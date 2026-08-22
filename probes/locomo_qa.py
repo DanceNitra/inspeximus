@@ -29,11 +29,40 @@ from inspeximus import Inspeximus
 DATA = os.path.join(HERE, "..", "..", "agora_output", "lab", "data", "locomo10.json")
 
 
+# ---------------------------------------------------------------------------------------------
+# A PROBE IN A PUBLIC REPOSITORY MUST NOT READ ITS AUTHOR'S HOME DIRECTORY. Found while fixing
+# DanceNitra/inspeximus#1, one file over from the one that was reported: the process environment
+# comes first, a dotenv is a FALLBACK, missing files are skipped, and nothing is overwritten.
+# The unconditional form this replaces crashed for every reader who was not the author.
+# ---------------------------------------------------------------------------------------------
+def _load_env_fallback():
+    import os as _os
+    _here = _os.path.dirname(_os.path.abspath(__file__))
+    for _cand in (_os.environ.get("AGORA_ENV_FILE", ""),
+                  _os.path.join(_here, "..", ".env"),
+                  _os.path.join(_here, "..", "server", ".env"),
+                  _os.path.join(_os.getcwd(), "server", ".env")):
+        if not _cand or not _os.path.exists(_cand):
+            continue
+        try:
+            with open(_cand, encoding="utf-8", errors="ignore") as _fh:
+                for _line in _fh:
+                    _line = _line.strip()
+                    if _line and not _line.startswith("#") and "=" in _line:
+                        _k, _v = _line.split("=", 1)
+                        _os.environ.setdefault(_k.strip(), _v.strip().strip('"').strip("'"))
+        except OSError:
+            continue
+        return _cand
+    return None
+
+
+_load_env_fallback()
+
+
 def _key():
-    for l in open(os.path.join(HERE, "..", "..", "server", ".env"), encoding="utf-8", errors="replace"):
-        if l.startswith("OPENAI_API_KEY="):
-            return l.split("=", 1)[1].strip()
-    return "ollama"
+    _load_env_fallback()
+    return os.environ.get("OPENAI_API_KEY") or "ollama"
 
 
 def llm(base, model, prompt, max_tokens=60, temp=0.0):

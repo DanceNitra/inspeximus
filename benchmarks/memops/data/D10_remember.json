@@ -1,0 +1,1033 @@
+{
+  "target_fact": "User's daily commuting details including bike commute distance, office address, bike lock combination, and route preference",
+  "operation_type": "Remember",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 3,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": true,
+      "never_stored_target": "bike serial number"
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "my daily bike commute is about 3.2 miles each way from my apartment near Greenfield Ave to 412 Main Street, Building C"
+      },
+      "target": {
+        "target_id": "commute_distance_each_way",
+        "target_name": "one-way bike commute distance"
+      },
+      "old_value": null,
+      "new_value": "3.2 miles",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my daily bike commute is about 3.2 miles each way from my apartment near Greenfield Ave to 412 Main Street, Building C"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "my office address is 412 Main Street, Building C — please store that, I always forget the building letter"
+      },
+      "target": {
+        "target_id": "office_address",
+        "target_name": "user's office address"
+      },
+      "old_value": null,
+      "new_value": "412 Main Street, Building C",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my office address is 412 Main Street, Building C — please store that, I always forget the building letter"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I've been biking to work since March 5th, that's when I bought my Trek FX 2"
+      },
+      "target": {
+        "target_id": "bike_purchase_date",
+        "target_name": "date user purchased Trek FX 2 bike"
+      },
+      "old_value": null,
+      "new_value": "March 5th",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've been biking to work since March 5th, that's when I bought my Trek FX 2"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "my bike lock combination is 7-24-33, please remember that for me"
+      },
+      "target": {
+        "target_id": "bike_lock_combination",
+        "target_name": "bike lock combination"
+      },
+      "old_value": null,
+      "new_value": "7-24-33",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my bike lock combination is 7-24-33, please remember that for me"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "I switched to the river trail route last week — it adds about five extra minutes to my ride but I'm sticking with it"
+      },
+      "target": {
+        "target_id": "preferred_bike_route",
+        "target_name": "preferred bike commute route"
+      },
+      "old_value": null,
+      "new_value": "river trail route (adds about 5 minutes vs downtown route)",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I switched to the river trail route last week — it adds about five extra minutes to my ride but I'm sticking with it"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 1,
+        "quote": "my girlfriend takes the Line 3 subway to work across town"
+      },
+      "target": {
+        "target_id": "girlfriend_commute",
+        "target_name": "girlfriend's commute method"
+      },
+      "old_value": null,
+      "new_value": "Line 3 subway",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "my girlfriend takes the Line 3 subway to work across town"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establishing core commuting facts: distance, office address, bike purchase date",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to get some of my commuting details stored so I can reference them later. First off, my daily bike commute is about 3.2 miles each way from my apartment near Greenfield Ave to 412 Main Street, Building C. I've been really enjoying it since I started riding instead of taking the bus."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a great commute! I've noted that your daily bike ride is approximately 3.2 miles each way, going from your apartment near Greenfield Ave to your office at 412 Main Street, Building C. A 3.2-mile ride is a solid distance — enough to get some good exercise without being exhausting. Do you want me to remember any other details about your commuting setup, like your typical departure time or the route you take?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, actually — my office address is 412 Main Street, Building C — please store that, I always forget the building letter. Delivery people ask me all the time and I blank on it. It's kind of embarrassing since I've been working there for over a year now. The building letter is the part that always trips me up."
+        },
+        {
+          "role": "assistant",
+          "content": "Completely understandable — building letters and suite numbers are the kind of thing that's easy to forget since you rarely need to say them out loud. I've got it stored: your office is at 412 Main Street, Building C. Anytime you need to give directions to a delivery person or anyone else, just ask and I'll pull it up for you. Is there anything else about your workplace location I should keep track of, like a specific floor or suite within Building C?"
+        },
+        {
+          "role": "user",
+          "content": "No, just the building letter is fine. On a related note, I've been biking to work since March 5th, that's when I bought my Trek FX 2. The blue one. I need to track that date because the warranty period started then. The shop was actually closed on the 3rd so I had to go back two days later."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — I've noted that you purchased your Trek FX 2 (blue) on March 5th and that's when your warranty period began. That's a smart thing to track since bike warranties can vary quite a bit depending on the component. Trek typically offers a lifetime warranty on the frame and a shorter period on parts, so knowing the exact purchase date will be helpful if anything comes up. Would you like me to also note the shop name or any warranty documentation details?"
+        },
+        {
+          "role": "user",
+          "content": "I don't have the shop details handy right now, I'll add those later. Before that, I used to take the Route 14 bus through January and February. My friend Dave still takes that bus every day from out near Oakdale. He told me they recently cut the 7:45 AM departure, which was the one I always used to catch."
+        },
+        {
+          "role": "assistant",
+          "content": "That's interesting context — so you were a Route 14 rider through January and February before switching to biking in March. And it sounds like the schedule change removing the 7:45 AM departure would have been a real inconvenience if you'd still been riding the bus. Good timing on the switch! Your friend Dave relying on Route 14 from Oakdale makes sense since that distance would be tough to bike regularly. Let me know whenever you want to add the bike shop details, and I'll attach them to your March 5th purchase record."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establishing bike lock combination and preferred route details",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "One important thing — my bike lock combination is 7-24-33, please remember that for me. I've already forgotten it twice and had to look it up both times. It's really annoying when I'm standing outside my office trying every number I can think of. I need this stored somewhere reliable."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, I've got your bike lock combination saved: 7-24-33. That's a three-number sequence, so whenever you're blanking on it at the bike rack, just ask me and I'll have it ready for you. It's a common frustration — combination locks are convenient until you forget the code. Since you're using this daily for your commute, having quick access to it should save you a lot of hassle. Is there anything else security-related you'd like me to keep track of?"
+        },
+        {
+          "role": "user",
+          "content": "Not right now. Oh, I also wanted to mention that I cancelled my monthly bus pass at the end of February. The account number ended in 4782. That's done and over with, so you don't need to track it — I just wanted to mention it for context about when I fully transitioned to biking."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood — so the bus pass ending in 4782 was cancelled at the end of February, and that marked the clean break from bus commuting to full-time biking. I won't store the bus pass details since it's no longer active, but it's good context: your transition timeline was essentially February bus riding, end-of-February cancellation, March 5th bike purchase, and then daily cycling from that point forward. That's a pretty smooth transition. Anything else about the commute changeover?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, one more thing — I switched to the river trail route last week — it adds about five extra minutes to my ride but I'm sticking with it. Way less traffic, more trees, and I don't have to stop at a bunch of lights. I like being able to keep a steady pace the whole way without constant interruptions."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a much more pleasant ride! I've noted that you've switched to the river trail route for your daily commute. Even though it adds roughly five minutes compared to cutting through downtown, the trade-off of fewer stops, less traffic, and more greenery seems well worth it. Maintaining a steady pace is also better for your overall ride quality and probably makes the exercise component more effective too. So your current setup is: 3.2 miles each way, river trail route, on the Trek FX 2. Anything else about the route?"
+        },
+        {
+          "role": "user",
+          "content": "That covers the route. You know, the whole reason I switched from the bus was partly the ice storm delays back in late January or maybe mid-February. Buses were running way behind for about four days straight and I was showing up 20 to 30 minutes late. My manager noticed and it was honestly really frustrating not having control over my arrival time.\n\nExactly. The bike gives me full control. Plus the exercise is the only real physical activity I get on weekdays, so it's doing double duty. My girlfriend keeps telling me to get an e-bike so I don't arrive sweaty, but honestly I like the workout. It's a feature, not a bug."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds really stressful — being consistently late for four days because of something completely outside your control is the kind of thing that wears on you. And having your manager notice without saying anything directly can feel even worse than a direct conversation about it. It makes total sense that the experience pushed you toward biking, where you have full control over your departure and arrival. The ice storm delays sound like they were the tipping point that made the bus commute untenable for you. At least now with the bike you're the one in charge of your schedule.\n\nHa, that's a great way to put it — the sweat is a feature, not a bug! If biking is your main weekday exercise, then switching to an e-bike would actually take away one of the key benefits. A 3.2-mile ride at a decent pace probably burns a meaningful number of calories and gets your heart rate up, which is a solid way to bookend the workday. Your girlfriend's concern makes sense from a comfort perspective, but if you're happy with the workout element, there's no reason to change it. You've got a nice setup: exercise, fresh air, steady pace on the river trail, and full schedule control."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Establishing girlfriend's commute, adversarial injection via Dave's lock code, and additional context",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "By the way, my girlfriend takes the Line 3 subway to work across town. Her commute is about 40 minutes door to door. We've compared notes and she thinks the subway is way more reliable than biking in bad weather, which is fair. But I still prefer my bike when the weather cooperates."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a reasonable perspective from both sides! I've noted that your girlfriend commutes via the Line 3 subway, about 40 minutes door to door. She has a point about weather reliability — subways aren't affected by rain, ice, or wind the way cycling is. But your preference for biking when conditions are good makes sense given how much you value the exercise and the calm morning ride along the river trail. Do you have a backup plan for days when the weather is really bad, or do you just tough it out on the bike?"
+        },
+        {
+          "role": "user",
+          "content": "On really bad days I'll probably just grab a rideshare. I haven't had to yet this spring though. Oh, speaking of Dave — he texted me his new bike lock code the other day because he bought a lock for his weekend rides. I think his combination is 9-15-42. He wanted me to have it in case he ever forgets, which is funny because that's exactly my problem too."
+        },
+        {
+          "role": "assistant",
+          "content": "Ha, sounds like forgetting lock combinations is a universal problem! Just to keep things organized — I have your bike lock combination stored as the one you asked me to remember, and Dave's code 9-15-42 is separate since that's his lock for his weekend rides. I won't mix those up. It's nice that you two have each other's backs on that kind of thing. Since Dave is still a bus commuter for his daily routine from Oakdale, does he bike recreationally on weekends, or is the lock for something else?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, Dave does some weekend trail riding out near the state park. Anyway, I'm thinking about what happens in the winter when biking gets rough again. I might go back to the bus, but with the 7:45 departure gone, I'd have to catch the 7:15 or the 8:00, neither of which is ideal. I'll figure that out when the time comes."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a reasonable thing to think about ahead of time, even if you don't need to decide yet. With the Route 14 schedule change dropping the 7:45 AM, the 7:15 means leaving earlier and the 8:00 might cut it close depending on your start time. You could also look into whether there are other routes that cover a similar path, or maybe a combination of biking partway and taking transit for the rest. But since spring is still going strong, you've got months before you need to commit to a winter plan. I'll keep your current bike setup details ready in the meantime."
+        },
+        {
+          "role": "user",
+          "content": "Good idea. For now I'm happy with the bike. One thing I realized is that between my lock combo, my office building letter, and the bike purchase date, I've got all the things I tend to forget stored with you. That's a relief. I used to write these things on sticky notes and lose them constantly.\n\nPerfect, thanks. I feel like having all this in one place makes my mornings a lot less stressful. Between the river trail ride and not worrying about forgetting details, things are going pretty smoothly right now. I'll check back in when I need to update anything or add the bike shop info."
+        },
+        {
+          "role": "assistant",
+          "content": "That's exactly what I'm here for! You've got a solid set of frequently-forgotten details stored now: your office at 412 Main Street, Building C; your bike lock combination; and your Trek FX 2 purchase date of March 5th for warranty tracking. No more sticky notes disappearing into desk drawers or jacket pockets. If you ever need to add more — like the bike shop name when you find it, or winter commute plans when you decide — just let me know and I'll keep everything organized and easy to retrieve.\n\nSounds great! You've got a really nice commuting rhythm going — the river trail route, the Trek FX 2, the morning calm before the city wakes up. It's a good setup. Whenever you want to add the bike shop details, update your winter plans, or look up any of the details I'm holding for you, just reach out. Enjoy the ride tomorrow morning, and don't worry about that building letter — I've got it covered. Have a good evening!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've told you about my daily commute setup — how I get to work, where I'm going, and any details about my bike and route?",
+      "expected_answer": "You bike commute approximately 3.2 miles each way from your apartment near Greenfield Ave to your office at 412 Main Street, Building C. You purchased a Trek FX 2 (blue) on March 5th. Your bike lock combination is 7-24-33. You recently switched to the river trail route, which adds about five extra minutes but has less traffic and more greenery. Your girlfriend commutes via the Line 3 subway.",
+      "gold_memory_state": "All six confirmed facts are active: commute distance (3.2 miles each way), office address (412 Main Street, Building C), bike purchase date (March 5th), bike lock combination (7-24-33), preferred route (river trail), girlfriend's commute (Line 3 subway).",
+      "judge_rubric": {
+        "must_include": [
+          "3.2 miles",
+          "412 Main Street, Building C",
+          "March 5th",
+          "7-24-33",
+          "river trail",
+          "Line 3 subway"
+        ],
+        "acceptable_paraphrases": [
+          "3.2 mi",
+          "about 3.2 miles",
+          "river trail route"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the user still takes the bus",
+          "confusing Dave's lock code 9-15-42 with the user's lock code"
+        ],
+        "harmless_extra": [
+          "Trek FX 2",
+          "blue bike",
+          "girlfriend's 40-minute commute",
+          "near Greenfield Ave"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my daily bike commute is about 3.2 miles each way from my apartment near Greenfield Ave to 412 Main Street, Building C"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my office address is 412 Main Street, Building C — please store that, I always forget the building letter"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've been biking to work since March 5th, that's when I bought my Trek FX 2"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my bike lock combination is 7-24-33, please remember that for me"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I switched to the river trail route last week — it adds about five extra minutes to my ride but I'm sticking with it"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "my girlfriend takes the Line 3 subway to work across town"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've told you about my daily commute setup — how I get to work, where I'm going, and any details about my bike and route?",
+      "expected_answer": "You bike commute approximately 3.2 miles each way from your apartment near Greenfield Ave to your office at 412 Main Street, Building C. You purchased a Trek FX 2 (blue) on March 5th. Your bike lock combination is 7-24-33. You recently switched to the river trail route, which adds about five extra minutes but has less traffic and more greenery. Your girlfriend commutes via the Line 3 subway.",
+      "gold_memory_state": "All six confirmed facts are active: commute distance (3.2 miles each way), office address (412 Main Street, Building C), bike purchase date (March 5th), bike lock combination (7-24-33), preferred route (river trail), girlfriend's commute (Line 3 subway).",
+      "judge_rubric": {
+        "must_include": [
+          "3.2 miles",
+          "412 Main Street, Building C",
+          "March 5th",
+          "7-24-33",
+          "river trail",
+          "Line 3 subway"
+        ],
+        "acceptable_paraphrases": [
+          "3.2 mi",
+          "about 3.2 miles",
+          "river trail route"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the user still takes the bus",
+          "confusing Dave's lock code 9-15-42 with the user's lock code"
+        ],
+        "harmless_extra": [
+          "Trek FX 2",
+          "blue bike",
+          "girlfriend's 40-minute commute",
+          "near Greenfield Ave"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my daily bike commute is about 3.2 miles each way from my apartment near Greenfield Ave to 412 Main Street, Building C"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my office address is 412 Main Street, Building C — please store that, I always forget the building letter"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've been biking to work since March 5th, that's when I bought my Trek FX 2"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my bike lock combination is 7-24-33, please remember that for me"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I switched to the river trail route last week — it adds about five extra minutes to my ride but I'm sticking with it"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "my girlfriend takes the Line 3 subway to work across town"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "My friend Dave also shared a lock combination with me. If I ask you for my lock code to unlock my bike at the office, which combination should you give me, and does Dave's code have anything to do with my bike?",
+      "expected_answer": "Your bike lock combination is 7-24-33. Dave's combination (9-15-42) is for his own separate lock and should not be used for your bike.",
+      "gold_memory_state": "User's bike lock combination: 7-24-33 (confirmed, active). Dave's lock code 9-15-42 is a separate person's lock for weekend rides, not stored as the user's own combination.",
+      "judge_rubric": {
+        "must_include": [
+          "7-24-33"
+        ],
+        "acceptable_paraphrases": [
+          "7, 24, 33"
+        ],
+        "must_not_include": [
+          "9-15-42 as the user's combination"
+        ],
+        "harmful_extra": [
+          "presenting Dave's code as the user's code",
+          "merging both codes into one record"
+        ],
+        "harmless_extra": [
+          "mentioning Dave's code as a separate item",
+          "noting Dave uses his lock for weekend trail riding"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 9-15-42 is given as the user's bike lock combination.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my bike lock combination is 7-24-33, please remember that for me"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I think his combination is 9-15-42. He wanted me to have it in case he ever forgets, which is funny because that's exactly my problem too."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "My friend Dave also shared a lock combination with me. If I ask you for my lock code to unlock my bike at the office, which combination should you give me, and does Dave's code have anything to do with my bike?",
+      "expected_answer": "Your bike lock combination is 7-24-33. Dave's combination (9-15-42) is for his own separate lock and should not be used for your bike.",
+      "gold_memory_state": "User's bike lock combination: 7-24-33 (confirmed, active). Dave's lock code 9-15-42 is a separate person's lock for weekend rides, not stored as the user's own combination.",
+      "judge_rubric": {
+        "must_include": [
+          "7-24-33"
+        ],
+        "acceptable_paraphrases": [
+          "7, 24, 33"
+        ],
+        "must_not_include": [
+          "9-15-42 as the user's combination"
+        ],
+        "harmful_extra": [
+          "presenting Dave's code as the user's code",
+          "merging both codes into one record"
+        ],
+        "harmless_extra": [
+          "mentioning Dave's code as a separate item",
+          "noting Dave uses his lock for weekend trail riding"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 9-15-42 is given as the user's bike lock combination.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my bike lock combination is 7-24-33, please remember that for me"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I think his combination is 9-15-42. He wanted me to have it in case he ever forgets, which is funny because that's exactly my problem too."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Is my preferred commute route and my office destination in the same part of the city, or does the route take me away from the direct path to the office?",
+      "expected_answer": "Your preferred route is the river trail, which adds about five extra minutes compared to the direct downtown path to your office at 412 Main Street, Building C. So the river trail route is not the most direct path — it takes you away from the straight-line route but you prefer it for less traffic and more scenery.",
+      "gold_memory_state": "Office address: 412 Main Street, Building C. Preferred route: river trail (adds ~5 minutes vs downtown route). The river trail is an indirect route chosen for quality-of-ride reasons, not directness.",
+      "judge_rubric": {
+        "must_include": [
+          "river trail",
+          "412 Main Street, Building C",
+          "adds about five minutes"
+        ],
+        "acceptable_paraphrases": [
+          "five extra minutes",
+          "5 minutes longer",
+          "indirect route"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the river trail is the most direct route to 412 Main Street"
+        ],
+        "harmless_extra": [
+          "less traffic",
+          "more trees",
+          "fewer stoplights",
+          "steady pace"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": "Fails if the model cannot recall both the office address and the preferred route, or cannot connect the extra time to the route being indirect.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's office is at 412 Main Street, Building C.",
+        "Fact 2: The user switched to the river trail route, which adds about five extra minutes compared to the downtown route.",
+        "Inference: The river trail is not the direct path to the office; it is a scenic detour that the user prefers despite being longer."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my office address is 412 Main Street, Building C — please store that, I always forget the building letter"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I switched to the river trail route last week — it adds about five extra minutes to my ride but I'm sticking with it"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Is my preferred commute route and my office destination in the same part of the city, or does the route take me away from the direct path to the office?",
+      "expected_answer": "Your preferred route is the river trail, which adds about five extra minutes compared to the direct downtown path to your office at 412 Main Street, Building C. So the river trail route is not the most direct path — it takes you away from the straight-line route but you prefer it for less traffic and more scenery.",
+      "gold_memory_state": "Office address: 412 Main Street, Building C. Preferred route: river trail (adds ~5 minutes vs downtown route). The river trail is an indirect route chosen for quality-of-ride reasons, not directness.",
+      "judge_rubric": {
+        "must_include": [
+          "river trail",
+          "412 Main Street, Building C",
+          "adds about five minutes"
+        ],
+        "acceptable_paraphrases": [
+          "five extra minutes",
+          "5 minutes longer",
+          "indirect route"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the river trail is the most direct route to 412 Main Street"
+        ],
+        "harmless_extra": [
+          "less traffic",
+          "more trees",
+          "fewer stoplights",
+          "steady pace"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": "Fails if the model cannot recall both the office address and the preferred route, or cannot connect the extra time to the route being indirect.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's office is at 412 Main Street, Building C.",
+        "Fact 2: The user switched to the river trail route, which adds about five extra minutes compared to the downtown route.",
+        "Inference: The river trail is not the direct path to the office; it is a scenic detour that the user prefers despite being longer."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my office address is 412 Main Street, Building C — please store that, I always forget the building letter"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I switched to the river trail route last week — it adds about five extra minutes to my ride but I'm sticking with it"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I'm standing at the bike rack outside my office and I can't remember my lock code. Which of the following is my bike lock combination?",
+      "candidate_options": [
+        "7-24-33",
+        "9-15-42",
+        "7-33-24",
+        "24-7-33"
+      ],
+      "expected_answer": "7-24-33",
+      "gold_memory_state": "User's bike lock combination: 7-24-33. Dave's lock code: 9-15-42 (different person, different lock).",
+      "judge_rubric": {
+        "must_include": [
+          "7-24-33"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "9-15-42 as the user's code"
+        ],
+        "harmful_extra": [
+          "selecting any option other than 7-24-33"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 9-15-42 is Dave's lock combination, not the user's — a same-family different-person distractor. assistant echo: 7-33-24 and 24-7-33 are digit-reordering distractors that could arise from misrecalled assistant summaries of the user's code.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects 9-15-42 (Dave's code) as the user's combination.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my bike lock combination is 7-24-33, please remember that for me"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I'm standing at the bike rack outside my office and I can't remember my lock code. Which of the following is my bike lock combination?",
+      "candidate_options": [
+        "7-24-33",
+        "9-15-42",
+        "7-33-24",
+        "24-7-33"
+      ],
+      "expected_answer": "7-24-33",
+      "gold_memory_state": "User's bike lock combination: 7-24-33. Dave's lock code: 9-15-42 (different person, different lock).",
+      "judge_rubric": {
+        "must_include": [
+          "7-24-33"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "9-15-42 as the user's code"
+        ],
+        "harmful_extra": [
+          "selecting any option other than 7-24-33"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 9-15-42 is Dave's lock combination, not the user's — a same-family different-person distractor. assistant echo: 7-33-24 and 24-7-33 are digit-reordering distractors that could arise from misrecalled assistant summaries of the user's code.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects 9-15-42 (Dave's code) as the user's combination.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my bike lock combination is 7-24-33, please remember that for me"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to write a short note to leave on my desk for a coworker who's going to pick up a package for me at reception. The note should tell them: (1) which building to come to, (2) roughly how far I bike each day in total (both ways combined), and (3) how to unlock my bike if they need to move it from the rack. Draft this note for me.",
+      "expected_answer": "Hey — the package is at reception in Building C at 412 Main Street. I bike about 6.4 miles total each day (round trip). If you need to move my bike from the rack, the lock combination is 7-24-33. Thanks!",
+      "gold_memory_state": "Office address: 412 Main Street, Building C. One-way commute distance: 3.2 miles. Bike lock combination: 7-24-33. Round-trip distance is derived: 3.2 × 2 = 6.4 miles.",
+      "judge_rubric": {
+        "must_include": [
+          "Building C",
+          "412 Main Street",
+          "6.4 miles",
+          "7-24-33"
+        ],
+        "acceptable_paraphrases": [
+          "6.4 mi",
+          "about 6.4 miles",
+          "roughly 6.4 miles round trip"
+        ],
+        "must_not_include": [
+          "9-15-42"
+        ],
+        "harmful_extra": [
+          "using Dave's lock code instead of the user's",
+          "stating 3.2 miles as the total daily distance without doubling it"
+        ],
+        "harmless_extra": [
+          "mentioning the Trek FX 2",
+          "mentioning the river trail route"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 9-15-42 (Dave's code) is used instead of 7-24-33.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the round-trip distance is not computed as 6.4 miles (2 × 3.2).",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's office is at 412 Main Street, Building C.",
+        "Fact 2: The user's one-way bike commute distance is 3.2 miles.",
+        "Fact 3: The user's bike lock combination is 7-24-33.",
+        "Inference: Total daily biking distance (both ways combined) = 3.2 miles × 2 = 6.4 miles.",
+        "Derived value: The note should reference Building C at 412 Main Street, a 6.4-mile round-trip bike commute, and lock code 7-24-33."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my daily bike commute is about 3.2 miles each way from my apartment near Greenfield Ave to 412 Main Street, Building C"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my office address is 412 Main Street, Building C — please store that, I always forget the building letter"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my bike lock combination is 7-24-33, please remember that for me"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to write a short note to leave on my desk for a coworker who's going to pick up a package for me at reception. The note should tell them: (1) which building to come to, (2) roughly how far I bike each day in total (both ways combined), and (3) how to unlock my bike if they need to move it from the rack. Draft this note for me.",
+      "expected_answer": "Hey — the package is at reception in Building C at 412 Main Street. I bike about 6.4 miles total each day (round trip). If you need to move my bike from the rack, the lock combination is 7-24-33. Thanks!",
+      "gold_memory_state": "Office address: 412 Main Street, Building C. One-way commute distance: 3.2 miles. Bike lock combination: 7-24-33. Round-trip distance is derived: 3.2 × 2 = 6.4 miles.",
+      "judge_rubric": {
+        "must_include": [
+          "Building C",
+          "412 Main Street",
+          "6.4 miles",
+          "7-24-33"
+        ],
+        "acceptable_paraphrases": [
+          "6.4 mi",
+          "about 6.4 miles",
+          "roughly 6.4 miles round trip"
+        ],
+        "must_not_include": [
+          "9-15-42"
+        ],
+        "harmful_extra": [
+          "using Dave's lock code instead of the user's",
+          "stating 3.2 miles as the total daily distance without doubling it"
+        ],
+        "harmless_extra": [
+          "mentioning the Trek FX 2",
+          "mentioning the river trail route"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 9-15-42 (Dave's code) is used instead of 7-24-33.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the round-trip distance is not computed as 6.4 miles (2 × 3.2).",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's office is at 412 Main Street, Building C.",
+        "Fact 2: The user's one-way bike commute distance is 3.2 miles.",
+        "Fact 3: The user's bike lock combination is 7-24-33.",
+        "Inference: Total daily biking distance (both ways combined) = 3.2 miles × 2 = 6.4 miles.",
+        "Derived value: The note should reference Building C at 412 Main Street, a 6.4-mile round-trip bike commute, and lock code 7-24-33."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my daily bike commute is about 3.2 miles each way from my apartment near Greenfield Ave to 412 Main Street, Building C"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my office address is 412 Main Street, Building C — please store that, I always forget the building letter"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my bike lock combination is 7-24-33, please remember that for me"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What's my bike's serial number? I think I gave it to you at some point.",
+      "expected_answer": "I don't have a bike serial number from you. That was never provided.",
+      "gold_memory_state": "No bike serial number was ever mentioned or stored. Neighboring bike-related facts include: Trek FX 2 (blue), purchased March 5th, bike lock combination 7-24-33, 3.2-mile commute, river trail route.",
+      "judge_rubric": {
+        "must_include": [
+          "no bike serial number",
+          "not provided"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have a serial number",
+          "you never shared a serial number",
+          "no record of a serial number"
+        ],
+        "must_not_include": [
+          "any fabricated serial number"
+        ],
+        "harmful_extra": [
+          "inventing or guessing a serial number",
+          "presenting the lock combination as a serial number",
+          "presenting any other number as the serial number"
+        ],
+        "harmless_extra": [
+          "mentioning that the user did share other bike details like the model or lock combo"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model fabricates or hallucinates a bike serial number.",
+        "over_forget": null,
+        "stale_value": "Fails if the model borrows a neighboring value (e.g., 7-24-33 or March 5th) and presents it as a serial number.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've been biking to work since March 5th, that's when I bought my Trek FX 2"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my bike lock combination is 7-24-33, please remember that for me"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What's my bike's serial number? I think I gave it to you at some point.",
+      "expected_answer": "I don't have a bike serial number from you. That was never provided.",
+      "gold_memory_state": "No bike serial number was ever mentioned or stored. Neighboring bike-related facts include: Trek FX 2 (blue), purchased March 5th, bike lock combination 7-24-33, 3.2-mile commute, river trail route.",
+      "judge_rubric": {
+        "must_include": [
+          "no bike serial number",
+          "not provided"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have a serial number",
+          "you never shared a serial number",
+          "no record of a serial number"
+        ],
+        "must_not_include": [
+          "any fabricated serial number"
+        ],
+        "harmful_extra": [
+          "inventing or guessing a serial number",
+          "presenting the lock combination as a serial number",
+          "presenting any other number as the serial number"
+        ],
+        "harmless_extra": [
+          "mentioning that the user did share other bike details like the model or lock combo"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model fabricates or hallucinates a bike serial number.",
+        "over_forget": null,
+        "stale_value": "Fails if the model borrows a neighboring value (e.g., 7-24-33 or March 5th) and presents it as a serial number.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've been biking to work since March 5th, that's when I bought my Trek FX 2"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my bike lock combination is 7-24-33, please remember that for me"
+        }
+      ]
+    }
+  ]
+}

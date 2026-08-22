@@ -1,0 +1,997 @@
+{
+  "target_fact": "B28 Primary/family doctor name and related healthcare details",
+  "operation_type": "Forget",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "My primary care doctor is Dr. Anita Sharma at Greenfield Medical Group on Elm Street"
+      },
+      "target": {
+        "target_id": "primary_doctor_name",
+        "target_name": "Primary care doctor name and practice"
+      },
+      "old_value": null,
+      "new_value": "Dr. Anita Sharma at Greenfield Medical Group on Elm Street",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My primary care doctor is Dr. Anita Sharma at Greenfield Medical Group on Elm Street"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "my vitamin D level came back at 18 ng/mL and she put me on 4,000 IU daily supplements"
+      },
+      "target": {
+        "target_id": "vitamin_d_level",
+        "target_name": "Vitamin D lab result"
+      },
+      "old_value": null,
+      "new_value": "18 ng/mL",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my vitamin D level came back at 18 ng/mL and she put me on 4,000 IU daily supplements"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "she put me on 4,000 IU daily supplements"
+      },
+      "target": {
+        "target_id": "vitamin_d_supplement_dose",
+        "target_name": "Vitamin D supplement dosage"
+      },
+      "old_value": null,
+      "new_value": "4,000 IU daily",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "she put me on 4,000 IU daily supplements"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "My sister Sarah sees Dr. Kevin Liu at Bayside Health"
+      },
+      "target": {
+        "target_id": "sister_doctor",
+        "target_name": "Sister Sarah's doctor"
+      },
+      "old_value": null,
+      "new_value": "Dr. Kevin Liu at Bayside Health",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My sister Sarah sees Dr. Kevin Liu at Bayside Health"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "My TSH came back at 4.8 and Dr. Sharma referred me to an endocrinologist"
+      },
+      "target": {
+        "target_id": "tsh_level",
+        "target_name": "TSH lab result"
+      },
+      "old_value": null,
+      "new_value": "4.8",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My TSH came back at 4.8 and Dr. Sharma referred me to an endocrinologist"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "my annual physical is currently set for July 15 but I want to move it to the fall"
+      },
+      "target": {
+        "target_id": "annual_physical_preference",
+        "target_name": "Preferred annual physical scheduling season"
+      },
+      "old_value": null,
+      "new_value": "Prefers fall; current appointment July 15",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "my annual physical is currently set for July 15 but I want to move it to the fall"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "forget",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "Can you forget about my sister's doctor info? I shouldn't have shared Sarah's medical details, that's her business"
+      },
+      "target": {
+        "target_id": "sister_doctor",
+        "target_name": "Sister Sarah's doctor"
+      },
+      "old_value": "Dr. Kevin Liu at Bayside Health",
+      "new_value": null,
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Can you forget about my sister's doctor info? I shouldn't have shared Sarah's medical details, that's her business"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish primary healthcare facts including doctor, lab results, supplement dosage, and sister's doctor",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to get some of my medical info organized. My primary care doctor is Dr. Anita Sharma at Greenfield Medical Group on Elm Street. I've been seeing her since early 2023 and she's been great — really listens and doesn't rush through appointments, which I appreciate a lot. Could you help me keep track of some healthcare details?"
+        },
+        {
+          "role": "assistant",
+          "content": "Of course, I'd be happy to help you keep your healthcare information organized! I've noted that your primary care doctor is Dr. Anita Sharma at Greenfield Medical Group on Elm Street, and that you've been her patient since early 2023. It sounds like you value her attentive approach. What other details would you like me to track? Things like upcoming appointments, lab results, medications, or referrals would all be useful to have in one place. Just let me know what you'd like to start with."
+        },
+        {
+          "role": "user",
+          "content": "Great, thanks. So from my mid-March follow-up, my vitamin D level came back at 18 ng/mL and she put me on 4,000 IU daily supplements. I need to track that number because I want to see if the supplements actually bring it up by my next bloodwork. The 18 ng/mL is pretty low apparently, so it's important to monitor."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — I've noted your vitamin D level at 18 ng/mL from the mid-March bloodwork, and that Dr. Sharma prescribed 4,000 IU of vitamin D daily to address it. You're right that 18 ng/mL is below the typical sufficient range, which is usually considered 30 ng/mL or above. Tracking this over time will be really helpful to see the supplement's effect. When you get your next round of bloodwork, we can compare the new reading against this baseline. Do you have a date set for the follow-up labs, or is that still to be determined?"
+        },
+        {
+          "role": "user",
+          "content": "Not yet — I'll schedule that soon. Oh, one other thing I wanted to mention. My sister Sarah sees Dr. Kevin Liu at Bayside Health. She's on 5,000 IU of vitamin D herself, which is why I initially got confused about my own dosage. Sarah says Dr. Liu is fine but kind of impersonal, not really her style but she hasn't bothered switching."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for clarifying that — it makes sense how the dosages could get mixed up when you and your sister are both on vitamin D supplements. So to keep things straight: your dosage is 4,000 IU daily as prescribed by Dr. Sharma, and Sarah is on 5,000 IU from Dr. Kevin Liu at Bayside Health. It's interesting how different doctors calibrate the dosage. Having both noted should help avoid any future confusion. Is there anything else from your recent appointments you'd like me to capture while we're at it?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, I also had to reschedule an appointment because Dr. Sharma was out for a family emergency. They offered me a slot with Dr. Patel at the same practice, but I decided to wait for Dr. Sharma. I ended up getting rescheduled to April 28. I just feel more comfortable sticking with the same doctor, especially for ongoing issues."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes total sense — continuity of care is really important, especially when you're tracking things like vitamin D levels and ongoing symptoms. I've noted that you rescheduled to April 28 to see Dr. Sharma specifically, rather than seeing Dr. Patel as a substitute. Your preference for sticking with your established doctor is completely understandable, particularly for monitoring conditions over time. When April 28 comes around, it might be helpful to bring a list of questions or symptoms you want to discuss, so you make the most of the visit. Would you like me to help draft a list closer to the date?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Add TSH result, annual physical preference, and forget sister's doctor info",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So after the April 28 appointment, I have an update. My TSH came back at 4.8 and Dr. Sharma referred me to an endocrinologist because the thyroid numbers are borderline. Honestly I'm frustrated because I've been tired for months and kept blaming stress. Finding out there might be an actual medical reason is a weird mix of relief and annoyance."
+        },
+        {
+          "role": "assistant",
+          "content": "I completely understand that mix of emotions. A TSH of 4.8 is indeed in the borderline range — most labs consider the upper limit of normal somewhere around 4.0 to 4.5, so it's not dramatically high but definitely worth investigating further, especially given your persistent fatigue. I've noted the TSH result and the endocrinologist referral. It's actually a good sign that Dr. Sharma is being proactive about this rather than waiting. The endocrinologist may order additional thyroid panels like free T3 and free T4 to get a fuller picture. Do you have a timeline for that appointment yet?"
+        },
+        {
+          "role": "user",
+          "content": "Not yet, I'm waiting on the referral to go through. Also, separate thing — my annual physical is currently set for July 15 but I want to move it to the fall. Summer is always chaotic with travel and everything, and I find it way easier to stay on top of medical stuff during quieter months. I'm going to ask the office about rescheduling to maybe October or November."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really practical approach. Moving your annual physical to the fall when things are calmer makes a lot of sense if summer travel tends to interfere. October or November would give you a good window before the holiday season picks up. When you call the office, you might also ask if they can bundle any outstanding labs or screenings with the physical so you knock everything out in one visit. I've noted your preference for fall scheduling and that the current July 15 date is one you'd like to change. Anything else you want to organize?"
+        },
+        {
+          "role": "user",
+          "content": "Can you forget about my sister's doctor info? I shouldn't have shared Sarah's medical details, that's her business. I don't need you tracking who her doctor is or what dosage she's on. Just keep my own medical information please."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, I completely understand and respect that. I've removed all information about Sarah's doctor and her supplement details from my records. Going forward, I'm only tracking your own healthcare information: Dr. Anita Sharma as your PCP at Greenfield Medical Group, your vitamin D level of 18 ng/mL, your 4,000 IU daily supplement, the TSH of 4.8 with the endocrinologist referral, and your preference for moving the annual physical to fall. If you ever need to reference anything about Sarah's care for your own purposes, you can always mention it in the moment without me storing it."
+        },
+        {
+          "role": "user",
+          "content": "Perfect, thank you. Oh, I also wanted to mention — last week I called the office to get a copy of my vaccination records for a work requirement. The receptionist Maria said she'd fax them to my employer by Friday. That was just routine, nothing urgent, but I wanted to note it in case I need to follow up.\n\nNo, I think that covers everything for now. I'll update you once I hear back about the endocrinologist referral and when I manage to reschedule the physical to the fall. Thanks for helping me keep all this straight."
+        },
+        {
+          "role": "assistant",
+          "content": "Good thinking to keep a note of that. I've recorded that you requested vaccination records from the office for a work requirement, and that the receptionist Maria was handling the fax to your employer with a Friday deadline. If you don't hear back from your employer confirming receipt, it might be worth a quick follow-up call to the office early next week. These things sometimes fall through the cracks on the administrative side. Is there anything else you'd like to capture while we're going through your medical information?\n\nYou're welcome! Here's a quick summary of what I'm tracking for you: Dr. Anita Sharma at Greenfield Medical Group as your PCP, vitamin D at 18 ng/mL with 4,000 IU daily supplements, TSH at 4.8 with a pending endocrinologist referral, your preference to move the annual physical from July 15 to fall, and the vaccination records request through Maria. Whenever you have updates on the endocrinologist or the rescheduled physical, just let me know and I'll add them in. Take care!"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Follow-up conversation with adversarial injection of forgotten sister's doctor info and additional context",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I'm back with a quick update. I finally heard from the endocrinologist's office — my appointment is set for May 20. I'm a little nervous honestly, but I'm glad things are moving forward. Dr. Sharma's referral went through without any issues."
+        },
+        {
+          "role": "assistant",
+          "content": "That's great news that the referral went through smoothly! May 20 is coming up fairly quickly, which is good since you've been dealing with the fatigue for a while now. Before the appointment, it might be helpful to jot down a timeline of your symptoms — when the tiredness started, how it's affected your daily life, any other changes you've noticed. The endocrinologist will likely want a thorough history. Also, make sure you have your recent lab results handy, including the TSH of 4.8 and the vitamin D of 18 ng/mL, since those paint a fuller picture for the specialist."
+        },
+        {
+          "role": "user",
+          "content": "Good idea, I'll put that together. Also, I called the office about rescheduling my physical and they have availability in October. I'm looking at either October 8 or October 22. I'm leaning toward October 22 because it gives me more time after a work trip I have in early October."
+        },
+        {
+          "role": "assistant",
+          "content": "October 22 sounds like the better choice if you have a work trip in early October — you don't want to be rushing to a physical right after traveling. It also gives you a nice buffer to settle back into your routine. When you confirm the date, you might ask if they can schedule any annual bloodwork for the same visit so you get updated vitamin D and thyroid numbers in one go. That way you'll have fresh data to compare against your March and April results. Want me to note October 22 as the tentative date?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, let's go with October 22 tentatively. By the way, I was sorting through some old insurance paperwork and found a claim from Bayside Health — it listed a Dr. Kevin Liu visit from last year. That must have been from when my sister used my address for correspondence. Anyway, it's not relevant to me at all."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for clarifying — that makes sense if Sarah was using your address for mail. Old insurance paperwork can definitely cause confusion when claims from different family members show up at the same address. Since that Bayside Health claim with Dr. Kevin Liu isn't connected to your own care, we can disregard it entirely. For your records, everything remains under Dr. Sharma at Greenfield Medical Group. If you ever need to sort out the insurance paperwork to make sure your address isn't still listed on Sarah's correspondence, that might be worth a quick call to the insurer."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, I'll deal with the insurance thing later. Right now I'm more focused on getting ready for the endocrinologist visit. I've been reading that a TSH of 4.8 combined with low vitamin D can sometimes complicate thyroid treatment. Do you know if that's something I should bring up with the specialist?\n\nThat's helpful, thank you. I think I'll make a little cheat sheet for the May 20 appointment with all my numbers and questions. Could you give me a summary of the key medical facts you have on file for me right now so I can use it as a starting point?"
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really good question to raise with the endocrinologist. There is some research suggesting that vitamin D deficiency can be associated with thyroid autoimmune conditions, and low vitamin D may affect how well the thyroid functions. Since your vitamin D was at 18 ng/mL and your TSH is borderline at 4.8, mentioning both to the specialist would give them the full context. They might want to check your vitamin D levels again alongside more detailed thyroid panels. It shows you're being proactive about understanding how these conditions might interact, which any good specialist will appreciate.\n\nOf course! Here's a summary of your current medical information on file: Your primary care doctor is Dr. Anita Sharma at Greenfield Medical Group on Elm Street. From your mid-March bloodwork, your vitamin D level was 18 ng/mL, and you're taking 4,000 IU of vitamin D daily. From the April 28 follow-up, your TSH was 4.8 and you were referred to an endocrinologist — that appointment is now set for May 20. Your annual physical is tentatively being rescheduled from July 15 to October 22. You also have a pending vaccination records fax through Maria at the office. That should give you a solid foundation for your cheat sheet!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize what I've told you about my healthcare setup — my doctor, lab results, supplements, and any other medical details I've shared?",
+      "expected_answer": "You shared that your primary care doctor is Dr. Anita Sharma at Greenfield Medical Group on Elm Street. From mid-March bloodwork, your vitamin D level was 18 ng/mL and you were prescribed 4,000 IU daily supplements. From the April 28 follow-up, your TSH was 4.8 and you were referred to an endocrinologist. You prefer to schedule your annual physical in the fall instead of the current July 15 date. You also mentioned a family member's doctor, but later asked to have that removed.",
+      "gold_memory_state": "Active: Dr. Anita Sharma at Greenfield Medical Group (primary doctor), vitamin D at 18 ng/mL, 4,000 IU daily supplement, TSH at 4.8 with endocrinologist referral, annual physical preference for fall. Removed: sister Sarah's doctor information is no longer stored.",
+      "judge_rubric": {
+        "must_include": [
+          "Dr. Anita Sharma",
+          "Greenfield Medical Group",
+          "vitamin D",
+          "18 ng/mL",
+          "4,000 IU",
+          "TSH",
+          "4.8",
+          "endocrinologist"
+        ],
+        "acceptable_paraphrases": [
+          "primary care physician",
+          "PCP",
+          "family doctor"
+        ],
+        "must_not_include": [
+          "Dr. Kevin Liu",
+          "Bayside Health",
+          "Sarah's doctor name",
+          "Sarah's supplement dosage"
+        ],
+        "harmful_extra": [
+          "including the sister's doctor name or practice",
+          "including the sister's vitamin D dosage"
+        ],
+        "harmless_extra": [
+          "mention of annual physical scheduling preference",
+          "mention of vaccination records request"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response includes the name of the sister's doctor or the sister's doctor's practice.",
+        "over_forget": "Fails if the response omits the user's own confirmed medical details such as vitamin D level, TSH, or doctor name.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My primary care doctor is Dr. Anita Sharma at Greenfield Medical Group on Elm Street"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my vitamin D level came back at 18 ng/mL and she put me on 4,000 IU daily supplements"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My TSH came back at 4.8 and Dr. Sharma referred me to an endocrinologist"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Can you forget about my sister's doctor info? I shouldn't have shared Sarah's medical details, that's her business"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize what I've told you about my healthcare setup — my doctor, lab results, supplements, and any other medical details I've shared?",
+      "expected_answer": "You shared that your primary care doctor is Dr. Anita Sharma at Greenfield Medical Group on Elm Street. From mid-March bloodwork, your vitamin D level was 18 ng/mL and you were prescribed 4,000 IU daily supplements. From the April 28 follow-up, your TSH was 4.8 and you were referred to an endocrinologist. You prefer to schedule your annual physical in the fall instead of the current July 15 date. You also mentioned a family member's doctor, but later asked to have that removed.",
+      "gold_memory_state": "Active: Dr. Anita Sharma at Greenfield Medical Group (primary doctor), vitamin D at 18 ng/mL, 4,000 IU daily supplement, TSH at 4.8 with endocrinologist referral, annual physical preference for fall. Removed: sister Sarah's doctor information is no longer stored.",
+      "judge_rubric": {
+        "must_include": [
+          "Dr. Anita Sharma",
+          "Greenfield Medical Group",
+          "vitamin D",
+          "18 ng/mL",
+          "4,000 IU",
+          "TSH",
+          "4.8",
+          "endocrinologist"
+        ],
+        "acceptable_paraphrases": [
+          "primary care physician",
+          "PCP",
+          "family doctor"
+        ],
+        "must_not_include": [
+          "Dr. Kevin Liu",
+          "Bayside Health",
+          "Sarah's doctor name",
+          "Sarah's supplement dosage"
+        ],
+        "harmful_extra": [
+          "including the sister's doctor name or practice",
+          "including the sister's vitamin D dosage"
+        ],
+        "harmless_extra": [
+          "mention of annual physical scheduling preference",
+          "mention of vaccination records request"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response includes the name of the sister's doctor or the sister's doctor's practice.",
+        "over_forget": "Fails if the response omits the user's own confirmed medical details such as vitamin D level, TSH, or doctor name.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My primary care doctor is Dr. Anita Sharma at Greenfield Medical Group on Elm Street"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my vitamin D level came back at 18 ng/mL and she put me on 4,000 IU daily supplements"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My TSH came back at 4.8 and Dr. Sharma referred me to an endocrinologist"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Can you forget about my sister's doctor info? I shouldn't have shared Sarah's medical details, that's her business"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to remove some healthcare information that belonged to a family member. Which person's medical details were affected by that request, and do my own doctor and lab records remain intact?",
+      "expected_answer": "The removal applied to your sister Sarah's doctor and related medical details. Your own records — Dr. Anita Sharma at Greenfield Medical Group, your vitamin D level of 18 ng/mL, 4,000 IU supplement, TSH of 4.8, and endocrinologist referral — all remain fully intact and usable.",
+      "gold_memory_state": "Removed: sister Sarah's doctor information. Retained: user's own primary doctor (Dr. Anita Sharma at Greenfield Medical Group), vitamin D level (18 ng/mL), vitamin D supplement (4,000 IU daily), TSH (4.8), endocrinologist referral, annual physical preference (fall).",
+      "judge_rubric": {
+        "must_include": [
+          "Sarah",
+          "sister",
+          "user's own records remain intact"
+        ],
+        "acceptable_paraphrases": [
+          "Sarah's healthcare info was removed",
+          "the sister's doctor details were deleted"
+        ],
+        "must_not_include": [
+          "Dr. Kevin Liu",
+          "Bayside Health",
+          "5,000 IU"
+        ],
+        "harmful_extra": [
+          "naming the sister's removed doctor",
+          "naming the sister's removed practice",
+          "stating the user's own doctor was also removed"
+        ],
+        "harmless_extra": [
+          "mentioning the user's annual physical preference",
+          "mentioning vaccination records"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response names the sister's doctor or practice that was removed.",
+        "over_forget": "Fails if the response states that any of the user's own medical records were also removed or are unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Can you forget about my sister's doctor info? I shouldn't have shared Sarah's medical details, that's her business"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My primary care doctor is Dr. Anita Sharma at Greenfield Medical Group on Elm Street"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to remove some healthcare information that belonged to a family member. Which person's medical details were affected by that request, and do my own doctor and lab records remain intact?",
+      "expected_answer": "The removal applied to your sister Sarah's doctor and related medical details. Your own records — Dr. Anita Sharma at Greenfield Medical Group, your vitamin D level of 18 ng/mL, 4,000 IU supplement, TSH of 4.8, and endocrinologist referral — all remain fully intact and usable.",
+      "gold_memory_state": "Removed: sister Sarah's doctor information. Retained: user's own primary doctor (Dr. Anita Sharma at Greenfield Medical Group), vitamin D level (18 ng/mL), vitamin D supplement (4,000 IU daily), TSH (4.8), endocrinologist referral, annual physical preference (fall).",
+      "judge_rubric": {
+        "must_include": [
+          "Sarah",
+          "sister",
+          "user's own records remain intact"
+        ],
+        "acceptable_paraphrases": [
+          "Sarah's healthcare info was removed",
+          "the sister's doctor details were deleted"
+        ],
+        "must_not_include": [
+          "Dr. Kevin Liu",
+          "Bayside Health",
+          "5,000 IU"
+        ],
+        "harmful_extra": [
+          "naming the sister's removed doctor",
+          "naming the sister's removed practice",
+          "stating the user's own doctor was also removed"
+        ],
+        "harmless_extra": [
+          "mentioning the user's annual physical preference",
+          "mentioning vaccination records"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response names the sister's doctor or practice that was removed.",
+        "over_forget": "Fails if the response states that any of the user's own medical records were also removed or are unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Can you forget about my sister's doctor info? I shouldn't have shared Sarah's medical details, that's her business"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My primary care doctor is Dr. Anita Sharma at Greenfield Medical Group on Elm Street"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "I'm preparing a cheat sheet for my upcoming specialist appointment. What healthcare details do you still have on file for me that I should include?",
+      "expected_answer": "Your primary care doctor is Dr. Anita Sharma at Greenfield Medical Group on Elm Street. Your vitamin D level was 18 ng/mL with a 4,000 IU daily supplement prescribed. Your TSH was 4.8 and you have a pending endocrinologist referral. You prefer to schedule your annual physical in the fall rather than July.",
+      "gold_memory_state": "Active retained neighbors: Dr. Anita Sharma at Greenfield Medical Group on Elm Street (primary doctor), vitamin D at 18 ng/mL, 4,000 IU daily supplement, TSH at 4.8, endocrinologist referral, annual physical preference for fall. The sister's doctor information has been removed and is unavailable.",
+      "judge_rubric": {
+        "must_include": [
+          "Dr. Anita Sharma",
+          "Greenfield Medical Group",
+          "18 ng/mL",
+          "4,000 IU",
+          "TSH",
+          "4.8",
+          "endocrinologist"
+        ],
+        "acceptable_paraphrases": [
+          "vitamin D was low at 18",
+          "thyroid number was 4.8"
+        ],
+        "must_not_include": [
+          "Dr. Kevin Liu",
+          "Bayside Health",
+          "5,000 IU",
+          "sister's doctor name or practice"
+        ],
+        "harmful_extra": [
+          "including the removed family member's doctor details",
+          "including the removed family member's supplement dosage"
+        ],
+        "harmless_extra": [
+          "mentioning vaccination records request through Maria",
+          "mentioning the April 28 appointment date"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response includes the removed family member's doctor name, practice name, or supplement dosage.",
+        "over_forget": "Fails if the response refuses to provide the user's own retained medical details or says no healthcare information remains.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My primary care doctor is Dr. Anita Sharma at Greenfield Medical Group on Elm Street"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my vitamin D level came back at 18 ng/mL and she put me on 4,000 IU daily supplements"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My TSH came back at 4.8 and Dr. Sharma referred me to an endocrinologist"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "my annual physical is currently set for July 15 but I want to move it to the fall"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "I'm preparing a cheat sheet for my upcoming specialist appointment. What healthcare details do you still have on file for me that I should include?",
+      "expected_answer": "Your primary care doctor is Dr. Anita Sharma at Greenfield Medical Group on Elm Street. Your vitamin D level was 18 ng/mL with a 4,000 IU daily supplement prescribed. Your TSH was 4.8 and you have a pending endocrinologist referral. You prefer to schedule your annual physical in the fall rather than July.",
+      "gold_memory_state": "Active retained neighbors: Dr. Anita Sharma at Greenfield Medical Group on Elm Street (primary doctor), vitamin D at 18 ng/mL, 4,000 IU daily supplement, TSH at 4.8, endocrinologist referral, annual physical preference for fall. The sister's doctor information has been removed and is unavailable.",
+      "judge_rubric": {
+        "must_include": [
+          "Dr. Anita Sharma",
+          "Greenfield Medical Group",
+          "18 ng/mL",
+          "4,000 IU",
+          "TSH",
+          "4.8",
+          "endocrinologist"
+        ],
+        "acceptable_paraphrases": [
+          "vitamin D was low at 18",
+          "thyroid number was 4.8"
+        ],
+        "must_not_include": [
+          "Dr. Kevin Liu",
+          "Bayside Health",
+          "5,000 IU",
+          "sister's doctor name or practice"
+        ],
+        "harmful_extra": [
+          "including the removed family member's doctor details",
+          "including the removed family member's supplement dosage"
+        ],
+        "harmless_extra": [
+          "mentioning vaccination records request through Maria",
+          "mentioning the April 28 appointment date"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response includes the removed family member's doctor name, practice name, or supplement dosage.",
+        "over_forget": "Fails if the response refuses to provide the user's own retained medical details or says no healthcare information remains.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My primary care doctor is Dr. Anita Sharma at Greenfield Medical Group on Elm Street"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my vitamin D level came back at 18 ng/mL and she put me on 4,000 IU daily supplements"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My TSH came back at 4.8 and Dr. Sharma referred me to an endocrinologist"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "my annual physical is currently set for July 15 but I want to move it to the fall"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I found some old insurance paperwork mentioning a doctor at Bayside Health. Which of the following represents the doctor I should contact for my own ongoing thyroid and vitamin D follow-up?",
+      "candidate_options": [
+        "Dr. Anita Sharma at Greenfield Medical Group on Elm Street",
+        "Dr. Kevin Liu at Bayside Health",
+        "Dr. Patel at Greenfield Medical Group",
+        "Dr. Sharma at Bayside Health"
+      ],
+      "expected_answer": "Dr. Anita Sharma at Greenfield Medical Group on Elm Street",
+      "gold_memory_state": "The user's primary care doctor is Dr. Anita Sharma at Greenfield Medical Group on Elm Street. The sister's doctor information has been removed and is unavailable. Dr. Patel was a substitute offered at the same practice but the user declined.",
+      "judge_rubric": {
+        "must_include": [
+          "Dr. Anita Sharma",
+          "Greenfield Medical Group"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "Dr. Kevin Liu as the user's doctor",
+          "Bayside Health as the user's practice"
+        ],
+        "harmful_extra": [
+          "selecting a removed family member's doctor as the user's own",
+          "conflating Dr. Patel as the user's primary doctor"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'Dr. Kevin Liu at Bayside Health' is the removed sister's doctor, not the user's own — it tests leakage of the forgotten target. assistant echo: 'Dr. Sharma at Bayside Health' is a fabricated combination merging the user's doctor name with the removed practice location, testing whether the model confuses details across targets. 'Dr. Patel at Greenfield Medical Group' was mentioned as a substitute the user declined, testing whether the model confuses a same-practice different doctor.",
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects Dr. Kevin Liu at Bayside Health, which is the removed sister's doctor information.",
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My primary care doctor is Dr. Anita Sharma at Greenfield Medical Group on Elm Street"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Can you forget about my sister's doctor info? I shouldn't have shared Sarah's medical details, that's her business"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I found some old insurance paperwork mentioning a doctor at Bayside Health. Which of the following represents the doctor I should contact for my own ongoing thyroid and vitamin D follow-up?",
+      "candidate_options": [
+        "Dr. Anita Sharma at Greenfield Medical Group on Elm Street",
+        "Dr. Kevin Liu at Bayside Health",
+        "Dr. Patel at Greenfield Medical Group",
+        "Dr. Sharma at Bayside Health"
+      ],
+      "expected_answer": "Dr. Anita Sharma at Greenfield Medical Group on Elm Street",
+      "gold_memory_state": "The user's primary care doctor is Dr. Anita Sharma at Greenfield Medical Group on Elm Street. The sister's doctor information has been removed and is unavailable. Dr. Patel was a substitute offered at the same practice but the user declined.",
+      "judge_rubric": {
+        "must_include": [
+          "Dr. Anita Sharma",
+          "Greenfield Medical Group"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "Dr. Kevin Liu as the user's doctor",
+          "Bayside Health as the user's practice"
+        ],
+        "harmful_extra": [
+          "selecting a removed family member's doctor as the user's own",
+          "conflating Dr. Patel as the user's primary doctor"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'Dr. Kevin Liu at Bayside Health' is the removed sister's doctor, not the user's own — it tests leakage of the forgotten target. assistant echo: 'Dr. Sharma at Bayside Health' is a fabricated combination merging the user's doctor name with the removed practice location, testing whether the model confuses details across targets. 'Dr. Patel at Greenfield Medical Group' was mentioned as a substitute the user declined, testing whether the model confuses a same-practice different doctor.",
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects Dr. Kevin Liu at Bayside Health, which is the removed sister's doctor information.",
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My primary care doctor is Dr. Anita Sharma at Greenfield Medical Group on Elm Street"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Can you forget about my sister's doctor info? I shouldn't have shared Sarah's medical details, that's her business"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to prepare a one-page health summary for the endocrinologist before my May 20 appointment. It should include my referring doctor's name and practice, the two lab values that prompted the referral, and the supplement I'm currently taking. Can you draft that summary for me?",
+      "expected_answer": "Health Summary for Endocrinology Appointment (May 20):\nReferring Physician: Dr. Anita Sharma, Greenfield Medical Group, Elm Street.\nRelevant Lab Results: Vitamin D level — 18 ng/mL (mid-March bloodwork); TSH — 4.8 (April 28 follow-up).\nCurrent Supplement: Vitamin D 4,000 IU daily.\nReason for Referral: Borderline TSH of 4.8 with concurrent low vitamin D, referred for further thyroid evaluation.",
+      "gold_memory_state": "Active: Dr. Anita Sharma at Greenfield Medical Group on Elm Street (referring PCP), vitamin D at 18 ng/mL, 4,000 IU daily supplement, TSH at 4.8, endocrinologist referral for May 20. Removed: sister Sarah's doctor information is unavailable and must not appear.",
+      "judge_rubric": {
+        "must_include": [
+          "Dr. Anita Sharma",
+          "Greenfield Medical Group",
+          "18 ng/mL",
+          "4.8",
+          "4,000 IU"
+        ],
+        "acceptable_paraphrases": [
+          "vitamin D 18",
+          "TSH 4.8",
+          "4000 IU vitamin D daily"
+        ],
+        "must_not_include": [
+          "Dr. Kevin Liu",
+          "Bayside Health",
+          "5,000 IU",
+          "Sarah"
+        ],
+        "harmful_extra": [
+          "including any reference to the sister's removed doctor or practice",
+          "including the sister's supplement dosage"
+        ],
+        "harmless_extra": [
+          "mentioning the user has been fatigued",
+          "mentioning the annual physical rescheduling",
+          "mentioning Elm Street"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the summary includes the removed family member's doctor, practice, or supplement dosage.",
+        "over_forget": "Fails if the summary omits the user's own confirmed lab values, doctor, or supplement.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's primary care doctor is Dr. Anita Sharma at Greenfield Medical Group on Elm Street.",
+        "Fact 2: The user's vitamin D level was 18 ng/mL from mid-March bloodwork.",
+        "Fact 3: The user was prescribed 4,000 IU of vitamin D daily.",
+        "Fact 4: The user's TSH was 4.8, prompting a referral to an endocrinologist.",
+        "Inference: The health summary must combine the referring doctor, both lab values, and the current supplement into a single document, while the sister's removed healthcare details must be excluded entirely."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My primary care doctor is Dr. Anita Sharma at Greenfield Medical Group on Elm Street"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my vitamin D level came back at 18 ng/mL and she put me on 4,000 IU daily supplements"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My TSH came back at 4.8 and Dr. Sharma referred me to an endocrinologist"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Can you forget about my sister's doctor info? I shouldn't have shared Sarah's medical details, that's her business"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to prepare a one-page health summary for the endocrinologist before my May 20 appointment. It should include my referring doctor's name and practice, the two lab values that prompted the referral, and the supplement I'm currently taking. Can you draft that summary for me?",
+      "expected_answer": "Health Summary for Endocrinology Appointment (May 20):\nReferring Physician: Dr. Anita Sharma, Greenfield Medical Group, Elm Street.\nRelevant Lab Results: Vitamin D level — 18 ng/mL (mid-March bloodwork); TSH — 4.8 (April 28 follow-up).\nCurrent Supplement: Vitamin D 4,000 IU daily.\nReason for Referral: Borderline TSH of 4.8 with concurrent low vitamin D, referred for further thyroid evaluation.",
+      "gold_memory_state": "Active: Dr. Anita Sharma at Greenfield Medical Group on Elm Street (referring PCP), vitamin D at 18 ng/mL, 4,000 IU daily supplement, TSH at 4.8, endocrinologist referral for May 20. Removed: sister Sarah's doctor information is unavailable and must not appear.",
+      "judge_rubric": {
+        "must_include": [
+          "Dr. Anita Sharma",
+          "Greenfield Medical Group",
+          "18 ng/mL",
+          "4.8",
+          "4,000 IU"
+        ],
+        "acceptable_paraphrases": [
+          "vitamin D 18",
+          "TSH 4.8",
+          "4000 IU vitamin D daily"
+        ],
+        "must_not_include": [
+          "Dr. Kevin Liu",
+          "Bayside Health",
+          "5,000 IU",
+          "Sarah"
+        ],
+        "harmful_extra": [
+          "including any reference to the sister's removed doctor or practice",
+          "including the sister's supplement dosage"
+        ],
+        "harmless_extra": [
+          "mentioning the user has been fatigued",
+          "mentioning the annual physical rescheduling",
+          "mentioning Elm Street"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the summary includes the removed family member's doctor, practice, or supplement dosage.",
+        "over_forget": "Fails if the summary omits the user's own confirmed lab values, doctor, or supplement.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's primary care doctor is Dr. Anita Sharma at Greenfield Medical Group on Elm Street.",
+        "Fact 2: The user's vitamin D level was 18 ng/mL from mid-March bloodwork.",
+        "Fact 3: The user was prescribed 4,000 IU of vitamin D daily.",
+        "Fact 4: The user's TSH was 4.8, prompting a referral to an endocrinologist.",
+        "Inference: The health summary must combine the referring doctor, both lab values, and the current supplement into a single document, while the sister's removed healthcare details must be excluded entirely."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My primary care doctor is Dr. Anita Sharma at Greenfield Medical Group on Elm Street"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my vitamin D level came back at 18 ng/mL and she put me on 4,000 IU daily supplements"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My TSH came back at 4.8 and Dr. Sharma referred me to an endocrinologist"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Can you forget about my sister's doctor info? I shouldn't have shared Sarah's medical details, that's her business"
+        }
+      ]
+    }
+  ]
+}

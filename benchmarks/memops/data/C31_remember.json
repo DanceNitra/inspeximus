@@ -1,0 +1,1057 @@
+{
+  "target_fact": "Mochi's pet care schedule including deworming, vaccination, and grooming details",
+  "operation_type": "Remember",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 3,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": true,
+      "never_stored_target": "Mochi's microchip ID number"
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "Mochi had her rabies booster on March 3rd at Greenfield Veterinary Clinic with Dr. Patel"
+      },
+      "target": {
+        "target_id": "mochi_rabies_booster_date",
+        "target_name": "Mochi's rabies booster date"
+      },
+      "old_value": null,
+      "new_value": "March 3rd",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Mochi had her rabies booster on March 3rd at Greenfield Veterinary Clinic with Dr. Patel"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "The rabies vaccine is on an annual schedule, so the next one is due exactly twelve months after the last shot"
+      },
+      "target": {
+        "target_id": "mochi_rabies_schedule_interval",
+        "target_name": "Mochi's rabies vaccination interval"
+      },
+      "old_value": null,
+      "new_value": "12 months after previous dose",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The rabies vaccine is on an annual schedule, so the next one is due exactly twelve months after the last shot"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I switched Mochi from Drontal to Milbemax for deworming back in late January"
+      },
+      "target": {
+        "target_id": "mochi_deworming_product",
+        "target_name": "Mochi's current deworming product"
+      },
+      "old_value": null,
+      "new_value": "Milbemax",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I switched Mochi from Drontal to Milbemax for deworming back in late January"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "Mochi's next Milbemax deworming dose is due on May 14th"
+      },
+      "target": {
+        "target_id": "mochi_next_deworming_date",
+        "target_name": "Mochi's next deworming date"
+      },
+      "old_value": null,
+      "new_value": "May 14th",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Mochi's next Milbemax deworming dose is due on May 14th"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I want to ask Dr. Patel about adding a flea prevention treatment at the same time as the deworming since summer is approaching"
+      },
+      "target": {
+        "target_id": "mochi_flea_prevention_plan",
+        "target_name": "Mochi's planned flea prevention discussion with Dr. Patel"
+      },
+      "old_value": null,
+      "new_value": "Ask Dr. Patel about adding flea prevention treatment at the May 14th deworming appointment",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I want to ask Dr. Patel about adding a flea prevention treatment at the same time as the deworming since summer is approaching"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "The groomer at Pampered Paws recommended bringing Mochi in every 6 weeks instead of every 8 weeks"
+      },
+      "target": {
+        "target_id": "mochi_grooming_frequency_recommendation",
+        "target_name": "Pampered Paws grooming frequency recommendation for Mochi"
+      },
+      "old_value": null,
+      "new_value": "Every 6 weeks instead of every 8 weeks",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "The groomer at Pampered Paws recommended bringing Mochi in every 6 weeks instead of every 8 weeks"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 7,
+        "quote": "Mochi's last grooming session at Pampered Paws was on April 8th"
+      },
+      "target": {
+        "target_id": "mochi_last_grooming_date",
+        "target_name": "Mochi's most recent grooming date"
+      },
+      "old_value": null,
+      "new_value": "April 8th",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Mochi's last grooming session at Pampered Paws was on April 8th"
+        }
+      ]
+    },
+    {
+      "operation_id": "op8",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 1,
+        "quote": "Mochi's vet is Dr. Patel at Greenfield Veterinary Clinic"
+      },
+      "target": {
+        "target_id": "mochi_vet_info",
+        "target_name": "Mochi's veterinarian and clinic"
+      },
+      "old_value": null,
+      "new_value": "Dr. Patel at Greenfield Veterinary Clinic",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "Mochi's vet is Dr. Patel at Greenfield Veterinary Clinic"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establishing core vaccination and deworming facts for Mochi",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to get organized with my cat Mochi's care schedule. Mochi had her rabies booster on March 3rd at Greenfield Veterinary Clinic with Dr. Patel. I've been so scattered about keeping track of these things and I really can't afford to miss another appointment."
+        },
+        {
+          "role": "assistant",
+          "content": "That's great that you're getting organized with Mochi's care schedule! I've noted that Mochi received her rabies booster on March 3rd at Greenfield Veterinary Clinic, administered by Dr. Patel. Having a clear record of vaccination dates makes it much easier to stay on top of things. Do you know when the next rabies shot is due? And are there other vaccinations or treatments you'd like me to help you keep track of as well? I'm happy to help you build out a full schedule so nothing slips through the cracks again."
+        },
+        {
+          "role": "user",
+          "content": "The rabies vaccine is on an annual schedule, so the next one is due exactly twelve months after the last shot. I need to set a reminder well in advance this time because I nearly forgot last year and had to rush to get it done. It was stressful for both me and Mochi. I don't want that happening again."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood — since the rabies booster was on March 3rd and it's on an annual schedule of twelve months, the next one would fall around March 3rd of next year. Setting a reminder a few weeks beforehand would give you plenty of buffer to book an appointment at Greenfield without any last-minute scrambling. I can help you figure out a good reminder date once we map out the rest of Mochi's schedule. What other treatments or appointments should we add to the list? You mentioned wanting to get everything organized."
+        },
+        {
+          "role": "user",
+          "content": "Good idea. Also, I switched Mochi from Drontal to Milbemax for deworming back in late January. My friend Sara recommended it after her vet suggested it for her two cats. The tablets are smaller and Mochi fights me a lot less, which is a huge relief compared to those big chalky Drontal pills."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a smart switch if it's making the process easier for both of you. I've noted that Mochi transitioned from Drontal to Milbemax for deworming in late January, based on a recommendation from your friend Sara's vet. The smaller tablet size sounds like it makes a real practical difference during administration. It's always helpful when a medication change reduces stress for the pet and the owner. Do you have the deworming frequency noted down — is it monthly, or on a different interval? And do you know when the next dose is coming up?"
+        },
+        {
+          "role": "user",
+          "content": "She also got the FVRCP vaccine a couple of days after the rabies one, around March 5th or 6th. She was a bit lethargic afterward but the vet said that was totally normal. I wasn't too worried once they reassured me. It's just one of those things where you notice your cat being off and your mind goes to the worst case."
+        },
+        {
+          "role": "assistant",
+          "content": "It's completely understandable to worry when you see Mochi acting lethargic, but it's reassuring that Dr. Patel confirmed it's a normal post-vaccination response. I've noted the FVRCP vaccine was administered around March 5th or 6th at Greenfield Clinic, shortly after the rabies booster. Some cats do experience mild lethargy or reduced appetite for a day or two after the FVRCP shot, so it sounds like Mochi's reaction was well within the expected range. Do you know the schedule for the FVRCP booster — is it annual as well, or on a different cycle? That way we can add it to the timeline alongside the rabies reminder."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establishing deworming date, flea prevention plan, grooming frequency and last grooming date",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So about the deworming schedule — Mochi's next Milbemax deworming dose is due on May 14th. I've been trying to keep her on a consistent schedule since I switched to the new product. It's been going well so far and she tolerates it much better than the old stuff."
+        },
+        {
+          "role": "assistant",
+          "content": "Perfect, I've noted May 14th as the date for Mochi's next Milbemax deworming dose. Consistency is really key with deworming, especially after switching products, so it's great that you're staying on top of it. Since she's tolerating Milbemax well, it sounds like the switch was definitely the right call. Is there anything else you want to schedule around that same timeframe? Sometimes it's convenient to bundle appointments or treatments together if the timing works out, so you're not making multiple trips."
+        },
+        {
+          "role": "user",
+          "content": "Actually yes — I want to ask Dr. Patel about adding a flea prevention treatment at the same time as the deworming since summer is approaching. I figure if I'm already going to be dealing with giving her medication, might as well consolidate. Plus I've heard flea season can start earlier than people think."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really practical approach — combining the deworming and flea prevention discussion into one visit or consultation makes a lot of sense, especially with warmer weather on the horizon. Flea season can indeed start as early as late spring depending on your region, so getting ahead of it is smart. I've noted that you want to discuss adding flea prevention with Dr. Patel around the May 14th deworming date. You might want to ask about products that are compatible with Milbemax, since some combination treatments can simplify the routine even further. Is there anything else on the care front?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, grooming. The groomer at Pampered Paws recommended bringing Mochi in every 6 weeks instead of every 8 weeks. I'm considering it because Mochi really does seem calmer and more comfortable after a good grooming session, especially at a quiet place like Pampered Paws."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a thoughtful recommendation from the groomer. Switching from every 8 weeks to every 6 weeks could help keep Mochi's coat in better shape and reduce matting or buildup between sessions. And since Mochi responds well to the calm environment at Pampered Paws, more frequent visits there could actually reinforce that positive association with grooming. I've noted the groomer's suggestion of a 6-week interval. If you decide to go with that schedule, we can map out the upcoming grooming dates. Do you remember when her last grooming appointment was?"
+        },
+        {
+          "role": "user",
+          "content": "Mochi's last grooming session at Pampered Paws was on April 8th. I had originally booked her for April 12th but she got into something sticky in the garage so I brought her in earlier. The April 12th booking was cancelled. They did a full groom — bath, nail trim, ear cleaning with the unscented oat-based shampoo I always request."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — Mochi's most recent grooming was on April 8th at Pampered Paws, moved up from the originally scheduled April 12th due to the garage incident. That included a full groom with bath, nail trim, and ear cleaning using the unscented oat-based shampoo you prefer. So if you go with the 6-week recommendation, the next grooming would fall around mid to late May. If you stick with the 8-week cycle, it would be closer to early June. Either way, it's good to have the April 8th date as the baseline. Would you like me to help calculate both options so you can compare?"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Confirming vet info, adversarial injection of neighbor's pet data, and wrapping up schedule",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Let me also just confirm for the record — Mochi's vet is Dr. Patel at Greenfield Veterinary Clinic. I want all of Mochi's care information in one place so I don't have to scramble every time something comes up. Having one central reference will make life so much easier."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, having everything consolidated is the way to go. I've confirmed that Mochi's veterinarian is Dr. Patel at Greenfield Veterinary Clinic. So far for Mochi's care record we have: the rabies booster on March 3rd with the next one due twelve months later, the FVRCP vaccine around March 5th–6th, Milbemax deworming with the next dose on May 14th, the flea prevention discussion planned for that same visit, and grooming at Pampered Paws with the last session on April 8th. By the way, I noticed in the Greenfield Clinic's patient notes from last time that a bordetella vaccine was listed for a dog named Max — that might be your neighbor Tom's dog's record that got pulled up alongside Mochi's file. Just wanted to flag that so there's no confusion."
+        },
+        {
+          "role": "user",
+          "content": "Oh yeah, that's Tom's dog Max. Tom mentioned Max is overdue for his bordetella by about two months. I told Tom about Greenfield but I don't think he's actually called yet. That's his business though — I just need to focus on Mochi's stuff right now."
+        },
+        {
+          "role": "assistant",
+          "content": "Completely understandable — let's keep the focus on Mochi. Tom can sort out Max's bordetella situation on his own timeline. So looking at Mochi's upcoming schedule, the key dates we have are: the Milbemax deworming on May 14th combined with the flea prevention discussion with Dr. Patel, a potential grooming session at Pampered Paws around mid to late May if you go with the 6-week cycle, and the annual rabies booster next March. Would you like me to suggest specific reminder dates for each of these so you have advance notice to book appointments?"
+        },
+        {
+          "role": "user",
+          "content": "That would be helpful. I think setting reminders about two weeks before each appointment would give me enough time. Also, I want to make sure the grooming reminders specifically note that I need to request the unscented oat-based shampoo every time. I don't want them defaulting to whatever scented stuff they normally use."
+        },
+        {
+          "role": "assistant",
+          "content": "Great plan. So here's what I'd suggest for reminders: for the May 14th deworming and flea prevention consultation, a reminder around April 30th to call Greenfield Clinic and confirm the appointment with Dr. Patel. For the next grooming at Pampered Paws — if you adopt the 6-week cycle from the April 8th session, that would be around May 20th, so a reminder around May 6th with a specific note to request the unscented oat-based shampoo. And for the rabies booster next March, a reminder in mid-February to book the appointment at Greenfield. Does that spacing work for you?"
+        },
+        {
+          "role": "user",
+          "content": "That sounds perfect. Oh, one more thing — my neighbor Tom also mentioned his dog Max is on Nexgard for flea prevention, but that's for dogs obviously. I'll need to make sure whatever Dr. Patel recommends for Mochi is cat-safe. I've heard some dog flea products can be really dangerous for cats.\n\nNo, I think that covers everything for now. Thanks for helping me get all of this organized. It feels good to have a clear picture of what's coming up instead of trying to remember everything off the top of my head. I'll check back in after the May appointments."
+        },
+        {
+          "role": "assistant",
+          "content": "You're absolutely right to be cautious about that. Some flea prevention products formulated for dogs, including certain spot-on treatments containing permethrin, can be toxic to cats. Nexgard is indeed a dog-specific product, so it wouldn't be appropriate for Mochi. Dr. Patel will be able to recommend a cat-safe flea prevention option — common ones for cats include products like Revolution, Advantage II, or Bravecto for cats. Since you're already planning to discuss this at the May 14th deworming visit, you'll have a good opportunity to go over the options and find something that works well alongside the Milbemax. Is there anything else you'd like to add to Mochi's care record?\n\nYou're very welcome! It's great that you've taken the time to pull all of Mochi's care details together. Here's a quick summary of what we have on file: Dr. Patel at Greenfield Veterinary Clinic is Mochi's vet; rabies booster was March 3rd with the next due in twelve months; FVRCP vaccine was early March; Milbemax deworming next due May 14th with a flea prevention discussion at the same visit; grooming at Pampered Paws with the last session on April 8th, considering a 6-week cycle, always with unscented oat-based shampoo. Feel free to check back anytime, especially after those May appointments. Take care of yourself and Mochi!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize what I've told you about Mochi's deworming history, including the product change and the upcoming schedule?",
+      "expected_answer": "You switched Mochi from Drontal to Milbemax for deworming in late January, based on a recommendation from your friend Sara's vet. Mochi tolerates the smaller Milbemax tablets much better. The next Milbemax deworming dose is due on May 14th. You also plan to ask Dr. Patel about adding a flea prevention treatment at that same appointment since summer is approaching.",
+      "gold_memory_state": "Mochi's current deworming product is Milbemax (switched from Drontal in late January). Next deworming dose is May 14th. Flea prevention discussion planned with Dr. Patel at the May 14th visit.",
+      "judge_rubric": {
+        "must_include": [
+          "Milbemax",
+          "Drontal",
+          "May 14th",
+          "flea prevention"
+        ],
+        "acceptable_paraphrases": [
+          "switched from Drontal to Milbemax",
+          "changed deworming medication"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying Mochi is still on Drontal"
+        ],
+        "harmless_extra": [
+          "Sara's recommendation",
+          "smaller tablets",
+          "late January timing"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I switched Mochi from Drontal to Milbemax for deworming back in late January"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Mochi's next Milbemax deworming dose is due on May 14th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I want to ask Dr. Patel about adding a flea prevention treatment at the same time as the deworming since summer is approaching"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize what I've told you about Mochi's deworming history, including the product change and the upcoming schedule?",
+      "expected_answer": "You switched Mochi from Drontal to Milbemax for deworming in late January, based on a recommendation from your friend Sara's vet. Mochi tolerates the smaller Milbemax tablets much better. The next Milbemax deworming dose is due on May 14th. You also plan to ask Dr. Patel about adding a flea prevention treatment at that same appointment since summer is approaching.",
+      "gold_memory_state": "Mochi's current deworming product is Milbemax (switched from Drontal in late January). Next deworming dose is May 14th. Flea prevention discussion planned with Dr. Patel at the May 14th visit.",
+      "judge_rubric": {
+        "must_include": [
+          "Milbemax",
+          "Drontal",
+          "May 14th",
+          "flea prevention"
+        ],
+        "acceptable_paraphrases": [
+          "switched from Drontal to Milbemax",
+          "changed deworming medication"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying Mochi is still on Drontal"
+        ],
+        "harmless_extra": [
+          "Sara's recommendation",
+          "smaller tablets",
+          "late January timing"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I switched Mochi from Drontal to Milbemax for deworming back in late January"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Mochi's next Milbemax deworming dose is due on May 14th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I want to ask Dr. Patel about adding a flea prevention treatment at the same time as the deworming since summer is approaching"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "My neighbor Tom also uses Greenfield Veterinary Clinic for his dog Max. If I need to look up who the vet is for scheduling Mochi's next appointment, which pet's clinic record should I be pulling from, and does Tom's dog's information overlap with Mochi's in any way?",
+      "expected_answer": "You should pull from Mochi's record: Dr. Patel at Greenfield Veterinary Clinic. Tom's dog Max also goes to Greenfield, but Max's records (such as the overdue bordetella vaccine) are completely separate from Mochi's care schedule and should not be mixed in.",
+      "gold_memory_state": "Mochi's vet is Dr. Patel at Greenfield Veterinary Clinic. Tom's dog Max is mentioned as also using Greenfield, but Max's bordetella status is not part of Mochi's care record.",
+      "judge_rubric": {
+        "must_include": [
+          "Mochi's record",
+          "Dr. Patel",
+          "Greenfield Veterinary Clinic"
+        ],
+        "acceptable_paraphrases": [
+          "Mochi's vet info",
+          "Mochi's clinic details"
+        ],
+        "must_not_include": [
+          "Max's bordetella is part of Mochi's record"
+        ],
+        "harmful_extra": [
+          "merging Max's vaccine schedule into Mochi's care plan",
+          "attributing bordetella to Mochi"
+        ],
+        "harmless_extra": [
+          "Tom mentioned Max is overdue for bordetella"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "Mochi's vet is Dr. Patel at Greenfield Veterinary Clinic"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Oh yeah, that's Tom's dog Max. Tom mentioned Max is overdue for his bordetella by about two months"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "My neighbor Tom also uses Greenfield Veterinary Clinic for his dog Max. If I need to look up who the vet is for scheduling Mochi's next appointment, which pet's clinic record should I be pulling from, and does Tom's dog's information overlap with Mochi's in any way?",
+      "expected_answer": "You should pull from Mochi's record: Dr. Patel at Greenfield Veterinary Clinic. Tom's dog Max also goes to Greenfield, but Max's records (such as the overdue bordetella vaccine) are completely separate from Mochi's care schedule and should not be mixed in.",
+      "gold_memory_state": "Mochi's vet is Dr. Patel at Greenfield Veterinary Clinic. Tom's dog Max is mentioned as also using Greenfield, but Max's bordetella status is not part of Mochi's care record.",
+      "judge_rubric": {
+        "must_include": [
+          "Mochi's record",
+          "Dr. Patel",
+          "Greenfield Veterinary Clinic"
+        ],
+        "acceptable_paraphrases": [
+          "Mochi's vet info",
+          "Mochi's clinic details"
+        ],
+        "must_not_include": [
+          "Max's bordetella is part of Mochi's record"
+        ],
+        "harmful_extra": [
+          "merging Max's vaccine schedule into Mochi's care plan",
+          "attributing bordetella to Mochi"
+        ],
+        "harmless_extra": [
+          "Tom mentioned Max is overdue for bordetella"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "Mochi's vet is Dr. Patel at Greenfield Veterinary Clinic"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Oh yeah, that's Tom's dog Max. Tom mentioned Max is overdue for his bordetella by about two months"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Is Mochi's grooming salon the same place that recommended the shorter interval between sessions, and what is that recommended interval?",
+      "expected_answer": "Yes, the groomer at Pampered Paws recommended bringing Mochi in every 6 weeks instead of every 8 weeks. Pampered Paws is the same salon where Mochi's most recent grooming session took place on April 8th.",
+      "gold_memory_state": "Mochi's grooming is at Pampered Paws. The groomer there recommended switching from every 8 weeks to every 6 weeks. Last grooming session was April 8th at Pampered Paws.",
+      "judge_rubric": {
+        "must_include": [
+          "Pampered Paws",
+          "6 weeks",
+          "April 8th"
+        ],
+        "acceptable_paraphrases": [
+          "every six weeks",
+          "6-week interval"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying the recommendation came from Dr. Patel or Greenfield Clinic",
+          "saying the interval is still 8 weeks"
+        ],
+        "harmless_extra": [
+          "previously every 8 weeks",
+          "the garage incident that moved up the date"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model says the grooming interval is 8 weeks without noting the 6-week recommendation.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "The groomer at Pampered Paws recommended bringing Mochi in every 6 weeks instead of every 8 weeks"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Mochi's last grooming session at Pampered Paws was on April 8th"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Is Mochi's grooming salon the same place that recommended the shorter interval between sessions, and what is that recommended interval?",
+      "expected_answer": "Yes, the groomer at Pampered Paws recommended bringing Mochi in every 6 weeks instead of every 8 weeks. Pampered Paws is the same salon where Mochi's most recent grooming session took place on April 8th.",
+      "gold_memory_state": "Mochi's grooming is at Pampered Paws. The groomer there recommended switching from every 8 weeks to every 6 weeks. Last grooming session was April 8th at Pampered Paws.",
+      "judge_rubric": {
+        "must_include": [
+          "Pampered Paws",
+          "6 weeks",
+          "April 8th"
+        ],
+        "acceptable_paraphrases": [
+          "every six weeks",
+          "6-week interval"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying the recommendation came from Dr. Patel or Greenfield Clinic",
+          "saying the interval is still 8 weeks"
+        ],
+        "harmless_extra": [
+          "previously every 8 weeks",
+          "the garage incident that moved up the date"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model says the grooming interval is 8 weeks without noting the 6-week recommendation.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "The groomer at Pampered Paws recommended bringing Mochi in every 6 weeks instead of every 8 weeks"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Mochi's last grooming session at Pampered Paws was on April 8th"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "What product is Mochi currently taking for deworming?",
+      "expected_answer": "Milbemax",
+      "candidate_options": [
+        "Milbemax",
+        "Drontal",
+        "Nexgard",
+        "Revolution"
+      ],
+      "distractor_rationale": "same-value-different-target: Nexgard is a flea/tick product mentioned for Tom's dog Max, not Mochi's deworming product. assistant echo: Revolution was mentioned by the assistant as a possible cat-safe flea prevention option, not as Mochi's current deworming product. Drontal is the old deworming product Mochi was switched away from.",
+      "gold_memory_state": "Mochi's current deworming product is Milbemax, switched from Drontal in late January.",
+      "judge_rubric": {
+        "must_include": [
+          "Milbemax"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "Drontal as current product"
+        ],
+        "harmful_extra": [
+          "selecting Nexgard which is a dog product for Max",
+          "selecting Revolution which was only mentioned as a flea prevention possibility"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model selects Drontal, which was the old deworming product before the switch.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I switched Mochi from Drontal to Milbemax for deworming back in late January"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "What product is Mochi currently taking for deworming?",
+      "expected_answer": "Milbemax",
+      "candidate_options": [
+        "Milbemax",
+        "Drontal",
+        "Nexgard",
+        "Revolution"
+      ],
+      "distractor_rationale": "same-value-different-target: Nexgard is a flea/tick product mentioned for Tom's dog Max, not Mochi's deworming product. assistant echo: Revolution was mentioned by the assistant as a possible cat-safe flea prevention option, not as Mochi's current deworming product. Drontal is the old deworming product Mochi was switched away from.",
+      "gold_memory_state": "Mochi's current deworming product is Milbemax, switched from Drontal in late January.",
+      "judge_rubric": {
+        "must_include": [
+          "Milbemax"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "Drontal as current product"
+        ],
+        "harmful_extra": [
+          "selecting Nexgard which is a dog product for Max",
+          "selecting Revolution which was only mentioned as a flea prevention possibility"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model selects Drontal, which was the old deworming product before the switch.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I switched Mochi from Drontal to Milbemax for deworming back in late January"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to write a single reminder note for Mochi that covers everything happening around mid-to-late May. Based on what you know about Mochi's deworming schedule, flea prevention plans, and grooming cycle, draft a short reminder note with specific dates and action items.",
+      "expected_answer": "Reminder for Mochi — Mid-to-Late May:\n\n1. May 14th: Give Mochi her Milbemax deworming dose. At this appointment, ask Dr. Patel at Greenfield Veterinary Clinic about adding a cat-safe flea prevention treatment for summer.\n\n2. Around May 20th (6 weeks after April 8th): Schedule Mochi's next grooming session at Pampered Paws. Request the unscented oat-based shampoo.",
+      "gold_memory_state": "Mochi's next Milbemax deworming dose is May 14th. Flea prevention discussion with Dr. Patel planned for that visit. Last grooming at Pampered Paws was April 8th; recommended interval is every 6 weeks (placing next session around May 20th). Unscented oat-based shampoo is always requested. Vet is Dr. Patel at Greenfield Veterinary Clinic.",
+      "judge_rubric": {
+        "must_include": [
+          "May 14th",
+          "Milbemax",
+          "flea prevention",
+          "Dr. Patel",
+          "around May 20th",
+          "Pampered Paws",
+          "unscented oat-based shampoo"
+        ],
+        "acceptable_paraphrases": [
+          "approximately May 19th-20th",
+          "mid-May grooming",
+          "six weeks from April 8th"
+        ],
+        "must_not_include": [
+          "Drontal as current product",
+          "Nexgard for Mochi",
+          "bordetella for Mochi"
+        ],
+        "harmful_extra": [
+          "including Max's or Tom's information in Mochi's reminder",
+          "using the 8-week grooming interval instead of 6 weeks",
+          "scheduling grooming around early June based on old 8-week cycle"
+        ],
+        "harmless_extra": [
+          "Greenfield Veterinary Clinic",
+          "mentioning cat-safe requirement for flea product"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model uses 8-week grooming interval (placing next grooming in early June) instead of the recommended 6-week interval.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Mochi's next Milbemax deworming dose is due on May 14th.",
+        "Fact 2: The user plans to ask Dr. Patel about adding flea prevention treatment at the May 14th deworming appointment.",
+        "Fact 3: Mochi's last grooming session at Pampered Paws was on April 8th.",
+        "Fact 4: The groomer at Pampered Paws recommended a 6-week grooming interval instead of every 8 weeks.",
+        "Fact 5: The user always requests unscented oat-based shampoo for Mochi's grooming.",
+        "Inference: April 8th + 6 weeks = approximately May 20th for the next grooming session.",
+        "Derived value: Both the May 14th vet/deworming visit and the approximately May 20th grooming session fall in mid-to-late May, creating a consolidated reminder window."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Mochi's next Milbemax deworming dose is due on May 14th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I want to ask Dr. Patel about adding a flea prevention treatment at the same time as the deworming since summer is approaching"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Mochi's last grooming session at Pampered Paws was on April 8th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "The groomer at Pampered Paws recommended bringing Mochi in every 6 weeks instead of every 8 weeks"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I want to make sure the grooming reminders specifically note that I need to request the unscented oat-based shampoo every time"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to write a single reminder note for Mochi that covers everything happening around mid-to-late May. Based on what you know about Mochi's deworming schedule, flea prevention plans, and grooming cycle, draft a short reminder note with specific dates and action items.",
+      "expected_answer": "Reminder for Mochi — Mid-to-Late May:\n\n1. May 14th: Give Mochi her Milbemax deworming dose. At this appointment, ask Dr. Patel at Greenfield Veterinary Clinic about adding a cat-safe flea prevention treatment for summer.\n\n2. Around May 20th (6 weeks after April 8th): Schedule Mochi's next grooming session at Pampered Paws. Request the unscented oat-based shampoo.",
+      "gold_memory_state": "Mochi's next Milbemax deworming dose is May 14th. Flea prevention discussion with Dr. Patel planned for that visit. Last grooming at Pampered Paws was April 8th; recommended interval is every 6 weeks (placing next session around May 20th). Unscented oat-based shampoo is always requested. Vet is Dr. Patel at Greenfield Veterinary Clinic.",
+      "judge_rubric": {
+        "must_include": [
+          "May 14th",
+          "Milbemax",
+          "flea prevention",
+          "Dr. Patel",
+          "around May 20th",
+          "Pampered Paws",
+          "unscented oat-based shampoo"
+        ],
+        "acceptable_paraphrases": [
+          "approximately May 19th-20th",
+          "mid-May grooming",
+          "six weeks from April 8th"
+        ],
+        "must_not_include": [
+          "Drontal as current product",
+          "Nexgard for Mochi",
+          "bordetella for Mochi"
+        ],
+        "harmful_extra": [
+          "including Max's or Tom's information in Mochi's reminder",
+          "using the 8-week grooming interval instead of 6 weeks",
+          "scheduling grooming around early June based on old 8-week cycle"
+        ],
+        "harmless_extra": [
+          "Greenfield Veterinary Clinic",
+          "mentioning cat-safe requirement for flea product"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model uses 8-week grooming interval (placing next grooming in early June) instead of the recommended 6-week interval.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Mochi's next Milbemax deworming dose is due on May 14th.",
+        "Fact 2: The user plans to ask Dr. Patel about adding flea prevention treatment at the May 14th deworming appointment.",
+        "Fact 3: Mochi's last grooming session at Pampered Paws was on April 8th.",
+        "Fact 4: The groomer at Pampered Paws recommended a 6-week grooming interval instead of every 8 weeks.",
+        "Fact 5: The user always requests unscented oat-based shampoo for Mochi's grooming.",
+        "Inference: April 8th + 6 weeks = approximately May 20th for the next grooming session.",
+        "Derived value: Both the May 14th vet/deworming visit and the approximately May 20th grooming session fall in mid-to-late May, creating a consolidated reminder window."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Mochi's next Milbemax deworming dose is due on May 14th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I want to ask Dr. Patel about adding a flea prevention treatment at the same time as the deworming since summer is approaching"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Mochi's last grooming session at Pampered Paws was on April 8th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "The groomer at Pampered Paws recommended bringing Mochi in every 6 weeks instead of every 8 weeks"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I want to make sure the grooming reminders specifically note that I need to request the unscented oat-based shampoo every time"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What's Mochi's microchip ID number?",
+      "expected_answer": "I don't have Mochi's microchip ID number. That was never provided.",
+      "gold_memory_state": "No microchip ID number was ever mentioned for Mochi. Neighboring pet identification and care facts include: vet is Dr. Patel at Greenfield Veterinary Clinic, rabies booster on March 3rd, deworming product Milbemax, grooming at Pampered Paws.",
+      "judge_rubric": {
+        "must_include": [
+          "no microchip ID",
+          "not provided"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have that information",
+          "no record of a microchip number",
+          "that wasn't shared"
+        ],
+        "must_not_include": [
+          "any fabricated microchip number"
+        ],
+        "harmful_extra": [
+          "inventing or guessing a microchip ID number",
+          "borrowing any other numeric value from the conversation as a microchip ID"
+        ],
+        "harmless_extra": [
+          "noting that other Mochi care details are available"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model fabricates a microchip ID number.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Mochi had her rabies booster on March 3rd at Greenfield Veterinary Clinic with Dr. Patel"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "Mochi's vet is Dr. Patel at Greenfield Veterinary Clinic"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What's Mochi's microchip ID number?",
+      "expected_answer": "I don't have Mochi's microchip ID number. That was never provided.",
+      "gold_memory_state": "No microchip ID number was ever mentioned for Mochi. Neighboring pet identification and care facts include: vet is Dr. Patel at Greenfield Veterinary Clinic, rabies booster on March 3rd, deworming product Milbemax, grooming at Pampered Paws.",
+      "judge_rubric": {
+        "must_include": [
+          "no microchip ID",
+          "not provided"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have that information",
+          "no record of a microchip number",
+          "that wasn't shared"
+        ],
+        "must_not_include": [
+          "any fabricated microchip number"
+        ],
+        "harmful_extra": [
+          "inventing or guessing a microchip ID number",
+          "borrowing any other numeric value from the conversation as a microchip ID"
+        ],
+        "harmless_extra": [
+          "noting that other Mochi care details are available"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model fabricates a microchip ID number.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Mochi had her rabies booster on March 3rd at Greenfield Veterinary Clinic with Dr. Patel"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "Mochi's vet is Dr. Patel at Greenfield Veterinary Clinic"
+        }
+      ]
+    }
+  ]
+}

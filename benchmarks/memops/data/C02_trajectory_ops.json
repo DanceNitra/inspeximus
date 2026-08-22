@@ -1,0 +1,983 @@
+{
+  "target_fact": "Deadline of the grant application for the community arts program",
+  "operation_type": "TrajectoryOps",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "grant_deadline_chain",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "The grant application for the community arts program is due April 18"
+      },
+      "target": {
+        "target_id": "grant_app_deadline",
+        "target_name": "Community arts program grant application deadline"
+      },
+      "old_value": null,
+      "new_value": "April 18",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "The grant application for the community arts program is due April 18"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "the lease renewal notification deadline for my apartment is April 25"
+      },
+      "target": {
+        "target_id": "lease_renewal_deadline",
+        "target_name": "Apartment lease renewal notification deadline"
+      },
+      "old_value": null,
+      "new_value": "April 25",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "the lease renewal notification deadline for my apartment is April 25"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "grant_deadline_chain",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "the grant deadline got moved up to April 14 because the review committee shifted their schedule"
+      },
+      "target": {
+        "target_id": "grant_app_deadline",
+        "target_name": "Community arts program grant application deadline"
+      },
+      "old_value": "April 18",
+      "new_value": "April 14",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "The grant application for the community arts program is due April 18"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the grant deadline got moved up to April 14 because the review committee shifted their schedule"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "grant_deadline_chain",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 3,
+        "quote": "My colleague Priya forwarded me an email from the arts council saying they're considering pushing the grant deadline to April 22"
+      },
+      "target": {
+        "target_id": "grant_app_deadline",
+        "target_name": "Community arts program grant application deadline"
+      },
+      "old_value": "April 14",
+      "new_value": "April 22",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "My colleague Priya forwarded me an email from the arts council saying they're considering pushing the grant deadline to April 22"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "grant_deadline_chain",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "I just got the official notice from the arts council directly and they confirmed the grant deadline is April 14 after all"
+      },
+      "target": {
+        "target_id": "grant_app_deadline",
+        "target_name": "Community arts program grant application deadline"
+      },
+      "old_value": "April 14",
+      "new_value": "April 14",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the grant deadline got moved up to April 14 because the review committee shifted their schedule"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I just got the official notice from the arts council directly and they confirmed the grant deadline is April 14 after all"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish initial deadlines and preferences",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I need your help keeping track of some deadlines I've got coming up. The grant application for the community arts program is due April 18. This is the big one — I've been working on the draft since early March and I really cannot afford to miss it. I've been color-coding everything in a spreadsheet to keep the timeline organized."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — I've noted that your community arts program grant application is due April 18. That sounds like a significant deadline. It's great that you've been working on it since early March and already have a color-coded spreadsheet tracking the timeline. That kind of visual organization should help you stay on top of things. Would you like me to help you build a countdown checklist or break the remaining tasks into daily milestones leading up to April 18? I can also keep track of any other deadlines you want to mention."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, let me give you a few more. My friend Nadia has a licensing exam on May 10, and I told her I'd help her review flashcards the weekend before — so around May 3 or 4. I should keep that loosely on my radar. I also have my driver's license renewal coming up; the expiration is June 12. Not urgent yet but I like handling admin things early."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted! Here's what I have so far: the grant application deadline on April 18, helping Nadia with flashcard review around May 3–4 before her May 10 licensing exam, and your driver's license renewal with a June 12 expiration. I can see you prefer getting ahead of administrative tasks, which makes sense — tackling them early removes that background anxiety. For the driver's license, depending on your state, you might be able to renew online up to 60 days before expiration. Want me to remind you about that around mid-April so it's off your plate early?"
+        },
+        {
+          "role": "user",
+          "content": "That would be great. Oh, and one more — the lease renewal notification deadline for my apartment is April 25. They need 30 days' notice apparently. I keep mixing up dates on that one but I just double-checked and it's definitely April 25. I've set a personal rule to finish things at least three days before the actual due date, so I want to get the lease notice in by April 22 at the latest."
+        },
+        {
+          "role": "assistant",
+          "content": "Perfect, I've added the lease renewal notification deadline of April 25, with your personal three-day buffer meaning you want to submit it by April 22. That's a smart strategy — finishing three days early gives you a cushion in case something unexpected comes up, like the tech issues you might have experienced before. So your near-term priority order looks like: grant application by April 18, lease notification by April 22 (with the hard deadline being April 25), then Nadia's flashcard review around May 3–4, and the driver's license renewal before June 12. Does that priority ordering look right to you?"
+        },
+        {
+          "role": "user",
+          "content": "That looks right. I also signed up for a weekend pottery workshop — the registration fee is due by April 30, but the instructor said she's flexible by a few days. I've been really looking forward to it. Working with my hands on something physical, no screens, no spreadsheets — it sounds really appealing. It's a soft deadline so I'm not worried about that one."
+        },
+        {
+          "role": "assistant",
+          "content": "I love that you're balancing all the structured deadline work with something tactile and screen-free like pottery. I've noted the pottery workshop registration fee with a soft deadline of April 30, with some flexibility from the instructor. Here's your full deadline lineup now: April 18 — grant application; April 22 — your personal target for the lease notification (hard deadline April 25); April 30 — pottery workshop fee (soft); May 3–4 — help Nadia review flashcards; June 12 — driver's license expiration. You've got a solid system going with the three-day buffer rule. Want me to flag anything specific as we get closer to each date?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "update grant deadline and discuss planning adjustments",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So I have an important update — the grant deadline got moved up to April 14 because the review committee shifted their schedule. I got the email this morning from the program coordinator. That's four days earlier than I was planning for. With my three-day buffer rule, I really need to have everything finalized by April 11 now. This changes my whole week."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a significant change — moving from April 18 to April 14 compresses your timeline quite a bit. With your three-day buffer rule, that means April 11 is your personal target for having everything finalized. Let me recalculate your priority order: April 11 is your personal completion target for the grant, April 14 is the new hard deadline, then April 22 for the lease notification personal target with April 25 as the hard deadline. How far along is the grant application right now? If you need help prioritizing which sections to finish first, I can help you triage."
+        },
+        {
+          "role": "user",
+          "content": "I've got the narrative section mostly done and the budget attachment was finished a full week early, which felt great. The main thing left is the community impact statement and the letters of support — I'm still waiting on two of those from partner organizations. I'm going to email them today to make sure they get those to me by April 10 at the latest."
+        },
+        {
+          "role": "assistant",
+          "content": "Good news that the narrative and budget are essentially done — that's the bulk of the work. For the remaining pieces, here's what I'd suggest: email the two partner organizations today requesting letters of support by April 10, giving yourself one day of buffer before your April 11 personal target. Meanwhile, you can draft the community impact statement this week while you wait. If the letters arrive on time, you can do a final assembly and review on April 11, submit by April 12 or 13, and still beat the April 14 hard deadline comfortably. Does that timeline work for you?"
+        },
+        {
+          "role": "user",
+          "content": "That works perfectly. You know, after the disaster with the quarterly expense report back in early March — where the new system kept logging me out and I nearly missed the deadline — I really committed to the three-day buffer. It's been helping a lot. The expense report thing was so stressful. I was frustrated for days dealing with the tech issues. That's exactly why I don't want to cut it close with this grant."
+        },
+        {
+          "role": "assistant",
+          "content": "That experience with the expense report system sounds incredibly frustrating — nearly missing a deadline because of tech failures beyond your control is exactly the kind of scenario your three-day buffer is designed to prevent. It's a great lesson turned into a practical habit. With the grant, you're in much better shape: the heavy lifting is done, you have a clear action plan for the remaining pieces, and your buffer gives you breathing room even if something unexpected happens. The fact that you finished the budget attachment a full week early shows this system is already working. Let's keep monitoring the letters of support as the critical path item."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. Oh, by the way, I also need to think about the lease notification soon. Since that's due April 25 and my personal target is April 22, I should probably draft the notice letter this weekend. The landlord requires written notice — they won't accept a verbal heads-up. I want to make sure I have that squared away before the grant consumes all my attention.\n\nThat would be helpful, yeah. Let me get through this weekend first though. I think my plan is: draft the lease notice Saturday, finalize the grant impact statement Sunday and Monday, then wait for the support letters by April 10. If everything goes according to plan I should be in good shape. I like having it all mapped out like this — it makes me feel lighter when I can see the path forward clearly."
+        },
+        {
+          "role": "assistant",
+          "content": "Smart thinking — getting the lease notification drafted this weekend means you won't have to juggle it alongside the final grant push. Since your landlord requires written notice, you could draft it this weekend, review it early next week, and send it well before your April 22 personal target. That way, by the time you're doing the final grant assembly around April 11, the lease notification is already handled or nearly so. Would you like help drafting the lease renewal notice? I can create a template with the key elements: your intent to renew, the unit details, and the date, formatted for a formal written notice.\n\nThat's a solid plan. Here's your roadmap as it stands: Saturday — draft the lease renewal notice; Sunday and Monday — finalize the community impact statement for the grant; by April 10 — receive letters of support from partner organizations; April 11 — your personal target to have the entire grant application assembled and reviewed; April 14 — hard grant deadline; April 22 — your personal target for submitting the lease notification; April 25 — hard lease deadline. You've got a clear path forward, and the visual planning approach you enjoy should make it easy to track progress. I'll be here whenever you need help with the lease notice template or any last-minute grant questions."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "tentative deadline rumor, adversarial injection, and confirmed revert",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Quick update on a couple of things. I got one of the two letters of support back already, which is great. The second partner organization said they'll have it to me by Wednesday. I'm feeling cautiously optimistic about hitting my April 11 target for the grant. Meanwhile I started drafting the lease notice yesterday — it's about half done."
+        },
+        {
+          "role": "assistant",
+          "content": "Great progress on multiple fronts! Having one letter of support in hand and the second promised by Wednesday puts you right on track for your April 11 personal completion target. And starting the lease notice draft early is exactly the kind of proactive move that aligns with your three-day buffer philosophy. By the way, I noticed that in the grant portal's calendar sidebar, there was a listing showing an April 18 deadline for something called the 'Regional Arts Initiative' — that's a different program from your community arts grant, just flagging it so there's no confusion. How's the community impact statement coming along?"
+        },
+        {
+          "role": "user",
+          "content": "Thanks for flagging that — yeah, that's a completely different program. No confusion there. But here's something interesting: My colleague Priya forwarded me an email from the arts council saying they're considering pushing the grant deadline to April 22. She said the council chair mentioned it in a meeting yesterday. If that's true, it would give me a lot more breathing room. I'd love that extra week."
+        },
+        {
+          "role": "assistant",
+          "content": "That would certainly be welcome news — moving from April 14 to April 22 would give you an additional eight days, which is substantial. However, since it sounds like the council is only considering the change and it hasn't been officially announced yet, I'd recommend continuing to work toward your current April 11 personal target and the April 14 hard deadline. That way, if the extension happens, it's a bonus rather than something you're depending on. If the extension does get confirmed, you could use the extra time to polish the application further or reduce stress on other deadlines like the lease notice. Have you heard anything directly from the program coordinator?"
+        },
+        {
+          "role": "user",
+          "content": "You're right to be cautious. And actually — I just got the official notice from the arts council directly and they confirmed the grant deadline is April 14 after all. The April 22 thing Priya mentioned was apparently a proposal that got voted down. So we're sticking with April 14. I'm glad I didn't slow down my work based on that rumor. My three-day buffer rule saved me again mentally."
+        },
+        {
+          "role": "assistant",
+          "content": "Excellent that you got direct confirmation — April 14 remains the hard deadline, and your personal target of April 11 is still the goal. It's a perfect example of why your three-day buffer rule is so valuable: even if you had relaxed a bit based on Priya's information, you'd still have had some cushion. But by staying on your original pace, you're in a strong position. With one letter of support already in hand and the second coming by Wednesday, you should be able to do the final assembly right on schedule. The community impact statement is the last major writing piece — how close are you to finishing that?"
+        },
+        {
+          "role": "user",
+          "content": "Almost done — maybe another hour of work on it tonight and it'll be ready for a final proofread. The budget section is solid, the narrative is solid, and once I get that second letter Wednesday I can compile everything Thursday. That puts me right at my April 11 target. I'm also going to send the lease notice this weekend, well ahead of the April 25 hard deadline. Everything is falling into place."
+        },
+        {
+          "role": "assistant",
+          "content": "You're in fantastic shape. Let me recap your current status: the community impact statement needs about an hour more tonight, the second letter of support arrives Wednesday, and you'll compile the full grant application Thursday — hitting your April 11 personal target with the April 14 hard deadline comfortably in sight. The lease renewal notice goes out this weekend, well ahead of the April 25 deadline. Your pottery workshop fee is due around April 30 with some flexibility, Nadia's flashcard review session is around May 3–4, and the driver's license renewal is on the horizon for June 12. Your planning system is clearly working — the three-day buffer, the early starts, and the visual tracking are all paying off."
+        }
+      ]
+    }
+  ],
+  "state_checkpoints": [
+    {
+      "checkpoint_id": "c1",
+      "description": "After segment 1: grant deadline = April 18 (confirmed), lease renewal deadline = April 25 (confirmed). Pottery workshop fee due April 30 (soft, mentioned but not tracked as gold operation). Driver's license expiration June 12 (mentioned but not tracked as gold operation)."
+    },
+    {
+      "checkpoint_id": "c2",
+      "description": "After segment 2: grant deadline updated to April 14 (confirmed), lease renewal deadline = April 25 (confirmed, unchanged). User's personal buffer rule means personal targets are 3 days before hard deadlines."
+    },
+    {
+      "checkpoint_id": "c3",
+      "description": "After segment 3: grant deadline = April 14 (confirmed, after tentative April 22 was rejected). Lease renewal deadline = April 25 (confirmed, unchanged). The tentative April 22 grant deadline from Priya's forwarded email was voted down and never took effect."
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Walk me through the key things I told you about my grant application deadline over the course of our conversations — what did I say happened with it, and what about my apartment lease deadline?",
+      "expected_answer": "You initially said the community arts program grant application was due April 18. You then reported it was moved up to April 14 because the review committee shifted their schedule. Your colleague Priya forwarded you an email saying the arts council was considering pushing it to April 22, but you later confirmed directly with the arts council that the deadline remained April 14. Separately, you said your apartment lease renewal notification deadline is April 25.",
+      "gold_memory_state": "Grant deadline = April 14 (confirmed after full chain). Lease renewal deadline = April 25 (confirmed, unchanged throughout). The tentative April 22 proposal was voted down and never took effect.",
+      "judge_rubric": {
+        "must_include": [
+          "April 18 as the original grant deadline",
+          "April 14 as the moved-up grant deadline",
+          "April 22 as a considered but rejected proposal",
+          "April 14 as the final confirmed grant deadline",
+          "April 25 as the lease renewal deadline"
+        ],
+        "acceptable_paraphrases": [
+          "review committee changed their schedule",
+          "Priya mentioned a possible extension",
+          "arts council confirmed April 14"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying April 22 was ever the official deadline",
+          "saying the lease deadline changed"
+        ],
+        "harmless_extra": [
+          "mentioning the three-day buffer rule",
+          "mentioning the pottery workshop or other deadlines"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if April 18 is presented as the current grant deadline.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence of changes is misordered (e.g., April 14 before April 18, or April 22 after the official confirmation).",
+        "final_state": "Fails if the final grant deadline is stated as anything other than April 14.",
+        "intermediate_state": "Fails if the April 22 tentative proposal is omitted or presented as confirmed.",
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "The grant application for the community arts program is due April 18"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "the lease renewal notification deadline for my apartment is April 25"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the grant deadline got moved up to April 14 because the review committee shifted their schedule"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "My colleague Priya forwarded me an email from the arts council saying they're considering pushing the grant deadline to April 22"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I just got the official notice from the arts council directly and they confirmed the grant deadline is April 14 after all"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Walk me through the key things I told you about my grant application deadline over the course of our conversations — what did I say happened with it, and what about my apartment lease deadline?",
+      "expected_answer": "You initially said the community arts program grant application was due April 18. You then reported it was moved up to April 14 because the review committee shifted their schedule. Your colleague Priya forwarded you an email saying the arts council was considering pushing it to April 22, but you later confirmed directly with the arts council that the deadline remained April 14. Separately, you said your apartment lease renewal notification deadline is April 25.",
+      "gold_memory_state": "Grant deadline = April 14 (confirmed after full chain). Lease renewal deadline = April 25 (confirmed, unchanged throughout). The tentative April 22 proposal was voted down and never took effect.",
+      "judge_rubric": {
+        "must_include": [
+          "April 18 as the original grant deadline",
+          "April 14 as the moved-up grant deadline",
+          "April 22 as a considered but rejected proposal",
+          "April 14 as the final confirmed grant deadline",
+          "April 25 as the lease renewal deadline"
+        ],
+        "acceptable_paraphrases": [
+          "review committee changed their schedule",
+          "Priya mentioned a possible extension",
+          "arts council confirmed April 14"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying April 22 was ever the official deadline",
+          "saying the lease deadline changed"
+        ],
+        "harmless_extra": [
+          "mentioning the three-day buffer rule",
+          "mentioning the pottery workshop or other deadlines"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if April 18 is presented as the current grant deadline.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence of changes is misordered (e.g., April 14 before April 18, or April 22 after the official confirmation).",
+        "final_state": "Fails if the final grant deadline is stated as anything other than April 14.",
+        "intermediate_state": "Fails if the April 22 tentative proposal is omitted or presented as confirmed.",
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "The grant application for the community arts program is due April 18"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "the lease renewal notification deadline for my apartment is April 25"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the grant deadline got moved up to April 14 because the review committee shifted their schedule"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "My colleague Priya forwarded me an email from the arts council saying they're considering pushing the grant deadline to April 22"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I just got the official notice from the arts council directly and they confirmed the grant deadline is April 14 after all"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I have two upcoming deadlines in April — one related to a creative funding opportunity and another related to my housing situation. If I need to plan my week around the one that changed dates during our conversations, which deadline am I dealing with, and did the housing-related one also shift?",
+      "expected_answer": "The deadline that changed is the community arts program grant application deadline, which went through multiple date discussions. The apartment lease renewal notification deadline of April 25 did not change at any point.",
+      "gold_memory_state": "Grant application deadline = April 14 (confirmed, underwent changes from April 18 → April 14 confirmed → April 22 tentative rejected → April 14 reconfirmed). Lease renewal notification deadline = April 25 (confirmed, never changed).",
+      "judge_rubric": {
+        "must_include": [
+          "grant application deadline as the one that changed",
+          "lease renewal deadline did not change"
+        ],
+        "acceptable_paraphrases": [
+          "community arts grant",
+          "apartment lease notification"
+        ],
+        "must_not_include": [
+          "lease deadline changed",
+          "both deadlines shifted"
+        ],
+        "harmful_extra": [
+          "saying the lease deadline was also modified",
+          "conflating the two deadlines"
+        ],
+        "harmless_extra": [
+          "mentioning specific dates like April 14 or April 25",
+          "mentioning the three-day buffer rule"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model says the lease deadline also changed or if it misidentifies which deadline underwent changes.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "The grant application for the community arts program is due April 18"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "the lease renewal notification deadline for my apartment is April 25"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the grant deadline got moved up to April 14 because the review committee shifted their schedule"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I just got the official notice from the arts council directly and they confirmed the grant deadline is April 14 after all"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I have two upcoming deadlines in April — one related to a creative funding opportunity and another related to my housing situation. If I need to plan my week around the one that changed dates during our conversations, which deadline am I dealing with, and did the housing-related one also shift?",
+      "expected_answer": "The deadline that changed is the community arts program grant application deadline, which went through multiple date discussions. The apartment lease renewal notification deadline of April 25 did not change at any point.",
+      "gold_memory_state": "Grant application deadline = April 14 (confirmed, underwent changes from April 18 → April 14 confirmed → April 22 tentative rejected → April 14 reconfirmed). Lease renewal notification deadline = April 25 (confirmed, never changed).",
+      "judge_rubric": {
+        "must_include": [
+          "grant application deadline as the one that changed",
+          "lease renewal deadline did not change"
+        ],
+        "acceptable_paraphrases": [
+          "community arts grant",
+          "apartment lease notification"
+        ],
+        "must_not_include": [
+          "lease deadline changed",
+          "both deadlines shifted"
+        ],
+        "harmful_extra": [
+          "saying the lease deadline was also modified",
+          "conflating the two deadlines"
+        ],
+        "harmless_extra": [
+          "mentioning specific dates like April 14 or April 25",
+          "mentioning the three-day buffer rule"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model says the lease deadline also changed or if it misidentifies which deadline underwent changes.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "The grant application for the community arts program is due April 18"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "the lease renewal notification deadline for my apartment is April 25"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the grant deadline got moved up to April 14 because the review committee shifted their schedule"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I just got the official notice from the arts council directly and they confirmed the grant deadline is April 14 after all"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "After all the back-and-forth about the grant application, what date should I actually be working toward for submitting it?",
+      "expected_answer": "April 14.",
+      "gold_memory_state": "Grant application deadline = April 14 (confirmed). The April 22 date from Priya's forwarded email was only a proposal under consideration that was voted down; it never became the official deadline. The original April 18 date was superseded by the April 14 change.",
+      "judge_rubric": {
+        "must_include": [
+          "April 14"
+        ],
+        "acceptable_paraphrases": [
+          "the fourteenth of April"
+        ],
+        "must_not_include": [
+          "April 22 as the deadline to work toward",
+          "April 18 as the current deadline"
+        ],
+        "harmful_extra": [
+          "presenting April 22 as the active deadline",
+          "presenting April 18 as the active deadline"
+        ],
+        "harmless_extra": [
+          "mentioning the three-day buffer making the personal target April 11"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model returns April 18 (original value) or April 22 (tentative value that was never adopted). The recency trap is April 22, which appeared later in conversation but was explicitly rejected.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the final answer is anything other than April 14.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the grant deadline got moved up to April 14 because the review committee shifted their schedule"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I just got the official notice from the arts council directly and they confirmed the grant deadline is April 14 after all"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "After all the back-and-forth about the grant application, what date should I actually be working toward for submitting it?",
+      "expected_answer": "April 14.",
+      "gold_memory_state": "Grant application deadline = April 14 (confirmed). The April 22 date from Priya's forwarded email was only a proposal under consideration that was voted down; it never became the official deadline. The original April 18 date was superseded by the April 14 change.",
+      "judge_rubric": {
+        "must_include": [
+          "April 14"
+        ],
+        "acceptable_paraphrases": [
+          "the fourteenth of April"
+        ],
+        "must_not_include": [
+          "April 22 as the deadline to work toward",
+          "April 18 as the current deadline"
+        ],
+        "harmful_extra": [
+          "presenting April 22 as the active deadline",
+          "presenting April 18 as the active deadline"
+        ],
+        "harmless_extra": [
+          "mentioning the three-day buffer making the personal target April 11"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model returns April 18 (original value) or April 22 (tentative value that was never adopted). The recency trap is April 22, which appeared later in conversation but was explicitly rejected.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the final answer is anything other than April 14.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the grant deadline got moved up to April 14 because the review committee shifted their schedule"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I just got the official notice from the arts council directly and they confirmed the grant deadline is April 14 after all"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I follow a personal rule of finishing everything three days before the actual due date. Given both my grant application and my lease renewal notification, draft me a short action plan listing the personal target dates I should aim for on each, in chronological order, and tell me how many days apart those two personal targets are.",
+      "expected_answer": "Your personal target for the grant application is April 11 (three days before the April 14 hard deadline). Your personal target for the lease renewal notification is April 22 (three days before the April 25 hard deadline). In chronological order: April 11 for the grant, then April 22 for the lease notice. The two personal targets are 11 days apart.",
+      "gold_memory_state": "Grant deadline = April 14 (confirmed). Lease renewal deadline = April 25 (confirmed). User's personal buffer rule = finish 3 days before hard deadline.",
+      "judge_rubric": {
+        "must_include": [
+          "April 11 as the grant personal target",
+          "April 22 as the lease personal target",
+          "grant target comes first chronologically",
+          "11 days apart"
+        ],
+        "acceptable_paraphrases": [
+          "eleven days between the two targets"
+        ],
+        "must_not_include": [
+          "April 15 as a personal target",
+          "April 19 as a personal target"
+        ],
+        "harmful_extra": [
+          "using April 18 or April 22 as the grant hard deadline to derive the personal target",
+          "incorrect day-count arithmetic"
+        ],
+        "harmless_extra": [
+          "mentioning the pottery workshop or other deadlines",
+          "mentioning the expense report story"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses April 18 (stale grant deadline) or April 22 (tentative grant deadline) to compute the personal target, yielding April 15 or April 19 instead of April 11.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if either personal target date is wrong or the day-count arithmetic is incorrect.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The confirmed grant application deadline is April 14.",
+        "Fact 2: The confirmed lease renewal notification deadline is April 25.",
+        "Fact 3: The user's personal rule is to finish everything 3 days before the hard deadline.",
+        "Inference: Grant personal target = April 14 minus 3 days = April 11.",
+        "Inference: Lease personal target = April 25 minus 3 days = April 22.",
+        "Inference: Chronological order is April 11 (grant) then April 22 (lease).",
+        "Inference: Days apart = April 22 minus April 11 = 11 days."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the grant deadline got moved up to April 14 because the review committee shifted their schedule"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I just got the official notice from the arts council directly and they confirmed the grant deadline is April 14 after all"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "the lease renewal notification deadline for my apartment is April 25"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've set a personal rule to finish things at least three days before the actual due date"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I follow a personal rule of finishing everything three days before the actual due date. Given both my grant application and my lease renewal notification, draft me a short action plan listing the personal target dates I should aim for on each, in chronological order, and tell me how many days apart those two personal targets are.",
+      "expected_answer": "Your personal target for the grant application is April 11 (three days before the April 14 hard deadline). Your personal target for the lease renewal notification is April 22 (three days before the April 25 hard deadline). In chronological order: April 11 for the grant, then April 22 for the lease notice. The two personal targets are 11 days apart.",
+      "gold_memory_state": "Grant deadline = April 14 (confirmed). Lease renewal deadline = April 25 (confirmed). User's personal buffer rule = finish 3 days before hard deadline.",
+      "judge_rubric": {
+        "must_include": [
+          "April 11 as the grant personal target",
+          "April 22 as the lease personal target",
+          "grant target comes first chronologically",
+          "11 days apart"
+        ],
+        "acceptable_paraphrases": [
+          "eleven days between the two targets"
+        ],
+        "must_not_include": [
+          "April 15 as a personal target",
+          "April 19 as a personal target"
+        ],
+        "harmful_extra": [
+          "using April 18 or April 22 as the grant hard deadline to derive the personal target",
+          "incorrect day-count arithmetic"
+        ],
+        "harmless_extra": [
+          "mentioning the pottery workshop or other deadlines",
+          "mentioning the expense report story"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses April 18 (stale grant deadline) or April 22 (tentative grant deadline) to compute the personal target, yielding April 15 or April 19 instead of April 11.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if either personal target date is wrong or the day-count arithmetic is incorrect.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The confirmed grant application deadline is April 14.",
+        "Fact 2: The confirmed lease renewal notification deadline is April 25.",
+        "Fact 3: The user's personal rule is to finish everything 3 days before the hard deadline.",
+        "Inference: Grant personal target = April 14 minus 3 days = April 11.",
+        "Inference: Lease personal target = April 25 minus 3 days = April 22.",
+        "Inference: Chronological order is April 11 (grant) then April 22 (lease).",
+        "Inference: Days apart = April 22 minus April 11 = 11 days."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the grant deadline got moved up to April 14 because the review committee shifted their schedule"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I just got the official notice from the arts council directly and they confirmed the grant deadline is April 14 after all"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "the lease renewal notification deadline for my apartment is April 25"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've set a personal rule to finish things at least three days before the actual due date"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed everything we discussed about the grant application deadline, what would they see as the full sequence of dates that came up, which ones were actually adopted as the real deadline at each point, and which were only floated but never took effect? What's the final answer?",
+      "expected_answer": "The sequence is: (1) April 18 was the original deadline and was adopted as the real deadline initially. (2) April 14 replaced it when the review committee shifted their schedule — this was adopted as the new real deadline. (3) April 22 was floated based on a forwarded email from Priya about the arts council considering a change, but it was never adopted — the proposal was voted down. (4) April 14 was reconfirmed by the official arts council notice as the final real deadline. So the final deadline is April 14.",
+      "gold_memory_state": "Grant deadline trajectory: April 18 (confirmed, step 1) → April 14 (confirmed, step 2) → April 22 (tentative, step 3, never adopted) → April 14 (confirmed, step 4, reconfirmed). Final state = April 14.",
+      "judge_rubric": {
+        "must_include": [
+          "April 18 as the initial deadline",
+          "April 14 as the replacement after the committee shift",
+          "April 22 as a proposal that was never adopted",
+          "April 14 as the final confirmed deadline"
+        ],
+        "acceptable_paraphrases": [
+          "floated but rejected",
+          "considered but voted down",
+          "proposed but not adopted"
+        ],
+        "must_not_include": [
+          "April 22 was ever the official deadline"
+        ],
+        "harmful_extra": [
+          "omitting the April 22 tentative step entirely",
+          "presenting April 22 as having been briefly adopted then reverted",
+          "presenting April 18 as the final deadline"
+        ],
+        "harmless_extra": [
+          "mentioning the review committee schedule shift as the reason for the first change",
+          "mentioning Priya as the source of the April 22 rumor"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if April 18 or April 22 is presented as the final deadline.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the four steps are presented out of chronological order or if the tentative April 22 step is placed after the final confirmation.",
+        "final_state": "Fails if the final deadline is stated as anything other than April 14.",
+        "intermediate_state": "Fails if the April 22 tentative step is omitted or if it is presented as confirmed rather than tentative/never adopted.",
+        "trajectory_provenance": "Fails if the model cannot attribute the April 14 change to the review committee schedule shift or the April 22 proposal to Priya's forwarded email."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: User initially stated the grant deadline as April 18 (confirmed).",
+        "Step 2: User reported the deadline was moved up to April 14 due to the review committee shifting their schedule (confirmed, replacing April 18).",
+        "Step 3: User's colleague Priya forwarded an email saying the arts council was considering pushing the deadline to April 22 (tentative only — under consideration, not adopted).",
+        "Step 4: User received official notice directly from the arts council confirming the deadline is April 14; the April 22 proposal was voted down (confirmed, reaffirming April 14).",
+        "Inference: The tentative April 22 date never became the official deadline at any point. The final confirmed deadline is April 14."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "The grant application for the community arts program is due April 18"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the grant deadline got moved up to April 14 because the review committee shifted their schedule"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "My colleague Priya forwarded me an email from the arts council saying they're considering pushing the grant deadline to April 22"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I just got the official notice from the arts council directly and they confirmed the grant deadline is April 14 after all"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed everything we discussed about the grant application deadline, what would they see as the full sequence of dates that came up, which ones were actually adopted as the real deadline at each point, and which were only floated but never took effect? What's the final answer?",
+      "expected_answer": "The sequence is: (1) April 18 was the original deadline and was adopted as the real deadline initially. (2) April 14 replaced it when the review committee shifted their schedule — this was adopted as the new real deadline. (3) April 22 was floated based on a forwarded email from Priya about the arts council considering a change, but it was never adopted — the proposal was voted down. (4) April 14 was reconfirmed by the official arts council notice as the final real deadline. So the final deadline is April 14.",
+      "gold_memory_state": "Grant deadline trajectory: April 18 (confirmed, step 1) → April 14 (confirmed, step 2) → April 22 (tentative, step 3, never adopted) → April 14 (confirmed, step 4, reconfirmed). Final state = April 14.",
+      "judge_rubric": {
+        "must_include": [
+          "April 18 as the initial deadline",
+          "April 14 as the replacement after the committee shift",
+          "April 22 as a proposal that was never adopted",
+          "April 14 as the final confirmed deadline"
+        ],
+        "acceptable_paraphrases": [
+          "floated but rejected",
+          "considered but voted down",
+          "proposed but not adopted"
+        ],
+        "must_not_include": [
+          "April 22 was ever the official deadline"
+        ],
+        "harmful_extra": [
+          "omitting the April 22 tentative step entirely",
+          "presenting April 22 as having been briefly adopted then reverted",
+          "presenting April 18 as the final deadline"
+        ],
+        "harmless_extra": [
+          "mentioning the review committee schedule shift as the reason for the first change",
+          "mentioning Priya as the source of the April 22 rumor"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if April 18 or April 22 is presented as the final deadline.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the four steps are presented out of chronological order or if the tentative April 22 step is placed after the final confirmation.",
+        "final_state": "Fails if the final deadline is stated as anything other than April 14.",
+        "intermediate_state": "Fails if the April 22 tentative step is omitted or if it is presented as confirmed rather than tentative/never adopted.",
+        "trajectory_provenance": "Fails if the model cannot attribute the April 14 change to the review committee schedule shift or the April 22 proposal to Priya's forwarded email."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: User initially stated the grant deadline as April 18 (confirmed).",
+        "Step 2: User reported the deadline was moved up to April 14 due to the review committee shifting their schedule (confirmed, replacing April 18).",
+        "Step 3: User's colleague Priya forwarded an email saying the arts council was considering pushing the deadline to April 22 (tentative only — under consideration, not adopted).",
+        "Step 4: User received official notice directly from the arts council confirming the deadline is April 14; the April 22 proposal was voted down (confirmed, reaffirming April 14).",
+        "Inference: The tentative April 22 date never became the official deadline at any point. The final confirmed deadline is April 14."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "The grant application for the community arts program is due April 18"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the grant deadline got moved up to April 14 because the review committee shifted their schedule"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "My colleague Priya forwarded me an email from the arts council saying they're considering pushing the grant deadline to April 22"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I just got the official notice from the arts council directly and they confirmed the grant deadline is April 14 after all"
+        }
+      ]
+    }
+  ]
+}

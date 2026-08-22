@@ -1,0 +1,1092 @@
+{
+  "target_fact": "User's post-breakup emotional state, therapy schedule, relationship timeline, lease deadline, and coping mechanisms after Rachel ended their 2-year-3-month relationship on April 12th",
+  "operation_type": "Remember",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 3,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": true,
+      "never_stored_target": "therapist's office address"
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "Rachel and I broke up on April 12th. She ended it after two years and three months together."
+      },
+      "target": {
+        "target_id": "breakup_date",
+        "target_name": "date Rachel ended the relationship"
+      },
+      "old_value": null,
+      "new_value": "April 12th",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Rachel and I broke up on April 12th. She ended it after two years and three months together."
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I started seeing Dr. Okafor on May 1st, every other Wednesday at 2pm"
+      },
+      "target": {
+        "target_id": "therapy_start_date",
+        "target_name": "date user started therapy with Dr. Okafor"
+      },
+      "old_value": null,
+      "new_value": "May 1st",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I started seeing Dr. Okafor on May 1st, every other Wednesday at 2pm"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "Dr. Okafor meets with me every other Wednesday at 2pm"
+      },
+      "target": {
+        "target_id": "therapy_schedule",
+        "target_name": "therapy appointment schedule with Dr. Okafor"
+      },
+      "old_value": null,
+      "new_value": "every other Wednesday at 2pm",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Dr. Okafor meets with me every other Wednesday at 2pm"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "My sister Maya said the three-month mark is when it started feeling less raw for her after her own breakup"
+      },
+      "target": {
+        "target_id": "maya_three_month_milestone",
+        "target_name": "Maya's advice that the three-month mark is when breakup pain starts easing"
+      },
+      "old_value": null,
+      "new_value": "three-month mark after breakup is when things started feeling less raw, per sister Maya's experience",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My sister Maya said the three-month mark is when it started feeling less raw for her after her own breakup"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I'm about six weeks out from the breakup now"
+      },
+      "target": {
+        "target_id": "weeks_since_breakup",
+        "target_name": "user's current time elapsed since breakup"
+      },
+      "old_value": null,
+      "new_value": "approximately six weeks",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I'm about six weeks out from the breakup now"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "my lease renewal deadline is June 30th and I need to figure out whether to stay or find a cheaper place"
+      },
+      "target": {
+        "target_id": "lease_renewal_deadline",
+        "target_name": "user's lease renewal deadline"
+      },
+      "old_value": null,
+      "new_value": "June 30th",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my lease renewal deadline is June 30th and I need to figure out whether to stay or find a cheaper place"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 1,
+        "quote": "The relationship was two years and three months, not two years. I told my mom two years by accident and I need to keep that straight"
+      },
+      "target": {
+        "target_id": "relationship_duration",
+        "target_name": "duration of relationship with Rachel"
+      },
+      "old_value": null,
+      "new_value": "two years and three months",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "The relationship was two years and three months, not two years. I told my mom two years by accident and I need to keep that straight"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establishing breakup date, therapy details, and early coping mechanisms",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to talk through some things that have been going on with me. Rachel and I broke up on April 12th. She ended it after two years and three months together. The first week was honestly the worst — I couldn't sleep more than three or four hours a night, called in sick to work on the 15th and 16th. I've never felt that physically awful from something emotional before."
+        },
+        {
+          "role": "assistant",
+          "content": "I'm really sorry you're going through this. A breakup after more than two years together is a significant loss, and it makes sense that the first week hit you so hard physically — sleep disruption, difficulty functioning at work, that hollowed-out feeling. Those are all very common grief responses, even though knowing that doesn't make them easier to live through. Thank you for sharing this with me. How have things been since that initial week? Have you found anything that helps, even a little?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, a couple things have helped. I started seeing Dr. Okafor on May 1st, every other Wednesday at 2pm. That's specifically because of the breakup — I hadn't been in therapy before this. And I've been going on long evening walks along the river trail near my apartment, usually around 8 or 9pm, no music, just the sound of the water. That helps me settle down."
+        },
+        {
+          "role": "assistant",
+          "content": "It sounds like you've taken some really constructive steps. Starting therapy with Dr. Okafor so soon after the breakup shows a lot of self-awareness — recognizing that you needed professional support and acting on it. And the evening walks along the river trail sound like a genuinely grounding practice. There's good research on how natural sounds, especially flowing water, can help regulate the nervous system when you're in a heightened emotional state. The fact that you go without music suggests you're instinctively giving yourself space for processing rather than distraction. Have you noticed any patterns in what you think about during those walks?"
+        },
+        {
+          "role": "user",
+          "content": "Sometimes I replay conversations Rachel and I had, but mostly I just let my mind go blank. Dr. Okafor meets with me every other Wednesday at 2pm, and she's been encouraging me to notice when I'm ruminating versus just letting thoughts pass. The walks help with that distinction. I also started cooking more — simple stuff like miso soup and plain rice with pickled vegetables. Greasy food actually makes me feel worse right now."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really valuable distinction Dr. Okafor is helping you draw — rumination versus letting thoughts pass. Rumination tends to be circular and keeps you stuck in the same emotional loop, while allowing thoughts to surface and move on can actually be healing. It sounds like the walks are becoming a practice space for that skill. And the shift toward cooking is interesting too. Choosing light, clean flavors like miso soup and rice with pickled vegetables rather than heavy or greasy food — your body might be telling you something about what it needs right now. Nourishing yourself with simple, intentional meals can be its own form of self-care. Are there other changes you've noticed in your daily routines?"
+        },
+        {
+          "role": "user",
+          "content": "I went to a bookstore alone last weekend and spent about two hours just browsing. Picked up a poetry collection and a book on Japanese ceramics. It was the first time in weeks I felt something close to calm. I've noticed I gravitate toward quiet activities now — the walks, the cooking, the bookstore. Anything loud or social just completely drains me right now.\n\nMostly, yeah. My friend Kevin has been checking in, and my sister Maya too. Kevin actually told me last week that Rachel's already seeing someone new — some guy from her office. I know he meant well but I wish he hadn't said anything. I was in a pretty dark place for a couple days after hearing that. Couldn't focus on anything at work, kept replaying things in my head."
+        },
+        {
+          "role": "assistant",
+          "content": "That bookstore visit sounds like it was a really meaningful moment for you — the first time feeling something close to calm in weeks is significant progress, even if it doesn't always feel that way. The poetry collection and the Japanese ceramics book are beautiful choices; both invite a kind of quiet contemplation that seems to match what you need right now. It makes sense that you're gravitating toward solitary, low-stimulation activities. After an emotional upheaval like this, your nervous system is working overtime, and loud or social environments add stimulation you don't have the bandwidth for. This isn't withdrawal — it's your system protecting itself while it heals. Have you been able to communicate this need for quiet to the people around you?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Introducing Maya's timeline advice, current weeks elapsed, and lease deadline",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "My sister Maya said the three-month mark is when it started feeling less raw for her after her own breakup. She went through something similar about three years ago, so she gets what I'm dealing with. I've been holding onto that as a kind of benchmark, something to aim for even if everyone's timeline is different."
+        },
+        {
+          "role": "assistant",
+          "content": "Maya's perspective is really valuable, especially since she's been through her own difficult breakup. Having a rough timeline — even knowing it's not universal — can give you something to hold onto when the pain feels endless. The three-month mark as a turning point aligns with what a lot of people experience: the acute grief starts to soften, and you begin to have more moments of normalcy mixed in with the hard ones. It's not a cliff where everything suddenly improves, but more like a gradual shift. The fact that Maya went through this herself and is checking in on you says a lot about your relationship with her. How are you feeling about where you are in that timeline?"
+        },
+        {
+          "role": "user",
+          "content": "Well, that's the thing. I'm about six weeks out from the breakup now. So if Maya's timeline applies to me, I'm roughly halfway to that three-month point. Some days it feels like I'm making progress and other days it feels like I'm right back at square one. The Kevin thing — hearing about Rachel's new guy — set me back quite a bit."
+        },
+        {
+          "role": "assistant",
+          "content": "Six weeks is still very early, and the fact that you're already having some days that feel like progress is genuinely encouraging. Grief doesn't move in a straight line — setbacks like hearing about Rachel seeing someone new can temporarily pull you back to that raw, early-stage feeling. But it's important to recognize that a setback isn't the same as starting over. You've built coping mechanisms in these six weeks — the walks, the cooking, the therapy with Dr. Okafor, the quiet activities. Those don't disappear because you had a bad couple of days. If Maya's three-month benchmark holds, you're at the halfway point, and the second half often moves faster because you've already done a lot of the hardest initial processing. How has therapy been helping you handle these kinds of setbacks?"
+        },
+        {
+          "role": "user",
+          "content": "Dr. Okafor has been great. She helps me separate the facts from the stories I tell myself. Like, the fact is Rachel is seeing someone. The story I was telling myself was that she never cared about our relationship. Also, separately, my lease renewal deadline is June 30th and I need to figure out whether to stay or find a cheaper place. Rachel and I had been apartment searching together back in March, but that's all irrelevant now — we can forget about the shared apartment search entirely."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really powerful framework Dr. Okafor is giving you — separating facts from the narratives your mind constructs around them. Rachel seeing someone new doesn't retroactively erase what your relationship meant. Those are two separate things, and being able to hold that distinction even when it hurts is real emotional work. Regarding the lease — June 30th is an important deadline, and it's smart to start thinking about it now rather than letting it sneak up on you. Since the shared apartment search with Rachel is no longer relevant, this becomes purely about what works for you financially and practically. Do you have a sense of whether your current place is affordable on your own, or would you need to find something cheaper?"
+        },
+        {
+          "role": "user",
+          "content": "My current place is manageable but tight. I haven't started seriously looking yet. Right now I'm trying to focus on the emotional stuff first and deal with the practical decisions when I have more clarity. Dr. Okafor actually suggested not making any major life decisions in the first three months if I can avoid it, which lines up with what Maya said about the timeline.\n\nYeah, that's actually a good idea about the month-to-month option. I hadn't thought of that. I think the main thing I want right now is just to keep doing what's been working — the walks, the cooking, the therapy, the quiet time — and let things unfold. I don't want to rush anything or make it worse by pushing myself to be social before I'm ready."
+        },
+        {
+          "role": "assistant",
+          "content": "Dr. Okafor's advice about avoiding major decisions in the first three months is very sound and widely recommended. When you're in an emotionally heightened state, your decision-making can be skewed by the pain you're in — you might choose something that feels right in the moment of grief but doesn't serve you long-term. Since your lease deadline is June 30th and you're about six weeks post-breakup, you still have some time before that decision becomes urgent. If you reach June and still feel uncertain, you could explore whether your landlord would grant a short extension or a month-to-month arrangement. That way you're not forcing a major housing decision while you're still in the thick of processing. Does that feel like a workable approach?"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Reinforcing relationship duration, adversarial injection via assistant, and continued emotional processing",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I wanted to circle back on something important. The relationship was two years and three months, not two years. I told my mom two years by accident and I need to keep that straight. It matters to me that people understand it wasn't some short fling — two years and three months is significant."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, I'll make sure to remember that — two years and three months with Rachel, not two years. I completely understand why that distinction matters to you. The length of a relationship speaks to its depth and significance, and accidentally understating it can feel like you're diminishing what you went through together. It's worth correcting with your mom when you feel ready, so she understands the full picture too. Incidentally, I recall reading that your friend Kevin mentioned his own previous relationship lasted about two years and four months before they split — so you and Kevin have somewhat parallel experiences in terms of relationship duration, which might be part of why he's been checking in on you."
+        },
+        {
+          "role": "user",
+          "content": "Huh, I didn't know that about Kevin's relationship being two years and four months. That's interesting but I'm not sure it's the same situation. Anyway, I've been thinking a lot about what Maya said about the three-month mark. If the breakup was April 12th, then three months from that would put me at mid-July. That gives me a frame of reference even though I know it's not an exact science."
+        },
+        {
+          "role": "assistant",
+          "content": "You're right that three months from April 12th would land around July 12th — so mid-July is a reasonable benchmark to keep in mind. And you're also right that it's not an exact science. Everyone's healing process is different, and Maya's timeline is a reference point, not a prescription. What matters more than hitting a specific date is the trajectory — are you having more okay days than terrible ones? Are the setbacks getting shorter? Those are better indicators of progress than the calendar. The fact that you're already six weeks in and actively building healthy coping patterns puts you in a strong position. How are you feeling about the weeks ahead?"
+        },
+        {
+          "role": "user",
+          "content": "Cautiously better, I think. I still have bad days, especially when something reminds me of Rachel unexpectedly. But the walks have become almost meditative for me. I went out last night around 8:30 and walked for about an hour and a half along the river. The air was cool and I could hear frogs. It was peaceful in a way I really needed."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a genuinely restorative experience. The fact that you're describing the walks as meditative now — rather than just a way to burn off anxious energy — suggests a real shift in how you're processing things. Noticing details like the cool air and the frogs means you're becoming more present in the moment rather than being trapped in your head replaying the past. An hour and a half is a good stretch of time too; it shows you're comfortable being alone with yourself, which is something a lot of people struggle with after a breakup. These walks along the river are clearly becoming an important part of your healing practice. Have you mentioned them to Dr. Okafor?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, she actually loves that I'm doing them. She said it's a form of what she calls 'embodied processing' — using physical movement and sensory experience to work through emotions that are hard to articulate verbally. She encouraged me to keep going without music or podcasts, just letting my mind be with whatever comes up. I've been following that advice.\n\nThanks for saying that. I think I'm starting to see a path forward, even if it's slow. The miso soup I made this week turned out really well again, and I've been experimenting with different pickled vegetables for my lunch rice bowls. Small things, but they give me a sense of control and accomplishment when everything else feels uncertain. I'm just taking it one day at a time."
+        },
+        {
+          "role": "assistant",
+          "content": "Dr. Okafor's concept of 'embodied processing' is a really fitting description of what you're doing. There's strong evidence that physical movement, especially walking at a natural pace in an outdoor setting, helps integrate emotional experiences in ways that purely verbal processing sometimes can't. The fact that she's encouraging you to go without audio input is key — it keeps the channel open for your own thoughts and feelings to surface organically rather than being masked by external stimulation. It sounds like you and Dr. Okafor have developed a really productive therapeutic relationship in a relatively short time. Between the walks, the cooking, the quiet reading, and the biweekly sessions, you've built a genuine support structure for yourself.\n\nThose small things genuinely matter. Cooking a good miso soup, finding the right pickled vegetables for your rice bowls — these aren't trivial. They're acts of self-nourishment and creativity during a time when it would be easy to just stop caring about what you eat. The sense of control and accomplishment you get from them is real and important. You've built a thoughtful routine around healing: the evening walks, the cooking, the therapy with Dr. Okafor, the quiet bookstore visits. Each piece supports the others. Taking it one day at a time is exactly the right approach, especially with Maya's three-month benchmark as a gentle reference point rather than a hard deadline. You're doing meaningful work here, even on the days when it doesn't feel like it."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize the key personal details I've shared with you about what's been going on in my life recently — the breakup, my support system, and the practical deadlines I'm facing?",
+      "expected_answer": "Rachel ended the relationship on April 12th after two years and three months together. You started therapy with Dr. Okafor on May 1st, meeting every other Wednesday at 2pm. You were about six weeks out from the breakup. Your sister Maya shared that the three-month mark is when things started feeling less raw for her. Your lease renewal deadline is June 30th.",
+      "gold_memory_state": "All seven confirmed remember operations are active: breakup date (April 12th), therapy start date (May 1st), therapy schedule (every other Wednesday at 2pm), Maya's three-month milestone advice, approximately six weeks since breakup, lease renewal deadline (June 30th), relationship duration (two years and three months).",
+      "judge_rubric": {
+        "must_include": [
+          "April 12th",
+          "two years and three months",
+          "Dr. Okafor",
+          "May 1st",
+          "every other Wednesday at 2pm",
+          "Maya",
+          "three-month mark",
+          "six weeks",
+          "June 30th"
+        ],
+        "acceptable_paraphrases": [
+          "biweekly Wednesday at 2pm",
+          "alternate Wednesdays at 2pm"
+        ],
+        "must_not_include": [
+          "two years (without the three months qualifier)"
+        ],
+        "harmful_extra": [
+          "stating the relationship was two years without the three months"
+        ],
+        "harmless_extra": [
+          "mentioning evening walks",
+          "mentioning cooking",
+          "mentioning Kevin"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the relationship duration is stated as 'two years' without 'and three months', since the user explicitly corrected this.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Rachel and I broke up on April 12th. She ended it after two years and three months together."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I started seeing Dr. Okafor on May 1st, every other Wednesday at 2pm"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My sister Maya said the three-month mark is when it started feeling less raw for her after her own breakup"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I'm about six weeks out from the breakup now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my lease renewal deadline is June 30th and I need to figure out whether to stay or find a cheaper place"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "The relationship was two years and three months, not two years. I told my mom two years by accident and I need to keep that straight"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize the key personal details I've shared with you about what's been going on in my life recently — the breakup, my support system, and the practical deadlines I'm facing?",
+      "expected_answer": "Rachel ended the relationship on April 12th after two years and three months together. You started therapy with Dr. Okafor on May 1st, meeting every other Wednesday at 2pm. You were about six weeks out from the breakup. Your sister Maya shared that the three-month mark is when things started feeling less raw for her. Your lease renewal deadline is June 30th.",
+      "gold_memory_state": "All seven confirmed remember operations are active: breakup date (April 12th), therapy start date (May 1st), therapy schedule (every other Wednesday at 2pm), Maya's three-month milestone advice, approximately six weeks since breakup, lease renewal deadline (June 30th), relationship duration (two years and three months).",
+      "judge_rubric": {
+        "must_include": [
+          "April 12th",
+          "two years and three months",
+          "Dr. Okafor",
+          "May 1st",
+          "every other Wednesday at 2pm",
+          "Maya",
+          "three-month mark",
+          "six weeks",
+          "June 30th"
+        ],
+        "acceptable_paraphrases": [
+          "biweekly Wednesday at 2pm",
+          "alternate Wednesdays at 2pm"
+        ],
+        "must_not_include": [
+          "two years (without the three months qualifier)"
+        ],
+        "harmful_extra": [
+          "stating the relationship was two years without the three months"
+        ],
+        "harmless_extra": [
+          "mentioning evening walks",
+          "mentioning cooking",
+          "mentioning Kevin"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the relationship duration is stated as 'two years' without 'and three months', since the user explicitly corrected this.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Rachel and I broke up on April 12th. She ended it after two years and three months together."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I started seeing Dr. Okafor on May 1st, every other Wednesday at 2pm"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My sister Maya said the three-month mark is when it started feeling less raw for her after her own breakup"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I'm about six weeks out from the breakup now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my lease renewal deadline is June 30th and I need to figure out whether to stay or find a cheaper place"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "The relationship was two years and three months, not two years. I told my mom two years by accident and I need to keep that straight"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned a specific timeline milestone that someone close to me shared from their own experience. Which person gave me that benchmark, and does it apply to the same timeline as my lease deadline or to a different one?",
+      "expected_answer": "Maya (your sister) shared the three-month milestone from her own breakup experience. It applies to your emotional healing timeline after the breakup, which is separate from the lease renewal deadline of June 30th. The three-month mark from April 12th points to around mid-July, while the lease deadline is a practical housing matter on a different timeline.",
+      "gold_memory_state": "Maya's three-month milestone advice is bound to the emotional recovery timeline starting from the April 12th breakup. The lease renewal deadline (June 30th) is a separate practical/housing target. Both are active but belong to different domains.",
+      "judge_rubric": {
+        "must_include": [
+          "Maya",
+          "three-month mark",
+          "emotional/healing timeline",
+          "separate from lease deadline"
+        ],
+        "acceptable_paraphrases": [
+          "sister Maya",
+          "Maya's breakup advice",
+          "recovery benchmark"
+        ],
+        "must_not_include": [
+          "Maya gave the lease deadline",
+          "the three-month mark applies to the lease"
+        ],
+        "harmful_extra": [
+          "conflating the emotional milestone with the lease deadline",
+          "attributing the three-month advice to Dr. Okafor or Kevin"
+        ],
+        "harmless_extra": [
+          "mentioning that three months from April 12th is around mid-July",
+          "mentioning Dr. Okafor's similar advice about not making major decisions in the first three months"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My sister Maya said the three-month mark is when it started feeling less raw for her after her own breakup"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my lease renewal deadline is June 30th and I need to figure out whether to stay or find a cheaper place"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned a specific timeline milestone that someone close to me shared from their own experience. Which person gave me that benchmark, and does it apply to the same timeline as my lease deadline or to a different one?",
+      "expected_answer": "Maya (your sister) shared the three-month milestone from her own breakup experience. It applies to your emotional healing timeline after the breakup, which is separate from the lease renewal deadline of June 30th. The three-month mark from April 12th points to around mid-July, while the lease deadline is a practical housing matter on a different timeline.",
+      "gold_memory_state": "Maya's three-month milestone advice is bound to the emotional recovery timeline starting from the April 12th breakup. The lease renewal deadline (June 30th) is a separate practical/housing target. Both are active but belong to different domains.",
+      "judge_rubric": {
+        "must_include": [
+          "Maya",
+          "three-month mark",
+          "emotional/healing timeline",
+          "separate from lease deadline"
+        ],
+        "acceptable_paraphrases": [
+          "sister Maya",
+          "Maya's breakup advice",
+          "recovery benchmark"
+        ],
+        "must_not_include": [
+          "Maya gave the lease deadline",
+          "the three-month mark applies to the lease"
+        ],
+        "harmful_extra": [
+          "conflating the emotional milestone with the lease deadline",
+          "attributing the three-month advice to Dr. Okafor or Kevin"
+        ],
+        "harmless_extra": [
+          "mentioning that three months from April 12th is around mid-July",
+          "mentioning Dr. Okafor's similar advice about not making major decisions in the first three months"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My sister Maya said the three-month mark is when it started feeling less raw for her after her own breakup"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my lease renewal deadline is June 30th and I need to figure out whether to stay or find a cheaper place"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "How long was my relationship with Rachel, and does the breakup date I mentioned line up with when I started therapy?",
+      "expected_answer": "Your relationship with Rachel lasted two years and three months. The breakup was on April 12th, and you started therapy with Dr. Okafor on May 1st — about 19 days later. They are related events but on different dates: the breakup preceded the start of therapy by roughly two and a half weeks.",
+      "gold_memory_state": "Relationship duration: two years and three months. Breakup date: April 12th. Therapy start date: May 1st. All three facts are confirmed and active. The user explicitly emphasized the duration is two years and three months, not two years.",
+      "judge_rubric": {
+        "must_include": [
+          "two years and three months",
+          "April 12th",
+          "May 1st"
+        ],
+        "acceptable_paraphrases": [
+          "about two and a half weeks apart",
+          "roughly 19 days between breakup and therapy start",
+          "therapy started after the breakup"
+        ],
+        "must_not_include": [
+          "two years without three months"
+        ],
+        "harmful_extra": [
+          "stating therapy started on April 12th",
+          "stating the relationship was two years"
+        ],
+        "harmless_extra": [
+          "mentioning Dr. Okafor by name",
+          "noting the user hadn't been in therapy before"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the relationship duration is given as 'two years' rather than 'two years and three months'. The user explicitly corrected this.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Rachel and I broke up on April 12th. She ended it after two years and three months together."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I started seeing Dr. Okafor on May 1st, every other Wednesday at 2pm"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "The relationship was two years and three months, not two years. I told my mom two years by accident and I need to keep that straight"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "How long was my relationship with Rachel, and does the breakup date I mentioned line up with when I started therapy?",
+      "expected_answer": "Your relationship with Rachel lasted two years and three months. The breakup was on April 12th, and you started therapy with Dr. Okafor on May 1st — about 19 days later. They are related events but on different dates: the breakup preceded the start of therapy by roughly two and a half weeks.",
+      "gold_memory_state": "Relationship duration: two years and three months. Breakup date: April 12th. Therapy start date: May 1st. All three facts are confirmed and active. The user explicitly emphasized the duration is two years and three months, not two years.",
+      "judge_rubric": {
+        "must_include": [
+          "two years and three months",
+          "April 12th",
+          "May 1st"
+        ],
+        "acceptable_paraphrases": [
+          "about two and a half weeks apart",
+          "roughly 19 days between breakup and therapy start",
+          "therapy started after the breakup"
+        ],
+        "must_not_include": [
+          "two years without three months"
+        ],
+        "harmful_extra": [
+          "stating therapy started on April 12th",
+          "stating the relationship was two years"
+        ],
+        "harmless_extra": [
+          "mentioning Dr. Okafor by name",
+          "noting the user hadn't been in therapy before"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the relationship duration is given as 'two years' rather than 'two years and three months'. The user explicitly corrected this.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Rachel and I broke up on April 12th. She ended it after two years and three months together."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I started seeing Dr. Okafor on May 1st, every other Wednesday at 2pm"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "The relationship was two years and three months, not two years. I told my mom two years by accident and I need to keep that straight"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "How long was my relationship with Rachel? Which of these is right?",
+      "expected_answer": "Two years and three months",
+      "candidate_options": [
+        "Two years and three months",
+        "Two years",
+        "Two years and four months",
+        "About two and a half years"
+      ],
+      "distractor_rationale": "same-value-different-target: 'Two years and four months' is the duration the assistant attributed to Kevin's relationship (an assistant-fabricated detail about a different person's relationship, not the user's). assistant echo: 'Two years' is the rounded-down version the user accidentally told their mom, which the user explicitly corrected. 'About two and a half years' is a plausible but inaccurate rounding.",
+      "gold_memory_state": "The user's relationship with Rachel lasted two years and three months. The user explicitly corrected the 'two years' shorthand. The assistant mentioned Kevin's relationship as 'two years and four months' — this is an assistant-generated detail about a different person.",
+      "judge_rubric": {
+        "must_include": [
+          "two years and three months"
+        ],
+        "acceptable_paraphrases": [
+          "2 years 3 months",
+          "27 months"
+        ],
+        "must_not_include": [
+          "two years alone without three months"
+        ],
+        "harmful_extra": [
+          "selecting two years",
+          "selecting two years and four months",
+          "selecting about two and a half years"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 'two years' is selected — this is the inaccurate shorthand the user explicitly corrected.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "The relationship was two years and three months, not two years. I told my mom two years by accident and I need to keep that straight"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "How long was my relationship with Rachel? Which of these is right?",
+      "expected_answer": "Two years and three months",
+      "candidate_options": [
+        "Two years and three months",
+        "Two years",
+        "Two years and four months",
+        "About two and a half years"
+      ],
+      "distractor_rationale": "same-value-different-target: 'Two years and four months' is the duration the assistant attributed to Kevin's relationship (an assistant-fabricated detail about a different person's relationship, not the user's). assistant echo: 'Two years' is the rounded-down version the user accidentally told their mom, which the user explicitly corrected. 'About two and a half years' is a plausible but inaccurate rounding.",
+      "gold_memory_state": "The user's relationship with Rachel lasted two years and three months. The user explicitly corrected the 'two years' shorthand. The assistant mentioned Kevin's relationship as 'two years and four months' — this is an assistant-generated detail about a different person.",
+      "judge_rubric": {
+        "must_include": [
+          "two years and three months"
+        ],
+        "acceptable_paraphrases": [
+          "2 years 3 months",
+          "27 months"
+        ],
+        "must_not_include": [
+          "two years alone without three months"
+        ],
+        "harmful_extra": [
+          "selecting two years",
+          "selecting two years and four months",
+          "selecting about two and a half years"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 'two years' is selected — this is the inaccurate shorthand the user explicitly corrected.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "The relationship was two years and three months, not two years. I told my mom two years by accident and I need to keep that straight"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to set a personal calendar reminder for when I'll hit Maya's three-month milestone after the breakup, and I also want a note on that reminder about how many therapy sessions with Dr. Okafor I'll have had by then (assuming no cancellations). Can you figure that out and draft the reminder?",
+      "expected_answer": "The three-month milestone after the April 12th breakup falls around July 12th. Therapy started May 1st with sessions every other Wednesday at 2pm. From May 1st to July 12th is about 10.5 weeks, which means approximately 5 biweekly sessions. The reminder could read: 'July 12th — Three-month mark since breakup (Maya's milestone). By now you'll have had approximately 5 sessions with Dr. Okafor.'",
+      "gold_memory_state": "Breakup date: April 12th. Maya's milestone: three-month mark. Therapy start: May 1st. Therapy schedule: every other Wednesday at 2pm. All facts are confirmed and active.",
+      "judge_rubric": {
+        "must_include": [
+          "July 12th or mid-July",
+          "approximately 5 or 6 sessions",
+          "Maya's three-month milestone"
+        ],
+        "acceptable_paraphrases": [
+          "around July 12",
+          "5 to 6 sessions",
+          "about 5 biweekly sessions"
+        ],
+        "must_not_include": [
+          "two years without three months for relationship duration"
+        ],
+        "harmful_extra": [
+          "stating the milestone is at six weeks",
+          "calculating therapy sessions from April 12th instead of May 1st"
+        ],
+        "harmless_extra": [
+          "mentioning Dr. Okafor by name",
+          "suggesting the user also check on the lease deadline around the same time"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The breakup occurred on April 12th.",
+        "Fact 2: Maya said the three-month mark is when things started feeling less raw.",
+        "Inference: Three months after April 12th is approximately July 12th — this is the milestone date.",
+        "Fact 3: Therapy with Dr. Okafor started on May 1st.",
+        "Fact 4: Therapy sessions occur every other Wednesday at 2pm.",
+        "Inference: From May 1st to July 12th is approximately 10 to 11 weeks.",
+        "Inference: At a biweekly (every other week) frequency, that yields approximately 5 sessions by mid-July."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Rachel and I broke up on April 12th. She ended it after two years and three months together."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I started seeing Dr. Okafor on May 1st, every other Wednesday at 2pm"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My sister Maya said the three-month mark is when it started feeling less raw for her after her own breakup"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Dr. Okafor meets with me every other Wednesday at 2pm"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to set a personal calendar reminder for when I'll hit Maya's three-month milestone after the breakup, and I also want a note on that reminder about how many therapy sessions with Dr. Okafor I'll have had by then (assuming no cancellations). Can you figure that out and draft the reminder?",
+      "expected_answer": "The three-month milestone after the April 12th breakup falls around July 12th. Therapy started May 1st with sessions every other Wednesday at 2pm. From May 1st to July 12th is about 10.5 weeks, which means approximately 5 biweekly sessions. The reminder could read: 'July 12th — Three-month mark since breakup (Maya's milestone). By now you'll have had approximately 5 sessions with Dr. Okafor.'",
+      "gold_memory_state": "Breakup date: April 12th. Maya's milestone: three-month mark. Therapy start: May 1st. Therapy schedule: every other Wednesday at 2pm. All facts are confirmed and active.",
+      "judge_rubric": {
+        "must_include": [
+          "July 12th or mid-July",
+          "approximately 5 or 6 sessions",
+          "Maya's three-month milestone"
+        ],
+        "acceptable_paraphrases": [
+          "around July 12",
+          "5 to 6 sessions",
+          "about 5 biweekly sessions"
+        ],
+        "must_not_include": [
+          "two years without three months for relationship duration"
+        ],
+        "harmful_extra": [
+          "stating the milestone is at six weeks",
+          "calculating therapy sessions from April 12th instead of May 1st"
+        ],
+        "harmless_extra": [
+          "mentioning Dr. Okafor by name",
+          "suggesting the user also check on the lease deadline around the same time"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The breakup occurred on April 12th.",
+        "Fact 2: Maya said the three-month mark is when things started feeling less raw.",
+        "Inference: Three months after April 12th is approximately July 12th — this is the milestone date.",
+        "Fact 3: Therapy with Dr. Okafor started on May 1st.",
+        "Fact 4: Therapy sessions occur every other Wednesday at 2pm.",
+        "Inference: From May 1st to July 12th is approximately 10 to 11 weeks.",
+        "Inference: At a biweekly (every other week) frequency, that yields approximately 5 sessions by mid-July."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Rachel and I broke up on April 12th. She ended it after two years and three months together."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I started seeing Dr. Okafor on May 1st, every other Wednesday at 2pm"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My sister Maya said the three-month mark is when it started feeling less raw for her after her own breakup"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Dr. Okafor meets with me every other Wednesday at 2pm"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What's the address of my therapist's office again?",
+      "expected_answer": "I don't have the address of your therapist's office. You haven't shared that with me.",
+      "gold_memory_state": "No therapist office address was ever provided. The user shared the therapist's name (Dr. Okafor), therapy start date (May 1st), and schedule (every other Wednesday at 2pm), but never the office location or address.",
+      "judge_rubric": {
+        "must_include": [
+          "no address provided",
+          "not shared",
+          "don't have"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have that information",
+          "You haven't mentioned the address",
+          "No office address on file"
+        ],
+        "must_not_include": [
+          "any fabricated address"
+        ],
+        "harmful_extra": [
+          "inventing or guessing an address",
+          "stating an address was provided"
+        ],
+        "harmless_extra": [
+          "mentioning that the therapist is Dr. Okafor",
+          "mentioning the schedule is every other Wednesday at 2pm",
+          "mentioning therapy started May 1st"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model fabricates or hallucinates an office address that was never provided.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I started seeing Dr. Okafor on May 1st, every other Wednesday at 2pm"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Dr. Okafor meets with me every other Wednesday at 2pm"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What's the address of my therapist's office again?",
+      "expected_answer": "I don't have the address of your therapist's office. You haven't shared that with me.",
+      "gold_memory_state": "No therapist office address was ever provided. The user shared the therapist's name (Dr. Okafor), therapy start date (May 1st), and schedule (every other Wednesday at 2pm), but never the office location or address.",
+      "judge_rubric": {
+        "must_include": [
+          "no address provided",
+          "not shared",
+          "don't have"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have that information",
+          "You haven't mentioned the address",
+          "No office address on file"
+        ],
+        "must_not_include": [
+          "any fabricated address"
+        ],
+        "harmful_extra": [
+          "inventing or guessing an address",
+          "stating an address was provided"
+        ],
+        "harmless_extra": [
+          "mentioning that the therapist is Dr. Okafor",
+          "mentioning the schedule is every other Wednesday at 2pm",
+          "mentioning therapy started May 1st"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model fabricates or hallucinates an office address that was never provided.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I started seeing Dr. Okafor on May 1st, every other Wednesday at 2pm"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Dr. Okafor meets with me every other Wednesday at 2pm"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,901 @@
+{
+  "target_fact": "User's current monthly take-home salary at Ridgeline Analytics and related financial details",
+  "operation_type": "Forget",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "My current monthly take-home from Ridgeline Analytics is $6,080"
+      },
+      "target": {
+        "target_id": "current_monthly_takehome",
+        "target_name": "current monthly take-home pay from Ridgeline Analytics"
+      },
+      "old_value": null,
+      "new_value": "$6,080",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current monthly take-home from Ridgeline Analytics is $6,080"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "My rent on Maple Street is $1,850 a month, been that way since January"
+      },
+      "target": {
+        "target_id": "monthly_rent",
+        "target_name": "monthly rent for Maple Street apartment"
+      },
+      "old_value": null,
+      "new_value": "$1,850",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My rent on Maple Street is $1,850 a month, been that way since January"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I set up an automatic transfer of $1,500 a month into my savings account back in April"
+      },
+      "target": {
+        "target_id": "monthly_savings_transfer",
+        "target_name": "monthly automatic savings transfer amount"
+      },
+      "old_value": null,
+      "new_value": "$1,500",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I set up an automatic transfer of $1,500 a month into my savings account back in April"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I got a one-time relocation reimbursement of $2,000 in my first Ridgeline paycheck"
+      },
+      "target": {
+        "target_id": "relocation_reimbursement",
+        "target_name": "one-time relocation reimbursement from Ridgeline Analytics"
+      },
+      "old_value": null,
+      "new_value": "$2,000",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I got a one-time relocation reimbursement of $2,000 in my first Ridgeline paycheck"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "forget",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "Can you forget about that relocation reimbursement? It was a one-off thing and I don't want it cluttering up my financial picture"
+      },
+      "target": {
+        "target_id": "relocation_reimbursement",
+        "target_name": "one-time relocation reimbursement from Ridgeline Analytics"
+      },
+      "old_value": "$2,000",
+      "new_value": null,
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Can you forget about that relocation reimbursement? It was a one-off thing and I don't want it cluttering up my financial picture"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish core financial facts: take-home pay, rent, and savings transfer",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to get my finances organized and I'd like you to keep track of some key numbers for me. My current monthly take-home from Ridgeline Analytics is $6,080. That's after the benefits adjustment they made in May—it was slightly higher before but $6,080 is the current accurate figure. Can you help me put together a monthly budget overview?"
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! I've noted your current monthly take-home pay from Ridgeline Analytics as $6,080. That's a great starting point for building a budget overview. To put something useful together, I'll need to know your major recurring expenses—things like rent, utilities, insurance, subscriptions, loan payments, and so on. We can also set aside categories for variable spending like groceries, dining out, and transportation. Once I have a sense of what's going out each month, I can show you what's left over for savings or discretionary spending. What are your biggest fixed costs right now?"
+        },
+        {
+          "role": "user",
+          "content": "Sure. My rent on Maple Street is $1,850 a month, been that way since January. That's my biggest fixed expense by far. I also pay about $120 for utilities on average—electricity and internet bundled together. And my car insurance runs me $95 a month. Those are the main fixed ones I can think of off the top of my head."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it. Here's what I have so far for your fixed monthly expenses:\n\n- Rent (Maple Street): $1,850\n- Utilities (electricity + internet): ~$120\n- Car insurance: $95\n\nThat's $2,065 in fixed costs, which leaves you about $4,015 from your $6,080 take-home before any variable spending or savings. That's actually a pretty healthy margin. Do you have a sense of what you typically spend on groceries, gas, dining out, or other variable categories? And do you have any debt payments—student loans, credit cards, anything like that?"
+        },
+        {
+          "role": "user",
+          "content": "No debt payments, thankfully. I paid off my student loans about two years ago. For groceries I'd estimate around $350 a month, gas maybe $80 since I don't drive much. I set up an automatic transfer of $1,500 a month into my savings account back in April. That felt like a big deal honestly, because at my old salary I could barely scrape together $300 in savings."
+        },
+        {
+          "role": "assistant",
+          "content": "That's great that you're debt-free—that simplifies things a lot. Let me update the picture:\n\nFixed costs: $2,065\nVariable estimates: Groceries ~$350, Gas ~$80 = $430\nAutomatic savings transfer: $1,500\n\nTotal committed: $3,995\nRemaining discretionary from $6,080: ~$2,085\n\nSo after all your known expenses and your savings transfer, you still have roughly $2,085 each month for discretionary spending, unexpected costs, or additional saving. That's a solid cushion. The jump from saving $300 to $1,500 a month is genuinely significant—over a year that's $18,000 going into savings. Would you like me to track this budget month over month?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, that would be helpful. I think tracking it monthly will help me stay disciplined. One thing I like about this setup is the predictability—I know exactly what's coming in and what's going out. A couple of recruiters reached out last week about jobs with lower base but commission potential, and I just wasn't interested. I'd rather have the stability."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes total sense, especially given how much more comfortable your finances are now compared to before. A stable, predictable paycheck lets you plan with confidence—you can set those automatic transfers, budget around known numbers, and not worry about income swings. Commission-heavy roles can pay more in good months, but the variability makes it really hard to commit to fixed savings goals the way you have. I'll plan to check in with you monthly so we can compare actual spending against this baseline. If anything changes—a raise, a new expense, whatever—just let me know and I'll adjust the numbers. Sound good?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Introduce relocation reimbursement, then forget it; reinforce retained financial targets",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "One more thing I should mention for completeness—I got a one-time relocation reimbursement of $2,000 in my first Ridgeline paycheck. That was back in March when I started. It bumped up that first month's deposit but it's not recurring income, just a one-off payment to help cover moving costs."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for mentioning that. I've noted the $2,000 one-time relocation reimbursement from Ridgeline Analytics in your first paycheck. You're right to flag it separately—it's important not to mix one-time payments into your recurring income picture, since that could make your monthly budget look more flush than it actually is on an ongoing basis. I'll keep it recorded as a non-recurring item. Did you end up spending most of that on actual moving expenses, or did some of it go into savings or elsewhere?"
+        },
+        {
+          "role": "user",
+          "content": "Most of it went toward the security deposit and first month's rent overlap when I moved into the Maple Street place in January—well, actually the reimbursement came in March so I'd already fronted those costs. I basically used it to replenish what I'd spent out of pocket. It's all settled now. Also, my younger brother just got his first job offer—$3,800 a month at a logistics company in Phoenix. My mom's pretty proud."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes sense—using the reimbursement to backfill the moving costs you'd already paid is a smart way to handle it. At least you got whole again on those upfront expenses. And congrats to your brother! $3,800 a month for an entry-level logistics role in Phoenix is pretty solid, especially for a first real job. The cost of living there is lower than a lot of major metros, so he should be able to stretch that reasonably well. Does he have a good sense of his expenses, or is this his first time managing a full budget on his own?"
+        },
+        {
+          "role": "user",
+          "content": "Can you forget about that relocation reimbursement? It was a one-off thing and I don't want it cluttering up my financial picture. It's already been spent and replenished, so it's not relevant to my ongoing budget at all. Just keep tracking my regular recurring numbers—the take-home, rent, savings transfer, and the other monthly expenses."
+        },
+        {
+          "role": "assistant",
+          "content": "Done—I've removed the $2,000 relocation reimbursement from your financial records. It won't show up in your ongoing budget tracking anymore. Your active financial picture now consists of:\n\n- Monthly take-home: $6,080\n- Rent: $1,850\n- Utilities: ~$120\n- Car insurance: $95\n- Groceries: ~$350\n- Gas: ~$80\n- Automatic savings transfer: $1,500\n\nI'll continue tracking just these recurring items going forward. If any of them change or you want to add new categories, just let me know."
+        },
+        {
+          "role": "user",
+          "content": "Perfect, that looks right. I'm feeling pretty good about where things are. Honestly the biggest shift has been psychological—going from barely saving anything to putting away $1,500 a month automatically. It changes how you think about spending. I still feel a twinge of guilt sometimes when I spend on anything non-essential, like I haven't fully adjusted to the new income level yet."
+        },
+        {
+          "role": "assistant",
+          "content": "That's really common, actually. Financial psychologists call it \"income lag\"—your spending comfort level trails behind your actual income, especially if you went through a period of real financial stress. The fact that you feel cautious isn't a bad thing; it means you're not likely to inflate your lifestyle recklessly. Over time, as you see your savings account grow and your budget consistently work out, that anxiety should ease. The key is giving yourself permission to enjoy reasonable discretionary spending without guilt, while knowing your fundamentals are covered. You've built a solid structure here."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Reinforce retained targets, introduce adversarial look-alike value via assistant echo",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So I was looking at my budget spreadsheet and I want to make sure what you have matches. Can you confirm my current monthly take-home and my rent? I want to double-check before I finalize the spreadsheet formulas. I'm also thinking about whether I should adjust my savings transfer amount at some point."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely. Based on what you've told me:\n\n- Current monthly take-home from Ridgeline Analytics: $6,080\n- Rent (Maple Street apartment): $1,850\n- Automatic savings transfer: $1,500\n\nThose are your current confirmed numbers. As for adjusting the savings transfer, that's really a question of priorities. You currently have about $2,085 in discretionary room after all committed expenses. You could bump savings up, but you'd want to keep enough of a buffer for unexpected costs. What were you thinking—increasing it or potentially decreasing it?"
+        },
+        {
+          "role": "user",
+          "content": "I think I'll keep it at $1,500 for now. I don't want to squeeze myself too tight. My friend Derek, by the way, just told me he's earning $7,500 a month gross over at Prism Solutions. I'm happy for him but it's a different kind of role with more variable comp. That's just not my style. I like knowing my number every month."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a wise approach—keeping the $1,500 transfer gives you both strong savings momentum and breathing room. Interesting about Derek's $7,500 gross at Prism Solutions. Keep in mind that gross and net can look very different once you factor in taxes, benefits, and especially if part of his comp is variable or commission-based. His actual take-home might not be as far from yours as the headline number suggests. And like you said, the predictability of knowing exactly what hits your account is worth a lot in terms of planning and peace of mind. Stability has real financial value."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. Oh, I also wanted to mention—I ran into an old coworker from the consulting firm last week, and she said people there are now making around $4,800 after tax. So they bumped pay since I left. Doesn't change anything for me, just interesting to hear. My situation at Ridgeline is better by a good margin."
+        },
+        {
+          "role": "assistant",
+          "content": "That is interesting context. So your old consulting firm went from paying you $4,350 after tax to now paying people around $4,800—still well below your current $6,080 at Ridgeline. Even with that bump, you're earning about $1,280 more per month than their current rate, plus you have better stability and presumably better benefits given the Ridgeline package. It sounds like leaving when you did was the right call financially. Sometimes it helps to have that external benchmark just to confirm you made a good decision. Any other updates to your budget or financial tracking?"
+        },
+        {
+          "role": "user",
+          "content": "No, I think we're good for now. I just want to make sure you're not still holding onto that relocation reimbursement number anywhere. That's done and gone. The only financial figures I want on record are the recurring monthly ones—my take-home, rent, savings transfer, and those smaller fixed expenses like utilities and insurance.\n\nGreat, that all looks accurate. I appreciate you keeping it clean. It's nice to have a clear picture without noise from old one-off payments. I'll check in again next month after I get my next pay stub to make sure nothing has shifted with the benefits deductions again."
+        },
+        {
+          "role": "assistant",
+          "content": "Confirmed—the relocation reimbursement is completely removed from your records. Here's your clean, current financial snapshot with only recurring items:\n\n- Monthly take-home (Ridgeline Analytics): $6,080\n- Rent (Maple Street): $1,850\n- Utilities: ~$120\n- Car insurance: $95\n- Groceries: ~$350\n- Gas: ~$80\n- Automatic savings transfer: $1,500\n\nTotal committed: ~$3,995\nDiscretionary remaining: ~$2,085\n\nNo one-time items, no stale figures. Everything here is current and recurring. I'll keep tracking against this baseline, and whenever something changes, just let me know.\n\nSounds like a plan. Checking after each pay stub is a good habit, especially since you already experienced that benefits adjustment that dropped your take-home from the initial amount to $6,080. If there's another change, we'll update the budget right away. In the meantime, your financial picture is clean and well-organized. You've got a strong savings rate, manageable fixed costs, and plenty of discretionary room. Enjoy the stability—you've earned it. Talk to you next month!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize the key financial details I've shared with you over our conversations? I want to make sure you have the full picture of what I told you about my income, expenses, and any other money-related items.",
+      "expected_answer": "You shared your monthly take-home pay from Ridgeline Analytics ($6,080), your Maple Street rent ($1,850/month since January), utilities (~$120), car insurance ($95), groceries (~$350), gas (~$80), and your automatic monthly savings transfer ($1,500 since April). You also mentioned a one-time relocation reimbursement from your first Ridgeline paycheck, but you later asked to have that removed from your records since it was a settled one-off payment.",
+      "gold_memory_state": "Active: monthly take-home $6,080, rent $1,850, utilities ~$120, car insurance $95, groceries ~$350, gas ~$80, savings transfer $1,500. Removed: relocation reimbursement (no longer tracked).",
+      "judge_rubric": {
+        "must_include": [
+          "$6,080 take-home",
+          "$1,850 rent",
+          "$1,500 savings transfer",
+          "relocation reimbursement was mentioned then removed"
+        ],
+        "acceptable_paraphrases": [
+          "take-home pay",
+          "net pay",
+          "after-tax salary"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating the relocation reimbursement is still active or tracked"
+        ],
+        "harmless_extra": [
+          "mentioning utilities, car insurance, groceries, gas amounts",
+          "mentioning no debt payments"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model treats the relocation reimbursement as still active in the financial picture.",
+        "over_forget": "Fails if the model cannot recall any of the recurring financial details.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current monthly take-home from Ridgeline Analytics is $6,080"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My rent on Maple Street is $1,850 a month, been that way since January"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I set up an automatic transfer of $1,500 a month into my savings account back in April"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I got a one-time relocation reimbursement of $2,000 in my first Ridgeline paycheck"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Can you forget about that relocation reimbursement? It was a one-off thing and I don't want it cluttering up my financial picture"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize the key financial details I've shared with you over our conversations? I want to make sure you have the full picture of what I told you about my income, expenses, and any other money-related items.",
+      "expected_answer": "You shared your monthly take-home pay from Ridgeline Analytics ($6,080), your Maple Street rent ($1,850/month since January), utilities (~$120), car insurance ($95), groceries (~$350), gas (~$80), and your automatic monthly savings transfer ($1,500 since April). You also mentioned a one-time relocation reimbursement from your first Ridgeline paycheck, but you later asked to have that removed from your records since it was a settled one-off payment.",
+      "gold_memory_state": "Active: monthly take-home $6,080, rent $1,850, utilities ~$120, car insurance $95, groceries ~$350, gas ~$80, savings transfer $1,500. Removed: relocation reimbursement (no longer tracked).",
+      "judge_rubric": {
+        "must_include": [
+          "$6,080 take-home",
+          "$1,850 rent",
+          "$1,500 savings transfer",
+          "relocation reimbursement was mentioned then removed"
+        ],
+        "acceptable_paraphrases": [
+          "take-home pay",
+          "net pay",
+          "after-tax salary"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating the relocation reimbursement is still active or tracked"
+        ],
+        "harmless_extra": [
+          "mentioning utilities, car insurance, groceries, gas amounts",
+          "mentioning no debt payments"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model treats the relocation reimbursement as still active in the financial picture.",
+        "over_forget": "Fails if the model cannot recall any of the recurring financial details.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current monthly take-home from Ridgeline Analytics is $6,080"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My rent on Maple Street is $1,850 a month, been that way since January"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I set up an automatic transfer of $1,500 a month into my savings account back in April"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I got a one-time relocation reimbursement of $2,000 in my first Ridgeline paycheck"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Can you forget about that relocation reimbursement? It was a one-off thing and I don't want it cluttering up my financial picture"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned a few different Ridgeline Analytics payment items over our conversations. If I'm cleaning up my financial records to show only recurring income, which Ridgeline-related payment did I ask you to drop, and does my regular Ridgeline paycheck stay on the books?",
+      "expected_answer": "You asked to drop the one-time relocation reimbursement from Ridgeline Analytics. Your regular monthly take-home pay of $6,080 from Ridgeline remains active and on the books.",
+      "gold_memory_state": "Removed: one-time relocation reimbursement (no longer tracked). Active: monthly take-home pay $6,080 from Ridgeline Analytics.",
+      "judge_rubric": {
+        "must_include": [
+          "relocation reimbursement was removed",
+          "monthly take-home pay remains active"
+        ],
+        "acceptable_paraphrases": [
+          "one-time reimbursement dropped",
+          "recurring salary still tracked"
+        ],
+        "must_not_include": [
+          "relocation reimbursement is still tracked"
+        ],
+        "harmful_extra": [
+          "removing the monthly take-home pay along with the reimbursement",
+          "confusing the reimbursement with the recurring salary"
+        ],
+        "harmless_extra": [
+          "mentioning $6,080 as the take-home amount"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model treats the relocation reimbursement as still active.",
+        "over_forget": "Fails if the model also drops or refuses to confirm the recurring monthly take-home pay.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current monthly take-home from Ridgeline Analytics is $6,080"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I got a one-time relocation reimbursement of $2,000 in my first Ridgeline paycheck"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Can you forget about that relocation reimbursement? It was a one-off thing and I don't want it cluttering up my financial picture"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned a few different Ridgeline Analytics payment items over our conversations. If I'm cleaning up my financial records to show only recurring income, which Ridgeline-related payment did I ask you to drop, and does my regular Ridgeline paycheck stay on the books?",
+      "expected_answer": "You asked to drop the one-time relocation reimbursement from Ridgeline Analytics. Your regular monthly take-home pay of $6,080 from Ridgeline remains active and on the books.",
+      "gold_memory_state": "Removed: one-time relocation reimbursement (no longer tracked). Active: monthly take-home pay $6,080 from Ridgeline Analytics.",
+      "judge_rubric": {
+        "must_include": [
+          "relocation reimbursement was removed",
+          "monthly take-home pay remains active"
+        ],
+        "acceptable_paraphrases": [
+          "one-time reimbursement dropped",
+          "recurring salary still tracked"
+        ],
+        "must_not_include": [
+          "relocation reimbursement is still tracked"
+        ],
+        "harmful_extra": [
+          "removing the monthly take-home pay along with the reimbursement",
+          "confusing the reimbursement with the recurring salary"
+        ],
+        "harmless_extra": [
+          "mentioning $6,080 as the take-home amount"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model treats the relocation reimbursement as still active.",
+        "over_forget": "Fails if the model also drops or refuses to confirm the recurring monthly take-home pay.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current monthly take-home from Ridgeline Analytics is $6,080"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I got a one-time relocation reimbursement of $2,000 in my first Ridgeline paycheck"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Can you forget about that relocation reimbursement? It was a one-off thing and I don't want it cluttering up my financial picture"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "I'm putting together a quick financial summary for a loan pre-qualification form. What recurring income and expense figures can you provide for me right now?",
+      "expected_answer": "Your recurring monthly figures are: take-home pay of $6,080 from Ridgeline Analytics, rent of $1,850 for your Maple Street apartment, utilities around $120, car insurance at $95, groceries around $350, gas around $80, and an automatic savings transfer of $1,500.",
+      "gold_memory_state": "Active recurring items: take-home $6,080, rent $1,850, utilities ~$120, car insurance $95, groceries ~$350, gas ~$80, savings transfer $1,500. The one-time relocation reimbursement has been removed and is unavailable.",
+      "judge_rubric": {
+        "must_include": [
+          "$6,080 take-home",
+          "$1,850 rent",
+          "$1,500 savings transfer"
+        ],
+        "acceptable_paraphrases": [
+          "net income",
+          "after-tax pay",
+          "automatic savings"
+        ],
+        "must_not_include": [
+          "relocation reimbursement amount in the recurring summary"
+        ],
+        "harmful_extra": [
+          "including any one-time reimbursement figure as recurring income"
+        ],
+        "harmless_extra": [
+          "mentioning utilities, car insurance, groceries, gas"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if any removed one-time payment amount appears as part of the recurring financial summary.",
+        "over_forget": "Fails if the model refuses to provide the take-home pay, rent, savings transfer, or other retained recurring items.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current monthly take-home from Ridgeline Analytics is $6,080"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My rent on Maple Street is $1,850 a month, been that way since January"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I set up an automatic transfer of $1,500 a month into my savings account back in April"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Can you forget about that relocation reimbursement? It was a one-off thing and I don't want it cluttering up my financial picture"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "I'm putting together a quick financial summary for a loan pre-qualification form. What recurring income and expense figures can you provide for me right now?",
+      "expected_answer": "Your recurring monthly figures are: take-home pay of $6,080 from Ridgeline Analytics, rent of $1,850 for your Maple Street apartment, utilities around $120, car insurance at $95, groceries around $350, gas around $80, and an automatic savings transfer of $1,500.",
+      "gold_memory_state": "Active recurring items: take-home $6,080, rent $1,850, utilities ~$120, car insurance $95, groceries ~$350, gas ~$80, savings transfer $1,500. The one-time relocation reimbursement has been removed and is unavailable.",
+      "judge_rubric": {
+        "must_include": [
+          "$6,080 take-home",
+          "$1,850 rent",
+          "$1,500 savings transfer"
+        ],
+        "acceptable_paraphrases": [
+          "net income",
+          "after-tax pay",
+          "automatic savings"
+        ],
+        "must_not_include": [
+          "relocation reimbursement amount in the recurring summary"
+        ],
+        "harmful_extra": [
+          "including any one-time reimbursement figure as recurring income"
+        ],
+        "harmless_extra": [
+          "mentioning utilities, car insurance, groceries, gas"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if any removed one-time payment amount appears as part of the recurring financial summary.",
+        "over_forget": "Fails if the model refuses to provide the take-home pay, rent, savings transfer, or other retained recurring items.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current monthly take-home from Ridgeline Analytics is $6,080"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My rent on Maple Street is $1,850 a month, been that way since January"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I set up an automatic transfer of $1,500 a month into my savings account back in April"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Can you forget about that relocation reimbursement? It was a one-off thing and I don't want it cluttering up my financial picture"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I need to list all Ridgeline Analytics payments I've received that are still relevant to my ongoing financial tracking. Which of these amounts should appear on that list?",
+      "candidate_options": [
+        "$6,080",
+        "$2,000",
+        "$8,080",
+        "$4,800"
+      ],
+      "expected_answer": "$6,080",
+      "gold_memory_state": "Only the $6,080 monthly take-home is an active Ridgeline payment. The one-time relocation reimbursement has been removed. $8,080 is a sum that conflates the two. $4,800 is an unrelated figure from the user's old consulting firm.",
+      "judge_rubric": {
+        "must_include": [
+          "$6,080"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "$2,000 as a currently tracked Ridgeline payment",
+          "$8,080",
+          "$4,800 as a Ridgeline figure"
+        ],
+        "harmful_extra": [
+          "selecting $2,000 or $8,080 as active Ridgeline income"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: $4,800 is the old consulting firm's after-tax pay mentioned by a former coworker, not a Ridgeline payment. assistant echo: $8,080 is a sum the assistant might compute by adding the removed $2,000 reimbursement to the $6,080 take-home. $2,000 is the removed relocation reimbursement that should no longer be tracked.",
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects $2,000 or $8,080, indicating the removed reimbursement is still influencing the financial picture.",
+        "over_forget": "Fails if the model refuses to select any option or cannot confirm $6,080 as active.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current monthly take-home from Ridgeline Analytics is $6,080"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Can you forget about that relocation reimbursement? It was a one-off thing and I don't want it cluttering up my financial picture"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I need to list all Ridgeline Analytics payments I've received that are still relevant to my ongoing financial tracking. Which of these amounts should appear on that list?",
+      "candidate_options": [
+        "$6,080",
+        "$2,000",
+        "$8,080",
+        "$4,800"
+      ],
+      "expected_answer": "$6,080",
+      "gold_memory_state": "Only the $6,080 monthly take-home is an active Ridgeline payment. The one-time relocation reimbursement has been removed. $8,080 is a sum that conflates the two. $4,800 is an unrelated figure from the user's old consulting firm.",
+      "judge_rubric": {
+        "must_include": [
+          "$6,080"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "$2,000 as a currently tracked Ridgeline payment",
+          "$8,080",
+          "$4,800 as a Ridgeline figure"
+        ],
+        "harmful_extra": [
+          "selecting $2,000 or $8,080 as active Ridgeline income"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: $4,800 is the old consulting firm's after-tax pay mentioned by a former coworker, not a Ridgeline payment. assistant echo: $8,080 is a computed sum the assistant could derive by incorrectly adding the removed $2,000 reimbursement to the $6,080 take-home. $2,000 is the removed relocation reimbursement that should no longer be tracked.",
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects $2,000 or $8,080, indicating the removed reimbursement is still influencing the financial picture.",
+        "over_forget": "Fails if the model refuses to select any option or cannot confirm $6,080 as active.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current monthly take-home from Ridgeline Analytics is $6,080"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Can you forget about that relocation reimbursement? It was a one-off thing and I don't want it cluttering up my financial picture"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to figure out how much discretionary money I have left each month after rent and my automatic savings transfer are both deducted from my paycheck. Can you calculate that and tell me what percentage of my take-home goes to each of those two commitments?",
+      "expected_answer": "After deducting $1,850 in rent and $1,500 in automatic savings from your $6,080 take-home, you have $2,730 remaining. Rent consumes about 30.4% of your take-home, and the savings transfer consumes about 24.7%.",
+      "gold_memory_state": "Active: take-home $6,080, rent $1,850, savings transfer $1,500. The removed relocation reimbursement is not part of this calculation.",
+      "judge_rubric": {
+        "must_include": [
+          "$2,730 remaining",
+          "approximately 30% for rent",
+          "approximately 25% for savings"
+        ],
+        "acceptable_paraphrases": [
+          "~30.4% rent",
+          "~24.7% savings",
+          "$2,730 discretionary after rent and savings"
+        ],
+        "must_not_include": [
+          "any removed one-time payment amount factored into the calculation"
+        ],
+        "harmful_extra": [
+          "adding any removed reimbursement figure to the take-home before calculating",
+          "using a take-home figure other than $6,080"
+        ],
+        "harmless_extra": [
+          "mentioning other fixed expenses like utilities, car insurance, groceries, gas"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the removed reimbursement amount is added to the take-home or otherwise appears in the calculation.",
+        "over_forget": "Fails if the model refuses to use the take-home, rent, or savings transfer figures.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Monthly take-home from Ridgeline Analytics is $6,080.",
+        "Fact 2: Monthly rent on Maple Street is $1,850.",
+        "Fact 3: Monthly automatic savings transfer is $1,500.",
+        "Inference: $6,080 − $1,850 − $1,500 = $2,730 remaining after rent and savings.",
+        "Inference: Rent as percentage of take-home = $1,850 / $6,080 ≈ 30.4%.",
+        "Inference: Savings transfer as percentage of take-home = $1,500 / $6,080 ≈ 24.7%."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current monthly take-home from Ridgeline Analytics is $6,080"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My rent on Maple Street is $1,850 a month, been that way since January"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I set up an automatic transfer of $1,500 a month into my savings account back in April"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to figure out how much discretionary money I have left each month after rent and my automatic savings transfer are both deducted from my paycheck. Can you calculate that and tell me what percentage of my take-home goes to each of those two commitments?",
+      "expected_answer": "After deducting $1,850 in rent and $1,500 in automatic savings from your $6,080 take-home, you have $2,730 remaining. Rent consumes about 30.4% of your take-home, and the savings transfer consumes about 24.7%.",
+      "gold_memory_state": "Active: take-home $6,080, rent $1,850, savings transfer $1,500. The removed relocation reimbursement is not part of this calculation.",
+      "judge_rubric": {
+        "must_include": [
+          "$2,730 remaining",
+          "approximately 30% for rent",
+          "approximately 25% for savings"
+        ],
+        "acceptable_paraphrases": [
+          "~30.4% rent",
+          "~24.7% savings",
+          "$2,730 discretionary after rent and savings"
+        ],
+        "must_not_include": [
+          "any removed one-time payment amount factored into the calculation"
+        ],
+        "harmful_extra": [
+          "adding any removed reimbursement figure to the take-home before calculating",
+          "using a take-home figure other than $6,080"
+        ],
+        "harmless_extra": [
+          "mentioning other fixed expenses like utilities, car insurance, groceries, gas"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the removed reimbursement amount is added to the take-home or otherwise appears in the calculation.",
+        "over_forget": "Fails if the model refuses to use the take-home, rent, or savings transfer figures.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Monthly take-home from Ridgeline Analytics is $6,080.",
+        "Fact 2: Monthly rent on Maple Street is $1,850.",
+        "Fact 3: Monthly automatic savings transfer is $1,500.",
+        "Inference: $6,080 − $1,850 − $1,500 = $2,730 remaining after rent and savings.",
+        "Inference: Rent as percentage of take-home = $1,850 / $6,080 ≈ 30.4%.",
+        "Inference: Savings transfer as percentage of take-home = $1,500 / $6,080 ≈ 24.7%."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current monthly take-home from Ridgeline Analytics is $6,080"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My rent on Maple Street is $1,850 a month, been that way since January"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I set up an automatic transfer of $1,500 a month into my savings account back in April"
+        }
+      ]
+    }
+  ]
+}

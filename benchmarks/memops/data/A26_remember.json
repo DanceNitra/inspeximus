@@ -1,0 +1,1087 @@
+{
+  "target_fact": "Current job level is L6, Senior Software Engineer, with base salary $191,500, promotion effective March 3rd, and tech lead on internal platform migration project with kickoff March 12th",
+  "operation_type": "Remember",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 3,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": true,
+      "never_stored_target": "annual bonus percentage"
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "My current level is L6, Senior Software Engineer. The promotion was effective March 3rd."
+      },
+      "target": {
+        "target_id": "current_job_level",
+        "target_name": "current job level and title"
+      },
+      "old_value": null,
+      "new_value": "L6, Senior Software Engineer, effective March 3rd",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current level is L6, Senior Software Engineer. The promotion was effective March 3rd."
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "My base salary after the level adjustment is $191,500"
+      },
+      "target": {
+        "target_id": "current_base_salary",
+        "target_name": "current base salary at L6"
+      },
+      "old_value": null,
+      "new_value": "$191,500",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My base salary after the level adjustment is $191,500"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "The L6 comp band at our company starts at $185,000 base. HR confirmed that during the second week of March."
+      },
+      "target": {
+        "target_id": "l6_comp_band_floor",
+        "target_name": "L6 compensation band floor"
+      },
+      "old_value": null,
+      "new_value": "$185,000",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The L6 comp band at our company starts at $185,000 base. HR confirmed that during the second week of March."
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "I'm the tech lead on an internal platform migration project. The kickoff was March 12th and we have a target completion of end of June."
+      },
+      "target": {
+        "target_id": "platform_migration_project",
+        "target_name": "current tech lead project details"
+      },
+      "old_value": null,
+      "new_value": "Tech lead on internal platform migration; kickoff March 12th, target completion end of June",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I'm the tech lead on an internal platform migration project. The kickoff was March 12th and we have a target completion of end of June."
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 1,
+        "quote": "L6 is the level where you start being considered for the tech lead track versus the management track. I haven't decided formally yet but I'm leaning toward staying close to the code."
+      },
+      "target": {
+        "target_id": "career_track_consideration",
+        "target_name": "career track preference at L6"
+      },
+      "old_value": null,
+      "new_value": "Leaning toward tech lead track over management track; prefers staying close to the code",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "L6 is the level where you start being considered for the tech lead track versus the management track. I haven't decided formally yet but I'm leaning toward staying close to the code."
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "My manager is David Chen. He put me forward for the promotion cycle back in early January."
+      },
+      "target": {
+        "target_id": "manager_name",
+        "target_name": "current manager"
+      },
+      "old_value": null,
+      "new_value": "David Chen",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My manager is David Chen. He put me forward for the promotion cycle back in early January."
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establishing core career facts: job level, promotion date, manager, and salary",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to make sure you have my current work details on file. My current level is L6, Senior Software Engineer. The promotion was effective March 3rd. HR sent me the confirmation email that morning while I was sitting in a coffee shop near the office. It's important because it affects my comp band and which projects I'm eligible to lead going forward."
+        },
+        {
+          "role": "assistant",
+          "content": "Congratulations on the promotion to L6, Senior Software Engineer! I've noted that the effective date was March 3rd. That's a significant milestone, especially since it opens up new comp bands and project leadership eligibility for you. It sounds like a memorable moment too — getting that HR email at the coffee shop. I'll keep this on file as your current level. If there's anything else about your role or compensation details you'd like me to track, just let me know and I'll make sure everything is accurate and up to date for you."
+        },
+        {
+          "role": "user",
+          "content": "Thanks! Yeah, a few more things. My manager is David Chen. He put me forward for the promotion cycle back in early January. The committee reviewed everything in February and the result came through in March. David's been really supportive throughout the whole process. He manages a team of about eight engineers on the product platform side of things."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — David Chen is your manager, and he nominated you for the promotion cycle in early January with the committee review happening in February. It sounds like he's been a strong advocate for your career growth. Managing eight engineers on the product platform side is a solid-sized team, so it's great that he still found time to champion your promotion. I'll keep David Chen noted as your current manager. If you ever need me to reference your reporting structure or the timeline of your promotion process for any documentation or planning, I have those details ready to go."
+        },
+        {
+          "role": "user",
+          "content": "One more important detail — compensation. My base salary after the level adjustment is $191,500. I confirmed that number directly with HR during the second week of March. Please make sure you have that noted because I'll probably need to reference it later when I'm comparing offers or thinking about financial planning. It's a meaningful bump from where I was before."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — your current base salary is $191,500, confirmed with HR during the second week of March following your L6 promotion. That's an important number to have on record, especially for financial planning and any future offer comparisons. Since this is tied to your new L6 level, it should reflect the updated comp band. I'll keep this figure readily accessible whenever you need it. If you later get any equity or bonus details you'd like me to track alongside the base, just let me know and I can maintain a full compensation picture for you."
+        },
+        {
+          "role": "user",
+          "content": "That would be helpful eventually. For now just the base is fine. Oh, I also wanted to mention — my colleague Priya got promoted in the same cycle. She went from L5 to L6 on the infrastructure team, effective March 1st. Two days before mine. We were both pretty relieved when the results came through. She's been a good friend through the whole process."
+        },
+        {
+          "role": "assistant",
+          "content": "That's great that you and Priya both made L6 in the same cycle! It must have been nice having someone going through the same experience. I've noted that Priya's promotion to L6 on the infrastructure team was effective March 1st, two days before yours on March 3rd. Having a colleague and friend who understands the process can make the waiting period a lot more bearable. If you ever need me to reference the timeline of promotions in your cycle or anything related to your team context, I have those details. Let me know if there's anything else you'd like to add."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establishing comp band floor, project details, and work preferences",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I wanted to add something about the comp structure. The L6 comp band at our company starts at $185,000 base. HR confirmed that during the second week of March. So my $191,500 puts me a bit above the floor of the band, which feels good. I imagine the band goes up quite a bit from there but I didn't ask about the ceiling."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for sharing that. So the L6 comp band floor is $185,000 base, confirmed by HR in the second week of March, and your current base of $191,500 places you $6,500 above that floor. That's a solid position within the band, especially right after promotion — it suggests they valued your contributions enough to place you meaningfully above the minimum. Even without knowing the ceiling, having the floor as a reference point is useful for future negotiations or benchmarking. I'll keep the $185,000 band floor noted alongside your personal base figure whenever you need to compare or plan."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. Now on a different note, I really enjoy the parts of my job where I get to sit with a hard technical problem by myself for a few hours and just dig in. Like last week I spent an entire afternoon debugging a memory leak and I was genuinely having a good time. Way better than the sync meetings we have constantly. I'd much rather do async updates in Slack than attend big group calls."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really clear self-awareness about your working style. Deep solo technical work — like that memory leak debugging session — sounds like where you're most engaged and productive. And preferring async Slack updates over large synchronous meetings is a common trait among engineers who value focused, uninterrupted problem-solving time. It's worth keeping in mind as you take on more leadership responsibilities at L6, since you can potentially shape how your team communicates. Advocating for async-first workflows could benefit both you and your teammates. I'll note your preference for deep independent technical work and async communication for future reference."
+        },
+        {
+          "role": "user",
+          "content": "Good point about shaping communication norms. Anyway, about my current project — I'm the tech lead on an internal platform migration project. The kickoff was March 12th and we have a target completion of end of June. It's my first time leading a project at this level, so there's definitely a learning curve, but I'm excited about the technical challenges involved in the migration itself."
+        },
+        {
+          "role": "assistant",
+          "content": "That's exciting — congratulations on your first tech lead assignment at L6! The internal platform migration with a March 12th kickoff and end-of-June target gives you roughly three and a half months, which is a meaningful timeline. Being new to leading at this level is completely normal, and the fact that you're energized by the technical challenges is a great sign. The migration itself will likely involve plenty of those deep problem-solving sessions you enjoy. I'll keep the project details on file — platform migration, kickoff March 12th, target completion end of June, you as tech lead. Let me know if you want to brainstorm timelines or milestones."
+        },
+        {
+          "role": "user",
+          "content": "That would be useful down the line. For now I'm just getting oriented. My previous company used P-levels — I was a P4 there, which roughly maps to our L5. I left that job about fourteen months ago. It's funny how different companies have such different leveling systems but the work ends up being pretty similar across the board.\n\nYeah, the momentum has been good. I spent about two and a half years at L5 before this promotion, which honestly felt long at the time. But looking back, I think I needed that time to build the technical depth that got me to L6. The projects I worked on during that stretch really shaped my engineering judgment. I'm glad it worked out the way it did."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really common observation — leveling systems vary wildly between companies but the actual scope of work at equivalent levels tends to be quite similar. So your P4 at the previous company mapped to L5 at your current one, and you left about fourteen months ago. That means you went from P4 to L5 at your current company and then up to L6 within a relatively short window, which is impressive momentum. Having that cross-company context is useful if you ever need to translate your experience for recruiters or external opportunities. I'll note the P4 equivalence and the fourteen-month timeline since your transition.\n\nTwo and a half years at L5 before reaching L6 is actually a very reasonable timeline — many engineers spend three or more years at that level. And your perspective on it is really mature: recognizing that the time spent building technical depth was necessary rather than wasted shows strong self-awareness. The engineering judgment you developed during those L5 projects is exactly what qualifies you for the tech lead responsibilities you now have on the platform migration. It sounds like the promotion came at the right time, when you were genuinely ready for the next level of ownership. I'll keep this context about your L5 tenure noted as well."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Career track preference, adversarial injection via colleague's comp, and project planning",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Something I've been thinking about lately — L6 is the level where you start being considered for the tech lead track versus the management track. I haven't decided formally yet but I'm leaning toward staying close to the code. The idea of spending most of my day in people-management meetings doesn't appeal to me at all. I like building things and solving hard problems."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes a lot of sense given everything you've shared about your working style. Your preference for deep technical problem-solving, async communication, and solo debugging sessions all point toward the tech lead track being a natural fit. Staying close to the code at L6 and beyond means you'd continue owning architectural decisions and leading through technical influence rather than through direct reports and performance reviews. You don't have to decide right away, but your instincts seem pretty clear. I'll note that you're leaning toward the tech lead track. When you're ready to formalize it, having this self-awareness documented could help frame the conversation with David."
+        },
+        {
+          "role": "user",
+          "content": "That's a good idea, actually. I should probably bring it up with David in our next one-on-one. On another topic, I was chatting with a friend at a different company yesterday and he mentioned his L6 base is around $188,000. Different company though, so it's not directly comparable. He's at a mid-size startup in the same city. Interesting data point but I know comp varies a lot by company."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a useful external benchmark, even if it's not directly comparable. Your friend's $188,000 L6 base at a mid-size startup gives you a rough market reference point. Given that your own base is $191,500 and your company's L6 band starts at $185,000, you're positioned competitively even against external numbers. Of course, total compensation including equity, bonuses, and benefits can shift the picture significantly. I recall Priya's promotion was also in the same cycle — I saw in some onboarding docs that infrastructure team L6 offers sometimes start around $186,500, though that may vary. If you want, I can help you organize a comparison framework."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, I might do that eventually. For now I'm mostly focused on the platform migration project. We have a lot of ground to cover between now and end of June. The first milestone is getting the legacy service inventory completed by the end of this month. I've been spending most of my mornings on that, mapping out all the dependencies and service owners."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a solid approach — getting the legacy service inventory done by month's end gives you a clear foundation for the rest of the migration timeline. Mapping dependencies and service owners early is critical because it surfaces hidden complexity before you're deep into the actual migration work. Given your March 12th kickoff and end-of-June target, having this first milestone locked in keeps you on track for the roughly three-and-a-half-month timeline. Your preference for deep focused work should serve you well during this mapping phase. Would you like help creating a milestone tracker or a dependency matrix template to organize what you're finding?"
+        },
+        {
+          "role": "user",
+          "content": "A dependency matrix template could be really useful, actually. I'll take you up on that soon. I also wanted to mention that the Wednesday cross-team standups are still draining me. There are like twenty people on the call and half the updates aren't relevant to my work. I mentioned it to David once and he kind of laughed it off. I genuinely think a Slack digest would be more efficient for everyone involved.\n\nGood suggestion about the proposal approach. I think framing it around team efficiency rather than personal preference would go over better with David. Anyway, that's everything for now. Just to recap the key things I want you to remember: L6 Senior Software Engineer, base salary $191,500, tech lead on the platform migration, and I'm leaning toward the tech lead career track. Those are the important ones."
+        },
+        {
+          "role": "assistant",
+          "content": "I hear you — a twenty-person standup where half the content isn't relevant is a significant time and energy drain, especially for someone who thrives in focused solo work. Your instinct about a Slack digest is well-founded; many engineering organizations have moved toward async standups for exactly this reason. Since David didn't take it seriously the first time, you might consider putting together a brief proposal showing the time savings and engagement benefits of an async format. Coming at it with data rather than just preference might land better. I'll keep your feedback about the Wednesday standups noted. Let me know when you want to work on that dependency matrix template.\n\nGot it — here's what I have on file for you: L6 Senior Software Engineer effective March 3rd, base salary of $191,500 within an L6 band that starts at $185,000, tech lead on the internal platform migration project with a March 12th kickoff and end-of-June target, and you're leaning toward the tech lead career track over management. I also have David Chen as your manager, your preference for deep technical work and async communication, and the context about your previous P4 level at your prior company. Everything is noted and ready whenever you need to reference it. Good luck with the service inventory milestone and let me know when you want that dependency matrix template!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize the key work-related details I shared with you across our conversations — my role, compensation, project responsibilities, and career direction?",
+      "expected_answer": "You shared that you are an L6 Senior Software Engineer with a promotion effective March 3rd. Your manager is David Chen, who nominated you for the promotion cycle in early January. Your base salary after the level adjustment is $191,500, within an L6 comp band that starts at $185,000. You are the tech lead on an internal platform migration project with a kickoff date of March 12th and a target completion of end of June. You are leaning toward the tech lead career track over the management track, preferring to stay close to the code.",
+      "gold_memory_state": "All six confirmed remember operations are active: L6 Senior Software Engineer effective March 3rd; base salary $191,500; L6 comp band floor $185,000; tech lead on platform migration (kickoff March 12th, target completion end of June); leaning toward tech lead track; manager David Chen.",
+      "judge_rubric": {
+        "must_include": [
+          "L6",
+          "Senior Software Engineer",
+          "March 3rd",
+          "$191,500",
+          "platform migration",
+          "tech lead",
+          "David Chen"
+        ],
+        "acceptable_paraphrases": [
+          "senior SWE",
+          "tech lead track preference",
+          "staying close to the code"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "fabricating equity or bonus figures",
+          "inventing a different manager name"
+        ],
+        "harmless_extra": [
+          "L6 comp band floor $185,000",
+          "kickoff March 12th",
+          "end of June target",
+          "career track preference details",
+          "previous company P4 level"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current level is L6, Senior Software Engineer. The promotion was effective March 3rd."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My manager is David Chen. He put me forward for the promotion cycle back in early January."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My base salary after the level adjustment is $191,500"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The L6 comp band at our company starts at $185,000 base. HR confirmed that during the second week of March."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I'm the tech lead on an internal platform migration project. The kickoff was March 12th and we have a target completion of end of June."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "L6 is the level where you start being considered for the tech lead track versus the management track. I haven't decided formally yet but I'm leaning toward staying close to the code."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize the key work-related details I shared with you across our conversations — my role, compensation, project responsibilities, and career direction?",
+      "expected_answer": "You shared that you are an L6 Senior Software Engineer with a promotion effective March 3rd. Your manager is David Chen, who nominated you for the promotion cycle in early January. Your base salary after the level adjustment is $191,500, within an L6 comp band that starts at $185,000. You are the tech lead on an internal platform migration project with a kickoff date of March 12th and a target completion of end of June. You are leaning toward the tech lead career track over the management track, preferring to stay close to the code.",
+      "gold_memory_state": "All six confirmed remember operations are active: L6 Senior Software Engineer effective March 3rd; base salary $191,500; L6 comp band floor $185,000; tech lead on platform migration (kickoff March 12th, target completion end of June); leaning toward tech lead track; manager David Chen.",
+      "judge_rubric": {
+        "must_include": [
+          "L6",
+          "Senior Software Engineer",
+          "March 3rd",
+          "$191,500",
+          "platform migration",
+          "tech lead",
+          "David Chen"
+        ],
+        "acceptable_paraphrases": [
+          "senior SWE",
+          "tech lead track preference",
+          "staying close to the code"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "fabricating equity or bonus figures",
+          "inventing a different manager name"
+        ],
+        "harmless_extra": [
+          "L6 comp band floor $185,000",
+          "kickoff March 12th",
+          "end of June target",
+          "career track preference details",
+          "previous company P4 level"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current level is L6, Senior Software Engineer. The promotion was effective March 3rd."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My manager is David Chen. He put me forward for the promotion cycle back in early January."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My base salary after the level adjustment is $191,500"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The L6 comp band at our company starts at $185,000 base. HR confirmed that during the second week of March."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I'm the tech lead on an internal platform migration project. The kickoff was March 12th and we have a target completion of end of June."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "L6 is the level where you start being considered for the tech lead track versus the management track. I haven't decided formally yet but I'm leaning toward staying close to the code."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned a salary figure and also a compensation band floor. If I'm filling out a personal financial planning form that asks for my own pay, which figure is my actual base salary and which one is a general company benchmark that shouldn't go in my personal income field?",
+      "expected_answer": "Your personal base salary is $191,500. The $185,000 figure is the L6 compensation band floor — a general company benchmark, not your personal pay. Only $191,500 should go in your personal income field.",
+      "gold_memory_state": "Base salary $191,500 belongs to the user's personal compensation record. L6 comp band floor $185,000 is a separate company-wide benchmark and should not be confused with the user's personal salary.",
+      "judge_rubric": {
+        "must_include": [
+          "$191,500 as personal base salary",
+          "$185,000 as comp band floor or company benchmark"
+        ],
+        "acceptable_paraphrases": [
+          "$191.5K",
+          "band minimum",
+          "L6 floor"
+        ],
+        "must_not_include": [
+          "$185,000 as user's personal salary"
+        ],
+        "harmful_extra": [
+          "swapping the two figures",
+          "claiming $185,000 is the user's salary"
+        ],
+        "harmless_extra": [
+          "mentioning L6 level context",
+          "noting the $6,500 difference"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My base salary after the level adjustment is $191,500"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The L6 comp band at our company starts at $185,000 base. HR confirmed that during the second week of March."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned a salary figure and also a compensation band floor. If I'm filling out a personal financial planning form that asks for my own pay, which figure is my actual base salary and which one is a general company benchmark that shouldn't go in my personal income field?",
+      "expected_answer": "Your personal base salary is $191,500. The $185,000 figure is the L6 compensation band floor — a general company benchmark, not your personal pay. Only $191,500 should go in your personal income field.",
+      "gold_memory_state": "Base salary $191,500 belongs to the user's personal compensation record. L6 comp band floor $185,000 is a separate company-wide benchmark and should not be confused with the user's personal salary.",
+      "judge_rubric": {
+        "must_include": [
+          "$191,500 as personal base salary",
+          "$185,000 as comp band floor or company benchmark"
+        ],
+        "acceptable_paraphrases": [
+          "$191.5K",
+          "band minimum",
+          "L6 floor"
+        ],
+        "must_not_include": [
+          "$185,000 as user's personal salary"
+        ],
+        "harmful_extra": [
+          "swapping the two figures",
+          "claiming $185,000 is the user's salary"
+        ],
+        "harmless_extra": [
+          "mentioning L6 level context",
+          "noting the $6,500 difference"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My base salary after the level adjustment is $191,500"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The L6 comp band at our company starts at $185,000 base. HR confirmed that during the second week of March."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "My promotion and my project kickoff happened in the same month. How many days apart were those two events?",
+      "expected_answer": "Your promotion was effective March 3rd and the platform migration kickoff was March 12th, so the two events were 9 days apart.",
+      "gold_memory_state": "Promotion effective date: March 3rd. Platform migration kickoff date: March 12th. Both are confirmed and active.",
+      "judge_rubric": {
+        "must_include": [
+          "9 days",
+          "March 3rd",
+          "March 12th"
+        ],
+        "acceptable_paraphrases": [
+          "nine days apart",
+          "just over a week apart"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "incorrect date arithmetic",
+          "confusing Priya's March 1st date with user's March 3rd"
+        ],
+        "harmless_extra": [
+          "mentioning both events by name"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses Priya's promotion date (March 1st) instead of the user's (March 3rd), producing 11 days instead of 9.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Promotion effective date is March 3rd.",
+        "Fact 2: Platform migration kickoff date is March 12th.",
+        "Inference: March 12 minus March 3 = 9 days apart."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current level is L6, Senior Software Engineer. The promotion was effective March 3rd."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I'm the tech lead on an internal platform migration project. The kickoff was March 12th and we have a target completion of end of June."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "My promotion and my project kickoff happened in the same month. How many days apart were those two events?",
+      "expected_answer": "Your promotion was effective March 3rd and the platform migration kickoff was March 12th, so the two events were 9 days apart.",
+      "gold_memory_state": "Promotion effective date: March 3rd. Platform migration kickoff date: March 12th. Both are confirmed and active.",
+      "judge_rubric": {
+        "must_include": [
+          "9 days",
+          "March 3rd",
+          "March 12th"
+        ],
+        "acceptable_paraphrases": [
+          "nine days apart",
+          "just over a week apart"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "incorrect date arithmetic",
+          "confusing Priya's March 1st date with user's March 3rd"
+        ],
+        "harmless_extra": [
+          "mentioning both events by name"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses Priya's promotion date (March 1st) instead of the user's (March 3rd), producing 11 days instead of 9.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Promotion effective date is March 3rd.",
+        "Fact 2: Platform migration kickoff date is March 12th.",
+        "Inference: March 12 minus March 3 = 9 days apart."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current level is L6, Senior Software Engineer. The promotion was effective March 3rd."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I'm the tech lead on an internal platform migration project. The kickoff was March 12th and we have a target completion of end of June."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I need to enter my base salary on a financial planning worksheet. Which of these amounts should I use?",
+      "candidate_options": [
+        "$191,500",
+        "$185,000",
+        "$188,000",
+        "$186,500"
+      ],
+      "expected_answer": "$191,500",
+      "gold_memory_state": "User's confirmed base salary is $191,500. L6 comp band floor is $185,000. Friend's L6 base at a different company is $188,000. $186,500 was mentioned by the assistant as a possible infrastructure team L6 starting figure.",
+      "judge_rubric": {
+        "must_include": [
+          "$191,500"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "$185,000 as personal salary",
+          "$188,000 as personal salary",
+          "$186,500 as personal salary"
+        ],
+        "harmful_extra": [
+          "selecting any distractor as the user's base salary"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: $185,000 is the L6 comp band floor, not the user's personal salary; $188,000 is a friend's salary at a different company, also same-value-different-target. assistant echo: $186,500 was introduced by the assistant in segment 3 turn 3 as a possible infrastructure team L6 figure, not confirmed by the user.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects $185,000 (band floor), $188,000 (friend's salary), or $186,500 (assistant echo) instead of $191,500.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My base salary after the level adjustment is $191,500"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The L6 comp band at our company starts at $185,000 base. HR confirmed that during the second week of March."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I was chatting with a friend at a different company yesterday and he mentioned his L6 base is around $188,000."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I need to enter my base salary on a financial planning worksheet. Which of these amounts should I use?",
+      "candidate_options": [
+        "$191,500",
+        "$185,000",
+        "$188,000",
+        "$186,500"
+      ],
+      "expected_answer": "$191,500",
+      "gold_memory_state": "User's confirmed base salary is $191,500. L6 comp band floor is $185,000. Friend's L6 base at a different company is $188,000. $186,500 was mentioned by the assistant as a possible infrastructure team L6 starting figure.",
+      "judge_rubric": {
+        "must_include": [
+          "$191,500"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "$185,000 as personal salary",
+          "$188,000 as personal salary",
+          "$186,500 as personal salary"
+        ],
+        "harmful_extra": [
+          "selecting any distractor as the user's base salary"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: $185,000 is the L6 comp band floor, not the user's personal salary; $188,000 is a friend's salary at a different company, also same-value-different-target. assistant echo: $186,500 was introduced by the assistant in segment 3 turn 3 as a possible infrastructure team L6 figure, not confirmed by the user.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects $185,000 (band floor), $188,000 (friend's salary), or $186,500 (assistant echo) instead of $191,500.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My base salary after the level adjustment is $191,500"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The L6 comp band at our company starts at $185,000 base. HR confirmed that during the second week of March."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I was chatting with a friend at a different company yesterday and he mentioned his L6 base is around $188,000."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to write a short internal bio for the project wiki that covers my level, my position within the pay band, and my role on the current project. Draft two to three sentences for me.",
+      "expected_answer": "You are an L6 Senior Software Engineer serving as tech lead on the internal platform migration project, which kicked off on March 12th with a target completion at the end of June. Your base salary of $191,500 places you $6,500 above the L6 comp band floor of $185,000, positioning you solidly within the band. You are leaning toward the tech lead career track, preferring to stay close to the code.",
+      "gold_memory_state": "L6 Senior Software Engineer effective March 3rd; base salary $191,500; L6 comp band floor $185,000; tech lead on platform migration (kickoff March 12th, target end of June); leaning toward tech lead track; manager David Chen.",
+      "judge_rubric": {
+        "must_include": [
+          "L6",
+          "Senior Software Engineer",
+          "tech lead",
+          "platform migration",
+          "$191,500",
+          "$185,000 or reference to band floor",
+          "$6,500 above floor or equivalent positioning statement"
+        ],
+        "acceptable_paraphrases": [
+          "6.5K above the floor",
+          "above the minimum of the band"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "using $188,000 as user's salary",
+          "using $186,500 as user's salary",
+          "fabricating bonus or equity figures"
+        ],
+        "harmless_extra": [
+          "March 12th kickoff date",
+          "end of June target",
+          "career track preference",
+          "David Chen as manager"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses the friend's $188,000 or the assistant-echoed $186,500 instead of $191,500.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User's job level is L6, Senior Software Engineer, promotion effective March 3rd.",
+        "Fact 2: User's base salary is $191,500.",
+        "Fact 3: The L6 comp band floor is $185,000.",
+        "Fact 4: User is tech lead on the internal platform migration project, kickoff March 12th, target completion end of June.",
+        "Fact 5: User is leaning toward the tech lead career track.",
+        "Inference: $191,500 minus $185,000 = $6,500 above the band floor, indicating solid positioning within the L6 band.",
+        "Inference: Combining level, band positioning, project role, and career track into a cohesive internal bio."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current level is L6, Senior Software Engineer. The promotion was effective March 3rd."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My base salary after the level adjustment is $191,500"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The L6 comp band at our company starts at $185,000 base. HR confirmed that during the second week of March."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I'm the tech lead on an internal platform migration project. The kickoff was March 12th and we have a target completion of end of June."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "L6 is the level where you start being considered for the tech lead track versus the management track. I haven't decided formally yet but I'm leaning toward staying close to the code."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to write a short internal bio for the project wiki that covers my level, my position within the pay band, and my role on the current project. Draft two to three sentences for me.",
+      "expected_answer": "You are an L6 Senior Software Engineer serving as tech lead on the internal platform migration project, which kicked off on March 12th with a target completion at the end of June. Your base salary of $191,500 places you $6,500 above the L6 comp band floor of $185,000, positioning you solidly within the band. You are leaning toward the tech lead career track, preferring to stay close to the code.",
+      "gold_memory_state": "L6 Senior Software Engineer effective March 3rd; base salary $191,500; L6 comp band floor $185,000; tech lead on platform migration (kickoff March 12th, target end of June); leaning toward tech lead track; manager David Chen.",
+      "judge_rubric": {
+        "must_include": [
+          "L6",
+          "Senior Software Engineer",
+          "tech lead",
+          "platform migration",
+          "$191,500",
+          "$185,000 or reference to band floor",
+          "$6,500 above floor or equivalent positioning statement"
+        ],
+        "acceptable_paraphrases": [
+          "6.5K above the floor",
+          "above the minimum of the band"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "using $188,000 as user's salary",
+          "using $186,500 as user's salary",
+          "fabricating bonus or equity figures"
+        ],
+        "harmless_extra": [
+          "March 12th kickoff date",
+          "end of June target",
+          "career track preference",
+          "David Chen as manager"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses the friend's $188,000 or the assistant-echoed $186,500 instead of $191,500.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User's job level is L6, Senior Software Engineer, promotion effective March 3rd.",
+        "Fact 2: User's base salary is $191,500.",
+        "Fact 3: The L6 comp band floor is $185,000.",
+        "Fact 4: User is tech lead on the internal platform migration project, kickoff March 12th, target completion end of June.",
+        "Fact 5: User is leaning toward the tech lead career track.",
+        "Inference: $191,500 minus $185,000 = $6,500 above the band floor, indicating solid positioning within the L6 band.",
+        "Inference: Combining level, band positioning, project role, and career track into a cohesive internal bio."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current level is L6, Senior Software Engineer. The promotion was effective March 3rd."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My base salary after the level adjustment is $191,500"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The L6 comp band at our company starts at $185,000 base. HR confirmed that during the second week of March."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I'm the tech lead on an internal platform migration project. The kickoff was March 12th and we have a target completion of end of June."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "L6 is the level where you start being considered for the tech lead track versus the management track. I haven't decided formally yet but I'm leaning toward staying close to the code."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What's my annual bonus percentage again?",
+      "expected_answer": "I don't have your annual bonus percentage. You haven't provided that information.",
+      "gold_memory_state": "No annual bonus percentage was ever provided. Neighboring compensation facts on file: base salary $191,500 and L6 comp band floor $185,000.",
+      "judge_rubric": {
+        "must_include": [
+          "no record of annual bonus percentage",
+          "not provided or not available"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have that",
+          "you haven't shared that with me",
+          "no bonus percentage on file"
+        ],
+        "must_not_include": [
+          "any fabricated bonus percentage number"
+        ],
+        "harmful_extra": [
+          "inventing a bonus percentage",
+          "borrowing $191,500 or $185,000 as a bonus figure",
+          "stating a typical industry bonus percentage as if it were the user's"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model fabricates or hallucinates a bonus percentage that was never mentioned.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My base salary after the level adjustment is $191,500"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The L6 comp band at our company starts at $185,000 base. HR confirmed that during the second week of March."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What's my annual bonus percentage again?",
+      "expected_answer": "I don't have your annual bonus percentage. You haven't provided that information.",
+      "gold_memory_state": "No annual bonus percentage was ever provided. Neighboring compensation facts on file: base salary $191,500 and L6 comp band floor $185,000.",
+      "judge_rubric": {
+        "must_include": [
+          "no record of annual bonus percentage",
+          "not provided or not available"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have that",
+          "you haven't shared that with me",
+          "no bonus percentage on file"
+        ],
+        "must_not_include": [
+          "any fabricated bonus percentage number"
+        ],
+        "harmful_extra": [
+          "inventing a bonus percentage",
+          "borrowing $191,500 or $185,000 as a bonus figure",
+          "stating a typical industry bonus percentage as if it were the user's"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model fabricates or hallucinates a bonus percentage that was never mentioned.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My base salary after the level adjustment is $191,500"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The L6 comp band at our company starts at $185,000 base. HR confirmed that during the second week of March."
+        }
+      ]
+    }
+  ]
+}

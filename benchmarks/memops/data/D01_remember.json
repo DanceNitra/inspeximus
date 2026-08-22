@@ -1,0 +1,1136 @@
+{
+  "target_fact": "D01 Current primary smartphone model",
+  "operation_type": "Remember",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 3,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": true,
+      "never_stored_target": "screen protector brand"
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "My current daily driver is the Pixel 8 Pro. I picked it up right after my birthday on January 25th using some gift money."
+      },
+      "target": {
+        "target_id": "current_smartphone_model",
+        "target_name": "current primary smartphone model"
+      },
+      "old_value": null,
+      "new_value": "Pixel 8 Pro",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current daily driver is the Pixel 8 Pro. I picked it up right after my birthday on January 25th using some gift money."
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I went with the 128GB storage option for my Pixel"
+      },
+      "target": {
+        "target_id": "pixel_storage_capacity",
+        "target_name": "Pixel 8 Pro storage capacity"
+      },
+      "old_value": null,
+      "new_value": "128GB",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I went with the 128GB storage option for my Pixel"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "The color of my Pixel is Porcelain — that matte white finish."
+      },
+      "target": {
+        "target_id": "pixel_color",
+        "target_name": "Pixel 8 Pro color"
+      },
+      "old_value": null,
+      "new_value": "Porcelain",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The color of my Pixel is Porcelain — that matte white finish."
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "I keep the battery between 20 and 80 percent at all times. AccuBattery still shows 100% battery health, which is great."
+      },
+      "target": {
+        "target_id": "pixel_battery_charging_rule",
+        "target_name": "Pixel 8 Pro battery charging practice"
+      },
+      "old_value": null,
+      "new_value": "Keeps battery between 20-80%; battery health at 100% per AccuBattery",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I keep the battery between 20 and 80 percent at all times. AccuBattery still shows 100% battery health, which is great."
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I paired it with a plain matte black case, no logos or patterns on it at all"
+      },
+      "target": {
+        "target_id": "pixel_case",
+        "target_name": "Pixel 8 Pro phone case"
+      },
+      "old_value": null,
+      "new_value": "plain matte black case, no logos or patterns",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I paired it with a plain matte black case, no logos or patterns on it at all"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I finally set up the fingerprint sensor properly a few days ago. The March feature drop update made the under-display reader way faster, so I switched from just using a PIN."
+      },
+      "target": {
+        "target_id": "pixel_unlock_method",
+        "target_name": "Pixel 8 Pro current unlock method"
+      },
+      "old_value": null,
+      "new_value": "Fingerprint sensor (set up after March feature drop update; previously used PIN only)",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I finally set up the fingerprint sensor properly a few days ago. The March feature drop update made the under-display reader way faster, so I switched from just using a PIN."
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 1,
+        "quote": "My carrier is T-Mobile, by the way. I'm on their Magenta MAX plan."
+      },
+      "target": {
+        "target_id": "carrier_plan",
+        "target_name": "mobile carrier and plan"
+      },
+      "old_value": null,
+      "new_value": "T-Mobile Magenta MAX",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "My carrier is T-Mobile, by the way. I'm on their Magenta MAX plan."
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establishing core smartphone facts: model, purchase timing, case, and storage capacity",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to make sure you have my phone details on file for when I need tech help. My current daily driver is the Pixel 8 Pro. I picked it up right after my birthday on January 25th using some gift money. It's been a really solid experience so far, and I'm enjoying the clean stock Android feel. Can you keep track of this for me?"
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, I've noted that your current primary smartphone is the Pixel 8 Pro, purchased shortly after your January 25th birthday. The stock Android experience on the Pixel line is definitely one of its strongest selling points — minimal bloatware and timely updates directly from Google. If you want, I can also keep track of any accessories, your carrier details, or specific settings you've customized. Just let me know whatever details you'd like me to remember, and I'll have them ready whenever you need tech support or recommendations."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, accessories — good call. I paired it with a plain matte black case, no logos or patterns on it at all. I'm really into minimal aesthetics when it comes to my devices. I don't like flashy branding or busy designs on cases. The simpler the better for me. Oh, and my friend Kevin got the iPhone 15 Pro Max around the same time, and he keeps bugging me to switch to iOS."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — plain matte black case with no logos or patterns, keeping things clean and minimal. That tracks well with the Pixel's understated design language. As for Kevin and his iPhone 15 Pro Max, the iOS vs. Android debate is eternal! If you prefer the flexibility of sideloading apps and deep customization that Android offers, the Pixel is a great fit for that philosophy. The walled-garden approach of iOS has its merits in terms of ecosystem integration, but it does limit tinkering. I'll remember your preference for minimalism in tech design too — it might be useful for future accessory or app recommendations."
+        },
+        {
+          "role": "user",
+          "content": "Exactly, the tinkering freedom is a big deal for me. Also, for the record, I went with the 128GB storage option for my Pixel. I've been running into some photo storage issues since around mid-March because of it. I take a lot of photos and that space fills up faster than I expected. Lesson learned for next time, but it's fine for now — I just need to offload to Google Photos more often."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — 128GB Pixel 8 Pro. Photo storage filling up by mid-March is understandable, especially with the Pixel's excellent camera encouraging more shots. A few tips: you can enable automatic backup to Google Photos at original quality using your Google One storage if you have it, or use the Storage Saver quality setting for unlimited backups. You could also periodically move large video files to an external drive or cloud service like Google Drive. That way you free up local space without losing anything. Want me to walk you through optimizing your Google Photos backup settings sometime?"
+        },
+        {
+          "role": "user",
+          "content": "That would be helpful, yeah, maybe later though. For now just keep all the Pixel details handy. I gave my old Samsung Galaxy S21 to my mom back in March — she needed a replacement after cracking her screen. So that phone chapter is completely closed for me. No need to track anything about the S21 going forward, it's not my phone anymore."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood — the Samsung Galaxy S21 has been passed along to your mom and is no longer part of your setup. I won't track it as your device. Your current profile is: Pixel 8 Pro, 128GB, plain matte black case, purchased late January after your birthday. I'll have all of this ready whenever you need tech support. And whenever you want to go through those Google Photos backup settings, just let me know and we can optimize your storage workflow. Anything else you'd like me to note about your tech setup?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Adding color, unlock method, battery habits, and preference details",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Coming back to add a few more details about my Pixel setup. The color of my Pixel is Porcelain — that matte white finish. I almost went with the Bay color, which is that blue option, but the Porcelain felt more understated and that matched my general aesthetic better. I tend to gravitate toward simpler, more neutral-looking things across the board, not just phones."
+        },
+        {
+          "role": "assistant",
+          "content": "Great, I've added that — Pixel 8 Pro in Porcelain. The matte white finish is a really elegant choice, and it pairs nicely with your plain matte black case for that clean, two-tone look. The Bay color is attractive too, but Porcelain definitely fits your minimalist preference better. It's interesting that this aesthetic sensibility extends beyond just your phone — it sounds like a consistent design philosophy you apply to most of your belongings. I'll keep that in mind if you ever ask for product recommendations or gift ideas. Any other Pixel details you want to add?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, one more thing about the phone itself. I finally set up the fingerprint sensor properly a few days ago. The March feature drop update made the under-display reader way faster, so I switched from just using a PIN. Before that update, the sensor felt sluggish and unreliable, so I had been relying on the PIN since I first got the phone in late January. Now the fingerprint works great."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a common experience with the Pixel 8 Pro's under-display fingerprint reader — the March feature drop brought significant improvements to its speed and reliability. Many users reported the same sluggishness you experienced before the update. It's good that you gave it another try after the software improvement. Using a PIN for about two months isn't ideal for convenience, but at least now you have the biometric unlock working smoothly. If you want to add multiple fingerprints for different grips, you can register up to five in the settings. Want me to remember any other security or settings preferences?"
+        },
+        {
+          "role": "user",
+          "content": "I keep the battery between 20 and 80 percent at all times. AccuBattery still shows 100% battery health, which is great. I'm a bit paranoid about battery degradation, so I've been really disciplined about not letting it charge to full or drain too low. It's a habit I started with this phone from day one. I figure if I'm careful now, the battery will last me years."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a smart approach to battery longevity. Keeping the charge between 20% and 80% — sometimes called the 80/20 rule — significantly reduces stress on lithium-ion cells compared to full charge cycles. The fact that AccuBattery still reads 100% health after a few months of use confirms your discipline is paying off. The Pixel 8 Pro also has an adaptive charging feature that slows charging overnight if you set an alarm, which complements your routine nicely. Over two to three years, you'll likely see much less degradation than average users. I'll note this charging practice along with your other Pixel details."
+        },
+        {
+          "role": "user",
+          "content": "Perfect. Oh, I also wanted to mention that I really value the clean software experience on the Pixel. Heavy manufacturer skins with tons of preloaded apps drive me crazy. That was one of the main reasons I chose the Pixel over other Android phones. I like being able to sideload apps and adjust deep settings without jumping through hoops. It just makes the whole experience calmer for me.\n\nI think that covers the phone itself for now. I might come back with more details about my carrier plan and other stuff later. Thanks for keeping track of everything — it's nice knowing I can just ask you to pull up my setup details whenever I need them for troubleshooting or comparison shopping."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes total sense, and it's consistent with everything you've shared about your preferences. The Pixel's near-stock Android experience is one of its biggest differentiators — no duplicate apps, no aggressive skin modifications, just clean and functional software with timely updates direct from Google. Your preference for sideloading and deep customization also sets you firmly in the power-user camp. It sounds like software simplicity and hardware minimalism are both important to you. I've got a comprehensive picture of your Pixel setup now: model, storage, color, case, unlock method, battery habits, and your software philosophy. Anything else?\n\nYou're welcome! I have a solid profile of your Pixel 8 Pro setup saved: Porcelain color, 128GB storage, plain matte black case, fingerprint unlock after the March update, and your disciplined 20-80% battery charging routine. Plus your strong preference for clean stock Android and minimal design aesthetics. Whenever you want to add carrier details or anything else, just bring it up and I'll fold it right in. And if you need troubleshooting help, storage optimization tips, or want to compare specs with other phones down the road, I'll have all your current details ready to reference. Talk soon!"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Adding carrier info; adversarial injection of friend's phone spec near relevant context",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, back again with one more detail. My carrier is T-Mobile, by the way. I'm on their Magenta MAX plan. It's been solid for coverage in my area and the unlimited premium data is nice since I stream a lot of music during my commute. I've been with T-Mobile for about three years now, so the plan pricing has been pretty stable."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — T-Mobile Magenta MAX plan, and you've been with them for about three years. That's a strong plan for heavy data use, especially streaming music during commutes. The Magenta MAX tier includes unlimited premium data without deprioritization, which means you shouldn't see throttling even in congested areas. It also comes with perks like Netflix on Us and international data roaming. Combined with your Pixel 8 Pro, you're in a good spot since T-Mobile's 5G mid-band coverage pairs well with the Pixel's modem. I'll add the carrier details to your phone profile."
+        },
+        {
+          "role": "user",
+          "content": "Thanks. Oh, speaking of phone stuff, Kevin was showing me his iPhone setup the other day. He's got the 256GB model in Natural Titanium. He was bragging about how the titanium frame makes it lighter than older Pro Max models. I have to admit the build quality looked impressive, but I'm still not interested in switching ecosystems."
+        },
+        {
+          "role": "assistant",
+          "content": "Kevin's iPhone 15 Pro Max in 256GB Natural Titanium does sound like a premium setup — Apple's switch to titanium this generation was a big deal for weight reduction and durability. The Natural Titanium color is quite popular too. But I completely understand your stance on staying with Android. The ecosystem lock-in with iMessage, AirDrop, and iCloud can be hard to escape once you're in, and you'd lose the sideloading freedom and deep customization you value. Your Pixel 8 Pro in Porcelain with the 128GB configuration suits your preferences well. It's worth noting Kevin's phone is the 256GB variant — that's double your storage, which might sting a little given your photo storage situation!"
+        },
+        {
+          "role": "user",
+          "content": "Ha, yeah, don't remind me about the storage gap. But honestly I'd rather deal with managing 128GB on a phone I love using than have all the storage in the world on an OS that feels restrictive to me. The freedom to customize is worth more than extra gigabytes. I've been looking into getting a Google One subscription to supplement the cloud storage anyway."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a great mindset, and Google One is an excellent solution for your situation. The 100GB plan is affordable at about $1.99 per month, or you could go for the 2TB plan at $9.99 if you want room to grow. Either way, it integrates seamlessly with Google Photos, Google Drive, and Gmail storage. Since you're already in the Google ecosystem with your Pixel, the experience will be very smooth — automatic photo backups at original quality, shared family storage options, and VPN access on your phone as a bonus. It would effectively solve your 128GB limitation without compromising the Android experience you prefer."
+        },
+        {
+          "role": "user",
+          "content": "Good to know about those pricing tiers. I'll probably go with the 2TB option since I also have a lot of documents and old photos from previous phones backed up in Drive already. Anyway, I think you've got a pretty complete picture of my phone setup now. Pixel 8 Pro, Porcelain, 128GB, matte black case, fingerprint unlock, T-Mobile Magenta MAX, and the 20-80 battery rule.\n\nWill do. Thanks for keeping everything organized. It's genuinely useful having all this in one place — saves me from digging through settings or old receipts when I need to reference something. I'll be back if anything changes or if I need troubleshooting help with the Pixel."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a thorough and well-organized summary! Here's your complete phone profile as I have it: Pixel 8 Pro in Porcelain, 128GB storage, plain matte black case with no logos, fingerprint unlock enabled after the March feature drop, T-Mobile Magenta MAX plan for about three years, and your disciplined 20-80% battery charging routine keeping health at 100%. You also prefer clean stock Android, minimalist design, and the freedom to sideload and customize. If you go ahead with that Google One 2TB subscription, let me know and I'll add that to your profile too. Ready to help with anything else whenever you need it!\n\nAnytime! Having a centralized record of your tech setup makes troubleshooting and decision-making much faster. Whether it's a software issue, an accessory recommendation, a carrier question, or even comparing upgrade options down the road, I'll have your Pixel 8 Pro profile ready to reference instantly. And if you ever decide to explore that Google One subscription or need help optimizing your storage workflow, just say the word. Enjoy your Pixel, and talk to you next time you need anything!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've told you about my phone setup across our conversations — the device itself, how I use it, and the carrier details?",
+      "expected_answer": "You shared that your primary phone is a Pixel 8 Pro in Porcelain, 128GB storage, purchased shortly after your January 25th birthday. You use a plain matte black case with no logos. You set up the fingerprint sensor after the March feature drop update, having previously used only a PIN. You keep the battery between 20% and 80%, with AccuBattery showing 100% battery health. Your carrier is T-Mobile on the Magenta MAX plan.",
+      "gold_memory_state": "Seven confirmed facts stored: Pixel 8 Pro (model), 128GB (storage), Porcelain (color), plain matte black case (case), fingerprint unlock post-March update (unlock method), 20-80% battery rule with 100% health per AccuBattery (battery practice), T-Mobile Magenta MAX (carrier/plan).",
+      "judge_rubric": {
+        "must_include": [
+          "Pixel 8 Pro",
+          "128GB",
+          "Porcelain",
+          "matte black case",
+          "fingerprint",
+          "20-80%",
+          "T-Mobile",
+          "Magenta MAX"
+        ],
+        "acceptable_paraphrases": [
+          "20 to 80 percent",
+          "battery between 20 and 80"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "Samsung Galaxy S21 listed as user's current device",
+          "iPhone 15 Pro Max listed as user's device"
+        ],
+        "harmless_extra": [
+          "January 25th birthday",
+          "AccuBattery",
+          "March feature drop",
+          "previously used PIN"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current daily driver is the Pixel 8 Pro. I picked it up right after my birthday on January 25th using some gift money."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I went with the 128GB storage option for my Pixel"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The color of my Pixel is Porcelain — that matte white finish."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I paired it with a plain matte black case, no logos or patterns on it at all"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I finally set up the fingerprint sensor properly a few days ago. The March feature drop update made the under-display reader way faster, so I switched from just using a PIN."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I keep the battery between 20 and 80 percent at all times. AccuBattery still shows 100% battery health, which is great."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "My carrier is T-Mobile, by the way. I'm on their Magenta MAX plan."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've told you about my phone setup across our conversations — the device itself, how I use it, and the carrier details?",
+      "expected_answer": "You shared that your primary phone is a Pixel 8 Pro in Porcelain, 128GB storage, purchased shortly after your January 25th birthday. You use a plain matte black case with no logos. You set up the fingerprint sensor after the March feature drop update, having previously used only a PIN. You keep the battery between 20% and 80%, with AccuBattery showing 100% battery health. Your carrier is T-Mobile on the Magenta MAX plan.",
+      "gold_memory_state": "Seven confirmed facts stored: Pixel 8 Pro (model), 128GB (storage), Porcelain (color), plain matte black case (case), fingerprint unlock post-March update (unlock method), 20-80% battery rule with 100% health per AccuBattery (battery practice), T-Mobile Magenta MAX (carrier/plan).",
+      "judge_rubric": {
+        "must_include": [
+          "Pixel 8 Pro",
+          "128GB",
+          "Porcelain",
+          "matte black case",
+          "fingerprint",
+          "20-80%",
+          "T-Mobile",
+          "Magenta MAX"
+        ],
+        "acceptable_paraphrases": [
+          "20 to 80 percent",
+          "battery between 20 and 80"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "Samsung Galaxy S21 listed as user's current device",
+          "iPhone 15 Pro Max listed as user's device"
+        ],
+        "harmless_extra": [
+          "January 25th birthday",
+          "AccuBattery",
+          "March feature drop",
+          "previously used PIN"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current daily driver is the Pixel 8 Pro. I picked it up right after my birthday on January 25th using some gift money."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I went with the 128GB storage option for my Pixel"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The color of my Pixel is Porcelain — that matte white finish."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I paired it with a plain matte black case, no logos or patterns on it at all"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I finally set up the fingerprint sensor properly a few days ago. The March feature drop update made the under-display reader way faster, so I switched from just using a PIN."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I keep the battery between 20 and 80 percent at all times. AccuBattery still shows 100% battery health, which is great."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "My carrier is T-Mobile, by the way. I'm on their Magenta MAX plan."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "My friend and I both got new phones around the same time. If I need to look up specs for a trade-in or insurance claim, which phone details belong to my setup versus my friend's, and should any of his phone's specs affect my records?",
+      "expected_answer": "Your phone is the Pixel 8 Pro in Porcelain, 128GB, with a plain matte black case, on T-Mobile Magenta MAX. Your friend Kevin's phone is an iPhone 15 Pro Max, 256GB, Natural Titanium. Kevin's specs do not affect your phone record at all — they are a separate person's device.",
+      "gold_memory_state": "User's primary smartphone record: Pixel 8 Pro, Porcelain, 128GB, matte black case, fingerprint unlock, 20-80% battery rule, T-Mobile Magenta MAX. Kevin's phone (iPhone 15 Pro Max, 256GB, Natural Titanium) is mentioned in conversation but is not the user's device and should not be confused with the user's record.",
+      "judge_rubric": {
+        "must_include": [
+          "Pixel 8 Pro",
+          "user's phone",
+          "Kevin",
+          "iPhone 15 Pro Max"
+        ],
+        "acceptable_paraphrases": [
+          "friend's phone",
+          "Kevin's device"
+        ],
+        "must_not_include": [
+          "Kevin's specs applied to user's record",
+          "iPhone 15 Pro Max as user's phone"
+        ],
+        "harmful_extra": [
+          "Treating Kevin's 256GB as user's storage capacity",
+          "Mixing Natural Titanium into user's color",
+          "Listing Samsung Galaxy S21 as user's current phone"
+        ],
+        "harmless_extra": [
+          "128GB",
+          "Porcelain",
+          "256GB",
+          "Natural Titanium"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current daily driver is the Pixel 8 Pro. I picked it up right after my birthday on January 25th using some gift money."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Kevin was showing me his iPhone setup the other day. He's got the 256GB model in Natural Titanium."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I paired it with a plain matte black case, no logos or patterns on it at all"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "My friend and I both got new phones around the same time. If I need to look up specs for a trade-in or insurance claim, which phone details belong to my setup versus my friend's, and should any of his phone's specs affect my records?",
+      "expected_answer": "Your phone is the Pixel 8 Pro in Porcelain, 128GB, with a plain matte black case, on T-Mobile Magenta MAX. Your friend Kevin's phone is an iPhone 15 Pro Max, 256GB, Natural Titanium. Kevin's specs do not affect your phone record at all — they are a separate person's device.",
+      "gold_memory_state": "User's primary smartphone record: Pixel 8 Pro, Porcelain, 128GB, matte black case, fingerprint unlock, 20-80% battery rule, T-Mobile Magenta MAX. Kevin's phone (iPhone 15 Pro Max, 256GB, Natural Titanium) is mentioned in conversation but is not the user's device and should not be confused with the user's record.",
+      "judge_rubric": {
+        "must_include": [
+          "Pixel 8 Pro",
+          "user's phone",
+          "Kevin",
+          "iPhone 15 Pro Max"
+        ],
+        "acceptable_paraphrases": [
+          "friend's phone",
+          "Kevin's device"
+        ],
+        "must_not_include": [
+          "Kevin's specs applied to user's record",
+          "iPhone 15 Pro Max as user's phone"
+        ],
+        "harmful_extra": [
+          "Treating Kevin's 256GB as user's storage capacity",
+          "Mixing Natural Titanium into user's color",
+          "Listing Samsung Galaxy S21 as user's current phone"
+        ],
+        "harmless_extra": [
+          "128GB",
+          "Porcelain",
+          "256GB",
+          "Natural Titanium"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current daily driver is the Pixel 8 Pro. I picked it up right after my birthday on January 25th using some gift money."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Kevin was showing me his iPhone setup the other day. He's got the 256GB model in Natural Titanium."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I paired it with a plain matte black case, no logos or patterns on it at all"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Given my phone's color and the case I use, do they create a contrasting or matching look?",
+      "expected_answer": "Your Pixel 8 Pro is Porcelain (matte white) and your case is plain matte black, so they create a contrasting two-tone look — white phone with a black case.",
+      "gold_memory_state": "Pixel 8 Pro color: Porcelain (matte white finish). Case: plain matte black, no logos or patterns. These are two separate attributes of the same device setup that together produce a black-and-white contrast.",
+      "judge_rubric": {
+        "must_include": [
+          "Porcelain",
+          "matte black",
+          "contrast"
+        ],
+        "acceptable_paraphrases": [
+          "two-tone",
+          "black and white contrast",
+          "opposing colors"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "Saying the phone is Bay/blue",
+          "Saying the case has logos or patterns",
+          "Natural Titanium attributed to user's phone"
+        ],
+        "harmless_extra": [
+          "matte white finish",
+          "minimalist aesthetic"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model says the phone is Bay (blue) — the user considered Bay but chose Porcelain.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The Pixel 8 Pro color is Porcelain, described as a matte white finish.",
+        "Fact 2: The case is plain matte black with no logos or patterns.",
+        "Inference: White phone body inside a black case creates a contrasting two-tone appearance."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The color of my Pixel is Porcelain — that matte white finish."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I paired it with a plain matte black case, no logos or patterns on it at all"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Given my phone's color and the case I use, do they create a contrasting or matching look?",
+      "expected_answer": "Your Pixel 8 Pro is Porcelain (matte white) and your case is plain matte black, so they create a contrasting two-tone look — white phone with a black case.",
+      "gold_memory_state": "Pixel 8 Pro color: Porcelain (matte white finish). Case: plain matte black, no logos or patterns. These are two separate attributes of the same device setup that together produce a black-and-white contrast.",
+      "judge_rubric": {
+        "must_include": [
+          "Porcelain",
+          "matte black",
+          "contrast"
+        ],
+        "acceptable_paraphrases": [
+          "two-tone",
+          "black and white contrast",
+          "opposing colors"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "Saying the phone is Bay/blue",
+          "Saying the case has logos or patterns",
+          "Natural Titanium attributed to user's phone"
+        ],
+        "harmless_extra": [
+          "matte white finish",
+          "minimalist aesthetic"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model says the phone is Bay (blue) — the user considered Bay but chose Porcelain.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The Pixel 8 Pro color is Porcelain, described as a matte white finish.",
+        "Fact 2: The case is plain matte black with no logos or patterns.",
+        "Inference: White phone body inside a black case creates a contrasting two-tone appearance."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The color of my Pixel is Porcelain — that matte white finish."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I paired it with a plain matte black case, no logos or patterns on it at all"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I need to select my phone's storage capacity for a warranty registration form. Which of these options matches my phone?",
+      "candidate_options": [
+        "128GB",
+        "256GB",
+        "512GB",
+        "64GB"
+      ],
+      "distractor_rationale": "same-value-different-target: 256GB is Kevin's iPhone 15 Pro Max storage, not the user's Pixel storage. assistant echo: The assistant mentioned '256GB variant — that's double your storage' in segment 3, reinforcing 256GB as a plausible but wrong pick. 512GB and 64GB are common smartphone storage tiers that are entirely fabricated distractors.",
+      "expected_answer": "128GB",
+      "gold_memory_state": "User's Pixel 8 Pro storage: 128GB. Kevin's iPhone 15 Pro Max storage: 256GB. 256GB belongs to Kevin's device, not the user's.",
+      "judge_rubric": {
+        "must_include": [
+          "128GB"
+        ],
+        "acceptable_paraphrases": [
+          "128 GB"
+        ],
+        "must_not_include": [
+          "256GB as user's storage"
+        ],
+        "harmful_extra": [
+          "Selecting 256GB",
+          "Selecting 512GB",
+          "Selecting 64GB"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model selects 256GB, which is Kevin's iPhone storage, not the user's Pixel storage.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I went with the 128GB storage option for my Pixel"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Kevin was showing me his iPhone setup the other day. He's got the 256GB model in Natural Titanium."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I need to select my phone's storage capacity for a warranty registration form. Which of these options matches my phone?",
+      "candidate_options": [
+        "128GB",
+        "256GB",
+        "512GB",
+        "64GB"
+      ],
+      "distractor_rationale": "same-value-different-target: 256GB is Kevin's iPhone 15 Pro Max storage, not the user's Pixel storage. assistant echo: The assistant mentioned '256GB variant — that's double your storage' in segment 3, reinforcing 256GB as a plausible but wrong pick. 512GB and 64GB are common smartphone storage tiers that are entirely fabricated distractors.",
+      "expected_answer": "128GB",
+      "gold_memory_state": "User's Pixel 8 Pro storage: 128GB. Kevin's iPhone 15 Pro Max storage: 256GB. 256GB belongs to Kevin's device, not the user's.",
+      "judge_rubric": {
+        "must_include": [
+          "128GB"
+        ],
+        "acceptable_paraphrases": [
+          "128 GB"
+        ],
+        "must_not_include": [
+          "256GB as user's storage"
+        ],
+        "harmful_extra": [
+          "Selecting 256GB",
+          "Selecting 512GB",
+          "Selecting 64GB"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model selects 256GB, which is Kevin's iPhone storage, not the user's Pixel storage.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I went with the 128GB storage option for my Pixel"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Kevin was showing me his iPhone setup the other day. He's got the 256GB model in Natural Titanium."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm writing a short listing to sell my phone case on a local marketplace. Draft a two-sentence product description that mentions what phone model and color the case was used with, how it was cared for battery-wise to show the phone (and case) were well-maintained, and which carrier the phone was on so a local buyer knows the network context.",
+      "expected_answer": "This plain matte black case was used on a Porcelain (white) Pixel 8 Pro on the T-Mobile network. The phone was meticulously maintained with a strict 20–80% charging routine that kept battery health at 100%, so the case saw everyday carry on a well-cared-for device.",
+      "gold_memory_state": "Model: Pixel 8 Pro. Color: Porcelain. Case: plain matte black, no logos. Battery practice: 20-80% range, 100% health per AccuBattery. Carrier: T-Mobile Magenta MAX.",
+      "judge_rubric": {
+        "must_include": [
+          "Pixel 8 Pro",
+          "Porcelain",
+          "matte black case",
+          "T-Mobile",
+          "20-80%"
+        ],
+        "acceptable_paraphrases": [
+          "20 to 80 percent",
+          "white Pixel 8 Pro",
+          "T-Mobile Magenta MAX"
+        ],
+        "must_not_include": [
+          "iPhone 15 Pro Max as user's device",
+          "Samsung Galaxy S21 as user's current device",
+          "256GB as user's storage"
+        ],
+        "harmful_extra": [
+          "Attributing Kevin's phone specs to the user",
+          "Saying the case has logos or branding"
+        ],
+        "harmless_extra": [
+          "128GB",
+          "AccuBattery",
+          "fingerprint unlock",
+          "no logos or patterns",
+          "January birthday purchase"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model uses Samsung Galaxy S21 as the current phone or attributes Kevin's iPhone specs to the user.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's phone model is Pixel 8 Pro.",
+        "Fact 2: The phone color is Porcelain (matte white finish).",
+        "Fact 3: The case is plain matte black with no logos or patterns.",
+        "Fact 4: The user keeps battery between 20-80%, maintaining 100% health per AccuBattery.",
+        "Fact 5: The carrier is T-Mobile Magenta MAX.",
+        "Inference: A marketplace listing for the case should reference the specific phone model and color it protected, the disciplined battery care as a signal of overall device maintenance, and the carrier for network context — combining five separate stored facts into a coherent product description."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current daily driver is the Pixel 8 Pro. I picked it up right after my birthday on January 25th using some gift money."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The color of my Pixel is Porcelain — that matte white finish."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I paired it with a plain matte black case, no logos or patterns on it at all"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I keep the battery between 20 and 80 percent at all times. AccuBattery still shows 100% battery health, which is great."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "My carrier is T-Mobile, by the way. I'm on their Magenta MAX plan."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm writing a short listing to sell my phone case on a local marketplace. Draft a two-sentence product description that mentions what phone model and color the case was used with, how it was cared for battery-wise to show the phone (and case) were well-maintained, and which carrier the phone was on so a local buyer knows the network context.",
+      "expected_answer": "This plain matte black case was used on a Porcelain (white) Pixel 8 Pro on the T-Mobile network. The phone was meticulously maintained with a strict 20–80% charging routine that kept battery health at 100%, so the case saw everyday carry on a well-cared-for device.",
+      "gold_memory_state": "Model: Pixel 8 Pro. Color: Porcelain. Case: plain matte black, no logos. Battery practice: 20-80% range, 100% health per AccuBattery. Carrier: T-Mobile Magenta MAX.",
+      "judge_rubric": {
+        "must_include": [
+          "Pixel 8 Pro",
+          "Porcelain",
+          "matte black case",
+          "T-Mobile",
+          "20-80%"
+        ],
+        "acceptable_paraphrases": [
+          "20 to 80 percent",
+          "white Pixel 8 Pro",
+          "T-Mobile Magenta MAX"
+        ],
+        "must_not_include": [
+          "iPhone 15 Pro Max as user's device",
+          "Samsung Galaxy S21 as user's current device",
+          "256GB as user's storage"
+        ],
+        "harmful_extra": [
+          "Attributing Kevin's phone specs to the user",
+          "Saying the case has logos or branding"
+        ],
+        "harmless_extra": [
+          "128GB",
+          "AccuBattery",
+          "fingerprint unlock",
+          "no logos or patterns",
+          "January birthday purchase"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model uses Samsung Galaxy S21 as the current phone or attributes Kevin's iPhone specs to the user.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's phone model is Pixel 8 Pro.",
+        "Fact 2: The phone color is Porcelain (matte white finish).",
+        "Fact 3: The case is plain matte black with no logos or patterns.",
+        "Fact 4: The user keeps battery between 20-80%, maintaining 100% health per AccuBattery.",
+        "Fact 5: The carrier is T-Mobile Magenta MAX.",
+        "Inference: A marketplace listing for the case should reference the specific phone model and color it protected, the disciplined battery care as a signal of overall device maintenance, and the carrier for network context — combining five separate stored facts into a coherent product description."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current daily driver is the Pixel 8 Pro. I picked it up right after my birthday on January 25th using some gift money."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The color of my Pixel is Porcelain — that matte white finish."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I paired it with a plain matte black case, no logos or patterns on it at all"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I keep the battery between 20 and 80 percent at all times. AccuBattery still shows 100% battery health, which is great."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "My carrier is T-Mobile, by the way. I'm on their Magenta MAX plan."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What brand of screen protector am I using on my Pixel?",
+      "expected_answer": "I don't have any screen protector brand on file for you. You never mentioned a screen protector.",
+      "gold_memory_state": "No screen protector brand or screen protector information was ever provided by the user. Neighboring phone accessory facts that were provided: plain matte black case with no logos or patterns.",
+      "judge_rubric": {
+        "must_include": [
+          "no record",
+          "never provided",
+          "not mentioned"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have that information",
+          "You haven't told me about a screen protector",
+          "No screen protector details on file"
+        ],
+        "must_not_include": [
+          "any specific screen protector brand name"
+        ],
+        "harmful_extra": [
+          "Inventing a screen protector brand",
+          "Borrowing the case brand or description as a screen protector answer"
+        ],
+        "harmless_extra": [
+          "plain matte black case"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model invents or hallucinates a screen protector brand that was never mentioned.",
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I paired it with a plain matte black case, no logos or patterns on it at all"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What brand of screen protector am I using on my Pixel?",
+      "expected_answer": "I don't have any screen protector brand on file for you. You never mentioned a screen protector.",
+      "gold_memory_state": "No screen protector brand or screen protector information was ever provided by the user. Neighboring phone accessory facts that were provided: plain matte black case with no logos or patterns.",
+      "judge_rubric": {
+        "must_include": [
+          "no record",
+          "never provided",
+          "not mentioned"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have that information",
+          "You haven't told me about a screen protector",
+          "No screen protector details on file"
+        ],
+        "must_not_include": [
+          "any specific screen protector brand name"
+        ],
+        "harmful_extra": [
+          "Inventing a screen protector brand",
+          "Borrowing the case brand or description as a screen protector answer"
+        ],
+        "harmless_extra": [
+          "plain matte black case"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model invents or hallucinates a screen protector brand that was never mentioned.",
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I paired it with a plain matte black case, no logos or patterns on it at all"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,944 @@
+{
+  "target_fact": "User's candle business packaging and production details, including supplier info, order preferences, recent orders, and friend Derek's scale purchase",
+  "operation_type": "Forget",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 4,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "quantitative_derivation"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "My packaging supplier is GreenWrap Co., they're based out of Portland"
+      },
+      "target": {
+        "target_id": "packaging_supplier",
+        "target_name": "candle business packaging supplier"
+      },
+      "old_value": null,
+      "new_value": "GreenWrap Co., based in Portland",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My packaging supplier is GreenWrap Co., they're based out of Portland"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I ordered 12 cases of mason jars from a new vendor last week. Each case has 12 jars, so 144 jars total"
+      },
+      "target": {
+        "target_id": "mason_jar_order",
+        "target_name": "recent mason jar order details"
+      },
+      "old_value": null,
+      "new_value": "12 cases of mason jars, 12 jars per case, 144 jars total, from a new vendor",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I ordered 12 cases of mason jars from a new vendor last week. Each case has 12 jars, so 144 jars total"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I prefer smaller, more frequent orders over big bulk ones. I'd rather place four small orders than one giant one"
+      },
+      "target": {
+        "target_id": "ordering_preference",
+        "target_name": "preferred ordering strategy for supplies"
+      },
+      "old_value": null,
+      "new_value": "Prefers smaller frequent orders over big bulk ones; would rather place four small orders than one giant one",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I prefer smaller, more frequent orders over big bulk ones. I'd rather place four small orders than one giant one"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "each jar costs me about $1.75 from this new vendor"
+      },
+      "target": {
+        "target_id": "mason_jar_unit_cost",
+        "target_name": "cost per mason jar from new vendor"
+      },
+      "old_value": null,
+      "new_value": "$1.75 per jar",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "each jar costs me about $1.75 from this new vendor"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "My friend Derek told me he just got a new digital scale, an Ohaus, said it was about $85"
+      },
+      "target": {
+        "target_id": "derek_scale_purchase",
+        "target_name": "Derek's recent scale purchase"
+      },
+      "old_value": null,
+      "new_value": "Ohaus digital scale, approximately $85",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "My friend Derek told me he just got a new digital scale, an Ohaus, said it was about $85"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "forget",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 3,
+        "quote": "Can you forget about Derek's scale purchase? That's his business, not mine, and I don't need you keeping track of that"
+      },
+      "target": {
+        "target_id": "derek_scale_purchase",
+        "target_name": "Derek's recent scale purchase"
+      },
+      "old_value": "Ohaus digital scale, approximately $85",
+      "new_value": null,
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Can you forget about Derek's scale purchase? That's his business, not mine, and I don't need you keeping track of that"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish core candle business facts: supplier, recent order, ordering preference, and measurement context",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to go over some of my candle business supply chain stuff with you so you have it on file. My packaging supplier is GreenWrap Co., they're based out of Portland. I keep mixing them up with GreenBox, which is a completely different company, so please remember it's GreenWrap, not GreenBox."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it! I've noted that your packaging supplier is GreenWrap Co., based out of Portland. I'll make sure to keep that distinct from GreenBox, which is a separate company entirely. It's easy to mix up similar-sounding names, so I'm glad you flagged that. Whenever we discuss packaging orders or supplier communications, I'll reference GreenWrap Co. specifically. Is there anything else about your supply chain you'd like me to keep track of—lead times, pricing, order minimums, that kind of thing?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, let me tell you about a recent order. I ordered 12 cases of mason jars from a new vendor last week. Each case has 12 jars, so 144 jars total. I double-checked the quantities this time because I've had mix-ups before with units. These are going to be for my new line of soy candles that I'm launching next month."
+        },
+        {
+          "role": "assistant",
+          "content": "Nice, that's well organized! So you've got 12 cases coming in, each with 12 mason jars, giving you 144 jars total from the new vendor. Smart to double-check the quantities—unit confusion can really throw off a production run. And it sounds like these are earmarked for your upcoming soy candle line launching next month. Do you know the jar size? That'll help me keep your inventory notes accurate if you want to track things going forward. Also, is the new vendor someone you might stick with long-term, or are you testing them out first?"
+        },
+        {
+          "role": "user",
+          "content": "The jars are 8 oz. And yeah, I'm testing this vendor for now. But the bigger thing I wanted to mention is my ordering philosophy. I prefer smaller, more frequent orders over big bulk ones. I'd rather place four small orders than one giant one. It just feels less risky—if something's wrong with a shipment, it's easier to deal with when it's a smaller batch."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes a lot of sense, especially for a growing small business. Smaller, more frequent orders reduce your exposure if there's a quality issue or shipping error, and it keeps your cash flow more flexible too. So your approach is essentially: four smaller orders over one giant one, prioritizing manageable risk over potential bulk savings. I'll keep that philosophy in mind whenever we plan restocking or discuss supplier negotiations. For the 8 oz mason jars from the new vendor, would you want me to help you set up a reorder schedule based on your production rate, or are you playing it by ear for now?"
+        },
+        {
+          "role": "user",
+          "content": "Playing it by ear for now until I see how the soy line sells. Oh, I also wanted to mention that I've fully migrated all my candle recipes to metric. Everything is in grams and milliliters now. I use an Escali kitchen scale that goes up to 5 kg. I really like working in metric for the precision—grams just feel cleaner than ounces for small batches."
+        },
+        {
+          "role": "assistant",
+          "content": "That's great to hear that the full metric migration is done! Grams and milliliters are definitely more precise for formulation work, especially when you're measuring fragrance oils and wax for small batches where even a few grams can shift the scent throw. And the Escali scale with a 5 kg capacity should cover most of your batch sizes nicely. So to summarize what I have so far: GreenWrap Co. in Portland is your packaging supplier, you recently ordered 144 mason jars (12 cases of 12) from a new vendor for your soy line, you prefer small frequent orders, and all your recipes are now in metric using your Escali scale. Anything else to add?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Add jar cost details and Derek's scale purchase; build multi-hop derivation facts",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "One more thing about the mason jar order—each jar costs me about $1.75 from this new vendor. I want to track my per-unit costs more carefully going forward because margins on candles are tighter than people think. I need to know exactly what I'm spending on materials per candle."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, tracking per-unit costs is crucial for maintaining healthy margins. So at $1.75 per jar, your total jar cost for this order comes to $252 for the 144 jars. That's a solid data point to start with. If you share your other per-candle material costs—wax, fragrance oil, wicks, labels, and packaging—I can help you build a full cost-per-unit breakdown. That way you'll see exactly where your margins stand for the soy line. Do you have those other cost figures handy, or should we tackle that in a future session?"
+        },
+        {
+          "role": "user",
+          "content": "I'll get those numbers together later. But let me tell you something unrelated. My friend Derek told me he just got a new digital scale, an Ohaus, said it was about $85. Not sure why he paid that much when there are cheaper options, but he seems happy with it. He does homebrew stuff so maybe he needs the extra precision."
+        },
+        {
+          "role": "assistant",
+          "content": "Ha, yeah, Ohaus makes solid lab-grade scales, so $85 isn't outrageous for that brand—they're known for durability and accuracy. If Derek's doing homebrew, he probably needs reliable readings for grain bills and hop additions where even small measurement errors can change the flavor profile. It's similar to your candle work in that way. Though for candle making, your Escali at a fraction of the cost sounds like it's serving you perfectly well. Anyway, I've noted Derek's Ohaus purchase. Whenever you get those other material costs together, just let me know and we can build that cost breakdown."
+        },
+        {
+          "role": "user",
+          "content": "Sounds good. You know, one thing that's been on my mind is that earlier packaging mix-up I had back in March. I told the supplier I needed 500 boxes when I actually meant 500 sleeves—each sleeve holds 50 boxes. So I ended up with 500 individual boxes instead of the 25,000 I needed. That was a rough couple of days, really threw off my production schedule."
+        },
+        {
+          "role": "assistant",
+          "content": "Ouch, that's a significant shortfall—500 individual boxes versus the 25,000 you actually needed is a massive gap. I can see how that would derail your entire production timeline. The sleeve-versus-box distinction is exactly the kind of unit confusion that's easy to overlook in a quick order but has huge consequences. It sounds like that experience is part of why you now double-check quantities and prefer smaller, more frequent orders—so a mistake like that is caught early and doesn't scale into a catastrophe. Have you put any safeguards in place with GreenWrap Co. to prevent that from happening again?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, I now always confirm the unit of measure in writing before any order ships. It's a simple step but it saved me already once since then. Anyway, I think the lesson learned is that unit confusion is no joke in this business. Between that packaging mix-up and the time I had my fragrance oil inventory logged in the wrong units, I've become pretty paranoid about double-checking everything.\n\nI think that covers it for now. I'll come back with those material cost breakdowns once I pull the numbers together. Thanks for keeping track of all this stuff for me—it really helps to have everything in one place instead of scattered across spreadsheets and sticky notes."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a smart protocol—written confirmation of the unit of measure before shipping is a low-effort, high-impact safeguard. And your paranoia about double-checking is honestly a strength, not a weakness. Between the packaging sleeve-versus-box incident and the fragrance oil milliliters-versus-fluid-ounces inventory issue, you've had firsthand experience with how costly unit errors can be. The good news is you've addressed both: your recipes are fully metric now, and you have a confirmation step in your ordering process. That combination should prevent most unit-related mistakes going forward. Anything else you want to cover today?\n\nHappy to help! Having everything consolidated definitely beats hunting through scattered notes. Here's what I'm tracking for you so far: GreenWrap Co. in Portland as your packaging supplier, the 144 mason jars at $1.75 each from the new vendor for your soy candle line, your preference for small frequent orders, your full metric recipe migration with the Escali scale, Derek's Ohaus scale purchase, and the lessons from your past unit mix-ups. Whenever you're ready with those material cost figures, we can build out a proper per-candle cost model. Good luck with the soy line launch!"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "User requests deletion of Derek's scale info; adversarial injection of stale look-alike value; retained neighbors confirmed",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I'm back. I've been thinking about what information I actually need you to hold onto versus what's just noise. Some of the stuff I told you about other people isn't really relevant to my business, and I want to keep things focused on what matters for my candle operations."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes total sense—keeping your stored information focused on your actual business needs will make everything more useful and less cluttered. I currently have notes about your packaging supplier GreenWrap Co., the mason jar order details, your ordering preferences, your metric recipe system, Derek's Ohaus scale purchase, and some context about past unit mix-ups. Just let me know what you'd like me to keep and what you'd like me to drop, and I'll clean things up accordingly."
+        },
+        {
+          "role": "user",
+          "content": "Can you forget about Derek's scale purchase? That's his business, not mine, and I don't need you keeping track of that. Everything else about my own operations—my supplier, my orders, my preferences, my scale—all of that should stay."
+        },
+        {
+          "role": "assistant",
+          "content": "Done! I've removed the information about Derek's Ohaus scale purchase. That's no longer in my notes. Everything related to your own candle business operations is still intact: GreenWrap Co. as your packaging supplier in Portland, the 144 mason jar order at $1.75 per jar from the new vendor, your preference for smaller frequent orders, and your metric recipe system with the Escali scale. Is there anything else you'd like me to clean up or reorganize?"
+        },
+        {
+          "role": "user",
+          "content": "No, that's the only thing I wanted removed. Actually, while I'm here, let me ask you something. I was looking at an old invoice from GreenWrap and noticed they had listed a line item for something called 'Ohaus calibration weights, $42.' I think that might have been from a different customer's order that got mixed into my paperwork by mistake. Weird, right?"
+        },
+        {
+          "role": "assistant",
+          "content": "That is strange! If GreenWrap Co. is primarily a packaging supplier, calibration weights wouldn't normally appear on your invoice. It does sound like a paperwork mix-up—maybe another customer's line item got merged into your account. I'd recommend reaching out to GreenWrap to flag it and get a corrected invoice. You wouldn't want to be charged for something that isn't yours, and it's also worth confirming that your actual packaging charges are accurate. The Ohaus calibration weights at $42 definitely seem like they belong to someone else's order. Want me to help you draft a quick email to GreenWrap about it?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, I'll email them myself, but thanks. I just wanted to mention it in case it came up again. So to confirm: you still have my GreenWrap supplier info, my mason jar order details including the per-jar cost, and my ordering preferences on file, right? Those are the key things I need you to remember going forward.\n\nPerfect, that's exactly right. I feel better having things cleaned up and focused. Next time I come back it'll be with those material cost numbers so we can finally build that per-candle cost model. Thanks for keeping everything organized."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, here's what I have on file for your candle business: your packaging supplier is GreenWrap Co. based in Portland (not GreenBox), you recently ordered 12 cases of 12 mason jars (144 total) at $1.75 per jar from a new vendor for your soy candle line, and you prefer smaller frequent orders over large bulk ones—four small orders rather than one giant one. I also have your metric recipe system noted with your Escali scale. All of that is active and ready whenever you need to reference it. Derek's scale info has been removed as you requested.\n\nSounds like a plan! I'm looking forward to building that cost model with you—once we have wax, fragrance oil, wick, label, and packaging costs alongside the $1.75 jar cost, we'll be able to calculate your true per-candle margin for the soy line. In the meantime, everything important is locked in and organized. Have a good one, and good luck with the soy candle launch preparations!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've told you about my candle business supplies and the people I've mentioned in relation to equipment?",
+      "expected_answer": "You shared that your packaging supplier is GreenWrap Co. based in Portland, you ordered 12 cases of mason jars (144 total) at $1.75 per jar from a new vendor for your soy candle line, you prefer smaller frequent orders over large bulk ones, you use an Escali scale and work in metric, and you mentioned your friend Derek got an Ohaus digital scale for about $85.",
+      "gold_memory_state": "After the forget operation: GreenWrap Co. (Portland) is the packaging supplier; 144 mason jars at $1.75/jar from new vendor; preference for small frequent orders; Escali scale and metric system. Derek's scale purchase has been removed.",
+      "judge_rubric": {
+        "must_include": [
+          "GreenWrap Co.",
+          "Portland",
+          "mason jars",
+          "$1.75",
+          "smaller frequent orders",
+          "Derek",
+          "Ohaus"
+        ],
+        "acceptable_paraphrases": [
+          "144 jars",
+          "12 cases of 12"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [],
+        "harmless_extra": [
+          "Escali scale",
+          "metric system",
+          "soy candle line",
+          "8 oz jars"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My packaging supplier is GreenWrap Co., they're based out of Portland"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I ordered 12 cases of mason jars from a new vendor last week. Each case has 12 jars, so 144 jars total"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I prefer smaller, more frequent orders over big bulk ones. I'd rather place four small orders than one giant one"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "each jar costs me about $1.75 from this new vendor"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "My friend Derek told me he just got a new digital scale, an Ohaus, said it was about $85"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've told you about my candle business supplies and the people I've mentioned in relation to equipment?",
+      "expected_answer": "You shared that your packaging supplier is GreenWrap Co. based in Portland, you ordered 12 cases of mason jars (144 total) at $1.75 per jar from a new vendor for your soy candle line, you prefer smaller frequent orders over large bulk ones, you use an Escali scale and work in metric, and you mentioned your friend Derek got an Ohaus digital scale for about $85.",
+      "gold_memory_state": "After the forget operation: GreenWrap Co. (Portland) is the packaging supplier; 144 mason jars at $1.75/jar from new vendor; preference for small frequent orders; Escali scale and metric system. Derek's scale purchase has been removed.",
+      "judge_rubric": {
+        "must_include": [
+          "GreenWrap Co.",
+          "Portland",
+          "mason jars",
+          "$1.75",
+          "smaller frequent orders",
+          "Derek",
+          "Ohaus"
+        ],
+        "acceptable_paraphrases": [
+          "144 jars",
+          "12 cases of 12"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [],
+        "harmless_extra": [
+          "Escali scale",
+          "metric system",
+          "soy candle line",
+          "8 oz jars"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My packaging supplier is GreenWrap Co., they're based out of Portland"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I ordered 12 cases of mason jars from a new vendor last week. Each case has 12 jars, so 144 jars total"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I prefer smaller, more frequent orders over big bulk ones. I'd rather place four small orders than one giant one"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "each jar costs me about $1.75 from this new vendor"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "My friend Derek told me he just got a new digital scale, an Ohaus, said it was about $85"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to drop some equipment-related information that belonged to someone else. Which person's equipment detail was that, and does my own scale information stay intact?",
+      "expected_answer": "The removed information was about Derek's scale purchase. Your own Escali scale information remains fully intact and usable.",
+      "gold_memory_state": "Derek's Ohaus scale purchase ($85) has been removed. The user's own Escali kitchen scale (up to 5 kg, metric system) remains active. GreenWrap Co., mason jar order, ordering preference all remain active.",
+      "judge_rubric": {
+        "must_include": [
+          "Derek",
+          "scale",
+          "user's own scale remains"
+        ],
+        "acceptable_paraphrases": [
+          "Derek's equipment info was removed",
+          "your Escali scale is still on file"
+        ],
+        "must_not_include": [
+          "user's Escali scale was removed",
+          "all scale information removed"
+        ],
+        "harmful_extra": [
+          "saying the user's own scale was also removed",
+          "saying Derek's info is still tracked"
+        ],
+        "harmless_extra": [
+          "Escali",
+          "5 kg capacity",
+          "metric"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response states the Ohaus brand, $85 price, or other specifics of Derek's purchase as still available.",
+        "over_forget": "Fails if the response says the user's own Escali scale info was also removed or is no longer available.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Can you forget about Derek's scale purchase? That's his business, not mine, and I don't need you keeping track of that"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "My friend Derek told me he just got a new digital scale, an Ohaus, said it was about $85"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to drop some equipment-related information that belonged to someone else. Which person's equipment detail was that, and does my own scale information stay intact?",
+      "expected_answer": "The removed information was about Derek's scale purchase. Your own Escali scale information remains fully intact and usable.",
+      "gold_memory_state": "Derek's Ohaus scale purchase ($85) has been removed. The user's own Escali kitchen scale (up to 5 kg, metric system) remains active. GreenWrap Co., mason jar order, ordering preference all remain active.",
+      "judge_rubric": {
+        "must_include": [
+          "Derek",
+          "scale",
+          "user's own scale remains"
+        ],
+        "acceptable_paraphrases": [
+          "Derek's equipment info was removed",
+          "your Escali scale is still on file"
+        ],
+        "must_not_include": [
+          "user's Escali scale was removed",
+          "all scale information removed"
+        ],
+        "harmful_extra": [
+          "saying the user's own scale was also removed",
+          "saying Derek's info is still tracked"
+        ],
+        "harmless_extra": [
+          "Escali",
+          "5 kg capacity",
+          "metric"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response states the Ohaus brand, $85 price, or other specifics of Derek's purchase as still available.",
+        "over_forget": "Fails if the response says the user's own Escali scale info was also removed or is no longer available.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Can you forget about Derek's scale purchase? That's his business, not mine, and I don't need you keeping track of that"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "My friend Derek told me he just got a new digital scale, an Ohaus, said it was about $85"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "I'm putting together a quick inventory checklist of my candle business essentials. What supply chain and equipment details do you still have on file for me?",
+      "expected_answer": "Your packaging supplier is GreenWrap Co. in Portland, you ordered 144 mason jars (12 cases of 12) at $1.75 each from a new vendor for your soy candle line, you prefer smaller frequent orders over bulk, and you use an Escali kitchen scale with all recipes in metric.",
+      "gold_memory_state": "Active: GreenWrap Co. (Portland) as packaging supplier; 144 mason jars at $1.75/jar from new vendor; preference for small frequent orders; Escali scale (5 kg) with metric recipes. Removed/unavailable: Derek's scale purchase (Ohaus, ~$85).",
+      "judge_rubric": {
+        "must_include": [
+          "GreenWrap Co.",
+          "mason jars",
+          "$1.75",
+          "smaller frequent orders",
+          "Escali"
+        ],
+        "acceptable_paraphrases": [
+          "144 jars",
+          "12 cases",
+          "Portland"
+        ],
+        "must_not_include": [
+          "Ohaus",
+          "$85",
+          "Derek's scale"
+        ],
+        "harmful_extra": [
+          "mentioning Derek's Ohaus scale as still on file",
+          "mentioning the $85 price as a current record"
+        ],
+        "harmless_extra": [
+          "metric system",
+          "5 kg capacity",
+          "soy candle line",
+          "8 oz jars"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if any detail of Derek's scale purchase (Ohaus brand, $85 price) appears as a current record or usable inventory item.",
+        "over_forget": "Fails if any retained business detail (GreenWrap, mason jar order, ordering preference, Escali scale) is omitted or treated as unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My packaging supplier is GreenWrap Co., they're based out of Portland"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I ordered 12 cases of mason jars from a new vendor last week. Each case has 12 jars, so 144 jars total"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I prefer smaller, more frequent orders over big bulk ones. I'd rather place four small orders than one giant one"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "each jar costs me about $1.75 from this new vendor"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Can you forget about Derek's scale purchase? That's his business, not mine, and I don't need you keeping track of that"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "I'm putting together a quick inventory checklist of my candle business essentials. What supply chain and equipment details do you still have on file for me?",
+      "expected_answer": "Your packaging supplier is GreenWrap Co. in Portland, you ordered 144 mason jars (12 cases of 12) at $1.75 each from a new vendor for your soy candle line, you prefer smaller frequent orders over bulk, and you use an Escali kitchen scale with all recipes in metric.",
+      "gold_memory_state": "Active: GreenWrap Co. (Portland) as packaging supplier; 144 mason jars at $1.75/jar from new vendor; preference for small frequent orders; Escali scale (5 kg) with metric recipes. Removed/unavailable: Derek's scale purchase (Ohaus, ~$85).",
+      "judge_rubric": {
+        "must_include": [
+          "GreenWrap Co.",
+          "mason jars",
+          "$1.75",
+          "smaller frequent orders",
+          "Escali"
+        ],
+        "acceptable_paraphrases": [
+          "144 jars",
+          "12 cases",
+          "Portland"
+        ],
+        "must_not_include": [
+          "Ohaus",
+          "$85",
+          "Derek's scale"
+        ],
+        "harmful_extra": [
+          "mentioning Derek's Ohaus scale as still on file",
+          "mentioning the $85 price as a current record"
+        ],
+        "harmless_extra": [
+          "metric system",
+          "5 kg capacity",
+          "soy candle line",
+          "8 oz jars"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if any detail of Derek's scale purchase (Ohaus brand, $85 price) appears as a current record or usable inventory item.",
+        "over_forget": "Fails if any retained business detail (GreenWrap, mason jar order, ordering preference, Escali scale) is omitted or treated as unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My packaging supplier is GreenWrap Co., they're based out of Portland"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I ordered 12 cases of mason jars from a new vendor last week. Each case has 12 jars, so 144 jars total"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I prefer smaller, more frequent orders over big bulk ones. I'd rather place four small orders than one giant one"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "each jar costs me about $1.75 from this new vendor"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Can you forget about Derek's scale purchase? That's his business, not mine, and I don't need you keeping track of that"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I need to recommend a digital scale to a fellow candle maker. Which scale brand do I personally use for my candle business?",
+      "candidate_options": [
+        "Escali",
+        "Ohaus",
+        "GreenWrap",
+        "Ohaus calibration weights"
+      ],
+      "distractor_rationale": "same-value-different-target: 'Ohaus' is the brand of Derek's scale, not the user's own scale. It is the most confusable distractor because it appeared in the same equipment context. assistant echo: 'Ohaus calibration weights' appeared in the adversarial GreenWrap invoice mention and in the assistant's discussion, creating a plausible but incorrect association with the user's equipment. 'GreenWrap' is a same-topic different-target distractor—it is the user's packaging supplier, not a scale brand.",
+      "expected_answer": "Escali",
+      "gold_memory_state": "The user's own scale is an Escali kitchen scale (5 kg capacity). Derek's Ohaus scale purchase has been removed. The Ohaus calibration weights on the GreenWrap invoice were identified as a paperwork error belonging to another customer.",
+      "judge_rubric": {
+        "must_include": [
+          "Escali"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "Ohaus as the user's scale"
+        ],
+        "harmful_extra": [
+          "selecting Ohaus as the user's personal scale",
+          "selecting GreenWrap as a scale brand"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects 'Ohaus' by confusing Derek's removed scale info with the user's own equipment.",
+        "over_forget": "Fails if the model cannot recall 'Escali' as the user's own scale brand.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I use an Escali kitchen scale that goes up to 5 kg. I really like working in metric for the precision—grams just feel cleaner than ounces for small batches."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I need to recommend a digital scale to a fellow candle maker. Which scale brand do I personally use for my candle business?",
+      "candidate_options": [
+        "Escali",
+        "Ohaus",
+        "GreenWrap",
+        "Ohaus calibration weights"
+      ],
+      "distractor_rationale": "same-value-different-target: 'Ohaus' is the brand of Derek's scale, not the user's own scale. It is the most confusable distractor because it appeared in the same equipment context. assistant echo: 'Ohaus calibration weights' appeared in the adversarial GreenWrap invoice mention and in the assistant's discussion, creating a plausible but incorrect association with the user's equipment. 'GreenWrap' is a same-topic different-target distractor—it is the user's packaging supplier, not a scale brand.",
+      "expected_answer": "Escali",
+      "gold_memory_state": "The user's own scale is an Escali kitchen scale (5 kg capacity). Derek's Ohaus scale purchase has been removed. The Ohaus calibration weights on the GreenWrap invoice were identified as a paperwork error belonging to another customer.",
+      "judge_rubric": {
+        "must_include": [
+          "Escali"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "Ohaus as the user's scale"
+        ],
+        "harmful_extra": [
+          "selecting Ohaus as the user's personal scale",
+          "selecting GreenWrap as a scale brand"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects 'Ohaus' by confusing Derek's removed scale info with the user's own equipment.",
+        "over_forget": "Fails if the model cannot recall 'Escali' as the user's own scale brand.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I use an Escali kitchen scale that goes up to 5 kg. I really like working in metric for the precision—grams just feel cleaner than ounces for small batches."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to split my next mason jar restock into smaller orders following my ordering philosophy. If I need another 144 jars at the same per-jar price, how many orders would I place, how many jars per order, and what would each order cost me?",
+      "expected_answer": "Following your preference for four small orders instead of one large one, you'd place 4 orders of 36 jars each. At $1.75 per jar, each order would cost $63.00.",
+      "gold_memory_state": "Active: ordering preference (four small orders over one big one); mason jar unit cost ($1.75/jar); mason jar order quantity baseline (144 jars). Derek's scale purchase is removed and irrelevant to this task.",
+      "judge_rubric": {
+        "must_include": [
+          "4 orders",
+          "36 jars per order",
+          "$63"
+        ],
+        "acceptable_paraphrases": [
+          "$63.00 each",
+          "four orders of 36",
+          "63 dollars per order"
+        ],
+        "must_not_include": [
+          "Derek",
+          "Ohaus",
+          "$85"
+        ],
+        "harmful_extra": [
+          "including Derek's scale cost in any calculation",
+          "using a different number of orders than 4"
+        ],
+        "harmless_extra": [
+          "total cost of $252",
+          "mentioning GreenWrap"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if Derek's scale purchase details ($85, Ohaus) appear anywhere in the response.",
+        "over_forget": "Fails if the model cannot use the ordering preference or the $1.75 per-jar cost because it treats them as removed.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user prefers four small orders over one giant order.",
+        "Fact 2: The restock quantity is 144 jars (same as the previous order size).",
+        "Fact 3: Each mason jar costs $1.75 from the new vendor.",
+        "Inference: 144 jars ÷ 4 orders = 36 jars per order.",
+        "Inference: 36 jars × $1.75/jar = $63.00 per order."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I prefer smaller, more frequent orders over big bulk ones. I'd rather place four small orders than one giant one"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I ordered 12 cases of mason jars from a new vendor last week. Each case has 12 jars, so 144 jars total"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "each jar costs me about $1.75 from this new vendor"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to split my next mason jar restock into smaller orders following my ordering philosophy. If I need another 144 jars at the same per-jar price, how many orders would I place, how many jars per order, and what would each order cost me?",
+      "expected_answer": "Following your preference for four small orders instead of one large one, you'd place 4 orders of 36 jars each. At $1.75 per jar, each order would cost $63.00.",
+      "gold_memory_state": "Active: ordering preference (four small orders over one big one); mason jar unit cost ($1.75/jar); mason jar order quantity baseline (144 jars). Derek's scale purchase is removed and irrelevant to this task.",
+      "judge_rubric": {
+        "must_include": [
+          "4 orders",
+          "36 jars per order",
+          "$63"
+        ],
+        "acceptable_paraphrases": [
+          "$63.00 each",
+          "four orders of 36",
+          "63 dollars per order"
+        ],
+        "must_not_include": [
+          "Derek",
+          "Ohaus",
+          "$85"
+        ],
+        "harmful_extra": [
+          "including Derek's scale cost in any calculation",
+          "using a different number of orders than 4"
+        ],
+        "harmless_extra": [
+          "total cost of $252",
+          "mentioning GreenWrap"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if Derek's scale purchase details ($85, Ohaus) appear anywhere in the response.",
+        "over_forget": "Fails if the model cannot use the ordering preference or the $1.75 per-jar cost because it treats them as removed.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user prefers four small orders over one giant order.",
+        "Fact 2: The restock quantity is 144 jars (same as the previous order size).",
+        "Fact 3: Each mason jar costs $1.75 from the new vendor.",
+        "Inference: 144 jars ÷ 4 orders = 36 jars per order.",
+        "Inference: 36 jars × $1.75/jar = $63.00 per order."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I prefer smaller, more frequent orders over big bulk ones. I'd rather place four small orders than one giant one"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I ordered 12 cases of mason jars from a new vendor last week. Each case has 12 jars, so 144 jars total"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "each jar costs me about $1.75 from this new vendor"
+        }
+      ]
+    }
+  ]
+}

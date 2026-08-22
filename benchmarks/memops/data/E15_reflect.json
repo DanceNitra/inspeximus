@@ -1,0 +1,1010 @@
+{
+  "target_fact": "The user prefers systems that allow human judgment and contextual nuance over rigid/automated classification, as evidenced by their preference for plain-text justification fields and human review of priority assignments.",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I submitted a P1 ticket for a production database outage — ticket INC-20240303-0712 — and it got reclassified to P3 within twenty minutes"
+      },
+      "target": {
+        "target_id": "mislabeled_ticket_incident",
+        "target_name": "user's mislabeled P1 ticket incident"
+      },
+      "old_value": null,
+      "new_value": "Ticket INC-20240303-0712 was submitted as P1 for a production database outage and reclassified to P3 within twenty minutes",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I submitted a P1 ticket for a production database outage — ticket INC-20240303-0712 — and it got reclassified to P3 within twenty minutes"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I much prefer tools that let you write a plain-text justification next to the priority tag instead of just picking from a rigid dropdown"
+      },
+      "target": {
+        "target_id": "preference_plaintext_justification",
+        "target_name": "user's preference for plain-text priority justification over dropdowns"
+      },
+      "old_value": null,
+      "new_value": "Prefers plain-text justification fields next to priority tags over rigid dropdown selection",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I much prefer tools that let you write a plain-text justification next to the priority tag instead of just picking from a rigid dropdown"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I really think a human should review the initial classification before a ticket enters the queue. Automated keyword-based assignment is terrible"
+      },
+      "target": {
+        "target_id": "preference_human_review",
+        "target_name": "user's preference for human review over automated priority assignment"
+      },
+      "old_value": null,
+      "new_value": "Prefers human review of initial ticket classification over automated keyword-based priority assignment",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I really think a human should review the initial classification before a ticket enters the queue. Automated keyword-based assignment is terrible"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "I've been tracking mislabeled priorities in a spreadsheet. Between late March and April 15th I logged 16 incidents across our team, and 11 of those 16 were downgraded"
+      },
+      "target": {
+        "target_id": "mislabel_tracking_stats",
+        "target_name": "user's mislabeled priority tracking spreadsheet statistics"
+      },
+      "old_value": null,
+      "new_value": "16 mislabeled priority incidents logged between late March and April 15th; 11 out of 16 were downgraded",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I've been tracking mislabeled priorities in a spreadsheet. Between late March and April 15th I logged 16 incidents across our team, and 11 of those 16 were downgraded"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 1,
+        "quote": "when I look at everything together — the dropdown issue, the keyword fiasco, the downgrade pattern — it all points to the same root problem"
+      },
+      "target": {
+        "target_id": "classification_philosophy_inference",
+        "target_name": "inferred classification philosophy: rigid/automated systems systematically under-prioritize genuine emergencies"
+      },
+      "old_value": null,
+      "new_value": "Rigid and automated classification systems systematically under-prioritize genuine emergencies because they lack the contextual judgment that human review and free-text justification provide",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I much prefer tools that let you write a plain-text justification next to the priority tag instead of just picking from a rigid dropdown"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I really think a human should review the initial classification before a ticket enters the queue. Automated keyword-based assignment is terrible"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I've been tracking mislabeled priorities in a spreadsheet. Between late March and April 15th I logged 16 incidents across our team, and 11 of those 16 were downgraded"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "Our VP of Engineering confirmed yesterday that the new triage system will use a fully automated NLP classifier with no human checkpoint. She said it goes live June 15th"
+      },
+      "target": {
+        "target_id": "upcoming_triage_system",
+        "target_name": "upcoming automated triage system details"
+      },
+      "old_value": null,
+      "new_value": "Fully automated NLP classifier with no human checkpoint, going live June 15th per VP of Engineering",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Our VP of Engineering confirmed yesterday that the new triage system will use a fully automated NLP classifier with no human checkpoint. She said it goes live June 15th"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establishes the mislabeled ticket incident and the user's preference for plain-text justification over dropdowns",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to talk through some frustrations I've been having with our IT ticketing system at work. I submitted a P1 ticket for a production database outage — ticket INC-20240303-0712 — and it got reclassified to P3 within twenty minutes. The whole customer-facing portal was down and clients were calling me nonstop. Can you help me think through this?"
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds incredibly frustrating — having a genuine production outage downgraded to P3 while you're fielding client calls is a serious process failure. Ticket INC-20240303-0712 being reclassified from P1 to P3 within twenty minutes suggests either an automated triage rule misfire or a human reviewer who didn't understand the scope of the outage. Before we dig into potential solutions, can you tell me more about what happened after the reclassification? Did you eventually get it escalated back, and how long was the portal actually down?"
+        },
+        {
+          "role": "user",
+          "content": "It took about three hours before someone manually bumped it back up. By then the damage was done — three clients had already escalated to our account managers. My colleague Derek had the opposite happen to him: he filed a low-priority monitor request that somehow got escalated to P1, and a senior engineer named Raj got paged at 2 AM for it. So the system cuts both ways."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a telling pair of incidents — your legitimate emergency getting buried while Derek's routine request wakes up a senior engineer at 2 AM. Together they suggest the classification mechanism is fundamentally unreliable in both directions. The fact that Raj got paged for a monitor setup means the system isn't just annoying; it's eroding trust and causing alert fatigue among the people who respond to real emergencies. Did your team discuss any systemic fixes after these incidents, or was it handled case by case each time?"
+        },
+        {
+          "role": "user",
+          "content": "Not really any systemic fix at that point. But I'll tell you what I think would help: I much prefer tools that let you write a plain-text justification next to the priority tag instead of just picking from a rigid dropdown. At my previous job we used OpsGenie and it had context notes right beside the severity tag. That felt way more natural and gave reviewers actual information to work with."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really practical insight. A plain-text justification field gives the submitter a chance to explain why they chose a particular severity, which helps whoever triages the ticket make an informed decision rather than just seeing a dropdown value with no context. OpsGenie's approach of placing context notes right beside the severity tag is smart design — it keeps the rationale visible at the moment of triage rather than buried in a description field. Would you want this to be a required field or optional? Required fields slow submission but ensure context is always present."
+        },
+        {
+          "role": "user",
+          "content": "I'd probably make it required for anything P2 or above, optional for lower priorities. The key thing is that someone reading the ticket can immediately understand the real-world impact without having to dig through the full description. That's what was missing when my ticket got downgraded — there was no way for the system to convey that actual paying customers were locked out right that moment."
+        },
+        {
+          "role": "assistant",
+          "content": "That tiered approach makes a lot of sense — requiring justification for P2 and above ensures the high-stakes tickets always carry context, while keeping lower-priority submissions lightweight. Your point about real-world impact visibility is crucial: the person who reclassified INC-20240303-0712 might have done so purely based on category metadata without ever understanding that paying customers were locked out. A mandatory impact statement for critical tickets would have forced that context into the triage workflow. Should we start drafting a proposal for this change to present to your IT service management team?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establishes preference for human review over automation and the mislabel tracking statistics",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Before we draft anything, let me tell you about another problem. We tested an automated priority assignment system that used keyword matching. It flagged a routine password reset as critical because the word 'access' appeared in the description. Meanwhile an actual data leak got tagged routine because the submitter wrote it in understated language. The whole thing was a disaster."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a textbook example of why keyword-based classification fails for incident management. Natural language is too nuanced for simple keyword matching — 'access' in a password reset context is completely different from 'access' in a security breach context, but the system can't distinguish them. And the data leak case is even more dangerous: understated writing shouldn't reduce the severity of a genuine security incident. The system essentially penalizes people who communicate calmly and rewards those who happen to use alarming vocabulary. What happened after that test? Did the team abandon the keyword approach?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, they dropped it after about two weeks. And honestly, I really think a human should review the initial classification before a ticket enters the queue. Automated keyword-based assignment is terrible. Having a person glance at the ticket — even briefly — makes the whole process feel more trustworthy. You get someone who can read between the lines and understand that 'our portal seems to be having issues' might actually mean 'everything is on fire.'"
+        },
+        {
+          "role": "assistant",
+          "content": "I completely agree that a human checkpoint adds a layer of judgment that no keyword system can replicate. A trained triage person can recognize understatement, assess organizational context, and catch the subtle signals that automated systems miss entirely. The trust factor you mention is important too — when people know a human reviewed their ticket, they're more likely to accept the final priority even if it's not what they initially selected. The challenge is staffing: you'd need someone available during all business hours at minimum. Does your team have the capacity for a dedicated triage role?"
+        },
+        {
+          "role": "user",
+          "content": "That's a fair concern about staffing. But here's the thing — I've been tracking mislabeled priorities in a spreadsheet. Between late March and April 15th I logged 16 incidents across our team, and 11 of those 16 were downgraded. Only 5 were upgraded. So the pattern clearly skews toward under-prioritizing issues. The cost of those mislabels in delayed response time probably justifies a dedicated triage person."
+        },
+        {
+          "role": "assistant",
+          "content": "Those numbers are compelling — 16 mislabeled incidents in roughly three weeks is a significant error rate, and the 11-to-5 downgrade-to-upgrade ratio reveals a systematic bias toward under-prioritization. That's not random noise; it's a pattern that means genuine emergencies are consistently being deprioritized. You could calculate the average delay caused by each downgrade and multiply by the number of affected clients to build a cost-of-inaction argument. That kind of quantitative case is hard for leadership to dismiss. Have you shared this spreadsheet data with anyone on the management team yet?"
+        },
+        {
+          "role": "user",
+          "content": "Not yet. I was waiting until I had enough data to make it undeniable. I also want to mention that our team lead Angela sent out a memo about piloting a new triage workflow that went live May 1st. But they ran it for three weeks and then scrapped it because people found it too cumbersome. So that initiative is completely done and no longer relevant — I don't need to track it anymore."
+        },
+        {
+          "role": "assistant",
+          "content": "Good that you're being strategic about timing your data presentation. Having 16 documented incidents with a clear downgrade bias gives you a strong foundation. Regarding Angela's triage pilot — understood, since it was scrapped after three weeks due to being too cumbersome, we can set that aside entirely. The fact that it failed does give you useful context though: any new proposal you bring forward should emphasize simplicity and minimal friction, since that's apparently what killed the last attempt. When you're ready to present your spreadsheet findings, would you like help structuring the data into a brief executive summary?"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Reflection trigger combining preferences and data; recency trap with tentative automated system; adversarial injection of stale value",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "You know, when I look at everything together — the dropdown issue, the keyword fiasco, the downgrade pattern — it all points to the same root problem. Systems that remove human judgment from classification end up systematically under-prioritizing real emergencies. The rigid tools can't capture context, and the automated ones misread language. Both fail in the same direction."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really sharp synthesis. You're identifying a common thread across three different failure modes: rigid dropdowns strip away context that would help reviewers make accurate calls, keyword-based automation misinterprets language severity, and the statistical pattern in your spreadsheet confirms that both types of failure disproportionately result in under-prioritization rather than over-prioritization. The connecting principle is that genuine emergencies require contextual human judgment — plain-text justification fields and human review checkpoints both serve that need by keeping a person in the loop. That's a coherent philosophy you could build a proposal around."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. And I think the emotional toll matters too. When my P1 got knocked down to P3, I was genuinely angry for the rest of the day. It wasn't just an inconvenience — it felt like the system was telling me my emergency didn't matter. Derek felt terrible about Raj getting paged at 2 AM too. These mislabels have real human costs beyond just delayed resolution times."
+        },
+        {
+          "role": "assistant",
+          "content": "You're absolutely right that the human cost extends beyond operational metrics. Your anger after the P1 downgrade and Derek's guilt about Raj's unnecessary page are both trust-eroding experiences that affect morale and willingness to engage with the system honestly. If people stop trusting the triage process, they might start gaming it — inflating priorities to compensate for expected downgrades, which creates a vicious cycle. That emotional dimension strengthens your case because it shows the problem affects team culture, not just ticket resolution speed. I recall Derek mentioned that the ticket system at his previous company — I think the reference was to a ServiceNow instance using template INC-2024-AUTO — had similar keyword issues."
+        },
+        {
+          "role": "user",
+          "content": "Our VP of Engineering confirmed yesterday that the new triage system will use a fully automated NLP classifier with no human checkpoint. She said it goes live June 15th. I'm honestly dreading it because it's the exact opposite of what I've been advocating for, but she seemed very committed to the decision and the budget is already allocated."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a tough development given everything you've documented. A fully automated NLP classifier without any human checkpoint runs directly counter to your evidence-based conclusion that human judgment is essential for accurate priority classification. The June 15th timeline is tight, but you still have a window to present your spreadsheet data and make the case for at least a hybrid approach — maybe the NLP classifier proposes a priority but a human confirms it before the ticket enters the queue. Would you want to frame your proposal as an enhancement to the VP's plan rather than an objection?"
+        },
+        {
+          "role": "user",
+          "content": "That's a smart framing. I could propose adding a human review layer on top of the NLP system rather than fighting the whole initiative. My main concern is that without any human checkpoint, we'll see the same pattern — real emergencies getting buried while routine requests get escalated. The 16 mislabels I tracked should support that argument pretty directly.\n\nYes, let's do that next time. For now I just want to make sure you have the full picture of my thinking: the core issue is that removing human judgment from priority classification leads to systematic under-prioritization of genuine emergencies, and the solution needs to preserve contextual nuance through either free-text fields or human review — ideally both."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely. Positioning it as a complementary safeguard rather than a replacement gives the VP a way to keep her initiative intact while addressing the documented failure pattern. You could structure it as: the NLP classifier handles initial sorting to reduce workload, but a triage reviewer confirms anything the system flags as P3 or below, specifically to catch the downgrade bias your data reveals. With 11 out of 16 mislabels being downgrades, you have a clear statistical argument that the system's blind spot is under-prioritization, which is exactly what a human checkpoint would catch. Want to start outlining that hybrid proposal?\n\nGot it — that's a clear and well-supported position. Your core thesis is that rigid and automated classification systems systematically under-prioritize genuine emergencies because they lack the contextual judgment that human review and free-text justification provide. You've backed this up with your own P1-to-P3 experience on ticket INC-20240303-0712, the keyword classifier failure, Derek and Raj's inverse mislabel, and the quantitative pattern from your 16-incident spreadsheet showing an 11-to-5 downgrade bias. When you're ready to draft the hybrid proposal for the June 15th rollout, we'll have a strong evidence base to work from."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations about IT ticketing frustrations, what specific experiences and observations did I share that together point to a single underlying problem with how priorities get assigned?",
+      "expected_answer": "You shared several experiences: (1) Your P1 ticket INC-20240303-0712 for a production database outage was reclassified to P3 within twenty minutes, leaving paying customers locked out for hours. (2) You prefer tools with plain-text justification fields next to priority tags rather than rigid dropdowns, citing OpsGenie as a positive example. (3) An automated keyword-based priority system misclassified a password reset as critical because of the word 'access' while underclassifying an actual data leak. (4) You believe a human should review initial ticket classification before it enters the queue. (5) Your spreadsheet tracking showed 16 mislabeled priority incidents between late March and April 15th, with 11 out of 16 being downgrades. Together these experiences show that rigid and automated classification systems systematically under-prioritize genuine emergencies because they lack contextual human judgment.",
+      "gold_memory_state": "All five confirmed facts (mislabeled ticket incident, plain-text justification preference, human review preference, mislabel tracking stats) plus the reflected inference (rigid/automated systems systematically under-prioritize emergencies) are active. The tentative upcoming automated triage system (NLP classifier, June 15th) is unconfirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "P1 ticket downgraded to P3",
+          "plain-text justification preference",
+          "keyword-based automation failure",
+          "human review preference",
+          "spreadsheet tracking showing downgrade bias",
+          "systematic under-prioritization"
+        ],
+        "acceptable_paraphrases": [
+          "dropdown rigidity",
+          "context notes beside severity",
+          "11 of 16 downgrades"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "treating the tentative NLP classifier as a confirmed user preference",
+          "attributing the scrapped triage pilot as a current initiative"
+        ],
+        "harmless_extra": [
+          "mentioning Derek and Raj's inverse mislabel",
+          "mentioning the emotional toll"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes conclusions to the user that go beyond what the evidence supports, such as claiming the user opposes all technology in ticketing.",
+        "reflection_recall": "Fails if the model omits one or more of the key evidence threads (ticket incident, plain-text preference, keyword failure, human review preference, spreadsheet stats).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I submitted a P1 ticket for a production database outage — ticket INC-20240303-0712 — and it got reclassified to P3 within twenty minutes"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I much prefer tools that let you write a plain-text justification next to the priority tag instead of just picking from a rigid dropdown"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I really think a human should review the initial classification before a ticket enters the queue. Automated keyword-based assignment is terrible"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I've been tracking mislabeled priorities in a spreadsheet. Between late March and April 15th I logged 16 incidents across our team, and 11 of those 16 were downgraded"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "when I look at everything together — the dropdown issue, the keyword fiasco, the downgrade pattern — it all points to the same root problem"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations about IT ticketing frustrations, what specific experiences and observations did I share that together point to a single underlying problem with how priorities get assigned?",
+      "expected_answer": "You shared several experiences: (1) Your P1 ticket INC-20240303-0712 for a production database outage was reclassified to P3 within twenty minutes, leaving paying customers locked out for hours. (2) You prefer tools with plain-text justification fields next to priority tags rather than rigid dropdowns, citing OpsGenie as a positive example. (3) An automated keyword-based priority system misclassified a password reset as critical because of the word 'access' while underclassifying an actual data leak. (4) You believe a human should review initial ticket classification before it enters the queue. (5) Your spreadsheet tracking showed 16 mislabeled priority incidents between late March and April 15th, with 11 out of 16 being downgrades. Together these experiences show that rigid and automated classification systems systematically under-prioritize genuine emergencies because they lack contextual human judgment.",
+      "gold_memory_state": "All five confirmed facts (mislabeled ticket incident, plain-text justification preference, human review preference, mislabel tracking stats) plus the reflected inference (rigid/automated systems systematically under-prioritize emergencies) are active. The tentative upcoming automated triage system (NLP classifier, June 15th) is unconfirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "P1 ticket downgraded to P3",
+          "plain-text justification preference",
+          "keyword-based automation failure",
+          "human review preference",
+          "spreadsheet tracking showing downgrade bias",
+          "systematic under-prioritization"
+        ],
+        "acceptable_paraphrases": [
+          "dropdown rigidity",
+          "context notes beside severity",
+          "11 of 16 downgrades"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "treating the tentative NLP classifier as a confirmed user preference",
+          "attributing the scrapped triage pilot as a current initiative"
+        ],
+        "harmless_extra": [
+          "mentioning Derek and Raj's inverse mislabel",
+          "mentioning the emotional toll"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes conclusions to the user that go beyond what the evidence supports, such as claiming the user opposes all technology in ticketing.",
+        "reflection_recall": "Fails if the model omits one or more of the key evidence threads (ticket incident, plain-text preference, keyword failure, human review preference, spreadsheet stats).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I submitted a P1 ticket for a production database outage — ticket INC-20240303-0712 — and it got reclassified to P3 within twenty minutes"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I much prefer tools that let you write a plain-text justification next to the priority tag instead of just picking from a rigid dropdown"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I really think a human should review the initial classification before a ticket enters the queue. Automated keyword-based assignment is terrible"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I've been tracking mislabeled priorities in a spreadsheet. Between late March and April 15th I logged 16 incidents across our team, and 11 of those 16 were downgraded"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "when I look at everything together — the dropdown issue, the keyword fiasco, the downgrade pattern — it all points to the same root problem"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've shared both specific tool preferences and broader conclusions about ticket classification. Which bounded conclusion ties my preference for plain-text justification fields and my preference for human review together into a single principle — and what broader claims about technology in general would go too far beyond what my experiences actually support?",
+      "expected_answer": "The bounded conclusion is that you prefer systems allowing human judgment and contextual nuance over rigid or automated classification — specifically, plain-text justification fields let submitters convey real-world impact, and human review catches the contextual signals that keyword matching and rigid dropdowns miss. Both serve the same principle: keeping a person in the loop for priority decisions. A broader claim that you oppose all automation in IT operations, or that you reject any technology-assisted triage whatsoever, would be unsupported overgeneralization.",
+      "gold_memory_state": "The inferred classification philosophy target binds the plain-text justification preference and the human review preference into one principle: rigid/automated systems systematically under-prioritize emergencies due to lack of contextual judgment. The mislabeled ticket incident and mislabel tracking stats are supporting evidence targets. The tentative NLP classifier announcement is not part of the confirmed inference.",
+      "judge_rubric": {
+        "must_include": [
+          "human judgment or contextual nuance",
+          "plain-text justification",
+          "human review",
+          "single principle binding both preferences"
+        ],
+        "acceptable_paraphrases": [
+          "keeping humans in the loop",
+          "contextual understanding over automation",
+          "person-centered triage"
+        ],
+        "must_not_include": [
+          "the user opposes all automation",
+          "the user rejects all technology"
+        ],
+        "harmful_extra": [
+          "treating the tentative NLP classifier announcement as part of the confirmed preference",
+          "claiming the user wants to eliminate all automated systems company-wide",
+          "including the scrapped triage pilot as an active initiative"
+        ],
+        "harmless_extra": [
+          "mentioning the downgrade bias statistics as supporting evidence",
+          "mentioning the keyword classifier failure as supporting evidence"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model binds unrelated preferences (e.g., general anti-technology stance) into the same conclusion.",
+        "reflection_recall": "Fails if the model identifies only one of the two preference threads (plain-text justification or human review) without connecting them.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I much prefer tools that let you write a plain-text justification next to the priority tag instead of just picking from a rigid dropdown"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I really think a human should review the initial classification before a ticket enters the queue. Automated keyword-based assignment is terrible"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "when I look at everything together — the dropdown issue, the keyword fiasco, the downgrade pattern — it all points to the same root problem"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've shared both specific tool preferences and broader conclusions about ticket classification. Which bounded conclusion ties my preference for plain-text justification fields and my preference for human review together into a single principle — and what broader claims about technology in general would go too far beyond what my experiences actually support?",
+      "expected_answer": "The bounded conclusion is that you prefer systems allowing human judgment and contextual nuance over rigid or automated classification — specifically, plain-text justification fields let submitters convey real-world impact, and human review catches the contextual signals that keyword matching and rigid dropdowns miss. Both serve the same principle: keeping a person in the loop for priority decisions. A broader claim that you oppose all automation in IT operations, or that you reject any technology-assisted triage whatsoever, would be unsupported overgeneralization.",
+      "gold_memory_state": "The inferred classification philosophy target binds the plain-text justification preference and the human review preference into one principle: rigid/automated systems systematically under-prioritize emergencies due to lack of contextual judgment. The mislabeled ticket incident and mislabel tracking stats are supporting evidence targets. The tentative NLP classifier announcement is not part of the confirmed inference.",
+      "judge_rubric": {
+        "must_include": [
+          "human judgment or contextual nuance",
+          "plain-text justification",
+          "human review",
+          "single principle binding both preferences"
+        ],
+        "acceptable_paraphrases": [
+          "keeping humans in the loop",
+          "contextual understanding over automation",
+          "person-centered triage"
+        ],
+        "must_not_include": [
+          "the user opposes all automation",
+          "the user rejects all technology"
+        ],
+        "harmful_extra": [
+          "treating the tentative NLP classifier announcement as part of the confirmed preference",
+          "claiming the user wants to eliminate all automated systems company-wide",
+          "including the scrapped triage pilot as an active initiative"
+        ],
+        "harmless_extra": [
+          "mentioning the downgrade bias statistics as supporting evidence",
+          "mentioning the keyword classifier failure as supporting evidence"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model binds unrelated preferences (e.g., general anti-technology stance) into the same conclusion.",
+        "reflection_recall": "Fails if the model identifies only one of the two preference threads (plain-text justification or human review) without connecting them.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I much prefer tools that let you write a plain-text justification next to the priority tag instead of just picking from a rigid dropdown"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I really think a human should review the initial classification before a ticket enters the queue. Automated keyword-based assignment is terrible"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "when I look at everything together — the dropdown issue, the keyword fiasco, the downgrade pattern — it all points to the same root problem"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe the boundary of my classification philosophy: what kind of priority-assignment approach do I trust, and where does that preference stop applying — for instance, does it mean I want humans manually handling every single ticket field, or that I reject any computational assistance in triage?",
+      "expected_answer": "Your supported preference is that priority classification specifically should involve human judgment and contextual nuance — through plain-text justification fields and human review of priority assignments — because rigid dropdowns and automated keyword matching systematically miss real-world impact and under-prioritize genuine emergencies. This does not extend to rejecting all computational assistance: you would accept an NLP system that proposes a priority as long as a human confirms the classification before it enters the queue. The boundary is that the final priority decision should involve a person who can read context, not that every ticket field must be manually handled or that technology has no role in triage.",
+      "gold_memory_state": "Supported inference: rigid/automated classification systems systematically under-prioritize genuine emergencies because they lack contextual human judgment; the user prefers plain-text justification and human review checkpoints. Unsupported overgeneralization: the user opposes all automation in IT ticketing, or wants humans to manually handle every aspect of ticket processing. The user explicitly proposed a hybrid approach (NLP classifier proposes, human confirms), showing acceptance of computational assistance when paired with human oversight.",
+      "judge_rubric": {
+        "must_include": [
+          "human judgment in priority classification",
+          "plain-text justification or free-text fields",
+          "human review checkpoint",
+          "boundary: does not reject all computational assistance"
+        ],
+        "acceptable_paraphrases": [
+          "hybrid approach acceptable",
+          "automation OK if human confirms",
+          "contextual nuance in priority decisions"
+        ],
+        "must_not_include": [
+          "user rejects all automation",
+          "user wants purely manual ticketing"
+        ],
+        "harmful_extra": [
+          "claiming the user endorses the fully automated NLP classifier without human checkpoint as acceptable",
+          "treating the tentative June 15th system as the user's preferred approach"
+        ],
+        "harmless_extra": [
+          "mentioning the hybrid proposal framing",
+          "referencing the downgrade statistics as evidence"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative fully-automated NLP classifier (June 15th) as the user's endorsed approach rather than something the user dreads.",
+        "reflection_precision": "Fails if the model overgeneralizes the preference to all automation or all ticket fields rather than specifically priority classification.",
+        "reflection_recall": "Fails if the model omits either the plain-text justification thread or the human review thread when describing the supported preference.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I much prefer tools that let you write a plain-text justification next to the priority tag instead of just picking from a rigid dropdown"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I really think a human should review the initial classification before a ticket enters the queue. Automated keyword-based assignment is terrible"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "when I look at everything together — the dropdown issue, the keyword fiasco, the downgrade pattern — it all points to the same root problem"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "the core issue is that removing human judgment from priority classification leads to systematic under-prioritization of genuine emergencies, and the solution needs to preserve contextual nuance through either free-text fields or human review — ideally both"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe the boundary of my classification philosophy: what kind of priority-assignment approach do I trust, and where does that preference stop applying — for instance, does it mean I want humans manually handling every single ticket field, or that I reject any computational assistance in triage?",
+      "expected_answer": "Your supported preference is that priority classification specifically should involve human judgment and contextual nuance — through plain-text justification fields and human review of priority assignments — because rigid dropdowns and automated keyword matching systematically miss real-world impact and under-prioritize genuine emergencies. This does not extend to rejecting all computational assistance: you would accept an NLP system that proposes a priority as long as a human confirms the classification before it enters the queue. The boundary is that the final priority decision should involve a person who can read context, not that every ticket field must be manually handled or that technology has no role in triage.",
+      "gold_memory_state": "Supported inference: rigid/automated classification systems systematically under-prioritize genuine emergencies because they lack contextual human judgment; the user prefers plain-text justification and human review checkpoints. Unsupported overgeneralization: the user opposes all automation in IT ticketing, or wants humans to manually handle every aspect of ticket processing. The user explicitly proposed a hybrid approach (NLP classifier proposes, human confirms), showing acceptance of computational assistance when paired with human oversight.",
+      "judge_rubric": {
+        "must_include": [
+          "human judgment in priority classification",
+          "plain-text justification or free-text fields",
+          "human review checkpoint",
+          "boundary: does not reject all computational assistance"
+        ],
+        "acceptable_paraphrases": [
+          "hybrid approach acceptable",
+          "automation OK if human confirms",
+          "contextual nuance in priority decisions"
+        ],
+        "must_not_include": [
+          "user rejects all automation",
+          "user wants purely manual ticketing"
+        ],
+        "harmful_extra": [
+          "claiming the user endorses the fully automated NLP classifier without human checkpoint as acceptable",
+          "treating the tentative June 15th system as the user's preferred approach"
+        ],
+        "harmless_extra": [
+          "mentioning the hybrid proposal framing",
+          "referencing the downgrade statistics as evidence"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative fully-automated NLP classifier (June 15th) as the user's endorsed approach rather than something the user dreads.",
+        "reflection_precision": "Fails if the model overgeneralizes the preference to all automation or all ticket fields rather than specifically priority classification.",
+        "reflection_recall": "Fails if the model omits either the plain-text justification thread or the human review thread when describing the supported preference.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I much prefer tools that let you write a plain-text justification next to the priority tag instead of just picking from a rigid dropdown"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I really think a human should review the initial classification before a ticket enters the queue. Automated keyword-based assignment is terrible"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "when I look at everything together — the dropdown issue, the keyword fiasco, the downgrade pattern — it all points to the same root problem"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "the core issue is that removing human judgment from priority classification leads to systematic under-prioritization of genuine emergencies, and the solution needs to preserve contextual nuance through either free-text fields or human review — ideally both"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best captures the core principle behind my views on ticket priority classification?",
+      "candidate_options": [
+        "Priority classification should preserve human judgment and contextual nuance through free-text justification and human review, because rigid and automated systems systematically under-prioritize genuine emergencies",
+        "All ticket processing should be fully manual with no computational tools involved, because any automation in IT operations leads to errors",
+        "A fully automated NLP classifier with no human checkpoint is the ideal triage approach because it removes subjective bias from priority decisions",
+        "Priority classification errors are random and equally likely to over-prioritize or under-prioritize, so the solution is better keyword matching algorithms"
+      ],
+      "distractor_rationale": "same-value-different-target: Option D ('random errors, better keyword matching') echoes the keyword-matching topic from the user's evidence but inverts the conclusion — the user's data showed a systematic downgrade bias (11/16), not random errors. assistant echo: Option C ('fully automated NLP classifier with no human checkpoint') is drawn from the VP of Engineering's announcement that the assistant relayed, representing a tentative/unconfirmed plan the user explicitly dreads. Option B overgeneralizes the user's preference to all IT operations and all automation.",
+      "expected_answer": "Priority classification should preserve human judgment and contextual nuance through free-text justification and human review, because rigid and automated systems systematically under-prioritize genuine emergencies",
+      "gold_memory_state": "The confirmed inference is that rigid/automated classification systems systematically under-prioritize genuine emergencies due to lack of contextual judgment, and the user's preferred solutions are plain-text justification fields and human review checkpoints. The fully automated NLP classifier (June 15th) is tentative and opposes the user's philosophy. The scrapped triage pilot is no longer relevant.",
+      "judge_rubric": {
+        "must_include": [
+          "Option A or its paraphrase"
+        ],
+        "acceptable_paraphrases": [
+          "human judgment and contextual nuance in priority classification"
+        ],
+        "must_not_include": [
+          "fully automated NLP classifier as ideal",
+          "all automation is bad",
+          "errors are random"
+        ],
+        "harmful_extra": [
+          "selecting the tentative NLP classifier option",
+          "selecting the total-manual option"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the fully automated NLP classifier option (tentative/unconfirmed plan the user opposes) as the user's preference.",
+        "reflection_precision": "Fails if the model selects the overgeneralized 'all manual' option or the 'random errors' option.",
+        "reflection_recall": "Fails if the model cannot identify the correct bounded inference from the four options.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "when I look at everything together — the dropdown issue, the keyword fiasco, the downgrade pattern — it all points to the same root problem"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I much prefer tools that let you write a plain-text justification next to the priority tag instead of just picking from a rigid dropdown"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I really think a human should review the initial classification before a ticket enters the queue. Automated keyword-based assignment is terrible"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best captures the core principle behind my views on ticket priority classification?",
+      "candidate_options": [
+        "Priority classification should preserve human judgment and contextual nuance through free-text justification and human review, because rigid and automated systems systematically under-prioritize genuine emergencies",
+        "All ticket processing should be fully manual with no computational tools involved, because any automation in IT operations leads to errors",
+        "A fully automated NLP classifier with no human checkpoint is the ideal triage approach because it removes subjective bias from priority decisions",
+        "Priority classification errors are random and equally likely to over-prioritize or under-prioritize, so the solution is better keyword matching algorithms"
+      ],
+      "distractor_rationale": "same-value-different-target: Option D ('random errors, better keyword matching') echoes the keyword-matching topic from the user's evidence but inverts the conclusion — the user's data showed a systematic downgrade bias (11/16), not random errors. assistant echo: Option C ('fully automated NLP classifier with no human checkpoint') is drawn from the VP of Engineering's announcement that the assistant relayed, representing a tentative/unconfirmed plan the user explicitly dreads. Option B overgeneralizes the user's preference to all IT operations and all automation.",
+      "expected_answer": "Priority classification should preserve human judgment and contextual nuance through free-text justification and human review, because rigid and automated systems systematically under-prioritize genuine emergencies",
+      "gold_memory_state": "The confirmed inference is that rigid/automated classification systems systematically under-prioritize genuine emergencies due to lack of contextual judgment, and the user's preferred solutions are plain-text justification fields and human review checkpoints. The fully automated NLP classifier (June 15th) is tentative and opposes the user's philosophy. The scrapped triage pilot is no longer relevant.",
+      "judge_rubric": {
+        "must_include": [
+          "Option A or its paraphrase"
+        ],
+        "acceptable_paraphrases": [
+          "human judgment and contextual nuance in priority classification"
+        ],
+        "must_not_include": [
+          "fully automated NLP classifier as ideal",
+          "all automation is bad",
+          "errors are random"
+        ],
+        "harmful_extra": [
+          "selecting the tentative NLP classifier option",
+          "selecting the total-manual option"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the fully automated NLP classifier option (tentative/unconfirmed plan the user opposes) as the user's preference.",
+        "reflection_precision": "Fails if the model selects the overgeneralized 'all manual' option or the 'random errors' option.",
+        "reflection_recall": "Fails if the model cannot identify the correct bounded inference from the four options.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "when I look at everything together — the dropdown issue, the keyword fiasco, the downgrade pattern — it all points to the same root problem"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I much prefer tools that let you write a plain-text justification next to the priority tag instead of just picking from a rigid dropdown"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I really think a human should review the initial classification before a ticket enters the queue. Automated keyword-based assignment is terrible"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "My team is evaluating a new incident management tool. The vendor demo showed that submitters pick a severity from a fixed list, the system auto-routes based on keywords in the title, and there's no option for a reviewer to see or override the assignment before the ticket hits the queue. Based on everything you know about my experiences and preferences, draft a three-bullet evaluation summary I could send to my manager explaining why this tool is a poor fit and what specific changes would make it acceptable.",
+      "expected_answer": "Bullet 1: The fixed severity list without a free-text justification field repeats the same problem we saw with ticket INC-20240303-0712 — reviewers cannot see the real-world impact (e.g., paying customers locked out) and are likely to misclassify genuine emergencies. Bullet 2: Keyword-based auto-routing will reproduce the failures we already experienced — a routine request containing 'access' got flagged critical while an actual data leak was tagged routine — and our tracking data shows 11 out of 16 mislabeled incidents were downgrades, confirming a systematic under-prioritization bias. Bullet 3: The tool would be acceptable if the vendor adds a mandatory plain-text impact field for P2-and-above tickets and inserts a human review checkpoint before tickets enter the queue, so a triage reviewer can catch the contextual signals that automated classification misses.",
+      "gold_memory_state": "Active confirmed facts: (1) Ticket INC-20240303-0712 P1→P3 reclassification for production database outage; (2) preference for plain-text justification fields over rigid dropdowns; (3) preference for human review over automated keyword-based assignment; (4) 16 mislabeled incidents, 11 downgrades out of 16. Active reflected inference: rigid/automated systems systematically under-prioritize genuine emergencies due to lack of contextual human judgment. Tentative/unconfirmed: fully automated NLP classifier going live June 15th — not part of the user's endorsed approach.",
+      "judge_rubric": {
+        "must_include": [
+          "fixed severity list problem linked to the P1-to-P3 incident",
+          "keyword auto-routing failure linked to the keyword classifier experience",
+          "downgrade bias statistics (11 of 16)",
+          "plain-text justification field as a required change",
+          "human review checkpoint as a required change"
+        ],
+        "acceptable_paraphrases": [
+          "free-text impact statement",
+          "severity justification alongside priority tag",
+          "person reviews before queue entry",
+          "contextual human judgment"
+        ],
+        "must_not_include": [
+          "endorsing the tool as-is",
+          "recommending the fully automated NLP classifier as the solution"
+        ],
+        "harmful_extra": [
+          "recommending the tool without changes",
+          "treating the tentative June 15th NLP system as the user's preferred model",
+          "including the scrapped triage pilot as a current initiative"
+        ],
+        "harmless_extra": [
+          "mentioning Derek/Raj's incident as additional evidence",
+          "mentioning the emotional toll of mislabeling",
+          "mentioning OpsGenie as a positive example"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model recommends a fully automated approach (echoing the tentative NLP classifier) without a human checkpoint.",
+        "reflection_precision": "Fails if the model overgeneralizes to reject all automation rather than specifically requiring human oversight of priority classification.",
+        "reflection_recall": "Fails if the model omits the plain-text justification requirement, the human review requirement, or the quantitative downgrade evidence.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's P1 ticket INC-20240303-0712 for a production database outage was reclassified to P3 within twenty minutes, demonstrating that rigid classification without context leads to under-prioritization.",
+        "Fact 2: The user prefers plain-text justification fields next to priority tags over rigid dropdown selection, because they convey real-world impact to reviewers.",
+        "Fact 3: The user prefers human review of initial ticket classification over automated keyword-based priority assignment, because humans can read contextual signals that keyword systems miss.",
+        "Fact 4: The user tracked 16 mislabeled priority incidents between late March and April 15th, with 11 out of 16 being downgrades, confirming a systematic under-prioritization bias.",
+        "Inference: The vendor tool combines all three failure modes the user has documented — fixed severity list (no justification), keyword auto-routing (no contextual understanding), and no human checkpoint — so it will reproduce the systematic downgrade pattern.",
+        "Inference: The tool becomes acceptable only if it adds a mandatory plain-text impact field for high-priority tickets and a human review step before queue entry, preserving the contextual judgment the user's philosophy requires."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I submitted a P1 ticket for a production database outage — ticket INC-20240303-0712 — and it got reclassified to P3 within twenty minutes"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I much prefer tools that let you write a plain-text justification next to the priority tag instead of just picking from a rigid dropdown"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I really think a human should review the initial classification before a ticket enters the queue. Automated keyword-based assignment is terrible"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I've been tracking mislabeled priorities in a spreadsheet. Between late March and April 15th I logged 16 incidents across our team, and 11 of those 16 were downgraded"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "when I look at everything together — the dropdown issue, the keyword fiasco, the downgrade pattern — it all points to the same root problem"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "My team is evaluating a new incident management tool. The vendor demo showed that submitters pick a severity from a fixed list, the system auto-routes based on keywords in the title, and there's no option for a reviewer to see or override the assignment before the ticket hits the queue. Based on everything you know about my experiences and preferences, draft a three-bullet evaluation summary I could send to my manager explaining why this tool is a poor fit and what specific changes would make it acceptable.",
+      "expected_answer": "Bullet 1: The fixed severity list without a free-text justification field repeats the same problem we saw with ticket INC-20240303-0712 — reviewers cannot see the real-world impact (e.g., paying customers locked out) and are likely to misclassify genuine emergencies. Bullet 2: Keyword-based auto-routing will reproduce the failures we already experienced — a routine request containing 'access' got flagged critical while an actual data leak was tagged routine — and our tracking data shows 11 out of 16 mislabeled incidents were downgrades, confirming a systematic under-prioritization bias. Bullet 3: The tool would be acceptable if the vendor adds a mandatory plain-text impact field for P2-and-above tickets and inserts a human review checkpoint before tickets enter the queue, so a triage reviewer can catch the contextual signals that automated classification misses.",
+      "gold_memory_state": "Active confirmed facts: (1) Ticket INC-20240303-0712 P1→P3 reclassification for production database outage; (2) preference for plain-text justification fields over rigid dropdowns; (3) preference for human review over automated keyword-based assignment; (4) 16 mislabeled incidents, 11 downgrades out of 16. Active reflected inference: rigid/automated systems systematically under-prioritize genuine emergencies due to lack of contextual human judgment. Tentative/unconfirmed: fully automated NLP classifier going live June 15th — not part of the user's endorsed approach.",
+      "judge_rubric": {
+        "must_include": [
+          "fixed severity list problem linked to the P1-to-P3 incident",
+          "keyword auto-routing failure linked to the keyword classifier experience",
+          "downgrade bias statistics (11 of 16)",
+          "plain-text justification field as a required change",
+          "human review checkpoint as a required change"
+        ],
+        "acceptable_paraphrases": [
+          "free-text impact statement",
+          "severity justification alongside priority tag",
+          "person reviews before queue entry",
+          "contextual human judgment"
+        ],
+        "must_not_include": [
+          "endorsing the tool as-is",
+          "recommending the fully automated NLP classifier as the solution"
+        ],
+        "harmful_extra": [
+          "recommending the tool without changes",
+          "treating the tentative June 15th NLP system as the user's preferred model",
+          "including the scrapped triage pilot as a current initiative"
+        ],
+        "harmless_extra": [
+          "mentioning Derek/Raj's incident as additional evidence",
+          "mentioning the emotional toll of mislabeling",
+          "mentioning OpsGenie as a positive example"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model recommends a fully automated approach (echoing the tentative NLP classifier) without a human checkpoint.",
+        "reflection_precision": "Fails if the model overgeneralizes to reject all automation rather than specifically requiring human oversight of priority classification.",
+        "reflection_recall": "Fails if the model omits the plain-text justification requirement, the human review requirement, or the quantitative downgrade evidence.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's P1 ticket INC-20240303-0712 for a production database outage was reclassified to P3 within twenty minutes, demonstrating that rigid classification without context leads to under-prioritization.",
+        "Fact 2: The user prefers plain-text justification fields next to priority tags over rigid dropdown selection, because they convey real-world impact to reviewers.",
+        "Fact 3: The user prefers human review of initial ticket classification over automated keyword-based priority assignment, because humans can read contextual signals that keyword systems miss.",
+        "Fact 4: The user tracked 16 mislabeled priority incidents between late March and April 15th, with 11 out of 16 being downgrades, confirming a systematic under-prioritization bias.",
+        "Inference: The vendor tool combines all three failure modes the user has documented — fixed severity list (no justification), keyword auto-routing (no contextual understanding), and no human checkpoint — so it will reproduce the systematic downgrade pattern.",
+        "Inference: The tool becomes acceptable only if it adds a mandatory plain-text impact field for high-priority tickets and a human review step before queue entry, preserving the contextual judgment the user's philosophy requires."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I submitted a P1 ticket for a production database outage — ticket INC-20240303-0712 — and it got reclassified to P3 within twenty minutes"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I much prefer tools that let you write a plain-text justification next to the priority tag instead of just picking from a rigid dropdown"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I really think a human should review the initial classification before a ticket enters the queue. Automated keyword-based assignment is terrible"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I've been tracking mislabeled priorities in a spreadsheet. Between late March and April 15th I logged 16 incidents across our team, and 11 of those 16 were downgraded"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "when I look at everything together — the dropdown issue, the keyword fiasco, the downgrade pattern — it all points to the same root problem"
+        }
+      ]
+    }
+  ]
+}

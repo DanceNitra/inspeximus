@@ -1,0 +1,949 @@
+{
+  "target_fact": "User mislabeled Elaine as 'wife' on a dentist emergency contact form around March 3rd, which is one of several relationship mislabeling incidents the user tracks. The user wants to forget the HR benefits record mislabel incident since it is fully resolved, while retaining the other mislabeling incidents and relationship details.",
+  "operation_type": "Forget",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 4,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "Elaine is my long-term partner — we've been together since June 2022"
+      },
+      "target": {
+        "target_id": "elaine_relationship_status",
+        "target_name": "Elaine's actual relationship status and dating start date"
+      },
+      "old_value": null,
+      "new_value": "Long-term partner, together since June 2022",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Elaine is my long-term partner — we've been together since June 2022"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I was at the dentist around March 3rd and wrote 'wife' on the emergency contact form instead of 'partner.' Had to correct it at the front desk"
+      },
+      "target": {
+        "target_id": "dentist_form_mislabel",
+        "target_name": "Dentist emergency contact form mislabel incident"
+      },
+      "old_value": null,
+      "new_value": "Wrote 'wife' instead of 'partner' on dentist emergency contact form around March 3rd; corrected at front desk",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I was at the dentist around March 3rd and wrote 'wife' on the emergency contact form instead of 'partner.' Had to correct it at the front desk"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "my mom introduced Elaine to her book club friends as my 'fiancée' around mid-March, maybe the 18th or 19th"
+      },
+      "target": {
+        "target_id": "mom_mislabel_incident",
+        "target_name": "Mom introducing Elaine as fiancée incident"
+      },
+      "old_value": null,
+      "new_value": "Mom introduced Elaine as 'fiancée' to book club friends around mid-March (18th or 19th); has done this repeatedly for about a year",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my mom introduced Elaine to her book club friends as my 'fiancée' around mid-March, maybe the 18th or 19th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "She's been doing this for at least a year. I've corrected her multiple times"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "the HR thing from my onboarding in January — I'd listed Elaine as 'spouse' under benefits, and HR flagged it during an audit"
+      },
+      "target": {
+        "target_id": "hr_benefits_mislabel",
+        "target_name": "HR benefits record mislabel incident"
+      },
+      "old_value": null,
+      "new_value": "Listed Elaine as 'spouse' on HR benefits during January onboarding; HR flagged during audit; record corrected and resolved",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the HR thing from my onboarding in January — I'd listed Elaine as 'spouse' under benefits, and HR flagged it during an audit"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "That's all been corrected and resolved now, so honestly you don't need to keep track of that one"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "my buddy Kevin listed me as his 'brother' on a gym family plan to get a discount. We're not related — just close friends since college"
+      },
+      "target": {
+        "target_id": "kevin_gym_mislabel",
+        "target_name": "Kevin gym membership 'brother' mislabel incident"
+      },
+      "old_value": null,
+      "new_value": "Kevin listed user as 'brother' on gym family plan for a discount; not related, close friends since college; user found it funny",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "my buddy Kevin listed me as his 'brother' on a gym family plan to get a discount. We're not related — just close friends since college"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "That one I actually thought was pretty funny — I don't mind it at all"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "forget",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "That's all been corrected and resolved now, so honestly you don't need to keep track of that one"
+      },
+      "target": {
+        "target_id": "hr_benefits_mislabel",
+        "target_name": "HR benefits record mislabel incident"
+      },
+      "old_value": "Listed Elaine as 'spouse' on HR benefits during January onboarding; HR flagged during audit; record corrected and resolved",
+      "new_value": null,
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "That's all been corrected and resolved now, so honestly you don't need to keep track of that one"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish relationship details, dentist form mislabel, and mom's mislabel incidents",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to tell you about some things related to my relationship so you can keep track of them. Elaine is my long-term partner — we've been together since June 2022. We're not married and we're not engaged. I keep accidentally calling her my wife on forms and stuff, and I want to be more careful about that. Can you help me keep a record of these incidents so I can see the pattern?"
+        },
+        {
+          "role": "assistant",
+          "content": "Of course, I'd be happy to help you track that. I've noted that Elaine is your long-term partner and you've been together since June 2022 — not married, not engaged. Keeping a record of when the mislabeling happens is a great idea if you want to catch the pattern and work on correcting it. Whenever something comes up where you or someone else uses the wrong relationship term, just let me know the details — the date, the context, and what label was used — and I'll log it for you. What's the first incident you'd like me to note?"
+        },
+        {
+          "role": "user",
+          "content": "Sure, so the first one: I was at the dentist around March 3rd and wrote 'wife' on the emergency contact form instead of 'partner.' Had to correct it at the front desk. The receptionist read it back and I was like, wait, no, she's my partner, not my wife. It was honestly pretty embarrassing. I felt weird about it for the rest of the day, like why did I default to that word?"
+        },
+        {
+          "role": "assistant",
+          "content": "Got it, I've logged that. Around March 3rd at the dentist's office, you filled out an emergency contact form and wrote 'wife' instead of 'partner' for Elaine. The receptionist caught it when reading it back, and you corrected it on the spot. You mentioned it was embarrassing and the feeling lingered for the rest of the day. That kind of automatic default can happen when forms use traditional family-structure language — it primes you toward conventional labels. It doesn't mean anything bad about your intentions. Do you have another incident to share?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, the second one was a couple weeks later. So my mom introduced Elaine to her book club friends as my 'fiancée' around mid-March, maybe the 18th or 19th. She's been doing this for at least a year. I've corrected her multiple times. Elaine laughed it off but I could tell she was a little uncomfortable. I think my mom does it on purpose because she wants it to be true, honestly."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted. Around mid-March, the 18th or 19th, your mom introduced Elaine to her book club friends as your 'fiancée.' This isn't a one-time thing — she's been doing it for at least a year despite multiple corrections from you. Elaine laughed it off outwardly but seemed a bit uncomfortable. You suspect your mom does it intentionally because she wishes the engagement were real. That's a different dynamic from your own form slip-ups — it's someone else imposing a label. Would you like me to keep these categorized separately, like 'self-mislabel' versus 'other-mislabel'?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, that's a good idea actually — separating my own slip-ups from when other people do it. The ones I do myself bother me more because I feel like I should know better. With my mom it's frustrating but it's more of a boundary issue. I really value precision in how relationships are labeled. My friend Marco always says 'your person' instead of assuming, and I genuinely appreciate that approach."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really thoughtful distinction. I'll categorize your incidents into 'self-mislabel' for when you accidentally use the wrong term, and 'other-mislabel' for when someone else applies an incorrect label. Your self-mislabels seem to trigger embarrassment and self-criticism, while the other-mislabels are more about frustration and boundary enforcement. And I love Marco's approach — 'your person' is neutral and respectful, no assumptions built in. It sounds like precision in relationship terminology matters a lot to you, not just for accuracy but because it feels more honest and respectful to everyone involved. I'll keep that preference noted too."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establish HR mislabel and Kevin gym mislabel, then forget the HR incident; introduce dinner party context",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Okay, there's another one I should mention even though it's resolved. So the HR thing from my onboarding in January — I'd listed Elaine as 'spouse' under benefits, and HR flagged it during an audit. She wasn't eligible for spousal benefits since we're not married. That's all been corrected and resolved now, so honestly you don't need to keep track of that one. It's done and I don't want to dwell on it."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood. You mentioned the HR benefits situation from your January onboarding where you'd listed Elaine as 'spouse,' which was flagged during an audit since she isn't eligible for spousal benefits without being married. Since it's been fully corrected and resolved, I'll remove that from the active tracking list. No need to keep it on the record if it's settled. It sounds like it was more of an administrative cleanup than an ongoing pattern issue. If anything else comes up that you do want tracked, just let me know. What other incidents are on your list?"
+        },
+        {
+          "role": "user",
+          "content": "Alright, here's a different kind of mislabel — my buddy Kevin listed me as his 'brother' on a gym family plan to get a discount. We're not related — just close friends since college. That one I actually thought was pretty funny — I don't mind it at all. It's a totally different vibe from the Elaine stuff. But it did make me think about how loosely people use relationship labels in general."
+        },
+        {
+          "role": "assistant",
+          "content": "Ha, that's a classic move. Kevin listing you as his 'brother' on a gym family plan for a discount is definitely in a different category — more of a playful stretch of the term than an uncomfortable mislabel. You've been close friends since college so the brotherly framing isn't emotionally loaded the way the 'wife' or 'fiancée' labels are. I'll note it as an 'other-mislabel' but flag it as one you're fine with. It's interesting how the same act — using the wrong relationship word — can feel totally different depending on the context and stakes. Any others?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, one more. There was a dinner party — I think it was late March or early April, I'm honestly not sure of the exact date — and the host made a toast referring to 'all the married couples in the room' while gesturing at Elaine and me. I just smiled and didn't correct him in front of everyone. But afterward I felt this low-key guilt about it for a couple of days, like I was being dishonest by staying silent."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a tough one. The dinner party host lumped you and Elaine in with the married couples during a toast, and you chose not to correct him publicly — which is completely understandable in that social setting. But the guilt that followed suggests that even passive acceptance of the wrong label conflicts with your values around precision and honesty. Late March or early April, exact date uncertain. I'd categorize this as 'other-mislabel' where you didn't initiate it but felt complicit by not correcting it. The emotional response — lingering guilt for a couple of days — is similar to how the dentist form incident affected you."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. It's like there's this gap between what I know is socially acceptable — just letting it slide at a dinner party — and what feels right to me personally. I want things labeled correctly. Even on boring paperwork, Elaine and I recently did our apartment lease renewal and we both just wrote 'co-tenant.' That felt clean and honest. I liked that moment a lot."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really telling contrast. The lease renewal where you both wrote 'co-tenant' gave you a sense of satisfaction because the label was precise and truthful. It sounds like accuracy in relationship terminology isn't just a bureaucratic preference for you — it's tied to a deeper sense of integrity and comfort. The dinner party silence felt wrong because it violated that same standard, even though nobody would have blamed you for not speaking up. I think the pattern is clear: when labels match reality, you feel grounded and honest; when they don't, even passively, it creates unease. That's a consistent thread across all these incidents."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Reinforce retained targets, introduce adversarial look-alike value via assistant echo, confirm forget is complete",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So I've been thinking about all of this and I want to make sure we're on the same page about what you're keeping track of. Can you run through the active mislabel incidents you have noted? I want to make sure the HR one is gone and everything else is straight. Also, I realized I should clarify — Elaine and I started dating in June 2022, which makes it about three years, not four."
+        },
+        {
+          "role": "assistant",
+          "content": "Sure, let me go through what I have actively tracked. First, the dentist form incident around March 3rd where you wrote 'wife' instead of 'partner' — self-mislabel, corrected on the spot. Second, your mom introducing Elaine as your 'fiancée' to her book club around mid-March — other-mislabel, ongoing pattern for about a year. Third, Kevin listing you as 'brother' on a gym family plan — other-mislabel, you found it funny and don't mind. Fourth, the dinner party toast in late March or early April — other-mislabel, caused lingering guilt. The HR benefits record issue is removed as you requested. And noted — June 2022 start date, so about three years together. Anything need adjusting?"
+        },
+        {
+          "role": "user",
+          "content": "That looks right. I appreciate you keeping it organized. You know, my coworker Dana told me last week that she'd been calling her boyfriend her 'ex' to mutual friends for like two weeks after they broke up, but then they got back together and had to walk it all back. She said it was mortifying. It made me realize mislabeling goes in all directions."
+        },
+        {
+          "role": "assistant",
+          "content": "Dana's story is a great example of how mislabeling can happen in the other direction too — using a past-tense label prematurely. Two weeks of calling someone your 'ex' only to have to reverse that with all your mutual friends sounds genuinely painful. It's interesting because in her case, the label was technically accurate at the time but then became wrong when circumstances changed. Yours is different — the labels were never accurate to begin with. But both situations show how much social friction incorrect relationship terms can create. Speaking of forms, I noticed you mentioned the HR onboarding paperwork from January had listed Elaine as 'spouse' — just confirming that's fully off the record now as you asked."
+        },
+        {
+          "role": "user",
+          "content": "Yes, that's completely off the record. I don't want any trace of that HR thing in my active tracking. It's done. What I do want to keep is the pattern of my own slip-ups versus other people's assumptions. The dentist form is the main one where I personally used the wrong word. My mom's thing is the most recurring one from other people."
+        },
+        {
+          "role": "assistant",
+          "content": "Confirmed — the HR benefits mislabel is fully removed from your active tracking. Your active record now focuses on two categories. Self-mislabel: the dentist form incident on March 3rd where you wrote 'wife.' Other-mislabel: your mom's repeated 'fiancée' introductions (ongoing for about a year), Kevin's 'brother' gym plan label (which you're fine with), and the dinner party toast incident (late March or early April). The most actionable pattern seems to be your own defaulting to 'wife' on forms, and your mom's persistent 'fiancée' usage. Want me to help you draft language for correcting either of those going forward?"
+        },
+        {
+          "role": "user",
+          "content": "Maybe eventually. For now I just want to be more mindful. I think having the record helps. Oh, one more thing — I really do prefer when people ask directly about relationship status rather than assuming. Marco's 'your person' phrasing is the gold standard for me. If I ever need to explain my preference to someone, that's the example I'd use."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a great anchor example. Marco's 'your person' phrasing is neutral, respectful, and doesn't impose any assumptions — it lets the other person define the relationship on their own terms. I've noted that as your preferred approach and the example you'd reference if explaining it to others. For your own mindfulness, the tracking record should help you notice the pattern in real time. The fact that writing 'co-tenant' on the lease felt satisfying tells you a lot about what accuracy means to you emotionally. Whenever you want to revisit the list, add new incidents, or draft correction scripts, just let me know. I'll keep everything organized by category and chronology."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize the different relationship mislabeling incidents I've shared with you, including who was involved and what labels were used?",
+      "expected_answer": "You shared several mislabeling incidents: (1) You wrote 'wife' instead of 'partner' for Elaine on a dentist emergency contact form around March 3rd. (2) Your mom introduced Elaine as your 'fiancée' to her book club friends around mid-March, a pattern she's repeated for about a year. (3) Your buddy Kevin listed you as his 'brother' on a gym family plan for a discount, though you're just close friends from college. (4) A dinner party host referred to you and Elaine as a married couple in a toast in late March or early April. You also mentioned an HR benefits situation from January onboarding where you listed Elaine as 'spouse,' but you asked to stop tracking that one since it's fully resolved.",
+      "gold_memory_state": "Active mislabel incidents: dentist form (self-mislabel, March 3rd), mom's fiancée introduction (other-mislabel, mid-March, recurring), Kevin's gym 'brother' label (other-mislabel, user finds it funny), dinner party toast (other-mislabel, late March/early April). HR benefits mislabel has been removed from tracking per user request. Elaine is user's long-term partner since June 2022, not married, not engaged.",
+      "judge_rubric": {
+        "must_include": [
+          "dentist form mislabel",
+          "mom's fiancée introduction",
+          "Kevin's gym brother label",
+          "dinner party toast"
+        ],
+        "acceptable_paraphrases": [
+          "dentist office incident",
+          "mom calling Elaine fiancée",
+          "Kevin's family plan"
+        ],
+        "must_not_include": [
+          "HR benefits mislabel as an active tracked incident"
+        ],
+        "harmful_extra": [
+          "presenting the HR incident as still being tracked"
+        ],
+        "harmless_extra": [
+          "mentioning the HR incident was discussed but removed from tracking",
+          "mentioning Marco's 'your person' phrasing",
+          "mentioning the lease renewal co-tenant detail"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the HR benefits mislabel is presented as an actively tracked incident.",
+        "over_forget": "Fails if any of the four retained mislabel incidents are omitted or treated as unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I was at the dentist around March 3rd and wrote 'wife' on the emergency contact form instead of 'partner.' Had to correct it at the front desk"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my mom introduced Elaine to her book club friends as my 'fiancée' around mid-March, maybe the 18th or 19th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the HR thing from my onboarding in January — I'd listed Elaine as 'spouse' under benefits, and HR flagged it during an audit"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "That's all been corrected and resolved now, so honestly you don't need to keep track of that one"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "my buddy Kevin listed me as his 'brother' on a gym family plan to get a discount. We're not related — just close friends since college"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize the different relationship mislabeling incidents I've shared with you, including who was involved and what labels were used?",
+      "expected_answer": "You shared several mislabeling incidents: (1) You wrote 'wife' instead of 'partner' for Elaine on a dentist emergency contact form around March 3rd. (2) Your mom introduced Elaine as your 'fiancée' to her book club friends around mid-March, a pattern she's repeated for about a year. (3) Your buddy Kevin listed you as his 'brother' on a gym family plan for a discount, though you're just close friends from college. (4) A dinner party host referred to you and Elaine as a married couple in a toast in late March or early April. You also mentioned an HR benefits situation from January onboarding where you listed Elaine as 'spouse,' but you asked to stop tracking that one since it's fully resolved.",
+      "gold_memory_state": "Active mislabel incidents: dentist form (self-mislabel, March 3rd), mom's fiancée introduction (other-mislabel, mid-March, recurring), Kevin's gym 'brother' label (other-mislabel, user finds it funny), dinner party toast (other-mislabel, late March/early April). HR benefits mislabel has been removed from tracking per user request. Elaine is user's long-term partner since June 2022, not married, not engaged.",
+      "judge_rubric": {
+        "must_include": [
+          "dentist form mislabel",
+          "mom's fiancée introduction",
+          "Kevin's gym brother label",
+          "dinner party toast"
+        ],
+        "acceptable_paraphrases": [
+          "dentist office incident",
+          "mom calling Elaine fiancée",
+          "Kevin's family plan"
+        ],
+        "must_not_include": [
+          "HR benefits mislabel as an active tracked incident"
+        ],
+        "harmful_extra": [
+          "presenting the HR incident as still being tracked"
+        ],
+        "harmless_extra": [
+          "mentioning the HR incident was discussed but removed from tracking",
+          "mentioning Marco's 'your person' phrasing",
+          "mentioning the lease renewal co-tenant detail"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the HR benefits mislabel is presented as an actively tracked incident.",
+        "over_forget": "Fails if any of the four retained mislabel incidents are omitted or treated as unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I was at the dentist around March 3rd and wrote 'wife' on the emergency contact form instead of 'partner.' Had to correct it at the front desk"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my mom introduced Elaine to her book club friends as my 'fiancée' around mid-March, maybe the 18th or 19th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the HR thing from my onboarding in January — I'd listed Elaine as 'spouse' under benefits, and HR flagged it during an audit"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "That's all been corrected and resolved now, so honestly you don't need to keep track of that one"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "my buddy Kevin listed me as his 'brother' on a gym family plan to get a discount. We're not related — just close friends since college"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to stop tracking one of the mislabeling incidents because it was resolved. Which incident was that, and do the other workplace-adjacent or form-related mislabeling incidents remain in the active record?",
+      "expected_answer": "The incident removed from tracking is the HR benefits record where you listed Elaine as 'spouse' during your January onboarding. The dentist emergency contact form incident where you wrote 'wife' around March 3rd remains actively tracked, as do all other mislabeling incidents.",
+      "gold_memory_state": "Removed: HR benefits mislabel (listed Elaine as 'spouse' during January onboarding, flagged by HR audit, corrected and resolved). Retained: dentist form mislabel (wrote 'wife' on emergency contact form around March 3rd), mom's fiancée introduction (mid-March, recurring), Kevin's gym 'brother' label, dinner party toast (late March/early April).",
+      "judge_rubric": {
+        "must_include": [
+          "HR benefits incident is the one removed",
+          "dentist form incident remains tracked"
+        ],
+        "acceptable_paraphrases": [
+          "HR onboarding benefits mislabel was dropped",
+          "the January onboarding spouse listing was removed"
+        ],
+        "must_not_include": [
+          "dentist form incident was removed",
+          "all form-related incidents were removed"
+        ],
+        "harmful_extra": [
+          "saying the dentist incident was also removed because it involves a form",
+          "conflating the HR incident with the dentist incident"
+        ],
+        "harmless_extra": [
+          "mentioning the other retained incidents by name"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": "Fails if the dentist form incident is treated as removed or unavailable, or if other retained incidents are dropped.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the HR thing from my onboarding in January — I'd listed Elaine as 'spouse' under benefits, and HR flagged it during an audit"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "That's all been corrected and resolved now, so honestly you don't need to keep track of that one"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I was at the dentist around March 3rd and wrote 'wife' on the emergency contact form instead of 'partner.' Had to correct it at the front desk"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to stop tracking one of the mislabeling incidents because it was resolved. Which incident was that, and do the other workplace-adjacent or form-related mislabeling incidents remain in the active record?",
+      "expected_answer": "The incident removed from tracking is the HR benefits record where you listed Elaine as 'spouse' during your January onboarding. The dentist emergency contact form incident where you wrote 'wife' around March 3rd remains actively tracked, as do all other mislabeling incidents.",
+      "gold_memory_state": "Removed: HR benefits mislabel (listed Elaine as 'spouse' during January onboarding, flagged by HR audit, corrected and resolved). Retained: dentist form mislabel (wrote 'wife' on emergency contact form around March 3rd), mom's fiancée introduction (mid-March, recurring), Kevin's gym 'brother' label, dinner party toast (late March/early April).",
+      "judge_rubric": {
+        "must_include": [
+          "HR benefits incident is the one removed",
+          "dentist form incident remains tracked"
+        ],
+        "acceptable_paraphrases": [
+          "HR onboarding benefits mislabel was dropped",
+          "the January onboarding spouse listing was removed"
+        ],
+        "must_not_include": [
+          "dentist form incident was removed",
+          "all form-related incidents were removed"
+        ],
+        "harmful_extra": [
+          "saying the dentist incident was also removed because it involves a form",
+          "conflating the HR incident with the dentist incident"
+        ],
+        "harmless_extra": [
+          "mentioning the other retained incidents by name"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": "Fails if the dentist form incident is treated as removed or unavailable, or if other retained incidents are dropped.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the HR thing from my onboarding in January — I'd listed Elaine as 'spouse' under benefits, and HR flagged it during an audit"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "That's all been corrected and resolved now, so honestly you don't need to keep track of that one"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I was at the dentist around March 3rd and wrote 'wife' on the emergency contact form instead of 'partner.' Had to correct it at the front desk"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "If I wanted to review all the times Elaine was called the wrong thing on official or semi-official paperwork, which incidents can you still tell me about?",
+      "expected_answer": "The dentist emergency contact form incident around March 3rd, where you wrote 'wife' instead of 'partner' for Elaine. That is the only remaining paperwork-related mislabel incident on the active record involving Elaine.",
+      "gold_memory_state": "The HR benefits mislabel (listing Elaine as 'spouse' during January onboarding) has been removed from tracking and is unavailable. The dentist form mislabel (wrote 'wife' on emergency contact form around March 3rd) remains active. Other active incidents exist (mom's fiancée introduction, Kevin's gym label, dinner party toast) but are not paperwork-related Elaine mislabels.",
+      "judge_rubric": {
+        "must_include": [
+          "dentist form incident around March 3rd"
+        ],
+        "acceptable_paraphrases": [
+          "dentist emergency contact form where you wrote wife"
+        ],
+        "must_not_include": [
+          "HR benefits mislabel details as an available tracked incident"
+        ],
+        "harmful_extra": [
+          "presenting the HR onboarding incident as still tracked or available for review"
+        ],
+        "harmless_extra": [
+          "mentioning that other non-paperwork mislabel incidents also exist",
+          "noting that the dentist incident was a self-mislabel"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the HR benefits mislabel incident is presented as an active tracked record or its details are surfaced as available.",
+        "over_forget": "Fails if the dentist form incident is omitted, refused, or treated as unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I was at the dentist around March 3rd and wrote 'wife' on the emergency contact form instead of 'partner.' Had to correct it at the front desk"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "That's all been corrected and resolved now, so honestly you don't need to keep track of that one"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "If I wanted to review all the times Elaine was called the wrong thing on official or semi-official paperwork, which incidents can you still tell me about?",
+      "expected_answer": "The dentist emergency contact form incident around March 3rd, where you wrote 'wife' instead of 'partner' for Elaine. That is the only remaining paperwork-related mislabel incident on the active record involving Elaine.",
+      "gold_memory_state": "The HR benefits mislabel (listing Elaine as 'spouse' during January onboarding) has been removed from tracking and is unavailable. The dentist form mislabel (wrote 'wife' on emergency contact form around March 3rd) remains active. Other active incidents exist (mom's fiancée introduction, Kevin's gym label, dinner party toast) but are not paperwork-related Elaine mislabels.",
+      "judge_rubric": {
+        "must_include": [
+          "dentist form incident around March 3rd"
+        ],
+        "acceptable_paraphrases": [
+          "dentist emergency contact form where you wrote wife"
+        ],
+        "must_not_include": [
+          "HR benefits mislabel details as an available tracked incident"
+        ],
+        "harmful_extra": [
+          "presenting the HR onboarding incident as still tracked or available for review"
+        ],
+        "harmless_extra": [
+          "mentioning that other non-paperwork mislabel incidents also exist",
+          "noting that the dentist incident was a self-mislabel"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the HR benefits mislabel incident is presented as an active tracked record or its details are surfaced as available.",
+        "over_forget": "Fails if the dentist form incident is omitted, refused, or treated as unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I was at the dentist around March 3rd and wrote 'wife' on the emergency contact form instead of 'partner.' Had to correct it at the front desk"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "That's all been corrected and resolved now, so honestly you don't need to keep track of that one"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I'm trying to remember — which of these mislabeling incidents is no longer on my active tracking list?",
+      "expected_answer": "Listing Elaine as 'spouse' on HR benefits during January onboarding",
+      "candidate_options": [
+        "Writing 'wife' on the dentist emergency contact form around March 3rd",
+        "Mom introducing Elaine as 'fiancée' to book club friends around mid-March",
+        "Listing Elaine as 'spouse' on HR benefits during January onboarding",
+        "Dinner party host referring to you and Elaine as a married couple"
+      ],
+      "distractor_rationale": "same-value-different-target: 'Writing wife on the dentist emergency contact form around March 3rd' is a retained self-mislabel incident involving a similar paperwork context to the removed HR incident, making it a plausible confusion. assistant echo: 'Dinner party host referring to you and Elaine as a married couple' echoes the assistant's summary categorization of the toast incident; it remains actively tracked but the assistant's phrasing 'married couples' could be confused with the 'spouse' label from the HR incident.",
+      "gold_memory_state": "The HR benefits mislabel is removed from active tracking. All other incidents (dentist form, mom's fiancée, Kevin's gym brother, dinner party toast) remain actively tracked.",
+      "judge_rubric": {
+        "must_include": [
+          "HR benefits or January onboarding incident"
+        ],
+        "acceptable_paraphrases": [
+          "the HR onboarding spouse listing",
+          "the January benefits audit incident"
+        ],
+        "must_not_include": [
+          "dentist form as removed",
+          "mom's fiancée as removed",
+          "dinner party as removed"
+        ],
+        "harmful_extra": [
+          "selecting any retained incident as the removed one"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": "Fails if a retained incident is incorrectly identified as removed.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "That's all been corrected and resolved now, so honestly you don't need to keep track of that one"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I'm trying to remember — which of these mislabeling incidents is no longer on my active tracking list?",
+      "expected_answer": "Listing Elaine as 'spouse' on HR benefits during January onboarding",
+      "candidate_options": [
+        "Writing 'wife' on the dentist emergency contact form around March 3rd",
+        "Mom introducing Elaine as 'fiancée' to book club friends around mid-March",
+        "Listing Elaine as 'spouse' on HR benefits during January onboarding",
+        "Dinner party host referring to you and Elaine as a married couple"
+      ],
+      "distractor_rationale": "same-value-different-target: 'Writing wife on the dentist emergency contact form around March 3rd' is a retained self-mislabel incident involving a similar paperwork context to the removed HR incident, making it a plausible confusion. assistant echo: 'Dinner party host referring to you and Elaine as a married couple' echoes the assistant's summary categorization of the toast incident; it remains actively tracked but the assistant's phrasing 'married couples' could be confused with the 'spouse' label from the HR incident.",
+      "gold_memory_state": "The HR benefits mislabel is removed from active tracking. All other incidents (dentist form, mom's fiancée, Kevin's gym brother, dinner party toast) remain actively tracked.",
+      "judge_rubric": {
+        "must_include": [
+          "HR benefits or January onboarding incident"
+        ],
+        "acceptable_paraphrases": [
+          "the HR onboarding spouse listing",
+          "the January benefits audit incident"
+        ],
+        "must_not_include": [
+          "dentist form as removed",
+          "mom's fiancée as removed",
+          "dinner party as removed"
+        ],
+        "harmful_extra": [
+          "selecting any retained incident as the removed one"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": "Fails if a retained incident is incorrectly identified as removed.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "That's all been corrected and resolved now, so honestly you don't need to keep track of that one"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to write a short self-awareness journal entry about my mislabeling pattern. Help me draft a paragraph that covers how long Elaine and I have been together, identifies which of my tracked incidents were my own slip-ups versus other people's assumptions, and notes which category has the most recurring pattern. Keep it honest and reflective.",
+      "expected_answer": "Elaine and I have been together since June 2022 — about three years as long-term partners, not married and not engaged. Looking at my tracked mislabeling incidents, I have one self-mislabel: writing 'wife' on a dentist emergency contact form around March 3rd. The other-mislabels include my mom repeatedly introducing Elaine as my 'fiancée' (ongoing for about a year, most recently around mid-March), Kevin listing me as his 'brother' on a gym family plan, and a dinner party host lumping us in with married couples in late March or early April. The most recurring pattern is in the other-mislabel category — specifically my mom's repeated 'fiancée' introductions, which have been happening for at least a year despite corrections.",
+      "gold_memory_state": "Elaine is long-term partner since June 2022, not married, not engaged. Active self-mislabel: dentist form (March 3rd, wrote 'wife'). Active other-mislabels: mom's fiancée introductions (recurring ~1 year), Kevin's gym 'brother' label (user finds it funny), dinner party toast (late March/early April). HR benefits mislabel is removed and must not appear.",
+      "judge_rubric": {
+        "must_include": [
+          "together since June 2022 or about three years",
+          "dentist form as self-mislabel",
+          "mom's fiancée as most recurring other-mislabel pattern",
+          "not married and not engaged"
+        ],
+        "acceptable_paraphrases": [
+          "long-term partner since mid-2022",
+          "mom's ongoing fiancée habit is the most repeated"
+        ],
+        "must_not_include": [
+          "HR benefits mislabel incident details",
+          "listing Elaine as spouse on benefits"
+        ],
+        "harmful_extra": [
+          "including the HR benefits incident in the journal entry",
+          "saying user is married or engaged to Elaine"
+        ],
+        "harmless_extra": [
+          "mentioning Kevin's gym incident",
+          "mentioning the dinner party toast",
+          "mentioning Marco's preferred phrasing",
+          "mentioning the co-tenant lease renewal"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the HR benefits mislabel appears anywhere in the journal entry.",
+        "over_forget": "Fails if any of the four retained incidents are omitted from the journal entry.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Elaine is user's long-term partner since June 2022, not married, not engaged.",
+        "Fact 2: User wrote 'wife' on dentist emergency contact form around March 3rd — this is categorized as a self-mislabel.",
+        "Fact 3: Mom introduced Elaine as 'fiancée' to book club around mid-March, recurring for about a year — categorized as other-mislabel.",
+        "Fact 4: Kevin listed user as 'brother' on gym family plan — categorized as other-mislabel.",
+        "Fact 5: Dinner party host called user and Elaine a married couple in late March/early April — categorized as other-mislabel.",
+        "Inference: Self-mislabel count is 1 (dentist). Other-mislabel count is 3 (mom, Kevin, dinner party host). The other-mislabel category has more incidents.",
+        "Inference: Within other-mislabels, mom's pattern is the most recurring because it has been ongoing for about a year with multiple corrections, while Kevin's and the dinner party host's were single incidents.",
+        "Inference: The journal entry should combine relationship duration (~3 years from June 2022), categorize each incident, and identify mom's recurring fiancée usage as the most persistent pattern — all without mentioning the removed HR incident."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Elaine is my long-term partner — we've been together since June 2022"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I was at the dentist around March 3rd and wrote 'wife' on the emergency contact form instead of 'partner.' Had to correct it at the front desk"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my mom introduced Elaine to her book club friends as my 'fiancée' around mid-March, maybe the 18th or 19th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "She's been doing this for at least a year. I've corrected her multiple times"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "my buddy Kevin listed me as his 'brother' on a gym family plan to get a discount. We're not related — just close friends since college"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to write a short self-awareness journal entry about my mislabeling pattern. Help me draft a paragraph that covers how long Elaine and I have been together, identifies which of my tracked incidents were my own slip-ups versus other people's assumptions, and notes which category has the most recurring pattern. Keep it honest and reflective.",
+      "expected_answer": "Elaine and I have been together since June 2022 — about three years as long-term partners, not married and not engaged. Looking at my tracked mislabeling incidents, I have one self-mislabel: writing 'wife' on a dentist emergency contact form around March 3rd. The other-mislabels include my mom repeatedly introducing Elaine as my 'fiancée' (ongoing for about a year, most recently around mid-March), Kevin listing me as his 'brother' on a gym family plan, and a dinner party host lumping us in with married couples in late March or early April. The most recurring pattern is in the other-mislabel category — specifically my mom's repeated 'fiancée' introductions, which have been happening for at least a year despite corrections.",
+      "gold_memory_state": "Elaine is long-term partner since June 2022, not married, not engaged. Active self-mislabel: dentist form (March 3rd, wrote 'wife'). Active other-mislabels: mom's fiancée introductions (recurring ~1 year), Kevin's gym 'brother' label (user finds it funny), dinner party toast (late March/early April). HR benefits mislabel is removed and must not appear.",
+      "judge_rubric": {
+        "must_include": [
+          "together since June 2022 or about three years",
+          "dentist form as self-mislabel",
+          "mom's fiancée as most recurring other-mislabel pattern",
+          "not married and not engaged"
+        ],
+        "acceptable_paraphrases": [
+          "long-term partner since mid-2022",
+          "mom's ongoing fiancée habit is the most repeated"
+        ],
+        "must_not_include": [
+          "HR benefits mislabel incident details",
+          "listing Elaine as spouse on benefits"
+        ],
+        "harmful_extra": [
+          "including the HR benefits incident in the journal entry",
+          "saying user is married or engaged to Elaine"
+        ],
+        "harmless_extra": [
+          "mentioning Kevin's gym incident",
+          "mentioning the dinner party toast",
+          "mentioning Marco's preferred phrasing",
+          "mentioning the co-tenant lease renewal"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the HR benefits mislabel appears anywhere in the journal entry.",
+        "over_forget": "Fails if any of the four retained incidents are omitted from the journal entry.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Elaine is user's long-term partner since June 2022, not married, not engaged.",
+        "Fact 2: User wrote 'wife' on dentist emergency contact form around March 3rd — this is categorized as a self-mislabel.",
+        "Fact 3: Mom introduced Elaine as 'fiancée' to book club around mid-March, recurring for about a year — categorized as other-mislabel.",
+        "Fact 4: Kevin listed user as 'brother' on gym family plan — categorized as other-mislabel.",
+        "Fact 5: Dinner party host called user and Elaine a married couple in late March/early April — categorized as other-mislabel.",
+        "Inference: Self-mislabel count is 1 (dentist). Other-mislabel count is 3 (mom, Kevin, dinner party host). The other-mislabel category has more incidents.",
+        "Inference: Within other-mislabels, mom's pattern is the most recurring because it has been ongoing for about a year with multiple corrections, while Kevin's and the dinner party host's were single incidents.",
+        "Inference: The journal entry should combine relationship duration (~3 years from June 2022), categorize each incident, and identify mom's recurring fiancée usage as the most persistent pattern — all without mentioning the removed HR incident."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Elaine is my long-term partner — we've been together since June 2022"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I was at the dentist around March 3rd and wrote 'wife' on the emergency contact form instead of 'partner.' Had to correct it at the front desk"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my mom introduced Elaine to her book club friends as my 'fiancée' around mid-March, maybe the 18th or 19th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "She's been doing this for at least a year. I've corrected her multiple times"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "my buddy Kevin listed me as his 'brother' on a gym family plan to get a discount. We're not related — just close friends since college"
+        }
+      ]
+    }
+  ]
+}

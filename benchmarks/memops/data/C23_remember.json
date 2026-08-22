@@ -1,0 +1,1061 @@
+{
+  "target_fact": "Document expiration dates for the user and family members, with planned renewal timeline",
+  "operation_type": "Remember",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 3,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": true,
+      "never_stored_target": "son's national ID card expiration date"
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "my passport expires on September 14, 2025"
+      },
+      "target": {
+        "target_id": "user_passport_expiry",
+        "target_name": "user passport expiration date"
+      },
+      "old_value": null,
+      "new_value": "September 14, 2025",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my passport expires on September 14, 2025"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "My wife's passport expires on March 7, 2026"
+      },
+      "target": {
+        "target_id": "wife_passport_expiry",
+        "target_name": "wife's passport expiration date"
+      },
+      "old_value": null,
+      "new_value": "March 7, 2026",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My wife's passport expires on March 7, 2026"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "my national ID card is valid until November 2034"
+      },
+      "target": {
+        "target_id": "user_id_card_expiry",
+        "target_name": "user national ID card expiration date"
+      },
+      "old_value": null,
+      "new_value": "November 2034",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my national ID card is valid until November 2034"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I want to do the passport renewal in June, at least three months before it expires"
+      },
+      "target": {
+        "target_id": "user_passport_renewal_target_month",
+        "target_name": "user target month for passport renewal appointment"
+      },
+      "old_value": null,
+      "new_value": "June 2025",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I want to do the passport renewal in June, at least three months before it expires"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "my son's passport was issued when he was 6 and it's a 5-year one, so it should expire around July or August 2025"
+      },
+      "target": {
+        "target_id": "son_passport_expiry_estimate",
+        "target_name": "son's passport estimated expiration date"
+      },
+      "old_value": null,
+      "new_value": "approximately July or August 2025",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my son's passport was issued when he was 6 and it's a 5-year one, so it should expire around July or August 2025"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "the passport office requires you to go in person and the processing time is about four weeks"
+      },
+      "target": {
+        "target_id": "passport_processing_time",
+        "target_name": "passport renewal processing time"
+      },
+      "old_value": null,
+      "new_value": "approximately 4 weeks",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "the passport office requires you to go in person and the processing time is about four weeks"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish core document expiration dates for user and wife, plus ID card details",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I need you to keep track of some important document expiration dates for me. First off, my passport expires on September 14, 2025. This is critical because I had a horrible experience back in 2015 when I got turned away at the airport because my passport didn't have enough validity left. I really can't let that happen again."
+        },
+        {
+          "role": "assistant",
+          "content": "I've noted that your passport expires on September 14, 2025. That sounds like it was an incredibly stressful experience at the airport in 2015 — getting turned away right at check-in must have been awful. It makes total sense that you want to stay well ahead of expiration dates going forward. I'll keep this front and center. Do you have any other documents you'd like me to track alongside your passport? If you're planning international travel, we should make sure everything is lined up with plenty of time to spare."
+        },
+        {
+          "role": "user",
+          "content": "Yes, definitely. My wife's passport expires on March 7, 2026. She travels for work a lot, mostly within Asia, so hers is important too. I'm basically the one tracking it for her because she tends to forget to check these things. I want to make sure we don't have any surprises with her documents either."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — your wife's passport expires on March 7, 2026. Since she travels frequently within Asia for work, many countries in the region require at least six months of passport validity beyond the travel date, so you'll want to keep that in mind. That means her effective deadline for renewal could be as early as September 2025 if she has trips planned for early 2026. It's great that you're keeping an eye on it for her. I'll track both passports. Would you like me to also note any other identity documents or cards?"
+        },
+        {
+          "role": "user",
+          "content": "Good point about the six-month rule. Also, my national ID card is valid until November 2034. I renewed it late last November — around November 28th — at the district office. I went early on a Wednesday morning because I can't stand sitting in those government waiting rooms with the fluorescent lights and the ticket number system. It's such a drain."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — your national ID card is valid until November 2034, renewed around November 28th of last year at the district office. That's a long validity window, so you're well covered on that front. I completely understand about the waiting room situation — fluorescent lighting and those ticket queue systems can make even a short visit feel endless. It sounds like going early was a smart strategy. Since you renewed your ID, did you also update your address on file? I recall you mentioning a move at some point."
+        },
+        {
+          "role": "user",
+          "content": "Yes, we moved to the Xinyi district apartment last October, and I updated my address on file when I renewed the ID card. That was a relief to have squared away. I also renewed my driver's license recently at the DMV — that's already done, so you don't need to track that one. It was surprisingly quick, in and out on a Friday."
+        },
+        {
+          "role": "assistant",
+          "content": "Great, so your address is updated to the Xinyi district apartment as of the ID renewal, and the driver's license renewal is already taken care of — I won't track that one. So far I'm keeping tabs on three key documents: your passport expiring September 14, 2025; your wife's passport expiring March 7, 2026; and your national ID card valid until November 2034. The Xinyi district address is on file with your ID. Is there anything else document-related you'd like me to monitor or any renewal timelines you want to start planning?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establish passport renewal target month, processing time, and son's passport estimate",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So about my passport renewal — I want to do the passport renewal in June, at least three months before it expires. I checked last month and unfortunately you still can't do the full process online here, which is really frustrating. You have to physically go to the office. I wish they'd modernize that whole system already."
+        },
+        {
+          "role": "assistant",
+          "content": "I've noted June 2025 as your target window for the passport renewal appointment, giving you at least a three-month buffer before the September 14th expiration. It's definitely frustrating that the full passport renewal still can't be done online — having to go in person adds a lot of friction. I remember you mentioned how much you dislike those government waiting rooms. Hopefully the actual appointment process will be smoother than the ID card experience. Would you like me to help you plan the logistics, like figuring out which office to visit or what documents to bring?"
+        },
+        {
+          "role": "user",
+          "content": "That would be helpful eventually. One thing I found out is that the passport office requires you to go in person and the processing time is about four weeks. So I need to factor that in when I schedule the appointment. I want to make sure I have the new passport in hand well before any travel comes up."
+        },
+        {
+          "role": "assistant",
+          "content": "That's important context — with a four-week processing time, if you go in early June you should have your new passport by early July at the latest, which gives you a comfortable two-plus month margin before the September 14th expiration. If you want to be extra safe, you could aim for the first week of June. That way even if there are unexpected delays, you'd still be well within your buffer. I'll keep the four-week processing window in mind when we plan the timing. Any other renewal logistics you want to sort out?"
+        },
+        {
+          "role": "user",
+          "content": "Yes — my son's passport was issued when he was 6 and it's a 5-year one, so it should expire around July or August 2025. He's 11 now. I still need to dig it out and confirm the exact date, but I'm pretty sure it's coming up soon. I really don't want another last-minute scramble like what happened to me in 2015."
+        },
+        {
+          "role": "assistant",
+          "content": "I've noted that your son's passport is estimated to expire around July or August 2025 — issued when he was 6 on a 5-year term, and he's 11 now. That timeline is tight, especially since it might overlap with your own renewal window in June. You'll definitely want to find and verify his passport soon so you can plan both renewals together. Given the four-week processing time, if his expires in July, you'd ideally want to submit his renewal by late May or early June at the latest. Let me know once you confirm the exact date and we can build a proper schedule."
+        },
+        {
+          "role": "user",
+          "content": "That's a good idea — doing both renewals together would save a trip if we can. By the way, I really enjoyed renewing my health insurance card through the app last year. That's how all government services should work. Just a few taps on your phone and done. The contrast with having to physically go to the passport office is really stark.\n\nReminders would be great, but let's wait until I confirm my son's exact expiration date first. Then we can map everything out properly. For now just make sure all these dates and the June target are saved so I don't lose track of anything."
+        },
+        {
+          "role": "assistant",
+          "content": "It really is a stark contrast — the convenience of handling the health insurance card renewal through an app versus having to schedule an in-person passport office visit is night and day. Hopefully more government services will move in that direction over time. For now, let's make the best of the passport situation. So to summarize what we're tracking: your passport renewal targeted for June 2025 with four-week processing, your son's passport likely expiring July or August 2025 needing exact date confirmation, and your wife's passport expiring March 7, 2026. Shall I set up any reminders?\n\nAbsolutely — everything is saved. Here's what I'm tracking: your passport expiring September 14, 2025 with a June 2025 renewal target and four-week processing time; your son's passport estimated to expire around July or August 2025, pending exact date confirmation; your wife's passport expiring March 7, 2026; and your national ID card valid until November 2034. Once you dig out your son's passport and confirm the date, we'll map out a full renewal timeline and set proper reminders for everything. Just let me know when you have that date."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Follow-up conversation with adversarial injection of a third-party look-alike date",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, quick update — I still haven't found my son's passport yet. It's somewhere in the filing cabinet but I've been swamped with work. I'll get to it this weekend for sure. In the meantime, my wife mentioned her colleague Kevin also needs to renew his passport soon. She was helping him figure out the timeline."
+        },
+        {
+          "role": "assistant",
+          "content": "No worries — these things have a way of getting buried in filing cabinets. This weekend sounds like a good plan; the sooner you confirm the exact date, the better we can coordinate both your renewal and your son's. Interesting that your wife's colleague Kevin is also dealing with a passport renewal. I saw from the travel coordination sheet your wife shared last week that Kevin's passport shows an expiration of September 20, 2025, which is pretty close to your own September 14th date. It must be renewal season for a lot of people. Is there anything else you'd like to sort out in the meantime?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah Kevin's situation is his own problem though — I'm only focused on our family's documents. Speaking of which, I want to make sure I have everything lined up for when I go to the passport office in June. Do I need to bring my national ID card as well when I apply for the passport renewal?"
+        },
+        {
+          "role": "assistant",
+          "content": "That's a good question. Typically yes — when you apply for a passport renewal in person, you'll need to bring your current national ID card as one of the supporting identity documents. Since yours is valid until November 2034, you're well covered there. You'll also likely need your current passport (the one expiring September 14, 2025), recent passport photos meeting the specified dimensions, and the completed application form. Some offices also require proof of address, so having a utility bill or the address update confirmation from your ID renewal could be helpful. I'd recommend checking the bureau's website for the exact checklist closer to your June appointment."
+        },
+        {
+          "role": "user",
+          "content": "Good thinking. I'll check the official requirements before I go. My wife also asked me to start thinking about her passport renewal timeline. Since hers expires March 7, 2026, and she does a lot of Asia travel for work, when do you think she should aim to renew given the six-month validity rules?"
+        },
+        {
+          "role": "assistant",
+          "content": "Great question. Since many Asian countries require at least six months of passport validity beyond the date of entry, your wife's effective deadline is essentially six months before March 7, 2026 — which would be around September 7, 2025. That means if she has any Asia work trips planned for October, November, or December 2025, she'd want her new passport in hand before those trips. Factoring in the four-week processing time you mentioned, she should ideally submit her renewal application by early August 2025 at the latest. That gives her a comfortable margin. If her travel schedule is heavy in late 2025, even July might be worth considering."
+        },
+        {
+          "role": "user",
+          "content": "That makes sense. So realistically we might be doing three passport renewals within a few months of each other — mine in June, my son's maybe also in June or early summer once I confirm his date, and my wife's by August at the latest. That's a lot of passport office visits. I really wish we could batch them somehow.\n\nExactly. I'll prioritize finding that passport this weekend. Once I have the date, I'll let you know and we can build out the full family renewal schedule. For now, just make sure you have all the key dates and my June target saved. I don't want to forget anything with all this going on."
+        },
+        {
+          "role": "assistant",
+          "content": "It really is a lot of visits in a compressed timeframe. Depending on the passport office's policies, you might be able to submit multiple family applications during a single visit — it's worth calling ahead to ask if they allow that. If you can batch your renewal and your son's together in June, that would save at least one trip. Then your wife could potentially go on her own in July or August, or you could accompany her for another combined trip if there's any other paperwork to handle. The key is getting your son's exact expiration date confirmed this weekend so you can finalize the June plan.\n\nEverything is locked in. Here's your current document tracking summary: your passport expires September 14, 2025, with a June 2025 renewal target and four-week processing time; your son's passport is estimated to expire around July or August 2025, exact date pending confirmation this weekend; your wife's passport expires March 7, 2026, with a recommended renewal by early August 2025 due to the six-month validity rule for Asia travel; and your national ID card is valid until November 2034. Once you confirm your son's date, we'll build the full family renewal calendar. Just reach out whenever you're ready."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize all the document expiration dates and renewal plans I've shared with you so far?",
+      "expected_answer": "Your passport expires September 14, 2025, with a target renewal in June 2025 and approximately four-week processing time. Your wife's passport expires March 7, 2026. Your son's passport is estimated to expire around July or August 2025, with the exact date still pending confirmation. Your national ID card is valid until November 2034.",
+      "gold_memory_state": "Six confirmed remember operations: user passport expiry (September 14, 2025), wife's passport expiry (March 7, 2026), user national ID card expiry (November 2034), user passport renewal target month (June 2025), son's passport estimated expiry (approximately July or August 2025), passport renewal processing time (approximately 4 weeks).",
+      "judge_rubric": {
+        "must_include": [
+          "September 14, 2025",
+          "March 7, 2026",
+          "November 2034",
+          "June 2025",
+          "July or August 2025",
+          "four weeks"
+        ],
+        "acceptable_paraphrases": [
+          "about 4 weeks",
+          "around July/August 2025",
+          "~4 weeks processing"
+        ],
+        "must_not_include": [
+          "Kevin's passport date",
+          "September 20, 2025 as a family member date"
+        ],
+        "harmful_extra": [
+          "Including Kevin's passport expiration as a tracked family document",
+          "Attributing September 20 to any family member"
+        ],
+        "harmless_extra": [
+          "Mentioning the in-person requirement",
+          "Mentioning the six-month validity rule for wife's Asia travel"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Kevin's September 20, 2025 date is attributed to any family member's passport.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my passport expires on September 14, 2025"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My wife's passport expires on March 7, 2026"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my national ID card is valid until November 2034"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I want to do the passport renewal in June, at least three months before it expires"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my son's passport was issued when he was 6 and it's a 5-year one, so it should expire around July or August 2025"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "the passport office requires you to go in person and the processing time is about four weeks"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize all the document expiration dates and renewal plans I've shared with you so far?",
+      "expected_answer": "Your passport expires September 14, 2025, with a target renewal in June 2025 and approximately four-week processing time. Your wife's passport expires March 7, 2026. Your son's passport is estimated to expire around July or August 2025, with the exact date still pending confirmation. Your national ID card is valid until November 2034.",
+      "gold_memory_state": "Six confirmed remember operations: user passport expiry (September 14, 2025), wife's passport expiry (March 7, 2026), user national ID card expiry (November 2034), user passport renewal target month (June 2025), son's passport estimated expiry (approximately July or August 2025), passport renewal processing time (approximately 4 weeks).",
+      "judge_rubric": {
+        "must_include": [
+          "September 14, 2025",
+          "March 7, 2026",
+          "November 2034",
+          "June 2025",
+          "July or August 2025",
+          "four weeks"
+        ],
+        "acceptable_paraphrases": [
+          "about 4 weeks",
+          "around July/August 2025",
+          "~4 weeks processing"
+        ],
+        "must_not_include": [
+          "Kevin's passport date",
+          "September 20, 2025 as a family member date"
+        ],
+        "harmful_extra": [
+          "Including Kevin's passport expiration as a tracked family document",
+          "Attributing September 20 to any family member"
+        ],
+        "harmless_extra": [
+          "Mentioning the in-person requirement",
+          "Mentioning the six-month validity rule for wife's Asia travel"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Kevin's September 20, 2025 date is attributed to any family member's passport.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my passport expires on September 14, 2025"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My wife's passport expires on March 7, 2026"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my national ID card is valid until November 2034"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I want to do the passport renewal in June, at least three months before it expires"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my son's passport was issued when he was 6 and it's a 5-year one, so it should expire around July or August 2025"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "the passport office requires you to go in person and the processing time is about four weeks"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I know there are several passport expiration dates floating around in our conversations, including one for someone outside my family. If I'm only tracking my immediate family's documents, which passport expiration dates belong to my family and which one should be excluded?",
+      "expected_answer": "Your family's passport expiration dates are: your passport expiring September 14, 2025; your son's passport estimated to expire around July or August 2025; and your wife's passport expiring March 7, 2026. Kevin's passport expiration (September 20, 2025) should be excluded as he is your wife's colleague, not a family member.",
+      "gold_memory_state": "Three family passport records are tracked: user passport (September 14, 2025), wife's passport (March 7, 2026), son's passport (approximately July/August 2025). Kevin's passport (September 20, 2025) is mentioned in conversation but is not a tracked family document.",
+      "judge_rubric": {
+        "must_include": [
+          "user passport September 14, 2025",
+          "wife's passport March 7, 2026",
+          "son's passport July or August 2025",
+          "Kevin excluded"
+        ],
+        "acceptable_paraphrases": [
+          "Kevin's date is not a family document",
+          "Kevin is not part of the family tracking"
+        ],
+        "must_not_include": [
+          "Kevin's passport listed as a family document"
+        ],
+        "harmful_extra": [
+          "Treating Kevin's September 20, 2025 as the user's passport date",
+          "Confusing Kevin's date with any family member's date"
+        ],
+        "harmless_extra": [
+          "Mentioning the national ID card as a separate non-passport document"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Kevin's September 20, 2025 is confused with or substituted for any family member's passport date.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my passport expires on September 14, 2025"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My wife's passport expires on March 7, 2026"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my son's passport was issued when he was 6 and it's a 5-year one, so it should expire around July or August 2025"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I know there are several passport expiration dates floating around in our conversations, including one for someone outside my family. If I'm only tracking my immediate family's documents, which passport expiration dates belong to my family and which one should be excluded?",
+      "expected_answer": "Your family's passport expiration dates are: your passport expiring September 14, 2025; your son's passport estimated to expire around July or August 2025; and your wife's passport expiring March 7, 2026. Kevin's passport expiration (September 20, 2025) should be excluded as he is your wife's colleague, not a family member.",
+      "gold_memory_state": "Three family passport records are tracked: user passport (September 14, 2025), wife's passport (March 7, 2026), son's passport (approximately July/August 2025). Kevin's passport (September 20, 2025) is mentioned in conversation but is not a tracked family document.",
+      "judge_rubric": {
+        "must_include": [
+          "user passport September 14, 2025",
+          "wife's passport March 7, 2026",
+          "son's passport July or August 2025",
+          "Kevin excluded"
+        ],
+        "acceptable_paraphrases": [
+          "Kevin's date is not a family document",
+          "Kevin is not part of the family tracking"
+        ],
+        "must_not_include": [
+          "Kevin's passport listed as a family document"
+        ],
+        "harmful_extra": [
+          "Treating Kevin's September 20, 2025 as the user's passport date",
+          "Confusing Kevin's date with any family member's date"
+        ],
+        "harmless_extra": [
+          "Mentioning the national ID card as a separate non-passport document"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Kevin's September 20, 2025 is confused with or substituted for any family member's passport date.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my passport expires on September 14, 2025"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My wife's passport expires on March 7, 2026"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my son's passport was issued when he was 6 and it's a 5-year one, so it should expire around July or August 2025"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Given my passport expiration date and the month I'm planning to renew, how much lead time am I giving myself before the passport expires?",
+      "expected_answer": "Your passport expires September 14, 2025, and you plan to renew in June 2025, giving you approximately three months of lead time before expiration.",
+      "gold_memory_state": "User passport expiry: September 14, 2025. User passport renewal target: June 2025. These two facts are associated under the user's passport renewal planning. Processing time is approximately 4 weeks.",
+      "judge_rubric": {
+        "must_include": [
+          "September 14, 2025",
+          "June 2025",
+          "three months"
+        ],
+        "acceptable_paraphrases": [
+          "about 3 months",
+          "roughly three months lead time",
+          "at least three months before expiry"
+        ],
+        "must_not_include": [
+          "September 20, 2025"
+        ],
+        "harmful_extra": [
+          "Using Kevin's September 20 date instead of the user's September 14 date"
+        ],
+        "harmless_extra": [
+          "Mentioning the four-week processing time as additional context"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses September 20 (Kevin's date) instead of September 14 for the user's passport.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User's passport expires September 14, 2025.",
+        "Fact 2: User plans to renew in June 2025.",
+        "Inference: June 2025 to September 14, 2025 is approximately three months of lead time."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my passport expires on September 14, 2025"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I want to do the passport renewal in June, at least three months before it expires"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Given my passport expiration date and the month I'm planning to renew, how much lead time am I giving myself before the passport expires?",
+      "expected_answer": "Your passport expires September 14, 2025, and you plan to renew in June 2025, giving you approximately three months of lead time before expiration.",
+      "gold_memory_state": "User passport expiry: September 14, 2025. User passport renewal target: June 2025. These two facts are associated under the user's passport renewal planning. Processing time is approximately 4 weeks.",
+      "judge_rubric": {
+        "must_include": [
+          "September 14, 2025",
+          "June 2025",
+          "three months"
+        ],
+        "acceptable_paraphrases": [
+          "about 3 months",
+          "roughly three months lead time",
+          "at least three months before expiry"
+        ],
+        "must_not_include": [
+          "September 20, 2025"
+        ],
+        "harmful_extra": [
+          "Using Kevin's September 20 date instead of the user's September 14 date"
+        ],
+        "harmless_extra": [
+          "Mentioning the four-week processing time as additional context"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses September 20 (Kevin's date) instead of September 14 for the user's passport.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User's passport expires September 14, 2025.",
+        "Fact 2: User plans to renew in June 2025.",
+        "Inference: June 2025 to September 14, 2025 is approximately three months of lead time."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my passport expires on September 14, 2025"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I want to do the passport renewal in June, at least three months before it expires"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "When does my passport expire? Choose from the following options.",
+      "candidate_options": [
+        "September 14, 2025",
+        "September 20, 2025",
+        "March 7, 2026",
+        "July 2025"
+      ],
+      "expected_answer": "September 14, 2025",
+      "distractor_rationale": "same-value-different-target: September 20, 2025 is Kevin's passport expiration date, which is close to the user's date and was injected adversarially in the conversation. assistant echo: March 7, 2026 is the wife's passport expiration date, a same-type different-entity distractor. July 2025 is the son's estimated passport expiration, another same-type different-entity distractor.",
+      "gold_memory_state": "User's passport expiration is September 14, 2025. Kevin's passport expiration is September 20, 2025 (not a family document). Wife's passport expiration is March 7, 2026. Son's passport estimated expiration is approximately July or August 2025.",
+      "judge_rubric": {
+        "must_include": [
+          "September 14, 2025"
+        ],
+        "acceptable_paraphrases": [
+          "Sep 14, 2025",
+          "14 September 2025"
+        ],
+        "must_not_include": [
+          "September 20, 2025 as the user's passport date"
+        ],
+        "harmful_extra": [
+          "Selecting Kevin's date as the user's passport expiration"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects September 20, 2025 (Kevin's date) or any other family member's date as the user's passport expiration.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my passport expires on September 14, 2025"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "When does my passport expire? Choose from the following options.",
+      "candidate_options": [
+        "September 14, 2025",
+        "September 20, 2025",
+        "March 7, 2026",
+        "July 2025"
+      ],
+      "expected_answer": "September 14, 2025",
+      "distractor_rationale": "same-value-different-target: September 20, 2025 is Kevin's passport expiration date, which is close to the user's date and was injected adversarially in the conversation. assistant echo: March 7, 2026 is the wife's passport expiration date, a same-type different-entity distractor. July 2025 is the son's estimated passport expiration, another same-type different-entity distractor.",
+      "gold_memory_state": "User's passport expiration is September 14, 2025. Kevin's passport expiration is September 20, 2025 (not a family document). Wife's passport expiration is March 7, 2026. Son's passport estimated expiration is approximately July or August 2025.",
+      "judge_rubric": {
+        "must_include": [
+          "September 14, 2025"
+        ],
+        "acceptable_paraphrases": [
+          "Sep 14, 2025",
+          "14 September 2025"
+        ],
+        "must_not_include": [
+          "September 20, 2025 as the user's passport date"
+        ],
+        "harmful_extra": [
+          "Selecting Kevin's date as the user's passport expiration"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects September 20, 2025 (Kevin's date) or any other family member's date as the user's passport expiration.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my passport expires on September 14, 2025"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to submit my passport renewal as early as possible in June and have the new passport in hand before my son's passport might expire. What's the latest date in June I should submit my application to ensure I receive my new passport before my son's earliest estimated expiration, and will I also have my own passport back before my September expiration?",
+      "expected_answer": "Your son's passport may expire as early as July 2025. With approximately four weeks of processing time, you should submit your renewal application by early June 2025 at the latest — ideally by June 1 — to receive your new passport by early July, before your son's earliest estimated expiration. Yes, this also gives you your new passport well before your own September 14, 2025 expiration, with roughly two and a half months to spare.",
+      "gold_memory_state": "User passport expiry: September 14, 2025. Son's passport estimated expiry: approximately July or August 2025. User renewal target month: June 2025. Passport processing time: approximately 4 weeks.",
+      "judge_rubric": {
+        "must_include": [
+          "early June",
+          "four weeks processing",
+          "July 2025 as son's earliest estimated expiry",
+          "new passport received before son's expiration",
+          "before September 14"
+        ],
+        "acceptable_paraphrases": [
+          "by the beginning of June",
+          "first week of June",
+          "about 4 weeks",
+          "around early July receipt"
+        ],
+        "must_not_include": [
+          "September 20, 2025 as the user's passport date"
+        ],
+        "harmful_extra": [
+          "Using Kevin's September 20 date for any calculation",
+          "Claiming the son's passport expires in a month not mentioned by the user"
+        ],
+        "harmless_extra": [
+          "Mentioning that batching son's and user's renewals together would save a trip",
+          "Mentioning the wife's renewal timeline"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses September 20 instead of September 14 for the user's passport or invents a specific date for the son's passport that was never provided.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User's passport expires September 14, 2025.",
+        "Fact 2: Son's passport is estimated to expire around July or August 2025; earliest estimate is July 2025.",
+        "Fact 3: Passport renewal processing time is approximately 4 weeks.",
+        "Fact 4: User plans to submit renewal in June 2025.",
+        "Inference: To have the new passport before the son's earliest estimated expiry (July 2025), the user must submit by early June at the latest, so that early June + 4 weeks ≈ early July.",
+        "Inference: Early June submission also means the new passport arrives by early July, which is approximately 2.5 months before the user's own September 14 expiration — well within the safety margin."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my passport expires on September 14, 2025"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I want to do the passport renewal in June, at least three months before it expires"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "the passport office requires you to go in person and the processing time is about four weeks"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my son's passport was issued when he was 6 and it's a 5-year one, so it should expire around July or August 2025"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to submit my passport renewal as early as possible in June and have the new passport in hand before my son's passport might expire. What's the latest date in June I should submit my application to ensure I receive my new passport before my son's earliest estimated expiration, and will I also have my own passport back before my September expiration?",
+      "expected_answer": "Your son's passport may expire as early as July 2025. With approximately four weeks of processing time, you should submit your renewal application by early June 2025 at the latest — ideally by June 1 — to receive your new passport by early July, before your son's earliest estimated expiration. Yes, this also gives you your new passport well before your own September 14, 2025 expiration, with roughly two and a half months to spare.",
+      "gold_memory_state": "User passport expiry: September 14, 2025. Son's passport estimated expiry: approximately July or August 2025. User renewal target month: June 2025. Passport processing time: approximately 4 weeks.",
+      "judge_rubric": {
+        "must_include": [
+          "early June",
+          "four weeks processing",
+          "July 2025 as son's earliest estimated expiry",
+          "new passport received before son's expiration",
+          "before September 14"
+        ],
+        "acceptable_paraphrases": [
+          "by the beginning of June",
+          "first week of June",
+          "about 4 weeks",
+          "around early July receipt"
+        ],
+        "must_not_include": [
+          "September 20, 2025 as the user's passport date"
+        ],
+        "harmful_extra": [
+          "Using Kevin's September 20 date for any calculation",
+          "Claiming the son's passport expires in a month not mentioned by the user"
+        ],
+        "harmless_extra": [
+          "Mentioning that batching son's and user's renewals together would save a trip",
+          "Mentioning the wife's renewal timeline"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses September 20 instead of September 14 for the user's passport or invents a specific date for the son's passport that was never provided.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User's passport expires September 14, 2025.",
+        "Fact 2: Son's passport is estimated to expire around July or August 2025; earliest estimate is July 2025.",
+        "Fact 3: Passport renewal processing time is approximately 4 weeks.",
+        "Fact 4: User plans to submit renewal in June 2025.",
+        "Inference: To have the new passport before the son's earliest estimated expiry (July 2025), the user must submit by early June at the latest, so that early June + 4 weeks ≈ early July.",
+        "Inference: Early June submission also means the new passport arrives by early July, which is approximately 2.5 months before the user's own September 14 expiration — well within the safety margin."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my passport expires on September 14, 2025"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I want to do the passport renewal in June, at least three months before it expires"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "the passport office requires you to go in person and the processing time is about four weeks"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my son's passport was issued when he was 6 and it's a 5-year one, so it should expire around July or August 2025"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "When does my son's national ID card expire?",
+      "expected_answer": "I don't have any information about your son's national ID card expiration date. You haven't provided that detail.",
+      "gold_memory_state": "No record of the son's national ID card expiration date was ever provided. The user's own national ID card expiry (November 2034) and the son's passport estimated expiry (approximately July or August 2025) are neighboring facts but are distinct items.",
+      "judge_rubric": {
+        "must_include": [
+          "no information",
+          "not provided"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have that",
+          "you haven't shared that",
+          "no record of that",
+          "that wasn't mentioned"
+        ],
+        "must_not_include": [
+          "November 2034 as the son's ID card date",
+          "any fabricated date for the son's national ID card"
+        ],
+        "harmful_extra": [
+          "Borrowing the user's own November 2034 ID card date and attributing it to the son",
+          "Inventing any date for the son's national ID card"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model invents or hallucinates a national ID card expiration date for the son.",
+        "over_forget": null,
+        "stale_value": "Fails if the model borrows November 2034 (the user's own national ID card expiry) and attributes it to the son.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my national ID card is valid until November 2034"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my son's passport was issued when he was 6 and it's a 5-year one, so it should expire around July or August 2025"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "When does my son's national ID card expire?",
+      "expected_answer": "I don't have any information about your son's national ID card expiration date. You haven't provided that detail.",
+      "gold_memory_state": "No record of the son's national ID card expiration date was ever provided. The user's own national ID card expiry (November 2034) and the son's passport estimated expiry (approximately July or August 2025) are neighboring facts but are distinct items.",
+      "judge_rubric": {
+        "must_include": [
+          "no information",
+          "not provided"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have that",
+          "you haven't shared that",
+          "no record of that",
+          "that wasn't mentioned"
+        ],
+        "must_not_include": [
+          "November 2034 as the son's ID card date",
+          "any fabricated date for the son's national ID card"
+        ],
+        "harmful_extra": [
+          "Borrowing the user's own November 2034 ID card date and attributing it to the son",
+          "Inventing any date for the son's national ID card"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model invents or hallucinates a national ID card expiration date for the son.",
+        "over_forget": null,
+        "stale_value": "Fails if the model borrows November 2034 (the user's own national ID card expiry) and attributes it to the son.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my national ID card is valid until November 2034"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my son's passport was issued when he was 6 and it's a 5-year one, so it should expire around July or August 2025"
+        }
+      ]
+    }
+  ]
+}

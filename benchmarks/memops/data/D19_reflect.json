@@ -1,0 +1,1017 @@
+{
+  "target_fact": "User prefers simple, open, cross-platform tools over ecosystem-locked or cluttered solutions, inferred from multiple stated preferences and decisions about cloud storage",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I switched over to Google Drive about five weeks ago as my default cloud storage"
+      },
+      "target": {
+        "target_id": "default_cloud_service",
+        "target_name": "default cloud storage service"
+      },
+      "old_value": null,
+      "new_value": "Google Drive",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I switched over to Google Drive about five weeks ago as my default cloud storage"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I rejected iCloud because I don't like being locked into Apple's ecosystem. I want my tools to work across platforms"
+      },
+      "target": {
+        "target_id": "icloud_rejection_reason",
+        "target_name": "reason for rejecting iCloud"
+      },
+      "old_value": null,
+      "new_value": "Does not want to be locked into Apple's ecosystem; wants cross-platform tools",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I rejected iCloud because I don't like being locked into Apple's ecosystem. I want my tools to work across platforms"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "OneDrive's dashboard was way too cluttered for me. I like a clean, minimal interface where I can just drag and drop files without a bunch of pop-ups"
+      },
+      "target": {
+        "target_id": "ui_preference_cloud",
+        "target_name": "preferred cloud storage UI characteristics"
+      },
+      "old_value": null,
+      "new_value": "Clean, minimal interface with drag-and-drop and no excessive pop-ups",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "OneDrive's dashboard was way too cluttered for me. I like a clean, minimal interface where I can just drag and drop files without a bunch of pop-ups"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I'm on the 2 TB Google One plan right now. I upgraded because my photography backups filled up the 200 GB tier almost immediately"
+      },
+      "target": {
+        "target_id": "google_one_plan",
+        "target_name": "Google One storage plan tier"
+      },
+      "old_value": null,
+      "new_value": "2 TB",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I'm on the 2 TB Google One plan right now. I upgraded because my photography backups filled up the 200 GB tier almost immediately"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "I guess the pattern is that I always end up picking whatever tool gives me the most freedom and the least friction. Ecosystem lock-in is a dealbreaker, and visual clutter drives me away fast"
+      },
+      "target": {
+        "target_id": "tool_selection_principle",
+        "target_name": "general tool selection principle"
+      },
+      "old_value": null,
+      "new_value": "Prefers tools that maximize freedom and minimize friction; ecosystem lock-in is a dealbreaker and visual clutter is a strong negative signal",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I rejected iCloud because I don't like being locked into Apple's ecosystem. I want my tools to work across platforms"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "OneDrive's dashboard was way too cluttered for me. I like a clean, minimal interface where I can just drag and drop files without a bunch of pop-ups"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I guess the pattern is that I always end up picking whatever tool gives me the most freedom and the least friction. Ecosystem lock-in is a dealbreaker, and visual clutter drives me away fast"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "my main storage folder on Google Drive is called Core_Vault. I reference it constantly so please keep that in mind"
+      },
+      "target": {
+        "target_id": "main_storage_folder",
+        "target_name": "main Google Drive storage folder name"
+      },
+      "old_value": null,
+      "new_value": "Core_Vault",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "my main storage folder on Google Drive is called Core_Vault. I reference it constantly so please keep that in mind"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 7,
+        "quote": "my coworker Dev just told me that Proton Drive is going to be my team's standard starting next quarter. So I'll probably have to switch everything over to Proton Drive soon"
+      },
+      "target": {
+        "target_id": "potential_future_cloud_service",
+        "target_name": "potential future default cloud storage service"
+      },
+      "old_value": null,
+      "new_value": "Proton Drive",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "my coworker Dev just told me that Proton Drive is going to be my team's standard starting next quarter. So I'll probably have to switch everything over to Proton Drive soon"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish cloud storage facts: current service, rejection of iCloud, UI preferences",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to give you some context about my cloud storage setup so you can help me stay organized. I switched over to Google Drive about five weeks ago as my default cloud storage. Before that I was on OneDrive for about two years, but the syncing kept breaking on my laptop and I finally got fed up after losing 40 minutes one afternoon trying to fix a folder that wouldn't update."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for the background! That sounds genuinely frustrating—losing 40 minutes to a sync issue is enough to sour anyone on a service. So your current default cloud storage is Google Drive, and you moved away from OneDrive due to persistent syncing problems on your laptop. I'll keep that in mind whenever we discuss file management, backups, or collaboration tools. If you have any more details about how your Drive is set up—folder structure, storage plan, sharing preferences—feel free to share those too, and I can help you optimize things."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, for sure. One thing I should mention: my friend Tessa uses iCloud and she loves it. She's been on the 2 TB iCloud+ plan since January. She tried to convince me to switch, but I rejected iCloud because I don't like being locked into Apple's ecosystem. I want my tools to work across platforms—Windows, Android, whatever. I don't want to be tied to one brand just because my phone happens to be a certain make."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes a lot of sense. Tessa's experience with iCloud+ sounds solid—no issues since January on the 2 TB plan is impressive—but your reasoning for passing on it is clear. You value cross-platform compatibility and don't want your tool choices dictated by which hardware brand you're currently using. That's a strong criterion that rules out ecosystem-locked services like iCloud pretty definitively. Google Drive fits well there since it works natively on Android, has solid Windows and macOS clients, and the web interface is accessible from basically anything. I'll factor that cross-platform preference into any future recommendations."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. And honestly the other big factor was the interface. OneDrive's dashboard was way too cluttered for me. I like a clean, minimal interface where I can just drag and drop files without a bunch of pop-ups asking me to confirm things or suggesting features I don't need. Google Drive isn't perfect, but it's noticeably less noisy than OneDrive was. That matters to me more than people might think."
+        },
+        {
+          "role": "assistant",
+          "content": "I hear you—interface clutter can be a real productivity killer, especially when you're managing files frequently. So you have two strong selection criteria for cloud tools: cross-platform openness and a clean, minimal UI with straightforward drag-and-drop. OneDrive failed on the UI front with too many pop-ups and a cluttered dashboard, and iCloud failed on the openness front by being too tightly coupled to Apple hardware. Google Drive sits in a sweet spot for you right now because it's relatively minimal and works across ecosystems. I'll keep both of those preferences in mind when we talk about any file management or productivity tools going forward."
+        },
+        {
+          "role": "user",
+          "content": "That's a good summary. One more thing for now—I set up automatic camera roll backup to Google Drive on my phone a few weeks ago. I did that after I accidentally deleted some photos from a trip to Portland. I think the trip was late February or maybe early March, the timeline is a bit fuzzy. But the auto-backup is running now so I won't lose photos like that again."
+        },
+        {
+          "role": "assistant",
+          "content": "Smart move setting up auto-backup after that scare. Losing trip photos is one of those things you don't think about until it happens. Whether the Portland trip was late February or early March, the important thing is the safety net is in place now. Your phone's camera roll is backing up automatically to Google Drive, so any new photos should be preserved even if you accidentally delete them locally. If you ever want help organizing those photo backups into folders or setting up any naming conventions inside Drive, just let me know. For now I've noted the auto-backup is active on your phone."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establish storage plan details, folder name, and trigger the reflective inference about tool selection principles",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So picking up where we left off—I wanted to clarify my storage situation. I'm on the 2 TB Google One plan right now. I upgraded because my photography backups filled up the 200 GB tier almost immediately. I do a lot of landscape and street photography, so the files add up fast. The upgrade happened sometime in mid-March, pretty soon after I switched to Drive."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it—you're on the 2 TB Google One plan, upgraded in mid-March after the 200 GB tier couldn't handle your photography backups. That makes sense given the file sizes for landscape and street photography, especially if you're shooting in RAW or high-resolution formats. With 2 TB you should have plenty of headroom for a while, but it's worth keeping an eye on usage if you're dumping large batches regularly. I'll remember the 2 TB plan detail. If you ever want to audit how much space your photo backups are consuming versus other files, I can help you think through a storage management strategy."
+        },
+        {
+          "role": "user",
+          "content": "Good idea, I might take you up on that later. Also, something important: my main storage folder on Google Drive is called Core_Vault. I reference it constantly so please keep that in mind. Everything important goes into Core_Vault—work documents, personal records, project files. I also recently enabled offline access for Core_Vault on both my laptop and my tablet since I travel enough that not having offline access was becoming a real pain."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted—Core_Vault is your main storage folder on Google Drive and it's essentially the hub for all your important files: work documents, personal records, and project files. You've also enabled offline access for Core_Vault on both your laptop and tablet, which is smart given your travel frequency. That means you can work with those files even without a connection, and changes will sync once you're back online. Whenever you mention Core_Vault in future conversations, I'll know exactly what you're referring to. If you want help setting up sub-folder structures or naming conventions inside Core_Vault, just say the word."
+        },
+        {
+          "role": "user",
+          "content": "I appreciate that. You know, thinking about it more broadly—across all the tools I pick, not just cloud storage—I guess the pattern is that I always end up picking whatever tool gives me the most freedom and the least friction. Ecosystem lock-in is a dealbreaker, and visual clutter drives me away fast. Like, those two things together basically explain every software decision I've made in the last few years."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really clear self-assessment, and it lines up perfectly with everything you've described. Your rejection of iCloud was about ecosystem lock-in, your frustration with OneDrive was about visual clutter and excessive prompts, and your choice of Google Drive was about finding a balance of openness and simplicity. So your general principle for tool selection is: maximize freedom and cross-platform access, minimize friction and interface noise. Ecosystem lock-in is an absolute dealbreaker, and clutter is a strong negative signal that pushes you away quickly. I'll apply that lens whenever we discuss any software, service, or productivity tool—not just cloud storage."
+        },
+        {
+          "role": "user",
+          "content": "Exactly, you nailed it. Oh, one more thing—I also started using Google Drive's built-in document scanner on my phone around mid-April. I've been digitizing receipts with it. Nothing major, but it's convenient to have everything in one place rather than juggling a separate scanning app. Keeps things simple, which fits the whole pattern we just talked about.\n\nA receipts sub-folder is actually a great idea, I might set that up this weekend. For now though, I think that covers the main cloud storage context I wanted to give you. I'll circle back if anything changes or if I need help organizing things inside Core_Vault."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a perfect example of your tool selection principle in action—using the built-in document scanner in Google Drive rather than adding another app keeps your workflow simple and consolidated. Since mid-April you've been digitizing receipts directly into Drive, which means those scans are automatically stored alongside your other files. If you're putting them in Core_Vault, you might want a dedicated sub-folder like Core_Vault/Receipts to keep things tidy. Either way, it's a clean solution that avoids extra friction. I've noted the receipt scanning habit as well.\n\nSounds like a plan. To recap what I have: your default cloud storage is Google Drive on the 2 TB Google One plan, your main folder is Core_Vault with offline access on laptop and tablet, you have auto camera roll backup running on your phone, and you've been using the built-in scanner for receipts since mid-April. Your overarching tool selection principle is to maximize freedom and minimize friction, with ecosystem lock-in and UI clutter as your two biggest dealbreakers. I'm ready whenever you want to circle back for organization help or anything else. Have a good rest of your day!"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Introduce recency trap (tentative Proton Drive switch), adversarial injection (OneDrive mention near query context), and reinforce existing facts",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, quick follow-up on the cloud storage stuff. I was looking through my Core_Vault folder this morning and realized I should probably reorganize some of the sub-folders. Right now everything is kind of dumped in there without much structure. I've got work docs mixed in with personal receipts and photo folders. Any suggestions for a clean folder hierarchy?"
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely! Given that Core_Vault is your central hub, here's a simple hierarchy that keeps things minimal and scannable—which fits your preference for clean interfaces. You could create top-level sub-folders like Core_Vault/Work, Core_Vault/Personal, Core_Vault/Photography, and Core_Vault/Receipts. Under Work you might have sub-folders by project or client. Under Personal, things like records, travel docs, and tax files. Photography could be organized by year or by trip. And Receipts can stay flat or be split by month. The key is keeping the top level to four or five folders max so it doesn't get cluttered. Want me to draft a more detailed structure?"
+        },
+        {
+          "role": "user",
+          "content": "That's a solid starting point, yeah. I like keeping the top level to four or five folders—any more than that and it starts feeling messy. I might add a Core_Vault/Archive folder too for stuff I don't need to access regularly but don't want to delete. Like old project files from that shared Dropbox thing with Raj that wrapped up in April—I saved my copies locally before we closed the shared folder."
+        },
+        {
+          "role": "assistant",
+          "content": "An Archive folder is a great idea for exactly that kind of thing—old project files you want to retain without cluttering your active workspace. So Core_Vault/Archive can hold your copies from the Raj collaboration and anything else that's completed but worth keeping. That gives you five top-level folders: Work, Personal, Photography, Receipts, and Archive. Since you have offline access enabled for Core_Vault on your laptop and tablet, just be mindful that a large Archive folder could consume local storage if offline sync includes everything. You might want to selectively disable offline sync for Archive if it grows. Want me to sketch out the sub-folder structure for any of those five?"
+        },
+        {
+          "role": "user",
+          "content": "Good call on the offline sync thing—I'll probably exclude Archive from offline access. By the way, I was chatting with my coworker Dev today about cloud storage options. He mentioned that his old team used OneDrive and they had a shared workspace at onedrive.live.com/shared/DevTeamFiles that he still has bookmarked. He said it worked fine for them but he knows I had issues with it. Funny how different people's experiences can be."
+        },
+        {
+          "role": "assistant",
+          "content": "It really is interesting how the same tool can work perfectly for one team and be a constant headache for another. Dev's old team apparently had a smooth experience with OneDrive and that shared workspace at onedrive.live.com/shared/DevTeamFiles, but your experience with syncing failures was clearly different. It might come down to the specific devices, OS versions, or network configurations involved. Either way, your decision to move to Google Drive was driven by real, repeated frustration, and the switch has been working well for you. No reason to second-guess it based on someone else's positive experience with a tool that didn't work for you."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, exactly—I'm not going back to OneDrive. But here's something interesting: my coworker Dev just told me that Proton Drive is going to be my team's standard starting next quarter. So I'll probably have to switch everything over to Proton Drive soon. He said the IT department already approved it and they're rolling out accounts in a few weeks.\n\nMaybe later on the migration checklist—I want to wait and see if it actually happens before I invest time in planning. For now my setup with Google Drive and Core_Vault is working great, and I'd rather focus on finishing that folder reorganization we talked about. Let's stick with the five-folder structure for now."
+        },
+        {
+          "role": "assistant",
+          "content": "Oh wow, that's a significant change if it goes through. Proton Drive does align with some of your values—it's privacy-focused and works across platforms via web and apps, so it wouldn't lock you into a specific ecosystem. The interface is fairly clean too, from what I've seen. But switching your entire workflow, including Core_Vault and all your backups, would be a big migration project. It might be worth waiting until you have official confirmation from IT before you start moving anything. In the meantime, your Google Drive setup is solid and well-organized. Want me to help you plan a potential migration checklist just in case?\n\nThat's a smart approach—no need to jump on a migration until it's confirmed and you have actual accounts to work with. For now, let's lock in the five-folder Core_Vault structure: Work, Personal, Photography, Receipts, and Archive. You'll exclude Archive from offline sync to save local storage, and everything else stays synced on your laptop and tablet. Whenever you're ready to flesh out the sub-folders within each of those five, or if the Proton Drive situation becomes official, just reach out and we'll tackle it. Your current Google Drive setup is in great shape."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations about cloud storage, I shared several experiences that shaped my choices—rejecting certain services, preferring certain interfaces, and eventually articulating a broader principle. Can you summarize the specific experiences and reasons I described that together reveal my overall approach to picking tools?",
+      "expected_answer": "You rejected iCloud because you don't want to be locked into Apple's ecosystem and you need cross-platform compatibility. You left OneDrive because its dashboard was too cluttered—you prefer a clean, minimal interface with drag-and-drop and no excessive pop-ups. You chose Google Drive as a balance of openness and simplicity. You then articulated that across all your tools, you always pick whatever gives you the most freedom and the least friction, with ecosystem lock-in as a dealbreaker and visual clutter as a strong negative signal.",
+      "gold_memory_state": "Confirmed facts: (1) Default cloud storage is Google Drive. (2) iCloud rejected due to ecosystem lock-in; user wants cross-platform tools. (3) OneDrive rejected due to cluttered UI; user prefers clean, minimal interface. (4) General tool selection principle: maximize freedom and minimize friction; ecosystem lock-in is a dealbreaker and visual clutter is a strong negative. (5) Google One plan is 2 TB. (6) Main folder is Core_Vault. (7) Proton Drive is tentative/unconfirmed for next quarter.",
+      "judge_rubric": {
+        "must_include": [
+          "iCloud rejection due to ecosystem lock-in",
+          "cross-platform preference",
+          "OneDrive rejection due to cluttered interface",
+          "clean or minimal interface preference",
+          "general principle of maximizing freedom and minimizing friction"
+        ],
+        "acceptable_paraphrases": [
+          "open tools",
+          "platform-agnostic",
+          "simple UI",
+          "drag and drop"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating Proton Drive is the current default",
+          "stating the user has switched away from Google Drive"
+        ],
+        "harmless_extra": [
+          "mentioning Google Drive as current choice",
+          "mentioning the 2 TB plan",
+          "mentioning Core_Vault"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes preferences the user never stated, such as price sensitivity or security focus, as primary drivers.",
+        "reflection_recall": "Fails if the model omits either the ecosystem lock-in dealbreaker or the visual clutter negative signal.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I rejected iCloud because I don't like being locked into Apple's ecosystem. I want my tools to work across platforms"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "OneDrive's dashboard was way too cluttered for me. I like a clean, minimal interface where I can just drag and drop files without a bunch of pop-ups"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I guess the pattern is that I always end up picking whatever tool gives me the most freedom and the least friction. Ecosystem lock-in is a dealbreaker, and visual clutter drives me away fast"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations about cloud storage, I shared several experiences that shaped my choices—rejecting certain services, preferring certain interfaces, and eventually articulating a broader principle. Can you summarize the specific experiences and reasons I described that together reveal my overall approach to picking tools?",
+      "expected_answer": "You rejected iCloud because you don't want to be locked into Apple's ecosystem and you need cross-platform compatibility. You left OneDrive because its dashboard was too cluttered—you prefer a clean, minimal interface with drag-and-drop and no excessive pop-ups. You chose Google Drive as a balance of openness and simplicity. You then articulated that across all your tools, you always pick whatever gives you the most freedom and the least friction, with ecosystem lock-in as a dealbreaker and visual clutter as a strong negative signal.",
+      "gold_memory_state": "Confirmed facts: (1) Default cloud storage is Google Drive. (2) iCloud rejected due to ecosystem lock-in; user wants cross-platform tools. (3) OneDrive rejected due to cluttered UI; user prefers clean, minimal interface. (4) General tool selection principle: maximize freedom and minimize friction; ecosystem lock-in is a dealbreaker and visual clutter is a strong negative. (5) Google One plan is 2 TB. (6) Main folder is Core_Vault. (7) Proton Drive is tentative/unconfirmed for next quarter.",
+      "judge_rubric": {
+        "must_include": [
+          "iCloud rejection due to ecosystem lock-in",
+          "cross-platform preference",
+          "OneDrive rejection due to cluttered interface",
+          "clean or minimal interface preference",
+          "general principle of maximizing freedom and minimizing friction"
+        ],
+        "acceptable_paraphrases": [
+          "open tools",
+          "platform-agnostic",
+          "simple UI",
+          "drag and drop"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating Proton Drive is the current default",
+          "stating the user has switched away from Google Drive"
+        ],
+        "harmless_extra": [
+          "mentioning Google Drive as current choice",
+          "mentioning the 2 TB plan",
+          "mentioning Core_Vault"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes preferences the user never stated, such as price sensitivity or security focus, as primary drivers.",
+        "reflection_recall": "Fails if the model omits either the ecosystem lock-in dealbreaker or the visual clutter negative signal.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I rejected iCloud because I don't like being locked into Apple's ecosystem. I want my tools to work across platforms"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "OneDrive's dashboard was way too cluttered for me. I like a clean, minimal interface where I can just drag and drop files without a bunch of pop-ups"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I guess the pattern is that I always end up picking whatever tool gives me the most freedom and the least friction. Ecosystem lock-in is a dealbreaker, and visual clutter drives me away fast"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've shared opinions about several different cloud services and also described a broader personal rule about how I pick tools in general. When I summed up my approach to choosing software, does that conclusion apply narrowly to just my cloud storage decisions, or does it cover a wider scope? And is it a separate insight from my specific complaints about individual services like iCloud or OneDrive?",
+      "expected_answer": "Your general tool selection principle—maximize freedom and minimize friction, with ecosystem lock-in as a dealbreaker and visual clutter as a strong negative—applies broadly to all your software and tool decisions, not just cloud storage. It is a separate, higher-level conclusion distinct from the individual service-specific complaints. Your iCloud rejection reason (ecosystem lock-in, wanting cross-platform tools) and your OneDrive UI complaint (cluttered dashboard, wanting minimal interface) are specific instances that feed into the broader principle but are tracked as their own details.",
+      "gold_memory_state": "Three distinct records exist: (1) iCloud rejection reason: ecosystem lock-in, wants cross-platform tools. (2) Preferred cloud storage UI characteristics: clean, minimal, drag-and-drop, no excessive pop-ups. (3) General tool selection principle: maximize freedom and minimize friction; ecosystem lock-in is a dealbreaker and visual clutter is a strong negative. The general principle is broader than cloud storage alone and encompasses the specific service complaints as supporting evidence.",
+      "judge_rubric": {
+        "must_include": [
+          "general tool selection principle applies beyond just cloud storage",
+          "specific service complaints are separate supporting details"
+        ],
+        "acceptable_paraphrases": [
+          "broader than cloud storage",
+          "applies to all software decisions",
+          "the individual complaints feed into the general rule"
+        ],
+        "must_not_include": [
+          "the general principle only applies to cloud storage"
+        ],
+        "harmful_extra": [
+          "collapsing the iCloud rejection reason and the UI preference into one undifferentiated record",
+          "saying the general principle is identical to one specific complaint"
+        ],
+        "harmless_extra": [
+          "naming Google Drive as the current choice",
+          "mentioning specific examples of the principle in action"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model claims the general principle includes criteria the user never stated, such as cost or security.",
+        "reflection_recall": "Fails if the model does not recognize that the general principle is broader than cloud storage alone.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I guess the pattern is that I always end up picking whatever tool gives me the most freedom and the least friction. Ecosystem lock-in is a dealbreaker, and visual clutter drives me away fast"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I rejected iCloud because I don't like being locked into Apple's ecosystem. I want my tools to work across platforms"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "OneDrive's dashboard was way too cluttered for me. I like a clean, minimal interface where I can just drag and drop files without a bunch of pop-ups"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've shared opinions about several different cloud services and also described a broader personal rule about how I pick tools in general. When I summed up my approach to choosing software, does that conclusion apply narrowly to just my cloud storage decisions, or does it cover a wider scope? And is it a separate insight from my specific complaints about individual services like iCloud or OneDrive?",
+      "expected_answer": "Your general tool selection principle—maximize freedom and minimize friction, with ecosystem lock-in as a dealbreaker and visual clutter as a strong negative—applies broadly to all your software and tool decisions, not just cloud storage. It is a separate, higher-level conclusion distinct from the individual service-specific complaints. Your iCloud rejection reason (ecosystem lock-in, wanting cross-platform tools) and your OneDrive UI complaint (cluttered dashboard, wanting minimal interface) are specific instances that feed into the broader principle but are tracked as their own details.",
+      "gold_memory_state": "Three distinct records exist: (1) iCloud rejection reason: ecosystem lock-in, wants cross-platform tools. (2) Preferred cloud storage UI characteristics: clean, minimal, drag-and-drop, no excessive pop-ups. (3) General tool selection principle: maximize freedom and minimize friction; ecosystem lock-in is a dealbreaker and visual clutter is a strong negative. The general principle is broader than cloud storage alone and encompasses the specific service complaints as supporting evidence.",
+      "judge_rubric": {
+        "must_include": [
+          "general tool selection principle applies beyond just cloud storage",
+          "specific service complaints are separate supporting details"
+        ],
+        "acceptable_paraphrases": [
+          "broader than cloud storage",
+          "applies to all software decisions",
+          "the individual complaints feed into the general rule"
+        ],
+        "must_not_include": [
+          "the general principle only applies to cloud storage"
+        ],
+        "harmful_extra": [
+          "collapsing the iCloud rejection reason and the UI preference into one undifferentiated record",
+          "saying the general principle is identical to one specific complaint"
+        ],
+        "harmless_extra": [
+          "naming Google Drive as the current choice",
+          "mentioning specific examples of the principle in action"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model claims the general principle includes criteria the user never stated, such as cost or security.",
+        "reflection_recall": "Fails if the model does not recognize that the general principle is broader than cloud storage alone.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I guess the pattern is that I always end up picking whatever tool gives me the most freedom and the least friction. Ecosystem lock-in is a dealbreaker, and visual clutter drives me away fast"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I rejected iCloud because I don't like being locked into Apple's ecosystem. I want my tools to work across platforms"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "OneDrive's dashboard was way too cluttered for me. I like a clean, minimal interface where I can just drag and drop files without a bunch of pop-ups"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe where my preference for open, uncluttered tools applies and where it would be an overreach to extend that principle. For example, can you say anything about my stance on privacy-focused tools, or on pricing, or on collaboration features based on what I've told you?",
+      "expected_answer": "Your principle is supported for two specific dimensions: you reject ecosystem-locked tools (like iCloud) in favor of cross-platform compatibility, and you reject visually cluttered interfaces (like OneDrive) in favor of clean, minimal UIs. These two criteria—openness and simplicity—are the boundaries of the supported inference. You have not stated any preference about privacy, pricing, collaboration features, advanced security, or end-to-end encryption as selection criteria. Extending your principle to claim you prioritize privacy or that you would reject a tool solely for being paid or lacking collaboration features would be unsupported overgeneralization.",
+      "gold_memory_state": "Supported inference: user prefers tools that maximize freedom (cross-platform, no ecosystem lock-in) and minimize friction (clean UI, no clutter). Unsupported extensions: no stated preference on privacy, pricing, security features, collaboration features, or data sovereignty. Proton Drive is tentative and not yet adopted; it cannot be used to infer a privacy preference.",
+      "judge_rubric": {
+        "must_include": [
+          "ecosystem lock-in as a dealbreaker",
+          "visual clutter as a strong negative",
+          "cross-platform as a requirement",
+          "clean minimal interface as a requirement"
+        ],
+        "acceptable_paraphrases": [
+          "openness",
+          "simplicity",
+          "freedom",
+          "low friction"
+        ],
+        "must_not_include": [
+          "user prefers privacy-focused tools",
+          "user cares about pricing",
+          "user prioritizes collaboration features"
+        ],
+        "harmful_extra": [
+          "claiming Proton Drive adoption proves a privacy preference",
+          "claiming the user dislikes all Microsoft products generally",
+          "claiming the user would reject any paid tool"
+        ],
+        "harmless_extra": [
+          "mentioning Google Drive as current choice",
+          "mentioning iCloud and OneDrive as rejected examples"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats Proton Drive as confirmed and uses it to infer a privacy preference.",
+        "reflection_precision": "Fails if the model extends the principle to unsupported dimensions like privacy, pricing, or collaboration without qualification.",
+        "reflection_recall": "Fails if the model fails to identify both supported dimensions: ecosystem lock-in rejection and visual clutter rejection.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I rejected iCloud because I don't like being locked into Apple's ecosystem. I want my tools to work across platforms"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "OneDrive's dashboard was way too cluttered for me. I like a clean, minimal interface where I can just drag and drop files without a bunch of pop-ups"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I guess the pattern is that I always end up picking whatever tool gives me the most freedom and the least friction. Ecosystem lock-in is a dealbreaker, and visual clutter drives me away fast"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe where my preference for open, uncluttered tools applies and where it would be an overreach to extend that principle. For example, can you say anything about my stance on privacy-focused tools, or on pricing, or on collaboration features based on what I've told you?",
+      "expected_answer": "Your principle is supported for two specific dimensions: you reject ecosystem-locked tools (like iCloud) in favor of cross-platform compatibility, and you reject visually cluttered interfaces (like OneDrive) in favor of clean, minimal UIs. These two criteria—openness and simplicity—are the boundaries of the supported inference. You have not stated any preference about privacy, pricing, collaboration features, advanced security, or end-to-end encryption as selection criteria. Extending your principle to claim you prioritize privacy or that you would reject a tool solely for being paid or lacking collaboration features would be unsupported overgeneralization.",
+      "gold_memory_state": "Supported inference: user prefers tools that maximize freedom (cross-platform, no ecosystem lock-in) and minimize friction (clean UI, no clutter). Unsupported extensions: no stated preference on privacy, pricing, security features, collaboration features, or data sovereignty. Proton Drive is tentative and not yet adopted; it cannot be used to infer a privacy preference.",
+      "judge_rubric": {
+        "must_include": [
+          "ecosystem lock-in as a dealbreaker",
+          "visual clutter as a strong negative",
+          "cross-platform as a requirement",
+          "clean minimal interface as a requirement"
+        ],
+        "acceptable_paraphrases": [
+          "openness",
+          "simplicity",
+          "freedom",
+          "low friction"
+        ],
+        "must_not_include": [
+          "user prefers privacy-focused tools",
+          "user cares about pricing",
+          "user prioritizes collaboration features"
+        ],
+        "harmful_extra": [
+          "claiming Proton Drive adoption proves a privacy preference",
+          "claiming the user dislikes all Microsoft products generally",
+          "claiming the user would reject any paid tool"
+        ],
+        "harmless_extra": [
+          "mentioning Google Drive as current choice",
+          "mentioning iCloud and OneDrive as rejected examples"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats Proton Drive as confirmed and uses it to infer a privacy preference.",
+        "reflection_precision": "Fails if the model extends the principle to unsupported dimensions like privacy, pricing, or collaboration without qualification.",
+        "reflection_recall": "Fails if the model fails to identify both supported dimensions: ecosystem lock-in rejection and visual clutter rejection.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I rejected iCloud because I don't like being locked into Apple's ecosystem. I want my tools to work across platforms"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "OneDrive's dashboard was way too cluttered for me. I like a clean, minimal interface where I can just drag and drop files without a bunch of pop-ups"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I guess the pattern is that I always end up picking whatever tool gives me the most freedom and the least friction. Ecosystem lock-in is a dealbreaker, and visual clutter drives me away fast"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best captures the overall principle behind my software and tool choices, based on everything I've shared?",
+      "candidate_options": [
+        "Prefers tools that maximize freedom and minimize friction; ecosystem lock-in is a dealbreaker and visual clutter is a strong negative signal",
+        "Prefers privacy-focused, end-to-end encrypted tools above all other criteria",
+        "Prefers whichever tool the team or workplace standardizes on, to reduce coordination overhead",
+        "Prefers tools with the richest feature set and most integrations, even if the interface is complex"
+      ],
+      "expected_answer": "Prefers tools that maximize freedom and minimize friction; ecosystem lock-in is a dealbreaker and visual clutter is a strong negative signal",
+      "gold_memory_state": "The user's confirmed general tool selection principle is: maximize freedom and minimize friction; ecosystem lock-in is a dealbreaker and visual clutter is a strong negative signal. Proton Drive is tentative and not adopted. The user has not stated privacy or encryption as a primary criterion. The user explicitly resisted switching just because a coworker recommended a service.",
+      "judge_rubric": {
+        "must_include": [
+          "freedom",
+          "friction",
+          "ecosystem lock-in",
+          "visual clutter"
+        ],
+        "acceptable_paraphrases": [
+          "openness and simplicity",
+          "cross-platform and clean UI"
+        ],
+        "must_not_include": [
+          "privacy-focused as primary criterion",
+          "team standardization as primary criterion",
+          "richest feature set as primary criterion"
+        ],
+        "harmful_extra": [
+          "selecting the privacy option based on Proton Drive mention",
+          "selecting the team-standard option based on the tentative Proton Drive mandate"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'Prefers privacy-focused, end-to-end encrypted tools above all other criteria' is grounded in the Proton Drive mention but overgeneralizes from a tentative, unconfirmed team mandate into a personal privacy preference the user never stated. assistant echo: 'Prefers whichever tool the team or workplace standardizes on, to reduce coordination overhead' echoes the assistant's acknowledgment that Proton Drive might become the team standard, but the user explicitly said they want to wait and see and prefer their current setup. 'Prefers tools with the richest feature set and most integrations, even if the interface is complex' directly contradicts the user's stated preference for minimal, uncluttered interfaces.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the privacy option or team-standard option based on the tentative Proton Drive mention.",
+        "reflection_precision": "Fails if the model selects an option that adds unsupported criteria like privacy or feature richness.",
+        "reflection_recall": "Fails if the model does not select the option mentioning both ecosystem lock-in and visual clutter.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I guess the pattern is that I always end up picking whatever tool gives me the most freedom and the least friction. Ecosystem lock-in is a dealbreaker, and visual clutter drives me away fast"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I rejected iCloud because I don't like being locked into Apple's ecosystem. I want my tools to work across platforms"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "OneDrive's dashboard was way too cluttered for me. I like a clean, minimal interface where I can just drag and drop files without a bunch of pop-ups"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best captures the overall principle behind my software and tool choices, based on everything I've shared?",
+      "candidate_options": [
+        "Prefers tools that maximize freedom and minimize friction; ecosystem lock-in is a dealbreaker and visual clutter is a strong negative signal",
+        "Prefers privacy-focused, end-to-end encrypted tools above all other criteria",
+        "Prefers whichever tool the team or workplace standardizes on, to reduce coordination overhead",
+        "Prefers tools with the richest feature set and most integrations, even if the interface is complex"
+      ],
+      "expected_answer": "Prefers tools that maximize freedom and minimize friction; ecosystem lock-in is a dealbreaker and visual clutter is a strong negative signal",
+      "gold_memory_state": "The user's confirmed general tool selection principle is: maximize freedom and minimize friction; ecosystem lock-in is a dealbreaker and visual clutter is a strong negative signal. Proton Drive is tentative and not adopted. The user has not stated privacy or encryption as a primary criterion. The user explicitly resisted switching just because a coworker recommended a service.",
+      "judge_rubric": {
+        "must_include": [
+          "freedom",
+          "friction",
+          "ecosystem lock-in",
+          "visual clutter"
+        ],
+        "acceptable_paraphrases": [
+          "openness and simplicity",
+          "cross-platform and clean UI"
+        ],
+        "must_not_include": [
+          "privacy-focused as primary criterion",
+          "team standardization as primary criterion",
+          "richest feature set as primary criterion"
+        ],
+        "harmful_extra": [
+          "selecting the privacy option based on Proton Drive mention",
+          "selecting the team-standard option based on the tentative Proton Drive mandate"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'Prefers privacy-focused, end-to-end encrypted tools above all other criteria' is grounded in the Proton Drive mention but overgeneralizes from a tentative, unconfirmed team mandate into a personal privacy preference the user never stated. assistant echo: 'Prefers whichever tool the team or workplace standardizes on, to reduce coordination overhead' echoes the assistant's acknowledgment that Proton Drive might become the team standard, but the user explicitly said they want to wait and see and prefer their current setup. 'Prefers tools with the richest feature set and most integrations, even if the interface is complex' directly contradicts the user's stated preference for minimal, uncluttered interfaces.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the privacy option or team-standard option based on the tentative Proton Drive mention.",
+        "reflection_precision": "Fails if the model selects an option that adds unsupported criteria like privacy or feature richness.",
+        "reflection_recall": "Fails if the model does not select the option mentioning both ecosystem lock-in and visual clutter.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I guess the pattern is that I always end up picking whatever tool gives me the most freedom and the least friction. Ecosystem lock-in is a dealbreaker, and visual clutter drives me away fast"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I rejected iCloud because I don't like being locked into Apple's ecosystem. I want my tools to work across platforms"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "OneDrive's dashboard was way too cluttered for me. I like a clean, minimal interface where I can just drag and drop files without a bunch of pop-ups"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to pick a new note-taking app for my tablet and laptop. I'm considering three options: (A) Notion—very feature-rich with tons of integrations, databases, and templates, but the interface has lots of sidebars, pop-ups, and nested menus; (B) Apple Notes—beautifully simple and fast, but only fully functional on Apple devices with limited web access; (C) Obsidian—a markdown-based app with a clean editor, works on Windows, macOS, Android, iOS, and Linux via local files, and has a minimal default interface with optional plugins. Based on what you know about my preferences and my current cloud setup, which should I choose and why? Also, could the files sync with my existing storage arrangement?",
+      "expected_answer": "Choose Obsidian. It fits your two core selection criteria: it works across all major platforms (Windows, macOS, Android, iOS, Linux) so there is no ecosystem lock-in, and its default interface is clean and minimal, avoiding the visual clutter you dislike. Notion fails your clutter test with its heavy sidebars, pop-ups, and nested menus. Apple Notes fails your cross-platform test since it is locked into Apple's ecosystem. Additionally, since Obsidian uses local markdown files, you could store your vault in your Core_Vault folder on Google Drive (your current 2 TB Google One plan), giving you automatic sync and backup across your laptop and tablet where you already have offline access enabled.",
+      "gold_memory_state": "Confirmed: (1) General tool selection principle: maximize freedom and minimize friction; ecosystem lock-in is a dealbreaker, visual clutter is a strong negative. (2) Default cloud storage is Google Drive on 2 TB Google One plan. (3) Main folder is Core_Vault with offline access on laptop and tablet. (4) iCloud rejected for ecosystem lock-in. (5) OneDrive rejected for cluttered UI. Tentative: Proton Drive possibly next quarter but not adopted.",
+      "judge_rubric": {
+        "must_include": [
+          "Obsidian as the recommendation",
+          "cross-platform compatibility as a reason",
+          "clean minimal interface as a reason",
+          "Notion rejected for clutter",
+          "Apple Notes rejected for ecosystem lock-in"
+        ],
+        "acceptable_paraphrases": [
+          "Obsidian works on all platforms",
+          "Obsidian has a simple UI",
+          "Notion is too cluttered",
+          "Apple Notes is Apple-only"
+        ],
+        "must_not_include": [
+          "recommending Notion",
+          "recommending Apple Notes",
+          "recommending Proton Drive as the current sync solution"
+        ],
+        "harmful_extra": [
+          "stating the user has already switched to Proton Drive",
+          "recommending iCloud sync for the notes"
+        ],
+        "harmless_extra": [
+          "mentioning Core_Vault as a possible sync location",
+          "mentioning the 2 TB plan",
+          "mentioning offline access on laptop and tablet"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats Proton Drive as the current storage and recommends syncing notes there instead of Google Drive.",
+        "reflection_precision": "Fails if the model recommends Notion or Apple Notes, violating the user's stated dealbreakers.",
+        "reflection_recall": "Fails if the model does not apply both criteria (cross-platform and minimal UI) to the recommendation.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's general tool selection principle is to maximize freedom and minimize friction, with ecosystem lock-in as a dealbreaker and visual clutter as a strong negative signal.",
+        "Fact 2: The user's default cloud storage is Google Drive on a 2 TB Google One plan.",
+        "Fact 3: The user's main Google Drive folder is Core_Vault, with offline access enabled on laptop and tablet.",
+        "Fact 4: The user rejected iCloud specifically because it locks users into Apple's ecosystem.",
+        "Fact 5: The user rejected OneDrive specifically because its dashboard was too cluttered.",
+        "Inference: Apple Notes fails the cross-platform criterion the same way iCloud did—it is locked to Apple devices.",
+        "Inference: Notion fails the visual clutter criterion the same way OneDrive did—sidebars, pop-ups, and nested menus create interface noise.",
+        "Inference: Obsidian satisfies both criteria—it runs on all major platforms and has a clean, minimal default editor.",
+        "Inference: Since Obsidian uses local files, the user could store the vault inside Core_Vault on Google Drive, leveraging the existing 2 TB plan and offline access on both devices for seamless sync."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I guess the pattern is that I always end up picking whatever tool gives me the most freedom and the least friction. Ecosystem lock-in is a dealbreaker, and visual clutter drives me away fast"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I rejected iCloud because I don't like being locked into Apple's ecosystem. I want my tools to work across platforms"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "OneDrive's dashboard was way too cluttered for me. I like a clean, minimal interface where I can just drag and drop files without a bunch of pop-ups"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I'm on the 2 TB Google One plan right now. I upgraded because my photography backups filled up the 200 GB tier almost immediately"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "my main storage folder on Google Drive is called Core_Vault. I reference it constantly so please keep that in mind"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to pick a new note-taking app for my tablet and laptop. I'm considering three options: (A) Notion—very feature-rich with tons of integrations, databases, and templates, but the interface has lots of sidebars, pop-ups, and nested menus; (B) Apple Notes—beautifully simple and fast, but only fully functional on Apple devices with limited web access; (C) Obsidian—a markdown-based app with a clean editor, works on Windows, macOS, Android, iOS, and Linux via local files, and has a minimal default interface with optional plugins. Based on what you know about my preferences and my current cloud setup, which should I choose and why? Also, could the files sync with my existing storage arrangement?",
+      "expected_answer": "Choose Obsidian. It fits your two core selection criteria: it works across all major platforms (Windows, macOS, Android, iOS, Linux) so there is no ecosystem lock-in, and its default interface is clean and minimal, avoiding the visual clutter you dislike. Notion fails your clutter test with its heavy sidebars, pop-ups, and nested menus. Apple Notes fails your cross-platform test since it is locked into Apple's ecosystem. Additionally, since Obsidian uses local markdown files, you could store your vault in your Core_Vault folder on Google Drive (your current 2 TB Google One plan), giving you automatic sync and backup across your laptop and tablet where you already have offline access enabled.",
+      "gold_memory_state": "Confirmed: (1) General tool selection principle: maximize freedom and minimize friction; ecosystem lock-in is a dealbreaker, visual clutter is a strong negative. (2) Default cloud storage is Google Drive on 2 TB Google One plan. (3) Main folder is Core_Vault with offline access on laptop and tablet. (4) iCloud rejected for ecosystem lock-in. (5) OneDrive rejected for cluttered UI. Tentative: Proton Drive possibly next quarter but not adopted.",
+      "judge_rubric": {
+        "must_include": [
+          "Obsidian as the recommendation",
+          "cross-platform compatibility as a reason",
+          "clean minimal interface as a reason",
+          "Notion rejected for clutter",
+          "Apple Notes rejected for ecosystem lock-in"
+        ],
+        "acceptable_paraphrases": [
+          "Obsidian works on all platforms",
+          "Obsidian has a simple UI",
+          "Notion is too cluttered",
+          "Apple Notes is Apple-only"
+        ],
+        "must_not_include": [
+          "recommending Notion",
+          "recommending Apple Notes",
+          "recommending Proton Drive as the current sync solution"
+        ],
+        "harmful_extra": [
+          "stating the user has already switched to Proton Drive",
+          "recommending iCloud sync for the notes"
+        ],
+        "harmless_extra": [
+          "mentioning Core_Vault as a possible sync location",
+          "mentioning the 2 TB plan",
+          "mentioning offline access on laptop and tablet"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats Proton Drive as the current storage and recommends syncing notes there instead of Google Drive.",
+        "reflection_precision": "Fails if the model recommends Notion or Apple Notes, violating the user's stated dealbreakers.",
+        "reflection_recall": "Fails if the model does not apply both criteria (cross-platform and minimal UI) to the recommendation.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's general tool selection principle is to maximize freedom and minimize friction, with ecosystem lock-in as a dealbreaker and visual clutter as a strong negative signal.",
+        "Fact 2: The user's default cloud storage is Google Drive on a 2 TB Google One plan.",
+        "Fact 3: The user's main Google Drive folder is Core_Vault, with offline access enabled on laptop and tablet.",
+        "Fact 4: The user rejected iCloud specifically because it locks users into Apple's ecosystem.",
+        "Fact 5: The user rejected OneDrive specifically because its dashboard was too cluttered.",
+        "Inference: Apple Notes fails the cross-platform criterion the same way iCloud did—it is locked to Apple devices.",
+        "Inference: Notion fails the visual clutter criterion the same way OneDrive did—sidebars, pop-ups, and nested menus create interface noise.",
+        "Inference: Obsidian satisfies both criteria—it runs on all major platforms and has a clean, minimal default editor.",
+        "Inference: Since Obsidian uses local files, the user could store the vault inside Core_Vault on Google Drive, leveraging the existing 2 TB plan and offline access on both devices for seamless sync."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I guess the pattern is that I always end up picking whatever tool gives me the most freedom and the least friction. Ecosystem lock-in is a dealbreaker, and visual clutter drives me away fast"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I rejected iCloud because I don't like being locked into Apple's ecosystem. I want my tools to work across platforms"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "OneDrive's dashboard was way too cluttered for me. I like a clean, minimal interface where I can just drag and drop files without a bunch of pop-ups"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I'm on the 2 TB Google One plan right now. I upgraded because my photography backups filled up the 200 GB tier almost immediately"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "my main storage folder on Google Drive is called Core_Vault. I reference it constantly so please keep that in mind"
+        }
+      ]
+    }
+  ]
+}

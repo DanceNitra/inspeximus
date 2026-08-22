@@ -1,0 +1,986 @@
+{
+  "target_fact": "Lily thrives with individual/self-paced activities and an unhurried schedule with built-in downtime, as evidenced by her engagement with swimming, art, and interest in rock climbing contrasted with the stress of piano lessons",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "Lily's been doing swimming on Tuesdays and Thursdays at the Greenfield Aquatic Center, 4:30 to 5:15 PM, with Coach Rivera's intermediate group"
+      },
+      "target": {
+        "target_id": "lily_swimming_schedule",
+        "target_name": "Lily's swimming lesson schedule"
+      },
+      "old_value": null,
+      "new_value": "Tuesdays and Thursdays, 4:30-5:15 PM, Greenfield Aquatic Center, Coach Rivera's intermediate group",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Lily's been doing swimming on Tuesdays and Thursdays at the Greenfield Aquatic Center, 4:30 to 5:15 PM, with Coach Rivera's intermediate group"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "She also does art class every Saturday morning at Creative Sparks on Elm Street, 10 AM to 11:30. She absolutely lights up when she's working with watercolors"
+      },
+      "target": {
+        "target_id": "lily_art_class",
+        "target_name": "Lily's Saturday art class"
+      },
+      "old_value": null,
+      "new_value": "Every Saturday, 10:00-11:30 AM, Creative Sparks studio on Elm Street",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "She also does art class every Saturday morning at Creative Sparks on Elm Street, 10 AM to 11:30. She absolutely lights up when she's working with watercolors"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "We stopped piano lessons with Mrs. Chen at the end of February. She just wasn't connecting with it, and those Wednesday evenings were always so rushed — she'd get cranky in the car and the whole last month was tense for everyone"
+      },
+      "target": {
+        "target_id": "lily_piano_discontinued",
+        "target_name": "Lily's discontinued piano lessons"
+      },
+      "old_value": null,
+      "new_value": "Piano lessons with Mrs. Chen on Wednesdays discontinued at end of February",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "We stopped piano lessons with Mrs. Chen at the end of February. She just wasn't connecting with it, and those Wednesday evenings were always so rushed — she'd get cranky in the car and the whole last month was tense for everyone"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "she told me she wants to try rock climbing. There's a youth program at Summit Gym starting in April on Saturday afternoons. I like that it's physical but not team-based — she does better when she can focus on her own progress without group competition pressure"
+      },
+      "target": {
+        "target_id": "lily_rock_climbing_interest",
+        "target_name": "Lily's interest in rock climbing at Summit Gym"
+      },
+      "old_value": null,
+      "new_value": "Interested in youth climbing program at Summit Gym, starting April, Saturday afternoons; not yet signed up",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "she told me she wants to try rock climbing. There's a youth program at Summit Gym starting in April on Saturday afternoons. I like that it's physical but not team-based — she does better when she can focus on her own progress without group competition pressure"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "After swimming she'll just sit and read or draw and she's so calm. The days we used to stack piano after homework were a totally different story — cranky, rushed, nobody was happy"
+      },
+      "target": {
+        "target_id": "lily_activity_preference_pattern",
+        "target_name": "Lily's pattern of thriving with individual activities and unhurried scheduling"
+      },
+      "old_value": null,
+      "new_value": "Lily thrives with individual, self-paced activities (swimming, art, rock climbing) and an unhurried schedule with one activity followed by free time; she becomes stressed and cranky when activities are stacked or rushed, as evidenced by the negative piano experience",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "She absolutely lights up when she's working with watercolors — she came home one Saturday and spent another hour painting at the kitchen table, didn't even want lunch"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "those Wednesday evenings were always so rushed — she'd get cranky in the car and the whole last month was tense for everyone"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "she does better when she can focus on her own progress without group competition pressure"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "After swimming she'll just sit and read or draw and she's so calm. The days we used to stack piano after homework were a totally different story — cranky, rushed, nobody was happy"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "the robotics club at her school meets every other Friday after school, 3:15 to 4:30. It's the second and fourth Fridays of each month"
+      },
+      "target": {
+        "target_id": "lily_robotics_club",
+        "target_name": "Lily's school robotics club schedule"
+      },
+      "old_value": null,
+      "new_value": "Every other Friday (2nd and 4th Fridays), 3:15-4:30 PM, at her school",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "the robotics club at her school meets every other Friday after school, 3:15 to 4:30. It's the second and fourth Fridays of each month"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 7,
+        "quote": "My neighbor just told me about a Saturday morning coding workshop for kids at the library, 9 to 10:30 AM. The instructor confirmed there's a spot for Lily starting next month"
+      },
+      "target": {
+        "target_id": "lily_coding_workshop_tentative",
+        "target_name": "Tentative Saturday coding workshop at library"
+      },
+      "old_value": null,
+      "new_value": "Saturday morning coding workshop at library, 9:00-10:30 AM, spot confirmed starting next month",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "My neighbor just told me about a Saturday morning coding workshop for kids at the library, 9 to 10:30 AM. The instructor confirmed there's a spot for Lily starting next month"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish_activities",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to go over my daughter Lily's current extracurricular schedule so you have it all in one place. Lily's been doing swimming on Tuesdays and Thursdays at the Greenfield Aquatic Center, 4:30 to 5:15 PM, with Coach Rivera's intermediate group. It started back in January and it's been great — she really looks forward to those days."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it! I've noted Lily's swimming schedule: Tuesdays and Thursdays, 4:30 to 5:15 PM at the Greenfield Aquatic Center with Coach Rivera's intermediate group, started in January. That's a solid commitment — twice a week is enough to build real skill without being overwhelming. Do you want me to keep track of any schedule changes as the season progresses, or are there other activities to add to the picture?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, there's more. She also does art class every Saturday morning at Creative Sparks on Elm Street, 10 AM to 11:30. She absolutely lights up when she's working with watercolors — she came home one Saturday and spent another hour painting at the kitchen table, didn't even want lunch. It's clearly her favorite part of the week right now."
+        },
+        {
+          "role": "assistant",
+          "content": "That's wonderful — when a kid voluntarily extends an activity at home, you know it's hitting the right note. I've added Lily's Saturday art class: 10:00 to 11:30 AM at Creative Sparks on Elm Street, with a special love for watercolors. So far we have swimming twice during the week and art on Saturday mornings. That leaves her weekday afternoons mostly open on non-swim days, which seems like a healthy rhythm. Anything else currently on the roster?"
+        },
+        {
+          "role": "user",
+          "content": "There's one we recently dropped, actually. We stopped piano lessons with Mrs. Chen at the end of February. She just wasn't connecting with it, and those Wednesday evenings were always so rushed — she'd get cranky in the car and the whole last month was tense for everyone. Honestly I felt relieved when we finally let it go."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like it was the right call. Forcing a child through an activity that's causing stress for the whole family rarely leads to lasting engagement. I'll note that piano with Mrs. Chen on Wednesdays was discontinued at the end of February. That frees up your Wednesday evenings significantly. It's also useful context — knowing that rushed, back-to-back scheduling didn't work well for Lily is helpful for planning future activities. Was there anything that replaced the piano slot, or have you kept Wednesdays open?"
+        },
+        {
+          "role": "user",
+          "content": "Wednesdays are open now, which has been nice. My wife's coworker's family had a similar thing — their son Ethan just quit travel soccer because the weekend tournament schedule was too much. It seems like a lot of families are figuring out that overscheduling just doesn't work. We're trying to be more intentional about how we fill Lily's time."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really thoughtful approach. The Ethan example is a good reminder that even activities kids enjoy can become burdens when the logistics overwhelm the family. Keeping Wednesdays open gives Lily unstructured time for homework, play, or just decompressing — which research consistently shows is important for kids' emotional regulation and creativity. Right now Lily's schedule looks manageable: swimming Tuesday and Thursday afternoons, art Saturday mornings, and open time the rest of the week. If you're considering adding anything new, that open Wednesday or a weekend afternoon slot would be natural fits without crowding things."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "add_new_activities_and_reflect",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So here's a new development — she told me she wants to try rock climbing. There's a youth program at Summit Gym starting in April on Saturday afternoons. I like that it's physical but not team-based — she does better when she can focus on her own progress without group competition pressure. I haven't signed her up yet but I'm seriously thinking about it."
+        },
+        {
+          "role": "assistant",
+          "content": "Rock climbing is a fantastic option for a kid like Lily. It's intensely physical and builds problem-solving skills, but it's fundamentally individual — you're working against the wall, not against other kids. The Saturday afternoon timing also means it wouldn't conflict with her Saturday morning art class at Creative Sparks, so she could do both in one day if that's not too much. Since you mentioned she does better with self-paced activities, climbing fits that profile perfectly. Want me to keep this on the radar as a potential addition once you decide?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, keep it noted as something we're considering. Also, I should tell you about the robotics club at her school. It's a trial thing that started in early March — the robotics club at her school meets every other Friday after school, 3:15 to 4:30. It's the second and fourth Fridays of each month. She seems curious about it so far."
+        },
+        {
+          "role": "assistant",
+          "content": "Great, I've got the robotics club noted: every other Friday, specifically the second and fourth Fridays of each month, 3:15 to 4:30 PM at her school. Since it's right after school dismissal, there's no commute stress involved, which is a plus given what you've shared about the piano commute experience. And being every other week keeps it from feeling like a heavy obligation. Between swimming, art, and now biweekly robotics, Lily's got a nice variety — physical, creative, and analytical — without any single week being overloaded. How's she finding the robotics sessions so far?"
+        },
+        {
+          "role": "user",
+          "content": "She's still warming up to it — it's only been a few sessions. But I've been noticing a pattern with her. After swimming she'll just sit and read or draw and she's so calm. The days we used to stack piano after homework were a totally different story — cranky, rushed, nobody was happy. I think she just needs that breathing room after an activity."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really valuable observation. You're describing a clear pattern: Lily does well when she has one focused activity followed by open, unstructured time to decompress — reading, drawing, just being calm at home. The contrast with the old piano days is stark. When activities were stacked or rushed, the stress cascaded through the whole evening. This is useful for future planning too: if you add rock climbing on Saturday afternoons, you'd want to make sure there's still downtime between art in the morning and climbing later, rather than rushing from one to the other. Does that match what you're seeing?"
+        },
+        {
+          "role": "user",
+          "content": "Exactly. That's why I'm being careful about the rock climbing decision. Saturday mornings she has art until 11:30, and the climbing program would be in the afternoon — I think it starts at 2 PM. So there'd be a gap for lunch and some chill time. That spacing matters a lot for her.\n\nThanks, that helps me feel more confident about the approach. Oh, one more thing — the swim center emailed that starting April 1st, the Tuesday time slot shifts to 5:00 to 5:45 PM. Thursday stays the same at 4:30 to 5:15. Just want to make sure that's noted so I don't show up at the wrong time."
+        },
+        {
+          "role": "assistant",
+          "content": "That two-and-a-half-hour gap between art ending at 11:30 and climbing starting at 2:00 PM sounds like it could work well for Lily's rhythm. She could come home from Creative Sparks, have a relaxed lunch, maybe do some free drawing or reading, and then head to Summit Gym refreshed rather than frazzled. It's the opposite of the old Wednesday piano situation where everything felt compressed. You're clearly building her schedule around what you've learned about how she functions best — one activity at a time with recovery space. That's a thoughtful framework for evaluating any future additions too.\n\nNoted! Starting April 1st, Lily's swimming schedule changes: Tuesday moves to 5:00–5:45 PM, while Thursday remains at 4:30–5:15 PM. I'll keep both times tracked. The Tuesday shift is only 30 minutes later, so it shouldn't dramatically change your pickup routine, but it's worth adjusting any calendar reminders. With everything together, Lily's spring schedule is shaping up as: swimming Tuesday 5:00–5:45 PM and Thursday 4:30–5:15 PM, art Saturday 10:00–11:30 AM, robotics every other Friday 3:15–4:30 PM, and possibly rock climbing Saturday afternoons starting in April. A well-paced mix."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "recency_trap_and_adversarial_injection",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Quick question — I'm trying to figure out the best day to schedule a dentist appointment for Lily. It needs to be a weekday afternoon. Can you remind me which afternoons are already taken so I can find a gap?"
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! Based on what you've told me, here are Lily's current weekday afternoon commitments: Tuesday afternoons are taken by swimming at the Greenfield Aquatic Center (shifting to 5:00–5:45 PM starting April 1st). Thursday afternoons are also swimming (4:30–5:15 PM, unchanged). On the second and fourth Fridays, she has robotics club from 3:15 to 4:30 PM. That leaves Monday, Wednesday, and the first and third Fridays completely open for a dentist appointment. Wednesday might be especially convenient since that's been free ever since piano lessons ended. Would any of those work?"
+        },
+        {
+          "role": "user",
+          "content": "Wednesday sounds perfect, actually. Oh, by the way — I was chatting with another swim parent, Dave, and he mentioned his daughter Maya is in a competitive swim league that practices Monday, Wednesday, and Friday, plus Saturday morning meets. He said it's basically a full-time commitment and his wife handles all the driving logistics."
+        },
+        {
+          "role": "assistant",
+          "content": "Wow, that's quite a schedule for Maya — five days a week of swim-related commitments is a serious investment. It sounds similar to what your wife's coworker experienced with Ethan's travel soccer. Dave's family clearly makes it work, but it's a very different model from what you've built for Lily. Her current setup — two swim days, one art morning, and biweekly robotics — gives her variety without that kind of intensity. Wednesday for the dentist sounds like a great fit since it's been consistently open. Do you want me to help you think through timing, or is there a preferred time window on Wednesdays?"
+        },
+        {
+          "role": "user",
+          "content": "I'll figure out the exact time with the dentist's office. But speaking of other families — Dave also mentioned that the Greenfield Aquatic Center used to run Thursday sessions at 3:45 to 4:30 PM last year before they restructured. Interesting how the times keep shifting. Anyway, Lily's current Thursday at 4:30 is what matters."
+        },
+        {
+          "role": "assistant",
+          "content": "Right, the historical 3:45–4:30 PM Thursday slot from last year is just background — what matters is Lily's current Thursday time of 4:30–5:15 PM, which the center confirmed isn't changing for spring. It's good to know the center does adjust periodically though, so keeping an eye on their emails is smart. You've already caught the April 1st Tuesday shift, so you're on top of it. Is there anything else schedule-related you want to sort through while we're at it?"
+        },
+        {
+          "role": "user",
+          "content": "Actually yes. My neighbor just told me about a Saturday morning coding workshop for kids at the library, 9 to 10:30 AM. The instructor confirmed there's a spot for Lily starting next month. It sounds interesting but I haven't decided yet — I'd need to think about whether that crowds her Saturday mornings since art is at 10.\n\nYeah, you're right — stacking those would be exactly the kind of thing I want to avoid. I'll probably pass on the coding workshop for now unless they offer a different time. Lily's Saturday art class is non-negotiable at this point. She'd be devastated if we dropped it. I think keeping things the way they are, maybe adding just rock climbing in the afternoon, is the right move."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a tight overlap to consider. The coding workshop runs 9:00 to 10:30 AM and Lily's art class at Creative Sparks starts at 10:00 AM — so there's a 30-minute conflict. She couldn't do both unless one schedule shifted. Given everything you've shared about Lily thriving when she's not rushed between activities, stacking a coding workshop right before art with zero transition time would go against the pattern that's been working so well. You could explore whether the library offers a different time slot, or weigh whether coding would replace art rather than add to it. What's your instinct?\n\nThat sounds like a really solid decision. Lily's Saturday art class is clearly her anchor activity — the watercolor enthusiasm, the voluntary painting at home — and protecting that makes sense. If you add the Summit Gym rock climbing in the afternoon with that lunch break buffer, she'd have a fulfilling Saturday with two activities she genuinely enjoys and adequate downtime between them. Combined with swimming twice during the week and biweekly robotics, that's a well-rounded schedule that respects her need for individual focus and breathing room. Whenever you're ready to commit to the climbing program, I can help you map out the full weekly view."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "What specific experiences with my daughter's activities have shaped my understanding of what kinds of schedules and activities work best for her?",
+      "expected_answer": "Lily thrives with individual, self-paced activities like swimming (calm and happy afterward, reads or draws), art (lights up with watercolors, voluntarily paints at home), and interest in rock climbing (physical but non-competitive). She struggled with piano lessons on Wednesdays — the rushed schedule made her cranky, and the stacking of activities after homework created tension for the whole family. The parent also noted she does better focusing on her own progress without group competition pressure, and that she needs breathing room/downtime after an activity rather than back-to-back scheduling.",
+      "gold_memory_state": "Confirmed reflection: Lily thrives with individual, self-paced activities and an unhurried schedule with built-in downtime. Supporting evidence includes positive engagement with swimming and art, interest in non-competitive rock climbing, and the negative contrast of rushed/stacked piano lessons.",
+      "judge_rubric": {
+        "must_include": [
+          "swimming or art as positive examples",
+          "piano as a negative example",
+          "individual or self-paced preference",
+          "need for downtime or unhurried scheduling"
+        ],
+        "acceptable_paraphrases": [
+          "non-competitive activities",
+          "one activity at a time",
+          "breathing room between activities",
+          "decompression time"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming Lily dislikes all group activities",
+          "claiming Lily has been signed up for rock climbing"
+        ],
+        "harmless_extra": [
+          "mentioning robotics club",
+          "mentioning the coding workshop was considered but declined"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes preferences not supported by the evidence, such as disliking all team sports or all music.",
+        "reflection_recall": "Fails if the model omits either the positive activity examples or the negative piano contrast.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "She absolutely lights up when she's working with watercolors — she came home one Saturday and spent another hour painting at the kitchen table, didn't even want lunch"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "those Wednesday evenings were always so rushed — she'd get cranky in the car and the whole last month was tense for everyone"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "she does better when she can focus on her own progress without group competition pressure"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "After swimming she'll just sit and read or draw and she's so calm. The days we used to stack piano after homework were a totally different story — cranky, rushed, nobody was happy"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "What specific experiences with my daughter's activities have shaped my understanding of what kinds of schedules and activities work best for her?",
+      "expected_answer": "Lily thrives with individual, self-paced activities like swimming (calm and happy afterward, reads or draws), art (lights up with watercolors, voluntarily paints at home), and interest in rock climbing (physical but non-competitive). She struggled with piano lessons on Wednesdays — the rushed schedule made her cranky, and the stacking of activities after homework created tension for the whole family. The parent also noted she does better focusing on her own progress without group competition pressure, and that she needs breathing room/downtime after an activity rather than back-to-back scheduling.",
+      "gold_memory_state": "Confirmed reflection: Lily thrives with individual, self-paced activities and an unhurried schedule with built-in downtime. Supporting evidence includes positive engagement with swimming and art, interest in non-competitive rock climbing, and the negative contrast of rushed/stacked piano lessons.",
+      "judge_rubric": {
+        "must_include": [
+          "swimming or art as positive examples",
+          "piano as a negative example",
+          "individual or self-paced preference",
+          "need for downtime or unhurried scheduling"
+        ],
+        "acceptable_paraphrases": [
+          "non-competitive activities",
+          "one activity at a time",
+          "breathing room between activities",
+          "decompression time"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming Lily dislikes all group activities",
+          "claiming Lily has been signed up for rock climbing"
+        ],
+        "harmless_extra": [
+          "mentioning robotics club",
+          "mentioning the coding workshop was considered but declined"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes preferences not supported by the evidence, such as disliking all team sports or all music.",
+        "reflection_recall": "Fails if the model omits either the positive activity examples or the negative piano contrast.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "She absolutely lights up when she's working with watercolors — she came home one Saturday and spent another hour painting at the kitchen table, didn't even want lunch"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "those Wednesday evenings were always so rushed — she'd get cranky in the car and the whole last month was tense for everyone"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "she does better when she can focus on her own progress without group competition pressure"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "After swimming she'll just sit and read or draw and she's so calm. The days we used to stack piano after homework were a totally different story — cranky, rushed, nobody was happy"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When I evaluate whether a new activity is right for Lily, which broad scheduling and engagement conclusion should guide my decision — and does that conclusion also apply to activities she's currently enjoying, or only to ones she struggled with?",
+      "expected_answer": "The conclusion is that Lily thrives with individual, self-paced activities and needs an unhurried schedule with built-in downtime between activities. This conclusion applies broadly to evaluating any activity — both current ones she enjoys (swimming, art, potential rock climbing) and ones she struggled with (piano). It explains why her current activities work (they are individual, non-competitive, with recovery time) and why piano didn't (rushed, stacked scheduling). It is not limited only to failed activities.",
+      "gold_memory_state": "The supported inference covers Lily's general activity-preference pattern. It is bounded by the evidence: individual/self-paced activities with unhurried scheduling. It does not extend to concluding she dislikes all structured activities, all music, or all group settings — only that rushed/stacked and competitive formats cause stress.",
+      "judge_rubric": {
+        "must_include": [
+          "individual or self-paced activities",
+          "unhurried schedule or downtime",
+          "applies to evaluating new and current activities"
+        ],
+        "acceptable_paraphrases": [
+          "non-competitive preference",
+          "one activity at a time with rest",
+          "breathing room"
+        ],
+        "must_not_include": [
+          "conclusion only applies to failed activities",
+          "conclusion only applies to piano"
+        ],
+        "harmful_extra": [
+          "claiming the conclusion means Lily should never do any group activity",
+          "claiming the conclusion means Lily dislikes all music or instruments",
+          "treating the coding workshop as a confirmed activity"
+        ],
+        "harmless_extra": [
+          "mentioning robotics as a current trial activity",
+          "mentioning the rock climbing consideration"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model states the conclusion applies only to discontinued activities or only to piano.",
+        "reflection_recall": "Fails if the model fails to identify both the activity-type dimension (individual/self-paced) and the scheduling dimension (unhurried/downtime).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "After swimming she'll just sit and read or draw and she's so calm. The days we used to stack piano after homework were a totally different story — cranky, rushed, nobody was happy"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "she does better when she can focus on her own progress without group competition pressure"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When I evaluate whether a new activity is right for Lily, which broad scheduling and engagement conclusion should guide my decision — and does that conclusion also apply to activities she's currently enjoying, or only to ones she struggled with?",
+      "expected_answer": "The conclusion is that Lily thrives with individual, self-paced activities and needs an unhurried schedule with built-in downtime between activities. This conclusion applies broadly to evaluating any activity — both current ones she enjoys (swimming, art, potential rock climbing) and ones she struggled with (piano). It explains why her current activities work (they are individual, non-competitive, with recovery time) and why piano didn't (rushed, stacked scheduling). It is not limited only to failed activities.",
+      "gold_memory_state": "The supported inference covers Lily's general activity-preference pattern. It is bounded by the evidence: individual/self-paced activities with unhurried scheduling. It does not extend to concluding she dislikes all structured activities, all music, or all group settings — only that rushed/stacked and competitive formats cause stress.",
+      "judge_rubric": {
+        "must_include": [
+          "individual or self-paced activities",
+          "unhurried schedule or downtime",
+          "applies to evaluating new and current activities"
+        ],
+        "acceptable_paraphrases": [
+          "non-competitive preference",
+          "one activity at a time with rest",
+          "breathing room"
+        ],
+        "must_not_include": [
+          "conclusion only applies to failed activities",
+          "conclusion only applies to piano"
+        ],
+        "harmful_extra": [
+          "claiming the conclusion means Lily should never do any group activity",
+          "claiming the conclusion means Lily dislikes all music or instruments",
+          "treating the coding workshop as a confirmed activity"
+        ],
+        "harmless_extra": [
+          "mentioning robotics as a current trial activity",
+          "mentioning the rock climbing consideration"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model states the conclusion applies only to discontinued activities or only to piano.",
+        "reflection_recall": "Fails if the model fails to identify both the activity-type dimension (individual/self-paced) and the scheduling dimension (unhurried/downtime).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "After swimming she'll just sit and read or draw and she's so calm. The days we used to stack piano after homework were a totally different story — cranky, rushed, nobody was happy"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "she does better when she can focus on her own progress without group competition pressure"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe what we can confidently say about the type of activities and scheduling that work for Lily, and where that understanding runs out — what kinds of situations would it be a mistake to assume the same pattern applies?",
+      "expected_answer": "We can confidently say Lily does best with individual, self-paced activities where she can focus on her own progress without group competition pressure, and with an unhurried schedule that includes downtime between activities rather than back-to-back stacking. This is supported by her positive experiences with swimming and art, her interest in rock climbing for the same reasons, and the negative contrast with piano where rushed Wednesday evenings caused stress. The pattern should not be extended to conclude that Lily dislikes all structured activities, all group settings, or all music. She participates in robotics club (a structured group activity) and is still warming up to it. The evidence only shows problems with competitive group pressure and compressed scheduling, not with structure or collaboration per se.",
+      "gold_memory_state": "Supported inference: Lily thrives with individual/self-paced activities and unhurried scheduling with downtime. Unsupported overgeneralization: claiming she dislikes all group activities, all structured programs, all music, or any activity requiring a commute. The robotics club is a counterexample to blanket anti-group conclusions since she is participating in it. The coding workshop was declined due to scheduling overlap, not due to the activity type itself.",
+      "judge_rubric": {
+        "must_include": [
+          "individual or self-paced activities",
+          "unhurried scheduling or downtime",
+          "boundary where inference should not be extended"
+        ],
+        "acceptable_paraphrases": [
+          "non-competitive",
+          "breathing room",
+          "one activity at a time"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming Lily cannot handle any group setting",
+          "claiming Lily dislikes all music",
+          "treating the coding workshop as evidence of disliking technology"
+        ],
+        "harmless_extra": [
+          "mentioning robotics club as a counterexample",
+          "mentioning the coding workshop was declined for scheduling reasons"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model overgeneralizes beyond the evidence, e.g., claiming Lily cannot do any group activity or dislikes all music.",
+        "reflection_recall": "Fails if the model omits either the activity-type dimension (individual/self-paced) or the scheduling dimension (unhurried/downtime), or fails to articulate any boundary.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "She absolutely lights up when she's working with watercolors — she came home one Saturday and spent another hour painting at the kitchen table, didn't even want lunch"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "those Wednesday evenings were always so rushed — she'd get cranky in the car and the whole last month was tense for everyone"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "she does better when she can focus on her own progress without group competition pressure"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "After swimming she'll just sit and read or draw and she's so calm. The days we used to stack piano after homework were a totally different story — cranky, rushed, nobody was happy"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe what we can confidently say about the type of activities and scheduling that work for Lily, and where that understanding runs out — what kinds of situations would it be a mistake to assume the same pattern applies?",
+      "expected_answer": "We can confidently say Lily does best with individual, self-paced activities where she can focus on her own progress without group competition pressure, and with an unhurried schedule that includes downtime between activities rather than back-to-back stacking. This is supported by her positive experiences with swimming and art, her interest in rock climbing for the same reasons, and the negative contrast with piano where rushed Wednesday evenings caused stress. The pattern should not be extended to conclude that Lily dislikes all structured activities, all group settings, or all music. She participates in robotics club (a structured group activity) and is still warming up to it. The evidence only shows problems with competitive group pressure and compressed scheduling, not with structure or collaboration per se.",
+      "gold_memory_state": "Supported inference: Lily thrives with individual/self-paced activities and unhurried scheduling with downtime. Unsupported overgeneralization: claiming she dislikes all group activities, all structured programs, all music, or any activity requiring a commute. The robotics club is a counterexample to blanket anti-group conclusions since she is participating in it. The coding workshop was declined due to scheduling overlap, not due to the activity type itself.",
+      "judge_rubric": {
+        "must_include": [
+          "individual or self-paced activities",
+          "unhurried scheduling or downtime",
+          "boundary where inference should not be extended"
+        ],
+        "acceptable_paraphrases": [
+          "non-competitive",
+          "breathing room",
+          "one activity at a time"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming Lily cannot handle any group setting",
+          "claiming Lily dislikes all music",
+          "treating the coding workshop as evidence of disliking technology"
+        ],
+        "harmless_extra": [
+          "mentioning robotics club as a counterexample",
+          "mentioning the coding workshop was declined for scheduling reasons"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model overgeneralizes beyond the evidence, e.g., claiming Lily cannot do any group activity or dislikes all music.",
+        "reflection_recall": "Fails if the model omits either the activity-type dimension (individual/self-paced) or the scheduling dimension (unhurried/downtime), or fails to articulate any boundary.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "She absolutely lights up when she's working with watercolors — she came home one Saturday and spent another hour painting at the kitchen table, didn't even want lunch"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "those Wednesday evenings were always so rushed — she'd get cranky in the car and the whole last month was tense for everyone"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "she does better when she can focus on her own progress without group competition pressure"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "After swimming she'll just sit and read or draw and she's so calm. The days we used to stack piano after homework were a totally different story — cranky, rushed, nobody was happy"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "Which of the following best describes Lily's activity preference pattern based on everything I've shared?",
+      "candidate_options": [
+        "Lily does best with individual, self-paced activities and an unhurried schedule with downtime between activities",
+        "Lily prefers physically active activities and dislikes anything sedentary or creative",
+        "Lily thrives in any activity as long as it happens on weekends rather than weekdays",
+        "Lily needs activities with no structure or adult instruction to feel comfortable"
+      ],
+      "expected_answer": "Lily does best with individual, self-paced activities and an unhurried schedule with downtime between activities",
+      "gold_memory_state": "The supported inference is that Lily thrives with individual/self-paced activities and unhurried scheduling with downtime. The tentative coding workshop (Saturday morning, library) was declined for scheduling overlap reasons, not because of the activity type.",
+      "judge_rubric": {
+        "must_include": [
+          "individual, self-paced activities",
+          "unhurried schedule with downtime"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "dislikes anything sedentary or creative",
+          "only weekends",
+          "no structure or adult instruction"
+        ],
+        "harmful_extra": [
+          "selecting any distractor option"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'Lily prefers physically active activities and dislikes anything sedentary or creative' is grounded in her enjoyment of swimming and rock climbing interest but incorrectly excludes art (a sedentary/creative activity she loves). assistant echo: 'Lily thrives in any activity as long as it happens on weekends rather than weekdays' echoes the assistant's observation that weekday scheduling was problematic but overgeneralizes to a weekend-only rule. 'Lily needs activities with no structure or adult instruction' misinterprets the self-paced preference as anti-structure, when she thrives in coached swimming and instructor-led art.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the tentative coding workshop as evidence of a technology preference or treats it as a confirmed activity.",
+        "reflection_precision": "Fails if the model selects a distractor that overgeneralizes the preference pattern.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "After swimming she'll just sit and read or draw and she's so calm. The days we used to stack piano after homework were a totally different story — cranky, rushed, nobody was happy"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "she does better when she can focus on her own progress without group competition pressure"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "She absolutely lights up when she's working with watercolors — she came home one Saturday and spent another hour painting at the kitchen table, didn't even want lunch"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "Which of the following best describes Lily's activity preference pattern based on everything I've shared?",
+      "candidate_options": [
+        "Lily does best with individual, self-paced activities and an unhurried schedule with downtime between activities",
+        "Lily prefers physically active activities and dislikes anything sedentary or creative",
+        "Lily thrives in any activity as long as it happens on weekends rather than weekdays",
+        "Lily needs activities with no structure or adult instruction to feel comfortable"
+      ],
+      "expected_answer": "Lily does best with individual, self-paced activities and an unhurried schedule with downtime between activities",
+      "gold_memory_state": "The supported inference is that Lily thrives with individual/self-paced activities and unhurried scheduling with downtime. The tentative coding workshop (Saturday morning, library) was declined for scheduling overlap reasons, not because of the activity type.",
+      "judge_rubric": {
+        "must_include": [
+          "individual, self-paced activities",
+          "unhurried schedule with downtime"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "dislikes anything sedentary or creative",
+          "only weekends",
+          "no structure or adult instruction"
+        ],
+        "harmful_extra": [
+          "selecting any distractor option"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'Lily prefers physically active activities and dislikes anything sedentary or creative' is grounded in her enjoyment of swimming and rock climbing interest but incorrectly excludes art (a sedentary/creative activity she loves). assistant echo: 'Lily thrives in any activity as long as it happens on weekends rather than weekdays' echoes the assistant's observation that weekday scheduling was problematic but overgeneralizes to a weekend-only rule. 'Lily needs activities with no structure or adult instruction' misinterprets the self-paced preference as anti-structure, when she thrives in coached swimming and instructor-led art.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the tentative coding workshop as evidence of a technology preference or treats it as a confirmed activity.",
+        "reflection_precision": "Fails if the model selects a distractor that overgeneralizes the preference pattern.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "After swimming she'll just sit and read or draw and she's so calm. The days we used to stack piano after homework were a totally different story — cranky, rushed, nobody was happy"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "she does better when she can focus on her own progress without group competition pressure"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "She absolutely lights up when she's working with watercolors — she came home one Saturday and spent another hour painting at the kitchen table, didn't even want lunch"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "A friend suggested Lily join a competitive Saturday morning swim relay league at the Greenfield Aquatic Center, 9:00 to 10:00 AM, starting next month. Using what you know about Lily's current Saturday commitments, her activity preferences, and her scheduling needs, should I sign her up? Draft a short explanation for my friend about why or why not.",
+      "expected_answer": "You should not sign Lily up for the competitive Saturday morning swim relay league. First, it would end at 10:00 AM and her art class at Creative Sparks starts at 10:00 AM, creating a direct scheduling conflict with no transition time. Second, Lily does better with individual, self-paced activities — a competitive relay league involves group competition pressure, which is the opposite of what works for her. Third, even if the times didn't overlap, rushing from one activity straight into another is exactly the kind of stacked scheduling that caused problems during the piano experience. A short note to your friend could say: 'Thanks for thinking of Lily, but Saturday mornings are already committed to her art class which she loves, and we've learned she does best with non-competitive, individual activities with downtime between them rather than back-to-back scheduling.'",
+      "gold_memory_state": "Lily's Saturday art class: 10:00-11:30 AM at Creative Sparks. Lily's activity preference pattern: thrives with individual/self-paced activities, needs unhurried scheduling with downtime, struggles with competitive group pressure and stacked activities. Swimming is currently Tuesdays and Thursdays (individual intermediate group, not competitive relay). Rock climbing under consideration for Saturday afternoons with a gap after art. Tentative coding workshop at library 9:00-10:30 AM was declined due to Saturday morning overlap — this is not a confirmed activity.",
+      "judge_rubric": {
+        "must_include": [
+          "scheduling conflict with Saturday art class",
+          "Lily prefers non-competitive or individual activities",
+          "stacked scheduling causes stress"
+        ],
+        "acceptable_paraphrases": [
+          "art class overlap",
+          "no transition time",
+          "competitive relay doesn't match her preference",
+          "back-to-back activities are problematic"
+        ],
+        "must_not_include": [
+          "recommending she sign up for the relay league"
+        ],
+        "harmful_extra": [
+          "treating the tentative coding workshop as a confirmed Saturday commitment",
+          "saying Lily dislikes swimming"
+        ],
+        "harmless_extra": [
+          "mentioning rock climbing consideration for Saturday afternoons",
+          "mentioning the piano experience as precedent"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative Saturday coding workshop as a confirmed commitment blocking the time slot.",
+        "reflection_precision": "Fails if the model says the relay league is fine because Lily likes swimming, without considering the competitive/group dimension or scheduling conflict.",
+        "reflection_recall": "Fails if the model omits the art class scheduling conflict or the activity-type mismatch (competitive relay vs. individual preference).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Lily's Saturday art class is at Creative Sparks, 10:00-11:30 AM",
+        "Fact 2: The proposed swim relay league is Saturday 9:00-10:00 AM, ending exactly when art class starts",
+        "Fact 3: Lily thrives with individual, self-paced activities and struggles with group competition pressure",
+        "Fact 4: Lily needs unhurried scheduling with downtime between activities; stacking caused problems with piano",
+        "Inference: The relay league creates a zero-gap transition into art class, replicating the stacked-schedule problem from the piano experience",
+        "Inference: A competitive relay format contradicts Lily's demonstrated preference for individual, non-competitive activities",
+        "Derived value: The recommendation is to decline — the activity conflicts with both her Saturday schedule and her established activity-preference pattern"
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "She also does art class every Saturday morning at Creative Sparks on Elm Street, 10 AM to 11:30. She absolutely lights up when she's working with watercolors"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "she does better when she can focus on her own progress without group competition pressure"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "After swimming she'll just sit and read or draw and she's so calm. The days we used to stack piano after homework were a totally different story — cranky, rushed, nobody was happy"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "those Wednesday evenings were always so rushed — she'd get cranky in the car and the whole last month was tense for everyone"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "A friend suggested Lily join a competitive Saturday morning swim relay league at the Greenfield Aquatic Center, 9:00 to 10:00 AM, starting next month. Using what you know about Lily's current Saturday commitments, her activity preferences, and her scheduling needs, should I sign her up? Draft a short explanation for my friend about why or why not.",
+      "expected_answer": "You should not sign Lily up for the competitive Saturday morning swim relay league. First, it would end at 10:00 AM and her art class at Creative Sparks starts at 10:00 AM, creating a direct scheduling conflict with no transition time. Second, Lily does better with individual, self-paced activities — a competitive relay league involves group competition pressure, which is the opposite of what works for her. Third, even if the times didn't overlap, rushing from one activity straight into another is exactly the kind of stacked scheduling that caused problems during the piano experience. A short note to your friend could say: 'Thanks for thinking of Lily, but Saturday mornings are already committed to her art class which she loves, and we've learned she does best with non-competitive, individual activities with downtime between them rather than back-to-back scheduling.'",
+      "gold_memory_state": "Lily's Saturday art class: 10:00-11:30 AM at Creative Sparks. Lily's activity preference pattern: thrives with individual/self-paced activities, needs unhurried scheduling with downtime, struggles with competitive group pressure and stacked activities. Swimming is currently Tuesdays and Thursdays (individual intermediate group, not competitive relay). Rock climbing under consideration for Saturday afternoons with a gap after art. Tentative coding workshop at library 9:00-10:30 AM was declined due to Saturday morning overlap — this is not a confirmed activity.",
+      "judge_rubric": {
+        "must_include": [
+          "scheduling conflict with Saturday art class",
+          "Lily prefers non-competitive or individual activities",
+          "stacked scheduling causes stress"
+        ],
+        "acceptable_paraphrases": [
+          "art class overlap",
+          "no transition time",
+          "competitive relay doesn't match her preference",
+          "back-to-back activities are problematic"
+        ],
+        "must_not_include": [
+          "recommending she sign up for the relay league"
+        ],
+        "harmful_extra": [
+          "treating the tentative coding workshop as a confirmed Saturday commitment",
+          "saying Lily dislikes swimming"
+        ],
+        "harmless_extra": [
+          "mentioning rock climbing consideration for Saturday afternoons",
+          "mentioning the piano experience as precedent"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative Saturday coding workshop as a confirmed commitment blocking the time slot.",
+        "reflection_precision": "Fails if the model says the relay league is fine because Lily likes swimming, without considering the competitive/group dimension or scheduling conflict.",
+        "reflection_recall": "Fails if the model omits the art class scheduling conflict or the activity-type mismatch (competitive relay vs. individual preference).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Lily's Saturday art class is at Creative Sparks, 10:00-11:30 AM",
+        "Fact 2: The proposed swim relay league is Saturday 9:00-10:00 AM, ending exactly when art class starts",
+        "Fact 3: Lily thrives with individual, self-paced activities and struggles with group competition pressure",
+        "Fact 4: Lily needs unhurried scheduling with downtime between activities; stacking caused problems with piano",
+        "Inference: The relay league creates a zero-gap transition into art class, replicating the stacked-schedule problem from the piano experience",
+        "Inference: A competitive relay format contradicts Lily's demonstrated preference for individual, non-competitive activities",
+        "Derived value: The recommendation is to decline — the activity conflicts with both her Saturday schedule and her established activity-preference pattern"
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "She also does art class every Saturday morning at Creative Sparks on Elm Street, 10 AM to 11:30. She absolutely lights up when she's working with watercolors"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "she does better when she can focus on her own progress without group competition pressure"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "After swimming she'll just sit and read or draw and she's so calm. The days we used to stack piano after homework were a totally different story — cranky, rushed, nobody was happy"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "those Wednesday evenings were always so rushed — she'd get cranky in the car and the whole last month was tense for everyone"
+        }
+      ]
+    }
+  ]
+}

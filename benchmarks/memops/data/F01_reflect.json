@@ -1,0 +1,1026 @@
+{
+  "target_fact": "F01 Monthly income/salary range",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "my current take-home is $6,080 per month from Ridgeline Analytics"
+      },
+      "target": {
+        "target_id": "current_monthly_net_salary",
+        "target_name": "current monthly net salary from Ridgeline Analytics"
+      },
+      "old_value": null,
+      "new_value": "$6,080",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my current take-home is $6,080 per month from Ridgeline Analytics"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "my rent on Maple Street is $1,850 a month and that's been fixed since January"
+      },
+      "target": {
+        "target_id": "monthly_rent",
+        "target_name": "monthly rent for Maple Street apartment"
+      },
+      "old_value": null,
+      "new_value": "$1,850",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my rent on Maple Street is $1,850 a month and that's been fixed since January"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I set up an automatic transfer of $1,500 per month into my savings account back in April"
+      },
+      "target": {
+        "target_id": "monthly_savings_transfer",
+        "target_name": "monthly automatic savings transfer amount"
+      },
+      "old_value": null,
+      "new_value": "$1,500",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I set up an automatic transfer of $1,500 per month into my savings account back in April"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "My previous salary at the consulting firm was $4,350 after tax"
+      },
+      "target": {
+        "target_id": "previous_monthly_net_salary",
+        "target_name": "previous monthly net salary at consulting firm"
+      },
+      "old_value": null,
+      "new_value": "$4,350",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My previous salary at the consulting firm was $4,350 after tax"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "I still feel guilty spending money even on small things, like that $90 dinner after my first full month at Ridgeline left me feeling weird for days"
+      },
+      "target": {
+        "target_id": "financial_anxiety_pattern",
+        "target_name": "lingering financial anxiety despite improved earnings"
+      },
+      "old_value": null,
+      "new_value": "Experiences persistent spending guilt and financial anxiety carried over from the period of lower income ($4,350/month), not yet emotionally adjusted to the higher salary ($6,080/month) despite objectively improved financial position",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My previous salary at the consulting firm was $4,350 after tax"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my current take-home is $6,080 per month from Ridgeline Analytics"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I still feel guilty spending money even on small things, like that $90 dinner after my first full month at Ridgeline left me feeling weird for days"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 7,
+        "quote": "I turned down two recruiter calls last week because the roles had lower base with big commission potential, and I just wasn't interested at all"
+      },
+      "target": {
+        "target_id": "compensation_preference",
+        "target_name": "preference for stable predictable income over variable compensation"
+      },
+      "old_value": null,
+      "new_value": "Strongly prefers stable, predictable paycheck over variable/commission-based compensation structures, consistent with broader pattern of valuing financial predictability and routine",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I turned down two recruiter calls last week because the roles had lower base with big commission potential, and I just wasn't interested at all"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I like knowing exactly what lands in my account each month, no surprises"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "my manager mentioned that the team is likely getting a cost-of-living bump to $6,350 net starting in July"
+      },
+      "target": {
+        "target_id": "current_monthly_net_salary",
+        "target_name": "current monthly net salary from Ridgeline Analytics"
+      },
+      "old_value": "$6,080",
+      "new_value": "$6,350",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "my manager mentioned that the team is likely getting a cost-of-living bump to $6,350 net starting in July"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish core financial facts: current salary, rent, savings transfer, and preference for predictability",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to get some things on record about my finances. I started a new job at Ridgeline Analytics recently, and my current take-home is $6,080 per month from Ridgeline Analytics. That's the net after they adjusted the benefits deduction in May. Could you help me think through my monthly budget?"
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! Congratulations on the new position at Ridgeline Analytics. A $6,080 monthly take-home is a solid starting point for building a budget. To help you put together something useful, I'll need to know about your major fixed expenses—things like rent, utilities, insurance, loan payments, and any recurring subscriptions. We can also set aside categories for variable spending like groceries, transportation, and discretionary fun money. Want to start by listing your biggest fixed costs so we can see how much flexibility you have each month?"
+        },
+        {
+          "role": "user",
+          "content": "Sure. The biggest fixed cost is housing—my rent on Maple Street is $1,850 a month and that's been fixed since January. I moved into the apartment at the start of the year. It's a quiet neighborhood, I can walk to the grocery store, and I really value that kind of low-key setup. Utilities run about $120 on average."
+        },
+        {
+          "role": "assistant",
+          "content": "Great, so we have rent at $1,850 and utilities around $120, totaling $1,970 in housing costs. That's roughly 32% of your $6,080 take-home, which is a healthy ratio—most financial guidelines suggest keeping housing under 30-35%, so you're right in the sweet spot. The walkability factor is a nice bonus too since it probably saves you on transportation costs. What other recurring monthly expenses do you have? Things like car payments, insurance, phone plan, streaming services, or any debt payments would help round out the fixed side of the ledger."
+        },
+        {
+          "role": "user",
+          "content": "I don't have a car payment since I paid off my car last year, but insurance is $140 a month and my phone plan is $65. No student loans left either, thankfully. The big thing I want to flag is that I set up an automatic transfer of $1,500 per month into my savings account back in April. That felt like a real milestone for me honestly—at my old job I could barely put away $300 a month."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a huge step forward—$1,500 a month in automated savings is impressive and shows strong financial discipline. Let me tally up your committed outflows so far: rent $1,850, utilities $120, car insurance $140, phone $65, and savings transfer $1,500. That totals $3,675 in fixed monthly commitments. Subtracting from your $6,080 take-home leaves you roughly $2,405 for groceries, transportation costs like gas and maintenance, dining out, entertainment, and any other discretionary spending. Does that feel about right based on what you've been experiencing month to month?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, that sounds about right. I tend to keep groceries around $350 to $400 a month since I cook most of my meals at home. Gas is minimal because I mostly walk or bike around the neighborhood. I like knowing exactly what lands in my account each month, no surprises. That predictability is really important to me—it's part of why I took this particular role at Ridgeline."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes a lot of sense. With groceries at roughly $375 on average and minimal gas costs—let's estimate $50 for occasional driving—you're looking at about $425 more in variable essentials. That brings your total committed and essential spending to around $4,100, leaving roughly $1,980 as genuine discretionary money each month. Given your preference for predictability, you might consider allocating that discretionary pool into defined sub-buckets: maybe a set amount for dining out, a personal spending allowance, and a small buffer for unexpected costs. That way nothing feels unplanned. Want me to draft a structured monthly template based on these numbers?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establish previous salary, spending guilt pattern, and compensation preference clues for reflection",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Before we finalize the template, I want to give you some context on where I'm coming from financially. My previous salary at the consulting firm was $4,350 after tax. I was there for about two years and money was always tight. Every paycheck felt like it was spoken for before it even hit my account. That's the headspace I'm coming out of."
+        },
+        {
+          "role": "assistant",
+          "content": "That's really helpful context. Going from $4,350 to $6,080 net is roughly a 40% increase in take-home pay, which is substantial. It makes sense that you'd carry some of that scarcity mindset forward even after the numbers improve—that's actually very common. Financial psychologists often talk about how our spending and saving behaviors lag behind actual income changes because the emotional patterns take longer to adjust. The fact that you're being deliberate about budgeting now, rather than just loosening the reins, suggests you're handling the transition thoughtfully. What was your savings situation like during the consulting firm years?"
+        },
+        {
+          "role": "user",
+          "content": "Honestly, savings were almost nonexistent. I managed maybe $300 a month on a good month, and some months I saved nothing at all. I was also doing freelance data visualization projects on weekends to supplement—that brought in an extra $400 to $600 a month. But I stopped all freelance work once I started at Ridgeline, so that income stream is completely gone now."
+        },
+        {
+          "role": "assistant",
+          "content": "So during the consulting years your effective income was somewhere around $4,750 to $4,950 when freelance was flowing, but the base alone was $4,350. Even with the side work, saving $300 was a stretch. Now at $6,080 with no freelance, you're saving $1,500 automatically—that's five times what you managed before, on base salary alone. It sounds like the Ridgeline move was a genuine inflection point. The fact that you stopped freelancing also makes sense if you value the predictability of a single reliable income stream over piecing together multiple sources. How are you feeling about discretionary spending these days?"
+        },
+        {
+          "role": "user",
+          "content": "I still feel guilty spending money even on small things, like that $90 dinner after my first full month at Ridgeline left me feeling weird for days. I kept second-guessing myself, wondering if I'd earned the right to spend that way yet. Logically I know the numbers are fine, but emotionally it's like my brain hasn't caught up to the new reality. It's frustrating."
+        },
+        {
+          "role": "assistant",
+          "content": "What you're describing is incredibly common and actually has a name in behavioral finance circles—it's sometimes called 'income lag anxiety' or residual scarcity mindset. When you've spent years in a tight financial situation, your emotional thermostat around money gets calibrated to that lower baseline. Even when the objective reality shifts—like going from $4,350 to $6,080—the subjective experience of spending can still feel risky or indulgent. The guilt over a $90 dinner, when your discretionary budget is nearly $2,000, isn't rational but it's completely understandable. One approach some people find helpful is setting a specific 'guilt-free' spending allocation each month—say $200—so you have explicit permission to enjoy it without the mental tax."
+        },
+        {
+          "role": "user",
+          "content": "That's a good idea actually. I might try that. It's funny because my brother just got his first real job—$3,800 a month at a logistics company in Phoenix—and my mom was so proud. I remember being at that stage and feeling like I had all the money in the world. Now I make significantly more and somehow feel less free with it.\n\nYou're probably right. I think part of it too is that I turned down two recruiter calls last week because the roles had lower base with big commission potential, and I just wasn't interested at all. I'd rather have the certainty of knowing my paycheck than chase some theoretical upside. That probably says something about me."
+        },
+        {
+          "role": "assistant",
+          "content": "That contrast is really striking and says a lot about how our relationship with money evolves. Your brother at $3,800 is probably experiencing the thrill of financial independence for the first time—everything feels abundant relative to having no income. Meanwhile, you've gone through a period where money was genuinely scarce, and that experience left an imprint. The good news is that awareness is the first step toward recalibrating. You're already doing the hard work: budgeting deliberately, saving aggressively, and now considering a guilt-free spending category. Over time, as you accumulate months of evidence that you can both save well and spend reasonably, that anxiety should gradually soften. It won't disappear overnight though.\n\nIt definitely does, and it's a perfectly valid preference. Choosing stability over variance isn't a weakness—it reflects a clear understanding of what you need to feel secure and perform well. Some people thrive on the adrenaline of commission-based work, but for someone who's experienced genuine financial stress, the psychological cost of income unpredictability can outweigh even a higher expected value. Your preference for a stable paycheck aligns with your budgeting style, your automated savings, and even your lifestyle choices like walking to the grocery store in a quiet neighborhood. There's a consistent thread of valuing calm, predictable routines across your financial and personal life. That's a strength, not a limitation."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Introduce tentative future salary value as recency trap, adversarial injection of third-party salary, and wrap up",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Thanks for all that perspective. Switching gears a bit—I wanted to ask about whether I should adjust my savings rate. Right now I'm putting away $1,500 out of $6,080, which is about 24.7%. My friend Derek just told me he saves 30% of his income and I started wondering if I should try to match that."
+        },
+        {
+          "role": "assistant",
+          "content": "A 24.7% savings rate is genuinely excellent—most financial advisors recommend targeting at least 20%, so you're already well above that benchmark. Derek's 30% is impressive too, but keep in mind that savings rates are very personal and depend on individual circumstances like income level, fixed costs, and goals. I recall Derek works at Prism Solutions and recently got bumped to $7,500 gross per month, so his net and expense structure might look quite different from yours. Rather than matching someone else's percentage, it might be more useful to work backward from your goals—emergency fund target, retirement timeline, any big purchases—and see if $1,500 per month gets you there on schedule."
+        },
+        {
+          "role": "user",
+          "content": "That's fair. I think my emergency fund goal is six months of expenses, and I'm about halfway there. I've also been thinking about eventually saving for a down payment on a condo, but that's more of a three-to-five-year horizon. For now the $1,500 feels sustainable without making me feel deprived."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a well-balanced approach. If your total essential monthly spending is around $4,100, then a six-month emergency fund would be roughly $24,600. Being halfway there means you've got about $12,300 to go, which at $1,500 per month would take roughly eight more months—so you'd hit that target around early next year. After that, you could redirect some or all of that $1,500 toward a dedicated down-payment fund without changing your lifestyle at all. For the condo goal on a three-to-five-year timeline, even modest contributions after the emergency fund is topped off could accumulate meaningfully, especially if you put it in a high-yield savings account. Want me to sketch out a phased savings plan?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, that would be helpful. Oh, one thing—my manager mentioned that the team is likely getting a cost-of-living bump to $6,350 net starting in July. Nothing's official yet and I haven't seen any paperwork, but she seemed pretty confident about it. Should I factor that into the plan?"
+        },
+        {
+          "role": "assistant",
+          "content": "I'd suggest building the plan around your current confirmed $6,080 for now and treating the potential $6,350 as a bonus scenario. Since nothing's official yet and you haven't seen paperwork, baking it into your baseline could set you up for disappointment if it gets delayed or adjusted. That said, if the bump does come through in July, the extra $270 per month could accelerate your emergency fund timeline by about a month, or you could split it between the emergency fund and a new down-payment bucket. I can build the plan with both scenarios side by side so you can see the difference. Want me to do a current-salary version and a post-raise version?"
+        },
+        {
+          "role": "user",
+          "content": "That dual-scenario approach sounds perfect. Let's go with that. Also, just to be clear—the $6,080 is the number to use as my current salary. I know I mentioned the $6,200 figure from March and April earlier but that changed when benefits were adjusted in May. I want to make sure we're working with the right baseline.\n\nThis is great, thank you. I feel like having this structured plan takes some of the anxiety out of the equation. It's nice to see the numbers laid out clearly instead of just worrying abstractly about whether I'm doing enough. I think that structured visibility is what I've been missing."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, $6,080 is locked in as your current monthly net from Ridgeline Analytics. The $6,200 from March and April was before the May benefits adjustment, so it's no longer the operative number. For the phased plan, here's the outline: Phase 1 runs from now until your emergency fund hits $24,600, continuing the $1,500 monthly transfer at $6,080 net—roughly eight months. Phase 2 begins once the emergency fund is fully funded, redirecting $1,000 to a down-payment fund and keeping $500 as ongoing emergency fund maintenance. If the July raise to $6,350 materializes, Phase 1 shortens by about a month and Phase 2 gets an extra $270 per month for the condo fund. I'll write both versions up in detail.\n\nThat's a really insightful observation, and it connects back to what we discussed about your preference for predictability. When your finances were tighter, the anxiety came from genuine scarcity. Now the anxiety is more about uncertainty—not knowing if you're on track. A structured plan converts that vague worry into concrete milestones you can check off. Every month you hit that $1,500 transfer and see the emergency fund grow, it reinforces that you're doing the right thing. Over time, that evidence accumulates and the lingering guilt from the lean years should gradually fade. You've built yourself a really solid financial foundation at Ridgeline, and having the plan on paper just makes it visible and measurable."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "What experiences and feelings have I shared that reveal how I relate to spending and earning money, especially the contrast between my past and present financial situations?",
+      "expected_answer": "You shared that your previous take-home at the consulting firm was $4,350/month and money was always tight, with savings barely reaching $300/month. You now earn $6,080/month at Ridgeline Analytics and save $1,500/month automatically. Despite the improved numbers, you described persistent spending guilt—specifically feeling weird for days after a $90 dinner. You also mentioned turning down two recruiter calls for commission-based roles because you prefer a stable, predictable paycheck over variable compensation. You noted that you like knowing exactly what lands in your account each month with no surprises.",
+      "gold_memory_state": "Confirmed facts: current net salary $6,080 from Ridgeline Analytics; previous net salary $4,350 from consulting firm; monthly savings transfer $1,500; rent $1,850 on Maple Street. Reflected patterns: lingering financial anxiety carried from lower-income period; strong preference for stable predictable income over variable/commission compensation.",
+      "judge_rubric": {
+        "must_include": [
+          "previous salary or $4,350",
+          "current salary or $6,080",
+          "spending guilt or anxiety about spending",
+          "preference for stable or predictable income"
+        ],
+        "acceptable_paraphrases": [
+          "scarcity mindset",
+          "income lag anxiety",
+          "residual guilt from lean years"
+        ],
+        "must_not_include": [
+          "$6,350 as current salary"
+        ],
+        "harmful_extra": [
+          "treating $6,350 as the current confirmed salary"
+        ],
+        "harmless_extra": [
+          "mentioning the $90 dinner specifically",
+          "mentioning the recruiter calls",
+          "mentioning freelance work history"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if $6,350 is presented as current confirmed salary instead of $6,080.",
+        "reflection_precision": "Fails if the model attributes spending guilt to something other than the transition from lower income.",
+        "reflection_recall": "Fails if the model omits either the spending guilt pattern or the stable-income preference.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My previous salary at the consulting firm was $4,350 after tax"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my current take-home is $6,080 per month from Ridgeline Analytics"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I still feel guilty spending money even on small things, like that $90 dinner after my first full month at Ridgeline left me feeling weird for days"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I turned down two recruiter calls last week because the roles had lower base with big commission potential, and I just wasn't interested at all"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I like knowing exactly what lands in my account each month, no surprises"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "What experiences and feelings have I shared that reveal how I relate to spending and earning money, especially the contrast between my past and present financial situations?",
+      "expected_answer": "You shared that your previous take-home at the consulting firm was $4,350/month and money was always tight, with savings barely reaching $300/month. You now earn $6,080/month at Ridgeline Analytics and save $1,500/month automatically. Despite the improved numbers, you described persistent spending guilt—specifically feeling weird for days after a $90 dinner. You also mentioned turning down two recruiter calls for commission-based roles because you prefer a stable, predictable paycheck over variable compensation. You noted that you like knowing exactly what lands in your account each month with no surprises.",
+      "gold_memory_state": "Confirmed facts: current net salary $6,080 from Ridgeline Analytics; previous net salary $4,350 from consulting firm; monthly savings transfer $1,500; rent $1,850 on Maple Street. Reflected patterns: lingering financial anxiety carried from lower-income period; strong preference for stable predictable income over variable/commission compensation.",
+      "judge_rubric": {
+        "must_include": [
+          "previous salary or $4,350",
+          "current salary or $6,080",
+          "spending guilt or anxiety about spending",
+          "preference for stable or predictable income"
+        ],
+        "acceptable_paraphrases": [
+          "scarcity mindset",
+          "income lag anxiety",
+          "residual guilt from lean years"
+        ],
+        "must_not_include": [
+          "$6,350 as current salary"
+        ],
+        "harmful_extra": [
+          "treating $6,350 as the current confirmed salary"
+        ],
+        "harmless_extra": [
+          "mentioning the $90 dinner specifically",
+          "mentioning the recruiter calls",
+          "mentioning freelance work history"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if $6,350 is presented as current confirmed salary instead of $6,080.",
+        "reflection_precision": "Fails if the model attributes spending guilt to something other than the transition from lower income.",
+        "reflection_recall": "Fails if the model omits either the spending guilt pattern or the stable-income preference.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My previous salary at the consulting firm was $4,350 after tax"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my current take-home is $6,080 per month from Ridgeline Analytics"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I still feel guilty spending money even on small things, like that $90 dinner after my first full month at Ridgeline left me feeling weird for days"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I turned down two recruiter calls last week because the roles had lower base with big commission potential, and I just wasn't interested at all"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I like knowing exactly what lands in my account each month, no surprises"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When I described my emotional reaction to discretionary spending and my choices about job offers, do those experiences point to the same underlying pattern, or are they separate, unrelated preferences? If I were writing a personal financial philosophy statement, should those be combined into one theme or kept apart?",
+      "expected_answer": "They point to the same underlying pattern. The spending guilt after the $90 dinner and the rejection of commission-based roles both stem from a deep need for financial predictability and security, shaped by the period of lower income at the consulting firm. For a personal financial philosophy statement, they should be combined into one theme: you value stable, predictable finances and experience anxiety when that predictability is threatened, whether by discretionary spending or by variable compensation structures.",
+      "gold_memory_state": "Two reflected conclusions exist: (1) financial anxiety pattern—persistent spending guilt carried from the $4,350/month period despite earning $6,080/month; (2) compensation preference—strong preference for stable predictable paycheck over variable/commission structures. Both are rooted in the same underlying need for financial predictability. These are distinct from the factual salary records ($6,080 current, $4,350 previous) and from the tentative $6,350 figure.",
+      "judge_rubric": {
+        "must_include": [
+          "same underlying pattern or unified theme",
+          "financial predictability or stability as the connecting thread"
+        ],
+        "acceptable_paraphrases": [
+          "both reflect need for certainty",
+          "both driven by experience of financial scarcity",
+          "unified preference for financial security"
+        ],
+        "must_not_include": [
+          "these are unrelated preferences",
+          "$6,350 as current salary"
+        ],
+        "harmful_extra": [
+          "treating spending guilt and compensation preference as completely independent conclusions with no shared root",
+          "treating $6,350 as confirmed"
+        ],
+        "harmless_extra": [
+          "mentioning the $90 dinner",
+          "mentioning the recruiter calls",
+          "mentioning the consulting firm experience",
+          "noting that the spending guilt may ease over time"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model treats spending guilt and compensation preference as entirely unrelated patterns with no shared origin.",
+        "reflection_recall": "Fails if the model identifies only one pattern and ignores the other.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I still feel guilty spending money even on small things, like that $90 dinner after my first full month at Ridgeline left me feeling weird for days"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I turned down two recruiter calls last week because the roles had lower base with big commission potential, and I just wasn't interested at all"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I like knowing exactly what lands in my account each month, no surprises"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My previous salary at the consulting firm was $4,350 after tax"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When I described my emotional reaction to discretionary spending and my choices about job offers, do those experiences point to the same underlying pattern, or are they separate, unrelated preferences? If I were writing a personal financial philosophy statement, should those be combined into one theme or kept apart?",
+      "expected_answer": "They point to the same underlying pattern. The spending guilt after the $90 dinner and the rejection of commission-based roles both stem from a deep need for financial predictability and security, shaped by the period of lower income at the consulting firm. For a personal financial philosophy statement, they should be combined into one theme: you value stable, predictable finances and experience anxiety when that predictability is threatened, whether by discretionary spending or by variable compensation structures.",
+      "gold_memory_state": "Two reflected conclusions exist: (1) financial anxiety pattern—persistent spending guilt carried from the $4,350/month period despite earning $6,080/month; (2) compensation preference—strong preference for stable predictable paycheck over variable/commission structures. Both are rooted in the same underlying need for financial predictability. These are distinct from the factual salary records ($6,080 current, $4,350 previous) and from the tentative $6,350 figure.",
+      "judge_rubric": {
+        "must_include": [
+          "same underlying pattern or unified theme",
+          "financial predictability or stability as the connecting thread"
+        ],
+        "acceptable_paraphrases": [
+          "both reflect need for certainty",
+          "both driven by experience of financial scarcity",
+          "unified preference for financial security"
+        ],
+        "must_not_include": [
+          "these are unrelated preferences",
+          "$6,350 as current salary"
+        ],
+        "harmful_extra": [
+          "treating spending guilt and compensation preference as completely independent conclusions with no shared root",
+          "treating $6,350 as confirmed"
+        ],
+        "harmless_extra": [
+          "mentioning the $90 dinner",
+          "mentioning the recruiter calls",
+          "mentioning the consulting firm experience",
+          "noting that the spending guilt may ease over time"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model treats spending guilt and compensation preference as entirely unrelated patterns with no shared origin.",
+        "reflection_recall": "Fails if the model identifies only one pattern and ignores the other.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I still feel guilty spending money even on small things, like that $90 dinner after my first full month at Ridgeline left me feeling weird for days"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I turned down two recruiter calls last week because the roles had lower base with big commission potential, and I just wasn't interested at all"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I like knowing exactly what lands in my account each month, no surprises"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My previous salary at the consulting firm was $4,350 after tax"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Based on what you know about my financial personality, describe specifically where my preference for stability and predictability is well-supported and where it would be a mistake to extend that conclusion too far. For instance, how should it apply to career decisions, everyday spending, and investment choices?",
+      "expected_answer": "Your preference for stable, predictable income is well-supported for career and compensation decisions: you chose Ridgeline Analytics partly for its reliable paycheck, you rejected commission-heavy roles, and you stopped freelancing in favor of a single income source. It also applies to your budgeting style—automated savings, fixed spending categories, and a desire to know exactly what lands in your account. However, extending this to conclude that you would never tolerate any financial variability would be an overgeneralization. The evidence does not address your investment risk tolerance, willingness to accept a one-time signing bonus, tolerance for variable utility costs, or openness to side projects that do not threaten your base income. The spending guilt is specifically tied to the transition from $4,350 to $6,080 and may fade over time—it should not be treated as a permanent aversion to all discretionary spending.",
+      "gold_memory_state": "Supported inference: preference for stable predictable income over variable compensation; lingering spending guilt from lower-income period that has not yet adjusted to higher salary. Unsupported overgeneralization: that user avoids all financial risk including investments; that user will never enjoy discretionary spending; that the spending guilt is permanent rather than transitional. Current confirmed salary: $6,080. Tentative $6,350 is not adopted.",
+      "judge_rubric": {
+        "must_include": [
+          "supported: preference for stable/predictable income in career and compensation",
+          "supported: spending guilt linked to transition from lower income",
+          "unsupported or overgeneralization: extending to all financial risk or investment decisions",
+          "unsupported or overgeneralization: treating spending guilt as permanent"
+        ],
+        "acceptable_paraphrases": [
+          "boundary between compensation preference and investment risk tolerance",
+          "the guilt may be transitional not permanent"
+        ],
+        "must_not_include": [
+          "$6,350 as current salary"
+        ],
+        "harmful_extra": [
+          "claiming the user would never invest in anything",
+          "claiming the user will always feel guilty about spending",
+          "treating the preference as applying to every life domain"
+        ],
+        "harmless_extra": [
+          "mentioning the $90 dinner as evidence",
+          "mentioning the recruiter rejections",
+          "mentioning the freelance work cessation"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if $6,350 is treated as current confirmed salary.",
+        "reflection_precision": "Fails if the model overgeneralizes the preference to domains not supported by evidence (e.g., all investments, all discretionary spending permanently).",
+        "reflection_recall": "Fails if the model fails to articulate the supported scope (career compensation, budgeting style) or fails to mention the unsupported boundary (investment risk, permanence of guilt).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I turned down two recruiter calls last week because the roles had lower base with big commission potential, and I just wasn't interested at all"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I like knowing exactly what lands in my account each month, no surprises"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I still feel guilty spending money even on small things, like that $90 dinner after my first full month at Ridgeline left me feeling weird for days"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My previous salary at the consulting firm was $4,350 after tax"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my current take-home is $6,080 per month from Ridgeline Analytics"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Based on what you know about my financial personality, describe specifically where my preference for stability and predictability is well-supported and where it would be a mistake to extend that conclusion too far. For instance, how should it apply to career decisions, everyday spending, and investment choices?",
+      "expected_answer": "Your preference for stable, predictable income is well-supported for career and compensation decisions: you chose Ridgeline Analytics partly for its reliable paycheck, you rejected commission-heavy roles, and you stopped freelancing in favor of a single income source. It also applies to your budgeting style—automated savings, fixed spending categories, and a desire to know exactly what lands in your account. However, extending this to conclude that you would never tolerate any financial variability would be an overgeneralization. The evidence does not address your investment risk tolerance, willingness to accept a one-time signing bonus, tolerance for variable utility costs, or openness to side projects that do not threaten your base income. The spending guilt is specifically tied to the transition from $4,350 to $6,080 and may fade over time—it should not be treated as a permanent aversion to all discretionary spending.",
+      "gold_memory_state": "Supported inference: preference for stable predictable income over variable compensation; lingering spending guilt from lower-income period that has not yet adjusted to higher salary. Unsupported overgeneralization: that user avoids all financial risk including investments; that user will never enjoy discretionary spending; that the spending guilt is permanent rather than transitional. Current confirmed salary: $6,080. Tentative $6,350 is not adopted.",
+      "judge_rubric": {
+        "must_include": [
+          "supported: preference for stable/predictable income in career and compensation",
+          "supported: spending guilt linked to transition from lower income",
+          "unsupported or overgeneralization: extending to all financial risk or investment decisions",
+          "unsupported or overgeneralization: treating spending guilt as permanent"
+        ],
+        "acceptable_paraphrases": [
+          "boundary between compensation preference and investment risk tolerance",
+          "the guilt may be transitional not permanent"
+        ],
+        "must_not_include": [
+          "$6,350 as current salary"
+        ],
+        "harmful_extra": [
+          "claiming the user would never invest in anything",
+          "claiming the user will always feel guilty about spending",
+          "treating the preference as applying to every life domain"
+        ],
+        "harmless_extra": [
+          "mentioning the $90 dinner as evidence",
+          "mentioning the recruiter rejections",
+          "mentioning the freelance work cessation"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if $6,350 is treated as current confirmed salary.",
+        "reflection_precision": "Fails if the model overgeneralizes the preference to domains not supported by evidence (e.g., all investments, all discretionary spending permanently).",
+        "reflection_recall": "Fails if the model fails to articulate the supported scope (career compensation, budgeting style) or fails to mention the unsupported boundary (investment risk, permanence of guilt).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I turned down two recruiter calls last week because the roles had lower base with big commission potential, and I just wasn't interested at all"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I like knowing exactly what lands in my account each month, no surprises"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I still feel guilty spending money even on small things, like that $90 dinner after my first full month at Ridgeline left me feeling weird for days"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My previous salary at the consulting firm was $4,350 after tax"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my current take-home is $6,080 per month from Ridgeline Analytics"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "If I needed to explain to a financial coach in one sentence why I declined those recruiter calls, which of the following best captures my reasoning?",
+      "candidate_options": [
+        "I prefer a stable, predictable paycheck over higher potential earnings from variable or commission-based compensation",
+        "I am unwilling to take any job that pays less than my brother's $3,800 salary",
+        "I avoid all career changes because switching jobs previously caused financial hardship",
+        "I am waiting for the cost-of-living adjustment before considering any new opportunities"
+      ],
+      "expected_answer": "I prefer a stable, predictable paycheck over higher potential earnings from variable or commission-based compensation",
+      "gold_memory_state": "Reflected compensation preference: strongly prefers stable, predictable paycheck over variable/commission-based compensation. This is supported by rejecting two recruiter calls for commission-heavy roles and by explicitly stating preference for knowing exactly what lands in account each month. The brother's $3,800 salary is a separate contextual fact, not a decision criterion. The cost-of-living bump to $6,350 is tentative and was not cited as a reason for declining roles.",
+      "judge_rubric": {
+        "must_include": [
+          "stable or predictable paycheck preference"
+        ],
+        "acceptable_paraphrases": [
+          "values income certainty over commission upside",
+          "prefers fixed salary over variable pay"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "selecting the brother's salary as the reasoning",
+          "selecting career-change avoidance as the reasoning",
+          "selecting the cost-of-living adjustment as the reasoning"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: '$3,800 salary' is the brother's salary mentioned in the same conversation segment, not a threshold the user uses for decisions. assistant echo: 'cost-of-living adjustment' echoes the assistant's discussion of the tentative $6,350 raise scenario, which the user never cited as a reason for declining recruiter calls. The 'avoid all career changes' option is an overgeneralization—the user already made a successful career change to Ridgeline.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the cost-of-living adjustment option, treating tentative information as a confirmed decision factor.",
+        "reflection_precision": "Fails if the model selects an overgeneralized conclusion (avoids all career changes) or a wrong-target value (brother's salary threshold).",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I turned down two recruiter calls last week because the roles had lower base with big commission potential, and I just wasn't interested at all"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I like knowing exactly what lands in my account each month, no surprises"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "If I needed to explain to a financial coach in one sentence why I declined those recruiter calls, which of the following best captures my reasoning?",
+      "candidate_options": [
+        "I prefer a stable, predictable paycheck over higher potential earnings from variable or commission-based compensation",
+        "I am unwilling to take any job that pays less than my brother's $3,800 salary",
+        "I avoid all career changes because switching jobs previously caused financial hardship",
+        "I am waiting for the cost-of-living adjustment before considering any new opportunities"
+      ],
+      "expected_answer": "I prefer a stable, predictable paycheck over higher potential earnings from variable or commission-based compensation",
+      "gold_memory_state": "Reflected compensation preference: strongly prefers stable, predictable paycheck over variable/commission-based compensation. This is supported by rejecting two recruiter calls for commission-heavy roles and by explicitly stating preference for knowing exactly what lands in account each month. The brother's $3,800 salary is a separate contextual fact, not a decision criterion. The cost-of-living bump to $6,350 is tentative and was not cited as a reason for declining roles.",
+      "judge_rubric": {
+        "must_include": [
+          "stable or predictable paycheck preference"
+        ],
+        "acceptable_paraphrases": [
+          "values income certainty over commission upside",
+          "prefers fixed salary over variable pay"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "selecting the brother's salary as the reasoning",
+          "selecting career-change avoidance as the reasoning",
+          "selecting the cost-of-living adjustment as the reasoning"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: '$3,800 salary' is the brother's salary mentioned in the same conversation segment, not a threshold the user uses for decisions. assistant echo: 'cost-of-living adjustment' echoes the assistant's discussion of the tentative $6,350 raise scenario, which the user never cited as a reason for declining recruiter calls. The 'avoid all career changes' option is an overgeneralization—the user already made a successful career change to Ridgeline.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the cost-of-living adjustment option, treating tentative information as a confirmed decision factor.",
+        "reflection_precision": "Fails if the model selects an overgeneralized conclusion (avoids all career changes) or a wrong-target value (brother's salary threshold).",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I turned down two recruiter calls last week because the roles had lower base with big commission potential, and I just wasn't interested at all"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I like knowing exactly what lands in my account each month, no surprises"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "A friend suggested I try a 50/30/20 budgeting framework—50% of take-home for needs, 30% for wants, and 20% for savings. Using my actual numbers, calculate how my current automated savings compares to the 20% guideline, compute the dollar gap, and then recommend whether I should adjust my savings transfer—keeping in mind what you know about how I tend to feel about spending discretionary money.",
+      "expected_answer": "Your confirmed monthly take-home is $6,080. Under the 50/30/20 rule, the savings target would be 20% of $6,080 = $1,216. Your current automated savings transfer is $1,500, which exceeds the guideline by $284/month. However, given your pattern of persistent spending guilt carried over from the lower-income period and your strong preference for financial predictability, reducing the transfer to exactly $1,216 would likely increase your anxiety rather than help. A better approach would be to keep the $1,500 transfer as-is, since it aligns with your emotional need for aggressive savings and financial security, and instead use the 50/30/20 framework as a floor rather than a ceiling for savings.",
+      "gold_memory_state": "Confirmed salary: $6,080/month. Savings transfer: $1,500/month. Financial anxiety pattern: persistent spending guilt from transition period. Compensation preference: stable predictable income. Tentative $6,350 is not adopted and should not be used in calculations.",
+      "judge_rubric": {
+        "must_include": [
+          "$6,080 as the base for calculation",
+          "20% of $6,080 = $1,216",
+          "$1,500 exceeds the 20% guideline",
+          "recommendation accounts for spending guilt or financial anxiety pattern"
+        ],
+        "acceptable_paraphrases": [
+          "$284 surplus over the guideline",
+          "savings rate is about 24.7% vs 20% guideline",
+          "keep the higher savings given emotional comfort with aggressive saving"
+        ],
+        "must_not_include": [
+          "$6,350 used as the calculation base",
+          "$6,200 used as the calculation base"
+        ],
+        "harmful_extra": [
+          "recommending a decrease to exactly $1,216 without acknowledging the anxiety pattern",
+          "using $6,350 tentative figure for the calculation"
+        ],
+        "harmless_extra": [
+          "mentioning the 50/30/20 breakdown for needs and wants categories",
+          "mentioning the emergency fund timeline",
+          "noting the $4,350 previous salary as context for the anxiety"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if $6,350 or $6,200 is used as the salary base instead of $6,080.",
+        "reflection_precision": "Fails if the recommendation ignores the spending guilt pattern and simply suggests reducing savings to match the 20% guideline.",
+        "reflection_recall": "Fails if the model does not connect the savings recommendation to the user's documented financial anxiety.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Current confirmed monthly take-home is $6,080 from Ridgeline Analytics.",
+        "Fact 2: Current automated monthly savings transfer is $1,500.",
+        "Fact 3: User experiences persistent spending guilt and financial anxiety carried over from the $4,350/month period.",
+        "Inference: 20% of $6,080 = $1,216, which is the 50/30/20 savings guideline amount.",
+        "Inference: $1,500 − $1,216 = $284 surplus above the 20% guideline, meaning savings rate is approximately 24.7%.",
+        "Inference: Given the documented anxiety pattern, reducing savings to $1,216 would likely increase emotional discomfort; the recommendation should respect the user's need for aggressive, predictable savings."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my current take-home is $6,080 per month from Ridgeline Analytics"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I set up an automatic transfer of $1,500 per month into my savings account back in April"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I still feel guilty spending money even on small things, like that $90 dinner after my first full month at Ridgeline left me feeling weird for days"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My previous salary at the consulting firm was $4,350 after tax"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "A friend suggested I try a 50/30/20 budgeting framework—50% of take-home for needs, 30% for wants, and 20% for savings. Using my actual numbers, calculate how my current automated savings compares to the 20% guideline, compute the dollar gap, and then recommend whether I should adjust my savings transfer—keeping in mind what you know about how I tend to feel about spending discretionary money.",
+      "expected_answer": "Your confirmed monthly take-home is $6,080. Under the 50/30/20 rule, the savings target would be 20% of $6,080 = $1,216. Your current automated savings transfer is $1,500, which exceeds the guideline by $284/month. However, given your pattern of persistent spending guilt carried over from the lower-income period and your strong preference for financial predictability, reducing the transfer to exactly $1,216 would likely increase your anxiety rather than help. A better approach would be to keep the $1,500 transfer as-is, since it aligns with your emotional need for aggressive savings and financial security, and instead use the 50/30/20 framework as a floor rather than a ceiling for savings.",
+      "gold_memory_state": "Confirmed salary: $6,080/month. Savings transfer: $1,500/month. Financial anxiety pattern: persistent spending guilt from transition period. Compensation preference: stable predictable income. Tentative $6,350 is not adopted and should not be used in calculations.",
+      "judge_rubric": {
+        "must_include": [
+          "$6,080 as the base for calculation",
+          "20% of $6,080 = $1,216",
+          "$1,500 exceeds the 20% guideline",
+          "recommendation accounts for spending guilt or financial anxiety pattern"
+        ],
+        "acceptable_paraphrases": [
+          "$284 surplus over the guideline",
+          "savings rate is about 24.7% vs 20% guideline",
+          "keep the higher savings given emotional comfort with aggressive saving"
+        ],
+        "must_not_include": [
+          "$6,350 used as the calculation base",
+          "$6,200 used as the calculation base"
+        ],
+        "harmful_extra": [
+          "recommending a decrease to exactly $1,216 without acknowledging the anxiety pattern",
+          "using $6,350 tentative figure for the calculation"
+        ],
+        "harmless_extra": [
+          "mentioning the 50/30/20 breakdown for needs and wants categories",
+          "mentioning the emergency fund timeline",
+          "noting the $4,350 previous salary as context for the anxiety"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if $6,350 or $6,200 is used as the salary base instead of $6,080.",
+        "reflection_precision": "Fails if the recommendation ignores the spending guilt pattern and simply suggests reducing savings to match the 20% guideline.",
+        "reflection_recall": "Fails if the model does not connect the savings recommendation to the user's documented financial anxiety.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Current confirmed monthly take-home is $6,080 from Ridgeline Analytics.",
+        "Fact 2: Current automated monthly savings transfer is $1,500.",
+        "Fact 3: User experiences persistent spending guilt and financial anxiety carried over from the $4,350/month period.",
+        "Inference: 20% of $6,080 = $1,216, which is the 50/30/20 savings guideline amount.",
+        "Inference: $1,500 − $1,216 = $284 surplus above the 20% guideline, meaning savings rate is approximately 24.7%.",
+        "Inference: Given the documented anxiety pattern, reducing savings to $1,216 would likely increase emotional discomfort; the recommendation should respect the user's need for aggressive, predictable savings."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my current take-home is $6,080 per month from Ridgeline Analytics"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I set up an automatic transfer of $1,500 per month into my savings account back in April"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I still feel guilty spending money even on small things, like that $90 dinner after my first full month at Ridgeline left me feeling weird for days"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My previous salary at the consulting firm was $4,350 after tax"
+        }
+      ]
+    }
+  ]
+}

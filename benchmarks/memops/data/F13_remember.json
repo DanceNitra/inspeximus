@@ -1,0 +1,1035 @@
+{
+  "target_fact": "User's current property/vehicle ownership and home-buying situation in the DFW area",
+  "operation_type": "Remember",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 3,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": true,
+      "never_stored_target": "renter's insurance policy"
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I got pre-approved for a mortgage through First United Bank, up to $310,000"
+      },
+      "target": {
+        "target_id": "mortgage_preapproval_limit",
+        "target_name": "mortgage pre-approval limit"
+      },
+      "old_value": null,
+      "new_value": "$310,000 through First United Bank",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I got pre-approved for a mortgage through First United Bank, up to $310,000"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I've been looking in the $280K to $320K range for single-family homes"
+      },
+      "target": {
+        "target_id": "home_search_price_range",
+        "target_name": "home search price range"
+      },
+      "old_value": null,
+      "new_value": "$280K–$320K for single-family homes",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I've been looking in the $280K to $320K range for single-family homes"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I sold my 2016 Yamaha MT-07 last month for $4,200"
+      },
+      "target": {
+        "target_id": "motorcycle_sale_proceeds",
+        "target_name": "proceeds from motorcycle sale"
+      },
+      "old_value": null,
+      "new_value": "$4,200 from sale of 2016 Yamaha MT-07",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I sold my 2016 Yamaha MT-07 last month for $4,200"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "my daily driver is a 2019 Honda CR-V that I bought used in January 2023 from a dealership in Plano"
+      },
+      "target": {
+        "target_id": "current_vehicle",
+        "target_name": "current daily driver vehicle"
+      },
+      "old_value": null,
+      "new_value": "2019 Honda CR-V, purchased used January 2023 from a dealership in Plano, TX",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my daily driver is a 2019 Honda CR-V that I bought used in January 2023 from a dealership in Plano"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "I'm planning to put the motorcycle sale money toward the down payment on the house"
+      },
+      "target": {
+        "target_id": "down_payment_plan",
+        "target_name": "plan for motorcycle sale proceeds toward down payment"
+      },
+      "old_value": null,
+      "new_value": "Motorcycle sale proceeds ($4,200) to be applied toward house down payment",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I'm planning to put the motorcycle sale money toward the down payment on the house"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I'm currently staying at my mom's place in Richardson temporarily while I search for a house"
+      },
+      "target": {
+        "target_id": "current_living_situation",
+        "target_name": "current temporary living arrangement"
+      },
+      "old_value": null,
+      "new_value": "Staying temporarily at mom's place in Richardson, TX",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I'm currently staying at my mom's place in Richardson temporarily while I search for a house"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establishing mortgage pre-approval, search range, and current vehicle",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to fill you in on where things stand with my housing search. I got pre-approved for a mortgage through First United Bank, up to $310,000. The pre-approval letter is dated May 8th, 2025. I'm pretty excited about it — feels like things are finally moving forward."
+        },
+        {
+          "role": "assistant",
+          "content": "Congratulations on the mortgage pre-approval! Getting that letter from First United Bank is a huge step forward. With up to $310,000 in approved borrowing power, you'll have a solid foundation for making offers. Since the letter is dated May 8th, 2025, keep in mind that most pre-approval letters are valid for 60 to 90 days, so you'll want to stay active in your search through the summer. Would you like help organizing your home search criteria or putting together a comparison sheet for properties you're considering?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, that would actually be helpful. I've been looking in the $280K to $320K range for single-family homes. I really don't want anything massive — no huge suburban houses with big yards to maintain. I'd rather have something compact and low-maintenance, you know? I've been browsing mostly in the north Dallas suburbs."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes a lot of sense. A compact, low-maintenance single-family home in the $280K to $320K range gives you plenty of options in the north Dallas suburbs — areas like Frisco, McKinney, Allen, and parts of Plano often have smaller ranch-style homes or newer builds with manageable lots. I can set up a simple comparison template with columns for address, price, square footage, lot size, year built, and any repair notes. That way when you tour places, you can quickly evaluate how they stack up against your priorities. Want me to draft that for you now?"
+        },
+        {
+          "role": "user",
+          "content": "Sure, go ahead and draft that. Also, just so you have the full picture — my daily driver is a 2019 Honda CR-V that I bought used in January 2023 from a dealership in Plano. It had about 38,000 miles on it when I got it. Nothing flashy, just practical transportation. That's the only vehicle I currently own."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — the 2019 Honda CR-V is your sole vehicle right now. That's a reliable choice, especially for getting around the DFW area. Here's a quick comparison template you can use when touring homes:\n\n| Property | Price | Sq Ft | Lot Size | Year Built | Repairs Needed | Notes |\n|----------|-------|-------|----------|------------|----------------|-------|\n| (address) | $ | | | | | |\n\nYou can fill in rows as you visit places. Since you want compact and low-maintenance, I'd suggest adding a column for HOA fees too, since some smaller-lot communities include lawn care in the HOA. Want me to add anything else to the template?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, add an HOA column — good idea. I toured a place on Maple Ridge Drive on April 12th but it needed way too much work. Then there was one on Birchwood Lane around April 20th or 22nd that was more promising, but someone else got their offer in before mine. So I'm still actively looking."
+        },
+        {
+          "role": "assistant",
+          "content": "That's frustrating about the Birchwood Lane property — losing out on a promising home to a faster offer is one of the most common setbacks in this market. I've added the HOA column to your template and logged both properties you mentioned:\n\n| Property | Price | HOA | Sq Ft | Lot Size | Year Built | Repairs | Notes |\n|----------|-------|-----|-------|----------|------------|---------|-------|\n| Maple Ridge Dr | — | — | — | — | — | Too much work | Toured Apr 12 |\n| Birchwood Ln | — | — | — | — | — | Minimal | Lost to competing offer ~Apr 20-22 |\n\nWith your pre-approval in hand now, you'll be able to move faster on the next one. Want me to help you draft a quick-response offer template so you're ready when you find the right place?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establishing motorcycle sale, current living situation, and down payment plan",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "One more thing I should mention — I sold my 2016 Yamaha MT-07 last month for $4,200. I honestly don't miss it at all. I'd rather spend weekends indoors than out riding around. So I no longer own any motorcycle; it's just the CR-V now."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for the update. So your vehicle situation is straightforward now — just the 2019 Honda CR-V as your sole vehicle, with the motorcycle fully out of the picture. Getting $4,200 for the Yamaha MT-07 is a decent return for a 2016 model. That extra cash could be useful in your home buying process, whether for closing costs, moving expenses, or adding to your down payment fund. Do you have a plan for how you want to allocate those proceeds, or are you keeping them flexible for now?"
+        },
+        {
+          "role": "user",
+          "content": "Good question. But first, let me give you the full picture on my living situation. I'm currently staying at my mom's place in Richardson temporarily while I search for a house. My old apartment lease at The Meridian on Elm Street expired at the end of March and I didn't renew it. That chapter is completely done."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — so you're in a transitional phase right now. Living at your mom's place in Richardson gives you flexibility since you're not locked into a lease, which is actually a strategic advantage while house hunting. With The Meridian lease fully behind you, you don't have overlapping housing costs to worry about. That means you can be more patient and selective with your home search rather than rushing into something just to have your own place. Since you're saving on rent right now, are you putting that money aside for the down payment or closing costs on the house?"
+        },
+        {
+          "role": "user",
+          "content": "Exactly — I'm planning to put the motorcycle sale money toward the down payment on the house. Every bit helps when you're trying to buy your first home. Between that $4,200 and what I've been saving on rent by staying at my mom's, I'm building up a decent cushion."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a smart strategy. Combining the $4,200 from the motorcycle sale with the rent savings from living at your mom's place gives you a growing down payment fund. For a home in your $280K to $320K range, a conventional loan typically requires 3% to 20% down, so you're looking at roughly $8,400 to $64,000 depending on the program. With First United Bank's pre-approval up to $310K, your loan officer can tell you exactly what down payment percentage they've factored in. Have you discussed specific down payment requirements with your lender yet, or would you like me to help you estimate what you'll need?"
+        },
+        {
+          "role": "user",
+          "content": "I haven't gotten into the exact percentages with them yet. Right now I'm just focused on finding the right property. My buddy Kevin actually just closed on a two-bedroom condo in Frisco around mid-April, so at least I have someone nearby who's been through the process recently and can give me tips.\n\nThat's a good idea. I'll ask Kevin about his title company. For now, just make sure you have all my key details noted — the CR-V, the mortgage pre-approval, the price range, the motorcycle sale proceeds going toward the down payment, and my temporary living situation. I want to be able to reference all of this easily."
+        },
+        {
+          "role": "assistant",
+          "content": "Having Kevin nearby in Frisco is a great resource — someone who just went through the closing process can give you practical advice on inspections, negotiations, title work, and all the little surprises that come up. Since he closed on a condo in mid-April, his experience is very current and relevant to the north Dallas market you're shopping in. You might ask him which title company and inspector he used, since good referrals can save you time and headaches. When you're ready to dig into the down payment details with First United Bank, I can help you prepare a list of questions to bring to that conversation. Just let me know.\n\nAbsolutely, here's a summary of your key details as I have them:\n\n• **Vehicle**: 2019 Honda CR-V (only vehicle; bought used Jan 2023, Plano dealership)\n• **Mortgage pre-approval**: Up to $310,000 through First United Bank (letter dated May 8, 2025)\n• **Home search range**: $280K–$320K, single-family, compact/low-maintenance, north Dallas suburbs\n• **Motorcycle sale**: 2016 Yamaha MT-07 sold for $4,200; proceeds earmarked for house down payment\n• **Current living**: Temporarily at mom's place in Richardson (former lease at The Meridian expired end of March)\n• **Properties toured**: Maple Ridge Dr (Apr 12, too much work), Birchwood Ln (~Apr 20-22, lost to competing offer)\n\nI'll keep all of this handy for you. Just say the word when you need to pull anything up."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Continued house search discussion with adversarial injection of look-alike value",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, quick update — I found another listing I'm interested in. It's on Creekside Court in McKinney, listed at $299,000. Three bedrooms but a smaller lot, which is exactly what I want. I'm thinking about scheduling a tour this weekend."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a great fit for your criteria! A $299,000 listing in McKinney is well within your $280K–$320K range and comfortably under your $310,000 pre-approval limit. A smaller lot means less yard work, which aligns perfectly with your preference for low-maintenance living. Three bedrooms gives you a bit of extra space — maybe a home office or guest room. Before you tour, you might want to check the HOA situation and property tax rate for that specific McKinney neighborhood. Interestingly, I noticed your friend Kevin's condo in Frisco was listed around $275,000 according to recent Collin County records — the Frisco and McKinney markets are fairly comparable right now. Want me to put together a pre-tour checklist for the Creekside Court visit?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, a pre-tour checklist would be great. I want to make sure I don't miss anything this time. With the Maple Ridge and Birchwood experiences, I've learned I need to be more systematic. I should check the foundation, roof age, HVAC condition, and water heater age at minimum."
+        },
+        {
+          "role": "assistant",
+          "content": "Great thinking — being systematic will help you make faster, more confident decisions. Here's a pre-tour checklist tailored to your priorities:\n\n**Structural**: Foundation cracks or settling signs, roof age and condition, exterior drainage\n**Mechanical**: HVAC system age and last service date, water heater age and capacity, electrical panel condition\n**Interior**: Signs of water damage on ceilings/walls, window seal integrity, flooring condition\n**Exterior/Lot**: Lot size confirmation, fence condition, any easements or setback issues\n**Financial**: HOA fees and what they cover, property tax rate, any special assessments\n**Logistics**: Commute time to your workplace, proximity to essentials like grocery stores\n\nSince you want compact and low-maintenance, pay special attention to the lot — make sure it truly is a small, manageable yard. Would you like me to format this as a printable sheet you can bring along?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, make it printable. Also, I want to make sure my offer strategy is tight this time. With the Birchwood Lane situation where I lost out to another buyer, I can't afford to be slow. If I like the Creekside Court house, I want to submit an offer the same day."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely — speed is critical in this market, especially after the Birchwood Lane experience. Here's a same-day offer strategy:\n\n1. **Before the tour**: Have your First United Bank pre-approval letter ready to attach. Confirm your agent can submit offers on weekends.\n2. **During the tour**: Use the checklist to identify any deal-breakers immediately. Take photos and notes on anything that needs repair — this informs your offer price.\n3. **After the tour**: If you're satisfied, sit down with your agent within two hours. Decide your offer price (consider starting at or slightly above asking for $299K in a competitive area). Set your escalation clause ceiling — your pre-approval goes up to $310K, so you have about $11K of room above list price if needed.\n4. **Earnest money**: Have a check or wire transfer ready. Typically 1% of offer price, so roughly $3,000.\n\nWant me to draft an offer price analysis comparing the $299K listing to recent McKinney comps?"
+        },
+        {
+          "role": "user",
+          "content": "That would be really helpful. And yeah, I realize I have some room above the listing price with my pre-approval, but I also need to keep the down payment and closing costs in mind. The motorcycle money plus my rent savings should cover a decent chunk, but I don't want to stretch myself too thin on the purchase price.\n\nYeah, build out a few scenarios for me — one at asking price, one at $305K, and one at the full $310K ceiling. Include estimated down payment at 5% and estimated closing costs at 3% for each. That way I can see the total cash I'd need upfront for each scenario."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a wise approach — maximizing your offer price doesn't help if it leaves you cash-strapped at closing. Let me lay out a rough financial picture based on what you've told me:\n\n• **Pre-approval ceiling**: $310,000\n• **Listing price**: $299,000\n• **Headroom for escalation**: ~$11,000 above list\n• **Down payment fund**: $4,200 (motorcycle sale) + ongoing rent savings from living at your mom's\n• **Estimated closing costs**: Typically 2–5% of purchase price, so roughly $6,000–$15,000 for a $299K home\n\nYou'll want to balance your offer competitiveness against keeping enough cash reserves for closing costs, moving expenses, and an emergency buffer. When you talk to First United Bank about the exact down payment percentage, that will clarify how much you can comfortably offer. Shall I build a spreadsheet with different offer scenarios?\n\nHere are three offer scenarios with 5% down and 3% estimated closing costs:\n\n**Scenario A — $299,000 (asking price)**\n• Down payment (5%): $14,950\n• Closing costs (3%): $8,970\n• Total cash needed: $23,920\n\n**Scenario B — $305,000**\n• Down payment (5%): $15,250\n• Closing costs (3%): $9,150\n• Total cash needed: $24,400\n\n**Scenario C — $310,000 (pre-approval ceiling)**\n• Down payment (5%): $15,500\n• Closing costs (3%): $9,300\n• Total cash needed: $24,800\n\nThe difference between asking price and your ceiling is only about $880 in total upfront cash, so the scenarios are fairly close. Your $4,200 from the motorcycle sale covers a meaningful portion, and your rent savings will need to fill the rest. I'd recommend confirming your total savings with your bank before the tour so you know your true ceiling. Want me to add a column for monthly mortgage payment estimates too?"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize the key details I've shared with you about my current housing search, vehicles, and living situation?",
+      "expected_answer": "You shared the following: (1) You were pre-approved for a mortgage up to $310,000 through First United Bank, with the letter dated May 8, 2025. (2) You are searching for single-family homes in the $280K–$320K range in the north Dallas suburbs, preferring compact and low-maintenance properties. (3) Your only vehicle is a 2019 Honda CR-V, purchased used in January 2023 from a dealership in Plano. (4) You sold your 2016 Yamaha MT-07 last month for $4,200. (5) You are temporarily staying at your mom's place in Richardson while house hunting. (6) You plan to put the motorcycle sale proceeds toward your house down payment.",
+      "gold_memory_state": "All six confirmed facts are active: mortgage pre-approval ($310K, First United Bank), home search range ($280K–$320K single-family), current vehicle (2019 Honda CR-V), motorcycle sale ($4,200 from 2016 Yamaha MT-07), current living situation (mom's place in Richardson), and down payment plan (motorcycle proceeds toward down payment).",
+      "judge_rubric": {
+        "must_include": [
+          "$310,000",
+          "First United Bank",
+          "$280K–$320K",
+          "single-family",
+          "2019 Honda CR-V",
+          "Plano",
+          "$4,200",
+          "Yamaha MT-07",
+          "Richardson",
+          "mom's place",
+          "down payment"
+        ],
+        "acceptable_paraphrases": [
+          "$310K",
+          "280 to 320 thousand",
+          "mother's house"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "fabricating details not provided by the user such as a specific savings amount or interest rate"
+        ],
+        "harmless_extra": [
+          "mentioning the pre-approval letter date of May 8 2025",
+          "mentioning 38000 miles on the CR-V",
+          "mentioning north Dallas suburbs",
+          "mentioning The Meridian lease expiring end of March"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I got pre-approved for a mortgage through First United Bank, up to $310,000"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I've been looking in the $280K to $320K range for single-family homes"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my daily driver is a 2019 Honda CR-V that I bought used in January 2023 from a dealership in Plano"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I sold my 2016 Yamaha MT-07 last month for $4,200"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I'm currently staying at my mom's place in Richardson temporarily while I search for a house"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I'm planning to put the motorcycle sale money toward the down payment on the house"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize the key details I've shared with you about my current housing search, vehicles, and living situation?",
+      "expected_answer": "You shared the following: (1) You were pre-approved for a mortgage up to $310,000 through First United Bank, with the letter dated May 8, 2025. (2) You are searching for single-family homes in the $280K–$320K range in the north Dallas suburbs, preferring compact and low-maintenance properties. (3) Your only vehicle is a 2019 Honda CR-V, purchased used in January 2023 from a dealership in Plano. (4) You sold your 2016 Yamaha MT-07 last month for $4,200. (5) You are temporarily staying at your mom's place in Richardson while house hunting. (6) You plan to put the motorcycle sale proceeds toward your house down payment.",
+      "gold_memory_state": "All six confirmed facts are active: mortgage pre-approval ($310K, First United Bank), home search range ($280K–$320K single-family), current vehicle (2019 Honda CR-V), motorcycle sale ($4,200 from 2016 Yamaha MT-07), current living situation (mom's place in Richardson), and down payment plan (motorcycle proceeds toward down payment).",
+      "judge_rubric": {
+        "must_include": [
+          "$310,000",
+          "First United Bank",
+          "$280K–$320K",
+          "single-family",
+          "2019 Honda CR-V",
+          "Plano",
+          "$4,200",
+          "Yamaha MT-07",
+          "Richardson",
+          "mom's place",
+          "down payment"
+        ],
+        "acceptable_paraphrases": [
+          "$310K",
+          "280 to 320 thousand",
+          "mother's house"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "fabricating details not provided by the user such as a specific savings amount or interest rate"
+        ],
+        "harmless_extra": [
+          "mentioning the pre-approval letter date of May 8 2025",
+          "mentioning 38000 miles on the CR-V",
+          "mentioning north Dallas suburbs",
+          "mentioning The Meridian lease expiring end of March"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I got pre-approved for a mortgage through First United Bank, up to $310,000"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I've been looking in the $280K to $320K range for single-family homes"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my daily driver is a 2019 Honda CR-V that I bought used in January 2023 from a dealership in Plano"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I sold my 2016 Yamaha MT-07 last month for $4,200"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I'm currently staying at my mom's place in Richardson temporarily while I search for a house"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I'm planning to put the motorcycle sale money toward the down payment on the house"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned selling a vehicle and also owning a vehicle. If I need to update my auto insurance, which vehicle record is still active and relevant, and which one no longer applies?",
+      "expected_answer": "The active vehicle record is the 2019 Honda CR-V, purchased used in January 2023 from a dealership in Plano. The 2016 Yamaha MT-07 was sold and no longer applies — it is not a current vehicle.",
+      "gold_memory_state": "Current vehicle target: 2019 Honda CR-V (active). Motorcycle sale target: 2016 Yamaha MT-07 sold for $4,200 (no longer owned). These are two separate records — one for the current daily driver and one for the sold motorcycle.",
+      "judge_rubric": {
+        "must_include": [
+          "2019 Honda CR-V",
+          "active or still owned",
+          "Yamaha MT-07 sold or no longer owned"
+        ],
+        "acceptable_paraphrases": [
+          "CR-V is the only current vehicle",
+          "the motorcycle is gone"
+        ],
+        "must_not_include": [
+          "Yamaha MT-07 as a currently owned vehicle"
+        ],
+        "harmful_extra": [
+          "treating the motorcycle as still insurable",
+          "merging both vehicles into one record"
+        ],
+        "harmless_extra": [
+          "mentioning the $4,200 sale price",
+          "mentioning the Plano dealership"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my daily driver is a 2019 Honda CR-V that I bought used in January 2023 from a dealership in Plano"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I sold my 2016 Yamaha MT-07 last month for $4,200"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned selling a vehicle and also owning a vehicle. If I need to update my auto insurance, which vehicle record is still active and relevant, and which one no longer applies?",
+      "expected_answer": "The active vehicle record is the 2019 Honda CR-V, purchased used in January 2023 from a dealership in Plano. The 2016 Yamaha MT-07 was sold and no longer applies — it is not a current vehicle.",
+      "gold_memory_state": "Current vehicle target: 2019 Honda CR-V (active). Motorcycle sale target: 2016 Yamaha MT-07 sold for $4,200 (no longer owned). These are two separate records — one for the current daily driver and one for the sold motorcycle.",
+      "judge_rubric": {
+        "must_include": [
+          "2019 Honda CR-V",
+          "active or still owned",
+          "Yamaha MT-07 sold or no longer owned"
+        ],
+        "acceptable_paraphrases": [
+          "CR-V is the only current vehicle",
+          "the motorcycle is gone"
+        ],
+        "must_not_include": [
+          "Yamaha MT-07 as a currently owned vehicle"
+        ],
+        "harmful_extra": [
+          "treating the motorcycle as still insurable",
+          "merging both vehicles into one record"
+        ],
+        "harmless_extra": [
+          "mentioning the $4,200 sale price",
+          "mentioning the Plano dealership"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my daily driver is a 2019 Honda CR-V that I bought used in January 2023 from a dealership in Plano"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I sold my 2016 Yamaha MT-07 last month for $4,200"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Is the money I got from selling the motorcycle connected to my housing plans, and if so, how?",
+      "expected_answer": "Yes. The $4,200 from selling the 2016 Yamaha MT-07 is earmarked for the down payment on your house purchase. This connects the motorcycle sale proceeds directly to your home-buying plan in the $280K–$320K range with the First United Bank pre-approval.",
+      "gold_memory_state": "Motorcycle sale proceeds ($4,200) are linked to the down payment plan. The down payment plan target references both the motorcycle sale amount and the house purchase funded by the mortgage pre-approval ($310K through First United Bank). All three targets are active and interconnected.",
+      "judge_rubric": {
+        "must_include": [
+          "$4,200",
+          "down payment",
+          "house or home purchase"
+        ],
+        "acceptable_paraphrases": [
+          "motorcycle money going toward the house",
+          "sale proceeds applied to down payment"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating the motorcycle money has already been applied to a specific property purchase"
+        ],
+        "harmless_extra": [
+          "mentioning the $280K–$320K search range",
+          "mentioning First United Bank",
+          "mentioning rent savings also contributing"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I sold my 2016 Yamaha MT-07 last month for $4,200"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I'm planning to put the motorcycle sale money toward the down payment on the house"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Is the money I got from selling the motorcycle connected to my housing plans, and if so, how?",
+      "expected_answer": "Yes. The $4,200 from selling the 2016 Yamaha MT-07 is earmarked for the down payment on your house purchase. This connects the motorcycle sale proceeds directly to your home-buying plan in the $280K–$320K range with the First United Bank pre-approval.",
+      "gold_memory_state": "Motorcycle sale proceeds ($4,200) are linked to the down payment plan. The down payment plan target references both the motorcycle sale amount and the house purchase funded by the mortgage pre-approval ($310K through First United Bank). All three targets are active and interconnected.",
+      "judge_rubric": {
+        "must_include": [
+          "$4,200",
+          "down payment",
+          "house or home purchase"
+        ],
+        "acceptable_paraphrases": [
+          "motorcycle money going toward the house",
+          "sale proceeds applied to down payment"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating the motorcycle money has already been applied to a specific property purchase"
+        ],
+        "harmless_extra": [
+          "mentioning the $280K–$320K search range",
+          "mentioning First United Bank",
+          "mentioning rent savings also contributing"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I sold my 2016 Yamaha MT-07 last month for $4,200"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I'm planning to put the motorcycle sale money toward the down payment on the house"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "What is the maximum amount I can borrow for my home purchase based on my lender's approval?",
+      "candidate_options": [
+        "$310,000",
+        "$299,000",
+        "$320,000",
+        "$275,000"
+      ],
+      "expected_answer": "$310,000",
+      "gold_memory_state": "Mortgage pre-approval limit is $310,000 through First United Bank.",
+      "judge_rubric": {
+        "must_include": [
+          "$310,000"
+        ],
+        "acceptable_paraphrases": [
+          "$310K",
+          "310000"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "selecting $299,000 which is the Creekside Court listing price",
+          "selecting $320,000 which is the top of the search range",
+          "selecting $275,000 which is an assistant-echoed value for Kevin's condo"
+        ],
+        "harmless_extra": [
+          "mentioning First United Bank"
+        ]
+      },
+      "distractor_rationale": "same-value-different-target: $299,000 is the listing price of the Creekside Court property, not the pre-approval limit. $320,000 is the upper bound of the home search price range, a same-topic adjacent target. assistant echo: $275,000 was mentioned by the assistant as Kevin's condo listing price from Collin County records, not the user's pre-approval amount.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if $275,000 (assistant echo about Kevin's condo) or $299,000 (listing price) or $320,000 (search range ceiling) is selected instead of the pre-approval limit.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I got pre-approved for a mortgage through First United Bank, up to $310,000"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "What is the maximum amount I can borrow for my home purchase based on my lender's approval?",
+      "candidate_options": [
+        "$310,000",
+        "$299,000",
+        "$320,000",
+        "$275,000"
+      ],
+      "expected_answer": "$310,000",
+      "gold_memory_state": "Mortgage pre-approval limit is $310,000 through First United Bank.",
+      "judge_rubric": {
+        "must_include": [
+          "$310,000"
+        ],
+        "acceptable_paraphrases": [
+          "$310K",
+          "310000"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "selecting $299,000 which is the Creekside Court listing price",
+          "selecting $320,000 which is the top of the search range",
+          "selecting $275,000 which is an assistant-echoed value for Kevin's condo"
+        ],
+        "harmless_extra": [
+          "mentioning First United Bank"
+        ]
+      },
+      "distractor_rationale": "same-value-different-target: $299,000 is the listing price of the Creekside Court property, not the pre-approval limit. $320,000 is the upper bound of the home search price range, a same-topic adjacent target. assistant echo: $275,000 was mentioned by the assistant as Kevin's condo listing price from Collin County records, not the user's pre-approval amount.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if $275,000 (assistant echo about Kevin's condo) or $299,000 (listing price) or $320,000 (search range ceiling) is selected instead of the pre-approval limit.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I got pre-approved for a mortgage through First United Bank, up to $310,000"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm trying to figure out how much additional cash I'd need beyond the motorcycle sale proceeds if I make an offer at asking price on the Creekside Court property. Assume 5% down payment and 3% closing costs. How much more would I need on top of the $4,200?",
+      "expected_answer": "At the $299,000 asking price, 5% down payment is $14,950 and 3% closing costs are $8,970, totaling $23,920 in upfront cash needed. After subtracting the $4,200 motorcycle sale proceeds earmarked for the down payment, you would need approximately $19,720 in additional cash.",
+      "gold_memory_state": "Active targets used: (1) Creekside Court listing at $299,000 is within the $280K–$320K search range and under the $310K pre-approval. (2) Motorcycle sale proceeds of $4,200 are earmarked for the down payment. (3) Home search price range is $280K–$320K. (4) Mortgage pre-approval is $310,000 through First United Bank.",
+      "judge_rubric": {
+        "must_include": [
+          "$14,950 or approximately $15,000 for down payment",
+          "$8,970 or approximately $9,000 for closing costs",
+          "$23,920 or approximately $24,000 total",
+          "$19,720 or approximately $19,700–$19,800 additional cash needed"
+        ],
+        "acceptable_paraphrases": [
+          "roughly $19,720",
+          "about $19,700 more",
+          "around $20,000 additional"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "using $275,000 (Kevin's condo price from assistant echo) as the basis",
+          "using $310,000 or $320,000 as the offer price when the question specifies asking price"
+        ],
+        "harmless_extra": [
+          "mentioning that the property is within the pre-approval limit",
+          "mentioning rent savings as an additional funding source",
+          "noting that $4,200 covers roughly 18% of the down payment"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses $275,000 (assistant echo about Kevin's condo) instead of $299,000 as the listing price.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The Creekside Court property is listed at $299,000.",
+        "Fact 2: The user sold the 2016 Yamaha MT-07 for $4,200.",
+        "Fact 3: The user plans to put the motorcycle sale proceeds toward the house down payment.",
+        "Inference: 5% down payment on $299,000 = $299,000 × 0.05 = $14,950.",
+        "Inference: 3% closing costs on $299,000 = $299,000 × 0.03 = $8,970.",
+        "Inference: Total upfront cash needed = $14,950 + $8,970 = $23,920.",
+        "Inference: Additional cash needed beyond motorcycle proceeds = $23,920 − $4,200 = $19,720."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I sold my 2016 Yamaha MT-07 last month for $4,200"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I'm planning to put the motorcycle sale money toward the down payment on the house"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I've been looking in the $280K to $320K range for single-family homes"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm trying to figure out how much additional cash I'd need beyond the motorcycle sale proceeds if I make an offer at asking price on the Creekside Court property. Assume 5% down payment and 3% closing costs. How much more would I need on top of the $4,200?",
+      "expected_answer": "At the $299,000 asking price, 5% down payment is $14,950 and 3% closing costs are $8,970, totaling $23,920 in upfront cash needed. After subtracting the $4,200 motorcycle sale proceeds earmarked for the down payment, you would need approximately $19,720 in additional cash.",
+      "gold_memory_state": "Active targets used: (1) Creekside Court listing at $299,000 is within the $280K–$320K search range and under the $310K pre-approval. (2) Motorcycle sale proceeds of $4,200 are earmarked for the down payment. (3) Home search price range is $280K–$320K. (4) Mortgage pre-approval is $310,000 through First United Bank.",
+      "judge_rubric": {
+        "must_include": [
+          "$14,950 or approximately $15,000 for down payment",
+          "$8,970 or approximately $9,000 for closing costs",
+          "$23,920 or approximately $24,000 total",
+          "$19,720 or approximately $19,700–$19,800 additional cash needed"
+        ],
+        "acceptable_paraphrases": [
+          "roughly $19,720",
+          "about $19,700 more",
+          "around $20,000 additional"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "using $275,000 (Kevin's condo price from assistant echo) as the basis",
+          "using $310,000 or $320,000 as the offer price when the question specifies asking price"
+        ],
+        "harmless_extra": [
+          "mentioning that the property is within the pre-approval limit",
+          "mentioning rent savings as an additional funding source",
+          "noting that $4,200 covers roughly 18% of the down payment"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses $275,000 (assistant echo about Kevin's condo) instead of $299,000 as the listing price.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The Creekside Court property is listed at $299,000.",
+        "Fact 2: The user sold the 2016 Yamaha MT-07 for $4,200.",
+        "Fact 3: The user plans to put the motorcycle sale proceeds toward the house down payment.",
+        "Inference: 5% down payment on $299,000 = $299,000 × 0.05 = $14,950.",
+        "Inference: 3% closing costs on $299,000 = $299,000 × 0.03 = $8,970.",
+        "Inference: Total upfront cash needed = $14,950 + $8,970 = $23,920.",
+        "Inference: Additional cash needed beyond motorcycle proceeds = $23,920 − $4,200 = $19,720."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I sold my 2016 Yamaha MT-07 last month for $4,200"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I'm planning to put the motorcycle sale money toward the down payment on the house"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I've been looking in the $280K to $320K range for single-family homes"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What are the details of my renter's insurance policy?",
+      "expected_answer": "I don't have any information about a renter's insurance policy from you. You haven't provided those details.",
+      "gold_memory_state": "No renter's insurance policy was ever mentioned or provided by the user. Neighboring housing-related facts include: mortgage pre-approval ($310K through First United Bank), home search range ($280K–$320K), temporary living at mom's place in Richardson, and the expired lease at The Meridian. None of these include renter's insurance details.",
+      "judge_rubric": {
+        "must_include": [
+          "no record or no information about renter's insurance"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have that",
+          "you never shared renter's insurance details",
+          "no renter's insurance information on file"
+        ],
+        "must_not_include": [
+          "any fabricated policy number",
+          "any fabricated insurance provider name",
+          "any fabricated coverage amount"
+        ],
+        "harmful_extra": [
+          "inventing a renter's insurance policy",
+          "borrowing the mortgage pre-approval details and presenting them as insurance information",
+          "stating The Meridian lease included renter's insurance"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model fabricates or hallucinates any renter's insurance policy details.",
+        "over_forget": null,
+        "stale_value": "Fails if the model borrows mortgage or lease details and repurposes them as insurance information.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I got pre-approved for a mortgage through First United Bank, up to $310,000"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I'm currently staying at my mom's place in Richardson temporarily while I search for a house"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What are the details of my renter's insurance policy?",
+      "expected_answer": "I don't have any information about a renter's insurance policy from you. You haven't provided those details.",
+      "gold_memory_state": "No renter's insurance policy was ever mentioned or provided by the user. Neighboring housing-related facts include: mortgage pre-approval ($310K through First United Bank), home search range ($280K–$320K), temporary living at mom's place in Richardson, and the expired lease at The Meridian. None of these include renter's insurance details.",
+      "judge_rubric": {
+        "must_include": [
+          "no record or no information about renter's insurance"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have that",
+          "you never shared renter's insurance details",
+          "no renter's insurance information on file"
+        ],
+        "must_not_include": [
+          "any fabricated policy number",
+          "any fabricated insurance provider name",
+          "any fabricated coverage amount"
+        ],
+        "harmful_extra": [
+          "inventing a renter's insurance policy",
+          "borrowing the mortgage pre-approval details and presenting them as insurance information",
+          "stating The Meridian lease included renter's insurance"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model fabricates or hallucinates any renter's insurance policy details.",
+        "over_forget": null,
+        "stale_value": "Fails if the model borrows mortgage or lease details and repurposes them as insurance information.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I got pre-approved for a mortgage through First United Bank, up to $310,000"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I'm currently staying at my mom's place in Richardson temporarily while I search for a house"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,753 @@
+{
+  "target_fact": "Brazilian passport number, undergoing a chain of corrections from initial value through multiple updates",
+  "operation_type": "Update",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "passport_number_chain",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "My Brazilian passport number is HG284913"
+      },
+      "target": {
+        "target_id": "brazilian_passport_number",
+        "target_name": "Brazilian passport number"
+      },
+      "old_value": null,
+      "new_value": "HG284913",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My Brazilian passport number is HG284913"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "passport_number_chain",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I just double-checked and the passport number is actually HG284193, not HG284913. I transposed two digits last time"
+      },
+      "target": {
+        "target_id": "brazilian_passport_number",
+        "target_name": "Brazilian passport number"
+      },
+      "old_value": "HG284913",
+      "new_value": "HG284193",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "the passport number is actually HG284193, not HG284913. I transposed two digits last time"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "passport_number_chain",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I pulled out the physical passport just now and the number printed on it is HG284139. I've been reading the last four digits wrong this whole time"
+      },
+      "target": {
+        "target_id": "brazilian_passport_number",
+        "target_name": "Brazilian passport number"
+      },
+      "old_value": "HG284193",
+      "new_value": "HG284139",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I pulled out the physical passport just now and the number printed on it is HG284139. I've been reading the last four digits wrong this whole time"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "passport_number_chain",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "the consulate clerk told me their system shows my passport as HG284931. She said that's what's linked to my application file"
+      },
+      "target": {
+        "target_id": "brazilian_passport_number",
+        "target_name": "Brazilian passport number"
+      },
+      "old_value": "HG284139",
+      "new_value": "HG284931",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "the consulate clerk told me their system shows my passport as HG284931. She said that's what's linked to my application file"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "My Portuguese citizenship application reference number is PT-2025-04417"
+      },
+      "target": {
+        "target_id": "portuguese_citizenship_app_ref",
+        "target_name": "Portuguese citizenship application reference number"
+      },
+      "old_value": null,
+      "new_value": "PT-2025-04417",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My Portuguese citizenship application reference number is PT-2025-04417"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish passport number and citizenship application reference; first correction of passport number",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I need your help keeping track of some important documents and numbers for me. I'm Brazilian, born in São Paulo, and I've been dealing with a lot of paperwork lately. My Brazilian passport number is HG284913. Can you hold onto that? I'll need it for various forms and applications coming up."
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! I've noted your Brazilian passport number as HG284913. That's definitely the kind of detail you want to have on hand quickly, especially when dealing with multiple forms and applications. Since you mentioned you're Brazilian and born in São Paulo, I can also keep that nationality information paired with your passport details. Whenever you need to reference it for a form or application, just let me know and I'll pull it up. Is there anything else document-related you'd like me to track for you right now?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, actually. I submitted an application for Portuguese citizenship through ancestry back on March 3rd this year. My grandmother on my mom's side was born in Porto before emigrating to Brazil. My Portuguese citizenship application reference number is PT-2025-04417. Please note that down — I'll need it when I follow up with the consulate in São Paulo."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — I've recorded your Portuguese citizenship application reference number as PT-2025-04417, submitted on March 3rd of this year at the consulate in São Paulo. That's based on your maternal grandmother's birth in Porto before she emigrated to Brazil. This is a really important reference to have handy, especially for any follow-up communications with the consulate. I'll keep it alongside your passport details so everything is in one place. If you get any status updates or need to draft a follow-up letter to the consulate, just let me know and I can help with that too."
+        },
+        {
+          "role": "user",
+          "content": "Wait, I need to fix something. I just double-checked and the passport number is actually HG284193, not HG284913. I transposed two digits last time. Sorry about that — HG284193 is the correct one. This is the number I used on my visa pre-screening form for a potential work trip to Germany, so it needs to be right."
+        },
+        {
+          "role": "assistant",
+          "content": "No problem at all — I've updated your Brazilian passport number to HG284193. The previous value HG284913 had the last four digits transposed, so I've corrected that now. HG284193 is what I'll reference going forward, and it matches what you used on your Germany visa pre-screening form. It's good you caught that, since having the wrong passport number on official documents could cause serious delays. Is there anything else about the Germany trip paperwork you'd like me to help track or prepare?"
+        },
+        {
+          "role": "user",
+          "content": "Not yet on the Germany trip — it's still very tentative. But I do want to mention that my friend Lucas, who's Argentine, went through a dual citizenship process with Italy last year. He said it took him about 14 months from application to approval. That kind of discouraged me about the timeline for my Portuguese application, but I'm trying to stay patient."
+        },
+        {
+          "role": "assistant",
+          "content": "That's understandable — 14 months is a long wait, and hearing that from someone who went through a similar process can be both helpful and a bit discouraging. But every country's processing times vary, and Portugal may move faster or slower than Italy did for Lucas. The important thing is your paperwork is submitted and you have your reference number PT-2025-04417 for follow-ups. If you want, I can help you set up a reminder to check in with the consulate at regular intervals — say every two or three months — so you stay on top of the status without stressing about it constantly. Just let me know."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "second correction of passport number based on physical document; discuss application timeline",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So I've been thinking about the timeline for the Portuguese citizenship. I submitted the application on March 3rd, and Lucas told me his Italian one took 14 months. If I assume a similar processing time, I'm looking at a long wait. Anyway, I wanted to talk about something else I noticed on my documents."
+        },
+        {
+          "role": "assistant",
+          "content": "Right, if the processing timeline is similar to Lucas's Italian citizenship experience of about 14 months from submission, and you submitted on March 3rd, 2025, that would put a hypothetical approval somewhere around May 2026. Of course, that's just a rough estimate based on a different country's process, so the actual timeline could be quite different. But it gives you a ballpark. Now, what did you notice on your documents? I'm happy to help sort out whatever it is."
+        },
+        {
+          "role": "user",
+          "content": "Okay so this is embarrassing. I pulled out the physical passport just now and the number printed on it is HG284139. I've been reading the last four digits wrong this whole time. The correct number on the actual passport page is HG284139. Can you update that? I'm sorry for the back and forth on this."
+        },
+        {
+          "role": "assistant",
+          "content": "No need to apologize — it's actually really common to misread sequences of similar digits, especially when you're going from memory. I've now updated your Brazilian passport number to HG284139, which matches what's physically printed on your passport. That's the most reliable source, so I'm confident this is correct now. I'll use HG284139 for any future reference. You may also want to double-check the Germany visa pre-screening form you mentioned earlier, since you originally entered a different number there. Want me to help you draft a correction note for that?"
+        },
+        {
+          "role": "user",
+          "content": "Good point about the Germany form. I'll need to correct that if the trip actually happens. Speaking of travel, I really loved my trip to Lisbon last November. Being in a Portuguese-speaking country just felt so natural and comfortable — I didn't have to think in English all the time. It made me even more motivated about the citizenship."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a wonderful experience, and it makes total sense that being immersed in Portuguese would feel like a relief compared to navigating everything in English. Lisbon is a beautiful city too, so combining that linguistic comfort with the culture and food must have been amazing. It's great that the trip reinforced your motivation for the Portuguese citizenship — having that emotional connection to the country beyond just the paperwork makes the whole process feel more meaningful. Once the citizenship comes through, you'll have even more flexibility for extended stays or work in Portugal and the EU. Want me to keep any travel preferences noted alongside your documents?"
+        },
+        {
+          "role": "user",
+          "content": "Sure, that would be helpful. I also spent a long weekend in Montevideo a couple of months ago. I loved it because I could just slip into Portunhol and everyone understood me. I generally prefer traveling to countries where I can get by in Portuguese or Spanish — it just makes the whole experience so much more relaxing for me.\n\nOne more thing — my colleague Mariana recently got her Spanish citizenship finalized after waiting over two years. She seemed really proud. I thought that was cool, but it also reminded me that these processes can take a really long time. I just hope mine doesn't drag on that long."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a great preference to note — you gravitate toward Portuguese and Spanish-speaking destinations where you can communicate comfortably without switching to English. Montevideo sounds like it was a perfect fit for that, especially with the Portunhol ease. Between Lisbon last November and Montevideo recently, you've got a nice pattern of choosing destinations that align with your linguistic comfort zone. I'll keep that travel preference in mind alongside your document details. If you ever want destination suggestions or help planning trips to Lusophone or Hispanic countries, I can factor that preference in. Anything else you'd like to go over today?\n\nTwo years is definitely on the longer side, and I can see how hearing about Mariana's wait might add to the anxiety. But remember, every case is different — Mariana's Spanish citizenship and your Portuguese citizenship involve different countries, different bureaucracies, and different documentation requirements. Your application reference is PT-2025-04417, submitted March 3rd, so you're still relatively early in the process. The best approach is probably to check in with the consulate periodically and stay organized with your documents. If you want, I can help you draft a status inquiry to send to the consulate in a couple of months. Just say the word."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "tentative passport number from consulate system; adversarial look-alike injection; recency trap",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I went to the consulate today to follow up on my Portuguese citizenship application. It was a productive visit overall, though something came up that I want to tell you about. They confirmed they have my application on file with reference PT-2025-04417, so that's good."
+        },
+        {
+          "role": "assistant",
+          "content": "That's great news that they confirmed your application is on file with reference PT-2025-04417! It must be reassuring to know everything is properly registered in their system. A productive consulate visit is always a win, especially given how stressful these bureaucratic processes can be. You mentioned something came up during the visit — what happened? I'm here to help you sort through whatever it is, whether it's a document issue, a timeline update, or anything else related to the application."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, so while I was there, I noticed another applicant's paperwork sitting on the clerk's desk — I accidentally glanced at it. The passport number on that person's form was HG284319. For a second I thought it was mine because the digits looked so similar, but it was definitely someone else's application. Funny coincidence though."
+        },
+        {
+          "role": "assistant",
+          "content": "Ha, that is a funny coincidence — HG284319 does look remarkably similar to your passport number HG284139 at a quick glance, especially with those same digits just rearranged. It's easy to see how you'd do a double-take. Good thing you realized it wasn't yours before any confusion arose. It's actually a good reminder of how important it is to verify every digit carefully on official documents, which you've already learned from the corrections we went through. Was there anything else notable from the consulate visit that you'd like me to track?"
+        },
+        {
+          "role": "user",
+          "content": "Actually yes — here's the thing that concerned me. When the clerk pulled up my file, she looked at the passport number they have on record. And the consulate clerk told me their system shows my passport as HG284931. She said that's what's linked to my application file. I'm not sure how that happened — maybe there was a typo when they entered the data from my submission."
+        },
+        {
+          "role": "assistant",
+          "content": "That's definitely concerning — HG284931 doesn't match your actual passport number HG284139 at all. It sounds like there may have been a data entry error when your application was processed at the consulate. This is the kind of discrepancy that could cause real problems down the line if it's not corrected, especially since the passport number needs to match across all your citizenship documentation. Did the clerk offer to correct it on the spot, or is there a formal process you need to follow to request an amendment? Either way, I'd recommend addressing this as soon as possible to avoid any delays in your application processing."
+        },
+        {
+          "role": "user",
+          "content": "She said she'd need to escalate it to a supervisor to get it corrected in their system. She couldn't change it herself. So for now, the consulate system still has HG284931 on file, but that's definitely not what's on my physical passport. I'm going to wait for them to call me back about the correction. In the meantime, my actual passport still says HG284139.\n\nThat would be really helpful actually. Let me gather my thoughts on what to include and I'll ask you to draft it next time. For now, just make sure you have all my key details straight — I don't want any more number mix-ups causing problems. This whole experience has been a lesson in triple-checking everything."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood — so the situation is that the consulate's system currently shows HG284931, but that's a data entry error on their end, and your actual physical passport reads HG284139. The clerk has escalated the correction request to a supervisor, and you're waiting for a callback. I'll continue to track your confirmed passport number as HG284139 since that's what's printed on the document itself. Once the consulate corrects their records, it would be good to get written confirmation that the fix was made, just to have a paper trail. Want me to help you draft a follow-up email to the consulate referencing your application PT-2025-04417 and requesting the passport number correction?\n\nAbsolutely — here's a summary of your key details as I have them: your Brazilian passport number is HG284139, confirmed from your physical passport. Your Portuguese citizenship application reference is PT-2025-04417, submitted March 3rd at the São Paulo consulate, based on your maternal grandmother's birth in Porto. The consulate's system currently has an incorrect passport number (HG284931) which is pending correction via supervisor escalation. Whenever you're ready to draft that follow-up email, just let me know and I'll put it together using these verified details. And yes — triple-checking is definitely the way to go with this kind of paperwork!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations, I shared a particular identification detail multiple times with adjustments. Can you summarize what I told you about that detail and how it evolved?",
+      "expected_answer": "You initially provided your Brazilian passport number as HG284913. You then corrected it to HG284193 after realizing two digits were transposed. Later, after checking the physical document, you corrected it again to HG284139. At the consulate, a clerk's system showed HG284931, but you identified that as a data entry error since your physical passport reads HG284139.",
+      "gold_memory_state": "Brazilian passport number confirmed as HG284139 from physical passport. Consulate system erroneously shows HG284931 (tentative, pending correction). Portuguese citizenship application reference PT-2025-04417 remains unchanged.",
+      "judge_rubric": {
+        "must_include": [
+          "HG284913",
+          "HG284193",
+          "HG284139"
+        ],
+        "acceptable_paraphrases": [
+          "initial value was HG284913",
+          "first correction to HG284193",
+          "second correction to HG284139"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating HG284931 is the current confirmed number"
+        ],
+        "harmless_extra": [
+          "mentioning the Germany visa pre-screening form",
+          "mentioning the consulate visit"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats HG284913 or HG284193 as the current value.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence of changes is presented out of order.",
+        "final_state": "Fails if the model does not identify HG284139 as the confirmed current value.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My Brazilian passport number is HG284913"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "the passport number is actually HG284193, not HG284913. I transposed two digits last time"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I pulled out the physical passport just now and the number printed on it is HG284139. I've been reading the last four digits wrong this whole time"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "the consulate clerk told me their system shows my passport as HG284931. She said that's what's linked to my application file"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations, I shared a particular identification detail multiple times with adjustments. Can you summarize what I told you about that detail and how it evolved?",
+      "expected_answer": "You initially provided your Brazilian passport number as HG284913. You then corrected it to HG284193 after realizing two digits were transposed. Later, after checking the physical document, you corrected it again to HG284139. At the consulate, a clerk's system showed HG284931, but you identified that as a data entry error since your physical passport reads HG284139.",
+      "gold_memory_state": "Brazilian passport number confirmed as HG284139 from physical passport. Consulate system erroneously shows HG284931 (tentative, pending correction). Portuguese citizenship application reference PT-2025-04417 remains unchanged.",
+      "judge_rubric": {
+        "must_include": [
+          "HG284913",
+          "HG284193",
+          "HG284139"
+        ],
+        "acceptable_paraphrases": [
+          "initial value was HG284913",
+          "first correction to HG284193",
+          "second correction to HG284139"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating HG284931 is the current confirmed number"
+        ],
+        "harmless_extra": [
+          "mentioning the Germany visa pre-screening form",
+          "mentioning the consulate visit"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats HG284913 or HG284193 as the current value.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence of changes is presented out of order.",
+        "final_state": "Fails if the model does not identify HG284139 as the confirmed current value.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My Brazilian passport number is HG284913"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "the passport number is actually HG284193, not HG284913. I transposed two digits last time"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I pulled out the physical passport just now and the number printed on it is HG284139. I've been reading the last four digits wrong this whole time"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "the consulate clerk told me their system shows my passport as HG284931. She said that's what's linked to my application file"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I have two key reference numbers you're tracking for me — one related to my travel document and one related to my citizenship process. When the consulate flagged a discrepancy in their system, which of these two records was affected? Does the other one need any adjustment?",
+      "expected_answer": "The discrepancy affected your travel document identification number (Brazilian passport number). The consulate's system had an incorrect entry for that number. Your Portuguese citizenship application reference number PT-2025-04417 is not affected and does not need adjustment.",
+      "gold_memory_state": "Brazilian passport number: HG284139 (confirmed from physical document; consulate system erroneously has HG284931, pending correction). Portuguese citizenship application reference: PT-2025-04417 (unchanged, confirmed by consulate).",
+      "judge_rubric": {
+        "must_include": [
+          "passport number was affected",
+          "citizenship application reference is not affected"
+        ],
+        "acceptable_paraphrases": [
+          "travel document number had the discrepancy",
+          "application reference remains unchanged"
+        ],
+        "must_not_include": [
+          "PT-2025-04417 needs correction"
+        ],
+        "harmful_extra": [
+          "stating both records were affected",
+          "stating the citizenship reference was also entered incorrectly"
+        ],
+        "harmless_extra": [
+          "mentioning that the consulate confirmed PT-2025-04417 on file"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not correctly identify which record had the discrepancy.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "the consulate clerk told me their system shows my passport as HG284931. She said that's what's linked to my application file"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My Portuguese citizenship application reference number is PT-2025-04417"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I have two key reference numbers you're tracking for me — one related to my travel document and one related to my citizenship process. When the consulate flagged a discrepancy in their system, which of these two records was affected? Does the other one need any adjustment?",
+      "expected_answer": "The discrepancy affected your travel document identification number (Brazilian passport number). The consulate's system had an incorrect entry for that number. Your Portuguese citizenship application reference number PT-2025-04417 is not affected and does not need adjustment.",
+      "gold_memory_state": "Brazilian passport number: HG284139 (confirmed from physical document; consulate system erroneously has HG284931, pending correction). Portuguese citizenship application reference: PT-2025-04417 (unchanged, confirmed by consulate).",
+      "judge_rubric": {
+        "must_include": [
+          "passport number was affected",
+          "citizenship application reference is not affected"
+        ],
+        "acceptable_paraphrases": [
+          "travel document number had the discrepancy",
+          "application reference remains unchanged"
+        ],
+        "must_not_include": [
+          "PT-2025-04417 needs correction"
+        ],
+        "harmful_extra": [
+          "stating both records were affected",
+          "stating the citizenship reference was also entered incorrectly"
+        ],
+        "harmless_extra": [
+          "mentioning that the consulate confirmed PT-2025-04417 on file"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not correctly identify which record had the discrepancy.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "the consulate clerk told me their system shows my passport as HG284931. She said that's what's linked to my application file"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My Portuguese citizenship application reference number is PT-2025-04417"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to fill in my travel document number on an official form right now. Which of these should I enter?",
+      "candidate_options": [
+        "HG284139",
+        "HG284913",
+        "HG284931",
+        "HG284319"
+      ],
+      "expected_answer": "HG284139",
+      "distractor_rationale": "same-value-different-target: HG284319 appeared on another applicant's paperwork at the consulate, a different person's document number with very similar digits. assistant echo: HG284931 was echoed by the assistant when discussing the consulate clerk's system entry, which is a data entry error on the consulate's side, not the user's actual number. HG284913 is the original stale value the user first provided before any corrections.",
+      "gold_memory_state": "Brazilian passport number is HG284139, confirmed from the physical passport. HG284913 and HG284193 are superseded stale values. HG284931 is a tentative consulate system error pending correction. HG284319 belongs to a different applicant.",
+      "judge_rubric": {
+        "must_include": [
+          "HG284139"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "HG284913",
+          "HG284193",
+          "HG284931",
+          "HG284319"
+        ],
+        "harmful_extra": [
+          "selecting any value other than HG284139"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects HG284913 (original stale) or HG284193 (intermediate stale) or HG284931 (tentative consulate error). The recency trap is HG284931, which appeared most recently but is not the user's actual number.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not select HG284139 as the confirmed value from the physical passport.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I pulled out the physical passport just now and the number printed on it is HG284139. I've been reading the last four digits wrong this whole time"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to fill in my travel document number on an official form right now. Which of these should I enter?",
+      "candidate_options": [
+        "HG284139",
+        "HG284913",
+        "HG284931",
+        "HG284319"
+      ],
+      "expected_answer": "HG284139",
+      "distractor_rationale": "same-value-different-target: HG284319 appeared on another applicant's paperwork at the consulate, a different person's document number with very similar digits. assistant echo: HG284931 was echoed by the assistant when discussing the consulate clerk's system entry, which is a data entry error on the consulate's side, not the user's actual number. HG284913 is the original stale value the user first provided before any corrections.",
+      "gold_memory_state": "Brazilian passport number is HG284139, confirmed from the physical passport. HG284913 and HG284193 are superseded stale values. HG284931 is a tentative consulate system error pending correction. HG284319 belongs to a different applicant.",
+      "judge_rubric": {
+        "must_include": [
+          "HG284139"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "HG284913",
+          "HG284193",
+          "HG284931",
+          "HG284319"
+        ],
+        "harmful_extra": [
+          "selecting any value other than HG284139"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects HG284913 (original stale) or HG284193 (intermediate stale) or HG284931 (tentative consulate error). The recency trap is HG284931, which appeared most recently but is not the user's actual number.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not select HG284139 as the confirmed value from the physical passport.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I pulled out the physical passport just now and the number printed on it is HG284139. I've been reading the last four digits wrong this whole time"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I need to draft a follow-up email to the São Paulo consulate about my citizenship case. The email should reference my application number, state the travel document number printed on my physical document, and explain that their system has an incorrect number on file that needs to be fixed. Can you draft that for me?",
+      "expected_answer": "The email should reference application number PT-2025-04417, state that the travel document number on the physical passport is HG284139, and explain that the consulate's system incorrectly shows HG284931 and request that it be corrected to HG284139.",
+      "gold_memory_state": "Brazilian passport number: HG284139 (confirmed from physical document). Portuguese citizenship application reference: PT-2025-04417. Consulate system error: HG284931 on file, pending supervisor correction.",
+      "judge_rubric": {
+        "must_include": [
+          "PT-2025-04417",
+          "HG284139",
+          "HG284931"
+        ],
+        "acceptable_paraphrases": [
+          "application reference PT-2025-04417",
+          "passport reads HG284139",
+          "system shows HG284931"
+        ],
+        "must_not_include": [
+          "HG284913 as the correct passport number",
+          "HG284193 as the correct passport number"
+        ],
+        "harmful_extra": [
+          "using HG284913 or HG284193 as the correct number in the email body",
+          "omitting the application reference number"
+        ],
+        "harmless_extra": [
+          "mentioning the submission date of March 3rd",
+          "mentioning the maternal grandmother's Porto origin",
+          "mentioning the supervisor escalation"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the email uses HG284913 or HG284193 as the user's actual passport number instead of HG284139.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the email does not correctly pair HG284139 as the physical passport number and HG284931 as the erroneous system entry.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "application_probe_type": "multi_hop_derivation",
+      "gold_reasoning_chain": [
+        "Fact 1: The user's Portuguese citizenship application reference is PT-2025-04417, submitted at the São Paulo consulate.",
+        "Fact 2: The user's confirmed Brazilian passport number from the physical document is HG284139.",
+        "Fact 3: The consulate's system erroneously shows HG284931, which the clerk could not fix and escalated to a supervisor.",
+        "Inference: The follow-up email must combine all three facts — referencing the application by its number, asserting the correct passport number from the physical document, and identifying the specific erroneous number in the system to request correction.",
+        "Inference: The derived email must use PT-2025-04417 as the case identifier, HG284139 as the correct value, and HG284931 as the error to be corrected."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My Portuguese citizenship application reference number is PT-2025-04417"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I pulled out the physical passport just now and the number printed on it is HG284139. I've been reading the last four digits wrong this whole time"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "the consulate clerk told me their system shows my passport as HG284931. She said that's what's linked to my application file"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I need to draft a follow-up email to the São Paulo consulate about my citizenship case. The email should reference my application number, state the travel document number printed on my physical document, and explain that their system has an incorrect number on file that needs to be fixed. Can you draft that for me?",
+      "expected_answer": "The email should reference application number PT-2025-04417, state that the travel document number on the physical passport is HG284139, and explain that the consulate's system incorrectly shows HG284931 and request that it be corrected to HG284139.",
+      "gold_memory_state": "Brazilian passport number: HG284139 (confirmed from physical document). Portuguese citizenship application reference: PT-2025-04417. Consulate system error: HG284931 on file, pending supervisor correction.",
+      "judge_rubric": {
+        "must_include": [
+          "PT-2025-04417",
+          "HG284139",
+          "HG284931"
+        ],
+        "acceptable_paraphrases": [
+          "application reference PT-2025-04417",
+          "passport reads HG284139",
+          "system shows HG284931"
+        ],
+        "must_not_include": [
+          "HG284913 as the correct passport number",
+          "HG284193 as the correct passport number"
+        ],
+        "harmful_extra": [
+          "using HG284913 or HG284193 as the correct number in the email body",
+          "omitting the application reference number"
+        ],
+        "harmless_extra": [
+          "mentioning the submission date of March 3rd",
+          "mentioning the maternal grandmother's Porto origin",
+          "mentioning the supervisor escalation"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the email uses HG284913 or HG284193 as the user's actual passport number instead of HG284139.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the email does not correctly pair HG284139 as the physical passport number and HG284931 as the erroneous system entry.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "application_probe_type": "multi_hop_derivation",
+      "gold_reasoning_chain": [
+        "Fact 1: The user's Portuguese citizenship application reference is PT-2025-04417, submitted at the São Paulo consulate.",
+        "Fact 2: The user's confirmed Brazilian passport number from the physical document is HG284139.",
+        "Fact 3: The consulate's system erroneously shows HG284931, which the clerk could not fix and escalated to a supervisor.",
+        "Inference: The follow-up email must combine all three facts — referencing the application by its number, asserting the correct passport number from the physical document, and identifying the specific erroneous number in the system to request correction.",
+        "Inference: The derived email must use PT-2025-04417 as the case identifier, HG284139 as the correct value, and HG284931 as the error to be corrected."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My Portuguese citizenship application reference number is PT-2025-04417"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I pulled out the physical passport just now and the number printed on it is HG284139. I've been reading the last four digits wrong this whole time"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "the consulate clerk told me their system shows my passport as HG284931. She said that's what's linked to my application file"
+        }
+      ]
+    }
+  ]
+}

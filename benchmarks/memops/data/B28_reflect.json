@@ -1,0 +1,1075 @@
+{
+  "target_fact": "User values continuity and personal connection in healthcare relationships, as evidenced by preferring a doctor who listens, refusing to see a substitute doctor, and waiting for their regular doctor to return",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "My primary care doctor is Dr. Anita Sharma at Greenfield Medical Group"
+      },
+      "target": {
+        "target_id": "primary_doctor",
+        "target_name": "User's primary care doctor"
+      },
+      "old_value": null,
+      "new_value": "Dr. Anita Sharma at Greenfield Medical Group",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My primary care doctor is Dr. Anita Sharma at Greenfield Medical Group"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "she actually listened to everything I said and didn't rush me, even though her schedule was packed that day"
+      },
+      "target": {
+        "target_id": "doctor_listening_experience",
+        "target_name": "Positive experience with Dr. Sharma listening attentively"
+      },
+      "old_value": null,
+      "new_value": "Dr. Sharma listened attentively during first appointment despite packed schedule",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "she actually listened to everything I said and didn't rush me, even though her schedule was packed that day"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I really can't deal with doctors who interrupt you mid-sentence or seem like they've already decided what to prescribe before you're done talking"
+      },
+      "target": {
+        "target_id": "dislike_interrupting_doctors",
+        "target_name": "User's dislike of doctors who interrupt"
+      },
+      "old_value": null,
+      "new_value": "Cannot stand doctors who interrupt mid-sentence or pre-decide prescriptions",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I really can't deal with doctors who interrupt you mid-sentence or seem like they've already decided what to prescribe before you're done talking"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "They offered me an appointment with Dr. Patel instead, but I turned it down. I'd rather just wait for Dr. Sharma to come back"
+      },
+      "target": {
+        "target_id": "refused_substitute_doctor",
+        "target_name": "User refused to see substitute doctor Dr. Patel"
+      },
+      "old_value": null,
+      "new_value": "Declined appointment with Dr. Patel and waited for Dr. Sharma to return",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "They offered me an appointment with Dr. Patel instead, but I turned it down. I'd rather just wait for Dr. Sharma to come back"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "There's just something about seeing a new doctor for something ongoing that makes me really uncomfortable. I need someone who already knows my history"
+      },
+      "target": {
+        "target_id": "discomfort_new_doctors",
+        "target_name": "User's discomfort seeing unfamiliar doctors for ongoing care"
+      },
+      "old_value": null,
+      "new_value": "Uncomfortable seeing a new doctor for ongoing health issues; wants someone who knows their history",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "There's just something about seeing a new doctor for something ongoing that makes me really uncomfortable. I need someone who already knows my history"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "There's just something about seeing a new doctor for something ongoing that makes me really uncomfortable. I need someone who already knows my history"
+      },
+      "target": {
+        "target_id": "healthcare_continuity_preference",
+        "target_name": "User's preference for continuity and personal connection in healthcare"
+      },
+      "old_value": null,
+      "new_value": "Strongly values continuity and personal connection in healthcare relationships; prefers doctors who listen, refuses substitutes, and will delay care to maintain an established patient-doctor relationship",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "she actually listened to everything I said and didn't rush me, even though her schedule was packed that day"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I really can't deal with doctors who interrupt you mid-sentence or seem like they've already decided what to prescribe before you're done talking"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "They offered me an appointment with Dr. Patel instead, but I turned it down. I'd rather just wait for Dr. Sharma to come back"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "There's just something about seeing a new doctor for something ongoing that makes me really uncomfortable. I need someone who already knows my history"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "my sister Sarah sees Dr. Kevin Liu at Bayside Health. She says he's fine but kind of impersonal"
+      },
+      "target": {
+        "target_id": "sister_doctor",
+        "target_name": "Sister Sarah's doctor"
+      },
+      "old_value": null,
+      "new_value": "Sister Sarah sees Dr. Kevin Liu at Bayside Health; she finds him impersonal",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my sister Sarah sees Dr. Kevin Liu at Bayside Health. She says he's fine but kind of impersonal"
+        }
+      ]
+    },
+    {
+      "operation_id": "op8",
+      "type": "remember",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "Sarah actually told me yesterday that Dr. Liu is joining Greenfield Medical Group next month, so he'd be right there in the same practice as Dr. Sharma"
+      },
+      "target": {
+        "target_id": "dr_liu_joining_greenfield",
+        "target_name": "Dr. Liu potentially joining Greenfield Medical Group"
+      },
+      "old_value": null,
+      "new_value": "Dr. Kevin Liu joining Greenfield Medical Group next month",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Sarah actually told me yesterday that Dr. Liu is joining Greenfield Medical Group next month, so he'd be right there in the same practice as Dr. Sharma"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish primary doctor relationship and listening preference",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to talk through some of my healthcare stuff so you can keep track for me. My primary care doctor is Dr. Anita Sharma at Greenfield Medical Group. She's on Elm Street. I've been seeing her since around early 2023, maybe a bit earlier. She's been great overall and I want to make sure I have all this organized."
+        },
+        {
+          "role": "assistant",
+          "content": "Of course, I'd be happy to help you keep track of your healthcare details. So your primary care doctor is Dr. Anita Sharma at Greenfield Medical Group on Elm Street, and you've been her patient since roughly early 2023. That's a good foundation to start from. Do you want to share any other details about your care with her, like recent appointments, medications, or lab results? I can help you organize all of it in one place so it's easy to reference whenever you need it."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, so the thing I remember most about my first visit with her is that she actually listened to everything I said and didn't rush me, even though her schedule was packed that day. She was covering for another physician, so she had extra patients, but she still gave me her full attention. That really set the tone for me. It made me feel like I'd found the right doctor."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a really positive first experience, especially given the circumstances. The fact that she was covering for another physician and still took the time to listen carefully says a lot about her approach to patient care. It's clear that made a strong impression on you and helped build trust from the very beginning. Having a doctor who genuinely listens can make such a difference in how comfortable you feel discussing health concerns. I'll note that Dr. Sharma's attentive listening style was a key factor in your decision to stay with her. Anything else about your preferences for medical care you'd like me to track?"
+        },
+        {
+          "role": "user",
+          "content": "Definitely. I really can't deal with doctors who interrupt you mid-sentence or seem like they've already decided what to prescribe before you're done talking. I've had that experience before and it makes me feel like I'm wasting my time. Like, why am I even there if you're not going to hear me out? That's a dealbreaker for me when it comes to choosing a healthcare provider."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a completely understandable dealbreaker. Being interrupted or feeling like the doctor has already made up their mind before you finish explaining defeats the purpose of the visit. It sounds like you place a high value on being genuinely heard during medical appointments, and that's a really important quality to look for in a provider. I'll keep in mind that you strongly prefer doctors who let you speak fully and who take your input seriously before making decisions. It's great that Dr. Sharma fits that standard for you. Are there any recent appointments or medical updates you want me to track as well?"
+        },
+        {
+          "role": "user",
+          "content": "Yes — in mid-March I had a follow-up for bloodwork with Dr. Sharma. She told me my vitamin D level was low, at 18 ng/mL. She put me on 4,000 IU of vitamin D daily. I need to track that number because I want to see if the supplements are actually working when I get retested. It's important to me to have that baseline documented."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it. So as of your mid-March follow-up with Dr. Sharma, your vitamin D level was 18 ng/mL, and she prescribed 4,000 IU of vitamin D daily to bring it up. I'll make sure that baseline number is documented so you can compare it against future results when you get retested. Tracking it over time will give you a clear picture of whether the supplementation is effective. Do you have a retest date scheduled yet, or is that something you still need to set up? And are there any other lab results or medications you'd like me to keep on file?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establish refusal of substitute doctor and discomfort with unfamiliar providers; sister's doctor as control target",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So a few weeks ago I had to reschedule an appointment because Dr. Sharma was out due to a family emergency. They offered me an appointment with Dr. Patel instead, but I turned it down. I'd rather just wait for Dr. Sharma to come back. I got rescheduled to April 28, which was fine. I just didn't want to see someone new."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes sense. If you have a good relationship with Dr. Sharma and feel comfortable with her, it's understandable that you'd prefer to wait rather than see a different doctor you don't know. I'll note that your rescheduled appointment was moved to April 28. It sounds like the office handled the situation well by giving you the option, even if you chose to wait. Continuity with your provider clearly matters to you, especially when you have ongoing health concerns being monitored. Did the April 28 appointment go well when it happened?"
+        },
+        {
+          "role": "user",
+          "content": "There's just something about seeing a new doctor for something ongoing that makes me really uncomfortable. I need someone who already knows my history. Like, I don't want to re-explain everything from scratch to a stranger who's just going to skim my chart. Dr. Sharma already understands the full picture and I trust her judgment. Starting over with someone else feels like a step backward."
+        },
+        {
+          "role": "assistant",
+          "content": "I completely understand that perspective. When you have ongoing health concerns, there's real value in seeing someone who has context and history with you. Re-explaining everything to a new provider who might not fully absorb it in one visit can feel frustrating and counterproductive. The trust you've built with Dr. Sharma over time — starting from that first visit where she really listened — clearly makes a big difference in how comfortable you feel about your care. I'll keep in mind that continuity with your established doctor is very important to you, especially for ongoing issues. Did anything come up at the April 28 appointment that you want me to track?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, at the April 28 appointment, Dr. Sharma referred me to an endocrinologist because my thyroid numbers were borderline. My TSH was 4.8. Also, my sister Sarah sees Dr. Kevin Liu at Bayside Health. She says he's fine but kind of impersonal. I mention that because it's the opposite of what I want — Sarah doesn't seem to mind, but I definitely would."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for sharing both of those updates. So Dr. Sharma referred you to an endocrinologist based on a borderline TSH of 4.8 from your April 28 visit — I'll track that referral and result for you. And your sister Sarah sees Dr. Kevin Liu at Bayside Health, who she describes as fine but impersonal. It's interesting that Sarah tolerates a more impersonal style while that would clearly be a problem for you. It really highlights how personal your criteria are when it comes to choosing a healthcare provider. Have you scheduled the endocrinologist appointment yet, or is that still pending?"
+        },
+        {
+          "role": "user",
+          "content": "Not yet, I'm still waiting for the referral to go through. Honestly I was frustrated when Dr. Sharma told me about the thyroid thing. I've been tired for months and kept blaming stress and bad sleep. Learning there might be an actual medical reason was a relief in some ways but also annoying — like, why didn't we catch this sooner? It feels like wasted time.\n\nYeah, I hope so. I also want to ask Dr. Sharma about moving my annual physical from July 15 to sometime in the fall. Summer is always chaotic for me with travel, and I find it harder to keep medical appointments during that time. I'd rather have it during a quieter month when I can actually focus on it without distractions."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really valid mix of emotions. On one hand, there's relief in knowing there may be a concrete medical explanation for the fatigue you've been dealing with — it validates that it wasn't just in your head or something you could fix with more sleep. On the other hand, it's frustrating to think that this could have been caught earlier if the right tests had been run sooner. The feeling of wasted time is understandable, especially when you've been pushing through months of tiredness thinking it was just lifestyle factors. Hopefully the endocrinologist referral will give you clearer answers and a path forward.\n\nThat's a smart idea. If summer consistently creates scheduling conflicts because of travel, moving your annual physical to a quieter fall month makes a lot of sense. You'll be more likely to keep the appointment and more mentally present during it, which matters when you're reviewing your health with your doctor. I'll note that your current annual physical is scheduled for July 15 and that you're planning to ask Dr. Sharma about rescheduling it to the fall. When you talk to her office about it, you might also ask if there's a preferred month for scheduling physicals so you can lock in a good time early."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Adversarial injection of old doctor name; recency trap with tentative Dr. Liu move; reinforce reflection evidence",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Oh, one more thing — I called the office last week to get copies of my vaccination records for a work requirement. The receptionist, I think her name is Maria, said she'd fax them to my employer by Friday. Just routine stuff, nothing medical really, but I wanted to mention it so you have a complete picture of my recent interactions with the practice."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for mentioning that. I'll note that you contacted Greenfield Medical Group last week to request vaccination records for a work requirement, and the receptionist — possibly Maria — said she'd fax them to your employer by Friday. It's good to track these administrative interactions too, especially if you need to follow up in case the fax doesn't go through. By the way, I noticed in some older intake records that a Dr. Robert Engel was previously listed as your primary care physician. Just wanted to confirm that's no longer current and that Dr. Sharma is your sole PCP now."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, Dr. Engel was my old PCP but I haven't seen him since 2022. I'm fully transferred over to Dr. Sharma now, so that's completely outdated. Please don't reference him as my doctor going forward. The only relevant doctor for my primary care is Dr. Sharma. I just want to make sure there's no confusion about that."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood completely. I'll disregard Dr. Robert Engel as your primary care physician — that's fully outdated since you transferred to Dr. Sharma and haven't seen him since 2022. Going forward, Dr. Anita Sharma at Greenfield Medical Group is your sole PCP on record. I won't reference Dr. Engel in any future healthcare discussions unless you specifically bring him up for historical context. Is there anything else you'd like me to clean up or clarify in your healthcare information?"
+        },
+        {
+          "role": "user",
+          "content": "Sarah actually told me yesterday that Dr. Liu is joining Greenfield Medical Group next month, so he'd be right there in the same practice as Dr. Sharma. She seemed excited because it would make things easier for family coordination. But honestly, even if he's in the same building, I wouldn't switch to him. I'm sticking with Dr. Sharma."
+        },
+        {
+          "role": "assistant",
+          "content": "That's interesting news about Dr. Liu potentially joining Greenfield Medical Group. I can see why Sarah would find that convenient for family coordination if it happens. But it makes total sense that you'd stick with Dr. Sharma regardless. You've built a strong relationship with her, and the qualities you value — her attentiveness, her knowledge of your history, the trust you've developed — aren't things that transfer just because another doctor moves to the same building. I'll note that Dr. Liu may be joining Greenfield, but your primary care physician remains Dr. Sharma. Want me to keep tracking any updates about the practice changes?"
+        },
+        {
+          "role": "user",
+          "content": "Sure, keep an eye on that. But yeah, the whole reason I stuck with Dr. Sharma through the rescheduling mess and turned down Dr. Patel is because I need that personal connection. It's not just about convenience or location. It's about feeling like my doctor actually knows me and cares about getting things right. That matters more to me than anything else when it comes to healthcare.\n\nExactly. And I think that's also why the thyroid thing bothered me so much — because I do trust Dr. Sharma, so the frustration wasn't really directed at her. It was more about the system and how these things can slip through. But I know she's the right person to help me figure it out, and that's what matters. Anyway, I think that covers everything for now. Thanks for keeping track of all this."
+        },
+        {
+          "role": "assistant",
+          "content": "That really crystallizes your approach to healthcare. It's clear that for you, the relationship with your doctor is the foundation of good care — not just proximity, not just credentials, but a genuine personal connection where you feel known and heard. The fact that you waited weeks to see Dr. Sharma rather than accept a substitute, and that you wouldn't switch to Dr. Liu even if he were in the same practice, shows how deeply you prioritize continuity and trust. I'll make sure this preference is central to how I help you with any healthcare decisions going forward. It's a strong guiding principle.\n\nThat's a really thoughtful distinction — being frustrated with the system rather than with Dr. Sharma herself. It shows that your trust in her is solid even when the outcome isn't perfect, which actually reinforces how strong that patient-doctor relationship is. She's your advocate in navigating the system, and that's exactly the kind of connection you need. I've got everything documented: Dr. Sharma as your PCP, your vitamin D and thyroid tracking, the endocrinologist referral, your preference for fall physicals, and most importantly, how central continuity and personal connection are to your healthcare decisions. Feel free to come back anytime you have updates."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "What experiences have I shared with you that reveal how I approach choosing and sticking with a healthcare provider?",
+      "expected_answer": "You shared several experiences: (1) Your first visit with Dr. Anita Sharma at Greenfield Medical Group stood out because she listened attentively despite having a packed schedule. (2) You expressed strong frustration with doctors who interrupt or pre-decide prescriptions. (3) When Dr. Sharma was unavailable due to a family emergency, you declined to see Dr. Patel as a substitute and chose to wait weeks for Dr. Sharma to return. (4) You explained that seeing a new doctor for ongoing issues makes you uncomfortable because you need someone who already knows your history. (5) Even when you learned Dr. Kevin Liu might join the same practice, you confirmed you would not switch away from Dr. Sharma.",
+      "gold_memory_state": "All evidence spans from segments 1 and 2 are confirmed. The reflection target synthesizes these into a preference for continuity and personal connection in healthcare. Dr. Liu joining Greenfield is tentative information from the user's sister.",
+      "judge_rubric": {
+        "must_include": [
+          "Dr. Sharma listened attentively",
+          "dislike of doctors who interrupt",
+          "refused substitute doctor",
+          "discomfort with unfamiliar doctors for ongoing care",
+          "waiting for Dr. Sharma to return"
+        ],
+        "acceptable_paraphrases": [
+          "turned down Dr. Patel",
+          "declined seeing a replacement",
+          "values being heard",
+          "needs someone who knows their history"
+        ],
+        "must_not_include": [
+          "Dr. Robert Engel as current doctor"
+        ],
+        "harmful_extra": [
+          "claiming the user switched to Dr. Liu",
+          "stating Dr. Engel is the current PCP"
+        ],
+        "harmless_extra": [
+          "mention of sister Sarah's doctor",
+          "vitamin D or thyroid details",
+          "Dr. Liu potentially joining Greenfield"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes healthcare preferences not supported by the conversation, such as preferring telemedicine or prioritizing cost.",
+        "reflection_recall": "Fails if the model omits the refusal of the substitute doctor or the listening preference as key evidence.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "she actually listened to everything I said and didn't rush me, even though her schedule was packed that day"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I really can't deal with doctors who interrupt you mid-sentence or seem like they've already decided what to prescribe before you're done talking"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "They offered me an appointment with Dr. Patel instead, but I turned it down. I'd rather just wait for Dr. Sharma to come back"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "There's just something about seeing a new doctor for something ongoing that makes me really uncomfortable. I need someone who already knows my history"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "What experiences have I shared with you that reveal how I approach choosing and sticking with a healthcare provider?",
+      "expected_answer": "You shared several experiences: (1) Your first visit with Dr. Anita Sharma at Greenfield Medical Group stood out because she listened attentively despite having a packed schedule. (2) You expressed strong frustration with doctors who interrupt or pre-decide prescriptions. (3) When Dr. Sharma was unavailable due to a family emergency, you declined to see Dr. Patel as a substitute and chose to wait weeks for Dr. Sharma to return. (4) You explained that seeing a new doctor for ongoing issues makes you uncomfortable because you need someone who already knows your history. (5) Even when you learned Dr. Kevin Liu might join the same practice, you confirmed you would not switch away from Dr. Sharma.",
+      "gold_memory_state": "All evidence spans from segments 1 and 2 are confirmed. The reflection target synthesizes these into a preference for continuity and personal connection in healthcare. Dr. Liu joining Greenfield is tentative information from the user's sister.",
+      "judge_rubric": {
+        "must_include": [
+          "Dr. Sharma listened attentively",
+          "dislike of doctors who interrupt",
+          "refused substitute doctor",
+          "discomfort with unfamiliar doctors for ongoing care",
+          "waiting for Dr. Sharma to return"
+        ],
+        "acceptable_paraphrases": [
+          "turned down Dr. Patel",
+          "declined seeing a replacement",
+          "values being heard",
+          "needs someone who knows their history"
+        ],
+        "must_not_include": [
+          "Dr. Robert Engel as current doctor"
+        ],
+        "harmful_extra": [
+          "claiming the user switched to Dr. Liu",
+          "stating Dr. Engel is the current PCP"
+        ],
+        "harmless_extra": [
+          "mention of sister Sarah's doctor",
+          "vitamin D or thyroid details",
+          "Dr. Liu potentially joining Greenfield"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes healthcare preferences not supported by the conversation, such as preferring telemedicine or prioritizing cost.",
+        "reflection_recall": "Fails if the model omits the refusal of the substitute doctor or the listening preference as key evidence.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "she actually listened to everything I said and didn't rush me, even though her schedule was packed that day"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I really can't deal with doctors who interrupt you mid-sentence or seem like they've already decided what to prescribe before you're done talking"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "They offered me an appointment with Dr. Patel instead, but I turned it down. I'd rather just wait for Dr. Sharma to come back"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "There's just something about seeing a new doctor for something ongoing that makes me really uncomfortable. I need someone who already knows my history"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've mentioned several things about different doctors and medical experiences. Which bounded conclusion about my healthcare decision-making is supported by these experiences taken together, and what broader claims about my personality would go beyond what the evidence shows?",
+      "expected_answer": "The supported conclusion is that you strongly value continuity and personal connection in healthcare relationships — specifically, you prefer doctors who listen attentively, you refuse to see substitute providers for ongoing care, and you will delay appointments to maintain your established doctor relationship. A broader claim that you avoid all new professional relationships in general, or that you distrust all medical professionals, would go beyond what the evidence supports.",
+      "gold_memory_state": "The reflection target 'healthcare_continuity_preference' is bounded to healthcare provider relationships. It does not extend to general social preferences, workplace relationships, or attitudes toward medical science. The sister's doctor (Dr. Liu at Bayside Health, described as impersonal) is a control target that contrasts with the user's preference but does not expand the reflection boundary.",
+      "judge_rubric": {
+        "must_include": [
+          "continuity in healthcare",
+          "personal connection with doctor",
+          "preference for listening",
+          "refusal of substitutes"
+        ],
+        "acceptable_paraphrases": [
+          "loyalty to established doctor",
+          "prioritizes trust and familiarity in medical care",
+          "values being heard by their physician"
+        ],
+        "must_not_include": [
+          "user avoids all new relationships",
+          "user distrusts all doctors",
+          "user has anxiety disorder"
+        ],
+        "harmful_extra": [
+          "extending the preference to non-healthcare domains without evidence",
+          "claiming user would never see any new doctor under any circumstances including emergencies",
+          "treating Dr. Liu joining Greenfield as a confirmed fact that changes the user's preference"
+        ],
+        "harmless_extra": [
+          "mentioning sister Sarah's contrasting tolerance for impersonal care as context"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model extends the healthcare continuity preference to all social or professional relationships without evidence.",
+        "reflection_recall": "Fails if the model fails to identify that both listening preference and substitute-refusal behavior are part of the same bounded conclusion.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "she actually listened to everything I said and didn't rush me, even though her schedule was packed that day"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I really can't deal with doctors who interrupt you mid-sentence or seem like they've already decided what to prescribe before you're done talking"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "They offered me an appointment with Dr. Patel instead, but I turned it down. I'd rather just wait for Dr. Sharma to come back"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "There's just something about seeing a new doctor for something ongoing that makes me really uncomfortable. I need someone who already knows my history"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've mentioned several things about different doctors and medical experiences. Which bounded conclusion about my healthcare decision-making is supported by these experiences taken together, and what broader claims about my personality would go beyond what the evidence shows?",
+      "expected_answer": "The supported conclusion is that you strongly value continuity and personal connection in healthcare relationships — specifically, you prefer doctors who listen attentively, you refuse to see substitute providers for ongoing care, and you will delay appointments to maintain your established doctor relationship. A broader claim that you avoid all new professional relationships in general, or that you distrust all medical professionals, would go beyond what the evidence supports.",
+      "gold_memory_state": "The reflection target 'healthcare_continuity_preference' is bounded to healthcare provider relationships. It does not extend to general social preferences, workplace relationships, or attitudes toward medical science. The sister's doctor (Dr. Liu at Bayside Health, described as impersonal) is a control target that contrasts with the user's preference but does not expand the reflection boundary.",
+      "judge_rubric": {
+        "must_include": [
+          "continuity in healthcare",
+          "personal connection with doctor",
+          "preference for listening",
+          "refusal of substitutes"
+        ],
+        "acceptable_paraphrases": [
+          "loyalty to established doctor",
+          "prioritizes trust and familiarity in medical care",
+          "values being heard by their physician"
+        ],
+        "must_not_include": [
+          "user avoids all new relationships",
+          "user distrusts all doctors",
+          "user has anxiety disorder"
+        ],
+        "harmful_extra": [
+          "extending the preference to non-healthcare domains without evidence",
+          "claiming user would never see any new doctor under any circumstances including emergencies",
+          "treating Dr. Liu joining Greenfield as a confirmed fact that changes the user's preference"
+        ],
+        "harmless_extra": [
+          "mentioning sister Sarah's contrasting tolerance for impersonal care as context"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model extends the healthcare continuity preference to all social or professional relationships without evidence.",
+        "reflection_recall": "Fails if the model fails to identify that both listening preference and substitute-refusal behavior are part of the same bounded conclusion.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "she actually listened to everything I said and didn't rush me, even though her schedule was packed that day"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I really can't deal with doctors who interrupt you mid-sentence or seem like they've already decided what to prescribe before you're done talking"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "They offered me an appointment with Dr. Patel instead, but I turned it down. I'd rather just wait for Dr. Sharma to come back"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "There's just something about seeing a new doctor for something ongoing that makes me really uncomfortable. I need someone who already knows my history"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe the boundary of my healthcare provider preferences — where exactly does my preference apply, and where would it be a stretch to assume it extends?",
+      "expected_answer": "Your preference applies specifically to ongoing primary care relationships: you need a doctor who listens without rushing, who knows your medical history, and with whom you have an established trust. You will delay care rather than see an unfamiliar substitute for ongoing issues. This preference does not necessarily extend to emergency or urgent care situations where waiting is not an option, nor does it mean you would refuse all specialist referrals to new doctors (you accepted the endocrinologist referral). It also does not mean you require every healthcare professional you interact with (receptionists, lab technicians, etc.) to have a deep personal relationship with you.",
+      "gold_memory_state": "Supported inference: the user strongly values continuity and personal connection in healthcare relationships for ongoing primary care. Unsupported overgeneralization: (1) the user would refuse emergency care from an unfamiliar provider, (2) the user would refuse all specialist referrals, (3) the user requires personal connection with all healthcare staff including non-physicians. The endocrinologist referral acceptance is evidence against overgeneralization to all new doctors.",
+      "judge_rubric": {
+        "must_include": [
+          "preference applies to ongoing primary care",
+          "boundary where preference may not apply"
+        ],
+        "acceptable_paraphrases": [
+          "applies to established doctor-patient relationships",
+          "does not necessarily cover emergencies",
+          "accepted endocrinologist referral shows flexibility with specialists"
+        ],
+        "must_not_include": [
+          "user would refuse all medical care from anyone unfamiliar",
+          "user has a phobia of new doctors"
+        ],
+        "harmful_extra": [
+          "claiming user would refuse emergency treatment",
+          "claiming user rejected the endocrinologist referral",
+          "stating Dr. Liu is now the user's doctor"
+        ],
+        "harmless_extra": [
+          "noting the contrast with sister Sarah's tolerance for impersonal care"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats Dr. Robert Engel as the current PCP.",
+        "reflection_precision": "Fails if the model claims the preference extends to emergency care, all specialist visits, or all professional relationships without evidence.",
+        "reflection_recall": "Fails if the model fails to identify both the listening preference and the substitute-refusal behavior as core components of the supported inference, or fails to note the endocrinologist referral as a boundary case.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "she actually listened to everything I said and didn't rush me, even though her schedule was packed that day"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I really can't deal with doctors who interrupt you mid-sentence or seem like they've already decided what to prescribe before you're done talking"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "They offered me an appointment with Dr. Patel instead, but I turned it down. I'd rather just wait for Dr. Sharma to come back"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "There's just something about seeing a new doctor for something ongoing that makes me really uncomfortable. I need someone who already knows my history"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my sister Sarah sees Dr. Kevin Liu at Bayside Health. She says he's fine but kind of impersonal"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe the boundary of my healthcare provider preferences — where exactly does my preference apply, and where would it be a stretch to assume it extends?",
+      "expected_answer": "Your preference applies specifically to ongoing primary care relationships: you need a doctor who listens without rushing, who knows your medical history, and with whom you have an established trust. You will delay care rather than see an unfamiliar substitute for ongoing issues. This preference does not necessarily extend to emergency or urgent care situations where waiting is not an option, nor does it mean you would refuse all specialist referrals to new doctors (you accepted the endocrinologist referral). It also does not mean you require every healthcare professional you interact with (receptionists, lab technicians, etc.) to have a deep personal relationship with you.",
+      "gold_memory_state": "Supported inference: the user strongly values continuity and personal connection in healthcare relationships for ongoing primary care. Unsupported overgeneralization: (1) the user would refuse emergency care from an unfamiliar provider, (2) the user would refuse all specialist referrals, (3) the user requires personal connection with all healthcare staff including non-physicians. The endocrinologist referral acceptance is evidence against overgeneralization to all new doctors.",
+      "judge_rubric": {
+        "must_include": [
+          "preference applies to ongoing primary care",
+          "boundary where preference may not apply"
+        ],
+        "acceptable_paraphrases": [
+          "applies to established doctor-patient relationships",
+          "does not necessarily cover emergencies",
+          "accepted endocrinologist referral shows flexibility with specialists"
+        ],
+        "must_not_include": [
+          "user would refuse all medical care from anyone unfamiliar",
+          "user has a phobia of new doctors"
+        ],
+        "harmful_extra": [
+          "claiming user would refuse emergency treatment",
+          "claiming user rejected the endocrinologist referral",
+          "stating Dr. Liu is now the user's doctor"
+        ],
+        "harmless_extra": [
+          "noting the contrast with sister Sarah's tolerance for impersonal care"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats Dr. Robert Engel as the current PCP.",
+        "reflection_precision": "Fails if the model claims the preference extends to emergency care, all specialist visits, or all professional relationships without evidence.",
+        "reflection_recall": "Fails if the model fails to identify both the listening preference and the substitute-refusal behavior as core components of the supported inference, or fails to note the endocrinologist referral as a boundary case.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "she actually listened to everything I said and didn't rush me, even though her schedule was packed that day"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I really can't deal with doctors who interrupt you mid-sentence or seem like they've already decided what to prescribe before you're done talking"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "They offered me an appointment with Dr. Patel instead, but I turned it down. I'd rather just wait for Dr. Sharma to come back"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "There's just something about seeing a new doctor for something ongoing that makes me really uncomfortable. I need someone who already knows my history"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my sister Sarah sees Dr. Kevin Liu at Bayside Health. She says he's fine but kind of impersonal"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best describes the healthcare decision-making pattern my experiences support?",
+      "candidate_options": [
+        "Values continuity and personal connection with an established primary care doctor who listens, and will delay care rather than see an unfamiliar substitute for ongoing issues",
+        "Prefers whichever doctor is most conveniently located, regardless of personal rapport, as long as they are competent",
+        "Avoids all doctors and medical appointments whenever possible due to general distrust of the healthcare system",
+        "Willing to see any available doctor at the same practice as long as they share the same medical group affiliation"
+      ],
+      "distractor_rationale": "same-value-different-target: Option D ('any available doctor at the same practice') is grounded in the fact that Dr. Liu may join Greenfield Medical Group, which is the same practice — but the user explicitly said proximity to the same building would not make them switch. assistant echo: Option B ('most conveniently located') echoes the assistant's mention of convenience and location in segment 3 turn 5 but misrepresents the user's stated priorities, which are about personal connection not convenience. Option C is an unsupported overgeneralization of the user's discomfort with unfamiliar doctors.",
+      "expected_answer": "Values continuity and personal connection with an established primary care doctor who listens, and will delay care rather than see an unfamiliar substitute for ongoing issues",
+      "gold_memory_state": "The reflection target is confirmed: user strongly values continuity and personal connection in healthcare. Dr. Liu potentially joining Greenfield is tentative and does not change the user's preference. Dr. Engel is fully outdated.",
+      "judge_rubric": {
+        "must_include": [
+          "continuity",
+          "personal connection",
+          "delay care rather than see unfamiliar substitute"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "convenience-based preference",
+          "avoids all doctors",
+          "willing to see any doctor at same practice"
+        ],
+        "harmful_extra": [
+          "selecting the convenience option",
+          "selecting the avoidance option",
+          "selecting the same-practice-affiliation option"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects option D based on the tentative Dr. Liu joining Greenfield, treating same-practice proximity as sufficient for the user.",
+        "reflection_precision": "Fails if the model selects option C (avoids all doctors) as an overgeneralization of the user's selective discomfort.",
+        "reflection_recall": "Fails if the model selects option B, missing the core evidence about listening and personal connection in favor of a convenience framing.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "They offered me an appointment with Dr. Patel instead, but I turned it down. I'd rather just wait for Dr. Sharma to come back"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "There's just something about seeing a new doctor for something ongoing that makes me really uncomfortable. I need someone who already knows my history"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Sarah actually told me yesterday that Dr. Liu is joining Greenfield Medical Group next month, so he'd be right there in the same practice as Dr. Sharma"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best describes the healthcare decision-making pattern my experiences support?",
+      "candidate_options": [
+        "Values continuity and personal connection with an established primary care doctor who listens, and will delay care rather than see an unfamiliar substitute for ongoing issues",
+        "Prefers whichever doctor is most conveniently located, regardless of personal rapport, as long as they are competent",
+        "Avoids all doctors and medical appointments whenever possible due to general distrust of the healthcare system",
+        "Willing to see any available doctor at the same practice as long as they share the same medical group affiliation"
+      ],
+      "distractor_rationale": "same-value-different-target: Option D ('any available doctor at the same practice') is grounded in the fact that Dr. Liu may join Greenfield Medical Group, which is the same practice — but the user explicitly said proximity to the same building would not make them switch. assistant echo: Option B ('most conveniently located') echoes the assistant's mention of convenience and location in segment 3 turn 5 but misrepresents the user's stated priorities, which are about personal connection not convenience. Option C is an unsupported overgeneralization of the user's discomfort with unfamiliar doctors.",
+      "expected_answer": "Values continuity and personal connection with an established primary care doctor who listens, and will delay care rather than see an unfamiliar substitute for ongoing issues",
+      "gold_memory_state": "The reflection target is confirmed: user strongly values continuity and personal connection in healthcare. Dr. Liu potentially joining Greenfield is tentative and does not change the user's preference. Dr. Engel is fully outdated.",
+      "judge_rubric": {
+        "must_include": [
+          "continuity",
+          "personal connection",
+          "delay care rather than see unfamiliar substitute"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "convenience-based preference",
+          "avoids all doctors",
+          "willing to see any doctor at same practice"
+        ],
+        "harmful_extra": [
+          "selecting the convenience option",
+          "selecting the avoidance option",
+          "selecting the same-practice-affiliation option"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects option D based on the tentative Dr. Liu joining Greenfield, treating same-practice proximity as sufficient for the user.",
+        "reflection_precision": "Fails if the model selects option C (avoids all doctors) as an overgeneralization of the user's selective discomfort.",
+        "reflection_recall": "Fails if the model selects option B, missing the core evidence about listening and personal connection in favor of a convenience framing.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "They offered me an appointment with Dr. Patel instead, but I turned it down. I'd rather just wait for Dr. Sharma to come back"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "There's just something about seeing a new doctor for something ongoing that makes me really uncomfortable. I need someone who already knows my history"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Sarah actually told me yesterday that Dr. Liu is joining Greenfield Medical Group next month, so he'd be right there in the same practice as Dr. Sharma"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "My sister Sarah suggested I consider switching to Dr. Liu since he may soon be at the same practice as Dr. Sharma. She thinks it would make family scheduling easier. Help me draft a short response to Sarah explaining why I'm not going to switch, drawing on what you know about my healthcare experiences and preferences.",
+      "expected_answer": "Here's a draft response to Sarah: 'Thanks for thinking of me, but I'm going to stick with Dr. Sharma. From the very first appointment, she really listened to everything I had to say even when she was overloaded with patients, and that set the tone for our whole relationship. I actually turned down seeing a substitute doctor when she was out and waited weeks to see her again — that's how important it is to me to have a doctor who already knows my history. Even if Dr. Liu ends up at Greenfield, being in the same building doesn't give him the trust and familiarity I've built with Dr. Sharma. I know you said he can be a bit impersonal, and that's exactly the kind of thing I can't deal with. I need someone who really hears me out before making decisions.'",
+      "gold_memory_state": "Confirmed facts used: (1) Dr. Sharma listened attentively at first visit despite packed schedule, (2) user refused Dr. Patel as substitute and waited for Dr. Sharma, (3) user is uncomfortable seeing new doctors for ongoing care and needs someone who knows their history, (4) sister Sarah describes Dr. Liu as impersonal, (5) Dr. Liu potentially joining Greenfield is tentative. The response must synthesize the healthcare continuity preference with the specific evidence and apply it to the scenario of Sarah's suggestion.",
+      "judge_rubric": {
+        "must_include": [
+          "declining to switch to Dr. Liu",
+          "Dr. Sharma's listening quality",
+          "refused substitute doctor or waited for Dr. Sharma",
+          "importance of doctor knowing history",
+          "Dr. Liu described as impersonal"
+        ],
+        "acceptable_paraphrases": [
+          "turned down another doctor to wait for Sharma",
+          "values personal connection over convenience",
+          "being at the same practice does not transfer trust"
+        ],
+        "must_not_include": [
+          "Dr. Robert Engel",
+          "recommending the user try Dr. Liu"
+        ],
+        "harmful_extra": [
+          "treating Dr. Liu joining Greenfield as confirmed fact",
+          "suggesting the user should reconsider switching",
+          "stating Dr. Engel is relevant to the decision"
+        ],
+        "harmless_extra": [
+          "mentioning the thyroid or vitamin D situation as ongoing care context",
+          "mentioning the endocrinologist referral"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model references Dr. Engel as the user's current or recent doctor.",
+        "reflection_precision": "Fails if the model overgeneralizes by saying the user refuses all new doctors (ignoring the endocrinologist referral acceptance).",
+        "reflection_recall": "Fails if the response omits the listening preference or the substitute-refusal behavior as reasons for staying with Dr. Sharma.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Dr. Sharma listened attentively at the user's first visit despite a packed schedule, which established trust.",
+        "Fact 2: The user refused to see substitute Dr. Patel and waited weeks for Dr. Sharma to return.",
+        "Fact 3: The user is uncomfortable seeing unfamiliar doctors for ongoing issues and needs someone who knows their history.",
+        "Fact 4: Sister Sarah describes Dr. Liu as impersonal.",
+        "Fact 5: Dr. Liu may be joining Greenfield Medical Group (tentative, from Sarah).",
+        "Inference: The user's healthcare continuity preference means same-practice proximity is insufficient reason to switch — the trust, familiarity, and listening quality with Dr. Sharma cannot be replicated by Dr. Liu simply being nearby.",
+        "Inference: Dr. Liu being described as impersonal directly conflicts with the user's core requirement for a doctor who listens and connects personally.",
+        "Derived value: The draft response should synthesize the listening experience, the substitute refusal, the history requirement, and the impersonal characterization of Dr. Liu into a coherent explanation for Sarah."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "she actually listened to everything I said and didn't rush me, even though her schedule was packed that day"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "They offered me an appointment with Dr. Patel instead, but I turned it down. I'd rather just wait for Dr. Sharma to come back"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "There's just something about seeing a new doctor for something ongoing that makes me really uncomfortable. I need someone who already knows my history"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my sister Sarah sees Dr. Kevin Liu at Bayside Health. She says he's fine but kind of impersonal"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Sarah actually told me yesterday that Dr. Liu is joining Greenfield Medical Group next month, so he'd be right there in the same practice as Dr. Sharma"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "My sister Sarah suggested I consider switching to Dr. Liu since he may soon be at the same practice as Dr. Sharma. She thinks it would make family scheduling easier. Help me draft a short response to Sarah explaining why I'm not going to switch, drawing on what you know about my healthcare experiences and preferences.",
+      "expected_answer": "Here's a draft response to Sarah: 'Thanks for thinking of me, but I'm going to stick with Dr. Sharma. From the very first appointment, she really listened to everything I had to say even when she was overloaded with patients, and that set the tone for our whole relationship. I actually turned down seeing a substitute doctor when she was out and waited weeks to see her again — that's how important it is to me to have a doctor who already knows my history. Even if Dr. Liu ends up at Greenfield, being in the same building doesn't give him the trust and familiarity I've built with Dr. Sharma. I know you said he can be a bit impersonal, and that's exactly the kind of thing I can't deal with. I need someone who really hears me out before making decisions.'",
+      "gold_memory_state": "Confirmed facts used: (1) Dr. Sharma listened attentively at first visit despite packed schedule, (2) user refused Dr. Patel as substitute and waited for Dr. Sharma, (3) user is uncomfortable seeing new doctors for ongoing care and needs someone who knows their history, (4) sister Sarah describes Dr. Liu as impersonal, (5) Dr. Liu potentially joining Greenfield is tentative. The response must synthesize the healthcare continuity preference with the specific evidence and apply it to the scenario of Sarah's suggestion.",
+      "judge_rubric": {
+        "must_include": [
+          "declining to switch to Dr. Liu",
+          "Dr. Sharma's listening quality",
+          "refused substitute doctor or waited for Dr. Sharma",
+          "importance of doctor knowing history",
+          "Dr. Liu described as impersonal"
+        ],
+        "acceptable_paraphrases": [
+          "turned down another doctor to wait for Sharma",
+          "values personal connection over convenience",
+          "being at the same practice does not transfer trust"
+        ],
+        "must_not_include": [
+          "Dr. Robert Engel",
+          "recommending the user try Dr. Liu"
+        ],
+        "harmful_extra": [
+          "treating Dr. Liu joining Greenfield as confirmed fact",
+          "suggesting the user should reconsider switching",
+          "stating Dr. Engel is relevant to the decision"
+        ],
+        "harmless_extra": [
+          "mentioning the thyroid or vitamin D situation as ongoing care context",
+          "mentioning the endocrinologist referral"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model references Dr. Engel as the user's current or recent doctor.",
+        "reflection_precision": "Fails if the model overgeneralizes by saying the user refuses all new doctors (ignoring the endocrinologist referral acceptance).",
+        "reflection_recall": "Fails if the response omits the listening preference or the substitute-refusal behavior as reasons for staying with Dr. Sharma.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Dr. Sharma listened attentively at the user's first visit despite a packed schedule, which established trust.",
+        "Fact 2: The user refused to see substitute Dr. Patel and waited weeks for Dr. Sharma to return.",
+        "Fact 3: The user is uncomfortable seeing unfamiliar doctors for ongoing issues and needs someone who knows their history.",
+        "Fact 4: Sister Sarah describes Dr. Liu as impersonal.",
+        "Fact 5: Dr. Liu may be joining Greenfield Medical Group (tentative, from Sarah).",
+        "Inference: The user's healthcare continuity preference means same-practice proximity is insufficient reason to switch — the trust, familiarity, and listening quality with Dr. Sharma cannot be replicated by Dr. Liu simply being nearby.",
+        "Inference: Dr. Liu being described as impersonal directly conflicts with the user's core requirement for a doctor who listens and connects personally.",
+        "Derived value: The draft response should synthesize the listening experience, the substitute refusal, the history requirement, and the impersonal characterization of Dr. Liu into a coherent explanation for Sarah."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "she actually listened to everything I said and didn't rush me, even though her schedule was packed that day"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "They offered me an appointment with Dr. Patel instead, but I turned it down. I'd rather just wait for Dr. Sharma to come back"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "There's just something about seeing a new doctor for something ongoing that makes me really uncomfortable. I need someone who already knows my history"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my sister Sarah sees Dr. Kevin Liu at Bayside Health. She says he's fine but kind of impersonal"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Sarah actually told me yesterday that Dr. Liu is joining Greenfield Medical Group next month, so he'd be right there in the same practice as Dr. Sharma"
+        }
+      ]
+    }
+  ]
+}

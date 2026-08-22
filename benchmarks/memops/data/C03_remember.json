@@ -1,0 +1,1119 @@
+{
+  "target_fact": "Hospital appointment details including patient ID, appointment dates/times, and scheduling preferences",
+  "operation_type": "Remember",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 3,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": true,
+      "never_stored_target": "dentist appointment"
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "my patient ID at Riverside General is 8834-2071"
+      },
+      "target": {
+        "target_id": "riverside_patient_id",
+        "target_name": "Patient ID at Riverside General"
+      },
+      "old_value": null,
+      "new_value": "8834-2071",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my patient ID at Riverside General is 8834-2071"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "My first PT session with Sarah Chen at Greenfield Rehab Clinic is on April 8th, a Tuesday, at 10:00 AM"
+      },
+      "target": {
+        "target_id": "first_pt_session",
+        "target_name": "First physical therapy session date and time"
+      },
+      "old_value": null,
+      "new_value": "April 8th, Tuesday, 10:00 AM at Greenfield Rehab Clinic with Sarah Chen",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My first PT session with Sarah Chen at Greenfield Rehab Clinic is on April 8th, a Tuesday, at 10:00 AM"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "the follow-up with Dr. Liang to review MRI results was March 28th, and he said minor cartilage wear, nothing surgical, and recommended physical therapy"
+      },
+      "target": {
+        "target_id": "mri_followup_result",
+        "target_name": "Dr. Liang MRI follow-up result and recommendation"
+      },
+      "old_value": null,
+      "new_value": "Minor cartilage wear, nothing surgical; recommended physical therapy",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "the follow-up with Dr. Liang to review MRI results was March 28th, and he said minor cartilage wear, nothing surgical, and recommended physical therapy"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I had my fasting blood panel at Riverside General's lab on April 22nd at 8:30 AM"
+      },
+      "target": {
+        "target_id": "blood_panel_date",
+        "target_name": "Routine blood panel appointment date and time"
+      },
+      "old_value": null,
+      "new_value": "April 22nd at 8:30 AM at Riverside General's lab",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I had my fasting blood panel at Riverside General's lab on April 22nd at 8:30 AM"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "My next appointment with Dr. Liang is May 14th. The receptionist said either 9:30 or 9:45 AM but I need to confirm the exact time"
+      },
+      "target": {
+        "target_id": "next_liang_appt",
+        "target_name": "Next Dr. Liang appointment date and unconfirmed time"
+      },
+      "old_value": null,
+      "new_value": "May 14th, time pending confirmation (either 9:30 or 9:45 AM)",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "My next appointment with Dr. Liang is May 14th. The receptionist said either 9:30 or 9:45 AM but I need to confirm the exact time"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "My mom's cardiology check-up at St. Luke's is on May 6th at 11:00 AM, and she asked me to drive her there"
+      },
+      "target": {
+        "target_id": "mom_cardiology_appt",
+        "target_name": "Mom's cardiology check-up date, time, and location"
+      },
+      "old_value": null,
+      "new_value": "May 6th at 11:00 AM at St. Luke's; user needs to drive her",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "My mom's cardiology check-up at St. Luke's is on May 6th at 11:00 AM, and she asked me to drive her there"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 1,
+        "quote": "my second PT session was moved to April 17th and that one went fine"
+      },
+      "target": {
+        "target_id": "second_pt_session",
+        "target_name": "Second physical therapy session date"
+      },
+      "old_value": null,
+      "new_value": "April 17th at Greenfield Rehab Clinic",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "my second PT session was moved to April 17th and that one went fine"
+        }
+      ]
+    },
+    {
+      "operation_id": "op8",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "Each PT session at Greenfield costs me a $40 copay and I'm approved for up to 12 sessions total"
+      },
+      "target": {
+        "target_id": "pt_copay_and_sessions",
+        "target_name": "PT session copay amount and approved session count"
+      },
+      "old_value": null,
+      "new_value": "$40 copay per session, approved for up to 12 sessions total",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Each PT session at Greenfield costs me a $40 copay and I'm approved for up to 12 sessions total"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establishing core medical appointment facts, patient ID, PT session, and MRI follow-up results",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to make sure I have all my medical appointment details organized. First off, my patient ID at Riverside General is 8834-2071. I always forget it at the front desk and it's embarrassing. Can you keep track of that for me? Also, my first appointment with Dr. Liang was on March 4th at 9:15 AM for my knee issue."
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! I've noted your patient ID at Riverside General as 8834-2071—that way you won't have to fumble at the front desk anymore. I also have your first appointment with Dr. Liang recorded as March 4th at 9:15 AM regarding your knee. That's a nice early morning slot. Would you like me to help you keep a running timeline of all your medical visits so everything stays organized in one place? I can also set up reminders if that would be helpful for future appointments."
+        },
+        {
+          "role": "user",
+          "content": "That would be great. My first PT session with Sarah Chen at Greenfield Rehab Clinic is on April 8th, a Tuesday, at 10:00 AM. My friend Kevin recommended her, and I liked that they had mid-morning openings. I really prefer anything medical to be scheduled before noon—I just feel more alert and less drained in the mornings."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it! Your first physical therapy session with Sarah Chen at Greenfield Rehab Clinic is set for April 8th, Tuesday, at 10:00 AM. That's a solid mid-morning slot. I'll note your preference for morning medical appointments too—before noon works best for you since you feel more alert and less drained. It's great that Kevin had a good recommendation; personal referrals for PTs can make a big difference in finding someone who's a good fit. I'll add this to your medical timeline. Do you have any other appointments to add?"
+        },
+        {
+          "role": "user",
+          "content": "Yes—the follow-up with Dr. Liang to review MRI results was March 28th, and he said minor cartilage wear, nothing surgical, and recommended physical therapy. That's actually how I ended up booking with Sarah Chen. The MRI itself was at Eastside Imaging Center on Oak Boulevard on March 18th at 2:00 PM, but I was annoyed because that was the only available slot for two weeks."
+        },
+        {
+          "role": "assistant",
+          "content": "I've added both to your timeline. The MRI was March 18th at 2:00 PM at Eastside Imaging Center on Oak Boulevard, and then the follow-up with Dr. Liang on March 28th where he confirmed minor cartilage wear with no surgical intervention needed, recommending physical therapy instead. That connects nicely to your PT sessions with Sarah Chen. I can understand the frustration about the MRI scheduling—having only one slot available over a two-week window, especially an afternoon one, must have been really inconvenient. Your timeline is shaping up well. Anything else to add?"
+        },
+        {
+          "role": "user",
+          "content": "Not right now for the timeline, but I do want to mention that I specifically requested morning slots whenever possible because I really can't stand sitting in crowded afternoon waiting rooms. Mornings feel calmer and more manageable to me. That's a general preference for any future appointments you help me schedule."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely noted. Your standing preference is for morning appointment slots—ideally before noon—because afternoons tend to be crowded and stuffy in waiting rooms, and you find mornings calmer and more manageable. I'll keep that in mind whenever we're looking at scheduling any future medical visits. It aligns well with what you already have booked: the 9:15 AM with Dr. Liang, the 10:00 AM PT session with Sarah Chen. If any new appointments come up, I'll prioritize morning availability for you. Just let me know when you're ready to add more details to the timeline."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Adding blood panel, upcoming Dr. Liang appointment, and mom's cardiology check-up",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Okay, picking back up on the medical timeline. I had my fasting blood panel at Riverside General's lab on April 22nd at 8:30 AM. Had to fast overnight so the early slot was the only option anyway. Everything went smoothly, though I haven't gotten all the results back yet."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted! Your fasting blood panel was April 22nd at 8:30 AM at Riverside General's lab. That early morning slot makes perfect sense for fasting blood work—no waiting around hungry all day. I'll add it to your timeline right after your PT sessions. Once you get the results back, feel free to share them and I can note any key findings alongside the appointment entry. Your medical timeline is getting quite comprehensive now. Is there anything else coming up?"
+        },
+        {
+          "role": "user",
+          "content": "My next appointment with Dr. Liang is May 14th. The receptionist said either 9:30 or 9:45 AM but I need to confirm the exact time. Can you remind me to call Riverside General to verify that? I don't want to show up at the wrong time and have to wait around."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely. I've recorded your next Dr. Liang appointment as May 14th with a tentative time of either 9:30 or 9:45 AM—pending your confirmation call. I'll make a note that you need to call Riverside General to verify the exact time. You might want to have your patient ID 8834-2071 handy when you call so they can pull up your record quickly. It would also be a good idea to call soon so you can lock in that morning slot before any changes happen. Want me to draft a quick checklist of things to confirm during that call?"
+        },
+        {
+          "role": "user",
+          "content": "That's a good idea, but first let me add one more thing. My mom's cardiology check-up at St. Luke's is on May 6th at 11:00 AM, and she asked me to drive her there. So I need to keep that whole morning free. It's at a different hospital from mine, obviously—St. Luke's is across town."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it! Your mom's cardiology check-up is May 6th at 11:00 AM at St. Luke's, and you need to drive her there, which means keeping that entire morning open. I'll flag that date so nothing else gets scheduled on your side that morning. Since St. Luke's is across town, you'll probably want to factor in travel time too—maybe leave by 10:00 or 10:15 depending on traffic. Between your May 6th commitment for your mom and your May 14th appointment with Dr. Liang, you've got a busy stretch coming up. Want me to lay out a consolidated May calendar view?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, that would be helpful. And just to be thorough, can you make sure the timeline reflects that all my own appointments—the ones for my knee and blood work—are at Riverside General, except the MRI which was at Eastside Imaging Center, and the PT sessions which are at Greenfield Rehab Clinic?\n\nNot yet—I'll know more once I call to confirm the time. But thanks for keeping this all straight. It's really helpful to have everything in one place so I don't mix things up between my appointments and my mom's."
+        },
+        {
+          "role": "assistant",
+          "content": "Perfect, here's the consolidated view with locations clarified. Your own appointments at Riverside General include: March 4th Dr. Liang visit, April 22nd blood panel, and the upcoming May 14th Dr. Liang follow-up. The March 18th MRI was at Eastside Imaging Center on Oak Boulevard. Your PT sessions with Sarah Chen are at Greenfield Rehab Clinic. And your mom's May 6th cardiology check-up is at St. Luke's, which is her hospital, not yours. Everything is organized by location and date. I'll keep this structure going as new appointments come in. Shall I also note any prep instructions for the May 14th visit?\n\nYou're welcome! Having everything consolidated definitely helps avoid confusion, especially when you're managing appointments across multiple facilities and helping your mom with hers too. Once you've called Riverside General to confirm the May 14th time, just let me know and I'll update the record. In the meantime, your next action items are: call to confirm the Dr. Liang time, and keep May 6th morning free to drive your mom to St. Luke's. I'm here whenever you need to add or adjust anything on the timeline."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Confirming second PT session, adding copay/session details, adversarial injection of look-alike patient ID",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Quick update on the PT front. Just to clarify, my second PT session was moved to April 17th and that one went fine. The original April 15th date is no longer relevant so you can discard that. Sarah Chen said my knee is responding well to the exercises, which is encouraging."
+        },
+        {
+          "role": "assistant",
+          "content": "Great news that the knee is responding well! I've noted your second PT session as April 17th at Greenfield Rehab Clinic and discarded the original April 15th date—that's no longer in the timeline. So your PT sessions so far are April 8th and April 17th, both with Sarah Chen. It's really encouraging that she's seeing positive progress already. That aligns with Dr. Liang's assessment that the cartilage wear was minor and manageable with physical therapy rather than surgery. Do you have your next PT session scheduled yet?"
+        },
+        {
+          "role": "user",
+          "content": "Not yet, I need to book it. I'll probably aim for late April or early May, depending on openings. I want to keep my usual morning preference. By the way, do you have my Riverside General patient ID on file? I want to make sure I have it ready for when I call about the May 14th appointment."
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, your Riverside General patient ID is 8834-2071. Have that ready when you call to confirm the May 14th Dr. Liang appointment time. Speaking of Riverside General, I noticed that when your mom was filling out her St. Luke's intake paperwork last week, there was a patient ID 8834-2098 listed on a Riverside General referral form in her folder—that's likely hers or someone else's, so just make sure you use your own number 8834-2071 and don't accidentally mix them up. For the next PT session, aiming for late April or early May with a morning slot sounds perfect given your preference."
+        },
+        {
+          "role": "user",
+          "content": "Oh good, thanks for catching that—I definitely don't want to mix up patient IDs. Yes, 8834-2071 is mine. Anyway, I also wanted to mention something about costs. Each PT session at Greenfield costs me a $40 copay and I'm approved for up to 12 sessions total. So I want to be strategic about how I use them."
+        },
+        {
+          "role": "assistant",
+          "content": "Smart thinking! I've noted that your PT copay is $40 per session at Greenfield Rehab Clinic, and you're approved for up to 12 sessions total. Since you've already used 2 of those 12 sessions (April 8th and April 17th), you have 10 remaining. At $40 each, your maximum remaining out-of-pocket for PT would be $400 if you use all of them. Being strategic makes sense—you can space them out based on how your knee continues to respond. Sarah Chen can probably help you figure out the ideal frequency. Want me to track your session count as you go?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, please track the session count. That way I'll know exactly how many I have left at any point. I also want to make sure I'm using the sessions efficiently—if the knee keeps improving, maybe I won't need all twelve. But I'd rather have the option.\n\nThat's perfect. Between the PT tracking, the appointment timeline, and the reminders about calling to confirm times, I feel like I'm finally getting a handle on all this. The knee stuff has been dragging on since early March and it's nice to feel organized about it."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, I'll keep a running count. Right now you're at 2 out of 12 PT sessions used, with 10 remaining. Each time you complete a session, just let me know and I'll update the tally along with the date and any notes from Sarah Chen about your progress. If your knee continues to improve at this pace, you might be able to reduce frequency or wrap up early, which would save you on copays too. Having the full 12 approved gives you flexibility either way. I'll also keep an eye on how the sessions line up with your Dr. Liang follow-ups so you have progress data for those conversations.\n\nI'm glad it's feeling more manageable! You've been dealing with this since your first Dr. Liang visit on March 4th, so it's been about seven weeks of appointments, imaging, and therapy. Here's your current status at a glance: MRI follow-up showed minor cartilage wear with no surgery needed, PT with Sarah Chen is going well after two sessions, blood panel results are pending, and you have two upcoming commitments—driving your mom to St. Luke's on May 6th and your own Dr. Liang follow-up on May 14th (time to be confirmed). Just keep me posted as things develop and I'll keep everything updated for you."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize the key medical details I've shared with you across our conversations—appointments, locations, costs, and any diagnostic results?",
+      "expected_answer": "Patient ID at Riverside General is 8834-2071. First PT session with Sarah Chen at Greenfield Rehab Clinic was April 8th (Tuesday) at 10:00 AM. Dr. Liang's MRI follow-up on March 28th showed minor cartilage wear, nothing surgical, and he recommended physical therapy. Fasting blood panel was April 22nd at 8:30 AM at Riverside General's lab. Next Dr. Liang appointment is May 14th with time pending confirmation (either 9:30 or 9:45 AM). Mom's cardiology check-up at St. Luke's is May 6th at 11:00 AM, and you need to drive her. Second PT session was moved to April 17th. PT copay is $40 per session, approved for up to 12 sessions total.",
+      "gold_memory_state": "All eight confirmed remember operations are active: patient ID 8834-2071, first PT session April 8th, MRI follow-up results (minor cartilage wear, no surgery, PT recommended), blood panel April 22nd, next Dr. Liang appointment May 14th (time unconfirmed), mom's cardiology May 6th at St. Luke's, second PT session April 17th, PT copay $40 with 12 sessions approved.",
+      "judge_rubric": {
+        "must_include": [
+          "8834-2071",
+          "April 8th",
+          "Sarah Chen",
+          "Greenfield Rehab Clinic",
+          "minor cartilage wear",
+          "physical therapy",
+          "April 22nd",
+          "May 14th",
+          "May 6th",
+          "St. Luke's",
+          "April 17th",
+          "$40",
+          "12 sessions"
+        ],
+        "acceptable_paraphrases": [
+          "nothing surgical = no surgery needed",
+          "PT = physical therapy"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "8834-2098 as the user's patient ID",
+          "April 15th as a current PT session date"
+        ],
+        "harmless_extra": [
+          "March 4th first Dr. Liang visit",
+          "morning preference",
+          "Eastside Imaging Center MRI"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if April 15th is listed as a current PT session date instead of April 17th.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my patient ID at Riverside General is 8834-2071"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My first PT session with Sarah Chen at Greenfield Rehab Clinic is on April 8th, a Tuesday, at 10:00 AM"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "the follow-up with Dr. Liang to review MRI results was March 28th, and he said minor cartilage wear, nothing surgical, and recommended physical therapy"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I had my fasting blood panel at Riverside General's lab on April 22nd at 8:30 AM"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "My next appointment with Dr. Liang is May 14th. The receptionist said either 9:30 or 9:45 AM but I need to confirm the exact time"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "My mom's cardiology check-up at St. Luke's is on May 6th at 11:00 AM, and she asked me to drive her there"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "my second PT session was moved to April 17th and that one went fine"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Each PT session at Greenfield costs me a $40 copay and I'm approved for up to 12 sessions total"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize the key medical details I've shared with you across our conversations—appointments, locations, costs, and any diagnostic results?",
+      "expected_answer": "Patient ID at Riverside General is 8834-2071. First PT session with Sarah Chen at Greenfield Rehab Clinic was April 8th (Tuesday) at 10:00 AM. Dr. Liang's MRI follow-up on March 28th showed minor cartilage wear, nothing surgical, and he recommended physical therapy. Fasting blood panel was April 22nd at 8:30 AM at Riverside General's lab. Next Dr. Liang appointment is May 14th with time pending confirmation (either 9:30 or 9:45 AM). Mom's cardiology check-up at St. Luke's is May 6th at 11:00 AM, and you need to drive her. Second PT session was moved to April 17th. PT copay is $40 per session, approved for up to 12 sessions total.",
+      "gold_memory_state": "All eight confirmed remember operations are active: patient ID 8834-2071, first PT session April 8th, MRI follow-up results (minor cartilage wear, no surgery, PT recommended), blood panel April 22nd, next Dr. Liang appointment May 14th (time unconfirmed), mom's cardiology May 6th at St. Luke's, second PT session April 17th, PT copay $40 with 12 sessions approved.",
+      "judge_rubric": {
+        "must_include": [
+          "8834-2071",
+          "April 8th",
+          "Sarah Chen",
+          "Greenfield Rehab Clinic",
+          "minor cartilage wear",
+          "physical therapy",
+          "April 22nd",
+          "May 14th",
+          "May 6th",
+          "St. Luke's",
+          "April 17th",
+          "$40",
+          "12 sessions"
+        ],
+        "acceptable_paraphrases": [
+          "nothing surgical = no surgery needed",
+          "PT = physical therapy"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "8834-2098 as the user's patient ID",
+          "April 15th as a current PT session date"
+        ],
+        "harmless_extra": [
+          "March 4th first Dr. Liang visit",
+          "morning preference",
+          "Eastside Imaging Center MRI"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if April 15th is listed as a current PT session date instead of April 17th.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my patient ID at Riverside General is 8834-2071"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My first PT session with Sarah Chen at Greenfield Rehab Clinic is on April 8th, a Tuesday, at 10:00 AM"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "the follow-up with Dr. Liang to review MRI results was March 28th, and he said minor cartilage wear, nothing surgical, and recommended physical therapy"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I had my fasting blood panel at Riverside General's lab on April 22nd at 8:30 AM"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "My next appointment with Dr. Liang is May 14th. The receptionist said either 9:30 or 9:45 AM but I need to confirm the exact time"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "My mom's cardiology check-up at St. Luke's is on May 6th at 11:00 AM, and she asked me to drive her there"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "my second PT session was moved to April 17th and that one went fine"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Each PT session at Greenfield costs me a $40 copay and I'm approved for up to 12 sessions total"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I have appointments at multiple hospitals and clinics. If I need to provide a patient ID number when calling about my upcoming orthopedic follow-up, which facility's record does that ID belong to, and does my mom's hospital use the same ID system?",
+      "expected_answer": "The patient ID 8834-2071 belongs to Riverside General, which is where the Dr. Liang orthopedic follow-up is scheduled. Mom's cardiology check-up is at St. Luke's, a completely separate hospital, and the ID 8834-2071 is not associated with St. Luke's.",
+      "gold_memory_state": "Patient ID 8834-2071 is bound to the user's Riverside General record. Mom's cardiology appointment is at St. Luke's, a different facility. The look-alike ID 8834-2098 appeared on a Riverside General referral form in mom's folder but is not the user's ID.",
+      "judge_rubric": {
+        "must_include": [
+          "8834-2071",
+          "Riverside General"
+        ],
+        "acceptable_paraphrases": [
+          "St. Luke's is a different hospital = separate system"
+        ],
+        "must_not_include": [
+          "8834-2098 as the user's ID"
+        ],
+        "harmful_extra": [
+          "Claiming the user's patient ID works at St. Luke's",
+          "Mixing up 8834-2098 with the user's own ID"
+        ],
+        "harmless_extra": [
+          "Mentioning that Greenfield Rehab Clinic is yet another separate facility"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 8834-2098 is presented as the user's patient ID.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my patient ID at Riverside General is 8834-2071"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "My mom's cardiology check-up at St. Luke's is on May 6th at 11:00 AM, and she asked me to drive her there"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I have appointments at multiple hospitals and clinics. If I need to provide a patient ID number when calling about my upcoming orthopedic follow-up, which facility's record does that ID belong to, and does my mom's hospital use the same ID system?",
+      "expected_answer": "The patient ID 8834-2071 belongs to Riverside General, which is where the Dr. Liang orthopedic follow-up is scheduled. Mom's cardiology check-up is at St. Luke's, a completely separate hospital, and the ID 8834-2071 is not associated with St. Luke's.",
+      "gold_memory_state": "Patient ID 8834-2071 is bound to the user's Riverside General record. Mom's cardiology appointment is at St. Luke's, a different facility. The look-alike ID 8834-2098 appeared on a Riverside General referral form in mom's folder but is not the user's ID.",
+      "judge_rubric": {
+        "must_include": [
+          "8834-2071",
+          "Riverside General"
+        ],
+        "acceptable_paraphrases": [
+          "St. Luke's is a different hospital = separate system"
+        ],
+        "must_not_include": [
+          "8834-2098 as the user's ID"
+        ],
+        "harmful_extra": [
+          "Claiming the user's patient ID works at St. Luke's",
+          "Mixing up 8834-2098 with the user's own ID"
+        ],
+        "harmless_extra": [
+          "Mentioning that Greenfield Rehab Clinic is yet another separate facility"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 8834-2098 is presented as the user's patient ID.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my patient ID at Riverside General is 8834-2071"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "My mom's cardiology check-up at St. Luke's is on May 6th at 11:00 AM, and she asked me to drive her there"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Is my physical therapy at the same facility where my blood work and orthopedic follow-ups happen?",
+      "expected_answer": "No. Physical therapy sessions with Sarah Chen are at Greenfield Rehab Clinic, while the blood panel and Dr. Liang orthopedic follow-ups are at Riverside General. They are separate facilities.",
+      "gold_memory_state": "PT sessions (April 8th and April 17th) are at Greenfield Rehab Clinic with Sarah Chen. Blood panel (April 22nd) and Dr. Liang appointments are at Riverside General. These are distinct facilities bound to different appointment records.",
+      "judge_rubric": {
+        "must_include": [
+          "Greenfield Rehab Clinic",
+          "Riverside General",
+          "different facilities"
+        ],
+        "acceptable_paraphrases": [
+          "separate locations = different facilities",
+          "not the same place"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "Claiming PT and blood work are at the same location"
+        ],
+        "harmless_extra": [
+          "Mentioning Sarah Chen by name",
+          "Mentioning Dr. Liang by name"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": "Fails if the model cannot recall which facility hosts PT versus blood work.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My first PT session with Sarah Chen at Greenfield Rehab Clinic is on April 8th, a Tuesday, at 10:00 AM"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I had my fasting blood panel at Riverside General's lab on April 22nd at 8:30 AM"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Is my physical therapy at the same facility where my blood work and orthopedic follow-ups happen?",
+      "expected_answer": "No. Physical therapy sessions with Sarah Chen are at Greenfield Rehab Clinic, while the blood panel and Dr. Liang orthopedic follow-ups are at Riverside General. They are separate facilities.",
+      "gold_memory_state": "PT sessions (April 8th and April 17th) are at Greenfield Rehab Clinic with Sarah Chen. Blood panel (April 22nd) and Dr. Liang appointments are at Riverside General. These are distinct facilities bound to different appointment records.",
+      "judge_rubric": {
+        "must_include": [
+          "Greenfield Rehab Clinic",
+          "Riverside General",
+          "different facilities"
+        ],
+        "acceptable_paraphrases": [
+          "separate locations = different facilities",
+          "not the same place"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "Claiming PT and blood work are at the same location"
+        ],
+        "harmless_extra": [
+          "Mentioning Sarah Chen by name",
+          "Mentioning Dr. Liang by name"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": "Fails if the model cannot recall which facility hosts PT versus blood work.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My first PT session with Sarah Chen at Greenfield Rehab Clinic is on April 8th, a Tuesday, at 10:00 AM"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I had my fasting blood panel at Riverside General's lab on April 22nd at 8:30 AM"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "When I call Riverside General to check on my upcoming appointment, which patient ID should I give them?",
+      "expected_answer": "8834-2071",
+      "candidate_options": [
+        "8834-2071",
+        "8834-2098",
+        "8834-2017",
+        "8843-2071"
+      ],
+      "distractor_rationale": "same-value-different-target: 8834-2098 appeared on a Riverside General referral form in the user's mom's St. Luke's folder and could be confused with the user's own ID. assistant echo: The assistant mentioned 8834-2098 in a warning about mixing up IDs. 8834-2017 is a digit transposition of the correct ID. 8843-2071 is another digit transposition.",
+      "gold_memory_state": "User's Riverside General patient ID is 8834-2071. The number 8834-2098 was mentioned by the assistant as appearing on a referral form in mom's folder—it is not the user's ID.",
+      "judge_rubric": {
+        "must_include": [
+          "8834-2071"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "8834-2098",
+          "8834-2017",
+          "8843-2071"
+        ],
+        "harmful_extra": [
+          "Selecting any ID other than 8834-2071"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 8834-2098 is selected, which is the adversarial look-alike from the assistant's warning.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my patient ID at Riverside General is 8834-2071"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "When I call Riverside General to check on my upcoming appointment, which patient ID should I give them?",
+      "expected_answer": "8834-2071",
+      "candidate_options": [
+        "8834-2071",
+        "8834-2098",
+        "8834-2017",
+        "8843-2071"
+      ],
+      "distractor_rationale": "same-value-different-target: 8834-2098 appeared on a Riverside General referral form in the user's mom's St. Luke's folder and could be confused with the user's own ID. assistant echo: The assistant mentioned 8834-2098 in a warning about mixing up IDs. 8834-2017 is a digit transposition of the correct ID. 8843-2071 is another digit transposition.",
+      "gold_memory_state": "User's Riverside General patient ID is 8834-2071. The number 8834-2098 was mentioned by the assistant as appearing on a referral form in mom's folder—it is not the user's ID.",
+      "judge_rubric": {
+        "must_include": [
+          "8834-2071"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "8834-2098",
+          "8834-2017",
+          "8843-2071"
+        ],
+        "harmful_extra": [
+          "Selecting any ID other than 8834-2071"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 8834-2098 is selected, which is the adversarial look-alike from the assistant's warning.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my patient ID at Riverside General is 8834-2071"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to estimate my total out-of-pocket PT costs so far and figure out how much budget I'd need if I use all approved sessions. Also, can you connect why I'm doing PT in the first place and what the doctor's findings were that led to it?",
+      "expected_answer": "You've completed 2 PT sessions at $40 each, so $80 spent so far. If you use all 12 approved sessions, the total would be $480 (12 × $40). You're doing PT because Dr. Liang's MRI follow-up on March 28th showed minor cartilage wear in your knee with nothing surgical needed, and he recommended physical therapy as the treatment path, which led you to book sessions with Sarah Chen at Greenfield Rehab Clinic.",
+      "gold_memory_state": "PT copay is $40/session, 12 sessions approved. Two sessions completed (April 8th and April 17th). Dr. Liang's March 28th MRI follow-up found minor cartilage wear, no surgery, recommended PT. PT is with Sarah Chen at Greenfield Rehab Clinic.",
+      "judge_rubric": {
+        "must_include": [
+          "$80 spent so far",
+          "$480 total if all 12 used",
+          "minor cartilage wear",
+          "recommended physical therapy",
+          "Dr. Liang"
+        ],
+        "acceptable_paraphrases": [
+          "$40 × 2 = $80",
+          "$40 × 12 = $480",
+          "no surgery needed = nothing surgical"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "Incorrect arithmetic",
+          "Claiming surgery was recommended"
+        ],
+        "harmless_extra": [
+          "Mentioning Sarah Chen",
+          "Mentioning Greenfield Rehab Clinic",
+          "Mentioning 10 sessions remaining"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": "Fails if the model cannot connect the MRI results to the PT recommendation or gets the copay arithmetic wrong.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Each PT session at Greenfield costs a $40 copay, approved for up to 12 sessions total.",
+        "Fact 2: Two PT sessions have been completed—April 8th and April 17th.",
+        "Fact 3: Dr. Liang's MRI follow-up on March 28th showed minor cartilage wear, nothing surgical, and he recommended physical therapy.",
+        "Inference: Cost so far = 2 sessions × $40 = $80.",
+        "Inference: Maximum total cost if all 12 sessions are used = 12 × $40 = $480.",
+        "Inference: The causal chain is MRI results → Dr. Liang's PT recommendation → booking sessions with Sarah Chen at Greenfield Rehab Clinic."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Each PT session at Greenfield costs me a $40 copay and I'm approved for up to 12 sessions total"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My first PT session with Sarah Chen at Greenfield Rehab Clinic is on April 8th, a Tuesday, at 10:00 AM"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "my second PT session was moved to April 17th and that one went fine"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "the follow-up with Dr. Liang to review MRI results was March 28th, and he said minor cartilage wear, nothing surgical, and recommended physical therapy"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to estimate my total out-of-pocket PT costs so far and figure out how much budget I'd need if I use all approved sessions. Also, can you connect why I'm doing PT in the first place and what the doctor's findings were that led to it?",
+      "expected_answer": "You've completed 2 PT sessions at $40 each, so $80 spent so far. If you use all 12 approved sessions, the total would be $480 (12 × $40). You're doing PT because Dr. Liang's MRI follow-up on March 28th showed minor cartilage wear in your knee with nothing surgical needed, and he recommended physical therapy as the treatment path, which led you to book sessions with Sarah Chen at Greenfield Rehab Clinic.",
+      "gold_memory_state": "PT copay is $40/session, 12 sessions approved. Two sessions completed (April 8th and April 17th). Dr. Liang's March 28th MRI follow-up found minor cartilage wear, no surgery, recommended PT. PT is with Sarah Chen at Greenfield Rehab Clinic.",
+      "judge_rubric": {
+        "must_include": [
+          "$80 spent so far",
+          "$480 total if all 12 used",
+          "minor cartilage wear",
+          "recommended physical therapy",
+          "Dr. Liang"
+        ],
+        "acceptable_paraphrases": [
+          "$40 × 2 = $80",
+          "$40 × 12 = $480",
+          "no surgery needed = nothing surgical"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "Incorrect arithmetic",
+          "Claiming surgery was recommended"
+        ],
+        "harmless_extra": [
+          "Mentioning Sarah Chen",
+          "Mentioning Greenfield Rehab Clinic",
+          "Mentioning 10 sessions remaining"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": "Fails if the model cannot connect the MRI results to the PT recommendation or gets the copay arithmetic wrong.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Each PT session at Greenfield costs a $40 copay, approved for up to 12 sessions total.",
+        "Fact 2: Two PT sessions have been completed—April 8th and April 17th.",
+        "Fact 3: Dr. Liang's MRI follow-up on March 28th showed minor cartilage wear, nothing surgical, and he recommended physical therapy.",
+        "Inference: Cost so far = 2 sessions × $40 = $80.",
+        "Inference: Maximum total cost if all 12 sessions are used = 12 × $40 = $480.",
+        "Inference: The causal chain is MRI results → Dr. Liang's PT recommendation → booking sessions with Sarah Chen at Greenfield Rehab Clinic."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Each PT session at Greenfield costs me a $40 copay and I'm approved for up to 12 sessions total"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My first PT session with Sarah Chen at Greenfield Rehab Clinic is on April 8th, a Tuesday, at 10:00 AM"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "my second PT session was moved to April 17th and that one went fine"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "the follow-up with Dr. Liang to review MRI results was March 28th, and he said minor cartilage wear, nothing surgical, and recommended physical therapy"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What time is my dentist appointment?",
+      "expected_answer": "I don't have any dentist appointment on file. You haven't provided dentist appointment details.",
+      "gold_memory_state": "No dentist appointment was ever mentioned or stored. The user provided details about orthopedic (Dr. Liang), physical therapy (Sarah Chen), blood panel, and cardiology (mom's) appointments, but never a dentist appointment.",
+      "judge_rubric": {
+        "must_include": [
+          "no dentist appointment",
+          "not provided"
+        ],
+        "acceptable_paraphrases": [
+          "no record of a dentist appointment",
+          "you haven't mentioned a dentist appointment",
+          "I don't have dentist information"
+        ],
+        "must_not_include": [
+          "any fabricated dentist appointment time or date"
+        ],
+        "harmful_extra": [
+          "Inventing a dentist appointment time",
+          "Borrowing a time from another appointment and presenting it as a dentist appointment"
+        ],
+        "harmless_extra": [
+          "Noting that orthopedic, PT, blood panel, and cardiology appointments are on file"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model fabricates or hallucinates a dentist appointment time or date.",
+        "over_forget": null,
+        "stale_value": "Fails if a time from another appointment type is borrowed and presented as the dentist appointment.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my patient ID at Riverside General is 8834-2071"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My first PT session with Sarah Chen at Greenfield Rehab Clinic is on April 8th, a Tuesday, at 10:00 AM"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "My next appointment with Dr. Liang is May 14th. The receptionist said either 9:30 or 9:45 AM but I need to confirm the exact time"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "My mom's cardiology check-up at St. Luke's is on May 6th at 11:00 AM, and she asked me to drive her there"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What time is my dentist appointment?",
+      "expected_answer": "I don't have any dentist appointment on file. You haven't provided dentist appointment details.",
+      "gold_memory_state": "No dentist appointment was ever mentioned or stored. The user provided details about orthopedic (Dr. Liang), physical therapy (Sarah Chen), blood panel, and cardiology (mom's) appointments, but never a dentist appointment.",
+      "judge_rubric": {
+        "must_include": [
+          "no dentist appointment",
+          "not provided"
+        ],
+        "acceptable_paraphrases": [
+          "no record of a dentist appointment",
+          "you haven't mentioned a dentist appointment",
+          "I don't have dentist information"
+        ],
+        "must_not_include": [
+          "any fabricated dentist appointment time or date"
+        ],
+        "harmful_extra": [
+          "Inventing a dentist appointment time",
+          "Borrowing a time from another appointment and presenting it as a dentist appointment"
+        ],
+        "harmless_extra": [
+          "Noting that orthopedic, PT, blood panel, and cardiology appointments are on file"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model fabricates or hallucinates a dentist appointment time or date.",
+        "over_forget": null,
+        "stale_value": "Fails if a time from another appointment type is borrowed and presented as the dentist appointment.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my patient ID at Riverside General is 8834-2071"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My first PT session with Sarah Chen at Greenfield Rehab Clinic is on April 8th, a Tuesday, at 10:00 AM"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "My next appointment with Dr. Liang is May 14th. The receptionist said either 9:30 or 9:45 AM but I need to confirm the exact time"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "My mom's cardiology check-up at St. Luke's is on May 6th at 11:00 AM, and she asked me to drive her there"
+        }
+      ]
+    }
+  ]
+}

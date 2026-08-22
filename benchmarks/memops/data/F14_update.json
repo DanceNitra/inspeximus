@@ -1,0 +1,835 @@
+{
+  "target_fact": "User's blood pressure reading reported by Dr. Simmons",
+  "operation_type": "Update",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "bp_reading",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "Dr. Simmons checked my blood pressure at my follow-up and it came back 142/88"
+      },
+      "target": {
+        "target_id": "bp_reading",
+        "target_name": "User's most recent blood pressure reading"
+      },
+      "old_value": null,
+      "new_value": "142/88",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Dr. Simmons checked my blood pressure at my follow-up and it came back 142/88"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "bp_reading",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I checked it again this morning and it was 136/84. So it's trending down a bit from that 142/88"
+      },
+      "target": {
+        "target_id": "bp_reading",
+        "target_name": "User's most recent blood pressure reading"
+      },
+      "old_value": "142/88",
+      "new_value": "136/84",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I checked it again this morning and it was 136/84. So it's trending down a bit from that 142/88"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "bp_reading",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I took my blood pressure twice yesterday. Morning was 132/82 and evening was 130/80. So I'd say the most accurate recent one is 130/80 since I was fully rested"
+      },
+      "target": {
+        "target_id": "bp_reading",
+        "target_name": "User's most recent blood pressure reading"
+      },
+      "old_value": "136/84",
+      "new_value": "130/80",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "the most accurate recent one is 130/80 since I was fully rested"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "bp_reading",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "The pharmacy kiosk at CVS just gave me 118/72 today. I think that machine reads low though, my home cuff never goes that low"
+      },
+      "target": {
+        "target_id": "bp_reading",
+        "target_name": "User's most recent blood pressure reading"
+      },
+      "old_value": "130/80",
+      "new_value": "118/72",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The pharmacy kiosk at CVS just gave me 118/72 today. I think that machine reads low though, my home cuff never goes that low"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "Dr. Simmons wants me to track for two full months before she decides on medication. I started tracking on April 15th"
+      },
+      "target": {
+        "target_id": "bp_monitoring_start",
+        "target_name": "Date user began home blood pressure monitoring"
+      },
+      "old_value": null,
+      "new_value": "April 15th",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I started tracking on April 15th"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "The monitoring period is two months, so the deadline to have enough data for Dr. Simmons is June 15th"
+      },
+      "target": {
+        "target_id": "bp_monitoring_deadline",
+        "target_name": "Deadline for blood pressure monitoring data review by Dr. Simmons"
+      },
+      "old_value": null,
+      "new_value": "June 15th",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The monitoring period is two months, so the deadline to have enough data for Dr. Simmons is June 15th"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 7,
+        "quote": "my gallbladder surgery was done by Dr. Patel at St. Luke's Medical Center, back in late 2019 or early 2020"
+      },
+      "target": {
+        "target_id": "gallbladder_surgeon",
+        "target_name": "Surgeon who performed user's gallbladder removal"
+      },
+      "old_value": null,
+      "new_value": "Dr. Patel at St. Luke's Medical Center",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "my gallbladder surgery was done by Dr. Patel at St. Luke's Medical Center, back in late 2019 or early 2020"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish initial BP reading, monitoring start date, and first home update",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to talk about my health tracking. Dr. Simmons checked my blood pressure at my follow-up and it came back 142/88. She said that's borderline high and wants me to monitor at home for a while before deciding whether I need medication. I'm a bit worried about it honestly."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for sharing that with me. A reading of 142/88 does fall into the stage 2 hypertension range, so I understand Dr. Simmons wanting to gather more data before jumping to medication. Home monitoring is a really good approach because single office readings can be affected by stress, caffeine, or even just the anxiety of being in a clinical setting—sometimes called 'white coat hypertension.' Are you using a home blood pressure cuff, and do you know how long Dr. Simmons wants you to track before your next appointment?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, I bought an Omron cuff from the pharmacy. Dr. Simmons wants me to track for two full months before she decides on medication. I started tracking on April 15th. She said to take it twice a day—morning and evening—and log the numbers. I've been pretty good about doing it consistently so far, though I sometimes forget the evening reading."
+        },
+        {
+          "role": "assistant",
+          "content": "Good, Omron makes reliable home monitors. So with a start date of April 15th and a two-month monitoring window, you'll want to have a solid log ready by mid-June. Taking it twice daily is ideal because blood pressure naturally fluctuates throughout the day—morning readings tend to be slightly higher due to the cortisol awakening response. If you're occasionally missing the evening reading, that's not a dealbreaker, but try setting a phone alarm as a reminder. Would you like me to help you set up a simple tracking format or spreadsheet to log your readings?"
+        },
+        {
+          "role": "user",
+          "content": "That would be helpful, yeah. Actually, I checked it again this morning and it was 136/84. So it's trending down a bit from that 142/88. I've been cutting back on salt and trying to walk more, so maybe that's helping. I also stopped drinking coffee after noon, which my sister suggested."
+        },
+        {
+          "role": "assistant",
+          "content": "That's encouraging progress! Going from 142/88 to 136/84 in a relatively short time suggests your lifestyle changes are having an effect. Reducing sodium intake is one of the most impactful dietary changes for blood pressure—some people see drops of 5-10 points systolic just from that. The afternoon coffee cutoff is smart too, since caffeine can transiently raise blood pressure and also disrupt sleep, which in turn affects next-morning readings. Walking regularly helps as well. I'll note your latest reading as 136/84. Would you like me to draft a simple two-column log template you can use on your phone or on paper?"
+        },
+        {
+          "role": "user",
+          "content": "Sure, a simple template would be great. Just date, time, and the reading. Nothing too fancy. Oh, also I should mention—my sister is the one who got me the Omron cuff, actually. She's been really supportive. She just had her second ACL reconstruction surgery around mid-April and she's doing physical therapy three times a week. I've been driving her to PT on Tuesdays."
+        },
+        {
+          "role": "assistant",
+          "content": "That's really kind of you to help her with rides, especially while she's recovering from a major knee surgery like ACL reconstruction. Physical therapy three times a week is intensive but important for regaining range of motion and strength. For your blood pressure log, I'll keep it simple: three columns—date, time of day (AM or PM), and the systolic/diastolic reading. You can add a notes column if you want to flag anything unusual, like a stressful day or a missed dose of anything. I'll draft that for you. Let me know if you'd also like a weekly average summary row to make it easier when you bring the log to Dr. Simmons."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Further BP update, monitoring deadline confirmation, and gallbladder surgery history",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I've been keeping up with the log pretty well. The monitoring period is two months, so the deadline to have enough data for Dr. Simmons is June 15th. I want to make sure I have consistent readings by then. I also want to organize my medical history a bit since I've had a few procedures over the years and I keep mixing up details when doctors ask."
+        },
+        {
+          "role": "assistant",
+          "content": "Great, so June 15th is the target date for having a complete blood pressure log to present to Dr. Simmons. That gives you a clear window to accumulate enough data points for her to see meaningful trends. As for organizing your medical history, that's a really smart idea—having a clean timeline of past surgeries, procedures, and significant health events makes every new doctor visit smoother. Would you like to start building a chronological medical history summary? We can go through each event you remember and I'll help you organize them by date and type."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, let's do that. I took my blood pressure twice yesterday. Morning was 132/82 and evening was 130/80. So I'd say the most accurate recent one is 130/80 since I was fully rested. Anyway, for my medical history—when I was about 14 or 15, I broke my left wrist falling off a bike. They put a cast on for about six weeks. It still aches in cold weather sometimes, but it's basically ancient history."
+        },
+        {
+          "role": "assistant",
+          "content": "Nice, 130/80 is a solid improvement from where you started. That puts you right at the threshold of normal, which is very encouraging given the lifestyle changes you've made. I'll update your most recent confirmed reading to 130/80. For your medical history timeline, I'll start with the wrist fracture: left wrist fracture around age 14-15 from a bicycle fall, treated with a cast for approximately six weeks, with residual cold-weather achiness. That's a good starting point. What's the next medical event you can recall chronologically?"
+        },
+        {
+          "role": "user",
+          "content": "Next would be my appendectomy when I was 22, which I think was 2015. That was emergency surgery at Mercy General—woke up in the middle of the night with terrible pain on my right side. Being wheeled into an OR at 3 a.m. when you're barely awake and in agony really stuck with me. I didn't sleep well for about two weeks after that. It was honestly pretty traumatic."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a really frightening experience, especially being rushed into emergency surgery in the middle of the night at 22. Appendectomies are common, but the emergency nature—sudden onset of severe pain, disorientation, the urgency of the OR—can absolutely be traumatic. The sleep disruption you experienced afterward is a very normal stress response. I'll add that to your timeline: emergency appendectomy in approximately 2015 at Mercy General Hospital, age 22, with notable post-operative anxiety and sleep disruption. What came after that in your medical history?"
+        },
+        {
+          "role": "user",
+          "content": "After that, my gallbladder surgery was done by Dr. Patel at St. Luke's Medical Center, back in late 2019 or early 2020. Laparoscopic cholecystectomy. Please remember Dr. Patel's name for me—I might need it for records transfers or follow-ups down the road. That experience was actually much better because the anesthesiologist took time to explain everything beforehand.\n\nYes—on March 7th this year I had a mole removed from my upper back. The dermatologist said the borders looked irregular, so it was precautionary. The biopsy came back benign, which was a huge relief because my uncle on my dad's side had melanoma about five years ago. He's fine now but it made the whole family paranoid about skin stuff."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, I'll remember Dr. Patel as your gallbladder surgeon at St. Luke's Medical Center. A laparoscopic cholecystectomy in late 2019 or early 2020—that's a much less invasive approach than open surgery, which likely helped with recovery. It's great that the anesthesiologist took the time to walk you through the procedure beforehand; that kind of thorough communication can make an enormous difference in patient comfort and trust. I'll note your preference for detailed pre-procedure explanations as well. So far your timeline is: wrist fracture at 14-15, appendectomy at 22 in 2015, and gallbladder removal in late 2019 or early 2020. Anything else?\n\nI can imagine the anxiety leading up to those biopsy results, especially with your uncle's melanoma history on your father's side. A benign result is wonderful news. Mole removal on March 7th of this year from your upper back, precautionary excision due to irregular borders, biopsy confirmed benign. I'll add that to the timeline. With your family history of melanoma, it would be wise to continue regular dermatological screenings—typically annually, or more frequently if your dermatologist recommends it. Your medical history summary is shaping up nicely. Would you like me to compile everything into a clean document you can share with Dr. Simmons's office?"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Adversarial injection of stale BP value, tentative BP reading from unreliable source, and wrap-up",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Yes, please compile it when we're done. I also wanted to mention—I've been meaning to schedule a colonoscopy. My dad had polyps found during his screening at 50, and Dr. Simmons suggested I get a baseline before I turn 40. I'm 38 now, so I should really get on that. I just hate the fasting prep. Not being able to eat on a normal schedule throws my whole day off."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a very reasonable recommendation from Dr. Simmons, especially given your father's history of polyps at 50. Current guidelines often suggest earlier screening for people with a first-degree relative who had polyps or colorectal issues. At 38, getting a baseline colonoscopy within the next year or two would be prudent. I understand the prep is the worst part for most people—the fasting and the bowel prep solution are genuinely unpleasant. Some newer prep protocols use split-dose regimens that are a bit easier to tolerate. You could ask Dr. Simmons's office which prep they recommend and whether there are lower-volume options. Would you like me to add 'schedule colonoscopy baseline' to a task list for you?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, add that to my to-do list. By the way, I was looking at the medical records that got transferred from St. Luke's to Dr. Simmons's office, and I noticed some interesting things. Everything looks correct on the surgical notes from Dr. Patel. I'm glad I got that transfer done."
+        },
+        {
+          "role": "assistant",
+          "content": "Great, I'll add the colonoscopy scheduling to your task list. It's good that the records transfer from St. Luke's is complete and that Dr. Patel's surgical notes look accurate. Having everything consolidated at Dr. Simmons's office will make future visits much more efficient. I noticed in the transferred records there was a vitals sheet from your 2019 pre-op workup that listed your blood pressure at 128/78 at the time—interesting to compare with your current monitoring. With your surgical history, current BP tracking, and the colonoscopy on the horizon, you're being really proactive about your health. Is there anything else you want to add to the medical history summary?"
+        },
+        {
+          "role": "user",
+          "content": "The pharmacy kiosk at CVS just gave me 118/72 today. I think that machine reads low though, my home cuff never goes that low. I wouldn't trust that number over my Omron readings at home. I'll stick with what my home cuff says for the log I'm bringing to Dr. Simmons."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a wise approach. Pharmacy kiosk monitors can be less accurate than a quality home cuff like your Omron—factors like cuff fit, calibration, and ambient noise in a store can all affect the reading. A reading of 118/72 does seem unusually low compared to your consistent home trend. For the purposes of your monitoring log for Dr. Simmons, sticking with your home cuff readings is the right call since those are taken under more controlled, consistent conditions. Your most reliable recent home reading of 130/80 is a much better data point. Do you want me to note the CVS reading separately as a reference, or just ignore it entirely?"
+        },
+        {
+          "role": "user",
+          "content": "Just ignore the CVS one for the official log. Anyway, I think we've covered most of the important stuff. Let me know if there's anything I should add to the medical history document before I bring it to my next appointment. I want it to be thorough so I don't have to keep repeating myself to different doctors."
+        },
+        {
+          "role": "assistant",
+          "content": "Your medical history summary is looking comprehensive. Here's what I have so far: left wrist fracture at age 14-15 with six-week cast and residual cold-weather achiness; emergency appendectomy in 2015 at Mercy General at age 22; laparoscopic cholecystectomy by Dr. Patel at St. Luke's Medical Center in late 2019 or early 2020; mole removal from upper back on March 7th this year with benign biopsy results; and current blood pressure monitoring with your most recent reliable home reading at 130/80, tracking through June 15th for Dr. Simmons. Family history includes your uncle's melanoma and your father's polyps. You might also want to add any current medications, allergies, or immunization records if you have them handy."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations about my health, I shared several blood pressure readings at different times. Can you walk me through which readings I reported and when, so I can see the full picture of what I told you?",
+      "expected_answer": "You first reported 142/88 from Dr. Simmons's office follow-up. Then you shared a home reading of 136/84, noting it was trending down. Later you reported two readings from the same day—132/82 in the morning and 130/80 in the evening—and said 130/80 was the most accurate since you were fully rested. Finally, you mentioned a CVS pharmacy kiosk reading of 118/72 but said you didn't trust that machine because your home cuff never reads that low.",
+      "gold_memory_state": "The confirmed current blood pressure reading is 130/80. The CVS kiosk reading of 118/72 is tentative and not trusted by the user. Prior readings of 142/88 and 136/84 are superseded.",
+      "judge_rubric": {
+        "must_include": [
+          "142/88",
+          "136/84",
+          "130/80",
+          "118/72"
+        ],
+        "acceptable_paraphrases": [
+          "Dr. Simmons office reading",
+          "home cuff reading",
+          "pharmacy kiosk reading"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming 118/72 is the current reliable reading",
+          "omitting the user's skepticism about the CVS kiosk"
+        ],
+        "harmless_extra": [
+          "mentioning salt reduction or lifestyle changes",
+          "mentioning the Omron cuff"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model presents 142/88 or 136/84 as the current reading without acknowledging they were superseded.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Dr. Simmons checked my blood pressure at my follow-up and it came back 142/88"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I checked it again this morning and it was 136/84. So it's trending down a bit from that 142/88"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I took my blood pressure twice yesterday. Morning was 132/82 and evening was 130/80. So I'd say the most accurate recent one is 130/80 since I was fully rested"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The pharmacy kiosk at CVS just gave me 118/72 today. I think that machine reads low though, my home cuff never goes that low"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations about my health, I shared several blood pressure readings at different times. Can you walk me through which readings I reported and when, so I can see the full picture of what I told you?",
+      "expected_answer": "You first reported 142/88 from Dr. Simmons's office follow-up. Then you shared a home reading of 136/84, noting it was trending down. Later you reported two readings from the same day—132/82 in the morning and 130/80 in the evening—and said 130/80 was the most accurate since you were fully rested. Finally, you mentioned a CVS pharmacy kiosk reading of 118/72 but said you didn't trust that machine because your home cuff never reads that low.",
+      "gold_memory_state": "The confirmed current blood pressure reading is 130/80. The CVS kiosk reading of 118/72 is tentative and not trusted by the user. Prior readings of 142/88 and 136/84 are superseded.",
+      "judge_rubric": {
+        "must_include": [
+          "142/88",
+          "136/84",
+          "130/80",
+          "118/72"
+        ],
+        "acceptable_paraphrases": [
+          "Dr. Simmons office reading",
+          "home cuff reading",
+          "pharmacy kiosk reading"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming 118/72 is the current reliable reading",
+          "omitting the user's skepticism about the CVS kiosk"
+        ],
+        "harmless_extra": [
+          "mentioning salt reduction or lifestyle changes",
+          "mentioning the Omron cuff"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model presents 142/88 or 136/84 as the current reading without acknowledging they were superseded.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Dr. Simmons checked my blood pressure at my follow-up and it came back 142/88"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I checked it again this morning and it was 136/84. So it's trending down a bit from that 142/88"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I took my blood pressure twice yesterday. Morning was 132/82 and evening was 130/80. So I'd say the most accurate recent one is 130/80 since I was fully rested"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The pharmacy kiosk at CVS just gave me 118/72 today. I think that machine reads low though, my home cuff never goes that low"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've mentioned several health-related numbers and dates across our conversations—blood pressure figures, a monitoring start date, and a monitoring deadline. If I need to report my latest reliable vital sign to Dr. Simmons, which specific record does that come from, and are the monitoring timeline dates affected by any of the blood pressure changes?",
+      "expected_answer": "The latest reliable blood pressure reading is 130/80, from your rested evening home-cuff measurement. The monitoring start date of April 15th and the monitoring deadline of June 15th are separate records and are not affected by changes in blood pressure readings.",
+      "gold_memory_state": "bp_reading target: current value 130/80 (confirmed). bp_monitoring_start target: April 15th (unchanged). bp_monitoring_deadline target: June 15th (unchanged). The 118/72 CVS kiosk reading is tentative and not adopted.",
+      "judge_rubric": {
+        "must_include": [
+          "130/80",
+          "monitoring dates are not affected"
+        ],
+        "acceptable_paraphrases": [
+          "April 15th start date unchanged",
+          "June 15th deadline unchanged",
+          "the evening rested reading"
+        ],
+        "must_not_include": [
+          "118/72 as the reliable reading",
+          "142/88 as the current reading",
+          "136/84 as the current reading"
+        ],
+        "harmful_extra": [
+          "saying the monitoring dates changed because the BP changed",
+          "treating 118/72 as the reliable current reading"
+        ],
+        "harmless_extra": [
+          "mentioning the Omron cuff",
+          "mentioning that the user takes readings morning and evening"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model returns 142/88 or 136/84 as the current reliable reading.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "the most accurate recent one is 130/80 since I was fully rested"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I started tracking on April 15th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The monitoring period is two months, so the deadline to have enough data for Dr. Simmons is June 15th"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've mentioned several health-related numbers and dates across our conversations—blood pressure figures, a monitoring start date, and a monitoring deadline. If I need to report my latest reliable vital sign to Dr. Simmons, which specific record does that come from, and are the monitoring timeline dates affected by any of the blood pressure changes?",
+      "expected_answer": "The latest reliable blood pressure reading is 130/80, from your rested evening home-cuff measurement. The monitoring start date of April 15th and the monitoring deadline of June 15th are separate records and are not affected by changes in blood pressure readings.",
+      "gold_memory_state": "bp_reading target: current value 130/80 (confirmed). bp_monitoring_start target: April 15th (unchanged). bp_monitoring_deadline target: June 15th (unchanged). The 118/72 CVS kiosk reading is tentative and not adopted.",
+      "judge_rubric": {
+        "must_include": [
+          "130/80",
+          "monitoring dates are not affected"
+        ],
+        "acceptable_paraphrases": [
+          "April 15th start date unchanged",
+          "June 15th deadline unchanged",
+          "the evening rested reading"
+        ],
+        "must_not_include": [
+          "118/72 as the reliable reading",
+          "142/88 as the current reading",
+          "136/84 as the current reading"
+        ],
+        "harmful_extra": [
+          "saying the monitoring dates changed because the BP changed",
+          "treating 118/72 as the reliable current reading"
+        ],
+        "harmless_extra": [
+          "mentioning the Omron cuff",
+          "mentioning that the user takes readings morning and evening"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model returns 142/88 or 136/84 as the current reliable reading.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "the most accurate recent one is 130/80 since I was fully rested"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I started tracking on April 15th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The monitoring period is two months, so the deadline to have enough data for Dr. Simmons is June 15th"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I'm putting together my blood pressure log summary for Dr. Simmons and need to highlight the most recent trustworthy reading. Which of these should I use as the headline number?",
+      "candidate_options": [
+        "142/88",
+        "136/84",
+        "130/80",
+        "118/72"
+      ],
+      "distractor_rationale": "same-value-different-target: 142/88 is the original office reading from Dr. Simmons, now superseded by multiple home readings—it belongs to an earlier state of the same target. 136/84 is the first home update, also superseded. assistant echo: The assistant mentioned 128/78 from a 2019 pre-op vitals sheet in segment 3 turn 3, but this is not in the candidate list; instead 118/72 serves as the recency-trap tentative distractor from the CVS kiosk that the user explicitly distrusted. 118/72 is the most recent reading chronologically but was flagged as unreliable by the user.",
+      "expected_answer": "130/80",
+      "gold_memory_state": "Current confirmed BP reading is 130/80. Prior values 142/88 and 136/84 are superseded. 118/72 is tentative/untrusted from CVS kiosk.",
+      "judge_rubric": {
+        "must_include": [
+          "130/80"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "142/88 as current",
+          "136/84 as current",
+          "118/72 as current"
+        ],
+        "harmful_extra": [
+          "selecting 118/72 because it is the most recent chronologically"
+        ],
+        "harmless_extra": [
+          "noting the downward trend"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 142/88 or 136/84 is selected. Also fails if 118/72 is selected, indicating a recency trap failure where the tentative value is treated as confirmed.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "the most accurate recent one is 130/80 since I was fully rested"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The pharmacy kiosk at CVS just gave me 118/72 today. I think that machine reads low though, my home cuff never goes that low"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I'm putting together my blood pressure log summary for Dr. Simmons and need to highlight the most recent trustworthy reading. Which of these should I use as the headline number?",
+      "candidate_options": [
+        "142/88",
+        "136/84",
+        "130/80",
+        "118/72"
+      ],
+      "distractor_rationale": "same-value-different-target: 142/88 is the original office reading from Dr. Simmons, now superseded by multiple home readings—it belongs to an earlier state of the same target. 136/84 is the first home update, also superseded. assistant echo: The assistant mentioned 128/78 from a 2019 pre-op vitals sheet in segment 3 turn 3, but this is not in the candidate list; instead 118/72 serves as the recency-trap tentative distractor from the CVS kiosk that the user explicitly distrusted. 118/72 is the most recent reading chronologically but was flagged as unreliable by the user.",
+      "expected_answer": "130/80",
+      "gold_memory_state": "Current confirmed BP reading is 130/80. Prior values 142/88 and 136/84 are superseded. 118/72 is tentative/untrusted from CVS kiosk.",
+      "judge_rubric": {
+        "must_include": [
+          "130/80"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "142/88 as current",
+          "136/84 as current",
+          "118/72 as current"
+        ],
+        "harmful_extra": [
+          "selecting 118/72 because it is the most recent chronologically"
+        ],
+        "harmless_extra": [
+          "noting the downward trend"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 142/88 or 136/84 is selected. Also fails if 118/72 is selected, indicating a recency trap failure where the tentative value is treated as confirmed.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "the most accurate recent one is 130/80 since I was fully rested"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The pharmacy kiosk at CVS just gave me 118/72 today. I think that machine reads low though, my home cuff never goes that low"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I need to draft a short health status note to email to Dr. Simmons before my next appointment. It should include my latest reliable blood pressure reading, when I started home monitoring, and the deadline she set for having enough data. Can you write that note for me?",
+      "expected_answer": "Dear Dr. Simmons, I wanted to give you a quick update ahead of our appointment. My most recent reliable home blood pressure reading is 130/80, taken in the evening while fully rested. I began home monitoring on April 15th using an Omron cuff, and I understand the deadline for having a complete data set is June 15th. I look forward to reviewing the full log with you. Best regards.",
+      "gold_memory_state": "BP reading: 130/80 (confirmed current). Monitoring start: April 15th. Monitoring deadline: June 15th. Tentative 118/72 CVS reading is not adopted. Stale values 142/88 and 136/84 are superseded.",
+      "judge_rubric": {
+        "must_include": [
+          "130/80",
+          "April 15th",
+          "June 15th"
+        ],
+        "acceptable_paraphrases": [
+          "April 15",
+          "June 15",
+          "mid-April start",
+          "mid-June deadline"
+        ],
+        "must_not_include": [
+          "142/88 as the current reading",
+          "136/84 as the current reading",
+          "118/72 as the current reading"
+        ],
+        "harmful_extra": [
+          "presenting 118/72 as the reliable reading in the note",
+          "presenting any superseded value as the latest reading"
+        ],
+        "harmless_extra": [
+          "mentioning the Omron cuff",
+          "mentioning lifestyle changes like salt reduction",
+          "mentioning twice-daily monitoring"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the note uses 142/88, 136/84, or 118/72 as the headline BP reading.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's most recent confirmed reliable blood pressure reading is 130/80, taken in the evening while fully rested.",
+        "Fact 2: The user started home blood pressure monitoring on April 15th.",
+        "Fact 3: The monitoring deadline for Dr. Simmons's data review is June 15th.",
+        "Inference: Combining all three confirmed facts, the note should present 130/80 as the latest reading, April 15th as the start, and June 15th as the deadline, while excluding the tentative 118/72 CVS reading and the superseded 142/88 and 136/84 values."
+      ],
+      "application_probe_type": "multi_hop_derivation",
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "the most accurate recent one is 130/80 since I was fully rested"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I started tracking on April 15th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The monitoring period is two months, so the deadline to have enough data for Dr. Simmons is June 15th"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I need to draft a short health status note to email to Dr. Simmons before my next appointment. It should include my latest reliable blood pressure reading, when I started home monitoring, and the deadline she set for having enough data. Can you write that note for me?",
+      "expected_answer": "Dear Dr. Simmons, I wanted to give you a quick update ahead of our appointment. My most recent reliable home blood pressure reading is 130/80, taken in the evening while fully rested. I began home monitoring on April 15th using an Omron cuff, and I understand the deadline for having a complete data set is June 15th. I look forward to reviewing the full log with you. Best regards.",
+      "gold_memory_state": "BP reading: 130/80 (confirmed current). Monitoring start: April 15th. Monitoring deadline: June 15th. Tentative 118/72 CVS reading is not adopted. Stale values 142/88 and 136/84 are superseded.",
+      "judge_rubric": {
+        "must_include": [
+          "130/80",
+          "April 15th",
+          "June 15th"
+        ],
+        "acceptable_paraphrases": [
+          "April 15",
+          "June 15",
+          "mid-April start",
+          "mid-June deadline"
+        ],
+        "must_not_include": [
+          "142/88 as the current reading",
+          "136/84 as the current reading",
+          "118/72 as the current reading"
+        ],
+        "harmful_extra": [
+          "presenting 118/72 as the reliable reading in the note",
+          "presenting any superseded value as the latest reading"
+        ],
+        "harmless_extra": [
+          "mentioning the Omron cuff",
+          "mentioning lifestyle changes like salt reduction",
+          "mentioning twice-daily monitoring"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the note uses 142/88, 136/84, or 118/72 as the headline BP reading.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's most recent confirmed reliable blood pressure reading is 130/80, taken in the evening while fully rested.",
+        "Fact 2: The user started home blood pressure monitoring on April 15th.",
+        "Fact 3: The monitoring deadline for Dr. Simmons's data review is June 15th.",
+        "Inference: Combining all three confirmed facts, the note should present 130/80 as the latest reading, April 15th as the start, and June 15th as the deadline, while excluding the tentative 118/72 CVS reading and the superseded 142/88 and 136/84 values."
+      ],
+      "application_probe_type": "multi_hop_derivation",
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "the most accurate recent one is 130/80 since I was fully rested"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I started tracking on April 15th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The monitoring period is two months, so the deadline to have enough data for Dr. Simmons is June 15th"
+        }
+      ]
+    }
+  ]
+}

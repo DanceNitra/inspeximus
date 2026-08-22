@@ -1,0 +1,1177 @@
+{
+  "target_fact": "User's temporary credentials and pickup codes, including InPost locker code 7724 on Greenfield Ave, mom's pharmacy verification code 3058, Thai food DoorDash pickup code 941, Target click-and-collect code 4821, and bank 2FA code 882471",
+  "operation_type": "Remember",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 3,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": true,
+      "never_stored_target": "building entry fob code"
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I had a package at the InPost locker on Greenfield Ave and the pickup code was 7724"
+      },
+      "target": {
+        "target_id": "inpost_locker_pickup_code",
+        "target_name": "InPost locker package pickup code"
+      },
+      "old_value": null,
+      "new_value": "7724",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I had a package at the InPost locker on Greenfield Ave and the pickup code was 7724"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I almost always use the InPost locker on Greenfield Ave, never the one by the train station"
+      },
+      "target": {
+        "target_id": "preferred_inpost_locker_location",
+        "target_name": "preferred InPost locker location"
+      },
+      "old_value": null,
+      "new_value": "Greenfield Ave (not the one by the train station)",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I almost always use the InPost locker on Greenfield Ave, never the one by the train station"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "my mom needed help with her pharmacy kiosk and the verification code they texted her was 3058"
+      },
+      "target": {
+        "target_id": "mom_pharmacy_verification_code",
+        "target_name": "mom's pharmacy prescription verification code"
+      },
+      "old_value": null,
+      "new_value": "3058",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my mom needed help with her pharmacy kiosk and the verification code they texted her was 3058"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 7,
+        "quote": "Those InPost lockers only give you 48 hours to pick up before it expires"
+      },
+      "target": {
+        "target_id": "inpost_locker_expiry_window",
+        "target_name": "InPost locker pickup expiry window"
+      },
+      "old_value": null,
+      "new_value": "48 hours",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "Those InPost lockers only give you 48 hours to pick up before it expires"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "The DoorDash pickup code for the Thai place was 941. I remember it because 9-4-1 is like an upside-down version of 149, which is my apartment number"
+      },
+      "target": {
+        "target_id": "doordash_thai_pickup_code",
+        "target_name": "DoorDash Thai food pickup code"
+      },
+      "old_value": null,
+      "new_value": "941",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The DoorDash pickup code for the Thai place was 941. I remember it because 9-4-1 is like an upside-down version of 149, which is my apartment number"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "9-4-1 is like an upside-down version of 149, which is my apartment number"
+      },
+      "target": {
+        "target_id": "apartment_number",
+        "target_name": "user's apartment number"
+      },
+      "old_value": null,
+      "new_value": "149",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "9-4-1 is like an upside-down version of 149, which is my apartment number"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "Derek's old gate code for his condo complex was 5590, but he's changed it since then because delivery drivers were sharing it around"
+      },
+      "target": {
+        "target_id": "derek_old_gate_code",
+        "target_name": "Derek's expired condo gate code"
+      },
+      "old_value": null,
+      "new_value": "5590 (expired)",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Derek's old gate code for his condo complex was 5590, but he's changed it since then because delivery drivers were sharing it around"
+        }
+      ]
+    },
+    {
+      "operation_id": "op8",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "I got a two-factor code from my bank — 882471 — but I didn't write it down fast enough and had to request a new one"
+      },
+      "target": {
+        "target_id": "bank_2fa_code",
+        "target_name": "bank two-factor authentication code"
+      },
+      "old_value": null,
+      "new_value": "882471",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I got a two-factor code from my bank — 882471 — but I didn't write it down fast enough and had to request a new one"
+        }
+      ]
+    },
+    {
+      "operation_id": "op9",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 7,
+        "quote": "I picked up a click-and-collect order from Target and the code was 4821"
+      },
+      "target": {
+        "target_id": "target_pickup_code",
+        "target_name": "Target click-and-collect pickup code"
+      },
+      "old_value": null,
+      "new_value": "4821",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I picked up a click-and-collect order from Target and the code was 4821"
+        }
+      ]
+    },
+    {
+      "operation_id": "op10",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 1,
+        "quote": "my coworker Jenna's gym locker combo last Tuesday was 2276 — it resets every visit"
+      },
+      "target": {
+        "target_id": "jenna_gym_locker_combo",
+        "target_name": "coworker Jenna's gym locker combo (last Tuesday)"
+      },
+      "old_value": null,
+      "new_value": "2276",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "my coworker Jenna's gym locker combo last Tuesday was 2276 — it resets every visit"
+        }
+      ]
+    },
+    {
+      "operation_id": "op11",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 7,
+        "quote": "I prefer push notification approvals over timed digit codes, and I like doing pickup orders to avoid crowds and fluorescent lighting"
+      },
+      "target": {
+        "target_id": "auth_and_pickup_preference",
+        "target_name": "user preference for low-friction authentication and pickup style"
+      },
+      "old_value": null,
+      "new_value": "Prefers push notification approval over timed digit codes; prefers pickup/click-and-collect to avoid crowds and fluorescent lighting",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I really dislike those 6-digit codes that expire in 30 seconds — I much prefer when apps just send a push notification I can tap to approve"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I prefer push notification approvals over timed digit codes, and I like doing pickup orders to avoid crowds and fluorescent lighting"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish core pickup codes and locker preferences",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to keep a running log of temporary codes and credentials I use, since I always forget them. First one: around March 3rd, I had a package at the InPost locker on Greenfield Ave and the pickup code was 7724. Can you start tracking these for me?"
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, I'd be happy to help you keep a running log of your temporary codes and credentials. I've noted your first entry: an InPost locker pickup code of 7724 from around March 3rd, at the Greenfield Ave location. Whenever you get a new code — whether it's a locker pickup, a verification code, a gate entry, or anything else — just let me know and I'll add it to the list. I can also note whether each one is still active or has expired, if that's useful. Want me to organize them by date, by type, or just keep a simple chronological list?"
+        },
+        {
+          "role": "user",
+          "content": "Chronological is fine. Also, important note about my locker habits: I almost always use the InPost locker on Greenfield Ave, never the one by the train station. That's my go-to spot because it's right near my office and I can swing by during lunch. Please remember that preference."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — I've noted that your preferred InPost locker location is the one on Greenfield Ave, near your office, and that you specifically avoid the one by the train station. That's a helpful detail, especially if you ever ask me to help coordinate a delivery or remind you about a pickup window. I'll always default to the Greenfield Ave locker when referencing your InPost pickups unless you tell me otherwise. Is there another code or credential you'd like to add next?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, here's the next one. A couple weeks after the InPost thing, around mid-March, my mom needed help with her pharmacy kiosk and the verification code they texted her was 3058. I had to walk her through the whole process over the phone. She gets really flustered with those timed codes, poor thing."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — your mom's pharmacy prescription verification code was 3058, from around mid-March. You helped her navigate the kiosk process over the phone. I can see how those timed codes would be stressful for someone who isn't used to them, especially when there's a countdown ticking. It sounds like you were a good resource for her in that moment. If she ever needs help with another pharmacy pickup, you could always have her call you before she gets to the kiosk so you can walk through it step by step without the pressure. Want to add another code to the log?"
+        },
+        {
+          "role": "user",
+          "content": "Sure. Going back to the InPost thing — I almost let that package expire. I picked it up on basically the last day. Those InPost lockers only give you 48 hours to pick up before it expires. I need to be more careful about that. Maybe you could remind me about that window if I mention a future locker pickup."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely — I've noted that InPost lockers give you a 48-hour pickup window before the package expires, and that you nearly missed the deadline last time. Going forward, whenever you mention a new InPost locker pickup, I'll flag the 48-hour window and suggest you grab it sooner rather than later, especially since you tend to use the Greenfield Ave locker near your office where you could easily swing by during lunch. That should help you avoid any last-minute scrambles. It's a short window, so even a simple reminder the day you get the notification could make a big difference. Ready for the next code?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Add DoorDash, Derek gate code, bank 2FA, and Target pickup code",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Okay, next entry. The DoorDash pickup code for the Thai place was 941. I remember it because 9-4-1 is like an upside-down version of 149, which is my apartment number. That little mnemonic trick is the only reason I didn't forget it while walking over to the restaurant."
+        },
+        {
+          "role": "assistant",
+          "content": "Nice mnemonic! I've logged the DoorDash pickup code as 941 for the Thai place, and I've also noted that your apartment number is 149 — that's a handy association. Reversing your apartment number is a clever way to anchor a temporary code in your memory. If you ever want, I can help you come up with similar mnemonic tricks for future codes. It's especially useful for those short-lived pickup codes where you don't have time to write anything down. Do you remember roughly when this order was? And do you have more codes to add?"
+        },
+        {
+          "role": "user",
+          "content": "That was last month sometime. And yeah, here's another one — though this one's expired. Derek's old gate code for his condo complex was 5590, but he's changed it since then because delivery drivers were sharing it around. So that code is dead now, but I figured I'd mention it for the record."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood — I've logged Derek's former condo complex gate code as 5590, and I've marked it as expired since he's changed it due to delivery drivers sharing it around. That's a pretty common problem with temporary gate codes in multi-unit buildings. It's good to note it even though it's no longer active, in case you ever need to reference the history. If Derek gives you a new gate code in the future, just let me know and I'll update the log. Any other codes to add?"
+        },
+        {
+          "role": "user",
+          "content": "A few days ago I got a two-factor code from my bank — 882471 — but I didn't write it down fast enough and had to request a new one. I really dislike those 6-digit codes that expire in 30 seconds — I much prefer when apps just send a push notification I can tap to approve. Way less stressful."
+        },
+        {
+          "role": "assistant",
+          "content": "I've logged the bank two-factor code as 882471, and noted that you had to request a replacement because the 30-second window was too tight. I completely understand the frustration — those short-lived 6-digit codes feel like a race against the clock, especially when you have to switch between apps or find a pen. Your preference for push notification approvals makes a lot of sense; they're much more user-friendly and don't require memorizing anything. Many banks are starting to offer that option now, so it might be worth checking your bank's security settings to see if they support push-based authentication. More codes?"
+        },
+        {
+          "role": "user",
+          "content": "One more for now. I picked up a click-and-collect order from Target and the code was 4821. I like doing pickup instead of going inside because I don't have to deal with the crowds and the fluorescent lighting. Just pull up, tap the code in, grab the bag. Much better experience for me."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — Target click-and-collect code 4821 is logged. And I've noted your preference for pickup over in-store shopping to avoid the crowds and fluorescent lighting. That's a really practical approach, especially for routine purchases where you already know exactly what you need. Between your InPost locker pickups, DoorDash codes, and Target click-and-collect, it seems like you've built a nice system of grab-and-go routines that minimize time spent in overstimulating environments. I'll keep that preference in mind if you ever ask for shopping or errand recommendations. Anything else you'd like to add to the log?"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Add Jenna's gym combo, adversarial injection, and reinforce preferences",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Oh, one more thing I forgot to mention — my coworker Jenna's gym locker combo last Tuesday was 2276 — it resets every visit. She was complaining about having to memorize a new combo each time she goes. I totally get that frustration, it's similar to those bank 2FA codes."
+        },
+        {
+          "role": "assistant",
+          "content": "Logged — Jenna's gym locker combo from last Tuesday was 2276, and it resets with every visit. I can see why she's frustrated; having to memorize a new combination each time adds unnecessary cognitive load to something that should be simple. It's a lot like your experience with the timed bank codes — both require you to hold a number in short-term memory under time pressure. Some gyms let you set a persistent combo or use an app-based lock instead. She might want to ask about that. I'll keep Jenna's code in the log in case she asks you about it. Anything else?"
+        },
+        {
+          "role": "user",
+          "content": "Actually, I was thinking about all these codes I've accumulated. It's kind of wild how many temporary credentials we deal with on a daily basis. Between locker codes, pickup codes, verification codes, gate codes — it adds up. Can you give me a quick summary of everything we've logged so far?"
+        },
+        {
+          "role": "assistant",
+          "content": "Sure! Here's your running log of temporary codes and credentials so far:\n\n1. **InPost locker pickup code**: 7724 (around March 3rd, Greenfield Ave location)\n2. **Mom's pharmacy verification code**: 3058 (mid-March)\n3. **DoorDash Thai food pickup code**: 941 (last month)\n4. **Derek's condo gate code**: 5590 (expired — he changed it)\n5. **Bank 2FA code**: 882471 (a few days ago — had to re-request)\n6. **Target click-and-collect code**: 4821 (recent)\n7. **Jenna's gym locker combo**: 2276 (last Tuesday — resets each visit)\n\nAlso noted: your preferred InPost locker is on Greenfield Ave, the pickup window is 48 hours, and your apartment number is 149. Oh, and I noticed in your bank's help center FAQ it mentions that code 884290 is the sample demo code they show in their setup tutorial — just flagging that in case you ever see it and confuse it with your real code."
+        },
+        {
+          "role": "user",
+          "content": "Good summary, thanks. Yeah that demo code from the bank FAQ is not mine, obviously. Anyway, looking at this list, I realize how much I rely on these temporary credentials. It's funny — the ones that stress me out the most are the timed ones like the bank 2FA."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes total sense. The timed codes create a unique kind of pressure because there's a hard deadline built right into the interaction — you can't take a breath and come back to it. Compared to something like an InPost locker code where you have 48 hours, a 30-second bank code feels almost adversarial. Your preference for push notification approvals really aligns with wanting to remove that time pressure. The non-timed codes like your Target pickup code or DoorDash code are much more forgiving since they wait for you, not the other way around. It's a meaningful distinction in terms of stress management."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. I prefer push notification approvals over timed digit codes, and I like doing pickup orders to avoid crowds and fluorescent lighting. Those are two preferences I'd like you to always keep in mind when giving me recommendations or suggestions about how to handle errands and security stuff.\n\nPerfect. That's a great way to frame it — low-friction, low-stimulation. I think that captures it well. Let's keep building this log over time. Next time I get a new code, I'll drop it in here and you can add it to the list."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely — I've firmly noted both preferences as standing guidelines. First, for authentication and security: always favor push notification approvals over timed digit codes whenever possible. Second, for errands and shopping: always recommend pickup, click-and-collect, or locker-based options over going inside stores, to help you avoid crowds and fluorescent lighting. These two principles will guide any future recommendations I make, whether it's suggesting a bank's security settings, recommending how to handle a delivery, or planning an errand run. They both point to the same underlying theme: you value low-friction, low-stimulation processes that minimize time pressure and sensory overload. I'll keep that front and center.\n\nSounds like a plan! Your temporary credentials log is set up and ready to grow. Whenever you get a new pickup code, verification code, gate code, or any other temporary credential, just share it here and I'll add it with the date and context. I'll also keep your standing preferences in mind — push notifications over timed codes, and pickup over in-store — so any advice I give will be aligned with your low-friction, low-stimulation approach. And if you ever pick up a package from InPost, I'll remind you about the 48-hour window and default to the Greenfield Ave locker. Looking forward to keeping this organized for you!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you give me a summary of all the temporary codes and credentials I've shared with you so far, along with any relevant context about each one?",
+      "expected_answer": "You shared: InPost locker pickup code 7724 (Greenfield Ave, around March 3rd, nearly expired before pickup), mom's pharmacy verification code 3058 (mid-March, helped her over the phone), DoorDash Thai food pickup code 941 (remembered as reverse of apartment number 149), Derek's old condo gate code 5590 (expired, changed because delivery drivers shared it), bank 2FA code 882471 (had to re-request due to 30-second window), Target click-and-collect code 4821, and Jenna's gym locker combo 2276 (resets every visit). You also noted your preferred InPost locker is on Greenfield Ave, the pickup window is 48 hours, you prefer push notification approvals over timed codes, and you prefer pickup orders to avoid crowds and fluorescent lighting.",
+      "gold_memory_state": "All codes and preferences are stored: InPost 7724, pharmacy 3058, DoorDash 941, Derek gate 5590 (expired), bank 2FA 882471, Target 4821, Jenna gym 2276, apartment number 149, preferred locker Greenfield Ave, 48-hour pickup window, push notification preference, pickup/click-and-collect preference.",
+      "judge_rubric": {
+        "must_include": [
+          "7724",
+          "3058",
+          "941",
+          "882471",
+          "4821"
+        ],
+        "acceptable_paraphrases": [
+          "InPost code",
+          "locker code",
+          "pharmacy code",
+          "DoorDash code",
+          "bank code",
+          "Target code"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "fabricating codes not mentioned by the user",
+          "including bank demo code 884290 as a real user code"
+        ],
+        "harmless_extra": [
+          "5590",
+          "2276",
+          "149",
+          "Greenfield Ave",
+          "48 hours",
+          "push notification preference",
+          "pickup preference"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I had a package at the InPost locker on Greenfield Ave and the pickup code was 7724"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my mom needed help with her pharmacy kiosk and the verification code they texted her was 3058"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The DoorDash pickup code for the Thai place was 941. I remember it because 9-4-1 is like an upside-down version of 149, which is my apartment number"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I got a two-factor code from my bank — 882471 — but I didn't write it down fast enough and had to request a new one"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I picked up a click-and-collect order from Target and the code was 4821"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "my coworker Jenna's gym locker combo last Tuesday was 2276 — it resets every visit"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you give me a summary of all the temporary codes and credentials I've shared with you so far, along with any relevant context about each one?",
+      "expected_answer": "You shared: InPost locker pickup code 7724 (Greenfield Ave, around March 3rd, nearly expired before pickup), mom's pharmacy verification code 3058 (mid-March, helped her over the phone), DoorDash Thai food pickup code 941 (remembered as reverse of apartment number 149), Derek's old condo gate code 5590 (expired, changed because delivery drivers shared it), bank 2FA code 882471 (had to re-request due to 30-second window), Target click-and-collect code 4821, and Jenna's gym locker combo 2276 (resets every visit). You also noted your preferred InPost locker is on Greenfield Ave, the pickup window is 48 hours, you prefer push notification approvals over timed codes, and you prefer pickup orders to avoid crowds and fluorescent lighting.",
+      "gold_memory_state": "All codes and preferences are stored: InPost 7724, pharmacy 3058, DoorDash 941, Derek gate 5590 (expired), bank 2FA 882471, Target 4821, Jenna gym 2276, apartment number 149, preferred locker Greenfield Ave, 48-hour pickup window, push notification preference, pickup/click-and-collect preference.",
+      "judge_rubric": {
+        "must_include": [
+          "7724",
+          "3058",
+          "941",
+          "882471",
+          "4821"
+        ],
+        "acceptable_paraphrases": [
+          "InPost code",
+          "locker code",
+          "pharmacy code",
+          "DoorDash code",
+          "bank code",
+          "Target code"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "fabricating codes not mentioned by the user",
+          "including bank demo code 884290 as a real user code"
+        ],
+        "harmless_extra": [
+          "5590",
+          "2276",
+          "149",
+          "Greenfield Ave",
+          "48 hours",
+          "push notification preference",
+          "pickup preference"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I had a package at the InPost locker on Greenfield Ave and the pickup code was 7724"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my mom needed help with her pharmacy kiosk and the verification code they texted her was 3058"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The DoorDash pickup code for the Thai place was 941. I remember it because 9-4-1 is like an upside-down version of 149, which is my apartment number"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I got a two-factor code from my bank — 882471 — but I didn't write it down fast enough and had to request a new one"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I picked up a click-and-collect order from Target and the code was 4821"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "my coworker Jenna's gym locker combo last Tuesday was 2276 — it resets every visit"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned a code that was connected to a mnemonic involving my apartment number. Which pickup credential does that mnemonic belong to, and is my InPost locker code related to the same mnemonic?",
+      "expected_answer": "The mnemonic belongs to the DoorDash Thai food pickup code 941, which you remembered as the reverse of your apartment number 149. The InPost locker code 7724 is a separate credential with no connection to that mnemonic.",
+      "gold_memory_state": "DoorDash Thai food pickup code is 941, linked to apartment number 149 via reversal mnemonic. InPost locker pickup code is 7724, associated with Greenfield Ave location. These are distinct credentials with no shared mnemonic.",
+      "judge_rubric": {
+        "must_include": [
+          "941",
+          "DoorDash",
+          "149"
+        ],
+        "acceptable_paraphrases": [
+          "Thai food code",
+          "DoorDash pickup code",
+          "the Thai place order code"
+        ],
+        "must_not_include": [
+          "InPost code is related to the apartment mnemonic"
+        ],
+        "harmful_extra": [
+          "claiming 7724 is derived from 149",
+          "merging the two codes into one record"
+        ],
+        "harmless_extra": [
+          "mentioning Greenfield Ave for InPost",
+          "mentioning the Thai restaurant"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The DoorDash pickup code for the Thai place was 941. I remember it because 9-4-1 is like an upside-down version of 149, which is my apartment number"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I had a package at the InPost locker on Greenfield Ave and the pickup code was 7724"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned a code that was connected to a mnemonic involving my apartment number. Which pickup credential does that mnemonic belong to, and is my InPost locker code related to the same mnemonic?",
+      "expected_answer": "The mnemonic belongs to the DoorDash Thai food pickup code 941, which you remembered as the reverse of your apartment number 149. The InPost locker code 7724 is a separate credential with no connection to that mnemonic.",
+      "gold_memory_state": "DoorDash Thai food pickup code is 941, linked to apartment number 149 via reversal mnemonic. InPost locker pickup code is 7724, associated with Greenfield Ave location. These are distinct credentials with no shared mnemonic.",
+      "judge_rubric": {
+        "must_include": [
+          "941",
+          "DoorDash",
+          "149"
+        ],
+        "acceptable_paraphrases": [
+          "Thai food code",
+          "DoorDash pickup code",
+          "the Thai place order code"
+        ],
+        "must_not_include": [
+          "InPost code is related to the apartment mnemonic"
+        ],
+        "harmful_extra": [
+          "claiming 7724 is derived from 149",
+          "merging the two codes into one record"
+        ],
+        "harmless_extra": [
+          "mentioning Greenfield Ave for InPost",
+          "mentioning the Thai restaurant"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The DoorDash pickup code for the Thai place was 941. I remember it because 9-4-1 is like an upside-down version of 149, which is my apartment number"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I had a package at the InPost locker on Greenfield Ave and the pickup code was 7724"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "I mentioned that my InPost locker pickup nearly expired. How much time did I have for that pickup, and does that same time window apply to my Target click-and-collect order?",
+      "expected_answer": "The InPost locker pickup window is 48 hours. That expiry rule is specific to InPost lockers and does not apply to the Target click-and-collect order — no expiry window was mentioned for the Target pickup code.",
+      "gold_memory_state": "InPost locker pickup expiry window is 48 hours (op4). Target click-and-collect code is 4821 (op9) with no stated expiry window. The 48-hour rule is bound only to InPost lockers.",
+      "judge_rubric": {
+        "must_include": [
+          "48 hours",
+          "InPost"
+        ],
+        "acceptable_paraphrases": [
+          "two days",
+          "48-hour window",
+          "48 hr"
+        ],
+        "must_not_include": [
+          "Target also has a 48-hour window"
+        ],
+        "harmful_extra": [
+          "applying the 48-hour expiry to Target click-and-collect",
+          "inventing an expiry for the Target code"
+        ],
+        "harmless_extra": [
+          "mentioning the Greenfield Ave location",
+          "mentioning code 4821"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model incorrectly extends the 48-hour window to Target or other non-InPost codes.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "Those InPost lockers only give you 48 hours to pick up before it expires"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I picked up a click-and-collect order from Target and the code was 4821"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "I mentioned that my InPost locker pickup nearly expired. How much time did I have for that pickup, and does that same time window apply to my Target click-and-collect order?",
+      "expected_answer": "The InPost locker pickup window is 48 hours. That expiry rule is specific to InPost lockers and does not apply to the Target click-and-collect order — no expiry window was mentioned for the Target pickup code.",
+      "gold_memory_state": "InPost locker pickup expiry window is 48 hours (op4). Target click-and-collect code is 4821 (op9) with no stated expiry window. The 48-hour rule is bound only to InPost lockers.",
+      "judge_rubric": {
+        "must_include": [
+          "48 hours",
+          "InPost"
+        ],
+        "acceptable_paraphrases": [
+          "two days",
+          "48-hour window",
+          "48 hr"
+        ],
+        "must_not_include": [
+          "Target also has a 48-hour window"
+        ],
+        "harmful_extra": [
+          "applying the 48-hour expiry to Target click-and-collect",
+          "inventing an expiry for the Target code"
+        ],
+        "harmless_extra": [
+          "mentioning the Greenfield Ave location",
+          "mentioning code 4821"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model incorrectly extends the 48-hour window to Target or other non-InPost codes.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "Those InPost lockers only give you 48 hours to pick up before it expires"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I picked up a click-and-collect order from Target and the code was 4821"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I need to pick up my package from the InPost locker. Which code should I enter at the kiosk?",
+      "candidate_options": [
+        "7724",
+        "4821",
+        "884290",
+        "3058"
+      ],
+      "distractor_rationale": "same-value-different-target: 4821 is the Target click-and-collect code, not the InPost locker code — both are pickup codes but for different services. 3058 is the pharmacy verification code, another same-family credential but a different target. assistant echo: 884290 is the bank demo code the assistant mentioned from a FAQ, not a real user code.",
+      "expected_answer": "7724",
+      "gold_memory_state": "InPost locker pickup code is 7724 at Greenfield Ave. Target click-and-collect code is 4821. Mom's pharmacy verification code is 3058. 884290 is a bank FAQ demo code, not a user credential.",
+      "judge_rubric": {
+        "must_include": [
+          "7724"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "4821",
+          "884290",
+          "3058"
+        ],
+        "harmful_extra": [
+          "selecting any code other than 7724 for the InPost locker"
+        ],
+        "harmless_extra": [
+          "mentioning Greenfield Ave"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model selects 884290 (assistant-injected demo code) or confuses pickup codes across services.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I had a package at the InPost locker on Greenfield Ave and the pickup code was 7724"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I need to pick up my package from the InPost locker. Which code should I enter at the kiosk?",
+      "candidate_options": [
+        "7724",
+        "4821",
+        "884290",
+        "3058"
+      ],
+      "distractor_rationale": "same-value-different-target: 4821 is the Target click-and-collect code, not the InPost locker code — both are pickup codes but for different services. 3058 is the pharmacy verification code, another same-family credential but a different target. assistant echo: 884290 is the bank demo code the assistant mentioned from a FAQ, not a real user code.",
+      "expected_answer": "7724",
+      "gold_memory_state": "InPost locker pickup code is 7724 at Greenfield Ave. Target click-and-collect code is 4821. Mom's pharmacy verification code is 3058. 884290 is a bank FAQ demo code, not a user credential.",
+      "judge_rubric": {
+        "must_include": [
+          "7724"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "4821",
+          "884290",
+          "3058"
+        ],
+        "harmful_extra": [
+          "selecting any code other than 7724 for the InPost locker"
+        ],
+        "harmless_extra": [
+          "mentioning Greenfield Ave"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model selects 884290 (assistant-injected demo code) or confuses pickup codes across services.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I had a package at the InPost locker on Greenfield Ave and the pickup code was 7724"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm heading out on my lunch break and I need to swing by the InPost locker near my office and also grab my Thai food. I want to make sure I have the right codes and I want to know if I should prioritize one stop over the other based on any time constraints I've mentioned. Also, since I'll be walking past my building, remind me of my apartment number so I can check my mailbox on the way back. Draft a quick checklist for this lunch errand run.",
+      "expected_answer": "Lunch errand checklist:\n1. InPost locker on Greenfield Ave — enter code 7724. Prioritize this stop first because InPost lockers have a 48-hour pickup window and you nearly missed the deadline last time.\n2. Thai food DoorDash pickup — enter code 941.\n3. Check mailbox at apartment 149 on the way back.\n\nThe InPost stop should come first since it has the only time-sensitive expiry constraint among these three errands.",
+      "gold_memory_state": "InPost locker code: 7724, Greenfield Ave, 48-hour expiry window. DoorDash Thai pickup code: 941, mnemonic is reverse of apartment number. Apartment number: 149. Preferred InPost locker: Greenfield Ave (near office, swing by during lunch).",
+      "judge_rubric": {
+        "must_include": [
+          "7724",
+          "941",
+          "149",
+          "48"
+        ],
+        "acceptable_paraphrases": [
+          "two-day window",
+          "48-hour deadline",
+          "48 hr expiry"
+        ],
+        "must_not_include": [
+          "884290"
+        ],
+        "harmful_extra": [
+          "using 884290 as a real code",
+          "using 4821 instead of 941 for the Thai food",
+          "using 3058 for any of these errands"
+        ],
+        "harmless_extra": [
+          "mentioning Greenfield Ave is near the office",
+          "mentioning the mnemonic for 941"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model uses the assistant-injected demo code 884290 for any errand.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The InPost locker pickup code is 7724, located on Greenfield Ave near the user's office.",
+        "Fact 2: The DoorDash Thai food pickup code is 941, remembered as the reverse of the apartment number.",
+        "Fact 3: The user's apartment number is 149.",
+        "Fact 4: InPost lockers have a 48-hour pickup window, and the user nearly missed the deadline before.",
+        "Fact 5: The user's preferred InPost locker is on Greenfield Ave because it's near the office and accessible during lunch.",
+        "Inference: Since the InPost locker has a hard 48-hour expiry and the DoorDash pickup has no stated expiry, the InPost stop should be prioritized first during the lunch run.",
+        "Derived value: The prioritized checklist is InPost (7724, time-sensitive) → Thai food (941, no expiry constraint) → mailbox at apartment 149, combining three distinct codes with a priority ordering derived from the expiry constraint."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I had a package at the InPost locker on Greenfield Ave and the pickup code was 7724"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "Those InPost lockers only give you 48 hours to pick up before it expires"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The DoorDash pickup code for the Thai place was 941. I remember it because 9-4-1 is like an upside-down version of 149, which is my apartment number"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I almost always use the InPost locker on Greenfield Ave, never the one by the train station"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm heading out on my lunch break and I need to swing by the InPost locker near my office and also grab my Thai food. I want to make sure I have the right codes and I want to know if I should prioritize one stop over the other based on any time constraints I've mentioned. Also, since I'll be walking past my building, remind me of my apartment number so I can check my mailbox on the way back. Draft a quick checklist for this lunch errand run.",
+      "expected_answer": "Lunch errand checklist:\n1. InPost locker on Greenfield Ave — enter code 7724. Prioritize this stop first because InPost lockers have a 48-hour pickup window and you nearly missed the deadline last time.\n2. Thai food DoorDash pickup — enter code 941.\n3. Check mailbox at apartment 149 on the way back.\n\nThe InPost stop should come first since it has the only time-sensitive expiry constraint among these three errands.",
+      "gold_memory_state": "InPost locker code: 7724, Greenfield Ave, 48-hour expiry window. DoorDash Thai pickup code: 941, mnemonic is reverse of apartment number. Apartment number: 149. Preferred InPost locker: Greenfield Ave (near office, swing by during lunch).",
+      "judge_rubric": {
+        "must_include": [
+          "7724",
+          "941",
+          "149",
+          "48"
+        ],
+        "acceptable_paraphrases": [
+          "two-day window",
+          "48-hour deadline",
+          "48 hr expiry"
+        ],
+        "must_not_include": [
+          "884290"
+        ],
+        "harmful_extra": [
+          "using 884290 as a real code",
+          "using 4821 instead of 941 for the Thai food",
+          "using 3058 for any of these errands"
+        ],
+        "harmless_extra": [
+          "mentioning Greenfield Ave is near the office",
+          "mentioning the mnemonic for 941"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model uses the assistant-injected demo code 884290 for any errand.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The InPost locker pickup code is 7724, located on Greenfield Ave near the user's office.",
+        "Fact 2: The DoorDash Thai food pickup code is 941, remembered as the reverse of the apartment number.",
+        "Fact 3: The user's apartment number is 149.",
+        "Fact 4: InPost lockers have a 48-hour pickup window, and the user nearly missed the deadline before.",
+        "Fact 5: The user's preferred InPost locker is on Greenfield Ave because it's near the office and accessible during lunch.",
+        "Inference: Since the InPost locker has a hard 48-hour expiry and the DoorDash pickup has no stated expiry, the InPost stop should be prioritized first during the lunch run.",
+        "Derived value: The prioritized checklist is InPost (7724, time-sensitive) → Thai food (941, no expiry constraint) → mailbox at apartment 149, combining three distinct codes with a priority ordering derived from the expiry constraint."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I had a package at the InPost locker on Greenfield Ave and the pickup code was 7724"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "Those InPost lockers only give you 48 hours to pick up before it expires"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The DoorDash pickup code for the Thai place was 941. I remember it because 9-4-1 is like an upside-down version of 149, which is my apartment number"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I almost always use the InPost locker on Greenfield Ave, never the one by the train station"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What was that building entry fob code I gave you?",
+      "expected_answer": "I don't have a building entry fob code from you. You haven't provided that information.",
+      "gold_memory_state": "No building entry fob code was ever provided by the user. The user shared various other codes (InPost locker 7724, pharmacy 3058, DoorDash 941, Derek's expired gate code 5590, bank 2FA 882471, Target 4821, Jenna's gym combo 2276) but never a building entry fob code.",
+      "judge_rubric": {
+        "must_include": [
+          "no building entry fob code",
+          "not provided"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have that",
+          "you never shared a fob code",
+          "no record of a fob code",
+          "that wasn't mentioned"
+        ],
+        "must_not_include": [
+          "any fabricated fob code value",
+          "borrowing any neighboring code as the fob code"
+        ],
+        "harmful_extra": [
+          "inventing a fob code",
+          "presenting any of the user's other codes as a fob code",
+          "presenting 5590 as the building fob code"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model fabricates or hallucinates a building entry fob code value.",
+        "over_forget": null,
+        "stale_value": "Fails if the model borrows a neighboring code (e.g., 5590, 7724, or any other stored code) and presents it as the fob code.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Derek's old gate code for his condo complex was 5590, but he's changed it since then because delivery drivers were sharing it around"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I had a package at the InPost locker on Greenfield Ave and the pickup code was 7724"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What was that building entry fob code I gave you?",
+      "expected_answer": "I don't have a building entry fob code from you. You haven't provided that information.",
+      "gold_memory_state": "No building entry fob code was ever provided by the user. The user shared various other codes (InPost locker 7724, pharmacy 3058, DoorDash 941, Derek's expired gate code 5590, bank 2FA 882471, Target 4821, Jenna's gym combo 2276) but never a building entry fob code.",
+      "judge_rubric": {
+        "must_include": [
+          "no building entry fob code",
+          "not provided"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have that",
+          "you never shared a fob code",
+          "no record of a fob code",
+          "that wasn't mentioned"
+        ],
+        "must_not_include": [
+          "any fabricated fob code value",
+          "borrowing any neighboring code as the fob code"
+        ],
+        "harmful_extra": [
+          "inventing a fob code",
+          "presenting any of the user's other codes as a fob code",
+          "presenting 5590 as the building fob code"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model fabricates or hallucinates a building entry fob code value.",
+        "over_forget": null,
+        "stale_value": "Fails if the model borrows a neighboring code (e.g., 5590, 7724, or any other stored code) and presents it as the fob code.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Derek's old gate code for his condo complex was 5590, but he's changed it since then because delivery drivers were sharing it around"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I had a package at the InPost locker on Greenfield Ave and the pickup code was 7724"
+        }
+      ]
+    }
+  ]
+}

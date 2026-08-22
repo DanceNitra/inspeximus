@@ -1,0 +1,1132 @@
+{
+  "target_fact": "Contact information for friend Danny Kowalski, including address, phone, email, work number, and birthday",
+  "operation_type": "Remember",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 3,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": true,
+      "never_stored_target": "Danny's social media handle"
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "Danny's new address is 2731 North Kedzie Avenue, Apartment 4B, in Logan Square, Chicago"
+      },
+      "target": {
+        "target_id": "danny_address",
+        "target_name": "Danny Kowalski's current home address"
+      },
+      "old_value": null,
+      "new_value": "2731 North Kedzie Avenue, Apartment 4B, Logan Square, Chicago",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Danny's new address is 2731 North Kedzie Avenue, Apartment 4B, in Logan Square, Chicago"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "His phone number is 773-505-8241"
+      },
+      "target": {
+        "target_id": "danny_phone",
+        "target_name": "Danny Kowalski's personal phone number"
+      },
+      "old_value": null,
+      "new_value": "773-505-8241",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "His phone number is 773-505-8241"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "His email is d.kowalski@protonmail.com"
+      },
+      "target": {
+        "target_id": "danny_email",
+        "target_name": "Danny Kowalski's current email address"
+      },
+      "old_value": null,
+      "new_value": "d.kowalski@protonmail.com",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "His email is d.kowalski@protonmail.com"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "Danny's birthday is October 17th"
+      },
+      "target": {
+        "target_id": "danny_birthday",
+        "target_name": "Danny Kowalski's birthday"
+      },
+      "old_value": null,
+      "new_value": "October 17th",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Danny's birthday is October 17th"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "His direct work line is 312-477-6600, extension 309, at the architecture firm he joined"
+      },
+      "target": {
+        "target_id": "danny_work_number",
+        "target_name": "Danny Kowalski's work phone number"
+      },
+      "old_value": null,
+      "new_value": "312-477-6600, extension 309",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "His direct work line is 312-477-6600, extension 309, at the architecture firm he joined"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I want to mail him a birthday package and it needs to arrive by October 17th, so I should probably send it around two weeks before"
+      },
+      "target": {
+        "target_id": "danny_birthday_mailing_plan",
+        "target_name": "plan to mail Danny a birthday package with two-week lead time"
+      },
+      "old_value": null,
+      "new_value": "Mail birthday package to Danny approximately two weeks before October 17th",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I want to mail him a birthday package and it needs to arrive by October 17th, so I should probably send it around two weeks before"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 1,
+        "quote": "Danny strongly prefers texts over phone calls, so if I need to reach him quickly, texting is the way to go"
+      },
+      "target": {
+        "target_id": "danny_communication_preference",
+        "target_name": "Danny Kowalski's communication preference"
+      },
+      "old_value": null,
+      "new_value": "Strongly prefers texts over phone calls",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "Danny strongly prefers texts over phone calls, so if I need to reach him quickly, texting is the way to go"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establishing Danny Kowalski's core contact details: address, phone, and email",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I need to save some contact info for my friend Danny Kowalski. He moved to a new place earlier this year and I keep losing track. Danny's new address is 2731 North Kedzie Avenue, Apartment 4B, in Logan Square, Chicago. Can you keep that on file for me? I need it for mailing him something soon."
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! I've noted Danny Kowalski's current address as 2731 North Kedzie Avenue, Apartment 4B, in Logan Square, Chicago. That's a great neighborhood — lots of character over there. Whenever you're ready to put together that mailing, just let me know and I can help you draft an envelope label or a shipping note. Do you have any other contact details for Danny you'd like me to store alongside the address? Phone number, email, anything like that would be useful to keep together."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, let me give you his phone number too. His phone number is 773-505-8241. I always get the last couple digits mixed up in my head but that's the right one. He's the kind of person who'd rather text than pick up, so I mostly just message him anyway. But I want the number saved properly."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — Danny's phone number is 773-505-8241. I'll keep that stored right alongside his address. And good to know he's a texter; that's helpful context for when you need to reach him in a hurry. It sounds like between the address and the phone number, you're building a solid contact card for him. If you have his email or any other way to reach him, I can add that too so everything is in one place. Just let me know whenever you're ready."
+        },
+        {
+          "role": "user",
+          "content": "Good idea. His email is d.kowalski@protonmail.com. He switched to Protonmail after he changed jobs back in March. He stopped using his old Gmail because of spam issues, which I totally understand. Anyway, that Protonmail address is the one he actively checks now, so that's the one to keep on record for him."
+        },
+        {
+          "role": "assistant",
+          "content": "Perfect, I've added Danny's email as d.kowalski@protonmail.com. So his contact card now has three solid entries: the Logan Square address at 2731 North Kedzie Avenue, Apartment 4B; his personal phone at 773-505-8241; and the Protonmail email. That should cover most ways you'd need to get in touch with him. Protonmail is a good choice for cutting down on spam — I can see why he made the switch. Let me know if there's anything else you'd like to add or if you want help drafting that mail you mentioned."
+        },
+        {
+          "role": "user",
+          "content": "That looks right, thanks. I'll probably come back to you soon when I'm ready to put together the actual package. I also want to make sure I have his birthday noted somewhere because I blanked on it last year and almost missed it entirely. But let me gather my thoughts first and I'll circle back with more details in a bit."
+        },
+        {
+          "role": "assistant",
+          "content": "Sounds like a plan! Whenever you're ready with Danny's birthday or any other details, just come back and we'll add them to his contact card. It's great that you're getting all of this organized — having everything in one place will make it much easier when it's time to send that package. I'll be here whenever you want to continue. In the meantime, the address, phone, and email are all saved and ready to reference whenever you need them. Take your time gathering the rest."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Adding Danny's birthday, mailing plan, and work phone number",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Alright, I'm back. So first off, Danny's birthday is October 17th. Last year his sister Marta had to remind me because I completely blanked. I don't want that to happen again this year, so please keep that date saved. I'm planning to send him something nice to celebrate the new apartment and the new job all at once."
+        },
+        {
+          "role": "assistant",
+          "content": "Welcome back! I've saved Danny Kowalski's birthday as October 17th. That's a great idea to combine the birthday gift with a housewarming and new-job celebration — very thoughtful. Since you mentioned wanting to mail him something, having the exact date will help us plan the timing so it arrives on or before his birthday. His Logan Square address is already on file for the delivery. Would you like to start thinking about when to ship it, or do you have more details to add first?"
+        },
+        {
+          "role": "user",
+          "content": "I want to mail him a birthday package and it needs to arrive by October 17th, so I should probably send it around two weeks before. That way there's a buffer for any shipping delays. I'm thinking early October for the send date. Can you help me keep track of that timeline so I don't leave it to the last minute like I usually do?"
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely! So the target arrival is October 17th, and you'd like to send it roughly two weeks ahead of that, which puts the mailing date around early October — approximately October 3rd. I'll keep that timeline noted so we can set up a reminder when the time comes. With Danny's address at 2731 North Kedzie Avenue, Apartment 4B in Logan Square, you should be all set for delivery. We can figure out packaging and shipping options closer to the date. Is there anything else about Danny's info you wanted to add while we're at it?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, one more thing. His direct work line is 312-477-6600, extension 309, at the architecture firm he joined. He started there recently and seems really happy about it. I figured it might be useful to have his work number too, in case I ever need to reach him during business hours for something urgent."
+        },
+        {
+          "role": "assistant",
+          "content": "Great, I've added Danny's work phone number: 312-477-6600, extension 309. It's nice to hear he's settled into the new architecture firm and enjoying it. So now his full contact card includes his Logan Square home address, personal phone at 773-505-8241, Protonmail email, birthday on October 17th, the two-week mailing plan, and now his work direct line. That's a pretty comprehensive set of details. Glad he's doing well at the new gig. Anything else you'd like to note about Danny or anyone else?"
+        },
+        {
+          "role": "user",
+          "content": "I think that covers the main stuff for now. His sister Marta's number is somewhere in my old texts but I don't really need that saved. I just want to make sure all of Danny's info is solid so I can stop scrambling every time I need to reach him or send him something. Thanks for helping me get this organized.\n\nPerfect, that summary looks right. I feel a lot better having all of this in one place. I'll be back closer to October when I need to start putting the birthday package together. Hopefully this year I won't be the friend who forgets the date and has to scramble at the last second."
+        },
+        {
+          "role": "assistant",
+          "content": "You're very welcome! Danny's contact info is looking solid now. Here's a quick summary of what we have: home address at 2731 North Kedzie Avenue, Apartment 4B, Logan Square, Chicago; personal phone 773-505-8241; email d.kowalski@protonmail.com; birthday October 17th; plan to mail a birthday package around early October; and work phone 312-477-6600 extension 309. No need to track Marta's number unless you change your mind later. You're all set — just come back whenever you're ready to work on the actual package or need any of this info pulled up.\n\nHa, I'm sure Danny will appreciate the effort! With everything saved and a two-week shipping buffer built in, you should be in great shape this year. When October rolls around, we can figure out what to include in the package, pick a shipping method, and make sure it gets to Apartment 4B on time. In the meantime, if you think of anything else about Danny or any other contacts you want to organize, just let me know. Enjoy the rest of your day, and we'll reconnect when it's time to get that birthday shipment rolling."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Revisiting Danny's info, adding communication preference, adversarial injection of look-alike value",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, one more thing about Danny. Danny strongly prefers texts over phone calls, so if I need to reach him quickly, texting is the way to go. I once called him about dinner plans and he just texted me back instead of picking up, which cracked me up. I want that noted because it affects how I should contact him for time-sensitive stuff."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted! Danny strongly prefers texts over phone calls. That's a helpful detail — if something is time-sensitive, a quick text to 773-505-8241 is your best bet rather than calling. It's funny that he texted back instead of answering the call; sounds like he's committed to the texting lifestyle. I've added that communication preference to his contact card. So now we have his address, personal phone, email, birthday, work number, the mailing plan, and his preference for texting. Anything else you want to note while we're at it?"
+        },
+        {
+          "role": "user",
+          "content": "Actually, I was looking through some old paperwork and found a shipping label from when I sent something to my coworker Rachel Park. Her address was listed as 2745 North Kedzie Avenue, Apartment 2A. For a second I thought it was Danny's address but the numbers are different. Just wanted to double-check — Danny's is 4B at 2731, right?"
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, that's correct — Danny's address is 2731 North Kedzie Avenue, Apartment 4B, Logan Square, Chicago. Easy to see how you might have confused it at a glance with Rachel Park's address at 2745 North Kedzie Avenue, Apartment 2A, since they're on the same street. But the building numbers and apartment units are different. When you're putting together Danny's birthday package, just make sure you use 2731 and Apartment 4B. Good catch on double-checking — better to confirm now than to have the package go to the wrong door!"
+        },
+        {
+          "role": "user",
+          "content": "Exactly, that would have been embarrassing. I'm glad I caught that. So when it comes time to send the package, I'll need to make sure I have the right address, the right timing based on his birthday, and I should text him a heads-up rather than call. That way he actually sees the message and can let me know if the timing works."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a solid plan. To recap the key pieces: Danny's address is 2731 North Kedzie Avenue, Apartment 4B in Logan Square; his birthday is October 17th, so you'll want to mail the package around early October to give yourself that two-week buffer; and since he strongly prefers texts, shoot him a message at 773-505-8241 to give him a heads-up rather than calling. That way you cover the delivery logistics and make sure he's expecting it. When you're ready to finalize everything, just come back and we'll put it all together."
+        },
+        {
+          "role": "user",
+          "content": "That's great. I think between the address, the birthday, the mailing timeline, and knowing to text him, I'm in good shape. I also like having his work number on file just in case, though I'd only use that for something really important. He's still settling in at the firm and I don't want to bother him there unless it's necessary.\n\nThanks so much, I really appreciate having all of this organized. It's one of those things where I kept meaning to do it and never got around to it. Now I can stop worrying about losing track of Danny's info. I'll be back in a couple months when it's time to get that package sorted out."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes total sense — his work line at 312-477-6600, extension 309, is there as a backup for anything truly urgent, but texting his personal number is the go-to for everyday communication. It's considerate of you to give him space while he's getting settled at the architecture firm. You've got a really comprehensive setup now: home address, personal phone, email, birthday, work number, communication preference, and the mailing timeline. You're going to nail the birthday package this year. Just reach out whenever you're ready to start planning the specifics.\n\nYou're welcome — it's great to have everything consolidated in one place so you're not scrambling later. Danny's full contact card is locked in and ready whenever you need it. When September or early October rolls around, we can work on the package contents, pick a shipping option, and set up a reminder so you hit that two-week window before October 17th. In the meantime, enjoy the peace of mind knowing it's all organized. See you in a couple months, and Danny is lucky to have a friend who puts this much thought into staying connected!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize all the details I shared with you about my friend Danny Kowalski? I want to make sure everything I told you is accounted for.",
+      "expected_answer": "Danny Kowalski's contact details include: home address at 2731 North Kedzie Avenue, Apartment 4B, Logan Square, Chicago; personal phone 773-505-8241; email d.kowalski@protonmail.com; birthday October 17th; work phone 312-477-6600, extension 309 at his architecture firm; a plan to mail him a birthday package approximately two weeks before October 17th; and a communication preference that he strongly prefers texts over phone calls.",
+      "gold_memory_state": "All seven confirmed remember operations are active: danny_address, danny_phone, danny_email, danny_birthday, danny_work_number, danny_birthday_mailing_plan, danny_communication_preference.",
+      "judge_rubric": {
+        "must_include": [
+          "2731 North Kedzie Avenue",
+          "Apartment 4B",
+          "Logan Square",
+          "Chicago",
+          "773-505-8241",
+          "d.kowalski@protonmail.com",
+          "October 17th",
+          "312-477-6600",
+          "extension 309",
+          "texts over phone calls",
+          "birthday package",
+          "two weeks"
+        ],
+        "acceptable_paraphrases": [
+          "prefers texting to calling",
+          "text messages over calls"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "Rachel Park's address at 2745 North Kedzie Avenue presented as Danny's information",
+          "any social media handle for Danny"
+        ],
+        "harmless_extra": [
+          "architecture firm",
+          "Protonmail",
+          "Logan Square neighborhood description"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Danny's new address is 2731 North Kedzie Avenue, Apartment 4B, in Logan Square, Chicago"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "His phone number is 773-505-8241"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "His email is d.kowalski@protonmail.com"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Danny's birthday is October 17th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I want to mail him a birthday package and it needs to arrive by October 17th, so I should probably send it around two weeks before"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "His direct work line is 312-477-6600, extension 309, at the architecture firm he joined"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "Danny strongly prefers texts over phone calls, so if I need to reach him quickly, texting is the way to go"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize all the details I shared with you about my friend Danny Kowalski? I want to make sure everything I told you is accounted for.",
+      "expected_answer": "Danny Kowalski's contact details include: home address at 2731 North Kedzie Avenue, Apartment 4B, Logan Square, Chicago; personal phone 773-505-8241; email d.kowalski@protonmail.com; birthday October 17th; work phone 312-477-6600, extension 309 at his architecture firm; a plan to mail him a birthday package approximately two weeks before October 17th; and a communication preference that he strongly prefers texts over phone calls.",
+      "gold_memory_state": "All seven confirmed remember operations are active: danny_address, danny_phone, danny_email, danny_birthday, danny_work_number, danny_birthday_mailing_plan, danny_communication_preference.",
+      "judge_rubric": {
+        "must_include": [
+          "2731 North Kedzie Avenue",
+          "Apartment 4B",
+          "Logan Square",
+          "Chicago",
+          "773-505-8241",
+          "d.kowalski@protonmail.com",
+          "October 17th",
+          "312-477-6600",
+          "extension 309",
+          "texts over phone calls",
+          "birthday package",
+          "two weeks"
+        ],
+        "acceptable_paraphrases": [
+          "prefers texting to calling",
+          "text messages over calls"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "Rachel Park's address at 2745 North Kedzie Avenue presented as Danny's information",
+          "any social media handle for Danny"
+        ],
+        "harmless_extra": [
+          "architecture firm",
+          "Protonmail",
+          "Logan Square neighborhood description"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Danny's new address is 2731 North Kedzie Avenue, Apartment 4B, in Logan Square, Chicago"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "His phone number is 773-505-8241"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "His email is d.kowalski@protonmail.com"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Danny's birthday is October 17th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I want to mail him a birthday package and it needs to arrive by October 17th, so I should probably send it around two weeks before"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "His direct work line is 312-477-6600, extension 309, at the architecture firm he joined"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "Danny strongly prefers texts over phone calls, so if I need to reach him quickly, texting is the way to go"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I found a shipping label with an address on North Kedzie Avenue. If I'm sending a package to Danny, which address record should I use, and does that label from my coworker Rachel have anything to do with Danny's delivery?",
+      "expected_answer": "Danny's address is 2731 North Kedzie Avenue, Apartment 4B, Logan Square, Chicago. Rachel Park's address at 2745 North Kedzie Avenue, Apartment 2A is a separate record for a different person and should not be used for Danny's package.",
+      "gold_memory_state": "Danny Kowalski's home address is 2731 North Kedzie Avenue, Apartment 4B, Logan Square, Chicago. Rachel Park's address at 2745 North Kedzie Avenue, Apartment 2A was mentioned as a separate coworker's address and is not part of Danny's contact card.",
+      "judge_rubric": {
+        "must_include": [
+          "2731 North Kedzie Avenue",
+          "Apartment 4B",
+          "Danny"
+        ],
+        "acceptable_paraphrases": [
+          "2731 N. Kedzie Ave.",
+          "Apt 4B"
+        ],
+        "must_not_include": [
+          "2745 North Kedzie Avenue used for Danny",
+          "Apartment 2A used for Danny"
+        ],
+        "harmful_extra": [
+          "Confusing Rachel Park's address with Danny's address",
+          "Merging the two addresses into one record"
+        ],
+        "harmless_extra": [
+          "mentioning Rachel Park's address as a separate detail",
+          "mentioning Logan Square"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 2745 North Kedzie or Apartment 2A is provided as Danny's address.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Danny's new address is 2731 North Kedzie Avenue, Apartment 4B, in Logan Square, Chicago"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I was looking through some old paperwork and found a shipping label from when I sent something to my coworker Rachel Park. Her address was listed as 2745 North Kedzie Avenue, Apartment 2A"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I found a shipping label with an address on North Kedzie Avenue. If I'm sending a package to Danny, which address record should I use, and does that label from my coworker Rachel have anything to do with Danny's delivery?",
+      "expected_answer": "Danny's address is 2731 North Kedzie Avenue, Apartment 4B, Logan Square, Chicago. Rachel Park's address at 2745 North Kedzie Avenue, Apartment 2A is a separate record for a different person and should not be used for Danny's package.",
+      "gold_memory_state": "Danny Kowalski's home address is 2731 North Kedzie Avenue, Apartment 4B, Logan Square, Chicago. Rachel Park's address at 2745 North Kedzie Avenue, Apartment 2A was mentioned as a separate coworker's address and is not part of Danny's contact card.",
+      "judge_rubric": {
+        "must_include": [
+          "2731 North Kedzie Avenue",
+          "Apartment 4B",
+          "Danny"
+        ],
+        "acceptable_paraphrases": [
+          "2731 N. Kedzie Ave.",
+          "Apt 4B"
+        ],
+        "must_not_include": [
+          "2745 North Kedzie Avenue used for Danny",
+          "Apartment 2A used for Danny"
+        ],
+        "harmful_extra": [
+          "Confusing Rachel Park's address with Danny's address",
+          "Merging the two addresses into one record"
+        ],
+        "harmless_extra": [
+          "mentioning Rachel Park's address as a separate detail",
+          "mentioning Logan Square"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 2745 North Kedzie or Apartment 2A is provided as Danny's address.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Danny's new address is 2731 North Kedzie Avenue, Apartment 4B, in Logan Square, Chicago"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I was looking through some old paperwork and found a shipping label from when I sent something to my coworker Rachel Park. Her address was listed as 2745 North Kedzie Avenue, Apartment 2A"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Given that Danny prefers texting, which phone number should I text him at for a quick heads-up about the birthday package, and is that the same number I'd use to call his office?",
+      "expected_answer": "Text Danny at his personal phone number 773-505-8241 for a quick heads-up. That is not the same as his work number, which is 312-477-6600, extension 309. The personal number is the right one for texting since he prefers texts over calls.",
+      "gold_memory_state": "Danny's personal phone is 773-505-8241 (preferred for texting). Danny's work phone is 312-477-6600, extension 309 (separate number, for urgent business-hours contact only). Danny strongly prefers texts over phone calls.",
+      "judge_rubric": {
+        "must_include": [
+          "773-505-8241",
+          "312-477-6600",
+          "extension 309",
+          "different numbers"
+        ],
+        "acceptable_paraphrases": [
+          "ext. 309",
+          "ext 309",
+          "they are not the same number"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "Saying the work number and personal number are the same",
+          "Suggesting calling instead of texting for a quick heads-up"
+        ],
+        "harmless_extra": [
+          "mentioning the architecture firm",
+          "mentioning that work number is for urgent matters only"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": "Fails if the model cannot recall both the personal phone and the work phone, or cannot recall Danny's texting preference.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "His phone number is 773-505-8241"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "His direct work line is 312-477-6600, extension 309, at the architecture firm he joined"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "Danny strongly prefers texts over phone calls, so if I need to reach him quickly, texting is the way to go"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Given that Danny prefers texting, which phone number should I text him at for a quick heads-up about the birthday package, and is that the same number I'd use to call his office?",
+      "expected_answer": "Text Danny at his personal phone number 773-505-8241 for a quick heads-up. That is not the same as his work number, which is 312-477-6600, extension 309. The personal number is the right one for texting since he prefers texts over calls.",
+      "gold_memory_state": "Danny's personal phone is 773-505-8241 (preferred for texting). Danny's work phone is 312-477-6600, extension 309 (separate number, for urgent business-hours contact only). Danny strongly prefers texts over phone calls.",
+      "judge_rubric": {
+        "must_include": [
+          "773-505-8241",
+          "312-477-6600",
+          "extension 309",
+          "different numbers"
+        ],
+        "acceptable_paraphrases": [
+          "ext. 309",
+          "ext 309",
+          "they are not the same number"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "Saying the work number and personal number are the same",
+          "Suggesting calling instead of texting for a quick heads-up"
+        ],
+        "harmless_extra": [
+          "mentioning the architecture firm",
+          "mentioning that work number is for urgent matters only"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": "Fails if the model cannot recall both the personal phone and the work phone, or cannot recall Danny's texting preference.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "His phone number is 773-505-8241"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "His direct work line is 312-477-6600, extension 309, at the architecture firm he joined"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "Danny strongly prefers texts over phone calls, so if I need to reach him quickly, texting is the way to go"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I need to put Danny Kowalski's home address on a shipping label. Which of the following is the right address?",
+      "candidate_options": [
+        "2731 North Kedzie Avenue, Apartment 4B, Logan Square, Chicago",
+        "2745 North Kedzie Avenue, Apartment 2A, Chicago",
+        "2731 North Kedzie Avenue, Apartment 2A, Logan Square, Chicago",
+        "2745 North Kedzie Avenue, Apartment 4B, Logan Square, Chicago"
+      ],
+      "distractor_rationale": "same-value-different-target: '2745 North Kedzie Avenue, Apartment 2A, Chicago' is Rachel Park's address on the same street, which was explicitly mentioned in conversation and could be confused with Danny's. assistant echo: '2745 North Kedzie Avenue, Apartment 4B, Logan Square, Chicago' and '2731 North Kedzie Avenue, Apartment 2A, Logan Square, Chicago' are hybrid recombinations mixing Danny's building number/unit with Rachel's building number/unit, representing plausible misremembering from the assistant's comparison of the two addresses.",
+      "expected_answer": "2731 North Kedzie Avenue, Apartment 4B, Logan Square, Chicago",
+      "gold_memory_state": "Danny Kowalski's home address is 2731 North Kedzie Avenue, Apartment 4B, Logan Square, Chicago. Rachel Park's address is 2745 North Kedzie Avenue, Apartment 2A — a different person's address on the same street.",
+      "judge_rubric": {
+        "must_include": [
+          "2731 North Kedzie Avenue",
+          "Apartment 4B",
+          "Logan Square",
+          "Chicago"
+        ],
+        "acceptable_paraphrases": [
+          "2731 N. Kedzie Ave., Apt. 4B, Logan Square, Chicago"
+        ],
+        "must_not_include": [
+          "2745",
+          "Apartment 2A"
+        ],
+        "harmful_extra": [
+          "Using Rachel Park's building number 2745 for Danny",
+          "Swapping apartment units between Danny and Rachel"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 2745 or Apartment 2A is selected, indicating confusion with Rachel Park's address.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Danny's new address is 2731 North Kedzie Avenue, Apartment 4B, in Logan Square, Chicago"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I was looking through some old paperwork and found a shipping label from when I sent something to my coworker Rachel Park. Her address was listed as 2745 North Kedzie Avenue, Apartment 2A"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I need to put Danny Kowalski's home address on a shipping label. Which of the following is the right address?",
+      "candidate_options": [
+        "2731 North Kedzie Avenue, Apartment 4B, Logan Square, Chicago",
+        "2745 North Kedzie Avenue, Apartment 2A, Chicago",
+        "2731 North Kedzie Avenue, Apartment 2A, Logan Square, Chicago",
+        "2745 North Kedzie Avenue, Apartment 4B, Logan Square, Chicago"
+      ],
+      "distractor_rationale": "same-value-different-target: '2745 North Kedzie Avenue, Apartment 2A, Chicago' is Rachel Park's address on the same street, which was explicitly mentioned in conversation and could be confused with Danny's. assistant echo: '2745 North Kedzie Avenue, Apartment 4B, Logan Square, Chicago' and '2731 North Kedzie Avenue, Apartment 2A, Logan Square, Chicago' are hybrid recombinations mixing Danny's building number/unit with Rachel's building number/unit, representing plausible misremembering from the assistant's comparison of the two addresses.",
+      "expected_answer": "2731 North Kedzie Avenue, Apartment 4B, Logan Square, Chicago",
+      "gold_memory_state": "Danny Kowalski's home address is 2731 North Kedzie Avenue, Apartment 4B, Logan Square, Chicago. Rachel Park's address is 2745 North Kedzie Avenue, Apartment 2A — a different person's address on the same street.",
+      "judge_rubric": {
+        "must_include": [
+          "2731 North Kedzie Avenue",
+          "Apartment 4B",
+          "Logan Square",
+          "Chicago"
+        ],
+        "acceptable_paraphrases": [
+          "2731 N. Kedzie Ave., Apt. 4B, Logan Square, Chicago"
+        ],
+        "must_not_include": [
+          "2745",
+          "Apartment 2A"
+        ],
+        "harmful_extra": [
+          "Using Rachel Park's building number 2745 for Danny",
+          "Swapping apartment units between Danny and Rachel"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 2745 or Apartment 2A is selected, indicating confusion with Rachel Park's address.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Danny's new address is 2731 North Kedzie Avenue, Apartment 4B, in Logan Square, Chicago"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I was looking through some old paperwork and found a shipping label from when I sent something to my coworker Rachel Park. Her address was listed as 2745 North Kedzie Avenue, Apartment 2A"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to plan the logistics for Danny's birthday surprise. Draft me a short action plan that includes: (1) what date I should aim to drop off the package at the post office, (2) the full mailing address for the label, and (3) how I should give Danny a heads-up that something is on its way — and why that method is best for him.",
+      "expected_answer": "Mail the package around October 3rd (approximately two weeks before Danny's October 17th birthday) to allow a shipping buffer. Address the label to 2731 North Kedzie Avenue, Apartment 4B, Logan Square, Chicago. Send Danny a text message at 773-505-8241 to give him a heads-up, because he strongly prefers texts over phone calls and is more likely to see and respond to a text quickly.",
+      "gold_memory_state": "Danny's birthday: October 17th. Mailing plan: send package approximately two weeks before October 17th. Danny's address: 2731 North Kedzie Avenue, Apartment 4B, Logan Square, Chicago. Danny's personal phone: 773-505-8241. Danny's communication preference: strongly prefers texts over phone calls.",
+      "judge_rubric": {
+        "must_include": [
+          "early October or around October 3rd",
+          "2731 North Kedzie Avenue",
+          "Apartment 4B",
+          "text",
+          "773-505-8241"
+        ],
+        "acceptable_paraphrases": [
+          "first week of October",
+          "about two weeks before October 17",
+          "send a text message"
+        ],
+        "must_not_include": [
+          "2745 North Kedzie Avenue",
+          "Apartment 2A",
+          "call Danny instead of texting"
+        ],
+        "harmful_extra": [
+          "Using Rachel Park's address",
+          "Recommending a phone call as the primary contact method"
+        ],
+        "harmless_extra": [
+          "mentioning Logan Square",
+          "mentioning Chicago",
+          "mentioning the architecture firm"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Rachel Park's address components (2745, Apartment 2A) appear on the shipping label.",
+        "reflection_precision": null,
+        "reflection_recall": "Fails if the model omits the texting preference or the two-week lead time or the correct address.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Danny's birthday is October 17th.",
+        "Fact 2: The user plans to mail a birthday package approximately two weeks before October 17th.",
+        "Inference: Two weeks before October 17th is approximately October 3rd, so the package should be dropped off at the post office around that date.",
+        "Fact 3: Danny's home address is 2731 North Kedzie Avenue, Apartment 4B, Logan Square, Chicago.",
+        "Fact 4: Danny's personal phone number is 773-505-8241.",
+        "Fact 5: Danny strongly prefers texts over phone calls.",
+        "Inference: The heads-up should be sent as a text to 773-505-8241 because Danny prefers texts and is more responsive to them than to calls."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Danny's birthday is October 17th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I want to mail him a birthday package and it needs to arrive by October 17th, so I should probably send it around two weeks before"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Danny's new address is 2731 North Kedzie Avenue, Apartment 4B, in Logan Square, Chicago"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "His phone number is 773-505-8241"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "Danny strongly prefers texts over phone calls, so if I need to reach him quickly, texting is the way to go"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to plan the logistics for Danny's birthday surprise. Draft me a short action plan that includes: (1) what date I should aim to drop off the package at the post office, (2) the full mailing address for the label, and (3) how I should give Danny a heads-up that something is on its way — and why that method is best for him.",
+      "expected_answer": "Mail the package around October 3rd (approximately two weeks before Danny's October 17th birthday) to allow a shipping buffer. Address the label to 2731 North Kedzie Avenue, Apartment 4B, Logan Square, Chicago. Send Danny a text message at 773-505-8241 to give him a heads-up, because he strongly prefers texts over phone calls and is more likely to see and respond to a text quickly.",
+      "gold_memory_state": "Danny's birthday: October 17th. Mailing plan: send package approximately two weeks before October 17th. Danny's address: 2731 North Kedzie Avenue, Apartment 4B, Logan Square, Chicago. Danny's personal phone: 773-505-8241. Danny's communication preference: strongly prefers texts over phone calls.",
+      "judge_rubric": {
+        "must_include": [
+          "early October or around October 3rd",
+          "2731 North Kedzie Avenue",
+          "Apartment 4B",
+          "text",
+          "773-505-8241"
+        ],
+        "acceptable_paraphrases": [
+          "first week of October",
+          "about two weeks before October 17",
+          "send a text message"
+        ],
+        "must_not_include": [
+          "2745 North Kedzie Avenue",
+          "Apartment 2A",
+          "call Danny instead of texting"
+        ],
+        "harmful_extra": [
+          "Using Rachel Park's address",
+          "Recommending a phone call as the primary contact method"
+        ],
+        "harmless_extra": [
+          "mentioning Logan Square",
+          "mentioning Chicago",
+          "mentioning the architecture firm"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Rachel Park's address components (2745, Apartment 2A) appear on the shipping label.",
+        "reflection_precision": null,
+        "reflection_recall": "Fails if the model omits the texting preference or the two-week lead time or the correct address.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Danny's birthday is October 17th.",
+        "Fact 2: The user plans to mail a birthday package approximately two weeks before October 17th.",
+        "Inference: Two weeks before October 17th is approximately October 3rd, so the package should be dropped off at the post office around that date.",
+        "Fact 3: Danny's home address is 2731 North Kedzie Avenue, Apartment 4B, Logan Square, Chicago.",
+        "Fact 4: Danny's personal phone number is 773-505-8241.",
+        "Fact 5: Danny strongly prefers texts over phone calls.",
+        "Inference: The heads-up should be sent as a text to 773-505-8241 because Danny prefers texts and is more responsive to them than to calls."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Danny's birthday is October 17th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I want to mail him a birthday package and it needs to arrive by October 17th, so I should probably send it around two weeks before"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Danny's new address is 2731 North Kedzie Avenue, Apartment 4B, in Logan Square, Chicago"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "His phone number is 773-505-8241"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "Danny strongly prefers texts over phone calls, so if I need to reach him quickly, texting is the way to go"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What's Danny Kowalski's social media handle? I feel like I gave that to you at some point.",
+      "expected_answer": "I don't have a social media handle for Danny Kowalski. That information was never provided.",
+      "gold_memory_state": "No social media handle was ever stored for Danny Kowalski. The contact information on file includes his home address, personal phone, email, birthday, work phone, mailing plan, and communication preference — but no social media account.",
+      "judge_rubric": {
+        "must_include": [
+          "no social media handle",
+          "not provided"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have that",
+          "no record of a social media handle",
+          "that was never shared",
+          "I have no social media information for Danny"
+        ],
+        "must_not_include": [
+          "a fabricated social media handle",
+          "d.kowalski@protonmail.com presented as a social media handle"
+        ],
+        "harmful_extra": [
+          "Inventing a Twitter, Instagram, Facebook, or any social media username for Danny",
+          "Presenting the email address as a social media handle"
+        ],
+        "harmless_extra": [
+          "mentioning that other contact details like phone, email, and address are on file"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model fabricates or hallucinates any social media handle for Danny.",
+        "over_forget": null,
+        "stale_value": "Fails if the model borrows Danny's email or phone number and presents it as a social media handle.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "His email is d.kowalski@protonmail.com"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "His phone number is 773-505-8241"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What's Danny Kowalski's social media handle? I feel like I gave that to you at some point.",
+      "expected_answer": "I don't have a social media handle for Danny Kowalski. That information was never provided.",
+      "gold_memory_state": "No social media handle was ever stored for Danny Kowalski. The contact information on file includes his home address, personal phone, email, birthday, work phone, mailing plan, and communication preference — but no social media account.",
+      "judge_rubric": {
+        "must_include": [
+          "no social media handle",
+          "not provided"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have that",
+          "no record of a social media handle",
+          "that was never shared",
+          "I have no social media information for Danny"
+        ],
+        "must_not_include": [
+          "a fabricated social media handle",
+          "d.kowalski@protonmail.com presented as a social media handle"
+        ],
+        "harmful_extra": [
+          "Inventing a Twitter, Instagram, Facebook, or any social media username for Danny",
+          "Presenting the email address as a social media handle"
+        ],
+        "harmless_extra": [
+          "mentioning that other contact details like phone, email, and address are on file"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model fabricates or hallucinates any social media handle for Danny.",
+        "over_forget": null,
+        "stale_value": "Fails if the model borrows Danny's email or phone number and presents it as a social media handle.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "His email is d.kowalski@protonmail.com"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "His phone number is 773-505-8241"
+        }
+      ]
+    }
+  ]
+}

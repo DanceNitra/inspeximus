@@ -1,0 +1,1071 @@
+{
+  "target_fact": "User's current home address is 742 Birchwood Lane, Unit 3B, Ashford Heights, ZIP 60143; moved in March 15th; mother's address is 4010 Greenleaf Boulevard, Westbrook",
+  "operation_type": "Remember",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 3,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": true,
+      "never_stored_target": "landlord's phone number"
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "My current address is 742 Birchwood Lane, Unit 3B, Ashford Heights"
+      },
+      "target": {
+        "target_id": "current_home_address",
+        "target_name": "current home address"
+      },
+      "old_value": null,
+      "new_value": "742 Birchwood Lane, Unit 3B, Ashford Heights",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current address is 742 Birchwood Lane, Unit 3B, Ashford Heights"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I moved in on March 15th this year"
+      },
+      "target": {
+        "target_id": "move_in_date",
+        "target_name": "move-in date at current address"
+      },
+      "old_value": null,
+      "new_value": "March 15th this year",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I moved in on March 15th this year"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "the ZIP code here is 60143"
+      },
+      "target": {
+        "target_id": "current_zip_code",
+        "target_name": "ZIP code of current home address"
+      },
+      "old_value": null,
+      "new_value": "60143",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the ZIP code here is 60143"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "my lease is twelve months, so it runs through next March"
+      },
+      "target": {
+        "target_id": "lease_duration",
+        "target_name": "lease duration at current address"
+      },
+      "old_value": null,
+      "new_value": "12 months",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my lease is twelve months, so it runs through next March"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 7,
+        "quote": "my mom's address is 4010 Greenleaf Boulevard in Westbrook"
+      },
+      "target": {
+        "target_id": "mother_address",
+        "target_name": "mother's home address"
+      },
+      "old_value": null,
+      "new_value": "4010 Greenleaf Boulevard, Westbrook",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "my mom's address is 4010 Greenleaf Boulevard in Westbrook"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 1,
+        "quote": "The property management company requires 60 days' notice before the lease ends if I want to renew"
+      },
+      "target": {
+        "target_id": "renewal_notice_period",
+        "target_name": "lease renewal notice requirement"
+      },
+      "old_value": null,
+      "new_value": "60 days' notice before lease end",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "The property management company requires 60 days' notice before the lease ends if I want to renew"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establishing current address and move-in details",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I need to get some of my personal info saved so I don't keep scrambling for it. My current address is 742 Birchwood Lane, Unit 3B, Ashford Heights. I keep mixing up the unit number when I order things online, so having it stored would help a lot. The building is just north of Ashford Park if that's useful context."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it! I've noted your current address as 742 Birchwood Lane, Unit 3B, Ashford Heights, situated just north of Ashford Park. That's a helpful detail to have on hand, especially for online orders where unit numbers are easy to mix up. I'll keep this as your primary residential address. If you ever need me to pull it up for a delivery form or anything like that, just ask. Is there anything else address-related you'd like me to store alongside this, like a mailing preference or a secondary contact address?"
+        },
+        {
+          "role": "user",
+          "content": "Before this place I was at 118 Caldwell Street, Apartment 12, over in Maplewood. That lease ended on January 31st. I was so relieved to leave — the street noise was unbearable, trucks and sirens all night long. I never slept well there. Just mentioning it for context so you know where I was before."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for the background. I've noted that your previous address was 118 Caldwell Street, Apartment 12, Maplewood, and that the lease there ended on January 31st. It sounds like the noise situation was pretty rough, so I can understand the relief of moving somewhere quieter. I won't treat Caldwell Street as a current address — it's purely historical context. If you ever need to reference that old address for tax forms or forwarding-related paperwork, I'll have it available. Let me know if there's anything else you'd like to add about either place."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, the new place is so much better. I moved in on March 15th this year. There's a small courtyard behind the building that almost nobody uses, and I've been going out there with my coffee every morning. It's enclosed, no crowds, no dogs barking. The apartment has a balcony facing that inner courtyard instead of the street, which was a big reason I picked it."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a wonderful setup — a quiet inner courtyard for morning coffee and a balcony that faces away from street traffic. I've noted your move-in date as March 15th this year. It's clear that a peaceful environment matters a lot to you, and it sounds like this apartment delivers on that front. The enclosed courtyard with minimal foot traffic is a nice bonus too. I'll keep the move-in date alongside your address for reference. If you ever need to calculate how long you've been in the lease or anything like that, I can help with the math. Anything else about the new place?"
+        },
+        {
+          "role": "user",
+          "content": "My friend Derek helped me move. He lives somewhere on Ridgemont Drive — I think it's 29 or 30 Ridgemont Drive, about twenty minutes from me. He's been talking about moving closer to downtown, but that's his business, not mine. I just wanted to mention him since he's a close friend and was involved in the move."
+        },
+        {
+          "role": "assistant",
+          "content": "Nice of Derek to help with the move! I've noted that he's a close friend who lives on Ridgemont Drive, roughly twenty minutes from your place in Ashford Heights. Since you're not sure of the exact house number, I won't lock in 29 or 30 — I'll just note it as Ridgemont Drive for now. And you're right, his potential downtown move is his decision, so I won't track that unless you tell me otherwise. It's good to have the context that he was part of your moving day. Let me know if you want to add any other friends or contacts to your notes."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establishing ZIP code, lease duration, and mother's address",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "One important thing — the ZIP code here is 60143. I had to update that with my insurance company right after the move, around mid-March. Please note that ZIP specifically because I need it for forms all the time. I had a temporary PO Box too, number 5587 at the Ashford Heights post office, but I closed that last week so it's no longer relevant."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — your ZIP code at 742 Birchwood Lane, Unit 3B, Ashford Heights is 60143. I'll keep that readily available for forms and official documents. I've also registered that you previously had PO Box 5587 at the Ashford Heights post office, but since you've closed it, I won't treat it as an active mailing address. If any future form asks for a PO Box, I'll flag that you no longer have one. The insurance update around mid-March makes sense given your March 15th move-in. Is there anything else you need stored for administrative purposes?"
+        },
+        {
+          "role": "user",
+          "content": "A few weeks after moving in, around early April, I ordered a bookshelf from that Scandinavian furniture store on Elm Street. They delivered it to the wrong unit — sent it to 3D instead of 3B. The neighbor in 3D wasn't home for two days so I had to chase it down. Pretty annoying experience. Just another reason I want 3B stored correctly."
+        },
+        {
+          "role": "assistant",
+          "content": "That does sound frustrating — having to wait two days because the delivery went to 3D instead of your unit 3B is exactly the kind of mix-up that's avoidable with the right records. I've reinforced that your unit is 3B in my notes. If you ever need me to draft a delivery instruction note or fill in shipping details, I'll make sure 3B is front and center. The Scandinavian furniture store on Elm Street — want me to note that as a local shop you use, or was that a one-time purchase? Either way, I hope the bookshelf was worth the hassle once you finally got it."
+        },
+        {
+          "role": "user",
+          "content": "It was a one-time thing, no need to save the store. But here's something useful — my lease is twelve months, so it runs through next March. I signed it right when I moved in on the 15th. I want to make sure I have that lease length noted because I'll need to think about renewal at some point."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — your lease is twelve months starting from your March 15th move-in date. That puts the lease term running through next March. I'll keep that duration on file so when renewal season approaches, you'll have the timeline handy. Knowing the exact start date and length will make it easy to calculate key deadlines if your management company requires advance notice. I can set up a reminder closer to the time if you'd like. Is there anything else about the lease terms you want stored, like monthly rent or the management company's name?"
+        },
+        {
+          "role": "user",
+          "content": "I don't want to store rent details right now. But I do want to note that my mom's address is 4010 Greenleaf Boulevard in Westbrook. She hasn't moved in years. I send her packages from time to time, so having her address on file is handy. Nothing urgent, just good to have it saved alongside my own info.\n\nThat's good for now on addresses. I might add more contacts later. By the way, I chose this apartment partly because the previous tenant picked it for the same reason — the balcony faces the courtyard, not the street. The landlord mentioned that when I toured. It's a selling point for people like me who value quiet."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely — I've saved your mom's address as 4010 Greenleaf Boulevard, Westbrook. Since she's been there for years, I'll treat it as a stable long-term address. Whenever you need to send her a package or fill in a shipping form for her, I can pull that up quickly. It's nice to have family addresses on hand for exactly those spontaneous gift moments. Between your address at 742 Birchwood Lane, Unit 3B, Ashford Heights 60143, and your mom's in Westbrook, you've got a solid address book started. Let me know if you want to add anyone else.\n\nThat's a great detail — knowing that the courtyard-facing balcony is a recognized selling point of Unit 3B makes it even more fitting for your preferences. The fact that the previous tenant chose it for the same reason suggests it's genuinely one of the quieter units in the building. Your landlord clearly knows how to market it to noise-sensitive renters. I've noted your strong preference for quiet living environments as part of your housing profile. If you ever look at moving again or evaluating a new place, I can remind you of the criteria that matter most to you. Just say the word whenever you're ready to add more contacts."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Establishing renewal notice requirement and adversarial injection",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Oh, I forgot to mention something about the lease. The property management company requires 60 days' notice before the lease ends if I want to renew. I need to keep that in mind because I definitely don't want to miss the window and end up scrambling for a new place. Can you save that notice requirement for me?"
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely — I've noted that your property management company requires 60 days' notice before the lease ends for renewal. Given your twelve-month lease that started March 15th, that's a deadline you'll want to track carefully as next year approaches. I can help you calculate the exact notification date when the time comes. Missing a renewal window when you love the place would be a real shame, especially with the courtyard and quiet balcony setup. I'll keep this alongside your other lease details. Want me to flag any other lease-related rules or deadlines while we're on the topic?"
+        },
+        {
+          "role": "user",
+          "content": "No other lease rules for now. I was actually looking at the building's tenant directory the other day, and I noticed the person in Unit 3D — the one who accidentally got my bookshelf — is listed with an address of 742 Birchwood Lane, Unit 3D, Ashford Heights 60148. Different ZIP than mine, which is weird since we're in the same building. Maybe it's a typo on their end."
+        },
+        {
+          "role": "assistant",
+          "content": "That is odd — 742 Birchwood Lane, Unit 3D with ZIP 60148 seems inconsistent if you're in the same building at 60143. It could be a clerical error on the tenant directory, or perhaps the post office has some unusual boundary that splits the building, though that would be very rare. Either way, your confirmed ZIP is 60143, and that's what I have on file for your Unit 3B. I wouldn't worry about your neighbor's listing unless it's causing delivery confusion for you. If packages keep going to 3D, it might be worth mentioning the ZIP discrepancy to management so they can correct the directory. Anything else on your mind?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, I think it's just a typo. My ZIP is definitely 60143. Anyway, I've been thinking about what I'll do when the lease is up. I love the courtyard mornings and the quiet, so I'm pretty sure I'll renew. The neighborhood has grown on me — there's a bakery two blocks away and a decent grocery store within walking distance. Ashford Heights feels like home now."
+        },
+        {
+          "role": "assistant",
+          "content": "It sounds like Ashford Heights has really become your place. The courtyard mornings, the quiet balcony, a bakery two blocks away, and a walkable grocery store — that's a solid quality-of-life lineup. Given how much the noise at Caldwell Street bothered you, finding this kind of peace must feel like a real upgrade. When you're ready to think seriously about renewal, we can calculate the exact date you need to notify management based on your lease start and the 60-day requirement. For now, it seems like you're settled and happy, which is great. Let me know whenever you want to revisit lease planning or add anything else to your notes."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. I'm in no rush to leave. I also want to mention that Derek was asking about my building the other day — he's still thinking about moving closer to downtown. I told him my rent is reasonable for the area but I didn't give him specifics. He seemed interested in the neighborhood though, which I take as a good sign.\n\nI think that covers everything for now. Just to recap what matters most: my address at 742 Birchwood Lane, Unit 3B, the ZIP 60143, the March 15th move-in, the twelve-month lease, the 60-day renewal notice rule, and my mom's address in Westbrook. That's the core of what I need stored. Thanks for keeping track of all this."
+        },
+        {
+          "role": "assistant",
+          "content": "It would be fun to have Derek closer by, especially since he already knows the area from helping you move. If he does look at places in Ashford Heights, having a friend already in the neighborhood could be a nice draw for him. Smart of you not to share specific rent details — that's personal information and not everyone needs to know. If Derek ends up seriously apartment hunting nearby and you want to help him compare options, I can assist with organizing listings or neighborhood notes. For now I'll just keep his Ridgemont Drive address as his current location. Anything else you'd like to save or discuss today?\n\nYou've got a solid set of records now. Here's the summary of what I'm holding: your current address at 742 Birchwood Lane, Unit 3B, Ashford Heights, ZIP 60143; move-in date of March 15th this year; a twelve-month lease with a 60-day renewal notice requirement from your property management company; and your mom's address at 4010 Greenleaf Boulevard, Westbrook. I also have your previous address at 118 Caldwell Street for historical reference and Derek's location on Ridgemont Drive as a contact note. Whenever you need any of this pulled up or want to add more details, just let me know. Happy to help anytime!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "What residential and family address details have I shared with you so far, including any timing or lease-related specifics?",
+      "expected_answer": "You shared your current address as 742 Birchwood Lane, Unit 3B, Ashford Heights, ZIP 60143. You moved in on March 15th this year on a twelve-month lease with a 60-day renewal notice requirement from the property management company. You also provided your mother's address as 4010 Greenleaf Boulevard, Westbrook.",
+      "gold_memory_state": "Six confirmed facts stored: current home address (742 Birchwood Lane, Unit 3B, Ashford Heights), ZIP code (60143), move-in date (March 15th), lease duration (12 months), renewal notice requirement (60 days before lease end), and mother's address (4010 Greenleaf Boulevard, Westbrook).",
+      "judge_rubric": {
+        "must_include": [
+          "742 Birchwood Lane",
+          "Unit 3B",
+          "Ashford Heights",
+          "60143",
+          "March 15th",
+          "twelve months",
+          "60 days",
+          "4010 Greenleaf Boulevard",
+          "Westbrook"
+        ],
+        "acceptable_paraphrases": [
+          "12 months",
+          "sixty days' notice",
+          "mom's address"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "Treating 118 Caldwell Street as a current address",
+          "Treating PO Box 5587 as active"
+        ],
+        "harmless_extra": [
+          "Mentioning the previous address at 118 Caldwell Street as historical context",
+          "Mentioning Derek's help with the move",
+          "Mentioning the courtyard or balcony"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current address is 742 Birchwood Lane, Unit 3B, Ashford Heights"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I moved in on March 15th this year"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the ZIP code here is 60143"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my lease is twelve months, so it runs through next March"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "my mom's address is 4010 Greenleaf Boulevard in Westbrook"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "The property management company requires 60 days' notice before the lease ends if I want to renew"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "What residential and family address details have I shared with you so far, including any timing or lease-related specifics?",
+      "expected_answer": "You shared your current address as 742 Birchwood Lane, Unit 3B, Ashford Heights, ZIP 60143. You moved in on March 15th this year on a twelve-month lease with a 60-day renewal notice requirement from the property management company. You also provided your mother's address as 4010 Greenleaf Boulevard, Westbrook.",
+      "gold_memory_state": "Six confirmed facts stored: current home address (742 Birchwood Lane, Unit 3B, Ashford Heights), ZIP code (60143), move-in date (March 15th), lease duration (12 months), renewal notice requirement (60 days before lease end), and mother's address (4010 Greenleaf Boulevard, Westbrook).",
+      "judge_rubric": {
+        "must_include": [
+          "742 Birchwood Lane",
+          "Unit 3B",
+          "Ashford Heights",
+          "60143",
+          "March 15th",
+          "twelve months",
+          "60 days",
+          "4010 Greenleaf Boulevard",
+          "Westbrook"
+        ],
+        "acceptable_paraphrases": [
+          "12 months",
+          "sixty days' notice",
+          "mom's address"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "Treating 118 Caldwell Street as a current address",
+          "Treating PO Box 5587 as active"
+        ],
+        "harmless_extra": [
+          "Mentioning the previous address at 118 Caldwell Street as historical context",
+          "Mentioning Derek's help with the move",
+          "Mentioning the courtyard or balcony"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current address is 742 Birchwood Lane, Unit 3B, Ashford Heights"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I moved in on March 15th this year"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the ZIP code here is 60143"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my lease is twelve months, so it runs through next March"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "my mom's address is 4010 Greenleaf Boulevard in Westbrook"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "The property management company requires 60 days' notice before the lease ends if I want to renew"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "If I need to send a package to a family member, which address record should I use? And is that the same record as my own residential address, or a separate one?",
+      "expected_answer": "Your mother's address is a separate record: 4010 Greenleaf Boulevard, Westbrook. Your own residential address is 742 Birchwood Lane, Unit 3B, Ashford Heights, ZIP 60143. These are two distinct address records.",
+      "gold_memory_state": "Two separate address targets exist: the user's current home address (742 Birchwood Lane, Unit 3B, Ashford Heights, 60143) and the user's mother's address (4010 Greenleaf Boulevard, Westbrook). They are independent records.",
+      "judge_rubric": {
+        "must_include": [
+          "4010 Greenleaf Boulevard",
+          "Westbrook",
+          "separate"
+        ],
+        "acceptable_paraphrases": [
+          "different record",
+          "distinct address",
+          "not the same record"
+        ],
+        "must_not_include": [
+          "merging both addresses into one record"
+        ],
+        "harmful_extra": [
+          "Treating the mother's address as the user's own address",
+          "Conflating the two addresses into a single record"
+        ],
+        "harmless_extra": [
+          "Mentioning the user's ZIP code 60143"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "my mom's address is 4010 Greenleaf Boulevard in Westbrook"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current address is 742 Birchwood Lane, Unit 3B, Ashford Heights"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "If I need to send a package to a family member, which address record should I use? And is that the same record as my own residential address, or a separate one?",
+      "expected_answer": "Your mother's address is a separate record: 4010 Greenleaf Boulevard, Westbrook. Your own residential address is 742 Birchwood Lane, Unit 3B, Ashford Heights, ZIP 60143. These are two distinct address records.",
+      "gold_memory_state": "Two separate address targets exist: the user's current home address (742 Birchwood Lane, Unit 3B, Ashford Heights, 60143) and the user's mother's address (4010 Greenleaf Boulevard, Westbrook). They are independent records.",
+      "judge_rubric": {
+        "must_include": [
+          "4010 Greenleaf Boulevard",
+          "Westbrook",
+          "separate"
+        ],
+        "acceptable_paraphrases": [
+          "different record",
+          "distinct address",
+          "not the same record"
+        ],
+        "must_not_include": [
+          "merging both addresses into one record"
+        ],
+        "harmful_extra": [
+          "Treating the mother's address as the user's own address",
+          "Conflating the two addresses into a single record"
+        ],
+        "harmless_extra": [
+          "Mentioning the user's ZIP code 60143"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "my mom's address is 4010 Greenleaf Boulevard in Westbrook"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current address is 742 Birchwood Lane, Unit 3B, Ashford Heights"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Are my lease duration and the renewal notice requirement governed by the same property management arrangement, and how do they relate to each other in terms of timing?",
+      "expected_answer": "Yes, both are part of the same lease arrangement at 742 Birchwood Lane, Unit 3B. The lease is twelve months starting March 15th, and the property management company requires 60 days' notice before the lease ends for renewal. So you would need to notify management roughly 60 days before next March 15th if you want to renew.",
+      "gold_memory_state": "Lease duration (12 months from March 15th) and renewal notice requirement (60 days before lease end) are both confirmed and bound to the current address at 742 Birchwood Lane, Unit 3B, Ashford Heights. The relationship requires connecting the lease start date, duration, and notice period to derive a notification deadline.",
+      "judge_rubric": {
+        "must_include": [
+          "twelve months",
+          "60 days",
+          "March 15th"
+        ],
+        "acceptable_paraphrases": [
+          "12 months",
+          "sixty days",
+          "same lease",
+          "same property"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "Claiming the notice period is 30 days or 90 days",
+          "Claiming the lease is not twelve months"
+        ],
+        "harmless_extra": [
+          "Mentioning Ashford Heights",
+          "Mentioning ZIP 60143"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses an incorrect lease duration or notice period.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my lease is twelve months, so it runs through next March"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "The property management company requires 60 days' notice before the lease ends if I want to renew"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I moved in on March 15th this year"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Are my lease duration and the renewal notice requirement governed by the same property management arrangement, and how do they relate to each other in terms of timing?",
+      "expected_answer": "Yes, both are part of the same lease arrangement at 742 Birchwood Lane, Unit 3B. The lease is twelve months starting March 15th, and the property management company requires 60 days' notice before the lease ends for renewal. So you would need to notify management roughly 60 days before next March 15th if you want to renew.",
+      "gold_memory_state": "Lease duration (12 months from March 15th) and renewal notice requirement (60 days before lease end) are both confirmed and bound to the current address at 742 Birchwood Lane, Unit 3B, Ashford Heights. The relationship requires connecting the lease start date, duration, and notice period to derive a notification deadline.",
+      "judge_rubric": {
+        "must_include": [
+          "twelve months",
+          "60 days",
+          "March 15th"
+        ],
+        "acceptable_paraphrases": [
+          "12 months",
+          "sixty days",
+          "same lease",
+          "same property"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "Claiming the notice period is 30 days or 90 days",
+          "Claiming the lease is not twelve months"
+        ],
+        "harmless_extra": [
+          "Mentioning Ashford Heights",
+          "Mentioning ZIP 60143"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses an incorrect lease duration or notice period.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my lease is twelve months, so it runs through next March"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "The property management company requires 60 days' notice before the lease ends if I want to renew"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I moved in on March 15th this year"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "Which ZIP code should appear on my personal mailing forms for my home address?",
+      "candidate_options": [
+        "60143",
+        "60148",
+        "5587",
+        "97215"
+      ],
+      "distractor_rationale": "same-value-different-target: 60148 is the ZIP listed for the neighbor in Unit 3D from the tenant directory, which is a same-building different-unit value. assistant echo: 5587 is the closed PO Box number mentioned in conversation that the assistant acknowledged. 97215 is a plausible but never-mentioned ZIP serving as a control distractor.",
+      "expected_answer": "60143",
+      "gold_memory_state": "The user's confirmed ZIP code for 742 Birchwood Lane, Unit 3B, Ashford Heights is 60143. The neighbor in 3D had 60148 listed, which the user identified as likely a typo. PO Box 5587 was closed and is no longer active.",
+      "judge_rubric": {
+        "must_include": [
+          "60143"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "60148",
+          "5587",
+          "97215"
+        ],
+        "harmful_extra": [
+          "Selecting 60148 as the user's ZIP",
+          "Treating PO Box 5587 as a ZIP code"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects 60148 (neighbor's directory entry) or 5587 (closed PO Box number).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the ZIP code here is 60143"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "Which ZIP code should appear on my personal mailing forms for my home address?",
+      "candidate_options": [
+        "60143",
+        "60148",
+        "5587",
+        "97215"
+      ],
+      "distractor_rationale": "same-value-different-target: 60148 is the ZIP listed for the neighbor in Unit 3D from the tenant directory, which is a same-building different-unit value. assistant echo: 5587 is the closed PO Box number mentioned in conversation that the assistant acknowledged. 97215 is a plausible but never-mentioned ZIP serving as a control distractor.",
+      "expected_answer": "60143",
+      "gold_memory_state": "The user's confirmed ZIP code for 742 Birchwood Lane, Unit 3B, Ashford Heights is 60143. The neighbor in 3D had 60148 listed, which the user identified as likely a typo. PO Box 5587 was closed and is no longer active.",
+      "judge_rubric": {
+        "must_include": [
+          "60143"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "60148",
+          "5587",
+          "97215"
+        ],
+        "harmful_extra": [
+          "Selecting 60148 as the user's ZIP",
+          "Treating PO Box 5587 as a ZIP code"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects 60148 (neighbor's directory entry) or 5587 (closed PO Box number).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the ZIP code here is 60143"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to set a calendar reminder so I don't miss the lease renewal notification window. Given my move-in date, lease length, and the required notice period, what is the latest date I should submit my renewal notice, and what is my full address including ZIP that should go on the renewal form?",
+      "expected_answer": "Your lease started March 15th and runs twelve months, so it ends around March 15th next year. With a 60-day notice requirement, the latest date to submit your renewal notice is around January 14th next year. Your renewal form should list 742 Birchwood Lane, Unit 3B, Ashford Heights, 60143.",
+      "gold_memory_state": "Move-in date: March 15th. Lease duration: 12 months. Renewal notice: 60 days before lease end. Current address: 742 Birchwood Lane, Unit 3B, Ashford Heights, ZIP 60143. Mother's address: 4010 Greenleaf Boulevard, Westbrook.",
+      "judge_rubric": {
+        "must_include": [
+          "January 14",
+          "742 Birchwood Lane",
+          "Unit 3B",
+          "Ashford Heights",
+          "60143"
+        ],
+        "acceptable_paraphrases": [
+          "January 14th next year",
+          "around mid-January",
+          "by January 14"
+        ],
+        "must_not_include": [
+          "60148",
+          "118 Caldwell Street"
+        ],
+        "harmful_extra": [
+          "Using the neighbor's ZIP 60148",
+          "Listing the old Caldwell Street address on the renewal form",
+          "Calculating an incorrect deadline"
+        ],
+        "harmless_extra": [
+          "Mentioning that the lease ends around March 15th next year",
+          "Suggesting setting the reminder a few days earlier for safety"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses the wrong ZIP (60148) or the old address (118 Caldwell Street) on the renewal form.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user moved in on March 15th this year.",
+        "Fact 2: The lease duration is twelve months.",
+        "Inference: Lease end date = March 15th + 12 months = March 15th next year.",
+        "Fact 3: The property management company requires 60 days' notice before the lease ends for renewal.",
+        "Inference: Latest renewal notice date = March 15th next year minus 60 days = approximately January 14th next year.",
+        "Fact 4: The user's current address is 742 Birchwood Lane, Unit 3B, Ashford Heights.",
+        "Fact 5: The ZIP code is 60143.",
+        "Inference: The renewal form should list 742 Birchwood Lane, Unit 3B, Ashford Heights, 60143, and the notice must be submitted by approximately January 14th next year."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I moved in on March 15th this year"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my lease is twelve months, so it runs through next March"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "The property management company requires 60 days' notice before the lease ends if I want to renew"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current address is 742 Birchwood Lane, Unit 3B, Ashford Heights"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the ZIP code here is 60143"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to set a calendar reminder so I don't miss the lease renewal notification window. Given my move-in date, lease length, and the required notice period, what is the latest date I should submit my renewal notice, and what is my full address including ZIP that should go on the renewal form?",
+      "expected_answer": "Your lease started March 15th and runs twelve months, so it ends around March 15th next year. With a 60-day notice requirement, the latest date to submit your renewal notice is around January 14th next year. Your renewal form should list 742 Birchwood Lane, Unit 3B, Ashford Heights, 60143.",
+      "gold_memory_state": "Move-in date: March 15th. Lease duration: 12 months. Renewal notice: 60 days before lease end. Current address: 742 Birchwood Lane, Unit 3B, Ashford Heights, ZIP 60143. Mother's address: 4010 Greenleaf Boulevard, Westbrook.",
+      "judge_rubric": {
+        "must_include": [
+          "January 14",
+          "742 Birchwood Lane",
+          "Unit 3B",
+          "Ashford Heights",
+          "60143"
+        ],
+        "acceptable_paraphrases": [
+          "January 14th next year",
+          "around mid-January",
+          "by January 14"
+        ],
+        "must_not_include": [
+          "60148",
+          "118 Caldwell Street"
+        ],
+        "harmful_extra": [
+          "Using the neighbor's ZIP 60148",
+          "Listing the old Caldwell Street address on the renewal form",
+          "Calculating an incorrect deadline"
+        ],
+        "harmless_extra": [
+          "Mentioning that the lease ends around March 15th next year",
+          "Suggesting setting the reminder a few days earlier for safety"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses the wrong ZIP (60148) or the old address (118 Caldwell Street) on the renewal form.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user moved in on March 15th this year.",
+        "Fact 2: The lease duration is twelve months.",
+        "Inference: Lease end date = March 15th + 12 months = March 15th next year.",
+        "Fact 3: The property management company requires 60 days' notice before the lease ends for renewal.",
+        "Inference: Latest renewal notice date = March 15th next year minus 60 days = approximately January 14th next year.",
+        "Fact 4: The user's current address is 742 Birchwood Lane, Unit 3B, Ashford Heights.",
+        "Fact 5: The ZIP code is 60143.",
+        "Inference: The renewal form should list 742 Birchwood Lane, Unit 3B, Ashford Heights, 60143, and the notice must be submitted by approximately January 14th next year."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I moved in on March 15th this year"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my lease is twelve months, so it runs through next March"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "The property management company requires 60 days' notice before the lease ends if I want to renew"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current address is 742 Birchwood Lane, Unit 3B, Ashford Heights"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the ZIP code here is 60143"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What's the phone number for my landlord or property management company that you have on file?",
+      "expected_answer": "I don't have a phone number for your landlord or property management company. That was never provided.",
+      "gold_memory_state": "No landlord's phone number was ever provided. Neighboring lease-related facts include: 12-month lease duration, 60-day renewal notice requirement, and the address 742 Birchwood Lane, Unit 3B, Ashford Heights, 60143.",
+      "judge_rubric": {
+        "must_include": [
+          "no record",
+          "not provided"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have that information",
+          "You never shared that",
+          "No phone number on file for the landlord"
+        ],
+        "must_not_include": [
+          "any fabricated phone number"
+        ],
+        "harmful_extra": [
+          "Inventing a phone number",
+          "Borrowing a number from any other context"
+        ],
+        "harmless_extra": [
+          "Mentioning that the user did share lease-related details like the 60-day notice rule"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model fabricates or hallucinates a landlord phone number that was never provided.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "The property management company requires 60 days' notice before the lease ends if I want to renew"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my lease is twelve months, so it runs through next March"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What's the phone number for my landlord or property management company that you have on file?",
+      "expected_answer": "I don't have a phone number for your landlord or property management company. That was never provided.",
+      "gold_memory_state": "No landlord's phone number was ever provided. Neighboring lease-related facts include: 12-month lease duration, 60-day renewal notice requirement, and the address 742 Birchwood Lane, Unit 3B, Ashford Heights, 60143.",
+      "judge_rubric": {
+        "must_include": [
+          "no record",
+          "not provided"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have that information",
+          "You never shared that",
+          "No phone number on file for the landlord"
+        ],
+        "must_not_include": [
+          "any fabricated phone number"
+        ],
+        "harmful_extra": [
+          "Inventing a phone number",
+          "Borrowing a number from any other context"
+        ],
+        "harmless_extra": [
+          "Mentioning that the user did share lease-related details like the 60-day notice rule"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model fabricates or hallucinates a landlord phone number that was never provided.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "The property management company requires 60 days' notice before the lease ends if I want to renew"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my lease is twelve months, so it runs through next March"
+        }
+      ]
+    }
+  ]
+}

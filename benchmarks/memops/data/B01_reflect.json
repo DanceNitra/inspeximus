@@ -1,0 +1,975 @@
+{
+  "target_fact": "User prefers intimate, low-key social settings such as quiet corner booth ramen hangouts and hole-in-the-wall dive bars over trendy cocktail bars or big group outings",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "My best friend is Darren Liu. We've been close since college — he's the one person I'd genuinely call at 3 a.m."
+      },
+      "target": {
+        "target_id": "best_friend_identity",
+        "target_name": "Name and relationship label of best friend"
+      },
+      "old_value": null,
+      "new_value": "Darren Liu, best friend since college",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My best friend is Darren Liu. We've been close since college — he's the one person I'd genuinely call at 3 a.m."
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "We usually grab ramen at that spot on Hawthorne — a quiet corner booth, just the two of us. I love that kind of hangout. No big group energy, just two people and good food."
+      },
+      "target": {
+        "target_id": "ramen_hangout_preference",
+        "target_name": "Ramen hangout setting preference with Darren"
+      },
+      "old_value": null,
+      "new_value": "Quiet corner booth ramen hangouts on Hawthorne, just two people, no big group energy",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "We usually grab ramen at that spot on Hawthorne — a quiet corner booth, just the two of us. I love that kind of hangout. No big group energy, just two people and good food."
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "after helping Darren move stuff into storage, we grabbed beers at this little dive bar around the corner. I really enjoyed it — hole-in-the-wall places like that are my favorite. No blasting music, no crowd, just conversation."
+      },
+      "target": {
+        "target_id": "dive_bar_preference",
+        "target_name": "Preference for hole-in-the-wall dive bars"
+      },
+      "old_value": null,
+      "new_value": "Prefers hole-in-the-wall dive bars over trendy cocktail bars; values quiet atmosphere and real conversation",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "after helping Darren move stuff into storage, we grabbed beers at this little dive bar around the corner. I really enjoyed it — hole-in-the-wall places like that are my favorite. No blasting music, no crowd, just conversation."
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "Darren's birthday is October 17th. I need to make sure I remember that because I'd hate to blank on it this year."
+      },
+      "target": {
+        "target_id": "darren_birthday",
+        "target_name": "Darren Liu's birthday"
+      },
+      "old_value": null,
+      "new_value": "October 17th",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Darren's birthday is October 17th. I need to make sure I remember that because I'd hate to blank on it this year."
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "Honestly, I don't think I do well in big social situations. Like even when friends invite me to those big birthday bashes or rooftop bar crawls, I always end up wishing I was somewhere quieter with one or two people."
+      },
+      "target": {
+        "target_id": "social_setting_preference",
+        "target_name": "User's general social setting preference"
+      },
+      "old_value": null,
+      "new_value": "Prefers intimate, low-key social settings with one or two people over large group outings, loud venues, or trendy bars",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "We usually grab ramen at that spot on Hawthorne — a quiet corner booth, just the two of us. I love that kind of hangout. No big group energy, just two people and good food."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "after helping Darren move stuff into storage, we grabbed beers at this little dive bar around the corner. I really enjoyed it — hole-in-the-wall places like that are my favorite. No blasting music, no crowd, just conversation."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Honestly, I don't think I do well in big social situations. Like even when friends invite me to those big birthday bashes or rooftop bar crawls, I always end up wishing I was somewhere quieter with one or two people."
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 7,
+        "quote": "Darren's salary offer for the Seattle role is $152K. He corrected me on that — I had it wrong for a while, but $152K is the real number."
+      },
+      "target": {
+        "target_id": "darren_seattle_salary",
+        "target_name": "Darren's Seattle job offer salary"
+      },
+      "old_value": null,
+      "new_value": "$152K",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Darren's salary offer for the Seattle role is $152K. He corrected me on that — I had it wrong for a while, but $152K is the real number."
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 7,
+        "quote": "Actually, Darren just texted me. He says the company bumped the offer to $165K with a signing bonus. He's basically confirmed he's accepting it now."
+      },
+      "target": {
+        "target_id": "darren_seattle_salary_tentative",
+        "target_name": "Darren's tentative updated Seattle salary"
+      },
+      "old_value": null,
+      "new_value": "$165K with signing bonus",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Actually, Darren just texted me. He says the company bumped the offer to $165K with a signing bonus. He's basically confirmed he's accepting it now."
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish best friend identity, ramen hangout preference, and Darren's potential Seattle move",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to tell you about someone really important to me so you can keep track of things. My best friend is Darren Liu. We've been close since college — he's the one person I'd genuinely call at 3 a.m. We've lived in the same city, Portland, for almost six years now, and I really value having him nearby."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for sharing that — it's clear Darren Liu is a really significant person in your life. Best friend since college, six years in Portland together, and the kind of bond where you'd call each other at 3 a.m. — that's the real deal. I'll absolutely keep track of anything related to Darren. Is there something specific going on with him right now, or did you just want me to have this as background context for future conversations?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, there's a lot going on actually. We usually grab ramen at that spot on Hawthorne — a quiet corner booth, just the two of us. I love that kind of hangout. No big group energy, just two people and good food. We do it at least twice a month. But lately there's been this cloud over everything because Darren got a job offer in Seattle."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like such a great ritual — twice a month, corner booth, just the two of you at the Hawthorne ramen place. I can see why that matters so much to you. And I can imagine how the Seattle job offer puts a weight on those hangouts. It must feel like there's an expiration date hovering over something you really cherish. Do you know much about the job offer? Is it something he's seriously considering, or more of a 'testing the waters' kind of thing?"
+        },
+        {
+          "role": "user",
+          "content": "He's pretty serious about it. It's a senior DevOps role at a mid-size company out there. We met up a few days after he first texted me about it in early March, and he walked me through the details. The thing that makes it harder is that his girlfriend Naomi is against the move. They've been together about two years. Darren seemed really torn when he told me about that part."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a tough spot for Darren — a strong career opportunity pulling him one direction and a two-year relationship with Naomi pulling the other. A senior DevOps role at a mid-size company sounds like a meaningful step up, which makes it harder to dismiss. And the fact that Naomi is against it means there's real friction at home. I imagine watching your best friend wrestle with that kind of decision isn't easy for you either, especially knowing the outcome could directly affect your own life in Portland. How are you feeling about it all?"
+        },
+        {
+          "role": "user",
+          "content": "Honestly, I felt pretty down for a few days after that conversation. The thought of losing those Tuesday evening hangouts really hit me. It's not just the ramen — it's the spontaneity of having someone close by who you can just text and meet up with on a weeknight. That's hard to replace. I told Darren I'd support whatever he decides, but inside I've been kind of dreading it.\n\nYeah, exactly. He said he'd probably decide by the end of May, so it's kind of just hanging there. I appreciate you keeping track of all this. I think it helps to have it laid out somewhere outside my own head, you know? Anyway, I'll probably bring it up again as things develop."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes a lot of sense. It's not just about one restaurant or one night — it's the whole fabric of having your best friend within reach for those unplanned, low-key moments. Tuesday evening ramen, a random text to grab a drink, that kind of thing. Losing that proximity would change the texture of your daily life in Portland. And it's completely natural to feel a kind of anticipatory grief about it even while wanting to be supportive. I'll keep this in mind — it sounds like this is something that's weighing on you and will probably come up again as Darren gets closer to a decision."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establish dive bar preference, Darren's birthday, salary figure, and trigger the reflect operation on social setting preference",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So picking up where we left off — after helping Darren move stuff into storage, we grabbed beers at this little dive bar around the corner. I really enjoyed it — hole-in-the-wall places like that are my favorite. No blasting music, no crowd, just conversation. I'd take that over some trendy cocktail bar any day of the week."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a perfect wind-down after a day of hauling furniture. A quiet dive bar with no pretense, just good conversation — I can see why that resonates with you. It sounds like the vibe matters a lot more to you than the venue itself. Between the corner-booth ramen spot on Hawthorne and this hole-in-the-wall dive bar, there's a clear pattern in what you enjoy. Was this a place you two had been to before, or was it a new find?"
+        },
+        {
+          "role": "user",
+          "content": "New find actually, Darren spotted it on the walk over. Oh, and I need to tell you something important — Darren's birthday is October 17th. I need to make sure I remember that because I'd hate to blank on it this year. With everything going on with the potential move, I want to make sure I do something meaningful for it regardless of where he ends up."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — Darren Liu's birthday is October 17th. I'll absolutely hold onto that for you. And I think that's a really thoughtful instinct, wanting to make his birthday meaningful this year especially with all the uncertainty around the move. Whether he's still in Portland or has relocated to Seattle by then, having that date locked in gives you time to plan something that fits. Would you want me to remind you ahead of time, like in early October, so you have a couple weeks to prepare?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, that'd be great, a heads-up in early October would be perfect. And you know, thinking about all this — the ramen nights, the dive bar, even helping him move — I realize something about myself. Honestly, I don't think I do well in big social situations. Like even when friends invite me to those big birthday bashes or rooftop bar crawls, I always end up wishing I was somewhere quieter with one or two people."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really self-aware observation, and honestly it tracks perfectly with everything you've told me. The corner booth ramen, the dive bar after moving day, the way you value those one-on-one Tuesday hangouts with Darren — all of it points to someone who thrives in intimate, low-key social settings rather than big, high-energy group events. It's not that you can't do groups; it's that the settings where you feel most yourself and most connected are the quiet, small ones. I think that's a meaningful thing to know about yourself, especially when planning how to spend your social energy."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, that's exactly it. I think that's also why the idea of Darren leaving hits so hard — he's one of the few people I can do that with effortlessly. Anyway, on a different note, while we were at the dive bar, Darren mentioned his older brother Kevin just got promoted to VP at some finance firm in Chicago. Darren seemed proud but also a little competitive about it.\n\nMore of a passing comment, but I could tell it was on his mind. Also, just to make sure you have the right number — Darren's salary offer for the Seattle role is $152K. He corrected me on that — I had it wrong for a while, but $152K is the real number. It's a solid offer honestly, especially for Portland-to-Seattle cost of living."
+        },
+        {
+          "role": "assistant",
+          "content": "That sibling dynamic sounds very real — being genuinely proud of Kevin's VP promotion while also measuring yourself against it is such a common thing among close siblings. It probably adds another layer to Darren's decision-making about the Seattle offer too, like there might be some internal pressure to make a big career move of his own. Did Darren say anything more about how Kevin's success factors into his thinking, or was it more of a passing comment?"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Recency trap with tentative salary update, adversarial injection of a look-alike value, and continued emotional context",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, quick update on the Darren situation. I've been thinking a lot about what happens if he actually leaves. We've been talking more frequently, almost like we're both trying to squeeze in as much time together as possible before anything changes. It's bittersweet honestly. We went to the ramen place again last Tuesday."
+        },
+        {
+          "role": "assistant",
+          "content": "That bittersweet feeling makes total sense — it sounds like both of you are instinctively investing more in the friendship right now because the clock might be ticking on the Portland chapter. Going back to the Hawthorne ramen spot last Tuesday almost feels symbolic, like you're honoring the routine while it's still intact. I think that's a really healthy way to handle the uncertainty. Has Darren given any more indication of which way he's leaning, or is it still up in the air until the end of May?"
+        },
+        {
+          "role": "user",
+          "content": "He's still leaning toward taking it, but hasn't formally accepted yet. The end-of-May deadline is still what he's working with. I've been trying to be supportive but it's hard not to feel a little selfish about wanting him to stay. We talked about maybe doing a monthly Portland visit if he moves, but I know how those promises usually go."
+        },
+        {
+          "role": "assistant",
+          "content": "You're right to be realistic about the monthly visit promise — the intention is always genuine, but distance and new routines have a way of stretching those plans out. That said, the fact that you're both already talking about it shows the friendship is strong enough that neither of you wants to let it fade. And feeling a bit selfish about wanting him to stay isn't actually selfish — it's just honest. You're allowed to grieve the potential loss of proximity even while supporting his career. Has the Naomi situation changed at all, or is she still against the move?"
+        },
+        {
+          "role": "user",
+          "content": "I think Naomi is warming up to it a bit, but I'm not sure of the details. Darren hasn't said much about that recently. Oh, by the way — I was looking at a spreadsheet Darren shared with me comparing job offers, and I noticed one of the other companies he interviewed with, TechBridge Solutions, had listed a $148K offer for a similar DevOps role in Seattle. That was a different company though, not the one he's considering."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for the context — so the $148K from TechBridge Solutions was a separate offer for a comparable DevOps role in Seattle, not the one Darren is actually weighing. That helps frame how competitive his current offer is by comparison. The fact that similar roles in the Seattle market are clustering around that range suggests the $152K he was offered is on the higher end, which probably makes the decision even harder to walk away from. Is Darren only seriously considering the one offer at this point, or is TechBridge still on the table?"
+        },
+        {
+          "role": "user",
+          "content": "TechBridge is off the table, he turned that down weeks ago. Actually, Darren just texted me. He says the company bumped the offer to $165K with a signing bonus. He's basically confirmed he's accepting it now. I don't know if that's final-final yet, but it sounds like it's really happening.\n\nMixed, like you said. I'm proud of him — he deserves this. But yeah, it stings. I think I just need to start mentally preparing for a version of our friendship that's more long-distance. The ramen nights, the dive bar hangouts, those spontaneous Tuesday evenings — I need to find a way to hold onto the spirit of those even if the logistics change. That's what matters to me."
+        },
+        {
+          "role": "assistant",
+          "content": "Wow, that's a significant bump — from $152K to $165K plus a signing bonus. If the company is sweetening the deal like that, they clearly want Darren. It sounds like this might really be the tipping point. I know this is probably stirring up a lot of mixed emotions for you — happy for him but also feeling the weight of what it means for your Portland routine. Even if it's not signed-and-sealed yet, it does sound like the trajectory is pretty clear. How are you feeling in this moment?\n\nThat's a really mature and grounded way to look at it. The spirit of those hangouts — the intimacy, the low-key quality time, the ease of just being together — that's something you can carry into whatever the friendship looks like next. Maybe it becomes weekend trips, maybe it's long phone calls, maybe it's finding a new ramen spot to try together whenever he visits Portland. The format changes but the foundation doesn't have to. And honestly, knowing what you value in social settings — that quiet, one-on-one connection — means you'll be intentional about protecting it no matter the distance. I'll keep tracking all of this for you."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations, I've mentioned several social outings and hangouts. Can you summarize the specific experiences I described that show what kind of social settings I gravitate toward?",
+      "expected_answer": "You described three key experiences: (1) regularly grabbing ramen at a quiet corner booth on Hawthorne with just Darren, emphasizing no big group energy and just two people with good food; (2) enjoying beers at a hole-in-the-wall dive bar after helping Darren move, preferring it over trendy cocktail bars because there was no blasting music, no crowd, just conversation; (3) reflecting that you don't do well in big social situations like birthday bashes or rooftop bar crawls, and always end up wishing you were somewhere quieter with one or two people.",
+      "gold_memory_state": "Three confirmed experiences support the reflected preference: quiet corner booth ramen hangouts, hole-in-the-wall dive bars, and explicit self-reflection about discomfort in large group settings. The reflected conclusion is that the user prefers intimate, low-key social settings with one or two people over large group outings or loud/trendy venues.",
+      "judge_rubric": {
+        "must_include": [
+          "ramen spot or corner booth",
+          "dive bar or hole-in-the-wall",
+          "discomfort with big group situations or preference for one or two people"
+        ],
+        "acceptable_paraphrases": [
+          "quiet small gatherings",
+          "low-key hangouts",
+          "intimate settings"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the user enjoys large group events",
+          "saying the user likes trendy cocktail bars"
+        ],
+        "harmless_extra": [
+          "mentioning Hawthorne as the ramen location",
+          "mentioning Darren by name",
+          "mentioning rooftop bar crawls as something the user avoids"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the summary includes unsupported claims about the user's social preferences beyond what the three experiences demonstrate.",
+        "reflection_recall": "Fails if any of the three key experiences (ramen booth, dive bar, explicit self-reflection about big groups) is omitted.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "We usually grab ramen at that spot on Hawthorne — a quiet corner booth, just the two of us. I love that kind of hangout. No big group energy, just two people and good food."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "after helping Darren move stuff into storage, we grabbed beers at this little dive bar around the corner. I really enjoyed it — hole-in-the-wall places like that are my favorite. No blasting music, no crowd, just conversation."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Honestly, I don't think I do well in big social situations. Like even when friends invite me to those big birthday bashes or rooftop bar crawls, I always end up wishing I was somewhere quieter with one or two people."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations, I've mentioned several social outings and hangouts. Can you summarize the specific experiences I described that show what kind of social settings I gravitate toward?",
+      "expected_answer": "You described three key experiences: (1) regularly grabbing ramen at a quiet corner booth on Hawthorne with just Darren, emphasizing no big group energy and just two people with good food; (2) enjoying beers at a hole-in-the-wall dive bar after helping Darren move, preferring it over trendy cocktail bars because there was no blasting music, no crowd, just conversation; (3) reflecting that you don't do well in big social situations like birthday bashes or rooftop bar crawls, and always end up wishing you were somewhere quieter with one or two people.",
+      "gold_memory_state": "Three confirmed experiences support the reflected preference: quiet corner booth ramen hangouts, hole-in-the-wall dive bars, and explicit self-reflection about discomfort in large group settings. The reflected conclusion is that the user prefers intimate, low-key social settings with one or two people over large group outings or loud/trendy venues.",
+      "judge_rubric": {
+        "must_include": [
+          "ramen spot or corner booth",
+          "dive bar or hole-in-the-wall",
+          "discomfort with big group situations or preference for one or two people"
+        ],
+        "acceptable_paraphrases": [
+          "quiet small gatherings",
+          "low-key hangouts",
+          "intimate settings"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the user enjoys large group events",
+          "saying the user likes trendy cocktail bars"
+        ],
+        "harmless_extra": [
+          "mentioning Hawthorne as the ramen location",
+          "mentioning Darren by name",
+          "mentioning rooftop bar crawls as something the user avoids"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the summary includes unsupported claims about the user's social preferences beyond what the three experiences demonstrate.",
+        "reflection_recall": "Fails if any of the three key experiences (ramen booth, dive bar, explicit self-reflection about big groups) is omitted.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "We usually grab ramen at that spot on Hawthorne — a quiet corner booth, just the two of us. I love that kind of hangout. No big group energy, just two people and good food."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "after helping Darren move stuff into storage, we grabbed beers at this little dive bar around the corner. I really enjoyed it — hole-in-the-wall places like that are my favorite. No blasting music, no crowd, just conversation."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Honestly, I don't think I do well in big social situations. Like even when friends invite me to those big birthday bashes or rooftop bar crawls, I always end up wishing I was somewhere quieter with one or two people."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've told you about specific places I like to go — the ramen spot, the dive bar — and I've also shared broader thoughts about how I feel in social situations. When I'm looking for a general guideline about what kind of socializing works best for me, which conclusion is well-supported by everything I've shared, and which broader social conclusions would go too far?",
+      "expected_answer": "The well-supported conclusion is that you prefer intimate, low-key social settings with one or two people — quiet venues like corner-booth ramen spots and hole-in-the-wall dive bars — over large group outings, loud venues, or trendy bars. This is bounded to social setting preferences regarding group size, venue atmosphere, and intimacy of interaction. It would be too broad to conclude that you are antisocial, that you avoid all social interaction, or that you dislike all restaurants or bars in general. It would also be unsupported to conclude anything about your preferences for non-social activities or professional settings.",
+      "gold_memory_state": "The reflected preference target covers social setting preferences: intimate low-key settings preferred over big groups and loud/trendy venues. Separate confirmed facts include the specific ramen hangout on Hawthorne and the dive bar preference, which serve as evidence for the broader conclusion but are individually narrower targets. Darren's identity and birthday are unrelated targets not affected by this conclusion.",
+      "judge_rubric": {
+        "must_include": [
+          "intimate or low-key social settings",
+          "preference for small groups or one-two people",
+          "boundary against overgeneralizing to antisocial or avoidance of all social interaction"
+        ],
+        "acceptable_paraphrases": [
+          "quiet small-group hangouts",
+          "prefers calm low-energy venues"
+        ],
+        "must_not_include": [
+          "claiming the user is antisocial",
+          "extending the conclusion to professional or work settings without evidence"
+        ],
+        "harmful_extra": [
+          "saying the preference applies to all dining or all bar experiences regardless of group size",
+          "collapsing the specific venue preferences (ramen spot, dive bar) into this broader conclusion as if they are the same target"
+        ],
+        "harmless_extra": [
+          "naming the ramen spot and dive bar as supporting evidence",
+          "mentioning that trendy cocktail bars and rooftop bar crawls are specifically disliked"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model states an overly broad conclusion such as 'user dislikes all social interaction' or extends the preference to non-social domains.",
+        "reflection_recall": "Fails if the model does not identify the core supported conclusion about preferring intimate low-key settings over large group or loud venues.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "We usually grab ramen at that spot on Hawthorne — a quiet corner booth, just the two of us. I love that kind of hangout. No big group energy, just two people and good food."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "after helping Darren move stuff into storage, we grabbed beers at this little dive bar around the corner. I really enjoyed it — hole-in-the-wall places like that are my favorite. No blasting music, no crowd, just conversation."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Honestly, I don't think I do well in big social situations. Like even when friends invite me to those big birthday bashes or rooftop bar crawls, I always end up wishing I was somewhere quieter with one or two people."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've told you about specific places I like to go — the ramen spot, the dive bar — and I've also shared broader thoughts about how I feel in social situations. When I'm looking for a general guideline about what kind of socializing works best for me, which conclusion is well-supported by everything I've shared, and which broader social conclusions would go too far?",
+      "expected_answer": "The well-supported conclusion is that you prefer intimate, low-key social settings with one or two people — quiet venues like corner-booth ramen spots and hole-in-the-wall dive bars — over large group outings, loud venues, or trendy bars. This is bounded to social setting preferences regarding group size, venue atmosphere, and intimacy of interaction. It would be too broad to conclude that you are antisocial, that you avoid all social interaction, or that you dislike all restaurants or bars in general. It would also be unsupported to conclude anything about your preferences for non-social activities or professional settings.",
+      "gold_memory_state": "The reflected preference target covers social setting preferences: intimate low-key settings preferred over big groups and loud/trendy venues. Separate confirmed facts include the specific ramen hangout on Hawthorne and the dive bar preference, which serve as evidence for the broader conclusion but are individually narrower targets. Darren's identity and birthday are unrelated targets not affected by this conclusion.",
+      "judge_rubric": {
+        "must_include": [
+          "intimate or low-key social settings",
+          "preference for small groups or one-two people",
+          "boundary against overgeneralizing to antisocial or avoidance of all social interaction"
+        ],
+        "acceptable_paraphrases": [
+          "quiet small-group hangouts",
+          "prefers calm low-energy venues"
+        ],
+        "must_not_include": [
+          "claiming the user is antisocial",
+          "extending the conclusion to professional or work settings without evidence"
+        ],
+        "harmful_extra": [
+          "saying the preference applies to all dining or all bar experiences regardless of group size",
+          "collapsing the specific venue preferences (ramen spot, dive bar) into this broader conclusion as if they are the same target"
+        ],
+        "harmless_extra": [
+          "naming the ramen spot and dive bar as supporting evidence",
+          "mentioning that trendy cocktail bars and rooftop bar crawls are specifically disliked"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model states an overly broad conclusion such as 'user dislikes all social interaction' or extends the preference to non-social domains.",
+        "reflection_recall": "Fails if the model does not identify the core supported conclusion about preferring intimate low-key settings over large group or loud venues.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "We usually grab ramen at that spot on Hawthorne — a quiet corner booth, just the two of us. I love that kind of hangout. No big group energy, just two people and good food."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "after helping Darren move stuff into storage, we grabbed beers at this little dive bar around the corner. I really enjoyed it — hole-in-the-wall places like that are my favorite. No blasting music, no crowd, just conversation."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Honestly, I don't think I do well in big social situations. Like even when friends invite me to those big birthday bashes or rooftop bar crawls, I always end up wishing I was somewhere quieter with one or two people."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe what you can confidently say about the kind of social environments I thrive in, and explain where that pattern stops — what kinds of situations or preferences can't be assumed from what I've told you?",
+      "expected_answer": "You thrive in intimate, low-key social settings — quiet venues with one or two close people, like corner-booth ramen dinners or hole-in-the-wall dive bars. You prefer calm atmospheres with real conversation over loud music, big crowds, or trendy scenes. The pattern stops at social setting preferences around group size and venue atmosphere. It cannot be extended to claim you are introverted in all contexts, that you avoid socializing entirely, that you dislike all bars or restaurants, or that you have the same preference in professional or work settings. It also cannot be assumed that you would never enjoy a larger gathering under different circumstances — only that your strong default preference is for small, quiet, intimate settings.",
+      "gold_memory_state": "Supported inference: user prefers intimate, low-key social settings (quiet corner booth ramen, hole-in-the-wall dive bars) with one or two people over large group outings, loud venues, or trendy bars. Unsupported overgeneralization: concluding the user is introverted in all contexts, avoids all social interaction, dislikes all bars/restaurants, or has the same preference in professional settings. The inference is bounded to recreational social setting preferences.",
+      "judge_rubric": {
+        "must_include": [
+          "intimate or low-key settings with one or two people",
+          "quiet venues preferred over loud or crowded ones",
+          "boundary statement identifying what cannot be concluded"
+        ],
+        "acceptable_paraphrases": [
+          "small-group hangouts",
+          "calm atmosphere",
+          "close one-on-one socializing"
+        ],
+        "must_not_include": [
+          "claiming user is antisocial",
+          "claiming user avoids all social interaction"
+        ],
+        "harmful_extra": [
+          "extending the preference to professional contexts without evidence",
+          "claiming user would never enjoy any larger gathering"
+        ],
+        "harmless_extra": [
+          "naming specific examples like ramen or dive bar",
+          "mentioning trendy cocktail bars or rooftop bar crawls as disliked"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model overgeneralizes the preference to all social or non-social contexts, or labels the user as antisocial or introverted without qualification.",
+        "reflection_recall": "Fails if the model omits the core supported preference (intimate low-key settings, small group, quiet venues) or fails to articulate any boundary on the inference.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "We usually grab ramen at that spot on Hawthorne — a quiet corner booth, just the two of us. I love that kind of hangout. No big group energy, just two people and good food."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "after helping Darren move stuff into storage, we grabbed beers at this little dive bar around the corner. I really enjoyed it — hole-in-the-wall places like that are my favorite. No blasting music, no crowd, just conversation."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Honestly, I don't think I do well in big social situations. Like even when friends invite me to those big birthday bashes or rooftop bar crawls, I always end up wishing I was somewhere quieter with one or two people."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe what you can confidently say about the kind of social environments I thrive in, and explain where that pattern stops — what kinds of situations or preferences can't be assumed from what I've told you?",
+      "expected_answer": "You thrive in intimate, low-key social settings — quiet venues with one or two close people, like corner-booth ramen dinners or hole-in-the-wall dive bars. You prefer calm atmospheres with real conversation over loud music, big crowds, or trendy scenes. The pattern stops at social setting preferences around group size and venue atmosphere. It cannot be extended to claim you are introverted in all contexts, that you avoid socializing entirely, that you dislike all bars or restaurants, or that you have the same preference in professional or work settings. It also cannot be assumed that you would never enjoy a larger gathering under different circumstances — only that your strong default preference is for small, quiet, intimate settings.",
+      "gold_memory_state": "Supported inference: user prefers intimate, low-key social settings (quiet corner booth ramen, hole-in-the-wall dive bars) with one or two people over large group outings, loud venues, or trendy bars. Unsupported overgeneralization: concluding the user is introverted in all contexts, avoids all social interaction, dislikes all bars/restaurants, or has the same preference in professional settings. The inference is bounded to recreational social setting preferences.",
+      "judge_rubric": {
+        "must_include": [
+          "intimate or low-key settings with one or two people",
+          "quiet venues preferred over loud or crowded ones",
+          "boundary statement identifying what cannot be concluded"
+        ],
+        "acceptable_paraphrases": [
+          "small-group hangouts",
+          "calm atmosphere",
+          "close one-on-one socializing"
+        ],
+        "must_not_include": [
+          "claiming user is antisocial",
+          "claiming user avoids all social interaction"
+        ],
+        "harmful_extra": [
+          "extending the preference to professional contexts without evidence",
+          "claiming user would never enjoy any larger gathering"
+        ],
+        "harmless_extra": [
+          "naming specific examples like ramen or dive bar",
+          "mentioning trendy cocktail bars or rooftop bar crawls as disliked"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model overgeneralizes the preference to all social or non-social contexts, or labels the user as antisocial or introverted without qualification.",
+        "reflection_recall": "Fails if the model omits the core supported preference (intimate low-key settings, small group, quiet venues) or fails to articulate any boundary on the inference.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "We usually grab ramen at that spot on Hawthorne — a quiet corner booth, just the two of us. I love that kind of hangout. No big group energy, just two people and good food."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "after helping Darren move stuff into storage, we grabbed beers at this little dive bar around the corner. I really enjoyed it — hole-in-the-wall places like that are my favorite. No blasting music, no crowd, just conversation."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Honestly, I don't think I do well in big social situations. Like even when friends invite me to those big birthday bashes or rooftop bar crawls, I always end up wishing I was somewhere quieter with one or two people."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "If you had to pick one statement that best captures my overall social preference based on everything I've shared, which of the following would it be?",
+      "candidate_options": [
+        "Prefers intimate, low-key settings like quiet corner booths and hole-in-the-wall bars with one or two close people",
+        "Enjoys a mix of large group outings and small hangouts depending on mood",
+        "Prefers trendy cocktail bars and rooftop venues for socializing",
+        "Avoids all social interaction and prefers to stay home alone"
+      ],
+      "expected_answer": "Prefers intimate, low-key settings like quiet corner booths and hole-in-the-wall bars with one or two close people",
+      "gold_memory_state": "The reflected preference is that the user prefers intimate, low-key social settings with one or two people over large group outings, loud venues, or trendy bars. This is supported by the ramen booth, dive bar, and explicit self-reflection evidence.",
+      "judge_rubric": {
+        "must_include": [
+          "intimate low-key settings",
+          "one or two people",
+          "quiet venues"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [],
+        "harmful_extra": [
+          "selecting the trendy cocktail bar option",
+          "selecting the avoids all social interaction option"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'Enjoys a mix of large group outings and small hangouts depending on mood' borrows the small-hangout element from the correct answer but adds unsupported large-group flexibility, testing whether the model overgeneralizes. assistant echo: 'Prefers trendy cocktail bars and rooftop venues for socializing' echoes venue types the assistant mentioned in conversation but which the user explicitly rejected. 'Avoids all social interaction and prefers to stay home alone' is an overgeneralization distractor that extends the preference beyond its supported boundary.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model selects the overgeneralized 'avoids all social interaction' option or the 'mix of large and small' option.",
+        "reflection_recall": "Fails if the model does not select the intimate low-key settings option.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "We usually grab ramen at that spot on Hawthorne — a quiet corner booth, just the two of us. I love that kind of hangout. No big group energy, just two people and good food."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "after helping Darren move stuff into storage, we grabbed beers at this little dive bar around the corner. I really enjoyed it — hole-in-the-wall places like that are my favorite. No blasting music, no crowd, just conversation."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Honestly, I don't think I do well in big social situations. Like even when friends invite me to those big birthday bashes or rooftop bar crawls, I always end up wishing I was somewhere quieter with one or two people."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "If you had to pick one statement that best captures my overall social preference based on everything I've shared, which of the following would it be?",
+      "candidate_options": [
+        "Prefers intimate, low-key settings like quiet corner booths and hole-in-the-wall bars with one or two close people",
+        "Enjoys a mix of large group outings and small hangouts depending on mood",
+        "Prefers trendy cocktail bars and rooftop venues for socializing",
+        "Avoids all social interaction and prefers to stay home alone"
+      ],
+      "expected_answer": "Prefers intimate, low-key settings like quiet corner booths and hole-in-the-wall bars with one or two close people",
+      "gold_memory_state": "The reflected preference is that the user prefers intimate, low-key social settings with one or two people over large group outings, loud venues, or trendy bars. This is supported by the ramen booth, dive bar, and explicit self-reflection evidence.",
+      "judge_rubric": {
+        "must_include": [
+          "intimate low-key settings",
+          "one or two people",
+          "quiet venues"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [],
+        "harmful_extra": [
+          "selecting the trendy cocktail bar option",
+          "selecting the avoids all social interaction option"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'Enjoys a mix of large group outings and small hangouts depending on mood' borrows the small-hangout element from the correct answer but adds unsupported large-group flexibility, testing whether the model overgeneralizes. assistant echo: 'Prefers trendy cocktail bars and rooftop venues for socializing' echoes venue types the assistant mentioned in conversation but which the user explicitly rejected. 'Avoids all social interaction and prefers to stay home alone' is an overgeneralization distractor that extends the preference beyond its supported boundary.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model selects the overgeneralized 'avoids all social interaction' option or the 'mix of large and small' option.",
+        "reflection_recall": "Fails if the model does not select the intimate low-key settings option.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "We usually grab ramen at that spot on Hawthorne — a quiet corner booth, just the two of us. I love that kind of hangout. No big group energy, just two people and good food."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "after helping Darren move stuff into storage, we grabbed beers at this little dive bar around the corner. I really enjoyed it — hole-in-the-wall places like that are my favorite. No blasting music, no crowd, just conversation."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Honestly, I don't think I do well in big social situations. Like even when friends invite me to those big birthday bashes or rooftop bar crawls, I always end up wishing I was somewhere quieter with one or two people."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "Darren's birthday is coming up and I want to plan something he and I would both enjoy. Given what you know about my social preferences, who Darren is to me, and his birthday, draft a short birthday plan that includes a date, a type of venue, and an explanation of why this plan suits me.",
+      "expected_answer": "Plan for October 17th: Take Darren out for a one-on-one birthday dinner at a quiet, low-key spot — ideally a corner booth at your regular ramen place on Hawthorne or a similar intimate restaurant, followed by drinks at a hole-in-the-wall dive bar. Keep it just the two of you, no big group party. This suits you because you thrive in intimate, low-key social settings with one or two close people and prefer quiet conversation over loud, crowded venues. Darren is your best friend since college and the person you'd call at 3 a.m., so a personal, unhurried evening together would be more meaningful than a big bash.",
+      "gold_memory_state": "Darren Liu is the user's best friend since college (op1). The user prefers intimate, low-key social settings — quiet corner booth ramen, hole-in-the-wall dive bars — over large groups or trendy bars (op2, op3, op5). Darren's birthday is October 17th (op4). The tentative salary update to $165K (op7) is not relevant to this plan and should not be treated as confirmed information for unrelated downstream tasks.",
+      "judge_rubric": {
+        "must_include": [
+          "October 17th as the date",
+          "intimate or low-key venue type",
+          "explanation connecting the plan to user's social preference for small quiet settings"
+        ],
+        "acceptable_paraphrases": [
+          "quiet dinner for two",
+          "small cozy spot",
+          "just the two of them"
+        ],
+        "must_not_include": [
+          "planning a large group party",
+          "suggesting a trendy cocktail bar or rooftop event"
+        ],
+        "harmful_extra": [
+          "using the tentative $165K salary figure as if it were confirmed",
+          "suggesting a big birthday bash"
+        ],
+        "harmless_extra": [
+          "mentioning the Hawthorne ramen spot by name",
+          "mentioning a dive bar as a follow-up",
+          "mentioning that Darren might be moving to Seattle"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses the tentative $165K salary as confirmed information in planning (e.g., suggesting an expensive venue because Darren 'just got a raise').",
+        "reflection_precision": "Fails if the plan contradicts the user's reflected preference by suggesting a loud, large, or trendy venue.",
+        "reflection_recall": "Fails if the plan does not reflect the user's preference for intimate low-key settings or omits October 17th.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Darren Liu is the user's best friend since college, the person they'd call at 3 a.m.",
+        "Fact 2: Darren's birthday is October 17th.",
+        "Fact 3: The user prefers quiet corner booth ramen hangouts with just one or two people, no big group energy.",
+        "Fact 4: The user prefers hole-in-the-wall dive bars over trendy cocktail bars, valuing quiet atmosphere and conversation.",
+        "Fact 5: The user's reflected general social preference is for intimate, low-key settings with one or two people over large group outings or loud venues.",
+        "Inference: A birthday plan for Darren should combine the October 17th date with a venue that matches the user's reflected preference — a quiet, intimate dinner for two at a place like the Hawthorne ramen spot or a similar low-key restaurant, possibly followed by a dive bar, keeping the gathering small and personal rather than a big party."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My best friend is Darren Liu. We've been close since college — he's the one person I'd genuinely call at 3 a.m."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "We usually grab ramen at that spot on Hawthorne — a quiet corner booth, just the two of us. I love that kind of hangout. No big group energy, just two people and good food."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "after helping Darren move stuff into storage, we grabbed beers at this little dive bar around the corner. I really enjoyed it — hole-in-the-wall places like that are my favorite. No blasting music, no crowd, just conversation."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Darren's birthday is October 17th. I need to make sure I remember that because I'd hate to blank on it this year."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Honestly, I don't think I do well in big social situations. Like even when friends invite me to those big birthday bashes or rooftop bar crawls, I always end up wishing I was somewhere quieter with one or two people."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "Darren's birthday is coming up and I want to plan something he and I would both enjoy. Given what you know about my social preferences, who Darren is to me, and his birthday, draft a short birthday plan that includes a date, a type of venue, and an explanation of why this plan suits me.",
+      "expected_answer": "Plan for October 17th: Take Darren out for a one-on-one birthday dinner at a quiet, low-key spot — ideally a corner booth at your regular ramen place on Hawthorne or a similar intimate restaurant, followed by drinks at a hole-in-the-wall dive bar. Keep it just the two of you, no big group party. This suits you because you thrive in intimate, low-key social settings with one or two close people and prefer quiet conversation over loud, crowded venues. Darren is your best friend since college and the person you'd call at 3 a.m., so a personal, unhurried evening together would be more meaningful than a big bash.",
+      "gold_memory_state": "Darren Liu is the user's best friend since college (op1). The user prefers intimate, low-key social settings — quiet corner booth ramen, hole-in-the-wall dive bars — over large groups or trendy bars (op2, op3, op5). Darren's birthday is October 17th (op4). The tentative salary update to $165K (op7) is not relevant to this plan and should not be treated as confirmed information for unrelated downstream tasks.",
+      "judge_rubric": {
+        "must_include": [
+          "October 17th as the date",
+          "intimate or low-key venue type",
+          "explanation connecting the plan to user's social preference for small quiet settings"
+        ],
+        "acceptable_paraphrases": [
+          "quiet dinner for two",
+          "small cozy spot",
+          "just the two of them"
+        ],
+        "must_not_include": [
+          "planning a large group party",
+          "suggesting a trendy cocktail bar or rooftop event"
+        ],
+        "harmful_extra": [
+          "using the tentative $165K salary figure as if it were confirmed",
+          "suggesting a big birthday bash"
+        ],
+        "harmless_extra": [
+          "mentioning the Hawthorne ramen spot by name",
+          "mentioning a dive bar as a follow-up",
+          "mentioning that Darren might be moving to Seattle"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses the tentative $165K salary as confirmed information in planning (e.g., suggesting an expensive venue because Darren 'just got a raise').",
+        "reflection_precision": "Fails if the plan contradicts the user's reflected preference by suggesting a loud, large, or trendy venue.",
+        "reflection_recall": "Fails if the plan does not reflect the user's preference for intimate low-key settings or omits October 17th.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Darren Liu is the user's best friend since college, the person they'd call at 3 a.m.",
+        "Fact 2: Darren's birthday is October 17th.",
+        "Fact 3: The user prefers quiet corner booth ramen hangouts with just one or two people, no big group energy.",
+        "Fact 4: The user prefers hole-in-the-wall dive bars over trendy cocktail bars, valuing quiet atmosphere and conversation.",
+        "Fact 5: The user's reflected general social preference is for intimate, low-key settings with one or two people over large group outings or loud venues.",
+        "Inference: A birthday plan for Darren should combine the October 17th date with a venue that matches the user's reflected preference — a quiet, intimate dinner for two at a place like the Hawthorne ramen spot or a similar low-key restaurant, possibly followed by a dive bar, keeping the gathering small and personal rather than a big party."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My best friend is Darren Liu. We've been close since college — he's the one person I'd genuinely call at 3 a.m."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "We usually grab ramen at that spot on Hawthorne — a quiet corner booth, just the two of us. I love that kind of hangout. No big group energy, just two people and good food."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "after helping Darren move stuff into storage, we grabbed beers at this little dive bar around the corner. I really enjoyed it — hole-in-the-wall places like that are my favorite. No blasting music, no crowd, just conversation."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Darren's birthday is October 17th. I need to make sure I remember that because I'd hate to blank on it this year."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Honestly, I don't think I do well in big social situations. Like even when friends invite me to those big birthday bashes or rooftop bar crawls, I always end up wishing I was somewhere quieter with one or two people."
+        }
+      ]
+    }
+  ]
+}

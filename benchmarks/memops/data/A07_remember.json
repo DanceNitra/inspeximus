@@ -1,0 +1,1141 @@
+{
+  "target_fact": "Spouse/partner's name is Daniel Reeves; related personal facts about their life together",
+  "operation_type": "Remember",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 3,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": true,
+      "never_stored_target": "Daniel's birthday"
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "My partner's name is Daniel Reeves. We've been together for four years now."
+      },
+      "target": {
+        "target_id": "partner_name",
+        "target_name": "partner's full name"
+      },
+      "old_value": null,
+      "new_value": "Daniel Reeves",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My partner's name is Daniel Reeves. We've been together for four years now."
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "Daniel got a callback for a stage manager position at the Wexford Community Theatre back in late March"
+      },
+      "target": {
+        "target_id": "daniel_theatre_role",
+        "target_name": "Daniel's theatre position"
+      },
+      "old_value": null,
+      "new_value": "Stage manager at Wexford Community Theatre",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Daniel got a callback for a stage manager position at the Wexford Community Theatre back in late March"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "The Wexford season runs twelve weeks starting June 2nd"
+      },
+      "target": {
+        "target_id": "wexford_season_start",
+        "target_name": "Wexford Community Theatre season start date"
+      },
+      "old_value": null,
+      "new_value": "June 2nd, twelve-week season",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The Wexford season runs twelve weeks starting June 2nd"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "Daniel's sister Megan Reeves is getting engaged soon. Her fiancé's name is Tomás."
+      },
+      "target": {
+        "target_id": "megan_engagement",
+        "target_name": "Daniel's sister Megan's engagement"
+      },
+      "old_value": null,
+      "new_value": "Megan Reeves is getting engaged to Tomás",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Daniel's sister Megan Reeves is getting engaged soon. Her fiancé's name is Tomás."
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "Daniel signed up for a Saturday pottery class at the rec center. It's an eight-session course."
+      },
+      "target": {
+        "target_id": "daniel_pottery_class",
+        "target_name": "Daniel's pottery class details"
+      },
+      "old_value": null,
+      "new_value": "Saturday pottery class at the rec center, eight-session course",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Daniel signed up for a Saturday pottery class at the rec center. It's an eight-session course."
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "his pottery class started May 4th and it meets every Saturday morning"
+      },
+      "target": {
+        "target_id": "pottery_start_date",
+        "target_name": "Daniel's pottery class start date"
+      },
+      "old_value": null,
+      "new_value": "May 4th, every Saturday morning",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "his pottery class started May 4th and it meets every Saturday morning"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 1,
+        "quote": "Daniel's mom Patricia visited us in mid-April and stayed for a week in the guest room"
+      },
+      "target": {
+        "target_id": "patricia_visit",
+        "target_name": "Patricia's visit details"
+      },
+      "old_value": null,
+      "new_value": "Daniel's mom Patricia visited mid-April, stayed one week in guest room",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "Daniel's mom Patricia visited us in mid-April and stayed for a week in the guest room"
+        }
+      ]
+    },
+    {
+      "operation_id": "op8",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "We had our anniversary dinner at a Vietnamese restaurant on Birch Avenue. It was on March 3rd."
+      },
+      "target": {
+        "target_id": "anniversary_dinner",
+        "target_name": "anniversary dinner details"
+      },
+      "old_value": null,
+      "new_value": "Anniversary dinner on March 3rd at Vietnamese restaurant on Birch Avenue",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "We had our anniversary dinner at a Vietnamese restaurant on Birch Avenue. It was on March 3rd."
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establishing core facts about partner Daniel Reeves and his theatre position",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to share some things about my personal life so you can help me keep track of stuff. My partner's name is Daniel Reeves. We've been together for four years now. He's a big part of my daily life, so I'll probably mention him a lot going forward. Can you keep all of this on file for me?"
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! I've noted that your partner is Daniel Reeves and that you've been together for four years. I'm happy to keep track of details about your life together. Feel free to share anything you'd like me to remember — whether it's about Daniel, your routines, upcoming events, or anything else. I'll do my best to keep everything organized so I can reference it when you need. What else would you like to tell me?"
+        },
+        {
+          "role": "user",
+          "content": "Great, thanks. So here's one big thing — Daniel got a callback for a stage manager position at the Wexford Community Theatre back in late March. He'd been waiting almost a month to hear back and was pretty anxious about it. When they finally called, he was absolutely thrilled. He's been wanting to get back into theatre work for a long time."
+        },
+        {
+          "role": "assistant",
+          "content": "That's wonderful news for Daniel! I've noted that he received a callback for a stage manager position at the Wexford Community Theatre in late March. It sounds like this was something he'd been hoping for since well before the callback, and the long wait made the good news even sweeter. Theatre work clearly means a lot to him. I'll keep this on record — if you want me to help plan anything around his schedule at the theatre or track related details, just let me know. Is there anything else about his role there?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, one more thing about that. The Wexford season runs twelve weeks starting June 2nd. Daniel's going to be pretty busy during that stretch since stage managers are involved in basically every rehearsal and performance. I'm already thinking about how our weeknight routines will shift once that kicks off. It'll be a big change for us."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — the Wexford Community Theatre season starts June 2nd and runs for twelve weeks. That means Daniel will likely be occupied through most of the summer, wrapping up around late August. It makes sense that your weeknight routines will need some adjusting during that period, especially since stage managers tend to have demanding schedules with rehearsals and tech runs. If you'd like, I can help you think through scheduling or planning around his theatre commitment as the season approaches. Anything else you'd like me to keep in mind?"
+        },
+        {
+          "role": "user",
+          "content": "That's it for now on the theatre stuff. Oh, one other thing — I really enjoy quiet, low-key dining experiences. Daniel and I tend to go out on weeknights specifically because restaurants are less crowded. I genuinely dislike noisy, packed places. We're thinking about trying a new Ethiopian restaurant downtown, but I told Daniel I'd prefer a Tuesday or Wednesday."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted! You prefer calm, quieter dining environments and tend to choose weeknights to avoid crowds. That's a smart approach for getting a more relaxed experience. For the Ethiopian restaurant downtown, a Tuesday or Wednesday sounds like an ideal choice — those are typically the quietest nights at most restaurants. When you're ready to plan that outing, I can help you think about timing or look into whether they take reservations. I've got a good picture of your preferences now. Let me know whenever you want to add more details or need help with anything."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Adding facts about Megan's engagement, Daniel's pottery class, and the class start date",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I have a few more things to share. Daniel's sister Megan Reeves is getting engaged soon. Her fiancé's name is Tomás. Daniel told me about it a few days ago and he seemed really excited. I think they'll probably have some kind of celebration or engagement party before long. It's nice to see Daniel happy about family stuff like that."
+        },
+        {
+          "role": "assistant",
+          "content": "That's lovely news! I've noted that Daniel's sister Megan Reeves is getting engaged to Tomás. It sounds like Daniel is really happy for her, which is great. Family milestones like engagements often come with planning — parties, gatherings, and the like — so if you and Daniel end up involved in any of that, I can help you keep track of dates or tasks. It's nice that this is something positive bringing the family together. Let me know if there are any other details about the engagement or anything else you'd like me to remember."
+        },
+        {
+          "role": "user",
+          "content": "Thanks. Also, on a different note — Daniel signed up for a Saturday pottery class at the rec center. It's an eight-session course. I went with him once and honestly enjoyed it more than I expected. There's something really nice about working with your hands and stepping away from screens for a while. Daniel's been going pretty consistently every week."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a wonderful activity for both of you! I've noted that Daniel is taking a Saturday pottery class at the rec center, and it's an eight-session course. It's great that you joined him once and found it enjoyable — working with your hands can be a really grounding experience, especially as a break from screen time. Since Daniel's been attending consistently, it sounds like he's genuinely into it. If you ever want to plan around his Saturday pottery schedule or think about signing up for your own sessions, I can help with that. Any other details about the class?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, his pottery class started May 4th and it meets every Saturday morning. So he's already a few sessions in at this point. He's been showing me some of the pieces he's working on — a mug and a small bowl so far. I think the hands-on creative outlet is good for him, especially with the theatre season coming up and all the stress that brings."
+        },
+        {
+          "role": "assistant",
+          "content": "Perfect, I've noted that Daniel's pottery class started on May 4th and meets every Saturday morning. So with eight sessions total, the class would run through late June. It sounds like he's making good progress already with the mug and bowl. Having a creative, tactile hobby like pottery is a great counterbalance to the more high-pressure demands of stage managing. Once the Wexford season ramps up in June, he might appreciate having that Saturday morning ritual even more. Let me know if you'd like me to track anything else about his schedule or activities."
+        },
+        {
+          "role": "user",
+          "content": "That's a good point about the timing overlap. I hadn't thought about how the pottery class ending lines up with the theatre season getting intense. Anyway, Daniel and I have been talking about maybe getting Megan and Tomás a nice engagement gift. I was thinking something handmade might be meaningful. Maybe Daniel could make something in his pottery class for them.\n\nThat's a nice idea about the note. I'll think about that. For now, I think I've covered the main updates. Daniel's got a lot going on between the theatre, the pottery class, and Megan's engagement. I just want to make sure all these details are saved so I can reference them later when I'm planning things around his schedule and our life together."
+        },
+        {
+          "role": "assistant",
+          "content": "What a thoughtful idea! A handmade pottery piece from Daniel would be a really personal and meaningful engagement gift for Megan and Tomás. Since Daniel still has several sessions left in his class, he could potentially work on something specific for them — maybe a decorative bowl or a set of mugs. You could even ask his instructor if there's time for a custom project. It would tie together his new hobby with a family celebration, which makes it extra special. If you want, I can help you brainstorm specific gift ideas or draft a note to go along with whatever he makes. Just let me know!\n\nAbsolutely, I've got everything recorded. Here's a quick summary of what I'm tracking: Daniel Reeves is your partner of four years; he has a stage manager position at Wexford Community Theatre with the season starting June 2nd for twelve weeks; he's taking an eight-session Saturday pottery class at the rec center that started May 4th; and his sister Megan Reeves is getting engaged to Tomás. I also know you prefer quiet weeknight dining and you're planning to try the new Ethiopian restaurant downtown. Whenever you need to reference any of this, just ask!"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Adding Patricia visit details, anniversary dinner, and introducing adversarial distractor",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to add a couple more things. Daniel's mom Patricia visited us in mid-April and stayed for a week in the guest room. She's nice enough, but she has this habit of rearranging the kitchen whenever she visits. That really bothered me — I like having things where I expect them. It took me a few days after she left to get everything back in order."
+        },
+        {
+          "role": "assistant",
+          "content": "I've noted that Daniel's mom Patricia visited in mid-April and stayed for a week in your guest room. I can understand how frustrating it must have been to have your kitchen reorganized without your input — especially when you value having things in their expected places. That kind of disruption to your personal space can be genuinely stressful, even when the person means well. It sounds like it took some effort to restore everything afterward. If Patricia visits again in the future, I can help you think about strategies for setting boundaries or preemptively organizing. What else would you like to share?"
+        },
+        {
+          "role": "user",
+          "content": "Thanks for understanding. On another topic — I was looking through some community theatre newsletters and I noticed that someone named James Hartwell is listed as the stage manager for the Riverside Players this season. I don't know him, but it caught my eye since Daniel's doing the same role at Wexford. Funny coincidence seeing another stage manager mentioned in the same newsletter batch."
+        },
+        {
+          "role": "assistant",
+          "content": "That is a funny coincidence! It's interesting to see how many community theatres are active in your area. James Hartwell handling stage management for the Riverside Players shows there's a real demand for that skill set locally. I recall from our earlier conversation that Daniel's friend at the Riverside Players — oh wait, I might be mixing things up. I see a note here referencing a \"Marcus Ellison, stage manager, Riverside Players\" from another user's profile that came up in a similar context. That's definitely not related to Daniel. Daniel's role is at Wexford Community Theatre. Sorry for any confusion there! Is there anything else you'd like to add?"
+        },
+        {
+          "role": "user",
+          "content": "No worries, yeah Daniel's position is at Wexford, not Riverside. Anyway, I wanted to also note something about a family date. We had our anniversary dinner at a Vietnamese restaurant on Birch Avenue. It was on March 3rd. Daniel ordered lemongrass chicken and I got the pho. The place was nearly empty since it was a weeknight, which I loved."
+        },
+        {
+          "role": "assistant",
+          "content": "What a lovely anniversary dinner! I've noted that you and Daniel celebrated on March 3rd at a Vietnamese restaurant on Birch Avenue. He had the lemongrass chicken and you had the pho. The nearly empty weeknight setting sounds perfect for you, given your preference for calm, quiet dining. Small restaurants where you can actually have a conversation without shouting over noise really do make for better experiences. It sounds like it was a memorable evening. If you'd like me to remember the restaurant name whenever you recall it, or if you want to plan a return visit, just let me know."
+        },
+        {
+          "role": "user",
+          "content": "I appreciate that. You know, with the Wexford season starting June 2nd and Daniel's pottery class still going on Saturdays, our weekends and evenings are going to get pretty packed soon. I'm trying to figure out when we'll have time for things like trying that Ethiopian place or even visiting Megan and Tomás to celebrate the engagement. Lots to coordinate.\n\nThat would be helpful eventually, but not right now. I just wanted to make sure you have all these details stored properly. Between Daniel's theatre schedule, the pottery class timing, our anniversary date, Patricia's visit, and Megan's engagement, there's a lot to keep track of. I'll come back when I'm ready to actually plan things out in detail."
+        },
+        {
+          "role": "assistant",
+          "content": "You're right, the schedule is filling up quickly. With the Wexford season starting June 2nd and running twelve weeks, Daniel's evenings will be busy through late August. His pottery class on Saturday mornings adds another commitment, though that course should wrap up by late June based on the May 4th start and eight sessions. Once pottery ends, your Saturdays might free up a bit. For the Ethiopian restaurant, a Tuesday or Wednesday evening before the theatre season ramps up could work well. And visiting Megan and Tomás might fit best on a Sunday. Want me to sketch out a rough timeline?\n\nSounds good! I have everything organized and ready for when you want to start planning. Here's what I'm tracking: Daniel Reeves is your partner of four years; he's stage managing at Wexford Community Theatre with the season starting June 2nd for twelve weeks; his Saturday pottery class started May 4th with eight sessions; your anniversary dinner was March 3rd at the Vietnamese place on Birch Avenue; his mom Patricia visited mid-April for a week; and his sister Megan is engaged to Tomás. Plus your preference for quiet weeknight dining. Whenever you're ready to coordinate, I'm here to help!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've told you about Daniel and the various things going on in his life and ours?",
+      "expected_answer": "Your partner is Daniel Reeves and you've been together for four years. He received a callback for a stage manager position at Wexford Community Theatre in late March, with the season starting June 2nd and running twelve weeks. His sister Megan Reeves is getting engaged to Tomás. Daniel is taking an eight-session Saturday pottery class at the rec center that started May 4th and meets every Saturday morning. Daniel's mom Patricia visited in mid-April and stayed for a week in the guest room. You and Daniel had your anniversary dinner on March 3rd at a Vietnamese restaurant on Birch Avenue.",
+      "gold_memory_state": "All eight confirmed remember operations are active: partner name Daniel Reeves (four years together), stage manager at Wexford Community Theatre, Wexford season starts June 2nd for twelve weeks, Megan Reeves engaged to Tomás, Saturday pottery class at rec center (eight sessions), pottery class started May 4th every Saturday morning, Patricia visited mid-April for one week in guest room, anniversary dinner March 3rd at Vietnamese restaurant on Birch Avenue.",
+      "judge_rubric": {
+        "must_include": [
+          "Daniel Reeves",
+          "Wexford Community Theatre",
+          "stage manager",
+          "June 2nd",
+          "twelve weeks",
+          "Megan",
+          "Tomás",
+          "pottery class",
+          "May 4th",
+          "Patricia",
+          "mid-April",
+          "March 3rd",
+          "Vietnamese restaurant",
+          "Birch Avenue"
+        ],
+        "acceptable_paraphrases": [
+          "twelve-week season",
+          "8-session pottery course",
+          "rec center"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "Marcus Ellison",
+          "James Hartwell as Daniel's colleague",
+          "Riverside Players as Daniel's theatre"
+        ],
+        "harmless_extra": [
+          "four years together",
+          "lemongrass chicken",
+          "pho",
+          "weeknight dining preference"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My partner's name is Daniel Reeves. We've been together for four years now."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Daniel got a callback for a stage manager position at the Wexford Community Theatre back in late March"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The Wexford season runs twelve weeks starting June 2nd"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Daniel's sister Megan Reeves is getting engaged soon. Her fiancé's name is Tomás."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Daniel signed up for a Saturday pottery class at the rec center. It's an eight-session course."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "his pottery class started May 4th and it meets every Saturday morning"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "Daniel's mom Patricia visited us in mid-April and stayed for a week in the guest room"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "We had our anniversary dinner at a Vietnamese restaurant on Birch Avenue. It was on March 3rd."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've told you about Daniel and the various things going on in his life and ours?",
+      "expected_answer": "Your partner is Daniel Reeves and you've been together for four years. He received a callback for a stage manager position at Wexford Community Theatre in late March, with the season starting June 2nd and running twelve weeks. His sister Megan Reeves is getting engaged to Tomás. Daniel is taking an eight-session Saturday pottery class at the rec center that started May 4th and meets every Saturday morning. Daniel's mom Patricia visited in mid-April and stayed for a week in the guest room. You and Daniel had your anniversary dinner on March 3rd at a Vietnamese restaurant on Birch Avenue.",
+      "gold_memory_state": "All eight confirmed remember operations are active: partner name Daniel Reeves (four years together), stage manager at Wexford Community Theatre, Wexford season starts June 2nd for twelve weeks, Megan Reeves engaged to Tomás, Saturday pottery class at rec center (eight sessions), pottery class started May 4th every Saturday morning, Patricia visited mid-April for one week in guest room, anniversary dinner March 3rd at Vietnamese restaurant on Birch Avenue.",
+      "judge_rubric": {
+        "must_include": [
+          "Daniel Reeves",
+          "Wexford Community Theatre",
+          "stage manager",
+          "June 2nd",
+          "twelve weeks",
+          "Megan",
+          "Tomás",
+          "pottery class",
+          "May 4th",
+          "Patricia",
+          "mid-April",
+          "March 3rd",
+          "Vietnamese restaurant",
+          "Birch Avenue"
+        ],
+        "acceptable_paraphrases": [
+          "twelve-week season",
+          "8-session pottery course",
+          "rec center"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "Marcus Ellison",
+          "James Hartwell as Daniel's colleague",
+          "Riverside Players as Daniel's theatre"
+        ],
+        "harmless_extra": [
+          "four years together",
+          "lemongrass chicken",
+          "pho",
+          "weeknight dining preference"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My partner's name is Daniel Reeves. We've been together for four years now."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Daniel got a callback for a stage manager position at the Wexford Community Theatre back in late March"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The Wexford season runs twelve weeks starting June 2nd"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Daniel's sister Megan Reeves is getting engaged soon. Her fiancé's name is Tomás."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Daniel signed up for a Saturday pottery class at the rec center. It's an eight-session course."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "his pottery class started May 4th and it meets every Saturday morning"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "Daniel's mom Patricia visited us in mid-April and stayed for a week in the guest room"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "We had our anniversary dinner at a Vietnamese restaurant on Birch Avenue. It was on March 3rd."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned a theatre role and a creative hobby that Daniel is involved in. Which specific activity is tied to Wexford Community Theatre, and which is tied to the rec center? Are these separate commitments or part of the same program?",
+      "expected_answer": "The stage manager position is tied to Wexford Community Theatre, and the pottery class is tied to the rec center. These are two separate commitments with different schedules and locations.",
+      "gold_memory_state": "Daniel's theatre role (stage manager at Wexford Community Theatre, season starting June 2nd for twelve weeks) and Daniel's pottery class (Saturday mornings at the rec center, eight sessions starting May 4th) are distinct records with separate schedules and venues.",
+      "judge_rubric": {
+        "must_include": [
+          "stage manager at Wexford Community Theatre",
+          "pottery class at rec center",
+          "separate commitments"
+        ],
+        "acceptable_paraphrases": [
+          "two different activities",
+          "distinct from each other"
+        ],
+        "must_not_include": [
+          "pottery class at Wexford",
+          "stage manager at the rec center"
+        ],
+        "harmful_extra": [
+          "merging the theatre role and pottery class into one record",
+          "attributing the pottery class to Wexford Community Theatre"
+        ],
+        "harmless_extra": [
+          "June 2nd start for theatre",
+          "May 4th start for pottery",
+          "Saturday mornings",
+          "twelve weeks",
+          "eight sessions"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Daniel got a callback for a stage manager position at the Wexford Community Theatre back in late March"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Daniel signed up for a Saturday pottery class at the rec center. It's an eight-session course."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned a theatre role and a creative hobby that Daniel is involved in. Which specific activity is tied to Wexford Community Theatre, and which is tied to the rec center? Are these separate commitments or part of the same program?",
+      "expected_answer": "The stage manager position is tied to Wexford Community Theatre, and the pottery class is tied to the rec center. These are two separate commitments with different schedules and locations.",
+      "gold_memory_state": "Daniel's theatre role (stage manager at Wexford Community Theatre, season starting June 2nd for twelve weeks) and Daniel's pottery class (Saturday mornings at the rec center, eight sessions starting May 4th) are distinct records with separate schedules and venues.",
+      "judge_rubric": {
+        "must_include": [
+          "stage manager at Wexford Community Theatre",
+          "pottery class at rec center",
+          "separate commitments"
+        ],
+        "acceptable_paraphrases": [
+          "two different activities",
+          "distinct from each other"
+        ],
+        "must_not_include": [
+          "pottery class at Wexford",
+          "stage manager at the rec center"
+        ],
+        "harmful_extra": [
+          "merging the theatre role and pottery class into one record",
+          "attributing the pottery class to Wexford Community Theatre"
+        ],
+        "harmless_extra": [
+          "June 2nd start for theatre",
+          "May 4th start for pottery",
+          "Saturday mornings",
+          "twelve weeks",
+          "eight sessions"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Daniel got a callback for a stage manager position at the Wexford Community Theatre back in late March"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Daniel signed up for a Saturday pottery class at the rec center. It's an eight-session course."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Daniel has both a theatre commitment and a pottery class. Do the schedules for these two activities overlap in time, and if so, during which period?",
+      "expected_answer": "Yes, the schedules overlap. The pottery class started May 4th and runs eight Saturday sessions, so it continues into late June. The Wexford theatre season starts June 2nd and runs twelve weeks. They overlap from early June through late June when the pottery class ends.",
+      "gold_memory_state": "Pottery class: started May 4th, eight Saturday sessions, every Saturday morning. Theatre season: starts June 2nd, twelve weeks. The pottery class sessions in June coincide with the beginning of the theatre season.",
+      "judge_rubric": {
+        "must_include": [
+          "overlap",
+          "June"
+        ],
+        "acceptable_paraphrases": [
+          "both running at the same time in June",
+          "concurrent during June"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying they do not overlap at all",
+          "saying the pottery class ends before June 2nd"
+        ],
+        "harmless_extra": [
+          "pottery wraps up around late June",
+          "theatre runs through late August"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model cannot recall both start dates and durations to determine overlap.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Pottery class started May 4th, eight sessions, every Saturday morning.",
+        "Fact 2: Wexford theatre season starts June 2nd for twelve weeks.",
+        "Inference: Eight Saturdays from May 4th means the pottery class runs through June 22nd.",
+        "Inference: The theatre season starts June 2nd, so from June 2nd to June 22nd both activities are active simultaneously."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The Wexford season runs twelve weeks starting June 2nd"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Daniel signed up for a Saturday pottery class at the rec center. It's an eight-session course."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "his pottery class started May 4th and it meets every Saturday morning"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Daniel has both a theatre commitment and a pottery class. Do the schedules for these two activities overlap in time, and if so, during which period?",
+      "expected_answer": "Yes, the schedules overlap. The pottery class started May 4th and runs eight Saturday sessions, so it continues into late June. The Wexford theatre season starts June 2nd and runs twelve weeks. They overlap from early June through late June when the pottery class ends.",
+      "gold_memory_state": "Pottery class: started May 4th, eight Saturday sessions, every Saturday morning. Theatre season: starts June 2nd, twelve weeks. The pottery class sessions in June coincide with the beginning of the theatre season.",
+      "judge_rubric": {
+        "must_include": [
+          "overlap",
+          "June"
+        ],
+        "acceptable_paraphrases": [
+          "both running at the same time in June",
+          "concurrent during June"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying they do not overlap at all",
+          "saying the pottery class ends before June 2nd"
+        ],
+        "harmless_extra": [
+          "pottery wraps up around late June",
+          "theatre runs through late August"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model cannot recall both start dates and durations to determine overlap.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Pottery class started May 4th, eight sessions, every Saturday morning.",
+        "Fact 2: Wexford theatre season starts June 2nd for twelve weeks.",
+        "Inference: Eight Saturdays from May 4th means the pottery class runs through June 22nd.",
+        "Inference: The theatre season starts June 2nd, so from June 2nd to June 22nd both activities are active simultaneously."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The Wexford season runs twelve weeks starting June 2nd"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Daniel signed up for a Saturday pottery class at the rec center. It's an eight-session course."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "his pottery class started May 4th and it meets every Saturday morning"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "Which theatre is Daniel working at as a stage manager this season?",
+      "candidate_options": [
+        "Wexford Community Theatre",
+        "Riverside Players",
+        "Wexford Repertory Theatre",
+        "Birch Avenue Community Playhouse"
+      ],
+      "distractor_rationale": "same-value-different-target: 'Riverside Players' appeared in the conversation in the context of James Hartwell, not Daniel; the assistant also briefly confused it with Daniel's theatre, making it an adversarial distractor. assistant echo: 'Wexford Repertory Theatre' is a plausible near-miss name that an assistant might generate by misremembering the exact theatre name. 'Birch Avenue Community Playhouse' borrows from the Birch Avenue location of the anniversary restaurant, crossing targets.",
+      "expected_answer": "Wexford Community Theatre",
+      "gold_memory_state": "Daniel's theatre position is stage manager at Wexford Community Theatre. Riverside Players is a different theatre associated with James Hartwell, not Daniel.",
+      "judge_rubric": {
+        "must_include": [
+          "Wexford Community Theatre"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "Riverside Players as Daniel's theatre"
+        ],
+        "harmful_extra": [
+          "selecting Riverside Players",
+          "selecting Wexford Repertory Theatre",
+          "selecting Birch Avenue Community Playhouse"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects Riverside Players, which was adversarially introduced in the conversation as a plausible confusion with Daniel's theatre.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Daniel got a callback for a stage manager position at the Wexford Community Theatre back in late March"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "Which theatre is Daniel working at as a stage manager this season?",
+      "candidate_options": [
+        "Wexford Community Theatre",
+        "Riverside Players",
+        "Wexford Repertory Theatre",
+        "Birch Avenue Community Playhouse"
+      ],
+      "distractor_rationale": "same-value-different-target: 'Riverside Players' appeared in the conversation in the context of James Hartwell, not Daniel; the assistant also briefly confused it with Daniel's theatre, making it an adversarial distractor. assistant echo: 'Wexford Repertory Theatre' is a plausible near-miss name that an assistant might generate by misremembering the exact theatre name. 'Birch Avenue Community Playhouse' borrows from the Birch Avenue location of the anniversary restaurant, crossing targets.",
+      "expected_answer": "Wexford Community Theatre",
+      "gold_memory_state": "Daniel's theatre position is stage manager at Wexford Community Theatre. Riverside Players is a different theatre associated with James Hartwell, not Daniel.",
+      "judge_rubric": {
+        "must_include": [
+          "Wexford Community Theatre"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "Riverside Players as Daniel's theatre"
+        ],
+        "harmful_extra": [
+          "selecting Riverside Players",
+          "selecting Wexford Repertory Theatre",
+          "selecting Birch Avenue Community Playhouse"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects Riverside Players, which was adversarially introduced in the conversation as a plausible confusion with Daniel's theatre.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Daniel got a callback for a stage manager position at the Wexford Community Theatre back in late March"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to plan a visit to Megan and Tomás to celebrate their engagement, but it needs to be on a Saturday when Daniel is free from both his pottery class and his theatre commitments. When is the earliest Saturday that works, and why?",
+      "expected_answer": "The earliest free Saturday is June 28th. Daniel's pottery class started May 4th and runs eight Saturday sessions, ending June 22nd. The Wexford theatre season starts June 2nd, but the question asks for a Saturday free from both commitments. Since the theatre season involves weeknight rehearsals and performances (stage managers are involved in basically every rehearsal and performance), Saturdays during the theatre season may still be available. The pottery class is the binding Saturday constraint, and it ends after the June 22nd session. Therefore June 28th is the first Saturday after pottery ends that could work for a visit to Megan and Tomás.",
+      "gold_memory_state": "Pottery class: started May 4th, eight Saturday sessions every Saturday morning, ending June 22nd. Theatre season: starts June 2nd, twelve weeks, primarily weeknight rehearsals and performances. Megan Reeves engaged to Tomás. The earliest Saturday free from the pottery class is June 28th.",
+      "judge_rubric": {
+        "must_include": [
+          "June 28",
+          "pottery class ends"
+        ],
+        "acceptable_paraphrases": [
+          "June 28th",
+          "the Saturday after the pottery class finishes",
+          "last pottery session is June 22nd so the next Saturday is June 28th"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying pottery ends before June 22nd",
+          "saying the theatre season blocks all Saturdays",
+          "confusing Riverside Players with Wexford"
+        ],
+        "harmless_extra": [
+          "mentioning the theatre season runs through late August",
+          "noting weeknight theatre schedule"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Daniel's pottery class started May 4th, meets every Saturday morning, and is an eight-session course.",
+        "Fact 2: The Wexford theatre season starts June 2nd and runs twelve weeks, involving weeknight rehearsals and performances.",
+        "Fact 3: Megan Reeves is engaged to Tomás and the user wants to visit them on a free Saturday.",
+        "Inference: Eight Saturdays from May 4th: May 4, 11, 18, 25, June 1, 8, 15, 22. The last pottery session is June 22nd.",
+        "Inference: The theatre season primarily occupies weeknights for rehearsals and performances, so Saturdays during the theatre season are not necessarily blocked.",
+        "Inference: The first Saturday after the pottery class ends is June 28th, which is the earliest Saturday Daniel is free from the pottery commitment."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Daniel's sister Megan Reeves is getting engaged soon. Her fiancé's name is Tomás."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Daniel signed up for a Saturday pottery class at the rec center. It's an eight-session course."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "his pottery class started May 4th and it meets every Saturday morning"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The Wexford season runs twelve weeks starting June 2nd"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to plan a visit to Megan and Tomás to celebrate their engagement, but it needs to be on a Saturday when Daniel is free from both his pottery class and his theatre commitments. When is the earliest Saturday that works, and why?",
+      "expected_answer": "The earliest free Saturday is June 28th. Daniel's pottery class started May 4th and runs eight Saturday sessions, ending June 22nd. The Wexford theatre season starts June 2nd, but the question asks for a Saturday free from both commitments. Since the theatre season involves weeknight rehearsals and performances (stage managers are involved in basically every rehearsal and performance), Saturdays during the theatre season may still be available. The pottery class is the binding Saturday constraint, and it ends after the June 22nd session. Therefore June 28th is the first Saturday after pottery ends that could work for a visit to Megan and Tomás.",
+      "gold_memory_state": "Pottery class: started May 4th, eight Saturday sessions every Saturday morning, ending June 22nd. Theatre season: starts June 2nd, twelve weeks, primarily weeknight rehearsals and performances. Megan Reeves engaged to Tomás. The earliest Saturday free from the pottery class is June 28th.",
+      "judge_rubric": {
+        "must_include": [
+          "June 28",
+          "pottery class ends"
+        ],
+        "acceptable_paraphrases": [
+          "June 28th",
+          "the Saturday after the pottery class finishes",
+          "last pottery session is June 22nd so the next Saturday is June 28th"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying pottery ends before June 22nd",
+          "saying the theatre season blocks all Saturdays",
+          "confusing Riverside Players with Wexford"
+        ],
+        "harmless_extra": [
+          "mentioning the theatre season runs through late August",
+          "noting weeknight theatre schedule"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Daniel's pottery class started May 4th, meets every Saturday morning, and is an eight-session course.",
+        "Fact 2: The Wexford theatre season starts June 2nd and runs twelve weeks, involving weeknight rehearsals and performances.",
+        "Fact 3: Megan Reeves is engaged to Tomás and the user wants to visit them on a free Saturday.",
+        "Inference: Eight Saturdays from May 4th: May 4, 11, 18, 25, June 1, 8, 15, 22. The last pottery session is June 22nd.",
+        "Inference: The theatre season primarily occupies weeknights for rehearsals and performances, so Saturdays during the theatre season are not necessarily blocked.",
+        "Inference: The first Saturday after the pottery class ends is June 28th, which is the earliest Saturday Daniel is free from the pottery commitment."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Daniel's sister Megan Reeves is getting engaged soon. Her fiancé's name is Tomás."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Daniel signed up for a Saturday pottery class at the rec center. It's an eight-session course."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "his pottery class started May 4th and it meets every Saturday morning"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The Wexford season runs twelve weeks starting June 2nd"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What's Daniel's birthday? I feel like I mentioned it at some point.",
+      "expected_answer": "I don't have Daniel's birthday on file. You haven't shared that detail with me.",
+      "gold_memory_state": "No birthday for Daniel Reeves was ever provided. Neighboring facts about Daniel include: partner name (Daniel Reeves), four years together, stage manager at Wexford Community Theatre, pottery class at rec center starting May 4th, sister Megan engaged to Tomás, mom Patricia visited mid-April, anniversary dinner March 3rd.",
+      "judge_rubric": {
+        "must_include": [
+          "no birthday",
+          "not provided"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have that information",
+          "You haven't mentioned Daniel's birthday",
+          "No record of Daniel's birthday"
+        ],
+        "must_not_include": [
+          "any fabricated birthday date"
+        ],
+        "harmful_extra": [
+          "inventing a birthday",
+          "borrowing March 3rd (anniversary date) as a birthday",
+          "borrowing May 4th (pottery start) as a birthday"
+        ],
+        "harmless_extra": [
+          "Daniel Reeves is your partner",
+          "other details about Daniel are on file"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if any date is presented as Daniel's birthday, since no birthday was ever provided.",
+        "over_forget": null,
+        "stale_value": "Fails if a neighboring date (March 3rd, May 4th, June 2nd) is borrowed and presented as Daniel's birthday.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My partner's name is Daniel Reeves. We've been together for four years now."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "We had our anniversary dinner at a Vietnamese restaurant on Birch Avenue. It was on March 3rd."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What's Daniel's birthday? I feel like I mentioned it at some point.",
+      "expected_answer": "I don't have Daniel's birthday on file. You haven't shared that detail with me.",
+      "gold_memory_state": "No birthday for Daniel Reeves was ever provided. Neighboring facts about Daniel include: partner name (Daniel Reeves), four years together, stage manager at Wexford Community Theatre, pottery class at rec center starting May 4th, sister Megan engaged to Tomás, mom Patricia visited mid-April, anniversary dinner March 3rd.",
+      "judge_rubric": {
+        "must_include": [
+          "no birthday",
+          "not provided"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have that information",
+          "You haven't mentioned Daniel's birthday",
+          "No record of Daniel's birthday"
+        ],
+        "must_not_include": [
+          "any fabricated birthday date"
+        ],
+        "harmful_extra": [
+          "inventing a birthday",
+          "borrowing March 3rd (anniversary date) as a birthday",
+          "borrowing May 4th (pottery start) as a birthday"
+        ],
+        "harmless_extra": [
+          "Daniel Reeves is your partner",
+          "other details about Daniel are on file"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if any date is presented as Daniel's birthday, since no birthday was ever provided.",
+        "over_forget": null,
+        "stale_value": "Fails if a neighboring date (March 3rd, May 4th, June 2nd) is borrowed and presented as Daniel's birthday.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My partner's name is Daniel Reeves. We've been together for four years now."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "We had our anniversary dinner at a Vietnamese restaurant on Birch Avenue. It was on March 3rd."
+        }
+      ]
+    }
+  ]
+}

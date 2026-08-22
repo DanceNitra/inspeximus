@@ -1,0 +1,1155 @@
+{
+  "target_fact": "User's subscription auto-renewal dates and billing cycles for active services",
+  "operation_type": "Remember",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 3,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": true,
+      "never_stored_target": "Hulu subscription renewal date"
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "My Adobe Creative Cloud auto-renews annually on March 15th"
+      },
+      "target": {
+        "target_id": "adobe_cc_renewal_date",
+        "target_name": "Adobe Creative Cloud annual auto-renewal date"
+      },
+      "old_value": null,
+      "new_value": "March 15, annually",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My Adobe Creative Cloud auto-renews annually on March 15th"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "the annual cost for Adobe Creative Cloud is $659"
+      },
+      "target": {
+        "target_id": "adobe_cc_annual_cost",
+        "target_name": "Adobe Creative Cloud annual subscription cost"
+      },
+      "old_value": null,
+      "new_value": "$659",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "the annual cost for Adobe Creative Cloud is $659"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "My NYT digital subscription started on November 2nd, and the introductory rate is $1 per week for the first year"
+      },
+      "target": {
+        "target_id": "nyt_subscription_start_date",
+        "target_name": "NYT digital subscription start date"
+      },
+      "old_value": null,
+      "new_value": "November 2",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My NYT digital subscription started on November 2nd, and the introductory rate is $1 per week for the first year"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "the introductory rate is $1 per week for the first year"
+      },
+      "target": {
+        "target_id": "nyt_intro_rate_duration",
+        "target_name": "NYT introductory rate duration"
+      },
+      "old_value": null,
+      "new_value": "$1/week for the first year",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "the introductory rate is $1 per week for the first year"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "iCloud+ 200GB plan renews monthly on the 17th"
+      },
+      "target": {
+        "target_id": "icloud_renewal_date",
+        "target_name": "iCloud+ monthly renewal date"
+      },
+      "old_value": null,
+      "new_value": "17th of every month",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "iCloud+ 200GB plan renews monthly on the 17th"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "Mullvad VPN renews annually around February 22nd"
+      },
+      "target": {
+        "target_id": "mullvad_renewal_date",
+        "target_name": "Mullvad VPN annual renewal date"
+      },
+      "old_value": null,
+      "new_value": "around February 22, annually",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Mullvad VPN renews annually around February 22nd"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "Adobe's cancellation window closes 14 days before the renewal date"
+      },
+      "target": {
+        "target_id": "adobe_cancellation_window",
+        "target_name": "Adobe Creative Cloud cancellation window deadline"
+      },
+      "old_value": null,
+      "new_value": "14 days before renewal date",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Adobe's cancellation window closes 14 days before the renewal date"
+        }
+      ]
+    },
+    {
+      "operation_id": "op8",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 8,
+        "quote": "Spotify Premium renews on the 7th of every month and that one's been going for about three years now"
+      },
+      "target": {
+        "target_id": "spotify_renewal_date",
+        "target_name": "Spotify Premium monthly renewal date"
+      },
+      "old_value": null,
+      "new_value": "7th of every month",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 8,
+          "quote": "Spotify Premium renews on the 7th of every month and that one's been going for about three years now"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establishing core subscription renewal facts",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I need to get my subscription renewal dates organized. I keep losing track and it's costing me money. My Adobe Creative Cloud auto-renews annually on March 15th, and I really need to stay on top of that one. Last year I almost missed the window and got hit with a full charge. Can you help me keep track of all of these?"
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, I'd be happy to help you organize your subscription renewal dates! Getting charged unexpectedly is really frustrating, so let's make sure you have a clear picture of everything. I've noted that your Adobe Creative Cloud auto-renews annually on March 15th, and that's clearly a priority for you. Let's go through the rest of your active subscriptions one by one so we can build a complete list. What other subscriptions do you want to track? We can set up a summary once we have them all documented together."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, so with Adobe specifically, the annual cost for Adobe Creative Cloud is $659. That's the full Creative Cloud all-apps plan. I was genuinely furious last year when that charge went through without me catching it in time. I spent three days arguing with their support team and only got a partial refund out of it. Never want to repeat that experience."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds incredibly frustrating — $659 is a significant charge to have sneak up on you, and only getting a partial refund after three days of back-and-forth makes it worse. I've noted the annual cost at $659 for the full Creative Cloud all-apps plan. We should definitely build in a reminder well before March 15th so you have plenty of time to decide whether to renew or cancel before the window closes. What other subscriptions should we add to the tracker? The more complete the list, the better we can prevent any surprises."
+        },
+        {
+          "role": "user",
+          "content": "Good idea. So I also have a New York Times digital subscription. My NYT digital subscription started on November 2nd, and the introductory rate is $1 per week for the first year. After that first year it jumps to the full price, which I think is something like $17 per week. I really need to cancel before that intro period ends because I'm not paying full price for it, even though I do enjoy their cooking section a lot."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — your NYT digital subscription started November 2nd at the introductory rate of $1 per week for the first year. That's a great deal but the jump to around $17 per week would be a huge increase, so we definitely want to flag that well in advance. Since it started November 2nd, you'd want to cancel or renegotiate before that anniversary rolls around. I can see why you'd want to keep the cooking section though — sometimes there are retention offers if you call to cancel. Let's keep adding to the list so we have everything in one place."
+        },
+        {
+          "role": "assistant",
+          "content": "Actually, I realize I should also ask — do you have a sense of how far in advance the NYT requires you to cancel before the rate change kicks in? Some subscriptions need notice days or even weeks ahead. We can factor that into your reminder timeline once we know. What other subscriptions are on your radar?"
+        },
+        {
+          "role": "user",
+          "content": "I'm not sure about the NYT cancellation window, I'll have to check. But let me also mention that Spotify Premium renews on the 7th of every month and that one's been going for about three years now. I'm not worried about Spotify at all, it's a reasonable price and I use it every single day. I just want it on the list for completeness so I have everything documented in one spot for reference purposes.\n\nPerfect, I've added Spotify Premium renewing on the 7th of every month to the list. It makes total sense to include it even if it's not a concern — having a complete picture helps you see your total monthly outflow at a glance. So far we have Adobe Creative Cloud renewing annually on March 15th at $659, NYT digital starting November 2nd at the $1/week intro rate for one year, and Spotify Premium monthly on the 7th. That's a solid start. Let's continue building this out whenever you're ready with more subscriptions to add."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Adding more subscriptions and cancellation details",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Alright, continuing with my subscription tracking. My iCloud+ 200GB plan renews monthly on the 17th. I signed up for it in mid-January and it's been pretty useful for backing up photos and documents. It's only a few dollars a month so it's not a big deal financially, but I still want it on the list so I can see everything together and know exactly when each charge hits my account."
+        },
+        {
+          "role": "assistant",
+          "content": "Great, I've added your iCloud+ 200GB plan renewing monthly on the 17th. Even though it's a smaller charge, those little subscriptions add up over time, so it's smart to track them all. Your list is growing nicely — we now have Adobe Creative Cloud annually on March 15th, NYT digital starting November 2nd with the intro rate, Spotify Premium monthly on the 7th, and now iCloud+ monthly on the 17th. Are there any other subscriptions you want to add? I also want to make sure we capture any that you've already cancelled so we don't accidentally include them."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, good point. I did cancel my Headspace subscription already — that was renewing on December 1st but I barely used it after the first month. Finding the cancel button was a whole ordeal too, which annoyed me. Anyway, that's done. But my Mullvad VPN renews annually around February 22nd. I pay with a voucher code so there's no credit card on file, which I really appreciate about their service."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — Headspace is cancelled and off the active list, and I've added Mullvad VPN renewing annually around February 22nd. I can see why you like the voucher code approach with Mullvad; no card on file means no surprise charges, which aligns perfectly with your goal of staying in control of renewals. Your active subscription list now includes Adobe Creative Cloud on March 15th annually, NYT digital from November 2nd, Spotify Premium on the 7th monthly, iCloud+ on the 17th monthly, and Mullvad VPN around February 22nd annually. That's five active subscriptions to monitor. Shall we talk about setting up reminders?"
+        },
+        {
+          "role": "user",
+          "content": "Definitely. Let's start with Adobe since that's the most expensive one and the one I'm most anxious about. I looked into it, and Adobe's cancellation window closes 14 days before the renewal date. So I need to make my decision at least two weeks before March 15th. After that 14-day cutoff, you're locked into the next billing cycle and there's basically no recourse. I learned that the hard way last year."
+        },
+        {
+          "role": "assistant",
+          "content": "That's really important information — Adobe's cancellation window closing 14 days before the renewal date means your hard deadline would be March 1st each year. After that you're locked in for another $659 cycle with no recourse, as you experienced. I'd recommend setting a reminder for late February, maybe around February 20th, to give yourself a comfortable buffer to evaluate whether you want to keep it. That way you have over a week to think it through without the pressure of a last-minute decision. Want me to help you figure out similar cutoff dates for your other subscriptions too?"
+        },
+        {
+          "role": "user",
+          "content": "That makes sense. I should probably set a similar early reminder for the NYT subscription too, so I don't forget about the intro rate expiring. I really value services that let you manage everything from one settings page without having to call anyone or chat with a retention specialist. That's one of the reasons I dropped Headspace so quickly — the cancellation process felt deliberately obstructive and hostile toward the customer.\n\nExactly. The monthly ones are easy — if I ever want to stop Spotify or iCloud+ I can just cancel before the next billing date, no big commitment. It's the annual subscriptions that really need advance planning. Oh, and one more thing — my brother mentioned his Netflix went up by $3 recently because he didn't notice the renewal and they switched his plan tier. That's exactly the kind of thing I'm trying to avoid with all this tracking."
+        },
+        {
+          "role": "assistant",
+          "content": "I completely understand that frustration. Subscription services that make cancellation intentionally difficult are essentially banking on customer inertia, and it feels manipulative. Your preference for straightforward, self-service management is very reasonable. For the NYT reminder, since your intro rate started November 2nd and lasts one year, you'd want to set a reminder well before that anniversary. We could aim for mid-October to give you plenty of time. Between Adobe's March deadline and the NYT anniversary, you'd have clear calendar markers for your two most time-sensitive subscriptions. The monthly ones like Spotify and iCloud+ are lower stakes since you can cancel any month.\n\nYour brother's Netflix experience is a perfect example of why this tracking matters. Price increases tied to automatic tier changes are sneaky, and by the time you notice, you've already been charged. Your approach of documenting everything is the right move. So to recap your active subscriptions: Spotify Premium on the 7th monthly, Adobe Creative Cloud on March 15th annually at $659 with a 14-day cancellation window, NYT digital from November 2nd with the $1/week intro rate for one year, iCloud+ on the 17th monthly, and Mullvad VPN around February 22nd annually via voucher. That's a solid, comprehensive tracker. Let me know anytime you want to review or update it."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Review and adversarial distractor injection",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to circle back on my subscription tracker. I've been thinking about which ones I actually want to keep long-term versus which ones I might drop. The Mullvad VPN is definitely a keeper — the voucher system is just so clean and transparent. And Spotify is non-negotiable, I use it every single day for music and podcasts. Those two are the ones I feel best about keeping indefinitely without any reservations."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes sense — Mullvad and Spotify are clearly providing consistent value for you. Mullvad's voucher system fits your preference for transparency, and Spotify's daily use justifies the monthly cost easily. For the others, it sounds like you might be weighing the cost-benefit more carefully. Adobe at $659 annually is the big one to evaluate, especially given your frustrating experience last year with their support team. The NYT intro rate expiring is another decision point coming up. By the way, I was looking at a subscription management article and it mentioned that a common iCloud+ renewal date is the 14th — but yours is the 17th, just want to make sure we have that right in case you see conflicting info anywhere."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, mine is definitely the 17th, not the 14th. Thanks for double-checking. Anyway, I'm on the fence about Adobe. I use Photoshop and Illustrator regularly for freelance work, so it's hard to justify dropping it entirely. But $659 is a lot of money. I've been looking into Affinity as a potential alternative since it's a one-time purchase rather than a subscription. Haven't made any decisions on that front yet though."
+        },
+        {
+          "role": "assistant",
+          "content": "Affinity is a popular alternative — their one-time purchase model is appealing compared to Adobe's recurring $659 annual charge. Affinity Photo and Affinity Designer cover a lot of the same ground as Photoshop and Illustrator, though there can be a learning curve and some feature gaps depending on your workflow. Since you use those tools for freelance work, it might be worth doing a trial run with Affinity before your Adobe cancellation window hits. That way you'd know whether it meets your needs before committing to dropping Creative Cloud. You'd want to start that evaluation by mid-February at the latest, giving yourself time before the March 1st cancellation deadline."
+        },
+        {
+          "role": "user",
+          "content": "That's a good point about the timeline. Mid-February would give me a solid month to test Affinity before I'd need to decide on Adobe. I think I'll download the trial this weekend. For the NYT, I'm leaning toward cancelling before the intro rate expires. I love the cooking section but I can probably find similar recipe content elsewhere for free. It's really just that one section I use consistently."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a practical approach. If the cooking section is the main draw, there are plenty of free recipe resources — sites like Serious Eats, Budget Bytes, and various food blogs offer excellent content without a subscription. You might also find that some NYT recipes get shared on social media or cooking forums. Since your NYT intro rate started November 2nd and runs for one year, you'd want to cancel before that anniversary. Setting a reminder for mid-October would give you a comfortable buffer. Between the Adobe evaluation starting mid-February and the NYT cancellation reminder in October, you've got a clear action plan for your two biggest subscription decisions this year."
+        },
+        {
+          "role": "user",
+          "content": "Perfect. I feel much more organized about all of this now. Having everything documented with specific dates and deadlines makes a huge difference. I think the key takeaway is that I need to be proactive about the annual subscriptions — Adobe in March and Mullvad in February and NYT around November. The monthly ones I can handle more casually since there's less commitment involved with those billing cycles.\n\nWill do. I appreciate all the help organizing this. It's funny how something as simple as writing down renewal dates and cancellation windows can save you hundreds of dollars. That Adobe charge last year was a $659 lesson in why you need to stay on top of these things. At least now I have a clear system and I know exactly when each deadline is coming up so I won't get caught off guard again."
+        },
+        {
+          "role": "assistant",
+          "content": "Exactly right. Your annual subscriptions are where the real financial risk lives — Adobe on March 15th with its 14-day cancellation window, Mullvad around February 22nd, and NYT around its November 2nd anniversary. Those are the dates that need proactive calendar reminders. The monthly subscriptions like Spotify on the 7th and iCloud+ on the 17th give you flexibility to adjust anytime without major consequences. You've built a really solid system here. I'd suggest reviewing this tracker quarterly to make sure nothing has changed — new subscriptions, price increases, or shifts in how much you're using each service. Just reach out whenever you want to revisit any of this.\n\nIt really is one of those cases where a little organization pays for itself many times over. That $659 Adobe charge was an expensive lesson, but it motivated you to build a system that will prevent it from happening again. You now have clear visibility into all five active subscriptions — their renewal dates, billing cycles, and the critical cancellation windows for the annual ones. The combination of proactive reminders and your preference for transparent, self-service management means you're well-positioned to stay in control. Don't hesitate to come back if you add new subscriptions or need to update any of these details. Good luck with the Affinity trial this weekend!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize all the subscription renewal dates and billing details I shared with you across our conversations?",
+      "expected_answer": "You shared the following subscription details: Adobe Creative Cloud auto-renews annually on March 15th at $659 per year, with a cancellation window that closes 14 days before the renewal date. Your NYT digital subscription started November 2nd at an introductory rate of $1/week for the first year. Spotify Premium renews on the 7th of every month. iCloud+ 200GB plan renews monthly on the 17th. Mullvad VPN renews annually around February 22nd, paid via voucher code.",
+      "gold_memory_state": "All five active subscriptions are stored: Adobe CC (March 15, annually, $659, 14-day cancellation window), NYT digital (started Nov 2, $1/week intro for first year), Spotify Premium (7th monthly), iCloud+ 200GB (17th monthly), Mullvad VPN (around Feb 22, annually).",
+      "judge_rubric": {
+        "must_include": [
+          "March 15",
+          "659",
+          "November 2",
+          "$1",
+          "7th",
+          "17th",
+          "February 22"
+        ],
+        "acceptable_paraphrases": [
+          "Mar 15",
+          "Nov 2",
+          "Feb 22"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "Hulu subscription",
+          "Netflix subscription details as if they were the user's own"
+        ],
+        "harmless_extra": [
+          "Headspace was cancelled",
+          "brother's Netflix anecdote"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My Adobe Creative Cloud auto-renews annually on March 15th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "the annual cost for Adobe Creative Cloud is $659"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My NYT digital subscription started on November 2nd, and the introductory rate is $1 per week for the first year"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 8,
+          "quote": "Spotify Premium renews on the 7th of every month and that one's been going for about three years now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "iCloud+ 200GB plan renews monthly on the 17th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Mullvad VPN renews annually around February 22nd"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Adobe's cancellation window closes 14 days before the renewal date"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize all the subscription renewal dates and billing details I shared with you across our conversations?",
+      "expected_answer": "You shared the following subscription details: Adobe Creative Cloud auto-renews annually on March 15th at $659 per year, with a cancellation window that closes 14 days before the renewal date. Your NYT digital subscription started November 2nd at an introductory rate of $1/week for the first year. Spotify Premium renews on the 7th of every month. iCloud+ 200GB plan renews monthly on the 17th. Mullvad VPN renews annually around February 22nd, paid via voucher code.",
+      "gold_memory_state": "All five active subscriptions are stored: Adobe CC (March 15, annually, $659, 14-day cancellation window), NYT digital (started Nov 2, $1/week intro for first year), Spotify Premium (7th monthly), iCloud+ 200GB (17th monthly), Mullvad VPN (around Feb 22, annually).",
+      "judge_rubric": {
+        "must_include": [
+          "March 15",
+          "659",
+          "November 2",
+          "$1",
+          "7th",
+          "17th",
+          "February 22"
+        ],
+        "acceptable_paraphrases": [
+          "Mar 15",
+          "Nov 2",
+          "Feb 22"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "Hulu subscription",
+          "Netflix subscription details as if they were the user's own"
+        ],
+        "harmless_extra": [
+          "Headspace was cancelled",
+          "brother's Netflix anecdote"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My Adobe Creative Cloud auto-renews annually on March 15th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "the annual cost for Adobe Creative Cloud is $659"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My NYT digital subscription started on November 2nd, and the introductory rate is $1 per week for the first year"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 8,
+          "quote": "Spotify Premium renews on the 7th of every month and that one's been going for about three years now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "iCloud+ 200GB plan renews monthly on the 17th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Mullvad VPN renews annually around February 22nd"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Adobe's cancellation window closes 14 days before the renewal date"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I have two subscriptions that renew annually in the first quarter of the year. If I need to set calendar reminders for both, which services are they and when does each one renew? Could the monthly iCloud+ renewal be confused with either of these?",
+      "expected_answer": "The two annual first-quarter renewals are Adobe Creative Cloud on March 15th and Mullvad VPN around February 22nd. The iCloud+ 200GB plan is a separate monthly subscription renewing on the 17th and should not be confused with either annual renewal.",
+      "gold_memory_state": "Adobe CC renews annually March 15; Mullvad VPN renews annually around February 22; iCloud+ renews monthly on the 17th. These are three distinct subscription records.",
+      "judge_rubric": {
+        "must_include": [
+          "Adobe Creative Cloud",
+          "March 15",
+          "Mullvad VPN",
+          "February 22",
+          "iCloud+ is monthly and separate"
+        ],
+        "acceptable_paraphrases": [
+          "Adobe CC",
+          "Mullvad",
+          "iCloud"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "treating iCloud+ as an annual subscription",
+          "merging Mullvad and Adobe into one record",
+          "listing Spotify or NYT as first-quarter annual renewals"
+        ],
+        "harmless_extra": [
+          "mentioning the 17th for iCloud+",
+          "mentioning voucher payment for Mullvad"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My Adobe Creative Cloud auto-renews annually on March 15th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Mullvad VPN renews annually around February 22nd"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "iCloud+ 200GB plan renews monthly on the 17th"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I have two subscriptions that renew annually in the first quarter of the year. If I need to set calendar reminders for both, which services are they and when does each one renew? Could the monthly iCloud+ renewal be confused with either of these?",
+      "expected_answer": "The two annual first-quarter renewals are Adobe Creative Cloud on March 15th and Mullvad VPN around February 22nd. The iCloud+ 200GB plan is a separate monthly subscription renewing on the 17th and should not be confused with either annual renewal.",
+      "gold_memory_state": "Adobe CC renews annually March 15; Mullvad VPN renews annually around February 22; iCloud+ renews monthly on the 17th. These are three distinct subscription records.",
+      "judge_rubric": {
+        "must_include": [
+          "Adobe Creative Cloud",
+          "March 15",
+          "Mullvad VPN",
+          "February 22",
+          "iCloud+ is monthly and separate"
+        ],
+        "acceptable_paraphrases": [
+          "Adobe CC",
+          "Mullvad",
+          "iCloud"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "treating iCloud+ as an annual subscription",
+          "merging Mullvad and Adobe into one record",
+          "listing Spotify or NYT as first-quarter annual renewals"
+        ],
+        "harmless_extra": [
+          "mentioning the 17th for iCloud+",
+          "mentioning voucher payment for Mullvad"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My Adobe Creative Cloud auto-renews annually on March 15th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Mullvad VPN renews annually around February 22nd"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "iCloud+ 200GB plan renews monthly on the 17th"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "For my Adobe Creative Cloud subscription, how does the cancellation deadline relate to the renewal date? What's the latest I could act?",
+      "expected_answer": "Adobe Creative Cloud's cancellation window closes 14 days before the March 15th annual renewal date, making March 1st the latest you could cancel or make a decision.",
+      "gold_memory_state": "Adobe CC renewal: March 15 annually. Cancellation window: 14 days before renewal. These two attributes are bound to the same Adobe Creative Cloud subscription record. Derived deadline: March 1st.",
+      "judge_rubric": {
+        "must_include": [
+          "14 days before",
+          "March 15",
+          "March 1"
+        ],
+        "acceptable_paraphrases": [
+          "two weeks before renewal",
+          "by March 1"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "applying Adobe's 14-day cancellation window to other subscriptions like Mullvad or NYT"
+        ],
+        "harmless_extra": [
+          "mentioning the $659 annual cost"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Adobe Creative Cloud renews annually on March 15th",
+        "Fact 2: Adobe's cancellation window closes 14 days before the renewal date",
+        "Inference: March 15 minus 14 days = March 1st is the latest cancellation deadline"
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My Adobe Creative Cloud auto-renews annually on March 15th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Adobe's cancellation window closes 14 days before the renewal date"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "For my Adobe Creative Cloud subscription, how does the cancellation deadline relate to the renewal date? What's the latest I could act?",
+      "expected_answer": "Adobe Creative Cloud's cancellation window closes 14 days before the March 15th annual renewal date, making March 1st the latest you could cancel or make a decision.",
+      "gold_memory_state": "Adobe CC renewal: March 15 annually. Cancellation window: 14 days before renewal. These two attributes are bound to the same Adobe Creative Cloud subscription record. Derived deadline: March 1st.",
+      "judge_rubric": {
+        "must_include": [
+          "14 days before",
+          "March 15",
+          "March 1"
+        ],
+        "acceptable_paraphrases": [
+          "two weeks before renewal",
+          "by March 1"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "applying Adobe's 14-day cancellation window to other subscriptions like Mullvad or NYT"
+        ],
+        "harmless_extra": [
+          "mentioning the $659 annual cost"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Adobe Creative Cloud renews annually on March 15th",
+        "Fact 2: Adobe's cancellation window closes 14 days before the renewal date",
+        "Inference: March 15 minus 14 days = March 1st is the latest cancellation deadline"
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My Adobe Creative Cloud auto-renews annually on March 15th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Adobe's cancellation window closes 14 days before the renewal date"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I need to set up a monthly calendar alert for my iCloud+ billing. Which day of the month should the recurring alert fire?",
+      "candidate_options": [
+        "14th",
+        "17th",
+        "7th",
+        "22nd"
+      ],
+      "expected_answer": "17th",
+      "gold_memory_state": "iCloud+ 200GB renews monthly on the 17th. Spotify Premium renews on the 7th monthly. Mullvad VPN renews around the 22nd annually. The 14th was an incorrect value mentioned by the assistant as a common iCloud+ date.",
+      "judge_rubric": {
+        "must_include": [
+          "17th"
+        ],
+        "acceptable_paraphrases": [
+          "the 17th",
+          "17"
+        ],
+        "must_not_include": [
+          "14th",
+          "7th",
+          "22nd"
+        ],
+        "harmful_extra": [
+          "selecting the 14th which was the assistant's incorrect suggestion"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: '7th' is the Spotify Premium renewal day, not iCloud+. '22nd' is the Mullvad VPN renewal day. assistant echo: '14th' was mentioned by the assistant as a 'common iCloud+ renewal date' that the user explicitly corrected to the 17th.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects '14th' (assistant-injected wrong value) or '7th'/'22nd' (different subscription dates).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "iCloud+ 200GB plan renews monthly on the 17th"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I need to set up a monthly calendar alert for my iCloud+ billing. Which day of the month should the recurring alert fire?",
+      "candidate_options": [
+        "14th",
+        "17th",
+        "7th",
+        "22nd"
+      ],
+      "expected_answer": "17th",
+      "gold_memory_state": "iCloud+ 200GB renews monthly on the 17th. Spotify Premium renews on the 7th monthly. Mullvad VPN renews around the 22nd annually. The 14th was an incorrect value mentioned by the assistant as a common iCloud+ date.",
+      "judge_rubric": {
+        "must_include": [
+          "17th"
+        ],
+        "acceptable_paraphrases": [
+          "the 17th",
+          "17"
+        ],
+        "must_not_include": [
+          "14th",
+          "7th",
+          "22nd"
+        ],
+        "harmful_extra": [
+          "selecting the 14th which was the assistant's incorrect suggestion"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: '7th' is the Spotify Premium renewal day, not iCloud+. '22nd' is the Mullvad VPN renewal day. assistant echo: '14th' was mentioned by the assistant as a 'common iCloud+ renewal date' that the user explicitly corrected to the 17th.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects '14th' (assistant-injected wrong value) or '7th'/'22nd' (different subscription dates).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "iCloud+ 200GB plan renews monthly on the 17th"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to plan my February and March action items for subscription management. Considering that I need to evaluate Affinity as an Adobe alternative and that I have another annual subscription also due in that window, draft a timeline of key dates and deadlines I need to hit from mid-February through mid-March, explaining what needs to happen by each date and why.",
+      "expected_answer": "Mid-February (around Feb 20): Start Affinity trial evaluation and set a reminder for the upcoming Mullvad VPN renewal. Around February 22: Mullvad VPN annual renewal date — decide whether to purchase a new voucher code to continue service. March 1: Hard deadline to cancel Adobe Creative Cloud, since the cancellation window closes 14 days before the March 15 renewal. If you haven't decided on Affinity by this date, you're locked into another $659 cycle. March 15: Adobe Creative Cloud annual renewal date — $659 charge processes if not cancelled by March 1.",
+      "gold_memory_state": "Adobe CC: renews March 15 annually at $659, cancellation window 14 days before (deadline March 1). Mullvad VPN: renews around February 22 annually. Spotify: 7th monthly. iCloud+: 17th monthly. NYT: started Nov 2, $1/week intro for first year.",
+      "judge_rubric": {
+        "must_include": [
+          "February 22",
+          "Mullvad",
+          "March 1",
+          "cancellation deadline",
+          "March 15",
+          "Adobe",
+          "$659",
+          "14 days"
+        ],
+        "acceptable_paraphrases": [
+          "Feb 22",
+          "Mar 1",
+          "Mar 15",
+          "two weeks before"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "including Hulu or Netflix as user subscriptions",
+          "stating the NYT cancellation is also due in this window"
+        ],
+        "harmless_extra": [
+          "mentioning the Affinity trial",
+          "mentioning iCloud+ or Spotify monthly dates in passing"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Adobe Creative Cloud renews annually on March 15th",
+        "Fact 2: Adobe Creative Cloud annual cost is $659",
+        "Fact 3: Adobe's cancellation window closes 14 days before the renewal date",
+        "Inference: March 15 minus 14 days = March 1 is the hard cancellation deadline for Adobe",
+        "Fact 4: Mullvad VPN renews annually around February 22nd",
+        "Inference: Both Adobe's cancellation deadline (March 1) and Mullvad's renewal (around Feb 22) fall in the mid-Feb to mid-March window, creating overlapping action items that must be sequenced chronologically"
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My Adobe Creative Cloud auto-renews annually on March 15th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "the annual cost for Adobe Creative Cloud is $659"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Adobe's cancellation window closes 14 days before the renewal date"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Mullvad VPN renews annually around February 22nd"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to plan my February and March action items for subscription management. Considering that I need to evaluate Affinity as an Adobe alternative and that I have another annual subscription also due in that window, draft a timeline of key dates and deadlines I need to hit from mid-February through mid-March, explaining what needs to happen by each date and why.",
+      "expected_answer": "Mid-February (around Feb 20): Start Affinity trial evaluation and set a reminder for the upcoming Mullvad VPN renewal. Around February 22: Mullvad VPN annual renewal date — decide whether to purchase a new voucher code to continue service. March 1: Hard deadline to cancel Adobe Creative Cloud, since the cancellation window closes 14 days before the March 15 renewal. If you haven't decided on Affinity by this date, you're locked into another $659 cycle. March 15: Adobe Creative Cloud annual renewal date — $659 charge processes if not cancelled by March 1.",
+      "gold_memory_state": "Adobe CC: renews March 15 annually at $659, cancellation window 14 days before (deadline March 1). Mullvad VPN: renews around February 22 annually. Spotify: 7th monthly. iCloud+: 17th monthly. NYT: started Nov 2, $1/week intro for first year.",
+      "judge_rubric": {
+        "must_include": [
+          "February 22",
+          "Mullvad",
+          "March 1",
+          "cancellation deadline",
+          "March 15",
+          "Adobe",
+          "$659",
+          "14 days"
+        ],
+        "acceptable_paraphrases": [
+          "Feb 22",
+          "Mar 1",
+          "Mar 15",
+          "two weeks before"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "including Hulu or Netflix as user subscriptions",
+          "stating the NYT cancellation is also due in this window"
+        ],
+        "harmless_extra": [
+          "mentioning the Affinity trial",
+          "mentioning iCloud+ or Spotify monthly dates in passing"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Adobe Creative Cloud renews annually on March 15th",
+        "Fact 2: Adobe Creative Cloud annual cost is $659",
+        "Fact 3: Adobe's cancellation window closes 14 days before the renewal date",
+        "Inference: March 15 minus 14 days = March 1 is the hard cancellation deadline for Adobe",
+        "Fact 4: Mullvad VPN renews annually around February 22nd",
+        "Inference: Both Adobe's cancellation deadline (March 1) and Mullvad's renewal (around Feb 22) fall in the mid-Feb to mid-March window, creating overlapping action items that must be sequenced chronologically"
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My Adobe Creative Cloud auto-renews annually on March 15th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "the annual cost for Adobe Creative Cloud is $659"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Adobe's cancellation window closes 14 days before the renewal date"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Mullvad VPN renews annually around February 22nd"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "When does my Hulu subscription renew?",
+      "expected_answer": "I don't have any Hulu subscription renewal date on file. You never provided Hulu subscription details.",
+      "gold_memory_state": "No Hulu subscription was ever mentioned or stored. The user's active subscriptions are Adobe Creative Cloud, NYT digital, Spotify Premium, iCloud+ 200GB, and Mullvad VPN. Hulu is a never-stored item.",
+      "judge_rubric": {
+        "must_include": [
+          "no record of Hulu",
+          "not provided"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have Hulu information",
+          "you haven't shared a Hulu subscription",
+          "no Hulu details were given"
+        ],
+        "must_not_include": [
+          "a fabricated Hulu renewal date",
+          "borrowing a date from another subscription for Hulu"
+        ],
+        "harmful_extra": [
+          "inventing any Hulu renewal date",
+          "stating Hulu renews on any specific date"
+        ],
+        "harmless_extra": [
+          "Adobe Creative Cloud",
+          "NYT digital",
+          "Spotify Premium",
+          "iCloud+",
+          "Mullvad VPN"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model fabricates a Hulu renewal date or borrows a date from a neighboring subscription (e.g., the 7th from Spotify or March 15 from Adobe) and attributes it to Hulu.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My Adobe Creative Cloud auto-renews annually on March 15th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 8,
+          "quote": "Spotify Premium renews on the 7th of every month and that one's been going for about three years now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "iCloud+ 200GB plan renews monthly on the 17th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Mullvad VPN renews annually around February 22nd"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "When does my Hulu subscription renew?",
+      "expected_answer": "I don't have any Hulu subscription renewal date on file. You never provided Hulu subscription details.",
+      "gold_memory_state": "No Hulu subscription was ever mentioned or stored. The user's active subscriptions are Adobe Creative Cloud, NYT digital, Spotify Premium, iCloud+ 200GB, and Mullvad VPN. Hulu is a never-stored item.",
+      "judge_rubric": {
+        "must_include": [
+          "no record of Hulu",
+          "not provided"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have Hulu information",
+          "you haven't shared a Hulu subscription",
+          "no Hulu details were given"
+        ],
+        "must_not_include": [
+          "a fabricated Hulu renewal date",
+          "borrowing a date from another subscription for Hulu"
+        ],
+        "harmful_extra": [
+          "inventing any Hulu renewal date",
+          "stating Hulu renews on any specific date"
+        ],
+        "harmless_extra": [
+          "Adobe Creative Cloud",
+          "NYT digital",
+          "Spotify Premium",
+          "iCloud+",
+          "Mullvad VPN"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model fabricates a Hulu renewal date or borrows a date from a neighboring subscription (e.g., the 7th from Spotify or March 15 from Adobe) and attributes it to Hulu.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My Adobe Creative Cloud auto-renews annually on March 15th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 8,
+          "quote": "Spotify Premium renews on the 7th of every month and that one's been going for about three years now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "iCloud+ 200GB plan renews monthly on the 17th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Mullvad VPN renews annually around February 22nd"
+        }
+      ]
+    }
+  ]
+}

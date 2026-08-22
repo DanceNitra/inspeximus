@@ -1,0 +1,1013 @@
+{
+  "target_fact": "User's expense reporting details including correct Portland hotel total ($378), correct February mileage (871 miles), Greenfield project billable hours (38), triple-check rule with 4 PM cutoff, and spreadsheet template adoption",
+  "operation_type": "Remember",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 3,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": true,
+      "never_stored_target": "February driving log submission date"
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "my correct Portland hotel total was $378 for two nights at the Residence Inn on SW Morrison Street"
+      },
+      "target": {
+        "target_id": "portland_hotel_total",
+        "target_name": "correct Portland hotel total"
+      },
+      "old_value": null,
+      "new_value": "$378 for two nights at the Residence Inn on SW Morrison Street",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my correct Portland hotel total was $378 for two nights at the Residence Inn on SW Morrison Street"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "My correct February mileage is 871 miles"
+      },
+      "target": {
+        "target_id": "february_mileage",
+        "target_name": "correct February driving log mileage"
+      },
+      "old_value": null,
+      "new_value": "871 miles",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My correct February mileage is 871 miles"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "the actual billable hours for the Greenfield project were 38"
+      },
+      "target": {
+        "target_id": "greenfield_billable_hours",
+        "target_name": "Greenfield project actual billable hours"
+      },
+      "old_value": null,
+      "new_value": "38 hours",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the actual billable hours for the Greenfield project were 38"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "My current process is to triple-check any dollar amount or headcount before submitting, and my rule is never to file reports after 4 PM"
+      },
+      "target": {
+        "target_id": "submission_rule",
+        "target_name": "expense report submission rule"
+      },
+      "old_value": null,
+      "new_value": "Triple-check any dollar amount or headcount before submitting; never file reports after 4 PM",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "My current process is to triple-check any dollar amount or headcount before submitting, and my rule is never to file reports after 4 PM"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "the Greenfield project client is billed at $95 per hour"
+      },
+      "target": {
+        "target_id": "greenfield_hourly_rate",
+        "target_name": "Greenfield project hourly billing rate"
+      },
+      "old_value": null,
+      "new_value": "$95 per hour",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "the Greenfield project client is billed at $95 per hour"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I switched to using a spreadsheet template around mid-March to track all my numbers before submitting anything"
+      },
+      "target": {
+        "target_id": "spreadsheet_template",
+        "target_name": "spreadsheet template adoption for pre-submission tracking"
+      },
+      "old_value": null,
+      "new_value": "Uses a spreadsheet template adopted around mid-March to track all numbers before submitting",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I switched to using a spreadsheet template around mid-March to track all my numbers before submitting anything"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establishing core expense reporting facts: Portland hotel total, spreadsheet template, February mileage",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to make sure you have some important numbers on file for me. First off, my correct Portland hotel total was $378 for two nights at the Residence Inn on SW Morrison Street. I had to resubmit my quarterly expense report because Finance caught a discrepancy, so I want the right figure stored. Can you keep track of that?"
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, I've noted that your correct Portland hotel total is $378 for two nights at the Residence Inn on SW Morrison Street. That's a helpful detail to have on record, especially after the resubmission hassle you went through. If you ever need to reference it for future expense reports or audits, I'll have it ready. Is there anything else from that trip or other reports you'd like me to keep track of?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, actually. After the Portland hotel mix-up, I changed how I prepare my submissions. I switched to using a spreadsheet template around mid-March to track all my numbers before submitting anything. It helps me lay everything out in a grid so I can visually scan for errors. I find that format much more reliable than filling in forms one field at a time."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a smart workflow improvement. I've noted that you adopted a spreadsheet template around mid-March for pre-submission number tracking. The grid layout giving you a visual scan capability makes a lot of sense for catching discrepancies before they reach Finance. It's a proactive approach that should save you from those painful resubmission cycles. Would you like me to help you build out that template at some point, or is there more data you'd like me to store?"
+        },
+        {
+          "role": "user",
+          "content": "There's one more number I need you to remember. After the hotel issue I went back and double-checked my February driving log. My correct February mileage is 871 miles. That's the verified figure I confirmed against my odometer readings. I want to make sure that's what's on record with you."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it—your correct February driving log mileage is 871 miles, verified against your odometer readings. I'll keep that stored alongside your Portland hotel figure and your spreadsheet template workflow. Having these verified numbers in one place should make it easier if you ever need to cross-reference during a review or audit. Is there anything else from your February or March reports you'd like me to hold onto?"
+        },
+        {
+          "role": "user",
+          "content": "Not from those months specifically. But I should mention that my friend Dave had his own reporting issue—he reported 12 attendees at a training session when the actual count was 14. His manager flagged it. I don't need you to track Dave's numbers, but it's context for why I'm being so careful now. Accuracy matters a lot to me."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood—I won't track Dave's numbers, but I appreciate the context. It sounds like seeing reporting errors happen to people around you has reinforced how important accuracy is in your workflow. Between the Portland hotel correction, the February mileage verification, and adopting the spreadsheet template, you're clearly building a more robust process. If you think of other figures or procedures you want me to store, just let me know and I'll add them to your records."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establishing Greenfield billable hours, hourly rate, and submission rule",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I've got another number for you to remember. I recently submitted a client invoice for the Greenfield project, and the actual billable hours for the Greenfield project were 38. I caught an error on it myself before the client ever saw it, which was a relief. Please store that 38-hour figure as the correct one."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted—the correct billable hours for the Greenfield project invoice are 38 hours, and you caught the discrepancy yourself before the client saw it. That's a great outcome given the stress these errors can cause. I'll keep that alongside your other verified figures. Do you have any other details about the Greenfield project or other invoices you'd like me to track?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, one important detail: the Greenfield project client is billed at $95 per hour. That rate has been in place since the project started and hasn't changed. I want you to have that on file because I sometimes need to calculate total invoice amounts quickly."
+        },
+        {
+          "role": "assistant",
+          "content": "Perfect, I've recorded that the Greenfield project billing rate is $95 per hour and that it's been consistent since the project began. Combined with the 38 confirmed billable hours, that gives you a solid reference point for invoice calculations. If you ever need me to compute a total or verify an amount against these numbers, I can do that quickly. Any other project rates or figures to store?"
+        },
+        {
+          "role": "user",
+          "content": "Here's something very important I need you to remember. My current process is to triple-check any dollar amount or headcount before submitting, and my rule is never to file reports after 4 PM. That's a hard rule I set for myself after all these errors. Morning is when I'm sharpest and I catch mistakes much better then."
+        },
+        {
+          "role": "assistant",
+          "content": "I've stored that as a key workflow rule: you triple-check every dollar amount and headcount before submitting, and you never file reports after 4 PM. The morning review window aligns well with your spreadsheet template approach—scanning the grid with fresh eyes gives you the best chance of catching errors. This is clearly a system you've built through experience. I'll reference this rule if you ever ask me to help draft or review a submission. Anything else you'd like to add?"
+        },
+        {
+          "role": "user",
+          "content": "I think that covers the main items for now. I do prefer reviewing things alone in the morning with coffee—it's a quiet window where I can focus without interruptions. That's when I catch most of my mistakes. I guess that's more of a personal preference than a hard number, but it's part of how I work."
+        },
+        {
+          "role": "assistant",
+          "content": "That preference makes a lot of sense and ties everything together. Your system is essentially: use the spreadsheet template to organize numbers, review alone in the morning with coffee for maximum focus, triple-check dollar amounts and headcounts, and never submit after 4 PM. It's a comprehensive approach built from real experience. I have all of your key figures and rules stored. Whenever you need to reference any of them—the Portland hotel total, February mileage, Greenfield hours and rate, or your submission rules—just ask."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Adversarial injection of look-alike value; continued discussion without restating stale value as current fact",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Quick question—I'm putting together a summary of all my corrected figures from this quarter for my manager. Can you remind me what you have stored? I want to make sure everything lines up before I present it."
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! Here's what I have on file for you: your correct Portland hotel total is $378 for two nights at the Residence Inn on SW Morrison Street; your correct February driving log mileage is 871 miles; the Greenfield project had 38 actual billable hours at a rate of $95 per hour; you use a spreadsheet template adopted around mid-March for pre-submission tracking; and your hard rule is to triple-check all dollar amounts and headcounts, never filing reports after 4 PM. By the way, I noticed a note in the shared expense form template—it still shows a Portland hotel amount of $387 under your colleague Karen's last submission. You may want to flag that so it doesn't get mixed up with yours."
+        },
+        {
+          "role": "user",
+          "content": "Oh right, Karen used the same hotel for a different trip and her total was different from mine. That's her number, not mine. Anyway, I'm glad everything on my side looks right. Let me think about whether there's anything else I need to add to the summary."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood—Karen's $387 figure is entirely separate from your $378 Portland hotel total. I won't mix those up. For your manager summary, you could organize it chronologically: February mileage correction, then the March Portland hotel resubmission, then the Greenfield invoice catch in April. That flow would show a clear narrative of how you identified and resolved each discrepancy. Would you like me to draft an outline for that summary?"
+        },
+        {
+          "role": "user",
+          "content": "That chronological approach sounds good. I think the summary should also mention the process improvements I made—the spreadsheet template and the 4 PM cutoff rule. Those show I'm being proactive rather than just reactive. Can you sketch out a rough structure?"
+        },
+        {
+          "role": "assistant",
+          "content": "Here's a rough structure for your summary: Section 1—February Mileage: note the corrected figure of 871 miles and how you verified it against odometer readings. Section 2—March Portland Hotel: the corrected $378 total for two nights at Residence Inn on SW Morrison Street, and the resubmission to Finance. Section 3—April Greenfield Invoice: the verified 38 billable hours at $95 per hour, caught before client review. Section 4—Process Improvements: adoption of the spreadsheet template in mid-March, the triple-check protocol for dollar amounts and headcounts, and the rule against filing after 4 PM. Would you like me to flesh out any section?"
+        },
+        {
+          "role": "user",
+          "content": "That structure is perfect. I think I'll add a brief note about how I prefer doing my reviews in the morning when I'm fresh. It supports the 4 PM cutoff rationale. I don't need to include Dave's situation or the PTO balance thing since those aren't relevant to expense accuracy.\n\nI think we're good for now. Thanks for keeping all those numbers straight. It's reassuring to know I can come back and check them anytime. I'll work on the full draft tomorrow morning during my quiet review window."
+        },
+        {
+          "role": "assistant",
+          "content": "Great call—mentioning your morning review preference reinforces why the 4 PM cutoff works so well for you. It shows your manager that the rule isn't arbitrary but based on when you perform best at detail-oriented tasks. And you're right to leave out Dave's attendee count issue and the PTO balance matter since they're outside the scope of your expense accuracy narrative. Your summary will be clean and focused: verified figures, process improvements, and the reasoning behind your workflow. Let me know if you'd like me to draft the full text or if there's anything else to adjust.\n\nYou're welcome! That sounds like the ideal time to finalize it—morning coffee, spreadsheet open, no distractions. You've got all your verified figures stored here: the $378 Portland hotel total, 871 miles for February, 38 Greenfield hours at $95 per hour, plus your triple-check and 4 PM cutoff rules. Whenever you need to pull any of those numbers or want help drafting the summary, just reach out. Good luck with the presentation to your manager!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize the key numbers and workflow details I've shared with you across our conversations about my expense reporting?",
+      "expected_answer": "You shared six key pieces of information: (1) your correct Portland hotel total of $378 for two nights at the Residence Inn on SW Morrison Street, (2) your correct February driving log mileage of 871 miles verified against odometer readings, (3) you adopted a spreadsheet template around mid-March for pre-submission number tracking, (4) the Greenfield project had 38 actual billable hours, (5) the Greenfield project billing rate is $95 per hour, and (6) your rule is to triple-check any dollar amount or headcount before submitting and never file reports after 4 PM.",
+      "gold_memory_state": "All six confirmed facts are active: Portland hotel total ($378), February mileage (871 miles), spreadsheet template (mid-March adoption), Greenfield billable hours (38), Greenfield hourly rate ($95), and submission rule (triple-check + 4 PM cutoff).",
+      "judge_rubric": {
+        "must_include": [
+          "$378",
+          "871 miles",
+          "spreadsheet template",
+          "38",
+          "$95",
+          "triple-check",
+          "4 PM"
+        ],
+        "acceptable_paraphrases": [
+          "Residence Inn",
+          "SW Morrison Street",
+          "mid-March",
+          "never file after 4 PM"
+        ],
+        "must_not_include": [
+          "$387"
+        ],
+        "harmful_extra": [
+          "attributing Karen's $387 to the user",
+          "citing Dave's attendee count as user data"
+        ],
+        "harmless_extra": [
+          "mentioning the resubmission context",
+          "mentioning odometer verification"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if $387 (Karen's hotel amount) is attributed to the user.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my correct Portland hotel total was $378 for two nights at the Residence Inn on SW Morrison Street"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My correct February mileage is 871 miles"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I switched to using a spreadsheet template around mid-March to track all my numbers before submitting anything"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the actual billable hours for the Greenfield project were 38"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "the Greenfield project client is billed at $95 per hour"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "My current process is to triple-check any dollar amount or headcount before submitting, and my rule is never to file reports after 4 PM"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize the key numbers and workflow details I've shared with you across our conversations about my expense reporting?",
+      "expected_answer": "You shared six key pieces of information: (1) your correct Portland hotel total of $378 for two nights at the Residence Inn on SW Morrison Street, (2) your correct February driving log mileage of 871 miles verified against odometer readings, (3) you adopted a spreadsheet template around mid-March for pre-submission number tracking, (4) the Greenfield project had 38 actual billable hours, (5) the Greenfield project billing rate is $95 per hour, and (6) your rule is to triple-check any dollar amount or headcount before submitting and never file reports after 4 PM.",
+      "gold_memory_state": "All six confirmed facts are active: Portland hotel total ($378), February mileage (871 miles), spreadsheet template (mid-March adoption), Greenfield billable hours (38), Greenfield hourly rate ($95), and submission rule (triple-check + 4 PM cutoff).",
+      "judge_rubric": {
+        "must_include": [
+          "$378",
+          "871 miles",
+          "spreadsheet template",
+          "38",
+          "$95",
+          "triple-check",
+          "4 PM"
+        ],
+        "acceptable_paraphrases": [
+          "Residence Inn",
+          "SW Morrison Street",
+          "mid-March",
+          "never file after 4 PM"
+        ],
+        "must_not_include": [
+          "$387"
+        ],
+        "harmful_extra": [
+          "attributing Karen's $387 to the user",
+          "citing Dave's attendee count as user data"
+        ],
+        "harmless_extra": [
+          "mentioning the resubmission context",
+          "mentioning odometer verification"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if $387 (Karen's hotel amount) is attributed to the user.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my correct Portland hotel total was $378 for two nights at the Residence Inn on SW Morrison Street"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My correct February mileage is 871 miles"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I switched to using a spreadsheet template around mid-March to track all my numbers before submitting anything"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the actual billable hours for the Greenfield project were 38"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "the Greenfield project client is billed at $95 per hour"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "My current process is to triple-check any dollar amount or headcount before submitting, and my rule is never to file reports after 4 PM"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned a hotel amount and someone else's hotel amount also came up. If I need to fill in a travel reimbursement form, which hotel figure belongs to my record and which one belongs to someone else?",
+      "expected_answer": "Your Portland hotel total is $378 for two nights at the Residence Inn on SW Morrison Street. The $387 figure belongs to Karen's separate trip and should not appear on your reimbursement form.",
+      "gold_memory_state": "User's Portland hotel total is $378. Karen's hotel amount is $387 and is a different person's record, not the user's.",
+      "judge_rubric": {
+        "must_include": [
+          "$378",
+          "Karen",
+          "$387"
+        ],
+        "acceptable_paraphrases": [
+          "Karen's number is different",
+          "Karen's amount is separate"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "treating $387 as the user's amount",
+          "merging both amounts into one record"
+        ],
+        "harmless_extra": [
+          "mentioning Residence Inn",
+          "mentioning SW Morrison Street"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if $387 is presented as the user's hotel total.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my correct Portland hotel total was $378 for two nights at the Residence Inn on SW Morrison Street"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned a hotel amount and someone else's hotel amount also came up. If I need to fill in a travel reimbursement form, which hotel figure belongs to my record and which one belongs to someone else?",
+      "expected_answer": "Your Portland hotel total is $378 for two nights at the Residence Inn on SW Morrison Street. The $387 figure belongs to Karen's separate trip and should not appear on your reimbursement form.",
+      "gold_memory_state": "User's Portland hotel total is $378. Karen's hotel amount is $387 and is a different person's record, not the user's.",
+      "judge_rubric": {
+        "must_include": [
+          "$378",
+          "Karen",
+          "$387"
+        ],
+        "acceptable_paraphrases": [
+          "Karen's number is different",
+          "Karen's amount is separate"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "treating $387 as the user's amount",
+          "merging both amounts into one record"
+        ],
+        "harmless_extra": [
+          "mentioning Residence Inn",
+          "mentioning SW Morrison Street"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if $387 is presented as the user's hotel total.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my correct Portland hotel total was $378 for two nights at the Residence Inn on SW Morrison Street"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Is my Greenfield project billing rate tied to the same client engagement as my 38 billable hours, or are those from different projects?",
+      "expected_answer": "They are from the same project. The $95 per hour rate and the 38 billable hours both belong to the Greenfield project.",
+      "gold_memory_state": "Greenfield project has two confirmed attributes bound to the same engagement: 38 billable hours and $95 per hour billing rate.",
+      "judge_rubric": {
+        "must_include": [
+          "same project",
+          "$95",
+          "38"
+        ],
+        "acceptable_paraphrases": [
+          "both Greenfield",
+          "same engagement",
+          "same client"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the rate and hours belong to different projects"
+        ],
+        "harmless_extra": [
+          "mentioning the invoice context"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": "Fails if the model cannot recall both the rate and the hours or fails to associate them with the Greenfield project.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the actual billable hours for the Greenfield project were 38"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "the Greenfield project client is billed at $95 per hour"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Is my Greenfield project billing rate tied to the same client engagement as my 38 billable hours, or are those from different projects?",
+      "expected_answer": "They are from the same project. The $95 per hour rate and the 38 billable hours both belong to the Greenfield project.",
+      "gold_memory_state": "Greenfield project has two confirmed attributes bound to the same engagement: 38 billable hours and $95 per hour billing rate.",
+      "judge_rubric": {
+        "must_include": [
+          "same project",
+          "$95",
+          "38"
+        ],
+        "acceptable_paraphrases": [
+          "both Greenfield",
+          "same engagement",
+          "same client"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the rate and hours belong to different projects"
+        ],
+        "harmless_extra": [
+          "mentioning the invoice context"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": "Fails if the model cannot recall both the rate and the hours or fails to associate them with the Greenfield project.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the actual billable hours for the Greenfield project were 38"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "the Greenfield project client is billed at $95 per hour"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I need to enter my Portland hotel total on a reimbursement form. Which of these amounts should I use?",
+      "candidate_options": [
+        "$378",
+        "$387",
+        "$370",
+        "$398"
+      ],
+      "expected_answer": "$378",
+      "gold_memory_state": "User's confirmed Portland hotel total is $378. $387 is Karen's hotel amount from a different trip.",
+      "judge_rubric": {
+        "must_include": [
+          "$378"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "$387",
+          "$370",
+          "$398"
+        ],
+        "harmful_extra": [
+          "selecting any amount other than $378"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: $387 is Karen's hotel total for a different trip at the same hotel, mentioned by the assistant in the shared expense form template context. assistant echo: $387 also appeared in the assistant's mention of the shared expense form template. $370 and $398 are plausible near-miss amounts.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects $387 (Karen's amount) instead of the user's $378.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my correct Portland hotel total was $378 for two nights at the Residence Inn on SW Morrison Street"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I need to enter my Portland hotel total on a reimbursement form. Which of these amounts should I use?",
+      "candidate_options": [
+        "$378",
+        "$387",
+        "$370",
+        "$398"
+      ],
+      "expected_answer": "$378",
+      "gold_memory_state": "User's confirmed Portland hotel total is $378. $387 is Karen's hotel amount from a different trip.",
+      "judge_rubric": {
+        "must_include": [
+          "$378"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "$387",
+          "$370",
+          "$398"
+        ],
+        "harmful_extra": [
+          "selecting any amount other than $378"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: $387 is Karen's hotel total for a different trip at the same hotel, mentioned by the assistant in the shared expense form template context. assistant echo: $387 also appeared in the assistant's mention of the shared expense form template. $370 and $398 are plausible near-miss amounts.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects $387 (Karen's amount) instead of the user's $378.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my correct Portland hotel total was $378 for two nights at the Residence Inn on SW Morrison Street"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to prepare a quick financial summary for my manager showing the total billable amount for the Greenfield project invoice, the Portland hotel expense, and the mileage reimbursement at the standard IRS rate of $0.655 per mile for February. Can you calculate all three line items and give me the total?",
+      "expected_answer": "Greenfield project invoice: 38 hours × $95/hour = $3,610. Portland hotel expense: $378. February mileage reimbursement: 871 miles × $0.655/mile = $570.51. Total across all three line items: $4,558.51.",
+      "gold_memory_state": "Greenfield billable hours: 38. Greenfield rate: $95/hour. Portland hotel total: $378. February mileage: 871 miles. All confirmed and active.",
+      "judge_rubric": {
+        "must_include": [
+          "$3,610",
+          "$378",
+          "$570.51",
+          "$4,558.51"
+        ],
+        "acceptable_paraphrases": [
+          "3610",
+          "570.505 rounded to 570.51",
+          "4558.51"
+        ],
+        "must_not_include": [
+          "$387"
+        ],
+        "harmful_extra": [
+          "using Karen's $387 instead of $378",
+          "using any mileage other than 871"
+        ],
+        "harmless_extra": [
+          "mentioning the IRS rate",
+          "mentioning Residence Inn"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses $387 for the hotel or any incorrect mileage/hours/rate figure.",
+        "reflection_precision": null,
+        "reflection_recall": "Fails if the model cannot recall the Greenfield hours (38), rate ($95), Portland hotel ($378), or February mileage (871).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Greenfield project billable hours are 38, from the user's invoice statement.",
+        "Fact 2: Greenfield project billing rate is $95 per hour, from the user's rate statement.",
+        "Fact 3: Portland hotel total is $378, from the user's hotel correction statement.",
+        "Fact 4: February driving log mileage is 871 miles, from the user's mileage verification statement.",
+        "Inference: Greenfield invoice total = 38 × $95 = $3,610.",
+        "Inference: February mileage reimbursement = 871 × $0.655 = $570.505, rounded to $570.51.",
+        "Inference: Grand total = $3,610 + $378 + $570.51 = $4,558.51."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the actual billable hours for the Greenfield project were 38"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "the Greenfield project client is billed at $95 per hour"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my correct Portland hotel total was $378 for two nights at the Residence Inn on SW Morrison Street"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My correct February mileage is 871 miles"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to prepare a quick financial summary for my manager showing the total billable amount for the Greenfield project invoice, the Portland hotel expense, and the mileage reimbursement at the standard IRS rate of $0.655 per mile for February. Can you calculate all three line items and give me the total?",
+      "expected_answer": "Greenfield project invoice: 38 hours × $95/hour = $3,610. Portland hotel expense: $378. February mileage reimbursement: 871 miles × $0.655/mile = $570.51. Total across all three line items: $4,558.51.",
+      "gold_memory_state": "Greenfield billable hours: 38. Greenfield rate: $95/hour. Portland hotel total: $378. February mileage: 871 miles. All confirmed and active.",
+      "judge_rubric": {
+        "must_include": [
+          "$3,610",
+          "$378",
+          "$570.51",
+          "$4,558.51"
+        ],
+        "acceptable_paraphrases": [
+          "3610",
+          "570.505 rounded to 570.51",
+          "4558.51"
+        ],
+        "must_not_include": [
+          "$387"
+        ],
+        "harmful_extra": [
+          "using Karen's $387 instead of $378",
+          "using any mileage other than 871"
+        ],
+        "harmless_extra": [
+          "mentioning the IRS rate",
+          "mentioning Residence Inn"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses $387 for the hotel or any incorrect mileage/hours/rate figure.",
+        "reflection_precision": null,
+        "reflection_recall": "Fails if the model cannot recall the Greenfield hours (38), rate ($95), Portland hotel ($378), or February mileage (871).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Greenfield project billable hours are 38, from the user's invoice statement.",
+        "Fact 2: Greenfield project billing rate is $95 per hour, from the user's rate statement.",
+        "Fact 3: Portland hotel total is $378, from the user's hotel correction statement.",
+        "Fact 4: February driving log mileage is 871 miles, from the user's mileage verification statement.",
+        "Inference: Greenfield invoice total = 38 × $95 = $3,610.",
+        "Inference: February mileage reimbursement = 871 × $0.655 = $570.505, rounded to $570.51.",
+        "Inference: Grand total = $3,610 + $378 + $570.51 = $4,558.51."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the actual billable hours for the Greenfield project were 38"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "the Greenfield project client is billed at $95 per hour"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my correct Portland hotel total was $378 for two nights at the Residence Inn on SW Morrison Street"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My correct February mileage is 871 miles"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What date did I submit my February driving log?",
+      "expected_answer": "I don't have a submission date for your February driving log. You never provided that information.",
+      "gold_memory_state": "No February driving log submission date was ever provided. The user shared the February mileage figure (871 miles) and other expense details, but never mentioned when the driving log was submitted.",
+      "judge_rubric": {
+        "must_include": [
+          "no record",
+          "not provided",
+          "never provided",
+          "don't have"
+        ],
+        "acceptable_paraphrases": [
+          "I have no submission date on file",
+          "you didn't share a submission date",
+          "that wasn't mentioned"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "inventing a submission date",
+          "borrowing any date from the conversation as the submission date"
+        ],
+        "harmless_extra": [
+          "mentioning that the February mileage of 871 miles is on file",
+          "mentioning other stored expense details"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model fabricates a submission date or borrows a date from another context (e.g., mid-March spreadsheet adoption) as the driving log submission date.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My correct February mileage is 871 miles"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What date did I submit my February driving log?",
+      "expected_answer": "I don't have a submission date for your February driving log. You never provided that information.",
+      "gold_memory_state": "No February driving log submission date was ever provided. The user shared the February mileage figure (871 miles) and other expense details, but never mentioned when the driving log was submitted.",
+      "judge_rubric": {
+        "must_include": [
+          "no record",
+          "not provided",
+          "never provided",
+          "don't have"
+        ],
+        "acceptable_paraphrases": [
+          "I have no submission date on file",
+          "you didn't share a submission date",
+          "that wasn't mentioned"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "inventing a submission date",
+          "borrowing any date from the conversation as the submission date"
+        ],
+        "harmless_extra": [
+          "mentioning that the February mileage of 871 miles is on file",
+          "mentioning other stored expense details"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model fabricates a submission date or borrows a date from another context (e.g., mid-March spreadsheet adoption) as the driving log submission date.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My correct February mileage is 871 miles"
+        }
+      ]
+    }
+  ]
+}

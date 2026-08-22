@@ -1,0 +1,946 @@
+{
+  "target_fact": "The user and wife are expecting a girl, due July 19th, with nursery planning and name shortlisting in progress. The user wants to forget the discarded boy names list.",
+  "operation_type": "Forget",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "We found out on March 3rd that we're having a girl"
+      },
+      "target": {
+        "target_id": "baby_gender",
+        "target_name": "expected baby's gender"
+      },
+      "old_value": null,
+      "new_value": "girl",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "We found out on March 3rd that we're having a girl"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "My wife's due date is July 19th"
+      },
+      "target": {
+        "target_id": "due_date",
+        "target_name": "wife's due date"
+      },
+      "old_value": null,
+      "new_value": "July 19th",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My wife's due date is July 19th"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "we had a short list of boy names we'd been considering — Elliot, Jasper, and Rowan"
+      },
+      "target": {
+        "target_id": "boy_names_list",
+        "target_name": "previously considered boy names list"
+      },
+      "old_value": null,
+      "new_value": "Elliot, Jasper, and Rowan",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "we had a short list of boy names we'd been considering — Elliot, Jasper, and Rowan"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "We narrowed the girl name list down to three: Elara, Margot, and Wren"
+      },
+      "target": {
+        "target_id": "girl_names_shortlist",
+        "target_name": "shortlisted girl names"
+      },
+      "old_value": null,
+      "new_value": "Elara, Margot, and Wren",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "We narrowed the girl name list down to three: Elara, Margot, and Wren"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "We're supposed to decide on the name by the end of this month"
+      },
+      "target": {
+        "target_id": "name_decision_deadline",
+        "target_name": "deadline to decide baby name"
+      },
+      "old_value": null,
+      "new_value": "end of this month",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "We're supposed to decide on the name by the end of this month"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "forget",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "please go ahead and forget that boy names list entirely — Elliot, Jasper, Rowan, all of it. We tossed it and we're only working with girl names now"
+      },
+      "target": {
+        "target_id": "boy_names_list",
+        "target_name": "previously considered boy names list"
+      },
+      "old_value": "Elliot, Jasper, and Rowan",
+      "new_value": null,
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "please go ahead and forget that boy names list entirely — Elliot, Jasper, Rowan, all of it. We tossed it and we're only working with girl names now"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish core baby-related facts: gender, due date, and the existence of a boy names list",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to share some big news and get a few things noted down so you can help me later. We found out on March 3rd that we're having a girl. The ultrasound tech was really confident — said the angle was super clear. I remember sitting in the car afterward kind of stunned for a minute. My wife cried happy tears. Please remember this: it's a girl."
+        },
+        {
+          "role": "assistant",
+          "content": "Congratulations — that is wonderful news! I've noted that you found out on March 3rd that you're expecting a girl, and that the ultrasound tech was confident about it. That must have been such an emotional moment for both of you. Whenever you need help with anything baby-related going forward — names, nursery planning, registry items, anything at all — just let me know and I'll have this context ready. Is there anything else you'd like me to keep track of right now?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, actually. My wife's due date is July 19th. That's an important one — I want to make sure you have it noted. We've been trying to plan everything around that timeline. Also, my mom called the evening of the ultrasound and she was over the moon. Kept saying she had a feeling it was going to be a girl. My dad texted me a heart emoji later, which is basically a standing ovation from him."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — due date is July 19th. I'll keep that front and center for any planning or timeline questions. That's a sweet detail about your parents' reactions too. Your dad's heart emoji standing ovation is pretty endearing. With a July due date, you've got a solid runway for nursery prep, name decisions, and all the logistics. If you want, I can help you build out a countdown checklist at some point — things like hospital bag packing, car seat installation deadlines, pediatrician selection, that sort of thing. Just say the word."
+        },
+        {
+          "role": "user",
+          "content": "That might be useful later, yeah. One more thing for now — before the ultrasound, we had a short list of boy names we'd been considering — Elliot, Jasper, and Rowan. We put real thought into those. My wife especially liked Jasper. But obviously those are moot now since we know it's a girl. I just want you to be aware that list existed."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood — you had Elliot, Jasper, and Rowan on a boy names shortlist before the ultrasound, with your wife particularly fond of Jasper. I've noted those for context. Since you now know it's a girl, I imagine you've shifted focus entirely to girl names. Whenever you're ready to brainstorm or narrow down girl name options, I'm happy to help — whether that's looking at meanings, checking popularity trends, or just being a sounding board. Let me know what else you'd like to cover."
+        },
+        {
+          "role": "user",
+          "content": "A few days after the ultrasound I ordered a little onesie with sunflowers on it from a small Etsy shop. Cost $22. I've always liked sunflowers — the bright yellow just makes me feel good. It was kind of the first tangible baby purchase and it felt really real at that point. My wife thought it was adorable. I want to get a few more things like that soon."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a lovely first purchase — sunflowers are such a cheerful motif, and $22 from a small Etsy shop is a nice way to support an independent seller too. There's something special about that first tangible baby item making everything feel more concrete. When you're ready to pick up more pieces, I can help you put together a small capsule wardrobe list for a newborn — essentials like bodysuits, sleep sacks, and a few fun personality pieces like your sunflower onesie. Just let me know your budget range and style preferences and we'll go from there."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establish girl name shortlist, name decision deadline, and execute forget of boy names list",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So we've made progress on the naming front. We narrowed the girl name list down to three: Elara, Margot, and Wren. My wife is really attached to Margot. I like Wren, but I'm not pushing hard on it. Elara is kind of the wildcard — we both think it's beautiful but aren't sure if it's too unusual for everyday life. It's been a lot of back and forth."
+        },
+        {
+          "role": "assistant",
+          "content": "Great shortlist — all three have distinct personalities. Margot has that classic French elegance and has been climbing in popularity without being overused. Wren is short, nature-inspired, and has a quiet strength to it. Elara is gorgeous — it's one of Jupiter's moons, which gives it a celestial quality, though you're right that it's less immediately recognizable. If it helps, I can look into middle name pairings for each, or we could talk through how each one sounds with your last name. Sometimes hearing it out loud in full helps break a tie."
+        },
+        {
+          "role": "user",
+          "content": "That's a good idea, maybe later. We're supposed to decide on the name by the end of this month. My wife set that deadline because she wants to start monogramming some nursery items and she doesn't want to rush it at the last minute. So the clock is ticking a bit. I think we'll probably land on Margot honestly, but I haven't fully let go of Wren yet."
+        },
+        {
+          "role": "assistant",
+          "content": "End of the month is a reasonable deadline, especially if your wife wants to get monogramming done without last-minute stress. That gives you a couple more weeks to sit with both names. One trick that sometimes helps: try using each name exclusively for a full day — refer to the baby as Margot on Monday, Wren on Tuesday, and see which one feels more natural rolling off the tongue. It can surface a gut preference you didn't realize you had. And there's always the middle name slot if you want to keep both in play."
+        },
+        {
+          "role": "user",
+          "content": "Actually, that's a clever idea, I might try that. But here's the thing — please go ahead and forget that boy names list entirely — Elliot, Jasper, Rowan, all of it. We tossed it and we're only working with girl names now. I don't want any confusion if I come back and ask about names later. The only names that matter are the three girl names."
+        },
+        {
+          "role": "assistant",
+          "content": "Done — I've cleared the boy names list from my memory. Elliot, Jasper, and Rowan are gone. Going forward, the only names I'll reference are your current girl name shortlist: Elara, Margot, and Wren. If you come back and ask about names, those are the three I'll work with. No mix-ups. Is there anything else you'd like me to update or clean up while we're at it?"
+        },
+        {
+          "role": "user",
+          "content": "No, that's good for now on the names front. We've also been looking at nursery colors — my wife wants lavender and I'm leaning toward a soft sage green. We haven't decided yet. I tend to gravitate toward earthy, muted tones in general. Bright pinks and purples aren't really my thing. I'd love help comparing those two color options later."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — lavender is your wife's pick and soft sage green is yours, with no final decision yet. Both are lovely nursery tones. Sage green is very on-trend right now and pairs beautifully with natural wood furniture and cream textiles, which sounds like it fits your earthy aesthetic. Lavender can feel calming and pairs well with whites and grays. When you're ready, I can pull together some mood board ideas for both directions, or even a blended palette that incorporates both sage and lavender accents. Just let me know when you'd like to dive in."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Continue baby planning conversation with adversarial look-alike injection and additional context; no new core operations",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, quick update — my brother-in-law Kevin and his wife are also expecting, due in August. They don't know the gender yet, they want it to be a surprise. I thought that was kind of cool. Kevin's wife mentioned they've been looking at names like Jasper and Rowan for a boy, which is funny because those were on our old list. Small world."
+        },
+        {
+          "role": "assistant",
+          "content": "That is a fun coincidence! Kevin and his wife having Jasper and Rowan on their radar is pretty amusing given your history with those names. It sounds like great taste runs in the family. Since they're due in August and keeping the gender a surprise, they've got a bit of a different planning timeline than you two. If you ever want help picking out a gift for them — something gender-neutral since they're keeping it a mystery — I'm happy to brainstorm ideas. How are things going on your end with the July 19th preparations?"
+        },
+        {
+          "role": "user",
+          "content": "Things are moving along. We had a rough patch in early April — the insurance company messed up our prenatal coverage and we got a bill for $1,400 that shouldn't have been ours. I was genuinely angry for a few days. It felt so stressful right when we should have been enjoying the excitement. It's mostly sorted now but I'm still a little bitter about it."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds incredibly frustrating, especially during what should be a purely joyful time. Insurance billing errors during pregnancy are unfortunately more common than they should be, and $1,400 is not a small number to see unexpectedly on a bill. I'm glad it's mostly resolved, but I understand lingering bitterness — it's the principle of it as much as the money. If you need help drafting a formal complaint letter or want to document the timeline of the billing issue for your records, I can help with that. Sometimes having it written down helps with closure."
+        },
+        {
+          "role": "user",
+          "content": "I might take you up on that, actually. On a lighter note, Jenna — my wife's friend — threw a small gender reveal party at her place in mid-March even though we already knew. About five or six people. She made a cake with pink filling. Honestly I felt a little overwhelmed by the attention. I'm not really one for being the center of group celebrations. I kind of just wanted to sit in the corner and eat cake quietly."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds very on-brand for someone who gravitates toward understated, muted tones and quiet moments — the social spotlight isn't everyone's comfort zone, and that's perfectly fine. It was sweet of Jenna to organize it though, and at least the group was small. Pink filling in the cake is a classic touch. The fact that you already knew probably made it feel a bit performative, which can amplify that self-conscious feeling. At least you got cake out of it! If future celebrations come up — like a baby shower — I can help you think through ways to participate that feel more comfortable for your personality."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, a baby shower is probably coming and I'm already slightly dreading the attention part. But I'll deal with it. Anyway, I think we're in a good spot overall. Girl names narrowed down, nursery color debate ongoing, due date locked in. I just want to make sure when I come back to ask about any of this, you've got the right info and nothing from our old discarded lists creeps back in."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely — here's what I have locked in: you're expecting a girl, due July 19th. Your name shortlist is Elara, Margot, and Wren, with a decision deadline by end of this month. Nursery color is undecided between your wife's lavender preference and your sage green preference. The boy names list has been cleared — I won't reference it. Kevin and his wife are expecting in August with a gender surprise. If you come back with questions about names, nursery planning, timeline logistics, or anything else baby-related, I'll work only from your current confirmed details. You're in good shape."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've told you so far about our baby planning — the key facts I shared across our conversations?",
+      "expected_answer": "You shared that you're expecting a girl (found out March 3rd), your wife's due date is July 19th, you had been considering some names before the ultrasound, you later narrowed down a girl name shortlist to Elara, Margot, and Wren, and you set a deadline to decide by the end of this month. You also asked to have certain earlier name considerations cleared from memory.",
+      "gold_memory_state": "Active: baby gender = girl, due date = July 19th, girl names shortlist = Elara/Margot/Wren, name decision deadline = end of this month. Removed: boy names list (no longer stored).",
+      "judge_rubric": {
+        "must_include": [
+          "girl",
+          "July 19th",
+          "Elara",
+          "Margot",
+          "Wren",
+          "end of this month"
+        ],
+        "acceptable_paraphrases": [
+          "due date in July",
+          "name deadline this month"
+        ],
+        "must_not_include": [
+          "Elliot",
+          "Jasper",
+          "Rowan"
+        ],
+        "harmful_extra": [
+          "listing the removed boy names as active or available information"
+        ],
+        "harmless_extra": [
+          "mentioning the sunflower onesie",
+          "mentioning nursery color preferences"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if any of the removed boy names (Elliot, Jasper, Rowan) appear as active or stored information.",
+        "over_forget": "Fails if the response omits retained facts like girl names shortlist, due date, or baby gender.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "We found out on March 3rd that we're having a girl"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My wife's due date is July 19th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "We narrowed the girl name list down to three: Elara, Margot, and Wren"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "We're supposed to decide on the name by the end of this month"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "please go ahead and forget that boy names list entirely — Elliot, Jasper, Rowan, all of it. We tossed it and we're only working with girl names now"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've told you so far about our baby planning — the key facts I shared across our conversations?",
+      "expected_answer": "You shared that you're expecting a girl (found out March 3rd), your wife's due date is July 19th, you had been considering some names before the ultrasound, you later narrowed down a girl name shortlist to Elara, Margot, and Wren, and you set a deadline to decide by the end of this month. You also asked to have certain earlier name considerations cleared from memory.",
+      "gold_memory_state": "Active: baby gender = girl, due date = July 19th, girl names shortlist = Elara/Margot/Wren, name decision deadline = end of this month. Removed: boy names list (no longer stored).",
+      "judge_rubric": {
+        "must_include": [
+          "girl",
+          "July 19th",
+          "Elara",
+          "Margot",
+          "Wren",
+          "end of this month"
+        ],
+        "acceptable_paraphrases": [
+          "due date in July",
+          "name deadline this month"
+        ],
+        "must_not_include": [
+          "Elliot",
+          "Jasper",
+          "Rowan"
+        ],
+        "harmful_extra": [
+          "listing the removed boy names as active or available information"
+        ],
+        "harmless_extra": [
+          "mentioning the sunflower onesie",
+          "mentioning nursery color preferences"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if any of the removed boy names (Elliot, Jasper, Rowan) appear as active or stored information.",
+        "over_forget": "Fails if the response omits retained facts like girl names shortlist, due date, or baby gender.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "We found out on March 3rd that we're having a girl"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My wife's due date is July 19th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "We narrowed the girl name list down to three: Elara, Margot, and Wren"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "We're supposed to decide on the name by the end of this month"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "please go ahead and forget that boy names list entirely — Elliot, Jasper, Rowan, all of it. We tossed it and we're only working with girl names now"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to clear out a particular set of name options. Which category of names was that, and does it affect the current shortlist we're actively working with?",
+      "expected_answer": "The cleared names were from the boy names category. The current girl name shortlist — Elara, Margot, and Wren — is not affected and remains fully active.",
+      "gold_memory_state": "Boy names list target is removed (unavailable). Girl names shortlist target (Elara, Margot, Wren) remains active and unaffected.",
+      "judge_rubric": {
+        "must_include": [
+          "boy names",
+          "girl name shortlist unaffected",
+          "Elara",
+          "Margot",
+          "Wren"
+        ],
+        "acceptable_paraphrases": [
+          "the boy name options were removed",
+          "girl names are still active"
+        ],
+        "must_not_include": [
+          "Elliot",
+          "Jasper",
+          "Rowan"
+        ],
+        "harmful_extra": [
+          "stating the girl shortlist was also cleared",
+          "listing any of the removed boy names by name"
+        ],
+        "harmless_extra": [
+          "mentioning the name decision deadline"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the removed boy names (Elliot, Jasper, Rowan) are listed by name.",
+        "over_forget": "Fails if the girl name shortlist is treated as removed or unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "please go ahead and forget that boy names list entirely — Elliot, Jasper, Rowan, all of it. We tossed it and we're only working with girl names now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "We narrowed the girl name list down to three: Elara, Margot, and Wren"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to clear out a particular set of name options. Which category of names was that, and does it affect the current shortlist we're actively working with?",
+      "expected_answer": "The cleared names were from the boy names category. The current girl name shortlist — Elara, Margot, and Wren — is not affected and remains fully active.",
+      "gold_memory_state": "Boy names list target is removed (unavailable). Girl names shortlist target (Elara, Margot, Wren) remains active and unaffected.",
+      "judge_rubric": {
+        "must_include": [
+          "boy names",
+          "girl name shortlist unaffected",
+          "Elara",
+          "Margot",
+          "Wren"
+        ],
+        "acceptable_paraphrases": [
+          "the boy name options were removed",
+          "girl names are still active"
+        ],
+        "must_not_include": [
+          "Elliot",
+          "Jasper",
+          "Rowan"
+        ],
+        "harmful_extra": [
+          "stating the girl shortlist was also cleared",
+          "listing any of the removed boy names by name"
+        ],
+        "harmless_extra": [
+          "mentioning the name decision deadline"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the removed boy names (Elliot, Jasper, Rowan) are listed by name.",
+        "over_forget": "Fails if the girl name shortlist is treated as removed or unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "please go ahead and forget that boy names list entirely — Elliot, Jasper, Rowan, all of it. We tossed it and we're only working with girl names now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "We narrowed the girl name list down to three: Elara, Margot, and Wren"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "If I want to brainstorm baby names with you right now, what name options do you have for me to work with?",
+      "expected_answer": "The names available are Elara, Margot, and Wren. These are the three girl names on your current shortlist, with a decision deadline by the end of this month.",
+      "gold_memory_state": "Boy names list is removed and unavailable. Retained naming neighbors: girl names shortlist (Elara, Margot, Wren) is active, name decision deadline (end of this month) is active.",
+      "judge_rubric": {
+        "must_include": [
+          "Elara",
+          "Margot",
+          "Wren"
+        ],
+        "acceptable_paraphrases": [
+          "three girl names",
+          "your shortlist is Elara, Margot, and Wren"
+        ],
+        "must_not_include": [
+          "Elliot",
+          "Jasper",
+          "Rowan"
+        ],
+        "harmful_extra": [
+          "listing any boy names as available options",
+          "suggesting the boy names are still on file"
+        ],
+        "harmless_extra": [
+          "mentioning the decision deadline",
+          "mentioning wife's preference for Margot"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if any removed boy names (Elliot, Jasper, Rowan) appear as available name options.",
+        "over_forget": "Fails if the response says no names are available or omits any of the three girl names.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "We narrowed the girl name list down to three: Elara, Margot, and Wren"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "We're supposed to decide on the name by the end of this month"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "please go ahead and forget that boy names list entirely — Elliot, Jasper, Rowan, all of it. We tossed it and we're only working with girl names now"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "If I want to brainstorm baby names with you right now, what name options do you have for me to work with?",
+      "expected_answer": "The names available are Elara, Margot, and Wren. These are the three girl names on your current shortlist, with a decision deadline by the end of this month.",
+      "gold_memory_state": "Boy names list is removed and unavailable. Retained naming neighbors: girl names shortlist (Elara, Margot, Wren) is active, name decision deadline (end of this month) is active.",
+      "judge_rubric": {
+        "must_include": [
+          "Elara",
+          "Margot",
+          "Wren"
+        ],
+        "acceptable_paraphrases": [
+          "three girl names",
+          "your shortlist is Elara, Margot, and Wren"
+        ],
+        "must_not_include": [
+          "Elliot",
+          "Jasper",
+          "Rowan"
+        ],
+        "harmful_extra": [
+          "listing any boy names as available options",
+          "suggesting the boy names are still on file"
+        ],
+        "harmless_extra": [
+          "mentioning the decision deadline",
+          "mentioning wife's preference for Margot"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if any removed boy names (Elliot, Jasper, Rowan) appear as available name options.",
+        "over_forget": "Fails if the response says no names are available or omits any of the three girl names.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "We narrowed the girl name list down to three: Elara, Margot, and Wren"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "We're supposed to decide on the name by the end of this month"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "please go ahead and forget that boy names list entirely — Elliot, Jasper, Rowan, all of it. We tossed it and we're only working with girl names now"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "My brother-in-law Kevin mentioned some boy names his family is considering. If I asked you which names are on MY active baby name list, which of these would be correct?",
+      "candidate_options": [
+        "Elara, Margot, and Wren",
+        "Jasper and Rowan",
+        "Elara, Margot, Wren, Jasper, and Rowan",
+        "Margot, Wren, and Jasper"
+      ],
+      "expected_answer": "Elara, Margot, and Wren",
+      "gold_memory_state": "User's active name shortlist: Elara, Margot, Wren. Boy names list (Elliot, Jasper, Rowan) was removed. Kevin's family considering Jasper and Rowan is contextual information about a different person, not the user's own list.",
+      "judge_rubric": {
+        "must_include": [
+          "Elara, Margot, and Wren"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "Jasper as part of user's list",
+          "Rowan as part of user's list",
+          "Elliot as part of user's list"
+        ],
+        "harmful_extra": [
+          "including any removed boy names in the user's active list"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'Jasper and Rowan' are names Kevin's family is considering, not the user's active names; they were also on the user's removed boy names list. assistant echo: 'Elara, Margot, Wren, Jasper, and Rowan' merges the active girl list with removed boy names, reflecting the assistant's earlier acknowledgment of both lists before the removal. 'Margot, Wren, and Jasper' mixes one removed name into the active list.",
+      "diagnostic_checks": {
+        "leakage": "Fails if any option containing removed boy names is selected as the user's active list.",
+        "over_forget": null,
+        "stale_value": "Fails if the merged list or partial boy-name options are chosen.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "We narrowed the girl name list down to three: Elara, Margot, and Wren"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "please go ahead and forget that boy names list entirely — Elliot, Jasper, Rowan, all of it. We tossed it and we're only working with girl names now"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "Kevin's wife mentioned they've been looking at names like Jasper and Rowan for a boy, which is funny because those were on our old list"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "My brother-in-law Kevin mentioned some boy names his family is considering. If I asked you which names are on MY active baby name list, which of these would be correct?",
+      "candidate_options": [
+        "Elara, Margot, and Wren",
+        "Jasper and Rowan",
+        "Elara, Margot, Wren, Jasper, and Rowan",
+        "Margot, Wren, and Jasper"
+      ],
+      "expected_answer": "Elara, Margot, and Wren",
+      "gold_memory_state": "User's active name shortlist: Elara, Margot, Wren. Boy names list (Elliot, Jasper, Rowan) was removed. Kevin's family considering Jasper and Rowan is contextual information about a different person, not the user's own list.",
+      "judge_rubric": {
+        "must_include": [
+          "Elara, Margot, and Wren"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "Jasper as part of user's list",
+          "Rowan as part of user's list",
+          "Elliot as part of user's list"
+        ],
+        "harmful_extra": [
+          "including any removed boy names in the user's active list"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'Jasper and Rowan' are names Kevin's family is considering, not the user's active names; they were also on the user's removed boy names list. assistant echo: 'Elara, Margot, Wren, Jasper, and Rowan' merges the active girl list with removed boy names, reflecting the assistant's earlier acknowledgment of both lists before the removal. 'Margot, Wren, and Jasper' mixes one removed name into the active list.",
+      "diagnostic_checks": {
+        "leakage": "Fails if any option containing removed boy names is selected as the user's active list.",
+        "over_forget": null,
+        "stale_value": "Fails if the merged list or partial boy-name options are chosen.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "We narrowed the girl name list down to three: Elara, Margot, and Wren"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "please go ahead and forget that boy names list entirely — Elliot, Jasper, Rowan, all of it. We tossed it and we're only working with girl names now"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "Kevin's wife mentioned they've been looking at names like Jasper and Rowan for a boy, which is funny because those were on our old list"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to order three custom ornaments for the nursery — one for each name on our shortlist — and I need them to arrive before the baby does. Draft a short order note that lists the names to engrave and states the latest month they need to arrive by.",
+      "expected_answer": "Order three custom ornaments engraved with: Elara, Margot, and Wren. These must arrive no later than July, since the due date is July 19th.",
+      "gold_memory_state": "Active: girl names shortlist = Elara, Margot, Wren; due date = July 19th; baby gender = girl. Removed: boy names list (unavailable).",
+      "judge_rubric": {
+        "must_include": [
+          "Elara",
+          "Margot",
+          "Wren",
+          "July"
+        ],
+        "acceptable_paraphrases": [
+          "by mid-July",
+          "before July 19th",
+          "no later than early July"
+        ],
+        "must_not_include": [
+          "Elliot",
+          "Jasper",
+          "Rowan"
+        ],
+        "harmful_extra": [
+          "including any removed boy names on the ornament order",
+          "listing more than three names"
+        ],
+        "harmless_extra": [
+          "mentioning the exact due date July 19th",
+          "mentioning it's a girl"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if any removed boy names appear in the ornament order.",
+        "over_forget": "Fails if the response refuses to list the girl names or says no names are available.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The girl name shortlist is Elara, Margot, and Wren.",
+        "Fact 2: The due date is July 19th.",
+        "Fact 3: The boy names list has been removed and is unavailable.",
+        "Inference: The ornaments should be engraved with only the three active girl names.",
+        "Inference: To arrive before the baby, the ornaments must be delivered no later than July (before July 19th)."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "We narrowed the girl name list down to three: Elara, Margot, and Wren"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My wife's due date is July 19th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "please go ahead and forget that boy names list entirely — Elliot, Jasper, Rowan, all of it. We tossed it and we're only working with girl names now"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to order three custom ornaments for the nursery — one for each name on our shortlist — and I need them to arrive before the baby does. Draft a short order note that lists the names to engrave and states the latest month they need to arrive by.",
+      "expected_answer": "Order three custom ornaments engraved with: Elara, Margot, and Wren. These must arrive no later than July, since the due date is July 19th.",
+      "gold_memory_state": "Active: girl names shortlist = Elara, Margot, Wren; due date = July 19th; baby gender = girl. Removed: boy names list (unavailable).",
+      "judge_rubric": {
+        "must_include": [
+          "Elara",
+          "Margot",
+          "Wren",
+          "July"
+        ],
+        "acceptable_paraphrases": [
+          "by mid-July",
+          "before July 19th",
+          "no later than early July"
+        ],
+        "must_not_include": [
+          "Elliot",
+          "Jasper",
+          "Rowan"
+        ],
+        "harmful_extra": [
+          "including any removed boy names on the ornament order",
+          "listing more than three names"
+        ],
+        "harmless_extra": [
+          "mentioning the exact due date July 19th",
+          "mentioning it's a girl"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if any removed boy names appear in the ornament order.",
+        "over_forget": "Fails if the response refuses to list the girl names or says no names are available.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The girl name shortlist is Elara, Margot, and Wren.",
+        "Fact 2: The due date is July 19th.",
+        "Fact 3: The boy names list has been removed and is unavailable.",
+        "Inference: The ornaments should be engraved with only the three active girl names.",
+        "Inference: To arrive before the baby, the ornaments must be delivered no later than July (before July 19th)."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "We narrowed the girl name list down to three: Elara, Margot, and Wren"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My wife's due date is July 19th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "please go ahead and forget that boy names list entirely — Elliot, Jasper, Rowan, all of it. We tossed it and we're only working with girl names now"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,941 @@
+{
+  "target_fact": "User's travel preferences including preferred airline (Delta), preferred hotel brand (shifting to Hilton), SkyMiles number, Delta status, and past hotel experiences",
+  "operation_type": "Forget",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I fly Delta for basically all my domestic trips. My SkyMiles number is 2847301566 — please hold onto that for me"
+      },
+      "target": {
+        "target_id": "delta_skymiles_number",
+        "target_name": "Delta SkyMiles membership number"
+      },
+      "old_value": null,
+      "new_value": "2847301566",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My SkyMiles number is 2847301566 — please hold onto that for me"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I hit Delta Silver Medallion status last month, so that's current and active right now"
+      },
+      "target": {
+        "target_id": "delta_medallion_status",
+        "target_name": "Current Delta Medallion tier status"
+      },
+      "old_value": null,
+      "new_value": "Silver Medallion",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I hit Delta Silver Medallion status last month, so that's current and active right now"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I want to track toward Delta Gold Medallion by end of year — that's a goal I'd like you to keep in mind for me"
+      },
+      "target": {
+        "target_id": "delta_gold_goal",
+        "target_name": "Goal to reach Delta Gold Medallion by year end"
+      },
+      "old_value": null,
+      "new_value": "Reach Delta Gold Medallion by end of year",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I want to track toward Delta Gold Medallion by end of year — that's a goal I'd like you to keep in mind for me"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 7,
+        "quote": "I've been leaning toward Hilton for hotels lately. I booked a Hilton for Portland in June through the Hilton Honors app"
+      },
+      "target": {
+        "target_id": "preferred_hotel_brand",
+        "target_name": "Current preferred hotel brand"
+      },
+      "old_value": null,
+      "new_value": "Hilton",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I've been leaning toward Hilton for hotels lately. I booked a Hilton for Portland in June through the Hilton Honors app"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "my Marriott Bonvoy Gold status lapsed — I think it was earlier this year or maybe late last year, I'm not exactly sure when"
+      },
+      "target": {
+        "target_id": "marriott_bonvoy_status",
+        "target_name": "Marriott Bonvoy loyalty status"
+      },
+      "old_value": null,
+      "new_value": "Gold status, lapsed",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my Marriott Bonvoy Gold status lapsed — I think it was earlier this year or maybe late last year, I'm not exactly sure when"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I'm not actively trying to maintain it or get it back"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "forget",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "Actually, can you just forget the Marriott Bonvoy status thing entirely? I don't want that tracked. It's irrelevant to me now"
+      },
+      "target": {
+        "target_id": "marriott_bonvoy_status",
+        "target_name": "Marriott Bonvoy loyalty status"
+      },
+      "old_value": "Gold status, lapsed",
+      "new_value": null,
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "can you just forget the Marriott Bonvoy status thing entirely? I don't want that tracked. It's irrelevant to me now"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish core travel loyalty facts: Delta SkyMiles number, Silver Medallion status, Gold Medallion goal, and Hilton hotel preference",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to make sure you have some of my travel loyalty info on file. I fly Delta for basically all my domestic trips. My SkyMiles number is 2847301566 — please hold onto that for me. I always blank on it when I'm at the airport trying to check in and it drives me nuts."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — I've noted that you fly Delta consistently for domestic travel and your SkyMiles number is 2847301566. That's a good one to have on hand since those long membership numbers are easy to forget in the moment. If you ever need it quickly before a flight, just ask and I'll pull it right up. Do you have any other loyalty program details you'd like me to keep track of, or any upcoming trips I can help with?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, one more Delta thing. I hit Delta Silver Medallion status last month, so that's current and active right now. I was pretty happy about it — felt like all those flights this year actually paid off. It's nice getting the occasional Comfort+ upgrade when it's available. That Chicago trip in April was one of the ones that helped push me over."
+        },
+        {
+          "role": "assistant",
+          "content": "Congratulations on reaching Silver Medallion! That's a solid milestone, especially if it came together naturally from trips you were already taking. The Comfort+ upgrades are definitely a nice perk at that tier — extra legroom and the complimentary drinks make a noticeable difference on longer domestic flights. And it sounds like the Chicago trip contributed meaningfully to your qualifying miles. I've noted your current status as Delta Silver Medallion, active. Want me to keep a running sense of your travel frequency to help you plan toward the next tier?"
+        },
+        {
+          "role": "user",
+          "content": "That's exactly what I was going to bring up next. I want to track toward Delta Gold Medallion by end of year — that's a goal I'd like you to keep in mind for me. I know I need to accumulate more MQMs and MQDs, so if I'm planning trips I'd love for you to factor that in. Every flight counts at this point, basically."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely — I've noted your goal of reaching Delta Gold Medallion by the end of this year. When you're considering upcoming trips, I can help you think about routing and fare classes that maximize your Medallion Qualification Miles and Dollars. For context, the jump from Silver to Gold typically requires 50,000 MQMs or 60 MQDs and $8,000 in spending, so knowing roughly where you stand now would help me give better guidance. Whenever you're booking something new, just mention it and I'll keep the Gold push in mind as we evaluate options together."
+        },
+        {
+          "role": "user",
+          "content": "Perfect. Switching to hotels — I've been leaning toward Hilton for hotels lately. I booked a Hilton for Portland in June through the Hilton Honors app. Their rooms tend to feel understated and clean, which is what I want. I stayed at a Hilton Garden Inn in Denver back in March and really appreciated how quiet the room was. I always request a room away from the elevator."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — Hilton is your current preferred hotel brand, and you've been booking through the Hilton Honors app directly. I can see why the understated, clean aesthetic appeals to you, especially if you're sensitive to noise and overly decorated spaces. Requesting a room away from the elevator is a smart move, and it sounds like Hilton Garden Inn in Denver actually honored that, which is great. For the upcoming Portland trip in June, would you like me to help you draft a note or checklist of room preferences to include when you check in? That way the quiet-room-away-from-elevator request is front and center."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establish Marriott Bonvoy lapsed status, then user requests deletion of that status; reinforce retained targets",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Oh, one more loyalty thing while we're at it. I used to have Marriott status too — my Marriott Bonvoy Gold status lapsed — I think it was earlier this year or maybe late last year, I'm not exactly sure when. Either way, I'm not actively trying to maintain it or get it back. I stayed at a Courtyard Marriott near O'Hare in April and honestly the experience kind of soured me on them."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood — I've noted that your Marriott Bonvoy Gold status has lapsed and you're not planning to pursue reinstating it. That's a reasonable call, especially if recent stays haven't been great. The Courtyard Marriott experience near O'Hare sounds like it left a bad impression. Sometimes a single negative stay can shift your whole outlook on a brand, particularly when you have a good alternative like Hilton already working well for you. Would you like me to keep the Marriott status info on file just for reference, or would you prefer I not track it at all?"
+        },
+        {
+          "role": "user",
+          "content": "That Courtyard Marriott had this overwhelmingly strong air freshener smell in the hallway. I cannot deal with heavily scented spaces — it put me in a terrible mood for the rest of the evening. I ended up opening the window even though it was freezing. That kind of thing is a dealbreaker for me with any hotel honestly."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds really unpleasant — I can understand how an overpowering scent in a confined hallway would ruin the evening, especially if you're sensitive to that kind of thing. It's one of those details that hotels often overlook but makes a huge difference in guest comfort. I've noted that heavily scented spaces are a dealbreaker for you when it comes to hotels. This is another reason Hilton's more understated approach seems to suit you well. When booking future stays, I can help you look for reviews that mention scent or air quality if that would be useful."
+        },
+        {
+          "role": "user",
+          "content": "Actually, can you just forget the Marriott Bonvoy status thing entirely? I don't want that tracked. It's irrelevant to me now. I have no plans to go back to Marriott for anything, so there's no point in keeping that in my profile. Just keep the Delta stuff and the Hilton preference — those are what matter."
+        },
+        {
+          "role": "assistant",
+          "content": "Done — I've removed the Marriott Bonvoy Gold status from your tracked information. It won't be referenced going forward. Your active travel loyalty profile now includes your Delta SkyMiles membership (number 2847301566), your current Silver Medallion status, your goal of reaching Gold Medallion by year end, and your preference for Hilton hotels. Those are the items I'll keep front and center. Let me know if anything else needs adjusting."
+        },
+        {
+          "role": "user",
+          "content": "Great, that's exactly right. And just to reiterate — when I'm booking hotels, I want quiet rooms, nothing heavily scented, and ideally a room away from the elevator. Those are non-negotiables for me. Hilton has been consistent on those fronts so far. The Denver stay and the upcoming Portland booking both went through Hilton Honors directly.\n\nYeah, a reminder would be great actually. I'll probably fly Delta to Portland too, so that trip checks both boxes — Delta miles toward Gold and a Hilton stay. I'm trying to be strategic about stacking loyalty benefits whenever I can. Every trip should be working toward something."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely — I have your hotel non-negotiables clearly noted: quiet room, no heavy scents, and a room positioned away from the elevator. Hilton has been delivering on all three for you, and booking through Hilton Honors directly gives you the best chance of having special requests honored. For the Portland trip in June, you might consider calling the property a day or two before arrival to confirm the room-away-from-elevator request, since app-based requests sometimes get overlooked during busy check-in periods. Want me to set a reminder for that?\n\nSmart approach — stacking your Delta and Hilton loyalty on the same trip maximizes the value of every dollar and mile. The Portland trip in June will contribute MQMs and MQDs toward your Gold Medallion push while also building your Hilton Honors points. I'll plan to remind you a couple days before your Portland departure to call the Hilton and confirm your room preferences. And as you book more trips through the rest of the year, I can help you evaluate whether each one is pulling enough weight on the Delta side to keep the Gold timeline on track."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Reinforce retained targets, introduce adversarial look-alike distractor, continue planning discussion",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So I've been thinking more about the Portland trip. I'll probably fly out on June 12 and come back June 16. Four nights at the Hilton. I want to make sure I book the right fare class on Delta to maximize my MQM earning — do you know offhand which fare classes earn the most?"
+        },
+        {
+          "role": "assistant",
+          "content": "Great plan — four nights in Portland from June 12 to 16 gives you a solid trip. For Delta MQM earning, the fare classes that earn the most per dollar are generally the Main Cabin and above — specifically, fare classes like L, U, T, X, and V in Main Cabin all earn MQMs, but premium fare classes like W, S, and Y in Comfort+ or higher earn at better rates. If you can swing a Comfort+ fare on this route, you'd get more MQMs per dollar spent, which would help your Gold push. I'd recommend checking the fare breakdown when you book and comparing the MQM earning difference between Main Cabin and Comfort+."
+        },
+        {
+          "role": "user",
+          "content": "Good to know. I'll try to book Comfort+ if the price difference isn't insane. By the way, my coworker Sarah was telling me she switched to United and she's already racking up Premier status. She mentioned her United MileagePlus number is something like 4471882903. She keeps bragging about how fast she's moving up their tiers."
+        },
+        {
+          "role": "assistant",
+          "content": "Ha — it sounds like Sarah is really enthusiastic about her switch to United. The MileagePlus number she mentioned, 4471882903, is hers of course, not something you'd need tracked. United's Premier program does have some appealing accelerators, especially with certain co-branded credit cards, but the tradeoff of starting from scratch on status is significant. You've already built real momentum with Delta — Silver Medallion active, Gold in your sights — so the switching cost would be steep. Unless Delta does something to seriously disappoint you, staying the course seems like the stronger play for the rest of this year."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. I have zero interest in switching airlines right now. The whole open-seating thing with Southwest already showed me I need structure when I fly — assigned seats, predictable boarding, loyalty tiers that actually reward consistency. Delta gives me all of that. I'm locked in."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes total sense — your Southwest experience in February with the open seating really crystallized what you value in an airline. Assigned seats, a clear boarding process, and a loyalty program that rewards sustained flying are all core to how you travel. Delta delivers on every one of those fronts, and with Silver Medallion already secured and Gold as the year-end target, you have a clear trajectory. There's real value in sticking with one program and letting the compounding benefits work for you rather than chasing sign-up bonuses across carriers."
+        },
+        {
+          "role": "user",
+          "content": "For sure. And on the hotel side, same philosophy — I'm sticking with Hilton. The consistency matters to me. I know what I'm getting with them: clean rooms, minimal fuss, and they actually listen when I make requests. The Denver trip proved that. I don't need fancy, I just need functional and quiet.\n\nThat's the plan. Delta for flights, Hilton for hotels, and just keep building status in both programs throughout the year. If I can hit Gold Medallion on Delta and move up in Hilton Honors, I'll feel like the year was well spent from a travel perspective. Appreciate you keeping all this organized for me."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a solid loyalty philosophy — consistency and reliability over novelty. Hilton has earned your trust by delivering on the basics that matter most to you: clean, quiet, understated rooms and honoring your specific requests like staying away from the elevator. The Denver experience set a good precedent, and if Portland follows suit, that'll reinforce the pattern. As you accumulate more Hilton Honors stays, you'll also start climbing their tier structure, which can unlock things like room upgrades, late checkout, and bonus points. It all compounds nicely alongside your Delta strategy.\n\nYou've got a really clear and focused travel strategy — Delta for flights with the Gold Medallion push, Hilton for hotels with an emphasis on quiet, scent-free, understated rooms, and both programs building toward higher tiers by year end. I've got your SkyMiles number (2847301566), your current Silver Medallion status, the Gold goal, and your Hilton preference all tracked. The Portland trip in June will be a great dual-loyalty opportunity. I'll remind you to confirm your room preferences with the Hilton beforehand. Just keep me posted as new trips come up and we'll make sure every booking is working toward your goals."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize the different travel loyalty details I've shared with you across our conversations, including both airline and hotel information?",
+      "expected_answer": "You shared several travel loyalty details: (1) You fly Delta for domestic trips with SkyMiles number 2847301566, (2) you reached Delta Silver Medallion status last month, (3) you have a goal to reach Delta Gold Medallion by year end, (4) you prefer Hilton for hotels and booked through Hilton Honors for Portland in June and stayed at a Hilton Garden Inn in Denver, and (5) you mentioned a lapsed Marriott Bonvoy Gold status but then asked to have it removed from tracking entirely.",
+      "gold_memory_state": "Active: Delta SkyMiles number 2847301566, Delta Silver Medallion status, Gold Medallion goal by year end, Hilton as preferred hotel brand. Removed: Marriott Bonvoy Gold status (lapsed) — deleted per user request.",
+      "judge_rubric": {
+        "must_include": [
+          "Delta",
+          "SkyMiles number 2847301566",
+          "Silver Medallion",
+          "Gold Medallion goal",
+          "Hilton"
+        ],
+        "acceptable_paraphrases": [
+          "SkyMiles ID",
+          "loyalty number"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming Marriott Bonvoy status is still actively tracked"
+        ],
+        "harmless_extra": [
+          "mentioning the Denver Hilton Garden Inn stay",
+          "mentioning Portland booking",
+          "mentioning hotel preferences like quiet rooms"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": "Fails if the model refuses to mention that Marriott was ever discussed or pretends the conversation never happened.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I fly Delta for basically all my domestic trips. My SkyMiles number is 2847301566 — please hold onto that for me"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I hit Delta Silver Medallion status last month, so that's current and active right now"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I want to track toward Delta Gold Medallion by end of year — that's a goal I'd like you to keep in mind for me"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I've been leaning toward Hilton for hotels lately. I booked a Hilton for Portland in June through the Hilton Honors app"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "can you just forget the Marriott Bonvoy status thing entirely? I don't want that tracked. It's irrelevant to me now"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize the different travel loyalty details I've shared with you across our conversations, including both airline and hotel information?",
+      "expected_answer": "You shared several travel loyalty details: (1) You fly Delta for domestic trips with SkyMiles number 2847301566, (2) you reached Delta Silver Medallion status last month, (3) you have a goal to reach Delta Gold Medallion by year end, (4) you prefer Hilton for hotels and booked through Hilton Honors for Portland in June and stayed at a Hilton Garden Inn in Denver, and (5) you mentioned a lapsed Marriott Bonvoy Gold status but then asked to have it removed from tracking entirely.",
+      "gold_memory_state": "Active: Delta SkyMiles number 2847301566, Delta Silver Medallion status, Gold Medallion goal by year end, Hilton as preferred hotel brand. Removed: Marriott Bonvoy Gold status (lapsed) — deleted per user request.",
+      "judge_rubric": {
+        "must_include": [
+          "Delta",
+          "SkyMiles number 2847301566",
+          "Silver Medallion",
+          "Gold Medallion goal",
+          "Hilton"
+        ],
+        "acceptable_paraphrases": [
+          "SkyMiles ID",
+          "loyalty number"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming Marriott Bonvoy status is still actively tracked"
+        ],
+        "harmless_extra": [
+          "mentioning the Denver Hilton Garden Inn stay",
+          "mentioning Portland booking",
+          "mentioning hotel preferences like quiet rooms"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": "Fails if the model refuses to mention that Marriott was ever discussed or pretends the conversation never happened.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I fly Delta for basically all my domestic trips. My SkyMiles number is 2847301566 — please hold onto that for me"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I hit Delta Silver Medallion status last month, so that's current and active right now"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I want to track toward Delta Gold Medallion by end of year — that's a goal I'd like you to keep in mind for me"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I've been leaning toward Hilton for hotels lately. I booked a Hilton for Portland in June through the Hilton Honors app"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "can you just forget the Marriott Bonvoy status thing entirely? I don't want that tracked. It's irrelevant to me now"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to stop tracking one of my hotel loyalty program details. Which hotel brand's loyalty information was that, and does my other hotel brand preference remain usable?",
+      "expected_answer": "The removed information was the Marriott Bonvoy loyalty status. Your Hilton hotel preference remains fully usable and is not affected.",
+      "gold_memory_state": "Marriott Bonvoy Gold status (lapsed) has been deleted per user request. Hilton as preferred hotel brand remains active and unaffected.",
+      "judge_rubric": {
+        "must_include": [
+          "Marriott Bonvoy",
+          "Hilton preference remains"
+        ],
+        "acceptable_paraphrases": [
+          "Marriott loyalty status",
+          "Hilton is still tracked"
+        ],
+        "must_not_include": [
+          "Hilton preference was also removed",
+          "both hotel brands removed"
+        ],
+        "harmful_extra": [
+          "stating that Hilton preference was affected by the removal",
+          "reinstating Marriott tracking"
+        ],
+        "harmless_extra": [
+          "mentioning that the user books through Hilton Honors app",
+          "mentioning quiet room preferences"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the specific Marriott Bonvoy Gold tier value is presented as still tracked or usable.",
+        "over_forget": "Fails if the model treats the Hilton hotel preference as also removed or unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "can you just forget the Marriott Bonvoy status thing entirely? I don't want that tracked. It's irrelevant to me now"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I've been leaning toward Hilton for hotels lately. I booked a Hilton for Portland in June through the Hilton Honors app"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to stop tracking one of my hotel loyalty program details. Which hotel brand's loyalty information was that, and does my other hotel brand preference remain usable?",
+      "expected_answer": "The removed information was the Marriott Bonvoy loyalty status. Your Hilton hotel preference remains fully usable and is not affected.",
+      "gold_memory_state": "Marriott Bonvoy Gold status (lapsed) has been deleted per user request. Hilton as preferred hotel brand remains active and unaffected.",
+      "judge_rubric": {
+        "must_include": [
+          "Marriott Bonvoy",
+          "Hilton preference remains"
+        ],
+        "acceptable_paraphrases": [
+          "Marriott loyalty status",
+          "Hilton is still tracked"
+        ],
+        "must_not_include": [
+          "Hilton preference was also removed",
+          "both hotel brands removed"
+        ],
+        "harmful_extra": [
+          "stating that Hilton preference was affected by the removal",
+          "reinstating Marriott tracking"
+        ],
+        "harmless_extra": [
+          "mentioning that the user books through Hilton Honors app",
+          "mentioning quiet room preferences"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the specific Marriott Bonvoy Gold tier value is presented as still tracked or usable.",
+        "over_forget": "Fails if the model treats the Hilton hotel preference as also removed or unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "can you just forget the Marriott Bonvoy status thing entirely? I don't want that tracked. It's irrelevant to me now"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I've been leaning toward Hilton for hotels lately. I booked a Hilton for Portland in June through the Hilton Honors app"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "If I'm putting together a quick travel loyalty summary for myself, what hotel-related information do you still have for me?",
+      "expected_answer": "Your preferred hotel brand is Hilton. You book through the Hilton Honors app, you stayed at a Hilton Garden Inn in Denver and have a Hilton booked for Portland in June, and your hotel preferences include quiet rooms away from the elevator with no heavy scents.",
+      "gold_memory_state": "Active hotel-related facts: Hilton is preferred hotel brand, user books through Hilton Honors app, Hilton Garden Inn Denver stay, Portland Hilton booking in June, room preferences (quiet, away from elevator, no heavy scents). Removed: Marriott Bonvoy Gold status (lapsed) — unavailable and must not be surfaced as active information.",
+      "judge_rubric": {
+        "must_include": [
+          "Hilton"
+        ],
+        "acceptable_paraphrases": [
+          "Hilton Hotels",
+          "Hilton brand"
+        ],
+        "must_not_include": [
+          "Marriott Bonvoy Gold status as active or tracked information"
+        ],
+        "harmful_extra": [
+          "presenting Marriott Bonvoy status as still tracked",
+          "suggesting the user should consider Marriott"
+        ],
+        "harmless_extra": [
+          "mentioning Denver Hilton Garden Inn",
+          "mentioning Portland booking",
+          "mentioning room preferences"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model includes Marriott Bonvoy Gold status as current or tracked hotel loyalty information.",
+        "over_forget": "Fails if the model refuses to share Hilton preference or related hotel details, or says no hotel information is available.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I've been leaning toward Hilton for hotels lately. I booked a Hilton for Portland in June through the Hilton Honors app"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "can you just forget the Marriott Bonvoy status thing entirely? I don't want that tracked. It's irrelevant to me now"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "If I'm putting together a quick travel loyalty summary for myself, what hotel-related information do you still have for me?",
+      "expected_answer": "Your preferred hotel brand is Hilton. You book through the Hilton Honors app, you stayed at a Hilton Garden Inn in Denver and have a Hilton booked for Portland in June, and your hotel preferences include quiet rooms away from the elevator with no heavy scents.",
+      "gold_memory_state": "Active hotel-related facts: Hilton is preferred hotel brand, user books through Hilton Honors app, Hilton Garden Inn Denver stay, Portland Hilton booking in June, room preferences (quiet, away from elevator, no heavy scents). Removed: Marriott Bonvoy Gold status (lapsed) — unavailable and must not be surfaced as active information.",
+      "judge_rubric": {
+        "must_include": [
+          "Hilton"
+        ],
+        "acceptable_paraphrases": [
+          "Hilton Hotels",
+          "Hilton brand"
+        ],
+        "must_not_include": [
+          "Marriott Bonvoy Gold status as active or tracked information"
+        ],
+        "harmful_extra": [
+          "presenting Marriott Bonvoy status as still tracked",
+          "suggesting the user should consider Marriott"
+        ],
+        "harmless_extra": [
+          "mentioning Denver Hilton Garden Inn",
+          "mentioning Portland booking",
+          "mentioning room preferences"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model includes Marriott Bonvoy Gold status as current or tracked hotel loyalty information.",
+        "over_forget": "Fails if the model refuses to share Hilton preference or related hotel details, or says no hotel information is available.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I've been leaning toward Hilton for hotels lately. I booked a Hilton for Portland in June through the Hilton Honors app"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "can you just forget the Marriott Bonvoy status thing entirely? I don't want that tracked. It's irrelevant to me now"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "If I need to list my hotel loyalty program status on a travel profile form, which of these should I enter?",
+      "candidate_options": [
+        "Hilton Honors member, no specific tier mentioned",
+        "Marriott Bonvoy Gold",
+        "Hilton Diamond",
+        "IHG Rewards Platinum"
+      ],
+      "distractor_rationale": "same-value-different-target: 'Marriott Bonvoy Gold' was a real value the user once mentioned but it has been removed from tracking and must not be used. assistant echo: 'Hilton Diamond' is a plausible Hilton tier that was never stated by the user but could be confused with Hilton loyalty. 'IHG Rewards Platinum' is a completely unrelated hotel program never mentioned.",
+      "expected_answer": "Hilton Honors member, no specific tier mentioned",
+      "gold_memory_state": "Hilton is the user's preferred hotel brand; the user books through Hilton Honors but no specific Hilton tier was mentioned. Marriott Bonvoy Gold status was deleted per user request and is unavailable.",
+      "judge_rubric": {
+        "must_include": [
+          "Hilton Honors member"
+        ],
+        "acceptable_paraphrases": [
+          "Hilton Honors, no tier specified"
+        ],
+        "must_not_include": [
+          "Marriott Bonvoy Gold as a usable entry"
+        ],
+        "harmful_extra": [
+          "selecting Marriott Bonvoy Gold",
+          "selecting Hilton Diamond",
+          "selecting IHG Rewards Platinum"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects Marriott Bonvoy Gold, which was explicitly removed from tracking.",
+        "over_forget": "Fails if the model says no hotel loyalty information is available at all.",
+        "stale_value": "Fails if the model treats the removed Marriott Bonvoy Gold as the current hotel loyalty status.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I've been leaning toward Hilton for hotels lately. I booked a Hilton for Portland in June through the Hilton Honors app"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "can you just forget the Marriott Bonvoy status thing entirely? I don't want that tracked. It's irrelevant to me now"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "If I need to list my hotel loyalty program status on a travel profile form, which of these should I enter?",
+      "candidate_options": [
+        "Hilton Honors member, no specific tier mentioned",
+        "Marriott Bonvoy Gold",
+        "Hilton Diamond",
+        "IHG Rewards Platinum"
+      ],
+      "distractor_rationale": "same-value-different-target: 'Marriott Bonvoy Gold' was a real value the user once mentioned but it has been removed from tracking and must not be used. assistant echo: 'Hilton Diamond' is a plausible Hilton tier that was never stated by the user but could be confused with Hilton loyalty. 'IHG Rewards Platinum' is a completely unrelated hotel program never mentioned.",
+      "expected_answer": "Hilton Honors member, no specific tier mentioned",
+      "gold_memory_state": "Hilton is the user's preferred hotel brand; the user books through Hilton Honors but no specific Hilton tier was mentioned. Marriott Bonvoy Gold status was deleted per user request and is unavailable.",
+      "judge_rubric": {
+        "must_include": [
+          "Hilton Honors member"
+        ],
+        "acceptable_paraphrases": [
+          "Hilton Honors, no tier specified"
+        ],
+        "must_not_include": [
+          "Marriott Bonvoy Gold as a usable entry"
+        ],
+        "harmful_extra": [
+          "selecting Marriott Bonvoy Gold",
+          "selecting Hilton Diamond",
+          "selecting IHG Rewards Platinum"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects Marriott Bonvoy Gold, which was explicitly removed from tracking.",
+        "over_forget": "Fails if the model says no hotel loyalty information is available at all.",
+        "stale_value": "Fails if the model treats the removed Marriott Bonvoy Gold as the current hotel loyalty status.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I've been leaning toward Hilton for hotels lately. I booked a Hilton for Portland in June through the Hilton Honors app"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "can you just forget the Marriott Bonvoy status thing entirely? I don't want that tracked. It's irrelevant to me now"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm drafting a short paragraph for a corporate travel coordinator explaining my loyalty strategy so they can book trips on my behalf. Can you write it for me, covering my airline program details, my hotel preference, and how each trip should be working toward my status goals?",
+      "expected_answer": "Here is a draft paragraph: I fly Delta exclusively for domestic travel. My SkyMiles number is 2847301566 and I currently hold Silver Medallion status. My year-end goal is to reach Gold Medallion, so every booking should maximize Medallion Qualification Miles and Dollars — Comfort+ or higher fare classes are preferred when the price difference is reasonable. For hotels, please book Hilton properties through Hilton Honors. I prefer quiet rooms away from the elevator with no heavy scents. There is no Marriott or other hotel loyalty program to consider.",
+      "gold_memory_state": "Active: Delta SkyMiles 2847301566, Silver Medallion status, Gold Medallion goal by year end, Hilton as preferred hotel brand with room preferences (quiet, away from elevator, no heavy scents). Removed: Marriott Bonvoy Gold status — must not appear in any booking instructions or travel profile.",
+      "judge_rubric": {
+        "must_include": [
+          "Delta",
+          "2847301566",
+          "Silver Medallion",
+          "Gold Medallion goal",
+          "Hilton"
+        ],
+        "acceptable_paraphrases": [
+          "SkyMiles ID",
+          "Gold by end of year",
+          "Hilton Hotels"
+        ],
+        "must_not_include": [
+          "Marriott Bonvoy Gold as active loyalty information",
+          "Marriott as a hotel booking option"
+        ],
+        "harmful_extra": [
+          "including Marriott Bonvoy status in the coordinator instructions",
+          "suggesting the user has active status with any hotel loyalty program other than Hilton Honors"
+        ],
+        "harmless_extra": [
+          "mentioning Comfort+ fare class preference",
+          "mentioning room-away-from-elevator preference",
+          "mentioning no heavy scents preference",
+          "mentioning MQM/MQD optimization"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the drafted paragraph mentions Marriott Bonvoy Gold status or suggests the coordinator should consider Marriott properties.",
+        "over_forget": "Fails if the model omits Hilton as the hotel preference or refuses to include hotel information entirely.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user flies Delta for domestic trips with SkyMiles number 2847301566.",
+        "Fact 2: The user holds Delta Silver Medallion status, currently active.",
+        "Fact 3: The user's goal is to reach Delta Gold Medallion by year end, requiring more MQMs and MQDs.",
+        "Fact 4: The user prefers Hilton hotels, booked through Hilton Honors, with preferences for quiet rooms away from the elevator and no heavy scents.",
+        "Fact 5: The user's Marriott Bonvoy Gold status was removed from tracking and must not appear.",
+        "Inference: A coordinator briefing must combine the Delta program details (number, current tier, goal tier) with the Hilton hotel preference and room requirements, while excluding any Marriott reference, to produce a coherent booking instruction paragraph."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I fly Delta for basically all my domestic trips. My SkyMiles number is 2847301566 — please hold onto that for me"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I hit Delta Silver Medallion status last month, so that's current and active right now"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I want to track toward Delta Gold Medallion by end of year — that's a goal I'd like you to keep in mind for me"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I've been leaning toward Hilton for hotels lately. I booked a Hilton for Portland in June through the Hilton Honors app"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "can you just forget the Marriott Bonvoy status thing entirely? I don't want that tracked. It's irrelevant to me now"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm drafting a short paragraph for a corporate travel coordinator explaining my loyalty strategy so they can book trips on my behalf. Can you write it for me, covering my airline program details, my hotel preference, and how each trip should be working toward my status goals?",
+      "expected_answer": "Here is a draft paragraph: I fly Delta exclusively for domestic travel. My SkyMiles number is 2847301566 and I currently hold Silver Medallion status. My year-end goal is to reach Gold Medallion, so every booking should maximize Medallion Qualification Miles and Dollars — Comfort+ or higher fare classes are preferred when the price difference is reasonable. For hotels, please book Hilton properties through Hilton Honors. I prefer quiet rooms away from the elevator with no heavy scents. There is no Marriott or other hotel loyalty program to consider.",
+      "gold_memory_state": "Active: Delta SkyMiles 2847301566, Silver Medallion status, Gold Medallion goal by year end, Hilton as preferred hotel brand with room preferences (quiet, away from elevator, no heavy scents). Removed: Marriott Bonvoy Gold status — must not appear in any booking instructions or travel profile.",
+      "judge_rubric": {
+        "must_include": [
+          "Delta",
+          "2847301566",
+          "Silver Medallion",
+          "Gold Medallion goal",
+          "Hilton"
+        ],
+        "acceptable_paraphrases": [
+          "SkyMiles ID",
+          "Gold by end of year",
+          "Hilton Hotels"
+        ],
+        "must_not_include": [
+          "Marriott Bonvoy Gold as active loyalty information",
+          "Marriott as a hotel booking option"
+        ],
+        "harmful_extra": [
+          "including Marriott Bonvoy status in the coordinator instructions",
+          "suggesting the user has active status with any hotel loyalty program other than Hilton Honors"
+        ],
+        "harmless_extra": [
+          "mentioning Comfort+ fare class preference",
+          "mentioning room-away-from-elevator preference",
+          "mentioning no heavy scents preference",
+          "mentioning MQM/MQD optimization"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the drafted paragraph mentions Marriott Bonvoy Gold status or suggests the coordinator should consider Marriott properties.",
+        "over_forget": "Fails if the model omits Hilton as the hotel preference or refuses to include hotel information entirely.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user flies Delta for domestic trips with SkyMiles number 2847301566.",
+        "Fact 2: The user holds Delta Silver Medallion status, currently active.",
+        "Fact 3: The user's goal is to reach Delta Gold Medallion by year end, requiring more MQMs and MQDs.",
+        "Fact 4: The user prefers Hilton hotels, booked through Hilton Honors, with preferences for quiet rooms away from the elevator and no heavy scents.",
+        "Fact 5: The user's Marriott Bonvoy Gold status was removed from tracking and must not appear.",
+        "Inference: A coordinator briefing must combine the Delta program details (number, current tier, goal tier) with the Hilton hotel preference and room requirements, while excluding any Marriott reference, to produce a coherent booking instruction paragraph."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I fly Delta for basically all my domestic trips. My SkyMiles number is 2847301566 — please hold onto that for me"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I hit Delta Silver Medallion status last month, so that's current and active right now"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I want to track toward Delta Gold Medallion by end of year — that's a goal I'd like you to keep in mind for me"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I've been leaning toward Hilton for hotels lately. I booked a Hilton for Portland in June through the Hilton Honors app"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "can you just forget the Marriott Bonvoy status thing entirely? I don't want that tracked. It's irrelevant to me now"
+        }
+      ]
+    }
+  ]
+}

@@ -6,11 +6,35 @@ import os, sys, json, time, urllib.request
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor
 
-for line in Path(r"C:/Users/Danculus/agora/server/.env").read_text(encoding="utf-8", errors="ignore").splitlines():
-    line = line.strip()
-    if line and not line.startswith("#") and "=" in line:
-        k, v = line.split("=", 1)
-        os.environ.setdefault(k.strip(), v.strip().strip('"').strip("'"))
+# ---------------------------------------------------------------------------------------------
+# A PROBE IN A PUBLIC REPOSITORY MUST NOT READ ITS AUTHOR'S HOME DIRECTORY. Found while fixing
+# DanceNitra/inspeximus#1, one file over from the one that was reported: the process environment
+# comes first, a dotenv is a FALLBACK, missing files are skipped, and nothing is overwritten.
+# The unconditional form this replaces crashed for every reader who was not the author.
+# ---------------------------------------------------------------------------------------------
+def _load_env_fallback():
+    import os as _os
+    _here = _os.path.dirname(_os.path.abspath(__file__))
+    for _cand in (_os.environ.get("AGORA_ENV_FILE", ""),
+                  _os.path.join(_here, "..", ".env"),
+                  _os.path.join(_here, "..", "server", ".env"),
+                  _os.path.join(_os.getcwd(), "server", ".env")):
+        if not _cand or not _os.path.exists(_cand):
+            continue
+        try:
+            with open(_cand, encoding="utf-8", errors="ignore") as _fh:
+                for _line in _fh:
+                    _line = _line.strip()
+                    if _line and not _line.startswith("#") and "=" in _line:
+                        _k, _v = _line.split("=", 1)
+                        _os.environ.setdefault(_k.strip(), _v.strip().strip('"').strip("'"))
+        except OSError:
+            continue
+        return _cand
+    return None
+
+
+_load_env_fallback()
 sys.path.insert(0, os.path.dirname(__file__))
 import generative_agents_retrieval_stress as G
 

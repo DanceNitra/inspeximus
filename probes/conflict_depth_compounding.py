@@ -24,7 +24,13 @@ from pathlib import Path
 
 random.seed(20260716)
 if not os.environ.get("LLM_BASE_URL"):
-    _envf = os.environ.get("AGORA_ENV_FILE", r"C:/Users/Danculus/agora/server/.env")
+    # Relative to this file, not to the author's home directory. See #1: a public probe that
+    # reads C:/Users/<someone>/ is a probe only that someone can run.
+    _here = os.path.dirname(os.path.abspath(__file__))
+    _envf = os.environ.get("AGORA_ENV_FILE") or next(
+        (c for c in (os.path.join(_here, "..", ".env"),
+                     os.path.join(_here, "..", "server", ".env"),
+                     os.path.join(os.getcwd(), "server", ".env")) if os.path.exists(c)), "")
     if os.path.exists(_envf):
         for line in Path(_envf).read_text(encoding="utf-8", errors="ignore").splitlines():
             line = line.strip()

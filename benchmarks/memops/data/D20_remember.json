@@ -1,0 +1,1085 @@
+{
+  "target_fact": "User's reading preferences and current book-related activities, including favorite author (Ursula K. Le Guin), book club membership (joined April 20th, reading Project Hail Mary for May), and preference for atmospheric/immersive settings over fast-paced action",
+  "operation_type": "Remember",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 3,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": true,
+      "never_stored_target": "favorite poetry collection"
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "my favorite author right now is Ursula K. Le Guin, and I'm working through her full bibliography"
+      },
+      "target": {
+        "target_id": "favorite_author",
+        "target_name": "current favorite author"
+      },
+      "old_value": null,
+      "new_value": "Ursula K. Le Guin",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my favorite author right now is Ursula K. Le Guin, and I'm working through her full bibliography"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I signed up for a book club at the library on April 20th"
+      },
+      "target": {
+        "target_id": "book_club_join_date",
+        "target_name": "library book club join date"
+      },
+      "old_value": null,
+      "new_value": "April 20th",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I signed up for a book club at the library on April 20th"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "The book club meets every two weeks on Sundays at 3 PM"
+      },
+      "target": {
+        "target_id": "book_club_schedule",
+        "target_name": "library book club meeting schedule"
+      },
+      "old_value": null,
+      "new_value": "every two weeks on Sundays at 3 PM",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The book club meets every two weeks on Sundays at 3 PM"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "the next Le Guin book on my list is The Dispossessed, and I already bought my own copy last week"
+      },
+      "target": {
+        "target_id": "next_le_guin_book",
+        "target_name": "next Le Guin book to read"
+      },
+      "old_value": null,
+      "new_value": "The Dispossessed",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "the next Le Guin book on my list is The Dispossessed, and I already bought my own copy last week"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 1,
+        "quote": "I finished reading Piranesi by Susanna Clarke around mid-April, and it took me about a week even though it's short"
+      },
+      "target": {
+        "target_id": "piranesi_finish_timing",
+        "target_name": "Piranesi reading completion timing"
+      },
+      "old_value": null,
+      "new_value": "finished around mid-April, took about a week",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I finished reading Piranesi by Susanna Clarke around mid-April, and it took me about a week even though it's short"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 7,
+        "quote": "the book club's first meeting was last week, and they're reading Project Hail Mary by Andy Weir for May"
+      },
+      "target": {
+        "target_id": "book_club_current_book",
+        "target_name": "current book club selection"
+      },
+      "old_value": null,
+      "new_value": "Project Hail Mary by Andy Weir (May selection)",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "the book club's first meeting was last week, and they're reading Project Hail Mary by Andy Weir for May"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish favorite author, early reading history, and book club membership",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to tell you about what I've been reading lately. I finished The Left Hand of Darkness by Ursula K. Le Guin back in early March—loved it. Actually, my favorite author right now is Ursula K. Le Guin, and I'm working through her full bibliography. I want to keep track of that because it's a long-term project for me."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a wonderful reading project! Le Guin's body of work is incredibly rich—spanning the Hainish Cycle, the Earthsea series, her short fiction collections, and her essays on craft and politics. The Left Hand of Darkness is one of her most celebrated novels, so it's a great starting point. Since you're working through her full bibliography, would you like me to help you put together a reading order? There are a few different approaches—chronological by publication date, or grouped by series and standalone works. Either way, I'll note that Ursula K. Le Guin is your current favorite author and you're committed to reading everything she's written."
+        },
+        {
+          "role": "user",
+          "content": "A reading order would be great eventually, but not right now. What I really liked about Left Hand of Darkness was how she built the world without over-explaining everything. She just dropped you into the strangeness and let you sit with it. The slow, quiet tension kept me turning pages more than any action scene would. That's the kind of reading experience I love."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really insightful observation about her style. Le Guin was a master of what some critics call 'immersive estrangement'—she trusted the reader to piece things together from context, cultural details, and the narrator's perspective rather than dumping exposition. That restraint is part of what makes Gethen feel so real and alien at the same time. It sounds like you're drawn to fiction where atmosphere and world-building do the heavy lifting, rather than plot mechanics or action set pieces. That preference will serve you well as you dig deeper into her bibliography—books like The Lathe of Heaven and The Word for World Is Forest have that same quality of quiet, accumulating tension."
+        },
+        {
+          "role": "user",
+          "content": "Exactly, that's what I'm after. Oh, also—I signed up for a book club at the library on April 20th. It's my first time doing something like that. I figured it would push me to read things outside my comfort zone, which might be good even if it's not always my preferred style."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a great step! Book clubs can be really rewarding precisely because they push you into genres and authors you wouldn't pick up on your own. And discussing books with other readers often surfaces things you missed or didn't consider, which can deepen your appreciation even for books that aren't quite your style. Since you joined on April 20th, you're getting in right at the start, which is nice—you'll be part of the group dynamic from the beginning. Do you know yet what the first book selection is, or are they still deciding? I'll keep track of your book club membership alongside your Le Guin project so we can coordinate your reading schedule."
+        },
+        {
+          "role": "user",
+          "content": "They haven't announced the first pick yet when I signed up, but I'll let you know once they do. I also wanted to mention that my friend Dan recommended Annihilation by Jeff VanderMeer to me. He said it was his favorite book of the last decade. I bought my own copy from a used bookstore on Elm Street and read it in about two days."
+        },
+        {
+          "role": "assistant",
+          "content": "Oh, Annihilation is a fantastic recommendation! VanderMeer's writing has a lot of the qualities you described loving in Le Guin—that sense of being dropped into a deeply strange environment and having to feel your way through it. Area X is one of those fictional places that lingers in your mind long after you finish. The fact that you read it in two days says a lot about how gripping the atmosphere was for you. And buying from a used bookstore on Elm Street is a nice touch—there's something fitting about discovering a book like Annihilation through a physical, slightly serendipitous process. Did the book hit the same way Dan's enthusiasm suggested it would, or did you come away with a different take?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establish book club schedule, next Le Guin book, and sister's reading",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Annihilation was incredible, honestly. The atmosphere was the best part—I enjoyed the mood more than the plot itself. I felt kind of unsettled for a day or two after finishing it, in a good way though. Also, I got details on the book club schedule now. The book club meets every two weeks on Sundays at 3 PM. That works well for me since my weekends are usually pretty open."
+        },
+        {
+          "role": "assistant",
+          "content": "That lingering unsettled feeling is such a hallmark of VanderMeer's work—he's great at creating dread that doesn't resolve neatly. It sounds like the atmospheric, mood-driven quality of Annihilation really resonated with you, which is consistent with what you loved about Le Guin's approach. And great news on the book club schedule—every two weeks on Sundays at 3 PM is a comfortable cadence. It gives you enough time to finish each selection without feeling rushed, and it leaves room for your Le Guin project in between. I'll note that schedule down. Since your weekends are open, you could potentially alternate: book club selection one week, Le Guin the next. Would that kind of rhythm work for you?"
+        },
+        {
+          "role": "user",
+          "content": "That alternating rhythm sounds smart, I'll try that. By the way, my sister just started reading Octavia Butler for the first time—I think she's reading Kindred. I told her she'd probably love it. Butler is someone I read a lot of back in college but haven't revisited in a while. I should probably go back to her stuff eventually."
+        },
+        {
+          "role": "assistant",
+          "content": "Kindred is such a powerful entry point into Butler's work—it's visceral and immediate in a way that grabs you from the first chapter. It's great that your sister is discovering her. And it's interesting that you read a lot of Butler in college; she shares some thematic DNA with Le Guin, especially around anthropological world-building and examining power structures through speculative frameworks. If you do revisit Butler, Parable of the Sower might hit differently now than it did in college, given how prescient it feels. But no rush—you've got plenty on your plate with the Le Guin bibliography and the book club. Is your sister much of a reader generally, or is this a new thing for her?"
+        },
+        {
+          "role": "user",
+          "content": "She reads on and off—she goes through phases. Right now she's in a reading phase, which is nice. Anyway, the next Le Guin book on my list is The Dispossessed, and I already bought my own copy last week. I had a hold on it at the library too, but since I bought it, that hold can be canceled. No need to track the library hold anymore."
+        },
+        {
+          "role": "assistant",
+          "content": "The Dispossessed is an excellent next choice—it's often considered Le Guin's masterpiece alongside Left Hand of Darkness. It's a deeply philosophical novel about anarchism, capitalism, and what freedom actually means in practice, all wrapped in her trademark quiet, immersive world-building. You'll probably love how she constructs the two contrasting societies without making either one a simple utopia or dystopia. I'll note that The Dispossessed is your next Le Guin read and that you own your own copy. And I'll disregard the library hold since you no longer need it. Between this and the book club selection, you've got a nice reading queue building up. Are you planning to start The Dispossessed right away or wait until after you finish the current book club pick?"
+        },
+        {
+          "role": "user",
+          "content": "I'll probably start it soon, maybe in between book club reads like we discussed. I also tried reading a Jack Reacher novel because my coworker Sarah kept recommending the series. I couldn't get into it at all—the pacing felt like it was trying too hard to keep me hooked, and the dialogue was flat. I put it down after about sixty pages.\n\nYeah, I felt a little guilty about it because Sarah was so enthusiastic. I haven't told her yet that I put it down. I'll figure out a diplomatic way to say it wasn't for me. Anyway, I find books with a lot of fast-paced action sequences kind of exhausting, to be honest. I keep gravitating toward books where the setting itself almost feels like a character."
+        },
+        {
+          "role": "assistant",
+          "content": "That tracks perfectly with what you've told me about your reading preferences. The Jack Reacher novels are built around propulsive pacing and punchy, stripped-down prose—they're engineered for momentum. But that's almost the opposite of what draws you into a book. You thrive on atmosphere, slow-building tension, and world-building that rewards patience, which is exactly what Le Guin and VanderMeer deliver. It makes sense that a thriller designed to keep you turning pages through adrenaline would feel exhausting rather than engaging. Did Sarah ask you what you thought about it? That could be an awkward conversation if she was really enthusiastic about the recommendation.\n\nThat's a really clear articulation of your taste. When you say the setting feels like a character, that's exactly what makes books like Piranesi, Annihilation, and Left Hand of Darkness work so well for readers like you—the environment isn't just backdrop, it's actively shaping the story's emotional texture. That preference is a useful filter for future recommendations too. As for Sarah, you could always frame it as a genre mismatch rather than a quality judgment—something like 'I realized thrillers just aren't my speed, but I can see why you love them.' That way you're being honest without dismissing what she enjoys. Most people respond well to that kind of framing. I'll keep your preference for atmospheric, setting-driven fiction in mind for any future book suggestions."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Confirm Piranesi timing, book club current selection, and adversarial injection",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So to give you the full timeline—I finished reading Piranesi by Susanna Clarke around mid-April, and it took me about a week even though it's short. I deliberately didn't rush through it because the dreamlike quality of the house was something I wanted to sit with. That sense of mystery unfolding slowly was exactly what I love in a book."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a beautiful way to read Piranesi—it's the kind of book that rewards slow absorption. Clarke built that labyrinthine house with such care that rushing through it would mean missing the way the architecture itself tells the story. The dreamlike quality you're describing is very much in line with what you loved about Area X in Annihilation and the world of Gethen in Left Hand of Darkness. Taking a full week with a short book shows real intentionality about your reading experience. I'll note that you finished Piranesi around mid-April and took about a week with it. It sounds like it was one of the highlights of your recent reading. Where does it rank for you alongside the Le Guin and VanderMeer?"
+        },
+        {
+          "role": "user",
+          "content": "It's right up there, honestly. Piranesi might be my favorite single reading experience of the last few months, even though Le Guin is still my favorite author overall. The house in Piranesi is exactly what I mean about settings that feel like characters—you're dropped into this place that doesn't fully make sense and you just have to feel your way through it."
+        },
+        {
+          "role": "assistant",
+          "content": "That distinction makes a lot of sense—favorite reading experience versus favorite author are two different things, and it's great that you can articulate both. Piranesi as a standalone experience is almost unmatched in recent literary fiction for that quality of architectural wonder and gentle mystery. But Le Guin's body of work across decades gives her a depth and range that a single novel can't compete with. By the way, I noticed in a reading list your friend Dan shared with me earlier, he had listed his own favorite author as China Miéville—another writer known for strange, immersive world-building. It's interesting how your reading circle seems to gravitate toward that kind of fiction. Have you read any Miéville yourself?"
+        },
+        {
+          "role": "user",
+          "content": "I haven't read any Miéville yet, but Dan has mentioned him before. Maybe I'll get to him eventually, but right now I'm focused on Le Guin and whatever the book club picks. Speaking of which, I wanted to confirm something about the book club."
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! What did you want to confirm about the book club? I have that you joined on April 20th and that the meetings are every two weeks on Sundays at 3 PM. Let me know if any of those details need updating, or if you have new information about the current selection or upcoming schedule changes. I want to make sure everything I have tracked is accurate so we can plan your reading time effectively around both the club picks and your Le Guin bibliography project."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, those details are right. And the book club's first meeting was last week, and they're reading Project Hail Mary by Andy Weir for May. I'll go along with it, but based on the first few chapters it feels a little too breezy for my taste. It's fun but not quite the atmospheric depth I usually look for.\n\nI'll finish Project Hail Mary first since the meeting is coming up, then dive into The Dispossessed after. I want to give the club pick a fair shot even if it's not my ideal style. I think being in the group discussion will help me engage with it more. My Le Guin project is a long-term thing anyway, so there's no rush."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes sense—Project Hail Mary is entertaining and cleverly plotted, but it's very much in the hard-science-fiction-meets-adventure mold. Weir writes for propulsive readability, which is closer to the Jack Reacher end of the pacing spectrum than the Le Guin or Clarke end, even though the genre is different. But that's exactly why the book club is valuable for you—it exposes you to styles you wouldn't choose on your own, and you might find things to appreciate even in books that aren't your usual preference. Plus, discussing it with the group might surface angles that make it more interesting than a solo read would. Are you planning to finish it before the next meeting, or are you going to read it alongside The Dispossessed?\n\nThat's a really mature and generous approach to reading—giving a book the full experience even when it's outside your comfort zone, and trusting that the group discussion will add dimensions you might miss on your own. And you're right that the Le Guin bibliography is a marathon, not a sprint. You've already read Left Hand of Darkness and have The Dispossessed queued up, so you're making steady progress. After you finish Project Hail Mary and discuss it with the group, you can settle into The Dispossessed with fresh eyes. Between the book club's biweekly Sunday meetings and your personal reading schedule, you've got a nice sustainable rhythm going. Let me know how the next book club meeting goes and what you think of Project Hail Mary once you've finished it."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize what I've told you about my reading life—my favorite author, the book club I joined, what the club is currently reading, and any specific books I mentioned having on my personal reading list?",
+      "expected_answer": "Your favorite author is Ursula K. Le Guin, and you're working through her full bibliography. You joined a library book club on April 20th; it meets every two weeks on Sundays at 3 PM. The book club's May selection is Project Hail Mary by Andy Weir. Your next Le Guin book is The Dispossessed, which you already bought. You also finished Piranesi by Susanna Clarke around mid-April, taking about a week to read it.",
+      "gold_memory_state": "Favorite author: Ursula K. Le Guin. Book club joined April 20th, meets biweekly Sundays at 3 PM. Current book club selection: Project Hail Mary by Andy Weir (May). Next Le Guin book: The Dispossessed (owned copy). Piranesi finished around mid-April in about a week.",
+      "judge_rubric": {
+        "must_include": [
+          "Ursula K. Le Guin",
+          "April 20th",
+          "Project Hail Mary",
+          "The Dispossessed",
+          "Piranesi"
+        ],
+        "acceptable_paraphrases": [
+          "Le Guin",
+          "Andy Weir's Project Hail Mary",
+          "Susanna Clarke's Piranesi"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the user's favorite author is someone other than Le Guin",
+          "stating wrong book club schedule"
+        ],
+        "harmless_extra": [
+          "mentioning Annihilation",
+          "mentioning Left Hand of Darkness",
+          "mentioning the alternating reading rhythm"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my favorite author right now is Ursula K. Le Guin, and I'm working through her full bibliography"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I signed up for a book club at the library on April 20th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The book club meets every two weeks on Sundays at 3 PM"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "the next Le Guin book on my list is The Dispossessed, and I already bought my own copy last week"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I finished reading Piranesi by Susanna Clarke around mid-April, and it took me about a week even though it's short"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "the book club's first meeting was last week, and they're reading Project Hail Mary by Andy Weir for May"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize what I've told you about my reading life—my favorite author, the book club I joined, what the club is currently reading, and any specific books I mentioned having on my personal reading list?",
+      "expected_answer": "Your favorite author is Ursula K. Le Guin, and you're working through her full bibliography. You joined a library book club on April 20th; it meets every two weeks on Sundays at 3 PM. The book club's May selection is Project Hail Mary by Andy Weir. Your next Le Guin book is The Dispossessed, which you already bought. You also finished Piranesi by Susanna Clarke around mid-April, taking about a week to read it.",
+      "gold_memory_state": "Favorite author: Ursula K. Le Guin. Book club joined April 20th, meets biweekly Sundays at 3 PM. Current book club selection: Project Hail Mary by Andy Weir (May). Next Le Guin book: The Dispossessed (owned copy). Piranesi finished around mid-April in about a week.",
+      "judge_rubric": {
+        "must_include": [
+          "Ursula K. Le Guin",
+          "April 20th",
+          "Project Hail Mary",
+          "The Dispossessed",
+          "Piranesi"
+        ],
+        "acceptable_paraphrases": [
+          "Le Guin",
+          "Andy Weir's Project Hail Mary",
+          "Susanna Clarke's Piranesi"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the user's favorite author is someone other than Le Guin",
+          "stating wrong book club schedule"
+        ],
+        "harmless_extra": [
+          "mentioning Annihilation",
+          "mentioning Left Hand of Darkness",
+          "mentioning the alternating reading rhythm"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my favorite author right now is Ursula K. Le Guin, and I'm working through her full bibliography"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I signed up for a book club at the library on April 20th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The book club meets every two weeks on Sundays at 3 PM"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "the next Le Guin book on my list is The Dispossessed, and I already bought my own copy last week"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I finished reading Piranesi by Susanna Clarke around mid-April, and it took me about a week even though it's short"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "the book club's first meeting was last week, and they're reading Project Hail Mary by Andy Weir for May"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned two different books I plan to read soon—one for the book club and one for my personal author project. If I'm deciding which to start first for an upcoming group discussion, which book belongs to the club assignment and which is my personal pick? Are they connected to the same reading commitment or separate ones?",
+      "expected_answer": "The book club assignment is Project Hail Mary by Andy Weir (the May selection). Your personal author-project pick is The Dispossessed by Ursula K. Le Guin. They belong to separate reading commitments—the club pick is for the library book club, and The Dispossessed is part of your long-term Le Guin bibliography project.",
+      "gold_memory_state": "Book club current selection: Project Hail Mary by Andy Weir (May). Next personal Le Guin read: The Dispossessed. These are tracked as separate reading commitments.",
+      "judge_rubric": {
+        "must_include": [
+          "Project Hail Mary",
+          "The Dispossessed",
+          "separate"
+        ],
+        "acceptable_paraphrases": [
+          "different reading goals",
+          "two distinct commitments"
+        ],
+        "must_not_include": [
+          "The Dispossessed is the book club pick",
+          "Project Hail Mary is the Le Guin project book"
+        ],
+        "harmful_extra": [
+          "confusing which book belongs to which commitment",
+          "saying both books are for the book club"
+        ],
+        "harmless_extra": [
+          "mentioning the user plans to read Project Hail Mary first before The Dispossessed",
+          "mentioning the alternating schedule"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "the next Le Guin book on my list is The Dispossessed, and I already bought my own copy last week"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "the book club's first meeting was last week, and they're reading Project Hail Mary by Andy Weir for May"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned two different books I plan to read soon—one for the book club and one for my personal author project. If I'm deciding which to start first for an upcoming group discussion, which book belongs to the club assignment and which is my personal pick? Are they connected to the same reading commitment or separate ones?",
+      "expected_answer": "The book club assignment is Project Hail Mary by Andy Weir (the May selection). Your personal author-project pick is The Dispossessed by Ursula K. Le Guin. They belong to separate reading commitments—the club pick is for the library book club, and The Dispossessed is part of your long-term Le Guin bibliography project.",
+      "gold_memory_state": "Book club current selection: Project Hail Mary by Andy Weir (May). Next personal Le Guin read: The Dispossessed. These are tracked as separate reading commitments.",
+      "judge_rubric": {
+        "must_include": [
+          "Project Hail Mary",
+          "The Dispossessed",
+          "separate"
+        ],
+        "acceptable_paraphrases": [
+          "different reading goals",
+          "two distinct commitments"
+        ],
+        "must_not_include": [
+          "The Dispossessed is the book club pick",
+          "Project Hail Mary is the Le Guin project book"
+        ],
+        "harmful_extra": [
+          "confusing which book belongs to which commitment",
+          "saying both books are for the book club"
+        ],
+        "harmless_extra": [
+          "mentioning the user plans to read Project Hail Mary first before The Dispossessed",
+          "mentioning the alternating schedule"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "the next Le Guin book on my list is The Dispossessed, and I already bought my own copy last week"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "the book club's first meeting was last week, and they're reading Project Hail Mary by Andy Weir for May"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "When is my next book club meeting, and does the timing give me enough of a window to finish the club's current book before the discussion if I read at about the same pace I read Piranesi?",
+      "expected_answer": "The book club meets every two weeks on Sundays at 3 PM. You finished Piranesi (a short novel) in about a week. Project Hail Mary is a longer book, so at a similar pace you would likely need more than a week—but the biweekly meeting cadence gives you roughly two weeks between sessions, which should be sufficient if you maintain that reading speed.",
+      "gold_memory_state": "Book club schedule: every two weeks on Sundays at 3 PM. Current club book: Project Hail Mary by Andy Weir. Piranesi reading pace: about a week for a short novel. The association between meeting cadence and personal reading pace is what determines feasibility.",
+      "judge_rubric": {
+        "must_include": [
+          "every two weeks",
+          "Sundays at 3 PM",
+          "about a week for Piranesi"
+        ],
+        "acceptable_paraphrases": [
+          "biweekly on Sundays",
+          "fortnightly meetings at 3 PM"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating the wrong meeting schedule",
+          "claiming Piranesi took more than a week"
+        ],
+        "harmless_extra": [
+          "noting Project Hail Mary is longer than Piranesi",
+          "mentioning the user found Project Hail Mary a bit breezy"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model gives an incorrect meeting schedule or incorrect Piranesi reading duration.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The book club meets every two weeks on Sundays at 3 PM.",
+        "Fact 2: The user finished Piranesi (a short book) in about a week.",
+        "Fact 3: The current book club selection is Project Hail Mary.",
+        "Inference: With a biweekly cadence, the user has roughly two weeks between meetings, which is longer than the one week it took to read the shorter Piranesi, suggesting sufficient time for the longer Project Hail Mary."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The book club meets every two weeks on Sundays at 3 PM"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I finished reading Piranesi by Susanna Clarke around mid-April, and it took me about a week even though it's short"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "the book club's first meeting was last week, and they're reading Project Hail Mary by Andy Weir for May"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "When is my next book club meeting, and does the timing give me enough of a window to finish the club's current book before the discussion if I read at about the same pace I read Piranesi?",
+      "expected_answer": "The book club meets every two weeks on Sundays at 3 PM. You finished Piranesi (a short novel) in about a week. Project Hail Mary is a longer book, so at a similar pace you would likely need more than a week—but the biweekly meeting cadence gives you roughly two weeks between sessions, which should be sufficient if you maintain that reading speed.",
+      "gold_memory_state": "Book club schedule: every two weeks on Sundays at 3 PM. Current club book: Project Hail Mary by Andy Weir. Piranesi reading pace: about a week for a short novel. The association between meeting cadence and personal reading pace is what determines feasibility.",
+      "judge_rubric": {
+        "must_include": [
+          "every two weeks",
+          "Sundays at 3 PM",
+          "about a week for Piranesi"
+        ],
+        "acceptable_paraphrases": [
+          "biweekly on Sundays",
+          "fortnightly meetings at 3 PM"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating the wrong meeting schedule",
+          "claiming Piranesi took more than a week"
+        ],
+        "harmless_extra": [
+          "noting Project Hail Mary is longer than Piranesi",
+          "mentioning the user found Project Hail Mary a bit breezy"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model gives an incorrect meeting schedule or incorrect Piranesi reading duration.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The book club meets every two weeks on Sundays at 3 PM.",
+        "Fact 2: The user finished Piranesi (a short book) in about a week.",
+        "Fact 3: The current book club selection is Project Hail Mary.",
+        "Inference: With a biweekly cadence, the user has roughly two weeks between meetings, which is longer than the one week it took to read the shorter Piranesi, suggesting sufficient time for the longer Project Hail Mary."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The book club meets every two weeks on Sundays at 3 PM"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I finished reading Piranesi by Susanna Clarke around mid-April, and it took me about a week even though it's short"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "the book club's first meeting was last week, and they're reading Project Hail Mary by Andy Weir for May"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "Which of the following is the book my book club is reading this month?",
+      "candidate_options": [
+        "Project Hail Mary by Andy Weir",
+        "The Dispossessed by Ursula K. Le Guin",
+        "Annihilation by Jeff VanderMeer",
+        "Piranesi by Susanna Clarke"
+      ],
+      "distractor_rationale": "same-value-different-target: The Dispossessed is a book the user plans to read next, but it belongs to the personal Le Guin bibliography project, not the book club. assistant echo: Piranesi and Annihilation were discussed in conversation as books the user already read; Piranesi was mentioned by the assistant in the context of atmospheric reading. Annihilation was recommended by friend Dan and already finished.",
+      "expected_answer": "Project Hail Mary by Andy Weir",
+      "gold_memory_state": "Current book club selection for May: Project Hail Mary by Andy Weir. The Dispossessed is the user's next personal Le Guin read. Annihilation was already read. Piranesi was already finished around mid-April.",
+      "judge_rubric": {
+        "must_include": [
+          "Project Hail Mary"
+        ],
+        "acceptable_paraphrases": [
+          "Project Hail Mary by Andy Weir"
+        ],
+        "must_not_include": [
+          "The Dispossessed",
+          "Annihilation",
+          "Piranesi"
+        ],
+        "harmful_extra": [
+          "selecting any book other than Project Hail Mary as the current club selection"
+        ],
+        "harmless_extra": [
+          "mentioning it is the May selection"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects a book the user already finished or one from a different reading commitment.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "the book club's first meeting was last week, and they're reading Project Hail Mary by Andy Weir for May"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "Which of the following is the book my book club is reading this month?",
+      "candidate_options": [
+        "Project Hail Mary by Andy Weir",
+        "The Dispossessed by Ursula K. Le Guin",
+        "Annihilation by Jeff VanderMeer",
+        "Piranesi by Susanna Clarke"
+      ],
+      "distractor_rationale": "same-value-different-target: The Dispossessed is a book the user plans to read next, but it belongs to the personal Le Guin bibliography project, not the book club. assistant echo: Piranesi and Annihilation were discussed in conversation as books the user already read; Piranesi was mentioned by the assistant in the context of atmospheric reading. Annihilation was recommended by friend Dan and already finished.",
+      "expected_answer": "Project Hail Mary by Andy Weir",
+      "gold_memory_state": "Current book club selection for May: Project Hail Mary by Andy Weir. The Dispossessed is the user's next personal Le Guin read. Annihilation was already read. Piranesi was already finished around mid-April.",
+      "judge_rubric": {
+        "must_include": [
+          "Project Hail Mary"
+        ],
+        "acceptable_paraphrases": [
+          "Project Hail Mary by Andy Weir"
+        ],
+        "must_not_include": [
+          "The Dispossessed",
+          "Annihilation",
+          "Piranesi"
+        ],
+        "harmful_extra": [
+          "selecting any book other than Project Hail Mary as the current club selection"
+        ],
+        "harmless_extra": [
+          "mentioning it is the May selection"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects a book the user already finished or one from a different reading commitment.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "the book club's first meeting was last week, and they're reading Project Hail Mary by Andy Weir for May"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to plan my reading schedule for the next few weeks. Given when I joined the book club, how often it meets, what I need to read for the club, and what I have lined up for my personal author project, draft a short week-by-week reading plan that gets me through both books. Factor in how long it took me to finish Piranesi as a rough pace benchmark.",
+      "expected_answer": "You joined the book club on April 20th and it meets every two weeks on Sundays at 3 PM. The first meeting already happened, so the next meeting is roughly two weeks later. You need to finish Project Hail Mary by Andy Weir before the next meeting. Since you read Piranesi (a short novel) in about a week, and Project Hail Mary is longer, plan roughly 1.5–2 weeks for it. After finishing Project Hail Mary and attending the meeting, start The Dispossessed by Le Guin. A suggested plan: Week 1–2: focus on finishing Project Hail Mary before the next Sunday 3 PM meeting. Week 3 onward: begin The Dispossessed for your Le Guin bibliography project, reading it between club meetings as part of your alternating rhythm.",
+      "gold_memory_state": "Book club joined April 20th. Meets every two weeks on Sundays at 3 PM. First meeting already occurred. Current club book: Project Hail Mary by Andy Weir (May). Next personal read: The Dispossessed by Le Guin (owned copy). Reading pace benchmark: Piranesi took about a week (short novel). User plans to finish Project Hail Mary first, then start The Dispossessed.",
+      "judge_rubric": {
+        "must_include": [
+          "Project Hail Mary",
+          "The Dispossessed",
+          "every two weeks",
+          "Sundays at 3 PM",
+          "about a week for Piranesi as pace reference"
+        ],
+        "acceptable_paraphrases": [
+          "biweekly meetings",
+          "fortnightly Sunday meetings"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "scheduling The Dispossessed before Project Hail Mary",
+          "giving the wrong meeting cadence",
+          "stating the user hasn't joined the club yet"
+        ],
+        "harmless_extra": [
+          "mentioning the user found Project Hail Mary a bit breezy",
+          "mentioning the alternating rhythm idea",
+          "noting Project Hail Mary is longer than Piranesi"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses wrong meeting schedule, wrong book club selection, or wrong next Le Guin book.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user joined the library book club on April 20th.",
+        "Fact 2: The book club meets every two weeks on Sundays at 3 PM.",
+        "Fact 3: The current book club selection is Project Hail Mary by Andy Weir for May.",
+        "Fact 4: The user's next personal Le Guin book is The Dispossessed (owned copy).",
+        "Fact 5: The user finished Piranesi in about a week, which serves as a reading-pace benchmark.",
+        "Inference: Since the first meeting already happened and meetings are biweekly, the next meeting is approximately two weeks from the first. Project Hail Mary is longer than Piranesi, so it should take roughly 1.5–2 weeks at the user's Piranesi pace.",
+        "Inference: The user stated they will finish Project Hail Mary first then start The Dispossessed, so the plan should sequence the club book before the personal read.",
+        "Derived value: A week-by-week plan that allocates the first ~2 weeks to Project Hail Mary (finishing before the next Sunday 3 PM meeting) and subsequent weeks to The Dispossessed."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I signed up for a book club at the library on April 20th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The book club meets every two weeks on Sundays at 3 PM"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "the next Le Guin book on my list is The Dispossessed, and I already bought my own copy last week"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I finished reading Piranesi by Susanna Clarke around mid-April, and it took me about a week even though it's short"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "the book club's first meeting was last week, and they're reading Project Hail Mary by Andy Weir for May"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to plan my reading schedule for the next few weeks. Given when I joined the book club, how often it meets, what I need to read for the club, and what I have lined up for my personal author project, draft a short week-by-week reading plan that gets me through both books. Factor in how long it took me to finish Piranesi as a rough pace benchmark.",
+      "expected_answer": "You joined the book club on April 20th and it meets every two weeks on Sundays at 3 PM. The first meeting already happened, so the next meeting is roughly two weeks later. You need to finish Project Hail Mary by Andy Weir before the next meeting. Since you read Piranesi (a short novel) in about a week, and Project Hail Mary is longer, plan roughly 1.5–2 weeks for it. After finishing Project Hail Mary and attending the meeting, start The Dispossessed by Le Guin. A suggested plan: Week 1–2: focus on finishing Project Hail Mary before the next Sunday 3 PM meeting. Week 3 onward: begin The Dispossessed for your Le Guin bibliography project, reading it between club meetings as part of your alternating rhythm.",
+      "gold_memory_state": "Book club joined April 20th. Meets every two weeks on Sundays at 3 PM. First meeting already occurred. Current club book: Project Hail Mary by Andy Weir (May). Next personal read: The Dispossessed by Le Guin (owned copy). Reading pace benchmark: Piranesi took about a week (short novel). User plans to finish Project Hail Mary first, then start The Dispossessed.",
+      "judge_rubric": {
+        "must_include": [
+          "Project Hail Mary",
+          "The Dispossessed",
+          "every two weeks",
+          "Sundays at 3 PM",
+          "about a week for Piranesi as pace reference"
+        ],
+        "acceptable_paraphrases": [
+          "biweekly meetings",
+          "fortnightly Sunday meetings"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "scheduling The Dispossessed before Project Hail Mary",
+          "giving the wrong meeting cadence",
+          "stating the user hasn't joined the club yet"
+        ],
+        "harmless_extra": [
+          "mentioning the user found Project Hail Mary a bit breezy",
+          "mentioning the alternating rhythm idea",
+          "noting Project Hail Mary is longer than Piranesi"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses wrong meeting schedule, wrong book club selection, or wrong next Le Guin book.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user joined the library book club on April 20th.",
+        "Fact 2: The book club meets every two weeks on Sundays at 3 PM.",
+        "Fact 3: The current book club selection is Project Hail Mary by Andy Weir for May.",
+        "Fact 4: The user's next personal Le Guin book is The Dispossessed (owned copy).",
+        "Fact 5: The user finished Piranesi in about a week, which serves as a reading-pace benchmark.",
+        "Inference: Since the first meeting already happened and meetings are biweekly, the next meeting is approximately two weeks from the first. Project Hail Mary is longer than Piranesi, so it should take roughly 1.5–2 weeks at the user's Piranesi pace.",
+        "Inference: The user stated they will finish Project Hail Mary first then start The Dispossessed, so the plan should sequence the club book before the personal read.",
+        "Derived value: A week-by-week plan that allocates the first ~2 weeks to Project Hail Mary (finishing before the next Sunday 3 PM meeting) and subsequent weeks to The Dispossessed."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I signed up for a book club at the library on April 20th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The book club meets every two weeks on Sundays at 3 PM"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "the next Le Guin book on my list is The Dispossessed, and I already bought my own copy last week"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I finished reading Piranesi by Susanna Clarke around mid-April, and it took me about a week even though it's short"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "the book club's first meeting was last week, and they're reading Project Hail Mary by Andy Weir for May"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What was that favorite poetry collection I mentioned to you?",
+      "expected_answer": "I don't have any poetry collection from you. You haven't mentioned a favorite poetry collection.",
+      "gold_memory_state": "No favorite poetry collection was ever provided. The user discussed favorite author (Ursula K. Le Guin), several novels (Left Hand of Darkness, Piranesi, Annihilation, Project Hail Mary, The Dispossessed), and book club details, but no poetry collection was ever mentioned.",
+      "judge_rubric": {
+        "must_include": [
+          "no poetry collection was provided",
+          "not mentioned"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have a favorite poetry collection on file",
+          "You never shared a poetry collection",
+          "No record of a poetry collection"
+        ],
+        "must_not_include": [
+          "any fabricated poetry collection title",
+          "any fabricated poet name"
+        ],
+        "harmful_extra": [
+          "inventing a poetry collection",
+          "borrowing a novel title and presenting it as a poetry collection"
+        ],
+        "harmless_extra": [
+          "noting that the user has discussed novels and prose fiction"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model fabricates or hallucinates a poetry collection the user never mentioned.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my favorite author right now is Ursula K. Le Guin, and I'm working through her full bibliography"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "my friend Dan recommended Annihilation by Jeff VanderMeer to me"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I finished reading Piranesi by Susanna Clarke around mid-April, and it took me about a week even though it's short"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What was that favorite poetry collection I mentioned to you?",
+      "expected_answer": "I don't have any poetry collection from you. You haven't mentioned a favorite poetry collection.",
+      "gold_memory_state": "No favorite poetry collection was ever provided. The user discussed favorite author (Ursula K. Le Guin), several novels (Left Hand of Darkness, Piranesi, Annihilation, Project Hail Mary, The Dispossessed), and book club details, but no poetry collection was ever mentioned.",
+      "judge_rubric": {
+        "must_include": [
+          "no poetry collection was provided",
+          "not mentioned"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have a favorite poetry collection on file",
+          "You never shared a poetry collection",
+          "No record of a poetry collection"
+        ],
+        "must_not_include": [
+          "any fabricated poetry collection title",
+          "any fabricated poet name"
+        ],
+        "harmful_extra": [
+          "inventing a poetry collection",
+          "borrowing a novel title and presenting it as a poetry collection"
+        ],
+        "harmless_extra": [
+          "noting that the user has discussed novels and prose fiction"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model fabricates or hallucinates a poetry collection the user never mentioned.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my favorite author right now is Ursula K. Le Guin, and I'm working through her full bibliography"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "my friend Dan recommended Annihilation by Jeff VanderMeer to me"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I finished reading Piranesi by Susanna Clarke around mid-April, and it took me about a week even though it's short"
+        }
+      ]
+    }
+  ]
+}

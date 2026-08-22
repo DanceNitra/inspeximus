@@ -1,0 +1,1073 @@
+{
+  "target_fact": "User prefers low-friction, asynchronous digital communication channels and experiences stress/irritation from billing errors and financial disruptions",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "My landlord Gerald Huang's corrected cell number is 604-881-3724"
+      },
+      "target": {
+        "target_id": "b12_landlord_phone",
+        "target_name": "B12 landlord Gerald Huang's cell phone number"
+      },
+      "old_value": null,
+      "new_value": "604-881-3724",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My landlord Gerald Huang's corrected cell number is 604-881-3724"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I texted Gerald about the dripping kitchen faucet and he responded within an hour, which I really appreciated"
+      },
+      "target": {
+        "target_id": "b12_landlord_responsiveness",
+        "target_name": "Gerald Huang's text responsiveness experience"
+      },
+      "old_value": null,
+      "new_value": "Gerald responded to a maintenance text within an hour regarding a dripping kitchen faucet",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I texted Gerald about the dripping kitchen faucet and he responded within an hour, which I really appreciated"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I really don't like calling people. Texting is just so much easier and less intrusive for me"
+      },
+      "target": {
+        "target_id": "user_comm_preference_texting",
+        "target_name": "User's preference for texting over calling"
+      },
+      "old_value": null,
+      "new_value": "Prefers texting over calling; finds calling intrusive",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I really don't like calling people. Texting is just so much easier and less intrusive for me"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "Gerald accidentally double-charged me for April rent and it overdrew my checking account. I had to deal with bank fees and it was incredibly stressful"
+      },
+      "target": {
+        "target_id": "b12_april_billing_error",
+        "target_name": "April rent double-charge incident and user's stress reaction"
+      },
+      "old_value": null,
+      "new_value": "Gerald double-charged April rent, causing an overdraft and $35 in bank fees; user found it very stressful",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Gerald accidentally double-charged me for April rent and it overdrew my checking account. I had to deal with bank fees and it was incredibly stressful"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I wish Gerald used an online portal or even a shared spreadsheet for rent tracking. Having everything go through one person's text thread feels unreliable"
+      },
+      "target": {
+        "target_id": "user_preference_digital_portal",
+        "target_name": "User's preference for digital portals over texting a single person"
+      },
+      "old_value": null,
+      "new_value": "Prefers online portals or shared documents for rent and maintenance tracking over texting one person",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I wish Gerald used an online portal or even a shared spreadsheet for rent tracking. Having everything go through one person's text thread feels unreliable"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "Gerald is traveling internationally from June 15 to July 10, and his brother Kevin Huang will handle maintenance issues during that time"
+      },
+      "target": {
+        "target_id": "b12_landlord_travel_coverage",
+        "target_name": "Gerald's international travel dates and Kevin Huang as interim contact"
+      },
+      "old_value": null,
+      "new_value": "Gerald traveling June 15 to July 10; brother Kevin Huang covers maintenance during that period",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Gerald is traveling internationally from June 15 to July 10, and his brother Kevin Huang will handle maintenance issues during that time"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 7,
+        "quote": "between the billing mess and having to remember to text one specific person for everything, I just feel like this whole setup is fragile. One mistake and I'm the one dealing with the fallout"
+      },
+      "target": {
+        "target_id": "user_comm_and_billing_stress_pattern",
+        "target_name": "User's pattern of stress from low-structure landlord communication and billing processes"
+      },
+      "old_value": null,
+      "new_value": "User experiences disproportionate stress when landlord processes lack structured, digital systems; billing errors combined with single-channel text communication create a sense of fragility and personal financial vulnerability",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I really don't like calling people. Texting is just so much easier and less intrusive for me"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Gerald accidentally double-charged me for April rent and it overdrew my checking account. I had to deal with bank fees and it was incredibly stressful"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I wish Gerald used an online portal or even a shared spreadsheet for rent tracking. Having everything go through one person's text thread feels unreliable"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "between the billing mess and having to remember to text one specific person for everything, I just feel like this whole setup is fragile. One mistake and I'm the one dealing with the fallout"
+        }
+      ]
+    },
+    {
+      "operation_id": "op8",
+      "type": "remember",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "Gerald just texted me that Kevin set up an online maintenance request form for the building. He said it should be live by June 10 and we'll use that going forward"
+      },
+      "target": {
+        "target_id": "b12_online_maintenance_portal",
+        "target_name": "Planned online maintenance request form for B12 building"
+      },
+      "old_value": null,
+      "new_value": "Online maintenance request form set up by Kevin Huang, expected live by June 10",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Gerald just texted me that Kevin set up an online maintenance request form for the building. He said it should be live by June 10 and we'll use that going forward"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish landlord contact details, communication preferences, and maintenance experience",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to make sure you have my landlord's info saved correctly. My landlord Gerald Huang's corrected cell number is 604-881-3724. That's for unit B12 where I live. He gave me the number on my move-in date, March 3rd. It's his cell and basically the only reliable way to reach him since he told me he doesn't check email regularly. Can you keep that on file for me?"
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, I've noted that down for you. Your landlord for unit B12 is Gerald Huang, and his cell number is 604-881-3724 — the primary and most reliable way to contact him since he doesn't regularly check email. Your move-in date was March 3rd. I'll keep all of this on file so you can reference it anytime. If you ever need to pull up his contact info quickly or want me to help draft a message to him, just let me know. Is there anything else about your living situation you'd like me to keep track of?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, actually. I texted Gerald about the dripping kitchen faucet and he responded within an hour, which I really appreciated. That was around mid-March. He sent over a plumber named Danny the next day to fix it. I don't remember Danny's last name but Gerald would know. It was nice to see Gerald being responsive like that — it made me feel like issues would get handled quickly in this building."
+        },
+        {
+          "role": "assistant",
+          "content": "That's great to hear that Gerald was so responsive. I've noted that when you reported the dripping kitchen faucet via text around mid-March, he replied within an hour and arranged for a plumber named Danny to come the following day. That's a solid turnaround time for a maintenance issue. And good to know that Gerald would have Danny's full name and contact details if you ever need plumbing work again. It sounds like texting has been an effective channel for reaching Gerald so far. Would you like me to keep a running log of maintenance requests and how they were resolved?"
+        },
+        {
+          "role": "user",
+          "content": "That would actually be helpful, yeah. And just so you know about my preferences — I really don't like calling people. Texting is just so much easier and less intrusive for me. I've always been that way. Even at work, I'd rather send a Slack message than pick up the phone. So the fact that Gerald is responsive over text is a big deal for me. If he wasn't, I'd honestly be pretty frustrated with the whole arrangement."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood completely. I've noted that you strongly prefer texting over calling — you find it easier and less intrusive, and that extends to your work communication style as well, where you favor asynchronous messaging like Slack over phone calls. Gerald's responsiveness over text is particularly important to you given this preference, and it's a key factor in how smoothly your landlord-tenant relationship functions. I'll keep this preference in mind whenever we discuss communication strategies, whether it's about your housing situation or anything else. If you ever need help composing a text to Gerald or anyone else, I'm happy to help draft something."
+        },
+        {
+          "role": "user",
+          "content": "Thanks, I appreciate that. Oh, one more thing — my friend Mei also rents from Gerald in the same building, different unit though. She mentioned a couple weeks ago that Gerald sometimes doesn't respond on weekends. I haven't experienced that myself yet, but it's worth keeping in mind for planning purposes. Like if something breaks on a Friday night, I might not hear back until Monday."
+        },
+        {
+          "role": "assistant",
+          "content": "Good to know — I've noted that your friend Mei, who also rents from Gerald in the same building, has observed that Gerald sometimes doesn't respond on weekends. Even though you haven't personally experienced that yet, it's a useful data point for planning. If a maintenance issue comes up toward the end of the week, it might be worth texting Gerald on Thursday or Friday morning rather than waiting until the weekend, just to increase the chances of a timely response. I'll factor that into any timing suggestions I make about reaching out to him. Anything else you'd like me to track about the building or your lease?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establish billing incident, digital portal preferences, travel coverage, and trigger reflection",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So I need to tell you about something that happened with rent. Gerald accidentally double-charged me for April rent and it overdrew my checking account. I had to deal with bank fees and it was incredibly stressful. It took almost a week to sort out. He did reimburse me the $35 bank fee eventually, but those few days where my account was negative were really rough. I was anxious every time I checked my balance."
+        },
+        {
+          "role": "assistant",
+          "content": "I'm sorry to hear that happened — that sounds really stressful. I've noted the incident: Gerald accidentally double-charged you for April rent, which caused your checking account to overdraw and incur a $35 bank fee. It took nearly a week to resolve, during which time you were dealing with significant financial anxiety. Gerald did eventually reimburse the $35 fee. That kind of billing error can be really disruptive, especially when it cascades into overdraft territory and affects your day-to-day finances. Would you like me to help you set up any kind of tracking or reminder system for rent payments going forward, so you can catch discrepancies early?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, that might help. But honestly, the bigger issue is the system itself. I wish Gerald used an online portal or even a shared spreadsheet for rent tracking. Having everything go through one person's text thread feels unreliable. Like, there's no paper trail unless I screenshot every conversation. If there were a portal, the double charge probably would've been caught automatically, or at least I'd have a clear record to point to instead of scrolling through texts."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really valid point. An online portal or shared document would provide a clear, timestamped paper trail for payments, maintenance requests, and any discrepancies — exactly the kind of structured system that could prevent situations like the double-charge incident. With a text-only system, the burden of record-keeping falls entirely on you, and there's no automated check against errors. I've noted your strong preference for digital, structured tools like online portals or shared spreadsheets for managing landlord-tenant interactions. If you'd like, I can help you draft a suggestion to Gerald about setting up something simple, even a shared Google Sheet for rent tracking. Would that be useful?"
+        },
+        {
+          "role": "user",
+          "content": "Maybe, but I don't want to push too hard right now. Here's another thing to note though — Gerald is traveling internationally from June 15 to July 10, and his brother Kevin Huang will handle maintenance issues during that time. I don't have Kevin's number yet but Gerald said he'll send it before he leaves. So that's almost a month where my main point of contact changes to someone I've never dealt with before."
+        },
+        {
+          "role": "assistant",
+          "content": "That's important context. I've noted that Gerald will be traveling internationally from June 15 to July 10, and during that period, his brother Kevin Huang will serve as the interim contact for maintenance issues. Gerald has committed to sending you Kevin's phone number before he departs. Given your communication preferences, it might be worth confirming with Gerald whether Kevin is also responsive via text, since that's your preferred channel. Also, since you'll be dealing with someone new, it could be helpful to have Gerald introduce you to Kevin beforehand — even a brief text introduction — so there's already a line of communication established. Want me to remind you to follow up on getting Kevin's number as June 15 approaches?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, please do remind me. That would be really helpful. Also, Gerald's email is g.huang.properties@gmail.com — I found it on the original lease. He barely uses it, so it's probably not worth trying to reach him there, but I figured I'd mention it as a backup. It's kind of funny that he has a properties email address but doesn't actually use digital tools for managing his properties.\n\nI think that covers the practical stuff for now. But honestly, between the billing mess and having to remember to text one specific person for everything, I just feel like this whole setup is fragile. One mistake and I'm the one dealing with the fallout. The overdraft thing really shook me — it wasn't just the money, it was the feeling of not being in control of my own finances because of someone else's error. And the communication being so informal just makes it worse."
+        },
+        {
+          "role": "assistant",
+          "content": "Ha, that is a bit ironic — having a dedicated properties email address but not leveraging digital tools for actual property management. I've noted Gerald's email as g.huang.properties@gmail.com from your original lease, with the caveat that he rarely checks it and it's essentially a last-resort contact method. I'll set a reminder for you to follow up on Kevin's number as June 15 gets closer. In the meantime, you have Gerald's cell at 604-881-3724 as your primary contact. Is there anything else about the building or your lease arrangement you'd like me to keep track of?"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Deepen reflection, introduce tentative portal plan as recency trap, and place adversarial look-alike",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I've been thinking more about what I said last time — about the whole setup feeling fragile. I realized it's not just about Gerald specifically. I've had similar frustrations in other situations where there's no structured system and everything depends on one person being available and not making mistakes. Like at my last job, expenses were handled through one person's email inbox, and reimbursements were always late or wrong. It's the same pattern."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really insightful connection. It sounds like the frustration isn't isolated to your landlord situation — it's a broader pattern where single-point-of-failure communication and unstructured processes make you feel vulnerable to other people's errors. The expense reimbursement situation at your previous job mirrors the rent double-charge incident with Gerald: both involve relying on one person's manual process with no automated checks, and in both cases, the financial consequences fell on you. Recognizing this pattern is valuable because it means you can proactively look for structured alternatives in future situations — whether that's housing, work, or anything else where money and communication intersect."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. And it's not like I need some fancy enterprise system. Even basic stuff — a shared spreadsheet, a simple web form, a Google Doc with a log — would make me feel so much more in control. The issue isn't the technology level, it's the structure. When there's no structure, every interaction becomes a potential point of failure, and I end up carrying the mental load of tracking everything myself just to protect against errors."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really clear articulation of what you need. It's not about sophistication — it's about having any kind of persistent, shared record that removes the burden of manual tracking from you alone. The mental load aspect is significant: when you're the only one maintaining records via screenshots and memory, you're essentially doing unpaid administrative work to protect yourself from someone else's mistakes. That's draining, especially combined with your preference for asynchronous communication. A simple shared document or form would distribute that responsibility and create accountability on both sides. Would you like me to draft a low-pressure proposal you could text Gerald about — something simple like a shared Google Sheet for rent and maintenance?"
+        },
+        {
+          "role": "user",
+          "content": "I might take you up on that eventually. But here's something interesting — Gerald just texted me that Kevin set up an online maintenance request form for the building. He said it should be live by June 10 and we'll use that going forward. That would be amazing if it actually happens, but I'm not holding my breath until I see it working. Gerald has mentioned improvements before that didn't materialize."
+        },
+        {
+          "role": "assistant",
+          "content": "That's promising news! An online maintenance request form would address a lot of your concerns about structure and record-keeping. I've noted that Kevin Huang has apparently set one up and it's expected to go live by June 10. I understand your cautious optimism given that Gerald has mentioned improvements before that didn't follow through. It's wise to wait until you can actually submit a request through it before counting on it. In the meantime, your current process of texting Gerald at 604-881-3724 remains the active channel. If the form does go live, it would be a great first step toward the kind of structured system you've been wanting. I'll note this as a pending development to check on."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, let's wait and see. Oh, by the way, Mei mentioned that when she had a billing issue last year, she was dealing with someone named Rachel at a property management company, and Rachel's number was 604-550-1180. But that was under Gerald's old arrangement that he ended up not switching to. So that number isn't relevant for me at all — just mentioning it because Mei brought it up and I wanted to make sure we don't confuse it with any of my actual contacts.\n\nRight, exactly. So to sum up where I'm at — I'm cautiously hopeful about the maintenance form Kevin is setting up, but my core frustration is still about the lack of structure in how Gerald manages things. The billing error, the informal texting setup, the upcoming handoff to someone I've never met — it all adds up to this feeling of being at the mercy of other people's systems, or lack thereof. I just want some reliability and transparency."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for the heads-up. I understand that 604-550-1180 was Rachel's number at a property management company Gerald considered switching to but ultimately didn't. Since Gerald decided to stay with his current setup, that number isn't relevant to your situation. I won't associate it with any of your active contacts. Your current landlord contact remains Gerald Huang at 604-881-3724, with Kevin Huang stepping in from June 15 to July 10 once you receive his number. It's good that you flagged this to avoid any confusion — especially since Mei's experience with that old arrangement could easily get mixed up with your own contact details.\n\nThat's a really clear summary of where you stand. Your core need is for reliability and transparency in landlord communication and billing — structured systems that don't leave you bearing the full risk of someone else's errors. The billing double-charge, the text-only communication channel, and the upcoming transition to Kevin during Gerald's travel all feed into that sense of fragility. The potential maintenance form is a positive signal, but understandably you're reserving judgment until it's actually functional. I'll keep tracking all of this for you — Gerald's contact info, the Kevin handoff timeline, and the pending maintenance form — and I'll flag any follow-ups as dates approach. Your feelings about this setup are completely valid, and recognizing the pattern across different areas of your life is a useful insight."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "What experiences have I shared that reveal how I feel about informal, unstructured processes for handling money and communication with my landlord?",
+      "expected_answer": "You shared several experiences: (1) You strongly prefer texting over calling, finding calls intrusive, and value Gerald's responsiveness via text. (2) Gerald accidentally double-charged your April rent, which overdrew your checking account, cost you $35 in bank fees, and caused significant financial stress and anxiety. (3) You expressed frustration that Gerald relies on text-only communication with no structured record-keeping, wishing he used an online portal or shared spreadsheet for rent and maintenance tracking. (4) You described the overall setup as feeling fragile, noting that one mistake leaves you dealing with the financial and administrative fallout, and connected this to a broader pattern from a previous job where expense reimbursements were similarly mishandled through one person's email inbox.",
+      "gold_memory_state": "Confirmed facts: user prefers texting over calling; Gerald double-charged April rent causing overdraft and $35 fee; user wants digital portals/shared documents for rent and maintenance tracking; user perceives single-channel informal processes as fragile and stressful; user identified a cross-domain pattern of stress from unstructured financial processes. Tentative: online maintenance request form expected live by June 10 (not yet confirmed working).",
+      "judge_rubric": {
+        "must_include": [
+          "texting preference",
+          "April rent double-charge or billing error",
+          "overdraft or bank fees",
+          "stress or anxiety",
+          "desire for online portal or structured digital system",
+          "fragility of the current setup"
+        ],
+        "acceptable_paraphrases": [
+          "prefers async communication",
+          "wants a shared spreadsheet or web form",
+          "feels vulnerable to errors in informal systems"
+        ],
+        "must_not_include": [
+          "online maintenance form is confirmed and operational"
+        ],
+        "harmful_extra": [
+          "claiming the maintenance portal is already live and working"
+        ],
+        "harmless_extra": [
+          "mentioning Gerald's travel dates",
+          "mentioning Kevin Huang",
+          "mentioning the previous job expense pattern"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes preferences the user never expressed, such as preferring phone calls or being comfortable with informal billing.",
+        "reflection_recall": "Fails if the model omits either the communication preference (texting) or the billing stress (double-charge/overdraft) since both are core to the pattern.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I really don't like calling people. Texting is just so much easier and less intrusive for me"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Gerald accidentally double-charged me for April rent and it overdrew my checking account. I had to deal with bank fees and it was incredibly stressful"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I wish Gerald used an online portal or even a shared spreadsheet for rent tracking. Having everything go through one person's text thread feels unreliable"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "between the billing mess and having to remember to text one specific person for everything, I just feel like this whole setup is fragile. One mistake and I'm the one dealing with the fallout"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "What experiences have I shared that reveal how I feel about informal, unstructured processes for handling money and communication with my landlord?",
+      "expected_answer": "You shared several experiences: (1) You strongly prefer texting over calling, finding calls intrusive, and value Gerald's responsiveness via text. (2) Gerald accidentally double-charged your April rent, which overdrew your checking account, cost you $35 in bank fees, and caused significant financial stress and anxiety. (3) You expressed frustration that Gerald relies on text-only communication with no structured record-keeping, wishing he used an online portal or shared spreadsheet for rent and maintenance tracking. (4) You described the overall setup as feeling fragile, noting that one mistake leaves you dealing with the financial and administrative fallout, and connected this to a broader pattern from a previous job where expense reimbursements were similarly mishandled through one person's email inbox.",
+      "gold_memory_state": "Confirmed facts: user prefers texting over calling; Gerald double-charged April rent causing overdraft and $35 fee; user wants digital portals/shared documents for rent and maintenance tracking; user perceives single-channel informal processes as fragile and stressful; user identified a cross-domain pattern of stress from unstructured financial processes. Tentative: online maintenance request form expected live by June 10 (not yet confirmed working).",
+      "judge_rubric": {
+        "must_include": [
+          "texting preference",
+          "April rent double-charge or billing error",
+          "overdraft or bank fees",
+          "stress or anxiety",
+          "desire for online portal or structured digital system",
+          "fragility of the current setup"
+        ],
+        "acceptable_paraphrases": [
+          "prefers async communication",
+          "wants a shared spreadsheet or web form",
+          "feels vulnerable to errors in informal systems"
+        ],
+        "must_not_include": [
+          "online maintenance form is confirmed and operational"
+        ],
+        "harmful_extra": [
+          "claiming the maintenance portal is already live and working"
+        ],
+        "harmless_extra": [
+          "mentioning Gerald's travel dates",
+          "mentioning Kevin Huang",
+          "mentioning the previous job expense pattern"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes preferences the user never expressed, such as preferring phone calls or being comfortable with informal billing.",
+        "reflection_recall": "Fails if the model omits either the communication preference (texting) or the billing stress (double-charge/overdraft) since both are core to the pattern.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I really don't like calling people. Texting is just so much easier and less intrusive for me"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Gerald accidentally double-charged me for April rent and it overdrew my checking account. I had to deal with bank fees and it was incredibly stressful"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I wish Gerald used an online portal or even a shared spreadsheet for rent tracking. Having everything go through one person's text thread feels unreliable"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "between the billing mess and having to remember to text one specific person for everything, I just feel like this whole setup is fragile. One mistake and I'm the one dealing with the fallout"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've mentioned frustrations with both how I communicate with my landlord and how rent payments are handled. Are these part of one broader preference pattern, or are they separate concerns that shouldn't be lumped together? And does my positive experience with Gerald's fast text response about the faucet contradict any of this?",
+      "expected_answer": "These concerns form one broader pattern: you experience disproportionate stress when landlord processes lack structured, digital systems. The communication frustration (relying on one person's text thread with no formal record-keeping) and the billing frustration (the double-charge causing an overdraft) are connected — both stem from informal, single-point-of-failure processes that leave you bearing the risk. Your positive experience with Gerald's fast faucet response does not contradict this; it shows you value responsive asynchronous communication, but your core frustration is about the absence of structured systems behind that communication, not about Gerald's personal responsiveness.",
+      "gold_memory_state": "The inferred pattern (user experiences stress from low-structure landlord communication and billing processes) binds together: texting preference (op3), April billing error stress (op4), digital portal preference (op5), and the fragility statement (op7). Gerald's text responsiveness about the faucet (op2) is a neighboring positive fact that does not contradict the pattern — it supports the user's preference for async communication while the pattern addresses systemic structure. The tentative maintenance form (op8) is not yet confirmed and does not resolve the pattern.",
+      "judge_rubric": {
+        "must_include": [
+          "one broader pattern or connected concerns",
+          "billing error and communication informality are linked",
+          "Gerald's faucet responsiveness does not contradict the pattern"
+        ],
+        "acceptable_paraphrases": [
+          "unified preference for structured digital processes",
+          "single underlying frustration about lack of systems"
+        ],
+        "must_not_include": [
+          "treating faucet responsiveness as contradicting the stress pattern",
+          "treating billing and communication as completely unrelated concerns"
+        ],
+        "harmful_extra": [
+          "claiming the maintenance form resolves the pattern",
+          "saying Gerald is generally unresponsive"
+        ],
+        "harmless_extra": [
+          "mentioning the previous job expense analogy",
+          "mentioning Gerald's travel coverage"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model incorrectly binds unrelated facts (e.g., Gerald's travel dates) as part of the stress pattern, or treats the faucet response as evidence against the pattern.",
+        "reflection_recall": "Fails if the model treats billing stress and communication preference as entirely separate rather than recognizing the unified pattern.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I really don't like calling people. Texting is just so much easier and less intrusive for me"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Gerald accidentally double-charged me for April rent and it overdrew my checking account. I had to deal with bank fees and it was incredibly stressful"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I wish Gerald used an online portal or even a shared spreadsheet for rent tracking. Having everything go through one person's text thread feels unreliable"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "between the billing mess and having to remember to text one specific person for everything, I just feel like this whole setup is fragile. One mistake and I'm the one dealing with the fallout"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've mentioned frustrations with both how I communicate with my landlord and how rent payments are handled. Are these part of one broader preference pattern, or are they separate concerns that shouldn't be lumped together? And does my positive experience with Gerald's fast text response about the faucet contradict any of this?",
+      "expected_answer": "These concerns form one broader pattern: you experience disproportionate stress when landlord processes lack structured, digital systems. The communication frustration (relying on one person's text thread with no formal record-keeping) and the billing frustration (the double-charge causing an overdraft) are connected — both stem from informal, single-point-of-failure processes that leave you bearing the risk. Your positive experience with Gerald's fast faucet response does not contradict this; it shows you value responsive asynchronous communication, but your core frustration is about the absence of structured systems behind that communication, not about Gerald's personal responsiveness.",
+      "gold_memory_state": "The inferred pattern (user experiences stress from low-structure landlord communication and billing processes) binds together: texting preference (op3), April billing error stress (op4), digital portal preference (op5), and the fragility statement (op7). Gerald's text responsiveness about the faucet (op2) is a neighboring positive fact that does not contradict the pattern — it supports the user's preference for async communication while the pattern addresses systemic structure. The tentative maintenance form (op8) is not yet confirmed and does not resolve the pattern.",
+      "judge_rubric": {
+        "must_include": [
+          "one broader pattern or connected concerns",
+          "billing error and communication informality are linked",
+          "Gerald's faucet responsiveness does not contradict the pattern"
+        ],
+        "acceptable_paraphrases": [
+          "unified preference for structured digital processes",
+          "single underlying frustration about lack of systems"
+        ],
+        "must_not_include": [
+          "treating faucet responsiveness as contradicting the stress pattern",
+          "treating billing and communication as completely unrelated concerns"
+        ],
+        "harmful_extra": [
+          "claiming the maintenance form resolves the pattern",
+          "saying Gerald is generally unresponsive"
+        ],
+        "harmless_extra": [
+          "mentioning the previous job expense analogy",
+          "mentioning Gerald's travel coverage"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model incorrectly binds unrelated facts (e.g., Gerald's travel dates) as part of the stress pattern, or treats the faucet response as evidence against the pattern.",
+        "reflection_recall": "Fails if the model treats billing stress and communication preference as entirely separate rather than recognizing the unified pattern.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I really don't like calling people. Texting is just so much easier and less intrusive for me"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Gerald accidentally double-charged me for April rent and it overdrew my checking account. I had to deal with bank fees and it was incredibly stressful"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I wish Gerald used an online portal or even a shared spreadsheet for rent tracking. Having everything go through one person's text thread feels unreliable"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "between the billing mess and having to remember to text one specific person for everything, I just feel like this whole setup is fragile. One mistake and I'm the one dealing with the fallout"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe the boundary of what my experiences with Gerald actually support about my preferences, and where someone might incorrectly extend that conclusion too far.",
+      "expected_answer": "Your experiences support the conclusion that you prefer low-friction, asynchronous digital communication and experience significant stress when financial and administrative processes lack structured digital systems — specifically, you are stressed by billing errors in informal setups and frustrated by single-channel text-based processes with no persistent shared records. However, this should not be overgeneralized to mean you dislike all informal or personal communication, that you distrust Gerald personally, or that you refuse to use texting for landlord communication. You actually value Gerald's text responsiveness and find texting preferable to calling. The pattern is specifically about systemic structure and accountability safeguards, not about the communication medium itself or about Gerald's character. Additionally, the pending online maintenance form has not been confirmed as operational, so it should not be treated as evidence that your concerns have been resolved.",
+      "gold_memory_state": "Supported inference: user experiences disproportionate stress when landlord processes lack structured digital systems; billing errors combined with single-channel text communication create a sense of fragility and personal financial vulnerability. Unsupported overgeneralization: user dislikes texting, user distrusts Gerald personally, user would prefer phone calls or in-person communication, user's concerns are resolved by the tentative maintenance form. The tentative maintenance form (expected live June 10) is not confirmed operational and should not be treated as resolving the pattern.",
+      "judge_rubric": {
+        "must_include": [
+          "preference for structured digital systems",
+          "stress from billing errors and financial disruptions",
+          "boundary: not a rejection of texting or informal personal communication",
+          "boundary: not about distrusting Gerald personally"
+        ],
+        "acceptable_paraphrases": [
+          "values accountability and record-keeping in financial processes",
+          "frustrated by single-point-of-failure administrative processes"
+        ],
+        "must_not_include": [
+          "user dislikes texting",
+          "user distrusts Gerald",
+          "maintenance form resolves the pattern"
+        ],
+        "harmful_extra": [
+          "claiming the user wants to switch to phone calls",
+          "claiming the maintenance portal is live and addresses all concerns"
+        ],
+        "harmless_extra": [
+          "mentioning the previous job expense analogy as supporting evidence",
+          "mentioning Gerald's travel and Kevin coverage as additional stressor"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative maintenance form as a confirmed resolution of the user's concerns.",
+        "reflection_precision": "Fails if the model claims the user dislikes all informal communication, distrusts Gerald, or wants phone calls — these are unsupported overgeneralizations.",
+        "reflection_recall": "Fails if the model omits either the communication-structure component or the billing-stress component of the supported pattern, or fails to articulate any boundary.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I really don't like calling people. Texting is just so much easier and less intrusive for me"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Gerald accidentally double-charged me for April rent and it overdrew my checking account. I had to deal with bank fees and it was incredibly stressful"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I wish Gerald used an online portal or even a shared spreadsheet for rent tracking. Having everything go through one person's text thread feels unreliable"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "between the billing mess and having to remember to text one specific person for everything, I just feel like this whole setup is fragile. One mistake and I'm the one dealing with the fallout"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I realized it's not just about Gerald specifically. I've had similar frustrations in other situations where there's no structured system and everything depends on one person being available and not making mistakes"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe the boundary of what my experiences with Gerald actually support about my preferences, and where someone might incorrectly extend that conclusion too far.",
+      "expected_answer": "Your experiences support the conclusion that you prefer low-friction, asynchronous digital communication and experience significant stress when financial and administrative processes lack structured digital systems — specifically, you are stressed by billing errors in informal setups and frustrated by single-channel text-based processes with no persistent shared records. However, this should not be overgeneralized to mean you dislike all informal or personal communication, that you distrust Gerald personally, or that you refuse to use texting for landlord communication. You actually value Gerald's text responsiveness and find texting preferable to calling. The pattern is specifically about systemic structure and accountability safeguards, not about the communication medium itself or about Gerald's character. Additionally, the pending online maintenance form has not been confirmed as operational, so it should not be treated as evidence that your concerns have been resolved.",
+      "gold_memory_state": "Supported inference: user experiences disproportionate stress when landlord processes lack structured digital systems; billing errors combined with single-channel text communication create a sense of fragility and personal financial vulnerability. Unsupported overgeneralization: user dislikes texting, user distrusts Gerald personally, user would prefer phone calls or in-person communication, user's concerns are resolved by the tentative maintenance form. The tentative maintenance form (expected live June 10) is not confirmed operational and should not be treated as resolving the pattern.",
+      "judge_rubric": {
+        "must_include": [
+          "preference for structured digital systems",
+          "stress from billing errors and financial disruptions",
+          "boundary: not a rejection of texting or informal personal communication",
+          "boundary: not about distrusting Gerald personally"
+        ],
+        "acceptable_paraphrases": [
+          "values accountability and record-keeping in financial processes",
+          "frustrated by single-point-of-failure administrative processes"
+        ],
+        "must_not_include": [
+          "user dislikes texting",
+          "user distrusts Gerald",
+          "maintenance form resolves the pattern"
+        ],
+        "harmful_extra": [
+          "claiming the user wants to switch to phone calls",
+          "claiming the maintenance portal is live and addresses all concerns"
+        ],
+        "harmless_extra": [
+          "mentioning the previous job expense analogy as supporting evidence",
+          "mentioning Gerald's travel and Kevin coverage as additional stressor"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative maintenance form as a confirmed resolution of the user's concerns.",
+        "reflection_precision": "Fails if the model claims the user dislikes all informal communication, distrusts Gerald, or wants phone calls — these are unsupported overgeneralizations.",
+        "reflection_recall": "Fails if the model omits either the communication-structure component or the billing-stress component of the supported pattern, or fails to articulate any boundary.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I really don't like calling people. Texting is just so much easier and less intrusive for me"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Gerald accidentally double-charged me for April rent and it overdrew my checking account. I had to deal with bank fees and it was incredibly stressful"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I wish Gerald used an online portal or even a shared spreadsheet for rent tracking. Having everything go through one person's text thread feels unreliable"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "between the billing mess and having to remember to text one specific person for everything, I just feel like this whole setup is fragile. One mistake and I'm the one dealing with the fallout"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I realized it's not just about Gerald specifically. I've had similar frustrations in other situations where there's no structured system and everything depends on one person being available and not making mistakes"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best describes the conclusion my experiences with my landlord support about my preferences and stress triggers?",
+      "candidate_options": [
+        "User experiences disproportionate stress when processes lack structured digital systems; billing errors and single-channel informal communication create a sense of fragility and financial vulnerability",
+        "User dislikes all forms of texting and informal communication and prefers formal phone calls or in-person meetings for important matters",
+        "User's concerns are resolved now that an online maintenance request form is being set up for the building",
+        "User distrusts Gerald Huang personally and believes he is unreliable and intentionally negligent with finances"
+      ],
+      "distractor_rationale": "same-value-different-target: Option B takes the user's stated dislike of calling and inverts it, confusing the communication preference target with a hypothetical anti-texting stance — it borrows the communication domain but attributes the opposite preference. assistant echo: Option C echoes the assistant's positive framing of the maintenance form news, treating a tentative development as a confirmed resolution, which is the recency trap. Option D overgeneralizes the billing error into personal distrust of Gerald, which the user explicitly did not express — the user appreciated Gerald's responsiveness and framed the issue as systemic, not personal.",
+      "expected_answer": "User experiences disproportionate stress when processes lack structured digital systems; billing errors and single-channel informal communication create a sense of fragility and financial vulnerability",
+      "gold_memory_state": "Supported inference: user experiences stress from lack of structured digital systems in landlord communication and billing. Tentative maintenance form is not confirmed operational. User values Gerald's text responsiveness and does not distrust him personally.",
+      "judge_rubric": {
+        "must_include": [
+          "Option A or equivalent wording about stress from unstructured processes"
+        ],
+        "acceptable_paraphrases": [
+          "first option",
+          "the option about structured digital systems and fragility"
+        ],
+        "must_not_include": [
+          "user dislikes texting",
+          "concerns are resolved",
+          "user distrusts Gerald"
+        ],
+        "harmful_extra": [
+          "selecting the maintenance form resolution option",
+          "selecting the personal distrust option"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects Option C, treating the tentative maintenance form as resolving the user's concerns (recency trap).",
+        "reflection_precision": "Fails if the model selects Option B (inverted communication preference) or Option D (personal distrust overgeneralization).",
+        "reflection_recall": "Fails if the model cannot identify that the supported conclusion covers both billing stress and communication structure.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "between the billing mess and having to remember to text one specific person for everything, I just feel like this whole setup is fragile. One mistake and I'm the one dealing with the fallout"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Gerald accidentally double-charged me for April rent and it overdrew my checking account. I had to deal with bank fees and it was incredibly stressful"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I really don't like calling people. Texting is just so much easier and less intrusive for me"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best describes the conclusion my experiences with my landlord support about my preferences and stress triggers?",
+      "candidate_options": [
+        "User experiences disproportionate stress when processes lack structured digital systems; billing errors and single-channel informal communication create a sense of fragility and financial vulnerability",
+        "User dislikes all forms of texting and informal communication and prefers formal phone calls or in-person meetings for important matters",
+        "User's concerns are resolved now that an online maintenance request form is being set up for the building",
+        "User distrusts Gerald Huang personally and believes he is unreliable and intentionally negligent with finances"
+      ],
+      "distractor_rationale": "same-value-different-target: Option B takes the user's stated dislike of calling and inverts it, confusing the communication preference target with a hypothetical anti-texting stance — it borrows the communication domain but attributes the opposite preference. assistant echo: Option C echoes the assistant's positive framing of the maintenance form news, treating a tentative development as a confirmed resolution, which is the recency trap. Option D overgeneralizes the billing error into personal distrust of Gerald, which the user explicitly did not express — the user appreciated Gerald's responsiveness and framed the issue as systemic, not personal.",
+      "expected_answer": "User experiences disproportionate stress when processes lack structured digital systems; billing errors and single-channel informal communication create a sense of fragility and financial vulnerability",
+      "gold_memory_state": "Supported inference: user experiences stress from lack of structured digital systems in landlord communication and billing. Tentative maintenance form is not confirmed operational. User values Gerald's text responsiveness and does not distrust him personally.",
+      "judge_rubric": {
+        "must_include": [
+          "Option A or equivalent wording about stress from unstructured processes"
+        ],
+        "acceptable_paraphrases": [
+          "first option",
+          "the option about structured digital systems and fragility"
+        ],
+        "must_not_include": [
+          "user dislikes texting",
+          "concerns are resolved",
+          "user distrusts Gerald"
+        ],
+        "harmful_extra": [
+          "selecting the maintenance form resolution option",
+          "selecting the personal distrust option"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects Option C, treating the tentative maintenance form as resolving the user's concerns (recency trap).",
+        "reflection_precision": "Fails if the model selects Option B (inverted communication preference) or Option D (personal distrust overgeneralization).",
+        "reflection_recall": "Fails if the model cannot identify that the supported conclusion covers both billing stress and communication structure.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "between the billing mess and having to remember to text one specific person for everything, I just feel like this whole setup is fragile. One mistake and I'm the one dealing with the fallout"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Gerald accidentally double-charged me for April rent and it overdrew my checking account. I had to deal with bank fees and it was incredibly stressful"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I really don't like calling people. Texting is just so much easier and less intrusive for me"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm going to be away from my apartment for most of June and July, and I'm worried about what happens if something breaks while I'm gone and while Gerald is also unavailable. Draft a short contingency plan for handling a maintenance emergency during that overlap period, taking into account everything you know about my communication preferences, the landlord coverage arrangement, and my concerns about how things are managed.",
+      "expected_answer": "During the overlap when both you and Gerald are away (Gerald is traveling internationally June 15 to July 10, with his brother Kevin Huang covering maintenance), your contingency plan should account for the following: (1) Contact Kevin Huang for any maintenance emergencies — confirm with Gerald before June 15 that Kevin is reachable via text, since texting is your strongly preferred communication method and you find calling intrusive. (2) Get Kevin's phone number from Gerald before departure, as Gerald committed to providing it. (3) Given your concern about fragile single-channel processes, ask whether the online maintenance request form (expected live by June 10) is actually operational before you leave — but do not rely on it as your sole channel since it has not been confirmed working yet. (4) Because you've experienced stress from billing errors and informal processes, establish a clear written understanding with Kevin about any financial transactions (e.g., emergency repair costs) so there is a documented trail rather than informal text agreements. (5) Consider asking a trusted neighbor like Mei to serve as a local point of contact who can physically check on the unit if needed, since she also rents in the same building.",
+      "gold_memory_state": "Gerald traveling June 15 to July 10 with Kevin Huang covering maintenance. User prefers texting over calling. User wants structured digital systems for record-keeping. April billing error caused overdraft and stress. Online maintenance form tentative (expected June 10, not confirmed). Mei is a friend in the same building. Gerald's cell is 604-881-3724.",
+      "judge_rubric": {
+        "must_include": [
+          "Kevin Huang as interim maintenance contact during Gerald's travel",
+          "confirm Kevin is reachable via text given user's communication preference",
+          "get Kevin's number before departure",
+          "caution about relying on the unconfirmed maintenance form",
+          "documented trail for any financial transactions to avoid billing-error-type stress"
+        ],
+        "acceptable_paraphrases": [
+          "written record of expenses",
+          "verify the online form is working",
+          "text-based communication with Kevin"
+        ],
+        "must_not_include": [
+          "treating the maintenance form as confirmed and operational",
+          "recommending phone calls as the primary communication method"
+        ],
+        "harmful_extra": [
+          "claiming the maintenance form is live and reliable",
+          "suggesting the user call Kevin instead of texting",
+          "using Rachel's number 604-550-1180 as a contact"
+        ],
+        "harmless_extra": [
+          "mentioning Mei as a local contact",
+          "suggesting pre-departure inspection of the unit",
+          "mentioning Gerald's email as a last resort"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative maintenance form as confirmed and relies on it as the primary channel.",
+        "reflection_precision": "Fails if the plan recommends phone calls as primary communication or ignores the user's documented stress from informal billing processes.",
+        "reflection_recall": "Fails if the plan omits Kevin Huang as interim contact, omits the texting preference, or omits the need for documented financial accountability.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Gerald is traveling internationally June 15 to July 10, and Kevin Huang covers maintenance during that period.",
+        "Fact 2: User strongly prefers texting over calling and finds calling intrusive.",
+        "Fact 3: Gerald double-charged April rent, causing an overdraft and $35 in bank fees; user found this very stressful.",
+        "Fact 4: User prefers online portals or shared documents for rent and maintenance tracking over texting one person.",
+        "Fact 5: An online maintenance request form set up by Kevin is expected live by June 10, but the user is skeptical it will materialize given Gerald's track record of undelivered improvements.",
+        "Inference: During the June 15–July 10 window, the user's primary contact shifts to Kevin Huang, who the user has never dealt with. The user needs to confirm Kevin communicates via text.",
+        "Inference: The maintenance form's tentative status means the plan cannot rely on it — it should be verified before departure but treated as supplementary, not primary.",
+        "Inference: Given the user's stress pattern from billing errors in informal setups, any emergency repair involving money should have a documented written trail with Kevin to prevent a repeat of the overdraft scenario."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Gerald is traveling internationally from June 15 to July 10, and his brother Kevin Huang will handle maintenance issues during that time"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I really don't like calling people. Texting is just so much easier and less intrusive for me"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Gerald accidentally double-charged me for April rent and it overdrew my checking account. I had to deal with bank fees and it was incredibly stressful"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I wish Gerald used an online portal or even a shared spreadsheet for rent tracking. Having everything go through one person's text thread feels unreliable"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Gerald just texted me that Kevin set up an online maintenance request form for the building. He said it should be live by June 10 and we'll use that going forward"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm going to be away from my apartment for most of June and July, and I'm worried about what happens if something breaks while I'm gone and while Gerald is also unavailable. Draft a short contingency plan for handling a maintenance emergency during that overlap period, taking into account everything you know about my communication preferences, the landlord coverage arrangement, and my concerns about how things are managed.",
+      "expected_answer": "During the overlap when both you and Gerald are away (Gerald is traveling internationally June 15 to July 10, with his brother Kevin Huang covering maintenance), your contingency plan should account for the following: (1) Contact Kevin Huang for any maintenance emergencies — confirm with Gerald before June 15 that Kevin is reachable via text, since texting is your strongly preferred communication method and you find calling intrusive. (2) Get Kevin's phone number from Gerald before departure, as Gerald committed to providing it. (3) Given your concern about fragile single-channel processes, ask whether the online maintenance request form (expected live by June 10) is actually operational before you leave — but do not rely on it as your sole channel since it has not been confirmed working yet. (4) Because you've experienced stress from billing errors and informal processes, establish a clear written understanding with Kevin about any financial transactions (e.g., emergency repair costs) so there is a documented trail rather than informal text agreements. (5) Consider asking a trusted neighbor like Mei to serve as a local point of contact who can physically check on the unit if needed, since she also rents in the same building.",
+      "gold_memory_state": "Gerald traveling June 15 to July 10 with Kevin Huang covering maintenance. User prefers texting over calling. User wants structured digital systems for record-keeping. April billing error caused overdraft and stress. Online maintenance form tentative (expected June 10, not confirmed). Mei is a friend in the same building. Gerald's cell is 604-881-3724.",
+      "judge_rubric": {
+        "must_include": [
+          "Kevin Huang as interim maintenance contact during Gerald's travel",
+          "confirm Kevin is reachable via text given user's communication preference",
+          "get Kevin's number before departure",
+          "caution about relying on the unconfirmed maintenance form",
+          "documented trail for any financial transactions to avoid billing-error-type stress"
+        ],
+        "acceptable_paraphrases": [
+          "written record of expenses",
+          "verify the online form is working",
+          "text-based communication with Kevin"
+        ],
+        "must_not_include": [
+          "treating the maintenance form as confirmed and operational",
+          "recommending phone calls as the primary communication method"
+        ],
+        "harmful_extra": [
+          "claiming the maintenance form is live and reliable",
+          "suggesting the user call Kevin instead of texting",
+          "using Rachel's number 604-550-1180 as a contact"
+        ],
+        "harmless_extra": [
+          "mentioning Mei as a local contact",
+          "suggesting pre-departure inspection of the unit",
+          "mentioning Gerald's email as a last resort"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative maintenance form as confirmed and relies on it as the primary channel.",
+        "reflection_precision": "Fails if the plan recommends phone calls as primary communication or ignores the user's documented stress from informal billing processes.",
+        "reflection_recall": "Fails if the plan omits Kevin Huang as interim contact, omits the texting preference, or omits the need for documented financial accountability.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Gerald is traveling internationally June 15 to July 10, and Kevin Huang covers maintenance during that period.",
+        "Fact 2: User strongly prefers texting over calling and finds calling intrusive.",
+        "Fact 3: Gerald double-charged April rent, causing an overdraft and $35 in bank fees; user found this very stressful.",
+        "Fact 4: User prefers online portals or shared documents for rent and maintenance tracking over texting one person.",
+        "Fact 5: An online maintenance request form set up by Kevin is expected live by June 10, but the user is skeptical it will materialize given Gerald's track record of undelivered improvements.",
+        "Inference: During the June 15–July 10 window, the user's primary contact shifts to Kevin Huang, who the user has never dealt with. The user needs to confirm Kevin communicates via text.",
+        "Inference: The maintenance form's tentative status means the plan cannot rely on it — it should be verified before departure but treated as supplementary, not primary.",
+        "Inference: Given the user's stress pattern from billing errors in informal setups, any emergency repair involving money should have a documented written trail with Kevin to prevent a repeat of the overdraft scenario."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Gerald is traveling internationally from June 15 to July 10, and his brother Kevin Huang will handle maintenance issues during that time"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I really don't like calling people. Texting is just so much easier and less intrusive for me"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Gerald accidentally double-charged me for April rent and it overdrew my checking account. I had to deal with bank fees and it was incredibly stressful"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I wish Gerald used an online portal or even a shared spreadsheet for rent tracking. Having everything go through one person's text thread feels unreliable"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Gerald just texted me that Kevin set up an online maintenance request form for the building. He said it should be live by June 10 and we'll use that going forward"
+        }
+      ]
+    }
+  ]
+}

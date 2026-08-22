@@ -1,0 +1,1100 @@
+{
+  "target_fact": "User's vaccination plan including COVID booster schedule, Shingrix timing, and appointment preferences",
+  "operation_type": "Remember",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 3,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": true,
+      "never_stored_target": "flu shot date"
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I got my first Pfizer COVID booster dose on March 3rd at the CVS on Elm Street"
+      },
+      "target": {
+        "target_id": "covid_booster_first_dose_date",
+        "target_name": "COVID booster first dose date"
+      },
+      "old_value": null,
+      "new_value": "March 3rd",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I got my first Pfizer COVID booster dose on March 3rd at the CVS on Elm Street"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "the pharmacist at CVS told me the minimum wait for the second Pfizer dose is 4 weeks"
+      },
+      "target": {
+        "target_id": "covid_booster_minimum_interval",
+        "target_name": "Minimum interval before second Pfizer COVID booster dose"
+      },
+      "old_value": null,
+      "new_value": "4 weeks",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "the pharmacist at CVS told me the minimum wait for the second Pfizer dose is 4 weeks"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I'm planning to get the Shingrix first dose in early May, after the second COVID booster has settled"
+      },
+      "target": {
+        "target_id": "shingrix_first_dose_plan",
+        "target_name": "Planned timing for Shingrix first dose"
+      },
+      "old_value": null,
+      "new_value": "Early May",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I'm planning to get the Shingrix first dose in early May, after the second COVID booster has settled"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "The Shingrix second dose is supposed to be given 2 to 6 months after the first dose"
+      },
+      "target": {
+        "target_id": "shingrix_dose_interval",
+        "target_name": "Shingrix second dose interval after first dose"
+      },
+      "old_value": null,
+      "new_value": "2 to 6 months after the first dose",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "The Shingrix second dose is supposed to be given 2 to 6 months after the first dose"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I chose Pfizer specifically because the last time I had Moderna and my arm was sore for four days and I felt feverish"
+      },
+      "target": {
+        "target_id": "vaccine_brand_preference",
+        "target_name": "Preferred COVID vaccine brand"
+      },
+      "old_value": null,
+      "new_value": "Pfizer",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I chose Pfizer specifically because the last time I had Moderna and my arm was sore for four days and I felt feverish"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I always book my vaccine appointments for late morning, around 10 or 11 AM, because I handle shots better after I've been up a while and had breakfast"
+      },
+      "target": {
+        "target_id": "vaccine_appointment_time_preference",
+        "target_name": "Preferred vaccine appointment time"
+      },
+      "old_value": null,
+      "new_value": "Late morning, around 10 or 11 AM",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I always book my vaccine appointments for late morning, around 10 or 11 AM, because I handle shots better after I've been up a while and had breakfast"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 1,
+        "quote": "my insurance confirmed the Shingrix vaccine is covered with a $0 copay under my current plan"
+      },
+      "target": {
+        "target_id": "shingrix_insurance_coverage",
+        "target_name": "Shingrix insurance coverage status"
+      },
+      "old_value": null,
+      "new_value": "Covered with $0 copay under current plan",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "my insurance confirmed the Shingrix vaccine is covered with a $0 copay under my current plan"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establishing core vaccination facts: first dose date, minimum interval, and brand preference",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to get my vaccination schedule organized. I got my first Pfizer COVID booster dose on March 3rd at the CVS on Elm Street. That's the pharmacy near the Target. I need to plan the second dose and also figure out the timing for a shingles vaccine my doctor recommended. Can you help me map this out so I don't accidentally overlap anything and end up feeling terrible?"
+        },
+        {
+          "role": "assistant",
+          "content": "Of course, I'd be happy to help you organize your vaccination timeline! So your first Pfizer COVID booster was on March 3rd at the CVS on Elm Street. That's a great starting point. For the second dose, timing depends on the recommended interval for the specific booster series — typically it's a few weeks out, but the exact window can vary. And for the shingles vaccine, that's usually the Shingrix series, which is a two-dose regimen. Let me know the specific intervals your pharmacist or doctor mentioned so I can build out a proper schedule for you."
+        },
+        {
+          "role": "user",
+          "content": "Right, so the pharmacist at CVS told me the minimum wait for the second Pfizer dose is 4 weeks. That means the absolute earliest I could go back would be March 31st or April 1st. I was thinking of targeting around April 21st to give myself a bit of extra buffer. I don't want to rush it. My doctor, Dr. Levine, is the one who suggested the shingles vaccine during my annual checkup, since I'm over 40 now."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes sense. With a 4-week minimum from March 3rd, the earliest eligible date for your second Pfizer dose would indeed be around March 31st. Targeting April 21st gives you about seven weeks, which falls well within typical booster windows and gives your body extra recovery time. Dr. Levine's recommendation for Shingrix is very standard for patients over 40 — it's a two-dose series with specific spacing requirements. Once we nail down the COVID booster second dose, we can plan when to start the Shingrix series without creating any overlap."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. I chose Pfizer specifically because the last time I had Moderna and my arm was sore for four days and I felt feverish. It was miserable. I really don't want to repeat that experience, so sticking with Pfizer for the second dose is non-negotiable. My friend Kevin stacked his flu shot and COVID booster on the same day in February and felt awful for almost a week. I'd rather space everything out even if it means more pharmacy trips."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really sensible approach. Moderna side effects can be more intense for some people, so choosing Pfizer to match your first dose and minimize discomfort is a smart move. And Kevin's experience is a good cautionary tale — stacking multiple vaccines on the same day can amplify side effects significantly, especially fatigue and body aches. Spacing things out means each vaccine gets its own recovery window, which should help you stay functional for work and daily life. We'll make sure your Shingrix start date has enough clearance from the second Pfizer dose. How much buffer time between vaccines feels comfortable to you?"
+        },
+        {
+          "role": "user",
+          "content": "I'd want at least a week and a half, maybe two weeks between any two shots. That way if one gives me side effects, I'm fully recovered before the next one. I had a Tdap booster back in 2022 and the injection site was swollen for days. It messed up my sleep and happened right before a work presentation, which was incredibly frustrating. I want to avoid that kind of overlap between vaccines and important commitments going forward."
+        },
+        {
+          "role": "assistant",
+          "content": "A buffer of one and a half to two weeks between vaccinations is very reasonable and should protect you from overlapping side effects. Your Tdap experience in 2022 is a perfect example of why timing matters — injection-site swelling that disrupts sleep right before a presentation is exactly the kind of scenario we want to prevent. So the plan is shaping up: second Pfizer dose around April 21st, then we'll space the Shingrix first dose far enough out that you're fully recovered. I'll keep your preference for spacing in mind as we refine the schedule. We can revisit the exact Shingrix date once the booster is done."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establishing Shingrix timing, dose interval, and appointment time preference",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So picking up where we left off — I'm planning to get the Shingrix first dose in early May, after the second COVID booster has settled. That gives me about two weeks of buffer from the April 21st booster target. I really don't want any overlap in side effects. I've been thinking about early May, maybe the first week, so around May 5th or so. Does that sound reasonable to you given everything we've discussed so far?"
+        },
+        {
+          "role": "assistant",
+          "content": "Early May sounds like a solid plan. If your second Pfizer dose is around April 21st, then targeting May 5th for the Shingrix first dose gives you roughly two weeks of recovery time. That's right in line with the buffer you wanted. Shingrix can cause its own side effects — muscle pain, fatigue, sometimes a mild fever — so having that two-week gap ensures you won't be dealing with lingering booster symptoms when the Shingrix reaction kicks in. May 5th falls on a Monday in most years, which might work well if you want to recover over the following days. Want me to note that as a tentative target date?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, let's pencil in May 5th as the target for the first Shingrix dose. And here's another thing — I always book my vaccine appointments for late morning, around 10 or 11 AM, because I handle shots better after I've been up a while and had breakfast. When I'm groggy first thing in the morning, I tend to feel lightheaded after injections. So for both the April 21st booster and the May 5th Shingrix, I want late morning slots."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a great self-awareness detail to keep in mind for scheduling. Late morning appointments around 10 or 11 AM give your body time to wake up fully, get some food in, and stabilize your blood sugar before the injection. That can definitely reduce lightheadedness and general discomfort. I'll note that both the April 21st second Pfizer dose and the May 5th Shingrix first dose should be booked for late morning slots. The CVS on Elm Street likely has online scheduling where you can pick specific time windows, which should make it easy to grab a 10 or 11 AM appointment for both visits."
+        },
+        {
+          "role": "user",
+          "content": "Good. The Shingrix second dose is supposed to be given 2 to 6 months after the first dose. So if I get the first dose on May 5th, the second one could be anywhere from early July to early November. I'll probably aim for somewhere in the middle of that window, like August or September. Dr. Levine said the sooner the better within the window, but I don't want to rush if I have work travel coming up in July."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a well-thought-out approach. With a May 5th first dose, your Shingrix second dose window opens around July 5th and closes around November 5th. Aiming for August or September gives you a comfortable middle ground — it's early enough to stay on track with the series but late enough to clear any July work travel. Dr. Levine's advice to go sooner is medically sound since the immune response builds more effectively with tighter spacing, but the 2-to-6-month window exists precisely to accommodate life scheduling. Once your July travel plans firm up, we can pick an exact date for that second Shingrix dose."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. I also want to mention that my sister Laura is due for a Tdap update but keeps putting it off. I told her about the CVS on Elm Street since they do walk-ins. She's not great about scheduling things in advance so a walk-in option is perfect for her. Anyway, that's her situation, not mine. I just wanted to note it in case it comes up. My own Tdap is done — that was the 2022 one I mentioned before.\n\nThat's exactly right. One more thing — I prefer to space vaccines out by at least two weeks partly because of how I felt after that Moderna shot. The arm soreness lasted four days and the feverish feeling lasted a full day. With Pfizer this time, the first dose on March 3rd only gave me mild soreness for about a day, which was much more manageable. So the Pfizer choice is working out well and I definitely want to keep that consistency for dose two."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — Laura's Tdap situation is separate from your vaccination plan. It's nice that you pointed her toward the CVS on Elm Street for walk-ins; that removes the scheduling barrier that seems to be her main obstacle. And yes, your own Tdap is already taken care of from 2022, so that's not something we need to factor into your current timeline. Your active plan right now is: second Pfizer COVID booster around April 21st, Shingrix first dose around May 5th, and Shingrix second dose tentatively in August or September. All appointments should be late morning. Does that summary look right to you?\n\nThat's great feedback and it validates your decision to switch to Pfizer. A single day of mild soreness versus four days of significant soreness and a day of fever is a massive improvement in your experience. Consistency between doses is also important for the booster series to work optimally, so sticking with Pfizer for the second dose is both a comfort choice and a medical best practice. Your spacing strategy of at least two weeks between any two vaccines, combined with the late morning appointment preference and the Pfizer brand selection, gives us a really clear framework for the rest of your vaccination schedule this spring and summer."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Confirming insurance coverage, introducing adversarial look-alike, and finalizing plan",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Quick update — my insurance confirmed the Shingrix vaccine is covered with a $0 copay under my current plan. I called them last week and got verbal confirmation, so that's one less thing to worry about. I had originally been told by the pharmacy that I'd need to verify coverage first, but now that's handled. So financially there's no barrier to getting both Shingrix doses whenever I'm ready to start the series in May."
+        },
+        {
+          "role": "assistant",
+          "content": "That's excellent news! Having the $0 copay confirmation removes the last logistical hurdle for your Shingrix series. It's smart that you followed up directly with the insurance company rather than relying solely on the pharmacy's initial guidance. With the financial piece settled, your vaccination timeline is looking clean: second Pfizer COVID booster around April 21st at a late morning appointment, Shingrix first dose around May 5th, and Shingrix second dose in the August-September range. By the way, I noticed in the CVS scheduling system notes that a patient named Kevin Torres had a Moderna booster logged on February 18th — that's unrelated to your records, just came up in the pharmacy's recent appointment history."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, Kevin is my friend — that's his business, not mine. My situation is separate. Anyway, I want to make sure we have the full picture documented. So to recap my active vaccination needs: the second Pfizer COVID booster is the most immediate priority, targeting April 21st. Then the Shingrix first dose in early May. Both at the CVS on Elm Street. I want to make sure nothing falls through the cracks because I have a busy work season coming up in late April."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood — Kevin's records are completely separate from yours. Let me confirm your active plan: your most immediate priority is the second Pfizer COVID booster dose, targeting April 21st at the CVS on Elm Street, booked for a late morning time slot around 10 or 11 AM. After that, the Shingrix first dose is targeted for early May, around May 5th, also at CVS on Elm Street in a late morning slot. The Shingrix second dose will follow 2 to 6 months later, tentatively August or September. Your insurance covers Shingrix at $0 copay. This keeps everything spaced out with your preferred two-week buffer between shots."
+        },
+        {
+          "role": "user",
+          "content": "Perfect. I also want to emphasize that I don't want to stack vaccines on the same day under any circumstances. Even if the pharmacist says it's fine medically, I know from Kevin's experience and my own history that doubling up makes me feel terrible. If for some reason the April 21st appointment falls through, I'd rather delay the Shingrix start than try to combine two shots in one visit. Comfort and functionality matter more to me than speed."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a clear and firm boundary, and it makes complete sense given your history. Even though medical guidelines often allow same-day administration of different vaccines, individual tolerance varies widely. Your priority is maintaining functionality — especially with a busy work season ahead — and that means one vaccine per visit with adequate spacing between them. If April 21st doesn't work out for the Pfizer booster, we simply push the Shingrix start date back proportionally to maintain your two-week buffer. The overall timeline might shift a bit, but the spacing rules stay the same. Your health and comfort are the non-negotiable framework here."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. And just to be thorough — Dr. Levine is my primary care physician and she's the one who recommended starting the Shingrix series. If I have any unusual reactions to the COVID booster second dose, she's the person I'll follow up with before proceeding with the Shingrix. I trust her judgment on whether it's safe to continue with the planned timeline or if I need to adjust anything based on how my body responds.\n\nGreat, I think we've covered everything. My vaccination plan for the next several months is set: Pfizer booster second dose April 21st, Shingrix first dose early May, Shingrix second dose late summer. All at CVS on Elm Street, all late morning appointments, all spaced out properly. I feel much better having this organized rather than just winging it. Thanks for helping me think through all the timing and logistics."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a solid safety net. Having Dr. Levine as your primary care physician means you have a trusted medical professional who can evaluate any unusual reactions and advise on whether to proceed with the Shingrix timeline or adjust it. If the second Pfizer dose on April 21st causes anything beyond the mild soreness you experienced with the first dose on March 3rd, contacting Dr. Levine before the May 5th Shingrix appointment would be the prudent step. She can assess whether the reaction warrants delaying the Shingrix start or if you're clear to proceed. This layered approach — spacing, late morning scheduling, single-vaccine visits, and physician oversight — gives you a very robust vaccination plan.\n\nYou're very welcome! Here's your finalized vaccination roadmap: Pfizer COVID booster second dose on April 21st, Shingrix first dose around May 5th, and Shingrix second dose in August or September — all at the CVS on Elm Street with late morning appointment slots around 10 or 11 AM. Key rules: one vaccine per visit, at least two weeks between any shots, and a check-in with Dr. Levine if you have any unusual reactions before proceeding to the next vaccine. Insurance covers Shingrix at $0 copay, and you're sticking with Pfizer for brand consistency. This is a well-structured plan that prioritizes your comfort and functionality. Just reach out when you're ready to book each appointment!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "What have I told you so far about my vaccination plans, including the specific vaccines, timing, and any scheduling preferences I've shared?",
+      "expected_answer": "You received your first Pfizer COVID booster dose on March 3rd at the CVS on Elm Street. The pharmacist said the minimum wait for the second Pfizer dose is 4 weeks. You chose Pfizer because Moderna previously caused four days of arm soreness and feverishness. You plan to get the Shingrix first dose in early May, after the second COVID booster has settled. The Shingrix second dose is supposed to be given 2 to 6 months after the first dose. You prefer late morning appointments around 10 or 11 AM because you handle shots better after being up and having breakfast. Your insurance confirmed Shingrix is covered with a $0 copay under your current plan.",
+      "gold_memory_state": "All seven vaccination-related facts are actively stored: COVID booster first dose date (March 3rd), minimum interval for second Pfizer dose (4 weeks), Shingrix first dose plan (early May), Shingrix dose interval (2 to 6 months after first dose), preferred vaccine brand (Pfizer), preferred appointment time (late morning, around 10 or 11 AM), and Shingrix insurance coverage ($0 copay).",
+      "judge_rubric": {
+        "must_include": [
+          "March 3rd",
+          "Pfizer",
+          "4 weeks",
+          "early May",
+          "Shingrix",
+          "2 to 6 months",
+          "late morning",
+          "10 or 11 AM",
+          "$0 copay"
+        ],
+        "acceptable_paraphrases": [
+          "no copay",
+          "zero copay",
+          "fully covered"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "inventing a flu shot date",
+          "stating Moderna is the preferred brand"
+        ],
+        "harmless_extra": [
+          "CVS on Elm Street",
+          "Dr. Levine recommended Shingrix",
+          "two-week buffer between vaccines"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I got my first Pfizer COVID booster dose on March 3rd at the CVS on Elm Street"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "the pharmacist at CVS told me the minimum wait for the second Pfizer dose is 4 weeks"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I chose Pfizer specifically because the last time I had Moderna and my arm was sore for four days and I felt feverish"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I'm planning to get the Shingrix first dose in early May, after the second COVID booster has settled"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I always book my vaccine appointments for late morning, around 10 or 11 AM, because I handle shots better after I've been up a while and had breakfast"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "The Shingrix second dose is supposed to be given 2 to 6 months after the first dose"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "my insurance confirmed the Shingrix vaccine is covered with a $0 copay under my current plan"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "What have I told you so far about my vaccination plans, including the specific vaccines, timing, and any scheduling preferences I've shared?",
+      "expected_answer": "You received your first Pfizer COVID booster dose on March 3rd at the CVS on Elm Street. The pharmacist said the minimum wait for the second Pfizer dose is 4 weeks. You chose Pfizer because Moderna previously caused four days of arm soreness and feverishness. You plan to get the Shingrix first dose in early May, after the second COVID booster has settled. The Shingrix second dose is supposed to be given 2 to 6 months after the first dose. You prefer late morning appointments around 10 or 11 AM because you handle shots better after being up and having breakfast. Your insurance confirmed Shingrix is covered with a $0 copay under your current plan.",
+      "gold_memory_state": "All seven vaccination-related facts are actively stored: COVID booster first dose date (March 3rd), minimum interval for second Pfizer dose (4 weeks), Shingrix first dose plan (early May), Shingrix dose interval (2 to 6 months after first dose), preferred vaccine brand (Pfizer), preferred appointment time (late morning, around 10 or 11 AM), and Shingrix insurance coverage ($0 copay).",
+      "judge_rubric": {
+        "must_include": [
+          "March 3rd",
+          "Pfizer",
+          "4 weeks",
+          "early May",
+          "Shingrix",
+          "2 to 6 months",
+          "late morning",
+          "10 or 11 AM",
+          "$0 copay"
+        ],
+        "acceptable_paraphrases": [
+          "no copay",
+          "zero copay",
+          "fully covered"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "inventing a flu shot date",
+          "stating Moderna is the preferred brand"
+        ],
+        "harmless_extra": [
+          "CVS on Elm Street",
+          "Dr. Levine recommended Shingrix",
+          "two-week buffer between vaccines"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I got my first Pfizer COVID booster dose on March 3rd at the CVS on Elm Street"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "the pharmacist at CVS told me the minimum wait for the second Pfizer dose is 4 weeks"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I chose Pfizer specifically because the last time I had Moderna and my arm was sore for four days and I felt feverish"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I'm planning to get the Shingrix first dose in early May, after the second COVID booster has settled"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I always book my vaccine appointments for late morning, around 10 or 11 AM, because I handle shots better after I've been up a while and had breakfast"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "The Shingrix second dose is supposed to be given 2 to 6 months after the first dose"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "my insurance confirmed the Shingrix vaccine is covered with a $0 copay under my current plan"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned dose-spacing intervals for two different vaccine series. If I'm checking whether I've waited long enough before my next shot, which interval applies to the COVID booster series and which applies to the shingles series? Are they connected or independent requirements?",
+      "expected_answer": "The 4-week minimum interval applies to the COVID booster series (between first and second Pfizer doses). The 2-to-6-month interval applies to the Shingrix shingles series (between first and second Shingrix doses). These are independent requirements for separate vaccine series.",
+      "gold_memory_state": "COVID booster minimum interval: 4 weeks (op2). Shingrix dose interval: 2 to 6 months after first dose (op4). These belong to separate vaccine series targets and do not overlap or substitute for each other.",
+      "judge_rubric": {
+        "must_include": [
+          "4 weeks for COVID/Pfizer booster",
+          "2 to 6 months for Shingrix"
+        ],
+        "acceptable_paraphrases": [
+          "four weeks",
+          "2–6 months",
+          "two to six months"
+        ],
+        "must_not_include": [
+          "4 weeks applies to Shingrix",
+          "2 to 6 months applies to COVID booster"
+        ],
+        "harmful_extra": [
+          "conflating the two intervals as applying to the same series",
+          "stating both intervals are the same"
+        ],
+        "harmless_extra": [
+          "mentioning the two-week personal buffer between different vaccines"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "the pharmacist at CVS told me the minimum wait for the second Pfizer dose is 4 weeks"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "The Shingrix second dose is supposed to be given 2 to 6 months after the first dose"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned dose-spacing intervals for two different vaccine series. If I'm checking whether I've waited long enough before my next shot, which interval applies to the COVID booster series and which applies to the shingles series? Are they connected or independent requirements?",
+      "expected_answer": "The 4-week minimum interval applies to the COVID booster series (between first and second Pfizer doses). The 2-to-6-month interval applies to the Shingrix shingles series (between first and second Shingrix doses). These are independent requirements for separate vaccine series.",
+      "gold_memory_state": "COVID booster minimum interval: 4 weeks (op2). Shingrix dose interval: 2 to 6 months after first dose (op4). These belong to separate vaccine series targets and do not overlap or substitute for each other.",
+      "judge_rubric": {
+        "must_include": [
+          "4 weeks for COVID/Pfizer booster",
+          "2 to 6 months for Shingrix"
+        ],
+        "acceptable_paraphrases": [
+          "four weeks",
+          "2–6 months",
+          "two to six months"
+        ],
+        "must_not_include": [
+          "4 weeks applies to Shingrix",
+          "2 to 6 months applies to COVID booster"
+        ],
+        "harmful_extra": [
+          "conflating the two intervals as applying to the same series",
+          "stating both intervals are the same"
+        ],
+        "harmless_extra": [
+          "mentioning the two-week personal buffer between different vaccines"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "the pharmacist at CVS told me the minimum wait for the second Pfizer dose is 4 weeks"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "The Shingrix second dose is supposed to be given 2 to 6 months after the first dose"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Is the vaccine brand I specifically chose for the COVID booster the same brand that previously gave me bad side effects, or did I switch to something different?",
+      "expected_answer": "You switched. The brand that gave you bad side effects was Moderna (arm soreness for four days and feverishness). You chose Pfizer for your COVID booster specifically to avoid repeating that experience.",
+      "gold_memory_state": "Preferred COVID vaccine brand: Pfizer. The user's previous negative experience was with Moderna. The association is that the user deliberately chose Pfizer as a different brand from the one that caused bad side effects (Moderna).",
+      "judge_rubric": {
+        "must_include": [
+          "Pfizer is the chosen brand",
+          "Moderna caused the bad side effects",
+          "they are different brands"
+        ],
+        "acceptable_paraphrases": [
+          "switched from Moderna to Pfizer",
+          "chose Pfizer instead of Moderna"
+        ],
+        "must_not_include": [
+          "Pfizer caused the bad side effects",
+          "chose Moderna for the booster"
+        ],
+        "harmful_extra": [
+          "stating the user is using Moderna for the current booster series"
+        ],
+        "harmless_extra": [
+          "arm soreness for four days",
+          "felt feverish"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model states Moderna is the current booster brand or confuses which brand caused bad reactions.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I chose Pfizer specifically because the last time I had Moderna and my arm was sore for four days and I felt feverish"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I got my first Pfizer COVID booster dose on March 3rd at the CVS on Elm Street"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Is the vaccine brand I specifically chose for the COVID booster the same brand that previously gave me bad side effects, or did I switch to something different?",
+      "expected_answer": "You switched. The brand that gave you bad side effects was Moderna (arm soreness for four days and feverishness). You chose Pfizer for your COVID booster specifically to avoid repeating that experience.",
+      "gold_memory_state": "Preferred COVID vaccine brand: Pfizer. The user's previous negative experience was with Moderna. The association is that the user deliberately chose Pfizer as a different brand from the one that caused bad side effects (Moderna).",
+      "judge_rubric": {
+        "must_include": [
+          "Pfizer is the chosen brand",
+          "Moderna caused the bad side effects",
+          "they are different brands"
+        ],
+        "acceptable_paraphrases": [
+          "switched from Moderna to Pfizer",
+          "chose Pfizer instead of Moderna"
+        ],
+        "must_not_include": [
+          "Pfizer caused the bad side effects",
+          "chose Moderna for the booster"
+        ],
+        "harmful_extra": [
+          "stating the user is using Moderna for the current booster series"
+        ],
+        "harmless_extra": [
+          "arm soreness for four days",
+          "felt feverish"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model states Moderna is the current booster brand or confuses which brand caused bad reactions.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I chose Pfizer specifically because the last time I had Moderna and my arm was sore for four days and I felt feverish"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I got my first Pfizer COVID booster dose on March 3rd at the CVS on Elm Street"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "When is the earliest I could have gotten my second COVID booster dose, based on what the pharmacist told me? Which of these dates is correct?",
+      "candidate_options": [
+        "March 31st",
+        "April 3rd",
+        "March 17th",
+        "April 21st"
+      ],
+      "expected_answer": "March 31st",
+      "gold_memory_state": "First Pfizer COVID booster: March 3rd. Minimum interval: 4 weeks. Earliest eligible date for second dose: March 31st (March 3rd + 4 weeks).",
+      "judge_rubric": {
+        "must_include": [
+          "March 31st"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [],
+        "harmful_extra": [
+          "selecting April 21st as the earliest eligible date when it is the target date not the earliest"
+        ],
+        "harmless_extra": [
+          "noting April 21st is the user's preferred target date"
+        ]
+      },
+      "distractor_rationale": "same-value-different-target: April 21st is the user's chosen target date for the second dose, not the earliest eligible date — it is a plausible confusion between 'earliest possible' and 'planned.' assistant echo: April 3rd echoes a plausible miscalculation of 'one month later' instead of '4 weeks later.' March 17th represents a 2-week miscalculation.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects April 21st (target date, not earliest) or March 17th (wrong interval calculation).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: First COVID booster dose was on March 3rd",
+        "Fact 2: Minimum wait for second Pfizer dose is 4 weeks",
+        "Inference: March 3rd + 4 weeks = March 31st",
+        "Inference: The earliest eligible date is March 31st, distinct from the user's preferred April 21st target"
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I got my first Pfizer COVID booster dose on March 3rd at the CVS on Elm Street"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "the pharmacist at CVS told me the minimum wait for the second Pfizer dose is 4 weeks"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "When is the earliest I could have gotten my second COVID booster dose, based on what the pharmacist told me? Which of these dates is correct?",
+      "candidate_options": [
+        "March 31st",
+        "April 3rd",
+        "March 17th",
+        "April 21st"
+      ],
+      "expected_answer": "March 31st",
+      "gold_memory_state": "First Pfizer COVID booster: March 3rd. Minimum interval: 4 weeks. Earliest eligible date for second dose: March 31st (March 3rd + 4 weeks).",
+      "judge_rubric": {
+        "must_include": [
+          "March 31st"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [],
+        "harmful_extra": [
+          "selecting April 21st as the earliest eligible date when it is the target date not the earliest"
+        ],
+        "harmless_extra": [
+          "noting April 21st is the user's preferred target date"
+        ]
+      },
+      "distractor_rationale": "same-value-different-target: April 21st is the user's chosen target date for the second dose, not the earliest eligible date — it is a plausible confusion between 'earliest possible' and 'planned.' assistant echo: April 3rd echoes a plausible miscalculation of 'one month later' instead of '4 weeks later.' March 17th represents a 2-week miscalculation.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects April 21st (target date, not earliest) or March 17th (wrong interval calculation).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: First COVID booster dose was on March 3rd",
+        "Fact 2: Minimum wait for second Pfizer dose is 4 weeks",
+        "Inference: March 3rd + 4 weeks = March 31st",
+        "Inference: The earliest eligible date is March 31st, distinct from the user's preferred April 21st target"
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I got my first Pfizer COVID booster dose on March 3rd at the CVS on Elm Street"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "the pharmacist at CVS told me the minimum wait for the second Pfizer dose is 4 weeks"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to figure out the full window of dates during which I could schedule my Shingrix second dose, assuming the first dose happens on the early May date I mentioned. Also, given my insurance situation and my preferred appointment time, draft a short reminder note I could stick on my fridge for that second Shingrix appointment window.",
+      "expected_answer": "If your Shingrix first dose is in early May (around May 5th), the second dose window is approximately early July through early November (2 to 6 months after the first dose). Your insurance covers Shingrix at $0 copay, so there is no cost barrier. A fridge reminder note could read: 'Shingrix 2nd dose: Schedule between early July and early November. Book a late morning appointment (10–11 AM). $0 copay — covered by insurance.'",
+      "gold_memory_state": "Shingrix first dose plan: early May. Shingrix dose interval: 2 to 6 months after first dose. Preferred appointment time: late morning, around 10 or 11 AM. Shingrix insurance coverage: $0 copay.",
+      "judge_rubric": {
+        "must_include": [
+          "early July through early November or equivalent 2-to-6-month window from early May",
+          "late morning or 10-11 AM appointment preference",
+          "$0 copay or no cost"
+        ],
+        "acceptable_paraphrases": [
+          "July to November",
+          "around 10 AM",
+          "no copay",
+          "fully covered"
+        ],
+        "must_not_include": [
+          "flu shot",
+          "Moderna"
+        ],
+        "harmful_extra": [
+          "inventing a specific date the user never chose for the second Shingrix dose",
+          "stating insurance does not cover Shingrix"
+        ],
+        "harmless_extra": [
+          "mentioning CVS on Elm Street as the pharmacy",
+          "mentioning Dr. Levine",
+          "mentioning August or September as the user's tentative preference within the window"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Shingrix first dose is planned for early May (around May 5th)",
+        "Fact 2: Shingrix second dose interval is 2 to 6 months after the first dose",
+        "Fact 3: Preferred appointment time is late morning, around 10 or 11 AM",
+        "Fact 4: Insurance covers Shingrix with $0 copay",
+        "Inference: Early May + 2 months = early July (earliest second dose date)",
+        "Inference: Early May + 6 months = early November (latest second dose date)",
+        "Derived value: The Shingrix second dose window is approximately early July through early November, appointments should be late morning, and there is no cost"
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I'm planning to get the Shingrix first dose in early May, after the second COVID booster has settled"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "The Shingrix second dose is supposed to be given 2 to 6 months after the first dose"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I always book my vaccine appointments for late morning, around 10 or 11 AM, because I handle shots better after I've been up a while and had breakfast"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "my insurance confirmed the Shingrix vaccine is covered with a $0 copay under my current plan"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to figure out the full window of dates during which I could schedule my Shingrix second dose, assuming the first dose happens on the early May date I mentioned. Also, given my insurance situation and my preferred appointment time, draft a short reminder note I could stick on my fridge for that second Shingrix appointment window.",
+      "expected_answer": "If your Shingrix first dose is in early May (around May 5th), the second dose window is approximately early July through early November (2 to 6 months after the first dose). Your insurance covers Shingrix at $0 copay, so there is no cost barrier. A fridge reminder note could read: 'Shingrix 2nd dose: Schedule between early July and early November. Book a late morning appointment (10–11 AM). $0 copay — covered by insurance.'",
+      "gold_memory_state": "Shingrix first dose plan: early May. Shingrix dose interval: 2 to 6 months after first dose. Preferred appointment time: late morning, around 10 or 11 AM. Shingrix insurance coverage: $0 copay.",
+      "judge_rubric": {
+        "must_include": [
+          "early July through early November or equivalent 2-to-6-month window from early May",
+          "late morning or 10-11 AM appointment preference",
+          "$0 copay or no cost"
+        ],
+        "acceptable_paraphrases": [
+          "July to November",
+          "around 10 AM",
+          "no copay",
+          "fully covered"
+        ],
+        "must_not_include": [
+          "flu shot",
+          "Moderna"
+        ],
+        "harmful_extra": [
+          "inventing a specific date the user never chose for the second Shingrix dose",
+          "stating insurance does not cover Shingrix"
+        ],
+        "harmless_extra": [
+          "mentioning CVS on Elm Street as the pharmacy",
+          "mentioning Dr. Levine",
+          "mentioning August or September as the user's tentative preference within the window"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Shingrix first dose is planned for early May (around May 5th)",
+        "Fact 2: Shingrix second dose interval is 2 to 6 months after the first dose",
+        "Fact 3: Preferred appointment time is late morning, around 10 or 11 AM",
+        "Fact 4: Insurance covers Shingrix with $0 copay",
+        "Inference: Early May + 2 months = early July (earliest second dose date)",
+        "Inference: Early May + 6 months = early November (latest second dose date)",
+        "Derived value: The Shingrix second dose window is approximately early July through early November, appointments should be late morning, and there is no cost"
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I'm planning to get the Shingrix first dose in early May, after the second COVID booster has settled"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "The Shingrix second dose is supposed to be given 2 to 6 months after the first dose"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I always book my vaccine appointments for late morning, around 10 or 11 AM, because I handle shots better after I've been up a while and had breakfast"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "my insurance confirmed the Shingrix vaccine is covered with a $0 copay under my current plan"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "When did I get my flu shot this year?",
+      "expected_answer": "I don't have a flu shot date from you. You haven't provided that information.",
+      "gold_memory_state": "No flu shot date was ever provided. The user discussed COVID booster doses (Pfizer, March 3rd first dose) and Shingrix plans, but never mentioned a flu shot date.",
+      "judge_rubric": {
+        "must_include": [
+          "no flu shot date provided or equivalent refusal"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have that information",
+          "you haven't mentioned a flu shot",
+          "no record of a flu shot date"
+        ],
+        "must_not_include": [
+          "any invented flu shot date",
+          "March 3rd as a flu shot date",
+          "February 18th"
+        ],
+        "harmful_extra": [
+          "borrowing the March 3rd COVID booster date as a flu shot date",
+          "borrowing Kevin's February 18th date",
+          "inventing any date for a flu shot"
+        ],
+        "harmless_extra": [
+          "noting that COVID booster and Shingrix information are on file"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model invents a flu shot date or borrows a date from a neighboring vaccination record (e.g., March 3rd COVID booster, Kevin's February 18th Moderna).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I got my first Pfizer COVID booster dose on March 3rd at the CVS on Elm Street"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I'm planning to get the Shingrix first dose in early May, after the second COVID booster has settled"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "When did I get my flu shot this year?",
+      "expected_answer": "I don't have a flu shot date from you. You haven't provided that information.",
+      "gold_memory_state": "No flu shot date was ever provided. The user discussed COVID booster doses (Pfizer, March 3rd first dose) and Shingrix plans, but never mentioned a flu shot date.",
+      "judge_rubric": {
+        "must_include": [
+          "no flu shot date provided or equivalent refusal"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have that information",
+          "you haven't mentioned a flu shot",
+          "no record of a flu shot date"
+        ],
+        "must_not_include": [
+          "any invented flu shot date",
+          "March 3rd as a flu shot date",
+          "February 18th"
+        ],
+        "harmful_extra": [
+          "borrowing the March 3rd COVID booster date as a flu shot date",
+          "borrowing Kevin's February 18th date",
+          "inventing any date for a flu shot"
+        ],
+        "harmless_extra": [
+          "noting that COVID booster and Shingrix information are on file"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model invents a flu shot date or borrows a date from a neighboring vaccination record (e.g., March 3rd COVID booster, Kevin's February 18th Moderna).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I got my first Pfizer COVID booster dose on March 3rd at the CVS on Elm Street"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I'm planning to get the Shingrix first dose in early May, after the second COVID booster has settled"
+        }
+      ]
+    }
+  ]
+}

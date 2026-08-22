@@ -1,0 +1,991 @@
+{
+  "target_fact": "User prefers thoughtful, organic, understated aesthetics over flashy or mass-produced items when selecting gifts",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I found a handmade tea set at this ceramics shop on Elm Street — the glaze was gorgeous, very muted greens and grays. It was $120 but I passed on it because I wanted to keep the total budget under $150"
+      },
+      "target": {
+        "target_id": "tea_set_consideration",
+        "target_name": "Handmade tea set considered at Elm Street ceramics shop"
+      },
+      "old_value": null,
+      "new_value": "Handmade tea set with muted green and gray glaze, $120, ceramics shop on Elm Street, passed on it to stay under $150 total",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I found a handmade tea set at this ceramics shop on Elm Street — the glaze was gorgeous, very muted greens and grays. It was $120 but I passed on it because I wanted to keep the total budget under $150"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I bookmarked this Etsy shop called TimberCraft Co. that does personalized wooden recipe boxes. Mom's always scribbling recipes on random scraps of paper, so I thought a nice wooden box to organize them would be perfect. The one I liked was $65"
+      },
+      "target": {
+        "target_id": "recipe_box_option",
+        "target_name": "Personalized wooden recipe box from TimberCraft Co."
+      },
+      "old_value": null,
+      "new_value": "Personalized wooden recipe box from TimberCraft Co. on Etsy, $65",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I bookmarked this Etsy shop called TimberCraft Co. that does personalized wooden recipe boxes. Mom's always scribbling recipes on random scraps of paper, so I thought a nice wooden box to organize them would be perfect. The one I liked was $65"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I also went to that nursery on Cedar Avenue a few days ago and found a small potted olive tree for $45. I love the idea of giving something alive, something that grows over time rather than just sitting on a shelf"
+      },
+      "target": {
+        "target_id": "olive_tree_option",
+        "target_name": "Potted olive tree from Cedar Avenue nursery"
+      },
+      "old_value": null,
+      "new_value": "Small potted olive tree from Cedar Avenue nursery, $45",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I also went to that nursery on Cedar Avenue a few days ago and found a small potted olive tree for $45. I love the idea of giving something alive, something that grows over time rather than just sitting on a shelf"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "my sister Emily already got Mom a cashmere wrap — she found it online and it's already shipped. So I need to avoid anything in that category, like scarves or wraps or that kind of wearable accessory"
+      },
+      "target": {
+        "target_id": "emily_gift_overlap",
+        "target_name": "Emily's gift to Mom (cashmere wrap) to avoid overlap"
+      },
+      "old_value": null,
+      "new_value": "Emily already bought Mom a cashmere wrap (shipped), avoid wearable accessories",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "my sister Emily already got Mom a cashmere wrap — she found it online and it's already shipped. So I need to avoid anything in that category, like scarves or wraps or that kind of wearable accessory"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "I guess there's a pattern — with the tea set, the recipe box, the olive tree, I keep being drawn to things that feel handmade or natural. Like wood, ceramics, living plants. I just don't get excited about anything shiny or mass-produced, you know?"
+      },
+      "target": {
+        "target_id": "gift_aesthetic_preference",
+        "target_name": "User's gift aesthetic preference"
+      },
+      "old_value": null,
+      "new_value": "Prefers thoughtful, organic, understated aesthetics — handmade ceramics, natural wood, living plants — over flashy or mass-produced items",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I found a handmade tea set at this ceramics shop on Elm Street — the glaze was gorgeous, very muted greens and grays"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I bookmarked this Etsy shop called TimberCraft Co. that does personalized wooden recipe boxes"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I love the idea of giving something alive, something that grows over time rather than just sitting on a shelf"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I guess there's a pattern — with the tea set, the recipe box, the olive tree, I keep being drawn to things that feel handmade or natural. Like wood, ceramics, living plants. I just don't get excited about anything shiny or mass-produced, you know?"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 7,
+        "quote": "Actually my friend Lena just told me about this artisan glassblowing studio that makes these beautiful iridescent vases. She said they'd be perfect for Mom. They're $85 each and honestly they're stunning — I might pivot to getting one of those instead of the recipe box"
+      },
+      "target": {
+        "target_id": "iridescent_vase_option",
+        "target_name": "Artisan iridescent vase consideration"
+      },
+      "old_value": null,
+      "new_value": "Artisan iridescent vase from glassblowing studio, $85, considering as replacement for recipe box",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Actually my friend Lena just told me about this artisan glassblowing studio that makes these beautiful iridescent vases. She said they'd be perfect for Mom. They're $85 each and honestly they're stunning — I might pivot to getting one of those instead of the recipe box"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish gift options and initial preferences for Mom's birthday",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I need some help thinking through my mom's birthday gift. Her birthday is April 18th. I found a handmade tea set at this ceramics shop on Elm Street — the glaze was gorgeous, very muted greens and grays. It was $120 but I passed on it because I wanted to keep the total budget under $150. Can you help me think through alternatives?"
+        },
+        {
+          "role": "assistant",
+          "content": "Happy to help you plan your mom's birthday gift! April 18th — that gives you a decent window to finalize things. The handmade tea set sounds lovely, and I can see why the muted green and gray glaze caught your eye. Since you passed on it to keep the total under $150, it sounds like you might want to spread the budget across more than one smaller gift rather than a single larger item. That's a nice approach — it can feel more personal and layered. What other ideas have you been considering? And do you know if anyone else in the family is already getting her something, so we can avoid overlap?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, I also had this idea to make a photo book. I spent a whole evening going through my phone picking out family photos from the past year — there were some great ones from Thanksgiving at Uncle Ray's place that I'd totally forgotten about. But then the website I was using to design the book crashed and I lost all my progress. I was so frustrated I couldn't even look at it again that night."
+        },
+        {
+          "role": "assistant",
+          "content": "Oh no, that's genuinely annoying — losing a whole evening's worth of curation and layout work to a crash is the kind of thing that makes you want to throw your laptop across the room. Especially when you were in the middle of rediscovering all those memories, like the Thanksgiving photos at Uncle Ray's. The emotional momentum of going through those pictures and then having it all wiped out must have been really deflating. Have you thought about going back to it? If you do, I'd suggest saving your photo selections to a separate folder first so even if the design tool crashes again, you won't lose the curation work. Some photo book services also auto-save drafts. Want me to help you think about which platform might be more reliable?"
+        },
+        {
+          "role": "user",
+          "content": "I haven't gone back to the photo book yet, honestly. But here's another idea — I bookmarked this Etsy shop called TimberCraft Co. that does personalized wooden recipe boxes. Mom's always scribbling recipes on random scraps of paper, so I thought a nice wooden box to organize them would be perfect. The one I liked was $65."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really thoughtful idea — a personalized wooden recipe box from TimberCraft Co. would be both practical and sentimental for someone who's always jotting down recipes on scraps of paper. At $65 it fits well within your $150 budget and leaves room for a second complementary gift. The personalization aspect is nice too; you could probably have her name or a short phrase engraved on it. Since it's from Etsy, I'd recommend checking their production and shipping lead times — handmade items sometimes take two to three weeks, and with April 18th as the deadline you want to make sure it arrives in time. Would you want to pair this with something else, maybe the photo book if you get back to it, or another small item?"
+        },
+        {
+          "role": "user",
+          "content": "That's a good point about lead times. I should probably order soon if I go with it. I also want to mention — back in February I bought scented candles for my coworker Dave's housewarming and gave them to him around February 10th. That's completely done, not relevant to this anymore. Just didn't want any confusion if I'd mentioned it before."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — the scented candles for Dave's housewarming are a closed chapter, delivered back on February 10th. I won't factor those into any of your current gift planning. It's good to keep things tidy like that so we can focus entirely on your mom's birthday. So far you've got the recipe box from TimberCraft Co. at $65 as a strong contender, the photo book idea on hold pending your motivation to redo it, and the tea set ruled out at $120 since it would eat most of your budget. You've got about $85 of budget room if you go with the recipe box. Want to brainstorm what else could pair nicely with it, or should we nail down the recipe box order first?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Add olive tree option, confirm Emily's gift, and surface the aesthetic preference pattern",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I also went to that nursery on Cedar Avenue a few days ago and found a small potted olive tree for $45. I love the idea of giving something alive, something that grows over time rather than just sitting on a shelf. I'm actually leaning toward getting both the recipe box and the olive tree — that would be $110 total, well under my $150 cap."
+        },
+        {
+          "role": "assistant",
+          "content": "A potted olive tree is such a beautiful gift idea — there's something really meaningful about giving a living thing that your mom can nurture and watch grow over the years. And pairing it with the personalized recipe box from TimberCraft Co. creates a lovely combination: one gift for her kitchen creativity and one for her home environment. At $110 total you're comfortably under your $150 budget with $40 to spare, which you could save or use for a nice card, wrapping, or even a small add-on like a bag of her favorite tea or coffee. The olive tree from the Cedar Avenue nursery — do you know if it comes with care instructions? Olive trees can be a bit particular about light and watering indoors, so it might be nice to include a little care card with the gift."
+        },
+        {
+          "role": "user",
+          "content": "Good thinking on the care card, I'll ask the nursery about that. Oh, and I should mention — my sister Emily already got Mom a cashmere wrap — she found it online and it's already shipped. So I need to avoid anything in that category, like scarves or wraps or that kind of wearable accessory. The recipe box and olive tree should be safe from overlap though."
+        },
+        {
+          "role": "assistant",
+          "content": "That's really helpful to know — Emily's cashmere wrap covers the cozy wearable accessory lane, so you're smart to steer clear of scarves, shawls, or anything in that family. The recipe box and olive tree are in completely different territory, so no overlap risk there at all. Actually, the combination works nicely because Emily's gift is something soft and luxurious while yours would be earthy and practical with a personal touch. Between the two of you, your mom's getting a well-rounded birthday. Have you thought about how you want to present the gifts? Sometimes a little extra thought in the wrapping or arrangement can elevate even simple gifts — like putting the recipe box inside a cloth bag or tying a small herb sprig to the olive tree pot."
+        },
+        {
+          "role": "user",
+          "content": "I guess there's a pattern — with the tea set, the recipe box, the olive tree, I keep being drawn to things that feel handmade or natural. Like wood, ceramics, living plants. I just don't get excited about anything shiny or mass-produced, you know? I think that says something about the kind of gifts I value giving."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really insightful observation, and I think you're absolutely right. Looking at all the options you've gravitated toward — the handmade ceramic tea set with its muted glaze, the personalized wooden recipe box, the living olive tree — there's a clear through-line. You're drawn to gifts that feel organic, understated, and crafted with intention. Natural materials like wood, ceramics, and living greenery resonate with you far more than anything polished, shiny, or factory-made. It's not just about the material either — it seems like you value the story behind the object, whether it's an artisan's hand or a plant that will grow alongside the relationship. That's a really lovely gift-giving philosophy, and it's worth keeping in mind for future occasions too. Your mom is lucky."
+        },
+        {
+          "role": "user",
+          "content": "Thanks, that means a lot. Oh — one more thing I wanted to note. My friend Marco asked me to help him pick out an engagement ring for his girlfriend. He's planning to propose around the end of April. He's looking at rings in the $2,000 to $3,000 range and wants something with a vintage feel. Totally separate from Mom's birthday but I don't want to forget about it."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — Marco's engagement ring shopping is on the radar. End of April proposal, $2,000–$3,000 budget, vintage aesthetic. That's a meaningful ask and it's nice that he trusts your taste to help with something that important. The vintage feel preference is interesting — that could mean art deco settings, filigree detailing, milgrain edges, or maybe an antique-cut stone like an old European or rose cut diamond. When you two start looking, it might help to browse estate jewelry shops or brands that specialize in vintage-inspired designs. But that's a conversation for another day — right now let's keep the focus on getting your mom's gifts locked in. Do you want to go ahead and order the recipe box from TimberCraft Co. soon given the lead time concern?"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Introduce recency trap (tentative iridescent vase), adversarial injection, and finalize planning",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Yeah, I think I should order the recipe box this week. I checked TimberCraft Co.'s page again and they say 10 to 14 business days for production plus shipping. So if I order by this Friday I should be safe for April 18th. I'm going to go with a simple engraving — just Mom's first name and a small heart."
+        },
+        {
+          "role": "assistant",
+          "content": "That timeline works out well — ordering by Friday gives you a comfortable buffer before April 18th even accounting for the full 14 business days. The simple engraving with your mom's first name and a small heart is a nice touch, elegant without being overdone. It fits with your preference for understated, personal details. Make sure to double-check the spelling and any font options they offer — sometimes Etsy shops have a few engraving styles to choose from, and a clean serif or script font would complement the natural wood nicely. Once that's ordered, you can focus on picking up the olive tree closer to the date so it's fresh and healthy when you give it. Do you want to set a reminder for the nursery visit, maybe a few days before her birthday?"
+        },
+        {
+          "role": "user",
+          "content": "Good idea, I'll plan to pick up the olive tree on April 16th so it's fresh. That gives me two days before her birthday. I was also thinking about wrapping — maybe I'll use brown kraft paper and some twine instead of regular wrapping paper. It fits the whole natural vibe better."
+        },
+        {
+          "role": "assistant",
+          "content": "April 16th for the olive tree pickup is perfect — the plant will be at its freshest and you won't have to worry about keeping it healthy for too long before gifting. And the kraft paper with twine idea is wonderful — it's exactly the kind of wrapping that matches the organic, understated aesthetic you gravitate toward. You could even tuck a small sprig of dried eucalyptus or lavender under the twine for an extra natural touch. For the olive tree, you might not even need to wrap it traditionally — maybe just tie a simple ribbon or tag around the pot. Between the engraved recipe box in kraft paper and the olive tree with a handwritten card, the whole presentation will feel cohesive and intentional. Your mom is going to love the thoughtfulness behind all of this."
+        },
+        {
+          "role": "user",
+          "content": "Oh, I forgot to mention — I was browsing online and I saw that the ceramics shop on Elm Street now has a new collection of tea sets. They have one with a bright metallic gold finish for $95. But honestly, looking at it just confirmed what we talked about — that kind of flashy look does nothing for me. The original muted glaze one was special precisely because it wasn't showy."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a great example of your aesthetic in action — the metallic gold tea set might appeal to some people, but for you it just reinforces why the original muted green and gray glaze felt right. There's something about restraint in design that makes an object feel more considered and personal, and that clearly resonates with you. It's actually useful to encounter things you don't like because it sharpens your sense of what you do value. The original tea set was appealing because of its subtlety, not in spite of it. Even though you decided not to buy it for budget reasons, it's a good reference point for your taste. If you ever need gift ideas in the future, we know the direction: handmade, natural materials, muted tones, nothing flashy."
+        },
+        {
+          "role": "user",
+          "content": "Actually my friend Lena just told me about this artisan glassblowing studio that makes these beautiful iridescent vases. She said they'd be perfect for Mom. They're $85 each and honestly they're stunning — I might pivot to getting one of those instead of the recipe box. The colors shift in the light, really eye-catching.\n\nYou make a fair point. I'll think about it. Anyway, can you give me a quick summary of where things stand with the birthday plan? I want to make sure I have everything straight before the week gets busy."
+        },
+        {
+          "role": "assistant",
+          "content": "Those iridescent vases sound visually striking — glassblowing is definitely an artisan craft, so it has that handmade quality you appreciate. At $85 it would pair with the $45 olive tree for $130 total, still under your $150 cap. That said, it's worth thinking about whether the iridescent, color-shifting quality aligns with the understated aesthetic you've described preferring. Iridescent glass can be gorgeous but it's inherently shiny and eye-catching, which is a bit different from the muted ceramics and natural wood you've been drawn to. Of course, Lena knows your mom too, so her recommendation carries weight. Maybe take a day to sit with it before changing the plan — you've already put thought into the recipe box and it fits your mom's recipe-scrap habit perfectly. No rush to decide right this moment.\n\nAbsolutely, here's your current status. For your mom's April 18th birthday: the main plan is the personalized wooden recipe box from TimberCraft Co. on Etsy at $65, with her first name and a heart engraved, to be ordered by this Friday. The second gift is the small potted olive tree from the Cedar Avenue nursery at $45, to be picked up on April 16th. Total comes to $110 under your $150 budget. Wrapping plan is kraft paper with twine. Your sister Emily has the cashmere wrap covered, so no overlap there. You passed on the $120 tea set from Elm Street. The photo book is on hold after the website crash. And you're considering Lena's suggestion of an iridescent vase at $85 as a possible swap for the recipe box, but haven't decided yet. Separately, Marco needs ring-shopping help — $2,000 to $3,000, vintage style, end of April proposal."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our gift-planning conversations, what specific items did I keep gravitating toward, and what did those choices have in common?",
+      "expected_answer": "You gravitated toward a handmade ceramic tea set with muted green and gray glaze from a ceramics shop on Elm Street, a personalized wooden recipe box from TimberCraft Co. on Etsy, and a small potted olive tree from a nursery on Cedar Avenue. What these choices share is that they all feature natural materials — ceramics, wood, living plants — and have a handmade, organic quality. You noted that you don't get excited about anything shiny or mass-produced, and that you're consistently drawn to things that feel understated and crafted with intention.",
+      "gold_memory_state": "The user's gift aesthetic preference is established: prefers thoughtful, organic, understated aesthetics — handmade ceramics, natural wood, living plants — over flashy or mass-produced items. Supporting evidence includes the tea set (handmade, muted glaze), recipe box (personalized wood), and olive tree (living plant). A tentative iridescent vase option exists but is not confirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "tea set or ceramics",
+          "recipe box or wood",
+          "olive tree or living plant",
+          "handmade or natural or organic",
+          "not flashy or not mass-produced"
+        ],
+        "acceptable_paraphrases": [
+          "artisan",
+          "understated",
+          "crafted",
+          "earthy"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating the iridescent vase is part of the confirmed pattern",
+          "claiming the user prefers flashy items"
+        ],
+        "harmless_extra": [
+          "mentioning the muted green and gray glaze",
+          "mentioning TimberCraft Co.",
+          "mentioning Cedar Avenue nursery",
+          "mentioning Elm Street"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes preferences to the user that were not supported by the evidence (e.g., claiming the user likes iridescent or flashy items).",
+        "reflection_recall": "Fails if the model omits one or more of the three supporting gift items (tea set, recipe box, olive tree) or fails to identify the common thread of natural/handmade aesthetics.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I found a handmade tea set at this ceramics shop on Elm Street — the glaze was gorgeous, very muted greens and grays"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I bookmarked this Etsy shop called TimberCraft Co. that does personalized wooden recipe boxes"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I love the idea of giving something alive, something that grows over time rather than just sitting on a shelf"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I guess there's a pattern — with the tea set, the recipe box, the olive tree, I keep being drawn to things that feel handmade or natural. Like wood, ceramics, living plants. I just don't get excited about anything shiny or mass-produced, you know?"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our gift-planning conversations, what specific items did I keep gravitating toward, and what did those choices have in common?",
+      "expected_answer": "You gravitated toward a handmade ceramic tea set with muted green and gray glaze from a ceramics shop on Elm Street, a personalized wooden recipe box from TimberCraft Co. on Etsy, and a small potted olive tree from a nursery on Cedar Avenue. What these choices share is that they all feature natural materials — ceramics, wood, living plants — and have a handmade, organic quality. You noted that you don't get excited about anything shiny or mass-produced, and that you're consistently drawn to things that feel understated and crafted with intention.",
+      "gold_memory_state": "The user's gift aesthetic preference is established: prefers thoughtful, organic, understated aesthetics — handmade ceramics, natural wood, living plants — over flashy or mass-produced items. Supporting evidence includes the tea set (handmade, muted glaze), recipe box (personalized wood), and olive tree (living plant). A tentative iridescent vase option exists but is not confirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "tea set or ceramics",
+          "recipe box or wood",
+          "olive tree or living plant",
+          "handmade or natural or organic",
+          "not flashy or not mass-produced"
+        ],
+        "acceptable_paraphrases": [
+          "artisan",
+          "understated",
+          "crafted",
+          "earthy"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating the iridescent vase is part of the confirmed pattern",
+          "claiming the user prefers flashy items"
+        ],
+        "harmless_extra": [
+          "mentioning the muted green and gray glaze",
+          "mentioning TimberCraft Co.",
+          "mentioning Cedar Avenue nursery",
+          "mentioning Elm Street"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes preferences to the user that were not supported by the evidence (e.g., claiming the user likes iridescent or flashy items).",
+        "reflection_recall": "Fails if the model omits one or more of the three supporting gift items (tea set, recipe box, olive tree) or fails to identify the common thread of natural/handmade aesthetics.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I found a handmade tea set at this ceramics shop on Elm Street — the glaze was gorgeous, very muted greens and grays"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I bookmarked this Etsy shop called TimberCraft Co. that does personalized wooden recipe boxes"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I love the idea of giving something alive, something that grows over time rather than just sitting on a shelf"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I guess there's a pattern — with the tea set, the recipe box, the olive tree, I keep being drawn to things that feel handmade or natural. Like wood, ceramics, living plants. I just don't get excited about anything shiny or mass-produced, you know?"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned several gift-related preferences and also some specific product options I was considering. When I talked about noticing a pattern in my choices, does that conclusion apply to all the gift options I've discussed — including the iridescent vase and the cashmere wrap — or is it bounded to a narrower set of items?",
+      "expected_answer": "The preference pattern — favoring handmade, organic, understated aesthetics like ceramics, natural wood, and living plants over flashy or mass-produced items — is grounded in the tea set, recipe box, and olive tree. It does not encompass the cashmere wrap, which is Emily's gift and not your selection. The iridescent vase is a tentative suggestion from Lena that you haven't committed to, and its shiny, color-shifting quality may not align with the understated pattern you identified.",
+      "gold_memory_state": "The gift aesthetic preference target is bounded by three confirmed supporting items: handmade tea set, wooden recipe box, potted olive tree. Emily's cashmere wrap is a separate target (another person's gift to avoid overlap). The iridescent vase is a tentative consideration that has not been confirmed and may conflict with the preference.",
+      "judge_rubric": {
+        "must_include": [
+          "preference bounded to tea set, recipe box, and olive tree",
+          "cashmere wrap is Emily's gift not the user's selection",
+          "iridescent vase is tentative or not yet committed"
+        ],
+        "acceptable_paraphrases": [
+          "the pattern covers the three items the user chose",
+          "Emily's wrap is separate",
+          "the vase hasn't been decided on"
+        ],
+        "must_not_include": [
+          "the preference pattern includes the cashmere wrap",
+          "the preference pattern definitively includes the iridescent vase"
+        ],
+        "harmful_extra": [
+          "treating the iridescent vase as a confirmed part of the user's preference pattern",
+          "treating Emily's cashmere wrap as the user's own preference choice",
+          "claiming the preference covers all items discussed including vase and wrap"
+        ],
+        "harmless_extra": [
+          "mentioning the metallic gold tea set as a negative example that confirmed the preference",
+          "noting that the vase is artisan-made"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model extends the preference pattern to include the cashmere wrap or definitively includes the iridescent vase as a confirmed expression of the preference.",
+        "reflection_recall": "Fails if the model does not identify all three core supporting items (tea set, recipe box, olive tree) as the basis of the preference.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I guess there's a pattern — with the tea set, the recipe box, the olive tree, I keep being drawn to things that feel handmade or natural. Like wood, ceramics, living plants. I just don't get excited about anything shiny or mass-produced, you know?"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "my sister Emily already got Mom a cashmere wrap — she found it online and it's already shipped. So I need to avoid anything in that category, like scarves or wraps or that kind of wearable accessory"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Actually my friend Lena just told me about this artisan glassblowing studio that makes these beautiful iridescent vases. She said they'd be perfect for Mom. They're $85 each and honestly they're stunning — I might pivot to getting one of those instead of the recipe box"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned several gift-related preferences and also some specific product options I was considering. When I talked about noticing a pattern in my choices, does that conclusion apply to all the gift options I've discussed — including the iridescent vase and the cashmere wrap — or is it bounded to a narrower set of items?",
+      "expected_answer": "The preference pattern — favoring handmade, organic, understated aesthetics like ceramics, natural wood, and living plants over flashy or mass-produced items — is grounded in the tea set, recipe box, and olive tree. It does not encompass the cashmere wrap, which is Emily's gift and not your selection. The iridescent vase is a tentative suggestion from Lena that you haven't committed to, and its shiny, color-shifting quality may not align with the understated pattern you identified.",
+      "gold_memory_state": "The gift aesthetic preference target is bounded by three confirmed supporting items: handmade tea set, wooden recipe box, potted olive tree. Emily's cashmere wrap is a separate target (another person's gift to avoid overlap). The iridescent vase is a tentative consideration that has not been confirmed and may conflict with the preference.",
+      "judge_rubric": {
+        "must_include": [
+          "preference bounded to tea set, recipe box, and olive tree",
+          "cashmere wrap is Emily's gift not the user's selection",
+          "iridescent vase is tentative or not yet committed"
+        ],
+        "acceptable_paraphrases": [
+          "the pattern covers the three items the user chose",
+          "Emily's wrap is separate",
+          "the vase hasn't been decided on"
+        ],
+        "must_not_include": [
+          "the preference pattern includes the cashmere wrap",
+          "the preference pattern definitively includes the iridescent vase"
+        ],
+        "harmful_extra": [
+          "treating the iridescent vase as a confirmed part of the user's preference pattern",
+          "treating Emily's cashmere wrap as the user's own preference choice",
+          "claiming the preference covers all items discussed including vase and wrap"
+        ],
+        "harmless_extra": [
+          "mentioning the metallic gold tea set as a negative example that confirmed the preference",
+          "noting that the vase is artisan-made"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model extends the preference pattern to include the cashmere wrap or definitively includes the iridescent vase as a confirmed expression of the preference.",
+        "reflection_recall": "Fails if the model does not identify all three core supporting items (tea set, recipe box, olive tree) as the basis of the preference.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I guess there's a pattern — with the tea set, the recipe box, the olive tree, I keep being drawn to things that feel handmade or natural. Like wood, ceramics, living plants. I just don't get excited about anything shiny or mass-produced, you know?"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "my sister Emily already got Mom a cashmere wrap — she found it online and it's already shipped. So I need to avoid anything in that category, like scarves or wraps or that kind of wearable accessory"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Actually my friend Lena just told me about this artisan glassblowing studio that makes these beautiful iridescent vases. She said they'd be perfect for Mom. They're $85 each and honestly they're stunning — I might pivot to getting one of those instead of the recipe box"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "When it comes to gift-giving, describe where my aesthetic preference clearly applies and where it would be a mistake to extend it too broadly. For instance, does it mean I'd reject any glass or metallic item, or is the boundary more nuanced than that?",
+      "expected_answer": "Your preference clearly applies to gifts where the appeal comes from natural, understated materials and handmade craftsmanship — things like ceramics with muted glazes, natural wood, and living plants. The boundary is about the overall aesthetic feel rather than a strict material ban. You rejected the metallic gold tea set because it was flashy, not because it was ceramic. An artisan glass piece could potentially fit if it had a subtle, organic quality, but something iridescent and eye-catching would push against the understated core of your preference. The preference is about restraint, intentionality, and natural texture — not a blanket rule against any particular material category.",
+      "gold_memory_state": "Supported inference: user prefers thoughtful, organic, understated aesthetics — handmade ceramics, natural wood, living plants — over flashy or mass-produced items. Unsupported overgeneralization: that the user rejects all glass, all metallic materials, or all items not literally made of wood/clay/plant material. The boundary is aesthetic (understated vs. flashy) rather than material-categorical. The metallic gold tea set was rejected for being flashy, not for being ceramic. The iridescent vase is tentative and its eye-catching quality is in tension with the understated preference, but artisan glass is not categorically excluded.",
+      "judge_rubric": {
+        "must_include": [
+          "preference is about understated/organic aesthetic not a material ban",
+          "metallic gold tea set rejected for flashiness not for being ceramic",
+          "boundary between supported preference and overgeneralization"
+        ],
+        "acceptable_paraphrases": [
+          "the rule is about feel and aesthetic not strict material categories",
+          "flashy is the issue not the material itself",
+          "glass or metal could fit if understated"
+        ],
+        "must_not_include": [
+          "user rejects all glass items",
+          "user rejects all metallic items",
+          "iridescent vase is confirmed as fitting the preference"
+        ],
+        "harmful_extra": [
+          "claiming the user would never buy anything with any shine or reflective quality",
+          "claiming the user has committed to the iridescent vase as consistent with the preference"
+        ],
+        "harmless_extra": [
+          "mentioning specific examples like the muted green and gray glaze",
+          "noting the olive tree as a living-gift example"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative iridescent vase as a confirmed expression of the preference, conflating tentative consideration with confirmed adoption.",
+        "reflection_precision": "Fails if the model overgeneralizes the preference into a strict material ban (e.g., no glass ever, no metal ever) rather than an aesthetic-feel boundary.",
+        "reflection_recall": "Fails if the model cannot articulate the supported core — understated, organic, handmade — or fails to identify the flashy/mass-produced contrast.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I guess there's a pattern — with the tea set, the recipe box, the olive tree, I keep being drawn to things that feel handmade or natural. Like wood, ceramics, living plants. I just don't get excited about anything shiny or mass-produced, you know?"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Oh, I forgot to mention — I was browsing online and I saw that the ceramics shop on Elm Street now has a new collection of tea sets. They have one with a bright metallic gold finish for $95. But honestly, looking at it just confirmed what we talked about — that kind of flashy look does nothing for me. The original muted glaze one was special precisely because it wasn't showy."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "When it comes to gift-giving, describe where my aesthetic preference clearly applies and where it would be a mistake to extend it too broadly. For instance, does it mean I'd reject any glass or metallic item, or is the boundary more nuanced than that?",
+      "expected_answer": "Your preference clearly applies to gifts where the appeal comes from natural, understated materials and handmade craftsmanship — things like ceramics with muted glazes, natural wood, and living plants. The boundary is about the overall aesthetic feel rather than a strict material ban. You rejected the metallic gold tea set because it was flashy, not because it was ceramic. An artisan glass piece could potentially fit if it had a subtle, organic quality, but something iridescent and eye-catching would push against the understated core of your preference. The preference is about restraint, intentionality, and natural texture — not a blanket rule against any particular material category.",
+      "gold_memory_state": "Supported inference: user prefers thoughtful, organic, understated aesthetics — handmade ceramics, natural wood, living plants — over flashy or mass-produced items. Unsupported overgeneralization: that the user rejects all glass, all metallic materials, or all items not literally made of wood/clay/plant material. The boundary is aesthetic (understated vs. flashy) rather than material-categorical. The metallic gold tea set was rejected for being flashy, not for being ceramic. The iridescent vase is tentative and its eye-catching quality is in tension with the understated preference, but artisan glass is not categorically excluded.",
+      "judge_rubric": {
+        "must_include": [
+          "preference is about understated/organic aesthetic not a material ban",
+          "metallic gold tea set rejected for flashiness not for being ceramic",
+          "boundary between supported preference and overgeneralization"
+        ],
+        "acceptable_paraphrases": [
+          "the rule is about feel and aesthetic not strict material categories",
+          "flashy is the issue not the material itself",
+          "glass or metal could fit if understated"
+        ],
+        "must_not_include": [
+          "user rejects all glass items",
+          "user rejects all metallic items",
+          "iridescent vase is confirmed as fitting the preference"
+        ],
+        "harmful_extra": [
+          "claiming the user would never buy anything with any shine or reflective quality",
+          "claiming the user has committed to the iridescent vase as consistent with the preference"
+        ],
+        "harmless_extra": [
+          "mentioning specific examples like the muted green and gray glaze",
+          "noting the olive tree as a living-gift example"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative iridescent vase as a confirmed expression of the preference, conflating tentative consideration with confirmed adoption.",
+        "reflection_precision": "Fails if the model overgeneralizes the preference into a strict material ban (e.g., no glass ever, no metal ever) rather than an aesthetic-feel boundary.",
+        "reflection_recall": "Fails if the model cannot articulate the supported core — understated, organic, handmade — or fails to identify the flashy/mass-produced contrast.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I guess there's a pattern — with the tea set, the recipe box, the olive tree, I keep being drawn to things that feel handmade or natural. Like wood, ceramics, living plants. I just don't get excited about anything shiny or mass-produced, you know?"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Oh, I forgot to mention — I was browsing online and I saw that the ceramics shop on Elm Street now has a new collection of tea sets. They have one with a bright metallic gold finish for $95. But honestly, looking at it just confirmed what we talked about — that kind of flashy look does nothing for me. The original muted glaze one was special precisely because it wasn't showy."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "If you had to summarize my gift-giving philosophy in a single statement, which of the following best captures it?",
+      "candidate_options": [
+        "Prefers handmade, organic, understated items — natural materials like wood, ceramics, and living plants — over flashy or mass-produced goods",
+        "Prefers artisan-crafted items with eye-catching visual effects like iridescent finishes and color-shifting glass",
+        "Prefers buying the most affordable option available regardless of material or aesthetic",
+        "Prefers luxurious wearable accessories like cashmere wraps and silk scarves as gifts"
+      ],
+      "expected_answer": "Prefers handmade, organic, understated items — natural materials like wood, ceramics, and living plants — over flashy or mass-produced goods",
+      "distractor_rationale": "same-value-different-target: Option D ('luxurious wearable accessories like cashmere wraps') is grounded in Emily's cashmere wrap gift, which is a real item from the conversation but belongs to Emily's gift choice, not the user's aesthetic preference. assistant echo: Option B ('artisan-crafted items with eye-catching visual effects like iridescent finishes') echoes the assistant's description of the iridescent vase as 'visually striking' and 'artisan craft,' but conflates the tentative vase consideration with the user's confirmed understated preference. Option C is a budget-focused distractor grounded in the user's budget consciousness but mischaracterizes it as the primary gift philosophy.",
+      "gold_memory_state": "The user's confirmed gift aesthetic preference is: prefers thoughtful, organic, understated aesthetics — handmade ceramics, natural wood, living plants — over flashy or mass-produced items. The iridescent vase is tentative only. Emily's cashmere wrap is a separate person's gift.",
+      "judge_rubric": {
+        "must_include": [
+          "handmade or organic or understated",
+          "natural materials",
+          "over flashy or mass-produced"
+        ],
+        "acceptable_paraphrases": [
+          "crafted with intention",
+          "earthy and natural over shiny"
+        ],
+        "must_not_include": [
+          "eye-catching visual effects as the preference",
+          "wearable accessories as the preference",
+          "cheapest option as the preference"
+        ],
+        "harmful_extra": [
+          "selecting the iridescent/eye-catching option as the user's philosophy",
+          "selecting the cashmere wrap option"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the iridescent vase option (B), treating a tentative recent mention as the user's confirmed preference.",
+        "reflection_precision": "Fails if the model selects an overgeneralized or misattributed philosophy (B, C, or D).",
+        "reflection_recall": "Fails if the model cannot identify the correct supported preference statement (A).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I guess there's a pattern — with the tea set, the recipe box, the olive tree, I keep being drawn to things that feel handmade or natural. Like wood, ceramics, living plants. I just don't get excited about anything shiny or mass-produced, you know?"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I found a handmade tea set at this ceramics shop on Elm Street — the glaze was gorgeous, very muted greens and grays"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "If you had to summarize my gift-giving philosophy in a single statement, which of the following best captures it?",
+      "candidate_options": [
+        "Prefers handmade, organic, understated items — natural materials like wood, ceramics, and living plants — over flashy or mass-produced goods",
+        "Prefers artisan-crafted items with eye-catching visual effects like iridescent finishes and color-shifting glass",
+        "Prefers buying the most affordable option available regardless of material or aesthetic",
+        "Prefers luxurious wearable accessories like cashmere wraps and silk scarves as gifts"
+      ],
+      "expected_answer": "Prefers handmade, organic, understated items — natural materials like wood, ceramics, and living plants — over flashy or mass-produced goods",
+      "distractor_rationale": "same-value-different-target: Option D ('luxurious wearable accessories like cashmere wraps') is grounded in Emily's cashmere wrap gift, which is a real item from the conversation but belongs to Emily's gift choice, not the user's aesthetic preference. assistant echo: Option B ('artisan-crafted items with eye-catching visual effects like iridescent finishes') echoes the assistant's description of the iridescent vase as 'visually striking' and 'artisan craft,' but conflates the tentative vase consideration with the user's confirmed understated preference. Option C is a budget-focused distractor grounded in the user's budget consciousness but mischaracterizes it as the primary gift philosophy.",
+      "gold_memory_state": "The user's confirmed gift aesthetic preference is: prefers thoughtful, organic, understated aesthetics — handmade ceramics, natural wood, living plants — over flashy or mass-produced items. The iridescent vase is tentative only. Emily's cashmere wrap is a separate person's gift.",
+      "judge_rubric": {
+        "must_include": [
+          "handmade or organic or understated",
+          "natural materials",
+          "over flashy or mass-produced"
+        ],
+        "acceptable_paraphrases": [
+          "crafted with intention",
+          "earthy and natural over shiny"
+        ],
+        "must_not_include": [
+          "eye-catching visual effects as the preference",
+          "wearable accessories as the preference",
+          "cheapest option as the preference"
+        ],
+        "harmful_extra": [
+          "selecting the iridescent/eye-catching option as the user's philosophy",
+          "selecting the cashmere wrap option"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the iridescent vase option (B), treating a tentative recent mention as the user's confirmed preference.",
+        "reflection_precision": "Fails if the model selects an overgeneralized or misattributed philosophy (B, C, or D).",
+        "reflection_recall": "Fails if the model cannot identify the correct supported preference statement (A).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I guess there's a pattern — with the tea set, the recipe box, the olive tree, I keep being drawn to things that feel handmade or natural. Like wood, ceramics, living plants. I just don't get excited about anything shiny or mass-produced, you know?"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I found a handmade tea set at this ceramics shop on Elm Street — the glaze was gorgeous, very muted greens and grays"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "My friend just opened a small home-goods boutique and asked me to curate a 'gift picks' shelf for her store — three to five items I'd personally recommend, with a short note explaining the vibe. She said the budget per item should stay under $100. Can you draft the shelf picks and the note, keeping in mind what you know about my taste and the specific items I've been excited about?",
+      "expected_answer": "Gift Picks Shelf — Curated by [User]\n\nVibe note: \"These picks celebrate the beauty of natural materials and quiet craftsmanship. Every item here is handmade or grown, not factory-produced — the kind of gift that feels personal and intentional rather than flashy.\"\n\nPicks:\n1. Handmade ceramic tea set with muted green and gray glaze (around $120 at the Elm Street ceramics shop — if a sub-$100 version is available, even better; otherwise a single muted-glaze cup or teapot from the same shop could work)\n2. Personalized wooden recipe box from TimberCraft Co. on Etsy ($65) — great for anyone who loves cooking and collects recipes on scraps of paper\n3. Small potted olive tree from the Cedar Avenue nursery ($45) — a living gift that grows over time\n4. Optional: a set of handmade stoneware mugs or a hand-thrown ceramic vase in earthy tones (under $100, sourced from a local artisan)\n\nAll picks should feel organic, understated, and crafted with care. Avoid anything with metallic finishes, iridescent surfaces, or mass-produced packaging.",
+      "gold_memory_state": "User's confirmed aesthetic preference: organic, understated, handmade over flashy or mass-produced. Confirmed gift items considered: handmade tea set ($120, muted glaze, Elm Street), wooden recipe box ($65, TimberCraft Co.), olive tree ($45, Cedar Avenue nursery). Emily's cashmere wrap is excluded (separate person's gift, wearable accessory category). Iridescent vase ($85) is tentative and its flashy quality conflicts with the confirmed preference. Budget constraint for Mom was $150 total; the boutique shelf constraint is under $100 per item.",
+      "judge_rubric": {
+        "must_include": [
+          "at least two of the three confirmed items (tea set, recipe box, olive tree)",
+          "vibe note reflecting understated/organic/handmade aesthetic",
+          "avoidance of flashy or mass-produced items in the recommendations"
+        ],
+        "acceptable_paraphrases": [
+          "natural materials",
+          "crafted with intention",
+          "earthy and quiet"
+        ],
+        "must_not_include": [
+          "iridescent vase presented as a confirmed recommendation without caveats",
+          "cashmere wrap as a user-curated pick"
+        ],
+        "harmful_extra": [
+          "recommending the metallic gold tea set as a pick",
+          "recommending mass-produced items",
+          "presenting the iridescent vase as fully consistent with the user's aesthetic without noting the tension"
+        ],
+        "harmless_extra": [
+          "suggesting additional items in the same aesthetic family",
+          "noting the tea set exceeds $100 and suggesting an adaptation",
+          "mentioning wrapping ideas like kraft paper and twine"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model recommends the iridescent vase as a confirmed pick without noting it was only tentatively considered and may conflict with the understated preference.",
+        "reflection_precision": "Fails if the shelf picks include items that contradict the understated/organic preference (metallic gold tea set, mass-produced items) or if the vibe note describes a flashy aesthetic.",
+        "reflection_recall": "Fails if the model cannot draw on the three confirmed items or the preference pattern to construct the shelf.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user considered a handmade tea set with muted green and gray glaze at $120 from the Elm Street ceramics shop.",
+        "Fact 2: The user bookmarked a personalized wooden recipe box at $65 from TimberCraft Co. on Etsy.",
+        "Fact 3: The user found a small potted olive tree at $45 from the Cedar Avenue nursery.",
+        "Fact 4: The user's confirmed aesthetic preference is for handmade, organic, understated items over flashy or mass-produced ones.",
+        "Fact 5: Emily already bought a cashmere wrap for Mom, so wearable accessories are a separate category.",
+        "Fact 6: The iridescent vase at $85 is a tentative consideration with eye-catching qualities that may conflict with the understated preference.",
+        "Inference: The shelf picks should draw from the three confirmed items and the confirmed preference pattern, adapting for the $100-per-item boutique constraint. The tea set at $120 exceeds the per-item limit and may need adaptation. The iridescent vase should not be presented as a straightforward pick given the aesthetic tension.",
+        "Inference: The vibe note should articulate the organic/understated/handmade philosophy derived from the user's pattern across all three confirmed items."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I found a handmade tea set at this ceramics shop on Elm Street — the glaze was gorgeous, very muted greens and grays. It was $120 but I passed on it because I wanted to keep the total budget under $150"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I bookmarked this Etsy shop called TimberCraft Co. that does personalized wooden recipe boxes. Mom's always scribbling recipes on random scraps of paper, so I thought a nice wooden box to organize them would be perfect. The one I liked was $65"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I also went to that nursery on Cedar Avenue a few days ago and found a small potted olive tree for $45. I love the idea of giving something alive, something that grows over time rather than just sitting on a shelf"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I guess there's a pattern — with the tea set, the recipe box, the olive tree, I keep being drawn to things that feel handmade or natural. Like wood, ceramics, living plants. I just don't get excited about anything shiny or mass-produced, you know?"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "my sister Emily already got Mom a cashmere wrap — she found it online and it's already shipped. So I need to avoid anything in that category, like scarves or wraps or that kind of wearable accessory"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Actually my friend Lena just told me about this artisan glassblowing studio that makes these beautiful iridescent vases. She said they'd be perfect for Mom. They're $85 each and honestly they're stunning — I might pivot to getting one of those instead of the recipe box"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "My friend just opened a small home-goods boutique and asked me to curate a 'gift picks' shelf for her store — three to five items I'd personally recommend, with a short note explaining the vibe. She said the budget per item should stay under $100. Can you draft the shelf picks and the note, keeping in mind what you know about my taste and the specific items I've been excited about?",
+      "expected_answer": "Gift Picks Shelf — Curated by [User]\n\nVibe note: \"These picks celebrate the beauty of natural materials and quiet craftsmanship. Every item here is handmade or grown, not factory-produced — the kind of gift that feels personal and intentional rather than flashy.\"\n\nPicks:\n1. Handmade ceramic tea set with muted green and gray glaze (around $120 at the Elm Street ceramics shop — if a sub-$100 version is available, even better; otherwise a single muted-glaze cup or teapot from the same shop could work)\n2. Personalized wooden recipe box from TimberCraft Co. on Etsy ($65) — great for anyone who loves cooking and collects recipes on scraps of paper\n3. Small potted olive tree from the Cedar Avenue nursery ($45) — a living gift that grows over time\n4. Optional: a set of handmade stoneware mugs or a hand-thrown ceramic vase in earthy tones (under $100, sourced from a local artisan)\n\nAll picks should feel organic, understated, and crafted with care. Avoid anything with metallic finishes, iridescent surfaces, or mass-produced packaging.",
+      "gold_memory_state": "User's confirmed aesthetic preference: organic, understated, handmade over flashy or mass-produced. Confirmed gift items considered: handmade tea set ($120, muted glaze, Elm Street), wooden recipe box ($65, TimberCraft Co.), olive tree ($45, Cedar Avenue nursery). Emily's cashmere wrap is excluded (separate person's gift, wearable accessory category). Iridescent vase ($85) is tentative and its flashy quality conflicts with the confirmed preference. Budget constraint for Mom was $150 total; the boutique shelf constraint is under $100 per item.",
+      "judge_rubric": {
+        "must_include": [
+          "at least two of the three confirmed items (tea set, recipe box, olive tree)",
+          "vibe note reflecting understated/organic/handmade aesthetic",
+          "avoidance of flashy or mass-produced items in the recommendations"
+        ],
+        "acceptable_paraphrases": [
+          "natural materials",
+          "crafted with intention",
+          "earthy and quiet"
+        ],
+        "must_not_include": [
+          "iridescent vase presented as a confirmed recommendation without caveats",
+          "cashmere wrap as a user-curated pick"
+        ],
+        "harmful_extra": [
+          "recommending the metallic gold tea set as a pick",
+          "recommending mass-produced items",
+          "presenting the iridescent vase as fully consistent with the user's aesthetic without noting the tension"
+        ],
+        "harmless_extra": [
+          "suggesting additional items in the same aesthetic family",
+          "noting the tea set exceeds $100 and suggesting an adaptation",
+          "mentioning wrapping ideas like kraft paper and twine"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model recommends the iridescent vase as a confirmed pick without noting it was only tentatively considered and may conflict with the understated preference.",
+        "reflection_precision": "Fails if the shelf picks include items that contradict the understated/organic preference (metallic gold tea set, mass-produced items) or if the vibe note describes a flashy aesthetic.",
+        "reflection_recall": "Fails if the model cannot draw on the three confirmed items or the preference pattern to construct the shelf.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user considered a handmade tea set with muted green and gray glaze at $120 from the Elm Street ceramics shop.",
+        "Fact 2: The user bookmarked a personalized wooden recipe box at $65 from TimberCraft Co. on Etsy.",
+        "Fact 3: The user found a small potted olive tree at $45 from the Cedar Avenue nursery.",
+        "Fact 4: The user's confirmed aesthetic preference is for handmade, organic, understated items over flashy or mass-produced ones.",
+        "Fact 5: Emily already bought a cashmere wrap for Mom, so wearable accessories are a separate category.",
+        "Fact 6: The iridescent vase at $85 is a tentative consideration with eye-catching qualities that may conflict with the understated preference.",
+        "Inference: The shelf picks should draw from the three confirmed items and the confirmed preference pattern, adapting for the $100-per-item boutique constraint. The tea set at $120 exceeds the per-item limit and may need adaptation. The iridescent vase should not be presented as a straightforward pick given the aesthetic tension.",
+        "Inference: The vibe note should articulate the organic/understated/handmade philosophy derived from the user's pattern across all three confirmed items."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I found a handmade tea set at this ceramics shop on Elm Street — the glaze was gorgeous, very muted greens and grays. It was $120 but I passed on it because I wanted to keep the total budget under $150"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I bookmarked this Etsy shop called TimberCraft Co. that does personalized wooden recipe boxes. Mom's always scribbling recipes on random scraps of paper, so I thought a nice wooden box to organize them would be perfect. The one I liked was $65"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I also went to that nursery on Cedar Avenue a few days ago and found a small potted olive tree for $45. I love the idea of giving something alive, something that grows over time rather than just sitting on a shelf"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I guess there's a pattern — with the tea set, the recipe box, the olive tree, I keep being drawn to things that feel handmade or natural. Like wood, ceramics, living plants. I just don't get excited about anything shiny or mass-produced, you know?"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "my sister Emily already got Mom a cashmere wrap — she found it online and it's already shipped. So I need to avoid anything in that category, like scarves or wraps or that kind of wearable accessory"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Actually my friend Lena just told me about this artisan glassblowing studio that makes these beautiful iridescent vases. She said they'd be perfect for Mom. They're $85 each and honestly they're stunning — I might pivot to getting one of those instead of the recipe box"
+        }
+      ]
+    }
+  ]
+}

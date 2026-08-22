@@ -1,0 +1,995 @@
+{
+  "target_fact": "User's COVID booster second dose target date, evolving through multiple confirmed changes with a tentative fork, plus Shingrix vaccination timing preference",
+  "operation_type": "TrajectoryOps",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "covid_dose2_date",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I'm aiming for April 7th for the second Pfizer dose"
+      },
+      "target": {
+        "target_id": "covid_booster_dose2_target_date",
+        "target_name": "COVID booster second dose target date"
+      },
+      "old_value": null,
+      "new_value": "April 7th",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I'm aiming for April 7th for the second Pfizer dose"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I'm planning to start the Shingrix series in early May, after the COVID booster side effects have cleared"
+      },
+      "target": {
+        "target_id": "shingrix_first_dose_timing",
+        "target_name": "Shingrix first dose planned timing"
+      },
+      "old_value": null,
+      "new_value": "early May",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I'm planning to start the Shingrix series in early May, after the COVID booster side effects have cleared"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "covid_dose2_date",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I called CVS this morning and they said April 7th is fully booked, so I moved it to April 14th"
+      },
+      "target": {
+        "target_id": "covid_booster_dose2_target_date",
+        "target_name": "COVID booster second dose target date"
+      },
+      "old_value": "April 7th",
+      "new_value": "April 14th",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I called CVS this morning and they said April 7th is fully booked, so I moved it to April 14th"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "covid_dose2_date",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "Actually I just got off the phone again. They had a cancellation on April 21st at 10:30 AM and I grabbed it. So April 21st is locked in now"
+      },
+      "target": {
+        "target_id": "covid_booster_dose2_target_date",
+        "target_name": "COVID booster second dose target date"
+      },
+      "old_value": "April 14th",
+      "new_value": "April 21st",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "They had a cancellation on April 21st at 10:30 AM and I grabbed it. So April 21st is locked in now"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "covid_dose2_date",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "My coworker just told me the CVS on Elm Street is closing for renovations starting April 18th. She said the Walgreens on Oak Avenue has Pfizer slots on April 10th, so I'll probably switch to April 10th there"
+      },
+      "target": {
+        "target_id": "covid_booster_dose2_target_date",
+        "target_name": "COVID booster second dose target date"
+      },
+      "old_value": "April 21st",
+      "new_value": "April 10th",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My coworker just told me the CVS on Elm Street is closing for renovations starting April 18th. She said the Walgreens on Oak Avenue has Pfizer slots on April 10th, so I'll probably switch to April 10th there"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish initial targets and preferences",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I need help keeping track of my vaccination schedule. I got my first Pfizer COVID booster on March 3rd at the CVS on Elm Street. The pharmacist told me the minimum wait for the second dose is four weeks, so April 1st is the earliest I could go back. I want to space things out carefully."
+        },
+        {
+          "role": "assistant",
+          "content": "I'll help you stay organized with your vaccination schedule. So your first Pfizer COVID booster was March 3rd at CVS on Elm Street, and the earliest the second dose can happen is April 1st based on the four-week minimum interval. That gives you a window starting April 1st. Do you have a specific target date in mind for the second dose, or would you like me to help you figure out the best timing based on your other commitments and any additional vaccines you're planning?"
+        },
+        {
+          "role": "user",
+          "content": "I'm aiming for April 7th for the second Pfizer dose. That gives me a few extra days past the minimum, which feels safer. I chose Pfizer specifically because last time I had Moderna and the side effects were rough — sore arm for four days and a fever the next day. I really want to stick with Pfizer this round to avoid that."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — April 7th is your target for the second Pfizer dose, giving you about five weeks from the first dose on March 3rd. And I've noted your strong preference for Pfizer over Moderna due to the side effects you experienced previously. That's a smart approach, keeping the same vaccine type for the series. Since you mentioned wanting to space things out, are there other vaccines on your radar that we should factor into the overall timeline so nothing overlaps badly?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, actually. My doctor, Dr. Levine, recommended I start the Shingrix vaccine since I'm over 40 now. It's a two-dose series and the second dose is two to six months after the first. I'm planning to start the Shingrix series in early May, after the COVID booster side effects have cleared. I really don't want overlapping side effects from different shots."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a solid plan. So after your second Pfizer dose around April 7th, you'll give yourself a few weeks to recover before starting Shingrix in early May. The Shingrix two-dose series with the second dose two to six months later means your second Shingrix shot would fall somewhere between July and November. Dr. Levine's recommendation makes sense given your age. Your approach of spacing vaccines apart is especially wise given your sensitivity to side effects. Would you like me to sketch out a rough timeline with buffer periods between each shot?"
+        },
+        {
+          "role": "user",
+          "content": "That would be great. Oh, and one more thing — I always book my vaccine appointments for late morning, around 10 or 11 AM. I've noticed I handle shots much better after I've been awake for a few hours and had breakfast. It makes a real difference compared to going first thing in the morning when I'm still groggy."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — late morning appointments around 10 or 11 AM work best for you. Here's a preliminary timeline based on everything you've shared: April 7th at around 10-11 AM for the second Pfizer COVID booster at CVS on Elm Street. Then early May, again late morning, for the first Shingrix dose. The second Shingrix dose would follow two to six months later, so roughly July through November, also late morning. I'll keep your preference for spacing vaccines and avoiding side-effect overlap in mind as we refine the schedule. Let me know if anything changes with availability or your calendar."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "update chain progresses with confirmed changes",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I called CVS this morning and they said April 7th is fully booked, so I moved it to April 14th. They confirmed they have Pfizer available on that date. It's still within the recommended window since the pharmacist said I have up to eight weeks from March 3rd, which would be April 28th. So April 14th is fine."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for the update. Your second Pfizer COVID booster is now scheduled for April 14th at CVS on Elm Street. That's six weeks after your March 3rd first dose, well within the four-to-eight-week recommended window. Since you've pushed the COVID booster back a week, does that affect your Shingrix timing at all? You were planning early May for the first Shingrix dose, so there should still be a comfortable gap between the COVID booster on April 14th and the Shingrix start. Want me to adjust the overall timeline?"
+        },
+        {
+          "role": "user",
+          "content": "The Shingrix timing should still work for early May. Two to three weeks after April 14th puts me right in that early May window. I'd probably aim for the first week of May. My insurance already confirmed the Shingrix is covered with a zero-dollar copay, so that's one less thing to worry about. I just need to call and book it."
+        },
+        {
+          "role": "assistant",
+          "content": "Great news about the insurance coverage — zero copay for Shingrix simplifies things. So your updated plan is: second Pfizer dose on April 14th, then first Shingrix dose in the first week of May, giving you roughly two to three weeks of buffer between shots. That spacing should help you avoid overlapping side effects. Since the insurance verification is already done, all you need to do is call the pharmacy to schedule the Shingrix appointment. Would you like a reminder checklist for what to do before each appointment, or any other notes to keep track of?"
+        },
+        {
+          "role": "user",
+          "content": "Actually I just got off the phone again. They had a cancellation on April 21st at 10:30 AM and I grabbed it. So April 21st is locked in now. I know that's a week later than April 14th, but honestly 10:30 AM is my ideal time slot and I didn't want to lose it. It's still within the eight-week window so I'm not worried."
+        },
+        {
+          "role": "assistant",
+          "content": "Perfect — your second Pfizer COVID booster is now confirmed for April 21st at 10:30 AM at CVS on Elm Street. That's exactly seven weeks after your March 3rd first dose, still comfortably within the recommended window, and the 10:30 AM slot aligns perfectly with your late-morning preference. With the date moving to April 21st, your early May Shingrix plan still works but the gap narrows a bit. You might want to push Shingrix to mid-May to maintain a comfortable buffer. Want me to update the full timeline with this change?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, let's push the Shingrix first dose target to mid-May instead. Maybe around May 12th or so. That gives me three full weeks after the COVID booster, which should be plenty of recovery time. Dr. Levine said the Shingrix side effects can be pretty strong so I want to be fully over the booster before I deal with that."
+        },
+        {
+          "role": "assistant",
+          "content": "Updated — here's your current vaccination timeline: Second Pfizer COVID booster on April 21st at 10:30 AM at CVS on Elm Street. First Shingrix dose around May 12th, giving you three weeks of buffer after the booster. Second Shingrix dose two to six months after the first, so roughly July through November. All appointments targeted for late morning around 10-11 AM. Dr. Levine's caution about Shingrix side effects is well noted, and the three-week gap should give you plenty of time to recover from the booster. I'll keep this timeline updated as you confirm the Shingrix booking."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "tentative fork and adversarial injection",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So my sister Laura finally went and got her Tdap booster at the CVS on Elm Street. She said they were super efficient and she was in and out in twenty minutes. She's been putting that off for months so I'm glad she finally did it. She mentioned they gave her a printout with some upcoming pharmacy schedule changes."
+        },
+        {
+          "role": "assistant",
+          "content": "That's great that Laura finally got her Tdap done! The CVS on Elm Street does seem like a convenient spot — you've had good experiences there too. It's nice that they were efficient with her visit. You mentioned she got a printout about upcoming pharmacy schedule changes — do you know if any of those changes might affect your April 21st appointment or the Shingrix booking you still need to make? It might be worth checking if their hours or availability are shifting."
+        },
+        {
+          "role": "user",
+          "content": "I'm not sure about the details yet. Laura said something about adjusted hours but she didn't read the whole thing carefully. I'll ask her to send me a photo of it. On a different note, I've been thinking about my friend Kevin's experience — he stacked his flu shot and COVID booster on the same day in February and felt terrible for almost a week. That really reinforces my approach of spacing everything out."
+        },
+        {
+          "role": "assistant",
+          "content": "Kevin's experience is a good cautionary tale — feeling awful for nearly a week from stacking shots is exactly the kind of thing you want to avoid, especially with work obligations. Your strategy of spacing vaccines with multi-week buffers between them is clearly the right call for your body. Once Laura sends you that pharmacy schedule printout, we can check if there are any conflicts with your planned dates. By the way, I noticed that Laura's Tdap printout might have referenced their April 10th Pfizer availability for walk-ins — that could be useful if you ever need to reschedule, though your April 21st slot is already confirmed."
+        },
+        {
+          "role": "user",
+          "content": "My coworker just told me the CVS on Elm Street is closing for renovations starting April 18th. She said the Walgreens on Oak Avenue has Pfizer slots on April 10th, so I'll probably switch to April 10th there. That would actually be earlier than planned but it's still past the four-week minimum since my first dose was March 3rd."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a significant development — if CVS on Elm Street closes for renovations on April 18th, your April 21st appointment there wouldn't work. Moving to April 10th at the Walgreens on Oak Avenue would be five weeks and two days after your March 3rd first dose, which is within the recommended window. Before you finalize the switch, you might want to confirm directly with CVS about the renovation timeline, since your coworker's information might not be completely accurate. Also, make sure Walgreens has the Pfizer vaccine specifically, since matching your first dose brand is important."
+        },
+        {
+          "role": "user",
+          "content": "That's a fair point. I haven't verified the renovation thing myself yet. I should probably call CVS directly tomorrow to confirm whether my April 21st appointment is still valid. If it is, I'd rather keep it since 10:30 AM was the perfect time slot. Either way, I need to make sure whichever pharmacy I go to has Pfizer specifically — that's non-negotiable for me."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely — calling CVS directly tomorrow is the smart move before making any changes. Your April 21st at 10:30 AM slot is ideal for your preferences, so it's worth confirming before giving it up. And yes, Pfizer is non-negotiable since you need to match your first dose and you specifically chose it to avoid the Moderna side effects you experienced before. Once you've confirmed with CVS, we can finalize the timeline. If the renovation story checks out, then we'll look at rebooking at Walgreens on Oak Avenue or another location that carries Pfizer. Just let me know what you find out."
+        }
+      ]
+    }
+  ],
+  "state_checkpoints": [
+    {
+      "checkpoint_id": "c1",
+      "description": "After segment 1: COVID booster dose 2 target date is April 7th (confirmed). Shingrix first dose planned for early May (confirmed). Late morning appointment preference established."
+    },
+    {
+      "checkpoint_id": "c2",
+      "description": "After segment 2: COVID booster dose 2 target date updated to April 14th then to April 21st at 10:30 AM (confirmed). Shingrix first dose pushed to mid-May around May 12th (confirmed). Insurance coverage for Shingrix confirmed at $0 copay."
+    },
+    {
+      "checkpoint_id": "c3",
+      "description": "After segment 3: COVID booster dose 2 target date has a tentative fork to April 10th at Walgreens on Oak Avenue based on unverified coworker info, but user has not confirmed the change and plans to call CVS to verify. Last confirmed value remains April 21st at 10:30 AM at CVS on Elm Street. Shingrix first dose target remains mid-May around May 12th (confirmed)."
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you walk me through what I told you about scheduling my second COVID booster dose and the Shingrix vaccine? I want to make sure you have the full picture of how the planning evolved, including all the date discussions.",
+      "expected_answer": "You initially aimed for April 7th for your second Pfizer COVID booster dose. When that date was fully booked at CVS, you rescheduled to April 14th. Then you grabbed a cancellation slot and locked in April 21st at 10:30 AM at CVS on Elm Street. Most recently, you mentioned your coworker said CVS on Elm Street might close for renovations starting April 18th, and you were considering switching to April 10th at Walgreens on Oak Avenue, but you hadn't verified that information yet and planned to call CVS to confirm. Separately, you planned to start the Shingrix series in early May, later adjusted to mid-May around May 12th to maintain buffer time after the COVID booster.",
+      "gold_memory_state": "COVID booster dose 2: last confirmed value is April 21st at 10:30 AM at CVS on Elm Street. A tentative unverified possibility of April 10th at Walgreens on Oak Avenue exists but is not confirmed. Shingrix first dose: mid-May around May 12th (confirmed).",
+      "judge_rubric": {
+        "must_include": [
+          "April 7th",
+          "April 14th",
+          "April 21st",
+          "early May or mid-May for Shingrix"
+        ],
+        "acceptable_paraphrases": [
+          "around May 12th for Shingrix",
+          "first week of May later pushed to mid-May"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating April 10th at Walgreens is the confirmed final date"
+        ],
+        "harmless_extra": [
+          "mentioning the 10:30 AM time slot preference",
+          "mentioning Pfizer preference",
+          "mentioning Dr. Levine"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats April 7th or April 14th as the current date without mentioning they were superseded.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence April 7th → April 14th → April 21st is presented out of order.",
+        "final_state": "Fails if April 10th at Walgreens is presented as the confirmed final date.",
+        "intermediate_state": "Fails if any intermediate date (April 7th or April 14th) is omitted from the narrative.",
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I'm aiming for April 7th for the second Pfizer dose"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I'm planning to start the Shingrix series in early May, after the COVID booster side effects have cleared"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I called CVS this morning and they said April 7th is fully booked, so I moved it to April 14th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "They had a cancellation on April 21st at 10:30 AM and I grabbed it. So April 21st is locked in now"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My coworker just told me the CVS on Elm Street is closing for renovations starting April 18th. She said the Walgreens on Oak Avenue has Pfizer slots on April 10th, so I'll probably switch to April 10th there"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you walk me through what I told you about scheduling my second COVID booster dose and the Shingrix vaccine? I want to make sure you have the full picture of how the planning evolved, including all the date discussions.",
+      "expected_answer": "You initially aimed for April 7th for your second Pfizer COVID booster dose. When that date was fully booked at CVS, you rescheduled to April 14th. Then you grabbed a cancellation slot and locked in April 21st at 10:30 AM at CVS on Elm Street. Most recently, you mentioned your coworker said CVS on Elm Street might close for renovations starting April 18th, and you were considering switching to April 10th at Walgreens on Oak Avenue, but you hadn't verified that information yet and planned to call CVS to confirm. Separately, you planned to start the Shingrix series in early May, later adjusted to mid-May around May 12th to maintain buffer time after the COVID booster.",
+      "gold_memory_state": "COVID booster dose 2: last confirmed value is April 21st at 10:30 AM at CVS on Elm Street. A tentative unverified possibility of April 10th at Walgreens on Oak Avenue exists but is not confirmed. Shingrix first dose: mid-May around May 12th (confirmed).",
+      "judge_rubric": {
+        "must_include": [
+          "April 7th",
+          "April 14th",
+          "April 21st",
+          "early May or mid-May for Shingrix"
+        ],
+        "acceptable_paraphrases": [
+          "around May 12th for Shingrix",
+          "first week of May later pushed to mid-May"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating April 10th at Walgreens is the confirmed final date"
+        ],
+        "harmless_extra": [
+          "mentioning the 10:30 AM time slot preference",
+          "mentioning Pfizer preference",
+          "mentioning Dr. Levine"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats April 7th or April 14th as the current date without mentioning they were superseded.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence April 7th → April 14th → April 21st is presented out of order.",
+        "final_state": "Fails if April 10th at Walgreens is presented as the confirmed final date.",
+        "intermediate_state": "Fails if any intermediate date (April 7th or April 14th) is omitted from the narrative.",
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I'm aiming for April 7th for the second Pfizer dose"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I'm planning to start the Shingrix series in early May, after the COVID booster side effects have cleared"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I called CVS this morning and they said April 7th is fully booked, so I moved it to April 14th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "They had a cancellation on April 21st at 10:30 AM and I grabbed it. So April 21st is locked in now"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My coworker just told me the CVS on Elm Street is closing for renovations starting April 18th. She said the Walgreens on Oak Avenue has Pfizer slots on April 10th, so I'll probably switch to April 10th there"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've been discussing two different vaccination timelines with you — one for a COVID booster and one for a different vaccine series. If I need to call a pharmacy to check on appointment availability, which vaccine's scheduling is still in flux and which one's timing has stayed stable? Are these two schedules linked in any way?",
+      "expected_answer": "The COVID booster second dose scheduling is the one still in flux — it has gone through multiple date changes and has a pending unverified possibility that needs confirmation. The Shingrix first dose timing has been more stable, adjusted once from early May to mid-May around May 12th but otherwise settled. The two schedules are linked because the Shingrix timing depends on allowing adequate recovery time after the COVID booster, so any change to the booster date could ripple into the Shingrix schedule.",
+      "gold_memory_state": "COVID booster dose 2 target date: last confirmed April 21st, with unverified tentative fork to April 10th. Shingrix first dose timing: mid-May around May 12th, confirmed. The Shingrix timing is downstream of the COVID booster date.",
+      "judge_rubric": {
+        "must_include": [
+          "COVID booster scheduling is in flux or unsettled",
+          "Shingrix timing is more stable",
+          "the two are linked because Shingrix depends on recovery from the booster"
+        ],
+        "acceptable_paraphrases": [
+          "COVID dose is the one needing pharmacy confirmation",
+          "Shingrix was only adjusted once"
+        ],
+        "must_not_include": [
+          "Shingrix scheduling has gone through multiple changes",
+          "COVID booster date is fully settled"
+        ],
+        "harmful_extra": [
+          "treating April 10th at Walgreens as the confirmed COVID booster date",
+          "saying the Shingrix date is also uncertain"
+        ],
+        "harmless_extra": [
+          "mentioning specific COVID booster dates like April 21st",
+          "mentioning May 12th for Shingrix",
+          "mentioning the three-week buffer"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model conflates the two targets or says both are equally unsettled.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I'm aiming for April 7th for the second Pfizer dose"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I'm planning to start the Shingrix series in early May, after the COVID booster side effects have cleared"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "They had a cancellation on April 21st at 10:30 AM and I grabbed it. So April 21st is locked in now"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My coworker just told me the CVS on Elm Street is closing for renovations starting April 18th. She said the Walgreens on Oak Avenue has Pfizer slots on April 10th, so I'll probably switch to April 10th there"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've been discussing two different vaccination timelines with you — one for a COVID booster and one for a different vaccine series. If I need to call a pharmacy to check on appointment availability, which vaccine's scheduling is still in flux and which one's timing has stayed stable? Are these two schedules linked in any way?",
+      "expected_answer": "The COVID booster second dose scheduling is the one still in flux — it has gone through multiple date changes and has a pending unverified possibility that needs confirmation. The Shingrix first dose timing has been more stable, adjusted once from early May to mid-May around May 12th but otherwise settled. The two schedules are linked because the Shingrix timing depends on allowing adequate recovery time after the COVID booster, so any change to the booster date could ripple into the Shingrix schedule.",
+      "gold_memory_state": "COVID booster dose 2 target date: last confirmed April 21st, with unverified tentative fork to April 10th. Shingrix first dose timing: mid-May around May 12th, confirmed. The Shingrix timing is downstream of the COVID booster date.",
+      "judge_rubric": {
+        "must_include": [
+          "COVID booster scheduling is in flux or unsettled",
+          "Shingrix timing is more stable",
+          "the two are linked because Shingrix depends on recovery from the booster"
+        ],
+        "acceptable_paraphrases": [
+          "COVID dose is the one needing pharmacy confirmation",
+          "Shingrix was only adjusted once"
+        ],
+        "must_not_include": [
+          "Shingrix scheduling has gone through multiple changes",
+          "COVID booster date is fully settled"
+        ],
+        "harmful_extra": [
+          "treating April 10th at Walgreens as the confirmed COVID booster date",
+          "saying the Shingrix date is also uncertain"
+        ],
+        "harmless_extra": [
+          "mentioning specific COVID booster dates like April 21st",
+          "mentioning May 12th for Shingrix",
+          "mentioning the three-week buffer"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model conflates the two targets or says both are equally unsettled.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I'm aiming for April 7th for the second Pfizer dose"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I'm planning to start the Shingrix series in early May, after the COVID booster side effects have cleared"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "They had a cancellation on April 21st at 10:30 AM and I grabbed it. So April 21st is locked in now"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My coworker just told me the CVS on Elm Street is closing for renovations starting April 18th. She said the Walgreens on Oak Avenue has Pfizer slots on April 10th, so I'll probably switch to April 10th there"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "I need to set a phone reminder for my second COVID booster appointment. What date, time, and pharmacy location should I put in the reminder right now?",
+      "expected_answer": "April 21st at 10:30 AM at CVS on Elm Street.",
+      "gold_memory_state": "The last confirmed COVID booster dose 2 appointment is April 21st at 10:30 AM at CVS on Elm Street. The user mentioned a possible switch to April 10th at Walgreens on Oak Avenue based on unverified coworker information about CVS renovations, but the user explicitly decided to call CVS to verify before making any change. The tentative April 10th value has not been adopted.",
+      "judge_rubric": {
+        "must_include": [
+          "April 21st",
+          "10:30 AM",
+          "CVS on Elm Street"
+        ],
+        "acceptable_paraphrases": [
+          "April 21, 10:30 AM, CVS Elm Street"
+        ],
+        "must_not_include": [
+          "April 10th as the reminder date",
+          "Walgreens on Oak Avenue as the location"
+        ],
+        "harmful_extra": [
+          "presenting April 10th at Walgreens as the current appointment",
+          "presenting April 14th or April 7th as the current appointment"
+        ],
+        "harmless_extra": [
+          "noting the user plans to call CVS to verify renovation rumors",
+          "mentioning the user may need to reschedule if CVS confirms renovations"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model returns April 7th or April 14th as the current appointment.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model returns April 10th at Walgreens, which is the tentative unverified value. This is the recency trap: April 10th was mentioned most recently but was never confirmed.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "They had a cancellation on April 21st at 10:30 AM and I grabbed it. So April 21st is locked in now"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My coworker just told me the CVS on Elm Street is closing for renovations starting April 18th. She said the Walgreens on Oak Avenue has Pfizer slots on April 10th, so I'll probably switch to April 10th there"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I should probably call CVS directly tomorrow to confirm whether my April 21st appointment is still valid. If it is, I'd rather keep it since 10:30 AM was the perfect time slot"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "I need to set a phone reminder for my second COVID booster appointment. What date, time, and pharmacy location should I put in the reminder right now?",
+      "expected_answer": "April 21st at 10:30 AM at CVS on Elm Street.",
+      "gold_memory_state": "The last confirmed COVID booster dose 2 appointment is April 21st at 10:30 AM at CVS on Elm Street. The user mentioned a possible switch to April 10th at Walgreens on Oak Avenue based on unverified coworker information about CVS renovations, but the user explicitly decided to call CVS to verify before making any change. The tentative April 10th value has not been adopted.",
+      "judge_rubric": {
+        "must_include": [
+          "April 21st",
+          "10:30 AM",
+          "CVS on Elm Street"
+        ],
+        "acceptable_paraphrases": [
+          "April 21, 10:30 AM, CVS Elm Street"
+        ],
+        "must_not_include": [
+          "April 10th as the reminder date",
+          "Walgreens on Oak Avenue as the location"
+        ],
+        "harmful_extra": [
+          "presenting April 10th at Walgreens as the current appointment",
+          "presenting April 14th or April 7th as the current appointment"
+        ],
+        "harmless_extra": [
+          "noting the user plans to call CVS to verify renovation rumors",
+          "mentioning the user may need to reschedule if CVS confirms renovations"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model returns April 7th or April 14th as the current appointment.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model returns April 10th at Walgreens, which is the tentative unverified value. This is the recency trap: April 10th was mentioned most recently but was never confirmed.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "They had a cancellation on April 21st at 10:30 AM and I grabbed it. So April 21st is locked in now"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My coworker just told me the CVS on Elm Street is closing for renovations starting April 18th. She said the Walgreens on Oak Avenue has Pfizer slots on April 10th, so I'll probably switch to April 10th there"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I should probably call CVS directly tomorrow to confirm whether my April 21st appointment is still valid. If it is, I'd rather keep it since 10:30 AM was the perfect time slot"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to request time off from work to cover both my COVID booster recovery and my Shingrix first dose recovery. Assuming I need two days off after each shot for side effects, what's the earliest calendar date I could reasonably schedule the Shingrix dose if I stick with my current booster plan, and what total number of sick days should I request across both vaccines?",
+      "expected_answer": "Based on your current booster appointment on April 21st plus two recovery days (April 22–23), the earliest reasonable Shingrix date — maintaining at least a three-week buffer as you planned — would be around May 12th. With two days off after the booster (April 22–23) and two days off after Shingrix (May 13–14), you should request a total of four sick days.",
+      "gold_memory_state": "COVID booster dose 2: April 21st at 10:30 AM (last confirmed). Shingrix first dose: mid-May around May 12th (confirmed, based on three-week buffer after booster). User wants to space vaccines to avoid overlapping side effects.",
+      "judge_rubric": {
+        "must_include": [
+          "April 21st as the booster date used in the calculation",
+          "around May 12th as the earliest Shingrix date",
+          "four total sick days"
+        ],
+        "acceptable_paraphrases": [
+          "4 days total",
+          "two days after each shot",
+          "May 12 or later for Shingrix"
+        ],
+        "must_not_include": [
+          "April 10th as the booster date",
+          "April 7th or April 14th as the booster date",
+          "early May as the Shingrix date"
+        ],
+        "harmful_extra": [
+          "using the tentative April 10th date for the booster calculation",
+          "calculating from a stale booster date"
+        ],
+        "harmless_extra": [
+          "mentioning the user prefers late-morning appointments",
+          "noting the user chose Pfizer to avoid Moderna side effects"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses April 7th, April 14th, or the tentative April 10th as the booster date for computation.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not use April 21st as the confirmed booster date.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's last confirmed COVID booster dose 2 date is April 21st at 10:30 AM.",
+        "Fact 2: The user planned Shingrix first dose for mid-May around May 12th, maintaining a three-week buffer after the booster.",
+        "Fact 3: The user wants two days off after each shot for side-effect recovery.",
+        "Inference: Booster on April 21st → recovery days April 22–23. Three weeks after April 21st = May 12th, which aligns with the user's stated Shingrix target.",
+        "Inference: Shingrix on May 12th → recovery days May 13–14. Total sick days = 2 (booster) + 2 (Shingrix) = 4 days."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "They had a cancellation on April 21st at 10:30 AM and I grabbed it. So April 21st is locked in now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Yeah, let's push the Shingrix first dose target to mid-May instead. Maybe around May 12th or so. That gives me three full weeks after the COVID booster, which should be plenty of recovery time"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I'm planning to start the Shingrix series in early May, after the COVID booster side effects have cleared"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to request time off from work to cover both my COVID booster recovery and my Shingrix first dose recovery. Assuming I need two days off after each shot for side effects, what's the earliest calendar date I could reasonably schedule the Shingrix dose if I stick with my current booster plan, and what total number of sick days should I request across both vaccines?",
+      "expected_answer": "Based on your current booster appointment on April 21st plus two recovery days (April 22–23), the earliest reasonable Shingrix date — maintaining at least a three-week buffer as you planned — would be around May 12th. With two days off after the booster (April 22–23) and two days off after Shingrix (May 13–14), you should request a total of four sick days.",
+      "gold_memory_state": "COVID booster dose 2: April 21st at 10:30 AM (last confirmed). Shingrix first dose: mid-May around May 12th (confirmed, based on three-week buffer after booster). User wants to space vaccines to avoid overlapping side effects.",
+      "judge_rubric": {
+        "must_include": [
+          "April 21st as the booster date used in the calculation",
+          "around May 12th as the earliest Shingrix date",
+          "four total sick days"
+        ],
+        "acceptable_paraphrases": [
+          "4 days total",
+          "two days after each shot",
+          "May 12 or later for Shingrix"
+        ],
+        "must_not_include": [
+          "April 10th as the booster date",
+          "April 7th or April 14th as the booster date",
+          "early May as the Shingrix date"
+        ],
+        "harmful_extra": [
+          "using the tentative April 10th date for the booster calculation",
+          "calculating from a stale booster date"
+        ],
+        "harmless_extra": [
+          "mentioning the user prefers late-morning appointments",
+          "noting the user chose Pfizer to avoid Moderna side effects"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses April 7th, April 14th, or the tentative April 10th as the booster date for computation.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not use April 21st as the confirmed booster date.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's last confirmed COVID booster dose 2 date is April 21st at 10:30 AM.",
+        "Fact 2: The user planned Shingrix first dose for mid-May around May 12th, maintaining a three-week buffer after the booster.",
+        "Fact 3: The user wants two days off after each shot for side-effect recovery.",
+        "Inference: Booster on April 21st → recovery days April 22–23. Three weeks after April 21st = May 12th, which aligns with the user's stated Shingrix target.",
+        "Inference: Shingrix on May 12th → recovery days May 13–14. Total sick days = 2 (booster) + 2 (Shingrix) = 4 days."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "They had a cancellation on April 21st at 10:30 AM and I grabbed it. So April 21st is locked in now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Yeah, let's push the Shingrix first dose target to mid-May instead. Maybe around May 12th or so. That gives me three full weeks after the COVID booster, which should be plenty of recovery time"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I'm planning to start the Shingrix series in early May, after the COVID booster side effects have cleared"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed our entire conversation history about when and where I'm getting my second COVID booster dose, what would they see as the full sequence of scheduling changes? For each date that came up, was it something I actually locked in or just something I was thinking about? And where did things land at the end?",
+      "expected_answer": "The sequence was: (1) April 7th at CVS on Elm Street — this was your initial target and was adopted as a firm plan. (2) April 14th at CVS on Elm Street — you switched to this after April 7th was fully booked; this was a confirmed change. (3) April 21st at 10:30 AM at CVS on Elm Street — you grabbed a cancellation slot and explicitly locked this in as confirmed. (4) April 10th at Walgreens on Oak Avenue — this came up based on a coworker's unverified claim that CVS was closing for renovations; you said you'd probably switch but hadn't verified it and planned to call CVS first, so this was never adopted. The final usable plan remains April 21st at 10:30 AM at CVS on Elm Street.",
+      "gold_memory_state": "COVID booster dose 2 trajectory: April 7th (confirmed, step 1) → April 14th (confirmed, step 2) → April 21st at 10:30 AM (confirmed, step 3) → April 10th at Walgreens (tentative, step 4, not adopted). Final confirmed state: April 21st at 10:30 AM at CVS on Elm Street.",
+      "judge_rubric": {
+        "must_include": [
+          "April 7th as the first date",
+          "April 14th as the second date",
+          "April 21st as the third and final confirmed date",
+          "April 10th mentioned but not finalized or adopted",
+          "final plan is April 21st at CVS on Elm Street"
+        ],
+        "acceptable_paraphrases": [
+          "April 10th was only a possibility",
+          "April 10th was under consideration but unverified",
+          "April 21st is still the active appointment"
+        ],
+        "must_not_include": [
+          "April 10th as the final confirmed date"
+        ],
+        "harmful_extra": [
+          "saying April 10th was confirmed or locked in",
+          "omitting any of the four dates from the sequence",
+          "presenting the dates out of chronological order"
+        ],
+        "harmless_extra": [
+          "mentioning Pfizer preference",
+          "mentioning the four-to-eight-week window",
+          "mentioning the coworker or sister Laura"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if any superseded date (April 7th or April 14th) is presented as the final state.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the chronological order April 7th → April 14th → April 21st → (tentative April 10th) is wrong or if any step is omitted.",
+        "final_state": "Fails if the model presents April 10th at Walgreens as the final confirmed state instead of April 21st at CVS.",
+        "intermediate_state": "Fails if any intermediate confirmed state (April 7th or April 14th) is omitted from the trajectory.",
+        "trajectory_provenance": "Fails if the model does not distinguish which dates were confirmed versus only tentatively considered."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: User initially set April 7th as the target date for the second Pfizer dose at CVS on Elm Street (confirmed).",
+        "Step 2: April 7th was fully booked, so user moved to April 14th at CVS on Elm Street (confirmed replacement).",
+        "Step 3: User grabbed a cancellation slot for April 21st at 10:30 AM at CVS on Elm Street and explicitly locked it in (confirmed replacement).",
+        "Step 4: Coworker reported CVS might close for renovations; user mentioned possibly switching to April 10th at Walgreens on Oak Avenue but did not verify or confirm (tentative, not adopted).",
+        "Step 5: User stated they would call CVS to verify before making any change, preferring to keep April 21st if possible.",
+        "Inference: The final confirmed state is April 21st at 10:30 AM at CVS on Elm Street. April 10th at Walgreens is a tentative fork that was never adopted."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I'm aiming for April 7th for the second Pfizer dose"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I called CVS this morning and they said April 7th is fully booked, so I moved it to April 14th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "They had a cancellation on April 21st at 10:30 AM and I grabbed it. So April 21st is locked in now"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My coworker just told me the CVS on Elm Street is closing for renovations starting April 18th. She said the Walgreens on Oak Avenue has Pfizer slots on April 10th, so I'll probably switch to April 10th there"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I should probably call CVS directly tomorrow to confirm whether my April 21st appointment is still valid. If it is, I'd rather keep it since 10:30 AM was the perfect time slot"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed our entire conversation history about when and where I'm getting my second COVID booster dose, what would they see as the full sequence of scheduling changes? For each date that came up, was it something I actually locked in or just something I was thinking about? And where did things land at the end?",
+      "expected_answer": "The sequence was: (1) April 7th at CVS on Elm Street — this was your initial target and was adopted as a firm plan. (2) April 14th at CVS on Elm Street — you switched to this after April 7th was fully booked; this was a confirmed change. (3) April 21st at 10:30 AM at CVS on Elm Street — you grabbed a cancellation slot and explicitly locked this in as confirmed. (4) April 10th at Walgreens on Oak Avenue — this came up based on a coworker's unverified claim that CVS was closing for renovations; you said you'd probably switch but hadn't verified it and planned to call CVS first, so this was never adopted. The final usable plan remains April 21st at 10:30 AM at CVS on Elm Street.",
+      "gold_memory_state": "COVID booster dose 2 trajectory: April 7th (confirmed, step 1) → April 14th (confirmed, step 2) → April 21st at 10:30 AM (confirmed, step 3) → April 10th at Walgreens (tentative, step 4, not adopted). Final confirmed state: April 21st at 10:30 AM at CVS on Elm Street.",
+      "judge_rubric": {
+        "must_include": [
+          "April 7th as the first date",
+          "April 14th as the second date",
+          "April 21st as the third and final confirmed date",
+          "April 10th mentioned but not finalized or adopted",
+          "final plan is April 21st at CVS on Elm Street"
+        ],
+        "acceptable_paraphrases": [
+          "April 10th was only a possibility",
+          "April 10th was under consideration but unverified",
+          "April 21st is still the active appointment"
+        ],
+        "must_not_include": [
+          "April 10th as the final confirmed date"
+        ],
+        "harmful_extra": [
+          "saying April 10th was confirmed or locked in",
+          "omitting any of the four dates from the sequence",
+          "presenting the dates out of chronological order"
+        ],
+        "harmless_extra": [
+          "mentioning Pfizer preference",
+          "mentioning the four-to-eight-week window",
+          "mentioning the coworker or sister Laura"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if any superseded date (April 7th or April 14th) is presented as the final state.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the chronological order April 7th → April 14th → April 21st → (tentative April 10th) is wrong or if any step is omitted.",
+        "final_state": "Fails if the model presents April 10th at Walgreens as the final confirmed state instead of April 21st at CVS.",
+        "intermediate_state": "Fails if any intermediate confirmed state (April 7th or April 14th) is omitted from the trajectory.",
+        "trajectory_provenance": "Fails if the model does not distinguish which dates were confirmed versus only tentatively considered."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: User initially set April 7th as the target date for the second Pfizer dose at CVS on Elm Street (confirmed).",
+        "Step 2: April 7th was fully booked, so user moved to April 14th at CVS on Elm Street (confirmed replacement).",
+        "Step 3: User grabbed a cancellation slot for April 21st at 10:30 AM at CVS on Elm Street and explicitly locked it in (confirmed replacement).",
+        "Step 4: Coworker reported CVS might close for renovations; user mentioned possibly switching to April 10th at Walgreens on Oak Avenue but did not verify or confirm (tentative, not adopted).",
+        "Step 5: User stated they would call CVS to verify before making any change, preferring to keep April 21st if possible.",
+        "Inference: The final confirmed state is April 21st at 10:30 AM at CVS on Elm Street. April 10th at Walgreens is a tentative fork that was never adopted."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I'm aiming for April 7th for the second Pfizer dose"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I called CVS this morning and they said April 7th is fully booked, so I moved it to April 14th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "They had a cancellation on April 21st at 10:30 AM and I grabbed it. So April 21st is locked in now"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My coworker just told me the CVS on Elm Street is closing for renovations starting April 18th. She said the Walgreens on Oak Avenue has Pfizer slots on April 10th, so I'll probably switch to April 10th there"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I should probably call CVS directly tomorrow to confirm whether my April 21st appointment is still valid. If it is, I'd rather keep it since 10:30 AM was the perfect time slot"
+        }
+      ]
+    }
+  ]
+}

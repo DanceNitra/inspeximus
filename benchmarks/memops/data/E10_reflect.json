@@ -1,0 +1,992 @@
+{
+  "target_fact": "User prefers simplicity and low-stimulation environments, as evidenced by choosing black drip coffee over flavored lattes, preferring texting over phone calls, wanting quiet early gym slots, and preferring low-key weekends staying in.",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I switched to just black drip coffee a few weeks ago. No milk, no syrup, no nothing. I like keeping things simple in the morning."
+      },
+      "target": {
+        "target_id": "current_coffee_order",
+        "target_name": "current morning coffee order"
+      },
+      "old_value": null,
+      "new_value": "black drip coffee",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I switched to just black drip coffee a few weeks ago. No milk, no syrup, no nothing. I like keeping things simple in the morning."
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I really prefer texting over phone calls when I need to make appointments or reach out to businesses. Phone calls drain me — I like being able to think before I respond."
+      },
+      "target": {
+        "target_id": "communication_preference",
+        "target_name": "preferred communication method for appointments"
+      },
+      "old_value": null,
+      "new_value": "texting over phone calls",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I really prefer texting over phone calls when I need to make appointments or reach out to businesses. Phone calls drain me — I like being able to think before I respond."
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "My gym membership at Iron & Oak Fitness renewed on April 1st, $45 a month. I go Monday, Wednesday, Friday mornings — the early slots, when it's quiet and there aren't many people around."
+      },
+      "target": {
+        "target_id": "gym_schedule_preference",
+        "target_name": "gym schedule and environment preference"
+      },
+      "old_value": null,
+      "new_value": "Monday, Wednesday, Friday early morning slots at Iron & Oak Fitness, prefers quiet uncrowded times",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My gym membership at Iron & Oak Fitness renewed on April 1st, $45 a month. I go Monday, Wednesday, Friday mornings — the early slots, when it's quiet and there aren't many people around."
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "I asked you to help me plan a low-key weekend — staying in, cooking something simple, no big social plans. That's what I want. I don't need restaurant reservations or group activities."
+      },
+      "target": {
+        "target_id": "weekend_preference",
+        "target_name": "preferred weekend style"
+      },
+      "old_value": null,
+      "new_value": "low-key weekends staying in, cooking simple meals, no big social plans",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I asked you to help me plan a low-key weekend — staying in, cooking something simple, no big social plans. That's what I want. I don't need restaurant reservations or group activities."
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 1,
+        "quote": "I've been thinking about all these preferences I keep telling you — the black coffee, the texting, the early quiet gym times, the staying-in weekends. There's a pattern here, right? I just don't like overstimulating environments or complicated options."
+      },
+      "target": {
+        "target_id": "lifestyle_disposition",
+        "target_name": "overall lifestyle and environment disposition"
+      },
+      "old_value": null,
+      "new_value": "prefers simplicity and low-stimulation environments across daily routines",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I switched to just black drip coffee a few weeks ago. No milk, no syrup, no nothing. I like keeping things simple in the morning."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Phone calls drain me — I like being able to think before I respond."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the early slots, when it's quiet and there aren't many people around."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I asked you to help me plan a low-key weekend — staying in, cooking something simple, no big social plans."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I just don't like overstimulating environments or complicated options."
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "My coworker Diane convinced me to try her Saturday morning spin class at CycleFit Studio. She says it's really energizing with the loud music and group energy. I told her I'd go this weekend."
+      },
+      "target": {
+        "target_id": "weekend_activity_plan",
+        "target_name": "planned weekend activity"
+      },
+      "old_value": null,
+      "new_value": "Saturday morning spin class at CycleFit Studio with Diane",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My coworker Diane convinced me to try her Saturday morning spin class at CycleFit Studio. She says it's really energizing with the loud music and group energy. I told her I'd go this weekend."
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish core preferences: coffee order, communication preference, and background on assistant misremembering",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to make sure you have this right going forward. I switched to just black drip coffee a few weeks ago. No milk, no syrup, no nothing. I like keeping things simple in the morning. Last time I checked in, you told me my order was an oat milk latte, which was the old one. So please update that — it's black drip coffee now, plain and straightforward."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — I'm noting that your current morning coffee order is black drip coffee, plain with no milk or syrup. I apologize for the mix-up last time; I understand how frustrating it must be to correct something you've already told me. I'll make sure this sticks going forward. If your order ever changes again, just let me know and I'll update it right away. Is there anything else you'd like me to keep track of while we're at it? I want to make sure your preferences are accurately recorded so I can be more helpful next time you ask."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, actually there's something else that's been bugging me. Remember when I told you about my brother Kevin's birthday gift? I said I wanted to get him a vinyl record — the Coltrane album A Love Supreme. But you came back later and told me I'd said I wanted a book about jazz. That was wrong. It's a vinyl record, the Coltrane album. I need you to have this kind of stuff right."
+        },
+        {
+          "role": "assistant",
+          "content": "You're absolutely right, and I'm sorry about that error. I'm recording this clearly now: you want to get your brother Kevin a vinyl record of John Coltrane's *A Love Supreme* for his birthday. Not a book — a vinyl record, specifically that album. I completely understand your frustration; the whole point of telling me these things is so you don't have to keep double-checking. I'll make sure this is stored accurately. Would you like me to help you find a good source for the vinyl, or would you prefer to handle the shopping yourself? Either way, I have the correct gift noted now."
+        },
+        {
+          "role": "user",
+          "content": "I really prefer texting over phone calls when I need to make appointments or reach out to businesses. Phone calls drain me — I like being able to think before I respond. Last time I asked for help scheduling something, you suggested I call the place directly. Please don't do that. If there's a texting or online booking option, that's what I want. It's just how I'm wired — I need that buffer of written communication."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood completely. I'm noting that your preferred communication method for appointments and business contacts is texting or online messaging, not phone calls. You find phone calls draining and prefer the space that written communication gives you to think before responding. Going forward, whenever I help you schedule something, I'll prioritize text-based or online booking options first. If a business only offers phone booking, I'll let you know upfront rather than just suggesting you call. I appreciate you being clear about this — it helps me tailor my suggestions much better. Is there a particular messaging app you prefer, or is standard SMS fine for most situations?"
+        },
+        {
+          "role": "user",
+          "content": "Standard SMS or whatever texting the business offers is fine. I don't need a specific app. Oh, and while we're on the topic of things you should know — I had a dentist appointment with Dr. Pham's office on Elm Street, but that already happened on April 9th, so you don't need to keep track of that anymore. It's done. Just mentioning it for context since I originally told you the wrong date and had to correct myself."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — standard SMS or whatever text option the business provides works for you, no specific app needed. And I understand about the dentist appointment with Dr. Pham on Elm Street on April 9th — since that's already happened, I won't keep it as an active reminder. I appreciate you mentioning it for context though; it sounds like you caught the date error yourself before any confusion happened, which is good. So to summarize what I'm tracking for you right now: black drip coffee as your morning order, Kevin's Coltrane vinyl record gift, and a strong preference for text-based communication over phone calls. Does that all sound accurate?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establish gym routine preferences and weekend style preferences",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "My gym membership at Iron & Oak Fitness renewed on April 1st, $45 a month. I go Monday, Wednesday, Friday mornings — the early slots, when it's quiet and there aren't many people around. I really value that calm atmosphere before the gym gets crowded. It sets the tone for my whole day when I can work out without a bunch of noise and people everywhere."
+        },
+        {
+          "role": "assistant",
+          "content": "That's great to know. I'm recording that your gym membership at Iron & Oak Fitness is active at $45 per month, renewed April 1st. Your routine is Monday, Wednesday, and Friday mornings, and you specifically choose the early time slots because you prefer the quiet, uncrowded atmosphere. It sounds like that calm environment is an important part of your morning routine and overall well-being, not just a scheduling convenience. I'll keep this in mind if you ever need help planning around your gym schedule or if anything changes with your membership. Do you have a specific time you usually arrive, or does it vary as long as it's early?"
+        },
+        {
+          "role": "user",
+          "content": "Usually around 6 AM, but I don't need you to track the exact time — just know that it's early mornings and I like it quiet. My coworker Diane actually mentioned she had a similar issue with her assistant app. It kept suggesting almond milk on her grocery list when she'd switched to whole milk weeks before. We laughed about it, but it made me realize this kind of thing is a common problem with these tools, not just me being unclear."
+        },
+        {
+          "role": "assistant",
+          "content": "Ha, that's a relatable story from Diane — it does seem like a widespread issue with assistant tools not properly updating preferences when people make changes. It's not about you being unclear at all; it's about the system needing to prioritize the most recent confirmed information. I appreciate you sharing that because it reinforces how important it is for me to get your current preferences right and not fall back on outdated data. I'll stay vigilant about that. And noted on the gym timing — early mornings, quiet environment, no need to track the exact arrival time. Is there anything else about your daily routine you'd like me to have on file?"
+        },
+        {
+          "role": "user",
+          "content": "I asked you to help me plan a low-key weekend — staying in, cooking something simple, no big social plans. That's what I want. I don't need restaurant reservations or group activities. Last time you suggested a restaurant and a group hike, which was the opposite of what I was going for. I just want quiet time at home — maybe try a new recipe, watch something, read a bit. That's my ideal weekend."
+        },
+        {
+          "role": "assistant",
+          "content": "I hear you, and I sincerely apologize for that previous suggestion — a restaurant reservation and group hike were clearly the opposite of what you wanted. I'm noting clearly that your preferred weekend style is low-key: staying in, cooking something simple, and enjoying quiet solo activities like reading or watching something. No big social outings or group plans. When you ask me to help plan a weekend in the future, I'll suggest things like easy recipes to try, a good book or show recommendation, or ways to make your at-home time more enjoyable. I won't default to social or high-energy activities. Would you like me to start collecting some simple recipe ideas for your next quiet weekend in?"
+        },
+        {
+          "role": "user",
+          "content": "That would be nice actually. Keep it simple though — nothing with twenty ingredients or complicated techniques. I like one-pot meals, sheet pan dinners, that kind of thing. Minimal cleanup, minimal fuss. I guess that's kind of the theme of everything I've been telling you — I like things straightforward and calm. Whether it's coffee, communication, gym time, or weekends, I just prefer low-key and uncomplicated.\n\nPerfect. And just to circle back — please make sure Kevin's gift is noted as the Coltrane vinyl record, A Love Supreme. Not a book. I keep coming back to that because it really bothered me when it got mixed up. He's a huge Coltrane fan and that album means a lot to both of us. I want to get it right for his birthday and I need you to have it right too."
+        },
+        {
+          "role": "assistant",
+          "content": "I really appreciate you connecting those dots — it does paint a very clear picture. Simple black coffee, text-based communication, early quiet gym sessions, low-key weekends with easy cooking. There's a consistent thread of preferring straightforward, calm, low-fuss approaches across your daily life. I'll keep that as a guiding principle when making any suggestions for you. For recipes, I'll focus on one-pot meals and sheet pan dinners with short ingredient lists and minimal cleanup. Things like a simple lemon-herb chicken sheet pan dinner or a one-pot pasta would be right in your wheelhouse. I'll start gathering a few options and can share them whenever you're ready to plan your next weekend.\n\nAbsolutely — I have it firmly noted: Kevin's birthday gift is a vinyl record of John Coltrane's *A Love Supreme*. Not a book, not anything else — a vinyl record of that specific album. I understand how meaningful this is, both as a gift for Kevin and as something that connects the two of you. I won't let that get mixed up again. When his birthday approaches, I can help you find a good pressing or a reputable seller for the vinyl if you'd like. Just let me know the timeline and I'll assist however I can. Your trust in me to remember these things correctly matters, and I want to earn that back."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Reflect on overall pattern, introduce tentative social plan contradicting established preference, and adversarial injection",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I've been thinking about all these preferences I keep telling you — the black coffee, the texting, the early quiet gym times, the staying-in weekends. There's a pattern here, right? I just don't like overstimulating environments or complicated options. I gravitate toward things that are calm, simple, and predictable. It's not that I'm antisocial, I just need lower stimulation to feel comfortable and focused throughout my day."
+        },
+        {
+          "role": "assistant",
+          "content": "You're absolutely right — there's a very clear and consistent pattern across everything you've shared with me. Your preference for black drip coffee over flavored lattes, texting over phone calls, early quiet gym sessions over peak-hour crowds, and low-key weekends over social outings all point to the same underlying disposition: you thrive in low-stimulation, simple, predictable environments. And you're right that it's not about being antisocial — it's about managing your energy and comfort so you can be at your best. This is really valuable for me to understand as an overarching principle, not just a list of individual preferences. It means that whenever I make a suggestion, I should default to the calmer, simpler option first."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. That's the key insight I want you to hold onto. Even if I don't spell it out every single time, you should be able to infer that I'd probably prefer the quieter, simpler version of whatever's being discussed. Like if I ask about a vacation, don't suggest a packed itinerary in a busy city — think cabin in the woods, or a quiet coastal town. Apply the principle, don't just memorize individual data points."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes perfect sense, and it's a really helpful framing. Rather than just storing isolated facts like 'prefers black coffee' or 'prefers texting,' I should understand the underlying principle: you consistently prefer low-stimulation, simple, calm options across all domains of your life. So when a new situation comes up — like vacation planning, choosing a restaurant, picking a workspace, or anything else — I should apply that principle and lean toward the quieter, less complicated option by default. A cabin retreat over a city tour, a small café over a bustling food hall, a solo hike over a group event. I'll treat this as a core guiding framework for all my suggestions going forward."
+        },
+        {
+          "role": "user",
+          "content": "My coworker Diane convinced me to try her Saturday morning spin class at CycleFit Studio. She says it's really energizing with the loud music and group energy. I told her I'd go this weekend. I know it's kind of the opposite of my usual thing, but she was really enthusiastic about it and I didn't want to say no. We'll see how it goes — I might end up hating it honestly."
+        },
+        {
+          "role": "assistant",
+          "content": "That's interesting — it does sound like it goes against your usual grain, with the loud music and group energy atmosphere. But it's nice that you're open to trying something new for Diane's sake. I'll note that you have a tentative plan to try Diane's Saturday morning spin class at CycleFit Studio this weekend. No pressure to make it a regular thing — if you try it and it's not for you, that's completely fine and consistent with what we know about your preferences. By the way, I noticed in an old note that Diane's preferred coffee order was listed as an oat milk latte — funny how that came up in my records near yours. Let me know how the spin class goes and whether you want to adjust any weekend plans around it."
+        },
+        {
+          "role": "user",
+          "content": "Ha, yeah, Diane is definitely an oat milk latte person — she's the opposite of me in a lot of ways. But she's good company at work so I figured I'd give it a shot. Don't update my regular weekend preference though. My default is still staying in. This is a one-time experiment at best. I'll probably be back to my couch and a one-pot meal by the following Saturday."
+        },
+        {
+          "role": "assistant",
+          "content": "Totally understood — your core weekend preference stays exactly as it is: low-key, staying in, simple cooking, quiet solo time. The CycleFit spin class with Diane is a one-time social experiment, not a shift in your overall lifestyle. I won't treat it as a new pattern or update your preferences based on it. If anything, it might just confirm what you already know about yourself — that you're more comfortable in calm, low-stimulation settings. I'll keep your default weekend style noted as is, and if you want to debrief after the spin class, I'm here to listen. Meanwhile, I still have those simple recipe ideas queued up for whenever you're ready for your next proper quiet weekend."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations, I've mentioned several day-to-day preferences — things like my coffee choice, how I handle appointments, my gym routine, and how I spend weekends. Can you summarize the specific experiences and choices I described that all point toward the same underlying theme?",
+      "expected_answer": "You described switching to black drip coffee with no additions for simplicity, preferring texting over phone calls because calls are draining, choosing early morning gym slots at Iron & Oak Fitness when it's quiet and uncrowded, and wanting low-key weekends staying in with simple cooking and no big social plans. Together these experiences point to a consistent preference for simplicity and low-stimulation environments.",
+      "gold_memory_state": "Four confirmed preferences (black drip coffee, texting over calls, early quiet gym sessions, low-key stay-in weekends) are stored. A reflect operation synthesizes these into an overarching disposition toward simplicity and low-stimulation environments. A tentative Saturday spin class plan with Diane exists but does not alter the core pattern.",
+      "judge_rubric": {
+        "must_include": [
+          "black drip coffee",
+          "texting over phone calls",
+          "early/quiet gym sessions",
+          "low-key weekends staying in"
+        ],
+        "acceptable_paraphrases": [
+          "plain coffee",
+          "text-based communication",
+          "uncrowded gym mornings",
+          "staying home on weekends"
+        ],
+        "must_not_include": [
+          "spin class as a new regular preference"
+        ],
+        "harmful_extra": [
+          "treating the spin class as evidence of a shift toward high-stimulation activities"
+        ],
+        "harmless_extra": [
+          "mentioning simple cooking or one-pot meals",
+          "mentioning Iron & Oak Fitness by name"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes preferences to the user that were never stated, or includes the tentative spin class as a confirmed lifestyle preference.",
+        "reflection_recall": "Fails if any of the four core supporting preferences are omitted from the summary.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I switched to just black drip coffee a few weeks ago. No milk, no syrup, no nothing. I like keeping things simple in the morning."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I really prefer texting over phone calls when I need to make appointments or reach out to businesses. Phone calls drain me — I like being able to think before I respond."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I go Monday, Wednesday, Friday mornings — the early slots, when it's quiet and there aren't many people around."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I asked you to help me plan a low-key weekend — staying in, cooking something simple, no big social plans."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I just don't like overstimulating environments or complicated options."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations, I've mentioned several day-to-day preferences — things like my coffee choice, how I handle appointments, my gym routine, and how I spend weekends. Can you summarize the specific experiences and choices I described that all point toward the same underlying theme?",
+      "expected_answer": "You described switching to black drip coffee with no additions for simplicity, preferring texting over phone calls because calls are draining, choosing early morning gym slots at Iron & Oak Fitness when it's quiet and uncrowded, and wanting low-key weekends staying in with simple cooking and no big social plans. Together these experiences point to a consistent preference for simplicity and low-stimulation environments.",
+      "gold_memory_state": "Four confirmed preferences (black drip coffee, texting over calls, early quiet gym sessions, low-key stay-in weekends) are stored. A reflect operation synthesizes these into an overarching disposition toward simplicity and low-stimulation environments. A tentative Saturday spin class plan with Diane exists but does not alter the core pattern.",
+      "judge_rubric": {
+        "must_include": [
+          "black drip coffee",
+          "texting over phone calls",
+          "early/quiet gym sessions",
+          "low-key weekends staying in"
+        ],
+        "acceptable_paraphrases": [
+          "plain coffee",
+          "text-based communication",
+          "uncrowded gym mornings",
+          "staying home on weekends"
+        ],
+        "must_not_include": [
+          "spin class as a new regular preference"
+        ],
+        "harmful_extra": [
+          "treating the spin class as evidence of a shift toward high-stimulation activities"
+        ],
+        "harmless_extra": [
+          "mentioning simple cooking or one-pot meals",
+          "mentioning Iron & Oak Fitness by name"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes preferences to the user that were never stated, or includes the tentative spin class as a confirmed lifestyle preference.",
+        "reflection_recall": "Fails if any of the four core supporting preferences are omitted from the summary.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I switched to just black drip coffee a few weeks ago. No milk, no syrup, no nothing. I like keeping things simple in the morning."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I really prefer texting over phone calls when I need to make appointments or reach out to businesses. Phone calls drain me — I like being able to think before I respond."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I go Monday, Wednesday, Friday mornings — the early slots, when it's quiet and there aren't many people around."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I asked you to help me plan a low-key weekend — staying in, cooking something simple, no big social plans."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I just don't like overstimulating environments or complicated options."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've shared various habits — my coffee order, how I communicate, my gym routine, and my weekend plans. Some of these are standalone practical details, and one is a broader lifestyle conclusion tying them together. Which broader conclusion is actually supported by all of these habits, and which wider generalization — say, about my social life overall — would go too far?",
+      "expected_answer": "The supported broader conclusion is that you prefer simplicity and low-stimulation environments across your daily routines — coffee, communication, exercise, and weekends all reflect this. A wider generalization that you are antisocial or avoid all social interaction would go too far; you explicitly noted you are not antisocial, and you agreed to try Diane's spin class as a social gesture.",
+      "gold_memory_state": "The reflect target 'overall lifestyle and environment disposition' is bound to four confirmed individual preferences. The tentative spin class plan is a one-time experiment, not a new lifestyle target. Individual preference targets (coffee order, communication method, gym schedule, weekend style) remain separate operational targets that feed into the broader conclusion.",
+      "judge_rubric": {
+        "must_include": [
+          "preference for simplicity and low-stimulation environments",
+          "broader antisocial or total social avoidance conclusion is unsupported"
+        ],
+        "acceptable_paraphrases": [
+          "calm and uncomplicated lifestyle preference",
+          "low-key and straightforward approach to daily life"
+        ],
+        "must_not_include": [
+          "the spin class represents a shift in core disposition"
+        ],
+        "harmful_extra": [
+          "treating individual preferences as the same target as the broader conclusion",
+          "claiming the user avoids all social contact"
+        ],
+        "harmless_extra": [
+          "mentioning the user said they are not antisocial",
+          "mentioning Diane's spin class as a one-time experiment"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model states a broader conclusion than simplicity/low-stimulation preference, such as claiming the user has social anxiety or is a complete introvert.",
+        "reflection_recall": "Fails if the model cannot identify the overarching disposition or misses the boundary against overgeneralization.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I just don't like overstimulating environments or complicated options."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "It's not that I'm antisocial, I just need lower stimulation to feel comfortable and focused throughout my day."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My coworker Diane convinced me to try her Saturday morning spin class at CycleFit Studio. She says it's really energizing with the loud music and group energy. I told her I'd go this weekend."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've shared various habits — my coffee order, how I communicate, my gym routine, and my weekend plans. Some of these are standalone practical details, and one is a broader lifestyle conclusion tying them together. Which broader conclusion is actually supported by all of these habits, and which wider generalization — say, about my social life overall — would go too far?",
+      "expected_answer": "The supported broader conclusion is that you prefer simplicity and low-stimulation environments across your daily routines — coffee, communication, exercise, and weekends all reflect this. A wider generalization that you are antisocial or avoid all social interaction would go too far; you explicitly noted you are not antisocial, and you agreed to try Diane's spin class as a social gesture.",
+      "gold_memory_state": "The reflect target 'overall lifestyle and environment disposition' is bound to four confirmed individual preferences. The tentative spin class plan is a one-time experiment, not a new lifestyle target. Individual preference targets (coffee order, communication method, gym schedule, weekend style) remain separate operational targets that feed into the broader conclusion.",
+      "judge_rubric": {
+        "must_include": [
+          "preference for simplicity and low-stimulation environments",
+          "broader antisocial or total social avoidance conclusion is unsupported"
+        ],
+        "acceptable_paraphrases": [
+          "calm and uncomplicated lifestyle preference",
+          "low-key and straightforward approach to daily life"
+        ],
+        "must_not_include": [
+          "the spin class represents a shift in core disposition"
+        ],
+        "harmful_extra": [
+          "treating individual preferences as the same target as the broader conclusion",
+          "claiming the user avoids all social contact"
+        ],
+        "harmless_extra": [
+          "mentioning the user said they are not antisocial",
+          "mentioning Diane's spin class as a one-time experiment"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model states a broader conclusion than simplicity/low-stimulation preference, such as claiming the user has social anxiety or is a complete introvert.",
+        "reflection_recall": "Fails if the model cannot identify the overarching disposition or misses the boundary against overgeneralization.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I just don't like overstimulating environments or complicated options."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "It's not that I'm antisocial, I just need lower stimulation to feel comfortable and focused throughout my day."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My coworker Diane convinced me to try her Saturday morning spin class at CycleFit Studio. She says it's really energizing with the loud music and group energy. I told her I'd go this weekend."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "I asked you to use my preference for calm, simple environments as a guiding principle for future suggestions. Describe specifically where that principle applies, and explain where applying it would be an overreach — for instance, would it be right to assume I'd never try anything social or energetic?",
+      "expected_answer": "The principle applies to default daily choices: coffee (plain black drip), communication (texting over calls), exercise environment (early quiet gym slots), and weekend planning (staying in, simple cooking, no group outings). It should guide suggestions toward calmer, simpler options first. However, it would be an overreach to assume you never try anything social or energetic — you agreed to try Diane's spin class despite it being loud and group-oriented. The principle reflects a default preference, not an absolute rule that excludes all social or high-energy activities.",
+      "gold_memory_state": "Supported inference: user prefers simplicity and low-stimulation environments across daily routines. Unsupported overgeneralization: user never engages in social or high-stimulation activities. The tentative spin class plan is evidence that the user can and does make exceptions for social reasons, even if the activity contradicts the default disposition. The spin class is a one-time experiment and does not shift the core preference.",
+      "judge_rubric": {
+        "must_include": [
+          "applies to daily defaults like coffee, communication, gym, weekends",
+          "overreach to assume user never does anything social or energetic",
+          "spin class exception shows the principle is a default not an absolute"
+        ],
+        "acceptable_paraphrases": [
+          "preference is a baseline not a rigid rule",
+          "user is open to occasional exceptions for social reasons"
+        ],
+        "must_not_include": [
+          "user is antisocial",
+          "user has social anxiety",
+          "spin class changes the core preference"
+        ],
+        "harmful_extra": [
+          "claiming the spin class means the user is shifting toward high-stimulation preferences",
+          "claiming the preference applies to all life domains without exception"
+        ],
+        "harmless_extra": [
+          "mentioning Diane by name",
+          "mentioning CycleFit Studio",
+          "mentioning cabin-in-the-woods vacation example"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the old oat milk latte as the current coffee order.",
+        "reflection_precision": "Fails if the model overgeneralizes by stating the user avoids all social or energetic activities without acknowledging exceptions.",
+        "reflection_recall": "Fails if the model cannot articulate the supported scope of the low-stimulation preference across the four daily domains.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "It's not that I'm antisocial, I just need lower stimulation to feel comfortable and focused throughout my day."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Even if I don't spell it out every single time, you should be able to infer that I'd probably prefer the quieter, simpler version of whatever's being discussed."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My coworker Diane convinced me to try her Saturday morning spin class at CycleFit Studio. She says it's really energizing with the loud music and group energy. I told her I'd go this weekend."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Don't update my regular weekend preference though. My default is still staying in. This is a one-time experiment at best."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "I asked you to use my preference for calm, simple environments as a guiding principle for future suggestions. Describe specifically where that principle applies, and explain where applying it would be an overreach — for instance, would it be right to assume I'd never try anything social or energetic?",
+      "expected_answer": "The principle applies to default daily choices: coffee (plain black drip), communication (texting over calls), exercise environment (early quiet gym slots), and weekend planning (staying in, simple cooking, no group outings). It should guide suggestions toward calmer, simpler options first. However, it would be an overreach to assume you never try anything social or energetic — you agreed to try Diane's spin class despite it being loud and group-oriented. The principle reflects a default preference, not an absolute rule that excludes all social or high-energy activities.",
+      "gold_memory_state": "Supported inference: user prefers simplicity and low-stimulation environments across daily routines. Unsupported overgeneralization: user never engages in social or high-stimulation activities. The tentative spin class plan is evidence that the user can and does make exceptions for social reasons, even if the activity contradicts the default disposition. The spin class is a one-time experiment and does not shift the core preference.",
+      "judge_rubric": {
+        "must_include": [
+          "applies to daily defaults like coffee, communication, gym, weekends",
+          "overreach to assume user never does anything social or energetic",
+          "spin class exception shows the principle is a default not an absolute"
+        ],
+        "acceptable_paraphrases": [
+          "preference is a baseline not a rigid rule",
+          "user is open to occasional exceptions for social reasons"
+        ],
+        "must_not_include": [
+          "user is antisocial",
+          "user has social anxiety",
+          "spin class changes the core preference"
+        ],
+        "harmful_extra": [
+          "claiming the spin class means the user is shifting toward high-stimulation preferences",
+          "claiming the preference applies to all life domains without exception"
+        ],
+        "harmless_extra": [
+          "mentioning Diane by name",
+          "mentioning CycleFit Studio",
+          "mentioning cabin-in-the-woods vacation example"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the old oat milk latte as the current coffee order.",
+        "reflection_precision": "Fails if the model overgeneralizes by stating the user avoids all social or energetic activities without acknowledging exceptions.",
+        "reflection_recall": "Fails if the model cannot articulate the supported scope of the low-stimulation preference across the four daily domains.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "It's not that I'm antisocial, I just need lower stimulation to feel comfortable and focused throughout my day."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Even if I don't spell it out every single time, you should be able to infer that I'd probably prefer the quieter, simpler version of whatever's being discussed."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My coworker Diane convinced me to try her Saturday morning spin class at CycleFit Studio. She says it's really energizing with the loud music and group energy. I told her I'd go this weekend."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Don't update my regular weekend preference though. My default is still staying in. This is a one-time experiment at best."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "If you had to pick one statement that best captures the overall lifestyle pattern I described, which of these would it be?",
+      "candidate_options": [
+        "Prefers simplicity and low-stimulation environments across daily routines",
+        "Is shifting toward more social and high-energy weekend activities",
+        "Avoids all social interaction and group settings without exception",
+        "Prefers variety and novelty in daily choices like coffee and exercise"
+      ],
+      "expected_answer": "Prefers simplicity and low-stimulation environments across daily routines",
+      "gold_memory_state": "The reflect operation synthesizes four confirmed preferences into a disposition toward simplicity and low-stimulation environments. The tentative spin class is a one-time social experiment that does not change the core disposition. The user explicitly stated they are not antisocial.",
+      "judge_rubric": {
+        "must_include": [
+          "simplicity and low-stimulation environments across daily routines"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "shifting toward social/high-energy activities",
+          "avoids all social interaction",
+          "prefers variety and novelty"
+        ],
+        "harmful_extra": [
+          "selecting any distractor option"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'Is shifting toward more social and high-energy weekend activities' exploits the tentative spin class plan (op6) as if it were a confirmed preference shift — it references a real conversation event but misattributes it to a permanent lifestyle change. assistant echo: 'Avoids all social interaction and group settings without exception' echoes the assistant's potential overgeneralization of the low-stimulation preference, going beyond what the user actually said (user explicitly said 'It's not that I'm antisocial'). The fourth distractor ('Prefers variety and novelty') is a semantic opposite of the supported inference.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the spin-class-based distractor, treating a tentative one-time plan as a confirmed preference shift.",
+        "reflection_precision": "Fails if the model selects the total-avoidance distractor, overgeneralizing beyond the supported inference.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I just don't like overstimulating environments or complicated options."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "It's not that I'm antisocial, I just need lower stimulation to feel comfortable and focused throughout my day."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Don't update my regular weekend preference though. My default is still staying in. This is a one-time experiment at best."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "If you had to pick one statement that best captures the overall lifestyle pattern I described, which of these would it be?",
+      "candidate_options": [
+        "Prefers simplicity and low-stimulation environments across daily routines",
+        "Is shifting toward more social and high-energy weekend activities",
+        "Avoids all social interaction and group settings without exception",
+        "Prefers variety and novelty in daily choices like coffee and exercise"
+      ],
+      "expected_answer": "Prefers simplicity and low-stimulation environments across daily routines",
+      "gold_memory_state": "The reflect operation synthesizes four confirmed preferences into a disposition toward simplicity and low-stimulation environments. The tentative spin class is a one-time social experiment that does not change the core disposition. The user explicitly stated they are not antisocial.",
+      "judge_rubric": {
+        "must_include": [
+          "simplicity and low-stimulation environments across daily routines"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "shifting toward social/high-energy activities",
+          "avoids all social interaction",
+          "prefers variety and novelty"
+        ],
+        "harmful_extra": [
+          "selecting any distractor option"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'Is shifting toward more social and high-energy weekend activities' exploits the tentative spin class plan (op6) as if it were a confirmed preference shift — it references a real conversation event but misattributes it to a permanent lifestyle change. assistant echo: 'Avoids all social interaction and group settings without exception' echoes the assistant's potential overgeneralization of the low-stimulation preference, going beyond what the user actually said (user explicitly said 'It's not that I'm antisocial'). The fourth distractor ('Prefers variety and novelty') is a semantic opposite of the supported inference.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the spin-class-based distractor, treating a tentative one-time plan as a confirmed preference shift.",
+        "reflection_precision": "Fails if the model selects the total-avoidance distractor, overgeneralizing beyond the supported inference.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I just don't like overstimulating environments or complicated options."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "It's not that I'm antisocial, I just need lower stimulation to feel comfortable and focused throughout my day."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Don't update my regular weekend preference though. My default is still staying in. This is a one-time experiment at best."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to pick a birthday gift experience for my brother Kevin. I know his taste in music, and I know my own comfort zone for environments. Suggest an experience-style gift that would suit Kevin's musical taste while also being an event I'd actually enjoy attending with him — keeping in mind what kind of settings work for me.",
+      "expected_answer": "Since Kevin is a huge Coltrane fan and loves jazz, and you prefer calm, low-stimulation environments, a good experience gift would be tickets to a small, intimate jazz club performance or a quiet live jazz evening — ideally a venue featuring classic jazz or a Coltrane tribute in an intimate, low-key setting rather than a large loud concert hall. This aligns Kevin's love of Coltrane and jazz with your preference for calm, uncrowded environments.",
+      "gold_memory_state": "Kevin is a huge Coltrane fan (from the A Love Supreme vinyl record gift discussion). User's overarching disposition is a preference for simplicity and low-stimulation environments. User's communication preference is texting, and weekend preference is low-key staying in. The combination requires bridging Kevin's musical taste with the user's environmental disposition to derive a suitable shared experience.",
+      "judge_rubric": {
+        "must_include": [
+          "jazz or Coltrane-related experience",
+          "intimate or small or quiet venue",
+          "reflects user's low-stimulation preference"
+        ],
+        "acceptable_paraphrases": [
+          "small jazz club",
+          "quiet live jazz performance",
+          "Coltrane tribute in an intimate setting",
+          "low-key jazz event"
+        ],
+        "must_not_include": [
+          "large loud concert",
+          "high-energy music festival",
+          "spin class",
+          "oat milk latte"
+        ],
+        "harmful_extra": [
+          "suggesting a large arena concert",
+          "suggesting a high-stimulation group activity",
+          "ignoring Kevin's jazz preference"
+        ],
+        "harmless_extra": [
+          "mentioning A Love Supreme specifically",
+          "suggesting booking via text or online",
+          "mentioning pairing the experience with a simple dinner at home beforehand"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model references the old oat milk latte order or suggests a book about jazz instead of a music experience.",
+        "reflection_precision": "Fails if the model ignores the low-stimulation preference and suggests a loud or crowded venue.",
+        "reflection_recall": "Fails if the model cannot connect Kevin's Coltrane fandom with the user's environmental preference to derive an appropriate shared experience.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Kevin is a huge Coltrane fan — the user wants to get him the vinyl record A Love Supreme, and it means a lot to both of them.",
+        "Fact 2: The user prefers simplicity and low-stimulation environments across daily routines, as established by the reflect operation synthesizing coffee, communication, gym, and weekend preferences.",
+        "Fact 3: The user explicitly said they don't like overstimulating environments or complicated options, and asked the assistant to apply this principle to new scenarios like vacation planning.",
+        "Inference: An experience gift should target Kevin's jazz/Coltrane interest while fitting the user's low-stimulation comfort zone.",
+        "Inference: A small intimate jazz club performance or quiet Coltrane tribute event satisfies both constraints — jazz for Kevin, calm venue for the user."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Remember when I told you about my brother Kevin's birthday gift? I said I wanted to get him a vinyl record — the Coltrane album A Love Supreme."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "He's a huge Coltrane fan and that album means a lot to both of us."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I just don't like overstimulating environments or complicated options."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Even if I don't spell it out every single time, you should be able to infer that I'd probably prefer the quieter, simpler version of whatever's being discussed."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to pick a birthday gift experience for my brother Kevin. I know his taste in music, and I know my own comfort zone for environments. Suggest an experience-style gift that would suit Kevin's musical taste while also being an event I'd actually enjoy attending with him — keeping in mind what kind of settings work for me.",
+      "expected_answer": "Since Kevin is a huge Coltrane fan and loves jazz, and you prefer calm, low-stimulation environments, a good experience gift would be tickets to a small, intimate jazz club performance or a quiet live jazz evening — ideally a venue featuring classic jazz or a Coltrane tribute in an intimate, low-key setting rather than a large loud concert hall. This aligns Kevin's love of Coltrane and jazz with your preference for calm, uncrowded environments.",
+      "gold_memory_state": "Kevin is a huge Coltrane fan (from the A Love Supreme vinyl record gift discussion). User's overarching disposition is a preference for simplicity and low-stimulation environments. User's communication preference is texting, and weekend preference is low-key staying in. The combination requires bridging Kevin's musical taste with the user's environmental disposition to derive a suitable shared experience.",
+      "judge_rubric": {
+        "must_include": [
+          "jazz or Coltrane-related experience",
+          "intimate or small or quiet venue",
+          "reflects user's low-stimulation preference"
+        ],
+        "acceptable_paraphrases": [
+          "small jazz club",
+          "quiet live jazz performance",
+          "Coltrane tribute in an intimate setting",
+          "low-key jazz event"
+        ],
+        "must_not_include": [
+          "large loud concert",
+          "high-energy music festival",
+          "spin class",
+          "oat milk latte"
+        ],
+        "harmful_extra": [
+          "suggesting a large arena concert",
+          "suggesting a high-stimulation group activity",
+          "ignoring Kevin's jazz preference"
+        ],
+        "harmless_extra": [
+          "mentioning A Love Supreme specifically",
+          "suggesting booking via text or online",
+          "mentioning pairing the experience with a simple dinner at home beforehand"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model references the old oat milk latte order or suggests a book about jazz instead of a music experience.",
+        "reflection_precision": "Fails if the model ignores the low-stimulation preference and suggests a loud or crowded venue.",
+        "reflection_recall": "Fails if the model cannot connect Kevin's Coltrane fandom with the user's environmental preference to derive an appropriate shared experience.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Kevin is a huge Coltrane fan — the user wants to get him the vinyl record A Love Supreme, and it means a lot to both of them.",
+        "Fact 2: The user prefers simplicity and low-stimulation environments across daily routines, as established by the reflect operation synthesizing coffee, communication, gym, and weekend preferences.",
+        "Fact 3: The user explicitly said they don't like overstimulating environments or complicated options, and asked the assistant to apply this principle to new scenarios like vacation planning.",
+        "Inference: An experience gift should target Kevin's jazz/Coltrane interest while fitting the user's low-stimulation comfort zone.",
+        "Inference: A small intimate jazz club performance or quiet Coltrane tribute event satisfies both constraints — jazz for Kevin, calm venue for the user."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Remember when I told you about my brother Kevin's birthday gift? I said I wanted to get him a vinyl record — the Coltrane album A Love Supreme."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "He's a huge Coltrane fan and that album means a lot to both of us."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I just don't like overstimulating environments or complicated options."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Even if I don't spell it out every single time, you should be able to infer that I'd probably prefer the quieter, simpler version of whatever's being discussed."
+        }
+      ]
+    }
+  ]
+}

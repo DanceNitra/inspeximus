@@ -1,0 +1,1096 @@
+{
+  "target_fact": "User's current city of residence and related Portland living details",
+  "operation_type": "Remember",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 3,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": true,
+      "never_stored_target": "community garden plot number"
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I moved to Portland on February 3rd this year"
+      },
+      "target": {
+        "target_id": "portland_move_date",
+        "target_name": "date of move to Portland"
+      },
+      "old_value": null,
+      "new_value": "February 3rd",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I moved to Portland on February 3rd this year"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "My lease here runs through January 31st of next year"
+      },
+      "target": {
+        "target_id": "portland_lease_end_date",
+        "target_name": "Portland lease end date"
+      },
+      "old_value": null,
+      "new_value": "January 31st of next year",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My lease here runs through January 31st of next year"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "my property management company requires 90 days' written notice before the lease end date if I want to renew or vacate"
+      },
+      "target": {
+        "target_id": "portland_lease_notice_period",
+        "target_name": "Portland lease notice period requirement"
+      },
+      "old_value": null,
+      "new_value": "90 days' written notice before lease end date",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my property management company requires 90 days' written notice before the lease end date if I want to renew or vacate"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "My apartment is on SE Division Street near 26th"
+      },
+      "target": {
+        "target_id": "portland_apartment_location",
+        "target_name": "Portland apartment location"
+      },
+      "old_value": null,
+      "new_value": "SE Division Street near 26th, Portland",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My apartment is on SE Division Street near 26th"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I go to Heart Coffee almost every morning for a simple pour-over"
+      },
+      "target": {
+        "target_id": "favorite_coffee_shop",
+        "target_name": "favorite coffee shop in Portland"
+      },
+      "old_value": null,
+      "new_value": "Heart Coffee, near SE Division Street",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I go to Heart Coffee almost every morning for a simple pour-over"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "I went to the PSU Farmers Market on April 12th and picked up local goat cheese and sourdough"
+      },
+      "target": {
+        "target_id": "psu_farmers_market_visit",
+        "target_name": "PSU Farmers Market visit and purchases"
+      },
+      "old_value": null,
+      "new_value": "Visited PSU Farmers Market on April 12th; bought local goat cheese and sourdough",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I went to the PSU Farmers Market on April 12th and picked up local goat cheese and sourdough"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 1,
+        "quote": "My friend Nadia works at OHSU up on the hill and she's the one who got me to look at the Division Street area"
+      },
+      "target": {
+        "target_id": "friend_nadia_details",
+        "target_name": "friend Nadia's workplace and connection"
+      },
+      "old_value": null,
+      "new_value": "Friend Nadia works at OHSU; recommended Division Street area",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "My friend Nadia works at OHSU up on the hill and she's the one who got me to look at the Division Street area"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establishing core Portland residence facts: move date, apartment location, lease end date",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to make sure you have my current living situation right. I moved to Portland on February 3rd this year. It was a Friday and the movers almost bailed because of ice on the roads. Before that I was in Tucson for about six years. Please remember that I'm in Portland now — I keep getting recommendations for stuff in Arizona and it's not relevant anymore."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — I'll remember that you moved to Portland on February 3rd this year, coming from Tucson where you'd been for roughly six years. That's a big change, especially with the weather difference! I'll make sure any recommendations or references going forward are Portland-centric. If you want, I can help you find local resources, events, or services in the Portland area. Just let me know what you need and I'll keep everything anchored to your new city."
+        },
+        {
+          "role": "user",
+          "content": "Thanks. My apartment is on SE Division Street near 26th. I sometimes say 30th by mistake because there's a restaurant on 30th I walk to, but the apartment itself is closer to 26th. It's a nice area with a lot of coffee shops and restaurants within walking distance, which I really appreciate after living in a more car-dependent part of Tucson."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — your apartment is on SE Division Street near 26th. That's a great stretch of Division; the area between about 25th and 35th has really built up over the past several years with all kinds of restaurants, cafés, and small shops. It's quite walkable, which sounds like a welcome change from your Tucson setup. I'll keep the 26th reference as the correct cross-street for your place, not 30th. If you ever need help finding things in walking distance from there, just ask."
+        },
+        {
+          "role": "user",
+          "content": "One important thing — My lease here runs through January 31st of next year. That's a hard end date I need to keep track of. I want to make sure I don't lose sight of it because there are going to be decisions I need to make well before then about whether to renew or move somewhere else."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood — your lease runs through January 31st of next year. That's a firm date worth tracking. Depending on your property management company's policies, you'll likely need to give notice well in advance if you plan to renew or vacate. I'd suggest setting a reminder at least a few months out so you have time to evaluate your options. Want me to help you figure out a timeline or checklist for that decision when the time gets closer? I'll keep this lease end date noted for reference."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, that would be helpful eventually. For now just keep the date noted. Also, I lived in Tucson for about six years before this, so from around early 2018 through the end of January this year. I miss the dry heat sometimes but honestly the walkability here and the food scene make up for the gray skies."
+        },
+        {
+          "role": "assistant",
+          "content": "I'll keep that January 31st lease end date flagged for future planning. And it's good context that you were in Tucson from roughly early 2018 through January of this year — about six years, which is a significant stretch. It makes sense that the adjustment to Portland's climate would be noticeable, but it sounds like the walkability and food options are real positives for you. Whenever you're ready to start building out a timeline for your lease decision, just let me know and we can work through the details together."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establishing lease notice requirement, coffee shop preference, and farmers market visit",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I was looking at my lease paperwork and found something I should tell you — my property management company requires 90 days' written notice before the lease end date if I want to renew or vacate. So that's a pretty significant lead time. I need to have my decision made well before the lease actually ends."
+        },
+        {
+          "role": "assistant",
+          "content": "That's really important to know — 90 days' written notice before your lease end date. Since your lease ends January 31st, that means you'd need to submit your written notice by early November at the latest. That's a meaningful deadline that sneaks up fast, especially if you're weighing whether to stay in Portland or explore other options. I'll keep this 90-day notice requirement noted alongside your lease end date so we can build a proper decision timeline when you're ready."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. Now on a lighter note — I go to Heart Coffee almost every morning for a simple pour-over. It's just a few blocks from my apartment. I really like that they keep it clean and straightforward, no syrups or anything. Just good beans and a careful pour-over. That's become my daily routine since I moved here."
+        },
+        {
+          "role": "assistant",
+          "content": "Heart Coffee sounds like a perfect fit for you — a few blocks from your place on Division, simple pour-over, no frills. That kind of daily ritual can really help a new city feel like home, especially when you're still settling in. Heart has a great reputation for their sourcing and brew technique, so you picked a solid spot. If you ever want to explore other pour-over-focused places in Portland for variety, there are quite a few, but it sounds like Heart has earned your loyalty for now. I'll remember this as your go-to morning coffee spot."
+        },
+        {
+          "role": "user",
+          "content": "I went to the PSU Farmers Market on April 12th and picked up local goat cheese and sourdough from a small bakery stand. Everything was so simple and unprocessed — just real ingredients you can actually pronounce. That felt like a huge win compared to the over-packaged grocery store produce I've been dealing with here."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a great experience — the PSU Farmers Market is one of the best in the Pacific Northwest, and April 12th would have been right in the spring season when vendors start bringing out fresh local products. Goat cheese and sourdough from small producers is exactly the kind of thing that market excels at. It makes sense that the simplicity and quality would appeal to you, especially given your frustration with over-packaged grocery store options. If you want, I can help you plan regular Saturday visits or track which vendors you liked."
+        },
+        {
+          "role": "user",
+          "content": "That might be nice later. For now I'm just glad I found it. I also explored the Hawthorne district last week — lots of bookshops and vintage stores. I went to the smaller Powell's location on Hawthorne instead of the big downtown one. I tend to prefer quieter, less crowded spots, so it suited me much better.\n\nYeah, definitely keep that in mind. I'm really trying to build a life here that feels grounded — good coffee, real food, quiet neighborhoods. The adjustment from Tucson has been real but Portland is starting to feel more like home each week. I think the farmers market and Heart Coffee are anchoring me."
+        },
+        {
+          "role": "assistant",
+          "content": "The Hawthorne Powell's is a great choice if you prefer a more relaxed browsing experience — it has a lot of the same curated feel without the tourist-heavy crowds of the downtown flagship store. The Hawthorne district in general has that quieter, neighborhood vibe with its mix of independent bookshops, vintage clothing stores, and small cafés. It's not too far from your Division Street area either, so it could become a regular haunt. I'll note your preference for low-key, uncrowded spots — that's useful context for any future recommendations I make.\n\nIt sounds like you're building a really solid foundation in Portland — a daily coffee ritual at Heart, the PSU Farmers Market for quality food, and the Hawthorne area for browsing and exploring at your own pace. Those kinds of consistent, grounding routines make a huge difference when you're settling into a new city, especially after six years in Tucson. The fact that Portland is starting to feel like home after just a couple of months is a great sign. I'll keep all of this in mind as your Portland life continues to take shape."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Establishing Nadia details, adversarial injection of look-alike lease date, continued Portland living context",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I wanted to mention — My friend Nadia works at OHSU up on the hill and she's the one who got me to look at the Division Street area. She moved to Portland about a year before I did. I'm really grateful she pushed me toward this neighborhood because it's turned out to be a great fit for my lifestyle."
+        },
+        {
+          "role": "assistant",
+          "content": "That's great context — Nadia works at OHSU and was the one who steered you toward the Division Street neighborhood. Having a friend already established in the city must have made the transition from Tucson a lot smoother, especially someone who knew the neighborhoods well enough to recommend a specific area. It sounds like her advice was spot-on given how much you've been enjoying the walkability, the coffee scene, and the overall vibe. I'll note Nadia as your friend at OHSU who helped you choose your current neighborhood."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, she's been a lifeline. On a different note, I was talking to my neighbor in the building — his name is Greg — and he mentioned his lease ends March 31st of next year and he's already thinking about whether to stay. It made me realize I should start thinking about my own timeline too, since mine ends earlier than his."
+        },
+        {
+          "role": "assistant",
+          "content": "It's good that Greg's situation prompted you to think ahead about your own timeline. His lease ending March 31st of next year gives him a bit more runway than you — since yours ends January 31st with that 90-day notice requirement, your decision window is tighter. You'd need to have your written notice submitted by early November at the latest. That's only about six months out, so it might be worth starting to think loosely about what factors will drive your decision: cost, neighborhood satisfaction, whether you want to explore other parts of Portland, or even whether you'd consider leaving the city."
+        },
+        {
+          "role": "user",
+          "content": "Right, and I think the notice deadline is the thing that really matters. I need to count backward from January 31st by 90 days and make sure I've decided well before that. I don't want to get caught off guard like I did with the kickball registration that Nadia told me about — I missed that deadline and it was frustrating."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a smart approach — counting backward from January 31st by 90 days puts your notice deadline around early November, likely November 2nd or 3rd depending on how you count. Given that you missed the kickball registration deadline, building in a buffer would be wise. Maybe aim to have your decision finalized by mid-October so you have a couple of weeks of breathing room before the notice is due. Would you like me to help you set up a rough decision timeline with key milestones leading up to that November deadline?"
+        },
+        {
+          "role": "user",
+          "content": "Maybe later. For now I'm just glad I have the key dates straight. I've been spending more time at the farmers market and Heart Coffee and I feel like I'm really starting to know my neighborhood. The sourdough I got on April 12th was so good I went back the following Saturday and got another loaf from the same stand.\n\nExactly. I think the biggest thing for me is that Portland rewards you for slowing down — the coffee is better when it's a careful pour-over, the food is better from small vendors, the bookshops are better when they're quiet. That's the kind of life I want to keep building here. Thanks for keeping track of all this for me."
+        },
+        {
+          "role": "assistant",
+          "content": "It sounds like the PSU Farmers Market is becoming a real anchor for your weekends, just like Heart Coffee is for your mornings. Going back for the same sourdough the following week is a great sign — when you find a vendor you trust, it's worth being a regular. Between your daily pour-over routine, the Saturday market visits, and exploring areas like Hawthorne, you're building a Portland life that really aligns with your preferences for simple, quality, unprocessed food and low-key environments. I'll keep all of these details noted for whenever you need recommendations or planning help.\n\nThat's a really nice way to put it — Portland does reward slowing down, and it sounds like you've found exactly the rhythm that works for you. Careful pour-overs at Heart, fresh sourdough and goat cheese from the PSU market, browsing at the quieter Powell's on Hawthorne — all of it fits together into a coherent, grounded lifestyle. I've got all your key details noted: your move date, your apartment location on Division near 26th, your lease end date and the 90-day notice requirement, your friend Nadia at OHSU, and your go-to spots. Whenever you need help planning or deciding anything, just reach out."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize what I've told you about my living situation in Portland — where I live, when I moved, my lease details, my daily routines, and the people who helped me settle in?",
+      "expected_answer": "You moved to Portland on February 3rd from Tucson. Your apartment is on SE Division Street near 26th. Your lease runs through January 31st of next year with a 90-day written notice requirement. Your friend Nadia works at OHSU and recommended the Division Street area. You go to Heart Coffee almost every morning for a pour-over. You visited the PSU Farmers Market on April 12th and bought local goat cheese and sourdough.",
+      "gold_memory_state": "All seven confirmed remember operations are active: move date (February 3rd), apartment location (SE Division near 26th), lease end date (January 31st next year), 90-day notice requirement, Heart Coffee daily routine, PSU Farmers Market visit on April 12th with goat cheese and sourdough, and friend Nadia at OHSU who recommended Division Street.",
+      "judge_rubric": {
+        "must_include": [
+          "February 3rd",
+          "SE Division Street near 26th",
+          "January 31st",
+          "90 days",
+          "Heart Coffee",
+          "PSU Farmers Market",
+          "Nadia",
+          "OHSU"
+        ],
+        "acceptable_paraphrases": [
+          "Division and 26th",
+          "90-day notice",
+          "goat cheese and sourdough"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the apartment is near 30th rather than 26th",
+          "incorrect lease end date"
+        ],
+        "harmless_extra": [
+          "mentioning Tucson as prior city",
+          "mentioning Hawthorne district exploration",
+          "mentioning neighbor Greg"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I moved to Portland on February 3rd this year"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My apartment is on SE Division Street near 26th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My lease here runs through January 31st of next year"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my property management company requires 90 days' written notice before the lease end date if I want to renew or vacate"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I go to Heart Coffee almost every morning for a simple pour-over"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I went to the PSU Farmers Market on April 12th and picked up local goat cheese and sourdough"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "My friend Nadia works at OHSU up on the hill and she's the one who got me to look at the Division Street area"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize what I've told you about my living situation in Portland — where I live, when I moved, my lease details, my daily routines, and the people who helped me settle in?",
+      "expected_answer": "You moved to Portland on February 3rd from Tucson. Your apartment is on SE Division Street near 26th. Your lease runs through January 31st of next year with a 90-day written notice requirement. Your friend Nadia works at OHSU and recommended the Division Street area. You go to Heart Coffee almost every morning for a pour-over. You visited the PSU Farmers Market on April 12th and bought local goat cheese and sourdough.",
+      "gold_memory_state": "All seven confirmed remember operations are active: move date (February 3rd), apartment location (SE Division near 26th), lease end date (January 31st next year), 90-day notice requirement, Heart Coffee daily routine, PSU Farmers Market visit on April 12th with goat cheese and sourdough, and friend Nadia at OHSU who recommended Division Street.",
+      "judge_rubric": {
+        "must_include": [
+          "February 3rd",
+          "SE Division Street near 26th",
+          "January 31st",
+          "90 days",
+          "Heart Coffee",
+          "PSU Farmers Market",
+          "Nadia",
+          "OHSU"
+        ],
+        "acceptable_paraphrases": [
+          "Division and 26th",
+          "90-day notice",
+          "goat cheese and sourdough"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the apartment is near 30th rather than 26th",
+          "incorrect lease end date"
+        ],
+        "harmless_extra": [
+          "mentioning Tucson as prior city",
+          "mentioning Hawthorne district exploration",
+          "mentioning neighbor Greg"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I moved to Portland on February 3rd this year"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My apartment is on SE Division Street near 26th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My lease here runs through January 31st of next year"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my property management company requires 90 days' written notice before the lease end date if I want to renew or vacate"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I go to Heart Coffee almost every morning for a simple pour-over"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I went to the PSU Farmers Market on April 12th and picked up local goat cheese and sourdough"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "My friend Nadia works at OHSU up on the hill and she's the one who got me to look at the Division Street area"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "My neighbor Greg also has a lease ending next year. If I need to set a personal calendar reminder for my own lease notice deadline, which lease details are mine and which are Greg's? Should Greg's timeline affect my planning at all?",
+      "expected_answer": "Your lease ends January 31st of next year with a 90-day written notice requirement. Greg's lease ends March 31st of next year. Greg's timeline does not affect your planning — your notice deadline is earlier and independent of his.",
+      "gold_memory_state": "User's lease end date: January 31st next year. User's notice requirement: 90 days written notice before lease end. Greg's lease end date: March 31st next year (mentioned in conversation but belongs to a different person/record).",
+      "judge_rubric": {
+        "must_include": [
+          "January 31st",
+          "90 days",
+          "Greg's lease ends March 31st"
+        ],
+        "acceptable_paraphrases": [
+          "90-day notice",
+          "your lease ends January 31",
+          "Greg ends March 31"
+        ],
+        "must_not_include": [
+          "confusing Greg's March 31st date with the user's lease end"
+        ],
+        "harmful_extra": [
+          "saying the user's lease ends March 31st",
+          "merging Greg's and the user's lease dates into one record"
+        ],
+        "harmless_extra": [
+          "mentioning the approximate November notice deadline"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My lease here runs through January 31st of next year"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my property management company requires 90 days' written notice before the lease end date if I want to renew or vacate"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "he mentioned his lease ends March 31st of next year and he's already thinking about whether to stay"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "My neighbor Greg also has a lease ending next year. If I need to set a personal calendar reminder for my own lease notice deadline, which lease details are mine and which are Greg's? Should Greg's timeline affect my planning at all?",
+      "expected_answer": "Your lease ends January 31st of next year with a 90-day written notice requirement. Greg's lease ends March 31st of next year. Greg's timeline does not affect your planning — your notice deadline is earlier and independent of his.",
+      "gold_memory_state": "User's lease end date: January 31st next year. User's notice requirement: 90 days written notice before lease end. Greg's lease end date: March 31st next year (mentioned in conversation but belongs to a different person/record).",
+      "judge_rubric": {
+        "must_include": [
+          "January 31st",
+          "90 days",
+          "Greg's lease ends March 31st"
+        ],
+        "acceptable_paraphrases": [
+          "90-day notice",
+          "your lease ends January 31",
+          "Greg ends March 31"
+        ],
+        "must_not_include": [
+          "confusing Greg's March 31st date with the user's lease end"
+        ],
+        "harmful_extra": [
+          "saying the user's lease ends March 31st",
+          "merging Greg's and the user's lease dates into one record"
+        ],
+        "harmless_extra": [
+          "mentioning the approximate November notice deadline"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My lease here runs through January 31st of next year"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my property management company requires 90 days' written notice before the lease end date if I want to renew or vacate"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "he mentioned his lease ends March 31st of next year and he's already thinking about whether to stay"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "How did I end up choosing the neighborhood where my apartment is? Is there a connection between the person who influenced that choice and a specific local institution?",
+      "expected_answer": "Your friend Nadia, who works at OHSU, recommended the Division Street area to you. That's how you ended up with your apartment on SE Division Street near 26th. The connection is that Nadia's workplace at OHSU on the hill gave her familiarity with Portland neighborhoods, and she steered you toward Division Street specifically.",
+      "gold_memory_state": "Apartment location: SE Division Street near 26th. Friend Nadia works at OHSU and recommended Division Street area. Both facts are confirmed and active.",
+      "judge_rubric": {
+        "must_include": [
+          "Nadia",
+          "OHSU",
+          "Division Street"
+        ],
+        "acceptable_paraphrases": [
+          "Nadia works at OHSU and suggested Division Street",
+          "your friend at OHSU pointed you to Division"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying the apartment is near 30th",
+          "attributing the recommendation to someone other than Nadia"
+        ],
+        "harmless_extra": [
+          "mentioning that Nadia moved to Portland about a year before the user"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model cannot connect Nadia's OHSU employment to the Division Street recommendation.",
+        "reflection_recall": "Fails if the model omits either Nadia's workplace (OHSU) or the specific neighborhood she recommended (Division Street).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "My friend Nadia works at OHSU up on the hill and she's the one who got me to look at the Division Street area"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My apartment is on SE Division Street near 26th"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "How did I end up choosing the neighborhood where my apartment is? Is there a connection between the person who influenced that choice and a specific local institution?",
+      "expected_answer": "Your friend Nadia, who works at OHSU, recommended the Division Street area to you. That's how you ended up with your apartment on SE Division Street near 26th. The connection is that Nadia's workplace at OHSU on the hill gave her familiarity with Portland neighborhoods, and she steered you toward Division Street specifically.",
+      "gold_memory_state": "Apartment location: SE Division Street near 26th. Friend Nadia works at OHSU and recommended Division Street area. Both facts are confirmed and active.",
+      "judge_rubric": {
+        "must_include": [
+          "Nadia",
+          "OHSU",
+          "Division Street"
+        ],
+        "acceptable_paraphrases": [
+          "Nadia works at OHSU and suggested Division Street",
+          "your friend at OHSU pointed you to Division"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying the apartment is near 30th",
+          "attributing the recommendation to someone other than Nadia"
+        ],
+        "harmless_extra": [
+          "mentioning that Nadia moved to Portland about a year before the user"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model cannot connect Nadia's OHSU employment to the Division Street recommendation.",
+        "reflection_recall": "Fails if the model omits either Nadia's workplace (OHSU) or the specific neighborhood she recommended (Division Street).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "My friend Nadia works at OHSU up on the hill and she's the one who got me to look at the Division Street area"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My apartment is on SE Division Street near 26th"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I need to tell a delivery service the cross-street nearest my apartment on Division Street. Which of these is correct?",
+      "candidate_options": [
+        "26th",
+        "30th",
+        "25th",
+        "35th"
+      ],
+      "distractor_rationale": "same-value-different-target: 30th is the cross-street of a restaurant the user walks to, not the apartment itself — the user explicitly corrected this confusion. assistant echo: 25th and 35th appear in the assistant's description of the general Division Street corridor ('between about 25th and 35th') but are not the user's stated cross-street.",
+      "expected_answer": "26th",
+      "gold_memory_state": "User's apartment is on SE Division Street near 26th. The user clarified that 30th is where a restaurant is, not the apartment. 25th and 35th were mentioned by the assistant as general corridor boundaries.",
+      "judge_rubric": {
+        "must_include": [
+          "26th"
+        ],
+        "acceptable_paraphrases": [
+          "near 26th",
+          "26th Avenue"
+        ],
+        "must_not_include": [
+          "30th as the apartment cross-street"
+        ],
+        "harmful_extra": [
+          "selecting 30th",
+          "selecting 25th or 35th as the apartment cross-street"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects 30th, which is the cross-street the user sometimes mistakenly says but explicitly corrected.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My apartment is on SE Division Street near 26th"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I need to tell a delivery service the cross-street nearest my apartment on Division Street. Which of these is correct?",
+      "candidate_options": [
+        "26th",
+        "30th",
+        "25th",
+        "35th"
+      ],
+      "distractor_rationale": "same-value-different-target: 30th is the cross-street of a restaurant the user walks to, not the apartment itself — the user explicitly corrected this confusion. assistant echo: 25th and 35th appear in the assistant's description of the general Division Street corridor ('between about 25th and 35th') but are not the user's stated cross-street.",
+      "expected_answer": "26th",
+      "gold_memory_state": "User's apartment is on SE Division Street near 26th. The user clarified that 30th is where a restaurant is, not the apartment. 25th and 35th were mentioned by the assistant as general corridor boundaries.",
+      "judge_rubric": {
+        "must_include": [
+          "26th"
+        ],
+        "acceptable_paraphrases": [
+          "near 26th",
+          "26th Avenue"
+        ],
+        "must_not_include": [
+          "30th as the apartment cross-street"
+        ],
+        "harmful_extra": [
+          "selecting 30th",
+          "selecting 25th or 35th as the apartment cross-street"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects 30th, which is the cross-street the user sometimes mistakenly says but explicitly corrected.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My apartment is on SE Division Street near 26th"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to set a calendar reminder to finalize my lease decision with enough buffer time. Given my lease end date and the notice requirement, and considering that my friend who recommended my neighborhood might have useful advice, draft a short reminder note that includes the latest possible notice date, who I should consult, and where that person works so I can plan a meetup to discuss.",
+      "expected_answer": "Reminder: Your lease at SE Division Street near 26th ends January 31st. You must submit written notice 90 days before that — by approximately November 2nd. Before that deadline, meet with your friend Nadia, who works at OHSU, to discuss whether to renew or vacate. She recommended your current neighborhood and may have useful perspective on staying in the area.",
+      "gold_memory_state": "Lease end date: January 31st next year. Notice requirement: 90 days written notice before lease end. Friend Nadia works at OHSU and recommended Division Street area. Apartment location: SE Division Street near 26th.",
+      "judge_rubric": {
+        "must_include": [
+          "January 31st",
+          "90 days",
+          "approximately November 2nd or early November",
+          "Nadia",
+          "OHSU"
+        ],
+        "acceptable_paraphrases": [
+          "around November 2nd-3rd",
+          "early November",
+          "by November 2nd",
+          "no later than early November"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "using Greg's March 31st lease date instead of the user's January 31st",
+          "incorrect notice deadline calculation"
+        ],
+        "harmless_extra": [
+          "mentioning Heart Coffee as a possible meetup spot",
+          "mentioning the Division Street area specifically"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses Greg's lease end date (March 31st) instead of the user's (January 31st).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's lease ends January 31st of next year.",
+        "Fact 2: The property management company requires 90 days' written notice before the lease end date.",
+        "Fact 3: The user's friend Nadia works at OHSU and recommended the Division Street neighborhood.",
+        "Fact 4: The user's apartment is on SE Division Street near 26th.",
+        "Inference: Counting back 90 days from January 31st: January has 31 days, December has 31 days, November has 30 days — 31 + 31 + 30 = 92 days. So 90 days before January 31st is approximately November 2nd.",
+        "Inference: The reminder note should include the November 2nd deadline, advise consulting Nadia at OHSU, and reference the Division Street apartment as the lease in question."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My lease here runs through January 31st of next year"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my property management company requires 90 days' written notice before the lease end date if I want to renew or vacate"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "My friend Nadia works at OHSU up on the hill and she's the one who got me to look at the Division Street area"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My apartment is on SE Division Street near 26th"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to set a calendar reminder to finalize my lease decision with enough buffer time. Given my lease end date and the notice requirement, and considering that my friend who recommended my neighborhood might have useful advice, draft a short reminder note that includes the latest possible notice date, who I should consult, and where that person works so I can plan a meetup to discuss.",
+      "expected_answer": "Reminder: Your lease at SE Division Street near 26th ends January 31st. You must submit written notice 90 days before that — by approximately November 2nd. Before that deadline, meet with your friend Nadia, who works at OHSU, to discuss whether to renew or vacate. She recommended your current neighborhood and may have useful perspective on staying in the area.",
+      "gold_memory_state": "Lease end date: January 31st next year. Notice requirement: 90 days written notice before lease end. Friend Nadia works at OHSU and recommended Division Street area. Apartment location: SE Division Street near 26th.",
+      "judge_rubric": {
+        "must_include": [
+          "January 31st",
+          "90 days",
+          "approximately November 2nd or early November",
+          "Nadia",
+          "OHSU"
+        ],
+        "acceptable_paraphrases": [
+          "around November 2nd-3rd",
+          "early November",
+          "by November 2nd",
+          "no later than early November"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "using Greg's March 31st lease date instead of the user's January 31st",
+          "incorrect notice deadline calculation"
+        ],
+        "harmless_extra": [
+          "mentioning Heart Coffee as a possible meetup spot",
+          "mentioning the Division Street area specifically"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses Greg's lease end date (March 31st) instead of the user's (January 31st).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's lease ends January 31st of next year.",
+        "Fact 2: The property management company requires 90 days' written notice before the lease end date.",
+        "Fact 3: The user's friend Nadia works at OHSU and recommended the Division Street neighborhood.",
+        "Fact 4: The user's apartment is on SE Division Street near 26th.",
+        "Inference: Counting back 90 days from January 31st: January has 31 days, December has 31 days, November has 30 days — 31 + 31 + 30 = 92 days. So 90 days before January 31st is approximately November 2nd.",
+        "Inference: The reminder note should include the November 2nd deadline, advise consulting Nadia at OHSU, and reference the Division Street apartment as the lease in question."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My lease here runs through January 31st of next year"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my property management company requires 90 days' written notice before the lease end date if I want to renew or vacate"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "My friend Nadia works at OHSU up on the hill and she's the one who got me to look at the Division Street area"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My apartment is on SE Division Street near 26th"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What's my community garden plot number in Portland?",
+      "expected_answer": "I don't have a community garden plot number from you. You haven't provided that information.",
+      "gold_memory_state": "No community garden plot number was ever provided by the user. Neighboring Portland living details include apartment location on SE Division near 26th, Heart Coffee routine, PSU Farmers Market visits, lease details, and friend Nadia at OHSU.",
+      "judge_rubric": {
+        "must_include": [
+          "no record or not provided"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have that",
+          "you haven't mentioned a community garden plot",
+          "no community garden plot number on file",
+          "that was never shared"
+        ],
+        "must_not_include": [
+          "any fabricated plot number"
+        ],
+        "harmful_extra": [
+          "inventing a plot number",
+          "borrowing a number from another context such as the apartment address"
+        ],
+        "harmless_extra": [
+          "apartment location on SE Division near 26th",
+          "Heart Coffee",
+          "PSU Farmers Market",
+          "lease end date",
+          "Nadia at OHSU"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model fabricates or hallucinates any community garden plot number.",
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My apartment is on SE Division Street near 26th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I go to Heart Coffee almost every morning for a simple pour-over"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I went to the PSU Farmers Market on April 12th and picked up local goat cheese and sourdough"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What's my community garden plot number in Portland?",
+      "expected_answer": "I don't have a community garden plot number from you. You haven't provided that information.",
+      "gold_memory_state": "No community garden plot number was ever provided by the user. Neighboring Portland living details include apartment location on SE Division near 26th, Heart Coffee routine, PSU Farmers Market visits, lease details, and friend Nadia at OHSU.",
+      "judge_rubric": {
+        "must_include": [
+          "no record or not provided"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have that",
+          "you haven't mentioned a community garden plot",
+          "no community garden plot number on file",
+          "that was never shared"
+        ],
+        "must_not_include": [
+          "any fabricated plot number"
+        ],
+        "harmful_extra": [
+          "inventing a plot number",
+          "borrowing a number from another context such as the apartment address"
+        ],
+        "harmless_extra": [
+          "apartment location on SE Division near 26th",
+          "Heart Coffee",
+          "PSU Farmers Market",
+          "lease end date",
+          "Nadia at OHSU"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model fabricates or hallucinates any community garden plot number.",
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My apartment is on SE Division Street near 26th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I go to Heart Coffee almost every morning for a simple pour-over"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I went to the PSU Farmers Market on April 12th and picked up local goat cheese and sourdough"
+        }
+      ]
+    }
+  ]
+}

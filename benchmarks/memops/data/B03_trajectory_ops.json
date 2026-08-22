@@ -1,0 +1,967 @@
+{
+  "target_fact": "David Keane's title on the product integration team",
+  "operation_type": "TrajectoryOps",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "bridge_entity"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "david_title_chain",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "David Keane is a Senior Technical Lead on the product integration team"
+      },
+      "target": {
+        "target_id": "david_keane_title",
+        "target_name": "David Keane's job title"
+      },
+      "old_value": null,
+      "new_value": "Senior Technical Lead",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "David Keane is a Senior Technical Lead on the product integration team"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "Tom Aldridge is the VP of Engineering now, he got promoted from Director of Engineering"
+      },
+      "target": {
+        "target_id": "tom_aldridge_title",
+        "target_name": "Tom Aldridge's job title"
+      },
+      "old_value": null,
+      "new_value": "VP of Engineering",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Tom Aldridge is the VP of Engineering now, he got promoted from Director of Engineering"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "david_title_chain",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "David's now acting as interim team lead for our sub-group on top of his Senior Technical Lead role"
+      },
+      "target": {
+        "target_id": "david_keane_title",
+        "target_name": "David Keane's job title"
+      },
+      "old_value": "Senior Technical Lead",
+      "new_value": "Senior Technical Lead + Interim Team Lead",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "David Keane is a Senior Technical Lead on the product integration team"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "David's now acting as interim team lead for our sub-group on top of his Senior Technical Lead role"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "david_title_chain",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "HR told David they're planning to make the interim team lead role permanent and drop the Senior Technical Lead part, so he'd just be Team Lead going forward"
+      },
+      "target": {
+        "target_id": "david_keane_title",
+        "target_name": "David Keane's job title"
+      },
+      "old_value": "Senior Technical Lead + Interim Team Lead",
+      "new_value": "Team Lead",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "HR told David they're planning to make the interim team lead role permanent and drop the Senior Technical Lead part, so he'd just be Team Lead going forward"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "david_title_chain",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 7,
+        "quote": "David confirmed in standup that the permanent change isn't happening yet, so for now he's still Senior Technical Lead plus the interim team lead duty"
+      },
+      "target": {
+        "target_id": "david_keane_title",
+        "target_name": "David Keane's job title"
+      },
+      "old_value": "Senior Technical Lead + Interim Team Lead",
+      "new_value": "Senior Technical Lead + Interim Team Lead",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "David's now acting as interim team lead for our sub-group on top of his Senior Technical Lead role"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "David confirmed in standup that the permanent change isn't happening yet, so for now he's still Senior Technical Lead plus the interim team lead duty"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish_baseline",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to make sure you have some details about the people I work with on the product integration team. David Keane is a Senior Technical Lead on the product integration team. I started working with him on March 4th when I got moved over to this team. I keep second-guessing the order of words in his title, but it's definitely Senior Technical Lead."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — David Keane, Senior Technical Lead on the product integration team, and you've been working with him since March 4th. I'll keep that title order straight for you: Senior first, then Technical Lead. If you need to reference him in emails or documents, I can help you draft those with the correct title. Do you have other colleagues on the team you'd like me to note as well?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, actually. There's Priya Mukherjee — she's a Systems Analyst II on the same team. She was the person who walked me through the onboarding docs for the integration platform. I really enjoyed working with her because she explains things without burying you in jargon. She just gets straight to the point, which I appreciate a lot."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — Priya Mukherjee, Systems Analyst II, and she handled your onboarding for the integration platform. It sounds like her communication style really clicked with yours. I'll remember that she's someone who keeps things clear and direct. If you ever need me to format onboarding notes or reference her contributions, I can pull that together quickly. Anyone else on the team I should know about, or any reporting relationships worth tracking?"
+        },
+        {
+          "role": "user",
+          "content": "Good question on reporting relationships. Tom Aldridge is the VP of Engineering now, he got promoted from Director of Engineering. He's David's manager. I sometimes mix up Tom and David's titles in my head, so having you remember this helps. Tom Aldridge, VP of Engineering, manages David Keane, Senior Technical Lead."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a helpful chain to keep straight. So the reporting line goes: Tom Aldridge, VP of Engineering, manages David Keane, Senior Technical Lead, who works on the product integration team with you. I can see how those titles might blur together since they're both senior leadership roles. Whenever you're drafting communications, I'll make sure Tom gets the VP title and David gets Senior Technical Lead. Is there anything else about the team structure you want me to hold onto?"
+        },
+        {
+          "role": "user",
+          "content": "One more person — Rachel Simmons just joined as a Junior Developer. I haven't worked with her much yet. My friend Marcus on the design team mentioned she came from an internship at the same company, so she's still pretty new to full-time work. That's the core team for now. I'll update you if anything changes."
+        },
+        {
+          "role": "assistant",
+          "content": "Perfect, I've got the full picture now. Rachel Simmons, Junior Developer, recently joined from an internal internship, and your friend Marcus on the design team gave you that background. So the key people are: David Keane (Senior Technical Lead), Priya Mukherjee (Systems Analyst II), Tom Aldridge (VP of Engineering, David's manager), and Rachel Simmons (Junior Developer). I'll keep all of this organized and ready whenever you need to reference anyone for emails, meeting notes, or org charts."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "introduce_update",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Quick update on David. David's now acting as interim team lead for our sub-group on top of his Senior Technical Lead role. Someone left the team and they haven't found a permanent replacement, so David's wearing two hats for now. I'm not sure how long this arrangement will last, but it's the current situation as of this week."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for the update. So David Keane is now carrying both his Senior Technical Lead responsibilities and an interim team lead role for your sub-group while they search for a permanent replacement. That's a significant workload increase for him. I'll track his current role as Senior Technical Lead plus Interim Team Lead. If you need to reference his capacity or responsibilities in any communications, I can help frame that accurately. Do you know if this changes anything about your reporting line?"
+        },
+        {
+          "role": "user",
+          "content": "Not really — Tom Aldridge is still the VP overseeing everything. David's just handling the day-to-day coordination for our sub-group now. One thing I've noticed is that David still keeps his one-on-ones really efficient. Fifteen minutes, written agenda beforehand, no small talk. I genuinely enjoy that format. I'd rather have a short focused meeting than an hour of meandering conversation."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a great sign that even with the extra responsibility, David's maintaining his efficient meeting style. Fifteen-minute one-on-ones with a pre-written agenda is pretty disciplined — it shows he values everyone's time even under increased pressure. And it aligns well with your preference for direct, focused communication. If you ever want me to help you prepare agenda items or talking points for those quick check-ins with David, I'm happy to help. Is there anything else shifting on the team?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, unfortunately Priya got moved to a different project under a new manager. That happened around April 11th. I was honestly pretty bummed about it because we'd built up a solid working rhythm. The few days after that I was in a noticeably worse mood at work, just dreading having to establish all that context with someone new on the integration platform."
+        },
+        {
+          "role": "assistant",
+          "content": "I'm sorry to hear that — losing a good working relationship like that is genuinely frustrating, especially when you'd found someone whose communication style matched yours so well. April 11th for the transition is noted. It makes sense that you'd feel low about having to rebuild that rapport and context from scratch. If it helps, I can compile the key onboarding details and integration platform notes that Priya walked you through, so you have a reference document ready for whoever steps into her role on your team."
+        },
+        {
+          "role": "user",
+          "content": "That's a good idea, actually. I might take you up on that. For now, the team is basically David handling both roles, Rachel who I haven't really worked with yet, and me. It's a smaller group than before. I'm hoping they fill the permanent team lead spot soon so David can go back to focusing on his Senior Technical Lead work full-time."
+        },
+        {
+          "role": "assistant",
+          "content": "That does sound like a lean setup — just you, David in his dual capacity, and Rachel who's still ramping up. I can understand wanting David to get back to his core Senior Technical Lead focus so the sub-group has dedicated leadership. In the meantime, if you want me to help draft any notes to management about team capacity or resource needs, I can structure those for you. And whenever you're ready to put together that integration platform reference document, just let me know and we'll get it started."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "tentative_fork_and_resolution",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I was looking at the internal org chart tool today and it still shows David's title as just Technical Lead — no 'Senior' prefix. I think the system is just outdated. I know for a fact his official title has always been Senior Technical Lead since I started working with him. Those tools are never up to date around here."
+        },
+        {
+          "role": "assistant",
+          "content": "Yeah, internal org chart tools are notorious for lagging behind actual titles. Based on everything you've told me, David Keane's official title is Senior Technical Lead, and he's currently also serving as interim team lead for your sub-group. I'd trust your direct knowledge over an outdated system entry. If you ever need to flag the discrepancy to HR or IT so they update the tool, I can help you draft that request. Is there anything else off about the org chart?"
+        },
+        {
+          "role": "user",
+          "content": "Funny you mention HR — I also noticed the chart lists someone named Kevin Dahl as Senior Technical Lead on a completely different team, the infrastructure team. Different person, different team entirely. Anyway, I wasn't looking at the chart for fun. I was trying to figure out what's happening with the permanent team lead search for our sub-group."
+        },
+        {
+          "role": "assistant",
+          "content": "Ah, so Kevin Dahl holds the same Senior Technical Lead title but on the infrastructure team — totally separate from David's role on the product integration team. And it sounds like you're eager to get clarity on when your sub-group will have a dedicated permanent team lead so David can step back from the interim duty. Have you heard any updates on the search timeline, or is it still up in the air? I can help you draft a follow-up inquiry to Tom Aldridge if that would be useful."
+        },
+        {
+          "role": "user",
+          "content": "Actually, something came up about that today. HR told David they're planning to make the interim team lead role permanent and drop the Senior Technical Lead part, so he'd just be Team Lead going forward. David mentioned it to me after lunch. It hasn't been finalized yet though — it's still going through approvals and headcount review."
+        },
+        {
+          "role": "assistant",
+          "content": "That's an interesting development. So the proposal from HR is to convert David's role entirely to Team Lead, removing the Senior Technical Lead title. Since it's still pending approvals and headcount review, nothing is official yet, but it's worth keeping an eye on. If that goes through, it would be a meaningful shift in David's responsibilities and title. Would you like me to note this as a pending change, or would you rather wait until it's confirmed before we update anything formally?"
+        },
+        {
+          "role": "user",
+          "content": "Hold off on treating that as final. David confirmed in standup that the permanent change isn't happening yet, so for now he's still Senior Technical Lead plus the interim team lead duty. He said the approvals got pushed back and there's no timeline. So his current title situation hasn't actually changed from what we discussed before."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood — I'll keep David's current status as Senior Technical Lead with the additional interim team lead responsibility, exactly as it's been. The HR proposal to make him just Team Lead is on hold with no clear timeline, so it's not actionable right now. If and when that changes, just let me know and I'll update accordingly. In the meantime, if you need to reference David in any emails or documents, I'll use Senior Technical Lead as his primary title and note the interim team lead duty as a temporary addition."
+        }
+      ]
+    }
+  ],
+  "state_checkpoints": [
+    {
+      "checkpoint_id": "c1",
+      "description": "After segment 1: David Keane's title is Senior Technical Lead (confirmed). Tom Aldridge is VP of Engineering (confirmed)."
+    },
+    {
+      "checkpoint_id": "c2",
+      "description": "After segment 2: David Keane's title is Senior Technical Lead + Interim Team Lead (confirmed). Tom Aldridge remains VP of Engineering (confirmed)."
+    },
+    {
+      "checkpoint_id": "c3",
+      "description": "After segment 3: HR proposed changing David to just Team Lead (tentative, not finalized). David confirmed the change isn't happening yet — he remains Senior Technical Lead + Interim Team Lead (confirmed). Tom Aldridge remains VP of Engineering (confirmed). Kevin Dahl is a same-title look-alike on a different team (adversarial injection, no operation)."
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you walk me through everything I've told you about David Keane's role and how it has evolved over our conversations?",
+      "expected_answer": "You first mentioned that David Keane is a Senior Technical Lead on the product integration team. Later, you said he took on an additional interim team lead responsibility for your sub-group after someone left. Then there was a mention that HR was planning to make the interim role permanent and drop the Senior Technical Lead part, but David confirmed in standup that the permanent change isn't happening yet, so he remains Senior Technical Lead with the interim team lead duty.",
+      "gold_memory_state": "David Keane's title is Senior Technical Lead + Interim Team Lead (confirmed). The HR proposal to change him to just Team Lead was tentative and explicitly rejected/deferred. Tom Aldridge is VP of Engineering and David's manager.",
+      "judge_rubric": {
+        "must_include": [
+          "Senior Technical Lead",
+          "interim team lead",
+          "HR proposal not finalized",
+          "still holding both roles"
+        ],
+        "acceptable_paraphrases": [
+          "acting team lead",
+          "dual role",
+          "wearing two hats"
+        ],
+        "must_not_include": [
+          "David is just Team Lead now"
+        ],
+        "harmful_extra": [
+          "stating the HR change went through",
+          "dropping the Senior Technical Lead title"
+        ],
+        "harmless_extra": [
+          "mentioning Tom Aldridge as David's manager",
+          "mentioning someone left the team"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model states David's title is just Team Lead, adopting the tentative HR proposal as final.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model misordering events, e.g., placing the HR proposal before the interim role addition.",
+        "final_state": "Fails if the model does not end with Senior Technical Lead + Interim Team Lead as the current state.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "David Keane is a Senior Technical Lead on the product integration team"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "David's now acting as interim team lead for our sub-group on top of his Senior Technical Lead role"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "HR told David they're planning to make the interim team lead role permanent and drop the Senior Technical Lead part, so he'd just be Team Lead going forward"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "David confirmed in standup that the permanent change isn't happening yet, so for now he's still Senior Technical Lead plus the interim team lead duty"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you walk me through everything I've told you about David Keane's role and how it has evolved over our conversations?",
+      "expected_answer": "You first mentioned that David Keane is a Senior Technical Lead on the product integration team. Later, you said he took on an additional interim team lead responsibility for your sub-group after someone left. Then there was a mention that HR was planning to make the interim role permanent and drop the Senior Technical Lead part, but David confirmed in standup that the permanent change isn't happening yet, so he remains Senior Technical Lead with the interim team lead duty.",
+      "gold_memory_state": "David Keane's title is Senior Technical Lead + Interim Team Lead (confirmed). The HR proposal to change him to just Team Lead was tentative and explicitly rejected/deferred. Tom Aldridge is VP of Engineering and David's manager.",
+      "judge_rubric": {
+        "must_include": [
+          "Senior Technical Lead",
+          "interim team lead",
+          "HR proposal not finalized",
+          "still holding both roles"
+        ],
+        "acceptable_paraphrases": [
+          "acting team lead",
+          "dual role",
+          "wearing two hats"
+        ],
+        "must_not_include": [
+          "David is just Team Lead now"
+        ],
+        "harmful_extra": [
+          "stating the HR change went through",
+          "dropping the Senior Technical Lead title"
+        ],
+        "harmless_extra": [
+          "mentioning Tom Aldridge as David's manager",
+          "mentioning someone left the team"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model states David's title is just Team Lead, adopting the tentative HR proposal as final.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model misordering events, e.g., placing the HR proposal before the interim role addition.",
+        "final_state": "Fails if the model does not end with Senior Technical Lead + Interim Team Lead as the current state.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "David Keane is a Senior Technical Lead on the product integration team"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "David's now acting as interim team lead for our sub-group on top of his Senior Technical Lead role"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "HR told David they're planning to make the interim team lead role permanent and drop the Senior Technical Lead part, so he'd just be Team Lead going forward"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "David confirmed in standup that the permanent change isn't happening yet, so for now he's still Senior Technical Lead plus the interim team lead duty"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I noticed the org chart shows someone on the infrastructure team with the same kind of title as David. If I need to draft an email about my sub-group's leadership situation, whose role information applies to my team and whose is completely separate?",
+      "expected_answer": "David Keane's role information applies to your product integration team — he holds the dual capacity on your sub-group. Kevin Dahl holds a similar title but is on the infrastructure team and is entirely separate from your sub-group's leadership situation.",
+      "gold_memory_state": "David Keane: Senior Technical Lead + Interim Team Lead on the product integration team (confirmed). Kevin Dahl: Senior Technical Lead on the infrastructure team (mentioned as a different person on a different team, no operation). Tom Aldridge: VP of Engineering, David's manager (confirmed).",
+      "judge_rubric": {
+        "must_include": [
+          "David Keane is the relevant person for the product integration team",
+          "Kevin Dahl is on a different team"
+        ],
+        "acceptable_paraphrases": [
+          "Kevin Dahl is infrastructure, not product integration",
+          "David is on your team, Kevin is not"
+        ],
+        "must_not_include": [
+          "Kevin Dahl is on the product integration team",
+          "Kevin Dahl's role applies to the user's sub-group"
+        ],
+        "harmful_extra": [
+          "conflating David Keane and Kevin Dahl",
+          "saying Kevin Dahl manages or leads the user's sub-group"
+        ],
+        "harmless_extra": [
+          "mentioning Tom Aldridge as the VP overseeing things",
+          "mentioning David's interim duty"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model confuses Kevin Dahl's record with David Keane's record or applies the wrong person to the user's team.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "David Keane is a Senior Technical Lead on the product integration team"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I also noticed the chart lists someone named Kevin Dahl as Senior Technical Lead on a completely different team, the infrastructure team"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I noticed the org chart shows someone on the infrastructure team with the same kind of title as David. If I need to draft an email about my sub-group's leadership situation, whose role information applies to my team and whose is completely separate?",
+      "expected_answer": "David Keane's role information applies to your product integration team — he holds the dual capacity on your sub-group. Kevin Dahl holds a similar title but is on the infrastructure team and is entirely separate from your sub-group's leadership situation.",
+      "gold_memory_state": "David Keane: Senior Technical Lead + Interim Team Lead on the product integration team (confirmed). Kevin Dahl: Senior Technical Lead on the infrastructure team (mentioned as a different person on a different team, no operation). Tom Aldridge: VP of Engineering, David's manager (confirmed).",
+      "judge_rubric": {
+        "must_include": [
+          "David Keane is the relevant person for the product integration team",
+          "Kevin Dahl is on a different team"
+        ],
+        "acceptable_paraphrases": [
+          "Kevin Dahl is infrastructure, not product integration",
+          "David is on your team, Kevin is not"
+        ],
+        "must_not_include": [
+          "Kevin Dahl is on the product integration team",
+          "Kevin Dahl's role applies to the user's sub-group"
+        ],
+        "harmful_extra": [
+          "conflating David Keane and Kevin Dahl",
+          "saying Kevin Dahl manages or leads the user's sub-group"
+        ],
+        "harmless_extra": [
+          "mentioning Tom Aldridge as the VP overseeing things",
+          "mentioning David's interim duty"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model confuses Kevin Dahl's record with David Keane's record or applies the wrong person to the user's team.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "David Keane is a Senior Technical Lead on the product integration team"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I also noticed the chart lists someone named Kevin Dahl as Senior Technical Lead on a completely different team, the infrastructure team"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "After all the back-and-forth about David Keane's position, what exactly is his title right now on the product integration team?",
+      "expected_answer": "Senior Technical Lead plus Interim Team Lead.",
+      "gold_memory_state": "David Keane's current title: Senior Technical Lead + Interim Team Lead (confirmed). The HR proposal to make him just Team Lead was tentative and explicitly not adopted — approvals were pushed back with no timeline. The tentative 'Team Lead' value is rejected and not usable.",
+      "judge_rubric": {
+        "must_include": [
+          "Senior Technical Lead",
+          "interim team lead"
+        ],
+        "acceptable_paraphrases": [
+          "Senior Technical Lead with an additional interim team lead role",
+          "Senior Technical Lead and acting team lead"
+        ],
+        "must_not_include": [
+          "just Team Lead",
+          "only Team Lead"
+        ],
+        "harmful_extra": [
+          "stating the HR proposal was finalized",
+          "dropping Senior Technical Lead from the answer"
+        ],
+        "harmless_extra": [
+          "mentioning the HR proposal exists but is not finalized",
+          "mentioning Tom Aldridge"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model returns 'Team Lead' (the tentative HR proposal) as the current title. This is the recency trap: the tentative value appears later in the conversation but was explicitly rejected.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not include both Senior Technical Lead and Interim Team Lead in the current title.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "David's now acting as interim team lead for our sub-group on top of his Senior Technical Lead role"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "David confirmed in standup that the permanent change isn't happening yet, so for now he's still Senior Technical Lead plus the interim team lead duty"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "After all the back-and-forth about David Keane's position, what exactly is his title right now on the product integration team?",
+      "expected_answer": "Senior Technical Lead plus Interim Team Lead.",
+      "gold_memory_state": "David Keane's current title: Senior Technical Lead + Interim Team Lead (confirmed). The HR proposal to make him just Team Lead was tentative and explicitly not adopted — approvals were pushed back with no timeline. The tentative 'Team Lead' value is rejected and not usable.",
+      "judge_rubric": {
+        "must_include": [
+          "Senior Technical Lead",
+          "interim team lead"
+        ],
+        "acceptable_paraphrases": [
+          "Senior Technical Lead with an additional interim team lead role",
+          "Senior Technical Lead and acting team lead"
+        ],
+        "must_not_include": [
+          "just Team Lead",
+          "only Team Lead"
+        ],
+        "harmful_extra": [
+          "stating the HR proposal was finalized",
+          "dropping Senior Technical Lead from the answer"
+        ],
+        "harmless_extra": [
+          "mentioning the HR proposal exists but is not finalized",
+          "mentioning Tom Aldridge"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model returns 'Team Lead' (the tentative HR proposal) as the current title. This is the recency trap: the tentative value appears later in the conversation but was explicitly rejected.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not include both Senior Technical Lead and Interim Team Lead in the current title.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "David's now acting as interim team lead for our sub-group on top of his Senior Technical Lead role"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "David confirmed in standup that the permanent change isn't happening yet, so for now he's still Senior Technical Lead plus the interim team lead duty"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to draft a short internal directory entry for David Keane that includes his current title, his team, and who he reports to along with that person's title. Can you write that for me?",
+      "expected_answer": "David Keane — Senior Technical Lead & Interim Team Lead, Product Integration Team. Reports to Tom Aldridge, VP of Engineering.",
+      "gold_memory_state": "David Keane: Senior Technical Lead + Interim Team Lead on product integration team (confirmed). Tom Aldridge: VP of Engineering, David's manager (confirmed). The tentative 'just Team Lead' proposal from HR is not adopted.",
+      "judge_rubric": {
+        "must_include": [
+          "Senior Technical Lead",
+          "Interim Team Lead",
+          "product integration",
+          "Tom Aldridge",
+          "VP of Engineering",
+          "reports to"
+        ],
+        "acceptable_paraphrases": [
+          "Acting Team Lead",
+          "interim team lead duty",
+          "Vice President of Engineering"
+        ],
+        "must_not_include": [
+          "just Team Lead",
+          "Director of Engineering"
+        ],
+        "harmful_extra": [
+          "using Team Lead as David's sole title",
+          "listing Tom Aldridge as Director of Engineering (his old title before promotion)",
+          "including Kevin Dahl as part of David's team"
+        ],
+        "harmless_extra": [
+          "mentioning the interim role is temporary",
+          "mentioning the sub-group"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses 'Team Lead' alone for David (tentative/rejected value) or 'Director of Engineering' for Tom (pre-promotion title).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the directory entry does not reflect both of David's current roles and Tom's current VP title.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: David Keane is a Senior Technical Lead on the product integration team.",
+        "Fact 2: David also took on an interim team lead role for the sub-group, and this dual role remains his current status.",
+        "Fact 3: Tom Aldridge is VP of Engineering and is David's manager.",
+        "Inference: The directory entry must combine David's dual title with his reporting line to Tom Aldridge and Tom's VP title.",
+        "Derived value: David Keane — Senior Technical Lead & Interim Team Lead, Product Integration Team, reporting to Tom Aldridge, VP of Engineering."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "David Keane is a Senior Technical Lead on the product integration team"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Tom Aldridge is the VP of Engineering now, he got promoted from Director of Engineering"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "David's now acting as interim team lead for our sub-group on top of his Senior Technical Lead role"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "David confirmed in standup that the permanent change isn't happening yet, so for now he's still Senior Technical Lead plus the interim team lead duty"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to draft a short internal directory entry for David Keane that includes his current title, his team, and who he reports to along with that person's title. Can you write that for me?",
+      "expected_answer": "David Keane — Senior Technical Lead & Interim Team Lead, Product Integration Team. Reports to Tom Aldridge, VP of Engineering.",
+      "gold_memory_state": "David Keane: Senior Technical Lead + Interim Team Lead on product integration team (confirmed). Tom Aldridge: VP of Engineering, David's manager (confirmed). The tentative 'just Team Lead' proposal from HR is not adopted.",
+      "judge_rubric": {
+        "must_include": [
+          "Senior Technical Lead",
+          "Interim Team Lead",
+          "product integration",
+          "Tom Aldridge",
+          "VP of Engineering",
+          "reports to"
+        ],
+        "acceptable_paraphrases": [
+          "Acting Team Lead",
+          "interim team lead duty",
+          "Vice President of Engineering"
+        ],
+        "must_not_include": [
+          "just Team Lead",
+          "Director of Engineering"
+        ],
+        "harmful_extra": [
+          "using Team Lead as David's sole title",
+          "listing Tom Aldridge as Director of Engineering (his old title before promotion)",
+          "including Kevin Dahl as part of David's team"
+        ],
+        "harmless_extra": [
+          "mentioning the interim role is temporary",
+          "mentioning the sub-group"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses 'Team Lead' alone for David (tentative/rejected value) or 'Director of Engineering' for Tom (pre-promotion title).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the directory entry does not reflect both of David's current roles and Tom's current VP title.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: David Keane is a Senior Technical Lead on the product integration team.",
+        "Fact 2: David also took on an interim team lead role for the sub-group, and this dual role remains his current status.",
+        "Fact 3: Tom Aldridge is VP of Engineering and is David's manager.",
+        "Inference: The directory entry must combine David's dual title with his reporting line to Tom Aldridge and Tom's VP title.",
+        "Derived value: David Keane — Senior Technical Lead & Interim Team Lead, Product Integration Team, reporting to Tom Aldridge, VP of Engineering."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "David Keane is a Senior Technical Lead on the product integration team"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Tom Aldridge is the VP of Engineering now, he got promoted from Director of Engineering"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "David's now acting as interim team lead for our sub-group on top of his Senior Technical Lead role"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "David confirmed in standup that the permanent change isn't happening yet, so for now he's still Senior Technical Lead plus the interim team lead duty"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed our entire conversation history about David Keane's position, what would they see as the sequence of changes — which designations were actually adopted and which were only floated but never went into effect?",
+      "expected_answer": "First, David was established as Senior Technical Lead. Second, he added an interim team lead role on top of that, making it Senior Technical Lead plus Interim Team Lead. Third, HR floated the idea of converting him to just Team Lead and dropping the Senior Technical Lead part, but that was never finalized. Fourth, David himself confirmed the proposed change isn't happening, so his title reverted to — and remains — Senior Technical Lead plus Interim Team Lead. The only value that was floated but never adopted was the standalone Team Lead designation.",
+      "gold_memory_state": "Step 1: Senior Technical Lead (confirmed). Step 2: Senior Technical Lead + Interim Team Lead (confirmed). Step 3: Team Lead only (tentative — HR proposal, never finalized). Step 4: Senior Technical Lead + Interim Team Lead (confirmed — David rejected the tentative change). Final state: Senior Technical Lead + Interim Team Lead.",
+      "judge_rubric": {
+        "must_include": [
+          "Senior Technical Lead as initial title",
+          "addition of interim team lead",
+          "HR proposal for just Team Lead was not adopted",
+          "final state is Senior Technical Lead plus Interim Team Lead"
+        ],
+        "acceptable_paraphrases": [
+          "acting team lead",
+          "proposed but never went through",
+          "still pending approval with no timeline"
+        ],
+        "must_not_include": [
+          "Team Lead is the current final title"
+        ],
+        "harmful_extra": [
+          "stating the HR change was adopted",
+          "omitting the tentative fork entirely",
+          "saying David went back to just Senior Technical Lead without the interim duty"
+        ],
+        "harmless_extra": [
+          "mentioning the approvals got pushed back",
+          "mentioning someone left the team prompting the interim role"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats 'Team Lead' as the final adopted value.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model does not present the four steps in chronological order: initial title → added interim → HR tentative proposal → rejection and reaffirmation.",
+        "final_state": "Fails if the final state is not Senior Technical Lead + Interim Team Lead.",
+        "intermediate_state": "Fails if the model omits the tentative HR proposal step or does not identify it as unadopted.",
+        "trajectory_provenance": "Fails if the model cannot ground each step to the user's statements."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: David Keane was introduced as Senior Technical Lead on the product integration team (confirmed).",
+        "Step 2: David took on an additional interim team lead role, making his effective title Senior Technical Lead + Interim Team Lead (confirmed).",
+        "Step 3: HR proposed converting David's role to just Team Lead, dropping Senior Technical Lead (tentative — pending approvals, never finalized).",
+        "Step 4: David confirmed in standup the permanent change isn't happening; his title remains Senior Technical Lead + Interim Team Lead (confirmed, rejecting the tentative fork).",
+        "Inference: The trajectory has four states, with one tentative fork that was explicitly rejected. The final usable state is Senior Technical Lead + Interim Team Lead."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "David Keane is a Senior Technical Lead on the product integration team"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "David's now acting as interim team lead for our sub-group on top of his Senior Technical Lead role"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "HR told David they're planning to make the interim team lead role permanent and drop the Senior Technical Lead part, so he'd just be Team Lead going forward"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "David confirmed in standup that the permanent change isn't happening yet, so for now he's still Senior Technical Lead plus the interim team lead duty"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed our entire conversation history about David Keane's position, what would they see as the sequence of changes — which designations were actually adopted and which were only floated but never went into effect?",
+      "expected_answer": "First, David was established as Senior Technical Lead. Second, he added an interim team lead role on top of that, making it Senior Technical Lead plus Interim Team Lead. Third, HR floated the idea of converting him to just Team Lead and dropping the Senior Technical Lead part, but that was never finalized. Fourth, David himself confirmed the proposed change isn't happening, so his title reverted to — and remains — Senior Technical Lead plus Interim Team Lead. The only value that was floated but never adopted was the standalone Team Lead designation.",
+      "gold_memory_state": "Step 1: Senior Technical Lead (confirmed). Step 2: Senior Technical Lead + Interim Team Lead (confirmed). Step 3: Team Lead only (tentative — HR proposal, never finalized). Step 4: Senior Technical Lead + Interim Team Lead (confirmed — David rejected the tentative change). Final state: Senior Technical Lead + Interim Team Lead.",
+      "judge_rubric": {
+        "must_include": [
+          "Senior Technical Lead as initial title",
+          "addition of interim team lead",
+          "HR proposal for just Team Lead was not adopted",
+          "final state is Senior Technical Lead plus Interim Team Lead"
+        ],
+        "acceptable_paraphrases": [
+          "acting team lead",
+          "proposed but never went through",
+          "still pending approval with no timeline"
+        ],
+        "must_not_include": [
+          "Team Lead is the current final title"
+        ],
+        "harmful_extra": [
+          "stating the HR change was adopted",
+          "omitting the tentative fork entirely",
+          "saying David went back to just Senior Technical Lead without the interim duty"
+        ],
+        "harmless_extra": [
+          "mentioning the approvals got pushed back",
+          "mentioning someone left the team prompting the interim role"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats 'Team Lead' as the final adopted value.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model does not present the four steps in chronological order: initial title → added interim → HR tentative proposal → rejection and reaffirmation.",
+        "final_state": "Fails if the final state is not Senior Technical Lead + Interim Team Lead.",
+        "intermediate_state": "Fails if the model omits the tentative HR proposal step or does not identify it as unadopted.",
+        "trajectory_provenance": "Fails if the model cannot ground each step to the user's statements."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: David Keane was introduced as Senior Technical Lead on the product integration team (confirmed).",
+        "Step 2: David took on an additional interim team lead role, making his effective title Senior Technical Lead + Interim Team Lead (confirmed).",
+        "Step 3: HR proposed converting David's role to just Team Lead, dropping Senior Technical Lead (tentative — pending approvals, never finalized).",
+        "Step 4: David confirmed in standup the permanent change isn't happening; his title remains Senior Technical Lead + Interim Team Lead (confirmed, rejecting the tentative fork).",
+        "Inference: The trajectory has four states, with one tentative fork that was explicitly rejected. The final usable state is Senior Technical Lead + Interim Team Lead."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "David Keane is a Senior Technical Lead on the product integration team"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "David's now acting as interim team lead for our sub-group on top of his Senior Technical Lead role"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "HR told David they're planning to make the interim team lead role permanent and drop the Senior Technical Lead part, so he'd just be Team Lead going forward"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "David confirmed in standup that the permanent change isn't happening yet, so for now he's still Senior Technical Lead plus the interim team lead duty"
+        }
+      ]
+    }
+  ]
+}

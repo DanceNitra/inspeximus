@@ -1,0 +1,785 @@
+{
+  "target_fact": "The day of the week the support group meets, which was initially stated as Thursday, then corrected to Wednesday, and undergoes further changes through the conversation.",
+  "operation_type": "Update",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "support_group_day",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I started going to a support group that meets on Thursday evenings at the community center on Elm Street"
+      },
+      "target": {
+        "target_id": "support_group_meeting_day",
+        "target_name": "Support group meeting day"
+      },
+      "old_value": null,
+      "new_value": "Thursday",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I started going to a support group that meets on Thursday evenings at the community center on Elm Street"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "support_group_day",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 7,
+        "quote": "I need to correct myself—I said the support group meets on Thursdays, but it's actually Wednesdays. Wednesday at 7 PM"
+      },
+      "target": {
+        "target_id": "support_group_meeting_day",
+        "target_name": "Support group meeting day"
+      },
+      "old_value": "Thursday",
+      "new_value": "Wednesday",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I need to correct myself—I said the support group meets on Thursdays, but it's actually Wednesdays. Wednesday at 7 PM"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "support_group_day",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 7,
+        "quote": "Marcus sent out an email yesterday saying the group is permanently moving to Tuesday evenings starting this week. Same time, 7 PM, same location on Elm Street"
+      },
+      "target": {
+        "target_id": "support_group_meeting_day",
+        "target_name": "Support group meeting day"
+      },
+      "old_value": "Wednesday",
+      "new_value": "Tuesday",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Marcus sent out an email yesterday saying the group is permanently moving to Tuesday evenings starting this week. Same time, 7 PM, same location on Elm Street"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "support_group_day",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "Marcus texted the group today saying the community center double-booked Tuesdays for the summer, so he's confirmed we'll be switching to Monday evenings starting next month"
+      },
+      "target": {
+        "target_id": "support_group_meeting_day",
+        "target_name": "Support group meeting day"
+      },
+      "old_value": "Tuesday",
+      "new_value": "Monday",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Marcus texted the group today saying the community center double-booked Tuesdays for the summer, so he's confirmed we'll be switching to Monday evenings starting next month"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I've been seeing Dr. Patel since April 8th. She's an LGBTQ+ affirming therapist with an office over on Birch Avenue"
+      },
+      "target": {
+        "target_id": "therapist_info",
+        "target_name": "Current therapist name and start date"
+      },
+      "old_value": null,
+      "new_value": "Dr. Patel, started April 8th, office on Birch Avenue",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I've been seeing Dr. Patel since April 8th. She's an LGBTQ+ affirming therapist with an office over on Birch Avenue"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish initial support group day and coming-out context; user corrects Thursday to Wednesday.",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to talk through some things that have been going on with me lately. A lot has changed in the past few months. I came out to my sister as bisexual on March 3rd, and it went really well. She was calm and supportive, which meant the world to me. That date is really important to me—March 3rd. I'd been anxious about it for almost a year."
+        },
+        {
+          "role": "assistant",
+          "content": "Thank you so much for sharing that with me. Coming out to a family member is a huge step, and it sounds like your sister responded with the kind of warmth and acceptance you deserved. I can understand why March 3rd holds special significance for you—it marks a turning point where that prolonged anxiety finally gave way to relief. It's wonderful that she hasn't made things awkward since then. That kind of steady, normalized support can make such a difference. Is there anything else you'd like to talk about regarding how things have been going since then?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, so after I came out, I started going to a support group that meets on Thursday evenings at the community center on Elm Street. It's a small group, maybe eight or nine people, mostly queer folks in their 20s and 30s. A guy named Marcus runs it—he's been doing it for about five years. I like that it's small. I really don't do well with big noisy groups where everyone talks over each other."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a really good fit for you, especially given your preference for smaller, more intimate settings. A group of eight or nine people is large enough to get diverse perspectives but small enough that you can actually have real conversations without the cross-talk that bothers you. And Marcus sounds like a steady presence—five years of facilitating a group like that shows real commitment. Having a consistent facilitator can help set the tone and keep things manageable. How has the group been going so far? Do you feel like you're getting something out of it?"
+        },
+        {
+          "role": "user",
+          "content": "It's been good. I also went on a couple of dates recently with a guy named Derek—we matched on Hinge. The first date was at a ramen place on 5th Avenue. I had this moment where I thought, okay, this is real, I'm dating a guy and it feels normal. But then he ghosted me after the second date, which honestly stung more than I expected. I was kind of low for a few days after that."
+        },
+        {
+          "role": "assistant",
+          "content": "I'm sorry to hear about Derek ghosting you. That kind of sudden silence after what felt like a genuine connection can really sting, especially when you're in a stage of life where everything feels new and a bit more vulnerable. The fact that you had that moment on the first date—sitting across from him and feeling like it was real and normal—that's actually a really meaningful milestone, regardless of how things ended. The low mood afterward makes total sense. It's not just about Derek specifically; it's about putting yourself out there in a new way. How are you feeling about it now?"
+        },
+        {
+          "role": "user",
+          "content": "I'm mostly past it. But hey, I need to correct myself—I said the support group meets on Thursdays, but it's actually Wednesdays. Wednesday at 7 PM. I always mix those up for some reason. Sorry about that. Anyway, the group has been a good anchor for me through all of this, including processing the whole Derek thing."
+        },
+        {
+          "role": "assistant",
+          "content": "No worries at all—thanks for the correction! So the support group meets Wednesdays at 7 PM at the community center on Elm Street. I've got that noted. It's great that the group has been serving as a reliable anchor, especially during times when things feel uncertain or emotionally bumpy, like the Derek situation. Having a consistent space where you can process experiences with people who understand your perspective is really valuable. It sounds like between the group and your sister's support, you're building a solid network around yourself. Is there anything else you'd like to organize or talk through?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Introduce therapist (control target), update support group day from Wednesday to Tuesday, mention Pride invitation.",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So I wanted to mention—I've been seeing Dr. Patel since April 8th. She's an LGBTQ+ affirming therapist with an office over on Birch Avenue. I had been looking at that online therapy platform for a while, but I ended up going local instead. I'm glad I did. Having someone in person has been really helpful, especially as I work through all this identity stuff."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really positive step. Dr. Patel sounds like a great choice, especially since you mentioned preferring smaller, more personal interactions—in-person therapy probably feels a lot more grounded than an online platform would have. Starting on April 8th means you've had a few weeks with her already, so you're probably past the initial getting-to-know-you phase and into some real work. Having an LGBTQ+ affirming therapist is so important when you're processing identity-related experiences. Between Dr. Patel, the support group, and your sister, it sounds like you're building a really thoughtful support system. How has therapy been going so far?"
+        },
+        {
+          "role": "user",
+          "content": "It's been really helpful. Dr. Patel is great at asking the right questions without pushing too hard. She's helped me think about why the Derek situation hit me harder than I expected—it's tied to this vulnerability of being newly out and putting myself out there for the first time. Also, my coworker Jen mentioned she's going to Pride in June and asked if I want to come along."
+        },
+        {
+          "role": "assistant",
+          "content": "That's wonderful that Dr. Patel is helping you unpack those layers. The connection between the Derek situation and the broader vulnerability of being newly out makes a lot of sense—it wasn't just a ghosting, it was a first real test of romantic vulnerability in your new identity. As for Pride with Jen, that's an interesting opportunity. I know you tend to prefer smaller, quieter events over big loud ones. Pride can definitely be overwhelming, but going with someone you already know and trust from work could make it feel more manageable. Have you given it much thought yet, or are you still on the fence?"
+        },
+        {
+          "role": "user",
+          "content": "I'm still thinking about it. I tend to gravitate toward smaller things. Speaking of which, I went to a queer book club meetup last week—only about six people showed up, which I actually preferred. We read Real Life by Brandon Taylor. It was a great conversation, felt intimate and real. That's more my speed than a parade with thousands of people."
+        },
+        {
+          "role": "assistant",
+          "content": "That book club sounds perfect for you. Six people is just the right size for a meaningful literary discussion, and Brandon Taylor's Real Life is such a fitting choice—it deals with identity, isolation, and belonging in a way that probably resonated with where you are right now. It sounds like you're naturally gravitating toward spaces that match your social comfort zone: the support group, this book club, therapy with Dr. Patel. Those are all intimate, low-key settings where genuine connection can happen. Pride is a very different energy. There's no rush to decide—you could always go for part of it and leave if it gets overwhelming."
+        },
+        {
+          "role": "user",
+          "content": "That's a good point. Oh, one more thing—Marcus sent out an email yesterday saying the group is permanently moving to Tuesday evenings starting this week. Same time, 7 PM, same location on Elm Street. He said the community center had a scheduling conflict with Wednesdays. So I need to adjust my calendar. It's a small change but I want to keep track of it.\n\nNo, I think that covers it for now. I've got therapy with Dr. Patel, the support group on Tuesdays, the book club whenever they meet next, and maybe Pride in June. It's a lot more social than I was even six months ago. I'm still not ready to tell my parents about being bi, but I'm okay with that. One thing at a time."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it—so the support group is now on Tuesday evenings at 7 PM, same location at the community center on Elm Street. That's a permanent change from Wednesdays due to the scheduling conflict. It's good that Marcus communicated it clearly and that the time and place stay the same—just the day shifts. I'd recommend updating any recurring calendar events you have. Since you've been going consistently, keeping the routine intact is important. Is there anything else you'd like me to help you keep track of or organize?\n\nYou've built a really solid foundation for yourself in a relatively short time. Therapy with Dr. Patel since April 8th, the Tuesday support group with Marcus, the queer book club, and a potential Pride outing with Jen—that's a meaningful network of support and community. And you're absolutely right that there's no timeline for telling your parents. You came out to your sister on March 3rd when you were ready, and when the time feels right for your parents, you'll know. For now, you're taking care of yourself and surrounding yourself with the right people and spaces. That's what matters."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Tentative future change to Monday (recency trap), adversarial injection of Thursday via assistant echo of a flyer.",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I've been thinking about what to bring up in my next session with Dr. Patel. I want to talk about this pattern I've noticed where I avoid situations that feel too exposed or public. Like, I know I gravitate toward small groups, but I'm wondering if it's more than just preference—if it's actually anxiety holding me back from things like Pride."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really insightful observation, and it sounds like exactly the kind of thing Dr. Patel could help you explore. There's a meaningful difference between a genuine preference for intimate settings and anxiety-driven avoidance of larger ones. You clearly thrive in small groups—the support group, the book club with six people, even the way you came out to your sister one-on-one. But if you suspect there's an avoidance component, unpacking that with Dr. Patel could help you decide about Pride from a place of clarity rather than fear. Would you like to draft some talking points for your next session?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, that would be helpful. I think the main points are: the pattern of choosing small settings, whether my hesitation about Pride is preference or avoidance, and maybe how the Derek situation made me more cautious about putting myself out there. Those three things feel connected somehow, like they all trace back to vulnerability."
+        },
+        {
+          "role": "assistant",
+          "content": "Those are excellent talking points, and I think you're right that they're interconnected through the theme of vulnerability. Here's a draft structure for your session: First, the pattern—you consistently choose small, intimate settings like the Tuesday evening support group and the six-person book club. Second, the Pride question—is your hesitation about going with Jen rooted in a genuine preference for quieter events, or is it anxiety about being visibly queer in a large public space? Third, the Derek aftermath—how being ghosted after your first real experience dating a man may have reinforced a desire to protect yourself from exposure. Dr. Patel might help you see whether these are separate threads or part of one larger pattern."
+        },
+        {
+          "role": "user",
+          "content": "That's really well organized, thanks. Oh, by the way—Marcus texted the group today saying the community center double-booked Tuesdays for the summer, so he's confirmed we'll be switching to Monday evenings starting next month. Same time still, 7 PM, same place. He said it should be permanent through September at least."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for the update. So Marcus is saying the group will move to Monday evenings at 7 PM starting next month, at least through September, because of the Tuesday double-booking. That's the second schedule change in a relatively short period. It's good that the time and location remain consistent—just the day keeps shifting. You might want to wait until the change actually takes effect before updating your recurring calendar, just in case anything changes again. In the meantime, you're still going on Tuesdays for now, right?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, Tuesdays for now. I also noticed something funny—there's a flyer on the community center bulletin board advertising a different support group that meets Thursday evenings in the same room. It's run by a woman named Linda and it's for general anxiety, not specifically queer. I wonder if that's what caused the original scheduling confusion with our group.\n\nNot really. I'm just glad I have all these different support structures in place. Between Dr. Patel, the support group with Marcus, and even the book club, I feel like I'm in a much better place than I was at the start of the year. I still think about that moment on March 3rd when I told my sister—it really changed everything for me."
+        },
+        {
+          "role": "assistant",
+          "content": "That's an interesting find! So there's a separate general anxiety support group run by Linda that meets Thursday evenings in the same room at the community center on Elm Street. It's entirely possible that's what caused some of the scheduling shuffles—multiple groups sharing the same space can create a lot of logistical headaches. It might also explain why you initially thought your group met on Thursdays, if you'd seen that flyer before and the days blurred together. Either way, Marcus seems to be handling the changes well by communicating them clearly to the group. Is there anything else on your mind?\n\nYou've come a long way since that pivotal moment on March 3rd. In just a few months, you've gone from anxiously holding that secret to building an entire ecosystem of support: weekly therapy with Dr. Patel since April 8th, Marcus's support group on Tuesday evenings—soon possibly Monday evenings—the queer book club, and your sister's unwavering acceptance. Each of those spaces serves a different purpose, and together they give you a well-rounded foundation. You should be proud of how intentionally you've approached this. Whatever you decide about Pride or telling your parents, you're doing it from a place of growing strength."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations, I mentioned the day my support group meets a few times. Can you walk me through what I said about the meeting day at different points?",
+      "expected_answer": "You initially said the support group meets on Thursday evenings, then corrected yourself and said it actually meets on Wednesdays at 7 PM. Later, you reported that Marcus emailed the group saying it was permanently moving to Tuesday evenings at 7 PM due to a scheduling conflict. Most recently, you mentioned Marcus texted that the community center double-booked Tuesdays for the summer, so the group would be switching to Monday evenings starting next month.",
+      "gold_memory_state": "The support group meeting day has been mentioned four times: Thursday (initial, later self-corrected), Wednesday (self-correction), Tuesday (permanent change per Marcus's email), and Monday (future change per Marcus's text, not yet in effect).",
+      "judge_rubric": {
+        "must_include": [
+          "Thursday",
+          "Wednesday",
+          "Tuesday",
+          "Monday"
+        ],
+        "acceptable_paraphrases": [
+          "the group day changed several times",
+          "Marcus announced schedule changes"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming only two changes occurred",
+          "omitting any of the four days"
+        ],
+        "harmless_extra": [
+          "mentioning the time stayed at 7 PM",
+          "mentioning the location stayed on Elm Street"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model only recalls Thursday or Wednesday without the later changes.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the order of day mentions is incorrect.",
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I started going to a support group that meets on Thursday evenings at the community center on Elm Street"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I need to correct myself—I said the support group meets on Thursdays, but it's actually Wednesdays. Wednesday at 7 PM"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Marcus sent out an email yesterday saying the group is permanently moving to Tuesday evenings starting this week. Same time, 7 PM, same location on Elm Street"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Marcus texted the group today saying the community center double-booked Tuesdays for the summer, so he's confirmed we'll be switching to Monday evenings starting next month"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations, I mentioned the day my support group meets a few times. Can you walk me through what I said about the meeting day at different points?",
+      "expected_answer": "You initially said the support group meets on Thursday evenings, then corrected yourself and said it actually meets on Wednesdays at 7 PM. Later, you reported that Marcus emailed the group saying it was permanently moving to Tuesday evenings at 7 PM due to a scheduling conflict. Most recently, you mentioned Marcus texted that the community center double-booked Tuesdays for the summer, so the group would be switching to Monday evenings starting next month.",
+      "gold_memory_state": "The support group meeting day has been mentioned four times: Thursday (initial, later self-corrected), Wednesday (self-correction), Tuesday (permanent change per Marcus's email), and Monday (future change per Marcus's text, not yet in effect).",
+      "judge_rubric": {
+        "must_include": [
+          "Thursday",
+          "Wednesday",
+          "Tuesday",
+          "Monday"
+        ],
+        "acceptable_paraphrases": [
+          "the group day changed several times",
+          "Marcus announced schedule changes"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming only two changes occurred",
+          "omitting any of the four days"
+        ],
+        "harmless_extra": [
+          "mentioning the time stayed at 7 PM",
+          "mentioning the location stayed on Elm Street"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model only recalls Thursday or Wednesday without the later changes.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the order of day mentions is incorrect.",
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I started going to a support group that meets on Thursday evenings at the community center on Elm Street"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I need to correct myself—I said the support group meets on Thursdays, but it's actually Wednesdays. Wednesday at 7 PM"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Marcus sent out an email yesterday saying the group is permanently moving to Tuesday evenings starting this week. Same time, 7 PM, same location on Elm Street"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Marcus texted the group today saying the community center double-booked Tuesdays for the summer, so he's confirmed we'll be switching to Monday evenings starting next month"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I noticed there's another group that also uses the community center on Elm Street. When Marcus announced the latest scheduling change, does that affect my group's schedule only, or does it also change anything about that other group's schedule?",
+      "expected_answer": "Marcus's scheduling announcements affect only your support group's meeting day. The other group—Linda's general anxiety support group that meets Thursday evenings—is a separate group and is not affected by Marcus's changes.",
+      "gold_memory_state": "The user's support group (run by Marcus) currently meets Tuesdays, with a future tentative move to Mondays. Linda's general anxiety group meets Thursdays in the same room. These are two distinct groups with independent schedules.",
+      "judge_rubric": {
+        "must_include": [
+          "Marcus's group only",
+          "Linda's group is separate and unaffected"
+        ],
+        "acceptable_paraphrases": [
+          "only your queer support group is affected",
+          "the Thursday anxiety group run by Linda is independent"
+        ],
+        "must_not_include": [
+          "Linda's group also changed days",
+          "both groups moved together"
+        ],
+        "harmful_extra": [
+          "claiming Linda's group schedule was affected by Marcus's announcements",
+          "conflating the two groups"
+        ],
+        "harmless_extra": [
+          "mentioning Linda's group meets Thursdays",
+          "mentioning both groups use the same room"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model conflates Marcus's group with Linda's group or applies Marcus's schedule change to Linda's group.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Marcus sent out an email yesterday saying the group is permanently moving to Tuesday evenings starting this week. Same time, 7 PM, same location on Elm Street"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Marcus texted the group today saying the community center double-booked Tuesdays for the summer, so he's confirmed we'll be switching to Monday evenings starting next month"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "there's a flyer on the community center bulletin board advertising a different support group that meets Thursday evenings in the same room. It's run by a woman named Linda and it's for general anxiety, not specifically queer"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I noticed there's another group that also uses the community center on Elm Street. When Marcus announced the latest scheduling change, does that affect my group's schedule only, or does it also change anything about that other group's schedule?",
+      "expected_answer": "Marcus's scheduling announcements affect only your support group's meeting day. The other group—Linda's general anxiety support group that meets Thursday evenings—is a separate group and is not affected by Marcus's changes.",
+      "gold_memory_state": "The user's support group (run by Marcus) currently meets Tuesdays, with a future tentative move to Mondays. Linda's general anxiety group meets Thursdays in the same room. These are two distinct groups with independent schedules.",
+      "judge_rubric": {
+        "must_include": [
+          "Marcus's group only",
+          "Linda's group is separate and unaffected"
+        ],
+        "acceptable_paraphrases": [
+          "only your queer support group is affected",
+          "the Thursday anxiety group run by Linda is independent"
+        ],
+        "must_not_include": [
+          "Linda's group also changed days",
+          "both groups moved together"
+        ],
+        "harmful_extra": [
+          "claiming Linda's group schedule was affected by Marcus's announcements",
+          "conflating the two groups"
+        ],
+        "harmless_extra": [
+          "mentioning Linda's group meets Thursdays",
+          "mentioning both groups use the same room"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model conflates Marcus's group with Linda's group or applies Marcus's schedule change to Linda's group.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Marcus sent out an email yesterday saying the group is permanently moving to Tuesday evenings starting this week. Same time, 7 PM, same location on Elm Street"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Marcus texted the group today saying the community center double-booked Tuesdays for the summer, so he's confirmed we'll be switching to Monday evenings starting next month"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "there's a flyer on the community center bulletin board advertising a different support group that meets Thursday evenings in the same room. It's run by a woman named Linda and it's for general anxiety, not specifically queer"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to set a recurring weekly reminder for my support group with Marcus. Which day of the week should I set it for right now?",
+      "candidate_options": [
+        "Thursday",
+        "Wednesday",
+        "Tuesday",
+        "Monday"
+      ],
+      "expected_answer": "Tuesday",
+      "gold_memory_state": "The support group currently meets on Tuesday evenings at 7 PM (confirmed permanent change from Marcus's email). The Monday change is tentative and not yet in effect (starts next month, through September). Thursday was the initial incorrect day. Wednesday was the corrected day before the Tuesday change.",
+      "judge_rubric": {
+        "must_include": [
+          "Tuesday"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "Thursday as current",
+          "Wednesday as current",
+          "Monday as current"
+        ],
+        "harmful_extra": [
+          "selecting Monday because it was mentioned most recently",
+          "selecting Thursday because of the flyer on the bulletin board"
+        ],
+        "harmless_extra": [
+          "noting Monday may take effect next month"
+        ]
+      },
+      "distractor_rationale": "same-value-different-target: Thursday is the day Linda's separate anxiety group meets in the same room, creating a plausible confusion with the user's own group. assistant echo: The assistant echoed 'Tuesday evening support group' and also mentioned 'soon possibly Monday evenings' in segment 3, making Monday a recency-trap distractor. Wednesday is the stale prior value. Monday is the tentative future value not yet in effect.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects Thursday (initial error or Linda's group confusion) or Wednesday (superseded value).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model selects Monday (tentative future change not yet active) instead of Tuesday (current confirmed day).",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Marcus sent out an email yesterday saying the group is permanently moving to Tuesday evenings starting this week. Same time, 7 PM, same location on Elm Street"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Marcus texted the group today saying the community center double-booked Tuesdays for the summer, so he's confirmed we'll be switching to Monday evenings starting next month"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to set a recurring weekly reminder for my support group with Marcus. Which day of the week should I set it for right now?",
+      "candidate_options": [
+        "Thursday",
+        "Wednesday",
+        "Tuesday",
+        "Monday"
+      ],
+      "expected_answer": "Tuesday",
+      "gold_memory_state": "The support group currently meets on Tuesday evenings at 7 PM (confirmed permanent change from Marcus's email). The Monday change is tentative and not yet in effect (starts next month, through September). Thursday was the initial incorrect day. Wednesday was the corrected day before the Tuesday change.",
+      "judge_rubric": {
+        "must_include": [
+          "Tuesday"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "Thursday as current",
+          "Wednesday as current",
+          "Monday as current"
+        ],
+        "harmful_extra": [
+          "selecting Monday because it was mentioned most recently",
+          "selecting Thursday because of the flyer on the bulletin board"
+        ],
+        "harmless_extra": [
+          "noting Monday may take effect next month"
+        ]
+      },
+      "distractor_rationale": "same-value-different-target: Thursday is the day Linda's separate anxiety group meets in the same room, creating a plausible confusion with the user's own group. assistant echo: The assistant echoed 'Tuesday evening support group' and also mentioned 'soon possibly Monday evenings' in segment 3, making Monday a recency-trap distractor. Wednesday is the stale prior value. Monday is the tentative future value not yet in effect.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects Thursday (initial error or Linda's group confusion) or Wednesday (superseded value).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model selects Monday (tentative future change not yet active) instead of Tuesday (current confirmed day).",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Marcus sent out an email yesterday saying the group is permanently moving to Tuesday evenings starting this week. Same time, 7 PM, same location on Elm Street"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Marcus texted the group today saying the community center double-booked Tuesdays for the summer, so he's confirmed we'll be switching to Monday evenings starting next month"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I want to draft a weekly self-care schedule card that lists my regular support activities with the day, time, and location for each. Include my therapy sessions with Dr. Patel and my support group with Marcus. For the support group, use whichever day I should actually show up to this week.",
+      "expected_answer": "Weekly Self-Care Schedule:\n1. Therapy with Dr. Patel — Office on Birch Avenue (day/time not specified beyond the start date of April 8th).\n2. Support Group with Marcus — Tuesday at 7 PM, Community Center on Elm Street.\n\nThe support group day for this week is Tuesday. Monday has been mentioned as a possible future change starting next month but is not yet in effect.",
+      "application_probe_type": "multi_hop_derivation",
+      "gold_memory_state": "Dr. Patel: LGBTQ+ affirming therapist, started April 8th, office on Birch Avenue. Support group: currently Tuesday at 7 PM at community center on Elm Street, run by Marcus. Monday is tentative (next month). Thursday and Wednesday are stale values.",
+      "judge_rubric": {
+        "must_include": [
+          "Dr. Patel",
+          "Birch Avenue",
+          "Tuesday",
+          "7 PM",
+          "Elm Street",
+          "Marcus"
+        ],
+        "acceptable_paraphrases": [
+          "community center on Elm Street",
+          "Elm Street community center"
+        ],
+        "must_not_include": [
+          "Thursday as the current support group day",
+          "Wednesday as the current support group day"
+        ],
+        "harmful_extra": [
+          "listing Monday as the current day to attend this week",
+          "listing Thursday as the support group day"
+        ],
+        "harmless_extra": [
+          "noting Monday may start next month",
+          "mentioning April 8th as Dr. Patel's start date"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the schedule card lists Wednesday or Thursday as the support group day.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if Monday is used as the current week's day instead of Tuesday.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user sees Dr. Patel, an LGBTQ+ affirming therapist, since April 8th, at an office on Birch Avenue.",
+        "Fact 2: The support group with Marcus permanently moved to Tuesday evenings at 7 PM at the community center on Elm Street.",
+        "Fact 3: Marcus announced a future move to Monday evenings starting next month, but that change is not yet in effect.",
+        "Inference: For this week's schedule, the support group day is Tuesday, not Monday.",
+        "Inference: The schedule card should combine Dr. Patel's location (Birch Avenue) with the support group's current confirmed day (Tuesday), time (7 PM), and location (Elm Street community center)."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I've been seeing Dr. Patel since April 8th. She's an LGBTQ+ affirming therapist with an office over on Birch Avenue"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Marcus sent out an email yesterday saying the group is permanently moving to Tuesday evenings starting this week. Same time, 7 PM, same location on Elm Street"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Marcus texted the group today saying the community center double-booked Tuesdays for the summer, so he's confirmed we'll be switching to Monday evenings starting next month"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I want to draft a weekly self-care schedule card that lists my regular support activities with the day, time, and location for each. Include my therapy sessions with Dr. Patel and my support group with Marcus. For the support group, use whichever day I should actually show up to this week.",
+      "expected_answer": "Weekly Self-Care Schedule:\n1. Therapy with Dr. Patel — Office on Birch Avenue (day/time not specified beyond the start date of April 8th).\n2. Support Group with Marcus — Tuesday at 7 PM, Community Center on Elm Street.\n\nThe support group day for this week is Tuesday. Monday has been mentioned as a possible future change starting next month but is not yet in effect.",
+      "application_probe_type": "multi_hop_derivation",
+      "gold_memory_state": "Dr. Patel: LGBTQ+ affirming therapist, started April 8th, office on Birch Avenue. Support group: currently Tuesday at 7 PM at community center on Elm Street, run by Marcus. Monday is tentative (next month). Thursday and Wednesday are stale values.",
+      "judge_rubric": {
+        "must_include": [
+          "Dr. Patel",
+          "Birch Avenue",
+          "Tuesday",
+          "7 PM",
+          "Elm Street",
+          "Marcus"
+        ],
+        "acceptable_paraphrases": [
+          "community center on Elm Street",
+          "Elm Street community center"
+        ],
+        "must_not_include": [
+          "Thursday as the current support group day",
+          "Wednesday as the current support group day"
+        ],
+        "harmful_extra": [
+          "listing Monday as the current day to attend this week",
+          "listing Thursday as the support group day"
+        ],
+        "harmless_extra": [
+          "noting Monday may start next month",
+          "mentioning April 8th as Dr. Patel's start date"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the schedule card lists Wednesday or Thursday as the support group day.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if Monday is used as the current week's day instead of Tuesday.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user sees Dr. Patel, an LGBTQ+ affirming therapist, since April 8th, at an office on Birch Avenue.",
+        "Fact 2: The support group with Marcus permanently moved to Tuesday evenings at 7 PM at the community center on Elm Street.",
+        "Fact 3: Marcus announced a future move to Monday evenings starting next month, but that change is not yet in effect.",
+        "Inference: For this week's schedule, the support group day is Tuesday, not Monday.",
+        "Inference: The schedule card should combine Dr. Patel's location (Birch Avenue) with the support group's current confirmed day (Tuesday), time (7 PM), and location (Elm Street community center)."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I've been seeing Dr. Patel since April 8th. She's an LGBTQ+ affirming therapist with an office over on Birch Avenue"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Marcus sent out an email yesterday saying the group is permanently moving to Tuesday evenings starting this week. Same time, 7 PM, same location on Elm Street"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Marcus texted the group today saying the community center double-booked Tuesdays for the summer, so he's confirmed we'll be switching to Monday evenings starting next month"
+        }
+      ]
+    }
+  ]
+}

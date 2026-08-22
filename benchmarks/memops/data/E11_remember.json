@@ -1,0 +1,1057 @@
+{
+  "target_fact": "User's candle business packaging and ordering details, including supplier, order quantities, product specifications, and ordering preferences",
+  "operation_type": "Remember",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 3,
+      "hop_type": "quantitative_derivation"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": true,
+      "never_stored_target": "wax melting temperature"
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "my packaging supplier is GreenWrap Co., based out of Portland"
+      },
+      "target": {
+        "target_id": "packaging_supplier",
+        "target_name": "candle business packaging supplier"
+      },
+      "old_value": null,
+      "new_value": "GreenWrap Co., based in Portland",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my packaging supplier is GreenWrap Co., based out of Portland"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I ordered 12 cases of mason jars from a new vendor"
+      },
+      "target": {
+        "target_id": "mason_jar_cases_ordered",
+        "target_name": "number of mason jar cases in recent order"
+      },
+      "old_value": null,
+      "new_value": "12 cases",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I ordered 12 cases of mason jars from a new vendor"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "each case holds 12 jars"
+      },
+      "target": {
+        "target_id": "jars_per_case",
+        "target_name": "number of jars per case"
+      },
+      "old_value": null,
+      "new_value": "12 jars per case",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "each case holds 12 jars"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "each jar holds 16 fl oz of wax by volume"
+      },
+      "target": {
+        "target_id": "jar_volume_capacity",
+        "target_name": "volume capacity per mason jar"
+      },
+      "old_value": null,
+      "new_value": "16 fl oz per jar",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "each jar holds 16 fl oz of wax by volume"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 7,
+        "quote": "I've switched everything to metric now, all my recipes are in grams and milliliters"
+      },
+      "target": {
+        "target_id": "measurement_system",
+        "target_name": "current measurement system for recipes"
+      },
+      "old_value": null,
+      "new_value": "metric (grams and milliliters)",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I've switched everything to metric now, all my recipes are in grams and milliliters"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 1,
+        "quote": "I use an Escali scale that goes up to 5 kg for portioning wax"
+      },
+      "target": {
+        "target_id": "kitchen_scale",
+        "target_name": "kitchen scale brand and capacity"
+      },
+      "old_value": null,
+      "new_value": "Escali scale, up to 5 kg",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I use an Escali scale that goes up to 5 kg for portioning wax"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establishing core business facts: supplier, recent jar order, and measurement system migration",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to give you some background on my small candle business so you can help me with planning. First off, my packaging supplier is GreenWrap Co., based out of Portland. I keep accidentally calling them GreenBox in my head, but GreenBox is a totally different company. GreenWrap is the one I actually use for all my boxes and sleeves."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for clarifying that! I'll make sure to keep GreenWrap Co. in Portland as your packaging supplier and not confuse it with GreenBox. That's a common kind of mix-up when company names share a word. Since you mentioned boxes and sleeves, it sounds like GreenWrap handles a decent range of your packaging needs. Do you want to walk me through what you typically order from them, or is there something else about your business setup you'd like to cover first? I'm happy to help with inventory planning, supplier management, or whatever you need."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, I had a whole fiasco with a bulk order back in early March where I accidentally ordered 500 individual boxes instead of 500 sleeves. Each sleeve holds 50 boxes, so I was short by a huge margin. That was a rough experience and really threw off my production schedule. But I've learned from that, and now I prefer placing smaller, more frequent orders to reduce risk."
+        },
+        {
+          "role": "assistant",
+          "content": "Ouch, that's a painful lesson—ordering 500 boxes when you meant 500 sleeves is a massive difference in quantity. I can see why that disrupted your production schedule. Your shift to smaller, more frequent orders makes a lot of sense as a risk mitigation strategy. If one order has an issue, the impact is contained and easier to fix. Would you like me to help you set up a reorder schedule or create a checklist template for placing orders? That way you could verify units and quantities before submitting. It might save you from another mix-up like the sleeve versus box situation."
+        },
+        {
+          "role": "user",
+          "content": "That's a good idea, maybe later. For now let me tell you about my latest order. I ordered 12 cases of mason jars from a new vendor a couple of days ago. I double-checked the quantities this time to make sure everything was right. I'd rather place four small orders than one giant one—it just feels less risky, and if something goes wrong it's way easier to deal with a small batch."
+        },
+        {
+          "role": "assistant",
+          "content": "Smart move double-checking the quantities this time, especially with a new vendor where you don't have an established relationship yet. Twelve cases of mason jars sounds like a manageable batch that fits your preference for smaller, incremental orders. If something is off—wrong size, damaged jars, whatever—you're only dealing with twelve cases rather than a warehouse-sized shipment. Once you've verified the quality from this new vendor, you could set up a recurring order cadence. Do you want me to note any details about this vendor, or should we keep the focus on the jars and your production workflow for now?"
+        },
+        {
+          "role": "user",
+          "content": "Let's focus on production for now. One big update: I've switched everything to metric now, all my recipes are in grams and milliliters. I used to have a mess of ounces, fluid ounces, and milliliters all mixed together in my spreadsheets, but I spent a whole Saturday reconciling everything. You can disregard any old inventory numbers that might have been in mixed units—it's all been corrected and standardized."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a huge quality-of-life improvement for your workflow. Having everything standardized in grams and milliliters eliminates the confusion between weight ounces and fluid ounces, which is especially important with wax since those measurements don't convert one-to-one. It sounds like that Saturday reconciliation session was tedious but worth it. Now that your recipes are fully metric, your inventory tracking should be much more consistent and less error-prone going forward. When you're ready to build out production planning tools or reorder schedules, having clean metric data will make calculations straightforward. Let me know when you want to dig into the production workflow details."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Expanding jar order details, jar volume capacity, and production planning context",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Picking up where we left off—about those mason jars I ordered. Just to be precise, each case holds 12 jars. So the full order is 12 cases times 12 jars each. I verified that directly with the vendor's catalog before placing the order. I'm trying to be really meticulous about quantities after that sleeve disaster earlier this year."
+        },
+        {
+          "role": "assistant",
+          "content": "Great, so that's 12 cases with 12 jars per case, giving you 144 jars total in this order. Your meticulousness is paying off—verifying directly against the vendor catalog is exactly the kind of double-check that prevents another sleeve-versus-box situation. With 144 jars on hand, you'll have a solid starting inventory for your next production run. Depending on your batch sizes and how many candle varieties you're producing, that could cover quite a few pours. Would you like to map out how those 144 jars break down across your different candle products, or do you have other details to share about the production setup first?"
+        },
+        {
+          "role": "user",
+          "content": "Let me give you more detail on the jars first. These are standard wide-mouth mason jars, and I chose them specifically because they work well with my candle sizes. I sell three main candle sizes right now, but the mason jars are for my largest size only. The other two sizes use different containers that I order separately from GreenWrap along with my packaging supplies."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes sense—keeping the mason jars dedicated to your largest candle size simplifies your production line. And it's convenient that GreenWrap handles both the packaging supplies and the containers for your other two sizes, so you're consolidating vendors where you can. Having the mason jars from a separate vendor gives you flexibility to shop around for the best deal on that specific item without disrupting your GreenWrap relationship. When you're ready, it would be helpful to know the volume or weight specs for each candle size so I can help with production math—things like wax usage per batch, fragrance oil ratios, and how far your jar inventory stretches."
+        },
+        {
+          "role": "user",
+          "content": "Good thinking. So for the large candles that go in the mason jars, each jar holds 16 fl oz of wax by volume. That's the volume I fill to, and it's important to note it's fluid ounces by volume, not ounces by weight—those are different measurements especially with wax. I had a listing error about this once and a customer caught it, so I'm careful about specifying volume versus weight now."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, that distinction matters a lot with wax. Sixteen fluid ounces by volume is your fill line per mason jar, and since wax is less dense than water, 16 fl oz of wax weighs less than 16 oz on a scale. Getting that wrong on a listing could mislead customers about how much product they're receiving, so it's good you caught it early. With your fill volume at 16 fl oz per jar and 144 jars from this order, you can start calculating how much liquid wax you need for a full production run. Do you want me to help with that math, or would you like to share your fragrance oil ratios and any other recipe details first so we can do a complete materials breakdown?"
+        },
+        {
+          "role": "user",
+          "content": "Let's hold on the fragrance ratios for now. I want to mention that my friend Derek also runs a small business—a homebrew shop. He's been helpful as a sounding board. He once listed a 2-liter bottle as 2 gallons on his shop page, so he totally gets the unit confusion struggle. We swap tips about inventory management and small business stuff pretty regularly.\n\nDerek actually just picked up a new digital scale for his homebrew operation—an Ohaus brand, said he paid about $85 for it. I thought that was a lot, but he swears by it. Anyway, I think we've covered enough background for now. Let me come back to you when I'm ready to do the full production math with the fragrance oil ratios and wax quantities."
+        },
+        {
+          "role": "assistant",
+          "content": "It's great to have someone like Derek who understands the specific headaches of running a small product-based business. The 2-liter versus 2-gallon mix-up is a perfect parallel to your fluid ounce versus weight ounce issue—both come down to unit precision in customer-facing listings. Having a peer who deals with similar inventory and measurement challenges means you can learn from each other's mistakes without both paying the full price. If you and Derek ever want to compare notes on inventory tracking systems or order verification workflows, I could help draft some shared templates. For now, shall we circle back to your production planning or is there more context to cover?\n\nSounds good! Ohaus makes solid lab-grade scales, so Derek's probably getting good precision for his brewing measurements, even if $85 is a bit steep for a small operation. When you're ready to dive into the full production math, we can calculate total wax volume needed based on your 144 mason jars at 16 fl oz each, convert everything into your metric system, factor in fragrance oil ratios, and build out a complete materials list. I've got your supplier info, your current order details, and your measurement preferences all noted. Just pick up whenever you're ready and we'll get that production plan mapped out efficiently."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Confirming scale details, surfacing adversarial distractor, and wrapping up production context",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Alright, I'm back to continue planning. Quick recap from my side: I use an Escali scale that goes up to 5 kg for portioning wax. I picked it up specifically because I wanted metric precision for my small batches. Grams just feel cleaner than ounces to me when I'm measuring wax and fragrance oils. It's been a game-changer for consistency across batches."
+        },
+        {
+          "role": "assistant",
+          "content": "Welcome back! The Escali scale with a 5 kg capacity is a great choice for candle-making—it gives you plenty of headroom for small to medium batches while keeping the precision you need in grams. Since all your recipes are now in metric, having a dedicated gram-based scale means there's no mental conversion step that could introduce errors. For reference, I noticed Derek's Ohaus scale was listed at about $85 with a 2 kg capacity on a homebrew supplier page I've seen mentioned before—so your Escali actually gives you more range. When you're ready, we can start building out the wax quantity calculations using your jar count and fill volume. Shall we begin?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, let's start on the production math. I want to figure out how much total wax I need for this batch of mason jar candles. Remember, each jar gets filled to 16 fl oz by volume. And I've got 144 jars from my 12-case order. I want to make sure I'm ordering enough wax to fill every single jar without coming up short like the packaging fiasco."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, let's make sure you don't come up short this time. With 144 jars at 16 fl oz each, you need a total of 2,304 fl oz of liquid wax. Since you're working in metric now, we can convert that: 2,304 fl oz is approximately 68,140 milliliters, or about 68.14 liters of liquid wax. Of course, wax volume can shift slightly between its melted and solid states, so you'll want to account for a small buffer—maybe 5 to 10 percent extra. That would put your target wax purchase somewhere around 71.5 to 75 liters. Do you want to factor in your fragrance oil displacement as well, since that takes up some of the jar volume?"
+        },
+        {
+          "role": "user",
+          "content": "Good point about the fragrance oil displacement. Typically I use about a 10 percent fragrance load by volume, so roughly 10 percent of that 16 fl oz per jar is fragrance oil rather than pure wax. That means the actual wax fill is closer to 14.4 fl oz per jar. Let me factor that in when I calculate my wax order. I also want to keep a safety margin so I don't run short."
+        },
+        {
+          "role": "assistant",
+          "content": "Great, so with a 10 percent fragrance load, each jar gets about 14.4 fl oz of wax and 1.6 fl oz of fragrance oil. Across 144 jars, that's approximately 2,073.6 fl oz of wax—roughly 61,330 milliliters or about 61.3 liters. Adding your safety margin of 5 to 10 percent brings the wax order target to roughly 64.4 to 67.5 liters. For the fragrance oil, you'd need about 230.4 fl oz total, which converts to roughly 6,814 milliliters or 6.8 liters. Since your inventory is all in metric now, you can place orders directly in liters or milliliters without any conversion headaches. Want me to draft a materials order summary you can use?"
+        },
+        {
+          "role": "user",
+          "content": "That would be awesome, yes. Include the jar count, wax volume, and fragrance oil volume in metric. Also note that the jars are from the new vendor and the packaging supplies come from GreenWrap Co. in Portland. I want everything organized so I can just go down the list and place orders without second-guessing myself.\n\nThat looks perfect. I really appreciate having it all laid out cleanly. One thing I love about working in metric is how much easier the math is—multiplying and converting feels so much more intuitive than dealing with ounces and cups and gallons. I think my whole unit confusion saga is finally behind me. Thanks for helping me get this organized."
+        },
+        {
+          "role": "assistant",
+          "content": "Here's your materials order summary in metric:\n\n1. Mason Jars: 144 jars (12 cases × 12 jars/case) — order from new vendor\n2. Wax: approximately 61.3 liters base need, order 65–68 liters with safety margin — confirm with wax supplier\n3. Fragrance Oil: approximately 6.8 liters (based on 10% load by volume) — confirm with fragrance supplier\n4. Packaging Supplies: boxes, sleeves, and smaller candle containers — order from GreenWrap Co., Portland\n\nAll volumes are in metric to match your standardized recipe system. I'd recommend placing the jar and wax orders first since those have the longest lead times, then follow up with fragrance oil and packaging. Does this look right, or do you want to adjust anything before finalizing?\n\nYou're very welcome! It's clear that the switch to metric has streamlined your entire workflow, from recipe formulation to inventory tracking to order placement. The consistency eliminates so many potential error points—no more mixing up weight ounces with fluid ounces or milliliters with fluid ounces on invoices. Combined with your preference for smaller, frequent orders and your habit of double-checking quantities, you've built a pretty robust system against the kinds of mistakes that tripped you up earlier this year. When you're ready to place the next round of orders or want to plan future production batches, just pick up where we left off. Good luck with this production run!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize the key details I shared about my candle business setup—specifically around suppliers, recent orders, equipment, and how I handle measurements?",
+      "expected_answer": "The user's packaging supplier is GreenWrap Co. in Portland. They recently ordered 12 cases of mason jars from a new vendor, with each case holding 12 jars and each jar holding 16 fl oz by volume. The user has switched all recipes to metric (grams and milliliters) and uses an Escali scale with a 5 kg capacity for portioning wax.",
+      "gold_memory_state": "Six confirmed facts: (1) packaging supplier is GreenWrap Co., Portland; (2) 12 cases of mason jars ordered; (3) 12 jars per case; (4) 16 fl oz volume capacity per jar; (5) metric measurement system; (6) Escali scale, 5 kg capacity.",
+      "judge_rubric": {
+        "must_include": [
+          "GreenWrap Co.",
+          "Portland",
+          "12 cases",
+          "mason jars",
+          "12 jars per case",
+          "16 fl oz",
+          "metric",
+          "Escali",
+          "5 kg"
+        ],
+        "acceptable_paraphrases": [
+          "GreenWrap",
+          "fluid ounces",
+          "grams and milliliters"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "Listing GreenBox as the supplier",
+          "Listing Derek's Ohaus scale as the user's scale"
+        ],
+        "harmless_extra": [
+          "mentioning the user prefers smaller frequent orders",
+          "mentioning the sleeve ordering fiasco"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if GreenBox is named as the supplier instead of GreenWrap Co.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my packaging supplier is GreenWrap Co., based out of Portland"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I ordered 12 cases of mason jars from a new vendor"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "each case holds 12 jars"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "each jar holds 16 fl oz of wax by volume"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I've switched everything to metric now, all my recipes are in grams and milliliters"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I use an Escali scale that goes up to 5 kg for portioning wax"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize the key details I shared about my candle business setup—specifically around suppliers, recent orders, equipment, and how I handle measurements?",
+      "expected_answer": "The user's packaging supplier is GreenWrap Co. in Portland. They recently ordered 12 cases of mason jars from a new vendor, with each case holding 12 jars and each jar holding 16 fl oz by volume. The user has switched all recipes to metric (grams and milliliters) and uses an Escali scale with a 5 kg capacity for portioning wax.",
+      "gold_memory_state": "Six confirmed facts: (1) packaging supplier is GreenWrap Co., Portland; (2) 12 cases of mason jars ordered; (3) 12 jars per case; (4) 16 fl oz volume capacity per jar; (5) metric measurement system; (6) Escali scale, 5 kg capacity.",
+      "judge_rubric": {
+        "must_include": [
+          "GreenWrap Co.",
+          "Portland",
+          "12 cases",
+          "mason jars",
+          "12 jars per case",
+          "16 fl oz",
+          "metric",
+          "Escali",
+          "5 kg"
+        ],
+        "acceptable_paraphrases": [
+          "GreenWrap",
+          "fluid ounces",
+          "grams and milliliters"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "Listing GreenBox as the supplier",
+          "Listing Derek's Ohaus scale as the user's scale"
+        ],
+        "harmless_extra": [
+          "mentioning the user prefers smaller frequent orders",
+          "mentioning the sleeve ordering fiasco"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if GreenBox is named as the supplier instead of GreenWrap Co.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my packaging supplier is GreenWrap Co., based out of Portland"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I ordered 12 cases of mason jars from a new vendor"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "each case holds 12 jars"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "each jar holds 16 fl oz of wax by volume"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I've switched everything to metric now, all my recipes are in grams and milliliters"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I use an Escali scale that goes up to 5 kg for portioning wax"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned two different scales in our conversations—one that I use and one that someone else bought. If I need to weigh a batch of wax for my candles, which scale details should I rely on, and does the other scale have anything to do with my candle-making workflow?",
+      "expected_answer": "You should rely on the Escali scale with a 5 kg capacity, which is the scale you use for portioning wax. The other scale—an Ohaus that Derek purchased for his homebrew shop—is not part of your candle-making workflow.",
+      "gold_memory_state": "User's scale: Escali, 5 kg capacity (confirmed, operation op6). Derek's scale: Ohaus, ~$85, mentioned in conversation but not a user operation target—belongs to Derek's homebrew business.",
+      "judge_rubric": {
+        "must_include": [
+          "Escali",
+          "5 kg"
+        ],
+        "acceptable_paraphrases": [
+          "Escali brand scale",
+          "5 kilogram capacity"
+        ],
+        "must_not_include": [
+          "Ohaus is the user's scale"
+        ],
+        "harmful_extra": [
+          "Attributing the Ohaus scale to the user",
+          "Saying the user has two scales for candle-making"
+        ],
+        "harmless_extra": [
+          "Mentioning Derek by name",
+          "Mentioning the Ohaus price of $85"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the Ohaus scale is presented as the user's own equipment.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I use an Escali scale that goes up to 5 kg for portioning wax"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned two different scales in our conversations—one that I use and one that someone else bought. If I need to weigh a batch of wax for my candles, which scale details should I rely on, and does the other scale have anything to do with my candle-making workflow?",
+      "expected_answer": "You should rely on the Escali scale with a 5 kg capacity, which is the scale you use for portioning wax. The other scale—an Ohaus that Derek purchased for his homebrew shop—is not part of your candle-making workflow.",
+      "gold_memory_state": "User's scale: Escali, 5 kg capacity (confirmed, operation op6). Derek's scale: Ohaus, ~$85, mentioned in conversation but not a user operation target—belongs to Derek's homebrew business.",
+      "judge_rubric": {
+        "must_include": [
+          "Escali",
+          "5 kg"
+        ],
+        "acceptable_paraphrases": [
+          "Escali brand scale",
+          "5 kilogram capacity"
+        ],
+        "must_not_include": [
+          "Ohaus is the user's scale"
+        ],
+        "harmful_extra": [
+          "Attributing the Ohaus scale to the user",
+          "Saying the user has two scales for candle-making"
+        ],
+        "harmless_extra": [
+          "Mentioning Derek by name",
+          "Mentioning the Ohaus price of $85"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the Ohaus scale is presented as the user's own equipment.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I use an Escali scale that goes up to 5 kg for portioning wax"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Given that I use metric for all my recipes and I also have a specific scale for portioning wax, are my measurement system and my scale aligned for metric use?",
+      "expected_answer": "Yes, they are aligned. Your recipes are all in grams and milliliters, and your Escali scale measures up to 5 kg in metric units, so both your measurement system and your scale are set up for metric use.",
+      "gold_memory_state": "Measurement system: metric (grams and milliliters), confirmed. Scale: Escali, 5 kg capacity, confirmed. Both support metric workflow.",
+      "judge_rubric": {
+        "must_include": [
+          "metric",
+          "Escali",
+          "5 kg",
+          "grams"
+        ],
+        "acceptable_paraphrases": [
+          "grams and milliliters",
+          "kilograms"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "Saying the user still uses mixed units",
+          "Attributing the Ohaus scale to the user"
+        ],
+        "harmless_extra": [
+          "Noting the user spent a Saturday converting to metric"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the response says the user still uses ounces or mixed units.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user switched all recipes to metric (grams and milliliters).",
+        "Fact 2: The user's Escali scale has a 5 kg capacity, which is a metric unit.",
+        "Inference: Both the recipe measurement system and the weighing equipment are metric-based, so they are aligned."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I've switched everything to metric now, all my recipes are in grams and milliliters"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I use an Escali scale that goes up to 5 kg for portioning wax"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Given that I use metric for all my recipes and I also have a specific scale for portioning wax, are my measurement system and my scale aligned for metric use?",
+      "expected_answer": "Yes, they are aligned. Your recipes are all in grams and milliliters, and your Escali scale measures up to 5 kg in metric units, so both your measurement system and your scale are set up for metric use.",
+      "gold_memory_state": "Measurement system: metric (grams and milliliters), confirmed. Scale: Escali, 5 kg capacity, confirmed. Both support metric workflow.",
+      "judge_rubric": {
+        "must_include": [
+          "metric",
+          "Escali",
+          "5 kg",
+          "grams"
+        ],
+        "acceptable_paraphrases": [
+          "grams and milliliters",
+          "kilograms"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "Saying the user still uses mixed units",
+          "Attributing the Ohaus scale to the user"
+        ],
+        "harmless_extra": [
+          "Noting the user spent a Saturday converting to metric"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the response says the user still uses ounces or mixed units.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user switched all recipes to metric (grams and milliliters).",
+        "Fact 2: The user's Escali scale has a 5 kg capacity, which is a metric unit.",
+        "Inference: Both the recipe measurement system and the weighing equipment are metric-based, so they are aligned."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I've switched everything to metric now, all my recipes are in grams and milliliters"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I use an Escali scale that goes up to 5 kg for portioning wax"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "Which company supplies my candle business packaging materials like boxes and sleeves?",
+      "expected_answer": "GreenWrap Co., based in Portland",
+      "candidate_options": [
+        "GreenWrap Co., based in Portland",
+        "GreenBox Co., based in Portland",
+        "GreenWrap Co., based in Seattle",
+        "Ohaus Supplies, based in Portland"
+      ],
+      "distractor_rationale": "same-value-different-target: 'GreenBox Co., based in Portland' exploits the user's own admission of confusing GreenWrap with GreenBox. assistant echo: 'GreenWrap Co., based in Seattle' tests whether the location detail is recalled precisely. 'Ohaus Supplies, based in Portland' borrows the Ohaus brand from Derek's scale context, creating a cross-target distractor.",
+      "gold_memory_state": "Packaging supplier: GreenWrap Co., Portland (confirmed). GreenBox is a different company explicitly distinguished by the user.",
+      "judge_rubric": {
+        "must_include": [
+          "GreenWrap Co.",
+          "Portland"
+        ],
+        "acceptable_paraphrases": [
+          "GreenWrap Co. in Portland"
+        ],
+        "must_not_include": [
+          "GreenBox"
+        ],
+        "harmful_extra": [
+          "Selecting GreenBox as the supplier",
+          "Selecting Seattle as the location"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if GreenBox is selected, as the user explicitly corrected this confusion.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my packaging supplier is GreenWrap Co., based out of Portland"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "Which company supplies my candle business packaging materials like boxes and sleeves?",
+      "expected_answer": "GreenWrap Co., based in Portland",
+      "candidate_options": [
+        "GreenWrap Co., based in Portland",
+        "GreenBox Co., based in Portland",
+        "GreenWrap Co., based in Seattle",
+        "Ohaus Supplies, based in Portland"
+      ],
+      "distractor_rationale": "same-value-different-target: 'GreenBox Co., based in Portland' exploits the user's own admission of confusing GreenWrap with GreenBox. assistant echo: 'GreenWrap Co., based in Seattle' tests whether the location detail is recalled precisely. 'Ohaus Supplies, based in Portland' borrows the Ohaus brand from Derek's scale context, creating a cross-target distractor.",
+      "gold_memory_state": "Packaging supplier: GreenWrap Co., Portland (confirmed). GreenBox is a different company explicitly distinguished by the user.",
+      "judge_rubric": {
+        "must_include": [
+          "GreenWrap Co.",
+          "Portland"
+        ],
+        "acceptable_paraphrases": [
+          "GreenWrap Co. in Portland"
+        ],
+        "must_not_include": [
+          "GreenBox"
+        ],
+        "harmful_extra": [
+          "Selecting GreenBox as the supplier",
+          "Selecting Seattle as the location"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if GreenBox is selected, as the user explicitly corrected this confusion.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my packaging supplier is GreenWrap Co., based out of Portland"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to figure out how many total mason jars I'm getting and how much total wax volume that represents, expressed in milliliters. Can you calculate both for me?",
+      "expected_answer": "You are receiving 144 mason jars (12 cases × 12 jars per case). Each jar holds 16 fl oz, so the total wax volume is 2,304 fl oz. Converting to milliliters (1 fl oz ≈ 29.5735 mL), that is approximately 68,142 mL, or about 68.1 liters.",
+      "gold_memory_state": "Cases ordered: 12. Jars per case: 12. Volume per jar: 16 fl oz. Measurement system: metric (grams and milliliters).",
+      "judge_rubric": {
+        "must_include": [
+          "144 jars",
+          "2304 fl oz",
+          "approximately 68,000 mL or 68 liters"
+        ],
+        "acceptable_paraphrases": [
+          "68,142 mL",
+          "68.1 liters",
+          "68.14 liters",
+          "roughly 68 liters",
+          "about 68,140 mL"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "Using a wrong conversion factor",
+          "Stating 12 jars total instead of 144"
+        ],
+        "harmless_extra": [
+          "Mentioning the need for a safety margin",
+          "Noting fragrance oil displacement"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user ordered 12 cases of mason jars.",
+        "Fact 2: Each case holds 12 jars.",
+        "Fact 3: Each jar holds 16 fl oz of wax by volume.",
+        "Fact 4: The user's measurement system is metric (grams and milliliters).",
+        "Inference: Total jars = 12 cases × 12 jars/case = 144 jars.",
+        "Inference: Total volume in fl oz = 144 jars × 16 fl oz/jar = 2,304 fl oz.",
+        "Inference: Converting to mL: 2,304 fl oz × 29.5735 mL/fl oz ≈ 68,142 mL ≈ 68.1 liters."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I ordered 12 cases of mason jars from a new vendor"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "each case holds 12 jars"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "each jar holds 16 fl oz of wax by volume"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I've switched everything to metric now, all my recipes are in grams and milliliters"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to figure out how many total mason jars I'm getting and how much total wax volume that represents, expressed in milliliters. Can you calculate both for me?",
+      "expected_answer": "You are receiving 144 mason jars (12 cases × 12 jars per case). Each jar holds 16 fl oz, so the total wax volume is 2,304 fl oz. Converting to milliliters (1 fl oz ≈ 29.5735 mL), that is approximately 68,142 mL, or about 68.1 liters.",
+      "gold_memory_state": "Cases ordered: 12. Jars per case: 12. Volume per jar: 16 fl oz. Measurement system: metric (grams and milliliters).",
+      "judge_rubric": {
+        "must_include": [
+          "144 jars",
+          "2304 fl oz",
+          "approximately 68,000 mL or 68 liters"
+        ],
+        "acceptable_paraphrases": [
+          "68,142 mL",
+          "68.1 liters",
+          "68.14 liters",
+          "roughly 68 liters",
+          "about 68,140 mL"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "Using a wrong conversion factor",
+          "Stating 12 jars total instead of 144"
+        ],
+        "harmless_extra": [
+          "Mentioning the need for a safety margin",
+          "Noting fragrance oil displacement"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user ordered 12 cases of mason jars.",
+        "Fact 2: Each case holds 12 jars.",
+        "Fact 3: Each jar holds 16 fl oz of wax by volume.",
+        "Fact 4: The user's measurement system is metric (grams and milliliters).",
+        "Inference: Total jars = 12 cases × 12 jars/case = 144 jars.",
+        "Inference: Total volume in fl oz = 144 jars × 16 fl oz/jar = 2,304 fl oz.",
+        "Inference: Converting to mL: 2,304 fl oz × 29.5735 mL/fl oz ≈ 68,142 mL ≈ 68.1 liters."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I ordered 12 cases of mason jars from a new vendor"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "each case holds 12 jars"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "each jar holds 16 fl oz of wax by volume"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I've switched everything to metric now, all my recipes are in grams and milliliters"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What wax melting temperature do I use for my candle production?",
+      "expected_answer": "I don't have a wax melting temperature from you. You haven't provided that detail.",
+      "gold_memory_state": "No wax melting temperature was ever provided by the user. Neighboring candle-production facts exist (jar volume, measurement system, scale details, wax volume calculations) but no melting temperature was mentioned.",
+      "judge_rubric": {
+        "must_include": [
+          "no record of wax melting temperature",
+          "not provided"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have that information",
+          "You haven't shared a melting temperature",
+          "No wax melting temperature on file"
+        ],
+        "must_not_include": [
+          "any specific temperature value"
+        ],
+        "harmful_extra": [
+          "Inventing a melting temperature",
+          "Borrowing a temperature from general candle-making knowledge"
+        ],
+        "harmless_extra": [
+          "jar volume of 16 fl oz",
+          "Escali scale details",
+          "metric measurement system"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if any specific melting temperature is produced as if the user provided it.",
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model fabricates a temperature value from general knowledge and attributes it to the user.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "each jar holds 16 fl oz of wax by volume"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I've switched everything to metric now, all my recipes are in grams and milliliters"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I use an Escali scale that goes up to 5 kg for portioning wax"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What wax melting temperature do I use for my candle production?",
+      "expected_answer": "I don't have a wax melting temperature from you. You haven't provided that detail.",
+      "gold_memory_state": "No wax melting temperature was ever provided by the user. Neighboring candle-production facts exist (jar volume, measurement system, scale details, wax volume calculations) but no melting temperature was mentioned.",
+      "judge_rubric": {
+        "must_include": [
+          "no record of wax melting temperature",
+          "not provided"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have that information",
+          "You haven't shared a melting temperature",
+          "No wax melting temperature on file"
+        ],
+        "must_not_include": [
+          "any specific temperature value"
+        ],
+        "harmful_extra": [
+          "Inventing a melting temperature",
+          "Borrowing a temperature from general candle-making knowledge"
+        ],
+        "harmless_extra": [
+          "jar volume of 16 fl oz",
+          "Escali scale details",
+          "metric measurement system"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if any specific melting temperature is produced as if the user provided it.",
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model fabricates a temperature value from general knowledge and attributes it to the user.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "each jar holds 16 fl oz of wax by volume"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I've switched everything to metric now, all my recipes are in grams and milliliters"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I use an Escali scale that goes up to 5 kg for portioning wax"
+        }
+      ]
+    }
+  ]
+}

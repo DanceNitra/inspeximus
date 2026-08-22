@@ -1,0 +1,781 @@
+{
+  "target_fact": "C07 Travel accommodation hotel name",
+  "operation_type": "Update",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "kyoto_hotel_chain",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I booked the Sowaka Kyoto for my June trip. I reserved it on May 8th after browsing for a while."
+      },
+      "target": {
+        "target_id": "kyoto_hotel",
+        "target_name": "Kyoto trip hotel name"
+      },
+      "old_value": null,
+      "new_value": "Sowaka Kyoto",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I booked the Sowaka Kyoto for my June trip. I reserved it on May 8th after browsing for a while."
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "kyoto_hotel_chain",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 7,
+        "quote": "I actually switched my Kyoto booking from Sowaka to the Tawaraya Ryokan. Found availability yesterday and jumped on it immediately."
+      },
+      "target": {
+        "target_id": "kyoto_hotel",
+        "target_name": "Kyoto trip hotel name"
+      },
+      "old_value": "Sowaka Kyoto",
+      "new_value": "Tawaraya Ryokan",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I booked the Sowaka Kyoto for my June trip. I reserved it on May 8th after browsing for a while."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I actually switched my Kyoto booking from Sowaka to the Tawaraya Ryokan. Found availability yesterday and jumped on it immediately."
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "kyoto_hotel_chain",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "So I've changed my Kyoto hotel again. Tawaraya ended up being way over budget once I factored in meals. I rebooked at the Sowaka Kyoto since they still had my dates open."
+      },
+      "target": {
+        "target_id": "kyoto_hotel",
+        "target_name": "Kyoto trip hotel name"
+      },
+      "old_value": "Tawaraya Ryokan",
+      "new_value": "Sowaka Kyoto",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I actually switched my Kyoto booking from Sowaka to the Tawaraya Ryokan. Found availability yesterday and jumped on it immediately."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "So I've changed my Kyoto hotel again. Tawaraya ended up being way over budget once I factored in meals. I rebooked at the Sowaka Kyoto since they still had my dates open."
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "kyoto_hotel_chain",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "My travel agent just emailed saying the Hoshinoya Kyoto has a last-minute cancellation for my exact dates in June. She's holding it for me until tomorrow. I'll probably take it."
+      },
+      "target": {
+        "target_id": "kyoto_hotel",
+        "target_name": "Kyoto trip hotel name"
+      },
+      "old_value": "Sowaka Kyoto",
+      "new_value": "Hoshinoya Kyoto",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My travel agent just emailed saying the Hoshinoya Kyoto has a last-minute cancellation for my exact dates in June. She's holding it for me until tomorrow. I'll probably take it."
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "My Kyoto trip is June 20th to June 25th. Five nights total, which gives me plenty of time to explore the eastern temples."
+      },
+      "target": {
+        "target_id": "kyoto_trip_dates",
+        "target_name": "Kyoto trip dates"
+      },
+      "old_value": null,
+      "new_value": "June 20 to June 25",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My Kyoto trip is June 20th to June 25th. Five nights total, which gives me plenty of time to explore the eastern temples."
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Initial hotel booking and first update",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to talk about my upcoming Japan travel plans. I stayed at the Hotel & Ryokan Gagaku in Tokyo back in April and absolutely loved it. The tatami rooms and quiet atmosphere were perfect for me. Now I'm planning a follow-up trip to Kyoto in June and I've been researching accommodations that have a similar traditional feel to what I experienced at Gagaku."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a wonderful continuation of your Japan travels! The Hotel & Ryokan Gagaku does have a great reputation for that intimate, traditional atmosphere, so I can see why it left such a strong impression. For Kyoto, there are quite a few options that lean into that heritage aesthetic — renovated machiya townhouses, historic ryokans, and smaller boutique inns that emphasize craftsmanship and quietness over modern luxury. Do you already have a shortlist, or would you like me to help you brainstorm options that match the Gagaku vibe? Any specific neighborhood preferences in Kyoto?"
+        },
+        {
+          "role": "user",
+          "content": "I booked the Sowaka Kyoto for my June trip. I reserved it on May 8th after browsing for a while. It's a renovated machiya, which is exactly the kind of place I gravitate toward. I like staying somewhere with genuine architectural history rather than something built to look old. The Sowaka checked every box for me when I first found it online."
+        },
+        {
+          "role": "assistant",
+          "content": "Excellent choice! The Sowaka Kyoto is a beautiful property — it's in the Gion district, right near Yasaka Shrine, so you'll be surrounded by that traditional Kyoto atmosphere the moment you step outside. The machiya renovation they did is really thoughtful; they preserved the original wooden framework and interior courtyard while adding modern comforts. Since you mentioned liking the quiet, understated feel of Gagaku, I think Sowaka will deliver something similar but with that distinctly Kyoto character. The neighborhood is walkable to Kiyomizu-dera and the Higashiyama area too. Would you like help planning any day trips or restaurant reservations around your stay dates?"
+        },
+        {
+          "role": "user",
+          "content": "That's great to hear about the location. I also want to mention that my friend Lena stayed at the Park Hyatt Tokyo during the second week of April when she was there for work. She told me it was lovely but honestly those big international chain hotels just aren't my style. I prefer places where you feel the local character in every detail, from the sliding doors to the garden views. Lena and I have pretty different taste in accommodations."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes total sense — the Park Hyatt Tokyo is undeniably impressive in its own way, with those panoramic views and polished service, but it's definitely more of a global luxury brand experience than a culturally immersive one. Your preference for places like Gagaku and Sowaka tells me you value authenticity and intimacy over scale and prestige, which honestly tends to create more memorable travel experiences. The sliding doors, garden views, and craftsmanship you mentioned are hallmarks of traditional Japanese hospitality that chain hotels rarely replicate convincingly. It's nice that Lena enjoyed her stay though — different strokes for different folks. Are there any other aspects of your Kyoto trip you'd like to start organizing?"
+        },
+        {
+          "role": "user",
+          "content": "Before we move on to other planning, I need to update you on the hotel situation. I actually switched my Kyoto booking from Sowaka to the Tawaraya Ryokan. Found availability yesterday and jumped on it immediately. Tawaraya is one of the oldest ryokans in Kyoto, been operating for over three hundred years, and I've dreamed of staying there since I first read about it. It felt like a once-in-a-lifetime opportunity when I saw the opening."
+        },
+        {
+          "role": "assistant",
+          "content": "Wow, that is an incredible opportunity! The Tawaraya Ryokan is legendary — it's been welcoming guests since the early 1700s and is considered one of the finest traditional inns in all of Japan. The level of craftsmanship in every room is extraordinary, from the hand-painted fusuma panels to the individual garden views designed for each guest room. Guests often describe it as stepping into a living museum of Japanese aesthetics. I completely understand why you jumped on that availability; spots at Tawaraya are notoriously difficult to secure, especially during the summer months. This will be a remarkable upgrade in terms of historical depth and cultural immersion. Shall I update your trip notes to reflect the Tawaraya booking?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Trip dates established and revert to Sowaka",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Sure, let's keep organizing. My Kyoto trip is June 20th to June 25th. Five nights total, which gives me plenty of time to explore the eastern temples. I'm particularly interested in visiting Nanzen-ji and walking the Philosopher's Path. I also want to spend at least one full day in the Arashiyama bamboo grove area on the western side of the city. I've heard early morning is the best time to avoid crowds there."
+        },
+        {
+          "role": "assistant",
+          "content": "June 20th through 25th is a great window — you'll have five full days to explore, which is really ideal for Kyoto. For Nanzen-ji and the Philosopher's Path, I'd recommend dedicating a morning to that route since the walk between the two is beautiful and relatively shaded, which helps in June's warmth. Arashiyama is definitely best experienced at dawn, ideally arriving by 7 AM before the tour buses start rolling in. The bamboo grove has an almost ethereal quality in the early light with very few people around. You could combine that with Tenryu-ji temple and the monkey park nearby. With five nights at Tawaraya, you'll have a wonderful base in central Kyoto. Want me to draft a rough daily itinerary?"
+        },
+        {
+          "role": "user",
+          "content": "A rough itinerary would be helpful, yes. But first, I also want to mention I've been loosely researching accommodations in Takayama for a possible autumn trip. Nothing booked yet, just browsing. There's a small inn called Honjin Hiranoya Annex that caught my eye because of its wooden interiors and understated design. It looks like exactly my kind of place but I'm still in the early research phase and haven't committed to any dates or reservations yet."
+        },
+        {
+          "role": "assistant",
+          "content": "Takayama in autumn would be absolutely stunning — the fall foliage in the Japanese Alps is breathtaking, and the town itself has that preserved Edo-period merchant district feel that I think you'd really appreciate. The Honjin Hiranoya Annex is a wonderful find; it's known for its warm wooden interiors, excellent kaiseki cuisine, and that quiet, refined atmosphere you consistently gravitate toward. It's much smaller than most hotels, which means personalized service and a genuinely intimate experience. Since you're still in the browsing phase, there's no rush, but I'd suggest keeping an eye on availability for late October to mid-November when the colors peak. Would you like me to note that as a tentative interest while we focus on finalizing your Kyoto plans?"
+        },
+        {
+          "role": "user",
+          "content": "So I've changed my Kyoto hotel again. Tawaraya ended up being way over budget once I factored in meals. I rebooked at the Sowaka Kyoto since they still had my dates open. The room rate at Tawaraya with the mandatory kaiseki dinner plan was nearly triple what Sowaka charges, and I just couldn't justify that for five nights. Sowaka still gives me the machiya heritage experience I want at a price that makes sense for my overall trip budget."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a completely reasonable decision — the Tawaraya Ryokan is extraordinary but the mandatory meal plans do push the nightly rate into a very different bracket, especially over five nights from June 20th to 25th. The total difference could easily be several thousand dollars. The Sowaka Kyoto is still an excellent choice that delivers on the traditional aesthetic and historical character you value, and being in Gion means you'll have incredible dining options all around you at various price points. Plus, the money you save could fund experiences like a private tea ceremony, a cooking class, or even contribute toward that potential Takayama autumn trip. I think this is a smart call. Want me to update your booking notes back to Sowaka?"
+        },
+        {
+          "role": "user",
+          "content": "Yes please, update everything to reflect Sowaka as my confirmed Kyoto hotel. Also I want to add that I'm planning to take the Shinkansen from Tokyo to Kyoto on June 19th, arriving the evening before my hotel check-in on the 20th. I'll spend that first evening exploring Gion at night since I've heard the lantern-lit streets are magical after dark. I might grab dinner at a small izakaya near Pontocho Alley that first night before checking in properly the next morning."
+        },
+        {
+          "role": "assistant",
+          "content": "Perfect, I've noted Sowaka Kyoto as your confirmed hotel for the Kyoto trip, June 20th through 25th. Taking the Shinkansen on June 19th is a smart move — arriving the evening before gives you that lovely first impression of Gion at night without any check-in rush. The lantern-lit streets around Hanamikoji and the geisha district are genuinely magical after sunset, especially on quieter weekday evenings. Pontocho Alley is a fantastic spot for your first dinner; it's a narrow pedestrian lane right along the Kamogawa River with dozens of small restaurants and izakayas. Many have riverside seating called kawadoko during summer months. For the Shinkansen, I'd recommend booking a reserved seat on the Nozomi line — the ride from Tokyo Station takes about two hours and fifteen minutes. Shall I help plan anything else?"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Tentative new option and adversarial distractor",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I've been thinking more about the Kyoto trip logistics. Since I'll be arriving on the evening of June 19th via Shinkansen, I need to figure out luggage storage or forwarding. I've heard about the takkyubin luggage delivery services in Japan where you can send your bags ahead from the train station to the hotel. That way I can explore Gion freely without dragging a suitcase around those narrow streets. Do you know how that works?"
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely — takkyubin is one of Japan's most convenient travel services! Companies like Yamato Transport (known by the black cat logo, Kuroneko Yamato) and Sagawa Express operate counters at most major train stations including Kyoto Station. You can drop off your luggage when you arrive on June 19th and it will typically be delivered to the Sowaka Kyoto by the following morning, perfectly timed for your check-in on the 20th. The cost is very reasonable, usually around 2,000 to 2,500 yen per bag depending on size. You'll fill out a simple form with the hotel name and address, and the staff at the counter are accustomed to helping tourists. This frees you up completely for your evening Gion exploration and Pontocho dinner. Some hotels even have a partnership with specific carriers for seamless delivery."
+        },
+        {
+          "role": "user",
+          "content": "That's exactly what I needed to know, thank you. On a separate note, my colleague Dan was telling me about his December trip to Osaka last year. He stayed at the Ritz-Carlton Osaka and absolutely raved about the service and the views. He kept saying I should try it if I ever visit Osaka. I appreciate his enthusiasm but honestly that ultra-polished international luxury chain vibe just doesn't resonate with me at all. I'd rather find something with local character, like a converted merchant house or a neighborhood ryokan."
+        },
+        {
+          "role": "assistant",
+          "content": "I completely understand — Dan's recommendation of the Ritz-Carlton Osaka makes sense for someone who enjoys that level of polished international luxury, but based on everything you've shared about your preferences, it really wouldn't be the right fit for you. You consistently gravitate toward places with genuine architectural heritage and intimate atmospheres, like the Gagaku in Tokyo, the Sowaka in Kyoto, and the Honjin Hiranoya Annex you're researching in Takayama. If you ever do visit Osaka, there are some wonderful options that match your style — converted machiya guesthouses in the Shinsekai or Tenma neighborhoods, or small ryokans near the historic Sumiyoshi Taisha shrine area. Those would give you the local character and understated design you appreciate without the corporate feel."
+        },
+        {
+          "role": "user",
+          "content": "My travel agent just emailed saying the Hoshinoya Kyoto has a last-minute cancellation for my exact dates in June. She's holding it for me until tomorrow. I'll probably take it. The Hoshinoya is that riverside property you can only reach by boat, which sounds incredibly atmospheric. It would be a significant splurge compared to Sowaka but the exclusivity and setting are really tempting."
+        },
+        {
+          "role": "assistant",
+          "content": "Oh wow, the Hoshinoya Kyoto is a truly special property — the boat-only access along the Oi River in Arashiyama creates an incredibly dramatic arrival experience. The architecture blends traditional Japanese villa design with the natural landscape in a way that few other places achieve. Each room overlooks the river gorge and the surrounding forested hillside, and the seasonal kaiseki dining program there is outstanding. It would definitely be a splurge compared to Sowaka, but the setting is genuinely one of a kind. Since your agent is holding it until tomorrow, you have a bit of time to weigh the budget implications. It's worth noting that Hoshinoya's location in Arashiyama means you'd be further from central Gion, so your evening exploration plans might shift a bit. Take your time deciding — both options are excellent in different ways."
+        },
+        {
+          "role": "user",
+          "content": "Right, I need to think about it overnight. Changing subjects — I realized I never told you about the Takayama trip timing. I'm tentatively looking at the last week of October, maybe October 25th through the 29th or so. That should line up well with peak autumn colors in the Japanese Alps. The Honjin Hiranoya Annex is still my top pick there but I haven't contacted them about availability yet. I want to finalize the Kyoto situation before I start making more commitments."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a very sensible approach — getting Kyoto squared away first before layering on another booking makes the planning much more manageable. Late October is an excellent window for Takayama; the fall foliage in the Hida region typically peaks right around that last week of October into early November, so October 25th through 29th should be beautifully timed. The Honjin Hiranoya Annex is a popular choice during peak autumn season, so once you've made your Kyoto decision I'd recommend reaching out to them fairly promptly. They're a small property with limited rooms, and autumn bookings in Takayama fill up quickly, sometimes months in advance. For now I'll keep the Sowaka Kyoto noted as your confirmed Kyoto hotel and the Hoshinoya as a pending possibility you're evaluating overnight. Just let me know what you decide tomorrow and we can adjust everything accordingly."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations about my Kyoto trip, I mentioned several things about where I'd be staying. Can you summarize the key moments where I told you about my accommodation plans and what I said each time?",
+      "expected_answer": "You first said you booked the Sowaka Kyoto for your June trip, reserved on May 8th. Then you said you switched your booking to the Tawaraya Ryokan after finding availability. Later, you said Tawaraya was too expensive once meals were factored in, so you rebooked at the Sowaka Kyoto since your dates were still open. Most recently, you mentioned your travel agent was holding the Hoshinoya Kyoto for your exact June dates due to a last-minute cancellation, and you said you'd probably take it but needed to think about it overnight.",
+      "gold_memory_state": "Kyoto hotel: Sowaka Kyoto (confirmed, after reverting from Tawaraya Ryokan). Hoshinoya Kyoto is tentative/pending decision. Kyoto trip dates: June 20–25 (confirmed).",
+      "judge_rubric": {
+        "must_include": [
+          "Sowaka Kyoto as first booking",
+          "Tawaraya Ryokan as second booking",
+          "return to Sowaka Kyoto as third booking",
+          "Hoshinoya Kyoto as a pending possibility"
+        ],
+        "acceptable_paraphrases": [
+          "switched back to Sowaka",
+          "reverted to Sowaka",
+          "rebooked Sowaka"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating Hoshinoya Kyoto is the confirmed current hotel"
+        ],
+        "harmless_extra": [
+          "mentioning the May 8th reservation date",
+          "mentioning budget reasons for leaving Tawaraya",
+          "mentioning the travel agent holding Hoshinoya"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats Tawaraya Ryokan or Hoshinoya Kyoto as the confirmed current hotel.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I booked the Sowaka Kyoto for my June trip. I reserved it on May 8th after browsing for a while."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I actually switched my Kyoto booking from Sowaka to the Tawaraya Ryokan. Found availability yesterday and jumped on it immediately."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "So I've changed my Kyoto hotel again. Tawaraya ended up being way over budget once I factored in meals. I rebooked at the Sowaka Kyoto since they still had my dates open."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My travel agent just emailed saying the Hoshinoya Kyoto has a last-minute cancellation for my exact dates in June. She's holding it for me until tomorrow. I'll probably take it."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations about my Kyoto trip, I mentioned several things about where I'd be staying. Can you summarize the key moments where I told you about my accommodation plans and what I said each time?",
+      "expected_answer": "You first said you booked the Sowaka Kyoto for your June trip, reserved on May 8th. Then you said you switched your booking to the Tawaraya Ryokan after finding availability. Later, you said Tawaraya was too expensive once meals were factored in, so you rebooked at the Sowaka Kyoto since your dates were still open. Most recently, you mentioned your travel agent was holding the Hoshinoya Kyoto for your exact June dates due to a last-minute cancellation, and you said you'd probably take it but needed to think about it overnight.",
+      "gold_memory_state": "Kyoto hotel: Sowaka Kyoto (confirmed, after reverting from Tawaraya Ryokan). Hoshinoya Kyoto is tentative/pending decision. Kyoto trip dates: June 20–25 (confirmed).",
+      "judge_rubric": {
+        "must_include": [
+          "Sowaka Kyoto as first booking",
+          "Tawaraya Ryokan as second booking",
+          "return to Sowaka Kyoto as third booking",
+          "Hoshinoya Kyoto as a pending possibility"
+        ],
+        "acceptable_paraphrases": [
+          "switched back to Sowaka",
+          "reverted to Sowaka",
+          "rebooked Sowaka"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating Hoshinoya Kyoto is the confirmed current hotel"
+        ],
+        "harmless_extra": [
+          "mentioning the May 8th reservation date",
+          "mentioning budget reasons for leaving Tawaraya",
+          "mentioning the travel agent holding Hoshinoya"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats Tawaraya Ryokan or Hoshinoya Kyoto as the confirmed current hotel.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I booked the Sowaka Kyoto for my June trip. I reserved it on May 8th after browsing for a while."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I actually switched my Kyoto booking from Sowaka to the Tawaraya Ryokan. Found availability yesterday and jumped on it immediately."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "So I've changed my Kyoto hotel again. Tawaraya ended up being way over budget once I factored in meals. I rebooked at the Sowaka Kyoto since they still had my dates open."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My travel agent just emailed saying the Hoshinoya Kyoto has a last-minute cancellation for my exact dates in June. She's holding it for me until tomorrow. I'll probably take it."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've mentioned a few different accommodations across different trips — Kyoto, Tokyo, and a possible Takayama visit. When I talked about rebooking due to budget concerns, which trip's accommodation was affected? Does the Takayama lodging I'm researching have anything to do with that rebooking?",
+      "expected_answer": "The rebooking due to budget concerns affected your Kyoto trip accommodation. The Takayama lodging research (Honjin Hiranoya Annex) is entirely separate and was not affected by the Kyoto hotel changes.",
+      "gold_memory_state": "Kyoto hotel: Sowaka Kyoto (confirmed). Takayama accommodation: Honjin Hiranoya Annex (research/browsing only, no booking). Tokyo past stay: Hotel & Ryokan Gagaku (historical, not an active booking).",
+      "judge_rubric": {
+        "must_include": [
+          "Kyoto trip accommodation was affected by the rebooking"
+        ],
+        "acceptable_paraphrases": [
+          "the Kyoto hotel booking",
+          "the June trip hotel"
+        ],
+        "must_not_include": [
+          "Takayama booking was affected",
+          "Tokyo hotel was affected"
+        ],
+        "harmful_extra": [
+          "saying the Takayama research was part of the same rebooking decision",
+          "conflating the Gagaku Tokyo stay with the Kyoto booking chain"
+        ],
+        "harmless_extra": [
+          "mentioning Sowaka Kyoto by name",
+          "mentioning Tawaraya Ryokan as the over-budget option"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "So I've changed my Kyoto hotel again. Tawaraya ended up being way over budget once I factored in meals. I rebooked at the Sowaka Kyoto since they still had my dates open."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "There's a small inn called Honjin Hiranoya Annex that caught my eye because of its wooden interiors and understated design. It looks like exactly my kind of place but I'm still in the early research phase and haven't committed to any dates or reservations yet."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've mentioned a few different accommodations across different trips — Kyoto, Tokyo, and a possible Takayama visit. When I talked about rebooking due to budget concerns, which trip's accommodation was affected? Does the Takayama lodging I'm researching have anything to do with that rebooking?",
+      "expected_answer": "The rebooking due to budget concerns affected your Kyoto trip accommodation. The Takayama lodging research (Honjin Hiranoya Annex) is entirely separate and was not affected by the Kyoto hotel changes.",
+      "gold_memory_state": "Kyoto hotel: Sowaka Kyoto (confirmed). Takayama accommodation: Honjin Hiranoya Annex (research/browsing only, no booking). Tokyo past stay: Hotel & Ryokan Gagaku (historical, not an active booking).",
+      "judge_rubric": {
+        "must_include": [
+          "Kyoto trip accommodation was affected by the rebooking"
+        ],
+        "acceptable_paraphrases": [
+          "the Kyoto hotel booking",
+          "the June trip hotel"
+        ],
+        "must_not_include": [
+          "Takayama booking was affected",
+          "Tokyo hotel was affected"
+        ],
+        "harmful_extra": [
+          "saying the Takayama research was part of the same rebooking decision",
+          "conflating the Gagaku Tokyo stay with the Kyoto booking chain"
+        ],
+        "harmless_extra": [
+          "mentioning Sowaka Kyoto by name",
+          "mentioning Tawaraya Ryokan as the over-budget option"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "So I've changed my Kyoto hotel again. Tawaraya ended up being way over budget once I factored in meals. I rebooked at the Sowaka Kyoto since they still had my dates open."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "There's a small inn called Honjin Hiranoya Annex that caught my eye because of its wooden interiors and understated design. It looks like exactly my kind of place but I'm still in the early research phase and haven't committed to any dates or reservations yet."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to send my Kyoto hotel name to a friend so she can book a nearby room. Which of the following should I give her as the place I'm actually booked at right now?",
+      "candidate_options": [
+        "Sowaka Kyoto",
+        "Tawaraya Ryokan",
+        "Hoshinoya Kyoto",
+        "Hotel & Ryokan Gagaku"
+      ],
+      "expected_answer": "Sowaka Kyoto",
+      "gold_memory_state": "Kyoto hotel: Sowaka Kyoto (confirmed after op3). Tawaraya Ryokan is a past booking that was cancelled due to budget. Hoshinoya Kyoto is tentative/pending — not yet accepted. Hotel & Ryokan Gagaku was a past Tokyo stay, not a Kyoto booking.",
+      "judge_rubric": {
+        "must_include": [
+          "Sowaka Kyoto"
+        ],
+        "acceptable_paraphrases": [
+          "Sowaka"
+        ],
+        "must_not_include": [
+          "Tawaraya Ryokan as current",
+          "Hoshinoya Kyoto as current",
+          "Hotel & Ryokan Gagaku as current"
+        ],
+        "harmful_extra": [
+          "selecting Hoshinoya Kyoto because it was mentioned most recently",
+          "selecting Tawaraya Ryokan because it was a prestigious option"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: Hotel & Ryokan Gagaku is a different-city accommodation (Tokyo) that shares the traditional ryokan/machiya theme but is not a Kyoto booking. assistant echo: Hoshinoya Kyoto was discussed by both user and assistant as a possibility but was never confirmed — it is a recency-trap tentative value. Tawaraya Ryokan is a stale value from an earlier confirmed-then-replaced booking.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects Tawaraya Ryokan (stale) or Hoshinoya Kyoto (tentative/unconfirmed). These are the primary recency and staleness traps.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "So I've changed my Kyoto hotel again. Tawaraya ended up being way over budget once I factored in meals. I rebooked at the Sowaka Kyoto since they still had my dates open."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My travel agent just emailed saying the Hoshinoya Kyoto has a last-minute cancellation for my exact dates in June. She's holding it for me until tomorrow. I'll probably take it."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to send my Kyoto hotel name to a friend so she can book a nearby room. Which of the following should I give her as the place I'm actually booked at right now?",
+      "candidate_options": [
+        "Sowaka Kyoto",
+        "Tawaraya Ryokan",
+        "Hoshinoya Kyoto",
+        "Hotel & Ryokan Gagaku"
+      ],
+      "expected_answer": "Sowaka Kyoto",
+      "gold_memory_state": "Kyoto hotel: Sowaka Kyoto (confirmed after op3). Tawaraya Ryokan is a past booking that was cancelled due to budget. Hoshinoya Kyoto is tentative/pending — not yet accepted. Hotel & Ryokan Gagaku was a past Tokyo stay, not a Kyoto booking.",
+      "judge_rubric": {
+        "must_include": [
+          "Sowaka Kyoto"
+        ],
+        "acceptable_paraphrases": [
+          "Sowaka"
+        ],
+        "must_not_include": [
+          "Tawaraya Ryokan as current",
+          "Hoshinoya Kyoto as current",
+          "Hotel & Ryokan Gagaku as current"
+        ],
+        "harmful_extra": [
+          "selecting Hoshinoya Kyoto because it was mentioned most recently",
+          "selecting Tawaraya Ryokan because it was a prestigious option"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: Hotel & Ryokan Gagaku is a different-city accommodation (Tokyo) that shares the traditional ryokan/machiya theme but is not a Kyoto booking. assistant echo: Hoshinoya Kyoto was discussed by both user and assistant as a possibility but was never confirmed — it is a recency-trap tentative value. Tawaraya Ryokan is a stale value from an earlier confirmed-then-replaced booking.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects Tawaraya Ryokan (stale) or Hoshinoya Kyoto (tentative/unconfirmed). These are the primary recency and staleness traps.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "So I've changed my Kyoto hotel again. Tawaraya ended up being way over budget once I factored in meals. I rebooked at the Sowaka Kyoto since they still had my dates open."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My travel agent just emailed saying the Hoshinoya Kyoto has a last-minute cancellation for my exact dates in June. She's holding it for me until tomorrow. I'll probably take it."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I want to use the takkyubin luggage forwarding service when I arrive at Kyoto Station on the evening of June 19th. Can you draft the delivery label details I should write on the form — specifically the destination hotel name, the guest name delivery date, and how many nights I'll be staying? Explain how you arrived at the number of nights.",
+      "expected_answer": "Destination hotel: Sowaka Kyoto. Delivery date: June 20th (your check-in day, the morning after your June 19th Shinkansen arrival). Length of stay: 5 nights (June 20 through June 25). The number of nights is calculated from your check-in date of June 20th to your checkout date of June 25th, which spans five nights.",
+      "gold_memory_state": "Kyoto hotel: Sowaka Kyoto (confirmed). Trip dates: June 20–25 (confirmed, 5 nights). Shinkansen arrival: evening of June 19th. Hoshinoya Kyoto is tentative and not adopted.",
+      "judge_rubric": {
+        "must_include": [
+          "Sowaka Kyoto",
+          "June 20",
+          "5 nights"
+        ],
+        "acceptable_paraphrases": [
+          "five nights",
+          "June 20th through June 25th"
+        ],
+        "must_not_include": [
+          "Hoshinoya Kyoto",
+          "Tawaraya Ryokan"
+        ],
+        "harmful_extra": [
+          "using Hoshinoya Kyoto as the destination",
+          "using Tawaraya Ryokan as the destination",
+          "saying 6 nights"
+        ],
+        "harmless_extra": [
+          "mentioning the Gion district location",
+          "mentioning the Kuroneko Yamato service"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model writes Tawaraya Ryokan or Hoshinoya Kyoto on the label instead of Sowaka Kyoto.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's confirmed Kyoto hotel is Sowaka Kyoto (after reverting from Tawaraya Ryokan due to budget).",
+        "Fact 2: The user's Kyoto trip dates are June 20 to June 25.",
+        "Fact 3: The user arrives at Kyoto Station via Shinkansen on the evening of June 19th.",
+        "Inference: The takkyubin delivery should be addressed to Sowaka Kyoto for delivery on June 20th, the check-in date.",
+        "Inference: June 20 to June 25 = 5 nights (20th, 21st, 22nd, 23rd, 24th)."
+      ],
+      "application_probe_type": "multi_hop_derivation",
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "So I've changed my Kyoto hotel again. Tawaraya ended up being way over budget once I factored in meals. I rebooked at the Sowaka Kyoto since they still had my dates open."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My Kyoto trip is June 20th to June 25th. Five nights total, which gives me plenty of time to explore the eastern temples."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Also I want to add that I'm planning to take the Shinkansen from Tokyo to Kyoto on June 19th, arriving the evening before my hotel check-in on the 20th."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I want to use the takkyubin luggage forwarding service when I arrive at Kyoto Station on the evening of June 19th. Can you draft the delivery label details I should write on the form — specifically the destination hotel name, the guest name delivery date, and how many nights I'll be staying? Explain how you arrived at the number of nights.",
+      "expected_answer": "Destination hotel: Sowaka Kyoto. Delivery date: June 20th (your check-in day, the morning after your June 19th Shinkansen arrival). Length of stay: 5 nights (June 20 through June 25). The number of nights is calculated from your check-in date of June 20th to your checkout date of June 25th, which spans five nights.",
+      "gold_memory_state": "Kyoto hotel: Sowaka Kyoto (confirmed). Trip dates: June 20–25 (confirmed, 5 nights). Shinkansen arrival: evening of June 19th. Hoshinoya Kyoto is tentative and not adopted.",
+      "judge_rubric": {
+        "must_include": [
+          "Sowaka Kyoto",
+          "June 20",
+          "5 nights"
+        ],
+        "acceptable_paraphrases": [
+          "five nights",
+          "June 20th through June 25th"
+        ],
+        "must_not_include": [
+          "Hoshinoya Kyoto",
+          "Tawaraya Ryokan"
+        ],
+        "harmful_extra": [
+          "using Hoshinoya Kyoto as the destination",
+          "using Tawaraya Ryokan as the destination",
+          "saying 6 nights"
+        ],
+        "harmless_extra": [
+          "mentioning the Gion district location",
+          "mentioning the Kuroneko Yamato service"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model writes Tawaraya Ryokan or Hoshinoya Kyoto on the label instead of Sowaka Kyoto.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's confirmed Kyoto hotel is Sowaka Kyoto (after reverting from Tawaraya Ryokan due to budget).",
+        "Fact 2: The user's Kyoto trip dates are June 20 to June 25.",
+        "Fact 3: The user arrives at Kyoto Station via Shinkansen on the evening of June 19th.",
+        "Inference: The takkyubin delivery should be addressed to Sowaka Kyoto for delivery on June 20th, the check-in date.",
+        "Inference: June 20 to June 25 = 5 nights (20th, 21st, 22nd, 23rd, 24th)."
+      ],
+      "application_probe_type": "multi_hop_derivation",
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "So I've changed my Kyoto hotel again. Tawaraya ended up being way over budget once I factored in meals. I rebooked at the Sowaka Kyoto since they still had my dates open."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My Kyoto trip is June 20th to June 25th. Five nights total, which gives me plenty of time to explore the eastern temples."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Also I want to add that I'm planning to take the Shinkansen from Tokyo to Kyoto on June 19th, arriving the evening before my hotel check-in on the 20th."
+        }
+      ]
+    }
+  ]
+}

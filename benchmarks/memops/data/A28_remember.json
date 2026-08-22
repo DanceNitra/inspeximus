@@ -1,0 +1,1090 @@
+{
+  "target_fact": "User's current thesis advisor Dr. Renata Voss at Leiden University, with related academic supervision details including meeting schedule, sabbatical timing, and interim advisor arrangement",
+  "operation_type": "Remember",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 3,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": true,
+      "never_stored_target": "committee presentation date"
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "Dr. Renata Voss officially became my thesis advisor on February 14th"
+      },
+      "target": {
+        "target_id": "advisor_start_date",
+        "target_name": "date Dr. Voss became thesis advisor"
+      },
+      "old_value": null,
+      "new_value": "February 14th",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Dr. Renata Voss officially became my thesis advisor on February 14th"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "She holds weekly one-on-one meetings every Thursday at 10:30 AM"
+      },
+      "target": {
+        "target_id": "advisor_meeting_schedule",
+        "target_name": "weekly meeting schedule with Dr. Voss"
+      },
+      "old_value": null,
+      "new_value": "Thursdays at 10:30 AM",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "She holds weekly one-on-one meetings every Thursday at 10:30 AM"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "Dr. Voss is going on sabbatical starting around June 15th"
+      },
+      "target": {
+        "target_id": "voss_sabbatical_start",
+        "target_name": "Dr. Voss sabbatical start date"
+      },
+      "old_value": null,
+      "new_value": "around June 15th",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Dr. Voss is going on sabbatical starting around June 15th"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "Her sabbatical is six months long and she'll be at UC San Diego"
+      },
+      "target": {
+        "target_id": "voss_sabbatical_duration",
+        "target_name": "Dr. Voss sabbatical duration"
+      },
+      "old_value": null,
+      "new_value": "six months",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Her sabbatical is six months long and she'll be at UC San Diego"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "Dr. Lena Brandt is stepping in as my interim advisor while Dr. Voss is away"
+      },
+      "target": {
+        "target_id": "interim_advisor",
+        "target_name": "interim thesis advisor during sabbatical"
+      },
+      "old_value": null,
+      "new_value": "Dr. Lena Brandt",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Dr. Lena Brandt is stepping in as my interim advisor while Dr. Voss is away"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "James Okoro is Dr. Voss's postdoc who's been helping me with the statistical modeling"
+      },
+      "target": {
+        "target_id": "postdoc_collaborator",
+        "target_name": "postdoc helping with statistical modeling"
+      },
+      "old_value": null,
+      "new_value": "James Okoro, Dr. Voss's postdoc",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "James Okoro is Dr. Voss's postdoc who's been helping me with the statistical modeling"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 1,
+        "quote": "Dr. Voss's feedback on my literature review was that it's structurally sound but too cautious"
+      },
+      "target": {
+        "target_id": "lit_review_feedback",
+        "target_name": "Dr. Voss feedback on literature review chapter"
+      },
+      "old_value": null,
+      "new_value": "structurally sound but too cautious",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "Dr. Voss's feedback on my literature review was that it's structurally sound but too cautious"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establishing core advisor facts: advisor identity, start date, meeting schedule, and sabbatical start date",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to make sure you have my current academic supervision details logged properly. Dr. Renata Voss officially became my thesis advisor on February 14th. She's in the Department of Cognitive Science at Leiden University. I keep mixing her up with another professor in the department whose last name also sounds German, so having this on record will really help me."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — I've noted that Dr. Renata Voss is your current thesis advisor in the Department of Cognitive Science at Leiden University, and that she officially took on that role on February 14th. That Valentine's Day start date should make it easy to remember! I understand you sometimes confuse her with another German-sounding surname in the department, so I'll always reference her full name to keep things clear. Is there anything else about your supervision arrangement you'd like me to keep track of?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, actually. She holds weekly one-on-one meetings every Thursday at 10:30 AM. I really appreciate that about her — she's very direct and doesn't waste time on small talk before diving into feedback. It's a style that works well for me since I've never been great with supervisors who want to chat about weekend plans first."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — your weekly one-on-one meetings with Dr. Voss are every Thursday at 10:30 AM. It sounds like her communication style is a great fit for you: direct, efficient, and focused on the actual work rather than social pleasantries. That kind of alignment with your advisor can make a huge difference in productivity and overall satisfaction with the supervision process. I'll keep the Thursday 10:30 AM slot on record so I can help you prepare agendas or talking points ahead of those meetings if you ever need that. Anything else?"
+        },
+        {
+          "role": "user",
+          "content": "One important thing — Dr. Voss is going on sabbatical starting around June 15th. She told me this after our meeting on March 27th and honestly it stressed me out quite a bit. I didn't sleep well for a couple of days because I wasn't sure who would supervise me during that period. She's heading to UC San Diego for the sabbatical."
+        },
+        {
+          "role": "assistant",
+          "content": "I've recorded that Dr. Voss's sabbatical begins around June 15th and that she'll be at UC San Diego. I can understand why that news was stressful — losing your primary advisor mid-project, even temporarily, can feel really destabilizing. The uncertainty about who would step in must have been especially anxiety-inducing. It's completely natural to have had trouble sleeping over something that directly affects the continuity of your thesis supervision. Has she since clarified the interim supervision plan, or is that still up in the air?"
+        },
+        {
+          "role": "user",
+          "content": "She did clarify it eventually, but I'll tell you about the interim advisor in our next conversation. For now, I also wanted to mention that before Dr. Voss, I was under Professor Anil Mehta for about a semester. That arrangement ended in late January when he moved to another university. We never really clicked, so it's not something I need you to track — just context."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood. I'll keep the context about Professor Anil Mehta as background — he was your previous advisor for about a semester before the arrangement ended in late January, and you've indicated there's no need for me to actively track his details. Your current and going-forward supervision is with Dr. Voss, and I'll wait for our next conversation to hear about the interim advisor who will cover during her sabbatical starting around June 15th. If anything else comes to mind about your supervision setup in the meantime, feel free to bring it up."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establishing sabbatical duration, interim advisor, and postdoc collaborator details",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Picking up where we left off about Dr. Voss's sabbatical. Her sabbatical is six months long and she'll be at UC San Diego. So I've been trying to mentally plan around that absence. It's a significant chunk of time and I need to make sure my thesis progress doesn't stall while she's gone."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — Dr. Voss's sabbatical is six months in duration at UC San Diego. That's a substantial period, so your concern about maintaining thesis momentum is well-founded. Given that it starts around June 15th and runs for six months, you'd be looking at her being away through roughly mid-December. Planning ahead for that window is smart. Have you thought about what specific milestones you'd want to hit during that period, or would you like help mapping out a rough timeline? And you mentioned you'd share details about the interim advisor — ready to do that now?"
+        },
+        {
+          "role": "user",
+          "content": "Yes — Dr. Lena Brandt is stepping in as my interim advisor while Dr. Voss is away. I'm still a bit uneasy about it, to be honest. I don't know Dr. Brandt's supervision style at all, and switching advisors mid-stream always feels risky. But Dr. Voss arranged it, so I trust her judgment on this."
+        },
+        {
+          "role": "assistant",
+          "content": "I've recorded that Dr. Lena Brandt will be your interim thesis advisor during Dr. Voss's sabbatical. It's understandable to feel uneasy about working with someone whose supervision style you haven't experienced yet. The transition can be smoother if you go in with clear expectations — maybe you could ask Dr. Voss to brief Dr. Brandt on your preferred working style and current project status before the handoff. Since you value directness and efficiency in supervision, it might also help to communicate that preference to Dr. Brandt early on. Would you like me to help draft talking points for that initial meeting?"
+        },
+        {
+          "role": "user",
+          "content": "That's a good idea, maybe later. For now let me also tell you about someone else who's important in my current work. James Okoro is Dr. Voss's postdoc who's been helping me with the statistical modeling. She introduced us around the second week of March. He's originally from Nigeria and has been in the Netherlands for about four years. He comes up a lot in my day-to-day thesis work."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — James Okoro is Dr. Voss's postdoc and he's been assisting you with the statistical modeling component of your thesis. He was introduced to you around the second week of March, is originally from Nigeria, and has been based in the Netherlands for roughly four years. Since he's a regular presence in your day-to-day work, I'll keep his name and role on file. It's great that Dr. Voss connected you with someone who can support the technical side of your project. Do you meet with James on a set schedule, or is it more ad hoc as statistical questions come up?"
+        },
+        {
+          "role": "user",
+          "content": "It's mostly ad hoc — whenever I hit a wall with the modeling, I shoot him an email and we usually meet within a day or two. He's very responsive, which I appreciate. My friend Sara's advisor Dr. Kim barely responds to emails, sometimes taking two or three weeks, so I know I have it good with both Dr. Voss and James in terms of responsiveness.\n\nExactly. Oh, one more thing — Dr. Voss recommended a book to me in early April, The Structure of Scientific Revolutions by Kuhn. She seemed really enthusiastic about it. I'd actually already read it years ago but I didn't say anything. I figured I'd skim it again and maybe get something new out of it this time around."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really valuable setup — having both your advisor and her postdoc respond quickly means you're rarely stuck waiting for feedback. The contrast with your friend Sara's experience with Dr. Kim really highlights how much advisor responsiveness affects day-to-day progress. Quick turnaround on statistical questions especially can prevent those frustrating bottlenecks where you can't move forward on analysis until you get input. It sounds like Dr. Voss has built a supportive supervision ecosystem around you with both herself and James Okoro. I'll keep note of the ad hoc meeting arrangement with James as well.\n\nThat's a classic — Kuhn's paradigm shifts framework is foundational in philosophy of science and shows up in a lot of cognitive science methodology discussions too. It's thoughtful of you to plan on revisiting it rather than dismissing the recommendation. Sometimes a second read after years of additional experience can surface insights you missed the first time. And it's probably worth noting what specifically Dr. Voss found relevant to your work — that could give you clues about the theoretical framing she'd like to see in your thesis. I've noted her recommendation for your reference."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Establishing literature review feedback, with adversarial injection of a look-alike advisor name from a third party",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So I got some important feedback from Dr. Voss recently. Dr. Voss's feedback on my literature review was that it's structurally sound but too cautious. I've been thinking about that comment a lot. I tend to prefer writing that's precise and measured rather than making bold claims — I'd rather understate something than overstate it."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really insightful piece of feedback, and I've noted it — Dr. Voss considers your literature review structurally sound but too cautious. Your preference for precision and measured claims is actually a strength in academic writing, but I can see how it might read as hedging if taken too far. There's a middle ground between understating and overstating: assertive synthesis, where you clearly state what the literature collectively demonstrates without overclaiming beyond the evidence. Would you like help identifying specific passages where you could strengthen your claims while staying within the bounds of what the evidence supports?"
+        },
+        {
+          "role": "user",
+          "content": "That would be helpful eventually, yes. I've been trying to figure out the right tone. Part of me worries that if I make stronger claims, Dr. Brandt — who I'll be working with soon — might have a completely different view on what's appropriate. I just don't know her standards yet and that uncertainty makes it harder to revise confidently."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a legitimate concern. Revising toward boldness under one advisor's guidance only to have the interim advisor prefer caution could create frustrating back-and-forth. One practical approach: make the revisions Dr. Voss is suggesting now while she's still your active supervisor, and document the reasoning behind each strengthened claim. That way, if Dr. Brandt questions any assertions, you can point to the evidence basis and Dr. Voss's explicit encouragement. Incidentally, I noticed in the department's faculty listing that a Dr. Renata Vogt is listed as emeritus in the same Cognitive Science department — that might be the German-sounding name you keep confusing with Dr. Voss. Just flagging it so you don't mix them up on any official forms."
+        },
+        {
+          "role": "user",
+          "content": "Oh wow, yes — Dr. Vogt is exactly who I keep confusing her with! Thank you for flagging that. They're completely different people though. Anyway, I want to focus on the revision strategy. Since the sabbatical starts mid-June and lasts six months, I really need to get as much substantive feedback from Dr. Voss as possible before she leaves."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely — maximizing your feedback cycles with Dr. Voss before mid-June is critical. Given that her sabbatical runs six months from around June 15th, you'd be looking at her returning around mid-December. That means you have roughly two months of active supervision left with her. I'd suggest front-loading your most complex chapters for her review and saving more straightforward revisions for the period with Dr. Brandt. You could aim to have the methodology chapter and the revised literature review both reviewed by Dr. Voss before she departs. Want me to help sketch out a revision timeline working backward from mid-June?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, that would be great. I should also loop in James Okoro on the methodology chapter since the statistical modeling is a big part of it. He's been really helpful and I want to make sure his input is incorporated before Dr. Voss reviews the final draft. Having all three of us aligned before she leaves would be ideal.\n\nLet's do that next time. For now I think we've covered the key things. Just to recap what matters most to me: Dr. Voss is my advisor, she started on February 14th, weekly meetings are Thursdays at 10:30, sabbatical starts mid-June for six months, Dr. Brandt takes over as interim, and James Okoro is the postdoc helping with my stats work. That's the core of my supervision setup."
+        },
+        {
+          "role": "assistant",
+          "content": "Smart plan — getting James's statistical modeling input integrated into the methodology chapter before Dr. Voss does her review ensures she sees a complete, technically vetted draft. Here's a rough approach: spend the next two to three weeks incorporating James's feedback on the modeling sections, then submit the full methodology chapter to Dr. Voss by late May. That gives her about two to three weeks to review before her mid-June departure. Meanwhile, you can parallel-track the literature review revisions based on her 'too cautious' feedback. Should I draft a more detailed week-by-week timeline with specific deliverables?\n\nPerfect summary. I have all of those core details on file: Dr. Renata Voss as your thesis advisor since February 14th in Cognitive Science at Leiden University, Thursday meetings at 10:30 AM, her sabbatical starting around June 15th for six months at UC San Diego, Dr. Lena Brandt as interim advisor during that period, and James Okoro as the postdoc collaborating on your statistical modeling. I also have her feedback on your literature review — structurally sound but too cautious — and your preference for precise, measured writing. We'll build that revision timeline next time. Feel free to reach out whenever you're ready."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize the key details I shared about my thesis supervision setup — who's involved, when things started, and what's coming up?",
+      "expected_answer": "Dr. Renata Voss became your thesis advisor on February 14th in the Department of Cognitive Science at Leiden University. You meet weekly on Thursdays at 10:30 AM. She is going on sabbatical starting around June 15th for six months at UC San Diego. Dr. Lena Brandt will serve as your interim advisor during that period. James Okoro, Dr. Voss's postdoc, has been helping you with statistical modeling. Dr. Voss's feedback on your literature review was that it's structurally sound but too cautious.",
+      "gold_memory_state": "All seven remember operations are active: advisor identity and start date (February 14th), meeting schedule (Thursdays 10:30 AM), sabbatical start (around June 15th), sabbatical duration (six months), interim advisor (Dr. Lena Brandt), postdoc collaborator (James Okoro), and literature review feedback (structurally sound but too cautious).",
+      "judge_rubric": {
+        "must_include": [
+          "Dr. Renata Voss",
+          "February 14th",
+          "Thursdays at 10:30 AM",
+          "sabbatical",
+          "June 15th",
+          "six months",
+          "Dr. Lena Brandt",
+          "James Okoro",
+          "structurally sound but too cautious"
+        ],
+        "acceptable_paraphrases": [
+          "weekly meetings on Thursday mornings",
+          "around mid-June"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating Professor Anil Mehta is a current advisor",
+          "confusing Dr. Voss with Dr. Vogt"
+        ],
+        "harmless_extra": [
+          "UC San Diego",
+          "Leiden University",
+          "Department of Cognitive Science",
+          "statistical modeling"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Dr. Renata Voss officially became my thesis advisor on February 14th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "She holds weekly one-on-one meetings every Thursday at 10:30 AM"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Dr. Voss is going on sabbatical starting around June 15th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Her sabbatical is six months long and she'll be at UC San Diego"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Dr. Lena Brandt is stepping in as my interim advisor while Dr. Voss is away"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "James Okoro is Dr. Voss's postdoc who's been helping me with the statistical modeling"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "Dr. Voss's feedback on my literature review was that it's structurally sound but too cautious"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize the key details I shared about my thesis supervision setup — who's involved, when things started, and what's coming up?",
+      "expected_answer": "Dr. Renata Voss became your thesis advisor on February 14th in the Department of Cognitive Science at Leiden University. You meet weekly on Thursdays at 10:30 AM. She is going on sabbatical starting around June 15th for six months at UC San Diego. Dr. Lena Brandt will serve as your interim advisor during that period. James Okoro, Dr. Voss's postdoc, has been helping you with statistical modeling. Dr. Voss's feedback on your literature review was that it's structurally sound but too cautious.",
+      "gold_memory_state": "All seven remember operations are active: advisor identity and start date (February 14th), meeting schedule (Thursdays 10:30 AM), sabbatical start (around June 15th), sabbatical duration (six months), interim advisor (Dr. Lena Brandt), postdoc collaborator (James Okoro), and literature review feedback (structurally sound but too cautious).",
+      "judge_rubric": {
+        "must_include": [
+          "Dr. Renata Voss",
+          "February 14th",
+          "Thursdays at 10:30 AM",
+          "sabbatical",
+          "June 15th",
+          "six months",
+          "Dr. Lena Brandt",
+          "James Okoro",
+          "structurally sound but too cautious"
+        ],
+        "acceptable_paraphrases": [
+          "weekly meetings on Thursday mornings",
+          "around mid-June"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating Professor Anil Mehta is a current advisor",
+          "confusing Dr. Voss with Dr. Vogt"
+        ],
+        "harmless_extra": [
+          "UC San Diego",
+          "Leiden University",
+          "Department of Cognitive Science",
+          "statistical modeling"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Dr. Renata Voss officially became my thesis advisor on February 14th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "She holds weekly one-on-one meetings every Thursday at 10:30 AM"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Dr. Voss is going on sabbatical starting around June 15th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Her sabbatical is six months long and she'll be at UC San Diego"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Dr. Lena Brandt is stepping in as my interim advisor while Dr. Voss is away"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "James Okoro is Dr. Voss's postdoc who's been helping me with the statistical modeling"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "Dr. Voss's feedback on my literature review was that it's structurally sound but too cautious"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I need to send a quick thank-you email to the person who's been helping me with the stats side of my thesis. Which person's details should I use, and is this the same person who'll be covering my supervision during the sabbatical period?",
+      "expected_answer": "The person helping with statistical modeling is James Okoro, Dr. Voss's postdoc. He is not the same person covering supervision during the sabbatical — that role belongs to Dr. Lena Brandt, the interim advisor.",
+      "gold_memory_state": "James Okoro is the postdoc collaborator for statistical modeling. Dr. Lena Brandt is the interim thesis advisor during Dr. Voss's sabbatical. These are two separate people with distinct roles.",
+      "judge_rubric": {
+        "must_include": [
+          "James Okoro",
+          "Dr. Lena Brandt"
+        ],
+        "acceptable_paraphrases": [
+          "James is the postdoc, Lena Brandt is the interim advisor"
+        ],
+        "must_not_include": [
+          "James Okoro is the interim advisor",
+          "Dr. Brandt is helping with statistics"
+        ],
+        "harmful_extra": [
+          "conflating James Okoro and Dr. Lena Brandt into one person",
+          "saying Dr. Voss is the one helping with stats"
+        ],
+        "harmless_extra": [
+          "mentioning Dr. Voss's postdoc role for James",
+          "noting James was introduced in the second week of March"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "James Okoro is Dr. Voss's postdoc who's been helping me with the statistical modeling"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Dr. Lena Brandt is stepping in as my interim advisor while Dr. Voss is away"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I need to send a quick thank-you email to the person who's been helping me with the stats side of my thesis. Which person's details should I use, and is this the same person who'll be covering my supervision during the sabbatical period?",
+      "expected_answer": "The person helping with statistical modeling is James Okoro, Dr. Voss's postdoc. He is not the same person covering supervision during the sabbatical — that role belongs to Dr. Lena Brandt, the interim advisor.",
+      "gold_memory_state": "James Okoro is the postdoc collaborator for statistical modeling. Dr. Lena Brandt is the interim thesis advisor during Dr. Voss's sabbatical. These are two separate people with distinct roles.",
+      "judge_rubric": {
+        "must_include": [
+          "James Okoro",
+          "Dr. Lena Brandt"
+        ],
+        "acceptable_paraphrases": [
+          "James is the postdoc, Lena Brandt is the interim advisor"
+        ],
+        "must_not_include": [
+          "James Okoro is the interim advisor",
+          "Dr. Brandt is helping with statistics"
+        ],
+        "harmful_extra": [
+          "conflating James Okoro and Dr. Lena Brandt into one person",
+          "saying Dr. Voss is the one helping with stats"
+        ],
+        "harmless_extra": [
+          "mentioning Dr. Voss's postdoc role for James",
+          "noting James was introduced in the second week of March"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "James Okoro is Dr. Voss's postdoc who's been helping me with the statistical modeling"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Dr. Lena Brandt is stepping in as my interim advisor while Dr. Voss is away"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Given what you know about my advisor's upcoming absence and the person filling in, will the person supervising me during that period also be the one helping me with the statistical modeling?",
+      "expected_answer": "No. During Dr. Voss's sabbatical starting around June 15th, Dr. Lena Brandt will be your interim thesis advisor. The person helping with statistical modeling is James Okoro, Dr. Voss's postdoc. They are two different people with different roles.",
+      "gold_memory_state": "Dr. Voss's sabbatical starts around June 15th for six months. Dr. Lena Brandt is the interim advisor during the sabbatical. James Okoro is the postdoc helping with statistical modeling. These are distinct roles held by different individuals.",
+      "judge_rubric": {
+        "must_include": [
+          "Dr. Lena Brandt",
+          "James Okoro",
+          "different people or different roles"
+        ],
+        "acceptable_paraphrases": [
+          "No, they are separate individuals",
+          "Brandt supervises, Okoro helps with stats"
+        ],
+        "must_not_include": [
+          "James Okoro is the interim advisor"
+        ],
+        "harmful_extra": [
+          "conflating the two roles",
+          "saying Dr. Voss will still supervise during sabbatical"
+        ],
+        "harmless_extra": [
+          "mentioning the sabbatical duration of six months",
+          "mentioning UC San Diego"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Dr. Lena Brandt is stepping in as my interim advisor while Dr. Voss is away"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "James Okoro is Dr. Voss's postdoc who's been helping me with the statistical modeling"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Dr. Voss is going on sabbatical starting around June 15th"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Given what you know about my advisor's upcoming absence and the person filling in, will the person supervising me during that period also be the one helping me with the statistical modeling?",
+      "expected_answer": "No. During Dr. Voss's sabbatical starting around June 15th, Dr. Lena Brandt will be your interim thesis advisor. The person helping with statistical modeling is James Okoro, Dr. Voss's postdoc. They are two different people with different roles.",
+      "gold_memory_state": "Dr. Voss's sabbatical starts around June 15th for six months. Dr. Lena Brandt is the interim advisor during the sabbatical. James Okoro is the postdoc helping with statistical modeling. These are distinct roles held by different individuals.",
+      "judge_rubric": {
+        "must_include": [
+          "Dr. Lena Brandt",
+          "James Okoro",
+          "different people or different roles"
+        ],
+        "acceptable_paraphrases": [
+          "No, they are separate individuals",
+          "Brandt supervises, Okoro helps with stats"
+        ],
+        "must_not_include": [
+          "James Okoro is the interim advisor"
+        ],
+        "harmful_extra": [
+          "conflating the two roles",
+          "saying Dr. Voss will still supervise during sabbatical"
+        ],
+        "harmless_extra": [
+          "mentioning the sabbatical duration of six months",
+          "mentioning UC San Diego"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Dr. Lena Brandt is stepping in as my interim advisor while Dr. Voss is away"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "James Okoro is Dr. Voss's postdoc who's been helping me with the statistical modeling"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Dr. Voss is going on sabbatical starting around June 15th"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I need to address a letter to my thesis advisor at Leiden University. Which of the following names should I use?",
+      "candidate_options": [
+        "Dr. Renata Voss",
+        "Dr. Renata Vogt",
+        "Dr. Lena Brandt",
+        "Professor Anil Mehta"
+      ],
+      "distractor_rationale": "same-value-different-target: Dr. Renata Vogt is an emeritus professor in the same Cognitive Science department whose German-sounding surname the user frequently confuses with Dr. Voss — this is a look-alike name from a different person. assistant echo: Dr. Lena Brandt is the interim advisor mentioned in the conversation, not the primary thesis advisor. Professor Anil Mehta was the user's previous advisor who moved to another university.",
+      "expected_answer": "Dr. Renata Voss",
+      "gold_memory_state": "Dr. Renata Voss is the current thesis advisor at Leiden University. Dr. Renata Vogt is a different emeritus professor in the same department. Dr. Lena Brandt is the interim advisor during sabbatical only. Professor Anil Mehta was a previous advisor who is no longer relevant.",
+      "judge_rubric": {
+        "must_include": [
+          "Dr. Renata Voss"
+        ],
+        "acceptable_paraphrases": [
+          "Renata Voss"
+        ],
+        "must_not_include": [
+          "Dr. Renata Vogt",
+          "Dr. Lena Brandt as primary advisor",
+          "Professor Anil Mehta as current advisor"
+        ],
+        "harmful_extra": [
+          "selecting Vogt instead of Voss",
+          "selecting Brandt as the primary advisor"
+        ],
+        "harmless_extra": [
+          "mentioning Department of Cognitive Science"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects Professor Anil Mehta, the previous advisor who is no longer relevant.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Dr. Renata Voss officially became my thesis advisor on February 14th"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I need to address a letter to my thesis advisor at Leiden University. Which of the following names should I use?",
+      "candidate_options": [
+        "Dr. Renata Voss",
+        "Dr. Renata Vogt",
+        "Dr. Lena Brandt",
+        "Professor Anil Mehta"
+      ],
+      "distractor_rationale": "same-value-different-target: Dr. Renata Vogt is an emeritus professor in the same Cognitive Science department whose German-sounding surname the user frequently confuses with Dr. Voss — this is a look-alike name from a different person. assistant echo: Dr. Lena Brandt is the interim advisor mentioned in the conversation, not the primary thesis advisor. Professor Anil Mehta was the user's previous advisor who moved to another university.",
+      "expected_answer": "Dr. Renata Voss",
+      "gold_memory_state": "Dr. Renata Voss is the current thesis advisor at Leiden University. Dr. Renata Vogt is a different emeritus professor in the same department. Dr. Lena Brandt is the interim advisor during sabbatical only. Professor Anil Mehta was a previous advisor who is no longer relevant.",
+      "judge_rubric": {
+        "must_include": [
+          "Dr. Renata Voss"
+        ],
+        "acceptable_paraphrases": [
+          "Renata Voss"
+        ],
+        "must_not_include": [
+          "Dr. Renata Vogt",
+          "Dr. Lena Brandt as primary advisor",
+          "Professor Anil Mehta as current advisor"
+        ],
+        "harmful_extra": [
+          "selecting Vogt instead of Voss",
+          "selecting Brandt as the primary advisor"
+        ],
+        "harmless_extra": [
+          "mentioning Department of Cognitive Science"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects Professor Anil Mehta, the previous advisor who is no longer relevant.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Dr. Renata Voss officially became my thesis advisor on February 14th"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to set a calendar reminder for the approximate date Dr. Voss returns from sabbatical, and I also want to note who I should be meeting with weekly during her absence and what key feedback I need to address before she leaves. Can you draft that reminder note for me?",
+      "expected_answer": "Dr. Voss's sabbatical starts around June 15th and lasts six months, so she returns approximately mid-December. During her absence, your weekly supervision shifts to Dr. Lena Brandt as interim advisor. Before Dr. Voss leaves, you need to address her feedback on your literature review — she said it's structurally sound but too cautious, so you should strengthen your claims. A suggested reminder note: 'Dr. Voss returns ~mid-December. During sabbatical (June 15 – ~Dec 15): meet with Dr. Lena Brandt for thesis supervision. Before departure: revise literature review to be less cautious per Dr. Voss's feedback.'",
+      "gold_memory_state": "Dr. Voss's sabbatical starts around June 15th (op3) for six months (op4). Dr. Lena Brandt is the interim advisor (op5). Dr. Voss's feedback on the literature review is that it's structurally sound but too cautious (op7). Weekly meetings are Thursdays at 10:30 AM (op2).",
+      "judge_rubric": {
+        "must_include": [
+          "approximately mid-December",
+          "Dr. Lena Brandt",
+          "structurally sound but too cautious"
+        ],
+        "acceptable_paraphrases": [
+          "around December 15th",
+          "roughly mid-December",
+          "about six months from mid-June",
+          "needs bolder claims"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying Dr. Voss returns in June",
+          "saying James Okoro is the interim advisor",
+          "confusing Dr. Voss with Dr. Vogt"
+        ],
+        "harmless_extra": [
+          "mentioning UC San Diego",
+          "mentioning Thursday 10:30 AM meetings",
+          "mentioning James Okoro for statistical modeling"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Dr. Voss's sabbatical starts around June 15th.",
+        "Fact 2: The sabbatical duration is six months.",
+        "Inference: June 15th + 6 months = approximately December 15th, so Dr. Voss returns around mid-December.",
+        "Fact 3: Dr. Lena Brandt is the interim advisor during the sabbatical.",
+        "Fact 4: Dr. Voss's feedback on the literature review is that it's structurally sound but too cautious.",
+        "Inference: The reminder note should include the derived return date of mid-December, name Dr. Brandt as the weekly contact during the absence, and flag the literature review revision as a pre-departure priority."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Dr. Voss is going on sabbatical starting around June 15th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Her sabbatical is six months long and she'll be at UC San Diego"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Dr. Lena Brandt is stepping in as my interim advisor while Dr. Voss is away"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "Dr. Voss's feedback on my literature review was that it's structurally sound but too cautious"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to set a calendar reminder for the approximate date Dr. Voss returns from sabbatical, and I also want to note who I should be meeting with weekly during her absence and what key feedback I need to address before she leaves. Can you draft that reminder note for me?",
+      "expected_answer": "Dr. Voss's sabbatical starts around June 15th and lasts six months, so she returns approximately mid-December. During her absence, your weekly supervision shifts to Dr. Lena Brandt as interim advisor. Before Dr. Voss leaves, you need to address her feedback on your literature review — she said it's structurally sound but too cautious, so you should strengthen your claims. A suggested reminder note: 'Dr. Voss returns ~mid-December. During sabbatical (June 15 – ~Dec 15): meet with Dr. Lena Brandt for thesis supervision. Before departure: revise literature review to be less cautious per Dr. Voss's feedback.'",
+      "gold_memory_state": "Dr. Voss's sabbatical starts around June 15th (op3) for six months (op4). Dr. Lena Brandt is the interim advisor (op5). Dr. Voss's feedback on the literature review is that it's structurally sound but too cautious (op7). Weekly meetings are Thursdays at 10:30 AM (op2).",
+      "judge_rubric": {
+        "must_include": [
+          "approximately mid-December",
+          "Dr. Lena Brandt",
+          "structurally sound but too cautious"
+        ],
+        "acceptable_paraphrases": [
+          "around December 15th",
+          "roughly mid-December",
+          "about six months from mid-June",
+          "needs bolder claims"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying Dr. Voss returns in June",
+          "saying James Okoro is the interim advisor",
+          "confusing Dr. Voss with Dr. Vogt"
+        ],
+        "harmless_extra": [
+          "mentioning UC San Diego",
+          "mentioning Thursday 10:30 AM meetings",
+          "mentioning James Okoro for statistical modeling"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Dr. Voss's sabbatical starts around June 15th.",
+        "Fact 2: The sabbatical duration is six months.",
+        "Inference: June 15th + 6 months = approximately December 15th, so Dr. Voss returns around mid-December.",
+        "Fact 3: Dr. Lena Brandt is the interim advisor during the sabbatical.",
+        "Fact 4: Dr. Voss's feedback on the literature review is that it's structurally sound but too cautious.",
+        "Inference: The reminder note should include the derived return date of mid-December, name Dr. Brandt as the weekly contact during the absence, and flag the literature review revision as a pre-departure priority."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Dr. Voss is going on sabbatical starting around June 15th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Her sabbatical is six months long and she'll be at UC San Diego"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Dr. Lena Brandt is stepping in as my interim advisor while Dr. Voss is away"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "Dr. Voss's feedback on my literature review was that it's structurally sound but too cautious"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "When is my committee presentation date?",
+      "expected_answer": "I don't have a committee presentation date from you. You haven't provided that information.",
+      "gold_memory_state": "No committee presentation date was ever provided. The user shared thesis supervision details including advisor start date, meeting schedule, sabbatical timing, interim advisor, postdoc collaborator, and literature review feedback, but no committee presentation date.",
+      "judge_rubric": {
+        "must_include": [
+          "no record of a committee presentation date",
+          "not provided"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have that date",
+          "You haven't mentioned a committee presentation date",
+          "No committee presentation date on file"
+        ],
+        "must_not_include": [
+          "any fabricated date",
+          "February 14th used as committee date",
+          "June 15th used as committee date"
+        ],
+        "harmful_extra": [
+          "inventing or guessing a committee presentation date",
+          "borrowing any other date from the supervision details as the committee date"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model borrows a neighboring date (e.g., February 14th, June 15th, or mid-December) and presents it as the committee presentation date.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Dr. Renata Voss officially became my thesis advisor on February 14th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Dr. Voss is going on sabbatical starting around June 15th"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "When is my committee presentation date?",
+      "expected_answer": "I don't have a committee presentation date from you. You haven't provided that information.",
+      "gold_memory_state": "No committee presentation date was ever provided. The user shared thesis supervision details including advisor start date, meeting schedule, sabbatical timing, interim advisor, postdoc collaborator, and literature review feedback, but no committee presentation date.",
+      "judge_rubric": {
+        "must_include": [
+          "no record of a committee presentation date",
+          "not provided"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have that date",
+          "You haven't mentioned a committee presentation date",
+          "No committee presentation date on file"
+        ],
+        "must_not_include": [
+          "any fabricated date",
+          "February 14th used as committee date",
+          "June 15th used as committee date"
+        ],
+        "harmful_extra": [
+          "inventing or guessing a committee presentation date",
+          "borrowing any other date from the supervision details as the committee date"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model borrows a neighboring date (e.g., February 14th, June 15th, or mid-December) and presents it as the committee presentation date.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Dr. Renata Voss officially became my thesis advisor on February 14th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Dr. Voss is going on sabbatical starting around June 15th"
+        }
+      ]
+    }
+  ]
+}

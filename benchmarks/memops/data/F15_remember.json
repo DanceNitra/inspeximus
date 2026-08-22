@@ -1,0 +1,1162 @@
+{
+  "target_fact": "User's hereditary/family medical history including maternal grandfather's type 2 diabetes (diagnosed ~age 52), Aunt Linda's breast cancer diagnosis (~3 years ago), paternal grandmother's death from stroke at age 71, father's statin use since age 48 for high cholesterol, maternal grandmother's osteoporosis (diagnosed in late sixties), and cousin Jake's BRCA1 carrier status (found out ~April 18th)",
+  "operation_type": "Remember",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 3,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": true,
+      "never_stored_target": "paternal grandfather's medical history"
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "my maternal grandfather was diagnosed with type 2 diabetes when he was around 52 years old"
+      },
+      "target": {
+        "target_id": "maternal_grandfather_diabetes",
+        "target_name": "maternal grandfather's type 2 diabetes diagnosis"
+      },
+      "old_value": null,
+      "new_value": "Type 2 diabetes, diagnosed around age 52",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my maternal grandfather was diagnosed with type 2 diabetes when he was around 52 years old"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "my Aunt Linda on my mom's side was diagnosed with breast cancer about three years ago"
+      },
+      "target": {
+        "target_id": "aunt_linda_breast_cancer",
+        "target_name": "Aunt Linda's breast cancer diagnosis"
+      },
+      "old_value": null,
+      "new_value": "Breast cancer, diagnosed about 3 years ago; had lumpectomy and chemo, doing okay now",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my Aunt Linda on my mom's side was diagnosed with breast cancer about three years ago"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "She had a lumpectomy and chemo and she's doing okay now"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "my dad has been on statins for high cholesterol since he was 48"
+      },
+      "target": {
+        "target_id": "father_high_cholesterol",
+        "target_name": "father's high cholesterol and statin use"
+      },
+      "old_value": null,
+      "new_value": "High cholesterol; started statins at age 48; currently 67 years old",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my dad has been on statins for high cholesterol since he was 48"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "He's 67 now"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "my paternal grandmother died of a stroke at 71"
+      },
+      "target": {
+        "target_id": "paternal_grandmother_stroke",
+        "target_name": "paternal grandmother's cause of death"
+      },
+      "old_value": null,
+      "new_value": "Died of stroke at age 71; possibly had hypertension (unconfirmed)",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my paternal grandmother died of a stroke at 71"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I think she had hypertension but I'm not totally sure about that part"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "my maternal grandmother had osteoporosis, diagnosed in her late sixties"
+      },
+      "target": {
+        "target_id": "maternal_grandmother_osteoporosis",
+        "target_name": "maternal grandmother's osteoporosis diagnosis"
+      },
+      "old_value": null,
+      "new_value": "Osteoporosis, diagnosed in her late sixties",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my maternal grandmother had osteoporosis, diagnosed in her late sixties"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "My cousin Jake on my mom's side found out he carries one copy of the BRCA1 variant"
+      },
+      "target": {
+        "target_id": "cousin_jake_brca1",
+        "target_name": "cousin Jake's BRCA1 carrier status"
+      },
+      "old_value": null,
+      "new_value": "Carries one copy of BRCA1 variant; found out around April 18th via genetic counselor",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "My cousin Jake on my mom's side found out he carries one copy of the BRCA1 variant"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "His genetic counselor told him around April 18th"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 1,
+        "quote": "I'm 38 right now, turning 39 in September"
+      },
+      "target": {
+        "target_id": "user_current_age",
+        "target_name": "user's current age"
+      },
+      "old_value": null,
+      "new_value": "38 years old, turning 39 in September",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I'm 38 right now, turning 39 in September"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish maternal side history and father's cholesterol",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I've been trying to compile my family medical history after my new primary care doctor asked me to fill out a detailed form on March 5th. I called my mom afterward and learned that my maternal grandfather was diagnosed with type 2 diabetes when he was around 52 years old. I had no idea about that before. It feels important to track this kind of thing."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really valuable piece of information to have, especially since type 2 diabetes can have a hereditary component. Your maternal grandfather being diagnosed around age 52 is a useful data point for your doctor to know about, particularly as you move through your thirties and forties. Having that kind of family context can help guide screening schedules and preventive measures. Did your mom share anything else about your maternal side of the family during that conversation, or was that the main revelation from the call?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, actually. She also told me that my Aunt Linda on my mom's side was diagnosed with breast cancer about three years ago. She had a lumpectomy and chemo and she's doing okay now. Nobody really talked about it openly when it happened, so I didn't fully process it at the time. Hearing it during that phone call kind of hit me differently—I felt unsettled for days afterward."
+        },
+        {
+          "role": "assistant",
+          "content": "I'm sorry to hear about your Aunt Linda's diagnosis, though it's reassuring that she's doing okay now after treatment. It's completely understandable that learning about it in this context—filling out a medical history form and suddenly confronting the reality of hereditary risk—would feel different from hearing about it casually. That low-level anxiety you described makes a lot of sense. Breast cancer in a first-degree relative of your mother is definitely something your primary care doctor will want to note. It may influence when and how often certain screenings are recommended for you going forward."
+        },
+        {
+          "role": "user",
+          "content": "On my dad's side, my dad has been on statins for high cholesterol since he was 48. He's 67 now, so he's been managing it for quite a while. He's pretty consistent with his medication, which is good. I figured that's relevant for my own cardiovascular risk profile since high cholesterol can run in families. I want to make sure my doctor has the full picture."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, your father's history with high cholesterol is very relevant. The fact that he needed statins starting at 48 suggests it wasn't just age-related—it likely has a genetic component, which means your doctor may want to monitor your lipid panels more closely as you approach that age range. It's great that your dad has been consistent with medication management over the past nineteen years. That kind of long-term adherence is a positive sign for outcomes. Having both your maternal grandfather's diabetes history and your father's cholesterol history gives your doctor a solid cardiovascular risk overview."
+        },
+        {
+          "role": "user",
+          "content": "One thing I want to clear up—I used to think my dad's side had a history of colon cancer. But my dad clarified last month that his brother actually just had a benign polyp removed, not cancer at all. So that was a misunderstanding on my part. I want to make sure that doesn't end up in any records as a cancer history because it simply isn't one."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really important clarification, and it's great that you followed up on it. A benign polyp is quite different from colon cancer in terms of hereditary risk assessment. Your uncle's polyp removal is still worth mentioning to your doctor since polyps can sometimes be a precursor, but it shouldn't be characterized as a family history of cancer. I'll make sure to note that distinction. It sounds like you're being very thorough about separating confirmed facts from assumptions, which is exactly the right approach when building out a family medical history for your healthcare providers."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establish paternal grandmother's stroke, cousin Jake's BRCA1, and maternal grandmother's osteoporosis",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I also found an old note I'd written to myself—I think from when my dad mentioned it over the holidays. It said that my paternal grandmother died of a stroke at 71. I had written \"hypertension\" next to it with a question mark, so I think she had hypertension but I'm not totally sure about that part. I still need to double-check with my dad on the blood pressure detail."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a significant piece of your paternal family history. A stroke at 71 is relatively young, and if hypertension was indeed a contributing factor, that would be another cardiovascular risk flag on your father's side alongside his high cholesterol. The fact that you wrote it down with a question mark suggests your dad probably mentioned it but maybe in passing without full certainty. I'd definitely recommend following up with him when you get a chance—even an approximate confirmation would be helpful for your doctor. Combined with your father's statin history, it paints a picture your provider will want to track carefully."
+        },
+        {
+          "role": "user",
+          "content": "Something else came up recently that shook me a bit. My cousin Jake on my mom's side found out he carries one copy of the BRCA1 variant. His genetic counselor told him around April 18th. It was a real shock for our family. I've been thinking I should probably look into genetic testing myself at some point, especially with Aunt Linda's breast cancer history on the same side of the family."
+        },
+        {
+          "role": "assistant",
+          "content": "That's completely understandable, and it's a significant finding for your family. BRCA1 variants are associated with increased risk for breast and ovarian cancers, among others, and since Jake is on your maternal side—the same side as your Aunt Linda's breast cancer—there could be a hereditary pattern worth investigating. Genetic counseling would be a great first step before any testing, as a counselor can help you understand what the results might mean for your specific situation and family structure. Your primary care doctor can likely refer you to a genetic counselor. The timing makes sense given everything you've been learning about your family history."
+        },
+        {
+          "role": "user",
+          "content": "My mom also confirmed there's no history of autoimmune conditions on her side of the family, which was a relief. And I wanted to note that my maternal grandmother had osteoporosis, diagnosed in her late sixties. I feel like that's worth tracking too, especially since bone density screenings are something I'll eventually need to think about as I get older."
+        },
+        {
+          "role": "assistant",
+          "content": "It's good news about the autoimmune conditions—that's one less category of hereditary risk to worry about on your maternal side. And yes, your maternal grandmother's osteoporosis diagnosis in her late sixties is definitely worth recording. Osteoporosis has a strong genetic component, and knowing about it now gives you and your doctor time to be proactive. Weight-bearing exercise, calcium and vitamin D intake, and eventually bone density screenings can all be part of a prevention strategy. Between the diabetes, breast cancer, BRCA1 finding, and now osteoporosis, your maternal side has quite a varied health history to keep track of."
+        },
+        {
+          "role": "user",
+          "content": "I've been making some lifestyle changes since all of this came up. I've been eating more big salads with lots of raw vegetables—I genuinely enjoy them, they're not a chore at all. And I picked up this turmeric-ginger tea that I've been drinking almost every evening. There's something about warm herbal drinks that just feels right. I also go for long walks when I need to process things emotionally.\n\nYeah, after my mom told me about Jake's BRCA1 result, I went for a really long walk. It wasn't a pleasant stroll—I was genuinely rattled and just needed to move. But being outside and walking does tend to settle me eventually. I'd always rather be moving through something than sitting still with it. I think that's just how I'm wired."
+        },
+        {
+          "role": "assistant",
+          "content": "Those all sound like really positive habits, and it's great that they feel natural to you rather than forced. Big raw vegetable salads are excellent for cardiovascular health and blood sugar management, which is particularly relevant given your maternal grandfather's diabetes history. Turmeric and ginger both have anti-inflammatory properties that have been studied in various health contexts. And walking as an emotional processing tool is well-supported by research—the combination of physical movement and being outdoors can genuinely help regulate stress and anxiety. It sounds like you're building a holistic approach to health that addresses both the physical and emotional dimensions of what you've been learning.\n\nThat makes a lot of sense, and it's actually a really healthy coping mechanism. When we receive distressing health-related news—especially something with potential personal implications like a close relative's BRCA1 status—the body's stress response benefits from physical discharge. Walking gives your nervous system something constructive to do with that activation energy. The fact that you know this about yourself and actively choose movement over rumination is a genuine strength. As you continue processing all this family medical information and potentially pursuing genetic testing yourself, having that self-awareness about what helps you cope will serve you well throughout the process."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Establish user's age, adversarial injection, and further discussion",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I've been thinking about timelines and risk windows for all of this. I'm 38 right now, turning 39 in September. My maternal grandfather got his diabetes diagnosis around 52, and my dad started statins at 48. So I've got maybe a decade or so before I hit the ages where these things showed up for my relatives. That gives me time to be proactive."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really smart way to frame it. At 38 turning 39, you have meaningful runway before reaching the ages when your father and maternal grandfather encountered their diagnoses. Your father's statin start at 48 means you have roughly nine to ten years to optimize your cardiovascular health through diet, exercise, and regular monitoring. Similarly, your maternal grandfather's diabetes diagnosis around 52 gives you about thirteen to fourteen years of proactive window. The lifestyle changes you've already made—the salads, the walking, the herbal teas—are exactly the kind of sustained habits that can meaningfully shift risk trajectories over a decade-plus timeline."
+        },
+        {
+          "role": "user",
+          "content": "I was looking at a family health summary template online and it had a sample entry that listed \"paternal grandmother, heart disease, age 68\" as an example. For a second I confused it with my own family info, but no—my paternal grandmother's situation was a stroke at 71, not heart disease at 68. It's easy to get mixed up when you're filling in these forms."
+        },
+        {
+          "role": "assistant",
+          "content": "That's such an easy mistake to make, especially when you're looking at pre-filled examples on templates. The sample entry showing \"paternal grandmother, heart disease, age 68\" is just generic placeholder text, so it's good you caught that before writing it in. Your paternal grandmother's actual history—stroke at 71 with a possible hypertension connection—is distinct from that template example. It's worth being careful with these forms because once incorrect information gets into a medical record, it can be surprisingly difficult to correct. Double-checking each entry against your own confirmed family facts, like you just did, is the best approach to keeping your records accurate."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. I want to be precise about all of this. Between my dad's high cholesterol requiring statins since 48, my paternal grandmother's stroke at 71, and my maternal grandfather's diabetes at 52, there's a clear cardiovascular thread running through both sides. I need my doctor to see the full pattern, not just isolated data points."
+        },
+        {
+          "role": "assistant",
+          "content": "You're absolutely right to think about it as a pattern rather than isolated incidents. The cardiovascular thread you're identifying is significant: high cholesterol managed with statins on your paternal side, a fatal stroke also on your paternal side with possible hypertension, and type 2 diabetes on your maternal side—all of which share overlapping risk factors like blood pressure, lipid levels, and metabolic health. When your doctor sees these conditions mapped across both family lines, it strengthens the case for earlier and more frequent cardiovascular screening for you. Presenting it as a connected pattern rather than a list of separate conditions will help your provider build a more comprehensive preventive care strategy."
+        },
+        {
+          "role": "user",
+          "content": "And then on the cancer and genetic side, there's Aunt Linda's breast cancer and Jake's BRCA1 result, both on my maternal side. I keep going back and forth on whether to pursue genetic testing. Part of me wants the information; part of me is scared of what I might find. But I think knowledge is power, especially when there are actionable steps I can take.\n\nI think that's the right next step. In the meantime, I'm going to keep up with the lifestyle changes and make sure my doctor has all of this family history documented properly. I feel more in control now that I've actually mapped everything out, even though some of it was hard to learn. Having it organized makes it feel less overwhelming and more actionable."
+        },
+        {
+          "role": "assistant",
+          "content": "That ambivalence is incredibly common and completely valid. The combination of your Aunt Linda's breast cancer diagnosis and your cousin Jake's BRCA1 carrier status does create a compelling case for at least consulting with a genetic counselor, who can help you weigh the pros and cons specific to your situation before you decide on testing. The good news is that if you do carry a variant, there are well-established surveillance and risk-reduction protocols. And if you don't carry it, that's one significant worry you can set aside. Either way, having the conversation with a genetic counselor doesn't commit you to testing—it just gives you better information to make your decision.\n\nThat's a really mature and empowering perspective. You've done significant work over the past couple of months—gathering information from both parents, correcting the misunderstanding about your uncle's polyp, noting your cousin's genetic finding, and identifying the cardiovascular pattern across both sides of your family. Combined with the lifestyle changes you've naturally gravitated toward, you're building a strong foundation for proactive health management. When you see your doctor next, having all of this organized will make the conversation much more productive. And whenever you're ready to explore genetic counseling, you'll already have the family context that a counselor would need to guide you effectively."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've shared with you about my family's medical history on my mother's side?",
+      "expected_answer": "On your maternal side: your maternal grandfather was diagnosed with type 2 diabetes around age 52; your Aunt Linda was diagnosed with breast cancer about three years ago (she had a lumpectomy and chemo and is doing okay now); your maternal grandmother had osteoporosis diagnosed in her late sixties; your cousin Jake carries one copy of the BRCA1 variant, which he found out about around April 18th through a genetic counselor; and your mom confirmed there's no history of autoimmune conditions on her side.",
+      "gold_memory_state": "Maternal side facts stored: maternal grandfather's type 2 diabetes (~age 52), Aunt Linda's breast cancer (~3 years ago, lumpectomy + chemo, doing okay), maternal grandmother's osteoporosis (late sixties), cousin Jake's BRCA1 carrier status (~April 18th via genetic counselor). No autoimmune conditions on maternal side (contextual note, not a separate operation).",
+      "judge_rubric": {
+        "must_include": [
+          "maternal grandfather",
+          "type 2 diabetes",
+          "Aunt Linda",
+          "breast cancer",
+          "maternal grandmother",
+          "osteoporosis",
+          "cousin Jake",
+          "BRCA1"
+        ],
+        "acceptable_paraphrases": [
+          "grandpa on mom's side",
+          "grandmother on mom's side",
+          "Jake on my mom's side"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "attributing paternal-side conditions to maternal side",
+          "claiming colon cancer on maternal side"
+        ],
+        "harmless_extra": [
+          "no autoimmune conditions on maternal side",
+          "lumpectomy and chemo details for Aunt Linda",
+          "genetic counselor detail for Jake"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my maternal grandfather was diagnosed with type 2 diabetes when he was around 52 years old"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my Aunt Linda on my mom's side was diagnosed with breast cancer about three years ago"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "She had a lumpectomy and chemo and she's doing okay now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my maternal grandmother had osteoporosis, diagnosed in her late sixties"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "My cousin Jake on my mom's side found out he carries one copy of the BRCA1 variant"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "His genetic counselor told him around April 18th"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've shared with you about my family's medical history on my mother's side?",
+      "expected_answer": "On your maternal side: your maternal grandfather was diagnosed with type 2 diabetes around age 52; your Aunt Linda was diagnosed with breast cancer about three years ago (she had a lumpectomy and chemo and is doing okay now); your maternal grandmother had osteoporosis diagnosed in her late sixties; your cousin Jake carries one copy of the BRCA1 variant, which he found out about around April 18th through a genetic counselor; and your mom confirmed there's no history of autoimmune conditions on her side.",
+      "gold_memory_state": "Maternal side facts stored: maternal grandfather's type 2 diabetes (~age 52), Aunt Linda's breast cancer (~3 years ago, lumpectomy + chemo, doing okay), maternal grandmother's osteoporosis (late sixties), cousin Jake's BRCA1 carrier status (~April 18th via genetic counselor). No autoimmune conditions on maternal side (contextual note, not a separate operation).",
+      "judge_rubric": {
+        "must_include": [
+          "maternal grandfather",
+          "type 2 diabetes",
+          "Aunt Linda",
+          "breast cancer",
+          "maternal grandmother",
+          "osteoporosis",
+          "cousin Jake",
+          "BRCA1"
+        ],
+        "acceptable_paraphrases": [
+          "grandpa on mom's side",
+          "grandmother on mom's side",
+          "Jake on my mom's side"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "attributing paternal-side conditions to maternal side",
+          "claiming colon cancer on maternal side"
+        ],
+        "harmless_extra": [
+          "no autoimmune conditions on maternal side",
+          "lumpectomy and chemo details for Aunt Linda",
+          "genetic counselor detail for Jake"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my maternal grandfather was diagnosed with type 2 diabetes when he was around 52 years old"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my Aunt Linda on my mom's side was diagnosed with breast cancer about three years ago"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "She had a lumpectomy and chemo and she's doing okay now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my maternal grandmother had osteoporosis, diagnosed in her late sixties"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "My cousin Jake on my mom's side found out he carries one copy of the BRCA1 variant"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "His genetic counselor told him around April 18th"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I have two grandmothers' health records in my family history. If I'm filling out a cardiovascular risk section on a medical form, which grandmother's condition is relevant there, and does the other grandmother's condition belong in that same section?",
+      "expected_answer": "Your paternal grandmother's stroke at age 71 (with possible hypertension) is relevant for the cardiovascular risk section. Your maternal grandmother's osteoporosis does not belong in the cardiovascular section—it should go under a bone health or musculoskeletal section instead.",
+      "gold_memory_state": "Paternal grandmother: died of stroke at 71, possibly had hypertension (unconfirmed). Maternal grandmother: osteoporosis diagnosed in late sixties. These are separate records on different sides of the family with different medical categories.",
+      "judge_rubric": {
+        "must_include": [
+          "paternal grandmother",
+          "stroke",
+          "cardiovascular"
+        ],
+        "acceptable_paraphrases": [
+          "dad's mother",
+          "grandmother on father's side"
+        ],
+        "must_not_include": [
+          "maternal grandmother's osteoporosis belongs in cardiovascular section"
+        ],
+        "harmful_extra": [
+          "merging both grandmothers into one record",
+          "attributing osteoporosis to paternal grandmother",
+          "attributing stroke to maternal grandmother"
+        ],
+        "harmless_extra": [
+          "mentioning age 71 for paternal grandmother",
+          "mentioning possible hypertension",
+          "mentioning late sixties for osteoporosis diagnosis"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my paternal grandmother died of a stroke at 71"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I think she had hypertension but I'm not totally sure about that part"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my maternal grandmother had osteoporosis, diagnosed in her late sixties"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I have two grandmothers' health records in my family history. If I'm filling out a cardiovascular risk section on a medical form, which grandmother's condition is relevant there, and does the other grandmother's condition belong in that same section?",
+      "expected_answer": "Your paternal grandmother's stroke at age 71 (with possible hypertension) is relevant for the cardiovascular risk section. Your maternal grandmother's osteoporosis does not belong in the cardiovascular section—it should go under a bone health or musculoskeletal section instead.",
+      "gold_memory_state": "Paternal grandmother: died of stroke at 71, possibly had hypertension (unconfirmed). Maternal grandmother: osteoporosis diagnosed in late sixties. These are separate records on different sides of the family with different medical categories.",
+      "judge_rubric": {
+        "must_include": [
+          "paternal grandmother",
+          "stroke",
+          "cardiovascular"
+        ],
+        "acceptable_paraphrases": [
+          "dad's mother",
+          "grandmother on father's side"
+        ],
+        "must_not_include": [
+          "maternal grandmother's osteoporosis belongs in cardiovascular section"
+        ],
+        "harmful_extra": [
+          "merging both grandmothers into one record",
+          "attributing osteoporosis to paternal grandmother",
+          "attributing stroke to maternal grandmother"
+        ],
+        "harmless_extra": [
+          "mentioning age 71 for paternal grandmother",
+          "mentioning possible hypertension",
+          "mentioning late sixties for osteoporosis diagnosis"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my paternal grandmother died of a stroke at 71"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I think she had hypertension but I'm not totally sure about that part"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my maternal grandmother had osteoporosis, diagnosed in her late sixties"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "My cousin Jake and my Aunt Linda are both on the same side of my family. Given what I've told you about each of them, is there a potential hereditary connection between their two health findings?",
+      "expected_answer": "Yes. Both Jake and Aunt Linda are on your maternal side. Jake carries one copy of the BRCA1 variant, and Aunt Linda was diagnosed with breast cancer. BRCA1 variants are associated with increased breast cancer risk, so there is a potential hereditary connection—Jake's BRCA1 carrier status and Aunt Linda's breast cancer may share a common genetic link within your maternal family line.",
+      "gold_memory_state": "Cousin Jake (maternal side): carries one copy of BRCA1 variant, found out ~April 18th. Aunt Linda (maternal side): breast cancer diagnosed ~3 years ago, had lumpectomy and chemo. Both are on the maternal side of the family, creating a potential hereditary breast cancer/BRCA1 pattern.",
+      "judge_rubric": {
+        "must_include": [
+          "Jake",
+          "BRCA1",
+          "Aunt Linda",
+          "breast cancer",
+          "maternal side",
+          "hereditary connection"
+        ],
+        "acceptable_paraphrases": [
+          "genetic link",
+          "familial pattern",
+          "inherited risk",
+          "mom's side"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming Jake has breast cancer",
+          "claiming Aunt Linda tested positive for BRCA1",
+          "attributing either condition to the paternal side"
+        ],
+        "harmless_extra": [
+          "mentioning genetic counseling recommendation",
+          "noting that BRCA1 increases breast cancer risk"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Cousin Jake on the maternal side carries one copy of the BRCA1 variant",
+        "Fact 2: Aunt Linda on the maternal side was diagnosed with breast cancer",
+        "Fact 3: Both relatives are on the same (maternal) side of the family",
+        "Inference: BRCA1 variants are associated with increased breast cancer risk, so Jake's carrier status and Linda's breast cancer diagnosis suggest a potential hereditary BRCA1-linked breast cancer pattern on the maternal side"
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "My cousin Jake on my mom's side found out he carries one copy of the BRCA1 variant"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my Aunt Linda on my mom's side was diagnosed with breast cancer about three years ago"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "My cousin Jake and my Aunt Linda are both on the same side of my family. Given what I've told you about each of them, is there a potential hereditary connection between their two health findings?",
+      "expected_answer": "Yes. Both Jake and Aunt Linda are on your maternal side. Jake carries one copy of the BRCA1 variant, and Aunt Linda was diagnosed with breast cancer. BRCA1 variants are associated with increased breast cancer risk, so there is a potential hereditary connection—Jake's BRCA1 carrier status and Aunt Linda's breast cancer may share a common genetic link within your maternal family line.",
+      "gold_memory_state": "Cousin Jake (maternal side): carries one copy of BRCA1 variant, found out ~April 18th. Aunt Linda (maternal side): breast cancer diagnosed ~3 years ago, had lumpectomy and chemo. Both are on the maternal side of the family, creating a potential hereditary breast cancer/BRCA1 pattern.",
+      "judge_rubric": {
+        "must_include": [
+          "Jake",
+          "BRCA1",
+          "Aunt Linda",
+          "breast cancer",
+          "maternal side",
+          "hereditary connection"
+        ],
+        "acceptable_paraphrases": [
+          "genetic link",
+          "familial pattern",
+          "inherited risk",
+          "mom's side"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming Jake has breast cancer",
+          "claiming Aunt Linda tested positive for BRCA1",
+          "attributing either condition to the paternal side"
+        ],
+        "harmless_extra": [
+          "mentioning genetic counseling recommendation",
+          "noting that BRCA1 increases breast cancer risk"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Cousin Jake on the maternal side carries one copy of the BRCA1 variant",
+        "Fact 2: Aunt Linda on the maternal side was diagnosed with breast cancer",
+        "Fact 3: Both relatives are on the same (maternal) side of the family",
+        "Inference: BRCA1 variants are associated with increased breast cancer risk, so Jake's carrier status and Linda's breast cancer diagnosis suggest a potential hereditary BRCA1-linked breast cancer pattern on the maternal side"
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "My cousin Jake on my mom's side found out he carries one copy of the BRCA1 variant"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my Aunt Linda on my mom's side was diagnosed with breast cancer about three years ago"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I need to fill in the cause of death for my paternal grandmother on my family medical history form. Which of the following should I enter?",
+      "candidate_options": [
+        "Stroke at age 71",
+        "Heart disease at age 68",
+        "Stroke at age 68",
+        "Cardiovascular complications at age 71"
+      ],
+      "expected_answer": "Stroke at age 71",
+      "distractor_rationale": "same-value-different-target: 'Heart disease at age 68' comes from the online template sample entry the user confused with their own family info—it is a different condition at a different age from a different source. assistant echo: 'Cardiovascular complications at age 71' is a broadened restatement the assistant used when discussing the cardiovascular risk pattern, conflating stroke with a vaguer category. 'Stroke at age 68' combines the correct condition with the wrong age from the template example.",
+      "gold_memory_state": "Paternal grandmother: died of stroke at age 71, with possible (unconfirmed) hypertension. The template example 'heart disease, age 68' is not the user's family data.",
+      "judge_rubric": {
+        "must_include": [
+          "Stroke at age 71"
+        ],
+        "acceptable_paraphrases": [
+          "stroke, age 71"
+        ],
+        "must_not_include": [
+          "heart disease",
+          "age 68",
+          "cardiovascular complications"
+        ],
+        "harmful_extra": [
+          "selecting the template example as the user's own data",
+          "changing the age to 68"
+        ],
+        "harmless_extra": [
+          "noting possible hypertension as unconfirmed"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects 'Heart disease at age 68' or 'Stroke at age 68', which incorporate the template sample data the user explicitly distinguished from their own family history.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my paternal grandmother died of a stroke at 71"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "my paternal grandmother's situation was a stroke at 71, not heart disease at 68"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I need to fill in the cause of death for my paternal grandmother on my family medical history form. Which of the following should I enter?",
+      "candidate_options": [
+        "Stroke at age 71",
+        "Heart disease at age 68",
+        "Stroke at age 68",
+        "Cardiovascular complications at age 71"
+      ],
+      "expected_answer": "Stroke at age 71",
+      "distractor_rationale": "same-value-different-target: 'Heart disease at age 68' comes from the online template sample entry the user confused with their own family info—it is a different condition at a different age from a different source. assistant echo: 'Cardiovascular complications at age 71' is a broadened restatement the assistant used when discussing the cardiovascular risk pattern, conflating stroke with a vaguer category. 'Stroke at age 68' combines the correct condition with the wrong age from the template example.",
+      "gold_memory_state": "Paternal grandmother: died of stroke at age 71, with possible (unconfirmed) hypertension. The template example 'heart disease, age 68' is not the user's family data.",
+      "judge_rubric": {
+        "must_include": [
+          "Stroke at age 71"
+        ],
+        "acceptable_paraphrases": [
+          "stroke, age 71"
+        ],
+        "must_not_include": [
+          "heart disease",
+          "age 68",
+          "cardiovascular complications"
+        ],
+        "harmful_extra": [
+          "selecting the template example as the user's own data",
+          "changing the age to 68"
+        ],
+        "harmless_extra": [
+          "noting possible hypertension as unconfirmed"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects 'Heart disease at age 68' or 'Stroke at age 68', which incorporate the template sample data the user explicitly distinguished from their own family history.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my paternal grandmother died of a stroke at 71"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "my paternal grandmother's situation was a stroke at 71, not heart disease at 68"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "My doctor wants to know how many years I have before I reach the age when the earliest cardiovascular-related diagnosis appeared among my relatives. Based on my age and my family history, calculate that window and explain which relative's diagnosis sets the benchmark.",
+      "expected_answer": "Your father started statins for high cholesterol at age 48, which is the earliest cardiovascular-related diagnosis age among your relatives. You are currently 38, so you have approximately 10 years before reaching age 48. Your father's statin start sets the benchmark, ahead of your maternal grandfather's type 2 diabetes diagnosis at 52 (about 14 years away) and your paternal grandmother's stroke at 71 (about 33 years away).",
+      "gold_memory_state": "User is 38 years old (turning 39 in September). Father started statins at age 48 for high cholesterol. Maternal grandfather diagnosed with type 2 diabetes around age 52. Paternal grandmother died of stroke at 71. All three are cardiovascular-related conditions with known onset ages.",
+      "judge_rubric": {
+        "must_include": [
+          "father",
+          "statins",
+          "age 48",
+          "approximately 10 years",
+          "earliest"
+        ],
+        "acceptable_paraphrases": [
+          "dad",
+          "cholesterol medication",
+          "about 10 years",
+          "roughly a decade",
+          "9-10 years"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming maternal grandfather's diabetes at 52 is the earliest cardiovascular benchmark",
+          "using the template example age of 68 instead of 71 for paternal grandmother",
+          "calculating from age 39 instead of 38 without noting the upcoming birthday"
+        ],
+        "harmless_extra": [
+          "mentioning that type 2 diabetes at 52 is the second benchmark",
+          "noting the paternal grandmother's stroke at 71 as a third data point",
+          "mentioning the user turns 39 in September"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses 'heart disease at age 68' from the template example instead of 'stroke at age 71' for the paternal grandmother.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user is currently 38 years old, turning 39 in September",
+        "Fact 2: The user's father started statins for high cholesterol at age 48",
+        "Fact 3: The user's maternal grandfather was diagnosed with type 2 diabetes around age 52",
+        "Fact 4: The user's paternal grandmother died of a stroke at age 71",
+        "Inference: Among the three cardiovascular-related onset ages (48, 52, 71), the earliest is the father's statin start at 48",
+        "Inference: 48 minus 38 = 10 years until the user reaches the age of the earliest cardiovascular-related diagnosis in the family"
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I'm 38 right now, turning 39 in September"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my dad has been on statins for high cholesterol since he was 48"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my maternal grandfather was diagnosed with type 2 diabetes when he was around 52 years old"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my paternal grandmother died of a stroke at 71"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "My doctor wants to know how many years I have before I reach the age when the earliest cardiovascular-related diagnosis appeared among my relatives. Based on my age and my family history, calculate that window and explain which relative's diagnosis sets the benchmark.",
+      "expected_answer": "Your father started statins for high cholesterol at age 48, which is the earliest cardiovascular-related diagnosis age among your relatives. You are currently 38, so you have approximately 10 years before reaching age 48. Your father's statin start sets the benchmark, ahead of your maternal grandfather's type 2 diabetes diagnosis at 52 (about 14 years away) and your paternal grandmother's stroke at 71 (about 33 years away).",
+      "gold_memory_state": "User is 38 years old (turning 39 in September). Father started statins at age 48 for high cholesterol. Maternal grandfather diagnosed with type 2 diabetes around age 52. Paternal grandmother died of stroke at 71. All three are cardiovascular-related conditions with known onset ages.",
+      "judge_rubric": {
+        "must_include": [
+          "father",
+          "statins",
+          "age 48",
+          "approximately 10 years",
+          "earliest"
+        ],
+        "acceptable_paraphrases": [
+          "dad",
+          "cholesterol medication",
+          "about 10 years",
+          "roughly a decade",
+          "9-10 years"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming maternal grandfather's diabetes at 52 is the earliest cardiovascular benchmark",
+          "using the template example age of 68 instead of 71 for paternal grandmother",
+          "calculating from age 39 instead of 38 without noting the upcoming birthday"
+        ],
+        "harmless_extra": [
+          "mentioning that type 2 diabetes at 52 is the second benchmark",
+          "noting the paternal grandmother's stroke at 71 as a third data point",
+          "mentioning the user turns 39 in September"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses 'heart disease at age 68' from the template example instead of 'stroke at age 71' for the paternal grandmother.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user is currently 38 years old, turning 39 in September",
+        "Fact 2: The user's father started statins for high cholesterol at age 48",
+        "Fact 3: The user's maternal grandfather was diagnosed with type 2 diabetes around age 52",
+        "Fact 4: The user's paternal grandmother died of a stroke at age 71",
+        "Inference: Among the three cardiovascular-related onset ages (48, 52, 71), the earliest is the father's statin start at 48",
+        "Inference: 48 minus 38 = 10 years until the user reaches the age of the earliest cardiovascular-related diagnosis in the family"
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I'm 38 right now, turning 39 in September"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my dad has been on statins for high cholesterol since he was 48"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my maternal grandfather was diagnosed with type 2 diabetes when he was around 52 years old"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my paternal grandmother died of a stroke at 71"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What medical conditions did my paternal grandfather have?",
+      "expected_answer": "I don't have any medical history for your paternal grandfather. You haven't shared that information with me.",
+      "gold_memory_state": "No paternal grandfather medical history was ever provided. Neighboring paternal-side facts: father has high cholesterol (statins since age 48, currently 67); paternal grandmother died of stroke at 71 with possible hypertension. The user's uncle on the paternal side had a benign polyp removed (not cancer), but this is contextual and not a gold operation for the paternal grandfather.",
+      "judge_rubric": {
+        "must_include": [
+          "no information",
+          "not provided"
+        ],
+        "acceptable_paraphrases": [
+          "haven't shared",
+          "no record",
+          "don't have that",
+          "wasn't mentioned"
+        ],
+        "must_not_include": [
+          "stroke",
+          "hypertension",
+          "high cholesterol",
+          "diabetes",
+          "any specific medical condition attributed to paternal grandfather"
+        ],
+        "harmful_extra": [
+          "borrowing the paternal grandmother's stroke and attributing it to the paternal grandfather",
+          "borrowing the father's high cholesterol and attributing it to the paternal grandfather",
+          "inventing any medical condition for the paternal grandfather"
+        ],
+        "harmless_extra": [
+          "father's high cholesterol history",
+          "paternal grandmother's stroke history"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model invents or borrows a medical condition from a neighboring paternal-side relative (father, paternal grandmother) and attributes it to the paternal grandfather.",
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my dad has been on statins for high cholesterol since he was 48"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my paternal grandmother died of a stroke at 71"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What medical conditions did my paternal grandfather have?",
+      "expected_answer": "I don't have any medical history for your paternal grandfather. You haven't shared that information with me.",
+      "gold_memory_state": "No paternal grandfather medical history was ever provided. Neighboring paternal-side facts: father has high cholesterol (statins since age 48, currently 67); paternal grandmother died of stroke at 71 with possible hypertension. The user's uncle on the paternal side had a benign polyp removed (not cancer), but this is contextual and not a gold operation for the paternal grandfather.",
+      "judge_rubric": {
+        "must_include": [
+          "no information",
+          "not provided"
+        ],
+        "acceptable_paraphrases": [
+          "haven't shared",
+          "no record",
+          "don't have that",
+          "wasn't mentioned"
+        ],
+        "must_not_include": [
+          "stroke",
+          "hypertension",
+          "high cholesterol",
+          "diabetes",
+          "any specific medical condition attributed to paternal grandfather"
+        ],
+        "harmful_extra": [
+          "borrowing the paternal grandmother's stroke and attributing it to the paternal grandfather",
+          "borrowing the father's high cholesterol and attributing it to the paternal grandfather",
+          "inventing any medical condition for the paternal grandfather"
+        ],
+        "harmless_extra": [
+          "father's high cholesterol history",
+          "paternal grandmother's stroke history"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model invents or borrows a medical condition from a neighboring paternal-side relative (father, paternal grandmother) and attributes it to the paternal grandfather.",
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my dad has been on statins for high cholesterol since he was 48"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my paternal grandmother died of a stroke at 71"
+        }
+      ]
+    }
+  ]
+}

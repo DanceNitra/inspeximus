@@ -1,0 +1,977 @@
+{
+  "target_fact": "User's Portuguese writing course placement test vocabulary score, tracked through multiple corrections, alongside related language learning facts",
+  "operation_type": "TrajectoryOps",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "vocab_score_chain",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I got a 74 out of 100 on the vocabulary section of the placement test"
+      },
+      "target": {
+        "target_id": "pt_vocab_score",
+        "target_name": "Portuguese writing course placement test vocabulary score"
+      },
+      "old_value": null,
+      "new_value": "74 out of 100",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I got a 74 out of 100 on the vocabulary section of the placement test"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "The course runs for eight weeks and it started on May 8th"
+      },
+      "target": {
+        "target_id": "pt_course_details",
+        "target_name": "Portuguese writing course start date and duration"
+      },
+      "old_value": null,
+      "new_value": "8-week course starting May 8th via WriteInPT",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The course runs for eight weeks and it started on May 8th"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "vocab_score_chain",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I double-checked the email from WriteInPT and my vocabulary score was actually 72, not 74"
+      },
+      "target": {
+        "target_id": "pt_vocab_score",
+        "target_name": "Portuguese writing course placement test vocabulary score"
+      },
+      "old_value": "74 out of 100",
+      "new_value": "72 out of 100",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I got a 74 out of 100 on the vocabulary section of the placement test"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I double-checked the email from WriteInPT and my vocabulary score was actually 72, not 74"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "vocab_score_chain",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 3,
+        "quote": "Professor Cláudia Mendes sent a note saying they recalibrated the scoring rubric and my adjusted vocabulary score should now be 78"
+      },
+      "target": {
+        "target_id": "pt_vocab_score",
+        "target_name": "Portuguese writing course placement test vocabulary score"
+      },
+      "old_value": "72 out of 100",
+      "new_value": "78 out of 100",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Professor Cláudia Mendes sent a note saying they recalibrated the scoring rubric and my adjusted vocabulary score should now be 78"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "vocab_score_chain",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "I just got a follow-up email from WriteInPT support saying the recalibration only applies to European Portuguese test takers, so my original corrected score of 72 stands"
+      },
+      "target": {
+        "target_id": "pt_vocab_score",
+        "target_name": "Portuguese writing course placement test vocabulary score"
+      },
+      "old_value": "78 out of 100",
+      "new_value": "72 out of 100",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I double-checked the email from WriteInPT and my vocabulary score was actually 72, not 74"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I just got a follow-up email from WriteInPT support saying the recalibration only applies to European Portuguese test takers, so my original corrected score of 72 stands"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish initial facts about Portuguese course and placement score",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to tell you about this Portuguese writing course I signed up for. It's through a platform called WriteInPT and the instructor is Professor Cláudia Mendes. I specifically chose a Brazilian Portuguese track because I have zero interest in European Portuguese grammar drills — they're tedious and rigid. I like how Brazilian Portuguese flows naturally in everyday conversation."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a great choice! It makes total sense to pick a course that aligns with how you actually use the language. Brazilian Portuguese definitely has that characteristic informality and rhythmic flow in everyday speech that sets it apart from European Portuguese. Professor Cláudia Mendes — I'll keep that name noted. Since you grew up speaking Brazilian Portuguese, a writing-focused course should help you strengthen the formal side while keeping that natural feel you enjoy. Did you have to take any kind of placement assessment before starting?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, there was a placement test. I got a 74 out of 100 on the vocabulary section of the placement test. Honestly I was a little disappointed — I thought I'd do better given that Portuguese is my native language. But I guess my reading and writing skills have slipped since I moved to the US when I was about eleven. My spoken Portuguese is still solid though, especially from my weekly calls with my grandmother."
+        },
+        {
+          "role": "assistant",
+          "content": "A 74 on vocabulary is honestly not bad at all, especially considering you've been primarily operating in English for years. There's a big difference between conversational fluency and formal written vocabulary — plenty of heritage speakers experience that gap. The fact that you maintain weekly calls with your grandmother in Portuguese means your oral skills stay sharp, which is a fantastic foundation. The writing course should help bridge that gap between your spoken comfort and written precision. What does the course structure look like — how long does it run?"
+        },
+        {
+          "role": "user",
+          "content": "The course runs for eight weeks and it started on May 8th. So I'm already a couple weeks into it. The assignments are interesting — we do creative writing exercises, short essays, that kind of thing. I've also been listening to a lot of MPB lately, mostly Caetano Veloso and Maria Bethânia. I love how the nasal vowels kind of hum in Portuguese lyrics. English songs just don't hit me the same way emotionally."
+        },
+        {
+          "role": "assistant",
+          "content": "So you're already getting into the swing of the coursework — that's exciting. An eight-week course starting May 8th means you'd be wrapping up around early July, which is a nice focused timeframe. Creative writing exercises and short essays are perfect for rebuilding that written fluency muscle. And I love that you're supplementing with MPB listening — Caetano Veloso and Maria Bethânia are incredible artists. The musicality of Portuguese, especially those nasal vowels, really does carry an emotional weight that's hard to replicate in English. It's like the language itself becomes part of the melody."
+        },
+        {
+          "role": "user",
+          "content": "Exactly, you get it. Oh, I also wanted to mention — my cousin Renata moved to Lisbon recently and she's been struggling with European Portuguese pronunciation differences even though she grew up speaking Brazilian Portuguese like me. She says the vowel sounds are way more different than she expected. I found that kind of funny honestly. We're both from São Paulo originally."
+        },
+        {
+          "role": "assistant",
+          "content": "That's really interesting about Renata! It's one of those things people underestimate — the gap between Brazilian and European Portuguese can be surprisingly wide, especially in pronunciation. The vowel reduction in European Portuguese is much more aggressive, and the cadence is quite different. It makes sense that someone who grew up with Brazilian Portuguese in São Paulo would find Lisbon speech patterns jarring at first. It's almost like going from American English to a thick Scottish accent — technically the same language but the phonetics can throw you off completely. Hopefully she adjusts with time living there."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "correct the vocabulary score and discuss course progress",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, quick update on the Portuguese course. I just finished the second week's assignment — it was a short personal essay about a childhood memory. I wrote about Carnaval in São Paulo, the blocos in my grandmother's neighborhood. Professor Cláudia gave me good feedback but said I need to watch my verb conjugations in the subjunctive mood. That tracks honestly."
+        },
+        {
+          "role": "assistant",
+          "content": "Writing about Carnaval and the blocos sounds like a wonderful topic choice — very personal and rich with sensory detail. The subjunctive mood is notoriously tricky even for native speakers, so don't be too hard on yourself. It's one of those areas where spoken Brazilian Portuguese often simplifies or avoids the subjunctive entirely, so when you switch to formal writing, those conjugations can feel unfamiliar. Professor Cláudia's feedback sounds constructive and targeted, which is exactly what you want from a course like this. Are you finding the weekly workload manageable alongside everything else?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah it's manageable. Actually, I need to correct something I told you before. I double-checked the email from WriteInPT and my vocabulary score was actually 72, not 74. I must have misremembered. Not a huge difference but I want to be accurate about it. Seventy-two out of a hundred. I remember feeling a bit deflated when I first saw it."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for the correction — I've noted that your vocabulary score is 72 out of 100, not 74. You're right that it's not a massive difference, but accuracy matters, especially when you're tracking your own progress. A 72 is still a solid starting point, and by the end of the eight-week course you'll likely see noticeable improvement in your written vocabulary range. The fact that you felt deflated shows you care about your Portuguese proficiency, which is motivating in itself. Once you finish the course, you could even retake a similar assessment to measure your growth objectively."
+        },
+        {
+          "role": "user",
+          "content": "That's a good idea actually. I've also been trying to read more in Portuguese. I picked up 'Torto Arado' by Itamar Vieira Junior a few weeks ago. Got through about sixty pages but my reading speed has dropped a lot compared to when I was a teenager. It was honestly a little discouraging — I felt defeated for a couple days, like I'd let something slip away without noticing."
+        },
+        {
+          "role": "assistant",
+          "content": "I can understand that feeling — noticing a skill you once had naturally has diminished can be genuinely disheartening. But sixty pages of 'Torto Arado' is nothing to dismiss; that's a beautifully written but linguistically rich novel. Your reading speed will come back with practice, especially now that you're actively engaging with Portuguese through the writing course, your grandmother's weekly calls, and MPB listening. Language attrition is normal for heritage speakers who've lived primarily in another language environment for years. The important thing is you're actively reversing it. Give yourself grace — the muscle memory is still there underneath."
+        },
+        {
+          "role": "user",
+          "content": "You're right, I appreciate that. My mom actually mentioned last week that she's been mixing up Portuguese and English more than usual. She called a garfo a fork mid-sentence while talking to my aunt and didn't even notice. She's been in the US over twenty years so I guess that makes sense. It made me more determined to keep my Portuguese strong though.\n\nThanks. Oh, one more thing — that Portuguese conversation group I used to attend on Thursday evenings at the café on Elm Street? That wrapped up at the end of March. The organizer moved away so it's done. No need to keep track of that for me anymore. I'm focusing my energy on the WriteInPT course and my own reading practice now."
+        },
+        {
+          "role": "assistant",
+          "content": "Your mom's experience is a perfect example of natural language attrition — after twenty-plus years of daily English immersion, those cross-language intrusions become almost inevitable. The garfo-to-fork switch is classic code-mixing, and the fact that she didn't even notice shows how deeply integrated both languages have become in her processing. It's actually a well-documented phenomenon in bilingual linguistics. Your determination to keep your Portuguese strong is admirable and you're doing all the right things: the writing course, reading Brazilian literature, MPB, and those weekly calls with your grandmother. That's a comprehensive approach.\n\nGot it — the Thursday evening Portuguese conversation group at the Elm Street café is no longer active since the organizer left at the end of March. I won't reference that going forward. It sounds like you've naturally replaced that social practice element with a more structured approach through the WriteInPT course, plus your independent reading with 'Torto Arado' and the organic conversation practice from your grandmother's weekly calls. That's actually a more well-rounded language maintenance strategy. The writing course gives you formal instruction, the reading builds vocabulary, and the calls keep your spoken fluency alive. You're covering all the bases."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "introduce tentative score recalibration, then confirm revert; adversarial injection",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, so I have a kind of interesting update about the WriteInPT course. I just submitted my third week's assignment — this one was about describing a place that feels like home. I wrote about my grandmother's kitchen in São Paulo, the smell of pão de queijo baking. Professor Cláudia said my descriptive vocabulary is improving noticeably, which felt really good to hear."
+        },
+        {
+          "role": "assistant",
+          "content": "That's wonderful feedback from Professor Cláudia! Writing about your grandmother's kitchen and pão de queijo sounds incredibly evocative — the sensory details of smell and place are powerful in descriptive writing. The fact that she's already noticing vocabulary improvement after just three weeks is encouraging, especially given where you started with your placement score. It sounds like the combination of the course assignments and your independent reading is paying off. Descriptive writing in particular benefits from that deep emotional connection to the subject matter, and you clearly have that with your grandmother's home. Keep that momentum going."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, it felt validating. But here's the thing — Professor Cláudia Mendes sent a note saying they recalibrated the scoring rubric and my adjusted vocabulary score should now be 78. Something about how the original rubric was weighted too heavily toward formal register vocabulary that isn't common in Brazilian Portuguese everyday usage. So they adjusted it upward for Brazilian Portuguese track students."
+        },
+        {
+          "role": "assistant",
+          "content": "Oh interesting — so the recalibration bumped your vocabulary score from 72 to 78? That's a meaningful jump and the reasoning makes sense. If the original rubric penalized students for not knowing formal European Portuguese register terms that aren't commonly used in Brazilian Portuguese conversation, then adjusting for the Brazilian track is fair. A 78 puts you in a stronger starting position than you initially thought. That must feel a bit vindicating after feeling deflated about the original score. It also aligns with Professor Cláudia's observation that your descriptive vocabulary is already improving — you may have had a higher baseline than the original test reflected."
+        },
+        {
+          "role": "user",
+          "content": "I just got a follow-up email from WriteInPT support saying the recalibration only applies to European Portuguese test takers, so my original corrected score of 72 stands. The note from Professor Cláudia was sent to all students by mistake apparently. So yeah, back to 72. A little annoying but whatever, the number doesn't change how the course is going."
+        },
+        {
+          "role": "assistant",
+          "content": "Ah, that's a bit of a rollercoaster — going from 72 to thinking it was 78 and then back to 72. But you're absolutely right that the score doesn't define your actual progress. Professor Cláudia's direct feedback about your improving descriptive vocabulary is far more meaningful than any placement number. And honestly, a 72 as a starting benchmark just means you have a clearer baseline to measure growth against when the eight weeks are done. The fact that you're already getting positive assignment feedback in week three tells you everything you need to know about your trajectory. Focus on the work, not the number."
+        },
+        {
+          "role": "user",
+          "content": "Exactly my thinking. By the way, I was chatting with Renata yesterday and she mentioned that her colleague in Lisbon — some guy named Pedro — scored an 85 on a similar WriteInPT European Portuguese placement vocabulary test. She was kind of bragging on his behalf which was funny. Anyway, I'm not comparing myself to anyone, I'm just focused on my own progress with the Brazilian Portuguese track.\n\nYeah, totally. I'm also thinking about what to do after this eight-week course ends. Since it started May 8th, it should wrap up around early July. I might look into a follow-up course or maybe start a reading group. For now though I'm just enjoying the process — the writing exercises, the MPB listening, the Sunday calls with my grandmother. It all feels like I'm reconnecting with something important."
+        },
+        {
+          "role": "assistant",
+          "content": "Ha, that's classic Renata energy — casually dropping Pedro's 85 into conversation. But you're right not to compare. An 85 on a European Portuguese track test and your 72 on the Brazilian Portuguese track are essentially measuring different things given how much the vocabulary registers differ. Pedro's living in Lisbon and presumably immersed in European Portuguese daily, so that context matters enormously. Your situation as a heritage Brazilian Portuguese speaker living in the US is completely different. What matters is your personal growth curve, and based on Professor Cláudia's feedback, that curve is heading in the right direction. Stay focused on your own lane.\n\nThat timeline checks out — an eight-week course from May 8th would put your completion around early July, so you still have several weeks of structured learning ahead. A follow-up course or reading group would be a natural next step to maintain momentum. You could even look into Brazilian literature discussion groups online to combine reading practice with conversation. But I love that you're enjoying the process right now rather than just racing toward an endpoint. The writing exercises, MPB, and Sunday calls with your grandmother create this beautiful ecosystem of language engagement — formal, artistic, and deeply personal all at once. That's the kind of holistic approach that leads to lasting reconnection."
+        }
+      ]
+    }
+  ],
+  "state_checkpoints": [
+    {
+      "checkpoint_id": "c1",
+      "description": "After segment 1: pt_vocab_score = 74 out of 100 (confirmed). pt_course_details = 8-week course starting May 8th via WriteInPT (confirmed)."
+    },
+    {
+      "checkpoint_id": "c2",
+      "description": "After segment 2: pt_vocab_score = 72 out of 100 (confirmed, corrected from 74). pt_course_details = 8-week course starting May 8th via WriteInPT (confirmed, unchanged)."
+    },
+    {
+      "checkpoint_id": "c3",
+      "description": "After segment 3: pt_vocab_score = 72 out of 100 (confirmed; tentative 78 was rejected as inapplicable recalibration). pt_course_details = 8-week course starting May 8th via WriteInPT (confirmed, unchanged). Adversarial noise: Pedro's 85 on European Portuguese track mentioned by Renata's colleague — not user's score."
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations about my Portuguese writing course, what did I tell you about my placement test vocabulary score and how that number evolved?",
+      "expected_answer": "You initially reported a vocabulary score of 74 out of 100 on the WriteInPT placement test. You then corrected it to 72 out of 100 after double-checking the email from WriteInPT. Later, you mentioned that Professor Cláudia Mendes sent a note about a recalibrated score of 78, but a follow-up email from WriteInPT support clarified that the recalibration only applied to European Portuguese test takers, so your score reverted to 72 out of 100.",
+      "gold_memory_state": "pt_vocab_score = 72 out of 100 (confirmed). The trajectory was: 74 → 72 (confirmed correction) → 78 (tentative recalibration, rejected) → 72 (confirmed revert). pt_course_details = 8-week course starting May 8th via WriteInPT (confirmed, unchanged).",
+      "judge_rubric": {
+        "must_include": [
+          "74",
+          "72",
+          "78",
+          "recalibration only applied to European Portuguese",
+          "final score is 72"
+        ],
+        "acceptable_paraphrases": [
+          "the adjusted score didn't apply to Brazilian Portuguese track",
+          "score went back to 72"
+        ],
+        "must_not_include": [
+          "final score is 78",
+          "final score is 74"
+        ],
+        "harmful_extra": [
+          "claiming 78 is the current score",
+          "claiming 74 is the current score"
+        ],
+        "harmless_extra": [
+          "mentioning Professor Cláudia Mendes",
+          "mentioning WriteInPT support email"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model presents 74 or 78 as the current score.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model does not capture the correct sequence: 74 → 72 → 78 (tentative) → 72.",
+        "final_state": "Fails if the final reported score is not 72.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I got a 74 out of 100 on the vocabulary section of the placement test"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I double-checked the email from WriteInPT and my vocabulary score was actually 72, not 74"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Professor Cláudia Mendes sent a note saying they recalibrated the scoring rubric and my adjusted vocabulary score should now be 78"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I just got a follow-up email from WriteInPT support saying the recalibration only applies to European Portuguese test takers, so my original corrected score of 72 stands"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations about my Portuguese writing course, what did I tell you about my placement test vocabulary score and how that number evolved?",
+      "expected_answer": "You initially reported a vocabulary score of 74 out of 100 on the WriteInPT placement test. You then corrected it to 72 out of 100 after double-checking the email from WriteInPT. Later, you mentioned that Professor Cláudia Mendes sent a note about a recalibrated score of 78, but a follow-up email from WriteInPT support clarified that the recalibration only applied to European Portuguese test takers, so your score reverted to 72 out of 100.",
+      "gold_memory_state": "pt_vocab_score = 72 out of 100 (confirmed). The trajectory was: 74 → 72 (confirmed correction) → 78 (tentative recalibration, rejected) → 72 (confirmed revert). pt_course_details = 8-week course starting May 8th via WriteInPT (confirmed, unchanged).",
+      "judge_rubric": {
+        "must_include": [
+          "74",
+          "72",
+          "78",
+          "recalibration only applied to European Portuguese",
+          "final score is 72"
+        ],
+        "acceptable_paraphrases": [
+          "the adjusted score didn't apply to Brazilian Portuguese track",
+          "score went back to 72"
+        ],
+        "must_not_include": [
+          "final score is 78",
+          "final score is 74"
+        ],
+        "harmful_extra": [
+          "claiming 78 is the current score",
+          "claiming 74 is the current score"
+        ],
+        "harmless_extra": [
+          "mentioning Professor Cláudia Mendes",
+          "mentioning WriteInPT support email"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model presents 74 or 78 as the current score.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model does not capture the correct sequence: 74 → 72 → 78 (tentative) → 72.",
+        "final_state": "Fails if the final reported score is not 72.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I got a 74 out of 100 on the vocabulary section of the placement test"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I double-checked the email from WriteInPT and my vocabulary score was actually 72, not 74"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Professor Cláudia Mendes sent a note saying they recalibrated the scoring rubric and my adjusted vocabulary score should now be 78"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I just got a follow-up email from WriteInPT support saying the recalibration only applies to European Portuguese test takers, so my original corrected score of 72 stands"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "My cousin Renata mentioned her colleague Pedro's score on a similar WriteInPT placement vocabulary test. If I need to report my own placement vocabulary result for the Brazilian Portuguese track, which score belongs to me and does Pedro's result have any bearing on my record?",
+      "expected_answer": "Your placement vocabulary score is 72 out of 100, on the Brazilian Portuguese track. Pedro's score of 85 is from a European Portuguese track test taken by Renata's colleague in Lisbon and has no bearing on your record.",
+      "gold_memory_state": "pt_vocab_score = 72 out of 100 (confirmed, Brazilian Portuguese track). Pedro's 85 is a separate person's score on a different track (European Portuguese) and is not part of the user's profile. pt_course_details = 8-week course starting May 8th via WriteInPT (confirmed, unchanged).",
+      "judge_rubric": {
+        "must_include": [
+          "72",
+          "user's own score",
+          "Pedro's score does not affect user's record"
+        ],
+        "acceptable_paraphrases": [
+          "Pedro's 85 is irrelevant to your placement",
+          "your score is 72 on the Brazilian Portuguese track"
+        ],
+        "must_not_include": [
+          "user's score is 78",
+          "user's score is 74",
+          "user's score is 85"
+        ],
+        "harmful_extra": [
+          "conflating Pedro's score with the user's score",
+          "treating 78 as the user's current score"
+        ],
+        "harmless_extra": [
+          "mentioning that Pedro is in Lisbon",
+          "mentioning Renata"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model reports 74 or 78 as the user's current score.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if model assigns Pedro's 85 or the tentative 78 to the user.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I double-checked the email from WriteInPT and my vocabulary score was actually 72, not 74"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I just got a follow-up email from WriteInPT support saying the recalibration only applies to European Portuguese test takers, so my original corrected score of 72 stands"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "her colleague in Lisbon — some guy named Pedro — scored an 85 on a similar WriteInPT European Portuguese placement vocabulary test"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "My cousin Renata mentioned her colleague Pedro's score on a similar WriteInPT placement vocabulary test. If I need to report my own placement vocabulary result for the Brazilian Portuguese track, which score belongs to me and does Pedro's result have any bearing on my record?",
+      "expected_answer": "Your placement vocabulary score is 72 out of 100, on the Brazilian Portuguese track. Pedro's score of 85 is from a European Portuguese track test taken by Renata's colleague in Lisbon and has no bearing on your record.",
+      "gold_memory_state": "pt_vocab_score = 72 out of 100 (confirmed, Brazilian Portuguese track). Pedro's 85 is a separate person's score on a different track (European Portuguese) and is not part of the user's profile. pt_course_details = 8-week course starting May 8th via WriteInPT (confirmed, unchanged).",
+      "judge_rubric": {
+        "must_include": [
+          "72",
+          "user's own score",
+          "Pedro's score does not affect user's record"
+        ],
+        "acceptable_paraphrases": [
+          "Pedro's 85 is irrelevant to your placement",
+          "your score is 72 on the Brazilian Portuguese track"
+        ],
+        "must_not_include": [
+          "user's score is 78",
+          "user's score is 74",
+          "user's score is 85"
+        ],
+        "harmful_extra": [
+          "conflating Pedro's score with the user's score",
+          "treating 78 as the user's current score"
+        ],
+        "harmless_extra": [
+          "mentioning that Pedro is in Lisbon",
+          "mentioning Renata"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model reports 74 or 78 as the user's current score.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if model assigns Pedro's 85 or the tentative 78 to the user.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I double-checked the email from WriteInPT and my vocabulary score was actually 72, not 74"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I just got a follow-up email from WriteInPT support saying the recalibration only applies to European Portuguese test takers, so my original corrected score of 72 stands"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "her colleague in Lisbon — some guy named Pedro — scored an 85 on a similar WriteInPT European Portuguese placement vocabulary test"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "After all the back-and-forth about my placement test vocabulary result, what score should I put on a language learning portfolio I'm assembling?",
+      "expected_answer": "72 out of 100.",
+      "gold_memory_state": "pt_vocab_score = 72 out of 100 (confirmed). The tentative recalibrated value of 78 was rejected because it only applied to European Portuguese test takers. The original initial value of 74 was also superseded by the confirmed correction to 72.",
+      "judge_rubric": {
+        "must_include": [
+          "72"
+        ],
+        "acceptable_paraphrases": [
+          "72 out of 100",
+          "72/100"
+        ],
+        "must_not_include": [
+          "78",
+          "74"
+        ],
+        "harmful_extra": [
+          "reporting 78 as the score",
+          "reporting 74 as the score",
+          "reporting 85 as the score"
+        ],
+        "harmless_extra": [
+          "mentioning it is for the Brazilian Portuguese track",
+          "mentioning WriteInPT"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses 74 (initial misreport) or 78 (tentative recalibration that was rejected). The recency trap is 78, which appeared most recently in the conversation but was explicitly reverted.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the final score is anything other than 72.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I double-checked the email from WriteInPT and my vocabulary score was actually 72, not 74"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I just got a follow-up email from WriteInPT support saying the recalibration only applies to European Portuguese test takers, so my original corrected score of 72 stands"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "After all the back-and-forth about my placement test vocabulary result, what score should I put on a language learning portfolio I'm assembling?",
+      "expected_answer": "72 out of 100.",
+      "gold_memory_state": "pt_vocab_score = 72 out of 100 (confirmed). The tentative recalibrated value of 78 was rejected because it only applied to European Portuguese test takers. The original initial value of 74 was also superseded by the confirmed correction to 72.",
+      "judge_rubric": {
+        "must_include": [
+          "72"
+        ],
+        "acceptable_paraphrases": [
+          "72 out of 100",
+          "72/100"
+        ],
+        "must_not_include": [
+          "78",
+          "74"
+        ],
+        "harmful_extra": [
+          "reporting 78 as the score",
+          "reporting 74 as the score",
+          "reporting 85 as the score"
+        ],
+        "harmless_extra": [
+          "mentioning it is for the Brazilian Portuguese track",
+          "mentioning WriteInPT"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses 74 (initial misreport) or 78 (tentative recalibration that was rejected). The recency trap is 78, which appeared most recently in the conversation but was explicitly reverted.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the final score is anything other than 72.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I double-checked the email from WriteInPT and my vocabulary score was actually 72, not 74"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I just got a follow-up email from WriteInPT support saying the recalibration only applies to European Portuguese test takers, so my original corrected score of 72 stands"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to write a short progress note for my language tutor that includes: (1) my starting vocabulary score on the placement test, (2) the name of the course platform and how long the course runs, and (3) an estimated end date for the course. Can you draft that note for me?",
+      "expected_answer": "Draft: \"I began the WriteInPT Brazilian Portuguese writing course with a placement vocabulary score of 72 out of 100. The course is 8 weeks long, starting May 8th, so it should wrap up around early July (approximately July 3rd).\"",
+      "gold_memory_state": "pt_vocab_score = 72 out of 100 (confirmed). pt_course_details = 8-week course starting May 8th via WriteInPT (confirmed). Derived end date: May 8 + 8 weeks ≈ July 3.",
+      "judge_rubric": {
+        "must_include": [
+          "72",
+          "WriteInPT",
+          "8 weeks",
+          "May 8",
+          "early July or approximately July 3"
+        ],
+        "acceptable_paraphrases": [
+          "around July 3rd",
+          "early July",
+          "beginning of July"
+        ],
+        "must_not_include": [
+          "74",
+          "78",
+          "85"
+        ],
+        "harmful_extra": [
+          "using 74 or 78 as the vocabulary score",
+          "using Pedro's score of 85"
+        ],
+        "harmless_extra": [
+          "mentioning Brazilian Portuguese track",
+          "mentioning Professor Cláudia Mendes"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses 74 (initial misreport) or 78 (rejected tentative recalibration) as the vocabulary score.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the vocabulary score is not 72 or if the course details are wrong.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's confirmed placement vocabulary score is 72 out of 100.",
+        "Fact 2: The course platform is WriteInPT and the course duration is 8 weeks.",
+        "Fact 3: The course started on May 8th.",
+        "Inference: May 8 + 8 weeks = approximately July 3rd.",
+        "Inference: The progress note should state a starting score of 72, the WriteInPT platform, an 8-week duration from May 8th, with an estimated end date around early July."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I double-checked the email from WriteInPT and my vocabulary score was actually 72, not 74"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The course runs for eight weeks and it started on May 8th"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I just got a follow-up email from WriteInPT support saying the recalibration only applies to European Portuguese test takers, so my original corrected score of 72 stands"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to write a short progress note for my language tutor that includes: (1) my starting vocabulary score on the placement test, (2) the name of the course platform and how long the course runs, and (3) an estimated end date for the course. Can you draft that note for me?",
+      "expected_answer": "Draft: \"I began the WriteInPT Brazilian Portuguese writing course with a placement vocabulary score of 72 out of 100. The course is 8 weeks long, starting May 8th, so it should wrap up around early July (approximately July 3rd).\"",
+      "gold_memory_state": "pt_vocab_score = 72 out of 100 (confirmed). pt_course_details = 8-week course starting May 8th via WriteInPT (confirmed). Derived end date: May 8 + 8 weeks ≈ July 3.",
+      "judge_rubric": {
+        "must_include": [
+          "72",
+          "WriteInPT",
+          "8 weeks",
+          "May 8",
+          "early July or approximately July 3"
+        ],
+        "acceptable_paraphrases": [
+          "around July 3rd",
+          "early July",
+          "beginning of July"
+        ],
+        "must_not_include": [
+          "74",
+          "78",
+          "85"
+        ],
+        "harmful_extra": [
+          "using 74 or 78 as the vocabulary score",
+          "using Pedro's score of 85"
+        ],
+        "harmless_extra": [
+          "mentioning Brazilian Portuguese track",
+          "mentioning Professor Cláudia Mendes"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses 74 (initial misreport) or 78 (rejected tentative recalibration) as the vocabulary score.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the vocabulary score is not 72 or if the course details are wrong.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's confirmed placement vocabulary score is 72 out of 100.",
+        "Fact 2: The course platform is WriteInPT and the course duration is 8 weeks.",
+        "Fact 3: The course started on May 8th.",
+        "Inference: May 8 + 8 weeks = approximately July 3rd.",
+        "Inference: The progress note should state a starting score of 72, the WriteInPT platform, an 8-week duration from May 8th, with an estimated end date around early July."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I double-checked the email from WriteInPT and my vocabulary score was actually 72, not 74"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The course runs for eight weeks and it started on May 8th"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I just got a follow-up email from WriteInPT support saying the recalibration only applies to European Portuguese test takers, so my original corrected score of 72 stands"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed our entire conversation history about my placement vocabulary score, what would they see as the sequence of values that came up, which ones were actually adopted versus only floated temporarily, and where things ended up?",
+      "expected_answer": "The sequence was: (1) Initially reported as 74 out of 100, which was adopted at first. (2) Corrected to 72 out of 100 after you checked the email from WriteInPT — this was adopted as the confirmed score. (3) A recalibrated score of 78 out of 100 was floated based on a note from Professor Cláudia Mendes about rubric changes, but this was only temporary. (4) WriteInPT support clarified the recalibration didn't apply to Brazilian Portuguese test takers, so the score reverted to 72 out of 100, which is the final adopted value.",
+      "gold_memory_state": "Full trajectory for pt_vocab_score: 74 (confirmed, then superseded) → 72 (confirmed correction) → 78 (tentative, rejected) → 72 (confirmed revert, final). pt_course_details = 8-week course starting May 8th via WriteInPT (unchanged throughout).",
+      "judge_rubric": {
+        "must_include": [
+          "74 as initial value",
+          "72 as corrected value",
+          "78 as temporarily floated value",
+          "78 was rejected or not adopted",
+          "final value is 72"
+        ],
+        "acceptable_paraphrases": [
+          "78 was only tentative",
+          "78 didn't apply to Brazilian Portuguese",
+          "ended at 72"
+        ],
+        "must_not_include": [
+          "final score is 78",
+          "final score is 74",
+          "85 was ever the user's score"
+        ],
+        "harmful_extra": [
+          "claiming 78 was ever formally adopted as the user's final score",
+          "including Pedro's 85 in the user's trajectory"
+        ],
+        "harmless_extra": [
+          "mentioning WriteInPT",
+          "mentioning Professor Cláudia Mendes",
+          "mentioning European Portuguese distinction"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 74 or 78 is presented as the final score.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence 74 → 72 → 78 (tentative) → 72 is not correctly ordered or if any step is missing.",
+        "final_state": "Fails if the final state is not 72 out of 100.",
+        "intermediate_state": "Fails if the model does not distinguish 78 as tentative/rejected versus 72 as confirmed.",
+        "trajectory_provenance": "Fails if the model cannot attribute the correction to the WriteInPT email check and the revert to the WriteInPT support clarification about European Portuguese."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: User initially reported vocabulary score as 74 out of 100 — this was the first adopted value.",
+        "Step 2: User corrected to 72 out of 100 after verifying the WriteInPT email — 74 was superseded, 72 became the confirmed value.",
+        "Step 3: Professor Cláudia Mendes sent a note about rubric recalibration suggesting an adjusted score of 78 — this was tentatively introduced.",
+        "Step 4: WriteInPT support clarified the recalibration only applies to European Portuguese test takers — the 78 was rejected.",
+        "Inference: The final confirmed value is 72 out of 100; the 78 was never formally adopted for the user's Brazilian Portuguese track placement."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I got a 74 out of 100 on the vocabulary section of the placement test"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I double-checked the email from WriteInPT and my vocabulary score was actually 72, not 74"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Professor Cláudia Mendes sent a note saying they recalibrated the scoring rubric and my adjusted vocabulary score should now be 78"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I just got a follow-up email from WriteInPT support saying the recalibration only applies to European Portuguese test takers, so my original corrected score of 72 stands"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed our entire conversation history about my placement vocabulary score, what would they see as the sequence of values that came up, which ones were actually adopted versus only floated temporarily, and where things ended up?",
+      "expected_answer": "The sequence was: (1) Initially reported as 74 out of 100, which was adopted at first. (2) Corrected to 72 out of 100 after you checked the email from WriteInPT — this was adopted as the confirmed score. (3) A recalibrated score of 78 out of 100 was floated based on a note from Professor Cláudia Mendes about rubric changes, but this was only temporary. (4) WriteInPT support clarified the recalibration didn't apply to Brazilian Portuguese test takers, so the score reverted to 72 out of 100, which is the final adopted value.",
+      "gold_memory_state": "Full trajectory for pt_vocab_score: 74 (confirmed, then superseded) → 72 (confirmed correction) → 78 (tentative, rejected) → 72 (confirmed revert, final). pt_course_details = 8-week course starting May 8th via WriteInPT (unchanged throughout).",
+      "judge_rubric": {
+        "must_include": [
+          "74 as initial value",
+          "72 as corrected value",
+          "78 as temporarily floated value",
+          "78 was rejected or not adopted",
+          "final value is 72"
+        ],
+        "acceptable_paraphrases": [
+          "78 was only tentative",
+          "78 didn't apply to Brazilian Portuguese",
+          "ended at 72"
+        ],
+        "must_not_include": [
+          "final score is 78",
+          "final score is 74",
+          "85 was ever the user's score"
+        ],
+        "harmful_extra": [
+          "claiming 78 was ever formally adopted as the user's final score",
+          "including Pedro's 85 in the user's trajectory"
+        ],
+        "harmless_extra": [
+          "mentioning WriteInPT",
+          "mentioning Professor Cláudia Mendes",
+          "mentioning European Portuguese distinction"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 74 or 78 is presented as the final score.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence 74 → 72 → 78 (tentative) → 72 is not correctly ordered or if any step is missing.",
+        "final_state": "Fails if the final state is not 72 out of 100.",
+        "intermediate_state": "Fails if the model does not distinguish 78 as tentative/rejected versus 72 as confirmed.",
+        "trajectory_provenance": "Fails if the model cannot attribute the correction to the WriteInPT email check and the revert to the WriteInPT support clarification about European Portuguese."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: User initially reported vocabulary score as 74 out of 100 — this was the first adopted value.",
+        "Step 2: User corrected to 72 out of 100 after verifying the WriteInPT email — 74 was superseded, 72 became the confirmed value.",
+        "Step 3: Professor Cláudia Mendes sent a note about rubric recalibration suggesting an adjusted score of 78 — this was tentatively introduced.",
+        "Step 4: WriteInPT support clarified the recalibration only applies to European Portuguese test takers — the 78 was rejected.",
+        "Inference: The final confirmed value is 72 out of 100; the 78 was never formally adopted for the user's Brazilian Portuguese track placement."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I got a 74 out of 100 on the vocabulary section of the placement test"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I double-checked the email from WriteInPT and my vocabulary score was actually 72, not 74"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Professor Cláudia Mendes sent a note saying they recalibrated the scoring rubric and my adjusted vocabulary score should now be 78"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I just got a follow-up email from WriteInPT support saying the recalibration only applies to European Portuguese test takers, so my original corrected score of 72 stands"
+        }
+      ]
+    }
+  ]
+}

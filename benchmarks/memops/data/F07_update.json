@@ -1,0 +1,824 @@
+{
+  "target_fact": "Current sertraline dosage prescribed by Dr. Huang",
+  "operation_type": "Update",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "sertraline_dosage",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "Dr. Huang started me on sertraline 50mg daily back on March 3rd"
+      },
+      "target": {
+        "target_id": "sertraline_dosage",
+        "target_name": "current daily sertraline dosage"
+      },
+      "old_value": null,
+      "new_value": "50mg daily",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Dr. Huang started me on sertraline 50mg daily back on March 3rd"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "sertraline_dosage",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "she bumped me up to 75mg about three weeks ago, so mid-April"
+      },
+      "target": {
+        "target_id": "sertraline_dosage",
+        "target_name": "current daily sertraline dosage"
+      },
+      "old_value": "50mg daily",
+      "new_value": "75mg daily",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "she bumped me up to 75mg about three weeks ago, so mid-April"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "sertraline_dosage",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "Dr. Huang actually brought me back down to 50mg last week because the 75mg was giving me bad nausea"
+      },
+      "target": {
+        "target_id": "sertraline_dosage",
+        "target_name": "current daily sertraline dosage"
+      },
+      "old_value": "75mg daily",
+      "new_value": "50mg daily",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Dr. Huang actually brought me back down to 50mg last week because the 75mg was giving me bad nausea"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "sertraline_dosage",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 7,
+        "quote": "Dr. Huang told me at the last session she's planning to try me on 100mg starting at my May 20th appointment"
+      },
+      "target": {
+        "target_id": "sertraline_dosage",
+        "target_name": "current daily sertraline dosage"
+      },
+      "old_value": "50mg daily",
+      "new_value": "100mg daily",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Dr. Huang told me at the last session she's planning to try me on 100mg starting at my May 20th appointment"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "My next appointment with Dr. Huang is May 20th at 2:30 p.m."
+      },
+      "target": {
+        "target_id": "next_dr_huang_appointment",
+        "target_name": "next scheduled appointment with Dr. Huang"
+      },
+      "old_value": null,
+      "new_value": "May 20th at 2:30 p.m.",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My next appointment with Dr. Huang is May 20th at 2:30 p.m."
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "My PHQ-9 dropped from 17 to 11 as of the mid-April session"
+      },
+      "target": {
+        "target_id": "phq9_score",
+        "target_name": "most recent PHQ-9 score"
+      },
+      "old_value": null,
+      "new_value": "11 (down from 17)",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My PHQ-9 dropped from 17 to 11 as of the mid-April session"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish initial sertraline dosage, appointment date, and begin dosage update chain",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to get some of my mental health info organized so I can keep track of things. Dr. Huang started me on sertraline 50mg daily back on March 3rd. She's my psychiatrist at Riverside Behavioral Health Clinic on 5th Avenue. I take it every morning with breakfast, though I miss the occasional day."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for sharing that — I've noted the key details. You're currently taking sertraline 50mg daily, prescribed by Dr. Huang at Riverside Behavioral Health Clinic on 5th Avenue, starting March 3rd. You take it in the morning with breakfast, and occasionally miss a day. If you'd like, I can help you set up a simple tracking system or reminders. Is there anything else you'd like me to keep on file regarding your treatment?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, please also note this — it's really important. My next appointment with Dr. Huang is May 20th at 2:30 p.m. I missed my last one because I wrote the wrong time down and got hit with a $75 cancellation fee, so I absolutely cannot mess this one up. Can you help me remember that?"
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, I've recorded that. Your next appointment with Dr. Huang is on May 20th at 2:30 p.m. I completely understand not wanting a repeat of the cancellation fee situation — $75 is no small thing, and the frustration of making that kind of mistake can really linger. When the date gets closer, feel free to ask me to confirm the details. Would you like me to draft a reminder note you can put somewhere visible, like on your fridge or phone lock screen?"
+        },
+        {
+          "role": "user",
+          "content": "That's a good idea, I'll think about it. Oh, one update on the medication — she bumped me up to 75mg about three weeks ago, so mid-April. The 50mg was working okay but she thought going a bit higher might help with the residual morning anxiety I was still having. So I'm on 75mg now."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it, I've updated your dosage. You're now on sertraline 75mg daily, increased from 50mg around mid-April. Dr. Huang made the change to address residual morning anxiety that the 50mg wasn't fully covering. That's a pretty standard titration step, and it sounds like she's being thoughtful about adjusting based on your symptom profile. How has the 75mg been feeling so far? Any noticeable changes in the morning anxiety or any new side effects since the increase?"
+        },
+        {
+          "role": "user",
+          "content": "Honestly, the mornings have been a little better anxiety-wise, but I've been getting some nausea in the first hour or so after taking it. Not severe, just unpleasant. I mentioned it to Dr. Huang and she said we'd monitor it. I also started journaling around late March, right after a rough work reorganization. I write by hand in a plain notebook a few times a week, usually at night."
+        },
+        {
+          "role": "assistant",
+          "content": "I appreciate you sharing that. So the 75mg is helping somewhat with morning anxiety but causing some nausea in the first hour after taking it — Dr. Huang is monitoring that. On the journaling front, that's a great habit. You started around late March after the work reorganization, writing by hand in a plain notebook a few times a week at night. Handwriting at night is a nice choice for winding down since it avoids screen stimulation. If the nausea continues, it might be worth discussing timing or food pairing with Dr. Huang at your May 20th appointment."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Report PHQ-9 score, confirm dosage reduction back to 50mg, and discuss coping strategies",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Quick update — I got my latest scores from Dr. Huang. My PHQ-9 dropped from 17 to 11 as of the mid-April session. She was pretty happy about the progress, and we switched to every-two-week sessions around that time. I was glad to hear the numbers are trending the right way."
+        },
+        {
+          "role": "assistant",
+          "content": "That's genuinely encouraging progress — going from a PHQ-9 of 17 to 11 is a meaningful drop, and it makes sense that Dr. Huang felt comfortable moving to biweekly sessions. A score of 11 is still in the moderate range, so there's room for continued improvement, but the trajectory is clearly positive. The combination of medication, journaling, and her ongoing care seems to be working. How are you feeling about the less frequent sessions? Some people find the extra space helpful, while others miss the weekly check-in."
+        },
+        {
+          "role": "user",
+          "content": "The biweekly pace is fine honestly. But here's the thing — Dr. Huang actually brought me back down to 50mg last week because the 75mg was giving me bad nausea. It wasn't going away and she decided the side effects weren't worth it at that dose. So I'm back on 50mg now."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood — I've updated your medication record. You're back on sertraline 50mg daily after the 75mg caused persistent nausea that didn't resolve. That's a reasonable clinical decision: if the side effects at a higher dose are undermining your daily comfort and compliance, stepping back to the dose that was tolerable makes sense, especially since your PHQ-9 was already improving. It sounds like Dr. Huang is being attentive to the balance between efficacy and quality of life. Are you noticing any return of the morning anxiety since going back to 50mg?"
+        },
+        {
+          "role": "user",
+          "content": "A little bit, but it's manageable. Walking helps — I go on slow walks around the neighborhood, especially on overcast days. There's something about a gray sky that feels calming to me. Bright sunny crowded days are actually kind of overwhelming. I've also been using a guided meditation app at bedtime, just a calm voice with no background music or chimes."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really thoughtful set of coping tools you've built. The slow neighborhood walks on overcast days, the voice-only meditation at bedtime, and the journaling at night — they all share a common thread of low stimulation and quiet solitude, which clearly works for your emotional regulation style. It's interesting that you find gray skies more calming than bright sunny ones; a lot of people feel that way but don't articulate it as clearly. Between the 50mg sertraline, the biweekly sessions, and these personal practices, you have a solid multi-layered approach. How often are you using the meditation app?"
+        },
+        {
+          "role": "user",
+          "content": "I used it three nights in a row last week and it helped me fall asleep faster each time. I want to keep that up. Also, my friend Marcus recently told me he's been dealing with panic attacks since last fall. He's seeing a therapist now that his wife found through their insurance. It made me think about how many people around me are quietly struggling.\n\nMaybe, we haven't really talked about it much beyond that one conversation. I think we're both still figuring things out. Anyway, I want to make sure you have my current info straight — 50mg sertraline, Dr. Huang at Riverside, next appointment May 20th at 2:30. That's the stuff I really need to keep accurate."
+        },
+        {
+          "role": "assistant",
+          "content": "Three consecutive nights with faster sleep onset is a promising start — consistency with the app could really reinforce a healthy bedtime routine alongside your journaling. As for Marcus, it takes real courage to disclose something like panic attacks, and the fact that he told you suggests he trusts you deeply. You're right that many people carry these struggles silently. It might even be comforting for both of you to know you're each navigating mental health treatment — not to compare experiences, but just to feel less alone in it. Do you think you and Marcus might support each other going forward?\n\nConfirmed — here's what I have on file: you're currently on sertraline 50mg daily, prescribed by Dr. Huang at Riverside Behavioral Health Clinic on 5th Avenue. Your next appointment is May 20th at 2:30 p.m. You switched from weekly to biweekly sessions around mid-April, and your most recent PHQ-9 score was 11, down from 17. You're also journaling by hand a few times a week at night and using a voice-only meditation app at bedtime. Everything looks consistent with what you've told me. I'll keep this current."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Introduce tentative future dosage plan, adversarial injection of old dosage, and wrap up",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I've been thinking about something. The work reorganization in late March really rattled me — I had about a week of heavy dread and insomnia, waking up at 3 or 4 a.m. and feeling like everything was pointless. That was probably the lowest point since I started treatment. I want to make sure I have better tools if something like that happens again."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like it was a really difficult period, and it's smart to think proactively about building resilience for future stressors. The dread, the early-morning waking, and the sense of pointlessness you described are classic acute stress responses layered on top of existing depression. Given what you've told me, you already have several tools that helped you come through it: the journaling you started right around that time, the walks on overcast days, and the ongoing medication and sessions with Dr. Huang. Would you like to brainstorm a concrete crisis plan — specific steps you'd follow if you notice those warning signs again?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, that would be helpful. I think the journaling kicked in almost by accident — I started writing because I couldn't sleep and it ended up being therapeutic. The walks too. I just wish I'd recognized sooner how bad things were getting instead of pushing through for a week before really addressing it."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really valuable insight — recognizing the lag between when symptoms escalate and when you take action is actually the first step in shortening it next time. Here's a rough framework we could build on: first, identify your personal early-warning signs, like the 3 a.m. waking and that heavy dread feeling. Second, set a threshold — maybe if those signs persist for two or three days, you activate your plan. Third, the plan itself: increase journaling frequency, go for a walk even if you don't feel like it, use the meditation app, and contact Dr. Huang's office to request an earlier session. Would you like me to draft this as a written checklist?"
+        },
+        {
+          "role": "user",
+          "content": "That's a good structure. Let me think about the thresholds. Also — I was looking at some old intake paperwork from when I first started with Dr. Huang, and it had my initial dosage listed. It's useful to see how things have changed since March."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a great idea to review your treatment timeline. Looking at your intake paperwork from March, you would have seen the initial 50mg listed there — and then of course you went up to 75mg in mid-April before coming back down to 50mg when the nausea was too persistent. Tracking that progression alongside your PHQ-9 improvement from 17 to 11 gives you a clearer picture of what's working. If you bring that paperwork to your May 20th appointment, Dr. Huang might appreciate seeing it as a conversation starter about next steps. Take your time with the threshold question — there's no rush."
+        },
+        {
+          "role": "user",
+          "content": "Right, about next steps — Dr. Huang told me at the last session she's planning to try me on 100mg starting at my May 20th appointment. She thinks I can tolerate a higher dose now that some time has passed since the nausea issues. So that might be coming up soon.\n\nI think I'd want to know if the nausea risk is higher going straight to 100mg versus a more gradual step. That's my main concern. Anyway, I feel like we've covered a lot today. Can you just confirm what you're holding onto for me — the key facts about my treatment?"
+        },
+        {
+          "role": "assistant",
+          "content": "That's an interesting development. So Dr. Huang is considering moving you to 100mg sertraline at your May 20th appointment, based on her assessment that enough time has passed since the nausea you experienced at 75mg. It makes sense clinically — sometimes the body adjusts differently with a larger jump after a stabilization period. Of course, that's still a plan until it actually happens, and she may reassess on the day depending on how you're feeling. For now, you're still on 50mg. Is there anything specific you'd want to discuss with her about the potential increase?\n\nOf course. Here's your current treatment summary: You're on sertraline 50mg daily, prescribed by Dr. Huang at Riverside Behavioral Health Clinic on 5th Avenue. Your next appointment is May 20th at 2:30 p.m. Your most recent PHQ-9 score is 11, down from an initial 17. You switched to biweekly sessions around mid-April. You journal by hand at night a few times a week, take slow walks on overcast days, and use a voice-only guided meditation app at bedtime. Dr. Huang has mentioned a possible increase to 100mg at your next visit, but that's pending — your current confirmed dosage is 50mg. That nausea concern is definitely worth raising with her on the 20th."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations, I mentioned my sertraline dosage a few times. Can you walk me through the key things I said about my dosage — what I initially shared and what I told you later?",
+      "expected_answer": "You initially said Dr. Huang started you on sertraline 50mg daily on March 3rd. Then you mentioned she increased it to 75mg around mid-April to address residual morning anxiety. Later, you said Dr. Huang brought you back down to 50mg because the 75mg was causing persistent nausea. Most recently, you mentioned she is planning to try 100mg starting at your May 20th appointment, though that hasn't happened yet.",
+      "gold_memory_state": "Current confirmed dosage: 50mg daily. Prior values: 50mg (initial) → 75mg (mid-April) → 50mg (after nausea). Tentative future plan: 100mg at May 20th appointment, not yet enacted.",
+      "judge_rubric": {
+        "must_include": [
+          "50mg initial",
+          "75mg increase",
+          "back to 50mg due to nausea",
+          "100mg planned for May 20th"
+        ],
+        "acceptable_paraphrases": [
+          "brought back down to 50mg",
+          "reduced to 50mg",
+          "returned to 50mg"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating 100mg is the current dosage"
+        ],
+        "harmless_extra": [
+          "mentioning March 3rd start date",
+          "mentioning Riverside Behavioral Health Clinic",
+          "mentioning morning anxiety as reason for increase"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 75mg or 100mg is presented as the current dosage.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Dr. Huang started me on sertraline 50mg daily back on March 3rd"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "she bumped me up to 75mg about three weeks ago, so mid-April"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Dr. Huang actually brought me back down to 50mg last week because the 75mg was giving me bad nausea"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Dr. Huang told me at the last session she's planning to try me on 100mg starting at my May 20th appointment"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations, I mentioned my sertraline dosage a few times. Can you walk me through the key things I said about my dosage — what I initially shared and what I told you later?",
+      "expected_answer": "You initially said Dr. Huang started you on sertraline 50mg daily on March 3rd. Then you mentioned she increased it to 75mg around mid-April to address residual morning anxiety. Later, you said Dr. Huang brought you back down to 50mg because the 75mg was causing persistent nausea. Most recently, you mentioned she is planning to try 100mg starting at your May 20th appointment, though that hasn't happened yet.",
+      "gold_memory_state": "Current confirmed dosage: 50mg daily. Prior values: 50mg (initial) → 75mg (mid-April) → 50mg (after nausea). Tentative future plan: 100mg at May 20th appointment, not yet enacted.",
+      "judge_rubric": {
+        "must_include": [
+          "50mg initial",
+          "75mg increase",
+          "back to 50mg due to nausea",
+          "100mg planned for May 20th"
+        ],
+        "acceptable_paraphrases": [
+          "brought back down to 50mg",
+          "reduced to 50mg",
+          "returned to 50mg"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating 100mg is the current dosage"
+        ],
+        "harmless_extra": [
+          "mentioning March 3rd start date",
+          "mentioning Riverside Behavioral Health Clinic",
+          "mentioning morning anxiety as reason for increase"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 75mg or 100mg is presented as the current dosage.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Dr. Huang started me on sertraline 50mg daily back on March 3rd"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "she bumped me up to 75mg about three weeks ago, so mid-April"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Dr. Huang actually brought me back down to 50mg last week because the 75mg was giving me bad nausea"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Dr. Huang told me at the last session she's planning to try me on 100mg starting at my May 20th appointment"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've shared several pieces of medical and scheduling information with you — dosage details, appointment dates, and assessment scores. If I need to verify what dose to take tomorrow morning, which piece of information applies, and does it affect my appointment date or my PHQ-9 score in any way?",
+      "expected_answer": "The dosage information applies — your current sertraline dose is 50mg daily. This is independent of your appointment date (May 20th at 2:30 p.m.) and your most recent PHQ-9 score (11), which are separate details and are not changed by the dosage.",
+      "gold_memory_state": "sertraline_dosage target: 50mg daily (confirmed). next_dr_huang_appointment target: May 20th at 2:30 p.m. (unchanged). phq9_score target: 11 (unchanged). These are three separate records.",
+      "judge_rubric": {
+        "must_include": [
+          "50mg daily as current dosage",
+          "appointment and PHQ-9 are separate/unaffected"
+        ],
+        "acceptable_paraphrases": [
+          "50mg is the current dose",
+          "the dosage record is what applies for tomorrow morning"
+        ],
+        "must_not_include": [
+          "75mg as current dosage",
+          "100mg as current dosage"
+        ],
+        "harmful_extra": [
+          "saying the appointment date changed due to dosage changes",
+          "saying PHQ-9 score changed due to dosage changes",
+          "treating 100mg as the active dosage"
+        ],
+        "harmless_extra": [
+          "mentioning Dr. Huang prescribed it",
+          "mentioning nausea as reason for returning to 50mg"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 75mg or 100mg is given as the dose to take tomorrow.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Dr. Huang actually brought me back down to 50mg last week because the 75mg was giving me bad nausea"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My next appointment with Dr. Huang is May 20th at 2:30 p.m."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My PHQ-9 dropped from 17 to 11 as of the mid-April session"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've shared several pieces of medical and scheduling information with you — dosage details, appointment dates, and assessment scores. If I need to verify what dose to take tomorrow morning, which piece of information applies, and does it affect my appointment date or my PHQ-9 score in any way?",
+      "expected_answer": "The dosage information applies — your current sertraline dose is 50mg daily. This is independent of your appointment date (May 20th at 2:30 p.m.) and your most recent PHQ-9 score (11), which are separate details and are not changed by the dosage.",
+      "gold_memory_state": "sertraline_dosage target: 50mg daily (confirmed). next_dr_huang_appointment target: May 20th at 2:30 p.m. (unchanged). phq9_score target: 11 (unchanged). These are three separate records.",
+      "judge_rubric": {
+        "must_include": [
+          "50mg daily as current dosage",
+          "appointment and PHQ-9 are separate/unaffected"
+        ],
+        "acceptable_paraphrases": [
+          "50mg is the current dose",
+          "the dosage record is what applies for tomorrow morning"
+        ],
+        "must_not_include": [
+          "75mg as current dosage",
+          "100mg as current dosage"
+        ],
+        "harmful_extra": [
+          "saying the appointment date changed due to dosage changes",
+          "saying PHQ-9 score changed due to dosage changes",
+          "treating 100mg as the active dosage"
+        ],
+        "harmless_extra": [
+          "mentioning Dr. Huang prescribed it",
+          "mentioning nausea as reason for returning to 50mg"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 75mg or 100mg is given as the dose to take tomorrow.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Dr. Huang actually brought me back down to 50mg last week because the 75mg was giving me bad nausea"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My next appointment with Dr. Huang is May 20th at 2:30 p.m."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My PHQ-9 dropped from 17 to 11 as of the mid-April session"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to tell my pharmacist exactly what daily sertraline dose I'm on right now. Which of these is correct?",
+      "candidate_options": [
+        "50mg daily",
+        "75mg daily",
+        "100mg daily",
+        "50mg twice daily"
+      ],
+      "expected_answer": "50mg daily",
+      "gold_memory_state": "Current confirmed dosage: 50mg daily. 75mg was a prior dosage that was reduced due to nausea. 100mg is a tentative future plan for May 20th, not yet enacted. 50mg twice daily was never mentioned.",
+      "judge_rubric": {
+        "must_include": [
+          "50mg daily"
+        ],
+        "acceptable_paraphrases": [
+          "50 mg once daily",
+          "sertraline 50mg/day"
+        ],
+        "must_not_include": [
+          "75mg",
+          "100mg",
+          "twice daily"
+        ],
+        "harmful_extra": [
+          "selecting 75mg as current",
+          "selecting 100mg as current",
+          "selecting 50mg twice daily"
+        ],
+        "harmless_extra": [
+          "noting that 100mg may be upcoming"
+        ]
+      },
+      "distractor_rationale": "same-value-different-target: '50mg twice daily' is a fabricated dosing schedule that shares the 50mg number but differs in frequency — tests whether the model confuses the value with a plausible pharmacological variant. assistant echo: '75mg daily' was echoed by the assistant as the current dose in an earlier segment before the reduction back to 50mg. '100mg daily' is the tentative future dose mentioned by the user, testing the recency trap — it is the most recently mentioned number but is not yet enacted.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 75mg daily is selected (stale prior value) or 100mg daily is selected (tentative future value mistaken for current).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Dr. Huang actually brought me back down to 50mg last week because the 75mg was giving me bad nausea"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Dr. Huang told me at the last session she's planning to try me on 100mg starting at my May 20th appointment"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to tell my pharmacist exactly what daily sertraline dose I'm on right now. Which of these is correct?",
+      "candidate_options": [
+        "50mg daily",
+        "75mg daily",
+        "100mg daily",
+        "50mg twice daily"
+      ],
+      "expected_answer": "50mg daily",
+      "gold_memory_state": "Current confirmed dosage: 50mg daily. 75mg was a prior dosage that was reduced due to nausea. 100mg is a tentative future plan for May 20th, not yet enacted. 50mg twice daily was never mentioned.",
+      "judge_rubric": {
+        "must_include": [
+          "50mg daily"
+        ],
+        "acceptable_paraphrases": [
+          "50 mg once daily",
+          "sertraline 50mg/day"
+        ],
+        "must_not_include": [
+          "75mg",
+          "100mg",
+          "twice daily"
+        ],
+        "harmful_extra": [
+          "selecting 75mg as current",
+          "selecting 100mg as current",
+          "selecting 50mg twice daily"
+        ],
+        "harmless_extra": [
+          "noting that 100mg may be upcoming"
+        ]
+      },
+      "distractor_rationale": "same-value-different-target: '50mg twice daily' is a fabricated dosing schedule that shares the 50mg number but differs in frequency — tests whether the model confuses the value with a plausible pharmacological variant. assistant echo: '75mg daily' was echoed by the assistant as the current dose in an earlier segment before the reduction back to 50mg. '100mg daily' is the tentative future dose mentioned by the user, testing the recency trap — it is the most recently mentioned number but is not yet enacted.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 75mg daily is selected (stale prior value) or 100mg daily is selected (tentative future value mistaken for current).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Dr. Huang actually brought me back down to 50mg last week because the 75mg was giving me bad nausea"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Dr. Huang told me at the last session she's planning to try me on 100mg starting at my May 20th appointment"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I want to prepare a brief medication summary card to hand to Dr. Huang at my next visit, so she can quickly see where things stand. The card should list: (1) the medication name and my dose as of today, (2) my most recent PHQ-9 score and what it improved from, and (3) the date and time of the appointment itself. Can you draft that card for me?",
+      "expected_answer": "Medication Summary Card for Dr. Huang Appointment:\n1. Medication: Sertraline 50mg daily\n2. PHQ-9: Currently 11 (improved from 17)\n3. Appointment: May 20th at 2:30 p.m.",
+      "application_probe_type": "multi_hop_derivation",
+      "gold_memory_state": "sertraline_dosage: 50mg daily (confirmed). phq9_score: 11, down from 17. next_dr_huang_appointment: May 20th at 2:30 p.m. Tentative 100mg plan exists but is not the current dosage and should not appear as the active dose on the card.",
+      "judge_rubric": {
+        "must_include": [
+          "sertraline",
+          "50mg",
+          "PHQ-9 score of 11",
+          "improved from 17",
+          "May 20th",
+          "2:30 p.m."
+        ],
+        "acceptable_paraphrases": [
+          "50 mg daily",
+          "PHQ-9 dropped from 17 to 11",
+          "May 20 at 2:30 PM"
+        ],
+        "must_not_include": [
+          "75mg as current dose",
+          "100mg as current dose"
+        ],
+        "harmful_extra": [
+          "listing 100mg as the active medication dose on the card",
+          "listing 75mg as the active medication dose on the card"
+        ],
+        "harmless_extra": [
+          "mentioning Riverside Behavioral Health Clinic",
+          "mentioning the 100mg plan as a future discussion item separate from the current dose",
+          "mentioning biweekly sessions"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 75mg or 100mg appears as the medication dose on the card.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's current confirmed sertraline dosage is 50mg daily, after being reduced from 75mg due to nausea.",
+        "Fact 2: The user's most recent PHQ-9 score is 11, down from an initial 17.",
+        "Fact 3: The user's next appointment with Dr. Huang is May 20th at 2:30 p.m.",
+        "Inference: The 100mg dosage mentioned by Dr. Huang is a future plan for the May 20th appointment, not the current active dose, so it should not appear as the active medication line on the card.",
+        "Inference: Combining these three confirmed facts, the card should show sertraline 50mg daily, PHQ-9 of 11 (from 17), and the May 20th 2:30 p.m. appointment date."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Dr. Huang actually brought me back down to 50mg last week because the 75mg was giving me bad nausea"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My PHQ-9 dropped from 17 to 11 as of the mid-April session"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My next appointment with Dr. Huang is May 20th at 2:30 p.m."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I want to prepare a brief medication summary card to hand to Dr. Huang at my next visit, so she can quickly see where things stand. The card should list: (1) the medication name and my dose as of today, (2) my most recent PHQ-9 score and what it improved from, and (3) the date and time of the appointment itself. Can you draft that card for me?",
+      "expected_answer": "Medication Summary Card for Dr. Huang Appointment:\n1. Medication: Sertraline 50mg daily\n2. PHQ-9: Currently 11 (improved from 17)\n3. Appointment: May 20th at 2:30 p.m.",
+      "application_probe_type": "multi_hop_derivation",
+      "gold_memory_state": "sertraline_dosage: 50mg daily (confirmed). phq9_score: 11, down from 17. next_dr_huang_appointment: May 20th at 2:30 p.m. Tentative 100mg plan exists but is not the current dosage and should not appear as the active dose on the card.",
+      "judge_rubric": {
+        "must_include": [
+          "sertraline",
+          "50mg",
+          "PHQ-9 score of 11",
+          "improved from 17",
+          "May 20th",
+          "2:30 p.m."
+        ],
+        "acceptable_paraphrases": [
+          "50 mg daily",
+          "PHQ-9 dropped from 17 to 11",
+          "May 20 at 2:30 PM"
+        ],
+        "must_not_include": [
+          "75mg as current dose",
+          "100mg as current dose"
+        ],
+        "harmful_extra": [
+          "listing 100mg as the active medication dose on the card",
+          "listing 75mg as the active medication dose on the card"
+        ],
+        "harmless_extra": [
+          "mentioning Riverside Behavioral Health Clinic",
+          "mentioning the 100mg plan as a future discussion item separate from the current dose",
+          "mentioning biweekly sessions"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 75mg or 100mg appears as the medication dose on the card.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's current confirmed sertraline dosage is 50mg daily, after being reduced from 75mg due to nausea.",
+        "Fact 2: The user's most recent PHQ-9 score is 11, down from an initial 17.",
+        "Fact 3: The user's next appointment with Dr. Huang is May 20th at 2:30 p.m.",
+        "Inference: The 100mg dosage mentioned by Dr. Huang is a future plan for the May 20th appointment, not the current active dose, so it should not appear as the active medication line on the card.",
+        "Inference: Combining these three confirmed facts, the card should show sertraline 50mg daily, PHQ-9 of 11 (from 17), and the May 20th 2:30 p.m. appointment date."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Dr. Huang actually brought me back down to 50mg last week because the 75mg was giving me bad nausea"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My PHQ-9 dropped from 17 to 11 as of the mid-April session"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My next appointment with Dr. Huang is May 20th at 2:30 p.m."
+        }
+      ]
+    }
+  ]
+}

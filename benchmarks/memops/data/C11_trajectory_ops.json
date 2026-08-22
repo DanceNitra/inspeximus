@@ -1,0 +1,919 @@
+{
+  "target_fact": "C11 Exam date",
+  "operation_type": "TrajectoryOps",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "c11_exam_date_chain",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I registered for the C11 exam — Fundamentals of Insurance — and my test date is April 19"
+      },
+      "target": {
+        "target_id": "c11_exam_date",
+        "target_name": "C11 exam date"
+      },
+      "old_value": null,
+      "new_value": "April 19",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I registered for the C11 exam — Fundamentals of Insurance — and my test date is April 19"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "My exam center is the Pearson VUE location on 250 Yonge Street in Toronto"
+      },
+      "target": {
+        "target_id": "c11_exam_center",
+        "target_name": "C11 exam center location"
+      },
+      "old_value": null,
+      "new_value": "Pearson VUE, 250 Yonge Street, Toronto",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My exam center is the Pearson VUE location on 250 Yonge Street in Toronto"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "c11_exam_date_chain",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I rescheduled my C11 exam to May 10. The April 19 date doesn't work anymore because of my Calgary work trip"
+      },
+      "target": {
+        "target_id": "c11_exam_date",
+        "target_name": "C11 exam date"
+      },
+      "old_value": "April 19",
+      "new_value": "May 10",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I rescheduled my C11 exam to May 10. The April 19 date doesn't work anymore because of my Calgary work trip"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "c11_exam_date_chain",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "The Pearson VUE site is showing a slot on May 3 that just opened up. I'm seriously considering grabbing it so I can just get the exam over with sooner"
+      },
+      "target": {
+        "target_id": "c11_exam_date",
+        "target_name": "C11 exam date"
+      },
+      "old_value": "May 10",
+      "new_value": "May 3",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The Pearson VUE site is showing a slot on May 3 that just opened up. I'm seriously considering grabbing it so I can just get the exam over with sooner"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "c11_exam_date_chain",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 7,
+        "quote": "I decided to keep my May 10 date after all. Moving it earlier would just stress me out and I'd lose a full week of prep"
+      },
+      "target": {
+        "target_id": "c11_exam_date",
+        "target_name": "C11 exam date"
+      },
+      "old_value": "May 3",
+      "new_value": "May 10",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I decided to keep my May 10 date after all. Moving it earlier would just stress me out and I'd lose a full week of prep"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish exam date and exam center",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I need some help organizing my study plan. I registered for the C11 exam — Fundamentals of Insurance — and my test date is April 19. I signed up around March 7 and figured six weeks would be plenty of time to get through all the material. Can you help me build a schedule?"
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, I'd be happy to help you build a study schedule for the C11 exam on April 19. Since you registered around March 7, that gives you roughly six weeks of preparation time, which is a solid window for the Fundamentals of Insurance material. To create an effective plan, I'll need to know a few things: how many chapters or modules does the course have, how many hours per day can you realistically dedicate to studying, and do you have any days or weeks where you know you'll be unavailable? That way I can distribute the workload evenly and build in review time before your test date."
+        },
+        {
+          "role": "user",
+          "content": "There are about twelve chapters total. I can do maybe an hour and a half on weekdays and more on weekends. My friend Kevin is also taking C11 but he's aiming for the May session — he said he didn't want to rush it. I kind of wish I had that extra breathing room, honestly, but I already committed to April."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a reasonable pace — twelve chapters over six weeks means roughly two chapters per week, which lines up nicely with your hour-and-a-half weekday blocks plus longer weekend sessions. Kevin's May timeline gives him more buffer, but your April 19 date is still very workable if we stay disciplined. I'd suggest covering two chapters per week Monday through Friday, then using Saturday for a cumulative review of everything covered that week and Sunday for a practice quiz or self-test. We can front-load the heavier or less familiar chapters so you have more review time toward the end. Does that general structure work for you, or do you already know which chapters are going to be harder?"
+        },
+        {
+          "role": "user",
+          "content": "That structure sounds good. One thing I should mention — My exam center is the Pearson VUE location on 250 Yonge Street in Toronto. I confirmed that when I first registered. Also, I tend to study better in the mornings, so I'd like to protect my pre-noon hours for exam prep specifically if possible."
+        },
+        {
+          "role": "assistant",
+          "content": "Good to know your exam is at the Pearson VUE location on 250 Yonge Street in Toronto — that's a well-known testing center so logistics on exam day should be straightforward. And since you study best in the mornings, we should absolutely build your schedule around that. I'd recommend blocking off 7:30 to 9:00 AM on weekdays as your dedicated study window. That gives you a focused ninety-minute block before work or other commitments. On weekends, you could extend that morning window to two or even three hours for deeper review sessions and full practice tests. Protecting that pre-noon time consistently will help you build a strong study habit. Want me to draft a week-by-week breakdown now?"
+        },
+        {
+          "role": "user",
+          "content": "Yes please, go ahead and draft that. Also I did a practice test recently, around March 22 or so, and I realized I was seriously underprepared on the underwriting section. That shook my confidence quite a bit. So I'd like extra time allocated to underwriting chapters if possible."
+        },
+        {
+          "role": "assistant",
+          "content": "I completely understand — discovering a weak area on a practice test can be discouraging, but it's actually one of the best things that can happen early in your prep because now you know exactly where to focus. Here's a rough week-by-week plan: Weeks 1-2, cover chapters 1 through 4, which are typically introductory. Week 3, dedicate entirely to the underwriting chapters with daily drills. Week 4, cover the remaining chapters on claims and regulation. Week 5, do a full review cycle with two practice exams, prioritizing underwriting questions. Week 6, light review and confidence-building practice the week of April 19. I'll weight the underwriting block with extra practice problems and flashcard sessions during your morning windows. Does this allocation feel right?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "update exam date to May 10 and discuss study materials",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So there's a change of plans. I rescheduled my C11 exam to May 10. The April 19 date doesn't work anymore because of my Calgary work trip — it falls on April 16 through 18, and sitting for the exam the day after flying back felt like a terrible idea. Please update your records to reflect May 10."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — I've updated your C11 exam date to May 10. That's a smart call; trying to take a high-stakes exam the day after a work trip to Calgary would have been rough, especially given how much focus the underwriting sections require. The good news is this gives you about three additional weeks of preparation time compared to the original April 19 date. That extra buffer means we can slow the pace on the harder chapters and add more practice exam cycles. Would you like me to rebuild the week-by-week schedule around the May 10 date, or do you want to keep the existing structure and just extend the review period at the end?"
+        },
+        {
+          "role": "user",
+          "content": "Let's rebuild the schedule entirely. I also bought a set of physical flashcards from the CSI website — the Canadian Securities Institute site — for $45. I really enjoy studying with physical cards more than digital ones. Flipping through them by hand helps things stick better for me."
+        },
+        {
+          "role": "assistant",
+          "content": "Great, I'll rebuild the schedule from scratch around May 10. And those CSI flashcards should be a solid addition to your toolkit — physical flashcards are excellent for active recall, and since you've told me you prefer tactile study methods, we should integrate them into your daily routine. Here's what I'm thinking for the new plan: from now through mid-April, cover the foundational chapters at a relaxed pace of about one and a half chapters per week. Then from mid-April through late April, focus heavily on underwriting using both the textbook and flashcards during your morning sessions. The first week of May is pure review — practice exams every other day plus flashcard drills. Sound reasonable?"
+        },
+        {
+          "role": "user",
+          "content": "That sounds perfect. Kevin actually pushed his exam date too — he moved to May 24 because he got behind on studying. So we're both in May now, just different dates. I've been doing at least one full practice exam every weekend since the reschedule and last Sunday I scored 71 percent."
+        },
+        {
+          "role": "assistant",
+          "content": "It's interesting that both you and Kevin ended up in May — at least now you can compare notes and maybe even do some study sessions together before your respective dates. A 71 percent on your most recent practice exam is a solid foundation to build from. Most C11 pass thresholds are around 60 percent, so you're already above that, but pushing into the high 70s or 80s would give you a comfortable margin. Since you're doing weekly practice exams, I'd suggest tracking your score by section each time so we can see whether underwriting is improving specifically. That way we can adjust the schedule if another section starts lagging. Want me to create a simple score tracker template?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, a score tracker would be helpful. Could you break it down by section — underwriting, claims, policy types, regulation, and general principles? Those are the main areas on the C11. I want to see my progress week over week leading up to May 10.\n\nGreat, thank you. One more thing — I want to make sure I review the ethics and professional conduct chapter thoroughly. I've heard from a few people that there are always a handful of tricky ethics questions on the C11 that catch people off guard. So please add that as a priority area too."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely. I'll set up a tracker with five columns — underwriting, claims, policy types, regulation, and general principles — plus a total score column and a date column for each weekend practice exam. Since your exam is May 10, you've got roughly five or six more weekend practice exams depending on when you start counting. Each row will capture one practice exam's section-by-section breakdown so you can spot trends. If underwriting stays below 70 percent for two consecutive weeks, we'll flag it for extra morning flashcard sessions. I'll also add a notes column where you can jot down specific topics you struggled with. I'll draft that tracker and share it with you shortly.\n\nGood call — ethics and professional conduct questions on the C11 are notorious for being scenario-based and nuanced, so surface-level reading isn't enough. I'll add a dedicated ethics review block in the last two weeks before May 10. During weeks four and five of the new schedule, I'll slot in one morning session per week specifically for ethics case studies and flashcard drills on conduct standards. That way it gets sustained attention without crowding out your underwriting focus. Between underwriting, ethics, and your weekly practice exams, you'll be covering the areas most likely to make or break your score. I'll incorporate this into the rebuilt schedule and the tracker. Anything else you'd like to adjust?"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "tentative earlier date considered then rejected; adversarial injection",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Quick update — I just finished another practice exam this morning and scored 78 percent overall. Underwriting was 74 percent this time, which is a big improvement from where I was a few weeks ago. The flashcards from CSI are really helping with retention on the policy types section too."
+        },
+        {
+          "role": "assistant",
+          "content": "That's fantastic progress — going from feeling underprepared on underwriting to scoring 74 percent is a real turnaround, and 78 percent overall puts you well above the passing threshold with still over a week until your May 10 exam. The CSI flashcards clearly complement your morning study routine well. At this point, I'd suggest shifting your remaining sessions toward targeted weak-spot drilling rather than full practice exams. Focus your morning blocks on the specific underwriting and ethics scenarios where you're still losing points. Maybe do one more full practice exam next weekend as a final confidence check, and then light review only in the days right before the test. How does that sound?"
+        },
+        {
+          "role": "user",
+          "content": "That sounds like a solid approach. By the way, I was chatting with Kevin yesterday and he mentioned his exam center is the Pearson VUE location at 5140 Yonge Street, the North York one. He said he picked it because it's closer to his apartment. Funny that we're at different Pearson VUE locations."
+        },
+        {
+          "role": "assistant",
+          "content": "It makes sense that Kevin would pick the North York Pearson VUE at 5140 Yonge Street if it's more convenient for him — there are several Pearson VUE locations across the GTA, and proximity definitely matters on exam day when you want to minimize travel stress. Your location at 250 Yonge Street downtown is a popular one too, so you'll want to plan your commute carefully, especially if you're going during morning rush hour. Since your exam is May 10, which is a Saturday, traffic shouldn't be as bad, but I'd still recommend arriving at least thirty minutes early to get settled. Have you mapped out your route to the 250 Yonge Street location yet?"
+        },
+        {
+          "role": "user",
+          "content": "The Pearson VUE site is showing a slot on May 3 that just opened up. I'm seriously considering grabbing it so I can just get the exam over with sooner. My scores have been trending up and I feel pretty ready. What do you think about moving it up a week?"
+        },
+        {
+          "role": "assistant",
+          "content": "I can see the appeal — your scores are strong and the momentum is clearly there. Moving to May 3 would give you one less week of prep but also one less week of pre-exam anxiety, which has its own value. That said, there are a few things to consider. You'd lose your final weekend practice exam, which was going to serve as your confidence check. You'd also have less time on the ethics deep-dive we just added to the schedule. If you feel your ethics knowledge is already solid, the trade-off might be worth it. But if you're still encountering tricky ethics scenarios in practice, that extra week could make a meaningful difference. It's your call — do you want me to adjust the schedule for May 3 just in case?"
+        },
+        {
+          "role": "user",
+          "content": "Hmm, you make a good point about the ethics review. I haven't actually done a dedicated ethics drill yet — I've mostly been focused on underwriting and policy types. Losing that final week of focused ethics prep does worry me a bit. Let me think about it overnight before I decide anything.\n\nI decided to keep my May 10 date after all. Moving it earlier would just stress me out and I'd lose a full week of prep. I want to make sure I'm thoroughly prepared on ethics and professional conduct before I sit for the exam. Let's finalize the schedule with May 10 as the date."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a wise approach — sleeping on it will give you clarity without the pressure of making a snap decision. In the meantime, I'd suggest doing a quick ethics mini-quiz tonight or tomorrow morning to gauge where you actually stand on that section. If you score above 75 percent on ethics without dedicated prep, that's a strong signal you could handle May 3. If you're below that, the extra week leading to May 10 becomes much more valuable. Either way, the Pearson VUE slots do get snapped up quickly, so if you decide on May 3, act fast. And if you keep May 10, you've got a perfect window for that ethics block. Let me know what you decide and I'll adjust everything accordingly.\n\nThat's a solid decision — keeping May 10 gives you the breathing room you've consistently said you prefer, and it ensures you can do a proper ethics deep-dive this week plus one final full practice exam next weekend. Here's the finalized plan for your remaining days: this week, Monday through Friday morning sessions dedicated to ethics case studies and flashcard review. Next Saturday, one final full-length practice exam covering all five sections. Sunday and Monday before the exam, light review only — skim your weakest flashcards and get good rest. Tuesday May 10, arrive at the Pearson VUE location on 250 Yonge Street at least thirty minutes early. You've put in strong work and your scores reflect that. You're going to do great."
+        }
+      ]
+    }
+  ],
+  "state_checkpoints": [
+    {
+      "checkpoint_id": "c1",
+      "description": "After segment 1: C11 exam date is April 19 (confirmed). Exam center is Pearson VUE, 250 Yonge Street, Toronto (confirmed)."
+    },
+    {
+      "checkpoint_id": "c2",
+      "description": "After segment 2: C11 exam date updated to May 10 (confirmed). Exam center remains Pearson VUE, 250 Yonge Street, Toronto (confirmed)."
+    },
+    {
+      "checkpoint_id": "c3",
+      "description": "After segment 3: C11 exam date tentatively considered as May 3 but rejected. Final confirmed date is May 10. Exam center remains Pearson VUE, 250 Yonge Street, Toronto (confirmed). Kevin's exam center at 5140 Yonge Street (adversarial look-alike) is not the user's location."
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations, I mentioned several things about my upcoming insurance certification exam — the date, the location, and some changes along the way. Can you summarize what I told you about the scheduling of that exam from start to finish?",
+      "expected_answer": "You initially said your test date was April 19. You then rescheduled to May 10 because of a Calgary work trip. You later mentioned considering moving it up to May 3 after a slot opened, but you ultimately decided to keep the May 10 date. Your exam center is the Pearson VUE location at 250 Yonge Street in Toronto.",
+      "gold_memory_state": "Final confirmed exam date: May 10. Exam center: Pearson VUE, 250 Yonge Street, Toronto. April 19 is superseded. May 3 was only considered, never confirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "April 19 as original date",
+          "May 10 as rescheduled/final date",
+          "May 3 was considered but not adopted",
+          "Pearson VUE at 250 Yonge Street Toronto"
+        ],
+        "acceptable_paraphrases": [
+          "initially April 19",
+          "changed to May 10",
+          "thought about May 3 but kept May 10"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "Saying May 3 was ever confirmed",
+          "Saying the exam center changed"
+        ],
+        "harmless_extra": [
+          "Mentioning the Calgary work trip as the reason for the first reschedule",
+          "Mentioning Kevin's exam details"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model treats April 19 or May 3 as the current date.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model gets the chronological order of date changes wrong (e.g., placing May 3 before the May 10 reschedule).",
+        "final_state": "Fails if the model does not identify May 10 as the final confirmed date.",
+        "intermediate_state": "Fails if the model omits April 19 as the original date or May 3 as a tentative consideration.",
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I registered for the C11 exam — Fundamentals of Insurance — and my test date is April 19"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I rescheduled my C11 exam to May 10. The April 19 date doesn't work anymore because of my Calgary work trip"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The Pearson VUE site is showing a slot on May 3 that just opened up. I'm seriously considering grabbing it so I can just get the exam over with sooner"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I decided to keep my May 10 date after all. Moving it earlier would just stress me out and I'd lose a full week of prep"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations, I mentioned several things about my upcoming insurance certification exam — the date, the location, and some changes along the way. Can you summarize what I told you about the scheduling of that exam from start to finish?",
+      "expected_answer": "You initially said your test date was April 19. You then rescheduled to May 10 because of a Calgary work trip. You later mentioned considering moving it up to May 3 after a slot opened, but you ultimately decided to keep the May 10 date. Your exam center is the Pearson VUE location at 250 Yonge Street in Toronto.",
+      "gold_memory_state": "Final confirmed exam date: May 10. Exam center: Pearson VUE, 250 Yonge Street, Toronto. April 19 is superseded. May 3 was only considered, never confirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "April 19 as original date",
+          "May 10 as rescheduled/final date",
+          "May 3 was considered but not adopted",
+          "Pearson VUE at 250 Yonge Street Toronto"
+        ],
+        "acceptable_paraphrases": [
+          "initially April 19",
+          "changed to May 10",
+          "thought about May 3 but kept May 10"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "Saying May 3 was ever confirmed",
+          "Saying the exam center changed"
+        ],
+        "harmless_extra": [
+          "Mentioning the Calgary work trip as the reason for the first reschedule",
+          "Mentioning Kevin's exam details"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model treats April 19 or May 3 as the current date.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model gets the chronological order of date changes wrong (e.g., placing May 3 before the May 10 reschedule).",
+        "final_state": "Fails if the model does not identify May 10 as the final confirmed date.",
+        "intermediate_state": "Fails if the model omits April 19 as the original date or May 3 as a tentative consideration.",
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I registered for the C11 exam — Fundamentals of Insurance — and my test date is April 19"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I rescheduled my C11 exam to May 10. The April 19 date doesn't work anymore because of my Calgary work trip"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The Pearson VUE site is showing a slot on May 3 that just opened up. I'm seriously considering grabbing it so I can just get the exam over with sooner"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I decided to keep my May 10 date after all. Moving it earlier would just stress me out and I'd lose a full week of prep"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned two different Pearson VUE addresses during our conversations. If I need to plan my commute for exam day, which location is mine and which one belongs to someone else?",
+      "expected_answer": "Your exam location is the Pearson VUE at 250 Yonge Street in Toronto. The 5140 Yonge Street location in North York is Kevin's exam center, not yours.",
+      "gold_memory_state": "User's exam center: Pearson VUE, 250 Yonge Street, Toronto (confirmed, never changed). Kevin's exam center: Pearson VUE, 5140 Yonge Street, North York (belongs to Kevin only). User's exam date: May 10 (confirmed).",
+      "judge_rubric": {
+        "must_include": [
+          "250 Yonge Street as the user's location",
+          "5140 Yonge Street as Kevin's location"
+        ],
+        "acceptable_paraphrases": [
+          "250 Yonge is yours",
+          "5140 Yonge is Kevin's"
+        ],
+        "must_not_include": [
+          "Saying 5140 Yonge Street is the user's location"
+        ],
+        "harmful_extra": [
+          "Confusing the two Pearson VUE locations",
+          "Attributing Kevin's location to the user"
+        ],
+        "harmless_extra": [
+          "Mentioning North York as the area for Kevin's center",
+          "Mentioning downtown Toronto for the user's center"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if user's exam center is reported as 5140 Yonge Street.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My exam center is the Pearson VUE location on 250 Yonge Street in Toronto"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I was chatting with Kevin yesterday and he mentioned his exam center is the Pearson VUE location at 5140 Yonge Street, the North York one. He said he picked it because it's closer to his apartment"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned two different Pearson VUE addresses during our conversations. If I need to plan my commute for exam day, which location is mine and which one belongs to someone else?",
+      "expected_answer": "Your exam location is the Pearson VUE at 250 Yonge Street in Toronto. The 5140 Yonge Street location in North York is Kevin's exam center, not yours.",
+      "gold_memory_state": "User's exam center: Pearson VUE, 250 Yonge Street, Toronto (confirmed, never changed). Kevin's exam center: Pearson VUE, 5140 Yonge Street, North York (belongs to Kevin only). User's exam date: May 10 (confirmed).",
+      "judge_rubric": {
+        "must_include": [
+          "250 Yonge Street as the user's location",
+          "5140 Yonge Street as Kevin's location"
+        ],
+        "acceptable_paraphrases": [
+          "250 Yonge is yours",
+          "5140 Yonge is Kevin's"
+        ],
+        "must_not_include": [
+          "Saying 5140 Yonge Street is the user's location"
+        ],
+        "harmful_extra": [
+          "Confusing the two Pearson VUE locations",
+          "Attributing Kevin's location to the user"
+        ],
+        "harmless_extra": [
+          "Mentioning North York as the area for Kevin's center",
+          "Mentioning downtown Toronto for the user's center"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if user's exam center is reported as 5140 Yonge Street.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My exam center is the Pearson VUE location on 250 Yonge Street in Toronto"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I was chatting with Kevin yesterday and he mentioned his exam center is the Pearson VUE location at 5140 Yonge Street, the North York one. He said he picked it because it's closer to his apartment"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "I need to set an alarm for the morning of my insurance exam. What date should I set it for?",
+      "expected_answer": "May 10.",
+      "gold_memory_state": "Final confirmed exam date is May 10. May 3 was tentatively considered but explicitly rejected by the user. April 19 was the original date, superseded by the reschedule to May 10.",
+      "judge_rubric": {
+        "must_include": [
+          "May 10"
+        ],
+        "acceptable_paraphrases": [
+          "May 10th",
+          "the 10th of May"
+        ],
+        "must_not_include": [
+          "May 3",
+          "April 19"
+        ],
+        "harmful_extra": [
+          "Suggesting May 3 as a possible or alternate date",
+          "Suggesting April 19"
+        ],
+        "harmless_extra": [
+          "Mentioning the exam is at Pearson VUE on 250 Yonge Street"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model returns May 3 (tentative, never confirmed) or April 19 (superseded original date). May 3 is the recency trap: it was mentioned most recently as a possibility but was explicitly rejected.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not identify May 10 as the final confirmed date.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I decided to keep my May 10 date after all. Moving it earlier would just stress me out and I'd lose a full week of prep"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I rescheduled my C11 exam to May 10. The April 19 date doesn't work anymore because of my Calgary work trip"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "I need to set an alarm for the morning of my insurance exam. What date should I set it for?",
+      "expected_answer": "May 10.",
+      "gold_memory_state": "Final confirmed exam date is May 10. May 3 was tentatively considered but explicitly rejected by the user. April 19 was the original date, superseded by the reschedule to May 10.",
+      "judge_rubric": {
+        "must_include": [
+          "May 10"
+        ],
+        "acceptable_paraphrases": [
+          "May 10th",
+          "the 10th of May"
+        ],
+        "must_not_include": [
+          "May 3",
+          "April 19"
+        ],
+        "harmful_extra": [
+          "Suggesting May 3 as a possible or alternate date",
+          "Suggesting April 19"
+        ],
+        "harmless_extra": [
+          "Mentioning the exam is at Pearson VUE on 250 Yonge Street"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model returns May 3 (tentative, never confirmed) or April 19 (superseded original date). May 3 is the recency trap: it was mentioned most recently as a possibility but was explicitly rejected.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not identify May 10 as the final confirmed date.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I decided to keep my May 10 date after all. Moving it earlier would just stress me out and I'd lose a full week of prep"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I rescheduled my C11 exam to May 10. The April 19 date doesn't work anymore because of my Calgary work trip"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to do one final full-length practice exam the Saturday before my insurance certification test, and I need to take it at a library near my testing center so I can scout the commute. Draft a one-sentence calendar reminder that includes the practice-exam date, the neighborhood I should head to, and the street my actual exam center is on.",
+      "expected_answer": "Saturday May 3: Full-length practice exam at a library near 250 Yonge Street in downtown Toronto to scout the commute to your Pearson VUE exam center.",
+      "gold_memory_state": "Exam date: May 10 (confirmed). Exam center: Pearson VUE, 250 Yonge Street, Toronto. The Saturday before May 10 is May 3. May 3 was previously considered as a tentative exam date but was rejected; here it is derived as the Saturday before the confirmed date.",
+      "judge_rubric": {
+        "must_include": [
+          "May 3 as the practice-exam Saturday",
+          "250 Yonge Street",
+          "Toronto or downtown Toronto"
+        ],
+        "acceptable_paraphrases": [
+          "Saturday May 3rd",
+          "the Saturday before May 10"
+        ],
+        "must_not_include": [
+          "April 19 as any relevant date",
+          "5140 Yonge Street as the user's exam center"
+        ],
+        "harmful_extra": [
+          "Using May 3 as the actual exam date rather than the practice date",
+          "Using Kevin's North York location"
+        ],
+        "harmless_extra": [
+          "Mentioning Pearson VUE by name",
+          "Suggesting arrival time"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses April 19 as the exam date or derives April 12 as the practice Saturday. Also fails if the model uses 5140 Yonge Street (Kevin's location) instead of 250 Yonge Street.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not use May 10 as the basis for deriving the practice-exam Saturday.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's confirmed exam date is May 10.",
+        "Fact 2: The user's exam center is the Pearson VUE location at 250 Yonge Street in Toronto.",
+        "Inference: The Saturday before May 10 is May 3, so the practice exam should be scheduled for Saturday May 3.",
+        "Inference: The library should be near 250 Yonge Street in downtown Toronto to allow commute scouting.",
+        "Derived value: Calendar reminder for Saturday May 3, practice exam near 250 Yonge Street, downtown Toronto."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I decided to keep my May 10 date after all. Moving it earlier would just stress me out and I'd lose a full week of prep"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My exam center is the Pearson VUE location on 250 Yonge Street in Toronto"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to do one final full-length practice exam the Saturday before my insurance certification test, and I need to take it at a library near my testing center so I can scout the commute. Draft a one-sentence calendar reminder that includes the practice-exam date, the neighborhood I should head to, and the street my actual exam center is on.",
+      "expected_answer": "Saturday May 3: Full-length practice exam at a library near 250 Yonge Street in downtown Toronto to scout the commute to your Pearson VUE exam center.",
+      "gold_memory_state": "Exam date: May 10 (confirmed). Exam center: Pearson VUE, 250 Yonge Street, Toronto. The Saturday before May 10 is May 3. May 3 was previously considered as a tentative exam date but was rejected; here it is derived as the Saturday before the confirmed date.",
+      "judge_rubric": {
+        "must_include": [
+          "May 3 as the practice-exam Saturday",
+          "250 Yonge Street",
+          "Toronto or downtown Toronto"
+        ],
+        "acceptable_paraphrases": [
+          "Saturday May 3rd",
+          "the Saturday before May 10"
+        ],
+        "must_not_include": [
+          "April 19 as any relevant date",
+          "5140 Yonge Street as the user's exam center"
+        ],
+        "harmful_extra": [
+          "Using May 3 as the actual exam date rather than the practice date",
+          "Using Kevin's North York location"
+        ],
+        "harmless_extra": [
+          "Mentioning Pearson VUE by name",
+          "Suggesting arrival time"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses April 19 as the exam date or derives April 12 as the practice Saturday. Also fails if the model uses 5140 Yonge Street (Kevin's location) instead of 250 Yonge Street.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not use May 10 as the basis for deriving the practice-exam Saturday.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's confirmed exam date is May 10.",
+        "Fact 2: The user's exam center is the Pearson VUE location at 250 Yonge Street in Toronto.",
+        "Inference: The Saturday before May 10 is May 3, so the practice exam should be scheduled for Saturday May 3.",
+        "Inference: The library should be near 250 Yonge Street in downtown Toronto to allow commute scouting.",
+        "Derived value: Calendar reminder for Saturday May 3, practice exam near 250 Yonge Street, downtown Toronto."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I decided to keep my May 10 date after all. Moving it earlier would just stress me out and I'd lose a full week of prep"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My exam center is the Pearson VUE location on 250 Yonge Street in Toronto"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed our entire conversation history about my insurance exam scheduling, what would they see as the full sequence of date changes — which dates were actually adopted, which were only floated, and what's the final plan?",
+      "expected_answer": "First, April 19 was set as the original date and was confirmed. Second, it was rescheduled to May 10, which was confirmed — the April 19 date was dropped because of a Calgary work trip. Third, May 3 was floated as a possibility when a slot opened up, but it was never adopted. Fourth, you decided to keep May 10 as the final date. The final plan is May 10.",
+      "gold_memory_state": "Trajectory: April 19 (confirmed, step 1) → May 10 (confirmed, step 2) → May 3 (tentative only, step 3, rejected) → May 10 reaffirmed (confirmed, step 4). Final state: May 10.",
+      "judge_rubric": {
+        "must_include": [
+          "April 19 as the first date",
+          "May 10 as the confirmed reschedule",
+          "May 3 as only considered or floated",
+          "May 10 as the final confirmed date"
+        ],
+        "acceptable_paraphrases": [
+          "April 19 originally",
+          "moved to May 10",
+          "May 3 was just an idea",
+          "stuck with May 10"
+        ],
+        "must_not_include": [
+          "May 3 was ever confirmed or adopted"
+        ],
+        "harmful_extra": [
+          "Saying the final date is May 3",
+          "Omitting May 3 from the trajectory entirely",
+          "Saying April 19 was the second date"
+        ],
+        "harmless_extra": [
+          "Mentioning the Calgary trip",
+          "Mentioning ethics prep as the reason for rejecting May 3"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model presents May 3 or April 19 as the final date.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model puts the dates in the wrong chronological order (e.g., May 3 before the first May 10 reschedule, or April 19 after May 10).",
+        "final_state": "Fails if the model does not conclude with May 10 as the final confirmed date.",
+        "intermediate_state": "Fails if the model omits any of the three intermediate states (April 19, first May 10, tentative May 3).",
+        "trajectory_provenance": "Fails if the model does not distinguish between confirmed changes and the tentative consideration of May 3."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: User registered with April 19 as the exam date (confirmed).",
+        "Step 2: User rescheduled to May 10 due to Calgary work trip (confirmed, supersedes April 19).",
+        "Step 3: User considered moving to May 3 when a slot opened (tentative only, never finalized).",
+        "Step 4: User explicitly decided to keep May 10, rejecting the May 3 option (confirmed, reaffirms May 10).",
+        "Derived value: The trajectory is April 19 → May 10 → May 3 (tentative, rejected) → May 10 (reaffirmed). Final state is May 10."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I registered for the C11 exam — Fundamentals of Insurance — and my test date is April 19"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I rescheduled my C11 exam to May 10. The April 19 date doesn't work anymore because of my Calgary work trip"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The Pearson VUE site is showing a slot on May 3 that just opened up. I'm seriously considering grabbing it so I can just get the exam over with sooner"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I decided to keep my May 10 date after all. Moving it earlier would just stress me out and I'd lose a full week of prep"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed our entire conversation history about my insurance exam scheduling, what would they see as the full sequence of date changes — which dates were actually adopted, which were only floated, and what's the final plan?",
+      "expected_answer": "First, April 19 was set as the original date and was confirmed. Second, it was rescheduled to May 10, which was confirmed — the April 19 date was dropped because of a Calgary work trip. Third, May 3 was floated as a possibility when a slot opened up, but it was never adopted. Fourth, you decided to keep May 10 as the final date. The final plan is May 10.",
+      "gold_memory_state": "Trajectory: April 19 (confirmed, step 1) → May 10 (confirmed, step 2) → May 3 (tentative only, step 3, rejected) → May 10 reaffirmed (confirmed, step 4). Final state: May 10.",
+      "judge_rubric": {
+        "must_include": [
+          "April 19 as the first date",
+          "May 10 as the confirmed reschedule",
+          "May 3 as only considered or floated",
+          "May 10 as the final confirmed date"
+        ],
+        "acceptable_paraphrases": [
+          "April 19 originally",
+          "moved to May 10",
+          "May 3 was just an idea",
+          "stuck with May 10"
+        ],
+        "must_not_include": [
+          "May 3 was ever confirmed or adopted"
+        ],
+        "harmful_extra": [
+          "Saying the final date is May 3",
+          "Omitting May 3 from the trajectory entirely",
+          "Saying April 19 was the second date"
+        ],
+        "harmless_extra": [
+          "Mentioning the Calgary trip",
+          "Mentioning ethics prep as the reason for rejecting May 3"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model presents May 3 or April 19 as the final date.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model puts the dates in the wrong chronological order (e.g., May 3 before the first May 10 reschedule, or April 19 after May 10).",
+        "final_state": "Fails if the model does not conclude with May 10 as the final confirmed date.",
+        "intermediate_state": "Fails if the model omits any of the three intermediate states (April 19, first May 10, tentative May 3).",
+        "trajectory_provenance": "Fails if the model does not distinguish between confirmed changes and the tentative consideration of May 3."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: User registered with April 19 as the exam date (confirmed).",
+        "Step 2: User rescheduled to May 10 due to Calgary work trip (confirmed, supersedes April 19).",
+        "Step 3: User considered moving to May 3 when a slot opened (tentative only, never finalized).",
+        "Step 4: User explicitly decided to keep May 10, rejecting the May 3 option (confirmed, reaffirms May 10).",
+        "Derived value: The trajectory is April 19 → May 10 → May 3 (tentative, rejected) → May 10 (reaffirmed). Final state is May 10."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I registered for the C11 exam — Fundamentals of Insurance — and my test date is April 19"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I rescheduled my C11 exam to May 10. The April 19 date doesn't work anymore because of my Calgary work trip"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The Pearson VUE site is showing a slot on May 3 that just opened up. I'm seriously considering grabbing it so I can just get the exam over with sooner"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I decided to keep my May 10 date after all. Moving it earlier would just stress me out and I'd lose a full week of prep"
+        }
+      ]
+    }
+  ]
+}

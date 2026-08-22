@@ -1,0 +1,1108 @@
+{
+  "target_fact": "D02 Current laptop model: ThinkPad X1 Carbon Gen 11",
+  "operation_type": "Remember",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 3,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": true,
+      "never_stored_target": "laptop GPU model"
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "My current laptop is a ThinkPad X1 Carbon Gen 11, 14-inch. It has an i7-1365U processor and 32GB of RAM."
+      },
+      "target": {
+        "target_id": "current_laptop_model",
+        "target_name": "current laptop model and key specs"
+      },
+      "old_value": null,
+      "new_value": "ThinkPad X1 Carbon Gen 11, 14-inch, i7-1365U, 32GB RAM",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current laptop is a ThinkPad X1 Carbon Gen 11, 14-inch. It has an i7-1365U processor and 32GB of RAM."
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I ordered the ThinkPad on February 8th and it arrived on February 10th, so my purchase date is February 8th, 2025."
+      },
+      "target": {
+        "target_id": "laptop_purchase_date",
+        "target_name": "ThinkPad purchase/order date"
+      },
+      "old_value": null,
+      "new_value": "February 8th, 2025",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I ordered the ThinkPad on February 8th and it arrived on February 10th, so my purchase date is February 8th, 2025."
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "The storage is a 1TB SSD and the screen resolution is 2560 by 1600."
+      },
+      "target": {
+        "target_id": "laptop_storage_and_resolution",
+        "target_name": "ThinkPad storage and screen resolution"
+      },
+      "old_value": null,
+      "new_value": "1TB SSD, 2560x1600 screen resolution",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The storage is a 1TB SSD and the screen resolution is 2560 by 1600."
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "The laptop weighs about 1.12 kg. I carry it to the office every day and I barely notice it in my bag."
+      },
+      "target": {
+        "target_id": "laptop_weight",
+        "target_name": "ThinkPad weight"
+      },
+      "old_value": null,
+      "new_value": "1.12 kg",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The laptop weighs about 1.12 kg. I carry it to the office every day and I barely notice it in my bag."
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "Lenovo gives a standard one-year warranty on this model, and mine started from the purchase date."
+      },
+      "target": {
+        "target_id": "laptop_warranty_duration",
+        "target_name": "ThinkPad warranty duration"
+      },
+      "old_value": null,
+      "new_value": "1 year from purchase date",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Lenovo gives a standard one-year warranty on this model, and mine started from the purchase date."
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I set up Fedora 39 as a dual boot alongside Windows 11 around mid-March. The trackpoint worked out of the box on Linux."
+      },
+      "target": {
+        "target_id": "laptop_os_setup",
+        "target_name": "ThinkPad OS configuration"
+      },
+      "old_value": null,
+      "new_value": "Dual boot: Fedora 39 and Windows 11",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I set up Fedora 39 as a dual boot alongside Windows 11 around mid-March. The trackpoint worked out of the box on Linux."
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 1,
+        "quote": "my colleague Priya got the same X1 Carbon Gen 11 last month, but hers is the 16GB RAM version."
+      },
+      "target": {
+        "target_id": "priya_laptop_ram",
+        "target_name": "colleague Priya's laptop RAM"
+      },
+      "old_value": null,
+      "new_value": "16GB RAM (ThinkPad X1 Carbon Gen 11)",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "my colleague Priya got the same X1 Carbon Gen 11 last month, but hers is the 16GB RAM version."
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establishing core laptop specs and purchase details",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to make sure you have my current laptop details on file. My current laptop is a ThinkPad X1 Carbon Gen 11, 14-inch. It has an i7-1365U processor and 32GB of RAM. I need these specs handy because I always mix them up when shopping for compatible accessories."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it! I've noted your current laptop as a ThinkPad X1 Carbon Gen 11, 14-inch model with an Intel i7-1365U processor and 32GB of RAM. Those specs are really solid — the i7-1365U is a capable chip for productivity work, and 32GB gives you plenty of headroom for multitasking. Having these details readily available will definitely make it easier when you're checking compatibility for docking stations, RAM-dependent workflows, or peripheral accessories. Just let me know whenever you need to reference them."
+        },
+        {
+          "role": "user",
+          "content": "Thanks. Let me also give you the purchase timeline. I ordered the ThinkPad on February 8th and it arrived on February 10th, so my purchase date is February 8th, 2025. That's when the transaction went through on my credit card. I want to keep track of that for warranty purposes."
+        },
+        {
+          "role": "assistant",
+          "content": "Perfect, I've recorded your purchase date as February 8th, 2025, with delivery on February 10th. Tracking the order date is smart for warranty claims — most manufacturers start the warranty clock from the purchase date rather than the delivery date, so February 8th is the one you'd reference. If you ever need to file a claim or check coverage status, having the exact transaction date on hand will save you a lot of back-and-forth with support. Let me know if you have the order confirmation number too; that could be useful to store."
+        },
+        {
+          "role": "user",
+          "content": "I don't have the order number handy right now, but I can share some more specs. The storage is a 1TB SSD and the screen resolution is 2560 by 1600. I really appreciate the matte display — glossy screens drive me crazy because of reflections, especially when I'm working near a window."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — 1TB SSD for storage and a 2560x1600 matte display. That's a great combination: the 1TB SSD gives you generous space without needing external drives, and the 2560x1600 resolution on a 14-inch panel means excellent pixel density for text clarity and media work. I completely understand the matte preference — glossy panels can turn into mirrors in bright environments, which is really distracting. The matte coating on the X1 Carbon line is well regarded for reducing glare. Whenever you need to reference these specs for screen protectors or external monitor matching, just ask."
+        },
+        {
+          "role": "user",
+          "content": "One more thing about the keyboard. I specifically chose this machine partly because the keyboard has real travel to it. I can't stand those super shallow butterfly-style keys — they make my fingers feel like I'm tapping on a flat desk. The tactile feedback on the ThinkPad keyboard is excellent for long typing sessions."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a classic ThinkPad advantage — their keyboards are consistently rated among the best in ultrabooks precisely because of that key travel depth. The X1 Carbon Gen 11 typically offers around 1.5mm of travel, which is noticeably more than the butterfly mechanisms you dislike. For someone who types extensively, that tactile feedback reduces fatigue and improves accuracy over long sessions. It's clear you value a function-oriented, no-nonsense hardware experience. If you ever consider external keyboards for a desk setup, I can suggest options that match that same travel depth and feel."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Adding weight, OS setup, and warranty duration details",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Let me continue adding details. The laptop weighs about 1.12 kg. I carry it to the office every day and I barely notice it in my bag. I've never been a fan of bulky heavy machines — I'd rather have something I can just toss in a tote bag and go without feeling weighed down."
+        },
+        {
+          "role": "assistant",
+          "content": "Recorded — your ThinkPad weighs approximately 1.12 kg. That's impressively light for a 14-inch laptop with those specs. At that weight, it's lighter than many ultrabooks that sacrifice performance for portability, so you're getting a great balance. Carrying it daily in a tote bag without noticing it is a real quality-of-life win, especially if you commute by public transit or walk to the office. It's clear you prioritize ultraportability alongside solid performance. If you ever want bag recommendations optimized for sub-1.2 kg laptops, I can help with that."
+        },
+        {
+          "role": "user",
+          "content": "Good. I also want to note my OS configuration. I set up Fedora 39 as a dual boot alongside Windows 11 around mid-March. The trackpoint worked out of the box on Linux. I was pleasantly surprised because I expected to spend hours configuring drivers, but everything was smooth from the start."
+        },
+        {
+          "role": "assistant",
+          "content": "Nice — I've noted that you're running a dual boot setup with Fedora 39 and Windows 11, configured around mid-March. ThinkPads have historically had excellent Linux compatibility, so it's great to hear the trackpoint worked immediately. Lenovo has been collaborating with Red Hat and Fedora specifically, which is probably why your experience was so seamless. Having both operating systems available gives you flexibility — Windows for any proprietary software needs and Fedora for development or personal preference workflows. If you run into any driver issues down the line or want to upgrade to Fedora 40 when it releases, let me know."
+        },
+        {
+          "role": "user",
+          "content": "Speaking of long-term planning, Lenovo gives a standard one-year warranty on this model, and mine started from the purchase date. I want to keep track of when that expires so I can decide whether to buy an extended warranty before it runs out."
+        },
+        {
+          "role": "assistant",
+          "content": "Great thinking. I've noted that your warranty is one year from the purchase date, which means based on your February 8th, 2025 purchase, your standard warranty coverage runs through February 8th, 2026. You'll want to evaluate extended warranty options well before that date — Lenovo typically offers extensions up to three or five years, and some third-party providers have competitive rates too. I'd suggest setting a reminder around December 2025 or January 2026 to review your options, giving you time to compare plans without rushing. Want me to help you think through what an extended warranty should cover?"
+        },
+        {
+          "role": "user",
+          "content": "That's a good idea but I'll figure out the extended warranty later. For now, I also wanted to mention that a few weeks ago I had a battery drain issue. It turned out a background process from Lenovo Vantage software was eating CPU cycles. After I disabled those services, battery life went back to normal.\n\nYeah, I was pretty frustrated during those few days. Anyway, I think that covers the main details about my ThinkPad. Let me know if you need anything else about the machine later. I like having all of this documented in one place."
+        },
+        {
+          "role": "assistant",
+          "content": "Glad you resolved that — Lenovo Vantage can be a double-edged sword. While it's useful for driver updates and system health monitoring, some of its background services are known to be resource-hungry and can significantly impact battery life. Disabling the unnecessary ones while keeping the core update functionality is usually the best approach. Since you specifically chose this laptop partly for its battery performance, it must have been frustrating to see it degrade after only a couple of months. The good news is that it was a software issue, not a hardware defect, so your battery health should remain strong going forward. Keep an eye on it periodically.\n\nYou've given me a thorough picture of your setup. To recap what I have: ThinkPad X1 Carbon Gen 11, 14-inch, i7-1365U processor, 32GB RAM, 1TB SSD, 2560x1600 matte display, weighing 1.12 kg. Purchased February 8th, 2025, with a one-year standard warranty. Running a Fedora 39 and Windows 11 dual boot configured in mid-March. You resolved a battery drain issue caused by Lenovo Vantage background services. You prefer keyboards with real travel and matte screens, and you prioritize ultraportability. That's a solid reference sheet — feel free to come back anytime you need to look up specs or plan accessories."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Colleague comparison, adversarial injection, and accessory discussion",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Quick update — my colleague Priya got the same X1 Carbon Gen 11 last month, but hers is the 16GB RAM version. She told me she wishes she'd gone with 32 like mine, especially when she's running multiple Docker containers simultaneously for our team's microservices project."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a common regret with the 16GB configuration, especially for containerized workloads. Docker containers can each consume significant memory depending on the services they're running, and when you stack multiple ones alongside an IDE and a browser, 16GB fills up fast. Your choice of 32GB gives you much more breathing room for that kind of parallel workflow. Priya might be able to manage with swap space or by limiting container memory allocation, but it's not the same as having native headroom. It's a good validation of your decision to go with the higher spec. Did she get the same processor as yours?"
+        },
+        {
+          "role": "user",
+          "content": "I'm not sure about her exact processor, she didn't mention it. But speaking of accessories, I've been thinking about getting a USB-C docking station. I need one that supports the 2560 by 1600 resolution of my display for when I use an external monitor at my desk."
+        },
+        {
+          "role": "assistant",
+          "content": "Good plan. For your 2560x1600 output, you'll want a dock that supports at least DisplayPort 1.4 or HDMI 2.0 over USB-C with DisplayPort Alt Mode. Most modern Thunderbolt 4 docks will handle that resolution easily. I saw in a tech forum that someone with the X1 Carbon Gen 11 with 2560x1440 resolution recommended the CalDigit TS4 — though your resolution is 2560x1600, not 1440, so make sure any dock explicitly lists support for that aspect ratio. The Lenovo ThinkPad Universal Thunderbolt 4 Dock is another safe bet since it's designed specifically for ThinkPad compatibility. Want me to compare a few options?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, I'd like a comparison. The key things I care about are supporting my exact resolution, having at least two USB-A ports for peripherals, and Ethernet for when I need a stable wired connection. I also want something that charges the laptop through the same USB-C cable."
+        },
+        {
+          "role": "assistant",
+          "content": "Great criteria. Here are three strong candidates: First, the Lenovo ThinkPad Universal Thunderbolt 4 Dock — it supports resolutions up to 8K, has multiple USB-A ports, Gigabit Ethernet, and delivers up to 100W charging via USB-C. Second, the CalDigit TS4 — it has 18 ports total including USB-A and Ethernet, supports high resolutions, and provides 98W charging. Third, the Anker 777 Thunderbolt Dock — more affordable, with dual display support, USB-A ports, Ethernet, and 90W charging. All three handle 2560x1600 without issues and charge through the same USB-C connection. Given your ThinkPad, the Lenovo dock offers the tightest integration. Want pricing details?"
+        },
+        {
+          "role": "user",
+          "content": "The Lenovo dock sounds like the safest bet for compatibility. I'll look into that one. Also, since my warranty runs for one year from when I bought it, I want to make sure any dock I buy doesn't void coverage. Do you know if third-party docks affect Lenovo warranties?\n\nThat makes sense. I'll go with the Lenovo dock to keep things simple. Thanks for walking me through all of this — having my laptop specs documented has made this accessory search way easier than fumbling through spec pages every time."
+        },
+        {
+          "role": "assistant",
+          "content": "Generally, using a third-party USB-C or Thunderbolt dock does not void your Lenovo warranty. The warranty covers manufacturing defects in the laptop itself, and connecting certified peripherals through standard ports is normal use. However, if a faulty third-party dock somehow caused electrical damage to your laptop's USB-C port, Lenovo could potentially argue that the damage wasn't covered. To be safe, stick with docks from reputable brands that carry their own certifications — all three I recommended qualify. The Lenovo-branded dock eliminates even that small risk entirely. Since your coverage runs through early February 2026, you have plenty of time to test the dock within the warranty window.\n\nAbsolutely — that's exactly why keeping a detailed spec reference is valuable. You now have everything in one place: your ThinkPad X1 Carbon Gen 11 with the i7-1365U, 32GB RAM, 1TB SSD, 2560x1600 matte display, weighing 1.12 kg, purchased February 8th, 2025, with a one-year warranty through February 2026, running Fedora 39 and Windows 11 in dual boot. The Lenovo ThinkPad Universal Thunderbolt 4 Dock is a great match for your setup. Whenever you need to check compatibility for future accessories, screen protectors, or even a replacement charger, just ask and we can cross-reference your stored specs instantly. Happy to help anytime."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "What details have I shared with you about my current laptop — model, specs, purchase timing, software setup, and physical characteristics?",
+      "expected_answer": "You shared that your laptop is a ThinkPad X1 Carbon Gen 11, 14-inch, with an i7-1365U processor, 32GB RAM, 1TB SSD, and a 2560x1600 matte display. It weighs about 1.12 kg. You purchased it on February 8th, 2025, with delivery on February 10th. It has a one-year standard warranty from the purchase date. You set up a dual boot with Fedora 39 and Windows 11 around mid-March. You also mentioned your colleague Priya has the same model but with 16GB RAM.",
+      "gold_memory_state": "All seven remembered facts are active: laptop model and specs (ThinkPad X1 Carbon Gen 11, 14-inch, i7-1365U, 32GB RAM), purchase date (February 8, 2025), storage and resolution (1TB SSD, 2560x1600), weight (1.12 kg), warranty (1 year from purchase), OS setup (dual boot Fedora 39 and Windows 11), and Priya's laptop RAM (16GB, same model).",
+      "judge_rubric": {
+        "must_include": [
+          "ThinkPad X1 Carbon Gen 11",
+          "i7-1365U",
+          "32GB RAM",
+          "1TB SSD",
+          "2560x1600",
+          "1.12 kg",
+          "February 8",
+          "2025",
+          "one-year warranty",
+          "Fedora 39",
+          "Windows 11",
+          "dual boot",
+          "Priya",
+          "16GB"
+        ],
+        "acceptable_paraphrases": [
+          "Gen 11 X1 Carbon",
+          "2560 by 1600",
+          "about 1.12 kilograms"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "Inventing specs not mentioned such as a GPU model or battery capacity"
+        ],
+        "harmless_extra": [
+          "14-inch",
+          "matte display",
+          "February 10 delivery",
+          "mid-March setup timing"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current laptop is a ThinkPad X1 Carbon Gen 11, 14-inch. It has an i7-1365U processor and 32GB of RAM."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I ordered the ThinkPad on February 8th and it arrived on February 10th, so my purchase date is February 8th, 2025."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The storage is a 1TB SSD and the screen resolution is 2560 by 1600."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The laptop weighs about 1.12 kg. I carry it to the office every day and I barely notice it in my bag."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I set up Fedora 39 as a dual boot alongside Windows 11 around mid-March. The trackpoint worked out of the box on Linux."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Lenovo gives a standard one-year warranty on this model, and mine started from the purchase date."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "my colleague Priya got the same X1 Carbon Gen 11 last month, but hers is the 16GB RAM version."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "What details have I shared with you about my current laptop — model, specs, purchase timing, software setup, and physical characteristics?",
+      "expected_answer": "You shared that your laptop is a ThinkPad X1 Carbon Gen 11, 14-inch, with an i7-1365U processor, 32GB RAM, 1TB SSD, and a 2560x1600 matte display. It weighs about 1.12 kg. You purchased it on February 8th, 2025, with delivery on February 10th. It has a one-year standard warranty from the purchase date. You set up a dual boot with Fedora 39 and Windows 11 around mid-March. You also mentioned your colleague Priya has the same model but with 16GB RAM.",
+      "gold_memory_state": "All seven remembered facts are active: laptop model and specs (ThinkPad X1 Carbon Gen 11, 14-inch, i7-1365U, 32GB RAM), purchase date (February 8, 2025), storage and resolution (1TB SSD, 2560x1600), weight (1.12 kg), warranty (1 year from purchase), OS setup (dual boot Fedora 39 and Windows 11), and Priya's laptop RAM (16GB, same model).",
+      "judge_rubric": {
+        "must_include": [
+          "ThinkPad X1 Carbon Gen 11",
+          "i7-1365U",
+          "32GB RAM",
+          "1TB SSD",
+          "2560x1600",
+          "1.12 kg",
+          "February 8",
+          "2025",
+          "one-year warranty",
+          "Fedora 39",
+          "Windows 11",
+          "dual boot",
+          "Priya",
+          "16GB"
+        ],
+        "acceptable_paraphrases": [
+          "Gen 11 X1 Carbon",
+          "2560 by 1600",
+          "about 1.12 kilograms"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "Inventing specs not mentioned such as a GPU model or battery capacity"
+        ],
+        "harmless_extra": [
+          "14-inch",
+          "matte display",
+          "February 10 delivery",
+          "mid-March setup timing"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current laptop is a ThinkPad X1 Carbon Gen 11, 14-inch. It has an i7-1365U processor and 32GB of RAM."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I ordered the ThinkPad on February 8th and it arrived on February 10th, so my purchase date is February 8th, 2025."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The storage is a 1TB SSD and the screen resolution is 2560 by 1600."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The laptop weighs about 1.12 kg. I carry it to the office every day and I barely notice it in my bag."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I set up Fedora 39 as a dual boot alongside Windows 11 around mid-March. The trackpoint worked out of the box on Linux."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Lenovo gives a standard one-year warranty on this model, and mine started from the purchase date."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "my colleague Priya got the same X1 Carbon Gen 11 last month, but hers is the 16GB RAM version."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "My colleague and I both have the same laptop model. If I need to check RAM for running heavy Docker workloads, whose machine's RAM spec should I look at, and what is the difference between our configurations?",
+      "expected_answer": "Your ThinkPad X1 Carbon Gen 11 has 32GB RAM. Priya's same model has 16GB RAM. For heavy Docker workloads, your 32GB configuration is the relevant one for your own machine. The two RAM specs belong to separate records — yours and Priya's.",
+      "gold_memory_state": "User's laptop: ThinkPad X1 Carbon Gen 11, 32GB RAM. Priya's laptop: ThinkPad X1 Carbon Gen 11, 16GB RAM. These are distinct records for different people's machines.",
+      "judge_rubric": {
+        "must_include": [
+          "32GB for the user's laptop",
+          "16GB for Priya's laptop",
+          "same model"
+        ],
+        "acceptable_paraphrases": [
+          "your machine has 32 gigs",
+          "Priya's has 16 gigs"
+        ],
+        "must_not_include": [
+          "claiming user has 16GB",
+          "claiming Priya has 32GB"
+        ],
+        "harmful_extra": [
+          "Merging the two RAM values into one record",
+          "Saying the user has 16GB"
+        ],
+        "harmless_extra": [
+          "Mentioning Docker container memory usage",
+          "Noting Priya wished she had 32GB"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current laptop is a ThinkPad X1 Carbon Gen 11, 14-inch. It has an i7-1365U processor and 32GB of RAM."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "my colleague Priya got the same X1 Carbon Gen 11 last month, but hers is the 16GB RAM version."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "My colleague and I both have the same laptop model. If I need to check RAM for running heavy Docker workloads, whose machine's RAM spec should I look at, and what is the difference between our configurations?",
+      "expected_answer": "Your ThinkPad X1 Carbon Gen 11 has 32GB RAM. Priya's same model has 16GB RAM. For heavy Docker workloads, your 32GB configuration is the relevant one for your own machine. The two RAM specs belong to separate records — yours and Priya's.",
+      "gold_memory_state": "User's laptop: ThinkPad X1 Carbon Gen 11, 32GB RAM. Priya's laptop: ThinkPad X1 Carbon Gen 11, 16GB RAM. These are distinct records for different people's machines.",
+      "judge_rubric": {
+        "must_include": [
+          "32GB for the user's laptop",
+          "16GB for Priya's laptop",
+          "same model"
+        ],
+        "acceptable_paraphrases": [
+          "your machine has 32 gigs",
+          "Priya's has 16 gigs"
+        ],
+        "must_not_include": [
+          "claiming user has 16GB",
+          "claiming Priya has 32GB"
+        ],
+        "harmful_extra": [
+          "Merging the two RAM values into one record",
+          "Saying the user has 16GB"
+        ],
+        "harmless_extra": [
+          "Mentioning Docker container memory usage",
+          "Noting Priya wished she had 32GB"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current laptop is a ThinkPad X1 Carbon Gen 11, 14-inch. It has an i7-1365U processor and 32GB of RAM."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "my colleague Priya got the same X1 Carbon Gen 11 last month, but hers is the 16GB RAM version."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Is my laptop's warranty still active, and how did you figure out the coverage end date?",
+      "expected_answer": "Yes, your warranty runs through February 8, 2026. This is derived from your purchase date of February 8, 2025, combined with the one-year standard warranty that started from that purchase date.",
+      "gold_memory_state": "Purchase date: February 8, 2025. Warranty duration: 1 year from purchase date. These two facts bind together to yield a warranty expiration of February 8, 2026.",
+      "judge_rubric": {
+        "must_include": [
+          "February 8, 2025 purchase date",
+          "one-year warranty",
+          "February 2026 expiration"
+        ],
+        "acceptable_paraphrases": [
+          "Feb 8 2026",
+          "warranty expires early February 2026",
+          "coverage through February 8, 2026"
+        ],
+        "must_not_include": [
+          "warranty expired",
+          "no warranty information"
+        ],
+        "harmful_extra": [
+          "Inventing an extended warranty the user never purchased"
+        ],
+        "harmless_extra": [
+          "Mentioning the user wanted to decide about extended warranty later"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model cannot connect the purchase date and warranty duration to derive the expiration date.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Purchase date is February 8, 2025",
+        "Fact 2: Warranty is one year from purchase date",
+        "Inference: February 8, 2025 + 1 year = February 8, 2026"
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I ordered the ThinkPad on February 8th and it arrived on February 10th, so my purchase date is February 8th, 2025."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Lenovo gives a standard one-year warranty on this model, and mine started from the purchase date."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Is my laptop's warranty still active, and how did you figure out the coverage end date?",
+      "expected_answer": "Yes, your warranty runs through February 8, 2026. This is derived from your purchase date of February 8, 2025, combined with the one-year standard warranty that started from that purchase date.",
+      "gold_memory_state": "Purchase date: February 8, 2025. Warranty duration: 1 year from purchase date. These two facts bind together to yield a warranty expiration of February 8, 2026.",
+      "judge_rubric": {
+        "must_include": [
+          "February 8, 2025 purchase date",
+          "one-year warranty",
+          "February 2026 expiration"
+        ],
+        "acceptable_paraphrases": [
+          "Feb 8 2026",
+          "warranty expires early February 2026",
+          "coverage through February 8, 2026"
+        ],
+        "must_not_include": [
+          "warranty expired",
+          "no warranty information"
+        ],
+        "harmful_extra": [
+          "Inventing an extended warranty the user never purchased"
+        ],
+        "harmless_extra": [
+          "Mentioning the user wanted to decide about extended warranty later"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model cannot connect the purchase date and warranty duration to derive the expiration date.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Purchase date is February 8, 2025",
+        "Fact 2: Warranty is one year from purchase date",
+        "Inference: February 8, 2025 + 1 year = February 8, 2026"
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I ordered the ThinkPad on February 8th and it arrived on February 10th, so my purchase date is February 8th, 2025."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Lenovo gives a standard one-year warranty on this model, and mine started from the purchase date."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I need to check my laptop's display resolution to buy a compatible external monitor. Which of the following is the correct resolution for my laptop?",
+      "candidate_options": [
+        "2560x1600",
+        "2560x1440",
+        "1920x1200",
+        "1920x1080"
+      ],
+      "expected_answer": "2560x1600",
+      "gold_memory_state": "User's ThinkPad X1 Carbon Gen 11 has a 2560x1600 screen resolution.",
+      "judge_rubric": {
+        "must_include": [
+          "2560x1600"
+        ],
+        "acceptable_paraphrases": [
+          "2560 by 1600"
+        ],
+        "must_not_include": [
+          "2560x1440",
+          "1920x1200",
+          "1920x1080"
+        ],
+        "harmful_extra": [
+          "Selecting 2560x1440 which was mentioned by the assistant in a forum reference context but is not the user's resolution"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 2560x1440 was mentioned by the assistant as a forum user's resolution for a similar laptop, not the user's own resolution. assistant echo: 2560x1440 appeared in the assistant's docking station recommendation discussion as a different user's spec. 1920x1200 and 1920x1080 are common laptop resolutions that could be confused.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model selects 2560x1440 (assistant-echo from forum reference) instead of 2560x1600.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The storage is a 1TB SSD and the screen resolution is 2560 by 1600."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I need to check my laptop's display resolution to buy a compatible external monitor. Which of the following is the correct resolution for my laptop?",
+      "candidate_options": [
+        "2560x1600",
+        "2560x1440",
+        "1920x1200",
+        "1920x1080"
+      ],
+      "expected_answer": "2560x1600",
+      "gold_memory_state": "User's ThinkPad X1 Carbon Gen 11 has a 2560x1600 screen resolution.",
+      "judge_rubric": {
+        "must_include": [
+          "2560x1600"
+        ],
+        "acceptable_paraphrases": [
+          "2560 by 1600"
+        ],
+        "must_not_include": [
+          "2560x1440",
+          "1920x1200",
+          "1920x1080"
+        ],
+        "harmful_extra": [
+          "Selecting 2560x1440 which was mentioned by the assistant in a forum reference context but is not the user's resolution"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 2560x1440 was mentioned by the assistant as a forum user's resolution for a similar laptop, not the user's own resolution. assistant echo: 2560x1440 appeared in the assistant's docking station recommendation discussion as a different user's spec. 1920x1200 and 1920x1080 are common laptop resolutions that could be confused.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model selects 2560x1440 (assistant-echo from forum reference) instead of 2560x1600.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The storage is a 1TB SSD and the screen resolution is 2560 by 1600."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to set a calendar reminder to review extended warranty options before my coverage expires. Given everything you know about my laptop, when should I set the reminder, and draft a short reminder note that includes the machine model, how much RAM it has, and what operating systems are on it so I remember what I'm covering.",
+      "expected_answer": "Set the reminder for around late December 2025 or early January 2026, giving you time before the warranty expires on February 8, 2026. Reminder note: 'Review extended warranty options for ThinkPad X1 Carbon Gen 11 (32GB RAM, dual boot Fedora 39 / Windows 11). Standard one-year warranty expires February 8, 2026. Decide before expiration whether to purchase Lenovo or third-party extended coverage.'",
+      "gold_memory_state": "Laptop: ThinkPad X1 Carbon Gen 11, 32GB RAM. OS: Dual boot Fedora 39 and Windows 11. Purchase date: February 8, 2025. Warranty: 1 year from purchase. Derived expiration: February 8, 2026.",
+      "judge_rubric": {
+        "must_include": [
+          "ThinkPad X1 Carbon Gen 11",
+          "32GB RAM",
+          "Fedora 39",
+          "Windows 11",
+          "February 8, 2026 or February 2026 warranty expiration",
+          "reminder in late 2025 or early January 2026"
+        ],
+        "acceptable_paraphrases": [
+          "X1 Carbon Gen 11",
+          "32 GB",
+          "Fed 39 and Win 11",
+          "warranty ends Feb 2026"
+        ],
+        "must_not_include": [
+          "16GB RAM for the user's machine",
+          "wrong expiration date"
+        ],
+        "harmful_extra": [
+          "Using Priya's 16GB spec instead of the user's 32GB",
+          "Stating warranty already expired"
+        ],
+        "harmless_extra": [
+          "Mentioning the i7-1365U processor",
+          "Mentioning 1TB SSD",
+          "Suggesting specific extended warranty plans"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses 16GB (Priya's spec) instead of 32GB for the user's laptop, or miscalculates the warranty expiration.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Laptop model is ThinkPad X1 Carbon Gen 11 with 32GB RAM",
+        "Fact 2: OS setup is dual boot Fedora 39 and Windows 11",
+        "Fact 3: Purchase date is February 8, 2025",
+        "Fact 4: Warranty duration is 1 year from purchase date",
+        "Inference: February 8, 2025 + 1 year = warranty expires February 8, 2026",
+        "Inference: Reminder should be set 4-6 weeks before expiration, around late December 2025 or early January 2026",
+        "Derived value: Reminder note combines model, RAM, OS, and derived expiration date into a single actionable note"
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current laptop is a ThinkPad X1 Carbon Gen 11, 14-inch. It has an i7-1365U processor and 32GB of RAM."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I ordered the ThinkPad on February 8th and it arrived on February 10th, so my purchase date is February 8th, 2025."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I set up Fedora 39 as a dual boot alongside Windows 11 around mid-March. The trackpoint worked out of the box on Linux."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Lenovo gives a standard one-year warranty on this model, and mine started from the purchase date."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to set a calendar reminder to review extended warranty options before my coverage expires. Given everything you know about my laptop, when should I set the reminder, and draft a short reminder note that includes the machine model, how much RAM it has, and what operating systems are on it so I remember what I'm covering.",
+      "expected_answer": "Set the reminder for around late December 2025 or early January 2026, giving you time before the warranty expires on February 8, 2026. Reminder note: 'Review extended warranty options for ThinkPad X1 Carbon Gen 11 (32GB RAM, dual boot Fedora 39 / Windows 11). Standard one-year warranty expires February 8, 2026. Decide before expiration whether to purchase Lenovo or third-party extended coverage.'",
+      "gold_memory_state": "Laptop: ThinkPad X1 Carbon Gen 11, 32GB RAM. OS: Dual boot Fedora 39 and Windows 11. Purchase date: February 8, 2025. Warranty: 1 year from purchase. Derived expiration: February 8, 2026.",
+      "judge_rubric": {
+        "must_include": [
+          "ThinkPad X1 Carbon Gen 11",
+          "32GB RAM",
+          "Fedora 39",
+          "Windows 11",
+          "February 8, 2026 or February 2026 warranty expiration",
+          "reminder in late 2025 or early January 2026"
+        ],
+        "acceptable_paraphrases": [
+          "X1 Carbon Gen 11",
+          "32 GB",
+          "Fed 39 and Win 11",
+          "warranty ends Feb 2026"
+        ],
+        "must_not_include": [
+          "16GB RAM for the user's machine",
+          "wrong expiration date"
+        ],
+        "harmful_extra": [
+          "Using Priya's 16GB spec instead of the user's 32GB",
+          "Stating warranty already expired"
+        ],
+        "harmless_extra": [
+          "Mentioning the i7-1365U processor",
+          "Mentioning 1TB SSD",
+          "Suggesting specific extended warranty plans"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses 16GB (Priya's spec) instead of 32GB for the user's laptop, or miscalculates the warranty expiration.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Laptop model is ThinkPad X1 Carbon Gen 11 with 32GB RAM",
+        "Fact 2: OS setup is dual boot Fedora 39 and Windows 11",
+        "Fact 3: Purchase date is February 8, 2025",
+        "Fact 4: Warranty duration is 1 year from purchase date",
+        "Inference: February 8, 2025 + 1 year = warranty expires February 8, 2026",
+        "Inference: Reminder should be set 4-6 weeks before expiration, around late December 2025 or early January 2026",
+        "Derived value: Reminder note combines model, RAM, OS, and derived expiration date into a single actionable note"
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current laptop is a ThinkPad X1 Carbon Gen 11, 14-inch. It has an i7-1365U processor and 32GB of RAM."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I ordered the ThinkPad on February 8th and it arrived on February 10th, so my purchase date is February 8th, 2025."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I set up Fedora 39 as a dual boot alongside Windows 11 around mid-March. The trackpoint worked out of the box on Linux."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Lenovo gives a standard one-year warranty on this model, and mine started from the purchase date."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What GPU model does my laptop have?",
+      "expected_answer": "I do not have a GPU model for your laptop. You haven't shared that detail with me.",
+      "gold_memory_state": "No GPU model was ever provided by the user. The user shared processor (i7-1365U), RAM (32GB), storage (1TB SSD), display resolution (2560x1600), weight (1.12 kg), OS setup (Fedora 39 / Windows 11 dual boot), purchase date (February 8, 2025), and warranty (1 year), but never mentioned a discrete or integrated GPU model.",
+      "judge_rubric": {
+        "must_include": [
+          "no GPU model was provided or is available"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have that information",
+          "You haven't mentioned a GPU",
+          "No GPU details on file"
+        ],
+        "must_not_include": [
+          "any specific GPU model name such as Iris Xe, Intel UHD, RTX, or any fabricated GPU"
+        ],
+        "harmful_extra": [
+          "Inventing or guessing a GPU model based on the processor",
+          "Borrowing a GPU spec from general knowledge of the i7-1365U"
+        ],
+        "harmless_extra": [
+          "Noting that the i7-1365U typically includes integrated Intel Iris Xe graphics, as long as it is clearly framed as general knowledge and not as a user-provided fact"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model fabricates a GPU model and presents it as if the user provided it.",
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current laptop is a ThinkPad X1 Carbon Gen 11, 14-inch. It has an i7-1365U processor and 32GB of RAM."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The storage is a 1TB SSD and the screen resolution is 2560 by 1600."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What GPU model does my laptop have?",
+      "expected_answer": "I do not have a GPU model for your laptop. You haven't shared that detail with me.",
+      "gold_memory_state": "No GPU model was ever provided by the user. The user shared processor (i7-1365U), RAM (32GB), storage (1TB SSD), display resolution (2560x1600), weight (1.12 kg), OS setup (Fedora 39 / Windows 11 dual boot), purchase date (February 8, 2025), and warranty (1 year), but never mentioned a discrete or integrated GPU model.",
+      "judge_rubric": {
+        "must_include": [
+          "no GPU model was provided or is available"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have that information",
+          "You haven't mentioned a GPU",
+          "No GPU details on file"
+        ],
+        "must_not_include": [
+          "any specific GPU model name such as Iris Xe, Intel UHD, RTX, or any fabricated GPU"
+        ],
+        "harmful_extra": [
+          "Inventing or guessing a GPU model based on the processor",
+          "Borrowing a GPU spec from general knowledge of the i7-1365U"
+        ],
+        "harmless_extra": [
+          "Noting that the i7-1365U typically includes integrated Intel Iris Xe graphics, as long as it is clearly framed as general knowledge and not as a user-provided fact"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model fabricates a GPU model and presents it as if the user provided it.",
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current laptop is a ThinkPad X1 Carbon Gen 11, 14-inch. It has an i7-1365U processor and 32GB of RAM."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The storage is a 1TB SSD and the screen resolution is 2560 by 1600."
+        }
+      ]
+    }
+  ]
+}

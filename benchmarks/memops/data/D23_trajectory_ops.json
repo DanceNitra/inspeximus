@@ -1,0 +1,973 @@
+{
+  "target_fact": "User's travel seat preference is window seat, with specific seat selection history and preferred side being left side of the plane",
+  "operation_type": "TrajectoryOps",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "seat_pref_chain",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I flew from Chicago to Denver on March 3rd for a work conference and I picked seat 12A, a window seat on the left side"
+      },
+      "target": {
+        "target_id": "seat_preference",
+        "target_name": "flight seat preference"
+      },
+      "old_value": null,
+      "new_value": "window seat, left side preferred",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I flew from Chicago to Denver on March 3rd for a work conference and I picked seat 12A, a window seat on the left side"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "My coworker Daniel always picks aisle seats because he has bad knees and needs to stretch his legs out"
+      },
+      "target": {
+        "target_id": "daniel_seat_preference",
+        "target_name": "coworker Daniel's seat preference"
+      },
+      "old_value": null,
+      "new_value": "aisle seat, due to bad knees",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My coworker Daniel always picks aisle seats because he has bad knees and needs to stretch his legs out"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "seat_pref_chain",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I accidentally booked a middle seat, 22B, for my flight to Tampa. I was rushing on my phone and didn't check the seat map"
+      },
+      "target": {
+        "target_id": "seat_preference",
+        "target_name": "flight seat preference"
+      },
+      "old_value": "window seat, left side preferred",
+      "new_value": "middle seat 22B (accidental, negative experience)",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I accidentally booked a middle seat, 22B, for my flight to Tampa. I was rushing on my phone and didn't check the seat map"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "seat_pref_chain",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "For my return flight from Tampa I made sure to grab 18A well in advance. Window seat, left side, just how I like it"
+      },
+      "target": {
+        "target_id": "seat_preference",
+        "target_name": "flight seat preference"
+      },
+      "old_value": "middle seat 22B (accidental, negative experience)",
+      "new_value": "window seat, left side preferred",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "For my return flight from Tampa I made sure to grab 18A well in advance. Window seat, left side, just how I like it"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "seat_pref_chain",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "the CRJ-900 has a 1-2 layout on the right side, so seat D would actually give me a solo window with nobody next to me at all. I'm thinking I might switch to right-side window for that route"
+      },
+      "target": {
+        "target_id": "seat_preference",
+        "target_name": "flight seat preference"
+      },
+      "old_value": "window seat, left side preferred",
+      "new_value": "window seat, right side for CRJ-900 solo seat",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "the CRJ-900 has a 1-2 layout on the right side, so seat D would actually give me a solo window with nobody next to me at all. I'm thinking I might switch to right-side window for that route"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish seat preference and control target",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to keep track of my travel preferences and recent flights. I flew from Chicago to Denver on March 3rd for a work conference and I picked seat 12A, a window seat on the left side. I always try to grab a window because I like leaning against the wall to sleep. That flight was about two and a half hours and I slept almost the whole way."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it! I'll note that you flew Chicago to Denver on March 3rd in seat 12A, a left-side window seat. It sounds like window seats are your go-to because you can lean against the wall and rest comfortably. That's a smart approach for a two-and-a-half-hour flight — getting solid sleep on a midday work trip means you arrive refreshed for the conference. Do you want me to keep a running log of your flights and seat selections so you can reference them later, or are you mainly focused on locking in your preferences for future bookings?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, a running log would be helpful actually. The Denver trip was specifically for a product strategy conference that ran March 4th through the 6th. I stayed at the Marriott downtown. I remember feeling really well-rested when I landed because I'd slept through most of the flight. The wall makes such a difference for me — I feel enclosed and secure rather than exposed."
+        },
+        {
+          "role": "assistant",
+          "content": "I've added the details: the product strategy conference ran March 4th through the 6th in Denver, and you stayed at the Marriott downtown. It's interesting that the enclosed feeling of a window seat gives you a sense of security — some people find it claustrophobic, but for you it's the opposite. That psychological comfort clearly translates into better rest, which is exactly what you want before a multi-day conference. I'll keep tracking these trips and your seating notes. If you have any upcoming flights or other past trips to add, just let me know and I'll update the log."
+        },
+        {
+          "role": "user",
+          "content": "Speaking of seating preferences, I should mention what my coworker Daniel told me a couple weeks after the Denver trip. My coworker Daniel always picks aisle seats because he has bad knees and needs to stretch his legs out. I get why that works for him, but honestly the idea of people bumping into me every time the drink cart rolls by sounds terrible. I'd much rather be tucked away by the window."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a fair contrast — Daniel's aisle preference makes total sense given his knee issues, since he needs that extra legroom and the freedom to stand up without climbing over anyone. But your reasoning is equally valid: window seats give you that physical barrier from foot traffic and cart bumps, plus the wall for sleeping. It sounds like you and Daniel represent opposite ends of the comfort spectrum when it comes to seat selection. I'll note Daniel's preference too in case it comes up for group travel planning. Any other colleagues whose preferences might be useful to track for team trips?"
+        },
+        {
+          "role": "user",
+          "content": "Not right now, just Daniel. Oh, I should also mention that my sister told me last month she switched to preferring aisle seats after a turbulent flight made her feel claustrophobic by the window. I understand her reaction, but for me turbulence actually makes me want to be more enclosed, not less. The window feels like an anchor to me. Totally different psychology I guess."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really interesting psychological split between you and your sister. For her, turbulence amplified the feeling of being trapped against the fuselage, so she moved to the aisle for a sense of openness and escape. For you, the same turbulence scenario reinforces the window seat's appeal because the wall feels stabilizing and grounding. It's a great example of how the same physical environment triggers opposite comfort responses in different people. I'll keep your sister's updated preference on file too, in case you're ever booking family travel together and need to accommodate both of your seating needs."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "update chain with middle seat experience and return to window",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So I need to update you on a pretty frustrating travel experience. I accidentally booked a middle seat, 22B, for my flight to Tampa. I was rushing on my phone and didn't check the seat map. It was a visit to see my parents, and I ended up stuck between two strangers for three hours with zero armrest space. I couldn't nap or lean anywhere and it put me in a terrible mood."
+        },
+        {
+          "role": "assistant",
+          "content": "Oh no, that sounds miserable — especially for someone who values the enclosed comfort of a window seat. Three hours in a middle seat with no armrest territory and no wall to lean on is basically your worst-case scenario. The fact that it affected your mood even after landing shows how much your seat selection impacts your overall travel experience. I've updated your log: Tampa-bound flight, seat 22B middle seat, accidental booking due to rushing on mobile. Want me to set up a checklist reminder for future bookings so you always verify the seat map before confirming?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, a checklist would be smart. The Tampa trip was to see my parents — they live in a suburb just east of downtown Tampa. I usually visit them every few months. The flight itself was about three hours, and normally I'd sleep through at least half of it if I had my window seat. Instead I just sat there irritated the entire time. Even my mom noticed I was in a bad mood when she picked me up at the airport."
+        },
+        {
+          "role": "assistant",
+          "content": "I can see why your mom picked up on it — arriving after three hours of discomfort without any rest would put anyone on edge, but especially someone whose whole flight routine depends on that window-wall nap setup. I'll note that your parents are in a suburb east of downtown Tampa and that you visit roughly every few months. For the booking checklist, I'd suggest three steps: first, open the seat map before payment; second, confirm the seat is a window with an A or F designation; third, verify it's on the left side if possible. Does that cover your priorities?"
+        },
+        {
+          "role": "user",
+          "content": "For my return flight from Tampa I made sure to grab 18A well in advance. Window seat, left side, just how I like it. I had a coffee and watched the clouds for a while — there's something about looking out the window at sunset altitude that I find genuinely calming. It completely reset my mood compared to the outbound middle-seat disaster. Night and day difference in how I felt when I landed back in Chicago."
+        },
+        {
+          "role": "assistant",
+          "content": "What a relief — seat 18A sounds like it was exactly the palate cleanser you needed after the 22B debacle. Window seat on the left side, coffee in hand, watching the sunset from altitude — that's your ideal flight experience in a nutshell. The contrast between the two flights really underscores how much your seat selection affects your entire travel mood and energy level. I've logged the return as seat 18A, window left side, Tampa to Chicago. Your log now shows a clear pattern: window-left equals calm and rested, middle equals frustrated and drained. I'll make sure the checklist flags any non-window selection."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. Oh, I should mention — I had a round-trip to Seattle tentatively booked for late April with window seats pre-selected on both legs, but that whole trip got cancelled because the client meeting was moved to a video call. So those seat selections don't matter anymore. Just wanted you to know so you don't have stale bookings in my log."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for the heads-up — I've removed the Seattle round-trip from your active travel log since the client meeting shifted to video. No point keeping stale seat selections for a cancelled trip. Your current active log now shows: the March 3rd Chicago-to-Denver flight in seat 12A, the Tampa outbound in the accidental middle seat 22B, and the Tampa return in seat 18A. The Seattle entries are archived as cancelled. If that client meeting ever gets rescheduled as in-person, just let me know and we can rebook with your window-left preference locked in from the start."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "tentative right-side fork and adversarial injection",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I've been looking at flights to Boston for mid-May. Haven't booked yet, but I'll definitely filter for window seats only. The route uses a CRJ-900 regional jet, which has a different cabin layout than the bigger planes I usually fly. I'm curious whether the window experience is different on a smaller aircraft like that. Have you heard anything about CRJ-900 seating?"
+        },
+        {
+          "role": "assistant",
+          "content": "Great question! The CRJ-900 has a 2-2 seating configuration, so there are only four seats per row with no middle seats at all. That's already a win for you since you'll never accidentally end up in a middle seat. The window seats are designated A on the left and D on the right. The cabin is narrower than a 737 or A320, so the windows are a bit closer to you, which might actually enhance that enclosed feeling you enjoy. The overhead bins are smaller, so pack accordingly. Given your left-side preference, seat A in any row would be your natural pick. Want me to flag some specific rows once you're ready to book?"
+        },
+        {
+          "role": "user",
+          "content": "That's helpful, thanks. I noticed the CRJ-900 layout online and it looks like there's no middle seat at all, which is amazing. I've been comparing rows and it seems like rows 8 through 12 are over the wing, which might be slightly quieter. I want to make sure I get a good row. Also, do you remember what seat Daniel usually goes for? I might be traveling with him on this one."
+        },
+        {
+          "role": "assistant",
+          "content": "Daniel prefers aisle seats because of his bad knees — he needs the legroom to stretch. On the CRJ-900's 2-2 layout, his best bet would be seat B or C in any row, since those are both aisle seats. If you two sit in the same row, you could take the A window and he could take the B aisle on the left side, which would actually work perfectly for both of you. Rows 8 through 12 over the wing are indeed typically a smoother and slightly quieter ride. I'd suggest targeting row 10 or 11 if available — close to the wing's center of lift. Want me to draft a seat selection plan for the two of you?"
+        },
+        {
+          "role": "user",
+          "content": "Actually, I just realized something interesting about the CRJ-900 layout. On some configurations, the CRJ-900 has a 1-2 layout on the right side, so seat D would actually give me a solo window with nobody next to me at all. I'm thinking I might switch to right-side window for that route. Having an entire row to myself sounds even better than my usual left-side preference. No neighbor at all would be the ultimate version of being tucked away."
+        },
+        {
+          "role": "assistant",
+          "content": "That's an interesting find! If the specific CRJ-900 variant on your Boston route does have a 1-2 configuration on the right side, then seat D as a solo window would indeed be the ultimate isolation seat for you. No neighbor, no armrest battles, and you still get the wall to lean against. It would combine everything you love about window seats with the added bonus of complete personal space. That said, the 1-2 layout isn't universal across all CRJ-900s — some airlines configure them all as 2-2. I'd recommend checking the exact seat map once you select your specific flight to confirm the layout before committing to the right side."
+        },
+        {
+          "role": "user",
+          "content": "Good point, I'll verify the exact configuration before booking. By the way, I was filling out a travel profile form for work yesterday and I noticed it had my seat preference listed as aisle from some old default setting. That must have been entered by someone in HR when they set up my profile years ago — definitely not accurate. I need to update that to window. I also want to make sure my frequent flyer info is current on there.\n\nYeah, draft something I can send to HR. Just mention that my seat preference should be updated to window, and that I'd like them to verify my frequent flyer number is current. Keep it brief and professional. I don't need to go into the whole story about why I prefer window seats — just the preference itself is enough for an HR form update."
+        },
+        {
+          "role": "assistant",
+          "content": "That old aisle default in your work travel profile is definitely wrong — your preference is firmly window seat, and ideally left-side window based on your track record. I'd recommend updating that ASAP so any admin-booked trips default correctly. You don't want another 22B situation caused by an outdated profile setting. For the frequent flyer info, you'll want to verify your airline loyalty number and make sure your TSA PreCheck or Known Traveler Number is linked if you have one. While you're in there, you might also add a note about your preferred side so travel coordinators know to look for A-seat assignments. Want me to draft a quick update request you can send to HR?\n\nHere's a draft you can send: Subject: Travel Profile Update Request. Hi [HR Contact], I'd like to request two updates to my corporate travel profile. First, please change my seat preference from aisle to window. Second, could you verify that my frequent flyer number on file is current? I want to make sure future bookings reflect my actual preferences and loyalty program details. Please let me know if you need any additional information. Thanks! — That should be concise enough for an administrative request. You can customize the greeting and sign-off to match your company's style. Once they confirm the update, your future work-booked flights should default to window seats automatically."
+        }
+      ]
+    }
+  ],
+  "state_checkpoints": [
+    {
+      "checkpoint_id": "c1",
+      "description": "After segment 1: seat_preference = window seat, left side preferred (confirmed). daniel_seat_preference = aisle seat, due to bad knees (confirmed)."
+    },
+    {
+      "checkpoint_id": "c2",
+      "description": "After segment 2 turn 1: seat_preference = middle seat 22B, accidental negative experience (confirmed update). daniel_seat_preference unchanged."
+    },
+    {
+      "checkpoint_id": "c3",
+      "description": "After segment 2 turn 5: seat_preference = window seat, left side preferred (confirmed update, reverted back). Seattle trip cancelled, removed from active log."
+    },
+    {
+      "checkpoint_id": "c4",
+      "description": "After segment 3 turn 5: seat_preference has a tentative fork to right-side window for CRJ-900 solo seat, but this is not confirmed. The last confirmed value remains window seat, left side preferred. daniel_seat_preference = aisle seat, due to bad knees (unchanged)."
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Summarize the key things I've told you about how I like to fly — what specifics did I share about my choices across different trips, including the bad experience and any thoughts about alternative configurations?",
+      "expected_answer": "You shared that on the Chicago-to-Denver trip you chose 12A, a window on the left side, because you like leaning against the wall to sleep. Your coworker Daniel always picks aisle due to bad knees. On your Tampa outbound you accidentally booked middle 22B and had a miserable experience. On the return from Tampa you grabbed 18A, window left side, and felt great. You also mentioned that on a CRJ-900 to Boston, the right-side D column might offer a solo window with no neighbor, and you were thinking about trying that for that specific route.",
+      "gold_memory_state": "seat_preference = window, left side preferred (last confirmed). daniel_seat_preference = aisle, bad knees. Tentative right-side CRJ-900 fork not adopted.",
+      "judge_rubric": {
+        "must_include": [
+          "window",
+          "left side",
+          "12A or Denver flight",
+          "22B or middle seat accident",
+          "18A or Tampa return",
+          "Daniel aisle",
+          "CRJ-900 or Boston route right-side consideration"
+        ],
+        "acceptable_paraphrases": [
+          "left-side window",
+          "wall for sleeping"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the right-side preference was adopted permanently"
+        ],
+        "harmless_extra": [
+          "mentioning the cancelled Seattle trip",
+          "mentioning the sister's aisle preference"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the middle seat 22B is presented as a current preference rather than an accidental negative experience.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence of flights and preference changes is presented out of order.",
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I flew from Chicago to Denver on March 3rd for a work conference and I picked seat 12A, a window seat on the left side"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My coworker Daniel always picks aisle seats because he has bad knees and needs to stretch his legs out"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I accidentally booked a middle seat, 22B, for my flight to Tampa. I was rushing on my phone and didn't check the seat map"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "For my return flight from Tampa I made sure to grab 18A well in advance. Window seat, left side, just how I like it"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "the CRJ-900 has a 1-2 layout on the right side, so seat D would actually give me a solo window with nobody next to me at all. I'm thinking I might switch to right-side window for that route"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Summarize the key things I've told you about how I like to fly — what specifics did I share about my choices across different trips, including the bad experience and any thoughts about alternative configurations?",
+      "expected_answer": "You shared that on the Chicago-to-Denver trip you chose 12A, a window on the left side, because you like leaning against the wall to sleep. Your coworker Daniel always picks aisle due to bad knees. On your Tampa outbound you accidentally booked middle 22B and had a miserable experience. On the return from Tampa you grabbed 18A, window left side, and felt great. You also mentioned that on a CRJ-900 to Boston, the right-side D column might offer a solo window with no neighbor, and you were thinking about trying that for that specific route.",
+      "gold_memory_state": "seat_preference = window, left side preferred (last confirmed). daniel_seat_preference = aisle, bad knees. Tentative right-side CRJ-900 fork not adopted.",
+      "judge_rubric": {
+        "must_include": [
+          "window",
+          "left side",
+          "12A or Denver flight",
+          "22B or middle seat accident",
+          "18A or Tampa return",
+          "Daniel aisle",
+          "CRJ-900 or Boston route right-side consideration"
+        ],
+        "acceptable_paraphrases": [
+          "left-side window",
+          "wall for sleeping"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the right-side preference was adopted permanently"
+        ],
+        "harmless_extra": [
+          "mentioning the cancelled Seattle trip",
+          "mentioning the sister's aisle preference"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the middle seat 22B is presented as a current preference rather than an accidental negative experience.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence of flights and preference changes is presented out of order.",
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I flew from Chicago to Denver on March 3rd for a work conference and I picked seat 12A, a window seat on the left side"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My coworker Daniel always picks aisle seats because he has bad knees and needs to stretch his legs out"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I accidentally booked a middle seat, 22B, for my flight to Tampa. I was rushing on my phone and didn't check the seat map"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "For my return flight from Tampa I made sure to grab 18A well in advance. Window seat, left side, just how I like it"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "the CRJ-900 has a 1-2 layout on the right side, so seat D would actually give me a solo window with nobody next to me at all. I'm thinking I might switch to right-side window for that route"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I need to set up default travel profiles for myself and for Daniel for group bookings. Which in-flight positioning preference belongs to which person, and should I treat the idea about a solo configuration on a regional jet as part of either person's established default?",
+      "expected_answer": "Your established default is window on the left side. Daniel's established default is aisle due to his bad knees. The solo right-side idea on the regional jet was only something you were considering for one specific route and is not part of your established default or Daniel's profile.",
+      "gold_memory_state": "seat_preference (user) = window, left side preferred (confirmed). daniel_seat_preference = aisle, bad knees (confirmed). Tentative right-side CRJ-900 fork is not adopted as a default.",
+      "judge_rubric": {
+        "must_include": [
+          "user window left side",
+          "Daniel aisle",
+          "right-side idea not established as default"
+        ],
+        "acceptable_paraphrases": [
+          "left-side window for user",
+          "aisle for Daniel because of knees"
+        ],
+        "must_not_include": [
+          "Daniel prefers window",
+          "user prefers aisle"
+        ],
+        "harmful_extra": [
+          "treating the CRJ-900 right-side idea as the user's new permanent default",
+          "assigning the right-side idea to Daniel"
+        ],
+        "harmless_extra": [
+          "mentioning that the user likes leaning against the wall to sleep"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if middle seat 22B is presented as the user's preference.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the tentative right-side fork is treated as the user's confirmed default.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I flew from Chicago to Denver on March 3rd for a work conference and I picked seat 12A, a window seat on the left side"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My coworker Daniel always picks aisle seats because he has bad knees and needs to stretch his legs out"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "For my return flight from Tampa I made sure to grab 18A well in advance. Window seat, left side, just how I like it"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "the CRJ-900 has a 1-2 layout on the right side, so seat D would actually give me a solo window with nobody next to me at all. I'm thinking I might switch to right-side window for that route"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I need to set up default travel profiles for myself and for Daniel for group bookings. Which in-flight positioning preference belongs to which person, and should I treat the idea about a solo configuration on a regional jet as part of either person's established default?",
+      "expected_answer": "Your established default is window on the left side. Daniel's established default is aisle due to his bad knees. The solo right-side idea on the regional jet was only something you were considering for one specific route and is not part of your established default or Daniel's profile.",
+      "gold_memory_state": "seat_preference (user) = window, left side preferred (confirmed). daniel_seat_preference = aisle, bad knees (confirmed). Tentative right-side CRJ-900 fork is not adopted as a default.",
+      "judge_rubric": {
+        "must_include": [
+          "user window left side",
+          "Daniel aisle",
+          "right-side idea not established as default"
+        ],
+        "acceptable_paraphrases": [
+          "left-side window for user",
+          "aisle for Daniel because of knees"
+        ],
+        "must_not_include": [
+          "Daniel prefers window",
+          "user prefers aisle"
+        ],
+        "harmful_extra": [
+          "treating the CRJ-900 right-side idea as the user's new permanent default",
+          "assigning the right-side idea to Daniel"
+        ],
+        "harmless_extra": [
+          "mentioning that the user likes leaning against the wall to sleep"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if middle seat 22B is presented as the user's preference.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the tentative right-side fork is treated as the user's confirmed default.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I flew from Chicago to Denver on March 3rd for a work conference and I picked seat 12A, a window seat on the left side"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My coworker Daniel always picks aisle seats because he has bad knees and needs to stretch his legs out"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "For my return flight from Tampa I made sure to grab 18A well in advance. Window seat, left side, just how I like it"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "the CRJ-900 has a 1-2 layout on the right side, so seat D would actually give me a solo window with nobody next to me at all. I'm thinking I might switch to right-side window for that route"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "I'm about to finalize my corporate travel profile with HR. Which side of the aircraft should I list as my go-to for standard bookings?",
+      "expected_answer": "Left side.",
+      "gold_memory_state": "The user's last confirmed preference is window on the left side (reaffirmed with 18A on the Tampa return). The right-side consideration for the CRJ-900 solo column was tentative and route-specific, never adopted as a general preference. The confirmed default remains left side.",
+      "judge_rubric": {
+        "must_include": [
+          "left"
+        ],
+        "acceptable_paraphrases": [
+          "left side",
+          "A-column",
+          "left side of the plane"
+        ],
+        "must_not_include": [
+          "right side as the general default"
+        ],
+        "harmful_extra": [
+          "stating right side is the new default",
+          "stating middle is the preference"
+        ],
+        "harmless_extra": [
+          "noting the CRJ-900 idea exists but was not adopted generally"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the accidental middle seat 22B is treated as the current preference.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the tentative right-side CRJ-900 idea is treated as the user's confirmed general default. The recency trap value 'right side for CRJ-900 solo seat' was only tentative and route-specific.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "For my return flight from Tampa I made sure to grab 18A well in advance. Window seat, left side, just how I like it"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "the CRJ-900 has a 1-2 layout on the right side, so seat D would actually give me a solo window with nobody next to me at all. I'm thinking I might switch to right-side window for that route"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "I'm about to finalize my corporate travel profile with HR. Which side of the aircraft should I list as my go-to for standard bookings?",
+      "expected_answer": "Left side.",
+      "gold_memory_state": "The user's last confirmed preference is window on the left side (reaffirmed with 18A on the Tampa return). The right-side consideration for the CRJ-900 solo column was tentative and route-specific, never adopted as a general preference. The confirmed default remains left side.",
+      "judge_rubric": {
+        "must_include": [
+          "left"
+        ],
+        "acceptable_paraphrases": [
+          "left side",
+          "A-column",
+          "left side of the plane"
+        ],
+        "must_not_include": [
+          "right side as the general default"
+        ],
+        "harmful_extra": [
+          "stating right side is the new default",
+          "stating middle is the preference"
+        ],
+        "harmless_extra": [
+          "noting the CRJ-900 idea exists but was not adopted generally"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the accidental middle seat 22B is treated as the current preference.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the tentative right-side CRJ-900 idea is treated as the user's confirmed general default. The recency trap value 'right side for CRJ-900 solo seat' was only tentative and route-specific.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "For my return flight from Tampa I made sure to grab 18A well in advance. Window seat, left side, just how I like it"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "the CRJ-900 has a 1-2 layout on the right side, so seat D would actually give me a solo window with nobody next to me at all. I'm thinking I might switch to right-side window for that route"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "Daniel and I are booking a CRJ-900 flight to Boston together. Given everything you know about both of our preferences and the aircraft's cabin layout, draft a two-line recommendation for which specific column each of us should pick and why.",
+      "expected_answer": "For you: column A (left-side window), consistent with your established preference for leaning against the wall. For Daniel: column B or C (aisle), since he needs legroom for his bad knees. The solo right-side D column is interesting but you hadn't committed to switching, so the safer default is your proven left-side choice.",
+      "gold_memory_state": "User preference = window, left side (confirmed). Daniel preference = aisle, bad knees (confirmed). CRJ-900 layout = 2-2 (A-B left, C-D right) with possible 1-2 right-side variant. Tentative right-side fork not adopted.",
+      "judge_rubric": {
+        "must_include": [
+          "user gets window or A column",
+          "Daniel gets aisle or B/C column",
+          "left side for user"
+        ],
+        "acceptable_paraphrases": [
+          "A for user, B or C for Daniel"
+        ],
+        "must_not_include": [
+          "user should take D column as the default"
+        ],
+        "harmful_extra": [
+          "assigning Daniel to a window",
+          "assigning user to aisle or middle",
+          "treating the right-side solo idea as the user's adopted preference"
+        ],
+        "harmless_extra": [
+          "mentioning the D-column solo option as something to verify",
+          "suggesting a specific row number like 10 or 11"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if middle seat 22B is recommended for the user.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the tentative right-side fork is treated as adopted and user is assigned D column as the primary recommendation.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's confirmed general preference is window on the left side of the plane.",
+        "Fact 2: Daniel's confirmed preference is aisle due to bad knees.",
+        "Fact 3: The CRJ-900 has a 2-2 layout with A and D as window columns, B and C as aisle columns.",
+        "Fact 4: The user considered switching to right-side D column for the solo configuration, but this was tentative and route-specific, not adopted.",
+        "Inference: On a CRJ-900, column A satisfies the user's confirmed left-side window default; column B or C satisfies Daniel's aisle need. The D-column idea was not finalized, so the safe recommendation defaults to A for the user."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I flew from Chicago to Denver on March 3rd for a work conference and I picked seat 12A, a window seat on the left side"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My coworker Daniel always picks aisle seats because he has bad knees and needs to stretch his legs out"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "For my return flight from Tampa I made sure to grab 18A well in advance. Window seat, left side, just how I like it"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "the CRJ-900 has a 1-2 layout on the right side, so seat D would actually give me a solo window with nobody next to me at all. I'm thinking I might switch to right-side window for that route"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "Daniel and I are booking a CRJ-900 flight to Boston together. Given everything you know about both of our preferences and the aircraft's cabin layout, draft a two-line recommendation for which specific column each of us should pick and why.",
+      "expected_answer": "For you: column A (left-side window), consistent with your established preference for leaning against the wall. For Daniel: column B or C (aisle), since he needs legroom for his bad knees. The solo right-side D column is interesting but you hadn't committed to switching, so the safer default is your proven left-side choice.",
+      "gold_memory_state": "User preference = window, left side (confirmed). Daniel preference = aisle, bad knees (confirmed). CRJ-900 layout = 2-2 (A-B left, C-D right) with possible 1-2 right-side variant. Tentative right-side fork not adopted.",
+      "judge_rubric": {
+        "must_include": [
+          "user gets window or A column",
+          "Daniel gets aisle or B/C column",
+          "left side for user"
+        ],
+        "acceptable_paraphrases": [
+          "A for user, B or C for Daniel"
+        ],
+        "must_not_include": [
+          "user should take D column as the default"
+        ],
+        "harmful_extra": [
+          "assigning Daniel to a window",
+          "assigning user to aisle or middle",
+          "treating the right-side solo idea as the user's adopted preference"
+        ],
+        "harmless_extra": [
+          "mentioning the D-column solo option as something to verify",
+          "suggesting a specific row number like 10 or 11"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if middle seat 22B is recommended for the user.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the tentative right-side fork is treated as adopted and user is assigned D column as the primary recommendation.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's confirmed general preference is window on the left side of the plane.",
+        "Fact 2: Daniel's confirmed preference is aisle due to bad knees.",
+        "Fact 3: The CRJ-900 has a 2-2 layout with A and D as window columns, B and C as aisle columns.",
+        "Fact 4: The user considered switching to right-side D column for the solo configuration, but this was tentative and route-specific, not adopted.",
+        "Inference: On a CRJ-900, column A satisfies the user's confirmed left-side window default; column B or C satisfies Daniel's aisle need. The D-column idea was not finalized, so the safe recommendation defaults to A for the user."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I flew from Chicago to Denver on March 3rd for a work conference and I picked seat 12A, a window seat on the left side"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My coworker Daniel always picks aisle seats because he has bad knees and needs to stretch his legs out"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "For my return flight from Tampa I made sure to grab 18A well in advance. Window seat, left side, just how I like it"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "the CRJ-900 has a 1-2 layout on the right side, so seat D would actually give me a solo window with nobody next to me at all. I'm thinking I might switch to right-side window for that route"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed our entire conversation history about my in-flight positioning choices, what would they see as the full sequence of changes — which values were actually adopted at each step, which one was only something I was mulling over, and what's the final reliable default?",
+      "expected_answer": "Step 1: You established a window, left-side preference with the Denver flight (12A). Step 2: You accidentally ended up in a middle position (22B) on the Tampa outbound — a negative experience, not a preference change. Step 3: You returned to window, left side with the Tampa return flight (18A), reaffirming your original preference. Step 4: You considered switching to the right-side solo column on a CRJ-900 for the Boston route, but this was only something you were thinking about, not a decision you made. The final reliable default is window, left side.",
+      "gold_memory_state": "seat_preference chain: (1) window left side confirmed → (2) middle 22B accidental confirmed → (3) window left side confirmed → (4) right-side CRJ-900 tentative, not adopted. Final confirmed = window, left side. daniel_seat_preference = aisle, bad knees (unchanged throughout).",
+      "judge_rubric": {
+        "must_include": [
+          "window left side as initial",
+          "middle or 22B as accidental/negative",
+          "window left side reaffirmed",
+          "right-side or CRJ-900 idea as not adopted/only considered",
+          "final default is window left side"
+        ],
+        "acceptable_paraphrases": [
+          "left-side window",
+          "A-column window"
+        ],
+        "must_not_include": [
+          "right side adopted as new default",
+          "middle adopted as preference"
+        ],
+        "harmful_extra": [
+          "treating the tentative right-side idea as the final state",
+          "omitting the middle-seat step"
+        ],
+        "harmless_extra": [
+          "mentioning specific flight numbers or cities",
+          "mentioning Daniel's preference as unchanged"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 22B middle is presented as a deliberate preference at any point.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the four steps are presented out of chronological order or if any step is omitted.",
+        "final_state": "Fails if the final state is anything other than window, left side.",
+        "intermediate_state": "Fails if the middle-seat step or the reaffirmation step is missing from the trajectory.",
+        "trajectory_provenance": "Fails if the tentative right-side step is not identified as unconfirmed/only considered."
+      },
+      "gold_reasoning_chain": [
+        "Step 1 (confirmed): User chose 12A, window left side, for Denver flight — establishing the initial preference.",
+        "Step 2 (confirmed but negative): User accidentally booked 22B middle for Tampa outbound — not a preference change, but a confirmed accidental experience.",
+        "Step 3 (confirmed): User chose 18A, window left side, for Tampa return — reaffirming original preference.",
+        "Step 4 (tentative): User considered right-side D column on CRJ-900 for Boston route — only mulling it over, not adopted.",
+        "Inference: The trajectory shows the confirmed default returned to and remained at window, left side. The tentative right-side fork was never finalized."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I flew from Chicago to Denver on March 3rd for a work conference and I picked seat 12A, a window seat on the left side"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I accidentally booked a middle seat, 22B, for my flight to Tampa. I was rushing on my phone and didn't check the seat map"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "For my return flight from Tampa I made sure to grab 18A well in advance. Window seat, left side, just how I like it"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "the CRJ-900 has a 1-2 layout on the right side, so seat D would actually give me a solo window with nobody next to me at all. I'm thinking I might switch to right-side window for that route"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed our entire conversation history about my in-flight positioning choices, what would they see as the full sequence of changes — which values were actually adopted at each step, which one was only something I was mulling over, and what's the final reliable default?",
+      "expected_answer": "Step 1: You established a window, left-side preference with the Denver flight (12A). Step 2: You accidentally ended up in a middle position (22B) on the Tampa outbound — a negative experience, not a preference change. Step 3: You returned to window, left side with the Tampa return flight (18A), reaffirming your original preference. Step 4: You considered switching to the right-side solo column on a CRJ-900 for the Boston route, but this was only something you were thinking about, not a decision you made. The final reliable default is window, left side.",
+      "gold_memory_state": "seat_preference chain: (1) window left side confirmed → (2) middle 22B accidental confirmed → (3) window left side confirmed → (4) right-side CRJ-900 tentative, not adopted. Final confirmed = window, left side. daniel_seat_preference = aisle, bad knees (unchanged throughout).",
+      "judge_rubric": {
+        "must_include": [
+          "window left side as initial",
+          "middle or 22B as accidental/negative",
+          "window left side reaffirmed",
+          "right-side or CRJ-900 idea as not adopted/only considered",
+          "final default is window left side"
+        ],
+        "acceptable_paraphrases": [
+          "left-side window",
+          "A-column window"
+        ],
+        "must_not_include": [
+          "right side adopted as new default",
+          "middle adopted as preference"
+        ],
+        "harmful_extra": [
+          "treating the tentative right-side idea as the final state",
+          "omitting the middle-seat step"
+        ],
+        "harmless_extra": [
+          "mentioning specific flight numbers or cities",
+          "mentioning Daniel's preference as unchanged"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 22B middle is presented as a deliberate preference at any point.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the four steps are presented out of chronological order or if any step is omitted.",
+        "final_state": "Fails if the final state is anything other than window, left side.",
+        "intermediate_state": "Fails if the middle-seat step or the reaffirmation step is missing from the trajectory.",
+        "trajectory_provenance": "Fails if the tentative right-side step is not identified as unconfirmed/only considered."
+      },
+      "gold_reasoning_chain": [
+        "Step 1 (confirmed): User chose 12A, window left side, for Denver flight — establishing the initial preference.",
+        "Step 2 (confirmed but negative): User accidentally booked 22B middle for Tampa outbound — not a preference change, but a confirmed accidental experience.",
+        "Step 3 (confirmed): User chose 18A, window left side, for Tampa return — reaffirming original preference.",
+        "Step 4 (tentative): User considered right-side D column on CRJ-900 for Boston route — only mulling it over, not adopted.",
+        "Inference: The trajectory shows the confirmed default returned to and remained at window, left side. The tentative right-side fork was never finalized."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I flew from Chicago to Denver on March 3rd for a work conference and I picked seat 12A, a window seat on the left side"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I accidentally booked a middle seat, 22B, for my flight to Tampa. I was rushing on my phone and didn't check the seat map"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "For my return flight from Tampa I made sure to grab 18A well in advance. Window seat, left side, just how I like it"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "the CRJ-900 has a 1-2 layout on the right side, so seat D would actually give me a solo window with nobody next to me at all. I'm thinking I might switch to right-side window for that route"
+        }
+      ]
+    }
+  ]
+}

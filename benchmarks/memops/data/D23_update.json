@@ -1,0 +1,796 @@
+{
+  "target_fact": "User's travel seat preference — specifically the row number of the Denver flight window seat, updated through a chain of corrections",
+  "operation_type": "Update",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "denver_seat",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I flew Chicago to Denver on March 3rd for the work conference, and I picked seat 14A — window seat, left side of the plane"
+      },
+      "target": {
+        "target_id": "denver_flight_seat",
+        "target_name": "Denver flight seat assignment"
+      },
+      "old_value": null,
+      "new_value": "14A",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I flew Chicago to Denver on March 3rd for the work conference, and I picked seat 14A — window seat, left side of the plane"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "denver_seat",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "Wait, I need to correct myself — it wasn't 14A on the Denver flight. I double-checked my boarding pass photo and it was actually 12A"
+      },
+      "target": {
+        "target_id": "denver_flight_seat",
+        "target_name": "Denver flight seat assignment"
+      },
+      "old_value": "14A",
+      "new_value": "12A",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I double-checked my boarding pass photo and it was actually 12A"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "denver_seat",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "So I pulled up my airline account history just now and the Denver booking actually shows seat 11A, not 12A. Row 12 doesn't even exist on that 737 configuration"
+      },
+      "target": {
+        "target_id": "denver_flight_seat",
+        "target_name": "Denver flight seat assignment"
+      },
+      "old_value": "12A",
+      "new_value": "11A",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I pulled up my airline account history just now and the Denver booking actually shows seat 11A, not 12A. Row 12 doesn't even exist on that 737 configuration"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "denver_seat",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "My coworker Sarah just texted me — she says we were in row 10, not 11, because she was in 10C right across the aisle from me. So it might have been 10A after all"
+      },
+      "target": {
+        "target_id": "denver_flight_seat",
+        "target_name": "Denver flight seat assignment"
+      },
+      "old_value": "11A",
+      "new_value": "10A",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "she says we were in row 10, not 11, because she was in 10C right across the aisle from me. So it might have been 10A after all"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I always go for window seats because I like leaning against the wall to sleep, and I prefer the left side of the plane since I naturally lean left when I doze off"
+      },
+      "target": {
+        "target_id": "general_seat_preference",
+        "target_name": "General flight seat preference"
+      },
+      "old_value": null,
+      "new_value": "Window seat, left side of the plane",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I always go for window seats because I like leaning against the wall to sleep, and I prefer the left side of the plane since I naturally lean left when I doze off"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "window seat, left side of the plane"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish initial seat info and general preference, then correct seat number from 14A to 12A",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to go over some of my recent travel details so you have them on file. I flew Chicago to Denver on March 3rd for the work conference, and I picked seat 14A — window seat, left side of the plane. The flight was about two and a half hours and I slept almost the entire way because I could lean against the wall."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for sharing those details! I've noted that you took a Chicago-to-Denver flight on March 3rd for a work conference, seated at 14A — a window seat on the left side. It sounds like the wall lean was perfect for catching some sleep on that relatively short two-and-a-half-hour flight. If you'd like me to keep track of any other travel details or preferences going forward, feel free to keep sharing. Do you have a general seat preference pattern, or was this a one-off choice?"
+        },
+        {
+          "role": "user",
+          "content": "Good question — yes, it's definitely a pattern. I always go for window seats because I like leaning against the wall to sleep, and I prefer the left side of the plane since I naturally lean left when I doze off. There's also something calming about looking out the window at altitude, especially around sunset. I feel more secure being tucked in by the wall rather than exposed on the aisle."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes a lot of sense — the combination of physical comfort for sleeping, the sense of enclosure, and the view creates a pretty compelling case for always choosing window seats on the left side. I've noted your general preference: window seat, left side of the aircraft, motivated by comfort leaning left to sleep, enjoying the view, and preferring the enclosed feeling over the aisle exposure. If you're ever booking and want me to help evaluate seat maps, I can prioritize left-side window options for you. Any other trips to go over?"
+        },
+        {
+          "role": "user",
+          "content": "Wait, I need to correct myself — it wasn't 14A on the Denver flight. I double-checked my boarding pass photo and it was actually 12A. I mixed up the row number in my head. Still window, still left side, but row 12 not row 14. Sorry about the confusion, I want to make sure you have the right info stored."
+        },
+        {
+          "role": "assistant",
+          "content": "No problem at all — I appreciate you checking and correcting that! I've updated the Denver flight seat from 14A to 12A. The key details remain the same: March 3rd, Chicago to Denver, window seat on the left side, and you slept most of the way. It's totally normal to mix up row numbers after the fact, so I'm glad you caught it with the boarding pass photo. Is there anything else from that trip or other flights you want to go over while we're organizing your travel history?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, let me mention one more trip. A couple weeks after Denver, maybe mid-March, I booked a flight to visit my parents in Tampa. I accidentally ended up in a middle seat — 22B — because I was rushing through the booking on my phone. That was miserable. Three hours stuck between two strangers, no armrest space, couldn't nap or lean anywhere. Put me in a terrible mood for the rest of the evening."
+        },
+        {
+          "role": "assistant",
+          "content": "Ouch, that sounds like the exact opposite of your ideal flying experience. I've noted the Tampa-bound flight from around mid-March: seat 22B, a middle seat you accidentally booked while rushing on your phone. Three hours without any wall to lean on or personal space clearly made it a frustrating trip. This really underscores how important the window seat is for your comfort and mood. I'll keep that in mind — if you ever want me to double-check a booking before you confirm, I can flag any non-window assignments. Anything else on the travel front?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Further correct Denver seat from 12A to 11A based on airline account, discuss return Tampa flight and cancelled Seattle trip",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I wanted to follow up on the Denver flight seat situation. I know I corrected it from 14A to 12A last time, but I went and checked something else to make sure I had it right. I looked at my actual airline account booking history online to get the definitive answer on which row it was."
+        },
+        {
+          "role": "assistant",
+          "content": "Smart move to go straight to the airline's booking records — that should give you the most reliable information. The boarding pass photo was already a good source, but the airline account history is essentially the official record. So what did it show? Was 12A confirmed, or is there another correction coming? Either way, I want to make sure I have the accurate seat number stored for that Denver flight."
+        },
+        {
+          "role": "user",
+          "content": "So I pulled up my airline account history just now and the Denver booking actually shows seat 11A, not 12A. Row 12 doesn't even exist on that 737 configuration — the rows go 10, 11, then skip to 13 because of the exit row layout. So the correct seat was definitely 11A. Window, left side, everything else is the same."
+        },
+        {
+          "role": "assistant",
+          "content": "Great catch — and that explains why the row numbers kept shifting in your memory. The 737 skip from row 11 to row 13 at the exit row is a common configuration that trips people up. I've updated your Denver flight seat from 12A to 11A. So the final record is: March 3rd, Chicago to Denver, seat 11A, window on the left side, slept most of the two-and-a-half-hour flight. That's now sourced directly from your airline account, so we can consider it definitive. Anything else to update?"
+        },
+        {
+          "role": "user",
+          "content": "Yes — last week I flew back from Tampa to Chicago. This time I made sure to select my seat well in advance: 18A, window, left side. Had a coffee and watched the clouds for a while. It was sunset timing and really beautiful, very calming. Night and day compared to that middle seat nightmare on the way down to Tampa."
+        },
+        {
+          "role": "assistant",
+          "content": "What a contrast from the 22B experience! I've noted your Tampa-to-Chicago return flight from last week: seat 18A, window on the left side, selected well in advance. Sounds like the sunset view at altitude delivered exactly the calming experience you love about window seats. Coffee and clouds at golden hour is a pretty ideal flight scenario for you. So now I have both legs of your Tampa travel on record — the unfortunate 22B outbound and the much better 18A return. Is there anything else travel-related you want to go over?"
+        },
+        {
+          "role": "user",
+          "content": "One thing that's no longer relevant — I had a round-trip to Seattle tentatively booked for late April. I'd pre-selected window seats for both legs, but the whole trip got cancelled because the client meeting was moved to a video call. So those seat selections don't matter anymore, you don't need to keep track of them.\n\nI'm also looking at flights to Boston for sometime in mid-May. Haven't booked yet, but I already know I'll filter for window seats only. The aircraft for that route is a CRJ-900, which has a one-and-two configuration — so window seats have no middle seat neighbor. That sounds ideal for me, basically guaranteed personal space plus the wall to lean on."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood — I'll disregard the Seattle round-trip entirely since it was cancelled. No need to track those window seat pre-selections since the flights aren't happening. It makes sense that a client meeting moving to video would eliminate the need for the trip. So your active travel history right now includes the Denver conference flight on March 3rd at seat 11A, the Tampa outbound at 22B, and the Tampa return at 18A. The Seattle booking is scratched. Let me know if any new trips come up or if there's anything else to organize.\n\nThe CRJ-900 sounds like it was practically designed for your preferences! With the 1-2 configuration on one side, a window seat gives you the wall lean you love plus zero chance of a middle-seat neighbor. That's the best of both worlds — full enclosure and personal space without any compromise. I've noted that you're considering a mid-May Boston trip, not yet booked, and you'll be targeting window seats on the CRJ-900. When you're ready to book, I can help you evaluate the seat map if you'd like. Just let me know when the dates firm up."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Coworker suggests different row for Denver seat (tentative recency trap), assistant echoes stale aisle-seat value as adversarial injection",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I was chatting with my coworker Daniel at lunch today about travel preferences. He's still firmly in the aisle camp — says he needs the legroom for his bad knees. I get why that works for him, but I told him the idea of people bumping into me with the drink cart sounds awful. I'd rather be tucked away at the window every time."
+        },
+        {
+          "role": "assistant",
+          "content": "It's funny how personal seat preferences can be so deeply tied to individual comfort needs — Daniel's knee issues make aisle seats a genuine necessity for him, while your preference for enclosure, sleep comfort, and avoiding aisle traffic makes window the clear winner for you. Neither is wrong; they're just optimized for completely different priorities. Speaking of Daniel, I recall from your earlier mentions that he always picks aisle — I think you said he mentioned seat 14C on a recent flight of his, if I'm remembering your conversation correctly. Anyway, your window preference is well documented at this point!"
+        },
+        {
+          "role": "user",
+          "content": "Ha, I don't think Daniel ever told me a specific seat number, you might be mixing something up there. Anyway, I also talked to my sister recently — she told me she switched to preferring aisle after a turbulent flight made her feel claustrophobic by the window. I understand that reaction, but for me it's the opposite. I feel more secure being enclosed, not less."
+        },
+        {
+          "role": "assistant",
+          "content": "You're right, I apologize for the confusion about Daniel's specific seat — I shouldn't have assumed a number. As for your sister, that's an interesting contrast. Turbulence triggering claustrophobia by the window is a legitimate response, and it makes sense that it pushed her toward aisle seats. But your reaction is the mirror image: enclosure equals security for you, not confinement. It really highlights how the same physical environment can feel completely different depending on the person. Your preference pattern is remarkably consistent — window, left side, enclosed, and calm. It clearly works for you across different flights and situations."
+        },
+        {
+          "role": "user",
+          "content": "My coworker Sarah just texted me — she says we were in row 10, not 11, because she was in 10C right across the aisle from me. So it might have been 10A after all. She's usually pretty good with details like that, though I haven't been able to verify it myself yet since I'm not near my computer to check the airline account again."
+        },
+        {
+          "role": "assistant",
+          "content": "Interesting — so Sarah's recollection puts you in 10A rather than the 11A that showed up in your airline account history. She does sound confident about it, and having been seated right across the aisle from you would give her a good frame of reference. At the same time, your airline account record did show 11A, and that's typically the most authoritative source. It might be worth double-checking when you're back at your computer. For now, I have 11A as the verified seat from your airline account. Let me know if Sarah's version turns out to be correct and I'll update it."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, I'll check when I get home tonight. Switching topics — for the Boston trip I mentioned, I'm thinking of going the week of May 12th. My preference is still window only, and with the CRJ-900 layout, I'm hoping to grab a seat on the left side in the single-seat row. That would be the ultimate solo flying experience for someone like me.\n\nWill do. I think that covers everything for now. Between the Denver conference, the Tampa trips, and the upcoming Boston plan, you've got a pretty good picture of how I travel. Window seat, left side, always — that's the one constant across all of it. Appreciate you keeping track of all these corrections on the Denver seat number too."
+        },
+        {
+          "role": "assistant",
+          "content": "The week of May 12th sounds like a solid timeframe for Boston. And yes, the single-seat side of the CRJ-900 would be absolutely perfect for you — window with no neighbor at all, plus the left-side wall lean. It's essentially your ideal seat configuration distilled into one spot. When you're ready to book, I'd suggest looking at the seat map early to lock in one of those single-row left-side window seats before they fill up. Regional jets tend to have fewer rows, so the best spots go fast. Just let me know when you're pulling the trigger and I can help review the options.\n\nAbsolutely — I'm glad we could nail down the details through the corrections. Here's a quick summary of where things stand: your Denver conference flight on March 3rd is recorded at seat 11A (pending your verification of Sarah's 10A suggestion), the Tampa outbound was the unfortunate 22B middle seat, the Tampa return was a much better 18A window, the Seattle trip is cancelled, and you're planning a Boston trip around the week of May 12th targeting window seats on the CRJ-900. Through it all, your core preference is crystal clear: window seat, left side, every time. Happy to help whenever the Boston booking is ready or if any other travel comes up!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Thinking back over what I've told you about my Denver conference flight seat, which specific messages from me first established the seat number and then determined the seat number you should rely on going forward?",
+      "expected_answer": "You first said the Denver flight seat was 14A, then said it was actually 12A after checking your boarding pass photo, and then said it was 11A after checking your airline account history. The airline account history showing 11A is the most authoritative source and the value to rely on.",
+      "gold_memory_state": "Denver flight seat is 11A (confirmed from airline account). Previous values 14A and 12A are superseded. A tentative suggestion of 10A from coworker Sarah has not been verified and is not adopted.",
+      "judge_rubric": {
+        "must_include": [
+          "14A as the initial value",
+          "12A as an intermediate value",
+          "11A as the value from the airline account"
+        ],
+        "acceptable_paraphrases": [
+          "row 11 seat A",
+          "seat 11A on the Denver flight"
+        ],
+        "must_not_include": [
+          "10A as the current reliable value"
+        ],
+        "harmful_extra": [
+          "treating 10A as confirmed or adopted"
+        ],
+        "harmless_extra": [
+          "mentioning the boarding pass photo for 12A",
+          "mentioning the 737 row-skip explanation"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 14A or 12A is presented as the current seat number.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if 10A is treated as the confirmed current value.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I flew Chicago to Denver on March 3rd for the work conference, and I picked seat 14A — window seat, left side of the plane"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Wait, I need to correct myself — it wasn't 14A on the Denver flight. I double-checked my boarding pass photo and it was actually 12A"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "So I pulled up my airline account history just now and the Denver booking actually shows seat 11A, not 12A. Row 12 doesn't even exist on that 737 configuration"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Thinking back over what I've told you about my Denver conference flight seat, which specific messages from me first established the seat number and then determined the seat number you should rely on going forward?",
+      "expected_answer": "You first said the Denver flight seat was 14A, then said it was actually 12A after checking your boarding pass photo, and then said it was 11A after checking your airline account history. The airline account history showing 11A is the most authoritative source and the value to rely on.",
+      "gold_memory_state": "Denver flight seat is 11A (confirmed from airline account). Previous values 14A and 12A are superseded. A tentative suggestion of 10A from coworker Sarah has not been verified and is not adopted.",
+      "judge_rubric": {
+        "must_include": [
+          "14A as the initial value",
+          "12A as an intermediate value",
+          "11A as the value from the airline account"
+        ],
+        "acceptable_paraphrases": [
+          "row 11 seat A",
+          "seat 11A on the Denver flight"
+        ],
+        "must_not_include": [
+          "10A as the current reliable value"
+        ],
+        "harmful_extra": [
+          "treating 10A as confirmed or adopted"
+        ],
+        "harmless_extra": [
+          "mentioning the boarding pass photo for 12A",
+          "mentioning the 737 row-skip explanation"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 14A or 12A is presented as the current seat number.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if 10A is treated as the confirmed current value.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I flew Chicago to Denver on March 3rd for the work conference, and I picked seat 14A — window seat, left side of the plane"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Wait, I need to correct myself — it wasn't 14A on the Denver flight. I double-checked my boarding pass photo and it was actually 12A"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "So I pulled up my airline account history just now and the Denver booking actually shows seat 11A, not 12A. Row 12 doesn't even exist on that 737 configuration"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've mentioned seat numbers for several different flights. When the row number was narrowed down using my airline account records, which flight's seat assignment was affected? Did the seat details for any of my other flights change as a result?",
+      "expected_answer": "The airline account verification affected only the Denver conference flight seat assignment, changing it to 11A. The Tampa outbound seat (22B), the Tampa return seat (18A), and your general window-seat preference were not affected.",
+      "gold_memory_state": "Denver flight seat: 11A (confirmed via airline account). Tampa outbound: 22B. Tampa return: 18A. General preference: window seat, left side. Seattle: cancelled, not tracked. Boston: not yet booked.",
+      "judge_rubric": {
+        "must_include": [
+          "Denver flight",
+          "11A"
+        ],
+        "acceptable_paraphrases": [
+          "Chicago to Denver flight",
+          "March 3rd conference flight"
+        ],
+        "must_not_include": [
+          "Tampa seat changed",
+          "general preference changed"
+        ],
+        "harmful_extra": [
+          "saying 22B or 18A were also verified or changed by the airline account check",
+          "saying the Boston trip seat was affected"
+        ],
+        "harmless_extra": [
+          "mentioning the Tampa seats as unchanged",
+          "mentioning the cancelled Seattle trip"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the Denver seat is reported as 14A or 12A.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if 10A is treated as the confirmed Denver seat.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "So I pulled up my airline account history just now and the Denver booking actually shows seat 11A, not 12A. Row 12 doesn't even exist on that 737 configuration"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "A couple weeks after Denver, maybe mid-March, I booked a flight to visit my parents in Tampa. I accidentally ended up in a middle seat — 22B — because I was rushing through the booking on my phone"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "This time I made sure to select my seat well in advance: 18A, window, left side"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've mentioned seat numbers for several different flights. When the row number was narrowed down using my airline account records, which flight's seat assignment was affected? Did the seat details for any of my other flights change as a result?",
+      "expected_answer": "The airline account verification affected only the Denver conference flight seat assignment, changing it to 11A. The Tampa outbound seat (22B), the Tampa return seat (18A), and your general window-seat preference were not affected.",
+      "gold_memory_state": "Denver flight seat: 11A (confirmed via airline account). Tampa outbound: 22B. Tampa return: 18A. General preference: window seat, left side. Seattle: cancelled, not tracked. Boston: not yet booked.",
+      "judge_rubric": {
+        "must_include": [
+          "Denver flight",
+          "11A"
+        ],
+        "acceptable_paraphrases": [
+          "Chicago to Denver flight",
+          "March 3rd conference flight"
+        ],
+        "must_not_include": [
+          "Tampa seat changed",
+          "general preference changed"
+        ],
+        "harmful_extra": [
+          "saying 22B or 18A were also verified or changed by the airline account check",
+          "saying the Boston trip seat was affected"
+        ],
+        "harmless_extra": [
+          "mentioning the Tampa seats as unchanged",
+          "mentioning the cancelled Seattle trip"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the Denver seat is reported as 14A or 12A.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if 10A is treated as the confirmed Denver seat.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "So I pulled up my airline account history just now and the Denver booking actually shows seat 11A, not 12A. Row 12 doesn't even exist on that 737 configuration"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "A couple weeks after Denver, maybe mid-March, I booked a flight to visit my parents in Tampa. I accidentally ended up in a middle seat — 22B — because I was rushing through the booking on my phone"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "This time I made sure to select my seat well in advance: 18A, window, left side"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to reference the exact seat I had on my Denver conference flight. Which of the following is the row and seat I should use?",
+      "candidate_options": [
+        "14A",
+        "12A",
+        "11A",
+        "10A"
+      ],
+      "expected_answer": "11A",
+      "gold_memory_state": "Denver flight seat is 11A, confirmed from airline account history. 14A was the initial self-report (superseded). 12A was the boarding-pass-photo correction (superseded). 10A is an unverified suggestion from coworker Sarah (tentative, not adopted).",
+      "judge_rubric": {
+        "must_include": [
+          "11A"
+        ],
+        "acceptable_paraphrases": [
+          "seat 11A",
+          "row 11, seat A"
+        ],
+        "must_not_include": [
+          "14A as correct",
+          "12A as correct",
+          "10A as correct"
+        ],
+        "harmful_extra": [
+          "selecting 10A because it was the most recently mentioned value"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 14A was the initial self-report for the same Denver flight, now superseded — tests stale-value residue. 12A was the intermediate boarding-pass correction, also superseded. assistant echo: The assistant summarized '11A (pending your verification of Sarah's 10A suggestion)' which could prime the model toward 10A. 10A is the tentative recency-trap value from Sarah's unverified text message, testing whether the model defaults to the most recently mentioned number.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 14A or 12A is selected — these are superseded values from earlier in the update chain.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if 10A is selected — this is a tentative recency-trap value that was never confirmed by the user's own airline account.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "So I pulled up my airline account history just now and the Denver booking actually shows seat 11A, not 12A. Row 12 doesn't even exist on that 737 configuration"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My coworker Sarah just texted me — she says we were in row 10, not 11, because she was in 10C right across the aisle from me. So it might have been 10A after all"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to reference the exact seat I had on my Denver conference flight. Which of the following is the row and seat I should use?",
+      "candidate_options": [
+        "14A",
+        "12A",
+        "11A",
+        "10A"
+      ],
+      "expected_answer": "11A",
+      "gold_memory_state": "Denver flight seat is 11A, confirmed from airline account history. 14A was the initial self-report (superseded). 12A was the boarding-pass-photo correction (superseded). 10A is an unverified suggestion from coworker Sarah (tentative, not adopted).",
+      "judge_rubric": {
+        "must_include": [
+          "11A"
+        ],
+        "acceptable_paraphrases": [
+          "seat 11A",
+          "row 11, seat A"
+        ],
+        "must_not_include": [
+          "14A as correct",
+          "12A as correct",
+          "10A as correct"
+        ],
+        "harmful_extra": [
+          "selecting 10A because it was the most recently mentioned value"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 14A was the initial self-report for the same Denver flight, now superseded — tests stale-value residue. 12A was the intermediate boarding-pass correction, also superseded. assistant echo: The assistant summarized '11A (pending your verification of Sarah's 10A suggestion)' which could prime the model toward 10A. 10A is the tentative recency-trap value from Sarah's unverified text message, testing whether the model defaults to the most recently mentioned number.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 14A or 12A is selected — these are superseded values from earlier in the update chain.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if 10A is selected — this is a tentative recency-trap value that was never confirmed by the user's own airline account.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "So I pulled up my airline account history just now and the Denver booking actually shows seat 11A, not 12A. Row 12 doesn't even exist on that 737 configuration"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My coworker Sarah just texted me — she says we were in row 10, not 11, because she was in 10C right across the aisle from me. So it might have been 10A after all"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I'm writing a short trip report for my manager summarizing my Denver conference travel. Draft one paragraph that mentions my flight date, route, the specific seat I had, and why that seat type works well for me. Also note how the Denver seat compared to the Tampa outbound experience.",
+      "expected_answer": "On March 3rd, you flew Chicago to Denver for the work conference and were seated in 11A, a window seat on the left side of the aircraft. This seat aligned with your general preference for left-side window seats, which let you lean against the wall and sleep for most of the two-and-a-half-hour flight. By contrast, your Tampa outbound flight a couple weeks later placed you in 22B, a middle seat booked by accident, which was uncomfortable and left you unable to nap — underscoring how important the window-seat setup is for your travel comfort.",
+      "gold_memory_state": "Denver flight: March 3rd, Chicago to Denver, seat 11A, window left side, slept most of the flight. General preference: window seat, left side, for wall-lean sleeping. Tampa outbound: seat 22B, middle seat, miserable experience. 10A is tentative and not adopted.",
+      "judge_rubric": {
+        "must_include": [
+          "March 3rd",
+          "Chicago to Denver",
+          "11A",
+          "window seat",
+          "left side",
+          "22B as the Tampa outbound seat",
+          "contrast between the two experiences"
+        ],
+        "acceptable_paraphrases": [
+          "seat 11A on the left",
+          "row 11 seat A"
+        ],
+        "must_not_include": [
+          "14A",
+          "12A",
+          "10A as the Denver seat"
+        ],
+        "harmful_extra": [
+          "using 10A, 12A, or 14A as the Denver seat in the trip report"
+        ],
+        "harmless_extra": [
+          "mentioning the 737 row-skip detail",
+          "mentioning the CRJ-900 Boston plan",
+          "mentioning the Tampa return at 18A"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 14A, 12A, or 10A appears as the Denver seat in the trip report.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the Denver seat is anything other than 11A.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "application_probe_type": "multi_hop_derivation",
+      "gold_reasoning_chain": [
+        "Fact 1: The user flew Chicago to Denver on March 3rd for a work conference.",
+        "Fact 2: The Denver flight seat was established as 14A, then corrected to 12A, then corrected to 11A based on the airline account — 11A is the confirmed seat.",
+        "Fact 3: The user's general preference is window seats on the left side of the plane for wall-lean sleeping comfort.",
+        "Fact 4: The Tampa outbound flight seat was 22B, a middle seat that was a miserable experience.",
+        "Fact 5: A tentative suggestion of 10A from coworker Sarah was never verified by the user and should not be adopted.",
+        "Inference: The trip report should use 11A as the Denver seat, explain why the window-left preference made it a good flight, and contrast it with the 22B Tampa middle-seat experience to illustrate the importance of seat selection."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I flew Chicago to Denver on March 3rd for the work conference, and I picked seat 14A — window seat, left side of the plane"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "So I pulled up my airline account history just now and the Denver booking actually shows seat 11A, not 12A. Row 12 doesn't even exist on that 737 configuration"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I always go for window seats because I like leaning against the wall to sleep, and I prefer the left side of the plane since I naturally lean left when I doze off"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "A couple weeks after Denver, maybe mid-March, I booked a flight to visit my parents in Tampa. I accidentally ended up in a middle seat — 22B — because I was rushing through the booking on my phone. That was miserable"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I'm writing a short trip report for my manager summarizing my Denver conference travel. Draft one paragraph that mentions my flight date, route, the specific seat I had, and why that seat type works well for me. Also note how the Denver seat compared to the Tampa outbound experience.",
+      "expected_answer": "On March 3rd, you flew Chicago to Denver for the work conference and were seated in 11A, a window seat on the left side of the aircraft. This seat aligned with your general preference for left-side window seats, which let you lean against the wall and sleep for most of the two-and-a-half-hour flight. By contrast, your Tampa outbound flight a couple weeks later placed you in 22B, a middle seat booked by accident, which was uncomfortable and left you unable to nap — underscoring how important the window-seat setup is for your travel comfort.",
+      "gold_memory_state": "Denver flight: March 3rd, Chicago to Denver, seat 11A, window left side, slept most of the flight. General preference: window seat, left side, for wall-lean sleeping. Tampa outbound: seat 22B, middle seat, miserable experience. 10A is tentative and not adopted.",
+      "judge_rubric": {
+        "must_include": [
+          "March 3rd",
+          "Chicago to Denver",
+          "11A",
+          "window seat",
+          "left side",
+          "22B as the Tampa outbound seat",
+          "contrast between the two experiences"
+        ],
+        "acceptable_paraphrases": [
+          "seat 11A on the left",
+          "row 11 seat A"
+        ],
+        "must_not_include": [
+          "14A",
+          "12A",
+          "10A as the Denver seat"
+        ],
+        "harmful_extra": [
+          "using 10A, 12A, or 14A as the Denver seat in the trip report"
+        ],
+        "harmless_extra": [
+          "mentioning the 737 row-skip detail",
+          "mentioning the CRJ-900 Boston plan",
+          "mentioning the Tampa return at 18A"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 14A, 12A, or 10A appears as the Denver seat in the trip report.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the Denver seat is anything other than 11A.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "application_probe_type": "multi_hop_derivation",
+      "gold_reasoning_chain": [
+        "Fact 1: The user flew Chicago to Denver on March 3rd for a work conference.",
+        "Fact 2: The Denver flight seat was established as 14A, then corrected to 12A, then corrected to 11A based on the airline account — 11A is the confirmed seat.",
+        "Fact 3: The user's general preference is window seats on the left side of the plane for wall-lean sleeping comfort.",
+        "Fact 4: The Tampa outbound flight seat was 22B, a middle seat that was a miserable experience.",
+        "Fact 5: A tentative suggestion of 10A from coworker Sarah was never verified by the user and should not be adopted.",
+        "Inference: The trip report should use 11A as the Denver seat, explain why the window-left preference made it a good flight, and contrast it with the 22B Tampa middle-seat experience to illustrate the importance of seat selection."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I flew Chicago to Denver on March 3rd for the work conference, and I picked seat 14A — window seat, left side of the plane"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "So I pulled up my airline account history just now and the Denver booking actually shows seat 11A, not 12A. Row 12 doesn't even exist on that 737 configuration"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I always go for window seats because I like leaning against the wall to sleep, and I prefer the left side of the plane since I naturally lean left when I doze off"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "A couple weeks after Denver, maybe mid-March, I booked a flight to visit my parents in Tampa. I accidentally ended up in a middle seat — 22B — because I was rushing through the booking on my phone. That was miserable"
+        }
+      ]
+    }
+  ]
+}

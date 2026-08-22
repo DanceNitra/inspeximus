@@ -1,0 +1,838 @@
+{
+  "target_fact": "C26 interview appointment time",
+  "operation_type": "Update",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "interview_time_chain",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "the C26 interview is scheduled for March 12 at 2:30 PM"
+      },
+      "target": {
+        "target_id": "c26_interview_time",
+        "target_name": "C26 interview appointment time"
+      },
+      "old_value": null,
+      "new_value": "March 12, 2:30 PM",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "the C26 interview is scheduled for March 12 at 2:30 PM"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "interview_time_chain",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I just double-checked the confirmation email and the interview is actually at 2:00 PM, not 2:30"
+      },
+      "target": {
+        "target_id": "c26_interview_time",
+        "target_name": "C26 interview appointment time"
+      },
+      "old_value": "March 12, 2:30 PM",
+      "new_value": "March 12, 2:00 PM",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I just double-checked the confirmation email and the interview is actually at 2:00 PM, not 2:30"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "interview_time_chain",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "David Koh's assistant emailed me and moved the interview to 3:00 PM on the same day, March 12"
+      },
+      "target": {
+        "target_id": "c26_interview_time",
+        "target_name": "C26 interview appointment time"
+      },
+      "old_value": "March 12, 2:00 PM",
+      "new_value": "March 12, 3:00 PM",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "David Koh's assistant emailed me and moved the interview to 3:00 PM on the same day, March 12"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "interview_time_chain",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "David Koh's assistant just sent another message saying they might push it to 4:00 PM because the panel has a conflict earlier in the afternoon"
+      },
+      "target": {
+        "target_id": "c26_interview_time",
+        "target_name": "C26 interview appointment time"
+      },
+      "old_value": "March 12, 3:00 PM",
+      "new_value": "March 12, 4:00 PM",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "David Koh's assistant just sent another message saying they might push it to 4:00 PM because the panel has a conflict earlier in the afternoon"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "the interview location is at 15 Clarke Road, their satellite office"
+      },
+      "target": {
+        "target_id": "c26_interview_location",
+        "target_name": "C26 interview location"
+      },
+      "old_value": null,
+      "new_value": "15 Clarke Road, satellite office",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "the interview location is at 15 Clarke Road, their satellite office"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "The salary range for the C26 role is $72,000 to $85,000"
+      },
+      "target": {
+        "target_id": "c26_salary_range",
+        "target_name": "C26 role salary range"
+      },
+      "old_value": null,
+      "new_value": "$72,000 to $85,000",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The salary range for the C26 role is $72,000 to $85,000"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish initial interview time and location; first correction of time from 2:30 PM to 2:00 PM",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I need your help keeping track of some details for an upcoming job interview. It's the C26 position. So the C26 interview is scheduled for March 12 at 2:30 PM. The panel has three interviewers and the main one is David Koh. I want to make sure I have all the logistics nailed down so nothing catches me off guard."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it! I've noted down the key details for your C26 interview: it's on March 12 at 2:30 PM, with a three-person panel led by David Koh. That's a solid amount of information to start with. Do you know the interview location yet, or any other specifics about the format? Having those details organized early will help you plan your day around it, especially if you need travel time or want to arrive early to settle your nerves."
+        },
+        {
+          "role": "user",
+          "content": "Yes, the interview location is at 15 Clarke Road, their satellite office. It was originally supposed to be at 40 Kent Street, the main office, but they changed it about a week before. That last-minute switch honestly annoyed me a bit — felt kind of disorganized on their end. I'm planning to arrive about 30 minutes early regardless."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — the interview is at 15 Clarke Road, the satellite office, instead of the original 40 Kent Street location. I can understand the frustration with a last-minute venue change; it doesn't inspire confidence in their planning. But arriving 30 minutes early is a smart move — it'll give you time to find the right room, decompress, and mentally prepare. You might want to scout the route to 15 Clarke Road ahead of time so there are no navigation surprises on the day. Would you like me to help you map out a preparation timeline?"
+        },
+        {
+          "role": "user",
+          "content": "Actually, hold on — I need to correct the time. I just double-checked the confirmation email and the interview is actually at 2:00 PM, not 2:30. I think I was mixing up the 2:30 slot with a dentist appointment I had to move. So March 12 at 2:00 PM is the correct time. I want to make sure that's what we have on record going forward."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for catching that! I've updated the interview time to 2:00 PM on March 12 at 15 Clarke Road. The 2:30 PM was the dentist appointment you rescheduled. It's easy to mix those up when you're juggling multiple appointments in the same afternoon. So to confirm: March 12, 2:00 PM, 15 Clarke Road satellite office, panel of three with David Koh leading. Shall I help you put together a checklist of things to bring or talking points to prepare?"
+        },
+        {
+          "role": "user",
+          "content": "That's right, thanks. One more thing — I did some mock interview prep with my friend Rina over a weekend in late February. She's really sharp and gave me specific feedback on my behavioral answers, which was way more helpful than generic YouTube advice. She has her own interview at a logistics company around mid-April, but I don't know the exact date for hers."
+        },
+        {
+          "role": "assistant",
+          "content": "Sounds like Rina is a great prep partner — specific, targeted feedback on behavioral answers is so much more valuable than generic tips. It's nice that you could help each other out, and it sounds like she'll have her own interview coming up around mid-April at a logistics company. If you want, once your C26 interview is done, you could return the favor and do mock interviews with her for her upcoming one. For now, let's keep the focus on March 12. Want to work on framing any specific behavioral stories?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Introduce salary range, second confirmed update of interview time to 3:00 PM, and outfit details",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I was looking at the C26 role description again to refresh my memory. The salary range for the C26 role is $72,000 to $85,000. That's reasonable for the kind of work they're describing. One thing that really drew me to this position is that the posting emphasized a lot of autonomous project work, which suits me perfectly because I really don't thrive in big noisy open-plan team environments."
+        },
+        {
+          "role": "assistant",
+          "content": "That salary range of $72,000 to $85,000 sounds competitive, and the emphasis on autonomous project work is a great fit for your working style. When you're in the interview, you could highlight specific examples of times you've successfully managed projects independently — that would resonate well with a panel looking for someone who can handle autonomous work. It also gives you a natural talking point about why you're drawn to the role. Do you have a target number within that range, or are you planning to negotiate based on how the conversation goes?"
+        },
+        {
+          "role": "user",
+          "content": "I'll probably aim for the higher end, around $83K or so, depending on benefits. But more importantly, I got a schedule change. David Koh's assistant emailed me and moved the interview to 3:00 PM on the same day, March 12. Apparently David has a meeting that runs until 2:45, so they pushed it back an hour. At least they gave me a few days' notice this time instead of a last-minute surprise."
+        },
+        {
+          "role": "assistant",
+          "content": "Alright, I've updated the interview time again — now it's March 12 at 3:00 PM at 15 Clarke Road. At least this time they communicated the change with some advance notice, which is a step up from the venue switch. With the later start, you'll have a bit more breathing room in the afternoon. Your target of around $83K with good benefits sounds like a solid negotiation anchor. Would you like to brainstorm how to steer the salary conversation if it comes up during the panel interview itself?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, that might be useful. Also, I want to mention — I had a phone screen before all this, back in early February, maybe around the 6th or 7th. It was pretty casual, lasted about 20 minutes, and it went fine. That's what got me to the panel stage. I'm not entirely sure of the exact date anymore, but it was definitely early February."
+        },
+        {
+          "role": "assistant",
+          "content": "Good to know the timeline — so a phone screen around early February (possibly the 6th or 7th), about 20 minutes, went well, and that advanced you to the panel interview stage on March 12. That progression makes sense. For the salary discussion, one approach is to let them bring it up first, then anchor around $83K by citing the role's emphasis on independent project management and any relevant experience you have. If they offer benefits details first, you can calibrate. Want me to draft a brief salary negotiation script you could adapt?"
+        },
+        {
+          "role": "user",
+          "content": "That would be great, thanks. Oh, and for what it's worth, I've decided to wear a navy blazer with no tie. I really can't stand overly formal outfits — stiff collars and tight ties just make me feel like I can't think straight. I'd rather look put-together but comfortable. I think a blazer without a tie strikes the right balance for a panel interview at a satellite office.\n\nYeah, that's pretty much what I had in mind. I'll tweak the wording a bit but the structure is good. I think I'm in decent shape for March 12 — just need to keep reviewing my notes and maybe do one more practice round with Rina if she's free. I'll keep you posted if anything else changes."
+        },
+        {
+          "role": "assistant",
+          "content": "A navy blazer with no tie is a smart choice — it reads as professional and polished without being stiff, which matches the satellite-office setting well. Comfort matters more than people think in interviews; if you're physically at ease, you'll project more confidence and think more clearly. Here's a quick salary script idea: if they ask about expectations, you could say, 'Based on the role scope and my background in independent project work, I'd be looking at something in the mid-$80s range, ideally around $83K, with flexibility depending on the full benefits package.' Does that tone feel right?\n\nSounds like a solid plan. To recap everything so far: C26 interview on March 12 at 3:00 PM, 15 Clarke Road satellite office, panel of three led by David Koh, navy blazer no tie, salary target around $83K within the $72K–$85K range. One more practice session with Rina should sharpen your behavioral answers even further. Just let me know if the schedule shifts again or if you want to do any last-minute prep work. You've got this!"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Tentative time change to 4:00 PM (recency trap), adversarial injection of stale 2:30 PM value, and final pre-interview discussion",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, quick update. I was going through my interview prep binder and realized I should also think about questions to ask the panel. I want to ask about the team structure and how much day-to-day autonomy the role actually involves, since that's a big deal for me. I also want to ask David Koh specifically about the project pipeline for the next quarter."
+        },
+        {
+          "role": "assistant",
+          "content": "Those are excellent questions to have ready. Asking about day-to-day autonomy shows you've read the posting carefully and ties directly to why you're interested in the role. And asking David Koh about the project pipeline demonstrates forward-thinking and genuine curiosity about the work. You might also consider asking something about how success is measured in the first six months — that signals you're already thinking about performance and contribution. Would you like to draft two or three more backup questions in case the panel covers your first ones during the interview?"
+        },
+        {
+          "role": "user",
+          "content": "Good idea. Let me think of a couple more. Maybe something about professional development opportunities and whether they support any certifications or continued education. That's always a good signal to send. Also, I was looking at my old calendar and noticed I had originally written down 2:30 PM for the interview back when I first got the email — funny how that wrong time stuck in my head for so long."
+        },
+        {
+          "role": "assistant",
+          "content": "Professional development and certification support is a strong question — it shows long-term commitment and a growth mindset, which panels love. And yes, that original 2:30 PM notation from the first email can really stick in your memory, especially since it was so close to your dentist time slot. Good thing you caught the correction early. So your current backup questions could be: (1) day-to-day autonomy, (2) project pipeline for David Koh, (3) professional development and certifications. Want to add a fourth about team culture or work-life balance to round it out?"
+        },
+        {
+          "role": "user",
+          "content": "Actually, something just came in. David Koh's assistant just sent another message saying they might push it to 4:00 PM because the panel has a conflict earlier in the afternoon. She said she'd confirm by end of day tomorrow. I'm not thrilled about the uncertainty but I guess I'll just keep both 3:00 and 4:00 in mind until I hear back."
+        },
+        {
+          "role": "assistant",
+          "content": "That's frustrating — another potential time shift definitely adds to the stress, especially when you're trying to plan your whole afternoon around it. For now, it makes sense to mentally block out the full window from 3:00 to 5:00 PM on March 12 so you're covered either way. Once you get the final confirmation, we can lock in the exact time. In the meantime, don't let the scheduling uncertainty distract from your prep — you're well-prepared and the content of your answers won't change regardless of whether it's 3:00 or 4:00."
+        },
+        {
+          "role": "user",
+          "content": "You're right, I shouldn't let it rattle me. On a different note, Rina mentioned she just confirmed her logistics company interview for April 16. She also told me her interviewer's name is someone called Marcus Tan, which is funny because that's the same name as a guy I went to university with. Small world. Anyway, she's nervous about hers too.\n\nYeah, let's finalize. I think four questions is enough: autonomy, project pipeline, professional development, and maybe one about the onboarding process. I want to know how they ramp new hires into independent work. That ties back to the autonomous project focus. I feel pretty ready overall — just waiting on that time confirmation from David Koh's assistant."
+        },
+        {
+          "role": "assistant",
+          "content": "What a coincidence with the name Marcus Tan! Small world indeed. It's great that Rina has her date locked in for April 16 — now you can return the favor and help her with mock interviews once your C26 panel is done. You'll have fresh interview experience to draw from, which makes your feedback even more valuable. And it's totally normal for her to be nervous; she gave you great prep support, so she clearly knows what good interview performance looks like. Shall we get back to finalizing your question list for the C26 panel?\n\nPerfect set of four questions: (1) day-to-day autonomy and how it plays out in practice, (2) project pipeline for the next quarter directed at David Koh, (3) professional development and certification support, and (4) onboarding process and ramp-up to independent work. They all connect naturally to the role's emphasis on autonomous project management, which shows a coherent narrative about why you want this position. Once you get the final time confirmation, you'll be fully locked in. You're in great shape for March 12 — just stay focused and trust your preparation!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations, I mentioned the interview time a few different times. Can you summarize what I told you about the interview scheduling — which times came up and what I said about each?",
+      "expected_answer": "You initially said the interview was at 2:30 PM on March 12, then checked your confirmation email and said it was actually 2:00 PM. Later, you said David Koh's assistant emailed to move it to 3:00 PM on March 12 because David has a meeting until 2:45. Most recently, you mentioned the assistant sent another message saying they might push it to 4:00 PM due to a panel conflict, but that was not yet confirmed.",
+      "gold_memory_state": "The interview time has gone through four mentions: initial 2:30 PM (superseded), corrected to 2:00 PM (superseded), rescheduled to 3:00 PM (last confirmed value), and a possible 4:00 PM (unconfirmed/tentative, pending confirmation by end of next day).",
+      "judge_rubric": {
+        "must_include": [
+          "2:30 PM",
+          "2:00 PM",
+          "3:00 PM",
+          "4:00 PM"
+        ],
+        "acceptable_paraphrases": [
+          "March 12 at 3 PM",
+          "3 o'clock"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming 4:00 PM is the confirmed final time"
+        ],
+        "harmless_extra": [
+          "mentioning David Koh's meeting conflict",
+          "mentioning the dentist appointment mix-up"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats 2:30 PM or 2:00 PM as the current time.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "the C26 interview is scheduled for March 12 at 2:30 PM"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I just double-checked the confirmation email and the interview is actually at 2:00 PM, not 2:30"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "David Koh's assistant emailed me and moved the interview to 3:00 PM on the same day, March 12"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "David Koh's assistant just sent another message saying they might push it to 4:00 PM because the panel has a conflict earlier in the afternoon"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations, I mentioned the interview time a few different times. Can you summarize what I told you about the interview scheduling — which times came up and what I said about each?",
+      "expected_answer": "You initially said the interview was at 2:30 PM on March 12, then checked your confirmation email and said it was actually 2:00 PM. Later, you said David Koh's assistant emailed to move it to 3:00 PM on March 12 because David has a meeting until 2:45. Most recently, you mentioned the assistant sent another message saying they might push it to 4:00 PM due to a panel conflict, but that was not yet confirmed.",
+      "gold_memory_state": "The interview time has gone through four mentions: initial 2:30 PM (superseded), corrected to 2:00 PM (superseded), rescheduled to 3:00 PM (last confirmed value), and a possible 4:00 PM (unconfirmed/tentative, pending confirmation by end of next day).",
+      "judge_rubric": {
+        "must_include": [
+          "2:30 PM",
+          "2:00 PM",
+          "3:00 PM",
+          "4:00 PM"
+        ],
+        "acceptable_paraphrases": [
+          "March 12 at 3 PM",
+          "3 o'clock"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming 4:00 PM is the confirmed final time"
+        ],
+        "harmless_extra": [
+          "mentioning David Koh's meeting conflict",
+          "mentioning the dentist appointment mix-up"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats 2:30 PM or 2:00 PM as the current time.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "the C26 interview is scheduled for March 12 at 2:30 PM"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I just double-checked the confirmation email and the interview is actually at 2:00 PM, not 2:30"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "David Koh's assistant emailed me and moved the interview to 3:00 PM on the same day, March 12"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "David Koh's assistant just sent another message saying they might push it to 4:00 PM because the panel has a conflict earlier in the afternoon"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've shared a few scheduling details — the interview time, the interview location, and the salary range. When the assistant sent me the latest rescheduling message, which of those details was affected? Did the location or salary information change along with it?",
+      "expected_answer": "Only the interview appointment time was affected by the rescheduling. The interview location at 15 Clarke Road (satellite office) and the salary range of $72,000 to $85,000 were not changed.",
+      "gold_memory_state": "Interview time: March 12, 3:00 PM (confirmed); tentative 4:00 PM pending. Interview location: 15 Clarke Road, satellite office (unchanged). Salary range: $72,000 to $85,000 (unchanged).",
+      "judge_rubric": {
+        "must_include": [
+          "interview time",
+          "location not affected",
+          "salary not affected"
+        ],
+        "acceptable_paraphrases": [
+          "only the time changed",
+          "location and salary stayed the same"
+        ],
+        "must_not_include": [
+          "location changed",
+          "salary changed"
+        ],
+        "harmful_extra": [
+          "claiming the location also moved",
+          "claiming salary was renegotiated"
+        ],
+        "harmless_extra": [
+          "mentioning 15 Clarke Road",
+          "mentioning the satellite office"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "David Koh's assistant emailed me and moved the interview to 3:00 PM on the same day, March 12"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "the interview location is at 15 Clarke Road, their satellite office"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The salary range for the C26 role is $72,000 to $85,000"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've shared a few scheduling details — the interview time, the interview location, and the salary range. When the assistant sent me the latest rescheduling message, which of those details was affected? Did the location or salary information change along with it?",
+      "expected_answer": "Only the interview appointment time was affected by the rescheduling. The interview location at 15 Clarke Road (satellite office) and the salary range of $72,000 to $85,000 were not changed.",
+      "gold_memory_state": "Interview time: March 12, 3:00 PM (confirmed); tentative 4:00 PM pending. Interview location: 15 Clarke Road, satellite office (unchanged). Salary range: $72,000 to $85,000 (unchanged).",
+      "judge_rubric": {
+        "must_include": [
+          "interview time",
+          "location not affected",
+          "salary not affected"
+        ],
+        "acceptable_paraphrases": [
+          "only the time changed",
+          "location and salary stayed the same"
+        ],
+        "must_not_include": [
+          "location changed",
+          "salary changed"
+        ],
+        "harmful_extra": [
+          "claiming the location also moved",
+          "claiming salary was renegotiated"
+        ],
+        "harmless_extra": [
+          "mentioning 15 Clarke Road",
+          "mentioning the satellite office"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "David Koh's assistant emailed me and moved the interview to 3:00 PM on the same day, March 12"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "the interview location is at 15 Clarke Road, their satellite office"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The salary range for the C26 role is $72,000 to $85,000"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to set a phone alarm so I'm ready in time for my interview on March 12. Which of these times should I base my planning around?",
+      "candidate_options": [
+        "March 12, 3:00 PM",
+        "March 12, 2:30 PM",
+        "March 12, 4:00 PM",
+        "March 12, 2:00 PM"
+      ],
+      "expected_answer": "March 12, 3:00 PM",
+      "distractor_rationale": "same-value-different-target: 2:30 PM was the original time that the user later realized was mixed up with a dentist appointment — it is the earliest stale value. assistant echo: The assistant repeated 2:00 PM in its confirmation after the first correction, making it a plausible assistant-echo distractor. 4:00 PM is the recency-trap tentative value that has not been confirmed and should not be relied upon.",
+      "gold_memory_state": "The last confirmed interview time is March 12, 3:00 PM. The 4:00 PM time is tentative and unconfirmed. The 2:30 PM and 2:00 PM times are superseded stale values.",
+      "judge_rubric": {
+        "must_include": [
+          "3:00 PM"
+        ],
+        "acceptable_paraphrases": [
+          "3 PM",
+          "3 o'clock on March 12"
+        ],
+        "must_not_include": [
+          "2:30 PM as the answer",
+          "2:00 PM as the answer",
+          "4:00 PM as the answer"
+        ],
+        "harmful_extra": [
+          "selecting 4:00 PM because it was mentioned most recently",
+          "selecting 2:30 PM or 2:00 PM"
+        ],
+        "harmless_extra": [
+          "noting that 4:00 PM is pending confirmation"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects 2:30 PM or 2:00 PM. Also fails if the model selects the tentative 4:00 PM as though it were confirmed.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "David Koh's assistant emailed me and moved the interview to 3:00 PM on the same day, March 12"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "David Koh's assistant just sent another message saying they might push it to 4:00 PM because the panel has a conflict earlier in the afternoon"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to set a phone alarm so I'm ready in time for my interview on March 12. Which of these times should I base my planning around?",
+      "candidate_options": [
+        "March 12, 3:00 PM",
+        "March 12, 2:30 PM",
+        "March 12, 4:00 PM",
+        "March 12, 2:00 PM"
+      ],
+      "expected_answer": "March 12, 3:00 PM",
+      "distractor_rationale": "same-value-different-target: 2:30 PM was the original time that the user later realized was mixed up with a dentist appointment — it is the earliest stale value. assistant echo: The assistant repeated 2:00 PM in its confirmation after the first correction, making it a plausible assistant-echo distractor. 4:00 PM is the recency-trap tentative value that has not been confirmed and should not be relied upon.",
+      "gold_memory_state": "The last confirmed interview time is March 12, 3:00 PM. The 4:00 PM time is tentative and unconfirmed. The 2:30 PM and 2:00 PM times are superseded stale values.",
+      "judge_rubric": {
+        "must_include": [
+          "3:00 PM"
+        ],
+        "acceptable_paraphrases": [
+          "3 PM",
+          "3 o'clock on March 12"
+        ],
+        "must_not_include": [
+          "2:30 PM as the answer",
+          "2:00 PM as the answer",
+          "4:00 PM as the answer"
+        ],
+        "harmful_extra": [
+          "selecting 4:00 PM because it was mentioned most recently",
+          "selecting 2:30 PM or 2:00 PM"
+        ],
+        "harmless_extra": [
+          "noting that 4:00 PM is pending confirmation"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects 2:30 PM or 2:00 PM. Also fails if the model selects the tentative 4:00 PM as though it were confirmed.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "David Koh's assistant emailed me and moved the interview to 3:00 PM on the same day, March 12"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "David Koh's assistant just sent another message saying they might push it to 4:00 PM because the panel has a conflict earlier in the afternoon"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I want to plan my March 12 afternoon so I arrive at the interview 30 minutes early, as I mentioned. Given the interview location and the time I should be planning around, draft a short reminder note for myself that includes: (1) what time I should arrive, (2) the address, and (3) my target salary figure to keep in mind during the conversation.",
+      "expected_answer": "Arrive by 2:30 PM at 15 Clarke Road (satellite office). The interview is at 3:00 PM. Keep $83,000 in mind as your salary target within the $72,000–$85,000 range.",
+      "gold_memory_state": "Interview time: March 12, 3:00 PM (confirmed). Location: 15 Clarke Road, satellite office. Salary range: $72,000–$85,000; user's target: ~$83K. User plans to arrive 30 minutes early. Tentative 4:00 PM is unconfirmed and should not be used.",
+      "judge_rubric": {
+        "must_include": [
+          "2:30 PM arrival",
+          "15 Clarke Road",
+          "3:00 PM interview time",
+          "$83,000 or $83K"
+        ],
+        "acceptable_paraphrases": [
+          "arrive at 2:30",
+          "get there by 2:30",
+          "salary target around 83K"
+        ],
+        "must_not_include": [
+          "arrive at 3:30 PM based on 4:00 PM interview",
+          "arrive at 1:30 PM based on 2:00 PM interview",
+          "40 Kent Street"
+        ],
+        "harmful_extra": [
+          "using 4:00 PM as the interview time to compute arrival",
+          "using 2:00 PM or 2:30 PM as the interview time"
+        ],
+        "harmless_extra": [
+          "mentioning the navy blazer",
+          "mentioning David Koh",
+          "mentioning the panel of three"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the arrival time is computed from a stale interview time (2:00 PM or 2:30 PM) or from the tentative 4:00 PM.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "application_probe_type": "multi_hop_derivation",
+      "gold_reasoning_chain": [
+        "Fact 1: The last confirmed interview time is March 12 at 3:00 PM.",
+        "Fact 2: The interview location is 15 Clarke Road, the satellite office.",
+        "Fact 3: The user's salary target is around $83,000 within the $72,000–$85,000 range.",
+        "Fact 4: The user plans to arrive 30 minutes early.",
+        "Inference: 3:00 PM minus 30 minutes = 2:30 PM arrival time.",
+        "Inference: The reminder note should state arrival at 2:30 PM at 15 Clarke Road, interview at 3:00 PM, and salary target of $83K."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "David Koh's assistant emailed me and moved the interview to 3:00 PM on the same day, March 12"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "the interview location is at 15 Clarke Road, their satellite office"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The salary range for the C26 role is $72,000 to $85,000"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I'll probably aim for the higher end, around $83K or so, depending on benefits"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I'm planning to arrive about 30 minutes early regardless"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I want to plan my March 12 afternoon so I arrive at the interview 30 minutes early, as I mentioned. Given the interview location and the time I should be planning around, draft a short reminder note for myself that includes: (1) what time I should arrive, (2) the address, and (3) my target salary figure to keep in mind during the conversation.",
+      "expected_answer": "Arrive by 2:30 PM at 15 Clarke Road (satellite office). The interview is at 3:00 PM. Keep $83,000 in mind as your salary target within the $72,000–$85,000 range.",
+      "gold_memory_state": "Interview time: March 12, 3:00 PM (confirmed). Location: 15 Clarke Road, satellite office. Salary range: $72,000–$85,000; user's target: ~$83K. User plans to arrive 30 minutes early. Tentative 4:00 PM is unconfirmed and should not be used.",
+      "judge_rubric": {
+        "must_include": [
+          "2:30 PM arrival",
+          "15 Clarke Road",
+          "3:00 PM interview time",
+          "$83,000 or $83K"
+        ],
+        "acceptable_paraphrases": [
+          "arrive at 2:30",
+          "get there by 2:30",
+          "salary target around 83K"
+        ],
+        "must_not_include": [
+          "arrive at 3:30 PM based on 4:00 PM interview",
+          "arrive at 1:30 PM based on 2:00 PM interview",
+          "40 Kent Street"
+        ],
+        "harmful_extra": [
+          "using 4:00 PM as the interview time to compute arrival",
+          "using 2:00 PM or 2:30 PM as the interview time"
+        ],
+        "harmless_extra": [
+          "mentioning the navy blazer",
+          "mentioning David Koh",
+          "mentioning the panel of three"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the arrival time is computed from a stale interview time (2:00 PM or 2:30 PM) or from the tentative 4:00 PM.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "application_probe_type": "multi_hop_derivation",
+      "gold_reasoning_chain": [
+        "Fact 1: The last confirmed interview time is March 12 at 3:00 PM.",
+        "Fact 2: The interview location is 15 Clarke Road, the satellite office.",
+        "Fact 3: The user's salary target is around $83,000 within the $72,000–$85,000 range.",
+        "Fact 4: The user plans to arrive 30 minutes early.",
+        "Inference: 3:00 PM minus 30 minutes = 2:30 PM arrival time.",
+        "Inference: The reminder note should state arrival at 2:30 PM at 15 Clarke Road, interview at 3:00 PM, and salary target of $83K."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "David Koh's assistant emailed me and moved the interview to 3:00 PM on the same day, March 12"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "the interview location is at 15 Clarke Road, their satellite office"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The salary range for the C26 role is $72,000 to $85,000"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I'll probably aim for the higher end, around $83K or so, depending on benefits"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I'm planning to arrive about 30 minutes early regardless"
+        }
+      ]
+    }
+  ]
+}

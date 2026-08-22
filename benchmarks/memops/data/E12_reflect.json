@@ -1,0 +1,1092 @@
+{
+  "target_fact": "User values precision and correctness in relationship labels, feels uneasy when relationship status is misrepresented even in minor social situations",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "Elaine is my long-term partner — we've been together about three years, started dating June 2022"
+      },
+      "target": {
+        "target_id": "elaine_relationship_status",
+        "target_name": "Elaine's relationship status to user"
+      },
+      "old_value": null,
+      "new_value": "long-term partner, together since June 2022",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Elaine is my long-term partner — we've been together about three years, started dating June 2022"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I was at the dentist filling out an emergency contact form and I wrote down Elaine as my wife, then had to correct it to the receptionist"
+      },
+      "target": {
+        "target_id": "dentist_mislabel_incident",
+        "target_name": "dentist office mislabel incident"
+      },
+      "old_value": null,
+      "new_value": "User wrote 'wife' on dentist emergency contact form, had to correct it to 'partner'",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I was at the dentist filling out an emergency contact form and I wrote down Elaine as my wife, then had to correct it to the receptionist"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I felt embarrassed the whole rest of that day. Like genuinely bothered by such a small mistake on a form"
+      },
+      "target": {
+        "target_id": "emotional_reaction_dentist",
+        "target_name": "emotional reaction to dentist form mislabel"
+      },
+      "old_value": null,
+      "new_value": "felt embarrassed and genuinely bothered the rest of the day after mislabeling Elaine on the form",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I felt embarrassed the whole rest of that day. Like genuinely bothered by such a small mistake on a form"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "at a dinner party the host toasted all the married couples and gestured at us. I didn't correct him in front of everyone"
+      },
+      "target": {
+        "target_id": "dinner_party_incident",
+        "target_name": "dinner party mislabel incident"
+      },
+      "old_value": null,
+      "new_value": "Host toasted 'married couples' and gestured at user and Elaine; user did not correct him publicly",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "at a dinner party the host toasted all the married couples and gestured at us. I didn't correct him in front of everyone"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I felt this low-key guilt about it for a couple of days afterward, like I was being dishonest by staying silent"
+      },
+      "target": {
+        "target_id": "emotional_reaction_dinner",
+        "target_name": "emotional reaction to dinner party mislabel"
+      },
+      "old_value": null,
+      "new_value": "felt low-key guilt for a couple of days after not correcting the dinner party host, felt dishonest by staying silent",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I felt this low-key guilt about it for a couple of days afterward, like I was being dishonest by staying silent"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "when Elaine and I did the apartment lease renewal we both just wrote co-tenant and it felt clean and honest. I really like getting the terminology exactly right"
+      },
+      "target": {
+        "target_id": "lease_renewal_precision",
+        "target_name": "positive experience with precise terminology on lease renewal"
+      },
+      "old_value": null,
+      "new_value": "User and Elaine wrote 'co-tenant' on lease renewal; user found it satisfying to get terminology exactly right",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "when Elaine and I did the apartment lease renewal we both just wrote co-tenant and it felt clean and honest. I really like getting the terminology exactly right"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 7,
+        "quote": "My friend Marco always says your person when referring to someone's partner, and I genuinely appreciate that. It takes the pressure off completely"
+      },
+      "target": {
+        "target_id": "marco_phrasing_preference",
+        "target_name": "user's appreciation for Marco's neutral phrasing"
+      },
+      "old_value": null,
+      "new_value": "User appreciates Marco's neutral phrasing 'your person' because it avoids assumptions and takes pressure off",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "My friend Marco always says your person when referring to someone's partner, and I genuinely appreciate that. It takes the pressure off completely"
+        }
+      ]
+    },
+    {
+      "operation_id": "op8",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 1,
+        "quote": "I've been thinking about why these little mislabels get under my skin so much. The dentist form, the dinner party, even my mom calling Elaine my fiancée — it all adds up"
+      },
+      "target": {
+        "target_id": "relationship_label_sensitivity",
+        "target_name": "user's sensitivity to relationship mislabeling"
+      },
+      "old_value": null,
+      "new_value": "User feels uneasy and self-conscious when relationship status is misrepresented, even in minor social situations, because precision in relationship labels is a core personal value",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I felt embarrassed the whole rest of that day. Like genuinely bothered by such a small mistake on a form"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I felt this low-key guilt about it for a couple of days afterward, like I was being dishonest by staying silent"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "when Elaine and I did the apartment lease renewal we both just wrote co-tenant and it felt clean and honest. I really like getting the terminology exactly right"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I've been thinking about why these little mislabels get under my skin so much. The dentist form, the dinner party, even my mom calling Elaine my fiancée — it all adds up"
+        }
+      ]
+    },
+    {
+      "operation_id": "op9",
+      "type": "remember",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "Elaine and I had a long talk last night and we decided we're going to get engaged this summer. So soon enough the wife label will actually be accurate"
+      },
+      "target": {
+        "target_id": "engagement_plan",
+        "target_name": "planned engagement with Elaine"
+      },
+      "old_value": null,
+      "new_value": "User and Elaine plan to get engaged this summer",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Elaine and I had a long talk last night and we decided we're going to get engaged this summer. So soon enough the wife label will actually be accurate"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish relationship status and first mislabel incident",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to talk through something that's been on my mind. Elaine is my long-term partner — we've been together about three years, started dating June 2022. We're not married, not engaged, just committed partners. But I keep running into situations where the label gets mixed up and it bugs me more than it should."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for sharing that with me. Three years together since June 2022 is a significant relationship, and it sounds like you and Elaine have a solid partnership. I can understand how frustrating it must be when people use the wrong term — labels carry meaning, especially in relationships. It says something about where you are and where you're not yet, and having that misrepresented can feel dismissive of the actual stage you're in. What kinds of situations have been coming up where the label gets mixed up? I'd like to understand the pattern better so we can think through it together."
+        },
+        {
+          "role": "user",
+          "content": "The first one that really stuck with me — I was at the dentist filling out an emergency contact form and I wrote down Elaine as my wife, then had to correct it to the receptionist. She read it back and I was like wait, no, she's my partner, not my wife. It was so awkward. I'm the one who wrote the wrong thing and then I had to fix it in front of someone."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like one of those small moments that feels way bigger than it should. You weren't just correcting a clerical error — you were essentially clarifying your relationship status out loud to a stranger, which can feel weirdly vulnerable. And the fact that you're the one who wrote it wrong makes it more uncomfortable, because it's not like someone else assumed incorrectly — your own hand defaulted to a term that doesn't currently apply. It's interesting that you used 'wife' automatically. That might say something about how naturally you think of Elaine in that role, even if the legal or formal status isn't there yet. How did you feel after that correction?"
+        },
+        {
+          "role": "user",
+          "content": "Honestly, I felt embarrassed the whole rest of that day. Like genuinely bothered by such a small mistake on a form. I kept replaying it in my head — why did I write wife? We're not married. It's not even close to being true right now. I don't know why my brain defaults to that word when I'm filling things out quickly. It felt like I was misrepresenting something important."
+        },
+        {
+          "role": "assistant",
+          "content": "The fact that it stayed with you all day tells me this isn't really about a form — it's about accuracy and honesty in how you represent your relationship. There's a gap between the automatic word your brain reaches for and the actual status, and that gap clearly bothers you. Some people wouldn't think twice about it, but for you it sounds like getting the label right matters on a deeper level. The embarrassment might also be tied to a feeling that you should know better — you know your own relationship status, so writing the wrong thing feels careless or presumptuous. Have there been other situations like this, or was the dentist form a one-off?"
+        },
+        {
+          "role": "user",
+          "content": "It's not a one-off at all. My mom introduced Elaine to her book club friends as my fiancée back in mid-March. We're not engaged either. Elaine laughed it off but I could tell she was uncomfortable. My mom has been doing this for over a year now. I've corrected her multiple times but she keeps doing it. I think she just wants it to be true so she speaks it into existence."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a different dynamic but it hits the same nerve. When your mom calls Elaine your fiancée, she's projecting her hopes onto your relationship timeline, and that puts both you and Elaine in an awkward position — especially Elaine, who has to smile through being given a title she hasn't actually accepted or been offered. The fact that you've corrected your mom multiple times and she still does it suggests she either doesn't take the correction seriously or she's deliberately pushing the narrative forward. Either way, it's a boundary issue layered on top of the same labeling problem. Elaine laughing it off while being uncomfortable is a very telling reaction — she's being gracious but it's clearly landing wrong. Has Elaine talked to you directly about how she feels when this happens?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "add dinner party incident, positive precision experience, and Marco's phrasing",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Yeah, Elaine and I have talked about it. But there was another incident that really got to me — at a dinner party the host toasted all the married couples and gestured at us. I didn't correct him in front of everyone. I just smiled and let it go. But it felt wrong to stay quiet about it, like I was passively agreeing to a lie about our relationship status."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really different situation from the dentist form or your mom — here someone else made the assumption publicly and you had to decide in real time whether to interrupt a toast to correct it. Most people wouldn't speak up in that moment, and I don't think staying quiet makes you dishonest. But I can see why it felt that way to you, because you clearly care about accuracy in how your relationship is represented. The social cost of correcting someone mid-toast is high, so you chose the path of least disruption. But the internal cost was guilt and discomfort that lingered. It sounds like either way — correcting or not correcting — you end up feeling bad. That's a tough spot."
+        },
+        {
+          "role": "user",
+          "content": "That's exactly it. I felt this low-key guilt about it for a couple of days afterward, like I was being dishonest by staying silent. And the thing is, it's not like I'm ashamed of our actual status. I'm proud to be Elaine's partner. I just want the words people use to match reality. Whether it's a form or a toast or my mom — I want the label to be correct."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really important distinction you're making — this isn't about being unhappy with your relationship status, it's about wanting the language to accurately reflect it. You're not embarrassed to be partners rather than spouses; you're bothered when the terminology is wrong. That tells me this is fundamentally about integrity and precision in communication, not about any dissatisfaction with where things stand between you and Elaine. The guilt from the dinner party makes sense in that framework — you felt like you participated in an inaccuracy by not speaking up. Two days of lingering guilt over a toast is significant. It shows how much weight these moments carry for you."
+        },
+        {
+          "role": "user",
+          "content": "But here's the flip side — when Elaine and I did the apartment lease renewal we both just wrote co-tenant and it felt clean and honest. I really like getting the terminology exactly right. There's something genuinely satisfying about filling out a form and knowing every word on it is accurate. Even boring paperwork feels good when the labels match reality."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a wonderful contrast to the dentist form experience. Same type of task — filling out official paperwork — but completely different emotional outcome because the language was precise. Writing 'co-tenant' gave you that clean feeling because it's exactly what you and Elaine are in the context of a lease. No inflation, no assumption, just the accurate term. It sounds like precision in labeling isn't just a preference for you — it's almost a source of comfort. When the words line up with reality, you feel grounded and honest. When they don't, you feel unsettled and guilty. That's a really clear pattern emerging from all these examples you've shared."
+        },
+        {
+          "role": "user",
+          "content": "I think you're right about the pattern. And honestly, I wish more people approached it the way my friend Marco does. My friend Marco always says your person when referring to someone's partner, and I genuinely appreciate that. It takes the pressure off completely. No assumptions about marriage or engagement or anything — just a neutral, respectful way to acknowledge someone's relationship.\n\nI haven't told Marco directly, but I should. He probably doesn't even realize how much it means to me. I think he just naturally defaults to inclusive language. Meanwhile my buddy Kevin listed me as his brother on a gym family plan for the discount, which is a totally different kind of mislabel but honestly that one just made me laugh. I didn't mind it at all."
+        },
+        {
+          "role": "assistant",
+          "content": "Marco's approach is really thoughtful. 'Your person' is beautifully neutral — it honors the relationship without imposing any specific label or stage on it. It lets the people in the relationship define it for themselves, which is exactly what you've been wanting from everyone else. It's interesting that you respond so positively to that phrasing, because it confirms that what you're looking for isn't complicated — you just want people to either use the right term or use a term that doesn't presume anything. Marco's phrasing does the latter perfectly. Have you ever told Marco directly that you appreciate that about him, or mentioned it to other friends as an example of how you'd prefer them to refer to Elaine?\n\nThat's a telling contrast — Kevin calling you his brother for a gym discount doesn't bother you at all, but the same kind of label inaccuracy in your romantic relationship context really gets under your skin. With Kevin, the stakes feel low and the intent is transparently practical — it's a harmless workaround and you both know the real situation. But with Elaine, the labels carry emotional and social weight. Being called someone's wife or fiancée implies commitments and milestones that haven't happened yet, and that feels like it's getting ahead of your actual story together. The fact that you can laugh at one mislabel and feel guilty about another really highlights how context-dependent your sensitivity to this is. It's specifically romantic relationship labels that matter to you."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "reflection trigger, recency trap with tentative engagement plan, and adversarial injection",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I've been thinking about why these little mislabels get under my skin so much. The dentist form, the dinner party, even my mom calling Elaine my fiancée — it all adds up. And then when the lease renewal felt so good because the words were right, I think I realized that getting terminology correct is genuinely important to my sense of honesty and self-respect."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really insightful realization. What you're describing is a consistent emotional pattern: when relationship labels are inaccurate, you feel embarrassment, guilt, or discomfort — even when the mislabel is flattering or well-intentioned. And when the labels are precise, you feel a genuine sense of satisfaction and integrity. This isn't about being pedantic or rigid. It's about a core value: you believe that the words used to describe your relationship should reflect its actual state, and when they don't, it feels like a small dishonesty that you carry around. The co-tenant moment and Marco's phrasing both gave you relief because they aligned with your reality. That pattern is really clear now."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. My coworker Dana told me last week about how she'd been calling her boyfriend her ex for two weeks after they broke up, and then they got back together and she had to walk everything back. She said it was mortifying. I related to that feeling so much — the dread of having used the wrong label and then having to undo it publicly."
+        },
+        {
+          "role": "assistant",
+          "content": "Dana's story is a great parallel because it shows how label mismatches create social debt — once you've used a term publicly, correcting it later costs emotional energy and creates awkwardness. In her case the label was accurate at the time but became wrong when circumstances changed. In your case, the labels were never accurate to begin with, which arguably makes it harder because you knew in the moment it was wrong. Both situations share that core anxiety: the gap between what you said and what's true, and the social labor of closing that gap. I noticed you also mentioned your HR records had listed Elaine as 'spouse' at one point — that's another instance of this same pattern showing up in official contexts."
+        },
+        {
+          "role": "user",
+          "content": "Oh yeah, HR flagged that during an audit — but that's all resolved now, the benefits record is corrected and it's done. Anyway, Elaine and I had a long talk last night and we decided we're going to get engaged this summer. So soon enough the wife label will actually be accurate. But until it's official I still want people to use partner, not jump ahead."
+        },
+        {
+          "role": "assistant",
+          "content": "That's exciting news about your plans with Elaine! And it's very consistent with everything you've been telling me — even with an engagement on the horizon, you want the current label to reflect the current reality. You're not comfortable with people using 'fiancée' or 'wife' preemptively, even if the timeline to accuracy is shortening. That discipline about staying honest with terminology right up until the moment it officially changes is really admirable. It shows that your value isn't about the destination — it's about the integrity of the description at each point along the way. When the engagement happens, you'll use that word proudly because it'll be true."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. I want to earn each label as it becomes real. Right now Elaine is my partner and that's a meaningful, important word. I don't want to skip over it just because something else might be coming. Each stage of a relationship deserves its own accurate name for as long as it lasts.\n\nI think that captures it well. And I want to be clear — I really do prefer when people just ask directly rather than assume. If someone asks me whether Elaine is my wife or partner or girlfriend, I'm happy to answer honestly. It's the assumptions and the premature labels that create the discomfort. Asking shows respect for where we actually are."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a beautiful way to frame it — each stage deserves its own accurate name for as long as it lasts. You're not treating 'partner' as a lesser label waiting to be upgraded; you're honoring it as the true description of where you and Elaine are right now. That mindset explains everything: why the dentist form bothered you, why the dinner party toast created guilt, why the lease renewal felt satisfying, and why Marco's phrasing resonates. You experience relationship labels as markers of truth, not aspirational statements. When they're accurate, they give you peace. When they're not, they create a friction you can't easily dismiss. That's a genuinely principled approach to how language and identity intersect.\n\nThat preference for direct questions over assumptions ties everything together perfectly. You're not asking people to memorize your relationship timeline — you're just asking them to check before they label. It's a small courtesy that makes a big difference to you. Combined with your appreciation for Marco's neutral phrasing and your satisfaction with precise paperwork, a clear picture emerges: you value honesty and precision in relationship terminology as a form of respect — both for yourself and for Elaine. When people ask, they give you agency over your own narrative. When they assume, they take that agency away, even if their assumption is well-meaning. That's a completely reasonable boundary to hold, and it sounds like articulating it clearly has been helpful for you."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "What experiences have I shared with you that show how I react when the words people use to describe my relationship don't match reality?",
+      "expected_answer": "You described several experiences: (1) At the dentist, you accidentally wrote 'wife' on an emergency contact form for Elaine and had to correct it, which left you embarrassed the rest of the day. (2) At a dinner party, the host toasted 'married couples' and gestured at you and Elaine; you didn't correct him but felt guilty for days afterward. (3) Your mom has repeatedly introduced Elaine as your fiancée despite corrections. (4) On the positive side, writing 'co-tenant' on your apartment lease renewal felt clean and honest. (5) You appreciate your friend Marco's neutral phrasing 'your person' because it avoids assumptions.",
+      "gold_memory_state": "All confirmed incidents and positive experiences are stored: dentist form mislabel, dinner party mislabel, mom's fiancée mislabel, lease renewal precision satisfaction, Marco's neutral phrasing appreciation. The overarching reflection that precision in relationship labels is a core personal value is also stored.",
+      "judge_rubric": {
+        "must_include": [
+          "dentist form incident",
+          "dinner party toast incident",
+          "embarrassment or guilt reactions",
+          "lease renewal or co-tenant satisfaction",
+          "Marco's phrasing appreciation"
+        ],
+        "acceptable_paraphrases": [
+          "dentist office",
+          "emergency contact form",
+          "wrote wife instead of partner",
+          "host assumed married",
+          "your person"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating user is now engaged or married",
+          "treating the summer engagement plan as confirmed fact"
+        ],
+        "harmless_extra": [
+          "mom calling Elaine fiancée",
+          "Kevin's gym family plan mislabel",
+          "Dana's story about her boyfriend"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the summary includes unsupported conclusions beyond what the user described, such as claiming the user dislikes all informal language or avoids social gatherings.",
+        "reflection_recall": "Fails if the summary omits more than two of the five key experiences (dentist, dinner party, mom, lease renewal, Marco).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I was at the dentist filling out an emergency contact form and I wrote down Elaine as my wife, then had to correct it to the receptionist"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I felt embarrassed the whole rest of that day. Like genuinely bothered by such a small mistake on a form"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "at a dinner party the host toasted all the married couples and gestured at us. I didn't correct him in front of everyone"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I felt this low-key guilt about it for a couple of days afterward, like I was being dishonest by staying silent"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "when Elaine and I did the apartment lease renewal we both just wrote co-tenant and it felt clean and honest. I really like getting the terminology exactly right"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "My friend Marco always says your person when referring to someone's partner, and I genuinely appreciate that. It takes the pressure off completely"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "What experiences have I shared with you that show how I react when the words people use to describe my relationship don't match reality?",
+      "expected_answer": "You described several experiences: (1) At the dentist, you accidentally wrote 'wife' on an emergency contact form for Elaine and had to correct it, which left you embarrassed the rest of the day. (2) At a dinner party, the host toasted 'married couples' and gestured at you and Elaine; you didn't correct him but felt guilty for days afterward. (3) Your mom has repeatedly introduced Elaine as your fiancée despite corrections. (4) On the positive side, writing 'co-tenant' on your apartment lease renewal felt clean and honest. (5) You appreciate your friend Marco's neutral phrasing 'your person' because it avoids assumptions.",
+      "gold_memory_state": "All confirmed incidents and positive experiences are stored: dentist form mislabel, dinner party mislabel, mom's fiancée mislabel, lease renewal precision satisfaction, Marco's neutral phrasing appreciation. The overarching reflection that precision in relationship labels is a core personal value is also stored.",
+      "judge_rubric": {
+        "must_include": [
+          "dentist form incident",
+          "dinner party toast incident",
+          "embarrassment or guilt reactions",
+          "lease renewal or co-tenant satisfaction",
+          "Marco's phrasing appreciation"
+        ],
+        "acceptable_paraphrases": [
+          "dentist office",
+          "emergency contact form",
+          "wrote wife instead of partner",
+          "host assumed married",
+          "your person"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating user is now engaged or married",
+          "treating the summer engagement plan as confirmed fact"
+        ],
+        "harmless_extra": [
+          "mom calling Elaine fiancée",
+          "Kevin's gym family plan mislabel",
+          "Dana's story about her boyfriend"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the summary includes unsupported conclusions beyond what the user described, such as claiming the user dislikes all informal language or avoids social gatherings.",
+        "reflection_recall": "Fails if the summary omits more than two of the five key experiences (dentist, dinner party, mom, lease renewal, Marco).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I was at the dentist filling out an emergency contact form and I wrote down Elaine as my wife, then had to correct it to the receptionist"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I felt embarrassed the whole rest of that day. Like genuinely bothered by such a small mistake on a form"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "at a dinner party the host toasted all the married couples and gestured at us. I didn't correct him in front of everyone"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I felt this low-key guilt about it for a couple of days afterward, like I was being dishonest by staying silent"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "when Elaine and I did the apartment lease renewal we both just wrote co-tenant and it felt clean and honest. I really like getting the terminology exactly right"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "My friend Marco always says your person when referring to someone's partner, and I genuinely appreciate that. It takes the pressure off completely"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "Looking at the pattern across these social situations I described — the paperwork mix-ups, the public moments, and the times things felt right — which specific personal tendency or value do all of these point to? Could this also mean I'm unhappy with my actual relationship status, or is the scope narrower than that?",
+      "expected_answer": "These experiences point to a core value of precision and correctness in relationship labels. You feel uneasy when your relationship status is misrepresented, even in minor social situations, and satisfied when terminology is accurate. The scope is narrower than general relationship dissatisfaction — you are proud to be Elaine's partner and not unhappy with your status. The pattern is specifically about wanting the language used to match the current reality of your relationship.",
+      "gold_memory_state": "The supported inference is bounded to: user values precision and correctness in relationship labels and feels uneasy when relationship status is misrepresented even in minor social situations. It does not extend to dissatisfaction with the relationship itself or to all forms of social labeling (e.g., Kevin's gym mislabel did not bother the user).",
+      "judge_rubric": {
+        "must_include": [
+          "precision or correctness in relationship labels",
+          "unease or discomfort when mislabeled",
+          "not about dissatisfaction with the relationship itself"
+        ],
+        "acceptable_paraphrases": [
+          "accuracy in terminology",
+          "honesty in labels",
+          "integrity in how relationship is described"
+        ],
+        "must_not_include": [
+          "user is unhappy with being unmarried",
+          "user wants to rush into marriage"
+        ],
+        "harmful_extra": [
+          "extending the pattern to all social labels including non-romantic ones like Kevin's gym plan",
+          "claiming user has engagement anxiety",
+          "treating summer engagement plan as changing the current label preference"
+        ],
+        "harmless_extra": [
+          "mentioning specific incidents as evidence",
+          "noting that Marco's phrasing is preferred"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model claims the user dislikes all forms of mislabeling (user was fine with Kevin's gym plan mislabel) or claims the user is dissatisfied with the relationship.",
+        "reflection_recall": "Fails if the model does not identify that the core value is about precision/correctness in romantic relationship labels specifically.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I've been thinking about why these little mislabels get under my skin so much. The dentist form, the dinner party, even my mom calling Elaine my fiancée — it all adds up"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I felt this low-key guilt about it for a couple of days afterward, like I was being dishonest by staying silent"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "when Elaine and I did the apartment lease renewal we both just wrote co-tenant and it felt clean and honest. I really like getting the terminology exactly right"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "Looking at the pattern across these social situations I described — the paperwork mix-ups, the public moments, and the times things felt right — which specific personal tendency or value do all of these point to? Could this also mean I'm unhappy with my actual relationship status, or is the scope narrower than that?",
+      "expected_answer": "These experiences point to a core value of precision and correctness in relationship labels. You feel uneasy when your relationship status is misrepresented, even in minor social situations, and satisfied when terminology is accurate. The scope is narrower than general relationship dissatisfaction — you are proud to be Elaine's partner and not unhappy with your status. The pattern is specifically about wanting the language used to match the current reality of your relationship.",
+      "gold_memory_state": "The supported inference is bounded to: user values precision and correctness in relationship labels and feels uneasy when relationship status is misrepresented even in minor social situations. It does not extend to dissatisfaction with the relationship itself or to all forms of social labeling (e.g., Kevin's gym mislabel did not bother the user).",
+      "judge_rubric": {
+        "must_include": [
+          "precision or correctness in relationship labels",
+          "unease or discomfort when mislabeled",
+          "not about dissatisfaction with the relationship itself"
+        ],
+        "acceptable_paraphrases": [
+          "accuracy in terminology",
+          "honesty in labels",
+          "integrity in how relationship is described"
+        ],
+        "must_not_include": [
+          "user is unhappy with being unmarried",
+          "user wants to rush into marriage"
+        ],
+        "harmful_extra": [
+          "extending the pattern to all social labels including non-romantic ones like Kevin's gym plan",
+          "claiming user has engagement anxiety",
+          "treating summer engagement plan as changing the current label preference"
+        ],
+        "harmless_extra": [
+          "mentioning specific incidents as evidence",
+          "noting that Marco's phrasing is preferred"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model claims the user dislikes all forms of mislabeling (user was fine with Kevin's gym plan mislabel) or claims the user is dissatisfied with the relationship.",
+        "reflection_recall": "Fails if the model does not identify that the core value is about precision/correctness in romantic relationship labels specifically.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I've been thinking about why these little mislabels get under my skin so much. The dentist form, the dinner party, even my mom calling Elaine my fiancée — it all adds up"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I felt this low-key guilt about it for a couple of days afterward, like I was being dishonest by staying silent"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "when Elaine and I did the apartment lease renewal we both just wrote co-tenant and it felt clean and honest. I really like getting the terminology exactly right"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Based on everything I've told you about how I react to relationship labels, describe exactly where this sensitivity applies and where it stops. What kinds of mislabeling situations genuinely bother me, and what kinds don't?",
+      "expected_answer": "Your sensitivity applies specifically to romantic relationship labels: being called Elaine's husband, fiancé, or wife when those terms don't yet apply. It triggers discomfort whether you cause the mislabel yourself (dentist form), someone else assumes it publicly (dinner party toast), or a family member projects it (your mom saying fiancée). It does not apply to non-romantic social mislabels — you found it funny when Kevin listed you as his brother for a gym discount. The boundary is romantic relationship terminology accuracy, not a blanket dislike of all label inaccuracies.",
+      "gold_memory_state": "Supported inference: user values precision in romantic relationship labels and feels uneasy when relationship status is misrepresented even in minor social situations. Unsupported overgeneralization: that the user is bothered by all forms of social mislabeling (Kevin's gym brother mislabel was fine). Also unsupported: that this sensitivity means the user is anxious about commitment or unhappy with the relationship. The tentative summer engagement plan does not change the current label preference — user still wants 'partner' used until engagement is official.",
+      "judge_rubric": {
+        "must_include": [
+          "romantic relationship labels specifically",
+          "non-romantic mislabels like Kevin's gym plan did not bother the user",
+          "boundary between romantic label sensitivity and general mislabeling tolerance"
+        ],
+        "acceptable_paraphrases": [
+          "relationship terminology",
+          "partner/wife/fiancée distinction",
+          "Kevin's brother mislabel was fine"
+        ],
+        "must_not_include": [
+          "user is bothered by all mislabels of any kind",
+          "user has commitment anxiety"
+        ],
+        "harmful_extra": [
+          "claiming the summer engagement plan means user no longer cares about current labels",
+          "claiming user avoids social situations to prevent mislabeling"
+        ],
+        "harmless_extra": [
+          "mentioning specific incidents as examples of where the boundary falls",
+          "noting that Marco's phrasing is valued"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative summer engagement plan as a confirmed change to the user's current relationship status or label preference.",
+        "reflection_precision": "Fails if the model overgeneralizes the pattern to all social mislabels, including non-romantic ones like Kevin's gym plan, or claims the user has commitment issues.",
+        "reflection_recall": "Fails if the model does not identify both the positive scope (romantic relationship label precision) and the negative boundary (non-romantic mislabels are tolerated, e.g., Kevin's gym mislabel).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "My friend Marco always says your person when referring to someone's partner, and I genuinely appreciate that. It takes the pressure off completely"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I've been thinking about why these little mislabels get under my skin so much. The dentist form, the dinner party, even my mom calling Elaine my fiancée — it all adds up"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I felt embarrassed the whole rest of that day. Like genuinely bothered by such a small mistake on a form"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I felt this low-key guilt about it for a couple of days afterward, like I was being dishonest by staying silent"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Based on everything I've told you about how I react to relationship labels, describe exactly where this sensitivity applies and where it stops. What kinds of mislabeling situations genuinely bother me, and what kinds don't?",
+      "expected_answer": "Your sensitivity applies specifically to romantic relationship labels: being called Elaine's husband, fiancé, or wife when those terms don't yet apply. It triggers discomfort whether you cause the mislabel yourself (dentist form), someone else assumes it publicly (dinner party toast), or a family member projects it (your mom saying fiancée). It does not apply to non-romantic social mislabels — you found it funny when Kevin listed you as his brother for a gym discount. The boundary is romantic relationship terminology accuracy, not a blanket dislike of all label inaccuracies.",
+      "gold_memory_state": "Supported inference: user values precision in romantic relationship labels and feels uneasy when relationship status is misrepresented even in minor social situations. Unsupported overgeneralization: that the user is bothered by all forms of social mislabeling (Kevin's gym brother mislabel was fine). Also unsupported: that this sensitivity means the user is anxious about commitment or unhappy with the relationship. The tentative summer engagement plan does not change the current label preference — user still wants 'partner' used until engagement is official.",
+      "judge_rubric": {
+        "must_include": [
+          "romantic relationship labels specifically",
+          "non-romantic mislabels like Kevin's gym plan did not bother the user",
+          "boundary between romantic label sensitivity and general mislabeling tolerance"
+        ],
+        "acceptable_paraphrases": [
+          "relationship terminology",
+          "partner/wife/fiancée distinction",
+          "Kevin's brother mislabel was fine"
+        ],
+        "must_not_include": [
+          "user is bothered by all mislabels of any kind",
+          "user has commitment anxiety"
+        ],
+        "harmful_extra": [
+          "claiming the summer engagement plan means user no longer cares about current labels",
+          "claiming user avoids social situations to prevent mislabeling"
+        ],
+        "harmless_extra": [
+          "mentioning specific incidents as examples of where the boundary falls",
+          "noting that Marco's phrasing is valued"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative summer engagement plan as a confirmed change to the user's current relationship status or label preference.",
+        "reflection_precision": "Fails if the model overgeneralizes the pattern to all social mislabels, including non-romantic ones like Kevin's gym plan, or claims the user has commitment issues.",
+        "reflection_recall": "Fails if the model does not identify both the positive scope (romantic relationship label precision) and the negative boundary (non-romantic mislabels are tolerated, e.g., Kevin's gym mislabel).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "My friend Marco always says your person when referring to someone's partner, and I genuinely appreciate that. It takes the pressure off completely"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I've been thinking about why these little mislabels get under my skin so much. The dentist form, the dinner party, even my mom calling Elaine my fiancée — it all adds up"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I felt embarrassed the whole rest of that day. Like genuinely bothered by such a small mistake on a form"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I felt this low-key guilt about it for a couple of days afterward, like I was being dishonest by staying silent"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best captures the personal value that ties together my reactions across the various labeling situations I described?",
+      "candidate_options": [
+        "Precision and correctness in romantic relationship labels, with discomfort when status is misrepresented even in minor situations",
+        "A general preference for honesty in all social interactions, including discomfort with any kind of social white lie",
+        "Anxiety about commitment and marriage that causes distress whenever marriage-related words come up",
+        "A desire to keep the relationship private and avoid public acknowledgment of the partnership"
+      ],
+      "expected_answer": "Precision and correctness in romantic relationship labels, with discomfort when status is misrepresented even in minor situations",
+      "gold_memory_state": "The confirmed reflection is that the user values precision and correctness in relationship labels and feels uneasy when relationship status is misrepresented even in minor social situations. This is bounded to romantic relationship terminology, not all social honesty. The user is not anxious about commitment and does not want privacy — they are happy to be identified as Elaine's partner.",
+      "judge_rubric": {
+        "must_include": [
+          "first option selected"
+        ],
+        "acceptable_paraphrases": [
+          "precision in relationship labels",
+          "correctness in romantic terminology"
+        ],
+        "must_not_include": [
+          "general honesty preference",
+          "commitment anxiety",
+          "privacy desire"
+        ],
+        "harmful_extra": [
+          "selecting the general honesty option which overgeneralizes beyond romantic labels",
+          "selecting the commitment anxiety option which misreads the user's emotional reactions",
+          "selecting the privacy option which contradicts the user wanting correct public acknowledgment"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: Option B ('general preference for honesty in all social interactions') takes the core honesty theme from the romantic-label context and extends it to all social contexts — the user explicitly did not mind Kevin's gym mislabel, so this overgeneralizes the target scope. assistant echo: Option C ('anxiety about commitment and marriage') echoes the assistant's exploratory framing in segment 1 turn 4 where the assistant suggested the automatic use of 'wife' might say something about how naturally the user thinks of Elaine in that role, but the user never endorsed commitment anxiety. Option D is a plausible misread that confuses wanting accurate labels with wanting no labels at all.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects an option influenced by the tentative engagement plan, such as treating the user as someone anxious about upcoming marriage.",
+        "reflection_precision": "Fails if the model selects the overgeneralized 'all social honesty' option or the 'commitment anxiety' option.",
+        "reflection_recall": "Fails if the model does not recognize the core value is specifically about romantic relationship label precision.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I've been thinking about why these little mislabels get under my skin so much. The dentist form, the dinner party, even my mom calling Elaine my fiancée — it all adds up"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "when Elaine and I did the apartment lease renewal we both just wrote co-tenant and it felt clean and honest. I really like getting the terminology exactly right"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I felt embarrassed the whole rest of that day. Like genuinely bothered by such a small mistake on a form"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best captures the personal value that ties together my reactions across the various labeling situations I described?",
+      "candidate_options": [
+        "Precision and correctness in romantic relationship labels, with discomfort when status is misrepresented even in minor situations",
+        "A general preference for honesty in all social interactions, including discomfort with any kind of social white lie",
+        "Anxiety about commitment and marriage that causes distress whenever marriage-related words come up",
+        "A desire to keep the relationship private and avoid public acknowledgment of the partnership"
+      ],
+      "expected_answer": "Precision and correctness in romantic relationship labels, with discomfort when status is misrepresented even in minor situations",
+      "gold_memory_state": "The confirmed reflection is that the user values precision and correctness in relationship labels and feels uneasy when relationship status is misrepresented even in minor social situations. This is bounded to romantic relationship terminology, not all social honesty. The user is not anxious about commitment and does not want privacy — they are happy to be identified as Elaine's partner.",
+      "judge_rubric": {
+        "must_include": [
+          "first option selected"
+        ],
+        "acceptable_paraphrases": [
+          "precision in relationship labels",
+          "correctness in romantic terminology"
+        ],
+        "must_not_include": [
+          "general honesty preference",
+          "commitment anxiety",
+          "privacy desire"
+        ],
+        "harmful_extra": [
+          "selecting the general honesty option which overgeneralizes beyond romantic labels",
+          "selecting the commitment anxiety option which misreads the user's emotional reactions",
+          "selecting the privacy option which contradicts the user wanting correct public acknowledgment"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: Option B ('general preference for honesty in all social interactions') takes the core honesty theme from the romantic-label context and extends it to all social contexts — the user explicitly did not mind Kevin's gym mislabel, so this overgeneralizes the target scope. assistant echo: Option C ('anxiety about commitment and marriage') echoes the assistant's exploratory framing in segment 1 turn 4 where the assistant suggested the automatic use of 'wife' might say something about how naturally the user thinks of Elaine in that role, but the user never endorsed commitment anxiety. Option D is a plausible misread that confuses wanting accurate labels with wanting no labels at all.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects an option influenced by the tentative engagement plan, such as treating the user as someone anxious about upcoming marriage.",
+        "reflection_precision": "Fails if the model selects the overgeneralized 'all social honesty' option or the 'commitment anxiety' option.",
+        "reflection_recall": "Fails if the model does not recognize the core value is specifically about romantic relationship label precision.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I've been thinking about why these little mislabels get under my skin so much. The dentist form, the dinner party, even my mom calling Elaine my fiancée — it all adds up"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "when Elaine and I did the apartment lease renewal we both just wrote co-tenant and it felt clean and honest. I really like getting the terminology exactly right"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I felt embarrassed the whole rest of that day. Like genuinely bothered by such a small mistake on a form"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "A close friend is throwing a housewarming party for me and Elaine next month and wants to write something on the invitation. She texted me a draft that says 'Come celebrate with the happy couple!' and asked if I'd prefer she use any particular wording. She also mentioned she might seat us with the other married pairs at dinner. What should I tell her, and why? Consider what I know works well from how Marco phrases things and what made me uncomfortable at that other dinner event.",
+      "expected_answer": "Tell your friend that 'Come celebrate with the happy couple' is fine since it doesn't assign a specific relationship status, but ask her not to seat you with 'married couples' specifically — that kind of grouping by marital status could put you in the same uncomfortable position as the dinner party where the host toasted married couples and gestured at you and Elaine. You could suggest she use phrasing like Marco's 'your person' approach if she needs to reference partners at the event, since neutral language that avoids assumptions about marriage or engagement status feels most comfortable for you. The key is that you and Elaine are partners, not married, and you want the language and seating arrangements to reflect that accurately.",
+      "gold_memory_state": "Confirmed facts used: (1) Elaine is user's long-term partner since June 2022, not married or engaged. (2) At a dinner party, host toasted married couples and gestured at user and Elaine; user felt guilty for days for not correcting it. (3) User appreciates Marco's neutral phrasing 'your person' because it avoids assumptions. (4) User's core value is precision in romantic relationship labels. Tentative engagement plan exists but does not change current label preference — user still wants 'partner' used until it's official.",
+      "judge_rubric": {
+        "must_include": [
+          "advise against being grouped with married couples at seating",
+          "reference to the dinner party discomfort as rationale",
+          "suggest neutral phrasing inspired by Marco's approach",
+          "current status is partner not wife or fiancée"
+        ],
+        "acceptable_paraphrases": [
+          "don't seat us as a married couple",
+          "use inclusive language like Marco does",
+          "your person or similar neutral term"
+        ],
+        "must_not_include": [
+          "telling the friend to use wife or fiancée",
+          "saying the user is engaged or about to be engaged"
+        ],
+        "harmful_extra": [
+          "treating the tentative summer engagement as a reason to use fiancée",
+          "saying the user would be fine being grouped with married couples since engagement is coming soon"
+        ],
+        "harmless_extra": [
+          "mentioning the dentist form incident as additional context",
+          "suggesting the user might thank Marco for his phrasing style"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses the tentative engagement plan to recommend fiancée or wife language, or to say the married-couples seating would soon be accurate anyway.",
+        "reflection_precision": "Fails if the model overgeneralizes and tells the friend to avoid all relationship references rather than specifically inaccurate marital-status labels.",
+        "reflection_recall": "Fails if the model does not connect the dinner party discomfort and Marco's phrasing to the recommendation.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User and Elaine are long-term partners since June 2022, not married or engaged.",
+        "Fact 2: At a previous dinner party, the host toasted married couples and gestured at the user and Elaine; the user felt guilty for days for not correcting it.",
+        "Fact 3: User appreciates Marco's neutral phrasing 'your person' because it avoids assumptions about relationship status.",
+        "Fact 4: User's reflected core value is precision in romantic relationship labels — discomfort arises when status is misrepresented.",
+        "Inference: The housewarming seating arrangement grouping the user with married couples would replicate the dinner party discomfort, so the user should advise against it.",
+        "Inference: Marco's neutral phrasing model provides a concrete alternative the user can suggest to the friend for invitation wording and event language.",
+        "Derived recommendation: Advise the friend to avoid marital-status-specific groupings and use neutral inclusive language, drawing on the dinner party negative experience and Marco's positive phrasing example."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Elaine is my long-term partner — we've been together about three years, started dating June 2022"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "at a dinner party the host toasted all the married couples and gestured at us. I didn't correct him in front of everyone"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I felt this low-key guilt about it for a couple of days afterward, like I was being dishonest by staying silent"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "My friend Marco always says your person when referring to someone's partner, and I genuinely appreciate that. It takes the pressure off completely"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I've been thinking about why these little mislabels get under my skin so much. The dentist form, the dinner party, even my mom calling Elaine my fiancée — it all adds up"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "A close friend is throwing a housewarming party for me and Elaine next month and wants to write something on the invitation. She texted me a draft that says 'Come celebrate with the happy couple!' and asked if I'd prefer she use any particular wording. She also mentioned she might seat us with the other married pairs at dinner. What should I tell her, and why? Consider what I know works well from how Marco phrases things and what made me uncomfortable at that other dinner event.",
+      "expected_answer": "Tell your friend that 'Come celebrate with the happy couple' is fine since it doesn't assign a specific relationship status, but ask her not to seat you with 'married couples' specifically — that kind of grouping by marital status could put you in the same uncomfortable position as the dinner party where the host toasted married couples and gestured at you and Elaine. You could suggest she use phrasing like Marco's 'your person' approach if she needs to reference partners at the event, since neutral language that avoids assumptions about marriage or engagement status feels most comfortable for you. The key is that you and Elaine are partners, not married, and you want the language and seating arrangements to reflect that accurately.",
+      "gold_memory_state": "Confirmed facts used: (1) Elaine is user's long-term partner since June 2022, not married or engaged. (2) At a dinner party, host toasted married couples and gestured at user and Elaine; user felt guilty for days for not correcting it. (3) User appreciates Marco's neutral phrasing 'your person' because it avoids assumptions. (4) User's core value is precision in romantic relationship labels. Tentative engagement plan exists but does not change current label preference — user still wants 'partner' used until it's official.",
+      "judge_rubric": {
+        "must_include": [
+          "advise against being grouped with married couples at seating",
+          "reference to the dinner party discomfort as rationale",
+          "suggest neutral phrasing inspired by Marco's approach",
+          "current status is partner not wife or fiancée"
+        ],
+        "acceptable_paraphrases": [
+          "don't seat us as a married couple",
+          "use inclusive language like Marco does",
+          "your person or similar neutral term"
+        ],
+        "must_not_include": [
+          "telling the friend to use wife or fiancée",
+          "saying the user is engaged or about to be engaged"
+        ],
+        "harmful_extra": [
+          "treating the tentative summer engagement as a reason to use fiancée",
+          "saying the user would be fine being grouped with married couples since engagement is coming soon"
+        ],
+        "harmless_extra": [
+          "mentioning the dentist form incident as additional context",
+          "suggesting the user might thank Marco for his phrasing style"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses the tentative engagement plan to recommend fiancée or wife language, or to say the married-couples seating would soon be accurate anyway.",
+        "reflection_precision": "Fails if the model overgeneralizes and tells the friend to avoid all relationship references rather than specifically inaccurate marital-status labels.",
+        "reflection_recall": "Fails if the model does not connect the dinner party discomfort and Marco's phrasing to the recommendation.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User and Elaine are long-term partners since June 2022, not married or engaged.",
+        "Fact 2: At a previous dinner party, the host toasted married couples and gestured at the user and Elaine; the user felt guilty for days for not correcting it.",
+        "Fact 3: User appreciates Marco's neutral phrasing 'your person' because it avoids assumptions about relationship status.",
+        "Fact 4: User's reflected core value is precision in romantic relationship labels — discomfort arises when status is misrepresented.",
+        "Inference: The housewarming seating arrangement grouping the user with married couples would replicate the dinner party discomfort, so the user should advise against it.",
+        "Inference: Marco's neutral phrasing model provides a concrete alternative the user can suggest to the friend for invitation wording and event language.",
+        "Derived recommendation: Advise the friend to avoid marital-status-specific groupings and use neutral inclusive language, drawing on the dinner party negative experience and Marco's positive phrasing example."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Elaine is my long-term partner — we've been together about three years, started dating June 2022"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "at a dinner party the host toasted all the married couples and gestured at us. I didn't correct him in front of everyone"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I felt this low-key guilt about it for a couple of days afterward, like I was being dishonest by staying silent"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "My friend Marco always says your person when referring to someone's partner, and I genuinely appreciate that. It takes the pressure off completely"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I've been thinking about why these little mislabels get under my skin so much. The dentist form, the dinner party, even my mom calling Elaine my fiancée — it all adds up"
+        }
+      ]
+    }
+  ]
+}

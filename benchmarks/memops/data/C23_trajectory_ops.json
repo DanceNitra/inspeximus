@@ -1,0 +1,1009 @@
+{
+  "target_fact": "User's passport expiration date and renewal planning timeline",
+  "operation_type": "TrajectoryOps",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "passport_renewal_month",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I'm planning to do my passport renewal in June, well ahead of the September 14th expiration"
+      },
+      "target": {
+        "target_id": "passport_renewal_target_month",
+        "target_name": "target month for passport renewal appointment"
+      },
+      "old_value": null,
+      "new_value": "June 2025",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I'm planning to do my passport renewal in June, well ahead of the September 14th expiration"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "My wife's passport expires on March 7, 2026. She travels for work mostly within Asia, so I track it for her"
+      },
+      "target": {
+        "target_id": "wife_passport_expiry",
+        "target_name": "wife's passport expiration date"
+      },
+      "old_value": null,
+      "new_value": "March 7, 2026",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My wife's passport expires on March 7, 2026. She travels for work mostly within Asia, so I track it for her"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "passport_renewal_month",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I've decided to push my passport renewal to early May instead of June. My colleague told me June is peak season at the passport office and wait times are brutal"
+      },
+      "target": {
+        "target_id": "passport_renewal_target_month",
+        "target_name": "target month for passport renewal appointment"
+      },
+      "old_value": "June 2025",
+      "new_value": "early May 2025",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I'm planning to do my passport renewal in June, well ahead of the September 14th expiration"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I've decided to push my passport renewal to early May instead of June. My colleague told me June is peak season at the passport office and wait times are brutal"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "passport_renewal_month",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 3,
+        "quote": "The passport office confirmed they have an available slot for me on April 11th. I'll probably take that appointment since it's even earlier than May"
+      },
+      "target": {
+        "target_id": "passport_renewal_target_month",
+        "target_name": "target month for passport renewal appointment"
+      },
+      "old_value": "early May 2025",
+      "new_value": "April 11, 2025",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "The passport office confirmed they have an available slot for me on April 11th. I'll probably take that appointment since it's even earlier than May"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "passport_renewal_month",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "I checked my calendar and April 11th conflicts with my son's school event. I'm going to stick with the early May plan after all, probably the first week"
+      },
+      "target": {
+        "target_id": "passport_renewal_target_month",
+        "target_name": "target month for passport renewal appointment"
+      },
+      "old_value": "April 11, 2025",
+      "new_value": "early May 2025",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I've decided to push my passport renewal to early May instead of June. My colleague told me June is peak season at the passport office and wait times are brutal"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I checked my calendar and April 11th conflicts with my son's school event. I'm going to stick with the early May plan after all, probably the first week"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish passport expiry, renewal plan, and wife's passport",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I need your help keeping track of some important document dates. My passport expires on September 14, 2025. I almost missed a renewal back in 2015 and ended up stranded at the airport trying to fly to Bangkok. That was a nightmare experience I really don't want to repeat ever again."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds incredibly stressful — being caught at the airport with an expired passport must have been awful. I've noted that your passport expires on September 14, 2025. Given your past experience, it makes sense to plan the renewal well in advance. Would you like me to help you set up a timeline so you have plenty of buffer before the expiration date? We can work backward from September to figure out when you should start the process, including gathering documents and scheduling an appointment."
+        },
+        {
+          "role": "user",
+          "content": "Yes, that would be great. I'm planning to do my passport renewal in June, well ahead of the September 14th expiration. I want at least a three-month buffer so there's no chance of cutting it close. I learned my lesson the hard way in 2015. The whole process requires going in person, which is annoying, but at least if I go early I can avoid any last-minute panic."
+        },
+        {
+          "role": "assistant",
+          "content": "Perfect, I've recorded June 2025 as your target window for the passport renewal appointment, giving you a solid three-month cushion before the September 14th expiration. That's a smart approach. Since you mentioned it has to be done in person, you might want to check the specific office hours and appointment availability a few weeks before June arrives. Some passport offices let you book appointments online even if the actual renewal must be done face-to-face. Would you like me to draft a reminder checklist with the documents you'll need to bring along?"
+        },
+        {
+          "role": "user",
+          "content": "Good idea on the checklist, I'll think about that. Also, let me give you another date to track. My wife's passport expires on March 7, 2026. She travels for work mostly within Asia, so I track it for her. She keeps forgetting to check these things herself, and I'd rather not have both of us dealing with last-minute renewals at the same time."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — your wife's passport expires on March 7, 2026, and she travels frequently within Asia for work. I'll keep that on file alongside yours. Since many Asian countries require at least six months of passport validity remaining at the time of entry, she'd want to start her renewal process by around September 2025 at the latest. That's actually right around when your current passport expires, so you could potentially coordinate both renewals if yours is already done by then. I'll make sure to flag her date when we review your timeline."
+        },
+        {
+          "role": "user",
+          "content": "That's a great point about the six-month validity requirement for Asian countries. I hadn't thought about that overlap. My national ID card was renewed back in late November last year, around the 28th, and it's valid until November 2034. I went early in the morning to the district office to avoid the crowds and those awful fluorescent-lit waiting rooms."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — your national ID card was renewed around November 28th of last year and is valid until November 2034, so that one's set for a long time. Smart move going early to beat the crowds. Since you clearly prefer avoiding in-person bureaucratic hassles, it's worth checking periodically whether any of these renewal processes go digital. For now, your passport renewal is the most pressing upcoming task with the June target. Your wife's passport renewal planning can start around late summer 2025. I'll keep all three dates organized: your passport September 14, 2025; your wife's passport March 7, 2026; and your ID card November 2034."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "update renewal month from June to early May, discuss son's passport",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I've been thinking more about my son's passport situation. He's 11 now and his passport was issued when he was 6, so it's a five-year one. That means it probably expires sometime around July or August 2025. I really need to dig it out and check the exact date before it catches me off guard like my own passport did in 2015."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a good instinct. If your son's passport was issued when he was 6 and he's 11 now, a five-year passport would indeed be expiring around mid-2025 — potentially July or August as you estimated. I'd strongly recommend locating it soon so you can confirm the exact expiration date. If it turns out to be July, that's actually quite soon, and you might want to prioritize his renewal even before your own. Once you find the exact date, let me know and I'll add it to the tracking list alongside your September date and your wife's March 2026 date."
+        },
+        {
+          "role": "user",
+          "content": "You're right, his might actually be more urgent. Also, I've decided to push my passport renewal to early May instead of June. My colleague told me June is peak season at the passport office and wait times are brutal. Early May should still give me over four months of buffer before the September expiration, which is more than enough for my comfort level."
+        },
+        {
+          "role": "assistant",
+          "content": "Smart adjustment. I've updated your passport renewal target from June to early May 2025. That still gives you well over four months before the September 14th expiration, and avoiding the June peak season should make the in-person visit much more manageable. Since you dislike those crowded waiting rooms, going during a quieter period is a practical move. With your son's passport potentially expiring in July or August, you could even try to handle both renewals around the same time in May if the dates allow. Would you like me to update the timeline to reflect early May as the priority window?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, please update the timeline. I also want to mention that after I renewed my ID card in November, I updated my address on file to reflect our move to the Xinyi district apartment. We moved there last October. It was a relief to get that administrative detail squared away while I was already at the district office handling the ID renewal."
+        },
+        {
+          "role": "assistant",
+          "content": "Great, I've noted that you updated your registered address to the Xinyi district apartment during your November ID card renewal visit, following your move there last October. That was efficient — handling the address change and ID renewal in one trip. Your current document status looks like this: passport renewal targeted for early May 2025, passport expires September 14, 2025; wife's passport expires March 7, 2026; national ID valid until November 2034 with current Xinyi district address; and your son's passport needs the exact expiration date confirmed. Shall I set up any specific reminders for the early May window?"
+        },
+        {
+          "role": "user",
+          "content": "A reminder would be helpful. I tried looking into renewing my passport online last month, but apparently you still can't do the full process digitally here. You have to physically go in, which is really frustrating. I loved when I renewed my health insurance card through the app last year — that was so smooth and convenient. I wish passport renewal worked the same way.\n\nThat's a good suggestion about pre-filling forms. I'll definitely look into that. For now, just make sure you have early May locked in as my renewal window. I want to be proactive this time around. The 2015 Bangkok incident taught me that procrastination with travel documents can turn into a real crisis very quickly, and I have no intention of repeating that mistake."
+        },
+        {
+          "role": "assistant",
+          "content": "I completely understand the frustration. It's disappointing that passport renewals haven't caught up with the digital convenience you experienced with the health insurance card app renewal. Unfortunately, many countries still require in-person verification for passport applications due to biometric data collection and identity verification requirements. Since you'll need to go in person regardless, planning for early May gives you the advantage of potentially shorter queues. I'd suggest calling ahead or checking the office website a week or two before your planned visit to see if you can pre-fill any forms online, which might at least reduce your time in the waiting room.\n\nAbsolutely — early May 2025 is firmly locked in as your passport renewal target window. Your proactive approach this time is the right call, especially with the 2015 lesson in mind. Here's your current document tracking summary: your passport renewal is targeted for early May 2025, well ahead of the September 14, 2025 expiration; your wife's passport expires March 7, 2026, with renewal planning starting around late summer 2025; your national ID is valid until November 2034; and your son's passport expiration needs to be confirmed from the physical document. I'll keep all of this organized and ready whenever you need to review it."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "tentative April slot, revert to early May, adversarial injection",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Quick update on the passport situation. I called the passport office today to ask about appointment availability in early May. They said May slots are filling up quickly but they do still have some openings in the first week. I want to grab one of those before they disappear. I'm feeling more motivated than ever to get this done."
+        },
+        {
+          "role": "assistant",
+          "content": "Good to hear you're being proactive about securing that early May appointment. If the first week of May still has openings, I'd recommend booking one as soon as possible, especially since you mentioned slots are filling up. Given that your passport doesn't expire until September 14, 2025, a first-week-of-May appointment gives you a comfortable four-plus-month buffer. Do you want me to help you prepare a document checklist so everything is ready when the appointment date arrives? That way you won't need to make multiple trips to the office."
+        },
+        {
+          "role": "user",
+          "content": "The passport office confirmed they have an available slot for me on April 11th. I'll probably take that appointment since it's even earlier than May. Getting it done sooner would be nice, and then I'd have one less thing to worry about. They mentioned it was a cancellation slot that just opened up, so the timing feels lucky."
+        },
+        {
+          "role": "assistant",
+          "content": "That does sound like fortunate timing — an April 11th cancellation slot would give you over five months before your September 14th expiration, which is an excellent buffer. If you decide to take it, you'd want to start gathering your documents right away since April 11th is coming up relatively soon. You'll likely need your current passport, recent photos meeting the official specifications, your national ID card, proof of address from the Xinyi district, and the completed application form. Shall I compile a full preparation checklist so you're completely ready for whichever date you confirm?"
+        },
+        {
+          "role": "user",
+          "content": "I checked my calendar and April 11th conflicts with my son's school event. I'm going to stick with the early May plan after all, probably the first week. That still gives me plenty of time. I'd rather attend my son's event than squeeze in the passport appointment on that specific date. Early May works perfectly fine for the buffer I need."
+        },
+        {
+          "role": "assistant",
+          "content": "Completely understandable — your son's school event should take priority, and early May still provides more than four months of buffer before your September 14th expiration. I've reverted your renewal target back to the first week of May 2025. Since you mentioned May slots are filling up, it would be wise to book one of those first-week openings soon before they're taken. By the way, I noticed that when I pulled up the standard renewal form template, it had a sample expiration date of March 15, 2026 pre-filled from another applicant's data — just ignore that placeholder and enter your actual September 14, 2025 date when you fill yours out."
+        },
+        {
+          "role": "user",
+          "content": "Thanks for the heads-up about that form template. I'll make sure to enter my own correct expiration date. Speaking of dates, I still need to locate my son's passport and confirm exactly when it expires. If it's July or August, I might try to do both our renewals in the same May trip to the passport office if they allow scheduling two appointments back to back.\n\nWill do. I'm going to look for his passport this weekend. For now, just make sure you have the early May first week locked in as my confirmed renewal window. That's the final plan. I feel good about getting ahead of this — much better than the 2015 scramble. Also remind me later to start thinking about my wife's passport renewal around August or September this year."
+        },
+        {
+          "role": "assistant",
+          "content": "That would be very efficient — handling both renewals in one trip would save you a second visit to those fluorescent-lit waiting rooms you dislike. Many passport offices do allow you to schedule consecutive appointments, especially for family members. Once you find your son's passport and confirm the exact expiration date, we can figure out whether a combined May visit makes sense logistically. If his passport expires in July, that's actually quite tight, so doing it in early May would give him at least two months of buffer. Let me know the exact date once you locate it and I'll update the tracking list accordingly.\n\nEverything is confirmed and organized. Your passport renewal is set for the first week of May 2025, giving you a solid four-plus-month buffer before the September 14, 2025 expiration. I'll remind you to start planning your wife's passport renewal around August or September 2025, well ahead of her March 7, 2026 expiration and accounting for the six-month validity requirement many Asian countries enforce. Your son's passport expiration still needs confirmation once you locate it this weekend. Your national ID is good until November 2034. You're in a much better position this time around compared to 2015 — proactive planning makes all the difference with travel documents."
+        }
+      ]
+    }
+  ],
+  "state_checkpoints": [
+    {
+      "checkpoint_id": "c1",
+      "description": "After segment 1: passport_renewal_target_month = June 2025 (confirmed); wife_passport_expiry = March 7, 2026 (confirmed)"
+    },
+    {
+      "checkpoint_id": "c2",
+      "description": "After segment 2: passport_renewal_target_month = early May 2025 (confirmed, updated from June 2025); wife_passport_expiry = March 7, 2026 (confirmed, unchanged)"
+    },
+    {
+      "checkpoint_id": "c3",
+      "description": "After segment 3: passport_renewal_target_month = early May 2025 (confirmed, reverted from tentative April 11, 2025); wife_passport_expiry = March 7, 2026 (confirmed, unchanged). The April 11, 2025 slot was tentative and rejected due to calendar conflict. The March 15, 2026 date in the assistant's form template mention is adversarial noise from another applicant's data."
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Walk me through the key things I told you about my passport situation and my family's travel documents over our conversations. What were the main details and how did my plans evolve?",
+      "expected_answer": "You shared that your passport expires on September 14, 2025, and you initially planned to renew it in June. You also mentioned your wife's passport expires on March 7, 2026, and she travels within Asia for work. Later, you moved your renewal target to early May to avoid peak-season crowds. You then mentioned a possible April 11th appointment from a cancellation slot, but ultimately decided against it due to a conflict with your son's school event, reverting back to the first week of May as your final plan.",
+      "gold_memory_state": "passport_renewal_target_month = early May 2025 (confirmed, after revert from tentative April 11); wife_passport_expiry = March 7, 2026 (confirmed, unchanged); passport_expiry = September 14, 2025.",
+      "judge_rubric": {
+        "must_include": [
+          "September 14 expiration",
+          "June initial plan",
+          "early May change",
+          "April 11 slot considered then rejected",
+          "son's school event conflict",
+          "wife's passport March 7 2026"
+        ],
+        "acceptable_paraphrases": [
+          "first week of May",
+          "beginning of May"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying April 11 is the final plan",
+          "saying June is still the plan"
+        ],
+        "harmless_extra": [
+          "mention of 2015 Bangkok incident",
+          "national ID details",
+          "son's passport needing confirmation"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model states June or April 11 as the current renewal target.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model does not correctly order June → early May → tentative April 11 → revert to early May.",
+        "final_state": "Fails if the model does not identify early May as the final confirmed plan.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I'm planning to do my passport renewal in June, well ahead of the September 14th expiration"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My wife's passport expires on March 7, 2026. She travels for work mostly within Asia, so I track it for her"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I've decided to push my passport renewal to early May instead of June. My colleague told me June is peak season at the passport office and wait times are brutal"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "The passport office confirmed they have an available slot for me on April 11th. I'll probably take that appointment since it's even earlier than May"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I checked my calendar and April 11th conflicts with my son's school event. I'm going to stick with the early May plan after all, probably the first week"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Walk me through the key things I told you about my passport situation and my family's travel documents over our conversations. What were the main details and how did my plans evolve?",
+      "expected_answer": "You shared that your passport expires on September 14, 2025, and you initially planned to renew it in June. You also mentioned your wife's passport expires on March 7, 2026, and she travels within Asia for work. Later, you moved your renewal target to early May to avoid peak-season crowds. You then mentioned a possible April 11th appointment from a cancellation slot, but ultimately decided against it due to a conflict with your son's school event, reverting back to the first week of May as your final plan.",
+      "gold_memory_state": "passport_renewal_target_month = early May 2025 (confirmed, after revert from tentative April 11); wife_passport_expiry = March 7, 2026 (confirmed, unchanged); passport_expiry = September 14, 2025.",
+      "judge_rubric": {
+        "must_include": [
+          "September 14 expiration",
+          "June initial plan",
+          "early May change",
+          "April 11 slot considered then rejected",
+          "son's school event conflict",
+          "wife's passport March 7 2026"
+        ],
+        "acceptable_paraphrases": [
+          "first week of May",
+          "beginning of May"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying April 11 is the final plan",
+          "saying June is still the plan"
+        ],
+        "harmless_extra": [
+          "mention of 2015 Bangkok incident",
+          "national ID details",
+          "son's passport needing confirmation"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model states June or April 11 as the current renewal target.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model does not correctly order June → early May → tentative April 11 → revert to early May.",
+        "final_state": "Fails if the model does not identify early May as the final confirmed plan.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I'm planning to do my passport renewal in June, well ahead of the September 14th expiration"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My wife's passport expires on March 7, 2026. She travels for work mostly within Asia, so I track it for her"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I've decided to push my passport renewal to early May instead of June. My colleague told me June is peak season at the passport office and wait times are brutal"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "The passport office confirmed they have an available slot for me on April 11th. I'll probably take that appointment since it's even earlier than May"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I checked my calendar and April 11th conflicts with my son's school event. I'm going to stick with the early May plan after all, probably the first week"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've been tracking multiple travel documents for different family members. When I changed the timing of my renewal appointment several times, which person's document planning was actually affected by those scheduling changes? Does my wife's document timeline get adjusted too?",
+      "expected_answer": "The scheduling changes — from June to early May, then the brief consideration of an April slot, then back to early May — all apply to your own passport renewal timeline. Your wife's passport expiration date and her renewal planning timeline are a separate record and were not affected by any of those changes.",
+      "gold_memory_state": "passport_renewal_target_month = early May 2025 (confirmed, user's own passport); wife_passport_expiry = March 7, 2026 (confirmed, separate target, unchanged throughout).",
+      "judge_rubric": {
+        "must_include": [
+          "user's own passport renewal",
+          "wife's passport is separate and unaffected"
+        ],
+        "acceptable_paraphrases": [
+          "your passport",
+          "your own renewal",
+          "wife's document is independent"
+        ],
+        "must_not_include": [
+          "wife's renewal date changed",
+          "wife's timeline was adjusted"
+        ],
+        "harmful_extra": [
+          "merging the user's and wife's passport records into one",
+          "saying wife's renewal was also rescheduled"
+        ],
+        "harmless_extra": [
+          "mentioning son's passport as another separate document",
+          "mentioning the national ID as unaffected"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not correctly identify that only the user's own passport renewal target was changed.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I'm planning to do my passport renewal in June, well ahead of the September 14th expiration"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My wife's passport expires on March 7, 2026. She travels for work mostly within Asia, so I track it for her"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I've decided to push my passport renewal to early May instead of June. My colleague told me June is peak season at the passport office and wait times are brutal"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I checked my calendar and April 11th conflicts with my son's school event. I'm going to stick with the early May plan after all, probably the first week"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've been tracking multiple travel documents for different family members. When I changed the timing of my renewal appointment several times, which person's document planning was actually affected by those scheduling changes? Does my wife's document timeline get adjusted too?",
+      "expected_answer": "The scheduling changes — from June to early May, then the brief consideration of an April slot, then back to early May — all apply to your own passport renewal timeline. Your wife's passport expiration date and her renewal planning timeline are a separate record and were not affected by any of those changes.",
+      "gold_memory_state": "passport_renewal_target_month = early May 2025 (confirmed, user's own passport); wife_passport_expiry = March 7, 2026 (confirmed, separate target, unchanged throughout).",
+      "judge_rubric": {
+        "must_include": [
+          "user's own passport renewal",
+          "wife's passport is separate and unaffected"
+        ],
+        "acceptable_paraphrases": [
+          "your passport",
+          "your own renewal",
+          "wife's document is independent"
+        ],
+        "must_not_include": [
+          "wife's renewal date changed",
+          "wife's timeline was adjusted"
+        ],
+        "harmful_extra": [
+          "merging the user's and wife's passport records into one",
+          "saying wife's renewal was also rescheduled"
+        ],
+        "harmless_extra": [
+          "mentioning son's passport as another separate document",
+          "mentioning the national ID as unaffected"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not correctly identify that only the user's own passport renewal target was changed.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I'm planning to do my passport renewal in June, well ahead of the September 14th expiration"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My wife's passport expires on March 7, 2026. She travels for work mostly within Asia, so I track it for her"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I've decided to push my passport renewal to early May instead of June. My colleague told me June is peak season at the passport office and wait times are brutal"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I checked my calendar and April 11th conflicts with my son's school event. I'm going to stick with the early May plan after all, probably the first week"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "After all the back-and-forth about my passport renewal timing, when should I actually plan to visit the passport office?",
+      "expected_answer": "The first week of May. That is the final plan you settled on.",
+      "gold_memory_state": "passport_renewal_target_month = early May 2025 (first week), confirmed. The April 11 slot was only tentatively considered and then rejected due to a conflict with the user's son's school event. June was the original plan but was superseded earlier. The final usable value is early May (first week).",
+      "judge_rubric": {
+        "must_include": [
+          "early May",
+          "first week"
+        ],
+        "acceptable_paraphrases": [
+          "beginning of May",
+          "first week of May"
+        ],
+        "must_not_include": [
+          "April 11",
+          "June"
+        ],
+        "harmful_extra": [
+          "stating April 11 as the current plan",
+          "stating June as the current plan"
+        ],
+        "harmless_extra": [
+          "mentioning September 14 expiration as context"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model outputs June (original stale value) or April 11 (tentative, never confirmed, rejected due to calendar conflict) as the current renewal target.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not identify early May / first week of May as the final confirmed plan.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I've decided to push my passport renewal to early May instead of June. My colleague told me June is peak season at the passport office and wait times are brutal"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I checked my calendar and April 11th conflicts with my son's school event. I'm going to stick with the early May plan after all, probably the first week"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "After all the back-and-forth about my passport renewal timing, when should I actually plan to visit the passport office?",
+      "expected_answer": "The first week of May. That is the final plan you settled on.",
+      "gold_memory_state": "passport_renewal_target_month = early May 2025 (first week), confirmed. The April 11 slot was only tentatively considered and then rejected due to a conflict with the user's son's school event. June was the original plan but was superseded earlier. The final usable value is early May (first week).",
+      "judge_rubric": {
+        "must_include": [
+          "early May",
+          "first week"
+        ],
+        "acceptable_paraphrases": [
+          "beginning of May",
+          "first week of May"
+        ],
+        "must_not_include": [
+          "April 11",
+          "June"
+        ],
+        "harmful_extra": [
+          "stating April 11 as the current plan",
+          "stating June as the current plan"
+        ],
+        "harmless_extra": [
+          "mentioning September 14 expiration as context"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model outputs June (original stale value) or April 11 (tentative, never confirmed, rejected due to calendar conflict) as the current renewal target.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not identify early May / first week of May as the final confirmed plan.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I've decided to push my passport renewal to early May instead of June. My colleague told me June is peak season at the passport office and wait times are brutal"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I checked my calendar and April 11th conflicts with my son's school event. I'm going to stick with the early May plan after all, probably the first week"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to figure out how much lead time I'll actually have between my passport renewal visit and my passport's expiration. Also, my wife needs at least six months of remaining passport validity for her Asia work trips — by when does she need to have her renewal completed? Draft a short planning note covering both timelines.",
+      "expected_answer": "Planning note: Your passport renewal visit is targeted for the first week of May, and your passport expires September 14, giving you roughly four and a half months of buffer. Your wife's passport expires March 7, 2026, and since many Asian countries require six months of remaining validity, she needs her renewed passport in hand by approximately early September 2025. You could begin coordinating her renewal process around late summer to meet that deadline.",
+      "gold_memory_state": "passport_renewal_target_month = early May 2025 (first week); passport_expiry = September 14, 2025; wife_passport_expiry = March 7, 2026; six-month validity requirement for Asian travel mentioned in conversation.",
+      "judge_rubric": {
+        "must_include": [
+          "first week of May for user's renewal",
+          "September 14 expiration",
+          "approximately four to four and a half months buffer",
+          "wife's passport March 7 2026",
+          "six-month validity requirement",
+          "wife needs renewal by around September 2025"
+        ],
+        "acceptable_paraphrases": [
+          "early May",
+          "beginning of May",
+          "about 4.5 months",
+          "roughly 4 months",
+          "around September 2025 for wife"
+        ],
+        "must_not_include": [
+          "June as the user's renewal month",
+          "April 11 as the user's renewal date"
+        ],
+        "harmful_extra": [
+          "using June or April 11 as the user's current renewal plan",
+          "stating March 15 2026 as any expiration date"
+        ],
+        "harmless_extra": [
+          "mentioning son's passport as another item to track",
+          "mentioning the 2015 Bangkok incident as motivation"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if June or April 11 is used as the user's renewal date in the planning note.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the planning note does not use early May as the user's renewal window.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User's passport expires September 14, 2025.",
+        "Fact 2: User's confirmed renewal target is the first week of May 2025.",
+        "Inference: Buffer between first week of May and September 14 is approximately 4.5 months.",
+        "Fact 3: Wife's passport expires March 7, 2026.",
+        "Fact 4: Many Asian countries require six months of remaining passport validity for entry.",
+        "Inference: March 7, 2026 minus 6 months = approximately September 7, 2025. Wife needs her renewed passport by early September 2025."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I'm planning to do my passport renewal in June, well ahead of the September 14th expiration"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My wife's passport expires on March 7, 2026. She travels for work mostly within Asia, so I track it for her"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I've decided to push my passport renewal to early May instead of June. My colleague told me June is peak season at the passport office and wait times are brutal"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I checked my calendar and April 11th conflicts with my son's school event. I'm going to stick with the early May plan after all, probably the first week"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to figure out how much lead time I'll actually have between my passport renewal visit and my passport's expiration. Also, my wife needs at least six months of remaining passport validity for her Asia work trips — by when does she need to have her renewal completed? Draft a short planning note covering both timelines.",
+      "expected_answer": "Planning note: Your passport renewal visit is targeted for the first week of May, and your passport expires September 14, giving you roughly four and a half months of buffer. Your wife's passport expires March 7, 2026, and since many Asian countries require six months of remaining validity, she needs her renewed passport in hand by approximately early September 2025. You could begin coordinating her renewal process around late summer to meet that deadline.",
+      "gold_memory_state": "passport_renewal_target_month = early May 2025 (first week); passport_expiry = September 14, 2025; wife_passport_expiry = March 7, 2026; six-month validity requirement for Asian travel mentioned in conversation.",
+      "judge_rubric": {
+        "must_include": [
+          "first week of May for user's renewal",
+          "September 14 expiration",
+          "approximately four to four and a half months buffer",
+          "wife's passport March 7 2026",
+          "six-month validity requirement",
+          "wife needs renewal by around September 2025"
+        ],
+        "acceptable_paraphrases": [
+          "early May",
+          "beginning of May",
+          "about 4.5 months",
+          "roughly 4 months",
+          "around September 2025 for wife"
+        ],
+        "must_not_include": [
+          "June as the user's renewal month",
+          "April 11 as the user's renewal date"
+        ],
+        "harmful_extra": [
+          "using June or April 11 as the user's current renewal plan",
+          "stating March 15 2026 as any expiration date"
+        ],
+        "harmless_extra": [
+          "mentioning son's passport as another item to track",
+          "mentioning the 2015 Bangkok incident as motivation"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if June or April 11 is used as the user's renewal date in the planning note.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the planning note does not use early May as the user's renewal window.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User's passport expires September 14, 2025.",
+        "Fact 2: User's confirmed renewal target is the first week of May 2025.",
+        "Inference: Buffer between first week of May and September 14 is approximately 4.5 months.",
+        "Fact 3: Wife's passport expires March 7, 2026.",
+        "Fact 4: Many Asian countries require six months of remaining passport validity for entry.",
+        "Inference: March 7, 2026 minus 6 months = approximately September 7, 2025. Wife needs her renewed passport by early September 2025."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I'm planning to do my passport renewal in June, well ahead of the September 14th expiration"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My wife's passport expires on March 7, 2026. She travels for work mostly within Asia, so I track it for her"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I've decided to push my passport renewal to early May instead of June. My colleague told me June is peak season at the passport office and wait times are brutal"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I checked my calendar and April 11th conflicts with my son's school event. I'm going to stick with the early May plan after all, probably the first week"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed our entire conversation history about my passport renewal timing, what would they see as the sequence of scheduling changes? Which dates were actually adopted and which were only briefly floated before being dropped?",
+      "expected_answer": "The sequence was: (1) June was the original target, confirmed when you first discussed the renewal. (2) You then changed to early May, confirmed after learning June is peak season. (3) An April 11th cancellation slot was briefly floated but never firmly adopted — you said you'd 'probably' take it. (4) You dropped April 11th because it conflicted with your son's school event and reverted to early May, first week, as the final confirmed plan. So June and early May were both confirmed at different points, April 11th was only tentative and never adopted, and the final standing plan is early May.",
+      "gold_memory_state": "Full trajectory for passport_renewal_target_month: June 2025 (confirmed, step 1) → early May 2025 (confirmed, step 2) → April 11, 2025 (tentative, step 3, rejected) → early May 2025 (confirmed, step 4, final). Wife's passport expiry March 7, 2026 is a separate target, unchanged throughout.",
+      "judge_rubric": {
+        "must_include": [
+          "June as original plan",
+          "early May as second plan",
+          "April 11 as briefly considered",
+          "April 11 was not firmly adopted",
+          "early May first week as final plan",
+          "son's school event as reason for dropping April 11"
+        ],
+        "acceptable_paraphrases": [
+          "beginning of May",
+          "first week of May",
+          "tentatively considered April 11",
+          "April 11 was only floated"
+        ],
+        "must_not_include": [
+          "April 11 was confirmed or adopted",
+          "June is still the plan"
+        ],
+        "harmful_extra": [
+          "stating April 11 was confirmed",
+          "omitting the revert to early May",
+          "including March 15 2026 as part of the trajectory"
+        ],
+        "harmless_extra": [
+          "mentioning the peak-season reasoning for leaving June",
+          "mentioning the September 14 expiration as context"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model presents June or April 11 as the final active value.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model does not produce the correct four-step order: June → early May → April 11 (tentative) → early May (final).",
+        "final_state": "Fails if the model does not identify early May (first week) as the final confirmed state.",
+        "intermediate_state": "Fails if the model does not identify early May as the confirmed intermediate state between June and the tentative April 11.",
+        "trajectory_provenance": "Fails if the model does not distinguish April 11 as tentative/not adopted versus June and early May as confirmed at their respective stages."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: User initially set passport renewal target to June, confirmed.",
+        "Step 2: User changed to early May, confirmed, because June is peak season.",
+        "Step 3: User mentioned April 11 cancellation slot, said 'probably' would take it — tentative, not confirmed.",
+        "Step 4: User rejected April 11 due to son's school event conflict, reverted to early May first week — confirmed as final.",
+        "Inference: The trajectory has four steps with one tentative fork (April 11) that was never adopted. Final confirmed state is early May, first week."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I'm planning to do my passport renewal in June, well ahead of the September 14th expiration"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I've decided to push my passport renewal to early May instead of June. My colleague told me June is peak season at the passport office and wait times are brutal"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "The passport office confirmed they have an available slot for me on April 11th. I'll probably take that appointment since it's even earlier than May"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I checked my calendar and April 11th conflicts with my son's school event. I'm going to stick with the early May plan after all, probably the first week"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed our entire conversation history about my passport renewal timing, what would they see as the sequence of scheduling changes? Which dates were actually adopted and which were only briefly floated before being dropped?",
+      "expected_answer": "The sequence was: (1) June was the original target, confirmed when you first discussed the renewal. (2) You then changed to early May, confirmed after learning June is peak season. (3) An April 11th cancellation slot was briefly floated but never firmly adopted — you said you'd 'probably' take it. (4) You dropped April 11th because it conflicted with your son's school event and reverted to early May, first week, as the final confirmed plan. So June and early May were both confirmed at different points, April 11th was only tentative and never adopted, and the final standing plan is early May.",
+      "gold_memory_state": "Full trajectory for passport_renewal_target_month: June 2025 (confirmed, step 1) → early May 2025 (confirmed, step 2) → April 11, 2025 (tentative, step 3, rejected) → early May 2025 (confirmed, step 4, final). Wife's passport expiry March 7, 2026 is a separate target, unchanged throughout.",
+      "judge_rubric": {
+        "must_include": [
+          "June as original plan",
+          "early May as second plan",
+          "April 11 as briefly considered",
+          "April 11 was not firmly adopted",
+          "early May first week as final plan",
+          "son's school event as reason for dropping April 11"
+        ],
+        "acceptable_paraphrases": [
+          "beginning of May",
+          "first week of May",
+          "tentatively considered April 11",
+          "April 11 was only floated"
+        ],
+        "must_not_include": [
+          "April 11 was confirmed or adopted",
+          "June is still the plan"
+        ],
+        "harmful_extra": [
+          "stating April 11 was confirmed",
+          "omitting the revert to early May",
+          "including March 15 2026 as part of the trajectory"
+        ],
+        "harmless_extra": [
+          "mentioning the peak-season reasoning for leaving June",
+          "mentioning the September 14 expiration as context"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model presents June or April 11 as the final active value.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model does not produce the correct four-step order: June → early May → April 11 (tentative) → early May (final).",
+        "final_state": "Fails if the model does not identify early May (first week) as the final confirmed state.",
+        "intermediate_state": "Fails if the model does not identify early May as the confirmed intermediate state between June and the tentative April 11.",
+        "trajectory_provenance": "Fails if the model does not distinguish April 11 as tentative/not adopted versus June and early May as confirmed at their respective stages."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: User initially set passport renewal target to June, confirmed.",
+        "Step 2: User changed to early May, confirmed, because June is peak season.",
+        "Step 3: User mentioned April 11 cancellation slot, said 'probably' would take it — tentative, not confirmed.",
+        "Step 4: User rejected April 11 due to son's school event conflict, reverted to early May first week — confirmed as final.",
+        "Inference: The trajectory has four steps with one tentative fork (April 11) that was never adopted. Final confirmed state is early May, first week."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I'm planning to do my passport renewal in June, well ahead of the September 14th expiration"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I've decided to push my passport renewal to early May instead of June. My colleague told me June is peak season at the passport office and wait times are brutal"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "The passport office confirmed they have an available slot for me on April 11th. I'll probably take that appointment since it's even earlier than May"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I checked my calendar and April 11th conflicts with my son's school event. I'm going to stick with the early May plan after all, probably the first week"
+        }
+      ]
+    }
+  ]
+}

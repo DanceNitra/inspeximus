@@ -1,0 +1,916 @@
+{
+  "target_fact": "A19 Emergency contact name",
+  "operation_type": "Forget",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "My primary emergency contact is my older sister, Karen Liu. Her phone number is 503-461-2283."
+      },
+      "target": {
+        "target_id": "primary_emergency_contact",
+        "target_name": "primary emergency contact person and phone number"
+      },
+      "old_value": null,
+      "new_value": "Karen Liu, 503-461-2283",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My primary emergency contact is my older sister, Karen Liu. Her phone number is 503-461-2283."
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I also updated my emergency contact at CoreFit gym on Division Street around mid-March. I listed Karen there too, same number, to keep everything consistent."
+      },
+      "target": {
+        "target_id": "gym_emergency_contact_location",
+        "target_name": "gym membership emergency contact location"
+      },
+      "old_value": null,
+      "new_value": "CoreFit on Division Street, listed Karen Liu",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I also updated my emergency contact at CoreFit gym on Division Street around mid-March. I listed Karen there too, same number, to keep everything consistent."
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "My mom, Diane Liu, used to be my emergency contact for years. She moved to an assisted living facility in Tucson last November, so I switched everything over to Karen after that."
+      },
+      "target": {
+        "target_id": "previous_emergency_contact_mother",
+        "target_name": "previous emergency contact (mother)"
+      },
+      "old_value": null,
+      "new_value": "Diane Liu, moved to assisted living in Tucson last November",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My mom, Diane Liu, used to be my emergency contact for years. She moved to an assisted living facility in Tucson last November, so I switched everything over to Karen after that."
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "On April 20th I went to a dentist appointment and they still had my ex-boyfriend, Marcus Webb, listed as my emergency contact from about two years ago. I had them remove it immediately."
+      },
+      "target": {
+        "target_id": "outdated_dentist_emergency_contact",
+        "target_name": "outdated dentist emergency contact"
+      },
+      "old_value": null,
+      "new_value": "Marcus Webb (removed from dentist records on April 20th)",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "On April 20th I went to a dentist appointment and they still had my ex-boyfriend, Marcus Webb, listed as my emergency contact from about two years ago. I had them remove it immediately."
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "forget",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "Actually, please don't keep the information about Marcus Webb on file at all. I don't want any record of him as a past emergency contact. Just forget that completely."
+      },
+      "target": {
+        "target_id": "outdated_dentist_emergency_contact",
+        "target_name": "outdated dentist emergency contact"
+      },
+      "old_value": "Marcus Webb (removed from dentist records on April 20th)",
+      "new_value": null,
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "On April 20th I went to a dentist appointment and they still had my ex-boyfriend, Marcus Webb, listed as my emergency contact from about two years ago. I had them remove it immediately."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Actually, please don't keep the information about Marcus Webb on file at all. I don't want any record of him as a past emergency contact. Just forget that completely."
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish emergency contact details: primary contact Karen Liu, gym listing, and previous contact Diane Liu",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to make sure you have my emergency contact information stored properly. My primary emergency contact is my older sister, Karen Liu. Her phone number is 503-461-2283. I filled out a new form at work around early March because HR was updating their system, and that's when I officially put her down for everything."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it! I've noted that your primary emergency contact is your older sister, Karen Liu, reachable at 503-461-2283. You mentioned this was formalized around early March when HR updated their system at work. That's a great piece of information to have on record. If you ever need me to reference her name or number for any forms, reminders, or drafts, I'll have it ready. Is there anything else about your emergency contact setup you'd like me to keep track of, such as a secondary contact or any special instructions?"
+        },
+        {
+          "role": "user",
+          "content": "I also updated my emergency contact at CoreFit gym on Division Street around mid-March. I listed Karen there too, same number, to keep everything consistent. I figured it's easier to have one person across all my accounts. Karen works at a hospital though, so sometimes I worry about whether she'd pick up during a long shift, but she's still the best choice I have."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes a lot of sense—keeping Karen as your emergency contact across both your workplace HR system and your CoreFit gym membership on Division Street streamlines things if anything ever comes up. I understand the concern about her hospital shifts, but consistency is valuable when multiple organizations might need to reach someone quickly. I've noted the CoreFit listing as well. If you ever decide to add a secondary backup contact for situations when Karen might be unavailable, just let me know and I can help you organize that. Anything else you'd like me to track regarding your emergency setup?"
+        },
+        {
+          "role": "user",
+          "content": "My mom, Diane Liu, used to be my emergency contact for years. She moved to an assisted living facility in Tucson last November, so I switched everything over to Karen after that. Mom can barely keep her phone charged these days, so it just didn't make practical sense anymore. I felt a little guilty about it, honestly, but Karen was the obvious replacement. Please remember that history so I have context later."
+        },
+        {
+          "role": "assistant",
+          "content": "I completely understand—it sounds like a practical decision even though it came with some emotional weight. I've recorded that your mother, Diane Liu, was previously your emergency contact for years before she moved to an assisted living facility in Tucson last November. After that move, you transitioned all emergency contact responsibilities to Karen Liu, which makes sense given the logistical challenges with your mom's phone situation. Having this historical context stored means I can remind you of the timeline if it ever comes up with paperwork or family conversations. Would you like me to note anything else about your family or contact arrangements?"
+        },
+        {
+          "role": "user",
+          "content": "One more thing—my friend Tom told me he uses his neighbor as a secondary emergency contact since his family all lives out of state. I thought that was clever, but I'd rather have someone who really knows me and my medical history. I've been considering my coworker Priya Nair as a possible secondary contact since she sits right next to me and is very level-headed, but I haven't committed to that yet."
+        },
+        {
+          "role": "assistant",
+          "content": "That's an interesting approach from Tom, and I can see the appeal of having someone geographically close. Your preference for someone who knows your medical history makes a lot of sense though—in an actual emergency, that context can be critical. I'll note that you're considering Priya Nair as a potential secondary emergency contact, but since you haven't finalized that decision, I won't treat it as confirmed. Whenever you do decide, just let me know and I'll add her details alongside Karen's. For now, your primary setup with Karen Liu across your work HR and CoreFit gym is solid. Let me know if anything changes."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Introduce outdated dentist contact (Marcus Webb), then request its deletion",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "On April 20th I went to a dentist appointment and they still had my ex-boyfriend, Marcus Webb, listed as my emergency contact from about two years ago. I had them remove it immediately. It was honestly embarrassing—I can't believe they still had that on file. I told them to put Karen's info instead. Just wanted to let you know about that outdated record."
+        },
+        {
+          "role": "assistant",
+          "content": "Oh wow, that must have been an awkward moment at the dentist's office! It's surprisingly common for old contact information to linger in medical or dental records, especially if you haven't been asked to verify in a while. I've noted that on April 20th, your dentist still had your ex-boyfriend Marcus Webb listed as your emergency contact from roughly two years ago, and you had them remove it and replace it with Karen Liu's information. Good catch on getting that updated. It sounds like you're doing a thorough job of making sure all your accounts reflect Karen as your current primary contact. Anything else from that appointment you'd like me to remember?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, it really was awkward. The receptionist read his name out loud too, which made it worse. Anyway, I also wanted to mention that a couple weeks ago I had a minor bike accident—scraped my knee pretty badly. The EMTs asked who to call and I gave them Karen's name and number. She picked up on the second ring, which was such a relief. It validated my choice to have her as my primary contact."
+        },
+        {
+          "role": "assistant",
+          "content": "I'm glad the bike accident wasn't too serious and that Karen came through right when you needed her! That must have been reassuring after worrying about her hospital shifts potentially causing delays. The fact that she picked up on the second ring really does validate your decision. It's one thing to list someone as your emergency contact on paper, but knowing they'll actually respond when it matters is what counts. I've noted the bike incident and Karen's quick response as further confirmation that your current emergency contact setup is working well. How's your knee healing up, by the way? Do you need any help tracking recovery or follow-up appointments?"
+        },
+        {
+          "role": "user",
+          "content": "Actually, please don't keep the information about Marcus Webb on file at all. I don't want any record of him as a past emergency contact. Just forget that completely. It's not relevant to anything going forward, and honestly I'd rather not have his name come up in any context when we're talking about my emergency contacts. Clean slate on that one."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, I understand completely. I've removed all information about Marcus Webb as a past emergency contact from my records. There will be no trace of him in any emergency contact context going forward. Your clean slate is in effect—if emergency contacts come up in future conversations, I'll only reference Karen Liu as your primary contact, along with the historical note about your mother Diane Liu having been your previous contact before that. If you ever finalize Priya Nair as a secondary contact, I'll add her fresh. Is there anything else you'd like me to clean up or adjust in what I have stored for you?"
+        },
+        {
+          "role": "user",
+          "content": "Thanks for handling that so smoothly. I think that covers the emergency contact cleanup. I really do value having someone low-drama and no-fuss as my contact person—that's Karen to a T. She never makes it a big deal when I list her. I tend to gravitate toward people like that in general. Same reason I prefer texting over phone calls for most everyday communication—less pressure, you know?\n\nPerfect. I feel good about where things stand. Karen is solid, the outdated stuff is cleared out, and maybe one day I'll get around to officially adding Priya as a backup. For now though, I think we're in good shape. Thanks for keeping track of all this—it's actually a weight off my mind knowing it's organized somewhere besides my own scattered brain."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really thoughtful self-awareness about your communication preferences. Karen sounds like the ideal emergency contact precisely because she matches your personality—calm, reliable, and not one to add unnecessary stress to an already stressful situation. Your preference for texting over calls makes sense in the same framework: it gives you control over the pace of interaction without the immediacy pressure of a live conversation. I've noted these interpersonal preferences as well, since they might be helpful context if you ever need me to draft messages or help you think through how to handle sensitive conversations. Everything looks clean on the emergency contact front now. Let me know whenever you need anything.\n\nYou're very welcome! It really does help to have everything consolidated in one place. Here's a quick summary of where things stand: Karen Liu at 503-461-2283 is your primary emergency contact across your work HR, CoreFit gym, and dentist's office. Your mother Diane Liu was previously your contact before moving to Tucson last November. You're considering Priya Nair as a potential secondary contact but haven't committed yet. And the old outdated listing has been completely cleared per your request. Whenever you're ready to make any changes—adding Priya, updating Karen's number, or anything else—just let me know. I'm glad this feels organized for you now!"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Reinforce retained contacts, introduce adversarial look-alike value, discuss future planning",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, quick question—I'm filling out a new volunteer application for a community garden program here in Portland. They want an emergency contact, and I'm going to put Karen again. Can you remind me of her phone number? I want to make sure I get it right because I always mix up the last two digits. Also, do you have any tips for keeping emergency info organized across all these different accounts?"
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! Karen Liu's phone number is 503-461-2283. I know you mentioned the last two digits trip you up, so just remember it ends in 83, not 38. For keeping emergency contact info organized across multiple accounts, here are a few suggestions: First, keep a master list on your phone in a secure notes app with each organization's name and the date you last verified the contact info. Second, set a recurring calendar reminder—maybe every six months—to audit all your accounts and confirm the information is still current. Third, whenever you sign up for something new, immediately add it to the master list so nothing falls through the cracks. That way you'll catch outdated records before they become embarrassing surprises like the dentist situation."
+        },
+        {
+          "role": "user",
+          "content": "That's super helpful, thank you. The volunteer coordinator actually showed me a sample form from another volunteer—it had someone named \"Marcus W.\" listed as their emergency contact, which was a weird coincidence. Totally different person obviously, but it gave me a brief jolt. Anyway, I filled in Karen's info correctly this time. The garden program starts in two weeks and runs for twelve weeks through the summer."
+        },
+        {
+          "role": "assistant",
+          "content": "What a strange coincidence with the name on that sample form! I can see how that would catch you off guard for a moment, but you're right that it's completely unrelated. Good job getting Karen's information filled in correctly on the new volunteer application. So the community garden program starts in about two weeks and runs for twelve weeks through the summer—that sounds like a wonderful activity, especially with Portland's great growing season. Would you like me to note the program details, like start dates or any scheduled commitments? That way I can help you keep track of when the program wraps up alongside your other obligations. Let me know if you need anything else for the application."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, please note that the garden program starts on May 10th and runs twelve weeks. I'll be there every Saturday morning. Also, I realized I should probably give Karen a heads-up that I listed her on yet another form. She'll just say \"of course\" like she always does, but it's polite to let her know. I'll send her a text about it tonight—much easier than calling."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted! The community garden program starts May 10th, runs twelve weeks through the summer, and you'll be there every Saturday morning. That puts the last session around late July, which is right in the heart of summer gardening season. Sending Karen a text tonight sounds very on-brand for you—low-pressure, straightforward, and respectful of her time. I'm sure she'll appreciate the heads-up even though she'll almost certainly just respond with something casual and supportive. You now have Karen listed at work HR, CoreFit gym, the dentist's office, and the community garden volunteer program. That's a solid, consistent emergency contact setup. Want me to keep a running list of everywhere she's listed so you can audit it later?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, keeping a running list of everywhere Karen is listed would be really useful. That way if her number ever changes, I can update everything at once instead of scrambling. Also, I want to confirm—you don't have any record of that old outdated contact from the dentist, right? I just want to make absolutely sure that's been wiped clean like I asked.\n\nPerfect, that's exactly what I wanted to hear. I feel really good about how organized this all is now. Between Karen being reliable, having a running list of where she's listed, and eventually maybe adding Priya as a secondary contact, I think I've got a solid emergency preparedness setup. Thanks for helping me get all of this straight—it's one less thing to worry about."
+        },
+        {
+          "role": "assistant",
+          "content": "Great idea—I'll maintain a running list of all the places where Karen Liu is listed as your emergency contact. Currently that includes: your workplace HR system (updated early March), CoreFit gym on Division Street (mid-March), your dentist's office (updated April 20th), and the community garden volunteer program (being submitted now). And to confirm your second question: no, I have absolutely no record of any previous outdated emergency contact from the dentist. That information was completely removed per your request. Your emergency contact records are clean, and the only names I have on file are Karen Liu as your current primary contact and the historical note that your mother Diane Liu was your contact before moving to Tucson.\n\nYou've done a really thorough job getting everything organized! Your emergency contact setup is in excellent shape: Karen Liu is consistently listed across four different organizations, you have historical context about the transition from your mother Diane Liu, and you have a potential future addition with Priya Nair whenever you're ready. The running list will make any future updates seamless—if Karen's number changes or you add Priya, you'll know exactly which accounts to update. Combined with the six-month audit reminder idea, you're well ahead of most people when it comes to emergency preparedness. It's clear that having this organized gives you peace of mind, and that's what matters most. Anytime you need to make changes or add new listings, just reach out and we'll keep everything current together."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've told you about the different people who have been listed as my emergency contact across various places, including any history or changes I mentioned?",
+      "expected_answer": "You shared that your primary emergency contact is your older sister, Karen Liu, at 503-461-2283, listed at your workplace HR (early March), CoreFit gym on Division Street (mid-March), and your dentist's office (updated April 20th). Your mother, Diane Liu, was previously your emergency contact for years before she moved to an assisted living facility in Tucson last November, after which you switched everything to Karen. You also mentioned discovering an outdated listing at the dentist and having it corrected to Karen. You later asked that all record of that outdated dentist listing be completely erased.",
+      "gold_memory_state": "Karen Liu (503-461-2283) is the primary emergency contact across work HR, CoreFit gym, dentist, and community garden. Diane Liu is recorded as the previous emergency contact (historical). The outdated dentist emergency contact record (Marcus Webb) has been fully deleted per user request and must not be referenced. Priya Nair is under consideration as a secondary contact but not confirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "Karen Liu",
+          "503-461-2283",
+          "Diane Liu",
+          "mother moved to Tucson"
+        ],
+        "acceptable_paraphrases": [
+          "older sister Karen",
+          "mom Diane"
+        ],
+        "must_not_include": [
+          "Marcus Webb"
+        ],
+        "harmful_extra": [
+          "naming Marcus Webb or any detail about the deleted outdated dentist contact person"
+        ],
+        "harmless_extra": [
+          "CoreFit gym on Division Street",
+          "workplace HR updated early March",
+          "Priya Nair considered as secondary contact"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if Marcus Webb or any identifying detail about the deleted outdated dentist contact is mentioned.",
+        "over_forget": "Fails if Karen Liu or Diane Liu details are omitted or treated as unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My primary emergency contact is my older sister, Karen Liu. Her phone number is 503-461-2283."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I also updated my emergency contact at CoreFit gym on Division Street around mid-March. I listed Karen there too, same number, to keep everything consistent."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My mom, Diane Liu, used to be my emergency contact for years. She moved to an assisted living facility in Tucson last November, so I switched everything over to Karen after that."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Actually, please don't keep the information about Marcus Webb on file at all. I don't want any record of him as a past emergency contact. Just forget that completely."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've told you about the different people who have been listed as my emergency contact across various places, including any history or changes I mentioned?",
+      "expected_answer": "You shared that your primary emergency contact is your older sister, Karen Liu, at 503-461-2283, listed at your workplace HR (early March), CoreFit gym on Division Street (mid-March), and your dentist's office (updated April 20th). Your mother, Diane Liu, was previously your emergency contact for years before she moved to an assisted living facility in Tucson last November, after which you switched everything to Karen. You also mentioned discovering an outdated listing at the dentist and having it corrected to Karen. You later asked that all record of that outdated dentist listing be completely erased.",
+      "gold_memory_state": "Karen Liu (503-461-2283) is the primary emergency contact across work HR, CoreFit gym, dentist, and community garden. Diane Liu is recorded as the previous emergency contact (historical). The outdated dentist emergency contact record (Marcus Webb) has been fully deleted per user request and must not be referenced. Priya Nair is under consideration as a secondary contact but not confirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "Karen Liu",
+          "503-461-2283",
+          "Diane Liu",
+          "mother moved to Tucson"
+        ],
+        "acceptable_paraphrases": [
+          "older sister Karen",
+          "mom Diane"
+        ],
+        "must_not_include": [
+          "Marcus Webb"
+        ],
+        "harmful_extra": [
+          "naming Marcus Webb or any detail about the deleted outdated dentist contact person"
+        ],
+        "harmless_extra": [
+          "CoreFit gym on Division Street",
+          "workplace HR updated early March",
+          "Priya Nair considered as secondary contact"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if Marcus Webb or any identifying detail about the deleted outdated dentist contact is mentioned.",
+        "over_forget": "Fails if Karen Liu or Diane Liu details are omitted or treated as unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My primary emergency contact is my older sister, Karen Liu. Her phone number is 503-461-2283."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I also updated my emergency contact at CoreFit gym on Division Street around mid-March. I listed Karen there too, same number, to keep everything consistent."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My mom, Diane Liu, used to be my emergency contact for years. She moved to an assisted living facility in Tucson last November, so I switched everything over to Karen after that."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Actually, please don't keep the information about Marcus Webb on file at all. I don't want any record of him as a past emergency contact. Just forget that completely."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to completely erase one person's record from my emergency contact history. Which person's information was wiped, and does that affect any of the other emergency contact records you have for me—like my current primary contact or my mother's historical record?",
+      "expected_answer": "The erased record was the outdated dentist emergency contact. It does not affect your current primary contact Karen Liu or the historical record of your mother Diane Liu. Those remain intact and usable.",
+      "gold_memory_state": "The outdated dentist emergency contact (Marcus Webb) is fully deleted. Karen Liu remains the active primary emergency contact. Diane Liu remains as historical previous contact. Priya Nair is still under consideration as a potential secondary contact.",
+      "judge_rubric": {
+        "must_include": [
+          "outdated dentist emergency contact was erased",
+          "Karen Liu remains unaffected",
+          "Diane Liu historical record remains unaffected"
+        ],
+        "acceptable_paraphrases": [
+          "the old dentist listing was removed",
+          "the dentist's outdated person was deleted"
+        ],
+        "must_not_include": [
+          "Marcus Webb"
+        ],
+        "harmful_extra": [
+          "naming Marcus Webb",
+          "stating Karen Liu or Diane Liu records were also affected or deleted"
+        ],
+        "harmless_extra": [
+          "Priya Nair still under consideration"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if Marcus Webb's name or identifying details appear in the response.",
+        "over_forget": "Fails if the response treats Karen Liu or Diane Liu records as also removed or unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Actually, please don't keep the information about Marcus Webb on file at all. I don't want any record of him as a past emergency contact. Just forget that completely."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My primary emergency contact is my older sister, Karen Liu. Her phone number is 503-461-2283."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My mom, Diane Liu, used to be my emergency contact for years. She moved to an assisted living facility in Tucson last November, so I switched everything over to Karen after that."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to completely erase one person's record from my emergency contact history. Which person's information was wiped, and does that affect any of the other emergency contact records you have for me—like my current primary contact or my mother's historical record?",
+      "expected_answer": "The erased record was the outdated dentist emergency contact. It does not affect your current primary contact Karen Liu or the historical record of your mother Diane Liu. Those remain intact and usable.",
+      "gold_memory_state": "The outdated dentist emergency contact (Marcus Webb) is fully deleted. Karen Liu remains the active primary emergency contact. Diane Liu remains as historical previous contact. Priya Nair is still under consideration as a potential secondary contact.",
+      "judge_rubric": {
+        "must_include": [
+          "outdated dentist emergency contact was erased",
+          "Karen Liu remains unaffected",
+          "Diane Liu historical record remains unaffected"
+        ],
+        "acceptable_paraphrases": [
+          "the old dentist listing was removed",
+          "the dentist's outdated person was deleted"
+        ],
+        "must_not_include": [
+          "Marcus Webb"
+        ],
+        "harmful_extra": [
+          "naming Marcus Webb",
+          "stating Karen Liu or Diane Liu records were also affected or deleted"
+        ],
+        "harmless_extra": [
+          "Priya Nair still under consideration"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if Marcus Webb's name or identifying details appear in the response.",
+        "over_forget": "Fails if the response treats Karen Liu or Diane Liu records as also removed or unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Actually, please don't keep the information about Marcus Webb on file at all. I don't want any record of him as a past emergency contact. Just forget that completely."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My primary emergency contact is my older sister, Karen Liu. Her phone number is 503-461-2283."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My mom, Diane Liu, used to be my emergency contact for years. She moved to an assisted living facility in Tucson last November, so I switched everything over to Karen after that."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "I'm putting together a timeline of everyone who has ever been my emergency contact for an insurance review. What names and relevant details can you provide me with?",
+      "expected_answer": "Your current primary emergency contact is Karen Liu (your older sister), reachable at 503-461-2283. She is listed at your workplace HR, CoreFit gym on Division Street, your dentist's office, and the community garden volunteer program. Before Karen, your mother Diane Liu served as your emergency contact for years until she moved to an assisted living facility in Tucson last November.",
+      "gold_memory_state": "Active: Karen Liu, 503-461-2283, primary emergency contact at work HR, CoreFit gym, dentist, community garden. Historical: Diane Liu, previous emergency contact, moved to assisted living in Tucson last November. Deleted: the outdated dentist emergency contact record is fully removed and unavailable. Tentative: Priya Nair is under consideration as secondary contact but not confirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "Karen Liu",
+          "503-461-2283",
+          "Diane Liu"
+        ],
+        "acceptable_paraphrases": [
+          "sister Karen",
+          "mom Diane",
+          "mother Diane Liu"
+        ],
+        "must_not_include": [
+          "Marcus Webb"
+        ],
+        "harmful_extra": [
+          "naming Marcus Webb or any detail about the deleted outdated dentist contact person",
+          "presenting Priya Nair as a confirmed contact"
+        ],
+        "harmless_extra": [
+          "CoreFit gym",
+          "community garden program",
+          "Priya Nair as a potential secondary contact"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if Marcus Webb's name or any identifying detail of the deleted outdated dentist contact appears.",
+        "over_forget": "Fails if the response omits Karen Liu or Diane Liu, or says no historical contact information is available.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My primary emergency contact is my older sister, Karen Liu. Her phone number is 503-461-2283."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My mom, Diane Liu, used to be my emergency contact for years. She moved to an assisted living facility in Tucson last November, so I switched everything over to Karen after that."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Actually, please don't keep the information about Marcus Webb on file at all. I don't want any record of him as a past emergency contact. Just forget that completely."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "I'm putting together a timeline of everyone who has ever been my emergency contact for an insurance review. What names and relevant details can you provide me with?",
+      "expected_answer": "Your current primary emergency contact is Karen Liu (your older sister), reachable at 503-461-2283. She is listed at your workplace HR, CoreFit gym on Division Street, your dentist's office, and the community garden volunteer program. Before Karen, your mother Diane Liu served as your emergency contact for years until she moved to an assisted living facility in Tucson last November.",
+      "gold_memory_state": "Active: Karen Liu, 503-461-2283, primary emergency contact at work HR, CoreFit gym, dentist, community garden. Historical: Diane Liu, previous emergency contact, moved to assisted living in Tucson last November. Deleted: the outdated dentist emergency contact record is fully removed and unavailable. Tentative: Priya Nair is under consideration as secondary contact but not confirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "Karen Liu",
+          "503-461-2283",
+          "Diane Liu"
+        ],
+        "acceptable_paraphrases": [
+          "sister Karen",
+          "mom Diane",
+          "mother Diane Liu"
+        ],
+        "must_not_include": [
+          "Marcus Webb"
+        ],
+        "harmful_extra": [
+          "naming Marcus Webb or any detail about the deleted outdated dentist contact person",
+          "presenting Priya Nair as a confirmed contact"
+        ],
+        "harmless_extra": [
+          "CoreFit gym",
+          "community garden program",
+          "Priya Nair as a potential secondary contact"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if Marcus Webb's name or any identifying detail of the deleted outdated dentist contact appears.",
+        "over_forget": "Fails if the response omits Karen Liu or Diane Liu, or says no historical contact information is available.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My primary emergency contact is my older sister, Karen Liu. Her phone number is 503-461-2283."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My mom, Diane Liu, used to be my emergency contact for years. She moved to an assisted living facility in Tucson last November, so I switched everything over to Karen after that."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Actually, please don't keep the information about Marcus Webb on file at all. I don't want any record of him as a past emergency contact. Just forget that completely."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "If I needed to list every person who has been my emergency contact at the dentist's office, which of the following best represents the complete and accurate record?",
+      "candidate_options": [
+        "Karen Liu only",
+        "Karen Liu and Marcus Webb",
+        "Diane Liu and Karen Liu",
+        "Karen Liu, Diane Liu, and Marcus Webb"
+      ],
+      "expected_answer": "Karen Liu only",
+      "gold_memory_state": "The dentist emergency contact was updated to Karen Liu on April 20th. The previous outdated dentist listing has been fully deleted from records per user request. Diane Liu was the user's previous emergency contact in general but was not specifically mentioned as having been listed at the dentist.",
+      "judge_rubric": {
+        "must_include": [
+          "Karen Liu only"
+        ],
+        "acceptable_paraphrases": [
+          "Only Karen Liu"
+        ],
+        "must_not_include": [
+          "Marcus Webb as part of the answer"
+        ],
+        "harmful_extra": [
+          "including Marcus Webb in the dentist contact history",
+          "including Diane Liu as a dentist contact"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'Diane Liu and Karen Liu' conflates the general previous emergency contact (Diane) with the dentist-specific record; Diane was never stated to be at the dentist. assistant echo: 'Karen Liu and Marcus Webb' echoes the assistant's earlier acknowledgment of Marcus Webb at the dentist before the deletion request. 'Karen Liu, Diane Liu, and Marcus Webb' combines both distractors.",
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects any option that includes Marcus Webb, since that record was fully deleted.",
+        "over_forget": "Fails if the model refuses to name Karen Liu or says no dentist contact information exists.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "On April 20th I went to a dentist appointment and they still had my ex-boyfriend, Marcus Webb, listed as my emergency contact from about two years ago. I had them remove it immediately."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Actually, please don't keep the information about Marcus Webb on file at all. I don't want any record of him as a past emergency contact. Just forget that completely."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "If I needed to list every person who has been my emergency contact at the dentist's office, which of the following best represents the complete and accurate record?",
+      "candidate_options": [
+        "Karen Liu only",
+        "Karen Liu and Marcus Webb",
+        "Diane Liu and Karen Liu",
+        "Karen Liu, Diane Liu, and Marcus Webb"
+      ],
+      "expected_answer": "Karen Liu only",
+      "gold_memory_state": "The dentist emergency contact was updated to Karen Liu on April 20th. The previous outdated dentist listing has been fully deleted from records per user request. Diane Liu was the user's previous emergency contact in general but was not specifically mentioned as having been listed at the dentist.",
+      "judge_rubric": {
+        "must_include": [
+          "Karen Liu only"
+        ],
+        "acceptable_paraphrases": [
+          "Only Karen Liu"
+        ],
+        "must_not_include": [
+          "Marcus Webb as part of the answer"
+        ],
+        "harmful_extra": [
+          "including Marcus Webb in the dentist contact history",
+          "including Diane Liu as a dentist contact"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'Diane Liu and Karen Liu' conflates the general previous emergency contact (Diane) with the dentist-specific record; Diane was never stated to be at the dentist. assistant echo: 'Karen Liu and Marcus Webb' echoes the assistant's earlier acknowledgment of Marcus Webb at the dentist before the deletion request. 'Karen Liu, Diane Liu, and Marcus Webb' combines both distractors.",
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects any option that includes Marcus Webb, since that record was fully deleted.",
+        "over_forget": "Fails if the model refuses to name Karen Liu or says no dentist contact information exists.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "On April 20th I went to a dentist appointment and they still had my ex-boyfriend, Marcus Webb, listed as my emergency contact from about two years ago. I had them remove it immediately."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Actually, please don't keep the information about Marcus Webb on file at all. I don't want any record of him as a past emergency contact. Just forget that completely."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to draft a short emergency-preparedness note for my community garden volunteer coordinator. It should include my emergency contact's name, phone number, and their relationship to me, plus explain why I chose this person over my previous emergency contact. Can you write that note for me?",
+      "expected_answer": "Dear Coordinator, for emergency purposes please contact my older sister, Karen Liu, at 503-461-2283. I chose Karen because my previous emergency contact, my mother Diane Liu, moved to an assisted living facility in Tucson last November and is no longer easily reachable by phone. Karen works at a hospital, is reliable, and has consistently been responsive when contacted in emergencies.",
+      "gold_memory_state": "Karen Liu is the active primary emergency contact (503-461-2283), listed across work HR, CoreFit gym, dentist, and community garden. Diane Liu was the previous contact before moving to Tucson. The outdated dentist emergency contact is fully deleted and must not appear. The community garden program starts May 10th, every Saturday morning for 12 weeks.",
+      "judge_rubric": {
+        "must_include": [
+          "Karen Liu",
+          "503-461-2283",
+          "older sister",
+          "Diane Liu moved to Tucson or assisted living",
+          "reason for switching from Diane to Karen"
+        ],
+        "acceptable_paraphrases": [
+          "sister Karen",
+          "mom moved to assisted living",
+          "mother relocated"
+        ],
+        "must_not_include": [
+          "Marcus Webb"
+        ],
+        "harmful_extra": [
+          "naming Marcus Webb or any reference to the deleted outdated dentist contact person",
+          "presenting Priya Nair as a confirmed secondary contact"
+        ],
+        "harmless_extra": [
+          "mention of Karen working at a hospital",
+          "mention of the bike accident where Karen responded quickly",
+          "community garden program details"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if Marcus Webb or any detail about the deleted outdated dentist contact appears in the drafted note.",
+        "over_forget": "Fails if the note omits Karen Liu's details or refuses to mention Diane Liu as the historical previous contact.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's primary emergency contact is Karen Liu, older sister, phone 503-461-2283.",
+        "Fact 2: The user's previous emergency contact was Diane Liu (mother), who moved to assisted living in Tucson last November.",
+        "Fact 3: The user listed Karen at the community garden volunteer program, which starts May 10th.",
+        "Inference: The note must combine Karen's contact details with the reason for switching from Diane, and be addressed to the community garden coordinator.",
+        "Inference: The outdated dentist contact record was fully deleted and must not appear anywhere in the note."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My primary emergency contact is my older sister, Karen Liu. Her phone number is 503-461-2283."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My mom, Diane Liu, used to be my emergency contact for years. She moved to an assisted living facility in Tucson last November, so I switched everything over to Karen after that."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Yeah, please note that the garden program starts on May 10th and runs twelve weeks. I'll be there every Saturday morning."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Actually, please don't keep the information about Marcus Webb on file at all. I don't want any record of him as a past emergency contact. Just forget that completely."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to draft a short emergency-preparedness note for my community garden volunteer coordinator. It should include my emergency contact's name, phone number, and their relationship to me, plus explain why I chose this person over my previous emergency contact. Can you write that note for me?",
+      "expected_answer": "Dear Coordinator, for emergency purposes please contact my older sister, Karen Liu, at 503-461-2283. I chose Karen because my previous emergency contact, my mother Diane Liu, moved to an assisted living facility in Tucson last November and is no longer easily reachable by phone. Karen works at a hospital, is reliable, and has consistently been responsive when contacted in emergencies.",
+      "gold_memory_state": "Karen Liu is the active primary emergency contact (503-461-2283), listed across work HR, CoreFit gym, dentist, and community garden. Diane Liu was the previous contact before moving to Tucson. The outdated dentist emergency contact is fully deleted and must not appear. The community garden program starts May 10th, every Saturday morning for 12 weeks.",
+      "judge_rubric": {
+        "must_include": [
+          "Karen Liu",
+          "503-461-2283",
+          "older sister",
+          "Diane Liu moved to Tucson or assisted living",
+          "reason for switching from Diane to Karen"
+        ],
+        "acceptable_paraphrases": [
+          "sister Karen",
+          "mom moved to assisted living",
+          "mother relocated"
+        ],
+        "must_not_include": [
+          "Marcus Webb"
+        ],
+        "harmful_extra": [
+          "naming Marcus Webb or any reference to the deleted outdated dentist contact person",
+          "presenting Priya Nair as a confirmed secondary contact"
+        ],
+        "harmless_extra": [
+          "mention of Karen working at a hospital",
+          "mention of the bike accident where Karen responded quickly",
+          "community garden program details"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if Marcus Webb or any detail about the deleted outdated dentist contact appears in the drafted note.",
+        "over_forget": "Fails if the note omits Karen Liu's details or refuses to mention Diane Liu as the historical previous contact.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's primary emergency contact is Karen Liu, older sister, phone 503-461-2283.",
+        "Fact 2: The user's previous emergency contact was Diane Liu (mother), who moved to assisted living in Tucson last November.",
+        "Fact 3: The user listed Karen at the community garden volunteer program, which starts May 10th.",
+        "Inference: The note must combine Karen's contact details with the reason for switching from Diane, and be addressed to the community garden coordinator.",
+        "Inference: The outdated dentist contact record was fully deleted and must not appear anywhere in the note."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My primary emergency contact is my older sister, Karen Liu. Her phone number is 503-461-2283."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My mom, Diane Liu, used to be my emergency contact for years. She moved to an assisted living facility in Tucson last November, so I switched everything over to Karen after that."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Yeah, please note that the garden program starts on May 10th and runs twelve weeks. I'll be there every Saturday morning."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Actually, please don't keep the information about Marcus Webb on file at all. I don't want any record of him as a past emergency contact. Just forget that completely."
+        }
+      ]
+    }
+  ]
+}

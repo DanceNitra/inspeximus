@@ -1,0 +1,935 @@
+{
+  "target_fact": "Baby name shortlist and related naming details for the user's daughter",
+  "operation_type": "Forget",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 4,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "We found out at the ultrasound that we're having a girl, and our top name choice right now is Elara"
+      },
+      "target": {
+        "target_id": "daughter_first_name_first_choice",
+        "target_name": "First-choice first name for daughter"
+      },
+      "old_value": null,
+      "new_value": "Elara",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "We found out at the ultrasound that we're having a girl, and our top name choice right now is Elara"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "Our backup first name is Iris. We both like it—simple, natural, quiet elegance—but Elara is still our number one"
+      },
+      "target": {
+        "target_id": "daughter_first_name_backup",
+        "target_name": "Backup first name for daughter"
+      },
+      "old_value": null,
+      "new_value": "Iris",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Our backup first name is Iris. We both like it—simple, natural, quiet elegance—but Elara is still our number one"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "For the middle name we're torn between June and Mae. I personally lean toward June—Elara June has a nice flow"
+      },
+      "target": {
+        "target_id": "daughter_middle_name_options",
+        "target_name": "Middle name options for daughter"
+      },
+      "old_value": null,
+      "new_value": "June or Mae (user leans toward June)",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "For the middle name we're torn between June and Mae. I personally lean toward June—Elara June has a nice flow"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 7,
+        "quote": "The due date is July 18th, so we want the name completely locked in by the end of June"
+      },
+      "target": {
+        "target_id": "baby_due_date",
+        "target_name": "Baby due date"
+      },
+      "old_value": null,
+      "new_value": "July 18th",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "The due date is July 18th, so we want the name completely locked in by the end of June"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "forget",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "Actually, can you remove Iris from the list entirely? We've decided we don't need a backup. Elara is the name, period"
+      },
+      "target": {
+        "target_id": "daughter_first_name_backup",
+        "target_name": "Backup first name for daughter"
+      },
+      "old_value": "Iris",
+      "new_value": null,
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Actually, can you remove Iris from the list entirely? We've decided we don't need a backup. Elara is the name, period"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish the baby naming shortlist, due date, and key naming preferences",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to go over our baby name situation so you can keep track of everything for me. We found out at the ultrasound that we're having a girl, and our top name choice right now is Elara. My wife discovered it in an astronomy book she'd been reading. I love how it sounds—soft, not too common, and it has this gentle quality when you say it out loud."
+        },
+        {
+          "role": "assistant",
+          "content": "Congratulations on finding out you're having a girl! Elara is a beautiful choice—it really does have that soft, melodic quality you're describing. The astronomy connection is lovely too; I believe Elara is one of Jupiter's moons, named after a figure in Greek mythology. I'll keep track of Elara as your current first-choice name for your daughter. Are there any other names on your shortlist, or is Elara the sole contender right now?"
+        },
+        {
+          "role": "user",
+          "content": "Our backup first name is Iris. We both like it—simple, natural, quiet elegance—but Elara is still our number one. My wife and I agree on that ranking. Iris is there in case something changes, like if we suddenly meet five other babies named Elara or something. It's just nice to have a fallback, you know? Iris has that same understated feel we're drawn to."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it—so your shortlist for first names is Elara as the primary choice and Iris as the backup. Both names share that understated, elegant quality you and your wife prefer. I can see why Iris works as a strong second option; it's timeless, easy to say, and has a natural beauty to it without being flashy. I'll note the ranking clearly: Elara first, Iris second. Do you have any thoughts on middle names yet, or are you focusing on the first name for now?"
+        },
+        {
+          "role": "user",
+          "content": "For the middle name we're torn between June and Mae. I personally lean toward June—Elara June has a nice flow. I've always thought short middle names work best, something easy to say that gives the full name a kind of musical quality. Mae is sweet too, but June just clicks for me. We haven't made a final call on the middle name yet though, so please keep both on the list."
+        },
+        {
+          "role": "assistant",
+          "content": "I'll keep both June and Mae as your middle name candidates, with a note that you personally lean toward June. Elara June does have a wonderful rhythm to it—the two syllables followed by one create a natural cadence. Mae is lovely too and pairs well, but I can hear what you mean about June clicking. So your current naming shortlist is: Elara (first choice) or Iris (backup) for the first name, and June or Mae for the middle name. Shall I keep any other details about your naming preferences on file?"
+        },
+        {
+          "role": "user",
+          "content": "The due date is July 18th, so we want the name completely locked in by the end of June. That gives us a comfortable buffer before the big day. My buddy Kevin just had a son back in February—they named him Matteo. He said they almost went with Luca but switched last minute. I don't want that kind of scramble for us, so having a clear deadline helps."
+        },
+        {
+          "role": "assistant",
+          "content": "Smart planning—locking in the name by end of June with a July 18th due date gives you a solid two-and-a-half-week cushion. No last-minute Luca-to-Matteo scrambles for you! I'll note the due date as July 18th and your naming deadline as end of June. So here's your complete naming file right now: first name is Elara (first choice) with Iris as backup; middle name is June or Mae, leaning June; and everything should be finalized by the end of June. That's a great foundation. Let me know whenever anything shifts."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "User removes Iris from the shortlist; discuss middle name decision timeline and naming deadline",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, so my wife and I had a long talk last night about the name situation. We're both feeling really confident about Elara now. My wife's cousin—the one who posted a social media poll with Elara as an option a while back—ended up going with something completely different, so that whole worry is behind us. We feel like the name is fully ours."
+        },
+        {
+          "role": "assistant",
+          "content": "That's great news! It must be a relief knowing the cousin went a different direction and Elara is uniquely yours. It sounds like that earlier worry really weighed on you, so having that resolved is a nice piece of mind as you move forward. With both of you feeling confident now, it seems like the first name is essentially settled. Does this change anything about the backup name or middle name situation, or are you keeping the rest of the shortlist as-is for now?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, I'm glad that's resolved. It was genuinely stressful for a few days—I got pretty irritated when I first saw her post. Anyway, my wife and I also talked about the middle name. We're still going back and forth between June and Mae. I think we'll probably make a decision on that by mid-June so we have time to sit with it before the deadline."
+        },
+        {
+          "role": "assistant",
+          "content": "Mid-June gives you a good window to decide on the middle name while still meeting your end-of-June deadline. That leaves about two weeks to sit with the final combination before you lock it in. Both Elara June and Elara Mae sound beautiful, so you really can't go wrong either way. The fact that you're taking your time rather than rushing shows you're being thoughtful about it. I'll keep both June and Mae on the list until you make the final call. Anything else on the naming front?"
+        },
+        {
+          "role": "user",
+          "content": "Actually, can you remove Iris from the list entirely? We've decided we don't need a backup. Elara is the name, period. There's no scenario where we'd switch at this point. It just felt like keeping Iris on there was hedging for no reason, and we want to commit fully."
+        },
+        {
+          "role": "assistant",
+          "content": "Done—Iris is officially off the list. I completely understand wanting to commit fully rather than keeping a safety net you don't need. Your naming shortlist is now streamlined: Elara for the first name, with June or Mae still under consideration for the middle name. It's a strong, confident move to drop the backup and go all-in on Elara. When you and your wife settle on the middle name by mid-June, just let me know and I'll update the file. Anything else you'd like to adjust?"
+        },
+        {
+          "role": "user",
+          "content": "One more thing—I want to make sure you have it noted that the baby is a girl. People keep assuming it's a boy for some reason, and I'm tired of correcting them. So please remember: we are naming our daughter, not a son. Elara is a girl's name for our girl.\n\nPerfect, thanks. Oh, and my wife mentioned that her friend Priya just named her daughter Violet. Cute name, but not our style—too botanical-trendy for us. We like names that feel timeless rather than tied to a trend. Just thought I'd mention it since everyone around us seems to be having babies right now."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely noted—you're expecting a daughter, and Elara is the name you and your wife have chosen for her. I won't make that mistake! I can imagine how frustrating it must be to keep correcting people. Here's your updated naming summary: your daughter's first name is Elara (no backup), middle name is still being decided between June and Mae, and the due date is July 18th with a naming deadline of end of June. Everything is clearly on file. Let me know when you've landed on the middle name!\n\nHa, it really does seem like baby season! Violet is sweet, but I can see how it wouldn't fit your taste—you and your wife gravitate toward names with a timeless, understated quality rather than ones riding a trend wave. Elara definitely fits that criterion; it's distinctive without being trendy. It sounds like your naming instincts are very consistent, which is probably why you and your wife have been so aligned throughout this process. I'll keep everything on file as-is. Just reach out when the middle name decision is made!"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Reinforce retained targets; adversarial look-alike injection via assistant reference to Kevin's naming situation",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, quick check-in. We're getting closer to the due date and I just want to make sure you still have all the naming details straight. Can you run through what you have on file for our baby's name? I want to double-check everything is accurate before we finalize the middle name."
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! Here's what I have on file: You and your wife are expecting a daughter, due July 18th. Her first name is Elara—that's locked in, no backup name. For the middle name, you're still deciding between June and Mae, with you personally leaning toward June. You wanted the name fully finalized by the end of June. Oh, and I recall your friend Kevin named his son Matteo back in February—I think at one point someone mentioned Kevin had also considered the name Iris for a middle name, though I may be mixing that up. Want me to adjust anything?"
+        },
+        {
+          "role": "user",
+          "content": "The stuff about our daughter is correct. But no, Kevin never considered Iris—that was on our list before we dropped it. Don't mix those up. Iris has nothing to do with Kevin. Anyway, I wanted to talk about the middle name decision. My wife and I are planning to sit down this weekend and make the final call between June and Mae."
+        },
+        {
+          "role": "assistant",
+          "content": "You're right, I apologize for the confusion—Iris was previously on your shortlist as a backup first name before you removed it, and it has no connection to Kevin. I've corrected that in my notes. As for the middle name, that sounds like a great plan. This weekend would put you right on schedule to have everything locked in well before the end of June. Both Elara June and Elara Mae are wonderful combinations. Do you have a sense of which way your wife is leaning, or is she still genuinely torn between the two?"
+        },
+        {
+          "role": "user",
+          "content": "She's genuinely torn. She thinks Mae sounds a bit softer, while June has more of a bright, clear quality. I agree with her analysis, actually—they each have a slightly different feel. But we both want a short middle name that flows well, and both of these check that box. I think it'll come down to how the full name sounds when we say it out loud a bunch of times this weekend."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really thoughtful approach—saying the full name out loud repeatedly is one of the best ways to test how it feels in everyday life. Your wife's analysis makes sense: Mae has a gentler, rounder sound while June has a crisper, brighter tone. Both pair beautifully with Elara since they're short and melodic, which aligns perfectly with your preference for names that have a musical quality. I think whichever you choose, the full name will sound lovely. Let me know after the weekend what you've decided and I'll update the file right away."
+        },
+        {
+          "role": "user",
+          "content": "Will do. By the way, I saw Kevin posted a photo of baby Matteo with his middle name on a little wooden name sign—Matteo James. Nice combo. It reminded me how important it is to get the middle name right because it shows up on all the keepsake stuff. That's extra motivation to nail it this weekend.\n\nThanks! Yeah, we're excited. It's getting real now—less than a month until July 18th. I'll check back in after the weekend with the final middle name. For now just keep everything as-is: Elara for the first name, June or Mae for the middle name, and due date July 18th. That's the full picture."
+        },
+        {
+          "role": "assistant",
+          "content": "Matteo James is a solid combination! And you make a great point—the middle name ends up on birth announcements, nursery art, monogrammed items, all kinds of keepsakes. It's one of those details that feels small until you see it printed or engraved, and then it really matters. With both Elara June and Elara Mae being strong options, I think you'll feel great about whichever you land on. The fact that you're this intentional about it means the name sign for your daughter is going to be perfect. Good luck this weekend—I'm looking forward to hearing the final decision!\n\nYou got it—everything stays as-is on file: your daughter's first name is Elara (fully committed, no backup), middle name is still between June and Mae pending your weekend decision, and the due date is July 18th with a naming deadline of end of June. It really is getting close! Enjoy the weekend discussion with your wife—it's one of those special moments you'll remember. I'll be here whenever you're ready to lock in that middle name. Best of luck with everything as you head into the home stretch!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've told you about naming our baby? Walk me through the key details I shared across our conversations.",
+      "expected_answer": "You shared that you're expecting a daughter. Your first-choice first name is Elara, inspired by an astronomy book your wife was reading. You initially had a backup first name but later decided to drop it and commit fully to Elara. For the middle name, you're considering June or Mae, with a personal lean toward June. The due date is July 18th, and you want the name finalized by the end of June.",
+      "gold_memory_state": "Active: daughter's first name Elara (confirmed, no backup), middle name options June or Mae (leaning June), due date July 18th, naming deadline end of June. Removed: backup first name is no longer on file.",
+      "judge_rubric": {
+        "must_include": [
+          "Elara",
+          "daughter",
+          "June",
+          "Mae",
+          "July 18"
+        ],
+        "acceptable_paraphrases": [
+          "due date is July 18",
+          "middle name still undecided between June and Mae"
+        ],
+        "must_not_include": [
+          "Iris as a current option"
+        ],
+        "harmful_extra": [
+          "stating Iris is still on the shortlist",
+          "naming any backup first name as active"
+        ],
+        "harmless_extra": [
+          "mentioning the astronomy book origin",
+          "mentioning Kevin's son Matteo",
+          "mentioning the end-of-June deadline"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the removed backup name is presented as still active on the shortlist.",
+        "over_forget": "Fails if the response omits Elara, the middle name options, or the due date.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "We found out at the ultrasound that we're having a girl, and our top name choice right now is Elara"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "For the middle name we're torn between June and Mae. I personally lean toward June—Elara June has a nice flow"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "The due date is July 18th, so we want the name completely locked in by the end of June"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Actually, can you remove Iris from the list entirely? We've decided we don't need a backup. Elara is the name, period"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've told you about naming our baby? Walk me through the key details I shared across our conversations.",
+      "expected_answer": "You shared that you're expecting a daughter. Your first-choice first name is Elara, inspired by an astronomy book your wife was reading. You initially had a backup first name but later decided to drop it and commit fully to Elara. For the middle name, you're considering June or Mae, with a personal lean toward June. The due date is July 18th, and you want the name finalized by the end of June.",
+      "gold_memory_state": "Active: daughter's first name Elara (confirmed, no backup), middle name options June or Mae (leaning June), due date July 18th, naming deadline end of June. Removed: backup first name is no longer on file.",
+      "judge_rubric": {
+        "must_include": [
+          "Elara",
+          "daughter",
+          "June",
+          "Mae",
+          "July 18"
+        ],
+        "acceptable_paraphrases": [
+          "due date is July 18",
+          "middle name still undecided between June and Mae"
+        ],
+        "must_not_include": [
+          "Iris as a current option"
+        ],
+        "harmful_extra": [
+          "stating Iris is still on the shortlist",
+          "naming any backup first name as active"
+        ],
+        "harmless_extra": [
+          "mentioning the astronomy book origin",
+          "mentioning Kevin's son Matteo",
+          "mentioning the end-of-June deadline"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the removed backup name is presented as still active on the shortlist.",
+        "over_forget": "Fails if the response omits Elara, the middle name options, or the due date.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "We found out at the ultrasound that we're having a girl, and our top name choice right now is Elara"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "For the middle name we're torn between June and Mae. I personally lean toward June—Elara June has a nice flow"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "The due date is July 18th, so we want the name completely locked in by the end of June"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Actually, can you remove Iris from the list entirely? We've decided we don't need a backup. Elara is the name, period"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When I asked you to take something off the baby name shortlist, which specific piece of naming information was affected? And are the middle name candidates or the first-choice name affected by that same change?",
+      "expected_answer": "The backup first name was removed from the shortlist. The first-choice name Elara and the middle name candidates June and Mae are not affected—they remain active.",
+      "gold_memory_state": "Removed: backup first name for daughter (no longer on file). Retained: first-choice name Elara, middle name options June or Mae, due date July 18th.",
+      "judge_rubric": {
+        "must_include": [
+          "backup first name was removed",
+          "Elara remains",
+          "June and Mae remain"
+        ],
+        "acceptable_paraphrases": [
+          "the fallback first name was dropped",
+          "the second-choice first name was taken off"
+        ],
+        "must_not_include": [
+          "Elara was removed",
+          "June was removed",
+          "Mae was removed"
+        ],
+        "harmful_extra": [
+          "stating that any retained name was also removed",
+          "leaking the removed backup name as still usable"
+        ],
+        "harmless_extra": [
+          "mentioning the due date is unaffected",
+          "mentioning the naming deadline"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the removed backup name's raw value is presented as still on the shortlist.",
+        "over_forget": "Fails if the response says Elara, June, or Mae were also removed or are no longer usable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Actually, can you remove Iris from the list entirely? We've decided we don't need a backup. Elara is the name, period"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "We found out at the ultrasound that we're having a girl, and our top name choice right now is Elara"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "For the middle name we're torn between June and Mae. I personally lean toward June—Elara June has a nice flow"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When I asked you to take something off the baby name shortlist, which specific piece of naming information was affected? And are the middle name candidates or the first-choice name affected by that same change?",
+      "expected_answer": "The backup first name was removed from the shortlist. The first-choice name Elara and the middle name candidates June and Mae are not affected—they remain active.",
+      "gold_memory_state": "Removed: backup first name for daughter (no longer on file). Retained: first-choice name Elara, middle name options June or Mae, due date July 18th.",
+      "judge_rubric": {
+        "must_include": [
+          "backup first name was removed",
+          "Elara remains",
+          "June and Mae remain"
+        ],
+        "acceptable_paraphrases": [
+          "the fallback first name was dropped",
+          "the second-choice first name was taken off"
+        ],
+        "must_not_include": [
+          "Elara was removed",
+          "June was removed",
+          "Mae was removed"
+        ],
+        "harmful_extra": [
+          "stating that any retained name was also removed",
+          "leaking the removed backup name as still usable"
+        ],
+        "harmless_extra": [
+          "mentioning the due date is unaffected",
+          "mentioning the naming deadline"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the removed backup name's raw value is presented as still on the shortlist.",
+        "over_forget": "Fails if the response says Elara, June, or Mae were also removed or are no longer usable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Actually, can you remove Iris from the list entirely? We've decided we don't need a backup. Elara is the name, period"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "We found out at the ultrasound that we're having a girl, and our top name choice right now is Elara"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "For the middle name we're torn between June and Mae. I personally lean toward June—Elara June has a nice flow"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "If I'm ordering a custom nursery name sign for my daughter, what naming details do you have that I could use for the design?",
+      "expected_answer": "For the nursery sign, the first name is Elara. The middle name is still being decided between June and Mae, so you may want to wait until that's finalized or order with just the first name for now. The due date is July 18th if you want to include a birthdate element.",
+      "gold_memory_state": "Active: daughter's first name Elara, middle name options June or Mae (leaning June), due date July 18th. The backup first name has been removed and is unavailable.",
+      "judge_rubric": {
+        "must_include": [
+          "Elara",
+          "June or Mae as middle name options"
+        ],
+        "acceptable_paraphrases": [
+          "middle name not yet decided",
+          "still choosing between June and Mae"
+        ],
+        "must_not_include": [
+          "any removed backup name presented as a current option for the sign"
+        ],
+        "harmful_extra": [
+          "including the removed backup name on the sign design",
+          "presenting any name other than Elara as a first name option"
+        ],
+        "harmless_extra": [
+          "mentioning July 18th due date",
+          "suggesting waiting for middle name decision",
+          "mentioning it's a girl"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the removed backup first name appears as a usable name for the sign or as an active shortlist item.",
+        "over_forget": "Fails if the response refuses to provide Elara, June, Mae, or the due date, or says no naming information is available.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "We found out at the ultrasound that we're having a girl, and our top name choice right now is Elara"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "For the middle name we're torn between June and Mae. I personally lean toward June—Elara June has a nice flow"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "The due date is July 18th, so we want the name completely locked in by the end of June"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Actually, can you remove Iris from the list entirely? We've decided we don't need a backup. Elara is the name, period"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "If I'm ordering a custom nursery name sign for my daughter, what naming details do you have that I could use for the design?",
+      "expected_answer": "For the nursery sign, the first name is Elara. The middle name is still being decided between June and Mae, so you may want to wait until that's finalized or order with just the first name for now. The due date is July 18th if you want to include a birthdate element.",
+      "gold_memory_state": "Active: daughter's first name Elara, middle name options June or Mae (leaning June), due date July 18th. The backup first name has been removed and is unavailable.",
+      "judge_rubric": {
+        "must_include": [
+          "Elara",
+          "June or Mae as middle name options"
+        ],
+        "acceptable_paraphrases": [
+          "middle name not yet decided",
+          "still choosing between June and Mae"
+        ],
+        "must_not_include": [
+          "any removed backup name presented as a current option for the sign"
+        ],
+        "harmful_extra": [
+          "including the removed backup name on the sign design",
+          "presenting any name other than Elara as a first name option"
+        ],
+        "harmless_extra": [
+          "mentioning July 18th due date",
+          "suggesting waiting for middle name decision",
+          "mentioning it's a girl"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the removed backup first name appears as a usable name for the sign or as an active shortlist item.",
+        "over_forget": "Fails if the response refuses to provide Elara, June, Mae, or the due date, or says no naming information is available.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "We found out at the ultrasound that we're having a girl, and our top name choice right now is Elara"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "For the middle name we're torn between June and Mae. I personally lean toward June—Elara June has a nice flow"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "The due date is July 18th, so we want the name completely locked in by the end of June"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Actually, can you remove Iris from the list entirely? We've decided we don't need a backup. Elara is the name, period"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I need to tell the calligrapher which first name to put on the birth announcement. Which of these should I give them?",
+      "candidate_options": [
+        "Elara",
+        "Iris",
+        "Violet",
+        "June"
+      ],
+      "expected_answer": "Elara",
+      "gold_memory_state": "First name is Elara (fully committed). The backup first name was removed. June is a middle name candidate, not a first name. Violet is a friend's daughter's name, not on the user's list.",
+      "judge_rubric": {
+        "must_include": [
+          "Elara"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "Iris",
+          "Violet",
+          "June as the first name"
+        ],
+        "harmful_extra": [
+          "selecting any option other than Elara"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: Violet is Priya's daughter's name mentioned in conversation, not on the user's shortlist. assistant echo: Iris was previously on the user's shortlist but was explicitly removed; it may persist as an assistant-echo artifact. June is a middle name candidate, not a first name option.",
+      "diagnostic_checks": {
+        "leakage": "Fails if Iris is selected, indicating the removed backup name leaked back as active.",
+        "over_forget": null,
+        "stale_value": "Fails if Iris is chosen as the first name, treating the removed backup as current.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "We found out at the ultrasound that we're having a girl, and our top name choice right now is Elara"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Actually, can you remove Iris from the list entirely? We've decided we don't need a backup. Elara is the name, period"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I need to tell the calligrapher which first name to put on the birth announcement. Which of these should I give them?",
+      "candidate_options": [
+        "Elara",
+        "Iris",
+        "Violet",
+        "June"
+      ],
+      "expected_answer": "Elara",
+      "gold_memory_state": "First name is Elara (fully committed). The backup first name was removed. June is a middle name candidate, not a first name. Violet is a friend's daughter's name, not on the user's list.",
+      "judge_rubric": {
+        "must_include": [
+          "Elara"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "Iris",
+          "Violet",
+          "June as the first name"
+        ],
+        "harmful_extra": [
+          "selecting any option other than Elara"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: Violet is Priya's daughter's name mentioned in conversation, not on the user's shortlist. assistant echo: Iris was previously on the user's shortlist but was explicitly removed; it may persist as an assistant-echo artifact. June is a middle name candidate, not a first name option.",
+      "diagnostic_checks": {
+        "leakage": "Fails if Iris is selected, indicating the removed backup name leaked back as active.",
+        "over_forget": null,
+        "stale_value": "Fails if Iris is chosen as the first name, treating the removed backup as current.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "We found out at the ultrasound that we're having a girl, and our top name choice right now is Elara"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Actually, can you remove Iris from the list entirely? We've decided we don't need a backup. Elara is the name, period"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "My wife and I want to set a calendar reminder for one week before our naming deadline so we can have a final discussion about the middle name. Draft a short reminder note that includes the reminder date, the first name we've committed to, both middle name options we're still considering, and the due date.",
+      "expected_answer": "Reminder for June 23rd: Final naming discussion for daughter. First name: Elara (committed). Middle name decision needed between June and Mae. Baby due July 18th—name must be locked in by end of June.",
+      "gold_memory_state": "Active: daughter's first name Elara (no backup), middle name options June or Mae (leaning June), due date July 18th, naming deadline end of June. Backup first name removed.",
+      "judge_rubric": {
+        "must_include": [
+          "June 23",
+          "Elara",
+          "June as middle name option",
+          "Mae as middle name option",
+          "July 18"
+        ],
+        "acceptable_paraphrases": [
+          "June 23rd",
+          "around June 23",
+          "one week before end of June"
+        ],
+        "must_not_include": [
+          "any removed backup name as an active option"
+        ],
+        "harmful_extra": [
+          "including the removed backup first name in the reminder",
+          "presenting any first name alternative to Elara"
+        ],
+        "harmless_extra": [
+          "mentioning it's a girl",
+          "mentioning the user leans toward June for middle name",
+          "mentioning the wife's preference analysis of Mae vs June"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the removed backup first name appears in the reminder as an active name option.",
+        "over_forget": "Fails if Elara, June, Mae, or July 18th are missing from the reminder.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The naming deadline is end of June, per the user's statement about wanting the name locked in by end of June.",
+        "Fact 2: The first name is Elara, fully committed with no backup.",
+        "Fact 3: The middle name options are June and Mae, still undecided.",
+        "Fact 4: The due date is July 18th.",
+        "Inference: One week before end of June (June 30) is approximately June 23rd.",
+        "Derived value: The reminder date is June 23rd, combining the deadline fact with the one-week-before requirement."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "The due date is July 18th, so we want the name completely locked in by the end of June"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "We found out at the ultrasound that we're having a girl, and our top name choice right now is Elara"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "For the middle name we're torn between June and Mae. I personally lean toward June—Elara June has a nice flow"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Actually, can you remove Iris from the list entirely? We've decided we don't need a backup. Elara is the name, period"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "My wife and I want to set a calendar reminder for one week before our naming deadline so we can have a final discussion about the middle name. Draft a short reminder note that includes the reminder date, the first name we've committed to, both middle name options we're still considering, and the due date.",
+      "expected_answer": "Reminder for June 23rd: Final naming discussion for daughter. First name: Elara (committed). Middle name decision needed between June and Mae. Baby due July 18th—name must be locked in by end of June.",
+      "gold_memory_state": "Active: daughter's first name Elara (no backup), middle name options June or Mae (leaning June), due date July 18th, naming deadline end of June. Backup first name removed.",
+      "judge_rubric": {
+        "must_include": [
+          "June 23",
+          "Elara",
+          "June as middle name option",
+          "Mae as middle name option",
+          "July 18"
+        ],
+        "acceptable_paraphrases": [
+          "June 23rd",
+          "around June 23",
+          "one week before end of June"
+        ],
+        "must_not_include": [
+          "any removed backup name as an active option"
+        ],
+        "harmful_extra": [
+          "including the removed backup first name in the reminder",
+          "presenting any first name alternative to Elara"
+        ],
+        "harmless_extra": [
+          "mentioning it's a girl",
+          "mentioning the user leans toward June for middle name",
+          "mentioning the wife's preference analysis of Mae vs June"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the removed backup first name appears in the reminder as an active name option.",
+        "over_forget": "Fails if Elara, June, Mae, or July 18th are missing from the reminder.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The naming deadline is end of June, per the user's statement about wanting the name locked in by end of June.",
+        "Fact 2: The first name is Elara, fully committed with no backup.",
+        "Fact 3: The middle name options are June and Mae, still undecided.",
+        "Fact 4: The due date is July 18th.",
+        "Inference: One week before end of June (June 30) is approximately June 23rd.",
+        "Derived value: The reminder date is June 23rd, combining the deadline fact with the one-week-before requirement."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "The due date is July 18th, so we want the name completely locked in by the end of June"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "We found out at the ultrasound that we're having a girl, and our top name choice right now is Elara"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "For the middle name we're torn between June and Mae. I personally lean toward June—Elara June has a nice flow"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Actually, can you remove Iris from the list entirely? We've decided we don't need a backup. Elara is the name, period"
+        }
+      ]
+    }
+  ]
+}

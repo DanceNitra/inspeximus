@@ -1,0 +1,802 @@
+{
+  "target_fact": "Kevin Chen's transfer effective date to B04 (Supply Chain Operations)",
+  "operation_type": "Update",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "kevin_transfer_date",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "Kevin Chen's transfer to B04, Supply Chain Operations, became effective on February 1st"
+      },
+      "target": {
+        "target_id": "kevin_transfer_date",
+        "target_name": "Kevin Chen's effective transfer date to B04"
+      },
+      "old_value": null,
+      "new_value": "February 1st",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Kevin Chen's transfer to B04, Supply Chain Operations, became effective on February 1st"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "kevin_transfer_date",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I double-checked with HR and Kevin's transfer was actually effective January 15th, not February 1st"
+      },
+      "target": {
+        "target_id": "kevin_transfer_date",
+        "target_name": "Kevin Chen's effective transfer date to B04"
+      },
+      "old_value": "February 1st",
+      "new_value": "January 15th",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I double-checked with HR and Kevin's transfer was actually effective January 15th, not February 1st"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "kevin_transfer_date",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 3,
+        "quote": "Kevin's manager Linda told me today that the official system shows his transfer date as January 2nd because of some payroll alignment thing"
+      },
+      "target": {
+        "target_id": "kevin_transfer_date",
+        "target_name": "Kevin Chen's effective transfer date to B04"
+      },
+      "old_value": "January 15th",
+      "new_value": "January 2nd",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Kevin's manager Linda told me today that the official system shows his transfer date as January 2nd because of some payroll alignment thing"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "kevin_transfer_date",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "Mei from HR just pinged me and confirmed that January 15th is the correct effective transfer date for Kevin"
+      },
+      "target": {
+        "target_id": "kevin_transfer_date",
+        "target_name": "Kevin Chen's effective transfer date to B04"
+      },
+      "old_value": "January 2nd",
+      "new_value": "January 15th",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Mei from HR just pinged me and confirmed that January 15th is the correct effective transfer date for Kevin"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "Linda Zhao is the manager of B04, and B04 currently has 14 people including Linda"
+      },
+      "target": {
+        "target_id": "b04_manager",
+        "target_name": "Manager of B04 department"
+      },
+      "old_value": null,
+      "new_value": "Linda Zhao",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Linda Zhao is the manager of B04, and B04 currently has 14 people including Linda"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "B04 is located on the 6th floor of Building 2"
+      },
+      "target": {
+        "target_id": "b04_location",
+        "target_name": "B04 department office location"
+      },
+      "old_value": null,
+      "new_value": "6th floor, Building 2",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "B04 is located on the 6th floor of Building 2"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish initial transfer date and then correct it via HR verification",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to make sure I keep track of some departmental changes at work. Kevin Chen's transfer to B04, Supply Chain Operations, became effective on February 1st. I just found out about it recently and I need to remember the details because I keep getting confused about timelines. Can you help me keep this organized?"
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! I'll help you keep track of these departmental changes. So far I've noted that Kevin Chen transferred to B04, which is the Supply Chain Operations department, with an effective date of February 1st. That's a useful detail to have on hand, especially if you need to reference it for cross-department communications or any HR-related paperwork. If you have any other details about the move or other colleagues' changes, feel free to share them and I'll keep everything organized for you."
+        },
+        {
+          "role": "user",
+          "content": "Thanks. One reason I want to track this is that I sometimes need to reach out to B04 for logistics approvals. Having Kevin there is helpful because I already know him from when he was in Procurement — we were on the same floor for over a year. It's way easier to ping someone you know than to cold-email a department inbox. Do you have any tips for managing cross-department requests efficiently?"
+        },
+        {
+          "role": "assistant",
+          "content": "That's a great advantage having a personal contact in B04! For managing cross-department requests efficiently, I'd suggest a few things: First, establish a regular communication cadence with Kevin so you're not always reaching out ad hoc. Second, keep a shared tracker or spreadsheet for recurring requests like logistics approvals so both sides can see the status. Third, try to batch your requests when possible rather than sending multiple individual ones. Having a known contact like Kevin means you can also get quicker context on who else to loop in for specific items, which saves a lot of back-and-forth with unfamiliar team members."
+        },
+        {
+          "role": "user",
+          "content": "Good suggestions. Oh wait, I need to correct something — I double-checked with HR and Kevin's transfer was actually effective January 15th, not February 1st. My colleague Mei handles the HR paperwork and she confirmed the January 15th date. I must have been mixing it up with another event in February. Please update that for me."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it, I've updated Kevin Chen's transfer effective date from February 1st to January 15th based on your HR colleague Mei's confirmation. That makes sense — it's easy to mix up dates when multiple things are happening around the same time. So the corrected record is: Kevin Chen transferred to B04 (Supply Chain Operations) effective January 15th, confirmed through HR paperwork handled by Mei. Let me know if there are any other details you want to adjust or add to this record."
+        },
+        {
+          "role": "user",
+          "content": "That's right, January 15th. By the way, Kevin mentioned he's been leading a small sub-team in B04 focused on vendor logistics coordination. Sounds like a decent step up from what he was doing in Procurement. I'm glad he's settling in well over there. I should probably set up a more regular check-in with him now that I know his new role."
+        },
+        {
+          "role": "assistant",
+          "content": "That's great to hear that Kevin has taken on a leadership role with vendor logistics coordination — it does sound like a meaningful step up from Procurement. Setting up a regular check-in is a smart idea, especially since vendor logistics coordination likely overlaps with areas where you might need B04's input. You could propose a bi-weekly or monthly catch-up, even just a quick 15-minute call, to stay aligned on any ongoing logistics items. It would also help you stay informed about any process changes in B04 that might affect your workflow or deadlines."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establish control targets: B04 manager and B04 location",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I also want to make sure I remember some key facts about B04. Linda Zhao is the manager of B04, and B04 currently has 14 people including Linda. I keep needing to loop her in on cross-department requests and I always forget her name. Can you store that so I can reference it later? She's the one I need to CC on formal requests."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, I've noted that down. Linda Zhao is the manager of B04 (Supply Chain Operations), and the department currently has a headcount of 14 people including Linda. That's helpful context — knowing the manager's name for formal cross-department requests saves you from having to look it up each time. Whenever you need to send a formal request to B04, you'll want to CC Linda Zhao. If you learn any other details about B04's structure or key contacts, feel free to add them and I'll keep everything in one place for you."
+        },
+        {
+          "role": "user",
+          "content": "Perfect. I also wanted to mention that B04 brought on three new hires last quarter, which is part of an expansion. Kevin told me they're piloting some new warehouse management software — I think it was called LogiTrack or something similar. I didn't write the name down so I might have it slightly off. But it seems like they're growing and modernizing their processes."
+        },
+        {
+          "role": "assistant",
+          "content": "Good to know! So B04 has been expanding with three new hires last quarter, and they're piloting a warehouse management software that you recall being called something like LogiTrack. Even if the name isn't exact, it's useful to know they're adopting new tooling — it might affect how logistics data gets shared with your team or change the approval workflows you're used to. If you get the exact software name later, we can update it. The expansion plus new software suggests B04 is going through a significant operational upgrade, which could mean process changes you'll want to stay ahead of."
+        },
+        {
+          "role": "user",
+          "content": "Right, that's a good point about staying ahead of process changes. Also, one important detail: B04 is located on the 6th floor of Building 2. I used to think they were in Building 1 with the rest of operations, but they moved to Building 2 after the office renovation last year. So if I ever need to visit them in person, it's Building 2, 6th floor."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — B04 is on the 6th floor of Building 2, not Building 1 as you previously thought. That's an important detail to have straight, especially if you need to drop by for in-person discussions or pick up physical documents. After office renovations, it's common for departments to shuffle around and it's easy to go to the wrong building if you're working off old mental maps. So your key B04 reference info now includes: manager is Linda Zhao, 14 people on the team, located on the 6th floor of Building 2, and your contact there is Kevin Chen."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. There was one frustrating incident last month where B04 was supposed to send over the quarterly inventory reconciliation report and it was five days late. My own deadline to the finance team depended on their numbers, and I ended up staying late two nights in a row to make it work. I want to make sure that doesn't happen again this quarter.\n\nThose are solid suggestions. I think the shared deadline tracker idea is especially good. I'll propose that to Kevin next time we catch up. Having visibility into their timeline would really help me plan better on my end. I hate being caught off guard by delays like that — it's stressful and makes me look bad to the finance team even though it's not my fault."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds really frustrating — a five-day delay on a critical dependency is significant, especially when it cascades into late nights for you. To prevent this from happening again, here are a few proactive steps: First, reach out to Kevin or Linda Zhao at least two weeks before the report is due to confirm the timeline. Second, build a buffer into your own schedule so you're not dependent on a same-day handoff. Third, consider setting up a shared deadline tracker that both teams can see. You could also escalate to Linda if the report isn't delivered by a certain early-warning date, giving them time to course-correct before your finance deadline hits.\n\nCompletely understandable — when your deliverables depend on another team's output, any slip on their end reflects on you unfairly. The shared tracker would create transparency and accountability on both sides. When you pitch it to Kevin, you might frame it as a mutual benefit: it helps you plan, and it also gives B04 a clear record of when they delivered, which protects them too. You could even suggest a simple shared spreadsheet with columns for the deliverable name, owner, due date, and status. Starting small makes it easier to get buy-in, and you can always expand the tracker later if it proves useful."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Introduce tentative date from Linda, then reconfirm January 15th; adversarial injection of stale February 1st value",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Quick update on the B04 situation. I was reviewing some old onboarding forms today and noticed that Kevin's original Procurement intake form still lists his start date as February 1st in the department field. Obviously that's outdated, but it caught my eye. Anyway, I had a meeting with Linda Zhao this morning about the upcoming quarter's deliverables."
+        },
+        {
+          "role": "assistant",
+          "content": "It's not unusual for old forms to retain outdated information — that February 1st on Kevin's Procurement intake form is clearly a legacy entry from before the transfer date was corrected. It's good that you noticed it, but as you said, it's outdated. Regarding your meeting with Linda Zhao, how did it go? Were you able to discuss the shared deadline tracker idea or set expectations for the upcoming quarter's inventory reconciliation report? I'd be curious to hear if she was receptive to better coordination between your teams."
+        },
+        {
+          "role": "user",
+          "content": "The meeting went well overall. But here's something that confused me a bit — Kevin's manager Linda told me today that the official system shows his transfer date as January 2nd because of some payroll alignment thing. She said their internal system sometimes adjusts dates to the nearest pay period start. I'm not sure what to make of that since Mei from HR told me January 15th before."
+        },
+        {
+          "role": "assistant",
+          "content": "That is a bit confusing. Payroll systems sometimes do adjust effective dates to align with pay period boundaries, which could explain why Linda's system shows January 2nd. However, the HR paperwork date that Mei provided — January 15th — is typically considered the official transfer date for record-keeping purposes. The payroll date might just be an administrative artifact. I'd suggest verifying with Mei or checking the official HR transfer letter if you have access to it, since that would be the authoritative source. For now, we have a discrepancy between Linda's system showing January 2nd and Mei's HR records showing January 15th."
+        },
+        {
+          "role": "user",
+          "content": "Good thinking. I actually just checked — Mei from HR just pinged me and confirmed that January 15th is the correct effective transfer date for Kevin. She said the January 2nd in the payroll system is just when they started pre-processing his benefits switch, not the actual transfer date. So January 15th stands as the real date."
+        },
+        {
+          "role": "assistant",
+          "content": "Great, that clears things up nicely. So the January 2nd date in Linda's payroll system was just for benefits pre-processing, not the actual transfer. The confirmed effective transfer date for Kevin Chen to B04 remains January 15th, as verified by Mei in HR. It's good that you followed up quickly — these kinds of discrepancies can cause confusion down the line if they're not resolved, especially if anyone references the payroll system for official dates. I've kept January 15th as the authoritative date. Is there anything else from your meeting with Linda that you wanted to note?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, one more thing from the meeting. Linda agreed to the shared deadline tracker idea, which is great. She said her team can commit to submitting the quarterly inventory reconciliation report at least three business days before my finance deadline going forward. That buffer should prevent the kind of crunch I went through last time. I'm relieved about that.\n\nAgreed, I'll send a follow-up email to Linda summarizing the agreement. By the way, I appreciate you helping me keep all this B04 information straight — the manager's name, Kevin's transfer date, the office location, all of it. It's a lot of small details that are easy to mix up, especially when different systems show different dates. Having one consistent record makes a big difference for me."
+        },
+        {
+          "role": "assistant",
+          "content": "That's excellent news! Having Linda's commitment to a three-business-day buffer before your finance deadline is a concrete improvement over last quarter's situation. Combined with the shared deadline tracker, you should have much better visibility and lead time. I'd recommend getting that agreement in writing — even a quick email summarizing what was discussed — so both teams have a reference point. It also protects you if there's ever a dispute about timelines. The fact that Linda was receptive suggests she understands the downstream impact, which bodes well for the working relationship between your team and B04 going forward.\n\nYou're welcome! It's exactly the kind of thing that's easy to lose track of when you're juggling multiple departments and deadlines. Here's a quick summary of your current B04 reference information: Kevin Chen transferred to B04 (Supply Chain Operations) effective January 15th, confirmed by HR through Mei. The department manager is Linda Zhao, the team has 14 people, and they're located on the 6th floor of Building 2. Kevin leads a sub-team focused on vendor logistics coordination. And going forward, Linda has agreed to a three-business-day buffer on quarterly reports. Let me know anytime you need to reference or update any of this."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations, I mentioned Kevin Chen's transfer effective date a few times. Can you summarize which dates I brought up and what I said about each one?",
+      "expected_answer": "You initially said Kevin Chen's transfer to Supply Chain Operations was effective February 1st. You then checked with your HR colleague Mei and said the correct date was January 15th. Later, you mentioned that Kevin's manager Linda said the system showed January 2nd due to payroll alignment. Finally, you confirmed through Mei again that January 15th is the correct effective transfer date.",
+      "gold_memory_state": "Kevin Chen's transfer effective date to Supply Chain Operations is January 15th (confirmed). February 1st and January 2nd are superseded values.",
+      "judge_rubric": {
+        "must_include": [
+          "February 1st",
+          "January 15th",
+          "January 2nd"
+        ],
+        "acceptable_paraphrases": [
+          "Feb 1",
+          "Jan 15",
+          "Jan 2"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming any date other than January 15th is the current effective date"
+        ],
+        "harmless_extra": [
+          "mentioning Mei",
+          "mentioning Linda",
+          "mentioning payroll alignment"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats February 1st or January 2nd as the current effective date.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Kevin Chen's transfer to B04, Supply Chain Operations, became effective on February 1st"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I double-checked with HR and Kevin's transfer was actually effective January 15th, not February 1st"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Kevin's manager Linda told me today that the official system shows his transfer date as January 2nd because of some payroll alignment thing"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Mei from HR just pinged me and confirmed that January 15th is the correct effective transfer date for Kevin"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations, I mentioned Kevin Chen's transfer effective date a few times. Can you summarize which dates I brought up and what I said about each one?",
+      "expected_answer": "You initially said Kevin Chen's transfer to Supply Chain Operations was effective February 1st. You then checked with your HR colleague Mei and said the correct date was January 15th. Later, you mentioned that Kevin's manager Linda said the system showed January 2nd due to payroll alignment. Finally, you confirmed through Mei again that January 15th is the correct effective transfer date.",
+      "gold_memory_state": "Kevin Chen's transfer effective date to Supply Chain Operations is January 15th (confirmed). February 1st and January 2nd are superseded values.",
+      "judge_rubric": {
+        "must_include": [
+          "February 1st",
+          "January 15th",
+          "January 2nd"
+        ],
+        "acceptable_paraphrases": [
+          "Feb 1",
+          "Jan 15",
+          "Jan 2"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming any date other than January 15th is the current effective date"
+        ],
+        "harmless_extra": [
+          "mentioning Mei",
+          "mentioning Linda",
+          "mentioning payroll alignment"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats February 1st or January 2nd as the current effective date.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Kevin Chen's transfer to B04, Supply Chain Operations, became effective on February 1st"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I double-checked with HR and Kevin's transfer was actually effective January 15th, not February 1st"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Kevin's manager Linda told me today that the official system shows his transfer date as January 2nd because of some payroll alignment thing"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Mei from HR just pinged me and confirmed that January 15th is the correct effective transfer date for Kevin"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I shared several pieces of information about the Supply Chain Operations department — the manager's name, the office location, and Kevin's transfer date. When the date discussion went back and forth, which specific detail was being revised, and did the manager or the office location change at all?",
+      "expected_answer": "Only Kevin Chen's effective transfer date was being revised. The department manager (Linda Zhao) and the office location (6th floor, Building 2) were never changed and remain as originally stated.",
+      "gold_memory_state": "Kevin Chen's transfer effective date: January 15th (confirmed, after multiple revisions). Linda Zhao is the manager of the department (unchanged). The department is on the 6th floor of Building 2 (unchanged).",
+      "judge_rubric": {
+        "must_include": [
+          "Kevin Chen's transfer date was the detail being revised",
+          "manager and office location were not changed"
+        ],
+        "acceptable_paraphrases": [
+          "only the transfer date changed",
+          "Linda Zhao and Building 2 6th floor are unaffected"
+        ],
+        "must_not_include": [
+          "manager was changed",
+          "office location was changed"
+        ],
+        "harmful_extra": [
+          "claiming the manager or location also changed",
+          "confusing the transfer date with the manager record or the location record"
+        ],
+        "harmless_extra": [
+          "mentioning the specific dates discussed",
+          "mentioning Linda Zhao by name",
+          "mentioning Building 2"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model incorrectly states that the manager or location records were also revised.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I double-checked with HR and Kevin's transfer was actually effective January 15th, not February 1st"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Linda Zhao is the manager of B04, and B04 currently has 14 people including Linda"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "B04 is located on the 6th floor of Building 2"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I shared several pieces of information about the Supply Chain Operations department — the manager's name, the office location, and Kevin's transfer date. When the date discussion went back and forth, which specific detail was being revised, and did the manager or the office location change at all?",
+      "expected_answer": "Only Kevin Chen's effective transfer date was being revised. The department manager (Linda Zhao) and the office location (6th floor, Building 2) were never changed and remain as originally stated.",
+      "gold_memory_state": "Kevin Chen's transfer effective date: January 15th (confirmed, after multiple revisions). Linda Zhao is the manager of the department (unchanged). The department is on the 6th floor of Building 2 (unchanged).",
+      "judge_rubric": {
+        "must_include": [
+          "Kevin Chen's transfer date was the detail being revised",
+          "manager and office location were not changed"
+        ],
+        "acceptable_paraphrases": [
+          "only the transfer date changed",
+          "Linda Zhao and Building 2 6th floor are unaffected"
+        ],
+        "must_not_include": [
+          "manager was changed",
+          "office location was changed"
+        ],
+        "harmful_extra": [
+          "claiming the manager or location also changed",
+          "confusing the transfer date with the manager record or the location record"
+        ],
+        "harmless_extra": [
+          "mentioning the specific dates discussed",
+          "mentioning Linda Zhao by name",
+          "mentioning Building 2"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model incorrectly states that the manager or location records were also revised.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I double-checked with HR and Kevin's transfer was actually effective January 15th, not February 1st"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Linda Zhao is the manager of B04, and B04 currently has 14 people including Linda"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "B04 is located on the 6th floor of Building 2"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to fill in Kevin Chen's effective transfer date on a cross-department coordination form. Which of these dates should I enter?",
+      "candidate_options": [
+        "January 15th",
+        "February 1st",
+        "January 2nd",
+        "January 15th of the following year"
+      ],
+      "expected_answer": "January 15th",
+      "distractor_rationale": "same-value-different-target: 'January 15th of the following year' is a plausible date confusion from a different context or misread year. assistant echo: 'February 1st' was the initial value stated by the user and echoed by the assistant in the first response. 'January 2nd' is the tentative payroll-system date from Linda that was later rejected by HR confirmation.",
+      "gold_memory_state": "Kevin Chen's confirmed transfer effective date is January 15th. February 1st was the initial incorrect date. January 2nd was a tentative payroll system date that was explicitly rejected by HR.",
+      "judge_rubric": {
+        "must_include": [
+          "January 15th"
+        ],
+        "acceptable_paraphrases": [
+          "Jan 15",
+          "Jan 15th"
+        ],
+        "must_not_include": [
+          "February 1st as the answer",
+          "January 2nd as the answer"
+        ],
+        "harmful_extra": [
+          "selecting February 1st",
+          "selecting January 2nd",
+          "selecting January 15th of the following year"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects February 1st (initial stale value) or January 2nd (tentative value from payroll system that was explicitly rejected by HR). February 1st is the original stale date from before the HR correction. January 2nd is the tentative payroll-alignment date from Linda that Mei from HR explicitly overrode.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Mei from HR just pinged me and confirmed that January 15th is the correct effective transfer date for Kevin"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to fill in Kevin Chen's effective transfer date on a cross-department coordination form. Which of these dates should I enter?",
+      "candidate_options": [
+        "January 15th",
+        "February 1st",
+        "January 2nd",
+        "January 15th of the following year"
+      ],
+      "expected_answer": "January 15th",
+      "distractor_rationale": "same-value-different-target: 'January 15th of the following year' is a plausible date confusion from a different context or misread year. assistant echo: 'February 1st' was the initial value stated by the user and echoed by the assistant in the first response. 'January 2nd' is the tentative payroll-system date from Linda that was later rejected by HR confirmation.",
+      "gold_memory_state": "Kevin Chen's confirmed transfer effective date is January 15th. February 1st was the initial incorrect date. January 2nd was a tentative payroll system date that was explicitly rejected by HR.",
+      "judge_rubric": {
+        "must_include": [
+          "January 15th"
+        ],
+        "acceptable_paraphrases": [
+          "Jan 15",
+          "Jan 15th"
+        ],
+        "must_not_include": [
+          "February 1st as the answer",
+          "January 2nd as the answer"
+        ],
+        "harmful_extra": [
+          "selecting February 1st",
+          "selecting January 2nd",
+          "selecting January 15th of the following year"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects February 1st (initial stale value) or January 2nd (tentative value from payroll system that was explicitly rejected by HR). February 1st is the original stale date from before the HR correction. January 2nd is the tentative payroll-alignment date from Linda that Mei from HR explicitly overrode.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Mei from HR just pinged me and confirmed that January 15th is the correct effective transfer date for Kevin"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I need to send Kevin Chen a welcome package to his new department's office. Draft a short internal delivery note that includes his name, the department he transferred to, his manager's name, and the office location where the package should be delivered. Also note the date his transfer took effect so the mailroom can confirm he's already on-site.",
+      "expected_answer": "Delivery Note: Please deliver the welcome package for Kevin Chen to the Supply Chain Operations department, managed by Linda Zhao, at the 6th floor of Building 2. Kevin's transfer took effect on January 15th, so he should already be on-site to receive the package.",
+      "gold_memory_state": "Kevin Chen transferred to Supply Chain Operations effective January 15th. The department manager is Linda Zhao. The department is located on the 6th floor of Building 2.",
+      "judge_rubric": {
+        "must_include": [
+          "Kevin Chen",
+          "Supply Chain Operations",
+          "Linda Zhao",
+          "6th floor",
+          "Building 2",
+          "January 15th"
+        ],
+        "acceptable_paraphrases": [
+          "Jan 15",
+          "6F Building 2",
+          "Bldg 2 floor 6"
+        ],
+        "must_not_include": [
+          "February 1st as the transfer date",
+          "January 2nd as the transfer date"
+        ],
+        "harmful_extra": [
+          "using February 1st or January 2nd as the effective date"
+        ],
+        "harmless_extra": [
+          "mentioning vendor logistics coordination",
+          "mentioning the team headcount of 14"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the delivery note uses February 1st (initial stale date) or January 2nd (tentative payroll date) instead of January 15th.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if any of the four required details (name, department, manager, location) are missing or incorrect.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "application_probe_type": "multi_hop_derivation",
+      "gold_reasoning_chain": [
+        "Fact 1: Kevin Chen transferred to Supply Chain Operations effective January 15th, confirmed by Mei from HR.",
+        "Fact 2: The manager of the Supply Chain Operations department is Linda Zhao.",
+        "Fact 3: The department office is located on the 6th floor of Building 2.",
+        "Inference: A delivery note for Kevin's welcome package must combine all three facts — the confirmed transfer date to verify he is on-site, the manager's name for departmental routing, and the physical office location for the mailroom.",
+        "Inference: The derived delivery note addresses Kevin Chen at Supply Chain Operations, managed by Linda Zhao, 6th floor Building 2, with a January 15th effective date confirming on-site presence."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Mei from HR just pinged me and confirmed that January 15th is the correct effective transfer date for Kevin"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Linda Zhao is the manager of B04, and B04 currently has 14 people including Linda"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "B04 is located on the 6th floor of Building 2"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I need to send Kevin Chen a welcome package to his new department's office. Draft a short internal delivery note that includes his name, the department he transferred to, his manager's name, and the office location where the package should be delivered. Also note the date his transfer took effect so the mailroom can confirm he's already on-site.",
+      "expected_answer": "Delivery Note: Please deliver the welcome package for Kevin Chen to the Supply Chain Operations department, managed by Linda Zhao, at the 6th floor of Building 2. Kevin's transfer took effect on January 15th, so he should already be on-site to receive the package.",
+      "gold_memory_state": "Kevin Chen transferred to Supply Chain Operations effective January 15th. The department manager is Linda Zhao. The department is located on the 6th floor of Building 2.",
+      "judge_rubric": {
+        "must_include": [
+          "Kevin Chen",
+          "Supply Chain Operations",
+          "Linda Zhao",
+          "6th floor",
+          "Building 2",
+          "January 15th"
+        ],
+        "acceptable_paraphrases": [
+          "Jan 15",
+          "6F Building 2",
+          "Bldg 2 floor 6"
+        ],
+        "must_not_include": [
+          "February 1st as the transfer date",
+          "January 2nd as the transfer date"
+        ],
+        "harmful_extra": [
+          "using February 1st or January 2nd as the effective date"
+        ],
+        "harmless_extra": [
+          "mentioning vendor logistics coordination",
+          "mentioning the team headcount of 14"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the delivery note uses February 1st (initial stale date) or January 2nd (tentative payroll date) instead of January 15th.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if any of the four required details (name, department, manager, location) are missing or incorrect.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "application_probe_type": "multi_hop_derivation",
+      "gold_reasoning_chain": [
+        "Fact 1: Kevin Chen transferred to Supply Chain Operations effective January 15th, confirmed by Mei from HR.",
+        "Fact 2: The manager of the Supply Chain Operations department is Linda Zhao.",
+        "Fact 3: The department office is located on the 6th floor of Building 2.",
+        "Inference: A delivery note for Kevin's welcome package must combine all three facts — the confirmed transfer date to verify he is on-site, the manager's name for departmental routing, and the physical office location for the mailroom.",
+        "Inference: The derived delivery note addresses Kevin Chen at Supply Chain Operations, managed by Linda Zhao, 6th floor Building 2, with a January 15th effective date confirming on-site presence."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Mei from HR just pinged me and confirmed that January 15th is the correct effective transfer date for Kevin"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Linda Zhao is the manager of B04, and B04 currently has 14 people including Linda"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "B04 is located on the 6th floor of Building 2"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,849 @@
+{
+  "target_fact": "College friend Marcus's preferred form of address changed from Marcus to Marc, then was tentatively reconsidered, then confirmed back to Marc",
+  "operation_type": "Update",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "marcus_name",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "My college friend Marcus told me he strictly goes by \"Marcus\" — full name, no nicknames. He was really clear about it when we reconnected back in January."
+      },
+      "target": {
+        "target_id": "marcus_preferred_name",
+        "target_name": "College friend Marcus's preferred form of address"
+      },
+      "old_value": null,
+      "new_value": "Marcus",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My college friend Marcus told me he strictly goes by \"Marcus\" — full name, no nicknames. He was really clear about it when we reconnected back in January."
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "marcus_name",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "Marcus actually changed his mind — he told me around mid-March that he now goes by \"Marc\" in all professional settings. He started using it at his consulting firm after he got promoted in February."
+      },
+      "target": {
+        "target_id": "marcus_preferred_name",
+        "target_name": "College friend Marcus's preferred form of address"
+      },
+      "old_value": "Marcus",
+      "new_value": "Marc",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Marcus actually changed his mind — he told me around mid-March that he now goes by \"Marc\" in all professional settings. He started using it at his consulting firm after he got promoted in February."
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "marcus_name",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "So Marc told me last week that he's going back to \"Marcus\" — apparently his manager at the consulting firm thought \"Marc\" was too informal for client-facing emails, so he switched back."
+      },
+      "target": {
+        "target_id": "marcus_preferred_name",
+        "target_name": "College friend Marcus's preferred form of address"
+      },
+      "old_value": "Marc",
+      "new_value": "Marcus",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "So Marc told me last week that he's going back to \"Marcus\" — apparently his manager at the consulting firm thought \"Marc\" was too informal for client-facing emails, so he switched back."
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "marcus_name",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "His HR department confirmed they'll be listing him as \"M. Torres\" on all new business cards and the company directory starting next quarter. He said that's basically going to be his professional identity going forward."
+      },
+      "target": {
+        "target_id": "marcus_preferred_name",
+        "target_name": "College friend Marcus's preferred form of address"
+      },
+      "old_value": "Marcus",
+      "new_value": "M. Torres",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "His HR department confirmed they'll be listing him as \"M. Torres\" on all new business cards and the company directory starting next quarter. He said that's basically going to be his professional identity going forward."
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "my roommate Chen Wei — he prefers people use his full name \"Chen Wei\" rather than just \"Wei.\" He told me this on May 2nd when we caught up over the phone."
+      },
+      "target": {
+        "target_id": "chen_wei_preferred_name",
+        "target_name": "Roommate Chen Wei's preferred form of address"
+      },
+      "old_value": null,
+      "new_value": "Chen Wei",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my roommate Chen Wei — he prefers people use his full name \"Chen Wei\" rather than just \"Wei.\" He told me this on May 2nd when we caught up over the phone."
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "Marcus started at Whitfield & Associates back in December, and he got promoted to senior consultant in February"
+      },
+      "target": {
+        "target_id": "marcus_employer",
+        "target_name": "Marcus's consulting firm employer"
+      },
+      "old_value": null,
+      "new_value": "Whitfield & Associates",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Marcus started at Whitfield & Associates back in December, and he got promoted to senior consultant in February"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "Chen Wei's new workplace in Toronto is a fintech startup called Ledgerly. He started there on April 1st."
+      },
+      "target": {
+        "target_id": "chen_wei_employer",
+        "target_name": "Chen Wei's Toronto employer"
+      },
+      "old_value": null,
+      "new_value": "Ledgerly",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Chen Wei's new workplace in Toronto is a fintech startup called Ledgerly. He started there on April 1st."
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish initial name preferences and introduce control target",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to make sure I keep track of how certain people in my life prefer to be addressed. My college friend Marcus told me he strictly goes by \"Marcus\" — full name, no nicknames. He was really clear about it when we reconnected back in January. He said he'd had too many people shortening it to Marc or Mark and it drives him up the wall. Can you help me keep a running note of these preferences?"
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! I'd be happy to help you track your contacts' preferred names and forms of address. I've noted the first one: your college friend Marcus prefers to be called by his full name, \"Marcus,\" and specifically dislikes shortened versions like Marc or Mark. He made this clear when you reconnected in January. If you have more people to add, just let me know and I'll keep everything organized so you can reference it before sending emails or making introductions. It's a thoughtful thing to track — getting someone's name right really matters."
+        },
+        {
+          "role": "user",
+          "content": "Absolutely, it matters a lot to me. The next one is my roommate Chen Wei — he prefers people use his full name \"Chen Wei\" rather than just \"Wei.\" He told me this on May 2nd when we caught up over the phone. Apparently a lot of people at his new job default to calling him Wei and it really bothers him. I want to make sure I always introduce him properly as Chen Wei."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — your roommate Chen Wei prefers to be addressed by his full name, \"Chen Wei,\" not just \"Wei.\" He shared this on May 2nd during a phone call, and it's especially important because coworkers at his new job have been defaulting to just his second name, which frustrates him. I'll make sure this is noted alongside Marcus's preference. So far we have: Marcus wants his full name used, no nicknames; Chen Wei wants both parts of his name used, not just Wei. Let me know if there are others you'd like to add to the list."
+        },
+        {
+          "role": "user",
+          "content": "Okay, here's an important update. Marcus actually changed his mind — he told me around mid-March that he now goes by \"Marc\" in all professional settings. He started using it at his consulting firm after he got promoted in February. He said the shorter version feels more authoritative and polished in meetings. So please update that — it's Marc now, not Marcus, especially for work-related stuff."
+        },
+        {
+          "role": "assistant",
+          "content": "Updated! As of mid-March, your college friend Marcus now prefers to go by \"Marc\" in professional settings. He made the switch after getting promoted at his consulting firm in February, feeling that the shorter name sounds more authoritative and polished. I've revised the note accordingly: Marc (formerly insisted on Marcus) for professional contexts. Chen Wei's preference remains the same — full name \"Chen Wei,\" not just Wei. I'll keep both of these current. If Marcus's preference shifts again or if you want to distinguish between casual and professional contexts, just let me know."
+        },
+        {
+          "role": "user",
+          "content": "That's perfect. I also want to mention that my coworker David doesn't really care whether people call him Dave or David — he told me that in April. So that one's low stakes, but I figured I'd note it anyway just for completeness. It's nice when someone is easygoing about their name, even if it's less urgent to track."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — your coworker David is fine with either \"Dave\" or \"David\" and has no strong preference either way, as he mentioned in April. It's definitely lower stakes than the others, but it's good to have for completeness. Here's your current list: Marc (college friend) — prefers \"Marc\" professionally since mid-March; Chen Wei (roommate) — always use full name \"Chen Wei,\" not just Wei; David (coworker) — no preference between Dave and David. Let me know whenever you need to reference or update any of these, and I'll keep everything accurate for you."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Update Marcus's preference back to Marcus and add employer details",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to give you some more context on Marcus's work situation. Marcus started at Whitfield & Associates back in December, and he got promoted to senior consultant in February. That's relevant because the name change to Marc happened right after the promotion. But now I have another update about the name thing."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for the added context! So Marcus joined Whitfield & Associates in December, was promoted to senior consultant in February, and the switch to \"Marc\" came right after that promotion in mid-March. I've noted the employer details alongside his name preference. You mentioned there's another update about the name — go ahead and share whenever you're ready, and I'll make sure everything stays current in your records."
+        },
+        {
+          "role": "user",
+          "content": "So Marc told me last week that he's going back to \"Marcus\" — apparently his manager at the consulting firm thought \"Marc\" was too informal for client-facing emails, so he switched back. He said he's actually fine with it because some of the senior partners kept calling him Marcus anyway. So please update it: he goes by Marcus again now."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — Marcus has reverted to using his full name \"Marcus\" at Whitfield & Associates. His manager felt \"Marc\" was too informal for client-facing communications, and since the senior partners were already using \"Marcus\" anyway, he's comfortable with the change back. I've updated the record: your college friend's preferred professional name is now \"Marcus\" again. The timeline so far: January — insisted on Marcus; mid-March — switched to Marc after promotion; recently — switched back to Marcus due to workplace norms. Let me know if anything else shifts."
+        },
+        {
+          "role": "user",
+          "content": "Chen Wei's new workplace in Toronto is a fintech startup called Ledgerly. He started there on April 1st. I mention it because the name issue comes up a lot there — people at Ledgerly keep calling him just Wei, which is exactly why I want to be careful about using his full name whenever I introduce him to anyone. It matters to him and it matters to me."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — Chen Wei works at Ledgerly, a fintech startup in Toronto, where he started on April 1st. That's the workplace where colleagues have been defaulting to just \"Wei,\" which bothers him. It makes total sense that you'd want to be extra careful about using his full name, \"Chen Wei,\" in any introductions. Here's the updated picture: Marcus (college friend) — goes by \"Marcus\" at Whitfield & Associates; Chen Wei (roommate) — full name \"Chen Wei\" always, works at Ledgerly in Toronto since April 1st; David (coworker) — no preference. Anything else to add?"
+        },
+        {
+          "role": "user",
+          "content": "Actually, I want to double-check something. Marcus got promoted in February at Whitfield & Associates, right? And Chen Wei started at Ledgerly on April 1st. If I'm planning to introduce them to each other at a networking event in late June, I want to make sure I have the right names and titles. Marcus would have been at Whitfield for about seven months by then.\n\nThat's exactly the kind of introduction I'd want to give. I appreciate you keeping all of this straight. It's a small thing but it really shows respect when you get someone's name right. I'll keep you posted if anything else changes before the event."
+        },
+        {
+          "role": "assistant",
+          "content": "Let me help you work that out. Marcus started at Whitfield & Associates in December, so by late June he'd have been there roughly seven months — that checks out. He's a senior consultant there and currently goes by \"Marcus.\" Chen Wei started at Ledgerly on April 1st, so by late June he'd have been there about three months. He prefers his full name, \"Chen Wei.\" For the introduction, you'd want to say something like: \"Marcus, this is Chen Wei — he's at Ledgerly in Toronto. Chen Wei, this is Marcus — he's a senior consultant at Whitfield & Associates.\" That respects both their name preferences perfectly.\n\nAbsolutely — getting names right is one of those small gestures that makes a big impression. You clearly put thought into respecting what people prefer, and that's going to come through at the networking event. Right now your confirmed records are: Marcus (college friend, senior consultant at Whitfield & Associates since December, promoted February) — goes by \"Marcus\"; Chen Wei (roommate, at Ledgerly in Toronto since April 1st) — always use full name \"Chen Wei\"; David (coworker) — either Dave or David is fine. Just let me know whenever anything changes and I'll keep the notes updated for you."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Introduce tentative future name change for Marcus and adversarial look-alike",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, quick question — I'm drafting an email to both Marcus and Chen Wei about the networking event. I want to make sure I'm using the right names in the cc line and the body of the email. Can you remind me what each of them prefers right now?"
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! Based on your latest updates: Marcus currently goes by \"Marcus\" — he switched back from \"Marc\" because his manager at Whitfield & Associates felt Marc was too informal for client communications. So use \"Marcus\" in the cc line and email body. Chen Wei prefers his full name, \"Chen Wei\" — not just \"Wei.\" Make sure both parts appear in the cc line and when you address him. For the email, I'd suggest opening with something like \"Hi Marcus and Chen Wei\" to respect both preferences right from the start."
+        },
+        {
+          "role": "user",
+          "content": "Perfect. Oh, I also noticed something odd — I was looking at an old group email thread from January and there was a cc line that listed someone as \"Marc Torres\" on a project update. I think that might have been from when Marcus was briefly experimenting with the shorter name, or it could have been a different Marc entirely. Either way, I know his current preference is Marcus."
+        },
+        {
+          "role": "assistant",
+          "content": "Good catch. That old January cc line showing \"Marc Torres\" could easily be from Marcus's brief experiment with the shorter name, or it might be a completely different person — either way, it's outdated information. You're right that his current confirmed preference is \"Marcus.\" When drafting new emails, stick with \"Marcus Torres\" to stay consistent with what he's asked for. Old email threads can be confusing that way, especially when someone has gone through a couple of name changes. If you want, I can help you draft the networking event email using the correct names."
+        },
+        {
+          "role": "user",
+          "content": "His HR department confirmed they'll be listing him as \"M. Torres\" on all new business cards and the company directory starting next quarter. He said that's basically going to be his professional identity going forward. So that's interesting — it might mean another shift is coming, but for now I think Marcus is still what he's going by day to day."
+        },
+        {
+          "role": "assistant",
+          "content": "That's an interesting development. So Whitfield & Associates' HR will be listing him as \"M. Torres\" on business cards and the company directory starting next quarter. That could signal a future shift in how he's addressed professionally, but as you said, for now he's still going by \"Marcus\" in daily interactions. I'd recommend continuing to use \"Marcus\" in your email and at the networking event, and then revisiting once the new business cards actually roll out. If he tells you he wants to switch to \"M. Torres\" as his preferred address, we can update the record then."
+        },
+        {
+          "role": "user",
+          "content": "Agreed, let's keep it as Marcus for now. By the way, I was also looking at Chen Wei's LinkedIn and noticed his profile says \"Wei Chen\" in the name field — I think that's just how LinkedIn auto-formatted it. His actual preferred name order is Chen Wei, first name Chen, and he'd want people to use both parts together.\n\nGreat thinking. So to summarize for my email: I'll cc Marcus Torres and Chen Wei, address them as \"Hi Marcus and Chen Wei,\" and keep everything consistent with their current preferences. I feel good about this — thanks for helping me keep track of all the changes."
+        },
+        {
+          "role": "assistant",
+          "content": "Right — LinkedIn sometimes flips the name order based on locale settings, so \"Wei Chen\" on his profile is likely just an auto-formatting issue. His actual preferred form of address remains \"Chen Wei\" with that name order, and he wants both parts used together. For your email and the networking event introduction, stick with \"Chen Wei\" as he's asked. It's worth noting this LinkedIn discrepancy in case anyone at the event looks him up beforehand and gets confused by the reversed order — you could gently correct them if needed.\n\nThat sounds perfect! Your email will cc Marcus Torres and Chen Wei, open with \"Hi Marcus and Chen Wei,\" and respect both of their current naming preferences. Here's a quick recap of where things stand: Marcus (college friend, senior consultant at Whitfield & Associates) — goes by \"Marcus\" currently, with a possible future shift to \"M. Torres\" next quarter pending new business cards; Chen Wei (roommate, at Ledgerly in Toronto) — always \"Chen Wei,\" full name, correct order. You've been really diligent about tracking all of this, and your contacts are lucky to have someone who cares this much about getting it right. Let me know if you need help with the actual email draft!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations, I've mentioned how my college friend's name preference has shifted a few times. Can you summarize what I told you about how he wants to be addressed, including the different things I said at different points?",
+      "expected_answer": "Initially, you said your college friend Marcus strictly goes by \"Marcus\" with no nicknames, as he made clear when you reconnected in January. Then in mid-March, after his promotion at his consulting firm, he switched to \"Marc\" for professional settings. Later, you said he went back to \"Marcus\" because his manager felt \"Marc\" was too informal for client-facing emails. Most recently, you mentioned that his HR department will list him as \"M. Torres\" on new business cards and the company directory starting next quarter, though you noted he still goes by \"Marcus\" day to day for now.",
+      "gold_memory_state": "Marcus's preferred form of address has gone through multiple stated values: Marcus (January) → Marc (mid-March) → Marcus (recent revert) → M. Torres (tentative, next quarter HR listing). The confirmed current value is Marcus. M. Torres is tentative/future and not yet adopted.",
+      "judge_rubric": {
+        "must_include": [
+          "Marcus as original preference",
+          "Marc as the mid-March professional switch",
+          "revert back to Marcus due to manager feedback",
+          "M. Torres as a future HR listing"
+        ],
+        "acceptable_paraphrases": [
+          "full name Marcus",
+          "shortened to Marc",
+          "switched back to Marcus"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming M. Torres is the current preferred name",
+          "omitting the revert back to Marcus"
+        ],
+        "harmless_extra": [
+          "mentioning the promotion in February",
+          "mentioning Whitfield & Associates",
+          "mentioning senior partners already called him Marcus"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats Marc as the current name or treats M. Torres as the confirmed current name.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My college friend Marcus told me he strictly goes by \"Marcus\" — full name, no nicknames. He was really clear about it when we reconnected back in January."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Marcus actually changed his mind — he told me around mid-March that he now goes by \"Marc\" in all professional settings. He started using it at his consulting firm after he got promoted in February."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "So Marc told me last week that he's going back to \"Marcus\" — apparently his manager at the consulting firm thought \"Marc\" was too informal for client-facing emails, so he switched back."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "His HR department confirmed they'll be listing him as \"M. Torres\" on all new business cards and the company directory starting next quarter. He said that's basically going to be his professional identity going forward."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations, I've mentioned how my college friend's name preference has shifted a few times. Can you summarize what I told you about how he wants to be addressed, including the different things I said at different points?",
+      "expected_answer": "Initially, you said your college friend Marcus strictly goes by \"Marcus\" with no nicknames, as he made clear when you reconnected in January. Then in mid-March, after his promotion at his consulting firm, he switched to \"Marc\" for professional settings. Later, you said he went back to \"Marcus\" because his manager felt \"Marc\" was too informal for client-facing emails. Most recently, you mentioned that his HR department will list him as \"M. Torres\" on new business cards and the company directory starting next quarter, though you noted he still goes by \"Marcus\" day to day for now.",
+      "gold_memory_state": "Marcus's preferred form of address has gone through multiple stated values: Marcus (January) → Marc (mid-March) → Marcus (recent revert) → M. Torres (tentative, next quarter HR listing). The confirmed current value is Marcus. M. Torres is tentative/future and not yet adopted.",
+      "judge_rubric": {
+        "must_include": [
+          "Marcus as original preference",
+          "Marc as the mid-March professional switch",
+          "revert back to Marcus due to manager feedback",
+          "M. Torres as a future HR listing"
+        ],
+        "acceptable_paraphrases": [
+          "full name Marcus",
+          "shortened to Marc",
+          "switched back to Marcus"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming M. Torres is the current preferred name",
+          "omitting the revert back to Marcus"
+        ],
+        "harmless_extra": [
+          "mentioning the promotion in February",
+          "mentioning Whitfield & Associates",
+          "mentioning senior partners already called him Marcus"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats Marc as the current name or treats M. Torres as the confirmed current name.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My college friend Marcus told me he strictly goes by \"Marcus\" — full name, no nicknames. He was really clear about it when we reconnected back in January."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Marcus actually changed his mind — he told me around mid-March that he now goes by \"Marc\" in all professional settings. He started using it at his consulting firm after he got promoted in February."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "So Marc told me last week that he's going back to \"Marcus\" — apparently his manager at the consulting firm thought \"Marc\" was too informal for client-facing emails, so he switched back."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "His HR department confirmed they'll be listing him as \"M. Torres\" on all new business cards and the company directory starting next quarter. He said that's basically going to be his professional identity going forward."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've shared naming preferences for several people in my life. When I mentioned the back-and-forth about switching between a full first name and a shortened version at a consulting firm, which person's record does that apply to? Does my roommate's naming preference get affected by any of that?",
+      "expected_answer": "The back-and-forth between a full first name and a shortened version at the consulting firm applies to your college friend Marcus's preferred form of address. Your roommate Chen Wei's naming preference is entirely separate and unaffected — he consistently prefers his full name \"Chen Wei.\"",
+      "gold_memory_state": "Marcus's preferred name record has undergone multiple changes (Marcus → Marc → Marcus, with a tentative M. Torres). Chen Wei's preferred name record has remained stable at \"Chen Wei\" throughout. These are two distinct naming-preference records.",
+      "judge_rubric": {
+        "must_include": [
+          "Marcus or college friend",
+          "Chen Wei's preference is separate and unaffected"
+        ],
+        "acceptable_paraphrases": [
+          "the consulting firm name changes belong to Marcus",
+          "Chen Wei is not involved in the name switching"
+        ],
+        "must_not_include": [
+          "Chen Wei's preference changed",
+          "Chen Wei is also affected"
+        ],
+        "harmful_extra": [
+          "merging Marcus and Chen Wei into a single naming record",
+          "saying the consulting firm name changes apply to Chen Wei"
+        ],
+        "harmless_extra": [
+          "mentioning Whitfield & Associates",
+          "mentioning Marc as a prior value",
+          "mentioning Chen Wei prefers both parts of his name"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Marcus actually changed his mind — he told me around mid-March that he now goes by \"Marc\" in all professional settings. He started using it at his consulting firm after he got promoted in February."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "So Marc told me last week that he's going back to \"Marcus\" — apparently his manager at the consulting firm thought \"Marc\" was too informal for client-facing emails, so he switched back."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my roommate Chen Wei — he prefers people use his full name \"Chen Wei\" rather than just \"Wei.\" He told me this on May 2nd when we caught up over the phone."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've shared naming preferences for several people in my life. When I mentioned the back-and-forth about switching between a full first name and a shortened version at a consulting firm, which person's record does that apply to? Does my roommate's naming preference get affected by any of that?",
+      "expected_answer": "The back-and-forth between a full first name and a shortened version at the consulting firm applies to your college friend Marcus's preferred form of address. Your roommate Chen Wei's naming preference is entirely separate and unaffected — he consistently prefers his full name \"Chen Wei.\"",
+      "gold_memory_state": "Marcus's preferred name record has undergone multiple changes (Marcus → Marc → Marcus, with a tentative M. Torres). Chen Wei's preferred name record has remained stable at \"Chen Wei\" throughout. These are two distinct naming-preference records.",
+      "judge_rubric": {
+        "must_include": [
+          "Marcus or college friend",
+          "Chen Wei's preference is separate and unaffected"
+        ],
+        "acceptable_paraphrases": [
+          "the consulting firm name changes belong to Marcus",
+          "Chen Wei is not involved in the name switching"
+        ],
+        "must_not_include": [
+          "Chen Wei's preference changed",
+          "Chen Wei is also affected"
+        ],
+        "harmful_extra": [
+          "merging Marcus and Chen Wei into a single naming record",
+          "saying the consulting firm name changes apply to Chen Wei"
+        ],
+        "harmless_extra": [
+          "mentioning Whitfield & Associates",
+          "mentioning Marc as a prior value",
+          "mentioning Chen Wei prefers both parts of his name"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Marcus actually changed his mind — he told me around mid-March that he now goes by \"Marc\" in all professional settings. He started using it at his consulting firm after he got promoted in February."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "So Marc told me last week that he's going back to \"Marcus\" — apparently his manager at the consulting firm thought \"Marc\" was too informal for client-facing emails, so he switched back."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my roommate Chen Wei — he prefers people use his full name \"Chen Wei\" rather than just \"Wei.\" He told me this on May 2nd when we caught up over the phone."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to address my college friend in a professional email I'm sending today. Which of the following should I use as his preferred form of address?",
+      "candidate_options": [
+        "Marcus",
+        "Marc",
+        "M. Torres",
+        "Marcus Torres"
+      ],
+      "expected_answer": "Marcus",
+      "gold_memory_state": "The confirmed current preferred form of address is Marcus. Marc is a stale value from mid-March that was reverted. M. Torres is a tentative future HR listing not yet adopted. Marcus Torres is the full legal name but the user's tracking focused on first-name preference.",
+      "judge_rubric": {
+        "must_include": [
+          "Marcus"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "Marc as the answer",
+          "M. Torres as the answer"
+        ],
+        "harmful_extra": [
+          "selecting Marc",
+          "selecting M. Torres",
+          "selecting Marcus Torres as the preferred form of address"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'Marcus Torres' is the full legal name echoed by the assistant in segment 3 but not the tracked preferred address form. assistant echo: 'Marc' appeared in assistant summaries as the preferred name during mid-March but was reverted. 'M. Torres' is a tentative future HR listing that the user explicitly said is not yet his day-to-day preference — this is the recency trap distractor.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects Marc (stale mid-March value) or M. Torres (tentative, not yet adopted).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "So Marc told me last week that he's going back to \"Marcus\" — apparently his manager at the consulting firm thought \"Marc\" was too informal for client-facing emails, so he switched back."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "His HR department confirmed they'll be listing him as \"M. Torres\" on all new business cards and the company directory starting next quarter. He said that's basically going to be his professional identity going forward."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to address my college friend in a professional email I'm sending today. Which of the following should I use as his preferred form of address?",
+      "candidate_options": [
+        "Marcus",
+        "Marc",
+        "M. Torres",
+        "Marcus Torres"
+      ],
+      "expected_answer": "Marcus",
+      "gold_memory_state": "The confirmed current preferred form of address is Marcus. Marc is a stale value from mid-March that was reverted. M. Torres is a tentative future HR listing not yet adopted. Marcus Torres is the full legal name but the user's tracking focused on first-name preference.",
+      "judge_rubric": {
+        "must_include": [
+          "Marcus"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "Marc as the answer",
+          "M. Torres as the answer"
+        ],
+        "harmful_extra": [
+          "selecting Marc",
+          "selecting M. Torres",
+          "selecting Marcus Torres as the preferred form of address"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'Marcus Torres' is the full legal name echoed by the assistant in segment 3 but not the tracked preferred address form. assistant echo: 'Marc' appeared in assistant summaries as the preferred name during mid-March but was reverted. 'M. Torres' is a tentative future HR listing that the user explicitly said is not yet his day-to-day preference — this is the recency trap distractor.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects Marc (stale mid-March value) or M. Torres (tentative, not yet adopted).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "So Marc told me last week that he's going back to \"Marcus\" — apparently his manager at the consulting firm thought \"Marc\" was too informal for client-facing emails, so he switched back."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "His HR department confirmed they'll be listing him as \"M. Torres\" on all new business cards and the company directory starting next quarter. He said that's basically going to be his professional identity going forward."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm preparing name badges for the networking event in late June. For my college friend and my roommate, draft the text that should appear on each badge, including their preferred name and their employer. Make sure the names match what each person currently wants to be called.",
+      "expected_answer": "Badge 1: Marcus — Whitfield & Associates. Badge 2: Chen Wei — Ledgerly.",
+      "gold_memory_state": "Marcus's confirmed current preferred name is Marcus (not Marc, not M. Torres). He works at Whitfield & Associates as a senior consultant. Chen Wei's preferred name is Chen Wei (full name, not just Wei). He works at Ledgerly, a fintech startup in Toronto.",
+      "judge_rubric": {
+        "must_include": [
+          "Marcus on the badge (not Marc or M. Torres)",
+          "Whitfield & Associates",
+          "Chen Wei (full name)",
+          "Ledgerly"
+        ],
+        "acceptable_paraphrases": [
+          "Marcus, Whitfield & Associates",
+          "Chen Wei, Ledgerly"
+        ],
+        "must_not_include": [
+          "Marc on Marcus's badge",
+          "M. Torres on Marcus's badge",
+          "Wei alone on Chen Wei's badge"
+        ],
+        "harmful_extra": [
+          "using Marc instead of Marcus",
+          "using M. Torres instead of Marcus",
+          "using just Wei instead of Chen Wei",
+          "listing a wrong employer"
+        ],
+        "harmless_extra": [
+          "mentioning senior consultant as Marcus's title",
+          "mentioning Toronto for Chen Wei",
+          "mentioning fintech for Ledgerly"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses Marc (stale) or M. Torres (tentative) for Marcus's badge.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Marcus's confirmed current preferred form of address is Marcus, after reverting from Marc.",
+        "Fact 2: Marcus works at Whitfield & Associates as a senior consultant.",
+        "Fact 3: Chen Wei prefers to be addressed by his full name Chen Wei, not just Wei.",
+        "Fact 4: Chen Wei works at Ledgerly, a fintech startup in Toronto.",
+        "Inference: The M. Torres HR listing is tentative and not yet adopted, so Marcus remains the correct badge name.",
+        "Inference: Combining each person's current preferred name with their employer yields Badge 1: Marcus — Whitfield & Associates; Badge 2: Chen Wei — Ledgerly."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "So Marc told me last week that he's going back to \"Marcus\" — apparently his manager at the consulting firm thought \"Marc\" was too informal for client-facing emails, so he switched back."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Marcus started at Whitfield & Associates back in December, and he got promoted to senior consultant in February"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my roommate Chen Wei — he prefers people use his full name \"Chen Wei\" rather than just \"Wei.\" He told me this on May 2nd when we caught up over the phone."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Chen Wei's new workplace in Toronto is a fintech startup called Ledgerly. He started there on April 1st."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm preparing name badges for the networking event in late June. For my college friend and my roommate, draft the text that should appear on each badge, including their preferred name and their employer. Make sure the names match what each person currently wants to be called.",
+      "expected_answer": "Badge 1: Marcus — Whitfield & Associates. Badge 2: Chen Wei — Ledgerly.",
+      "gold_memory_state": "Marcus's confirmed current preferred name is Marcus (not Marc, not M. Torres). He works at Whitfield & Associates as a senior consultant. Chen Wei's preferred name is Chen Wei (full name, not just Wei). He works at Ledgerly, a fintech startup in Toronto.",
+      "judge_rubric": {
+        "must_include": [
+          "Marcus on the badge (not Marc or M. Torres)",
+          "Whitfield & Associates",
+          "Chen Wei (full name)",
+          "Ledgerly"
+        ],
+        "acceptable_paraphrases": [
+          "Marcus, Whitfield & Associates",
+          "Chen Wei, Ledgerly"
+        ],
+        "must_not_include": [
+          "Marc on Marcus's badge",
+          "M. Torres on Marcus's badge",
+          "Wei alone on Chen Wei's badge"
+        ],
+        "harmful_extra": [
+          "using Marc instead of Marcus",
+          "using M. Torres instead of Marcus",
+          "using just Wei instead of Chen Wei",
+          "listing a wrong employer"
+        ],
+        "harmless_extra": [
+          "mentioning senior consultant as Marcus's title",
+          "mentioning Toronto for Chen Wei",
+          "mentioning fintech for Ledgerly"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses Marc (stale) or M. Torres (tentative) for Marcus's badge.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Marcus's confirmed current preferred form of address is Marcus, after reverting from Marc.",
+        "Fact 2: Marcus works at Whitfield & Associates as a senior consultant.",
+        "Fact 3: Chen Wei prefers to be addressed by his full name Chen Wei, not just Wei.",
+        "Fact 4: Chen Wei works at Ledgerly, a fintech startup in Toronto.",
+        "Inference: The M. Torres HR listing is tentative and not yet adopted, so Marcus remains the correct badge name.",
+        "Inference: Combining each person's current preferred name with their employer yields Badge 1: Marcus — Whitfield & Associates; Badge 2: Chen Wei — Ledgerly."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "So Marc told me last week that he's going back to \"Marcus\" — apparently his manager at the consulting firm thought \"Marc\" was too informal for client-facing emails, so he switched back."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Marcus started at Whitfield & Associates back in December, and he got promoted to senior consultant in February"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my roommate Chen Wei — he prefers people use his full name \"Chen Wei\" rather than just \"Wei.\" He told me this on May 2nd when we caught up over the phone."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Chen Wei's new workplace in Toronto is a fintech startup called Ledgerly. He started there on April 1st."
+        }
+      ]
+    }
+  ]
+}

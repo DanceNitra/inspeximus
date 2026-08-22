@@ -1,0 +1,1055 @@
+{
+  "target_fact": "User's favorite restaurant is Olive & Thyme on Magnolia Boulevard, with specific details about usual order, dining preferences, visit history, and other restaurant-related facts.",
+  "operation_type": "Forget",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "My favorite restaurant is Olive & Thyme, it's on Magnolia Boulevard"
+      },
+      "target": {
+        "target_id": "favorite_restaurant_name_location",
+        "target_name": "favorite restaurant name and location"
+      },
+      "old_value": null,
+      "new_value": "Olive & Thyme on Magnolia Boulevard",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My favorite restaurant is Olive & Thyme, it's on Magnolia Boulevard"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "my go-to order there is the roasted cauliflower flatbread with a side of their house green salad"
+      },
+      "target": {
+        "target_id": "usual_order_olive_thyme",
+        "target_name": "usual order at Olive & Thyme"
+      },
+      "old_value": null,
+      "new_value": "Roasted cauliflower flatbread with a side of house green salad",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my go-to order there is the roasted cauliflower flatbread with a side of their house green salad"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I first went there because my friend Clara brought me for her birthday lunch, that was around February 8th"
+      },
+      "target": {
+        "target_id": "first_visit_olive_thyme",
+        "target_name": "first visit to Olive & Thyme details"
+      },
+      "old_value": null,
+      "new_value": "First visit around February 8th for friend Clara's birthday lunch",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I first went there because my friend Clara brought me for her birthday lunch, that was around February 8th"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "they close at 9:30 on weekdays, not 10 like I originally thought"
+      },
+      "target": {
+        "target_id": "olive_thyme_weekday_closing",
+        "target_name": "Olive & Thyme weekday closing time"
+      },
+      "old_value": null,
+      "new_value": "9:30 PM on weekdays",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "they close at 9:30 on weekdays, not 10 like I originally thought"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "the bill for both of us was $47 before tip when I went with my coworker Dev last week"
+      },
+      "target": {
+        "target_id": "recent_visit_with_dev",
+        "target_name": "recent visit to Olive & Thyme with coworker Dev"
+      },
+      "old_value": null,
+      "new_value": "Visited with coworker Dev; bill was $47 before tip for two people",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "the bill for both of us was $47 before tip when I went with my coworker Dev last week"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Dev is vegetarian and he got the beet and goat cheese tartine"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "they discontinued the lavender lemonade which was the one drink I always got there"
+      },
+      "target": {
+        "target_id": "lavender_lemonade_discontinued",
+        "target_name": "lavender lemonade discontinuation at Olive & Thyme"
+      },
+      "old_value": null,
+      "new_value": "Lavender lemonade discontinued; replaced with hibiscus drink that is too sweet",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "they discontinued the lavender lemonade which was the one drink I always got there"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "They replaced it with some hibiscus thing that's way too sweet for me"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "forget",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 3,
+        "quote": "can you forget the stuff about my visit with Dev? I don't need you tracking individual outings like that"
+      },
+      "target": {
+        "target_id": "recent_visit_with_dev",
+        "target_name": "recent visit to Olive & Thyme with coworker Dev"
+      },
+      "old_value": "Visited with coworker Dev; bill was $47 before tip for two people",
+      "new_value": null,
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "can you forget the stuff about my visit with Dev? I don't need you tracking individual outings like that"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish core restaurant facts: name, location, usual order, first visit details, and dining atmosphere preferences.",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to make sure you have some details about my dining habits saved. My favorite restaurant is Olive & Thyme, it's on Magnolia Boulevard. I've been going there pretty regularly since the beginning of this year and it's become my absolute go-to spot. The atmosphere is really calm—soft lighting, no blaring music—and that's a big part of why I love it so much."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it! I'll remember that your favorite restaurant is Olive & Thyme on Magnolia Boulevard. It sounds like a wonderful place—the calm atmosphere with soft lighting and no loud music clearly makes a big difference for you. That kind of environment can really elevate the whole dining experience. Do you have a usual order there, or do you like to switch things up each time you visit? I'd be happy to note down any other details about the restaurant that you'd like me to keep track of for future reference."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, definitely note this down—my go-to order there is the roasted cauliflower flatbread with a side of their house green salad. That combo is what I always end up happiest with. I've tried other things on the menu but I keep coming back to that. It's light, flavorful, and just the right amount of food for me. Please remember that specific order because I sometimes forget and almost order something else."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted! Your usual order at Olive & Thyme is the roasted cauliflower flatbread with a side of their house green salad. That's a great combo—light and flavorful sounds perfect, especially if heavier dishes don't sit as well with you. I'll keep this on file so if you ever ask me what to order there, I can remind you to stick with what makes you happiest. It's nice to have a reliable go-to. Do you want me to remember anything else about the restaurant, like specific visits or people you've gone with?"
+        },
+        {
+          "role": "user",
+          "content": "Sure, here's some background. I first went there because my friend Clara brought me for her birthday lunch, that was around February 8th. I honestly wasn't expecting much going in, but Clara insisted and I'm glad she did. The whole vibe just clicked for me from that very first visit. Clara has good taste apparently. Before that I'd never even heard of the place, so it was a complete discovery for me."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a great origin story for a favorite restaurant! I'll remember that your first visit to Olive & Thyme was around February 8th, when your friend Clara brought you there for her birthday lunch. It sounds like Clara really did you a favor—sometimes the best discoveries come from being dragged somewhere you wouldn't have chosen yourself. The fact that the vibe clicked immediately says a lot about the place matching your preferences. Do you still go with Clara sometimes, or has it become more of a solo or varied-company spot for you now?"
+        },
+        {
+          "role": "user",
+          "content": "It's become a mix. I've taken different people there. I also really enjoy going solo—they have counter seating by the window that doesn't make you feel awkward eating alone, which I appreciate. Some restaurants make solo dining feel weird but Olive & Thyme handles it well. They also have a small patio out back with about six tables, and I always prefer sitting out there when the weather is nice. Eating outside without a lot of noise is ideal for me."
+        },
+        {
+          "role": "assistant",
+          "content": "That's wonderful—it sounds like Olive & Thyme really caters to different dining situations for you. I'll note that you enjoy solo dining at the counter seating by the window, and that you prefer the small back patio with about six tables when the weather is nice. The fact that you can eat alone comfortably there and also bring friends speaks to the versatility of the place. Eating outside in a quiet setting clearly aligns with your preference for calm, low-stimulation environments. It's really a well-rounded spot for you. Let me know if there are more details you'd like me to save."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Add operational details: closing time, visit with Dev, lavender lemonade discontinuation, and address approximation.",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "One practical thing—they close at 9:30 on weekdays, not 10 like I originally thought. I showed up once at 9:15 in early April and barely made it in. So if I ever ask you to help me plan an evening there on a weeknight, keep that 9:30 cutoff in mind. I learned the hard way that you can't just stroll in at quarter to ten expecting to be seated."
+        },
+        {
+          "role": "assistant",
+          "content": "Good to know! I'll remember that Olive & Thyme closes at 9:30 PM on weekdays, not 10 PM. That's a pretty important detail for planning weeknight visits—arriving at 9:15 and barely making it in is cutting it close for sure. If you ever want me to help coordinate an evening dinner there during the week, I'll factor in that 9:30 closing time so you have a comfortable buffer. It might be worth aiming for 8:30 or earlier to actually enjoy the meal without feeling rushed. Any other logistical details about the place I should keep track of?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, so the bill for both of us was $47 before tip when I went with my coworker Dev last week. Dev is vegetarian and he got the beet and goat cheese tartine. He was really impressed by how many vegetarian options they have. I had my usual flatbread. I thought $47 for two people with those kinds of dishes was pretty fair honestly. Dev kept going on about his tartine the whole way back to the office."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a great outing! I'll note that you recently visited Olive & Thyme with your coworker Dev, and the bill came to $47 before tip for two people. Dev being vegetarian and finding plenty of options there is a good sign of their menu diversity—the beet and goat cheese tartine sounds excellent if he was raving about it. And $47 for two quality meals is definitely reasonable pricing. It's nice to have a spot you can bring coworkers to that accommodates different dietary needs while keeping the bill manageable. Anything else from that visit worth remembering?"
+        },
+        {
+          "role": "user",
+          "content": "Actually yes—they discontinued the lavender lemonade which was the one drink I always got there. I saw it on their Instagram a couple weeks ago and it genuinely put me in a sour mood for the rest of that evening. They replaced it with some hibiscus thing that's way too sweet for me. It felt like they were messing with a good thing. That lavender lemonade was part of the whole experience for me."
+        },
+        {
+          "role": "assistant",
+          "content": "Oh no, I'm sorry to hear that! I'll remember that the lavender lemonade—your go-to drink at Olive & Thyme—has been discontinued and replaced with a hibiscus drink that you find too sweet. That's genuinely frustrating when a place removes something that was part of your personal ritual there. The fact that it affected your mood for the whole evening shows how much that drink meant to the overall experience. Maybe you could ask them if they'd consider bringing it back, or if there's another lighter drink option that might work as a replacement? Sometimes restaurants rotate seasonal items back in."
+        },
+        {
+          "role": "user",
+          "content": "Maybe, I doubt it though. Anyway, I'm pretty sure their address is around 3938 Magnolia Blvd, or maybe 3936—somewhere right around there. I can never remember the exact number but it's in that block. If you need to note the general location that's close enough. I walk there from my place so I don't usually think about the exact street number honestly.\n\nI think that covers the main stuff for now. Oh wait—I also took my mom there for a weeknight dinner back in late February or early March. She approved of the portions, which is high praise from her, and she really liked their lemon herb chicken. She even asked for the recipe and the server just laughed. That was a fun evening."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood! I'll note that Olive & Thyme is located at approximately 3936-3938 Magnolia Boulevard—you're not certain of the exact number but it's in that block. Since you walk there, the precise address probably matters less for your own navigation, but it's good to have the approximate location on file in case you ever need to share directions with someone or look up their hours online. Between the address, the 9:30 weekday closing time, and your usual order, I've got a solid profile of your Olive & Thyme habits now. Anything else you'd like me to keep track of?\n\nWhat a sweet memory! I'll note that you took your mom to Olive & Thyme for a weeknight dinner in late February or early March. Her approving of the portions—which you describe as high praise from her—and loving the lemon herb chicken enough to ask for the recipe is a great endorsement. The server laughing at the recipe request is a classic restaurant moment. It sounds like Olive & Thyme works well for family dinners too, not just solo visits or outings with friends and coworkers. You've really built up quite a history with this place in just a few months."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Forget request for Dev visit details; adversarial injection of look-alike restaurant; retain all other Olive & Thyme facts.",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I was thinking about organizing a small dinner for a few friends at Olive & Thyme soon. Probably on a weeknight since weekends are harder for everyone. I'd want to get there early enough that we're not rushing before they close. Maybe aim for 7:30 so we have a solid two hours if we want to linger on the patio."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a great plan! Based on what I have saved, Olive & Thyme closes at 9:30 PM on weekdays, so arriving at 7:30 gives you a comfortable two-hour window. That should be plenty of time to enjoy the meal and linger on the back patio, especially if the weather cooperates. Since you prefer sitting outside at those six or so tables, you might want to arrive a bit early or call ahead to make sure patio seating is available for a group. Would you like me to help draft an invitation message or plan the logistics for the dinner?"
+        },
+        {
+          "role": "user",
+          "content": "Sure, but first—can you forget the stuff about my visit with Dev? I don't need you tracking individual outings like that. It feels a bit much having every single dinner logged. Keep everything else about the restaurant though—my usual order, the closing time, the patio preference, all of that. Just drop the Dev visit specifically."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, I've removed the details about your visit with Dev from my memory. I completely understand not wanting every individual outing logged—that can feel like unnecessary surveillance of your social life. Everything else about Olive & Thyme stays intact: your usual order of the roasted cauliflower flatbread with house green salad, the 9:30 PM weekday closing time, your patio and counter-seating preferences, the lavender lemonade situation, your first visit with Clara, the dinner with your mom, and the approximate address on Magnolia Boulevard. All of that is still saved. Now, shall we work on planning that group dinner?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, let's do that. I'm thinking of inviting Clara and maybe two other friends. Oh by the way, Clara mentioned she recently tried a place called Olive Branch Bistro on Riverside Drive and said it was amazing. She said their flatbread was incredible and the bill for two was only $38. She's been going on about it nonstop, trying to get me to switch."
+        },
+        {
+          "role": "assistant",
+          "content": "Ha, it sounds like Clara is trying to lure you away from your spot! Olive Branch Bistro on Riverside Drive does sound interesting from her description—$38 for two with great flatbread is competitive pricing. But given how much Olive & Thyme means to you and how well it fits your preferences for quiet atmosphere, the specific menu items you love, and the comfortable solo and group dining setup, it would take a lot to dethrone it. For the group dinner, if you're inviting Clara plus two others, that's four people total. The back patio could work nicely since it has about six tables. Would you like me to draft a casual text to send to the group?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, let's draft something casual. Mention that it's on Magnolia Boulevard in case anyone needs the general area, and suggest a weeknight—maybe a Wednesday or Thursday. I'd want to note that they should plan to arrive by 7:30 since the place closes at 9:30. Keep it simple and friendly, nothing too formal.\n\nThat looks good actually. I might add a note about the vegetarian options since one of the friends I'm inviting doesn't eat meat. And I'll definitely be ordering my usual flatbread and salad combo—that never gets old. Thanks for helping me put this together, I'm looking forward to it."
+        },
+        {
+          "role": "assistant",
+          "content": "Here's a casual draft for you:\n\n\"Hey! I'm putting together a low-key dinner at Olive & Thyme on Magnolia Blvd—thinking a Wednesday or Thursday evening soon. Plan to get there by 7:30 so we have plenty of time (they close at 9:30 on weeknights). They've got a nice patio out back if the weather's good. Let me know what evening works best for you! 🍽️\"\n\nFeel free to tweak the tone or add any specifics. You could also mention the vegetarian-friendly menu if any of your friends have dietary preferences, since the restaurant clearly has good options for that. Want me to adjust anything in the message?\n\nYou're welcome! Adding a note about the vegetarian options is a great idea—Olive & Thyme clearly has an impressive selection for non-meat eaters, so your friend should have plenty to choose from. And sticking with your roasted cauliflower flatbread and house green salad is a solid call—when you've found the perfect order, there's no reason to mess with it. I hope the dinner goes wonderfully! If you need help with anything else for the evening—like figuring out the exact address or planning the timing—just let me know. Enjoy the patio if the weather cooperates!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've shared with you about my experiences at Olive & Thyme — the people I've gone with, what I've ordered, practical details about the place, and anything notable that happened there?",
+      "expected_answer": "You shared that Olive & Thyme on Magnolia Boulevard (approximately 3936–3938) is your favorite restaurant. Your usual order is the roasted cauliflower flatbread with a side of house green salad. Your first visit was around February 8th when your friend Clara brought you for her birthday lunch. The restaurant closes at 9:30 PM on weekdays. You visited with your coworker Dev and the bill was $47 before tip for two. The lavender lemonade you always ordered was discontinued and replaced with a hibiscus drink that's too sweet. You also took your mom there for a weeknight dinner in late February or early March — she liked the lemon herb chicken and approved of the portions. You enjoy the counter seating by the window for solo dining and prefer the back patio with about six tables when weather permits.",
+      "gold_memory_state": "All Olive & Thyme facts from the conversation are established: name/location, usual order, first visit with Clara, weekday closing time, visit with Dev, lavender lemonade discontinuation, mom's visit, seating preferences, approximate address. The Dev visit details were later requested to be removed, but at the point of full trace summary all were initially shared.",
+      "judge_rubric": {
+        "must_include": [
+          "Olive & Thyme",
+          "Magnolia Boulevard",
+          "roasted cauliflower flatbread",
+          "house green salad",
+          "Clara",
+          "February 8th",
+          "9:30 PM weekday closing",
+          "lavender lemonade discontinued"
+        ],
+        "acceptable_paraphrases": [
+          "cauliflower flatbread",
+          "green salad",
+          "closes at 9:30 on weeknights"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "fabricating visits or details not mentioned by the user"
+        ],
+        "harmless_extra": [
+          "mentioning the patio preference",
+          "mentioning the mom's visit",
+          "mentioning the approximate address",
+          "mentioning the hibiscus replacement drink",
+          "mentioning Dev visit"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My favorite restaurant is Olive & Thyme, it's on Magnolia Boulevard"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my go-to order there is the roasted cauliflower flatbread with a side of their house green salad"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I first went there because my friend Clara brought me for her birthday lunch, that was around February 8th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "they close at 9:30 on weekdays, not 10 like I originally thought"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "the bill for both of us was $47 before tip when I went with my coworker Dev last week"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "they discontinued the lavender lemonade which was the one drink I always got there"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've shared with you about my experiences at Olive & Thyme — the people I've gone with, what I've ordered, practical details about the place, and anything notable that happened there?",
+      "expected_answer": "You shared that Olive & Thyme on Magnolia Boulevard (approximately 3936–3938) is your favorite restaurant. Your usual order is the roasted cauliflower flatbread with a side of house green salad. Your first visit was around February 8th when your friend Clara brought you for her birthday lunch. The restaurant closes at 9:30 PM on weekdays. You visited with your coworker Dev and the bill was $47 before tip for two. The lavender lemonade you always ordered was discontinued and replaced with a hibiscus drink that's too sweet. You also took your mom there for a weeknight dinner in late February or early March — she liked the lemon herb chicken and approved of the portions. You enjoy the counter seating by the window for solo dining and prefer the back patio with about six tables when weather permits.",
+      "gold_memory_state": "All Olive & Thyme facts from the conversation are established: name/location, usual order, first visit with Clara, weekday closing time, visit with Dev, lavender lemonade discontinuation, mom's visit, seating preferences, approximate address. The Dev visit details were later requested to be removed, but at the point of full trace summary all were initially shared.",
+      "judge_rubric": {
+        "must_include": [
+          "Olive & Thyme",
+          "Magnolia Boulevard",
+          "roasted cauliflower flatbread",
+          "house green salad",
+          "Clara",
+          "February 8th",
+          "9:30 PM weekday closing",
+          "lavender lemonade discontinued"
+        ],
+        "acceptable_paraphrases": [
+          "cauliflower flatbread",
+          "green salad",
+          "closes at 9:30 on weeknights"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "fabricating visits or details not mentioned by the user"
+        ],
+        "harmless_extra": [
+          "mentioning the patio preference",
+          "mentioning the mom's visit",
+          "mentioning the approximate address",
+          "mentioning the hibiscus replacement drink",
+          "mentioning Dev visit"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My favorite restaurant is Olive & Thyme, it's on Magnolia Boulevard"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my go-to order there is the roasted cauliflower flatbread with a side of their house green salad"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I first went there because my friend Clara brought me for her birthday lunch, that was around February 8th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "they close at 9:30 on weekdays, not 10 like I originally thought"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "the bill for both of us was $47 before tip when I went with my coworker Dev last week"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "they discontinued the lavender lemonade which was the one drink I always got there"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to drop some specific dining outing details. Which particular outing's details did I ask you to remove, and do the details about my other outings — like the one with Clara or the one with my mom — still remain usable?",
+      "expected_answer": "You asked to remove the details about the outing with your coworker Dev. The details about your first visit with Clara (her birthday lunch around February 8th) and the weeknight dinner with your mom (late February or early March, lemon herb chicken) remain fully usable and are not affected.",
+      "gold_memory_state": "The Dev visit record (bill of $47, beet and goat cheese tartine, vegetarian options) is removed. Clara's birthday lunch visit and mom's weeknight dinner visit are retained as separate records. All other Olive & Thyme facts remain intact.",
+      "judge_rubric": {
+        "must_include": [
+          "Dev outing removed",
+          "Clara visit retained",
+          "mom visit retained"
+        ],
+        "acceptable_paraphrases": [
+          "the dinner with Dev was dropped",
+          "Clara's birthday lunch is still saved",
+          "your mom's dinner is still on file"
+        ],
+        "must_not_include": [
+          "Clara visit removed",
+          "mom visit removed",
+          "all outing details removed"
+        ],
+        "harmful_extra": [
+          "stating that Clara or mom visit details were also removed",
+          "stating that all individual outings were dropped"
+        ],
+        "harmless_extra": [
+          "mentioning that the usual order is still saved",
+          "mentioning the closing time is still saved"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response includes the specific bill amount ($47) or Dev's order details as currently stored information.",
+        "over_forget": "Fails if the response says Clara's visit or mom's visit details are also unavailable or removed.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "can you forget the stuff about my visit with Dev? I don't need you tracking individual outings like that"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I first went there because my friend Clara brought me for her birthday lunch, that was around February 8th"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to drop some specific dining outing details. Which particular outing's details did I ask you to remove, and do the details about my other outings — like the one with Clara or the one with my mom — still remain usable?",
+      "expected_answer": "You asked to remove the details about the outing with your coworker Dev. The details about your first visit with Clara (her birthday lunch around February 8th) and the weeknight dinner with your mom (late February or early March, lemon herb chicken) remain fully usable and are not affected.",
+      "gold_memory_state": "The Dev visit record (bill of $47, beet and goat cheese tartine, vegetarian options) is removed. Clara's birthday lunch visit and mom's weeknight dinner visit are retained as separate records. All other Olive & Thyme facts remain intact.",
+      "judge_rubric": {
+        "must_include": [
+          "Dev outing removed",
+          "Clara visit retained",
+          "mom visit retained"
+        ],
+        "acceptable_paraphrases": [
+          "the dinner with Dev was dropped",
+          "Clara's birthday lunch is still saved",
+          "your mom's dinner is still on file"
+        ],
+        "must_not_include": [
+          "Clara visit removed",
+          "mom visit removed",
+          "all outing details removed"
+        ],
+        "harmful_extra": [
+          "stating that Clara or mom visit details were also removed",
+          "stating that all individual outings were dropped"
+        ],
+        "harmless_extra": [
+          "mentioning that the usual order is still saved",
+          "mentioning the closing time is still saved"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response includes the specific bill amount ($47) or Dev's order details as currently stored information.",
+        "over_forget": "Fails if the response says Clara's visit or mom's visit details are also unavailable or removed.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "can you forget the stuff about my visit with Dev? I don't need you tracking individual outings like that"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I first went there because my friend Clara brought me for her birthday lunch, that was around February 8th"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "If I wanted to write a quick review of Olive & Thyme covering the food, drinks, timing, and personal memories there, what details do you still have that I could draw on?",
+      "expected_answer": "You can draw on: your usual order of roasted cauliflower flatbread with house green salad; the lavender lemonade being discontinued and replaced with a too-sweet hibiscus drink; the 9:30 PM weekday closing time; your first visit around February 8th for Clara's birthday lunch; your mom's weeknight dinner in late February or early March where she loved the lemon herb chicken; the calm atmosphere with soft lighting; the counter seating by the window and the back patio with about six tables; and the approximate address around 3936–3938 Magnolia Boulevard.",
+      "gold_memory_state": "The Dev visit details (bill amount, Dev's order, vegetarian options discussion) are unavailable — removed per user request. All other Olive & Thyme facts remain active: restaurant name and location, usual order, first visit with Clara, weekday closing time, lavender lemonade discontinuation, mom's visit, seating preferences, approximate address, atmosphere preferences.",
+      "judge_rubric": {
+        "must_include": [
+          "roasted cauliflower flatbread",
+          "house green salad",
+          "lavender lemonade discontinued",
+          "9:30 PM weekday closing",
+          "Clara's birthday lunch",
+          "mom's dinner"
+        ],
+        "acceptable_paraphrases": [
+          "flatbread and salad combo",
+          "closes at 9:30 on weeknights",
+          "Clara brought you for her birthday"
+        ],
+        "must_not_include": [
+          "$47 bill",
+          "Dev",
+          "beet and goat cheese tartine"
+        ],
+        "harmful_extra": [
+          "including specific details about the Dev visit such as the bill amount or Dev's order"
+        ],
+        "harmless_extra": [
+          "mentioning the patio",
+          "mentioning counter seating",
+          "mentioning the approximate address",
+          "mentioning the hibiscus replacement"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response mentions Dev, the $47 bill, or the beet and goat cheese tartine as available details.",
+        "over_forget": "Fails if the response omits retained neighbors like Clara's visit, mom's dinner, the usual order, the closing time, or the lavender lemonade situation, or says no personal visit memories remain.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my go-to order there is the roasted cauliflower flatbread with a side of their house green salad"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I first went there because my friend Clara brought me for her birthday lunch, that was around February 8th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "they close at 9:30 on weekdays, not 10 like I originally thought"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "they discontinued the lavender lemonade which was the one drink I always got there"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "can you forget the stuff about my visit with Dev? I don't need you tracking individual outings like that"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "If I wanted to write a quick review of Olive & Thyme covering the food, drinks, timing, and personal memories there, what details do you still have that I could draw on?",
+      "expected_answer": "You can draw on: your usual order of roasted cauliflower flatbread with house green salad; the lavender lemonade being discontinued and replaced with a too-sweet hibiscus drink; the 9:30 PM weekday closing time; your first visit around February 8th for Clara's birthday lunch; your mom's weeknight dinner in late February or early March where she loved the lemon herb chicken; the calm atmosphere with soft lighting; the counter seating by the window and the back patio with about six tables; and the approximate address around 3936–3938 Magnolia Boulevard.",
+      "gold_memory_state": "The Dev visit details (bill amount, Dev's order, vegetarian options discussion) are unavailable — removed per user request. All other Olive & Thyme facts remain active: restaurant name and location, usual order, first visit with Clara, weekday closing time, lavender lemonade discontinuation, mom's visit, seating preferences, approximate address, atmosphere preferences.",
+      "judge_rubric": {
+        "must_include": [
+          "roasted cauliflower flatbread",
+          "house green salad",
+          "lavender lemonade discontinued",
+          "9:30 PM weekday closing",
+          "Clara's birthday lunch",
+          "mom's dinner"
+        ],
+        "acceptable_paraphrases": [
+          "flatbread and salad combo",
+          "closes at 9:30 on weeknights",
+          "Clara brought you for her birthday"
+        ],
+        "must_not_include": [
+          "$47 bill",
+          "Dev",
+          "beet and goat cheese tartine"
+        ],
+        "harmful_extra": [
+          "including specific details about the Dev visit such as the bill amount or Dev's order"
+        ],
+        "harmless_extra": [
+          "mentioning the patio",
+          "mentioning counter seating",
+          "mentioning the approximate address",
+          "mentioning the hibiscus replacement"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response mentions Dev, the $47 bill, or the beet and goat cheese tartine as available details.",
+        "over_forget": "Fails if the response omits retained neighbors like Clara's visit, mom's dinner, the usual order, the closing time, or the lavender lemonade situation, or says no personal visit memories remain.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my go-to order there is the roasted cauliflower flatbread with a side of their house green salad"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I first went there because my friend Clara brought me for her birthday lunch, that was around February 8th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "they close at 9:30 on weekdays, not 10 like I originally thought"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "they discontinued the lavender lemonade which was the one drink I always got there"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "can you forget the stuff about my visit with Dev? I don't need you tracking individual outings like that"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I'm trying to remember who I've taken to Olive & Thyme that you'd still have details about. Which of these correctly describes the companion visits you have on file for me?",
+      "candidate_options": [
+        "Clara for her birthday lunch around February 8th, and your mom for a weeknight dinner in late February or early March",
+        "Dev for a weekday lunch where the bill was $47, and Clara for her birthday",
+        "Clara for her birthday lunch, Dev for a work outing, and your mom for a weeknight dinner",
+        "Your mom for a weeknight dinner in late February, and a friend who recommended Olive Branch Bistro"
+      ],
+      "expected_answer": "Clara for her birthday lunch around February 8th, and your mom for a weeknight dinner in late February or early March",
+      "gold_memory_state": "After the removal of Dev visit details, only Clara's birthday lunch visit and mom's weeknight dinner visit remain as stored companion visit records. Dev's visit information is no longer available.",
+      "judge_rubric": {
+        "must_include": [
+          "Clara",
+          "mom"
+        ],
+        "acceptable_paraphrases": [
+          "Clara's birthday lunch and your mother's dinner"
+        ],
+        "must_not_include": [
+          "Dev as a currently stored visit"
+        ],
+        "harmful_extra": [
+          "including Dev as a stored companion visit",
+          "including Olive Branch Bistro visitor as a stored Olive & Thyme companion"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: Option D includes a reference to Olive Branch Bistro, which is Clara's recommendation for a different restaurant, not an Olive & Thyme visit. assistant echo: Options B and C include Dev visit details that were removed per user request but were echoed by the assistant in earlier turns.",
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects option B or C, which include Dev visit details that should no longer be stored.",
+        "over_forget": "Fails if the model refuses to identify any companion visits or says no visit records remain.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I first went there because my friend Clara brought me for her birthday lunch, that was around February 8th"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "can you forget the stuff about my visit with Dev? I don't need you tracking individual outings like that"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I'm trying to remember who I've taken to Olive & Thyme that you'd still have details about. Which of these correctly describes the companion visits you have on file for me?",
+      "candidate_options": [
+        "Clara for her birthday lunch around February 8th, and your mom for a weeknight dinner in late February or early March",
+        "Dev for a weekday lunch where the bill was $47, and Clara for her birthday",
+        "Clara for her birthday lunch, Dev for a work outing, and your mom for a weeknight dinner",
+        "Your mom for a weeknight dinner in late February, and a friend who recommended Olive Branch Bistro"
+      ],
+      "expected_answer": "Clara for her birthday lunch around February 8th, and your mom for a weeknight dinner in late February or early March",
+      "gold_memory_state": "After the removal of Dev visit details, only Clara's birthday lunch visit and mom's weeknight dinner visit remain as stored companion visit records. Dev's visit information is no longer available.",
+      "judge_rubric": {
+        "must_include": [
+          "Clara",
+          "mom"
+        ],
+        "acceptable_paraphrases": [
+          "Clara's birthday lunch and your mother's dinner"
+        ],
+        "must_not_include": [
+          "Dev as a currently stored visit"
+        ],
+        "harmful_extra": [
+          "including Dev as a stored companion visit",
+          "including Olive Branch Bistro visitor as a stored Olive & Thyme companion"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: Option D includes a reference to Olive Branch Bistro, which is Clara's recommendation for a different restaurant, not an Olive & Thyme visit. assistant echo: Options B and C include Dev visit details that were removed per user request but were echoed by the assistant in earlier turns.",
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects option B or C, which include Dev visit details that should no longer be stored.",
+        "over_forget": "Fails if the model refuses to identify any companion visits or says no visit records remain.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I first went there because my friend Clara brought me for her birthday lunch, that was around February 8th"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "can you forget the stuff about my visit with Dev? I don't need you tracking individual outings like that"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to plan a repeat of how I first discovered Olive & Thyme — take a friend there on a weeknight for a birthday dinner, sit on the patio, and order my favorite food. Draft a short plan that includes what time we should aim to arrive, what I'll order, where we'll sit, and what drink situation I should expect given recent menu changes.",
+      "expected_answer": "Plan: Arrive by 7:30–8:00 PM to allow enough time before the 9:30 PM weekday closing. Request the back patio seating (about six tables). You'll order the roasted cauliflower flatbread with a side of house green salad. For drinks, note that the lavender lemonade you used to always get has been discontinued and replaced with a hibiscus drink you find too sweet, so you'll need to choose a different beverage or ask about other options.",
+      "gold_memory_state": "Active facts used: weekday closing at 9:30 PM, usual order (roasted cauliflower flatbread + house green salad), back patio preference (~6 tables), lavender lemonade discontinued and replaced with too-sweet hibiscus drink. First visit was with Clara for her birthday lunch around Feb 8th (context for the birthday dinner framing). Dev visit details are unavailable and must not appear.",
+      "judge_rubric": {
+        "must_include": [
+          "9:30 PM closing time factored into arrival",
+          "roasted cauliflower flatbread",
+          "house green salad",
+          "back patio",
+          "lavender lemonade discontinued"
+        ],
+        "acceptable_paraphrases": [
+          "arrive before 9:30",
+          "flatbread and salad",
+          "outdoor patio seating",
+          "lavender lemonade no longer available"
+        ],
+        "must_not_include": [
+          "$47 bill",
+          "Dev",
+          "beet and goat cheese tartine"
+        ],
+        "harmful_extra": [
+          "including Dev visit details in the plan",
+          "suggesting the lavender lemonade is still available"
+        ],
+        "harmless_extra": [
+          "mentioning the hibiscus replacement",
+          "suggesting arriving at a specific time like 7:30",
+          "mentioning the calm atmosphere"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the plan references Dev, the $47 bill, or any other removed visit detail.",
+        "over_forget": "Fails if the plan omits retained facts like the closing time, usual order, patio preference, or drink situation.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Olive & Thyme closes at 9:30 PM on weekdays.",
+        "Fact 2: User's usual order is roasted cauliflower flatbread with house green salad.",
+        "Fact 3: User prefers the back patio with about six tables when weather is nice.",
+        "Fact 4: The lavender lemonade was discontinued and replaced with a hibiscus drink the user finds too sweet.",
+        "Fact 5: The first visit was Clara's birthday lunch around February 8th, providing context for the birthday-dinner recreation.",
+        "Inference: Arrival should be early enough to allow a comfortable meal before 9:30 PM closing — around 7:30–8:00 PM.",
+        "Inference: The drink plan must account for the lavender lemonade being gone and the replacement being unsuitable, so an alternative beverage choice is needed."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "they close at 9:30 on weekdays, not 10 like I originally thought"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my go-to order there is the roasted cauliflower flatbread with a side of their house green salad"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "They also have a small patio out back with about six tables, and I always prefer sitting out there when the weather is nice"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "they discontinued the lavender lemonade which was the one drink I always got there"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I first went there because my friend Clara brought me for her birthday lunch, that was around February 8th"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to plan a repeat of how I first discovered Olive & Thyme — take a friend there on a weeknight for a birthday dinner, sit on the patio, and order my favorite food. Draft a short plan that includes what time we should aim to arrive, what I'll order, where we'll sit, and what drink situation I should expect given recent menu changes.",
+      "expected_answer": "Plan: Arrive by 7:30–8:00 PM to allow enough time before the 9:30 PM weekday closing. Request the back patio seating (about six tables). You'll order the roasted cauliflower flatbread with a side of house green salad. For drinks, note that the lavender lemonade you used to always get has been discontinued and replaced with a hibiscus drink you find too sweet, so you'll need to choose a different beverage or ask about other options.",
+      "gold_memory_state": "Active facts used: weekday closing at 9:30 PM, usual order (roasted cauliflower flatbread + house green salad), back patio preference (~6 tables), lavender lemonade discontinued and replaced with too-sweet hibiscus drink. First visit was with Clara for her birthday lunch around Feb 8th (context for the birthday dinner framing). Dev visit details are unavailable and must not appear.",
+      "judge_rubric": {
+        "must_include": [
+          "9:30 PM closing time factored into arrival",
+          "roasted cauliflower flatbread",
+          "house green salad",
+          "back patio",
+          "lavender lemonade discontinued"
+        ],
+        "acceptable_paraphrases": [
+          "arrive before 9:30",
+          "flatbread and salad",
+          "outdoor patio seating",
+          "lavender lemonade no longer available"
+        ],
+        "must_not_include": [
+          "$47 bill",
+          "Dev",
+          "beet and goat cheese tartine"
+        ],
+        "harmful_extra": [
+          "including Dev visit details in the plan",
+          "suggesting the lavender lemonade is still available"
+        ],
+        "harmless_extra": [
+          "mentioning the hibiscus replacement",
+          "suggesting arriving at a specific time like 7:30",
+          "mentioning the calm atmosphere"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the plan references Dev, the $47 bill, or any other removed visit detail.",
+        "over_forget": "Fails if the plan omits retained facts like the closing time, usual order, patio preference, or drink situation.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Olive & Thyme closes at 9:30 PM on weekdays.",
+        "Fact 2: User's usual order is roasted cauliflower flatbread with house green salad.",
+        "Fact 3: User prefers the back patio with about six tables when weather is nice.",
+        "Fact 4: The lavender lemonade was discontinued and replaced with a hibiscus drink the user finds too sweet.",
+        "Fact 5: The first visit was Clara's birthday lunch around February 8th, providing context for the birthday-dinner recreation.",
+        "Inference: Arrival should be early enough to allow a comfortable meal before 9:30 PM closing — around 7:30–8:00 PM.",
+        "Inference: The drink plan must account for the lavender lemonade being gone and the replacement being unsuitable, so an alternative beverage choice is needed."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "they close at 9:30 on weekdays, not 10 like I originally thought"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my go-to order there is the roasted cauliflower flatbread with a side of their house green salad"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "They also have a small patio out back with about six tables, and I always prefer sitting out there when the weather is nice"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "they discontinued the lavender lemonade which was the one drink I always got there"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I first went there because my friend Clara brought me for her birthday lunch, that was around February 8th"
+        }
+      ]
+    }
+  ]
+}

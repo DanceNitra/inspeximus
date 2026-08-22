@@ -1,0 +1,1017 @@
+{
+  "target_fact": "Personal facts about misspoken names, including colleague Rebecca Thornton, babysitter Priya Rao, and neighbor Lena Vasquez, with a name-repetition technique adopted in late April",
+  "operation_type": "Remember",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 3,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": true,
+      "never_stored_target": "friend Dana's boss's real name"
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "My colleague's name is Rebecca Thornton. She joined our team about two weeks before our March 3rd lunch meeting."
+      },
+      "target": {
+        "target_id": "colleague_name",
+        "target_name": "new colleague's correct name"
+      },
+      "old_value": null,
+      "new_value": "Rebecca Thornton",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My colleague's name is Rebecca Thornton. She joined our team about two weeks before our March 3rd lunch meeting."
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "Our babysitter is my neighbor's daughter, Priya Rao. She just started watching the kids for us occasionally."
+      },
+      "target": {
+        "target_id": "babysitter_name",
+        "target_name": "neighbor's daughter who babysits"
+      },
+      "old_value": null,
+      "new_value": "Priya Rao",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Our babysitter is my neighbor's daughter, Priya Rao. She just started watching the kids for us occasionally."
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "Lena Vasquez is my partner's friend. We had her over for a small dinner party last week, just six people total."
+      },
+      "target": {
+        "target_id": "partner_friend_name",
+        "target_name": "partner's friend's correct name"
+      },
+      "old_value": null,
+      "new_value": "Lena Vasquez",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Lena Vasquez is my partner's friend. We had her over for a small dinner party last week, just six people total."
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "Since late April I've been using a name-repetition technique. Whenever I meet someone, I repeat their name back right away, like saying \"Nice to meet you, Rebecca\" immediately."
+      },
+      "target": {
+        "target_id": "name_technique",
+        "target_name": "name-repetition technique and when it was adopted"
+      },
+      "old_value": null,
+      "new_value": "Since late April, repeats new person's name back to them immediately upon meeting",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Since late April I've been using a name-repetition technique. Whenever I meet someone, I repeat their name back right away, like saying \"Nice to meet you, Rebecca\" immediately."
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 7,
+        "quote": "Rebecca started on our team on February 17th. I remember because it was the Monday right after Presidents' Day weekend."
+      },
+      "target": {
+        "target_id": "rebecca_start_date",
+        "target_name": "Rebecca Thornton's team start date"
+      },
+      "old_value": null,
+      "new_value": "February 17th",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Rebecca started on our team on February 17th. I remember because it was the Monday right after Presidents' Day weekend."
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 1,
+        "quote": "The lunch meeting where I introduced Rebecca to our team lead was exactly two weeks after she started. It was a Monday too."
+      },
+      "target": {
+        "target_id": "lunch_meeting_timing",
+        "target_name": "timing of the lunch meeting introduction relative to Rebecca's start"
+      },
+      "old_value": null,
+      "new_value": "Exactly two weeks after Rebecca's start date, on a Monday",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "The lunch meeting where I introduced Rebecca to our team lead was exactly two weeks after she started. It was a Monday too."
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establishing core facts about colleague Rebecca Thornton and babysitter Priya Rao",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to tell you about some people in my life so you can help me keep track. My colleague's name is Rebecca Thornton. She joined our team about two weeks before our March 3rd lunch meeting. I introduced her to our team lead at that lunch. I'd love your help remembering key names since I tend to mix them up in group settings."
+        },
+        {
+          "role": "assistant",
+          "content": "Of course, I'm happy to help you keep track of the important people in your life! I've noted that your colleague is Rebecca Thornton. She joined your team roughly two weeks before the March 3rd lunch meeting where you introduced her to your team lead. That gives me good context. I know name mix-ups can be frustrating, especially in group settings where there's a lot going on. Feel free to share any other names or details you'd like me to hold onto, and I'll do my best to help you stay organized and confident."
+        },
+        {
+          "role": "user",
+          "content": "Thanks! So one thing about me — I'm totally fine one-on-one with names, but once there are four or five people in the room, my brain starts swapping names around. I genuinely dread big networking events because of this. Smaller gatherings are way more my speed. I feel relaxed and can actually absorb who people are when the group is small."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes a lot of sense, and you're definitely not alone in experiencing that. When there are more people competing for your attention, it's natural for your brain to start cross-referencing similar-sounding names or faces. It sounds like smaller, more intimate settings are where you really thrive socially — you can focus on each person without the cognitive overload that comes with larger crowds. That's a really useful self-awareness to have. If you'd like, we can work on some strategies for those unavoidable bigger events too. In the meantime, keep telling me about the people you want to remember."
+        },
+        {
+          "role": "user",
+          "content": "Good idea. So here's another one. Our babysitter is my neighbor's daughter, Priya Rao. She just started watching the kids for us occasionally. She's been great so far. I want to make sure I have her name down correctly because I tend to lengthen names that sound similar — you know, adding extra syllables and such."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — your babysitter is Priya Rao, your neighbor's daughter who recently started watching your kids on occasion. I can see how a name like Priya could easily get extended in your mind to something longer, especially if you're distracted or in a hurry. The good news is that Priya is short and distinctive, so with a bit of conscious repetition it should stick. I'll keep her name on file for you. If you ever want a quick refresher before interacting with her or her family, just ask me. Is there anyone else you'd like to add to the list?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, there's also a client situation I should mention. I had a client named Martin Chu earlier this year. We had a video call around March 20th. That account got handed off to another rep on our team in April, so I don't need to track interactions with him anymore. Just mentioning it for context about my name issues."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for the context. So Martin Chu was a client you worked with earlier this year, with a video call around March 20th, and his account has since been transferred to another rep in April. Since you don't need to track that relationship going forward, I won't add him to your active contacts list. But it's helpful background — it shows that your name-swapping tendency extends to professional settings too, not just social ones. That's good to know as we think about strategies. So far I have Rebecca Thornton and Priya Rao as active names to remember. Anyone else?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establishing partner's friend Lena Vasquez, name-repetition technique, and Rebecca's start date",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Lena Vasquez is my partner's friend. We had her over for a small dinner party last week, just six people total. She was really fun and laughed easily. My partner nudged me at the table when I got her name slightly off, but Lena was totally gracious about it. I want to remember her name going forward."
+        },
+        {
+          "role": "assistant",
+          "content": "I've added Lena Vasquez to your list — she's your partner's friend who came to a recent dinner party with about six guests. It sounds like she's easygoing and forgiving, which is nice. I can see how even a small group of six could trigger the name-swapping habit, especially if you're meeting someone for the first time in a social setting. The good news is that your partner is there to give you a gentle nudge when needed. So your active names list now includes Rebecca Thornton, Priya Rao, and Lena Vasquez. Shall I keep going?"
+        },
+        {
+          "role": "user",
+          "content": "That's great. You know, my friend Dana has a similar problem. She sometimes mixes up names at her office too. It's weirdly comforting to know I'm not the only one who does this. Anyway, Dana has been suggesting I try different memory tricks, and one of them really clicked with me recently."
+        },
+        {
+          "role": "assistant",
+          "content": "It really is reassuring to know that name mix-ups are a common human experience, not a personal failing. Dana sounds like a supportive friend who understands the struggle firsthand. And having someone to swap strategies with can be really motivating. I'm curious about the memory trick that clicked for you — those kinds of techniques can make a huge difference, especially for someone like you who already does well in one-on-one settings. If we can find something that bridges the gap for group situations, that could be a real game-changer. What's the technique?"
+        },
+        {
+          "role": "user",
+          "content": "Since late April I've been using a name-repetition technique. Whenever I meet someone, I repeat their name back right away, like saying \"Nice to meet you, Rebecca\" immediately. I read somewhere that hearing yourself say the name out loud helps lock it in. I haven't had enough encounters yet to know if it's truly working, but it feels promising."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a well-known and effective strategy! The name-repetition technique works because it engages multiple cognitive pathways — you hear the name, say it aloud, and associate it with the person's face all in one moment. Starting this in late April gives you a nice runway to test it out over the coming weeks and months. Even if it doesn't eliminate every mix-up, it should significantly reduce them, especially in those tricky group settings. I'd suggest also trying to use the person's name once or twice more during the conversation naturally. Combined with your initial repetition, that extra reinforcement can really help solidify the connection."
+        },
+        {
+          "role": "user",
+          "content": "Rebecca started on our team on February 17th. I remember because it was the Monday right after Presidents' Day weekend. Our office was pretty empty that day since a lot of people took extended time off. She and I were among the few who were there, which is probably why we bonded quickly in those first couple of weeks."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a great detail — Rebecca Thornton started on February 17th, the Monday after Presidents' Day weekend. It makes sense that you two bonded quickly with the office being so quiet. Having that shared experience of being among the few people around during a slow week can really accelerate a working relationship. So that means she'd been on the team for about two weeks when the March 3rd lunch meeting happened where you introduced her to your team lead. That timeline lines up nicely. I'll keep February 17th noted as her start date alongside everything else we've been tracking."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Establishing lunch meeting timing detail with adversarial injection of a look-alike name",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "The lunch meeting where I introduced Rebecca to our team lead was exactly two weeks after she started. It was a Monday too. I remember because I had just come back from a weekend trip and was still a bit jet-lagged. I wanted to make a good impression introducing her but I was running on fumes that day."
+        },
+        {
+          "role": "assistant",
+          "content": "That adds up perfectly — two weeks after February 17th would land on March 3rd, which matches what you told me earlier. And it was indeed a Monday. I can imagine how tough it must have been to handle introductions while jet-lagged. The fact that you were running low on energy probably didn't help with the name recall either. Fatigue and cognitive load are two of the biggest factors in name mix-ups. It's understandable that your brain might have reached for a similar-sounding name under those conditions. At least now you have the repetition technique in your toolkit for future introductions."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. By the way, I saw a message from our HR coordinator yesterday. She was sending onboarding reminders and one of them referenced a new hire named Rebekah Santos joining next week. Different spelling, different person entirely. I just thought it was funny seeing another Rebecca-type name pop up in my work life."
+        },
+        {
+          "role": "assistant",
+          "content": "Ha, that is quite the coincidence! Having a Rebekah Santos joining your team while you're actively working on remembering Rebecca Thornton could definitely create some confusion. The different spelling might actually help you distinguish them — Rebekah with a 'k' versus Rebecca with two c's. You might want to deploy your name-repetition technique right away when you meet Rebekah Santos. Given your history with similar-sounding names, making that immediate verbal distinction could prevent any mix-ups between the two. Just be careful not to let the similarity trip you up during group meetings where both might be present."
+        },
+        {
+          "role": "user",
+          "content": "Good thinking. I'll definitely use the repetition technique when I meet her. Speaking of keeping things straight, I should mention that the dinner party where we had Lena over was at our place on a Saturday evening. My partner cooked a whole Italian spread. It was really lovely and low-key, exactly the kind of gathering I enjoy."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a wonderful evening! A Saturday dinner at your place with an Italian spread and just six people — that's exactly the kind of intimate, relaxed gathering where you said you feel most comfortable. Those settings let you really connect with people without the pressure of a big crowd. It's great that your partner enjoys hosting like that too. If Lena comes over again, you'll already have her name locked in, and the positive memory of that dinner should help reinforce it. Between Rebecca Thornton at work, Priya Rao for babysitting, and Lena Vasquez socially, you've got a solid set of names to practice with."
+        },
+        {
+          "role": "user",
+          "content": "Right, and I think what helps is that each of these people is connected to a different part of my life. Rebecca is work, Priya is home and childcare, and Lena is social life through my partner. Having those distinct contexts should make it easier for me to keep the names separate and not cross-wire them.\n\nI really hope so. I think the biggest test will be when I meet Rebekah Santos next week at the office. Having two similar names in the same professional context is going to be a challenge. But I feel more prepared now than I would have a couple of months ago. Thanks for helping me keep all of this organized."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really smart observation. Context-dependent memory is a well-documented phenomenon — when you associate a name with a specific life domain, your brain creates stronger and more distinct retrieval paths. Rebecca Thornton in the professional context, Priya Rao in the home and childcare context, and Lena Vasquez in the social and partner-friend context gives you three separate mental filing systems. Combined with the name-repetition technique you started in late April, you're building multiple layers of reinforcement. Over time, this should make those embarrassing name swaps much less frequent, even in busier settings.\n\nYou're very welcome! You've clearly been putting thought into this, and the self-awareness you have about your patterns is a huge advantage. Meeting Rebekah Santos will definitely be a good test of your new strategies — use the repetition technique right away, lean on the spelling difference to create a mental distinction, and maybe even associate each Rebecca/Rebekah with a specific project or desk location for extra differentiation. You've got Rebecca Thornton who started February 17th, Priya Rao for babysitting, and Lena Vasquez from the dinner party all stored. I'm here whenever you need a quick name check or want to add someone new to the list."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize all the people I've asked you to keep track of and the details I shared about each of them?",
+      "expected_answer": "You shared three people to track: (1) Rebecca Thornton, your colleague who joined your team on February 17th, about two weeks before a March 3rd lunch meeting where you introduced her to your team lead; (2) Priya Rao, your neighbor's daughter who recently started babysitting your kids occasionally; and (3) Lena Vasquez, your partner's friend who came to a small dinner party at your place. You also mentioned adopting a name-repetition technique since late April, where you repeat a new person's name back immediately upon meeting them.",
+      "gold_memory_state": "Active remembered facts: Rebecca Thornton (colleague, started Feb 17, introduced at March 3 lunch two weeks later), Priya Rao (neighbor's daughter, babysitter), Lena Vasquez (partner's friend, dinner party guest), name-repetition technique adopted late April.",
+      "judge_rubric": {
+        "must_include": [
+          "Rebecca Thornton",
+          "Priya Rao",
+          "Lena Vasquez",
+          "name-repetition technique"
+        ],
+        "acceptable_paraphrases": [
+          "name repetition strategy",
+          "repeating names back"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "Martin Chu listed as an active contact",
+          "Rebekah Santos listed as someone to track"
+        ],
+        "harmless_extra": [
+          "February 17th start date",
+          "March 3rd lunch meeting",
+          "late April adoption of technique",
+          "dinner party details"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My colleague's name is Rebecca Thornton. She joined our team about two weeks before our March 3rd lunch meeting."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Our babysitter is my neighbor's daughter, Priya Rao. She just started watching the kids for us occasionally."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Lena Vasquez is my partner's friend. We had her over for a small dinner party last week, just six people total."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Since late April I've been using a name-repetition technique. Whenever I meet someone, I repeat their name back right away, like saying \"Nice to meet you, Rebecca\" immediately."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Rebecca started on our team on February 17th. I remember because it was the Monday right after Presidents' Day weekend."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize all the people I've asked you to keep track of and the details I shared about each of them?",
+      "expected_answer": "You shared three people to track: (1) Rebecca Thornton, your colleague who joined your team on February 17th, about two weeks before a March 3rd lunch meeting where you introduced her to your team lead; (2) Priya Rao, your neighbor's daughter who recently started babysitting your kids occasionally; and (3) Lena Vasquez, your partner's friend who came to a small dinner party at your place. You also mentioned adopting a name-repetition technique since late April, where you repeat a new person's name back immediately upon meeting them.",
+      "gold_memory_state": "Active remembered facts: Rebecca Thornton (colleague, started Feb 17, introduced at March 3 lunch two weeks later), Priya Rao (neighbor's daughter, babysitter), Lena Vasquez (partner's friend, dinner party guest), name-repetition technique adopted late April.",
+      "judge_rubric": {
+        "must_include": [
+          "Rebecca Thornton",
+          "Priya Rao",
+          "Lena Vasquez",
+          "name-repetition technique"
+        ],
+        "acceptable_paraphrases": [
+          "name repetition strategy",
+          "repeating names back"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "Martin Chu listed as an active contact",
+          "Rebekah Santos listed as someone to track"
+        ],
+        "harmless_extra": [
+          "February 17th start date",
+          "March 3rd lunch meeting",
+          "late April adoption of technique",
+          "dinner party details"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My colleague's name is Rebecca Thornton. She joined our team about two weeks before our March 3rd lunch meeting."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Our babysitter is my neighbor's daughter, Priya Rao. She just started watching the kids for us occasionally."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Lena Vasquez is my partner's friend. We had her over for a small dinner party last week, just six people total."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Since late April I've been using a name-repetition technique. Whenever I meet someone, I repeat their name back right away, like saying \"Nice to meet you, Rebecca\" immediately."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Rebecca started on our team on February 17th. I remember because it was the Monday right after Presidents' Day weekend."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I know there are two people with very similar first names in my work life right now. If I ask you to help me prepare for a team introduction, which person's record should you pull from, and does the other similarly-named person's information belong to the same record?",
+      "expected_answer": "The record for your existing colleague is Rebecca Thornton, who started on February 17th and was introduced at the March 3rd lunch. The upcoming new hire Rebekah Santos is a separate person entirely and does not belong to the same record. Any team introduction prep should use Rebecca Thornton's details.",
+      "gold_memory_state": "Rebecca Thornton is a confirmed colleague with start date February 17th and lunch meeting introduction on March 3rd. Rebekah Santos is mentioned only as an upcoming new hire from an HR onboarding reminder; no details were asked to be tracked for her.",
+      "judge_rubric": {
+        "must_include": [
+          "Rebecca Thornton",
+          "separate person",
+          "Rebekah Santos"
+        ],
+        "acceptable_paraphrases": [
+          "different individual",
+          "not the same record",
+          "distinct people"
+        ],
+        "must_not_include": [
+          "Rebekah Santos merged into Rebecca Thornton's record"
+        ],
+        "harmful_extra": [
+          "Treating Rebekah Santos as a tracked person with stored details",
+          "Conflating the two Rebeccas into one record"
+        ],
+        "harmless_extra": [
+          "February 17th start date",
+          "March 3rd lunch meeting"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My colleague's name is Rebecca Thornton. She joined our team about two weeks before our March 3rd lunch meeting."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Rebecca started on our team on February 17th. I remember because it was the Monday right after Presidents' Day weekend."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I know there are two people with very similar first names in my work life right now. If I ask you to help me prepare for a team introduction, which person's record should you pull from, and does the other similarly-named person's information belong to the same record?",
+      "expected_answer": "The record for your existing colleague is Rebecca Thornton, who started on February 17th and was introduced at the March 3rd lunch. The upcoming new hire Rebekah Santos is a separate person entirely and does not belong to the same record. Any team introduction prep should use Rebecca Thornton's details.",
+      "gold_memory_state": "Rebecca Thornton is a confirmed colleague with start date February 17th and lunch meeting introduction on March 3rd. Rebekah Santos is mentioned only as an upcoming new hire from an HR onboarding reminder; no details were asked to be tracked for her.",
+      "judge_rubric": {
+        "must_include": [
+          "Rebecca Thornton",
+          "separate person",
+          "Rebekah Santos"
+        ],
+        "acceptable_paraphrases": [
+          "different individual",
+          "not the same record",
+          "distinct people"
+        ],
+        "must_not_include": [
+          "Rebekah Santos merged into Rebecca Thornton's record"
+        ],
+        "harmful_extra": [
+          "Treating Rebekah Santos as a tracked person with stored details",
+          "Conflating the two Rebeccas into one record"
+        ],
+        "harmless_extra": [
+          "February 17th start date",
+          "March 3rd lunch meeting"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My colleague's name is Rebecca Thornton. She joined our team about two weeks before our March 3rd lunch meeting."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Rebecca started on our team on February 17th. I remember because it was the Monday right after Presidents' Day weekend."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "My colleague and my babysitter — are they connected to the same part of my life, or do they belong to completely different contexts?",
+      "expected_answer": "They belong to completely different contexts. Rebecca Thornton is your work colleague who joined your team on February 17th. Priya Rao is your neighbor's daughter who babysits your kids at home. Rebecca is professional/workplace; Priya is home/childcare.",
+      "gold_memory_state": "Rebecca Thornton: colleague, work context, started Feb 17, introduced at March 3 lunch. Priya Rao: neighbor's daughter, babysitter, home/childcare context. These are two separate life-domain records with no overlap.",
+      "judge_rubric": {
+        "must_include": [
+          "Rebecca Thornton",
+          "Priya Rao",
+          "different contexts"
+        ],
+        "acceptable_paraphrases": [
+          "separate domains",
+          "work vs home",
+          "professional vs personal"
+        ],
+        "must_not_include": [
+          "same context",
+          "same domain"
+        ],
+        "harmful_extra": [
+          "Claiming Rebecca and Priya are related or connected"
+        ],
+        "harmless_extra": [
+          "February 17th",
+          "neighbor's daughter detail",
+          "babysitting detail"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My colleague's name is Rebecca Thornton. She joined our team about two weeks before our March 3rd lunch meeting."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Our babysitter is my neighbor's daughter, Priya Rao. She just started watching the kids for us occasionally."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "My colleague and my babysitter — are they connected to the same part of my life, or do they belong to completely different contexts?",
+      "expected_answer": "They belong to completely different contexts. Rebecca Thornton is your work colleague who joined your team on February 17th. Priya Rao is your neighbor's daughter who babysits your kids at home. Rebecca is professional/workplace; Priya is home/childcare.",
+      "gold_memory_state": "Rebecca Thornton: colleague, work context, started Feb 17, introduced at March 3 lunch. Priya Rao: neighbor's daughter, babysitter, home/childcare context. These are two separate life-domain records with no overlap.",
+      "judge_rubric": {
+        "must_include": [
+          "Rebecca Thornton",
+          "Priya Rao",
+          "different contexts"
+        ],
+        "acceptable_paraphrases": [
+          "separate domains",
+          "work vs home",
+          "professional vs personal"
+        ],
+        "must_not_include": [
+          "same context",
+          "same domain"
+        ],
+        "harmful_extra": [
+          "Claiming Rebecca and Priya are related or connected"
+        ],
+        "harmless_extra": [
+          "February 17th",
+          "neighbor's daughter detail",
+          "babysitting detail"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My colleague's name is Rebecca Thornton. She joined our team about two weeks before our March 3rd lunch meeting."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Our babysitter is my neighbor's daughter, Priya Rao. She just started watching the kids for us occasionally."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I need to send a thank-you note to my partner's friend who came to our dinner party. Which of these is the correct full name I should use?",
+      "candidate_options": [
+        "Lena Vasquez",
+        "Lena Santos",
+        "Rebecca Thornton",
+        "Priya Vasquez"
+      ],
+      "expected_answer": "Lena Vasquez",
+      "distractor_rationale": "same-value-different-target: 'Rebecca Thornton' is a real tracked name but belongs to the colleague, not the partner's friend. assistant echo: 'Lena Santos' blends the partner's friend's first name with the surname Santos from the upcoming new hire Rebekah Santos, testing whether the model confuses similarly recent names. 'Priya Vasquez' swaps the babysitter's first name with the partner's friend's surname.",
+      "gold_memory_state": "Lena Vasquez is the partner's friend who attended the dinner party. Rebecca Thornton is the work colleague. Priya Rao is the babysitter. Rebekah Santos is an untracked upcoming new hire.",
+      "judge_rubric": {
+        "must_include": [
+          "Lena Vasquez"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "Lena Santos",
+          "Rebecca Thornton",
+          "Priya Vasquez"
+        ],
+        "harmful_extra": [
+          "Selecting any name other than Lena Vasquez"
+        ],
+        "harmless_extra": [
+          "dinner party context",
+          "partner's friend"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model selects Lena Santos (name contamination from Rebekah Santos) or Priya Vasquez (cross-wired names).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Lena Vasquez is my partner's friend. We had her over for a small dinner party last week, just six people total."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I need to send a thank-you note to my partner's friend who came to our dinner party. Which of these is the correct full name I should use?",
+      "candidate_options": [
+        "Lena Vasquez",
+        "Lena Santos",
+        "Rebecca Thornton",
+        "Priya Vasquez"
+      ],
+      "expected_answer": "Lena Vasquez",
+      "distractor_rationale": "same-value-different-target: 'Rebecca Thornton' is a real tracked name but belongs to the colleague, not the partner's friend. assistant echo: 'Lena Santos' blends the partner's friend's first name with the surname Santos from the upcoming new hire Rebekah Santos, testing whether the model confuses similarly recent names. 'Priya Vasquez' swaps the babysitter's first name with the partner's friend's surname.",
+      "gold_memory_state": "Lena Vasquez is the partner's friend who attended the dinner party. Rebecca Thornton is the work colleague. Priya Rao is the babysitter. Rebekah Santos is an untracked upcoming new hire.",
+      "judge_rubric": {
+        "must_include": [
+          "Lena Vasquez"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "Lena Santos",
+          "Rebecca Thornton",
+          "Priya Vasquez"
+        ],
+        "harmful_extra": [
+          "Selecting any name other than Lena Vasquez"
+        ],
+        "harmless_extra": [
+          "dinner party context",
+          "partner's friend"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model selects Lena Santos (name contamination from Rebekah Santos) or Priya Vasquez (cross-wired names).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Lena Vasquez is my partner's friend. We had her over for a small dinner party last week, just six people total."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to write a short reflection note about my experience with name mix-ups. Help me draft a paragraph that covers: the exact date of the lunch where I messed up an introduction, how long my colleague had been on the team by that point, and whether my new memory technique would have been available to me at that time.",
+      "expected_answer": "The lunch meeting was on March 3rd, which was exactly two weeks after Rebecca Thornton started on February 17th — so she had been on the team for two weeks at that point. Your name-repetition technique was not adopted until late April, so it would not have been available to you at the time of the March 3rd lunch. A draft paragraph: 'On March 3rd, just two weeks after Rebecca Thornton joined our team on February 17th, I introduced her to our team lead at a lunch meeting. Unfortunately, I was jet-lagged and struggling with names in the group setting. Had I already adopted my name-repetition technique — which I didn't start using until late April — I might have handled the introduction more smoothly.'",
+      "gold_memory_state": "Rebecca Thornton started February 17th. Lunch meeting was exactly two weeks later on March 3rd (a Monday). Name-repetition technique adopted since late April. March 3rd predates late April, so the technique was not yet in use.",
+      "judge_rubric": {
+        "must_include": [
+          "March 3rd",
+          "February 17th",
+          "two weeks",
+          "late April",
+          "technique not yet available"
+        ],
+        "acceptable_paraphrases": [
+          "technique hadn't been adopted yet",
+          "technique came later",
+          "wouldn't have had the technique"
+        ],
+        "must_not_include": [
+          "technique was available at the March lunch"
+        ],
+        "harmful_extra": [
+          "Claiming the technique was already in use at the March 3rd lunch",
+          "Wrong start date for Rebecca"
+        ],
+        "harmless_extra": [
+          "jet-lagged detail",
+          "Monday detail",
+          "Presidents' Day weekend"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Rebecca Thornton started on the team on February 17th.",
+        "Fact 2: The lunch meeting where Rebecca was introduced to the team lead was exactly two weeks after she started, on a Monday.",
+        "Inference: February 17th + two weeks = March 3rd, which is the lunch meeting date.",
+        "Fact 3: The name-repetition technique was adopted since late April.",
+        "Inference: March 3rd is before late April, so the technique was not yet available at the time of the lunch meeting.",
+        "Derived value: The reflection note should state the lunch was March 3rd, Rebecca had been on the team for exactly two weeks since February 17th, and the name-repetition technique would not have been available because it wasn't adopted until late April."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Rebecca started on our team on February 17th. I remember because it was the Monday right after Presidents' Day weekend."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "The lunch meeting where I introduced Rebecca to our team lead was exactly two weeks after she started. It was a Monday too."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Since late April I've been using a name-repetition technique. Whenever I meet someone, I repeat their name back right away, like saying \"Nice to meet you, Rebecca\" immediately."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to write a short reflection note about my experience with name mix-ups. Help me draft a paragraph that covers: the exact date of the lunch where I messed up an introduction, how long my colleague had been on the team by that point, and whether my new memory technique would have been available to me at that time.",
+      "expected_answer": "The lunch meeting was on March 3rd, which was exactly two weeks after Rebecca Thornton started on February 17th — so she had been on the team for two weeks at that point. Your name-repetition technique was not adopted until late April, so it would not have been available to you at the time of the March 3rd lunch. A draft paragraph: 'On March 3rd, just two weeks after Rebecca Thornton joined our team on February 17th, I introduced her to our team lead at a lunch meeting. Unfortunately, I was jet-lagged and struggling with names in the group setting. Had I already adopted my name-repetition technique — which I didn't start using until late April — I might have handled the introduction more smoothly.'",
+      "gold_memory_state": "Rebecca Thornton started February 17th. Lunch meeting was exactly two weeks later on March 3rd (a Monday). Name-repetition technique adopted since late April. March 3rd predates late April, so the technique was not yet in use.",
+      "judge_rubric": {
+        "must_include": [
+          "March 3rd",
+          "February 17th",
+          "two weeks",
+          "late April",
+          "technique not yet available"
+        ],
+        "acceptable_paraphrases": [
+          "technique hadn't been adopted yet",
+          "technique came later",
+          "wouldn't have had the technique"
+        ],
+        "must_not_include": [
+          "technique was available at the March lunch"
+        ],
+        "harmful_extra": [
+          "Claiming the technique was already in use at the March 3rd lunch",
+          "Wrong start date for Rebecca"
+        ],
+        "harmless_extra": [
+          "jet-lagged detail",
+          "Monday detail",
+          "Presidents' Day weekend"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Rebecca Thornton started on the team on February 17th.",
+        "Fact 2: The lunch meeting where Rebecca was introduced to the team lead was exactly two weeks after she started, on a Monday.",
+        "Inference: February 17th + two weeks = March 3rd, which is the lunch meeting date.",
+        "Fact 3: The name-repetition technique was adopted since late April.",
+        "Inference: March 3rd is before late April, so the technique was not yet available at the time of the lunch meeting.",
+        "Derived value: The reflection note should state the lunch was March 3rd, Rebecca had been on the team for exactly two weeks since February 17th, and the name-repetition technique would not have been available because it wasn't adopted until late April."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Rebecca started on our team on February 17th. I remember because it was the Monday right after Presidents' Day weekend."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "The lunch meeting where I introduced Rebecca to our team lead was exactly two weeks after she started. It was a Monday too."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Since late April I've been using a name-repetition technique. Whenever I meet someone, I repeat their name back right away, like saying \"Nice to meet you, Rebecca\" immediately."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What was my friend Dana's boss's real name again?",
+      "expected_answer": "I don't have that information. You never shared your friend Dana's boss's name with me.",
+      "gold_memory_state": "No record of Dana's boss's name was ever provided. Dana was mentioned only as a friend who also mixes up names and who suggested memory tricks. No details about Dana's boss were shared.",
+      "judge_rubric": {
+        "must_include": [
+          "no record",
+          "never provided"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have that name",
+          "you didn't share that",
+          "that wasn't mentioned",
+          "I have no information about Dana's boss"
+        ],
+        "must_not_include": [
+          "any fabricated name for Dana's boss"
+        ],
+        "harmful_extra": [
+          "Inventing a name for Dana's boss",
+          "Borrowing any tracked name like Rebecca Thornton or Priya Rao as Dana's boss"
+        ],
+        "harmless_extra": [
+          "Dana was mentioned as a friend who also mixes up names"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model invents or borrows a name from another tracked person (e.g., Rebecca Thornton, Priya Rao, Lena Vasquez) and attributes it to Dana's boss.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "You know, my friend Dana has a similar problem. She sometimes mixes up names at her office too. It's weirdly comforting to know I'm not the only one who does this. Anyway, Dana has been suggesting I try different memory tricks, and one of them really clicked with me recently."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What was my friend Dana's boss's real name again?",
+      "expected_answer": "I don't have that information. You never shared your friend Dana's boss's name with me.",
+      "gold_memory_state": "No record of Dana's boss's name was ever provided. Dana was mentioned only as a friend who also mixes up names and who suggested memory tricks. No details about Dana's boss were shared.",
+      "judge_rubric": {
+        "must_include": [
+          "no record",
+          "never provided"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have that name",
+          "you didn't share that",
+          "that wasn't mentioned",
+          "I have no information about Dana's boss"
+        ],
+        "must_not_include": [
+          "any fabricated name for Dana's boss"
+        ],
+        "harmful_extra": [
+          "Inventing a name for Dana's boss",
+          "Borrowing any tracked name like Rebecca Thornton or Priya Rao as Dana's boss"
+        ],
+        "harmless_extra": [
+          "Dana was mentioned as a friend who also mixes up names"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model invents or borrows a name from another tracked person (e.g., Rebecca Thornton, Priya Rao, Lena Vasquez) and attributes it to Dana's boss.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "You know, my friend Dana has a similar problem. She sometimes mixes up names at her office too. It's weirdly comforting to know I'm not the only one who does this. Anyway, Dana has been suggesting I try different memory tricks, and one of them really clicked with me recently."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,830 @@
+{
+  "target_fact": "Primary care doctor name and practice details",
+  "operation_type": "Update",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "vitamin_d_dose",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "Dr. Sharma put me on 5,000 IU of vitamin D daily after my bloodwork came back low"
+      },
+      "target": {
+        "target_id": "vitamin_d_daily_dose",
+        "target_name": "daily vitamin D supplement dose prescribed by Dr. Sharma"
+      },
+      "old_value": null,
+      "new_value": "5,000 IU",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Dr. Sharma put me on 5,000 IU of vitamin D daily after my bloodwork came back low"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "vitamin_d_dose",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I said that wrong earlier — it's 4,000 IU daily, not 5,000. I mixed it up with what my sister takes"
+      },
+      "target": {
+        "target_id": "vitamin_d_daily_dose",
+        "target_name": "daily vitamin D supplement dose prescribed by Dr. Sharma"
+      },
+      "old_value": "5,000 IU",
+      "new_value": "4,000 IU",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I said that wrong earlier — it's 4,000 IU daily, not 5,000. I mixed it up with what my sister takes"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "vitamin_d_dose",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "Dr. Sharma actually bumped my vitamin D up to 6,000 IU daily at the April 28 appointment because my levels were still low"
+      },
+      "target": {
+        "target_id": "vitamin_d_daily_dose",
+        "target_name": "daily vitamin D supplement dose prescribed by Dr. Sharma"
+      },
+      "old_value": "4,000 IU",
+      "new_value": "6,000 IU",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Dr. Sharma actually bumped my vitamin D up to 6,000 IU daily at the April 28 appointment because my levels were still low"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "vitamin_d_dose",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "The endocrinologist's office called and said he might want to raise my vitamin D to 8,000 IU once he reviews the full panel"
+      },
+      "target": {
+        "target_id": "vitamin_d_daily_dose",
+        "target_name": "daily vitamin D supplement dose prescribed by Dr. Sharma"
+      },
+      "old_value": "6,000 IU",
+      "new_value": "8,000 IU",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The endocrinologist's office called and said he might want to raise my vitamin D to 8,000 IU once he reviews the full panel"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "my vitamin D level came back at 18 ng/mL in mid-March"
+      },
+      "target": {
+        "target_id": "vitamin_d_level_march",
+        "target_name": "vitamin D blood level from mid-March bloodwork"
+      },
+      "old_value": null,
+      "new_value": "18 ng/mL",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my vitamin D level came back at 18 ng/mL in mid-March"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "my TSH was 4.8 and Dr. Sharma referred me to an endocrinologist because the thyroid numbers were borderline"
+      },
+      "target": {
+        "target_id": "tsh_level_april",
+        "target_name": "TSH level from April 28 appointment"
+      },
+      "old_value": null,
+      "new_value": "4.8",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my TSH was 4.8 and Dr. Sharma referred me to an endocrinologist because the thyroid numbers were borderline"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish vitamin D dose (initial value), vitamin D level, and doctor context",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to go over some of my recent medical stuff so you can help me keep track. My primary care doctor is Dr. Anita Sharma at Greenfield Medical Group on Elm Street. Dr. Sharma put me on 5,000 IU of vitamin D daily after my bloodwork came back low. I need to track this because I want to see if the supplements are actually making a difference over the next few months."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for sharing all of that — I've noted that your primary care doctor is Dr. Anita Sharma at Greenfield Medical Group on Elm Street, and that she prescribed 5,000 IU of vitamin D daily after your bloodwork showed low levels. Tracking supplement effectiveness over time is a great idea. Do you happen to know what your actual vitamin D level was on the bloodwork? That would give us a useful baseline number to compare against future results. Also, do you remember roughly when the bloodwork was done so we can time future check-ins appropriately?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, good call. So my vitamin D level came back at 18 ng/mL in mid-March. That's the number I really want to keep an eye on because anything under 20 is considered deficient, and I'd like to get it up to at least 40 or 50 eventually. Dr. Sharma said we'd recheck in about three months to see if the supplements are moving the needle. I've been pretty consistent about taking them every morning with breakfast."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — your mid-March vitamin D level was 18 ng/mL, which as you noted falls in the deficient range (under 20). Your goal is to get it up to at least 40–50 ng/mL, and Dr. Sharma plans to recheck in about three months from mid-March, which would put the follow-up around mid-June. It's great that you're taking the supplement consistently with breakfast since vitamin D is fat-soluble and absorbs better with food. I'll keep that 18 ng/mL baseline on file so we can compare when your new results come in. Anything else from that bloodwork you want me to track?"
+        },
+        {
+          "role": "user",
+          "content": "Actually wait — I need to correct something. I said that wrong earlier — it's 4,000 IU daily, not 5,000. I mixed it up with what my sister takes. My sister Sarah sees Dr. Kevin Liu over at Bayside Health and she's on 5,000 IU because her levels were even lower than mine. So please update that: my dose is 4,000 IU daily, and Sarah's is 5,000 IU with a different doctor entirely."
+        },
+        {
+          "role": "assistant",
+          "content": "No problem at all — I've corrected your vitamin D dose to 4,000 IU daily as prescribed by Dr. Sharma. The 5,000 IU is your sister Sarah's dose, prescribed by her doctor, Dr. Kevin Liu at Bayside Health. It's easy to mix those up when you're both taking similar supplements. So to confirm: you're on 4,000 IU daily of vitamin D, your baseline level was 18 ng/mL in mid-March, and your next recheck should be around mid-June. Is there anything else about your medical history you'd like me to help organize or keep track of going forward?"
+        },
+        {
+          "role": "user",
+          "content": "One more thing — I used to see Dr. Robert Engel as my PCP before Dr. Sharma, but I fully transferred over in early 2023 and haven't seen him since 2022. So that's no longer relevant. I just wanted to mention it in case it ever comes up in old records or something, but Dr. Sharma is my current and only PCP. I don't want any confusion there."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood — Dr. Anita Sharma at Greenfield Medical Group is your current and only primary care physician. You previously saw Dr. Robert Engel but fully transferred away from him in early 2023, and you haven't had any visits with him since 2022. I'll treat Dr. Sharma as your sole PCP going forward and won't reference Dr. Engel as an active provider. That's a good thing to clarify since old records can sometimes cause mix-ups. So far I have your PCP info, your vitamin D baseline and supplement dose, and the approximate recheck timeline. Let me know whenever you want to add more details or review what we have."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Dose increase at April 28 appointment, TSH result and endocrinology referral",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I had my rescheduled appointment with Dr. Sharma on April 28 and there's a lot to update you on. First, remember I had to reschedule because she had a family emergency? They offered me Dr. Patel who's also at Greenfield, but I decided to wait for Dr. Sharma. Anyway, the appointment happened and she went over a bunch of stuff with me, including new bloodwork results."
+        },
+        {
+          "role": "assistant",
+          "content": "Welcome back — glad the April 28 appointment with Dr. Sharma finally happened after the reschedule. It makes sense that you waited for her rather than seeing Dr. Patel, especially since you have an established relationship with Dr. Sharma and prefer continuity of care. So it sounds like there were some significant updates from the visit. I'd love to hear what the new bloodwork showed and any changes she made to your treatment plan. Did they recheck your vitamin D level, and were there any other lab results worth tracking?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, they rechecked everything. My vitamin D was still low — it came up a little bit to 22 ng/mL, but that's still below where we want it. Dr. Sharma actually bumped my vitamin D up to 6,000 IU daily at the April 28 appointment because my levels were still low. She said 4,000 clearly wasn't enough to get me into the optimal range fast enough, so she wanted to be more aggressive with the dosing for the next three months."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a meaningful update — your vitamin D went from 18 ng/mL in mid-March to 22 ng/mL at the April 28 recheck, so there's some improvement but you're still below the 40–50 ng/mL target range. I've updated your daily vitamin D dose from 4,000 IU to 6,000 IU per Dr. Sharma's new prescription. She wants to recheck again in about three months from the April 28 visit, which would be around late July. That more aggressive dosing should hopefully accelerate your progress. Were there any other lab results or changes from the appointment?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, the bigger news is that my TSH was 4.8 and Dr. Sharma referred me to an endocrinologist because the thyroid numbers were borderline. I've been feeling tired for months and kept thinking it was stress or bad sleep, but now there might be an actual medical explanation. It's honestly frustrating — like why didn't we catch this sooner? But at least now we're looking into it. She said the endocrinologist would do a more comprehensive thyroid panel."
+        },
+        {
+          "role": "assistant",
+          "content": "I can understand the frustration — months of fatigue attributed to stress and poor sleep, only to find out your TSH is 4.8, which sits right at that borderline-high range where thyroid function could be contributing. It's a relief to have a potential explanation, but also annoying that it wasn't flagged earlier. I've noted the TSH level and the referral to an endocrinologist for a comprehensive thyroid panel. Do you have the endocrinologist's name or the appointment date yet? And is this something Dr. Sharma wants to coordinate with, or will the endocrinologist be managing the thyroid side independently?"
+        },
+        {
+          "role": "user",
+          "content": "I don't have the endocrinologist appointment scheduled yet — I'm waiting for the referral to go through insurance. Dr. Sharma said she wants to stay in the loop and coordinate, which I appreciate about her. She's not the type to just hand you off. Also, I've been thinking about moving my annual physical from July 15 to sometime in the fall. Summer is always chaotic with travel and I'd rather do it during a quieter month. I haven't officially changed it yet though.\n\nThat's it for now from the visit itself. Oh, I also called the office last week to get my vaccination records faxed to my employer for a work requirement. The receptionist Maria said she'd handle it by Friday. That was just routine, nothing medical to track there. I'll let you know once the endocrinology referral comes through."
+        },
+        {
+          "role": "assistant",
+          "content": "It's great that Dr. Sharma wants to stay coordinated with the endocrinologist rather than just referring you out — that continuity of care really matters, especially when you're dealing with potentially connected issues like low vitamin D and borderline thyroid function. I'll keep an eye out for when you get the endocrinology appointment scheduled. As for the annual physical, your current date is July 15 and you're thinking about moving it to the fall for a calmer scheduling window. That makes sense — once you decide on a specific month or date, let me know and I'll update that. Anything else from the April 28 visit?"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Tentative dose increase from endocrinologist (recency trap), adversarial injection of sister's dose",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Quick update — the endocrinology referral finally went through insurance. The endocrinologist is Dr. Mehta at Capital Endocrine Associates. My appointment is set for May 19. I'm a little nervous about seeing a new doctor but Dr. Sharma said Dr. Mehta is thorough and she trusts him, so that helps. I just hope he doesn't want to redo all the bloodwork from scratch."
+        },
+        {
+          "role": "assistant",
+          "content": "Good news that the referral cleared insurance. Dr. Mehta at Capital Endocrine Associates on May 19 — I've noted that. It's understandable to feel uneasy about a new provider, but the fact that Dr. Sharma personally recommended him and plans to stay coordinated should help bridge that gap. Regarding the bloodwork, many endocrinologists will want to run their own comprehensive thyroid panel even if recent labs exist, since they may want to check additional markers like free T3, free T4, and thyroid antibodies beyond just TSH. It might be worth asking Dr. Sharma's office to forward your April 28 results to Dr. Mehta's office ahead of time so he has context before your visit."
+        },
+        {
+          "role": "user",
+          "content": "That's a great idea — I'll call Greenfield and ask Maria to send the records over to Dr. Mehta's office. By the way, I was looking at my patient portal and noticed something confusing. It shows my vitamin D supplement as 5,000 IU, which is wrong. I think the system might have pulled from an old entry or maybe it's showing a default. My current prescribed dose from Dr. Sharma is definitely 6,000 IU as of the April 28 visit."
+        },
+        {
+          "role": "assistant",
+          "content": "That's definitely confusing — patient portals can sometimes lag behind or display outdated information, especially if the dosage was changed at a recent visit and the system hasn't been updated yet. Your confirmed current dose is 6,000 IU daily as prescribed by Dr. Sharma at the April 28 appointment. I'd recommend mentioning the portal discrepancy to Maria when you call about forwarding records to Dr. Mehta, so they can correct it in the system. You don't want the endocrinologist seeing 5,000 IU on your chart and making recommendations based on the wrong baseline. It's also worth double-checking that your updated vitamin D level of 22 ng/mL is reflected accurately in the records being sent over."
+        },
+        {
+          "role": "user",
+          "content": "Good thinking. Also, I almost forgot — The endocrinologist's office called and said he might want to raise my vitamin D to 8,000 IU once he reviews the full panel. They said given my TSH being borderline and the vitamin D still being low, a higher dose could help both issues. I guess I'll find out for sure at the May 19 appointment."
+        },
+        {
+          "role": "assistant",
+          "content": "That's interesting — there is research suggesting a connection between vitamin D deficiency and thyroid function, so it makes sense that Dr. Mehta might want to take a more aggressive supplementation approach. The potential increase to 8,000 IU daily would be a notable jump from your current 6,000 IU. Since this isn't confirmed yet and depends on his full review at the May 19 appointment, I'll note it as a possibility but keep your current dose recorded as 6,000 IU from Dr. Sharma until you have a definitive new prescription. Let me know what comes out of that appointment and we can update everything accordingly."
+        },
+        {
+          "role": "user",
+          "content": "Sounds good. Oh, I was talking to my sister Sarah the other day and she mentioned that Dr. Liu adjusted her vitamin D dose too — she's now on 6,000 IU as well, same as me currently. Funny how we ended up on the same dose after starting at different amounts. She also said her TSH was normal though, so at least she doesn't have the thyroid concern on top of everything.\n\nYeah exactly. Alright, I think that's everything for now. I'll update you after the May 19 appointment with Dr. Mehta. Hopefully he confirms a clear plan and I can stop worrying about whether my dose is going to change again. I just want to get my levels sorted out and figure out the thyroid situation once and for all."
+        },
+        {
+          "role": "assistant",
+          "content": "That is a funny coincidence — you and Sarah both landing on 6,000 IU daily after starting at different doses and with different doctors. It's good to hear that Sarah's TSH is normal, so she doesn't have the added thyroid layer to worry about. For your records, your situation is a bit more complex since you're juggling both the vitamin D deficiency and the borderline TSH of 4.8 with the upcoming endocrinology evaluation. It'll be helpful to compare notes with Sarah on how the supplements are working for her, but of course your treatment plan may diverge once Dr. Mehta weighs in on the thyroid side. Speaking of which, I noticed from earlier that your sister's previous dose with Dr. Liu at Bayside Health was 5,000 IU — so her adjustment mirrors yours in a way."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations, I've mentioned my vitamin D supplement dose a few times. Can you walk me through what I said about it at different points — which amounts came up and why?",
+      "expected_answer": "You initially said your dose was 5,000 IU daily, then corrected yourself and said it was actually 4,000 IU daily (you had mixed it up with your sister Sarah's dose). Later, after the April 28 appointment with Dr. Sharma, you said she increased your dose to 6,000 IU daily because your levels were still low. Most recently, you mentioned the endocrinologist's office called to say Dr. Mehta might raise it to 8,000 IU, but that was pending his full review at the May 19 appointment.",
+      "gold_memory_state": "Vitamin D dose trajectory: 5,000 IU (initial misstatement) → 4,000 IU (self-correction) → 6,000 IU (confirmed increase at April 28 appointment) → 8,000 IU (tentative, pending endocrinologist review). Current confirmed dose is 6,000 IU daily.",
+      "judge_rubric": {
+        "must_include": [
+          "5,000 IU as initial statement",
+          "4,000 IU as correction",
+          "6,000 IU as the dose from the April 28 appointment",
+          "8,000 IU as a possibility pending review"
+        ],
+        "acceptable_paraphrases": [
+          "mixed up with sister's dose",
+          "Dr. Sharma increased it",
+          "endocrinologist might raise it"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "Stating 8,000 IU is the current confirmed dose"
+        ],
+        "harmless_extra": [
+          "Mentioning the vitamin D levels of 18 ng/mL and 22 ng/mL",
+          "Mentioning the sister Sarah's dose"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model presents 5,000 IU or 4,000 IU as the current dose without noting they were superseded",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Dr. Sharma put me on 5,000 IU of vitamin D daily after my bloodwork came back low"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I said that wrong earlier — it's 4,000 IU daily, not 5,000. I mixed it up with what my sister takes"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Dr. Sharma actually bumped my vitamin D up to 6,000 IU daily at the April 28 appointment because my levels were still low"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The endocrinologist's office called and said he might want to raise my vitamin D to 8,000 IU once he reviews the full panel"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations, I've mentioned my vitamin D supplement dose a few times. Can you walk me through what I said about it at different points — which amounts came up and why?",
+      "expected_answer": "You initially said your dose was 5,000 IU daily, then corrected yourself and said it was actually 4,000 IU daily (you had mixed it up with your sister Sarah's dose). Later, after the April 28 appointment with Dr. Sharma, you said she increased your dose to 6,000 IU daily because your levels were still low. Most recently, you mentioned the endocrinologist's office called to say Dr. Mehta might raise it to 8,000 IU, but that was pending his full review at the May 19 appointment.",
+      "gold_memory_state": "Vitamin D dose trajectory: 5,000 IU (initial misstatement) → 4,000 IU (self-correction) → 6,000 IU (confirmed increase at April 28 appointment) → 8,000 IU (tentative, pending endocrinologist review). Current confirmed dose is 6,000 IU daily.",
+      "judge_rubric": {
+        "must_include": [
+          "5,000 IU as initial statement",
+          "4,000 IU as correction",
+          "6,000 IU as the dose from the April 28 appointment",
+          "8,000 IU as a possibility pending review"
+        ],
+        "acceptable_paraphrases": [
+          "mixed up with sister's dose",
+          "Dr. Sharma increased it",
+          "endocrinologist might raise it"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "Stating 8,000 IU is the current confirmed dose"
+        ],
+        "harmless_extra": [
+          "Mentioning the vitamin D levels of 18 ng/mL and 22 ng/mL",
+          "Mentioning the sister Sarah's dose"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model presents 5,000 IU or 4,000 IU as the current dose without noting they were superseded",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Dr. Sharma put me on 5,000 IU of vitamin D daily after my bloodwork came back low"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I said that wrong earlier — it's 4,000 IU daily, not 5,000. I mixed it up with what my sister takes"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Dr. Sharma actually bumped my vitamin D up to 6,000 IU daily at the April 28 appointment because my levels were still low"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The endocrinologist's office called and said he might want to raise my vitamin D to 8,000 IU once he reviews the full panel"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "My sister and I are both taking vitamin D supplements prescribed by different doctors. If I need to fill out a medication reconciliation form for my own provider, which dose entry belongs to my record and which belongs to my sister's? Should her dosing information affect what goes on my form?",
+      "expected_answer": "Your current vitamin D dose is 6,000 IU daily, prescribed by Dr. Sharma. Your sister Sarah's dose is 6,000 IU daily (adjusted from her original 5,000 IU), prescribed by Dr. Kevin Liu at Bayside Health. Only your 6,000 IU dose from Dr. Sharma belongs on your medication form. Sarah's dosing history should not affect your record.",
+      "gold_memory_state": "User's confirmed vitamin D dose: 6,000 IU daily (Dr. Sharma, April 28). Sister Sarah's dose: originally 5,000 IU from Dr. Kevin Liu at Bayside Health, later adjusted to 6,000 IU. The two records are separate despite currently having the same value. A tentative 8,000 IU from the endocrinologist is not yet confirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "6,000 IU as the user's current dose",
+          "Dr. Sharma as prescriber",
+          "Sarah's dose is separate"
+        ],
+        "acceptable_paraphrases": [
+          "sister's information is irrelevant to the user's form",
+          "only the user's own prescription matters"
+        ],
+        "must_not_include": [
+          "4,000 IU as the user's current dose",
+          "5,000 IU as the user's current dose"
+        ],
+        "harmful_extra": [
+          "Putting 8,000 IU on the form as the user's dose",
+          "Merging sister's prescription into user's record",
+          "Listing 5,000 IU as the user's current dose because it was the sister's original dose"
+        ],
+        "harmless_extra": [
+          "Mentioning that Sarah's dose was also adjusted",
+          "Noting the 8,000 IU is pending"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 4,000 IU or 5,000 IU is placed on the user's form as the current dose",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Dr. Sharma actually bumped my vitamin D up to 6,000 IU daily at the April 28 appointment because my levels were still low"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I said that wrong earlier — it's 4,000 IU daily, not 5,000. I mixed it up with what my sister takes"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "she mentioned that Dr. Liu adjusted her vitamin D dose too — she's now on 6,000 IU as well, same as me currently"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "My sister and I are both taking vitamin D supplements prescribed by different doctors. If I need to fill out a medication reconciliation form for my own provider, which dose entry belongs to my record and which belongs to my sister's? Should her dosing information affect what goes on my form?",
+      "expected_answer": "Your current vitamin D dose is 6,000 IU daily, prescribed by Dr. Sharma. Your sister Sarah's dose is 6,000 IU daily (adjusted from her original 5,000 IU), prescribed by Dr. Kevin Liu at Bayside Health. Only your 6,000 IU dose from Dr. Sharma belongs on your medication form. Sarah's dosing history should not affect your record.",
+      "gold_memory_state": "User's confirmed vitamin D dose: 6,000 IU daily (Dr. Sharma, April 28). Sister Sarah's dose: originally 5,000 IU from Dr. Kevin Liu at Bayside Health, later adjusted to 6,000 IU. The two records are separate despite currently having the same value. A tentative 8,000 IU from the endocrinologist is not yet confirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "6,000 IU as the user's current dose",
+          "Dr. Sharma as prescriber",
+          "Sarah's dose is separate"
+        ],
+        "acceptable_paraphrases": [
+          "sister's information is irrelevant to the user's form",
+          "only the user's own prescription matters"
+        ],
+        "must_not_include": [
+          "4,000 IU as the user's current dose",
+          "5,000 IU as the user's current dose"
+        ],
+        "harmful_extra": [
+          "Putting 8,000 IU on the form as the user's dose",
+          "Merging sister's prescription into user's record",
+          "Listing 5,000 IU as the user's current dose because it was the sister's original dose"
+        ],
+        "harmless_extra": [
+          "Mentioning that Sarah's dose was also adjusted",
+          "Noting the 8,000 IU is pending"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 4,000 IU or 5,000 IU is placed on the user's form as the current dose",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Dr. Sharma actually bumped my vitamin D up to 6,000 IU daily at the April 28 appointment because my levels were still low"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I said that wrong earlier — it's 4,000 IU daily, not 5,000. I mixed it up with what my sister takes"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "she mentioned that Dr. Liu adjusted her vitamin D dose too — she's now on 6,000 IU as well, same as me currently"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I'm preparing for my May 19 appointment with Dr. Mehta and want to write down my vitamin D dose so I can tell him accurately. Which of the following amounts should I report as my daily vitamin D dose?",
+      "candidate_options": [
+        "4,000 IU",
+        "5,000 IU",
+        "6,000 IU",
+        "8,000 IU"
+      ],
+      "expected_answer": "6,000 IU",
+      "gold_memory_state": "Current confirmed vitamin D dose: 6,000 IU daily (prescribed by Dr. Sharma at April 28 appointment). 4,000 IU is the previous confirmed dose before the increase. 5,000 IU was the user's initial misstatement (actually the sister's dose from Dr. Liu). 8,000 IU is a tentative possibility pending Dr. Mehta's review — not yet prescribed.",
+      "judge_rubric": {
+        "must_include": [
+          "6,000 IU"
+        ],
+        "acceptable_paraphrases": [
+          "6000 IU",
+          "six thousand IU"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "Selecting 8,000 IU as the current dose",
+          "Selecting 4,000 IU as the current dose",
+          "Selecting 5,000 IU as the current dose"
+        ],
+        "harmless_extra": [
+          "Noting that 8,000 IU may be considered at the appointment"
+        ]
+      },
+      "distractor_rationale": "same-value-different-target: 5,000 IU is the sister Sarah's original dose prescribed by Dr. Kevin Liu, not the user's dose. assistant echo: 5,000 IU also appeared in the patient portal display that the assistant discussed, reinforcing this wrong value. 4,000 IU is the stale pre-increase dose. 8,000 IU is the tentative recency-trap value from the endocrinologist's preliminary suggestion.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model selects 4,000 IU (old confirmed dose) or 5,000 IU (initial misstatement / sister's dose) or 8,000 IU (tentative, not yet prescribed)",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Dr. Sharma actually bumped my vitamin D up to 6,000 IU daily at the April 28 appointment because my levels were still low"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The endocrinologist's office called and said he might want to raise my vitamin D to 8,000 IU once he reviews the full panel"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I'm preparing for my May 19 appointment with Dr. Mehta and want to write down my vitamin D dose so I can tell him accurately. Which of the following amounts should I report as my daily vitamin D dose?",
+      "candidate_options": [
+        "4,000 IU",
+        "5,000 IU",
+        "6,000 IU",
+        "8,000 IU"
+      ],
+      "expected_answer": "6,000 IU",
+      "gold_memory_state": "Current confirmed vitamin D dose: 6,000 IU daily (prescribed by Dr. Sharma at April 28 appointment). 4,000 IU is the previous confirmed dose before the increase. 5,000 IU was the user's initial misstatement (actually the sister's dose from Dr. Liu). 8,000 IU is a tentative possibility pending Dr. Mehta's review — not yet prescribed.",
+      "judge_rubric": {
+        "must_include": [
+          "6,000 IU"
+        ],
+        "acceptable_paraphrases": [
+          "6000 IU",
+          "six thousand IU"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "Selecting 8,000 IU as the current dose",
+          "Selecting 4,000 IU as the current dose",
+          "Selecting 5,000 IU as the current dose"
+        ],
+        "harmless_extra": [
+          "Noting that 8,000 IU may be considered at the appointment"
+        ]
+      },
+      "distractor_rationale": "same-value-different-target: 5,000 IU is the sister Sarah's original dose prescribed by Dr. Kevin Liu, not the user's dose. assistant echo: 5,000 IU also appeared in the patient portal display that the assistant discussed, reinforcing this wrong value. 4,000 IU is the stale pre-increase dose. 8,000 IU is the tentative recency-trap value from the endocrinologist's preliminary suggestion.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model selects 4,000 IU (old confirmed dose) or 5,000 IU (initial misstatement / sister's dose) or 8,000 IU (tentative, not yet prescribed)",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Dr. Sharma actually bumped my vitamin D up to 6,000 IU daily at the April 28 appointment because my levels were still low"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The endocrinologist's office called and said he might want to raise my vitamin D to 8,000 IU once he reviews the full panel"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to prepare a brief health summary card to bring to Dr. Mehta on May 19. It should include my primary care doctor's name and practice, my most recent vitamin D blood level and the date it was taken, my current daily vitamin D dose, and my TSH result that prompted the referral. Can you draft that for me?",
+      "expected_answer": "Health Summary Card:\n- Primary Care Physician: Dr. Anita Sharma, Greenfield Medical Group, Elm Street\n- Most Recent Vitamin D Level: 22 ng/mL (April 28)\n- Current Daily Vitamin D Dose: 6,000 IU\n- TSH Level: 4.8 (April 28, borderline — prompted endocrinology referral)",
+      "gold_memory_state": "PCP: Dr. Anita Sharma at Greenfield Medical Group on Elm Street. Vitamin D level at April 28 appointment: 22 ng/mL (up from 18 ng/mL in mid-March). Current confirmed vitamin D dose: 6,000 IU daily. TSH: 4.8 from April 28. Endocrinologist: Dr. Mehta at Capital Endocrine Associates, May 19 appointment. 8,000 IU is tentative and should not appear as the current dose.",
+      "judge_rubric": {
+        "must_include": [
+          "Dr. Anita Sharma",
+          "Greenfield Medical Group",
+          "22 ng/mL",
+          "6,000 IU",
+          "4.8"
+        ],
+        "acceptable_paraphrases": [
+          "Greenfield Medical on Elm Street",
+          "TSH 4.8",
+          "vitamin D 22"
+        ],
+        "must_not_include": [
+          "8,000 IU as current dose",
+          "4,000 IU as current dose",
+          "5,000 IU as current dose"
+        ],
+        "harmful_extra": [
+          "Listing 8,000 IU as the current dose",
+          "Listing Dr. Robert Engel as PCP",
+          "Listing 18 ng/mL as the most recent vitamin D level without noting it was the earlier baseline"
+        ],
+        "harmless_extra": [
+          "Mentioning the mid-March baseline of 18 ng/mL for comparison",
+          "Noting the referral was for borderline thyroid",
+          "Mentioning Elm Street"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 4,000 IU or 5,000 IU appears as the current dose, or if 18 ng/mL is listed as the most recent level without clarification, or if Dr. Engel appears as PCP",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the summary card does not include all four requested data points with correct current values",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's primary care doctor is Dr. Anita Sharma at Greenfield Medical Group on Elm Street.",
+        "Fact 2: The user's vitamin D level at the April 28 appointment was 22 ng/mL, up from 18 ng/mL in mid-March.",
+        "Fact 3: Dr. Sharma increased the user's vitamin D dose to 6,000 IU daily at the April 28 appointment.",
+        "Fact 4: The user's TSH was 4.8 at the April 28 appointment, prompting a referral to an endocrinologist.",
+        "Inference: The health summary card must combine the PCP identity, the most recent (not baseline) vitamin D level, the current confirmed (not tentative) dose, and the TSH value — all drawn from different confirmed facts across the conversation.",
+        "Inference: The 8,000 IU tentative dose must be excluded because it is not yet prescribed; the 18 ng/mL is the older baseline, not the most recent level."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My primary care doctor is Dr. Anita Sharma at Greenfield Medical Group on Elm Street"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Dr. Sharma actually bumped my vitamin D up to 6,000 IU daily at the April 28 appointment because my levels were still low"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my TSH was 4.8 and Dr. Sharma referred me to an endocrinologist because the thyroid numbers were borderline"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my vitamin D level came back at 18 ng/mL in mid-March"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to prepare a brief health summary card to bring to Dr. Mehta on May 19. It should include my primary care doctor's name and practice, my most recent vitamin D blood level and the date it was taken, my current daily vitamin D dose, and my TSH result that prompted the referral. Can you draft that for me?",
+      "expected_answer": "Health Summary Card:\n- Primary Care Physician: Dr. Anita Sharma, Greenfield Medical Group, Elm Street\n- Most Recent Vitamin D Level: 22 ng/mL (April 28)\n- Current Daily Vitamin D Dose: 6,000 IU\n- TSH Level: 4.8 (April 28, borderline — prompted endocrinology referral)",
+      "gold_memory_state": "PCP: Dr. Anita Sharma at Greenfield Medical Group on Elm Street. Vitamin D level at April 28 appointment: 22 ng/mL (up from 18 ng/mL in mid-March). Current confirmed vitamin D dose: 6,000 IU daily. TSH: 4.8 from April 28. Endocrinologist: Dr. Mehta at Capital Endocrine Associates, May 19 appointment. 8,000 IU is tentative and should not appear as the current dose.",
+      "judge_rubric": {
+        "must_include": [
+          "Dr. Anita Sharma",
+          "Greenfield Medical Group",
+          "22 ng/mL",
+          "6,000 IU",
+          "4.8"
+        ],
+        "acceptable_paraphrases": [
+          "Greenfield Medical on Elm Street",
+          "TSH 4.8",
+          "vitamin D 22"
+        ],
+        "must_not_include": [
+          "8,000 IU as current dose",
+          "4,000 IU as current dose",
+          "5,000 IU as current dose"
+        ],
+        "harmful_extra": [
+          "Listing 8,000 IU as the current dose",
+          "Listing Dr. Robert Engel as PCP",
+          "Listing 18 ng/mL as the most recent vitamin D level without noting it was the earlier baseline"
+        ],
+        "harmless_extra": [
+          "Mentioning the mid-March baseline of 18 ng/mL for comparison",
+          "Noting the referral was for borderline thyroid",
+          "Mentioning Elm Street"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 4,000 IU or 5,000 IU appears as the current dose, or if 18 ng/mL is listed as the most recent level without clarification, or if Dr. Engel appears as PCP",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the summary card does not include all four requested data points with correct current values",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's primary care doctor is Dr. Anita Sharma at Greenfield Medical Group on Elm Street.",
+        "Fact 2: The user's vitamin D level at the April 28 appointment was 22 ng/mL, up from 18 ng/mL in mid-March.",
+        "Fact 3: Dr. Sharma increased the user's vitamin D dose to 6,000 IU daily at the April 28 appointment.",
+        "Fact 4: The user's TSH was 4.8 at the April 28 appointment, prompting a referral to an endocrinologist.",
+        "Inference: The health summary card must combine the PCP identity, the most recent (not baseline) vitamin D level, the current confirmed (not tentative) dose, and the TSH value — all drawn from different confirmed facts across the conversation.",
+        "Inference: The 8,000 IU tentative dose must be excluded because it is not yet prescribed; the 18 ng/mL is the older baseline, not the most recent level."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My primary care doctor is Dr. Anita Sharma at Greenfield Medical Group on Elm Street"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Dr. Sharma actually bumped my vitamin D up to 6,000 IU daily at the April 28 appointment because my levels were still low"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my TSH was 4.8 and Dr. Sharma referred me to an endocrinologist because the thyroid numbers were borderline"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my vitamin D level came back at 18 ng/mL in mid-March"
+        }
+      ]
+    }
+  ]
+}

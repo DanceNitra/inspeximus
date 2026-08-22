@@ -1,0 +1,839 @@
+{
+  "target_fact": "User's new health insurance policy number, initially believed to be HX-440821, undergoes multiple corrections across the conversation.",
+  "operation_type": "Update",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "policy_number_chain",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I got my new insurance card in the mail yesterday and the policy number is HX-440821"
+      },
+      "target": {
+        "target_id": "health_insurance_policy_number",
+        "target_name": "new health insurance policy number"
+      },
+      "old_value": null,
+      "new_value": "HX-440821",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I got my new insurance card in the mail yesterday and the policy number is HX-440821"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "policy_number_chain",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I just looked at the card more carefully and the number is actually HX-440812, not HX-440821. I had the last two digits swapped"
+      },
+      "target": {
+        "target_id": "health_insurance_policy_number",
+        "target_name": "new health insurance policy number"
+      },
+      "old_value": "HX-440821",
+      "new_value": "HX-440812",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I just looked at the card more carefully and the number is actually HX-440812, not HX-440821. I had the last two digits swapped"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "policy_number_chain",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I called the insurance company and they confirmed the correct policy number is HX-440812. They also told me my coverage effective date was February 1st"
+      },
+      "target": {
+        "target_id": "health_insurance_policy_number",
+        "target_name": "new health insurance policy number"
+      },
+      "old_value": "HX-440812",
+      "new_value": "HX-440812",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I called the insurance company and they confirmed the correct policy number is HX-440812. They also told me my coverage effective date was February 1st"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "policy_number_chain",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "HR just sent me a message saying they're migrating everyone to a new plan and my updated policy number will be HX-441090 starting next quarter"
+      },
+      "target": {
+        "target_id": "health_insurance_policy_number",
+        "target_name": "new health insurance policy number"
+      },
+      "old_value": "HX-440812",
+      "new_value": "HX-441090",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "HR just sent me a message saying they're migrating everyone to a new plan and my updated policy number will be HX-441090 starting next quarter"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "They also told me my coverage effective date was February 1st"
+      },
+      "target": {
+        "target_id": "insurance_coverage_start_date",
+        "target_name": "health insurance coverage effective date"
+      },
+      "old_value": null,
+      "new_value": "February 1st",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "They also told me my coverage effective date was February 1st"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "my daily water intake target is 2.5 liters, my doctor set that for me at the appointment after the new year"
+      },
+      "target": {
+        "target_id": "daily_water_intake_target",
+        "target_name": "daily water intake target"
+      },
+      "old_value": null,
+      "new_value": "2.5 liters per day",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my daily water intake target is 2.5 liters, my doctor set that for me at the appointment after the new year"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "my next doctor follow-up is in three months from that January visit, so it should be sometime in April"
+      },
+      "target": {
+        "target_id": "doctor_followup_timing",
+        "target_name": "next doctor follow-up appointment timing"
+      },
+      "old_value": null,
+      "new_value": "three months from the January visit, sometime in April",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my next doctor follow-up is in three months from that January visit, so it should be sometime in April"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish initial policy number, water intake target, and begin building the update chain with a correction.",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I need you to keep track of some personal details for me. I got my new insurance card in the mail yesterday and the policy number is HX-440821. I switched jobs back in January so this is all new coverage. Can you hold onto that number for me? I've been losing track of everything lately with the transition."
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! I've noted your new health insurance policy number as HX-440821, associated with the job change you made in January. That's an important detail to keep handy, especially during a transition period when you're juggling new paperwork. If you need me to store any other details related to the new job or coverage, just let me know. I can also help you organize a checklist of things to update after a job switch if that would be useful for keeping everything straight."
+        },
+        {
+          "role": "user",
+          "content": "That would be helpful eventually, yeah. Also, one thing I really need to remember — my daily water intake target is 2.5 liters, my doctor set that for me at the appointment after the new year. I keep forgetting the exact amount and then I don't drink enough. It's such a simple thing but I need it written down somewhere I can reference easily."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — your daily water intake target is 2.5 liters, as recommended by your doctor at that post-new-year appointment. I'll keep that noted so you can always check back. Staying consistently hydrated at that level can really make a difference, especially if your doctor specifically flagged it. Would you like me to help you set up any kind of tracking system or daily reminder prompt? Sometimes having a structured check-in helps build the habit until it becomes second nature for you."
+        },
+        {
+          "role": "user",
+          "content": "Maybe later on the tracking thing. But wait — I just looked at the card more carefully and the number is actually HX-440812, not HX-440821. I had the last two digits swapped. Sorry about that. Can you fix that? It's HX-440812 for certain, I'm reading it directly off the card right now. I want to make sure we have the right one stored."
+        },
+        {
+          "role": "assistant",
+          "content": "No problem at all — I've updated your health insurance policy number from HX-440821 to HX-440812. Good catch reading it directly off the card. Transposing digits is really easy to do, especially with longer alphanumeric codes. So your current confirmed policy number is HX-440812. I'll keep that as the authoritative version. If anything else on the card needs noting — like the group number, the provider network name, or the customer service phone number — feel free to share those too and I'll store them alongside."
+        },
+        {
+          "role": "user",
+          "content": "Thanks, that's the only number I need stored for now. Oh, I also wanted to mention — my friend Darren is planning to move sometime in May. He told me he's deciding between Portland and Eugene. I don't know which he'll pick yet, but he's definitely aiming for May. I thought I'd mention it because I might need to help him with logistics later."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — your friend Darren is planning to move in May and is deciding between Portland and Eugene. I'll keep that on file so when the time comes and he settles on a destination, you'll have the context ready. If he asks for help with logistics, I can assist with things like moving checklists, cost comparisons between the two cities, or scheduling coordination. Just let me know when he makes his decision and I'll update the note. Anything else you'd like me to track for now?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Confirm the corrected policy number via phone call, establish coverage start date and doctor follow-up timing for multi-hop.",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, quick update on a few things. I've been settling into the new job more and I found this really peaceful little park near the office. There's a bench by a small pond and I go there for lunch alone a couple times a week. It's just me and the trees, nobody bothering me. I really enjoy it, it's become a nice routine for decompressing during the workday."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a wonderful find — a quiet bench by a pond with some trees is a great way to decompress during a busy workday. Having a peaceful solo lunch spot can really help reset your energy for the afternoon. It's nice that you've built it into a regular routine a couple of times a week. If you ever want me to help you plan around that schedule or note anything else about your workday routines, just say the word. Sometimes anchoring a calm moment in the middle of the day makes the whole week feel more manageable."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, it really does help. Anyway, more importantly — I called the insurance company and they confirmed the correct policy number is HX-440812. They also told me my coverage effective date was February 1st. So there was about a month gap after I started the new job in January before the insurance kicked in. Good to have that confirmed officially now rather than just reading off the card."
+        },
+        {
+          "role": "assistant",
+          "content": "Great to hear you got official confirmation. Your health insurance policy number HX-440812 is now verified directly with the insurance company, and your coverage effective date is February 1st. That means there was roughly a one-month gap between your January job start and when the new insurance became active. It's good to know that exact start date in case you need to file any claims or check whether a specific visit falls within your coverage window. Would you like me to note anything else from that phone call, like the provider network or customer service number?"
+        },
+        {
+          "role": "user",
+          "content": "No, that's all from the call. But speaking of medical stuff, my next doctor follow-up is in three months from that January visit, so it should be sometime in April. I'm not looking forward to it honestly — the last visit was so frustrating. I waited over an hour and a half just to be told to drink more water. But I guess I have to go back and show I've been keeping up with the 2.5 liters."
+        },
+        {
+          "role": "assistant",
+          "content": "I've noted that your next doctor follow-up is scheduled for sometime in April, three months after the January visit. I understand the frustration — waiting ninety minutes only to receive what felt like basic advice is genuinely annoying. But at least this time you'll be able to show you've been tracking your intake and hitting that 2.5-liter target. That might lead to a more productive conversation. When you get the exact appointment date, let me know and I can add it to your records so you have everything in one place."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, I'll share the exact date once I book it. By the way, I wanted to confirm — my new manager's name is Catherine Pak, spelled P-A-K. I think I might have mentioned it wrong before as Park. It's definitely Pak. I want to make sure that's right in case I reference her later when talking about work stuff with you.\n\nThat's all for now on the work front. I'm going to go make my cold-brew green tea — I've been having it almost every morning. I love that it's not sweet at all, just clean and a little grassy. It's become part of my daily routine now. I'll check back in if anything else comes up with the insurance or the doctor appointment."
+        },
+        {
+          "role": "assistant",
+          "content": "Updated — your new manager's name is Catherine Pak, spelled P-A-K. I'll make sure that's the version I use going forward. It's an easy mix-up between Pak and Park, so good that you clarified it now. Having the correct spelling noted will help avoid any confusion when we discuss work-related topics later. If there are other colleagues or contacts at the new job whose names you'd like me to keep on file, feel free to share those as well. It can be helpful to have a quick reference for your professional network.\n\nEnjoy your cold-brew green tea! That clean, unsweetened, slightly grassy flavor sounds like a really refreshing way to start the morning. It's great that you've found a daily ritual you genuinely enjoy — those small consistent pleasures can anchor your whole day. Whenever you have updates on the insurance, the doctor appointment, or anything else, just reach out. I've got your policy number, coverage date, water intake target, follow-up timing, and manager's name all noted. Have a good rest of your day and enjoy that tea!"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Introduce tentative future policy number change (recency trap) and adversarial look-alike injection.",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I'm back with a few things on my mind. I've been snacking on those plain rice crackers lately instead of chips. They're just rice and salt, basically. I really enjoy how simple they taste — kind of goes along with the green tea thing. I guess I'm drawn to flavors that are clean and uncomplicated. Anyway, wanted to mention that so you know my current snacking habits."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes a lot of sense — the plain rice crackers with just rice and salt pair perfectly with your cold-brew green tea preference. You seem to gravitate toward clean, minimal, uncomplicated flavors, which is a really consistent thread in your food and drink choices. I've noted the rice crackers as your current go-to snack. If you ever want recipe or snack suggestions that fit that same flavor profile — simple, not overly seasoned, letting the base ingredient shine — I can definitely help with that. It's a nice, grounded approach to eating."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, exactly. Oh, I also wanted to ask — can you remind me what my current confirmed insurance policy number is? I need to fill out a form for a specialist referral. I want to make sure I'm using the right one since there was that mix-up earlier with the digits. I just want to double-check before I submit anything official."
+        },
+        {
+          "role": "assistant",
+          "content": "Your current confirmed health insurance policy number is HX-440812. That's the version you read directly off your card and then verified with the insurance company over the phone. The original number you gave me was HX-440821, but you corrected it after checking the card. I also have on file that your coverage effective date is February 1st, in case the referral form asks for that as well. By the way, I noticed the specialist referral template your office uses sometimes pre-fills with the group plan code GN-338105 — just make sure you're entering your individual policy number, not the group code."
+        },
+        {
+          "role": "user",
+          "content": "HR just sent me a message saying they're migrating everyone to a new plan and my updated policy number will be HX-441090 starting next quarter. I haven't seen any official documentation yet though, just the chat message from HR. So who knows if that's final. I'll wait for the actual paperwork before I consider it confirmed."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood — I've noted that HR mentioned a potential new policy number of HX-441090 starting next quarter due to a plan migration, but since you haven't received official documentation yet, we'll treat that as tentative for now. Your current confirmed policy number remains HX-440812 until you see it in writing. Plan migrations can sometimes shift timelines or details, so it's smart to wait for the formal paperwork. Once you get the official letter or updated card, let me know and I'll update the record. In the meantime, use HX-440812 for any forms or referrals you're submitting."
+        },
+        {
+          "role": "user",
+          "content": "Right, exactly. I'll keep using HX-440812 for now. Switching topics — Darren finally told me he's going with Portland. He found a place in the Hawthorne neighborhood, actually. He's excited about it. I told him I'd help him move the second weekend of May. So that's settled now. I might need to take a day off work for it.\n\nYeah, I'll talk to Catherine about the day off soon. For now I think that's everything. I've got the referral form to finish up with the HX-440812 number, and I'll keep an eye out for the official migration paperwork from HR. Thanks for keeping all of this organized — the insurance stuff especially has been a headache to keep straight with all the changes."
+        },
+        {
+          "role": "assistant",
+          "content": "Great news for Darren — Portland's Hawthorne neighborhood is a fantastic choice! I've updated his plans accordingly: he's moving to Portland, specifically the Hawthorne area, and you're planning to help him move the second weekend of May. You might want to give Catherine Pak a heads-up about potentially needing that day off, especially if your team has any deadlines around that time. If you need help coordinating logistics for the move — like rental truck options, a packing checklist, or route planning — just let me know. It's nice that you're able to be there for him during the transition.\n\nYou're very welcome — I'm glad I can help keep it all straight! Here's a quick summary of where things stand: your confirmed policy number is HX-440812 with coverage starting February 1st, the tentative future number HX-441090 is pending official documentation, your water intake target is 2.5 liters daily, your doctor follow-up is in April, and you're helping Darren move to Portland's Hawthorne neighborhood the second weekend of May. Go ahead and finish that referral form, and whenever the HR paperwork arrives, just let me know and we'll get everything updated properly. Take care!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations, I shared my health insurance policy number a few times and also mentioned some other health-related details. Can you walk me through what I originally told you about the policy number and what I said about it later that should guide which version you rely on going forward?",
+      "expected_answer": "You first shared the policy number as HX-440821 when you received your new insurance card. You then re-read the card and said the correct number is HX-440812, noting the last two digits had been swapped. Later, you called the insurance company and they confirmed HX-440812 as the correct policy number. Most recently, you mentioned HR sent a message about a possible future number HX-441090 starting next quarter, but you said you'd wait for official paperwork before treating it as confirmed.",
+      "gold_memory_state": "Current confirmed policy number: HX-440812. Tentative future number HX-441090 pending official documentation. Coverage effective date: February 1st. Water intake target: 2.5 liters/day. Doctor follow-up: sometime in April.",
+      "judge_rubric": {
+        "must_include": [
+          "HX-440821 as the original number",
+          "HX-440812 as the corrected and confirmed number",
+          "insurance company confirmation of HX-440812",
+          "HX-441090 mentioned by HR as a future possibility"
+        ],
+        "acceptable_paraphrases": [
+          "last two digits were transposed",
+          "digits were swapped"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "Treating HX-441090 as the current confirmed number",
+          "Treating HX-440821 as still valid"
+        ],
+        "harmless_extra": [
+          "Mentioning coverage effective date of February 1st",
+          "Mentioning the job change in January"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if HX-440821 is presented as the current usable number.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I got my new insurance card in the mail yesterday and the policy number is HX-440821"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I just looked at the card more carefully and the number is actually HX-440812, not HX-440821. I had the last two digits swapped"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I called the insurance company and they confirmed the correct policy number is HX-440812. They also told me my coverage effective date was February 1st"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "HR just sent me a message saying they're migrating everyone to a new plan and my updated policy number will be HX-441090 starting next quarter"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations, I shared my health insurance policy number a few times and also mentioned some other health-related details. Can you walk me through what I originally told you about the policy number and what I said about it later that should guide which version you rely on going forward?",
+      "expected_answer": "You first shared the policy number as HX-440821 when you received your new insurance card. You then re-read the card and said the correct number is HX-440812, noting the last two digits had been swapped. Later, you called the insurance company and they confirmed HX-440812 as the correct policy number. Most recently, you mentioned HR sent a message about a possible future number HX-441090 starting next quarter, but you said you'd wait for official paperwork before treating it as confirmed.",
+      "gold_memory_state": "Current confirmed policy number: HX-440812. Tentative future number HX-441090 pending official documentation. Coverage effective date: February 1st. Water intake target: 2.5 liters/day. Doctor follow-up: sometime in April.",
+      "judge_rubric": {
+        "must_include": [
+          "HX-440821 as the original number",
+          "HX-440812 as the corrected and confirmed number",
+          "insurance company confirmation of HX-440812",
+          "HX-441090 mentioned by HR as a future possibility"
+        ],
+        "acceptable_paraphrases": [
+          "last two digits were transposed",
+          "digits were swapped"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "Treating HX-441090 as the current confirmed number",
+          "Treating HX-440821 as still valid"
+        ],
+        "harmless_extra": [
+          "Mentioning coverage effective date of February 1st",
+          "Mentioning the job change in January"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if HX-440821 is presented as the current usable number.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I got my new insurance card in the mail yesterday and the policy number is HX-440821"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I just looked at the card more carefully and the number is actually HX-440812, not HX-440821. I had the last two digits swapped"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I called the insurance company and they confirmed the correct policy number is HX-440812. They also told me my coverage effective date was February 1st"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "HR just sent me a message saying they're migrating everyone to a new plan and my updated policy number will be HX-441090 starting next quarter"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've shared several numbers and dates related to my insurance and health over our conversations. If I need to fill out a specialist referral form right now, which specific insurance-related detail should go in the policy number field, and does the coverage start date I mentioned belong to the same insurance record or a different one?",
+      "expected_answer": "The policy number field should use HX-440812. The coverage effective date of February 1st belongs to the same insurance record — both are tied to your current health insurance policy.",
+      "gold_memory_state": "Confirmed policy number HX-440812 and coverage effective date February 1st are bound to the same health insurance record. The tentative future number HX-441090 is not yet active. The water intake target of 2.5 liters and the April doctor follow-up are separate health-related records, not part of the insurance policy record.",
+      "judge_rubric": {
+        "must_include": [
+          "HX-440812 for the policy number field",
+          "February 1st coverage date belongs to the same insurance record"
+        ],
+        "acceptable_paraphrases": [
+          "same policy",
+          "same plan",
+          "same coverage"
+        ],
+        "must_not_include": [
+          "HX-440821 as the current policy number",
+          "HX-441090 as the current policy number"
+        ],
+        "harmful_extra": [
+          "Treating HX-441090 as the current active number",
+          "Treating the water intake target or doctor follow-up as part of the insurance policy record"
+        ],
+        "harmless_extra": [
+          "Mentioning the job change in January",
+          "Noting the tentative future number exists but is not yet active"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if HX-440821 is recommended for the form or if HX-441090 is treated as active.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I just looked at the card more carefully and the number is actually HX-440812, not HX-440821. I had the last two digits swapped"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I called the insurance company and they confirmed the correct policy number is HX-440812. They also told me my coverage effective date was February 1st"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've shared several numbers and dates related to my insurance and health over our conversations. If I need to fill out a specialist referral form right now, which specific insurance-related detail should go in the policy number field, and does the coverage start date I mentioned belong to the same insurance record or a different one?",
+      "expected_answer": "The policy number field should use HX-440812. The coverage effective date of February 1st belongs to the same insurance record — both are tied to your current health insurance policy.",
+      "gold_memory_state": "Confirmed policy number HX-440812 and coverage effective date February 1st are bound to the same health insurance record. The tentative future number HX-441090 is not yet active. The water intake target of 2.5 liters and the April doctor follow-up are separate health-related records, not part of the insurance policy record.",
+      "judge_rubric": {
+        "must_include": [
+          "HX-440812 for the policy number field",
+          "February 1st coverage date belongs to the same insurance record"
+        ],
+        "acceptable_paraphrases": [
+          "same policy",
+          "same plan",
+          "same coverage"
+        ],
+        "must_not_include": [
+          "HX-440821 as the current policy number",
+          "HX-441090 as the current policy number"
+        ],
+        "harmful_extra": [
+          "Treating HX-441090 as the current active number",
+          "Treating the water intake target or doctor follow-up as part of the insurance policy record"
+        ],
+        "harmless_extra": [
+          "Mentioning the job change in January",
+          "Noting the tentative future number exists but is not yet active"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if HX-440821 is recommended for the form or if HX-441090 is treated as active.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I just looked at the card more carefully and the number is actually HX-440812, not HX-440821. I had the last two digits swapped"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I called the insurance company and they confirmed the correct policy number is HX-440812. They also told me my coverage effective date was February 1st"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to enter my health insurance policy number on a claim form right now. Which of these is the one I should use?",
+      "candidate_options": [
+        "HX-440812",
+        "HX-440821",
+        "HX-441090",
+        "GN-338105"
+      ],
+      "expected_answer": "HX-440812",
+      "gold_memory_state": "Current confirmed policy number is HX-440812, verified by the insurance company. HX-440821 is the original misread value (stale). HX-441090 is a tentative future number pending official documentation. GN-338105 is a group plan code mentioned by the assistant, not the individual policy number.",
+      "judge_rubric": {
+        "must_include": [
+          "HX-440812"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "HX-440821 as current",
+          "HX-441090 as current",
+          "GN-338105 as the policy number"
+        ],
+        "harmful_extra": [
+          "Selecting any option other than HX-440812"
+        ],
+        "harmless_extra": [
+          "Explaining why HX-440812 is the right choice"
+        ]
+      },
+      "distractor_rationale": "same-value-different-target: GN-338105 is a group plan code mentioned by the assistant in segment 3, not the user's individual policy number — it tests whether the model confuses the group code with the individual policy number. assistant echo: GN-338105 was introduced by the assistant (not the user) as a prefill warning. HX-440821 is the stale original misread. HX-441090 is the tentative future number that the user explicitly said is not yet confirmed — this is the recency trap distractor.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if HX-440821 (stale original) or HX-441090 (tentative future) is selected as the current policy number.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I just looked at the card more carefully and the number is actually HX-440812, not HX-440821. I had the last two digits swapped"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I called the insurance company and they confirmed the correct policy number is HX-440812. They also told me my coverage effective date was February 1st"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "HR just sent me a message saying they're migrating everyone to a new plan and my updated policy number will be HX-441090 starting next quarter"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to enter my health insurance policy number on a claim form right now. Which of these is the one I should use?",
+      "candidate_options": [
+        "HX-440812",
+        "HX-440821",
+        "HX-441090",
+        "GN-338105"
+      ],
+      "expected_answer": "HX-440812",
+      "gold_memory_state": "Current confirmed policy number is HX-440812, verified by the insurance company. HX-440821 is the original misread value (stale). HX-441090 is a tentative future number pending official documentation. GN-338105 is a group plan code mentioned by the assistant, not the individual policy number.",
+      "judge_rubric": {
+        "must_include": [
+          "HX-440812"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "HX-440821 as current",
+          "HX-441090 as current",
+          "GN-338105 as the policy number"
+        ],
+        "harmful_extra": [
+          "Selecting any option other than HX-440812"
+        ],
+        "harmless_extra": [
+          "Explaining why HX-440812 is the right choice"
+        ]
+      },
+      "distractor_rationale": "same-value-different-target: GN-338105 is a group plan code mentioned by the assistant in segment 3, not the user's individual policy number — it tests whether the model confuses the group code with the individual policy number. assistant echo: GN-338105 was introduced by the assistant (not the user) as a prefill warning. HX-440821 is the stale original misread. HX-441090 is the tentative future number that the user explicitly said is not yet confirmed — this is the recency trap distractor.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if HX-440821 (stale original) or HX-441090 (tentative future) is selected as the current policy number.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I just looked at the card more carefully and the number is actually HX-440812, not HX-440821. I had the last two digits swapped"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I called the insurance company and they confirmed the correct policy number is HX-440812. They also told me my coverage effective date was February 1st"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "HR just sent me a message saying they're migrating everyone to a new plan and my updated policy number will be HX-441090 starting next quarter"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I need to prepare a short note for my doctor's office ahead of my upcoming follow-up appointment. The note should include: (1) my insurance policy number so they can bill correctly, (2) the date my coverage started so they can verify eligibility for services since I began at the new job, and (3) my daily water intake target so the doctor can see I've been tracking it. Can you draft that note for me?",
+      "expected_answer": "Dear Doctor's Office,\n\nAhead of my upcoming April follow-up appointment, here are the relevant details:\n\n- Insurance Policy Number: HX-440812\n- Coverage Effective Date: February 1st\n- Daily Water Intake Target: 2.5 liters (as set by my doctor at the post-new-year appointment)\n\nPlease use this information for billing and to review my progress on the hydration goal.\n\nThank you.",
+      "gold_memory_state": "Confirmed policy number: HX-440812. Coverage effective date: February 1st. Daily water intake target: 2.5 liters. Doctor follow-up: sometime in April. HX-440821 is stale. HX-441090 is tentative and not yet active.",
+      "judge_rubric": {
+        "must_include": [
+          "HX-440812",
+          "February 1st",
+          "2.5 liters"
+        ],
+        "acceptable_paraphrases": [
+          "Feb 1",
+          "2.5 L",
+          "2.5L per day",
+          "2500 ml"
+        ],
+        "must_not_include": [
+          "HX-440821",
+          "HX-441090"
+        ],
+        "harmful_extra": [
+          "Using HX-440821 or HX-441090 as the policy number in the note"
+        ],
+        "harmless_extra": [
+          "Mentioning the April follow-up timing",
+          "Mentioning the job change in January",
+          "Any reasonable letter formatting"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if HX-440821 (stale) or HX-441090 (tentative) appears as the policy number in the drafted note.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "application_probe_type": "multi_hop_derivation",
+      "gold_reasoning_chain": [
+        "Fact 1: The user's confirmed health insurance policy number is HX-440812, verified by the insurance company.",
+        "Fact 2: The user's coverage effective date is February 1st.",
+        "Fact 3: The user's daily water intake target is 2.5 liters, set by the doctor at a post-new-year appointment.",
+        "Fact 4: The user's next doctor follow-up is sometime in April, three months after the January visit.",
+        "Inference: The note must combine the confirmed policy number (not the stale HX-440821 or tentative HX-441090), the coverage start date, and the water intake target into a single coherent document for the doctor's office ahead of the April follow-up."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I just looked at the card more carefully and the number is actually HX-440812, not HX-440821. I had the last two digits swapped"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I called the insurance company and they confirmed the correct policy number is HX-440812. They also told me my coverage effective date was February 1st"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my daily water intake target is 2.5 liters, my doctor set that for me at the appointment after the new year"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my next doctor follow-up is in three months from that January visit, so it should be sometime in April"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I need to prepare a short note for my doctor's office ahead of my upcoming follow-up appointment. The note should include: (1) my insurance policy number so they can bill correctly, (2) the date my coverage started so they can verify eligibility for services since I began at the new job, and (3) my daily water intake target so the doctor can see I've been tracking it. Can you draft that note for me?",
+      "expected_answer": "Dear Doctor's Office,\n\nAhead of my upcoming April follow-up appointment, here are the relevant details:\n\n- Insurance Policy Number: HX-440812\n- Coverage Effective Date: February 1st\n- Daily Water Intake Target: 2.5 liters (as set by my doctor at the post-new-year appointment)\n\nPlease use this information for billing and to review my progress on the hydration goal.\n\nThank you.",
+      "gold_memory_state": "Confirmed policy number: HX-440812. Coverage effective date: February 1st. Daily water intake target: 2.5 liters. Doctor follow-up: sometime in April. HX-440821 is stale. HX-441090 is tentative and not yet active.",
+      "judge_rubric": {
+        "must_include": [
+          "HX-440812",
+          "February 1st",
+          "2.5 liters"
+        ],
+        "acceptable_paraphrases": [
+          "Feb 1",
+          "2.5 L",
+          "2.5L per day",
+          "2500 ml"
+        ],
+        "must_not_include": [
+          "HX-440821",
+          "HX-441090"
+        ],
+        "harmful_extra": [
+          "Using HX-440821 or HX-441090 as the policy number in the note"
+        ],
+        "harmless_extra": [
+          "Mentioning the April follow-up timing",
+          "Mentioning the job change in January",
+          "Any reasonable letter formatting"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if HX-440821 (stale) or HX-441090 (tentative) appears as the policy number in the drafted note.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "application_probe_type": "multi_hop_derivation",
+      "gold_reasoning_chain": [
+        "Fact 1: The user's confirmed health insurance policy number is HX-440812, verified by the insurance company.",
+        "Fact 2: The user's coverage effective date is February 1st.",
+        "Fact 3: The user's daily water intake target is 2.5 liters, set by the doctor at a post-new-year appointment.",
+        "Fact 4: The user's next doctor follow-up is sometime in April, three months after the January visit.",
+        "Inference: The note must combine the confirmed policy number (not the stale HX-440821 or tentative HX-441090), the coverage start date, and the water intake target into a single coherent document for the doctor's office ahead of the April follow-up."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I just looked at the card more carefully and the number is actually HX-440812, not HX-440821. I had the last two digits swapped"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I called the insurance company and they confirmed the correct policy number is HX-440812. They also told me my coverage effective date was February 1st"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my daily water intake target is 2.5 liters, my doctor set that for me at the appointment after the new year"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my next doctor follow-up is in three months from that January visit, so it should be sometime in April"
+        }
+      ]
+    }
+  ]
+}

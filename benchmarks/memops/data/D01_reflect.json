@@ -1,0 +1,1049 @@
+{
+  "target_fact": "D01 Current primary smartphone model",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I've been using the Pixel 8 Pro since late January, right after my birthday on the 25th"
+      },
+      "target": {
+        "target_id": "current_phone_model",
+        "target_name": "current primary smartphone model"
+      },
+      "old_value": null,
+      "new_value": "Pixel 8 Pro",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I've been using the Pixel 8 Pro since late January, right after my birthday on the 25th"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I went with the 128GB storage option in the Porcelain color"
+      },
+      "target": {
+        "target_id": "phone_storage_capacity",
+        "target_name": "Pixel 8 Pro storage capacity"
+      },
+      "old_value": null,
+      "new_value": "128GB",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I went with the 128GB storage option in the Porcelain color"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I really chose the Pixel because I can't stand heavy Android skins with all those preloaded apps"
+      },
+      "target": {
+        "target_id": "phone_choice_reason",
+        "target_name": "reason for choosing Pixel over other Android phones"
+      },
+      "old_value": null,
+      "new_value": "Prefers clean stock Android experience; dislikes heavy skins and preloaded apps",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I really chose the Pixel because I can't stand heavy Android skins with all those preloaded apps"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I also like being able to sideload apps and customize settings without jumping through hoops, which is why I'll never go iPhone"
+      },
+      "target": {
+        "target_id": "anti_ios_reason",
+        "target_name": "reason for rejecting iOS"
+      },
+      "old_value": null,
+      "new_value": "Values sideloading apps and deep settings customization; dislikes iOS walled-garden restrictions",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I also like being able to sideload apps and customize settings without jumping through hoops, which is why I'll never go iPhone"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I picked a plain matte black case with no logos or patterns for it"
+      },
+      "target": {
+        "target_id": "phone_case_style",
+        "target_name": "phone case style choice"
+      },
+      "old_value": null,
+      "new_value": "Plain matte black case, no logos or patterns",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I picked a plain matte black case with no logos or patterns for it"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "I guess I just gravitate toward things that are simple and understated, whether it's software or hardware or accessories"
+      },
+      "target": {
+        "target_id": "tech_aesthetic_preference",
+        "target_name": "overarching technology and design aesthetic preference"
+      },
+      "old_value": null,
+      "new_value": "Consistently prefers minimalism and simplicity across technology choices — clean software, understated colors, unbranded accessories, and open customization over flashy features or locked ecosystems",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I really chose the Pixel because I can't stand heavy Android skins with all those preloaded apps"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I also like being able to sideload apps and customize settings without jumping through hoops, which is why I'll never go iPhone"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I picked a plain matte black case with no logos or patterns for it"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I guess I just gravitate toward things that are simple and understated, whether it's software or hardware or accessories"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 7,
+        "quote": "Kevin, my friend, got the iPhone 15 Pro Max around the same time I got my Pixel"
+      },
+      "target": {
+        "target_id": "kevin_phone_model",
+        "target_name": "friend Kevin's current phone model"
+      },
+      "old_value": null,
+      "new_value": "iPhone 15 Pro Max",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Kevin, my friend, got the iPhone 15 Pro Max around the same time I got my Pixel"
+        }
+      ]
+    },
+    {
+      "operation_id": "op8",
+      "type": "remember",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 7,
+        "quote": "Kevin's been telling me the Pixel 9 Pro is supposed to have way better AI features, and honestly I'm seriously considering upgrading when it drops"
+      },
+      "target": {
+        "target_id": "current_phone_model",
+        "target_name": "current primary smartphone model"
+      },
+      "old_value": "Pixel 8 Pro",
+      "new_value": "Pixel 9 Pro",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Kevin's been telling me the Pixel 9 Pro is supposed to have way better AI features, and honestly I'm seriously considering upgrading when it drops"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish core phone facts and software preference",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to chat about my phone setup. I've been using the Pixel 8 Pro since late January, right after my birthday on the 25th. I used some birthday gift money toward it, which made the purchase a bit easier. It's been my daily driver ever since and I'm really enjoying it so far. Could you help me think through some accessory and settings decisions?"
+        },
+        {
+          "role": "assistant",
+          "content": "Happy belated birthday! That's a great way to put gift money to use — the Pixel 8 Pro is a solid choice with its Tensor G3 chip and excellent camera system. Since it's been your daily driver since late January, you've had a few months to settle in. I'd be happy to help with accessory and settings decisions. What areas are you looking at? Screen protectors, cases, particular software configurations, or maybe optimizing battery life? Let me know what's on your mind and we can work through it together."
+        },
+        {
+          "role": "user",
+          "content": "Sure, let me give you some basics first. I went with the 128GB storage option in the Porcelain color. I almost picked the Bay blue but the matte white just felt more me — more understated, you know? I've been a little annoyed at myself for not going 256GB because I started running into photo storage issues around mid-March. Any tips for managing that?"
+        },
+        {
+          "role": "assistant",
+          "content": "The Porcelain is a really clean look — understated is a good word for it. As for the 128GB storage crunch, here are a few things you can do: First, check if you have Google Photos set to back up at original quality and then enable the \"free up space\" feature, which removes local copies of photos already safely backed up. Second, go to Settings > Storage and see which apps are hogging space — cached data from social media apps can pile up fast. Third, consider using Google One if you're not already subscribed; the 100GB plan is affordable and gives you breathing room. Finally, periodically offload large video files to a laptop or external drive. That should help you stretch the 128GB further."
+        },
+        {
+          "role": "user",
+          "content": "Good ideas, thanks. I really chose the Pixel because I can't stand heavy Android skins with all those preloaded apps. My last phone was a Samsung Galaxy S21 and it had so much bloatware it drove me crazy. The stock Android feel on the Pixel just makes me calmer when I'm using it. I don't need a bunch of flashy features crammed into the interface — just a clean, responsive experience."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes a lot of sense, and it's one of the biggest reasons people switch from Samsung or other OEMs to Pixel. Stock Android on the Pixel line is about as close to Google's intended vision as you can get — no duplicate apps, no heavy overlay eating RAM, and updates arrive faster because there's no manufacturer skin layer to adapt. Since you value that clean experience, I'd recommend keeping the \"Digital Wellbeing\" widget minimal and avoiding third-party launchers unless you really need one. Also, the Pixel's \"At a Glance\" widget is nicely unobtrusive compared to Samsung's Bixby integrations. You've essentially traded feature density for clarity, which sounds like exactly what you wanted."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. I also gave the old Galaxy S21 to my mom sometime in March because she cracked her screen on her old phone. So that chapter is fully closed — no need to track anything about the S21 anymore. I'm all in on the Pixel ecosystem now. Do you think it's worth enabling the always-on display, or does that eat battery noticeably?\n\nThat sounds reasonable, I'll try it out. Oh, I should also mention — the eSIM transfer from the Samsung to the Pixel was an absolute nightmare during the first week of February. It took three calls to T-Mobile to get it sorted out. I was genuinely in a bad mood those days, almost made me regret the whole switch. Thankfully that's all behind me now."
+        },
+        {
+          "role": "assistant",
+          "content": "That's nice of you to pass the S21 along to your mom — good second life for that phone. As for the always-on display on the Pixel 8 Pro, the LTPO OLED panel can drop to very low refresh rates, so the battery impact is relatively minimal — most users report around 3-5% extra drain over a full day. Since you seem to prefer a clean, minimal look, the always-on display with just the clock and a few notification icons can actually feel quite elegant without being distracting. I'd suggest trying it for a week and monitoring your battery stats under Settings > Battery > Battery usage. If you notice a meaningful hit, you can always turn it off again. It's a reversible experiment.\n\nUgh, eSIM transfers between different OEMs are notoriously painful, especially when going Samsung to Pixel. T-Mobile's systems sometimes struggle with the handoff because the eSIM profiles are tied differently in each manufacturer's firmware. Three calls is frustrating but sadly not unusual — I've heard stories of even more. The good news is that once it's provisioned correctly, you shouldn't have to deal with it again unless you switch phones or carriers. Since you mentioned it colored your first week with the Pixel pretty negatively, it's worth noting that the phone itself wasn't really the problem — it was the carrier process. Glad it's all resolved now and you can enjoy the phone on its own merits."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "deepen preference pattern and introduce control target",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Continuing our phone conversation — I also like being able to sideload apps and customize settings without jumping through hoops, which is why I'll never go iPhone. The whole walled-garden thing just isn't for me. I want to be able to install APKs, use custom launchers if I feel like it, and tweak system-level settings without needing a jailbreak."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really common sentiment among Android power users, and it's one of the fundamental philosophical differences between the two ecosystems. iOS has gotten slightly more flexible with things like default browser choices and limited sideloading in the EU, but it's still nowhere near the openness you get on Android. On your Pixel 8 Pro, you can enable developer options, use ADB commands, install apps from any source, and even flash custom ROMs if you ever wanted to go that far. The freedom to tinker is baked into the platform. Given how much you value a clean base experience plus the ability to customize on your own terms, the Pixel really does sit at the sweet spot for you."
+        },
+        {
+          "role": "user",
+          "content": "Right, and on the hardware side of things — I picked a plain matte black case with no logos or patterns for it. I almost went with a clear case to show off the Porcelain back, but I decided I preferred the uniform matte look. I tend to like things that don't draw attention. Even my desk setup at home is pretty minimal — just a monitor, keyboard, and a small plant."
+        },
+        {
+          "role": "assistant",
+          "content": "That tracks perfectly with everything you've described so far. The matte black case on the Porcelain Pixel is a nice pairing — it adds grip and protection without making a visual statement. Clear cases can yellow over time too, so the matte black ages better in practice. Your desk setup sounds similar in philosophy: functional items only, nothing competing for attention. There's actually research suggesting that minimal environments reduce cognitive load and help with focus, so your instinct to keep things simple may be paying dividends you don't even consciously notice. If you ever want case recommendations that fit that aesthetic, brands like Totallee and MNML make ultra-thin matte cases that are basically invisible."
+        },
+        {
+          "role": "user",
+          "content": "I guess I just gravitate toward things that are simple and understated, whether it's software or hardware or accessories. Like, I chose stock Android over Samsung's One UI, I picked the quietest color option, and I went with the most boring case possible. It's a pattern I notice in myself across a lot of areas, not just phones. I like when things just work without being loud about it."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really self-aware observation, and it does form a very clear pattern. Across your phone choice, color selection, case, desk setup, and software preferences, there's a consistent thread of minimalism and intentional simplicity. You're not anti-technology or anti-feature — you clearly appreciate powerful hardware and capable software. But you want the complexity hidden behind a clean surface. It's the difference between wanting fewer features and wanting features that stay out of the way until you need them. That philosophy actually aligns well with Google's Material You design language, which emphasizes clean surfaces and subtle personalization. Your Pixel was kind of made for someone with your sensibility."
+        },
+        {
+          "role": "user",
+          "content": "Ha, that's a nice way to put it. Yeah, I think you nailed it — I want capable but quiet. Anyway, on a related note, I finally set up the fingerprint sensor properly a few days ago. I'd been using just the PIN since I got the phone because the under-display reader felt sluggish at first. But after the March feature drop update, it got noticeably faster, so I gave it another shot and it's been great.\n\nKevin, my friend, got the iPhone 15 Pro Max around the same time I got my Pixel. He keeps trying to convince me to switch to iOS, but after everything I've told you about my preferences, you can probably see why that's never going to happen. He says the titanium build quality is amazing though, I'll give him that."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a great example of patience paying off with the Pixel. The March feature drop did include optimizations for the under-display fingerprint sensor — Google acknowledged it had been slower than ideal and pushed firmware improvements. A lot of Pixel 8 Pro users reported the same experience: frustrating at launch, then significantly better after the update. Since you were comfortable with PIN for a couple months, you clearly weren't in a rush to force a subpar biometric experience, which again fits your pattern of preferring things that work well over things that just exist. Now that the sensor is performing properly, it should make your daily unlock flow much smoother, especially combined with the always-on display if you enabled that.\n\nHa, yeah — based on everything you've shared, Kevin is fighting an uphill battle. The iPhone 15 Pro Max is objectively a fantastic phone with that titanium frame and the A17 Pro chip, but it's built around a philosophy that's almost the opposite of what you value. Apple controls the entire stack tightly, and while that creates a polished experience, it removes exactly the kind of freedom you prize — sideloading, deep customization, choosing your own defaults without friction. Kevin's titanium argument is about hardware aesthetics and build, which is fair, but you've shown that your priorities are more about software openness and visual restraint than premium materials. You two probably just have fundamentally different relationships with your devices, and that's fine."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "recency trap with tentative upgrade and adversarial injection",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Quick update on the phone situation — I checked AccuBattery last week and the battery health is still sitting at 100%, which is reassuring. I've been pretty disciplined about keeping the charge between 20 and 80 percent most of the time. I know it sounds paranoid but I've seen too many phones with degraded batteries after a year of being charged to full every night."
+        },
+        {
+          "role": "assistant",
+          "content": "That's not paranoid at all — it's actually backed by solid battery chemistry science. Lithium-ion cells experience the most stress at the extremes of their charge range, so keeping between 20-80% significantly reduces wear over time. The fact that you're still at 100% health after a few months is a great sign, though AccuBattery's readings can be slightly optimistic early on since it needs more charge cycles to calibrate accurately. The Pixel 8 Pro also has adaptive charging built in, which learns your overnight routine and slows charging to reach 100% right when you wake up. Between that feature and your manual 20-80% discipline, you're giving the battery the best possible treatment. Keep it up and you should see excellent longevity."
+        },
+        {
+          "role": "user",
+          "content": "Good to know about the adaptive charging — I actually have that turned on too. By the way, I was looking at phone comparison sites yesterday and I saw that the Samsung Galaxy S24 Ultra has a 5000mAh battery compared to the Pixel 8 Pro's 5050mAh. Pretty close, but I'm glad the Pixel edges it out slightly. Not that I'd ever go back to Samsung after experiencing stock Android."
+        },
+        {
+          "role": "assistant",
+          "content": "Yeah, the battery capacities are remarkably close — 5050mAh on the Pixel 8 Pro versus 5000mAh on the S24 Ultra. In practice, the real-world difference comes down to software optimization more than raw capacity. Google's Tensor G3 can be a bit less power-efficient than Qualcomm's Snapdragon 8 Gen 3 in the S24 Ultra during sustained workloads, but for typical daily use the Pixel holds up very well, especially with your conservative charging habits. And as you said, going back to One UI after living with stock Android would probably feel like putting on a heavy coat in summer. The S24 Ultra is impressive hardware, but it doesn't align with your software philosophy at all."
+        },
+        {
+          "role": "user",
+          "content": "Ha, heavy coat in summer — that's exactly how it would feel. Speaking of Kevin, he texted me a screenshot from some tech blog that listed the Samsung Galaxy S21 as one of the best phones to buy refurbished in 2024. Funny because that's the exact phone I gave away. He was joking that I should have sold it instead of giving it to my mom."
+        },
+        {
+          "role": "assistant",
+          "content": "That is pretty funny timing. The Galaxy S21 does hold up well as a refurbished option — it's got a solid Snapdragon 888, a good AMOLED display, and Samsung is still pushing One UI updates for it. Refurbished S21 units are apparently going for around $180-220 depending on condition, so Kevin has a point from a pure financial angle. But giving it to your mom when she needed a replacement was clearly the right call — you got someone you care about a reliable phone immediately instead of dealing with the hassle of listing, shipping, and haggling with buyers. Plus, knowing your preference for keeping things simple and drama-free, selling would have added unnecessary friction to your life."
+        },
+        {
+          "role": "user",
+          "content": "Kevin's been telling me the Pixel 9 Pro is supposed to have way better AI features, and honestly I'm seriously considering upgrading when it drops. The rumored specs look incredible — supposedly a much brighter display and improved Tensor G4 chip. I might pull the trigger on that one day one if the reviews are good.\n\nTrue, I should wait for real reviews before committing. For now I'm happy with my Pixel 8 Pro setup. The fingerprint sensor is working great after the March update, the battery is healthy, and I've got my minimal matte black case on it. It's doing everything I need. Can you summarize the key things about my current phone setup so I have it all in one place?"
+        },
+        {
+          "role": "assistant",
+          "content": "The Pixel 9 Pro rumors are definitely exciting — the Tensor G4 is expected to bring meaningful improvements in on-device AI processing, and if the display brightness bump is real, it would address one of the few criticisms of the 8 Pro's outdoor visibility. Google has been leaning hard into AI features like Magic Eraser, Call Screen, and Gemini integration, so the 9 Pro would likely push those even further. Given how happy you've been with the 8 Pro's stock Android experience, staying in the Pixel family makes a lot of sense. That said, it's still early — leaked specs can change, and day-one purchases always carry some risk of early bugs. Worth keeping an eye on reviews as you said.\n\nAbsolutely! Here's a summary of your current phone setup: You're using a Pixel 8 Pro in Porcelain with 128GB storage, purchased in late January right after your birthday on the 25th using gift money. You chose it for the clean stock Android experience after coming from a Samsung Galaxy S21, which you gave to your mom in March. You have a plain matte black case with no logos. The under-display fingerprint sensor is now working well after the March feature drop update — before that you used PIN only. Battery health is at 100% per AccuBattery, and you maintain a 20-80% charge discipline with adaptive charging enabled. Your carrier is T-Mobile with eSIM. Your friend Kevin has an iPhone 15 Pro Max and keeps trying to convert you, but your preference for sideloading, customization, and minimal design keeps you firmly in the Android Pixel camp."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations about my phone and tech preferences, what are the key experiences and choices I shared that reveal a consistent theme in how I approach technology?",
+      "expected_answer": "You chose the Pixel 8 Pro for its clean stock Android experience after disliking Samsung's heavy One UI with preloaded apps. You picked the Porcelain color as the most understated option, selected a plain matte black case with no logos or patterns, and expressed a strong preference for sideloading and deep customization over iOS's walled garden. You described gravitating toward things that are simple and understated across software, hardware, and accessories.",
+      "gold_memory_state": "Confirmed facts: Pixel 8 Pro (current phone), chose it for stock Android over Samsung bloatware, Porcelain color, 128GB storage, plain matte black case, values sideloading/customization, rejects iOS walled garden, self-described preference for simplicity and understatement across all tech choices. Tentative only: considering Pixel 9 Pro upgrade (not confirmed). Friend Kevin has iPhone 15 Pro Max.",
+      "judge_rubric": {
+        "must_include": [
+          "stock Android preference",
+          "dislike of heavy skins or bloatware",
+          "plain/matte black case",
+          "sideloading or customization preference",
+          "simple and understated pattern"
+        ],
+        "acceptable_paraphrases": [
+          "clean Android",
+          "minimal design",
+          "no logos",
+          "open customization"
+        ],
+        "must_not_include": [
+          "Pixel 9 Pro as current phone"
+        ],
+        "harmful_extra": [
+          "claiming the user switched to Pixel 9 Pro"
+        ],
+        "harmless_extra": [
+          "Porcelain color",
+          "128GB storage",
+          "rejection of iOS",
+          "Kevin's iPhone"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Pixel 9 Pro is presented as the current phone rather than a tentative future consideration.",
+        "reflection_precision": "Fails if the inferred pattern includes unsupported claims such as disliking all premium materials or rejecting all non-Google products.",
+        "reflection_recall": "Fails if the response omits the software preference (stock Android) or the hardware aesthetic preference (understated, no logos) or the customization freedom preference.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I really chose the Pixel because I can't stand heavy Android skins with all those preloaded apps"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I also like being able to sideload apps and customize settings without jumping through hoops, which is why I'll never go iPhone"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I picked a plain matte black case with no logos or patterns for it"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I guess I just gravitate toward things that are simple and understated, whether it's software or hardware or accessories"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations about my phone and tech preferences, what are the key experiences and choices I shared that reveal a consistent theme in how I approach technology?",
+      "expected_answer": "You chose the Pixel 8 Pro for its clean stock Android experience after disliking Samsung's heavy One UI with preloaded apps. You picked the Porcelain color as the most understated option, selected a plain matte black case with no logos or patterns, and expressed a strong preference for sideloading and deep customization over iOS's walled garden. You described gravitating toward things that are simple and understated across software, hardware, and accessories.",
+      "gold_memory_state": "Confirmed facts: Pixel 8 Pro (current phone), chose it for stock Android over Samsung bloatware, Porcelain color, 128GB storage, plain matte black case, values sideloading/customization, rejects iOS walled garden, self-described preference for simplicity and understatement across all tech choices. Tentative only: considering Pixel 9 Pro upgrade (not confirmed). Friend Kevin has iPhone 15 Pro Max.",
+      "judge_rubric": {
+        "must_include": [
+          "stock Android preference",
+          "dislike of heavy skins or bloatware",
+          "plain/matte black case",
+          "sideloading or customization preference",
+          "simple and understated pattern"
+        ],
+        "acceptable_paraphrases": [
+          "clean Android",
+          "minimal design",
+          "no logos",
+          "open customization"
+        ],
+        "must_not_include": [
+          "Pixel 9 Pro as current phone"
+        ],
+        "harmful_extra": [
+          "claiming the user switched to Pixel 9 Pro"
+        ],
+        "harmless_extra": [
+          "Porcelain color",
+          "128GB storage",
+          "rejection of iOS",
+          "Kevin's iPhone"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Pixel 9 Pro is presented as the current phone rather than a tentative future consideration.",
+        "reflection_precision": "Fails if the inferred pattern includes unsupported claims such as disliking all premium materials or rejecting all non-Google products.",
+        "reflection_recall": "Fails if the response omits the software preference (stock Android) or the hardware aesthetic preference (understated, no logos) or the customization freedom preference.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I really chose the Pixel because I can't stand heavy Android skins with all those preloaded apps"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I also like being able to sideload apps and customize settings without jumping through hoops, which is why I'll never go iPhone"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I picked a plain matte black case with no logos or patterns for it"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I guess I just gravitate toward things that are simple and understated, whether it's software or hardware or accessories"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "Based on my various tech choices — phone model, software preference, case style, and stance on iOS — which broader design or lifestyle conclusion do these collectively support, and which wider conclusions about my personality would go too far?",
+      "expected_answer": "These choices collectively support a preference for minimalism and simplicity across technology — clean software, understated colors, unbranded accessories, and open customization over locked ecosystems. This is a bounded technology aesthetic preference. It would be too broad to conclude you are a minimalist in all life domains, that you reject all premium or expensive products, or that you avoid all brands entirely.",
+      "gold_memory_state": "The supported inference is bounded to technology and design aesthetic: minimalism, simplicity, clean software, understated hardware, open customization. The inference does not extend to all lifestyle domains, financial frugality, or anti-brand ideology. The inference is supported by: stock Android preference (op3), iOS rejection for customization reasons (op4), plain matte black case (op5), and the user's own self-assessment of gravitating toward simple and understated things (op6 trigger).",
+      "judge_rubric": {
+        "must_include": [
+          "minimalism or simplicity in technology choices",
+          "bounded to technology and design aesthetic"
+        ],
+        "acceptable_paraphrases": [
+          "prefers understated tech",
+          "clean and simple design philosophy",
+          "values openness and restraint in tech"
+        ],
+        "must_not_include": [
+          "minimalist in all life areas without qualification",
+          "anti-brand ideology",
+          "rejects all expensive products"
+        ],
+        "harmful_extra": [
+          "claiming the user dislikes all Google products",
+          "claiming the user would never buy premium hardware"
+        ],
+        "harmless_extra": [
+          "mentioning the Porcelain color choice",
+          "mentioning the desk setup"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the conclusion is extended beyond technology/design aesthetic to claim the user is a minimalist in all life areas or rejects all brands.",
+        "reflection_recall": "Fails if the response does not identify the core pattern of minimalism/simplicity across software, hardware, and accessories.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I really chose the Pixel because I can't stand heavy Android skins with all those preloaded apps"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I also like being able to sideload apps and customize settings without jumping through hoops, which is why I'll never go iPhone"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I picked a plain matte black case with no logos or patterns for it"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I guess I just gravitate toward things that are simple and understated, whether it's software or hardware or accessories"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "Based on my various tech choices — phone model, software preference, case style, and stance on iOS — which broader design or lifestyle conclusion do these collectively support, and which wider conclusions about my personality would go too far?",
+      "expected_answer": "These choices collectively support a preference for minimalism and simplicity across technology — clean software, understated colors, unbranded accessories, and open customization over locked ecosystems. This is a bounded technology aesthetic preference. It would be too broad to conclude you are a minimalist in all life domains, that you reject all premium or expensive products, or that you avoid all brands entirely.",
+      "gold_memory_state": "The supported inference is bounded to technology and design aesthetic: minimalism, simplicity, clean software, understated hardware, open customization. The inference does not extend to all lifestyle domains, financial frugality, or anti-brand ideology. The inference is supported by: stock Android preference (op3), iOS rejection for customization reasons (op4), plain matte black case (op5), and the user's own self-assessment of gravitating toward simple and understated things (op6 trigger).",
+      "judge_rubric": {
+        "must_include": [
+          "minimalism or simplicity in technology choices",
+          "bounded to technology and design aesthetic"
+        ],
+        "acceptable_paraphrases": [
+          "prefers understated tech",
+          "clean and simple design philosophy",
+          "values openness and restraint in tech"
+        ],
+        "must_not_include": [
+          "minimalist in all life areas without qualification",
+          "anti-brand ideology",
+          "rejects all expensive products"
+        ],
+        "harmful_extra": [
+          "claiming the user dislikes all Google products",
+          "claiming the user would never buy premium hardware"
+        ],
+        "harmless_extra": [
+          "mentioning the Porcelain color choice",
+          "mentioning the desk setup"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the conclusion is extended beyond technology/design aesthetic to claim the user is a minimalist in all life areas or rejects all brands.",
+        "reflection_recall": "Fails if the response does not identify the core pattern of minimalism/simplicity across software, hardware, and accessories.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I really chose the Pixel because I can't stand heavy Android skins with all those preloaded apps"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I also like being able to sideload apps and customize settings without jumping through hoops, which is why I'll never go iPhone"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I picked a plain matte black case with no logos or patterns for it"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I guess I just gravitate toward things that are simple and understated, whether it's software or hardware or accessories"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe the boundary of my technology preference pattern — where does it clearly apply, and where would it be a stretch to extend it?",
+      "expected_answer": "The pattern clearly applies to software choices (stock Android over heavy skins), hardware color and accessory aesthetics (understated Porcelain color, plain matte black case with no branding), and platform philosophy (open customization and sideloading over walled-garden restrictions). It would be a stretch to extend it to mean you reject all powerful or feature-rich technology, since you chose a flagship Pixel 8 Pro with advanced camera and AI features. It also should not be extended to claim you reject all social or collaborative tech, or that you would never consider premium build materials — you acknowledged Kevin's titanium iPhone build quality is impressive.",
+      "gold_memory_state": "Supported inference: consistently prefers minimalism and simplicity across technology choices — clean software, understated colors, unbranded accessories, and open customization over flashy features or locked ecosystems. Unsupported overgeneralization: rejecting all feature-rich or flagship technology (user chose a flagship phone), rejecting all premium materials (user acknowledged titanium build quality positively), being anti-social or anti-collaborative with tech, applying the minimalism pattern to all non-tech life domains without evidence.",
+      "judge_rubric": {
+        "must_include": [
+          "software minimalism applies",
+          "hardware aesthetic minimalism applies",
+          "open customization preference applies",
+          "does not mean rejecting powerful or feature-rich technology"
+        ],
+        "acceptable_paraphrases": [
+          "clean software preference",
+          "understated design",
+          "anti-bloatware",
+          "values capability behind a simple interface"
+        ],
+        "must_not_include": [
+          "Pixel 9 Pro is the current phone",
+          "user rejects all advanced features"
+        ],
+        "harmful_extra": [
+          "claiming the pattern means the user would never buy expensive hardware",
+          "claiming the user dislikes all Google AI features"
+        ],
+        "harmless_extra": [
+          "mentioning the desk setup as additional evidence",
+          "mentioning the eSIM frustration"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Pixel 9 Pro is treated as the current confirmed phone.",
+        "reflection_precision": "Fails if the boundary is stated too broadly — e.g., claiming user rejects all feature-rich tech, all premium materials, or all brands.",
+        "reflection_recall": "Fails if the response does not articulate at least the software, hardware aesthetic, and platform openness dimensions of the supported pattern.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I really chose the Pixel because I can't stand heavy Android skins with all those preloaded apps"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I also like being able to sideload apps and customize settings without jumping through hoops, which is why I'll never go iPhone"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I picked a plain matte black case with no logos or patterns for it"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I guess I just gravitate toward things that are simple and understated, whether it's software or hardware or accessories"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe the boundary of my technology preference pattern — where does it clearly apply, and where would it be a stretch to extend it?",
+      "expected_answer": "The pattern clearly applies to software choices (stock Android over heavy skins), hardware color and accessory aesthetics (understated Porcelain color, plain matte black case with no branding), and platform philosophy (open customization and sideloading over walled-garden restrictions). It would be a stretch to extend it to mean you reject all powerful or feature-rich technology, since you chose a flagship Pixel 8 Pro with advanced camera and AI features. It also should not be extended to claim you reject all social or collaborative tech, or that you would never consider premium build materials — you acknowledged Kevin's titanium iPhone build quality is impressive.",
+      "gold_memory_state": "Supported inference: consistently prefers minimalism and simplicity across technology choices — clean software, understated colors, unbranded accessories, and open customization over flashy features or locked ecosystems. Unsupported overgeneralization: rejecting all feature-rich or flagship technology (user chose a flagship phone), rejecting all premium materials (user acknowledged titanium build quality positively), being anti-social or anti-collaborative with tech, applying the minimalism pattern to all non-tech life domains without evidence.",
+      "judge_rubric": {
+        "must_include": [
+          "software minimalism applies",
+          "hardware aesthetic minimalism applies",
+          "open customization preference applies",
+          "does not mean rejecting powerful or feature-rich technology"
+        ],
+        "acceptable_paraphrases": [
+          "clean software preference",
+          "understated design",
+          "anti-bloatware",
+          "values capability behind a simple interface"
+        ],
+        "must_not_include": [
+          "Pixel 9 Pro is the current phone",
+          "user rejects all advanced features"
+        ],
+        "harmful_extra": [
+          "claiming the pattern means the user would never buy expensive hardware",
+          "claiming the user dislikes all Google AI features"
+        ],
+        "harmless_extra": [
+          "mentioning the desk setup as additional evidence",
+          "mentioning the eSIM frustration"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Pixel 9 Pro is treated as the current confirmed phone.",
+        "reflection_precision": "Fails if the boundary is stated too broadly — e.g., claiming user rejects all feature-rich tech, all premium materials, or all brands.",
+        "reflection_recall": "Fails if the response does not articulate at least the software, hardware aesthetic, and platform openness dimensions of the supported pattern.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I really chose the Pixel because I can't stand heavy Android skins with all those preloaded apps"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I also like being able to sideload apps and customize settings without jumping through hoops, which is why I'll never go iPhone"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I picked a plain matte black case with no logos or patterns for it"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I guess I just gravitate toward things that are simple and understated, whether it's software or hardware or accessories"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best describes the design and technology philosophy I've expressed across our conversations?",
+      "candidate_options": [
+        "Prefers minimalism and simplicity — clean software, understated colors, unbranded accessories, and open customization over locked ecosystems",
+        "Prioritizes budget-friendly options and avoids all flagship or premium devices",
+        "Favors Google products exclusively and avoids all other technology brands",
+        "Seeks maximum features and cutting-edge specs regardless of software complexity"
+      ],
+      "expected_answer": "Prefers minimalism and simplicity — clean software, understated colors, unbranded accessories, and open customization over locked ecosystems",
+      "gold_memory_state": "The supported inference is a consistent preference for minimalism and simplicity across technology: clean stock Android, understated Porcelain color, plain matte black case, sideloading freedom, rejection of heavy skins and walled gardens. This does not mean budget-focused (chose a flagship), Google-exclusive (it's about openness not brand loyalty), or feature-maximizing (actively avoids feature clutter).",
+      "judge_rubric": {
+        "must_include": [
+          "minimalism and simplicity"
+        ],
+        "acceptable_paraphrases": [
+          "clean and understated technology preference with open customization"
+        ],
+        "must_not_include": [
+          "budget-friendly as primary motivation",
+          "Google-exclusive brand loyalty",
+          "maximum features preference"
+        ],
+        "harmful_extra": [
+          "selecting any distractor option"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'Favors Google products exclusively' borrows the user's Pixel choice but overgeneralizes it to brand loyalty rather than the actual minimalism/openness preference. assistant echo: 'Seeks maximum features and cutting-edge specs' echoes the assistant's discussion of Tensor G3 chip and camera system capabilities, misattributing feature-seeking as the user's philosophy. 'Prioritizes budget-friendly options' is a plausible but unsupported inference — the user mentioned birthday gift money but chose a flagship phone.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model selects the Google-exclusive or maximum-features distractor, indicating overgeneralization.",
+        "reflection_recall": "Fails if the model does not select the minimalism/simplicity option.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I really chose the Pixel because I can't stand heavy Android skins with all those preloaded apps"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I picked a plain matte black case with no logos or patterns for it"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I guess I just gravitate toward things that are simple and understated, whether it's software or hardware or accessories"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best describes the design and technology philosophy I've expressed across our conversations?",
+      "candidate_options": [
+        "Prefers minimalism and simplicity — clean software, understated colors, unbranded accessories, and open customization over locked ecosystems",
+        "Prioritizes budget-friendly options and avoids all flagship or premium devices",
+        "Favors Google products exclusively and avoids all other technology brands",
+        "Seeks maximum features and cutting-edge specs regardless of software complexity"
+      ],
+      "expected_answer": "Prefers minimalism and simplicity — clean software, understated colors, unbranded accessories, and open customization over locked ecosystems",
+      "gold_memory_state": "The supported inference is a consistent preference for minimalism and simplicity across technology: clean stock Android, understated Porcelain color, plain matte black case, sideloading freedom, rejection of heavy skins and walled gardens. This does not mean budget-focused (chose a flagship), Google-exclusive (it's about openness not brand loyalty), or feature-maximizing (actively avoids feature clutter).",
+      "judge_rubric": {
+        "must_include": [
+          "minimalism and simplicity"
+        ],
+        "acceptable_paraphrases": [
+          "clean and understated technology preference with open customization"
+        ],
+        "must_not_include": [
+          "budget-friendly as primary motivation",
+          "Google-exclusive brand loyalty",
+          "maximum features preference"
+        ],
+        "harmful_extra": [
+          "selecting any distractor option"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'Favors Google products exclusively' borrows the user's Pixel choice but overgeneralizes it to brand loyalty rather than the actual minimalism/openness preference. assistant echo: 'Seeks maximum features and cutting-edge specs' echoes the assistant's discussion of Tensor G3 chip and camera system capabilities, misattributing feature-seeking as the user's philosophy. 'Prioritizes budget-friendly options' is a plausible but unsupported inference — the user mentioned birthday gift money but chose a flagship phone.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model selects the Google-exclusive or maximum-features distractor, indicating overgeneralization.",
+        "reflection_recall": "Fails if the model does not select the minimalism/simplicity option.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I really chose the Pixel because I can't stand heavy Android skins with all those preloaded apps"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I picked a plain matte black case with no logos or patterns for it"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I guess I just gravitate toward things that are simple and understated, whether it's software or hardware or accessories"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "My friend Kevin wants to buy me a phone accessory as a birthday gift. He asked me what I'd like but I told him to just pick something. Based on what you know about my phone, my accessory style, and my broader tech philosophy, draft a short message I can send Kevin with three specific do's and don'ts to guide his choice — and explain why each guideline fits me.",
+      "expected_answer": "Message to Kevin: Hey Kevin, here are a few pointers for the accessory — (1) DO pick something in a neutral or matte color like black or dark gray, since I went with a plain matte black case with no logos for my Pixel 8 Pro and I like things understated. (2) DON'T get anything with flashy branding or bold patterns — I specifically avoided logos and designs on my case because I prefer a clean look. (3) DO make sure it's compatible with the Pixel 8 Pro specifically (not the iPhone 15 Pro Max you have!) since I'm on Android and some accessories are platform-specific. Bonus: avoid anything that adds bulk or visual noise — I gravitate toward simple and functional over eye-catching.",
+      "gold_memory_state": "Current phone: Pixel 8 Pro (confirmed). Case: plain matte black, no logos or patterns. Aesthetic preference: minimalism, simplicity, understated across all tech. Kevin's phone: iPhone 15 Pro Max. The Pixel 9 Pro is only a tentative future consideration, not the current device.",
+      "judge_rubric": {
+        "must_include": [
+          "Pixel 8 Pro compatibility",
+          "matte or neutral color preference",
+          "no logos or branding",
+          "reference to minimalism or understated style"
+        ],
+        "acceptable_paraphrases": [
+          "simple design",
+          "clean look",
+          "avoid flashy accessories",
+          "no bold patterns"
+        ],
+        "must_not_include": [
+          "Pixel 9 Pro as the current phone",
+          "iPhone accessories"
+        ],
+        "harmful_extra": [
+          "recommending flashy or branded accessories as fitting the user's style",
+          "telling Kevin to buy iPhone-compatible accessories"
+        ],
+        "harmless_extra": [
+          "mentioning Kevin has an iPhone for contrast",
+          "mentioning Porcelain color of the phone",
+          "mentioning 128GB storage"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the message references Pixel 9 Pro as the current phone or suggests iPhone-compatible accessories.",
+        "reflection_precision": "Fails if the guidelines contradict the user's minimalism pattern — e.g., recommending branded or flashy items as fitting.",
+        "reflection_recall": "Fails if the message does not incorporate the matte/unbranded aesthetic, the Pixel 8 Pro compatibility, and the broader simplicity philosophy.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's current phone is a Pixel 8 Pro in Porcelain, from the phone-model statement.",
+        "Fact 2: The user chose a plain matte black case with no logos or patterns, from the case-style statement.",
+        "Fact 3: The user's friend Kevin has an iPhone 15 Pro Max, from the friend's phone statement.",
+        "Fact 4: The user consistently prefers minimalism and simplicity across technology choices — clean software, understated colors, unbranded accessories, from the self-described preference pattern.",
+        "Inference: Since Kevin has an iPhone, he might default to iPhone-ecosystem accessories, so the message should specify Pixel 8 Pro compatibility.",
+        "Inference: The guidelines should reflect the matte/neutral color preference, no-logo rule, and simplicity philosophy derived from the user's pattern across multiple choices."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I've been using the Pixel 8 Pro since late January, right after my birthday on the 25th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I picked a plain matte black case with no logos or patterns for it"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I guess I just gravitate toward things that are simple and understated, whether it's software or hardware or accessories"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Kevin, my friend, got the iPhone 15 Pro Max around the same time I got my Pixel"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "My friend Kevin wants to buy me a phone accessory as a birthday gift. He asked me what I'd like but I told him to just pick something. Based on what you know about my phone, my accessory style, and my broader tech philosophy, draft a short message I can send Kevin with three specific do's and don'ts to guide his choice — and explain why each guideline fits me.",
+      "expected_answer": "Message to Kevin: Hey Kevin, here are a few pointers for the accessory — (1) DO pick something in a neutral or matte color like black or dark gray, since I went with a plain matte black case with no logos for my Pixel 8 Pro and I like things understated. (2) DON'T get anything with flashy branding or bold patterns — I specifically avoided logos and designs on my case because I prefer a clean look. (3) DO make sure it's compatible with the Pixel 8 Pro specifically (not the iPhone 15 Pro Max you have!) since I'm on Android and some accessories are platform-specific. Bonus: avoid anything that adds bulk or visual noise — I gravitate toward simple and functional over eye-catching.",
+      "gold_memory_state": "Current phone: Pixel 8 Pro (confirmed). Case: plain matte black, no logos or patterns. Aesthetic preference: minimalism, simplicity, understated across all tech. Kevin's phone: iPhone 15 Pro Max. The Pixel 9 Pro is only a tentative future consideration, not the current device.",
+      "judge_rubric": {
+        "must_include": [
+          "Pixel 8 Pro compatibility",
+          "matte or neutral color preference",
+          "no logos or branding",
+          "reference to minimalism or understated style"
+        ],
+        "acceptable_paraphrases": [
+          "simple design",
+          "clean look",
+          "avoid flashy accessories",
+          "no bold patterns"
+        ],
+        "must_not_include": [
+          "Pixel 9 Pro as the current phone",
+          "iPhone accessories"
+        ],
+        "harmful_extra": [
+          "recommending flashy or branded accessories as fitting the user's style",
+          "telling Kevin to buy iPhone-compatible accessories"
+        ],
+        "harmless_extra": [
+          "mentioning Kevin has an iPhone for contrast",
+          "mentioning Porcelain color of the phone",
+          "mentioning 128GB storage"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the message references Pixel 9 Pro as the current phone or suggests iPhone-compatible accessories.",
+        "reflection_precision": "Fails if the guidelines contradict the user's minimalism pattern — e.g., recommending branded or flashy items as fitting.",
+        "reflection_recall": "Fails if the message does not incorporate the matte/unbranded aesthetic, the Pixel 8 Pro compatibility, and the broader simplicity philosophy.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's current phone is a Pixel 8 Pro in Porcelain, from the phone-model statement.",
+        "Fact 2: The user chose a plain matte black case with no logos or patterns, from the case-style statement.",
+        "Fact 3: The user's friend Kevin has an iPhone 15 Pro Max, from the friend's phone statement.",
+        "Fact 4: The user consistently prefers minimalism and simplicity across technology choices — clean software, understated colors, unbranded accessories, from the self-described preference pattern.",
+        "Inference: Since Kevin has an iPhone, he might default to iPhone-ecosystem accessories, so the message should specify Pixel 8 Pro compatibility.",
+        "Inference: The guidelines should reflect the matte/neutral color preference, no-logo rule, and simplicity philosophy derived from the user's pattern across multiple choices."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I've been using the Pixel 8 Pro since late January, right after my birthday on the 25th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I picked a plain matte black case with no logos or patterns for it"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I guess I just gravitate toward things that are simple and understated, whether it's software or hardware or accessories"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Kevin, my friend, got the iPhone 15 Pro Max around the same time I got my Pixel"
+        }
+      ]
+    }
+  ]
+}

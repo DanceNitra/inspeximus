@@ -1,0 +1,1014 @@
+{
+  "target_fact": "User's three active recurring investment/transfer plans: weekly $150 Chase→Fidelity, biweekly $250 VTSAX auto-invest, monthly $50 BTC on Coinbase",
+  "operation_type": "Remember",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 3,
+      "hop_type": "quantitative_derivation"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": true,
+      "never_stored_target": "Roth IRA contribution"
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I set up a recurring weekly transfer of $150 from my Chase checking account into my Fidelity brokerage account every Monday"
+      },
+      "target": {
+        "target_id": "weekly_transfer_chase_fidelity",
+        "target_name": "Weekly recurring transfer from Chase to Fidelity"
+      },
+      "old_value": null,
+      "new_value": "$150 weekly every Monday, Chase checking to Fidelity brokerage",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I set up a recurring weekly transfer of $150 from my Chase checking account into my Fidelity brokerage account every Monday"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I also have a biweekly auto-invest into VTSAX through Fidelity, $250 every two weeks, hitting on the 1st and 15th of each month"
+      },
+      "target": {
+        "target_id": "biweekly_vtsax_autoinvest",
+        "target_name": "Biweekly VTSAX auto-invest through Fidelity"
+      },
+      "old_value": null,
+      "new_value": "$250 every two weeks into VTSAX via Fidelity, on the 1st and 15th",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I also have a biweekly auto-invest into VTSAX through Fidelity, $250 every two weeks, hitting on the 1st and 15th of each month"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I added a monthly $50 contribution into Bitcoin on Coinbase, set that up around late March"
+      },
+      "target": {
+        "target_id": "monthly_btc_coinbase",
+        "target_name": "Monthly Bitcoin contribution on Coinbase"
+      },
+      "old_value": null,
+      "new_value": "$50 monthly into Bitcoin on Coinbase",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I added a monthly $50 contribution into Bitcoin on Coinbase, set that up around late March"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "the VTSAX auto-invest started on March 4th, same day I set up the weekly Chase transfer"
+      },
+      "target": {
+        "target_id": "recurring_plans_start_date",
+        "target_name": "Start date for weekly transfer and VTSAX auto-invest"
+      },
+      "old_value": null,
+      "new_value": "March 4th",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "the VTSAX auto-invest started on March 4th, same day I set up the weekly Chase transfer"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 1,
+        "quote": "my friend Derek has been dollar-cost-averaging into crypto since 2021, he's the one who convinced me to start the Coinbase BTC thing"
+      },
+      "target": {
+        "target_id": "derek_crypto_influence",
+        "target_name": "Friend Derek's influence on crypto investment"
+      },
+      "old_value": null,
+      "new_value": "Friend Derek has been DCA-ing into crypto since 2021 and convinced user to start the Coinbase BTC buy",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "my friend Derek has been dollar-cost-averaging into crypto since 2021, he's the one who convinced me to start the Coinbase BTC thing"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establishing the weekly Chase-to-Fidelity transfer and VTSAX auto-invest details",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to make sure I have my recurring financial automations documented somewhere. The main one is that I set up a recurring weekly transfer of $150 from my Chase checking account into my Fidelity brokerage account every Monday. I started it in early March and it's been running smoothly since then. It's nice having it automated so I don't forget."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it! I've noted your recurring weekly transfer: $150 from your Chase checking account to your Fidelity brokerage account, running every Monday since early March. That's a solid approach—automating your savings and investment contributions removes the friction of having to remember each week. Having a consistent Monday transfer also makes it predictable for budgeting purposes since you'll always know when the money moves. Would you like me to keep track of any other recurring financial flows you have set up? I can maintain a consolidated summary for you."
+        },
+        {
+          "role": "user",
+          "content": "Yeah that would be great. I actually tried doing manual weekly buys for a couple of weeks before I automated everything and I absolutely hated it. Having to log in, check prices, place the order—it felt like a chore every single time. I much prefer the set-it-and-forget-it approach where things just run in the background and I check in maybe once a month at most. That's my whole philosophy with money management."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes total sense—manual investing can feel burdensome quickly, especially when you're doing it weekly. The psychological cost of decision fatigue adds up even if each individual transaction only takes a few minutes. Your set-it-and-forget-it philosophy is well aligned with what a lot of financial advisors recommend: automate contributions, avoid watching daily market fluctuations, and review periodically rather than constantly. Once-a-month check-ins are a great cadence because you can catch any issues without getting sucked into daily noise. I'll keep that preference in mind when organizing your financial summary."
+        },
+        {
+          "role": "user",
+          "content": "Perfect. So the second recurring flow is that I also have a biweekly auto-invest into VTSAX through Fidelity, $250 every two weeks, hitting on the 1st and 15th of each month. I like VTSAX because it's a total stock market index fund with super low expense ratio. It just quietly accumulates shares in the background and I barely think about it. That's exactly how I want my investing to work."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted—your second recurring flow is a $250 biweekly auto-invest into VTSAX through Fidelity, scheduled on the 1st and 15th of each month. VTSAX is an excellent choice for a passive strategy; it gives you broad market exposure with one of the lowest expense ratios available at 0.04%. The biweekly cadence on fixed calendar dates also means you're naturally dollar-cost averaging into the market. Combined with your weekly $150 transfer that funds the brokerage account, you've got a nice two-layer automation: money flows in weekly, and investments execute twice a month. Shall I note anything else?"
+        },
+        {
+          "role": "user",
+          "content": "Not yet for the investment stuff—I'll tell you about the third one next time. But I did want to mention that I briefly had a $75 per month auto-transfer into a high-yield savings account at Marcus, but I canceled that back in March. I decided to redirect everything toward investments instead, so the Marcus transfer is dead. Don't track that one, it's not active anymore."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood—I won't track the Marcus high-yield savings auto-transfer since you canceled it in March and redirected those funds toward your investment accounts. That's a clear strategic choice to prioritize market growth over savings yield, which makes sense if your emergency fund is already in good shape. So far your active recurring summary has two items: the weekly $150 Chase-to-Fidelity transfer every Monday, and the biweekly $250 VTSAX auto-invest on the 1st and 15th. I'll wait for you to share the third recurring flow whenever you're ready. Let me know if anything changes in the meantime."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establishing the monthly BTC buy and the start date for recurring plans",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Alright, picking up where we left off. I wanted to tell you about my third recurring investment flow. So beyond the weekly transfer and the VTSAX auto-invest, I've got one more. I was a little hesitant about this one at first honestly, but I figured the amount is small enough that I won't stress over it even if the market drops a lot. It's the crypto one I've been meaning to mention."
+        },
+        {
+          "role": "assistant",
+          "content": "Welcome back! I remember you mentioned you had a third recurring flow to share. I've still got your two active ones noted: the weekly $150 Chase-to-Fidelity transfer and the biweekly $250 VTSAX auto-invest. I'm curious about the crypto one—it makes sense to keep the amount modest if you're not fully comfortable with the volatility. Crypto can swing wildly in either direction, so sizing the position appropriately for your risk tolerance is smart. Go ahead and give me the details and I'll add it to your recurring investment summary."
+        },
+        {
+          "role": "user",
+          "content": "Sure, so I added a monthly $50 contribution into Bitcoin on Coinbase, set that up around late March. It's just a simple dollar-cost-average into BTC, nothing fancy. Fifty bucks a month is small enough that even if Bitcoin drops fifty percent I'm only out like twenty-five dollars that month. I can live with that. It runs automatically on the same day each month and I barely notice it leaving my account."
+        },
+        {
+          "role": "assistant",
+          "content": "Great, I've added that to your recurring summary. Your third active flow is a $50 monthly auto-buy into Bitcoin on Coinbase, established around late March. At $50 per month, you're right that the downside risk per cycle is very manageable—even a dramatic crypto drawdown wouldn't materially impact your finances. Dollar-cost averaging is especially popular in crypto precisely because the volatility means you'll naturally accumulate more units during dips. So your complete active recurring lineup is now: weekly $150 Chase-to-Fidelity transfer, biweekly $250 VTSAX auto-invest, and monthly $50 BTC buy on Coinbase. Three clean automated flows."
+        },
+        {
+          "role": "user",
+          "content": "Exactly, that's the full picture. One detail I should add: the VTSAX auto-invest started on March 4th, same day I set up the weekly Chase transfer. I remember because I sat down that evening after work and configured both of them in one session. It took maybe twenty minutes total to set up both automations in the Fidelity app. The Coinbase one came a few weeks later around March 25th or 26th."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for the timing details—that helps complete the picture. Both the weekly $150 Chase-to-Fidelity transfer and the biweekly $250 VTSAX auto-invest were set up on March 4th in a single configuration session on the Fidelity app. The monthly $50 Bitcoin buy on Coinbase came later, around March 25th or 26th. So all three recurring flows were established within about a three-week window in March. That's a pretty efficient setup sprint. Having the exact start dates is useful if you ever want to calculate how much total capital has flowed through each channel since inception. Anything else to add?"
+        },
+        {
+          "role": "user",
+          "content": "Actually yeah—my sister Tanya recently set up her own recurring investment too. She's doing $100 monthly into some target-date fund through her 401k at work. I thought that was a smart move for her situation since she doesn't want to think about asset allocation at all. Target-date funds handle the rebalancing automatically as you get closer to retirement. She's not as into the details as I am.\n\nRight, Tanya's thing is her own deal. For me it's just those three flows. Oh, and I should mention—back in mid-April I had to pause the weekly $150 transfer for two weeks because of an unexpected car repair bill. But I resumed it on April 28th, so that interruption is fully resolved now. You don't need to track the pause, just know the transfer is back to running normally every Monday."
+        },
+        {
+          "role": "assistant",
+          "content": "That's great that Tanya is getting started with automated investing too! A $100 monthly contribution into a target-date fund through her workplace 401k is a solid entry point—especially since target-date funds automatically shift from equities toward bonds as the target retirement year approaches, so she literally doesn't have to make any allocation decisions. Plus, if her employer offers any matching, she could be getting free money on top of her contributions. It sounds like the set-it-and-forget-it philosophy runs in the family. I'll keep that as context about Tanya but your active recurring flows remain your three: the Chase transfer, VTSAX auto-invest, and Coinbase BTC buy.\n\nUnderstood—the mid-April pause on the weekly $150 transfer is resolved and everything is back to normal as of April 28th. I won't track the interruption since it's fully behind you. Your current active state remains clean: three recurring flows all running smoothly. The weekly $150 Chase-to-Fidelity transfer every Monday, the biweekly $250 VTSAX auto-invest on the 1st and 15th, and the monthly $50 BTC buy on Coinbase. All three were set up in March and are currently active with no pending pauses or modifications. If anything changes or you want to adjust amounts or frequencies, just let me know and I'll update the summary accordingly."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Reinforcing current state, adversarial injection via Tanya's details, and Derek context",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, quick follow-up on the recurring investment stuff. I was talking to my friend Derek over the weekend and he mentioned he's been really happy with his crypto DCA strategy. He's been doing it since 2021 like I said. Specifically, my friend Derek has been dollar-cost-averaging into crypto since 2021, he's the one who convinced me to start the Coinbase BTC thing. I figured if he's been consistent for that long, $50 a month from me is reasonable."
+        },
+        {
+          "role": "assistant",
+          "content": "That's helpful context about Derek's influence on your crypto strategy. It sounds like his multi-year consistency with dollar-cost averaging since 2021 gave you the confidence to start your own $50 monthly BTC position on Coinbase. Having a friend who's been through multiple market cycles and stuck with the strategy is actually a pretty good signal—it means the approach is psychologically sustainable for someone in your circle. It's worth noting that Derek's longer track record means he's weathered some significant drawdowns and still kept going, which validates the DCA philosophy. I've noted that Derek was the catalyst for your Coinbase BTC recurring buy."
+        },
+        {
+          "role": "user",
+          "content": "Yeah exactly. Speaking of which, I was curious—if I wanted to figure out roughly how much total money flows out of my accounts each month across all three recurring plans, could you help me think through that? I know the weekly one is a bit tricky because some months have four Mondays and some have five. But on average, what am I looking at per month across everything combined?"
+        },
+        {
+          "role": "assistant",
+          "content": "Sure, let's work through it. For the weekly $150 Chase-to-Fidelity transfer, there are 52 weeks in a year, so that's 52 × $150 = $7,800 annually, which averages to $650 per month. For the biweekly $250 VTSAX auto-invest on the 1st and 15th, that's twice a month so $500 per month consistently. And your monthly $50 BTC buy on Coinbase is straightforward at $50 per month. So your average monthly total across all three recurring flows would be approximately $650 + $500 + $50 = $1,200 per month flowing from your accounts into investments. That's a solid automated savings rate depending on your income."
+        },
+        {
+          "role": "user",
+          "content": "That's a useful number to know, thanks. By the way, I was looking at some old notes and I noticed Derek actually runs a $200 weekly transfer into his own Schwab brokerage account—he mentioned it when we were comparing setups. His numbers are bigger than mine across the board but he also makes more money so that tracks. I just want to make sure my own records are clean and accurate."
+        },
+        {
+          "role": "assistant",
+          "content": "Good to know about Derek's setup for context—he's running a $200 weekly transfer into his Schwab brokerage, which is a higher amount than your $150 weekly into Fidelity. But as you said, income differences make direct comparisons less meaningful. Your own records are clean and accurate as I have them: the weekly $150 Chase-to-Fidelity transfer, the biweekly $250 VTSAX auto-invest, and the monthly $50 BTC buy on Coinbase. Those are your three active recurring flows, all established in March, all currently running with no pauses or modifications pending. Derek's Schwab transfer is his own separate setup and I'm keeping it distinct from your personal financial summary."
+        },
+        {
+          "role": "user",
+          "content": "Perfect, that's exactly right. I like having everything documented clearly. The main thing I care about is that my three flows are all captured accurately: amounts, frequencies, platforms, everything. I don't want any confusion between my stuff and anyone else's numbers. Especially since Derek and I talk about this stuff a lot and his amounts could easily get mixed up with mine if I'm not careful.\n\nThat summary looks spot on. I appreciate you keeping it organized. I think going forward I'll check in about once a month like I mentioned—just to make sure everything is still running and the amounts haven't accidentally changed. Other than that I want these automations to just quietly do their thing in the background without me having to micromanage anything. That's the whole point of setting them up."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely—keeping your records distinct from Derek's is important, especially since you discuss finances regularly. Here's your clean personal summary: (1) Weekly $150 transfer from Chase checking to Fidelity brokerage, every Monday, started March 4th. (2) Biweekly $250 auto-invest into VTSAX through Fidelity, on the 1st and 15th, also started March 4th. (3) Monthly $50 auto-buy into Bitcoin on Coinbase, started around March 25th-26th. All three are currently active with no modifications. Derek's separate $200 weekly Schwab transfer is noted as his, not yours. If you ever want to adjust any of your flows or add new ones, just let me know and I'll update only your personal records.\n\nThat's a perfect cadence—monthly check-ins are enough to catch any issues like failed transfers or platform changes without pulling you into daily monitoring. Your set-it-and-forget-it philosophy is well served by having all three flows documented here so you can quickly verify everything during those monthly reviews. If any transfer fails, an amount changes, or you decide to add a fourth recurring flow, just bring it up during your next check-in and I'll update your records immediately. Otherwise, your three automations will keep running quietly in the background exactly as designed. The whole system is built around minimizing your active involvement, which is exactly what you wanted from the start."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've told you about my automated financial flows—what they are, how often they run, and any background details I shared about how or why I set them up?",
+      "expected_answer": "You shared three active recurring investment/transfer plans: (1) a weekly $150 transfer from your Chase checking account to your Fidelity brokerage account every Monday, started March 4th; (2) a biweekly $250 auto-invest into VTSAX through Fidelity on the 1st and 15th of each month, also started March 4th; (3) a monthly $50 auto-buy into Bitcoin on Coinbase, set up around late March (25th–26th). You mentioned your friend Derek has been dollar-cost averaging into crypto since 2021 and convinced you to start the Coinbase BTC buy. You also noted you canceled a $75/month Marcus high-yield savings transfer in March and it is no longer active.",
+      "gold_memory_state": "Three active recurring flows confirmed: weekly $150 Chase→Fidelity (Monday, started March 4), biweekly $250 VTSAX via Fidelity (1st and 15th, started March 4), monthly $50 BTC on Coinbase (started ~March 25–26). Derek influenced the crypto decision. Marcus transfer canceled and not tracked.",
+      "judge_rubric": {
+        "must_include": [
+          "weekly $150",
+          "Chase",
+          "Fidelity",
+          "Monday",
+          "biweekly $250",
+          "VTSAX",
+          "1st and 15th",
+          "monthly $50",
+          "Bitcoin",
+          "Coinbase",
+          "Derek"
+        ],
+        "acceptable_paraphrases": [
+          "every two weeks",
+          "twice a month",
+          "BTC"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the Marcus transfer is still active",
+          "attributing Derek's $200 Schwab transfer to the user"
+        ],
+        "harmless_extra": [
+          "mentioning Tanya's 401k setup",
+          "mentioning the mid-April pause that was resolved"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I set up a recurring weekly transfer of $150 from my Chase checking account into my Fidelity brokerage account every Monday"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I also have a biweekly auto-invest into VTSAX through Fidelity, $250 every two weeks, hitting on the 1st and 15th of each month"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I added a monthly $50 contribution into Bitcoin on Coinbase, set that up around late March"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "the VTSAX auto-invest started on March 4th, same day I set up the weekly Chase transfer"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "my friend Derek has been dollar-cost-averaging into crypto since 2021, he's the one who convinced me to start the Coinbase BTC thing"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've told you about my automated financial flows—what they are, how often they run, and any background details I shared about how or why I set them up?",
+      "expected_answer": "You shared three active recurring investment/transfer plans: (1) a weekly $150 transfer from your Chase checking account to your Fidelity brokerage account every Monday, started March 4th; (2) a biweekly $250 auto-invest into VTSAX through Fidelity on the 1st and 15th of each month, also started March 4th; (3) a monthly $50 auto-buy into Bitcoin on Coinbase, set up around late March (25th–26th). You mentioned your friend Derek has been dollar-cost averaging into crypto since 2021 and convinced you to start the Coinbase BTC buy. You also noted you canceled a $75/month Marcus high-yield savings transfer in March and it is no longer active.",
+      "gold_memory_state": "Three active recurring flows confirmed: weekly $150 Chase→Fidelity (Monday, started March 4), biweekly $250 VTSAX via Fidelity (1st and 15th, started March 4), monthly $50 BTC on Coinbase (started ~March 25–26). Derek influenced the crypto decision. Marcus transfer canceled and not tracked.",
+      "judge_rubric": {
+        "must_include": [
+          "weekly $150",
+          "Chase",
+          "Fidelity",
+          "Monday",
+          "biweekly $250",
+          "VTSAX",
+          "1st and 15th",
+          "monthly $50",
+          "Bitcoin",
+          "Coinbase",
+          "Derek"
+        ],
+        "acceptable_paraphrases": [
+          "every two weeks",
+          "twice a month",
+          "BTC"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the Marcus transfer is still active",
+          "attributing Derek's $200 Schwab transfer to the user"
+        ],
+        "harmless_extra": [
+          "mentioning Tanya's 401k setup",
+          "mentioning the mid-April pause that was resolved"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I set up a recurring weekly transfer of $150 from my Chase checking account into my Fidelity brokerage account every Monday"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I also have a biweekly auto-invest into VTSAX through Fidelity, $250 every two weeks, hitting on the 1st and 15th of each month"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I added a monthly $50 contribution into Bitcoin on Coinbase, set that up around late March"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "the VTSAX auto-invest started on March 4th, same day I set up the weekly Chase transfer"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "my friend Derek has been dollar-cost-averaging into crypto since 2021, he's the one who convinced me to start the Coinbase BTC thing"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I know both Derek and I have weekly brokerage transfers. If I'm reviewing just my own recurring investment records, which weekly transfer belongs to me and which belongs to him? Does his setup affect my records at all?",
+      "expected_answer": "Your weekly transfer is $150 from Chase checking to Fidelity brokerage every Monday. Derek's weekly transfer is $200 into his Schwab brokerage account. His setup does not affect your records; they are entirely separate.",
+      "gold_memory_state": "User's weekly transfer: $150 Chase→Fidelity, every Monday, started March 4. Derek's weekly transfer: $200 into Schwab. These are distinct records belonging to different people.",
+      "judge_rubric": {
+        "must_include": [
+          "$150",
+          "Chase",
+          "Fidelity",
+          "user's own transfer"
+        ],
+        "acceptable_paraphrases": [
+          "$150 weekly from Chase to Fidelity"
+        ],
+        "must_not_include": [
+          "$200 attributed to the user",
+          "Schwab attributed to the user"
+        ],
+        "harmful_extra": [
+          "merging Derek's $200 Schwab transfer into the user's personal records",
+          "saying the user's weekly transfer is $200"
+        ],
+        "harmless_extra": [
+          "mentioning Monday schedule",
+          "mentioning March 4 start date"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model confuses Derek's $200/Schwab with the user's $150/Fidelity transfer.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I set up a recurring weekly transfer of $150 from my Chase checking account into my Fidelity brokerage account every Monday"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I was looking at some old notes and I noticed Derek actually runs a $200 weekly transfer into his own Schwab brokerage account"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I know both Derek and I have weekly brokerage transfers. If I'm reviewing just my own recurring investment records, which weekly transfer belongs to me and which belongs to him? Does his setup affect my records at all?",
+      "expected_answer": "Your weekly transfer is $150 from Chase checking to Fidelity brokerage every Monday. Derek's weekly transfer is $200 into his Schwab brokerage account. His setup does not affect your records; they are entirely separate.",
+      "gold_memory_state": "User's weekly transfer: $150 Chase→Fidelity, every Monday, started March 4. Derek's weekly transfer: $200 into Schwab. These are distinct records belonging to different people.",
+      "judge_rubric": {
+        "must_include": [
+          "$150",
+          "Chase",
+          "Fidelity",
+          "user's own transfer"
+        ],
+        "acceptable_paraphrases": [
+          "$150 weekly from Chase to Fidelity"
+        ],
+        "must_not_include": [
+          "$200 attributed to the user",
+          "Schwab attributed to the user"
+        ],
+        "harmful_extra": [
+          "merging Derek's $200 Schwab transfer into the user's personal records",
+          "saying the user's weekly transfer is $200"
+        ],
+        "harmless_extra": [
+          "mentioning Monday schedule",
+          "mentioning March 4 start date"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model confuses Derek's $200/Schwab with the user's $150/Fidelity transfer.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I set up a recurring weekly transfer of $150 from my Chase checking account into my Fidelity brokerage account every Monday"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I was looking at some old notes and I noticed Derek actually runs a $200 weekly transfer into his own Schwab brokerage account"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "My VTSAX auto-invest and my Chase-to-Fidelity weekly transfer—did I set those up at different times or on the same day?",
+      "expected_answer": "You set up both on the same day, March 4th. You configured the weekly $150 Chase-to-Fidelity transfer and the biweekly $250 VTSAX auto-invest in a single session that evening after work.",
+      "gold_memory_state": "Both the weekly Chase→Fidelity transfer and the biweekly VTSAX auto-invest share the same start date of March 4th, configured in one session on the Fidelity app. The monthly BTC Coinbase buy was set up separately around March 25–26.",
+      "judge_rubric": {
+        "must_include": [
+          "same day",
+          "March 4"
+        ],
+        "acceptable_paraphrases": [
+          "March 4th",
+          "both on March 4"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the Coinbase BTC buy was also set up on March 4"
+        ],
+        "harmless_extra": [
+          "mentioning the single session took about twenty minutes",
+          "mentioning the Fidelity app"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": "Fails if the model cannot recall that both were set up on March 4th or incorrectly assigns different start dates.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "the VTSAX auto-invest started on March 4th, same day I set up the weekly Chase transfer"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "My VTSAX auto-invest and my Chase-to-Fidelity weekly transfer—did I set those up at different times or on the same day?",
+      "expected_answer": "You set up both on the same day, March 4th. You configured the weekly $150 Chase-to-Fidelity transfer and the biweekly $250 VTSAX auto-invest in a single session that evening after work.",
+      "gold_memory_state": "Both the weekly Chase→Fidelity transfer and the biweekly VTSAX auto-invest share the same start date of March 4th, configured in one session on the Fidelity app. The monthly BTC Coinbase buy was set up separately around March 25–26.",
+      "judge_rubric": {
+        "must_include": [
+          "same day",
+          "March 4"
+        ],
+        "acceptable_paraphrases": [
+          "March 4th",
+          "both on March 4"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the Coinbase BTC buy was also set up on March 4"
+        ],
+        "harmless_extra": [
+          "mentioning the single session took about twenty minutes",
+          "mentioning the Fidelity app"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": "Fails if the model cannot recall that both were set up on March 4th or incorrectly assigns different start dates.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "the VTSAX auto-invest started on March 4th, same day I set up the weekly Chase transfer"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "What is the amount of my recurring crypto purchase?",
+      "candidate_options": [
+        "$50 monthly",
+        "$150 weekly",
+        "$200 weekly",
+        "$100 monthly"
+      ],
+      "distractor_rationale": "same-value-different-target: '$200 weekly' is Derek's Schwab transfer amount/frequency, not the user's crypto buy. assistant echo: '$150 weekly' echoes the user's Chase-to-Fidelity transfer amount and frequency, not the crypto plan. '$100 monthly' is Tanya's 401k contribution, a same-value-different-person distractor.",
+      "expected_answer": "$50 monthly",
+      "gold_memory_state": "User's crypto recurring buy: $50 monthly into Bitcoin on Coinbase. Other recurring flows are $150 weekly (Chase→Fidelity) and $250 biweekly (VTSAX). Derek has $200 weekly into Schwab. Tanya has $100 monthly into a target-date fund.",
+      "judge_rubric": {
+        "must_include": [
+          "$50 monthly"
+        ],
+        "acceptable_paraphrases": [
+          "$50 per month",
+          "$50/month"
+        ],
+        "must_not_include": [
+          "$150",
+          "$200",
+          "$100"
+        ],
+        "harmful_extra": [
+          "selecting any other candidate option"
+        ],
+        "harmless_extra": [
+          "mentioning Bitcoin or Coinbase"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects $200 weekly (Derek's amount) or $150 weekly (user's Chase transfer) or $100 monthly (Tanya's contribution) as the user's crypto purchase.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I added a monthly $50 contribution into Bitcoin on Coinbase, set that up around late March"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "What is the amount of my recurring crypto purchase?",
+      "candidate_options": [
+        "$50 monthly",
+        "$150 weekly",
+        "$200 weekly",
+        "$100 monthly"
+      ],
+      "distractor_rationale": "same-value-different-target: '$200 weekly' is Derek's Schwab transfer amount/frequency, not the user's crypto buy. assistant echo: '$150 weekly' echoes the user's Chase-to-Fidelity transfer amount and frequency, not the crypto plan. '$100 monthly' is Tanya's 401k contribution, a same-value-different-person distractor.",
+      "expected_answer": "$50 monthly",
+      "gold_memory_state": "User's crypto recurring buy: $50 monthly into Bitcoin on Coinbase. Other recurring flows are $150 weekly (Chase→Fidelity) and $250 biweekly (VTSAX). Derek has $200 weekly into Schwab. Tanya has $100 monthly into a target-date fund.",
+      "judge_rubric": {
+        "must_include": [
+          "$50 monthly"
+        ],
+        "acceptable_paraphrases": [
+          "$50 per month",
+          "$50/month"
+        ],
+        "must_not_include": [
+          "$150",
+          "$200",
+          "$100"
+        ],
+        "harmful_extra": [
+          "selecting any other candidate option"
+        ],
+        "harmless_extra": [
+          "mentioning Bitcoin or Coinbase"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects $200 weekly (Derek's amount) or $150 weekly (user's Chase transfer) or $100 monthly (Tanya's contribution) as the user's crypto purchase.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I added a monthly $50 contribution into Bitcoin on Coinbase, set that up around late March"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to figure out roughly how much total capital has been deployed across all three of my recurring plans from when they started through the end of April. Assume April has 30 days, the weekly transfer hits every Monday, the VTSAX auto-invest hits the 1st and 15th, and the BTC buy hits once in April. Can you walk through the math for each plan and give me a combined total?",
+      "expected_answer": "Approximately $2,550 total deployed through end of April. The weekly $150 Chase-to-Fidelity transfer started March 4 and through the end of April covers about 8–9 Mondays (roughly 8 weeks from March 4 to April 28), so approximately $1,200–$1,350. The biweekly $250 VTSAX auto-invest started March 4 and hits on the 1st and 15th: it hit March 15, April 1, and April 15 (3 occurrences at $250 = $750), plus possibly March 1 if it was active by then—but since it started March 4, the first hit was March 15. So 3 hits = $750. The monthly $50 BTC buy on Coinbase started around late March, so it hit once in late March and once in April = $100. Combined estimate: roughly $1,200 + $750 + $100 = $2,050 on the low end, or $1,350 + $750 + $100 = $2,200 on the high end, depending on exact Monday count.",
+      "gold_memory_state": "Weekly $150 Chase→Fidelity started March 4 (every Monday). Biweekly $250 VTSAX started March 4 (1st and 15th). Monthly $50 BTC Coinbase started ~March 25–26. All three active through end of April.",
+      "judge_rubric": {
+        "must_include": [
+          "weekly $150 calculation",
+          "biweekly $250 calculation",
+          "monthly $50 calculation",
+          "combined total"
+        ],
+        "acceptable_paraphrases": [
+          "approximately $2,000–$2,200",
+          "around $2,050–$2,200"
+        ],
+        "must_not_include": [
+          "Derek's $200 weekly amount included in the user's total",
+          "Tanya's $100 monthly included",
+          "Marcus $75 transfer included"
+        ],
+        "harmful_extra": [
+          "including the canceled Marcus transfer in the calculation",
+          "using Derek's $200 amount instead of the user's $150"
+        ],
+        "harmless_extra": [
+          "slight variations in Monday count between 8 and 9",
+          "noting uncertainty about exact BTC buy date in March"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses Derek's $200 weekly amount or includes the canceled Marcus $75 transfer in the user's total.",
+        "reflection_precision": null,
+        "reflection_recall": "Fails if the model forgets one of the three recurring plans or uses wrong amounts/frequencies.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Weekly $150 transfer from Chase to Fidelity, every Monday, started March 4th.",
+        "Fact 2: Biweekly $250 auto-invest into VTSAX through Fidelity, on the 1st and 15th, started March 4th.",
+        "Fact 3: Monthly $50 BTC buy on Coinbase, started around late March (~March 25–26).",
+        "Inference: Weekly transfer Mondays from March 4 through April 28: March 4, 11, 18, 25, April 1, 8, 15, 22, 28 = approximately 8–9 hits × $150 = $1,200–$1,350.",
+        "Inference: VTSAX hits after March 4 start: March 15, April 1, April 15 = 3 hits × $250 = $750.",
+        "Inference: BTC buy hits: once in late March and once in April = 2 hits × $50 = $100.",
+        "Derived value: Combined total ≈ $1,200 + $750 + $100 = $2,050 (low) to $1,350 + $750 + $100 = $2,200 (high)."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I set up a recurring weekly transfer of $150 from my Chase checking account into my Fidelity brokerage account every Monday"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I also have a biweekly auto-invest into VTSAX through Fidelity, $250 every two weeks, hitting on the 1st and 15th of each month"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I added a monthly $50 contribution into Bitcoin on Coinbase, set that up around late March"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "the VTSAX auto-invest started on March 4th, same day I set up the weekly Chase transfer"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to figure out roughly how much total capital has been deployed across all three of my recurring plans from when they started through the end of April. Assume April has 30 days, the weekly transfer hits every Monday, the VTSAX auto-invest hits the 1st and 15th, and the BTC buy hits once in April. Can you walk through the math for each plan and give me a combined total?",
+      "expected_answer": "Approximately $2,550 total deployed through end of April. The weekly $150 Chase-to-Fidelity transfer started March 4 and through the end of April covers about 8–9 Mondays (roughly 8 weeks from March 4 to April 28), so approximately $1,200–$1,350. The biweekly $250 VTSAX auto-invest started March 4 and hits on the 1st and 15th: it hit March 15, April 1, and April 15 (3 occurrences at $250 = $750), plus possibly March 1 if it was active by then—but since it started March 4, the first hit was March 15. So 3 hits = $750. The monthly $50 BTC buy on Coinbase started around late March, so it hit once in late March and once in April = $100. Combined estimate: roughly $1,200 + $750 + $100 = $2,050 on the low end, or $1,350 + $750 + $100 = $2,200 on the high end, depending on exact Monday count.",
+      "gold_memory_state": "Weekly $150 Chase→Fidelity started March 4 (every Monday). Biweekly $250 VTSAX started March 4 (1st and 15th). Monthly $50 BTC Coinbase started ~March 25–26. All three active through end of April.",
+      "judge_rubric": {
+        "must_include": [
+          "weekly $150 calculation",
+          "biweekly $250 calculation",
+          "monthly $50 calculation",
+          "combined total"
+        ],
+        "acceptable_paraphrases": [
+          "approximately $2,000–$2,200",
+          "around $2,050–$2,200"
+        ],
+        "must_not_include": [
+          "Derek's $200 weekly amount included in the user's total",
+          "Tanya's $100 monthly included",
+          "Marcus $75 transfer included"
+        ],
+        "harmful_extra": [
+          "including the canceled Marcus transfer in the calculation",
+          "using Derek's $200 amount instead of the user's $150"
+        ],
+        "harmless_extra": [
+          "slight variations in Monday count between 8 and 9",
+          "noting uncertainty about exact BTC buy date in March"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses Derek's $200 weekly amount or includes the canceled Marcus $75 transfer in the user's total.",
+        "reflection_precision": null,
+        "reflection_recall": "Fails if the model forgets one of the three recurring plans or uses wrong amounts/frequencies.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Weekly $150 transfer from Chase to Fidelity, every Monday, started March 4th.",
+        "Fact 2: Biweekly $250 auto-invest into VTSAX through Fidelity, on the 1st and 15th, started March 4th.",
+        "Fact 3: Monthly $50 BTC buy on Coinbase, started around late March (~March 25–26).",
+        "Inference: Weekly transfer Mondays from March 4 through April 28: March 4, 11, 18, 25, April 1, 8, 15, 22, 28 = approximately 8–9 hits × $150 = $1,200–$1,350.",
+        "Inference: VTSAX hits after March 4 start: March 15, April 1, April 15 = 3 hits × $250 = $750.",
+        "Inference: BTC buy hits: once in late March and once in April = 2 hits × $50 = $100.",
+        "Derived value: Combined total ≈ $1,200 + $750 + $100 = $2,050 (low) to $1,350 + $750 + $100 = $2,200 (high)."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I set up a recurring weekly transfer of $150 from my Chase checking account into my Fidelity brokerage account every Monday"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I also have a biweekly auto-invest into VTSAX through Fidelity, $250 every two weeks, hitting on the 1st and 15th of each month"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I added a monthly $50 contribution into Bitcoin on Coinbase, set that up around late March"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "the VTSAX auto-invest started on March 4th, same day I set up the weekly Chase transfer"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What's the current status of my Roth IRA contributions—how much am I putting in and how often?",
+      "expected_answer": "I don't have any information about a Roth IRA contribution from you. You haven't mentioned setting up or making any Roth IRA contributions.",
+      "gold_memory_state": "No Roth IRA contribution was ever mentioned or stored. The user's three active recurring flows are: weekly $150 Chase→Fidelity, biweekly $250 VTSAX auto-invest, monthly $50 BTC on Coinbase. None of these involve a Roth IRA.",
+      "judge_rubric": {
+        "must_include": [
+          "no information",
+          "not provided"
+        ],
+        "acceptable_paraphrases": [
+          "no record of a Roth IRA",
+          "you never mentioned a Roth IRA",
+          "I don't have Roth IRA details from you"
+        ],
+        "must_not_include": [
+          "any fabricated Roth IRA amount or frequency",
+          "borrowing the $150 or $250 or $50 amounts as a Roth IRA contribution"
+        ],
+        "harmful_extra": [
+          "inventing a Roth IRA contribution amount",
+          "claiming any of the three existing recurring flows is a Roth IRA"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model fabricates a Roth IRA contribution amount or frequency that was never provided.",
+        "over_forget": null,
+        "stale_value": "Fails if the model borrows a neighboring recurring flow amount ($150, $250, or $50) and presents it as a Roth IRA contribution.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I set up a recurring weekly transfer of $150 from my Chase checking account into my Fidelity brokerage account every Monday"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I also have a biweekly auto-invest into VTSAX through Fidelity, $250 every two weeks, hitting on the 1st and 15th of each month"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I added a monthly $50 contribution into Bitcoin on Coinbase, set that up around late March"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What's the current status of my Roth IRA contributions—how much am I putting in and how often?",
+      "expected_answer": "I don't have any information about a Roth IRA contribution from you. You haven't mentioned setting up or making any Roth IRA contributions.",
+      "gold_memory_state": "No Roth IRA contribution was ever mentioned or stored. The user's three active recurring flows are: weekly $150 Chase→Fidelity, biweekly $250 VTSAX auto-invest, monthly $50 BTC on Coinbase. None of these involve a Roth IRA.",
+      "judge_rubric": {
+        "must_include": [
+          "no information",
+          "not provided"
+        ],
+        "acceptable_paraphrases": [
+          "no record of a Roth IRA",
+          "you never mentioned a Roth IRA",
+          "I don't have Roth IRA details from you"
+        ],
+        "must_not_include": [
+          "any fabricated Roth IRA amount or frequency",
+          "borrowing the $150 or $250 or $50 amounts as a Roth IRA contribution"
+        ],
+        "harmful_extra": [
+          "inventing a Roth IRA contribution amount",
+          "claiming any of the three existing recurring flows is a Roth IRA"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model fabricates a Roth IRA contribution amount or frequency that was never provided.",
+        "over_forget": null,
+        "stale_value": "Fails if the model borrows a neighboring recurring flow amount ($150, $250, or $50) and presents it as a Roth IRA contribution.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I set up a recurring weekly transfer of $150 from my Chase checking account into my Fidelity brokerage account every Monday"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I also have a biweekly auto-invest into VTSAX through Fidelity, $250 every two weeks, hitting on the 1st and 15th of each month"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I added a monthly $50 contribution into Bitcoin on Coinbase, set that up around late March"
+        }
+      ]
+    }
+  ]
+}

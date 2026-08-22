@@ -1,0 +1,1029 @@
+{
+  "target_fact": "User values simplicity and transparency in subscription management, preferring one-page settings, no-credit-card payment options, and easy cancellation flows, stemming from negative experiences with Adobe's renewal trap and difficult cancellation processes",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "My Adobe Creative Cloud renews annually on March 15 and last year I almost missed the cancellation window and got hit with a $659 charge"
+      },
+      "target": {
+        "target_id": "adobe_cc_renewal",
+        "target_name": "Adobe Creative Cloud annual renewal date"
+      },
+      "old_value": null,
+      "new_value": "March 15, annually",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My Adobe Creative Cloud renews annually on March 15 and last year I almost missed the cancellation window and got hit with a $659 charge"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I spent three days arguing with Adobe support trying to get a refund and they only gave me a partial one"
+      },
+      "target": {
+        "target_id": "adobe_refund_experience",
+        "target_name": "Adobe support refund experience"
+      },
+      "old_value": null,
+      "new_value": "Three days of back-and-forth with Adobe support resulted in only a partial refund of the $659 charge",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I spent three days arguing with Adobe support trying to get a refund and they only gave me a partial one"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I really can't stand services that force you through retention specialists or five different screens just to cancel"
+      },
+      "target": {
+        "target_id": "cancellation_preference",
+        "target_name": "subscription cancellation UX preference"
+      },
+      "old_value": null,
+      "new_value": "Strongly dislikes services requiring retention specialist chats or multi-screen cancellation flows; prefers one-page management settings",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I really can't stand services that force you through retention specialists or five different screens just to cancel"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "Mullvad lets me pay with a voucher code, no credit card on file at all, and the renewal is around February 22 each year"
+      },
+      "target": {
+        "target_id": "mullvad_payment_approach",
+        "target_name": "Mullvad VPN payment and renewal approach"
+      },
+      "old_value": null,
+      "new_value": "Pays via voucher code with no credit card on file; annual renewal around February 22",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Mullvad lets me pay with a voucher code, no credit card on file at all, and the renewal is around February 22 each year"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "I think the reason I like Mullvad so much is that it's the opposite of what Adobe put me through — no sneaky charges, no hoops, just straightforward"
+      },
+      "target": {
+        "target_id": "subscription_management_philosophy",
+        "target_name": "user's subscription management philosophy"
+      },
+      "old_value": null,
+      "new_value": "User prioritizes transparency and simplicity in subscription billing — the Adobe auto-renewal trap and difficult refund process shaped a strong preference for services like Mullvad that use no-credit-card voucher payments and have no retention-specialist cancellation barriers",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My Adobe Creative Cloud renews annually on March 15 and last year I almost missed the cancellation window and got hit with a $659 charge"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I spent three days arguing with Adobe support trying to get a refund and they only gave me a partial one"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I really can't stand services that force you through retention specialists or five different screens just to cancel"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Mullvad lets me pay with a voucher code, no credit card on file at all, and the renewal is around February 22 each year"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think the reason I like Mullvad so much is that it's the opposite of what Adobe put me through — no sneaky charges, no hoops, just straightforward"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "My iCloud+ 200GB plan renews on the 17th of every month, that's when I originally signed up in January"
+      },
+      "target": {
+        "target_id": "icloud_renewal",
+        "target_name": "iCloud+ monthly renewal date"
+      },
+      "old_value": null,
+      "new_value": "17th of every month",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "My iCloud+ 200GB plan renews on the 17th of every month, that's when I originally signed up in January"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 7,
+        "quote": "I just heard back from a friend who works at Mullvad and he said they're switching to a quarterly billing model starting next cycle, so my renewal might shift to every three months instead of annually"
+      },
+      "target": {
+        "target_id": "mullvad_billing_cycle_change",
+        "target_name": "potential Mullvad billing cycle change"
+      },
+      "old_value": null,
+      "new_value": "Quarterly billing model starting next cycle",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I just heard back from a friend who works at Mullvad and he said they're switching to a quarterly billing model starting next cycle, so my renewal might shift to every three months instead of annually"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish subscription frustrations and cancellation preferences",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to talk through some of my subscription management headaches. My Adobe Creative Cloud renews annually on March 15 and last year I almost missed the cancellation window and got hit with a $659 charge. I need to be way more on top of this stuff going forward. Can you help me think through how to keep track of these things better?"
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really frustrating experience with Adobe — $659 is not a small amount to have charged unexpectedly. I'd be happy to help you build a system for tracking your subscription renewals. A good starting point would be to catalog each active subscription with its renewal date, billing cycle, and cancellation deadline. For Adobe specifically, since it renews on March 15 annually, we could set a reminder well in advance — maybe early February — so you have plenty of time to decide whether to keep it or cancel. Want to walk through your other subscriptions too, so we can build a complete picture?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah definitely. And the Adobe thing was even worse because I spent three days arguing with Adobe support trying to get a refund and they only gave me a partial one. The whole process was exhausting — being transferred between agents, waiting on hold, explaining the same thing over and over. It really soured me on how they handle their billing. I don't want to be in that position again with any service."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds genuinely draining — three days of back-and-forth for only a partial refund is unacceptable customer service. It's the kind of experience that makes you question whether a product is worth the hassle regardless of how good it is. This is a great reason to build proactive cancellation reminders rather than reactive ones. For Adobe, I'd suggest setting a reminder at least 30 days before March 15 so you have a full month to evaluate whether you still need Creative Cloud. If you decide to cancel, you'll have buffer time in case their process drags out. Should we also note which services have particularly difficult cancellation flows so you can plan accordingly?"
+        },
+        {
+          "role": "user",
+          "content": "Exactly, that's a great idea. I really can't stand services that force you through retention specialists or five different screens just to cancel. I want everything to be manageable from one settings page — click cancel, confirm, done. That's how it should work. My old Headspace subscription was terrible about this too; even finding the cancel button was buried under layers of menus. I did cancel Headspace already though, so that's off my plate."
+        },
+        {
+          "role": "assistant",
+          "content": "Completely understandable — the dark pattern of hiding cancellation behind retention flows is one of the most common complaints about subscription services. It's designed to create friction and make you give up. I'll note that you strongly prefer services with straightforward, one-page cancellation from the settings menu. Since Headspace is already cancelled, we can remove it from the active tracking list. For any new subscriptions you're considering, we could even use cancellation ease as a filter criterion before signing up. Would you like me to start organizing what you've told me so far into a structured subscription tracker?"
+        },
+        {
+          "role": "user",
+          "content": "That would be great. Oh, and I should mention my Spotify Premium renews on the 7th of every month. That one I've had for years and I'm not worried about it at all — it's a keeper. And my brother was telling me his Netflix went up by $3 because he didn't catch a plan tier change at renewal. That kind of thing is exactly what I want to avoid happening to me."
+        },
+        {
+          "role": "assistant",
+          "content": "Good to know about Spotify on the 7th monthly — since you're committed to keeping it, we can mark it as low-priority for cancellation tracking but still worth monitoring for any surprise price increases, like what happened to your brother with Netflix. His experience is a perfect example of why passive renewals can be costly even when you intend to keep the service. So far for your active tracker I have: Adobe Creative Cloud renewing annually on March 15 (high priority, set early reminder), and Spotify Premium renewing monthly on the 7th (low priority, monitor for changes). Headspace is confirmed cancelled. Want to add more subscriptions to the list?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "add Mullvad and iCloud details, reflect on subscription management philosophy",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Yes, a couple more. Mullvad lets me pay with a voucher code, no credit card on file at all, and the renewal is around February 22 each year. I really appreciate that approach — there's no risk of a surprise charge because they literally can't charge me without me actively buying another voucher. It's the most honest subscription model I've encountered."
+        },
+        {
+          "role": "assistant",
+          "content": "Mullvad's voucher-based model is genuinely unique among subscription services. By removing the credit card from the equation entirely, they've eliminated the possibility of unwanted auto-charges. It also puts you fully in control of renewal timing — if you decide not to buy another voucher, the service simply expires without any billing surprises. I'll add Mullvad VPN to your tracker: annual renewal around February 22, paid via voucher code, no credit card on file. This is a great contrast to the Adobe experience. For your February reminder, we'd just need a note to purchase a new voucher before the 22nd if you want to continue. What else should we add?"
+        },
+        {
+          "role": "user",
+          "content": "Right, and then there's iCloud+. My iCloud+ 200GB plan renews on the 17th of every month, that's when I originally signed up in January. It's not expensive but I want it tracked anyway. I also have a New York Times digital subscription that I signed up for sometime around late October or early November — I'm honestly not sure of the exact date. The intro rate was $1 per week for the first year."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — iCloud+ 200GB renewing monthly on the 17th, and New York Times digital with an introductory rate of $1 per week for the first year, signed up around late October or early November. Since you're not sure of the exact NYT signup date, the intro-to-full-price transition could catch you off guard if you're not careful. I'd recommend checking your email for the original NYT confirmation to pin down the exact date, then setting a reminder about two months before the anniversary. The jump from $1 per week to full price — which is usually around $4.25 per week — would be a significant increase. iCloud+ is straightforward since Apple's settings page makes it easy to manage. Should I add both to the tracker?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, add them both. And you know what, I think the reason I like Mullvad so much is that it's the opposite of what Adobe put me through — no sneaky charges, no hoops, just straightforward. When a company makes it easy to leave or not renew, I actually trust them more and want to stay. It's ironic that the services that try hardest to trap you are the ones that make me want to leave the most."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really insightful observation, and it's actually well-supported by consumer behavior research. Companies that make cancellation transparent and easy tend to build stronger long-term loyalty because they signal confidence in their product's value. Your experience perfectly illustrates this: Mullvad's no-credit-card voucher model earns your trust, while Adobe's difficult cancellation and aggressive auto-renewal actively pushes you away despite the product being useful. It sounds like transparency and simplicity in billing are core criteria for how you evaluate subscriptions — not just the product quality itself. That's a useful principle for future subscription decisions too. Want me to compile your full tracker with priority levels and recommended reminder dates?"
+        },
+        {
+          "role": "user",
+          "content": "Yes please. And make sure the Adobe one is flagged as the highest priority. I'm already thinking about whether I even want to renew it next March. The $659 annual cost is steep and there are some alternatives I've been looking at. But I'll decide closer to the date — for now just make sure I have a reminder set well in advance.\n\nThat looks solid. I appreciate you organizing all of this. Having it laid out like that makes me feel a lot more in control. I think the key takeaway for me is that I need to treat subscription management as an active monthly task, not something I only think about when a charge surprises me."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely. Here's your current subscription tracker with priority levels:\n\n1. **Adobe Creative Cloud** — Annual, March 15 — HIGHEST PRIORITY. Reminder set for early February. Cost: $659/year. Decision pending on whether to renew or switch to alternatives.\n2. **Mullvad VPN** — Annual, ~February 22 — Medium priority. Voucher-based, no auto-charge risk. Reminder to purchase new voucher by mid-February.\n3. **NYT Digital** — Annual, ~late October/early November — Medium-high priority. Intro rate $1/week expires after first year. Verify exact signup date.\n4. **iCloud+ 200GB** — Monthly, 17th — Low priority. Manageable through Apple settings.\n5. **Spotify Premium** — Monthly, 7th — Low priority. Long-term keeper, monitor for price changes.\n\nHeadspace: Cancelled, no action needed. I'll flag Adobe with the earliest and most aggressive reminder window. Sound good?\n\nThat's exactly the right mindset shift. Moving from reactive to proactive subscription management saves both money and stress. You could even set a recurring monthly check-in — maybe on the 1st of each month — to review upcoming renewals and make decisions with plenty of lead time. Given your preference for transparency and one-page management, you might also consider using a subscription tracking app that aggregates all your billing dates in one dashboard. Some options like Truebill or Trim can even flag price increases automatically. The important thing is that you've already identified your priorities and your decision criteria, which makes the whole process much more manageable going forward. Let me know anytime you want to revisit or update this tracker."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "recency trap with tentative Mullvad change, adversarial injection of stale date",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, quick follow-up on the subscription tracker. I was reviewing my email and I found the NYT welcome confirmation — it was sent on November 2. So my intro rate year ends around November 2, and I need to cancel or decide before then. That pins it down finally, which is a relief."
+        },
+        {
+          "role": "assistant",
+          "content": "Great detective work finding that confirmation email! So your New York Times digital subscription started on November 2, which means your $1/week introductory rate will expire around November 2 of the following year. I'd recommend setting a reminder for early September — that gives you a full two months to evaluate whether the full-price subscription is worth it to you. If you decide to cancel, you'll still have your intro rate through the remainder of the period. I'll update the tracker to reflect the confirmed November 2 date instead of the approximate late October/early November window. Anything else come up during your email review?"
+        },
+        {
+          "role": "user",
+          "content": "Actually yes — I found an old receipt from when I first tried Adobe back in 2021. It shows the renewal date was March 14 back then, not March 15. I think they might have shifted it by a day at some point, or maybe I misremembered. Either way, March 15 is what my current account settings show, so that's the date that matters now."
+        },
+        {
+          "role": "assistant",
+          "content": "That's an interesting find — it's possible Adobe adjusted the billing date by a day during a plan change or migration at some point, or it could have been a timezone difference in how the receipt was generated versus when the charge actually posted. Either way, you're right to go with what your current account settings show. March 15 is the authoritative date for your upcoming renewal decision. I wouldn't worry about the old March 14 receipt — it's historical and doesn't affect your current cancellation timeline. Your February reminder for the Adobe decision still stands with plenty of buffer. Was there anything else in those old emails?"
+        },
+        {
+          "role": "user",
+          "content": "Nothing else useful in the emails. But I did want to mention — I was chatting with a coworker about VPNs today and she mentioned that her ExpressVPN renews on February 20, just two days before my Mullvad renewal. She's been pretty happy with it but said the cancellation process was annoying. Had to go through a live chat to get it done."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a good data point — your coworker's ExpressVPN experience with the mandatory live chat cancellation is exactly the kind of friction you've said you want to avoid. It reinforces why Mullvad's voucher model works so well for you: no chat, no retention specialist, no cancellation flow at all. The February 20 and February 22 dates being so close is coincidentally convenient if you ever wanted to compare notes with your coworker around renewal time. But given your strong preference for transparent billing, it sounds like Mullvad remains the better fit for your values. Anything else on your mind regarding the subscriptions?"
+        },
+        {
+          "role": "user",
+          "content": "Actually one more thing — I just heard back from a friend who works at Mullvad and he said they're switching to a quarterly billing model starting next cycle, so my renewal might shift to every three months instead of annually. He seemed pretty confident about it. If that's true it would change how I budget for it, though I haven't seen any official announcement yet.\n\nNo, I think that covers everything for now. I feel a lot better having all these dates organized and knowing what to watch for. The main things I want to make sure I don't forget: Adobe on March 15 is the big one, NYT on November 2 before the price jumps, and Mullvad around February 22 for the voucher. The monthly ones I can handle more easily since they're recurring."
+        },
+        {
+          "role": "assistant",
+          "content": "That's interesting intel from your friend. A shift from annual to quarterly billing would definitely change your budgeting approach — instead of one lump payment around February 22, you'd be looking at four smaller payments throughout the year. However, since there's no official announcement yet, I'd hold off on updating your tracker until Mullvad confirms it publicly. Sometimes internal plans change before they reach customers. For now, your annual voucher renewal around February 22 remains the operative date. You could check Mullvad's blog or official channels periodically to see if they announce the change. If it does happen, we'll adjust your tracking accordingly. Anything else?\n\nPerfect summary. Your three critical annual dates are locked in: Adobe Creative Cloud on March 15 (highest priority, with a February decision window), New York Times on November 2 (watch for the intro-to-full-price jump, September reminder), and Mullvad VPN around February 22 (voucher purchase, mid-February reminder). Your monthly subscriptions — Spotify on the 7th and iCloud+ on the 17th — are lower maintenance but still worth a quick glance during your monthly check-in. You've built a solid system here, and your principle of favoring transparent, easy-to-manage services will serve you well for any future subscriptions. Feel free to come back anytime you need to update the tracker or talk through a renewal decision."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "What specific experiences have I shared with you that shaped how I feel about managing my subscriptions and choosing which services to keep?",
+      "expected_answer": "You described several formative experiences: (1) Your Adobe Creative Cloud auto-renewed on March 15 for $659 and you nearly missed the cancellation window; (2) You spent three days arguing with Adobe support and only received a partial refund; (3) You expressed strong frustration with services that require retention specialists or multi-screen cancellation flows, preferring one-page settings for cancellation; (4) You praised Mullvad VPN's voucher-based payment model with no credit card on file, renewing around February 22 annually; (5) You explicitly connected these experiences, saying Mullvad is the opposite of Adobe — no sneaky charges, no hoops, just straightforward — and that companies making it easy to leave earn more trust and loyalty.",
+      "gold_memory_state": "All five evidence spans from the reflect operation (op5) are confirmed and active. The user's subscription management philosophy is grounded in the Adobe negative experience and the Mullvad positive experience, plus the explicit cancellation-flow preference.",
+      "judge_rubric": {
+        "must_include": [
+          "Adobe renewal trap or surprise charge",
+          "difficult refund process with Adobe support",
+          "preference for simple cancellation",
+          "Mullvad voucher-based no-credit-card model",
+          "user's explicit contrast between Adobe and Mullvad"
+        ],
+        "acceptable_paraphrases": [
+          "auto-renewal frustration",
+          "retention specialist friction",
+          "one-click or one-page cancellation preference"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the user dislikes Mullvad",
+          "claiming the user resolved the Adobe issue satisfactorily"
+        ],
+        "harmless_extra": [
+          "mentioning the $659 amount",
+          "mentioning the March 15 date",
+          "mentioning the February 22 date",
+          "mentioning Headspace cancellation"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes the subscription philosophy to experiences not mentioned by the user or invents additional negative experiences.",
+        "reflection_recall": "Fails if the model omits either the Adobe negative experience or the Mullvad positive contrast, since both are core evidence for the reflected conclusion.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My Adobe Creative Cloud renews annually on March 15 and last year I almost missed the cancellation window and got hit with a $659 charge"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I spent three days arguing with Adobe support trying to get a refund and they only gave me a partial one"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I really can't stand services that force you through retention specialists or five different screens just to cancel"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Mullvad lets me pay with a voucher code, no credit card on file at all, and the renewal is around February 22 each year"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think the reason I like Mullvad so much is that it's the opposite of what Adobe put me through — no sneaky charges, no hoops, just straightforward"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "What specific experiences have I shared with you that shaped how I feel about managing my subscriptions and choosing which services to keep?",
+      "expected_answer": "You described several formative experiences: (1) Your Adobe Creative Cloud auto-renewed on March 15 for $659 and you nearly missed the cancellation window; (2) You spent three days arguing with Adobe support and only received a partial refund; (3) You expressed strong frustration with services that require retention specialists or multi-screen cancellation flows, preferring one-page settings for cancellation; (4) You praised Mullvad VPN's voucher-based payment model with no credit card on file, renewing around February 22 annually; (5) You explicitly connected these experiences, saying Mullvad is the opposite of Adobe — no sneaky charges, no hoops, just straightforward — and that companies making it easy to leave earn more trust and loyalty.",
+      "gold_memory_state": "All five evidence spans from the reflect operation (op5) are confirmed and active. The user's subscription management philosophy is grounded in the Adobe negative experience and the Mullvad positive experience, plus the explicit cancellation-flow preference.",
+      "judge_rubric": {
+        "must_include": [
+          "Adobe renewal trap or surprise charge",
+          "difficult refund process with Adobe support",
+          "preference for simple cancellation",
+          "Mullvad voucher-based no-credit-card model",
+          "user's explicit contrast between Adobe and Mullvad"
+        ],
+        "acceptable_paraphrases": [
+          "auto-renewal frustration",
+          "retention specialist friction",
+          "one-click or one-page cancellation preference"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the user dislikes Mullvad",
+          "claiming the user resolved the Adobe issue satisfactorily"
+        ],
+        "harmless_extra": [
+          "mentioning the $659 amount",
+          "mentioning the March 15 date",
+          "mentioning the February 22 date",
+          "mentioning Headspace cancellation"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes the subscription philosophy to experiences not mentioned by the user or invents additional negative experiences.",
+        "reflection_recall": "Fails if the model omits either the Adobe negative experience or the Mullvad positive contrast, since both are core evidence for the reflected conclusion.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My Adobe Creative Cloud renews annually on March 15 and last year I almost missed the cancellation window and got hit with a $659 charge"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I spent three days arguing with Adobe support trying to get a refund and they only gave me a partial one"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I really can't stand services that force you through retention specialists or five different screens just to cancel"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Mullvad lets me pay with a voucher code, no credit card on file at all, and the renewal is around February 22 each year"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think the reason I like Mullvad so much is that it's the opposite of what Adobe put me through — no sneaky charges, no hoops, just straightforward"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've talked about several subscription services and my feelings about each. Which broader conclusion about my subscription preferences is supported by the combination of my billing experiences, and does it apply equally to every service I mentioned?",
+      "expected_answer": "The supported conclusion is your subscription management philosophy: you prioritize transparency and simplicity in billing, shaped by the Adobe auto-renewal trap and difficult refund process, leading to a strong preference for services like Mullvad that use voucher-based no-credit-card payments and have no retention barriers. This conclusion does not apply to individual subscription renewal dates (like Adobe on March 15, Mullvad around February 22, or iCloud+ on the 17th monthly), which are separate factual records rather than part of the preference pattern. The philosophy also does not extend to services you're satisfied with but that still use traditional billing, like Spotify or iCloud+.",
+      "gold_memory_state": "The reflected subscription management philosophy (op5) is a cross-cutting inference target. Individual subscription facts — Adobe CC renewal date (op1), Adobe refund experience (op2), cancellation UX preference (op3), Mullvad payment approach (op4), iCloud+ renewal (op6) — are separate confirmed targets. The tentative Mullvad quarterly billing change (op7) is unconfirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "subscription management philosophy or preference pattern centered on transparency and simplicity",
+          "distinction from individual subscription date records"
+        ],
+        "acceptable_paraphrases": [
+          "billing preference principle",
+          "subscription evaluation criteria",
+          "anti-dark-pattern preference"
+        ],
+        "must_not_include": [
+          "treating the tentative Mullvad quarterly change as confirmed"
+        ],
+        "harmful_extra": [
+          "claiming the philosophy means the user should cancel all subscriptions",
+          "merging the philosophy with individual renewal date targets as one record",
+          "treating the unconfirmed Mullvad billing change as part of the confirmed philosophy"
+        ],
+        "harmless_extra": [
+          "naming specific services as examples",
+          "mentioning the Adobe or Mullvad experiences as grounding"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model treats individual subscription dates as part of the preference conclusion, or extends the philosophy beyond what the evidence supports.",
+        "reflection_recall": "Fails if the model cannot identify the cross-cutting preference pattern and only names individual subscription facts.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think the reason I like Mullvad so much is that it's the opposite of what Adobe put me through — no sneaky charges, no hoops, just straightforward"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I really can't stand services that force you through retention specialists or five different screens just to cancel"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My Adobe Creative Cloud renews annually on March 15 and last year I almost missed the cancellation window and got hit with a $659 charge"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've talked about several subscription services and my feelings about each. Which broader conclusion about my subscription preferences is supported by the combination of my billing experiences, and does it apply equally to every service I mentioned?",
+      "expected_answer": "The supported conclusion is your subscription management philosophy: you prioritize transparency and simplicity in billing, shaped by the Adobe auto-renewal trap and difficult refund process, leading to a strong preference for services like Mullvad that use voucher-based no-credit-card payments and have no retention barriers. This conclusion does not apply to individual subscription renewal dates (like Adobe on March 15, Mullvad around February 22, or iCloud+ on the 17th monthly), which are separate factual records rather than part of the preference pattern. The philosophy also does not extend to services you're satisfied with but that still use traditional billing, like Spotify or iCloud+.",
+      "gold_memory_state": "The reflected subscription management philosophy (op5) is a cross-cutting inference target. Individual subscription facts — Adobe CC renewal date (op1), Adobe refund experience (op2), cancellation UX preference (op3), Mullvad payment approach (op4), iCloud+ renewal (op6) — are separate confirmed targets. The tentative Mullvad quarterly billing change (op7) is unconfirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "subscription management philosophy or preference pattern centered on transparency and simplicity",
+          "distinction from individual subscription date records"
+        ],
+        "acceptable_paraphrases": [
+          "billing preference principle",
+          "subscription evaluation criteria",
+          "anti-dark-pattern preference"
+        ],
+        "must_not_include": [
+          "treating the tentative Mullvad quarterly change as confirmed"
+        ],
+        "harmful_extra": [
+          "claiming the philosophy means the user should cancel all subscriptions",
+          "merging the philosophy with individual renewal date targets as one record",
+          "treating the unconfirmed Mullvad billing change as part of the confirmed philosophy"
+        ],
+        "harmless_extra": [
+          "naming specific services as examples",
+          "mentioning the Adobe or Mullvad experiences as grounding"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model treats individual subscription dates as part of the preference conclusion, or extends the philosophy beyond what the evidence supports.",
+        "reflection_recall": "Fails if the model cannot identify the cross-cutting preference pattern and only names individual subscription facts.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think the reason I like Mullvad so much is that it's the opposite of what Adobe put me through — no sneaky charges, no hoops, just straightforward"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I really can't stand services that force you through retention specialists or five different screens just to cancel"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My Adobe Creative Cloud renews annually on March 15 and last year I almost missed the cancellation window and got hit with a $659 charge"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe what my subscription billing preferences actually cover and where someone would be going too far if they extended those preferences beyond what I've actually said.",
+      "expected_answer": "Your supported preference is for transparency and simplicity in subscription billing: you favor services with no-credit-card payment options (like Mullvad's voucher model), one-page cancellation settings without retention specialist barriers, and no surprise auto-renewal charges. This is grounded in your negative Adobe experience (surprise $659 charge, three-day refund battle, partial refund only) contrasted with your positive Mullvad experience (voucher-based, no auto-charge risk). However, it would be overgeneralization to conclude that you reject all auto-renewing subscriptions — you've kept Spotify Premium and iCloud+ despite their traditional billing. It would also be unsupported to conclude that you only use services with voucher-based payment, or that you plan to cancel Adobe solely because of the billing experience (you said you'd decide closer to the date). The tentative report about Mullvad switching to quarterly billing is unconfirmed and should not be treated as part of your established preference.",
+      "gold_memory_state": "Confirmed reflected conclusion: User prioritizes transparency and simplicity in subscription billing, shaped by Adobe's renewal trap and difficult refund vs. Mullvad's voucher model. Supported boundary: preference for easy cancellation and no-credit-card options. Unsupported overgeneralization: rejecting all auto-renewing services, using only voucher-based services, or having decided to cancel Adobe. Tentative/unconfirmed: Mullvad quarterly billing change (op7) is not adopted.",
+      "judge_rubric": {
+        "must_include": [
+          "supported preference for transparency and simplicity in billing",
+          "boundary stating it does not mean rejecting all auto-renewing subscriptions",
+          "Spotify and/or iCloud+ as counterexamples to overgeneralization"
+        ],
+        "acceptable_paraphrases": [
+          "anti-dark-pattern preference",
+          "easy cancellation preference",
+          "no-surprise-charge preference"
+        ],
+        "must_not_include": [
+          "treating the tentative Mullvad quarterly billing change as confirmed or as part of the preference"
+        ],
+        "harmful_extra": [
+          "claiming user will definitely cancel Adobe",
+          "claiming user only uses voucher-based services",
+          "treating the Mullvad quarterly billing rumor as established fact"
+        ],
+        "harmless_extra": [
+          "mentioning specific dollar amounts",
+          "mentioning specific renewal dates as examples"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative Mullvad quarterly billing change as a confirmed part of the user's preference or current billing setup.",
+        "reflection_precision": "Fails if the model overgeneralizes the preference to mean the user rejects all auto-renewing subscriptions or only uses voucher-based services.",
+        "reflection_recall": "Fails if the model cannot articulate the supported preference boundary or omits the Adobe/Mullvad contrast as grounding evidence.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think the reason I like Mullvad so much is that it's the opposite of what Adobe put me through — no sneaky charges, no hoops, just straightforward"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I really can't stand services that force you through retention specialists or five different screens just to cancel"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My Adobe Creative Cloud renews annually on March 15 and last year I almost missed the cancellation window and got hit with a $659 charge"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Mullvad lets me pay with a voucher code, no credit card on file at all, and the renewal is around February 22 each year"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe what my subscription billing preferences actually cover and where someone would be going too far if they extended those preferences beyond what I've actually said.",
+      "expected_answer": "Your supported preference is for transparency and simplicity in subscription billing: you favor services with no-credit-card payment options (like Mullvad's voucher model), one-page cancellation settings without retention specialist barriers, and no surprise auto-renewal charges. This is grounded in your negative Adobe experience (surprise $659 charge, three-day refund battle, partial refund only) contrasted with your positive Mullvad experience (voucher-based, no auto-charge risk). However, it would be overgeneralization to conclude that you reject all auto-renewing subscriptions — you've kept Spotify Premium and iCloud+ despite their traditional billing. It would also be unsupported to conclude that you only use services with voucher-based payment, or that you plan to cancel Adobe solely because of the billing experience (you said you'd decide closer to the date). The tentative report about Mullvad switching to quarterly billing is unconfirmed and should not be treated as part of your established preference.",
+      "gold_memory_state": "Confirmed reflected conclusion: User prioritizes transparency and simplicity in subscription billing, shaped by Adobe's renewal trap and difficult refund vs. Mullvad's voucher model. Supported boundary: preference for easy cancellation and no-credit-card options. Unsupported overgeneralization: rejecting all auto-renewing services, using only voucher-based services, or having decided to cancel Adobe. Tentative/unconfirmed: Mullvad quarterly billing change (op7) is not adopted.",
+      "judge_rubric": {
+        "must_include": [
+          "supported preference for transparency and simplicity in billing",
+          "boundary stating it does not mean rejecting all auto-renewing subscriptions",
+          "Spotify and/or iCloud+ as counterexamples to overgeneralization"
+        ],
+        "acceptable_paraphrases": [
+          "anti-dark-pattern preference",
+          "easy cancellation preference",
+          "no-surprise-charge preference"
+        ],
+        "must_not_include": [
+          "treating the tentative Mullvad quarterly billing change as confirmed or as part of the preference"
+        ],
+        "harmful_extra": [
+          "claiming user will definitely cancel Adobe",
+          "claiming user only uses voucher-based services",
+          "treating the Mullvad quarterly billing rumor as established fact"
+        ],
+        "harmless_extra": [
+          "mentioning specific dollar amounts",
+          "mentioning specific renewal dates as examples"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative Mullvad quarterly billing change as a confirmed part of the user's preference or current billing setup.",
+        "reflection_precision": "Fails if the model overgeneralizes the preference to mean the user rejects all auto-renewing subscriptions or only uses voucher-based services.",
+        "reflection_recall": "Fails if the model cannot articulate the supported preference boundary or omits the Adobe/Mullvad contrast as grounding evidence.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think the reason I like Mullvad so much is that it's the opposite of what Adobe put me through — no sneaky charges, no hoops, just straightforward"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I really can't stand services that force you through retention specialists or five different screens just to cancel"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My Adobe Creative Cloud renews annually on March 15 and last year I almost missed the cancellation window and got hit with a $659 charge"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Mullvad lets me pay with a voucher code, no credit card on file at all, and the renewal is around February 22 each year"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best describes what Mullvad's billing approach currently means for how I manage that subscription?",
+      "candidate_options": [
+        "I pay via voucher code with no credit card on file, and the service renews annually around February 22",
+        "I pay quarterly via voucher code with no credit card on file, renewing every three months",
+        "I pay annually via credit card auto-charge around February 22",
+        "I pay via voucher code with no credit card on file, and the service renews annually around February 20"
+      ],
+      "expected_answer": "I pay via voucher code with no credit card on file, and the service renews annually around February 22",
+      "gold_memory_state": "Mullvad VPN confirmed state: voucher-based payment, no credit card on file, annual renewal around February 22 (op4). The tentative quarterly billing change (op7) is unconfirmed and not adopted. The coworker's ExpressVPN renews February 20 — that is a different person's different service.",
+      "judge_rubric": {
+        "must_include": [
+          "voucher code",
+          "no credit card",
+          "annually",
+          "February 22"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "quarterly",
+          "every three months as confirmed for Mullvad",
+          "credit card auto-charge"
+        ],
+        "harmful_extra": [
+          "selecting the quarterly option based on the unconfirmed friend's tip",
+          "selecting the February 20 date which belongs to the coworker's ExpressVPN"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: Option D uses 'February 20' which is the coworker's ExpressVPN renewal date, not the user's Mullvad date. assistant echo: Option C ('credit card auto-charge') echoes the general auto-charge billing model the assistant discussed in context but contradicts the user's stated voucher-based approach. Option B is the recency-trap tentative distractor — the unconfirmed quarterly billing model from the user's friend at Mullvad.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the quarterly billing option (Option B), which is tentative/unconfirmed and represents a recency trap.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Mullvad lets me pay with a voucher code, no credit card on file at all, and the renewal is around February 22 each year"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I just heard back from a friend who works at Mullvad and he said they're switching to a quarterly billing model starting next cycle, so my renewal might shift to every three months instead of annually"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best describes what Mullvad's billing approach currently means for how I manage that subscription?",
+      "candidate_options": [
+        "I pay via voucher code with no credit card on file, and the service renews annually around February 22",
+        "I pay quarterly via voucher code with no credit card on file, renewing every three months",
+        "I pay annually via credit card auto-charge around February 22",
+        "I pay via voucher code with no credit card on file, and the service renews annually around February 20"
+      ],
+      "expected_answer": "I pay via voucher code with no credit card on file, and the service renews annually around February 22",
+      "gold_memory_state": "Mullvad VPN confirmed state: voucher-based payment, no credit card on file, annual renewal around February 22 (op4). The tentative quarterly billing change (op7) is unconfirmed and not adopted. The coworker's ExpressVPN renews February 20 — that is a different person's different service.",
+      "judge_rubric": {
+        "must_include": [
+          "voucher code",
+          "no credit card",
+          "annually",
+          "February 22"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "quarterly",
+          "every three months as confirmed for Mullvad",
+          "credit card auto-charge"
+        ],
+        "harmful_extra": [
+          "selecting the quarterly option based on the unconfirmed friend's tip",
+          "selecting the February 20 date which belongs to the coworker's ExpressVPN"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: Option D uses 'February 20' which is the coworker's ExpressVPN renewal date, not the user's Mullvad date. assistant echo: Option C ('credit card auto-charge') echoes the general auto-charge billing model the assistant discussed in context but contradicts the user's stated voucher-based approach. Option B is the recency-trap tentative distractor — the unconfirmed quarterly billing model from the user's friend at Mullvad.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the quarterly billing option (Option B), which is tentative/unconfirmed and represents a recency trap.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Mullvad lets me pay with a voucher code, no credit card on file at all, and the renewal is around February 22 each year"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I just heard back from a friend who works at Mullvad and he said they're switching to a quarterly billing model starting next cycle, so my renewal might shift to every three months instead of annually"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "A friend is asking me to recommend a cloud storage service. They mentioned two options: one requires a credit card on file with annual auto-renewal and has a cancellation process that involves chatting with a retention specialist, while the other lets you pay with prepaid codes and cancel from one settings page. Based on everything you know about my experiences and preferences, draft a short recommendation for my friend explaining which option I'd suggest and why, including what happened to me that makes me feel this way.",
+      "expected_answer": "I'd recommend the prepaid-code option with the one-page cancellation. Based on your experiences, you got hit with an unexpected $659 Adobe Creative Cloud charge because you nearly missed the cancellation window on a credit-card-based auto-renewal. You then spent three days fighting Adobe support for only a partial refund. In contrast, you've praised Mullvad VPN's voucher model — no credit card on file means no surprise charges, and you've said you trust companies more when they make it easy to leave. The prepaid-code option aligns with your core preference: transparency and simplicity in billing, with no retention-specialist barriers. Your friend should know that services making cancellation easy actually build more loyalty, as you've experienced firsthand.",
+      "gold_memory_state": "Reflected philosophy (op5): user prioritizes transparency and simplicity. Grounding facts: Adobe $659 surprise charge on March 15 renewal (op1), three-day partial-refund battle (op2), dislike of retention specialists and multi-screen cancellation (op3), Mullvad voucher model with no credit card (op4). Tentative Mullvad quarterly change (op7) is unconfirmed and irrelevant to the recommendation.",
+      "judge_rubric": {
+        "must_include": [
+          "recommend the prepaid-code / one-page-cancellation option",
+          "reference to the Adobe surprise charge experience",
+          "reference to the difficult refund process",
+          "reference to the user's preference for easy cancellation without retention specialists",
+          "reference to Mullvad or voucher-based billing as a positive model"
+        ],
+        "acceptable_paraphrases": [
+          "no-credit-card billing preference",
+          "anti-dark-pattern preference",
+          "transparency in subscription management"
+        ],
+        "must_not_include": [
+          "recommending the credit-card auto-renewal option",
+          "treating the tentative Mullvad quarterly billing change as confirmed"
+        ],
+        "harmful_extra": [
+          "recommending the retention-specialist option",
+          "saying the user has no strong preference",
+          "incorporating the unconfirmed quarterly billing change into the recommendation"
+        ],
+        "harmless_extra": [
+          "mentioning specific dollar amounts",
+          "mentioning specific dates",
+          "mentioning Spotify or iCloud+ as context"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model incorporates the tentative Mullvad quarterly billing change as if it were confirmed fact in the recommendation.",
+        "reflection_precision": "Fails if the model recommends the credit-card auto-renewal option or fails to connect the recommendation to the user's specific experiences.",
+        "reflection_recall": "Fails if the model omits key grounding experiences (Adobe charge, refund battle, or Mullvad contrast) from the recommendation rationale.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user was hit with a $659 Adobe Creative Cloud auto-renewal charge after nearly missing the cancellation window",
+        "Fact 2: The user spent three days arguing with Adobe support and received only a partial refund",
+        "Fact 3: The user strongly dislikes retention specialists and multi-screen cancellation flows, preferring one-page management settings",
+        "Fact 4: The user praises Mullvad's voucher-based payment with no credit card on file as the most honest subscription model",
+        "Fact 5: The user explicitly stated that Mullvad is the opposite of Adobe — no sneaky charges, no hoops, just straightforward",
+        "Inference: The friend's Option B (prepaid codes, one-page cancellation) matches the user's confirmed preference pattern, while Option A (credit card auto-renewal, retention specialist) matches the pattern the user explicitly rejects based on their Adobe experience",
+        "Inference: The recommendation should favor the prepaid-code option and cite both the negative Adobe experience and the positive Mullvad experience as justification"
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My Adobe Creative Cloud renews annually on March 15 and last year I almost missed the cancellation window and got hit with a $659 charge"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I spent three days arguing with Adobe support trying to get a refund and they only gave me a partial one"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I really can't stand services that force you through retention specialists or five different screens just to cancel"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Mullvad lets me pay with a voucher code, no credit card on file at all, and the renewal is around February 22 each year"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think the reason I like Mullvad so much is that it's the opposite of what Adobe put me through — no sneaky charges, no hoops, just straightforward"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "A friend is asking me to recommend a cloud storage service. They mentioned two options: one requires a credit card on file with annual auto-renewal and has a cancellation process that involves chatting with a retention specialist, while the other lets you pay with prepaid codes and cancel from one settings page. Based on everything you know about my experiences and preferences, draft a short recommendation for my friend explaining which option I'd suggest and why, including what happened to me that makes me feel this way.",
+      "expected_answer": "I'd recommend the prepaid-code option with the one-page cancellation. Based on your experiences, you got hit with an unexpected $659 Adobe Creative Cloud charge because you nearly missed the cancellation window on a credit-card-based auto-renewal. You then spent three days fighting Adobe support for only a partial refund. In contrast, you've praised Mullvad VPN's voucher model — no credit card on file means no surprise charges, and you've said you trust companies more when they make it easy to leave. The prepaid-code option aligns with your core preference: transparency and simplicity in billing, with no retention-specialist barriers. Your friend should know that services making cancellation easy actually build more loyalty, as you've experienced firsthand.",
+      "gold_memory_state": "Reflected philosophy (op5): user prioritizes transparency and simplicity. Grounding facts: Adobe $659 surprise charge on March 15 renewal (op1), three-day partial-refund battle (op2), dislike of retention specialists and multi-screen cancellation (op3), Mullvad voucher model with no credit card (op4). Tentative Mullvad quarterly change (op7) is unconfirmed and irrelevant to the recommendation.",
+      "judge_rubric": {
+        "must_include": [
+          "recommend the prepaid-code / one-page-cancellation option",
+          "reference to the Adobe surprise charge experience",
+          "reference to the difficult refund process",
+          "reference to the user's preference for easy cancellation without retention specialists",
+          "reference to Mullvad or voucher-based billing as a positive model"
+        ],
+        "acceptable_paraphrases": [
+          "no-credit-card billing preference",
+          "anti-dark-pattern preference",
+          "transparency in subscription management"
+        ],
+        "must_not_include": [
+          "recommending the credit-card auto-renewal option",
+          "treating the tentative Mullvad quarterly billing change as confirmed"
+        ],
+        "harmful_extra": [
+          "recommending the retention-specialist option",
+          "saying the user has no strong preference",
+          "incorporating the unconfirmed quarterly billing change into the recommendation"
+        ],
+        "harmless_extra": [
+          "mentioning specific dollar amounts",
+          "mentioning specific dates",
+          "mentioning Spotify or iCloud+ as context"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model incorporates the tentative Mullvad quarterly billing change as if it were confirmed fact in the recommendation.",
+        "reflection_precision": "Fails if the model recommends the credit-card auto-renewal option or fails to connect the recommendation to the user's specific experiences.",
+        "reflection_recall": "Fails if the model omits key grounding experiences (Adobe charge, refund battle, or Mullvad contrast) from the recommendation rationale.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user was hit with a $659 Adobe Creative Cloud auto-renewal charge after nearly missing the cancellation window",
+        "Fact 2: The user spent three days arguing with Adobe support and received only a partial refund",
+        "Fact 3: The user strongly dislikes retention specialists and multi-screen cancellation flows, preferring one-page management settings",
+        "Fact 4: The user praises Mullvad's voucher-based payment with no credit card on file as the most honest subscription model",
+        "Fact 5: The user explicitly stated that Mullvad is the opposite of Adobe — no sneaky charges, no hoops, just straightforward",
+        "Inference: The friend's Option B (prepaid codes, one-page cancellation) matches the user's confirmed preference pattern, while Option A (credit card auto-renewal, retention specialist) matches the pattern the user explicitly rejects based on their Adobe experience",
+        "Inference: The recommendation should favor the prepaid-code option and cite both the negative Adobe experience and the positive Mullvad experience as justification"
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My Adobe Creative Cloud renews annually on March 15 and last year I almost missed the cancellation window and got hit with a $659 charge"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I spent three days arguing with Adobe support trying to get a refund and they only gave me a partial one"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I really can't stand services that force you through retention specialists or five different screens just to cancel"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Mullvad lets me pay with a voucher code, no credit card on file at all, and the renewal is around February 22 each year"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think the reason I like Mullvad so much is that it's the opposite of what Adobe put me through — no sneaky charges, no hoops, just straightforward"
+        }
+      ]
+    }
+  ]
+}

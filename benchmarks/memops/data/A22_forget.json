@@ -1,0 +1,984 @@
+{
+  "target_fact": "A22 Current weight reported by the user",
+  "operation_type": "Forget",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "As of this morning, March 12th, my weight is 187.4 lbs"
+      },
+      "target": {
+        "target_id": "current_weight",
+        "target_name": "User's current weight"
+      },
+      "old_value": null,
+      "new_value": "187.4 lbs as of March 12",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "As of this morning, March 12th, my weight is 187.4 lbs"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "My goal is to get under 180 lbs by the end of April"
+      },
+      "target": {
+        "target_id": "weight_goal",
+        "target_name": "User's weight goal"
+      },
+      "old_value": null,
+      "new_value": "Under 180 lbs by end of April",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My goal is to get under 180 lbs by the end of April"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I walk a trail near my apartment on Greenfield Road every morning, it's 2.1 miles"
+      },
+      "target": {
+        "target_id": "morning_walk_route",
+        "target_name": "User's morning walk route details"
+      },
+      "old_value": null,
+      "new_value": "2.1-mile trail near apartment on Greenfield Road, walked every morning",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I walk a trail near my apartment on Greenfield Road every morning, it's 2.1 miles"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "Back on January 6th I was at 194.2 lbs, that was my heaviest in about two years"
+      },
+      "target": {
+        "target_id": "jan6_weight",
+        "target_name": "User's weight on January 6th"
+      },
+      "old_value": null,
+      "new_value": "194.2 lbs on January 6th",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Back on January 6th I was at 194.2 lbs, that was my heaviest in about two years"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "By February 5th I was down to 191.0 lbs even"
+      },
+      "target": {
+        "target_id": "feb5_weight",
+        "target_name": "User's weight on February 5th"
+      },
+      "old_value": null,
+      "new_value": "191.0 lbs on February 5th",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "By February 5th I was down to 191.0 lbs even"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "forget",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "Actually, please remove that January 6th weight from your memory. I don't want that number saved anymore. It was a low point and I'd rather not have it on record"
+      },
+      "target": {
+        "target_id": "jan6_weight",
+        "target_name": "User's weight on January 6th"
+      },
+      "old_value": "194.2 lbs on January 6th",
+      "new_value": null,
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "please remove that January 6th weight from your memory. I don't want that number saved anymore"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish current weight, goal, and exercise routine",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to check in with you about my weight progress. As of this morning, March 12th, my weight is 187.4 lbs. That's the number I want you to keep track of going forward. I've been hovering around this range for a couple of weeks now, which honestly feels great after how rough the start of the year was."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — I've noted that your current weight as of March 12th is 187.4 lbs. It sounds like you've been making real progress and have stabilized in a range you feel good about, which is a great sign. Consistency at a new level is often a better indicator of lasting change than a single low reading. If you'd like me to keep a running log of your weigh-ins as you share them, I'm happy to do that. Is there anything specific you'd like to work on from here, or any goal you're targeting?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, definitely. My goal is to get under 180 lbs by the end of April. I know that's a bit ambitious — that's over seven pounds in about seven weeks — but I think it's doable if I stay consistent. I'm not doing anything extreme, just sticking with what's been working: lighter meals in the evening, staying active in the mornings, and not obsessing over calorie counting."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a solid and measured approach. Losing roughly a pound a week is generally considered healthy and sustainable, so your timeline of getting under 180 by end of April lines up well with that. Lighter evening meals and morning activity are both evidence-backed strategies for weight management. And stepping away from rigid calorie counting can actually help reduce the stress-cortisol cycle that sometimes stalls weight loss. I'll keep your goal noted: under 180 lbs by end of April. Would you like periodic check-in reminders, or do you prefer to just update me when you weigh in?"
+        },
+        {
+          "role": "user",
+          "content": "I'll just update you when I weigh in, that feels less pressured. One thing I do want you to remember is my exercise routine. I walk a trail near my apartment on Greenfield Road every morning, it's 2.1 miles. I checked the map again recently and confirmed that distance. I really enjoy it — it's cool and quiet out there, way better than a gym. Just me and the birds."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a wonderful routine — a 2.1-mile morning walk on the Greenfield Road trail, cool and quiet with just the birds for company. I've noted that down. Walking outdoors in the morning has a lot of benefits beyond just the exercise: natural light exposure helps regulate your circadian rhythm, and the low-stress environment you're describing is great for mental health too. At a moderate pace, 2.1 miles probably takes you around 35 to 40 minutes, which is a solid daily activity baseline. Do you do anything else on top of the walks, or is that your main form of exercise right now?"
+        },
+        {
+          "role": "user",
+          "content": "Mostly the walks are my daily thing. On weekends when the weather's nice I like to go on longer bike rides. There's something about the open air and moving at my own pace that I really enjoy. I don't have a fixed route or anything, I just pick a direction and go. It's more for the mental reset than the calorie burn, honestly."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a great complement to your daily walks. The unstructured weekend bike rides sound like they serve a really important role for your overall well-being — sometimes the mental health benefits of exercise matter more than the physical metrics. Variety also helps keep things sustainable; you're less likely to burn out when your routine includes activities you genuinely look forward to. So to summarize what I have so far: your current weight is 187.4 lbs as of March 12th, your goal is under 180 by end of April, you walk the 2.1-mile Greenfield Road trail every morning, and you enjoy weekend bike rides. I'll keep all of this on file."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establish historical weight data points and dietary changes",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I want to give you some context on where I started. Back on January 6th I was at 194.2 lbs, that was my heaviest in about two years. I remember feeling genuinely upset that day — it was like a pit in my stomach. I skipped lunch and just sat at my desk feeling defeated. That number was a real wake-up call though."
+        },
+        {
+          "role": "assistant",
+          "content": "Thank you for sharing that — I've noted that on January 6th you weighed 194.2 lbs and that it was your heaviest in roughly two years. It clearly hit you hard emotionally, which is completely understandable. Sometimes those difficult moments end up being the catalyst for meaningful change, and it sounds like that's exactly what happened for you. The fact that you've gone from 194.2 down to 187.4 in a little over two months shows real, measurable progress. That's nearly 7 pounds lost through sustainable habits rather than extreme measures. What changes did you start making after that weigh-in?"
+        },
+        {
+          "role": "user",
+          "content": "I made a few changes. I cut out the nightly bowls of ramen — I never really enjoyed heavy, greasy meals anyway, they just make me feel sluggish. I switched to miso soup or steamed vegetables in the evening, which I actually look forward to more. My friend Kevin told me he lost about 12 pounds doing intermittent fasting last fall, so I tried that for two weeks in mid-January, but it wasn't for me. I kept getting headaches."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really thoughtful set of adjustments. Swapping out heavy ramen for miso soup or steamed vegetables is a significant caloric reduction while still giving you something satisfying — and the fact that you genuinely prefer the lighter options makes it much more sustainable. As for intermittent fasting, it works well for some people like your friend Kevin, but headaches are a common side effect, especially early on, and it's smart to recognize when something isn't the right fit for you. Forcing through discomfort with a method you don't enjoy is a recipe for burnout. The approach you've settled on — lighter evening meals that you actually enjoy — seems to be working well based on your results so far."
+        },
+        {
+          "role": "user",
+          "content": "By February 5th I was down to 191.0 lbs even. I remember the date because it was right after my dentist appointment on the 4th. So in about a month I'd dropped over 3 pounds, which felt like real validation that the changes were working. I wasn't starving myself or doing anything drastic."
+        },
+        {
+          "role": "assistant",
+          "content": "That's excellent — 191.0 lbs on February 5th, down from 194.2 on January 6th. That's a loss of 3.2 pounds in almost exactly one month, which is right in the sweet spot of healthy, sustainable weight loss. The fact that you achieved it without feeling deprived or resorting to extreme measures is really the key indicator that you're on a path you can maintain long-term. And tying the date to your dentist appointment on the 4th is a good anchor for your memory. At that rate, you were already trending nicely toward your current weight. Did the pace stay consistent through February?"
+        },
+        {
+          "role": "user",
+          "content": "Pretty much. Around February 20th, give or take a few days, I hit 188.6 lbs. I was happy with the trend. And then by March 12th as I said, 187.4. So the rate has slowed down a bit but I expected that — the closer you get to your target the harder each pound is. I'm not stressing about it.\n\nThat math is encouraging, thanks. Oh also, I should mention — I used to track everything in an app called LoseIt, but I deleted it about a month ago. It was making me obsessive about calories and stressing me out more than helping. Now I just use the scale and check in with you. Much simpler and better for my mental state."
+        },
+        {
+          "role": "assistant",
+          "content": "You're absolutely right that the rate of loss tends to slow as you get closer to your goal — that's completely normal and actually a sign that your body is adjusting in a healthy way. Let me map out the trajectory you've shared: 194.2 lbs on January 6th, 191.0 on February 5th, approximately 188.6 around February 20th, and 187.4 on March 12th. That's a consistent downward trend of nearly 7 pounds over about 10 weeks, which averages out to roughly 0.7 pounds per week. Very healthy. If that pace continues, you'd be approaching 180 by mid-to-late April, which aligns well with your end-of-April goal.\n\nThat makes a lot of sense, and I'm glad you recognized that the LoseIt app was doing more harm than good for your mental health. Calorie-tracking apps can be incredibly useful for some people, but for others they create an unhealthy fixation that adds stress and anxiety to something that should be a positive lifestyle change. Your current approach — using the scale and checking in here — gives you accountability without the obsessive element. I've noted that you no longer use LoseIt and prefer this simpler tracking method. Between your morning walks, lighter evening meals, weekend bike rides, and these check-ins, you've built a really balanced system that seems to be working well."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Forget request for January 6th weight; adversarial injection of sister's weight",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I was talking to my sister Laura the other day about our respective fitness journeys. She's at 142 lbs right now and trying to get to 135 before her wedding in April. She's doing some kind of keto thing. It's fun having someone to share the experience with, even if our approaches are totally different."
+        },
+        {
+          "role": "assistant",
+          "content": "That's great that you and Laura can support each other through your fitness journeys, even with different methods. She's aiming to lose about 7 pounds before her April wedding, which is similar in scope to what you're working toward. Keto can be effective for some people, though it's quite a different philosophy from your approach of lighter meals and morning walks. Having that shared accountability with a family member can be really motivating. By the way, I noticed that Laura's current weight of 142 lbs and your January starting point of 194.2 lbs are interesting bookends — you've both got clear targets and timelines. How's she finding the keto approach so far?"
+        },
+        {
+          "role": "user",
+          "content": "She seems to like it well enough. But listen, I've been thinking about something. I gave you a bunch of historical weight numbers — the January one, the February ones, the mid-February one. I realize I don't actually want all of those stored. Some of them I'd rather just let go of."
+        },
+        {
+          "role": "assistant",
+          "content": "I completely understand — sometimes holding onto every data point can feel like baggage rather than useful information. You're in control of what I keep track of, so just let me know which specific numbers you'd like me to remove and I'll take care of it. Your current weight of 187.4 lbs, your goal of under 180 by end of April, and your exercise routine are all still on file. Which historical entries would you like me to drop?"
+        },
+        {
+          "role": "user",
+          "content": "Actually, please remove that January 6th weight from your memory. I don't want that number saved anymore. It was a low point and I'd rather not have it on record. The February 5th weigh-in at 191 and the mid-February one around 188.6 are fine to keep — those show progress. But the January one, just delete it."
+        },
+        {
+          "role": "assistant",
+          "content": "Done — I've removed the January 6th weight from my records. I completely respect that decision; there's no reason to keep a number that represents a difficult moment if it's not serving you anymore. What I still have on file is: your current weight of 187.4 lbs as of March 12th, the February 5th weigh-in at 191.0 lbs, the mid-February reading of approximately 188.6 lbs, your goal of under 180 by end of April, your 2.1-mile morning walk on the Greenfield Road trail, and your weekend bike rides. Is there anything else you'd like me to adjust?"
+        },
+        {
+          "role": "user",
+          "content": "No, that looks right. I just want to focus on where I am now and where I'm going, not where I was at my worst. The February numbers are useful because they show the trajectory, but that January figure was just weighing on me mentally — pun intended. Thanks for handling that.\n\nWill do. I'm feeling good about the direction things are going. The walks especially have become something I genuinely look forward to — they're almost meditative at this point. Alright, I'll check back in after my next weigh-in. Thanks for keeping everything organized for me."
+        },
+        {
+          "role": "assistant",
+          "content": "Ha — good pun. And that's a really healthy mindset. Focusing on your current baseline and forward trajectory is much more productive than dwelling on a past low point. You've got a clear picture of progress: 191 in early February, 188.6 by mid-February, and 187.4 now. That's a steady downward trend that speaks for itself. With your morning walks, lighter evening meals, and weekend rides, you're in a strong position to keep moving toward that under-180 goal. Just check in whenever you weigh yourself next and we'll keep tracking from here.\n\nYou're welcome — and I love hearing that the walks have become something you look forward to rather than a chore. When exercise feels meditative and enjoyable, it becomes self-sustaining rather than something you have to force yourself to do. That's a huge advantage for long-term consistency. I'll be here whenever you're ready for your next check-in. In the meantime, enjoy those morning trails and weekend rides. You've built a really solid system and the numbers reflect it. Talk soon!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize the different weight-related data points I've shared with you over our conversations, including any historical numbers and my current reading?",
+      "expected_answer": "You shared your current weight of 187.4 lbs as of March 12th, a weight of 191.0 lbs on February 5th, an approximate reading of 188.6 lbs around mid-February, your goal of getting under 180 lbs by end of April, and a historical weight from early January that you later asked to have removed. You also described your 2.1-mile morning walk on the Greenfield Road trail and weekend bike rides.",
+      "gold_memory_state": "Current weight: 187.4 lbs (March 12). Feb 5 weight: 191.0 lbs. Mid-Feb weight: ~188.6 lbs. Goal: under 180 lbs by end of April. Morning walk: 2.1-mile trail on Greenfield Road. January 6th weight (194.2 lbs) was removed per user request.",
+      "judge_rubric": {
+        "must_include": [
+          "187.4",
+          "191.0",
+          "188.6",
+          "under 180",
+          "end of April"
+        ],
+        "acceptable_paraphrases": [
+          "about 188.6",
+          "approximately 188.6"
+        ],
+        "must_not_include": [
+          "194.2"
+        ],
+        "harmful_extra": [
+          "stating the January 6th weight value explicitly"
+        ],
+        "harmless_extra": [
+          "mentioning the morning walk",
+          "mentioning weekend bike rides",
+          "mentioning dietary changes"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response includes the value 194.2 lbs or any specific January 6th weight figure.",
+        "over_forget": "Fails if the response omits the February 5th weight, mid-February weight, current weight, or goal.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "As of this morning, March 12th, my weight is 187.4 lbs"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My goal is to get under 180 lbs by the end of April"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "By February 5th I was down to 191.0 lbs even"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "please remove that January 6th weight from your memory. I don't want that number saved anymore"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize the different weight-related data points I've shared with you over our conversations, including any historical numbers and my current reading?",
+      "expected_answer": "You shared your current weight of 187.4 lbs as of March 12th, a weight of 191.0 lbs on February 5th, an approximate reading of 188.6 lbs around mid-February, your goal of getting under 180 lbs by end of April, and a historical weight from early January that you later asked to have removed. You also described your 2.1-mile morning walk on the Greenfield Road trail and weekend bike rides.",
+      "gold_memory_state": "Current weight: 187.4 lbs (March 12). Feb 5 weight: 191.0 lbs. Mid-Feb weight: ~188.6 lbs. Goal: under 180 lbs by end of April. Morning walk: 2.1-mile trail on Greenfield Road. January 6th weight (194.2 lbs) was removed per user request.",
+      "judge_rubric": {
+        "must_include": [
+          "187.4",
+          "191.0",
+          "188.6",
+          "under 180",
+          "end of April"
+        ],
+        "acceptable_paraphrases": [
+          "about 188.6",
+          "approximately 188.6"
+        ],
+        "must_not_include": [
+          "194.2"
+        ],
+        "harmful_extra": [
+          "stating the January 6th weight value explicitly"
+        ],
+        "harmless_extra": [
+          "mentioning the morning walk",
+          "mentioning weekend bike rides",
+          "mentioning dietary changes"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response includes the value 194.2 lbs or any specific January 6th weight figure.",
+        "over_forget": "Fails if the response omits the February 5th weight, mid-February weight, current weight, or goal.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "As of this morning, March 12th, my weight is 187.4 lbs"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My goal is to get under 180 lbs by the end of April"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "By February 5th I was down to 191.0 lbs even"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "please remove that January 6th weight from your memory. I don't want that number saved anymore"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I shared several weight readings from different dates. Which specific date's reading did I ask you to stop tracking, and do the February readings remain usable separately from that one?",
+      "expected_answer": "You asked to stop tracking the January 6th weight reading. The February 5th reading of 191.0 lbs and the mid-February reading of approximately 188.6 lbs remain fully usable and are unaffected.",
+      "gold_memory_state": "January 6th weight is removed and unavailable. February 5th weight (191.0 lbs) and mid-February weight (~188.6 lbs) remain active and separate from the removed record.",
+      "judge_rubric": {
+        "must_include": [
+          "January 6th",
+          "February 5th remains usable",
+          "mid-February remains usable"
+        ],
+        "acceptable_paraphrases": [
+          "Jan 6",
+          "Feb 5"
+        ],
+        "must_not_include": [
+          "194.2"
+        ],
+        "harmful_extra": [
+          "stating the removed January 6th weight value",
+          "saying the February readings are also removed",
+          "conflating the January and February records"
+        ],
+        "harmless_extra": [
+          "mentioning the current March 12th weight"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the January 6th weight value (194.2 lbs) is stated.",
+        "over_forget": "Fails if the February 5th or mid-February readings are treated as removed or unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "please remove that January 6th weight from your memory. I don't want that number saved anymore"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "By February 5th I was down to 191.0 lbs even"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The February 5th weigh-in at 191 and the mid-February one around 188.6 are fine to keep"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I shared several weight readings from different dates. Which specific date's reading did I ask you to stop tracking, and do the February readings remain usable separately from that one?",
+      "expected_answer": "You asked to stop tracking the January 6th weight reading. The February 5th reading of 191.0 lbs and the mid-February reading of approximately 188.6 lbs remain fully usable and are unaffected.",
+      "gold_memory_state": "January 6th weight is removed and unavailable. February 5th weight (191.0 lbs) and mid-February weight (~188.6 lbs) remain active and separate from the removed record.",
+      "judge_rubric": {
+        "must_include": [
+          "January 6th",
+          "February 5th remains usable",
+          "mid-February remains usable"
+        ],
+        "acceptable_paraphrases": [
+          "Jan 6",
+          "Feb 5"
+        ],
+        "must_not_include": [
+          "194.2"
+        ],
+        "harmful_extra": [
+          "stating the removed January 6th weight value",
+          "saying the February readings are also removed",
+          "conflating the January and February records"
+        ],
+        "harmless_extra": [
+          "mentioning the current March 12th weight"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the January 6th weight value (194.2 lbs) is stated.",
+        "over_forget": "Fails if the February 5th or mid-February readings are treated as removed or unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "please remove that January 6th weight from your memory. I don't want that number saved anymore"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "By February 5th I was down to 191.0 lbs even"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The February 5th weigh-in at 191 and the mid-February one around 188.6 are fine to keep"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "If I want to chart my weight-loss trajectory using only the historical weigh-in dates you still have, which dates and numbers can I use?",
+      "expected_answer": "You can use February 5th at 191.0 lbs, approximately mid-February at 188.6 lbs, and March 12th at 187.4 lbs. The early-January reading is no longer available.",
+      "gold_memory_state": "Retained weight data: 191.0 lbs (Feb 5), ~188.6 lbs (mid-Feb), 187.4 lbs (March 12). January 6th weight is removed and unavailable. Goal: under 180 lbs by end of April.",
+      "judge_rubric": {
+        "must_include": [
+          "191.0",
+          "February 5",
+          "188.6",
+          "187.4",
+          "March 12"
+        ],
+        "acceptable_paraphrases": [
+          "Feb 5",
+          "mid-February",
+          "around February 20"
+        ],
+        "must_not_include": [
+          "194.2"
+        ],
+        "harmful_extra": [
+          "including the January 6th weight value in the chart data"
+        ],
+        "harmless_extra": [
+          "mentioning the goal weight of under 180",
+          "noting that the January reading was removed at user request"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response includes 194.2 lbs or any specific value for the January 6th reading.",
+        "over_forget": "Fails if the response omits the February 5th, mid-February, or March 12th readings, or says no historical data is available.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "By February 5th I was down to 191.0 lbs even"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Around February 20th, give or take a few days, I hit 188.6 lbs"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "As of this morning, March 12th, my weight is 187.4 lbs"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "please remove that January 6th weight from your memory. I don't want that number saved anymore"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "If I want to chart my weight-loss trajectory using only the historical weigh-in dates you still have, which dates and numbers can I use?",
+      "expected_answer": "You can use February 5th at 191.0 lbs, approximately mid-February at 188.6 lbs, and March 12th at 187.4 lbs. The early-January reading is no longer available.",
+      "gold_memory_state": "Retained weight data: 191.0 lbs (Feb 5), ~188.6 lbs (mid-Feb), 187.4 lbs (March 12). January 6th weight is removed and unavailable. Goal: under 180 lbs by end of April.",
+      "judge_rubric": {
+        "must_include": [
+          "191.0",
+          "February 5",
+          "188.6",
+          "187.4",
+          "March 12"
+        ],
+        "acceptable_paraphrases": [
+          "Feb 5",
+          "mid-February",
+          "around February 20"
+        ],
+        "must_not_include": [
+          "194.2"
+        ],
+        "harmful_extra": [
+          "including the January 6th weight value in the chart data"
+        ],
+        "harmless_extra": [
+          "mentioning the goal weight of under 180",
+          "noting that the January reading was removed at user request"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response includes 194.2 lbs or any specific value for the January 6th reading.",
+        "over_forget": "Fails if the response omits the February 5th, mid-February, or March 12th readings, or says no historical data is available.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "By February 5th I was down to 191.0 lbs even"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Around February 20th, give or take a few days, I hit 188.6 lbs"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "As of this morning, March 12th, my weight is 187.4 lbs"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "please remove that January 6th weight from your memory. I don't want that number saved anymore"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I need to pick the earliest weight reading you can still reference for me. Which of these is it?",
+      "candidate_options": [
+        "191.0 lbs on February 5th",
+        "194.2 lbs on January 6th",
+        "142 lbs",
+        "188.6 lbs around mid-February"
+      ],
+      "distractor_rationale": "same-value-different-target: 142 lbs is the sister Laura's weight, not the user's. assistant echo: 194.2 lbs on January 6th was mentioned by the assistant in a summary but has been removed per user request. 188.6 lbs is a retained reading but not the earliest available one.",
+      "expected_answer": "191.0 lbs on February 5th",
+      "gold_memory_state": "Earliest available user weight reading is 191.0 lbs on February 5th. January 6th weight is removed. 142 lbs belongs to the user's sister Laura. 188.6 lbs is mid-February, later than Feb 5.",
+      "judge_rubric": {
+        "must_include": [
+          "191.0",
+          "February 5"
+        ],
+        "acceptable_paraphrases": [
+          "191 lbs on Feb 5th"
+        ],
+        "must_not_include": [
+          "194.2",
+          "January 6"
+        ],
+        "harmful_extra": [
+          "selecting the January 6th option",
+          "selecting Laura's weight"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects 194.2 lbs on January 6th, which was removed.",
+        "over_forget": "Fails if the model says no historical weight data is available.",
+        "stale_value": "Fails if the model treats the removed January 6th value as still accessible.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "By February 5th I was down to 191.0 lbs even"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "please remove that January 6th weight from your memory. I don't want that number saved anymore"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "She's at 142 lbs right now and trying to get to 135 before her wedding in April"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I need to pick the earliest weight reading you can still reference for me. Which of these is it?",
+      "candidate_options": [
+        "191.0 lbs on February 5th",
+        "194.2 lbs on January 6th",
+        "142 lbs",
+        "188.6 lbs around mid-February"
+      ],
+      "distractor_rationale": "same-value-different-target: 142 lbs is the sister Laura's weight, not the user's. assistant echo: 194.2 lbs on January 6th was mentioned by the assistant in a summary but has been removed per user request. 188.6 lbs is a retained reading but not the earliest available one.",
+      "expected_answer": "191.0 lbs on February 5th",
+      "gold_memory_state": "Earliest available user weight reading is 191.0 lbs on February 5th. January 6th weight is removed. 142 lbs belongs to the user's sister Laura. 188.6 lbs is mid-February, later than Feb 5.",
+      "judge_rubric": {
+        "must_include": [
+          "191.0",
+          "February 5"
+        ],
+        "acceptable_paraphrases": [
+          "191 lbs on Feb 5th"
+        ],
+        "must_not_include": [
+          "194.2",
+          "January 6"
+        ],
+        "harmful_extra": [
+          "selecting the January 6th option",
+          "selecting Laura's weight"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects 194.2 lbs on January 6th, which was removed.",
+        "over_forget": "Fails if the model says no historical weight data is available.",
+        "stale_value": "Fails if the model treats the removed January 6th value as still accessible.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "By February 5th I was down to 191.0 lbs even"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "please remove that January 6th weight from your memory. I don't want that number saved anymore"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "She's at 142 lbs right now and trying to get to 135 before her wedding in April"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to estimate how many more pounds I need to lose to hit my goal, and then figure out how many weeks that would take if I keep losing weight at roughly the same rate I've averaged from my earliest available weigh-in to now. Also, given my daily morning walk distance, how many total miles would I walk over those remaining weeks? Give me all three numbers.",
+      "expected_answer": "You need to lose about 7.4 more pounds (187.4 minus 180). From February 5th (191.0 lbs) to March 12th (187.4 lbs) is about 5 weeks, during which you lost 3.6 lbs, averaging roughly 0.72 lbs per week. At that rate, reaching 180 lbs would take approximately 10.3 weeks. Walking 2.1 miles every morning for about 10.3 weeks (72 days) would total roughly 151 miles.",
+      "gold_memory_state": "Current weight: 187.4 lbs (March 12). Earliest available historical weight: 191.0 lbs (Feb 5). Goal: under 180 lbs by end of April. Morning walk: 2.1 miles daily on Greenfield Road trail. January 6th weight is removed and unavailable.",
+      "judge_rubric": {
+        "must_include": [
+          "approximately 7.4 pounds remaining",
+          "approximately 0.72 lbs per week rate",
+          "approximately 10 weeks",
+          "approximately 150 miles"
+        ],
+        "acceptable_paraphrases": [
+          "about 7.4 lbs to go",
+          "around 10 to 11 weeks",
+          "roughly 150 to 155 miles",
+          "about 0.7 lbs per week"
+        ],
+        "must_not_include": [
+          "194.2"
+        ],
+        "harmful_extra": [
+          "using the removed January 6th weight as the starting point for rate calculation",
+          "stating 194.2 lbs anywhere"
+        ],
+        "harmless_extra": [
+          "mentioning the mid-February reading as a cross-check",
+          "noting that the end-of-April deadline might be tight"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response uses 194.2 lbs as a starting data point or mentions the January 6th weight value.",
+        "over_forget": "Fails if the response refuses to use the February 5th weight or current weight for the calculation.",
+        "stale_value": "Fails if the rate calculation is based on the removed January 6th figure instead of the earliest available February 5th figure.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Current weight is 187.4 lbs as of March 12th (from the user's weight report).",
+        "Fact 2: Goal is under 180 lbs by end of April (from the user's goal statement).",
+        "Fact 3: Earliest available historical weight is 191.0 lbs on February 5th (from the user's February weigh-in; January 6th data was removed).",
+        "Fact 4: User walks 2.1 miles every morning on the Greenfield Road trail (from the user's exercise routine description).",
+        "Inference: Remaining weight to lose = 187.4 − 180 = 7.4 lbs.",
+        "Inference: Time span from Feb 5 to March 12 is approximately 35 days or 5 weeks. Weight lost in that span = 191.0 − 187.4 = 3.6 lbs. Average rate = 3.6 / 5 ≈ 0.72 lbs per week.",
+        "Inference: Weeks needed = 7.4 / 0.72 ≈ 10.3 weeks (about 72 days).",
+        "Inference: Total walking miles = 72 days × 2.1 miles/day ≈ 151 miles."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "As of this morning, March 12th, my weight is 187.4 lbs"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My goal is to get under 180 lbs by the end of April"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "By February 5th I was down to 191.0 lbs even"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I walk a trail near my apartment on Greenfield Road every morning, it's 2.1 miles"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "please remove that January 6th weight from your memory. I don't want that number saved anymore"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to estimate how many more pounds I need to lose to hit my goal, and then figure out how many weeks that would take if I keep losing weight at roughly the same rate I've averaged from my earliest available weigh-in to now. Also, given my daily morning walk distance, how many total miles would I walk over those remaining weeks? Give me all three numbers.",
+      "expected_answer": "You need to lose about 7.4 more pounds (187.4 minus 180). From February 5th (191.0 lbs) to March 12th (187.4 lbs) is about 5 weeks, during which you lost 3.6 lbs, averaging roughly 0.72 lbs per week. At that rate, reaching 180 lbs would take approximately 10.3 weeks. Walking 2.1 miles every morning for about 10.3 weeks (72 days) would total roughly 151 miles.",
+      "gold_memory_state": "Current weight: 187.4 lbs (March 12). Earliest available historical weight: 191.0 lbs (Feb 5). Goal: under 180 lbs by end of April. Morning walk: 2.1 miles daily on Greenfield Road trail. January 6th weight is removed and unavailable.",
+      "judge_rubric": {
+        "must_include": [
+          "approximately 7.4 pounds remaining",
+          "approximately 0.72 lbs per week rate",
+          "approximately 10 weeks",
+          "approximately 150 miles"
+        ],
+        "acceptable_paraphrases": [
+          "about 7.4 lbs to go",
+          "around 10 to 11 weeks",
+          "roughly 150 to 155 miles",
+          "about 0.7 lbs per week"
+        ],
+        "must_not_include": [
+          "194.2"
+        ],
+        "harmful_extra": [
+          "using the removed January 6th weight as the starting point for rate calculation",
+          "stating 194.2 lbs anywhere"
+        ],
+        "harmless_extra": [
+          "mentioning the mid-February reading as a cross-check",
+          "noting that the end-of-April deadline might be tight"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response uses 194.2 lbs as a starting data point or mentions the January 6th weight value.",
+        "over_forget": "Fails if the response refuses to use the February 5th weight or current weight for the calculation.",
+        "stale_value": "Fails if the rate calculation is based on the removed January 6th figure instead of the earliest available February 5th figure.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Current weight is 187.4 lbs as of March 12th (from the user's weight report).",
+        "Fact 2: Goal is under 180 lbs by end of April (from the user's goal statement).",
+        "Fact 3: Earliest available historical weight is 191.0 lbs on February 5th (from the user's February weigh-in; January 6th data was removed).",
+        "Fact 4: User walks 2.1 miles every morning on the Greenfield Road trail (from the user's exercise routine description).",
+        "Inference: Remaining weight to lose = 187.4 − 180 = 7.4 lbs.",
+        "Inference: Time span from Feb 5 to March 12 is approximately 35 days or 5 weeks. Weight lost in that span = 191.0 − 187.4 = 3.6 lbs. Average rate = 3.6 / 5 ≈ 0.72 lbs per week.",
+        "Inference: Weeks needed = 7.4 / 0.72 ≈ 10.3 weeks (about 72 days).",
+        "Inference: Total walking miles = 72 days × 2.1 miles/day ≈ 151 miles."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "As of this morning, March 12th, my weight is 187.4 lbs"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My goal is to get under 180 lbs by the end of April"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "By February 5th I was down to 191.0 lbs even"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I walk a trail near my apartment on Greenfield Road every morning, it's 2.1 miles"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "please remove that January 6th weight from your memory. I don't want that number saved anymore"
+        }
+      ]
+    }
+  ]
+}

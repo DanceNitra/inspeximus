@@ -1,0 +1,983 @@
+{
+  "target_fact": "User prefers minimal, clutter-free software experiences — evidenced by disliking Brave's built-in crypto wallet, choosing uBlock Origin for ad blocking, setting DuckDuckGo as default search, and switching from Chrome to Firefox for better resource management",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I switched my default browser on my work laptop to Firefox back in early March because Chrome was using like 6 GB of RAM with barely a dozen tabs open"
+      },
+      "target": {
+        "target_id": "work_laptop_default_browser",
+        "target_name": "default browser on work laptop"
+      },
+      "old_value": null,
+      "new_value": "Firefox",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I switched my default browser on my work laptop to Firefox back in early March because Chrome was using like 6 GB of RAM with barely a dozen tabs open"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I tried Brave for a couple days but I really didn't like having that crypto wallet thing built right into the browser — it felt like unnecessary bloat"
+      },
+      "target": {
+        "target_id": "brave_experience",
+        "target_name": "experience with Brave browser"
+      },
+      "old_value": null,
+      "new_value": "Tried briefly, disliked the built-in crypto wallet as unnecessary bloat",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I tried Brave for a couple days but I really didn't like having that crypto wallet thing built right into the browser — it felt like unnecessary bloat"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I installed uBlock Origin on Firefox around mid-April because I really want clean pages without pop-ups and banners cluttering everything up"
+      },
+      "target": {
+        "target_id": "ublock_origin_extension",
+        "target_name": "ad-blocking extension on Firefox"
+      },
+      "old_value": null,
+      "new_value": "uBlock Origin installed mid-April for clean browsing without pop-ups and banners",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I installed uBlock Origin on Firefox around mid-April because I really want clean pages without pop-ups and banners cluttering everything up"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I also set DuckDuckGo as my default search engine inside Firefox on April 22nd"
+      },
+      "target": {
+        "target_id": "default_search_engine_firefox",
+        "target_name": "default search engine in Firefox"
+      },
+      "old_value": null,
+      "new_value": "DuckDuckGo, set on April 22nd",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I also set DuckDuckGo as my default search engine inside Firefox on April 22nd"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "my home desktop still has Chrome as the default browser — I haven't changed that one because it's mostly for streaming and casual stuff, and the machine has 32 GB of RAM so performance isn't really an issue"
+      },
+      "target": {
+        "target_id": "home_desktop_default_browser",
+        "target_name": "default browser on home desktop"
+      },
+      "old_value": null,
+      "new_value": "Chrome",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "my home desktop still has Chrome as the default browser — I haven't changed that one because it's mostly for streaming and casual stuff, and the machine has 32 GB of RAM so performance isn't really an issue"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 7,
+        "quote": "I guess when I look at all the choices I've been making — Firefox over Chrome, uBlock Origin, DuckDuckGo, ditching Brave because of the crypto stuff — it's all about keeping things simple and stripped down"
+      },
+      "target": {
+        "target_id": "software_preference_pattern",
+        "target_name": "software preference pattern"
+      },
+      "old_value": null,
+      "new_value": "Prefers minimal, clutter-free software experiences that focus on core functionality without unnecessary extras",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I switched my default browser on my work laptop to Firefox back in early March because Chrome was using like 6 GB of RAM with barely a dozen tabs open"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I tried Brave for a couple days but I really didn't like having that crypto wallet thing built right into the browser — it felt like unnecessary bloat"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I installed uBlock Origin on Firefox around mid-April because I really want clean pages without pop-ups and banners cluttering everything up"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I also set DuckDuckGo as my default search engine inside Firefox on April 22nd"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess when I look at all the choices I've been making — Firefox over Chrome, uBlock Origin, DuckDuckGo, ditching Brave because of the crypto stuff — it's all about keeping things simple and stripped down"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "Kevin told me yesterday that Vivaldi has this really slick tab-stacking feature and honestly he's pretty much convinced me to give it a shot on my home desktop next weekend"
+      },
+      "target": {
+        "target_id": "home_desktop_default_browser",
+        "target_name": "default browser on home desktop"
+      },
+      "old_value": "Chrome",
+      "new_value": "Vivaldi",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Kevin told me yesterday that Vivaldi has this really slick tab-stacking feature and honestly he's pretty much convinced me to give it a shot on my home desktop next weekend"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish core browser facts and early preferences",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to tell you about some changes I've made to my setup recently so you can help me keep track of things. I switched my default browser on my work laptop to Firefox back in early March because Chrome was using like 6 GB of RAM with barely a dozen tabs open. Everything else on the machine was getting sluggish, and I just couldn't deal with it anymore. My friend Kevin had been telling me to try something new for weeks."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — so Firefox is now your default browser on your work laptop, and the switch happened in early March. That's a pretty common complaint with Chrome honestly; high memory usage with only a handful of tabs is frustrating, especially on a work machine where you need resources for other applications. Kevin sounds like a good influence on that front. If you want, I can help you keep a running log of your browser and software configuration across your devices, so when IT asks or you need to reference anything, you've got it all in one place. Just let me know what else you'd like me to track."
+        },
+        {
+          "role": "user",
+          "content": "Yeah that'd be great actually. So about Kevin — he actually switched to Brave around the same time, maybe a week before me, and kept raving about the built-in ad blocking. I tried Brave for a couple days but I really didn't like having that crypto wallet thing built right into the browser — it felt like unnecessary bloat. I just want a browser that does its core job well without random features bolted on that I didn't ask for. That's why I ended up going with Firefox instead."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes total sense. So Kevin went with Brave for the ad-blocking perks, and you gave it a brief test run but were put off by the integrated crypto wallet — you saw it as clutter that doesn't belong in a browser. Your preference is clearly for tools that stay focused on their primary purpose without tacking on extra features. I'll note that you tried Brave briefly and rejected it for that reason. Firefox fits your philosophy much better since it's relatively lean and highly customizable. Do you want me to also note Kevin's browser choice in case it comes up in conversation later, or is that not worth tracking?"
+        },
+        {
+          "role": "user",
+          "content": "Nah, Kevin changes browsers constantly so don't bother tracking his. But here's something else — I installed uBlock Origin on Firefox around mid-April because I really want clean pages without pop-ups and banners cluttering everything up. Just the actual content, nothing extra obscuring the reading experience. It made a huge difference immediately, especially on news sites that are just drowning in ads. I feel like I'm finally browsing the way the web should have always been, honestly."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a solid choice — uBlock Origin is widely considered one of the best content blockers out there, and it aligns perfectly with your preference for a clean, distraction-free browsing experience. I'll note that you installed it on Firefox around mid-April and that your motivation was eliminating pop-ups, banners, and other visual clutter so you can focus on actual page content. News sites especially are notorious for aggressive advertising, so I can see why the improvement was immediately noticeable. Between choosing Firefox for efficiency and adding uBlock Origin for cleanliness, you're clearly building a setup that prioritizes function over flashiness. Want me to track any other extensions you've added?"
+        },
+        {
+          "role": "user",
+          "content": "Not yet, uBlock Origin is the only extension I've added so far. Oh, I also wanted to mention — around late March I had this really annoying issue where Outlook on my work laptop kept opening links in Microsoft Edge regardless of what I set as the default browser. I spent a solid hour digging through Windows settings and even the registry before I found out that IT had pushed a group policy override. I was genuinely irritated for the rest of that afternoon because it felt like the machine was actively fighting my preferences."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds incredibly frustrating — you went through all the effort of configuring your defaults and then discovered that a group policy from IT was silently overriding your choice and forcing links through Edge. Spending an hour troubleshooting something that turned out to be an administrative override would annoy anyone, especially when you value having control over your own software configuration. That kind of experience — where the system ignores your explicit preferences — clearly strikes a nerve for you. I'll keep a note of that Outlook-Edge issue in case it resurfaces or you need to reference it when talking to IT again. Did you eventually get the group policy changed, or is it still an ongoing problem?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Add more browser configuration details and surface the reflective pattern",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I got IT to fix the group policy thing eventually, so that's resolved now. But moving on — I also set DuckDuckGo as my default search engine inside Firefox on April 22nd. I remember the date because it was the day after my dentist appointment. I picked DuckDuckGo because I like that it doesn't track your searches or build advertising profiles on you. It fits with the whole approach of keeping things clean and focused on just getting results without extra noise or surveillance."
+        },
+        {
+          "role": "assistant",
+          "content": "Perfect, I'll note that DuckDuckGo became your default search engine in Firefox as of April 22nd. The reasoning is consistent with everything else you've described — you want tools that do their job without layering on tracking, profiling, or other unwanted overhead. DuckDuckGo's privacy-first approach pairs nicely with Firefox and uBlock Origin. You're essentially building a browsing stack where every component is chosen for doing one thing well and staying out of your way. That's a pretty coherent philosophy honestly. I've got the date anchored to the day after your dentist appointment too, in case you need to reference the timeline. Anything else about your Firefox setup?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, one more thing about my devices. So my home desktop still has Chrome as the default browser — I haven't changed that one because it's mostly for streaming and casual stuff, and the machine has 32 GB of RAM so performance isn't really an issue. Chrome's memory hunger doesn't matter as much when you've got that much headroom. I also set Safari as the default on my iPhone around mid-March because Firefox on mobile felt kind of janky with the gestures. So I've got different defaults across three devices now."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — so here's the full picture across your devices: Firefox on the work laptop, Safari on your iPhone since around mid-March, and Chrome still on the home desktop. The reasoning for each makes sense: Firefox for efficiency on the work laptop, Safari for smoother gesture support on iOS, and Chrome stays on the home desktop because the 32 GB of RAM absorbs its memory usage without any real performance penalty. It's interesting that you're comfortable using Chrome at home where the resource constraints are different, even though it was the exact problem on your work machine. That's a pragmatic approach — you're not anti-Chrome on principle, just anti-poor-performance. Want me to keep a consolidated device-browser map for you?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, a consolidated map would actually be really helpful for when IT asks me things. So just to confirm — work laptop is Firefox, phone is Safari, home desktop is Chrome. Three different browsers across three devices, which is a little annoying but each one makes sense for its context. The work laptop needed something lightweight, the phone needed good gesture support, and the home desktop has enough power that it doesn't matter. I prioritize different things depending on the hardware constraints."
+        },
+        {
+          "role": "assistant",
+          "content": "Here's your consolidated device-browser map based on everything you've told me:\n\n• Work laptop → Firefox (switched early March; lightweight, efficient)\n• iPhone → Safari (switched mid-March; better gesture support than Firefox mobile)\n• Home desktop → Chrome (unchanged; 32 GB RAM negates performance concerns)\n\nAdditional Firefox configuration on the work laptop:\n• uBlock Origin extension (installed mid-April)\n• DuckDuckGo as default search engine (set April 22nd)\n\nYou're right that each choice is contextual rather than dogmatic — you pick whatever best serves the specific hardware and use case. I'll keep this map updated if anything changes. Just flag me whenever you make a switch and I'll revise it. Is there anything else about your setup you'd like documented?"
+        },
+        {
+          "role": "user",
+          "content": "That map looks perfect, thanks. You know, stepping back and looking at all of this — I guess when I look at all the choices I've been making — Firefox over Chrome, uBlock Origin, DuckDuckGo, ditching Brave because of the crypto stuff — it's all about keeping things simple and stripped down. I just want software that does its core job without layering on extra features or tracking or visual noise that I didn't ask for. That's basically my whole philosophy when it comes to picking tools and configuring my devices."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really clear and consistent pattern when you lay it all out like that. Every decision you've described traces back to the same core principle: you prefer minimal, clutter-free software that focuses on its primary function without bolting on extras you didn't request. Firefox over Chrome for efficiency, uBlock Origin for visual cleanliness, DuckDuckGo for search without surveillance, and rejecting Brave because the crypto wallet felt like unnecessary bloat — they all reinforce the same preference. Even your frustration with the Outlook-Edge group policy override fits the pattern: you were upset because the system was ignoring your deliberate, minimalist configuration choices. I think this is a useful insight to keep in mind whenever you're evaluating new tools or making setup decisions going forward."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Recency trap with tentative browser change and adversarial injection of stale value",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, quick update on a few things. So I was chatting with Kevin again yesterday and he's officially moved from Brave to Vivaldi now. He says it's the most customizable browser he's ever used and he's obsessed with the tab stacking feature. Honestly I'm curious about it but I'm not planning to try it myself on my work laptop — Firefox is doing exactly what I need there. I don't want to mess with a setup that's already working well for me."
+        },
+        {
+          "role": "assistant",
+          "content": "That tracks with Kevin's pattern of switching browsers frequently — sounds like Vivaldi is his latest obsession. The tab stacking feature is genuinely interesting; Vivaldi does offer a lot of power-user customization options. But I think your instinct to stay with Firefox on the work laptop is smart given your philosophy of keeping things minimal and functional. You've got a setup that works — Firefox plus uBlock Origin plus DuckDuckGo — and there's no real reason to introduce disruption. Curiosity is fine, but you've clearly learned what works for you. I'll just note that Kevin is now on Vivaldi in case it comes up again. Anything else going on with your setup?"
+        },
+        {
+          "role": "user",
+          "content": "Actually yeah — I was looking at that old IT ticket from late March about the Outlook-Edge issue, and I noticed the ticket had my default browser listed as Chrome. That must have been from before I switched, because it was clearly outdated information on the form. Anyway, I wanted to ask you something about my phone setup. I've been thinking about whether Safari is really the best choice on my iPhone or if I should reconsider Firefox mobile now that they've pushed some updates."
+        },
+        {
+          "role": "assistant",
+          "content": "Right, that IT ticket showing Chrome as your default browser is definitely stale information from before your early March switch to Firefox — it's just residual data on the form that was never updated. As for your iPhone situation, Safari has been your default there since mid-March, and your original reasoning was that Firefox mobile felt janky with the gestures. If Firefox has pushed meaningful gesture and navigation improvements since then, it could be worth revisiting. However, given your preference for stability and tools that just work without friction, I'd suggest only switching if you've seen concrete evidence that the gesture issues are resolved. Would you like me to look into what recent Firefox mobile updates have addressed, or do you want to test it yourself first?"
+        },
+        {
+          "role": "user",
+          "content": "I'll probably test it myself at some point, no rush. But here's the thing — Kevin told me yesterday that Vivaldi has this really slick tab-stacking feature and honestly he's pretty much convinced me to give it a shot on my home desktop next weekend. I figure since that machine has plenty of power, it wouldn't hurt to experiment there instead of on my work laptop where I need everything stable. So I might be replacing Chrome on the home desktop with Vivaldi soon."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a reasonable approach — experimenting on the home desktop where you have 32 GB of RAM and primarily use it for streaming and casual browsing means there's very little risk if Vivaldi doesn't work out. It's a much safer testing ground than your work laptop where you depend on a stable Firefox setup with uBlock Origin and DuckDuckGo. If you do try Vivaldi next weekend, you'll get firsthand experience with the tab stacking Kevin's been raving about, and you can evaluate whether it fits your minimalism preference or whether it leans too far into feature overload. Just let me know if you end up making the switch and I'll update your device-browser map accordingly."
+        },
+        {
+          "role": "user",
+          "content": "Yeah exactly, I'll let you know if I actually go through with it. For now though, nothing has changed — work laptop is still Firefox, phone is still Safari, home desktop is still Chrome. I just wanted to flag that Vivaldi idea as something I'm considering for the home machine. Oh and one more thing — I got rid of that old Android tablet back in April, sold it on eBay, so you don't need to track anything related to that device. The Firefox sync issue I had with it is completely irrelevant now."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood — your current device-browser map remains exactly the same: Firefox on the work laptop, Safari on the iPhone, and Chrome on the home desktop. The Vivaldi experiment is just a possibility for next weekend, nothing committed yet. And I'll remove the Android tablet from any device tracking entirely since you sold it in April — the Firefox bookmark sync issue that was tied to it is completely moot now. So your active device list is down to three: work laptop, iPhone, and home desktop. If and when you test Vivaldi on the home desktop, just give me a heads up and I'll revise the map. Everything else in your setup — uBlock Origin, DuckDuckGo, your browser choices — stays as documented. Sound good?"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Looking back at all the software and browser decisions I've shared with you, what were the key experiences and choices that point toward a consistent underlying preference?",
+      "expected_answer": "You switched your work laptop's default browser to Firefox in early March because Chrome was consuming too much RAM. You tried Brave briefly but rejected it because the built-in crypto wallet felt like unnecessary bloat. You installed uBlock Origin on Firefox in mid-April to eliminate ads, pop-ups, and banners for cleaner browsing. You set DuckDuckGo as your default search engine on April 22nd to avoid tracking and advertising profiles. Together, these choices all point toward a preference for minimal, clutter-free software that focuses on core functionality.",
+      "gold_memory_state": "Confirmed software preference pattern: prefers minimal, clutter-free software experiences. Supported by: Firefox over Chrome for efficiency, rejection of Brave's crypto wallet as bloat, uBlock Origin for ad-free pages, DuckDuckGo for privacy-focused search. Home desktop still uses Chrome (sufficient RAM). Vivaldi consideration for home desktop is tentative only.",
+      "judge_rubric": {
+        "must_include": [
+          "Firefox switch from Chrome",
+          "Brave rejection due to crypto wallet/bloat",
+          "uBlock Origin for clean browsing",
+          "DuckDuckGo for search without tracking"
+        ],
+        "acceptable_paraphrases": [
+          "ad blocker instead of uBlock Origin",
+          "privacy-focused search instead of DuckDuckGo"
+        ],
+        "must_not_include": [
+          "Vivaldi as a confirmed switch"
+        ],
+        "harmful_extra": [
+          "claiming user dislikes Chrome on principle",
+          "claiming user switched home desktop to Vivaldi"
+        ],
+        "harmless_extra": [
+          "mentioning the Outlook-Edge group policy frustration",
+          "mentioning Safari on iPhone"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes preferences not supported by the evidence, such as claiming the user dislikes all Chromium-based browsers.",
+        "reflection_recall": "Fails if the model omits more than one of the four key evidence points (Firefox switch, Brave rejection, uBlock Origin, DuckDuckGo).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I switched my default browser on my work laptop to Firefox back in early March because Chrome was using like 6 GB of RAM with barely a dozen tabs open"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I tried Brave for a couple days but I really didn't like having that crypto wallet thing built right into the browser — it felt like unnecessary bloat"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I installed uBlock Origin on Firefox around mid-April because I really want clean pages without pop-ups and banners cluttering everything up"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I also set DuckDuckGo as my default search engine inside Firefox on April 22nd"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess when I look at all the choices I've been making — Firefox over Chrome, uBlock Origin, DuckDuckGo, ditching Brave because of the crypto stuff — it's all about keeping things simple and stripped down"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Looking back at all the software and browser decisions I've shared with you, what were the key experiences and choices that point toward a consistent underlying preference?",
+      "expected_answer": "You switched your work laptop's default browser to Firefox in early March because Chrome was consuming too much RAM. You tried Brave briefly but rejected it because the built-in crypto wallet felt like unnecessary bloat. You installed uBlock Origin on Firefox in mid-April to eliminate ads, pop-ups, and banners for cleaner browsing. You set DuckDuckGo as your default search engine on April 22nd to avoid tracking and advertising profiles. Together, these choices all point toward a preference for minimal, clutter-free software that focuses on core functionality.",
+      "gold_memory_state": "Confirmed software preference pattern: prefers minimal, clutter-free software experiences. Supported by: Firefox over Chrome for efficiency, rejection of Brave's crypto wallet as bloat, uBlock Origin for ad-free pages, DuckDuckGo for privacy-focused search. Home desktop still uses Chrome (sufficient RAM). Vivaldi consideration for home desktop is tentative only.",
+      "judge_rubric": {
+        "must_include": [
+          "Firefox switch from Chrome",
+          "Brave rejection due to crypto wallet/bloat",
+          "uBlock Origin for clean browsing",
+          "DuckDuckGo for search without tracking"
+        ],
+        "acceptable_paraphrases": [
+          "ad blocker instead of uBlock Origin",
+          "privacy-focused search instead of DuckDuckGo"
+        ],
+        "must_not_include": [
+          "Vivaldi as a confirmed switch"
+        ],
+        "harmful_extra": [
+          "claiming user dislikes Chrome on principle",
+          "claiming user switched home desktop to Vivaldi"
+        ],
+        "harmless_extra": [
+          "mentioning the Outlook-Edge group policy frustration",
+          "mentioning Safari on iPhone"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes preferences not supported by the evidence, such as claiming the user dislikes all Chromium-based browsers.",
+        "reflection_recall": "Fails if the model omits more than one of the four key evidence points (Firefox switch, Brave rejection, uBlock Origin, DuckDuckGo).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I switched my default browser on my work laptop to Firefox back in early March because Chrome was using like 6 GB of RAM with barely a dozen tabs open"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I tried Brave for a couple days but I really didn't like having that crypto wallet thing built right into the browser — it felt like unnecessary bloat"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I installed uBlock Origin on Firefox around mid-April because I really want clean pages without pop-ups and banners cluttering everything up"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I also set DuckDuckGo as my default search engine inside Firefox on April 22nd"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess when I look at all the choices I've been making — Firefox over Chrome, uBlock Origin, DuckDuckGo, ditching Brave because of the crypto stuff — it's all about keeping things simple and stripped down"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When I summed up my software philosophy, which bounded conclusion does that support about my tool preferences, and would it be accurate to extend that conclusion to say I avoid a particular browser entirely across all my devices?",
+      "expected_answer": "The supported conclusion is that you prefer minimal, clutter-free software focused on core functionality without unnecessary extras. However, it would not be accurate to extend this to say you avoid any single browser entirely — you still use a resource-heavy browser on your home desktop where hardware constraints are not an issue, showing your preference is contextual rather than absolute.",
+      "gold_memory_state": "Confirmed pattern: prefers minimal, clutter-free software. This is bounded by context — the user pragmatically keeps different browsers on different devices based on hardware constraints. The home desktop retains a different browser because the 32 GB RAM negates performance concerns. The pattern does not support a blanket anti-any-browser stance.",
+      "judge_rubric": {
+        "must_include": [
+          "minimal or clutter-free software preference",
+          "the conclusion is contextual or hardware-dependent, not absolute"
+        ],
+        "acceptable_paraphrases": [
+          "streamlined tools",
+          "lean software",
+          "focused on core function"
+        ],
+        "must_not_include": [
+          "user avoids Chrome entirely",
+          "user switched home desktop browser to Vivaldi"
+        ],
+        "harmful_extra": [
+          "claiming the user has switched all devices to Firefox",
+          "treating the Vivaldi consideration as a confirmed change"
+        ],
+        "harmless_extra": [
+          "mentioning specific examples like uBlock Origin or DuckDuckGo as supporting evidence"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model overgeneralizes the preference to claim the user avoids any particular browser on all devices.",
+        "reflection_recall": "Fails if the model cannot articulate the minimal/clutter-free software preference.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess when I look at all the choices I've been making — Firefox over Chrome, uBlock Origin, DuckDuckGo, ditching Brave because of the crypto stuff — it's all about keeping things simple and stripped down"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "my home desktop still has Chrome as the default browser — I haven't changed that one because it's mostly for streaming and casual stuff, and the machine has 32 GB of RAM so performance isn't really an issue"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When I summed up my software philosophy, which bounded conclusion does that support about my tool preferences, and would it be accurate to extend that conclusion to say I avoid a particular browser entirely across all my devices?",
+      "expected_answer": "The supported conclusion is that you prefer minimal, clutter-free software focused on core functionality without unnecessary extras. However, it would not be accurate to extend this to say you avoid any single browser entirely — you still use a resource-heavy browser on your home desktop where hardware constraints are not an issue, showing your preference is contextual rather than absolute.",
+      "gold_memory_state": "Confirmed pattern: prefers minimal, clutter-free software. This is bounded by context — the user pragmatically keeps different browsers on different devices based on hardware constraints. The home desktop retains a different browser because the 32 GB RAM negates performance concerns. The pattern does not support a blanket anti-any-browser stance.",
+      "judge_rubric": {
+        "must_include": [
+          "minimal or clutter-free software preference",
+          "the conclusion is contextual or hardware-dependent, not absolute"
+        ],
+        "acceptable_paraphrases": [
+          "streamlined tools",
+          "lean software",
+          "focused on core function"
+        ],
+        "must_not_include": [
+          "user avoids Chrome entirely",
+          "user switched home desktop browser to Vivaldi"
+        ],
+        "harmful_extra": [
+          "claiming the user has switched all devices to Firefox",
+          "treating the Vivaldi consideration as a confirmed change"
+        ],
+        "harmless_extra": [
+          "mentioning specific examples like uBlock Origin or DuckDuckGo as supporting evidence"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model overgeneralizes the preference to claim the user avoids any particular browser on all devices.",
+        "reflection_recall": "Fails if the model cannot articulate the minimal/clutter-free software preference.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess when I look at all the choices I've been making — Firefox over Chrome, uBlock Origin, DuckDuckGo, ditching Brave because of the crypto stuff — it's all about keeping things simple and stripped down"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "my home desktop still has Chrome as the default browser — I haven't changed that one because it's mostly for streaming and casual stuff, and the machine has 32 GB of RAM so performance isn't really an issue"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe the boundary of my software preference: where does it reliably apply, and in what kinds of situations would it be a mistake to assume it holds?",
+      "expected_answer": "Your preference for minimal, clutter-free software reliably applies when you are choosing tools for productivity or daily browsing — you favor lightweight browsers, ad blockers, and privacy-focused search engines that avoid unnecessary features. However, it would be a mistake to assume this preference holds universally: on devices with abundant resources used for casual purposes, you are comfortable keeping a resource-heavy browser. The preference is driven by practical constraints and a desire for focused functionality, not by ideological opposition to any specific software vendor.",
+      "gold_memory_state": "Supported inference: user prefers minimal, clutter-free software experiences focused on core functionality. Boundary: this applies to productivity/work contexts and resource-constrained hardware. Unsupported overgeneralization: claiming the user avoids all feature-rich or resource-heavy software regardless of context, or claiming the user opposes any specific brand on principle. The home desktop keeping Chrome demonstrates the contextual boundary. The tentative Vivaldi consideration (op7) is not adopted and does not modify the pattern.",
+      "judge_rubric": {
+        "must_include": [
+          "minimal or clutter-free preference applies to productivity and resource-constrained contexts",
+          "the preference does not extend to all devices or all situations"
+        ],
+        "acceptable_paraphrases": [
+          "streamlined tools for work",
+          "context-dependent minimalism"
+        ],
+        "must_not_include": [
+          "user is anti-Chrome on principle",
+          "Vivaldi is now the home desktop browser"
+        ],
+        "harmful_extra": [
+          "claiming the user would never use a feature-rich browser under any circumstance",
+          "treating the Vivaldi experiment as completed"
+        ],
+        "harmless_extra": [
+          "mentioning specific evidence like uBlock Origin, DuckDuckGo, or the Brave rejection"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative Vivaldi switch as confirmed and uses it to modify the preference pattern.",
+        "reflection_precision": "Fails if the model overgeneralizes to claim the user avoids all feature-rich software or opposes Chrome on principle.",
+        "reflection_recall": "Fails if the model cannot articulate the supported preference for minimal, clutter-free tools or cannot identify the contextual boundary.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess when I look at all the choices I've been making — Firefox over Chrome, uBlock Origin, DuckDuckGo, ditching Brave because of the crypto stuff — it's all about keeping things simple and stripped down"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "my home desktop still has Chrome as the default browser — I haven't changed that one because it's mostly for streaming and casual stuff, and the machine has 32 GB of RAM so performance isn't really an issue"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I tried Brave for a couple days but I really didn't like having that crypto wallet thing built right into the browser — it felt like unnecessary bloat"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe the boundary of my software preference: where does it reliably apply, and in what kinds of situations would it be a mistake to assume it holds?",
+      "expected_answer": "Your preference for minimal, clutter-free software reliably applies when you are choosing tools for productivity or daily browsing — you favor lightweight browsers, ad blockers, and privacy-focused search engines that avoid unnecessary features. However, it would be a mistake to assume this preference holds universally: on devices with abundant resources used for casual purposes, you are comfortable keeping a resource-heavy browser. The preference is driven by practical constraints and a desire for focused functionality, not by ideological opposition to any specific software vendor.",
+      "gold_memory_state": "Supported inference: user prefers minimal, clutter-free software experiences focused on core functionality. Boundary: this applies to productivity/work contexts and resource-constrained hardware. Unsupported overgeneralization: claiming the user avoids all feature-rich or resource-heavy software regardless of context, or claiming the user opposes any specific brand on principle. The home desktop keeping Chrome demonstrates the contextual boundary. The tentative Vivaldi consideration (op7) is not adopted and does not modify the pattern.",
+      "judge_rubric": {
+        "must_include": [
+          "minimal or clutter-free preference applies to productivity and resource-constrained contexts",
+          "the preference does not extend to all devices or all situations"
+        ],
+        "acceptable_paraphrases": [
+          "streamlined tools for work",
+          "context-dependent minimalism"
+        ],
+        "must_not_include": [
+          "user is anti-Chrome on principle",
+          "Vivaldi is now the home desktop browser"
+        ],
+        "harmful_extra": [
+          "claiming the user would never use a feature-rich browser under any circumstance",
+          "treating the Vivaldi experiment as completed"
+        ],
+        "harmless_extra": [
+          "mentioning specific evidence like uBlock Origin, DuckDuckGo, or the Brave rejection"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative Vivaldi switch as confirmed and uses it to modify the preference pattern.",
+        "reflection_precision": "Fails if the model overgeneralizes to claim the user avoids all feature-rich software or opposes Chrome on principle.",
+        "reflection_recall": "Fails if the model cannot articulate the supported preference for minimal, clutter-free tools or cannot identify the contextual boundary.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess when I look at all the choices I've been making — Firefox over Chrome, uBlock Origin, DuckDuckGo, ditching Brave because of the crypto stuff — it's all about keeping things simple and stripped down"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "my home desktop still has Chrome as the default browser — I haven't changed that one because it's mostly for streaming and casual stuff, and the machine has 32 GB of RAM so performance isn't really an issue"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I tried Brave for a couple days but I really didn't like having that crypto wallet thing built right into the browser — it felt like unnecessary bloat"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "Which of the following best describes the overall software philosophy my browser and tool choices support?",
+      "candidate_options": [
+        "Prefers minimal, clutter-free software focused on core functionality without unnecessary extras",
+        "Prioritizes maximum customization and power-user features across all devices",
+        "Avoids all Google products and services on principle due to privacy concerns",
+        "Chooses open-source software exclusively regardless of usability trade-offs"
+      ],
+      "expected_answer": "Prefers minimal, clutter-free software focused on core functionality without unnecessary extras",
+      "gold_memory_state": "Confirmed pattern: minimal, clutter-free software preference. The user still uses Chrome on the home desktop (not anti-Google on principle). The user chose Safari on iPhone for gesture support (not open-source exclusive). The user rejected Brave's extra features but not because of customization maximization — the opposite.",
+      "judge_rubric": {
+        "must_include": [
+          "minimal, clutter-free software focused on core functionality"
+        ],
+        "acceptable_paraphrases": [
+          "streamlined, distraction-free tools for primary purpose"
+        ],
+        "must_not_include": [
+          "maximum customization",
+          "avoids all Google products",
+          "open-source exclusively"
+        ],
+        "harmful_extra": [
+          "selecting any distractor option"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'Prioritizes maximum customization and power-user features' could be confused because Vivaldi (mentioned by Kevin) is heavily customization-focused, but the user's own philosophy is minimalism, not maximization. assistant echo: 'Avoids all Google products and services on principle' echoes the assistant's framing of the Chrome-to-Firefox switch but overgeneralizes — the user keeps Chrome on the home desktop. 'Chooses open-source software exclusively' is plausible because Firefox, uBlock Origin, and DuckDuckGo have open-source ties, but Safari on iPhone disproves exclusivity.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model selects an overgeneralized distractor such as 'avoids all Google products' or 'open-source exclusively'.",
+        "reflection_recall": "Fails if the model cannot identify the minimal/clutter-free core of the preference.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess when I look at all the choices I've been making — Firefox over Chrome, uBlock Origin, DuckDuckGo, ditching Brave because of the crypto stuff — it's all about keeping things simple and stripped down"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I tried Brave for a couple days but I really didn't like having that crypto wallet thing built right into the browser — it felt like unnecessary bloat"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "Which of the following best describes the overall software philosophy my browser and tool choices support?",
+      "candidate_options": [
+        "Prefers minimal, clutter-free software focused on core functionality without unnecessary extras",
+        "Prioritizes maximum customization and power-user features across all devices",
+        "Avoids all Google products and services on principle due to privacy concerns",
+        "Chooses open-source software exclusively regardless of usability trade-offs"
+      ],
+      "expected_answer": "Prefers minimal, clutter-free software focused on core functionality without unnecessary extras",
+      "gold_memory_state": "Confirmed pattern: minimal, clutter-free software preference. The user still uses Chrome on the home desktop (not anti-Google on principle). The user chose Safari on iPhone for gesture support (not open-source exclusive). The user rejected Brave's extra features but not because of customization maximization — the opposite.",
+      "judge_rubric": {
+        "must_include": [
+          "minimal, clutter-free software focused on core functionality"
+        ],
+        "acceptable_paraphrases": [
+          "streamlined, distraction-free tools for primary purpose"
+        ],
+        "must_not_include": [
+          "maximum customization",
+          "avoids all Google products",
+          "open-source exclusively"
+        ],
+        "harmful_extra": [
+          "selecting any distractor option"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'Prioritizes maximum customization and power-user features' could be confused because Vivaldi (mentioned by Kevin) is heavily customization-focused, but the user's own philosophy is minimalism, not maximization. assistant echo: 'Avoids all Google products and services on principle' echoes the assistant's framing of the Chrome-to-Firefox switch but overgeneralizes — the user keeps Chrome on the home desktop. 'Chooses open-source software exclusively' is plausible because Firefox, uBlock Origin, and DuckDuckGo have open-source ties, but Safari on iPhone disproves exclusivity.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model selects an overgeneralized distractor such as 'avoids all Google products' or 'open-source exclusively'.",
+        "reflection_recall": "Fails if the model cannot identify the minimal/clutter-free core of the preference.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess when I look at all the choices I've been making — Firefox over Chrome, uBlock Origin, DuckDuckGo, ditching Brave because of the crypto stuff — it's all about keeping things simple and stripped down"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I tried Brave for a couple days but I really didn't like having that crypto wallet thing built right into the browser — it felt like unnecessary bloat"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "A colleague just recommended I try a new browser called Floorp, which is a Firefox fork. It keeps Firefox's extension support but adds a built-in sidebar with a news feed, a weather widget, and a workspace organizer. Given what you know about my setup and preferences, should I try it on my work laptop, and how should I configure my browsing stack if I do?",
+      "expected_answer": "Based on your preference for minimal, clutter-free software, Floorp's built-in sidebar with a news feed, weather widget, and workspace organizer would likely feel like the same kind of unnecessary bloat that made you reject Brave's crypto wallet. Since your work laptop already has Firefox configured with uBlock Origin and DuckDuckGo — a setup you've described as working well — switching to Floorp would risk disrupting a stable, minimalist configuration. If you were curious enough to try it anyway, you should disable or remove the sidebar extras and re-install uBlock Origin and set DuckDuckGo as the default search engine to maintain your clean browsing experience. But given your philosophy, sticking with your current Firefox setup on the work laptop is the recommendation that best fits your pattern.",
+      "gold_memory_state": "Work laptop: Firefox with uBlock Origin and DuckDuckGo. Preference pattern: minimal, clutter-free software. Brave was rejected for built-in crypto wallet (bloat). Home desktop: Chrome (unchanged, tentative Vivaldi not adopted). The recommendation must combine the preference pattern with the specific work laptop configuration and the Brave rejection precedent.",
+      "judge_rubric": {
+        "must_include": [
+          "recommend against Floorp's extra features or recommend disabling them",
+          "reference the Brave rejection as precedent for disliking built-in extras",
+          "mention uBlock Origin and DuckDuckGo as part of the current setup to preserve"
+        ],
+        "acceptable_paraphrases": [
+          "Floorp sidebar is similar bloat to Brave crypto wallet",
+          "keep current Firefox stack"
+        ],
+        "must_not_include": [
+          "recommend Floorp without caveats",
+          "Vivaldi as the current home desktop browser"
+        ],
+        "harmful_extra": [
+          "recommending the user switch to Vivaldi on the work laptop",
+          "treating Vivaldi as already adopted"
+        ],
+        "harmless_extra": [
+          "mentioning Safari on iPhone",
+          "mentioning Chrome on home desktop for contrast"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative Vivaldi consideration as an adopted change and factors it into the recommendation.",
+        "reflection_precision": "Fails if the model does not apply the clutter-free preference to evaluate Floorp's extra features.",
+        "reflection_recall": "Fails if the model forgets the uBlock Origin or DuckDuckGo configuration on the work laptop, or forgets the Brave rejection precedent.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User's work laptop runs Firefox, chosen for lightweight efficiency over Chrome.",
+        "Fact 2: User installed uBlock Origin on Firefox for clean, ad-free browsing.",
+        "Fact 3: User set DuckDuckGo as default search engine for tracking-free search.",
+        "Fact 4: User rejected Brave because its built-in crypto wallet felt like unnecessary bloat.",
+        "Fact 5: User's overall preference pattern is minimal, clutter-free software focused on core functionality.",
+        "Inference: Floorp's built-in sidebar with news feed, weather widget, and workspace organizer parallels the kind of bundled extras that caused the user to reject Brave — applying the same preference pattern predicts the user would find Floorp's additions unwelcome.",
+        "Inference: The recommended action is to stay with the current Firefox + uBlock Origin + DuckDuckGo stack on the work laptop, or if testing Floorp, disable the sidebar extras and replicate the existing extension/search configuration."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I switched my default browser on my work laptop to Firefox back in early March because Chrome was using like 6 GB of RAM with barely a dozen tabs open"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I tried Brave for a couple days but I really didn't like having that crypto wallet thing built right into the browser — it felt like unnecessary bloat"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I installed uBlock Origin on Firefox around mid-April because I really want clean pages without pop-ups and banners cluttering everything up"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I also set DuckDuckGo as my default search engine inside Firefox on April 22nd"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess when I look at all the choices I've been making — Firefox over Chrome, uBlock Origin, DuckDuckGo, ditching Brave because of the crypto stuff — it's all about keeping things simple and stripped down"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "A colleague just recommended I try a new browser called Floorp, which is a Firefox fork. It keeps Firefox's extension support but adds a built-in sidebar with a news feed, a weather widget, and a workspace organizer. Given what you know about my setup and preferences, should I try it on my work laptop, and how should I configure my browsing stack if I do?",
+      "expected_answer": "Based on your preference for minimal, clutter-free software, Floorp's built-in sidebar with a news feed, weather widget, and workspace organizer would likely feel like the same kind of unnecessary bloat that made you reject Brave's crypto wallet. Since your work laptop already has Firefox configured with uBlock Origin and DuckDuckGo — a setup you've described as working well — switching to Floorp would risk disrupting a stable, minimalist configuration. If you were curious enough to try it anyway, you should disable or remove the sidebar extras and re-install uBlock Origin and set DuckDuckGo as the default search engine to maintain your clean browsing experience. But given your philosophy, sticking with your current Firefox setup on the work laptop is the recommendation that best fits your pattern.",
+      "gold_memory_state": "Work laptop: Firefox with uBlock Origin and DuckDuckGo. Preference pattern: minimal, clutter-free software. Brave was rejected for built-in crypto wallet (bloat). Home desktop: Chrome (unchanged, tentative Vivaldi not adopted). The recommendation must combine the preference pattern with the specific work laptop configuration and the Brave rejection precedent.",
+      "judge_rubric": {
+        "must_include": [
+          "recommend against Floorp's extra features or recommend disabling them",
+          "reference the Brave rejection as precedent for disliking built-in extras",
+          "mention uBlock Origin and DuckDuckGo as part of the current setup to preserve"
+        ],
+        "acceptable_paraphrases": [
+          "Floorp sidebar is similar bloat to Brave crypto wallet",
+          "keep current Firefox stack"
+        ],
+        "must_not_include": [
+          "recommend Floorp without caveats",
+          "Vivaldi as the current home desktop browser"
+        ],
+        "harmful_extra": [
+          "recommending the user switch to Vivaldi on the work laptop",
+          "treating Vivaldi as already adopted"
+        ],
+        "harmless_extra": [
+          "mentioning Safari on iPhone",
+          "mentioning Chrome on home desktop for contrast"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative Vivaldi consideration as an adopted change and factors it into the recommendation.",
+        "reflection_precision": "Fails if the model does not apply the clutter-free preference to evaluate Floorp's extra features.",
+        "reflection_recall": "Fails if the model forgets the uBlock Origin or DuckDuckGo configuration on the work laptop, or forgets the Brave rejection precedent.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User's work laptop runs Firefox, chosen for lightweight efficiency over Chrome.",
+        "Fact 2: User installed uBlock Origin on Firefox for clean, ad-free browsing.",
+        "Fact 3: User set DuckDuckGo as default search engine for tracking-free search.",
+        "Fact 4: User rejected Brave because its built-in crypto wallet felt like unnecessary bloat.",
+        "Fact 5: User's overall preference pattern is minimal, clutter-free software focused on core functionality.",
+        "Inference: Floorp's built-in sidebar with news feed, weather widget, and workspace organizer parallels the kind of bundled extras that caused the user to reject Brave — applying the same preference pattern predicts the user would find Floorp's additions unwelcome.",
+        "Inference: The recommended action is to stay with the current Firefox + uBlock Origin + DuckDuckGo stack on the work laptop, or if testing Floorp, disable the sidebar extras and replicate the existing extension/search configuration."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I switched my default browser on my work laptop to Firefox back in early March because Chrome was using like 6 GB of RAM with barely a dozen tabs open"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I tried Brave for a couple days but I really didn't like having that crypto wallet thing built right into the browser — it felt like unnecessary bloat"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I installed uBlock Origin on Firefox around mid-April because I really want clean pages without pop-ups and banners cluttering everything up"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I also set DuckDuckGo as my default search engine inside Firefox on April 22nd"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess when I look at all the choices I've been making — Firefox over Chrome, uBlock Origin, DuckDuckGo, ditching Brave because of the crypto stuff — it's all about keeping things simple and stripped down"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,993 @@
+{
+  "target_fact": "User's investment holdings and allocation in a Fidelity brokerage account, including VTI, VXUS, BND, and cash/money market positions, with the REIT/VNQ consideration forgotten.",
+  "operation_type": "Forget",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 5,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "quantitative_derivation"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I opened a brokerage account with Fidelity on March 3rd and deposited $15,000 as my initial funding"
+      },
+      "target": {
+        "target_id": "fidelity_account_initial_deposit",
+        "target_name": "Fidelity brokerage account initial deposit"
+      },
+      "old_value": null,
+      "new_value": "$15,000 initial deposit on March 3rd",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I opened a brokerage account with Fidelity on March 3rd and deposited $15,000 as my initial funding"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I bought about $9,000 of VTI right away, then $3,000 of VXUS for international, and kept $3,000 in the money market fund"
+      },
+      "target": {
+        "target_id": "initial_allocation_breakdown",
+        "target_name": "Initial allocation breakdown (VTI, VXUS, money market)"
+      },
+      "old_value": null,
+      "new_value": "$9,000 VTI, $3,000 VXUS, $3,000 money market",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I bought about $9,000 of VTI right away, then $3,000 of VXUS for international, and kept $3,000 in the money market fund"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I added $2,500 to the account in mid-April and put all of it into BND, the Vanguard bond ETF"
+      },
+      "target": {
+        "target_id": "bnd_purchase",
+        "target_name": "BND bond ETF purchase"
+      },
+      "old_value": null,
+      "new_value": "$2,500 into BND in mid-April",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I added $2,500 to the account in mid-April and put all of it into BND, the Vanguard bond ETF"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "my current rough allocation is about 55% US equities in VTI, 18% international in VXUS, 15% bonds in BND, and the remaining 12% or so in cash and money market"
+      },
+      "target": {
+        "target_id": "current_allocation_percentages",
+        "target_name": "Current portfolio allocation percentages"
+      },
+      "old_value": null,
+      "new_value": "55% US equities (VTI), 18% international equities (VXUS), 15% bonds (BND), ~12% cash/money market",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my current rough allocation is about 55% US equities in VTI, 18% international in VXUS, 15% bonds in BND, and the remaining 12% or so in cash and money market"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "my sister Angela set up a 529 plan for her daughter back in February and I recommended the age-based portfolio option since her daughter is only 3"
+      },
+      "target": {
+        "target_id": "angela_529_recommendation",
+        "target_name": "Angela's 529 plan fund recommendation"
+      },
+      "old_value": null,
+      "new_value": "Recommended age-based portfolio option for Angela's 529 plan (daughter is 3 years old, set up in February)",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "my sister Angela set up a 529 plan for her daughter back in February and I recommended the age-based portfolio option since her daughter is only 3"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "forget",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "you can go ahead and forget about the VNQ REIT idea entirely, that's dead, I'm not pursuing REITs at all"
+      },
+      "target": {
+        "target_id": "vnq_reit_consideration",
+        "target_name": "VNQ REIT consideration for diversification"
+      },
+      "old_value": "Looked into adding VNQ (Vanguard REIT ETF) for diversification",
+      "new_value": null,
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I was reading about VNQ, the Vanguard REIT ETF, as a way to add some real estate exposure for diversification"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "you can go ahead and forget about the VNQ REIT idea entirely, that's dead, I'm not pursuing REITs at all"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establishing core portfolio holdings and initial allocation",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to get my investment details organized so I can track things over time. I opened a brokerage account with Fidelity on March 3rd and deposited $15,000 as my initial funding. That's the baseline I want to measure everything against going forward. Can you help me keep track of all of this?"
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, I'd be happy to help you track your investment portfolio! So your starting point is a Fidelity brokerage account opened on March 3rd with a $15,000 initial deposit. That's a solid foundation to build from. I'll use that $15,000 figure as your baseline for tracking growth or changes over time. What did you end up investing in once the money was in the account? Knowing the specific holdings will help me keep a clear picture of your allocation."
+        },
+        {
+          "role": "user",
+          "content": "Sure, so for the initial purchases—I bought about $9,000 of VTI right away, then $3,000 of VXUS for international, and kept $3,000 in the money market fund. I like VTI because it's basically the whole US stock market in one fund, and VXUS gives me some international diversification. The money market piece is just a cash buffer sitting there earning a little interest."
+        },
+        {
+          "role": "assistant",
+          "content": "Great breakdown. So out of your $15,000 initial deposit, you allocated $9,000 to VTI (Vanguard Total Stock Market ETF) for broad US equity exposure, $3,000 to VXUS (Vanguard Total International Stock ETF) for international diversification, and $3,000 sitting in the Fidelity money market fund as a cash buffer. That's a clean 60/20/20 split between US equities, international equities, and cash. It's a sensible starting allocation—VTI and VXUS together give you very broad global coverage without having to pick individual stocks. Want to tell me about any changes since then?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, in mid-April I added more money. I added $2,500 to the account in mid-April and put all of it into BND, the Vanguard bond ETF. I figured I should have some fixed income in the mix since I'm the type who gets anxious when things swing around too much. So that brought my total contributions up from the original $15,000 to $17,500 total invested."
+        },
+        {
+          "role": "assistant",
+          "content": "Good call on adding the bond component. So your total contributions are now $17,500: the original $15,000 plus the additional $2,500 that went entirely into BND (Vanguard Total Bond Market ETF). Your holdings now span four positions: VTI at roughly $9,000 initial cost, VXUS at $3,000, BND at $2,500, and $3,000 in the money market fund. Adding BND should help smooth out the overall volatility of your portfolio, which sounds like it aligns well with your preference for steadier returns. Has anything else changed since mid-April?"
+        },
+        {
+          "role": "user",
+          "content": "One thing I was looking into—I was reading about VNQ, the Vanguard REIT ETF, as a way to add some real estate exposure for diversification. I spent a couple of weeks researching it, looking at the dividend yield and how it correlates with the rest of my portfolio. I haven't bought any yet though, it's still just something I've been considering. My coworker Dave was also telling me about NVIDIA but I'm really not interested in individual stocks."
+        },
+        {
+          "role": "assistant",
+          "content": "Interesting that you've been researching VNQ. REITs can offer a different return profile since they're tied to real estate income and tend to have higher dividend yields. The correlation with broad equities like VTI is moderate, so it could add some diversification benefit. That said, REITs can also be volatile in rising-rate environments, so it's worth thinking about timing. As for individual stocks like NVIDIA, I completely understand wanting to avoid that kind of single-stock risk—your broad-index approach with VTI and VXUS gives you tech exposure anyway without the stomach-churning daily swings. Let me know if you decide to pull the trigger on VNQ."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establishing current allocation percentages, Angela's 529, and forgetting the REIT idea",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So I checked my portfolio last week and wanted to give you the updated percentage breakdown. This is important for me to track—my current rough allocation is about 55% US equities in VTI, 18% international in VXUS, 15% bonds in BND, and the remaining 12% or so in cash and money market. Please make sure to remember those exact percentages so I can compare them later when I rebalance."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it, I'll lock in those current allocation percentages for you. As of last week your portfolio stands at approximately: 55% US equities (VTI), 18% international equities (VXUS), 15% bonds (BND), and roughly 12% cash/money market. Those add up to 100%, and they'll serve as your comparison baseline for any future rebalancing decisions. It's worth noting that your equity exposure (US + international) totals about 73%, with the remaining 27% in bonds and cash—a moderately conservative tilt. Shall I note anything else about the portfolio?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, one more thing—my sister Angela set up a 529 plan for her daughter back in February and I recommended the age-based portfolio option since her daughter is only 3. Angela might come back to me asking about it, so I want to remember what advice I gave her. I told her the age-based option would automatically shift from stocks to bonds as her daughter gets closer to college age, so she wouldn't have to manage it herself."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a great recommendation. I'll remember that Angela set up a 529 plan for her daughter in February, and you recommended the age-based portfolio option given that her daughter is only 3 years old. The age-based approach is smart for such a long time horizon—it starts heavily weighted toward equities for growth and gradually shifts to more conservative bond and money market allocations as the beneficiary approaches college age, typically around 18. That way Angela doesn't need to actively rebalance. If she asks you about it again, you can remind her of the automatic glide path. Anything else you want me to keep track of?"
+        },
+        {
+          "role": "user",
+          "content": "Actually yes—about that VNQ REIT thing I mentioned before. I've thought about it more and you can go ahead and forget about the VNQ REIT idea entirely, that's dead, I'm not pursuing REITs at all. I realized I don't really understand real estate markets well enough, and my portfolio is diversified enough with VTI, VXUS, and BND. No need to add complexity for the sake of it."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood, I'll drop the VNQ REIT consideration completely from your portfolio tracking. It makes sense—your current mix of VTI, VXUS, and BND already gives you broad diversification across US equities, international equities, and fixed income. Adding REITs would introduce another asset class to monitor without necessarily improving your risk-adjusted returns, especially if you're not comfortable with the real estate market dynamics. Keeping things simple and understandable is a valid investment philosophy. Your active holdings remain VTI, VXUS, BND, and the money market fund. Is there anything else you'd like to adjust?"
+        },
+        {
+          "role": "user",
+          "content": "I've been thinking I should increase my bond allocation a bit more over the coming months. I just feel more comfortable when the portfolio doesn't bounce around as much. Slow and steady is my style. Maybe I'll shift from 15% bonds to something like 20% bonds eventually, but I haven't done it yet—just a thought for now. I'll let you know when I actually make a move.\n\nThat sounds right. For now my allocation is still the 55/18/15/12 split I told you about. I want to make sure that's what we're tracking as the current state. I might also ask you to help me calculate some rebalancing targets once I decide how much to shift around, but that's for another day."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a reasonable direction to consider. Moving from 15% to 20% bonds would bring your total defensive allocation (bonds plus cash) from about 27% to roughly 32%, which would further dampen volatility. Given your preference for steadier returns and the fact that market swings make you anxious, a higher bond weighting could help you sleep better at night. The trade-off is slightly lower expected long-term returns, but peace of mind has real value. Whenever you're ready to make the actual shift, just let me know and I'll update your allocation records. For now I'll note it as something you're considering but haven't executed yet.\n\nConfirmed—your current portfolio allocation on record is 55% US equities (VTI), 18% international equities (VXUS), 15% bonds (BND), and approximately 12% cash/money market. That's the active baseline I'm tracking. The potential increase to 20% bonds is noted as a future consideration but not yet executed. Whenever you're ready to rebalance, I can help you calculate the dollar amounts you'd need to move between positions to hit your new targets based on your total portfolio value at that time. Just say the word. Is there anything else for today?"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Adversarial injection and reinforcing retained targets",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I was talking to my coworker Dave again yesterday. He was showing me his Schwab account and he's got like 40% of his portfolio in individual tech stocks—NVIDIA, AMD, Microsoft. He said he's also got about 10% in VNQ actually, the REIT fund. He's been doing well with it apparently, up about 8% on the REIT position since January. Different strokes I guess."
+        },
+        {
+          "role": "assistant",
+          "content": "Dave certainly has a different investment style! A 40% allocation to individual tech stocks plus 10% in VNQ shows he's comfortable with much higher concentration risk and sector-specific bets. The 8% gain on his VNQ position since January is solid, but REITs can be quite cyclical and rate-sensitive. It's worth noting that Dave's approach involves monitoring individual positions closely and tolerating bigger swings—which is exactly the kind of thing you've said makes you uncomfortable. Your diversified ETF approach with VTI, VXUS, and BND is designed to avoid that kind of stock-picking stress. There's no single right way to invest; it just depends on risk tolerance and how much attention you want to pay."
+        },
+        {
+          "role": "user",
+          "content": "Exactly, I'm sticking with my approach. By the way, do you still have my total contribution amount on file? I want to make sure the math adds up. I put in $15,000 initially and then the additional $2,500 later. So my total out-of-pocket contributions should be $17,500, right? That's before any market gains or losses."
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, that's exactly right. Your total out-of-pocket contributions to the Fidelity brokerage account are $17,500: the initial $15,000 deposit on March 3rd plus the additional $2,500 you added in mid-April, which went entirely into BND. Any difference between your current portfolio value and that $17,500 baseline would represent your net market gains or losses. Given that you experienced about a 6% dip after the tariff news in early April but it mostly recovered by month's end, your portfolio value is likely somewhere near that $17,500 mark, give or take whatever the markets have done since. Would you like to do a more detailed performance check?"
+        },
+        {
+          "role": "user",
+          "content": "Not yet, I'll do that when I get my next statement. I'm just glad I have a simple system. Four positions—VTI, VXUS, BND, and the money market fund—and that's it. No individual stocks, no REITs, no crypto, no options. Just broad index funds and a cash cushion. That's the whole portfolio and I want to keep it that way for the foreseeable future."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a clean and disciplined approach. Your complete portfolio consists of exactly four positions: VTI for US equity exposure, VXUS for international equity exposure, BND for fixed income, and the Fidelity money market fund as your cash cushion. No individual stocks, no REITs, no crypto, no options—just broad diversified index funds plus cash. This kind of simplicity makes it easy to track, easy to rebalance, and keeps emotional decision-making to a minimum. When your next statement arrives, we can compare your actual portfolio value against the $17,500 contribution baseline and see how things are trending. Sounds like a solid plan."
+        },
+        {
+          "role": "user",
+          "content": "One last thing—I realized I should also remember that the tariff-related dip in early April was about 6% over roughly one week. That was a real stress test for me emotionally. I want to have that on record so that if something similar happens again, I can look back and remind myself that it recovered. It's a good reference point for staying calm during volatility.\n\nExactly. Alright, I think we're in good shape. To recap what I need you to remember: my Fidelity account details, the $17,500 in total contributions, my four holdings and their allocation percentages, Angela's 529 recommendation, and the early April dip as an emotional benchmark. And the REIT thing is gone—don't track that anymore. That's everything for now."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really smart idea—creating an emotional reference point for future market stress. I'll note that in early April, your portfolio experienced approximately a 6% decline over about one week following tariff-related news. You found it quite stressful and were checking the app frequently, but the portfolio recovered most of the losses by the end of the month. This kind of personal market history is valuable because next time there's a sharp downturn, you can look back at this episode and remind yourself that temporary dips are normal and recovery followed. It can help you avoid panic selling or making impulsive changes during the next bout of volatility.\n\nPerfect, here's what I have on record for you: Fidelity brokerage account opened March 3rd with $15,000 initial deposit, plus $2,500 added in mid-April, totaling $17,500 in contributions. Four active holdings: VTI (55% US equities), VXUS (18% international equities), BND (15% bonds), and money market fund (~12% cash). Angela's 529 plan for her daughter set up in February—you recommended the age-based portfolio option given her daughter is 3. The early April tariff dip of roughly 6% over one week serves as your emotional volatility benchmark, with the key takeaway being that it recovered. The VNQ REIT consideration has been fully removed from tracking. You're all set!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize what I've told you about my Fidelity brokerage account — the holdings, contributions, and any investment ideas I explored along the way?",
+      "expected_answer": "You opened a Fidelity brokerage account on March 3rd with a $15,000 initial deposit. You bought $9,000 of VTI, $3,000 of VXUS, and kept $3,000 in the money market fund. In mid-April you added $2,500 and put it all into BND, bringing total contributions to $17,500. Your current allocation is approximately 55% VTI, 18% VXUS, 15% BND, and 12% cash/money market. You also mentioned looking into VNQ (Vanguard REIT ETF) for real estate diversification but later decided not to pursue it. Separately, you recommended an age-based portfolio option for your sister Angela's 529 plan.",
+      "gold_memory_state": "Active: Fidelity account opened March 3rd, $15,000 initial deposit; $9,000 VTI, $3,000 VXUS, $3,000 money market; $2,500 BND added mid-April; total contributions $17,500; current allocation 55% VTI / 18% VXUS / 15% BND / ~12% cash; Angela's 529 age-based recommendation. Removed: VNQ REIT consideration.",
+      "judge_rubric": {
+        "must_include": [
+          "VTI",
+          "VXUS",
+          "BND",
+          "money market",
+          "$15,000",
+          "$2,500",
+          "Fidelity"
+        ],
+        "acceptable_paraphrases": [
+          "total stock market ETF for VTI",
+          "international stock ETF for VXUS",
+          "bond ETF for BND"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating VNQ was purchased or is still being considered"
+        ],
+        "harmless_extra": [
+          "mentioning the early April tariff dip",
+          "mentioning Dave's portfolio"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if VNQ/REIT is described as still under consideration or as an active holding.",
+        "over_forget": "Fails if the response omits retained holdings like VTI, VXUS, BND, or money market.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I opened a brokerage account with Fidelity on March 3rd and deposited $15,000 as my initial funding"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I bought about $9,000 of VTI right away, then $3,000 of VXUS for international, and kept $3,000 in the money market fund"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I added $2,500 to the account in mid-April and put all of it into BND, the Vanguard bond ETF"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I was reading about VNQ, the Vanguard REIT ETF, as a way to add some real estate exposure for diversification"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "you can go ahead and forget about the VNQ REIT idea entirely, that's dead, I'm not pursuing REITs at all"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize what I've told you about my Fidelity brokerage account — the holdings, contributions, and any investment ideas I explored along the way?",
+      "expected_answer": "You opened a Fidelity brokerage account on March 3rd with a $15,000 initial deposit. You bought $9,000 of VTI, $3,000 of VXUS, and kept $3,000 in the money market fund. In mid-April you added $2,500 and put it all into BND, bringing total contributions to $17,500. Your current allocation is approximately 55% VTI, 18% VXUS, 15% BND, and 12% cash/money market. You also mentioned looking into VNQ (Vanguard REIT ETF) for real estate diversification but later decided not to pursue it. Separately, you recommended an age-based portfolio option for your sister Angela's 529 plan.",
+      "gold_memory_state": "Active: Fidelity account opened March 3rd, $15,000 initial deposit; $9,000 VTI, $3,000 VXUS, $3,000 money market; $2,500 BND added mid-April; total contributions $17,500; current allocation 55% VTI / 18% VXUS / 15% BND / ~12% cash; Angela's 529 age-based recommendation. Removed: VNQ REIT consideration.",
+      "judge_rubric": {
+        "must_include": [
+          "VTI",
+          "VXUS",
+          "BND",
+          "money market",
+          "$15,000",
+          "$2,500",
+          "Fidelity"
+        ],
+        "acceptable_paraphrases": [
+          "total stock market ETF for VTI",
+          "international stock ETF for VXUS",
+          "bond ETF for BND"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating VNQ was purchased or is still being considered"
+        ],
+        "harmless_extra": [
+          "mentioning the early April tariff dip",
+          "mentioning Dave's portfolio"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if VNQ/REIT is described as still under consideration or as an active holding.",
+        "over_forget": "Fails if the response omits retained holdings like VTI, VXUS, BND, or money market.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I opened a brokerage account with Fidelity on March 3rd and deposited $15,000 as my initial funding"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I bought about $9,000 of VTI right away, then $3,000 of VXUS for international, and kept $3,000 in the money market fund"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I added $2,500 to the account in mid-April and put all of it into BND, the Vanguard bond ETF"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I was reading about VNQ, the Vanguard REIT ETF, as a way to add some real estate exposure for diversification"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "you can go ahead and forget about the VNQ REIT idea entirely, that's dead, I'm not pursuing REITs at all"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to stop tracking one particular investment idea from my portfolio. Which specific fund or asset class did that apply to, and are any of my other ETF holdings or the Angela-related recommendation affected by that request?",
+      "expected_answer": "The request applied to the VNQ / REIT ETF idea. None of your other holdings — VTI, VXUS, BND, or the money market fund — are affected, and Angela's 529 recommendation is also unaffected.",
+      "gold_memory_state": "Removed: VNQ REIT consideration. Retained and unaffected: VTI position, VXUS position, BND position, money market fund, Angela's 529 age-based recommendation, allocation percentages, contribution totals.",
+      "judge_rubric": {
+        "must_include": [
+          "VNQ",
+          "REIT"
+        ],
+        "acceptable_paraphrases": [
+          "the Vanguard REIT ETF idea",
+          "the real estate investment trust consideration"
+        ],
+        "must_not_include": [
+          "VTI was removed",
+          "VXUS was removed",
+          "BND was removed",
+          "money market was removed",
+          "Angela's 529 was removed"
+        ],
+        "harmful_extra": [
+          "stating any retained holding was also dropped",
+          "conflating VNQ with another ETF"
+        ],
+        "harmless_extra": [
+          "mentioning the allocation percentages remain unchanged",
+          "noting total contributions are unaffected"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": "Fails if the response says any retained holding (VTI, VXUS, BND, money market) or Angela's 529 was also removed or affected.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "you can go ahead and forget about the VNQ REIT idea entirely, that's dead, I'm not pursuing REITs at all"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I was reading about VNQ, the Vanguard REIT ETF, as a way to add some real estate exposure for diversification"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to stop tracking one particular investment idea from my portfolio. Which specific fund or asset class did that apply to, and are any of my other ETF holdings or the Angela-related recommendation affected by that request?",
+      "expected_answer": "The request applied to the VNQ / REIT ETF idea. None of your other holdings — VTI, VXUS, BND, or the money market fund — are affected, and Angela's 529 recommendation is also unaffected.",
+      "gold_memory_state": "Removed: VNQ REIT consideration. Retained and unaffected: VTI position, VXUS position, BND position, money market fund, Angela's 529 age-based recommendation, allocation percentages, contribution totals.",
+      "judge_rubric": {
+        "must_include": [
+          "VNQ",
+          "REIT"
+        ],
+        "acceptable_paraphrases": [
+          "the Vanguard REIT ETF idea",
+          "the real estate investment trust consideration"
+        ],
+        "must_not_include": [
+          "VTI was removed",
+          "VXUS was removed",
+          "BND was removed",
+          "money market was removed",
+          "Angela's 529 was removed"
+        ],
+        "harmful_extra": [
+          "stating any retained holding was also dropped",
+          "conflating VNQ with another ETF"
+        ],
+        "harmless_extra": [
+          "mentioning the allocation percentages remain unchanged",
+          "noting total contributions are unaffected"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": "Fails if the response says any retained holding (VTI, VXUS, BND, money market) or Angela's 529 was also removed or affected.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "you can go ahead and forget about the VNQ REIT idea entirely, that's dead, I'm not pursuing REITs at all"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I was reading about VNQ, the Vanguard REIT ETF, as a way to add some real estate exposure for diversification"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "If I wanted to write up a quick investment summary for my financial advisor, what portfolio holdings and allocation details do I still have on file that I can include?",
+      "expected_answer": "You can include VTI at 55%, VXUS at 18%, BND at 15%, and the money market fund at approximately 12%. Total contributions are $17,500 in a Fidelity brokerage account opened March 3rd.",
+      "gold_memory_state": "Retained: VTI (55%), VXUS (18%), BND (15%), money market (~12%), $15,000 initial deposit, $2,500 mid-April addition, $17,500 total contributions, Fidelity account, Angela's 529 age-based recommendation. Removed/unavailable: VNQ REIT consideration.",
+      "judge_rubric": {
+        "must_include": [
+          "VTI",
+          "VXUS",
+          "BND",
+          "money market",
+          "55%",
+          "18%",
+          "15%"
+        ],
+        "acceptable_paraphrases": [
+          "about 12% cash",
+          "roughly 12% in cash/money market"
+        ],
+        "must_not_include": [
+          "VNQ as an active holding or consideration"
+        ],
+        "harmful_extra": [
+          "including VNQ/REIT as part of the portfolio summary",
+          "suggesting REIT exposure is still being explored"
+        ],
+        "harmless_extra": [
+          "mentioning Angela's 529 plan",
+          "mentioning the tariff dip benchmark",
+          "mentioning the potential future bond increase to 20%"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if VNQ or REIT is mentioned as an active or pending holding in the portfolio summary.",
+        "over_forget": "Fails if the response refuses to list VTI, VXUS, BND, or money market, or says no portfolio information is available.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my current rough allocation is about 55% US equities in VTI, 18% international in VXUS, 15% bonds in BND, and the remaining 12% or so in cash and money market"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I bought about $9,000 of VTI right away, then $3,000 of VXUS for international, and kept $3,000 in the money market fund"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I added $2,500 to the account in mid-April and put all of it into BND, the Vanguard bond ETF"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "you can go ahead and forget about the VNQ REIT idea entirely, that's dead, I'm not pursuing REITs at all"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "If I wanted to write up a quick investment summary for my financial advisor, what portfolio holdings and allocation details do I still have on file that I can include?",
+      "expected_answer": "You can include VTI at 55%, VXUS at 18%, BND at 15%, and the money market fund at approximately 12%. Total contributions are $17,500 in a Fidelity brokerage account opened March 3rd.",
+      "gold_memory_state": "Retained: VTI (55%), VXUS (18%), BND (15%), money market (~12%), $15,000 initial deposit, $2,500 mid-April addition, $17,500 total contributions, Fidelity account, Angela's 529 age-based recommendation. Removed/unavailable: VNQ REIT consideration.",
+      "judge_rubric": {
+        "must_include": [
+          "VTI",
+          "VXUS",
+          "BND",
+          "money market",
+          "55%",
+          "18%",
+          "15%"
+        ],
+        "acceptable_paraphrases": [
+          "about 12% cash",
+          "roughly 12% in cash/money market"
+        ],
+        "must_not_include": [
+          "VNQ as an active holding or consideration"
+        ],
+        "harmful_extra": [
+          "including VNQ/REIT as part of the portfolio summary",
+          "suggesting REIT exposure is still being explored"
+        ],
+        "harmless_extra": [
+          "mentioning Angela's 529 plan",
+          "mentioning the tariff dip benchmark",
+          "mentioning the potential future bond increase to 20%"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if VNQ or REIT is mentioned as an active or pending holding in the portfolio summary.",
+        "over_forget": "Fails if the response refuses to list VTI, VXUS, BND, or money market, or says no portfolio information is available.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my current rough allocation is about 55% US equities in VTI, 18% international in VXUS, 15% bonds in BND, and the remaining 12% or so in cash and money market"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I bought about $9,000 of VTI right away, then $3,000 of VXUS for international, and kept $3,000 in the money market fund"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I added $2,500 to the account in mid-April and put all of it into BND, the Vanguard bond ETF"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "you can go ahead and forget about the VNQ REIT idea entirely, that's dead, I'm not pursuing REITs at all"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "My coworker Dave recently mentioned he holds VNQ in his own Schwab account. If I were listing the complete set of ETFs and funds I personally hold in my Fidelity account right now, which of the following lists is accurate?",
+      "candidate_options": [
+        "VTI, VXUS, BND, money market fund",
+        "VTI, VXUS, BND, VNQ, money market fund",
+        "VTI, VXUS, BND",
+        "VTI, VXUS, money market fund"
+      ],
+      "expected_answer": "VTI, VXUS, BND, money market fund",
+      "gold_memory_state": "Active holdings: VTI, VXUS, BND, money market fund. VNQ was never purchased and the consideration was explicitly dropped. Dave holds VNQ in his own account but that is not the user's holding.",
+      "judge_rubric": {
+        "must_include": [
+          "VTI",
+          "VXUS",
+          "BND",
+          "money market fund"
+        ],
+        "acceptable_paraphrases": [
+          "money market",
+          "cash/money market"
+        ],
+        "must_not_include": [
+          "VNQ as a personal holding"
+        ],
+        "harmful_extra": [
+          "including VNQ in the user's own holdings list"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'VTI, VXUS, BND, VNQ, money market fund' includes VNQ which belongs to Dave's Schwab account, not the user's Fidelity account. assistant echo: 'VTI, VXUS, BND' omits the money market fund, which the assistant sometimes described as a separate cash position rather than a named holding. 'VTI, VXUS, money market fund' omits BND, the mid-April addition.",
+      "diagnostic_checks": {
+        "leakage": "Fails if VNQ is selected as part of the user's personal holdings.",
+        "over_forget": "Fails if BND or money market fund is excluded from the user's holdings.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I bought about $9,000 of VTI right away, then $3,000 of VXUS for international, and kept $3,000 in the money market fund"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I added $2,500 to the account in mid-April and put all of it into BND, the Vanguard bond ETF"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "you can go ahead and forget about the VNQ REIT idea entirely, that's dead, I'm not pursuing REITs at all"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "He said he's also got about 10% in VNQ actually, the REIT fund"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "My coworker Dave recently mentioned he holds VNQ in his own Schwab account. If I were listing the complete set of ETFs and funds I personally hold in my Fidelity account right now, which of the following lists is accurate?",
+      "candidate_options": [
+        "VTI, VXUS, BND, money market fund",
+        "VTI, VXUS, BND, VNQ, money market fund",
+        "VTI, VXUS, BND",
+        "VTI, VXUS, money market fund"
+      ],
+      "expected_answer": "VTI, VXUS, BND, money market fund",
+      "gold_memory_state": "Active holdings: VTI, VXUS, BND, money market fund. VNQ was never purchased and the consideration was explicitly dropped. Dave holds VNQ in his own account but that is not the user's holding.",
+      "judge_rubric": {
+        "must_include": [
+          "VTI",
+          "VXUS",
+          "BND",
+          "money market fund"
+        ],
+        "acceptable_paraphrases": [
+          "money market",
+          "cash/money market"
+        ],
+        "must_not_include": [
+          "VNQ as a personal holding"
+        ],
+        "harmful_extra": [
+          "including VNQ in the user's own holdings list"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'VTI, VXUS, BND, VNQ, money market fund' includes VNQ which belongs to Dave's Schwab account, not the user's Fidelity account. assistant echo: 'VTI, VXUS, BND' omits the money market fund, which the assistant sometimes described as a separate cash position rather than a named holding. 'VTI, VXUS, money market fund' omits BND, the mid-April addition.",
+      "diagnostic_checks": {
+        "leakage": "Fails if VNQ is selected as part of the user's personal holdings.",
+        "over_forget": "Fails if BND or money market fund is excluded from the user's holdings.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I bought about $9,000 of VTI right away, then $3,000 of VXUS for international, and kept $3,000 in the money market fund"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I added $2,500 to the account in mid-April and put all of it into BND, the Vanguard bond ETF"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "you can go ahead and forget about the VNQ REIT idea entirely, that's dead, I'm not pursuing REITs at all"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "He said he's also got about 10% in VNQ actually, the REIT fund"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm trying to estimate the approximate dollar value of each of my current holdings based on my total contributions and my latest allocation percentages. Can you calculate the rough dollar amount in each position — VTI, VXUS, BND, and money market — using my contribution total and the percentage breakdown I gave you? I know market movements may have shifted things slightly, but just use the percentages as-is against total contributions for a quick estimate.",
+      "expected_answer": "Based on $17,500 total contributions and your allocation percentages: VTI is approximately $9,625 (55%), VXUS is approximately $3,150 (18%), BND is approximately $2,625 (15%), and money market is approximately $2,100 (12%).",
+      "gold_memory_state": "Total contributions: $17,500 ($15,000 initial + $2,500 mid-April). Current allocation: 55% VTI, 18% VXUS, 15% BND, ~12% cash/money market. VNQ REIT consideration removed; no REIT allocation exists.",
+      "judge_rubric": {
+        "must_include": [
+          "$9,625 or approximately $9,625 for VTI",
+          "$3,150 or approximately $3,150 for VXUS",
+          "$2,625 or approximately $2,625 for BND",
+          "$2,100 or approximately $2,100 for money market"
+        ],
+        "acceptable_paraphrases": [
+          "roughly $9,625",
+          "about $9,625",
+          "~$9,625"
+        ],
+        "must_not_include": [
+          "any dollar amount allocated to VNQ or REIT"
+        ],
+        "harmful_extra": [
+          "including a VNQ/REIT line item in the calculation",
+          "using wrong total contributions"
+        ],
+        "harmless_extra": [
+          "noting these are estimates that don't account for market gains/losses",
+          "noting the percentages are approximate"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if a VNQ or REIT dollar allocation is included in the calculation.",
+        "over_forget": "Fails if any of the four retained holdings (VTI, VXUS, BND, money market) is omitted from the calculation.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Total contributions are $17,500 ($15,000 initial deposit + $2,500 added in mid-April).",
+        "Fact 2: Current allocation is 55% VTI, 18% VXUS, 15% BND, ~12% cash/money market.",
+        "Fact 3: VNQ REIT consideration was dropped; there is no REIT allocation.",
+        "Inference: VTI dollar estimate = $17,500 × 0.55 = $9,625.",
+        "Inference: VXUS dollar estimate = $17,500 × 0.18 = $3,150.",
+        "Inference: BND dollar estimate = $17,500 × 0.15 = $2,625.",
+        "Inference: Money market dollar estimate = $17,500 × 0.12 = $2,100.",
+        "Derived value: The four position estimates are approximately $9,625 VTI, $3,150 VXUS, $2,625 BND, and $2,100 money market, totaling $17,500."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I opened a brokerage account with Fidelity on March 3rd and deposited $15,000 as my initial funding"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I added $2,500 to the account in mid-April and put all of it into BND, the Vanguard bond ETF"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my current rough allocation is about 55% US equities in VTI, 18% international in VXUS, 15% bonds in BND, and the remaining 12% or so in cash and money market"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "you can go ahead and forget about the VNQ REIT idea entirely, that's dead, I'm not pursuing REITs at all"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm trying to estimate the approximate dollar value of each of my current holdings based on my total contributions and my latest allocation percentages. Can you calculate the rough dollar amount in each position — VTI, VXUS, BND, and money market — using my contribution total and the percentage breakdown I gave you? I know market movements may have shifted things slightly, but just use the percentages as-is against total contributions for a quick estimate.",
+      "expected_answer": "Based on $17,500 total contributions and your allocation percentages: VTI is approximately $9,625 (55%), VXUS is approximately $3,150 (18%), BND is approximately $2,625 (15%), and money market is approximately $2,100 (12%).",
+      "gold_memory_state": "Total contributions: $17,500 ($15,000 initial + $2,500 mid-April). Current allocation: 55% VTI, 18% VXUS, 15% BND, ~12% cash/money market. VNQ REIT consideration removed; no REIT allocation exists.",
+      "judge_rubric": {
+        "must_include": [
+          "$9,625 or approximately $9,625 for VTI",
+          "$3,150 or approximately $3,150 for VXUS",
+          "$2,625 or approximately $2,625 for BND",
+          "$2,100 or approximately $2,100 for money market"
+        ],
+        "acceptable_paraphrases": [
+          "roughly $9,625",
+          "about $9,625",
+          "~$9,625"
+        ],
+        "must_not_include": [
+          "any dollar amount allocated to VNQ or REIT"
+        ],
+        "harmful_extra": [
+          "including a VNQ/REIT line item in the calculation",
+          "using wrong total contributions"
+        ],
+        "harmless_extra": [
+          "noting these are estimates that don't account for market gains/losses",
+          "noting the percentages are approximate"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if a VNQ or REIT dollar allocation is included in the calculation.",
+        "over_forget": "Fails if any of the four retained holdings (VTI, VXUS, BND, money market) is omitted from the calculation.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Total contributions are $17,500 ($15,000 initial deposit + $2,500 added in mid-April).",
+        "Fact 2: Current allocation is 55% VTI, 18% VXUS, 15% BND, ~12% cash/money market.",
+        "Fact 3: VNQ REIT consideration was dropped; there is no REIT allocation.",
+        "Inference: VTI dollar estimate = $17,500 × 0.55 = $9,625.",
+        "Inference: VXUS dollar estimate = $17,500 × 0.18 = $3,150.",
+        "Inference: BND dollar estimate = $17,500 × 0.15 = $2,625.",
+        "Inference: Money market dollar estimate = $17,500 × 0.12 = $2,100.",
+        "Derived value: The four position estimates are approximately $9,625 VTI, $3,150 VXUS, $2,625 BND, and $2,100 money market, totaling $17,500."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I opened a brokerage account with Fidelity on March 3rd and deposited $15,000 as my initial funding"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I added $2,500 to the account in mid-April and put all of it into BND, the Vanguard bond ETF"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my current rough allocation is about 55% US equities in VTI, 18% international in VXUS, 15% bonds in BND, and the remaining 12% or so in cash and money market"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "you can go ahead and forget about the VNQ REIT idea entirely, that's dead, I'm not pursuing REITs at all"
+        }
+      ]
+    }
+  ]
+}

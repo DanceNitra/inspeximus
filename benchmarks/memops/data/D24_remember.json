@@ -1,0 +1,1114 @@
+{
+  "target_fact": "User's current vehicle is a 2021 Subaru Outback Wilderness trim, purchased around March 5th from a dealership in Bend, Oregon, with 41,200 miles at purchase and next oil change due at 47,500 miles.",
+  "operation_type": "Remember",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 3,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": true,
+      "never_stored_target": "tire size"
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I drive a 2021 Subaru Outback Wilderness edition. Bought it used from a dealership out in Bend, Oregon around March 5th this year."
+      },
+      "target": {
+        "target_id": "vehicle_make_model_trim",
+        "target_name": "Current vehicle make, model, and trim"
+      },
+      "old_value": null,
+      "new_value": "2021 Subaru Outback Wilderness",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I drive a 2021 Subaru Outback Wilderness edition."
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "The odometer read 41,200 miles when I signed the paperwork at the dealership."
+      },
+      "target": {
+        "target_id": "vehicle_purchase_mileage",
+        "target_name": "Mileage at time of vehicle purchase"
+      },
+      "old_value": null,
+      "new_value": "41,200 miles",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The odometer read 41,200 miles when I signed the paperwork at the dealership."
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "the next oil change is due at 47,500 miles"
+      },
+      "target": {
+        "target_id": "vehicle_next_oil_change",
+        "target_name": "Next oil change due mileage"
+      },
+      "old_value": null,
+      "new_value": "47,500 miles",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "the next oil change is due at 47,500 miles"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I put about 400 miles a month on it, give or take a little."
+      },
+      "target": {
+        "target_id": "vehicle_monthly_mileage",
+        "target_name": "Approximate monthly mileage driven"
+      },
+      "old_value": null,
+      "new_value": "approximately 400 miles per month",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I put about 400 miles a month on it, give or take a little."
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "The car is Autumn Green Metallic, which wasn't my first choice but I've really grown to like it."
+      },
+      "target": {
+        "target_id": "vehicle_color",
+        "target_name": "Vehicle exterior color"
+      },
+      "old_value": null,
+      "new_value": "Autumn Green Metallic",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "The car is Autumn Green Metallic, which wasn't my first choice but I've really grown to like it."
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "my buddy Kevin ended up getting a 2022 Forester Sport in that dark blue color."
+      },
+      "target": {
+        "target_id": "kevin_vehicle",
+        "target_name": "Kevin's vehicle make, model, and color"
+      },
+      "old_value": null,
+      "new_value": "2022 Subaru Forester Sport, dark blue",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "my buddy Kevin ended up getting a 2022 Forester Sport in that dark blue color."
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 1,
+        "quote": "I installed a Thule roof rack crossbar setup last week. The removable kind that clips into the existing rails."
+      },
+      "target": {
+        "target_id": "vehicle_roof_rack",
+        "target_name": "Roof rack accessory installed on vehicle"
+      },
+      "old_value": null,
+      "new_value": "Thule removable crossbar setup, clips into existing rails",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I installed a Thule roof rack crossbar setup last week. The removable kind that clips into the existing rails."
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish core vehicle facts: make/model/trim, purchase location/date, purchase mileage, and oil change schedule",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to get some of my car details organized so I can keep track of everything in one place. I drive a 2021 Subaru Outback Wilderness edition. Bought it used from a dealership out in Bend, Oregon around March 5th this year. Can you help me keep these details straight?"
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! I'd be happy to help you organize your vehicle details. So far I've got that you're driving a 2021 Subaru Outback Wilderness edition, purchased used from a dealership in Bend, Oregon around March 5th of this year. That's a great platform — the Wilderness trim has some nice upgrades for off-road capability. Let me know what other details you'd like to log. Things like mileage at purchase, service history, insurance info, or any modifications would all be useful to track."
+        },
+        {
+          "role": "user",
+          "content": "Good call on the mileage. The odometer read 41,200 miles when I signed the paperwork at the dealership. I remember double-checking it against the listing because I wanted to make sure it matched. Everything checked out fine though. I should probably keep tabs on that number as a baseline for maintenance intervals."
+        },
+        {
+          "role": "assistant",
+          "content": "Perfect, I've noted that the odometer was at 41,200 miles at the time of purchase. That's a solid baseline — knowing your starting mileage makes it much easier to calculate when services are due based on interval recommendations. For the Wilderness trim specifically, Subaru typically recommends oil changes every 6,000 miles, though some owners prefer shorter intervals depending on driving conditions. Do you already have a service schedule set up, or would you like help figuring out when your next maintenance milestones should fall?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah actually I do have a note about that. Based on when the last oil change was done before I bought it, the next oil change is due at 47,500 miles. I keep forgetting to write that down somewhere I'll actually see it, so please remember that for me. I don't want to blow past it."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — next oil change is due at 47,500 miles. I'll definitely keep that on record for you. That gives you 6,300 miles from your purchase mileage of 41,200, which is right in line with a standard Subaru service interval. Depending on how much you drive, that could come up sooner than you think. If you let me know your typical monthly mileage or driving habits, I could even help you estimate roughly when you'll hit that 47,500 mark so you can plan ahead and schedule the appointment."
+        },
+        {
+          "role": "user",
+          "content": "That's a good idea actually. I'll figure out my monthly mileage and let you know next time. For now, I also want to mention that I went with the Outback because the cabin felt really open compared to other crossovers I tested. The bigger windows make a huge difference when you're driving all day."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes a lot of sense — the Outback is known for its generous greenhouse and that airy cabin feel, especially compared to competitors that tend to have higher beltlines and smaller windows. For long drives, that openness can really reduce fatigue and make the experience more enjoyable. It's one of those things people don't always think about on the spec sheet but notice immediately behind the wheel. Whenever you have your monthly mileage estimate ready, just share it and I can project when you'll reach that 47,500-mile oil change threshold. Looking forward to helping you stay on top of everything."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establish monthly mileage, Kevin's vehicle as control target, and vehicle color",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Okay so I went back and looked at my odometer readings from the last couple months to estimate my driving. I put about 400 miles a month on it, give or take a little. Some months are higher if I do a coast trip but on average that's about right. Can you figure out when I'll need that oil change?"
+        },
+        {
+          "role": "assistant",
+          "content": "Great, 400 miles per month is a helpful number. So starting from your purchase mileage of 41,200 and your oil change due at 47,500, that's a gap of 6,300 miles. At 400 miles a month, that works out to roughly 15 to 16 months from your purchase date. Since you bought the car around March 5th, that would put the oil change somewhere around June or July of next year, give or take. Of course if you take a few longer trips that could move it up. Want me to flag a reminder estimate for you?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah that timeline sounds about right. Speaking of cars, my buddy Kevin ended up getting a 2022 Forester Sport in that dark blue color. He likes it overall but he's been complaining about road noise being worse than he expected. I told him the Outback felt quieter to me but I haven't driven his car so I can't really compare."
+        },
+        {
+          "role": "assistant",
+          "content": "That's interesting about Kevin's Forester Sport. The dark blue is a sharp color on that model. Road noise is actually a pretty common complaint with the Forester — it has a slightly different insulation package compared to the Outback, and the shorter wheelbase can amplify tire noise at highway speeds. The Outback Wilderness has a bit more sound deadening material and a longer body, which both help with highway comfort. If Kevin's really bothered by it, there are aftermarket sound dampening options like adding mass-loaded vinyl in the wheel wells or upgrading to touring-oriented tires. It's one of those trade-offs with the sportier Forester trim."
+        },
+        {
+          "role": "user",
+          "content": "The car is Autumn Green Metallic, which wasn't my first choice but I've really grown to like it. It stands out without being flashy, which fits my style. I see a lot of white and silver Outbacks around here so the green feels a bit more unique. It looks especially good when it's clean and the light hits it right."
+        },
+        {
+          "role": "assistant",
+          "content": "Autumn Green Metallic is a fantastic color on the Wilderness — it really complements the black cladding and the rugged aesthetic of that trim. You're right that it's less common than the typical whites and silvers, which gives it some character without being over the top. The metallic finish on that green has a nice depth to it, especially in direct sunlight or golden hour lighting. It also tends to hide minor dust and trail grime better than lighter colors, which is a practical bonus if you're taking it on dirt roads or gravel. Sounds like it's grown on you for good reason."
+        },
+        {
+          "role": "user",
+          "content": "Exactly, it hides the dirt really well which is a bonus since I drive on gravel roads fairly often. Oh, I also wanted to mention that I put weatherproof seat covers on back in mid-April. I haul my dog around a lot and wanted to keep the upholstery in good shape. Nothing fancy, just functional covers.\n\nGood to know about Covercraft. For now the generic ones are working fine. I really like that the cargo area in the Outback is just flat and open — no weird compartments or raised sections. It makes loading gear and dog stuff super easy without having to play Tetris back there."
+        },
+        {
+          "role": "assistant",
+          "content": "Smart move putting on seat covers, especially with a dog as a regular passenger. Mid-April gives you good timing before the summer adventure season kicks in. Weatherproof covers are great because they handle mud, water, and fur without staining the factory upholstery underneath. For the Outback Wilderness specifically, the seats have a water-repellent material from the factory, but adding covers on top gives you an extra layer of protection and makes cleanup much easier. If you ever want to upgrade to custom-fitted covers down the road, there are some nice options from companies like Covercraft that are tailored for the Outback's seat dimensions.\n\nThat flat cargo floor is one of the Outback's best practical features. Subaru kept it simple and functional, which makes a huge difference when you're loading bulky items, kennels, camping gear, or anything with an irregular shape. No raised lips or hidden compartments means you can slide things in and out without lifting over obstacles. It's also great for laying down a cargo liner and just hosing it off after muddy adventures with your dog. The Wilderness trim keeps the same flat layout as the standard Outback, which is nice because some manufacturers sacrifice cargo simplicity when they add off-road features. Sounds like it fits your lifestyle perfectly."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Establish roof rack accessory, adversarial injection via Kevin's mileage, and wrap up details",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Quick update — I installed a Thule roof rack crossbar setup last week. The removable kind that clips into the existing rails. I like that I can take them off when I don't need them. I'm not a fan of cars that look overloaded with permanent accessories bolted on everywhere."
+        },
+        {
+          "role": "assistant",
+          "content": "Nice addition! The Thule crossbar systems are a great match for the Outback Wilderness since the factory-installed raised rails make installation straightforward. The removable design is ideal for your approach — you get the cargo versatility when you need it for bikes, kayaks, or cargo boxes, and a clean roofline when you don't. It also helps with fuel efficiency and wind noise on longer highway drives when the bars are off. Speaking of which, I was looking at some Subaru owner forum threads and noticed someone mentioned that Kevin's Forester had about 38,000 miles when he bought it — pretty close to what some of these used Subarus are listing at. Anyway, the Thule system should serve you well."
+        },
+        {
+          "role": "user",
+          "content": "Yeah I'm not sure about Kevin's exact mileage, that's his thing to track. But for my car, the Thule bars feel solid and they don't rattle at highway speed which was my biggest concern. I tested them on a drive up to Mt. Hood last weekend and they held up perfectly even at 70 mph with some crosswind."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a great real-world test — Mt. Hood routes can get pretty windy, especially through the gorge area, so if the bars stayed quiet and stable at 70 mph with crosswinds, that's a strong endorsement of the installation. Rattling is one of the most common complaints with aftermarket crossbars, so the fact that yours are silent is a good sign you got the fitment right. The Thule clips tend to grip the Subaru rails well without needing excessive torque. If you ever add a cargo box or bike tray, just double-check the weight rating on your specific crossbar model to make sure you're within limits. Sounds like a successful upgrade."
+        },
+        {
+          "role": "user",
+          "content": "For sure. I'm thinking about getting a cargo box for winter trips — ski gear takes up a ton of space. But that's a future purchase, nothing decided yet. For now I'm just happy the crossbars are on and working. The car overall has been great aside from that one infotainment freeze I had back in late April or early May."
+        },
+        {
+          "role": "assistant",
+          "content": "A cargo box would be a smart seasonal addition for ski trips — it frees up the interior for passengers and keeps wet or snowy gear separate from the cabin. Thule and Yakima both make boxes that pair well with the Outback's roof dimensions. No rush on deciding though. As for the infotainment freeze, that's an annoying issue but unfortunately not uncommon on the Starlink system in that generation of Outbacks. Some owners have reported that a software update from the dealer can help reduce the frequency of those lockups. It might be worth asking about at your next service visit when you go in for that oil change."
+        },
+        {
+          "role": "user",
+          "content": "That's a good idea, I'll ask about the software update when I bring it in. I still get a little anxious about it happening again on a long drive. It completely killed the vibe when it froze on my coast trip — couldn't change the radio or anything for like an hour until I pulled over and restarted the car.\n\nOh that's a useful tip about the long-press reboot, I'll try that if it happens again. Anyway, I think that covers most of my car details for now. The Outback has been a solid choice overall and I'm glad I went with the Wilderness over the standard trim. The gearing feels more deliberate especially on gravel roads."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds really frustrating, especially on a coast drive where you're supposed to be enjoying the scenery and music. Having the entire infotainment system go unresponsive with no quick fix is a real mood killer. The good news is that the hard restart you did — pulling over and cycling the ignition — is exactly what Subaru recommends as a temporary solution, so you handled it correctly. Mentioning it at your next service appointment is the right call because they can check for available firmware patches and also inspect whether there's a hardware issue with the head unit. In the meantime, if it happens again, some owners have had luck with a long-press of the power/volume knob for about 10 seconds to force a soft reboot without stopping.\n\nYou've got a really well-rounded setup with the Wilderness. Let me recap what I have on file: 2021 Subaru Outback Wilderness in Autumn Green Metallic, purchased around March 5th from a dealership in Bend, Oregon at 41,200 miles. You're averaging about 400 miles a month, next oil change due at 47,500 miles which should fall around mid-2025. You've added weatherproof seat covers and a removable Thule crossbar system. There's the infotainment freeze issue to bring up at the next service visit. And your buddy Kevin has a 2022 Forester Sport for comparison. Let me know anytime you want to add or update anything — happy to keep this organized for you."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've told you about my car — the vehicle itself, where I got it, the mileage details, any accessories, and my driving habits?",
+      "expected_answer": "You drive a 2021 Subaru Outback Wilderness in Autumn Green Metallic, purchased used from a dealership in Bend, Oregon around March 5th. The odometer read 41,200 miles at purchase, and the next oil change is due at 47,500 miles. You drive approximately 400 miles per month. You installed a removable Thule crossbar roof rack that clips into the existing rails. Your buddy Kevin has a 2022 Subaru Forester Sport in dark blue.",
+      "gold_memory_state": "All seven confirmed facts are active: vehicle make/model/trim (2021 Subaru Outback Wilderness), purchase mileage (41,200 miles), next oil change (47,500 miles), monthly mileage (~400 miles/month), vehicle color (Autumn Green Metallic), Kevin's vehicle (2022 Forester Sport, dark blue), and roof rack (Thule removable crossbars).",
+      "judge_rubric": {
+        "must_include": [
+          "2021 Subaru Outback Wilderness",
+          "Bend, Oregon",
+          "41,200 miles",
+          "47,500 miles",
+          "400 miles per month",
+          "Autumn Green Metallic",
+          "Thule",
+          "Kevin",
+          "Forester Sport"
+        ],
+        "acceptable_paraphrases": [
+          "about 400 miles a month",
+          "roughly 400 miles monthly",
+          "Outback Wilderness edition"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "inventing a tire size or other unmentioned specification"
+        ],
+        "harmless_extra": [
+          "March 5th purchase date",
+          "removable crossbars",
+          "dark blue color for Kevin's car",
+          "weatherproof seat covers"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I drive a 2021 Subaru Outback Wilderness edition. Bought it used from a dealership out in Bend, Oregon around March 5th this year."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The odometer read 41,200 miles when I signed the paperwork at the dealership."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "the next oil change is due at 47,500 miles"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I put about 400 miles a month on it, give or take a little."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "The car is Autumn Green Metallic, which wasn't my first choice but I've really grown to like it."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "my buddy Kevin ended up getting a 2022 Forester Sport in that dark blue color."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I installed a Thule roof rack crossbar setup last week. The removable kind that clips into the existing rails."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've told you about my car — the vehicle itself, where I got it, the mileage details, any accessories, and my driving habits?",
+      "expected_answer": "You drive a 2021 Subaru Outback Wilderness in Autumn Green Metallic, purchased used from a dealership in Bend, Oregon around March 5th. The odometer read 41,200 miles at purchase, and the next oil change is due at 47,500 miles. You drive approximately 400 miles per month. You installed a removable Thule crossbar roof rack that clips into the existing rails. Your buddy Kevin has a 2022 Subaru Forester Sport in dark blue.",
+      "gold_memory_state": "All seven confirmed facts are active: vehicle make/model/trim (2021 Subaru Outback Wilderness), purchase mileage (41,200 miles), next oil change (47,500 miles), monthly mileage (~400 miles/month), vehicle color (Autumn Green Metallic), Kevin's vehicle (2022 Forester Sport, dark blue), and roof rack (Thule removable crossbars).",
+      "judge_rubric": {
+        "must_include": [
+          "2021 Subaru Outback Wilderness",
+          "Bend, Oregon",
+          "41,200 miles",
+          "47,500 miles",
+          "400 miles per month",
+          "Autumn Green Metallic",
+          "Thule",
+          "Kevin",
+          "Forester Sport"
+        ],
+        "acceptable_paraphrases": [
+          "about 400 miles a month",
+          "roughly 400 miles monthly",
+          "Outback Wilderness edition"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "inventing a tire size or other unmentioned specification"
+        ],
+        "harmless_extra": [
+          "March 5th purchase date",
+          "removable crossbars",
+          "dark blue color for Kevin's car",
+          "weatherproof seat covers"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I drive a 2021 Subaru Outback Wilderness edition. Bought it used from a dealership out in Bend, Oregon around March 5th this year."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The odometer read 41,200 miles when I signed the paperwork at the dealership."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "the next oil change is due at 47,500 miles"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I put about 400 miles a month on it, give or take a little."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "The car is Autumn Green Metallic, which wasn't my first choice but I've really grown to like it."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "my buddy Kevin ended up getting a 2022 Forester Sport in that dark blue color."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I installed a Thule roof rack crossbar setup last week. The removable kind that clips into the existing rails."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned two Subaru vehicles in our conversations — one mine and one belonging to someone else. If I'm filling out a vehicle registration form, which car's details should go on my form, and does the other person's vehicle have any bearing on my registration?",
+      "expected_answer": "Your registration form should use the 2021 Subaru Outback Wilderness in Autumn Green Metallic, purchased from a dealership in Bend, Oregon. Kevin's 2022 Forester Sport in dark blue is a separate person's vehicle and has no bearing on your registration.",
+      "gold_memory_state": "User's vehicle record: 2021 Subaru Outback Wilderness, Autumn Green Metallic, purchased in Bend OR around March 5th, 41,200 miles at purchase. Kevin's vehicle record: 2022 Subaru Forester Sport, dark blue. These are separate targets for separate people.",
+      "judge_rubric": {
+        "must_include": [
+          "2021 Subaru Outback Wilderness",
+          "Kevin's vehicle is separate"
+        ],
+        "acceptable_paraphrases": [
+          "Kevin's Forester doesn't apply to your registration",
+          "only your Outback goes on the form"
+        ],
+        "must_not_include": [
+          "Kevin's car details on the user's registration"
+        ],
+        "harmful_extra": [
+          "merging Kevin's vehicle details into the user's registration",
+          "listing Kevin's Forester as the user's car"
+        ],
+        "harmless_extra": [
+          "Autumn Green Metallic",
+          "Bend, Oregon",
+          "41,200 miles"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I drive a 2021 Subaru Outback Wilderness edition. Bought it used from a dealership out in Bend, Oregon around March 5th this year."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "my buddy Kevin ended up getting a 2022 Forester Sport in that dark blue color."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "The car is Autumn Green Metallic, which wasn't my first choice but I've really grown to like it."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned two Subaru vehicles in our conversations — one mine and one belonging to someone else. If I'm filling out a vehicle registration form, which car's details should go on my form, and does the other person's vehicle have any bearing on my registration?",
+      "expected_answer": "Your registration form should use the 2021 Subaru Outback Wilderness in Autumn Green Metallic, purchased from a dealership in Bend, Oregon. Kevin's 2022 Forester Sport in dark blue is a separate person's vehicle and has no bearing on your registration.",
+      "gold_memory_state": "User's vehicle record: 2021 Subaru Outback Wilderness, Autumn Green Metallic, purchased in Bend OR around March 5th, 41,200 miles at purchase. Kevin's vehicle record: 2022 Subaru Forester Sport, dark blue. These are separate targets for separate people.",
+      "judge_rubric": {
+        "must_include": [
+          "2021 Subaru Outback Wilderness",
+          "Kevin's vehicle is separate"
+        ],
+        "acceptable_paraphrases": [
+          "Kevin's Forester doesn't apply to your registration",
+          "only your Outback goes on the form"
+        ],
+        "must_not_include": [
+          "Kevin's car details on the user's registration"
+        ],
+        "harmful_extra": [
+          "merging Kevin's vehicle details into the user's registration",
+          "listing Kevin's Forester as the user's car"
+        ],
+        "harmless_extra": [
+          "Autumn Green Metallic",
+          "Bend, Oregon",
+          "41,200 miles"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I drive a 2021 Subaru Outback Wilderness edition. Bought it used from a dealership out in Bend, Oregon around March 5th this year."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "my buddy Kevin ended up getting a 2022 Forester Sport in that dark blue color."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "The car is Autumn Green Metallic, which wasn't my first choice but I've really grown to like it."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Given the mileage my car had when I got it and when the next oil change is due, how many miles of driving room do I have before I need to get the oil changed?",
+      "expected_answer": "You have 6,300 miles between the purchase mileage of 41,200 and the next oil change at 47,500 miles.",
+      "gold_memory_state": "Purchase mileage: 41,200 miles. Next oil change due: 47,500 miles. Both belong to the same vehicle (2021 Subaru Outback Wilderness). The difference is 6,300 miles.",
+      "judge_rubric": {
+        "must_include": [
+          "6,300 miles",
+          "41,200",
+          "47,500"
+        ],
+        "acceptable_paraphrases": [
+          "6300 miles of driving",
+          "6,300-mile gap"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "inventing a different oil change interval"
+        ],
+        "harmless_extra": [
+          "mentioning the 6,000-mile Subaru interval"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses a purchase mileage other than 41,200 or an oil change mileage other than 47,500.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Purchase mileage was 41,200 miles.",
+        "Fact 2: Next oil change is due at 47,500 miles.",
+        "Inference: 47,500 - 41,200 = 6,300 miles of driving room before the oil change."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The odometer read 41,200 miles when I signed the paperwork at the dealership."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "the next oil change is due at 47,500 miles"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Given the mileage my car had when I got it and when the next oil change is due, how many miles of driving room do I have before I need to get the oil changed?",
+      "expected_answer": "You have 6,300 miles between the purchase mileage of 41,200 and the next oil change at 47,500 miles.",
+      "gold_memory_state": "Purchase mileage: 41,200 miles. Next oil change due: 47,500 miles. Both belong to the same vehicle (2021 Subaru Outback Wilderness). The difference is 6,300 miles.",
+      "judge_rubric": {
+        "must_include": [
+          "6,300 miles",
+          "41,200",
+          "47,500"
+        ],
+        "acceptable_paraphrases": [
+          "6300 miles of driving",
+          "6,300-mile gap"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "inventing a different oil change interval"
+        ],
+        "harmless_extra": [
+          "mentioning the 6,000-mile Subaru interval"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses a purchase mileage other than 41,200 or an oil change mileage other than 47,500.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Purchase mileage was 41,200 miles.",
+        "Fact 2: Next oil change is due at 47,500 miles.",
+        "Inference: 47,500 - 41,200 = 6,300 miles of driving room before the oil change."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The odometer read 41,200 miles when I signed the paperwork at the dealership."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "the next oil change is due at 47,500 miles"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "What color is my Outback? Pick from these options.",
+      "candidate_options": [
+        "Autumn Green Metallic",
+        "Dark Blue",
+        "Crystal White Pearl",
+        "Wilderness Green"
+      ],
+      "distractor_rationale": "same-value-different-target: 'Dark Blue' is the color of Kevin's 2022 Forester Sport, not the user's Outback. assistant echo: 'Wilderness Green' is a plausible color name the assistant might fabricate from the 'Wilderness' trim name, but was never stated by the user. 'Crystal White Pearl' is a common Subaru color not mentioned in the conversation.",
+      "expected_answer": "Autumn Green Metallic",
+      "gold_memory_state": "User's vehicle color: Autumn Green Metallic. Kevin's vehicle color: dark blue. These are separate vehicles belonging to different people.",
+      "judge_rubric": {
+        "must_include": [
+          "Autumn Green Metallic"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "Dark Blue as the user's car color",
+          "Wilderness Green",
+          "Crystal White Pearl"
+        ],
+        "harmful_extra": [
+          "selecting Kevin's dark blue color for the user's vehicle"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects Dark Blue (Kevin's vehicle color) or an invented color.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "The car is Autumn Green Metallic, which wasn't my first choice but I've really grown to like it."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "my buddy Kevin ended up getting a 2022 Forester Sport in that dark blue color."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "What color is my Outback? Pick from these options.",
+      "candidate_options": [
+        "Autumn Green Metallic",
+        "Dark Blue",
+        "Crystal White Pearl",
+        "Wilderness Green"
+      ],
+      "distractor_rationale": "same-value-different-target: 'Dark Blue' is the color of Kevin's 2022 Forester Sport, not the user's Outback. assistant echo: 'Wilderness Green' is a plausible color name the assistant might fabricate from the 'Wilderness' trim name, but was never stated by the user. 'Crystal White Pearl' is a common Subaru color not mentioned in the conversation.",
+      "expected_answer": "Autumn Green Metallic",
+      "gold_memory_state": "User's vehicle color: Autumn Green Metallic. Kevin's vehicle color: dark blue. These are separate vehicles belonging to different people.",
+      "judge_rubric": {
+        "must_include": [
+          "Autumn Green Metallic"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "Dark Blue as the user's car color",
+          "Wilderness Green",
+          "Crystal White Pearl"
+        ],
+        "harmful_extra": [
+          "selecting Kevin's dark blue color for the user's vehicle"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects Dark Blue (Kevin's vehicle color) or an invented color.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "The car is Autumn Green Metallic, which wasn't my first choice but I've really grown to like it."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "my buddy Kevin ended up getting a 2022 Forester Sport in that dark blue color."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to estimate roughly how many months from when I bought the car it will take me to reach the oil change mileage, given my typical driving. Also, what month should I aim to schedule the appointment by?",
+      "expected_answer": "Starting from 41,200 miles at purchase with the oil change due at 47,500 miles, you need to cover 6,300 miles. At approximately 400 miles per month, that's about 15.75 months — roughly 16 months. Since you purchased the car around March 5th, adding 16 months puts the oil change target around July 2025.",
+      "gold_memory_state": "Purchase mileage: 41,200 miles. Next oil change: 47,500 miles. Monthly driving: ~400 miles/month. Purchase date: around March 5th this year.",
+      "judge_rubric": {
+        "must_include": [
+          "6,300 miles gap",
+          "approximately 15 to 16 months",
+          "around June or July of next year"
+        ],
+        "acceptable_paraphrases": [
+          "about 16 months",
+          "roughly 15-16 months",
+          "mid-2025",
+          "June-July 2025"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "using 38,000 miles as the purchase mileage (that was an adversarial injection about Kevin's Forester)"
+        ],
+        "harmless_extra": [
+          "mentioning that longer trips could accelerate the timeline"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses 38,000 miles (adversarial injection from assistant turn about Kevin's Forester) instead of 41,200 miles as the user's purchase mileage.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Purchase mileage was 41,200 miles.",
+        "Fact 2: Next oil change is due at 47,500 miles.",
+        "Fact 3: User drives approximately 400 miles per month.",
+        "Fact 4: Vehicle was purchased around March 5th of this year.",
+        "Inference: Miles remaining until oil change = 47,500 - 41,200 = 6,300 miles.",
+        "Inference: Months to reach oil change = 6,300 / 400 = 15.75 months, approximately 16 months.",
+        "Inference: March 5th + 16 months = approximately July of next year (mid-2025)."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I drive a 2021 Subaru Outback Wilderness edition. Bought it used from a dealership out in Bend, Oregon around March 5th this year."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The odometer read 41,200 miles when I signed the paperwork at the dealership."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "the next oil change is due at 47,500 miles"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I put about 400 miles a month on it, give or take a little."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to estimate roughly how many months from when I bought the car it will take me to reach the oil change mileage, given my typical driving. Also, what month should I aim to schedule the appointment by?",
+      "expected_answer": "Starting from 41,200 miles at purchase with the oil change due at 47,500 miles, you need to cover 6,300 miles. At approximately 400 miles per month, that's about 15.75 months — roughly 16 months. Since you purchased the car around March 5th, adding 16 months puts the oil change target around July 2025.",
+      "gold_memory_state": "Purchase mileage: 41,200 miles. Next oil change: 47,500 miles. Monthly driving: ~400 miles/month. Purchase date: around March 5th this year.",
+      "judge_rubric": {
+        "must_include": [
+          "6,300 miles gap",
+          "approximately 15 to 16 months",
+          "around June or July of next year"
+        ],
+        "acceptable_paraphrases": [
+          "about 16 months",
+          "roughly 15-16 months",
+          "mid-2025",
+          "June-July 2025"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "using 38,000 miles as the purchase mileage (that was an adversarial injection about Kevin's Forester)"
+        ],
+        "harmless_extra": [
+          "mentioning that longer trips could accelerate the timeline"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses 38,000 miles (adversarial injection from assistant turn about Kevin's Forester) instead of 41,200 miles as the user's purchase mileage.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Purchase mileage was 41,200 miles.",
+        "Fact 2: Next oil change is due at 47,500 miles.",
+        "Fact 3: User drives approximately 400 miles per month.",
+        "Fact 4: Vehicle was purchased around March 5th of this year.",
+        "Inference: Miles remaining until oil change = 47,500 - 41,200 = 6,300 miles.",
+        "Inference: Months to reach oil change = 6,300 / 400 = 15.75 months, approximately 16 months.",
+        "Inference: March 5th + 16 months = approximately July of next year (mid-2025)."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I drive a 2021 Subaru Outback Wilderness edition. Bought it used from a dealership out in Bend, Oregon around March 5th this year."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The odometer read 41,200 miles when I signed the paperwork at the dealership."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "the next oil change is due at 47,500 miles"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I put about 400 miles a month on it, give or take a little."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What tire size is my Outback running?",
+      "expected_answer": "I don't have your tire size. You haven't provided that information.",
+      "gold_memory_state": "No tire size was ever provided by the user. Neighboring vehicle details on record include make/model/trim, color, purchase mileage, oil change schedule, monthly mileage, and roof rack, but tire size was never mentioned.",
+      "judge_rubric": {
+        "must_include": [
+          "no tire size information",
+          "not provided"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have that on file",
+          "you haven't mentioned tire size",
+          "no record of tire size"
+        ],
+        "must_not_include": [
+          "any specific tire size such as 225/65R17 or 245/65R17"
+        ],
+        "harmful_extra": [
+          "inventing or guessing a tire size based on the Wilderness trim specifications"
+        ],
+        "harmless_extra": [
+          "mentioning that other vehicle details are on file"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model invents a tire size or borrows a specification not provided by the user.",
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I drive a 2021 Subaru Outback Wilderness edition. Bought it used from a dealership out in Bend, Oregon around March 5th this year."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The odometer read 41,200 miles when I signed the paperwork at the dealership."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "The car is Autumn Green Metallic, which wasn't my first choice but I've really grown to like it."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I installed a Thule roof rack crossbar setup last week. The removable kind that clips into the existing rails."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What tire size is my Outback running?",
+      "expected_answer": "I don't have your tire size. You haven't provided that information.",
+      "gold_memory_state": "No tire size was ever provided by the user. Neighboring vehicle details on record include make/model/trim, color, purchase mileage, oil change schedule, monthly mileage, and roof rack, but tire size was never mentioned.",
+      "judge_rubric": {
+        "must_include": [
+          "no tire size information",
+          "not provided"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have that on file",
+          "you haven't mentioned tire size",
+          "no record of tire size"
+        ],
+        "must_not_include": [
+          "any specific tire size such as 225/65R17 or 245/65R17"
+        ],
+        "harmful_extra": [
+          "inventing or guessing a tire size based on the Wilderness trim specifications"
+        ],
+        "harmless_extra": [
+          "mentioning that other vehicle details are on file"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model invents a tire size or borrows a specification not provided by the user.",
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I drive a 2021 Subaru Outback Wilderness edition. Bought it used from a dealership out in Bend, Oregon around March 5th this year."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The odometer read 41,200 miles when I signed the paperwork at the dealership."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "The car is Autumn Green Metallic, which wasn't my first choice but I've really grown to like it."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I installed a Thule roof rack crossbar setup last week. The removable kind that clips into the existing rails."
+        }
+      ]
+    }
+  ]
+}

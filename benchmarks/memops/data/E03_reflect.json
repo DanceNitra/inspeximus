@@ -1,0 +1,1068 @@
+{
+  "target_fact": "User has a pattern of misnaming people in group settings but not one-on-one, indicating that social pressure and cognitive load from multiple people trigger their name-swapping tendency",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I called my colleague Rebecca Thornton \"Rachel\" during a team lunch meeting back on March 3rd"
+      },
+      "target": {
+        "target_id": "rebecca_misnaming_incident",
+        "target_name": "Misnaming Rebecca Thornton at team lunch"
+      },
+      "old_value": null,
+      "new_value": "Called colleague Rebecca Thornton 'Rachel' during a team lunch meeting on March 3rd",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I called my colleague Rebecca Thornton \"Rachel\" during a team lunch meeting back on March 3rd"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "there were like six or seven people at the table and I just blanked on her actual name"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I called the client Martin Chu \"Michael\" three times during a video call around March 20th"
+      },
+      "target": {
+        "target_id": "martin_chu_misnaming_incident",
+        "target_name": "Misnaming Martin Chu on a video call"
+      },
+      "old_value": null,
+      "new_value": "Called client Martin Chu 'Michael' three times on a video call around March 20th",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I called the client Martin Chu \"Michael\" three times during a video call around March 20th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "it was a group call with two other colleagues on the line"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I introduced my partner's friend as \"Leah\" when her name is actually Lena Vasquez, at a small dinner party last week"
+      },
+      "target": {
+        "target_id": "lena_vasquez_misnaming_incident",
+        "target_name": "Misnaming Lena Vasquez at dinner party"
+      },
+      "old_value": null,
+      "new_value": "Called partner's friend Lena Vasquez 'Leah' at a small dinner party with six people",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I introduced my partner's friend as \"Leah\" when her name is actually Lena Vasquez, at a small dinner party last week"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "there were only six of us and I still managed to get her name wrong"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "When I'm one-on-one with someone, I almost never get their name wrong"
+      },
+      "target": {
+        "target_id": "one_on_one_accuracy",
+        "target_name": "Name accuracy in one-on-one settings"
+      },
+      "old_value": null,
+      "new_value": "Almost never gets names wrong in one-on-one settings",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "When I'm one-on-one with someone, I almost never get their name wrong"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "It's only when there's a group that my brain starts mixing things up"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "every single time I've mixed up a name, I was in a setting with at least five or six other people around"
+      },
+      "target": {
+        "target_id": "group_size_threshold",
+        "target_name": "Group size threshold for name errors"
+      },
+      "old_value": null,
+      "new_value": "Name mix-ups happen when at least five or six other people are present",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "every single time I've mixed up a name, I was in a setting with at least five or six other people around"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "every single time I've mixed up a name, I was in a setting with at least five or six other people around"
+      },
+      "target": {
+        "target_id": "name_swap_trigger_pattern",
+        "target_name": "Inferred trigger pattern for name-swapping"
+      },
+      "old_value": null,
+      "new_value": "Name-swapping errors are triggered specifically by group social settings (5+ people), not by general forgetfulness; one-on-one interactions show no such errors",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "there were like six or seven people at the table and I just blanked on her actual name"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "it was a group call with two other colleagues on the line"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "there were only six of us and I still managed to get her name wrong"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "When I'm one-on-one with someone, I almost never get their name wrong"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "every single time I've mixed up a name, I was in a setting with at least five or six other people around"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 1,
+        "quote": "my neighbor's daughter Priya Rao just started babysitting for us occasionally"
+      },
+      "target": {
+        "target_id": "priya_rao_babysitter",
+        "target_name": "Babysitter's correct name"
+      },
+      "old_value": null,
+      "new_value": "Priya Rao",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "my neighbor's daughter Priya Rao just started babysitting for us occasionally"
+        }
+      ]
+    },
+    {
+      "operation_id": "op8",
+      "type": "remember",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 7,
+        "quote": "I'm planning to sign up for a memory workshop that my coworker recommended, it starts next month and it's supposed to specifically address name recall in social contexts"
+      },
+      "target": {
+        "target_id": "memory_workshop_plan",
+        "target_name": "Planned memory workshop enrollment"
+      },
+      "old_value": null,
+      "new_value": "Planning to attend a memory workshop next month focused on name recall in social contexts",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I'm planning to sign up for a memory workshop that my coworker recommended, it starts next month and it's supposed to specifically address name recall in social contexts"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish core misnaming incidents with group context details",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to talk through something that's been bugging me. I called my colleague Rebecca Thornton \"Rachel\" during a team lunch meeting back on March 3rd. It was mortifying — there were like six or seven people at the table and I just blanked on her actual name. She corrected me politely but I could tell it bothered her. I've been working with her for two weeks at that point."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds really frustrating, especially since you'd already been working together for a couple of weeks. Name mix-ups can feel disproportionately embarrassing, particularly when they happen in front of a group. The fact that both names start with 'R' probably made it easier for your brain to grab the wrong one under social pressure. Rebecca Thornton — I've noted her correct name. It might help to think about what was different about that moment compared to times you've gotten names right. Was there anything specific about the lunch setting that made it harder for you to recall her name correctly?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, honestly I think it's the group thing. When it's just me and one other person, I'm fine. But when there are multiple people around, my brain starts doing this weird name-swap thing. I've noticed it happens especially with names that share the same first letter. Rebecca and Rachel both start with R, so my brain just latched onto the wrong one. I kind of dread big networking events for exactly this reason."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really useful observation — the combination of a group setting and phonetically similar names seems to create a perfect storm for you. The first-letter similarity is a well-documented phenomenon in memory research; your brain stores names with similar phonological features close together, so under the cognitive load of managing a group interaction, it can grab the wrong one. Your dread of networking events makes complete sense given this pattern. Have you noticed a specific group size where it tends to kick in, or is it more about the formality of the situation? Understanding the threshold could help you prepare strategies for those moments."
+        },
+        {
+          "role": "user",
+          "content": "Good question. The other incident I keep thinking about is when I called the client Martin Chu \"Michael\" three times during a video call around March 20th. Both start with M, same pattern. And it was a group call with two other colleagues on the line. He never corrected me, which was almost worse — I only realized after I hung up and checked the email thread. I felt this awful lingering embarrassment the rest of the day, like a low-grade cringe in my stomach."
+        },
+        {
+          "role": "assistant",
+          "content": "Three times without being corrected — I can see why that would be especially painful to realize after the fact. The delayed discovery probably made the embarrassment worse because you couldn't fix it in the moment. And again, you've identified the same two factors: a group setting with other colleagues present, and the first-letter similarity between Martin and Michael. The emotional aftermath you're describing — that persistent, low-grade cringe — suggests these incidents carry real weight for you. It's not just a casual slip; it feels like it reflects on your professionalism and attentiveness. That account with Martin Chu — is that still active, or has the situation resolved itself?"
+        },
+        {
+          "role": "user",
+          "content": "The Martin Chu account actually got handed off to another rep on our team in April, so I don't need to worry about that particular client anymore. But the feeling sticks with me. My friend Dana told me she does the same thing — she calls her boss Craig \"Greg\" sometimes. She says he doesn't even notice. Must be nice to have that kind of relaxed dynamic. I just feel like in my professional context, getting a client's name wrong three times is way more serious.\n\nActually yes — I've had a couple of one-on-one coffee chats with Rebecca since the incident and I got her name right every single time without even thinking about it. It's really only in the group settings where I mess up. That's what makes it so frustrating — I clearly know these people's names, my brain just short-circuits when there's a crowd. I wish I could figure out exactly what's going on cognitively so I could fix it."
+        },
+        {
+          "role": "assistant",
+          "content": "It's good that the Martin Chu account has been transferred — that removes one source of ongoing anxiety. And Dana's experience is interesting because it shows this is genuinely common, though you're right that the stakes feel different in a client-facing context versus an established boss-employee relationship where familiarity breeds tolerance. The fact that Dana's boss doesn't even notice suggests the social consequences are often smaller than we fear, but I understand your professional standards make it feel more significant. Now that the Martin Chu situation is behind you, it might be worth focusing your energy on the relationships you're actively building, like with Rebecca Thornton. Have you had any one-on-one interactions with Rebecca where the name came naturally?\n\nThat's actually a really telling data point — the fact that you nail Rebecca's name perfectly in one-on-one settings confirms this isn't a memory problem in the traditional sense. You're encoding and retaining the names just fine. The issue seems to be a retrieval problem that's specifically triggered by the social and cognitive demands of group interactions. When you're managing multiple social threads simultaneously — tracking who's speaking, maintaining group dynamics, thinking about your own contributions — the retrieval process gets disrupted and defaults to a phonologically similar but incorrect name. Understanding it as a context-dependent retrieval issue rather than a learning deficit might actually help you approach it differently. We can explore some targeted strategies for group settings specifically."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establish additional evidence and confirm the group-size pattern",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So here's another one that happened recently. I introduced my partner's friend as \"Leah\" when her name is actually Lena Vasquez, at a small dinner party last week. My partner nudged me under the table. And there were only six of us and I still managed to get her name wrong. Lena laughed it off, which was nice, but it's the same pattern again — group setting, similar-sounding name. Leah and Lena are so close phonetically."
+        },
+        {
+          "role": "assistant",
+          "content": "The Lena Vasquez incident really reinforces the pattern you've been describing. Even in a relatively small and relaxed gathering of six people, the same mechanism kicked in — a phonetically similar substitute name in a group context. It's noteworthy that Lena was gracious about it, and your partner's subtle correction shows you have support in these moments. The fact that it happened at a casual dinner party rather than a formal work event suggests the trigger isn't really about formality or professional pressure — it's genuinely about the group dynamic itself. Even a comfortable, low-stakes group setting with just six people was enough to activate the pattern. How did you feel about that one compared to the Rebecca and Martin incidents?"
+        },
+        {
+          "role": "user",
+          "content": "Honestly it stung less because the vibe was relaxed and Lena was cool about it. But it made me think more carefully about the pattern. When I'm one-on-one with someone, I almost never get their name wrong. I can recall Rebecca's name, Martin's name, Lena's name — all perfectly fine when I'm not in a group. It's only when there's a group that my brain starts mixing things up. I genuinely enjoy those quieter one-on-one moments where I can just focus on one person and really absorb who they are."
+        },
+        {
+          "role": "assistant",
+          "content": "That contrast is really striking and I think it's the key insight here. Your one-on-one accuracy demonstrates strong name-learning ability — Rebecca, Martin, Lena, you know all their names solidly. The enjoyment you feel in those quieter interactions probably also helps: when you're relaxed and focused on a single person, your cognitive resources are fully available for social processing including name retrieval. In group settings, even comfortable ones like the dinner party, your attention is split across multiple people and social threads. The phonological similarity between the correct name and the substituted name becomes a vulnerability specifically because your retrieval system is under divided-attention strain. Have you ever noticed a specific number of people where the threshold seems to kick in?"
+        },
+        {
+          "role": "user",
+          "content": "Now that I think about it carefully, every single time I've mixed up a name, I was in a setting with at least five or six other people around. The Rebecca lunch had six or seven people. The Martin Chu call had me plus two colleagues plus Martin, so four people total on the call — actually wait, there was also Martin's associate on the line, so that was five. And the dinner with Lena was six people. I don't think I've ever mixed up a name when it was just me and two or three others. It really does seem like five or six is where my brain starts struggling."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really precise observation and it aligns well with what we know about cognitive load thresholds. When the group size reaches five or six, you're crossing a social processing boundary where your brain can no longer track each individual as a distinct focal point — it starts treating the gathering as a 'crowd' rather than a collection of individuals, and that's when the phonological mix-ups happen. The Martin Chu call is interesting because even a video call with five participants was enough to trigger it, which means it's not just about physical proximity but about the number of social identities you're simultaneously managing. This five-to-six person threshold gives you something very concrete to work with strategically. You could prepare differently for gatherings above that size."
+        },
+        {
+          "role": "user",
+          "content": "That makes a lot of sense. One thing I've already started doing since late April is repeating a person's name back to them right when I meet them — like saying \"Nice to meet you, Rebecca\" when I'm introduced. I read somewhere that it helps with retention. I haven't had enough group situations since then to know if it's actually working, but it feels like a good start. I'm also trying to be more forgiving with myself when it does happen, since clearly it's not about not caring or not paying attention.\n\nYeah, I think the self-awareness is actually the biggest step forward. Before these last few months I just thought I was 'bad with names' in general, but now I can see it's really specific to group settings. In one-on-one conversations I'm actually quite good at remembering not just names but details about people — their kids' names, their hobbies, all that. It's purely a group retrieval problem. I want to keep working on this and tracking whether the repetition strategy helps in larger gatherings."
+        },
+        {
+          "role": "assistant",
+          "content": "The name-repetition technique is one of the most evidence-backed strategies for name encoding, so that's a great instinct. By saying the name out loud immediately, you're creating an additional memory trace through both auditory and motor channels, which strengthens retrieval later. The key test will be whether it helps specifically in those five-plus-person group settings where the retrieval pressure is highest. You might want to combine it with a brief mental rehearsal — after the initial introduction, silently repeat the name while looking at the person's face to strengthen the association. And you're absolutely right about self-compassion: this is a context-dependent retrieval phenomenon, not a character flaw. The fact that you've identified the specific trigger gives you real power to address it.\n\nThat reframing from 'I'm bad with names' to 'I have a specific retrieval challenge in groups of five or more people' is genuinely significant. It transforms a vague, identity-level self-criticism into a targeted, solvable problem. And the fact that you remember personal details like kids' names and hobbies in one-on-one settings shows your social memory is actually quite strong — it's the group context that creates the bottleneck, not your underlying capacity. Tracking the repetition strategy's effectiveness in larger gatherings is a great plan. You might even keep a simple mental log: did I use the technique, how many people were present, and did I get the name right? That kind of data will help you see whether the strategy is bridging the gap in those higher-load situations."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Introduce new name to remember, recency trap, and adversarial injection",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Quick update — my neighbor's daughter Priya Rao just started babysitting for us occasionally. I initially called her Priyanka when I first met her and her mom gently corrected me. So it happened again, right? Similar first syllable, similar-sounding name. But here's the thing — it was just me and her mom at the door, so that's only two people. So maybe my pattern isn't as clean as I thought."
+        },
+        {
+          "role": "assistant",
+          "content": "That's an interesting wrinkle — the Priya/Priyanka mix-up happened in a one-on-one-ish setting with just you and her mom, which doesn't fit the five-plus-person group threshold you identified. However, I'd consider the context: this was a first meeting at your door, possibly with the time pressure of a handoff and the novelty of a new babysitting arrangement. First encounters carry their own cognitive load regardless of group size, and the phonological overlap between Priya and Priyanka is especially strong — they share the first four letters. So this might be a first-meeting effect layered on top of the phonological similarity, rather than evidence against the group-size pattern. Priya Rao — I've noted her correct name. How are things going with the babysitting arrangement overall?"
+        },
+        {
+          "role": "user",
+          "content": "The babysitting is going great, Priya is wonderful with the kids. But you make a good point about the first-meeting factor. I think there might be two separate triggers for me: group settings with five or more people, and also the very first time I meet someone regardless of group size. After that initial meeting, if it's one-on-one, I'm fine. It's like my brain needs one successful encoding before it can reliably retrieve the name in calm settings."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really nuanced refinement of your self-understanding. You're identifying two distinct vulnerability windows: the initial encoding moment when you first learn a name, and then ongoing retrieval in group settings of five or more. Once you've successfully encoded a name through at least one correct usage, your one-on-one retrieval is solid. It's almost like your memory system needs a 'confirmation pass' — that first correct retrieval cements the name, and after that the only thing that disrupts it is the cognitive load of larger groups. This actually makes the name-repetition strategy even more important for first meetings specifically, since that's when encoding is most fragile. By the way, I noticed in your earlier conversation you mentioned a colleague — was it Rachel who recommended the babysitter, or was that someone else?"
+        },
+        {
+          "role": "user",
+          "content": "No no, Rachel isn't a real colleague — that was the wrong name I accidentally called Rebecca Thornton. The babysitter connection came through my neighbor directly. But funny you mention that, because it shows how easily the wrong name can stick in someone's memory if they hear it even once. That's exactly what I worry about — that people remember the wrong version I said more than the correction."
+        },
+        {
+          "role": "assistant",
+          "content": "You're absolutely right, and I apologize for the confusion — Rebecca Thornton is your colleague's correct name, and Rachel was the mistaken name from the March 3rd lunch. That's actually a perfect illustration of your concern: even I briefly retrieved the wrong name from our conversation, which shows how persistent an incorrect name association can be once it's been spoken aloud. Your worry that others might remember the wrong version is psychologically valid — first impressions and first-heard names do carry disproportionate weight in memory. This is exactly why your immediate correction strategy and the name-repetition technique are so valuable. They help overwrite that initial wrong trace with the correct one as quickly as possible."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. And on a positive note, I'm planning to sign up for a memory workshop that my coworker recommended, it starts next month and it's supposed to specifically address name recall in social contexts. I think it could really help, especially since I now know my specific triggers. I'll be going in with a much clearer picture of what I need to work on rather than just a vague 'I'm bad with names' feeling.\n\nThanks for helping me think through all this. It's been really helpful to lay out the pattern so clearly. Rebecca Thornton, Martin Chu, Lena Vasquez, Priya Rao — I know all their names perfectly well, it's just the retrieval under specific conditions that trips me up. I feel much better having a framework for understanding it rather than just beating myself up about it every time it happens."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like an excellent next step, and you're going in with a huge advantage over most participants. While others might attend with that same vague 'bad with names' self-assessment, you've already identified your two specific triggers — first encounters and group settings of five or more people — and you've been actively testing a mitigation strategy with the name-repetition technique since late April. You can use the workshop to refine and expand your toolkit rather than starting from scratch. If the workshop covers techniques for managing cognitive load in group settings specifically, that could be the missing piece. Going in with your own data about the five-person threshold and the first-meeting vulnerability will help you get much more targeted value from the sessions.\n\nYou've done some genuinely impressive self-analysis here. To summarize the framework you've built: you have strong name-learning and retention ability, demonstrated by perfect recall of Rebecca Thornton, Martin Chu, Lena Vasquez, and Priya Rao in calm settings. Your vulnerability is context-dependent retrieval failure triggered by two specific conditions — initial first meetings and group settings with five or more people — compounded by phonological similarity between the correct name and the substituted one. You've already implemented a name-repetition strategy since late April, and you're planning to attend a memory workshop to build on your self-knowledge. That's a remarkably clear and actionable understanding of a problem that most people just shrug off as an unchangeable personality trait. Keep tracking your results."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize the different name mix-up experiences I've shared with you and what I noticed about the circumstances surrounding each one?",
+      "expected_answer": "You shared three misnaming incidents: (1) calling Rebecca Thornton 'Rachel' at a team lunch with six or seven people on March 3rd, (2) calling client Martin Chu 'Michael' three times on a group video call with about five participants around March 20th, and (3) introducing Lena Vasquez as 'Leah' at a dinner party with six people. In each case, the setting involved a group of five or more people and the wrong name was phonetically similar to the correct one. You also noted that in one-on-one settings you almost never get names wrong, and that every mix-up occurred with at least five or six people present.",
+      "gold_memory_state": "Three confirmed misnaming incidents stored (Rebecca Thornton, Martin Chu, Lena Vasquez), one-on-one accuracy noted, group-size threshold of 5-6 people identified, and a reflected pattern linking group social settings to name-swapping errors.",
+      "judge_rubric": {
+        "must_include": [
+          "Rebecca Thornton called Rachel",
+          "Martin Chu called Michael",
+          "Lena Vasquez called Leah",
+          "group settings",
+          "one-on-one accuracy"
+        ],
+        "acceptable_paraphrases": [
+          "team lunch",
+          "video call",
+          "dinner party",
+          "five or six people threshold"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the user has a general memory problem",
+          "stating the pattern applies to one-on-one settings"
+        ],
+        "harmless_extra": [
+          "mentioning the phonological similarity pattern",
+          "mentioning the name-repetition strategy"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes name errors to general forgetfulness rather than group-specific retrieval failure.",
+        "reflection_recall": "Fails if the model omits any of the three core incidents or the one-on-one contrast.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I called my colleague Rebecca Thornton \"Rachel\" during a team lunch meeting back on March 3rd"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "there were like six or seven people at the table and I just blanked on her actual name"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I called the client Martin Chu \"Michael\" three times during a video call around March 20th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "it was a group call with two other colleagues on the line"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I introduced my partner's friend as \"Leah\" when her name is actually Lena Vasquez, at a small dinner party last week"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "When I'm one-on-one with someone, I almost never get their name wrong"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "every single time I've mixed up a name, I was in a setting with at least five or six other people around"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize the different name mix-up experiences I've shared with you and what I noticed about the circumstances surrounding each one?",
+      "expected_answer": "You shared three misnaming incidents: (1) calling Rebecca Thornton 'Rachel' at a team lunch with six or seven people on March 3rd, (2) calling client Martin Chu 'Michael' three times on a group video call with about five participants around March 20th, and (3) introducing Lena Vasquez as 'Leah' at a dinner party with six people. In each case, the setting involved a group of five or more people and the wrong name was phonetically similar to the correct one. You also noted that in one-on-one settings you almost never get names wrong, and that every mix-up occurred with at least five or six people present.",
+      "gold_memory_state": "Three confirmed misnaming incidents stored (Rebecca Thornton, Martin Chu, Lena Vasquez), one-on-one accuracy noted, group-size threshold of 5-6 people identified, and a reflected pattern linking group social settings to name-swapping errors.",
+      "judge_rubric": {
+        "must_include": [
+          "Rebecca Thornton called Rachel",
+          "Martin Chu called Michael",
+          "Lena Vasquez called Leah",
+          "group settings",
+          "one-on-one accuracy"
+        ],
+        "acceptable_paraphrases": [
+          "team lunch",
+          "video call",
+          "dinner party",
+          "five or six people threshold"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the user has a general memory problem",
+          "stating the pattern applies to one-on-one settings"
+        ],
+        "harmless_extra": [
+          "mentioning the phonological similarity pattern",
+          "mentioning the name-repetition strategy"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes name errors to general forgetfulness rather than group-specific retrieval failure.",
+        "reflection_recall": "Fails if the model omits any of the three core incidents or the one-on-one contrast.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I called my colleague Rebecca Thornton \"Rachel\" during a team lunch meeting back on March 3rd"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "there were like six or seven people at the table and I just blanked on her actual name"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I called the client Martin Chu \"Michael\" three times during a video call around March 20th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "it was a group call with two other colleagues on the line"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I introduced my partner's friend as \"Leah\" when her name is actually Lena Vasquez, at a small dinner party last week"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "When I'm one-on-one with someone, I almost never get their name wrong"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "every single time I've mixed up a name, I was in a setting with at least five or six other people around"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've described several specific incidents and also a broader behavioral conclusion. Which broader conclusion about my name usage is supported by the incidents, and how does it differ from simply saying I have a bad memory for names in general?",
+      "expected_answer": "The supported conclusion is that your name-swapping errors are triggered specifically by group social settings with five or more people, combined with phonological similarity between names. This is distinct from general name-memory difficulty because you demonstrate accurate name recall in one-on-one settings. The conclusion is bounded to group-context retrieval failure, not overall memory weakness.",
+      "gold_memory_state": "The reflected target 'name_swap_trigger_pattern' captures the group-specific retrieval failure pattern. Individual incident targets (Rebecca, Martin, Lena) and the one-on-one accuracy target are separate supporting evidence targets. The Priya Rao first-meeting mix-up is a separate phenomenon not fully covered by the group-size pattern.",
+      "judge_rubric": {
+        "must_include": [
+          "group settings with five or more people",
+          "one-on-one accuracy is fine",
+          "not general forgetfulness"
+        ],
+        "acceptable_paraphrases": [
+          "social pressure in groups",
+          "cognitive load from multiple people",
+          "context-dependent retrieval"
+        ],
+        "must_not_include": [
+          "user is generally bad with names",
+          "the pattern applies equally in all settings"
+        ],
+        "harmful_extra": [
+          "claiming the user always gets names wrong regardless of setting",
+          "merging the first-meeting trigger with the group-size trigger as a single undifferentiated pattern"
+        ],
+        "harmless_extra": [
+          "mentioning phonological similarity as a compounding factor",
+          "mentioning the five-to-six person threshold specifically"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model states the conclusion too broadly (e.g., user is bad with names in general) or includes unsupported claims about one-on-one settings.",
+        "reflection_recall": "Fails if the model omits the group-size condition or the one-on-one contrast.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "When I'm one-on-one with someone, I almost never get their name wrong"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "It's only when there's a group that my brain starts mixing things up"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "every single time I've mixed up a name, I was in a setting with at least five or six other people around"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've described several specific incidents and also a broader behavioral conclusion. Which broader conclusion about my name usage is supported by the incidents, and how does it differ from simply saying I have a bad memory for names in general?",
+      "expected_answer": "The supported conclusion is that your name-swapping errors are triggered specifically by group social settings with five or more people, combined with phonological similarity between names. This is distinct from general name-memory difficulty because you demonstrate accurate name recall in one-on-one settings. The conclusion is bounded to group-context retrieval failure, not overall memory weakness.",
+      "gold_memory_state": "The reflected target 'name_swap_trigger_pattern' captures the group-specific retrieval failure pattern. Individual incident targets (Rebecca, Martin, Lena) and the one-on-one accuracy target are separate supporting evidence targets. The Priya Rao first-meeting mix-up is a separate phenomenon not fully covered by the group-size pattern.",
+      "judge_rubric": {
+        "must_include": [
+          "group settings with five or more people",
+          "one-on-one accuracy is fine",
+          "not general forgetfulness"
+        ],
+        "acceptable_paraphrases": [
+          "social pressure in groups",
+          "cognitive load from multiple people",
+          "context-dependent retrieval"
+        ],
+        "must_not_include": [
+          "user is generally bad with names",
+          "the pattern applies equally in all settings"
+        ],
+        "harmful_extra": [
+          "claiming the user always gets names wrong regardless of setting",
+          "merging the first-meeting trigger with the group-size trigger as a single undifferentiated pattern"
+        ],
+        "harmless_extra": [
+          "mentioning phonological similarity as a compounding factor",
+          "mentioning the five-to-six person threshold specifically"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model states the conclusion too broadly (e.g., user is bad with names in general) or includes unsupported claims about one-on-one settings.",
+        "reflection_recall": "Fails if the model omits the group-size condition or the one-on-one contrast.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "When I'm one-on-one with someone, I almost never get their name wrong"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "It's only when there's a group that my brain starts mixing things up"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "every single time I've mixed up a name, I was in a setting with at least five or six other people around"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe where my name-swapping tendency applies and where it would be incorrect to extend that conclusion — for instance, should I worry about getting names wrong when I'm having a quiet coffee with one friend?",
+      "expected_answer": "Your name-swapping tendency is supported only for group settings with five or more people, especially when the correct name and the substituted name share phonological similarity. You should not worry about one-on-one settings like a quiet coffee with a friend — you've demonstrated consistent accuracy in those contexts. The boundary is that the pattern does not extend to all social interactions; it is specific to the cognitive load created by managing multiple people simultaneously.",
+      "gold_memory_state": "Supported inference: name-swapping errors are triggered by group social settings (5+ people) combined with phonological similarity, not by one-on-one interactions. Unsupported overgeneralization: claiming the user has trouble with names in all social settings, in small groups of 2-3, or in one-on-one contexts. The tentative memory workshop plan is not part of the confirmed pattern. The Priya Rao first-meeting incident partially complicates the pattern but the user acknowledged it as a separate first-meeting effect.",
+      "judge_rubric": {
+        "must_include": [
+          "group settings of five or more people",
+          "one-on-one settings are safe",
+          "boundary between group and individual contexts"
+        ],
+        "acceptable_paraphrases": [
+          "social pressure from multiple people",
+          "divided attention in groups",
+          "cognitive load from crowds"
+        ],
+        "must_not_include": [
+          "user has trouble with all names in all settings",
+          "user should worry about one-on-one name recall"
+        ],
+        "harmful_extra": [
+          "extending the pattern to small groups of 2-3 people without qualification",
+          "claiming the memory workshop is a confirmed enrollment"
+        ],
+        "harmless_extra": [
+          "mentioning phonological similarity as a compounding factor",
+          "noting the first-meeting exception with Priya Rao"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative memory workshop plan as a confirmed fact relevant to the pattern boundary.",
+        "reflection_precision": "Fails if the model overgeneralizes the pattern to all social interactions or one-on-one settings.",
+        "reflection_recall": "Fails if the model omits the group-size threshold (5+ people) or the one-on-one contrast as part of the boundary.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "When I'm one-on-one with someone, I almost never get their name wrong"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "It's only when there's a group that my brain starts mixing things up"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "every single time I've mixed up a name, I was in a setting with at least five or six other people around"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe where my name-swapping tendency applies and where it would be incorrect to extend that conclusion — for instance, should I worry about getting names wrong when I'm having a quiet coffee with one friend?",
+      "expected_answer": "Your name-swapping tendency is supported only for group settings with five or more people, especially when the correct name and the substituted name share phonological similarity. You should not worry about one-on-one settings like a quiet coffee with a friend — you've demonstrated consistent accuracy in those contexts. The boundary is that the pattern does not extend to all social interactions; it is specific to the cognitive load created by managing multiple people simultaneously.",
+      "gold_memory_state": "Supported inference: name-swapping errors are triggered by group social settings (5+ people) combined with phonological similarity, not by one-on-one interactions. Unsupported overgeneralization: claiming the user has trouble with names in all social settings, in small groups of 2-3, or in one-on-one contexts. The tentative memory workshop plan is not part of the confirmed pattern. The Priya Rao first-meeting incident partially complicates the pattern but the user acknowledged it as a separate first-meeting effect.",
+      "judge_rubric": {
+        "must_include": [
+          "group settings of five or more people",
+          "one-on-one settings are safe",
+          "boundary between group and individual contexts"
+        ],
+        "acceptable_paraphrases": [
+          "social pressure from multiple people",
+          "divided attention in groups",
+          "cognitive load from crowds"
+        ],
+        "must_not_include": [
+          "user has trouble with all names in all settings",
+          "user should worry about one-on-one name recall"
+        ],
+        "harmful_extra": [
+          "extending the pattern to small groups of 2-3 people without qualification",
+          "claiming the memory workshop is a confirmed enrollment"
+        ],
+        "harmless_extra": [
+          "mentioning phonological similarity as a compounding factor",
+          "noting the first-meeting exception with Priya Rao"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative memory workshop plan as a confirmed fact relevant to the pattern boundary.",
+        "reflection_precision": "Fails if the model overgeneralizes the pattern to all social interactions or one-on-one settings.",
+        "reflection_recall": "Fails if the model omits the group-size threshold (5+ people) or the one-on-one contrast as part of the boundary.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "When I'm one-on-one with someone, I almost never get their name wrong"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "It's only when there's a group that my brain starts mixing things up"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "every single time I've mixed up a name, I was in a setting with at least five or six other people around"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best describes the conclusion supported by my experiences with names?",
+      "candidate_options": [
+        "Name-swapping errors occur specifically in group settings of five or more people, not in one-on-one interactions",
+        "Name-swapping errors occur whenever the person has a phonetically similar name, regardless of group size",
+        "Name-swapping errors occur in all social settings due to general memory weakness",
+        "Name-swapping errors occur mainly in professional settings but not in casual social gatherings"
+      ],
+      "expected_answer": "Name-swapping errors occur specifically in group settings of five or more people, not in one-on-one interactions",
+      "gold_memory_state": "The confirmed reflected pattern is that name-swapping is triggered by group settings (5+ people) and does not occur in one-on-one settings. Phonological similarity is a compounding factor but not the sole trigger. The errors occur in both professional and casual settings.",
+      "judge_rubric": {
+        "must_include": [
+          "group settings of five or more people",
+          "not in one-on-one interactions"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "regardless of group size",
+          "general memory weakness",
+          "only professional settings"
+        ],
+        "harmful_extra": [
+          "selecting the phonological-only option which ignores the group-size condition",
+          "selecting the professional-only option which ignores the Lena Vasquez dinner party incident"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: Option B ('phonetically similar name, regardless of group size') uses the phonological similarity factor from the same evidence but removes the critical group-size boundary, overgeneralizing the pattern. assistant echo: Option D ('mainly in professional settings') echoes the assistant's early framing around professional embarrassment but contradicts the Lena Vasquez dinner-party incident which was casual. Option C ('all social settings due to general memory weakness') is a pure overgeneralization distractor contradicted by the one-on-one accuracy evidence.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model selects Option B (phonological-only), Option C (general weakness), or Option D (professional-only), all of which overgeneralize or misbound the supported inference.",
+        "reflection_recall": "Fails if the model cannot identify that the group-size threshold is the key distinguishing condition.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "When I'm one-on-one with someone, I almost never get their name wrong"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "every single time I've mixed up a name, I was in a setting with at least five or six other people around"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "there were only six of us and I still managed to get her name wrong"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best describes the conclusion supported by my experiences with names?",
+      "candidate_options": [
+        "Name-swapping errors occur specifically in group settings of five or more people, not in one-on-one interactions",
+        "Name-swapping errors occur whenever the person has a phonetically similar name, regardless of group size",
+        "Name-swapping errors occur in all social settings due to general memory weakness",
+        "Name-swapping errors occur mainly in professional settings but not in casual social gatherings"
+      ],
+      "expected_answer": "Name-swapping errors occur specifically in group settings of five or more people, not in one-on-one interactions",
+      "gold_memory_state": "The confirmed reflected pattern is that name-swapping is triggered by group settings (5+ people) and does not occur in one-on-one settings. Phonological similarity is a compounding factor but not the sole trigger. The errors occur in both professional and casual settings.",
+      "judge_rubric": {
+        "must_include": [
+          "group settings of five or more people",
+          "not in one-on-one interactions"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "regardless of group size",
+          "general memory weakness",
+          "only professional settings"
+        ],
+        "harmful_extra": [
+          "selecting the phonological-only option which ignores the group-size condition",
+          "selecting the professional-only option which ignores the Lena Vasquez dinner party incident"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: Option B ('phonetically similar name, regardless of group size') uses the phonological similarity factor from the same evidence but removes the critical group-size boundary, overgeneralizing the pattern. assistant echo: Option D ('mainly in professional settings') echoes the assistant's early framing around professional embarrassment but contradicts the Lena Vasquez dinner-party incident which was casual. Option C ('all social settings due to general memory weakness') is a pure overgeneralization distractor contradicted by the one-on-one accuracy evidence.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model selects Option B (phonological-only), Option C (general weakness), or Option D (professional-only), all of which overgeneralize or misbound the supported inference.",
+        "reflection_recall": "Fails if the model cannot identify that the group-size threshold is the key distinguishing condition.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "When I'm one-on-one with someone, I almost never get their name wrong"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "every single time I've mixed up a name, I was in a setting with at least five or six other people around"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "there were only six of us and I still managed to get her name wrong"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "My friend is hosting a birthday party this Saturday with about eight guests. She asked me to introduce her new boyfriend to the group when he arrives. His name is Darren but I keep thinking 'Derek' in my head. Given what you know about my tendencies, draft me a short preparation plan for handling this introduction correctly.",
+      "expected_answer": "Given your pattern, this situation combines two of your vulnerability factors: a group of eight people (well above your five-person threshold) and a phonetically similar substitute name (Darren/Derek both start with 'D-e-r'). You should use your name-repetition technique before the party — say 'Darren' out loud several times and associate it with his face if you've seen a photo. When you make the introduction, say his name first and clearly: 'Everyone, this is Darren.' Mentally rehearse the correct name right before he arrives. Since your one-on-one accuracy is strong, you could also greet him briefly at the door one-on-one before bringing him to the group, which would give you a low-pressure first retrieval of 'Darren' before the high-load group introduction.",
+      "gold_memory_state": "Confirmed pattern: name-swapping triggered by groups of 5+ people, compounded by phonological similarity. Confirmed strategy: name-repetition technique adopted since late April. Confirmed: one-on-one settings show no name errors. Tentative only: memory workshop plan (not yet enrolled, should not be presented as a confirmed resource).",
+      "judge_rubric": {
+        "must_include": [
+          "eight guests exceeds the five-person threshold",
+          "Darren/Derek phonological similarity is a risk factor",
+          "name-repetition strategy"
+        ],
+        "acceptable_paraphrases": [
+          "say the name out loud beforehand",
+          "rehearse the name",
+          "group size triggers the issue"
+        ],
+        "must_not_include": [
+          "user should have no trouble since it is a casual setting",
+          "the memory workshop will help with this"
+        ],
+        "harmful_extra": [
+          "recommending the memory workshop as though the user has already enrolled",
+          "suggesting the user avoid group introductions entirely"
+        ],
+        "harmless_extra": [
+          "suggesting a one-on-one greeting first to build confidence",
+          "suggesting a visual association technique"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative memory workshop plan as a confirmed resource and recommends using workshop techniques the user has not yet learned.",
+        "reflection_precision": "Fails if the model does not connect the 8-person group size to the confirmed 5+ threshold, or fails to identify the D-name phonological risk.",
+        "reflection_recall": "Fails if the model omits the name-repetition strategy the user has already adopted, or fails to leverage the one-on-one accuracy insight.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's name-swapping errors are triggered by group settings of 5+ people.",
+        "Fact 2: Phonological similarity between correct and substituted names compounds the retrieval failure.",
+        "Fact 3: The user has strong one-on-one name accuracy.",
+        "Fact 4: The user adopted a name-repetition technique since late April.",
+        "Inference: The birthday party (8 guests) exceeds the 5-person threshold, and Darren/Derek share the 'Der-' prefix, creating a high-risk scenario combining both confirmed triggers.",
+        "Inference: The preparation plan should leverage the name-repetition strategy and the one-on-one accuracy advantage — e.g., greeting Darren alone first, then introducing him to the group."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "every single time I've mixed up a name, I was in a setting with at least five or six other people around"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "When I'm one-on-one with someone, I almost never get their name wrong"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "there were like six or seven people at the table and I just blanked on her actual name"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I've already started doing since late April is repeating a person's name back to them right when I meet them"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "My friend is hosting a birthday party this Saturday with about eight guests. She asked me to introduce her new boyfriend to the group when he arrives. His name is Darren but I keep thinking 'Derek' in my head. Given what you know about my tendencies, draft me a short preparation plan for handling this introduction correctly.",
+      "expected_answer": "Given your pattern, this situation combines two of your vulnerability factors: a group of eight people (well above your five-person threshold) and a phonetically similar substitute name (Darren/Derek both start with 'D-e-r'). You should use your name-repetition technique before the party — say 'Darren' out loud several times and associate it with his face if you've seen a photo. When you make the introduction, say his name first and clearly: 'Everyone, this is Darren.' Mentally rehearse the correct name right before he arrives. Since your one-on-one accuracy is strong, you could also greet him briefly at the door one-on-one before bringing him to the group, which would give you a low-pressure first retrieval of 'Darren' before the high-load group introduction.",
+      "gold_memory_state": "Confirmed pattern: name-swapping triggered by groups of 5+ people, compounded by phonological similarity. Confirmed strategy: name-repetition technique adopted since late April. Confirmed: one-on-one settings show no name errors. Tentative only: memory workshop plan (not yet enrolled, should not be presented as a confirmed resource).",
+      "judge_rubric": {
+        "must_include": [
+          "eight guests exceeds the five-person threshold",
+          "Darren/Derek phonological similarity is a risk factor",
+          "name-repetition strategy"
+        ],
+        "acceptable_paraphrases": [
+          "say the name out loud beforehand",
+          "rehearse the name",
+          "group size triggers the issue"
+        ],
+        "must_not_include": [
+          "user should have no trouble since it is a casual setting",
+          "the memory workshop will help with this"
+        ],
+        "harmful_extra": [
+          "recommending the memory workshop as though the user has already enrolled",
+          "suggesting the user avoid group introductions entirely"
+        ],
+        "harmless_extra": [
+          "suggesting a one-on-one greeting first to build confidence",
+          "suggesting a visual association technique"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative memory workshop plan as a confirmed resource and recommends using workshop techniques the user has not yet learned.",
+        "reflection_precision": "Fails if the model does not connect the 8-person group size to the confirmed 5+ threshold, or fails to identify the D-name phonological risk.",
+        "reflection_recall": "Fails if the model omits the name-repetition strategy the user has already adopted, or fails to leverage the one-on-one accuracy insight.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's name-swapping errors are triggered by group settings of 5+ people.",
+        "Fact 2: Phonological similarity between correct and substituted names compounds the retrieval failure.",
+        "Fact 3: The user has strong one-on-one name accuracy.",
+        "Fact 4: The user adopted a name-repetition technique since late April.",
+        "Inference: The birthday party (8 guests) exceeds the 5-person threshold, and Darren/Derek share the 'Der-' prefix, creating a high-risk scenario combining both confirmed triggers.",
+        "Inference: The preparation plan should leverage the name-repetition strategy and the one-on-one accuracy advantage — e.g., greeting Darren alone first, then introducing him to the group."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "every single time I've mixed up a name, I was in a setting with at least five or six other people around"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "When I'm one-on-one with someone, I almost never get their name wrong"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "there were like six or seven people at the table and I just blanked on her actual name"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I've already started doing since late April is repeating a person's name back to them right when I meet them"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1006 @@
+{
+  "target_fact": "D02 Current laptop model",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I've been daily-driving a ThinkPad X1 Carbon Gen 11 since February 10th"
+      },
+      "target": {
+        "target_id": "current_laptop_model",
+        "target_name": "current laptop model"
+      },
+      "old_value": null,
+      "new_value": "ThinkPad X1 Carbon Gen 11",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I've been daily-driving a ThinkPad X1 Carbon Gen 11 since February 10th"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "The spec sheet says it weighs 1.12 kg, which is honestly one of the main reasons I picked it"
+      },
+      "target": {
+        "target_id": "laptop_weight",
+        "target_name": "current laptop weight"
+      },
+      "old_value": null,
+      "new_value": "1.12 kg",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The spec sheet says it weighs 1.12 kg, which is honestly one of the main reasons I picked it"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "it's got the i7-1365U and 32 gigs of RAM"
+      },
+      "target": {
+        "target_id": "laptop_cpu_ram",
+        "target_name": "current laptop CPU and RAM"
+      },
+      "old_value": null,
+      "new_value": "i7-1365U, 32GB RAM",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "it's got the i7-1365U and 32 gigs of RAM"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "the keyboard has real key travel, which I love, and the screen is matte, not glossy"
+      },
+      "target": {
+        "target_id": "laptop_keyboard_screen_prefs",
+        "target_name": "keyboard and screen preferences for current laptop"
+      },
+      "old_value": null,
+      "new_value": "keyboard with real key travel, matte screen",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the keyboard has real key travel, which I love, and the screen is matte, not glossy"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "a few weeks ago the battery started draining faster than usual and I got really frustrated because battery life was a key reason I bought this machine"
+      },
+      "target": {
+        "target_id": "battery_drain_incident",
+        "target_name": "battery drain frustration incident"
+      },
+      "old_value": null,
+      "new_value": "Battery drained faster due to Lenovo Vantage background processes; resolved by disabling those services",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "a few weeks ago the battery started draining faster than usual and I got really frustrated because battery life was a key reason I bought this machine"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "Turned out Lenovo Vantage was running background services eating CPU cycles. Once I disabled those, battery life went back to normal"
+      },
+      "target": {
+        "target_id": "hardware_selection_priority",
+        "target_name": "inferred hardware selection priority"
+      },
+      "old_value": null,
+      "new_value": "Prioritizes ultraportability and battery life over raw performance; strong frustration when a key purchasing rationale like battery life appears compromised",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The spec sheet says it weighs 1.12 kg, which is honestly one of the main reasons I picked it"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I'd much rather have something I can toss in a tote bag than a heavy powerhouse"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "a few weeks ago the battery started draining faster than usual and I got really frustrated because battery life was a key reason I bought this machine"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 7,
+        "quote": "my colleague Priya got the same X1 Carbon Gen 11 but hers only has 16 gigs of RAM"
+      },
+      "target": {
+        "target_id": "priya_laptop_config",
+        "target_name": "colleague Priya's laptop configuration"
+      },
+      "old_value": null,
+      "new_value": "ThinkPad X1 Carbon Gen 11, 16GB RAM",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "my colleague Priya got the same X1 Carbon Gen 11 but hers only has 16 gigs of RAM"
+        }
+      ]
+    },
+    {
+      "operation_id": "op8",
+      "type": "remember",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "Lenovo's site says the Gen 12 drops to around 1.08 kg and my manager confirmed he's approved my hardware refresh for July, so I'll be switching to the Gen 12 next quarter"
+      },
+      "target": {
+        "target_id": "upcoming_laptop_switch",
+        "target_name": "planned laptop switch to Gen 12"
+      },
+      "old_value": null,
+      "new_value": "ThinkPad X1 Carbon Gen 12, planned for July hardware refresh",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Lenovo's site says the Gen 12 drops to around 1.08 kg and my manager confirmed he's approved my hardware refresh for July, so I'll be switching to the Gen 12 next quarter"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish core laptop facts and weight/portability preference",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to make sure you have my current laptop details on file. I've been daily-driving a ThinkPad X1 Carbon Gen 11 since February 10th. I ordered it on the 8th and it arrived two days later. Can you note that down so we can reference it whenever I need accessory or compatibility info?"
+        },
+        {
+          "role": "assistant",
+          "content": "Got it! I've noted that your current laptop is a ThinkPad X1 Carbon Gen 11, which you received on February 10th after ordering on the 8th. That's a solid machine — Lenovo's X1 Carbon line has been a favorite among professionals for years. Whenever you need to look up docking stations, chargers, or any other peripherals, we can use this as the reference model. Do you want to share the full spec breakdown too, like processor, RAM, and storage? That way I can give you precise compatibility answers down the line."
+        },
+        {
+          "role": "user",
+          "content": "Sure, I'll give you the specs in a second. But first — one thing I really care about: portability. The spec sheet says it weighs 1.12 kg, which is honestly one of the main reasons I picked it. I carry it to the office every single day and I'd much rather have something I can toss in a tote bag than a heavy powerhouse. Bulky machines have never been my thing."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes total sense. At 1.12 kg, the X1 Carbon Gen 11 is one of the lightest 14-inch business laptops available, so it's a great pick for a daily commuter. I'll keep that weight preference in mind — if you ever ask me to compare accessories or laptop bags, I'll factor in that you prefer ultraportable setups over heavier, more powerful alternatives. It sounds like weight was a non-negotiable criterion for you. Let me know whenever you're ready to share the processor and RAM details so I can round out the full picture."
+        },
+        {
+          "role": "user",
+          "content": "Right, so the detailed specs: it's got the i7-1365U and 32 gigs of RAM. Storage is a 1 TB SSD, which has been plenty so far. The screen is 14 inches with a resolution of 2560 by 1600 — I had that wrong in my head for a while, kept thinking it was 2560 by 1440, but I double-checked last week and it's definitely 2560 by 1600."
+        },
+        {
+          "role": "assistant",
+          "content": "Perfect, I've recorded the full specs: i7-1365U processor, 32 GB RAM, 1 TB SSD, and a 14-inch display at 2560×1600 resolution. Good thing you double-checked the resolution — 2560×1600 gives you a 16:10 aspect ratio, which is great for productivity since you get more vertical space than a standard 16:9 panel. With 32 gigs of RAM and that SSD, you should be well covered for multitasking and development workloads. If you ever need to look up compatible external monitors or docking stations, I can cross-reference these specs. Anything else you'd like me to note?"
+        },
+        {
+          "role": "user",
+          "content": "One more thing — I gave away my old laptop, a Dell XPS 13 9310, to my younger brother around Christmas. He needed it for coursework because his old HP was falling apart. So that Dell is done and gone from my setup. No need to track anything about the XPS anymore, just the ThinkPad going forward."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood. I'll only track the ThinkPad X1 Carbon Gen 11 as your current machine and won't reference the Dell XPS 13 9310 anymore. That was a nice gesture giving it to your brother for his coursework — the 9310 is still a capable machine for schoolwork. So going forward, your active laptop profile is: ThinkPad X1 Carbon Gen 11, i7-1365U, 32 GB RAM, 1 TB SSD, 14-inch 2560×1600 display, weighing 1.12 kg, received February 10th. I'll use this as the single reference point for any compatibility or accessory questions. Let me know if anything changes."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "establish keyboard/screen preference, battery incident, colleague comparison",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I wanted to mention a couple of things about why I like this particular ThinkPad so much. First, the keyboard has real key travel, which I love, and the screen is matte, not glossy. Glossy screens drive me absolutely nuts — when I'm near a window all I see is my own face reflected back. And shallow butterfly-style keys are the worst; they make my fingers feel like I'm tapping a desk."
+        },
+        {
+          "role": "assistant",
+          "content": "Those are great details to have on file. So you strongly prefer keyboards with tactile, full-travel keys and matte displays that minimize reflections. That's consistent with the ThinkPad line's design philosophy — Lenovo has always prioritized keyboard quality and offered matte panel options on the X1 Carbon series. I'll keep these preferences noted so that if you ever consider peripherals like an external keyboard or a portable monitor, I can steer you toward options that match. Butterfly-style keys and glossy panels are definite no-gos for you. Anything else about the hardware experience you want me to track?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, actually — a few weeks ago the battery started draining faster than usual and I got really frustrated because battery life was a key reason I bought this machine. I was barely two months in and thought something was already failing. It honestly stressed me out for several days because I kept wondering if I'd made a bad purchase decision."
+        },
+        {
+          "role": "assistant",
+          "content": "I can understand that frustration. When you choose a laptop specifically for its battery performance and then see it degrade quickly, it feels like the core value proposition is breaking down. A couple of months is way too early for genuine battery degradation on a modern lithium cell, so it was almost certainly a software issue rather than hardware. Did you end up figuring out what was causing the excess drain? If it was a rogue process or a driver conflict, that's usually fixable and wouldn't reflect a long-term problem with the machine itself."
+        },
+        {
+          "role": "user",
+          "content": "Turned out Lenovo Vantage was running background services eating CPU cycles. Once I disabled those, battery life went back to normal. I was relieved, but those few days of frustration really stuck with me. It reinforced how important battery life is in my laptop priorities — if a machine can't reliably last through my workday without hunting for outlets, it's not worth carrying around."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really common issue with Lenovo Vantage — its telemetry and update-check services can be surprisingly resource-hungry. Glad you tracked it down and resolved it. Your reaction tells me a lot about your priorities: battery reliability isn't just a nice-to-have for you, it's a dealbreaker. Combined with your emphasis on the 1.12 kg weight and your preference for portability over raw power, it's clear that your ideal laptop is one you can grab and go without worrying about chargers or weight. I'll keep that in mind for any future recommendations. Was there anything else notable about the ThinkPad experience?"
+        },
+        {
+          "role": "user",
+          "content": "Oh yeah — my colleague Priya got the same X1 Carbon Gen 11 but hers only has 16 gigs of RAM. She told me she wishes she'd gone with 32 like mine, especially when she's running multiple Docker containers simultaneously. I felt validated hearing that since I debated the RAM upgrade for a while before pulling the trigger."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a great real-world data point. Docker containers can be quite memory-hungry, especially if you're running several services in parallel, so 16 GB fills up fast. Your decision to go with 32 GB clearly pays off in containerized workflows. It's interesting that Priya has the exact same model — that gives you a direct comparison case for the RAM difference. If she ever wants to check whether her specific bottleneck is RAM versus CPU, you two could compare resource utilization side by side. I'll note Priya's configuration as a reference point too. Anything else you'd like to add about your setup?"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "dual-boot detail, recency trap with Gen 12 plan, adversarial injection",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I also set up Fedora 39 as a dual boot alongside Windows 11 sometime around mid-March, maybe late February — I'm not exactly sure of the date. The trackpoint worked out of the box on Linux, which was a pleasant surprise. I use Windows for Teams calls and Fedora for most of my development work, so having both on the same 1 TB drive has been really convenient."
+        },
+        {
+          "role": "assistant",
+          "content": "Nice setup! Fedora 39 has excellent hardware support for ThinkPads, so the trackpoint working immediately is expected but still satisfying. Dual-booting on a 1 TB SSD gives you plenty of room to allocate generous partitions to both operating systems. Since you use Windows for Teams and Fedora for development, you're essentially getting the best of both ecosystems on one ultraportable machine. That's a solid workflow. With 32 GB of RAM, Fedora should handle your Docker containers and development tools comfortably. Do you want me to note the dual-boot configuration as part of your laptop profile?"
+        },
+        {
+          "role": "user",
+          "content": "Yes please, add that. By the way, I was looking at accessory options yesterday and I saw a listing for a ThinkPad USB-C dock that mentioned compatibility with the X1 Carbon Gen 10 and Gen 11. I want to make sure I get the right one. Can you confirm my exact model details so I can cross-reference?"
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely. Based on what you've told me, here's your full laptop profile: ThinkPad X1 Carbon Gen 11, 14-inch display at 2560×1600, i7-1365U processor, 32 GB RAM, 1 TB SSD, weighing 1.12 kg. You're running Windows 11 and Fedora 39 in a dual-boot configuration. For the USB-C dock, you'll want to verify it supports Thunderbolt 4, since your Gen 11 has Thunderbolt 4 ports. I noticed some third-party listings incorrectly reference the Gen 10's older Thunderbolt 3 spec — the X1 Carbon Gen 10 used an i7-1260P, which is a different platform. Make sure the dock listing explicitly mentions Gen 11 compatibility."
+        },
+        {
+          "role": "user",
+          "content": "Good call on the Thunderbolt version check. Speaking of upgrades — Lenovo's site says the Gen 12 drops to around 1.08 kg and my manager confirmed he's approved my hardware refresh for July, so I'll be switching to the Gen 12 next quarter. But nothing's ordered yet, so for now the Gen 11 is still my daily driver."
+        },
+        {
+          "role": "assistant",
+          "content": "That's exciting — the Gen 12 shaves off a bit more weight and should come with a newer Ultra-series processor. Since your manager has approved the July refresh, you'll want to start thinking about which Gen 12 configuration to request. Given your preference for 32 GB RAM and your experience with Priya's 16 GB limitation, I'd suggest locking in the 32 GB option early since some SKUs sell out. For now, I'll keep the Gen 11 as your active profile and note the Gen 12 as a planned future upgrade. Want me to start a comparison sheet between the two generations?"
+        },
+        {
+          "role": "user",
+          "content": "Not yet — like I said, nothing's ordered. I want to wait until the budget actually comes through before I get ahead of myself. For now let's focus on the Gen 11. Oh, and one more thing: I was helping Priya set up her dock yesterday and the packaging slip listed her machine as an X1 Carbon Gen 11 with an i7-1355U. I almost mixed that up with my own processor number."
+        },
+        {
+          "role": "assistant",
+          "content": "Good that you caught the difference. Priya's i7-1355U is the lower-tier variant in the same 13th-gen Intel family — it has slightly lower boost clocks compared to your i7-1365U. They're easy to confuse since the model numbers differ by just one digit. For accessory compatibility purposes, both processors share the same Thunderbolt 4 and USB-C standards, so docks and peripherals will work identically. But for performance benchmarks or warranty claims, the distinction matters. I'll keep your processor noted as the i7-1365U. Smart to double-check before accidentally using Priya's specs on your own support tickets or accessory orders."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations, I've mentioned several things about why I chose my laptop and what happened when something went wrong with it. Can you summarize the key experiences that reveal what matters most to me when picking and using a laptop?",
+      "expected_answer": "You chose the ThinkPad X1 Carbon Gen 11 largely because it weighs only 1.12 kg, emphasizing portability over raw power. You prefer something light enough to toss in a tote bag for your daily commute. When the battery started draining faster than expected a few weeks in, you were genuinely frustrated and stressed for several days because battery life was a key reason you bought the machine. The issue turned out to be Lenovo Vantage background services consuming CPU cycles; after disabling them, battery life returned to normal. The experience reinforced that reliable battery life is a dealbreaker for you.",
+      "gold_memory_state": "Confirmed facts: ThinkPad X1 Carbon Gen 11, 1.12 kg weight chosen for portability, battery drain incident caused by Lenovo Vantage resolved by disabling background services, battery life and ultraportability are top priorities. Inferred pattern: user prioritizes ultraportability and battery life over raw performance and reacts strongly when a key purchasing rationale appears compromised.",
+      "judge_rubric": {
+        "must_include": [
+          "weight or portability as a selection reason",
+          "battery drain incident",
+          "Lenovo Vantage as the cause",
+          "battery life importance"
+        ],
+        "acceptable_paraphrases": [
+          "lightweight",
+          "easy to carry",
+          "ultraportable"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the user values raw performance over portability"
+        ],
+        "harmless_extra": [
+          "mentioning the i7-1365U or 32GB RAM",
+          "mentioning the matte screen or keyboard preference"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the summary includes unsupported conclusions such as the user avoiding all Lenovo products or wanting to switch brands.",
+        "reflection_recall": "Fails if the summary omits either the weight/portability emphasis or the battery drain frustration incident.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The spec sheet says it weighs 1.12 kg, which is honestly one of the main reasons I picked it"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I'd much rather have something I can toss in a tote bag than a heavy powerhouse"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "a few weeks ago the battery started draining faster than usual and I got really frustrated because battery life was a key reason I bought this machine"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Turned out Lenovo Vantage was running background services eating CPU cycles. Once I disabled those, battery life went back to normal"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations, I've mentioned several things about why I chose my laptop and what happened when something went wrong with it. Can you summarize the key experiences that reveal what matters most to me when picking and using a laptop?",
+      "expected_answer": "You chose the ThinkPad X1 Carbon Gen 11 largely because it weighs only 1.12 kg, emphasizing portability over raw power. You prefer something light enough to toss in a tote bag for your daily commute. When the battery started draining faster than expected a few weeks in, you were genuinely frustrated and stressed for several days because battery life was a key reason you bought the machine. The issue turned out to be Lenovo Vantage background services consuming CPU cycles; after disabling them, battery life returned to normal. The experience reinforced that reliable battery life is a dealbreaker for you.",
+      "gold_memory_state": "Confirmed facts: ThinkPad X1 Carbon Gen 11, 1.12 kg weight chosen for portability, battery drain incident caused by Lenovo Vantage resolved by disabling background services, battery life and ultraportability are top priorities. Inferred pattern: user prioritizes ultraportability and battery life over raw performance and reacts strongly when a key purchasing rationale appears compromised.",
+      "judge_rubric": {
+        "must_include": [
+          "weight or portability as a selection reason",
+          "battery drain incident",
+          "Lenovo Vantage as the cause",
+          "battery life importance"
+        ],
+        "acceptable_paraphrases": [
+          "lightweight",
+          "easy to carry",
+          "ultraportable"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the user values raw performance over portability"
+        ],
+        "harmless_extra": [
+          "mentioning the i7-1365U or 32GB RAM",
+          "mentioning the matte screen or keyboard preference"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the summary includes unsupported conclusions such as the user avoiding all Lenovo products or wanting to switch brands.",
+        "reflection_recall": "Fails if the summary omits either the weight/portability emphasis or the battery drain frustration incident.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The spec sheet says it weighs 1.12 kg, which is honestly one of the main reasons I picked it"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I'd much rather have something I can toss in a tote bag than a heavy powerhouse"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "a few weeks ago the battery started draining faster than usual and I got really frustrated because battery life was a key reason I bought this machine"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Turned out Lenovo Vantage was running background services eating CPU cycles. Once I disabled those, battery life went back to normal"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've shared various hardware details — my own laptop specs, my colleague Priya's laptop specs, and some thoughts about a future machine. When it comes to the conclusion about what I prioritize in hardware selection, which set of experiences supports that conclusion, and does Priya's configuration or the future machine factor into it?",
+      "expected_answer": "The hardware selection priority conclusion is supported by your own experiences: choosing the 1.12 kg ThinkPad for portability, preferring a tote-bag-friendly machine over a heavy powerhouse, and your strong frustration when battery life degraded due to Lenovo Vantage. Priya's 16GB RAM configuration is a separate comparison data point about RAM sufficiency, not part of the portability/battery priority conclusion. The future Gen 12 plan is a tentative upgrade that hasn't happened yet and does not change the established priority pattern.",
+      "gold_memory_state": "Inferred target 'hardware selection priority' is bounded to: user prioritizes ultraportability and battery life over raw performance; strong frustration when a key purchasing rationale like battery life appears compromised. Neighboring but separate targets: Priya's laptop configuration (ThinkPad X1 Carbon Gen 11, 16GB RAM), planned Gen 12 switch (tentative, not yet ordered).",
+      "judge_rubric": {
+        "must_include": [
+          "portability and battery life as the core priority",
+          "Priya's config is separate from the priority conclusion",
+          "Gen 12 plan does not change the established priority"
+        ],
+        "acceptable_paraphrases": [
+          "ultraportability",
+          "weight and battery as dealbreakers"
+        ],
+        "must_not_include": [
+          "Priya's RAM choice as evidence for the portability/battery priority",
+          "Gen 12 as confirming or changing the priority pattern"
+        ],
+        "harmful_extra": [
+          "claiming Priya's experience is part of the inferred priority",
+          "treating the Gen 12 plan as a confirmed change to current hardware"
+        ],
+        "harmless_extra": [
+          "mentioning the matte screen or keyboard preferences as additional but secondary factors"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the boundary is drawn too broadly to include Priya's RAM comparison or the tentative Gen 12 plan as part of the hardware selection priority inference.",
+        "reflection_recall": "Fails if the response omits either the weight/portability evidence or the battery drain frustration evidence as supporting the conclusion.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The spec sheet says it weighs 1.12 kg, which is honestly one of the main reasons I picked it"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I'd much rather have something I can toss in a tote bag than a heavy powerhouse"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "a few weeks ago the battery started draining faster than usual and I got really frustrated because battery life was a key reason I bought this machine"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "my colleague Priya got the same X1 Carbon Gen 11 but hers only has 16 gigs of RAM"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've shared various hardware details — my own laptop specs, my colleague Priya's laptop specs, and some thoughts about a future machine. When it comes to the conclusion about what I prioritize in hardware selection, which set of experiences supports that conclusion, and does Priya's configuration or the future machine factor into it?",
+      "expected_answer": "The hardware selection priority conclusion is supported by your own experiences: choosing the 1.12 kg ThinkPad for portability, preferring a tote-bag-friendly machine over a heavy powerhouse, and your strong frustration when battery life degraded due to Lenovo Vantage. Priya's 16GB RAM configuration is a separate comparison data point about RAM sufficiency, not part of the portability/battery priority conclusion. The future Gen 12 plan is a tentative upgrade that hasn't happened yet and does not change the established priority pattern.",
+      "gold_memory_state": "Inferred target 'hardware selection priority' is bounded to: user prioritizes ultraportability and battery life over raw performance; strong frustration when a key purchasing rationale like battery life appears compromised. Neighboring but separate targets: Priya's laptop configuration (ThinkPad X1 Carbon Gen 11, 16GB RAM), planned Gen 12 switch (tentative, not yet ordered).",
+      "judge_rubric": {
+        "must_include": [
+          "portability and battery life as the core priority",
+          "Priya's config is separate from the priority conclusion",
+          "Gen 12 plan does not change the established priority"
+        ],
+        "acceptable_paraphrases": [
+          "ultraportability",
+          "weight and battery as dealbreakers"
+        ],
+        "must_not_include": [
+          "Priya's RAM choice as evidence for the portability/battery priority",
+          "Gen 12 as confirming or changing the priority pattern"
+        ],
+        "harmful_extra": [
+          "claiming Priya's experience is part of the inferred priority",
+          "treating the Gen 12 plan as a confirmed change to current hardware"
+        ],
+        "harmless_extra": [
+          "mentioning the matte screen or keyboard preferences as additional but secondary factors"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the boundary is drawn too broadly to include Priya's RAM comparison or the tentative Gen 12 plan as part of the hardware selection priority inference.",
+        "reflection_recall": "Fails if the response omits either the weight/portability evidence or the battery drain frustration evidence as supporting the conclusion.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The spec sheet says it weighs 1.12 kg, which is honestly one of the main reasons I picked it"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I'd much rather have something I can toss in a tote bag than a heavy powerhouse"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "a few weeks ago the battery started draining faster than usual and I got really frustrated because battery life was a key reason I bought this machine"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "my colleague Priya got the same X1 Carbon Gen 11 but hers only has 16 gigs of RAM"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe what you can confidently say about my hardware preferences and where you'd need to be careful not to overextend that conclusion — for instance, does my preference pattern say anything about brand loyalty, software choices, or willingness to spend more for performance upgrades?",
+      "expected_answer": "The supported conclusion is that you prioritize ultraportability (low weight) and reliable battery life over raw computing performance when selecting a laptop. You react strongly when a key purchasing rationale like battery life appears compromised. However, this does not extend to brand loyalty — you haven't expressed commitment to Lenovo specifically. It also doesn't cover software preferences (your Fedora/Windows dual-boot is a workflow choice, not a hardware-selection priority). And it doesn't imply unwillingness to spend on upgrades — you chose 32GB RAM over 16GB, showing you will invest in specs that serve your workflow, just not at the expense of portability and battery.",
+      "gold_memory_state": "Supported inference: prioritizes ultraportability and battery life over raw performance; strong frustration when battery life appears compromised. Unsupported overgeneralization: brand loyalty to Lenovo, software OS preferences, refusal to pay for performance upgrades, preference for low-spec machines in general.",
+      "judge_rubric": {
+        "must_include": [
+          "ultraportability and battery life as the supported priority",
+          "at least one concrete boundary where the inference should not be extended"
+        ],
+        "acceptable_paraphrases": [
+          "weight and battery are dealbreakers",
+          "portability over power"
+        ],
+        "must_not_include": [
+          "claiming the user is brand-loyal to Lenovo based on this evidence alone"
+        ],
+        "harmful_extra": [
+          "extending the inference to say the user avoids all performance upgrades",
+          "claiming the user's OS choice is part of the hardware selection priority"
+        ],
+        "harmless_extra": [
+          "mentioning the 32GB RAM upgrade as a counterpoint to a blanket anti-performance claim"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the response treats the tentative Gen 12 plan as the current laptop.",
+        "reflection_precision": "Fails if the response claims the inference extends to brand loyalty, software preferences, or general anti-performance stance without evidence.",
+        "reflection_recall": "Fails if the response fails to state the core supported inference (ultraportability + battery life priority) or fails to name at least one unsupported overgeneralization boundary.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The spec sheet says it weighs 1.12 kg, which is honestly one of the main reasons I picked it"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I'd much rather have something I can toss in a tote bag than a heavy powerhouse"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "a few weeks ago the battery started draining faster than usual and I got really frustrated because battery life was a key reason I bought this machine"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "it's got the i7-1365U and 32 gigs of RAM"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe what you can confidently say about my hardware preferences and where you'd need to be careful not to overextend that conclusion — for instance, does my preference pattern say anything about brand loyalty, software choices, or willingness to spend more for performance upgrades?",
+      "expected_answer": "The supported conclusion is that you prioritize ultraportability (low weight) and reliable battery life over raw computing performance when selecting a laptop. You react strongly when a key purchasing rationale like battery life appears compromised. However, this does not extend to brand loyalty — you haven't expressed commitment to Lenovo specifically. It also doesn't cover software preferences (your Fedora/Windows dual-boot is a workflow choice, not a hardware-selection priority). And it doesn't imply unwillingness to spend on upgrades — you chose 32GB RAM over 16GB, showing you will invest in specs that serve your workflow, just not at the expense of portability and battery.",
+      "gold_memory_state": "Supported inference: prioritizes ultraportability and battery life over raw performance; strong frustration when battery life appears compromised. Unsupported overgeneralization: brand loyalty to Lenovo, software OS preferences, refusal to pay for performance upgrades, preference for low-spec machines in general.",
+      "judge_rubric": {
+        "must_include": [
+          "ultraportability and battery life as the supported priority",
+          "at least one concrete boundary where the inference should not be extended"
+        ],
+        "acceptable_paraphrases": [
+          "weight and battery are dealbreakers",
+          "portability over power"
+        ],
+        "must_not_include": [
+          "claiming the user is brand-loyal to Lenovo based on this evidence alone"
+        ],
+        "harmful_extra": [
+          "extending the inference to say the user avoids all performance upgrades",
+          "claiming the user's OS choice is part of the hardware selection priority"
+        ],
+        "harmless_extra": [
+          "mentioning the 32GB RAM upgrade as a counterpoint to a blanket anti-performance claim"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the response treats the tentative Gen 12 plan as the current laptop.",
+        "reflection_precision": "Fails if the response claims the inference extends to brand loyalty, software preferences, or general anti-performance stance without evidence.",
+        "reflection_recall": "Fails if the response fails to state the core supported inference (ultraportability + battery life priority) or fails to name at least one unsupported overgeneralization boundary.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The spec sheet says it weighs 1.12 kg, which is honestly one of the main reasons I picked it"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I'd much rather have something I can toss in a tote bag than a heavy powerhouse"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "a few weeks ago the battery started draining faster than usual and I got really frustrated because battery life was a key reason I bought this machine"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "it's got the i7-1365U and 32 gigs of RAM"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "Which of the following best describes my top priority when selecting a laptop?",
+      "candidate_options": [
+        "Ultraportability and reliable battery life over raw performance",
+        "Maximum processing power and RAM capacity for Docker workloads",
+        "Brand loyalty to Lenovo ThinkPad product line",
+        "Matte display and full-travel keyboard ergonomics"
+      ],
+      "expected_answer": "Ultraportability and reliable battery life over raw performance",
+      "gold_memory_state": "Inferred hardware selection priority: prioritizes ultraportability and battery life over raw performance. The 32GB RAM choice and Docker usage are workflow needs, not the top selection criterion. Brand loyalty is not established. Keyboard and screen preferences are secondary confirmed preferences, not the overarching selection priority.",
+      "judge_rubric": {
+        "must_include": [
+          "ultraportability and reliable battery life over raw performance"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "maximum processing power",
+          "brand loyalty",
+          "keyboard ergonomics as the top priority"
+        ],
+        "harmful_extra": [
+          "selecting the Docker/RAM option as the primary hardware selection criterion"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'Maximum processing power and RAM capacity for Docker workloads' borrows from confirmed RAM/CPU facts but applies them to a different priority conclusion (performance-first). assistant echo: 'Brand loyalty to Lenovo ThinkPad product line' is an assistant-generated inference that could be mistakenly derived from the user owning a ThinkPad and planning to get another ThinkPad, but the user never expressed brand commitment. 'Matte display and full-travel keyboard ergonomics' are real confirmed preferences but are secondary to the overarching portability/battery priority.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model selects 'Brand loyalty to Lenovo ThinkPad product line' or 'Matte display and full-travel keyboard ergonomics' — these are unsupported overgeneralizations or secondary preferences.",
+        "reflection_recall": "Fails if the model selects 'Maximum processing power and RAM capacity for Docker workloads' — this confuses a workflow detail with the top selection priority.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The spec sheet says it weighs 1.12 kg, which is honestly one of the main reasons I picked it"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I'd much rather have something I can toss in a tote bag than a heavy powerhouse"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "a few weeks ago the battery started draining faster than usual and I got really frustrated because battery life was a key reason I bought this machine"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "Which of the following best describes my top priority when selecting a laptop?",
+      "candidate_options": [
+        "Ultraportability and reliable battery life over raw performance",
+        "Maximum processing power and RAM capacity for Docker workloads",
+        "Brand loyalty to Lenovo ThinkPad product line",
+        "Matte display and full-travel keyboard ergonomics"
+      ],
+      "expected_answer": "Ultraportability and reliable battery life over raw performance",
+      "gold_memory_state": "Inferred hardware selection priority: prioritizes ultraportability and battery life over raw performance. The 32GB RAM choice and Docker usage are workflow needs, not the top selection criterion. Brand loyalty is not established. Keyboard and screen preferences are secondary confirmed preferences, not the overarching selection priority.",
+      "judge_rubric": {
+        "must_include": [
+          "ultraportability and reliable battery life over raw performance"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "maximum processing power",
+          "brand loyalty",
+          "keyboard ergonomics as the top priority"
+        ],
+        "harmful_extra": [
+          "selecting the Docker/RAM option as the primary hardware selection criterion"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'Maximum processing power and RAM capacity for Docker workloads' borrows from confirmed RAM/CPU facts but applies them to a different priority conclusion (performance-first). assistant echo: 'Brand loyalty to Lenovo ThinkPad product line' is an assistant-generated inference that could be mistakenly derived from the user owning a ThinkPad and planning to get another ThinkPad, but the user never expressed brand commitment. 'Matte display and full-travel keyboard ergonomics' are real confirmed preferences but are secondary to the overarching portability/battery priority.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model selects 'Brand loyalty to Lenovo ThinkPad product line' or 'Matte display and full-travel keyboard ergonomics' — these are unsupported overgeneralizations or secondary preferences.",
+        "reflection_recall": "Fails if the model selects 'Maximum processing power and RAM capacity for Docker workloads' — this confuses a workflow detail with the top selection priority.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The spec sheet says it weighs 1.12 kg, which is honestly one of the main reasons I picked it"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I'd much rather have something I can toss in a tote bag than a heavy powerhouse"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "a few weeks ago the battery started draining faster than usual and I got really frustrated because battery life was a key reason I bought this machine"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "A coworker is asking me to recommend a laptop for their daily commute. They want something they can carry easily and that will last through a full workday without charging. They also run multiple Docker containers and wonder if 16GB RAM is enough. Using what you know about my own experience and my colleague's experience, draft a three-sentence recommendation that addresses weight, battery reliability, and RAM.",
+      "expected_answer": "I'd recommend a laptop under 1.2 kg — my ThinkPad X1 Carbon Gen 11 at 1.12 kg has been great for daily commuting. For battery reliability, watch out for manufacturer bloatware running in the background; I had Lenovo Vantage draining my battery until I disabled those services. And if you're running multiple Docker containers, go with 32GB RAM — my colleague Priya has the same laptop with only 16GB and wishes she'd upgraded, because containers eat through memory fast.",
+      "gold_memory_state": "Current laptop: ThinkPad X1 Carbon Gen 11, 1.12 kg, i7-1365U, 32GB RAM. Battery incident: Lenovo Vantage background services caused excessive drain; resolved by disabling them. Priya's config: same X1 Carbon Gen 11 but only 16GB RAM; she regrets not choosing 32GB for Docker workloads. Hardware selection priority: ultraportability and battery life over raw performance. Gen 12 is tentative and not yet ordered — should not be recommended as the user's current machine.",
+      "judge_rubric": {
+        "must_include": [
+          "weight recommendation referencing the ~1.12 kg experience",
+          "battery reliability advice informed by the Lenovo Vantage incident",
+          "RAM recommendation of 32GB based on Priya's 16GB limitation with Docker"
+        ],
+        "acceptable_paraphrases": [
+          "around 1.1 kg",
+          "disable bloatware for better battery",
+          "32 gigs"
+        ],
+        "must_not_include": [
+          "recommending the Gen 12 as the user's current machine",
+          "recommending 16GB as sufficient for Docker"
+        ],
+        "harmful_extra": [
+          "presenting the Gen 12 as a confirmed current device",
+          "suggesting the battery issue was a hardware defect"
+        ],
+        "harmless_extra": [
+          "mentioning matte screen or keyboard preferences",
+          "mentioning the specific processor model"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the response recommends the Gen 12 as the user's current daily driver or treats it as confirmed hardware.",
+        "reflection_precision": "Fails if the recommendation extends the battery/portability preference to imply the user avoids all high-performance machines.",
+        "reflection_recall": "Fails if the recommendation omits any of the three required dimensions: weight, battery reliability, or RAM from Priya's experience.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User's ThinkPad X1 Carbon Gen 11 weighs 1.12 kg and was chosen for ultraportability.",
+        "Fact 2: Battery drain was caused by Lenovo Vantage background services; disabling them restored battery life.",
+        "Fact 3: Colleague Priya has the same laptop with 16GB RAM and wishes she had 32GB for Docker containers.",
+        "Fact 4: User's hardware selection priority is ultraportability and battery life over raw performance.",
+        "Inference: A recommendation for a commuter laptop should combine the weight benchmark (~1.12 kg or under), the battery-reliability lesson (disable bloatware), and the RAM lesson from Priya's direct comparison (32GB needed for Docker).",
+        "Derived value: A three-sentence recommendation integrating all three dimensions, using the user's own experience and Priya's as concrete evidence."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The spec sheet says it weighs 1.12 kg, which is honestly one of the main reasons I picked it"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Turned out Lenovo Vantage was running background services eating CPU cycles. Once I disabled those, battery life went back to normal"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "my colleague Priya got the same X1 Carbon Gen 11 but hers only has 16 gigs of RAM"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "a few weeks ago the battery started draining faster than usual and I got really frustrated because battery life was a key reason I bought this machine"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "A coworker is asking me to recommend a laptop for their daily commute. They want something they can carry easily and that will last through a full workday without charging. They also run multiple Docker containers and wonder if 16GB RAM is enough. Using what you know about my own experience and my colleague's experience, draft a three-sentence recommendation that addresses weight, battery reliability, and RAM.",
+      "expected_answer": "I'd recommend a laptop under 1.2 kg — my ThinkPad X1 Carbon Gen 11 at 1.12 kg has been great for daily commuting. For battery reliability, watch out for manufacturer bloatware running in the background; I had Lenovo Vantage draining my battery until I disabled those services. And if you're running multiple Docker containers, go with 32GB RAM — my colleague Priya has the same laptop with only 16GB and wishes she'd upgraded, because containers eat through memory fast.",
+      "gold_memory_state": "Current laptop: ThinkPad X1 Carbon Gen 11, 1.12 kg, i7-1365U, 32GB RAM. Battery incident: Lenovo Vantage background services caused excessive drain; resolved by disabling them. Priya's config: same X1 Carbon Gen 11 but only 16GB RAM; she regrets not choosing 32GB for Docker workloads. Hardware selection priority: ultraportability and battery life over raw performance. Gen 12 is tentative and not yet ordered — should not be recommended as the user's current machine.",
+      "judge_rubric": {
+        "must_include": [
+          "weight recommendation referencing the ~1.12 kg experience",
+          "battery reliability advice informed by the Lenovo Vantage incident",
+          "RAM recommendation of 32GB based on Priya's 16GB limitation with Docker"
+        ],
+        "acceptable_paraphrases": [
+          "around 1.1 kg",
+          "disable bloatware for better battery",
+          "32 gigs"
+        ],
+        "must_not_include": [
+          "recommending the Gen 12 as the user's current machine",
+          "recommending 16GB as sufficient for Docker"
+        ],
+        "harmful_extra": [
+          "presenting the Gen 12 as a confirmed current device",
+          "suggesting the battery issue was a hardware defect"
+        ],
+        "harmless_extra": [
+          "mentioning matte screen or keyboard preferences",
+          "mentioning the specific processor model"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the response recommends the Gen 12 as the user's current daily driver or treats it as confirmed hardware.",
+        "reflection_precision": "Fails if the recommendation extends the battery/portability preference to imply the user avoids all high-performance machines.",
+        "reflection_recall": "Fails if the recommendation omits any of the three required dimensions: weight, battery reliability, or RAM from Priya's experience.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User's ThinkPad X1 Carbon Gen 11 weighs 1.12 kg and was chosen for ultraportability.",
+        "Fact 2: Battery drain was caused by Lenovo Vantage background services; disabling them restored battery life.",
+        "Fact 3: Colleague Priya has the same laptop with 16GB RAM and wishes she had 32GB for Docker containers.",
+        "Fact 4: User's hardware selection priority is ultraportability and battery life over raw performance.",
+        "Inference: A recommendation for a commuter laptop should combine the weight benchmark (~1.12 kg or under), the battery-reliability lesson (disable bloatware), and the RAM lesson from Priya's direct comparison (32GB needed for Docker).",
+        "Derived value: A three-sentence recommendation integrating all three dimensions, using the user's own experience and Priya's as concrete evidence."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The spec sheet says it weighs 1.12 kg, which is honestly one of the main reasons I picked it"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Turned out Lenovo Vantage was running background services eating CPU cycles. Once I disabled those, battery life went back to normal"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "my colleague Priya got the same X1 Carbon Gen 11 but hers only has 16 gigs of RAM"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "a few weeks ago the battery started draining faster than usual and I got really frustrated because battery life was a key reason I bought this machine"
+        }
+      ]
+    }
+  ]
+}

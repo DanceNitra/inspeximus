@@ -1,0 +1,776 @@
+{
+  "target_fact": "Deadline of the lease renewal notification for the user's apartment",
+  "operation_type": "Update",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "lease_renewal_deadline",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "The lease renewal deadline for my apartment is May 1. That's when I need to let the management office know whether I'm staying or not."
+      },
+      "target": {
+        "target_id": "lease_renewal_deadline",
+        "target_name": "Apartment lease renewal notification deadline"
+      },
+      "old_value": null,
+      "new_value": "May 1",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "The lease renewal deadline for my apartment is May 1. That's when I need to let the management office know whether I'm staying or not."
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "lease_renewal_deadline",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I just double-checked the lease paperwork. The deadline is actually April 25, not May 1. They require 30 days' notice and the lease term ends May 25, so the notice has to be in by April 25."
+      },
+      "target": {
+        "target_id": "lease_renewal_deadline",
+        "target_name": "Apartment lease renewal notification deadline"
+      },
+      "old_value": "May 1",
+      "new_value": "April 25",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "The lease renewal deadline for my apartment is May 1. That's when I need to let the management office know whether I'm staying or not."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I just double-checked the lease paperwork. The deadline is actually April 25, not May 1. They require 30 days' notice and the lease term ends May 25, so the notice has to be in by April 25."
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "lease_renewal_deadline",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I got an email from the property manager this morning. She said there was a typo in my lease addendum and the actual notice period is 45 days, not 30. So the real deadline is April 10, not April 25."
+      },
+      "target": {
+        "target_id": "lease_renewal_deadline",
+        "target_name": "Apartment lease renewal notification deadline"
+      },
+      "old_value": "April 25",
+      "new_value": "April 10",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I got an email from the property manager this morning. She said there was a typo in my lease addendum and the actual notice period is 45 days, not 30. So the real deadline is April 10, not April 25."
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "lease_renewal_deadline",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "The building's new ownership group sent a notice saying all renewal deadlines are being pushed to April 20 across the board. My neighbor got the same letter."
+      },
+      "target": {
+        "target_id": "lease_renewal_deadline",
+        "target_name": "Apartment lease renewal notification deadline"
+      },
+      "old_value": "April 10",
+      "new_value": "April 20",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The building's new ownership group sent a notice saying all renewal deadlines are being pushed to April 20 across the board. My neighbor got the same letter."
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "The grant application for the community arts program is due April 18. I've been working on the draft since early March and I really cannot miss this one."
+      },
+      "target": {
+        "target_id": "grant_application_deadline",
+        "target_name": "Community arts program grant application deadline"
+      },
+      "old_value": null,
+      "new_value": "April 18",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The grant application for the community arts program is due April 18. I've been working on the draft since early March and I really cannot miss this one."
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish initial lease renewal deadline and grant deadline; correct lease deadline from May 1 to April 25.",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I need help keeping track of a few upcoming deadlines. The lease renewal deadline for my apartment is May 1. That's when I need to let the management office know whether I'm staying or not. I've been meaning to organize all of this somewhere but haven't gotten around to it yet. Could you help me set up some kind of timeline?"
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! I'll help you build a timeline for your deadlines. So far I have your apartment lease renewal notification deadline as May 1. That's a good one to track — missing a lease renewal window can cause a lot of unnecessary stress. Let's start listing your other deadlines too, and I can help you figure out the order and any buffer days you might want to build in. What else do you have coming up?"
+        },
+        {
+          "role": "user",
+          "content": "The grant application for the community arts program is due April 18. I've been working on the draft since early March and I really cannot miss this one. It's a big deal for me — I've put a lot of hours into the budget spreadsheet and the narrative section. I like to finish things early, ideally at least three days before the actual due date, so I'm aiming to have it wrapped up by April 15 at the latest."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — community arts program grant application due April 18, with your personal target of finishing by April 15. That's a solid buffer. Since you've been working on it since early March, it sounds like you're already well into the process, which is great. So far your timeline looks like this: April 15 — personal target to finish the grant application; April 18 — official grant application deadline; May 1 — lease renewal notification deadline. Want me to add any other items, or should we talk through the grant application checklist first?"
+        },
+        {
+          "role": "user",
+          "content": "Wait, hold on. I just double-checked the lease paperwork. The deadline is actually April 25, not May 1. They require 30 days' notice and the lease term ends May 25, so the notice has to be in by April 25. I keep mixing up those dates. Sorry about that — can you update that in the timeline? I want to make sure I have the right date locked in."
+        },
+        {
+          "role": "assistant",
+          "content": "No problem at all — it's better to catch that now! I've updated the lease renewal notification deadline from May 1 to April 25. With the 30-day notice requirement and the lease ending May 25, April 25 is indeed the correct cutoff. Your updated timeline now reads: April 15 — personal target to finish grant application; April 18 — official grant application deadline; April 25 — apartment lease renewal notification deadline. That puts two important deadlines within a single week, so you might want to plan accordingly. Anything else to add?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, that's a tight week for sure. I also have my friend Nadia's licensing exam coming up on May 10. I promised to help her review flashcards the weekend before, so that's loosely around May 3 or 4. It's not a hard deadline for me, but I want to keep it on my radar so I don't accidentally schedule something else that weekend. Can you note that as well?"
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, I've added that to your list. Here's the full timeline so far: April 15 — personal target to finish grant application; April 18 — official grant application deadline; April 25 — apartment lease renewal notification deadline; May 3-4 — help Nadia review flashcards for her May 10 licensing exam. That gives you a bit of breathing room after the April deadlines before the Nadia commitment. Since you mentioned you like finishing things early, you might consider getting the lease renewal notice submitted a few days before April 25 as well, just to keep consistent with your three-day buffer rule."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Update lease renewal deadline again from April 25 to April 10 based on corrected notice period; discuss planning around deadlines.",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I wanted to come back to the timeline we set up. I've been thinking about the grant application and I realize I need to get the letters of support gathered before April 12 so I have time to compile everything. The application itself is still due April 18, but April 12 is my internal cutoff for having all the supporting documents in hand. That way I have almost a full week to finalize."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a smart approach — giving yourself a full week between collecting supporting documents and the final submission date is a solid buffer. I'll note April 12 as your internal cutoff for gathering letters of support for the grant application, with the official deadline still at April 18. Your timeline is filling out nicely. Here's where things stand: April 10-12 range is getting dense, so you'll want to be proactive. Do you want to talk through what still needs to happen for the grant, or should we look at the other deadlines?"
+        },
+        {
+          "role": "user",
+          "content": "Actually, before we get into the grant details, I got an email from the property manager this morning. She said there was a typo in my lease addendum and the actual notice period is 45 days, not 30. So the real deadline is April 10, not April 25. That's way earlier than I thought. I'm kind of stressed about it now because that's barely a week away. I need to decide soon whether I'm renewing."
+        },
+        {
+          "role": "assistant",
+          "content": "Oh wow, that's a significant change — moving from April 25 all the way up to April 10 is a big shift. I've updated your lease renewal notification deadline to April 10. With 45 days' notice required and the lease ending May 25, April 10 checks out. I understand the stress — that puts the lease decision right on top of your grant document collection cutoff. Here's your revised timeline: April 10 — apartment lease renewal notification deadline (45-day notice); April 12 — internal cutoff for grant support letters; April 18 — official grant application deadline. You'll want to prioritize the lease decision immediately. Do you have a sense of which way you're leaning?"
+        },
+        {
+          "role": "user",
+          "content": "I'm probably going to renew. The rent is reasonable and I like the neighborhood. I just hate that this deadline got sprung on me — it reminds me of that department offsite RSVP back in early March where they gave us like five days' notice. I really don't do well when deadlines get compressed like that. Anyway, I think I'll draft the renewal notice tonight and submit it tomorrow, well before April 10."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a great plan — drafting tonight and submitting tomorrow would get you comfortably ahead of the April 10 deadline, which aligns perfectly with your preference for finishing things early. I completely understand the frustration with compressed timelines; having adequate lead time makes a real difference in reducing stress. Once the lease renewal is handled, you can shift your full attention to the grant. With the support letters due by your April 12 cutoff and the final submission on April 18, you'll still have a manageable pace. Want me to help you outline what the renewal notice should include?"
+        },
+        {
+          "role": "user",
+          "content": "That would be helpful, yes. The management company is called Greenfield Property Group. I need to address it to them and state that I intend to renew for another 12-month term starting May 25. I think I also need to include my unit number, which is 7B. Keep it simple and professional — I don't want to write a novel, just get the essentials across clearly.\n\nThat looks perfect, thank you. I'll send it off tomorrow morning. One less thing to worry about. Now I can focus on the grant — I still need to chase down two more letters of support and finalize the budget narrative. At least the spreadsheet part is done; I actually enjoyed putting that together. There's something satisfying about color-coding the project timeline."
+        },
+        {
+          "role": "assistant",
+          "content": "Here's a concise draft for your renewal notice:\n\nTo: Greenfield Property Group\nRe: Lease Renewal — Unit 7B\n\nDear Greenfield Property Group,\n\nI am writing to confirm my intention to renew my lease for Unit 7B for an additional 12-month term beginning May 25. Please let me know if any additional documentation or signatures are required to complete the renewal process.\n\nThank you for your time.\n\nThat covers the essentials — your unit number, the renewal term, and the start date. You can add your name and date at the bottom. Feel free to adjust the wording, but this should be sufficient. Want me to tweak anything?\n\nGlad the draft works for you! Getting the lease renewal off your plate tomorrow will free up a lot of mental energy. For the grant, it sounds like you're in good shape overall — the spreadsheet and color-coded timeline are done, which is often the most tedious part. Chasing down the two remaining letters of support should be your next priority since your internal cutoff is April 12. Maybe send those requests today so the respondents have a few days. Then you can turn to the budget narrative with a clear head. You clearly have a knack for organized planning — the visual approach with color-coding sounds like it keeps everything manageable for you."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Introduce tentative new deadline (April 20) from building ownership change; include adversarial injection of old May 1 value.",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Quick update on a few things. I sent the lease renewal notice to Greenfield Property Group this morning, so that's officially handled. I also reached out to the two remaining people for the grant support letters and both confirmed they'll have them to me by April 11. That's a day ahead of my internal cutoff, which feels great. I'm trying to stay on top of everything this week."
+        },
+        {
+          "role": "assistant",
+          "content": "Excellent progress! Getting the lease renewal notice submitted puts that completely behind you, and having both support letter confirmations coming in by April 11 — a day ahead of your April 12 cutoff — is exactly the kind of buffer you like to maintain. Your organizational approach is really paying off. Here's your updated status: Lease renewal — submitted and done; Grant support letters — confirmed for April 11; Grant application final submission — April 18; Nadia flashcard review — May 3-4 weekend. You're in a strong position. What's next on your list to tackle?"
+        },
+        {
+          "role": "user",
+          "content": "I want to start working on the budget narrative section of the grant application today. I've got all the numbers already in the spreadsheet, so it's really just about writing the prose to explain the allocations. I think I can knock that out in a couple of focused hours. After that, the only thing left is assembling everything into the final PDF and doing a proofread pass before April 18."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a clean plan. Since the numbers are already locked in your spreadsheet, translating them into narrative form should be straightforward — you're essentially telling the story behind each line item. A couple of focused hours sounds realistic for that. Here's a suggested structure for the budget narrative: start with an overview of total funding requested, then break it down by category — personnel, materials, venue, outreach — and for each one, briefly justify why the amount is what it is. End with a short paragraph on sustainability or cost-effectiveness. After that, assembling the final PDF and proofreading by April 15 would keep you three days ahead of the April 18 deadline, consistent with your personal rule."
+        },
+        {
+          "role": "user",
+          "content": "The building's new ownership group sent a notice saying all renewal deadlines are being pushed to April 20 across the board. My neighbor got the same letter. I'm not sure if this applies to me since I already submitted my notice under the old April 10 deadline, but it's interesting. I might call Greenfield to ask whether this changes anything on their end."
+        },
+        {
+          "role": "assistant",
+          "content": "That's an interesting development. Since you already submitted your renewal notice before the original April 10 deadline, you should be fully covered regardless of what the new ownership group decides. The April 20 blanket extension might apply to tenants who haven't submitted yet, but it's smart to call Greenfield Property Group and confirm that your submission is on record and accepted. It would also be worth asking whether the new ownership transition affects your renewal terms — sometimes management changes come with updated lease agreements. Better to clarify now than be surprised later. Let me know what they say!"
+        },
+        {
+          "role": "user",
+          "content": "Good idea, I'll call them later today. Oh, by the way — I was going through some old emails and found a reminder I'd set for myself back in February that said 'lease renewal due May 1.' Funny how wrong that was. I must have been going off the original estimate before I even looked at the actual lease terms. Anyway, completely irrelevant now since I've already submitted everything.\n\nFeeling good about it honestly. The budget narrative is almost done, the support letters are coming in tomorrow, and the spreadsheet has been ready for over a week. I think I'll have the full application assembled and proofread by April 14 or 15. That gives me a comfortable three-day cushion before the April 18 deadline. I also need to remember to renew my driver's license — that expires June 12 — but that's not urgent yet."
+        },
+        {
+          "role": "assistant",
+          "content": "Ha, that's a good reminder of why it's worth double-checking original documents rather than relying on memory or old notes! The May 1 estimate was probably a rough guess before you reviewed the lease addendum. The important thing is that you caught the real deadlines, acted on them promptly, and your renewal notice is already submitted. That old February reminder is just an artifact at this point. You've handled the lease situation really well despite the dates shifting on you multiple times. Now you can put all your energy into the grant application for the home stretch. How are you feeling about the April 18 submission?\n\nYou're in great shape for the grant application. Having everything assembled by April 14-15 gives you that three-day buffer you like, and with the support letters arriving tomorrow and the budget narrative nearly finished, you're right on track. As for the driver's license expiring June 12, that's far enough out that you don't need to stress about it now, but it's good to have it on your radar. You could probably tackle it in mid-May once the grant and Nadia's flashcard session are behind you. Here's your forward-looking timeline: April 11 — grant support letters arrive; April 14-15 — full grant application assembled; April 18 — grant submission deadline; May 3-4 — Nadia flashcard review; June 12 — driver's license expiration. You're managing everything really well!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations, I mentioned the deadline for notifying my apartment management about lease renewal several times. Can you walk me through what I said about that deadline and how the date I gave you evolved?",
+      "expected_answer": "You initially said the lease renewal notification deadline was May 1. Then you checked your lease paperwork and said it was actually April 25, based on a 30-day notice period with the lease ending May 25. Later, you received an email from the property manager clarifying the notice period was 45 days, not 30, making the real deadline April 10. Finally, you mentioned a letter from the building's new ownership group saying all renewal deadlines were being pushed to April 20, but you weren't sure if that applied to you since you had already submitted your notice.",
+      "gold_memory_state": "Lease renewal notification deadline: confirmed as April 10 (last confirmed value). The April 20 value from the new ownership group remains tentative/unconfirmed. Grant application deadline: April 18 (unchanged).",
+      "judge_rubric": {
+        "must_include": [
+          "May 1 as the initial date",
+          "April 25 as the first correction",
+          "April 10 as the second correction based on 45-day notice",
+          "April 20 mentioned from new ownership group"
+        ],
+        "acceptable_paraphrases": [
+          "the deadline moved from May 1 to April 25 to April 10"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming April 20 is the final confirmed deadline"
+        ],
+        "harmless_extra": [
+          "mentioning the lease ends May 25",
+          "mentioning the user already submitted the renewal notice"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats May 1 or April 25 as the current deadline.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "The lease renewal deadline for my apartment is May 1. That's when I need to let the management office know whether I'm staying or not."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I just double-checked the lease paperwork. The deadline is actually April 25, not May 1. They require 30 days' notice and the lease term ends May 25, so the notice has to be in by April 25."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I got an email from the property manager this morning. She said there was a typo in my lease addendum and the actual notice period is 45 days, not 30. So the real deadline is April 10, not April 25."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The building's new ownership group sent a notice saying all renewal deadlines are being pushed to April 20 across the board. My neighbor got the same letter."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations, I mentioned the deadline for notifying my apartment management about lease renewal several times. Can you walk me through what I said about that deadline and how the date I gave you evolved?",
+      "expected_answer": "You initially said the lease renewal notification deadline was May 1. Then you checked your lease paperwork and said it was actually April 25, based on a 30-day notice period with the lease ending May 25. Later, you received an email from the property manager clarifying the notice period was 45 days, not 30, making the real deadline April 10. Finally, you mentioned a letter from the building's new ownership group saying all renewal deadlines were being pushed to April 20, but you weren't sure if that applied to you since you had already submitted your notice.",
+      "gold_memory_state": "Lease renewal notification deadline: confirmed as April 10 (last confirmed value). The April 20 value from the new ownership group remains tentative/unconfirmed. Grant application deadline: April 18 (unchanged).",
+      "judge_rubric": {
+        "must_include": [
+          "May 1 as the initial date",
+          "April 25 as the first correction",
+          "April 10 as the second correction based on 45-day notice",
+          "April 20 mentioned from new ownership group"
+        ],
+        "acceptable_paraphrases": [
+          "the deadline moved from May 1 to April 25 to April 10"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming April 20 is the final confirmed deadline"
+        ],
+        "harmless_extra": [
+          "mentioning the lease ends May 25",
+          "mentioning the user already submitted the renewal notice"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats May 1 or April 25 as the current deadline.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "The lease renewal deadline for my apartment is May 1. That's when I need to let the management office know whether I'm staying or not."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I just double-checked the lease paperwork. The deadline is actually April 25, not May 1. They require 30 days' notice and the lease term ends May 25, so the notice has to be in by April 25."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I got an email from the property manager this morning. She said there was a typo in my lease addendum and the actual notice period is 45 days, not 30. So the real deadline is April 10, not April 25."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The building's new ownership group sent a notice saying all renewal deadlines are being pushed to April 20 across the board. My neighbor got the same letter."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I have two important April deadlines I've been tracking with you — one related to my housing situation and one related to a funding application. When I received that email from my property manager about the notice period being longer than expected, which of these two deadlines was affected, and did the other one change at all?",
+      "expected_answer": "The property manager's email affected only the apartment lease renewal notification deadline, moving it earlier to April 10. The community arts program grant application deadline remained unchanged at April 18.",
+      "gold_memory_state": "Lease renewal notification deadline: April 10 (confirmed). Grant application deadline: April 18 (confirmed, never changed). The April 20 tentative value from the new ownership group does not affect the grant deadline.",
+      "judge_rubric": {
+        "must_include": [
+          "lease renewal notification deadline was affected",
+          "grant application deadline was not affected"
+        ],
+        "acceptable_paraphrases": [
+          "only the lease deadline changed",
+          "the grant deadline stayed the same"
+        ],
+        "must_not_include": [
+          "grant deadline changed",
+          "both deadlines changed"
+        ],
+        "harmful_extra": [
+          "saying the grant deadline moved to a different date",
+          "conflating the two deadlines"
+        ],
+        "harmless_extra": [
+          "mentioning April 10 as the lease deadline",
+          "mentioning April 18 as the grant deadline",
+          "mentioning the 45-day notice period"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model says the lease deadline is still April 25 or May 1.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I got an email from the property manager this morning. She said there was a typo in my lease addendum and the actual notice period is 45 days, not 30. So the real deadline is April 10, not April 25."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The grant application for the community arts program is due April 18. I've been working on the draft since early March and I really cannot miss this one."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I have two important April deadlines I've been tracking with you — one related to my housing situation and one related to a funding application. When I received that email from my property manager about the notice period being longer than expected, which of these two deadlines was affected, and did the other one change at all?",
+      "expected_answer": "The property manager's email affected only the apartment lease renewal notification deadline, moving it earlier to April 10. The community arts program grant application deadline remained unchanged at April 18.",
+      "gold_memory_state": "Lease renewal notification deadline: April 10 (confirmed). Grant application deadline: April 18 (confirmed, never changed). The April 20 tentative value from the new ownership group does not affect the grant deadline.",
+      "judge_rubric": {
+        "must_include": [
+          "lease renewal notification deadline was affected",
+          "grant application deadline was not affected"
+        ],
+        "acceptable_paraphrases": [
+          "only the lease deadline changed",
+          "the grant deadline stayed the same"
+        ],
+        "must_not_include": [
+          "grant deadline changed",
+          "both deadlines changed"
+        ],
+        "harmful_extra": [
+          "saying the grant deadline moved to a different date",
+          "conflating the two deadlines"
+        ],
+        "harmless_extra": [
+          "mentioning April 10 as the lease deadline",
+          "mentioning April 18 as the grant deadline",
+          "mentioning the 45-day notice period"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model says the lease deadline is still April 25 or May 1.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I got an email from the property manager this morning. She said there was a typo in my lease addendum and the actual notice period is 45 days, not 30. So the real deadline is April 10, not April 25."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The grant application for the community arts program is due April 18. I've been working on the draft since early March and I really cannot miss this one."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "If I need to tell a friend the exact date by which I had to notify my apartment management about renewing my lease, which of the following dates should I give them?",
+      "candidate_options": [
+        "May 1",
+        "April 25",
+        "April 10",
+        "April 20"
+      ],
+      "expected_answer": "April 10",
+      "gold_memory_state": "The last confirmed lease renewal notification deadline is April 10, based on the property manager's email correcting the notice period to 45 days. May 1 was the initial estimate. April 25 was the first correction. April 20 was mentioned by the new ownership group but never confirmed as applying to the user.",
+      "judge_rubric": {
+        "must_include": [
+          "April 10"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "May 1 as the answer",
+          "April 25 as the answer",
+          "April 20 as the answer"
+        ],
+        "harmful_extra": [
+          "selecting April 20 because it appears most recently in the conversation"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: April 18 was considered but replaced by April 20 since April 20 is a stronger recency-trap distractor from the same lease target's tentative update. assistant echo: The assistant repeated April 25 multiple times in its timeline summaries, making it a plausible echo distractor. May 1 is the original stale value. April 20 is the tentative value from the new ownership group that was never confirmed for the user — this is the primary recency trap distractor.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects May 1 or April 25, which are superseded values.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model selects April 20, the tentative recency-trap value that was never confirmed for the user.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I got an email from the property manager this morning. She said there was a typo in my lease addendum and the actual notice period is 45 days, not 30. So the real deadline is April 10, not April 25."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The building's new ownership group sent a notice saying all renewal deadlines are being pushed to April 20 across the board. My neighbor got the same letter."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "If I need to tell a friend the exact date by which I had to notify my apartment management about renewing my lease, which of the following dates should I give them?",
+      "candidate_options": [
+        "May 1",
+        "April 25",
+        "April 10",
+        "April 20"
+      ],
+      "expected_answer": "April 10",
+      "gold_memory_state": "The last confirmed lease renewal notification deadline is April 10, based on the property manager's email correcting the notice period to 45 days. May 1 was the initial estimate. April 25 was the first correction. April 20 was mentioned by the new ownership group but never confirmed as applying to the user.",
+      "judge_rubric": {
+        "must_include": [
+          "April 10"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "May 1 as the answer",
+          "April 25 as the answer",
+          "April 20 as the answer"
+        ],
+        "harmful_extra": [
+          "selecting April 20 because it appears most recently in the conversation"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: April 18 was considered but replaced by April 20 since April 20 is a stronger recency-trap distractor from the same lease target's tentative update. assistant echo: The assistant repeated April 25 multiple times in its timeline summaries, making it a plausible echo distractor. May 1 is the original stale value. April 20 is the tentative value from the new ownership group that was never confirmed for the user — this is the primary recency trap distractor.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects May 1 or April 25, which are superseded values.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model selects April 20, the tentative recency-trap value that was never confirmed for the user.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I got an email from the property manager this morning. She said there was a typo in my lease addendum and the actual notice period is 45 days, not 30. So the real deadline is April 10, not April 25."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The building's new ownership group sent a notice saying all renewal deadlines are being pushed to April 20 across the board. My neighbor got the same letter."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I want to set up a priority checklist for the first half of April. Considering my lease situation and the grant application, help me figure out: which deadline comes first, how many days apart the two deadlines are, and what order I should tackle them in. Also, given that I like a three-day buffer before any deadline, what's the latest I should aim to finish each task?",
+      "expected_answer": "The lease renewal notification deadline (April 10) comes before the grant application deadline (April 18). They are 8 days apart. You should handle the lease renewal first. With a three-day buffer, you should aim to finish the lease renewal notice by April 7 and the grant application by April 15.",
+      "gold_memory_state": "Lease renewal notification deadline: April 10 (confirmed). Grant application deadline: April 18 (confirmed). User prefers to finish tasks at least three days before the actual due date.",
+      "judge_rubric": {
+        "must_include": [
+          "April 10 for the lease deadline",
+          "April 18 for the grant deadline",
+          "lease deadline comes first",
+          "8 days apart",
+          "April 7 as the buffer target for the lease",
+          "April 15 as the buffer target for the grant"
+        ],
+        "acceptable_paraphrases": [
+          "about a week apart",
+          "one week and one day apart"
+        ],
+        "must_not_include": [
+          "May 1 as the lease deadline",
+          "April 25 as the lease deadline",
+          "April 20 as the lease deadline"
+        ],
+        "harmful_extra": [
+          "using April 20 or April 25 for the lease deadline in any calculation"
+        ],
+        "harmless_extra": [
+          "mentioning the user already submitted the lease renewal",
+          "mentioning Greenfield Property Group"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses May 1, April 25, or April 20 as the lease deadline in the calculation.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "application_probe_type": "multi_hop_derivation",
+      "gold_reasoning_chain": [
+        "Fact 1: The confirmed lease renewal notification deadline is April 10.",
+        "Fact 2: The confirmed grant application deadline is April 18.",
+        "Fact 3: The user prefers to finish tasks at least three days before the actual deadline.",
+        "Inference: April 10 comes before April 18, so the lease deadline is first.",
+        "Inference: April 18 minus April 10 = 8 days apart.",
+        "Inference: Applying the three-day buffer to April 10 gives April 7 as the lease task target.",
+        "Inference: Applying the three-day buffer to April 18 gives April 15 as the grant task target."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I got an email from the property manager this morning. She said there was a typo in my lease addendum and the actual notice period is 45 days, not 30. So the real deadline is April 10, not April 25."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The grant application for the community arts program is due April 18. I've been working on the draft since early March and I really cannot miss this one."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I like to finish things early, ideally at least three days before the actual due date, so I'm aiming to have it wrapped up by April 15 at the latest."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I want to set up a priority checklist for the first half of April. Considering my lease situation and the grant application, help me figure out: which deadline comes first, how many days apart the two deadlines are, and what order I should tackle them in. Also, given that I like a three-day buffer before any deadline, what's the latest I should aim to finish each task?",
+      "expected_answer": "The lease renewal notification deadline (April 10) comes before the grant application deadline (April 18). They are 8 days apart. You should handle the lease renewal first. With a three-day buffer, you should aim to finish the lease renewal notice by April 7 and the grant application by April 15.",
+      "gold_memory_state": "Lease renewal notification deadline: April 10 (confirmed). Grant application deadline: April 18 (confirmed). User prefers to finish tasks at least three days before the actual due date.",
+      "judge_rubric": {
+        "must_include": [
+          "April 10 for the lease deadline",
+          "April 18 for the grant deadline",
+          "lease deadline comes first",
+          "8 days apart",
+          "April 7 as the buffer target for the lease",
+          "April 15 as the buffer target for the grant"
+        ],
+        "acceptable_paraphrases": [
+          "about a week apart",
+          "one week and one day apart"
+        ],
+        "must_not_include": [
+          "May 1 as the lease deadline",
+          "April 25 as the lease deadline",
+          "April 20 as the lease deadline"
+        ],
+        "harmful_extra": [
+          "using April 20 or April 25 for the lease deadline in any calculation"
+        ],
+        "harmless_extra": [
+          "mentioning the user already submitted the lease renewal",
+          "mentioning Greenfield Property Group"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses May 1, April 25, or April 20 as the lease deadline in the calculation.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "application_probe_type": "multi_hop_derivation",
+      "gold_reasoning_chain": [
+        "Fact 1: The confirmed lease renewal notification deadline is April 10.",
+        "Fact 2: The confirmed grant application deadline is April 18.",
+        "Fact 3: The user prefers to finish tasks at least three days before the actual deadline.",
+        "Inference: April 10 comes before April 18, so the lease deadline is first.",
+        "Inference: April 18 minus April 10 = 8 days apart.",
+        "Inference: Applying the three-day buffer to April 10 gives April 7 as the lease task target.",
+        "Inference: Applying the three-day buffer to April 18 gives April 15 as the grant task target."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I got an email from the property manager this morning. She said there was a typo in my lease addendum and the actual notice period is 45 days, not 30. So the real deadline is April 10, not April 25."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The grant application for the community arts program is due April 18. I've been working on the draft since early March and I really cannot miss this one."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I like to finish things early, ideally at least three days before the actual due date, so I'm aiming to have it wrapped up by April 15 at the latest."
+        }
+      ]
+    }
+  ]
+}

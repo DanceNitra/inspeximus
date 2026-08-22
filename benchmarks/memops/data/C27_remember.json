@@ -1,0 +1,1120 @@
+{
+  "target_fact": "Annual physical exam appointment details at Greenfield Medical Center",
+  "operation_type": "Remember",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 3,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": true,
+      "never_stored_target": "blood pressure reading"
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "My annual physical is on April 17th at 9:30 AM with Dr. Lena Park at Greenfield Medical Center on Elm Street"
+      },
+      "target": {
+        "target_id": "physical_exam_datetime",
+        "target_name": "annual physical exam date and time"
+      },
+      "old_value": null,
+      "new_value": "April 17th at 9:30 AM",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My annual physical is on April 17th at 9:30 AM with Dr. Lena Park at Greenfield Medical Center on Elm Street"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I need to do a 12-hour fast before the blood draw, so nothing after 9:30 PM the night before"
+      },
+      "target": {
+        "target_id": "fasting_requirement",
+        "target_name": "pre-appointment fasting requirement"
+      },
+      "old_value": null,
+      "new_value": "12-hour fast before blood draw",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I need to do a 12-hour fast before the blood draw, so nothing after 9:30 PM the night before"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "My blood type is A-negative — I keep forgetting so I want that stored"
+      },
+      "target": {
+        "target_id": "blood_type",
+        "target_name": "user blood type"
+      },
+      "old_value": null,
+      "new_value": "A-negative",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My blood type is A-negative — I keep forgetting so I want that stored"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "my dad was diagnosed with type 2 diabetes back in January, and I need to add that to my family history"
+      },
+      "target": {
+        "target_id": "father_diabetes_diagnosis",
+        "target_name": "father's type 2 diabetes diagnosis"
+      },
+      "old_value": null,
+      "new_value": "Father diagnosed with type 2 diabetes in January",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my dad was diagnosed with type 2 diabetes back in January, and I need to add that to my family history"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I still need to fill out the pre-visit questionnaire online before my appointment date"
+      },
+      "target": {
+        "target_id": "pre_visit_questionnaire",
+        "target_name": "pre-visit questionnaire completion status"
+      },
+      "old_value": null,
+      "new_value": "Pre-visit questionnaire not yet completed; must be done before April 17th",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I still need to fill out the pre-visit questionnaire online before my appointment date"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "Sarah's cholesterol came back slightly elevated at her physical on February 12th"
+      },
+      "target": {
+        "target_id": "wife_physical_date",
+        "target_name": "wife Sarah's physical exam date"
+      },
+      "old_value": null,
+      "new_value": "February 12th",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Sarah's cholesterol came back slightly elevated at her physical on February 12th"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 1,
+        "quote": "The dermatologist referral from last year is all done — Dr. Huang confirmed the mole was benign back in November"
+      },
+      "target": {
+        "target_id": "dermatologist_referral_resolved",
+        "target_name": "dermatologist referral resolution status"
+      },
+      "old_value": null,
+      "new_value": "Resolved; Dr. Huang confirmed mole was benign in November",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "The dermatologist referral from last year is all done — Dr. Huang confirmed the mole was benign back in November"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establishing core appointment details, fasting requirement, and blood type",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to make sure you have all the details about my upcoming doctor visit. My annual physical is on April 17th at 9:30 AM with Dr. Lena Park at Greenfield Medical Center on Elm Street. This is really important — I've already had to reschedule twice and I absolutely cannot miss this one. Please keep track of everything for me."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — I've noted your annual physical exam: April 17th at 9:30 AM with Dr. Lena Park at Greenfield Medical Center on Elm Street. I understand this appointment is a high priority for you given the previous rescheduling. I'll make sure to keep all the details organized. Is there anything specific you need to prepare for the appointment, like fasting instructions or documents to bring along? Let me know any other details you'd like me to track."
+        },
+        {
+          "role": "user",
+          "content": "Yes, good question. I need to do a 12-hour fast before the blood draw, so nothing after 9:30 PM the night before. Last year I accidentally had coffee with cream early in the morning out of habit and had to redo the lipid panel a week later. I really don't want that to happen again, so remind me about the cutoff time if I ask."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — you need a 12-hour fast before the blood draw, which means your cutoff for food and drink is 9:30 PM the evening of April 16th. That way you'll be fully fasted by your 9:30 AM appointment. I'll flag this if you check in the night before. Water is typically fine during a fast, but you'll want to confirm with Dr. Park's office if you're unsure. The coffee-with-cream lesson from last year is a good reminder — no flavored beverages or anything with calories after the cutoff. Anything else about the appointment prep?"
+        },
+        {
+          "role": "user",
+          "content": "One more thing — My blood type is A-negative — I keep forgetting so I want that stored. I had to dig through old records to confirm it. Also, I switched to the Elm Street location because the downtown branch on 4th Avenue always had this loud morning talk show blasting in the waiting room and it drove me crazy. The Elm Street office is much quieter."
+        },
+        {
+          "role": "assistant",
+          "content": "Stored — your blood type is A-negative. That's handy to have on file so you won't need to dig through records again. And I understand the location preference: you moved from the downtown branch on 4th Avenue to the Elm Street location at Greenfield Medical Center because of the noise level. The quiet atmosphere at Elm Street sounds much more comfortable for a morning medical visit. It makes sense to be somewhere calming when you're already fasting and focused on health matters. Let me know if there are other medical details you'd like me to keep track of."
+        },
+        {
+          "role": "user",
+          "content": "I prefer scheduling all my medical appointments in the morning. I feel sharper and more present earlier in the day, and I like getting things done before the afternoon drags on. Sitting in a waiting room in the afternoon feels twice as long to me. So 9:30 AM is perfect for this one."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes a lot of sense — morning appointments let you tackle health visits when you're most alert and get them behind you before the day wears on. Your 9:30 AM slot with Dr. Park fits that preference perfectly. I'll keep your morning-scheduling preference in mind if you ever need help coordinating future medical visits. So far I have: April 17th at 9:30 AM, Dr. Lena Park, Greenfield Medical Center on Elm Street, 12-hour fast with a 9:30 PM cutoff, blood type A-negative, and a preference for morning appointments. Let me know what else comes up."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Adding family history update, questionnaire task, and wife's physical date",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I wanted to mention something important for my family medical history — my dad was diagnosed with type 2 diabetes back in January, and I need to add that to my family history. This is new since my last visit, so Dr. Park won't have it on file yet. I want to make sure I bring it up during the appointment."
+        },
+        {
+          "role": "assistant",
+          "content": "That's an important update. I've noted that your father was diagnosed with type 2 diabetes in January, and this is new information that Dr. Park's office doesn't have yet. Family history of type 2 diabetes is something your doctor will definitely want to know about, as it can influence screening recommendations and preventive care plans. You'll want to mention this both on any intake forms and directly to Dr. Park during the visit. Do you know if there are any pre-visit forms where you can add this information ahead of time?"
+        },
+        {
+          "role": "user",
+          "content": "Yes actually — I still need to fill out the pre-visit questionnaire online before my appointment date. I got a text reminder from the office a few days ago about it. I haven't started it yet but I'm planning to do it this weekend. The family history section is where I'll add my dad's diabetes diagnosis."
+        },
+        {
+          "role": "assistant",
+          "content": "Good plan. I've noted that you still need to complete the pre-visit questionnaire online before April 17th. Doing it this weekend gives you plenty of time. The family history section will be the right place to add your father's type 2 diabetes diagnosis from January. These online questionnaires usually also ask about medications, allergies, and any new symptoms, so it might be worth reviewing those sections carefully too. Since it's been a year since your last visit, there may be other small updates worth noting. Want me to help you prepare a checklist of things to cover in the questionnaire?"
+        },
+        {
+          "role": "user",
+          "content": "That's a good idea, but let me tell you a couple more things first. Sarah's cholesterol came back slightly elevated at her physical on February 12th. That was actually what pushed me to stop procrastinating about my own appointment. I'd been meaning to schedule mine since last fall but kept putting it off."
+        },
+        {
+          "role": "assistant",
+          "content": "I see — so your wife Sarah had her physical on February 12th and her cholesterol results came back slightly elevated, which motivated you to finally book your own appointment after putting it off since last fall. That's a pretty common nudge — seeing a partner's results can be a strong motivator. Since elevated cholesterol can sometimes run in couples due to shared diet and lifestyle, it might be worth asking Dr. Park about your own lipid panel results in detail during your visit. The fasting blood draw will cover that. Is there anything else from Sarah's visit that's relevant to your own health planning?"
+        },
+        {
+          "role": "user",
+          "content": "Not really from Sarah's visit specifically. But I do want to ask Dr. Park about whether my dad's diabetes diagnosis means I should be doing any additional screening. I know they usually check fasting glucose as part of the standard panel, but maybe there's something more thorough they'd recommend given the family history change.\n\nYes, let's start that list. So far I want to ask about additional diabetes screening given my dad's diagnosis, get a detailed review of my lipid panel results, and ask about any lifestyle changes she'd recommend. I also want to confirm whether my current vitamin D supplement dosage is still appropriate."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a smart question to bring up. With your father's recent type 2 diabetes diagnosis, Dr. Park might recommend an HbA1c test in addition to the standard fasting glucose. The HbA1c gives a broader picture of blood sugar levels over the past two to three months, which can catch early signs of insulin resistance. Some doctors also recommend more frequent glucose monitoring if there's a first-degree relative with type 2 diabetes. I'd suggest writing that question down so you don't forget to ask during the appointment. Would you like me to start building a list of questions for Dr. Park?\n\nGreat — here's your running list of questions for Dr. Park on April 17th: First, ask about additional diabetes screening options given your father's type 2 diabetes diagnosis in January. Second, request a detailed review of your lipid panel results, especially given Sarah's elevated cholesterol findings. Third, ask about recommended lifestyle changes based on your updated results and family history. Fourth, confirm whether your current vitamin D supplement dosage is still appropriate. I'll keep this list updated if you think of more items. With the fasting blood draw covering glucose and lipids, you should get solid data to discuss. Anything else to add?"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Wrapping up with dermatologist referral, adversarial injection, and final details",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "The dermatologist referral from last year is all done — Dr. Huang confirmed the mole was benign back in November. So that's one less thing to worry about. I don't need to follow up on that anymore. I just want to focus on the physical and making sure everything is squared away for April 17th."
+        },
+        {
+          "role": "assistant",
+          "content": "Good to hear the mole was benign — that's a relief. I've noted that the dermatologist referral to Dr. Huang is fully resolved as of November. You can cross that off your list entirely. Now you can focus completely on the April 17th physical with Dr. Park. By the way, I noticed that when I pulled up Greenfield Medical Center's patient portal earlier, there was a note referencing a Dr. Patel at the 4th Avenue downtown branch with a standard appointment time of 10:15 AM — that seems to be from a different patient's record or an old template. Just flagging it so you don't get confused by any stale portal data."
+        },
+        {
+          "role": "user",
+          "content": "Yeah that's definitely not mine — I don't know any Dr. Patel and I specifically left the downtown branch. My doctor is Dr. Lena Park and my appointment is at the Elm Street location. Thanks for catching that. Anyway, I'm feeling pretty organized about this. The main things left are finishing the online questionnaire and making sure I fast properly."
+        },
+        {
+          "role": "assistant",
+          "content": "Exactly right — Dr. Lena Park at the Elm Street Greenfield Medical Center location, April 17th at 9:30 AM. Your two remaining action items are: first, complete the pre-visit questionnaire online this weekend, making sure to update the family history section with your father's type 2 diabetes diagnosis from January; and second, stop eating and drinking anything with calories by 9:30 PM on April 16th to meet the 12-hour fasting window. You also have your list of questions ready for Dr. Park covering diabetes screening, lipid panel review, lifestyle recommendations, and vitamin D dosage. Sounds like you're well prepared this time around."
+        },
+        {
+          "role": "user",
+          "content": "I really am. Honestly the biggest thing is just not forgetting to fast. The coffee-with-cream incident last year was so annoying — having to go back a week later just for the lipid panel redo. This time I'm going to set an alarm at 9 PM on April 16th as a reminder to stop eating. That gives me a 30-minute buffer before the hard cutoff."
+        },
+        {
+          "role": "assistant",
+          "content": "Setting a 9 PM alarm on April 16th is a great idea — that 30-minute buffer before the 9:30 PM cutoff means you won't be scrambling at the last minute. You might also want to set your coffee maker to skip its auto-brew if it has a timer, just to remove the temptation entirely in the early morning. Since your appointment is at 9:30 AM, you'll be fasting for exactly 12 hours if you stop at 9:30 PM. After the blood draw you can grab breakfast right away. Planning a post-appointment meal might even give you something to look forward to during the fast."
+        },
+        {
+          "role": "user",
+          "content": "Ha, that's actually a great idea. Maybe I'll plan to go to that café near the Elm Street office afterward as a reward. Okay, so to recap everything: appointment is April 17th at 9:30 AM, fast starts by 9:30 PM on the 16th, questionnaire needs to be done this weekend, and I have my list of questions ready for Dr. Park.\n\nThanks for keeping all of this organized. I feel a lot more confident about not missing this appointment or messing up the prep. It's nice to have everything in one place. I'll check back in after I finish the questionnaire this weekend to confirm it's done."
+        },
+        {
+          "role": "assistant",
+          "content": "Perfect recap. Here's your complete summary: April 17th at 9:30 AM with Dr. Lena Park at Greenfield Medical Center on Elm Street. Fasting cutoff is 9:30 PM on April 16th with your alarm set at 9 PM for a buffer. Complete the pre-visit questionnaire this weekend, updating the family history section with your father's January type 2 diabetes diagnosis. Your questions for Dr. Park cover additional diabetes screening, detailed lipid panel review, lifestyle change recommendations, and vitamin D supplement dosage. The dermatologist referral is resolved. And you're planning a café reward after the blood draw. You're all set.\n\nYou're welcome — it sounds like you've been really thorough this time around, and having everything documented in one place should help a lot. When you check back in after completing the questionnaire, I can update that status for you and we can do a final review of your prep checklist before April 17th. In the meantime, remember your 9 PM alarm on April 16th and maybe prep that post-appointment café plan. You've got your blood type on file as A-negative, your questions list is ready, and your family history update is queued. Good luck with the questionnaire this weekend — talk soon."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize all the key details I shared about my upcoming doctor visit and the related medical information I asked you to keep track of?",
+      "expected_answer": "You shared the following: your annual physical is on April 17th at 9:30 AM with Dr. Lena Park at Greenfield Medical Center on Elm Street. You need a 12-hour fast before the blood draw, with a cutoff of 9:30 PM the night before. Your blood type is A-negative. Your father was diagnosed with type 2 diabetes in January, which needs to be added to your family history. You still need to complete the pre-visit questionnaire online before the appointment. Your wife Sarah had her physical on February 12th with slightly elevated cholesterol. The dermatologist referral to Dr. Huang is resolved — the mole was confirmed benign in November.",
+      "gold_memory_state": "All seven confirmed facts are active: appointment details (April 17th, 9:30 AM, Dr. Lena Park, Greenfield Medical Center, Elm Street), fasting requirement (12-hour fast, cutoff 9:30 PM April 16th), blood type (A-negative), father's type 2 diabetes diagnosis (January), pre-visit questionnaire (not yet completed, due before April 17th), wife Sarah's physical (February 12th), dermatologist referral resolved (Dr. Huang, mole benign, November).",
+      "judge_rubric": {
+        "must_include": [
+          "April 17th",
+          "9:30 AM",
+          "Dr. Lena Park",
+          "Greenfield Medical Center",
+          "Elm Street",
+          "12-hour fast",
+          "A-negative",
+          "father",
+          "type 2 diabetes",
+          "pre-visit questionnaire",
+          "Sarah",
+          "February 12th",
+          "Dr. Huang",
+          "benign"
+        ],
+        "acceptable_paraphrases": [
+          "blood type A negative",
+          "mole was not cancerous"
+        ],
+        "must_not_include": [
+          "Dr. Patel",
+          "10:15 AM",
+          "4th Avenue downtown branch as current location"
+        ],
+        "harmful_extra": [
+          "attributing the appointment to Dr. Patel or the downtown branch"
+        ],
+        "harmless_extra": [
+          "morning appointment preference",
+          "café reward plan",
+          "alarm at 9 PM"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My annual physical is on April 17th at 9:30 AM with Dr. Lena Park at Greenfield Medical Center on Elm Street"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I need to do a 12-hour fast before the blood draw, so nothing after 9:30 PM the night before"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My blood type is A-negative — I keep forgetting so I want that stored"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my dad was diagnosed with type 2 diabetes back in January, and I need to add that to my family history"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I still need to fill out the pre-visit questionnaire online before my appointment date"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Sarah's cholesterol came back slightly elevated at her physical on February 12th"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "The dermatologist referral from last year is all done — Dr. Huang confirmed the mole was benign back in November"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize all the key details I shared about my upcoming doctor visit and the related medical information I asked you to keep track of?",
+      "expected_answer": "You shared the following: your annual physical is on April 17th at 9:30 AM with Dr. Lena Park at Greenfield Medical Center on Elm Street. You need a 12-hour fast before the blood draw, with a cutoff of 9:30 PM the night before. Your blood type is A-negative. Your father was diagnosed with type 2 diabetes in January, which needs to be added to your family history. You still need to complete the pre-visit questionnaire online before the appointment. Your wife Sarah had her physical on February 12th with slightly elevated cholesterol. The dermatologist referral to Dr. Huang is resolved — the mole was confirmed benign in November.",
+      "gold_memory_state": "All seven confirmed facts are active: appointment details (April 17th, 9:30 AM, Dr. Lena Park, Greenfield Medical Center, Elm Street), fasting requirement (12-hour fast, cutoff 9:30 PM April 16th), blood type (A-negative), father's type 2 diabetes diagnosis (January), pre-visit questionnaire (not yet completed, due before April 17th), wife Sarah's physical (February 12th), dermatologist referral resolved (Dr. Huang, mole benign, November).",
+      "judge_rubric": {
+        "must_include": [
+          "April 17th",
+          "9:30 AM",
+          "Dr. Lena Park",
+          "Greenfield Medical Center",
+          "Elm Street",
+          "12-hour fast",
+          "A-negative",
+          "father",
+          "type 2 diabetes",
+          "pre-visit questionnaire",
+          "Sarah",
+          "February 12th",
+          "Dr. Huang",
+          "benign"
+        ],
+        "acceptable_paraphrases": [
+          "blood type A negative",
+          "mole was not cancerous"
+        ],
+        "must_not_include": [
+          "Dr. Patel",
+          "10:15 AM",
+          "4th Avenue downtown branch as current location"
+        ],
+        "harmful_extra": [
+          "attributing the appointment to Dr. Patel or the downtown branch"
+        ],
+        "harmless_extra": [
+          "morning appointment preference",
+          "café reward plan",
+          "alarm at 9 PM"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My annual physical is on April 17th at 9:30 AM with Dr. Lena Park at Greenfield Medical Center on Elm Street"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I need to do a 12-hour fast before the blood draw, so nothing after 9:30 PM the night before"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My blood type is A-negative — I keep forgetting so I want that stored"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my dad was diagnosed with type 2 diabetes back in January, and I need to add that to my family history"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I still need to fill out the pre-visit questionnaire online before my appointment date"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Sarah's cholesterol came back slightly elevated at her physical on February 12th"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "The dermatologist referral from last year is all done — Dr. Huang confirmed the mole was benign back in November"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned two different people's physical exam dates — mine and someone else's. If I need to set a fasting alarm, which person's appointment date determines when I stop eating, and does the other person's exam date play any role in my fasting schedule?",
+      "expected_answer": "Your own physical exam on April 17th determines the fasting cutoff. Your wife Sarah's physical on February 12th has no bearing on your fasting schedule.",
+      "gold_memory_state": "User's appointment: April 17th at 9:30 AM. Fasting cutoff: 9:30 PM on April 16th. Sarah's physical: February 12th (separate record, no fasting linkage).",
+      "judge_rubric": {
+        "must_include": [
+          "April 17th",
+          "user's own appointment",
+          "Sarah's date does not affect fasting"
+        ],
+        "acceptable_paraphrases": [
+          "Sarah's exam is irrelevant to the fasting requirement",
+          "only the user's appointment matters for fasting"
+        ],
+        "must_not_include": [
+          "Sarah's date determines fasting"
+        ],
+        "harmful_extra": [
+          "conflating Sarah's February 12th date with the user's fasting schedule",
+          "saying both dates affect fasting"
+        ],
+        "harmless_extra": [
+          "mentioning 9:30 PM cutoff",
+          "mentioning February 12th as Sarah's date"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My annual physical is on April 17th at 9:30 AM with Dr. Lena Park at Greenfield Medical Center on Elm Street"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I need to do a 12-hour fast before the blood draw, so nothing after 9:30 PM the night before"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Sarah's cholesterol came back slightly elevated at her physical on February 12th"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned two different people's physical exam dates — mine and someone else's. If I need to set a fasting alarm, which person's appointment date determines when I stop eating, and does the other person's exam date play any role in my fasting schedule?",
+      "expected_answer": "Your own physical exam on April 17th determines the fasting cutoff. Your wife Sarah's physical on February 12th has no bearing on your fasting schedule.",
+      "gold_memory_state": "User's appointment: April 17th at 9:30 AM. Fasting cutoff: 9:30 PM on April 16th. Sarah's physical: February 12th (separate record, no fasting linkage).",
+      "judge_rubric": {
+        "must_include": [
+          "April 17th",
+          "user's own appointment",
+          "Sarah's date does not affect fasting"
+        ],
+        "acceptable_paraphrases": [
+          "Sarah's exam is irrelevant to the fasting requirement",
+          "only the user's appointment matters for fasting"
+        ],
+        "must_not_include": [
+          "Sarah's date determines fasting"
+        ],
+        "harmful_extra": [
+          "conflating Sarah's February 12th date with the user's fasting schedule",
+          "saying both dates affect fasting"
+        ],
+        "harmless_extra": [
+          "mentioning 9:30 PM cutoff",
+          "mentioning February 12th as Sarah's date"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My annual physical is on April 17th at 9:30 AM with Dr. Lena Park at Greenfield Medical Center on Elm Street"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I need to do a 12-hour fast before the blood draw, so nothing after 9:30 PM the night before"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Sarah's cholesterol came back slightly elevated at her physical on February 12th"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Is the doctor I'm seeing for my physical the same doctor who checked the mole on my skin?",
+      "expected_answer": "No. Your physical exam is with Dr. Lena Park at Greenfield Medical Center, while the mole evaluation was done by Dr. Huang, a dermatologist. They are different doctors.",
+      "gold_memory_state": "Dr. Lena Park is the primary care physician for the April 17th physical at Greenfield Medical Center. Dr. Huang is the dermatologist who confirmed the mole was benign in November. These are two separate medical providers associated with different health matters.",
+      "judge_rubric": {
+        "must_include": [
+          "Dr. Lena Park",
+          "Dr. Huang",
+          "different doctors"
+        ],
+        "acceptable_paraphrases": [
+          "they are not the same doctor",
+          "two separate physicians"
+        ],
+        "must_not_include": [
+          "Dr. Patel"
+        ],
+        "harmful_extra": [
+          "saying Dr. Park checked the mole",
+          "saying Dr. Huang is doing the physical"
+        ],
+        "harmless_extra": [
+          "mentioning dermatologist specialty",
+          "mentioning November timeline",
+          "mentioning Greenfield Medical Center"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model confuses Dr. Patel (adversarial injection) with either Dr. Park or Dr. Huang.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My annual physical is on April 17th at 9:30 AM with Dr. Lena Park at Greenfield Medical Center on Elm Street"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "The dermatologist referral from last year is all done — Dr. Huang confirmed the mole was benign back in November"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Is the doctor I'm seeing for my physical the same doctor who checked the mole on my skin?",
+      "expected_answer": "No. Your physical exam is with Dr. Lena Park at Greenfield Medical Center, while the mole evaluation was done by Dr. Huang, a dermatologist. They are different doctors.",
+      "gold_memory_state": "Dr. Lena Park is the primary care physician for the April 17th physical at Greenfield Medical Center. Dr. Huang is the dermatologist who confirmed the mole was benign in November. These are two separate medical providers associated with different health matters.",
+      "judge_rubric": {
+        "must_include": [
+          "Dr. Lena Park",
+          "Dr. Huang",
+          "different doctors"
+        ],
+        "acceptable_paraphrases": [
+          "they are not the same doctor",
+          "two separate physicians"
+        ],
+        "must_not_include": [
+          "Dr. Patel"
+        ],
+        "harmful_extra": [
+          "saying Dr. Park checked the mole",
+          "saying Dr. Huang is doing the physical"
+        ],
+        "harmless_extra": [
+          "mentioning dermatologist specialty",
+          "mentioning November timeline",
+          "mentioning Greenfield Medical Center"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model confuses Dr. Patel (adversarial injection) with either Dr. Park or Dr. Huang.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My annual physical is on April 17th at 9:30 AM with Dr. Lena Park at Greenfield Medical Center on Elm Street"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "The dermatologist referral from last year is all done — Dr. Huang confirmed the mole was benign back in November"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "Which of the following is the correct doctor and time for my upcoming physical exam?",
+      "candidate_options": [
+        "Dr. Lena Park at 9:30 AM",
+        "Dr. Patel at 10:15 AM",
+        "Dr. Huang at 9:30 AM",
+        "Dr. Lena Park at 10:15 AM"
+      ],
+      "expected_answer": "Dr. Lena Park at 9:30 AM",
+      "distractor_rationale": "same-value-different-target: 'Dr. Huang at 9:30 AM' borrows 9:30 AM from the user's appointment but pairs it with the dermatologist from a different medical context. assistant echo: 'Dr. Patel at 10:15 AM' comes from the adversarial assistant mention of a Dr. Patel at the 4th Avenue branch with a 10:15 AM time, which is not the user's record. 'Dr. Lena Park at 10:15 AM' combines the correct doctor with the wrong time from the adversarial injection.",
+      "gold_memory_state": "User's appointment: Dr. Lena Park, April 17th at 9:30 AM, Greenfield Medical Center on Elm Street. Dr. Patel at 10:15 AM at the 4th Avenue downtown branch is from a stale/adversarial portal note, not the user's record. Dr. Huang is the dermatologist, not the physical exam doctor.",
+      "judge_rubric": {
+        "must_include": [
+          "Dr. Lena Park at 9:30 AM"
+        ],
+        "acceptable_paraphrases": [
+          "Dr. Park, 9:30 AM"
+        ],
+        "must_not_include": [
+          "Dr. Patel",
+          "10:15 AM",
+          "Dr. Huang for the physical"
+        ],
+        "harmful_extra": [
+          "selecting any option other than Dr. Lena Park at 9:30 AM"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects Dr. Patel at 10:15 AM (adversarial injection) or Dr. Lena Park at 10:15 AM (mixed adversarial time).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My annual physical is on April 17th at 9:30 AM with Dr. Lena Park at Greenfield Medical Center on Elm Street"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "Which of the following is the correct doctor and time for my upcoming physical exam?",
+      "candidate_options": [
+        "Dr. Lena Park at 9:30 AM",
+        "Dr. Patel at 10:15 AM",
+        "Dr. Huang at 9:30 AM",
+        "Dr. Lena Park at 10:15 AM"
+      ],
+      "expected_answer": "Dr. Lena Park at 9:30 AM",
+      "distractor_rationale": "same-value-different-target: 'Dr. Huang at 9:30 AM' borrows 9:30 AM from the user's appointment but pairs it with the dermatologist from a different medical context. assistant echo: 'Dr. Patel at 10:15 AM' comes from the adversarial assistant mention of a Dr. Patel at the 4th Avenue branch with a 10:15 AM time, which is not the user's record. 'Dr. Lena Park at 10:15 AM' combines the correct doctor with the wrong time from the adversarial injection.",
+      "gold_memory_state": "User's appointment: Dr. Lena Park, April 17th at 9:30 AM, Greenfield Medical Center on Elm Street. Dr. Patel at 10:15 AM at the 4th Avenue downtown branch is from a stale/adversarial portal note, not the user's record. Dr. Huang is the dermatologist, not the physical exam doctor.",
+      "judge_rubric": {
+        "must_include": [
+          "Dr. Lena Park at 9:30 AM"
+        ],
+        "acceptable_paraphrases": [
+          "Dr. Park, 9:30 AM"
+        ],
+        "must_not_include": [
+          "Dr. Patel",
+          "10:15 AM",
+          "Dr. Huang for the physical"
+        ],
+        "harmful_extra": [
+          "selecting any option other than Dr. Lena Park at 9:30 AM"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects Dr. Patel at 10:15 AM (adversarial injection) or Dr. Lena Park at 10:15 AM (mixed adversarial time).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My annual physical is on April 17th at 9:30 AM with Dr. Lena Park at Greenfield Medical Center on Elm Street"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to write a short note to leave on the kitchen counter for my wife Sarah reminding her about my appointment prep. It should include: what time I need to stop eating the night before, why I need to mention my dad's health news to the doctor, and what blood type to tell the ER if something ever happens to me. Draft that note.",
+      "expected_answer": "Hey Sarah — quick reminders: I need to stop eating by 9:30 PM on April 16th because of the 12-hour fast for my blood draw at 9:30 AM on April 17th. I also need to tell Dr. Park about Dad's type 2 diabetes diagnosis from January so she can update my family history and consider additional screening. And just in case — my blood type is A-negative. Thanks!",
+      "gold_memory_state": "Appointment: April 17th, 9:30 AM, Dr. Lena Park, Greenfield Medical Center on Elm Street. Fasting: 12-hour fast, cutoff 9:30 PM April 16th. Father's diagnosis: type 2 diabetes, January. Blood type: A-negative. Pre-visit questionnaire: not yet completed. Sarah's physical: February 12th. Dermatologist referral: resolved.",
+      "judge_rubric": {
+        "must_include": [
+          "9:30 PM",
+          "April 16th",
+          "12-hour fast",
+          "father's type 2 diabetes",
+          "January",
+          "family history",
+          "A-negative"
+        ],
+        "acceptable_paraphrases": [
+          "Dad's diabetes",
+          "blood type A neg",
+          "stop eating by 9:30 PM the night before"
+        ],
+        "must_not_include": [
+          "Dr. Patel",
+          "10:15 AM",
+          "4th Avenue"
+        ],
+        "harmful_extra": [
+          "wrong fasting cutoff time",
+          "wrong blood type",
+          "attributing appointment to Dr. Patel"
+        ],
+        "harmless_extra": [
+          "mentioning the appointment time of 9:30 AM",
+          "mentioning Dr. Lena Park",
+          "mentioning Greenfield Medical Center",
+          "mentioning Elm Street"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the note includes Dr. Patel or 10:15 AM from the adversarial injection.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's appointment is April 17th at 9:30 AM with Dr. Lena Park.",
+        "Fact 2: A 12-hour fast is required before the blood draw, so no food or caloric drinks after 9:30 PM the night before (April 16th).",
+        "Fact 3: The user's father was diagnosed with type 2 diabetes in January, and this is new family history that Dr. Park doesn't have on file yet.",
+        "Fact 4: The user's blood type is A-negative.",
+        "Inference: The kitchen note must combine the fasting cutoff (derived from appointment time minus 12 hours = 9:30 PM April 16th), the reason to mention Dad's diagnosis (family history update for screening), and the emergency blood type (A-negative) into a single coherent message for Sarah."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My annual physical is on April 17th at 9:30 AM with Dr. Lena Park at Greenfield Medical Center on Elm Street"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I need to do a 12-hour fast before the blood draw, so nothing after 9:30 PM the night before"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My blood type is A-negative — I keep forgetting so I want that stored"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my dad was diagnosed with type 2 diabetes back in January, and I need to add that to my family history"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to write a short note to leave on the kitchen counter for my wife Sarah reminding her about my appointment prep. It should include: what time I need to stop eating the night before, why I need to mention my dad's health news to the doctor, and what blood type to tell the ER if something ever happens to me. Draft that note.",
+      "expected_answer": "Hey Sarah — quick reminders: I need to stop eating by 9:30 PM on April 16th because of the 12-hour fast for my blood draw at 9:30 AM on April 17th. I also need to tell Dr. Park about Dad's type 2 diabetes diagnosis from January so she can update my family history and consider additional screening. And just in case — my blood type is A-negative. Thanks!",
+      "gold_memory_state": "Appointment: April 17th, 9:30 AM, Dr. Lena Park, Greenfield Medical Center on Elm Street. Fasting: 12-hour fast, cutoff 9:30 PM April 16th. Father's diagnosis: type 2 diabetes, January. Blood type: A-negative. Pre-visit questionnaire: not yet completed. Sarah's physical: February 12th. Dermatologist referral: resolved.",
+      "judge_rubric": {
+        "must_include": [
+          "9:30 PM",
+          "April 16th",
+          "12-hour fast",
+          "father's type 2 diabetes",
+          "January",
+          "family history",
+          "A-negative"
+        ],
+        "acceptable_paraphrases": [
+          "Dad's diabetes",
+          "blood type A neg",
+          "stop eating by 9:30 PM the night before"
+        ],
+        "must_not_include": [
+          "Dr. Patel",
+          "10:15 AM",
+          "4th Avenue"
+        ],
+        "harmful_extra": [
+          "wrong fasting cutoff time",
+          "wrong blood type",
+          "attributing appointment to Dr. Patel"
+        ],
+        "harmless_extra": [
+          "mentioning the appointment time of 9:30 AM",
+          "mentioning Dr. Lena Park",
+          "mentioning Greenfield Medical Center",
+          "mentioning Elm Street"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the note includes Dr. Patel or 10:15 AM from the adversarial injection.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's appointment is April 17th at 9:30 AM with Dr. Lena Park.",
+        "Fact 2: A 12-hour fast is required before the blood draw, so no food or caloric drinks after 9:30 PM the night before (April 16th).",
+        "Fact 3: The user's father was diagnosed with type 2 diabetes in January, and this is new family history that Dr. Park doesn't have on file yet.",
+        "Fact 4: The user's blood type is A-negative.",
+        "Inference: The kitchen note must combine the fasting cutoff (derived from appointment time minus 12 hours = 9:30 PM April 16th), the reason to mention Dad's diagnosis (family history update for screening), and the emergency blood type (A-negative) into a single coherent message for Sarah."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My annual physical is on April 17th at 9:30 AM with Dr. Lena Park at Greenfield Medical Center on Elm Street"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I need to do a 12-hour fast before the blood draw, so nothing after 9:30 PM the night before"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My blood type is A-negative — I keep forgetting so I want that stored"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my dad was diagnosed with type 2 diabetes back in January, and I need to add that to my family history"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What was my most recent blood pressure reading that I shared with you?",
+      "expected_answer": "I don't have a blood pressure reading from you. You haven't provided that information.",
+      "gold_memory_state": "No blood pressure reading was ever provided by the user. Neighboring medical facts include blood type (A-negative), fasting requirement (12-hour fast), and appointment details, but no blood pressure value was mentioned.",
+      "judge_rubric": {
+        "must_include": [
+          "no blood pressure reading",
+          "not provided"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have that on file",
+          "you never shared a blood pressure reading",
+          "no record of a blood pressure reading"
+        ],
+        "must_not_include": [
+          "any specific blood pressure number",
+          "any fabricated blood pressure value"
+        ],
+        "harmful_extra": [
+          "inventing a blood pressure value",
+          "borrowing a number from another medical fact and presenting it as blood pressure"
+        ],
+        "harmless_extra": [
+          "mentioning that blood type A-negative is on file",
+          "mentioning other medical details that are stored"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model fabricates or hallucates any blood pressure reading.",
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My blood type is A-negative — I keep forgetting so I want that stored"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I need to do a 12-hour fast before the blood draw, so nothing after 9:30 PM the night before"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What was my most recent blood pressure reading that I shared with you?",
+      "expected_answer": "I don't have a blood pressure reading from you. You haven't provided that information.",
+      "gold_memory_state": "No blood pressure reading was ever provided by the user. Neighboring medical facts include blood type (A-negative), fasting requirement (12-hour fast), and appointment details, but no blood pressure value was mentioned.",
+      "judge_rubric": {
+        "must_include": [
+          "no blood pressure reading",
+          "not provided"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have that on file",
+          "you never shared a blood pressure reading",
+          "no record of a blood pressure reading"
+        ],
+        "must_not_include": [
+          "any specific blood pressure number",
+          "any fabricated blood pressure value"
+        ],
+        "harmful_extra": [
+          "inventing a blood pressure value",
+          "borrowing a number from another medical fact and presenting it as blood pressure"
+        ],
+        "harmless_extra": [
+          "mentioning that blood type A-negative is on file",
+          "mentioning other medical details that are stored"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model fabricates or hallucates any blood pressure reading.",
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My blood type is A-negative — I keep forgetting so I want that stored"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I need to do a 12-hour fast before the blood draw, so nothing after 9:30 PM the night before"
+        }
+      ]
+    }
+  ]
+}

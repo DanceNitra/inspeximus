@@ -1,0 +1,955 @@
+{
+  "target_fact": "C25 conference paper submission details including submission ID, page limit, and rebuttal phase date",
+  "operation_type": "TrajectoryOps",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "c25_page_limit",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "The main track page limit for C25 is 8 pages excluding references"
+      },
+      "target": {
+        "target_id": "c25_main_track_page_limit",
+        "target_name": "C25 main track page limit"
+      },
+      "old_value": null,
+      "new_value": "8 pages excluding references",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The main track page limit for C25 is 8 pages excluding references"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "Our final submission ID on the C25 portal is #4782"
+      },
+      "target": {
+        "target_id": "c25_submission_id",
+        "target_name": "C25 portal submission ID"
+      },
+      "old_value": null,
+      "new_value": "#4782",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Our final submission ID on the C25 portal is #4782"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "c25_page_limit",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I need to correct something I told you earlier about the page limit. The main track is actually 10 pages excluding references, not 8"
+      },
+      "target": {
+        "target_id": "c25_main_track_page_limit",
+        "target_name": "C25 main track page limit"
+      },
+      "old_value": "8 pages excluding references",
+      "new_value": "10 pages excluding references",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The main track is actually 10 pages excluding references, not 8. I had it confused with the workshop track, which is 8 pages"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "c25_page_limit",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 3,
+        "quote": "Elena just messaged me saying the C25 organizers posted an amendment raising the main track limit to 12 pages excluding references"
+      },
+      "target": {
+        "target_id": "c25_main_track_page_limit",
+        "target_name": "C25 main track page limit"
+      },
+      "old_value": "10 pages excluding references",
+      "new_value": "12 pages excluding references",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Elena just messaged me saying the C25 organizers posted an amendment raising the main track limit to 12 pages excluding references"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "c25_page_limit",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 7,
+        "quote": "I checked the official C25 site myself and the main track limit is still 10 pages excluding references. Elena must have been looking at a different track"
+      },
+      "target": {
+        "target_id": "c25_main_track_page_limit",
+        "target_name": "C25 main track page limit"
+      },
+      "old_value": "12 pages excluding references",
+      "new_value": "10 pages excluding references",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I checked the official C25 site myself and the main track limit is still 10 pages excluding references"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish initial facts about C25 submission",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to organize my notes about our C25 conference paper. We submitted on March 21, one day before the extended deadline of March 22. The paper title is \"Adaptive Threshold Mechanisms in Low-Resource Classification Pipelines.\" My co-author is Dr. Elena Vasquez—she handled the literature review."
+        },
+        {
+          "role": "assistant",
+          "content": "Great, I'll help you keep track of all the C25 details. So far I have: you submitted your paper titled \"Adaptive Threshold Mechanisms in Low-Resource Classification Pipelines\" on March 21, just before the extended deadline of March 22. Your co-author Dr. Elena Vasquez was responsible for the literature review section. Would you like to add any other details about the submission, such as the submission portal ID or formatting specifics? Having everything in one place could be useful during the review and rebuttal phases."
+        },
+        {
+          "role": "user",
+          "content": "Yes, a few more things. The main track page limit for C25 is 8 pages excluding references. We formatted everything in LaTeX using the official C25 template on Overleaf, which made collaboration with Elena much smoother than emailing .tex files back and forth like we used to do. I really prefer rigid, clean templates."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted. The C25 main track page limit is 8 pages excluding references. You used the official C25 LaTeX template via Overleaf for collaboration with Dr. Vasquez, which you found much more efficient than exchanging .tex files by email. You also prefer rigid, clean templates that minimize visual clutter. These formatting details will be handy if you need to prepare a camera-ready version later. Do you have the submission confirmation number or any other portal details you'd like me to track alongside these notes?"
+        },
+        {
+          "role": "user",
+          "content": "Our final submission ID on the C25 portal is #4782. Please remember that—it's important in case there are any issues during the review process. I also cut about 12 references from Elena's literature review section because she tends to over-cite. I like keeping papers stripped down to just what's essential."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it—your C25 submission ID is #4782 on the portal. I'll keep that front and center in case you need it for review correspondence. You trimmed 12 references from Dr. Vasquez's literature review to keep the paper lean and essential, which aligns with your preference for concise academic writing. That's a solid approach, especially for conference submissions where reviewers appreciate clarity. Is there anything else about the submission timeline or the review process you'd like me to note down?"
+        },
+        {
+          "role": "user",
+          "content": "The rebuttal phase opens May 6 according to the C25 website timeline. I want to be well-prepared this time because for a previous venue I scrambled during rebuttal and it showed. I've already started compiling notes. Also, the original deadline was March 15 before they extended it to March 22."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood. The C25 rebuttal phase opens May 6, and you're proactively compiling notes so you're better prepared than last time. The original submission deadline was March 15 before the extension to March 22, which gave you extra time to finalize. Here's your C25 summary so far: paper title is \"Adaptive Threshold Mechanisms in Low-Resource Classification Pipelines,\" submitted March 21, submission ID #4782, main track limit 8 pages excluding references, LaTeX via Overleaf, rebuttal opens May 6. Let me know if anything changes or if you want help drafting rebuttal notes."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "correct page limit and add review timeline details",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I need to correct something I told you earlier about the page limit. The main track is actually 10 pages excluding references, not 8. I had it confused with the workshop track, which is 8 pages. Please update that in your notes—it's an important distinction if we need to expand during camera-ready."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for the correction. I've updated the C25 main track page limit to 10 pages excluding references. The workshop track is 8 pages excluding references—that's where the confusion came from. This is indeed an important distinction, especially if you get the chance to expand sections during the camera-ready phase. Your current summary now reads: main track limit 10 pages excluding references, submission ID #4782, submitted March 21, rebuttal opens May 6. Is there anything else that needs correcting or updating?"
+        },
+        {
+          "role": "user",
+          "content": "No other corrections right now. Around early April we got a notification that reviewer assignments were completed. My labmate Joon also submitted to C25, and he mentioned his confirmation email came a day later than mine, which was a little odd. I wonder if there were portal issues."
+        },
+        {
+          "role": "assistant",
+          "content": "Interesting—reviewer assignments were completed around early April, and you received your notification before your labmate Joon got his, even though you both submitted to C25. A one-day gap could indicate minor portal processing delays or batch assignment waves rather than a real issue. It might be worth checking the C25 portal directly to confirm your paper's status if anything seems off. You have submission ID #4782 handy for reference. Would you like me to help you draft any inquiry to the organizers, or are you comfortable waiting for the next review milestone?"
+        },
+        {
+          "role": "user",
+          "content": "I'll wait for now—no need to contact organizers yet. I've been thinking about the rebuttal strategy. Since the rebuttal opens May 6 and we submitted on March 21, that gives us roughly 46 days between submission and rebuttal. I want to use that gap productively to anticipate reviewer concerns about our methodology section."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a smart approach. The roughly 46-day window between your March 21 submission and the May 6 rebuttal opening is a good chunk of time to prepare. Anticipating methodology concerns is especially wise since that section tends to draw the most scrutiny in classification pipeline papers. You could draft responses to likely questions about threshold selection, dataset size justification, and baseline comparisons. Would you like me to help you outline a structured rebuttal preparation template that covers common reviewer objection categories for this type of work?"
+        },
+        {
+          "role": "user",
+          "content": "That would be great actually. The paper focuses on adaptive thresholds for low-resource scenarios, so I expect questions about how we defined \"low-resource\" and what our minimum dataset size threshold was. Elena handled the experimental setup, so I'll need to coordinate with her on the specific numbers before rebuttal.\n\nYes, expand sections one and two for now. I'll fill in the details once I sync with Elena. Also, one more thing to remember: I turned in an internal work report on February 9—that's done and over with, completely separate from C25. No need to track that one going forward."
+        },
+        {
+          "role": "assistant",
+          "content": "Perfect. I'll outline a rebuttal prep template focused on your paper's core areas. For the \"low-resource\" definition, you'll want a crisp, citable justification ready. For minimum dataset size thresholds, coordinate with Dr. Vasquez to get the exact experimental parameters documented. Here's a starter framework: (1) Definition of low-resource scope and justification, (2) Dataset size thresholds and selection rationale, (3) Adaptive threshold mechanism novelty vs. existing approaches, (4) Baseline comparison methodology, (5) Generalizability claims and limitations. Want me to expand any of these sections with specific talking points you can fill in?\n\nGot it—I won't track the February 9 internal work report since it's complete and unrelated to C25. For your rebuttal prep, here are expanded sections: Section 1, Definition of Low-Resource Scope: prepare a concise definition with citations from established benchmarks, address whether low-resource refers to labeled data scarcity, computational constraints, or both, and anticipate pushback on boundary cases. Section 2, Dataset Size Thresholds: document the exact minimum sample counts used in experiments, justify why those thresholds were chosen over alternatives, and reference Dr. Vasquez's experimental setup notes. I'll keep these ready for you to fill in after syncing with Elena."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "tentative page limit change and adversarial injection, then confirmation of original corrected value",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Quick update—I've been going through the rebuttal prep notes and they're shaping up well. I also noticed that Joon's C25 submission ID was #4781, so we were sequential in the portal. He's been asking me about formatting since his paper used a Word-based template instead of LaTeX."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a fun coincidence—your submission #4782 and Joon's #4781 were right next to each other in the portal queue. It makes sense he'd ask you about formatting since you used the official LaTeX template on Overleaf, which tends to produce cleaner output than Word-based submissions. If he's having formatting issues, he might want to check whether his Word template matches the current C25 style requirements. Some conferences update their templates after the initial posting. Would you like to share any of your LaTeX setup notes with him, or keep your prep focused on rebuttal?"
+        },
+        {
+          "role": "user",
+          "content": "I'll help him later. Elena just messaged me saying the C25 organizers posted an amendment raising the main track limit to 12 pages excluding references. She saw it on the conference announcements page. If that's true, we might have room to expand the methodology section during camera-ready."
+        },
+        {
+          "role": "assistant",
+          "content": "That would be significant news—going from 10 to 12 pages excluding references would give you two extra pages for the methodology expansion you've been planning. If confirmed, that's a great opportunity to address potential reviewer concerns preemptively in the camera-ready version rather than squeezing everything into the rebuttal. Before you start planning the expansion though, it might be worth verifying directly on the official C25 announcements page yourself, since sometimes co-authors forward preliminary or misread notices. Want me to note this as a pending change for now?"
+        },
+        {
+          "role": "user",
+          "content": "Good idea, I'll verify it myself. In the meantime, I've been reviewing our paper's reference list one more time. We ended up with 34 references after I trimmed Elena's section. For a 10-page paper in this subfield, that feels about right—not too bloated, not too sparse. I like that balance."
+        },
+        {
+          "role": "assistant",
+          "content": "Thirty-four references for a 10-page paper in low-resource classification seems well-balanced. Given that you already trimmed 12 references from Dr. Vasquez's original literature review, you've clearly been intentional about keeping only what's essential. That restraint should read well to reviewers who appreciate concise, focused citation practices. If the page limit does increase and you expand the methodology, you might add a few targeted references to support the new content, but I'd keep the same lean philosophy. Shall I help you categorize the 34 references by section for the rebuttal prep?"
+        },
+        {
+          "role": "user",
+          "content": "Not yet, I'll do that closer to rebuttal. Oh, and I just noticed something—Joon mentioned his paper's page count was listed as 8 pages on his confirmation, but that's because he submitted to the workshop track, not the main track. That clears up why his formatting specs looked different from mine.\n\nI checked the official C25 site myself and the main track limit is still 10 pages excluding references. Elena must have been looking at a different track or an outdated post. So no change there—our paper stays formatted to the 10-page main track standard. I'll let her know."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes perfect sense. Joon's 8-page limit matches the C25 workshop track specifications, while your main track submission follows the 10-page limit. That explains the formatting discrepancies he was asking about—workshop and main track templates can differ in margins, font sizes, and section requirements even at the same conference. It's good you figured that out before potentially giving him main-track-specific advice. With your rebuttal phase opening May 6, you still have time to finalize your prep. Let me know when you're ready to categorize references or expand the rebuttal template sections.\n\nGood that you verified directly. The C25 main track page limit remains 10 pages excluding references, just as you corrected earlier. Elena's message was likely based on a different track announcement or an outdated notice. Your paper stays formatted to the confirmed 10-page main track standard under submission ID #4782. With the rebuttal opening May 6, your current prep timeline is solid. Once you sync with Dr. Vasquez on the experimental parameters and clarify the page limit mix-up with her, you'll be well-positioned for a strong rebuttal. Let me know whenever you're ready to continue working on the prep template."
+        }
+      ]
+    }
+  ],
+  "state_checkpoints": [
+    {
+      "checkpoint_id": "c1",
+      "description": "After segment 1: c25_main_track_page_limit = '8 pages excluding references' (confirmed), c25_submission_id = '#4782' (confirmed)"
+    },
+    {
+      "checkpoint_id": "c2",
+      "description": "After segment 2: c25_main_track_page_limit = '10 pages excluding references' (confirmed, updated from 8), c25_submission_id = '#4782' (confirmed, unchanged)"
+    },
+    {
+      "checkpoint_id": "c3",
+      "description": "After segment 3: c25_main_track_page_limit = '10 pages excluding references' (confirmed, reverted after tentative 12-page fork), c25_submission_id = '#4782' (confirmed, unchanged)"
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations about the conference paper, I shared several details and later revised some of them. Can you summarize the key facts I told you about the submission and how the formatting specifications evolved?",
+      "expected_answer": "You initially stated the main track page limit was 8 pages excluding references and provided submission ID #4782. You later corrected the page limit to 10 pages excluding references, clarifying the 8-page figure applied to the workshop track. A co-author then relayed that the limit had been raised to 12 pages, but you personally verified on the official site that it remained 10 pages excluding references. The rebuttal phase opens May 6.",
+      "gold_memory_state": "c25_main_track_page_limit = '10 pages excluding references' (confirmed after full chain); c25_submission_id = '#4782' (confirmed, unchanged); rebuttal phase date = May 6.",
+      "judge_rubric": {
+        "must_include": [
+          "8 pages as initial value",
+          "10 pages as corrected value",
+          "12 pages as an unverified claim",
+          "10 pages as the final verified value",
+          "#4782"
+        ],
+        "acceptable_paraphrases": [
+          "eight pages",
+          "ten pages",
+          "twelve pages"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the page limit is currently 8 or 12"
+        ],
+        "harmless_extra": [
+          "mentioning the rebuttal date",
+          "mentioning Dr. Vasquez",
+          "mentioning the paper title"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 8 pages or 12 pages is presented as the current limit.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence of page-limit changes is misordered (e.g., 12 before 10, or 8 after 10).",
+        "final_state": "Fails if the final page limit is not stated as 10 pages excluding references.",
+        "intermediate_state": "Fails if intermediate states (8 → 10 → tentative 12 → confirmed 10) are missing or wrong.",
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The main track page limit for C25 is 8 pages excluding references"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Our final submission ID on the C25 portal is #4782"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The main track is actually 10 pages excluding references, not 8"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Elena just messaged me saying the C25 organizers posted an amendment raising the main track limit to 12 pages excluding references"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I checked the official C25 site myself and the main track limit is still 10 pages excluding references"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations about the conference paper, I shared several details and later revised some of them. Can you summarize the key facts I told you about the submission and how the formatting specifications evolved?",
+      "expected_answer": "You initially stated the main track page limit was 8 pages excluding references and provided submission ID #4782. You later corrected the page limit to 10 pages excluding references, clarifying the 8-page figure applied to the workshop track. A co-author then relayed that the limit had been raised to 12 pages, but you personally verified on the official site that it remained 10 pages excluding references. The rebuttal phase opens May 6.",
+      "gold_memory_state": "c25_main_track_page_limit = '10 pages excluding references' (confirmed after full chain); c25_submission_id = '#4782' (confirmed, unchanged); rebuttal phase date = May 6.",
+      "judge_rubric": {
+        "must_include": [
+          "8 pages as initial value",
+          "10 pages as corrected value",
+          "12 pages as an unverified claim",
+          "10 pages as the final verified value",
+          "#4782"
+        ],
+        "acceptable_paraphrases": [
+          "eight pages",
+          "ten pages",
+          "twelve pages"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the page limit is currently 8 or 12"
+        ],
+        "harmless_extra": [
+          "mentioning the rebuttal date",
+          "mentioning Dr. Vasquez",
+          "mentioning the paper title"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 8 pages or 12 pages is presented as the current limit.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence of page-limit changes is misordered (e.g., 12 before 10, or 8 after 10).",
+        "final_state": "Fails if the final page limit is not stated as 10 pages excluding references.",
+        "intermediate_state": "Fails if intermediate states (8 → 10 → tentative 12 → confirmed 10) are missing or wrong.",
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The main track page limit for C25 is 8 pages excluding references"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Our final submission ID on the C25 portal is #4782"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The main track is actually 10 pages excluding references, not 8"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Elena just messaged me saying the C25 organizers posted an amendment raising the main track limit to 12 pages excluding references"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I checked the official C25 site myself and the main track limit is still 10 pages excluding references"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "The formatting specification that went through multiple revisions during our conversations—does it apply to the same track my labmate Joon submitted to, or to a different one? Which track's specification was actually revised?",
+      "expected_answer": "The specification that was revised is the main track page limit. Joon submitted to the workshop track, which has a separate 8-page limit that was never revised. The main track page limit is the one that went through changes and is currently 10 pages excluding references.",
+      "gold_memory_state": "c25_main_track_page_limit = '10 pages excluding references' (confirmed, underwent revision chain); workshop track = 8 pages (mentioned but not a tracked target with revisions); Joon's submission = workshop track (#4781).",
+      "judge_rubric": {
+        "must_include": [
+          "main track",
+          "different from Joon's workshop track"
+        ],
+        "acceptable_paraphrases": [
+          "the main conference track, not the workshop track"
+        ],
+        "must_not_include": [
+          "Joon's track limit was revised",
+          "both tracks were revised"
+        ],
+        "harmful_extra": [
+          "claiming the workshop track limit changed",
+          "claiming Joon submitted to the main track"
+        ],
+        "harmless_extra": [
+          "mentioning Joon's submission ID #4781",
+          "mentioning the current main track limit value"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the main track page limit is not identified as the revised target.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The main track is actually 10 pages excluding references, not 8. I had it confused with the workshop track, which is 8 pages"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I checked the official C25 site myself and the main track limit is still 10 pages excluding references"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "The formatting specification that went through multiple revisions during our conversations—does it apply to the same track my labmate Joon submitted to, or to a different one? Which track's specification was actually revised?",
+      "expected_answer": "The specification that was revised is the main track page limit. Joon submitted to the workshop track, which has a separate 8-page limit that was never revised. The main track page limit is the one that went through changes and is currently 10 pages excluding references.",
+      "gold_memory_state": "c25_main_track_page_limit = '10 pages excluding references' (confirmed, underwent revision chain); workshop track = 8 pages (mentioned but not a tracked target with revisions); Joon's submission = workshop track (#4781).",
+      "judge_rubric": {
+        "must_include": [
+          "main track",
+          "different from Joon's workshop track"
+        ],
+        "acceptable_paraphrases": [
+          "the main conference track, not the workshop track"
+        ],
+        "must_not_include": [
+          "Joon's track limit was revised",
+          "both tracks were revised"
+        ],
+        "harmful_extra": [
+          "claiming the workshop track limit changed",
+          "claiming Joon submitted to the main track"
+        ],
+        "harmless_extra": [
+          "mentioning Joon's submission ID #4781",
+          "mentioning the current main track limit value"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the main track page limit is not identified as the revised target.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The main track is actually 10 pages excluding references, not 8. I had it confused with the workshop track, which is 8 pages"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I checked the official C25 site myself and the main track limit is still 10 pages excluding references"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "After all the back-and-forth about the page limit for our conference paper's track, what page limit should I actually use when preparing the camera-ready version?",
+      "expected_answer": "10 pages excluding references.",
+      "gold_memory_state": "c25_main_track_page_limit = '10 pages excluding references' (final confirmed value). The tentative 12-page value from Elena's message was not adopted. The original 8-page value was superseded earlier.",
+      "judge_rubric": {
+        "must_include": [
+          "10 pages excluding references"
+        ],
+        "acceptable_paraphrases": [
+          "ten pages, not counting references",
+          "10 pages plus references"
+        ],
+        "must_not_include": [
+          "8 pages as current",
+          "12 pages as current"
+        ],
+        "harmful_extra": [
+          "stating the limit is 12 pages",
+          "stating the limit is 8 pages"
+        ],
+        "harmless_extra": [
+          "mentioning references are excluded"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model returns 8 pages (original stale value) or 12 pages (tentative value that was rejected). The tentative 12-page value is the recency trap; the model must reject it in favor of the verified 10-page limit.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the answer is anything other than 10 pages excluding references.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I checked the official C25 site myself and the main track limit is still 10 pages excluding references"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "After all the back-and-forth about the page limit for our conference paper's track, what page limit should I actually use when preparing the camera-ready version?",
+      "expected_answer": "10 pages excluding references.",
+      "gold_memory_state": "c25_main_track_page_limit = '10 pages excluding references' (final confirmed value). The tentative 12-page value from Elena's message was not adopted. The original 8-page value was superseded earlier.",
+      "judge_rubric": {
+        "must_include": [
+          "10 pages excluding references"
+        ],
+        "acceptable_paraphrases": [
+          "ten pages, not counting references",
+          "10 pages plus references"
+        ],
+        "must_not_include": [
+          "8 pages as current",
+          "12 pages as current"
+        ],
+        "harmful_extra": [
+          "stating the limit is 12 pages",
+          "stating the limit is 8 pages"
+        ],
+        "harmless_extra": [
+          "mentioning references are excluded"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model returns 8 pages (original stale value) or 12 pages (tentative value that was rejected). The tentative 12-page value is the recency trap; the model must reject it in favor of the verified 10-page limit.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the answer is anything other than 10 pages excluding references.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I checked the official C25 site myself and the main track limit is still 10 pages excluding references"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to send a quick status email to Dr. Vasquez before the rebuttal phase opens. Draft me a two-sentence email body that reminds her of our portal submission number, tells her the correct main track page limit she should plan around for camera-ready, and mentions how many days remain between our submission date and the rebuttal opening so she understands the prep window.",
+      "expected_answer": "Hi Elena, our portal submission is #4782 and the main track page limit is 10 pages excluding references, so please plan the camera-ready around that. We have about 46 days between our March 21 submission and the May 6 rebuttal opening to prepare our responses.",
+      "gold_memory_state": "c25_submission_id = '#4782'; c25_main_track_page_limit = '10 pages excluding references'; submission date = March 21; rebuttal phase opens = May 6; gap ≈ 46 days.",
+      "judge_rubric": {
+        "must_include": [
+          "#4782",
+          "10 pages excluding references",
+          "46 days or approximately 46 days"
+        ],
+        "acceptable_paraphrases": [
+          "submission number 4782",
+          "ten pages not including references",
+          "roughly 46 days",
+          "about 46 days"
+        ],
+        "must_not_include": [
+          "8 pages as the limit",
+          "12 pages as the limit"
+        ],
+        "harmful_extra": [
+          "using 8 or 12 as the page limit",
+          "wrong submission ID"
+        ],
+        "harmless_extra": [
+          "mentioning March 21",
+          "mentioning May 6",
+          "mentioning camera-ready",
+          "mentioning rebuttal preparation"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the page limit is given as 8 (original stale) or 12 (tentative rejected).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if any of the three required facts (#4782, 10 pages, ~46 days) are wrong.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The portal submission ID is #4782.",
+        "Fact 2: The final confirmed main track page limit is 10 pages excluding references.",
+        "Fact 3: The paper was submitted on March 21.",
+        "Fact 4: The rebuttal phase opens May 6.",
+        "Inference: The gap between March 21 and May 6 is 46 days."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Our final submission ID on the C25 portal is #4782"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I checked the official C25 site myself and the main track limit is still 10 pages excluding references"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "We submitted on March 21, one day before the extended deadline of March 22"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "The rebuttal phase opens May 6 according to the C25 website timeline"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to send a quick status email to Dr. Vasquez before the rebuttal phase opens. Draft me a two-sentence email body that reminds her of our portal submission number, tells her the correct main track page limit she should plan around for camera-ready, and mentions how many days remain between our submission date and the rebuttal opening so she understands the prep window.",
+      "expected_answer": "Hi Elena, our portal submission is #4782 and the main track page limit is 10 pages excluding references, so please plan the camera-ready around that. We have about 46 days between our March 21 submission and the May 6 rebuttal opening to prepare our responses.",
+      "gold_memory_state": "c25_submission_id = '#4782'; c25_main_track_page_limit = '10 pages excluding references'; submission date = March 21; rebuttal phase opens = May 6; gap ≈ 46 days.",
+      "judge_rubric": {
+        "must_include": [
+          "#4782",
+          "10 pages excluding references",
+          "46 days or approximately 46 days"
+        ],
+        "acceptable_paraphrases": [
+          "submission number 4782",
+          "ten pages not including references",
+          "roughly 46 days",
+          "about 46 days"
+        ],
+        "must_not_include": [
+          "8 pages as the limit",
+          "12 pages as the limit"
+        ],
+        "harmful_extra": [
+          "using 8 or 12 as the page limit",
+          "wrong submission ID"
+        ],
+        "harmless_extra": [
+          "mentioning March 21",
+          "mentioning May 6",
+          "mentioning camera-ready",
+          "mentioning rebuttal preparation"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the page limit is given as 8 (original stale) or 12 (tentative rejected).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if any of the three required facts (#4782, 10 pages, ~46 days) are wrong.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The portal submission ID is #4782.",
+        "Fact 2: The final confirmed main track page limit is 10 pages excluding references.",
+        "Fact 3: The paper was submitted on March 21.",
+        "Fact 4: The rebuttal phase opens May 6.",
+        "Inference: The gap between March 21 and May 6 is 46 days."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Our final submission ID on the C25 portal is #4782"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I checked the official C25 site myself and the main track limit is still 10 pages excluding references"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "We submitted on March 21, one day before the extended deadline of March 22"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "The rebuttal phase opens May 6 according to the C25 website timeline"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed our entire conversation history about the main track formatting specification, what would they see as the full sequence of values it went through, which of those values were actually adopted versus only floated, and what's the final number I should rely on?",
+      "expected_answer": "The sequence was: first 8 pages excluding references (initially stated but later found to be wrong—it was the workshop track figure), then corrected to 10 pages excluding references (confirmed by the user), then a co-author relayed 12 pages excluding references (only floated, never verified, and ultimately rejected), and finally re-confirmed at 10 pages excluding references after direct verification on the official site. The values actually adopted were 8 (briefly), then 10. The 12-page figure was never adopted. The final reliable number is 10 pages excluding references.",
+      "gold_memory_state": "Full trajectory for main track page limit: 8 pages (confirmed, chain step 1) → 10 pages (confirmed correction, chain step 2) → 12 pages (tentative, chain step 3, rejected) → 10 pages (confirmed re-verification, chain step 4). Submission ID #4782 unchanged throughout.",
+      "judge_rubric": {
+        "must_include": [
+          "8 pages as first value",
+          "10 pages as corrected value",
+          "12 pages as a floated/unverified value",
+          "10 pages as final confirmed value",
+          "12 pages was not adopted"
+        ],
+        "acceptable_paraphrases": [
+          "eight",
+          "ten",
+          "twelve",
+          "not verified",
+          "rejected",
+          "unconfirmed"
+        ],
+        "must_not_include": [
+          "12 pages as the final value",
+          "8 pages as the final value"
+        ],
+        "harmful_extra": [
+          "claiming 12 was ever officially adopted",
+          "omitting the 12-page tentative step entirely"
+        ],
+        "harmless_extra": [
+          "mentioning Elena as the source of the 12-page claim",
+          "mentioning the workshop track confusion"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 8 or 12 is presented as the final usable value.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the order of changes is not 8 → 10 → 12 (tentative) → 10.",
+        "final_state": "Fails if the final state is not 10 pages excluding references.",
+        "intermediate_state": "Fails if any intermediate state (8, 10, tentative 12) is omitted or misordered.",
+        "trajectory_provenance": "Fails if the tentative 12-page value is not attributed to the co-author's unverified message, or if the final 10-page value is not attributed to the user's own verification."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: The user first stated the main track limit as 8 pages excluding references.",
+        "Step 2: The user corrected this to 10 pages excluding references, noting 8 applied to the workshop track.",
+        "Step 3: Dr. Vasquez relayed that the organizers raised the limit to 12 pages—this was tentative and unverified.",
+        "Step 4: The user personally checked the official site and confirmed the limit is still 10 pages excluding references, rejecting the 12-page claim.",
+        "Inference: The adopted trajectory is 8 → 10 → (tentative 12, rejected) → 10, with 10 as the final confirmed value."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The main track page limit for C25 is 8 pages excluding references"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The main track is actually 10 pages excluding references, not 8. I had it confused with the workshop track, which is 8 pages"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Elena just messaged me saying the C25 organizers posted an amendment raising the main track limit to 12 pages excluding references"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I checked the official C25 site myself and the main track limit is still 10 pages excluding references"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed our entire conversation history about the main track formatting specification, what would they see as the full sequence of values it went through, which of those values were actually adopted versus only floated, and what's the final number I should rely on?",
+      "expected_answer": "The sequence was: first 8 pages excluding references (initially stated but later found to be wrong—it was the workshop track figure), then corrected to 10 pages excluding references (confirmed by the user), then a co-author relayed 12 pages excluding references (only floated, never verified, and ultimately rejected), and finally re-confirmed at 10 pages excluding references after direct verification on the official site. The values actually adopted were 8 (briefly), then 10. The 12-page figure was never adopted. The final reliable number is 10 pages excluding references.",
+      "gold_memory_state": "Full trajectory for main track page limit: 8 pages (confirmed, chain step 1) → 10 pages (confirmed correction, chain step 2) → 12 pages (tentative, chain step 3, rejected) → 10 pages (confirmed re-verification, chain step 4). Submission ID #4782 unchanged throughout.",
+      "judge_rubric": {
+        "must_include": [
+          "8 pages as first value",
+          "10 pages as corrected value",
+          "12 pages as a floated/unverified value",
+          "10 pages as final confirmed value",
+          "12 pages was not adopted"
+        ],
+        "acceptable_paraphrases": [
+          "eight",
+          "ten",
+          "twelve",
+          "not verified",
+          "rejected",
+          "unconfirmed"
+        ],
+        "must_not_include": [
+          "12 pages as the final value",
+          "8 pages as the final value"
+        ],
+        "harmful_extra": [
+          "claiming 12 was ever officially adopted",
+          "omitting the 12-page tentative step entirely"
+        ],
+        "harmless_extra": [
+          "mentioning Elena as the source of the 12-page claim",
+          "mentioning the workshop track confusion"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 8 or 12 is presented as the final usable value.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the order of changes is not 8 → 10 → 12 (tentative) → 10.",
+        "final_state": "Fails if the final state is not 10 pages excluding references.",
+        "intermediate_state": "Fails if any intermediate state (8, 10, tentative 12) is omitted or misordered.",
+        "trajectory_provenance": "Fails if the tentative 12-page value is not attributed to the co-author's unverified message, or if the final 10-page value is not attributed to the user's own verification."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: The user first stated the main track limit as 8 pages excluding references.",
+        "Step 2: The user corrected this to 10 pages excluding references, noting 8 applied to the workshop track.",
+        "Step 3: Dr. Vasquez relayed that the organizers raised the limit to 12 pages—this was tentative and unverified.",
+        "Step 4: The user personally checked the official site and confirmed the limit is still 10 pages excluding references, rejecting the 12-page claim.",
+        "Inference: The adopted trajectory is 8 → 10 → (tentative 12, rejected) → 10, with 10 as the final confirmed value."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The main track page limit for C25 is 8 pages excluding references"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The main track is actually 10 pages excluding references, not 8. I had it confused with the workshop track, which is 8 pages"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Elena just messaged me saying the C25 organizers posted an amendment raising the main track limit to 12 pages excluding references"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I checked the official C25 site myself and the main track limit is still 10 pages excluding references"
+        }
+      ]
+    }
+  ]
+}

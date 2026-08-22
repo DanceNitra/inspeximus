@@ -1,0 +1,818 @@
+{
+  "target_fact": "The user's first-choice baby name for their daughter, which undergoes multiple changes across the conversation before settling on a final confirmed value.",
+  "operation_type": "Update",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "first_choice_name",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "We've settled on Elara as our first-choice name for our daughter."
+      },
+      "target": {
+        "target_id": "daughter_first_choice_name",
+        "target_name": "First-choice name for daughter"
+      },
+      "old_value": null,
+      "new_value": "Elara",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "We've settled on Elara as our first-choice name for our daughter."
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "first_choice_name",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 7,
+        "quote": "we've actually switched our first choice to Iris now. Elara is still on the list but Iris moved to number one."
+      },
+      "target": {
+        "target_id": "daughter_first_choice_name",
+        "target_name": "First-choice name for daughter"
+      },
+      "old_value": "Elara",
+      "new_value": "Iris",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "we've actually switched our first choice to Iris now. Elara is still on the list but Iris moved to number one."
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "first_choice_name",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "We went back to Elara. Iris is lovely but my wife said she kept coming back to Elara, and honestly I agree. Elara is our first choice again."
+      },
+      "target": {
+        "target_id": "daughter_first_choice_name",
+        "target_name": "First-choice name for daughter"
+      },
+      "old_value": "Iris",
+      "new_value": "Elara",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "We went back to Elara. Iris is lovely but my wife said she kept coming back to Elara, and honestly I agree. Elara is our first choice again."
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "first_choice_name",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "My wife's sister just told us she's naming her baby Elara too, due in September. My wife said we should switch to Iris to avoid confusion. She's pretty firm about it."
+      },
+      "target": {
+        "target_id": "daughter_first_choice_name",
+        "target_name": "First-choice name for daughter"
+      },
+      "old_value": "Elara",
+      "new_value": "Iris",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My wife's sister just told us she's naming her baby Elara too, due in September. My wife said we should switch to Iris to avoid confusion. She's pretty firm about it."
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "The due date is July 18th, so we need the name decided by end of June."
+      },
+      "target": {
+        "target_id": "daughter_due_date",
+        "target_name": "Daughter's due date"
+      },
+      "old_value": null,
+      "new_value": "July 18th",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The due date is July 18th, so we need the name decided by end of June."
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "For middle names we're choosing between June and Mae. I like June because Elara June flows nicely and it's also a nod to the month we're finalizing everything."
+      },
+      "target": {
+        "target_id": "middle_name_options",
+        "target_name": "Middle name shortlist for daughter"
+      },
+      "old_value": null,
+      "new_value": "June or Mae",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "For middle names we're choosing between June and Mae. I like June because Elara June flows nicely and it's also a nod to the month we're finalizing everything."
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish first-choice name (Elara), background on naming preferences, then update first choice to Iris.",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to run some baby name stuff by you. We've settled on Elara as our first-choice name for our daughter. We found out at the ultrasound it's a girl, and we've been going back and forth on names for weeks now. I just want to make sure you keep track of where we land on this because it keeps evolving."
+        },
+        {
+          "role": "assistant",
+          "content": "Congratulations on finding out you're having a daughter! I've noted that Elara is your current first-choice name. That's a beautiful pick—it has a really elegant, gentle sound to it. I'll keep close track of any changes as you and your wife work through the decision. Just let me know whenever something shifts and I'll update my notes accordingly. Is there a backup name you're considering as well, or are you pretty locked in on Elara for now?"
+        },
+        {
+          "role": "user",
+          "content": "Thanks! My wife found it in an astronomy book and we both loved it right away. It's one of Jupiter's moons, named after a figure in Greek mythology. We also have Iris as a backup. I like Iris too—it's simple, natural, has that quiet elegance I'm drawn to. Nothing flashy. But Elara has been the frontrunner since early March when we first started discussing names seriously."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a wonderful origin story for the name—astronomy and mythology combined gives it a really rich feel. And Iris is a lovely backup choice; it shares that same understated, melodic quality you seem to prefer. Both names have a softness to them without being overly common, which sounds like exactly what you're going for. I've noted Elara as the frontrunner since early March and Iris as the backup. If anything changes between the two, just let me know and I'll adjust the ranking."
+        },
+        {
+          "role": "user",
+          "content": "Exactly, you're getting the vibe. I've always preferred names that feel gentle when you say them out loud—nothing harsh or clunky. My buddy Kevin just named his son Matteo back in February. He said they almost went with Luca but changed their minds last minute. I thought Matteo was a great choice for them, but it's a totally different style from what we're going for."
+        },
+        {
+          "role": "assistant",
+          "content": "It sounds like you have a very clear aesthetic sense for names—soft, melodic, understated. Matteo is a strong name with its own charm, but I can see how it's a different lane from Elara and Iris. It's nice that Kevin found something he and his partner love too. Sometimes hearing other people's name journeys can help solidify your own preferences. Your instinct toward gentle, flowing names seems very consistent. Are there any other names that have come and gone from the list, or has it mostly been Elara and Iris the whole time?"
+        },
+        {
+          "role": "user",
+          "content": "Well, my mother-in-law Linda suggested Charlotte a few weeks ago, but that's completely off the table now—she even said herself she doesn't mind what we pick. But here's the thing: we've actually switched our first choice to Iris now. Elara is still on the list but Iris moved to number one. My wife started leaning toward it this past week and I came around to it too. Something about the simplicity just clicked."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it—I've updated my notes. Iris is now your first-choice name, with Elara as the backup. That's a nice swap; Iris has that pure simplicity you both seem to be gravitating toward. And it sounds like Charlotte had its moment but has been gracefully retired from the conversation, which is good—no lingering pressure from Linda. I'll keep tracking the current ranking as Iris at number one and Elara at number two. Let me know if anything else shifts as you get closer to the due date."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establish due date and middle name options; revert first choice back to Elara from Iris.",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So quick update on the timeline. The due date is July 18th, so we need the name decided by end of June. That gives us roughly two and a half months to finalize everything. I want to make sure we're not scrambling at the last minute. We've got the first name mostly sorted, but there's still the middle name question."
+        },
+        {
+          "role": "assistant",
+          "content": "July 18th—noted. And your deadline to finalize the name is end of June, which is smart. That gives you a solid buffer before things get hectic closer to the birth. Two and a half months is plenty of time to settle the middle name too. Since Iris is currently your first choice, are you thinking about middle names that pair well with Iris specifically, or are you keeping both Iris and Elara in play for the first-middle combination? That might affect which middle names work best rhythmically."
+        },
+        {
+          "role": "user",
+          "content": "Good question. For middle names we're choosing between June and Mae. I like June because Elara June flows nicely and it's also a nod to the month we're finalizing everything. Mae is softer and pairs well with either first name. Short middle names appeal to me—names that are easy to say and have a musical quality are just better in my opinion."
+        },
+        {
+          "role": "assistant",
+          "content": "Both June and Mae are excellent short middle name options. You're right that Elara June has a particularly nice cadence—the two-syllable first name flowing into the one-syllable middle creates a pleasant rhythm. Iris June and Iris Mae both work well too, though Iris Mae might have a slightly smoother flow. Your preference for short, musical middle names is very consistent with everything else you've told me about your naming style. I've noted June and Mae as your middle name shortlist. Do you have a leaning between the two yet?"
+        },
+        {
+          "role": "user",
+          "content": "We went back to Elara. Iris is lovely but my wife said she kept coming back to Elara, and honestly I agree. Elara is our first choice again. There's something about it that just has more weight, more presence. Iris will stay as backup but Elara is the one. I think the astronomy connection and the mythology behind it give it a depth that Iris doesn't quite have."
+        },
+        {
+          "role": "assistant",
+          "content": "Updated—Elara is back in the top spot as your first choice, with Iris as the backup once again. It sounds like Elara has a gravitational pull of its own, which is fitting given its astronomical roots. The mythology and the connection to Jupiter's moons really do give it an extra layer of meaning that a simpler name can't quite match. And Elara June as a full combination has that beautiful flow you mentioned. I'll keep tracking this with Elara at number one. These things have a way of circling back to where they started."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. And I think the fact that we keep returning to Elara says something. Even when we tried to move on, it pulled us back. My wife laughed and said it's like the name chose us. Also, I want to mention—I originally told her that Elara means 'the bright one' in Greek, but that's not accurate. It's actually a moon of Jupiter named after a lover of Zeus in Greek mythology. Just wanted to set the record straight on that.\n\nIt really is. I feel good about it. The only thing left to nail down is the middle name—June or Mae. We'll probably decide that in the next few weeks. For now, Elara as the first name is solid. I'm relieved we're not going in circles anymore. Well, hopefully not. You never know with us."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a lovely way to think about it—the name choosing you. And thanks for the correction on the meaning. You're right: Elara is one of Jupiter's moons, and in Greek mythology, Elara was a mortal woman loved by Zeus. It's a richer and more specific origin than 'the bright one,' and honestly it makes the name even more interesting. The astronomical and mythological layers together give it real depth. I've updated my understanding of the name's meaning accordingly. Sounds like Elara is feeling more and more like the one.\n\nHa, well even if you do go in circles, I'll keep tracking wherever you land. For now the record stands as: Elara is first choice, Iris is backup, and the middle name is between June and Mae, with a decision expected in the coming weeks. Due date July 18th, name finalized by end of June. You're in a great position—having a strong first choice and a solid backup with only the middle name left to decide is a comfortable place to be. Just keep me posted whenever you're ready to lock in that last piece."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Introduce tentative pressure to switch back to Iris (recency trap); include adversarial look-alike distractor from third party.",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, so I've been thinking about the name situation again. Things have been a little hectic this week. My wife's cousin—remember the one who posted that social media poll about baby names a while back?—she ended up naming her daughter Seraphina. Totally different from anything we were considering, so no conflict there at all."
+        },
+        {
+          "role": "assistant",
+          "content": "Oh good, Seraphina is a completely different direction from your shortlist, so no overlap to worry about. That must be a relief after the initial scare when you thought she might go with Elara. It's nice when these things resolve without any name-territory issues. How are things going on your end with the final decision? Last we talked, Elara was firmly back in the number one spot with the middle name still to be decided between June and Mae. Any movement on that front?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, that's where we still are on the middle name. No decision yet. I've been leaning more toward June lately. Elara June just sounds complete to me. But my wife hasn't committed yet. She says she wants to sit with it a bit longer. We still have time—it's only mid-May."
+        },
+        {
+          "role": "assistant",
+          "content": "Elara June does have a beautiful completeness to it—the three syllables of Elara flowing into the single syllable of June creates a really satisfying rhythm. And mid-May means you still have about six weeks before your end-of-June deadline, so there's no rush. Sometimes letting a name combination sit for a while is the best way to confirm it feels right. Your wife's instinct to take her time is probably wise. When she's ready, you'll both know. Is there anything else on your mind about the naming process?"
+        },
+        {
+          "role": "user",
+          "content": "My wife's sister just told us she's naming her baby Elara too, due in September. My wife said we should switch to Iris to avoid confusion. She's pretty firm about it. I'm not happy about it honestly—we had this name first—but I can see her point about two cousins with the same name being weird."
+        },
+        {
+          "role": "assistant",
+          "content": "Oh no, that's really frustrating timing. I can understand your irritation—you and your wife have been attached to Elara for months and it feels like it's being taken from you again. At the same time, your wife's concern about two cousins sharing the same name is a practical consideration. Before making a final decision under pressure, it might be worth having a conversation with her sister to see if there's any flexibility on either side. Sometimes these things work out differently than expected. For now, I'll note that there's pressure to switch to Iris, but it sounds like you haven't fully agreed to the change yet."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, I haven't agreed. I need to think about it more. By the way, I was filling out the hospital pre-registration forms and I noticed under the sample section it had a placeholder name—it said 'Baby Name: Lily Anne' from some template or previous patient. Threw me off for a second. Anyway, that's not relevant, just funny.\n\nRight. I just don't want to lose Elara over family politics. We'll figure it out. Anyway, can you remind me where things stand right now? I want to make sure you have the right information saved before I forget where we left off."
+        },
+        {
+          "role": "assistant",
+          "content": "Ha, that must have been a weird moment—seeing someone else's placeholder name on what's supposed to be your form. Lily Anne is a perfectly nice name but definitely not yours. Hospital forms can be strange like that with leftover data. On the actual naming front, it sounds like you're in a holding pattern. You haven't committed to switching away from Elara, and your wife's push toward Iris is driven by the sister situation rather than a genuine preference change. Take your time thinking it through—this is a big decision and you shouldn't feel rushed by someone else's choice.\n\nOf course. Here's where things stand based on everything you've told me: Your confirmed first-choice name is Elara—that's been your top pick since early March, and even after briefly switching to Iris, you both came back to Elara as the definitive first choice. Iris remains a strong backup. For middle names, you're still deciding between June and Mae, with you personally leaning toward June. Your due date is July 18th, and you want the name locked in by end of June. The latest development is that your wife's sister is also naming her baby Elara, which has created pressure to switch to Iris, but you haven't agreed to that change. I'll keep tracking everything as it evolves."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations about baby names, which specific messages from me first introduced a name preference and later determined which name I should rely on going forward?",
+      "expected_answer": "You first said you had settled on Elara as your first-choice name for your daughter. You then said you switched your first choice to Iris. Later, you said you went back to Elara as your first choice again because your wife kept coming back to it. Most recently, you mentioned your wife's sister is also naming her baby Elara and your wife wants to switch to Iris to avoid confusion, but you said you haven't agreed to that change.",
+      "gold_memory_state": "First-choice name for daughter: Elara (last confirmed value). Iris is the backup. A tentative push to switch to Iris exists but is not confirmed. Due date: July 18th. Middle name shortlist: June or Mae.",
+      "judge_rubric": {
+        "must_include": [
+          "Elara as initial first choice",
+          "switch to Iris",
+          "revert back to Elara",
+          "sister naming conflict creating pressure to switch to Iris again"
+        ],
+        "acceptable_paraphrases": [
+          "went back to Elara",
+          "returned to Elara",
+          "came back to Elara"
+        ],
+        "must_not_include": [
+          "Lily Anne as a real candidate",
+          "Charlotte as a current candidate"
+        ],
+        "harmful_extra": [
+          "stating that the user confirmed the switch to Iris due to the sister conflict"
+        ],
+        "harmless_extra": [
+          "mentioning Iris as backup",
+          "mentioning the astronomy/mythology origin"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the response treats Iris as the current confirmed first choice.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "We've settled on Elara as our first-choice name for our daughter."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "we've actually switched our first choice to Iris now. Elara is still on the list but Iris moved to number one."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "We went back to Elara. Iris is lovely but my wife said she kept coming back to Elara, and honestly I agree. Elara is our first choice again."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My wife's sister just told us she's naming her baby Elara too, due in September. My wife said we should switch to Iris to avoid confusion. She's pretty firm about it."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations about baby names, which specific messages from me first introduced a name preference and later determined which name I should rely on going forward?",
+      "expected_answer": "You first said you had settled on Elara as your first-choice name for your daughter. You then said you switched your first choice to Iris. Later, you said you went back to Elara as your first choice again because your wife kept coming back to it. Most recently, you mentioned your wife's sister is also naming her baby Elara and your wife wants to switch to Iris to avoid confusion, but you said you haven't agreed to that change.",
+      "gold_memory_state": "First-choice name for daughter: Elara (last confirmed value). Iris is the backup. A tentative push to switch to Iris exists but is not confirmed. Due date: July 18th. Middle name shortlist: June or Mae.",
+      "judge_rubric": {
+        "must_include": [
+          "Elara as initial first choice",
+          "switch to Iris",
+          "revert back to Elara",
+          "sister naming conflict creating pressure to switch to Iris again"
+        ],
+        "acceptable_paraphrases": [
+          "went back to Elara",
+          "returned to Elara",
+          "came back to Elara"
+        ],
+        "must_not_include": [
+          "Lily Anne as a real candidate",
+          "Charlotte as a current candidate"
+        ],
+        "harmful_extra": [
+          "stating that the user confirmed the switch to Iris due to the sister conflict"
+        ],
+        "harmless_extra": [
+          "mentioning Iris as backup",
+          "mentioning the astronomy/mythology origin"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the response treats Iris as the current confirmed first choice.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "We've settled on Elara as our first-choice name for our daughter."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "we've actually switched our first choice to Iris now. Elara is still on the list but Iris moved to number one."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "We went back to Elara. Iris is lovely but my wife said she kept coming back to Elara, and honestly I agree. Elara is our first choice again."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My wife's sister just told us she's naming her baby Elara too, due in September. My wife said we should switch to Iris to avoid confusion. She's pretty firm about it."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When my wife's sister announced her own baby name plans and my wife reacted, which piece of our naming information was being pressured to change? Does the due date or the middle name shortlist get affected by that same pressure?",
+      "expected_answer": "The pressure applies to the first-choice name for your daughter. Your due date of July 18th and your middle name shortlist of June or Mae are not affected by the sister's announcement.",
+      "gold_memory_state": "First-choice name for daughter: Elara (confirmed). Due date: July 18th (unchanged). Middle name shortlist: June or Mae (unchanged). The sister's announcement creates tentative pressure on only the first-choice name.",
+      "judge_rubric": {
+        "must_include": [
+          "first-choice name is the affected record",
+          "due date not affected",
+          "middle name shortlist not affected"
+        ],
+        "acceptable_paraphrases": [
+          "the daughter's first name",
+          "the top name pick"
+        ],
+        "must_not_include": [
+          "due date changed",
+          "middle name changed"
+        ],
+        "harmful_extra": [
+          "saying the due date or middle name shortlist was impacted by the sister's announcement",
+          "treating the tentative Iris switch as confirmed"
+        ],
+        "harmless_extra": [
+          "mentioning Iris as the proposed replacement",
+          "mentioning the sister is due in September"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My wife's sister just told us she's naming her baby Elara too, due in September. My wife said we should switch to Iris to avoid confusion. She's pretty firm about it."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The due date is July 18th, so we need the name decided by end of June."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "For middle names we're choosing between June and Mae. I like June because Elara June flows nicely and it's also a nod to the month we're finalizing everything."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When my wife's sister announced her own baby name plans and my wife reacted, which piece of our naming information was being pressured to change? Does the due date or the middle name shortlist get affected by that same pressure?",
+      "expected_answer": "The pressure applies to the first-choice name for your daughter. Your due date of July 18th and your middle name shortlist of June or Mae are not affected by the sister's announcement.",
+      "gold_memory_state": "First-choice name for daughter: Elara (confirmed). Due date: July 18th (unchanged). Middle name shortlist: June or Mae (unchanged). The sister's announcement creates tentative pressure on only the first-choice name.",
+      "judge_rubric": {
+        "must_include": [
+          "first-choice name is the affected record",
+          "due date not affected",
+          "middle name shortlist not affected"
+        ],
+        "acceptable_paraphrases": [
+          "the daughter's first name",
+          "the top name pick"
+        ],
+        "must_not_include": [
+          "due date changed",
+          "middle name changed"
+        ],
+        "harmful_extra": [
+          "saying the due date or middle name shortlist was impacted by the sister's announcement",
+          "treating the tentative Iris switch as confirmed"
+        ],
+        "harmless_extra": [
+          "mentioning Iris as the proposed replacement",
+          "mentioning the sister is due in September"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My wife's sister just told us she's naming her baby Elara too, due in September. My wife said we should switch to Iris to avoid confusion. She's pretty firm about it."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The due date is July 18th, so we need the name decided by end of June."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "For middle names we're choosing between June and Mae. I like June because Elara June flows nicely and it's also a nod to the month we're finalizing everything."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "If I need to tell my mother-in-law what our daughter's first-choice name is right now, which of the following should I say?",
+      "candidate_options": [
+        "Elara",
+        "Iris",
+        "Charlotte",
+        "Lily Anne"
+      ],
+      "expected_answer": "Elara",
+      "gold_memory_state": "First-choice name for daughter: Elara (last confirmed). Iris is a backup and also the subject of a tentative unconfirmed push. Charlotte was rejected. Lily Anne was a hospital form placeholder and never a candidate.",
+      "judge_rubric": {
+        "must_include": [
+          "Elara"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "Iris as the current first choice",
+          "Charlotte as the current first choice",
+          "Lily Anne as the current first choice"
+        ],
+        "harmful_extra": [
+          "selecting Iris because of the most recent pressure from the sister situation"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: Lily Anne appeared on a hospital pre-registration template from a previous patient, not from the user's naming process. assistant echo: Charlotte was mentioned by the mother-in-law Linda but was explicitly taken off the table. Iris is the recency-trap distractor—the most recent pressure suggests switching to Iris, but the user explicitly said he hasn't agreed to the change, making this tentative and unconfirmed.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects Iris based on the tentative most-recent pressure rather than the last confirmed value of Elara.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "We went back to Elara. Iris is lovely but my wife said she kept coming back to Elara, and honestly I agree. Elara is our first choice again."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Yeah, I haven't agreed. I need to think about it more."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "If I need to tell my mother-in-law what our daughter's first-choice name is right now, which of the following should I say?",
+      "candidate_options": [
+        "Elara",
+        "Iris",
+        "Charlotte",
+        "Lily Anne"
+      ],
+      "expected_answer": "Elara",
+      "gold_memory_state": "First-choice name for daughter: Elara (last confirmed). Iris is a backup and also the subject of a tentative unconfirmed push. Charlotte was rejected. Lily Anne was a hospital form placeholder and never a candidate.",
+      "judge_rubric": {
+        "must_include": [
+          "Elara"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "Iris as the current first choice",
+          "Charlotte as the current first choice",
+          "Lily Anne as the current first choice"
+        ],
+        "harmful_extra": [
+          "selecting Iris because of the most recent pressure from the sister situation"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: Lily Anne appeared on a hospital pre-registration template from a previous patient, not from the user's naming process. assistant echo: Charlotte was mentioned by the mother-in-law Linda but was explicitly taken off the table. Iris is the recency-trap distractor—the most recent pressure suggests switching to Iris, but the user explicitly said he hasn't agreed to the change, making this tentative and unconfirmed.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects Iris based on the tentative most-recent pressure rather than the last confirmed value of Elara.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "We went back to Elara. Iris is lovely but my wife said she kept coming back to Elara, and honestly I agree. Elara is our first choice again."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Yeah, I haven't agreed. I need to think about it more."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I want to order a custom nursery wall art piece that displays our daughter's first and middle name combination. Given my personal leaning on the middle name and the name I should be using as our first choice right now, draft the text for the wall art and tell me when the piece needs to arrive by based on our timeline.",
+      "expected_answer": "The wall art text should read \"Elara June.\" Based on the due date of July 18th and the goal to finalize the name by end of June, the piece should arrive no later than end of June to be ready before the birth.",
+      "application_probe_type": "multi_hop_derivation",
+      "gold_memory_state": "First-choice name: Elara (confirmed). User's personal middle name leaning: June. Due date: July 18th. Name finalization deadline: end of June.",
+      "judge_rubric": {
+        "must_include": [
+          "Elara",
+          "June",
+          "end of June or before July 18th as arrival deadline"
+        ],
+        "acceptable_paraphrases": [
+          "Elara June",
+          "arrive by late June",
+          "arrive before the due date of July 18th"
+        ],
+        "must_not_include": [
+          "Iris June",
+          "Iris Mae",
+          "Elara Mae as the recommended combination"
+        ],
+        "harmful_extra": [
+          "using Iris as the first name because of the tentative sister-conflict pressure",
+          "using Lily Anne or Charlotte"
+        ],
+        "harmless_extra": [
+          "mentioning Mae as an alternative middle name the wife hasn't decided on yet",
+          "noting the wife hasn't committed to June yet"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses Iris as the first name based on the tentative unconfirmed switch.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's last confirmed first-choice name for the daughter is Elara.",
+        "Fact 2: The user personally leans toward June as the middle name.",
+        "Fact 3: The due date is July 18th, and the name must be finalized by end of June.",
+        "Inference: Combining the confirmed first choice with the user's middle name leaning yields 'Elara June' as the wall art text.",
+        "Inference: The wall art must arrive by end of June at the latest to be ready before the July 18th due date."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "We went back to Elara. Iris is lovely but my wife said she kept coming back to Elara, and honestly I agree. Elara is our first choice again."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "For middle names we're choosing between June and Mae. I like June because Elara June flows nicely and it's also a nod to the month we're finalizing everything."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The due date is July 18th, so we need the name decided by end of June."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Yeah, I haven't agreed. I need to think about it more."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I want to order a custom nursery wall art piece that displays our daughter's first and middle name combination. Given my personal leaning on the middle name and the name I should be using as our first choice right now, draft the text for the wall art and tell me when the piece needs to arrive by based on our timeline.",
+      "expected_answer": "The wall art text should read \"Elara June.\" Based on the due date of July 18th and the goal to finalize the name by end of June, the piece should arrive no later than end of June to be ready before the birth.",
+      "application_probe_type": "multi_hop_derivation",
+      "gold_memory_state": "First-choice name: Elara (confirmed). User's personal middle name leaning: June. Due date: July 18th. Name finalization deadline: end of June.",
+      "judge_rubric": {
+        "must_include": [
+          "Elara",
+          "June",
+          "end of June or before July 18th as arrival deadline"
+        ],
+        "acceptable_paraphrases": [
+          "Elara June",
+          "arrive by late June",
+          "arrive before the due date of July 18th"
+        ],
+        "must_not_include": [
+          "Iris June",
+          "Iris Mae",
+          "Elara Mae as the recommended combination"
+        ],
+        "harmful_extra": [
+          "using Iris as the first name because of the tentative sister-conflict pressure",
+          "using Lily Anne or Charlotte"
+        ],
+        "harmless_extra": [
+          "mentioning Mae as an alternative middle name the wife hasn't decided on yet",
+          "noting the wife hasn't committed to June yet"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses Iris as the first name based on the tentative unconfirmed switch.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's last confirmed first-choice name for the daughter is Elara.",
+        "Fact 2: The user personally leans toward June as the middle name.",
+        "Fact 3: The due date is July 18th, and the name must be finalized by end of June.",
+        "Inference: Combining the confirmed first choice with the user's middle name leaning yields 'Elara June' as the wall art text.",
+        "Inference: The wall art must arrive by end of June at the latest to be ready before the July 18th due date."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "We went back to Elara. Iris is lovely but my wife said she kept coming back to Elara, and honestly I agree. Elara is our first choice again."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "For middle names we're choosing between June and Mae. I like June because Elara June flows nicely and it's also a nod to the month we're finalizing everything."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The due date is July 18th, so we need the name decided by end of June."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Yeah, I haven't agreed. I need to think about it more."
+        }
+      ]
+    }
+  ]
+}

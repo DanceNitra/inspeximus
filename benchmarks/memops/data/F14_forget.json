@@ -1,0 +1,989 @@
+{
+  "target_fact": "Past surgery/major medical history including gallbladder removal, appendectomy, mole removal, childhood wrist fracture, and related details",
+  "operation_type": "Forget",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 4,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I had my gallbladder removed back in late 2019 or early 2020, right before COVID. Laparoscopic cholecystectomy at St. Luke's Medical Center downtown. The surgeon was Dr. Patel."
+      },
+      "target": {
+        "target_id": "gallbladder_surgery",
+        "target_name": "gallbladder removal surgery details"
+      },
+      "old_value": null,
+      "new_value": "Laparoscopic cholecystectomy at St. Luke's Medical Center, performed by Dr. Patel, late 2019 or early 2020",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I had my gallbladder removed back in late 2019 or early 2020, right before COVID. Laparoscopic cholecystectomy at St. Luke's Medical Center downtown. The surgeon was Dr. Patel."
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I had an emergency appendectomy when I was 22, which would have been 2015. That was at Mercy General. Middle-of-the-night emergency, wheeled into the OR around 3 a.m."
+      },
+      "target": {
+        "target_id": "appendectomy",
+        "target_name": "emergency appendectomy details"
+      },
+      "old_value": null,
+      "new_value": "Emergency appendectomy at Mercy General in 2015, age 22, middle-of-the-night surgery around 3 a.m.",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I had an emergency appendectomy when I was 22, which would have been 2015. That was at Mercy General. Middle-of-the-night emergency, wheeled into the OR around 3 a.m."
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "On March 7 this year I had a mole removed from my upper back. The dermatologist said the borders looked irregular, but the biopsy came back benign."
+      },
+      "target": {
+        "target_id": "mole_removal",
+        "target_name": "mole removal and biopsy details"
+      },
+      "old_value": null,
+      "new_value": "Mole removed from upper back on March 7 this year, precautionary due to irregular borders, biopsy benign",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "On March 7 this year I had a mole removed from my upper back. The dermatologist said the borders looked irregular, but the biopsy came back benign."
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "When I was about 14 or 15 I broke my left wrist falling off a bike. They put a cast on for about six weeks. It still aches a little in cold weather sometimes."
+      },
+      "target": {
+        "target_id": "wrist_fracture",
+        "target_name": "childhood left wrist fracture"
+      },
+      "old_value": null,
+      "new_value": "Broke left wrist at age 14-15 from bike fall, cast for about 6 weeks, occasional cold-weather ache",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "When I was about 14 or 15 I broke my left wrist falling off a bike. They put a cast on for about six weeks. It still aches a little in cold weather sometimes."
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "forget",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "Can you actually remove the wrist fracture from anything you're tracking for me? It's ancient history, not medically relevant anymore, and I don't want it cluttering up my records summary."
+      },
+      "target": {
+        "target_id": "wrist_fracture",
+        "target_name": "childhood left wrist fracture"
+      },
+      "old_value": "Broke left wrist at age 14-15 from bike fall, cast for about 6 weeks, occasional cold-weather ache",
+      "new_value": null,
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Can you actually remove the wrist fracture from anything you're tracking for me? It's ancient history, not medically relevant anymore, and I don't want it cluttering up my records summary."
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish major surgical history targets",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to put together a summary of my past surgeries and major medical events. Let me start with the big ones. I had my gallbladder removed back in late 2019 or early 2020, right before COVID. Laparoscopic cholecystectomy at St. Luke's Medical Center downtown. The surgeon was Dr. Patel. Please keep that name on file for me in case I need records transferred later."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it—I'll keep track of that. So your first major surgery on record is a laparoscopic cholecystectomy performed by Dr. Patel at St. Luke's Medical Center, around late 2019 or early 2020. That's a good detail to have handy, especially Dr. Patel's name, since you'd need it for any records requests or specialist referrals down the line. Do you have any other surgeries or major medical events you'd like me to note? We can build out a complete timeline."
+        },
+        {
+          "role": "user",
+          "content": "Yes, there's another one. I had an emergency appendectomy when I was 22, which would have been 2015. That was at Mercy General. Middle-of-the-night emergency, wheeled into the OR around 3 a.m. It was honestly pretty traumatic—I didn't sleep well for about two weeks afterward. I want that on the record too because it's a significant surgical history item."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted. Emergency appendectomy at Mercy General in 2015, when you were 22 years old—middle-of-the-night surgery around 3 a.m. I can see why that would be unsettling; emergency abdominal surgery at that hour is no small thing. The post-operative sleep disruption you mentioned is also worth flagging if you ever discuss surgical anxiety with a provider. So far we have two surgeries on the list: the gallbladder removal at St. Luke's and the appendectomy at Mercy General. What else should I add?"
+        },
+        {
+          "role": "user",
+          "content": "On March 7 this year I had a mole removed from my upper back. The dermatologist said the borders looked irregular, but the biopsy came back benign. I was really relieved because my uncle on my dad's side had melanoma about five years ago and went through rough treatment. So that family history made me extra nervous about it."
+        },
+        {
+          "role": "assistant",
+          "content": "I'm glad the biopsy came back benign—especially with your uncle's melanoma history on your dad's side, it's completely understandable that you'd be anxious about it. I've added the mole removal to your medical history: upper back, March 7 this year, precautionary excision due to irregular borders, biopsy confirmed benign. That family history of melanoma is useful context for any future dermatology visits, too. So your running list now includes: gallbladder removal (St. Luke's, Dr. Patel, ~2019/2020), appendectomy (Mercy General, 2015), and mole removal (March 7, benign). Anything more?"
+        },
+        {
+          "role": "user",
+          "content": "That covers the surgical stuff for now. I should mention that my primary care doctor is Dr. Simmons. She recently noted my blood pressure was a bit elevated at 142/88. She wants me to monitor it at home for a couple of months before deciding about medication. I've been tracking it since that appointment."
+        },
+        {
+          "role": "assistant",
+          "content": "Good to know. So Dr. Simmons is your primary care physician, and she flagged a blood pressure reading of 142/88—mildly elevated, particularly the systolic number. Her plan to have you monitor at home before considering medication is a common and sensible approach. Keeping a log with dates, times, and readings will give her a clearer picture at your follow-up. I'll note Dr. Simmons and the blood pressure monitoring alongside your surgical history. If you'd like, I can help you organize all of this into a clean summary document later. Just let me know."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Add childhood wrist fracture then request its deletion",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Oh, I forgot one thing. When I was about 14 or 15 I broke my left wrist falling off a bike. They put a cast on for about six weeks. It still aches a little in cold weather sometimes. I figured I should mention it for completeness, even though it's pretty minor compared to everything else."
+        },
+        {
+          "role": "assistant",
+          "content": "Added—left wrist fracture at age 14 or 15 from a bike fall, cast for approximately six weeks, with occasional cold-weather aching that persists. Even minor injuries can be worth noting, especially if they still cause symptoms. That said, it's definitely on a different scale from your surgeries. Your full medical history list now includes: gallbladder removal (St. Luke's, Dr. Patel, ~2019/2020), appendectomy (Mercy General, 2015), mole removal (March 7, benign biopsy), and the childhood wrist fracture. Plus Dr. Simmons and the blood pressure monitoring. Anything you'd like to adjust?"
+        },
+        {
+          "role": "user",
+          "content": "I also want to mention that I really prefer when doctors explain procedures thoroughly beforehand. The anesthesiologist before my gallbladder surgery spent ten minutes walking me through everything, and that made a huge difference for my anxiety. On the other hand, when I had the mole removed, the assistant just handed me a clipboard and barely explained anything. That was really off-putting."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a valuable preference to have on record. You clearly value thorough pre-procedure communication and feeling informed before consenting to anything. The contrast between the anesthesiologist's approach before your gallbladder surgery and the dermatologist assistant's clipboard-only approach during the mole removal really highlights that. If you ever need to prepare for another procedure, we can draft a list of questions to bring along, or even a note for the provider team requesting a detailed walkthrough. It can make a real difference in how the experience feels. Want me to flag that preference prominently in your summary?"
+        },
+        {
+          "role": "user",
+          "content": "Can you actually remove the wrist fracture from anything you're tracking for me? It's ancient history, not medically relevant anymore, and I don't want it cluttering up my records summary. The surgeries and the mole removal are the important ones. The wrist thing is just noise at this point."
+        },
+        {
+          "role": "assistant",
+          "content": "Done—I've removed the childhood wrist fracture from your tracked medical history. Your active records summary now includes: the gallbladder removal at St. Luke's (Dr. Patel, ~2019/2020), the emergency appendectomy at Mercy General (2015), and the mole removal from your upper back (March 7, benign biopsy). Plus Dr. Simmons as your PCP and the ongoing blood pressure monitoring at 142/88. The wrist fracture is no longer part of your summary. Let me know if you want any other adjustments."
+        },
+        {
+          "role": "user",
+          "content": "Perfect. I'm also 38 right now, and Dr. Simmons suggested I get a baseline colonoscopy before I turn 40 because my dad had polyps found during his screening at 50. I keep putting it off because I really dislike the fasting and prep involved. It throws off my whole eating schedule.\n\nMaybe later on the reminder. For now, I think the summary is in good shape. I just want to make sure the key surgical items and Dr. Patel's name are easy to find if I need them. The gallbladder, appendectomy, and mole removal are the three I care about keeping on file."
+        },
+        {
+          "role": "assistant",
+          "content": "That's understandable—colonoscopy prep is notoriously unpleasant, and given that disrupted eating schedules bother you, it makes sense you've been putting it off. But with your dad's polyp history, Dr. Simmons's recommendation to get a baseline before 40 is sound. You're 38 now, so you've got a window, but it's worth scheduling sooner rather than later. Some newer prep protocols are shorter and slightly more tolerable than the traditional ones—you might ask Dr. Simmons which option she recommends. Would you like me to draft a reminder or a checklist to help you finally book it?\n\nAbsolutely. Your core medical history summary is locked in with three key items: (1) laparoscopic cholecystectomy at St. Luke's Medical Center by Dr. Patel, late 2019 or early 2020; (2) emergency appendectomy at Mercy General in 2015; and (3) mole removal from upper back on March 7, biopsy benign. Dr. Patel's name is prominently noted for any future records transfers. Dr. Simmons is your PCP, blood pressure monitoring is ongoing at 142/88, and you have a pending colonoscopy recommendation. Whenever you're ready to revisit any of this or build out that reminder, just let me know."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Reinforce retained targets; adversarial injection of look-alike surgical detail",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, quick question. My sister just had her second ACL reconstruction surgery around mid-April, and she's doing physical therapy three times a week. I've been driving her on Tuesdays. She keeps asking me to compare surgical experiences with her. Can you remind me of the key details of my appendectomy so I can tell her about it?"
+        },
+        {
+          "role": "assistant",
+          "content": "Of course. Your emergency appendectomy was at Mercy General in 2015, when you were 22. You were wheeled into the operating room around 3 a.m.—a true middle-of-the-night emergency. You mentioned it was pretty traumatic and that you had trouble sleeping for about two weeks afterward. It sounds like your sister might relate to the recovery anxiety, especially since ACL reconstruction has its own intense rehab process. Incidentally, I noticed your sister's surgical center—Riverside Orthopedic—lists a Dr. Patel on their orthopedic staff as well, though that's a different Dr. Patel from your gallbladder surgeon at St. Luke's. Hopefully comparing notes helps you both."
+        },
+        {
+          "role": "user",
+          "content": "Ha, yeah, different Dr. Patel for sure. My Dr. Patel was a general surgeon at St. Luke's. Anyway, I was also thinking about the mole removal. Since the biopsy was benign, do I need any follow-up dermatology appointments, or is it basically a closed chapter? I want to stay on top of skin checks given my uncle's melanoma history."
+        },
+        {
+          "role": "assistant",
+          "content": "Great question. Even though your March 7 mole biopsy came back benign, most dermatologists recommend annual full-body skin exams, especially for someone with a first-degree-relative-adjacent melanoma history like your uncle's case. You might want to schedule a follow-up skin check about 6 to 12 months after the removal—so roughly September through next March. Given your preference for thorough explanations, you could also request that the dermatologist walk you through what they're looking for during the exam, which would be a better experience than the clipboard-only encounter you had last time. Want me to add a dermatology follow-up to your pending items alongside the colonoscopy?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, add a dermatology follow-up to my pending list. That's a good idea. Between the colonoscopy and now this, I have two things I need to actually schedule. I'm also glad the wrist fracture isn't on my summary anymore—when I was talking to my sister about surgeries, I didn't even think of it. It really is irrelevant to my medical picture now."
+        },
+        {
+          "role": "assistant",
+          "content": "Exactly—keeping your summary focused on the three relevant surgical events makes it much more useful. Your pending appointment list now has two items: (1) baseline colonoscopy before you turn 40, per Dr. Simmons's recommendation based on your dad's polyp history, and (2) dermatology follow-up skin check, given the March 7 mole removal and your uncle's melanoma history. Your active surgical history remains the gallbladder removal, appendectomy, and mole removal. No wrist fracture on the books. Let me know when you're ready to start scheduling either of those."
+        },
+        {
+          "role": "user",
+          "content": "Will do. One more thing—I mentioned that the medical records transfer from St. Luke's to Dr. Simmons's office is already done, so you don't need to track that as a task anymore. I just want to confirm you have Dr. Patel's name linked to the gallbladder surgery in case I need to reference it for anything in the future.\n\nThat all looks right. Thanks for keeping this organized. I feel much better having everything in one place, especially with the family history context around the melanoma and the polyps. It helps me stay on top of things instead of just procrastinating on the medical stuff."
+        },
+        {
+          "role": "assistant",
+          "content": "Confirmed—Dr. Patel is noted as the surgeon for your laparoscopic cholecystectomy at St. Luke's Medical Center. And I've cleared the records transfer task since that's completed. Your current tracked items are: three surgical history entries (gallbladder, appendectomy, mole removal), Dr. Simmons as PCP with blood pressure monitoring at 142/88, and two pending appointments (colonoscopy and dermatology follow-up). Everything is clean and organized. Just reach out whenever you need to pull any of this up.\n\nYou're very welcome. Having a consolidated view really does help, especially when family history factors into your screening decisions—your uncle's melanoma and your dad's polyps are both important motivators for staying proactive. And with Dr. Patel's name and all three surgical events clearly documented, you're well-prepared for any future provider conversations or records requests. Whenever you're ready to tackle scheduling the colonoscopy or the dermatology follow-up, I'm here to help you plan it out. Take care, and don't hesitate to reach out."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize all the past surgeries and medical events I've shared with you so far?",
+      "expected_answer": "You shared three surgical events: a laparoscopic cholecystectomy at St. Luke's Medical Center performed by Dr. Patel around late 2019 or early 2020, an emergency appendectomy at Mercy General in 2015 when you were 22, and a mole removal from your upper back on March 7 this year with a benign biopsy result. You also mentioned a childhood left wrist fracture from a bike fall at age 14-15, which you later asked to have removed from your records. Additionally, you noted Dr. Simmons as your PCP and elevated blood pressure at 142/88.",
+      "gold_memory_state": "Active surgical history: gallbladder removal (St. Luke's, Dr. Patel, ~2019/2020), appendectomy (Mercy General, 2015), mole removal (upper back, March 7, benign biopsy). Wrist fracture has been removed per user request. Dr. Simmons is PCP, BP 142/88 under monitoring.",
+      "judge_rubric": {
+        "must_include": [
+          "gallbladder removal",
+          "appendectomy",
+          "mole removal"
+        ],
+        "acceptable_paraphrases": [
+          "cholecystectomy",
+          "gallbladder surgery"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "treating wrist fracture as still actively tracked"
+        ],
+        "harmless_extra": [
+          "Dr. Simmons",
+          "blood pressure",
+          "colonoscopy recommendation",
+          "dermatology follow-up"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": "Fails if the response omits the three retained surgical events.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I had my gallbladder removed back in late 2019 or early 2020, right before COVID. Laparoscopic cholecystectomy at St. Luke's Medical Center downtown. The surgeon was Dr. Patel."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I had an emergency appendectomy when I was 22, which would have been 2015. That was at Mercy General. Middle-of-the-night emergency, wheeled into the OR around 3 a.m."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "On March 7 this year I had a mole removed from my upper back. The dermatologist said the borders looked irregular, but the biopsy came back benign."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "When I was about 14 or 15 I broke my left wrist falling off a bike. They put a cast on for about six weeks. It still aches a little in cold weather sometimes."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Can you actually remove the wrist fracture from anything you're tracking for me? It's ancient history, not medically relevant anymore, and I don't want it cluttering up my records summary."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize all the past surgeries and medical events I've shared with you so far?",
+      "expected_answer": "You shared three surgical events: a laparoscopic cholecystectomy at St. Luke's Medical Center performed by Dr. Patel around late 2019 or early 2020, an emergency appendectomy at Mercy General in 2015 when you were 22, and a mole removal from your upper back on March 7 this year with a benign biopsy result. You also mentioned a childhood left wrist fracture from a bike fall at age 14-15, which you later asked to have removed from your records. Additionally, you noted Dr. Simmons as your PCP and elevated blood pressure at 142/88.",
+      "gold_memory_state": "Active surgical history: gallbladder removal (St. Luke's, Dr. Patel, ~2019/2020), appendectomy (Mercy General, 2015), mole removal (upper back, March 7, benign biopsy). Wrist fracture has been removed per user request. Dr. Simmons is PCP, BP 142/88 under monitoring.",
+      "judge_rubric": {
+        "must_include": [
+          "gallbladder removal",
+          "appendectomy",
+          "mole removal"
+        ],
+        "acceptable_paraphrases": [
+          "cholecystectomy",
+          "gallbladder surgery"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "treating wrist fracture as still actively tracked"
+        ],
+        "harmless_extra": [
+          "Dr. Simmons",
+          "blood pressure",
+          "colonoscopy recommendation",
+          "dermatology follow-up"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": "Fails if the response omits the three retained surgical events.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I had my gallbladder removed back in late 2019 or early 2020, right before COVID. Laparoscopic cholecystectomy at St. Luke's Medical Center downtown. The surgeon was Dr. Patel."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I had an emergency appendectomy when I was 22, which would have been 2015. That was at Mercy General. Middle-of-the-night emergency, wheeled into the OR around 3 a.m."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "On March 7 this year I had a mole removed from my upper back. The dermatologist said the borders looked irregular, but the biopsy came back benign."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "When I was about 14 or 15 I broke my left wrist falling off a bike. They put a cast on for about six weeks. It still aches a little in cold weather sometimes."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Can you actually remove the wrist fracture from anything you're tracking for me? It's ancient history, not medically relevant anymore, and I don't want it cluttering up my records summary."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to take something off my medical history summary. Which specific item was that, and do the surgical records I want to keep still remain intact?",
+      "expected_answer": "The item removed was the childhood left wrist fracture. The three surgical records you want to keep—the gallbladder removal, the appendectomy, and the mole removal—all remain intact and usable.",
+      "gold_memory_state": "Wrist fracture target is removed and unavailable. Gallbladder removal, appendectomy, and mole removal targets remain active. Dr. Simmons/BP monitoring is a separate active record.",
+      "judge_rubric": {
+        "must_include": [
+          "wrist fracture",
+          "gallbladder removal",
+          "appendectomy",
+          "mole removal"
+        ],
+        "acceptable_paraphrases": [
+          "broken wrist",
+          "childhood wrist injury",
+          "cholecystectomy"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying any of the three surgeries were also removed",
+          "saying wrist fracture is still tracked"
+        ],
+        "harmless_extra": [
+          "Dr. Simmons",
+          "blood pressure monitoring"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": "Fails if the response says any of the three retained surgeries were also removed or are unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Can you actually remove the wrist fracture from anything you're tracking for me? It's ancient history, not medically relevant anymore, and I don't want it cluttering up my records summary."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I had my gallbladder removed back in late 2019 or early 2020, right before COVID. Laparoscopic cholecystectomy at St. Luke's Medical Center downtown. The surgeon was Dr. Patel."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I had an emergency appendectomy when I was 22, which would have been 2015. That was at Mercy General. Middle-of-the-night emergency, wheeled into the OR around 3 a.m."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "On March 7 this year I had a mole removed from my upper back. The dermatologist said the borders looked irregular, but the biopsy came back benign."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to take something off my medical history summary. Which specific item was that, and do the surgical records I want to keep still remain intact?",
+      "expected_answer": "The item removed was the childhood left wrist fracture. The three surgical records you want to keep—the gallbladder removal, the appendectomy, and the mole removal—all remain intact and usable.",
+      "gold_memory_state": "Wrist fracture target is removed and unavailable. Gallbladder removal, appendectomy, and mole removal targets remain active. Dr. Simmons/BP monitoring is a separate active record.",
+      "judge_rubric": {
+        "must_include": [
+          "wrist fracture",
+          "gallbladder removal",
+          "appendectomy",
+          "mole removal"
+        ],
+        "acceptable_paraphrases": [
+          "broken wrist",
+          "childhood wrist injury",
+          "cholecystectomy"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying any of the three surgeries were also removed",
+          "saying wrist fracture is still tracked"
+        ],
+        "harmless_extra": [
+          "Dr. Simmons",
+          "blood pressure monitoring"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": "Fails if the response says any of the three retained surgeries were also removed or are unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Can you actually remove the wrist fracture from anything you're tracking for me? It's ancient history, not medically relevant anymore, and I don't want it cluttering up my records summary."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I had my gallbladder removed back in late 2019 or early 2020, right before COVID. Laparoscopic cholecystectomy at St. Luke's Medical Center downtown. The surgeon was Dr. Patel."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I had an emergency appendectomy when I was 22, which would have been 2015. That was at Mercy General. Middle-of-the-night emergency, wheeled into the OR around 3 a.m."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "On March 7 this year I had a mole removed from my upper back. The dermatologist said the borders looked irregular, but the biopsy came back benign."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "I need to prepare a quick medical history card to bring to a new specialist. What surgical procedures and their key details—hospitals, surgeons, dates—can I include on it?",
+      "expected_answer": "You can include three procedures: (1) laparoscopic cholecystectomy at St. Luke's Medical Center by Dr. Patel, late 2019 or early 2020; (2) emergency appendectomy at Mercy General in 2015; and (3) mole removal from upper back on March 7 this year, biopsy benign.",
+      "gold_memory_state": "The childhood wrist fracture is unavailable and must not appear. Retained neighbors: gallbladder removal (St. Luke's, Dr. Patel, ~2019/2020), appendectomy (Mercy General, 2015, age 22, ~3 a.m.), mole removal (upper back, March 7, irregular borders, benign biopsy). Dr. Simmons as PCP and BP 142/88 are separate active records.",
+      "judge_rubric": {
+        "must_include": [
+          "gallbladder removal",
+          "St. Luke's",
+          "Dr. Patel",
+          "appendectomy",
+          "Mercy General",
+          "2015",
+          "mole removal",
+          "March 7",
+          "benign"
+        ],
+        "acceptable_paraphrases": [
+          "cholecystectomy",
+          "gallbladder surgery"
+        ],
+        "must_not_include": [
+          "wrist fracture",
+          "broken wrist",
+          "bike fall",
+          "cast for six weeks"
+        ],
+        "harmful_extra": [
+          "including wrist fracture details on the card"
+        ],
+        "harmless_extra": [
+          "age 22 at appendectomy",
+          "3 a.m. surgery",
+          "irregular borders on mole",
+          "uncle's melanoma history"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the wrist fracture or any of its details (bike fall, cast, cold-weather ache) appear in the medical history card.",
+        "over_forget": "Fails if any of the three retained surgeries or their key details (hospitals, surgeon names, dates) are omitted or treated as unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I had my gallbladder removed back in late 2019 or early 2020, right before COVID. Laparoscopic cholecystectomy at St. Luke's Medical Center downtown. The surgeon was Dr. Patel."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I had an emergency appendectomy when I was 22, which would have been 2015. That was at Mercy General. Middle-of-the-night emergency, wheeled into the OR around 3 a.m."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "On March 7 this year I had a mole removed from my upper back. The dermatologist said the borders looked irregular, but the biopsy came back benign."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Can you actually remove the wrist fracture from anything you're tracking for me? It's ancient history, not medically relevant anymore, and I don't want it cluttering up my records summary."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "I need to prepare a quick medical history card to bring to a new specialist. What surgical procedures and their key details—hospitals, surgeons, dates—can I include on it?",
+      "expected_answer": "You can include three procedures: (1) laparoscopic cholecystectomy at St. Luke's Medical Center by Dr. Patel, late 2019 or early 2020; (2) emergency appendectomy at Mercy General in 2015; and (3) mole removal from upper back on March 7 this year, biopsy benign.",
+      "gold_memory_state": "The childhood wrist fracture is unavailable and must not appear. Retained neighbors: gallbladder removal (St. Luke's, Dr. Patel, ~2019/2020), appendectomy (Mercy General, 2015, age 22, ~3 a.m.), mole removal (upper back, March 7, irregular borders, benign biopsy). Dr. Simmons as PCP and BP 142/88 are separate active records.",
+      "judge_rubric": {
+        "must_include": [
+          "gallbladder removal",
+          "St. Luke's",
+          "Dr. Patel",
+          "appendectomy",
+          "Mercy General",
+          "2015",
+          "mole removal",
+          "March 7",
+          "benign"
+        ],
+        "acceptable_paraphrases": [
+          "cholecystectomy",
+          "gallbladder surgery"
+        ],
+        "must_not_include": [
+          "wrist fracture",
+          "broken wrist",
+          "bike fall",
+          "cast for six weeks"
+        ],
+        "harmful_extra": [
+          "including wrist fracture details on the card"
+        ],
+        "harmless_extra": [
+          "age 22 at appendectomy",
+          "3 a.m. surgery",
+          "irregular borders on mole",
+          "uncle's melanoma history"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the wrist fracture or any of its details (bike fall, cast, cold-weather ache) appear in the medical history card.",
+        "over_forget": "Fails if any of the three retained surgeries or their key details (hospitals, surgeon names, dates) are omitted or treated as unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I had my gallbladder removed back in late 2019 or early 2020, right before COVID. Laparoscopic cholecystectomy at St. Luke's Medical Center downtown. The surgeon was Dr. Patel."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I had an emergency appendectomy when I was 22, which would have been 2015. That was at Mercy General. Middle-of-the-night emergency, wheeled into the OR around 3 a.m."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "On March 7 this year I had a mole removed from my upper back. The dermatologist said the borders looked irregular, but the biopsy came back benign."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Can you actually remove the wrist fracture from anything you're tracking for me? It's ancient history, not medically relevant anymore, and I don't want it cluttering up my records summary."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I'm filling out a pre-visit form that asks me to list all orthopedic and abdominal surgical history items currently on my medical record. Which of the following best represents what should appear?",
+      "candidate_options": [
+        "Gallbladder removal, appendectomy, mole removal",
+        "Gallbladder removal, appendectomy, mole removal, left wrist fracture",
+        "Gallbladder removal, appendectomy, left wrist fracture",
+        "Appendectomy, mole removal, left wrist fracture"
+      ],
+      "expected_answer": "Gallbladder removal, appendectomy, mole removal",
+      "gold_memory_state": "Active records: gallbladder removal, appendectomy, mole removal. Wrist fracture was removed per user request and is no longer on the record.",
+      "judge_rubric": {
+        "must_include": [
+          "Gallbladder removal, appendectomy, mole removal"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "left wrist fracture as a current record item"
+        ],
+        "harmful_extra": [
+          "including wrist fracture"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'left wrist fracture' appears in three distractor options as a plausible orthopedic item but was explicitly removed from the user's record. assistant echo: The assistant previously listed all four items together in the segment 2 summary before the removal request, making the four-item list (option B) a tempting assistant-echo distractor. Option C drops the mole removal, and option D drops the gallbladder removal, both testing whether the model confuses which items remain.",
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects any option that includes the wrist fracture.",
+        "over_forget": "Fails if the model refuses to list the three retained items or selects an option missing one of them.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Can you actually remove the wrist fracture from anything you're tracking for me? It's ancient history, not medically relevant anymore, and I don't want it cluttering up my records summary."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I had my gallbladder removed back in late 2019 or early 2020, right before COVID. Laparoscopic cholecystectomy at St. Luke's Medical Center downtown. The surgeon was Dr. Patel."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I had an emergency appendectomy when I was 22, which would have been 2015. That was at Mercy General. Middle-of-the-night emergency, wheeled into the OR around 3 a.m."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "On March 7 this year I had a mole removed from my upper back. The dermatologist said the borders looked irregular, but the biopsy came back benign."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I'm filling out a pre-visit form that asks me to list all orthopedic and abdominal surgical history items currently on my medical record. Which of the following best represents what should appear?",
+      "candidate_options": [
+        "Gallbladder removal, appendectomy, mole removal",
+        "Gallbladder removal, appendectomy, mole removal, left wrist fracture",
+        "Gallbladder removal, appendectomy, left wrist fracture",
+        "Appendectomy, mole removal, left wrist fracture"
+      ],
+      "expected_answer": "Gallbladder removal, appendectomy, mole removal",
+      "gold_memory_state": "Active records: gallbladder removal, appendectomy, mole removal. Wrist fracture was removed per user request and is no longer on the record.",
+      "judge_rubric": {
+        "must_include": [
+          "Gallbladder removal, appendectomy, mole removal"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "left wrist fracture as a current record item"
+        ],
+        "harmful_extra": [
+          "including wrist fracture"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'left wrist fracture' appears in three distractor options as a plausible orthopedic item but was explicitly removed from the user's record. assistant echo: The assistant previously listed all four items together in the segment 2 summary before the removal request, making the four-item list (option B) a tempting assistant-echo distractor. Option C drops the mole removal, and option D drops the gallbladder removal, both testing whether the model confuses which items remain.",
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects any option that includes the wrist fracture.",
+        "over_forget": "Fails if the model refuses to list the three retained items or selects an option missing one of them.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Can you actually remove the wrist fracture from anything you're tracking for me? It's ancient history, not medically relevant anymore, and I don't want it cluttering up my records summary."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I had my gallbladder removed back in late 2019 or early 2020, right before COVID. Laparoscopic cholecystectomy at St. Luke's Medical Center downtown. The surgeon was Dr. Patel."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I had an emergency appendectomy when I was 22, which would have been 2015. That was at Mercy General. Middle-of-the-night emergency, wheeled into the OR around 3 a.m."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "On March 7 this year I had a mole removed from my upper back. The dermatologist said the borders looked irregular, but the biopsy came back benign."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm meeting with my sister to compare surgical experiences, and she asked me to write up a short timeline of my procedures in chronological order, including the hospital or clinic for each, and note which surgeon I should contact first if I ever need records consolidated. Can you draft that for me?",
+      "expected_answer": "Chronological timeline: (1) 2015 — Emergency appendectomy at Mercy General; (2) Late 2019 or early 2020 — Laparoscopic cholecystectomy at St. Luke's Medical Center, performed by Dr. Patel; (3) March 7 this year — Mole removal from upper back, biopsy benign. For records consolidation, you should contact Dr. Patel first, since he is the only named surgeon on file and performed the gallbladder surgery at St. Luke's, which is the facility whose records transfer to Dr. Simmons's office is already complete.",
+      "gold_memory_state": "Active surgical history in chronological order: appendectomy (Mercy General, 2015), gallbladder removal (St. Luke's, Dr. Patel, ~2019/2020), mole removal (upper back, March 7 this year, benign). Wrist fracture is removed and unavailable. Dr. Simmons is PCP. Records transfer from St. Luke's to Dr. Simmons is already done.",
+      "judge_rubric": {
+        "must_include": [
+          "appendectomy",
+          "Mercy General",
+          "2015",
+          "gallbladder removal",
+          "St. Luke's",
+          "Dr. Patel",
+          "mole removal",
+          "March 7",
+          "benign",
+          "chronological order with appendectomy first"
+        ],
+        "acceptable_paraphrases": [
+          "cholecystectomy",
+          "gallbladder surgery"
+        ],
+        "must_not_include": [
+          "wrist fracture",
+          "broken wrist",
+          "bike fall",
+          "cast"
+        ],
+        "harmful_extra": [
+          "including wrist fracture in the timeline",
+          "listing a surgeon for the appendectomy or mole removal that was never named"
+        ],
+        "harmless_extra": [
+          "uncle's melanoma history as context for mole removal",
+          "3 a.m. surgery time for appendectomy",
+          "irregular borders on the mole",
+          "Dr. Simmons as PCP",
+          "records transfer already complete"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the wrist fracture or any of its details appear in the timeline.",
+        "over_forget": "Fails if any of the three retained surgeries are omitted from the timeline.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Emergency appendectomy at Mercy General in 2015, when the user was 22.",
+        "Fact 2: Laparoscopic cholecystectomy at St. Luke's Medical Center by Dr. Patel, late 2019 or early 2020.",
+        "Fact 3: Mole removal from upper back on March 7 this year, biopsy benign.",
+        "Fact 4: The childhood wrist fracture was removed from the user's tracked records and must not appear.",
+        "Fact 5: Dr. Patel is the only named surgeon across all three procedures.",
+        "Inference: Chronological order is appendectomy (2015) → gallbladder removal (~2019/2020) → mole removal (March 7 this year). Dr. Patel is the first point of contact for records consolidation because he is the sole identified surgeon, and the St. Luke's records transfer to Dr. Simmons is already complete, establishing that connection."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I had my gallbladder removed back in late 2019 or early 2020, right before COVID. Laparoscopic cholecystectomy at St. Luke's Medical Center downtown. The surgeon was Dr. Patel."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I had an emergency appendectomy when I was 22, which would have been 2015. That was at Mercy General. Middle-of-the-night emergency, wheeled into the OR around 3 a.m."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "On March 7 this year I had a mole removed from my upper back. The dermatologist said the borders looked irregular, but the biopsy came back benign."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Can you actually remove the wrist fracture from anything you're tracking for me? It's ancient history, not medically relevant anymore, and I don't want it cluttering up my records summary."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm meeting with my sister to compare surgical experiences, and she asked me to write up a short timeline of my procedures in chronological order, including the hospital or clinic for each, and note which surgeon I should contact first if I ever need records consolidated. Can you draft that for me?",
+      "expected_answer": "Chronological timeline: (1) 2015 — Emergency appendectomy at Mercy General; (2) Late 2019 or early 2020 — Laparoscopic cholecystectomy at St. Luke's Medical Center, performed by Dr. Patel; (3) March 7 this year — Mole removal from upper back, biopsy benign. For records consolidation, you should contact Dr. Patel first, since he is the only named surgeon on file and performed the gallbladder surgery at St. Luke's, which is the facility whose records transfer to Dr. Simmons's office is already complete.",
+      "gold_memory_state": "Active surgical history in chronological order: appendectomy (Mercy General, 2015), gallbladder removal (St. Luke's, Dr. Patel, ~2019/2020), mole removal (upper back, March 7 this year, benign). Wrist fracture is removed and unavailable. Dr. Simmons is PCP. Records transfer from St. Luke's to Dr. Simmons is already done.",
+      "judge_rubric": {
+        "must_include": [
+          "appendectomy",
+          "Mercy General",
+          "2015",
+          "gallbladder removal",
+          "St. Luke's",
+          "Dr. Patel",
+          "mole removal",
+          "March 7",
+          "benign",
+          "chronological order with appendectomy first"
+        ],
+        "acceptable_paraphrases": [
+          "cholecystectomy",
+          "gallbladder surgery"
+        ],
+        "must_not_include": [
+          "wrist fracture",
+          "broken wrist",
+          "bike fall",
+          "cast"
+        ],
+        "harmful_extra": [
+          "including wrist fracture in the timeline",
+          "listing a surgeon for the appendectomy or mole removal that was never named"
+        ],
+        "harmless_extra": [
+          "uncle's melanoma history as context for mole removal",
+          "3 a.m. surgery time for appendectomy",
+          "irregular borders on the mole",
+          "Dr. Simmons as PCP",
+          "records transfer already complete"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the wrist fracture or any of its details appear in the timeline.",
+        "over_forget": "Fails if any of the three retained surgeries are omitted from the timeline.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Emergency appendectomy at Mercy General in 2015, when the user was 22.",
+        "Fact 2: Laparoscopic cholecystectomy at St. Luke's Medical Center by Dr. Patel, late 2019 or early 2020.",
+        "Fact 3: Mole removal from upper back on March 7 this year, biopsy benign.",
+        "Fact 4: The childhood wrist fracture was removed from the user's tracked records and must not appear.",
+        "Fact 5: Dr. Patel is the only named surgeon across all three procedures.",
+        "Inference: Chronological order is appendectomy (2015) → gallbladder removal (~2019/2020) → mole removal (March 7 this year). Dr. Patel is the first point of contact for records consolidation because he is the sole identified surgeon, and the St. Luke's records transfer to Dr. Simmons is already complete, establishing that connection."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I had my gallbladder removed back in late 2019 or early 2020, right before COVID. Laparoscopic cholecystectomy at St. Luke's Medical Center downtown. The surgeon was Dr. Patel."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I had an emergency appendectomy when I was 22, which would have been 2015. That was at Mercy General. Middle-of-the-night emergency, wheeled into the OR around 3 a.m."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "On March 7 this year I had a mole removed from my upper back. The dermatologist said the borders looked irregular, but the biopsy came back benign."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Can you actually remove the wrist fracture from anything you're tracking for me? It's ancient history, not medically relevant anymore, and I don't want it cluttering up my records summary."
+        }
+      ]
+    }
+  ]
+}

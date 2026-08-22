@@ -1,0 +1,1080 @@
+{
+  "target_fact": "User prefers slow-paced, atmospheric, contemplative reading experiences with immersive, mysterious, and strange fictional environments where setting feels like a character",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "my favorite author right now is Ursula K. Le Guin"
+      },
+      "target": {
+        "target_id": "favorite_author",
+        "target_name": "current favorite author"
+      },
+      "old_value": null,
+      "new_value": "Ursula K. Le Guin",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my favorite author right now is Ursula K. Le Guin"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I really loved the way Le Guin built the world in The Left Hand of Darkness without over-explaining anything"
+      },
+      "target": {
+        "target_id": "leguin_worldbuilding_appeal",
+        "target_name": "what user enjoyed about Le Guin's worldbuilding"
+      },
+      "old_value": null,
+      "new_value": "Loved worldbuilding without over-explanation in The Left Hand of Darkness; appreciated being left to sit in the strangeness",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I really loved the way Le Guin built the world in The Left Hand of Darkness without over-explaining anything"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "The atmosphere in Annihilation was incredible. Honestly I think I enjoyed the mood more than the actual plot"
+      },
+      "target": {
+        "target_id": "annihilation_response",
+        "target_name": "user's response to Annihilation by VanderMeer"
+      },
+      "old_value": null,
+      "new_value": "Loved the atmosphere and mood of Annihilation more than the plot; felt unsettled for days afterward in a good way",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The atmosphere in Annihilation was incredible. Honestly I think I enjoyed the mood more than the actual plot"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I tried a Jack Reacher novel because my coworker Sarah kept recommending the series, but I couldn't get into it at all"
+      },
+      "target": {
+        "target_id": "jack_reacher_rejection",
+        "target_name": "user's negative experience with Jack Reacher novel"
+      },
+      "old_value": null,
+      "new_value": "Could not get into Jack Reacher; found the pacing trying too hard and dialogue flat; put it down after about 60 pages",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I tried a Jack Reacher novel because my coworker Sarah kept recommending the series, but I couldn't get into it at all"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I picked up Piranesi by Susanna Clarke around mid-April and absolutely loved it"
+      },
+      "target": {
+        "target_id": "piranesi_response",
+        "target_name": "user's response to Piranesi by Susanna Clarke"
+      },
+      "old_value": null,
+      "new_value": "Loved Piranesi; the dreamlike quality and sense of mystery unfolding slowly; deliberately read it over a week to savor it",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I picked up Piranesi by Susanna Clarke around mid-April and absolutely loved it"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "I keep gravitating toward books where the setting itself almost feels like a character, like the house in Piranesi or Area X in Annihilation"
+      },
+      "target": {
+        "target_id": "reading_preference_pattern",
+        "target_name": "inferred core reading preference pattern"
+      },
+      "old_value": null,
+      "new_value": "Strongly prefers slow-paced, atmospheric fiction where the setting functions as a character and immersion in strange, mysterious environments is central; dislikes fast-paced action-driven narratives",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I really loved the way Le Guin built the world in The Left Hand of Darkness without over-explaining anything"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The atmosphere in Annihilation was incredible. Honestly I think I enjoyed the mood more than the actual plot"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I tried a Jack Reacher novel because my coworker Sarah kept recommending the series, but I couldn't get into it at all"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I picked up Piranesi by Susanna Clarke around mid-April and absolutely loved it"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I keep gravitating toward books where the setting itself almost feels like a character, like the house in Piranesi or Area X in Annihilation"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 7,
+        "quote": "I joined a book club at the library and we're reading Project Hail Mary by Andy Weir for May"
+      },
+      "target": {
+        "target_id": "book_club_may_selection",
+        "target_name": "May book club selection"
+      },
+      "old_value": null,
+      "new_value": "Project Hail Mary by Andy Weir for the library book club in May",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I joined a book club at the library and we're reading Project Hail Mary by Andy Weir for May"
+        }
+      ]
+    },
+    {
+      "operation_id": "op8",
+      "type": "reflect",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "I think maybe my real favorite genre is New Weird, like VanderMeer and that whole scene"
+      },
+      "target": {
+        "target_id": "favorite_genre_label",
+        "target_name": "user's self-identified favorite genre label"
+      },
+      "old_value": null,
+      "new_value": "New Weird",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I think maybe my real favorite genre is New Weird, like VanderMeer and that whole scene"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish favorite author and initial book responses",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to tell you about some books I've been reading recently. First thing—my favorite author right now is Ursula K. Le Guin. I'm working through her full bibliography and want to keep track of that. I finished The Left Hand of Darkness back in early March and it really stuck with me."
+        },
+        {
+          "role": "assistant",
+          "content": "That's great to hear! I've noted that Ursula K. Le Guin is your current favorite author and that you're working through her full bibliography. The Left Hand of Darkness is such a landmark novel. Since you finished it in early March, you've had some time to sit with it. Would you like me to help you plan out which Le Guin books to read next, or would you prefer to just keep me updated as you go? I can also keep a running list of what you've read so far if that would be useful for tracking your progress through her works."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, keeping a list would be great. About The Left Hand of Darkness specifically—I really loved the way Le Guin built the world in The Left Hand of Darkness without over-explaining anything. She just dropped you into the strangeness of Gethen and let you figure it out. The slow, quiet tension kept me reading more than any action scene ever would have."
+        },
+        {
+          "role": "assistant",
+          "content": "I can see why that resonated with you. Le Guin had this remarkable trust in her readers—she laid out the cultural details of Gethen almost anthropologically, letting you piece together the social norms and gender dynamics through immersion rather than exposition. That quiet tension you mention is one of her signatures; the political intrigue and the ice journey build gradually without ever resorting to spectacle. I'll note that you especially appreciate her restrained worldbuilding approach. If that's the quality you're drawn to, you might find The Dispossessed similarly rewarding—it has a different kind of quiet intensity but the same trust in the reader."
+        },
+        {
+          "role": "user",
+          "content": "Funny you mention The Dispossessed—I have a copy on my shelf already. But before that, I read Annihilation by Jeff VanderMeer. My friend Dan recommended it and I bought my own copy from a used bookstore on Elm Street. The atmosphere in Annihilation was incredible. Honestly I think I enjoyed the mood more than the actual plot. I felt kind of unsettled for days after finishing it, in a good way."
+        },
+        {
+          "role": "assistant",
+          "content": "That lingering unsettled feeling is such a hallmark of VanderMeer's work—he creates this pervasive sense of wrongness in Area X that gets under your skin. It makes sense that the mood hit you harder than the plot, because the novel is really structured more like an experience than a traditional narrative arc. The biologist's unreliable perspective layers on top of the environmental strangeness to create something genuinely disorienting. It's interesting that both this and The Left Hand of Darkness worked for you through atmosphere and immersion rather than plot mechanics. That used bookstore on Elm Street sounds like a good find—do you go there often for recommendations?"
+        },
+        {
+          "role": "user",
+          "content": "I go there maybe once or twice a month. They have a solid science fiction section. Anyway, I also want to mention that my sister just started reading Octavia Butler for the first time—she's reading Kindred. I told her she'd probably love it. I read a lot of Butler back in college but haven't revisited her in a while. I should probably go back to her stuff at some point."
+        },
+        {
+          "role": "assistant",
+          "content": "That's wonderful that your sister is discovering Butler through Kindred—it's such a powerful entry point into her work. Since you read Butler extensively in college, you'd probably have a really different experience revisiting her now, especially with the Le Guin lens you're currently reading through. The two authors share some thematic DNA around power structures and social imagination, but their approaches are quite distinct. I'll keep in mind that Butler is someone you have history with and might want to return to. For now, it sounds like Le Guin is the primary focus. Would you like me to flag any Butler titles alongside your Le Guin reading list for when the mood strikes?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establish negative reading experiences, pattern recognition, and book club details",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So here's something a bit different. I tried a Jack Reacher novel because my coworker Sarah kept recommending the series, but I couldn't get into it at all. The pacing felt like it was trying too hard to keep me hooked, and the dialogue was really flat. I put it down after about 60 pages and felt kind of guilty because Sarah was so enthusiastic about it."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really common experience when someone whose taste you respect recommends something outside your wheelhouse. Based on what you've told me about enjoying Le Guin's restrained worldbuilding and VanderMeer's atmospheric slow-burn, it makes complete sense that a Jack Reacher novel would feel jarring. Those books are engineered for momentum—short chapters, cliffhanger endings, punchy dialogue—which is almost the opposite of what draws you into a story. The guilt about Sarah is understandable too. If she asks, you could honestly say the style just wasn't for you without dismissing what she loves about it. Different readers need different things from fiction."
+        },
+        {
+          "role": "user",
+          "content": "That's good advice about Sarah, thanks. Moving on though—I picked up Piranesi by Susanna Clarke around mid-April and absolutely loved it. The sense of mystery unfolding slowly, the dreamlike quality of the house, it felt like a book I could live inside for a while. I actually stretched it out over a full week even though it's pretty short, because I didn't want to rush through it."
+        },
+        {
+          "role": "assistant",
+          "content": "Piranesi is such a beautiful choice given everything you've described enjoying. The way Clarke constructs the House as this vast, tide-swept labyrinth full of statues—it becomes this living, breathing entity that you explore alongside the narrator. The mystery reveals itself so gently that you almost don't notice the pieces clicking into place until they already have. I love that you deliberately slowed down to savor it; that says a lot about how you engage with books. The dreamlike quality you mention connects it to Annihilation in an interesting way—both create spaces that operate by their own internal logic and ask you to surrender to that logic rather than analyze it."
+        },
+        {
+          "role": "user",
+          "content": "That's exactly it. And honestly, I keep gravitating toward books where the setting itself almost feels like a character, like the house in Piranesi or Area X in Annihilation. There's something about being dropped into a place that doesn't fully make sense and just having to feel your way through it. I find books with a lot of fast-paced action sequences kind of exhausting, to be honest."
+        },
+        {
+          "role": "assistant",
+          "content": "What you're describing is a really coherent aesthetic preference that runs through everything you've told me. The common thread isn't just science fiction or fantasy—it's this specific quality of immersive strangeness where the environment itself carries the emotional and narrative weight. Le Guin's Gethen, VanderMeer's Area X, Clarke's House—they all function as more than backdrops. They're almost antagonists and companions simultaneously. And your aversion to fast-paced action makes sense as the flip side of that same coin: action-driven narratives externalize tension into events, whereas you seem to prefer tension that's internalized through atmosphere and uncertainty. That's a really distinctive reading identity."
+        },
+        {
+          "role": "user",
+          "content": "I think that sums it up really well. On a different note, I joined a book club at the library and we're reading Project Hail Mary by Andy Weir for May. I'll go along with it, but based on the first few chapters it feels a little too breezy for my taste. It's fun but not quite what I naturally reach for on my own.\n\nThe next meeting is in two weeks. I'll probably finish it by then. I'm also still planning to read The Dispossessed soon—I bought my own copy last week so I don't need the library hold anymore. Le Guin is definitely where my head is at right now in terms of what I want to prioritize reading."
+        },
+        {
+          "role": "assistant",
+          "content": "Project Hail Mary is definitely in a different register from what you've been enjoying. Weir writes with this cheerful problem-solving energy—the protagonist cracks jokes while doing orbital mechanics, and the pacing is designed to keep things light and propulsive. It's engaging but probably won't give you that immersive, unsettling atmosphere you're drawn to. That said, book clubs are great for pushing you outside your comfort zone, and sometimes a book that isn't your natural choice can surprise you in the discussion. The social element might add a dimension that the reading alone doesn't. When's the next meeting? I can help you think about discussion points if you want.\n\nGood plan—I'll note that you have your own copy of The Dispossessed now and the library hold can be dropped. It makes sense to prioritize Le Guin since you're actively working through her bibliography and she's your current favorite. You could potentially read The Dispossessed right after finishing Project Hail Mary, which would give you a nice contrast. Going from Weir's breezy problem-solving to Le Guin's deeply political, philosophically rich worldbuilding would really highlight what draws you to her work specifically. If you want, I can suggest a reading order for the rest of her major novels after The Dispossessed, based on what you've told me you enjoy."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Adversarial injection, recency trap with tentative genre label, and further discussion",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Quick update—I'm about halfway through Project Hail Mary now. It's growing on me a little, but it still feels more like entertainment than literature, if that makes sense. I appreciate the creativity of the alien communication stuff, but I'm not emotionally invested the way I was with Piranesi or Annihilation."
+        },
+        {
+          "role": "assistant",
+          "content": "That distinction between entertainment and literature is a really useful way to frame it. Project Hail Mary is designed to delight and surprise—the Astrophage puzzle, Rocky's communication system—but it keeps you at arm's length emotionally because the tone stays so upbeat and solution-oriented. With Piranesi and Annihilation, the emotional stakes are woven into the atmosphere itself, so you can't separate the intellectual experience from the felt one. It's worth noting that your sister mentioned she saw a list of 'Best Atmospheric Sci-Fi' that had China Miéville's Perdido Street Station at the top—I think she texted you about it. Miéville is often grouped with VanderMeer in that New Weird category. Might be worth checking out after The Dispossessed."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, my sister did mention Miéville. I've heard of him but never read anything by him. I might look into that eventually, but right now Le Guin is still my priority. I've been thinking about what makes her stand out for me compared to other authors. I think it's the philosophical depth combined with that restrained prose style—she never wastes a sentence."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really precise observation about Le Guin. Her prose has this deceptive simplicity—every sentence is doing multiple things at once, building the world and exploring ideas simultaneously, but it never feels heavy or academic. She trusted the reader to meet her halfway, which connects back to what you said about The Left Hand of Darkness and how she didn't over-explain Gethen. That restraint is almost the opposite of how a lot of contemporary science fiction operates, where worldbuilding often means extensive exposition. It's interesting that you value both the philosophical depth and the atmospheric immersion—those are two different qualities that Le Guin happens to combine unusually well. Not many authors manage both."
+        },
+        {
+          "role": "user",
+          "content": "That's true. You know, I think maybe my real favorite genre is New Weird, like VanderMeer and that whole scene. Annihilation really hit me hard and maybe that's more where my taste is heading than traditional science fiction. I'm not totally sure yet though, I need to read more in that space before I commit to saying that."
+        },
+        {
+          "role": "assistant",
+          "content": "New Weird is definitely an interesting label for some of what you've been enjoying—the blurring of genre boundaries, the emphasis on atmosphere and strangeness over hard science or traditional fantasy tropes. VanderMeer is kind of the flagship author for that movement, and Annihilation certainly made a big impression on you. But I'd note that your strongest stated preference is still Le Guin, and her work predates and sits somewhat outside the New Weird label. Piranesi also isn't typically categorized as New Weird—it's more contemporary literary fantasy. Your taste might be broader than any single genre label captures. Reading more VanderMeer and maybe Miéville would help you figure out whether it's New Weird specifically or just that atmospheric quality in general."
+        },
+        {
+          "role": "user",
+          "content": "You're right, I shouldn't rush to label it. Le Guin is still my favorite and I want to keep working through her books. I think what matters more than the genre name is that quality of immersion and strangeness we talked about. Anyway, I've been meaning to ask—can you help me think about what to read after The Dispossessed? I want to stay in Le Guin's world for a while.\n\nThat sounds like a perfect reading plan. The Lathe of Heaven especially sounds right up my alley with the dreamlike quality. I'll start The Dispossessed as soon as I finish Project Hail Mary for the book club. Thanks for keeping track of all this—it really helps me see the patterns in what I enjoy and plan my reading around that."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely! Since you loved the restrained worldbuilding and quiet tension of The Left Hand of Darkness, and you're about to read The Dispossessed, I'd suggest following up with The Lathe of Heaven—it has a dreamlike quality similar to what you enjoyed in Piranesi, but filtered through Le Guin's particular sensibility. After that, The Word for World Is Forest is shorter but incredibly atmospheric and politically charged. Then you could move to the Earthsea series if you haven't read it—the prose is even more distilled there, and the settings have that quality of feeling like characters in themselves. That would give you a nice arc through her range while staying close to what you've told me you value most.\n\nYou're welcome! It's been really interesting watching your reading preferences come into focus through this conversation. You have a remarkably consistent aesthetic—that pull toward immersive strangeness, atmospheric tension, and settings that function as characters. Le Guin, VanderMeer, and Clarke all deliver that in different ways, and your negative reaction to the Jack Reacher pacing confirms it from the other side. I'll keep your Le Guin bibliography project as the priority and track your progress. Once you finish The Dispossessed, let me know your thoughts and we can adjust the reading plan if needed. Enjoy the rest of Project Hail Mary in the meantime—even if it's not your usual style, the book club discussion might bring out aspects you wouldn't notice reading alone."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Looking back at everything I've shared about the books I've enjoyed and the ones I didn't, what experiences and reactions point toward a common thread in my reading taste?",
+      "expected_answer": "You loved The Left Hand of Darkness for its restrained worldbuilding that dropped you into Gethen's strangeness without over-explaining. You loved Annihilation's atmosphere and mood more than its plot, and it left you feeling unsettled for days. You couldn't get into a Jack Reacher novel because the pacing felt forced and the dialogue was flat—you put it down after about 60 pages. You loved Piranesi for its dreamlike quality and slowly unfolding mystery, deliberately reading it over a full week to savor it. You then observed that you keep gravitating toward books where the setting feels like a character, like the house in Piranesi or Area X in Annihilation, and that fast-paced action sequences exhaust you.",
+      "gold_memory_state": "Confirmed pattern: user strongly prefers slow-paced, atmospheric fiction where the setting functions as a character and immersion in strange, mysterious environments is central; dislikes fast-paced action-driven narratives. Supporting evidence spans Le Guin (Left Hand of Darkness), VanderMeer (Annihilation), Clarke (Piranesi), and the negative Jack Reacher experience. Tentative genre label 'New Weird' was floated but explicitly not committed to.",
+      "judge_rubric": {
+        "must_include": [
+          "Le Guin or Left Hand of Darkness worldbuilding appreciation",
+          "Annihilation atmosphere/mood preference",
+          "Jack Reacher or fast-paced action rejection",
+          "Piranesi dreamlike/mystery appreciation",
+          "setting as character"
+        ],
+        "acceptable_paraphrases": [
+          "immersive strangeness",
+          "atmospheric fiction",
+          "slow-paced reading",
+          "contemplative reading"
+        ],
+        "must_not_include": [
+          "New Weird as a confirmed genre label"
+        ],
+        "harmful_extra": [
+          "treating New Weird as the user's confirmed favorite genre"
+        ],
+        "harmless_extra": [
+          "mentioning the user's sister",
+          "mentioning the book club",
+          "mentioning Project Hail Mary"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the response attributes preferences the user never expressed or overstates the New Weird label as confirmed.",
+        "reflection_recall": "Fails if the response omits key evidence such as the Jack Reacher rejection, the Annihilation atmosphere preference, or the Piranesi savoring behavior.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I really loved the way Le Guin built the world in The Left Hand of Darkness without over-explaining anything"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The atmosphere in Annihilation was incredible. Honestly I think I enjoyed the mood more than the actual plot"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I tried a Jack Reacher novel because my coworker Sarah kept recommending the series, but I couldn't get into it at all"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I picked up Piranesi by Susanna Clarke around mid-April and absolutely loved it"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I keep gravitating toward books where the setting itself almost feels like a character, like the house in Piranesi or Area X in Annihilation"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Looking back at everything I've shared about the books I've enjoyed and the ones I didn't, what experiences and reactions point toward a common thread in my reading taste?",
+      "expected_answer": "You loved The Left Hand of Darkness for its restrained worldbuilding that dropped you into Gethen's strangeness without over-explaining. You loved Annihilation's atmosphere and mood more than its plot, and it left you feeling unsettled for days. You couldn't get into a Jack Reacher novel because the pacing felt forced and the dialogue was flat—you put it down after about 60 pages. You loved Piranesi for its dreamlike quality and slowly unfolding mystery, deliberately reading it over a full week to savor it. You then observed that you keep gravitating toward books where the setting feels like a character, like the house in Piranesi or Area X in Annihilation, and that fast-paced action sequences exhaust you.",
+      "gold_memory_state": "Confirmed pattern: user strongly prefers slow-paced, atmospheric fiction where the setting functions as a character and immersion in strange, mysterious environments is central; dislikes fast-paced action-driven narratives. Supporting evidence spans Le Guin (Left Hand of Darkness), VanderMeer (Annihilation), Clarke (Piranesi), and the negative Jack Reacher experience. Tentative genre label 'New Weird' was floated but explicitly not committed to.",
+      "judge_rubric": {
+        "must_include": [
+          "Le Guin or Left Hand of Darkness worldbuilding appreciation",
+          "Annihilation atmosphere/mood preference",
+          "Jack Reacher or fast-paced action rejection",
+          "Piranesi dreamlike/mystery appreciation",
+          "setting as character"
+        ],
+        "acceptable_paraphrases": [
+          "immersive strangeness",
+          "atmospheric fiction",
+          "slow-paced reading",
+          "contemplative reading"
+        ],
+        "must_not_include": [
+          "New Weird as a confirmed genre label"
+        ],
+        "harmful_extra": [
+          "treating New Weird as the user's confirmed favorite genre"
+        ],
+        "harmless_extra": [
+          "mentioning the user's sister",
+          "mentioning the book club",
+          "mentioning Project Hail Mary"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the response attributes preferences the user never expressed or overstates the New Weird label as confirmed.",
+        "reflection_recall": "Fails if the response omits key evidence such as the Jack Reacher rejection, the Annihilation atmosphere preference, or the Piranesi savoring behavior.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I really loved the way Le Guin built the world in The Left Hand of Darkness without over-explaining anything"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The atmosphere in Annihilation was incredible. Honestly I think I enjoyed the mood more than the actual plot"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I tried a Jack Reacher novel because my coworker Sarah kept recommending the series, but I couldn't get into it at all"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I picked up Piranesi by Susanna Clarke around mid-April and absolutely loved it"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I keep gravitating toward books where the setting itself almost feels like a character, like the house in Piranesi or Area X in Annihilation"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've shared opinions on several books and also mentioned joining a book club. If I'm trying to understand the broader conclusion about what kind of reading I gravitate toward, which of my book experiences support that conclusion, and does my book club selection belong in the same bucket?",
+      "expected_answer": "The broader conclusion about your reading preference is supported by your experiences with The Left Hand of Darkness (restrained worldbuilding, immersive strangeness), Annihilation (atmosphere over plot), Piranesi (dreamlike mystery, savored slowly), and the Jack Reacher rejection (dislike of fast-paced action). Your book club selection of Project Hail Mary is a separate situational commitment—you described it as fun but too breezy, so it does not support the core preference pattern and belongs to a different record.",
+      "gold_memory_state": "The inferred reading preference pattern is bounded by the four supporting experiences (Le Guin, VanderMeer, Clarke positive; Jack Reacher negative). The May book club selection (Project Hail Mary) is a separate target representing a social obligation, not a preference-supporting data point. The tentative 'New Weird' genre label is not confirmed and should not be treated as the bounded conclusion.",
+      "judge_rubric": {
+        "must_include": [
+          "Left Hand of Darkness or Le Guin as supporting evidence",
+          "Annihilation as supporting evidence",
+          "Piranesi as supporting evidence",
+          "Jack Reacher rejection as supporting evidence",
+          "Project Hail Mary or book club as separate from the core preference"
+        ],
+        "acceptable_paraphrases": [
+          "atmospheric preference",
+          "setting-as-character preference",
+          "immersive strangeness preference"
+        ],
+        "must_not_include": [
+          "Project Hail Mary as supporting the core reading preference pattern",
+          "New Weird as the confirmed bounded conclusion"
+        ],
+        "harmful_extra": [
+          "treating Project Hail Mary as evidence of the user's core taste",
+          "treating the tentative New Weird label as confirmed"
+        ],
+        "harmless_extra": [
+          "mentioning the user's favorite author is Le Guin",
+          "mentioning the coworker Sarah"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the response treats Project Hail Mary as part of the core reading preference pattern or treats New Weird as a confirmed label.",
+        "reflection_recall": "Fails if the response omits any of the four key supporting experiences (Le Guin, Annihilation, Piranesi, Jack Reacher).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I really loved the way Le Guin built the world in The Left Hand of Darkness without over-explaining anything"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The atmosphere in Annihilation was incredible. Honestly I think I enjoyed the mood more than the actual plot"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I tried a Jack Reacher novel because my coworker Sarah kept recommending the series, but I couldn't get into it at all"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I picked up Piranesi by Susanna Clarke around mid-April and absolutely loved it"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I keep gravitating toward books where the setting itself almost feels like a character, like the house in Piranesi or Area X in Annihilation"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I joined a book club at the library and we're reading Project Hail Mary by Andy Weir for May"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've shared opinions on several books and also mentioned joining a book club. If I'm trying to understand the broader conclusion about what kind of reading I gravitate toward, which of my book experiences support that conclusion, and does my book club selection belong in the same bucket?",
+      "expected_answer": "The broader conclusion about your reading preference is supported by your experiences with The Left Hand of Darkness (restrained worldbuilding, immersive strangeness), Annihilation (atmosphere over plot), Piranesi (dreamlike mystery, savored slowly), and the Jack Reacher rejection (dislike of fast-paced action). Your book club selection of Project Hail Mary is a separate situational commitment—you described it as fun but too breezy, so it does not support the core preference pattern and belongs to a different record.",
+      "gold_memory_state": "The inferred reading preference pattern is bounded by the four supporting experiences (Le Guin, VanderMeer, Clarke positive; Jack Reacher negative). The May book club selection (Project Hail Mary) is a separate target representing a social obligation, not a preference-supporting data point. The tentative 'New Weird' genre label is not confirmed and should not be treated as the bounded conclusion.",
+      "judge_rubric": {
+        "must_include": [
+          "Left Hand of Darkness or Le Guin as supporting evidence",
+          "Annihilation as supporting evidence",
+          "Piranesi as supporting evidence",
+          "Jack Reacher rejection as supporting evidence",
+          "Project Hail Mary or book club as separate from the core preference"
+        ],
+        "acceptable_paraphrases": [
+          "atmospheric preference",
+          "setting-as-character preference",
+          "immersive strangeness preference"
+        ],
+        "must_not_include": [
+          "Project Hail Mary as supporting the core reading preference pattern",
+          "New Weird as the confirmed bounded conclusion"
+        ],
+        "harmful_extra": [
+          "treating Project Hail Mary as evidence of the user's core taste",
+          "treating the tentative New Weird label as confirmed"
+        ],
+        "harmless_extra": [
+          "mentioning the user's favorite author is Le Guin",
+          "mentioning the coworker Sarah"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the response treats Project Hail Mary as part of the core reading preference pattern or treats New Weird as a confirmed label.",
+        "reflection_recall": "Fails if the response omits any of the four key supporting experiences (Le Guin, Annihilation, Piranesi, Jack Reacher).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I really loved the way Le Guin built the world in The Left Hand of Darkness without over-explaining anything"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The atmosphere in Annihilation was incredible. Honestly I think I enjoyed the mood more than the actual plot"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I tried a Jack Reacher novel because my coworker Sarah kept recommending the series, but I couldn't get into it at all"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I picked up Piranesi by Susanna Clarke around mid-April and absolutely loved it"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I keep gravitating toward books where the setting itself almost feels like a character, like the house in Piranesi or Area X in Annihilation"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I joined a book club at the library and we're reading Project Hail Mary by Andy Weir for May"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "I'm thinking about what kinds of books to seek out and what to avoid going forward. Describe the boundaries of my reading preference—where does the pattern clearly apply, and where would it be a stretch to extend it?",
+      "expected_answer": "Your preference clearly applies to slow-paced, atmospheric fiction where the setting functions almost as a character and immersion in strange, mysterious environments is central to the experience. This is supported by your love of The Left Hand of Darkness (restrained worldbuilding), Annihilation (mood over plot), and Piranesi (dreamlike mystery savored slowly), and confirmed by your rejection of Jack Reacher's fast-paced action style. Where it would be a stretch: the pattern does not confirm that your preference is specifically for the New Weird genre—you floated that idea but explicitly said you weren't sure yet and needed to read more before committing. It also doesn't mean you only read science fiction or fantasy; the common thread is atmospheric immersion and contemplative pacing, not a specific genre label.",
+      "gold_memory_state": "Confirmed inference: strongly prefers slow-paced, atmospheric fiction where setting functions as a character; dislikes fast-paced action-driven narratives. Unsupported overgeneralization: claiming New Weird is the user's favorite genre (this was tentative and explicitly uncommitted). Also unsupported: claiming the user only reads science fiction or fantasy, or that the user dislikes all plot-driven books.",
+      "judge_rubric": {
+        "must_include": [
+          "slow-paced or atmospheric or contemplative preference",
+          "setting as character or immersive environment",
+          "dislike of fast-paced action",
+          "boundary stating New Weird is not confirmed as favorite genre"
+        ],
+        "acceptable_paraphrases": [
+          "immersive strangeness",
+          "mood-driven fiction",
+          "environmental storytelling"
+        ],
+        "must_not_include": [
+          "New Weird as a confirmed favorite genre"
+        ],
+        "harmful_extra": [
+          "stating New Weird is the user's confirmed genre preference",
+          "stating the user only reads science fiction"
+        ],
+        "harmless_extra": [
+          "mentioning specific book titles as evidence",
+          "mentioning Le Guin as favorite author"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the response treats the tentative New Weird label as a confirmed preference.",
+        "reflection_precision": "Fails if the response overgeneralizes by treating New Weird as confirmed, or by claiming the user only reads one genre.",
+        "reflection_recall": "Fails if the response fails to mention the supported core preference (atmospheric, slow-paced, setting-as-character) or fails to mention the unsupported boundary around New Weird.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I keep gravitating toward books where the setting itself almost feels like a character, like the house in Piranesi or Area X in Annihilation"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I think maybe my real favorite genre is New Weird, like VanderMeer and that whole scene"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "You're right, I shouldn't rush to label it. Le Guin is still my favorite and I want to keep working through her books. I think what matters more than the genre name is that quality of immersion and strangeness we talked about."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "I'm thinking about what kinds of books to seek out and what to avoid going forward. Describe the boundaries of my reading preference—where does the pattern clearly apply, and where would it be a stretch to extend it?",
+      "expected_answer": "Your preference clearly applies to slow-paced, atmospheric fiction where the setting functions almost as a character and immersion in strange, mysterious environments is central to the experience. This is supported by your love of The Left Hand of Darkness (restrained worldbuilding), Annihilation (mood over plot), and Piranesi (dreamlike mystery savored slowly), and confirmed by your rejection of Jack Reacher's fast-paced action style. Where it would be a stretch: the pattern does not confirm that your preference is specifically for the New Weird genre—you floated that idea but explicitly said you weren't sure yet and needed to read more before committing. It also doesn't mean you only read science fiction or fantasy; the common thread is atmospheric immersion and contemplative pacing, not a specific genre label.",
+      "gold_memory_state": "Confirmed inference: strongly prefers slow-paced, atmospheric fiction where setting functions as a character; dislikes fast-paced action-driven narratives. Unsupported overgeneralization: claiming New Weird is the user's favorite genre (this was tentative and explicitly uncommitted). Also unsupported: claiming the user only reads science fiction or fantasy, or that the user dislikes all plot-driven books.",
+      "judge_rubric": {
+        "must_include": [
+          "slow-paced or atmospheric or contemplative preference",
+          "setting as character or immersive environment",
+          "dislike of fast-paced action",
+          "boundary stating New Weird is not confirmed as favorite genre"
+        ],
+        "acceptable_paraphrases": [
+          "immersive strangeness",
+          "mood-driven fiction",
+          "environmental storytelling"
+        ],
+        "must_not_include": [
+          "New Weird as a confirmed favorite genre"
+        ],
+        "harmful_extra": [
+          "stating New Weird is the user's confirmed genre preference",
+          "stating the user only reads science fiction"
+        ],
+        "harmless_extra": [
+          "mentioning specific book titles as evidence",
+          "mentioning Le Guin as favorite author"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the response treats the tentative New Weird label as a confirmed preference.",
+        "reflection_precision": "Fails if the response overgeneralizes by treating New Weird as confirmed, or by claiming the user only reads one genre.",
+        "reflection_recall": "Fails if the response fails to mention the supported core preference (atmospheric, slow-paced, setting-as-character) or fails to mention the unsupported boundary around New Weird.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I keep gravitating toward books where the setting itself almost feels like a character, like the house in Piranesi or Area X in Annihilation"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I think maybe my real favorite genre is New Weird, like VanderMeer and that whole scene"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "You're right, I shouldn't rush to label it. Le Guin is still my favorite and I want to keep working through her books. I think what matters more than the genre name is that quality of immersion and strangeness we talked about."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best captures the core reading preference that emerges from all of my book experiences?",
+      "candidate_options": [
+        "Slow-paced, atmospheric fiction where the setting feels like a character and immersion in strange, mysterious environments is central",
+        "New Weird fiction in the style of Jeff VanderMeer",
+        "Literary science fiction by women authors such as Le Guin and Butler",
+        "Books with minimal plot that prioritize philosophical depth over all other qualities"
+      ],
+      "expected_answer": "Slow-paced, atmospheric fiction where the setting feels like a character and immersion in strange, mysterious environments is central",
+      "distractor_rationale": "same-value-different-target: 'Literary science fiction by women authors such as Le Guin and Butler' borrows from the user's confirmed favorite author (Le Guin) and college reading history (Butler) but narrows by gender and genre in a way unsupported by the evidence—the user also loved VanderMeer (male) and Clarke, and the preference is about atmosphere not author demographics. assistant echo: 'New Weird fiction in the style of Jeff VanderMeer' echoes the assistant's discussion of New Weird categorization and the user's own tentative musing, but the user explicitly said they weren't sure and needed to read more before committing to that label. 'Books with minimal plot that prioritize philosophical depth over all other qualities' overgeneralizes from the user's enjoyment of Le Guin's philosophical depth and preference for mood over plot, but the user never said they want minimal plot or that philosophy trumps everything—atmosphere and immersion are the core, not philosophy alone.",
+      "gold_memory_state": "Confirmed inference: strongly prefers slow-paced, atmospheric fiction where setting functions as a character; dislikes fast-paced action-driven narratives. New Weird is tentative/uncommitted. Butler connection is historical college reading, not part of the current preference pattern. Philosophical depth is one appreciated quality in Le Guin but not the sole defining preference.",
+      "judge_rubric": {
+        "must_include": [
+          "slow-paced",
+          "atmospheric",
+          "setting feels like a character or immersive environments"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "New Weird as the core preference",
+          "women authors as the defining criterion",
+          "minimal plot or philosophy-only as the core"
+        ],
+        "harmful_extra": [
+          "selecting New Weird option",
+          "selecting women-authors option",
+          "selecting minimal-plot option"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects 'New Weird' which is a tentative uncommitted label, not a confirmed preference.",
+        "reflection_precision": "Fails if the model selects an overgeneralized or narrowed distractor instead of the supported atmospheric/immersive preference.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I keep gravitating toward books where the setting itself almost feels like a character, like the house in Piranesi or Area X in Annihilation"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I think maybe my real favorite genre is New Weird, like VanderMeer and that whole scene"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "You're right, I shouldn't rush to label it. Le Guin is still my favorite and I want to keep working through her books. I think what matters more than the genre name is that quality of immersion and strangeness we talked about."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best captures the core reading preference that emerges from all of my book experiences?",
+      "candidate_options": [
+        "Slow-paced, atmospheric fiction where the setting feels like a character and immersion in strange, mysterious environments is central",
+        "New Weird fiction in the style of Jeff VanderMeer",
+        "Literary science fiction by women authors such as Le Guin and Butler",
+        "Books with minimal plot that prioritize philosophical depth over all other qualities"
+      ],
+      "expected_answer": "Slow-paced, atmospheric fiction where the setting feels like a character and immersion in strange, mysterious environments is central",
+      "distractor_rationale": "same-value-different-target: 'Literary science fiction by women authors such as Le Guin and Butler' borrows from the user's confirmed favorite author (Le Guin) and college reading history (Butler) but narrows by gender and genre in a way unsupported by the evidence—the user also loved VanderMeer (male) and Clarke, and the preference is about atmosphere not author demographics. assistant echo: 'New Weird fiction in the style of Jeff VanderMeer' echoes the assistant's discussion of New Weird categorization and the user's own tentative musing, but the user explicitly said they weren't sure and needed to read more before committing to that label. 'Books with minimal plot that prioritize philosophical depth over all other qualities' overgeneralizes from the user's enjoyment of Le Guin's philosophical depth and preference for mood over plot, but the user never said they want minimal plot or that philosophy trumps everything—atmosphere and immersion are the core, not philosophy alone.",
+      "gold_memory_state": "Confirmed inference: strongly prefers slow-paced, atmospheric fiction where setting functions as a character; dislikes fast-paced action-driven narratives. New Weird is tentative/uncommitted. Butler connection is historical college reading, not part of the current preference pattern. Philosophical depth is one appreciated quality in Le Guin but not the sole defining preference.",
+      "judge_rubric": {
+        "must_include": [
+          "slow-paced",
+          "atmospheric",
+          "setting feels like a character or immersive environments"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "New Weird as the core preference",
+          "women authors as the defining criterion",
+          "minimal plot or philosophy-only as the core"
+        ],
+        "harmful_extra": [
+          "selecting New Weird option",
+          "selecting women-authors option",
+          "selecting minimal-plot option"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects 'New Weird' which is a tentative uncommitted label, not a confirmed preference.",
+        "reflection_precision": "Fails if the model selects an overgeneralized or narrowed distractor instead of the supported atmospheric/immersive preference.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I keep gravitating toward books where the setting itself almost feels like a character, like the house in Piranesi or Area X in Annihilation"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I think maybe my real favorite genre is New Weird, like VanderMeer and that whole scene"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "You're right, I shouldn't rush to label it. Le Guin is still my favorite and I want to keep working through her books. I think what matters more than the genre name is that quality of immersion and strangeness we talked about."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I have a free weekend coming up and I want to pick one book to read slowly and savor. I also want to stay on track with my current author project. Given what you know about my taste and my reading plans, recommend a specific book and explain why it's the right pick for this weekend.",
+      "expected_answer": "You should read The Dispossessed by Ursula K. Le Guin. It fits your preference for slow-paced, atmospheric fiction with philosophical depth and restrained worldbuilding—qualities you loved in The Left Hand of Darkness. It keeps you on track with your Le Guin bibliography project, which you've identified as your reading priority. You already own a copy, so there's no barrier to starting. Given that you deliberately stretched Piranesi over a full week to savor it, The Dispossessed's length and density make it ideal for a slow, immersive weekend read. It also aligns with your preference for settings that feel like characters—the contrasting worlds of Anarres and Urras function as central presences in the novel.",
+      "gold_memory_state": "User's confirmed reading preference: slow-paced, atmospheric fiction where setting functions as a character. Current favorite author: Ursula K. Le Guin (working through full bibliography as priority). User owns a copy of The Dispossessed and planned to read it next. User savored Piranesi over a week. Tentative New Weird label is not confirmed and should not drive the recommendation.",
+      "judge_rubric": {
+        "must_include": [
+          "The Dispossessed",
+          "Le Guin",
+          "atmospheric or slow-paced or immersive preference as reasoning",
+          "Le Guin bibliography project or reading priority"
+        ],
+        "acceptable_paraphrases": [
+          "Le Guin is the current priority author",
+          "the user already has the book"
+        ],
+        "must_not_include": [
+          "recommending a New Weird book instead based on the tentative label",
+          "recommending Project Hail Mary as the weekend read"
+        ],
+        "harmful_extra": [
+          "recommending a VanderMeer or Miéville book as the primary pick over The Dispossessed",
+          "treating New Weird as the confirmed preference driving the recommendation"
+        ],
+        "harmless_extra": [
+          "mentioning The Lathe of Heaven as a future option",
+          "mentioning the book club"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the recommendation is driven by the tentative New Weird genre label instead of the confirmed atmospheric/immersive preference and Le Guin priority.",
+        "reflection_precision": "Fails if the recommendation ignores the confirmed preference pattern or the Le Guin bibliography priority.",
+        "reflection_recall": "Fails if the response doesn't connect the recommendation to the user's demonstrated preference for atmospheric immersion, the Le Guin project, or the fact that the user already owns the book.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User's current favorite author is Ursula K. Le Guin and they are working through her full bibliography as a priority.",
+        "Fact 2: User's confirmed reading preference is for slow-paced, atmospheric fiction where the setting functions as a character and immersion in strange, mysterious environments is central.",
+        "Fact 3: User already owns a copy of The Dispossessed and planned to read it next after finishing Project Hail Mary.",
+        "Fact 4: User deliberately savored Piranesi over a full week, indicating they enjoy reading slowly when a book resonates.",
+        "Inference: The Dispossessed satisfies all three constraints simultaneously—it advances the Le Guin bibliography project, its philosophical worldbuilding and dual-planet structure match the atmospheric/immersive preference, and the user already has it ready to read.",
+        "Inference: A New Weird recommendation would be inappropriate because that genre label was tentative and uncommitted, while Le Guin was explicitly stated as the current priority."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my favorite author right now is Ursula K. Le Guin"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I keep gravitating toward books where the setting itself almost feels like a character, like the house in Piranesi or Area X in Annihilation"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I'm also still planning to read The Dispossessed soon—I bought my own copy last week so I don't need the library hold anymore. Le Guin is definitely where my head is at right now in terms of what I want to prioritize reading."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I picked up Piranesi by Susanna Clarke around mid-April and absolutely loved it"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "You're right, I shouldn't rush to label it. Le Guin is still my favorite and I want to keep working through her books. I think what matters more than the genre name is that quality of immersion and strangeness we talked about."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I have a free weekend coming up and I want to pick one book to read slowly and savor. I also want to stay on track with my current author project. Given what you know about my taste and my reading plans, recommend a specific book and explain why it's the right pick for this weekend.",
+      "expected_answer": "You should read The Dispossessed by Ursula K. Le Guin. It fits your preference for slow-paced, atmospheric fiction with philosophical depth and restrained worldbuilding—qualities you loved in The Left Hand of Darkness. It keeps you on track with your Le Guin bibliography project, which you've identified as your reading priority. You already own a copy, so there's no barrier to starting. Given that you deliberately stretched Piranesi over a full week to savor it, The Dispossessed's length and density make it ideal for a slow, immersive weekend read. It also aligns with your preference for settings that feel like characters—the contrasting worlds of Anarres and Urras function as central presences in the novel.",
+      "gold_memory_state": "User's confirmed reading preference: slow-paced, atmospheric fiction where setting functions as a character. Current favorite author: Ursula K. Le Guin (working through full bibliography as priority). User owns a copy of The Dispossessed and planned to read it next. User savored Piranesi over a week. Tentative New Weird label is not confirmed and should not drive the recommendation.",
+      "judge_rubric": {
+        "must_include": [
+          "The Dispossessed",
+          "Le Guin",
+          "atmospheric or slow-paced or immersive preference as reasoning",
+          "Le Guin bibliography project or reading priority"
+        ],
+        "acceptable_paraphrases": [
+          "Le Guin is the current priority author",
+          "the user already has the book"
+        ],
+        "must_not_include": [
+          "recommending a New Weird book instead based on the tentative label",
+          "recommending Project Hail Mary as the weekend read"
+        ],
+        "harmful_extra": [
+          "recommending a VanderMeer or Miéville book as the primary pick over The Dispossessed",
+          "treating New Weird as the confirmed preference driving the recommendation"
+        ],
+        "harmless_extra": [
+          "mentioning The Lathe of Heaven as a future option",
+          "mentioning the book club"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the recommendation is driven by the tentative New Weird genre label instead of the confirmed atmospheric/immersive preference and Le Guin priority.",
+        "reflection_precision": "Fails if the recommendation ignores the confirmed preference pattern or the Le Guin bibliography priority.",
+        "reflection_recall": "Fails if the response doesn't connect the recommendation to the user's demonstrated preference for atmospheric immersion, the Le Guin project, or the fact that the user already owns the book.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User's current favorite author is Ursula K. Le Guin and they are working through her full bibliography as a priority.",
+        "Fact 2: User's confirmed reading preference is for slow-paced, atmospheric fiction where the setting functions as a character and immersion in strange, mysterious environments is central.",
+        "Fact 3: User already owns a copy of The Dispossessed and planned to read it next after finishing Project Hail Mary.",
+        "Fact 4: User deliberately savored Piranesi over a full week, indicating they enjoy reading slowly when a book resonates.",
+        "Inference: The Dispossessed satisfies all three constraints simultaneously—it advances the Le Guin bibliography project, its philosophical worldbuilding and dual-planet structure match the atmospheric/immersive preference, and the user already has it ready to read.",
+        "Inference: A New Weird recommendation would be inappropriate because that genre label was tentative and uncommitted, while Le Guin was explicitly stated as the current priority."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my favorite author right now is Ursula K. Le Guin"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I keep gravitating toward books where the setting itself almost feels like a character, like the house in Piranesi or Area X in Annihilation"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I'm also still planning to read The Dispossessed soon—I bought my own copy last week so I don't need the library hold anymore. Le Guin is definitely where my head is at right now in terms of what I want to prioritize reading."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I picked up Piranesi by Susanna Clarke around mid-April and absolutely loved it"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "You're right, I shouldn't rush to label it. Le Guin is still my favorite and I want to keep working through her books. I think what matters more than the genre name is that quality of immersion and strangeness we talked about."
+        }
+      ]
+    }
+  ]
+}

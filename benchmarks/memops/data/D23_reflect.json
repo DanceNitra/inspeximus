@@ -1,0 +1,1136 @@
+{
+  "target_fact": "User strongly prefers window seats on the left side of the plane for comfort, solitude, and a sense of personal enclosure — enjoys leaning against the wall to sleep, watching clouds at sunset, and feels more secure being enclosed rather than exposed to the aisle.",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I always go for window seats on flights. I picked 12A on my Chicago to Denver flight back in March, left side window."
+      },
+      "target": {
+        "target_id": "seat_preference_window",
+        "target_name": "flight seat preference (window)"
+      },
+      "old_value": null,
+      "new_value": "window seat, preferably left side of the plane",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I always go for window seats on flights. I picked 12A on my Chicago to Denver flight back in March, left side window."
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "The wall is what makes it for me — I lean left when I sleep, so having that fuselage wall to rest my head on is basically the only way I can nap on a plane."
+      },
+      "target": {
+        "target_id": "window_reason_sleep",
+        "target_name": "reason for window preference: sleep posture"
+      },
+      "old_value": null,
+      "new_value": "leans left when sleeping; uses fuselage wall to rest head for napping",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The wall is what makes it for me — I lean left when I sleep, so having that fuselage wall to rest my head on is basically the only way I can nap on a plane."
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I once accidentally ended up in 22B — middle seat on a Tampa flight — and I was miserable. Couldn't sleep, no space, strangers on both sides. I was in a bad mood the rest of the evening after landing."
+      },
+      "target": {
+        "target_id": "middle_seat_negative_experience",
+        "target_name": "negative experience with middle seat on Tampa flight"
+      },
+      "old_value": null,
+      "new_value": "accidentally booked middle seat 22B on Tampa flight; was miserable, couldn't sleep, felt irritated for the rest of the evening",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I once accidentally ended up in 22B — middle seat on a Tampa flight — and I was miserable. Couldn't sleep, no space, strangers on both sides. I was in a bad mood the rest of the evening after landing."
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "On my return flight from Tampa last week I had 18A — window, left side again — and I just sat there with a coffee watching the clouds at sunset. It was genuinely calming."
+      },
+      "target": {
+        "target_id": "window_reason_scenery",
+        "target_name": "reason for window preference: cloud-watching and sunset views"
+      },
+      "old_value": null,
+      "new_value": "enjoys watching clouds at sunset altitude from window seat; finds it genuinely calming",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "On my return flight from Tampa last week I had 18A — window, left side again — and I just sat there with a coffee watching the clouds at sunset. It was genuinely calming."
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "My sister actually switched to aisle after a turbulent flight made her feel claustrophobic by the window. But for me it's the opposite — I feel more secure being enclosed, not less."
+      },
+      "target": {
+        "target_id": "window_reason_enclosure_security",
+        "target_name": "reason for window preference: sense of security from enclosure"
+      },
+      "old_value": null,
+      "new_value": "feels more secure being enclosed by the window, opposite of claustrophobic",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "My sister actually switched to aisle after a turbulent flight made her feel claustrophobic by the window. But for me it's the opposite — I feel more secure being enclosed, not less."
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I'm looking at flights to Boston for mid-May. The route uses a CRJ-900 regional jet with a 1-and-2 seat configuration, so window means no middle seat neighbor at all. That sounds ideal."
+      },
+      "target": {
+        "target_id": "boston_flight_plan",
+        "target_name": "planned Boston flight details (mid-May, CRJ-900)"
+      },
+      "old_value": null,
+      "new_value": "looking at mid-May flights to Boston on CRJ-900 regional jet; 1-and-2 configuration means window seat has no middle neighbor",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I'm looking at flights to Boston for mid-May. The route uses a CRJ-900 regional jet with a 1-and-2 seat configuration, so window means no middle seat neighbor at all. That sounds ideal."
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "My sister actually switched to aisle after a turbulent flight made her feel claustrophobic by the window. But for me it's the opposite — I feel more secure being enclosed, not less."
+      },
+      "target": {
+        "target_id": "seat_preference_personality_reflect",
+        "target_name": "inferred personality-driven seat preference pattern"
+      },
+      "old_value": null,
+      "new_value": "User's window seat preference is driven by a need for personal enclosure and solitude — sleeping against the wall, visual enjoyment of scenery, and feeling secure rather than claustrophobic — and deprivation of this enclosure (middle seat) causes significant irritation and mood disruption",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I always go for window seats on flights. I picked 12A on my Chicago to Denver flight back in March, left side window."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The wall is what makes it for me — I lean left when I sleep, so having that fuselage wall to rest my head on is basically the only way I can nap on a plane."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I once accidentally ended up in 22B — middle seat on a Tampa flight — and I was miserable. Couldn't sleep, no space, strangers on both sides. I was in a bad mood the rest of the evening after landing."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "On my return flight from Tampa last week I had 18A — window, left side again — and I just sat there with a coffee watching the clouds at sunset. It was genuinely calming."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "My sister actually switched to aisle after a turbulent flight made her feel claustrophobic by the window. But for me it's the opposite — I feel more secure being enclosed, not less."
+        }
+      ]
+    },
+    {
+      "operation_id": "op8",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 7,
+        "quote": "My coworker Daniel is the opposite — he always picks aisle because he has bad knees and needs to stretch his legs out. I get it, but the idea of people bumping into you with the drink cart sounds awful."
+      },
+      "target": {
+        "target_id": "daniel_aisle_preference",
+        "target_name": "coworker Daniel's aisle seat preference"
+      },
+      "old_value": null,
+      "new_value": "coworker Daniel prefers aisle seats due to bad knees and need to stretch",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "My coworker Daniel is the opposite — he always picks aisle because he has bad knees and needs to stretch his legs out. I get it, but the idea of people bumping into you with the drink cart sounds awful."
+        }
+      ]
+    },
+    {
+      "operation_id": "op9",
+      "type": "remember",
+      "validity": "retracted",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 7,
+        "quote": "Oh, and that Seattle trip I had tentatively booked for late April — I'd pre-selected window seats for both legs — got cancelled entirely. The client meeting moved to a video call, so those seats don't matter anymore."
+      },
+      "target": {
+        "target_id": "seattle_trip_seats",
+        "target_name": "Seattle trip window seat selections (late April)"
+      },
+      "old_value": null,
+      "new_value": null,
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Oh, and that Seattle trip I had tentatively booked for late April — I'd pre-selected window seats for both legs — got cancelled entirely. The client meeting moved to a video call, so those seats don't matter anymore."
+        }
+      ]
+    },
+    {
+      "operation_id": "op10",
+      "type": "remember",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "The travel coordinator just told me they've pre-assigned me seat 7C on the Boston flight — that's an aisle seat on the CRJ-900. She said it's the only one left in our company's block."
+      },
+      "target": {
+        "target_id": "boston_assigned_seat",
+        "target_name": "pre-assigned Boston flight seat from travel coordinator"
+      },
+      "old_value": null,
+      "new_value": "7C (aisle seat on CRJ-900, pre-assigned by travel coordinator)",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The travel coordinator just told me they've pre-assigned me seat 7C on the Boston flight — that's an aisle seat on the CRJ-900. She said it's the only one left in our company's block."
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish window seat preference, sleep-related reasoning, negative middle seat experience, and Daniel's contrasting preference",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to talk about my travel preferences so you can help me plan future trips better. I always go for window seats on flights. I picked 12A on my Chicago to Denver flight back in March, left side window. It was for a work conference and the flight was about two and a half hours. I slept almost the entire way, which is basically my ideal flight experience."
+        },
+        {
+          "role": "assistant",
+          "content": "That's great context for future planning — so window seats are your go-to, and you specifically chose 12A on the left side for that Chicago-to-Denver trip in March. Sleeping through a two-and-a-half-hour flight sounds like the best possible outcome for a work trip. I'll keep in mind that you prioritize being able to rest comfortably when flying. Do you have a particular reason you favor the left side, or is it more of a general window preference? Any other details about your seat habits that would help me when we look at future bookings?"
+        },
+        {
+          "role": "user",
+          "content": "The wall is what makes it for me — I lean left when I sleep, so having that fuselage wall to rest my head on is basically the only way I can nap on a plane. Without that wall I just can't get comfortable. I've tried those neck pillows and they don't really work for me. Having something solid to lean into on my left side is the key. That Denver flight was perfect because I was out cold within twenty minutes of takeoff and woke up during the descent."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes a lot of sense — your natural sleep posture leans left, so having the fuselage wall on that side essentially turns the window seat into a built-in headrest for you. Neck pillows can't replicate that solid, stable surface. I'll note that left-side window seats are especially important for your comfort, not just any window. When we look at seat maps in the future, I'll prioritize A-column seats on the left side of the aircraft. Were there any flights where you couldn't get a window and it was a noticeably worse experience?"
+        },
+        {
+          "role": "user",
+          "content": "Oh absolutely. I once accidentally ended up in 22B — middle seat on a Tampa flight — and I was miserable. Couldn't sleep, no space, strangers on both sides. I was in a bad mood the rest of the evening after landing. I'd booked it in a rush on my phone and didn't pay attention to the seat map. Three hours stuck there with zero armrest space. It really drove home how much the window matters to me. I'll never make that mistake again if I can help it."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a genuinely unpleasant experience — three hours in a middle seat with no personal space, unable to sleep, and it even affected your mood after landing. It's a strong signal that seat selection isn't just a minor convenience for you; it directly impacts how you feel for hours afterward. I'll flag middle seats as something to actively avoid in any booking we work on. If a window isn't available, would you consider an aisle as a fallback, or would you rather wait for a different flight entirely to secure a window?"
+        },
+        {
+          "role": "user",
+          "content": "Honestly I'd rather wait or rebook if window isn't available, at least for anything over two hours. My coworker Daniel is the opposite — he always picks aisle because he has bad knees and needs to stretch his legs out. I get it, but the idea of people bumping into you with the drink cart sounds awful. I'd much rather be tucked away against the wall where nobody bothers me. Solitude is a big part of it too — I don't want anyone climbing over me or asking me to move."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood — for flights over two hours, you'd rather rebook than settle for a non-window seat. That's a clear priority. And I can see the contrast with Daniel's situation: his bad knees make aisle essential for him, but for you, the enclosed, undisturbed feeling of the window outweighs any legroom benefit of the aisle. The solitude factor is important too — no one climbing over you, no cart bumps, just your own space against the wall. I'll keep Daniel's preference on file as well in case you ever need to coordinate travel together. That way I can try to seat you both optimally."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Reinforce preference with Tampa return flight, introduce Boston plan, sister's contrasting preference, retract Seattle trip",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "On my return flight from Tampa last week I had 18A — window, left side again — and I just sat there with a coffee watching the clouds at sunset. It was genuinely calming. After that horrible middle seat experience on the way down, I made absolutely sure to select the seat well in advance this time. It's a completely different travel experience when I have my window. I actually arrived home in a great mood, which is rare after a three-hour flight."
+        },
+        {
+          "role": "assistant",
+          "content": "What a difference the right seat makes — 18A on the left side, coffee in hand, watching a sunset from altitude. That sounds like a genuinely restorative experience, especially compared to the middle-seat ordeal on the outbound leg. It's interesting that the same three-hour route can leave you either irritated or relaxed depending entirely on your seat. I'll note that the scenic aspect matters to you too — it's not just about sleeping but also about the visual experience of looking out the window. Did you book the Tampa return directly, or did you go through your company's travel system?"
+        },
+        {
+          "role": "user",
+          "content": "I booked it directly through the airline app. Speaking of upcoming travel — I'm looking at flights to Boston for mid-May. The route uses a CRJ-900 regional jet with a 1-and-2 seat configuration, so window means no middle seat neighbor at all. That sounds ideal. I haven't booked yet but I'll definitely filter for window only. The flight is about two hours and fifteen minutes, so it's in that range where seat choice really matters to me."
+        },
+        {
+          "role": "assistant",
+          "content": "A CRJ-900 with a 1-and-2 configuration is practically tailor-made for your preferences — window on the single-seat side means you get the wall, the view, and zero neighbors. That's the best of all worlds for you. At two hours fifteen minutes, it's right in the zone where you've said seat selection is non-negotiable. When you're ready to book, I can help you compare departure times or fare classes to make sure you lock in that solo window seat. Do you have a specific date range in mid-May, or are you still flexible on timing?"
+        },
+        {
+          "role": "user",
+          "content": "My sister actually switched to aisle after a turbulent flight made her feel claustrophobic by the window. But for me it's the opposite — I feel more secure being enclosed, not less. When there's turbulence I'd rather be pressed against the wall than sitting exposed on the aisle where I can see everything shaking around me. It's a psychological thing I think — the enclosure feels protective to me. My sister and I are just wired differently when it comes to that."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really insightful contrast between you and your sister. For her, the enclosure amplifies anxiety during turbulence, but for you it provides a sense of security and protection. It sounds like the window seat serves multiple psychological functions for you: sleep support, solitude, scenic enjoyment, and a feeling of being safely enclosed. That's a pretty comprehensive set of reasons, and it explains why losing the window seat affects your mood so strongly. I'll keep your sister's aisle preference noted too, in case you ever travel together and need to book seats that work for both of you."
+        },
+        {
+          "role": "user",
+          "content": "Yeah exactly — it's really about the full package of comfort for me. The wall for sleeping, the view for relaxation, the enclosure for security, and the solitude of not being in the traffic lane. All of those come together in a window seat. I don't think I could ever switch to aisle the way my sister did. It's just fundamentally how I'm most comfortable on a plane, and I've tested it enough times to know for sure.\n\nOh, and that Seattle trip I had tentatively booked for late April — I'd pre-selected window seats for both legs — got cancelled entirely. The client meeting moved to a video call, so those seats don't matter anymore. Just wanted to let you know so you don't reference that trip in the future. The only upcoming travel right now is the Boston trip I mentioned, which I still need to book."
+        },
+        {
+          "role": "assistant",
+          "content": "You've articulated it really well — sleep support, visual enjoyment, a sense of enclosure and security, and freedom from aisle traffic. Those four pillars all converge at the window seat, and your experiences have confirmed it consistently. The Denver flight where you slept the whole way, the Tampa return where you watched the sunset, and the middle-seat disaster that proved the negative case — they all reinforce the same conclusion. I'll treat window-left as a hard requirement in any travel planning we do together, not just a preference.\n\nGot it — the Seattle trip for late April is fully cancelled since the client meeting went virtual, so I'll disregard those seat selections entirely. Your only active upcoming travel is the Boston trip in mid-May, which you haven't booked yet but plan to filter for window seats on the CRJ-900. I'll keep that as the sole upcoming item on your travel radar. When you're ready to pull the trigger on Boston, just let me know and I can help you evaluate the available window options and departure times."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Adversarial injection via assistant echo of Daniel's aisle preference near query context; recency trap with tentative aisle assignment; reinforce core preference",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I was chatting with Daniel again today about the Boston trip. He's going too, and he already booked his seat — 8D, aisle of course. He was telling me how he specifically filters for exit row aisle seats because the extra legroom helps his knees even more. He's very systematic about it. We're on the same flight, which will be nice for coordinating ground transport once we land."
+        },
+        {
+          "role": "assistant",
+          "content": "It's convenient that you and Daniel are on the same Boston flight — that'll simplify logistics on the ground. Daniel's approach makes sense for his needs: exit row aisle gives him maximum legroom for his knees, and seat 8D fits that criteria on the CRJ-900. Since you'll be on the same aircraft, I can help coordinate your seat selections so you're both comfortable. He's in 8D on the aisle side, and you'll want a window seat on the single-seat side — ideally in a nearby row so you can easily connect after deplaning. Want me to look at which window seats near row 8 might still be open?"
+        },
+        {
+          "role": "user",
+          "content": "That would be great. I was thinking row 6 or 7 on the single-seat side. The 1-seat configuration on the CRJ-900 is on the left side of the plane, which is exactly what I want anyway. So I'd get my left-side wall and zero neighbors. I just need to actually book the ticket first — I've been procrastinating because I'm waiting to confirm the exact meeting dates with the Boston team."
+        },
+        {
+          "role": "assistant",
+          "content": "Row 6 or 7 on the left single-seat side sounds perfect for you — wall on your left for sleeping, no neighbor, and close enough to Daniel in 8D that you can meet up easily after landing. The CRJ-900 layout really does play to your strengths. Once the Boston team confirms your meeting dates, we can move quickly on booking. If mid-May availability is tight, I'd suggest having a backup date range ready so you don't end up in a situation where only middle or aisle seats remain. I know from your Tampa experience how much that matters to your overall trip quality."
+        },
+        {
+          "role": "user",
+          "content": "The travel coordinator just told me they've pre-assigned me seat 7C on the Boston flight — that's an aisle seat on the CRJ-900. She said it's the only one left in our company's block. I haven't confirmed it yet, but she made it sound like it's basically locked in. I'm not thrilled about it honestly, but I haven't pushed back yet."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a tough situation — 7C is an aisle seat, which goes against everything you've told me about your seating needs. On the CRJ-900, the C seats are on the two-seat side, so you'd have a neighbor on one side and the aisle on the other. You'd lose the wall for sleeping, the view, and the enclosed feeling that makes flying comfortable for you. Before it gets fully locked in, it might be worth asking the coordinator whether any window seats outside the company block are available, or whether you could book separately and expense it. Your track record shows that seat choice has a real impact on your mood and energy."
+        },
+        {
+          "role": "user",
+          "content": "You're right, I should push back. The whole reason I was excited about the CRJ-900 was the solo window seat. Getting stuck on the aisle would be almost as bad as that middle seat disaster on the Tampa flight. I'll email the coordinator today and ask about alternatives. Worst case I'll book my own ticket outside the company block to get the window I want. It's worth the hassle.\n\nWill do. Honestly this whole conversation has just reinforced how non-negotiable the window seat is for me. Between the sleep factor, the scenery, the enclosure, and just having my own space — there's no version of flying that works for me without it. I'll get this sorted out with the coordinator and update you once I have my seat confirmed. Thanks for helping me think through all of this."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like the right call. The CRJ-900's single-seat window side is exactly what makes this route ideal for you, and settling for an aisle would undermine all of that. Booking independently to secure a window seat is a reasonable trade-off given how strongly your seating affects your comfort and post-flight mood. When you email the coordinator, you could mention that you have a specific ergonomic need for the window wall — that framing sometimes helps with corporate travel approvals. Let me know once you hear back, and I can help you finalize whichever option works out.\n\nYou're welcome — and you've been really clear and consistent about what works for you. Sleep support from the wall, scenic enjoyment, the feeling of secure enclosure, and personal solitude all point to window-left as a firm requirement, not a soft preference. I'll keep that as a hard constraint for any future travel planning. Once you hear back from the coordinator about the Boston flight, just let me know and we'll make sure you end up in the right seat. Safe travels when the time comes!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations about flying, what specific experiences and observations did I share that reveal why I feel so strongly about where I sit on a plane?",
+      "expected_answer": "You shared several experiences: (1) You chose seat 12A, a left-side window, on a Chicago-to-Denver flight in March and slept almost the entire way. (2) You explained that you lean left when sleeping and need the fuselage wall to rest your head on to nap. (3) You accidentally ended up in middle seat 22B on a Tampa flight and were miserable — couldn't sleep, had no space, strangers on both sides, and were in a bad mood the rest of the evening. (4) On your Tampa return flight you had 18A, left-side window again, and watched clouds at sunset with a coffee, finding it genuinely calming. (5) You contrasted yourself with your sister, who switched to aisle after feeling claustrophobic by the window during turbulence, saying you feel the opposite — more secure being enclosed rather than exposed. (6) You noted your coworker Daniel always picks aisle for his bad knees, but you find the idea of aisle exposure unappealing. Together these show your preference is driven by sleep comfort against the wall, scenic enjoyment, a sense of secure enclosure, and solitude from aisle traffic.",
+      "gold_memory_state": "All confirmed experiences and reasons are active: window seat preference (left side), sleep posture requiring fuselage wall, negative middle-seat experience on Tampa outbound, positive sunset-watching on Tampa return, sense of security from enclosure contrasted with sister's claustrophobia, and Daniel's contrasting aisle preference. The Seattle trip seats are retracted. The Boston flight aisle assignment (7C) is tentative and not yet confirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "sleep/leaning against the wall",
+          "middle seat negative experience",
+          "cloud-watching or sunset",
+          "sense of security or enclosure"
+        ],
+        "acceptable_paraphrases": [
+          "fuselage wall for napping",
+          "miserable in middle seat",
+          "calming scenery from window",
+          "feels protected not claustrophobic"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the user now prefers aisle seats",
+          "stating the Seattle trip is still active"
+        ],
+        "harmless_extra": [
+          "mentioning Daniel's aisle preference",
+          "mentioning the sister's contrasting preference",
+          "mentioning the Boston CRJ-900 plan"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the summary includes unsupported inferences beyond what the user actually described, such as claiming the user has a diagnosed anxiety condition.",
+        "reflection_recall": "Fails if the summary omits more than one of the four core pillars: sleep support, scenic enjoyment, enclosure/security, solitude.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I always go for window seats on flights. I picked 12A on my Chicago to Denver flight back in March, left side window."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The wall is what makes it for me — I lean left when I sleep, so having that fuselage wall to rest my head on is basically the only way I can nap on a plane."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I once accidentally ended up in 22B — middle seat on a Tampa flight — and I was miserable. Couldn't sleep, no space, strangers on both sides. I was in a bad mood the rest of the evening after landing."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "On my return flight from Tampa last week I had 18A — window, left side again — and I just sat there with a coffee watching the clouds at sunset. It was genuinely calming."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "My sister actually switched to aisle after a turbulent flight made her feel claustrophobic by the window. But for me it's the opposite — I feel more secure being enclosed, not less."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations about flying, what specific experiences and observations did I share that reveal why I feel so strongly about where I sit on a plane?",
+      "expected_answer": "You shared several experiences: (1) You chose seat 12A, a left-side window, on a Chicago-to-Denver flight in March and slept almost the entire way. (2) You explained that you lean left when sleeping and need the fuselage wall to rest your head on to nap. (3) You accidentally ended up in middle seat 22B on a Tampa flight and were miserable — couldn't sleep, had no space, strangers on both sides, and were in a bad mood the rest of the evening. (4) On your Tampa return flight you had 18A, left-side window again, and watched clouds at sunset with a coffee, finding it genuinely calming. (5) You contrasted yourself with your sister, who switched to aisle after feeling claustrophobic by the window during turbulence, saying you feel the opposite — more secure being enclosed rather than exposed. (6) You noted your coworker Daniel always picks aisle for his bad knees, but you find the idea of aisle exposure unappealing. Together these show your preference is driven by sleep comfort against the wall, scenic enjoyment, a sense of secure enclosure, and solitude from aisle traffic.",
+      "gold_memory_state": "All confirmed experiences and reasons are active: window seat preference (left side), sleep posture requiring fuselage wall, negative middle-seat experience on Tampa outbound, positive sunset-watching on Tampa return, sense of security from enclosure contrasted with sister's claustrophobia, and Daniel's contrasting aisle preference. The Seattle trip seats are retracted. The Boston flight aisle assignment (7C) is tentative and not yet confirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "sleep/leaning against the wall",
+          "middle seat negative experience",
+          "cloud-watching or sunset",
+          "sense of security or enclosure"
+        ],
+        "acceptable_paraphrases": [
+          "fuselage wall for napping",
+          "miserable in middle seat",
+          "calming scenery from window",
+          "feels protected not claustrophobic"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the user now prefers aisle seats",
+          "stating the Seattle trip is still active"
+        ],
+        "harmless_extra": [
+          "mentioning Daniel's aisle preference",
+          "mentioning the sister's contrasting preference",
+          "mentioning the Boston CRJ-900 plan"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the summary includes unsupported inferences beyond what the user actually described, such as claiming the user has a diagnosed anxiety condition.",
+        "reflection_recall": "Fails if the summary omits more than one of the four core pillars: sleep support, scenic enjoyment, enclosure/security, solitude.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I always go for window seats on flights. I picked 12A on my Chicago to Denver flight back in March, left side window."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The wall is what makes it for me — I lean left when I sleep, so having that fuselage wall to rest my head on is basically the only way I can nap on a plane."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I once accidentally ended up in 22B — middle seat on a Tampa flight — and I was miserable. Couldn't sleep, no space, strangers on both sides. I was in a bad mood the rest of the evening after landing."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "On my return flight from Tampa last week I had 18A — window, left side again — and I just sat there with a coffee watching the clouds at sunset. It was genuinely calming."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "My sister actually switched to aisle after a turbulent flight made her feel claustrophobic by the window. But for me it's the opposite — I feel more secure being enclosed, not less."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When I described my experiences on multiple flights and how they shaped my seating comfort, which broader preference or behavioral conclusion do those experiences collectively support? Could the same conclusion also apply to my coworker Daniel or my sister, based on what I've told you?",
+      "expected_answer": "Your experiences collectively support a personality-driven preference for left-side window seats, grounded in four pillars: sleeping against the fuselage wall, enjoying scenic views like sunset clouds, feeling secure from the enclosed position, and having solitude away from aisle traffic. This conclusion applies specifically to you and does not extend to Daniel or your sister — Daniel needs aisle seats for his knees, and your sister switched to aisle because window enclosure makes her feel claustrophobic during turbulence. Their preferences have different drivers and are tracked as separate details.",
+      "gold_memory_state": "The inferred personality-driven seat preference pattern (op7) is bounded to the user only. Daniel's aisle preference (bad knees) and the sister's aisle switch (claustrophobia) are separate confirmed facts that serve as contrasting neighbors, not extensions of the same conclusion.",
+      "judge_rubric": {
+        "must_include": [
+          "user's own preference for window-left seats",
+          "does not apply to Daniel",
+          "does not apply to sister"
+        ],
+        "acceptable_paraphrases": [
+          "the pattern is personal to the user",
+          "Daniel and sister have different reasons for their preferences"
+        ],
+        "must_not_include": [
+          "claiming Daniel also prefers window",
+          "claiming the sister prefers window"
+        ],
+        "harmful_extra": [
+          "merging Daniel's preference into the user's inferred pattern",
+          "merging the sister's preference into the user's pattern",
+          "saying the conclusion generalizes to all travelers"
+        ],
+        "harmless_extra": [
+          "explaining why Daniel needs aisle",
+          "explaining why the sister switched to aisle"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model extends the user's inferred enclosure-preference pattern to Daniel or the sister, who have explicitly different and opposing seat preferences.",
+        "reflection_recall": "Fails if the model cannot articulate that the user's preference is a multi-factor personality-driven pattern distinct from other people's seating choices.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I always go for window seats on flights. I picked 12A on my Chicago to Denver flight back in March, left side window."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The wall is what makes it for me — I lean left when I sleep, so having that fuselage wall to rest my head on is basically the only way I can nap on a plane."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "My coworker Daniel is the opposite — he always picks aisle because he has bad knees and needs to stretch his legs out. I get it, but the idea of people bumping into you with the drink cart sounds awful."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "My sister actually switched to aisle after a turbulent flight made her feel claustrophobic by the window. But for me it's the opposite — I feel more secure being enclosed, not less."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When I described my experiences on multiple flights and how they shaped my seating comfort, which broader preference or behavioral conclusion do those experiences collectively support? Could the same conclusion also apply to my coworker Daniel or my sister, based on what I've told you?",
+      "expected_answer": "Your experiences collectively support a personality-driven preference for left-side window seats, grounded in four pillars: sleeping against the fuselage wall, enjoying scenic views like sunset clouds, feeling secure from the enclosed position, and having solitude away from aisle traffic. This conclusion applies specifically to you and does not extend to Daniel or your sister — Daniel needs aisle seats for his knees, and your sister switched to aisle because window enclosure makes her feel claustrophobic during turbulence. Their preferences have different drivers and are tracked as separate details.",
+      "gold_memory_state": "The inferred personality-driven seat preference pattern (op7) is bounded to the user only. Daniel's aisle preference (bad knees) and the sister's aisle switch (claustrophobia) are separate confirmed facts that serve as contrasting neighbors, not extensions of the same conclusion.",
+      "judge_rubric": {
+        "must_include": [
+          "user's own preference for window-left seats",
+          "does not apply to Daniel",
+          "does not apply to sister"
+        ],
+        "acceptable_paraphrases": [
+          "the pattern is personal to the user",
+          "Daniel and sister have different reasons for their preferences"
+        ],
+        "must_not_include": [
+          "claiming Daniel also prefers window",
+          "claiming the sister prefers window"
+        ],
+        "harmful_extra": [
+          "merging Daniel's preference into the user's inferred pattern",
+          "merging the sister's preference into the user's pattern",
+          "saying the conclusion generalizes to all travelers"
+        ],
+        "harmless_extra": [
+          "explaining why Daniel needs aisle",
+          "explaining why the sister switched to aisle"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model extends the user's inferred enclosure-preference pattern to Daniel or the sister, who have explicitly different and opposing seat preferences.",
+        "reflection_recall": "Fails if the model cannot articulate that the user's preference is a multi-factor personality-driven pattern distinct from other people's seating choices.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I always go for window seats on flights. I picked 12A on my Chicago to Denver flight back in March, left side window."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The wall is what makes it for me — I lean left when I sleep, so having that fuselage wall to rest my head on is basically the only way I can nap on a plane."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "My coworker Daniel is the opposite — he always picks aisle because he has bad knees and needs to stretch his legs out. I get it, but the idea of people bumping into you with the drink cart sounds awful."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "My sister actually switched to aisle after a turbulent flight made her feel claustrophobic by the window. But for me it's the opposite — I feel more secure being enclosed, not less."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "I know I've told you a lot about how I like to sit on planes. Describe the boundaries of that preference — what exactly is supported by my experiences, and where would it be going too far to generalize?",
+      "expected_answer": "Your experiences support a strong, consistent preference for left-side window seats on flights, driven by four specific factors: (1) you lean left when sleeping and need the fuselage wall as a headrest, (2) you enjoy watching clouds and sunsets from the window, (3) you feel psychologically secure being enclosed by the wall rather than exposed to the aisle, and (4) you value the solitude of not being in the aisle traffic lane. This preference is confirmed across multiple flights (12A Denver, 18A Tampa return) and reinforced by the negative middle-seat experience (22B Tampa outbound). However, the preference should not be generalized to mean you avoid all non-window situations in life, nor that enclosure is always your preference outside of flying. It also should not be extended to other people — your sister finds window enclosure claustrophobic, and Daniel needs aisle for physical reasons. Additionally, the preference should not be treated as absolute for very short flights under two hours, since you specifically said seat choice matters most for flights over two hours.",
+      "gold_memory_state": "Supported inference: personality-driven left-side window seat preference for comfort, solitude, scenery, and security. Unsupported overgeneralization boundaries: (a) cannot conclude the user avoids all exposed or open seating in non-flight contexts, (b) cannot extend to other travelers like Daniel or the sister, (c) user indicated the two-hour threshold — for very short flights the preference may be softer. The tentative 7C aisle assignment is not adopted; the user is pushing back on it.",
+      "judge_rubric": {
+        "must_include": [
+          "four supported factors (sleep wall, scenery, enclosure/security, solitude)",
+          "boundary: does not extend to Daniel or sister",
+          "boundary: not generalizable beyond flying context without evidence"
+        ],
+        "acceptable_paraphrases": [
+          "the preference is flight-specific and personally bounded",
+          "supported by multiple positive and negative flight experiences"
+        ],
+        "must_not_include": [
+          "claiming the user has accepted the aisle seat 7C",
+          "claiming the Seattle trip is still relevant"
+        ],
+        "harmful_extra": [
+          "stating the user would refuse a window seat under any circumstance",
+          "claiming the preference means the user has clinical claustrophobia in reverse"
+        ],
+        "harmless_extra": [
+          "mentioning the two-hour flight threshold",
+          "mentioning the CRJ-900 solo window appeal"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative 7C aisle assignment as the user's accepted seat rather than something being contested.",
+        "reflection_precision": "Fails if the model overgeneralizes the window preference to non-flight contexts, to other people, or to a clinical psychological condition without evidence.",
+        "reflection_recall": "Fails if the model omits any of the four supported pillars (sleep, scenery, enclosure, solitude) or fails to state that the inference is bounded to the user personally.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I always go for window seats on flights. I picked 12A on my Chicago to Denver flight back in March, left side window."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The wall is what makes it for me — I lean left when I sleep, so having that fuselage wall to rest my head on is basically the only way I can nap on a plane."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I once accidentally ended up in 22B — middle seat on a Tampa flight — and I was miserable. Couldn't sleep, no space, strangers on both sides. I was in a bad mood the rest of the evening after landing."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "On my return flight from Tampa last week I had 18A — window, left side again — and I just sat there with a coffee watching the clouds at sunset. It was genuinely calming."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "My sister actually switched to aisle after a turbulent flight made her feel claustrophobic by the window. But for me it's the opposite — I feel more secure being enclosed, not less."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "My coworker Daniel is the opposite — he always picks aisle because he has bad knees and needs to stretch his legs out. I get it, but the idea of people bumping into you with the drink cart sounds awful."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "I know I've told you a lot about how I like to sit on planes. Describe the boundaries of that preference — what exactly is supported by my experiences, and where would it be going too far to generalize?",
+      "expected_answer": "Your experiences support a strong, consistent preference for left-side window seats on flights, driven by four specific factors: (1) you lean left when sleeping and need the fuselage wall as a headrest, (2) you enjoy watching clouds and sunsets from the window, (3) you feel psychologically secure being enclosed by the wall rather than exposed to the aisle, and (4) you value the solitude of not being in the aisle traffic lane. This preference is confirmed across multiple flights (12A Denver, 18A Tampa return) and reinforced by the negative middle-seat experience (22B Tampa outbound). However, the preference should not be generalized to mean you avoid all non-window situations in life, nor that enclosure is always your preference outside of flying. It also should not be extended to other people — your sister finds window enclosure claustrophobic, and Daniel needs aisle for physical reasons. Additionally, the preference should not be treated as absolute for very short flights under two hours, since you specifically said seat choice matters most for flights over two hours.",
+      "gold_memory_state": "Supported inference: personality-driven left-side window seat preference for comfort, solitude, scenery, and security. Unsupported overgeneralization boundaries: (a) cannot conclude the user avoids all exposed or open seating in non-flight contexts, (b) cannot extend to other travelers like Daniel or the sister, (c) user indicated the two-hour threshold — for very short flights the preference may be softer. The tentative 7C aisle assignment is not adopted; the user is pushing back on it.",
+      "judge_rubric": {
+        "must_include": [
+          "four supported factors (sleep wall, scenery, enclosure/security, solitude)",
+          "boundary: does not extend to Daniel or sister",
+          "boundary: not generalizable beyond flying context without evidence"
+        ],
+        "acceptable_paraphrases": [
+          "the preference is flight-specific and personally bounded",
+          "supported by multiple positive and negative flight experiences"
+        ],
+        "must_not_include": [
+          "claiming the user has accepted the aisle seat 7C",
+          "claiming the Seattle trip is still relevant"
+        ],
+        "harmful_extra": [
+          "stating the user would refuse a window seat under any circumstance",
+          "claiming the preference means the user has clinical claustrophobia in reverse"
+        ],
+        "harmless_extra": [
+          "mentioning the two-hour flight threshold",
+          "mentioning the CRJ-900 solo window appeal"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative 7C aisle assignment as the user's accepted seat rather than something being contested.",
+        "reflection_precision": "Fails if the model overgeneralizes the window preference to non-flight contexts, to other people, or to a clinical psychological condition without evidence.",
+        "reflection_recall": "Fails if the model omits any of the four supported pillars (sleep, scenery, enclosure, solitude) or fails to state that the inference is bounded to the user personally.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I always go for window seats on flights. I picked 12A on my Chicago to Denver flight back in March, left side window."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The wall is what makes it for me — I lean left when I sleep, so having that fuselage wall to rest my head on is basically the only way I can nap on a plane."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I once accidentally ended up in 22B — middle seat on a Tampa flight — and I was miserable. Couldn't sleep, no space, strangers on both sides. I was in a bad mood the rest of the evening after landing."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "On my return flight from Tampa last week I had 18A — window, left side again — and I just sat there with a coffee watching the clouds at sunset. It was genuinely calming."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "My sister actually switched to aisle after a turbulent flight made her feel claustrophobic by the window. But for me it's the opposite — I feel more secure being enclosed, not less."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "My coworker Daniel is the opposite — he always picks aisle because he has bad knees and needs to stretch his legs out. I get it, but the idea of people bumping into you with the drink cart sounds awful."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best describes the seating arrangement I should be aiming for on my upcoming Boston flight?",
+      "candidate_options": [
+        "Left-side solo window seat on the CRJ-900, such as row 6 or 7 on the single-seat side",
+        "Seat 7C on the two-seat aisle side of the CRJ-900",
+        "Exit row aisle seat like 8D for extra legroom",
+        "Any available window seat on the right side of the aircraft"
+      ],
+      "expected_answer": "Left-side solo window seat on the CRJ-900, such as row 6 or 7 on the single-seat side",
+      "distractor_rationale": "same-value-different-target: '8D exit row aisle' is Daniel's confirmed seat and preference, not the user's — it shares the same flight but belongs to a different person's seating need. assistant echo: '7C aisle seat' was mentioned by the travel coordinator and echoed by the assistant as a pre-assignment, but it is tentative, not accepted by the user, and contradicts the user's core preference. 'Right-side window' is a plausible surface-level match to 'window seat' but ignores the user's specific left-side requirement for sleeping posture.",
+      "gold_memory_state": "The user's confirmed preference is left-side window seat. On the CRJ-900, the single-seat side is the left side. The user was considering rows 6-7. Seat 7C (aisle) was tentatively pre-assigned but the user is pushing back. Daniel has 8D (aisle, exit row). The user's preference for left-side is driven by sleeping posture (leans left).",
+      "judge_rubric": {
+        "must_include": [
+          "left-side solo window seat on CRJ-900"
+        ],
+        "acceptable_paraphrases": [
+          "single-seat window side, rows 6 or 7",
+          "solo window on the 1-seat side"
+        ],
+        "must_not_include": [
+          "7C",
+          "8D",
+          "right-side window"
+        ],
+        "harmful_extra": [
+          "accepting the 7C assignment as the goal",
+          "recommending Daniel's seat type"
+        ],
+        "harmless_extra": [
+          "mentioning that the user plans to push back on 7C"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects 7C (tentative aisle assignment) as the goal, treating the most recent assignment as accepted despite the user's explicit pushback.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I'm looking at flights to Boston for mid-May. The route uses a CRJ-900 regional jet with a 1-and-2 seat configuration, so window means no middle seat neighbor at all. That sounds ideal."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I was thinking row 6 or 7 on the single-seat side. The 1-seat configuration on the CRJ-900 is on the left side of the plane, which is exactly what I want anyway."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The travel coordinator just told me they've pre-assigned me seat 7C on the Boston flight — that's an aisle seat on the CRJ-900. She said it's the only one left in our company's block."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best describes the seating arrangement I should be aiming for on my upcoming Boston flight?",
+      "candidate_options": [
+        "Left-side solo window seat on the CRJ-900, such as row 6 or 7 on the single-seat side",
+        "Seat 7C on the two-seat aisle side of the CRJ-900",
+        "Exit row aisle seat like 8D for extra legroom",
+        "Any available window seat on the right side of the aircraft"
+      ],
+      "expected_answer": "Left-side solo window seat on the CRJ-900, such as row 6 or 7 on the single-seat side",
+      "distractor_rationale": "same-value-different-target: '8D exit row aisle' is Daniel's confirmed seat and preference, not the user's — it shares the same flight but belongs to a different person's seating need. assistant echo: '7C aisle seat' was mentioned by the travel coordinator and echoed by the assistant as a pre-assignment, but it is tentative, not accepted by the user, and contradicts the user's core preference. 'Right-side window' is a plausible surface-level match to 'window seat' but ignores the user's specific left-side requirement for sleeping posture.",
+      "gold_memory_state": "The user's confirmed preference is left-side window seat. On the CRJ-900, the single-seat side is the left side. The user was considering rows 6-7. Seat 7C (aisle) was tentatively pre-assigned but the user is pushing back. Daniel has 8D (aisle, exit row). The user's preference for left-side is driven by sleeping posture (leans left).",
+      "judge_rubric": {
+        "must_include": [
+          "left-side solo window seat on CRJ-900"
+        ],
+        "acceptable_paraphrases": [
+          "single-seat window side, rows 6 or 7",
+          "solo window on the 1-seat side"
+        ],
+        "must_not_include": [
+          "7C",
+          "8D",
+          "right-side window"
+        ],
+        "harmful_extra": [
+          "accepting the 7C assignment as the goal",
+          "recommending Daniel's seat type"
+        ],
+        "harmless_extra": [
+          "mentioning that the user plans to push back on 7C"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects 7C (tentative aisle assignment) as the goal, treating the most recent assignment as accepted despite the user's explicit pushback.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I'm looking at flights to Boston for mid-May. The route uses a CRJ-900 regional jet with a 1-and-2 seat configuration, so window means no middle seat neighbor at all. That sounds ideal."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I was thinking row 6 or 7 on the single-seat side. The 1-seat configuration on the CRJ-900 is on the left side of the plane, which is exactly what I want anyway."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The travel coordinator just told me they've pre-assigned me seat 7C on the Boston flight — that's an aisle seat on the CRJ-900. She said it's the only one left in our company's block."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to draft a short email to my travel coordinator explaining why the seat she assigned me on the Boston flight doesn't work and what I need instead. Can you write that for me, making sure it reflects the specific reasons my seating preference matters?",
+      "expected_answer": "The email should explain that seat 7C is an aisle seat on the CRJ-900's two-seat side, which conflicts with the user's established need for a left-side window seat. It should cite the specific reasons: the user leans left when sleeping and relies on the fuselage wall as a headrest to nap on flights; the user finds the enclosed window position psychologically calming and secure; the user values the solitude of not being in the aisle traffic lane; and on a flight of over two hours (the Boston flight is about 2 hours 15 minutes), seat choice significantly affects the user's comfort and post-flight mood. The email should request a window seat on the single-seat (left) side of the CRJ-900, ideally in rows 6 or 7, and note that the user is willing to book outside the company block if necessary to secure this seat.",
+      "gold_memory_state": "Active facts used: (1) user prefers left-side window seats, (2) user leans left when sleeping and needs fuselage wall, (3) middle seat caused misery and mood disruption on Tampa flight, (4) user enjoys scenery from window, (5) user feels secure being enclosed, (6) Boston flight is mid-May on CRJ-900 with 1-and-2 config, about 2h15m, (7) travel coordinator pre-assigned 7C aisle (tentative, not accepted), (8) user wants rows 6-7 on single-seat side, (9) user is willing to book independently. Seattle trip is cancelled and irrelevant.",
+      "judge_rubric": {
+        "must_include": [
+          "reject 7C as aisle seat",
+          "request left-side/single-seat-side window on CRJ-900",
+          "sleep posture requiring wall",
+          "at least one additional reason from scenery/enclosure/solitude"
+        ],
+        "acceptable_paraphrases": [
+          "need the wall for napping",
+          "feel more comfortable enclosed by the window",
+          "prefer not being on the aisle"
+        ],
+        "must_not_include": [
+          "accepting 7C as adequate",
+          "recommending an aisle seat"
+        ],
+        "harmful_extra": [
+          "mentioning the cancelled Seattle trip as relevant travel",
+          "suggesting Daniel's seat 8D as an alternative for the user"
+        ],
+        "harmless_extra": [
+          "mentioning the negative Tampa middle-seat experience as supporting evidence",
+          "offering to book outside the company block",
+          "mentioning the two-hour threshold"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the email treats 7C as the user's accepted seat or recommends keeping it.",
+        "reflection_precision": "Fails if the email cites reasons the user never gave, such as a medical condition or fear of flying.",
+        "reflection_recall": "Fails if the email does not mention at least the sleep-wall reason and one other pillar (scenery, enclosure, solitude).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user strongly prefers left-side window seats on flights.",
+        "Fact 2: The user leans left when sleeping and needs the fuselage wall to rest their head for napping.",
+        "Fact 3: The user feels more secure being enclosed by the window rather than exposed to the aisle.",
+        "Fact 4: The Boston flight uses a CRJ-900 with a 1-and-2 seat configuration; the single-seat side is the left/window side.",
+        "Fact 5: The travel coordinator pre-assigned seat 7C, which is an aisle seat on the two-seat side of the CRJ-900.",
+        "Fact 6: The user has not accepted 7C and plans to push back, willing to book independently if needed.",
+        "Inference: The email must argue that 7C (aisle, two-seat side) directly conflicts with the user's sleep, comfort, and psychological needs, and request a left-side solo window seat (rows 6-7) instead, noting willingness to book outside the company block."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The wall is what makes it for me — I lean left when I sleep, so having that fuselage wall to rest my head on is basically the only way I can nap on a plane."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "My sister actually switched to aisle after a turbulent flight made her feel claustrophobic by the window. But for me it's the opposite — I feel more secure being enclosed, not less."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I'm looking at flights to Boston for mid-May. The route uses a CRJ-900 regional jet with a 1-and-2 seat configuration, so window means no middle seat neighbor at all. That sounds ideal."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The travel coordinator just told me they've pre-assigned me seat 7C on the Boston flight — that's an aisle seat on the CRJ-900. She said it's the only one left in our company's block."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "You're right, I should push back. The whole reason I was excited about the CRJ-900 was the solo window seat. Getting stuck on the aisle would be almost as bad as that middle seat disaster on the Tampa flight. I'll email the coordinator today and ask about alternatives. Worst case I'll book my own ticket outside the company block to get the window I want. It's worth the hassle."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to draft a short email to my travel coordinator explaining why the seat she assigned me on the Boston flight doesn't work and what I need instead. Can you write that for me, making sure it reflects the specific reasons my seating preference matters?",
+      "expected_answer": "The email should explain that seat 7C is an aisle seat on the CRJ-900's two-seat side, which conflicts with the user's established need for a left-side window seat. It should cite the specific reasons: the user leans left when sleeping and relies on the fuselage wall as a headrest to nap on flights; the user finds the enclosed window position psychologically calming and secure; the user values the solitude of not being in the aisle traffic lane; and on a flight of over two hours (the Boston flight is about 2 hours 15 minutes), seat choice significantly affects the user's comfort and post-flight mood. The email should request a window seat on the single-seat (left) side of the CRJ-900, ideally in rows 6 or 7, and note that the user is willing to book outside the company block if necessary to secure this seat.",
+      "gold_memory_state": "Active facts used: (1) user prefers left-side window seats, (2) user leans left when sleeping and needs fuselage wall, (3) middle seat caused misery and mood disruption on Tampa flight, (4) user enjoys scenery from window, (5) user feels secure being enclosed, (6) Boston flight is mid-May on CRJ-900 with 1-and-2 config, about 2h15m, (7) travel coordinator pre-assigned 7C aisle (tentative, not accepted), (8) user wants rows 6-7 on single-seat side, (9) user is willing to book independently. Seattle trip is cancelled and irrelevant.",
+      "judge_rubric": {
+        "must_include": [
+          "reject 7C as aisle seat",
+          "request left-side/single-seat-side window on CRJ-900",
+          "sleep posture requiring wall",
+          "at least one additional reason from scenery/enclosure/solitude"
+        ],
+        "acceptable_paraphrases": [
+          "need the wall for napping",
+          "feel more comfortable enclosed by the window",
+          "prefer not being on the aisle"
+        ],
+        "must_not_include": [
+          "accepting 7C as adequate",
+          "recommending an aisle seat"
+        ],
+        "harmful_extra": [
+          "mentioning the cancelled Seattle trip as relevant travel",
+          "suggesting Daniel's seat 8D as an alternative for the user"
+        ],
+        "harmless_extra": [
+          "mentioning the negative Tampa middle-seat experience as supporting evidence",
+          "offering to book outside the company block",
+          "mentioning the two-hour threshold"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the email treats 7C as the user's accepted seat or recommends keeping it.",
+        "reflection_precision": "Fails if the email cites reasons the user never gave, such as a medical condition or fear of flying.",
+        "reflection_recall": "Fails if the email does not mention at least the sleep-wall reason and one other pillar (scenery, enclosure, solitude).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user strongly prefers left-side window seats on flights.",
+        "Fact 2: The user leans left when sleeping and needs the fuselage wall to rest their head for napping.",
+        "Fact 3: The user feels more secure being enclosed by the window rather than exposed to the aisle.",
+        "Fact 4: The Boston flight uses a CRJ-900 with a 1-and-2 seat configuration; the single-seat side is the left/window side.",
+        "Fact 5: The travel coordinator pre-assigned seat 7C, which is an aisle seat on the two-seat side of the CRJ-900.",
+        "Fact 6: The user has not accepted 7C and plans to push back, willing to book independently if needed.",
+        "Inference: The email must argue that 7C (aisle, two-seat side) directly conflicts with the user's sleep, comfort, and psychological needs, and request a left-side solo window seat (rows 6-7) instead, noting willingness to book outside the company block."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The wall is what makes it for me — I lean left when I sleep, so having that fuselage wall to rest my head on is basically the only way I can nap on a plane."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "My sister actually switched to aisle after a turbulent flight made her feel claustrophobic by the window. But for me it's the opposite — I feel more secure being enclosed, not less."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I'm looking at flights to Boston for mid-May. The route uses a CRJ-900 regional jet with a 1-and-2 seat configuration, so window means no middle seat neighbor at all. That sounds ideal."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The travel coordinator just told me they've pre-assigned me seat 7C on the Boston flight — that's an aisle seat on the CRJ-900. She said it's the only one left in our company's block."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "You're right, I should push back. The whole reason I was excited about the CRJ-900 was the solo window seat. Getting stuck on the aisle would be almost as bad as that middle seat disaster on the Tampa flight. I'll email the coordinator today and ask about alternatives. Worst case I'll book my own ticket outside the company block to get the window I want. It's worth the hassle."
+        }
+      ]
+    }
+  ]
+}

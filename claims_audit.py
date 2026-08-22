@@ -897,6 +897,16 @@ NUMBER_CLAIMS = [
     _c("site-bench-graphiti", "index.html", ["0.00"], ">0.00<",
        "Benchmark bar: Graphiti 0.00", "REPRODUCIBLE-WITH-DEPS",
        "python probes/integrity_bench_revert.py --systems inspeximus,graphiti --n 20"),
+    # The instrument, published beside the numbers it produces. Replaying ONE store run's retrieved
+    # contexts through five judges moves the inspeximus figure from 0.75 to 0.80-1.00 with nothing
+    # about the store changing, so the caveat under the chart is itself a measurement and is
+    # registered like one.
+    _c("site-bench-judge-sensitivity", "index.html", ["0.80", "1.00"],
+       "scores 0.80–1.00 for the same store", "Judge sensitivity: the same retrieved contexts score 0.80-1.00 under newer judges",
+       "REPRODUCIBLE-WITH-DEPS",
+       "python probes/does_the_headline_number_depend_on_who_judges_it.py --n 20",
+       "Needs OPENAI_API_KEY. gpt-4o-mini 0.75 (the pinned baseline), gpt-5.4-nano 0.80, "
+       "gpt-5.4-mini 0.80, gpt-5.6-luna 0.85, gpt-5.5 1.00."),
 ]
 
 #: Every remaining numeric token, with an exact expected count and a reason it is not a claim.
@@ -1019,6 +1029,9 @@ NON_CLAIM_TOKENS = {
         "4413": (1, "PR #4413 -- a pull-request number"),
     },
     "index.html": {
+        # A SETTING, not a measurement: the temperature the shared judge is pinned at.
+        "0.0": (1, "the judge's temperature in the benchmark caveat, a parameter not a result"),
+        "2026": (1, "the re-measurement date in the benchmark caveat, not a quantity"),
         "0": (1, "the schema.org offer price, '0' USD -- a JSON-LD literal"),
         "01": (1, "a section beat label"),
         "02": (1, "a section beat label"),

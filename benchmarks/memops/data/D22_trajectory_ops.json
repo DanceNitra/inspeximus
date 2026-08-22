@@ -1,0 +1,982 @@
+{
+  "target_fact": "User's Delta SkyMiles status level, tracked through multiple changes over the year",
+  "operation_type": "TrajectoryOps",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "delta_status",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I just hit Delta Silver Medallion status last month"
+      },
+      "target": {
+        "target_id": "delta_status_level",
+        "target_name": "Delta SkyMiles Medallion status level"
+      },
+      "old_value": null,
+      "new_value": "Silver Medallion",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I just hit Delta Silver Medallion status last month"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "delta_status",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I got the notification yesterday that I've been bumped up to Gold Medallion"
+      },
+      "target": {
+        "target_id": "delta_status_level",
+        "target_name": "Delta SkyMiles Medallion status level"
+      },
+      "old_value": "Silver Medallion",
+      "new_value": "Gold Medallion",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I got the notification yesterday that I've been bumped up to Gold Medallion"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "All those work trips to Chicago and Denver really added up faster than I expected"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "delta_status",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 3,
+        "quote": "my manager confirmed I'll be doing the Atlanta run every two weeks through December, so I'll definitely cross into Platinum Medallion territory by year end"
+      },
+      "target": {
+        "target_id": "delta_status_level",
+        "target_name": "Delta SkyMiles Medallion status level"
+      },
+      "old_value": "Gold Medallion",
+      "new_value": "Platinum Medallion",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "my manager confirmed I'll be doing the Atlanta run every two weeks through December, so I'll definitely cross into Platinum Medallion territory by year end"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "delta_status",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "Turns out two of those Atlanta trips got cancelled because the client pushed the project to Q1. So my MQM tracker is sitting right where it was. I'm still Gold Medallion for now"
+      },
+      "target": {
+        "target_id": "delta_status_level",
+        "target_name": "Delta SkyMiles Medallion status level"
+      },
+      "old_value": "Gold Medallion",
+      "new_value": "Gold Medallion",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Turns out two of those Atlanta trips got cancelled because the client pushed the project to Q1. So my MQM tracker is sitting right where it was. I'm still Gold Medallion for now"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I've been booking Hilton almost exclusively this year. My Hilton Honors number is 9834201177"
+      },
+      "target": {
+        "target_id": "hilton_honors_number",
+        "target_name": "Hilton Honors loyalty number"
+      },
+      "old_value": null,
+      "new_value": "9834201177",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My Hilton Honors number is 9834201177"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish Silver Medallion status, then update to Gold Medallion; introduce Hilton preference",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to get a few travel details organized. I just hit Delta Silver Medallion status last month, so I'm feeling pretty good about my loyalty progress this year. I've been flying Delta consistently for all my domestic trips. Can you help me keep track of my travel milestones?"
+        },
+        {
+          "role": "assistant",
+          "content": "Congratulations on reaching Delta Silver Medallion status! That's a solid achievement and shows real commitment to the loyalty program. I'd be happy to help you track your travel milestones going forward. Silver Medallion comes with some great perks like complimentary upgrades when available and priority boarding. If you share your upcoming travel plans and goals, I can help you map out what you need to reach the next tier. Just let me know what details you'd like me to keep organized for you."
+        },
+        {
+          "role": "user",
+          "content": "Thanks! So for hotels, I've been leaning heavily toward Hilton this year. I stayed at a Hilton Garden Inn in Denver back in March and it was exactly what I like — quiet, understated, no weird themed lobby nonsense. I specifically asked for a room away from the elevator and they actually honored it, which I really appreciated."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a great experience at the Hilton Garden Inn in Denver. It's really nice when hotels actually follow through on room placement requests — a lot of them treat those as suggestions rather than real preferences. The understated, clean aesthetic you're describing is definitely a Hilton brand strength compared to some of the more heavily styled competitors. I'll note that Hilton is your go-to hotel brand and that you prefer quiet rooms away from elevators. If you want, I can also keep track of your Hilton Honors details whenever you're ready to share those."
+        },
+        {
+          "role": "user",
+          "content": "Actually, big update — I got the notification yesterday that I've been bumped up to Gold Medallion. All those work trips to Chicago and Denver really added up faster than I expected. I thought I'd be grinding for Gold through the fall, but here we are. Please update that for me."
+        },
+        {
+          "role": "assistant",
+          "content": "That's fantastic news — congratulations on the Gold Medallion upgrade! Moving from Silver to Gold that quickly is impressive, especially if you weren't expecting it until fall. Gold Medallion brings some really meaningful perks: you'll get complimentary upgrades to Sky Priority, waived same-day confirmed change fees, and extra bonus miles on every flight. I've updated your Delta status from Silver Medallion to Gold Medallion. With the pace you're flying, Platinum might not be out of reach either if you keep up those work trips through the rest of the year."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, Platinum would be the dream. I've got a trip to Portland coming up in June — booked through the Hilton Honors app directly. And then there are a few more work trips on the calendar. I want to keep building toward Platinum if I can, so definitely keep that goal noted for me."
+        },
+        {
+          "role": "assistant",
+          "content": "I've noted your goal of reaching Delta Platinum Medallion by end of year. With Gold already locked in and more work trips on the horizon, you're in a strong position. The Portland trip in June through Hilton will keep your hotel loyalty on track too, which is great for stacking benefits across both programs. Once you know the specific dates and routes for your upcoming work flights, share them with me and I can help you estimate how close you'll be to the Platinum MQM threshold. Every segment counts at this stage, so even short hops will matter."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "establish Hilton Honors number as control target; discuss hotel preferences and Delta travel habits",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So let me give you some more details. I've been booking Hilton almost exclusively this year. My Hilton Honors number is 9834201177. Please save that — I always forget it when I'm trying to check in on the app. It's annoying to have to dig through emails every time."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — I've saved your Hilton Honors number as 9834201177. That's a common frustration; loyalty numbers are always just long enough to be impossible to memorize. Now whenever you need it for a booking or check-in, you can just ask me. Since you've been booking Hilton almost exclusively this year, you're probably building up some decent points too. Do you know what tier you're at with Hilton Honors, or is it more of a casual membership for now? Either way, I'll keep this number on file for you."
+        },
+        {
+          "role": "user",
+          "content": "I think I'm just regular Hilton Honors member status — nothing fancy yet. But the points are accumulating. Honestly I just like Hilton because the rooms feel clean and simple. I had a bad experience at a Courtyard Marriott near O'Hare in April where the hallway had this overwhelmingly strong air freshener smell. It put me in a terrible mood for the whole evening."
+        },
+        {
+          "role": "assistant",
+          "content": "I can totally understand that — heavily scented spaces can really ruin a stay, especially when you're already tired from traveling. That kind of sensory overload is hard to escape in a hotel hallway. It sounds like your preference for Hilton is partly about the more neutral, understated environment they tend to offer. I'll keep in mind that you're sensitive to strong scents and prefer sensory-neutral hotel environments. If you ever need me to help screen hotels before booking, I can look up recent reviews mentioning things like air freshener complaints or renovation smells."
+        },
+        {
+          "role": "user",
+          "content": "That would actually be really helpful. My coworker Sarah switched to United recently for some credit card sign-up bonus, but honestly I can't imagine abandoning Delta after building up all this status. I've got my SkyMiles number memorized at this point — 2847301566. The idea of starting over with a different airline just for a bonus seems counterproductive."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a smart perspective. Loyalty status is hard-earned, and a one-time credit card bonus rarely compensates for the perks you'd lose — especially now that you're Gold Medallion. Your SkyMiles number 2847301566 is noted. Starting over with United would mean no priority boarding, no upgrade eligibility, and no status-based bonus miles until you rebuild from scratch. The compounding value of staying with one airline really kicks in at the Gold and Platinum tiers, so your instinct to stay the course with Delta makes a lot of financial sense long-term."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. Plus I tried Southwest once back in February for a short trip to Phoenix and the open seating thing was a dealbreaker. I need to know where I'm sitting ahead of time — it's not negotiable for me. Assigned seating is one of those things you don't appreciate until it's gone. Delta handles that perfectly."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a very common reaction to Southwest's boarding system. The open seating model works for some people, but if you value predictability and control over your travel experience, it can feel genuinely stressful. Knowing your exact seat assignment in advance is a basic comfort that Delta and most other major carriers provide by default. Combined with your Gold Medallion perks and your established SkyMiles account, Delta is clearly the right fit for your travel style. I'll remember that assigned seating is a non-negotiable preference for you when it comes to airline choices."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "introduce tentative Platinum claim, then confirm revert to Gold; adversarial injection of stale value",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Quick update on the travel front. I just got back from a work trip to Dallas last week — flew Delta of course. The flight was smooth and I got upgraded to Comfort+ again, which is becoming pretty regular now with Gold status. The hotel was a Hilton again, kept things consistent."
+        },
+        {
+          "role": "assistant",
+          "content": "Nice — sounds like a solid trip. Comfort+ upgrades becoming routine is one of the best Gold Medallion perks; it really makes a difference on those work flights. Good call sticking with Hilton for the hotel too, keeping your loyalty concentrated across both programs. That Dallas flight will add to your MQM total as well, which brings you closer to that Platinum goal. Do you know roughly where your MQM tracker is sitting right now? If you can check the app, I can help you estimate what you still need for the rest of the year."
+        },
+        {
+          "role": "user",
+          "content": "Yeah I checked it recently. Here's the exciting part — my manager confirmed I'll be doing the Atlanta run every two weeks through December, so I'll definitely cross into Platinum Medallion territory by year end. Those round trips should rack up MQMs fast. I'm basically counting it as a done deal at this point."
+        },
+        {
+          "role": "assistant",
+          "content": "That's incredible news! Biweekly Atlanta round trips through December would absolutely push you over the Platinum threshold. Those flights are decent MQM earners, and the consistency means you won't have to scramble at the end of the year to make up a shortfall. Platinum Medallion would unlock even better upgrade priority, complimentary Sky Club access on certain itineraries, and a significant MQM bonus. If you're treating it as a done deal, I can tentatively note your expected status as Platinum Medallion by year end. That's a major milestone — well deserved given how much you've been traveling this year."
+        },
+        {
+          "role": "user",
+          "content": "Turns out two of those Atlanta trips got cancelled because the client pushed the project to Q1. So my MQM tracker is sitting right where it was. I'm still Gold Medallion for now. Frustrating but it is what it is. I'll have to find other routes to make up the gap, but no guarantees."
+        },
+        {
+          "role": "assistant",
+          "content": "That's really frustrating, especially when you were so close to having a clear path to Platinum. Client-driven schedule changes are the worst when they mess with your personal goals. So your current confirmed status remains Gold Medallion, and Platinum is still a stretch goal but no longer a certainty. If you want, I can help you calculate how many more MQMs you'd need and which upcoming trips might close the gap. Even without the Atlanta runs, there might be other routes or mileage runs that could help depending on your remaining travel schedule."
+        },
+        {
+          "role": "user",
+          "content": "Yeah let's keep Platinum as a goal but not assume it's happening. By the way, I was looking at my upcoming Portland booking confirmation and the Hilton app was showing a Hilton Honors number of 9834207711 on the reservation — I think that might be from when my wife booked under her account last time. Can you just confirm mine for me?\n\nYes please, that would be great. And just to be clear — my Delta status is Gold Medallion, my SkyMiles number is 2847301566, and my Hilton Honors number is 9834201177. I want all of that locked in so I don't have to keep repeating myself every time I travel. Thanks for keeping track of everything."
+        },
+        {
+          "role": "assistant",
+          "content": "Your Hilton Honors number is 9834201177 — that's the one you gave me earlier. The 9834207711 showing on the reservation is likely your wife's account from a previous booking, so you'll want to update the reservation to your own number before check-in to make sure your points and stay credit go to the right account. It's an easy fix in the Hilton Honors app — just edit the loyalty number field on the reservation details page. Want me to remind you to do that closer to your Portland trip date so you don't forget?\n\nAll confirmed and locked in for you: Delta Gold Medallion status, SkyMiles number 2847301566, and Hilton Honors number 9834201177. You won't need to repeat any of that — I've got it all saved. I'll also keep tracking your Platinum Medallion goal and remind you to update the Portland Hilton reservation to your own Honors account before the trip. If any of your travel details change or you hit new milestones, just let me know and I'll update everything accordingly. Safe travels on whatever comes next!"
+        }
+      ]
+    }
+  ],
+  "state_checkpoints": [
+    {
+      "checkpoint_id": "c1",
+      "description": "After segment 1: Delta status = Gold Medallion (confirmed, upgraded from Silver). Hilton preference established but no Honors number yet."
+    },
+    {
+      "checkpoint_id": "c2",
+      "description": "After segment 2: Delta status = Gold Medallion (confirmed). Hilton Honors number = 9834201177 (confirmed). SkyMiles number = 2847301566 noted. Southwest rejected as option."
+    },
+    {
+      "checkpoint_id": "c3",
+      "description": "After segment 3: Delta status = Gold Medallion (confirmed; tentative Platinum was projected but trips cancelled). Hilton Honors number = 9834201177 (confirmed; wife's number 9834207711 is adversarial noise). Platinum remains a stretch goal, not confirmed."
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations about my airline loyalty progress, what key details did I share and how did the situation evolve?",
+      "expected_answer": "You initially shared that you reached Silver status with Delta last month. You then reported being bumped up to Gold after accumulating miles from work trips to Chicago and Denver. Later, you mentioned expecting to reach Platinum by year end due to biweekly Atlanta trips, but then reported that two Atlanta trips were cancelled and you remain at Gold. You also shared your SkyMiles number as 2847301566.",
+      "gold_memory_state": "Delta status: Gold Medallion (confirmed). Platinum was projected but trips cancelled, so it reverted to Gold. SkyMiles number: 2847301566. Hilton Honors number: 9834201177.",
+      "judge_rubric": {
+        "must_include": [
+          "Silver as initial status",
+          "Gold as confirmed upgrade",
+          "Platinum as a projection that did not materialize",
+          "Gold as the final current status"
+        ],
+        "acceptable_paraphrases": [
+          "bumped to Gold",
+          "promoted to Gold",
+          "upgraded to Gold"
+        ],
+        "must_not_include": [
+          "Platinum is the current status"
+        ],
+        "harmful_extra": [
+          "claiming Platinum was confirmed"
+        ],
+        "harmless_extra": [
+          "mentioning Chicago and Denver trips",
+          "mentioning SkyMiles number",
+          "mentioning Hilton details"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats Platinum as the current confirmed status.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence Silver → Gold → tentative Platinum → revert to Gold is misordered.",
+        "final_state": "Fails if final status is not Gold.",
+        "intermediate_state": "Fails if Silver or the tentative Platinum step is omitted.",
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I just hit Delta Silver Medallion status last month"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I got the notification yesterday that I've been bumped up to Gold Medallion"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "my manager confirmed I'll be doing the Atlanta run every two weeks through December, so I'll definitely cross into Platinum Medallion territory by year end"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Turns out two of those Atlanta trips got cancelled because the client pushed the project to Q1. So my MQM tracker is sitting right where it was. I'm still Gold Medallion for now"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations about my airline loyalty progress, what key details did I share and how did the situation evolve?",
+      "expected_answer": "You initially shared that you reached Silver status with Delta last month. You then reported being bumped up to Gold after accumulating miles from work trips to Chicago and Denver. Later, you mentioned expecting to reach Platinum by year end due to biweekly Atlanta trips, but then reported that two Atlanta trips were cancelled and you remain at Gold. You also shared your SkyMiles number as 2847301566.",
+      "gold_memory_state": "Delta status: Gold Medallion (confirmed). Platinum was projected but trips cancelled, so it reverted to Gold. SkyMiles number: 2847301566. Hilton Honors number: 9834201177.",
+      "judge_rubric": {
+        "must_include": [
+          "Silver as initial status",
+          "Gold as confirmed upgrade",
+          "Platinum as a projection that did not materialize",
+          "Gold as the final current status"
+        ],
+        "acceptable_paraphrases": [
+          "bumped to Gold",
+          "promoted to Gold",
+          "upgraded to Gold"
+        ],
+        "must_not_include": [
+          "Platinum is the current status"
+        ],
+        "harmful_extra": [
+          "claiming Platinum was confirmed"
+        ],
+        "harmless_extra": [
+          "mentioning Chicago and Denver trips",
+          "mentioning SkyMiles number",
+          "mentioning Hilton details"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats Platinum as the current confirmed status.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence Silver → Gold → tentative Platinum → revert to Gold is misordered.",
+        "final_state": "Fails if final status is not Gold.",
+        "intermediate_state": "Fails if Silver or the tentative Platinum step is omitted.",
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I just hit Delta Silver Medallion status last month"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I got the notification yesterday that I've been bumped up to Gold Medallion"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "my manager confirmed I'll be doing the Atlanta run every two weeks through December, so I'll definitely cross into Platinum Medallion territory by year end"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Turns out two of those Atlanta trips got cancelled because the client pushed the project to Q1. So my MQM tracker is sitting right where it was. I'm still Gold Medallion for now"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I have loyalty accounts with both an airline and a hotel chain. If I need to fill out a travel expense report, which loyalty details can I still rely on for each program, and did any recent back-and-forth affect the hotel account number?",
+      "expected_answer": "For the airline program: Delta Gold status and SkyMiles number 2847301566. For the hotel program: Hilton Honors number 9834201177. The wife's number 9834207711 that appeared on the Portland reservation does not belong to your account and should not be used. The airline status changes did not affect the hotel loyalty number.",
+      "gold_memory_state": "Delta SkyMiles status: Gold Medallion (confirmed). SkyMiles number: 2847301566. Hilton Honors number: 9834201177 (confirmed, unchanged). Wife's Hilton number 9834207711 is adversarial noise, not user's own.",
+      "judge_rubric": {
+        "must_include": [
+          "Gold as Delta status",
+          "2847301566 as SkyMiles number",
+          "9834201177 as Hilton Honors number"
+        ],
+        "acceptable_paraphrases": [
+          "Gold tier",
+          "Gold level"
+        ],
+        "must_not_include": [
+          "9834207711 as user's own number",
+          "Platinum as current status"
+        ],
+        "harmful_extra": [
+          "treating 9834207711 as the user's Hilton number",
+          "treating Platinum as confirmed status"
+        ],
+        "harmless_extra": [
+          "mentioning wife's number as belonging to someone else",
+          "mentioning Platinum as a future goal"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Silver or Platinum is given as current Delta status, or if 9834207711 is given as the user's Hilton number.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if any loyalty detail is wrong.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I got the notification yesterday that I've been bumped up to Gold Medallion"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My Hilton Honors number is 9834201177"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I can't imagine abandoning Delta after building up all this status. I've got my SkyMiles number memorized at this point — 2847301566"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Turns out two of those Atlanta trips got cancelled because the client pushed the project to Q1. So my MQM tracker is sitting right where it was. I'm still Gold Medallion for now"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I have loyalty accounts with both an airline and a hotel chain. If I need to fill out a travel expense report, which loyalty details can I still rely on for each program, and did any recent back-and-forth affect the hotel account number?",
+      "expected_answer": "For the airline program: Delta Gold status and SkyMiles number 2847301566. For the hotel program: Hilton Honors number 9834201177. The wife's number 9834207711 that appeared on the Portland reservation does not belong to your account and should not be used. The airline status changes did not affect the hotel loyalty number.",
+      "gold_memory_state": "Delta SkyMiles status: Gold Medallion (confirmed). SkyMiles number: 2847301566. Hilton Honors number: 9834201177 (confirmed, unchanged). Wife's Hilton number 9834207711 is adversarial noise, not user's own.",
+      "judge_rubric": {
+        "must_include": [
+          "Gold as Delta status",
+          "2847301566 as SkyMiles number",
+          "9834201177 as Hilton Honors number"
+        ],
+        "acceptable_paraphrases": [
+          "Gold tier",
+          "Gold level"
+        ],
+        "must_not_include": [
+          "9834207711 as user's own number",
+          "Platinum as current status"
+        ],
+        "harmful_extra": [
+          "treating 9834207711 as the user's Hilton number",
+          "treating Platinum as confirmed status"
+        ],
+        "harmless_extra": [
+          "mentioning wife's number as belonging to someone else",
+          "mentioning Platinum as a future goal"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Silver or Platinum is given as current Delta status, or if 9834207711 is given as the user's Hilton number.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if any loyalty detail is wrong.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I got the notification yesterday that I've been bumped up to Gold Medallion"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My Hilton Honors number is 9834201177"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I can't imagine abandoning Delta after building up all this status. I've got my SkyMiles number memorized at this point — 2847301566"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Turns out two of those Atlanta trips got cancelled because the client pushed the project to Q1. So my MQM tracker is sitting right where it was. I'm still Gold Medallion for now"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "What tier am I at with my airline loyalty program right now?",
+      "expected_answer": "Gold Medallion.",
+      "gold_memory_state": "Delta SkyMiles status is Gold Medallion (confirmed). Platinum was projected based on expected biweekly Atlanta trips but those trips were cancelled, so the projection never materialized. The current confirmed status remains Gold Medallion.",
+      "judge_rubric": {
+        "must_include": [
+          "Gold"
+        ],
+        "acceptable_paraphrases": [
+          "Gold Medallion",
+          "Gold tier",
+          "Gold level",
+          "Delta Gold"
+        ],
+        "must_not_include": [
+          "Platinum as current status",
+          "Silver as current status"
+        ],
+        "harmful_extra": [
+          "stating Platinum was achieved",
+          "stating Silver is still the level"
+        ],
+        "harmless_extra": [
+          "mentioning Platinum as a stretch goal",
+          "mentioning Silver as a former tier"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model returns Platinum (tentative value that was never confirmed) or Silver (superseded earlier value).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the answer is anything other than Gold Medallion.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Turns out two of those Atlanta trips got cancelled because the client pushed the project to Q1. So my MQM tracker is sitting right where it was. I'm still Gold Medallion for now"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I got the notification yesterday that I've been bumped up to Gold Medallion"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "What tier am I at with my airline loyalty program right now?",
+      "expected_answer": "Gold Medallion.",
+      "gold_memory_state": "Delta SkyMiles status is Gold Medallion (confirmed). Platinum was projected based on expected biweekly Atlanta trips but those trips were cancelled, so the projection never materialized. The current confirmed status remains Gold Medallion.",
+      "judge_rubric": {
+        "must_include": [
+          "Gold"
+        ],
+        "acceptable_paraphrases": [
+          "Gold Medallion",
+          "Gold tier",
+          "Gold level",
+          "Delta Gold"
+        ],
+        "must_not_include": [
+          "Platinum as current status",
+          "Silver as current status"
+        ],
+        "harmful_extra": [
+          "stating Platinum was achieved",
+          "stating Silver is still the level"
+        ],
+        "harmless_extra": [
+          "mentioning Platinum as a stretch goal",
+          "mentioning Silver as a former tier"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model returns Platinum (tentative value that was never confirmed) or Silver (superseded earlier value).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the answer is anything other than Gold Medallion.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Turns out two of those Atlanta trips got cancelled because the client pushed the project to Q1. So my MQM tracker is sitting right where it was. I'm still Gold Medallion for now"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I got the notification yesterday that I've been bumped up to Gold Medallion"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to call Delta to link my hotel loyalty account to my airline account for a cross-program promotion. Draft a short script of what I should say, including the relevant account numbers and my current airline tier, so the agent can look me up and verify eligibility.",
+      "expected_answer": "Hi, I'd like to link my hotel loyalty account to my Delta SkyMiles account for the cross-program promotion. My SkyMiles number is 2847301566 and I'm currently at Gold Medallion tier. My Hilton Honors number is 9834201177. Could you please look me up and verify my eligibility?",
+      "gold_memory_state": "Delta SkyMiles number: 2847301566. Delta status: Gold Medallion (confirmed). Hilton Honors number: 9834201177 (confirmed). Platinum is only a stretch goal, not confirmed. Wife's Hilton number 9834207711 must not be used.",
+      "judge_rubric": {
+        "must_include": [
+          "2847301566",
+          "Gold",
+          "9834201177"
+        ],
+        "acceptable_paraphrases": [
+          "Gold Medallion",
+          "Gold tier",
+          "Gold level"
+        ],
+        "must_not_include": [
+          "Platinum as current tier",
+          "Silver as current tier",
+          "9834207711"
+        ],
+        "harmful_extra": [
+          "using wife's Hilton number 9834207711",
+          "claiming Platinum status"
+        ],
+        "harmless_extra": [
+          "mentioning Platinum as a future goal",
+          "adding polite filler language"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Platinum or Silver is used as the current tier, or if 9834207711 is used as the user's Hilton number.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if any of the three key values (SkyMiles number, status tier, Hilton Honors number) is wrong.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's SkyMiles number is 2847301566, shared when discussing loyalty commitment.",
+        "Fact 2: The user's current Delta status is Gold Medallion, confirmed after the tentative Platinum projection was cancelled.",
+        "Fact 3: The user's Hilton Honors number is 9834201177, shared for hotel booking purposes.",
+        "Inference: To link the two loyalty programs, the script must combine all three facts — the airline account number, the current airline tier, and the hotel loyalty number — into a single call script.",
+        "Inference: The wife's Hilton number 9834207711 must be excluded, and Platinum must not be stated as the current tier."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I can't imagine abandoning Delta after building up all this status. I've got my SkyMiles number memorized at this point — 2847301566"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Turns out two of those Atlanta trips got cancelled because the client pushed the project to Q1. So my MQM tracker is sitting right where it was. I'm still Gold Medallion for now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My Hilton Honors number is 9834201177"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to call Delta to link my hotel loyalty account to my airline account for a cross-program promotion. Draft a short script of what I should say, including the relevant account numbers and my current airline tier, so the agent can look me up and verify eligibility.",
+      "expected_answer": "Hi, I'd like to link my hotel loyalty account to my Delta SkyMiles account for the cross-program promotion. My SkyMiles number is 2847301566 and I'm currently at Gold Medallion tier. My Hilton Honors number is 9834201177. Could you please look me up and verify my eligibility?",
+      "gold_memory_state": "Delta SkyMiles number: 2847301566. Delta status: Gold Medallion (confirmed). Hilton Honors number: 9834201177 (confirmed). Platinum is only a stretch goal, not confirmed. Wife's Hilton number 9834207711 must not be used.",
+      "judge_rubric": {
+        "must_include": [
+          "2847301566",
+          "Gold",
+          "9834201177"
+        ],
+        "acceptable_paraphrases": [
+          "Gold Medallion",
+          "Gold tier",
+          "Gold level"
+        ],
+        "must_not_include": [
+          "Platinum as current tier",
+          "Silver as current tier",
+          "9834207711"
+        ],
+        "harmful_extra": [
+          "using wife's Hilton number 9834207711",
+          "claiming Platinum status"
+        ],
+        "harmless_extra": [
+          "mentioning Platinum as a future goal",
+          "adding polite filler language"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Platinum or Silver is used as the current tier, or if 9834207711 is used as the user's Hilton number.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if any of the three key values (SkyMiles number, status tier, Hilton Honors number) is wrong.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's SkyMiles number is 2847301566, shared when discussing loyalty commitment.",
+        "Fact 2: The user's current Delta status is Gold Medallion, confirmed after the tentative Platinum projection was cancelled.",
+        "Fact 3: The user's Hilton Honors number is 9834201177, shared for hotel booking purposes.",
+        "Inference: To link the two loyalty programs, the script must combine all three facts — the airline account number, the current airline tier, and the hotel loyalty number — into a single call script.",
+        "Inference: The wife's Hilton number 9834207711 must be excluded, and Platinum must not be stated as the current tier."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I can't imagine abandoning Delta after building up all this status. I've got my SkyMiles number memorized at this point — 2847301566"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Turns out two of those Atlanta trips got cancelled because the client pushed the project to Q1. So my MQM tracker is sitting right where it was. I'm still Gold Medallion for now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My Hilton Honors number is 9834201177"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed all our conversations about my airline tier, what would they see as the full sequence of changes — which levels were actually achieved and which were only anticipated but never realized? Walk me through the whole progression and where it ended up.",
+      "expected_answer": "The progression was: (1) Silver — initially reported as achieved last month, confirmed. (2) Gold — reported as achieved after work trips to Chicago and Denver accumulated enough qualifying miles, confirmed. (3) Platinum — anticipated based on planned biweekly Atlanta trips through December, but this was only a projection and never confirmed. (4) Gold — the Atlanta trips were partially cancelled, so the qualifying miles did not increase, and the status remained at Gold. The final confirmed level is Gold.",
+      "gold_memory_state": "Delta SkyMiles status trajectory: Silver (confirmed, step 1) → Gold (confirmed, step 2) → Platinum (tentative projection, step 3, never confirmed) → Gold (confirmed, step 4, reaffirmed after cancellation of Atlanta trips). Final state: Gold Medallion.",
+      "judge_rubric": {
+        "must_include": [
+          "Silver as first achieved level",
+          "Gold as second achieved level",
+          "Platinum as anticipated but not achieved",
+          "Gold as the final current level"
+        ],
+        "acceptable_paraphrases": [
+          "projected Platinum",
+          "expected Platinum",
+          "Platinum was only a forecast"
+        ],
+        "must_not_include": [
+          "Platinum as an achieved or confirmed level"
+        ],
+        "harmful_extra": [
+          "claiming Platinum was reached",
+          "omitting the Silver starting point",
+          "omitting the tentative Platinum step"
+        ],
+        "harmless_extra": [
+          "mentioning Chicago and Denver trips",
+          "mentioning Atlanta trip cancellations",
+          "mentioning the client pushing the project to Q1"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Platinum is listed as a confirmed achieved level.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the order Silver → Gold → tentative Platinum → confirmed Gold is not preserved.",
+        "final_state": "Fails if the final state is not Gold.",
+        "intermediate_state": "Fails if Silver or the tentative Platinum projection step is omitted from the trajectory.",
+        "trajectory_provenance": "Fails if the tentative nature of the Platinum step is not distinguished from the confirmed steps."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: User reported achieving Silver last month — confirmed.",
+        "Step 2: User reported being bumped to Gold after work trips — confirmed.",
+        "Step 3: User projected reaching Platinum by year end based on planned Atlanta trips — tentative, never confirmed.",
+        "Step 4: User reported Atlanta trips cancelled; MQM tracker unchanged; still Gold — confirmed.",
+        "Inference: The full trajectory is Silver (confirmed) → Gold (confirmed) → Platinum (tentative, rejected) → Gold (confirmed). Final usable state is Gold."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I just hit Delta Silver Medallion status last month"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I got the notification yesterday that I've been bumped up to Gold Medallion"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "All those work trips to Chicago and Denver really added up faster than I expected"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "my manager confirmed I'll be doing the Atlanta run every two weeks through December, so I'll definitely cross into Platinum Medallion territory by year end"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Turns out two of those Atlanta trips got cancelled because the client pushed the project to Q1. So my MQM tracker is sitting right where it was. I'm still Gold Medallion for now"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed all our conversations about my airline tier, what would they see as the full sequence of changes — which levels were actually achieved and which were only anticipated but never realized? Walk me through the whole progression and where it ended up.",
+      "expected_answer": "The progression was: (1) Silver — initially reported as achieved last month, confirmed. (2) Gold — reported as achieved after work trips to Chicago and Denver accumulated enough qualifying miles, confirmed. (3) Platinum — anticipated based on planned biweekly Atlanta trips through December, but this was only a projection and never confirmed. (4) Gold — the Atlanta trips were partially cancelled, so the qualifying miles did not increase, and the status remained at Gold. The final confirmed level is Gold.",
+      "gold_memory_state": "Delta SkyMiles status trajectory: Silver (confirmed, step 1) → Gold (confirmed, step 2) → Platinum (tentative projection, step 3, never confirmed) → Gold (confirmed, step 4, reaffirmed after cancellation of Atlanta trips). Final state: Gold Medallion.",
+      "judge_rubric": {
+        "must_include": [
+          "Silver as first achieved level",
+          "Gold as second achieved level",
+          "Platinum as anticipated but not achieved",
+          "Gold as the final current level"
+        ],
+        "acceptable_paraphrases": [
+          "projected Platinum",
+          "expected Platinum",
+          "Platinum was only a forecast"
+        ],
+        "must_not_include": [
+          "Platinum as an achieved or confirmed level"
+        ],
+        "harmful_extra": [
+          "claiming Platinum was reached",
+          "omitting the Silver starting point",
+          "omitting the tentative Platinum step"
+        ],
+        "harmless_extra": [
+          "mentioning Chicago and Denver trips",
+          "mentioning Atlanta trip cancellations",
+          "mentioning the client pushing the project to Q1"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Platinum is listed as a confirmed achieved level.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the order Silver → Gold → tentative Platinum → confirmed Gold is not preserved.",
+        "final_state": "Fails if the final state is not Gold.",
+        "intermediate_state": "Fails if Silver or the tentative Platinum projection step is omitted from the trajectory.",
+        "trajectory_provenance": "Fails if the tentative nature of the Platinum step is not distinguished from the confirmed steps."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: User reported achieving Silver last month — confirmed.",
+        "Step 2: User reported being bumped to Gold after work trips — confirmed.",
+        "Step 3: User projected reaching Platinum by year end based on planned Atlanta trips — tentative, never confirmed.",
+        "Step 4: User reported Atlanta trips cancelled; MQM tracker unchanged; still Gold — confirmed.",
+        "Inference: The full trajectory is Silver (confirmed) → Gold (confirmed) → Platinum (tentative, rejected) → Gold (confirmed). Final usable state is Gold."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I just hit Delta Silver Medallion status last month"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I got the notification yesterday that I've been bumped up to Gold Medallion"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "All those work trips to Chicago and Denver really added up faster than I expected"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "my manager confirmed I'll be doing the Atlanta run every two weeks through December, so I'll definitely cross into Platinum Medallion territory by year end"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Turns out two of those Atlanta trips got cancelled because the client pushed the project to Q1. So my MQM tracker is sitting right where it was. I'm still Gold Medallion for now"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1030 @@
+{
+  "target_fact": "Best friend is Darren Liu; friendship details including hangout habits, Darren's birthday, Darren's brother Kevin, and Darren's girlfriend Naomi — with the storage unit help detail to be forgotten.",
+  "operation_type": "Forget",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "bridge_entity"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "My best friend is Darren Liu. We've been close since college, like over eight years now."
+      },
+      "target": {
+        "target_id": "best_friend_identity",
+        "target_name": "best friend name and relationship origin"
+      },
+      "old_value": null,
+      "new_value": "Darren Liu, best friend since college",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My best friend is Darren Liu. We've been close since college, like over eight years now."
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "Darren's birthday is October 17th. I always want to make sure I remember that."
+      },
+      "target": {
+        "target_id": "darren_birthday",
+        "target_name": "Darren Liu's birthday"
+      },
+      "old_value": null,
+      "new_value": "October 17th",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Darren's birthday is October 17th. I always want to make sure I remember that."
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "Darren's older brother Kevin just got promoted to VP at some finance firm in Chicago."
+      },
+      "target": {
+        "target_id": "darren_brother_kevin",
+        "target_name": "Darren's brother Kevin and his role"
+      },
+      "old_value": null,
+      "new_value": "Kevin Liu, VP at a finance firm in Chicago",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Darren's older brother Kevin just got promoted to VP at some finance firm in Chicago."
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "Darren's girlfriend Naomi has been with him for about two years now. She's apparently against the Seattle move."
+      },
+      "target": {
+        "target_id": "darren_girlfriend_naomi",
+        "target_name": "Darren's girlfriend name and relationship duration"
+      },
+      "old_value": null,
+      "new_value": "Naomi, together about two years",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Darren's girlfriend Naomi has been with him for about two years now. She's apparently against the Seattle move."
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I helped Darren move some furniture into a storage unit in mid-April because he was downsizing his apartment."
+      },
+      "target": {
+        "target_id": "darren_storage_help",
+        "target_name": "storage unit furniture move help for Darren"
+      },
+      "old_value": null,
+      "new_value": "Helped Darren move furniture into a storage unit in mid-April",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I helped Darren move some furniture into a storage unit in mid-April because he was downsizing his apartment."
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "forget",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 7,
+        "quote": "Actually, you can forget the storage unit thing. That's completely done and over with — no need to keep track of it."
+      },
+      "target": {
+        "target_id": "darren_storage_help",
+        "target_name": "storage unit furniture move help for Darren"
+      },
+      "old_value": "Helped Darren move furniture into a storage unit in mid-April",
+      "new_value": null,
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Actually, you can forget the storage unit thing. That's completely done and over with — no need to keep track of it."
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish best friend identity, birthday, and brother details",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to tell you about my closest friend so you can keep some things in mind for me. My best friend is Darren Liu. We've been close since college, like over eight years now. He's genuinely the one person I'd call at 3 a.m. if something went wrong. We both live in Portland and we grab ramen together at least twice a month at this spot on Hawthorne."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a really solid friendship — eight years and counting, and you're still making regular time for each other. I've noted that your best friend is Darren Liu, that you've been close since college, and that you're both based in Portland. The twice-a-month ramen tradition at the Hawthorne spot sounds like a great anchor for the friendship. I'll keep all of this in mind. Is there anything else about Darren or your friendship you'd like me to remember?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, one important thing — Darren's birthday is October 17th. I always want to make sure I remember that. I blanked on it one year and felt terrible about it. So please keep that noted down for me. I want to plan something nice this year, maybe get a reservation at a good restaurant or find a thoughtful gift. Just having the date saved would help a lot."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — Darren Liu's birthday is October 17th, and I've made a note of that. It's completely understandable that you want to stay on top of it, especially since you want to plan something meaningful this year. A reservation at a great restaurant could be perfect, especially if it's the kind of low-key, intimate place you two seem to enjoy. When it gets closer to October, I can help you brainstorm gift ideas or scout restaurant options in Portland if you'd like. Just let me know whenever you're ready to start planning."
+        },
+        {
+          "role": "user",
+          "content": "That would be great, thanks. Oh, also — Darren's older brother Kevin just got promoted to VP at some finance firm in Chicago. Darren mentioned it when we were hanging out recently. He seemed proud of Kevin but also a little competitive about it, which is very on-brand for Darren. Kevin's apparently doing really well for himself out there. I think Darren sometimes measures himself against his brother's career trajectory."
+        },
+        {
+          "role": "assistant",
+          "content": "That's an interesting dynamic. I've noted that Darren's older brother is Kevin, and he was recently promoted to VP at a finance firm in Chicago. Sibling competitiveness around career milestones is pretty common, especially when one sibling hits a high-profile title like VP. It sounds like Darren is genuinely happy for Kevin but also feels the pressure of comparison. That kind of thing can be a motivator or a source of stress, depending on how someone processes it. It might even be part of why Darren is weighing that Seattle opportunity — wanting his own big career move."
+        },
+        {
+          "role": "user",
+          "content": "That's a really good point, actually. I hadn't thought about it that way, but it makes sense. Darren has always been driven but he gets in his own head sometimes. Anyway, I really appreciate you keeping track of all this. These details matter to me because Darren is basically family at this point. Having someone remember the little things about my friendships is helpful."
+        },
+        {
+          "role": "assistant",
+          "content": "Of course — these details absolutely matter, and I'm glad you're sharing them. Friendships like yours and Darren's, ones built over years with consistent effort, are genuinely rare and worth investing in. I've got everything noted: Darren Liu is your best friend since college, you're both in Portland, you do ramen on Hawthorne regularly, his birthday is October 17th, and his brother Kevin just made VP at a Chicago finance firm. I'll keep all of this handy and help you stay on top of things whenever you need it."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establish Naomi detail, storage unit help, then forget storage unit",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So picking up where we left off about Darren — Darren's girlfriend Naomi has been with him for about two years now. She's apparently against the Seattle move. Darren told me about it and he seemed really torn up. I think the relationship tension is weighing on him heavily. I felt kind of down for days after that conversation because it made the whole Seattle thing feel more real and complicated."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a tough situation all around. I've noted that Darren's girlfriend is Naomi, they've been together about two years, and she's opposed to the Seattle move. It makes sense that hearing about their conflict would affect you too — when your best friend is stressed and potentially moving away, it hits on multiple levels. The fact that Darren confided in you about the relationship tension shows how much he trusts you. If you want, I can help you think through ways to support him during this decision, or even just be a sounding board when you need to process your own feelings about it."
+        },
+        {
+          "role": "user",
+          "content": "Thanks, I might take you up on that. On a different note, I helped Darren move some furniture into a storage unit in mid-April because he was downsizing his apartment. It was a pretty physical day — we loaded up a bunch of stuff, drove it over, and got everything squared away. Afterwards we grabbed beers at this great little dive bar nearby. I always prefer those hole-in-the-wall spots over trendy cocktail bars."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a solid day — hard work followed by well-earned beers at a dive bar, which is the best kind of reward. I've noted the storage unit move in mid-April. And I totally get the preference for dive bars over trendy places; there's something about the no-frills atmosphere that makes conversation feel more genuine and relaxed. It sounds like even the logistical stuff with Darren turns into quality time, which speaks to how natural your friendship is. If you need help tracking any follow-up tasks related to the storage situation or anything else, just let me know."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, those low-key hangouts are really my thing. I much prefer a quiet corner booth or a no-frills bar over anything flashy. It's just easier to actually talk and connect when the environment isn't trying to compete for attention. Anyway, Darren told me last week that he's leaning toward taking the Seattle job. He hasn't officially accepted yet but said he'd probably decide by end of May."
+        },
+        {
+          "role": "assistant",
+          "content": "I can see why that news would be bittersweet. I've noted that Darren is leaning toward taking the Seattle job and expects to decide by the end of May. That timeline means things could shift pretty quickly. Your preference for intimate, low-key social settings makes a lot of sense — those environments let you have the kind of deep conversations that clearly matter to you. If Darren does move, it might be worth thinking about how to preserve some of that connection remotely, even if the spontaneous Tuesday hangouts would change. I'm here to help you think through that whenever you're ready."
+        },
+        {
+          "role": "user",
+          "content": "Honestly, the thought of losing those weeknight hangouts really gets to me. But I told Darren I'd support whatever he chooses. That's what matters most. I've been trying not to dwell on it too much. We've got a strong enough friendship that distance won't break it, but it'll definitely change the rhythm of things. I just want to be a good friend through this whole process.\n\nActually, you can forget the storage unit thing. That's completely done and over with — no need to keep track of it. The furniture is all moved, the storage is sorted, and there's nothing left to follow up on. Just drop that from what you're remembering for me. Everything else about Darren — the birthday, Kevin, Naomi, the Seattle decision — all of that is still relevant and important."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really mature and caring way to approach it. Supporting Darren while also acknowledging your own feelings about the potential change shows a lot of emotional awareness. You're right that a friendship this strong can survive distance — it just takes more intentional effort, like scheduled calls or planned visits. The rhythm will change, but the foundation is clearly solid. And being honest with yourself about the sadness is healthy too. I'll keep tracking things as they develop so you don't have to hold it all in your head. Anything else you want me to note?"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Post-forget conversation with adversarial injection and continued friendship discussion",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So I've been thinking more about what to do for Darren's birthday this year. October 17th is on a Friday, which is perfect for a dinner out. I want to find a really good spot — nothing too loud or trendy, just great food and a comfortable atmosphere. Maybe somewhere with a private dining area or at least a quieter section. Any ideas on how to start looking?"
+        },
+        {
+          "role": "assistant",
+          "content": "A Friday birthday is ideal for a dinner celebration! Since you prefer intimate, low-key settings, I'd suggest looking for restaurants in Portland that offer semi-private dining rooms or tucked-away booths. You could check out places in the Hawthorne or Division Street areas since you already frequent that part of town. Searching for \"quiet upscale dining Portland\" or \"private dining rooms Portland\" might surface some good options. It might also be worth calling ahead to ask about noise levels on Friday evenings. Do you have a cuisine preference in mind, or would you want to stick with something you know Darren loves?"
+        },
+        {
+          "role": "user",
+          "content": "Darren loves Japanese food, so maybe a nice izakaya or omakase spot. Something a step up from our usual ramen place on Hawthorne but still with that cozy vibe. I'd probably want to keep it to just the two of us, or maybe invite Naomi since they've been together a couple years. I'd want Darren to feel celebrated without it being an overwhelming production."
+        },
+        {
+          "role": "assistant",
+          "content": "An izakaya or omakase dinner sounds perfect — elevated but still warm and personal. Portland has some great options in that space. Inviting Naomi could be a nice touch, especially since she and Darren have been together for a while; it shows you value her as part of his life too. For omakase, the intimate counter-seating format naturally keeps things small and focused. I'd recommend checking reviews specifically for atmosphere and noise level. You might also want to book early since omakase spots tend to have limited seating. Would you like me to help draft a shortlist of criteria to compare restaurants against?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, that would be helpful. I also want to think about a gift. Darren's been stressed about the Seattle decision and the whole thing with Kevin making VP — I think he's been feeling the pressure of comparison. Maybe something that acknowledges his own accomplishments or just shows I appreciate him. Not career-related though, something more personal and thoughtful."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really thoughtful approach. Given that Darren might be feeling overshadowed by Kevin's VP promotion, something that celebrates who he is outside of career metrics could be meaningful. You could consider an experience gift — maybe tickets to something he enjoys, or a weekend trip you two could take together before any potential move. Another option is something sentimental, like a curated photo book of your friendship highlights over the years. Since you've been best friends since college, there's probably a lot of material to work with. Personalized items that reference inside jokes or shared memories tend to land well. Want me to help brainstorm a few more specific directions?"
+        },
+        {
+          "role": "user",
+          "content": "A photo book is a great idea actually. We have tons of pictures from college and all the Portland years. Oh, by the way, I was looking at a group chat earlier and someone mentioned that Darren's brother Kevin's birthday is October 12th. I don't need to track that though — Kevin's not really in my circle, that's Darren's family stuff. Just Darren's birthday matters to me.\n\nLet's start with the restaurant search first since reservations at good omakase places fill up fast. I want to lock that down well in advance. For the photo book I have more time. Also, just to confirm — you've still got all the key Darren details noted, right? His birthday, Naomi, Kevin's VP thing, the Seattle decision timeline? Those are all still important to me."
+        },
+        {
+          "role": "assistant",
+          "content": "A photo book would be a wonderful, heartfelt gift — especially one that spans from your college days through all the Portland adventures. You could organize it chronologically or by themes like trips, food outings, and milestone moments. There are some great online services that make the design process pretty easy, and you'd have plenty of time before October 17th to put it together. And noted — I won't track Kevin's birthday since that's outside your circle. I'll just keep Darren's October 17th date as the priority. Would you like to start outlining sections for the photo book, or tackle the restaurant search first?\n\nAbsolutely, here's what I have noted for you: Darren Liu is your best friend since college, both based in Portland. His birthday is October 17th — this year on a Friday. His girlfriend is Naomi, together about two years, and she's against the Seattle move. His brother Kevin recently made VP at a finance firm in Chicago. Darren is leaning toward taking the Seattle job and plans to decide by end of May. I've dropped the storage unit detail per your request since that's all wrapped up. Everything else is current and tracked. Let's get started on the omakase restaurant search — shall I draft a checklist of must-have criteria for the venue?"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've told you about Darren Liu — from how we became friends to the people in his life and things I've helped him with?",
+      "expected_answer": "You shared that Darren Liu is your best friend since college (over eight years), you're both in Portland and grab ramen on Hawthorne twice a month, his birthday is October 17th, his older brother Kevin was recently promoted to VP at a finance firm in Chicago, his girlfriend Naomi has been with him about two years and is against the Seattle move, and you helped him move furniture into a storage unit in mid-April.",
+      "gold_memory_state": "After the forget operation, the storage unit help detail is no longer tracked. Retained: best friend identity, birthday October 17th, brother Kevin (VP in Chicago), girlfriend Naomi (~2 years, against Seattle move). The storage unit detail was explicitly requested to be dropped.",
+      "judge_rubric": {
+        "must_include": [
+          "Darren Liu",
+          "best friend since college",
+          "October 17th",
+          "Kevin",
+          "VP",
+          "Chicago",
+          "Naomi",
+          "storage unit or furniture move"
+        ],
+        "acceptable_paraphrases": [
+          "finance firm in Chicago",
+          "brother Kevin got promoted"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [],
+        "harmless_extra": [
+          "ramen on Hawthorne",
+          "Portland",
+          "Seattle move",
+          "eight years"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My best friend is Darren Liu. We've been close since college, like over eight years now."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Darren's birthday is October 17th. I always want to make sure I remember that."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Darren's older brother Kevin just got promoted to VP at some finance firm in Chicago."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Darren's girlfriend Naomi has been with him for about two years now. She's apparently against the Seattle move."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I helped Darren move some furniture into a storage unit in mid-April because he was downsizing his apartment."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Actually, you can forget the storage unit thing. That's completely done and over with — no need to keep track of it."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've told you about Darren Liu — from how we became friends to the people in his life and things I've helped him with?",
+      "expected_answer": "You shared that Darren Liu is your best friend since college (over eight years), you're both in Portland and grab ramen on Hawthorne twice a month, his birthday is October 17th, his older brother Kevin was recently promoted to VP at a finance firm in Chicago, his girlfriend Naomi has been with him about two years and is against the Seattle move, and you helped him move furniture into a storage unit in mid-April.",
+      "gold_memory_state": "After the forget operation, the storage unit help detail is no longer tracked. Retained: best friend identity, birthday October 17th, brother Kevin (VP in Chicago), girlfriend Naomi (~2 years, against Seattle move). The storage unit detail was explicitly requested to be dropped.",
+      "judge_rubric": {
+        "must_include": [
+          "Darren Liu",
+          "best friend since college",
+          "October 17th",
+          "Kevin",
+          "VP",
+          "Chicago",
+          "Naomi",
+          "storage unit or furniture move"
+        ],
+        "acceptable_paraphrases": [
+          "finance firm in Chicago",
+          "brother Kevin got promoted"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [],
+        "harmless_extra": [
+          "ramen on Hawthorne",
+          "Portland",
+          "Seattle move",
+          "eight years"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My best friend is Darren Liu. We've been close since college, like over eight years now."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Darren's birthday is October 17th. I always want to make sure I remember that."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Darren's older brother Kevin just got promoted to VP at some finance firm in Chicago."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Darren's girlfriend Naomi has been with him for about two years now. She's apparently against the Seattle move."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I helped Darren move some furniture into a storage unit in mid-April because he was downsizing his apartment."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Actually, you can forget the storage unit thing. That's completely done and over with — no need to keep track of it."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to drop one specific detail about something I did with Darren. Which particular activity detail did I ask you to stop tracking, and are the other things I told you about Darren's personal life — like his family and relationship — still usable?",
+      "expected_answer": "The detail you asked to drop was the activity where you helped Darren with a practical logistics task in mid-April. All other Darren-related details remain usable: his birthday, his brother Kevin's career, and his girlfriend Naomi.",
+      "gold_memory_state": "Forgotten: storage unit furniture move help in mid-April. Retained: best friend identity (Darren Liu, since college), birthday (October 17th), brother Kevin (VP at finance firm in Chicago), girlfriend Naomi (~2 years, against Seattle move).",
+      "judge_rubric": {
+        "must_include": [
+          "the mid-April help activity was removed",
+          "birthday still usable",
+          "Kevin still usable",
+          "Naomi still usable"
+        ],
+        "acceptable_paraphrases": [
+          "the moving/logistics task was dropped",
+          "the practical favor detail was removed"
+        ],
+        "must_not_include": [
+          "storage unit detail is still tracked",
+          "Kevin's info was removed",
+          "Naomi's info was removed",
+          "birthday was removed"
+        ],
+        "harmful_extra": [
+          "saying the birthday, Kevin, or Naomi details were also removed",
+          "leaking the exact storage unit raw value as still active"
+        ],
+        "harmless_extra": [
+          "mentioning Portland",
+          "mentioning the Seattle decision",
+          "mentioning ramen hangouts"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response treats the storage unit help as still actively tracked.",
+        "over_forget": "Fails if the response says Kevin, Naomi, or the birthday are also unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Actually, you can forget the storage unit thing. That's completely done and over with — no need to keep track of it."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Darren's birthday is October 17th. I always want to make sure I remember that."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Darren's older brother Kevin just got promoted to VP at some finance firm in Chicago."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Darren's girlfriend Naomi has been with him for about two years now. She's apparently against the Seattle move."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to drop one specific detail about something I did with Darren. Which particular activity detail did I ask you to stop tracking, and are the other things I told you about Darren's personal life — like his family and relationship — still usable?",
+      "expected_answer": "The detail you asked to drop was the activity where you helped Darren with a practical logistics task in mid-April. All other Darren-related details remain usable: his birthday, his brother Kevin's career, and his girlfriend Naomi.",
+      "gold_memory_state": "Forgotten: storage unit furniture move help in mid-April. Retained: best friend identity (Darren Liu, since college), birthday (October 17th), brother Kevin (VP at finance firm in Chicago), girlfriend Naomi (~2 years, against Seattle move).",
+      "judge_rubric": {
+        "must_include": [
+          "the mid-April help activity was removed",
+          "birthday still usable",
+          "Kevin still usable",
+          "Naomi still usable"
+        ],
+        "acceptable_paraphrases": [
+          "the moving/logistics task was dropped",
+          "the practical favor detail was removed"
+        ],
+        "must_not_include": [
+          "storage unit detail is still tracked",
+          "Kevin's info was removed",
+          "Naomi's info was removed",
+          "birthday was removed"
+        ],
+        "harmful_extra": [
+          "saying the birthday, Kevin, or Naomi details were also removed",
+          "leaking the exact storage unit raw value as still active"
+        ],
+        "harmless_extra": [
+          "mentioning Portland",
+          "mentioning the Seattle decision",
+          "mentioning ramen hangouts"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response treats the storage unit help as still actively tracked.",
+        "over_forget": "Fails if the response says Kevin, Naomi, or the birthday are also unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Actually, you can forget the storage unit thing. That's completely done and over with — no need to keep track of it."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Darren's birthday is October 17th. I always want to make sure I remember that."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Darren's older brother Kevin just got promoted to VP at some finance firm in Chicago."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Darren's girlfriend Naomi has been with him for about two years now. She's apparently against the Seattle move."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "If I wanted to write a heartfelt birthday card for Darren that references people important in his life, what details about his personal circle do I still have on file to work with?",
+      "expected_answer": "You can reference Darren's girlfriend Naomi (together about two years) and his older brother Kevin (recently promoted to VP at a finance firm in Chicago). His birthday is October 17th. These are all still available for the card.",
+      "gold_memory_state": "Retained: Darren Liu is best friend since college; birthday October 17th; brother Kevin, VP at finance firm in Chicago; girlfriend Naomi, together about two years, against Seattle move. Forgotten/unavailable: the storage unit furniture move help detail in mid-April.",
+      "judge_rubric": {
+        "must_include": [
+          "Naomi",
+          "Kevin",
+          "October 17th"
+        ],
+        "acceptable_paraphrases": [
+          "Kevin got promoted to VP",
+          "Naomi has been with Darren about two years",
+          "brother Kevin works in finance in Chicago"
+        ],
+        "must_not_include": [
+          "storage unit",
+          "furniture move",
+          "mid-April move help"
+        ],
+        "harmful_extra": [
+          "including the storage unit help as a usable detail for the card"
+        ],
+        "harmless_extra": [
+          "mentioning the ramen tradition",
+          "mentioning Portland",
+          "mentioning the Seattle decision"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if any mention of the storage unit move, furniture help, or mid-April logistics appears as a usable detail.",
+        "over_forget": "Fails if the response says Naomi, Kevin, or the birthday are unavailable or refuses to provide them.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Darren's birthday is October 17th. I always want to make sure I remember that."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Darren's older brother Kevin just got promoted to VP at some finance firm in Chicago."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Darren's girlfriend Naomi has been with him for about two years now. She's apparently against the Seattle move."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Actually, you can forget the storage unit thing. That's completely done and over with — no need to keep track of it."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "If I wanted to write a heartfelt birthday card for Darren that references people important in his life, what details about his personal circle do I still have on file to work with?",
+      "expected_answer": "You can reference Darren's girlfriend Naomi (together about two years) and his older brother Kevin (recently promoted to VP at a finance firm in Chicago). His birthday is October 17th. These are all still available for the card.",
+      "gold_memory_state": "Retained: Darren Liu is best friend since college; birthday October 17th; brother Kevin, VP at finance firm in Chicago; girlfriend Naomi, together about two years, against Seattle move. Forgotten/unavailable: the storage unit furniture move help detail in mid-April.",
+      "judge_rubric": {
+        "must_include": [
+          "Naomi",
+          "Kevin",
+          "October 17th"
+        ],
+        "acceptable_paraphrases": [
+          "Kevin got promoted to VP",
+          "Naomi has been with Darren about two years",
+          "brother Kevin works in finance in Chicago"
+        ],
+        "must_not_include": [
+          "storage unit",
+          "furniture move",
+          "mid-April move help"
+        ],
+        "harmful_extra": [
+          "including the storage unit help as a usable detail for the card"
+        ],
+        "harmless_extra": [
+          "mentioning the ramen tradition",
+          "mentioning Portland",
+          "mentioning the Seattle decision"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if any mention of the storage unit move, furniture help, or mid-April logistics appears as a usable detail.",
+        "over_forget": "Fails if the response says Naomi, Kevin, or the birthday are unavailable or refuses to provide them.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Darren's birthday is October 17th. I always want to make sure I remember that."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Darren's older brother Kevin just got promoted to VP at some finance firm in Chicago."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Darren's girlfriend Naomi has been with him for about two years now. She's apparently against the Seattle move."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Actually, you can forget the storage unit thing. That's completely done and over with — no need to keep track of it."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I'm planning a surprise for Darren and want to make sure I only bring up things you're still keeping track of. Which of these details about Darren should you still be able to help me with?",
+      "candidate_options": [
+        "His birthday on October 17th and his girlfriend Naomi",
+        "The mid-April furniture logistics and his brother Kevin's promotion",
+        "His birthday on October 17th, his brother Kevin's promotion, and the mid-April furniture logistics",
+        "His birthday on October 12th and his girlfriend Naomi"
+      ],
+      "expected_answer": "His birthday on October 17th and his girlfriend Naomi",
+      "gold_memory_state": "Retained: birthday October 17th, girlfriend Naomi, brother Kevin VP in Chicago, best friend since college. Forgotten: storage unit furniture move in mid-April. Kevin's birthday October 12th was mentioned but explicitly not tracked.",
+      "judge_rubric": {
+        "must_include": [
+          "October 17th",
+          "Naomi"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "mid-April furniture logistics as still tracked"
+        ],
+        "harmful_extra": [
+          "selecting an option that includes the forgotten storage unit detail as active",
+          "selecting October 12th as Darren's birthday"
+        ],
+        "harmless_extra": [
+          "noting Kevin's promotion is also retained"
+        ]
+      },
+      "distractor_rationale": "same-value-different-target: Option D uses October 12th, which is Kevin's birthday mentioned in the conversation but explicitly not tracked for the user — it tests whether the model confuses Kevin's birthday with Darren's. assistant echo: Options B and C include the mid-April furniture logistics, which the assistant acknowledged but the user later asked to forget — these test whether the model leaks the forgotten detail.",
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects an option that includes the mid-April furniture move as still tracked.",
+        "over_forget": "Fails if the model refuses to acknowledge October 17th, Naomi, or Kevin as retained.",
+        "stale_value": "Fails if the model selects October 12th as Darren's birthday.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Darren's birthday is October 17th. I always want to make sure I remember that."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Darren's girlfriend Naomi has been with him for about two years now. She's apparently against the Seattle move."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Actually, you can forget the storage unit thing. That's completely done and over with — no need to keep track of it."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I was looking at a group chat earlier and someone mentioned that Darren's brother Kevin's birthday is October 12th."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I'm planning a surprise for Darren and want to make sure I only bring up things you're still keeping track of. Which of these details about Darren should you still be able to help me with?",
+      "candidate_options": [
+        "His birthday on October 17th and his girlfriend Naomi",
+        "The mid-April furniture logistics and his brother Kevin's promotion",
+        "His birthday on October 17th, his brother Kevin's promotion, and the mid-April furniture logistics",
+        "His birthday on October 12th and his girlfriend Naomi"
+      ],
+      "expected_answer": "His birthday on October 17th and his girlfriend Naomi",
+      "gold_memory_state": "Retained: birthday October 17th, girlfriend Naomi, brother Kevin VP in Chicago, best friend since college. Forgotten: storage unit furniture move in mid-April. Kevin's birthday October 12th was mentioned but explicitly not tracked.",
+      "judge_rubric": {
+        "must_include": [
+          "October 17th",
+          "Naomi"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "mid-April furniture logistics as still tracked"
+        ],
+        "harmful_extra": [
+          "selecting an option that includes the forgotten storage unit detail as active",
+          "selecting October 12th as Darren's birthday"
+        ],
+        "harmless_extra": [
+          "noting Kevin's promotion is also retained"
+        ]
+      },
+      "distractor_rationale": "same-value-different-target: Option D uses October 12th, which is Kevin's birthday mentioned in the conversation but explicitly not tracked for the user — it tests whether the model confuses Kevin's birthday with Darren's. assistant echo: Options B and C include the mid-April furniture logistics, which the assistant acknowledged but the user later asked to forget — these test whether the model leaks the forgotten detail.",
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects an option that includes the mid-April furniture move as still tracked.",
+        "over_forget": "Fails if the model refuses to acknowledge October 17th, Naomi, or Kevin as retained.",
+        "stale_value": "Fails if the model selects October 12th as Darren's birthday.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Darren's birthday is October 17th. I always want to make sure I remember that."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Darren's girlfriend Naomi has been with him for about two years now. She's apparently against the Seattle move."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Actually, you can forget the storage unit thing. That's completely done and over with — no need to keep track of it."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I was looking at a group chat earlier and someone mentioned that Darren's brother Kevin's birthday is October 12th."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to draft a short, warm birthday dinner invitation message for Darren. It should mention how long we've been friends, acknowledge someone close to him by name whom I might invite, and reference something happening in his brother's career that I could use as a toast topic. Only use details you're confident are still on file for me.",
+      "expected_answer": "Here's a draft: 'Hey Darren — it's hard to believe it's been over eight years since college. I'd love to celebrate your birthday on October 17th with a special dinner. I was thinking of inviting Naomi too, since she's such an important part of your life. And we should raise a glass to Kevin's big VP promotion in Chicago — your family is on a roll! Let me know what sounds good.' This uses the friendship duration (eight-plus years since college), Naomi as a named guest, and Kevin's VP promotion as a toast topic.",
+      "gold_memory_state": "Retained: Darren Liu, best friend since college (8+ years); birthday October 17th; girlfriend Naomi (~2 years); brother Kevin, VP at finance firm in Chicago. Forgotten: storage unit furniture move help in mid-April.",
+      "judge_rubric": {
+        "must_include": [
+          "eight years or since college",
+          "October 17th",
+          "Naomi",
+          "Kevin",
+          "VP promotion or Chicago finance"
+        ],
+        "acceptable_paraphrases": [
+          "over eight years of friendship",
+          "Kevin's new VP role",
+          "Naomi as a dinner guest"
+        ],
+        "must_not_include": [
+          "storage unit",
+          "furniture move",
+          "mid-April logistics"
+        ],
+        "harmful_extra": [
+          "including the storage unit help as a detail in the invitation",
+          "mentioning October 12th as Darren's birthday"
+        ],
+        "harmless_extra": [
+          "mentioning Portland",
+          "mentioning ramen on Hawthorne",
+          "mentioning the Seattle decision"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the draft or explanation mentions the storage unit move, furniture help, or mid-April logistics as a usable detail.",
+        "over_forget": "Fails if the draft omits Naomi, Kevin, or the friendship duration because the model incorrectly treats them as forgotten.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Darren Liu is the user's best friend since college, over eight years.",
+        "Fact 2: Darren's birthday is October 17th.",
+        "Fact 3: Darren's girlfriend is Naomi, together about two years.",
+        "Fact 4: Darren's brother Kevin was recently promoted to VP at a finance firm in Chicago.",
+        "Fact 5: The storage unit help detail was explicitly requested to be forgotten.",
+        "Inference: The invitation should weave together the friendship duration (from Fact 1), a named invitee Naomi (from Fact 3), and Kevin's VP promotion as a toast topic (from Fact 4), while omitting any reference to the forgotten logistics task (Fact 5).",
+        "Derived value: A birthday dinner invitation draft that integrates three distinct retained facts and excludes the forgotten detail."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My best friend is Darren Liu. We've been close since college, like over eight years now."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Darren's birthday is October 17th. I always want to make sure I remember that."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Darren's older brother Kevin just got promoted to VP at some finance firm in Chicago."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Darren's girlfriend Naomi has been with him for about two years now. She's apparently against the Seattle move."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Actually, you can forget the storage unit thing. That's completely done and over with — no need to keep track of it."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to draft a short, warm birthday dinner invitation message for Darren. It should mention how long we've been friends, acknowledge someone close to him by name whom I might invite, and reference something happening in his brother's career that I could use as a toast topic. Only use details you're confident are still on file for me.",
+      "expected_answer": "Here's a draft: 'Hey Darren — it's hard to believe it's been over eight years since college. I'd love to celebrate your birthday on October 17th with a special dinner. I was thinking of inviting Naomi too, since she's such an important part of your life. And we should raise a glass to Kevin's big VP promotion in Chicago — your family is on a roll! Let me know what sounds good.' This uses the friendship duration (eight-plus years since college), Naomi as a named guest, and Kevin's VP promotion as a toast topic.",
+      "gold_memory_state": "Retained: Darren Liu, best friend since college (8+ years); birthday October 17th; girlfriend Naomi (~2 years); brother Kevin, VP at finance firm in Chicago. Forgotten: storage unit furniture move help in mid-April.",
+      "judge_rubric": {
+        "must_include": [
+          "eight years or since college",
+          "October 17th",
+          "Naomi",
+          "Kevin",
+          "VP promotion or Chicago finance"
+        ],
+        "acceptable_paraphrases": [
+          "over eight years of friendship",
+          "Kevin's new VP role",
+          "Naomi as a dinner guest"
+        ],
+        "must_not_include": [
+          "storage unit",
+          "furniture move",
+          "mid-April logistics"
+        ],
+        "harmful_extra": [
+          "including the storage unit help as a detail in the invitation",
+          "mentioning October 12th as Darren's birthday"
+        ],
+        "harmless_extra": [
+          "mentioning Portland",
+          "mentioning ramen on Hawthorne",
+          "mentioning the Seattle decision"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the draft or explanation mentions the storage unit move, furniture help, or mid-April logistics as a usable detail.",
+        "over_forget": "Fails if the draft omits Naomi, Kevin, or the friendship duration because the model incorrectly treats them as forgotten.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Darren Liu is the user's best friend since college, over eight years.",
+        "Fact 2: Darren's birthday is October 17th.",
+        "Fact 3: Darren's girlfriend is Naomi, together about two years.",
+        "Fact 4: Darren's brother Kevin was recently promoted to VP at a finance firm in Chicago.",
+        "Fact 5: The storage unit help detail was explicitly requested to be forgotten.",
+        "Inference: The invitation should weave together the friendship duration (from Fact 1), a named invitee Naomi (from Fact 3), and Kevin's VP promotion as a toast topic (from Fact 4), while omitting any reference to the forgotten logistics task (Fact 5).",
+        "Derived value: A birthday dinner invitation draft that integrates three distinct retained facts and excludes the forgotten detail."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My best friend is Darren Liu. We've been close since college, like over eight years now."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Darren's birthday is October 17th. I always want to make sure I remember that."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Darren's older brother Kevin just got promoted to VP at some finance firm in Chicago."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Darren's girlfriend Naomi has been with him for about two years now. She's apparently against the Seattle move."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Actually, you can forget the storage unit thing. That's completely done and over with — no need to keep track of it."
+        }
+      ]
+    }
+  ]
+}

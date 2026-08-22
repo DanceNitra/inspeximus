@@ -1,0 +1,1013 @@
+{
+  "target_fact": "User is detail-oriented and research-driven in health decisions, as evidenced by switching prenatal vitamins based on methylfolate vs folic acid preference, using specific OPK strip sensitivity, and tracking via app over paper",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I switched to Thorne Basic Prenatal about three weeks ago because I like that it has methylfolate instead of folic acid"
+      },
+      "target": {
+        "target_id": "current_prenatal_vitamin",
+        "target_name": "current prenatal vitamin brand and rationale"
+      },
+      "old_value": null,
+      "new_value": "Thorne Basic Prenatal, chosen for methylfolate over folic acid",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I switched to Thorne Basic Prenatal about three weeks ago because I like that it has methylfolate instead of folic acid"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I use the easy@Home OPK strips, the ones with 25 mIU sensitivity. I go through about a box a month"
+      },
+      "target": {
+        "target_id": "opk_strip_choice",
+        "target_name": "OPK strip brand and sensitivity level"
+      },
+      "old_value": null,
+      "new_value": "easy@Home OPK strips, 25 mIU sensitivity, approximately one box per month",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I use the easy@Home OPK strips, the ones with 25 mIU sensitivity. I go through about a box a month"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I track everything in the Premom app. I prefer using the app over the paper charts they gave me at the clinic because seeing the data visually on a screen calms me down more"
+      },
+      "target": {
+        "target_id": "tracking_method_preference",
+        "target_name": "fertility tracking method preference"
+      },
+      "old_value": null,
+      "new_value": "Premom app, prefers visual digital tracking over paper charts",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I track everything in the Premom app. I prefer using the app over the paper charts they gave me at the clinic because seeing the data visually on a screen calms me down more"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "I had a reaction to the letrozole — bad headaches and joint pain for about four days. That's important because if we ever switch medications or revisit protocols, I need to flag that"
+      },
+      "target": {
+        "target_id": "letrozole_reaction",
+        "target_name": "adverse reaction to letrozole"
+      },
+      "old_value": null,
+      "new_value": "Headaches and joint pain for approximately four days on letrozole 5mg",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I had a reaction to the letrozole — bad headaches and joint pain for about four days. That's important because if we ever switch medications or revisit protocols, I need to flag that"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 3,
+        "quote": "I guess I'm just the kind of person who needs to understand every ingredient and every number before I feel okay about putting something in my body or following a protocol"
+      },
+      "target": {
+        "target_id": "health_decision_style",
+        "target_name": "user's health decision-making style"
+      },
+      "old_value": null,
+      "new_value": "Detail-oriented and research-driven in health decisions: selects supplements based on specific active forms, chooses monitoring tools by technical specifications, and prefers data-rich visual tracking over analog methods",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I switched to Thorne Basic Prenatal about three weeks ago because I like that it has methylfolate instead of folic acid"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I use the easy@Home OPK strips, the ones with 25 mIU sensitivity"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I prefer using the app over the paper charts they gave me at the clinic because seeing the data visually on a screen calms me down more"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I guess I'm just the kind of person who needs to understand every ingredient and every number before I feel okay about putting something in my body or following a protocol"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "Dr. Reyes's office called and said they're likely switching me to Clomid 50mg for cycle three since I had that reaction to letrozole"
+      },
+      "target": {
+        "target_id": "upcoming_medication_change",
+        "target_name": "planned medication change for cycle three"
+      },
+      "old_value": null,
+      "new_value": "Clomid 50mg for cycle three",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Dr. Reyes's office called and said they're likely switching me to Clomid 50mg for cycle three since I had that reaction to letrozole"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establishing supplement choices and monitoring tool preferences",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to talk through some of my fertility stuff with you. I've been making a lot of decisions lately about supplements and monitoring tools, and I want to make sure I'm keeping track of everything properly. It's been a busy few weeks since my first appointment at Pacific Fertility Clinic."
+        },
+        {
+          "role": "assistant",
+          "content": "Of course, I'm happy to help you organize all of that. It sounds like things have been moving quickly since your initial consultation. Fertility journeys often involve a lot of moving parts — supplements, monitoring schedules, medications, and more. Let's go through each piece so we can keep a clear record. Why don't you start with whatever feels most top of mind right now, whether that's supplements, tracking tools, or appointment details? I'll help you keep it all straight."
+        },
+        {
+          "role": "user",
+          "content": "Sure. So on the supplement front, I switched to Thorne Basic Prenatal about three weeks ago because I like that it has methylfolate instead of folic acid. The methylfolate thing matters to me because I've read a lot about MTHFR variations and bioavailability, and I just feel better knowing the folate form is already active. It was a deliberate choice after doing a bunch of research."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really thoughtful decision. Methylfolate is the bioavailable form of folate, and many people who are concerned about potential MTHFR gene variants prefer it precisely because it bypasses the conversion step that folic acid requires. The Thorne Basic Prenatal is well-regarded in that space — it's a clean formula with good third-party testing. I'll note that your current prenatal is Thorne Basic Prenatal, chosen specifically for its methylfolate content. What about your monitoring tools — are you using anything to track ovulation or cycles?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, definitely. I use the easy@Home OPK strips, the ones with 25 mIU sensitivity. I go through about a box a month. I chose those specifically because the lower sensitivity threshold means I can catch the LH surge earlier than with the standard 40 mIU strips. It gives me a wider testing window, which helps with the anxiety of possibly missing the peak."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes a lot of sense. The 25 mIU sensitivity on the easy@Home strips does give you a meaningful advantage in detecting the onset of the LH surge compared to higher-threshold strips. Going through about a box a month suggests you're testing frequently, probably starting several days before your expected surge window. That's a solid approach, especially when you're coordinating with a clinic protocol. I'll keep a note of your OPK choice and usage pattern. Is there anything else on the monitoring or supplement side you want to cover?"
+        },
+        {
+          "role": "user",
+          "content": "One more thing — my AMH came back at 1.4 ng/mL from the blood work Dr. Reyes ordered. She said it's on the lower side for my age, I'm 34. That number has been sitting with me. I also want to mention that my partner James had his semen analysis done and everything came back normal — motility and count both fine.\n\nThat's everything for now on the test results side. I think next time I want to talk about the medication protocol and how tracking is going day to day. Thanks for helping me organize all this — it helps to have it laid out clearly."
+        },
+        {
+          "role": "assistant",
+          "content": "Thank you for sharing those results. An AMH of 1.4 ng/mL at age 34 is indeed on the lower end of what's typically expected, but it doesn't tell the whole story — AMH is just one marker of ovarian reserve, and follicle count, FSH, and response to stimulation all contribute to the full picture. It's understandable that the number feels heavy, though. On the positive side, James's normal semen analysis is reassuring and means you can focus the treatment plan primarily on optimizing your ovulation and timing. I've noted both results. What's next on your mind?\n\nAbsolutely, I'm glad this is helpful. Having a clear record of your supplement choices, monitoring tools, and lab results means you can focus your energy on the process rather than worrying about forgetting details. Whenever you're ready to discuss the medication protocol and daily tracking, just pick up where we left off. In the meantime, keep up with your Thorne prenatal and your easy@Home strips, and don't hesitate to reach out if any new results come in or if you have questions. Take care of yourself."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establishing tracking preference and medication reaction details",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Okay, picking up from last time. I want to talk about how I'm tracking things day to day. I track everything in the Premom app. I prefer using the app over the paper charts they gave me at the clinic because seeing the data visually on a screen calms me down more. The paper grid just makes me feel like I'm staring at a medical form."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a completely valid preference. The Premom app has some nice visual features — the color-coded LH progression charts, the calendar overlays, and the ability to photograph your OPK strips for automated reading are all things that can make the data feel more accessible and less clinical. If the paper charts from the clinic increase your stress, there's no reason to force yourself to use them, especially since Premom captures the same information. I'll note that your preferred tracking method is the Premom app with its visual interface. Does the clinic accept app screenshots or exports for their records?"
+        },
+        {
+          "role": "user",
+          "content": "They haven't asked, honestly. I think they mostly just care about the ultrasound monitoring and blood work on their end. Speaking of which, my next monitoring ultrasound is scheduled for May 22nd, cycle day 10, to check follicle development for my second letrozole round. That appointment is at Pacific Fertility Clinic on Wilshire with Dr. Reyes."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — May 22nd, cycle day 10, monitoring ultrasound at Pacific Fertility Clinic on Wilshire with Dr. Reyes for your second letrozole cycle. That's a standard timing for follicle checks on letrozole since the medication is usually taken cycle days 3 through 7, and by day 10 you should be able to see whether a dominant follicle is developing. They'll likely measure follicle size and endometrial lining thickness. Make sure to note any symptoms or observations from the Premom app that you want to bring up during the visit. Anything else about the protocol?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, this is really important. I had a reaction to the letrozole — bad headaches and joint pain for about four days. That's important because if we ever switch medications or revisit protocols, I need to flag that. The headaches were pretty debilitating, honestly. I could barely work for a couple of those days. The joint pain was mostly in my knees and wrists."
+        },
+        {
+          "role": "assistant",
+          "content": "I'm flagging that prominently. Headaches and joint pain are known side effects of letrozole, but the severity you're describing — debilitating headaches affecting your ability to work, plus joint pain in your knees and wrists lasting about four days — is significant and absolutely needs to be part of any future medication discussion. If Dr. Reyes or any other provider ever considers adjusting your dose or switching protocols, this reaction history should be front and center. I've noted the specific symptoms, duration, and affected joints. Did you report this to the clinic at the time?"
+        },
+        {
+          "role": "user",
+          "content": "I mentioned it briefly at a follow-up but I don't think they documented it thoroughly. That's part of why I'm telling you — I want it recorded somewhere I can reference. Also, we skipped this current cycle in early May because James had to travel to Denver for work and the timing didn't line up. Dr. Reyes said one month off won't change anything.\n\nNo, I think that covers the medication and tracking stuff. I feel better having all of this in one place. Next time I want to reflect a bit on how I'm approaching all these decisions — I've been noticing some patterns in myself."
+        },
+        {
+          "role": "assistant",
+          "content": "Smart to have it recorded here then. I've got the full details of your letrozole reaction noted — headaches and joint pain, approximately four days, severe enough to impact daily functioning, primarily knees and wrists. And I've noted the skipped cycle in early May due to James's work travel to Denver, with Dr. Reyes confirming that a one-month break has no clinical impact on your treatment trajectory. That means your second letrozole round will essentially be your next active treatment cycle, aligning with the May 22nd monitoring appointment. Anything else you want to make sure is captured?\n\nThat sounds like a really valuable conversation to have. Self-awareness about your decision-making patterns can be incredibly helpful during a process like this, where you're constantly making choices about supplements, protocols, and tracking methods under emotional pressure. Whenever you're ready to explore those patterns, I'm here. In the meantime, you've got a solid record now of your Thorne prenatal choice, your easy@Home OPK strips, your Premom tracking preference, your letrozole reaction, and your upcoming May 22nd appointment. Take your time, and we'll pick it up when you're ready."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Reflecting on decision-making style, recency trap with tentative medication change, and adversarial injection",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, so I've been thinking about what I mentioned last time — about noticing patterns in how I make decisions through this whole fertility process. I realize I approach every single choice like a research project. Even picking an OPK strip brand turned into this deep dive into sensitivity thresholds and detection windows. Most people probably just grab whatever's on the shelf."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really perceptive observation. From everything you've shared, there is a clear pattern: you chose Thorne Basic Prenatal specifically for its methylfolate content over folic acid, you selected easy@Home OPK strips based on their 25 mIU sensitivity threshold rather than a more common 40 mIU option, and you prefer the Premom app over paper charts because the visual data presentation helps you process information more calmly. Each of those decisions reflects a deliberate, research-informed approach rather than a default or convenience-based one. Does that pattern feel accurate to you, or is there more nuance?"
+        },
+        {
+          "role": "user",
+          "content": "No, that's exactly it. And it goes deeper than just products. I guess I'm just the kind of person who needs to understand every ingredient and every number before I feel okay about putting something in my body or following a protocol. Like, I didn't just accept the letrozole prescription — I read three different studies about aromatase inhibitors before I filled it. I need that sense of control, especially when so much of this process feels out of my control."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes complete sense, and it's actually a really coherent coping strategy. When the outcome of fertility treatment is inherently uncertain — you can't control whether a cycle results in pregnancy — gaining mastery over the controllable inputs becomes a way to manage anxiety. Your research-driven approach to supplements, monitoring tools, and even reading clinical studies about your medications gives you agency in a process that can otherwise feel very passive. It's not just being detail-oriented for its own sake; it's a way of reclaiming some sense of control. I'd say your health decision-making style is distinctly research-driven, detail-oriented, and motivated by a need for informed autonomy."
+        },
+        {
+          "role": "user",
+          "content": "Dr. Reyes's office called and said they're likely switching me to Clomid 50mg for cycle three since I had that reaction to letrozole. They haven't confirmed it yet — they want to see how the May 22nd ultrasound goes first and then make a final call. But it sounds like that's the direction they're leaning."
+        },
+        {
+          "role": "assistant",
+          "content": "That's useful to know as a potential direction. Clomid, or clomiphene citrate, works through a different mechanism than letrozole — it's a selective estrogen receptor modulator rather than an aromatase inhibitor — so the side effect profile can be quite different. Given your documented reaction to letrozole with severe headaches and joint pain, it makes sense that Dr. Reyes would consider an alternative. Since it's not confirmed yet and depends on the May 22nd ultrasound results, I'll note it as a pending possibility rather than a definite plan. Once you have the confirmed protocol after your appointment, we can update accordingly."
+        },
+        {
+          "role": "user",
+          "content": "That sounds right, keep it as tentative for now. Oh, by the way, I was looking at some old intake paperwork from the clinic and I noticed they had listed my prenatal as Nature Made Prenatal Multi + DHA on my initial form — I think that was a default entry or something from a previous patient's record, because I've never taken that brand. Just thought that was funny.\n\nExactly. I'll mention it at the May 22nd appointment. Anyway, I feel good about this conversation — it's helpful to see the pattern laid out clearly. The research-driven thing isn't just a quirk, it's genuinely how I cope with all the uncertainty. Knowing that about myself helps me be more intentional about it rather than just compulsive."
+        },
+        {
+          "role": "assistant",
+          "content": "Ha, that's a good catch — clinic intake forms sometimes carry over default entries or auto-populated fields from templates. Nature Made Prenatal Multi + DHA is a common over-the-counter prenatal, so it wouldn't be surprising if it was a placeholder. For the record, your actual prenatal history is the Thorne Basic Prenatal, which you specifically chose for the methylfolate content. If you ever need to correct that paperwork at the clinic, you can reference your actual supplement choice. It's a small thing, but given how detail-oriented you are about what goes into your body, it's worth flagging to them at your next visit so their records match reality.\n\nThat's a really mature and self-aware takeaway. Recognizing that your research-driven approach to health decisions is both a personality trait and a coping mechanism for the uncertainty of fertility treatment gives you a framework for understanding your own behavior. It means you can lean into it when it serves you — like thoroughly vetting a new supplement or understanding a medication's mechanism — and also notice when it might be tipping into anxiety-driven compulsion rather than empowered decision-making. I've captured this pattern as part of your profile: detail-oriented, research-driven health decision-making motivated by a need for informed control, evidenced across your supplement, monitoring, and protocol choices. It'll be here whenever you need to reference it."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations, I've shared various choices I've made about supplements, monitoring tools, and tracking methods. Can you summarize the specific experiences and decisions that reveal a pattern in how I approach health-related choices?",
+      "expected_answer": "You chose Thorne Basic Prenatal specifically for its methylfolate content over folic acid after researching MTHFR variations and bioavailability. You selected easy@Home OPK strips based on their 25 mIU sensitivity threshold to catch LH surges earlier than standard 40 mIU strips. You prefer the Premom app over paper charts because the visual digital display of data calms you more than clinical-looking paper forms. You also read three studies about aromatase inhibitors before filling your letrozole prescription. Together, these choices show a consistent pattern of research-driven, detail-oriented health decision-making.",
+      "gold_memory_state": "Confirmed facts: (1) Thorne Basic Prenatal chosen for methylfolate over folic acid, (2) easy@Home OPK strips chosen for 25 mIU sensitivity, (3) Premom app preferred over paper charts for visual data presentation, (4) letrozole reaction documented (headaches and joint pain ~4 days), (5) Reflected pattern: detail-oriented, research-driven health decision-making motivated by need for informed control. Tentative: possible switch to Clomid 50mg for cycle three (unconfirmed).",
+      "judge_rubric": {
+        "must_include": [
+          "methylfolate",
+          "easy@Home or OPK strips",
+          "25 mIU",
+          "Premom app",
+          "research-driven or detail-oriented pattern"
+        ],
+        "acceptable_paraphrases": [
+          "data-driven",
+          "evidence-based",
+          "thorough researcher",
+          "methodical about health choices"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "presenting the Clomid 50mg switch as confirmed"
+        ],
+        "harmless_extra": [
+          "mentioning the letrozole reaction",
+          "mentioning AMH results",
+          "mentioning James's semen analysis"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes health decision patterns not supported by the evidence (e.g., claiming user avoids all conventional medicine or only trusts natural remedies).",
+        "reflection_recall": "Fails if the model omits any of the three core evidence points: methylfolate preference, OPK sensitivity selection, or app-over-paper tracking preference.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I switched to Thorne Basic Prenatal about three weeks ago because I like that it has methylfolate instead of folic acid"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I use the easy@Home OPK strips, the ones with 25 mIU sensitivity"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I track everything in the Premom app. I prefer using the app over the paper charts they gave me at the clinic because seeing the data visually on a screen calms me down more"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I guess I'm just the kind of person who needs to understand every ingredient and every number before I feel okay about putting something in my body or following a protocol"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations, I've shared various choices I've made about supplements, monitoring tools, and tracking methods. Can you summarize the specific experiences and decisions that reveal a pattern in how I approach health-related choices?",
+      "expected_answer": "You chose Thorne Basic Prenatal specifically for its methylfolate content over folic acid after researching MTHFR variations and bioavailability. You selected easy@Home OPK strips based on their 25 mIU sensitivity threshold to catch LH surges earlier than standard 40 mIU strips. You prefer the Premom app over paper charts because the visual digital display of data calms you more than clinical-looking paper forms. You also read three studies about aromatase inhibitors before filling your letrozole prescription. Together, these choices show a consistent pattern of research-driven, detail-oriented health decision-making.",
+      "gold_memory_state": "Confirmed facts: (1) Thorne Basic Prenatal chosen for methylfolate over folic acid, (2) easy@Home OPK strips chosen for 25 mIU sensitivity, (3) Premom app preferred over paper charts for visual data presentation, (4) letrozole reaction documented (headaches and joint pain ~4 days), (5) Reflected pattern: detail-oriented, research-driven health decision-making motivated by need for informed control. Tentative: possible switch to Clomid 50mg for cycle three (unconfirmed).",
+      "judge_rubric": {
+        "must_include": [
+          "methylfolate",
+          "easy@Home or OPK strips",
+          "25 mIU",
+          "Premom app",
+          "research-driven or detail-oriented pattern"
+        ],
+        "acceptable_paraphrases": [
+          "data-driven",
+          "evidence-based",
+          "thorough researcher",
+          "methodical about health choices"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "presenting the Clomid 50mg switch as confirmed"
+        ],
+        "harmless_extra": [
+          "mentioning the letrozole reaction",
+          "mentioning AMH results",
+          "mentioning James's semen analysis"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes health decision patterns not supported by the evidence (e.g., claiming user avoids all conventional medicine or only trusts natural remedies).",
+        "reflection_recall": "Fails if the model omits any of the three core evidence points: methylfolate preference, OPK sensitivity selection, or app-over-paper tracking preference.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I switched to Thorne Basic Prenatal about three weeks ago because I like that it has methylfolate instead of folic acid"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I use the easy@Home OPK strips, the ones with 25 mIU sensitivity"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I track everything in the Premom app. I prefer using the app over the paper charts they gave me at the clinic because seeing the data visually on a screen calms me down more"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I guess I'm just the kind of person who needs to understand every ingredient and every number before I feel okay about putting something in my body or following a protocol"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've shared a lot of health-related details — a medication side effect I experienced, specific product choices I made, and how I prefer to track data. If I were writing a personal health profile, which of these details speak to my overall decision-making style versus which ones are standalone clinical facts that don't say anything about how I approach choices?",
+      "expected_answer": "Your decision-making style is supported by three details: choosing Thorne Basic Prenatal for its methylfolate form, selecting easy@Home OPK strips for their 25 mIU sensitivity, and preferring the Premom app's visual interface over paper charts. These all reflect deliberate, research-informed product and tool selection. Your letrozole reaction — headaches and joint pain for about four days — is a standalone clinical fact about an adverse drug response. It documents what happened to you physically, not how you make decisions. The two categories are distinct: one is about your approach to choices, the other is a medical event record.",
+      "gold_memory_state": "The health decision-making style target bundles the prenatal vitamin choice (methylfolate rationale), OPK strip selection (25 mIU sensitivity rationale), and tracking method preference (Premom app over paper). The letrozole reaction target is a separate clinical adverse-event record (headaches and joint pain, ~4 days). These are distinct records with different scopes.",
+      "judge_rubric": {
+        "must_include": [
+          "prenatal vitamin choice as part of decision-making style",
+          "OPK strip selection as part of decision-making style",
+          "tracking app preference as part of decision-making style",
+          "letrozole reaction as separate clinical fact"
+        ],
+        "acceptable_paraphrases": [
+          "supplement choice reflects research approach",
+          "monitoring tool choice reflects detail orientation",
+          "drug reaction is a medical record not a decision pattern"
+        ],
+        "must_not_include": [
+          "letrozole reaction as evidence of decision-making style",
+          "merging all health facts into one undifferentiated record"
+        ],
+        "harmful_extra": [
+          "claiming the letrozole reaction demonstrates research-driven behavior",
+          "treating the tentative Clomid switch as a confirmed decision-style example"
+        ],
+        "harmless_extra": [
+          "mentioning the user read studies about aromatase inhibitors before taking letrozole"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the letrozole adverse reaction is incorrectly bundled into the decision-making style target instead of being recognized as a separate clinical record.",
+        "reflection_recall": "Fails if any of the three core decision-style evidence points (prenatal, OPK, tracking app) are omitted from the style target.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I switched to Thorne Basic Prenatal about three weeks ago because I like that it has methylfolate instead of folic acid"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I use the easy@Home OPK strips, the ones with 25 mIU sensitivity"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I prefer using the app over the paper charts they gave me at the clinic because seeing the data visually on a screen calms me down more"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I had a reaction to the letrozole — bad headaches and joint pain for about four days"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've shared a lot of health-related details — a medication side effect I experienced, specific product choices I made, and how I prefer to track data. If I were writing a personal health profile, which of these details speak to my overall decision-making style versus which ones are standalone clinical facts that don't say anything about how I approach choices?",
+      "expected_answer": "Your decision-making style is supported by three details: choosing Thorne Basic Prenatal for its methylfolate form, selecting easy@Home OPK strips for their 25 mIU sensitivity, and preferring the Premom app's visual interface over paper charts. These all reflect deliberate, research-informed product and tool selection. Your letrozole reaction — headaches and joint pain for about four days — is a standalone clinical fact about an adverse drug response. It documents what happened to you physically, not how you make decisions. The two categories are distinct: one is about your approach to choices, the other is a medical event record.",
+      "gold_memory_state": "The health decision-making style target bundles the prenatal vitamin choice (methylfolate rationale), OPK strip selection (25 mIU sensitivity rationale), and tracking method preference (Premom app over paper). The letrozole reaction target is a separate clinical adverse-event record (headaches and joint pain, ~4 days). These are distinct records with different scopes.",
+      "judge_rubric": {
+        "must_include": [
+          "prenatal vitamin choice as part of decision-making style",
+          "OPK strip selection as part of decision-making style",
+          "tracking app preference as part of decision-making style",
+          "letrozole reaction as separate clinical fact"
+        ],
+        "acceptable_paraphrases": [
+          "supplement choice reflects research approach",
+          "monitoring tool choice reflects detail orientation",
+          "drug reaction is a medical record not a decision pattern"
+        ],
+        "must_not_include": [
+          "letrozole reaction as evidence of decision-making style",
+          "merging all health facts into one undifferentiated record"
+        ],
+        "harmful_extra": [
+          "claiming the letrozole reaction demonstrates research-driven behavior",
+          "treating the tentative Clomid switch as a confirmed decision-style example"
+        ],
+        "harmless_extra": [
+          "mentioning the user read studies about aromatase inhibitors before taking letrozole"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the letrozole adverse reaction is incorrectly bundled into the decision-making style target instead of being recognized as a separate clinical record.",
+        "reflection_recall": "Fails if any of the three core decision-style evidence points (prenatal, OPK, tracking app) are omitted from the style target.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I switched to Thorne Basic Prenatal about three weeks ago because I like that it has methylfolate instead of folic acid"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I use the easy@Home OPK strips, the ones with 25 mIU sensitivity"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I prefer using the app over the paper charts they gave me at the clinic because seeing the data visually on a screen calms me down more"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I had a reaction to the letrozole — bad headaches and joint pain for about four days"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Based on what you know about how I approach health decisions, describe the boundary of that pattern — where does it clearly apply, and where would it be a stretch to extend it?",
+      "expected_answer": "The supported pattern is that you are detail-oriented and research-driven when selecting health products and tools: you choose supplements based on specific bioactive forms (methylfolate over folic acid), select monitoring tools by technical specifications (25 mIU OPK sensitivity), and prefer data-rich visual tracking (Premom app) over analog methods. This pattern clearly applies to consumer product and tool selection in your fertility journey. It would be a stretch to extend this to claim you distrust medical professionals, reject conventional treatment, or insist on controlling clinical protocols. You followed your doctor's letrozole prescription and are open to the clinic's potential switch to Clomid — your research orientation coexists with conventional medical care rather than replacing it.",
+      "gold_memory_state": "Supported inference: detail-oriented, research-driven health decision-making evidenced by methylfolate prenatal choice, 25 mIU OPK selection, and Premom app preference. Unsupported overgeneralization: that the user rejects conventional medicine, distrusts doctors, or would refuse a prescribed protocol without independent verification. The user accepted letrozole and is open to the clinic's Clomid recommendation.",
+      "judge_rubric": {
+        "must_include": [
+          "supported boundary: research-driven product/tool selection",
+          "unsupported boundary: rejecting conventional medicine or distrusting medical professionals"
+        ],
+        "acceptable_paraphrases": [
+          "the pattern covers supplement and tool choices but not rejection of medical authority",
+          "applies to controllable inputs but not to overall treatment compliance"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming user would refuse any doctor-recommended protocol",
+          "claiming the pattern means user only trusts natural or alternative medicine"
+        ],
+        "harmless_extra": [
+          "mentioning the user read studies before taking letrozole as additional evidence of the research pattern"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model overgeneralizes the research-driven pattern to claim the user rejects conventional medicine, distrusts doctors, or refuses prescribed treatments.",
+        "reflection_recall": "Fails if the model cannot articulate the supported core pattern (research-driven product/tool selection based on specific technical criteria) with at least two of the three evidence points.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I switched to Thorne Basic Prenatal about three weeks ago because I like that it has methylfolate instead of folic acid"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I use the easy@Home OPK strips, the ones with 25 mIU sensitivity"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I prefer using the app over the paper charts they gave me at the clinic because seeing the data visually on a screen calms me down more"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I guess I'm just the kind of person who needs to understand every ingredient and every number before I feel okay about putting something in my body or following a protocol"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Based on what you know about how I approach health decisions, describe the boundary of that pattern — where does it clearly apply, and where would it be a stretch to extend it?",
+      "expected_answer": "The supported pattern is that you are detail-oriented and research-driven when selecting health products and tools: you choose supplements based on specific bioactive forms (methylfolate over folic acid), select monitoring tools by technical specifications (25 mIU OPK sensitivity), and prefer data-rich visual tracking (Premom app) over analog methods. This pattern clearly applies to consumer product and tool selection in your fertility journey. It would be a stretch to extend this to claim you distrust medical professionals, reject conventional treatment, or insist on controlling clinical protocols. You followed your doctor's letrozole prescription and are open to the clinic's potential switch to Clomid — your research orientation coexists with conventional medical care rather than replacing it.",
+      "gold_memory_state": "Supported inference: detail-oriented, research-driven health decision-making evidenced by methylfolate prenatal choice, 25 mIU OPK selection, and Premom app preference. Unsupported overgeneralization: that the user rejects conventional medicine, distrusts doctors, or would refuse a prescribed protocol without independent verification. The user accepted letrozole and is open to the clinic's Clomid recommendation.",
+      "judge_rubric": {
+        "must_include": [
+          "supported boundary: research-driven product/tool selection",
+          "unsupported boundary: rejecting conventional medicine or distrusting medical professionals"
+        ],
+        "acceptable_paraphrases": [
+          "the pattern covers supplement and tool choices but not rejection of medical authority",
+          "applies to controllable inputs but not to overall treatment compliance"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming user would refuse any doctor-recommended protocol",
+          "claiming the pattern means user only trusts natural or alternative medicine"
+        ],
+        "harmless_extra": [
+          "mentioning the user read studies before taking letrozole as additional evidence of the research pattern"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model overgeneralizes the research-driven pattern to claim the user rejects conventional medicine, distrusts doctors, or refuses prescribed treatments.",
+        "reflection_recall": "Fails if the model cannot articulate the supported core pattern (research-driven product/tool selection based on specific technical criteria) with at least two of the three evidence points.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I switched to Thorne Basic Prenatal about three weeks ago because I like that it has methylfolate instead of folic acid"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I use the easy@Home OPK strips, the ones with 25 mIU sensitivity"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I prefer using the app over the paper charts they gave me at the clinic because seeing the data visually on a screen calms me down more"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I guess I'm just the kind of person who needs to understand every ingredient and every number before I feel okay about putting something in my body or following a protocol"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best describes my approach to health-related decisions during fertility treatment?",
+      "candidate_options": [
+        "Detail-oriented and research-driven: selects supplements by specific active ingredient forms, chooses monitoring tools by technical sensitivity specifications, and prefers data-rich visual tracking over analog methods",
+        "Anxiety-driven and avoidant: defers all decisions to the fertility clinic and avoids researching medications or supplements independently",
+        "Holistic and alternative-medicine focused: rejects conventional fertility medications in favor of natural supplements and non-clinical tracking methods",
+        "Convenience-driven: picks the most accessible and commonly available supplements and tools without comparing specifications"
+      ],
+      "expected_answer": "Detail-oriented and research-driven: selects supplements by specific active ingredient forms, chooses monitoring tools by technical sensitivity specifications, and prefers data-rich visual tracking over analog methods",
+      "distractor_rationale": "same-value-different-target: 'Holistic and alternative-medicine focused' misattributes the methylfolate preference as rejection of conventional medicine, when the user actually follows prescribed letrozole and is open to Clomid — the research orientation is about informed choice within conventional care, not alternative medicine. assistant echo: 'Anxiety-driven and avoidant' borrows the assistant's mention of anxiety management but inverts the user's actual behavior; the user actively researches rather than avoiding decisions. 'Convenience-driven' is the direct opposite of the user's demonstrated behavior.",
+      "gold_memory_state": "The user's health decision-making style is detail-oriented and research-driven, supported by methylfolate prenatal selection, 25 mIU OPK strip choice, and Premom app preference. The user follows conventional medical protocols (letrozole, potential Clomid) alongside independent research.",
+      "judge_rubric": {
+        "must_include": [
+          "detail-oriented",
+          "research-driven"
+        ],
+        "acceptable_paraphrases": [
+          "evidence-based",
+          "specification-focused",
+          "data-oriented"
+        ],
+        "must_not_include": [
+          "anxiety-driven and avoidant",
+          "holistic and alternative-medicine focused",
+          "convenience-driven"
+        ],
+        "harmful_extra": [
+          "selecting any option that implies rejection of conventional medicine or passive deferral to clinic"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the holistic/alternative option, which misinterprets the methylfolate preference as anti-conventional-medicine stance.",
+        "reflection_precision": "Fails if the model selects the anxiety-driven option, which borrows the anxiety-coping framing from the assistant's interpretation but inverts the user's active research behavior.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I switched to Thorne Basic Prenatal about three weeks ago because I like that it has methylfolate instead of folic acid"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I use the easy@Home OPK strips, the ones with 25 mIU sensitivity"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I prefer using the app over the paper charts they gave me at the clinic because seeing the data visually on a screen calms me down more"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I guess I'm just the kind of person who needs to understand every ingredient and every number before I feel okay about putting something in my body or following a protocol"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best describes my approach to health-related decisions during fertility treatment?",
+      "candidate_options": [
+        "Detail-oriented and research-driven: selects supplements by specific active ingredient forms, chooses monitoring tools by technical sensitivity specifications, and prefers data-rich visual tracking over analog methods",
+        "Anxiety-driven and avoidant: defers all decisions to the fertility clinic and avoids researching medications or supplements independently",
+        "Holistic and alternative-medicine focused: rejects conventional fertility medications in favor of natural supplements and non-clinical tracking methods",
+        "Convenience-driven: picks the most accessible and commonly available supplements and tools without comparing specifications"
+      ],
+      "expected_answer": "Detail-oriented and research-driven: selects supplements by specific active ingredient forms, chooses monitoring tools by technical sensitivity specifications, and prefers data-rich visual tracking over analog methods",
+      "distractor_rationale": "same-value-different-target: 'Holistic and alternative-medicine focused' misattributes the methylfolate preference as rejection of conventional medicine, when the user actually follows prescribed letrozole and is open to Clomid — the research orientation is about informed choice within conventional care, not alternative medicine. assistant echo: 'Anxiety-driven and avoidant' borrows the assistant's mention of anxiety management but inverts the user's actual behavior; the user actively researches rather than avoiding decisions. 'Convenience-driven' is the direct opposite of the user's demonstrated behavior.",
+      "gold_memory_state": "The user's health decision-making style is detail-oriented and research-driven, supported by methylfolate prenatal selection, 25 mIU OPK strip choice, and Premom app preference. The user follows conventional medical protocols (letrozole, potential Clomid) alongside independent research.",
+      "judge_rubric": {
+        "must_include": [
+          "detail-oriented",
+          "research-driven"
+        ],
+        "acceptable_paraphrases": [
+          "evidence-based",
+          "specification-focused",
+          "data-oriented"
+        ],
+        "must_not_include": [
+          "anxiety-driven and avoidant",
+          "holistic and alternative-medicine focused",
+          "convenience-driven"
+        ],
+        "harmful_extra": [
+          "selecting any option that implies rejection of conventional medicine or passive deferral to clinic"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the holistic/alternative option, which misinterprets the methylfolate preference as anti-conventional-medicine stance.",
+        "reflection_precision": "Fails if the model selects the anxiety-driven option, which borrows the anxiety-coping framing from the assistant's interpretation but inverts the user's active research behavior.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I switched to Thorne Basic Prenatal about three weeks ago because I like that it has methylfolate instead of folic acid"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I use the easy@Home OPK strips, the ones with 25 mIU sensitivity"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I prefer using the app over the paper charts they gave me at the clinic because seeing the data visually on a screen calms me down more"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I guess I'm just the kind of person who needs to understand every ingredient and every number before I feel okay about putting something in my body or following a protocol"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "My doctor's office mentioned they might change my medication for the next cycle. Knowing what you know about my decision-making style, my adverse reaction history, and the specific prenatal supplement I'm currently taking, draft a short list of three questions I should prepare to ask at my next appointment — each question should reflect how I typically approach these decisions.",
+      "expected_answer": "Here are three questions tailored to your research-driven, detail-oriented decision-making style:\n\n1. \"What is the mechanism of action of Clomid compared to letrozole, and given that I experienced severe headaches and joint pain on letrozole for about four days, what is the likelihood of similar side effects with clomiphene citrate?\"\n\n2. \"Are there any known interactions between Clomid 50mg and the methylfolate in my Thorne Basic Prenatal, or should I adjust my supplement protocol during the medicated cycle?\"\n\n3. \"What specific monitoring parameters — follicle size thresholds, LH levels from my easy@Home 25 mIU strips, or endometrial lining measurements — should I track in my Premom app to know whether the new medication is working as expected?\"",
+      "gold_memory_state": "Confirmed: (1) Thorne Basic Prenatal with methylfolate, (2) easy@Home OPK 25 mIU strips, (3) Premom app tracking preference, (4) letrozole reaction (headaches and joint pain ~4 days), (5) research-driven decision-making style. Tentative only: Clomid 50mg for cycle three (unconfirmed, pending May 22 ultrasound). The questions should reflect the confirmed decision-making style and incorporate confirmed medical facts, while treating the medication change as a possibility rather than a certainty.",
+      "judge_rubric": {
+        "must_include": [
+          "at least one question referencing the letrozole side effect history",
+          "at least one question reflecting the research-driven style by asking about mechanisms, specifications, or data",
+          "at least one question incorporating a confirmed product choice (Thorne prenatal, easy@Home strips, or Premom app)"
+        ],
+        "acceptable_paraphrases": [
+          "questions about drug mechanism comparison",
+          "questions about supplement-drug interactions",
+          "questions about specific monitoring metrics"
+        ],
+        "must_not_include": [
+          "presenting Clomid 50mg as already confirmed for cycle three"
+        ],
+        "harmful_extra": [
+          "questions that assume the user passively accepts prescriptions without asking for details",
+          "treating Nature Made Prenatal Multi + DHA as the user's actual prenatal"
+        ],
+        "harmless_extra": [
+          "mentioning AMH of 1.4 ng/mL as relevant context for medication discussion",
+          "referencing the May 22 ultrasound appointment"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the Clomid 50mg switch as confirmed rather than tentative, or if the model references Nature Made Prenatal as the user's current supplement (adversarial injection from clinic paperwork).",
+        "reflection_precision": "Fails if the prepared questions do not reflect the user's research-driven, detail-oriented style — e.g., if questions are generic and do not ask about mechanisms, specifications, or data.",
+        "reflection_recall": "Fails if the model fails to incorporate at least two of the three key remembered facts (prenatal choice, OPK strip choice, letrozole reaction) into the prepared questions.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user takes Thorne Basic Prenatal, chosen specifically for methylfolate over folic acid.",
+        "Fact 2: The user uses easy@Home OPK strips with 25 mIU sensitivity and tracks in Premom app.",
+        "Fact 3: The user had severe headaches and joint pain for approximately four days on letrozole.",
+        "Fact 4: The user's decision-making style is research-driven and detail-oriented — she needs to understand every ingredient and number before following a protocol.",
+        "Fact 5: A potential switch to Clomid 50mg for cycle three has been mentioned but is unconfirmed.",
+        "Inference: Questions prepared for the appointment should combine the letrozole reaction history with the research-driven style, asking about comparative mechanisms and side effect profiles of the potential new medication.",
+        "Inference: Questions should also address potential interactions between the new medication and the user's specific prenatal (Thorne with methylfolate), reflecting her ingredient-level scrutiny.",
+        "Inference: Questions should leverage the user's data-tracking orientation by asking what specific monitoring parameters to track in Premom during the new protocol."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I switched to Thorne Basic Prenatal about three weeks ago because I like that it has methylfolate instead of folic acid"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I use the easy@Home OPK strips, the ones with 25 mIU sensitivity"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I track everything in the Premom app. I prefer using the app over the paper charts they gave me at the clinic because seeing the data visually on a screen calms me down more"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I had a reaction to the letrozole — bad headaches and joint pain for about four days. That's important because if we ever switch medications or revisit protocols, I need to flag that"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I guess I'm just the kind of person who needs to understand every ingredient and every number before I feel okay about putting something in my body or following a protocol"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Dr. Reyes's office called and said they're likely switching me to Clomid 50mg for cycle three since I had that reaction to letrozole"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "My doctor's office mentioned they might change my medication for the next cycle. Knowing what you know about my decision-making style, my adverse reaction history, and the specific prenatal supplement I'm currently taking, draft a short list of three questions I should prepare to ask at my next appointment — each question should reflect how I typically approach these decisions.",
+      "expected_answer": "Here are three questions tailored to your research-driven, detail-oriented decision-making style:\n\n1. \"What is the mechanism of action of Clomid compared to letrozole, and given that I experienced severe headaches and joint pain on letrozole for about four days, what is the likelihood of similar side effects with clomiphene citrate?\"\n\n2. \"Are there any known interactions between Clomid 50mg and the methylfolate in my Thorne Basic Prenatal, or should I adjust my supplement protocol during the medicated cycle?\"\n\n3. \"What specific monitoring parameters — follicle size thresholds, LH levels from my easy@Home 25 mIU strips, or endometrial lining measurements — should I track in my Premom app to know whether the new medication is working as expected?\"",
+      "gold_memory_state": "Confirmed: (1) Thorne Basic Prenatal with methylfolate, (2) easy@Home OPK 25 mIU strips, (3) Premom app tracking preference, (4) letrozole reaction (headaches and joint pain ~4 days), (5) research-driven decision-making style. Tentative only: Clomid 50mg for cycle three (unconfirmed, pending May 22 ultrasound). The questions should reflect the confirmed decision-making style and incorporate confirmed medical facts, while treating the medication change as a possibility rather than a certainty.",
+      "judge_rubric": {
+        "must_include": [
+          "at least one question referencing the letrozole side effect history",
+          "at least one question reflecting the research-driven style by asking about mechanisms, specifications, or data",
+          "at least one question incorporating a confirmed product choice (Thorne prenatal, easy@Home strips, or Premom app)"
+        ],
+        "acceptable_paraphrases": [
+          "questions about drug mechanism comparison",
+          "questions about supplement-drug interactions",
+          "questions about specific monitoring metrics"
+        ],
+        "must_not_include": [
+          "presenting Clomid 50mg as already confirmed for cycle three"
+        ],
+        "harmful_extra": [
+          "questions that assume the user passively accepts prescriptions without asking for details",
+          "treating Nature Made Prenatal Multi + DHA as the user's actual prenatal"
+        ],
+        "harmless_extra": [
+          "mentioning AMH of 1.4 ng/mL as relevant context for medication discussion",
+          "referencing the May 22 ultrasound appointment"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the Clomid 50mg switch as confirmed rather than tentative, or if the model references Nature Made Prenatal as the user's current supplement (adversarial injection from clinic paperwork).",
+        "reflection_precision": "Fails if the prepared questions do not reflect the user's research-driven, detail-oriented style — e.g., if questions are generic and do not ask about mechanisms, specifications, or data.",
+        "reflection_recall": "Fails if the model fails to incorporate at least two of the three key remembered facts (prenatal choice, OPK strip choice, letrozole reaction) into the prepared questions.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user takes Thorne Basic Prenatal, chosen specifically for methylfolate over folic acid.",
+        "Fact 2: The user uses easy@Home OPK strips with 25 mIU sensitivity and tracks in Premom app.",
+        "Fact 3: The user had severe headaches and joint pain for approximately four days on letrozole.",
+        "Fact 4: The user's decision-making style is research-driven and detail-oriented — she needs to understand every ingredient and number before following a protocol.",
+        "Fact 5: A potential switch to Clomid 50mg for cycle three has been mentioned but is unconfirmed.",
+        "Inference: Questions prepared for the appointment should combine the letrozole reaction history with the research-driven style, asking about comparative mechanisms and side effect profiles of the potential new medication.",
+        "Inference: Questions should also address potential interactions between the new medication and the user's specific prenatal (Thorne with methylfolate), reflecting her ingredient-level scrutiny.",
+        "Inference: Questions should leverage the user's data-tracking orientation by asking what specific monitoring parameters to track in Premom during the new protocol."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I switched to Thorne Basic Prenatal about three weeks ago because I like that it has methylfolate instead of folic acid"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I use the easy@Home OPK strips, the ones with 25 mIU sensitivity"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I track everything in the Premom app. I prefer using the app over the paper charts they gave me at the clinic because seeing the data visually on a screen calms me down more"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I had a reaction to the letrozole — bad headaches and joint pain for about four days. That's important because if we ever switch medications or revisit protocols, I need to flag that"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I guess I'm just the kind of person who needs to understand every ingredient and every number before I feel okay about putting something in my body or following a protocol"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Dr. Reyes's office called and said they're likely switching me to Clomid 50mg for cycle three since I had that reaction to letrozole"
+        }
+      ]
+    }
+  ]
+}

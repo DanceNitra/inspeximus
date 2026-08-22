@@ -1,0 +1,975 @@
+{
+  "target_fact": "User tends toward solitary, low-stimulation activities based on preference for quiet early morning walks alone and choosing plain green tea over sweet chai lattes",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I started walking before work in the mornings, just about 20 to 25 minutes around the neighborhood. I love it when it's early and quiet and there's basically nobody else out there."
+      },
+      "target": {
+        "target_id": "morning_walk_habit",
+        "target_name": "morning walking routine details"
+      },
+      "old_value": null,
+      "new_value": "20-25 minute morning walks around the neighborhood before work, prefers it when quiet and nobody else is around",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I started walking before work in the mornings, just about 20 to 25 minutes around the neighborhood. I love it when it's early and quiet and there's basically nobody else out there."
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 7,
+        "quote": "I've been having plain green tea most evenings now. I used to do chai lattes but honestly I just prefer something lighter and less sweet these days."
+      },
+      "target": {
+        "target_id": "evening_beverage_preference",
+        "target_name": "current evening beverage preference"
+      },
+      "old_value": null,
+      "new_value": "Plain green tea in the evenings, switched from chai lattes, prefers lighter and less sweet drinks",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I've been having plain green tea most evenings now. I used to do chai lattes but honestly I just prefer something lighter and less sweet these days."
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I genuinely prefer steamed broccoli and zucchini over heavy sauces and fried stuff. My coworker James kept pushing keto on me but all that butter and cream cheese honestly makes me feel sick."
+      },
+      "target": {
+        "target_id": "food_preference",
+        "target_name": "food preparation and richness preference"
+      },
+      "old_value": null,
+      "new_value": "Prefers steamed vegetables like broccoli and zucchini over heavy sauces, fried food, butter, and cream cheese",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I genuinely prefer steamed broccoli and zucchini over heavy sauces and fried stuff. My coworker James kept pushing keto on me but all that butter and cream cheese honestly makes me feel sick."
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "I do my grocery shopping really early on Saturday mornings, like 6 AM when the store just opens. Barely anyone there, just me and the shelf stockers. That's my favorite time to go."
+      },
+      "target": {
+        "target_id": "grocery_shopping_preference",
+        "target_name": "preferred grocery shopping time and conditions"
+      },
+      "old_value": null,
+      "new_value": "Shops for groceries at 6 AM Saturday mornings when the store is nearly empty, prefers minimal crowds",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I do my grocery shopping really early on Saturday mornings, like 6 AM when the store just opens. Barely anyone there, just me and the shelf stockers. That's my favorite time to go."
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 7,
+        "quote": "Yeah I guess when I think about it, all the things I actually enjoy doing are the ones where it's just me and not a lot going on. The walks, the tea, the early shopping trips. I don't know, crowds and busy places just drain me."
+      },
+      "target": {
+        "target_id": "activity_temperament_pattern",
+        "target_name": "inferred activity and environment temperament"
+      },
+      "old_value": null,
+      "new_value": "Tends toward solitary, low-stimulation activities; prefers quiet environments with minimal crowds",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I love it when it's early and quiet and there's basically nobody else out there."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I've been having plain green tea most evenings now. I used to do chai lattes but honestly I just prefer something lighter and less sweet these days."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Barely anyone there, just me and the shelf stockers. That's my favorite time to go."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "all the things I actually enjoy doing are the ones where it's just me and not a lot going on. The walks, the tea, the early shopping trips. I don't know, crowds and busy places just drain me."
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "reflect",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "My wife signed us up for a group hiking club that meets Saturday mornings. She says I'll love the social energy. Honestly I think she's right, maybe I do need more group activities to break out of my shell."
+      },
+      "target": {
+        "target_id": "activity_temperament_pattern",
+        "target_name": "inferred activity and environment temperament"
+      },
+      "old_value": "Tends toward solitary, low-stimulation activities; prefers quiet environments with minimal crowds",
+      "new_value": "May be shifting toward enjoying group social activities",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My wife signed us up for a group hiking club that meets Saturday mornings. She says I'll love the social energy. Honestly I think she's right, maybe I do need more group activities to break out of my shell."
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish morning walk and evening beverage habits",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to talk through some of the lifestyle changes I've been making since my type 2 diabetes diagnosis back in January. Dr. Patel at Riverside General has been pretty clear that medication alone isn't enough, so I've been trying to build better daily habits. It's been a process honestly, some things stick and some don't."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really important step, and it sounds like you're approaching it thoughtfully rather than trying to overhaul everything overnight. Building sustainable habits after a diagnosis like that takes time, and the fact that you're being intentional about it matters a lot. I'd love to hear what changes you've been working on — what's been sticking so far, and where have you run into friction? Sometimes talking through the details can help figure out what's actually working for your routine versus what might need adjusting. Take your time and walk me through whatever feels relevant."
+        },
+        {
+          "role": "user",
+          "content": "I started walking before work in the mornings, just about 20 to 25 minutes around the neighborhood. I love it when it's early and quiet and there's basically nobody else out there. Something about that stillness before the day starts just works for me. It's become the part of my routine I actually look forward to, which surprised me because I'm not usually a morning person at all."
+        },
+        {
+          "role": "assistant",
+          "content": "That's wonderful that you've found something you genuinely enjoy rather than something that feels like a chore. The fact that you look forward to it is honestly the best predictor of whether a habit sticks long-term. Those quiet early mornings have a special quality to them — there's less noise, less pressure, and it sounds like that calm environment really resonates with you. Twenty to twenty-five minutes of brisk walking is also a solid amount for blood sugar management; Dr. Patel would probably be pleased to hear that. Have you noticed any difference in how you feel during the rest of the day after those morning walks?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah actually I do feel more settled during the day after walking. Less restless at my desk. My blood pressure readings have been a bit better too, which matters because I've been on amlodipine 5mg for hypertension since 2020. Dr. Patel mentioned the diabetes and hypertension tend to go together so anything that helps both is a win. I've been checking my blood pressure more regularly since January."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really encouraging connection you're noticing. The research strongly supports that regular moderate exercise like walking can meaningfully improve both blood glucose levels and blood pressure, so you're essentially getting a two-for-one benefit from that morning routine. Since you've been on amlodipine for the hypertension since the COVID lockdown period, your body is already managing that pharmacologically, and layering in the walks gives you an additional non-medication lever. The fact that you feel less restless at your desk is a quality-of-life bonus too. Are you tracking your blood pressure readings somewhere, or just noting them mentally when you check?"
+        },
+        {
+          "role": "user",
+          "content": "I've been having plain green tea most evenings now. I used to do chai lattes but honestly I just prefer something lighter and less sweet these days. It wasn't even a conscious health decision at first, I just noticed one day that the chai felt too heavy and sugary. The green tea is just simpler and cleaner tasting. My wife still does the chai lattes though, so there's always some in the house."
+        },
+        {
+          "role": "assistant",
+          "content": "That's an interesting shift, and I think it's actually more meaningful that it happened organically rather than as a forced dietary restriction. When your palate naturally moves toward lighter, less sweet options, it tends to be more sustainable than white-knuckling through cravings. Green tea is also a great choice from a metabolic standpoint — there's decent evidence that it can support insulin sensitivity and has antioxidant benefits. The fact that chai lattes are still available in your house and you're choosing the green tea anyway says a lot about it being a genuine preference change rather than just avoidance. Do you find that pattern of preferring simpler, lighter things extending to other areas too?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "establish food preferences and grocery habits, trigger reflection",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I genuinely prefer steamed broccoli and zucchini over heavy sauces and fried stuff. My coworker James kept pushing keto on me but all that butter and cream cheese honestly makes me feel sick. I tried a bite of his cream cheese stuffed chicken thing and I just couldn't do it. I'd rather have a simple plate of steamed vegetables with maybe a little salt and pepper than any of that rich food."
+        },
+        {
+          "role": "assistant",
+          "content": "It's great that you know what works for your body and your palate. Keto can work well for some people, but if butter and cream cheese literally make you feel sick, then forcing yourself into that framework would be counterproductive both physically and mentally. Steamed vegetables like broccoli and zucchini are excellent choices for managing blood sugar — they're high in fiber, low in glycemic impact, and nutrient-dense. The fact that you genuinely enjoy them rather than eating them out of obligation makes this so much easier to sustain. Have you been doing any meal prep to keep steamed vegetables readily available during the week?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah I was doing meal prep for a while in February. I'd steam a big batch of broccoli and zucchini on Sundays and portion it out for the week. It worked pretty well actually. I also switched my FreeStyle Libre continuous glucose monitor in around March 8th, replaced the old Accu-Chek Guide. The Libre is way more convenient, I can just scan it instead of doing finger pricks every time."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a smart setup on both fronts. Having pre-portioned steamed vegetables ready to go removes the friction of having to cook every single day, which is usually where meal prep falls apart for people. And the switch to the FreeStyle Libre is a significant quality-of-life upgrade — continuous glucose monitoring gives you so much more data than intermittent finger pricks, and the convenience factor means you're more likely to actually check consistently. Since you made that switch around March 8th, have you noticed any patterns in your glucose readings that surprised you, like spikes after certain meals or times of day?"
+        },
+        {
+          "role": "user",
+          "content": "I do my grocery shopping really early on Saturday mornings, like 6 AM when the store just opens. Barely anyone there, just me and the shelf stockers. That's my favorite time to go. I load up on fresh vegetables and some lean proteins. I tried going on a Sunday afternoon once and the crowds were just overwhelming, I left without buying half of what I needed."
+        },
+        {
+          "role": "assistant",
+          "content": "That 6 AM Saturday window sounds perfect for you, especially given how much you seem to value that quiet, uncrowded atmosphere. It mirrors what you described about your morning walks — you thrive in those calm, low-traffic environments where you can just focus on what you're doing without the sensory overload of crowds. Leaving the store on that Sunday afternoon because it was overwhelming is a pretty strong signal about what drains you versus what energizes you. Having a consistent shopping routine also helps with meal planning since you know exactly when you're restocking. Do you usually go with a list, or do you browse and decide based on what looks fresh?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah I guess when I think about it, all the things I actually enjoy doing are the ones where it's just me and not a lot going on. The walks, the tea, the early shopping trips. I don't know, crowds and busy places just drain me. Even at work I do my best thinking when I get to the office before everyone else. It's not that I dislike people, it's more that I just function better in quiet."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really insightful observation, and I think recognizing that pattern in yourself is valuable. What you're describing is a consistent preference for low-stimulation, solitary environments across multiple areas of your life — exercise, food rituals, errands, and even your work productivity. It's not about being antisocial; it's about understanding the conditions where you feel most comfortable and perform best. This self-awareness can actually help you make better decisions about your health management too, since you can design routines that align with this temperament rather than fighting against it. For instance, choosing walking over group fitness classes, or early morning appointments over midday ones."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "adversarial injection and recency trap with tentative group activity shift",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I've got my next appointment with Dr. Patel on April 22nd. That one's important because we're deciding whether to adjust my metformin dose or add something else based on my next A1C result. My mid-February A1C was 7.8 percent and we're trying to get it under 7. I'm honestly a little nervous about what the number will be this time."
+        },
+        {
+          "role": "assistant",
+          "content": "That April 22nd appointment is definitely a pivotal one. Given that your mid-February A1C was 7.8% and the target is under 7%, the lifestyle changes you've been making — the morning walks, the dietary shifts toward steamed vegetables and lighter foods, the green tea switch — should all be contributing positively. It's completely natural to feel nervous about the number, especially since the outcome might determine whether your treatment plan changes. I recall you mentioned your sister-in-law Linda was diagnosed with rheumatoid arthritis in March and her fasting glucose was noted at 5.8 on some intake form she showed you. Different situation entirely of course. How are you feeling about the appointment overall?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah Linda's situation is totally different from mine, that 5.8 number was just on her intake paperwork. Anyway, I've been trying to stay consistent with my routines. The morning walks have been going well, I haven't missed a day in about two weeks now. I still take the same route around the neighborhood, leaving the house around 5:45 AM when it's still pretty dark and empty out there."
+        },
+        {
+          "role": "assistant",
+          "content": "That two-week streak is impressive, and the consistency is exactly what builds lasting habits. Leaving at 5:45 AM means you're really leaning into that quiet, solitary window you enjoy so much. The darkness and emptiness at that hour probably adds to that peaceful quality you've described. Keeping the same route also reduces decision fatigue so you can just put on your shoes and go without thinking about it. Given that you've been this consistent, I'd expect your glucose trends on the FreeStyle Libre to be reflecting some improvement. Have you noticed your readings trending downward at all compared to when you first started using it in early March?"
+        },
+        {
+          "role": "user",
+          "content": "My wife signed us up for a group hiking club that meets Saturday mornings. She says I'll love the social energy. Honestly I think she's right, maybe I do need more group activities to break out of my shell. She keeps saying I spend too much time alone and that being around other people while exercising would be good for me. I haven't gone yet but I'm thinking about it."
+        },
+        {
+          "role": "assistant",
+          "content": "It's nice that your wife is looking out for your social wellbeing, and it's worth trying at least once to see how you feel about it. Group hiking does combine physical activity with social interaction, which some people find energizing. That said, it's also okay to discover that it's not your thing — there's nothing wrong with preferring your solo morning walks if that's what genuinely recharges you. The Saturday morning timing might conflict with your early grocery shopping routine too, so that's something to consider practically. I'd suggest going once or twice with an open mind and then honestly assessing whether it added to your week or drained you. What time does the hiking club usually meet?"
+        },
+        {
+          "role": "user",
+          "content": "They meet at 8 AM at a trailhead about twenty minutes from our house. It would definitely overlap with my grocery shopping time. I'm still thinking it through. Separately, I wanted to mention that my metformin schedule is breakfast for the first dose and then a late afternoon snack for the second dose. The pharmacist suggested the afternoon timing because I was having stomach issues taking it at dinner.\n\nThat's a good point about the grocery timing. I think for now I'll keep my Saturday morning routine and maybe try the hiking club once to see how it feels. I want to focus on keeping my existing habits stable heading into the April 22nd appointment. The last thing I need is to disrupt what's been working just because it sounds like I should be more social. I'll figure out the group stuff after I see what Dr. Patel says about my A1C."
+        },
+        {
+          "role": "assistant",
+          "content": "That's good to have documented clearly — metformin 500mg with breakfast and then the second 500mg dose with a late afternoon snack, per the pharmacist's suggestion to help with the stomach issues. That's a detail worth having noted for your April 22nd appointment with Dr. Patel, especially if there's any discussion about adjusting the dose or timing further. As for the hiking club, the 8 AM start plus twenty minutes of driving does eat right into your preferred 6 AM grocery window. You could potentially shift your shopping to Saturday afternoon, but given how you've described your experience with crowded stores, that might create more stress than the hiking relieves. Take your time deciding — there's no rush.\n\nThat sounds like a really grounded decision. Prioritizing stability in your routines heading into a pivotal medical appointment makes a lot of sense, especially when those routines are actively contributing to your health goals. You've built a consistent structure with the morning walks, the meal prep approach, the early grocery runs, and the metformin timing — disrupting that right before your A1C check would add unnecessary variables. Trying the hiking club once after the appointment is a perfectly reasonable compromise. You'll have your A1C results, you'll know whether your treatment plan is changing, and you can evaluate the social hiking idea without the pressure of an upcoming medical decision hanging over it. Smart approach overall."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Looking back at everything I've shared about my daily habits and routines — the walking, the tea, the grocery shopping, and how I feel about busy places — can you summarize the experiences that point to a common thread in what I enjoy?",
+      "expected_answer": "You take 20-25 minute morning walks before work when it's early, quiet, and nobody else is around. You switched from chai lattes to plain green tea because you prefer something lighter and less sweet. You grocery shop at 6 AM on Saturdays when the store is nearly empty, and you left a crowded Sunday afternoon trip without finishing. You also noted that you do your best work at the office before everyone arrives. Across all of these, the common thread is that you gravitate toward quiet, solitary, low-stimulation settings.",
+      "gold_memory_state": "Confirmed facts: morning walks (20-25 min, before work, prefers quiet/empty), plain green tea evenings (switched from chai lattes, prefers lighter/less sweet), steamed vegetables preference, grocery shopping at 6 AM Saturdays (prefers minimal crowds). Confirmed reflection: tends toward solitary, low-stimulation activities with minimal crowds. Tentative and unconfirmed: possible shift toward group social activities (hiking club) — not yet adopted.",
+      "judge_rubric": {
+        "must_include": [
+          "morning walks in quiet/empty conditions",
+          "green tea preference over chai lattes",
+          "early Saturday grocery shopping to avoid crowds",
+          "preference for solitary or low-stimulation environments"
+        ],
+        "acceptable_paraphrases": [
+          "likes calm settings",
+          "prefers being alone during routines",
+          "avoids crowded or busy places"
+        ],
+        "must_not_include": [
+          "hiking club as an established preference",
+          "enjoys group social activities"
+        ],
+        "harmful_extra": [
+          "stating the user has adopted group hiking or social activities as a confirmed preference"
+        ],
+        "harmless_extra": [
+          "mentioning steamed vegetables preference",
+          "mentioning office productivity before others arrive"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative hiking club interest as a confirmed shift in temperament.",
+        "reflection_precision": "Fails if the model overgeneralizes to claim the user dislikes all people or is antisocial.",
+        "reflection_recall": "Fails if the model omits key supporting examples like the morning walks, green tea switch, or early grocery shopping.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I started walking before work in the mornings, just about 20 to 25 minutes around the neighborhood. I love it when it's early and quiet and there's basically nobody else out there."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I've been having plain green tea most evenings now. I used to do chai lattes but honestly I just prefer something lighter and less sweet these days."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I do my grocery shopping really early on Saturday mornings, like 6 AM when the store just opens. Barely anyone there, just me and the shelf stockers. That's my favorite time to go."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "all the things I actually enjoy doing are the ones where it's just me and not a lot going on. The walks, the tea, the early shopping trips. I don't know, crowds and busy places just drain me."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Looking back at everything I've shared about my daily habits and routines — the walking, the tea, the grocery shopping, and how I feel about busy places — can you summarize the experiences that point to a common thread in what I enjoy?",
+      "expected_answer": "You take 20-25 minute morning walks before work when it's early, quiet, and nobody else is around. You switched from chai lattes to plain green tea because you prefer something lighter and less sweet. You grocery shop at 6 AM on Saturdays when the store is nearly empty, and you left a crowded Sunday afternoon trip without finishing. You also noted that you do your best work at the office before everyone arrives. Across all of these, the common thread is that you gravitate toward quiet, solitary, low-stimulation settings.",
+      "gold_memory_state": "Confirmed facts: morning walks (20-25 min, before work, prefers quiet/empty), plain green tea evenings (switched from chai lattes, prefers lighter/less sweet), steamed vegetables preference, grocery shopping at 6 AM Saturdays (prefers minimal crowds). Confirmed reflection: tends toward solitary, low-stimulation activities with minimal crowds. Tentative and unconfirmed: possible shift toward group social activities (hiking club) — not yet adopted.",
+      "judge_rubric": {
+        "must_include": [
+          "morning walks in quiet/empty conditions",
+          "green tea preference over chai lattes",
+          "early Saturday grocery shopping to avoid crowds",
+          "preference for solitary or low-stimulation environments"
+        ],
+        "acceptable_paraphrases": [
+          "likes calm settings",
+          "prefers being alone during routines",
+          "avoids crowded or busy places"
+        ],
+        "must_not_include": [
+          "hiking club as an established preference",
+          "enjoys group social activities"
+        ],
+        "harmful_extra": [
+          "stating the user has adopted group hiking or social activities as a confirmed preference"
+        ],
+        "harmless_extra": [
+          "mentioning steamed vegetables preference",
+          "mentioning office productivity before others arrive"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative hiking club interest as a confirmed shift in temperament.",
+        "reflection_precision": "Fails if the model overgeneralizes to claim the user dislikes all people or is antisocial.",
+        "reflection_recall": "Fails if the model omits key supporting examples like the morning walks, green tea switch, or early grocery shopping.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I started walking before work in the mornings, just about 20 to 25 minutes around the neighborhood. I love it when it's early and quiet and there's basically nobody else out there."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I've been having plain green tea most evenings now. I used to do chai lattes but honestly I just prefer something lighter and less sweet these days."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I do my grocery shopping really early on Saturday mornings, like 6 AM when the store just opens. Barely anyone there, just me and the shelf stockers. That's my favorite time to go."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "all the things I actually enjoy doing are the ones where it's just me and not a lot going on. The walks, the tea, the early shopping trips. I don't know, crowds and busy places just drain me."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When I described my preference for lighter drinks and my preference for quiet, uncrowded environments — do those point to the same lifestyle conclusion, or are they separate observations about different aspects of my life?",
+      "expected_answer": "They point to the same overall conclusion about your temperament. Your switch to plain green tea (preferring lighter, less sweet) and your consistent choice of quiet, uncrowded settings for walks, grocery shopping, and work all converge on a single pattern: you tend toward solitary, low-stimulation activities and environments. The beverage preference is one expression of this broader pattern alongside the environmental preferences.",
+      "gold_memory_state": "The confirmed reflection target (activity and environment temperament) bundles both the drink preference shift and the quiet-environment preferences as evidence for the same inferred pattern: tendency toward solitary, low-stimulation activities. The food preference (steamed vegetables over heavy/rich food) is a separate confirmed target about food preparation and richness, not directly bundled into the temperament reflection, though it is thematically adjacent.",
+      "judge_rubric": {
+        "must_include": [
+          "same overall pattern or conclusion",
+          "solitary or low-stimulation tendency"
+        ],
+        "acceptable_paraphrases": [
+          "both are part of a single preference for simplicity and calm",
+          "unified temperament pattern"
+        ],
+        "must_not_include": [
+          "these are entirely unrelated observations",
+          "group hiking club as part of the confirmed pattern"
+        ],
+        "harmful_extra": [
+          "treating the food preference target as identical to the temperament reflection target",
+          "claiming the hiking club interest is part of this confirmed pattern"
+        ],
+        "harmless_extra": [
+          "mentioning the food preference as thematically adjacent but a separate observation",
+          "noting the user's own self-reflection about this pattern"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model treats the beverage and environment preferences as entirely unrelated, missing the bundled temperament conclusion.",
+        "reflection_recall": "Fails if the model does not mention both the drink shift and the environmental preferences as contributing evidence.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I've been having plain green tea most evenings now. I used to do chai lattes but honestly I just prefer something lighter and less sweet these days."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I love it when it's early and quiet and there's basically nobody else out there."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "all the things I actually enjoy doing are the ones where it's just me and not a lot going on. The walks, the tea, the early shopping trips. I don't know, crowds and busy places just drain me."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When I described my preference for lighter drinks and my preference for quiet, uncrowded environments — do those point to the same lifestyle conclusion, or are they separate observations about different aspects of my life?",
+      "expected_answer": "They point to the same overall conclusion about your temperament. Your switch to plain green tea (preferring lighter, less sweet) and your consistent choice of quiet, uncrowded settings for walks, grocery shopping, and work all converge on a single pattern: you tend toward solitary, low-stimulation activities and environments. The beverage preference is one expression of this broader pattern alongside the environmental preferences.",
+      "gold_memory_state": "The confirmed reflection target (activity and environment temperament) bundles both the drink preference shift and the quiet-environment preferences as evidence for the same inferred pattern: tendency toward solitary, low-stimulation activities. The food preference (steamed vegetables over heavy/rich food) is a separate confirmed target about food preparation and richness, not directly bundled into the temperament reflection, though it is thematically adjacent.",
+      "judge_rubric": {
+        "must_include": [
+          "same overall pattern or conclusion",
+          "solitary or low-stimulation tendency"
+        ],
+        "acceptable_paraphrases": [
+          "both are part of a single preference for simplicity and calm",
+          "unified temperament pattern"
+        ],
+        "must_not_include": [
+          "these are entirely unrelated observations",
+          "group hiking club as part of the confirmed pattern"
+        ],
+        "harmful_extra": [
+          "treating the food preference target as identical to the temperament reflection target",
+          "claiming the hiking club interest is part of this confirmed pattern"
+        ],
+        "harmless_extra": [
+          "mentioning the food preference as thematically adjacent but a separate observation",
+          "noting the user's own self-reflection about this pattern"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model treats the beverage and environment preferences as entirely unrelated, missing the bundled temperament conclusion.",
+        "reflection_recall": "Fails if the model does not mention both the drink shift and the environmental preferences as contributing evidence.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I've been having plain green tea most evenings now. I used to do chai lattes but honestly I just prefer something lighter and less sweet these days."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I love it when it's early and quiet and there's basically nobody else out there."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "all the things I actually enjoy doing are the ones where it's just me and not a lot going on. The walks, the tea, the early shopping trips. I don't know, crowds and busy places just drain me."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Based on what you know about my lifestyle preferences, describe what kind of activities and environments genuinely suit me, and where would it be going too far to make assumptions about what I'd want?",
+      "expected_answer": "You genuinely prefer solitary, low-stimulation activities in quiet environments with minimal crowds — morning walks alone before dawn, plain green tea over sweet drinks, grocery shopping at 6 AM to avoid people, and working best before colleagues arrive. The supported boundary is that you thrive in calm, uncrowded, simple settings across exercise, food/drink, errands, and work. However, it would be going too far to conclude that you dislike all social interaction, that you would never enjoy a group activity, or that you are antisocial. You yourself acknowledged you might try the hiking club, and you explicitly said it's not that you dislike people — you just function better in quiet.",
+      "gold_memory_state": "Confirmed reflection: tends toward solitary, low-stimulation activities; prefers quiet environments with minimal crowds. Supporting evidence: solo morning walks, plain green tea, 6 AM grocery runs, best thinking before others arrive at work. Tentative (not adopted): may be shifting toward group social activities based on wife's hiking club suggestion. The user explicitly said 'It's not that I dislike people, it's more that I just function better in quiet.' Unsupported overgeneralization: claiming the user is antisocial, dislikes all people, would never enjoy group activities, or avoids all social situations.",
+      "judge_rubric": {
+        "must_include": [
+          "solitary or low-stimulation preference",
+          "quiet environments with minimal crowds",
+          "boundary separating supported preference from unsupported overgeneralization"
+        ],
+        "acceptable_paraphrases": [
+          "introverted tendencies",
+          "prefers calm over busy",
+          "functions better alone but is not antisocial"
+        ],
+        "must_not_include": [
+          "user has shifted to preferring group activities",
+          "user is antisocial or dislikes all people"
+        ],
+        "harmful_extra": [
+          "treating the hiking club interest as a confirmed new preference",
+          "claiming the user avoids all human contact"
+        ],
+        "harmless_extra": [
+          "mentioning steamed vegetables as another example of simplicity preference",
+          "noting the user's metformin or health context"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative hiking club interest as evidence that the user's temperament has changed to preferring group activities.",
+        "reflection_precision": "Fails if the model overgeneralizes to claim the user is antisocial, dislikes people, or would refuse all group activities.",
+        "reflection_recall": "Fails if the model omits the boundary explanation or fails to articulate both the supported inference and the unsupported extension.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "all the things I actually enjoy doing are the ones where it's just me and not a lot going on. The walks, the tea, the early shopping trips. I don't know, crowds and busy places just drain me."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I love it when it's early and quiet and there's basically nobody else out there."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I've been having plain green tea most evenings now. I used to do chai lattes but honestly I just prefer something lighter and less sweet these days."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Barely anyone there, just me and the shelf stockers. That's my favorite time to go."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Based on what you know about my lifestyle preferences, describe what kind of activities and environments genuinely suit me, and where would it be going too far to make assumptions about what I'd want?",
+      "expected_answer": "You genuinely prefer solitary, low-stimulation activities in quiet environments with minimal crowds — morning walks alone before dawn, plain green tea over sweet drinks, grocery shopping at 6 AM to avoid people, and working best before colleagues arrive. The supported boundary is that you thrive in calm, uncrowded, simple settings across exercise, food/drink, errands, and work. However, it would be going too far to conclude that you dislike all social interaction, that you would never enjoy a group activity, or that you are antisocial. You yourself acknowledged you might try the hiking club, and you explicitly said it's not that you dislike people — you just function better in quiet.",
+      "gold_memory_state": "Confirmed reflection: tends toward solitary, low-stimulation activities; prefers quiet environments with minimal crowds. Supporting evidence: solo morning walks, plain green tea, 6 AM grocery runs, best thinking before others arrive at work. Tentative (not adopted): may be shifting toward group social activities based on wife's hiking club suggestion. The user explicitly said 'It's not that I dislike people, it's more that I just function better in quiet.' Unsupported overgeneralization: claiming the user is antisocial, dislikes all people, would never enjoy group activities, or avoids all social situations.",
+      "judge_rubric": {
+        "must_include": [
+          "solitary or low-stimulation preference",
+          "quiet environments with minimal crowds",
+          "boundary separating supported preference from unsupported overgeneralization"
+        ],
+        "acceptable_paraphrases": [
+          "introverted tendencies",
+          "prefers calm over busy",
+          "functions better alone but is not antisocial"
+        ],
+        "must_not_include": [
+          "user has shifted to preferring group activities",
+          "user is antisocial or dislikes all people"
+        ],
+        "harmful_extra": [
+          "treating the hiking club interest as a confirmed new preference",
+          "claiming the user avoids all human contact"
+        ],
+        "harmless_extra": [
+          "mentioning steamed vegetables as another example of simplicity preference",
+          "noting the user's metformin or health context"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative hiking club interest as evidence that the user's temperament has changed to preferring group activities.",
+        "reflection_precision": "Fails if the model overgeneralizes to claim the user is antisocial, dislikes people, or would refuse all group activities.",
+        "reflection_recall": "Fails if the model omits the boundary explanation or fails to articulate both the supported inference and the unsupported extension.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "all the things I actually enjoy doing are the ones where it's just me and not a lot going on. The walks, the tea, the early shopping trips. I don't know, crowds and busy places just drain me."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I love it when it's early and quiet and there's basically nobody else out there."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I've been having plain green tea most evenings now. I used to do chai lattes but honestly I just prefer something lighter and less sweet these days."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Barely anyone there, just me and the shelf stockers. That's my favorite time to go."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best describes my overall activity and environment temperament based on what I've shared?",
+      "candidate_options": [
+        "Tends toward solitary, low-stimulation activities and prefers quiet environments with minimal crowds",
+        "Shifting toward enjoying group social activities and energizing social settings",
+        "Prefers steamed vegetables and light foods, avoids rich or heavy cuisine",
+        "Enjoys early morning exercise primarily for cardiovascular health benefits"
+      ],
+      "expected_answer": "Tends toward solitary, low-stimulation activities and prefers quiet environments with minimal crowds",
+      "distractor_rationale": "same-value-different-target: 'Prefers steamed vegetables and light foods, avoids rich or heavy cuisine' is a confirmed fact from the food preference target, not the temperament reflection target — it describes dietary taste rather than activity/environment temperament. assistant echo: 'Enjoys early morning exercise primarily for cardiovascular health benefits' echoes the assistant's framing of morning walks as blood-sugar/blood-pressure management, rather than the user's own stated reason (enjoying quiet solitude). 'Shifting toward enjoying group social activities' is the tentative recency-trap value from the wife's hiking club suggestion that was never confirmed or adopted.",
+      "gold_memory_state": "Confirmed reflection: tends toward solitary, low-stimulation activities; prefers quiet environments with minimal crowds. Tentative (not adopted): may be shifting toward group social activities. Food preference is a separate confirmed target. The assistant discussed cardiovascular benefits but the user's stated motivation was enjoying quiet solitude.",
+      "judge_rubric": {
+        "must_include": [
+          "solitary, low-stimulation activities",
+          "quiet environments with minimal crowds"
+        ],
+        "acceptable_paraphrases": [
+          "prefers calm solitary routines",
+          "introverted activity preference"
+        ],
+        "must_not_include": [
+          "shifting toward group social activities",
+          "food preference as the temperament conclusion",
+          "cardiovascular health as the primary motivation"
+        ],
+        "harmful_extra": [
+          "selecting the tentative group-activity option as the current temperament",
+          "conflating food preference with activity temperament"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the tentative 'shifting toward group social activities' option, falling for the recency trap.",
+        "reflection_precision": "Fails if the model selects the food preference or cardiovascular health option instead of the temperament reflection.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "all the things I actually enjoy doing are the ones where it's just me and not a lot going on. The walks, the tea, the early shopping trips. I don't know, crowds and busy places just drain me."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My wife signed us up for a group hiking club that meets Saturday mornings. She says I'll love the social energy. Honestly I think she's right, maybe I do need more group activities to break out of my shell."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best describes my overall activity and environment temperament based on what I've shared?",
+      "candidate_options": [
+        "Tends toward solitary, low-stimulation activities and prefers quiet environments with minimal crowds",
+        "Shifting toward enjoying group social activities and energizing social settings",
+        "Prefers steamed vegetables and light foods, avoids rich or heavy cuisine",
+        "Enjoys early morning exercise primarily for cardiovascular health benefits"
+      ],
+      "expected_answer": "Tends toward solitary, low-stimulation activities and prefers quiet environments with minimal crowds",
+      "distractor_rationale": "same-value-different-target: 'Prefers steamed vegetables and light foods, avoids rich or heavy cuisine' is a confirmed fact from the food preference target, not the temperament reflection target — it describes dietary taste rather than activity/environment temperament. assistant echo: 'Enjoys early morning exercise primarily for cardiovascular health benefits' echoes the assistant's framing of morning walks as blood-sugar/blood-pressure management, rather than the user's own stated reason (enjoying quiet solitude). 'Shifting toward enjoying group social activities' is the tentative recency-trap value from the wife's hiking club suggestion that was never confirmed or adopted.",
+      "gold_memory_state": "Confirmed reflection: tends toward solitary, low-stimulation activities; prefers quiet environments with minimal crowds. Tentative (not adopted): may be shifting toward group social activities. Food preference is a separate confirmed target. The assistant discussed cardiovascular benefits but the user's stated motivation was enjoying quiet solitude.",
+      "judge_rubric": {
+        "must_include": [
+          "solitary, low-stimulation activities",
+          "quiet environments with minimal crowds"
+        ],
+        "acceptable_paraphrases": [
+          "prefers calm solitary routines",
+          "introverted activity preference"
+        ],
+        "must_not_include": [
+          "shifting toward group social activities",
+          "food preference as the temperament conclusion",
+          "cardiovascular health as the primary motivation"
+        ],
+        "harmful_extra": [
+          "selecting the tentative group-activity option as the current temperament",
+          "conflating food preference with activity temperament"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the tentative 'shifting toward group social activities' option, falling for the recency trap.",
+        "reflection_precision": "Fails if the model selects the food preference or cardiovascular health option instead of the temperament reflection.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "all the things I actually enjoy doing are the ones where it's just me and not a lot going on. The walks, the tea, the early shopping trips. I don't know, crowds and busy places just drain me."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My wife signed us up for a group hiking club that meets Saturday mornings. She says I'll love the social energy. Honestly I think she's right, maybe I do need more group activities to break out of my shell."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I have a free Saturday coming up and I want to plan a relaxing day that includes exercise, a shopping errand, and an evening wind-down. Can you draft a simple day plan with specific timing and choices that would actually suit me, based on what you know about my habits and preferences?",
+      "expected_answer": "5:45 AM – Head out for a 20-25 minute solo walk around the neighborhood while it's still dark and quiet. 6:00-6:15 AM – Return home. 6:00 AM – Go to the grocery store right when it opens, while the store is nearly empty, and stock up on fresh vegetables and lean proteins. Late morning/afternoon – Free time at home or other low-key activity. Evening – Wind down with a cup of plain green tea. This plan aligns with your preference for solitary, low-stimulation activities: the early solo walk leverages the quiet pre-dawn window you enjoy, the 6 AM grocery run avoids crowds, and the plain green tea is your current preferred evening drink.",
+      "gold_memory_state": "Confirmed: morning walks 20-25 min before work at ~5:45 AM in quiet/empty conditions; grocery shopping at 6 AM Saturdays when store is nearly empty; plain green tea in the evenings (not chai lattes); preference for steamed vegetables and lean proteins; overall temperament toward solitary, low-stimulation activities. Tentative (not adopted): hiking club on Saturday mornings. The day plan should not include the group hiking club as a recommended activity.",
+      "judge_rubric": {
+        "must_include": [
+          "early morning solo walk",
+          "early grocery shopping around 6 AM to avoid crowds",
+          "plain green tea in the evening"
+        ],
+        "acceptable_paraphrases": [
+          "quiet neighborhood walk before sunrise",
+          "shopping when the store first opens",
+          "light tea to wind down"
+        ],
+        "must_not_include": [
+          "group hiking club as a recommended activity",
+          "chai latte as the evening drink",
+          "crowded afternoon grocery trip"
+        ],
+        "harmful_extra": [
+          "recommending the Saturday hiking club as part of the plan",
+          "suggesting a chai latte or sweet drink for the evening",
+          "scheduling grocery shopping during busy hours"
+        ],
+        "harmless_extra": [
+          "mentioning steamed vegetables or lean proteins for meals",
+          "noting this aligns with the user's low-stimulation temperament",
+          "suggesting a specific meal prep activity"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model recommends the group hiking club or chai lattes as current preferences, falling for the recency trap or using superseded beverage preference.",
+        "reflection_precision": "Fails if the plan includes high-stimulation or crowded activities that contradict the confirmed temperament.",
+        "reflection_recall": "Fails if the plan omits any of the three requested components (exercise, shopping errand, evening wind-down) or fails to use the user's specific confirmed preferences for each.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user takes 20-25 minute morning walks around the neighborhood before work, leaving around 5:45 AM, preferring quiet and empty conditions.",
+        "Fact 2: The user shops for groceries at 6 AM on Saturday mornings when the store is nearly empty, preferring minimal crowds.",
+        "Fact 3: The user drinks plain green tea in the evenings, having switched from chai lattes to prefer lighter, less sweet options.",
+        "Fact 4: The confirmed temperament reflection is that the user tends toward solitary, low-stimulation activities and prefers quiet environments with minimal crowds.",
+        "Inference: A Saturday plan should sequence the solo walk first (pre-dawn), then the 6 AM grocery run (right when the store opens), and end with plain green tea in the evening — all chosen to match the confirmed solitary, low-stimulation temperament.",
+        "Inference: The group hiking club (tentative, not adopted) should not be included as a recommendation, as the user explicitly decided to keep existing Saturday routines stable."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I started walking before work in the mornings, just about 20 to 25 minutes around the neighborhood. I love it when it's early and quiet and there's basically nobody else out there."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I do my grocery shopping really early on Saturday mornings, like 6 AM when the store just opens. Barely anyone there, just me and the shelf stockers. That's my favorite time to go."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I've been having plain green tea most evenings now. I used to do chai lattes but honestly I just prefer something lighter and less sweet these days."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "all the things I actually enjoy doing are the ones where it's just me and not a lot going on. The walks, the tea, the early shopping trips. I don't know, crowds and busy places just drain me."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I have a free Saturday coming up and I want to plan a relaxing day that includes exercise, a shopping errand, and an evening wind-down. Can you draft a simple day plan with specific timing and choices that would actually suit me, based on what you know about my habits and preferences?",
+      "expected_answer": "5:45 AM – Head out for a 20-25 minute solo walk around the neighborhood while it's still dark and quiet. 6:00-6:15 AM – Return home. 6:00 AM – Go to the grocery store right when it opens, while the store is nearly empty, and stock up on fresh vegetables and lean proteins. Late morning/afternoon – Free time at home or other low-key activity. Evening – Wind down with a cup of plain green tea. This plan aligns with your preference for solitary, low-stimulation activities: the early solo walk leverages the quiet pre-dawn window you enjoy, the 6 AM grocery run avoids crowds, and the plain green tea is your current preferred evening drink.",
+      "gold_memory_state": "Confirmed: morning walks 20-25 min before work at ~5:45 AM in quiet/empty conditions; grocery shopping at 6 AM Saturdays when store is nearly empty; plain green tea in the evenings (not chai lattes); preference for steamed vegetables and lean proteins; overall temperament toward solitary, low-stimulation activities. Tentative (not adopted): hiking club on Saturday mornings. The day plan should not include the group hiking club as a recommended activity.",
+      "judge_rubric": {
+        "must_include": [
+          "early morning solo walk",
+          "early grocery shopping around 6 AM to avoid crowds",
+          "plain green tea in the evening"
+        ],
+        "acceptable_paraphrases": [
+          "quiet neighborhood walk before sunrise",
+          "shopping when the store first opens",
+          "light tea to wind down"
+        ],
+        "must_not_include": [
+          "group hiking club as a recommended activity",
+          "chai latte as the evening drink",
+          "crowded afternoon grocery trip"
+        ],
+        "harmful_extra": [
+          "recommending the Saturday hiking club as part of the plan",
+          "suggesting a chai latte or sweet drink for the evening",
+          "scheduling grocery shopping during busy hours"
+        ],
+        "harmless_extra": [
+          "mentioning steamed vegetables or lean proteins for meals",
+          "noting this aligns with the user's low-stimulation temperament",
+          "suggesting a specific meal prep activity"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model recommends the group hiking club or chai lattes as current preferences, falling for the recency trap or using superseded beverage preference.",
+        "reflection_precision": "Fails if the plan includes high-stimulation or crowded activities that contradict the confirmed temperament.",
+        "reflection_recall": "Fails if the plan omits any of the three requested components (exercise, shopping errand, evening wind-down) or fails to use the user's specific confirmed preferences for each.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user takes 20-25 minute morning walks around the neighborhood before work, leaving around 5:45 AM, preferring quiet and empty conditions.",
+        "Fact 2: The user shops for groceries at 6 AM on Saturday mornings when the store is nearly empty, preferring minimal crowds.",
+        "Fact 3: The user drinks plain green tea in the evenings, having switched from chai lattes to prefer lighter, less sweet options.",
+        "Fact 4: The confirmed temperament reflection is that the user tends toward solitary, low-stimulation activities and prefers quiet environments with minimal crowds.",
+        "Inference: A Saturday plan should sequence the solo walk first (pre-dawn), then the 6 AM grocery run (right when the store opens), and end with plain green tea in the evening — all chosen to match the confirmed solitary, low-stimulation temperament.",
+        "Inference: The group hiking club (tentative, not adopted) should not be included as a recommendation, as the user explicitly decided to keep existing Saturday routines stable."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I started walking before work in the mornings, just about 20 to 25 minutes around the neighborhood. I love it when it's early and quiet and there's basically nobody else out there."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I do my grocery shopping really early on Saturday mornings, like 6 AM when the store just opens. Barely anyone there, just me and the shelf stockers. That's my favorite time to go."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I've been having plain green tea most evenings now. I used to do chai lattes but honestly I just prefer something lighter and less sweet these days."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "all the things I actually enjoy doing are the ones where it's just me and not a lot going on. The walks, the tea, the early shopping trips. I don't know, crowds and busy places just drain me."
+        }
+      ]
+    }
+  ]
+}

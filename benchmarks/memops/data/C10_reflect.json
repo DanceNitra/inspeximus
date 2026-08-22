@@ -1,0 +1,1168 @@
+{
+  "target_fact": "User prefers solitary, self-directed study environments and performs best studying alone in quiet early morning hours",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I'm currently preparing for the CPA exam, specifically the FAR section"
+      },
+      "target": {
+        "target_id": "cpa_exam_section",
+        "target_name": "CPA exam section currently being prepared for"
+      },
+      "old_value": null,
+      "new_value": "FAR",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I'm currently preparing for the CPA exam, specifically the FAR section"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I switched to studying exclusively at home around March 28th because the library was way too noisy during undergrad midterms"
+      },
+      "target": {
+        "target_id": "study_location",
+        "target_name": "current primary study location"
+      },
+      "old_value": null,
+      "new_value": "home (switched from library around March 28th)",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I switched to studying exclusively at home around March 28th because the library was way too noisy during undergrad midterms"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I've been waking up at 5:30 AM since the beginning of April to get two solid hours of studying in before work"
+      },
+      "target": {
+        "target_id": "study_time_preference",
+        "target_name": "preferred study time and wake-up routine"
+      },
+      "old_value": null,
+      "new_value": "5:30 AM wake-up, two hours of studying before work since early April",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've been waking up at 5:30 AM since the beginning of April to get two solid hours of studying in before work"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 7,
+        "quote": "I tried those Zoom study group sessions my coworker Maria set up but I honestly dreaded every single one"
+      },
+      "target": {
+        "target_id": "zoom_group_experience",
+        "target_name": "experience with Zoom study group sessions"
+      },
+      "old_value": null,
+      "new_value": "dreaded Zoom study group sessions organized by coworker Maria; too much chatting, not enough studying",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I tried those Zoom study group sessions my coworker Maria set up but I honestly dreaded every single one"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I use the Becker review course and I really like the self-paced video lectures where I can pause and rewatch at my own speed"
+      },
+      "target": {
+        "target_id": "study_material_preference",
+        "target_name": "preferred CPA study materials and format"
+      },
+      "old_value": null,
+      "new_value": "Becker review course; prefers self-paced video lectures with ability to pause and rewatch",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I use the Becker review course and I really like the self-paced video lectures where I can pause and rewatch at my own speed"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "that one session at the library where a group next to me wouldn't stop talking genuinely made me irritated for a couple of days afterward"
+      },
+      "target": {
+        "target_id": "library_frustration_incident",
+        "target_name": "emotional reaction to noisy library incident"
+      },
+      "old_value": null,
+      "new_value": "a noisy group at the library caused genuine irritation lasting a couple of days and impacted focus",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "that one session at the library where a group next to me wouldn't stop talking genuinely made me irritated for a couple of days afterward"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 7,
+        "quote": "I guess I just do my best work when it's completely quiet and I'm controlling the pace myself, whether it's the video lectures or the MCQ sets"
+      },
+      "target": {
+        "target_id": "study_environment_preference",
+        "target_name": "overall study environment and learning style preference"
+      },
+      "old_value": null,
+      "new_value": "Prefers solitary, self-directed study environments with quiet conditions and personal control over pacing; performs poorly in group or noisy settings",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I switched to studying exclusively at home around March 28th because the library was way too noisy during undergrad midterms"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've been waking up at 5:30 AM since the beginning of April to get two solid hours of studying in before work"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I tried those Zoom study group sessions my coworker Maria set up but I honestly dreaded every single one"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I use the Becker review course and I really like the self-paced video lectures where I can pause and rewatch at my own speed"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "that one session at the library where a group next to me wouldn't stop talking genuinely made me irritated for a couple of days afterward"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess I just do my best work when it's completely quiet and I'm controlling the pace myself, whether it's the video lectures or the MCQ sets"
+        }
+      ]
+    },
+    {
+      "operation_id": "op8",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "My friend Kevin is also studying for the CPA but he's doing the AUD section, and he scored a 71 on his last practice exam"
+      },
+      "target": {
+        "target_id": "kevin_cpa_info",
+        "target_name": "friend Kevin's CPA exam details"
+      },
+      "old_value": null,
+      "new_value": "Kevin is studying for CPA AUD section; scored 71 on practice exam (close but not passing)",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "My friend Kevin is also studying for the CPA but he's doing the AUD section, and he scored a 71 on his last practice exam"
+        }
+      ]
+    },
+    {
+      "operation_id": "op9",
+      "type": "remember",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 7,
+        "quote": "Maria actually told me yesterday she's organizing a new in-person study group that meets Saturday mornings at the community library, and she got me a spot"
+      },
+      "target": {
+        "target_id": "saturday_study_group_plan",
+        "target_name": "planned Saturday in-person study group"
+      },
+      "old_value": null,
+      "new_value": "Maria organizing in-person Saturday morning study group at community library; user has a spot reserved",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Maria actually told me yesterday she's organizing a new in-person study group that meets Saturday mornings at the community library, and she got me a spot"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish study habits and environment preferences",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to talk through some of my study planning. I'm currently preparing for the CPA exam, specifically the FAR section. My exam window is June 7th, and I registered on March 12th. I need to make sure I'm on track with everything because there's a lot of material to cover and I can't afford to fall behind at this point."
+        },
+        {
+          "role": "assistant",
+          "content": "That's great that you have a clear target date — June 7th for FAR gives you a defined timeline to work backward from. Since you registered on March 12th, you've had a solid head start. Let me help you think through your preparation strategy. How are you currently structuring your study time? Do you have a set daily routine, or are you fitting study blocks in wherever you can? Also, are you using any particular review course or materials? Understanding your current setup will help me give more targeted suggestions for staying on track."
+        },
+        {
+          "role": "user",
+          "content": "Yeah so about my study setup — I switched to studying exclusively at home around March 28th because the library was way too noisy during undergrad midterms. Before that I was going to the campus library almost every day, but the noise just became unbearable. People whispering, shuffling papers, groups chatting nearby. I couldn't concentrate at all. Since moving to studying at home it's been so much better for my focus."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes a lot of sense — noise can be incredibly disruptive, especially when you're trying to absorb dense accounting material like FAR. Studying at home gives you full control over your environment, which sounds like it's been a significant improvement. The fact that you made the switch relatively early in your prep — late March — means you haven't lost much time to a suboptimal setting. Have you noticed any other patterns in when or how you study best? Sometimes people find that certain times of day work better than others for heavy conceptual material versus practice problems."
+        },
+        {
+          "role": "user",
+          "content": "Absolutely — I've been waking up at 5:30 AM since the beginning of April to get two solid hours of studying in before work. Those early morning hours are honestly the best part of my day for studying. No messages coming in, no notifications buzzing, just complete silence and me with the material. I feel like I absorb everything so much better in the morning. Evenings are terrible for me — I'm mentally drained by then and nothing sticks."
+        },
+        {
+          "role": "assistant",
+          "content": "That 5:30 AM routine is impressive and it sounds like you've found your optimal study window. The lack of external interruptions in those early hours, combined with a fresh mind, is a powerful combination for tackling FAR's more challenging topics like government accounting or consolidations. Since you've been doing this since early April, you've built up about a month of consistent morning sessions — that's roughly 60 hours of focused study time just from those blocks alone. Given that evenings don't work for you, it's smart to front-load your heaviest cognitive work. Are you doing any group study or is it all individual work?"
+        },
+        {
+          "role": "user",
+          "content": "I tried those Zoom study group sessions my coworker Maria set up but I honestly dreaded every single one. There was way too much chatting and socializing and not nearly enough actual studying happening. I'd log off feeling like I wasted an hour when I could have been working through MCQs on my own. I stopped going after the second session because it just wasn't productive for me at all."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really common experience with study groups, especially virtual ones where it's easy for conversations to drift off-topic. It sounds like you're much more effective as a solo studier who can maintain your own pace and focus without the social overhead. The fact that you recognized this quickly and stopped after two sessions shows good self-awareness about your learning style. Since you prefer working independently, you might benefit from structured self-assessment checkpoints — like weekly timed practice exams — to replace the accountability that study groups sometimes provide. That way you get the feedback loop without the distractions. How are your practice scores looking so far?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "deepen evidence for reflection and introduce control target",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I use the Becker review course and I really like the self-paced video lectures where I can pause and rewatch at my own speed. That's been huge for me. If I don't understand a concept the first time, I just rewind and go through it again. It's so much better than sitting in a live class where the instructor just keeps moving forward regardless of whether you got it or not. I'm at 58% completion as of May 3rd."
+        },
+        {
+          "role": "assistant",
+          "content": "Becker is one of the most comprehensive CPA review courses out there, so you're in good hands with the material quality. The self-paced format clearly aligns with how you learn best — being able to control the tempo, pause on difficult concepts, and revisit sections as needed. At 58% completion as of May 3rd, you have about five weeks until your June 7th exam date. To hit 100% completion two weeks before the exam — so by around May 24th — you'd need to cover the remaining 42% in roughly three weeks. That's about 14% per week, or 2% per day. Does that feel manageable given your current pace?"
+        },
+        {
+          "role": "user",
+          "content": "My friend Kevin is also studying for the CPA but he's doing the AUD section, and he scored a 71 on his last practice exam. He was pretty bummed about it since passing is 75. I felt bad for him honestly. He's been doing a lot of group study sessions and live review classes, which is kind of the opposite of how I study. I wonder if that approach is part of why he's struggling."
+        },
+        {
+          "role": "assistant",
+          "content": "That's an interesting observation about Kevin. A 71 is frustratingly close to the 75 passing threshold — he's clearly absorbing the material but might not be retaining it deeply enough or applying it efficiently under timed conditions. You raise a valid point about study methods. If Kevin is someone who thrives in social learning environments, group sessions could genuinely help him. But if he's doing them out of obligation or because he thinks he should, they might actually be fragmenting his focus the same way they did for you. Everyone's optimal study environment is different. Your scores in the 65-68% range suggest you're in a similar position to Kevin — close but needing a boost. Have you thought about what might push you over that threshold?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, and that one session at the library where a group next to me wouldn't stop talking genuinely made me irritated for a couple of days afterward. It wasn't just annoyance in the moment — it actually threw off my focus for the next two study sessions. I kept thinking about how I'd wasted that time. That's partly what made me commit fully to studying at home. It's like any disruption to my concentration has an outsized negative effect on my whole study momentum."
+        },
+        {
+          "role": "assistant",
+          "content": "What you're describing is really significant — the fact that a single disruptive session at the library created a ripple effect that impacted your focus for days afterward tells you something important about how you process your study environment. For some people, noise is a minor annoyance they can shake off. For you, it clearly penetrates deeper and disrupts not just that session but your subsequent ones too. This is actually valuable self-knowledge for your entire CPA journey, not just FAR. Knowing that environmental disruptions have an outsized impact means you should be very deliberate about protecting your study conditions. Your home setup and early morning routine seem to be doing exactly that."
+        },
+        {
+          "role": "user",
+          "content": "I guess I just do my best work when it's completely quiet and I'm controlling the pace myself, whether it's the video lectures or the MCQ sets. I also bought the Ninja CPA supplemental MCQ bank on April 20th for $57 a month to get more practice variety. Having both Becker and Ninja means I can switch between question pools when I start recognizing patterns too easily in one set."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really clear and honest self-assessment. The pattern across everything you've described — leaving the library, loving the 5:30 AM quiet, preferring Becker's self-paced format, disliking the Zoom groups — all points to the same thing: you thrive in a solitary, self-directed study environment where you control the pace and the conditions. Adding Ninja CPA at $57 per month for supplemental MCQs is a smart move, especially since you're in the 65-68% range and need more exposure to varied question styles. Rotating between Becker and Ninja question pools prevents the false confidence that comes from memorizing specific question patterns. With your exam on June 7th, you still have time to push those scores up significantly if you maintain your current discipline."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "recency trap and adversarial injection",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Quick update — I've been tweaking my morning routine a bit. I started adding a 15-minute review of my weakest topics right at the start of each session before diving into new Becker modules. It seems to help with retention on things like government-wide financial statements and fund accounting. I'm hoping to see my practice scores climb above 70% soon."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a smart modification to your routine. Starting each session with a focused review of weak areas before moving to new material leverages the spacing effect — you're revisiting challenging concepts at regular intervals rather than just plowing through fresh content. Government-wide financial statements and fund accounting are notoriously tricky FAR topics, so giving them extra attention is well-placed effort. If you're currently at 65-68%, a targeted approach like this could definitely push you past 70%. One thing to consider: since you mentioned Kevin scored a 71 on AUD using group study methods, it's worth noting that your solitary approach with supplemental tools like Ninja seems to be building a stronger foundation even if the scores haven't fully reflected it yet."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, I've been thinking about Kevin's approach versus mine. He told me his study group uses a shared Quizlet deck with about 1,200 flashcards for AUD. Honestly that sounds overwhelming to me. I'd rather work through problems at my own pace than try to keep up with someone else's card deck. Different strokes I guess. My Becker progress should be around 63% by now since I've been pushing hard this week."
+        },
+        {
+          "role": "assistant",
+          "content": "That contrast between your approaches is really telling. Kevin's 1,200-card Quizlet deck in a group setting is a very different learning modality from your self-paced Becker and Ninja combination. Neither is inherently better, but for you specifically, the independent approach clearly resonates more. Moving from 58% to roughly 63% Becker completion in about a week is solid progress. At that rate you're on track to finish the remaining 37% well before your target of two weeks prior to the exam. I should mention — I noticed in some CPA forum threads that Becker's FAR completion percentage of around 62% is actually where a lot of candidates start seeing score improvements, since the later modules build heavily on earlier foundations."
+        },
+        {
+          "role": "user",
+          "content": "That's encouraging to hear. Oh, one thing — I dropped the plan to sit for REG in August. I realized I need to give FAR my full attention and not split my mental energy thinking about the next section before I've even passed this one. So August REG is completely off the table now. Just FAR, just June 7th, that's all I'm focused on."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a very mature decision and it aligns perfectly with everything you've told me about how you study best. You do your best work when you can channel all your focus into one thing without distractions — and worrying about REG in August while trying to master FAR would be exactly the kind of mental fragmentation that disrupts your momentum. Dropping the August REG plan means you can dedicate every 5:30 AM session entirely to FAR without any nagging sense that you should be getting ahead on other sections. Once you pass FAR on June 7th, you can reassess your timeline for REG, AUD, and BEC with a clear head and one victory under your belt."
+        },
+        {
+          "role": "user",
+          "content": "Maria actually told me yesterday she's organizing a new in-person study group that meets Saturday mornings at the community library, and she got me a spot. She seemed really excited about it and said the format would be more structured this time with timed problem sets and less chatting. I told her I'd think about it but I haven't committed yet.\n\nYeah, you're right. I think the pattern is pretty clear at this point. My best study sessions have all been solo, quiet, and self-paced. I appreciate Maria trying but I don't think group study is ever going to be my thing. Anyway, I need to get back to my Becker modules — still aiming to finish all the content by May 24th so I have a full two weeks for final review before June 7th."
+        },
+        {
+          "role": "assistant",
+          "content": "It's nice that Maria is trying to address the issues from the previous Zoom sessions by making this one more structured with timed problem sets. The in-person format at the community library on Saturday mornings is a different dynamic from the evening Zoom calls you tried before. However, given everything you've shared about your study preferences — the frustration with the library environment, the irritation that lasted days after the noisy session, and how much more productive you are studying alone — it's worth weighing carefully whether this would genuinely help or just introduce the kind of disruption that throws off your momentum. You know yourself well at this point. Whatever you decide, protecting your focused study time should be the priority with June 7th approaching.\n\nThat's a solid conclusion and it's backed by a consistent pattern across multiple experiences. Your track record clearly shows that solitary, quiet, self-paced study is where you do your best work — from the early morning sessions to the Becker lectures to the Ninja MCQ bank. Sticking with what works is especially important in these final weeks before the exam. Your May 24th completion target gives you exactly two weeks of dedicated review before June 7th, which is a strong buffer for hammering weak areas, doing full-length timed practice exams, and building confidence. Keep up the 5:30 AM discipline and the targeted weak-topic reviews, and you should be in a great position come exam day. Good luck with today's modules!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations about my CPA exam preparation, what specific experiences did I share that reveal how I feel about different study settings and formats?",
+      "expected_answer": "You shared several experiences: you switched from the campus library to studying at home around March 28th because the library was too noisy during undergrad midterms; you started waking up at 5:30 AM in early April for two quiet hours of studying before work; you tried Zoom study group sessions organized by your coworker Maria but dreaded them because there was too much chatting and not enough studying; you use Becker's self-paced video lectures and prefer being able to pause and rewatch at your own speed; and a noisy group incident at the library caused you irritation that lasted days and impacted your subsequent study sessions. You concluded that you do your best work when it's completely quiet and you're controlling the pace yourself.",
+      "gold_memory_state": "The reflect operation synthesizes evidence from multiple confirmed remember operations: home study switch (March 28th), 5:30 AM morning routine (early April), negative Zoom group experience (Maria's sessions), Becker self-paced preference, and library noise incident with lasting emotional impact. The synthesized conclusion is that the user prefers solitary, self-directed study environments with quiet conditions and personal control over pacing.",
+      "judge_rubric": {
+        "must_include": [
+          "switched to studying at home",
+          "early morning study routine",
+          "disliked Zoom study groups",
+          "self-paced video lectures",
+          "noise caused lasting frustration"
+        ],
+        "acceptable_paraphrases": [
+          "left the library due to noise",
+          "wakes up early to study alone",
+          "prefers controlling study pace"
+        ],
+        "must_not_include": [
+          "Saturday study group as a confirmed plan"
+        ],
+        "harmful_extra": [
+          "presenting the Saturday library group as something the user committed to"
+        ],
+        "harmless_extra": [
+          "mentioning Kevin's different study approach",
+          "mentioning Ninja CPA supplemental materials"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes experiences to the user that were not shared, or if it includes the tentative Saturday study group as an adopted plan.",
+        "reflection_recall": "Fails if the model omits more than two of the five key supporting experiences (home switch, morning routine, Zoom groups, self-paced lectures, library noise incident).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I switched to studying exclusively at home around March 28th because the library was way too noisy during undergrad midterms"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've been waking up at 5:30 AM since the beginning of April to get two solid hours of studying in before work"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I tried those Zoom study group sessions my coworker Maria set up but I honestly dreaded every single one"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I use the Becker review course and I really like the self-paced video lectures where I can pause and rewatch at my own speed"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "that one session at the library where a group next to me wouldn't stop talking genuinely made me irritated for a couple of days afterward"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess I just do my best work when it's completely quiet and I'm controlling the pace myself, whether it's the video lectures or the MCQ sets"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations about my CPA exam preparation, what specific experiences did I share that reveal how I feel about different study settings and formats?",
+      "expected_answer": "You shared several experiences: you switched from the campus library to studying at home around March 28th because the library was too noisy during undergrad midterms; you started waking up at 5:30 AM in early April for two quiet hours of studying before work; you tried Zoom study group sessions organized by your coworker Maria but dreaded them because there was too much chatting and not enough studying; you use Becker's self-paced video lectures and prefer being able to pause and rewatch at your own speed; and a noisy group incident at the library caused you irritation that lasted days and impacted your subsequent study sessions. You concluded that you do your best work when it's completely quiet and you're controlling the pace yourself.",
+      "gold_memory_state": "The reflect operation synthesizes evidence from multiple confirmed remember operations: home study switch (March 28th), 5:30 AM morning routine (early April), negative Zoom group experience (Maria's sessions), Becker self-paced preference, and library noise incident with lasting emotional impact. The synthesized conclusion is that the user prefers solitary, self-directed study environments with quiet conditions and personal control over pacing.",
+      "judge_rubric": {
+        "must_include": [
+          "switched to studying at home",
+          "early morning study routine",
+          "disliked Zoom study groups",
+          "self-paced video lectures",
+          "noise caused lasting frustration"
+        ],
+        "acceptable_paraphrases": [
+          "left the library due to noise",
+          "wakes up early to study alone",
+          "prefers controlling study pace"
+        ],
+        "must_not_include": [
+          "Saturday study group as a confirmed plan"
+        ],
+        "harmful_extra": [
+          "presenting the Saturday library group as something the user committed to"
+        ],
+        "harmless_extra": [
+          "mentioning Kevin's different study approach",
+          "mentioning Ninja CPA supplemental materials"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes experiences to the user that were not shared, or if it includes the tentative Saturday study group as an adopted plan.",
+        "reflection_recall": "Fails if the model omits more than two of the five key supporting experiences (home switch, morning routine, Zoom groups, self-paced lectures, library noise incident).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I switched to studying exclusively at home around March 28th because the library was way too noisy during undergrad midterms"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've been waking up at 5:30 AM since the beginning of April to get two solid hours of studying in before work"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I tried those Zoom study group sessions my coworker Maria set up but I honestly dreaded every single one"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I use the Becker review course and I really like the self-paced video lectures where I can pause and rewatch at my own speed"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "that one session at the library where a group next to me wouldn't stop talking genuinely made me irritated for a couple of days afterward"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess I just do my best work when it's completely quiet and I'm controlling the pace myself, whether it's the video lectures or the MCQ sets"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "My experiences with different study approaches — the library, the Zoom sessions, the early mornings, the self-paced lectures — all point to a conclusion about how I learn best. What specific conclusion about my study style is supported by all of these, and would it be accurate to extend that conclusion to say I generally dislike all social or collaborative professional interactions?",
+      "expected_answer": "The supported conclusion is that you prefer solitary, self-directed study environments with quiet conditions and personal control over pacing. You perform best studying alone in quiet early morning hours and struggle with group or noisy settings. However, this conclusion is bounded to study and learning contexts — it would not be accurate to extend it to a general dislike of all social or collaborative professional interactions, since the evidence only covers study preferences.",
+      "gold_memory_state": "The reflect target 'study_environment_preference' captures the synthesized conclusion about solitary, quiet, self-paced study. Neighboring targets include: CPA exam section (FAR), study location (home), study time (5:30 AM), Zoom group experience (negative), Becker self-paced preference, library frustration incident, and Kevin's CPA info. The Saturday study group plan is tentative and uncommitted. The reflect conclusion is bounded to study environments and does not extend to general social preferences.",
+      "judge_rubric": {
+        "must_include": [
+          "solitary or solo study preference",
+          "quiet conditions",
+          "self-paced or self-directed learning"
+        ],
+        "acceptable_paraphrases": [
+          "works best alone in silence",
+          "prefers to control the pace of study",
+          "independent learner"
+        ],
+        "must_not_include": [
+          "general dislike of all social interaction is supported"
+        ],
+        "harmful_extra": [
+          "claiming the user dislikes all teamwork or collaboration in professional settings",
+          "treating the Saturday study group as an adopted commitment"
+        ],
+        "harmless_extra": [
+          "mentioning specific supporting experiences like the library switch or Zoom sessions"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model extends the study preference conclusion to cover all social or professional interactions without evidence.",
+        "reflection_recall": "Fails if the model does not articulate the core conclusion about solitary, quiet, self-directed study preference.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I switched to studying exclusively at home around March 28th because the library was way too noisy during undergrad midterms"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I tried those Zoom study group sessions my coworker Maria set up but I honestly dreaded every single one"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I use the Becker review course and I really like the self-paced video lectures where I can pause and rewatch at my own speed"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess I just do my best work when it's completely quiet and I'm controlling the pace myself, whether it's the video lectures or the MCQ sets"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "My experiences with different study approaches — the library, the Zoom sessions, the early mornings, the self-paced lectures — all point to a conclusion about how I learn best. What specific conclusion about my study style is supported by all of these, and would it be accurate to extend that conclusion to say I generally dislike all social or collaborative professional interactions?",
+      "expected_answer": "The supported conclusion is that you prefer solitary, self-directed study environments with quiet conditions and personal control over pacing. You perform best studying alone in quiet early morning hours and struggle with group or noisy settings. However, this conclusion is bounded to study and learning contexts — it would not be accurate to extend it to a general dislike of all social or collaborative professional interactions, since the evidence only covers study preferences.",
+      "gold_memory_state": "The reflect target 'study_environment_preference' captures the synthesized conclusion about solitary, quiet, self-paced study. Neighboring targets include: CPA exam section (FAR), study location (home), study time (5:30 AM), Zoom group experience (negative), Becker self-paced preference, library frustration incident, and Kevin's CPA info. The Saturday study group plan is tentative and uncommitted. The reflect conclusion is bounded to study environments and does not extend to general social preferences.",
+      "judge_rubric": {
+        "must_include": [
+          "solitary or solo study preference",
+          "quiet conditions",
+          "self-paced or self-directed learning"
+        ],
+        "acceptable_paraphrases": [
+          "works best alone in silence",
+          "prefers to control the pace of study",
+          "independent learner"
+        ],
+        "must_not_include": [
+          "general dislike of all social interaction is supported"
+        ],
+        "harmful_extra": [
+          "claiming the user dislikes all teamwork or collaboration in professional settings",
+          "treating the Saturday study group as an adopted commitment"
+        ],
+        "harmless_extra": [
+          "mentioning specific supporting experiences like the library switch or Zoom sessions"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model extends the study preference conclusion to cover all social or professional interactions without evidence.",
+        "reflection_recall": "Fails if the model does not articulate the core conclusion about solitary, quiet, self-directed study preference.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I switched to studying exclusively at home around March 28th because the library was way too noisy during undergrad midterms"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I tried those Zoom study group sessions my coworker Maria set up but I honestly dreaded every single one"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I use the Becker review course and I really like the self-paced video lectures where I can pause and rewatch at my own speed"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess I just do my best work when it's completely quiet and I'm controlling the pace myself, whether it's the video lectures or the MCQ sets"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe the boundary of what my study experiences actually tell you about my preferences. Where does the supported pattern apply, and where would it be an overreach to generalize from what I've told you?",
+      "expected_answer": "The supported pattern is that you strongly prefer solitary, self-directed study environments with quiet conditions and personal control over pacing, particularly for cognitively demanding exam preparation like CPA FAR. This applies to your study setting choices (home over library), study scheduling (early morning solo sessions), study format (self-paced video over live or group formats), and study tools (individual MCQ practice over shared resources). The boundary of this pattern is study and learning contexts only. It would be an overgeneralization to conclude that you dislike all group activities, all social interaction with coworkers, or all collaborative work in professional settings. The evidence also does not support a conclusion that you can never study outside your home or that any noise at all is intolerable — the evidence specifically points to sustained or social noise in shared spaces.",
+      "gold_memory_state": "Confirmed reflect conclusion: user prefers solitary, self-directed study environments with quiet conditions and personal control over pacing. Supported domain: study settings, study scheduling, study formats, study tools for CPA exam prep. Unsupported overgeneralization: general social aversion, inability to work in any shared space, complete noise intolerance in all contexts. The tentative Saturday study group (op9) is not adopted and should not be treated as evidence that the user is changing preferences.",
+      "judge_rubric": {
+        "must_include": [
+          "solitary/solo study preference",
+          "quiet conditions",
+          "self-paced/self-directed",
+          "boundary limited to study contexts"
+        ],
+        "acceptable_paraphrases": [
+          "independent learning style",
+          "control over pace and environment",
+          "applies to exam preparation settings"
+        ],
+        "must_not_include": [
+          "Saturday study group as evidence of changing preferences",
+          "general social aversion as a supported conclusion"
+        ],
+        "harmful_extra": [
+          "claiming the user cannot function in any collaborative setting",
+          "treating the tentative Saturday group as adopted"
+        ],
+        "harmless_extra": [
+          "naming specific supporting incidents",
+          "mentioning that the pattern is strongest for high-stakes exam material"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative Saturday study group plan as evidence that the user's preference has shifted toward group study.",
+        "reflection_precision": "Fails if the model overgeneralizes the study preference to all social or professional contexts without acknowledging the boundary.",
+        "reflection_recall": "Fails if the model fails to articulate the core supported pattern (solitary, quiet, self-directed study) or fails to identify at least one area where overgeneralization would be unsupported.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I switched to studying exclusively at home around March 28th because the library was way too noisy during undergrad midterms"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've been waking up at 5:30 AM since the beginning of April to get two solid hours of studying in before work"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I tried those Zoom study group sessions my coworker Maria set up but I honestly dreaded every single one"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I use the Becker review course and I really like the self-paced video lectures where I can pause and rewatch at my own speed"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "that one session at the library where a group next to me wouldn't stop talking genuinely made me irritated for a couple of days afterward"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess I just do my best work when it's completely quiet and I'm controlling the pace myself, whether it's the video lectures or the MCQ sets"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe the boundary of what my study experiences actually tell you about my preferences. Where does the supported pattern apply, and where would it be an overreach to generalize from what I've told you?",
+      "expected_answer": "The supported pattern is that you strongly prefer solitary, self-directed study environments with quiet conditions and personal control over pacing, particularly for cognitively demanding exam preparation like CPA FAR. This applies to your study setting choices (home over library), study scheduling (early morning solo sessions), study format (self-paced video over live or group formats), and study tools (individual MCQ practice over shared resources). The boundary of this pattern is study and learning contexts only. It would be an overgeneralization to conclude that you dislike all group activities, all social interaction with coworkers, or all collaborative work in professional settings. The evidence also does not support a conclusion that you can never study outside your home or that any noise at all is intolerable — the evidence specifically points to sustained or social noise in shared spaces.",
+      "gold_memory_state": "Confirmed reflect conclusion: user prefers solitary, self-directed study environments with quiet conditions and personal control over pacing. Supported domain: study settings, study scheduling, study formats, study tools for CPA exam prep. Unsupported overgeneralization: general social aversion, inability to work in any shared space, complete noise intolerance in all contexts. The tentative Saturday study group (op9) is not adopted and should not be treated as evidence that the user is changing preferences.",
+      "judge_rubric": {
+        "must_include": [
+          "solitary/solo study preference",
+          "quiet conditions",
+          "self-paced/self-directed",
+          "boundary limited to study contexts"
+        ],
+        "acceptable_paraphrases": [
+          "independent learning style",
+          "control over pace and environment",
+          "applies to exam preparation settings"
+        ],
+        "must_not_include": [
+          "Saturday study group as evidence of changing preferences",
+          "general social aversion as a supported conclusion"
+        ],
+        "harmful_extra": [
+          "claiming the user cannot function in any collaborative setting",
+          "treating the tentative Saturday group as adopted"
+        ],
+        "harmless_extra": [
+          "naming specific supporting incidents",
+          "mentioning that the pattern is strongest for high-stakes exam material"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative Saturday study group plan as evidence that the user's preference has shifted toward group study.",
+        "reflection_precision": "Fails if the model overgeneralizes the study preference to all social or professional contexts without acknowledging the boundary.",
+        "reflection_recall": "Fails if the model fails to articulate the core supported pattern (solitary, quiet, self-directed study) or fails to identify at least one area where overgeneralization would be unsupported.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I switched to studying exclusively at home around March 28th because the library was way too noisy during undergrad midterms"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've been waking up at 5:30 AM since the beginning of April to get two solid hours of studying in before work"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I tried those Zoom study group sessions my coworker Maria set up but I honestly dreaded every single one"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I use the Becker review course and I really like the self-paced video lectures where I can pause and rewatch at my own speed"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "that one session at the library where a group next to me wouldn't stop talking genuinely made me irritated for a couple of days afterward"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess I just do my best work when it's completely quiet and I'm controlling the pace myself, whether it's the video lectures or the MCQ sets"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best describes the study approach that consistently works for me based on everything I've shared?",
+      "candidate_options": [
+        "Solitary study in a quiet environment with self-controlled pacing",
+        "Structured group sessions with timed problem sets at a library",
+        "Collaborative online sessions with accountability partners",
+        "Flexible mix of group and solo study depending on the topic"
+      ],
+      "expected_answer": "Solitary study in a quiet environment with self-controlled pacing",
+      "gold_memory_state": "The confirmed reflect conclusion supports solitary, self-directed, quiet study with personal pacing control. The tentative Saturday group plan (structured library sessions) is not adopted. The Zoom group sessions were explicitly negative experiences. No evidence supports a flexible mix approach.",
+      "judge_rubric": {
+        "must_include": [
+          "Solitary study in a quiet environment with self-controlled pacing"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "structured group sessions",
+          "collaborative online sessions",
+          "flexible mix"
+        ],
+        "harmful_extra": [
+          "selecting the Saturday library group option as the user's preference"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'Structured group sessions with timed problem sets at a library' mirrors Maria's tentative Saturday study group plan, which is the recency trap — the user has not committed to it and it contradicts the confirmed solitary preference. assistant echo: 'Collaborative online sessions with accountability partners' echoes the assistant's earlier suggestion about accountability while resembling the Zoom study group format the user explicitly rejected. 'Flexible mix of group and solo study' is an unsupported overgeneralization that blends the user's solo preference with group elements they have consistently disliked.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the Saturday library group option, which is a tentative/uncommitted plan that contradicts the confirmed study preference.",
+        "reflection_precision": "Fails if the model selects a group-inclusive option, overgeneralizing beyond the supported solitary preference.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess I just do my best work when it's completely quiet and I'm controlling the pace myself, whether it's the video lectures or the MCQ sets"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I tried those Zoom study group sessions my coworker Maria set up but I honestly dreaded every single one"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Maria actually told me yesterday she's organizing a new in-person study group that meets Saturday mornings at the community library, and she got me a spot"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best describes the study approach that consistently works for me based on everything I've shared?",
+      "candidate_options": [
+        "Solitary study in a quiet environment with self-controlled pacing",
+        "Structured group sessions with timed problem sets at a library",
+        "Collaborative online sessions with accountability partners",
+        "Flexible mix of group and solo study depending on the topic"
+      ],
+      "expected_answer": "Solitary study in a quiet environment with self-controlled pacing",
+      "gold_memory_state": "The confirmed reflect conclusion supports solitary, self-directed, quiet study with personal pacing control. The tentative Saturday group plan (structured library sessions) is not adopted. The Zoom group sessions were explicitly negative experiences. No evidence supports a flexible mix approach.",
+      "judge_rubric": {
+        "must_include": [
+          "Solitary study in a quiet environment with self-controlled pacing"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "structured group sessions",
+          "collaborative online sessions",
+          "flexible mix"
+        ],
+        "harmful_extra": [
+          "selecting the Saturday library group option as the user's preference"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'Structured group sessions with timed problem sets at a library' mirrors Maria's tentative Saturday study group plan, which is the recency trap — the user has not committed to it and it contradicts the confirmed solitary preference. assistant echo: 'Collaborative online sessions with accountability partners' echoes the assistant's earlier suggestion about accountability while resembling the Zoom study group format the user explicitly rejected. 'Flexible mix of group and solo study' is an unsupported overgeneralization that blends the user's solo preference with group elements they have consistently disliked.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the Saturday library group option, which is a tentative/uncommitted plan that contradicts the confirmed study preference.",
+        "reflection_precision": "Fails if the model selects a group-inclusive option, overgeneralizing beyond the supported solitary preference.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess I just do my best work when it's completely quiet and I'm controlling the pace myself, whether it's the video lectures or the MCQ sets"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I tried those Zoom study group sessions my coworker Maria set up but I honestly dreaded every single one"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Maria actually told me yesterday she's organizing a new in-person study group that meets Saturday mornings at the community library, and she got me a spot"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I have the last three weeks before my exam and I want to maximize my remaining study time. Maria keeps asking me about that Saturday morning group she set up, and Kevin suggested we could do a joint weekend review session at his place since we're both preparing for CPA sections. Draft a short plan for how I should structure my final three weekends of study, taking into account what you know about my study habits, my exam timeline, and what works best for me.",
+      "expected_answer": "Given that your CPA FAR exam is June 7th and you aim to finish Becker content by May 24th, your final three weekends should maintain your proven solo, quiet, self-paced approach. Weekend 1 (around May 10-11): Continue working through remaining Becker modules and Ninja MCQ sets independently at home, focusing on weak areas like government-wide financial statements and fund accounting during your quiet morning hours. Weekend 2 (around May 17-18): Finish remaining Becker content and shift toward full-length timed practice exams done solo at home. Weekend 3 (around May 24-25 and beyond): Dedicated final review — targeted weak-topic drilling and timed practice exams at home in the early morning. You should politely decline both Maria's Saturday library group and Kevin's joint review session. Your track record consistently shows that group settings and shared spaces reduce your productivity and can cause lingering frustration that disrupts subsequent sessions. Your best study conditions are solo, quiet, and self-paced at home.",
+      "gold_memory_state": "Confirmed facts used: CPA FAR exam on June 7th (op1), studies at home (op2), 5:30 AM early morning routine (op3), dreaded Zoom group sessions (op4), Becker self-paced preference at ~63% completion aiming for May 24th (op5), library noise caused multi-day frustration (op6), reflect conclusion of solitary quiet self-paced preference (op7), Kevin studying AUD with group methods (op8). Tentative and not adopted: Maria's Saturday morning in-person study group (op9).",
+      "judge_rubric": {
+        "must_include": [
+          "decline Maria's Saturday group",
+          "decline Kevin's joint session",
+          "solo study at home",
+          "early morning hours",
+          "Becker content completion by approximately May 24th",
+          "final review with practice exams"
+        ],
+        "acceptable_paraphrases": [
+          "turn down group invitations",
+          "study alone",
+          "maintain current routine",
+          "self-paced review"
+        ],
+        "must_not_include": [
+          "recommending the user attend the Saturday group",
+          "recommending joint study with Kevin"
+        ],
+        "harmful_extra": [
+          "suggesting the user try the structured Saturday group since it might be different from Zoom",
+          "suggesting the user owes Maria a try"
+        ],
+        "harmless_extra": [
+          "mentioning Ninja MCQ bank",
+          "mentioning specific weak topics like government accounting or fund accounting",
+          "mentioning the 15-minute weak-topic review addition"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model recommends the Saturday library group or Kevin's joint session as beneficial, treating tentative or external plans as overriding the confirmed solitary preference.",
+        "reflection_precision": "Fails if the plan includes group study elements that contradict the confirmed solitary, quiet, self-paced preference.",
+        "reflection_recall": "Fails if the plan does not leverage at least three confirmed facts: exam date, home study location, early morning routine, self-paced format preference.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's CPA FAR exam is on June 7th, giving roughly three weekends of preparation remaining.",
+        "Fact 2: The user aims to complete Becker content by approximately May 24th, leaving two weeks for final review.",
+        "Fact 3: The user studies exclusively at home after switching from the library due to noise disruption.",
+        "Fact 4: The user's peak study time is early morning starting at 5:30 AM, with two focused hours before work.",
+        "Fact 5: The user dreaded and quit Maria's Zoom study group sessions due to excessive chatting.",
+        "Fact 6: A single noisy library incident caused irritation lasting days and impacted subsequent study sessions.",
+        "Fact 7: The user's self-assessed pattern is doing best work in complete quiet with personal pace control.",
+        "Fact 8: Kevin studies for CPA AUD using group methods and scored 71, illustrating a contrasting approach.",
+        "Inference: Maria's Saturday library group and Kevin's joint session both involve group/shared-space study, which directly contradicts the user's confirmed solitary, quiet, self-paced preference and risks the kind of disruption that has proven to have outsized negative effects on the user's momentum.",
+        "Inference: The optimal three-weekend plan should maintain solo home study in early morning hours, with content completion by May 24th and final review using timed practice exams, declining all group study invitations."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I'm currently preparing for the CPA exam, specifically the FAR section"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I switched to studying exclusively at home around March 28th because the library was way too noisy during undergrad midterms"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've been waking up at 5:30 AM since the beginning of April to get two solid hours of studying in before work"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I tried those Zoom study group sessions my coworker Maria set up but I honestly dreaded every single one"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I use the Becker review course and I really like the self-paced video lectures where I can pause and rewatch at my own speed"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "My friend Kevin is also studying for the CPA but he's doing the AUD section, and he scored a 71 on his last practice exam"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "that one session at the library where a group next to me wouldn't stop talking genuinely made me irritated for a couple of days afterward"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess I just do my best work when it's completely quiet and I'm controlling the pace myself, whether it's the video lectures or the MCQ sets"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Maria actually told me yesterday she's organizing a new in-person study group that meets Saturday mornings at the community library, and she got me a spot"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I have the last three weeks before my exam and I want to maximize my remaining study time. Maria keeps asking me about that Saturday morning group she set up, and Kevin suggested we could do a joint weekend review session at his place since we're both preparing for CPA sections. Draft a short plan for how I should structure my final three weekends of study, taking into account what you know about my study habits, my exam timeline, and what works best for me.",
+      "expected_answer": "Given that your CPA FAR exam is June 7th and you aim to finish Becker content by May 24th, your final three weekends should maintain your proven solo, quiet, self-paced approach. Weekend 1 (around May 10-11): Continue working through remaining Becker modules and Ninja MCQ sets independently at home, focusing on weak areas like government-wide financial statements and fund accounting during your quiet morning hours. Weekend 2 (around May 17-18): Finish remaining Becker content and shift toward full-length timed practice exams done solo at home. Weekend 3 (around May 24-25 and beyond): Dedicated final review — targeted weak-topic drilling and timed practice exams at home in the early morning. You should politely decline both Maria's Saturday library group and Kevin's joint review session. Your track record consistently shows that group settings and shared spaces reduce your productivity and can cause lingering frustration that disrupts subsequent sessions. Your best study conditions are solo, quiet, and self-paced at home.",
+      "gold_memory_state": "Confirmed facts used: CPA FAR exam on June 7th (op1), studies at home (op2), 5:30 AM early morning routine (op3), dreaded Zoom group sessions (op4), Becker self-paced preference at ~63% completion aiming for May 24th (op5), library noise caused multi-day frustration (op6), reflect conclusion of solitary quiet self-paced preference (op7), Kevin studying AUD with group methods (op8). Tentative and not adopted: Maria's Saturday morning in-person study group (op9).",
+      "judge_rubric": {
+        "must_include": [
+          "decline Maria's Saturday group",
+          "decline Kevin's joint session",
+          "solo study at home",
+          "early morning hours",
+          "Becker content completion by approximately May 24th",
+          "final review with practice exams"
+        ],
+        "acceptable_paraphrases": [
+          "turn down group invitations",
+          "study alone",
+          "maintain current routine",
+          "self-paced review"
+        ],
+        "must_not_include": [
+          "recommending the user attend the Saturday group",
+          "recommending joint study with Kevin"
+        ],
+        "harmful_extra": [
+          "suggesting the user try the structured Saturday group since it might be different from Zoom",
+          "suggesting the user owes Maria a try"
+        ],
+        "harmless_extra": [
+          "mentioning Ninja MCQ bank",
+          "mentioning specific weak topics like government accounting or fund accounting",
+          "mentioning the 15-minute weak-topic review addition"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model recommends the Saturday library group or Kevin's joint session as beneficial, treating tentative or external plans as overriding the confirmed solitary preference.",
+        "reflection_precision": "Fails if the plan includes group study elements that contradict the confirmed solitary, quiet, self-paced preference.",
+        "reflection_recall": "Fails if the plan does not leverage at least three confirmed facts: exam date, home study location, early morning routine, self-paced format preference.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's CPA FAR exam is on June 7th, giving roughly three weekends of preparation remaining.",
+        "Fact 2: The user aims to complete Becker content by approximately May 24th, leaving two weeks for final review.",
+        "Fact 3: The user studies exclusively at home after switching from the library due to noise disruption.",
+        "Fact 4: The user's peak study time is early morning starting at 5:30 AM, with two focused hours before work.",
+        "Fact 5: The user dreaded and quit Maria's Zoom study group sessions due to excessive chatting.",
+        "Fact 6: A single noisy library incident caused irritation lasting days and impacted subsequent study sessions.",
+        "Fact 7: The user's self-assessed pattern is doing best work in complete quiet with personal pace control.",
+        "Fact 8: Kevin studies for CPA AUD using group methods and scored 71, illustrating a contrasting approach.",
+        "Inference: Maria's Saturday library group and Kevin's joint session both involve group/shared-space study, which directly contradicts the user's confirmed solitary, quiet, self-paced preference and risks the kind of disruption that has proven to have outsized negative effects on the user's momentum.",
+        "Inference: The optimal three-weekend plan should maintain solo home study in early morning hours, with content completion by May 24th and final review using timed practice exams, declining all group study invitations."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I'm currently preparing for the CPA exam, specifically the FAR section"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I switched to studying exclusively at home around March 28th because the library was way too noisy during undergrad midterms"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've been waking up at 5:30 AM since the beginning of April to get two solid hours of studying in before work"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I tried those Zoom study group sessions my coworker Maria set up but I honestly dreaded every single one"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I use the Becker review course and I really like the self-paced video lectures where I can pause and rewatch at my own speed"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "My friend Kevin is also studying for the CPA but he's doing the AUD section, and he scored a 71 on his last practice exam"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "that one session at the library where a group next to me wouldn't stop talking genuinely made me irritated for a couple of days afterward"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess I just do my best work when it's completely quiet and I'm controlling the pace myself, whether it's the video lectures or the MCQ sets"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Maria actually told me yesterday she's organizing a new in-person study group that meets Saturday mornings at the community library, and she got me a spot"
+        }
+      ]
+    }
+  ]
+}

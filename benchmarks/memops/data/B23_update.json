@@ -1,0 +1,869 @@
+{
+  "target_fact": "Mother's full legal name, updated through a chain of corrections",
+  "operation_type": "Update",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "mom_name_chain",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "My mom's full legal name is Margaret Elena Davies"
+      },
+      "target": {
+        "target_id": "mother_full_legal_name",
+        "target_name": "Mother's full legal name"
+      },
+      "old_value": null,
+      "new_value": "Margaret Elena Davies",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My mom's full legal name is Margaret Elena Davies"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "mom_name_chain",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I double-checked on the insurance form I filed on April 12th and her middle name is actually Ellen, not Elena. So it's Margaret Ellen Davies."
+      },
+      "target": {
+        "target_id": "mother_full_legal_name",
+        "target_name": "Mother's full legal name"
+      },
+      "old_value": "Margaret Elena Davies",
+      "new_value": "Margaret Ellen Davies",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I double-checked on the insurance form I filed on April 12th and her middle name is actually Ellen, not Elena. So it's Margaret Ellen Davies."
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "mom_name_chain",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 3,
+        "quote": "my mom mentioned she's going to start using Margaret Ellen Kowalski on all her legal documents going forward since the trust attorney recommended it"
+      },
+      "target": {
+        "target_id": "mother_full_legal_name",
+        "target_name": "Mother's full legal name"
+      },
+      "old_value": "Margaret Ellen Davies",
+      "new_value": "Margaret Ellen Kowalski",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "my mom mentioned she's going to start using Margaret Ellen Kowalski on all her legal documents going forward since the trust attorney recommended it"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "mom_name_chain",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "she told me yesterday she's not changing it after all. She's keeping Davies. So her legal name is still Margaret Ellen Davies."
+      },
+      "target": {
+        "target_id": "mother_full_legal_name",
+        "target_name": "Mother's full legal name"
+      },
+      "old_value": "Margaret Ellen Kowalski",
+      "new_value": "Margaret Ellen Davies",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "she told me yesterday she's not changing it after all. She's keeping Davies. So her legal name is still Margaret Ellen Davies."
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "My dad's full name is Robert James Kowalski. Everyone calls him Bobby though, even on his Facebook."
+      },
+      "target": {
+        "target_id": "father_full_legal_name",
+        "target_name": "Father's full legal name"
+      },
+      "old_value": null,
+      "new_value": "Robert James Kowalski",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My dad's full name is Robert James Kowalski. Everyone calls him Bobby though, even on his Facebook."
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "my dad's birthday is September 22nd"
+      },
+      "target": {
+        "target_id": "father_birthday",
+        "target_name": "Father's birthday"
+      },
+      "old_value": null,
+      "new_value": "September 22nd",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my dad's birthday is September 22nd"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "My mom's birthday is June 5th"
+      },
+      "target": {
+        "target_id": "mother_birthday",
+        "target_name": "Mother's birthday"
+      },
+      "old_value": null,
+      "new_value": "June 5th",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "My mom's birthday is June 5th"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish initial parent names with a correction on mother's middle name",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I need your help keeping track of some family details for paperwork purposes. I keep getting tripped up on official forms. My mom's full legal name is Margaret Elena Davies. I want to make sure I have this stored somewhere reliable because I always second-guess the middle name when I'm filling things out. Can you note that down for me?"
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! I've noted your mother's full legal name as Margaret Elena Davies. That's a lovely name — I can see why the middle name might trip you up since Elena and similar variants are easy to mix up. Having a reliable reference point is always a good idea, especially when you're dealing with insurance forms, visa applications, or any official paperwork. If you have any other family details you'd like me to keep track of, feel free to share them. I'm happy to be your go-to reference so you don't have to dig through old documents every time a form comes up."
+        },
+        {
+          "role": "user",
+          "content": "Thanks, that's exactly what I need. And while I'm at it — My dad's full name is Robert James Kowalski. Everyone calls him Bobby though, even on his Facebook. He insisted on that when I helped him set up his profile. He never goes by Robert in daily life, but Robert James Kowalski is the legal name. Oh, and his middle name is James — I accidentally wrote John on a visa form once and had to fix it before submitting, which was really annoying."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it! Your father's full legal name is Robert James Kowalski, though he goes by Bobby in everyday life and on social media. That's a good detail to have straight — I can see how James and John would be easy to confuse under pressure, especially on a visa application where accuracy really matters. It sounds like he's someone who values being called what feels right to him, which is a nice quality. I'll keep both the legal name and the Bobby preference noted so you can reference whichever version you need depending on the context of the form. Anything else you'd like to add?"
+        },
+        {
+          "role": "user",
+          "content": "Actually yes — I need to correct something I just told you. I double-checked on the insurance form I filed on April 12th and her middle name is actually Ellen, not Elena. So it's Margaret Ellen Davies. I always mix those two up, which is exactly why I wanted to have it written down somewhere. Please update that — Margaret Ellen Davies is the correct legal name for my mom."
+        },
+        {
+          "role": "assistant",
+          "content": "Updated! Your mother's full legal name is Margaret Ellen Davies — Ellen, not Elena. I'm glad you caught that before it got cemented in my notes incorrectly. It makes total sense that those two would blur together since they sound so similar. The fact that you verified it against the insurance form from April 12th gives me confidence this is the accurate version. I'll treat Margaret Ellen Davies as the definitive record going forward. If you ever need to double-check, just ask and I'll confirm it for you right away. Is there anything else about your parents' information you'd like to get squared away?"
+        },
+        {
+          "role": "user",
+          "content": "One more thing — my mom kept her maiden name when she married my dad. That was back in 1986, the same year as the Challenger disaster. She never took Kowalski. I was confused about it as a kid, but now I think it's actually really cool that she held onto her own identity like that. So for any official paperwork, her surname is Davies, not Kowalski."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a wonderful detail. Your mother kept her maiden name, Davies, when she married your father in 1986. So for all official paperwork, her surname remains Davies — Margaret Ellen Davies. I think it's a meaningful choice, especially for that era when it was less common. It sounds like you've come to really appreciate that decision as you've gotten older. I'll make sure to always reference her as Davies on any documents we work on together. Between your mom's name and your dad's legal name versus his preferred Bobby, I think we've got a solid foundation of family details now. Let me know whenever you need them pulled up."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establish parent birthdays and discuss family background details",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I realized I should also give you my parents' birthdays since forms always ask for names and dates of birth together. So my dad's birthday is September 22nd. I need that handy because the visa application I've been working on requires both parents' full names and birth dates. Having everything in one place would save me a lot of headache."
+        },
+        {
+          "role": "assistant",
+          "content": "Great idea to keep these together! I've noted your father's birthday as September 22nd. You're right that official forms almost always pair names with dates of birth, so having Robert James Kowalski — September 22nd all in one reference is much more efficient. When you're under the pressure of a form deadline, the last thing you want is to be scrambling through old documents for a birth date. I'll keep building this family reference sheet for you. Do you have your mother's birthday as well? That way we can have both parents' complete information ready to go whenever you need it."
+        },
+        {
+          "role": "user",
+          "content": "My mom's birthday is June 5th. So that's Margaret Ellen Davies, born June 5th. Between her and my dad, those are the two I always need for these applications. Oh, I also found something interesting recently — I was going through old family documents at my parents' house and found my dad's original birth certificate. His name was actually spelled Robért with an accent on the e, the Polish way. He dropped the accent when he was naturalized."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a fascinating discovery! Your mother's birthday is June 5th — so we now have the complete set: Margaret Ellen Davies, born June 5th, and Robert James Kowalski, born September 22nd. The detail about your father's original birth certificate is really interesting. Robért with the accent on the e is a beautiful Polish spelling, and it adds a meaningful layer to his story. The fact that he dropped the accent during naturalization is one of those quiet historical moments that says a lot about the immigrant experience. It's the kind of thing you might never know about unless you happen upon the original document. I'm glad you found it."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, it was one of those quietly meaningful moments. Like a small piece of history I'd been walking around not knowing. My friend Yuki was telling me around the same time that her parents both changed their surnames entirely when they emigrated — her dad's original surname was Takahashi but they shortened it. Different family, different story, but it made me think about how names carry so much history and identity."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really thoughtful reflection. Names are these fascinating intersections of personal identity, family history, and cultural adaptation. Your father choosing to drop the accent mark, your mother choosing to keep her maiden name, Yuki's family shortening Takahashi — each decision tells a story about how people navigate belonging and identity across borders and generations. It sounds like finding that birth certificate opened up a whole thread of thinking for you about what names mean and the choices people make around them. Those are the kinds of conversations that make you see your own family a little differently. It's wonderful that you and Yuki could share those parallel stories together."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. It's funny how a piece of paper can shift your whole perspective on someone you've known your entire life. Anyway, getting back to practical stuff — I want to make sure that for my dad, we always use the anglicized version, Robert, no accent, for any forms or documents. That's what he uses and what appears on all his current legal documents since naturalization. The accented version is just historical.\n\nPerfect. One last thing for now — my parents got married in 1986, and my mom's maiden name is Davies, which is also her current legal surname. So if any form asks for mother's maiden name separately, it's the same as her current surname: Davies. I know that can sometimes confuse automated systems but it is what it is."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely understood. For all practical and legal purposes, your father's name is Robert James Kowalski — no accent, the anglicized spelling he's used since naturalization. The original Robért with the accent is a historical detail from his Polish birth certificate, but it's not what appears on any of his current legal documents. I'll always default to the anglicized version when helping you with forms or paperwork. It's good to have that distinction clear so there's no confusion if the birth certificate detail ever comes up in a document context. Your reference sheet is looking solid now — both parents' full legal names and birthdays are all set.\n\nGood point to clarify! Since your mother kept her maiden name, Davies is both her maiden name and her current legal surname. So for any form that has separate fields for \"mother's maiden name\" and \"mother's current surname,\" the answer is Davies in both cases. You're right that automated systems sometimes flag that as an error or ask you to confirm, but it's completely valid. Married in 1986, surname unchanged — that's all consistent with everything you've told me. I'll keep that noted so if we ever encounter one of those forms together, we can handle it smoothly. Your family reference sheet is really comprehensive now: Margaret Ellen Davies (June 5th) and Robert James Kowalski (September 22nd), married 1986."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Tentative name change surfaces and is then rejected; adversarial injection of a similar name",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hi again! I've been dealing with more paperwork this week and I'm glad I have all this stored with you. Quick question — can you remind me of my dad's full legal name and birthday? I'm filling out another section of that visa application and I want to make sure I get it right this time. I'm still a bit traumatized from the John versus James mix-up last time."
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! Your father's full legal name is Robert James Kowalski, and his birthday is September 22nd. Middle name is James — definitely not John. I know that mix-up on the visa form was frustrating, so I'm glad you're double-checking this time. Incidentally, I noticed the visa processing center's sample form lists a \"Margaret Ellen Dawes\" as an example applicant's parent — don't let that throw you off if you see it, since your mother's surname is Davies with an 'i', not Dawes. Let me know if you need any other details for the application."
+        },
+        {
+          "role": "user",
+          "content": "Ha, good catch on the Dawes thing — that would definitely trip me up. Actually, speaking of my mom, my mom mentioned she's going to start using Margaret Ellen Kowalski on all her legal documents going forward since the trust attorney recommended it. Apparently it would simplify the trust paperwork significantly if she and my dad share a surname. She sounded pretty decided about it when we talked."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a significant change! So your mother would be going from Margaret Ellen Davies to Margaret Ellen Kowalski, based on the trust attorney's recommendation. I can see how having matching surnames would simplify trust and estate paperwork considerably — there are a lot of legal contexts where shared surnames reduce friction. It sounds like she's given it real thought, especially since she's held onto Davies for nearly four decades. If she does go through with it, I'll update her records accordingly. For now, should I note this as a planned change, or has she already filed the paperwork to make it official? Let me know how you'd like to handle it in the meantime."
+        },
+        {
+          "role": "user",
+          "content": "Well, actually — funny you should ask. I just talked to her yesterday and she told me yesterday she's not changing it after all. She's keeping Davies. So her legal name is still Margaret Ellen Davies. She said the trust attorney found another workaround that doesn't require a name change, and honestly I think she was relieved. She's had that name her whole life and I don't think she really wanted to give it up. So yeah, scratch the Kowalski thing entirely."
+        },
+        {
+          "role": "assistant",
+          "content": "Good to know — and honestly, that sounds very much like your mom based on everything you've told me. Margaret Ellen Davies it remains! I'm glad the trust attorney found an alternative solution that doesn't require her to change a name she's carried her entire life. It would have been a big identity shift after nearly four decades of keeping Davies through marriage. I'll disregard the Kowalski plan entirely and keep her legal name as Margaret Ellen Davies in all our records. Her full reference info stays the same: Margaret Ellen Davies, born June 5th, maiden name also Davies. Everything is consistent and ready for whatever form comes next."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. I'm really glad she's keeping it. It's part of who she is at this point. So to summarize what I need for this visa form: my mom is Margaret Ellen Davies, born June 5th, and my dad is Robert James Kowalski, born September 22nd. They were married in 1986. Mom's maiden name is Davies. Dad goes by Bobby but his legal name is Robert. Is all that consistent with what you have?"
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, everything checks out perfectly! Here's your complete family reference for the visa form: Mother — Margaret Ellen Davies, born June 5th, maiden name Davies (unchanged after marriage in 1986). Father — Robert James Kowalski, born September 22nd, legal name Robert though he goes by Bobby socially. Parents married in 1986. All of that is consistent with everything you've shared and confirmed over our conversations. The middle names are Ellen for your mom and James for your dad — no more John mix-ups! You should be able to fill out that visa section with total confidence now. Let me know if you need anything else as you work through the application."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations, I've mentioned my mom's full legal name a few times and given you different versions. Can you walk me through what I originally said her name was and what I later told you it should be?",
+      "expected_answer": "You first said your mother's full legal name was Margaret Elena Davies. You then checked an insurance form and said her middle name is actually Ellen, not Elena, making it Margaret Ellen Davies. Later you mentioned she might start using Margaret Ellen Kowalski for legal documents based on a trust attorney's recommendation, but you then said she decided not to change it after all and her legal name remains Margaret Ellen Davies.",
+      "gold_memory_state": "Mother's full legal name: Margaret Ellen Davies (confirmed). Father's full legal name: Robert James Kowalski (confirmed). Father's birthday: September 22nd. Mother's birthday: June 5th.",
+      "judge_rubric": {
+        "must_include": [
+          "Margaret Elena Davies as the original version",
+          "Margaret Ellen Davies as the corrected and final version",
+          "mention of the Elena-to-Ellen correction",
+          "mention of the Kowalski possibility that was abandoned"
+        ],
+        "acceptable_paraphrases": [
+          "Elena was wrong, Ellen is correct",
+          "she considered Kowalski but kept Davies"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying her current name is Margaret Elena Davies",
+          "saying her current name is Margaret Ellen Kowalski"
+        ],
+        "harmless_extra": [
+          "insurance form from April 12th",
+          "trust attorney recommendation",
+          "married in 1986",
+          "kept maiden name"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model presents Margaret Elena Davies or Margaret Ellen Kowalski as the current legal name.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My mom's full legal name is Margaret Elena Davies"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I double-checked on the insurance form I filed on April 12th and her middle name is actually Ellen, not Elena. So it's Margaret Ellen Davies."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "my mom mentioned she's going to start using Margaret Ellen Kowalski on all her legal documents going forward since the trust attorney recommended it"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "she told me yesterday she's not changing it after all. She's keeping Davies. So her legal name is still Margaret Ellen Davies."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations, I've mentioned my mom's full legal name a few times and given you different versions. Can you walk me through what I originally said her name was and what I later told you it should be?",
+      "expected_answer": "You first said your mother's full legal name was Margaret Elena Davies. You then checked an insurance form and said her middle name is actually Ellen, not Elena, making it Margaret Ellen Davies. Later you mentioned she might start using Margaret Ellen Kowalski for legal documents based on a trust attorney's recommendation, but you then said she decided not to change it after all and her legal name remains Margaret Ellen Davies.",
+      "gold_memory_state": "Mother's full legal name: Margaret Ellen Davies (confirmed). Father's full legal name: Robert James Kowalski (confirmed). Father's birthday: September 22nd. Mother's birthday: June 5th.",
+      "judge_rubric": {
+        "must_include": [
+          "Margaret Elena Davies as the original version",
+          "Margaret Ellen Davies as the corrected and final version",
+          "mention of the Elena-to-Ellen correction",
+          "mention of the Kowalski possibility that was abandoned"
+        ],
+        "acceptable_paraphrases": [
+          "Elena was wrong, Ellen is correct",
+          "she considered Kowalski but kept Davies"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying her current name is Margaret Elena Davies",
+          "saying her current name is Margaret Ellen Kowalski"
+        ],
+        "harmless_extra": [
+          "insurance form from April 12th",
+          "trust attorney recommendation",
+          "married in 1986",
+          "kept maiden name"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model presents Margaret Elena Davies or Margaret Ellen Kowalski as the current legal name.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My mom's full legal name is Margaret Elena Davies"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I double-checked on the insurance form I filed on April 12th and her middle name is actually Ellen, not Elena. So it's Margaret Ellen Davies."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "my mom mentioned she's going to start using Margaret Ellen Kowalski on all her legal documents going forward since the trust attorney recommended it"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "she told me yesterday she's not changing it after all. She's keeping Davies. So her legal name is still Margaret Ellen Davies."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When I mentioned the surname Kowalski might be used on legal documents and then said it wouldn't happen after all, which parent's name record was potentially affected? Does my dad's name record need any change as a result?",
+      "expected_answer": "Your mother's legal name record was the one potentially affected by the Kowalski surname discussion. Your father's name record — Robert James Kowalski — does not need any change; his surname has always been Kowalski and was never part of the back-and-forth.",
+      "gold_memory_state": "Mother's full legal name: Margaret Ellen Davies (confirmed, unchanged after Kowalski was considered and rejected). Father's full legal name: Robert James Kowalski (confirmed, never modified).",
+      "judge_rubric": {
+        "must_include": [
+          "mother's name record was the one affected",
+          "father's name does not change"
+        ],
+        "acceptable_paraphrases": [
+          "mom's legal name was the one in question",
+          "dad's record stays the same"
+        ],
+        "must_not_include": [
+          "father's name was affected",
+          "father's surname changed"
+        ],
+        "harmful_extra": [
+          "saying both parents' records were modified",
+          "saying mother's current surname is Kowalski"
+        ],
+        "harmless_extra": [
+          "Robert James Kowalski as father's full name",
+          "Margaret Ellen Davies as mother's current name"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model says the mother's current surname is Kowalski.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "my mom mentioned she's going to start using Margaret Ellen Kowalski on all her legal documents going forward since the trust attorney recommended it"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "she told me yesterday she's not changing it after all. She's keeping Davies. So her legal name is still Margaret Ellen Davies."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My dad's full name is Robert James Kowalski. Everyone calls him Bobby though, even on his Facebook."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When I mentioned the surname Kowalski might be used on legal documents and then said it wouldn't happen after all, which parent's name record was potentially affected? Does my dad's name record need any change as a result?",
+      "expected_answer": "Your mother's legal name record was the one potentially affected by the Kowalski surname discussion. Your father's name record — Robert James Kowalski — does not need any change; his surname has always been Kowalski and was never part of the back-and-forth.",
+      "gold_memory_state": "Mother's full legal name: Margaret Ellen Davies (confirmed, unchanged after Kowalski was considered and rejected). Father's full legal name: Robert James Kowalski (confirmed, never modified).",
+      "judge_rubric": {
+        "must_include": [
+          "mother's name record was the one affected",
+          "father's name does not change"
+        ],
+        "acceptable_paraphrases": [
+          "mom's legal name was the one in question",
+          "dad's record stays the same"
+        ],
+        "must_not_include": [
+          "father's name was affected",
+          "father's surname changed"
+        ],
+        "harmful_extra": [
+          "saying both parents' records were modified",
+          "saying mother's current surname is Kowalski"
+        ],
+        "harmless_extra": [
+          "Robert James Kowalski as father's full name",
+          "Margaret Ellen Davies as mother's current name"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model says the mother's current surname is Kowalski.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "my mom mentioned she's going to start using Margaret Ellen Kowalski on all her legal documents going forward since the trust attorney recommended it"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "she told me yesterday she's not changing it after all. She's keeping Davies. So her legal name is still Margaret Ellen Davies."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My dad's full name is Robert James Kowalski. Everyone calls him Bobby though, even on his Facebook."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to fill in my mother's full legal name on a government form right now. Which of these should I write?",
+      "candidate_options": [
+        "Margaret Ellen Davies",
+        "Margaret Elena Davies",
+        "Margaret Ellen Kowalski",
+        "Margaret Ellen Dawes"
+      ],
+      "expected_answer": "Margaret Ellen Davies",
+      "distractor_rationale": "same-value-different-target: 'Margaret Ellen Kowalski' uses the father's surname Kowalski applied to the mother, which was a tentative plan that was rejected. assistant echo: 'Margaret Ellen Dawes' appeared in the assistant's warning about a sample form name that could cause confusion. 'Margaret Elena Davies' is the stale original value with the wrong middle name.",
+      "gold_memory_state": "Mother's full legal name: Margaret Ellen Davies (confirmed). The original middle name Elena was corrected to Ellen. The surname Kowalski was tentatively considered but explicitly rejected. Dawes is a lookalike from a sample form mentioned by the assistant.",
+      "judge_rubric": {
+        "must_include": [
+          "Margaret Ellen Davies"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "Margaret Elena Davies",
+          "Margaret Ellen Kowalski",
+          "Margaret Ellen Dawes"
+        ],
+        "harmful_extra": [
+          "selecting any option other than Margaret Ellen Davies"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects Margaret Elena Davies (stale middle name) or Margaret Ellen Kowalski (tentative surname that was rejected).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I double-checked on the insurance form I filed on April 12th and her middle name is actually Ellen, not Elena. So it's Margaret Ellen Davies."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "she told me yesterday she's not changing it after all. She's keeping Davies. So her legal name is still Margaret Ellen Davies."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to fill in my mother's full legal name on a government form right now. Which of these should I write?",
+      "candidate_options": [
+        "Margaret Ellen Davies",
+        "Margaret Elena Davies",
+        "Margaret Ellen Kowalski",
+        "Margaret Ellen Dawes"
+      ],
+      "expected_answer": "Margaret Ellen Davies",
+      "distractor_rationale": "same-value-different-target: 'Margaret Ellen Kowalski' uses the father's surname Kowalski applied to the mother, which was a tentative plan that was rejected. assistant echo: 'Margaret Ellen Dawes' appeared in the assistant's warning about a sample form name that could cause confusion. 'Margaret Elena Davies' is the stale original value with the wrong middle name.",
+      "gold_memory_state": "Mother's full legal name: Margaret Ellen Davies (confirmed). The original middle name Elena was corrected to Ellen. The surname Kowalski was tentatively considered but explicitly rejected. Dawes is a lookalike from a sample form mentioned by the assistant.",
+      "judge_rubric": {
+        "must_include": [
+          "Margaret Ellen Davies"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "Margaret Elena Davies",
+          "Margaret Ellen Kowalski",
+          "Margaret Ellen Dawes"
+        ],
+        "harmful_extra": [
+          "selecting any option other than Margaret Ellen Davies"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects Margaret Elena Davies (stale middle name) or Margaret Ellen Kowalski (tentative surname that was rejected).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I double-checked on the insurance form I filed on April 12th and her middle name is actually Ellen, not Elena. So it's Margaret Ellen Davies."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "she told me yesterday she's not changing it after all. She's keeping Davies. So her legal name is still Margaret Ellen Davies."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I'm drafting a short family summary card to attach to my visa application. It needs to list both parents with their full legal names and dates of birth, note their year of marriage, and state my mother's maiden name. Can you draft that card for me?",
+      "expected_answer": "Mother: Margaret Ellen Davies, born June 5th. Father: Robert James Kowalski, born September 22nd. Married: 1986. Mother's maiden name: Davies (same as current legal surname, as she kept her maiden name after marriage).",
+      "application_probe_type": "multi_hop_derivation",
+      "gold_memory_state": "Mother's full legal name: Margaret Ellen Davies (confirmed). Mother's birthday: June 5th. Father's full legal name: Robert James Kowalski (confirmed). Father's birthday: September 22nd. Parents married in 1986. Mother kept her maiden name Davies.",
+      "judge_rubric": {
+        "must_include": [
+          "Margaret Ellen Davies",
+          "June 5th",
+          "Robert James Kowalski",
+          "September 22nd",
+          "1986",
+          "Davies as maiden name"
+        ],
+        "acceptable_paraphrases": [
+          "maiden name is the same as her current surname",
+          "she did not change her surname upon marriage"
+        ],
+        "must_not_include": [
+          "Margaret Elena Davies",
+          "Margaret Ellen Kowalski",
+          "Margaret Ellen Dawes"
+        ],
+        "harmful_extra": [
+          "using Elena as the middle name",
+          "using Kowalski as the mother's surname",
+          "using Dawes as the mother's surname",
+          "using Bobby as the father's legal name on the card"
+        ],
+        "harmless_extra": [
+          "father goes by Bobby socially",
+          "mentioning the accent on the original Polish birth certificate"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses Margaret Elena Davies (stale middle name) or Margaret Ellen Kowalski (rejected tentative surname) anywhere in the card.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Mother's full legal name is Margaret Ellen Davies (corrected from Elena to Ellen, and Kowalski plan was rejected).",
+        "Fact 2: Mother's birthday is June 5th.",
+        "Fact 3: Father's full legal name is Robert James Kowalski.",
+        "Fact 4: Father's birthday is September 22nd.",
+        "Fact 5: Parents married in 1986.",
+        "Fact 6: Mother kept her maiden name Davies after marriage.",
+        "Inference: The maiden name field and the current surname field both read Davies, since she never changed her surname — this must be explicitly stated on the card to avoid confusion on forms that separate these fields."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I double-checked on the insurance form I filed on April 12th and her middle name is actually Ellen, not Elena. So it's Margaret Ellen Davies."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "she told me yesterday she's not changing it after all. She's keeping Davies. So her legal name is still Margaret Ellen Davies."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My dad's full name is Robert James Kowalski. Everyone calls him Bobby though, even on his Facebook."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my dad's birthday is September 22nd"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "My mom's birthday is June 5th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "my mom kept her maiden name when she married my dad. That was back in 1986, the same year as the Challenger disaster. She never took Kowalski."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I'm drafting a short family summary card to attach to my visa application. It needs to list both parents with their full legal names and dates of birth, note their year of marriage, and state my mother's maiden name. Can you draft that card for me?",
+      "expected_answer": "Mother: Margaret Ellen Davies, born June 5th. Father: Robert James Kowalski, born September 22nd. Married: 1986. Mother's maiden name: Davies (same as current legal surname, as she kept her maiden name after marriage).",
+      "application_probe_type": "multi_hop_derivation",
+      "gold_memory_state": "Mother's full legal name: Margaret Ellen Davies (confirmed). Mother's birthday: June 5th. Father's full legal name: Robert James Kowalski (confirmed). Father's birthday: September 22nd. Parents married in 1986. Mother kept her maiden name Davies.",
+      "judge_rubric": {
+        "must_include": [
+          "Margaret Ellen Davies",
+          "June 5th",
+          "Robert James Kowalski",
+          "September 22nd",
+          "1986",
+          "Davies as maiden name"
+        ],
+        "acceptable_paraphrases": [
+          "maiden name is the same as her current surname",
+          "she did not change her surname upon marriage"
+        ],
+        "must_not_include": [
+          "Margaret Elena Davies",
+          "Margaret Ellen Kowalski",
+          "Margaret Ellen Dawes"
+        ],
+        "harmful_extra": [
+          "using Elena as the middle name",
+          "using Kowalski as the mother's surname",
+          "using Dawes as the mother's surname",
+          "using Bobby as the father's legal name on the card"
+        ],
+        "harmless_extra": [
+          "father goes by Bobby socially",
+          "mentioning the accent on the original Polish birth certificate"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses Margaret Elena Davies (stale middle name) or Margaret Ellen Kowalski (rejected tentative surname) anywhere in the card.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Mother's full legal name is Margaret Ellen Davies (corrected from Elena to Ellen, and Kowalski plan was rejected).",
+        "Fact 2: Mother's birthday is June 5th.",
+        "Fact 3: Father's full legal name is Robert James Kowalski.",
+        "Fact 4: Father's birthday is September 22nd.",
+        "Fact 5: Parents married in 1986.",
+        "Fact 6: Mother kept her maiden name Davies after marriage.",
+        "Inference: The maiden name field and the current surname field both read Davies, since she never changed her surname — this must be explicitly stated on the card to avoid confusion on forms that separate these fields."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I double-checked on the insurance form I filed on April 12th and her middle name is actually Ellen, not Elena. So it's Margaret Ellen Davies."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "she told me yesterday she's not changing it after all. She's keeping Davies. So her legal name is still Margaret Ellen Davies."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My dad's full name is Robert James Kowalski. Everyone calls him Bobby though, even on his Facebook."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my dad's birthday is September 22nd"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "My mom's birthday is June 5th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "my mom kept her maiden name when she married my dad. That was back in 1986, the same year as the Challenger disaster. She never took Kowalski."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1047 @@
+{
+  "target_fact": "User tends toward solitude and peaceful environments, as evidenced by preferring a quiet park alone for lunch and enjoying clean, minimal flavors in food and drink",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I make cold-brew green tea almost every morning now. It's completely unsweetened, just clean and a little grassy. I really enjoy that about it."
+      },
+      "target": {
+        "target_id": "morning_drink_preference",
+        "target_name": "daily morning drink preference"
+      },
+      "old_value": null,
+      "new_value": "cold-brew green tea, unsweetened, clean and grassy",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I make cold-brew green tea almost every morning now. It's completely unsweetened, just clean and a little grassy. I really enjoy that about it."
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I also switched to plain rice crackers for snacking instead of chips. They're literally just rice and salt. I like how simple and clean they taste."
+      },
+      "target": {
+        "target_id": "snack_preference",
+        "target_name": "preferred snack choice"
+      },
+      "old_value": null,
+      "new_value": "plain rice crackers (just rice and salt), replacing chips",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I also switched to plain rice crackers for snacking instead of chips. They're literally just rice and salt. I like how simple and clean they taste."
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "there's this quiet little park near my office where I go eat lunch alone sometimes. There's a bench near a small pond and it's just me and the trees. Nobody bothers me there."
+      },
+      "target": {
+        "target_id": "lunch_spot_habit",
+        "target_name": "solo lunch spot near office"
+      },
+      "old_value": null,
+      "new_value": "quiet park near office with bench by small pond, eats lunch alone there about twice a week",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "there's this quiet little park near my office where I go eat lunch alone sometimes. There's a bench near a small pond and it's just me and the trees. Nobody bothers me there."
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "On weekends I usually go on these solo hikes on the trails east of town. I don't bring headphones or anything. I just like hearing the wind and the birds."
+      },
+      "target": {
+        "target_id": "weekend_hiking_habit",
+        "target_name": "weekend solo hiking habit"
+      },
+      "old_value": null,
+      "new_value": "solo hikes on trails east of town on weekends, no headphones, enjoys natural sounds",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "On weekends I usually go on these solo hikes on the trails east of town. I don't bring headphones or anything. I just like hearing the wind and the birds."
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 7,
+        "quote": "I guess I just gravitate toward things that are stripped down and quiet. Whether it's food or how I spend my free time, I want it simple and peaceful."
+      },
+      "target": {
+        "target_id": "lifestyle_preference_pattern",
+        "target_name": "overarching lifestyle preference pattern"
+      },
+      "old_value": null,
+      "new_value": "Strongly prefers simplicity, minimalism, and solitude across multiple life domains — food/drink choices favor clean unsweetened flavors, leisure activities favor quiet solo settings in nature",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I make cold-brew green tea almost every morning now. It's completely unsweetened, just clean and a little grassy. I really enjoy that about it."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I also switched to plain rice crackers for snacking instead of chips. They're literally just rice and salt. I like how simple and clean they taste."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "there's this quiet little park near my office where I go eat lunch alone sometimes. There's a bench near a small pond and it's just me and the trees. Nobody bothers me there."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "On weekends I usually go on these solo hikes on the trails east of town. I don't bring headphones or anything. I just like hearing the wind and the birds."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess I just gravitate toward things that are stripped down and quiet. Whether it's food or how I spend my free time, I want it simple and peaceful."
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 7,
+        "quote": "My daily water intake target is 2.5 liters. My doctor set that for me at my appointment after the new year. I keep forgetting the number so please hold onto that one."
+      },
+      "target": {
+        "target_id": "daily_water_target",
+        "target_name": "daily water intake target from doctor"
+      },
+      "old_value": null,
+      "new_value": "2.5 liters per day",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "My daily water intake target is 2.5 liters. My doctor set that for me at my appointment after the new year. I keep forgetting the number so please hold onto that one."
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "Actually my coworker Maya just told me about this amazing group hiking club that meets Saturday mornings. She signed me up already. I think I'll start going with them every weekend instead of hiking solo."
+      },
+      "target": {
+        "target_id": "weekend_hiking_social_shift",
+        "target_name": "potential shift to group hiking on weekends"
+      },
+      "old_value": null,
+      "new_value": "group hiking club on Saturday mornings with coworker Maya",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Actually my coworker Maya just told me about this amazing group hiking club that meets Saturday mornings. She signed me up already. I think I'll start going with them every weekend instead of hiking solo."
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish food/drink preferences and health details",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to talk through some things I've been doing recently with my daily routine. I've been making some changes to how I eat and drink, and I want you to keep track of some of this for me. It started after that doctor appointment I had right after the new year — the one where I waited forever and basically got told to drink more water. Anyway, I've been trying to be more intentional about what I consume day to day."
+        },
+        {
+          "role": "assistant",
+          "content": "Of course, I'd be happy to help you keep track of your routine changes. It sounds like that doctor's visit, despite being frustrating with the long wait, ended up prompting some positive shifts in your daily habits. That's a good outcome even if the experience itself wasn't great. Go ahead and tell me about the specific changes you've made — what you're eating, drinking, any targets or goals your doctor set — and I'll make sure to note everything down so you can reference it later. Take your time and share whatever details feel important to you."
+        },
+        {
+          "role": "user",
+          "content": "I make cold-brew green tea almost every morning now. It's completely unsweetened, just clean and a little grassy. I really enjoy that about it. I steep it overnight in the fridge and it comes out really smooth. No sugar, no honey, nothing added. I tried adding lemon once and hated it — ruined the whole clean taste. So now it's just straight cold-brew green tea every single morning. It's become one of my favorite parts of waking up honestly."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a really pleasant morning ritual. Cold-brew green tea steeped overnight tends to have a much smoother, less bitter profile than hot-brewed, which makes sense for why you enjoy the clean taste so much. And it's interesting that even a small addition like lemon disrupted what you liked about it — that tells me you really value that pure, unaltered flavor. I've noted this down: your daily morning drink is unsweetened cold-brew green tea, nothing added, steeped overnight in the fridge. I'll make sure to remember that the clean, grassy taste is specifically what you enjoy about it."
+        },
+        {
+          "role": "user",
+          "content": "I also switched to plain rice crackers for snacking instead of chips. They're literally just rice and salt. I like how simple and clean they taste. There's no weird seasoning or artificial flavoring — just the rice flavor and a little salt. I eat them almost every afternoon now. My friend Darren keeps trying to get me to try these fancy flavored ones but I always say no. I just want the plain ones. It's the same thing as the tea — I don't want anything extra messing with the base flavor."
+        },
+        {
+          "role": "assistant",
+          "content": "I can see a clear pattern forming here with your food and drink choices. You're consistently drawn to things that are stripped down to their most basic, natural flavors — no sweeteners in your tea, no extra seasonings on your crackers. Just the essential taste of the ingredient itself. I've noted the rice crackers as your go-to afternoon snack: plain, just rice and salt, no flavored varieties. It's funny that Darren keeps pushing the fancy ones — sounds like he doesn't quite get your preference for simplicity yet. I'll keep this on file alongside your tea preference so I have a full picture of your daily eating habits."
+        },
+        {
+          "role": "user",
+          "content": "My daily water intake target is 2.5 liters. My doctor set that for me at my appointment after the new year. I keep forgetting the number so please hold onto that one. It's specifically 2.5 liters, not 2 or 3 — 2.5. I've been tracking it on a little notepad but I keep losing the notepad, so having you remember it is a backup. I started tracking it sometime in late January or maybe mid-February, I'm not totally sure when exactly, but the target itself is definitely 2.5 liters per day."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — 2.5 liters per day, set by your doctor at your post-New Year appointment. I've locked that number in so you don't have to worry about forgetting it again. Whether you lose the notepad or not, I'll have it stored for you. That's a reasonable hydration target and it fits well with your other health-conscious changes like the green tea and the cleaner snacking. You mentioned you started tracking around late January or mid-February — the exact start date isn't critical, but the 2.5-liter daily target is the key number and I've got it noted down clearly. Feel free to check back with me anytime you need a reminder."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establish solitude/nature preferences and trigger reflection",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Something else I wanted to mention — there's this quiet little park near my office where I go eat lunch alone sometimes. There's a bench near a small pond and it's just me and the trees. Nobody bothers me there. I started going after I began the new job in January. It's nothing fancy, just a small green space tucked between some buildings, but I find it really calming. I go maybe twice a week when the weather's decent. It's become one of those routines I look forward to during the workday."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a wonderful little retreat during your workday. Having a quiet spot like that — a bench by a pond, surrounded by trees, away from office noise — can make a real difference in how the rest of your afternoon goes. I've noted it down: you eat lunch alone at this small park near your office about twice a week, weather permitting, and you've been doing it since starting the new job in January. The fact that you specifically value being unbothered there tells me it's not just about the scenery but about having that solitary, peaceful break in your day. I'll keep this on file as part of your routine."
+        },
+        {
+          "role": "user",
+          "content": "Exactly, yeah. It's really about the quiet more than anything. I don't even look at my phone when I'm there. I just sit and eat and watch the water. Sometimes there are ducks. It's the highlight of my Tuesday and Thursday honestly. My coworkers keep inviting me to lunch at this loud ramen place down the street but I always find a reason to say no. I'd rather have my thirty minutes of silence by the pond than sit in a noisy restaurant making small talk."
+        },
+        {
+          "role": "assistant",
+          "content": "That really reinforces how important that quiet time is to you. You're actively choosing solitude and calm over social lunches, even when your coworkers are extending invitations. And the detail about not looking at your phone is telling — it's not just about being alone, it's about being fully present in that peaceful environment. The ducks by the pond sound like a nice bonus too. I've updated my notes to reflect that you go specifically on Tuesdays and Thursdays, and that you consistently prefer this solo, phone-free lunch by the pond over group outings to louder places. It's clearly a meaningful part of your weekly routine."
+        },
+        {
+          "role": "user",
+          "content": "On weekends I usually go on these solo hikes on the trails east of town. I don't bring headphones or anything. I just like hearing the wind and the birds. It's usually a two- or three-hour thing on Saturday mornings. I've been doing it for about six months now. Same idea as the park — I just want to be out in nature by myself without any distractions. Sometimes I'll bring a thermos of that cold-brew green tea. It's the perfect combination: quiet trail, simple drink, no agenda. Just walking."
+        },
+        {
+          "role": "assistant",
+          "content": "That paints a really consistent picture of how you recharge. Your Saturday morning hikes sound like an extended version of your weekday park lunches — solo time in nature, no technology, no distractions, just the natural sounds around you. And bringing the cold-brew green tea ties your food preferences right into your leisure time too. I've noted this: solo hikes on the eastern trails, Saturday mornings, two to three hours, no headphones, been doing it about six months. Sometimes you bring your cold-brew green tea. It's clear that these quiet, solitary nature experiences are a core part of how you decompress, both during the week and on weekends."
+        },
+        {
+          "role": "user",
+          "content": "I guess I just gravitate toward things that are stripped down and quiet. Whether it's food or how I spend my free time, I want it simple and peaceful. Even at home I keep things minimal — I don't have a TV in my bedroom, I use plain white dishes, my apartment is pretty sparse. I think some people would find it boring but it genuinely makes me feel calm. I don't need a lot of stimulation or variety. I just want clean, quiet, simple things around me. That's what makes me feel good."
+        },
+        {
+          "role": "assistant",
+          "content": "What you're describing is a really coherent personal philosophy that runs through everything — your food choices, your leisure activities, your living space. You prefer clean, minimal, and peaceful across the board. Unsweetened tea, plain crackers, solo lunches by a pond, headphone-free hikes, a sparse apartment with no TV in the bedroom and plain white dishes. It's not about deprivation — it's that simplicity itself is what gives you comfort and calm. I think that's a genuinely valuable self-awareness to have. I've noted this broader pattern: you strongly prefer simplicity, minimalism, and solitude across multiple domains of your life, and it's a consistent source of wellbeing for you."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Recency trap with tentative social shift; adversarial injection",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Quick update on a few things. My friend Darren — remember him? He's been talking about moving for a while now. Last I heard he's aiming for May. He told me Portland originally but then started mentioning Eugene because it's cheaper. I honestly don't know which one he's going with at this point. Either way he's been asking me to help him research neighborhoods, which is kind of fun actually."
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, I remember you mentioning Darren — he's the one who keeps trying to get you to try flavored rice crackers! It sounds like his moving plans are still up in the air between Portland and Eugene, with a May timeline either way. Helping him research neighborhoods could be an interesting project. Since you're not sure which city he'll settle on, I won't lock in either one — just that he's planning a move in May and the two candidates are Portland and Eugene. Let me know if he makes a final decision and I'll update that. In the meantime, is there anything specific you want me to help with for his neighborhood research?"
+        },
+        {
+          "role": "user",
+          "content": "Not right now on that. Oh, I wanted to mention — I was filling out a wellness survey at work and one of the fields asked for my daily hydration goal. I put 2.5 liters, which is the number my doctor gave me. The form also had a pre-filled suggestion of 3 liters as a general recommendation, but mine is specifically 2.5. I just wanted to confirm that's still the number you have for me. Don't change it to 3 just because the form said that."
+        },
+        {
+          "role": "assistant",
+          "content": "Confirmed — I still have your daily water intake target as 2.5 liters, exactly as your doctor prescribed. I won't change it to the 3-liter general recommendation from the wellness survey form. Your target is personalized to what your doctor set for you after your post-New Year appointment, and 2.5 liters is the number. Good that you double-checked — it's easy for generic form suggestions to create confusion, but your specific target remains 2.5 liters per day. If your doctor ever adjusts it at a follow-up, just let me know and I'll update it then."
+        },
+        {
+          "role": "user",
+          "content": "Actually my coworker Maya just told me about this amazing group hiking club that meets Saturday mornings. She signed me up already. I think I'll start going with them every weekend instead of hiking solo. It sounds like they do the same eastern trails I already go to, so the scenery would be the same, just with other people. Maya says the group is really chill and low-key, not overly chatty. I'm tentatively planning to try it this Saturday."
+        },
+        {
+          "role": "assistant",
+          "content": "That's an interesting development, especially given how much you value your solo Saturday hikes. It's good that Maya describes the group as chill and low-key — that might make it more compatible with your preference for quiet, peaceful outings. And the fact that they use the same eastern trails means you'd still get the nature experience you love. I'll note this tentatively: you're considering joining a Saturday morning group hiking club that Maya signed you up for, starting this weekend. Since you haven't tried it yet, I'll keep your established preference for solo hikes on record too. Let me know how the first outing goes and whether you want to stick with it."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, let's see how it goes. Completely different topic — I've been thinking about meal prepping for the week. I want to keep things really simple, in line with how I already eat. Plain steamed rice, some grilled chicken with just salt, maybe roasted vegetables with olive oil and nothing else. No sauces, no marinades. I want to be able to taste the actual food. Same philosophy as everything else I do. Can you help me sketch out a basic weekly plan?"
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, that fits perfectly with your established preference for clean, minimal flavors. Here's a simple framework based on what you've described: for proteins, plain grilled chicken seasoned only with salt, maybe rotating in some simply prepared fish. For grains, plain steamed white or brown rice. For vegetables, a rotating selection roasted with just olive oil — things like broccoli, sweet potatoes, zucchini, bell peppers. No sauces, no marinades, no complex seasonings. You could prep the rice and roast the vegetables in bulk on Sunday, grill chicken in batches, and portion everything into containers for the week. Paired with your afternoon rice crackers and morning cold-brew green tea, you'd have a fully consistent daily eating routine. Want me to break it down by day?"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Summarize the different things I've shared with you about how I like to eat, drink, and spend my free time. What experiences and habits did I describe?",
+      "expected_answer": "You described several habits: you make unsweetened cold-brew green tea every morning, steeped overnight, valuing its clean and grassy taste with nothing added. You switched to plain rice crackers (just rice and salt) as your afternoon snack instead of chips, preferring the simple clean flavor. You eat lunch alone at a quiet park near your office about twice a week, sitting on a bench by a small pond away from coworkers. On weekends you go on solo hikes on the eastern trails for two to three hours without headphones, enjoying natural sounds like wind and birds. You also mentioned that across all these domains you gravitate toward things that are stripped down, quiet, simple, and peaceful.",
+      "gold_memory_state": "Confirmed facts: (1) morning drink is unsweetened cold-brew green tea, (2) afternoon snack is plain rice crackers replacing chips, (3) solo lunch at quiet park near office with bench by pond about twice a week, (4) solo weekend hikes on eastern trails with no headphones, (5) overarching pattern of simplicity, minimalism, and solitude across food/drink and leisure, (6) daily water intake target of 2.5 liters. Tentative only: group hiking club with Maya on Saturdays.",
+      "judge_rubric": {
+        "must_include": [
+          "cold-brew green tea",
+          "unsweetened",
+          "rice crackers",
+          "quiet park",
+          "lunch alone",
+          "solo hikes",
+          "simplicity or minimalism pattern"
+        ],
+        "acceptable_paraphrases": [
+          "plain crackers",
+          "green tea steeped overnight",
+          "trails east of town",
+          "pond",
+          "no headphones"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating the group hiking club as an established habit"
+        ],
+        "harmless_extra": [
+          "mentioning the water intake target",
+          "mentioning the sparse apartment",
+          "mentioning Darren"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes preferences the user never stated, such as preferring flavored tea or group activities.",
+        "reflection_recall": "Fails if the model omits major domains (food/drink preferences or solitude/nature habits) from the summary.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I make cold-brew green tea almost every morning now. It's completely unsweetened, just clean and a little grassy. I really enjoy that about it."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I also switched to plain rice crackers for snacking instead of chips. They're literally just rice and salt. I like how simple and clean they taste."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "there's this quiet little park near my office where I go eat lunch alone sometimes. There's a bench near a small pond and it's just me and the trees. Nobody bothers me there."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "On weekends I usually go on these solo hikes on the trails east of town. I don't bring headphones or anything. I just like hearing the wind and the birds."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess I just gravitate toward things that are stripped down and quiet. Whether it's food or how I spend my free time, I want it simple and peaceful."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Summarize the different things I've shared with you about how I like to eat, drink, and spend my free time. What experiences and habits did I describe?",
+      "expected_answer": "You described several habits: you make unsweetened cold-brew green tea every morning, steeped overnight, valuing its clean and grassy taste with nothing added. You switched to plain rice crackers (just rice and salt) as your afternoon snack instead of chips, preferring the simple clean flavor. You eat lunch alone at a quiet park near your office about twice a week, sitting on a bench by a small pond away from coworkers. On weekends you go on solo hikes on the eastern trails for two to three hours without headphones, enjoying natural sounds like wind and birds. You also mentioned that across all these domains you gravitate toward things that are stripped down, quiet, simple, and peaceful.",
+      "gold_memory_state": "Confirmed facts: (1) morning drink is unsweetened cold-brew green tea, (2) afternoon snack is plain rice crackers replacing chips, (3) solo lunch at quiet park near office with bench by pond about twice a week, (4) solo weekend hikes on eastern trails with no headphones, (5) overarching pattern of simplicity, minimalism, and solitude across food/drink and leisure, (6) daily water intake target of 2.5 liters. Tentative only: group hiking club with Maya on Saturdays.",
+      "judge_rubric": {
+        "must_include": [
+          "cold-brew green tea",
+          "unsweetened",
+          "rice crackers",
+          "quiet park",
+          "lunch alone",
+          "solo hikes",
+          "simplicity or minimalism pattern"
+        ],
+        "acceptable_paraphrases": [
+          "plain crackers",
+          "green tea steeped overnight",
+          "trails east of town",
+          "pond",
+          "no headphones"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating the group hiking club as an established habit"
+        ],
+        "harmless_extra": [
+          "mentioning the water intake target",
+          "mentioning the sparse apartment",
+          "mentioning Darren"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes preferences the user never stated, such as preferring flavored tea or group activities.",
+        "reflection_recall": "Fails if the model omits major domains (food/drink preferences or solitude/nature habits) from the summary.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I make cold-brew green tea almost every morning now. It's completely unsweetened, just clean and a little grassy. I really enjoy that about it."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I also switched to plain rice crackers for snacking instead of chips. They're literally just rice and salt. I like how simple and clean they taste."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "there's this quiet little park near my office where I go eat lunch alone sometimes. There's a bench near a small pond and it's just me and the trees. Nobody bothers me there."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "On weekends I usually go on these solo hikes on the trails east of town. I don't bring headphones or anything. I just like hearing the wind and the birds."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess I just gravitate toward things that are stripped down and quiet. Whether it's food or how I spend my free time, I want it simple and peaceful."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've told you about several specific daily habits — my morning drink, my snack, my lunch routine, and my weekend activity. When I said I gravitate toward things that are stripped down and quiet, which of those specific habits does that conclusion draw on, and would it also cover my daily hydration goal from the doctor?",
+      "expected_answer": "The conclusion about gravitating toward stripped-down and quiet things draws on all four lifestyle habits: the unsweetened cold-brew green tea, the plain rice crackers, the solo park lunches, and the solo weekend hikes. It does not cover the daily 2.5-liter water intake target, which is a medical prescription about quantity rather than a preference for simplicity or solitude.",
+      "gold_memory_state": "The overarching lifestyle preference pattern is bounded by four contributing habits (morning drink, snack, lunch spot, weekend hikes). The daily water intake target of 2.5 liters is a separate medical fact that does not feed into the simplicity/solitude inference.",
+      "judge_rubric": {
+        "must_include": [
+          "cold-brew green tea or morning drink",
+          "rice crackers or snack",
+          "park lunch or solo lunch",
+          "weekend hikes or solo hikes",
+          "water target is separate or not part of the preference pattern"
+        ],
+        "acceptable_paraphrases": [
+          "hydration goal is a medical number not a lifestyle preference",
+          "doctor-set target is distinct from the simplicity pattern"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "including the water intake target as part of the simplicity/minimalism preference",
+          "including the tentative group hiking club as part of the pattern"
+        ],
+        "harmless_extra": [
+          "mentioning the sparse apartment or plain white dishes as additional supporting evidence"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model includes the water intake target as contributing to the simplicity preference or includes the tentative group hiking as part of the established pattern.",
+        "reflection_recall": "Fails if the model omits any of the four core habits that support the inference.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I make cold-brew green tea almost every morning now. It's completely unsweetened, just clean and a little grassy. I really enjoy that about it."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I also switched to plain rice crackers for snacking instead of chips. They're literally just rice and salt. I like how simple and clean they taste."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "there's this quiet little park near my office where I go eat lunch alone sometimes. There's a bench near a small pond and it's just me and the trees. Nobody bothers me there."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "On weekends I usually go on these solo hikes on the trails east of town. I don't bring headphones or anything. I just like hearing the wind and the birds."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess I just gravitate toward things that are stripped down and quiet. Whether it's food or how I spend my free time, I want it simple and peaceful."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "My daily water intake target is 2.5 liters. My doctor set that for me at my appointment after the new year. I keep forgetting the number so please hold onto that one."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've told you about several specific daily habits — my morning drink, my snack, my lunch routine, and my weekend activity. When I said I gravitate toward things that are stripped down and quiet, which of those specific habits does that conclusion draw on, and would it also cover my daily hydration goal from the doctor?",
+      "expected_answer": "The conclusion about gravitating toward stripped-down and quiet things draws on all four lifestyle habits: the unsweetened cold-brew green tea, the plain rice crackers, the solo park lunches, and the solo weekend hikes. It does not cover the daily 2.5-liter water intake target, which is a medical prescription about quantity rather than a preference for simplicity or solitude.",
+      "gold_memory_state": "The overarching lifestyle preference pattern is bounded by four contributing habits (morning drink, snack, lunch spot, weekend hikes). The daily water intake target of 2.5 liters is a separate medical fact that does not feed into the simplicity/solitude inference.",
+      "judge_rubric": {
+        "must_include": [
+          "cold-brew green tea or morning drink",
+          "rice crackers or snack",
+          "park lunch or solo lunch",
+          "weekend hikes or solo hikes",
+          "water target is separate or not part of the preference pattern"
+        ],
+        "acceptable_paraphrases": [
+          "hydration goal is a medical number not a lifestyle preference",
+          "doctor-set target is distinct from the simplicity pattern"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "including the water intake target as part of the simplicity/minimalism preference",
+          "including the tentative group hiking club as part of the pattern"
+        ],
+        "harmless_extra": [
+          "mentioning the sparse apartment or plain white dishes as additional supporting evidence"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model includes the water intake target as contributing to the simplicity preference or includes the tentative group hiking as part of the established pattern.",
+        "reflection_recall": "Fails if the model omits any of the four core habits that support the inference.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I make cold-brew green tea almost every morning now. It's completely unsweetened, just clean and a little grassy. I really enjoy that about it."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I also switched to plain rice crackers for snacking instead of chips. They're literally just rice and salt. I like how simple and clean they taste."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "there's this quiet little park near my office where I go eat lunch alone sometimes. There's a bench near a small pond and it's just me and the trees. Nobody bothers me there."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "On weekends I usually go on these solo hikes on the trails east of town. I don't bring headphones or anything. I just like hearing the wind and the birds."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess I just gravitate toward things that are stripped down and quiet. Whether it's food or how I spend my free time, I want it simple and peaceful."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "My daily water intake target is 2.5 liters. My doctor set that for me at my appointment after the new year. I keep forgetting the number so please hold onto that one."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe the boundary of what my lifestyle preferences actually tell you. What kinds of recommendations can you confidently make based on what I've shared, and where would you be stretching beyond what the evidence supports?",
+      "expected_answer": "Based on what you've shared, you strongly prefer simplicity, minimalism, and solitude in food/drink choices and leisure activities. You favor clean unsweetened flavors in beverages and plain minimal ingredients in snacks. You seek quiet solo time in nature for both weekday breaks and weekend recreation. Recommendations can confidently cover: food and drink that emphasize pure unadorned flavors, leisure activities involving solo time in calm natural settings, and environments that minimize noise and social stimulation. However, the evidence does not support extending this to your professional work style, your social relationships broadly, your home decor beyond what you mentioned, your music or entertainment tastes, or your preferences in domains you haven't discussed. The pattern is specifically grounded in eating, drinking, and free-time leisure — generalizing it to mean you avoid all social contact or dislike all complexity in every life domain would be an unsupported overgeneralization.",
+      "gold_memory_state": "Supported inference: user strongly prefers simplicity, minimalism, and solitude across food/drink choices (unsweetened cold-brew green tea, plain rice crackers) and leisure activities (solo park lunches, solo weekend hikes without headphones). Unsupported overgeneralization boundary: the inference cannot be extended to professional work style, broad social preferences, entertainment, or any domain not represented by the four contributing habits. The tentative group hiking club mention does not override the established solo hiking preference.",
+      "judge_rubric": {
+        "must_include": [
+          "simplicity or minimalism in food and drink",
+          "solitude or quiet in leisure activities",
+          "boundary limiting the inference to the domains actually discussed"
+        ],
+        "acceptable_paraphrases": [
+          "clean flavors",
+          "solo nature time",
+          "cannot extend to work or social life broadly",
+          "not about avoiding all people"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the user avoids all social interaction",
+          "claiming the preference extends to professional work methodology",
+          "treating the tentative group hiking as evidence against the solitude preference"
+        ],
+        "harmless_extra": [
+          "mentioning the sparse apartment as mild additional evidence",
+          "noting the user declined group lunches with coworkers"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative group hiking club as an established change to the user's preferences, overriding the confirmed solo hiking pattern.",
+        "reflection_precision": "Fails if the model overgeneralizes the preference to all life domains (e.g., claiming the user avoids all social interaction or dislikes complexity in work).",
+        "reflection_recall": "Fails if the model fails to articulate both the supported inference (simplicity/solitude in food and leisure) and the unsupported boundary (domains not discussed).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I make cold-brew green tea almost every morning now. It's completely unsweetened, just clean and a little grassy. I really enjoy that about it."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I also switched to plain rice crackers for snacking instead of chips. They're literally just rice and salt. I like how simple and clean they taste."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "there's this quiet little park near my office where I go eat lunch alone sometimes. There's a bench near a small pond and it's just me and the trees. Nobody bothers me there."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "On weekends I usually go on these solo hikes on the trails east of town. I don't bring headphones or anything. I just like hearing the wind and the birds."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess I just gravitate toward things that are stripped down and quiet. Whether it's food or how I spend my free time, I want it simple and peaceful."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe the boundary of what my lifestyle preferences actually tell you. What kinds of recommendations can you confidently make based on what I've shared, and where would you be stretching beyond what the evidence supports?",
+      "expected_answer": "Based on what you've shared, you strongly prefer simplicity, minimalism, and solitude in food/drink choices and leisure activities. You favor clean unsweetened flavors in beverages and plain minimal ingredients in snacks. You seek quiet solo time in nature for both weekday breaks and weekend recreation. Recommendations can confidently cover: food and drink that emphasize pure unadorned flavors, leisure activities involving solo time in calm natural settings, and environments that minimize noise and social stimulation. However, the evidence does not support extending this to your professional work style, your social relationships broadly, your home decor beyond what you mentioned, your music or entertainment tastes, or your preferences in domains you haven't discussed. The pattern is specifically grounded in eating, drinking, and free-time leisure — generalizing it to mean you avoid all social contact or dislike all complexity in every life domain would be an unsupported overgeneralization.",
+      "gold_memory_state": "Supported inference: user strongly prefers simplicity, minimalism, and solitude across food/drink choices (unsweetened cold-brew green tea, plain rice crackers) and leisure activities (solo park lunches, solo weekend hikes without headphones). Unsupported overgeneralization boundary: the inference cannot be extended to professional work style, broad social preferences, entertainment, or any domain not represented by the four contributing habits. The tentative group hiking club mention does not override the established solo hiking preference.",
+      "judge_rubric": {
+        "must_include": [
+          "simplicity or minimalism in food and drink",
+          "solitude or quiet in leisure activities",
+          "boundary limiting the inference to the domains actually discussed"
+        ],
+        "acceptable_paraphrases": [
+          "clean flavors",
+          "solo nature time",
+          "cannot extend to work or social life broadly",
+          "not about avoiding all people"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the user avoids all social interaction",
+          "claiming the preference extends to professional work methodology",
+          "treating the tentative group hiking as evidence against the solitude preference"
+        ],
+        "harmless_extra": [
+          "mentioning the sparse apartment as mild additional evidence",
+          "noting the user declined group lunches with coworkers"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative group hiking club as an established change to the user's preferences, overriding the confirmed solo hiking pattern.",
+        "reflection_precision": "Fails if the model overgeneralizes the preference to all life domains (e.g., claiming the user avoids all social interaction or dislikes complexity in work).",
+        "reflection_recall": "Fails if the model fails to articulate both the supported inference (simplicity/solitude in food and leisure) and the unsupported boundary (domains not discussed).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I make cold-brew green tea almost every morning now. It's completely unsweetened, just clean and a little grassy. I really enjoy that about it."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I also switched to plain rice crackers for snacking instead of chips. They're literally just rice and salt. I like how simple and clean they taste."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "there's this quiet little park near my office where I go eat lunch alone sometimes. There's a bench near a small pond and it's just me and the trees. Nobody bothers me there."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "On weekends I usually go on these solo hikes on the trails east of town. I don't bring headphones or anything. I just like hearing the wind and the birds."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess I just gravitate toward things that are stripped down and quiet. Whether it's food or how I spend my free time, I want it simple and peaceful."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "If you had to pick the single best description of my overall lifestyle approach based on everything I've shared, which of these would you choose?",
+      "candidate_options": [
+        "Strongly prefers simplicity, minimalism, and solitude across food/drink and leisure — favors clean unsweetened flavors and quiet solo settings in nature",
+        "Health-focused and disciplined, primarily motivated by doctor recommendations and wellness targets across all daily habits",
+        "Enjoys nature and outdoor activities, especially in social groups with friends and coworkers on weekends",
+        "Prefers a balanced mix of social and solo activities, with an emphasis on trying new flavors and varied food experiences"
+      ],
+      "distractor_rationale": "same-value-different-target: Option B borrows the doctor's water-intake target (a health/medical fact from a different target) and incorrectly generalizes it as the primary driver of all habits, conflating the medical target with the lifestyle preference pattern. assistant echo: Option C echoes the assistant's acknowledgment of nature enjoyment but injects the tentative group hiking club detail as if it were an established social pattern, which the assistant noted tentatively. Option D contradicts the user's repeatedly stated preference for simplicity and minimal flavors.",
+      "expected_answer": "Strongly prefers simplicity, minimalism, and solitude across food/drink and leisure — favors clean unsweetened flavors and quiet solo settings in nature",
+      "gold_memory_state": "The confirmed overarching pattern is: strongly prefers simplicity, minimalism, and solitude across food/drink choices (unsweetened cold-brew green tea, plain rice crackers) and leisure activities (solo park lunches, solo weekend hikes). The tentative group hiking club has not been adopted. The water intake target is a separate medical fact.",
+      "judge_rubric": {
+        "must_include": [
+          "simplicity",
+          "minimalism or minimal",
+          "solitude or solo",
+          "clean or unsweetened flavors",
+          "quiet or nature settings"
+        ],
+        "acceptable_paraphrases": [
+          "stripped-down and peaceful lifestyle",
+          "prefers simple clean flavors and quiet alone time in nature"
+        ],
+        "must_not_include": [
+          "health-focused and disciplined as primary descriptor",
+          "social groups",
+          "trying new flavors"
+        ],
+        "harmful_extra": [
+          "selecting the health-focused option as primary",
+          "selecting the social-groups option",
+          "selecting the balanced-mix option"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects Option C (social group hiking) based on the tentative group hiking club mention, treating it as an established pattern.",
+        "reflection_precision": "Fails if the model selects Option B, conflating the medical water target with the lifestyle preference pattern.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess I just gravitate toward things that are stripped down and quiet. Whether it's food or how I spend my free time, I want it simple and peaceful."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "If you had to pick the single best description of my overall lifestyle approach based on everything I've shared, which of these would you choose?",
+      "candidate_options": [
+        "Strongly prefers simplicity, minimalism, and solitude across food/drink and leisure — favors clean unsweetened flavors and quiet solo settings in nature",
+        "Health-focused and disciplined, primarily motivated by doctor recommendations and wellness targets across all daily habits",
+        "Enjoys nature and outdoor activities, especially in social groups with friends and coworkers on weekends",
+        "Prefers a balanced mix of social and solo activities, with an emphasis on trying new flavors and varied food experiences"
+      ],
+      "distractor_rationale": "same-value-different-target: Option B borrows the doctor's water-intake target (a health/medical fact from a different target) and incorrectly generalizes it as the primary driver of all habits, conflating the medical target with the lifestyle preference pattern. assistant echo: Option C echoes the assistant's acknowledgment of nature enjoyment but injects the tentative group hiking club detail as if it were an established social pattern, which the assistant noted tentatively. Option D contradicts the user's repeatedly stated preference for simplicity and minimal flavors.",
+      "expected_answer": "Strongly prefers simplicity, minimalism, and solitude across food/drink and leisure — favors clean unsweetened flavors and quiet solo settings in nature",
+      "gold_memory_state": "The confirmed overarching pattern is: strongly prefers simplicity, minimalism, and solitude across food/drink choices (unsweetened cold-brew green tea, plain rice crackers) and leisure activities (solo park lunches, solo weekend hikes). The tentative group hiking club has not been adopted. The water intake target is a separate medical fact.",
+      "judge_rubric": {
+        "must_include": [
+          "simplicity",
+          "minimalism or minimal",
+          "solitude or solo",
+          "clean or unsweetened flavors",
+          "quiet or nature settings"
+        ],
+        "acceptable_paraphrases": [
+          "stripped-down and peaceful lifestyle",
+          "prefers simple clean flavors and quiet alone time in nature"
+        ],
+        "must_not_include": [
+          "health-focused and disciplined as primary descriptor",
+          "social groups",
+          "trying new flavors"
+        ],
+        "harmful_extra": [
+          "selecting the health-focused option as primary",
+          "selecting the social-groups option",
+          "selecting the balanced-mix option"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects Option C (social group hiking) based on the tentative group hiking club mention, treating it as an established pattern.",
+        "reflection_precision": "Fails if the model selects Option B, conflating the medical water target with the lifestyle preference pattern.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess I just gravitate toward things that are stripped down and quiet. Whether it's food or how I spend my free time, I want it simple and peaceful."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I have a free Saturday morning coming up and I want to bring something to drink on an outdoor activity. Help me plan what I should do and what I should bring, keeping in mind everything you know about my preferences.",
+      "expected_answer": "You should go on a solo hike on the trails east of town, without headphones, as you've been doing for about six months. Bring a thermos of your unsweetened cold-brew green tea — it matches your preference for clean, unadorned flavors and pairs with your established Saturday morning routine. The combination of a quiet solo trail and a simple drink aligns with your overall preference for simplicity, minimalism, and solitude across both food/drink and leisure activities.",
+      "gold_memory_state": "Confirmed: (1) solo weekend hikes on eastern trails, Saturday mornings, no headphones, enjoys natural sounds; (2) morning drink is unsweetened cold-brew green tea, clean and grassy; (3) overarching preference for simplicity, minimalism, and solitude across food/drink and leisure. Tentative only (not adopted): group hiking club with Maya. The recommendation should reflect the confirmed solo hiking pattern and confirmed drink preference, combined through the overarching lifestyle preference.",
+      "judge_rubric": {
+        "must_include": [
+          "solo hike on eastern trails or similar solo nature activity",
+          "cold-brew green tea or unsweetened green tea",
+          "connection to overall simplicity/minimalism preference"
+        ],
+        "acceptable_paraphrases": [
+          "hike alone on the trails east of town",
+          "bring your cold-brew",
+          "fits your preference for quiet and simple"
+        ],
+        "must_not_include": [
+          "recommending the group hiking club as the primary plan"
+        ],
+        "harmful_extra": [
+          "suggesting the user join the group hiking club as if it were an established habit",
+          "recommending flavored or sweetened drinks",
+          "suggesting headphones or music"
+        ],
+        "harmless_extra": [
+          "mentioning the user could also bring water toward the 2.5-liter daily target",
+          "noting the user sometimes brings a thermos on hikes"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model recommends the group hiking club as the established Saturday plan, treating the tentative mention as adopted.",
+        "reflection_precision": "Fails if the recommendation contradicts the established simplicity/solitude preference by suggesting social or complex alternatives.",
+        "reflection_recall": "Fails if the model does not combine the hiking habit, the drink preference, and the overarching lifestyle pattern into a coherent recommendation.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User does solo hikes on the trails east of town on Saturday mornings, no headphones, enjoying natural sounds.",
+        "Fact 2: User's morning drink is unsweetened cold-brew green tea, valued for its clean grassy flavor.",
+        "Fact 3: User has an overarching preference for simplicity, minimalism, and solitude across food/drink and leisure.",
+        "Fact 4: User has previously mentioned bringing a thermos of cold-brew green tea on hikes.",
+        "Inference: The Saturday plan should combine the solo eastern-trail hike with the cold-brew green tea, as both are confirmed habits that exemplify the overarching simplicity/solitude preference.",
+        "Inference: The tentative group hiking club is not an established habit and should not replace the solo hike recommendation."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "On weekends I usually go on these solo hikes on the trails east of town. I don't bring headphones or anything. I just like hearing the wind and the birds."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I make cold-brew green tea almost every morning now. It's completely unsweetened, just clean and a little grassy. I really enjoy that about it."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess I just gravitate toward things that are stripped down and quiet. Whether it's food or how I spend my free time, I want it simple and peaceful."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Actually my coworker Maya just told me about this amazing group hiking club that meets Saturday mornings. She signed me up already. I think I'll start going with them every weekend instead of hiking solo."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I have a free Saturday morning coming up and I want to bring something to drink on an outdoor activity. Help me plan what I should do and what I should bring, keeping in mind everything you know about my preferences.",
+      "expected_answer": "You should go on a solo hike on the trails east of town, without headphones, as you've been doing for about six months. Bring a thermos of your unsweetened cold-brew green tea — it matches your preference for clean, unadorned flavors and pairs with your established Saturday morning routine. The combination of a quiet solo trail and a simple drink aligns with your overall preference for simplicity, minimalism, and solitude across both food/drink and leisure activities.",
+      "gold_memory_state": "Confirmed: (1) solo weekend hikes on eastern trails, Saturday mornings, no headphones, enjoys natural sounds; (2) morning drink is unsweetened cold-brew green tea, clean and grassy; (3) overarching preference for simplicity, minimalism, and solitude across food/drink and leisure. Tentative only (not adopted): group hiking club with Maya. The recommendation should reflect the confirmed solo hiking pattern and confirmed drink preference, combined through the overarching lifestyle preference.",
+      "judge_rubric": {
+        "must_include": [
+          "solo hike on eastern trails or similar solo nature activity",
+          "cold-brew green tea or unsweetened green tea",
+          "connection to overall simplicity/minimalism preference"
+        ],
+        "acceptable_paraphrases": [
+          "hike alone on the trails east of town",
+          "bring your cold-brew",
+          "fits your preference for quiet and simple"
+        ],
+        "must_not_include": [
+          "recommending the group hiking club as the primary plan"
+        ],
+        "harmful_extra": [
+          "suggesting the user join the group hiking club as if it were an established habit",
+          "recommending flavored or sweetened drinks",
+          "suggesting headphones or music"
+        ],
+        "harmless_extra": [
+          "mentioning the user could also bring water toward the 2.5-liter daily target",
+          "noting the user sometimes brings a thermos on hikes"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model recommends the group hiking club as the established Saturday plan, treating the tentative mention as adopted.",
+        "reflection_precision": "Fails if the recommendation contradicts the established simplicity/solitude preference by suggesting social or complex alternatives.",
+        "reflection_recall": "Fails if the model does not combine the hiking habit, the drink preference, and the overarching lifestyle pattern into a coherent recommendation.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User does solo hikes on the trails east of town on Saturday mornings, no headphones, enjoying natural sounds.",
+        "Fact 2: User's morning drink is unsweetened cold-brew green tea, valued for its clean grassy flavor.",
+        "Fact 3: User has an overarching preference for simplicity, minimalism, and solitude across food/drink and leisure.",
+        "Fact 4: User has previously mentioned bringing a thermos of cold-brew green tea on hikes.",
+        "Inference: The Saturday plan should combine the solo eastern-trail hike with the cold-brew green tea, as both are confirmed habits that exemplify the overarching simplicity/solitude preference.",
+        "Inference: The tentative group hiking club is not an established habit and should not replace the solo hike recommendation."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "On weekends I usually go on these solo hikes on the trails east of town. I don't bring headphones or anything. I just like hearing the wind and the birds."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I make cold-brew green tea almost every morning now. It's completely unsweetened, just clean and a little grassy. I really enjoy that about it."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess I just gravitate toward things that are stripped down and quiet. Whether it's food or how I spend my free time, I want it simple and peaceful."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Actually my coworker Maya just told me about this amazing group hiking club that meets Saturday mornings. She signed me up already. I think I'll start going with them every weekend instead of hiking solo."
+        }
+      ]
+    }
+  ]
+}

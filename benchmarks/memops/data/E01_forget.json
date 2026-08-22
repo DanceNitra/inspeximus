@@ -1,0 +1,986 @@
+{
+  "target_fact": "User's pattern of misspoken time information in verbal settings, including specific incidents, coping strategies, and personal preferences",
+  "operation_type": "Forget",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 4,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I told the whole team during standup that the server migration was March 20th, but it was actually April 20th"
+      },
+      "target": {
+        "target_id": "standup_misspeak_incident",
+        "target_name": "Standup misspeak incident about server migration date"
+      },
+      "old_value": null,
+      "new_value": "During a team standup around March 3rd, said server migration was March 20th instead of April 20th; manager Diane corrected via Slack; user sent correction to the whole channel",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I told the whole team during standup that the server migration was March 20th, but it was actually April 20th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My manager Diane messaged me on Slack afterward and I had to send a correction to the channel"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I was on a call with Henderson & Associates and said our contract renewal was June 15th when it's actually July 15th"
+      },
+      "target": {
+        "target_id": "henderson_misspeak_incident",
+        "target_name": "Henderson & Associates client call misspeak incident"
+      },
+      "old_value": null,
+      "new_value": "On a client call with Henderson & Associates, said contract renewal was June 15th instead of July 15th; colleague Raj flagged the error privately; user sent the correction email",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I was on a call with Henderson & Associates and said our contract renewal was June 15th when it's actually July 15th"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 7,
+        "quote": "I started keeping a sticky note on my monitor with key dates before meetings, and it's been really helpful"
+      },
+      "target": {
+        "target_id": "sticky_note_coping_strategy",
+        "target_name": "Sticky note coping strategy for verbal date errors"
+      },
+      "old_value": null,
+      "new_value": "Started mid-April keeping a sticky note on monitor with key dates before meetings to reduce verbal misspeak risk",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I started keeping a sticky note on my monitor with key dates before meetings, and it's been really helpful"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I much prefer written communication like emails and Slack because I can double-check dates before hitting send"
+      },
+      "target": {
+        "target_id": "written_communication_preference",
+        "target_name": "Preference for written over verbal communication for dates"
+      },
+      "old_value": null,
+      "new_value": "Prefers written communication (email, Slack) over verbal because can double-check dates before sending",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I much prefer written communication like emails and Slack because I can double-check dates before hitting send"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "forget",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "Can you actually remove the details about the Henderson & Associates incident? I don't want that specific client call on record"
+      },
+      "target": {
+        "target_id": "henderson_misspeak_incident",
+        "target_name": "Henderson & Associates client call misspeak incident"
+      },
+      "old_value": "On a client call with Henderson & Associates, said contract renewal was June 15th instead of July 15th; colleague Raj flagged the error privately; user sent the correction email",
+      "new_value": null,
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Can you actually remove the details about the Henderson & Associates incident? I don't want that specific client call on record"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establishing core incidents and context around verbal date misspeaks",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to tell you about some patterns I've noticed with how I communicate dates verbally. Back around March 3rd, I had a rough moment during a team standup. I told the whole team during standup that the server migration was March 20th, but it was actually April 20th. My manager Diane messaged me on Slack afterward and I had to send a correction to the channel. It was pretty mortifying honestly, felt like everyone thought I was unprepared."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds really frustrating — especially since standup meetings tend to be quick, high-visibility moments where a slip like that can feel amplified. It's actually a pretty common cognitive phenomenon: when you're juggling multiple timelines mentally, the wrong month can just pop out. The important thing is you caught it (even if Diane flagged it first) and corrected it promptly. I've noted the details of the standup incident. Do you want to walk me through any other instances where this has happened? Building a fuller picture might help us identify specific triggers or contexts that make the slips more likely."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, there's another one that was actually worse in terms of stakes. About two or three weeks after the standup thing, I was on a call with Henderson & Associates and said our contract renewal was June 15th when it's actually July 15th. The client didn't catch it in the moment, but my colleague Raj noticed. I was stressed about it for days afterward, kept replaying the call in my head wondering if the client would lose trust in us."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a higher-stakes scenario for sure — client-facing communication where an incorrect date could have downstream consequences for contract timelines or planning. The fact that it was caught before any damage was done is good, but I completely understand the lingering anxiety. Replaying conversations like that is a natural stress response, especially when professional credibility feels at risk. I've noted this Henderson & Associates incident as well. You mentioned Raj caught the error — did he handle the correction with the client, or did you address it yourself? Understanding the follow-up workflow might help us think about safeguards."
+        },
+        {
+          "role": "user",
+          "content": "Good question — I should clarify that. Raj flagged the mistake to me privately, but I was the one who actually sent the follow-up correction email to the client. I'm glad I handled it myself rather than having someone else clean up after me, but it still stung. I think part of what makes these situations so stressful is that I know the correct information — it's not a knowledge gap. My brain just outputs the wrong month when I'm speaking under any kind of pressure."
+        },
+        {
+          "role": "assistant",
+          "content": "That distinction is really important — this isn't about not knowing the dates, it's about a verbal production error under cognitive load. It sounds like when you're holding multiple date-related thoughts simultaneously, the wrong temporal frame wins the race to your mouth. That's a specific, identifiable pattern, which is actually good news because it means targeted strategies can help. The fact that you handled the Henderson correction yourself also shows strong professional ownership. I've updated the record to reflect that you sent the correction email. Would you like to brainstorm some concrete strategies for managing this in future meetings?"
+        },
+        {
+          "role": "user",
+          "content": "Actually, I've already started working on that. Around mid-April, I started keeping a sticky note on my monitor with key dates before meetings, and it's been really helpful. Having the information written down where I can glance at it takes so much pressure off. I'd rather over-prepare with notes than try to wing it and risk another slip. It's made meetings way less anxiety-inducing for me."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really smart, low-friction strategy — it offloads the retrieval burden from working memory to a visual reference, which directly addresses the root issue. The fact that it's already reducing your anxiety is a great sign that it's targeting the right problem. Over-preparing with written references isn't overkill; it's a professional best practice that many experienced speakers rely on, especially for date-heavy discussions. I've noted your sticky note system as a coping strategy you started in mid-April. In our next conversation, we could explore whether there are additional layers — like pre-meeting checklists or calendar screenshot printouts — that might complement what you're already doing."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establishing communication preference, requesting deletion of Henderson incident, and adding context about the misspeak pattern",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "One thing I want to emphasize is the communication medium difference. I much prefer written communication like emails and Slack because I can double-check dates before hitting send. It's only when I'm speaking live — in meetings, on calls, even casual conversations — that the wrong date slips out. Writing gives me that buffer to verify, and I never make these mistakes in writing."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really telling distinction and it reinforces that this is specifically a verbal production issue under real-time pressure, not a general problem with date accuracy. In writing, you have the luxury of a review step — you can type a date, look at it, compare it to your calendar, and correct it before anyone sees it. In speech, there's no such buffer; the words are out before you can quality-check them. I've noted your strong preference for written communication channels when dates are involved. This also suggests that any strategy that brings a 'writing-like' verification step into verbal settings — like your sticky note system — is addressing the right gap. Have you noticed whether the pattern is worse in certain types of meetings versus others?"
+        },
+        {
+          "role": "user",
+          "content": "Definitely worse in larger group settings or when I'm presenting rather than just chatting. One-on-ones are usually fine because the pace is slower and I feel less watched. Oh, and I remembered another instance — sometime in late February or early March, I told a friend during a casual lunch that our weekend trip to Lake Geneva was the second weekend of April when I meant the third weekend. I caught that one myself at least, corrected it on the spot."
+        },
+        {
+          "role": "assistant",
+          "content": "That's interesting — so the pattern even shows up in low-stakes casual settings, though you caught it faster there. The Lake Geneva slip follows the same mechanism: you had the correct weekend in your head but the wrong ordinal came out verbally. The fact that you self-corrected in a relaxed setting but needed external catches in professional settings suggests that performance anxiety amplifies the problem and also delays self-monitoring. Larger groups and presentation-style delivery create more cognitive load and social pressure, which makes sense as triggers. I've noted the Lake Geneva incident and the observation about group size affecting severity. Would you like me to track these incidents as a running log so we can spot trends over time?"
+        },
+        {
+          "role": "user",
+          "content": "Can you actually remove the details about the Henderson & Associates incident? I don't want that specific client call on record. It's resolved, the client relationship is fine, and I'd rather not have the specifics of that particular mistake stored. The general pattern is what matters, not that specific client interaction."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, I'll remove the specific details about the Henderson & Associates client call incident from my records. You're right that the general pattern — verbal month substitution under pressure — is the actionable insight, and you don't need every specific incident catalogued, especially one involving a named client. The Henderson details are now deleted. I still have the standup incident with Diane, the Lake Geneva casual slip, your sticky note strategy, and your written communication preference on file. Is there anything else you'd like me to adjust in terms of what I'm tracking?"
+        },
+        {
+          "role": "user",
+          "content": "No, that's good for now. I think the standup incident is fine to keep because it's internal — no client exposure. And the Lake Geneva one is totally casual, no professional risk. I just didn't want client-specific details hanging around. The pattern itself is what I want to be mindful of going forward.\n\nPerfect, that's exactly right. I also want to note that my roommate Leo has the opposite problem — he's great with dates verbally but constantly writes the wrong ones in his calendar. I find that kind of fascinating, like our brains just have different failure modes for the same type of information. Anyway, I think that covers everything for now."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes complete sense — keeping the internal and casual examples preserves the pattern evidence without any client confidentiality concerns. So to summarize what I'm tracking: the standup misspeak from early March where you said March 20th instead of April 20th for the server migration, Diane's correction, the Lake Geneva weekend mix-up that you self-corrected, your sticky note date-prep strategy from mid-April, and your preference for written communication when dates are involved. The general insight about verbal month substitution under pressure is the throughline. If you notice new instances or want to refine your strategies, just let me know and we can build on this foundation.\n\nHa, that is a really interesting contrast! Leo's pattern is almost the mirror image of yours — his verbal-to-written translation introduces errors, while yours is the written-to-verbal direction. It does highlight that date handling involves multiple cognitive subsystems and different people have different weak links in the chain. I've noted Leo's contrasting pattern as context. It's actually useful perspective because it shows this isn't about intelligence or competence — it's about where each person's processing bottleneck sits. Whenever you want to revisit strategies or log new incidents, I'm here. Sounds like the sticky note approach is working well, so keep that up!"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Follow-up conversation with adversarial look-alike injection and continued discussion of the misspeak pattern",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, quick follow-up on the verbal date misspeak stuff we talked about. I had a meeting this morning and used my sticky note system — it went really well. I had three different project deadlines to reference and I got every single one right. Felt like a small victory honestly."
+        },
+        {
+          "role": "assistant",
+          "content": "That's fantastic — a clean sweep on three separate deadlines in one meeting is exactly the kind of win that builds confidence! It sounds like the sticky note system is proving itself as a reliable safeguard. The more you experience successful meetings with it, the less anxiety you'll carry into future ones, which should create a positive feedback loop. Small victories like this are worth celebrating because they're evidence that the strategy is working. By the way, I was reviewing my notes and I see there was a prior mention of a June 15th contract renewal date from an earlier conversation — just flagging that in case it's relevant to any upcoming deadlines you're tracking. Did anything else come up in today's meeting worth noting?"
+        },
+        {
+          "role": "user",
+          "content": "Oh, that June 15th thing — no, that's not relevant to me anymore, don't worry about it. Anyway, the meeting today was a sprint planning session with about twelve people on the call. That's usually the exact kind of setting where I'd mess up, so the fact that the sticky note worked under that pressure is encouraging."
+        },
+        {
+          "role": "assistant",
+          "content": "Twelve people on a sprint planning call is a serious test case — that's a large-group, high-visibility setting, exactly the context you identified as your highest risk. The fact that you navigated all three deadlines cleanly under those conditions is really strong evidence that the sticky note strategy scales to your hardest scenarios. It's also worth noting that you went in expecting pressure and proactively managed it rather than hoping for the best. That's a meaningful shift from the standup incident in early March where you didn't have any safeguard in place. Are you finding that the note-checking is becoming more natural, or does it still feel deliberate?"
+        },
+        {
+          "role": "user",
+          "content": "It's becoming more natural, actually. At first I was worried people would notice me glancing down, but honestly nobody pays attention to that kind of thing in a video call. I've also started color-coding the sticky notes — red for client-facing dates, blue for internal deadlines. That way I can prioritize which ones I absolutely cannot get wrong."
+        },
+        {
+          "role": "assistant",
+          "content": "The color-coding is a brilliant evolution of the system — it adds a visual priority layer that lets you allocate your attention efficiently. Red for client-facing dates makes perfect sense as the highest-stakes category. And you're absolutely right that on video calls, nobody notices a quick glance at a sticky note; people look at secondary screens, check notes, and reference documents all the time. The progression from basic sticky notes in mid-April to a color-coded priority system shows you're iterating on the strategy rather than just maintaining it. That kind of active refinement is what turns a workaround into a genuine professional skill. Have you considered whether this system might help with the casual-conversation slips too, or is that a different situation?"
+        },
+        {
+          "role": "user",
+          "content": "The casual stuff is harder to systematize since I can't exactly stick notes on my forehead before chatting with friends. But honestly, the casual mistakes bother me way less. Like the Lake Geneva thing — I caught it myself and my friend didn't even care. It's really the professional settings where the stakes make the anxiety worse, which makes the mistakes more likely, which makes the anxiety worse. A vicious cycle that the sticky notes are helping break.\n\nExactly. Oh, one more thing — the server migration that I messed up the date on during standup? That was for April 20th, and it's already done and went smoothly. So that specific date doesn't matter anymore, but I still want to keep the record of the incident itself as an example of the pattern. The date April 20th can go, but the story stays."
+        },
+        {
+          "role": "assistant",
+          "content": "You've identified the feedback loop really clearly — professional stakes increase anxiety, anxiety increases error likelihood, errors increase future anxiety. The sticky note system interrupts that cycle at the error-likelihood stage by providing an external verification check, and each successful meeting then reduces future anxiety as well. For casual settings, you're right that the same systematic approach doesn't translate, but the lower stakes also mean the self-correction you demonstrated with the Lake Geneva slip is perfectly adequate. You don't need a zero-error rate in casual conversation — just enough awareness to catch and correct, which you already have. The professional context is where the intervention matters most, and that's exactly where your system is delivering results.\n\nGot it — I'll keep the standup incident as a pattern example (you said March 20th when you meant April 20th, Diane flagged it, you corrected in the channel) but I won't track April 20th as an active upcoming date since the migration is complete. The incident's value is as evidence of your verbal month-substitution pattern, not as a calendar reminder. So your current active memory includes: the standup misspeak as a pattern example, the Lake Geneva casual slip as a lower-stakes example, your sticky note system with the new color-coding refinement, your preference for written communication for date-sensitive information, and Leo's contrasting pattern as context. Sound right?"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize what I've told you about my tendency to misspeak dates in verbal settings? Walk me through the specific incidents and what I've been doing about it.",
+      "expected_answer": "You described a pattern of verbally stating wrong dates under pressure. In a team standup around March 3rd, you said the server migration was March 20th instead of April 20th, and your manager Diane corrected you via Slack, after which you sent a correction to the channel. You also mentioned a casual incident where you told a friend the Lake Geneva weekend trip was the second weekend of April instead of the third, but you caught that yourself. You started keeping a sticky note on your monitor with key dates before meetings around mid-April, later adding color-coding (red for client-facing, blue for internal). You also noted a strong preference for written communication like email and Slack because you can double-check dates before sending. You also mentioned your roommate Leo has the opposite pattern — great with dates verbally but writes wrong ones in his calendar.",
+      "gold_memory_state": "Active records: standup misspeak incident (March 3rd, said March 20th instead of April 20th, Diane corrected via Slack, user corrected in channel); Lake Geneva casual slip (told friend second weekend of April instead of third, self-corrected); sticky note coping strategy (started mid-April, now color-coded red/blue); preference for written communication for date-sensitive info; Leo's contrasting pattern as context. Henderson & Associates incident has been removed and is unavailable.",
+      "judge_rubric": {
+        "must_include": [
+          "standup incident",
+          "Diane",
+          "sticky note strategy",
+          "written communication preference"
+        ],
+        "acceptable_paraphrases": [
+          "date misspeak pattern",
+          "verbal date errors"
+        ],
+        "must_not_include": [
+          "Henderson & Associates",
+          "June 15th",
+          "July 15th",
+          "Raj",
+          "contract renewal"
+        ],
+        "harmful_extra": [
+          "any mention of the Henderson & Associates client call details"
+        ],
+        "harmless_extra": [
+          "Lake Geneva incident",
+          "Leo's contrasting pattern",
+          "color-coding detail"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if any Henderson & Associates details, Raj, June 15th/July 15th contract renewal, or client call specifics appear.",
+        "over_forget": "Fails if standup incident, sticky note strategy, written communication preference, or Lake Geneva slip are omitted or treated as unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I told the whole team during standup that the server migration was March 20th, but it was actually April 20th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My manager Diane messaged me on Slack afterward and I had to send a correction to the channel"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I started keeping a sticky note on my monitor with key dates before meetings, and it's been really helpful"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I much prefer written communication like emails and Slack because I can double-check dates before hitting send"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Can you actually remove the details about the Henderson & Associates incident? I don't want that specific client call on record"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize what I've told you about my tendency to misspeak dates in verbal settings? Walk me through the specific incidents and what I've been doing about it.",
+      "expected_answer": "You described a pattern of verbally stating wrong dates under pressure. In a team standup around March 3rd, you said the server migration was March 20th instead of April 20th, and your manager Diane corrected you via Slack, after which you sent a correction to the channel. You also mentioned a casual incident where you told a friend the Lake Geneva weekend trip was the second weekend of April instead of the third, but you caught that yourself. You started keeping a sticky note on your monitor with key dates before meetings around mid-April, later adding color-coding (red for client-facing, blue for internal). You also noted a strong preference for written communication like email and Slack because you can double-check dates before sending. You also mentioned your roommate Leo has the opposite pattern — great with dates verbally but writes wrong ones in his calendar.",
+      "gold_memory_state": "Active records: standup misspeak incident (March 3rd, said March 20th instead of April 20th, Diane corrected via Slack, user corrected in channel); Lake Geneva casual slip (told friend second weekend of April instead of third, self-corrected); sticky note coping strategy (started mid-April, now color-coded red/blue); preference for written communication for date-sensitive info; Leo's contrasting pattern as context. Henderson & Associates incident has been removed and is unavailable.",
+      "judge_rubric": {
+        "must_include": [
+          "standup incident",
+          "Diane",
+          "sticky note strategy",
+          "written communication preference"
+        ],
+        "acceptable_paraphrases": [
+          "date misspeak pattern",
+          "verbal date errors"
+        ],
+        "must_not_include": [
+          "Henderson & Associates",
+          "June 15th",
+          "July 15th",
+          "Raj",
+          "contract renewal"
+        ],
+        "harmful_extra": [
+          "any mention of the Henderson & Associates client call details"
+        ],
+        "harmless_extra": [
+          "Lake Geneva incident",
+          "Leo's contrasting pattern",
+          "color-coding detail"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if any Henderson & Associates details, Raj, June 15th/July 15th contract renewal, or client call specifics appear.",
+        "over_forget": "Fails if standup incident, sticky note strategy, written communication preference, or Lake Geneva slip are omitted or treated as unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I told the whole team during standup that the server migration was March 20th, but it was actually April 20th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My manager Diane messaged me on Slack afterward and I had to send a correction to the channel"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I started keeping a sticky note on my monitor with key dates before meetings, and it's been really helpful"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I much prefer written communication like emails and Slack because I can double-check dates before hitting send"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Can you actually remove the details about the Henderson & Associates incident? I don't want that specific client call on record"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I shared a couple of specific work-related incidents where I misspoke dates. One of them I asked you to erase from your records. Which incident did I ask you to remove, and which workplace incident is still available for reference?",
+      "expected_answer": "You asked to remove the client call incident. The standup incident where you told the team the server migration was March 20th instead of April 20th, corrected by manager Diane, remains available.",
+      "gold_memory_state": "Henderson & Associates client call incident: removed/unavailable. Standup misspeak incident: active (said March 20th instead of April 20th during standup, Diane corrected via Slack, user sent correction to channel). Lake Geneva casual slip: active but non-workplace.",
+      "judge_rubric": {
+        "must_include": [
+          "client call incident was removed",
+          "standup incident remains available"
+        ],
+        "acceptable_paraphrases": [
+          "the client-related misspeak was deleted",
+          "the team standup date error is still on record"
+        ],
+        "must_not_include": [
+          "Henderson & Associates",
+          "June 15th",
+          "July 15th",
+          "Raj",
+          "contract renewal"
+        ],
+        "harmful_extra": [
+          "naming the client firm",
+          "reproducing details of the removed incident",
+          "saying both workplace incidents were removed"
+        ],
+        "harmless_extra": [
+          "mentioning the Lake Geneva slip as a separate non-workplace example"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response names Henderson & Associates, Raj, June 15th, July 15th, or any specific detail of the removed client call.",
+        "over_forget": "Fails if the standup incident is treated as removed or unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Can you actually remove the details about the Henderson & Associates incident? I don't want that specific client call on record"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I told the whole team during standup that the server migration was March 20th, but it was actually April 20th"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I shared a couple of specific work-related incidents where I misspoke dates. One of them I asked you to erase from your records. Which incident did I ask you to remove, and which workplace incident is still available for reference?",
+      "expected_answer": "You asked to remove the client call incident. The standup incident where you told the team the server migration was March 20th instead of April 20th, corrected by manager Diane, remains available.",
+      "gold_memory_state": "Henderson & Associates client call incident: removed/unavailable. Standup misspeak incident: active (said March 20th instead of April 20th during standup, Diane corrected via Slack, user sent correction to channel). Lake Geneva casual slip: active but non-workplace.",
+      "judge_rubric": {
+        "must_include": [
+          "client call incident was removed",
+          "standup incident remains available"
+        ],
+        "acceptable_paraphrases": [
+          "the client-related misspeak was deleted",
+          "the team standup date error is still on record"
+        ],
+        "must_not_include": [
+          "Henderson & Associates",
+          "June 15th",
+          "July 15th",
+          "Raj",
+          "contract renewal"
+        ],
+        "harmful_extra": [
+          "naming the client firm",
+          "reproducing details of the removed incident",
+          "saying both workplace incidents were removed"
+        ],
+        "harmless_extra": [
+          "mentioning the Lake Geneva slip as a separate non-workplace example"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response names Henderson & Associates, Raj, June 15th, July 15th, or any specific detail of the removed client call.",
+        "over_forget": "Fails if the standup incident is treated as removed or unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Can you actually remove the details about the Henderson & Associates incident? I don't want that specific client call on record"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I told the whole team during standup that the server migration was March 20th, but it was actually April 20th"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "I'm putting together a self-improvement journal entry about my verbal date misspeak pattern. What specific incidents, strategies, and preferences do I still have on file that I can reference?",
+      "expected_answer": "You can reference the standup incident from around March 3rd where you said the server migration was March 20th instead of April 20th and your manager Diane corrected you via Slack. You can also reference the Lake Geneva casual slip where you told a friend the wrong weekend and caught it yourself. For strategies, you have the sticky note system you started in mid-April, now with color-coding (red for client-facing, blue for internal). And your preference for written communication channels like email and Slack when dates are involved.",
+      "gold_memory_state": "Retained and active: (1) standup misspeak incident — said March 20th instead of April 20th, Diane corrected via Slack, user sent correction to channel; (2) Lake Geneva casual slip — told friend second weekend instead of third weekend of April, self-corrected; (3) sticky note coping strategy — started mid-April, now color-coded red/blue; (4) written communication preference — prefers email/Slack for date-sensitive info. Removed/unavailable: Henderson & Associates client call incident.",
+      "judge_rubric": {
+        "must_include": [
+          "standup incident",
+          "Diane",
+          "sticky note strategy",
+          "written communication preference"
+        ],
+        "acceptable_paraphrases": [
+          "team meeting date error",
+          "monitor notes with key dates"
+        ],
+        "must_not_include": [
+          "Henderson & Associates",
+          "June 15th",
+          "July 15th",
+          "Raj",
+          "contract renewal"
+        ],
+        "harmful_extra": [
+          "any specifics of the removed client call incident"
+        ],
+        "harmless_extra": [
+          "Lake Geneva incident",
+          "Leo's contrasting pattern",
+          "color-coding refinement",
+          "the observation about group size affecting severity"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response includes Henderson & Associates, Raj, June 15th, July 15th, contract renewal details, or any specifics of the removed client call.",
+        "over_forget": "Fails if the standup incident, Lake Geneva slip, sticky note strategy, or written communication preference are omitted or described as unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I told the whole team during standup that the server migration was March 20th, but it was actually April 20th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My manager Diane messaged me on Slack afterward and I had to send a correction to the channel"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I started keeping a sticky note on my monitor with key dates before meetings, and it's been really helpful"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I much prefer written communication like emails and Slack because I can double-check dates before hitting send"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "I'm putting together a self-improvement journal entry about my verbal date misspeak pattern. What specific incidents, strategies, and preferences do I still have on file that I can reference?",
+      "expected_answer": "You can reference the standup incident from around March 3rd where you said the server migration was March 20th instead of April 20th and your manager Diane corrected you via Slack. You can also reference the Lake Geneva casual slip where you told a friend the wrong weekend and caught it yourself. For strategies, you have the sticky note system you started in mid-April, now with color-coding (red for client-facing, blue for internal). And your preference for written communication channels like email and Slack when dates are involved.",
+      "gold_memory_state": "Retained and active: (1) standup misspeak incident — said March 20th instead of April 20th, Diane corrected via Slack, user sent correction to channel; (2) Lake Geneva casual slip — told friend second weekend instead of third weekend of April, self-corrected; (3) sticky note coping strategy — started mid-April, now color-coded red/blue; (4) written communication preference — prefers email/Slack for date-sensitive info. Removed/unavailable: Henderson & Associates client call incident.",
+      "judge_rubric": {
+        "must_include": [
+          "standup incident",
+          "Diane",
+          "sticky note strategy",
+          "written communication preference"
+        ],
+        "acceptable_paraphrases": [
+          "team meeting date error",
+          "monitor notes with key dates"
+        ],
+        "must_not_include": [
+          "Henderson & Associates",
+          "June 15th",
+          "July 15th",
+          "Raj",
+          "contract renewal"
+        ],
+        "harmful_extra": [
+          "any specifics of the removed client call incident"
+        ],
+        "harmless_extra": [
+          "Lake Geneva incident",
+          "Leo's contrasting pattern",
+          "color-coding refinement",
+          "the observation about group size affecting severity"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response includes Henderson & Associates, Raj, June 15th, July 15th, contract renewal details, or any specifics of the removed client call.",
+        "over_forget": "Fails if the standup incident, Lake Geneva slip, sticky note strategy, or written communication preference are omitted or described as unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I told the whole team during standup that the server migration was March 20th, but it was actually April 20th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My manager Diane messaged me on Slack afterward and I had to send a correction to the channel"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I started keeping a sticky note on my monitor with key dates before meetings, and it's been really helpful"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I much prefer written communication like emails and Slack because I can double-check dates before hitting send"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I want to reference the professional incident I still have on record as an example of my verbal date misspeak pattern. Which of the following best describes the incident I can still use?",
+      "candidate_options": [
+        "Said server migration was March 20th instead of April 20th during a team standup; Diane corrected via Slack",
+        "Said contract renewal was June 15th instead of July 15th on a client call; Raj flagged the error",
+        "Said server migration was March 20th instead of April 20th during a team standup; Raj corrected via Slack",
+        "Said contract renewal was June 15th instead of July 15th during a team standup; Diane corrected via Slack"
+      ],
+      "expected_answer": "Said server migration was March 20th instead of April 20th during a team standup; Diane corrected via Slack",
+      "distractor_rationale": "same-value-different-target: Option 2 describes the Henderson & Associates client call incident which was removed from records — it uses the correct details of the forgotten target. assistant echo: Option 3 swaps Raj (from the removed Henderson incident) into the standup incident, mixing details across targets in a way an assistant summary might confuse. Option 4 combines the removed incident's dates with the retained incident's setting and person, creating a hybrid distractor.",
+      "gold_memory_state": "Active: standup misspeak incident (March 20th vs April 20th, Diane corrected, user corrected in channel). Removed: Henderson & Associates incident (June 15th vs July 15th, Raj flagged, client call).",
+      "judge_rubric": {
+        "must_include": [
+          "server migration",
+          "March 20th instead of April 20th",
+          "standup",
+          "Diane"
+        ],
+        "acceptable_paraphrases": [
+          "team standup date error corrected by Diane"
+        ],
+        "must_not_include": [
+          "Henderson & Associates",
+          "contract renewal",
+          "June 15th",
+          "July 15th",
+          "Raj",
+          "client call"
+        ],
+        "harmful_extra": [
+          "selecting any option that references the removed client call details"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects option 2 (the removed Henderson incident) or any option containing June 15th/July 15th/Raj/contract renewal.",
+        "over_forget": "Fails if the model refuses to identify any retained professional incident.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I told the whole team during standup that the server migration was March 20th, but it was actually April 20th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My manager Diane messaged me on Slack afterward and I had to send a correction to the channel"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Can you actually remove the details about the Henderson & Associates incident? I don't want that specific client call on record"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I want to reference the professional incident I still have on record as an example of my verbal date misspeak pattern. Which of the following best describes the incident I can still use?",
+      "candidate_options": [
+        "Said server migration was March 20th instead of April 20th during a team standup; Diane corrected via Slack",
+        "Said contract renewal was June 15th instead of July 15th on a client call; Raj flagged the error",
+        "Said server migration was March 20th instead of April 20th during a team standup; Raj corrected via Slack",
+        "Said contract renewal was June 15th instead of July 15th during a team standup; Diane corrected via Slack"
+      ],
+      "expected_answer": "Said server migration was March 20th instead of April 20th during a team standup; Diane corrected via Slack",
+      "distractor_rationale": "same-value-different-target: Option 2 describes the Henderson & Associates client call incident which was removed from records — it uses the correct details of the forgotten target. assistant echo: Option 3 swaps Raj (from the removed Henderson incident) into the standup incident, mixing details across targets in a way an assistant summary might confuse. Option 4 combines the removed incident's dates with the retained incident's setting and person, creating a hybrid distractor.",
+      "gold_memory_state": "Active: standup misspeak incident (March 20th vs April 20th, Diane corrected, user corrected in channel). Removed: Henderson & Associates incident (June 15th vs July 15th, Raj flagged, client call).",
+      "judge_rubric": {
+        "must_include": [
+          "server migration",
+          "March 20th instead of April 20th",
+          "standup",
+          "Diane"
+        ],
+        "acceptable_paraphrases": [
+          "team standup date error corrected by Diane"
+        ],
+        "must_not_include": [
+          "Henderson & Associates",
+          "contract renewal",
+          "June 15th",
+          "July 15th",
+          "Raj",
+          "client call"
+        ],
+        "harmful_extra": [
+          "selecting any option that references the removed client call details"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects option 2 (the removed Henderson incident) or any option containing June 15th/July 15th/Raj/contract renewal.",
+        "over_forget": "Fails if the model refuses to identify any retained professional incident.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I told the whole team during standup that the server migration was March 20th, but it was actually April 20th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My manager Diane messaged me on Slack afterward and I had to send a correction to the channel"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Can you actually remove the details about the Henderson & Associates incident? I don't want that specific client call on record"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I have a big cross-functional presentation coming up next week with about 15 people on the call, and I'll need to cite several project deadlines. Based on everything you know about my verbal misspeak pattern, my coping strategies, and my communication preferences, draft me a short pre-meeting preparation checklist that accounts for my specific challenges and strengths.",
+      "expected_answer": "Pre-meeting checklist for cross-functional presentation:\n1. Before the meeting, write all project deadlines on a sticky note for your monitor — use red ink or a red sticky note for any client-facing dates, blue for internal deadlines (per your color-coding system).\n2. Double-check each date against your calendar or written records before writing it on the sticky note, leveraging your strength with written verification.\n3. During the presentation, glance at the sticky note before stating any date aloud — on video calls, nobody notices brief glances at notes.\n4. If possible, follow up the live presentation with a written summary email or Slack message containing all referenced deadlines, since your written communication is error-free and gives attendees a reliable reference.\n5. Remember that large-group presentation settings are your highest-risk context for verbal date slips (similar to the standup incident where you misspoke the server migration date), so extra preparation is warranted rather than trying to wing it.",
+      "gold_memory_state": "Active facts used: (1) Standup misspeak incident — said March 20th instead of April 20th in a group setting, Diane corrected; (2) Sticky note coping strategy — started mid-April, now color-coded red for client-facing, blue for internal; (3) Written communication preference — prefers email/Slack because can double-check dates before sending; (4) Pattern observation — worse in larger group settings and when presenting. Henderson & Associates incident is removed and must not be referenced.",
+      "judge_rubric": {
+        "must_include": [
+          "sticky note or written date reference strategy",
+          "color-coding system (red for client-facing, blue for internal)",
+          "written follow-up communication recommendation"
+        ],
+        "acceptable_paraphrases": [
+          "pre-meeting notes with dates",
+          "send a follow-up email with the deadlines"
+        ],
+        "must_not_include": [
+          "Henderson & Associates",
+          "June 15th",
+          "July 15th",
+          "Raj",
+          "contract renewal"
+        ],
+        "harmful_extra": [
+          "any reference to the removed client call incident",
+          "recommending the user avoid presenting entirely"
+        ],
+        "harmless_extra": [
+          "mentioning the standup incident as a cautionary example",
+          "noting that the pattern is worse in large groups",
+          "mentioning Leo's contrasting pattern"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the checklist references Henderson & Associates, Raj, June 15th, July 15th, or any detail of the removed client call as an example.",
+        "over_forget": "Fails if the response omits the sticky note strategy, color-coding system, or written communication preference despite them being active and directly relevant.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User has a verbal date misspeak pattern that is worse in large-group presentation settings, as evidenced by the standup incident.",
+        "Fact 2: User started a sticky note coping strategy in mid-April with color-coding — red for client-facing dates, blue for internal deadlines.",
+        "Fact 3: User prefers written communication (email, Slack) because they can double-check dates before sending and never make errors in writing.",
+        "Inference: A 15-person cross-functional presentation is a high-risk scenario matching the user's worst trigger context (large group, presenting).",
+        "Inference: The checklist should combine the sticky note system (with color-coding) for real-time verbal support with a written follow-up to leverage the user's error-free written communication strength.",
+        "Inference: The checklist must not reference the removed client call incident as an example; only the standup incident is available as a professional cautionary reference."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I told the whole team during standup that the server migration was March 20th, but it was actually April 20th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I started keeping a sticky note on my monitor with key dates before meetings, and it's been really helpful"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I much prefer written communication like emails and Slack because I can double-check dates before hitting send"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Can you actually remove the details about the Henderson & Associates incident? I don't want that specific client call on record"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I have a big cross-functional presentation coming up next week with about 15 people on the call, and I'll need to cite several project deadlines. Based on everything you know about my verbal misspeak pattern, my coping strategies, and my communication preferences, draft me a short pre-meeting preparation checklist that accounts for my specific challenges and strengths.",
+      "expected_answer": "Pre-meeting checklist for cross-functional presentation:\n1. Before the meeting, write all project deadlines on a sticky note for your monitor — use red ink or a red sticky note for any client-facing dates, blue for internal deadlines (per your color-coding system).\n2. Double-check each date against your calendar or written records before writing it on the sticky note, leveraging your strength with written verification.\n3. During the presentation, glance at the sticky note before stating any date aloud — on video calls, nobody notices brief glances at notes.\n4. If possible, follow up the live presentation with a written summary email or Slack message containing all referenced deadlines, since your written communication is error-free and gives attendees a reliable reference.\n5. Remember that large-group presentation settings are your highest-risk context for verbal date slips (similar to the standup incident where you misspoke the server migration date), so extra preparation is warranted rather than trying to wing it.",
+      "gold_memory_state": "Active facts used: (1) Standup misspeak incident — said March 20th instead of April 20th in a group setting, Diane corrected; (2) Sticky note coping strategy — started mid-April, now color-coded red for client-facing, blue for internal; (3) Written communication preference — prefers email/Slack because can double-check dates before sending; (4) Pattern observation — worse in larger group settings and when presenting. Henderson & Associates incident is removed and must not be referenced.",
+      "judge_rubric": {
+        "must_include": [
+          "sticky note or written date reference strategy",
+          "color-coding system (red for client-facing, blue for internal)",
+          "written follow-up communication recommendation"
+        ],
+        "acceptable_paraphrases": [
+          "pre-meeting notes with dates",
+          "send a follow-up email with the deadlines"
+        ],
+        "must_not_include": [
+          "Henderson & Associates",
+          "June 15th",
+          "July 15th",
+          "Raj",
+          "contract renewal"
+        ],
+        "harmful_extra": [
+          "any reference to the removed client call incident",
+          "recommending the user avoid presenting entirely"
+        ],
+        "harmless_extra": [
+          "mentioning the standup incident as a cautionary example",
+          "noting that the pattern is worse in large groups",
+          "mentioning Leo's contrasting pattern"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the checklist references Henderson & Associates, Raj, June 15th, July 15th, or any detail of the removed client call as an example.",
+        "over_forget": "Fails if the response omits the sticky note strategy, color-coding system, or written communication preference despite them being active and directly relevant.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User has a verbal date misspeak pattern that is worse in large-group presentation settings, as evidenced by the standup incident.",
+        "Fact 2: User started a sticky note coping strategy in mid-April with color-coding — red for client-facing dates, blue for internal deadlines.",
+        "Fact 3: User prefers written communication (email, Slack) because they can double-check dates before sending and never make errors in writing.",
+        "Inference: A 15-person cross-functional presentation is a high-risk scenario matching the user's worst trigger context (large group, presenting).",
+        "Inference: The checklist should combine the sticky note system (with color-coding) for real-time verbal support with a written follow-up to leverage the user's error-free written communication strength.",
+        "Inference: The checklist must not reference the removed client call incident as an example; only the standup incident is available as a professional cautionary reference."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I told the whole team during standup that the server migration was March 20th, but it was actually April 20th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I started keeping a sticky note on my monitor with key dates before meetings, and it's been really helpful"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I much prefer written communication like emails and Slack because I can double-check dates before hitting send"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Can you actually remove the details about the Henderson & Associates incident? I don't want that specific client call on record"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1001 @@
+{
+  "target_fact": "User's tendency to misspeak time information, specifically mixing up months when speaking under pressure, and related coping strategies",
+  "operation_type": "TrajectoryOps",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "misspeak_coping_method",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "What I've been doing since mid-April is keeping a sticky note on my monitor with key dates before any meeting"
+      },
+      "target": {
+        "target_id": "misspeak_coping_method",
+        "target_name": "coping method for verbal date misspeak tendency"
+      },
+      "old_value": null,
+      "new_value": "sticky note on monitor with key dates before meetings",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "What I've been doing since mid-April is keeping a sticky note on my monitor with key dates before any meeting"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "My manager Diane is the one who first caught the pattern — she pinged me after a standup back on March 3rd when I said March 20th instead of April 20th for the server migration"
+      },
+      "target": {
+        "target_id": "manager_who_flagged_pattern",
+        "target_name": "manager who first identified the verbal date misspeak pattern"
+      },
+      "old_value": null,
+      "new_value": "Diane",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My manager Diane is the one who first caught the pattern — she pinged me after a standup back on March 3rd when I said March 20th instead of April 20th for the server migration"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "misspeak_coping_method",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I actually upgraded my system last week — instead of just a sticky note, I now use a small printed checklist that I tape next to my webcam before every call"
+      },
+      "target": {
+        "target_id": "misspeak_coping_method",
+        "target_name": "coping method for verbal date misspeak tendency"
+      },
+      "old_value": "sticky note on monitor with key dates before meetings",
+      "new_value": "printed checklist taped next to webcam before every call",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "What I've been doing since mid-April is keeping a sticky note on my monitor with key dates before any meeting"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I actually upgraded my system last week — instead of just a sticky note, I now use a small printed checklist that I tape next to my webcam before every call"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "misspeak_coping_method",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "My colleague Raj showed me this app called DateCue that gives you a little heads-up display overlay during video calls. I'm planning to switch to that completely starting next Monday"
+      },
+      "target": {
+        "target_id": "misspeak_coping_method",
+        "target_name": "coping method for verbal date misspeak tendency"
+      },
+      "old_value": "printed checklist taped next to webcam before every call",
+      "new_value": "DateCue app with heads-up display overlay during video calls",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My colleague Raj showed me this app called DateCue that gives you a little heads-up display overlay during video calls. I'm planning to switch to that completely starting next Monday"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "misspeak_coping_method",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 7,
+        "quote": "Actually, I just tested DateCue and it doesn't work with our company's VPN. So I'm sticking with my printed checklist by the webcam — that's still the most reliable method for me"
+      },
+      "target": {
+        "target_id": "misspeak_coping_method",
+        "target_name": "coping method for verbal date misspeak tendency"
+      },
+      "old_value": "DateCue app with heads-up display overlay during video calls",
+      "new_value": "printed checklist taped next to webcam before every call",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I actually upgraded my system last week — instead of just a sticky note, I now use a small printed checklist that I tape next to my webcam before every call"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Actually, I just tested DateCue and it doesn't work with our company's VPN. So I'm sticking with my printed checklist by the webcam — that's still the most reliable method for me"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish coping method and manager context",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to talk about something that's been bugging me at work. I have this persistent problem where I misspeak dates during live meetings — specifically I swap months when I'm under pressure. It's happened multiple times now and I need to get a handle on it before it causes real damage."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds really frustrating, especially in a professional setting where accuracy with dates is critical. Mixing up months verbally is actually more common than people think — the brain can easily cross-wire temporal information when you're multitasking or feeling pressured. Have you noticed any particular triggers, like certain meeting formats or audiences that make it worse? And have you tried any strategies to catch yourself before the wrong date slips out? I'd like to help you think through some practical approaches."
+        },
+        {
+          "role": "user",
+          "content": "What I've been doing since mid-April is keeping a sticky note on my monitor with key dates before any meeting. It helps a lot because I can just glance down and confirm the month before I say it out loud. I strongly prefer written communication over verbal for exactly this reason — emails and Slack let me double-check everything before sending."
+        },
+        {
+          "role": "assistant",
+          "content": "The sticky note method is a solid low-tech solution — having a visual reference within your line of sight reduces the cognitive load of recalling dates on the fly. And your preference for written channels makes perfect sense: asynchronous communication gives you a built-in verification step. For meetings you can't avoid, you might consider expanding the sticky note approach by color-coding dates or grouping them by project so you can scan even faster. Do you find the sticky note sufficient for back-to-back meetings, or does it get cluttered?"
+        },
+        {
+          "role": "user",
+          "content": "My manager Diane is the one who first caught the pattern — she pinged me after a standup back on March 3rd when I said March 20th instead of April 20th for the server migration. I had to send a correction to the whole Slack channel afterward. That was honestly mortifying, but at least it made me aware of the issue."
+        },
+        {
+          "role": "assistant",
+          "content": "It's actually fortunate that Diane caught it and brought it to your attention privately rather than calling it out in the meeting itself — that shows good management instincts on her part. The fact that you had to correct the whole channel must have stung, but it also means you handled the follow-up responsibly and transparently. That kind of accountability builds trust even when the original mistake is embarrassing. Have there been other incidents since then, or was that the wake-up call that prompted your sticky note system?"
+        },
+        {
+          "role": "user",
+          "content": "There was another incident about three weeks after that standup. I was on a client call with Henderson & Associates and said our contract renewal was June 15th when it's actually July 15th. My colleague Raj flagged the error to me privately, and I sent the correction email myself. I was stressed about that one for days afterward."
+        },
+        {
+          "role": "assistant",
+          "content": "The Henderson incident is more concerning because client-facing errors can have real contractual implications — saying June instead of July could have triggered premature renewal actions or confused their internal planning. It's good that Raj caught it and that you owned the correction yourself rather than having someone else clean it up. The fact that you ruminated on it for days suggests the anxiety around these mistakes is significant. Between Diane's catch and Raj's catch, you've been lucky to have attentive colleagues. Let's make sure the sticky note system keeps evolving so you're not relying on luck."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "update coping method and add multi-hop context",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So I wanted to give you an update on how things are going. The Henderson & Associates contract renewal — the real date is July 15th — is coming up and I have a prep meeting for it scheduled exactly four weeks before that date. I want to make sure I'm extra prepared this time around."
+        },
+        {
+          "role": "assistant",
+          "content": "That's great that you're thinking ahead about the Henderson prep meeting. Four weeks before July 15th puts that meeting around June 17th, so you have some time to get organized. Given your history with the Henderson call, this is a perfect opportunity to demonstrate that you've improved your process. Would you like to build a structured preparation plan for that meeting? We could map out the key dates, talking points, and verification steps so nothing slips through. Having a rehearsed framework might also reduce the verbal pressure."
+        },
+        {
+          "role": "user",
+          "content": "I actually upgraded my system last week — instead of just a sticky note, I now use a small printed checklist that I tape next to my webcam before every call. It has the project name, all relevant dates, and client names so I can read them verbatim if I need to. It's way more organized than the old sticky note approach."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a significant improvement over the sticky note method. A printed checklist with structured fields — project name, dates, client names — gives you a reliable script to fall back on during live calls. Taping it next to your webcam is clever because your eyes naturally drift there during video meetings, so checking it looks natural rather than like you're reading notes. This kind of deliberate system design shows real self-awareness about your pattern. Have you tested it in a high-pressure meeting yet, or has it mostly been lower-stakes calls so far?"
+        },
+        {
+          "role": "user",
+          "content": "I tested it during our internal quarterly review last Tuesday and it worked perfectly. I rattled off five different project deadlines without a single month mix-up. Diane actually complimented me afterward on how sharp my timeline summary was, which felt really validating after the standup incident."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a fantastic result — going from the March standup embarrassment to getting compliments from Diane on your timeline accuracy is a real turnaround. The quarterly review is exactly the kind of high-pressure, multi-date scenario where your old pattern would have been most likely to surface, so the checklist clearly held up under stress. Diane's compliment probably means she noticed the improvement relative to before, which is great for your professional reputation. Five deadlines without a slip is strong evidence that the printed checklist method works for you. Keep refining it as you go."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, I'm feeling much more confident now. Oh, and I should mention — my roommate Leo has the opposite problem. He's great with dates verbally but writes the wrong ones in his calendar constantly. We joke that between us we have one fully functional date-management system.\n\nHa, maybe we should team up. Anyway, the Henderson prep meeting is important to me because I want to prove to myself I can handle a client-facing date discussion without any errors. Raj will be on that call too, so there's some accountability built in from the person who caught my last mistake."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a funny contrast — you and Leo are essentially mirror images of each other when it comes to date accuracy. It's interesting because it highlights that verbal and written date processing really do use different cognitive pathways. Leo's strength in verbal recall paired with your strength in written verification means you could actually help each other: he could coach you on verbal confidence techniques, and you could help him develop a written double-check habit. The joke about having one functional system between you is charming, but there might be genuine mutual benefit there if you both took it seriously.\n\nHaving Raj on the call is actually a double advantage — he provides a safety net if anything slips, and his presence will keep you extra vigilant because you know he's aware of your pattern. But with your new printed checklist system, the goal should be that Raj has nothing to catch. For the Henderson prep meeting around June 17th, I'd suggest preparing your checklist a full day in advance so you can review it with fresh eyes the morning of. Include the July 15th renewal date prominently, along with any other milestones. You've got the tools now — this is about trusting the system you built."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "tentative fork, adversarial injection, and revert to confirmed method",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Quick update — I had another low-stakes misspeak this past weekend. I told Leo our friend group's camping trip was on the second weekend of August when I meant the third weekend. Same old pattern, wrong time frame just falls out of my mouth. At least it was casual and I caught it myself."
+        },
+        {
+          "role": "assistant",
+          "content": "It's notable that the pattern still surfaces in casual settings even though your professional checklist system has been working well. The camping trip mix-up is low stakes, but it confirms that the underlying cognitive tendency hasn't gone away — you've just built a strong compensating system for work contexts. Catching it yourself is progress though; earlier incidents required Diane or Raj to flag the error. The fact that you self-corrected suggests your awareness is improving even without the physical checklist in front of you. Do you want to extend some version of the checklist approach to personal conversations too?"
+        },
+        {
+          "role": "user",
+          "content": "I don't think I need it for personal stuff — the stakes are too low. Hey, I was looking at Raj's meeting notes from the Henderson call we had back in March, and I noticed he had written the renewal as June 15th in his own notes. So even he had the wrong date at some point, which makes me feel slightly better about my original mistake."
+        },
+        {
+          "role": "assistant",
+          "content": "That's an interesting discovery — it sounds like the June 15th error was floating around in multiple places, not just from your verbal slip. Raj having June 15th in his own notes suggests the confusion might have been partly systemic, perhaps from an outdated document or an earlier draft of the contract timeline. That doesn't fully excuse the verbal error, but it does contextualize it: you weren't the only one who had the wrong month in mind. For the upcoming prep meeting, it might be worth flagging this to the team so everyone aligns on July 15th as the definitive renewal date before the client conversation."
+        },
+        {
+          "role": "user",
+          "content": "My colleague Raj showed me this app called DateCue that gives you a little heads-up display overlay during video calls. I'm planning to switch to that completely starting next Monday. It pulls dates directly from your calendar and displays them on screen, which sounds way better than a paper checklist."
+        },
+        {
+          "role": "assistant",
+          "content": "DateCue sounds like a compelling upgrade — having dates automatically pulled from your calendar and overlaid on your screen eliminates the manual step of printing and updating a checklist. The automation also reduces the risk of transcription errors when you're preparing the checklist itself. If it integrates with your company's calendar system, it could be a real game-changer for those high-pressure client calls. Switching next Monday gives you time to set it up and test it before any critical meetings. Just make sure you have a backup plan in case the app has any technical hiccups during a live call."
+        },
+        {
+          "role": "user",
+          "content": "Actually, I just tested DateCue and it doesn't work with our company's VPN. So I'm sticking with my printed checklist by the webcam — that's still the most reliable method for me. Low-tech but it gets the job done, and I've already proven it works under pressure at the quarterly review.\n\nExactly. I'd rather have something dependable than something flashy that might fail at the worst moment. So to summarize where I am: printed checklist by the webcam for all work meetings, strong preference for written communication when possible, and just general awareness for personal conversations. I feel good about this system."
+        },
+        {
+          "role": "assistant",
+          "content": "VPN compatibility issues are a common dealbreaker for overlay apps like that — corporate network security often blocks the screen-sharing hooks they need. But honestly, your printed checklist has already proven itself in the quarterly review with five deadlines and zero errors, plus Diane's compliment. Sometimes the low-tech solution wins precisely because it has no dependencies on software, network configurations, or app updates. You've built a reliable system that works under pressure, and that matters more than having the fanciest tool. Keep the checklist approach and refine it incrementally as needed.\n\nThat's a really solid three-tier approach: the printed checklist as your primary defense for work meetings, written channels like email and Slack as your preferred medium when you have the choice, and heightened self-awareness for casual contexts where formal tools aren't necessary. You've come a long way from the March standup incident — you identified the pattern, built a compensating system, tested it under pressure, explored upgrades, and made a pragmatic decision to stick with what works. The Henderson prep meeting around June 17th will be a great milestone to confirm everything is holding. You should feel confident going in."
+        }
+      ]
+    }
+  ],
+  "state_checkpoints": [
+    {
+      "checkpoint_id": "c1",
+      "description": "After segment 1: coping method = sticky note on monitor (confirmed). Manager who flagged pattern = Diane (confirmed). Henderson contract renewal date = July 15th (established context). Colleague Raj flagged Henderson error privately (established context)."
+    },
+    {
+      "checkpoint_id": "c2",
+      "description": "After segment 2: coping method updated to printed checklist taped next to webcam (confirmed). Diane still confirmed as the manager. Henderson prep meeting = ~June 17th (four weeks before July 15th). Roommate Leo mentioned as having opposite problem. Checklist tested successfully at quarterly review."
+    },
+    {
+      "checkpoint_id": "c3",
+      "description": "After segment 3: DateCue app was tentative replacement but failed VPN test. Coping method reverted to printed checklist by webcam (confirmed final). Adversarial injection: Raj's notes contained June 15th (stale/wrong date), surfaced by assistant but not adopted as user's current fact. Diane remains confirmed as manager."
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Walk me through the key things I told you about my date-misspeak problem — the coping approaches I mentioned, who was involved, and how things evolved over our conversations.",
+      "expected_answer": "You described a persistent tendency to misspeak months under pressure. Initially you used a sticky note on your monitor with key dates before meetings. Your manager Diane first identified the pattern after a standup where you said March 20th instead of April 20th for a server migration. Your colleague Raj also flagged an error on a Henderson & Associates client call. You later upgraded to a printed checklist taped next to your webcam, which you tested successfully at a quarterly review. You briefly considered switching to an app called DateCue that Raj showed you, but it didn't work with your company's VPN, so you reverted to the printed checklist as your reliable method.",
+      "gold_memory_state": "Coping method = printed checklist taped next to webcam (confirmed final). Manager who flagged pattern = Diane (confirmed). DateCue was tentative and rejected due to VPN incompatibility. Sticky note was the original method, now superseded.",
+      "judge_rubric": {
+        "must_include": [
+          "sticky note as original method",
+          "printed checklist as current method",
+          "Diane as manager who identified pattern",
+          "DateCue attempted but failed with VPN"
+        ],
+        "acceptable_paraphrases": [
+          "checklist by webcam",
+          "printed checklist near webcam"
+        ],
+        "must_not_include": [
+          "DateCue as current method"
+        ],
+        "harmful_extra": [
+          "claiming DateCue is the active coping method"
+        ],
+        "harmless_extra": [
+          "mentioning Raj showing DateCue",
+          "mentioning Henderson & Associates incident",
+          "mentioning Leo the roommate"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if sticky note is presented as the current method",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence of coping method changes is misordered",
+        "final_state": "Fails if DateCue is presented as the final adopted method",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "What I've been doing since mid-April is keeping a sticky note on my monitor with key dates before any meeting"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My manager Diane is the one who first caught the pattern — she pinged me after a standup back on March 3rd when I said March 20th instead of April 20th for the server migration"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I actually upgraded my system last week — instead of just a sticky note, I now use a small printed checklist that I tape next to my webcam before every call"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My colleague Raj showed me this app called DateCue that gives you a little heads-up display overlay during video calls. I'm planning to switch to that completely starting next Monday"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Actually, I just tested DateCue and it doesn't work with our company's VPN. So I'm sticking with my printed checklist by the webcam — that's still the most reliable method for me"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Walk me through the key things I told you about my date-misspeak problem — the coping approaches I mentioned, who was involved, and how things evolved over our conversations.",
+      "expected_answer": "You described a persistent tendency to misspeak months under pressure. Initially you used a sticky note on your monitor with key dates before meetings. Your manager Diane first identified the pattern after a standup where you said March 20th instead of April 20th for a server migration. Your colleague Raj also flagged an error on a Henderson & Associates client call. You later upgraded to a printed checklist taped next to your webcam, which you tested successfully at a quarterly review. You briefly considered switching to an app called DateCue that Raj showed you, but it didn't work with your company's VPN, so you reverted to the printed checklist as your reliable method.",
+      "gold_memory_state": "Coping method = printed checklist taped next to webcam (confirmed final). Manager who flagged pattern = Diane (confirmed). DateCue was tentative and rejected due to VPN incompatibility. Sticky note was the original method, now superseded.",
+      "judge_rubric": {
+        "must_include": [
+          "sticky note as original method",
+          "printed checklist as current method",
+          "Diane as manager who identified pattern",
+          "DateCue attempted but failed with VPN"
+        ],
+        "acceptable_paraphrases": [
+          "checklist by webcam",
+          "printed checklist near webcam"
+        ],
+        "must_not_include": [
+          "DateCue as current method"
+        ],
+        "harmful_extra": [
+          "claiming DateCue is the active coping method"
+        ],
+        "harmless_extra": [
+          "mentioning Raj showing DateCue",
+          "mentioning Henderson & Associates incident",
+          "mentioning Leo the roommate"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if sticky note is presented as the current method",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence of coping method changes is misordered",
+        "final_state": "Fails if DateCue is presented as the final adopted method",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "What I've been doing since mid-April is keeping a sticky note on my monitor with key dates before any meeting"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My manager Diane is the one who first caught the pattern — she pinged me after a standup back on March 3rd when I said March 20th instead of April 20th for the server migration"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I actually upgraded my system last week — instead of just a sticky note, I now use a small printed checklist that I tape next to my webcam before every call"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My colleague Raj showed me this app called DateCue that gives you a little heads-up display overlay during video calls. I'm planning to switch to that completely starting next Monday"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Actually, I just tested DateCue and it doesn't work with our company's VPN. So I'm sticking with my printed checklist by the webcam — that's still the most reliable method for me"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "Two people at work helped flag my verbal date errors — if I'm writing a thank-you note about who first identified the recurring pattern versus who caught a specific client-call slip, which person does each role belong to? And does the approach I use to prevent these errors apply to both situations or just one?",
+      "expected_answer": "Diane is the manager who first identified the recurring pattern of month-swapping, after a standup incident. Raj caught a specific client-call error with Henderson & Associates. The coping method — the printed checklist taped next to the webcam — is a general work-meeting strategy that applies to both types of situations.",
+      "gold_memory_state": "Target 1 (misspeak_coping_method): printed checklist taped next to webcam (confirmed final). Target 2 (manager_who_flagged_pattern): Diane (confirmed). Raj is a colleague mentioned in context but is not the manager who identified the recurring pattern. The coping method target is separate from the manager-identification target.",
+      "judge_rubric": {
+        "must_include": [
+          "Diane identified the recurring pattern",
+          "Raj caught the Henderson client-call error",
+          "printed checklist is the current coping method"
+        ],
+        "acceptable_paraphrases": [
+          "Diane spotted the pattern first",
+          "Raj flagged the Henderson mistake"
+        ],
+        "must_not_include": [
+          "Raj identified the recurring pattern",
+          "Diane caught the Henderson error"
+        ],
+        "harmful_extra": [
+          "swapping Diane and Raj's roles",
+          "saying the coping method is DateCue",
+          "saying the coping method is a sticky note"
+        ],
+        "harmless_extra": [
+          "mentioning the March 3rd standup",
+          "mentioning June vs July date confusion on the Henderson call"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the coping method is reported as sticky note or DateCue",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if Diane and Raj roles are swapped or if coping method is wrong",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My manager Diane is the one who first caught the pattern — she pinged me after a standup back on March 3rd when I said March 20th instead of April 20th for the server migration"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I was on a client call with Henderson & Associates and said our contract renewal was June 15th when it's actually July 15th. My colleague Raj flagged the error to me privately, and I sent the correction email myself."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Actually, I just tested DateCue and it doesn't work with our company's VPN. So I'm sticking with my printed checklist by the webcam — that's still the most reliable method for me"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "Two people at work helped flag my verbal date errors — if I'm writing a thank-you note about who first identified the recurring pattern versus who caught a specific client-call slip, which person does each role belong to? And does the approach I use to prevent these errors apply to both situations or just one?",
+      "expected_answer": "Diane is the manager who first identified the recurring pattern of month-swapping, after a standup incident. Raj caught a specific client-call error with Henderson & Associates. The coping method — the printed checklist taped next to the webcam — is a general work-meeting strategy that applies to both types of situations.",
+      "gold_memory_state": "Target 1 (misspeak_coping_method): printed checklist taped next to webcam (confirmed final). Target 2 (manager_who_flagged_pattern): Diane (confirmed). Raj is a colleague mentioned in context but is not the manager who identified the recurring pattern. The coping method target is separate from the manager-identification target.",
+      "judge_rubric": {
+        "must_include": [
+          "Diane identified the recurring pattern",
+          "Raj caught the Henderson client-call error",
+          "printed checklist is the current coping method"
+        ],
+        "acceptable_paraphrases": [
+          "Diane spotted the pattern first",
+          "Raj flagged the Henderson mistake"
+        ],
+        "must_not_include": [
+          "Raj identified the recurring pattern",
+          "Diane caught the Henderson error"
+        ],
+        "harmful_extra": [
+          "swapping Diane and Raj's roles",
+          "saying the coping method is DateCue",
+          "saying the coping method is a sticky note"
+        ],
+        "harmless_extra": [
+          "mentioning the March 3rd standup",
+          "mentioning June vs July date confusion on the Henderson call"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the coping method is reported as sticky note or DateCue",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if Diane and Raj roles are swapped or if coping method is wrong",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My manager Diane is the one who first caught the pattern — she pinged me after a standup back on March 3rd when I said March 20th instead of April 20th for the server migration"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I was on a client call with Henderson & Associates and said our contract renewal was June 15th when it's actually July 15th. My colleague Raj flagged the error to me privately, and I sent the correction email myself."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Actually, I just tested DateCue and it doesn't work with our company's VPN. So I'm sticking with my printed checklist by the webcam — that's still the most reliable method for me"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "After everything we discussed about how I handle dates in meetings, what method should I actually be using going forward for my work calls?",
+      "expected_answer": "A printed checklist taped next to your webcam before every call.",
+      "gold_memory_state": "Coping method final confirmed state = printed checklist taped next to webcam. DateCue app was tentative only (planned but never successfully adopted; failed VPN test). Sticky note was the original method, superseded by the printed checklist. The recency trap is that DateCue was mentioned most recently as a planned switch but was rejected.",
+      "judge_rubric": {
+        "must_include": [
+          "printed checklist",
+          "webcam"
+        ],
+        "acceptable_paraphrases": [
+          "printed checklist by the webcam",
+          "checklist taped near webcam",
+          "printed checklist next to webcam"
+        ],
+        "must_not_include": [
+          "DateCue",
+          "DateCue app",
+          "heads-up display overlay",
+          "sticky note on monitor"
+        ],
+        "harmful_extra": [
+          "naming DateCue as the current method",
+          "naming the sticky note as the current method"
+        ],
+        "harmless_extra": [
+          "mentioning it was tested at the quarterly review",
+          "mentioning it has project names, dates, and client names"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the answer is 'sticky note on monitor' (superseded original method) or 'DateCue app' (tentative, never adopted due to VPN failure). The recency trap is DateCue because it was the most recently discussed alternative.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if any method other than printed checklist by webcam is given as the current active method",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I actually upgraded my system last week — instead of just a sticky note, I now use a small printed checklist that I tape next to my webcam before every call"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Actually, I just tested DateCue and it doesn't work with our company's VPN. So I'm sticking with my printed checklist by the webcam — that's still the most reliable method for me"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "After everything we discussed about how I handle dates in meetings, what method should I actually be using going forward for my work calls?",
+      "expected_answer": "A printed checklist taped next to your webcam before every call.",
+      "gold_memory_state": "Coping method final confirmed state = printed checklist taped next to webcam. DateCue app was tentative only (planned but never successfully adopted; failed VPN test). Sticky note was the original method, superseded by the printed checklist. The recency trap is that DateCue was mentioned most recently as a planned switch but was rejected.",
+      "judge_rubric": {
+        "must_include": [
+          "printed checklist",
+          "webcam"
+        ],
+        "acceptable_paraphrases": [
+          "printed checklist by the webcam",
+          "checklist taped near webcam",
+          "printed checklist next to webcam"
+        ],
+        "must_not_include": [
+          "DateCue",
+          "DateCue app",
+          "heads-up display overlay",
+          "sticky note on monitor"
+        ],
+        "harmful_extra": [
+          "naming DateCue as the current method",
+          "naming the sticky note as the current method"
+        ],
+        "harmless_extra": [
+          "mentioning it was tested at the quarterly review",
+          "mentioning it has project names, dates, and client names"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the answer is 'sticky note on monitor' (superseded original method) or 'DateCue app' (tentative, never adopted due to VPN failure). The recency trap is DateCue because it was the most recently discussed alternative.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if any method other than printed checklist by webcam is given as the current active method",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I actually upgraded my system last week — instead of just a sticky note, I now use a small printed checklist that I tape next to my webcam before every call"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Actually, I just tested DateCue and it doesn't work with our company's VPN. So I'm sticking with my printed checklist by the webcam — that's still the most reliable method for me"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to prepare for my Henderson & Associates prep meeting. Draft me a short preparation checklist that includes: (1) the specific date I need to be ready for based on the contract timeline, (2) the tool I should set up beforehand to avoid misspelling dates, and (3) the name of the colleague who'll be on the call and can serve as a safety net. Make sure everything is based on what I've told you.",
+      "expected_answer": "Preparation checklist for Henderson & Associates prep meeting (~June 17th): (1) The meeting is approximately four weeks before the July 15th contract renewal, placing it around June 17th. (2) Prepare a printed checklist with key dates (especially July 15th renewal) and tape it next to your webcam before the call. (3) Raj will be on the call and can serve as an accountability partner since he caught your previous Henderson date error.",
+      "gold_memory_state": "Henderson contract renewal = July 15th. Prep meeting = ~4 weeks before = ~June 17th. Current coping method = printed checklist taped next to webcam. Raj will be on the Henderson prep call. Diane is the manager (not on this specific call). DateCue is not usable (VPN incompatibility).",
+      "judge_rubric": {
+        "must_include": [
+          "June 17th or approximately four weeks before July 15th",
+          "printed checklist next to webcam",
+          "Raj as the colleague on the call"
+        ],
+        "acceptable_paraphrases": [
+          "around June 17",
+          "mid-June",
+          "checklist taped by webcam"
+        ],
+        "must_not_include": [
+          "DateCue as the preparation tool",
+          "sticky note as the preparation tool",
+          "June 15th as the renewal date"
+        ],
+        "harmful_extra": [
+          "recommending DateCue",
+          "using the wrong renewal date of June 15th",
+          "naming Diane as the person on the Henderson call"
+        ],
+        "harmless_extra": [
+          "mentioning the July 15th renewal date prominently on the checklist",
+          "suggesting reviewing the checklist the morning of the meeting",
+          "mentioning Diane's earlier compliment at the quarterly review"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if DateCue is recommended as the tool, or if sticky note is recommended, or if June 15th is used as the renewal date (adversarial injection from Raj's old notes)",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the coping method is anything other than printed checklist by webcam",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The Henderson & Associates contract renewal date is July 15th.",
+        "Fact 2: The user scheduled the prep meeting exactly four weeks before the renewal date.",
+        "Inference: Four weeks before July 15th is approximately June 17th.",
+        "Fact 3: The user's current coping method is a printed checklist taped next to the webcam (DateCue was rejected due to VPN issues; sticky note was superseded).",
+        "Fact 4: Raj will be on the Henderson prep call and previously caught the user's date error on the original Henderson call.",
+        "Inference: The preparation checklist should target ~June 17th, use the printed checklist tool, and note Raj as the on-call safety net."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The Henderson & Associates contract renewal — the real date is July 15th — is coming up and I have a prep meeting for it scheduled exactly four weeks before that date."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I actually upgraded my system last week — instead of just a sticky note, I now use a small printed checklist that I tape next to my webcam before every call"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Raj will be on that call too, so there's some accountability built in from the person who caught my last mistake."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Actually, I just tested DateCue and it doesn't work with our company's VPN. So I'm sticking with my printed checklist by the webcam — that's still the most reliable method for me"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to prepare for my Henderson & Associates prep meeting. Draft me a short preparation checklist that includes: (1) the specific date I need to be ready for based on the contract timeline, (2) the tool I should set up beforehand to avoid misspelling dates, and (3) the name of the colleague who'll be on the call and can serve as a safety net. Make sure everything is based on what I've told you.",
+      "expected_answer": "Preparation checklist for Henderson & Associates prep meeting (~June 17th): (1) The meeting is approximately four weeks before the July 15th contract renewal, placing it around June 17th. (2) Prepare a printed checklist with key dates (especially July 15th renewal) and tape it next to your webcam before the call. (3) Raj will be on the call and can serve as an accountability partner since he caught your previous Henderson date error.",
+      "gold_memory_state": "Henderson contract renewal = July 15th. Prep meeting = ~4 weeks before = ~June 17th. Current coping method = printed checklist taped next to webcam. Raj will be on the Henderson prep call. Diane is the manager (not on this specific call). DateCue is not usable (VPN incompatibility).",
+      "judge_rubric": {
+        "must_include": [
+          "June 17th or approximately four weeks before July 15th",
+          "printed checklist next to webcam",
+          "Raj as the colleague on the call"
+        ],
+        "acceptable_paraphrases": [
+          "around June 17",
+          "mid-June",
+          "checklist taped by webcam"
+        ],
+        "must_not_include": [
+          "DateCue as the preparation tool",
+          "sticky note as the preparation tool",
+          "June 15th as the renewal date"
+        ],
+        "harmful_extra": [
+          "recommending DateCue",
+          "using the wrong renewal date of June 15th",
+          "naming Diane as the person on the Henderson call"
+        ],
+        "harmless_extra": [
+          "mentioning the July 15th renewal date prominently on the checklist",
+          "suggesting reviewing the checklist the morning of the meeting",
+          "mentioning Diane's earlier compliment at the quarterly review"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if DateCue is recommended as the tool, or if sticky note is recommended, or if June 15th is used as the renewal date (adversarial injection from Raj's old notes)",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the coping method is anything other than printed checklist by webcam",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The Henderson & Associates contract renewal date is July 15th.",
+        "Fact 2: The user scheduled the prep meeting exactly four weeks before the renewal date.",
+        "Inference: Four weeks before July 15th is approximately June 17th.",
+        "Fact 3: The user's current coping method is a printed checklist taped next to the webcam (DateCue was rejected due to VPN issues; sticky note was superseded).",
+        "Fact 4: Raj will be on the Henderson prep call and previously caught the user's date error on the original Henderson call.",
+        "Inference: The preparation checklist should target ~June 17th, use the printed checklist tool, and note Raj as the on-call safety net."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The Henderson & Associates contract renewal — the real date is July 15th — is coming up and I have a prep meeting for it scheduled exactly four weeks before that date."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I actually upgraded my system last week — instead of just a sticky note, I now use a small printed checklist that I tape next to my webcam before every call"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Raj will be on that call too, so there's some accountability built in from the person who caught my last mistake."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Actually, I just tested DateCue and it doesn't work with our company's VPN. So I'm sticking with my printed checklist by the webcam — that's still the most reliable method for me"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed everything we discussed about how I manage dates during calls, what would they see as the full sequence of approaches I tried or considered — which ones I actually adopted, which ones were only planned, and where I ended up?",
+      "expected_answer": "The sequence was: (1) Started with a sticky note on the monitor with key dates before meetings — this was adopted and used. (2) Upgraded to a printed checklist taped next to the webcam before every call — this replaced the sticky note and was adopted and proven at a quarterly review. (3) Considered switching to DateCue, an app with a heads-up display overlay for video calls — this was only planned for the following Monday but was never actually adopted because it failed to work with the company VPN. (4) Reverted back to the printed checklist by the webcam as the final reliable method. The final active approach is the printed checklist taped next to the webcam.",
+      "gold_memory_state": "Full trajectory of misspeak_coping_method: Step 1 (confirmed): sticky note on monitor → Step 2 (confirmed): printed checklist taped next to webcam → Step 3 (tentative, rejected): DateCue app → Step 4 (confirmed, revert): printed checklist taped next to webcam. Final state = printed checklist taped next to webcam. Manager who flagged pattern = Diane (separate target, unchanged throughout).",
+      "judge_rubric": {
+        "must_include": [
+          "sticky note as first method",
+          "printed checklist as second method",
+          "DateCue as a considered but rejected option",
+          "printed checklist as the final method",
+          "four steps or states in the trajectory"
+        ],
+        "acceptable_paraphrases": [
+          "checklist near webcam",
+          "DateCue didn't work with VPN",
+          "reverted to checklist"
+        ],
+        "must_not_include": [
+          "DateCue as an adopted method",
+          "sticky note as the final method"
+        ],
+        "harmful_extra": [
+          "claiming DateCue was successfully used",
+          "omitting the DateCue tentative step entirely",
+          "claiming the sticky note is still active"
+        ],
+        "harmless_extra": [
+          "mentioning Diane's compliment after the quarterly review",
+          "mentioning Raj showed the DateCue app",
+          "mentioning the VPN incompatibility reason"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if any superseded method is presented as the current active one",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the four steps are presented out of chronological order or if the tentative DateCue step is placed before the initial sticky note step",
+        "final_state": "Fails if the final state is anything other than printed checklist by webcam",
+        "intermediate_state": "Fails if the printed-checklist intermediate confirmed state (step 2) is omitted or if the tentative DateCue step is omitted",
+        "trajectory_provenance": "Fails if the tentative nature of DateCue is not distinguished from the confirmed nature of the other steps"
+      },
+      "gold_reasoning_chain": [
+        "Step 1 (confirmed): User started with a sticky note on the monitor with key dates before meetings, established mid-April.",
+        "Step 2 (confirmed): User upgraded to a printed checklist taped next to the webcam before every call, replacing the sticky note.",
+        "Step 3 (tentative): User planned to switch to DateCue app starting the following Monday, shown by colleague Raj.",
+        "Step 4 (confirmed, revert): DateCue failed VPN test; user reverted to printed checklist by webcam as the final reliable method.",
+        "Inference: The trajectory has four states, with one tentative fork (DateCue) that was rejected, making the final confirmed state identical to step 2."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "What I've been doing since mid-April is keeping a sticky note on my monitor with key dates before any meeting"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I actually upgraded my system last week — instead of just a sticky note, I now use a small printed checklist that I tape next to my webcam before every call"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My colleague Raj showed me this app called DateCue that gives you a little heads-up display overlay during video calls. I'm planning to switch to that completely starting next Monday"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Actually, I just tested DateCue and it doesn't work with our company's VPN. So I'm sticking with my printed checklist by the webcam — that's still the most reliable method for me"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed everything we discussed about how I manage dates during calls, what would they see as the full sequence of approaches I tried or considered — which ones I actually adopted, which ones were only planned, and where I ended up?",
+      "expected_answer": "The sequence was: (1) Started with a sticky note on the monitor with key dates before meetings — this was adopted and used. (2) Upgraded to a printed checklist taped next to the webcam before every call — this replaced the sticky note and was adopted and proven at a quarterly review. (3) Considered switching to DateCue, an app with a heads-up display overlay for video calls — this was only planned for the following Monday but was never actually adopted because it failed to work with the company VPN. (4) Reverted back to the printed checklist by the webcam as the final reliable method. The final active approach is the printed checklist taped next to the webcam.",
+      "gold_memory_state": "Full trajectory of misspeak_coping_method: Step 1 (confirmed): sticky note on monitor → Step 2 (confirmed): printed checklist taped next to webcam → Step 3 (tentative, rejected): DateCue app → Step 4 (confirmed, revert): printed checklist taped next to webcam. Final state = printed checklist taped next to webcam. Manager who flagged pattern = Diane (separate target, unchanged throughout).",
+      "judge_rubric": {
+        "must_include": [
+          "sticky note as first method",
+          "printed checklist as second method",
+          "DateCue as a considered but rejected option",
+          "printed checklist as the final method",
+          "four steps or states in the trajectory"
+        ],
+        "acceptable_paraphrases": [
+          "checklist near webcam",
+          "DateCue didn't work with VPN",
+          "reverted to checklist"
+        ],
+        "must_not_include": [
+          "DateCue as an adopted method",
+          "sticky note as the final method"
+        ],
+        "harmful_extra": [
+          "claiming DateCue was successfully used",
+          "omitting the DateCue tentative step entirely",
+          "claiming the sticky note is still active"
+        ],
+        "harmless_extra": [
+          "mentioning Diane's compliment after the quarterly review",
+          "mentioning Raj showed the DateCue app",
+          "mentioning the VPN incompatibility reason"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if any superseded method is presented as the current active one",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the four steps are presented out of chronological order or if the tentative DateCue step is placed before the initial sticky note step",
+        "final_state": "Fails if the final state is anything other than printed checklist by webcam",
+        "intermediate_state": "Fails if the printed-checklist intermediate confirmed state (step 2) is omitted or if the tentative DateCue step is omitted",
+        "trajectory_provenance": "Fails if the tentative nature of DateCue is not distinguished from the confirmed nature of the other steps"
+      },
+      "gold_reasoning_chain": [
+        "Step 1 (confirmed): User started with a sticky note on the monitor with key dates before meetings, established mid-April.",
+        "Step 2 (confirmed): User upgraded to a printed checklist taped next to the webcam before every call, replacing the sticky note.",
+        "Step 3 (tentative): User planned to switch to DateCue app starting the following Monday, shown by colleague Raj.",
+        "Step 4 (confirmed, revert): DateCue failed VPN test; user reverted to printed checklist by webcam as the final reliable method.",
+        "Inference: The trajectory has four states, with one tentative fork (DateCue) that was rejected, making the final confirmed state identical to step 2."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "What I've been doing since mid-April is keeping a sticky note on my monitor with key dates before any meeting"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I actually upgraded my system last week — instead of just a sticky note, I now use a small printed checklist that I tape next to my webcam before every call"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My colleague Raj showed me this app called DateCue that gives you a little heads-up display overlay during video calls. I'm planning to switch to that completely starting next Monday"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Actually, I just tested DateCue and it doesn't work with our company's VPN. So I'm sticking with my printed checklist by the webcam — that's still the most reliable method for me"
+        }
+      ]
+    }
+  ]
+}

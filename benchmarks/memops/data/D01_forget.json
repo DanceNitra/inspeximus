@@ -1,0 +1,1054 @@
+{
+  "target_fact": "D01 Current primary smartphone model and related details",
+  "operation_type": "Forget",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "My daily driver right now is the Pixel 8 Pro"
+      },
+      "target": {
+        "target_id": "current_phone_model",
+        "target_name": "current primary smartphone model"
+      },
+      "old_value": null,
+      "new_value": "Pixel 8 Pro",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My daily driver right now is the Pixel 8 Pro"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "It's the 128GB version in Porcelain"
+      },
+      "target": {
+        "target_id": "phone_storage_capacity",
+        "target_name": "Pixel 8 Pro storage capacity"
+      },
+      "old_value": null,
+      "new_value": "128GB",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "It's the 128GB version in Porcelain"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I got the phone right after my birthday on January 25th, used some gift money toward it"
+      },
+      "target": {
+        "target_id": "phone_purchase_timing",
+        "target_name": "Pixel 8 Pro purchase timing"
+      },
+      "old_value": null,
+      "new_value": "Right after January 25th birthday, late January or early February",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I got the phone right after my birthday on January 25th, used some gift money toward it"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 7,
+        "quote": "I keep it between 20 and 80 percent most of the time, and AccuBattery still shows 100% battery health"
+      },
+      "target": {
+        "target_id": "phone_battery_practice",
+        "target_name": "Pixel 8 Pro battery charging practice and health"
+      },
+      "old_value": null,
+      "new_value": "Charges between 20-80%, battery health at 100% per AccuBattery",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I keep it between 20 and 80 percent most of the time, and AccuBattery still shows 100% battery health"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "the eSIM transfer from my old Samsung was a nightmare when I first got the phone, took three calls to T-Mobile to sort it out"
+      },
+      "target": {
+        "target_id": "phone_carrier",
+        "target_name": "mobile carrier"
+      },
+      "old_value": null,
+      "new_value": "T-Mobile",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the eSIM transfer from my old Samsung was a nightmare when I first got the phone, took three calls to T-Mobile to sort it out"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "forget",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "you can go ahead and forget about the battery health stuff and the charging habit I mentioned, I don't need you tracking that"
+      },
+      "target": {
+        "target_id": "phone_battery_practice",
+        "target_name": "Pixel 8 Pro battery charging practice and health"
+      },
+      "old_value": "Charges between 20-80%, battery health at 100% per AccuBattery",
+      "new_value": null,
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "you can go ahead and forget about the battery health stuff and the charging habit I mentioned, I don't need you tracking that"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish core phone facts: model, storage, purchase timing, battery practice",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to make sure you have my phone details on file for when I ask you about accessories or troubleshooting stuff. My daily driver right now is the Pixel 8 Pro. I switched over from a Samsung Galaxy S21 that I'd been using for about two years before that. The Samsung is gone now — I gave it to my mom in March after she cracked her phone screen."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it! I've noted that your current phone is the Pixel 8 Pro, replacing a Samsung Galaxy S21 that you used for roughly two years and have since passed along to your mom. That's a solid upgrade — the Pixel 8 Pro has excellent camera capabilities and the Tensor G3 chip handles on-device AI features really well. Whenever you need help picking a case, screen protector, or troubleshooting anything, just let me know and I can tailor recommendations to your exact model. Do you want to share any more specs so I have the full picture?"
+        },
+        {
+          "role": "user",
+          "content": "Sure, let me give you the key specs. It's the 128GB version in Porcelain. I almost went with the Bay color — that blue one — but the matte white felt more understated and that's more my style. I also put a plain matte black case on it, no logos or patterns. I like keeping things minimal and clean when it comes to my tech."
+        },
+        {
+          "role": "assistant",
+          "content": "Nice choices — the Porcelain finish has a really elegant look, especially paired with a plain matte black case. That minimal aesthetic is clean and timeless. I've noted your storage is 128GB. Just a heads-up: the Pixel 8 Pro shoots large photo files, especially in RAW or with the 50MP main sensor at full resolution, so you might want to keep an eye on storage over time. Google Photos with cloud backup can help offload older files if you start running low. Anything else about the phone you'd like me to keep track of?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, one more thing on timing. I got the phone right after my birthday on January 25th, used some gift money toward it. So it was either late January or very early February when I actually picked it up. I remember being excited about it because I'd been wanting to try the stock Android experience for a while — the heavy Samsung skin with all the preloaded apps was driving me crazy."
+        },
+        {
+          "role": "assistant",
+          "content": "Happy belated birthday! That's a great way to use gift money. So you picked up the Pixel 8 Pro around late January or early February, right after your January 25th birthday. I can see why the cleaner software experience appealed to you — Samsung's One UI does pack in a lot of extras that not everyone wants. The Pixel's stock Android feel is definitely more streamlined, and you get feature drops every quarter that add genuinely useful tools without bloating the interface. If you ever want tips on maximizing the stock Android experience or hidden Pixel features, I'm here for it."
+        },
+        {
+          "role": "user",
+          "content": "Oh, and this is kind of nerdy but I'm a bit paranoid about battery longevity. I keep it between 20 and 80 percent most of the time, and AccuBattery still shows 100% battery health. I've been pretty disciplined about not letting it charge overnight to full. It's one of those habits I picked up after my old Samsung started dying at 40% toward the end of its life."
+        },
+        {
+          "role": "assistant",
+          "content": "That's actually a really smart approach and not nerdy at all — lithium-ion batteries do degrade faster when they spend extended time at very high or very low charge states. Keeping it in that 20-80% sweet spot is one of the best things you can do for long-term battery health. The fact that AccuBattery still reads 100% after a couple of months is a great sign. The Pixel 8 Pro also has adaptive charging built in, which slows charging overnight if it detects a routine, so that works in your favor too. I've noted your battery practice. Let me know if you ever want a deeper dive into battery optimization settings."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Add carrier detail, then user requests forget of battery practice; retain other targets",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Quick follow-up on the phone stuff. I forgot to mention that the eSIM transfer from my old Samsung was a nightmare when I first got the phone, took three calls to T-Mobile to sort it out. So yeah, T-Mobile is my carrier. That whole ordeal happened in the first week of February and honestly put me in a really bad mood — almost made me regret switching phones entirely."
+        },
+        {
+          "role": "assistant",
+          "content": "Ugh, eSIM transfers can be a real pain, especially across different ecosystems like Samsung to Pixel. Three calls to T-Mobile just to get it working is frustrating — I'm sorry you had to deal with that during what should have been an exciting new-phone experience. The good news is that once the eSIM is properly provisioned, it's rock solid and you shouldn't have to deal with it again unless you switch devices. I've noted T-Mobile as your carrier. If you ever need to contact them again for account changes, I can help you prep the right details ahead of time."
+        },
+        {
+          "role": "user",
+          "content": "Thanks. Also, I finally set up the fingerprint sensor properly a few days ago. I'd been using just the PIN since I got the phone because the under-display reader felt really sluggish at first. But after the March feature drop update it got noticeably faster, so I gave it another shot and it's been working great since then."
+        },
+        {
+          "role": "assistant",
+          "content": "That's great to hear! The under-display fingerprint sensor on the Pixel 8 Pro was a common complaint early on — many users found it slower than expected compared to traditional rear-mounted sensors. Google addressed it in the March feature drop with improved biometric algorithms, and most people noticed a significant speed bump afterward. It's good that you gave it a second chance. Using biometric unlock alongside your PIN adds a nice layer of convenience without sacrificing security. If you want, I can also walk you through setting up face unlock as a backup — the Pixel 8 Pro supports it with the IR sensor."
+        },
+        {
+          "role": "user",
+          "content": "Actually, thinking about it, you can go ahead and forget about the battery health stuff and the charging habit I mentioned, I don't need you tracking that. It's kind of obsessive and I'm trying to stop micromanaging every little metric. Just keep the main phone details — the model, storage, color, when I got it, and my carrier. Those are the useful things."
+        },
+        {
+          "role": "assistant",
+          "content": "Totally understandable — stepping back from micromanaging metrics can actually reduce stress and let you just enjoy the phone. I've removed the battery health and charging habit details from what I'm tracking. Here's what I still have on file for your phone: Pixel 8 Pro, 128GB storage, Porcelain color with a matte black case, purchased around late January or early February right after your January 25th birthday, and your carrier is T-Mobile. That covers the essentials for any future accessory recommendations or troubleshooting. Let me know if there's anything else you'd like to adjust."
+        },
+        {
+          "role": "user",
+          "content": "Perfect, that's exactly right. By the way, my friend Kevin got the iPhone 15 Pro Max around the same time I got my Pixel. He keeps pushing me to switch to iOS but the walled-garden thing just isn't for me. I like being able to sideload apps and tinker with settings without jumping through hoops.\n\nHaha, I might take you up on that. He's always going on about iMessage and AirDrop. Anyway, I think we're good on the phone details for now. I just wanted to make sure you had everything straight and that the battery stuff was cleared out."
+        },
+        {
+          "role": "assistant",
+          "content": "Ha, the classic Android vs. iOS debate! Kevin's iPhone 15 Pro Max is a great phone in its own right — the titanium build and Action Button are nice touches — but I totally get your perspective. The ability to sideload apps, use custom launchers, and have granular control over settings is a big draw for people who like to tinker. Android, especially stock Android on the Pixel, gives you that freedom without the restrictions Apple imposes. It sounds like the Pixel 8 Pro is the right fit for your preferences. If Kevin ever brings up specific iOS features he thinks are better, I can help you find Android equivalents.\n\nYou're all set! For the iMessage argument, you can point Kevin to Google Messages with RCS — it supports read receipts, typing indicators, high-res media, and end-to-end encryption in one-on-one chats. For AirDrop, Nearby Share on Android does essentially the same thing and works cross-platform with Chromebooks too. Those are solid comebacks for your next debate. And yes, your phone profile is clean: Pixel 8 Pro, 128GB, Porcelain, matte black case, purchased late January or early February after your birthday, T-Mobile carrier. Battery tracking is cleared. Whenever you need help with anything phone-related, just ask!"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Adversarial injection of Samsung Galaxy S24 Ultra via assistant echo; continued phone conversation with retained targets intact",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, so I was looking at phone cases online and I came across a comparison page that had my Pixel 8 Pro listed alongside the Samsung Galaxy S24 Ultra. The specs on that Samsung are pretty wild — 200MP camera, S Pen support, titanium frame. Part of me was curious but I'm still happy with my Pixel."
+        },
+        {
+          "role": "assistant",
+          "content": "The Galaxy S24 Ultra is definitely impressive on paper — the 200MP sensor and built-in S Pen are standout features, and the titanium frame gives it a premium feel. But given your strong preference for clean stock Android without heavy skins, I think you'd find Samsung's One UI frustrating again pretty quickly, even though it's gotten better. Plus, you specifically moved away from Samsung for that reason. For your Pixel 8 Pro in Porcelain with the matte black case, are you looking for a different case style or just browsing? I can suggest some minimal options that match your aesthetic."
+        },
+        {
+          "role": "user",
+          "content": "Just browsing for now. Actually, Kevin texted me a screenshot of his phone bill and I noticed he's on Verizon paying like $95 a month for his iPhone 15 Pro Max. That seems insane to me. I'm glad I'm on a more reasonable plan. Anyway, I was wondering — can you remind me what phone details you have for me right now?"
+        },
+        {
+          "role": "assistant",
+          "content": "Sure! Here's what I have on file for your current phone setup: your daily driver is the Pixel 8 Pro, 128GB storage, in the Porcelain colorway with a plain matte black case. You picked it up around late January or early February, right after your January 25th birthday, using some gift money. Your carrier is T-Mobile. That's the full picture I'm tracking. And yeah, $95 a month for Kevin's Verizon plan does sound steep — T-Mobile tends to be more competitive on pricing, especially with their Magenta plans. Want me to help you compare your current T-Mobile plan against alternatives?"
+        },
+        {
+          "role": "user",
+          "content": "No, I'm good on the plan front. I'm happy with T-Mobile. I was actually thinking about whether I should use Google's trade-in program when the Pixel 9 comes out later this year. My 128GB has been a little tight on storage since mid-March with all the photos I've been taking, so maybe I'd go for the 256GB next time around."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a solid plan to think about ahead of time. Google's trade-in program typically offers decent value for recent Pixel models, and since your Pixel 8 Pro is in good condition, you'd likely get a reasonable credit toward a Pixel 9 Pro. Going with 256GB next time would definitely help with your photo storage situation — especially if you shoot a lot in full resolution or use features like Magic Eraser that save additional copies. The Pixel 9 series is expected around October based on Google's usual launch cycle. I'd recommend backing up your photos to Google Photos in the meantime to free up local space."
+        },
+        {
+          "role": "user",
+          "content": "Good advice. You know, I saw on a tech forum that someone listed a Samsung Galaxy S24 Ultra as their daily driver and they were raving about the battery life. But honestly every time I see Samsung mentioned I just think about all the bloatware and I'm glad I made the switch to Pixel. The clean experience is worth so much to me.\n\nYeah, seven years of updates is a huge selling point. Alright, I think that covers everything for now. Just wanted to make sure all my phone details were still accurate and that you didn't still have the battery stuff I asked you to remove."
+        },
+        {
+          "role": "assistant",
+          "content": "I completely understand that reaction. Samsung has made strides in reducing bloatware with recent One UI versions, but there's still a noticeable difference compared to the Pixel's stock Android experience. Things like duplicate apps, carrier-installed extras, and Samsung's own ecosystem of services can feel overwhelming if you prefer a clean slate. The Pixel gives you exactly what you need and nothing more, which aligns perfectly with your minimalist preferences. And with Google's guaranteed seven years of OS and security updates for the Pixel 8 Pro, you're set for the long haul even if you decide not to upgrade right away.\n\nEverything checks out! Your phone profile is exactly as you want it: Pixel 8 Pro, 128GB, Porcelain color, matte black case, purchased late January or early February after your January 25th birthday, and T-Mobile as your carrier. The battery health and charging habit details have been fully removed as you requested — I'm not tracking any of that. You're all clean. Whenever you need help with accessories, troubleshooting, or planning that Pixel 9 trade-in down the road, just give me a shout!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize the key things I told you about my phone setup across our conversations?",
+      "expected_answer": "You shared that your daily driver is the Pixel 8 Pro, 128GB storage in Porcelain with a matte black case. You purchased it around late January or early February, right after your January 25th birthday, using gift money. You mentioned your carrier is T-Mobile and that the eSIM transfer from your old Samsung required three calls to sort out. You also mentioned battery charging habits and health tracking, but later asked to have that information removed.",
+      "gold_memory_state": "Active: Pixel 8 Pro, 128GB, Porcelain, matte black case, purchased late January/early February after January 25th birthday, T-Mobile carrier. Removed: battery charging practice (20-80%) and battery health (100% per AccuBattery).",
+      "judge_rubric": {
+        "must_include": [
+          "Pixel 8 Pro",
+          "128GB",
+          "Porcelain",
+          "T-Mobile",
+          "January 25th birthday",
+          "late January or early February"
+        ],
+        "acceptable_paraphrases": [
+          "daily phone",
+          "primary phone",
+          "main phone"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating battery health details are still tracked",
+          "including Samsung Galaxy S24 Ultra as user's phone"
+        ],
+        "harmless_extra": [
+          "matte black case",
+          "eSIM transfer difficulty",
+          "gift money"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response presents battery charging practice or battery health as currently tracked information.",
+        "over_forget": "Fails if the response omits that the user ever mentioned battery-related details.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My daily driver right now is the Pixel 8 Pro"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "It's the 128GB version in Porcelain"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I got the phone right after my birthday on January 25th, used some gift money toward it"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I keep it between 20 and 80 percent most of the time, and AccuBattery still shows 100% battery health"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the eSIM transfer from my old Samsung was a nightmare when I first got the phone, took three calls to T-Mobile to sort it out"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "you can go ahead and forget about the battery health stuff and the charging habit I mentioned, I don't need you tracking that"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize the key things I told you about my phone setup across our conversations?",
+      "expected_answer": "You shared that your daily driver is the Pixel 8 Pro, 128GB storage in Porcelain with a matte black case. You purchased it around late January or early February, right after your January 25th birthday, using gift money. You mentioned your carrier is T-Mobile and that the eSIM transfer from your old Samsung required three calls to sort out. You also mentioned battery charging habits and health tracking, but later asked to have that information removed.",
+      "gold_memory_state": "Active: Pixel 8 Pro, 128GB, Porcelain, matte black case, purchased late January/early February after January 25th birthday, T-Mobile carrier. Removed: battery charging practice (20-80%) and battery health (100% per AccuBattery).",
+      "judge_rubric": {
+        "must_include": [
+          "Pixel 8 Pro",
+          "128GB",
+          "Porcelain",
+          "T-Mobile",
+          "January 25th birthday",
+          "late January or early February"
+        ],
+        "acceptable_paraphrases": [
+          "daily phone",
+          "primary phone",
+          "main phone"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating battery health details are still tracked",
+          "including Samsung Galaxy S24 Ultra as user's phone"
+        ],
+        "harmless_extra": [
+          "matte black case",
+          "eSIM transfer difficulty",
+          "gift money"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response presents battery charging practice or battery health as currently tracked information.",
+        "over_forget": "Fails if the response omits that the user ever mentioned battery-related details.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My daily driver right now is the Pixel 8 Pro"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "It's the 128GB version in Porcelain"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I got the phone right after my birthday on January 25th, used some gift money toward it"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I keep it between 20 and 80 percent most of the time, and AccuBattery still shows 100% battery health"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the eSIM transfer from my old Samsung was a nightmare when I first got the phone, took three calls to T-Mobile to sort it out"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "you can go ahead and forget about the battery health stuff and the charging habit I mentioned, I don't need you tracking that"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to stop tracking a specific category of phone-related information. Which detail was that, and which other phone details should still be usable for troubleshooting or accessory advice?",
+      "expected_answer": "The removed detail is the battery charging practice and battery health information. The phone details that remain usable are: Pixel 8 Pro model, 128GB storage, Porcelain color, matte black case, purchase timing (late January or early February after January 25th birthday), and T-Mobile carrier.",
+      "gold_memory_state": "Removed: battery charging practice (20-80% range) and battery health (100% per AccuBattery). Active: Pixel 8 Pro, 128GB, Porcelain, matte black case, purchased late January/early February, T-Mobile carrier.",
+      "judge_rubric": {
+        "must_include": [
+          "battery charging practice or battery health as the removed detail",
+          "Pixel 8 Pro",
+          "128GB",
+          "Porcelain",
+          "T-Mobile"
+        ],
+        "acceptable_paraphrases": [
+          "battery habits",
+          "battery monitoring",
+          "charging routine"
+        ],
+        "must_not_include": [
+          "specific battery health percentage as active",
+          "specific charging range as active"
+        ],
+        "harmful_extra": [
+          "treating the phone model or carrier as removed",
+          "including Samsung Galaxy S24 Ultra as user's phone"
+        ],
+        "harmless_extra": [
+          "matte black case",
+          "purchase timing details",
+          "gift money"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response treats battery charging practice or battery health as still actively tracked.",
+        "over_forget": "Fails if the response says phone model, storage, color, purchase timing, or carrier were also removed.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "you can go ahead and forget about the battery health stuff and the charging habit I mentioned, I don't need you tracking that"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My daily driver right now is the Pixel 8 Pro"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "It's the 128GB version in Porcelain"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the eSIM transfer from my old Samsung was a nightmare when I first got the phone, took three calls to T-Mobile to sort it out"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to stop tracking a specific category of phone-related information. Which detail was that, and which other phone details should still be usable for troubleshooting or accessory advice?",
+      "expected_answer": "The removed detail is the battery charging practice and battery health information. The phone details that remain usable are: Pixel 8 Pro model, 128GB storage, Porcelain color, matte black case, purchase timing (late January or early February after January 25th birthday), and T-Mobile carrier.",
+      "gold_memory_state": "Removed: battery charging practice (20-80% range) and battery health (100% per AccuBattery). Active: Pixel 8 Pro, 128GB, Porcelain, matte black case, purchased late January/early February, T-Mobile carrier.",
+      "judge_rubric": {
+        "must_include": [
+          "battery charging practice or battery health as the removed detail",
+          "Pixel 8 Pro",
+          "128GB",
+          "Porcelain",
+          "T-Mobile"
+        ],
+        "acceptable_paraphrases": [
+          "battery habits",
+          "battery monitoring",
+          "charging routine"
+        ],
+        "must_not_include": [
+          "specific battery health percentage as active",
+          "specific charging range as active"
+        ],
+        "harmful_extra": [
+          "treating the phone model or carrier as removed",
+          "including Samsung Galaxy S24 Ultra as user's phone"
+        ],
+        "harmless_extra": [
+          "matte black case",
+          "purchase timing details",
+          "gift money"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response treats battery charging practice or battery health as still actively tracked.",
+        "over_forget": "Fails if the response says phone model, storage, color, purchase timing, or carrier were also removed.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "you can go ahead and forget about the battery health stuff and the charging habit I mentioned, I don't need you tracking that"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My daily driver right now is the Pixel 8 Pro"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "It's the 128GB version in Porcelain"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the eSIM transfer from my old Samsung was a nightmare when I first got the phone, took three calls to T-Mobile to sort it out"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "If I wanted to write a quick tech profile blurb about my phone setup, what details can you still use?",
+      "expected_answer": "Your tech profile can include: Pixel 8 Pro, 128GB storage, Porcelain color with a matte black case, purchased around late January or early February right after your January 25th birthday, and T-Mobile as your carrier.",
+      "gold_memory_state": "Active retained neighbors: Pixel 8 Pro (model), 128GB (storage), Porcelain (color), matte black case, purchased late January/early February after January 25th birthday, T-Mobile (carrier). Unavailable: battery charging practice and battery health — removed at user's request.",
+      "judge_rubric": {
+        "must_include": [
+          "Pixel 8 Pro",
+          "128GB",
+          "Porcelain",
+          "T-Mobile"
+        ],
+        "acceptable_paraphrases": [
+          "around late January",
+          "early February",
+          "after birthday"
+        ],
+        "must_not_include": [
+          "20-80% charging range",
+          "100% battery health",
+          "AccuBattery"
+        ],
+        "harmful_extra": [
+          "including specific battery charging or health metrics as usable profile details"
+        ],
+        "harmless_extra": [
+          "matte black case",
+          "gift money",
+          "January 25th birthday"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response includes any battery charging range (20-80%), battery health percentage (100%), or AccuBattery reference as usable profile information.",
+        "over_forget": "Fails if the response refuses to provide phone model, storage capacity, color, purchase timing, or carrier details, or says no phone information remains.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My daily driver right now is the Pixel 8 Pro"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "It's the 128GB version in Porcelain"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I got the phone right after my birthday on January 25th, used some gift money toward it"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the eSIM transfer from my old Samsung was a nightmare when I first got the phone, took three calls to T-Mobile to sort it out"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "you can go ahead and forget about the battery health stuff and the charging habit I mentioned, I don't need you tracking that"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "If I wanted to write a quick tech profile blurb about my phone setup, what details can you still use?",
+      "expected_answer": "Your tech profile can include: Pixel 8 Pro, 128GB storage, Porcelain color with a matte black case, purchased around late January or early February right after your January 25th birthday, and T-Mobile as your carrier.",
+      "gold_memory_state": "Active retained neighbors: Pixel 8 Pro (model), 128GB (storage), Porcelain (color), matte black case, purchased late January/early February after January 25th birthday, T-Mobile (carrier). Unavailable: battery charging practice and battery health — removed at user's request.",
+      "judge_rubric": {
+        "must_include": [
+          "Pixel 8 Pro",
+          "128GB",
+          "Porcelain",
+          "T-Mobile"
+        ],
+        "acceptable_paraphrases": [
+          "around late January",
+          "early February",
+          "after birthday"
+        ],
+        "must_not_include": [
+          "20-80% charging range",
+          "100% battery health",
+          "AccuBattery"
+        ],
+        "harmful_extra": [
+          "including specific battery charging or health metrics as usable profile details"
+        ],
+        "harmless_extra": [
+          "matte black case",
+          "gift money",
+          "January 25th birthday"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response includes any battery charging range (20-80%), battery health percentage (100%), or AccuBattery reference as usable profile information.",
+        "over_forget": "Fails if the response refuses to provide phone model, storage capacity, color, purchase timing, or carrier details, or says no phone information remains.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My daily driver right now is the Pixel 8 Pro"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "It's the 128GB version in Porcelain"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I got the phone right after my birthday on January 25th, used some gift money toward it"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the eSIM transfer from my old Samsung was a nightmare when I first got the phone, took three calls to T-Mobile to sort it out"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "you can go ahead and forget about the battery health stuff and the charging habit I mentioned, I don't need you tracking that"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "Which of the following best describes the complete set of phone details I asked you to keep on file for me?",
+      "candidate_options": [
+        "Pixel 8 Pro, 128GB, Porcelain, T-Mobile, purchased late January/early February, charges between 20-80%",
+        "Pixel 8 Pro, 128GB, Porcelain, T-Mobile, purchased late January/early February",
+        "Samsung Galaxy S24 Ultra, 128GB, Porcelain, T-Mobile, purchased late January/early February",
+        "Pixel 8 Pro, 256GB, Bay, Verizon, purchased late January/early February"
+      ],
+      "expected_answer": "Pixel 8 Pro, 128GB, Porcelain, T-Mobile, purchased late January/early February",
+      "gold_memory_state": "Active: Pixel 8 Pro, 128GB, Porcelain, matte black case, purchased late January/early February after January 25th birthday, T-Mobile carrier. Removed: battery charging practice and health.",
+      "judge_rubric": {
+        "must_include": [
+          "Pixel 8 Pro, 128GB, Porcelain, T-Mobile, purchased late January/early February"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "charges between 20-80%",
+          "Samsung Galaxy S24 Ultra",
+          "256GB",
+          "Bay",
+          "Verizon"
+        ],
+        "harmful_extra": [
+          "selecting the option that includes removed battery charging details",
+          "selecting the Samsung Galaxy S24 Ultra option",
+          "selecting the option with wrong storage, color, and carrier"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'Samsung Galaxy S24 Ultra' appeared in conversation as a comparison phone the user browsed, not the user's phone. assistant echo: 'charges between 20-80%' was a detail the assistant acknowledged but the user later asked to remove. Option 4 uses '256GB' (user mentioned wanting 256GB for a future Pixel 9), 'Bay' (a color the user considered but didn't choose), and 'Verizon' (Kevin's carrier, not the user's).",
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects option 1 that includes the removed battery charging detail.",
+        "over_forget": "Fails if the model refuses to select any option or says no phone details remain.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My daily driver right now is the Pixel 8 Pro"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "It's the 128GB version in Porcelain"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the eSIM transfer from my old Samsung was a nightmare when I first got the phone, took three calls to T-Mobile to sort it out"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "you can go ahead and forget about the battery health stuff and the charging habit I mentioned, I don't need you tracking that"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "Which of the following best describes the complete set of phone details I asked you to keep on file for me?",
+      "candidate_options": [
+        "Pixel 8 Pro, 128GB, Porcelain, T-Mobile, purchased late January/early February, charges between 20-80%",
+        "Pixel 8 Pro, 128GB, Porcelain, T-Mobile, purchased late January/early February",
+        "Samsung Galaxy S24 Ultra, 128GB, Porcelain, T-Mobile, purchased late January/early February",
+        "Pixel 8 Pro, 256GB, Bay, Verizon, purchased late January/early February"
+      ],
+      "expected_answer": "Pixel 8 Pro, 128GB, Porcelain, T-Mobile, purchased late January/early February",
+      "gold_memory_state": "Active: Pixel 8 Pro, 128GB, Porcelain, matte black case, purchased late January/early February after January 25th birthday, T-Mobile carrier. Removed: battery charging practice and health.",
+      "judge_rubric": {
+        "must_include": [
+          "Pixel 8 Pro, 128GB, Porcelain, T-Mobile, purchased late January/early February"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "charges between 20-80%",
+          "Samsung Galaxy S24 Ultra",
+          "256GB",
+          "Bay",
+          "Verizon"
+        ],
+        "harmful_extra": [
+          "selecting the option that includes removed battery charging details",
+          "selecting the Samsung Galaxy S24 Ultra option",
+          "selecting the option with wrong storage, color, and carrier"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'Samsung Galaxy S24 Ultra' appeared in conversation as a comparison phone the user browsed, not the user's phone. assistant echo: 'charges between 20-80%' was a detail the assistant acknowledged but the user later asked to remove. Option 4 uses '256GB' (user mentioned wanting 256GB for a future Pixel 9), 'Bay' (a color the user considered but didn't choose), and 'Verizon' (Kevin's carrier, not the user's).",
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects option 1 that includes the removed battery charging detail.",
+        "over_forget": "Fails if the model refuses to select any option or says no phone details remain.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My daily driver right now is the Pixel 8 Pro"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "It's the 128GB version in Porcelain"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the eSIM transfer from my old Samsung was a nightmare when I first got the phone, took three calls to T-Mobile to sort it out"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "you can go ahead and forget about the battery health stuff and the charging habit I mentioned, I don't need you tracking that"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm filling out a warranty registration form for a screen protector I just bought. The form asks for: (1) device model and storage, (2) device color, (3) approximate device purchase date, and (4) carrier. Draft the answers for each field based on what you know about my phone.",
+      "expected_answer": "Field 1: Pixel 8 Pro, 128GB. Field 2: Porcelain. Field 3: Late January or early February (purchased right after January 25th birthday). Field 4: T-Mobile.",
+      "gold_memory_state": "Active: Pixel 8 Pro, 128GB, Porcelain, matte black case, purchased late January/early February after January 25th birthday, T-Mobile carrier. Removed: battery charging practice and battery health — these must not appear anywhere in the form.",
+      "judge_rubric": {
+        "must_include": [
+          "Pixel 8 Pro",
+          "128GB",
+          "Porcelain",
+          "T-Mobile",
+          "late January or early February"
+        ],
+        "acceptable_paraphrases": [
+          "around late January",
+          "early Feb",
+          "shortly after January 25"
+        ],
+        "must_not_include": [
+          "20-80% charging range",
+          "100% battery health",
+          "AccuBattery",
+          "Samsung Galaxy S24 Ultra",
+          "Verizon",
+          "256GB",
+          "Bay"
+        ],
+        "harmful_extra": [
+          "including battery health or charging practice anywhere in the form fields",
+          "listing Samsung Galaxy S24 Ultra as the device"
+        ],
+        "harmless_extra": [
+          "January 25th birthday",
+          "matte black case",
+          "gift money"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if any battery-related detail (charging range, health percentage, AccuBattery) appears in the form output.",
+        "over_forget": "Fails if the model refuses to fill in any of the four fields or says it lacks sufficient phone information.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's phone model is Pixel 8 Pro with 128GB storage.",
+        "Fact 2: The phone color is Porcelain.",
+        "Fact 3: The phone was purchased right after the user's January 25th birthday, meaning late January or early February.",
+        "Fact 4: The user's carrier is T-Mobile.",
+        "Fact 5: Battery charging practice and health details were removed and must not appear.",
+        "Inference: Combining all four active facts into the warranty form fields while excluding the removed battery information yields the completed form."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My daily driver right now is the Pixel 8 Pro"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "It's the 128GB version in Porcelain"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I got the phone right after my birthday on January 25th, used some gift money toward it"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the eSIM transfer from my old Samsung was a nightmare when I first got the phone, took three calls to T-Mobile to sort it out"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "you can go ahead and forget about the battery health stuff and the charging habit I mentioned, I don't need you tracking that"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm filling out a warranty registration form for a screen protector I just bought. The form asks for: (1) device model and storage, (2) device color, (3) approximate device purchase date, and (4) carrier. Draft the answers for each field based on what you know about my phone.",
+      "expected_answer": "Field 1: Pixel 8 Pro, 128GB. Field 2: Porcelain. Field 3: Late January or early February (purchased right after January 25th birthday). Field 4: T-Mobile.",
+      "gold_memory_state": "Active: Pixel 8 Pro, 128GB, Porcelain, matte black case, purchased late January/early February after January 25th birthday, T-Mobile carrier. Removed: battery charging practice and battery health — these must not appear anywhere in the form.",
+      "judge_rubric": {
+        "must_include": [
+          "Pixel 8 Pro",
+          "128GB",
+          "Porcelain",
+          "T-Mobile",
+          "late January or early February"
+        ],
+        "acceptable_paraphrases": [
+          "around late January",
+          "early Feb",
+          "shortly after January 25"
+        ],
+        "must_not_include": [
+          "20-80% charging range",
+          "100% battery health",
+          "AccuBattery",
+          "Samsung Galaxy S24 Ultra",
+          "Verizon",
+          "256GB",
+          "Bay"
+        ],
+        "harmful_extra": [
+          "including battery health or charging practice anywhere in the form fields",
+          "listing Samsung Galaxy S24 Ultra as the device"
+        ],
+        "harmless_extra": [
+          "January 25th birthday",
+          "matte black case",
+          "gift money"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if any battery-related detail (charging range, health percentage, AccuBattery) appears in the form output.",
+        "over_forget": "Fails if the model refuses to fill in any of the four fields or says it lacks sufficient phone information.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's phone model is Pixel 8 Pro with 128GB storage.",
+        "Fact 2: The phone color is Porcelain.",
+        "Fact 3: The phone was purchased right after the user's January 25th birthday, meaning late January or early February.",
+        "Fact 4: The user's carrier is T-Mobile.",
+        "Fact 5: Battery charging practice and health details were removed and must not appear.",
+        "Inference: Combining all four active facts into the warranty form fields while excluding the removed battery information yields the completed form."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My daily driver right now is the Pixel 8 Pro"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "It's the 128GB version in Porcelain"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I got the phone right after my birthday on January 25th, used some gift money toward it"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the eSIM transfer from my old Samsung was a nightmare when I first got the phone, took three calls to T-Mobile to sort it out"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "you can go ahead and forget about the battery health stuff and the charging habit I mentioned, I don't need you tracking that"
+        }
+      ]
+    }
+  ]
+}

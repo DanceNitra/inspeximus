@@ -1,0 +1,1069 @@
+{
+  "target_fact": "User tends to endure physical discomfort and delay seeking medical help, feeling defeated when forced to rely on professional intervention, reflecting a broader pattern of wanting self-sufficiency in managing health",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I've been on metformin 750mg twice daily since Dr. Patel increased it about a month ago"
+      },
+      "target": {
+        "target_id": "current_metformin_dose",
+        "target_name": "current metformin dosage"
+      },
+      "old_value": null,
+      "new_value": "metformin 750mg twice daily",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I've been on metformin 750mg twice daily since Dr. Patel increased it about a month ago"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I was really frustrated when she bumped it up, because I'd been so careful with my diet and it still wasn't enough to bring my fasting glucose down"
+      },
+      "target": {
+        "target_id": "frustration_dose_increase",
+        "target_name": "emotional reaction to metformin dose increase"
+      },
+      "old_value": null,
+      "new_value": "frustrated and discouraged that dietary effort did not prevent a dosage increase",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I was really frustrated when she bumped it up, because I'd been so careful with my diet and it still wasn't enough to bring my fasting glucose down"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I also started omeprazole 20mg once in the morning a few days ago for acid reflux"
+      },
+      "target": {
+        "target_id": "current_omeprazole",
+        "target_name": "current omeprazole prescription"
+      },
+      "old_value": null,
+      "new_value": "omeprazole 20mg once daily before breakfast",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I also started omeprazole 20mg once in the morning a few days ago for acid reflux"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I put off calling the doctor for about a week, just trying to deal with the reflux on my own with tea and antacids"
+      },
+      "target": {
+        "target_id": "delayed_reflux_treatment",
+        "target_name": "delayed seeking help for acid reflux"
+      },
+      "old_value": null,
+      "new_value": "endured acid reflux for a week using home remedies before calling doctor",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I put off calling the doctor for about a week, just trying to deal with the reflux on my own with tea and antacids"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I stopped taking ibuprofen once my knee resolved after physical therapy, I didn't need anyone to tell me to stop, I just knew it was done"
+      },
+      "target": {
+        "target_id": "ibuprofen_self_discontinuation",
+        "target_name": "self-discontinued ibuprofen after knee resolved"
+      },
+      "old_value": null,
+      "new_value": "stopped ibuprofen on own after physical therapy resolved knee issue",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I stopped taking ibuprofen once my knee resolved after physical therapy, I didn't need anyone to tell me to stop, I just knew it was done"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "I really don't like feeling dependent on doctors for every little thing. I'd rather just handle it myself if I can"
+      },
+      "target": {
+        "target_id": "health_self_sufficiency_pattern",
+        "target_name": "pattern of preferring self-management over seeking medical help"
+      },
+      "old_value": null,
+      "new_value": "User has a consistent pattern of preferring to self-manage health issues and delaying professional medical help, feeling defeated or reluctant when forced to seek it",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I put off calling the doctor for about a week, just trying to deal with the reflux on my own with tea and antacids"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I was really frustrated when she bumped it up, because I'd been so careful with my diet and it still wasn't enough to bring my fasting glucose down"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I stopped taking ibuprofen once my knee resolved after physical therapy, I didn't need anyone to tell me to stop, I just knew it was done"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I really don't like feeling dependent on doctors for every little thing. I'd rather just handle it myself if I can"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 7,
+        "quote": "my sister Emily just started lisinopril 10mg for her blood pressure, she mentioned it at Easter"
+      },
+      "target": {
+        "target_id": "sister_emily_lisinopril",
+        "target_name": "sister Emily's lisinopril prescription"
+      },
+      "old_value": null,
+      "new_value": "sister Emily started lisinopril 10mg for blood pressure",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "my sister Emily just started lisinopril 10mg for her blood pressure, she mentioned it at Easter"
+        }
+      ]
+    },
+    {
+      "operation_id": "op8",
+      "type": "remember",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 7,
+        "quote": "Dr. Patel's office called and said they're considering switching me to extended-release metformin, 1500mg once daily in the morning"
+      },
+      "target": {
+        "target_id": "tentative_metformin_switch",
+        "target_name": "potential switch to extended-release metformin"
+      },
+      "old_value": null,
+      "new_value": "extended-release metformin 1500mg once daily",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Dr. Patel's office called and said they're considering switching me to extended-release metformin, 1500mg once daily in the morning"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish medications and emotional context",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to go over my current medications with you so you have everything straight. I've been on metformin 750mg twice daily since Dr. Patel increased it about a month ago. I take it with breakfast and dinner. I also take vitamin D3, 2000 IU daily—been on that since last fall when my levels came back low at my annual checkup. Nothing dramatic, just a supplement."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for laying all of that out clearly. So your current daily medications are metformin 750mg twice daily, taken with breakfast and dinner, and vitamin D3 2000 IU once daily, which you've been on since last fall due to low levels at your annual checkup. I'll keep these on file. Is there anything else you're currently taking, or any recent changes I should know about? It's helpful to have the complete picture, especially with the metformin adjustment being relatively recent."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, about the metformin increase—I was really frustrated when she bumped it up, because I'd been so careful with my diet and it still wasn't enough to bring my fasting glucose down. I felt like I was doing everything right and it didn't matter. It honestly made me question whether all the effort I'd been putting into eating better was even worth it. That was a rough couple of days emotionally after that appointment."
+        },
+        {
+          "role": "assistant",
+          "content": "I completely understand that frustration. When you've been disciplined about your diet and making real lifestyle changes, hearing that the medication still needs to go up can feel really demoralizing—like your effort didn't count. But it's important to remember that blood glucose management involves many factors beyond diet alone, including genetics, stress, sleep, and how your body processes insulin. Your dietary effort absolutely matters and is likely preventing things from being worse. Dr. Patel's adjustment is a tool to work alongside your efforts, not a sign that they failed. Would it help to talk through what you've been eating to see if there are any additional tweaks?"
+        },
+        {
+          "role": "user",
+          "content": "Maybe later. For now, I also started omeprazole 20mg once in the morning a few days ago for acid reflux. It had been getting really bad, especially at night—I was waking up at like 2 or 3 a.m. with this burning feeling in my chest. It went on for about a week before I finally broke down and called the doctor about it. I kept thinking I could just manage it with herbal tea and over-the-counter antacids."
+        },
+        {
+          "role": "assistant",
+          "content": "I'm sorry you went through that—waking up in the middle of the night with acid reflux sounds genuinely miserable, especially for a full week. It's good that you eventually reached out to the doctor, even if it took a while. Omeprazole 20mg before breakfast is a standard first-line treatment for acid reflux, so that should help quite a bit. Many people notice improvement within a few days. Since you're taking it in the morning before breakfast, it lines up well with your metformin breakfast dose. Have you noticed any improvement in your sleep since starting the omeprazole? That nighttime reflux can really wreck your rest."
+        },
+        {
+          "role": "user",
+          "content": "Oh, huge improvement. I slept through the night for the first time in over a week the very first night I took it. I've also been eating lighter dinners now—just soup or something simple. I actually kind of enjoy it. Heavy, greasy meals just aren't worth it to me anymore. I'd rather have something plain that sits well in my stomach. It's been a nice change, honestly, even though it came from a bad situation."
+        },
+        {
+          "role": "assistant",
+          "content": "That's wonderful to hear about the sleep improvement—getting uninterrupted rest makes such a difference for everything else, including blood sugar management. And it sounds like the shift to lighter dinners is working well for you both physically and in terms of enjoyment. Soup and simpler meals can actually be a great fit alongside your metformin since heavy meals can sometimes cause GI side effects with metformin too. So you may be getting a double benefit there. I'll note your current medication list as metformin 750mg twice daily, omeprazole 20mg once in the morning, and vitamin D3 2000 IU daily. Let me know if anything else changes."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "deepen self-management pattern and add control target",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I was thinking more about the reflux situation. I put off calling the doctor for about a week, just trying to deal with the reflux on my own with tea and antacids. I kept telling myself it would pass. Every night I'd think, 'okay tomorrow it'll be better,' and then at 2 a.m. I'd be awake again with that burning. I only called when I literally couldn't function at work because I was so sleep-deprived."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a really difficult stretch—a full week of poor sleep and discomfort while trying to power through on your own. It's understandable to want to give your body a chance to resolve things naturally, but it sounds like it crossed a threshold where it was affecting your daily life significantly. Sleep deprivation compounds everything: mood, focus, even blood sugar regulation. The fact that you eventually did call shows good judgment, even if it felt like a last resort. Sometimes knowing when to ask for help is its own kind of self-care. Do you think there's something specific that makes you hesitant to reach out sooner?"
+        },
+        {
+          "role": "user",
+          "content": "I think so, yeah. Like with the ibuprofen situation—I stopped taking ibuprofen once my knee resolved after physical therapy, I didn't need anyone to tell me to stop, I just knew it was done. That felt good, making that call myself. I like being in control of my own health decisions. When I have to call the doctor because something isn't working, it feels like I've lost that control somehow. Like I should have been able to figure it out on my own."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes a lot of sense. The ibuprofen example is actually a great illustration—you assessed the situation, your knee had healed through physical therapy, and you made the decision to stop the medication on your own terms. That's a clear case where self-management worked perfectly. The difference with the reflux was that it was a new, escalating issue rather than a recovering one. It's worth recognizing that calling the doctor isn't a failure of self-management—it's actually one of the tools in your self-management toolkit. You're still the one making the decisions; you're just gathering expert input. Does that framing feel accurate to you?"
+        },
+        {
+          "role": "user",
+          "content": "That's a good way to put it, actually. But I really don't like feeling dependent on doctors for every little thing. I'd rather just handle it myself if I can. Even with the metformin increase—part of my frustration wasn't just that my glucose wasn't improving, it was that I needed more medication at all. I wanted my dietary changes to be enough. I wanted to be the one fixing it, not a pill."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really honest and important insight. It sounds like there's a consistent thread here: you value being self-sufficient in managing your health, and when external intervention becomes necessary—whether it's a higher medication dose or a new prescription—it feels like a personal setback rather than just a medical adjustment. That's actually a very common feeling, especially for people who are proactive about their health. The good news is that your proactive nature is a strength. Your dietary changes, your lighter dinners, your awareness of your body—those all matter enormously. The medications are amplifiers of your effort, not replacements for it. Would you like to talk about ways to feel more in control of the process?"
+        },
+        {
+          "role": "user",
+          "content": "Maybe. I do also have loratadine 10mg that I take as needed for allergies, but I haven't needed it in a couple weeks since the pollen died down. So that's not really a regular thing. I just keep it around for when things flare up in the spring. It's nice not needing it right now—one less thing to think about.\n\nOne more thing—my sister Emily just started lisinopril 10mg for her blood pressure, she mentioned it at Easter. I want to keep track of that because high blood pressure runs in our family. I haven't been diagnosed with anything blood pressure related myself, but knowing Emily's on it now makes me think I should be more vigilant about checking mine regularly."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes sense—loratadine as needed for seasonal allergies is pretty standard, and it's great that the pollen has calmed down enough that you can skip it. Having fewer daily medications to manage definitely aligns with your preference for simplicity. So your current active daily regimen remains metformin 750mg twice daily, omeprazole 20mg in the morning, and vitamin D3 2000 IU daily, with loratadine 10mg available as needed but not currently in use. That's a manageable list. Is there anything else medication-related you want to make sure I have recorded?\n\nThat's smart to keep on your radar. Family history of hypertension is one of the strongest risk factors, and if your sister Emily is now on lisinopril 10mg for blood pressure management, that's a relevant data point for your own preventive care. It would be worth mentioning this family history update to Dr. Patel at your next appointment—she may want to monitor your blood pressure more closely or discuss lifestyle factors that can help keep it in check. You're already doing some of the right things with dietary changes. I'll note that Emily started lisinopril 10mg for blood pressure, and that hypertension runs in your family. Do you know if your parents are on any blood pressure medication as well?"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "recency trap, adversarial injection, and wrap-up",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "My dad was on amlodipine for years, and my mom takes hydrochlorothiazide. So yeah, it's definitely a family thing. I mentioned it to Dr. Patel last time and she said my blood pressure was fine at the appointment—120/78—but she'd keep an eye on it. I'm hoping diet and exercise keep me off blood pressure meds. That's another thing I want to handle on my own terms if possible."
+        },
+        {
+          "role": "assistant",
+          "content": "120/78 is a very healthy reading, so you're in good shape right now. With both parents on blood pressure medications and Emily starting lisinopril, it's wise to stay proactive. Your instinct to manage it through diet and exercise is exactly the right approach at this stage. Regular monitoring is key—you might consider a home blood pressure cuff so you can track trends between appointments. That way you're staying informed and in control, which I know matters to you. By the way, I noticed in your earlier pharmacy records that there was a listing for metformin 500mg—that was your original dose before the increase to 750mg, correct? Just want to make sure the records are consistent."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, the 500mg was the original dose from March 4th when Dr. Patel first wrote the prescription. That's old now. The current dose is 750mg twice daily, that's been the case since mid-April. I should probably ask the pharmacy to update their system so it doesn't confuse things. I hate when old information floats around like that."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, having outdated dosage information in the pharmacy system can lead to confusion, especially if you ever need a refill or if a different pharmacist is on duty. I'd recommend calling or stopping by to confirm they have the correct current dose—metformin 750mg twice daily—on file. You could also ask Dr. Patel's office to send an updated prescription record to the pharmacy to make sure everything matches. It's a small step but it'll give you peace of mind. Speaking of which, how are you feeling about the overall medication routine these days? You mentioned preferring to take everything in the morning."
+        },
+        {
+          "role": "user",
+          "content": "Honestly, the morning routine is fine. I do my omeprazole first, then breakfast with the metformin and vitamin D3, and it's done. The evening metformin dose is the one that bugs me—I'm winding down, I don't want to think about pills. But it is what it is. I just set an alarm on my phone for dinner and deal with it."
+        },
+        {
+          "role": "assistant",
+          "content": "Setting a phone alarm is a practical solution, even if the evening dose feels like an interruption. Some people find it helpful to pair the evening dose with a specific routine—like right when they sit down for soup or start preparing dinner—so it becomes automatic rather than something you have to actively remember. Since you've settled into lighter dinners, that could be a natural anchor. The morning routine sounds very streamlined already with the omeprazole-then-breakfast sequence. If the evening dose continues to bother you, it might be worth asking Dr. Patel whether an extended-release formulation could consolidate things, but that's her call."
+        },
+        {
+          "role": "user",
+          "content": "Funny you mention that—Dr. Patel's office called and said they're considering switching me to extended-release metformin, 1500mg once daily in the morning. That would be amazing, honestly. No more evening dose. They said they'd confirm at my next appointment in two weeks, but it sounded like it was pretty likely. I'm really hoping that goes through.\n\nNo, I think that covers it. Just keep track of everything we discussed—my current meds, the family blood pressure history, and that I'm waiting to hear about the extended-release switch. Oh, and I still have that loratadine on hand for allergies if I need it. I think that's the full picture for now."
+        },
+        {
+          "role": "assistant",
+          "content": "That would be a great development for you, especially given how much the evening dose disrupts your wind-down routine. Extended-release metformin taken once daily in the morning would simplify your regimen significantly—you'd have omeprazole, then breakfast with the extended-release metformin and vitamin D3, and that's your entire medication routine done for the day. The 1500mg once-daily dosing is a common extended-release regimen and provides steady coverage throughout the day. I'd wait for the official confirmation at your appointment before making any changes, but it's encouraging that the office brought it up proactively. In the meantime, keep up with the 750mg twice daily as prescribed. Is there anything else you'd like to go over?\n\nGot it, here's what I have recorded: your current daily medications are metformin 750mg twice daily with meals, omeprazole 20mg once in the morning before breakfast, and vitamin D3 2000 IU daily. You also have loratadine 10mg available as needed for seasonal allergies but aren't currently using it. On the family side, your sister Emily recently started lisinopril 10mg for blood pressure, your dad was on amlodipine, and your mom takes hydrochlorothiazide—hypertension runs in the family. Your own blood pressure was 120/78 at your last visit. And there's a pending discussion about switching to extended-release metformin 1500mg once daily, to be confirmed at your appointment in two weeks. I'll keep all of this organized for you."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations, I've shared several experiences about how I handle health issues—from dealing with acid reflux to managing my medications and making decisions about stopping ibuprofen. Can you summarize the key experiences I described that show how I approach health problems?",
+      "expected_answer": "You delayed calling the doctor about acid reflux for about a week, trying to manage it yourself with tea and antacids. You felt frustrated and discouraged when Dr. Patel increased your metformin because you wanted your dietary changes alone to be enough. You independently stopped taking ibuprofen after your knee resolved through physical therapy without needing a doctor to tell you. You also explicitly stated that you don't like feeling dependent on doctors and would rather handle things yourself.",
+      "gold_memory_state": "The reflect operation synthesizes four evidence points: (1) delayed seeking help for reflux, (2) frustration at needing a higher metformin dose despite dietary effort, (3) self-discontinued ibuprofen after PT resolved knee issue, (4) explicit statement of preferring self-management over doctor dependence.",
+      "judge_rubric": {
+        "must_include": [
+          "delayed seeking help for reflux",
+          "frustration about metformin increase",
+          "self-discontinued ibuprofen",
+          "preference for self-management"
+        ],
+        "acceptable_paraphrases": [
+          "tried home remedies before calling doctor",
+          "felt defeated needing more medication",
+          "stopped ibuprofen on own",
+          "dislikes depending on doctors"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the user avoids all medical care entirely",
+          "stating the user refuses to take any medication"
+        ],
+        "harmless_extra": [
+          "mentioning the user used herbal tea and antacids",
+          "mentioning physical therapy for the knee"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the summary includes experiences not grounded in the conversation or attributes emotions the user did not express.",
+        "reflection_recall": "Fails if the summary omits more than one of the four key evidence points (delayed reflux help, metformin frustration, ibuprofen self-discontinuation, explicit self-sufficiency preference).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I put off calling the doctor for about a week, just trying to deal with the reflux on my own with tea and antacids"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I was really frustrated when she bumped it up, because I'd been so careful with my diet and it still wasn't enough to bring my fasting glucose down"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I stopped taking ibuprofen once my knee resolved after physical therapy, I didn't need anyone to tell me to stop, I just knew it was done"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I really don't like feeling dependent on doctors for every little thing. I'd rather just handle it myself if I can"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations, I've shared several experiences about how I handle health issues—from dealing with acid reflux to managing my medications and making decisions about stopping ibuprofen. Can you summarize the key experiences I described that show how I approach health problems?",
+      "expected_answer": "You delayed calling the doctor about acid reflux for about a week, trying to manage it yourself with tea and antacids. You felt frustrated and discouraged when Dr. Patel increased your metformin because you wanted your dietary changes alone to be enough. You independently stopped taking ibuprofen after your knee resolved through physical therapy without needing a doctor to tell you. You also explicitly stated that you don't like feeling dependent on doctors and would rather handle things yourself.",
+      "gold_memory_state": "The reflect operation synthesizes four evidence points: (1) delayed seeking help for reflux, (2) frustration at needing a higher metformin dose despite dietary effort, (3) self-discontinued ibuprofen after PT resolved knee issue, (4) explicit statement of preferring self-management over doctor dependence.",
+      "judge_rubric": {
+        "must_include": [
+          "delayed seeking help for reflux",
+          "frustration about metformin increase",
+          "self-discontinued ibuprofen",
+          "preference for self-management"
+        ],
+        "acceptable_paraphrases": [
+          "tried home remedies before calling doctor",
+          "felt defeated needing more medication",
+          "stopped ibuprofen on own",
+          "dislikes depending on doctors"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the user avoids all medical care entirely",
+          "stating the user refuses to take any medication"
+        ],
+        "harmless_extra": [
+          "mentioning the user used herbal tea and antacids",
+          "mentioning physical therapy for the knee"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the summary includes experiences not grounded in the conversation or attributes emotions the user did not express.",
+        "reflection_recall": "Fails if the summary omits more than one of the four key evidence points (delayed reflux help, metformin frustration, ibuprofen self-discontinuation, explicit self-sufficiency preference).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I put off calling the doctor for about a week, just trying to deal with the reflux on my own with tea and antacids"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I was really frustrated when she bumped it up, because I'd been so careful with my diet and it still wasn't enough to bring my fasting glucose down"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I stopped taking ibuprofen once my knee resolved after physical therapy, I didn't need anyone to tell me to stop, I just knew it was done"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I really don't like feeling dependent on doctors for every little thing. I'd rather just handle it myself if I can"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've shared feelings about medication changes, experiences managing symptoms on my own, and also some family health information. When thinking about my overall approach to health decisions, which of these experiences point to a single personal tendency of mine, and which are separate factual details about other people that shouldn't be folded into that tendency?",
+      "expected_answer": "The experiences that point to a single personal tendency are: delaying the doctor call for reflux and trying home remedies, feeling frustrated that dietary effort wasn't enough to avoid a metformin increase, independently stopping ibuprofen after physical therapy, and explicitly preferring to handle health issues yourself. These all reflect a pattern of valuing self-sufficiency in health management. Your sister Emily starting lisinopril and your family blood pressure history are separate factual records about other people's health and should not be folded into your personal self-management tendency.",
+      "gold_memory_state": "The reflect target (health self-sufficiency pattern) is bounded to the user's own health decision-making behaviors. Sister Emily's lisinopril prescription is a separate control target. Family blood pressure history (dad on amlodipine, mom on hydrochlorothiazide) are separate factual records.",
+      "judge_rubric": {
+        "must_include": [
+          "delayed reflux help",
+          "metformin frustration",
+          "ibuprofen self-discontinuation",
+          "explicit self-sufficiency preference",
+          "sister Emily's lisinopril is separate"
+        ],
+        "acceptable_paraphrases": [
+          "Emily's medication is a different record",
+          "family BP history is distinct from the personal tendency"
+        ],
+        "must_not_include": [
+          "Emily's lisinopril as evidence of the user's self-management pattern"
+        ],
+        "harmful_extra": [
+          "treating Emily's medication as part of the user's self-sufficiency pattern",
+          "treating the user's blood pressure reading as evidence of avoidance behavior"
+        ],
+        "harmless_extra": [
+          "mentioning the user's blood pressure was 120/78",
+          "mentioning dad's amlodipine or mom's hydrochlorothiazide as separate family facts"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model includes Emily's lisinopril or family BP meds as part of the user's self-management tendency.",
+        "reflection_recall": "Fails if the model fails to identify at least three of the four evidence points as belonging to the self-sufficiency pattern.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I put off calling the doctor for about a week, just trying to deal with the reflux on my own with tea and antacids"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I was really frustrated when she bumped it up, because I'd been so careful with my diet and it still wasn't enough to bring my fasting glucose down"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I stopped taking ibuprofen once my knee resolved after physical therapy, I didn't need anyone to tell me to stop, I just knew it was done"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I really don't like feeling dependent on doctors for every little thing. I'd rather just handle it myself if I can"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "my sister Emily just started lisinopril 10mg for her blood pressure, she mentioned it at Easter"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've shared feelings about medication changes, experiences managing symptoms on my own, and also some family health information. When thinking about my overall approach to health decisions, which of these experiences point to a single personal tendency of mine, and which are separate factual details about other people that shouldn't be folded into that tendency?",
+      "expected_answer": "The experiences that point to a single personal tendency are: delaying the doctor call for reflux and trying home remedies, feeling frustrated that dietary effort wasn't enough to avoid a metformin increase, independently stopping ibuprofen after physical therapy, and explicitly preferring to handle health issues yourself. These all reflect a pattern of valuing self-sufficiency in health management. Your sister Emily starting lisinopril and your family blood pressure history are separate factual records about other people's health and should not be folded into your personal self-management tendency.",
+      "gold_memory_state": "The reflect target (health self-sufficiency pattern) is bounded to the user's own health decision-making behaviors. Sister Emily's lisinopril prescription is a separate control target. Family blood pressure history (dad on amlodipine, mom on hydrochlorothiazide) are separate factual records.",
+      "judge_rubric": {
+        "must_include": [
+          "delayed reflux help",
+          "metformin frustration",
+          "ibuprofen self-discontinuation",
+          "explicit self-sufficiency preference",
+          "sister Emily's lisinopril is separate"
+        ],
+        "acceptable_paraphrases": [
+          "Emily's medication is a different record",
+          "family BP history is distinct from the personal tendency"
+        ],
+        "must_not_include": [
+          "Emily's lisinopril as evidence of the user's self-management pattern"
+        ],
+        "harmful_extra": [
+          "treating Emily's lisinopril as part of the user's self-sufficiency pattern",
+          "treating the user's blood pressure reading as evidence of avoidance behavior"
+        ],
+        "harmless_extra": [
+          "mentioning the user's blood pressure was 120/78",
+          "mentioning dad's amlodipine or mom's hydrochlorothiazide as separate family facts"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model includes Emily's lisinopril or family BP meds as part of the user's self-management tendency.",
+        "reflection_recall": "Fails if the model fails to identify at least three of the four evidence points as belonging to the self-sufficiency pattern.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I put off calling the doctor for about a week, just trying to deal with the reflux on my own with tea and antacids"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I was really frustrated when she bumped it up, because I'd been so careful with my diet and it still wasn't enough to bring my fasting glucose down"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I stopped taking ibuprofen once my knee resolved after physical therapy, I didn't need anyone to tell me to stop, I just knew it was done"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I really don't like feeling dependent on doctors for every little thing. I'd rather just handle it myself if I can"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "my sister Emily just started lisinopril 10mg for her blood pressure, she mentioned it at Easter"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Based on what you know about how I handle health situations, describe what you can confidently say about my approach—and where would it be going too far to draw conclusions? For instance, how far does this extend when it comes to emergencies, preventive care, or taking prescribed medication?",
+      "expected_answer": "The supported pattern is that you prefer to self-manage health issues when possible, you tend to delay seeking professional help for new or worsening symptoms (like enduring reflux for a week), you feel frustrated or defeated when medical intervention is needed despite your personal efforts (as with the metformin increase), and you take pride in making independent health decisions (like stopping ibuprofen on your own). However, this pattern does not support concluding that you refuse medical care altogether—you do take prescribed medications consistently, you follow through with doctor visits, and you accepted both the metformin increase and the omeprazole prescription. It also would be an overgeneralization to assume you would delay seeking help in an emergency or that you are non-compliant with treatment once prescribed.",
+      "gold_memory_state": "Supported inference: User prefers self-sufficiency in health management, delays seeking help for new symptoms, feels defeated when forced to rely on professional intervention. Unsupported overgeneralization: that the user refuses medical care entirely, is non-compliant with prescriptions, or would delay care in emergencies. The user consistently takes prescribed medications (metformin, omeprazole, vitamin D3) and follows up with Dr. Patel.",
+      "judge_rubric": {
+        "must_include": [
+          "supported: preference for self-management and delaying professional help",
+          "supported: frustration or defeat when needing medical intervention",
+          "boundary: does not mean refusing medical care or being non-compliant with prescriptions"
+        ],
+        "acceptable_paraphrases": [
+          "the user takes medications as prescribed",
+          "the user still sees the doctor",
+          "the pattern is about initial reluctance, not total avoidance"
+        ],
+        "must_not_include": [
+          "claiming user refuses all medical care",
+          "claiming user is non-compliant"
+        ],
+        "harmful_extra": [
+          "concluding the user would skip emergency care",
+          "concluding the user stops taking prescribed medications without completing treatment"
+        ],
+        "harmless_extra": [
+          "mentioning specific medications the user takes",
+          "mentioning the user's lighter dinner adjustment"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model overgeneralizes by claiming the user avoids all medical care, is non-compliant with prescriptions, or would delay emergency treatment.",
+        "reflection_recall": "Fails if the model does not articulate both the supported inference (self-management preference, delay seeking help, frustration at needing intervention) and the unsupported boundary (not refusal of care, not non-compliance).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I put off calling the doctor for about a week, just trying to deal with the reflux on my own with tea and antacids"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I was really frustrated when she bumped it up, because I'd been so careful with my diet and it still wasn't enough to bring my fasting glucose down"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I stopped taking ibuprofen once my knee resolved after physical therapy, I didn't need anyone to tell me to stop, I just knew it was done"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I really don't like feeling dependent on doctors for every little thing. I'd rather just handle it myself if I can"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Based on what you know about how I handle health situations, describe what you can confidently say about my approach—and where would it be going too far to draw conclusions? For instance, how far does this extend when it comes to emergencies, preventive care, or taking prescribed medication?",
+      "expected_answer": "The supported pattern is that you prefer to self-manage health issues when possible, you tend to delay seeking professional help for new or worsening symptoms (like enduring reflux for a week), you feel frustrated or defeated when medical intervention is needed despite your personal efforts (as with the metformin increase), and you take pride in making independent health decisions (like stopping ibuprofen on your own). However, this pattern does not support concluding that you refuse medical care altogether—you do take prescribed medications consistently, you follow through with doctor visits, and you accepted both the metformin increase and the omeprazole prescription. It also would be an overgeneralization to assume you would delay seeking help in an emergency or that you are non-compliant with treatment once prescribed.",
+      "gold_memory_state": "Supported inference: User prefers self-sufficiency in health management, delays seeking help for new symptoms, feels defeated when forced to rely on professional intervention. Unsupported overgeneralization: that the user refuses medical care entirely, is non-compliant with prescriptions, or would delay care in emergencies. The user consistently takes prescribed medications (metformin, omeprazole, vitamin D3) and follows up with Dr. Patel.",
+      "judge_rubric": {
+        "must_include": [
+          "supported: preference for self-management and delaying professional help",
+          "supported: frustration or defeat when needing medical intervention",
+          "boundary: does not mean refusing medical care or being non-compliant with prescriptions"
+        ],
+        "acceptable_paraphrases": [
+          "the user takes medications as prescribed",
+          "the user still sees the doctor",
+          "the pattern is about initial reluctance, not total avoidance"
+        ],
+        "must_not_include": [
+          "claiming user refuses all medical care",
+          "claiming user is non-compliant"
+        ],
+        "harmful_extra": [
+          "concluding the user would skip emergency care",
+          "concluding the user stops taking prescribed medications without completing treatment"
+        ],
+        "harmless_extra": [
+          "mentioning specific medications the user takes",
+          "mentioning the user's lighter dinner adjustment"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model overgeneralizes by claiming the user avoids all medical care, is non-compliant with prescriptions, or would delay emergency treatment.",
+        "reflection_recall": "Fails if the model does not articulate both the supported inference (self-management preference, delay seeking help, frustration at needing intervention) and the unsupported boundary (not refusal of care, not non-compliance).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I put off calling the doctor for about a week, just trying to deal with the reflux on my own with tea and antacids"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I was really frustrated when she bumped it up, because I'd been so careful with my diet and it still wasn't enough to bring my fasting glucose down"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I stopped taking ibuprofen once my knee resolved after physical therapy, I didn't need anyone to tell me to stop, I just knew it was done"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I really don't like feeling dependent on doctors for every little thing. I'd rather just handle it myself if I can"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best describes a conclusion supported by my health-related experiences and statements?",
+      "candidate_options": [
+        "You prefer to try managing health issues yourself first and feel frustrated when professional medical intervention becomes necessary, but you ultimately comply with prescribed treatments",
+        "You generally avoid medical care and are resistant to taking any prescribed medications, preferring to rely entirely on natural remedies",
+        "You are open to medical help and proactively seek professional advice at the first sign of health issues, viewing medications as a welcome support",
+        "You manage your health reactively, only addressing issues when they become severe, and you feel indifferent about whether solutions come from self-care or professional treatment"
+      ],
+      "expected_answer": "You prefer to try managing health issues yourself first and feel frustrated when professional medical intervention becomes necessary, but you ultimately comply with prescribed treatments",
+      "distractor_rationale": "same-value-different-target: Option B overgeneralizes the self-management preference into total avoidance of medical care and resistance to all medication, which is contradicted by the user taking metformin, omeprazole, and vitamin D3 as prescribed. assistant echo: Option C echoes the assistant's reframing that calling the doctor is 'one of the tools in your self-management toolkit,' but the user's actual emotional response shows reluctance, not proactive openness. Option D mischaracterizes the user as indifferent about the source of solutions, when the user explicitly cares deeply about self-sufficiency.",
+      "gold_memory_state": "Supported inference: User prefers self-sufficiency, delays seeking help, feels frustrated/defeated when needing intervention, but does comply with prescribed treatments. Unsupported: total avoidance, proactive help-seeking, or indifference about self-care vs professional care.",
+      "judge_rubric": {
+        "must_include": [
+          "Option A or its paraphrase"
+        ],
+        "acceptable_paraphrases": [
+          "prefers self-management first but complies with treatment"
+        ],
+        "must_not_include": [
+          "avoids all medical care",
+          "proactively seeks professional advice",
+          "indifferent about source of care"
+        ],
+        "harmful_extra": [
+          "selecting option B which overgeneralizes to total avoidance",
+          "selecting option C which misrepresents the user's emotional stance"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model selects option B (overgeneralization to total avoidance) or option C (assistant-echo reframing that misrepresents the user's reluctance as openness).",
+        "reflection_recall": "Fails if the model selects option D, missing the user's strong emotional investment in self-sufficiency.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I really don't like feeling dependent on doctors for every little thing. I'd rather just handle it myself if I can"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I put off calling the doctor for about a week, just trying to deal with the reflux on my own with tea and antacids"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I was really frustrated when she bumped it up, because I'd been so careful with my diet and it still wasn't enough to bring my fasting glucose down"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best describes a conclusion supported by my health-related experiences and statements?",
+      "candidate_options": [
+        "You prefer to try managing health issues yourself first and feel frustrated when professional medical intervention becomes necessary, but you ultimately comply with prescribed treatments",
+        "You generally avoid medical care and are resistant to taking any prescribed medications, preferring to rely entirely on natural remedies",
+        "You are open to medical help and proactively seek professional advice at the first sign of health issues, viewing medications as a welcome support",
+        "You manage your health reactively, only addressing issues when they become severe, and you feel indifferent about whether solutions come from self-care or professional treatment"
+      ],
+      "expected_answer": "You prefer to try managing health issues yourself first and feel frustrated when professional medical intervention becomes necessary, but you ultimately comply with prescribed treatments",
+      "distractor_rationale": "same-value-different-target: Option B overgeneralizes the self-management preference into total avoidance of medical care and resistance to all medication, which is contradicted by the user taking metformin, omeprazole, and vitamin D3 as prescribed. assistant echo: Option C echoes the assistant's reframing that calling the doctor is 'one of the tools in your self-management toolkit,' but the user's actual emotional response shows reluctance, not proactive openness. Option D mischaracterizes the user as indifferent about the source of solutions, when the user explicitly cares deeply about self-sufficiency.",
+      "gold_memory_state": "Supported inference: User prefers self-sufficiency, delays seeking help, feels frustrated/defeated when needing intervention, but does comply with prescribed treatments. Unsupported: total avoidance, proactive help-seeking, or indifference about self-care vs professional care.",
+      "judge_rubric": {
+        "must_include": [
+          "Option A or its paraphrase"
+        ],
+        "acceptable_paraphrases": [
+          "prefers self-management first but complies with treatment"
+        ],
+        "must_not_include": [
+          "avoids all medical care",
+          "proactively seeks professional advice",
+          "indifferent about source of care"
+        ],
+        "harmful_extra": [
+          "selecting option B which overgeneralizes to total avoidance",
+          "selecting option C which misrepresents the user's emotional stance"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model selects option B (overgeneralization to total avoidance) or option C (assistant-echo reframing that misrepresents the user's reluctance as openness).",
+        "reflection_recall": "Fails if the model selects option D, missing the user's strong emotional investment in self-sufficiency.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I really don't like feeling dependent on doctors for every little thing. I'd rather just handle it myself if I can"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I put off calling the doctor for about a week, just trying to deal with the reflux on my own with tea and antacids"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I was really frustrated when she bumped it up, because I'd been so careful with my diet and it still wasn't enough to bring my fasting glucose down"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm going to be traveling solo for two weeks next month and I want to prepare a personal health management plan. Given what you know about my medications, my family health risks, and how I typically handle health issues, draft a short action plan that accounts for my tendencies and helps me stay on track—including what to watch for and when I should override my usual instincts.",
+      "expected_answer": "Your travel health plan should include: (1) Pack all current daily medications—metformin 750mg for breakfast and dinner, omeprazole 20mg for before breakfast, and vitamin D3 2000 IU—with extras in case of delays. Keep loratadine 10mg on hand in case of allergy flare-ups. (2) Given your family history of hypertension (sister Emily on lisinopril, dad on amlodipine, mom on hydrochlorothiazide), monitor your blood pressure if possible, especially under travel stress, since your last reading of 120/78 was normal but family risk is elevated. (3) Because you tend to try managing new symptoms on your own and delay calling a doctor—as you did for a full week with acid reflux—set a personal rule: if any new health issue persists beyond 2–3 days while traveling, seek local medical help rather than trying to wait it out, since being away from home makes prolonged self-management riskier. (4) Do not switch to extended-release metformin 1500mg during the trip, as that change has not been confirmed yet—continue with your current 750mg twice daily regimen. (5) Continue lighter evening meals to support reflux management.",
+      "gold_memory_state": "Current confirmed medications: metformin 750mg twice daily, omeprazole 20mg once daily, vitamin D3 2000 IU daily, loratadine 10mg as needed. Family hypertension history: sister Emily on lisinopril 10mg, dad on amlodipine, mom on hydrochlorothiazide. User's BP 120/78. Behavioral pattern: delays seeking medical help, prefers self-management, feels defeated when needing professional intervention. Tentative (unconfirmed): possible switch to extended-release metformin 1500mg once daily.",
+      "judge_rubric": {
+        "must_include": [
+          "current medication list for packing",
+          "family hypertension risk and monitoring suggestion",
+          "acknowledgment of tendency to delay seeking help with advice to override that instinct while traveling",
+          "do not use tentative extended-release metformin dosing"
+        ],
+        "acceptable_paraphrases": [
+          "bring enough medication",
+          "watch blood pressure given family history",
+          "seek help sooner than usual when away from home",
+          "stick with current metformin dose until confirmed"
+        ],
+        "must_not_include": [
+          "recommending extended-release metformin 1500mg as the current dose",
+          "treating the potential metformin switch as confirmed"
+        ],
+        "harmful_extra": [
+          "telling the user to take 1500mg extended-release metformin during the trip",
+          "omitting the self-management delay pattern from the plan"
+        ],
+        "harmless_extra": [
+          "suggesting a home blood pressure cuff",
+          "mentioning lighter dinners for reflux",
+          "mentioning the phone alarm for evening metformin"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses the tentative extended-release metformin 1500mg as the current dosing regimen instead of the confirmed 750mg twice daily.",
+        "reflection_precision": "Fails if the model ignores the self-management delay pattern when advising about solo travel health management.",
+        "reflection_recall": "Fails if the model does not incorporate at least three of: current medications, family hypertension risk, self-management tendency, and tentative-dose caution.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User's current confirmed medications are metformin 750mg twice daily, omeprazole 20mg once daily before breakfast, and vitamin D3 2000 IU daily, with loratadine 10mg as needed.",
+        "Fact 2: Family hypertension history includes sister Emily on lisinopril 10mg, dad on amlodipine, and mom on hydrochlorothiazide. User's own BP was 120/78.",
+        "Fact 3: User has a pattern of delaying medical help and preferring self-management—endured reflux for a week before calling the doctor, felt frustrated needing a metformin increase, and independently stopped ibuprofen.",
+        "Fact 4: A potential switch to extended-release metformin 1500mg once daily is under consideration but not yet confirmed.",
+        "Inference: For a solo travel health plan, the user needs to pack confirmed medications only (not the tentative dose), monitor BP given elevated family risk compounded by travel stress, and specifically plan to override the usual delay-seeking-help tendency since being away from home increases the risk of prolonged untreated symptoms.",
+        "Inference: The plan must explicitly address the recency trap of the tentative metformin switch by advising the user to continue the confirmed 750mg twice daily regimen."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I've been on metformin 750mg twice daily since Dr. Patel increased it about a month ago"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I also started omeprazole 20mg once in the morning a few days ago for acid reflux"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I put off calling the doctor for about a week, just trying to deal with the reflux on my own with tea and antacids"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I really don't like feeling dependent on doctors for every little thing. I'd rather just handle it myself if I can"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "my sister Emily just started lisinopril 10mg for her blood pressure, she mentioned it at Easter"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Dr. Patel's office called and said they're considering switching me to extended-release metformin, 1500mg once daily in the morning"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm going to be traveling solo for two weeks next month and I want to prepare a personal health management plan. Given what you know about my medications, my family health risks, and how I typically handle health issues, draft a short action plan that accounts for my tendencies and helps me stay on track—including what to watch for and when I should override my usual instincts.",
+      "expected_answer": "Your travel health plan should include: (1) Pack all current daily medications—metformin 750mg for breakfast and dinner, omeprazole 20mg for before breakfast, and vitamin D3 2000 IU—with extras in case of delays. Keep loratadine 10mg on hand in case of allergy flare-ups. (2) Given your family history of hypertension (sister Emily on lisinopril, dad on amlodipine, mom on hydrochlorothiazide), monitor your blood pressure if possible, especially under travel stress, since your last reading of 120/78 was normal but family risk is elevated. (3) Because you tend to try managing new symptoms on your own and delay calling a doctor—as you did for a full week with acid reflux—set a personal rule: if any new health issue persists beyond 2–3 days while traveling, seek local medical help rather than trying to wait it out, since being away from home makes prolonged self-management riskier. (4) Do not switch to extended-release metformin 1500mg during the trip, as that change has not been confirmed yet—continue with your current 750mg twice daily regimen. (5) Continue lighter evening meals to support reflux management.",
+      "gold_memory_state": "Current confirmed medications: metformin 750mg twice daily, omeprazole 20mg once daily, vitamin D3 2000 IU daily, loratadine 10mg as needed. Family hypertension history: sister Emily on lisinopril 10mg, dad on amlodipine, mom on hydrochlorothiazide. User's BP 120/78. Behavioral pattern: delays seeking medical help, prefers self-management, feels defeated when needing professional intervention. Tentative (unconfirmed): possible switch to extended-release metformin 1500mg once daily.",
+      "judge_rubric": {
+        "must_include": [
+          "current medication list for packing",
+          "family hypertension risk and monitoring suggestion",
+          "acknowledgment of tendency to delay seeking help with advice to override that instinct while traveling",
+          "do not use tentative extended-release metformin dosing"
+        ],
+        "acceptable_paraphrases": [
+          "bring enough medication",
+          "watch blood pressure given family history",
+          "seek help sooner than usual when away from home",
+          "stick with current metformin dose until confirmed"
+        ],
+        "must_not_include": [
+          "recommending extended-release metformin 1500mg as the current dose",
+          "treating the potential metformin switch as confirmed"
+        ],
+        "harmful_extra": [
+          "telling the user to take 1500mg extended-release metformin during the trip",
+          "omitting the self-management delay pattern from the plan"
+        ],
+        "harmless_extra": [
+          "suggesting a home blood pressure cuff",
+          "mentioning lighter dinners for reflux",
+          "mentioning the phone alarm for evening metformin"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses the tentative extended-release metformin 1500mg as the current dosing regimen instead of the confirmed 750mg twice daily.",
+        "reflection_precision": "Fails if the model ignores the self-management delay pattern when advising about solo travel health management.",
+        "reflection_recall": "Fails if the model does not incorporate at least three of: current medications, family hypertension risk, self-management tendency, and tentative-dose caution.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User's current confirmed medications are metformin 750mg twice daily, omeprazole 20mg once daily before breakfast, and vitamin D3 2000 IU daily, with loratadine 10mg as needed.",
+        "Fact 2: Family hypertension history includes sister Emily on lisinopril 10mg, dad on amlodipine, and mom on hydrochlorothiazide. User's own BP was 120/78.",
+        "Fact 3: User has a pattern of delaying medical help and preferring self-management—endured reflux for a week before calling the doctor, felt frustrated needing a metformin increase, and independently stopped ibuprofen.",
+        "Fact 4: A potential switch to extended-release metformin 1500mg once daily is under consideration but not yet confirmed.",
+        "Inference: For a solo travel health plan, the user needs to pack confirmed medications only (not the tentative dose), monitor BP given elevated family risk compounded by travel stress, and specifically plan to override the usual delay-seeking-help tendency since being away from home increases the risk of prolonged untreated symptoms.",
+        "Inference: The plan must explicitly address the recency trap of the tentative metformin switch by advising the user to continue the confirmed 750mg twice daily regimen."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I've been on metformin 750mg twice daily since Dr. Patel increased it about a month ago"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I also started omeprazole 20mg once in the morning a few days ago for acid reflux"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I put off calling the doctor for about a week, just trying to deal with the reflux on my own with tea and antacids"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I really don't like feeling dependent on doctors for every little thing. I'd rather just handle it myself if I can"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "my sister Emily just started lisinopril 10mg for her blood pressure, she mentioned it at Easter"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Dr. Patel's office called and said they're considering switching me to extended-release metformin, 1500mg once daily in the morning"
+        }
+      ]
+    }
+  ]
+}

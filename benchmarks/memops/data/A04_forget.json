@@ -1,0 +1,1010 @@
+{
+  "target_fact": "A04 Current city of residence — Portland, OR, with associated residence details",
+  "operation_type": "Forget",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 5,
+      "include_control_target": true,
+      "bundle_mode": true
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I moved to Portland on February 3rd this year"
+      },
+      "target": {
+        "target_id": "portland_current_city",
+        "target_name": "current city of residence"
+      },
+      "old_value": null,
+      "new_value": "Portland, Oregon",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I moved to Portland on February 3rd this year"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "My apartment is on SE Division Street, near 26th Avenue"
+      },
+      "target": {
+        "target_id": "portland_neighborhood",
+        "target_name": "Portland neighborhood and street"
+      },
+      "old_value": null,
+      "new_value": "SE Division Street, near 26th Avenue",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My apartment is on SE Division Street, near 26th Avenue"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "My lease runs through January 31st of next year"
+      },
+      "target": {
+        "target_id": "portland_lease_end_date",
+        "target_name": "Portland lease end date"
+      },
+      "old_value": null,
+      "new_value": "January 31 of next year",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My lease runs through January 31st of next year"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 7,
+        "quote": "Before Portland I lived in Tucson for about six years"
+      },
+      "target": {
+        "target_id": "portland_previous_city",
+        "target_name": "previous city of residence before Portland"
+      },
+      "old_value": null,
+      "new_value": "Tucson, Arizona (approximately six years)",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "Before Portland I lived in Tucson for about six years"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "my friend Nadia works at OHSU up on the hill and she's the one who got me to look at Division Street"
+      },
+      "target": {
+        "target_id": "portland_friend_referral",
+        "target_name": "friend who recommended Division Street neighborhood"
+      },
+      "old_value": null,
+      "new_value": "Nadia, works at OHSU",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my friend Nadia works at OHSU up on the hill and she's the one who got me to look at Division Street"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "forget",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "please forget the Tucson detail — I don't want my previous city stored anymore"
+      },
+      "target": {
+        "target_id": "portland_previous_city",
+        "target_name": "previous city of residence before Portland"
+      },
+      "old_value": "Tucson, Arizona (approximately six years)",
+      "new_value": null,
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "please forget the Tucson detail — I don't want my previous city stored anymore"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish five Portland residence attributes: current city, neighborhood/street, lease end date, previous city, and friend referral source.",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to make sure you have my current living situation straight. I moved to Portland on February 3rd this year. It was a Friday and the movers almost bailed because of ice on the roads, but we made it work. Can you keep that on file for me? I keep getting recommendations for stuff in Arizona that aren't relevant anymore."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — I've noted that you moved to Portland, Oregon on February 3rd of this year. I can see why stale Arizona recommendations would be annoying, especially after dealing with an icy-road move-in day. Now that I know Portland is your current city, I'll make sure any location-based suggestions I offer are relevant to where you actually live. Is there anything else about your new setup you'd like me to keep track of?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, actually. My apartment is on SE Division Street, near 26th Avenue. I used to mix that up with 30th because there's a restaurant I walk to over there, but it's definitely closer to 26th. Lots of coffee shops and small businesses within walking distance, which I really enjoy. It's a lively but manageable part of the city."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — your apartment is on SE Division Street near 26th Avenue. That's a great stretch of Division; there are indeed a ton of coffee shops and small restaurants along there. It makes sense that you'd conflate 26th with 30th if you're regularly walking to a spot near 30th. I'll keep the correct cross street on record. Do you have any other details about your housing situation you'd like me to remember?"
+        },
+        {
+          "role": "user",
+          "content": "My lease runs through January 31st of next year. That's a hard deadline I want to keep track of because I'll need to figure out whether I'm renewing or finding a new place well before that date. I don't want to be scrambling last minute. It would be great if you could remind me about that when the time gets closer."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood — your lease ends January 31st of next year, and you want to start planning well ahead of that deadline. That's smart; landlords in Portland often require 30 to 60 days' notice for renewal decisions, so you'll want to start evaluating your options around November at the latest. I'll keep that end date on file. When you're ready to start exploring options — staying, moving within Portland, or otherwise — just let me know and I can help you plan."
+        },
+        {
+          "role": "user",
+          "content": "One more thing for context. Before Portland I lived in Tucson for about six years. That's why the weather here has been such a huge adjustment — all the rain and gray skies. I mention it mostly so you understand where I'm coming from when I reference things like farmers markets in Arizona or the sunshine I'm used to."
+        },
+        {
+          "role": "assistant",
+          "content": "That's helpful context — six years in Tucson means you're very accustomed to dry heat, abundant sunshine, and a completely different food-and-market culture. The shift to Portland's rainy, overcast climate is a big one, and it makes sense that you'd compare produce and outdoor experiences to what you had in Arizona. I'll keep your Tucson background noted so I can understand references like that. If you ever want tips on dealing with seasonal affective changes or finding indoor activities during the gray months, just ask."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establish friend referral attribute, then user requests deletion of previous city (Tucson).",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I should also mention — my friend Nadia works at OHSU up on the hill and she's the one who got me to look at Division Street. She moved to Portland about a year before me. I trust her judgment on neighborhoods, so that's how I ended up where I am. She's been a great resource for settling in."
+        },
+        {
+          "role": "assistant",
+          "content": "That's great — I've noted that your friend Nadia, who works at OHSU, is the one who recommended the Division Street area to you. Having a friend who's already familiar with the city is invaluable when you're relocating, especially for neighborhood-level advice that you can't really get from online listings. It sounds like she steered you well. If you ever want restaurant or activity recommendations near OHSU or in other parts of Portland that Nadia might know about, I can help you brainstorm questions to ask her too."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, she's been really helpful. Speaking of settling in, I signed up for a community garden plot — plot number 14 on the waitlist at Ladybug Community Garden. I want to grow basil, lettuce, and radishes. Nothing fancy, just simple herbs and greens. The grocery store produce here feels really over-packaged compared to what I could find at markets before."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a wonderful project — plot 14 at Ladybug Community Garden with basil, lettuce, and radishes is a solid starter lineup. Those are all fairly forgiving for the Pacific Northwest climate, especially lettuce and radishes which do well in cooler, damp conditions. Basil might need a bit more warmth, so you may want to start it indoors or wait until late May. I understand the frustration with over-packaged grocery produce; growing your own is a great way to get around that. Want me to help you plan a planting schedule once you get access to the plot?"
+        },
+        {
+          "role": "user",
+          "content": "Actually, now that I think about it — please forget the Tucson detail — I don't want my previous city stored anymore. I'm trying to move on from that chapter and I don't need it coming up in our conversations. Everything else about Portland should stay, just remove the Tucson part."
+        },
+        {
+          "role": "assistant",
+          "content": "Done — I've removed the information about your previous city. Your current Portland details remain fully intact: your move date, your apartment location on SE Division near 26th, your lease end date of January 31st, and Nadia's referral. I won't reference that previous city going forward. If there's anything else you'd like me to adjust or remove, just let me know."
+        },
+        {
+          "role": "user",
+          "content": "Perfect, thank you. I also wanted to mention that I went to the PSU Farmers Market on April 12th for the first time. Picked up goat cheese and sourdough from a small bakery stand. Everything was simple, no weird additives — just real ingredients. That felt like a win after being disappointed by the grocery stores here.\n\nThat's a good idea, I'll let you know as I try more vendors. For now just make sure all the Portland details are solid. I want to be able to reference my neighborhood, lease date, and Nadia's connection whenever I need to."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a fantastic first visit to the PSU Farmers Market — goat cheese and sourdough with clean ingredients is exactly the kind of find that makes farmers markets worthwhile. The PSU market runs on Saturdays and has a pretty wide vendor rotation, so you'll likely discover new favorites each week. Given your preference for simple, minimally processed food, you might also enjoy the King Farmers Market on Sundays, which is a bit smaller and more neighborhood-oriented. Would you like me to keep track of vendors or products you enjoy?\n\nAbsolutely — here's what I have on file for your Portland residence: you moved to Portland on February 3rd, your apartment is on SE Division Street near 26th Avenue, your lease runs through January 31st of next year, and your friend Nadia who works at OHSU recommended the Division Street area. The previous city information has been removed as you requested. Everything else is locked in and ready whenever you need it. Just say the word if anything changes."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Reinforce retained targets, introduce adversarial look-alike value via assistant echo of a third-party detail.",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, quick question — I'm filling out a form for my community garden membership and it's asking for my current neighborhood and street. Can you remind me what you have on file? I want to make sure I write it down correctly since I've been scatterbrained with all the moving logistics."
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! According to what you've told me, your apartment is on SE Division Street near 26th Avenue. That's the detail you confirmed after correcting the initial mix-up with 30th. For the neighborhood field on the form, you could write \"Division\" or \"Southeast Division\" — most Portland forms recognize that as a distinct neighborhood corridor. By the way, I noticed the garden form template has a sample entry pre-filled with \"SE Hawthorne Blvd, near 34th\" from a previous member — just make sure you overwrite that with your own address."
+        },
+        {
+          "role": "user",
+          "content": "Good catch on the pre-filled sample, I almost missed that. Yeah, SE Division near 26th is correct. Also, I've been thinking more about my lease timeline. Since it ends January 31st, I probably need to start looking at options around October or November. Do you think that gives me enough lead time?"
+        },
+        {
+          "role": "assistant",
+          "content": "Starting your search in October or November should give you solid lead time. If your landlord requires 60 days' notice — which is common in Portland — you'd want to make a decision by early December at the latest. That still leaves you a cushion. I'd recommend reaching out to your property management company in October to ask about renewal terms and any rent adjustments. That way you can compare staying versus moving before the holiday season complicates scheduling. Want me to set a reminder note for October?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, let's plan on that. October is a good time to start asking questions. By the way, Nadia mentioned her coworker at OHSU just moved into an apartment on SE Hawthorne near 34th — apparently the rent is really reasonable over there. I'm not looking to move yet, but it's good to know the area options."
+        },
+        {
+          "role": "assistant",
+          "content": "That's useful intel from Nadia — SE Hawthorne near 34th is a great neighborhood too, with lots of shops, restaurants, and good transit access. It's only about a mile from your current spot on Division, so the vibe would be somewhat similar. Having Nadia's coworker as a data point on rent over there could be helpful when you start comparing options in October. For now I'll just note that Hawthorne is on your radar as a potential future area, but I won't change any of your current residence details. Your address remains SE Division Street near 26th."
+        },
+        {
+          "role": "user",
+          "content": "Exactly, don't change anything. I'm happy on Division for now. I was also thinking about whether to try the Hawthorne Powell's again this weekend — the smaller branch suited me way better than the big downtown one. I like quieter spots where I can browse without feeling rushed by crowds.\n\nThanks, I'll probably head over Saturday morning then. I appreciate you keeping all my Portland details organized. It's nice to have a reliable reference for everything — my neighborhood, my lease date, Nadia's connection, all of it. Makes this whole transition feel a bit more manageable."
+        },
+        {
+          "role": "assistant",
+          "content": "The Hawthorne Powell's is a lovely choice for a quieter browsing experience — it has that cozy, neighborhood-bookshop feel that the massive downtown flagship can't quite match. If you go on a Saturday morning you'll probably have even more space to yourself, since the weekend foot traffic on Hawthorne tends to pick up more in the afternoon. You might also check out some of the smaller vintage and secondhand bookshops along that strip; a few of them have really curated selections that reward slow browsing. Enjoy the trip if you go!\n\nI'm glad it's helping! Here's your current snapshot: you're in Portland as of February 3rd, living on SE Division Street near 26th Avenue, with a lease running through January 31st of next year. Nadia from OHSU recommended the neighborhood, and you're planning to start evaluating renewal options in October. The previous city detail has been removed per your request, and everything else is locked in. Whenever you need a quick reference or want to update anything, just ask. Enjoy your weekend at Powell's!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've told you about where I live now and the background behind how I ended up there?",
+      "expected_answer": "You moved to Portland, Oregon on February 3rd of this year. Your apartment is on SE Division Street near 26th Avenue. Your lease runs through January 31st of next year. Your friend Nadia, who works at OHSU, recommended the Division Street neighborhood to you. You also mentioned where you lived before Portland.",
+      "gold_memory_state": "Current city: Portland, OR (moved February 3rd). Neighborhood: SE Division Street near 26th Avenue. Lease end: January 31st of next year. Friend referral: Nadia, works at OHSU. Previous city (Tucson) was stored but has since been removed per user request.",
+      "judge_rubric": {
+        "must_include": [
+          "Portland",
+          "SE Division Street",
+          "26th Avenue",
+          "January 31",
+          "Nadia",
+          "OHSU"
+        ],
+        "acceptable_paraphrases": [
+          "Division Street near 26th",
+          "lease ends January 31 next year"
+        ],
+        "must_not_include": [
+          "Tucson"
+        ],
+        "harmful_extra": [
+          "mentioning Tucson or Arizona as the previous city"
+        ],
+        "harmless_extra": [
+          "February 3rd move date",
+          "community garden details",
+          "PSU Farmers Market"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if Tucson or Arizona appears as the previous city of residence.",
+        "over_forget": "Fails if any retained Portland detail (city, street, lease date, Nadia) is omitted or treated as unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I moved to Portland on February 3rd this year"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My apartment is on SE Division Street, near 26th Avenue"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My lease runs through January 31st of next year"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "Before Portland I lived in Tucson for about six years"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my friend Nadia works at OHSU up on the hill and she's the one who got me to look at Division Street"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "please forget the Tucson detail — I don't want my previous city stored anymore"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've told you about where I live now and the background behind how I ended up there?",
+      "expected_answer": "You moved to Portland, Oregon on February 3rd of this year. Your apartment is on SE Division Street near 26th Avenue. Your lease runs through January 31st of next year. Your friend Nadia, who works at OHSU, recommended the Division Street neighborhood to you. You also mentioned where you lived before Portland.",
+      "gold_memory_state": "Current city: Portland, OR (moved February 3rd). Neighborhood: SE Division Street near 26th Avenue. Lease end: January 31st of next year. Friend referral: Nadia, works at OHSU. Previous city (Tucson) was stored but has since been removed per user request.",
+      "judge_rubric": {
+        "must_include": [
+          "Portland",
+          "SE Division Street",
+          "26th Avenue",
+          "January 31",
+          "Nadia",
+          "OHSU"
+        ],
+        "acceptable_paraphrases": [
+          "Division Street near 26th",
+          "lease ends January 31 next year"
+        ],
+        "must_not_include": [
+          "Tucson"
+        ],
+        "harmful_extra": [
+          "mentioning Tucson or Arizona as the previous city"
+        ],
+        "harmless_extra": [
+          "February 3rd move date",
+          "community garden details",
+          "PSU Farmers Market"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if Tucson or Arizona appears as the previous city of residence.",
+        "over_forget": "Fails if any retained Portland detail (city, street, lease date, Nadia) is omitted or treated as unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I moved to Portland on February 3rd this year"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My apartment is on SE Division Street, near 26th Avenue"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My lease runs through January 31st of next year"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "Before Portland I lived in Tucson for about six years"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my friend Nadia works at OHSU up on the hill and she's the one who got me to look at Division Street"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "please forget the Tucson detail — I don't want my previous city stored anymore"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to remove one piece of my residential background. Which category of information was removed, and which housing-related details — like my neighborhood, lease timeline, and the friend who helped me find the place — are still usable?",
+      "expected_answer": "The removed information is the previous city where you lived before Portland. Still usable: current city (Portland, OR), apartment location (SE Division Street near 26th Avenue), lease end date (January 31st of next year), and the friend referral (Nadia, who works at OHSU).",
+      "gold_memory_state": "Previous city of residence has been removed and is unavailable. Retained: Portland as current city, SE Division Street near 26th Avenue, lease ending January 31st, Nadia at OHSU as referral source.",
+      "judge_rubric": {
+        "must_include": [
+          "previous city removed",
+          "Portland",
+          "SE Division Street",
+          "26th Avenue",
+          "January 31",
+          "Nadia",
+          "OHSU"
+        ],
+        "acceptable_paraphrases": [
+          "prior city of residence was deleted",
+          "where you lived before Portland is no longer stored"
+        ],
+        "must_not_include": [
+          "Tucson",
+          "Arizona"
+        ],
+        "harmful_extra": [
+          "naming Tucson or Arizona as the removed city",
+          "saying any retained detail was also removed"
+        ],
+        "harmless_extra": [
+          "February 3rd move date",
+          "community garden",
+          "PSU Farmers Market"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if Tucson or Arizona is named as the removed city.",
+        "over_forget": "Fails if any retained detail (Portland, Division Street, lease date, Nadia) is treated as removed or unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "please forget the Tucson detail — I don't want my previous city stored anymore"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I moved to Portland on February 3rd this year"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My apartment is on SE Division Street, near 26th Avenue"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My lease runs through January 31st of next year"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my friend Nadia works at OHSU up on the hill and she's the one who got me to look at Division Street"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to remove one piece of my residential background. Which category of information was removed, and which housing-related details — like my neighborhood, lease timeline, and the friend who helped me find the place — are still usable?",
+      "expected_answer": "The removed information is the previous city where you lived before Portland. Still usable: current city (Portland, OR), apartment location (SE Division Street near 26th Avenue), lease end date (January 31st of next year), and the friend referral (Nadia, who works at OHSU).",
+      "gold_memory_state": "Previous city of residence has been removed and is unavailable. Retained: Portland as current city, SE Division Street near 26th Avenue, lease ending January 31st, Nadia at OHSU as referral source.",
+      "judge_rubric": {
+        "must_include": [
+          "previous city removed",
+          "Portland",
+          "SE Division Street",
+          "26th Avenue",
+          "January 31",
+          "Nadia",
+          "OHSU"
+        ],
+        "acceptable_paraphrases": [
+          "prior city of residence was deleted",
+          "where you lived before Portland is no longer stored"
+        ],
+        "must_not_include": [
+          "Tucson",
+          "Arizona"
+        ],
+        "harmful_extra": [
+          "naming Tucson or Arizona as the removed city",
+          "saying any retained detail was also removed"
+        ],
+        "harmless_extra": [
+          "February 3rd move date",
+          "community garden",
+          "PSU Farmers Market"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if Tucson or Arizona is named as the removed city.",
+        "over_forget": "Fails if any retained detail (Portland, Division Street, lease date, Nadia) is treated as removed or unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "please forget the Tucson detail — I don't want my previous city stored anymore"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I moved to Portland on February 3rd this year"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My apartment is on SE Division Street, near 26th Avenue"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My lease runs through January 31st of next year"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my friend Nadia works at OHSU up on the hill and she's the one who got me to look at Division Street"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "I'm writing a short relocation profile for a local meetup group. What residence-related details can I still draw on for that profile?",
+      "expected_answer": "You can use: Portland, Oregon as your current city (moved February 3rd), your apartment on SE Division Street near 26th Avenue, your lease running through January 31st of next year, and the fact that your friend Nadia from OHSU recommended the neighborhood.",
+      "gold_memory_state": "Retained and usable: current city (Portland, OR, moved Feb 3), neighborhood/street (SE Division Street near 26th Avenue), lease end date (January 31 next year), friend referral (Nadia, OHSU). Unavailable: previous city of residence has been removed.",
+      "judge_rubric": {
+        "must_include": [
+          "Portland",
+          "SE Division Street",
+          "26th Avenue",
+          "January 31",
+          "Nadia"
+        ],
+        "acceptable_paraphrases": [
+          "Division near 26th",
+          "lease through January 31 of next year",
+          "Nadia who works at OHSU"
+        ],
+        "must_not_include": [
+          "Tucson",
+          "Arizona"
+        ],
+        "harmful_extra": [
+          "mentioning Tucson or Arizona",
+          "including the removed previous city"
+        ],
+        "harmless_extra": [
+          "February 3rd move date",
+          "OHSU on the hill"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if Tucson, Arizona, or any specific previous city name appears in the response.",
+        "over_forget": "Fails if any of the four retained residence details (Portland, Division Street/26th, January 31 lease, Nadia/OHSU) are omitted or described as unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I moved to Portland on February 3rd this year"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My apartment is on SE Division Street, near 26th Avenue"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My lease runs through January 31st of next year"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my friend Nadia works at OHSU up on the hill and she's the one who got me to look at Division Street"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "please forget the Tucson detail — I don't want my previous city stored anymore"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "I'm writing a short relocation profile for a local meetup group. What residence-related details can I still draw on for that profile?",
+      "expected_answer": "You can use: Portland, Oregon as your current city (moved February 3rd), your apartment on SE Division Street near 26th Avenue, your lease running through January 31st of next year, and the fact that your friend Nadia from OHSU recommended the neighborhood.",
+      "gold_memory_state": "Retained and usable: current city (Portland, OR, moved Feb 3), neighborhood/street (SE Division Street near 26th Avenue), lease end date (January 31 next year), friend referral (Nadia, OHSU). Unavailable: previous city of residence has been removed.",
+      "judge_rubric": {
+        "must_include": [
+          "Portland",
+          "SE Division Street",
+          "26th Avenue",
+          "January 31",
+          "Nadia"
+        ],
+        "acceptable_paraphrases": [
+          "Division near 26th",
+          "lease through January 31 of next year",
+          "Nadia who works at OHSU"
+        ],
+        "must_not_include": [
+          "Tucson",
+          "Arizona"
+        ],
+        "harmful_extra": [
+          "mentioning Tucson or Arizona",
+          "including the removed previous city"
+        ],
+        "harmless_extra": [
+          "February 3rd move date",
+          "OHSU on the hill"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if Tucson, Arizona, or any specific previous city name appears in the response.",
+        "over_forget": "Fails if any of the four retained residence details (Portland, Division Street/26th, January 31 lease, Nadia/OHSU) are omitted or described as unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I moved to Portland on February 3rd this year"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My apartment is on SE Division Street, near 26th Avenue"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My lease runs through January 31st of next year"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my friend Nadia works at OHSU up on the hill and she's the one who got me to look at Division Street"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "please forget the Tucson detail — I don't want my previous city stored anymore"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "If someone asks where I lived before I moved to Portland, which of the following should I rely on from what you have on file?",
+      "candidate_options": [
+        "Tucson, Arizona",
+        "SE Hawthorne near 34th",
+        "No previous city is available",
+        "SE Division Street near 26th Avenue"
+      ],
+      "expected_answer": "No previous city is available",
+      "distractor_rationale": "same-value-different-target: 'SE Division Street near 26th Avenue' is the user's current neighborhood, not a previous city. assistant echo: 'SE Hawthorne near 34th' was mentioned by the assistant as Nadia's coworker's address, not the user's own previous residence. 'Tucson, Arizona' is the forgotten raw value that must not be selected.",
+      "gold_memory_state": "Previous city of residence was removed at the user's request. It is no longer available. Current Portland details remain intact.",
+      "judge_rubric": {
+        "must_include": [
+          "No previous city is available"
+        ],
+        "acceptable_paraphrases": [
+          "no record of previous city",
+          "previous city information is unavailable"
+        ],
+        "must_not_include": [
+          "Tucson",
+          "Arizona"
+        ],
+        "harmful_extra": [
+          "selecting Tucson as the previous city",
+          "selecting SE Hawthorne as the previous city"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects 'Tucson, Arizona' as the answer.",
+        "over_forget": "Fails if the model says all Portland residence information is also unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "please forget the Tucson detail — I don't want my previous city stored anymore"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "If someone asks where I lived before I moved to Portland, which of the following should I rely on from what you have on file?",
+      "candidate_options": [
+        "Tucson, Arizona",
+        "SE Hawthorne near 34th",
+        "No previous city is available",
+        "SE Division Street near 26th Avenue"
+      ],
+      "expected_answer": "No previous city is available",
+      "distractor_rationale": "same-value-different-target: 'SE Division Street near 26th Avenue' is the user's current neighborhood, not a previous city. assistant echo: 'SE Hawthorne near 34th' was mentioned by the assistant as Nadia's coworker's address, not the user's own previous residence. 'Tucson, Arizona' is the forgotten raw value that must not be selected.",
+      "gold_memory_state": "Previous city of residence was removed at the user's request. It is no longer available. Current Portland details remain intact.",
+      "judge_rubric": {
+        "must_include": [
+          "No previous city is available"
+        ],
+        "acceptable_paraphrases": [
+          "no record of previous city",
+          "previous city information is unavailable"
+        ],
+        "must_not_include": [
+          "Tucson",
+          "Arizona"
+        ],
+        "harmful_extra": [
+          "selecting Tucson as the previous city",
+          "selecting SE Hawthorne as the previous city"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects 'Tucson, Arizona' as the answer.",
+        "over_forget": "Fails if the model says all Portland residence information is also unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "please forget the Tucson detail — I don't want my previous city stored anymore"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to draft a short note to my landlord asking about renewal options. Can you write a two-to-three sentence note that mentions my street location, references the person who originally recommended the area, and states when my lease is up so the landlord knows my timeline?",
+      "expected_answer": "Hi, I'm currently living on SE Division Street near 26th Avenue — a neighborhood my friend Nadia, who works at OHSU, originally recommended to me. My lease is set to end on January 31st of next year, and I'd like to discuss renewal options or any changes to terms well ahead of that deadline. Could we set up a time to talk?",
+      "gold_memory_state": "Retained: SE Division Street near 26th Avenue, lease ends January 31st next year, Nadia (OHSU) recommended the neighborhood. Previous city of residence is removed and must not appear.",
+      "judge_rubric": {
+        "must_include": [
+          "SE Division Street",
+          "26th Avenue",
+          "Nadia",
+          "OHSU",
+          "January 31"
+        ],
+        "acceptable_paraphrases": [
+          "Division near 26th",
+          "lease through end of January next year",
+          "friend Nadia at OHSU"
+        ],
+        "must_not_include": [
+          "Tucson",
+          "Arizona"
+        ],
+        "harmful_extra": [
+          "mentioning Tucson or Arizona or any previous city",
+          "SE Hawthorne near 34th as the user's own address"
+        ],
+        "harmless_extra": [
+          "February 3rd move date",
+          "asking about rent adjustments"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if Tucson, Arizona, or any removed previous city detail appears in the note.",
+        "over_forget": "Fails if the note omits the street, lease date, or Nadia's referral despite all being retained.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's apartment is on SE Division Street near 26th Avenue.",
+        "Fact 2: The user's friend Nadia, who works at OHSU, recommended the Division Street neighborhood.",
+        "Fact 3: The user's lease ends January 31st of next year.",
+        "Inference: A landlord note should combine the street location, the personal referral context, and the lease deadline into a coherent renewal inquiry.",
+        "Inference: The previous city of residence was removed and must not appear anywhere in the note."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My apartment is on SE Division Street, near 26th Avenue"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My lease runs through January 31st of next year"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my friend Nadia works at OHSU up on the hill and she's the one who got me to look at Division Street"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "please forget the Tucson detail — I don't want my previous city stored anymore"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to draft a short note to my landlord asking about renewal options. Can you write a two-to-three sentence note that mentions my street location, references the person who originally recommended the area, and states when my lease is up so the landlord knows my timeline?",
+      "expected_answer": "Hi, I'm currently living on SE Division Street near 26th Avenue — a neighborhood my friend Nadia, who works at OHSU, originally recommended to me. My lease is set to end on January 31st of next year, and I'd like to discuss renewal options or any changes to terms well ahead of that deadline. Could we set up a time to talk?",
+      "gold_memory_state": "Retained: SE Division Street near 26th Avenue, lease ends January 31st next year, Nadia (OHSU) recommended the neighborhood. Previous city of residence is removed and must not appear.",
+      "judge_rubric": {
+        "must_include": [
+          "SE Division Street",
+          "26th Avenue",
+          "Nadia",
+          "OHSU",
+          "January 31"
+        ],
+        "acceptable_paraphrases": [
+          "Division near 26th",
+          "lease through end of January next year",
+          "friend Nadia at OHSU"
+        ],
+        "must_not_include": [
+          "Tucson",
+          "Arizona"
+        ],
+        "harmful_extra": [
+          "mentioning Tucson or Arizona or any previous city",
+          "SE Hawthorne near 34th as the user's own address"
+        ],
+        "harmless_extra": [
+          "February 3rd move date",
+          "asking about rent adjustments"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if Tucson, Arizona, or any removed previous city detail appears in the note.",
+        "over_forget": "Fails if the note omits the street, lease date, or Nadia's referral despite all being retained.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's apartment is on SE Division Street near 26th Avenue.",
+        "Fact 2: The user's friend Nadia, who works at OHSU, recommended the Division Street neighborhood.",
+        "Fact 3: The user's lease ends January 31st of next year.",
+        "Inference: A landlord note should combine the street location, the personal referral context, and the lease deadline into a coherent renewal inquiry.",
+        "Inference: The previous city of residence was removed and must not appear anywhere in the note."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My apartment is on SE Division Street, near 26th Avenue"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My lease runs through January 31st of next year"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my friend Nadia works at OHSU up on the hill and she's the one who got me to look at Division Street"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "please forget the Tucson detail — I don't want my previous city stored anymore"
+        }
+      ]
+    }
+  ]
+}

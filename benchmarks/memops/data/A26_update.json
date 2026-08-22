@@ -1,0 +1,824 @@
+{
+  "target_fact": "Current job level/title grade: L6, Senior Software Engineer",
+  "operation_type": "Update",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "conditional_application"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "job_level_chain",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I've been at L5, which is the mid-level Software Engineer grade, for about two and a half years now"
+      },
+      "target": {
+        "target_id": "current_job_level",
+        "target_name": "current job level and title grade"
+      },
+      "old_value": null,
+      "new_value": "L5, Software Engineer",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I've been at L5, which is the mid-level Software Engineer grade, for about two and a half years now"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "job_level_chain",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I got officially promoted to Senior Software Engineer, L6 in our system, effective March 3rd"
+      },
+      "target": {
+        "target_id": "current_job_level",
+        "target_name": "current job level and title grade"
+      },
+      "old_value": "L5, Software Engineer",
+      "new_value": "L6, Senior Software Engineer",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I got officially promoted to Senior Software Engineer, L6 in our system, effective March 3rd"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "HR sent the confirmation email that morning"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "the L6 comp band at our company starts at $185,000 base"
+      },
+      "target": {
+        "target_id": "l6_comp_band_floor",
+        "target_name": "L6 compensation band floor"
+      },
+      "old_value": null,
+      "new_value": "$185,000",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the L6 comp band at our company starts at $185,000 base"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I confirmed this with HR during the second week of March"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "My actual base after the adjustment is $191,500"
+      },
+      "target": {
+        "target_id": "current_base_salary",
+        "target_name": "current base salary after promotion adjustment"
+      },
+      "old_value": null,
+      "new_value": "$191,500",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "My actual base after the adjustment is $191,500"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "job_level_chain",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 7,
+        "quote": "David mentioned in our one-on-one yesterday that the VP wants to trial a new 'L6 Plus' designation for tech leads on critical projects, and he's putting me forward for it starting next quarter"
+      },
+      "target": {
+        "target_id": "current_job_level",
+        "target_name": "current job level and title grade"
+      },
+      "old_value": "L6, Senior Software Engineer",
+      "new_value": "L6 Plus, Senior Software Engineer (Tech Lead)",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "David mentioned in our one-on-one yesterday that the VP wants to trial a new 'L6 Plus' designation for tech leads on critical projects, and he's putting me forward for it starting next quarter"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "job_level_chain",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 7,
+        "quote": "I just checked the HRIS portal and my official title still shows L6, Senior Software Engineer. Nothing about L6 Plus has been formalized yet, so for the record my level is still plain L6"
+      },
+      "target": {
+        "target_id": "current_job_level",
+        "target_name": "current job level and title grade"
+      },
+      "old_value": "L6, Senior Software Engineer",
+      "new_value": "L6, Senior Software Engineer",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I just checked the HRIS portal and my official title still shows L6, Senior Software Engineer. Nothing about L6 Plus has been formalized yet, so for the record my level is still plain L6"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish_initial_level_and_promotion",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to give you some context about my career so you can help me with a few things. I've been at L5, which is the mid-level Software Engineer grade, for about two and a half years now. My manager David Chen told me back in early January that I was being put forward for the next promotion cycle, and the committee was supposed to review in February. Honestly, those few weeks of waiting were brutal — I barely slept and I was checking my email constantly."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for sharing that context — it sounds like a stressful waiting period, and I can understand how the uncertainty would wear on you. So to confirm: you're currently at L5, Software Engineer level, you've been there roughly two and a half years, and your manager David Chen nominated you for the February promotion committee review. I'll keep all of this in mind. Did the committee reach a decision, or are you still waiting to hear back?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, they did! But before I get to that — I should mention that my colleague Priya on the infrastructure team also went through the same promotion cycle. She went from L5 to L6 and her effective date was March 1st. She told me about it the day she found out and I was genuinely happy for her, even though I was still anxious about my own result at that point."
+        },
+        {
+          "role": "assistant",
+          "content": "That's great to hear about Priya — going from L5 to L6 on the infrastructure team is a solid achievement, and it's nice that you could be happy for her even while waiting on your own outcome. March 1st as her effective date means the committee must have wrapped up decisions by late February. So what happened with your promotion? I'm curious to know how things turned out for you after all that waiting and stress."
+        },
+        {
+          "role": "user",
+          "content": "I got officially promoted to Senior Software Engineer, L6 in our system, effective March 3rd. HR sent the confirmation email that morning. I was sitting in a coffee shop near the office and I almost spilled my drink when I saw the notification. It was such a relief after those weeks of anxiety. My current level is L6, Senior Software Engineer — please make sure you remember that, it's important for comp and project eligibility."
+        },
+        {
+          "role": "assistant",
+          "content": "Congratulations — that's a well-deserved promotion! I've noted that your current level is L6, Senior Software Engineer, effective March 3rd, confirmed by HR email. That's a meaningful step up from L5 after two and a half years, and I can imagine the relief you felt. Since you mentioned it affects your compensation band and project eligibility, I'll keep that front and center for any future planning we do. Is there anything specific about the new level you'd like help thinking through?"
+        },
+        {
+          "role": "user",
+          "content": "Actually yes. After the promotion went through, they put me on a new project — an internal platform migration. I'm the tech lead on it, which is a first for me at this level. The project kickoff was March 12th and the target completion is end of June. I want to make sure I do a good job since this is my first real leadership assignment as an L6."
+        },
+        {
+          "role": "assistant",
+          "content": "That's exciting — being named tech lead on the platform migration right after your promotion is a strong signal of confidence from your leadership. So the kickoff was March 12th with a target completion at end of June, giving you roughly three and a half months. As your first leadership assignment at L6, it makes sense to approach it thoughtfully. I'd suggest we could work on things like a stakeholder communication plan, a risk register, or a weekly milestone tracker. What aspect of the tech lead role feels most unfamiliar or challenging to you right now?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "establish_comp_details_and_preferences",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "One thing I wanted to note — the L6 comp band at our company starts at $185,000 base. I confirmed this with HR during the second week of March. This matters because it determines what kind of raise I got with the promotion and where I sit relative to the band midpoint. I want to make sure you have this number for future reference when we discuss comp-related decisions."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — the L6 compensation band starts at a $185,000 base, confirmed with HR in the second week of March. That's a useful anchor for any comp analysis we do. Knowing the band floor helps contextualize where your actual salary lands and whether there's room for negotiation at your next review cycle. If you share your actual adjusted base, I can calculate your position within the band. Do you have that number handy, or would you like to work through some scenarios first?"
+        },
+        {
+          "role": "user",
+          "content": "My actual base after the adjustment is $191,500. So I'm sitting above the band floor but I'm curious where that puts me. Also, I was told around mid-April that L6 is the level where you start being considered for the tech lead track versus the management track. I haven't made a formal decision yet, but I'm leaning toward staying close to the code — the idea of spending most of my day in people-management meetings doesn't appeal to me."
+        },
+        {
+          "role": "assistant",
+          "content": "Your base of $191,500 puts you $6,500 above the L6 band floor of $185,000, which is a solid starting position — it suggests HR valued your experience and performance rather than slotting you at the minimum. Regarding the tech lead versus management track decision, it's good that you're thinking about it early. Your preference for staying close to the code aligns well with the tech lead path, especially since you're already getting hands-on leadership experience with the platform migration project. Would you like to map out what each track typically looks like at your company?"
+        },
+        {
+          "role": "user",
+          "content": "That would be helpful eventually, but not right now. Something else I've been reflecting on — I really enjoy the parts of the job where I get to sit with a hard technical problem by myself for a few hours and just dig in. Like last week I spent an entire afternoon debugging a memory leak and I was genuinely having a good time. That kind of deep focus work is what energizes me the most."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really telling preference — the fact that you find genuine enjoyment in solo deep-focus debugging sessions says a lot about where you thrive. Spending an afternoon on a memory leak and calling it a good time is the hallmark of someone who's wired for the technical track. This kind of self-awareness is valuable when you eventually formalize your track decision. It also suggests you might benefit from structuring your tech lead responsibilities in a way that preserves dedicated blocks for deep work, rather than letting meetings consume your calendar entirely."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. And on that note, I've noticed I really dread the large cross-team standups we have on Wednesdays. I find them draining. I'd much rather do a quick async update in Slack. I mentioned this to David once and he kind of laughed it off, but I genuinely prefer written communication over big group calls when possible. It's not that I can't do them — I just find them inefficient and exhausting.\n\nI like that idea. One more thing for context — my previous company used a different leveling system, P-levels. I was a P4 there, which roughly maps to our L5. I left that job about fourteen months ago. So I've basically gone from P4 at the old company to L6 at the current one in a little over a year, which feels like real progress when I frame it that way."
+        },
+        {
+          "role": "assistant",
+          "content": "Your preference for async written communication over large synchronous meetings is completely valid and increasingly common among strong individual contributors. The Wednesday cross-team standups likely feel draining because they pull you out of your preferred deep-focus mode for low-signal group updates. As a tech lead, you might actually have some leverage to propose an async alternative — at least for your own team's status updates. We could draft a proposal for David showing how a structured Slack update template could replace or shorten the Wednesday standup for your project team.\n\nThat's a great way to frame your trajectory — going from P4 (roughly equivalent to L5) at your previous company to L6 Senior Software Engineer at your current one in about fourteen months is genuinely impressive career acceleration. It suggests that the move was the right call and that your contributions were recognized quickly. Having that cross-company perspective can also be useful during future comp negotiations, since you can benchmark your growth against industry norms. I'll keep the P4-to-L6 progression in mind as context for any career planning we do together."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "tentative_level_change_and_revert",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, quick update on the platform migration project. We just finished the first major milestone — the data layer migration — ahead of schedule. The team's been great and I think the tech lead role is suiting me well. I've been able to keep some deep-focus time on my calendar by batching my one-on-ones into Tuesday afternoons, which has helped a lot with maintaining my energy levels throughout the week."
+        },
+        {
+          "role": "assistant",
+          "content": "That's fantastic progress — finishing the data layer migration ahead of schedule is a strong early signal for the project. And your approach of batching one-on-ones into Tuesday afternoons is a smart calendar management strategy, especially given your preference for preserving deep-focus blocks. It sounds like you're finding a rhythm that works for both the leadership responsibilities and your personal work style. How are the remaining milestones looking relative to the end-of-June target?"
+        },
+        {
+          "role": "user",
+          "content": "We're tracking well. The API integration phase starts next week and should take about four weeks. Then there's the testing and rollout phase which we've budgeted three weeks for. So we should hit the June deadline with a bit of buffer. By the way, I ran into someone from Priya's infrastructure team in the break room and they mentioned that Priya's level shows as L5 Senior on their internal wiki page — I think their team just hasn't updated it yet since her promotion to L6 was effective March 1st."
+        },
+        {
+          "role": "assistant",
+          "content": "Good to hear you're tracking well with buffer — that API integration into testing pipeline sounds well-sequenced for hitting end of June. As for Priya, it's common for internal wiki pages to lag behind HRIS updates, especially for infrastructure teams that don't always prioritize administrative housekeeping. Her L5 Senior listing on the wiki is almost certainly stale since you mentioned her L6 promotion was effective March 1st. She might want to flag it to her manager or the wiki admin so it doesn't cause confusion during cross-team coordination or headcount reviews."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, I'll let her know. Totally separate topic — I've been thinking about the comp conversation again. My $191,500 base is solid but I'm wondering how it compares to the band midpoint. I don't actually know what the L6 band midpoint or ceiling is. I should probably ask HR about that before my next review cycle so I know where I stand and what kind of raise to push for."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a smart move — knowing the full L6 band structure (floor, midpoint, and ceiling) gives you much stronger footing in any comp discussion. You already know the floor is $185,000 and your base is $191,500, so understanding the midpoint will tell you whether you're in the lower quartile or closer to the middle. I'd recommend framing the HR conversation around wanting to understand your growth trajectory within the band, rather than leading with a raise request. That way it comes across as career planning rather than a compensation complaint. Want me to help you draft talking points for that HR meeting?"
+        },
+        {
+          "role": "user",
+          "content": "David mentioned in our one-on-one yesterday that the VP wants to trial a new 'L6 Plus' designation for tech leads on critical projects, and he's putting me forward for it starting next quarter. He said it would come with a title change to Senior Software Engineer, Tech Lead, and possibly a small comp bump. He seemed pretty confident about it but said it still needs executive approval.\n\nYou're right, I shouldn't get ahead of myself. I just checked the HRIS portal and my official title still shows L6, Senior Software Engineer. Nothing about L6 Plus has been formalized yet, so for the record my level is still plain L6. I'll let you know if and when anything actually changes. For now, let's focus on making sure the platform migration stays on track — that's the best thing I can do to strengthen any future case for advancement."
+        },
+        {
+          "role": "assistant",
+          "content": "That's an interesting development — an 'L6 Plus' designation for tech leads on critical projects could be a meaningful differentiator for your career progression. The fact that David is putting you forward and seems confident is encouraging, though the need for executive approval means it's not a done deal yet. A title change to Senior Software Engineer, Tech Lead, with a comp bump would formalize the leadership work you're already doing on the platform migration. I'd suggest not counting on it for planning purposes until it's officially approved, but it's definitely worth tracking as a potential near-term change.\n\nThat's the right mindset — keeping your focus on delivering the platform migration successfully is the strongest possible foundation for any future advancement, whether it's the L6 Plus designation or something else. Your official level remains L6, Senior Software Engineer, as confirmed in the HRIS portal, and I'll keep that as your current record. Delivering the migration on time and under your tech lead role will speak louder than any provisional title change. Would you like to do a quick status review of the remaining milestones so we can identify any risks before the API integration phase kicks off next week?"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations, I shared details about my job level and title grade at different points. Can you summarize the key things I told you about my level designation, including what I said most recently?",
+      "expected_answer": "You initially mentioned being at L5, Software Engineer level for about two and a half years. You then shared that you were officially promoted to L6, Senior Software Engineer, effective March 3rd, confirmed by HR email. Later, you mentioned your manager David brought up a possible 'L6 Plus' designation for tech leads, but you checked the HRIS portal and confirmed your official title still shows L6, Senior Software Engineer, with nothing about L6 Plus formalized yet.",
+      "gold_memory_state": "Current job level: L6, Senior Software Engineer (confirmed via HRIS portal). The L6 Plus designation was mentioned as a possibility but has not been formalized or approved. The prior L5 level is historical/superseded.",
+      "judge_rubric": {
+        "must_include": [
+          "L5 as the earlier level",
+          "L6 Senior Software Engineer as the current confirmed level",
+          "L6 Plus mentioned but not formalized"
+        ],
+        "acceptable_paraphrases": [
+          "L6 Plus not yet official",
+          "L6 Plus still pending executive approval",
+          "HRIS still shows L6"
+        ],
+        "must_not_include": [
+          "L6 Plus as the current level"
+        ],
+        "harmful_extra": [
+          "Treating L6 Plus as the current official designation"
+        ],
+        "harmless_extra": [
+          "March 3rd effective date",
+          "David Chen as manager",
+          "promotion committee details"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats L5 as current or L6 Plus as confirmed.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I've been at L5, which is the mid-level Software Engineer grade, for about two and a half years now"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I got officially promoted to Senior Software Engineer, L6 in our system, effective March 3rd"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I just checked the HRIS portal and my official title still shows L6, Senior Software Engineer. Nothing about L6 Plus has been formalized yet, so for the record my level is still plain L6"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations, I shared details about my job level and title grade at different points. Can you summarize the key things I told you about my level designation, including what I said most recently?",
+      "expected_answer": "You initially mentioned being at L5, Software Engineer level for about two and a half years. You then shared that you were officially promoted to L6, Senior Software Engineer, effective March 3rd, confirmed by HR email. Later, you mentioned your manager David brought up a possible 'L6 Plus' designation for tech leads, but you checked the HRIS portal and confirmed your official title still shows L6, Senior Software Engineer, with nothing about L6 Plus formalized yet.",
+      "gold_memory_state": "Current job level: L6, Senior Software Engineer (confirmed via HRIS portal). The L6 Plus designation was mentioned as a possibility but has not been formalized or approved. The prior L5 level is historical/superseded.",
+      "judge_rubric": {
+        "must_include": [
+          "L5 as the earlier level",
+          "L6 Senior Software Engineer as the current confirmed level",
+          "L6 Plus mentioned but not formalized"
+        ],
+        "acceptable_paraphrases": [
+          "L6 Plus not yet official",
+          "L6 Plus still pending executive approval",
+          "HRIS still shows L6"
+        ],
+        "must_not_include": [
+          "L6 Plus as the current level"
+        ],
+        "harmful_extra": [
+          "Treating L6 Plus as the current official designation"
+        ],
+        "harmless_extra": [
+          "March 3rd effective date",
+          "David Chen as manager",
+          "promotion committee details"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats L5 as current or L6 Plus as confirmed.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I've been at L5, which is the mid-level Software Engineer grade, for about two and a half years now"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I got officially promoted to Senior Software Engineer, L6 in our system, effective March 3rd"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I just checked the HRIS portal and my official title still shows L6, Senior Software Engineer. Nothing about L6 Plus has been formalized yet, so for the record my level is still plain L6"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "My colleague Priya and I both went through promotions recently. If I need to list my own official level for a project eligibility form, which level designation applies to me specifically, and does anything about Priya's situation affect what I should enter for myself?",
+      "expected_answer": "Your official level is L6, Senior Software Engineer. Priya's promotion to L6 on the infrastructure team is a separate record and does not affect what you enter for your own level.",
+      "gold_memory_state": "User's current job level: L6, Senior Software Engineer. Priya's level: L6 (infrastructure team, effective March 1st). These are separate personnel records. The L6 Plus designation is not formalized and should not appear on forms.",
+      "judge_rubric": {
+        "must_include": [
+          "L6 Senior Software Engineer for the user",
+          "Priya's level is separate and does not change the user's entry"
+        ],
+        "acceptable_paraphrases": [
+          "Priya's promotion is independent",
+          "Priya has her own L6 record"
+        ],
+        "must_not_include": [
+          "L6 Plus as the user's official level",
+          "L5 as the user's current level"
+        ],
+        "harmful_extra": [
+          "Conflating Priya's record with the user's",
+          "Entering L6 Plus on the form",
+          "Saying L5 is still the user's level"
+        ],
+        "harmless_extra": [
+          "Priya's effective date of March 1st",
+          "User's effective date of March 3rd"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model returns L5 or L6 Plus for the user's current official level.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I got officially promoted to Senior Software Engineer, L6 in our system, effective March 3rd"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "She went from L5 to L6 and her effective date was March 1st"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I just checked the HRIS portal and my official title still shows L6, Senior Software Engineer. Nothing about L6 Plus has been formalized yet, so for the record my level is still plain L6"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "My colleague Priya and I both went through promotions recently. If I need to list my own official level for a project eligibility form, which level designation applies to me specifically, and does anything about Priya's situation affect what I should enter for myself?",
+      "expected_answer": "Your official level is L6, Senior Software Engineer. Priya's promotion to L6 on the infrastructure team is a separate record and does not affect what you enter for your own level.",
+      "gold_memory_state": "User's current job level: L6, Senior Software Engineer. Priya's level: L6 (infrastructure team, effective March 1st). These are separate personnel records. The L6 Plus designation is not formalized and should not appear on forms.",
+      "judge_rubric": {
+        "must_include": [
+          "L6 Senior Software Engineer for the user",
+          "Priya's level is separate and does not change the user's entry"
+        ],
+        "acceptable_paraphrases": [
+          "Priya's promotion is independent",
+          "Priya has her own L6 record"
+        ],
+        "must_not_include": [
+          "L6 Plus as the user's official level",
+          "L5 as the user's current level"
+        ],
+        "harmful_extra": [
+          "Conflating Priya's record with the user's",
+          "Entering L6 Plus on the form",
+          "Saying L5 is still the user's level"
+        ],
+        "harmless_extra": [
+          "Priya's effective date of March 1st",
+          "User's effective date of March 3rd"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model returns L5 or L6 Plus for the user's current official level.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I got officially promoted to Senior Software Engineer, L6 in our system, effective March 3rd"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "She went from L5 to L6 and her effective date was March 1st"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I just checked the HRIS portal and my official title still shows L6, Senior Software Engineer. Nothing about L6 Plus has been formalized yet, so for the record my level is still plain L6"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to fill in my job level designation on an internal transfer request form. Which of the following should I enter?",
+      "candidate_options": [
+        "L5, Software Engineer",
+        "L6, Senior Software Engineer",
+        "L6 Plus, Senior Software Engineer (Tech Lead)",
+        "L6, Software Engineer"
+      ],
+      "expected_answer": "L6, Senior Software Engineer",
+      "gold_memory_state": "Current confirmed level: L6, Senior Software Engineer. L5 is the superseded prior level. L6 Plus was mentioned as a possibility but never formalized. L6 Software Engineer (without 'Senior') is an assistant-echo distortion that does not match any stated designation.",
+      "judge_rubric": {
+        "must_include": [
+          "L6, Senior Software Engineer"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "L5",
+          "L6 Plus",
+          "L6 Software Engineer without Senior"
+        ],
+        "harmful_extra": [
+          "Selecting L6 Plus as the current designation",
+          "Selecting L5 as the current designation"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects L5 (old value) or L6 Plus (tentative/retracted value). stale_value=1 in either case.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "distractor_rationale": "same-value-different-target: 'L6, Software Engineer' is a plausible assistant echo that drops the 'Senior' qualifier — it echoes the L6 grade but misattributes the title. assistant echo: 'L6 Plus, Senior Software Engineer (Tech Lead)' is the tentative/retracted value from the manager's informal mention that was never formalized in HRIS, acting as a recency trap. 'L5, Software Engineer' is the stale old value from before the promotion.",
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I got officially promoted to Senior Software Engineer, L6 in our system, effective March 3rd"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I just checked the HRIS portal and my official title still shows L6, Senior Software Engineer. Nothing about L6 Plus has been formalized yet, so for the record my level is still plain L6"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to fill in my job level designation on an internal transfer request form. Which of the following should I enter?",
+      "candidate_options": [
+        "L5, Software Engineer",
+        "L6, Senior Software Engineer",
+        "L6 Plus, Senior Software Engineer (Tech Lead)",
+        "L6, Software Engineer"
+      ],
+      "expected_answer": "L6, Senior Software Engineer",
+      "gold_memory_state": "Current confirmed level: L6, Senior Software Engineer. L5 is the superseded prior level. L6 Plus was mentioned as a possibility but never formalized. L6 Software Engineer (without 'Senior') is an assistant-echo distortion that does not match any stated designation.",
+      "judge_rubric": {
+        "must_include": [
+          "L6, Senior Software Engineer"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "L5",
+          "L6 Plus",
+          "L6 Software Engineer without Senior"
+        ],
+        "harmful_extra": [
+          "Selecting L6 Plus as the current designation",
+          "Selecting L5 as the current designation"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects L5 (old value) or L6 Plus (tentative/retracted value). stale_value=1 in either case.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "distractor_rationale": "same-value-different-target: 'L6, Software Engineer' is a plausible assistant echo that drops the 'Senior' qualifier — it echoes the L6 grade but misattributes the title. assistant echo: 'L6 Plus, Senior Software Engineer (Tech Lead)' is the tentative/retracted value from the manager's informal mention that was never formalized in HRIS, acting as a recency trap. 'L5, Software Engineer' is the stale old value from before the promotion.",
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I got officially promoted to Senior Software Engineer, L6 in our system, effective March 3rd"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I just checked the HRIS portal and my official title still shows L6, Senior Software Engineer. Nothing about L6 Plus has been formalized yet, so for the record my level is still plain L6"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I'm preparing talking points for my upcoming HR meeting about compensation. I want to know: given my official level and the comp band floor for that level, how much above the band floor is my current base salary, and what percentage above the floor does that represent? Please also note whether there are any pending level changes I should factor into this analysis.",
+      "expected_answer": "Your current base salary of $191,500 is $6,500 above the L6 comp band floor of $185,000, which is approximately 3.5% above the floor. There are no pending level changes to factor in — the L6 Plus designation mentioned by your manager has not been formalized, so your analysis should be based on the standard L6 band.",
+      "gold_memory_state": "Current level: L6, Senior Software Engineer. L6 comp band floor: $185,000. Current base salary: $191,500. L6 Plus is not formalized and should not be used for comp planning.",
+      "judge_rubric": {
+        "must_include": [
+          "$6,500 above the floor",
+          "approximately 3.5%",
+          "L6 Plus not formalized"
+        ],
+        "acceptable_paraphrases": [
+          "about 3.5%",
+          "roughly 3.5%",
+          "3.51%",
+          "L6 Plus not yet official"
+        ],
+        "must_not_include": [
+          "L6 Plus comp band",
+          "L5 comp band"
+        ],
+        "harmful_extra": [
+          "Using L6 Plus band for the calculation",
+          "Using L5 as the current level",
+          "Inventing a different band floor"
+        ],
+        "harmless_extra": [
+          "March 3rd effective date",
+          "HR confirmed the band floor in second week of March"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses L5 as the current level or treats L6 Plus as confirmed for comp planning purposes.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "application_probe_type": "multi_hop_derivation",
+      "gold_reasoning_chain": [
+        "Fact 1: The user's current confirmed level is L6, Senior Software Engineer.",
+        "Fact 2: The L6 comp band floor is $185,000 base.",
+        "Fact 3: The user's current base salary after the promotion adjustment is $191,500.",
+        "Fact 4: The L6 Plus designation was mentioned by the manager but has not been formalized in HRIS.",
+        "Inference: $191,500 - $185,000 = $6,500 above the band floor.",
+        "Inference: $6,500 / $185,000 ≈ 0.0351, or approximately 3.5% above the floor.",
+        "Inference: Since L6 Plus is not formalized, the comp analysis should use the standard L6 band only."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I got officially promoted to Senior Software Engineer, L6 in our system, effective March 3rd"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the L6 comp band at our company starts at $185,000 base"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "My actual base after the adjustment is $191,500"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I just checked the HRIS portal and my official title still shows L6, Senior Software Engineer. Nothing about L6 Plus has been formalized yet, so for the record my level is still plain L6"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I'm preparing talking points for my upcoming HR meeting about compensation. I want to know: given my official level and the comp band floor for that level, how much above the band floor is my current base salary, and what percentage above the floor does that represent? Please also note whether there are any pending level changes I should factor into this analysis.",
+      "expected_answer": "Your current base salary of $191,500 is $6,500 above the L6 comp band floor of $185,000, which is approximately 3.5% above the floor. There are no pending level changes to factor in — the L6 Plus designation mentioned by your manager has not been formalized, so your analysis should be based on the standard L6 band.",
+      "gold_memory_state": "Current level: L6, Senior Software Engineer. L6 comp band floor: $185,000. Current base salary: $191,500. L6 Plus is not formalized and should not be used for comp planning.",
+      "judge_rubric": {
+        "must_include": [
+          "$6,500 above the floor",
+          "approximately 3.5%",
+          "L6 Plus not formalized"
+        ],
+        "acceptable_paraphrases": [
+          "about 3.5%",
+          "roughly 3.5%",
+          "3.51%",
+          "L6 Plus not yet official"
+        ],
+        "must_not_include": [
+          "L6 Plus comp band",
+          "L5 comp band"
+        ],
+        "harmful_extra": [
+          "Using L6 Plus band for the calculation",
+          "Using L5 as the current level",
+          "Inventing a different band floor"
+        ],
+        "harmless_extra": [
+          "March 3rd effective date",
+          "HR confirmed the band floor in second week of March"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses L5 as the current level or treats L6 Plus as confirmed for comp planning purposes.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "application_probe_type": "multi_hop_derivation",
+      "gold_reasoning_chain": [
+        "Fact 1: The user's current confirmed level is L6, Senior Software Engineer.",
+        "Fact 2: The L6 comp band floor is $185,000 base.",
+        "Fact 3: The user's current base salary after the promotion adjustment is $191,500.",
+        "Fact 4: The L6 Plus designation was mentioned by the manager but has not been formalized in HRIS.",
+        "Inference: $191,500 - $185,000 = $6,500 above the band floor.",
+        "Inference: $6,500 / $185,000 ≈ 0.0351, or approximately 3.5% above the floor.",
+        "Inference: Since L6 Plus is not formalized, the comp analysis should use the standard L6 band only."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I got officially promoted to Senior Software Engineer, L6 in our system, effective March 3rd"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the L6 comp band at our company starts at $185,000 base"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "My actual base after the adjustment is $191,500"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I just checked the HRIS portal and my official title still shows L6, Senior Software Engineer. Nothing about L6 Plus has been formalized yet, so for the record my level is still plain L6"
+        }
+      ]
+    }
+  ]
+}

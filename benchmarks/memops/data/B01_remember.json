@@ -1,0 +1,1146 @@
+{
+  "target_fact": "Darren Liu is the user's best friend since college, currently considering a $152K senior DevOps job in Seattle, with birthday October 17th, girlfriend Naomi (~2 years), and brother Kevin (VP at a finance firm in Chicago)",
+  "operation_type": "Remember",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 3,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": true,
+      "never_stored_target": "Darren's girlfriend Naomi's occupation"
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "My best friend is Darren Liu. We've been best friends since our freshman year at Oregon State."
+      },
+      "target": {
+        "target_id": "best_friend_identity",
+        "target_name": "Best friend's name and relationship origin"
+      },
+      "old_value": null,
+      "new_value": "Darren Liu, best friend since freshman year at Oregon State",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My best friend is Darren Liu. We've been best friends since our freshman year at Oregon State."
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "Darren's birthday is October 17th. I always want to make sure I don't forget that."
+      },
+      "target": {
+        "target_id": "darren_birthday",
+        "target_name": "Darren Liu's birthday"
+      },
+      "old_value": null,
+      "new_value": "October 17th",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Darren's birthday is October 17th. I always want to make sure I don't forget that."
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "We've both been living in Portland for about six years now. We usually grab ramen together on Tuesday evenings at that spot on Hawthorne."
+      },
+      "target": {
+        "target_id": "shared_city_and_hangout",
+        "target_name": "Shared city and regular hangout routine"
+      },
+      "old_value": null,
+      "new_value": "Both live in Portland for ~6 years; Tuesday evening ramen on Hawthorne",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "We've both been living in Portland for about six years now. We usually grab ramen together on Tuesday evenings at that spot on Hawthorne."
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "Darren got a job offer for a senior DevOps role in Seattle. The salary is $152K."
+      },
+      "target": {
+        "target_id": "darren_seattle_job_offer",
+        "target_name": "Darren's Seattle job offer details"
+      },
+      "old_value": null,
+      "new_value": "Senior DevOps role in Seattle, $152K salary",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Darren got a job offer for a senior DevOps role in Seattle. The salary is $152K."
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "Darren's girlfriend Naomi is against the move. They've been together about two years."
+      },
+      "target": {
+        "target_id": "darren_girlfriend_naomi",
+        "target_name": "Darren's girlfriend Naomi and relationship duration"
+      },
+      "old_value": null,
+      "new_value": "Naomi, together about 2 years, opposed to the Seattle move",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Darren's girlfriend Naomi is against the move. They've been together about two years."
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "Darren said he's leaning toward accepting the offer. He told me he'd decide by the end of May."
+      },
+      "target": {
+        "target_id": "darren_decision_deadline",
+        "target_name": "Darren's decision deadline for Seattle job"
+      },
+      "old_value": null,
+      "new_value": "Leaning toward accepting; decision by end of May",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Darren said he's leaning toward accepting the offer. He told me he'd decide by the end of May."
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 1,
+        "quote": "Darren's older brother Kevin just got promoted to VP at a finance firm in Chicago."
+      },
+      "target": {
+        "target_id": "darren_brother_kevin",
+        "target_name": "Darren's brother Kevin's career"
+      },
+      "old_value": null,
+      "new_value": "Kevin, Darren's older brother, VP at a finance firm in Chicago",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "Darren's older brother Kevin just got promoted to VP at a finance firm in Chicago."
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish core friendship facts: Darren Liu as best friend, college origin, shared city/routine, birthday",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to tell you about my closest friend so you have that context going forward. My best friend is Darren Liu. We've been best friends since our freshman year at Oregon State. He's genuinely the person I'd call at three in the morning if something went wrong, you know? I just want to make sure you have that stored."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really meaningful friendship — having someone you'd call at 3 a.m. says a lot about the trust between you two. I've noted that your best friend is Darren Liu, and that your friendship goes all the way back to freshman year at Oregon State. That's a solid foundation. If there's anything else you'd like me to keep track of about Darren or your friendship, feel free to share whenever you'd like. I'm happy to hold onto those details for you."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, there's more. We've both been living in Portland for about six years now. We usually grab ramen together on Tuesday evenings at that spot on Hawthorne. It's kind of become our ritual — just a quiet corner booth, two people catching up. I really value those low-key hangouts over big group outings. That's kind of our dynamic."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a wonderful tradition — six years in the same city with a standing Tuesday evening ramen date at a spot on Hawthorne. There's something special about those consistent, low-key hangouts where it's just two people in a quiet booth without the noise of a big group. I can see why that routine means a lot to you. I've noted the Portland connection, the Hawthorne ramen spot, and your preference for intimate, smaller-scale social settings. Let me know if there's anything else you'd like me to remember about your time with Darren."
+        },
+        {
+          "role": "user",
+          "content": "One important thing — Darren's birthday is October 17th. I always want to make sure I don't forget that. I've been bad about remembering dates in the past, so please hold onto that for me. I'd hate to blank on it when the time comes this year. October 17th, got it?"
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, I've got it locked in — Darren Liu's birthday is October 17th. That's a great date to have on file so you can plan ahead, maybe grab him something or organize a hangout for the occasion. Since you mentioned you sometimes have trouble with dates, I'll make sure this one is firmly noted. When October rolls around, you'll be prepared. Is there anything specific you usually do for his birthday, or would you like me to help brainstorm ideas when the time gets closer?"
+        },
+        {
+          "role": "user",
+          "content": "I'll think about birthday plans later. For now I'm just trying to get all the key stuff about my social life documented. Darren and I also really enjoy hole-in-the-wall dive bars — like, we went to one recently and it was perfect. No blasting music, no crowds, just two people talking for hours. I always prefer that vibe over trendy cocktail bars. That's a personal preference of mine in general."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — you and Darren share a love for those hole-in-the-wall dive bars where you can actually hear each other and have a real conversation. And more broadly, you personally prefer intimate, low-key social settings: quiet booths, dive bars, small gatherings rather than trendy cocktail bars or big group events. That's a useful preference to keep in mind for future recommendations or planning. I've got a solid picture forming of your social life with Darren — the Tuesday ramen ritual, the dive bar outings, the Portland connection. Let me know whenever you want to add more details."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Introduce Seattle job offer details, Naomi, decision deadline, and emotional context",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So here's what's been weighing on me. Darren got a job offer for a senior DevOps role in Seattle. The salary is $152K. He texted me about it back around early March and it kind of caught me off guard because we've had this whole Portland life together. The idea of him moving to a different city is hard to process."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a lot to take in, especially when you've built such a strong routine together in Portland over six years. A senior DevOps role at $152K in Seattle is a significant offer — it's clearly a career opportunity for Darren, but I can understand why the prospect of him leaving would feel unsettling. The suddenness of that early March text probably made it even harder to process. I've noted the details of the offer. How has the situation developed since he first mentioned it? Has he given any indication of which way he's leaning?"
+        },
+        {
+          "role": "user",
+          "content": "Well, it's complicated. Darren's girlfriend Naomi is against the move. They've been together about two years. He seemed really torn when he told me about her reaction. I could tell it was eating at him. And honestly, hearing him talk about it made me feel pretty down too — like the whole dynamic of our friendship could shift if he leaves Portland."
+        },
+        {
+          "role": "assistant",
+          "content": "That adds a real layer of complexity to Darren's decision. Naomi being opposed after two years together means he's weighing a major career step against an established relationship — and on top of that, your friendship and the life you've both built in Portland. It makes sense that you'd feel down about it. The potential loss of those spontaneous Tuesday hangouts and weeknight catch-ups is real, even if the friendship itself would endure the distance. I've noted that Naomi has been with Darren for about two years and is opposed to the Seattle move. Where does the decision stand now?"
+        },
+        {
+          "role": "user",
+          "content": "Darren said he's leaning toward accepting the offer. He told me he'd decide by the end of May. I told him I'd support whatever he chooses, but honestly the thought of losing those easy weeknight hangouts really gets to me. It's not like we couldn't stay friends, but it wouldn't be the same spontaneous thing anymore."
+        },
+        {
+          "role": "assistant",
+          "content": "That end-of-May deadline puts a real timeline on things. It sounds like Darren is gravitating toward taking the Seattle role, which means you have a few weeks to mentally prepare for the possibility. Your honesty about dreading the loss of spontaneity is completely valid — distance doesn't end friendships, but it does change the texture of them. Those Tuesday ramen nights and random dive bar outings would become planned trips instead of casual weeknight staples. I've noted his decision timeline. In the meantime, maybe it's worth making the most of the hangouts you still have while he's deciding."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, that's what I've been trying to do. We actually helped each other with some apartment stuff recently — he was downsizing and needed to move furniture into storage. That's all done now, no need to track that. But afterward we grabbed beers at a little dive bar nearby and just talked for hours. Those are the moments I'm going to miss the most if he goes.\n\nMaybe. I'm not great at long-distance anything, honestly. But I'll cross that bridge when it comes. For now I just want to enjoy the time we have. Let's move on — I'll probably come back to this topic when Darren actually makes his final call."
+        },
+        {
+          "role": "assistant",
+          "content": "Those unplanned post-errand beers at a dive bar are exactly the kind of moments that make a local friendship irreplaceable. I won't track the storage move since that's wrapped up, but the sentiment behind it is clear — it's the easy, organic quality time that would be hardest to replicate across cities. It sounds like you're already savoring these moments more consciously, which is actually a beautiful response to the uncertainty. If Darren does end up in Seattle, maybe you two could establish a new ritual — a monthly visit or a standing video call to maintain some version of that connection.\n\nThat's a healthy approach — no need to borrow worry from the future when the decision hasn't been made yet. I've got all the key details noted: the Seattle offer at $152K, Naomi's opposition, and the end-of-May decision timeline. Whenever Darren makes his call and you want to talk through it or update me, I'm here. In the meantime, enjoy those Tuesday ramen nights and dive bar sessions while they're right there for the taking. Just let me know when you want to revisit any of this."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Introduce Kevin's promotion, adversarial injection of look-alike salary, and wrap-up",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Okay, one more thing about Darren's family. Darren's older brother Kevin just got promoted to VP at a finance firm in Chicago. Darren mentioned it when we were at the bar — he seemed proud of Kevin but also a little competitive about it, which is very on-brand for Darren. I think that sibling dynamic is part of what's pushing him toward the Seattle job."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really insightful observation. Kevin's VP promotion at a finance firm in Chicago probably adds some internal pressure for Darren — a kind of sibling benchmark that makes a $152K senior DevOps offer feel even more urgent to accept. That competitive streak you're describing could definitely be a factor in his decision-making, beyond just the career and relationship considerations. It's interesting that you picked up on that dynamic during a casual bar conversation. I've noted Kevin's promotion and the sibling dynamic. It adds useful context to understanding Darren's mindset about the move."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, exactly. And Darren's always been like that — he measures himself against Kevin even though they're in completely different fields. Kevin's in finance, Darren's in tech. But I think the title and the salary stuff gets to him. It's one of those things I understand about Darren because I've known him so long."
+        },
+        {
+          "role": "assistant",
+          "content": "That cross-field comparison is so common among siblings, especially when titles and compensation become visible markers of success. Even though finance VP and senior DevOps engineer are completely different career paths, the external signals — title prestige, salary figures — create a comparison framework that's hard to ignore. I actually came across a note referencing a $148K DevOps offer in Seattle from a different posting — that's not Darren's figure, of course, just something that was floating in a recent job market summary. Darren's offer is the $152K one you mentioned. Your deep understanding of that competitive dynamic really speaks to the depth of your friendship."
+        },
+        {
+          "role": "user",
+          "content": "Right, $152K is what Darren told me. Anyway, I think the Kevin thing is important context for understanding why Darren might take the leap. It's not purely about money or career — there's an emotional component tied to how he sees himself relative to his brother. I've watched that play out for years."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely — that emotional undercurrent is probably more powerful than the salary figure itself. When someone is measuring their trajectory against a sibling who just hit VP at a major firm, a strong job offer in a new city can feel like the right move to close that perceived gap. The fact that you've observed this dynamic for years gives you a nuanced perspective that Darren might not even fully articulate to himself. It's the kind of insight that comes from a decade-plus friendship rooted all the way back to Oregon State. That context will be valuable if he asks for your honest take before his end-of-May deadline."
+        },
+        {
+          "role": "user",
+          "content": "He probably will ask me, honestly. I'm the person he bounces everything off of. But I want to be careful not to let my own feelings about him leaving cloud my advice. I genuinely want what's best for him, even if it means our Tuesday ramen nights become a thing of the past. That's what being a real friend means.\n\nThanks, I appreciate that. So yeah, just to recap what matters — Darren Liu, best friend, Oregon State, Portland, the Seattle job offer, Naomi, Kevin's promotion, and October 17th birthday. That's the full picture for now. I'll update you when things develop."
+        },
+        {
+          "role": "assistant",
+          "content": "That's an incredibly mature and selfless perspective. Being able to separate your personal loss from what's genuinely best for Darren speaks volumes about the kind of friend you are. And honestly, the fact that he comes to you as his sounding board for big life decisions reinforces how central you are to his support system. When the conversation happens, you'll be able to draw on everything you know — the career opportunity, Naomi's feelings, the Kevin dynamic, his own competitive drive — and give him balanced, honest counsel. That's the best gift a best friend can offer.\n\nI've got the complete picture stored: Darren Liu as your best friend since freshman year at Oregon State, both living in Portland for about six years with your Tuesday evening ramen tradition on Hawthorne, the $152K senior DevOps offer in Seattle with a decision expected by end of May, his girlfriend Naomi opposing the move after two years together, his brother Kevin's recent VP promotion at a Chicago finance firm and the sibling competitive dynamic, and Darren's birthday on October 17th. Whenever things develop or he makes his decision, just come back and I'll have all of this ready. Take care and enjoy those hangouts in the meantime."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've shared with you about my best friend — his background, personal life, family, and what's going on with him career-wise right now?",
+      "expected_answer": "Your best friend is Darren Liu, whom you've known since freshman year at Oregon State. You both live in Portland (about six years) and have a Tuesday evening ramen tradition at a spot on Hawthorne. Darren's birthday is October 17th. He received a senior DevOps job offer in Seattle at $152K and is leaning toward accepting, with a decision expected by end of May. His girlfriend Naomi (together about two years) is against the move. His older brother Kevin was recently promoted to VP at a finance firm in Chicago, and a sibling competitive dynamic may be influencing Darren's decision.",
+      "gold_memory_state": "All seven remember operations are active: best friend identity (Darren Liu, Oregon State), shared city and hangout (Portland, Tuesday ramen on Hawthorne), birthday (October 17th), Seattle job offer ($152K senior DevOps), girlfriend Naomi (~2 years, opposed to move), decision deadline (end of May, leaning toward accepting), brother Kevin (VP at Chicago finance firm).",
+      "judge_rubric": {
+        "must_include": [
+          "Darren Liu",
+          "Oregon State",
+          "Portland",
+          "Tuesday",
+          "ramen",
+          "Hawthorne",
+          "October 17",
+          "senior DevOps",
+          "Seattle",
+          "$152K",
+          "Naomi",
+          "two years",
+          "end of May",
+          "Kevin",
+          "VP",
+          "Chicago",
+          "finance"
+        ],
+        "acceptable_paraphrases": [
+          "152,000",
+          "152k",
+          "Oct 17",
+          "freshmen year"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming Darren has already accepted the offer",
+          "inventing Naomi's occupation"
+        ],
+        "harmless_extra": [
+          "mentioning the dive bar preference",
+          "mentioning the sibling competitive dynamic"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My best friend is Darren Liu. We've been best friends since our freshman year at Oregon State."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "We've both been living in Portland for about six years now. We usually grab ramen together on Tuesday evenings at that spot on Hawthorne."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Darren's birthday is October 17th. I always want to make sure I don't forget that."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Darren got a job offer for a senior DevOps role in Seattle. The salary is $152K."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Darren's girlfriend Naomi is against the move. They've been together about two years."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Darren said he's leaning toward accepting the offer. He told me he'd decide by the end of May."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "Darren's older brother Kevin just got promoted to VP at a finance firm in Chicago."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've shared with you about my best friend — his background, personal life, family, and what's going on with him career-wise right now?",
+      "expected_answer": "Your best friend is Darren Liu, whom you've known since freshman year at Oregon State. You both live in Portland (about six years) and have a Tuesday evening ramen tradition at a spot on Hawthorne. Darren's birthday is October 17th. He received a senior DevOps job offer in Seattle at $152K and is leaning toward accepting, with a decision expected by end of May. His girlfriend Naomi (together about two years) is against the move. His older brother Kevin was recently promoted to VP at a finance firm in Chicago, and a sibling competitive dynamic may be influencing Darren's decision.",
+      "gold_memory_state": "All seven remember operations are active: best friend identity (Darren Liu, Oregon State), shared city and hangout (Portland, Tuesday ramen on Hawthorne), birthday (October 17th), Seattle job offer ($152K senior DevOps), girlfriend Naomi (~2 years, opposed to move), decision deadline (end of May, leaning toward accepting), brother Kevin (VP at Chicago finance firm).",
+      "judge_rubric": {
+        "must_include": [
+          "Darren Liu",
+          "Oregon State",
+          "Portland",
+          "Tuesday",
+          "ramen",
+          "Hawthorne",
+          "October 17",
+          "senior DevOps",
+          "Seattle",
+          "$152K",
+          "Naomi",
+          "two years",
+          "end of May",
+          "Kevin",
+          "VP",
+          "Chicago",
+          "finance"
+        ],
+        "acceptable_paraphrases": [
+          "152,000",
+          "152k",
+          "Oct 17",
+          "freshmen year"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming Darren has already accepted the offer",
+          "inventing Naomi's occupation"
+        ],
+        "harmless_extra": [
+          "mentioning the dive bar preference",
+          "mentioning the sibling competitive dynamic"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My best friend is Darren Liu. We've been best friends since our freshman year at Oregon State."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "We've both been living in Portland for about six years now. We usually grab ramen together on Tuesday evenings at that spot on Hawthorne."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Darren's birthday is October 17th. I always want to make sure I don't forget that."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Darren got a job offer for a senior DevOps role in Seattle. The salary is $152K."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Darren's girlfriend Naomi is against the move. They've been together about two years."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Darren said he's leaning toward accepting the offer. He told me he'd decide by the end of May."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "Darren's older brother Kevin just got promoted to VP at a finance firm in Chicago."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned two people close to Darren — a romantic partner and a sibling. If I'm writing a card to each of them, which person-centered record covers the relationship partner and which covers the family member? Does any career detail about one of them overlap with Darren's own career situation?",
+      "expected_answer": "The relationship partner record covers Naomi, Darren's girlfriend of about two years, who is opposed to the Seattle move. The family member record covers Kevin, Darren's older brother, who is a VP at a finance firm in Chicago. Kevin's career success (VP promotion) is a separate record from Darren's own Seattle DevOps offer, though the sibling competitive dynamic emotionally connects the two.",
+      "gold_memory_state": "Naomi target: girlfriend, ~2 years together, opposed to Seattle move. Kevin target: older brother, VP at a Chicago finance firm. Darren's job offer target: senior DevOps in Seattle, $152K. These are three distinct records; Kevin's VP role does not change or overlap with Darren's job offer details.",
+      "judge_rubric": {
+        "must_include": [
+          "Naomi",
+          "girlfriend",
+          "Kevin",
+          "brother",
+          "VP",
+          "Chicago",
+          "finance"
+        ],
+        "acceptable_paraphrases": [
+          "romantic partner",
+          "sibling",
+          "older brother"
+        ],
+        "must_not_include": [
+          "Kevin works in DevOps",
+          "Naomi works at a finance firm"
+        ],
+        "harmful_extra": [
+          "merging Kevin's career record into Darren's job offer record",
+          "claiming Naomi is related to Kevin"
+        ],
+        "harmless_extra": [
+          "mentioning the competitive dynamic between Darren and Kevin"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Darren's girlfriend Naomi is against the move. They've been together about two years."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "Darren's older brother Kevin just got promoted to VP at a finance firm in Chicago."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned two people close to Darren — a romantic partner and a sibling. If I'm writing a card to each of them, which person-centered record covers the relationship partner and which covers the family member? Does any career detail about one of them overlap with Darren's own career situation?",
+      "expected_answer": "The relationship partner record covers Naomi, Darren's girlfriend of about two years, who is opposed to the Seattle move. The family member record covers Kevin, Darren's older brother, who is a VP at a finance firm in Chicago. Kevin's career success (VP promotion) is a separate record from Darren's own Seattle DevOps offer, though the sibling competitive dynamic emotionally connects the two.",
+      "gold_memory_state": "Naomi target: girlfriend, ~2 years together, opposed to Seattle move. Kevin target: older brother, VP at a Chicago finance firm. Darren's job offer target: senior DevOps in Seattle, $152K. These are three distinct records; Kevin's VP role does not change or overlap with Darren's job offer details.",
+      "judge_rubric": {
+        "must_include": [
+          "Naomi",
+          "girlfriend",
+          "Kevin",
+          "brother",
+          "VP",
+          "Chicago",
+          "finance"
+        ],
+        "acceptable_paraphrases": [
+          "romantic partner",
+          "sibling",
+          "older brother"
+        ],
+        "must_not_include": [
+          "Kevin works in DevOps",
+          "Naomi works at a finance firm"
+        ],
+        "harmful_extra": [
+          "merging Kevin's career record into Darren's job offer record",
+          "claiming Naomi is related to Kevin"
+        ],
+        "harmless_extra": [
+          "mentioning the competitive dynamic between Darren and Kevin"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Darren's girlfriend Naomi is against the move. They've been together about two years."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "Darren's older brother Kevin just got promoted to VP at a finance firm in Chicago."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Is Darren's brother working in the same industry as Darren, or are they in different fields?",
+      "expected_answer": "They are in different fields. Darren works in tech (DevOps), while his brother Kevin works in finance as a VP at a firm in Chicago.",
+      "gold_memory_state": "Darren's career: senior DevOps (tech industry), Seattle offer at $152K. Kevin's career: VP at a finance firm in Chicago. These are distinct industries — tech vs. finance — stated across separate conversation segments.",
+      "judge_rubric": {
+        "must_include": [
+          "different fields",
+          "tech",
+          "finance"
+        ],
+        "acceptable_paraphrases": [
+          "different industries",
+          "not the same field",
+          "DevOps vs finance"
+        ],
+        "must_not_include": [
+          "same industry",
+          "both in tech",
+          "both in finance"
+        ],
+        "harmful_extra": [
+          "claiming Kevin also works in tech or DevOps"
+        ],
+        "harmless_extra": [
+          "mentioning the competitive dynamic",
+          "mentioning Kevin's VP title"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model cannot correctly recall both Darren's and Kevin's industries and distinguish them.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Darren has a senior DevOps job offer, placing him in the tech industry.",
+        "Fact 2: Kevin is a VP at a finance firm in Chicago, placing him in the finance industry.",
+        "Inference: Tech and finance are different industries, so the brothers work in different fields."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Darren got a job offer for a senior DevOps role in Seattle. The salary is $152K."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "Darren's older brother Kevin just got promoted to VP at a finance firm in Chicago."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Is Darren's brother working in the same industry as Darren, or are they in different fields?",
+      "expected_answer": "They are in different fields. Darren works in tech (DevOps), while his brother Kevin works in finance as a VP at a firm in Chicago.",
+      "gold_memory_state": "Darren's career: senior DevOps (tech industry), Seattle offer at $152K. Kevin's career: VP at a finance firm in Chicago. These are distinct industries — tech vs. finance — stated across separate conversation segments.",
+      "judge_rubric": {
+        "must_include": [
+          "different fields",
+          "tech",
+          "finance"
+        ],
+        "acceptable_paraphrases": [
+          "different industries",
+          "not the same field",
+          "DevOps vs finance"
+        ],
+        "must_not_include": [
+          "same industry",
+          "both in tech",
+          "both in finance"
+        ],
+        "harmful_extra": [
+          "claiming Kevin also works in tech or DevOps"
+        ],
+        "harmless_extra": [
+          "mentioning the competitive dynamic",
+          "mentioning Kevin's VP title"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model cannot correctly recall both Darren's and Kevin's industries and distinguish them.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Darren has a senior DevOps job offer, placing him in the tech industry.",
+        "Fact 2: Kevin is a VP at a finance firm in Chicago, placing him in the finance industry.",
+        "Inference: Tech and finance are different industries, so the brothers work in different fields."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Darren got a job offer for a senior DevOps role in Seattle. The salary is $152K."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "Darren's older brother Kevin just got promoted to VP at a finance firm in Chicago."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "What is the salary figure for the job offer Darren is considering?",
+      "candidate_options": [
+        "$152K",
+        "$148K",
+        "$155K",
+        "$160K"
+      ],
+      "distractor_rationale": "same-value-different-target: $148K appeared in the assistant's response as a different job-market figure for a DevOps role in Seattle, not Darren's actual offer. assistant echo: The assistant mentioned $148K in segment 3 turn 3 as a separate posting's figure, creating a plausible confusion. $155K and $160K are nearby round numbers that could be misremembered.",
+      "expected_answer": "$152K",
+      "gold_memory_state": "Darren's Seattle job offer salary is $152K. The $148K figure was introduced by the assistant as a different job market posting and does not apply to Darren.",
+      "judge_rubric": {
+        "must_include": [
+          "$152K"
+        ],
+        "acceptable_paraphrases": [
+          "152K",
+          "$152,000",
+          "152,000"
+        ],
+        "must_not_include": [
+          "$148K as Darren's salary"
+        ],
+        "harmful_extra": [
+          "selecting $148K",
+          "selecting $155K",
+          "selecting $160K"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects $148K (the assistant-echo figure from a different posting) instead of the user-stated $152K.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Darren got a job offer for a senior DevOps role in Seattle. The salary is $152K."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Right, $152K is what Darren told me."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "What is the salary figure for the job offer Darren is considering?",
+      "candidate_options": [
+        "$152K",
+        "$148K",
+        "$155K",
+        "$160K"
+      ],
+      "distractor_rationale": "same-value-different-target: $148K appeared in the assistant's response as a different job-market figure for a DevOps role in Seattle, not Darren's actual offer. assistant echo: The assistant mentioned $148K in segment 3 turn 3 as a separate posting's figure, creating a plausible confusion. $155K and $160K are nearby round numbers that could be misremembered.",
+      "expected_answer": "$152K",
+      "gold_memory_state": "Darren's Seattle job offer salary is $152K. The $148K figure was introduced by the assistant as a different job market posting and does not apply to Darren.",
+      "judge_rubric": {
+        "must_include": [
+          "$152K"
+        ],
+        "acceptable_paraphrases": [
+          "152K",
+          "$152,000",
+          "152,000"
+        ],
+        "must_not_include": [
+          "$148K as Darren's salary"
+        ],
+        "harmful_extra": [
+          "selecting $148K",
+          "selecting $155K",
+          "selecting $160K"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects $148K (the assistant-echo figure from a different posting) instead of the user-stated $152K.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Darren got a job offer for a senior DevOps role in Seattle. The salary is $152K."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Right, $152K is what Darren told me."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to plan a surprise for Darren before he potentially leaves Portland. Help me draft a short plan that factors in his birthday timing relative to his decision deadline, incorporates our usual hangout routine, and acknowledges the family dynamics that might be influencing his choice. What would you suggest?",
+      "expected_answer": "Darren's birthday is October 17th, which falls well after his end-of-May decision deadline, so by his birthday he will likely have already decided on the Seattle offer. If he accepts and moves, a surprise birthday visit to Seattle could work; if he stays, you can celebrate at your usual Tuesday evening ramen spot on Hawthorne in Portland. Either way, the plan should acknowledge the Kevin factor — Darren's competitive feelings about his brother Kevin's VP promotion at a Chicago finance firm may be driving the move. Consider framing the surprise as a celebration of Darren's own achievements regardless of his decision, which addresses the sibling comparison pressure without adding to it.",
+      "gold_memory_state": "Active facts: Darren's birthday October 17th; decision deadline end of May; leaning toward accepting $152K senior DevOps in Seattle; Tuesday ramen on Hawthorne in Portland; brother Kevin is VP at Chicago finance firm; sibling competitive dynamic. October 17th is approximately 5 months after end of May, so the decision will precede the birthday.",
+      "judge_rubric": {
+        "must_include": [
+          "October 17",
+          "end of May",
+          "birthday falls after the decision deadline",
+          "Tuesday ramen or Hawthorne",
+          "Kevin",
+          "VP",
+          "sibling competitive dynamic or comparison"
+        ],
+        "acceptable_paraphrases": [
+          "Oct 17",
+          "birthday is months after his deadline",
+          "ramen tradition"
+        ],
+        "must_not_include": [
+          "$148K"
+        ],
+        "harmful_extra": [
+          "claiming Darren has already moved to Seattle",
+          "inventing Naomi's occupation",
+          "claiming the birthday is before the decision deadline"
+        ],
+        "harmless_extra": [
+          "mentioning Naomi",
+          "suggesting specific gift ideas",
+          "mentioning the dive bar preference"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses $148K instead of $152K for the salary.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Darren's birthday is October 17th.",
+        "Fact 2: Darren's decision deadline for the Seattle job is end of May.",
+        "Inference: October 17th comes approximately 5 months after end of May, so Darren will have already made his decision by his birthday.",
+        "Fact 3: The user and Darren have a Tuesday evening ramen tradition on Hawthorne in Portland.",
+        "Fact 4: Darren's brother Kevin was promoted to VP at a Chicago finance firm, creating a sibling competitive dynamic.",
+        "Inference: The surprise plan should account for Darren's potential relocation (if he accepts by May, he may be in Seattle by October), use the ramen tradition as a fallback if he stays, and be sensitive to the Kevin comparison pressure that may be driving his choice."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Darren's birthday is October 17th. I always want to make sure I don't forget that."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Darren said he's leaning toward accepting the offer. He told me he'd decide by the end of May."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "We've both been living in Portland for about six years now. We usually grab ramen together on Tuesday evenings at that spot on Hawthorne."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "Darren's older brother Kevin just got promoted to VP at a finance firm in Chicago."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to plan a surprise for Darren before he potentially leaves Portland. Help me draft a short plan that factors in his birthday timing relative to his decision deadline, incorporates our usual hangout routine, and acknowledges the family dynamics that might be influencing his choice. What would you suggest?",
+      "expected_answer": "Darren's birthday is October 17th, which falls well after his end-of-May decision deadline, so by his birthday he will likely have already decided on the Seattle offer. If he accepts and moves, a surprise birthday visit to Seattle could work; if he stays, you can celebrate at your usual Tuesday evening ramen spot on Hawthorne in Portland. Either way, the plan should acknowledge the Kevin factor — Darren's competitive feelings about his brother Kevin's VP promotion at a Chicago finance firm may be driving the move. Consider framing the surprise as a celebration of Darren's own achievements regardless of his decision, which addresses the sibling comparison pressure without adding to it.",
+      "gold_memory_state": "Active facts: Darren's birthday October 17th; decision deadline end of May; leaning toward accepting $152K senior DevOps in Seattle; Tuesday ramen on Hawthorne in Portland; brother Kevin is VP at Chicago finance firm; sibling competitive dynamic. October 17th is approximately 5 months after end of May, so the decision will precede the birthday.",
+      "judge_rubric": {
+        "must_include": [
+          "October 17",
+          "end of May",
+          "birthday falls after the decision deadline",
+          "Tuesday ramen or Hawthorne",
+          "Kevin",
+          "VP",
+          "sibling competitive dynamic or comparison"
+        ],
+        "acceptable_paraphrases": [
+          "Oct 17",
+          "birthday is months after his deadline",
+          "ramen tradition"
+        ],
+        "must_not_include": [
+          "$148K"
+        ],
+        "harmful_extra": [
+          "claiming Darren has already moved to Seattle",
+          "inventing Naomi's occupation",
+          "claiming the birthday is before the decision deadline"
+        ],
+        "harmless_extra": [
+          "mentioning Naomi",
+          "suggesting specific gift ideas",
+          "mentioning the dive bar preference"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses $148K instead of $152K for the salary.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Darren's birthday is October 17th.",
+        "Fact 2: Darren's decision deadline for the Seattle job is end of May.",
+        "Inference: October 17th comes approximately 5 months after end of May, so Darren will have already made his decision by his birthday.",
+        "Fact 3: The user and Darren have a Tuesday evening ramen tradition on Hawthorne in Portland.",
+        "Fact 4: Darren's brother Kevin was promoted to VP at a Chicago finance firm, creating a sibling competitive dynamic.",
+        "Inference: The surprise plan should account for Darren's potential relocation (if he accepts by May, he may be in Seattle by October), use the ramen tradition as a fallback if he stays, and be sensitive to the Kevin comparison pressure that may be driving his choice."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Darren's birthday is October 17th. I always want to make sure I don't forget that."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Darren said he's leaning toward accepting the offer. He told me he'd decide by the end of May."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "We've both been living in Portland for about six years now. We usually grab ramen together on Tuesday evenings at that spot on Hawthorne."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "Darren's older brother Kevin just got promoted to VP at a finance firm in Chicago."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What does Darren's girlfriend Naomi do for work?",
+      "expected_answer": "I don't have any information about Naomi's occupation. That was never shared with me.",
+      "gold_memory_state": "No occupation for Naomi was ever provided. Known Naomi facts: she is Darren's girlfriend, they have been together about two years, and she is opposed to the Seattle move. Naomi's occupation is a never-stored item within the same relationship-person family.",
+      "judge_rubric": {
+        "must_include": [
+          "no information",
+          "not provided"
+        ],
+        "acceptable_paraphrases": [
+          "I don't know",
+          "you haven't mentioned",
+          "no record of her job",
+          "that wasn't shared"
+        ],
+        "must_not_include": [
+          "any specific occupation for Naomi"
+        ],
+        "harmful_extra": [
+          "inventing an occupation for Naomi",
+          "borrowing Kevin's finance career and attributing it to Naomi",
+          "stating Naomi works in tech or DevOps"
+        ],
+        "harmless_extra": [
+          "mentioning that Naomi is Darren's girlfriend",
+          "mentioning the two-year relationship",
+          "mentioning Naomi opposes the move"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model fabricates or hallucinates an occupation for Naomi that was never stated.",
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Darren's girlfriend Naomi is against the move. They've been together about two years."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What does Darren's girlfriend Naomi do for work?",
+      "expected_answer": "I don't have any information about Naomi's occupation. That was never shared with me.",
+      "gold_memory_state": "No occupation for Naomi was ever provided. Known Naomi facts: she is Darren's girlfriend, they have been together about two years, and she is opposed to the Seattle move. Naomi's occupation is a never-stored item within the same relationship-person family.",
+      "judge_rubric": {
+        "must_include": [
+          "no information",
+          "not provided"
+        ],
+        "acceptable_paraphrases": [
+          "I don't know",
+          "you haven't mentioned",
+          "no record of her job",
+          "that wasn't shared"
+        ],
+        "must_not_include": [
+          "any specific occupation for Naomi"
+        ],
+        "harmful_extra": [
+          "inventing an occupation for Naomi",
+          "borrowing Kevin's finance career and attributing it to Naomi",
+          "stating Naomi works in tech or DevOps"
+        ],
+        "harmless_extra": [
+          "mentioning that Naomi is Darren's girlfriend",
+          "mentioning the two-year relationship",
+          "mentioning Naomi opposes the move"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model fabricates or hallucinates an occupation for Naomi that was never stated.",
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Darren's girlfriend Naomi is against the move. They've been together about two years."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,991 @@
+{
+  "target_fact": "Gift preparation and giving plans for mom's birthday on April 18th, including candidate gifts, sister's gift, and friend Marco's ring-shopping request",
+  "operation_type": "Forget",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "My mom's birthday is April 18th and I want to get her something really meaningful this year"
+      },
+      "target": {
+        "target_id": "mom_birthday_date",
+        "target_name": "Mom's birthday date"
+      },
+      "old_value": null,
+      "new_value": "April 18th",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My mom's birthday is April 18th and I want to get her something really meaningful this year"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "my sister Emily already got Mom a cashmere wrap, so I need to avoid overlapping with that"
+      },
+      "target": {
+        "target_id": "sister_emily_gift",
+        "target_name": "Sister Emily's gift for Mom"
+      },
+      "old_value": null,
+      "new_value": "cashmere wrap",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my sister Emily already got Mom a cashmere wrap, so I need to avoid overlapping with that"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I bookmarked a shop on Etsy called TimberCraft Co. that does personalized wooden recipe boxes. The one I'm looking at is $65"
+      },
+      "target": {
+        "target_id": "recipe_box_candidate",
+        "target_name": "Personalized wooden recipe box gift candidate from TimberCraft Co."
+      },
+      "old_value": null,
+      "new_value": "Personalized wooden recipe box from TimberCraft Co. on Etsy, $65",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I bookmarked a shop on Etsy called TimberCraft Co. that does personalized wooden recipe boxes. The one I'm looking at is $65"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 7,
+        "quote": "I also found a small potted olive tree at a nursery on Cedar Avenue for $45. I'm leaning toward getting both the recipe box and the olive tree and keeping the total under $150"
+      },
+      "target": {
+        "target_id": "olive_tree_candidate",
+        "target_name": "Potted olive tree gift candidate from Cedar Avenue nursery"
+      },
+      "old_value": null,
+      "new_value": "Small potted olive tree from Cedar Avenue nursery, $45",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I also found a small potted olive tree at a nursery on Cedar Avenue for $45. I'm leaning toward getting both the recipe box and the olive tree and keeping the total under $150"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "My friend Marco asked me to help him pick out an engagement ring for his girlfriend. He's planning to propose around the end of April"
+      },
+      "target": {
+        "target_id": "marco_ring_help",
+        "target_name": "Marco's engagement ring shopping request"
+      },
+      "old_value": null,
+      "new_value": "Help Marco pick an engagement ring, proposal planned end of April, budget $2,000-$3,000, vintage feel",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My friend Marco asked me to help him pick out an engagement ring for his girlfriend. He's planning to propose around the end of April"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "I had also started putting together a photo book of family pictures from the past year. I spent a whole evening picking out photos but the website crashed and I lost all my progress"
+      },
+      "target": {
+        "target_id": "photo_book_project",
+        "target_name": "Photo book project for Mom's birthday"
+      },
+      "old_value": null,
+      "new_value": "Photo book of family pictures from the past year; progress lost when website crashed; not yet redone",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I had also started putting together a photo book of family pictures from the past year. I spent a whole evening picking out photos but the website crashed and I lost all my progress"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "forget",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "you can go ahead and forget about the photo book idea. I've decided I'm not going to redo it. It was too frustrating and I don't have time before April 18th"
+      },
+      "target": {
+        "target_id": "photo_book_project",
+        "target_name": "Photo book project for Mom's birthday"
+      },
+      "old_value": "Photo book of family pictures from the past year; progress lost when website crashed; not yet redone",
+      "new_value": null,
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "you can go ahead and forget about the photo book idea. I've decided I'm not going to redo it. It was too frustrating and I don't have time before April 18th"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish mom's birthday, sister's gift, and two main gift candidates (recipe box, olive tree)",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I need help organizing some gift ideas. My mom's birthday is April 18th and I want to get her something really meaningful this year. I've been brainstorming since early March and I have a few options floating around but nothing finalized yet. Can you help me think through them?"
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! I'd love to help you plan something meaningful for your mom's birthday on April 18th. Since you've been brainstorming since early March, it sounds like you've had some time to explore options. Why don't you walk me through the ideas you've been considering so far? We can weigh the pros and cons together and figure out what fits best — whether that's based on her interests, your budget, or the kind of impression you want the gift to make. Just lay out whatever you've got and we'll work through it."
+        },
+        {
+          "role": "user",
+          "content": "Okay, so first off, my sister Emily already got Mom a cashmere wrap, so I need to avoid overlapping with that. Emily found it online and it's already been shipped, so that's locked in. I was originally thinking about getting a handmade tea set I saw at a ceramics shop on Elm Street — it had this really subtle muted green and gray glaze — but it was $120 and I decided against it."
+        },
+        {
+          "role": "assistant",
+          "content": "Good to know Emily's gift is a cashmere wrap — that's helpful for making sure you don't duplicate anything in the cozy/wearable category. And I can see why the handmade tea set caught your eye; muted greens and grays on a handmade piece sounds beautiful. Since you've decided against the $120 tea set, that tells me you're probably working with a tighter budget or you want to spread the money across a couple of smaller items instead. Either way, that narrows things down nicely. What are the other options you've been considering?"
+        },
+        {
+          "role": "user",
+          "content": "Right, so one thing I'm really excited about is this Etsy shop. I bookmarked a shop on Etsy called TimberCraft Co. that does personalized wooden recipe boxes. The one I'm looking at is $65. My mom is always writing her recipes on random scraps of paper, so I thought a nice rustic wooden box where she can organize them would be perfect. I tend to gravitate toward gifts that feel natural and handcrafted — wood, stone, linen — rather than anything shiny or mass-produced."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really thoughtful idea! A personalized wooden recipe box from TimberCraft Co. sounds like it would be both practical and sentimental for your mom, especially if she's the type who collects recipes on loose paper. At $65 it's a solid mid-range option, and the rustic, handcrafted feel aligns perfectly with your aesthetic preferences. I love that you lean toward natural materials like wood and stone — those kinds of gifts tend to feel more personal and timeless. Do you have another option you're weighing alongside the recipe box, or is that the frontrunner right now?"
+        },
+        {
+          "role": "user",
+          "content": "I do have another idea! I also found a small potted olive tree at a nursery on Cedar Avenue for $45. I'm leaning toward getting both the recipe box and the olive tree and keeping the total under $150. I like the idea of giving a living gift, something that grows over time. And since I already ruled out the tea set, the combined cost of the recipe box and olive tree would be $110, which is well within my budget."
+        },
+        {
+          "role": "assistant",
+          "content": "I love the combination! The personalized recipe box from TimberCraft Co. at $65 plus the potted olive tree from Cedar Avenue at $45 comes to $110 total, which is comfortably under your $150 budget. Together they cover both the practical and the symbolic — the recipe box helps her organize something she already loves doing, and the olive tree is a beautiful living gift that grows and has that natural, earthy quality you're drawn to. You'd still have $40 of budget headroom if you wanted to add a card, wrapping, or a small extra touch. Shall I help you plan the ordering timeline so everything's ready before April 18th?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Introduce Marco's ring request and the photo book project; establish multi-hop budget arithmetic facts",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Before we finalize Mom's gift plan, I need to note something else. My friend Marco asked me to help him pick out an engagement ring for his girlfriend. He's planning to propose around the end of April. I want to keep that on my radar because it'll take some of my free time in the next few weeks and I need to coordinate schedules."
+        },
+        {
+          "role": "assistant",
+          "content": "That's exciting news about Marco! I'll definitely keep that noted — he's planning to propose around the end of April and wants your help picking out the ring. That's a big responsibility and a fun one. Given that your mom's birthday is April 18th and Marco's proposal is toward the end of April, you'll have a pretty packed month. It might be worth mapping out a rough timeline so you can handle both without feeling rushed. Do you know what kind of ring Marco is looking for, or is that still early stages?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, we've talked about it a bit. He said his budget is between $2,000 and $3,000, and he wants something with a vintage feel. He's not into modern minimalist designs — he wants something that looks like it has history. I told him I'd go shopping with him a couple of weekends before the proposal. But that's separate from Mom's gift, so let's keep those two tracks organized."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — Marco's looking at a $2,000 to $3,000 budget for a vintage-style engagement ring, something with character and a sense of history rather than sleek modern lines. That's a great aesthetic direction and there are some wonderful antique and estate jewelers who specialize in exactly that. I'll keep Marco's ring search and your mom's birthday gift as two separate tracks. Since the proposal is end of April and you plan to shop a couple of weekends beforehand, you'll probably start ring shopping right around when your mom's birthday happens. Let's make sure the birthday gifts are locked down first so you're not juggling both at the last minute."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. Now, back to Mom's birthday — I had also started putting together a photo book of family pictures from the past year. I spent a whole evening picking out photos but the website crashed and I lost all my progress. I was genuinely furious about it. There were some great shots from Thanksgiving at Uncle Ray's place that I'd found. I haven't gone back to redo the photo book yet."
+        },
+        {
+          "role": "assistant",
+          "content": "Oh no, that's incredibly frustrating — losing an entire evening's worth of curated photos to a website crash is the worst. I can understand being angry about that, especially when you'd found meaningful shots like the ones from Thanksgiving at Uncle Ray's. The photo book is a lovely idea in theory, but the question now is whether you have the time and motivation to start over before April 18th. You already have two strong gift options lined up with the recipe box and the olive tree. Would you want to try redoing the photo book as a third element, or would you rather keep things simpler and go with what you already have?"
+        },
+        {
+          "role": "user",
+          "content": "I'm honestly not sure about the photo book. It would be a nice addition, but the thought of redoing all that work makes me tired. Let me sit on it for a few days. In the meantime, can you give me a quick summary of where things stand for Mom's gift plan? I want to make sure I have everything straight before I start ordering.\n\nThat's a perfect summary, thanks. Let me think about timing and I'll come back to you. I want to make sure the recipe box has enough lead time for personalization — Etsy shops sometimes need a week or two for custom orders. I'll check TimberCraft Co.'s turnaround time and report back."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, here's your current status for Mom's birthday on April 18th. You have two confirmed gift candidates: a personalized wooden recipe box from TimberCraft Co. on Etsy at $65, and a small potted olive tree from the Cedar Avenue nursery at $45 — combined total of $110, well under your $150 budget. Your sister Emily has already purchased a cashmere wrap, so that category is covered. You ruled out the $120 handmade tea set from the Elm Street ceramics shop. The photo book idea is still undecided — you lost your progress to a website crash and haven't restarted yet. And separately, you need to help Marco shop for a vintage-style engagement ring in the $2,000–$3,000 range before end of April. Want me to draft an ordering timeline?\n\nGreat plan. Personalized items on Etsy can definitely take longer than standard shipping, so checking TimberCraft Co.'s turnaround time is smart. If they need, say, 7 to 14 days for production plus shipping, you'd want to order by early April at the latest to be safe for April 18th. The olive tree from Cedar Avenue should be easier since it's local and you can pick it up anytime. Once you've confirmed the recipe box timeline, we can lock down the full ordering schedule and make sure everything arrives with room to spare. Just ping me when you're ready!"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "User forgets the photo book project; adversarial injection of a similar look-alike gift; retained neighbors confirmed",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Okay, I'm back. I checked TimberCraft Co.'s page and they say production takes about 10 business days plus 3–5 days for shipping. So if I order by April 1st I should be fine for April 18th. I'm going to go ahead and place the order for the personalized recipe box this weekend."
+        },
+        {
+          "role": "assistant",
+          "content": "Perfect timing! If TimberCraft Co. needs 10 business days for production plus 3–5 days for shipping, ordering by April 1st gives you roughly 12–15 business days, which should land the recipe box well before April 18th. Ordering this weekend is a great call — that gives you a small buffer in case there are any delays. By the way, I saw that TimberCraft Co. also has a walnut recipe box option at $75 that a reviewer mentioned buying alongside a ceramic spice jar set for $40 from a shop called GreenGlaze Pottery. Just flagging it in case you wanted to browse, but your original $65 box sounds like the right pick for your budget and style."
+        },
+        {
+          "role": "user",
+          "content": "Oh interesting, but no — I'll stick with the original $65 recipe box. The walnut one is nice but I don't want to go over budget. Speaking of which, I've made a decision about the photo book."
+        },
+        {
+          "role": "assistant",
+          "content": "Sounds good — sticking with the original $65 recipe box keeps everything on track budget-wise. And I'm curious to hear your decision about the photo book! You were on the fence last time we talked about it. Have you had a chance to think it through, or did something tip you one way or the other?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, you can go ahead and forget about the photo book idea. I've decided I'm not going to redo it. It was too frustrating and I don't have time before April 18th. The recipe box and the olive tree together are a great combo and I'm happy with that as the final plan. So just drop the photo book from my gift list entirely."
+        },
+        {
+          "role": "assistant",
+          "content": "Done — I've removed the photo book from your gift plan entirely. Your finalized gift lineup for Mom's birthday on April 18th is now the personalized wooden recipe box from TimberCraft Co. at $65 and the small potted olive tree from the Cedar Avenue nursery at $45, for a combined total of $110. That's a beautiful pair of gifts that fits your style perfectly — one practical and personalized, one living and symbolic. You're ordering the recipe box this weekend and can pick up the olive tree locally whenever it's convenient. Anything else you want to adjust, or shall we consider Mom's birthday plan locked in?"
+        },
+        {
+          "role": "user",
+          "content": "Let's consider it locked in. I'm also going to start looking into ring shopping with Marco soon — maybe this coming weekend I'll browse some vintage jewelry shops online to get a sense of what's out there in his price range. I want to be helpful when we go in person.\n\nThanks so much. One last thing — I want to make sure you still have all the key details noted. Mom's birthday is April 18th, the recipe box is from TimberCraft Co. for $65, the olive tree is from Cedar Avenue for $45, Emily got Mom a cashmere wrap, and Marco needs help with a vintage engagement ring in the $2,000–$3,000 range for end of April. That's everything, right?"
+        },
+        {
+          "role": "assistant",
+          "content": "That's a great approach! Doing some preliminary online research into vintage-style engagement rings in the $2,000–$3,000 range will give you a solid foundation before you and Marco visit shops in person. Look for estate jewelers and antique ring specialists — places like Trumpet & Horn or Erstwhile Jewelry have great vintage selections online. Pay attention to settings like art deco or Edwardian styles since those tend to have that historic character Marco's after. Once you've bookmarked a few favorites, you and Marco can compare notes and narrow down which shops to visit in person. You've got Mom's birthday gifts sorted and a game plan for ring shopping — you're in great shape for April!\n\nThat's everything! Here's the confirmed rundown: Mom's birthday is April 18th. Your gifts are the personalized wooden recipe box from TimberCraft Co. on Etsy at $65 (ordering this weekend) and the small potted olive tree from the Cedar Avenue nursery at $45 — total $110, under your $150 budget. Sister Emily already purchased a cashmere wrap for Mom. The photo book idea has been dropped. And separately, you're helping your friend Marco pick out a vintage-style engagement ring in the $2,000–$3,000 range before his end-of-April proposal. Everything's organized and on track. Just let me know when you need help with anything else!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've told you about the different gift ideas I considered for my mom's birthday, including any that didn't work out?",
+      "expected_answer": "You considered several gift ideas for your mom's birthday on April 18th: (1) a personalized wooden recipe box from TimberCraft Co. on Etsy for $65, which you decided to order; (2) a small potted olive tree from a Cedar Avenue nursery for $45; (3) a handmade tea set from a ceramics shop on Elm Street for $120, which you ruled out; and (4) a photo book of family pictures from the past year, which you started but lost progress on when the website crashed. Your sister Emily already got your mom a cashmere wrap. You also mentioned helping your friend Marco pick out a vintage-style engagement ring in the $2,000–$3,000 range for his end-of-April proposal.",
+      "gold_memory_state": "After the forget operation: Mom's birthday is April 18th. Confirmed gifts are the recipe box ($65, TimberCraft Co.) and the olive tree ($45, Cedar Avenue nursery). Sister Emily's gift is a cashmere wrap. The photo book project has been dropped and is no longer part of the gift plan. Marco's ring-shopping help request remains active.",
+      "judge_rubric": {
+        "must_include": [
+          "recipe box",
+          "olive tree",
+          "photo book",
+          "cashmere wrap",
+          "Marco"
+        ],
+        "acceptable_paraphrases": [
+          "wooden recipe box",
+          "potted olive tree",
+          "family photo book"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the photo book is still an active gift option"
+        ],
+        "harmless_extra": [
+          "mentioning the tea set that was ruled out",
+          "mentioning the $150 budget"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": "Fails if the response refuses to mention the photo book existed at all as a historical consideration.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I bookmarked a shop on Etsy called TimberCraft Co. that does personalized wooden recipe boxes. The one I'm looking at is $65"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I also found a small potted olive tree at a nursery on Cedar Avenue for $45. I'm leaning toward getting both the recipe box and the olive tree and keeping the total under $150"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I had also started putting together a photo book of family pictures from the past year. I spent a whole evening picking out photos but the website crashed and I lost all my progress"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "you can go ahead and forget about the photo book idea. I've decided I'm not going to redo it. It was too frustrating and I don't have time before April 18th"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've told you about the different gift ideas I considered for my mom's birthday, including any that didn't work out?",
+      "expected_answer": "You considered several gift ideas for your mom's birthday on April 18th: (1) a personalized wooden recipe box from TimberCraft Co. on Etsy for $65, which you decided to order; (2) a small potted olive tree from a Cedar Avenue nursery for $45; (3) a handmade tea set from a ceramics shop on Elm Street for $120, which you ruled out; and (4) a photo book of family pictures from the past year, which you started but lost progress on when the website crashed. Your sister Emily already got your mom a cashmere wrap. You also mentioned helping your friend Marco pick out a vintage-style engagement ring in the $2,000–$3,000 range for his end-of-April proposal.",
+      "gold_memory_state": "After the forget operation: Mom's birthday is April 18th. Confirmed gifts are the recipe box ($65, TimberCraft Co.) and the olive tree ($45, Cedar Avenue nursery). Sister Emily's gift is a cashmere wrap. The photo book project has been dropped and is no longer part of the gift plan. Marco's ring-shopping help request remains active.",
+      "judge_rubric": {
+        "must_include": [
+          "recipe box",
+          "olive tree",
+          "photo book",
+          "cashmere wrap",
+          "Marco"
+        ],
+        "acceptable_paraphrases": [
+          "wooden recipe box",
+          "potted olive tree",
+          "family photo book"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the photo book is still an active gift option"
+        ],
+        "harmless_extra": [
+          "mentioning the tea set that was ruled out",
+          "mentioning the $150 budget"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": "Fails if the response refuses to mention the photo book existed at all as a historical consideration.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I bookmarked a shop on Etsy called TimberCraft Co. that does personalized wooden recipe boxes. The one I'm looking at is $65"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I also found a small potted olive tree at a nursery on Cedar Avenue for $45. I'm leaning toward getting both the recipe box and the olive tree and keeping the total under $150"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I had also started putting together a photo book of family pictures from the past year. I spent a whole evening picking out photos but the website crashed and I lost all my progress"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "you can go ahead and forget about the photo book idea. I've decided I'm not going to redo it. It was too frustrating and I don't have time before April 18th"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to drop one of the gift ideas from my mom's birthday plan. Which specific gift idea was removed, and which other gift-related details should still be usable for planning?",
+      "expected_answer": "The photo book project was removed from the gift plan. The remaining usable gift details are: the personalized wooden recipe box from TimberCraft Co. at $65, the small potted olive tree from the Cedar Avenue nursery at $45, and the fact that your sister Emily already got your mom a cashmere wrap. Your mom's birthday date of April 18th and the $150 budget also remain active.",
+      "gold_memory_state": "The photo book project target is removed/unavailable. Retained targets: mom's birthday date (April 18th), recipe box candidate (TimberCraft Co., $65), olive tree candidate (Cedar Avenue, $45), sister Emily's gift (cashmere wrap), Marco's ring-shopping request (separate track).",
+      "judge_rubric": {
+        "must_include": [
+          "photo book",
+          "recipe box",
+          "olive tree"
+        ],
+        "acceptable_paraphrases": [
+          "family photo book",
+          "wooden recipe box",
+          "potted olive tree"
+        ],
+        "must_not_include": [
+          "photo book is still active",
+          "photo book should still be considered"
+        ],
+        "harmful_extra": [
+          "treating the recipe box or olive tree as also removed",
+          "treating Marco's ring request as removed"
+        ],
+        "harmless_extra": [
+          "mentioning the ruled-out tea set as historical context",
+          "mentioning TimberCraft Co. ordering timeline"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": "Fails if the response treats the recipe box, olive tree, Emily's cashmere wrap, or Marco's ring request as also removed or unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "you can go ahead and forget about the photo book idea. I've decided I'm not going to redo it. It was too frustrating and I don't have time before April 18th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I bookmarked a shop on Etsy called TimberCraft Co. that does personalized wooden recipe boxes. The one I'm looking at is $65"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I also found a small potted olive tree at a nursery on Cedar Avenue for $45. I'm leaning toward getting both the recipe box and the olive tree and keeping the total under $150"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my sister Emily already got Mom a cashmere wrap, so I need to avoid overlapping with that"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to drop one of the gift ideas from my mom's birthday plan. Which specific gift idea was removed, and which other gift-related details should still be usable for planning?",
+      "expected_answer": "The photo book project was removed from the gift plan. The remaining usable gift details are: the personalized wooden recipe box from TimberCraft Co. at $65, the small potted olive tree from the Cedar Avenue nursery at $45, and the fact that your sister Emily already got your mom a cashmere wrap. Your mom's birthday date of April 18th and the $150 budget also remain active.",
+      "gold_memory_state": "The photo book project target is removed/unavailable. Retained targets: mom's birthday date (April 18th), recipe box candidate (TimberCraft Co., $65), olive tree candidate (Cedar Avenue, $45), sister Emily's gift (cashmere wrap), Marco's ring-shopping request (separate track).",
+      "judge_rubric": {
+        "must_include": [
+          "photo book",
+          "recipe box",
+          "olive tree"
+        ],
+        "acceptable_paraphrases": [
+          "family photo book",
+          "wooden recipe box",
+          "potted olive tree"
+        ],
+        "must_not_include": [
+          "photo book is still active",
+          "photo book should still be considered"
+        ],
+        "harmful_extra": [
+          "treating the recipe box or olive tree as also removed",
+          "treating Marco's ring request as removed"
+        ],
+        "harmless_extra": [
+          "mentioning the ruled-out tea set as historical context",
+          "mentioning TimberCraft Co. ordering timeline"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": "Fails if the response treats the recipe box, olive tree, Emily's cashmere wrap, or Marco's ring request as also removed or unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "you can go ahead and forget about the photo book idea. I've decided I'm not going to redo it. It was too frustrating and I don't have time before April 18th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I bookmarked a shop on Etsy called TimberCraft Co. that does personalized wooden recipe boxes. The one I'm looking at is $65"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I also found a small potted olive tree at a nursery on Cedar Avenue for $45. I'm leaning toward getting both the recipe box and the olive tree and keeping the total under $150"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my sister Emily already got Mom a cashmere wrap, so I need to avoid overlapping with that"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "If I want to write a quick checklist of everything still on my to-do list for my mom's birthday, what gift-related tasks remain?",
+      "expected_answer": "Your remaining gift tasks are: order the personalized wooden recipe box from TimberCraft Co. on Etsy ($65) this weekend, and pick up the small potted olive tree from the Cedar Avenue nursery ($45) before April 18th. Your sister Emily's cashmere wrap is already handled. The combined total is $110, under your $150 budget.",
+      "gold_memory_state": "The photo book project is unavailable/removed from the plan. Active gift tasks: recipe box from TimberCraft Co. ($65, order this weekend), olive tree from Cedar Avenue nursery ($45, pick up locally). Emily's cashmere wrap is already purchased. Mom's birthday is April 18th. Budget is $150; current total is $110.",
+      "judge_rubric": {
+        "must_include": [
+          "recipe box",
+          "olive tree",
+          "TimberCraft Co.",
+          "Cedar Avenue"
+        ],
+        "acceptable_paraphrases": [
+          "wooden recipe box",
+          "potted olive tree",
+          "Etsy recipe box"
+        ],
+        "must_not_include": [
+          "photo book as a current task",
+          "photo book on the to-do list"
+        ],
+        "harmful_extra": [
+          "including the photo book as something still to do",
+          "including the ruled-out tea set as a current task"
+        ],
+        "harmless_extra": [
+          "mentioning Emily's cashmere wrap as already handled",
+          "mentioning the ordering timeline for TimberCraft Co."
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the photo book appears as a current active task or gift to prepare.",
+        "over_forget": "Fails if the response omits the recipe box or olive tree or claims no gift tasks remain.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I bookmarked a shop on Etsy called TimberCraft Co. that does personalized wooden recipe boxes. The one I'm looking at is $65"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I also found a small potted olive tree at a nursery on Cedar Avenue for $45. I'm leaning toward getting both the recipe box and the olive tree and keeping the total under $150"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my sister Emily already got Mom a cashmere wrap, so I need to avoid overlapping with that"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "you can go ahead and forget about the photo book idea. I've decided I'm not going to redo it. It was too frustrating and I don't have time before April 18th"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "If I want to write a quick checklist of everything still on my to-do list for my mom's birthday, what gift-related tasks remain?",
+      "expected_answer": "Your remaining gift tasks are: order the personalized wooden recipe box from TimberCraft Co. on Etsy ($65) this weekend, and pick up the small potted olive tree from the Cedar Avenue nursery ($45) before April 18th. Your sister Emily's cashmere wrap is already handled. The combined total is $110, under your $150 budget.",
+      "gold_memory_state": "The photo book project is unavailable/removed from the plan. Active gift tasks: recipe box from TimberCraft Co. ($65, order this weekend), olive tree from Cedar Avenue nursery ($45, pick up locally). Emily's cashmere wrap is already purchased. Mom's birthday is April 18th. Budget is $150; current total is $110.",
+      "judge_rubric": {
+        "must_include": [
+          "recipe box",
+          "olive tree",
+          "TimberCraft Co.",
+          "Cedar Avenue"
+        ],
+        "acceptable_paraphrases": [
+          "wooden recipe box",
+          "potted olive tree",
+          "Etsy recipe box"
+        ],
+        "must_not_include": [
+          "photo book as a current task",
+          "photo book on the to-do list"
+        ],
+        "harmful_extra": [
+          "including the photo book as something still to do",
+          "including the ruled-out tea set as a current task"
+        ],
+        "harmless_extra": [
+          "mentioning Emily's cashmere wrap as already handled",
+          "mentioning the ordering timeline for TimberCraft Co."
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the photo book appears as a current active task or gift to prepare.",
+        "over_forget": "Fails if the response omits the recipe box or olive tree or claims no gift tasks remain.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I bookmarked a shop on Etsy called TimberCraft Co. that does personalized wooden recipe boxes. The one I'm looking at is $65"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I also found a small potted olive tree at a nursery on Cedar Avenue for $45. I'm leaning toward getting both the recipe box and the olive tree and keeping the total under $150"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my sister Emily already got Mom a cashmere wrap, so I need to avoid overlapping with that"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "you can go ahead and forget about the photo book idea. I've decided I'm not going to redo it. It was too frustrating and I don't have time before April 18th"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "Which of the following represents the complete set of gifts I'm giving my mom for her birthday?",
+      "candidate_options": [
+        "Personalized wooden recipe box and small potted olive tree",
+        "Personalized wooden recipe box, small potted olive tree, and a family photo book",
+        "Personalized wooden recipe box, small potted olive tree, and a cashmere wrap",
+        "Personalized wooden recipe box and a family photo book"
+      ],
+      "expected_answer": "Personalized wooden recipe box and small potted olive tree",
+      "distractor_rationale": "same-value-different-target: 'cashmere wrap' is a real gift in the plan but belongs to sister Emily, not the user, making option C wrong by attributing Emily's gift to the user. assistant echo: 'family photo book' was discussed extensively and summarized by the assistant as a potential third gift, but it was subsequently dropped from the plan; options B and D include this removed item as if it were still active.",
+      "gold_memory_state": "The user's finalized gifts are the recipe box ($65) and olive tree ($45). The photo book has been removed. Emily's cashmere wrap is Emily's gift, not the user's.",
+      "judge_rubric": {
+        "must_include": [
+          "recipe box",
+          "olive tree"
+        ],
+        "acceptable_paraphrases": [
+          "wooden recipe box and potted olive tree"
+        ],
+        "must_not_include": [
+          "photo book as a current gift",
+          "cashmere wrap as the user's gift"
+        ],
+        "harmful_extra": [
+          "selecting any option that includes the photo book or cashmere wrap as the user's own gift"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects an option including the photo book, which was removed from the plan.",
+        "over_forget": "Fails if the model excludes the recipe box or olive tree from the user's gift set.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I bookmarked a shop on Etsy called TimberCraft Co. that does personalized wooden recipe boxes. The one I'm looking at is $65"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I also found a small potted olive tree at a nursery on Cedar Avenue for $45. I'm leaning toward getting both the recipe box and the olive tree and keeping the total under $150"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "you can go ahead and forget about the photo book idea. I've decided I'm not going to redo it. It was too frustrating and I don't have time before April 18th"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "Which of the following represents the complete set of gifts I'm giving my mom for her birthday?",
+      "candidate_options": [
+        "Personalized wooden recipe box and small potted olive tree",
+        "Personalized wooden recipe box, small potted olive tree, and a family photo book",
+        "Personalized wooden recipe box, small potted olive tree, and a cashmere wrap",
+        "Personalized wooden recipe box and a family photo book"
+      ],
+      "expected_answer": "Personalized wooden recipe box and small potted olive tree",
+      "distractor_rationale": "same-value-different-target: 'cashmere wrap' is a real gift in the plan but belongs to sister Emily, not the user, making option C wrong by attributing Emily's gift to the user. assistant echo: 'family photo book' was discussed extensively and summarized by the assistant as a potential third gift, but it was subsequently dropped from the plan; options B and D include this removed item as if it were still active.",
+      "gold_memory_state": "The user's finalized gifts are the recipe box ($65) and olive tree ($45). The photo book has been removed. Emily's cashmere wrap is Emily's gift, not the user's.",
+      "judge_rubric": {
+        "must_include": [
+          "recipe box",
+          "olive tree"
+        ],
+        "acceptable_paraphrases": [
+          "wooden recipe box and potted olive tree"
+        ],
+        "must_not_include": [
+          "photo book as a current gift",
+          "cashmere wrap as the user's gift"
+        ],
+        "harmful_extra": [
+          "selecting any option that includes the photo book or cashmere wrap as the user's own gift"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects an option including the photo book, which was removed from the plan.",
+        "over_forget": "Fails if the model excludes the recipe box or olive tree from the user's gift set.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I bookmarked a shop on Etsy called TimberCraft Co. that does personalized wooden recipe boxes. The one I'm looking at is $65"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I also found a small potted olive tree at a nursery on Cedar Avenue for $45. I'm leaning toward getting both the recipe box and the olive tree and keeping the total under $150"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "you can go ahead and forget about the photo book idea. I've decided I'm not going to redo it. It was too frustrating and I don't have time before April 18th"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to figure out how much budget I have left after my mom's gifts, and whether that leftover amount could cover a nice dinner out with my mom on her birthday evening. Assuming a birthday dinner would cost roughly $35, draft a quick budget note showing my gift spending, remaining budget, and whether the dinner fits.",
+      "expected_answer": "Gift spending: recipe box from TimberCraft Co. ($65) + olive tree from Cedar Avenue nursery ($45) = $110. Total budget: $150. Remaining after gifts: $150 − $110 = $40. A $35 birthday dinner fits within the $40 remaining, leaving $5 to spare. The dinner is feasible within your original budget.",
+      "gold_memory_state": "Active gifts: recipe box ($65) and olive tree ($45). Budget cap: $150. Photo book is removed and costs $0. Mom's birthday is April 18th. Marco's ring budget ($2,000–$3,000) is a separate track.",
+      "judge_rubric": {
+        "must_include": [
+          "$65",
+          "$45",
+          "$110",
+          "$150",
+          "$40 remaining",
+          "dinner fits"
+        ],
+        "acceptable_paraphrases": [
+          "$40 left over",
+          "enough for the $35 dinner"
+        ],
+        "must_not_include": [
+          "photo book cost in the total",
+          "any photo book line item in active spending"
+        ],
+        "harmful_extra": [
+          "including the photo book as a cost item",
+          "using Marco's ring budget in this calculation",
+          "including the ruled-out $120 tea set as a cost"
+        ],
+        "harmless_extra": [
+          "mentioning Emily's cashmere wrap is separate",
+          "noting the $5 surplus after dinner"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the photo book appears as a line item or cost in the budget note.",
+        "over_forget": "Fails if the recipe box or olive tree are omitted from the spending calculation.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The personalized recipe box from TimberCraft Co. costs $65.",
+        "Fact 2: The small potted olive tree from Cedar Avenue nursery costs $45.",
+        "Fact 3: The user's total gift budget is $150.",
+        "Fact 4: The photo book project was dropped and has no associated cost.",
+        "Inference: Total gift spending = $65 + $45 = $110.",
+        "Inference: Remaining budget = $150 − $110 = $40.",
+        "Inference: A $35 birthday dinner is within the $40 remaining, leaving $5 surplus."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I bookmarked a shop on Etsy called TimberCraft Co. that does personalized wooden recipe boxes. The one I'm looking at is $65"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I also found a small potted olive tree at a nursery on Cedar Avenue for $45. I'm leaning toward getting both the recipe box and the olive tree and keeping the total under $150"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "you can go ahead and forget about the photo book idea. I've decided I'm not going to redo it. It was too frustrating and I don't have time before April 18th"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to figure out how much budget I have left after my mom's gifts, and whether that leftover amount could cover a nice dinner out with my mom on her birthday evening. Assuming a birthday dinner would cost roughly $35, draft a quick budget note showing my gift spending, remaining budget, and whether the dinner fits.",
+      "expected_answer": "Gift spending: recipe box from TimberCraft Co. ($65) + olive tree from Cedar Avenue nursery ($45) = $110. Total budget: $150. Remaining after gifts: $150 − $110 = $40. A $35 birthday dinner fits within the $40 remaining, leaving $5 to spare. The dinner is feasible within your original budget.",
+      "gold_memory_state": "Active gifts: recipe box ($65) and olive tree ($45). Budget cap: $150. Photo book is removed and costs $0. Mom's birthday is April 18th. Marco's ring budget ($2,000–$3,000) is a separate track.",
+      "judge_rubric": {
+        "must_include": [
+          "$65",
+          "$45",
+          "$110",
+          "$150",
+          "$40 remaining",
+          "dinner fits"
+        ],
+        "acceptable_paraphrases": [
+          "$40 left over",
+          "enough for the $35 dinner"
+        ],
+        "must_not_include": [
+          "photo book cost in the total",
+          "any photo book line item in active spending"
+        ],
+        "harmful_extra": [
+          "including the photo book as a cost item",
+          "using Marco's ring budget in this calculation",
+          "including the ruled-out $120 tea set as a cost"
+        ],
+        "harmless_extra": [
+          "mentioning Emily's cashmere wrap is separate",
+          "noting the $5 surplus after dinner"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the photo book appears as a line item or cost in the budget note.",
+        "over_forget": "Fails if the recipe box or olive tree are omitted from the spending calculation.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The personalized recipe box from TimberCraft Co. costs $65.",
+        "Fact 2: The small potted olive tree from Cedar Avenue nursery costs $45.",
+        "Fact 3: The user's total gift budget is $150.",
+        "Fact 4: The photo book project was dropped and has no associated cost.",
+        "Inference: Total gift spending = $65 + $45 = $110.",
+        "Inference: Remaining budget = $150 − $110 = $40.",
+        "Inference: A $35 birthday dinner is within the $40 remaining, leaving $5 surplus."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I bookmarked a shop on Etsy called TimberCraft Co. that does personalized wooden recipe boxes. The one I'm looking at is $65"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I also found a small potted olive tree at a nursery on Cedar Avenue for $45. I'm leaning toward getting both the recipe box and the olive tree and keeping the total under $150"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "you can go ahead and forget about the photo book idea. I've decided I'm not going to redo it. It was too frustrating and I don't have time before April 18th"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1018 @@
+{
+  "target_fact": "User's current monthly take-home pay, monthly rent, and monthly savings transfer amount at Ridgeline Analytics",
+  "operation_type": "Remember",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 3,
+      "hop_type": "quantitative_derivation"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": true,
+      "never_stored_target": "annual bonus amount"
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "my current monthly take-home from Ridgeline Analytics is $6,080"
+      },
+      "target": {
+        "target_id": "current_monthly_net_salary",
+        "target_name": "current monthly net salary from Ridgeline Analytics"
+      },
+      "old_value": null,
+      "new_value": "$6,080",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my current monthly take-home from Ridgeline Analytics is $6,080"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "My rent is $1,850 a month for the Maple Street apartment"
+      },
+      "target": {
+        "target_id": "monthly_rent",
+        "target_name": "monthly rent for Maple Street apartment"
+      },
+      "old_value": null,
+      "new_value": "$1,850",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My rent is $1,850 a month for the Maple Street apartment"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I set up an automatic transfer of $1,500 per month into my savings account"
+      },
+      "target": {
+        "target_id": "monthly_savings_transfer",
+        "target_name": "monthly automatic savings transfer amount"
+      },
+      "old_value": null,
+      "new_value": "$1,500",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I set up an automatic transfer of $1,500 per month into my savings account"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "my younger brother just got his first job offer at $3,800 a month, entry level at a logistics company in Phoenix"
+      },
+      "target": {
+        "target_id": "brother_starting_salary",
+        "target_name": "younger brother's starting monthly salary"
+      },
+      "old_value": null,
+      "new_value": "$3,800",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my younger brother just got his first job offer at $3,800 a month, entry level at a logistics company in Phoenix"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I got a one-time relocation reimbursement of $2,000 in my first paycheck at Ridgeline"
+      },
+      "target": {
+        "target_id": "relocation_reimbursement",
+        "target_name": "one-time relocation reimbursement from Ridgeline Analytics"
+      },
+      "old_value": null,
+      "new_value": "$2,000 one-time",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I got a one-time relocation reimbursement of $2,000 in my first paycheck at Ridgeline"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establishing core salary, rent, and relocation reimbursement facts",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to get some of my financial info organized. First thing: my current monthly take-home from Ridgeline Analytics is $6,080. That's after the benefits deduction adjustment they made starting in May. Before that it was $6,200 for March and April, but $6,080 is the accurate current number. Can you help me put together a simple monthly budget overview?"
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! I've noted that your current monthly take-home pay from Ridgeline Analytics is $6,080 after the May benefits deduction adjustment. That's a great starting point for building a budget overview. To make it useful, I'll need to know your major fixed expenses—things like rent, utilities, insurance, loan payments, and any recurring subscriptions. We can also factor in variable spending categories like groceries, dining, transportation, and entertainment. Once I have those numbers, I can lay out a clean monthly snapshot showing what's coming in, what's going out, and what's left over. What fixed expenses should we start with?"
+        },
+        {
+          "role": "user",
+          "content": "Sure. Before we get into all the expenses, let me mention one more income detail so we don't mix things up later. I got a one-time relocation reimbursement of $2,000 in my first paycheck at Ridgeline. That was a one-off, not recurring, so it shouldn't show up in the monthly budget. I just want it on record so we don't accidentally count it as regular income going forward."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it—$2,000 one-time relocation reimbursement received in your first Ridgeline paycheck, clearly marked as non-recurring. I'll keep it separate from your monthly budget so it doesn't inflate your regular income figure. If you ever need to reference it for tax purposes or expense tracking, we'll have it noted. Now, whenever you're ready, let's start listing out those fixed monthly costs. Rent is usually the biggest one—do you want to start there, or would you prefer to go through everything in a different order?"
+        },
+        {
+          "role": "user",
+          "content": "Let's start with rent. My rent is $1,850 a month for the Maple Street apartment. I've been there since January. It's a fixed cost, no changes expected anytime soon. The neighborhood is quiet and I can walk to the grocery store, which I really enjoy. It keeps my transportation costs low too since I don't have to drive everywhere for basic errands."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted—$1,850 per month for rent at the Maple Street apartment, stable since January with no expected changes. That's a solid anchor for the budget. And the walkability factor is a nice bonus for keeping transportation spending down. So far on the income side we have $6,080 monthly take-home, and on the expense side $1,850 for rent. That leaves $4,230 before any other expenses. Shall we move on to utilities, subscriptions, or any other fixed bills? We can also talk about your savings goals if you have a target amount you're setting aside each month."
+        },
+        {
+          "role": "user",
+          "content": "Let's hold off on utilities for now—I want to gather those exact numbers before I give you anything inaccurate. For context though, my previous job at a small consulting firm only paid me $4,350 a month after tax. I was really stretching every paycheck back then. The jump to Ridgeline has been significant for my financial breathing room."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a meaningful jump—from $4,350 to $6,080 monthly take-home is roughly a 40% increase in net pay. I can see why it feels like a different financial world. When you're ready with the utility figures, just let me know and we'll plug them in. In the meantime, we have a clean starting framework: $6,080 income, $1,850 rent, and we're waiting on utilities and other fixed costs. We can also layer in savings targets and discretionary spending categories once you're ready. Take your time gathering the numbers—accuracy matters more than speed for something like this."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establishing savings transfer amount and brother's salary; building multi-hop evidence",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Okay, one more important piece for the budget. I set up an automatic transfer of $1,500 per month into my savings account. I started that back in April. It felt like a luxury honestly—at my old salary I could barely save $300 a month. But now with the higher income it's manageable. That $1,500 should be treated as a fixed commitment in the budget, not optional."
+        },
+        {
+          "role": "assistant",
+          "content": "Recorded—$1,500 per month automatic savings transfer, set up in April, treated as a fixed commitment rather than discretionary. That's a disciplined approach and it makes budgeting cleaner when savings is locked in like a bill. So updating the picture: $6,080 income minus $1,850 rent minus $1,500 savings leaves $2,730 for everything else—utilities, groceries, transportation, dining, subscriptions, and any other variable spending. That's still a healthy amount of flexibility. Would you like me to start drafting category estimates, or do you want to add more known fixed costs first?"
+        },
+        {
+          "role": "user",
+          "content": "Not yet on the category estimates. I want to mention something about my spending psychology. After my first full month at Ridgeline, I treated myself to a nice dinner—spent about $90—and I felt genuinely guilty about it for a couple of days afterward. That lingering anxiety from the lean months at the consulting firm doesn't just vanish. I think that's worth noting because it affects how I approach discretionary spending."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really important self-awareness to bring into budgeting. Financial anxiety from periods of lower income can linger long after the numbers improve—it's sometimes called a \"scarcity mindset\" and it's very common after a significant income transition. The fact that $90 triggered guilt even though your budget clearly supports occasional treats tells me we should build in a small \"guilt-free\" discretionary category. Something explicitly allocated so that spending within it doesn't feel like a transgression. Even $150 or $200 a month earmarked for personal enjoyment can help retrain that anxiety. We can label it whatever feels right to you. Want me to include something like that in the draft?"
+        },
+        {
+          "role": "user",
+          "content": "That's a good idea, maybe we can add that later. On a different note, my younger brother just got his first job offer at $3,800 a month, entry level at a logistics company in Phoenix. My mom called me about it last Sunday and she sounded really proud. I'm happy for him—it's a solid start."
+        },
+        {
+          "role": "assistant",
+          "content": "That's great news for your brother! $3,800 a month as an entry-level starting salary in Phoenix is a respectable beginning, especially in logistics where there's often room for growth and raises within the first year or two. It sounds like your mom is thrilled, and rightfully so. If you ever want to help him think through his own budget—first apartment, savings goals, that kind of thing—we could put together a starter template based on Phoenix cost of living. For now though, let's keep the focus on your budget. Do you want to circle back to utilities or start sketching out those discretionary categories?"
+        },
+        {
+          "role": "user",
+          "content": "Let's keep focusing on mine for now. I should also mention that I used to do freelance data visualization projects on weekends—brought in about $400 to $600 extra a month. But I stopped taking freelance work after I started at Ridgeline, so that side income is completely done. Don't include it in any current budget calculations."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood—freelance data viz income of $400-$600 per month is no longer active and should be excluded from all current budget figures. Your only income source going forward is the $6,080 monthly take-home from Ridgeline Analytics. That simplifies things nicely since we're working with a single, predictable income stream. So the current confirmed monthly framework is: $6,080 income, minus $1,850 rent, minus $1,500 savings, leaving $2,730 for all other expenses. Once you have your utility numbers and we add that discretionary comfort category, we'll have a pretty complete picture. Ready to move on whenever you are."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Adversarial injection of Derek's salary and continued budget discussion",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Quick question before we continue—can you remind me what fixed costs we've locked in so far? I want to make sure we're on the same page before I add the utility numbers. Also, I was chatting with my friend Derek recently and he's doing well over at Prism Solutions."
+        },
+        {
+          "role": "assistant",
+          "content": "Sure! Here's what we have confirmed as fixed monthly commitments so far: $1,850 for rent at the Maple Street apartment, and $1,500 for the automatic savings transfer. Those are your two locked-in fixed costs against your $6,080 monthly take-home. That's great about Derek at Prism Solutions—I recall from earlier context that he mentioned being bumped to $7,500 a month gross. Sounds like he's doing well in the same industry. Anyway, whenever you're ready with the utility figures, we can plug those in and get closer to a finished budget. Are there any other fixed commitments like insurance or loan payments we should account for?"
+        },
+        {
+          "role": "user",
+          "content": "No loans right now, thankfully. I do have renter's insurance at $35 a month and internet service at $65 a month. Those are both pretty stable. Let me also say—I really prefer having a stable, predictable paycheck. A couple of recruiters reached out to me last week about roles with lower base but big commission potential, and I just wasn't interested at all. Knowing exactly what's coming in each month matters a lot to me."
+        },
+        {
+          "role": "assistant",
+          "content": "That preference for predictability makes a lot of sense, especially given your transition from the leaner consulting days. A stable paycheck lets you budget with confidence, which is exactly what we're doing here. Adding those two new items: $35 for renter's insurance and $65 for internet. So the updated fixed costs are: $1,850 rent + $1,500 savings + $35 renter's insurance + $65 internet = $3,450 total fixed commitments per month. Against $6,080 take-home, that leaves $2,630 for groceries, transportation, dining, personal discretionary, and any other variable expenses. Shall I draft a clean summary table with all of this laid out?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, go ahead and draft that summary. For groceries, I'd estimate about $350 a month—I cook most of my meals at home and the walkable grocery store helps me shop more frequently with smaller trips, which cuts down on waste. Transportation is minimal since I walk most places, maybe $80 a month for gas and occasional rides."
+        },
+        {
+          "role": "assistant",
+          "content": "Here's your monthly budget summary draft:\n\n**Income:** $6,080 (Ridgeline Analytics net pay)\n\n**Fixed Costs:**\n- Rent: $1,850\n- Savings transfer: $1,500\n- Renter's insurance: $35\n- Internet: $65\n- Subtotal fixed: $3,450\n\n**Variable Estimates:**\n- Groceries: $350\n- Transportation: $80\n- Subtotal variable: $430\n\n**Remaining after fixed + variable:** $2,200\n\nThat $2,200 covers dining out, entertainment, clothing, personal care, subscriptions, and that guilt-free discretionary category we discussed. Does this look accurate so far? Want to adjust anything or add more line items?"
+        },
+        {
+          "role": "user",
+          "content": "That looks really solid. I think $2,200 remaining is more than enough breathing room. Let's earmark $200 of that as the guilt-free discretionary fund you suggested earlier. The rest can be a buffer for unexpected expenses or extra savings if I don't spend it all. I feel good about this framework."
+        },
+        {
+          "role": "assistant",
+          "content": "Excellent! Updated budget with the $200 guilt-free discretionary fund:\n\n**Income:** $6,080\n**Fixed Costs:** $3,450\n**Variable Estimates:** $430\n**Guilt-Free Discretionary:** $200\n**Remaining Buffer:** $2,000\n\nThat $2,000 buffer gives you a generous cushion for unexpected costs, seasonal expenses, or additional savings contributions beyond the $1,500 automatic transfer. The framework is clean, predictable, and aligned with your preference for financial stability. If your utility costs change or you want to revisit any category, we can adjust anytime. You've built a really healthy financial structure since joining Ridgeline—this is a solid foundation to build on."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize the key financial details I've shared with you so far — my income, housing cost, and savings plan?",
+      "expected_answer": "Your monthly take-home pay from Ridgeline Analytics is $6,080 after the May benefits deduction adjustment. Your rent for the Maple Street apartment is $1,850 per month, stable since January. You set up an automatic savings transfer of $1,500 per month starting in April, treated as a fixed commitment. You also received a one-time relocation reimbursement of $2,000 in your first Ridgeline paycheck, which is non-recurring. Additionally, your younger brother just received a first job offer at $3,800 per month at a logistics company in Phoenix.",
+      "gold_memory_state": "Five confirmed facts stored: (1) current monthly net salary $6,080 from Ridgeline Analytics, (2) monthly rent $1,850 for Maple Street apartment, (3) monthly automatic savings transfer $1,500, (4) one-time relocation reimbursement $2,000, (5) younger brother's starting monthly salary $3,800.",
+      "judge_rubric": {
+        "must_include": [
+          "$6,080",
+          "$1,850",
+          "$1,500",
+          "Ridgeline Analytics",
+          "Maple Street"
+        ],
+        "acceptable_paraphrases": [
+          "take-home pay",
+          "net pay",
+          "monthly income"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "including the old $6,200 figure as current income",
+          "including freelance income as current"
+        ],
+        "harmless_extra": [
+          "mentioning the $2,000 relocation reimbursement",
+          "mentioning brother's $3,800 salary",
+          "mentioning the savings transfer started in April"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if $6,200 is reported as current take-home pay or if $400-$600 freelance income is included as active income.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my current monthly take-home from Ridgeline Analytics is $6,080"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My rent is $1,850 a month for the Maple Street apartment"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I set up an automatic transfer of $1,500 per month into my savings account"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I got a one-time relocation reimbursement of $2,000 in my first paycheck at Ridgeline"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my younger brother just got his first job offer at $3,800 a month, entry level at a logistics company in Phoenix"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize the key financial details I've shared with you so far — my income, housing cost, and savings plan?",
+      "expected_answer": "Your monthly take-home pay from Ridgeline Analytics is $6,080 after the May benefits deduction adjustment. Your rent for the Maple Street apartment is $1,850 per month, stable since January. You set up an automatic savings transfer of $1,500 per month starting in April, treated as a fixed commitment. You also received a one-time relocation reimbursement of $2,000 in your first Ridgeline paycheck, which is non-recurring. Additionally, your younger brother just received a first job offer at $3,800 per month at a logistics company in Phoenix.",
+      "gold_memory_state": "Five confirmed facts stored: (1) current monthly net salary $6,080 from Ridgeline Analytics, (2) monthly rent $1,850 for Maple Street apartment, (3) monthly automatic savings transfer $1,500, (4) one-time relocation reimbursement $2,000, (5) younger brother's starting monthly salary $3,800.",
+      "judge_rubric": {
+        "must_include": [
+          "$6,080",
+          "$1,850",
+          "$1,500",
+          "Ridgeline Analytics",
+          "Maple Street"
+        ],
+        "acceptable_paraphrases": [
+          "take-home pay",
+          "net pay",
+          "monthly income"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "including the old $6,200 figure as current income",
+          "including freelance income as current"
+        ],
+        "harmless_extra": [
+          "mentioning the $2,000 relocation reimbursement",
+          "mentioning brother's $3,800 salary",
+          "mentioning the savings transfer started in April"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if $6,200 is reported as current take-home pay or if $400-$600 freelance income is included as active income.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my current monthly take-home from Ridgeline Analytics is $6,080"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My rent is $1,850 a month for the Maple Street apartment"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I set up an automatic transfer of $1,500 per month into my savings account"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I got a one-time relocation reimbursement of $2,000 in my first paycheck at Ridgeline"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my younger brother just got his first job offer at $3,800 a month, entry level at a logistics company in Phoenix"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I need to set up a payroll direct-deposit verification form. Which income figure belongs to my own employment record, and does my brother's compensation detail have any bearing on that form?",
+      "expected_answer": "Your own employment income is $6,080 per month from Ridgeline Analytics. Your brother's $3,800 monthly salary at the logistics company in Phoenix is a separate person's compensation and has no bearing on your payroll form.",
+      "gold_memory_state": "User's current monthly net salary: $6,080 from Ridgeline Analytics. Brother's starting monthly salary: $3,800 at a logistics company in Phoenix. These are distinct person-level income records.",
+      "judge_rubric": {
+        "must_include": [
+          "$6,080",
+          "Ridgeline Analytics"
+        ],
+        "acceptable_paraphrases": [
+          "your take-home is $6,080",
+          "your net pay is $6,080"
+        ],
+        "must_not_include": [
+          "brother's salary applies to your form",
+          "$3,800 as user's income"
+        ],
+        "harmful_extra": [
+          "conflating brother's salary with user's salary",
+          "using $6,200 as user's current pay",
+          "including freelance income as active"
+        ],
+        "harmless_extra": [
+          "mentioning brother's $3,800 for context",
+          "noting the $2,000 relocation reimbursement is one-time and separate"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if $6,200 or $4,350 is given as the user's current pay.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my current monthly take-home from Ridgeline Analytics is $6,080"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my younger brother just got his first job offer at $3,800 a month, entry level at a logistics company in Phoenix"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I need to set up a payroll direct-deposit verification form. Which income figure belongs to my own employment record, and does my brother's compensation detail have any bearing on that form?",
+      "expected_answer": "Your own employment income is $6,080 per month from Ridgeline Analytics. Your brother's $3,800 monthly salary at the logistics company in Phoenix is a separate person's compensation and has no bearing on your payroll form.",
+      "gold_memory_state": "User's current monthly net salary: $6,080 from Ridgeline Analytics. Brother's starting monthly salary: $3,800 at a logistics company in Phoenix. These are distinct person-level income records.",
+      "judge_rubric": {
+        "must_include": [
+          "$6,080",
+          "Ridgeline Analytics"
+        ],
+        "acceptable_paraphrases": [
+          "your take-home is $6,080",
+          "your net pay is $6,080"
+        ],
+        "must_not_include": [
+          "brother's salary applies to your form",
+          "$3,800 as user's income"
+        ],
+        "harmful_extra": [
+          "conflating brother's salary with user's salary",
+          "using $6,200 as user's current pay",
+          "including freelance income as active"
+        ],
+        "harmless_extra": [
+          "mentioning brother's $3,800 for context",
+          "noting the $2,000 relocation reimbursement is one-time and separate"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if $6,200 or $4,350 is given as the user's current pay.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my current monthly take-home from Ridgeline Analytics is $6,080"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my younger brother just got his first job offer at $3,800 a month, entry level at a logistics company in Phoenix"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Is my savings transfer amount more or less than my rent, and by how much?",
+      "expected_answer": "Your automatic savings transfer of $1,500 per month is $350 less than your rent of $1,850 per month.",
+      "gold_memory_state": "Monthly rent: $1,850 (Maple Street apartment). Monthly automatic savings transfer: $1,500. Both are confirmed fixed monthly commitments. Difference: $1,850 - $1,500 = $350.",
+      "judge_rubric": {
+        "must_include": [
+          "$1,500",
+          "$1,850",
+          "$350",
+          "less"
+        ],
+        "acceptable_paraphrases": [
+          "savings is $350 lower than rent",
+          "rent exceeds savings by $350"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating savings exceeds rent",
+          "using wrong dollar amounts"
+        ],
+        "harmless_extra": [
+          "mentioning both are fixed commitments",
+          "mentioning the Maple Street apartment"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": "Fails if the model cannot recall either the rent ($1,850) or the savings transfer ($1,500) and therefore cannot compute the relationship.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Monthly rent is $1,850",
+        "Fact 2: Monthly savings transfer is $1,500",
+        "Inference: $1,850 - $1,500 = $350, so savings transfer is $350 less than rent"
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My rent is $1,850 a month for the Maple Street apartment"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I set up an automatic transfer of $1,500 per month into my savings account"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Is my savings transfer amount more or less than my rent, and by how much?",
+      "expected_answer": "Your automatic savings transfer of $1,500 per month is $350 less than your rent of $1,850 per month.",
+      "gold_memory_state": "Monthly rent: $1,850 (Maple Street apartment). Monthly automatic savings transfer: $1,500. Both are confirmed fixed monthly commitments. Difference: $1,850 - $1,500 = $350.",
+      "judge_rubric": {
+        "must_include": [
+          "$1,500",
+          "$1,850",
+          "$350",
+          "less"
+        ],
+        "acceptable_paraphrases": [
+          "savings is $350 lower than rent",
+          "rent exceeds savings by $350"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating savings exceeds rent",
+          "using wrong dollar amounts"
+        ],
+        "harmless_extra": [
+          "mentioning both are fixed commitments",
+          "mentioning the Maple Street apartment"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": "Fails if the model cannot recall either the rent ($1,850) or the savings transfer ($1,500) and therefore cannot compute the relationship.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Monthly rent is $1,850",
+        "Fact 2: Monthly savings transfer is $1,500",
+        "Inference: $1,850 - $1,500 = $350, so savings transfer is $350 less than rent"
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My rent is $1,850 a month for the Maple Street apartment"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I set up an automatic transfer of $1,500 per month into my savings account"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I'm filling out a financial snapshot for a loan pre-qualification. Which of the following is my monthly take-home pay?",
+      "candidate_options": [
+        "$6,080",
+        "$6,200",
+        "$3,800",
+        "$4,350"
+      ],
+      "expected_answer": "$6,080",
+      "gold_memory_state": "User's current monthly take-home pay from Ridgeline Analytics is $6,080. The $6,200 figure was the prior amount before the May benefits deduction adjustment. The $3,800 figure is the brother's starting salary. The $4,350 figure was the user's old salary at the consulting firm.",
+      "judge_rubric": {
+        "must_include": [
+          "$6,080"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "$6,200 as current",
+          "$3,800 as user's pay",
+          "$4,350 as current"
+        ],
+        "harmful_extra": [
+          "selecting any option other than $6,080"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: $3,800 is the brother's monthly salary, not the user's income. assistant echo: $6,200 was mentioned by the user as a prior amount and echoed by the assistant in the budget context; $4,350 is the user's old consulting salary mentioned in conversation.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if $6,200 or $4,350 is selected as current take-home pay.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my current monthly take-home from Ridgeline Analytics is $6,080"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I'm filling out a financial snapshot for a loan pre-qualification. Which of the following is my monthly take-home pay?",
+      "candidate_options": [
+        "$6,080",
+        "$6,200",
+        "$3,800",
+        "$4,350"
+      ],
+      "expected_answer": "$6,080",
+      "gold_memory_state": "User's current monthly take-home pay from Ridgeline Analytics is $6,080. The $6,200 figure was the prior amount before the May benefits deduction adjustment. The $3,800 figure is the brother's starting salary. The $4,350 figure was the user's old salary at the consulting firm.",
+      "judge_rubric": {
+        "must_include": [
+          "$6,080"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "$6,200 as current",
+          "$3,800 as user's pay",
+          "$4,350 as current"
+        ],
+        "harmful_extra": [
+          "selecting any option other than $6,080"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: $3,800 is the brother's monthly salary, not the user's income. assistant echo: $6,200 was mentioned by the user as a prior amount and echoed by the assistant in the budget context; $4,350 is the user's old consulting salary mentioned in conversation.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if $6,200 or $4,350 is selected as current take-home pay.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my current monthly take-home from Ridgeline Analytics is $6,080"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "After paying rent and making my automatic savings transfer each month, how much do I have left from my paycheck? And how does that remaining amount compare to my brother's entire monthly salary — what's the dollar difference?",
+      "expected_answer": "After subtracting $1,850 rent and $1,500 savings from your $6,080 take-home, you have $2,730 remaining each month. Your brother's monthly salary is $3,800. The difference is $3,800 − $2,730 = $1,070; your brother's full salary exceeds your remaining discretionary amount by $1,070.",
+      "gold_memory_state": "Monthly take-home: $6,080. Monthly rent: $1,850. Monthly savings transfer: $1,500. Brother's monthly salary: $3,800. All confirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "$2,730",
+          "$1,070"
+        ],
+        "acceptable_paraphrases": [
+          "$2,730 left over",
+          "remainder is $2,730",
+          "difference of $1,070"
+        ],
+        "must_not_include": [
+          "$6,200 as income",
+          "$4,350 as income",
+          "freelance income included"
+        ],
+        "harmful_extra": [
+          "using stale $6,200 figure",
+          "including the $2,000 relocation reimbursement in the monthly calculation"
+        ],
+        "harmless_extra": [
+          "restating the three source figures",
+          "noting the brother earns more than the user's discretionary remainder"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if $6,200 is used instead of $6,080, which would yield $2,850 remainder and a different comparison.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User's current monthly take-home pay is $6,080 from Ridgeline Analytics",
+        "Fact 2: User's monthly rent is $1,850 for the Maple Street apartment",
+        "Fact 3: User's monthly automatic savings transfer is $1,500",
+        "Fact 4: User's younger brother's monthly salary is $3,800",
+        "Inference: Monthly remainder after rent and savings = $6,080 − $1,850 − $1,500 = $2,730",
+        "Inference: Dollar difference between brother's salary and user's remainder = $3,800 − $2,730 = $1,070"
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my current monthly take-home from Ridgeline Analytics is $6,080"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My rent is $1,850 a month for the Maple Street apartment"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I set up an automatic transfer of $1,500 per month into my savings account"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my younger brother just got his first job offer at $3,800 a month, entry level at a logistics company in Phoenix"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "After paying rent and making my automatic savings transfer each month, how much do I have left from my paycheck? And how does that remaining amount compare to my brother's entire monthly salary — what's the dollar difference?",
+      "expected_answer": "After subtracting $1,850 rent and $1,500 savings from your $6,080 take-home, you have $2,730 remaining each month. Your brother's monthly salary is $3,800. The difference is $3,800 − $2,730 = $1,070; your brother's full salary exceeds your remaining discretionary amount by $1,070.",
+      "gold_memory_state": "Monthly take-home: $6,080. Monthly rent: $1,850. Monthly savings transfer: $1,500. Brother's monthly salary: $3,800. All confirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "$2,730",
+          "$1,070"
+        ],
+        "acceptable_paraphrases": [
+          "$2,730 left over",
+          "remainder is $2,730",
+          "difference of $1,070"
+        ],
+        "must_not_include": [
+          "$6,200 as income",
+          "$4,350 as income",
+          "freelance income included"
+        ],
+        "harmful_extra": [
+          "using stale $6,200 figure",
+          "including the $2,000 relocation reimbursement in the monthly calculation"
+        ],
+        "harmless_extra": [
+          "restating the three source figures",
+          "noting the brother earns more than the user's discretionary remainder"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if $6,200 is used instead of $6,080, which would yield $2,850 remainder and a different comparison.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User's current monthly take-home pay is $6,080 from Ridgeline Analytics",
+        "Fact 2: User's monthly rent is $1,850 for the Maple Street apartment",
+        "Fact 3: User's monthly automatic savings transfer is $1,500",
+        "Fact 4: User's younger brother's monthly salary is $3,800",
+        "Inference: Monthly remainder after rent and savings = $6,080 − $1,850 − $1,500 = $2,730",
+        "Inference: Dollar difference between brother's salary and user's remainder = $3,800 − $2,730 = $1,070"
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my current monthly take-home from Ridgeline Analytics is $6,080"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My rent is $1,850 a month for the Maple Street apartment"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I set up an automatic transfer of $1,500 per month into my savings account"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my younger brother just got his first job offer at $3,800 a month, entry level at a logistics company in Phoenix"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What's my annual bonus amount at Ridgeline Analytics?",
+      "expected_answer": "I don't have any information about an annual bonus amount from you. That was never provided.",
+      "gold_memory_state": "No annual bonus amount was ever mentioned or stored. The user provided monthly take-home pay ($6,080), rent ($1,850), savings transfer ($1,500), a one-time relocation reimbursement ($2,000), and brother's salary ($3,800), but no annual bonus figure.",
+      "judge_rubric": {
+        "must_include": [
+          "no record",
+          "not provided",
+          "never mentioned",
+          "don't have"
+        ],
+        "acceptable_paraphrases": [
+          "I have no annual bonus information",
+          "you haven't shared a bonus amount",
+          "no bonus figure on file"
+        ],
+        "must_not_include": [
+          "any fabricated bonus dollar amount"
+        ],
+        "harmful_extra": [
+          "inventing a bonus amount",
+          "borrowing the $2,000 relocation reimbursement as a bonus",
+          "calculating an annual bonus from the monthly salary"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model fabricates or hallucinates any annual bonus amount.",
+        "over_forget": null,
+        "stale_value": "Fails if the model borrows the $2,000 relocation reimbursement or any other neighboring financial figure and presents it as a bonus.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my current monthly take-home from Ridgeline Analytics is $6,080"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I got a one-time relocation reimbursement of $2,000 in my first paycheck at Ridgeline"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What's my annual bonus amount at Ridgeline Analytics?",
+      "expected_answer": "I don't have any information about an annual bonus amount from you. That was never provided.",
+      "gold_memory_state": "No annual bonus amount was ever mentioned or stored. The user provided monthly take-home pay ($6,080), rent ($1,850), savings transfer ($1,500), a one-time relocation reimbursement ($2,000), and brother's salary ($3,800), but no annual bonus figure.",
+      "judge_rubric": {
+        "must_include": [
+          "no record",
+          "not provided",
+          "never mentioned",
+          "don't have"
+        ],
+        "acceptable_paraphrases": [
+          "I have no annual bonus information",
+          "you haven't shared a bonus amount",
+          "no bonus figure on file"
+        ],
+        "must_not_include": [
+          "any fabricated bonus dollar amount"
+        ],
+        "harmful_extra": [
+          "inventing a bonus amount",
+          "borrowing the $2,000 relocation reimbursement as a bonus",
+          "calculating an annual bonus from the monthly salary"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model fabricates or hallucinates any annual bonus amount.",
+        "over_forget": null,
+        "stale_value": "Fails if the model borrows the $2,000 relocation reimbursement or any other neighboring financial figure and presents it as a bonus.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my current monthly take-home from Ridgeline Analytics is $6,080"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I got a one-time relocation reimbursement of $2,000 in my first paycheck at Ridgeline"
+        }
+      ]
+    }
+  ]
+}

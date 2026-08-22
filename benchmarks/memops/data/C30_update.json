@@ -1,0 +1,842 @@
+{
+  "target_fact": "Biweekly VTSAX auto-invest amount through Fidelity",
+  "operation_type": "Update",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "vtsax_amount",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I set up a biweekly auto-invest into VTSAX through Fidelity for $200 every two weeks"
+      },
+      "target": {
+        "target_id": "vtsax_biweekly_amount",
+        "target_name": "Biweekly VTSAX auto-invest amount"
+      },
+      "old_value": null,
+      "new_value": "$200",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I set up a biweekly auto-invest into VTSAX through Fidelity for $200 every two weeks"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "vtsax_amount",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I went back and checked my Fidelity settings and the VTSAX auto-invest is actually $250 every two weeks, not $200"
+      },
+      "target": {
+        "target_id": "vtsax_biweekly_amount",
+        "target_name": "Biweekly VTSAX auto-invest amount"
+      },
+      "old_value": "$200",
+      "new_value": "$250",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I went back and checked my Fidelity settings and the VTSAX auto-invest is actually $250 every two weeks, not $200"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "vtsax_amount",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I bumped the VTSAX auto-invest up to $300 every two weeks starting this cycle"
+      },
+      "target": {
+        "target_id": "vtsax_biweekly_amount",
+        "target_name": "Biweekly VTSAX auto-invest amount"
+      },
+      "old_value": "$250",
+      "new_value": "$300",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I bumped the VTSAX auto-invest up to $300 every two weeks starting this cycle"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "vtsax_amount",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "My financial advisor recommended I increase the VTSAX contribution to $350 biweekly to max out my annual target"
+      },
+      "target": {
+        "target_id": "vtsax_biweekly_amount",
+        "target_name": "Biweekly VTSAX auto-invest amount"
+      },
+      "old_value": "$300",
+      "new_value": "$350",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My financial advisor recommended I increase the VTSAX contribution to $350 biweekly to max out my annual target"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "vtsax_amount",
+      "chain_step": 5,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 7,
+        "quote": "I decided to keep the VTSAX auto-invest at $300 biweekly for now"
+      },
+      "target": {
+        "target_id": "vtsax_biweekly_amount",
+        "target_name": "Biweekly VTSAX auto-invest amount"
+      },
+      "old_value": "$300",
+      "new_value": "$300",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I decided to keep the VTSAX auto-invest at $300 biweekly for now"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I also have a monthly $50 Bitcoin buy set up on Coinbase that hits on the 1st of each month"
+      },
+      "target": {
+        "target_id": "btc_monthly_buy",
+        "target_name": "Monthly Bitcoin auto-buy on Coinbase"
+      },
+      "old_value": null,
+      "new_value": "$50 monthly on the 1st via Coinbase",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I also have a monthly $50 Bitcoin buy set up on Coinbase that hits on the 1st of each month"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish initial recurring investment details including VTSAX amount and BTC buy, then correct the VTSAX amount",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to go over my recurring investment setup so you have it all on record. I set up a biweekly auto-invest into VTSAX through Fidelity for $200 every two weeks. It's timed to execute on the 1st and 15th of each month. I started it in early March alongside a weekly transfer from Chase to Fidelity. Can you keep track of these for me?"
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, I'll keep track of all your recurring investment details. So far I have noted that you have a biweekly auto-invest into VTSAX through Fidelity at $200 every two weeks, executing on the 1st and 15th of each month, which you started in early March. You also mentioned a weekly transfer from Chase to Fidelity—do you want to give me the specifics on that one as well? I'm happy to maintain a running summary of all your automated investment flows so you can reference them anytime."
+        },
+        {
+          "role": "user",
+          "content": "Sure, the weekly transfer is $150 every Monday from Chase checking to Fidelity brokerage. But let me also mention the crypto side of things. I also have a monthly $50 Bitcoin buy set up on Coinbase that hits on the 1st of each month. My friend Derek convinced me to start dollar-cost-averaging into BTC. It's small enough that I don't stress about it."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it, so here's what I have so far for your recurring investment flows: first, a $150 weekly transfer every Monday from your Chase checking account to your Fidelity brokerage account. Second, a biweekly $200 VTSAX auto-invest through Fidelity on the 1st and 15th. And third, a monthly $50 Bitcoin purchase on Coinbase on the 1st of each month, inspired by your friend Derek's dollar-cost-averaging approach. That's three automated flows total. Let me know if any of those details need adjusting or if there's anything else to add."
+        },
+        {
+          "role": "user",
+          "content": "Actually, I need to fix something. I went back and checked my Fidelity settings and the VTSAX auto-invest is actually $250 every two weeks, not $200. I must have been remembering an older amount from when I first considered setting it up. So please update that—$250 biweekly into VTSAX, not $200. Everything else is correct though."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for the correction! I've updated the VTSAX auto-invest amount from $200 to $250 every two weeks. So your current recurring investment summary is: (1) $150 weekly transfer every Monday from Chase checking to Fidelity brokerage, (2) $250 biweekly VTSAX auto-invest through Fidelity on the 1st and 15th of each month, and (3) $50 monthly Bitcoin purchase on Coinbase on the 1st. I'll keep these as your active recurring flows. Let me know whenever anything changes."
+        },
+        {
+          "role": "user",
+          "content": "Perfect, that's all accurate now. One thing I really like about this whole setup is that it's completely hands-off. I tried doing manual weekly buys for a couple weeks before automating and I absolutely hated it—logging in, checking prices, placing orders felt like a chore. The set-it-and-forget-it approach is so much better for my sanity. I only check in about once a month now."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes a lot of sense, and it's a really common experience. Manual investing can feel like a second job, especially when you're doing it weekly. The beauty of automation is exactly what you described—you set the rules once, and the system handles the execution while you focus on other things. Checking in monthly is a solid cadence; it gives you enough visibility without creating decision fatigue. Your three recurring flows are well-documented now, and I'll keep them updated as things evolve. Just flag me whenever there's a change."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "User increases the VTSAX amount and discusses monthly investment totals",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, quick update on the investment front. I got a small raise at work—about $200 more per month after taxes. I've been thinking about where to put the extra money and I decided to increase one of my recurring investments rather than add a new one. Keeping things simple, you know? I want to stay with the same three flows I already have."
+        },
+        {
+          "role": "assistant",
+          "content": "Congratulations on the raise! That's great news, and I think it's smart to channel the extra income into your existing automated flows rather than adding complexity. You currently have three recurring investments: the $150 weekly Chase-to-Fidelity transfer, the $250 biweekly VTSAX auto-invest, and the $50 monthly Bitcoin buy on Coinbase. Which one are you planning to increase? I can update the records as soon as you decide."
+        },
+        {
+          "role": "user",
+          "content": "I bumped the VTSAX auto-invest up to $300 every two weeks starting this cycle. So instead of $250 biweekly, it's now $300 biweekly on the same 1st and 15th schedule. The other two flows stay the same—$150 weekly to Fidelity and $50 monthly BTC on Coinbase. I figured VTSAX gives me the broadest market exposure so it made sense to put the extra there."
+        },
+        {
+          "role": "assistant",
+          "content": "Updated! Your VTSAX biweekly auto-invest is now $300 every two weeks on the 1st and 15th, up from $250. Your other two flows remain unchanged: $150 weekly from Chase to Fidelity every Monday, and $50 monthly Bitcoin purchase on Coinbase on the 1st. That's a solid allocation decision—VTSAX gives you total U.S. stock market exposure, so increasing there maximizes diversification. Want me to calculate your approximate total monthly investment across all three flows?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, actually, that would be helpful. Can you break it down for me? I want to see the monthly total so I can compare it against my take-home pay and make sure I'm not overextending. My monthly take-home after the raise is about $4,200. I want to keep my total automated investments under 25% of take-home."
+        },
+        {
+          "role": "assistant",
+          "content": "Sure, let me break it down. The $150 weekly transfer works out to roughly $650 per month (about 4.33 weeks per month on average). The $300 biweekly VTSAX auto-invest is $600 per month (two contributions). The $50 monthly Bitcoin buy is $50. So your total automated monthly investment is approximately $1,300. Against your $4,200 take-home, that's about 31%—which is above your 25% threshold of $1,050. You might want to consider whether that's comfortable or if you'd like to adjust one of the flows downward."
+        },
+        {
+          "role": "user",
+          "content": "Hmm, that's a bit higher than I realized. I'll think about whether to scale something back, but for now I'm going to leave everything as is. The $300 biweekly VTSAX is still the right call—I'd rather trim somewhere else in my budget if needed. Also, Derek told me he's putting $100 monthly into Ethereum now on top of his Bitcoin DCA. That guy is way more aggressive with crypto than I am.\n\nSounds good. Oh, one more thing—I realized the VTSAX auto-invest hitting on the 1st and 15th means I'm investing $600 into VTSAX every month. That's actually the single largest component of my automated investing. I want to make sure that's recorded correctly: $300 on the 1st, $300 on the 15th, both into VTSAX through Fidelity. That's the current setup."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a reasonable approach—keeping the investment flows intact and looking for savings elsewhere in your budget gives you more flexibility. And yeah, Derek sounds like he's building a pretty substantial crypto position with both Bitcoin and Ethereum DCA. Your approach is much more conservative on the crypto side at $50 monthly, which seems aligned with your comfort level. For now I have your three active flows recorded as: $150 weekly Chase to Fidelity, $300 biweekly VTSAX, and $50 monthly BTC. Let me know if you decide to adjust anything.\n\nConfirmed and recorded: your VTSAX auto-invest is $300 on the 1st and $300 on the 15th of each month through Fidelity, totaling $600 per month into VTSAX. That is indeed your largest single automated investment component, making up roughly 46% of your total monthly automated investing. I've got everything documented clearly. Whenever you want to review or make changes, just let me know and I can pull up the full summary."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Financial advisor suggests an increase (tentative), user ultimately keeps $300; adversarial injection of old $250 value",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I had a meeting with a financial advisor last week—first time doing that, actually. She went through all my accounts and seemed impressed that I had automated everything already. She had some suggestions though, and I want to talk through them before deciding anything. Mostly she was focused on the VTSAX allocation since that's the biggest piece."
+        },
+        {
+          "role": "assistant",
+          "content": "That's great that you took the step to meet with a financial advisor! It sounds like she validated your automation-first approach, which is encouraging. Since she focused on the VTSAX allocation as your largest recurring investment, I imagine she had thoughts on either the amount or the fund choice itself. What were her main suggestions? I can help you think through the implications against your current setup—right now you have $300 biweekly into VTSAX, $150 weekly Chase to Fidelity, and $50 monthly BTC on Coinbase."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, so her main point was about the amount. She ran some projections based on my income, expenses, and retirement timeline, and she thinks I should be investing more aggressively into index funds while I'm still young. She didn't say anything about changing the fund itself—VTSAX is fine. It was purely about the contribution level and whether I could push it higher."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a common recommendation for younger investors—the idea being that time in the market matters more than timing, and higher contributions now compound significantly over decades. It's good that she's not suggesting you switch away from VTSAX; the fund itself is a solid broad-market choice. The question then becomes how much higher she thinks you should go and whether your budget can handle it, especially since we calculated that your current automated investments are already around 31% of your take-home. What specific number did she suggest?"
+        },
+        {
+          "role": "user",
+          "content": "My financial advisor recommended I increase the VTSAX contribution to $350 biweekly to max out my annual target. She said at $350 every two weeks I'd hit roughly $9,100 annually into VTSAX alone, which aligns with some goal she calculated. I haven't made the change yet though—I told her I'd think about it over the weekend and see if the numbers work with my other expenses."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a meaningful bump—from $300 to $350 biweekly would add an extra $100 per month to your VTSAX contributions, bringing the monthly total from $600 to $700. Your overall automated monthly investing would go from roughly $1,300 to about $1,400, which would be about 33% of your $4,200 take-home. It makes sense to take a few days to review your budget before committing. The annual target of roughly $9,100 into VTSAX is a solid benchmark. Let me know what you decide after thinking it over."
+        },
+        {
+          "role": "user",
+          "content": "I've been going back and forth on it all weekend. I pulled up my Fidelity account history and noticed that back when I was at $250 biweekly, my monthly cash flow felt a lot more comfortable. But honestly, I think the jump from $250 to $300 was the right move and I don't want to undo that progress. The question is just whether $350 is too aggressive right now.\n\nI decided to keep the VTSAX auto-invest at $300 biweekly for now. The advisor's $350 suggestion makes sense on paper, but with my car repair from April still partly on a payment plan and some other bills coming up, I don't want to stretch too thin. I'll revisit the idea in a couple months when the car thing is fully paid off. So yeah, $300 biweekly into VTSAX is still the current number."
+        },
+        {
+          "role": "assistant",
+          "content": "It's smart to look at how previous changes affected your cash flow. The step from $250 to $300 added $100 per month and you've been managing that well, so that's a good sign. Going to $350 would add another $100 monthly on top of that. If the $250-to-$300 jump felt manageable, the next $100 might be fine too—but it depends on whether your other expenses have changed. You could also consider a compromise, like $325 biweekly, to split the difference. What's your gut telling you after reviewing everything?\n\nThat sounds like a very prudent decision. Keeping the VTSAX auto-invest at $300 biweekly while you finish paying off the car repair gives you breathing room and avoids unnecessary financial stress. You can always revisit the $350 target once the payment plan is done—at that point you'll have a clearer picture of your monthly cash flow. So your active recurring flows remain: $150 weekly from Chase to Fidelity, $300 biweekly into VTSAX on the 1st and 15th, and $50 monthly BTC on Coinbase. I'll keep these on record and we can reassess whenever you're ready."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Looking back at everything I've told you about my VTSAX auto-invest setup through Fidelity, what were the key moments where I shared or revised the biweekly amount? Summarize what I said each time.",
+      "expected_answer": "You initially said the biweekly VTSAX auto-invest through Fidelity was $200 every two weeks. Then you checked your Fidelity settings and said it was actually $250 every two weeks, not $200. Later you said you bumped it up to $300 every two weeks starting that cycle. Your financial advisor recommended $350 biweekly, but you decided to keep it at $300 biweekly for now.",
+      "gold_memory_state": "The VTSAX biweekly auto-invest amount is $300. The $350 advisor recommendation was considered but not adopted. Previous values of $200 and $250 are superseded.",
+      "judge_rubric": {
+        "must_include": [
+          "$200 initial",
+          "$250 correction",
+          "$300 increase",
+          "$350 advisor recommendation not adopted",
+          "$300 kept"
+        ],
+        "acceptable_paraphrases": [
+          "kept at $300",
+          "stayed at $300",
+          "decided not to change from $300"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the amount is currently $350",
+          "claiming the amount is currently $250 or $200"
+        ],
+        "harmless_extra": [
+          "mentioning the 1st and 15th schedule",
+          "mentioning the raise",
+          "mentioning the car repair"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model treats $200, $250, or $350 as the current amount.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if model does not identify $300 as the final current amount.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I set up a biweekly auto-invest into VTSAX through Fidelity for $200 every two weeks"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I went back and checked my Fidelity settings and the VTSAX auto-invest is actually $250 every two weeks, not $200"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I bumped the VTSAX auto-invest up to $300 every two weeks starting this cycle"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My financial advisor recommended I increase the VTSAX contribution to $350 biweekly to max out my annual target"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I decided to keep the VTSAX auto-invest at $300 biweekly for now"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Looking back at everything I've told you about my VTSAX auto-invest setup through Fidelity, what were the key moments where I shared or revised the biweekly amount? Summarize what I said each time.",
+      "expected_answer": "You initially said the biweekly VTSAX auto-invest through Fidelity was $200 every two weeks. Then you checked your Fidelity settings and said it was actually $250 every two weeks, not $200. Later you said you bumped it up to $300 every two weeks starting that cycle. Your financial advisor recommended $350 biweekly, but you decided to keep it at $300 biweekly for now.",
+      "gold_memory_state": "The VTSAX biweekly auto-invest amount is $300. The $350 advisor recommendation was considered but not adopted. Previous values of $200 and $250 are superseded.",
+      "judge_rubric": {
+        "must_include": [
+          "$200 initial",
+          "$250 correction",
+          "$300 increase",
+          "$350 advisor recommendation not adopted",
+          "$300 kept"
+        ],
+        "acceptable_paraphrases": [
+          "kept at $300",
+          "stayed at $300",
+          "decided not to change from $300"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the amount is currently $350",
+          "claiming the amount is currently $250 or $200"
+        ],
+        "harmless_extra": [
+          "mentioning the 1st and 15th schedule",
+          "mentioning the raise",
+          "mentioning the car repair"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model treats $200, $250, or $350 as the current amount.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if model does not identify $300 as the final current amount.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I set up a biweekly auto-invest into VTSAX through Fidelity for $200 every two weeks"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I went back and checked my Fidelity settings and the VTSAX auto-invest is actually $250 every two weeks, not $200"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I bumped the VTSAX auto-invest up to $300 every two weeks starting this cycle"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My financial advisor recommended I increase the VTSAX contribution to $350 biweekly to max out my annual target"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I decided to keep the VTSAX auto-invest at $300 biweekly for now"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I have multiple recurring investment flows. When I discussed changing the biweekly contribution amount several times, which specific investment record does that apply to? Does my Coinbase recurring buy get affected by any of those amount changes?",
+      "expected_answer": "All the biweekly amount changes apply to the VTSAX auto-invest through Fidelity. The monthly $50 Bitcoin buy on Coinbase is a separate recurring investment and is not affected by any of those changes.",
+      "gold_memory_state": "VTSAX biweekly auto-invest amount is $300 (after chain of updates from $200 → $250 → $300, with $350 tentative rejected). Monthly Bitcoin auto-buy on Coinbase is $50 on the 1st, unchanged throughout.",
+      "judge_rubric": {
+        "must_include": [
+          "VTSAX auto-invest through Fidelity",
+          "Coinbase Bitcoin buy is not affected"
+        ],
+        "acceptable_paraphrases": [
+          "the VTSAX biweekly investment",
+          "the Fidelity VTSAX recurring investment"
+        ],
+        "must_not_include": [
+          "Coinbase amount changed",
+          "Bitcoin buy was updated"
+        ],
+        "harmful_extra": [
+          "saying the Bitcoin buy amount changed",
+          "conflating the two investment records"
+        ],
+        "harmless_extra": [
+          "mentioning the weekly Chase to Fidelity transfer as another separate flow"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I bumped the VTSAX auto-invest up to $300 every two weeks starting this cycle"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I also have a monthly $50 Bitcoin buy set up on Coinbase that hits on the 1st of each month"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I have multiple recurring investment flows. When I discussed changing the biweekly contribution amount several times, which specific investment record does that apply to? Does my Coinbase recurring buy get affected by any of those amount changes?",
+      "expected_answer": "All the biweekly amount changes apply to the VTSAX auto-invest through Fidelity. The monthly $50 Bitcoin buy on Coinbase is a separate recurring investment and is not affected by any of those changes.",
+      "gold_memory_state": "VTSAX biweekly auto-invest amount is $300 (after chain of updates from $200 → $250 → $300, with $350 tentative rejected). Monthly Bitcoin auto-buy on Coinbase is $50 on the 1st, unchanged throughout.",
+      "judge_rubric": {
+        "must_include": [
+          "VTSAX auto-invest through Fidelity",
+          "Coinbase Bitcoin buy is not affected"
+        ],
+        "acceptable_paraphrases": [
+          "the VTSAX biweekly investment",
+          "the Fidelity VTSAX recurring investment"
+        ],
+        "must_not_include": [
+          "Coinbase amount changed",
+          "Bitcoin buy was updated"
+        ],
+        "harmful_extra": [
+          "saying the Bitcoin buy amount changed",
+          "conflating the two investment records"
+        ],
+        "harmless_extra": [
+          "mentioning the weekly Chase to Fidelity transfer as another separate flow"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I bumped the VTSAX auto-invest up to $300 every two weeks starting this cycle"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I also have a monthly $50 Bitcoin buy set up on Coinbase that hits on the 1st of each month"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to verify the per-contribution amount for my biweekly VTSAX auto-invest on Fidelity so I can set up a matching budget line. Which of these amounts should I use?",
+      "candidate_options": [
+        "$200",
+        "$250",
+        "$300",
+        "$350"
+      ],
+      "expected_answer": "$300",
+      "gold_memory_state": "The current confirmed VTSAX biweekly auto-invest amount is $300. $200 was the initial value (superseded). $250 was the corrected value (superseded by increase to $300). $350 was a tentative advisor recommendation that was not adopted.",
+      "judge_rubric": {
+        "must_include": [
+          "$300"
+        ],
+        "acceptable_paraphrases": [
+          "300 dollars",
+          "three hundred dollars"
+        ],
+        "must_not_include": [
+          "$200 as current",
+          "$250 as current",
+          "$350 as current"
+        ],
+        "harmful_extra": [
+          "selecting $350 because it was mentioned most recently in the conversation",
+          "selecting $250 because the user mentioned feeling comfortable at that level"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: $50 (the Bitcoin buy amount) was considered but replaced with $200 as a more confusable same-target stale value. $200 is the original stale value from the same VTSAX target. $250 is the intermediate stale value after the first correction. $350 is the tentative advisor-recommended value that was never adopted—this is the recency trap distractor. assistant echo: The assistant echoed $250 in the segment 1 summary and $350 in the segment 3 budget projection, both of which could mislead a model relying on assistant turns.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model selects $200, $250, or $350. $350 is the recency trap: it was the most recently discussed amount but was tentative and explicitly rejected.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if model does not select $300 as the current confirmed amount.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I decided to keep the VTSAX auto-invest at $300 biweekly for now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I bumped the VTSAX auto-invest up to $300 every two weeks starting this cycle"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to verify the per-contribution amount for my biweekly VTSAX auto-invest on Fidelity so I can set up a matching budget line. Which of these amounts should I use?",
+      "candidate_options": [
+        "$200",
+        "$250",
+        "$300",
+        "$350"
+      ],
+      "expected_answer": "$300",
+      "gold_memory_state": "The current confirmed VTSAX biweekly auto-invest amount is $300. $200 was the initial value (superseded). $250 was the corrected value (superseded by increase to $300). $350 was a tentative advisor recommendation that was not adopted.",
+      "judge_rubric": {
+        "must_include": [
+          "$300"
+        ],
+        "acceptable_paraphrases": [
+          "300 dollars",
+          "three hundred dollars"
+        ],
+        "must_not_include": [
+          "$200 as current",
+          "$250 as current",
+          "$350 as current"
+        ],
+        "harmful_extra": [
+          "selecting $350 because it was mentioned most recently in the conversation",
+          "selecting $250 because the user mentioned feeling comfortable at that level"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: $50 (the Bitcoin buy amount) was considered but replaced with $200 as a more confusable same-target stale value. $200 is the original stale value from the same VTSAX target. $250 is the intermediate stale value after the first correction. $350 is the tentative advisor-recommended value that was never adopted—this is the recency trap distractor. assistant echo: The assistant echoed $250 in the segment 1 summary and $350 in the segment 3 budget projection, both of which could mislead a model relying on assistant turns.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model selects $200, $250, or $350. $350 is the recency trap: it was the most recently discussed amount but was tentative and explicitly rejected.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if model does not select $300 as the current confirmed amount.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I decided to keep the VTSAX auto-invest at $300 biweekly for now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I bumped the VTSAX auto-invest up to $300 every two weeks starting this cycle"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I'm trying to figure out what percentage of my $4,200 monthly take-home pay goes to my total automated investments right now. Can you calculate the approximate monthly total across all my recurring investment flows and give me the percentage? Break it down by each flow.",
+      "expected_answer": "The $150 weekly Chase-to-Fidelity transfer is approximately $650/month (4.33 weeks). The $300 biweekly VTSAX auto-invest is $600/month (two contributions). The $50 monthly Bitcoin buy is $50/month. Total is approximately $1,300/month. As a percentage of $4,200 take-home, that is approximately 31%.",
+      "gold_memory_state": "VTSAX biweekly auto-invest: $300 (current confirmed). Weekly Chase-to-Fidelity transfer: $150. Monthly Bitcoin buy on Coinbase: $50. Monthly take-home: $4,200.",
+      "judge_rubric": {
+        "must_include": [
+          "$300 biweekly VTSAX ($600/month)",
+          "$150 weekly ($650/month approximately)",
+          "$50 monthly BTC",
+          "approximately $1,300 total",
+          "approximately 31%"
+        ],
+        "acceptable_paraphrases": [
+          "about 31%",
+          "roughly 31%",
+          "around 30-31%",
+          "$1,300 per month"
+        ],
+        "must_not_include": [
+          "$250 biweekly",
+          "$200 biweekly",
+          "$350 biweekly",
+          "$500/month VTSAX",
+          "$700/month VTSAX"
+        ],
+        "harmful_extra": [
+          "using $250 or $350 for the VTSAX calculation",
+          "using $200 for the VTSAX calculation"
+        ],
+        "harmless_extra": [
+          "mentioning the 25% threshold the user discussed",
+          "noting the user is above the 25% target"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model uses $200, $250, or $350 for the VTSAX biweekly amount in the calculation instead of $300.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the final percentage calculation does not use $300 biweekly for VTSAX.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "application_probe_type": "multi_hop_derivation",
+      "gold_reasoning_chain": [
+        "Fact 1: The weekly Chase-to-Fidelity transfer is $150 every Monday.",
+        "Fact 2: The biweekly VTSAX auto-invest is currently $300 every two weeks (confirmed, not $350 which was tentative and rejected).",
+        "Fact 3: The monthly Bitcoin buy on Coinbase is $50 on the 1st.",
+        "Fact 4: The user's monthly take-home pay is approximately $4,200.",
+        "Inference: Weekly $150 × 4.33 weeks/month ≈ $650/month.",
+        "Inference: Biweekly $300 × 2 contributions/month = $600/month.",
+        "Inference: Monthly BTC = $50/month.",
+        "Inference: Total automated monthly investment ≈ $650 + $600 + $50 = $1,300.",
+        "Inference: $1,300 / $4,200 ≈ 0.3095 ≈ 31%."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I decided to keep the VTSAX auto-invest at $300 biweekly for now"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I also have a monthly $50 Bitcoin buy set up on Coinbase that hits on the 1st of each month"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "the weekly transfer is $150 every Monday from Chase checking to Fidelity brokerage"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "My monthly take-home after the raise is about $4,200"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I'm trying to figure out what percentage of my $4,200 monthly take-home pay goes to my total automated investments right now. Can you calculate the approximate monthly total across all my recurring investment flows and give me the percentage? Break it down by each flow.",
+      "expected_answer": "The $150 weekly Chase-to-Fidelity transfer is approximately $650/month (4.33 weeks). The $300 biweekly VTSAX auto-invest is $600/month (two contributions). The $50 monthly Bitcoin buy is $50/month. Total is approximately $1,300/month. As a percentage of $4,200 take-home, that is approximately 31%.",
+      "gold_memory_state": "VTSAX biweekly auto-invest: $300 (current confirmed). Weekly Chase-to-Fidelity transfer: $150. Monthly Bitcoin buy on Coinbase: $50. Monthly take-home: $4,200.",
+      "judge_rubric": {
+        "must_include": [
+          "$300 biweekly VTSAX ($600/month)",
+          "$150 weekly ($650/month approximately)",
+          "$50 monthly BTC",
+          "approximately $1,300 total",
+          "approximately 31%"
+        ],
+        "acceptable_paraphrases": [
+          "about 31%",
+          "roughly 31%",
+          "around 30-31%",
+          "$1,300 per month"
+        ],
+        "must_not_include": [
+          "$250 biweekly",
+          "$200 biweekly",
+          "$350 biweekly",
+          "$500/month VTSAX",
+          "$700/month VTSAX"
+        ],
+        "harmful_extra": [
+          "using $250 or $350 for the VTSAX calculation",
+          "using $200 for the VTSAX calculation"
+        ],
+        "harmless_extra": [
+          "mentioning the 25% threshold the user discussed",
+          "noting the user is above the 25% target"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model uses $200, $250, or $350 for the VTSAX biweekly amount in the calculation instead of $300.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the final percentage calculation does not use $300 biweekly for VTSAX.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "application_probe_type": "multi_hop_derivation",
+      "gold_reasoning_chain": [
+        "Fact 1: The weekly Chase-to-Fidelity transfer is $150 every Monday.",
+        "Fact 2: The biweekly VTSAX auto-invest is currently $300 every two weeks (confirmed, not $350 which was tentative and rejected).",
+        "Fact 3: The monthly Bitcoin buy on Coinbase is $50 on the 1st.",
+        "Fact 4: The user's monthly take-home pay is approximately $4,200.",
+        "Inference: Weekly $150 × 4.33 weeks/month ≈ $650/month.",
+        "Inference: Biweekly $300 × 2 contributions/month = $600/month.",
+        "Inference: Monthly BTC = $50/month.",
+        "Inference: Total automated monthly investment ≈ $650 + $600 + $50 = $1,300.",
+        "Inference: $1,300 / $4,200 ≈ 0.3095 ≈ 31%."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I decided to keep the VTSAX auto-invest at $300 biweekly for now"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I also have a monthly $50 Bitcoin buy set up on Coinbase that hits on the 1st of each month"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "the weekly transfer is $150 every Monday from Chase checking to Fidelity brokerage"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "My monthly take-home after the raise is about $4,200"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,980 @@
+{
+  "target_fact": "Parents' names and related personal details",
+  "operation_type": "TrajectoryOps",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "dad_preferred_name",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "My dad is Robert James Kowalski, but he goes by Bobby. Everyone calls him Bobby, even on his Facebook."
+      },
+      "target": {
+        "target_id": "dad_preferred_name",
+        "target_name": "Dad's preferred first name"
+      },
+      "old_value": null,
+      "new_value": "Bobby",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My dad is Robert James Kowalski, but he goes by Bobby. Everyone calls him Bobby, even on his Facebook."
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "My mom's full legal name is Margaret Ellen Davies. She kept her maiden name when she married my dad back in 1986."
+      },
+      "target": {
+        "target_id": "mom_full_legal_name",
+        "target_name": "Mom's full legal name"
+      },
+      "old_value": null,
+      "new_value": "Margaret Ellen Davies",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My mom's full legal name is Margaret Ellen Davies. She kept her maiden name when she married my dad back in 1986."
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "dad_preferred_name",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "Actually, my dad recently told me he wants to start going by Rob professionally now. He said Bobby feels too informal for his new consulting work."
+      },
+      "target": {
+        "target_id": "dad_preferred_name",
+        "target_name": "Dad's preferred first name"
+      },
+      "old_value": "Bobby",
+      "new_value": "Rob",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My dad is Robert James Kowalski, but he goes by Bobby. Everyone calls him Bobby, even on his Facebook."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Actually, my dad recently told me he wants to start going by Rob professionally now. He said Bobby feels too informal for his new consulting work."
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "dad_preferred_name",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 3,
+        "quote": "My dad mentioned yesterday that the consulting firm actually wants to list him as Robert on all their materials. So he's going to use Robert going forward."
+      },
+      "target": {
+        "target_id": "dad_preferred_name",
+        "target_name": "Dad's preferred first name"
+      },
+      "old_value": "Rob",
+      "new_value": "Robert",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "My dad mentioned yesterday that the consulting firm actually wants to list him as Robert on all their materials. So he's going to use Robert going forward."
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "dad_preferred_name",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "Okay update on my dad — he pushed back on the firm and they agreed to list him as Rob. So Rob is the name he's using now, not Robert."
+      },
+      "target": {
+        "target_id": "dad_preferred_name",
+        "target_name": "Dad's preferred first name"
+      },
+      "old_value": "Rob",
+      "new_value": "Rob",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Okay update on my dad — he pushed back on the firm and they agreed to list him as Rob. So Rob is the name he's using now, not Robert."
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish_baseline",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I need some help organizing information about my parents for a bunch of forms I have coming up. I keep getting details mixed up, and I want to have everything straight in one place. My dad's birthday is September 22nd and my mom's is June 5th, just for reference since forms always ask for those alongside names."
+        },
+        {
+          "role": "assistant",
+          "content": "Of course, I'd be happy to help you organize your parents' information! Having everything in one place will definitely save you time and stress when filling out forms. So far I have your dad's birthday as September 22nd and your mom's birthday as June 5th. Let's build out the rest of their details — what are their full names? And any other information you'd like me to keep track of, like addresses or identification numbers, just let me know and we can create a comprehensive reference for you."
+        },
+        {
+          "role": "user",
+          "content": "My dad is Robert James Kowalski, but he goes by Bobby. Everyone calls him Bobby, even on his Facebook. He's always been stubborn about that — insists on Bobby over Robert. I actually helped him set up his Facebook profile a few years back and he was very clear about it. I admire that about him honestly, sticking to what feels right instead of being overly formal."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it! Your dad is Robert James Kowalski, legal name, but he strongly prefers Bobby in everyday usage — Bobby Kowalski is what he goes by socially and online. I love that detail about him insisting on Bobby when you helped set up his Facebook; it really speaks to his character. I'll note his preferred name as Bobby for any informal references and Robert James Kowalski for legal paperwork. That distinction will be useful when you're switching between official documents and more casual correspondence. What about your mom's information? Let's get her details captured too."
+        },
+        {
+          "role": "user",
+          "content": "My mom's full legal name is Margaret Ellen Davies. She kept her maiden name when she married my dad back in 1986. I used to be confused about that as a kid, but now I think it's really cool. Her middle name is Ellen — I always second-guess whether it's Ellen or Elena, but I confirmed it's Ellen when I filled out an insurance form on April 12th. Please make sure you remember it's Ellen."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted! Your mom's full legal name is Margaret Ellen Davies — middle name Ellen, confirmed via the insurance form you completed on April 12th. She kept her maiden name Davies when she married your dad in 1986, which is the year of the Challenger disaster as a memory anchor. So for legal paperwork, she's Margaret Ellen Davies, not Kowalski. I'll make sure to flag Ellen specifically so you don't second-guess it anymore. So far your parent reference sheet looks like this: Dad — Robert James Kowalski, goes by Bobby, born September 22nd. Mom — Margaret Ellen Davies, born June 5th. Shall I add anything else?"
+        },
+        {
+          "role": "user",
+          "content": "That looks great so far. Oh, one more thing — my parents got married in 1986, and my mom was 24 at the time. I mention that because I sometimes need to calculate her birth year for certain forms that ask for it. Also, I found my dad's original birth certificate recently and his name was spelled Robért with an accent on the e, the Polish way. He dropped the accent when he was naturalized."
+        },
+        {
+          "role": "assistant",
+          "content": "Interesting detail about the accent! So your dad's original Polish birth certificate shows Robért with an accent on the e, which he dropped during naturalization. That's a meaningful piece of family history. And great reference point about your mom — married in 1986 at age 24, which means she was born in 1962, consistent with her June 5th birthday. I'll keep that calculation handy for forms requiring birth year. Your reference sheet is shaping up nicely. Let me know when you have more details to add, or if you'd like me to format this differently for specific form types you're working on."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "introduce_update",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I'm back. I've got a visa application coming up and I need to double-check everything. Last time I filled out a visa form I accidentally put my dad's middle name as John instead of James. I caught it before submitting but I was really annoyed at myself. Can you confirm what you have for my dad's full details so I don't mess up again?"
+        },
+        {
+          "role": "assistant",
+          "content": "Welcome back! I totally understand wanting to double-check everything before a visa application — those forms are unforgiving. Here's what I have for your dad: his full legal name is Robert James Kowalski, middle name James, not John. He goes by Bobby in everyday life. His birthday is September 22nd. His original Polish birth certificate spelled his first name as Robért with an accent, which was dropped during naturalization. I'm glad you caught the John/James mix-up last time before submitting. Want me to also review your mom's details so you have everything fresh for the application?"
+        },
+        {
+          "role": "user",
+          "content": "Actually, my dad recently told me he wants to start going by Rob professionally now. He said Bobby feels too informal for his new consulting work. So for anything professional or work-related, he prefers Rob Kowalski. He's keeping Bobby for family and friends, but Rob is his professional name now. Can you update that?"
+        },
+        {
+          "role": "assistant",
+          "content": "Updated! Your dad now prefers Rob Kowalski for professional contexts — his new consulting work made him feel Bobby was too informal for that setting. So the breakdown is: legal name remains Robert James Kowalski, professional preferred name is now Rob Kowalski, and for family and social contexts he still goes by Bobby. That's a practical distinction to have on file, especially since consulting clients and professional documents will use Rob. I'll keep both preferences noted so you can use the right one depending on the context. Anything else you'd like to adjust before we finalize your visa application reference sheet?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, actually. My friend Yuki was telling me about how her parents changed their surnames when they emigrated — her dad's original name was Takahashi but they shortened it. It made me think about how names carry so much identity. Anyway, for the visa form, I need both parents' full legal names and birth dates together. Can you compile that for me in a clean format?"
+        },
+        {
+          "role": "assistant",
+          "content": "That's a fascinating story about Yuki's family — name changes during emigration carry so much weight and history, similar to your dad's accent mark story. Here's your clean reference for the visa application:\n\nFather: Robert James Kowalski, Date of Birth: September 22nd\nMother: Margaret Ellen Davies, Date of Birth: June 5th\n\nAdditional notes: Your parents married in 1986. Your mother kept her maiden name Davies. Your mother was born in 1962 based on being 24 at the time of the 1986 marriage. Your father's preferred professional name is Rob Kowalski. Let me know if the visa form requires any additional fields like addresses or citizenship details."
+        },
+        {
+          "role": "user",
+          "content": "That's perfect, thank you. One thing I want to make sure — my mom briefly considered hyphenating her name to Davies-Kowalski for some trust paperwork, but she decided against it last week. So her legal name is still just Margaret Ellen Davies. Don't store the hyphenated version as anything current. It's not happening.\n\nI think that covers it for now. I feel a lot more organized about all this. Having the names, dates, and preferences all in one place really helps. I'll probably be back once I start the actual application in case I run into any tricky fields. Thanks for keeping track of everything so carefully."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood completely. Your mom's legal name remains Margaret Ellen Davies — the Davies-Kowalski hyphenation was considered for trust paperwork but she decided against it, so it's off the table entirely. I won't reference that hyphenated version as current or pending. Her name on all documents should continue to be Margaret Ellen Davies. That keeps things clean and avoids any confusion if you're filling out forms down the line. Is there anything else you want to verify or update before you start the visa application? I want to make sure every detail is locked in correctly for you.\n\nYou're very welcome! I'm glad we could get everything organized. You've got a solid reference now: your dad Robert James Kowalski, professionally Rob, born September 22nd; your mom Margaret Ellen Davies, born June 5th, 1962; married in 1986; and all the little details that make forms easier. When you start the actual visa application, feel free to come back and I'll help you work through any tricky fields or formatting requirements. Having this all documented means you can focus on the application itself rather than second-guessing names and dates. Good luck with the preparation!"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "update_chain_and_traps",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hi again! So the visa application is going well, but I have a couple of updates. First, some general stuff — I was looking at an old form my dad filled out years ago and it had his name listed as R. John Kowalski. That must have been a typo or something because his middle name is definitely James. Just thought that was funny. Anyway, I have news about his preferred name situation."
+        },
+        {
+          "role": "assistant",
+          "content": "Welcome back! That's funny about the old form showing R. John Kowalski — definitely a typo or clerical error, since we've confirmed his middle name is James multiple times. It's amazing how these errors persist in old paperwork and can cause confusion down the line. Good thing you know the correct information. I'm curious about the update on his preferred name situation though — last we discussed, he had switched to Rob for professional use while keeping Bobby for family and friends. What's the latest development? I want to make sure we keep everything current and accurate for your records."
+        },
+        {
+          "role": "user",
+          "content": "My dad mentioned yesterday that the consulting firm actually wants to list him as Robert on all their materials. So he's going to use Robert going forward. He seemed fine with it — said it sounds more authoritative for the client-facing work they do. I guess Bobby and Rob are both out for professional purposes now."
+        },
+        {
+          "role": "assistant",
+          "content": "Interesting shift! So the consulting firm prefers the full formal Robert on their materials, and your dad is on board with that for the authoritative feel it brings to client-facing work. That would make his professional name Robert Kowalski rather than Rob Kowalski. It's quite a journey from Bobby to Rob to Robert in the professional sphere. I'll note that update. For your records, that would mean: legal name Robert James Kowalski, professional preferred name now Robert Kowalski per the consulting firm's preference, and Bobby still for family and social contexts. Let me know if there are any other changes to track."
+        },
+        {
+          "role": "user",
+          "content": "Okay update on my dad — he pushed back on the firm and they agreed to list him as Rob. So Rob is the name he's using now, not Robert. He told me this morning that Robert felt too stiff and he compromised with them on Rob. That's his final answer for professional use. I'm glad he stood his ground on that, very on-brand for him."
+        },
+        {
+          "role": "assistant",
+          "content": "That is very on-brand for your dad! He's consistent about asserting his name preferences, which is something you've always admired about him. So the final professional name is Rob Kowalski — the firm wanted Robert, he pushed back, and they settled on Rob as a compromise. That tracks with his personality of finding what feels right and sticking to it. Updated reference: legal name Robert James Kowalski, professional preferred name Rob Kowalski (confirmed with the consulting firm), family and social name Bobby Kowalski. Rob is the current and confirmed professional preference. Anything else to update before you continue with the visa work?"
+        },
+        {
+          "role": "user",
+          "content": "Nope, I think that's it for the name stuff. Oh, I did notice on the visa form there was a sample entry that showed a parent's name as Margaret Elena Davies — that's not my mom's middle name though, hers is Ellen not Elena. I almost got tripped up by that sample entry because it looked so similar. Good thing I have everything documented now.\n\nExactly, that's why I wanted everything in one place. Between my dad's evolving name preferences and my tendency to second-guess my mom's middle name, having this all tracked has been incredibly helpful. I feel much more confident filling out these forms now. Thanks again for being so thorough about keeping everything current and accurate."
+        },
+        {
+          "role": "assistant",
+          "content": "Great catch! That sample entry with Margaret Elena Davies is a perfect example of why having your records organized matters — Elena and Ellen are so similar that it's easy to mix them up, especially when you're staring at forms for hours. Your mom's confirmed middle name is Ellen, as you verified back on April 12th with the insurance form. Margaret Ellen Davies is correct, not Elena. It's actually kind of ironic that the sample entry happened to use such a similar name combination. I'm glad the documentation we built together is already paying off. Keep referring back to your reference sheet as you work through the rest of the visa application.\n\nYou're absolutely welcome! It's been a great exercise in getting everything organized. Your final reference is clean and current: Dad — Robert James Kowalski, professionally goes by Rob Kowalski (confirmed after negotiating with the consulting firm), Bobby for family and friends, born September 22nd. Mom — Margaret Ellen Davies, middle name Ellen (not Elena), born June 5th, 1962, kept her maiden name since the 1986 marriage. You've navigated the name updates smoothly, and now you have a reliable reference that should make every form straightforward. Come back anytime you need to verify or update anything. Good luck finishing that visa application!"
+        }
+      ]
+    }
+  ],
+  "state_checkpoints": [
+    {
+      "checkpoint_id": "c1",
+      "description": "After segment 1: Dad's preferred name is Bobby (confirmed). Mom's full legal name is Margaret Ellen Davies (confirmed). Dad's birthday is September 22nd, Mom's birthday is June 5th. Mom was born in 1962. Parents married in 1986."
+    },
+    {
+      "checkpoint_id": "c2",
+      "description": "After segment 2: Dad's preferred professional name updated to Rob (confirmed), replacing Bobby for professional contexts. Bobby still used for family/social. Mom's legal name confirmed as Margaret Ellen Davies; hyphenation idea (Davies-Kowalski) was considered and rejected, not stored."
+    },
+    {
+      "checkpoint_id": "c3",
+      "description": "After segment 3: Dad's preferred professional name had a tentative change to Robert (per consulting firm request) but was reverted to Rob (confirmed) after dad pushed back. Final confirmed professional name is Rob. Mom's name remains Margaret Ellen Davies (Ellen, not Elena). All other facts unchanged."
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Walk me through the key things I told you about my parents' names and how those details evolved over our conversations. What did I share, and what changed along the way?",
+      "expected_answer": "You first shared that your dad is Robert James Kowalski but goes by Bobby, and your mom's full legal name is Margaret Ellen Davies (maiden name kept after the 1986 marriage, middle name Ellen confirmed via an insurance form on April 12th). Later, you said your dad wanted to go by Rob professionally instead of Bobby. Then you mentioned the consulting firm wanted him listed as Robert, but he pushed back and they settled on Rob. So his professional preferred name went from Bobby to Rob, with a brief consideration of Robert that didn't stick. Your mom's name stayed Margaret Ellen Davies throughout — a hyphenation idea (Davies-Kowalski) was considered and rejected.",
+      "gold_memory_state": "Dad: legal name Robert James Kowalski, professional preferred name Rob (confirmed), family/social name Bobby. Mom: Margaret Ellen Davies (Ellen, not Elena). Parents married 1986. Mom born 1962. Dad's birthday September 22nd, Mom's birthday June 5th.",
+      "judge_rubric": {
+        "must_include": [
+          "Bobby as initial preferred name",
+          "Rob as current professional name",
+          "Robert was considered but rejected",
+          "Margaret Ellen Davies"
+        ],
+        "acceptable_paraphrases": [
+          "dad pushed back on Robert and settled on Rob",
+          "firm agreed to Rob instead of Robert"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying Robert is the current professional name",
+          "saying Davies-Kowalski is current"
+        ],
+        "harmless_extra": [
+          "mentioning the Polish accent on Robért",
+          "mentioning mom was born in 1962",
+          "mentioning the 1986 marriage"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Bobby is presented as the current professional name or Robert is presented as the final professional name.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence Bobby → Rob → Robert (tentative) → Rob (confirmed) is misordered.",
+        "final_state": "Fails if the final professional name is not Rob.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My dad is Robert James Kowalski, but he goes by Bobby. Everyone calls him Bobby, even on his Facebook."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My mom's full legal name is Margaret Ellen Davies. She kept her maiden name when she married my dad back in 1986."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Actually, my dad recently told me he wants to start going by Rob professionally now. He said Bobby feels too informal for his new consulting work."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "My dad mentioned yesterday that the consulting firm actually wants to list him as Robert on all their materials. So he's going to use Robert going forward."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Okay update on my dad — he pushed back on the firm and they agreed to list him as Rob. So Rob is the name he's using now, not Robert."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Walk me through the key things I told you about my parents' names and how those details evolved over our conversations. What did I share, and what changed along the way?",
+      "expected_answer": "You first shared that your dad is Robert James Kowalski but goes by Bobby, and your mom's full legal name is Margaret Ellen Davies (maiden name kept after the 1986 marriage, middle name Ellen confirmed via an insurance form on April 12th). Later, you said your dad wanted to go by Rob professionally instead of Bobby. Then you mentioned the consulting firm wanted him listed as Robert, but he pushed back and they settled on Rob. So his professional preferred name went from Bobby to Rob, with a brief consideration of Robert that didn't stick. Your mom's name stayed Margaret Ellen Davies throughout — a hyphenation idea (Davies-Kowalski) was considered and rejected.",
+      "gold_memory_state": "Dad: legal name Robert James Kowalski, professional preferred name Rob (confirmed), family/social name Bobby. Mom: Margaret Ellen Davies (Ellen, not Elena). Parents married 1986. Mom born 1962. Dad's birthday September 22nd, Mom's birthday June 5th.",
+      "judge_rubric": {
+        "must_include": [
+          "Bobby as initial preferred name",
+          "Rob as current professional name",
+          "Robert was considered but rejected",
+          "Margaret Ellen Davies"
+        ],
+        "acceptable_paraphrases": [
+          "dad pushed back on Robert and settled on Rob",
+          "firm agreed to Rob instead of Robert"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying Robert is the current professional name",
+          "saying Davies-Kowalski is current"
+        ],
+        "harmless_extra": [
+          "mentioning the Polish accent on Robért",
+          "mentioning mom was born in 1962",
+          "mentioning the 1986 marriage"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Bobby is presented as the current professional name or Robert is presented as the final professional name.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence Bobby → Rob → Robert (tentative) → Rob (confirmed) is misordered.",
+        "final_state": "Fails if the final professional name is not Rob.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My dad is Robert James Kowalski, but he goes by Bobby. Everyone calls him Bobby, even on his Facebook."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My mom's full legal name is Margaret Ellen Davies. She kept her maiden name when she married my dad back in 1986."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Actually, my dad recently told me he wants to start going by Rob professionally now. He said Bobby feels too informal for his new consulting work."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "My dad mentioned yesterday that the consulting firm actually wants to list him as Robert on all their materials. So he's going to use Robert going forward."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Okay update on my dad — he pushed back on the firm and they agreed to list him as Rob. So Rob is the name he's using now, not Robert."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "My dad's name preferences kept shifting for work reasons. Which specific aspect of his identity was being adjusted each time, and did any of those changes affect my mom's name details or my dad's legal name on file?",
+      "expected_answer": "Only your dad's preferred first name for professional use was being adjusted — it went through several iterations. Your mom's legal name (Margaret Ellen Davies) was never affected by any of those changes. Your dad's legal name (Robert James Kowalski) also remained unchanged throughout; only the informal/professional preferred name was in flux.",
+      "gold_memory_state": "Dad's preferred professional name is Rob (confirmed final). Dad's legal name Robert James Kowalski is unchanged. Mom's legal name Margaret Ellen Davies is unchanged. The hyphenation idea Davies-Kowalski was rejected and not stored.",
+      "judge_rubric": {
+        "must_include": [
+          "dad's preferred/professional first name was the thing changing",
+          "mom's name was not affected",
+          "dad's legal name was not affected"
+        ],
+        "acceptable_paraphrases": [
+          "only the professional nickname changed",
+          "the preferred name for work contexts was what shifted"
+        ],
+        "must_not_include": [
+          "mom's name changed",
+          "dad's legal name changed"
+        ],
+        "harmful_extra": [
+          "saying the legal name Robert James Kowalski was modified",
+          "saying Margaret Ellen Davies was updated or hyphenated",
+          "conflating the preferred-name changes with a legal name change"
+        ],
+        "harmless_extra": [
+          "mentioning Bobby is still used for family/social",
+          "mentioning the consulting firm context"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model says mom's name or dad's legal name was affected by the preferred-name changes.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My dad is Robert James Kowalski, but he goes by Bobby. Everyone calls him Bobby, even on his Facebook."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Actually, my dad recently told me he wants to start going by Rob professionally now. He said Bobby feels too informal for his new consulting work."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Okay update on my dad — he pushed back on the firm and they agreed to list him as Rob. So Rob is the name he's using now, not Robert."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My mom's full legal name is Margaret Ellen Davies. She kept her maiden name when she married my dad back in 1986."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "My dad's name preferences kept shifting for work reasons. Which specific aspect of his identity was being adjusted each time, and did any of those changes affect my mom's name details or my dad's legal name on file?",
+      "expected_answer": "Only your dad's preferred first name for professional use was being adjusted — it went through several iterations. Your mom's legal name (Margaret Ellen Davies) was never affected by any of those changes. Your dad's legal name (Robert James Kowalski) also remained unchanged throughout; only the informal/professional preferred name was in flux.",
+      "gold_memory_state": "Dad's preferred professional name is Rob (confirmed final). Dad's legal name Robert James Kowalski is unchanged. Mom's legal name Margaret Ellen Davies is unchanged. The hyphenation idea Davies-Kowalski was rejected and not stored.",
+      "judge_rubric": {
+        "must_include": [
+          "dad's preferred/professional first name was the thing changing",
+          "mom's name was not affected",
+          "dad's legal name was not affected"
+        ],
+        "acceptable_paraphrases": [
+          "only the professional nickname changed",
+          "the preferred name for work contexts was what shifted"
+        ],
+        "must_not_include": [
+          "mom's name changed",
+          "dad's legal name changed"
+        ],
+        "harmful_extra": [
+          "saying the legal name Robert James Kowalski was modified",
+          "saying Margaret Ellen Davies was updated or hyphenated",
+          "conflating the preferred-name changes with a legal name change"
+        ],
+        "harmless_extra": [
+          "mentioning Bobby is still used for family/social",
+          "mentioning the consulting firm context"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model says mom's name or dad's legal name was affected by the preferred-name changes.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My dad is Robert James Kowalski, but he goes by Bobby. Everyone calls him Bobby, even on his Facebook."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Actually, my dad recently told me he wants to start going by Rob professionally now. He said Bobby feels too informal for his new consulting work."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Okay update on my dad — he pushed back on the firm and they agreed to list him as Rob. So Rob is the name he's using now, not Robert."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My mom's full legal name is Margaret Ellen Davies. She kept her maiden name when she married my dad back in 1986."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "After all the back-and-forth about my dad's professional name, what name should I put on his consulting business cards right now?",
+      "expected_answer": "Rob Kowalski.",
+      "gold_memory_state": "Dad's confirmed professional preferred name is Rob. The tentative value 'Robert' (requested by the consulting firm) was rejected after the dad pushed back. Bobby remains the family/social name only. The final confirmed professional name is Rob.",
+      "judge_rubric": {
+        "must_include": [
+          "Rob"
+        ],
+        "acceptable_paraphrases": [
+          "Rob Kowalski"
+        ],
+        "must_not_include": [
+          "Robert as current professional name",
+          "Bobby as current professional name"
+        ],
+        "harmful_extra": [
+          "saying Robert is the professional name",
+          "saying Bobby should go on business cards"
+        ],
+        "harmless_extra": [
+          "mentioning his legal name is Robert James Kowalski",
+          "mentioning Bobby is for family use"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model answers 'Robert' (tentative value that was rejected) or 'Bobby' (superseded for professional use). The recency trap is 'Robert' since it was the most recently mentioned alternative before being overridden.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if anything other than Rob is given as the current professional name.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Okay update on my dad — he pushed back on the firm and they agreed to list him as Rob. So Rob is the name he's using now, not Robert."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Actually, my dad recently told me he wants to start going by Rob professionally now. He said Bobby feels too informal for his new consulting work."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "After all the back-and-forth about my dad's professional name, what name should I put on his consulting business cards right now?",
+      "expected_answer": "Rob Kowalski.",
+      "gold_memory_state": "Dad's confirmed professional preferred name is Rob. The tentative value 'Robert' (requested by the consulting firm) was rejected after the dad pushed back. Bobby remains the family/social name only. The final confirmed professional name is Rob.",
+      "judge_rubric": {
+        "must_include": [
+          "Rob"
+        ],
+        "acceptable_paraphrases": [
+          "Rob Kowalski"
+        ],
+        "must_not_include": [
+          "Robert as current professional name",
+          "Bobby as current professional name"
+        ],
+        "harmful_extra": [
+          "saying Robert is the professional name",
+          "saying Bobby should go on business cards"
+        ],
+        "harmless_extra": [
+          "mentioning his legal name is Robert James Kowalski",
+          "mentioning Bobby is for family use"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model answers 'Robert' (tentative value that was rejected) or 'Bobby' (superseded for professional use). The recency trap is 'Robert' since it was the most recently mentioned alternative before being overridden.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if anything other than Rob is given as the current professional name.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Okay update on my dad — he pushed back on the firm and they agreed to list him as Rob. So Rob is the name he's using now, not Robert."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Actually, my dad recently told me he wants to start going by Rob professionally now. He said Bobby feels too informal for his new consulting work."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to draft a short family section for a visa application cover letter. It should mention both parents by their correct current names (using my dad's professional name since this is an official document) and include the year my mom was born. Can you draft that paragraph for me?",
+      "expected_answer": "A paragraph mentioning Rob Kowalski (dad, using professional name for the official context) and Margaret Ellen Davies (mom), noting that mom was born in 1962. For example: 'My father is Rob Kowalski and my mother is Margaret Ellen Davies, born in 1962. They have been married since 1986, and my mother retained her maiden name Davies.'",
+      "gold_memory_state": "Dad's professional preferred name: Rob. Dad's legal name: Robert James Kowalski. Mom's legal name: Margaret Ellen Davies. Mom was born in 1962 (married in 1986 at age 24). Parents married in 1986.",
+      "judge_rubric": {
+        "must_include": [
+          "Rob Kowalski or Rob as dad's name in the draft",
+          "Margaret Ellen Davies as mom's name",
+          "1962 as mom's birth year"
+        ],
+        "acceptable_paraphrases": [
+          "Rob Kowalski",
+          "Margaret Davies",
+          "born 1962"
+        ],
+        "must_not_include": [
+          "Bobby as the name used in the official document",
+          "Robert as the professional name in the draft",
+          "Davies-Kowalski"
+        ],
+        "harmful_extra": [
+          "using Bobby in an official visa letter",
+          "using Robert as the preferred name",
+          "using Elena instead of Ellen",
+          "hyphenating mom's name"
+        ],
+        "harmless_extra": [
+          "mentioning the 1986 marriage",
+          "mentioning dad's legal name Robert James Kowalski alongside the preferred name",
+          "mentioning mom kept her maiden name"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Bobby is used as dad's name in an official context, or if Robert is used as the professional name (tentative, rejected).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the draft does not use Rob for dad or Margaret Ellen Davies for mom or 1962 for birth year.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Dad's legal name is Robert James Kowalski, and his current professional preferred name is Rob.",
+        "Fact 2: Mom's full legal name is Margaret Ellen Davies.",
+        "Fact 3: Mom was 24 when she married in 1986.",
+        "Inference: 1986 minus 24 equals 1962, so mom was born in 1962.",
+        "Inference: Since this is an official document, dad's professional name Rob should be used rather than the family nickname Bobby.",
+        "Derived value: The draft should reference Rob Kowalski, Margaret Ellen Davies, and birth year 1962."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Okay update on my dad — he pushed back on the firm and they agreed to list him as Rob. So Rob is the name he's using now, not Robert."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My mom's full legal name is Margaret Ellen Davies. She kept her maiden name when she married my dad back in 1986."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "my parents got married in 1986, and my mom was 24 at the time. I mention that because I sometimes need to calculate her birth year for certain forms that ask for it."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to draft a short family section for a visa application cover letter. It should mention both parents by their correct current names (using my dad's professional name since this is an official document) and include the year my mom was born. Can you draft that paragraph for me?",
+      "expected_answer": "A paragraph mentioning Rob Kowalski (dad, using professional name for the official context) and Margaret Ellen Davies (mom), noting that mom was born in 1962. For example: 'My father is Rob Kowalski and my mother is Margaret Ellen Davies, born in 1962. They have been married since 1986, and my mother retained her maiden name Davies.'",
+      "gold_memory_state": "Dad's professional preferred name: Rob. Dad's legal name: Robert James Kowalski. Mom's legal name: Margaret Ellen Davies. Mom was born in 1962 (married in 1986 at age 24). Parents married in 1986.",
+      "judge_rubric": {
+        "must_include": [
+          "Rob Kowalski or Rob as dad's name in the draft",
+          "Margaret Ellen Davies as mom's name",
+          "1962 as mom's birth year"
+        ],
+        "acceptable_paraphrases": [
+          "Rob Kowalski",
+          "Margaret Davies",
+          "born 1962"
+        ],
+        "must_not_include": [
+          "Bobby as the name used in the official document",
+          "Robert as the professional name in the draft",
+          "Davies-Kowalski"
+        ],
+        "harmful_extra": [
+          "using Bobby in an official visa letter",
+          "using Robert as the preferred name",
+          "using Elena instead of Ellen",
+          "hyphenating mom's name"
+        ],
+        "harmless_extra": [
+          "mentioning the 1986 marriage",
+          "mentioning dad's legal name Robert James Kowalski alongside the preferred name",
+          "mentioning mom kept her maiden name"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Bobby is used as dad's name in an official context, or if Robert is used as the professional name (tentative, rejected).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the draft does not use Rob for dad or Margaret Ellen Davies for mom or 1962 for birth year.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Dad's legal name is Robert James Kowalski, and his current professional preferred name is Rob.",
+        "Fact 2: Mom's full legal name is Margaret Ellen Davies.",
+        "Fact 3: Mom was 24 when she married in 1986.",
+        "Inference: 1986 minus 24 equals 1962, so mom was born in 1962.",
+        "Inference: Since this is an official document, dad's professional name Rob should be used rather than the family nickname Bobby.",
+        "Derived value: The draft should reference Rob Kowalski, Margaret Ellen Davies, and birth year 1962."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Okay update on my dad — he pushed back on the firm and they agreed to list him as Rob. So Rob is the name he's using now, not Robert."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My mom's full legal name is Margaret Ellen Davies. She kept her maiden name when she married my dad back in 1986."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "my parents got married in 1986, and my mom was 24 at the time. I mention that because I sometimes need to calculate her birth year for certain forms that ask for it."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed everything we discussed about what my dad prefers to be called professionally, what would they see as the full sequence of names that came up, which ones were actually adopted, and where things ended up?",
+      "expected_answer": "The sequence was: (1) Bobby — this was the original preferred name, adopted and used initially for all contexts. (2) Rob — your dad switched to this for professional use because Bobby felt too informal for consulting; this was adopted as his professional name. (3) Robert — the consulting firm wanted this on their materials and your dad initially agreed; however, this was only briefly considered and was not ultimately adopted. (4) Rob again — your dad pushed back on the firm and they agreed to list him as Rob. Rob is the final adopted professional name. So the full trajectory is Bobby → Rob → Robert (not adopted) → Rob (final, adopted).",
+      "gold_memory_state": "Dad's preferred professional name trajectory: Bobby (confirmed, step 1) → Rob (confirmed, step 2) → Robert (tentative, step 3, rejected) → Rob (confirmed, step 4, final). Current confirmed value: Rob.",
+      "judge_rubric": {
+        "must_include": [
+          "Bobby as starting point",
+          "Rob as second value",
+          "Robert as a value that was considered but not ultimately adopted",
+          "Rob as the final value"
+        ],
+        "acceptable_paraphrases": [
+          "Robert was tentative or temporary",
+          "Robert didn't stick",
+          "Robert was reversed"
+        ],
+        "must_not_include": [
+          "Robert as the final professional name"
+        ],
+        "harmful_extra": [
+          "omitting the Robert step entirely",
+          "saying Robert was confirmed/adopted",
+          "saying Bobby is the final professional name"
+        ],
+        "harmless_extra": [
+          "mentioning Bobby is still used for family/friends",
+          "mentioning the consulting firm context"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Robert is presented as adopted/confirmed rather than tentative/rejected.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence Bobby → Rob → Robert → Rob is presented in wrong order or if any step is missing.",
+        "final_state": "Fails if the final state is not Rob.",
+        "intermediate_state": "Fails if the Robert step is omitted or if its tentative/rejected status is not indicated.",
+        "trajectory_provenance": "Fails if the model cannot attribute the Robert step to the consulting firm's request or the final Rob to the dad's pushback."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: Dad's preferred name was initially established as Bobby — everyone called him Bobby.",
+        "Step 2: Dad decided Bobby was too informal for consulting and switched to Rob for professional use. This was confirmed.",
+        "Step 3: The consulting firm wanted to list him as Robert on their materials. Dad initially agreed. This was tentative.",
+        "Step 4: Dad pushed back on the firm and they agreed to Rob. The Robert option was rejected. Rob is the confirmed final professional name.",
+        "Inference: The trajectory has four steps with one tentative fork (Robert) that was reversed. The final confirmed professional name is Rob."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My dad is Robert James Kowalski, but he goes by Bobby. Everyone calls him Bobby, even on his Facebook."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Actually, my dad recently told me he wants to start going by Rob professionally now. He said Bobby feels too informal for his new consulting work."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "My dad mentioned yesterday that the consulting firm actually wants to list him as Robert on all their materials. So he's going to use Robert going forward."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Okay update on my dad — he pushed back on the firm and they agreed to list him as Rob. So Rob is the name he's using now, not Robert."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed everything we discussed about what my dad prefers to be called professionally, what would they see as the full sequence of names that came up, which ones were actually adopted, and where things ended up?",
+      "expected_answer": "The sequence was: (1) Bobby — this was the original preferred name, adopted and used initially for all contexts. (2) Rob — your dad switched to this for professional use because Bobby felt too informal for consulting; this was adopted as his professional name. (3) Robert — the consulting firm wanted this on their materials and your dad initially agreed; however, this was only briefly considered and was not ultimately adopted. (4) Rob again — your dad pushed back on the firm and they agreed to list him as Rob. Rob is the final adopted professional name. So the full trajectory is Bobby → Rob → Robert (not adopted) → Rob (final, adopted).",
+      "gold_memory_state": "Dad's preferred professional name trajectory: Bobby (confirmed, step 1) → Rob (confirmed, step 2) → Robert (tentative, step 3, rejected) → Rob (confirmed, step 4, final). Current confirmed value: Rob.",
+      "judge_rubric": {
+        "must_include": [
+          "Bobby as starting point",
+          "Rob as second value",
+          "Robert as a value that was considered but not ultimately adopted",
+          "Rob as the final value"
+        ],
+        "acceptable_paraphrases": [
+          "Robert was tentative or temporary",
+          "Robert didn't stick",
+          "Robert was reversed"
+        ],
+        "must_not_include": [
+          "Robert as the final professional name"
+        ],
+        "harmful_extra": [
+          "omitting the Robert step entirely",
+          "saying Robert was confirmed/adopted",
+          "saying Bobby is the final professional name"
+        ],
+        "harmless_extra": [
+          "mentioning Bobby is still used for family/friends",
+          "mentioning the consulting firm context"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Robert is presented as adopted/confirmed rather than tentative/rejected.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence Bobby → Rob → Robert → Rob is presented in wrong order or if any step is missing.",
+        "final_state": "Fails if the final state is not Rob.",
+        "intermediate_state": "Fails if the Robert step is omitted or if its tentative/rejected status is not indicated.",
+        "trajectory_provenance": "Fails if the model cannot attribute the Robert step to the consulting firm's request or the final Rob to the dad's pushback."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: Dad's preferred name was initially established as Bobby — everyone called him Bobby.",
+        "Step 2: Dad decided Bobby was too informal for consulting and switched to Rob for professional use. This was confirmed.",
+        "Step 3: The consulting firm wanted to list him as Robert on their materials. Dad initially agreed. This was tentative.",
+        "Step 4: Dad pushed back on the firm and they agreed to Rob. The Robert option was rejected. Rob is the confirmed final professional name.",
+        "Inference: The trajectory has four steps with one tentative fork (Robert) that was reversed. The final confirmed professional name is Rob."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My dad is Robert James Kowalski, but he goes by Bobby. Everyone calls him Bobby, even on his Facebook."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Actually, my dad recently told me he wants to start going by Rob professionally now. He said Bobby feels too informal for his new consulting work."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "My dad mentioned yesterday that the consulting firm actually wants to list him as Robert on all their materials. So he's going to use Robert going forward."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Okay update on my dad — he pushed back on the firm and they agreed to list him as Rob. So Rob is the name he's using now, not Robert."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1021 @@
+{
+  "target_fact": "User prefers solitary/independent work environments based on pattern of choosing independent research electives, enjoying solo phonetics lab work, and finding group workshops draining",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "My MSc is in Computational Linguistics from the University of Edinburgh, finished all requirements by September 2022"
+      },
+      "target": {
+        "target_id": "highest_degree",
+        "target_name": "highest educational qualification"
+      },
+      "old_value": null,
+      "new_value": "MSc in Computational Linguistics, University of Edinburgh, completed September 2022",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My MSc is in Computational Linguistics from the University of Edinburgh, finished all requirements by September 2022"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "During undergrad at Leeds I spent hours alone in the phonetics lab with spectrograms and acoustic data and it never bothered me at all"
+      },
+      "target": {
+        "target_id": "solo_lab_preference",
+        "target_name": "enjoyment of solitary phonetics lab work during undergrad"
+      },
+      "old_value": null,
+      "new_value": "Enjoyed spending hours alone in the phonetics lab working with spectrograms and acoustic data at Leeds",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "During undergrad at Leeds I spent hours alone in the phonetics lab with spectrograms and acoustic data and it never bothered me at all"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 7,
+        "quote": "at Edinburgh I deliberately chose all electives that were independent research-focused rather than the group project ones"
+      },
+      "target": {
+        "target_id": "elective_choices",
+        "target_name": "pattern of choosing independent research electives at Edinburgh"
+      },
+      "old_value": null,
+      "new_value": "Deliberately chose all independent research-focused electives over group project electives at Edinburgh",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "at Edinburgh I deliberately chose all electives that were independent research-focused rather than the group project ones"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "The one elective I regretted was the dialogue systems module because it had mandatory group workshops that I found really draining"
+      },
+      "target": {
+        "target_id": "group_workshop_aversion",
+        "target_name": "negative experience with mandatory group workshops"
+      },
+      "old_value": null,
+      "new_value": "Found mandatory group workshops in the dialogue systems module draining and regretted choosing that elective",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The one elective I regretted was the dialogue systems module because it had mandatory group workshops that I found really draining"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "I've been browsing PhD programs but only ones where the structure is mostly independent research with minimal cohort-based teaching obligations"
+      },
+      "target": {
+        "target_id": "phd_browsing_preference",
+        "target_name": "PhD program browsing preference for independent structure"
+      },
+      "old_value": null,
+      "new_value": "Browsing PhD programs that have mostly independent research structure with minimal cohort-based teaching obligations",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I've been browsing PhD programs but only ones where the structure is mostly independent research with minimal cohort-based teaching obligations"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 7,
+        "quote": "I suppose when I look at the pattern across everything, the lab time, the elective choices, hating those group workshops, even how I'm filtering PhD programs now, it all points the same way"
+      },
+      "target": {
+        "target_id": "work_environment_preference",
+        "target_name": "inferred preference for solitary/independent work environments"
+      },
+      "old_value": null,
+      "new_value": "Strongly prefers solitary and independent work environments over collaborative or group-based settings",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "During undergrad at Leeds I spent hours alone in the phonetics lab with spectrograms and acoustic data and it never bothered me at all"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "at Edinburgh I deliberately chose all electives that were independent research-focused rather than the group project ones"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The one elective I regretted was the dialogue systems module because it had mandatory group workshops that I found really draining"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I've been browsing PhD programs but only ones where the structure is mostly independent research with minimal cohort-based teaching obligations"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "My dissertation was on sentiment analysis in Scottish Twitter data and my supervisor was Dr. Fiona Ashworth"
+      },
+      "target": {
+        "target_id": "dissertation_topic_supervisor",
+        "target_name": "Edinburgh dissertation topic and supervisor"
+      },
+      "old_value": null,
+      "new_value": "Dissertation on sentiment analysis in Scottish Twitter data, supervised by Dr. Fiona Ashworth",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "My dissertation was on sentiment analysis in Scottish Twitter data and my supervisor was Dr. Fiona Ashworth"
+        }
+      ]
+    },
+    {
+      "operation_id": "op8",
+      "type": "reflect",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 7,
+        "quote": "The team lead mentioned they value collaborative problem-solving and I think I could actually thrive in a more team-oriented setup for once"
+      },
+      "target": {
+        "target_id": "work_environment_preference",
+        "target_name": "inferred preference for solitary/independent work environments"
+      },
+      "old_value": "Strongly prefers solitary and independent work environments over collaborative or group-based settings",
+      "new_value": "Could thrive in a team-oriented collaborative setup",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "The team lead mentioned they value collaborative problem-solving and I think I could actually thrive in a more team-oriented setup for once"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establishing educational background and early evidence of work-style preferences",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to go over my educational background because I need help putting together a summary for job applications. My MSc is in Computational Linguistics from the University of Edinburgh, finished all requirements by September 2022. The ceremony was in November though. People keep assuming I studied computer science, which is annoying because it's really not the same thing at all."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for sharing that — I'll make sure to note your degree correctly as an MSc in Computational Linguistics from the University of Edinburgh, completed September 2022 with the ceremony in November. You're right that Computational Linguistics and Computer Science are quite different fields, even though they share some overlap in programming and data processing. For your job application summary, I'd recommend leading with the precise degree title prominently so recruiters don't default to assumptions. Would you like me to start drafting a brief education section, or should we first go through your full academic history?"
+        },
+        {
+          "role": "user",
+          "content": "Let's go through the full history first. Before Edinburgh I did my BA in English Language and Linguistics at the University of Leeds, graduated in 2020. During undergrad at Leeds I spent hours alone in the phonetics lab with spectrograms and acoustic data and it never bothered me at all. I actually really enjoyed that kind of focused solo work — it was probably my favourite part of the whole degree honestly."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a solid academic progression — a BA in English Language and Linguistics from Leeds in 2020, then the MSc in Computational Linguistics at Edinburgh. The phonetics lab experience is interesting because it shows hands-on technical skills with acoustic analysis tools and spectrograms, which could be valuable to highlight for roles involving speech technology or NLP data pipelines. The fact that you thrived in that independent lab environment also says something about your working style. For the summary, I could frame the Leeds experience as foundational training in linguistic analysis with practical lab methodology. Shall I note any specific phonetics projects, or should we move on to Edinburgh details?"
+        },
+        {
+          "role": "user",
+          "content": "No specific phonetics projects worth mentioning for applications. Let's focus on Edinburgh. I got a merit overall for the program, not a distinction. I was gutted about that for a while because I missed distinction by a narrow margin. Took me a few weeks to stop dwelling on it after results came out. But it is what it is now, I've moved past it. I just want the summary to be accurate."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood — I'll record that as a merit classification for the MSc. I know that must have been frustrating, especially missing distinction by a narrow margin, but a merit from Edinburgh in Computational Linguistics is still a strong qualification. For the job application summary, many employers in NLP and language technology focus more on project experience and technical skills than classification grades, so we can emphasize your dissertation work and specific competencies. If you'd prefer, we can simply list the degree without the classification on certain applications where it's optional. Would you like to tell me about your dissertation or any key modules that would strengthen the summary?"
+        },
+        {
+          "role": "user",
+          "content": "Good idea about being selective with the classification. Regarding modules — at Edinburgh I deliberately chose all electives that were independent research-focused rather than the group project ones. I found I did much better work when I could just sit down with papers and datasets on my own schedule. The only exception was one module I'll tell you about next time. For now just note that independent research electives were my thing."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — you consistently selected independent research-focused electives at Edinburgh and found that approach suited your working style well, producing better results when you could engage with papers and datasets at your own pace. That's actually a useful framing for applications: it shows self-direction, initiative, and the ability to manage your own research workflow, which are qualities that employers in research-oriented NLP roles value highly. I'll hold off on the exception module until you share more details. For the summary so far, I have your Leeds BA, Edinburgh MSc with merit, and a clear preference for independent research modules. We can build on this foundation next time you're ready."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Deepening evidence of work-style pattern and adding dissertation details; user recognizes the pattern explicitly",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Right, so about that exception module. The one elective I regretted was the dialogue systems module because it had mandatory group workshops that I found really draining. I didn't get much out of those sessions compared to when I could just read papers independently. It confirmed for me that collaborative classroom formats aren't really my strength. I wish I'd picked another independent module instead."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a clear data point — the dialogue systems module's mandatory group workshops were draining for you, and you felt you learned less from those collaborative sessions than from independent reading. It makes sense that you'd regret not choosing another independent research elective instead. This is consistent with what you mentioned about your elective strategy and the phonetics lab at Leeds. For the application summary, we might want to frame your skill set around autonomous research capability and self-directed learning, since those clearly align with how you perform best. Should we move on to your dissertation details now, or is there more about the Edinburgh modules?"
+        },
+        {
+          "role": "user",
+          "content": "Let's do dissertation details. My dissertation was on sentiment analysis in Scottish Twitter data and my supervisor was Dr. Fiona Ashworth. She was brilliant to work with. I think our final supervision meeting was July 19th, 2022, right before I left for a short trip. She's apparently moved to King's College London now so her old Edinburgh email probably doesn't work anymore."
+        },
+        {
+          "role": "assistant",
+          "content": "Great details — I'll note that your dissertation focused on sentiment analysis in Scottish Twitter data, supervised by Dr. Fiona Ashworth, with your final supervision meeting around July 19th, 2022. That's a strong dissertation topic for NLP roles since sentiment analysis is directly applicable to industry, and the Scottish Twitter angle shows you can handle dialect variation and noisy real-world text data. Regarding Dr. Ashworth's move to King's College London, if you need a reference letter in the future, you'd want to track down her updated KCL contact details rather than using the old Edinburgh email. Want me to draft a dissertation summary paragraph for your applications?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, draft something later. But first — I've been browsing PhD programs but only ones where the structure is mostly independent research with minimal cohort-based teaching obligations. I don't want to end up in a program where half my time is spent running tutorials or doing group seminars. I haven't made any decisions yet, just looking at what's out there and filtering based on that."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes sense as a filtering criterion — you're specifically looking for PhD programs that prioritize independent research over cohort-based teaching and group seminar obligations. Given your track record of thriving in solo work environments, that's a smart way to narrow down programs. Many UK and European PhD structures do lean heavily toward independent research with a single supervisor, which might suit you well. Programs in the US tend to have more coursework and teaching requirements in the first couple of years. I can help you compare specific programs if you find ones that interest you. Have you identified any particular universities or research groups yet?"
+        },
+        {
+          "role": "user",
+          "content": "Not yet, still in the early browsing phase. But I suppose when I look at the pattern across everything, the lab time, the elective choices, hating those group workshops, even how I'm filtering PhD programs now, it all points the same way. I clearly do my best work and feel most comfortable when I can operate independently. It's been consistent since undergrad through my masters and now into career planning.\n\nYes, please do note it. Also, my friend Callum from the same Edinburgh cohort got a distinction and went straight into a PhD at UCL. I think he started January 2023 but I'm not entirely sure of the exact date. He's been doing well from what I hear. Anyway, that's all the education stuff for now, I think we have a solid picture."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really perceptive self-assessment. When you lay out the evidence like that — the solitary phonetics lab work at Leeds, deliberately selecting independent research electives at Edinburgh, the negative experience with group workshops in the dialogue systems module, and now filtering PhD programs for independent research structures — it does form a very consistent pattern. You clearly perform at your best and feel most energized in independent, self-directed work environments. That's valuable self-knowledge for both career planning and any future academic pursuits. I'd suggest we keep this insight front and center when evaluating job roles too, not just PhD programs. Shall I note this as a core working-style preference for your profile?\n\nNoted — your friend Callum from the Edinburgh MSc cohort achieved a distinction and started a PhD at UCL, likely around January 2023. It's good to have that context for your network. So to summarize your education profile: BA in English Language and Linguistics from Leeds (2020), MSc in Computational Linguistics from Edinburgh (merit, completed September 2022), dissertation on sentiment analysis in Scottish Twitter data supervised by Dr. Fiona Ashworth, and a clear core preference for independent, self-directed work environments that's been consistent throughout your academic career. That gives us a strong foundation for job application materials and future academic planning. I'll have that dissertation summary paragraph ready when you need it."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Adversarial injection and recency trap; tentative shift in work-style preference that should not override confirmed reflection",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, quick update. I had a preliminary interview yesterday for an NLP engineer role at a company called Meridian Analytics. They asked about my educational background and I referenced the MSc in Computational Linguistics. The interviewer seemed impressed by the Scottish Twitter sentiment analysis project, so that was encouraging. They want me back for a second round next week."
+        },
+        {
+          "role": "assistant",
+          "content": "That's great news — congratulations on the positive first interview at Meridian Analytics! It makes sense that the Scottish Twitter sentiment analysis project stood out, since it demonstrates both practical NLP skills and the ability to handle real-world messy data with dialect variation. For the second round, you might want to prepare to discuss the technical methodology in more depth — things like your preprocessing pipeline for Scottish dialect features, the sentiment models you compared, and your evaluation metrics. Would you like help preparing talking points based on your dissertation work? Also, do you know what the second round format will be?"
+        },
+        {
+          "role": "user",
+          "content": "They said the second round involves a technical assessment and then a conversation with the team lead. I looked up the team on LinkedIn and noticed one of the engineers listed a BSc in Computer Science from Edinburgh. Their student ID format looked different from mine though — mine was s2145837 and theirs seemed to start with a different prefix. Anyway, not important, just caught my eye."
+        },
+        {
+          "role": "assistant",
+          "content": "Interesting that you spotted a fellow Edinburgh alum on the team — that could actually be a nice conversation starter during the second round, though as you noted, the student ID prefix difference makes sense since Computer Science and Computational Linguistics are housed in different schools at Edinburgh. Your student number s2145837 would have been under Informatics or the linguistics program specifically. For the technical assessment, I'd recommend reviewing core NLP pipeline concepts, sentiment analysis architectures, and any Python libraries you used heavily in your dissertation. For the team lead conversation, having concrete examples of your independent research methodology ready would showcase your strengths well. Want to do a mock preparation session?"
+        },
+        {
+          "role": "user",
+          "content": "Maybe later on the mock prep. Here's the thing though — I spoke to Callum about Meridian and he mentioned that his UCL supervisor, Professor Hayward, actually published a paper with someone at Meridian last year on multimodal sentiment analysis. Small world. Callum said the Meridian team culture is very collaborative and workshop-heavy, which he thought I'd find challenging given how I usually work."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a useful inside perspective from Callum — and interesting that his UCL supervisor Professor Hayward has a publication connection to Meridian. The fact that the team culture is described as very collaborative and workshop-heavy is worth considering carefully given your established preference for independent work environments. It doesn't necessarily mean it's a bad fit, but it's important information for your decision-making. You might want to ask specific questions during the second round about how much autonomy individual engineers have versus how much time is spent in group sessions. That way you can assess whether the collaboration level is manageable or whether it would be draining in the same way those Edinburgh group workshops were."
+        },
+        {
+          "role": "user",
+          "content": "The team lead mentioned they value collaborative problem-solving and I think I could actually thrive in a more team-oriented setup for once. The role sounds exciting enough that I feel like the collaborative environment might energize me rather than drain me. I've been thinking maybe my preference for solo work was just an academic thing and won't apply in a professional context where the problems are more engaging.\n\nFair point. I'll reserve judgment until after the second round. Oh, one more thing — when I was preparing for the interview I pulled up my LinkedIn and noticed I still haven't uploaded my degree certificate digitally anywhere. My student ID is s2145837 and I'll probably need that to request an official transcript from Edinburgh if Meridian asks for verification. Can you remind me of that if it comes up later?"
+        },
+        {
+          "role": "assistant",
+          "content": "It's great that you're feeling enthusiastic about the opportunity — that kind of excitement about the work itself can definitely make a difference in how you experience collaborative settings. It's possible that engaging real-world NLP problems at Meridian could feel different from academic group workshops. At the same time, it might be worth keeping in mind that the pattern you identified spans quite a few years and different contexts, from the Leeds phonetics lab through Edinburgh electives to your PhD browsing criteria. Perhaps the second-round conversation with the team lead will give you more concrete information about what day-to-day collaboration actually looks like there, which could help you assess whether this is a genuine shift or initial interview enthusiasm.\n\nAbsolutely — I'll keep a note that you need to digitally upload your degree certificate and that your Edinburgh student ID is s2145837 for requesting official transcripts if Meridian Analytics needs verification. It's actually good practice to have a digital copy of the certificate on hand regardless, since other employers may ask for it too. You could also request a digital transcript directly from Edinburgh's student records office using that student ID, which would give you a verified document ready to share. For now, focus on preparing for the second round, and I'll remind you about the certificate and transcript if verification comes up. Good luck with the technical assessment and team lead conversation next week!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Looking back at everything I've shared about my academic experiences — from undergrad through my master's and into career planning — what specific experiences did I describe that all pointed toward the same conclusion about how I work best?",
+      "expected_answer": "You described four key experiences: (1) spending hours alone in the phonetics lab at Leeds working with spectrograms and acoustic data and enjoying it, (2) deliberately choosing all independent research-focused electives over group project electives at Edinburgh, (3) regretting the dialogue systems module because its mandatory group workshops were draining, and (4) browsing PhD programs filtered specifically for independent research structures with minimal cohort-based teaching obligations. Together these experiences consistently pointed toward a strong preference for solitary, independent work environments.",
+      "gold_memory_state": "Confirmed reflection: user strongly prefers solitary and independent work environments over collaborative or group-based settings, supported by four evidence points spanning undergrad, master's, and career planning. A tentative reconsideration toward team-oriented work was expressed in the context of the Meridian Analytics interview but is not confirmed and does not override the established pattern.",
+      "judge_rubric": {
+        "must_include": [
+          "phonetics lab / solo lab work at Leeds",
+          "independent research electives at Edinburgh",
+          "group workshops being draining",
+          "PhD program filtering for independent research"
+        ],
+        "acceptable_paraphrases": [
+          "solo work",
+          "working alone",
+          "self-directed",
+          "autonomous research"
+        ],
+        "must_not_include": [
+          "the tentative team-oriented shift as if it were the established conclusion"
+        ],
+        "harmful_extra": [
+          "presenting the Meridian interview enthusiasm as the confirmed work-style preference"
+        ],
+        "harmless_extra": [
+          "mentioning the user explicitly recognized the pattern themselves",
+          "mentioning the dissertation topic or supervisor"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model presents the tentative team-oriented preference from the Meridian interview context as the established confirmed pattern.",
+        "reflection_precision": "Fails if the model includes unsupported experiences not mentioned by the user as evidence for the preference.",
+        "reflection_recall": "Fails if the model omits one or more of the four evidence points (lab work, elective choices, group workshop aversion, PhD filtering).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "During undergrad at Leeds I spent hours alone in the phonetics lab with spectrograms and acoustic data and it never bothered me at all"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "at Edinburgh I deliberately chose all electives that were independent research-focused rather than the group project ones"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The one elective I regretted was the dialogue systems module because it had mandatory group workshops that I found really draining"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I've been browsing PhD programs but only ones where the structure is mostly independent research with minimal cohort-based teaching obligations"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Looking back at everything I've shared about my academic experiences — from undergrad through my master's and into career planning — what specific experiences did I describe that all pointed toward the same conclusion about how I work best?",
+      "expected_answer": "You described four key experiences: (1) spending hours alone in the phonetics lab at Leeds working with spectrograms and acoustic data and enjoying it, (2) deliberately choosing all independent research-focused electives over group project electives at Edinburgh, (3) regretting the dialogue systems module because its mandatory group workshops were draining, and (4) browsing PhD programs filtered specifically for independent research structures with minimal cohort-based teaching obligations. Together these experiences consistently pointed toward a strong preference for solitary, independent work environments.",
+      "gold_memory_state": "Confirmed reflection: user strongly prefers solitary and independent work environments over collaborative or group-based settings, supported by four evidence points spanning undergrad, master's, and career planning. A tentative reconsideration toward team-oriented work was expressed in the context of the Meridian Analytics interview but is not confirmed and does not override the established pattern.",
+      "judge_rubric": {
+        "must_include": [
+          "phonetics lab / solo lab work at Leeds",
+          "independent research electives at Edinburgh",
+          "group workshops being draining",
+          "PhD program filtering for independent research"
+        ],
+        "acceptable_paraphrases": [
+          "solo work",
+          "working alone",
+          "self-directed",
+          "autonomous research"
+        ],
+        "must_not_include": [
+          "the tentative team-oriented shift as if it were the established conclusion"
+        ],
+        "harmful_extra": [
+          "presenting the Meridian interview enthusiasm as the confirmed work-style preference"
+        ],
+        "harmless_extra": [
+          "mentioning the user explicitly recognized the pattern themselves",
+          "mentioning the dissertation topic or supervisor"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model presents the tentative team-oriented preference from the Meridian interview context as the established confirmed pattern.",
+        "reflection_precision": "Fails if the model includes unsupported experiences not mentioned by the user as evidence for the preference.",
+        "reflection_recall": "Fails if the model omits one or more of the four evidence points (lab work, elective choices, group workshop aversion, PhD filtering).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "During undergrad at Leeds I spent hours alone in the phonetics lab with spectrograms and acoustic data and it never bothered me at all"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "at Edinburgh I deliberately chose all electives that were independent research-focused rather than the group project ones"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The one elective I regretted was the dialogue systems module because it had mandatory group workshops that I found really draining"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I've been browsing PhD programs but only ones where the structure is mostly independent research with minimal cohort-based teaching obligations"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've shared various things about my academic background — degree details, dissertation information, elective preferences, and work-style observations. When I explicitly connected the dots about my working style across multiple experiences, which bounded conclusion is actually supported by the evidence, and which broader social or personality conclusions would go too far?",
+      "expected_answer": "The supported conclusion is that you prefer solitary and independent work environments over collaborative or group-based settings, bounded specifically to work/study contexts. This is supported by the phonetics lab enjoyment, independent elective choices, aversion to group workshops, and PhD program filtering criteria. A broader conclusion — such as being antisocial, disliking all human interaction, or being unable to collaborate under any circumstances — would be unsupported overgeneralization beyond what the evidence shows.",
+      "gold_memory_state": "The inferred preference for solitary/independent work environments is a distinct conclusion bound to the work_environment_preference target. It is separate from the highest_degree target (MSc details), the dissertation_topic_supervisor target (sentiment analysis / Dr. Ashworth), and the individual evidence targets (solo_lab_preference, elective_choices, group_workshop_aversion, phd_browsing_preference). The tentative reconsideration about thriving in team settings at Meridian is not confirmed and does not alter the bounded conclusion.",
+      "judge_rubric": {
+        "must_include": [
+          "preference for solitary/independent work environments",
+          "bounded to work or study contexts"
+        ],
+        "acceptable_paraphrases": [
+          "self-directed work preference",
+          "independent work style",
+          "solo work preference"
+        ],
+        "must_not_include": [
+          "the tentative team-oriented shift as if it were the confirmed conclusion",
+          "treating the degree details or dissertation topic as part of the work-style conclusion"
+        ],
+        "harmful_extra": [
+          "claiming the user is antisocial or unable to collaborate at all",
+          "merging the work-style conclusion with the degree or dissertation targets as one record"
+        ],
+        "harmless_extra": [
+          "naming the four evidence points",
+          "noting the user themselves recognized the pattern"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model treats the tentative Meridian team-oriented remark as the confirmed bounded conclusion.",
+        "reflection_recall": "Fails if the model cannot identify the work-environment preference as the supported conclusion.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I suppose when I look at the pattern across everything, the lab time, the elective choices, hating those group workshops, even how I'm filtering PhD programs now, it all points the same way"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "During undergrad at Leeds I spent hours alone in the phonetics lab with spectrograms and acoustic data and it never bothered me at all"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "at Edinburgh I deliberately chose all electives that were independent research-focused rather than the group project ones"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The one elective I regretted was the dialogue systems module because it had mandatory group workshops that I found really draining"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've shared various things about my academic background — degree details, dissertation information, elective preferences, and work-style observations. When I explicitly connected the dots about my working style across multiple experiences, which bounded conclusion is actually supported by the evidence, and which broader social or personality conclusions would go too far?",
+      "expected_answer": "The supported conclusion is that you prefer solitary and independent work environments over collaborative or group-based settings, bounded specifically to work/study contexts. This is supported by the phonetics lab enjoyment, independent elective choices, aversion to group workshops, and PhD program filtering criteria. A broader conclusion — such as being antisocial, disliking all human interaction, or being unable to collaborate under any circumstances — would be unsupported overgeneralization beyond what the evidence shows.",
+      "gold_memory_state": "The inferred preference for solitary/independent work environments is a distinct conclusion bound to the work_environment_preference target. It is separate from the highest_degree target (MSc details), the dissertation_topic_supervisor target (sentiment analysis / Dr. Ashworth), and the individual evidence targets (solo_lab_preference, elective_choices, group_workshop_aversion, phd_browsing_preference). The tentative reconsideration about thriving in team settings at Meridian is not confirmed and does not alter the bounded conclusion.",
+      "judge_rubric": {
+        "must_include": [
+          "preference for solitary/independent work environments",
+          "bounded to work or study contexts"
+        ],
+        "acceptable_paraphrases": [
+          "self-directed work preference",
+          "independent work style",
+          "solo work preference"
+        ],
+        "must_not_include": [
+          "the tentative team-oriented shift as if it were the confirmed conclusion",
+          "treating the degree details or dissertation topic as part of the work-style conclusion"
+        ],
+        "harmful_extra": [
+          "claiming the user is antisocial or unable to collaborate at all",
+          "merging the work-style conclusion with the degree or dissertation targets as one record"
+        ],
+        "harmless_extra": [
+          "naming the four evidence points",
+          "noting the user themselves recognized the pattern"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model treats the tentative Meridian team-oriented remark as the confirmed bounded conclusion.",
+        "reflection_recall": "Fails if the model cannot identify the work-environment preference as the supported conclusion.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I suppose when I look at the pattern across everything, the lab time, the elective choices, hating those group workshops, even how I'm filtering PhD programs now, it all points the same way"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "During undergrad at Leeds I spent hours alone in the phonetics lab with spectrograms and acoustic data and it never bothered me at all"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "at Edinburgh I deliberately chose all electives that were independent research-focused rather than the group project ones"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The one elective I regretted was the dialogue systems module because it had mandatory group workshops that I found really draining"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_counterfactual",
+      "question": "I'm considering two PhD programs. Program A is at a large research group where students share an open-plan office, attend weekly lab meetings, co-author most papers with peers, and run joint tutorials. Program B has each student working independently with their supervisor, a private desk, no mandatory group seminars, and papers are typically single-authored. Based on what you know about my working style, which program would you recommend and why?",
+      "expected_answer": "Program B is the better fit. Your consistent pattern of thriving in independent, self-directed environments — enjoying solo phonetics lab work, choosing independent research electives, finding group workshops draining, and filtering PhD programs for independent structures — all point toward Program B's private desk, independent supervisor relationship, no mandatory group seminars, and single-authored paper culture. Program A's open-plan office, weekly lab meetings, co-authoring, and joint tutorials closely resemble the collaborative formats you've found draining.",
+      "gold_memory_state": "Confirmed work-environment preference: strongly prefers solitary and independent work environments. Supported by four evidence points. A tentative remark about possibly thriving in a team-oriented setup at Meridian Analytics was not confirmed and does not override the established pattern. The counterfactual recommendation should rely on the confirmed preference, not the tentative remark.",
+      "judge_rubric": {
+        "must_include": [
+          "recommend Program B",
+          "independent/solitary work preference as the basis"
+        ],
+        "acceptable_paraphrases": [
+          "Program B is a better match",
+          "Program B aligns with your working style"
+        ],
+        "must_not_include": [
+          "recommending Program A as the primary choice",
+          "citing the Meridian team-oriented remark as reason to choose Program A"
+        ],
+        "harmful_extra": [
+          "saying the user might actually prefer Program A because they recently expressed openness to collaboration"
+        ],
+        "harmless_extra": [
+          "acknowledging Program A could have networking benefits",
+          "noting that the user's own PhD browsing criteria already aligned with Program B's structure"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses the tentative Meridian team-oriented remark to recommend Program A or to hedge the recommendation toward Program A.",
+        "reflection_precision": "Fails if the model cites unsupported evidence for the recommendation.",
+        "reflection_recall": "Fails if the model fails to connect the recommendation to the established independent work preference pattern.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "During undergrad at Leeds I spent hours alone in the phonetics lab with spectrograms and acoustic data and it never bothered me at all"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "at Edinburgh I deliberately chose all electives that were independent research-focused rather than the group project ones"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The one elective I regretted was the dialogue systems module because it had mandatory group workshops that I found really draining"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I've been browsing PhD programs but only ones where the structure is mostly independent research with minimal cohort-based teaching obligations"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_counterfactual",
+      "question": "I'm considering two PhD programs. Program A is at a large research group where students share an open-plan office, attend weekly lab meetings, co-author most papers with peers, and run joint tutorials. Program B has each student working independently with their supervisor, a private desk, no mandatory group seminars, and papers are typically single-authored. Based on what you know about my working style, which program would you recommend and why?",
+      "expected_answer": "Program B is the better fit. Your consistent pattern of thriving in independent, self-directed environments — enjoying solo phonetics lab work, choosing independent research electives, finding group workshops draining, and filtering PhD programs for independent structures — all point toward Program B's private desk, independent supervisor relationship, no mandatory group seminars, and single-authored paper culture. Program A's open-plan office, weekly lab meetings, co-authoring, and joint tutorials closely resemble the collaborative formats you've found draining.",
+      "gold_memory_state": "Confirmed work-environment preference: strongly prefers solitary and independent work environments. Supported by four evidence points. A tentative remark about possibly thriving in a team-oriented setup at Meridian Analytics was not confirmed and does not override the established pattern. The counterfactual recommendation should rely on the confirmed preference, not the tentative remark.",
+      "judge_rubric": {
+        "must_include": [
+          "recommend Program B",
+          "independent/solitary work preference as the basis"
+        ],
+        "acceptable_paraphrases": [
+          "Program B is a better match",
+          "Program B aligns with your working style"
+        ],
+        "must_not_include": [
+          "recommending Program A as the primary choice",
+          "citing the Meridian team-oriented remark as reason to choose Program A"
+        ],
+        "harmful_extra": [
+          "saying the user might actually prefer Program A because they recently expressed openness to collaboration"
+        ],
+        "harmless_extra": [
+          "acknowledging Program A could have networking benefits",
+          "noting that the user's own PhD browsing criteria already aligned with Program B's structure"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses the tentative Meridian team-oriented remark to recommend Program A or to hedge the recommendation toward Program A.",
+        "reflection_precision": "Fails if the model cites unsupported evidence for the recommendation.",
+        "reflection_recall": "Fails if the model fails to connect the recommendation to the established independent work preference pattern.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "During undergrad at Leeds I spent hours alone in the phonetics lab with spectrograms and acoustic data and it never bothered me at all"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "at Edinburgh I deliberately chose all electives that were independent research-focused rather than the group project ones"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The one elective I regretted was the dialogue systems module because it had mandatory group workshops that I found really draining"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I've been browsing PhD programs but only ones where the structure is mostly independent research with minimal cohort-based teaching obligations"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best describes my established working-style preference based on my academic and career-planning experiences?",
+      "candidate_options": [
+        "Strongly prefers solitary and independent work environments over collaborative or group-based settings",
+        "Could thrive in a team-oriented collaborative setup given sufficiently engaging problems",
+        "Prefers a balanced mix of independent research and regular group collaboration",
+        "Works best in structured cohort-based programs with frequent peer interaction"
+      ],
+      "expected_answer": "Strongly prefers solitary and independent work environments over collaborative or group-based settings",
+      "gold_memory_state": "The confirmed reflection from op6 establishes a strong preference for solitary/independent work environments, supported by four evidence points. The tentative op8 remark about thriving in a team-oriented setup is not confirmed and should not be selected.",
+      "judge_rubric": {
+        "must_include": [
+          "solitary and independent work environments"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "team-oriented collaborative setup as the established preference"
+        ],
+        "harmful_extra": [
+          "selecting the team-oriented option based on recency"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'Works best in structured cohort-based programs with frequent peer interaction' is a fabricated opposite extreme not supported by any evidence. assistant echo: 'Could thrive in a team-oriented collaborative setup given sufficiently engaging problems' echoes the user's tentative remark from the Meridian interview context (op8), which was not confirmed and serves as the recency-trap distractor. 'Prefers a balanced mix of independent research and regular group collaboration' is a moderate middle-ground distractor not supported by the evidence pattern.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects 'Could thrive in a team-oriented collaborative setup' based on recency of the tentative Meridian remark.",
+        "reflection_precision": "Fails if the model selects the balanced-mix or cohort-based option without evidence support.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I suppose when I look at the pattern across everything, the lab time, the elective choices, hating those group workshops, even how I'm filtering PhD programs now, it all points the same way"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "The team lead mentioned they value collaborative problem-solving and I think I could actually thrive in a more team-oriented setup for once"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best describes my established working-style preference based on my academic and career-planning experiences?",
+      "candidate_options": [
+        "Strongly prefers solitary and independent work environments over collaborative or group-based settings",
+        "Could thrive in a team-oriented collaborative setup given sufficiently engaging problems",
+        "Prefers a balanced mix of independent research and regular group collaboration",
+        "Works best in structured cohort-based programs with frequent peer interaction"
+      ],
+      "expected_answer": "Strongly prefers solitary and independent work environments over collaborative or group-based settings",
+      "gold_memory_state": "The confirmed reflection from op6 establishes a strong preference for solitary/independent work environments, supported by four evidence points. The tentative op8 remark about thriving in a team-oriented setup is not confirmed and should not be selected.",
+      "judge_rubric": {
+        "must_include": [
+          "solitary and independent work environments"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "team-oriented collaborative setup as the established preference"
+        ],
+        "harmful_extra": [
+          "selecting the team-oriented option based on recency"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'Works best in structured cohort-based programs with frequent peer interaction' is a fabricated opposite extreme not supported by any evidence. assistant echo: 'Could thrive in a team-oriented collaborative setup given sufficiently engaging problems' echoes the user's tentative remark from the Meridian interview context (op8), which was not confirmed and serves as the recency-trap distractor. 'Prefers a balanced mix of independent research and regular group collaboration' is a moderate middle-ground distractor not supported by the evidence pattern.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects 'Could thrive in a team-oriented collaborative setup' based on recency of the tentative Meridian remark.",
+        "reflection_precision": "Fails if the model selects the balanced-mix or cohort-based option without evidence support.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I suppose when I look at the pattern across everything, the lab time, the elective choices, hating those group workshops, even how I'm filtering PhD programs now, it all points the same way"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "The team lead mentioned they value collaborative problem-solving and I think I could actually thrive in a more team-oriented setup for once"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to draft a short 'About Me' paragraph for PhD program applications that highlights my educational background, my dissertation experience, and the kind of research environment I'm looking for. Can you write that paragraph for me?",
+      "expected_answer": "You hold a BA in English Language and Linguistics from the University of Leeds and an MSc in Computational Linguistics from the University of Edinburgh (completed September 2022). Your master's dissertation, supervised by Dr. Fiona Ashworth, focused on sentiment analysis in Scottish Twitter data, demonstrating your ability to handle real-world noisy text and dialect variation independently. Throughout your academic career — from extended solo phonetics lab work at Leeds to deliberately selecting independent research electives at Edinburgh — you have consistently produced your strongest work in self-directed settings. You are seeking a PhD program structured around independent research with a single supervisor, where you can apply that same focused, autonomous approach to advancing NLP research.",
+      "gold_memory_state": "Active confirmed facts: MSc in Computational Linguistics from University of Edinburgh completed September 2022; BA in English Language and Linguistics from Leeds (2020); dissertation on sentiment analysis in Scottish Twitter data supervised by Dr. Fiona Ashworth; confirmed preference for solitary/independent work environments. The tentative remark about thriving in team settings is not confirmed and should not appear in the paragraph.",
+      "judge_rubric": {
+        "must_include": [
+          "MSc in Computational Linguistics from Edinburgh",
+          "BA from Leeds",
+          "dissertation on sentiment analysis in Scottish Twitter data",
+          "Dr. Fiona Ashworth as supervisor",
+          "preference for independent/solitary research environment"
+        ],
+        "acceptable_paraphrases": [
+          "autonomous work style",
+          "self-directed research",
+          "independent research focus"
+        ],
+        "must_not_include": [
+          "enthusiasm for collaborative or team-oriented environments as a stated preference",
+          "the tentative Meridian team remark as part of the applicant profile"
+        ],
+        "harmful_extra": [
+          "including the merit classification unless the user asked for it",
+          "saying the user is open to collaborative settings"
+        ],
+        "harmless_extra": [
+          "mentioning acoustic analysis or phonetics skills from Leeds",
+          "mentioning the PhD browsing criteria for independent structures"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the paragraph describes the user as open to or enthusiastic about collaborative environments based on the tentative Meridian remark.",
+        "reflection_precision": "Fails if the paragraph overgeneralizes the work-style preference beyond what the evidence supports (e.g., claiming the user cannot work with others at all).",
+        "reflection_recall": "Fails if the paragraph omits the independent work-style preference entirely or fails to connect educational background to the dissertation and the environment preference.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User holds an MSc in Computational Linguistics from the University of Edinburgh, completed September 2022.",
+        "Fact 2: User's dissertation was on sentiment analysis in Scottish Twitter data, supervised by Dr. Fiona Ashworth.",
+        "Fact 3: User holds a BA in English Language and Linguistics from the University of Leeds.",
+        "Fact 4: User enjoyed spending hours alone in the phonetics lab at Leeds working with spectrograms and acoustic data.",
+        "Fact 5: User deliberately chose all independent research-focused electives over group project electives at Edinburgh.",
+        "Inference: The user's educational trajectory and dissertation experience demonstrate sustained independent research capability, and their confirmed preference for solitary work environments should be framed as a strength in the PhD application paragraph, positioning them as seeking a program with an independent research structure."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My MSc is in Computational Linguistics from the University of Edinburgh, finished all requirements by September 2022"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "My dissertation was on sentiment analysis in Scottish Twitter data and my supervisor was Dr. Fiona Ashworth"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "During undergrad at Leeds I spent hours alone in the phonetics lab with spectrograms and acoustic data and it never bothered me at all"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "at Edinburgh I deliberately chose all electives that were independent research-focused rather than the group project ones"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I've been browsing PhD programs but only ones where the structure is mostly independent research with minimal cohort-based teaching obligations"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to draft a short 'About Me' paragraph for PhD program applications that highlights my educational background, my dissertation experience, and the kind of research environment I'm looking for. Can you write that paragraph for me?",
+      "expected_answer": "You hold a BA in English Language and Linguistics from the University of Leeds and an MSc in Computational Linguistics from the University of Edinburgh (completed September 2022). Your master's dissertation, supervised by Dr. Fiona Ashworth, focused on sentiment analysis in Scottish Twitter data, demonstrating your ability to handle real-world noisy text and dialect variation independently. Throughout your academic career — from extended solo phonetics lab work at Leeds to deliberately selecting independent research electives at Edinburgh — you have consistently produced your strongest work in self-directed settings. You are seeking a PhD program structured around independent research with a single supervisor, where you can apply that same focused, autonomous approach to advancing NLP research.",
+      "gold_memory_state": "Active confirmed facts: MSc in Computational Linguistics from University of Edinburgh completed September 2022; BA in English Language and Linguistics from Leeds (2020); dissertation on sentiment analysis in Scottish Twitter data supervised by Dr. Fiona Ashworth; confirmed preference for solitary/independent work environments. The tentative remark about thriving in team settings is not confirmed and should not appear in the paragraph.",
+      "judge_rubric": {
+        "must_include": [
+          "MSc in Computational Linguistics from Edinburgh",
+          "BA from Leeds",
+          "dissertation on sentiment analysis in Scottish Twitter data",
+          "Dr. Fiona Ashworth as supervisor",
+          "preference for independent/solitary research environment"
+        ],
+        "acceptable_paraphrases": [
+          "autonomous work style",
+          "self-directed research",
+          "independent research focus"
+        ],
+        "must_not_include": [
+          "enthusiasm for collaborative or team-oriented environments as a stated preference",
+          "the tentative Meridian team remark as part of the applicant profile"
+        ],
+        "harmful_extra": [
+          "including the merit classification unless the user asked for it",
+          "saying the user is open to collaborative settings"
+        ],
+        "harmless_extra": [
+          "mentioning acoustic analysis or phonetics skills from Leeds",
+          "mentioning the PhD browsing criteria for independent structures"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the paragraph describes the user as open to or enthusiastic about collaborative environments based on the tentative Meridian remark.",
+        "reflection_precision": "Fails if the paragraph overgeneralizes the work-style preference beyond what the evidence supports (e.g., claiming the user cannot work with others at all).",
+        "reflection_recall": "Fails if the paragraph omits the independent work-style preference entirely or fails to connect educational background to the dissertation and the environment preference.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User holds an MSc in Computational Linguistics from the University of Edinburgh, completed September 2022.",
+        "Fact 2: User's dissertation was on sentiment analysis in Scottish Twitter data, supervised by Dr. Fiona Ashworth.",
+        "Fact 3: User holds a BA in English Language and Linguistics from the University of Leeds.",
+        "Fact 4: User enjoyed spending hours alone in the phonetics lab at Leeds working with spectrograms and acoustic data.",
+        "Fact 5: User deliberately chose all independent research-focused electives over group project electives at Edinburgh.",
+        "Inference: The user's educational trajectory and dissertation experience demonstrate sustained independent research capability, and their confirmed preference for solitary work environments should be framed as a strength in the PhD application paragraph, positioning them as seeking a program with an independent research structure."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My MSc is in Computational Linguistics from the University of Edinburgh, finished all requirements by September 2022"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "My dissertation was on sentiment analysis in Scottish Twitter data and my supervisor was Dr. Fiona Ashworth"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "During undergrad at Leeds I spent hours alone in the phonetics lab with spectrograms and acoustic data and it never bothered me at all"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "at Edinburgh I deliberately chose all electives that were independent research-focused rather than the group project ones"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I've been browsing PhD programs but only ones where the structure is mostly independent research with minimal cohort-based teaching obligations"
+        }
+      ]
+    }
+  ]
+}

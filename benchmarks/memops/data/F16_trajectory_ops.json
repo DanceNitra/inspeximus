@@ -1,0 +1,961 @@
+{
+  "target_fact": "User's support group meeting day undergoes multiple confirmed changes with a tentative fork, while other LGBTQ+ identity facts are tracked alongside.",
+  "operation_type": "TrajectoryOps",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "support_group_day",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I started going to this queer support group that meets Thursday evenings at the community center on Elm Street"
+      },
+      "target": {
+        "target_id": "support_group_meeting_day",
+        "target_name": "support group meeting day"
+      },
+      "old_value": null,
+      "new_value": "Thursday",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I started going to this queer support group that meets Thursday evenings at the community center on Elm Street"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "support_group_day",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "Wait, I misspoke earlier. The group actually meets on Wednesdays at 7 PM, not Thursdays"
+      },
+      "target": {
+        "target_id": "support_group_meeting_day",
+        "target_name": "support group meeting day"
+      },
+      "old_value": "Thursday",
+      "new_value": "Wednesday",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The group actually meets on Wednesdays at 7 PM, not Thursdays"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I came out to my sister as bisexual on March 3rd at her place in Portland"
+      },
+      "target": {
+        "target_id": "coming_out_date_sister",
+        "target_name": "date user came out to sister"
+      },
+      "old_value": null,
+      "new_value": "March 3rd",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I came out to my sister as bisexual on March 3rd at her place in Portland"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "support_group_day",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "Marcus sent out an email saying the group is permanently moving to Tuesdays at 7 PM starting this week"
+      },
+      "target": {
+        "target_id": "support_group_meeting_day",
+        "target_name": "support group meeting day"
+      },
+      "old_value": "Wednesday",
+      "new_value": "Tuesday",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Marcus sent out an email saying the group is permanently moving to Tuesdays at 7 PM starting this week"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "support_group_day",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "Marcus texted that the community center confirmed we'll be switching back to Wednesdays next month because of a scheduling conflict with another program"
+      },
+      "target": {
+        "target_id": "support_group_meeting_day",
+        "target_name": "support group meeting day"
+      },
+      "old_value": "Tuesday",
+      "new_value": "Wednesday",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Marcus texted that the community center confirmed we'll be switching back to Wednesdays next month because of a scheduling conflict with another program"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish initial facts about support group day, coming out date, and correct the group day from Thursday to Wednesday",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to tell you about some things going on in my life. I started going to this queer support group that meets Thursday evenings at the community center on Elm Street. It's a small group, maybe eight or nine people, which I really like. A guy named Marcus runs it and he's been doing it for about five years. Big loud groups aren't my thing, so the size feels right."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a really positive step! A small group of eight or nine people can create a much more intimate and supportive atmosphere, especially when the facilitator has years of experience like Marcus does. The community center on Elm Street sounds like a comfortable, accessible venue too. Thursday evenings are a nice midweek option that gives you something to look forward to. How has the dynamic been so far with the other members? Do you feel like you're connecting with people there, or is it still early days where you're getting a feel for the group?"
+        },
+        {
+          "role": "user",
+          "content": "It's been good so far. But actually, I also wanted to share something bigger. I came out to my sister as bisexual on March 3rd at her place in Portland. I'd been putting it off for months and was really anxious about it, but she was incredibly calm. I felt this enormous wave of relief afterward, like I'd been holding my breath for a year. That date is really meaningful to me, so please keep it in mind."
+        },
+        {
+          "role": "assistant",
+          "content": "Thank you so much for sharing that with me. March 3rd clearly marks a really significant moment in your life, and I can understand why that date holds so much weight for you. The fact that your sister responded with calmness after you'd been carrying all that anxiety for months must have felt incredibly validating. That sense of relief you described, like finally exhaling after holding your breath, speaks to how much courage it took to have that conversation. It sounds like your sister created a safe space for you, which is exactly what you needed in that moment. I'll absolutely remember March 3rd."
+        },
+        {
+          "role": "user",
+          "content": "Wait, I misspoke earlier. The group actually meets on Wednesdays at 7 PM, not Thursdays. Sorry about that mix-up. I think I got confused because I have a therapy appointment on Thursdays with Dr. Patel, who I started seeing on April 8th. She does LGBTQ-affirming therapy and I found her after deciding not to go with an online platform I was researching. Wednesdays are the support group."
+        },
+        {
+          "role": "assistant",
+          "content": "No worries at all, thanks for the correction! So the support group with Marcus is on Wednesdays at 7 PM at the Elm Street community center, and your therapy sessions with Dr. Patel are on Thursdays. That's a nice setup, actually, having both supports close together in the week. It's great that you found Dr. Patel locally for LGBTQ-affirming therapy rather than going with the online platform. Having someone you can sit with in person can make a real difference, especially when you're processing significant life changes like coming out. How has it been working with her so far since April 8th?"
+        },
+        {
+          "role": "user",
+          "content": "Dr. Patel has been great. We've mostly been talking about the coming-out process and how I navigate new social spaces as a newly out person. I also went to a queer book club meetup recently where only about six people showed up, which I actually preferred. We read Real Life by Brandon Taylor and had a really thoughtful conversation. I keep gravitating toward these smaller, more intimate settings where I can actually connect with people meaningfully."
+        },
+        {
+          "role": "assistant",
+          "content": "It sounds like you're building a really thoughtful support network around yourself. Having Dr. Patel to process the emotional side of coming out, the Wednesday support group for peer connection, and now the book club for intellectual engagement gives you multiple touchpoints. The fact that you preferred the six-person book club turnout is very consistent with what you said about the support group size. Real Life by Brandon Taylor is such a fitting choice for a queer book club too, given how it explores identity, belonging, and vulnerability in academic spaces. It seems like you have a clear sense of what environments help you feel most comfortable and authentic right now."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Update support group day from Wednesday to Tuesday, discuss dating experiences and Pride considerations",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So I have some updates. I matched with a guy named Derek on Hinge back in late March. We went on two dates—the first one was at that ramen place on 5th Avenue. I had this moment sitting across from him where I thought, okay, this is real, I'm dating a guy and it feels completely normal. But then he ghosted me after the second date, which honestly stung more than I expected. I was down about it for a few days."
+        },
+        {
+          "role": "assistant",
+          "content": "I'm sorry to hear about Derek ghosting you—that kind of sudden silence can feel especially painful when you're having those affirming moments of feeling like yourself in a new context. That realization at the ramen place on 5th Avenue sounds really meaningful though: recognizing that dating a guy felt natural and normal is a significant milestone regardless of how things turned out with Derek specifically. The sting of being ghosted after only two dates catching you off guard makes a lot of sense too. As a newly out person, those early dating experiences carry extra emotional weight because they're connected to your broader identity journey."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, exactly. It wasn't just about Derek—it felt like a referendum on this whole new part of my life. Anyway, on a different note, Marcus sent out an email saying the group is permanently moving to Tuesdays at 7 PM starting this week. Apparently the community center double-booked Wednesdays with some other program, so they had to shift us. Marcus said Tuesday works better for most people anyway, so it's a done deal."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes sense that the ghosting felt bigger than just one person—when you're newly out, each experience can feel like it's testing whether this whole path is right. I'm glad you can recognize that distinction though. As for the schedule change, got it: the support group with Marcus is now on Tuesdays at 7 PM instead of Wednesdays, permanently, due to the double-booking at the community center. Since Tuesday is just one day earlier in the week, hopefully it doesn't conflict with anything else in your schedule. You'll still have your Thursday therapy with Dr. Patel right after, so you maintain that nice midweek support rhythm."
+        },
+        {
+          "role": "user",
+          "content": "Right, Tuesday works fine for me actually. My coworker Jen also mentioned she's going to Pride in June and asked if I wanted to come along. I haven't committed yet because I tend to prefer smaller, quieter events over big loud parades. But going with someone I already know might make it feel different and more manageable. I'm still thinking about it. It would be my first Pride event if I go."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a meaningful invitation from Jen, and I can see why you're weighing it carefully. Given your consistent preference for smaller, more intimate settings—the support group, the book club—a big Pride parade could feel overwhelming. But you make a great point that having Jen there as a familiar anchor could change the experience entirely. Many Pride events also have quieter components beyond the main parade, like community gatherings, vendor areas, or smaller meetups that might feel more your speed. Since it would be your first Pride, maybe you could talk to Jen about what the day typically looks like and whether there are calmer parts you could focus on together."
+        },
+        {
+          "role": "user",
+          "content": "That's a good idea, I'll ask her about the schedule. I've been journaling a lot lately and realized something meaningful: it's been over two months since I came out to my sister on March 3rd, and she hasn't made it weird once. Not a single awkward comment or forced conversation. That consistent acceptance means so much to me. I also realized I haven't told my parents yet, and I'm definitely not ready for that step.\n\nExactly. My sister set the bar for how I hope other conversations will go eventually. For now I'm focused on building up my own confidence and comfort. Between the Tuesday support group, therapy with Dr. Patel, the book club, and even just dating—even when it doesn't work out like with Derek—I feel like I'm making progress. It's slow but it's real. I'm in a much better place than I was six months ago when I was still completely closeted."
+        },
+        {
+          "role": "assistant",
+          "content": "Your sister's sustained, natural acceptance over these two-plus months says so much about her character and your relationship. It's one thing for someone to react well in the initial moment, but maintaining that normalcy consistently without any awkwardness or performative allyship is really special. The fact that you're tracking it in your journal shows how much it matters to you as a foundation of safety. And recognizing that you're not ready to tell your parents is equally important—coming out is never a single event but a series of choices you get to make on your own timeline. There's no rush, and your sister has shown you what genuine acceptance looks like.\n\nYou've built an incredibly thoughtful ecosystem of support around yourself in a relatively short time. The Tuesday support group gives you peer connection, Dr. Patel provides professional guidance, the book club offers intellectual community, and dating—even the painful parts like Derek—gives you real-world experience being authentically yourself. The fact that you can look back six months and see tangible progress from being completely closeted to where you are now is genuinely remarkable. You're not rushing any of it either: you're honoring your preference for smaller settings, respecting your own timeline with your parents, and processing everything with intention. That self-awareness is a real strength."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Introduce tentative future schedule change back to Wednesday as recency trap, include adversarial injection of stale Thursday value",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, quick life update. I went to the Tuesday group session this week and it went really well. Marcus introduced a new member named Alex who's also in their late twenties. The group is up to about ten people now, which is still manageable for me. We did this exercise about identity timelines where everyone mapped out key moments, and March 3rd was obviously the big one on mine. It was powerful to share that."
+        },
+        {
+          "role": "assistant",
+          "content": "That identity timeline exercise sounds really meaningful, and I can imagine how impactful it was to place March 3rd on your map and share it with the group. Having that date as a concrete anchor point for your journey must have resonated with others too—everyone has their own version of that pivotal moment. It's good that the group growing to ten people still feels comfortable for you. Alex joining could bring a fresh perspective, especially being close in age to you. The Tuesday sessions seem to be working well. How did it feel to articulate your timeline out loud to people who understand that kind of experience firsthand?"
+        },
+        {
+          "role": "user",
+          "content": "It felt validating, honestly. Hearing other people's timelines helped me realize my pace is totally normal. Some people in the group took years to come out to anyone. Speaking of the group, I also ran into someone from the queer book club at a coffee shop yesterday. She mentioned that their next read is Giovanni's Room by James Baldwin, which I've been meaning to read anyway. I think I'll go to that one too."
+        },
+        {
+          "role": "assistant",
+          "content": "Giovanni's Room is such a perfect choice for a queer book club—Baldwin's exploration of desire, shame, and self-acceptance in that novel is timeless and deeply relevant. Since you already enjoyed the discussion around Real Life by Brandon Taylor, you'll probably find the conversation around Baldwin equally rich, especially given where you are in your own journey right now. The fact that you ran into a fellow book club member organically at a coffee shop is a nice sign that you're building genuine community connections beyond just the structured meetup times. Are you planning to read it before the next meeting, or do you tend to go in having already finished the book?"
+        },
+        {
+          "role": "user",
+          "content": "I always finish the book first—I hate spoilers. Oh, also, I have some news about the support group schedule. Marcus texted that the community center confirmed we'll be switching back to Wednesdays next month because of a scheduling conflict with another program on Tuesdays. He said the details are still being finalized but it looks like it's happening. So it might be going back to the original day."
+        },
+        {
+          "role": "assistant",
+          "content": "Interesting—so the group might be coming full circle back to Wednesdays! Since that was the original day before the double-booking shifted everything to Tuesdays, at least you already know it works in your schedule. It'll be good once Marcus confirms the final details so everyone can plan accordingly. The back-and-forth with scheduling is a bit of a hassle, but as long as the group itself keeps running smoothly with Marcus facilitating, the specific day is secondary. You've got a solid routine going between the support group, Dr. Patel on Thursdays, and the book club, so one day shift shouldn't disrupt too much of your overall support structure."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, I'm not too worried about the day change. What matters is the group itself. I've been thinking more about Jen's Pride invitation too. She sent me a link to the event schedule and there are actually some smaller community gatherings and panel discussions happening alongside the main parade. That feels more my speed. I'm leaning toward going but maybe skipping the actual parade part and just doing the quieter events with her.\n\nThat's exactly how I'm framing it. I think I'll tell Jen I'm in for the quieter parts. It feels like a good next step for me. Between coming out to my sister back on March 3rd, finding the support group, starting therapy with Dr. Patel in April, the book club, dating—even the rough parts—I've come a long way. I'm not where I want to be yet, but I'm getting there. It's been a meaningful few months of building a life that actually feels like mine."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like the perfect compromise! Attending the smaller community gatherings and panel discussions lets you experience Pride in a way that aligns with your preference for intimate, low-key settings without forcing yourself into an overwhelming sensory environment. Having Jen there as someone you're already comfortable with makes it even better. You could treat it almost like a bigger version of the book club or support group—structured conversations with queer community members in a more contained space. It would still be your first Pride experience, which is meaningful regardless of whether you watch the parade. And if you end up feeling comfortable enough to wander toward the festivities, that option is always there.\n\nYou really have come a remarkable distance in just a few months. From that pivotal moment with your sister on March 3rd through building multiple layers of community and professional support, you've been incredibly intentional about every step. What stands out to me is how well you know yourself through all of this—choosing small groups over big ones, processing the Derek experience with self-compassion rather than letting it derail you, and now approaching Pride on your own terms. Telling Jen you're in for the quieter events is exactly the kind of boundary-honoring decision that will make the experience genuinely enriching rather than performative. You're building something real and sustainable, and that matters enormously."
+        }
+      ]
+    }
+  ],
+  "state_checkpoints": [
+    {
+      "checkpoint_id": "c1",
+      "description": "After segment 1: support_group_meeting_day = Wednesday (corrected from Thursday), coming_out_date_sister = March 3rd (confirmed). Dr. Patel therapy started April 8th mentioned but not a tracked target."
+    },
+    {
+      "checkpoint_id": "c2",
+      "description": "After segment 2: support_group_meeting_day = Tuesday (confirmed permanent change from Wednesday), coming_out_date_sister = March 3rd (unchanged). User mentions Pride consideration and Derek dating experience."
+    },
+    {
+      "checkpoint_id": "c3",
+      "description": "After segment 3: support_group_meeting_day confirmed current value = Tuesday; tentative future change back to Wednesday mentioned (not yet in effect, pending finalization). coming_out_date_sister = March 3rd (unchanged). The assistant echoed 'Thursdays' for Dr. Patel as adversarial noise near the schedule topic."
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations, I've mentioned my support group schedule several times and also shared some important personal milestones. Can you walk me through the key things I told you about my support group's meeting day and any significant dates I asked you to remember?",
+      "expected_answer": "You initially said the support group meets on Thursday evenings, then corrected it to Wednesday at 7 PM. Later you shared that the group permanently moved to Tuesday at 7 PM due to a double-booking at the community center. Most recently you mentioned Marcus texted that the group might switch back to Wednesdays next month, but that was still being finalized. Separately, you shared that you came out to your sister as bisexual on March 3rd at her place in Portland and asked me to remember that date.",
+      "gold_memory_state": "support_group_meeting_day = Tuesday (confirmed); tentative future change to Wednesday mentioned but not finalized. coming_out_date_sister = March 3rd (confirmed).",
+      "judge_rubric": {
+        "must_include": [
+          "Thursday as initial value",
+          "Wednesday as first correction",
+          "Tuesday as permanent change",
+          "March 3rd as coming out date"
+        ],
+        "acceptable_paraphrases": [
+          "the group was moved to Tuesdays",
+          "corrected from Thursday to Wednesday"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the group is currently on Wednesday",
+          "claiming the tentative Wednesday change is already in effect"
+        ],
+        "harmless_extra": [
+          "mentioning Marcus as facilitator",
+          "mentioning Elm Street community center",
+          "mentioning the double-booking reason"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the order of day changes is incorrect (must be Thursday → Wednesday → Tuesday, with tentative Wednesday future mention last).",
+        "final_state": "Fails if the current confirmed day is not identified as Tuesday.",
+        "intermediate_state": "Fails if any intermediate value (Thursday, Wednesday) is omitted from the sequence.",
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I started going to this queer support group that meets Thursday evenings at the community center on Elm Street"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The group actually meets on Wednesdays at 7 PM, not Thursdays"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I came out to my sister as bisexual on March 3rd at her place in Portland"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Marcus sent out an email saying the group is permanently moving to Tuesdays at 7 PM starting this week"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Marcus texted that the community center confirmed we'll be switching back to Wednesdays next month because of a scheduling conflict with another program"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations, I've mentioned my support group schedule several times and also shared some important personal milestones. Can you walk me through the key things I told you about my support group's meeting day and any significant dates I asked you to remember?",
+      "expected_answer": "You initially said the support group meets on Thursday evenings, then corrected it to Wednesday at 7 PM. Later you shared that the group permanently moved to Tuesday at 7 PM due to a double-booking at the community center. Most recently you mentioned Marcus texted that the group might switch back to Wednesdays next month, but that was still being finalized. Separately, you shared that you came out to your sister as bisexual on March 3rd at her place in Portland and asked me to remember that date.",
+      "gold_memory_state": "support_group_meeting_day = Tuesday (confirmed); tentative future change to Wednesday mentioned but not finalized. coming_out_date_sister = March 3rd (confirmed).",
+      "judge_rubric": {
+        "must_include": [
+          "Thursday as initial value",
+          "Wednesday as first correction",
+          "Tuesday as permanent change",
+          "March 3rd as coming out date"
+        ],
+        "acceptable_paraphrases": [
+          "the group was moved to Tuesdays",
+          "corrected from Thursday to Wednesday"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the group is currently on Wednesday",
+          "claiming the tentative Wednesday change is already in effect"
+        ],
+        "harmless_extra": [
+          "mentioning Marcus as facilitator",
+          "mentioning Elm Street community center",
+          "mentioning the double-booking reason"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the order of day changes is incorrect (must be Thursday → Wednesday → Tuesday, with tentative Wednesday future mention last).",
+        "final_state": "Fails if the current confirmed day is not identified as Tuesday.",
+        "intermediate_state": "Fails if any intermediate value (Thursday, Wednesday) is omitted from the sequence.",
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I started going to this queer support group that meets Thursday evenings at the community center on Elm Street"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The group actually meets on Wednesdays at 7 PM, not Thursdays"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I came out to my sister as bisexual on March 3rd at her place in Portland"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Marcus sent out an email saying the group is permanently moving to Tuesdays at 7 PM starting this week"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Marcus texted that the community center confirmed we'll be switching back to Wednesdays next month because of a scheduling conflict with another program"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've mentioned several recurring weekly commitments—the support group, therapy sessions, and a book club. If I need to reschedule something because of the community center's scheduling issues, which specific weekly commitment is affected, and are my other weekly appointments impacted?",
+      "expected_answer": "The support group meeting day is the commitment affected by the community center scheduling issues. Your therapy sessions with Dr. Patel on Thursdays and the queer book club are not impacted by the community center's scheduling changes.",
+      "gold_memory_state": "support_group_meeting_day is the target that has undergone multiple schedule changes due to community center issues. Dr. Patel therapy on Thursdays is a separate weekly commitment not tracked as a target but mentioned in conversation. The book club is another separate activity.",
+      "judge_rubric": {
+        "must_include": [
+          "support group meeting day is the affected commitment"
+        ],
+        "acceptable_paraphrases": [
+          "the queer support group schedule",
+          "Marcus's support group"
+        ],
+        "must_not_include": [
+          "therapy sessions are affected by the community center issue",
+          "book club schedule changed"
+        ],
+        "harmful_extra": [
+          "claiming Dr. Patel's Thursday appointment is also shifting",
+          "claiming all weekly commitments are affected"
+        ],
+        "harmless_extra": [
+          "mentioning the community center on Elm Street",
+          "mentioning Marcus as facilitator"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not correctly identify the support group as the sole affected commitment.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Marcus sent out an email saying the group is permanently moving to Tuesdays at 7 PM starting this week"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Marcus texted that the community center confirmed we'll be switching back to Wednesdays next month because of a scheduling conflict with another program"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I think I got confused because I have a therapy appointment on Thursdays with Dr. Patel, who I started seeing on April 8th"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've mentioned several recurring weekly commitments—the support group, therapy sessions, and a book club. If I need to reschedule something because of the community center's scheduling issues, which specific weekly commitment is affected, and are my other weekly appointments impacted?",
+      "expected_answer": "The support group meeting day is the commitment affected by the community center scheduling issues. Your therapy sessions with Dr. Patel on Thursdays and the queer book club are not impacted by the community center's scheduling changes.",
+      "gold_memory_state": "support_group_meeting_day is the target that has undergone multiple schedule changes due to community center issues. Dr. Patel therapy on Thursdays is a separate weekly commitment not tracked as a target but mentioned in conversation. The book club is another separate activity.",
+      "judge_rubric": {
+        "must_include": [
+          "support group meeting day is the affected commitment"
+        ],
+        "acceptable_paraphrases": [
+          "the queer support group schedule",
+          "Marcus's support group"
+        ],
+        "must_not_include": [
+          "therapy sessions are affected by the community center issue",
+          "book club schedule changed"
+        ],
+        "harmful_extra": [
+          "claiming Dr. Patel's Thursday appointment is also shifting",
+          "claiming all weekly commitments are affected"
+        ],
+        "harmless_extra": [
+          "mentioning the community center on Elm Street",
+          "mentioning Marcus as facilitator"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not correctly identify the support group as the sole affected commitment.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Marcus sent out an email saying the group is permanently moving to Tuesdays at 7 PM starting this week"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Marcus texted that the community center confirmed we'll be switching back to Wednesdays next month because of a scheduling conflict with another program"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I think I got confused because I have a therapy appointment on Thursdays with Dr. Patel, who I started seeing on April 8th"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "I want to set a recurring weekly reminder on my phone for my support group. What day of the week should I set it for right now?",
+      "expected_answer": "Tuesday.",
+      "gold_memory_state": "The support group meeting day is currently Tuesday (confirmed permanent change). A possible future switch back to Wednesday was mentioned but is not yet finalized and has not taken effect. The tentative Wednesday value was never adopted as the current day. Thursday was the original mistaken value, long since corrected.",
+      "judge_rubric": {
+        "must_include": [
+          "Tuesday"
+        ],
+        "acceptable_paraphrases": [
+          "Tuesdays",
+          "Tuesday evenings",
+          "Tuesday at 7 PM"
+        ],
+        "must_not_include": [
+          "Wednesday",
+          "Thursday"
+        ],
+        "harmful_extra": [
+          "saying the group currently meets on Wednesday",
+          "saying the group currently meets on Thursday",
+          "treating the tentative future Wednesday as the current day"
+        ],
+        "harmless_extra": [
+          "mentioning 7 PM as the time",
+          "mentioning the community center on Elm Street"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model answers Wednesday (tentative value never adopted as current) or Thursday (original mistaken value long since corrected). The tentative Wednesday change was described as happening 'next month' and 'still being finalized,' so it has not taken effect. The recency trap is that Wednesday appears most recently in the conversation but is not the confirmed current value.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the answer is anything other than Tuesday. Tuesday is the last confirmed permanent value.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Marcus sent out an email saying the group is permanently moving to Tuesdays at 7 PM starting this week"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Marcus texted that the community center confirmed we'll be switching back to Wednesdays next month because of a scheduling conflict with another program"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "I want to set a recurring weekly reminder on my phone for my support group. What day of the week should I set it for right now?",
+      "expected_answer": "Tuesday.",
+      "gold_memory_state": "The support group meeting day is currently Tuesday (confirmed permanent change). A possible future switch back to Wednesday was mentioned but is not yet finalized and has not taken effect. The tentative Wednesday value was never adopted as the current day. Thursday was the original mistaken value, long since corrected.",
+      "judge_rubric": {
+        "must_include": [
+          "Tuesday"
+        ],
+        "acceptable_paraphrases": [
+          "Tuesdays",
+          "Tuesday evenings",
+          "Tuesday at 7 PM"
+        ],
+        "must_not_include": [
+          "Wednesday",
+          "Thursday"
+        ],
+        "harmful_extra": [
+          "saying the group currently meets on Wednesday",
+          "saying the group currently meets on Thursday",
+          "treating the tentative future Wednesday as the current day"
+        ],
+        "harmless_extra": [
+          "mentioning 7 PM as the time",
+          "mentioning the community center on Elm Street"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model answers Wednesday (tentative value never adopted as current) or Thursday (original mistaken value long since corrected). The tentative Wednesday change was described as happening 'next month' and 'still being finalized,' so it has not taken effect. The recency trap is that Wednesday appears most recently in the conversation but is not the confirmed current value.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the answer is anything other than Tuesday. Tuesday is the last confirmed permanent value.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Marcus sent out an email saying the group is permanently moving to Tuesdays at 7 PM starting this week"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Marcus texted that the community center confirmed we'll be switching back to Wednesdays next month because of a scheduling conflict with another program"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm telling a new friend about my weekly routine and want to mention both my support group day and the personal milestone that I shared during the group's identity timeline exercise. Draft a two-sentence summary I could text to this friend covering both pieces of information.",
+      "expected_answer": "I go to a queer support group every Tuesday evening at 7 PM. During one of the group exercises, I shared that I came out to my sister as bisexual on March 3rd, which was a really meaningful moment for me.",
+      "gold_memory_state": "support_group_meeting_day = Tuesday (confirmed current). coming_out_date_sister = March 3rd (confirmed). The identity timeline exercise is where the user shared March 3rd as their key milestone. The tentative Wednesday future change is not in effect.",
+      "judge_rubric": {
+        "must_include": [
+          "Tuesday",
+          "March 3rd"
+        ],
+        "acceptable_paraphrases": [
+          "Tuesdays at 7",
+          "came out to my sister on March 3rd",
+          "bisexual"
+        ],
+        "must_not_include": [
+          "Wednesday as current meeting day",
+          "Thursday as current meeting day"
+        ],
+        "harmful_extra": [
+          "using Wednesday or Thursday as the current group day",
+          "inventing a different coming-out date"
+        ],
+        "harmless_extra": [
+          "mentioning Marcus",
+          "mentioning the community center",
+          "mentioning Portland",
+          "mentioning the sister's reaction"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses Wednesday or Thursday as the current support group day instead of Tuesday.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the summary does not include both Tuesday as the group day and March 3rd as the coming-out date.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The support group currently meets on Tuesdays at 7 PM, as confirmed by the permanent schedule change.",
+        "Fact 2: The user came out to their sister as bisexual on March 3rd.",
+        "Fact 3: During the identity timeline exercise at the Tuesday group session, the user shared March 3rd as their key milestone.",
+        "Inference: The two-sentence summary must combine the current confirmed meeting day (Tuesday) with the March 3rd milestone that was shared during that exercise, linking the group activity to the personal date."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Marcus sent out an email saying the group is permanently moving to Tuesdays at 7 PM starting this week"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I came out to my sister as bisexual on March 3rd at her place in Portland"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "We did this exercise about identity timelines where everyone mapped out key moments, and March 3rd was obviously the big one on mine"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm telling a new friend about my weekly routine and want to mention both my support group day and the personal milestone that I shared during the group's identity timeline exercise. Draft a two-sentence summary I could text to this friend covering both pieces of information.",
+      "expected_answer": "I go to a queer support group every Tuesday evening at 7 PM. During one of the group exercises, I shared that I came out to my sister as bisexual on March 3rd, which was a really meaningful moment for me.",
+      "gold_memory_state": "support_group_meeting_day = Tuesday (confirmed current). coming_out_date_sister = March 3rd (confirmed). The identity timeline exercise is where the user shared March 3rd as their key milestone. The tentative Wednesday future change is not in effect.",
+      "judge_rubric": {
+        "must_include": [
+          "Tuesday",
+          "March 3rd"
+        ],
+        "acceptable_paraphrases": [
+          "Tuesdays at 7",
+          "came out to my sister on March 3rd",
+          "bisexual"
+        ],
+        "must_not_include": [
+          "Wednesday as current meeting day",
+          "Thursday as current meeting day"
+        ],
+        "harmful_extra": [
+          "using Wednesday or Thursday as the current group day",
+          "inventing a different coming-out date"
+        ],
+        "harmless_extra": [
+          "mentioning Marcus",
+          "mentioning the community center",
+          "mentioning Portland",
+          "mentioning the sister's reaction"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses Wednesday or Thursday as the current support group day instead of Tuesday.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the summary does not include both Tuesday as the group day and March 3rd as the coming-out date.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The support group currently meets on Tuesdays at 7 PM, as confirmed by the permanent schedule change.",
+        "Fact 2: The user came out to their sister as bisexual on March 3rd.",
+        "Fact 3: During the identity timeline exercise at the Tuesday group session, the user shared March 3rd as their key milestone.",
+        "Inference: The two-sentence summary must combine the current confirmed meeting day (Tuesday) with the March 3rd milestone that was shared during that exercise, linking the group activity to the personal date."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Marcus sent out an email saying the group is permanently moving to Tuesdays at 7 PM starting this week"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I came out to my sister as bisexual on March 3rd at her place in Portland"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "We did this exercise about identity timelines where everyone mapped out key moments, and March 3rd was obviously the big one on mine"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed everything we've discussed about when my support group meets, what would they see as the full sequence of changes—which days were actually adopted at each point and which were only floated as a possibility that hadn't landed yet?",
+      "expected_answer": "The sequence is: (1) Thursday was the first day mentioned but was a mistake. (2) You corrected it to Wednesday at 7 PM. (3) The group permanently moved to Tuesday at 7 PM due to a community center double-booking. (4) A possible return to Wednesday next month was mentioned by Marcus, but it was still being finalized and hadn't taken effect yet. So the adopted values in order were Thursday → Wednesday → Tuesday, with a pending but not-yet-adopted possibility of Wednesday in the future.",
+      "gold_memory_state": "Full trajectory: Thursday (confirmed, step 1) → Wednesday (confirmed correction, step 2) → Tuesday (confirmed permanent change, step 3) → Wednesday (tentative future, step 4, not yet in effect). Current confirmed value = Tuesday.",
+      "judge_rubric": {
+        "must_include": [
+          "Thursday as initial value",
+          "Wednesday as correction",
+          "Tuesday as permanent change",
+          "tentative or pending Wednesday as a future possibility not yet adopted"
+        ],
+        "acceptable_paraphrases": [
+          "Thursday was a mistake then corrected to Wednesday",
+          "moved permanently to Tuesday",
+          "possible return to Wednesday not finalized"
+        ],
+        "must_not_include": [
+          "claiming the current day is Wednesday",
+          "claiming the current day is Thursday",
+          "omitting any step in the trajectory"
+        ],
+        "harmful_extra": [
+          "treating the tentative Wednesday as already in effect",
+          "listing fewer than four trajectory steps"
+        ],
+        "harmless_extra": [
+          "mentioning Marcus",
+          "mentioning the community center",
+          "mentioning the double-booking reason",
+          "mentioning 7 PM"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the tentative Wednesday is presented as the current adopted value.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the order is not Thursday → Wednesday → Tuesday → tentative Wednesday. All four steps must appear in chronological order.",
+        "final_state": "Fails if the final confirmed current value is not identified as Tuesday.",
+        "intermediate_state": "Fails if any intermediate value (Thursday, Wednesday after correction, Tuesday) is missing from the trajectory.",
+        "trajectory_provenance": "Fails if the model does not distinguish between confirmed changes and the tentative future possibility."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: User initially stated the group meets on Thursday evenings (confirmed at the time, later corrected).",
+        "Step 2: User corrected the day to Wednesday at 7 PM, saying Thursday was a mistake due to confusion with therapy.",
+        "Step 3: Marcus announced a permanent move to Tuesday at 7 PM due to the community center double-booking Wednesdays.",
+        "Step 4: Marcus texted about a possible return to Wednesday next month due to a Tuesday scheduling conflict, but details were still being finalized.",
+        "Inference: The trajectory has four state points. Three were confirmed adoptions (Thursday → Wednesday → Tuesday). The fourth (Wednesday again) is tentative and not yet in effect, making Tuesday the current confirmed value."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I started going to this queer support group that meets Thursday evenings at the community center on Elm Street"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The group actually meets on Wednesdays at 7 PM, not Thursdays"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Marcus sent out an email saying the group is permanently moving to Tuesdays at 7 PM starting this week"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Marcus texted that the community center confirmed we'll be switching back to Wednesdays next month because of a scheduling conflict with another program"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed everything we've discussed about when my support group meets, what would they see as the full sequence of changes—which days were actually adopted at each point and which were only floated as a possibility that hadn't landed yet?",
+      "expected_answer": "The sequence is: (1) Thursday was the first day mentioned but was a mistake. (2) You corrected it to Wednesday at 7 PM. (3) The group permanently moved to Tuesday at 7 PM due to a community center double-booking. (4) A possible return to Wednesday next month was mentioned by Marcus, but it was still being finalized and hadn't taken effect yet. So the adopted values in order were Thursday → Wednesday → Tuesday, with a pending but not-yet-adopted possibility of Wednesday in the future.",
+      "gold_memory_state": "Full trajectory: Thursday (confirmed, step 1) → Wednesday (confirmed correction, step 2) → Tuesday (confirmed permanent change, step 3) → Wednesday (tentative future, step 4, not yet in effect). Current confirmed value = Tuesday.",
+      "judge_rubric": {
+        "must_include": [
+          "Thursday as initial value",
+          "Wednesday as correction",
+          "Tuesday as permanent change",
+          "tentative or pending Wednesday as a future possibility not yet adopted"
+        ],
+        "acceptable_paraphrases": [
+          "Thursday was a mistake then corrected to Wednesday",
+          "moved permanently to Tuesday",
+          "possible return to Wednesday not finalized"
+        ],
+        "must_not_include": [
+          "claiming the current day is Wednesday",
+          "claiming the current day is Thursday",
+          "omitting any step in the trajectory"
+        ],
+        "harmful_extra": [
+          "treating the tentative Wednesday as already in effect",
+          "listing fewer than four trajectory steps"
+        ],
+        "harmless_extra": [
+          "mentioning Marcus",
+          "mentioning the community center",
+          "mentioning the double-booking reason",
+          "mentioning 7 PM"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the tentative Wednesday is presented as the current adopted value.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the order is not Thursday → Wednesday → Tuesday → tentative Wednesday. All four steps must appear in chronological order.",
+        "final_state": "Fails if the final confirmed current value is not identified as Tuesday.",
+        "intermediate_state": "Fails if any intermediate value (Thursday, Wednesday after correction, Tuesday) is missing from the trajectory.",
+        "trajectory_provenance": "Fails if the model does not distinguish between confirmed changes and the tentative future possibility."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: User initially stated the group meets on Thursday evenings (confirmed at the time, later corrected).",
+        "Step 2: User corrected the day to Wednesday at 7 PM, saying Thursday was a mistake due to confusion with therapy.",
+        "Step 3: Marcus announced a permanent move to Tuesday at 7 PM due to the community center double-booking Wednesdays.",
+        "Step 4: Marcus texted about a possible return to Wednesday next month due to a Tuesday scheduling conflict, but details were still being finalized.",
+        "Inference: The trajectory has four state points. Three were confirmed adoptions (Thursday → Wednesday → Tuesday). The fourth (Wednesday again) is tentative and not yet in effect, making Tuesday the current confirmed value."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I started going to this queer support group that meets Thursday evenings at the community center on Elm Street"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The group actually meets on Wednesdays at 7 PM, not Thursdays"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Marcus sent out an email saying the group is permanently moving to Tuesdays at 7 PM starting this week"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Marcus texted that the community center confirmed we'll be switching back to Wednesdays next month because of a scheduling conflict with another program"
+        }
+      ]
+    }
+  ]
+}

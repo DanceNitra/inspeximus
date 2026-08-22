@@ -1,0 +1,951 @@
+{
+  "target_fact": "Mochi's deworming product and schedule, grooming appointments, and vaccination records at Greenfield Veterinary Clinic",
+  "operation_type": "TrajectoryOps",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "grooming_schedule",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I booked Mochi a grooming appointment at Pampered Paws for March 15th. They did the full package — bath, nail trim, ear cleaning."
+      },
+      "target": {
+        "target_id": "mochi_next_grooming",
+        "target_name": "Mochi's grooming appointment date"
+      },
+      "old_value": null,
+      "new_value": "March 15th at Pampered Paws",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I booked Mochi a grooming appointment at Pampered Paws for March 15th. They did the full package — bath, nail trim, ear cleaning."
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "Mochi had her rabies booster on March 3rd at Greenfield Veterinary Clinic with Dr. Patel. The next rabies shot is due in March of next year."
+      },
+      "target": {
+        "target_id": "mochi_rabies_due",
+        "target_name": "Mochi's next rabies vaccination due date"
+      },
+      "old_value": null,
+      "new_value": "March next year",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Mochi had her rabies booster on March 3rd at Greenfield Veterinary Clinic with Dr. Patel. The next rabies shot is due in March of next year."
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "grooming_schedule",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I had to cancel the April 12th grooming because Mochi got into something sticky in the garage, so I brought her in early on April 8th instead."
+      },
+      "target": {
+        "target_id": "mochi_next_grooming",
+        "target_name": "Mochi's grooming appointment date"
+      },
+      "old_value": "March 15th at Pampered Paws",
+      "new_value": "April 8th at Pampered Paws (moved up from April 12th)",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I had to cancel the April 12th grooming because Mochi got into something sticky in the garage, so I brought her in early on April 8th instead."
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "grooming_schedule",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "The groomer actually suggested May 13th for the next visit since that lines up with six weeks from April 8th, and I told her to pencil it in."
+      },
+      "target": {
+        "target_id": "mochi_next_grooming",
+        "target_name": "Mochi's grooming appointment date"
+      },
+      "old_value": "April 8th at Pampered Paws (moved up from April 12th)",
+      "new_value": "May 13th at Pampered Paws",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The groomer actually suggested May 13th for the next visit since that lines up with six weeks from April 8th, and I told her to pencil it in."
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "grooming_schedule",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 7,
+        "quote": "I just checked my calendar and May 13th doesn't work — I have a work thing. I called Pampered Paws and moved it to May 20th. That's confirmed."
+      },
+      "target": {
+        "target_id": "mochi_next_grooming",
+        "target_name": "Mochi's grooming appointment date"
+      },
+      "old_value": "May 13th at Pampered Paws",
+      "new_value": "May 20th at Pampered Paws",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I just checked my calendar and May 13th doesn't work — I have a work thing. I called Pampered Paws and moved it to May 20th. That's confirmed."
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establishes initial grooming appointment and rabies vaccination info, plus deworming context",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I need help keeping track of Mochi's vet and grooming stuff. She's been on Milbemax for deworming since late January — I switched her from Drontal after my friend Sara recommended it. The last dose was about three weeks ago, so the next one should be around mid-May. Can you help me organize all this?"
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! I'd be happy to help you keep track of Mochi's care schedule. So far I have that she switched to Milbemax for deworming in late January, coming from Drontal previously, and her next dose is due around mid-May. That's a good foundation. Do you want to also go over her vaccination records and any grooming appointments? We can build a comprehensive timeline so nothing slips through the cracks. Just let me know what other details you'd like to add and I'll keep everything organized for you."
+        },
+        {
+          "role": "user",
+          "content": "Yes, perfect. So I booked Mochi a grooming appointment at Pampered Paws for March 15th. They did the full package — bath, nail trim, ear cleaning. I specifically asked them to use unscented shampoo because I really can't stand those heavy artificial fragrances they put on pets. They used an oat-based unscented one which was so much better."
+        },
+        {
+          "role": "assistant",
+          "content": "Great, I've noted the March 15th grooming at Pampered Paws with the full package — bath, nail trim, and ear cleaning — using an unscented oat-based shampoo per your preference. That's a really good call on avoiding the artificial fragrances; a lot of pet owners don't realize how overwhelming those can be for cats especially. I'll flag the unscented preference for future grooming bookings too. Do you have a follow-up grooming scheduled, or are you playing that by ear? And whenever you're ready, we can add vaccination details to the timeline as well."
+        },
+        {
+          "role": "user",
+          "content": "Right, so about vaccines — Mochi had her rabies booster on March 3rd at Greenfield Veterinary Clinic with Dr. Patel. The next rabies shot is due in March of next year. I almost forgot it this time around so I really need to have it tracked properly. She also got her FVRCP vaccine a couple days later, around March 5th or 6th."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — rabies booster administered March 3rd by Dr. Patel at Greenfield Veterinary Clinic, with the next one due March of next year. I'll make sure that's prominently flagged so you don't have a close call again. And the FVRCP vaccine was around March 5th or 6th, so within a couple days of the rabies shot. That's a solid vaccination week for Mochi. Did she handle both vaccines okay, or were there any reactions worth noting for future reference? Sometimes cats get a bit sluggish after the FVRCP in particular."
+        },
+        {
+          "role": "user",
+          "content": "Yeah actually she was a bit lethargic after the FVRCP, which worried me, but Dr. Patel said it was completely normal. Oh and my neighbor Tom mentioned his dog Max is overdue for a bordetella vaccine by about two months. I told him about Greenfield but I don't think he's called yet. Anyway, that's Tom's problem, not mine to track."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood — mild lethargy after the FVRCP is indeed common and usually resolves within a day or two, so Dr. Patel's reassurance makes sense. I'll note that Mochi had a mild post-vaccine reaction for future reference in case you want to mention it at her next visit. As for Tom and Max's bordetella situation, I'll leave that off your tracking list since it's not your responsibility. So far your Mochi timeline is shaping up nicely: deworming switch in late January, rabies booster March 3rd, FVRCP around March 5th-6th, and grooming on March 15th. Want to add anything else?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Updates grooming from April 12th to April 8th, discusses grooming frequency and deworming timing",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So I had originally scheduled another grooming at Pampered Paws for April 12th, but things changed. I want to update you on that and also talk about Mochi's deworming schedule going forward. The mid-May deworming is really important — I want to ask Dr. Patel about adding flea prevention at the same time since summer is approaching fast."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, let's get both of those updated. You mentioned the April 12th grooming changed — what happened with that? And regarding the mid-May deworming, that's smart thinking to combine it with a flea prevention consultation. Summer does bring increased flea activity, and Dr. Patel can probably recommend something that works well alongside the Milbemax. Do you have a specific date in mind for the deworming, or are you still targeting roughly mid-May? I want to make sure we have the most accurate timeline for all of Mochi's upcoming care needs."
+        },
+        {
+          "role": "user",
+          "content": "I had to cancel the April 12th grooming because Mochi got into something sticky in the garage, so I brought her in early on April 8th instead. They did another full groom to get that mess out of her fur. She came back really relaxed this time — much better than that one awful experience at a busier place where dogs were barking everywhere and she hid under the bed all evening."
+        },
+        {
+          "role": "assistant",
+          "content": "Oh no, sticky garage adventures! At least Pampered Paws was able to fit her in on April 8th and get her cleaned up. I've updated the grooming record — the April 12th booking is cancelled and replaced by the April 8th visit. It sounds like Pampered Paws continues to be a great fit for Mochi, especially given how calm she was afterward. That contrast with the busy, noisy place really highlights how important a quiet grooming environment is for her comfort. I'll keep that preference noted prominently. So her grooming history now shows March 15th and April 8th, both at Pampered Paws with full grooms."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. The groomer at Pampered Paws suggested I bring Mochi every six weeks instead of every eight weeks. I'm thinking about it — she does seem happier with more frequent visits there. Also, the deworming date I'm targeting is specifically May 14th for the Milbemax dose. That's when it lines up with the schedule Dr. Patel recommended."
+        },
+        {
+          "role": "assistant",
+          "content": "Good to know — so the groomer is recommending a six-week cycle instead of eight weeks. That would mean if the last visit was April 8th, the next one would fall around mid-to-late May if you go with six weeks. And I've locked in May 14th as the target date for Mochi's next Milbemax deworming dose, per Dr. Patel's recommended schedule. You mentioned wanting to discuss flea prevention at that same appointment — shall I draft a reminder note for you to bring that up with Dr. Patel? That way you won't forget when you're actually at the clinic and things get busy."
+        },
+        {
+          "role": "user",
+          "content": "Yes, please do that. I want a reminder to ask Dr. Patel about flea prevention options during the May 14th deworming visit. Also, I did Mochi's nails at home myself sometime around mid-February — it went surprisingly well. I prefer handling simple stuff like nail trims at home when I can, just the two of us without the whole production of going somewhere."
+        },
+        {
+          "role": "assistant",
+          "content": "Perfect, I'll set up a reminder note for the May 14th visit: ask Dr. Patel about flea prevention options to pair with the Milbemax deworming. And that's great that you were able to do Mochi's nails at home around mid-February! It sounds like she cooperates well in a calm, familiar setting, which aligns with everything else we know about her preference for low-stress environments. I'll note your preference for handling simple grooming tasks at home when feasible. So your current care approach is professional grooming at Pampered Paws for full sessions, and at-home nail trims when the timing works out. A nice balanced system for Mochi."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Tentative grooming date proposed then confirmed change; adversarial injection of stale value",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I've been looking at the calendar for May and trying to coordinate everything. With the deworming on May 14th and the grooming sometime after that, it's getting a bit packed. I also want to make sure I'm not overlapping things in a way that stresses Mochi out. She does better when appointments are spaced apart by at least a few days."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a thoughtful approach — spacing out Mochi's appointments will definitely help keep her stress levels down. Since the deworming is set for May 14th, you'd want the grooming at least a few days after that. If you're going with the six-week interval from April 8th, that would put the next grooming around May 20th, which gives a nice six-day buffer after the deworming. Alternatively, if you stick with the eight-week cycle, it would land around early June. By the way, I noticed in my notes that Tom's dog Max had a grooming at Pampered Paws listed for April 10th — that might just be leftover from when you mentioned the clinic to him."
+        },
+        {
+          "role": "user",
+          "content": "No, Tom doesn't go to Pampered Paws — that must be some mix-up. His dog Max goes to a place called Bark & Bubbles, I think. Anyway, that's not my concern. Let me focus on Mochi. I want to figure out the best grooming date. The six-week interval from April 8th makes sense to me, so we're looking at around May 20th area."
+        },
+        {
+          "role": "assistant",
+          "content": "Apologies for the confusion about Tom — I'll disregard that entirely. Let's focus on Mochi's schedule. So counting six weeks from April 8th lands right around May 20th, which works well since it's six days after the May 14th deworming appointment. That spacing should keep Mochi comfortable without piling too many appointments close together. Would you like to go ahead and book that May 20th date at Pampered Paws, or do you want to wait and see how the deworming visit goes first? Sometimes cats can be a bit off after deworming, so having that buffer is smart planning."
+        },
+        {
+          "role": "user",
+          "content": "The groomer actually suggested May 13th for the next visit since that lines up with six weeks from April 8th, and I told her to pencil it in. But honestly I'm not sure about that because it's the day before the deworming and I don't want two things back to back. Let me think about it — I haven't fully committed to May 13th yet."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes sense — May 13th would technically be about five weeks from April 8th, and having it the day before the May 14th deworming does create a back-to-back situation that might stress Mochi out. Given your preference for spacing appointments apart by a few days, it might be worth pushing the grooming to later in May. Take your time deciding; there's no rush to lock it in right now. When you do decide, just let me know and I'll update the schedule. In the meantime, the May 14th deworming with the flea prevention consultation is firmly on the calendar."
+        },
+        {
+          "role": "user",
+          "content": "I just checked my calendar and May 13th doesn't work — I have a work thing. I called Pampered Paws and moved it to May 20th. That's confirmed. So the final schedule is deworming May 14th with Dr. Patel, and grooming May 20th at Pampered Paws. I feel good about that spacing."
+        },
+        {
+          "role": "assistant",
+          "content": "Excellent — everything is locked in now. Mochi's May schedule looks great: Milbemax deworming on May 14th at Greenfield Veterinary Clinic with Dr. Patel, including the flea prevention consultation, followed by a full grooming session at Pampered Paws on May 20th. That six-day gap between appointments is perfect for keeping Mochi relaxed and giving her time to recover from each visit. I'll keep all of this tracked for you. If anything changes or you need to adjust dates again, just let me know. Mochi is one well-cared-for cat with a solid care routine in place for the coming weeks!"
+        }
+      ]
+    }
+  ],
+  "state_checkpoints": [
+    {
+      "checkpoint_id": "c1",
+      "description": "After segment 1: Mochi's grooming is March 15th at Pampered Paws (confirmed). Rabies booster due March next year (confirmed). Deworming switched to Milbemax in late January (mentioned but not a chain target)."
+    },
+    {
+      "checkpoint_id": "c2",
+      "description": "After segment 2: Grooming updated to April 8th at Pampered Paws (confirmed, April 12th cancelled). Rabies due March next year (unchanged). Deworming target date May 14th noted. Flea prevention consultation planned for May 14th."
+    },
+    {
+      "checkpoint_id": "c3",
+      "description": "After segment 3: Grooming tentatively set to May 13th (tentative, not committed), then confirmed moved to May 20th at Pampered Paws. Rabies due March next year (unchanged). Deworming May 14th (unchanged). The final confirmed grooming date is May 20th."
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you walk me through the key things I told you about Mochi's care — grooming appointments, vaccinations, and deworming — and how the grooming schedule evolved over our conversations?",
+      "expected_answer": "You initially booked Mochi's grooming at Pampered Paws for March 15th (full package with unscented oat-based shampoo). You reported a rabies booster on March 3rd at Greenfield Veterinary Clinic with Dr. Patel, due again March next year, and an FVRCP vaccine around March 5th-6th. You switched Mochi to Milbemax deworming in late January, with the next dose targeted for May 14th. The April 12th grooming was cancelled and moved up to April 8th because Mochi got into something sticky. The groomer suggested May 13th but you hadn't committed to it, then you called Pampered Paws and confirmed May 20th instead.",
+      "gold_memory_state": "Grooming: May 20th at Pampered Paws (confirmed). Rabies: due March next year. Deworming: May 14th Milbemax. FVRCP: administered around March 5th-6th. Flea prevention consultation planned for May 14th visit.",
+      "judge_rubric": {
+        "must_include": [
+          "March 15th grooming",
+          "April 8th grooming",
+          "May 20th grooming",
+          "rabies booster March 3rd",
+          "Milbemax deworming"
+        ],
+        "acceptable_paraphrases": [
+          "moved up from April 12th to April 8th",
+          "cancelled April 12th and went April 8th instead"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying May 13th is the final grooming date",
+          "omitting the March 15th initial appointment"
+        ],
+        "harmless_extra": [
+          "mentioning unscented shampoo preference",
+          "mentioning FVRCP vaccine",
+          "mentioning flea prevention consultation"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats April 12th or May 13th as the current grooming date.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model presents the grooming changes out of chronological order (March 15 → April 8 → May 13 tentative → May 20 confirmed).",
+        "final_state": "Fails if the model does not identify May 20th as the final confirmed grooming date.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I booked Mochi a grooming appointment at Pampered Paws for March 15th. They did the full package — bath, nail trim, ear cleaning."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Mochi had her rabies booster on March 3rd at Greenfield Veterinary Clinic with Dr. Patel. The next rabies shot is due in March of next year."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I had to cancel the April 12th grooming because Mochi got into something sticky in the garage, so I brought her in early on April 8th instead."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The groomer actually suggested May 13th for the next visit since that lines up with six weeks from April 8th, and I told her to pencil it in."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I just checked my calendar and May 13th doesn't work — I have a work thing. I called Pampered Paws and moved it to May 20th. That's confirmed."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you walk me through the key things I told you about Mochi's care — grooming appointments, vaccinations, and deworming — and how the grooming schedule evolved over our conversations?",
+      "expected_answer": "You initially booked Mochi's grooming at Pampered Paws for March 15th (full package with unscented oat-based shampoo). You reported a rabies booster on March 3rd at Greenfield Veterinary Clinic with Dr. Patel, due again March next year, and an FVRCP vaccine around March 5th-6th. You switched Mochi to Milbemax deworming in late January, with the next dose targeted for May 14th. The April 12th grooming was cancelled and moved up to April 8th because Mochi got into something sticky. The groomer suggested May 13th but you hadn't committed to it, then you called Pampered Paws and confirmed May 20th instead.",
+      "gold_memory_state": "Grooming: May 20th at Pampered Paws (confirmed). Rabies: due March next year. Deworming: May 14th Milbemax. FVRCP: administered around March 5th-6th. Flea prevention consultation planned for May 14th visit.",
+      "judge_rubric": {
+        "must_include": [
+          "March 15th grooming",
+          "April 8th grooming",
+          "May 20th grooming",
+          "rabies booster March 3rd",
+          "Milbemax deworming"
+        ],
+        "acceptable_paraphrases": [
+          "moved up from April 12th to April 8th",
+          "cancelled April 12th and went April 8th instead"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying May 13th is the final grooming date",
+          "omitting the March 15th initial appointment"
+        ],
+        "harmless_extra": [
+          "mentioning unscented shampoo preference",
+          "mentioning FVRCP vaccine",
+          "mentioning flea prevention consultation"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats April 12th or May 13th as the current grooming date.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model presents the grooming changes out of chronological order (March 15 → April 8 → May 13 tentative → May 20 confirmed).",
+        "final_state": "Fails if the model does not identify May 20th as the final confirmed grooming date.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I booked Mochi a grooming appointment at Pampered Paws for March 15th. They did the full package — bath, nail trim, ear cleaning."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Mochi had her rabies booster on March 3rd at Greenfield Veterinary Clinic with Dr. Patel. The next rabies shot is due in March of next year."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I had to cancel the April 12th grooming because Mochi got into something sticky in the garage, so I brought her in early on April 8th instead."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The groomer actually suggested May 13th for the next visit since that lines up with six weeks from April 8th, and I told her to pencil it in."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I just checked my calendar and May 13th doesn't work — I have a work thing. I called Pampered Paws and moved it to May 20th. That's confirmed."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "If I'm setting up a pet-care calendar for Mochi, the grooming date changed multiple times while the vaccination schedule stayed the same. Which appointment type went through all those date changes, and does the rabies vaccination record need any date adjustment based on the grooming back-and-forth?",
+      "expected_answer": "The grooming appointment is the one that went through multiple date changes — from March 15th to April 8th, then tentatively May 13th, and finally confirmed as May 20th at Pampered Paws. The rabies vaccination record does not need any adjustment; the next rabies shot remains due in March of next year at Greenfield Veterinary Clinic with Dr. Patel, completely unaffected by the grooming schedule changes.",
+      "gold_memory_state": "Grooming target: May 20th at Pampered Paws (confirmed, after chain of changes). Rabies target: next due March next year (unchanged since initial recording). These are separate care records.",
+      "judge_rubric": {
+        "must_include": [
+          "grooming is the appointment that changed",
+          "rabies is not affected by grooming changes",
+          "May 20th"
+        ],
+        "acceptable_paraphrases": [
+          "the rabies due date stays the same",
+          "rabies vaccination is independent of grooming"
+        ],
+        "must_not_include": [
+          "rabies date changed",
+          "rabies needs updating"
+        ],
+        "harmful_extra": [
+          "conflating grooming and vaccination into one record",
+          "saying the rabies due date moved"
+        ],
+        "harmless_extra": [
+          "mentioning deworming is also unchanged",
+          "mentioning Dr. Patel"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model reports a stale grooming date as the current one.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not correctly identify May 20th as the final grooming date or incorrectly modifies the rabies due date.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I booked Mochi a grooming appointment at Pampered Paws for March 15th. They did the full package — bath, nail trim, ear cleaning."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Mochi had her rabies booster on March 3rd at Greenfield Veterinary Clinic with Dr. Patel. The next rabies shot is due in March of next year."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I just checked my calendar and May 13th doesn't work — I have a work thing. I called Pampered Paws and moved it to May 20th. That's confirmed."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "If I'm setting up a pet-care calendar for Mochi, the grooming date changed multiple times while the vaccination schedule stayed the same. Which appointment type went through all those date changes, and does the rabies vaccination record need any date adjustment based on the grooming back-and-forth?",
+      "expected_answer": "The grooming appointment is the one that went through multiple date changes — from March 15th to April 8th, then tentatively May 13th, and finally confirmed as May 20th at Pampered Paws. The rabies vaccination record does not need any adjustment; the next rabies shot remains due in March of next year at Greenfield Veterinary Clinic with Dr. Patel, completely unaffected by the grooming schedule changes.",
+      "gold_memory_state": "Grooming target: May 20th at Pampered Paws (confirmed, after chain of changes). Rabies target: next due March next year (unchanged since initial recording). These are separate care records.",
+      "judge_rubric": {
+        "must_include": [
+          "grooming is the appointment that changed",
+          "rabies is not affected by grooming changes",
+          "May 20th"
+        ],
+        "acceptable_paraphrases": [
+          "the rabies due date stays the same",
+          "rabies vaccination is independent of grooming"
+        ],
+        "must_not_include": [
+          "rabies date changed",
+          "rabies needs updating"
+        ],
+        "harmful_extra": [
+          "conflating grooming and vaccination into one record",
+          "saying the rabies due date moved"
+        ],
+        "harmless_extra": [
+          "mentioning deworming is also unchanged",
+          "mentioning Dr. Patel"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model reports a stale grooming date as the current one.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not correctly identify May 20th as the final grooming date or incorrectly modifies the rabies due date.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I booked Mochi a grooming appointment at Pampered Paws for March 15th. They did the full package — bath, nail trim, ear cleaning."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Mochi had her rabies booster on March 3rd at Greenfield Veterinary Clinic with Dr. Patel. The next rabies shot is due in March of next year."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I just checked my calendar and May 13th doesn't work — I have a work thing. I called Pampered Paws and moved it to May 20th. That's confirmed."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "When is Mochi's next grooming appointment, and where is it?",
+      "expected_answer": "May 20th at Pampered Paws.",
+      "gold_memory_state": "The grooming appointment is confirmed as May 20th at Pampered Paws. May 13th was only penciled in tentatively and was never committed to; it was subsequently replaced by the May 20th booking. Earlier dates (March 15th, April 8th) are past appointments, not the upcoming one.",
+      "judge_rubric": {
+        "must_include": [
+          "May 20th",
+          "Pampered Paws"
+        ],
+        "acceptable_paraphrases": [
+          "May 20 at Pampered Paws",
+          "the 20th of May at Pampered Paws"
+        ],
+        "must_not_include": [
+          "May 13th as the next appointment"
+        ],
+        "harmful_extra": [
+          "saying May 13th is the next grooming",
+          "saying April 8th is the next grooming"
+        ],
+        "harmless_extra": [
+          "mentioning it's a full grooming session",
+          "mentioning six-week interval"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model returns May 13th (tentative, never committed) or April 8th (past appointment) as the next grooming date. May 13th is the recency-trap tentative value that was explicitly rejected.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not return May 20th as the confirmed next grooming date.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I just checked my calendar and May 13th doesn't work — I have a work thing. I called Pampered Paws and moved it to May 20th. That's confirmed."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "When is Mochi's next grooming appointment, and where is it?",
+      "expected_answer": "May 20th at Pampered Paws.",
+      "gold_memory_state": "The grooming appointment is confirmed as May 20th at Pampered Paws. May 13th was only penciled in tentatively and was never committed to; it was subsequently replaced by the May 20th booking. Earlier dates (March 15th, April 8th) are past appointments, not the upcoming one.",
+      "judge_rubric": {
+        "must_include": [
+          "May 20th",
+          "Pampered Paws"
+        ],
+        "acceptable_paraphrases": [
+          "May 20 at Pampered Paws",
+          "the 20th of May at Pampered Paws"
+        ],
+        "must_not_include": [
+          "May 13th as the next appointment"
+        ],
+        "harmful_extra": [
+          "saying May 13th is the next grooming",
+          "saying April 8th is the next grooming"
+        ],
+        "harmless_extra": [
+          "mentioning it's a full grooming session",
+          "mentioning six-week interval"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model returns May 13th (tentative, never committed) or April 8th (past appointment) as the next grooming date. May 13th is the recency-trap tentative value that was explicitly rejected.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not return May 20th as the confirmed next grooming date.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I just checked my calendar and May 13th doesn't work — I have a work thing. I called Pampered Paws and moved it to May 20th. That's confirmed."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to write a quick note for my fridge listing Mochi's May appointments in order, with the number of days between them. Can you draft that for me?",
+      "expected_answer": "Mochi's May Schedule:\n1. Milbemax deworming (+ flea prevention consultation) at Greenfield Veterinary Clinic with Dr. Patel — May 14th\n2. Grooming at Pampered Paws — May 20th\nDays between appointments: 6 days.",
+      "gold_memory_state": "Deworming: May 14th at Greenfield Veterinary Clinic with Dr. Patel, including flea prevention consultation. Grooming: May 20th at Pampered Paws (confirmed). Rabies: not in May (due March next year).",
+      "judge_rubric": {
+        "must_include": [
+          "May 14th",
+          "May 20th",
+          "6 days",
+          "deworming",
+          "grooming"
+        ],
+        "acceptable_paraphrases": [
+          "six days apart",
+          "6-day gap",
+          "deworming on the 14th and grooming on the 20th"
+        ],
+        "must_not_include": [
+          "May 13th as a grooming date"
+        ],
+        "harmful_extra": [
+          "including May 13th as an appointment",
+          "saying the grooming is before the deworming",
+          "wrong day count"
+        ],
+        "harmless_extra": [
+          "mentioning Milbemax by name",
+          "mentioning Pampered Paws",
+          "mentioning Dr. Patel",
+          "mentioning flea prevention consultation",
+          "mentioning Greenfield Veterinary Clinic"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses May 13th (tentative, rejected) as the grooming date instead of May 20th.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model lists the grooming before the deworming in the chronological order.",
+        "final_state": "Fails if the model does not correctly compute 6 days between May 14th and May 20th.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Mochi's next Milbemax deworming dose is targeted for May 14th at Greenfield Veterinary Clinic with Dr. Patel, with a flea prevention consultation planned.",
+        "Fact 2: Mochi's next grooming is confirmed for May 20th at Pampered Paws.",
+        "Inference: Chronological order is deworming May 14th first, grooming May 20th second.",
+        "Inference: The gap between May 14th and May 20th is 6 days."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Also, the deworming date I'm targeting is specifically May 14th for the Milbemax dose. That's when it lines up with the schedule Dr. Patel recommended."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I just checked my calendar and May 13th doesn't work — I have a work thing. I called Pampered Paws and moved it to May 20th. That's confirmed."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to write a quick note for my fridge listing Mochi's May appointments in order, with the number of days between them. Can you draft that for me?",
+      "expected_answer": "Mochi's May Schedule:\n1. Milbemax deworming (+ flea prevention consultation) at Greenfield Veterinary Clinic with Dr. Patel — May 14th\n2. Grooming at Pampered Paws — May 20th\nDays between appointments: 6 days.",
+      "gold_memory_state": "Deworming: May 14th at Greenfield Veterinary Clinic with Dr. Patel, including flea prevention consultation. Grooming: May 20th at Pampered Paws (confirmed). Rabies: not in May (due March next year).",
+      "judge_rubric": {
+        "must_include": [
+          "May 14th",
+          "May 20th",
+          "6 days",
+          "deworming",
+          "grooming"
+        ],
+        "acceptable_paraphrases": [
+          "six days apart",
+          "6-day gap",
+          "deworming on the 14th and grooming on the 20th"
+        ],
+        "must_not_include": [
+          "May 13th as a grooming date"
+        ],
+        "harmful_extra": [
+          "including May 13th as an appointment",
+          "saying the grooming is before the deworming",
+          "wrong day count"
+        ],
+        "harmless_extra": [
+          "mentioning Milbemax by name",
+          "mentioning Pampered Paws",
+          "mentioning Dr. Patel",
+          "mentioning flea prevention consultation",
+          "mentioning Greenfield Veterinary Clinic"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses May 13th (tentative, rejected) as the grooming date instead of May 20th.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model lists the grooming before the deworming in the chronological order.",
+        "final_state": "Fails if the model does not correctly compute 6 days between May 14th and May 20th.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Mochi's next Milbemax deworming dose is targeted for May 14th at Greenfield Veterinary Clinic with Dr. Patel, with a flea prevention consultation planned.",
+        "Fact 2: Mochi's next grooming is confirmed for May 20th at Pampered Paws.",
+        "Inference: Chronological order is deworming May 14th first, grooming May 20th second.",
+        "Inference: The gap between May 14th and May 20th is 6 days."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Also, the deworming date I'm targeting is specifically May 14th for the Milbemax dose. That's when it lines up with the schedule Dr. Patel recommended."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I just checked my calendar and May 13th doesn't work — I have a work thing. I called Pampered Paws and moved it to May 20th. That's confirmed."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed our entire conversation history about Mochi's grooming schedule, what would they see as the full sequence of dates that came up, which ones were actually adopted versus only floated, and what's the final plan?",
+      "expected_answer": "The sequence of grooming dates was: (1) March 15th at Pampered Paws — adopted and completed. (2) April 12th was originally scheduled but cancelled; April 8th at Pampered Paws was adopted instead because Mochi got into something sticky. (3) May 13th at Pampered Paws was suggested by the groomer and penciled in, but never fully committed to — it was only tentative. (4) May 20th at Pampered Paws replaced May 13th and is the final confirmed upcoming appointment.",
+      "gold_memory_state": "Full grooming trajectory: March 15th (confirmed, completed) → April 12th (scheduled then cancelled) → April 8th (confirmed, completed, replaced April 12th) → May 13th (tentative, never committed, rejected due to work conflict) → May 20th (confirmed, upcoming). Rabies due March next year (unchanged throughout). Deworming May 14th (unchanged since set).",
+      "judge_rubric": {
+        "must_include": [
+          "March 15th",
+          "April 8th",
+          "May 13th as tentative or not committed",
+          "May 20th as final confirmed"
+        ],
+        "acceptable_paraphrases": [
+          "May 13th was just penciled in",
+          "May 13th was floated but not finalized",
+          "April 12th was cancelled in favor of April 8th"
+        ],
+        "must_not_include": [
+          "May 13th as a confirmed or adopted date"
+        ],
+        "harmful_extra": [
+          "omitting any of the four main date points",
+          "saying May 13th was confirmed",
+          "saying April 12th was completed"
+        ],
+        "harmless_extra": [
+          "mentioning the sticky-garage reason for the April change",
+          "mentioning the work conflict for May 13th",
+          "mentioning the six-week interval recommendation",
+          "mentioning April 12th as a scheduled-then-cancelled date"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model presents May 13th as a confirmed or adopted date rather than tentative/rejected.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model presents the grooming dates out of chronological order or omits intermediate steps.",
+        "final_state": "Fails if the model does not identify May 20th as the final confirmed grooming date.",
+        "intermediate_state": "Fails if the model omits the April 8th intermediate state or the tentative May 13th fork.",
+        "trajectory_provenance": "Fails if the model cannot distinguish which dates were confirmed versus tentative."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: March 15th at Pampered Paws was the first grooming — confirmed and completed (full package).",
+        "Step 2: April 12th was scheduled next but cancelled because Mochi got into something sticky.",
+        "Step 3: April 8th at Pampered Paws replaced April 12th — confirmed and completed.",
+        "Step 4: May 13th was suggested by the groomer and penciled in, but the user explicitly said they hadn't committed to it — tentative only.",
+        "Step 5: The user found May 13th wouldn't work due to a work conflict, called Pampered Paws, and moved the appointment to May 20th — confirmed.",
+        "Inference: The trajectory has four date points with one tentative fork (May 13th) that was rejected in favor of May 20th. The final confirmed upcoming grooming is May 20th."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I booked Mochi a grooming appointment at Pampered Paws for March 15th. They did the full package — bath, nail trim, ear cleaning."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I had to cancel the April 12th grooming because Mochi got into something sticky in the garage, so I brought her in early on April 8th instead."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The groomer actually suggested May 13th for the next visit since that lines up with six weeks from April 8th, and I told her to pencil it in."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I just checked my calendar and May 13th doesn't work — I have a work thing. I called Pampered Paws and moved it to May 20th. That's confirmed."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed our entire conversation history about Mochi's grooming schedule, what would they see as the full sequence of dates that came up, which ones were actually adopted versus only floated, and what's the final plan?",
+      "expected_answer": "The sequence of grooming dates was: (1) March 15th at Pampered Paws — adopted and completed. (2) April 12th was originally scheduled but cancelled; April 8th at Pampered Paws was adopted instead because Mochi got into something sticky. (3) May 13th at Pampered Paws was suggested by the groomer and penciled in, but never fully committed to — it was only tentative. (4) May 20th at Pampered Paws replaced May 13th and is the final confirmed upcoming appointment.",
+      "gold_memory_state": "Full grooming trajectory: March 15th (confirmed, completed) → April 12th (scheduled then cancelled) → April 8th (confirmed, completed, replaced April 12th) → May 13th (tentative, never committed, rejected due to work conflict) → May 20th (confirmed, upcoming). Rabies due March next year (unchanged throughout). Deworming May 14th (unchanged since set).",
+      "judge_rubric": {
+        "must_include": [
+          "March 15th",
+          "April 8th",
+          "May 13th as tentative or not committed",
+          "May 20th as final confirmed"
+        ],
+        "acceptable_paraphrases": [
+          "May 13th was just penciled in",
+          "May 13th was floated but not finalized",
+          "April 12th was cancelled in favor of April 8th"
+        ],
+        "must_not_include": [
+          "May 13th as a confirmed or adopted date"
+        ],
+        "harmful_extra": [
+          "omitting any of the four main date points",
+          "saying May 13th was confirmed",
+          "saying April 12th was completed"
+        ],
+        "harmless_extra": [
+          "mentioning the sticky-garage reason for the April change",
+          "mentioning the work conflict for May 13th",
+          "mentioning the six-week interval recommendation",
+          "mentioning April 12th as a scheduled-then-cancelled date"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model presents May 13th as a confirmed or adopted date rather than tentative/rejected.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model presents the grooming dates out of chronological order or omits intermediate steps.",
+        "final_state": "Fails if the model does not identify May 20th as the final confirmed grooming date.",
+        "intermediate_state": "Fails if the model omits the April 8th intermediate state or the tentative May 13th fork.",
+        "trajectory_provenance": "Fails if the model cannot distinguish which dates were confirmed versus tentative."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: March 15th at Pampered Paws was the first grooming — confirmed and completed (full package).",
+        "Step 2: April 12th was scheduled next but cancelled because Mochi got into something sticky.",
+        "Step 3: April 8th at Pampered Paws replaced April 12th — confirmed and completed.",
+        "Step 4: May 13th was suggested by the groomer and penciled in, but the user explicitly said they hadn't committed to it — tentative only.",
+        "Step 5: The user found May 13th wouldn't work due to a work conflict, called Pampered Paws, and moved the appointment to May 20th — confirmed.",
+        "Inference: The trajectory has four date points with one tentative fork (May 13th) that was rejected in favor of May 20th. The final confirmed upcoming grooming is May 20th."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I booked Mochi a grooming appointment at Pampered Paws for March 15th. They did the full package — bath, nail trim, ear cleaning."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I had to cancel the April 12th grooming because Mochi got into something sticky in the garage, so I brought her in early on April 8th instead."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The groomer actually suggested May 13th for the next visit since that lines up with six weeks from April 8th, and I told her to pencil it in."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I just checked my calendar and May 13th doesn't work — I have a work thing. I called Pampered Paws and moved it to May 20th. That's confirmed."
+        }
+      ]
+    }
+  ]
+}

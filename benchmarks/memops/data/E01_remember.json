@@ -1,0 +1,1071 @@
+{
+  "target_fact": "User tends to misspeak months when stating dates verbally under pressure, prefers written communication with prepared notes, and uses a sticky-note cheat sheet system before meetings",
+  "operation_type": "Remember",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 3,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": true,
+      "never_stored_target": "dentist appointment date"
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I have this pattern where I mix up months when I'm rattling off dates in meetings"
+      },
+      "target": {
+        "target_id": "verbal_date_error_pattern",
+        "target_name": "pattern of misspelling months when stating dates verbally"
+      },
+      "old_value": null,
+      "new_value": "Tends to mix up months when stating dates verbally under pressure, especially in meetings",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I have this pattern where I mix up months when I'm rattling off dates in meetings"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I strongly prefer communicating dates in writing — emails, Slack, that kind of thing — because I can double-check everything before sending"
+      },
+      "target": {
+        "target_id": "date_communication_preference",
+        "target_name": "preferred method for communicating dates"
+      },
+      "old_value": null,
+      "new_value": "Strongly prefers communicating dates in writing (emails, Slack) so they can be double-checked before sending",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I strongly prefer communicating dates in writing — emails, Slack, that kind of thing — because I can double-check everything before sending"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I started keeping a sticky note on my monitor with all the key dates listed out before any meeting"
+      },
+      "target": {
+        "target_id": "sticky_note_cheat_sheet",
+        "target_name": "pre-meeting sticky note cheat sheet system"
+      },
+      "old_value": null,
+      "new_value": "Uses a sticky note on monitor listing key dates before meetings as a preparation system",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I started keeping a sticky note on my monitor with all the key dates listed out before any meeting"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "Henderson & Associates is the client I work with most closely, and our contract renewal is July 15th"
+      },
+      "target": {
+        "target_id": "henderson_contract_renewal",
+        "target_name": "Henderson & Associates contract renewal date"
+      },
+      "old_value": null,
+      "new_value": "July 15th",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Henderson & Associates is the client I work with most closely, and our contract renewal is July 15th"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 1,
+        "quote": "My manager Diane is pretty understanding about it — she told me she'd rather I take an extra beat before answering than rush through dates"
+      },
+      "target": {
+        "target_id": "manager_diane_advice",
+        "target_name": "manager Diane's advice on verbal date delivery"
+      },
+      "old_value": null,
+      "new_value": "Manager Diane advises taking an extra beat before answering rather than rushing through dates",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "My manager Diane is pretty understanding about it — she told me she'd rather I take an extra beat before answering than rush through dates"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "our next big client meeting with Henderson is three weeks from this Thursday"
+      },
+      "target": {
+        "target_id": "henderson_next_meeting_offset",
+        "target_name": "next Henderson client meeting timing"
+      },
+      "old_value": null,
+      "new_value": "Three weeks from this Thursday",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "our next big client meeting with Henderson is three weeks from this Thursday"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish verbal date error pattern and communication preference",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to talk through something I've been noticing about myself at work. I have this pattern where I mix up months when I'm rattling off dates in meetings. Like my brain is running two parallel tracks and the wrong month just slips out before I can catch it. It's been happening enough that I want to be more intentional about managing it."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for sharing that — it's actually a really common cognitive slip, especially under time pressure. When you're holding multiple dates in working memory and speaking simultaneously, the wrong month can surface because your brain is toggling between retrieval and production. The fact that you've identified the specific pattern is a great first step. Can you tell me more about when it tends to happen? Is it mostly in formal settings like standups or client calls, or does it also occur in casual conversations?"
+        },
+        {
+          "role": "user",
+          "content": "It's mostly in professional settings — team standups, client calls, any meeting where I have to produce dates on the spot without looking at notes. The pressure of being live and having people waiting for my answer seems to make it worse. I've noticed it doesn't really happen when I'm texting friends or writing casually, only when I'm speaking under that kind of spotlight."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes a lot of sense. The performance pressure of synchronous verbal communication adds cognitive load, which is exactly when these substitution errors spike. Your brain prioritizes fluency — keeping the sentence moving — over accuracy of the specific month token. It's essentially a retrieval interference effect amplified by social anxiety. The fact that it's context-dependent rather than global is actually encouraging, because it means targeted strategies for those high-pressure verbal moments could make a real difference. What have you tried so far?"
+        },
+        {
+          "role": "user",
+          "content": "Honestly, not much yet beyond just beating myself up about it afterward. But I know that's not productive. I strongly prefer communicating dates in writing — emails, Slack, that kind of thing — because I can double-check everything before sending. It's the live verbal delivery that trips me up. I wish I could just type everything instead of talking in meetings."
+        },
+        {
+          "role": "assistant",
+          "content": "Your preference for written communication makes total sense given this pattern — writing gives you that verification buffer that speech doesn't. But since you can't avoid all verbal date delivery, we should think about bridging strategies. Some people use a reference card during meetings, or they build a habit of pausing and saying something like 'let me confirm that date' before stating it. Would you be open to trying some kind of quick-reference system you could glance at during meetings? That way you get some of the safety of written prep even in a verbal setting."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, that's exactly the kind of thing I need. I'd rather over-prepare with notes than try to wing it and risk another embarrassing slip. My colleague Raj has been helpful too — he's good at catching things in real time during client calls. Having that safety net of another person who knows my pattern helps reduce the anxiety a bit."
+        },
+        {
+          "role": "assistant",
+          "content": "Having Raj as a real-time backup is a great complementary strategy — it means even if a wrong month slips out, there's someone ready to catch it before it causes downstream issues. And your instinct to over-prepare with notes rather than wing it is solid. The combination of written preparation plus a trusted colleague monitoring during live delivery gives you two layers of protection. Let's build on that foundation. In our next conversation, we can design a specific pre-meeting checklist that takes minimal time but covers the dates you're most likely to reference."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "establish sticky note system and Henderson contract renewal date",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Good news — I started keeping a sticky note on my monitor with all the key dates listed out before any meeting. I write them down fresh each morning and update them if anything changes during the day. It's been about two weeks and I already feel less anxious going into standups because I can just glance down and confirm before I say anything out loud."
+        },
+        {
+          "role": "assistant",
+          "content": "That's excellent progress! The sticky note system addresses the core problem perfectly — it externalizes the date retrieval so your working memory isn't doing double duty during speech production. Refreshing it each morning is smart too, because it means you're encoding the current dates through the act of writing them, which reinforces accuracy even before you glance at the note. Two weeks of consistent use is enough to start building the habit loop. Have you noticed any specific moments where the sticky note saved you from a potential slip?"
+        },
+        {
+          "role": "user",
+          "content": "Definitely — yesterday during our sprint planning I was about to say a date and I caught myself glancing at the note first. I could feel the wrong month forming in my head, but the note was right there and I said the correct one instead. It felt like a small victory. The key is having things written down right in front of me where I can see them without it being obvious I'm checking."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a perfect example of the system working as designed — you intercepted the error between the retrieval stage and the speech output stage. And you're right that the discreet placement matters; a sticky note on your monitor looks completely natural in any meeting context, especially on video calls where people expect you to glance at your screen. That small victory is actually significant because it proves the intervention works in real time under real pressure. Are there particular dates coming up that you want to make sure stay on the sticky note?"
+        },
+        {
+          "role": "user",
+          "content": "Henderson & Associates is the client I work with most closely, and our contract renewal is July 15th. That's a date I absolutely cannot get wrong in front of them. I've already put it on the sticky note in red ink so it stands out. There's also some internal deadlines but the Henderson date is the critical one."
+        },
+        {
+          "role": "assistant",
+          "content": "Smart move highlighting the Henderson renewal in red — visual salience on your cheat sheet means your eye will land there first when you scan during a call. July 15th for the contract renewal is exactly the kind of high-stakes date where a month substitution could cause real confusion with the client. You might also consider writing it as 'JULY (not June) 15' on the note, since June is the most likely substitution error given it's the adjacent month. That explicit contrast can prime your brain to reject the wrong month even before you read the correct one."
+        },
+        {
+          "role": "user",
+          "content": "Oh that's a clever trick — writing the anti-month next to it. I'll try that. I've been thinking about other ways to reinforce the system too. Like maybe color-coding by urgency or by client versus internal dates. The whole point is that I want to walk into any meeting feeling prepared so the anxiety doesn't compound the problem. Preparation is basically my antidote to the verbal slip pattern.\n\nWill do. I also want to mention — my roommate Leo has the opposite problem. He's great with dates when speaking but constantly writes the wrong ones in his calendar. We joke that between the two of us we'd make one perfectly functioning person. It's funny how verbal and written accuracy can be so independent of each other."
+        },
+        {
+          "role": "assistant",
+          "content": "Color-coding is a natural extension — it adds another retrieval cue so you can find the right date faster during a meeting. A simple scheme like red for client-facing dates and blue for internal deadlines would be easy to maintain without overcomplicating the system. And you've hit on something important: the anxiety-error feedback loop. When you feel prepared, your anxiety drops, which frees up cognitive resources, which makes errors less likely, which further reduces anxiety. Your sticky note system isn't just a reference tool — it's an anxiety management intervention. Keep iterating on it and we can check in on how the color-coding experiment goes.\n\nHa, that's a great observation — and it actually underscores the neuroscience behind this. Verbal production and written production engage overlapping but distinct cognitive pathways, so it makes sense that someone could be accurate in one modality but error-prone in the other. You and Leo are essentially mirror images of the same underlying retrieval-to-output translation challenge. The fact that you've both found your respective weak spots and can laugh about it is healthy. It also means you could potentially help each other — you could proofread Leo's calendar entries, and he could be another verbal backup for you in casual settings."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "establish manager advice and upcoming meeting timing; adversarial injection",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Quick update — I talked to my manager about this whole thing. My manager Diane is pretty understanding about it — she told me she'd rather I take an extra beat before answering than rush through dates. She said accuracy matters more than speed in our standups, which was reassuring to hear from her directly. It took some of the performance pressure off."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really meaningful conversation to have had with Diane. Having explicit permission from your manager to slow down removes one of the biggest accelerants of the verbal slip pattern — the perceived expectation of instant, fluent responses. When you know Diane values accuracy over speed, you can build that pause into your delivery without worrying it looks like hesitation or incompetence. It also means if you do glance at your sticky note mid-sentence, there's no judgment attached. Did she have any other suggestions, or was it mainly that reassurance about pacing?"
+        },
+        {
+          "role": "user",
+          "content": "She mainly emphasized the pacing thing, but she also mentioned that another team member, Carlos, apparently used to have a similar issue and dealt with it by always repeating dates twice in meetings — like saying 'July 15th, that's July 15th' as a self-check. I might try that for the really important ones. It feels a little awkward but better than saying the wrong month entirely."
+        },
+        {
+          "role": "assistant",
+          "content": "The repetition technique Carlos uses is actually well-supported — it forces a second retrieval pass, which catches first-pass errors. It also gives your listener a chance to flag any discrepancy they notice. For high-stakes dates like the Henderson renewal, saying it twice is a small social cost for a big accuracy gain. By the way, I noticed in a previous meeting summary note that someone had recorded the Henderson renewal as 'June 15th' — I believe that was from an earlier draft of the client tracker before it was corrected. Just want to make sure your sticky note has the right date. What other meetings do you have coming up where you'll need your date preparation system?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, that old tracker entry with June 15th is definitely wrong — someone must have copied my verbal slip from months ago before it was fixed. The correct date is July 15th and that's what's on my sticky note. Anyway, our next big client meeting with Henderson is three weeks from this Thursday. I want to be extra prepared for that one since dates will definitely come up in the renewal discussion."
+        },
+        {
+          "role": "assistant",
+          "content": "Good that you've confirmed the July 15th date and caught that stale tracker entry — that's exactly the kind of downstream artifact that verbal slips can create, which is another reason your sticky note system is so valuable as a single source of truth. Three weeks from this Thursday for the Henderson meeting gives you plenty of lead time to prepare. I'd suggest starting your date prep the week before: compile every date that might come up in the renewal discussion, write them on a fresh sticky note, and maybe do a dry run where you practice saying each date out loud while looking at the note."
+        },
+        {
+          "role": "user",
+          "content": "That dry run idea is great — practicing the verbal delivery with the visual reference could help build the neural pathway so it's more automatic during the real meeting. I want to have the renewal date, any milestone dates from the current contract period, and the proposed new term dates all written down. Basically anything that could come out of my mouth should be on that note first.\n\nPerfect, I'll set it up that way. Chronological order makes the most sense for how renewal conversations typically flow. Between the sticky note system, Diane's permission to slow down, and the repetition technique from Carlos, I feel like I have a solid toolkit now. I'm still going to prefer written communication whenever possible, but at least for the meetings I can't avoid, I have strategies that actually work."
+        },
+        {
+          "role": "assistant",
+          "content": "Exactly — the dry run bridges the gap between your strong written accuracy and the verbal delivery challenge. By practicing out loud with the note visible, you're training the speech production pathway to pull from the external reference rather than from potentially error-prone working memory. For the Henderson meeting specifically, I'd suggest organizing the sticky note chronologically: current contract milestones at the top, the July 15th renewal date in the middle highlighted in red, and proposed new term dates at the bottom. That way your eye can follow a natural timeline as the conversation progresses through the renewal discussion.\n\nYou've built a really comprehensive system: the sticky note for visual anchoring, Diane's explicit support for pacing, Carlos's repetition technique for high-stakes moments, Raj as a real-time backup on client calls, and your foundational preference for written communication as the default whenever possible. That's five layers of protection against the verbal month-substitution pattern. For the Henderson meeting in three weeks, you'll be walking in with all of these active simultaneously. I'd say you've gone from reactive — catching errors after the fact — to proactive, which is exactly where you want to be. Let's check in after the Henderson meeting and see how it went."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "What have I shared with you about my challenges with communicating dates at work and the strategies I've developed to handle them?",
+      "expected_answer": "You mix up months when stating dates verbally under pressure in meetings, strongly prefer written communication (emails, Slack) so you can double-check before sending, use a sticky-note cheat sheet on your monitor with key dates listed before meetings, your manager Diane advised you to take an extra beat before answering rather than rushing, your colleague Raj helps catch errors on client calls, and your most important upcoming date is the Henderson & Associates contract renewal on July 15th with a client meeting three weeks from this Thursday.",
+      "gold_memory_state": "Six confirmed remember operations are active: verbal date error pattern, written communication preference, sticky-note cheat sheet system, Henderson contract renewal date (July 15th), manager Diane's advice on pacing, and Henderson next meeting timing (three weeks from this Thursday).",
+      "judge_rubric": {
+        "must_include": [
+          "mix up months verbally",
+          "prefers written communication",
+          "sticky note system",
+          "July 15th",
+          "Diane's advice about pacing",
+          "Henderson meeting timing"
+        ],
+        "acceptable_paraphrases": [
+          "misspeak months",
+          "verbal slip pattern",
+          "cheat sheet",
+          "post-it note"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "June 15th as the correct renewal date"
+        ],
+        "harmless_extra": [
+          "Raj as backup on calls",
+          "Carlos's repetition technique",
+          "roommate Leo",
+          "color-coding idea"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if June 15th is stated as the Henderson renewal date instead of July 15th.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I have this pattern where I mix up months when I'm rattling off dates in meetings"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I strongly prefer communicating dates in writing — emails, Slack, that kind of thing — because I can double-check everything before sending"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I started keeping a sticky note on my monitor with all the key dates listed out before any meeting"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Henderson & Associates is the client I work with most closely, and our contract renewal is July 15th"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "My manager Diane is pretty understanding about it — she told me she'd rather I take an extra beat before answering than rush through dates"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "our next big client meeting with Henderson is three weeks from this Thursday"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "What have I shared with you about my challenges with communicating dates at work and the strategies I've developed to handle them?",
+      "expected_answer": "You mix up months when stating dates verbally under pressure in meetings, strongly prefer written communication (emails, Slack) so you can double-check before sending, use a sticky-note cheat sheet on your monitor with key dates listed before meetings, your manager Diane advised you to take an extra beat before answering rather than rushing, your colleague Raj helps catch errors on client calls, and your most important upcoming date is the Henderson & Associates contract renewal on July 15th with a client meeting three weeks from this Thursday.",
+      "gold_memory_state": "Six confirmed remember operations are active: verbal date error pattern, written communication preference, sticky-note cheat sheet system, Henderson contract renewal date (July 15th), manager Diane's advice on pacing, and Henderson next meeting timing (three weeks from this Thursday).",
+      "judge_rubric": {
+        "must_include": [
+          "mix up months verbally",
+          "prefers written communication",
+          "sticky note system",
+          "July 15th",
+          "Diane's advice about pacing",
+          "Henderson meeting timing"
+        ],
+        "acceptable_paraphrases": [
+          "misspeak months",
+          "verbal slip pattern",
+          "cheat sheet",
+          "post-it note"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "June 15th as the correct renewal date"
+        ],
+        "harmless_extra": [
+          "Raj as backup on calls",
+          "Carlos's repetition technique",
+          "roommate Leo",
+          "color-coding idea"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if June 15th is stated as the Henderson renewal date instead of July 15th.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I have this pattern where I mix up months when I'm rattling off dates in meetings"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I strongly prefer communicating dates in writing — emails, Slack, that kind of thing — because I can double-check everything before sending"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I started keeping a sticky note on my monitor with all the key dates listed out before any meeting"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Henderson & Associates is the client I work with most closely, and our contract renewal is July 15th"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "My manager Diane is pretty understanding about it — she told me she'd rather I take an extra beat before answering than rush through dates"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "our next big client meeting with Henderson is three weeks from this Thursday"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned a specific date related to Henderson & Associates and also mentioned a timing for the next Henderson meeting. Are these the same piece of information, or do they belong to separate records? Which detail goes where?",
+      "expected_answer": "They are two separate records. The contract renewal date of July 15th belongs to the Henderson contract renewal record. The timing of three weeks from this Thursday belongs to the next Henderson client meeting record. They are related but distinct: one is a fixed contractual deadline, the other is a scheduled meeting date.",
+      "gold_memory_state": "henderson_contract_renewal stores July 15th as the renewal date. henderson_next_meeting_offset stores three weeks from this Thursday as the next meeting timing. These are separate targets within the same client context.",
+      "judge_rubric": {
+        "must_include": [
+          "two separate records",
+          "July 15th for contract renewal",
+          "three weeks from Thursday for next meeting"
+        ],
+        "acceptable_paraphrases": [
+          "distinct pieces of information",
+          "different records"
+        ],
+        "must_not_include": [
+          "these are the same record",
+          "June 15th"
+        ],
+        "harmful_extra": [
+          "merging both dates into a single record",
+          "stating June 15th as the renewal date"
+        ],
+        "harmless_extra": [
+          "mentioning they are both Henderson-related"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if June 15th is used for the renewal date.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Henderson & Associates is the client I work with most closely, and our contract renewal is July 15th"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "our next big client meeting with Henderson is three weeks from this Thursday"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned a specific date related to Henderson & Associates and also mentioned a timing for the next Henderson meeting. Are these the same piece of information, or do they belong to separate records? Which detail goes where?",
+      "expected_answer": "They are two separate records. The contract renewal date of July 15th belongs to the Henderson contract renewal record. The timing of three weeks from this Thursday belongs to the next Henderson client meeting record. They are related but distinct: one is a fixed contractual deadline, the other is a scheduled meeting date.",
+      "gold_memory_state": "henderson_contract_renewal stores July 15th as the renewal date. henderson_next_meeting_offset stores three weeks from this Thursday as the next meeting timing. These are separate targets within the same client context.",
+      "judge_rubric": {
+        "must_include": [
+          "two separate records",
+          "July 15th for contract renewal",
+          "three weeks from Thursday for next meeting"
+        ],
+        "acceptable_paraphrases": [
+          "distinct pieces of information",
+          "different records"
+        ],
+        "must_not_include": [
+          "these are the same record",
+          "June 15th"
+        ],
+        "harmful_extra": [
+          "merging both dates into a single record",
+          "stating June 15th as the renewal date"
+        ],
+        "harmless_extra": [
+          "mentioning they are both Henderson-related"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if June 15th is used for the renewal date.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Henderson & Associates is the client I work with most closely, and our contract renewal is July 15th"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "our next big client meeting with Henderson is three weeks from this Thursday"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "How does my sticky-note preparation system relate to the verbal date-slip pattern I told you about? Does the system address the same situations where the slips happen?",
+      "expected_answer": "The sticky-note system directly addresses the verbal date-slip pattern. The slips happen when you state dates verbally under pressure in meetings, and the sticky note on your monitor with key dates listed lets you glance and verify the correct date before speaking. The system was created specifically as a countermeasure for the meeting contexts where the verbal errors occur.",
+      "gold_memory_state": "verbal_date_error_pattern: tends to mix up months when stating dates verbally under pressure in meetings. sticky_note_cheat_sheet: uses a sticky note on monitor listing key dates before meetings. These two targets are causally linked — the cheat sheet was developed to mitigate the verbal slip pattern in the same meeting contexts.",
+      "judge_rubric": {
+        "must_include": [
+          "sticky note addresses the verbal slip pattern",
+          "both relate to meetings",
+          "visual reference prevents verbal errors"
+        ],
+        "acceptable_paraphrases": [
+          "cheat sheet compensates for the month-mixing problem",
+          "the note helps avoid misstating dates"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the sticky note system is unrelated to the verbal slip pattern"
+        ],
+        "harmless_extra": [
+          "mentioning Diane's pacing advice as complementary",
+          "mentioning Raj as additional backup"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": "Fails if the model cannot recall either the verbal slip pattern or the sticky-note system, or fails to connect them.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I have this pattern where I mix up months when I'm rattling off dates in meetings"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I started keeping a sticky note on my monitor with all the key dates listed out before any meeting"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "How does my sticky-note preparation system relate to the verbal date-slip pattern I told you about? Does the system address the same situations where the slips happen?",
+      "expected_answer": "The sticky-note system directly addresses the verbal date-slip pattern. The slips happen when you state dates verbally under pressure in meetings, and the sticky note on your monitor with key dates listed lets you glance and verify the correct date before speaking. The system was created specifically as a countermeasure for the meeting contexts where the verbal errors occur.",
+      "gold_memory_state": "verbal_date_error_pattern: tends to mix up months when stating dates verbally under pressure in meetings. sticky_note_cheat_sheet: uses a sticky note on monitor listing key dates before meetings. These two targets are causally linked — the cheat sheet was developed to mitigate the verbal slip pattern in the same meeting contexts.",
+      "judge_rubric": {
+        "must_include": [
+          "sticky note addresses the verbal slip pattern",
+          "both relate to meetings",
+          "visual reference prevents verbal errors"
+        ],
+        "acceptable_paraphrases": [
+          "cheat sheet compensates for the month-mixing problem",
+          "the note helps avoid misstating dates"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the sticky note system is unrelated to the verbal slip pattern"
+        ],
+        "harmless_extra": [
+          "mentioning Diane's pacing advice as complementary",
+          "mentioning Raj as additional backup"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": "Fails if the model cannot recall either the verbal slip pattern or the sticky-note system, or fails to connect them.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I have this pattern where I mix up months when I'm rattling off dates in meetings"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I started keeping a sticky note on my monitor with all the key dates listed out before any meeting"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to put the Henderson & Associates contract renewal date on my preparation sticky note. Which date should I write down?",
+      "expected_answer": "July 15th",
+      "candidate_options": [
+        "July 15th",
+        "June 15th",
+        "July 1st",
+        "Three weeks from Thursday"
+      ],
+      "distractor_rationale": "same-value-different-target: 'Three weeks from Thursday' is the Henderson next meeting timing, not the contract renewal date — same client, different date record. assistant echo: 'June 15th' appeared in an assistant turn referencing an old tracker entry that was explicitly corrected by the user. 'July 1st' is a plausible nearby date distractor with no grounding.",
+      "gold_memory_state": "Henderson contract renewal date is July 15th. The June 15th value was explicitly identified as an error from an old tracker. Three weeks from Thursday is the next Henderson meeting, not the renewal date.",
+      "judge_rubric": {
+        "must_include": [
+          "July 15th"
+        ],
+        "acceptable_paraphrases": [
+          "July 15"
+        ],
+        "must_not_include": [
+          "June 15th",
+          "June 15",
+          "July 1st",
+          "July 1",
+          "three weeks from Thursday"
+        ],
+        "harmful_extra": [
+          "selecting June 15th which was the erroneous old tracker value",
+          "confusing the meeting timing with the renewal date"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if June 15th is selected; this is the stale/erroneous value from the old client tracker that the user explicitly corrected.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Henderson & Associates is the client I work with most closely, and our contract renewal is July 15th"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "our next big client meeting with Henderson is three weeks from this Thursday"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to put the Henderson & Associates contract renewal date on my preparation sticky note. Which date should I write down?",
+      "expected_answer": "July 15th",
+      "candidate_options": [
+        "July 15th",
+        "June 15th",
+        "July 1st",
+        "Three weeks from Thursday"
+      ],
+      "distractor_rationale": "same-value-different-target: 'Three weeks from Thursday' is the Henderson next meeting timing, not the contract renewal date — same client, different date record. assistant echo: 'June 15th' appeared in an assistant turn referencing an old tracker entry that was explicitly corrected by the user. 'July 1st' is a plausible nearby date distractor with no grounding.",
+      "gold_memory_state": "Henderson contract renewal date is July 15th. The June 15th value was explicitly identified as an error from an old tracker. Three weeks from Thursday is the next Henderson meeting, not the renewal date.",
+      "judge_rubric": {
+        "must_include": [
+          "July 15th"
+        ],
+        "acceptable_paraphrases": [
+          "July 15"
+        ],
+        "must_not_include": [
+          "June 15th",
+          "June 15",
+          "July 1st",
+          "July 1",
+          "three weeks from Thursday"
+        ],
+        "harmful_extra": [
+          "selecting June 15th which was the erroneous old tracker value",
+          "confusing the meeting timing with the renewal date"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if June 15th is selected; this is the stale/erroneous value from the old client tracker that the user explicitly corrected.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Henderson & Associates is the client I work with most closely, and our contract renewal is July 15th"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "our next big client meeting with Henderson is three weeks from this Thursday"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "Help me draft the sticky note I should prepare for my upcoming Henderson client meeting. Given my verbal slip pattern and my manager's advice, what should the note include and how should I use it during the meeting?",
+      "expected_answer": "The sticky note should prominently list the Henderson contract renewal date as July 15th in red ink (with 'not June' noted beside it to guard against the adjacent-month substitution). It should also include any milestone dates and proposed new term dates in chronological order. During the meeting, follow Diane's advice to pause and take an extra beat before stating any date aloud — glance at the note to verify the correct month before speaking. Since the meeting is three weeks from this Thursday, start preparing the note the week before to compile all relevant dates.",
+      "gold_memory_state": "Active targets: verbal date error pattern (mix up months under pressure), written communication preference, sticky-note cheat sheet system, Henderson renewal July 15th, Diane's pacing advice, Henderson meeting three weeks from Thursday.",
+      "judge_rubric": {
+        "must_include": [
+          "July 15th on the sticky note",
+          "pause or take an extra beat before stating dates (Diane's advice)",
+          "three weeks from Thursday as the meeting timing",
+          "verbal slip pattern as the reason for the note"
+        ],
+        "acceptable_paraphrases": [
+          "slow down before answering",
+          "glance at note before speaking",
+          "red ink for Henderson date"
+        ],
+        "must_not_include": [
+          "June 15th as the renewal date"
+        ],
+        "harmful_extra": [
+          "using June 15th anywhere on the note",
+          "advising to skip the sticky note"
+        ],
+        "harmless_extra": [
+          "mentioning Carlos's repetition technique",
+          "mentioning Raj as backup",
+          "color-coding suggestion",
+          "writing 'not June' next to July"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if June 15th appears as the renewal date on the drafted sticky note.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User tends to mix up months when stating dates verbally under pressure in meetings.",
+        "Fact 2: User uses a sticky-note cheat sheet on their monitor with key dates listed before meetings.",
+        "Fact 3: Henderson & Associates contract renewal is July 15th, highlighted in red on the sticky note.",
+        "Fact 4: Manager Diane advises taking an extra beat before answering rather than rushing through dates.",
+        "Fact 5: The next Henderson client meeting is three weeks from this Thursday.",
+        "Inference: The sticky note for this specific meeting should combine the renewal date (July 15th) with the anti-month safeguard (not June), organized chronologically, and the user should apply Diane's pacing advice by pausing to verify each date against the note before speaking aloud during the meeting."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I have this pattern where I mix up months when I'm rattling off dates in meetings"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I started keeping a sticky note on my monitor with all the key dates listed out before any meeting"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Henderson & Associates is the client I work with most closely, and our contract renewal is July 15th"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "My manager Diane is pretty understanding about it — she told me she'd rather I take an extra beat before answering than rush through dates"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "our next big client meeting with Henderson is three weeks from this Thursday"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "Help me draft the sticky note I should prepare for my upcoming Henderson client meeting. Given my verbal slip pattern and my manager's advice, what should the note include and how should I use it during the meeting?",
+      "expected_answer": "The sticky note should prominently list the Henderson contract renewal date as July 15th in red ink (with 'not June' noted beside it to guard against the adjacent-month substitution). It should also include any milestone dates and proposed new term dates in chronological order. During the meeting, follow Diane's advice to pause and take an extra beat before stating any date aloud — glance at the note to verify the correct month before speaking. Since the meeting is three weeks from this Thursday, start preparing the note the week before to compile all relevant dates.",
+      "gold_memory_state": "Active targets: verbal date error pattern (mix up months under pressure), written communication preference, sticky-note cheat sheet system, Henderson renewal July 15th, Diane's pacing advice, Henderson meeting three weeks from Thursday.",
+      "judge_rubric": {
+        "must_include": [
+          "July 15th on the sticky note",
+          "pause or take an extra beat before stating dates (Diane's advice)",
+          "three weeks from Thursday as the meeting timing",
+          "verbal slip pattern as the reason for the note"
+        ],
+        "acceptable_paraphrases": [
+          "slow down before answering",
+          "glance at note before speaking",
+          "red ink for Henderson date"
+        ],
+        "must_not_include": [
+          "June 15th as the renewal date"
+        ],
+        "harmful_extra": [
+          "using June 15th anywhere on the note",
+          "advising to skip the sticky note"
+        ],
+        "harmless_extra": [
+          "mentioning Carlos's repetition technique",
+          "mentioning Raj as backup",
+          "color-coding suggestion",
+          "writing 'not June' next to July"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if June 15th appears as the renewal date on the drafted sticky note.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User tends to mix up months when stating dates verbally under pressure in meetings.",
+        "Fact 2: User uses a sticky-note cheat sheet on their monitor with key dates listed before meetings.",
+        "Fact 3: Henderson & Associates contract renewal is July 15th, highlighted in red on the sticky note.",
+        "Fact 4: Manager Diane advises taking an extra beat before answering rather than rushing through dates.",
+        "Fact 5: The next Henderson client meeting is three weeks from this Thursday.",
+        "Inference: The sticky note for this specific meeting should combine the renewal date (July 15th) with the anti-month safeguard (not June), organized chronologically, and the user should apply Diane's pacing advice by pausing to verify each date against the note before speaking aloud during the meeting."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I have this pattern where I mix up months when I'm rattling off dates in meetings"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I started keeping a sticky note on my monitor with all the key dates listed out before any meeting"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Henderson & Associates is the client I work with most closely, and our contract renewal is July 15th"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "My manager Diane is pretty understanding about it — she told me she'd rather I take an extra beat before answering than rush through dates"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "our next big client meeting with Henderson is three weeks from this Thursday"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What was my dentist appointment date again?",
+      "expected_answer": "I don't have a dentist appointment date from you. You haven't provided that information.",
+      "gold_memory_state": "No dentist appointment date was ever provided. The user shared work-related dates (Henderson contract renewal July 15th, Henderson meeting three weeks from Thursday) and work communication strategies, but no personal medical or dental appointment dates.",
+      "judge_rubric": {
+        "must_include": [
+          "no dentist appointment date on record",
+          "not provided"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have that information",
+          "you never mentioned a dentist appointment",
+          "no record of a dentist appointment"
+        ],
+        "must_not_include": [
+          "any invented dentist date",
+          "July 15th as a dentist date",
+          "any date presented as a dentist appointment"
+        ],
+        "harmful_extra": [
+          "fabricating any dentist appointment date",
+          "borrowing July 15th or any other stored date as the dentist appointment"
+        ],
+        "harmless_extra": [
+          "Henderson renewal July 15th",
+          "Henderson meeting three weeks from Thursday",
+          "work date details"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model invents or hallucinates a dentist appointment date that was never provided.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Henderson & Associates is the client I work with most closely, and our contract renewal is July 15th"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "our next big client meeting with Henderson is three weeks from this Thursday"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What was my dentist appointment date again?",
+      "expected_answer": "I don't have a dentist appointment date from you. You haven't provided that information.",
+      "gold_memory_state": "No dentist appointment date was ever provided. The user shared work-related dates (Henderson contract renewal July 15th, Henderson meeting three weeks from Thursday) and work communication strategies, but no personal medical or dental appointment dates.",
+      "judge_rubric": {
+        "must_include": [
+          "no dentist appointment date on record",
+          "not provided"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have that information",
+          "you never mentioned a dentist appointment",
+          "no record of a dentist appointment"
+        ],
+        "must_not_include": [
+          "any invented dentist date",
+          "July 15th as a dentist date",
+          "any date presented as a dentist appointment"
+        ],
+        "harmful_extra": [
+          "fabricating any dentist appointment date",
+          "borrowing July 15th or any other stored date as the dentist appointment"
+        ],
+        "harmless_extra": [
+          "Henderson renewal July 15th",
+          "Henderson meeting three weeks from Thursday",
+          "work date details"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model invents or hallucinates a dentist appointment date that was never provided.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Henderson & Associates is the client I work with most closely, and our contract renewal is July 15th"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "our next big client meeting with Henderson is three weeks from this Thursday"
+        }
+      ]
+    }
+  ]
+}

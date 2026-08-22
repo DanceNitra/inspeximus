@@ -1,0 +1,1042 @@
+{
+  "target_fact": "User prefers a slow-paced, tactile, and structured study approach based on evidence of enjoying physical flashcards, preferring morning study sessions, and choosing to reschedule rather than cram",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I rescheduled my C11 exam from April 19 to May 10 because I had a work trip to Calgary that overlapped"
+      },
+      "target": {
+        "target_id": "c11_exam_date",
+        "target_name": "C11 exam date"
+      },
+      "old_value": null,
+      "new_value": "May 10",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I rescheduled my C11 exam from April 19 to May 10 because I had a work trip to Calgary that overlapped"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I bought a physical flashcard set from CSI for $45 and honestly I just prefer flipping through real cards by hand over any app"
+      },
+      "target": {
+        "target_id": "flashcard_preference",
+        "target_name": "study material preference for C11 exam"
+      },
+      "old_value": null,
+      "new_value": "Physical flashcards from CSI, $45",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I bought a physical flashcard set from CSI for $45 and honestly I just prefer flipping through real cards by hand over any app"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I've been doing my exam prep in the mornings specifically because my brain works way better before noon"
+      },
+      "target": {
+        "target_id": "preferred_study_time",
+        "target_name": "preferred study time of day"
+      },
+      "old_value": null,
+      "new_value": "Mornings, before noon",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've been doing my exam prep in the mornings specifically because my brain works way better before noon"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I've been doing one full practice exam every weekend since I rescheduled. Last Sunday I got 71%"
+      },
+      "target": {
+        "target_id": "practice_exam_cadence",
+        "target_name": "C11 practice exam schedule and latest score"
+      },
+      "old_value": null,
+      "new_value": "One full practice exam every weekend; latest score 71%",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I've been doing one full practice exam every weekend since I rescheduled. Last Sunday I got 71%"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "I'd rather take more time and actually understand the material than rush through it and risk failing"
+      },
+      "target": {
+        "target_id": "pacing_preference",
+        "target_name": "study pacing preference"
+      },
+      "old_value": null,
+      "new_value": "Prefers taking more time to understand material rather than rushing",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I'd rather take more time and actually understand the material than rush through it and risk failing"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "I'd rather take more time and actually understand the material than rush through it and risk failing"
+      },
+      "target": {
+        "target_id": "study_approach_preference",
+        "target_name": "overall study approach preference"
+      },
+      "old_value": null,
+      "new_value": "Prefers a slow-paced, tactile, and structured study approach: chooses physical flashcards over digital, studies in the mornings for clarity, and reschedules exams rather than cramming",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I bought a physical flashcard set from CSI for $45 and honestly I just prefer flipping through real cards by hand over any app"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've been doing my exam prep in the mornings specifically because my brain works way better before noon"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I'd rather take more time and actually understand the material than rush through it and risk failing"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "My exam center is the Pearson VUE location on 250 Yonge Street in Toronto"
+      },
+      "target": {
+        "target_id": "exam_center_location",
+        "target_name": "C11 exam center location"
+      },
+      "old_value": null,
+      "new_value": "Pearson VUE, 250 Yonge Street, Toronto",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "My exam center is the Pearson VUE location on 250 Yonge Street in Toronto"
+        }
+      ]
+    },
+    {
+      "operation_id": "op8",
+      "type": "remember",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 7,
+        "quote": "Kevin told me the Pearson VUE center might be relocating to 300 Bay Street by mid-May, so he's already confirmed his booking there"
+      },
+      "target": {
+        "target_id": "exam_center_location_tentative",
+        "target_name": "potential new exam center location"
+      },
+      "old_value": null,
+      "new_value": "300 Bay Street, Toronto",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Kevin told me the Pearson VUE center might be relocating to 300 Bay Street by mid-May, so he's already confirmed his booking there"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establishing core study facts and preferences",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to give you some context about my exam situation. I rescheduled my C11 exam from April 19 to May 10 because I had a work trip to Calgary that overlapped. The trip was around April 15 to 17 or maybe 16 to 18, I'm honestly not sure, but either way it made the original date impossible. I'm feeling better about the new timeline though."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for the update! That makes total sense — trying to sit for a certification exam the day after flying back from a work trip would have been brutal. May 10 gives you a solid buffer. That's roughly three more weeks of study time compared to the original April 19 date, which is significant for a content-heavy exam like C11 Fundamentals of Insurance. Do you want me to help you build out a revised study schedule leading up to May 10, or are you already working from a plan you're comfortable with?"
+        },
+        {
+          "role": "user",
+          "content": "I bought a physical flashcard set from CSI for $45 and honestly I just prefer flipping through real cards by hand over any app. There's something about the tactile process that helps me retain the material better. I've been using them every day since they arrived. I think they cover all the main chapters including underwriting, which is the section I struggled with most on my first practice test."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a great investment — CSI's flashcard sets are well-regarded for the C11 curriculum, and at $45 that's pretty reasonable for a comprehensive set. It's interesting that you gravitate toward physical cards. Research actually supports that handwriting and physical manipulation of study materials can improve encoding compared to passive screen-based review. Since underwriting was your weakest area on that first practice test, you might consider separating out the underwriting flashcards and doing an extra daily pass through just those. Would you like help creating a targeted review rotation for the underwriting content specifically?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah that's a good idea. I've been doing my exam prep in the mornings specifically because my brain works way better before noon. After lunch I tend to lose focus pretty quickly, so I try to protect that morning window for the harder study material. I usually start around 7:30 and go until about 10 or 10:30 depending on the day."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really disciplined approach, and it makes sense to align your hardest cognitive work with your peak alertness window. A 7:30 to 10:30 block gives you up to three hours of focused study time, which is substantial if you're consistent. Since underwriting is your weakest area, I'd suggest front-loading that topic into the first 60-90 minutes of each session when your concentration is freshest, then rotating through other chapters in the remaining time. On days when you feel particularly sharp, you could extend into claims or risk management content. Want me to sketch out a sample morning block schedule?"
+        },
+        {
+          "role": "user",
+          "content": "Sure, but keep it flexible. I don't like rigid schedules because some mornings I wake up and want to focus on whatever felt shaky the day before. Also, my friend Kevin is taking C11 too — he pushed his date to May 24 because he fell behind. So we've been texting about study strategies. He's more of a digital learner though, uses Anki and online quizzes mostly.\n\nLet's talk weak areas first. Beyond underwriting, I think I'm also a bit shaky on the reinsurance chapter. The concepts around facultative versus treaty reinsurance keep tripping me up. I can define them separately but when a practice question gives me a scenario I second-guess myself. I think I need more scenario-based practice for those two chapters specifically."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — I'll keep the schedule as a loose framework rather than a rigid block plan, so you can adapt based on what feels weakest each morning. That's actually a smart self-directed approach. It's great that you and Kevin can bounce ideas off each other even though your study styles differ. His Anki-based approach and your physical flashcard method are both evidence-backed — it just comes down to what clicks for each person. Since you're both in May now, you could even do informal check-ins to compare progress on specific chapters. Want me to draft that flexible morning template now, or should we talk through your weak areas first?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Deepening study context and surfacing pacing preference",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Quick update — I've been doing one full practice exam every weekend since I rescheduled. Last Sunday I got 71%. It's better than my first attempt back in late March when I was way underprepared, but I still need to get that up. The passing mark for C11 is 60% but I don't want to just barely scrape by, you know? I want to actually feel confident walking in."
+        },
+        {
+          "role": "assistant",
+          "content": "A 71% is solid progress, especially considering how you felt after that first practice test. You're already 11 points above the pass threshold, which gives you a meaningful cushion. But I totally understand wanting to feel genuinely confident rather than just technically passing. With about three weekends left before May 10, if you can push each practice exam score up by even 3-5 points per week, you'd be in the high 70s to low 80s by exam day. That would be a really comfortable position. Do you track which sections pull your score down on each practice exam, or do you just look at the overall percentage?"
+        },
+        {
+          "role": "user",
+          "content": "I've started breaking it down by section actually. Underwriting and reinsurance are still my lowest but they've improved. My exam center is the Pearson VUE location on 250 Yonge Street in Toronto. I confirmed that when I rescheduled. It was actually hard to find a May slot there because a lot of dates were already booked, so I feel lucky I got May 10 at all."
+        },
+        {
+          "role": "assistant",
+          "content": "Good that you're doing section-level breakdowns — that's the fastest way to identify where targeted study will have the biggest score impact. And the Pearson VUE center on 250 Yonge Street is a well-known testing location, pretty central in downtown Toronto. Since mid-May slots were scarce, it's worth double-checking your confirmation email to make sure all the logistics are locked in — things like your ID requirements, arrival time, and any COVID or security protocols they might still have. Have you visited the center before, or will this be your first time testing there?"
+        },
+        {
+          "role": "user",
+          "content": "First time there. I've done other exams at a different Pearson VUE location in Mississauga but never the Yonge Street one. I'm planning to do a dry run of the commute a few days before so I'm not stressed about finding the place on exam morning. I'd rather take more time and actually understand the material than rush through it and risk failing. That's basically why I moved the exam in the first place."
+        },
+        {
+          "role": "assistant",
+          "content": "Doing a commute dry run is a really smart move, especially for a first visit to that location. Yonge Street can be busy in the mornings, so knowing exactly how long the trip takes and where to park or which subway exit to use will eliminate a whole layer of stress on May 10. And your philosophy about taking more time to genuinely understand the material rather than cramming is clearly paying off — your score trajectory from that shaky first practice test to a 71% shows real improvement. Since you prefer morning study sessions, you might even simulate exam conditions by doing your next practice test at 7:30 AM to match your peak focus window."
+        },
+        {
+          "role": "user",
+          "content": "That's actually a brilliant idea. The real exam is at 9 AM so doing a practice run at 7:30 or 8 would get me in the right headspace. I've also been reviewing the CSI flashcards right before bed as a secondary pass — just a quick 15-minute flip-through of whatever I studied that morning. It seems to help with retention overnight.\n\nYeah, let's do that. I have three weekends left — this coming one, then the one after, and then the weekend right before the exam. I want the last weekend to be lighter though, more review and less full-length testing. I don't want to burn out right before the real thing. Maybe I'll just do flashcard review and light scenario practice that final weekend."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really effective spaced repetition strategy — studying in the morning when your focus is sharpest, then doing a brief review before sleep when your brain consolidates memories. The 15-minute evening flashcard pass is essentially giving your brain a second encoding opportunity for the same material, which research shows significantly improves long-term retention. Since your exam is at 9 AM on May 10, doing timed practice tests starting at 8 AM on weekend mornings would closely simulate the real conditions. You'd get used to being mentally sharp at that specific time. Want me to help you set up a weekend practice exam schedule for the remaining weeks?"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Recency trap with tentative location change and adversarial distractor",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, so I've been thinking more about the exam logistics. I want to make sure I have everything organized for May 10. I need two pieces of valid government-issued ID, right? I've got my driver's license and my passport, so I should be fine on that front. I just want to triple-check because I'd hate to show up and get turned away."
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, Pearson VUE typically requires two forms of valid identification, and at least one must include a photo and a signature. Your driver's license covers both of those requirements, and your passport provides the second valid government-issued ID. You should be all set. Just make sure neither document is expired — it's one of those things that's easy to overlook. It's also worth bringing your exam confirmation email or booking number, either printed or on your phone, just in case there's any check-in confusion at the 250 Yonge Street location. Have you received a confirmation email with your specific booking details?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah I got the confirmation email. It has my booking reference number, the May 10 date, and the 9 AM start time all listed. I saved a screenshot on my phone and also forwarded it to my personal email just in case. I'm being extra cautious because Kevin told me he almost got turned away once when his confirmation didn't load on his phone."
+        },
+        {
+          "role": "assistant",
+          "content": "That's really smart to have both a screenshot and an email backup. Kevin's experience is a great cautionary tale — relying solely on a phone with potentially spotty data connection in a building lobby is risky. Some candidates even print a hard copy to keep in their bag as a third backup, which might be worth considering given your preference for physical materials. Since you've got the booking reference, date, and start time all confirmed, you're in great shape logistically. The main thing now is just continuing your study momentum through these last few weeks. How did this past weekend's practice exam go?"
+        },
+        {
+          "role": "user",
+          "content": "I got 74% this weekend, so a three-point bump from last week's 71%. I'm happy with the direction. The underwriting section actually went much better — I think the flashcards are really helping there. Reinsurance is still my weakest but I'm starting to get the facultative versus treaty distinction more intuitively now, especially with scenario questions."
+        },
+        {
+          "role": "assistant",
+          "content": "A 74% is excellent progress — that three-point improvement in one week shows your study strategy is working. The fact that underwriting improved specifically suggests the CSI flashcards are doing their job for that section. For reinsurance, since you're getting better at the facultative versus treaty distinction through scenarios, I'd recommend finding or creating five to ten more scenario-based practice questions focused purely on reinsurance arrangements. By the way, I noticed that Kevin's earlier booking confirmation from Pearson VUE listed 300 Bay Street as his testing center — that's a different location from your 250 Yonge Street center, so make sure you don't mix up directions if you two discuss logistics."
+        },
+        {
+          "role": "user",
+          "content": "Kevin told me the Pearson VUE center might be relocating to 300 Bay Street by mid-May, so he's already confirmed his booking there. He said they sent him an email about it. I haven't gotten any email like that though, and my confirmation still says 250 Yonge Street. I'm not sure what to make of it honestly.\n\nGood call, I'll phone them tomorrow morning. I just want to make sure there are no surprises. On the study front, I'm planning to do my last full practice exam this coming Saturday at 8 AM to simulate real conditions. Then the final weekend before May 10 will just be flashcard review and light scenario work like we discussed. I feel like I'm in a good rhythm now."
+        },
+        {
+          "role": "assistant",
+          "content": "That's worth looking into, but I wouldn't panic. It's possible that Kevin's May 24 exam date falls after a transition period and yours on May 10 is still at the current 250 Yonge Street location. Testing centers sometimes phase relocations gradually, and different exam dates can be assigned to different locations during the transition. Since your confirmation email explicitly states 250 Yonge Street for May 10, I'd trust that unless Pearson VUE contacts you directly with a change. You could also call Pearson VUE's customer service line to double-check, just for peace of mind. It would only take a few minutes and would eliminate any uncertainty.\n\nThat sounds like a perfectly structured final push. Doing your last full practice exam this Saturday at 8 AM will give you one more data point on your score trajectory and let you identify any remaining weak spots with enough time to address them. Then tapering to flashcard review and light scenarios the final weekend is wise — you want to arrive on May 10 feeling fresh and confident, not mentally exhausted from last-minute cramming. Your scores have been trending upward steadily, from that rough first practice test to 71% to 74%, so the momentum is clearly there. After you call Pearson VUE tomorrow to confirm your location, you'll have all the logistics and study pieces locked in. You've got this."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "What experiences have I shared with you that reveal how I like to approach studying for exams?",
+      "expected_answer": "You shared several experiences: you bought physical flashcards from CSI for $45 because you prefer flipping through real cards over using apps, you study in the mornings before noon because your brain works better then, you rescheduled your exam from April 19 to May 10 rather than cramming around a work trip, you do one full practice exam every weekend with your latest score being 74%, and you explicitly said you'd rather take more time and understand the material than rush through it and risk failing.",
+      "gold_memory_state": "All confirmed study-approach facts are active: physical flashcard preference, morning study window, exam rescheduling decision, weekly practice exam cadence, and explicit pacing preference. The reflected inference that the user prefers a slow-paced, tactile, and structured study approach is supported by these facts.",
+      "judge_rubric": {
+        "must_include": [
+          "physical flashcards",
+          "morning study",
+          "rescheduled exam rather than cramming",
+          "prefers taking more time"
+        ],
+        "acceptable_paraphrases": [
+          "tactile learning",
+          "hands-on cards",
+          "early morning sessions",
+          "moved exam date to avoid rushing"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the user prefers digital tools",
+          "claiming the user studies at night"
+        ],
+        "harmless_extra": [
+          "mentioning Kevin's different study style",
+          "mentioning the practice exam scores"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes study preferences the user never expressed.",
+        "reflection_recall": "Fails if the model omits key evidence such as physical flashcards, morning preference, or rescheduling decision.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I bought a physical flashcard set from CSI for $45 and honestly I just prefer flipping through real cards by hand over any app"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've been doing my exam prep in the mornings specifically because my brain works way better before noon"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I'd rather take more time and actually understand the material than rush through it and risk failing"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I rescheduled my C11 exam from April 19 to May 10 because I had a work trip to Calgary that overlapped"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "What experiences have I shared with you that reveal how I like to approach studying for exams?",
+      "expected_answer": "You shared several experiences: you bought physical flashcards from CSI for $45 because you prefer flipping through real cards over using apps, you study in the mornings before noon because your brain works better then, you rescheduled your exam from April 19 to May 10 rather than cramming around a work trip, you do one full practice exam every weekend with your latest score being 74%, and you explicitly said you'd rather take more time and understand the material than rush through it and risk failing.",
+      "gold_memory_state": "All confirmed study-approach facts are active: physical flashcard preference, morning study window, exam rescheduling decision, weekly practice exam cadence, and explicit pacing preference. The reflected inference that the user prefers a slow-paced, tactile, and structured study approach is supported by these facts.",
+      "judge_rubric": {
+        "must_include": [
+          "physical flashcards",
+          "morning study",
+          "rescheduled exam rather than cramming",
+          "prefers taking more time"
+        ],
+        "acceptable_paraphrases": [
+          "tactile learning",
+          "hands-on cards",
+          "early morning sessions",
+          "moved exam date to avoid rushing"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the user prefers digital tools",
+          "claiming the user studies at night"
+        ],
+        "harmless_extra": [
+          "mentioning Kevin's different study style",
+          "mentioning the practice exam scores"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes study preferences the user never expressed.",
+        "reflection_recall": "Fails if the model omits key evidence such as physical flashcards, morning preference, or rescheduling decision.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I bought a physical flashcard set from CSI for $45 and honestly I just prefer flipping through real cards by hand over any app"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've been doing my exam prep in the mornings specifically because my brain works way better before noon"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I'd rather take more time and actually understand the material than rush through it and risk failing"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I rescheduled my C11 exam from April 19 to May 10 because I had a work trip to Calgary that overlapped"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "Based on everything I've told you about my exam preparation habits, what bounded conclusion about my study approach is supported? Would it be fair to extend that conclusion to say I also avoid all group study or dislike any form of technology in learning?",
+      "expected_answer": "The supported conclusion is that you prefer a slow-paced, tactile, and structured study approach — you choose physical flashcards over apps, study in the mornings for peak clarity, and reschedule exams rather than cramming. It would not be fair to extend this to conclude you avoid all group study or dislike all technology in learning, since you actively text with Kevin about study strategies and there is no evidence against group study in general.",
+      "gold_memory_state": "The reflected target 'overall study approach preference' is active with the value: prefers a slow-paced, tactile, and structured study approach. Supporting facts include physical flashcard preference, morning study sessions, and rescheduling over cramming. Kevin's study collaboration and the user's digital communication with Kevin are separate confirmed facts that limit overgeneralization.",
+      "judge_rubric": {
+        "must_include": [
+          "slow-paced or deliberate",
+          "tactile or physical",
+          "structured",
+          "flashcards over apps or digital tools",
+          "morning study",
+          "reschedule rather than cram"
+        ],
+        "acceptable_paraphrases": [
+          "hands-on learning",
+          "methodical approach",
+          "prefers physical materials",
+          "avoids rushing"
+        ],
+        "must_not_include": [
+          "user avoids all technology",
+          "user dislikes group study"
+        ],
+        "harmful_extra": [
+          "claiming the user avoids all collaborative learning",
+          "claiming the user never uses any digital tools",
+          "conflating Kevin's Anki-based approach with the user's own preference"
+        ],
+        "harmless_extra": [
+          "mentioning Kevin's different study style as context",
+          "mentioning practice exam cadence"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model claims the user avoids all technology or group study without evidence.",
+        "reflection_recall": "Fails if the model omits any of the three core evidence pillars: physical flashcards, morning sessions, rescheduling.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I bought a physical flashcard set from CSI for $45 and honestly I just prefer flipping through real cards by hand over any app"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've been doing my exam prep in the mornings specifically because my brain works way better before noon"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I'd rather take more time and actually understand the material than rush through it and risk failing"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "Based on everything I've told you about my exam preparation habits, what bounded conclusion about my study approach is supported? Would it be fair to extend that conclusion to say I also avoid all group study or dislike any form of technology in learning?",
+      "expected_answer": "The supported conclusion is that you prefer a slow-paced, tactile, and structured study approach — you choose physical flashcards over apps, study in the mornings for peak clarity, and reschedule exams rather than cramming. It would not be fair to extend this to conclude you avoid all group study or dislike all technology in learning, since you actively text with Kevin about study strategies and there is no evidence against group study in general.",
+      "gold_memory_state": "The reflected target 'overall study approach preference' is active with the value: prefers a slow-paced, tactile, and structured study approach. Supporting facts include physical flashcard preference, morning study sessions, and rescheduling over cramming. Kevin's study collaboration and the user's digital communication with Kevin are separate confirmed facts that limit overgeneralization.",
+      "judge_rubric": {
+        "must_include": [
+          "slow-paced or deliberate",
+          "tactile or physical",
+          "structured",
+          "flashcards over apps or digital tools",
+          "morning study",
+          "reschedule rather than cram"
+        ],
+        "acceptable_paraphrases": [
+          "hands-on learning",
+          "methodical approach",
+          "prefers physical materials",
+          "avoids rushing"
+        ],
+        "must_not_include": [
+          "user avoids all technology",
+          "user dislikes group study"
+        ],
+        "harmful_extra": [
+          "claiming the user avoids all collaborative learning",
+          "claiming the user never uses any digital tools",
+          "conflating Kevin's Anki-based approach with the user's own preference"
+        ],
+        "harmless_extra": [
+          "mentioning Kevin's different study style as context",
+          "mentioning practice exam cadence"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model claims the user avoids all technology or group study without evidence.",
+        "reflection_recall": "Fails if the model omits any of the three core evidence pillars: physical flashcards, morning sessions, rescheduling.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I bought a physical flashcard set from CSI for $45 and honestly I just prefer flipping through real cards by hand over any app"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've been doing my exam prep in the mornings specifically because my brain works way better before noon"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I'd rather take more time and actually understand the material than rush through it and risk failing"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "difficulty": "hard",
+      "question": "Describe what you can confidently say about my learning style based on our conversations, and where the boundary is — what kinds of conclusions about how I learn would go beyond what I've actually shown you?",
+      "expected_answer": "Confidently supported: you prefer a slow-paced, tactile, and structured study approach. You choose physical flashcards over digital apps, schedule study sessions in the mornings before noon when your focus is sharpest, and you reschedule exams to give yourself more preparation time rather than cramming. The boundary is that this pattern applies specifically to your exam study habits for certification material. It would be unsupported to generalize that you avoid all digital tools, dislike collaborative learning, or that you apply this same approach to every type of learning or work task. You actively communicate with Kevin digitally about study strategies, and nothing indicates you reject technology broadly — only that for study materials you prefer physical over digital.",
+      "gold_memory_state": "Reflected inference is active: user prefers a slow-paced, tactile, and structured study approach. Supported by three confirmed facts: physical flashcard preference, morning study sessions, rescheduling over cramming. Unsupported overgeneralizations include: avoids all technology, dislikes collaborative learning, applies this approach to all domains of life. The inference boundary is limited to exam/certification study habits.",
+      "judge_rubric": {
+        "must_include": [
+          "physical flashcards over digital",
+          "morning study sessions",
+          "reschedule rather than cram",
+          "boundary or limit of the inference"
+        ],
+        "acceptable_paraphrases": [
+          "tactile materials",
+          "hands-on cards",
+          "prefers not to rush",
+          "deliberate pacing"
+        ],
+        "must_not_include": [
+          "user avoids all technology",
+          "user dislikes all collaboration"
+        ],
+        "harmful_extra": [
+          "claiming the preference extends to all areas of life without qualification",
+          "claiming the user is anti-technology"
+        ],
+        "harmless_extra": [
+          "mentioning Kevin's contrasting digital approach as boundary evidence",
+          "mentioning the before-bed flashcard review"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model claims unsupported generalizations such as the user avoiding all digital tools or all collaborative study.",
+        "reflection_recall": "Fails if the model omits any of the three core evidence pillars or fails to articulate a boundary.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I bought a physical flashcard set from CSI for $45 and honestly I just prefer flipping through real cards by hand over any app"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've been doing my exam prep in the mornings specifically because my brain works way better before noon"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I'd rather take more time and actually understand the material than rush through it and risk failing"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "difficulty": "hard",
+      "question": "Describe what you can confidently say about my learning style based on our conversations, and where the boundary is — what kinds of conclusions about how I learn would go beyond what I've actually shown you?",
+      "expected_answer": "Confidently supported: you prefer a slow-paced, tactile, and structured study approach. You choose physical flashcards over digital apps, schedule study sessions in the mornings before noon when your focus is sharpest, and you reschedule exams to give yourself more preparation time rather than cramming. The boundary is that this pattern applies specifically to your exam study habits for certification material. It would be unsupported to generalize that you avoid all digital tools, dislike collaborative learning, or that you apply this same approach to every type of learning or work task. You actively communicate with Kevin digitally about study strategies, and nothing indicates you reject technology broadly — only that for study materials you prefer physical over digital.",
+      "gold_memory_state": "Reflected inference is active: user prefers a slow-paced, tactile, and structured study approach. Supported by three confirmed facts: physical flashcard preference, morning study sessions, rescheduling over cramming. Unsupported overgeneralizations include: avoids all technology, dislikes collaborative learning, applies this approach to all domains of life. The inference boundary is limited to exam/certification study habits.",
+      "judge_rubric": {
+        "must_include": [
+          "physical flashcards over digital",
+          "morning study sessions",
+          "reschedule rather than cram",
+          "boundary or limit of the inference"
+        ],
+        "acceptable_paraphrases": [
+          "tactile materials",
+          "hands-on cards",
+          "prefers not to rush",
+          "deliberate pacing"
+        ],
+        "must_not_include": [
+          "user avoids all technology",
+          "user dislikes all collaboration"
+        ],
+        "harmful_extra": [
+          "claiming the preference extends to all areas of life without qualification",
+          "claiming the user is anti-technology"
+        ],
+        "harmless_extra": [
+          "mentioning Kevin's contrasting digital approach as boundary evidence",
+          "mentioning the before-bed flashcard review"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model claims unsupported generalizations such as the user avoiding all digital tools or all collaborative study.",
+        "reflection_recall": "Fails if the model omits any of the three core evidence pillars or fails to articulate a boundary.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I bought a physical flashcard set from CSI for $45 and honestly I just prefer flipping through real cards by hand over any app"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've been doing my exam prep in the mornings specifically because my brain works way better before noon"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I'd rather take more time and actually understand the material than rush through it and risk failing"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "Which of the following best describes my overall approach to exam preparation?",
+      "candidate_options": [
+        "Slow-paced, tactile, and structured — prefers physical flashcards, morning study sessions, and rescheduling over cramming",
+        "Tech-savvy and flexible — uses Anki and online quizzes, studies whenever time permits, and adapts schedule on the fly",
+        "Intensive and deadline-driven — crams close to the exam date, uses digital resources for speed, and studies late at night",
+        "Collaborative and social — relies primarily on group study sessions, shared digital notes, and peer quizzing"
+      ],
+      "expected_answer": "Slow-paced, tactile, and structured — prefers physical flashcards, morning study sessions, and rescheduling over cramming",
+      "distractor_rationale": "same-value-different-target: Option B describes Kevin's study approach (Anki, digital quizzes, flexible scheduling) rather than the user's own approach. assistant echo: Option D is loosely inspired by the assistant's mention of informal check-ins with Kevin, but the user never described a collaborative or group-study-first approach. Option C is a direct inversion of the user's stated preference for deliberate pacing over cramming.",
+      "gold_memory_state": "Reflected inference is active: user prefers a slow-paced, tactile, and structured study approach based on physical flashcards, morning sessions, and rescheduling over cramming.",
+      "judge_rubric": {
+        "must_include": [
+          "slow-paced",
+          "tactile",
+          "structured"
+        ],
+        "acceptable_paraphrases": [
+          "deliberate",
+          "hands-on",
+          "methodical"
+        ],
+        "must_not_include": [
+          "tech-savvy",
+          "Anki-based",
+          "crams",
+          "group study primary"
+        ],
+        "harmful_extra": [
+          "selecting Kevin's approach as the user's own",
+          "selecting cramming as the user's style"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects Kevin's digital approach or the cramming approach as the user's preference.",
+        "reflection_precision": "Fails if the model selects an overgeneralized or unsupported characterization.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I bought a physical flashcard set from CSI for $45 and honestly I just prefer flipping through real cards by hand over any app"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've been doing my exam prep in the mornings specifically because my brain works way better before noon"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I'd rather take more time and actually understand the material than rush through it and risk failing"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "Which of the following best describes my overall approach to exam preparation?",
+      "candidate_options": [
+        "Slow-paced, tactile, and structured — prefers physical flashcards, morning study sessions, and rescheduling over cramming",
+        "Tech-savvy and flexible — uses Anki and online quizzes, studies whenever time permits, and adapts schedule on the fly",
+        "Intensive and deadline-driven — crams close to the exam date, uses digital resources for speed, and studies late at night",
+        "Collaborative and social — relies primarily on group study sessions, shared digital notes, and peer quizzing"
+      ],
+      "expected_answer": "Slow-paced, tactile, and structured — prefers physical flashcards, morning study sessions, and rescheduling over cramming",
+      "distractor_rationale": "same-value-different-target: Option B describes Kevin's study approach (Anki, digital quizzes, flexible scheduling) rather than the user's own approach. assistant echo: Option D is loosely inspired by the assistant's mention of informal check-ins with Kevin, but the user never described a collaborative or group-study-first approach. Option C is a direct inversion of the user's stated preference for deliberate pacing over cramming.",
+      "gold_memory_state": "Reflected inference is active: user prefers a slow-paced, tactile, and structured study approach based on physical flashcards, morning sessions, and rescheduling over cramming.",
+      "judge_rubric": {
+        "must_include": [
+          "slow-paced",
+          "tactile",
+          "structured"
+        ],
+        "acceptable_paraphrases": [
+          "deliberate",
+          "hands-on",
+          "methodical"
+        ],
+        "must_not_include": [
+          "tech-savvy",
+          "Anki-based",
+          "crams",
+          "group study primary"
+        ],
+        "harmful_extra": [
+          "selecting Kevin's approach as the user's own",
+          "selecting cramming as the user's style"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects Kevin's digital approach or the cramming approach as the user's preference.",
+        "reflection_precision": "Fails if the model selects an overgeneralized or unsupported characterization.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I bought a physical flashcard set from CSI for $45 and honestly I just prefer flipping through real cards by hand over any app"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've been doing my exam prep in the mornings specifically because my brain works way better before noon"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I'd rather take more time and actually understand the material than rush through it and risk failing"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "application_probe_type": "multi_hop_derivation",
+      "difficulty": "hard",
+      "question": "I'm thinking about adding one more intensive study day to my schedule before the exam. Given what you know about when I study best, what materials I use, how I pace myself, and when my exam is, recommend a specific plan for that extra day — what time of day, what materials, and how it should fit relative to my exam date so I don't burn out.",
+      "expected_answer": "Schedule the extra study day for a morning before noon, ideally no later than the Wednesday or Thursday before May 10 to avoid last-weekend burnout. Use your physical CSI flashcards as the primary material, focusing on your weaker areas like reinsurance. Keep the session structured but not exhausting — around 2.5 to 3 hours starting at 7:30 AM — consistent with your usual rhythm. Avoid scheduling it the final weekend before the exam, since you planned that weekend for light flashcard review and scenario practice only, not intensive study. This respects your preference for deliberate pacing over cramming.",
+      "gold_memory_state": "Active confirmed facts: exam date is May 10; preferred study time is mornings before noon starting around 7:30; preferred materials are physical CSI flashcards; pacing preference is slow and deliberate with no cramming; final weekend before exam is reserved for light review only. Reflected inference: slow-paced, tactile, structured approach.",
+      "judge_rubric": {
+        "must_include": [
+          "morning or before noon",
+          "physical flashcards or CSI flashcards",
+          "before the final weekend or not too close to May 10",
+          "avoid cramming or keep it non-intensive near exam day"
+        ],
+        "acceptable_paraphrases": [
+          "early in the day",
+          "tactile materials",
+          "mid-week before the exam",
+          "respect the taper plan"
+        ],
+        "must_not_include": [
+          "recommend evening study",
+          "recommend Anki or digital apps as primary tool",
+          "recommend cramming the day before"
+        ],
+        "harmful_extra": [
+          "suggesting the exam is at 250 Yonge Street when the user has not confirmed the location is unchanged after the relocation rumor",
+          "recommending the 300 Bay Street location as confirmed"
+        ],
+        "harmless_extra": [
+          "mentioning reinsurance or underwriting as focus areas",
+          "mentioning the 7:30 to 10:30 window",
+          "mentioning the 74% practice score"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model recommends evening study, digital-first tools, or cramming the day before — all contradicting the reflected preference.",
+        "reflection_precision": "Fails if the recommendation ignores the slow-paced, tactile, structured approach.",
+        "reflection_recall": "Fails if the plan omits morning timing, physical flashcards, or the anti-cramming pacing constraint.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's exam is on May 10.",
+        "Fact 2: The user prefers studying in the mornings before noon, typically starting around 7:30 AM.",
+        "Fact 3: The user's preferred study materials are physical CSI flashcards.",
+        "Fact 4: The user prefers taking more time and understanding material rather than rushing or cramming.",
+        "Fact 5: The user planned the final weekend before the exam for light flashcard review and scenario practice only.",
+        "Inference: An extra intensive study day should be scheduled on a weekday morning (e.g., Wednesday or Thursday before May 10) to avoid conflicting with the light-review final weekend.",
+        "Inference: The session should use physical flashcards in a morning window, lasting about 2.5-3 hours, consistent with the user's established rhythm and pacing preference."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I rescheduled my C11 exam from April 19 to May 10 because I had a work trip to Calgary that overlapped"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I bought a physical flashcard set from CSI for $45 and honestly I just prefer flipping through real cards by hand over any app"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've been doing my exam prep in the mornings specifically because my brain works way better before noon"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I'd rather take more time and actually understand the material than rush through it and risk failing"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "application_probe_type": "multi_hop_derivation",
+      "difficulty": "hard",
+      "question": "I'm thinking about adding one more intensive study day to my schedule before the exam. Given what you know about when I study best, what materials I use, how I pace myself, and when my exam is, recommend a specific plan for that extra day — what time of day, what materials, and how it should fit relative to my exam date so I don't burn out.",
+      "expected_answer": "Schedule the extra study day for a morning before noon, ideally no later than the Wednesday or Thursday before May 10 to avoid last-weekend burnout. Use your physical CSI flashcards as the primary material, focusing on your weaker areas like reinsurance. Keep the session structured but not exhausting — around 2.5 to 3 hours starting at 7:30 AM — consistent with your usual rhythm. Avoid scheduling it the final weekend before the exam, since you planned that weekend for light flashcard review and scenario practice only, not intensive study. This respects your preference for deliberate pacing over cramming.",
+      "gold_memory_state": "Active confirmed facts: exam date is May 10; preferred study time is mornings before noon starting around 7:30; preferred materials are physical CSI flashcards; pacing preference is slow and deliberate with no cramming; final weekend before exam is reserved for light review only. Reflected inference: slow-paced, tactile, structured approach.",
+      "judge_rubric": {
+        "must_include": [
+          "morning or before noon",
+          "physical flashcards or CSI flashcards",
+          "before the final weekend or not too close to May 10",
+          "avoid cramming or keep it non-intensive near exam day"
+        ],
+        "acceptable_paraphrases": [
+          "early in the day",
+          "tactile materials",
+          "mid-week before the exam",
+          "respect the taper plan"
+        ],
+        "must_not_include": [
+          "recommend evening study",
+          "recommend Anki or digital apps as primary tool",
+          "recommend cramming the day before"
+        ],
+        "harmful_extra": [
+          "suggesting the exam is at 250 Yonge Street when the user has not confirmed the location is unchanged after the relocation rumor",
+          "recommending the 300 Bay Street location as confirmed"
+        ],
+        "harmless_extra": [
+          "mentioning reinsurance or underwriting as focus areas",
+          "mentioning the 7:30 to 10:30 window",
+          "mentioning the 74% practice score"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model recommends evening study, digital-first tools, or cramming the day before — all contradicting the reflected preference.",
+        "reflection_precision": "Fails if the recommendation ignores the slow-paced, tactile, structured approach.",
+        "reflection_recall": "Fails if the plan omits morning timing, physical flashcards, or the anti-cramming pacing constraint.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's exam is on May 10.",
+        "Fact 2: The user prefers studying in the mornings before noon, typically starting around 7:30 AM.",
+        "Fact 3: The user's preferred study materials are physical CSI flashcards.",
+        "Fact 4: The user prefers taking more time and understanding material rather than rushing or cramming.",
+        "Fact 5: The user planned the final weekend before the exam for light flashcard review and scenario practice only.",
+        "Inference: An extra intensive study day should be scheduled on a weekday morning (e.g., Wednesday or Thursday before May 10) to avoid conflicting with the light-review final weekend.",
+        "Inference: The session should use physical flashcards in a morning window, lasting about 2.5-3 hours, consistent with the user's established rhythm and pacing preference."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I rescheduled my C11 exam from April 19 to May 10 because I had a work trip to Calgary that overlapped"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I bought a physical flashcard set from CSI for $45 and honestly I just prefer flipping through real cards by hand over any app"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've been doing my exam prep in the mornings specifically because my brain works way better before noon"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I'd rather take more time and actually understand the material than rush through it and risk failing"
+        }
+      ]
+    }
+  ]
+}

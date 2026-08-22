@@ -258,6 +258,13 @@
             Does a correction stick after the value is contested? One open, adversarial cut — revert success
             over 20 trials, with 95% Wilson intervals.
           </p>
+          <p class="sub" style="font-size:.85em;opacity:.75">
+            Every store is read through one shared judge, <code>gpt-4o-mini</code> at
+            <code>temperature 0.0</code>, so the comparison is symmetric. The judge is part of the
+            instrument: replaying the same retrieved contexts through newer models scores 0.80–1.00 for the same store,
+            so these numbers are only comparable with each other. Re-measured 2026-08-22 and unchanged.
+            <a href="https://github.com/DanceNitra/inspeximus/blob/main/probes/does_the_headline_number_depend_on_who_judges_it.py">Judge-sensitivity probe</a>.
+          </p>
         </div>
         <div class="bench reveal" id="bench">
           <div class="bench__row" data-value="0.75" data-lo="0.53" data-hi="0.89" data-self="1">

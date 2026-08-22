@@ -1,0 +1,931 @@
+{
+  "target_fact": "D16 Current smartwatch/wearable device model and related wearable ecosystem details",
+  "operation_type": "Forget",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 4,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I picked up a Garmin Fenix 7X Sapphire Solar back in early March, the 51mm version"
+      },
+      "target": {
+        "target_id": "current_smartwatch_model",
+        "target_name": "current smartwatch model"
+      },
+      "old_value": null,
+      "new_value": "Garmin Fenix 7X Sapphire Solar (51mm)",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I picked up a Garmin Fenix 7X Sapphire Solar back in early March, the 51mm version"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I switched to the SolarFace watch face from Connect IQ. It just shows time, date, battery, and steps"
+      },
+      "target": {
+        "target_id": "current_watch_face",
+        "target_name": "current Garmin watch face"
+      },
+      "old_value": null,
+      "new_value": "SolarFace from Connect IQ",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I switched to the SolarFace watch face from Connect IQ. It just shows time, date, battery, and steps"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I also got a Garmin HRM-Pro Plus chest strap in mid-April to pair with it for running. Paid $129.99 at REI"
+      },
+      "target": {
+        "target_id": "chest_strap_accessory",
+        "target_name": "Garmin chest strap heart rate monitor accessory"
+      },
+      "old_value": null,
+      "new_value": "Garmin HRM-Pro Plus, purchased at REI for $129.99",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I also got a Garmin HRM-Pro Plus chest strap in mid-April to pair with it for running. Paid $129.99 at REI"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "my resting heart rate has been averaging about 58 bpm according to the watch, and my doctor confirmed that was good at my checkup on April 22nd"
+      },
+      "target": {
+        "target_id": "resting_heart_rate",
+        "target_name": "average resting heart rate from Garmin"
+      },
+      "old_value": null,
+      "new_value": "58 bpm",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my resting heart rate has been averaging about 58 bpm according to the watch, and my doctor confirmed that was good at my checkup on April 22nd"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "forget",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "Actually, can you forget that resting heart rate number I gave you? My doctor said those averages shift a lot and I don't want an outdated number sitting in your memory"
+      },
+      "target": {
+        "target_id": "resting_heart_rate",
+        "target_name": "average resting heart rate from Garmin"
+      },
+      "old_value": "58 bpm",
+      "new_value": null,
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "can you forget that resting heart rate number I gave you? My doctor said those averages shift a lot and I don't want an outdated number sitting in your memory"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish core wearable facts: smartwatch model, watch face, chest strap accessory",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to give you some details about my current wearable setup so you can help me with fitness tracking questions later. I picked up a Garmin Fenix 7X Sapphire Solar back in early March, the 51mm version. I'd been eyeing it for months and finally pulled the trigger right after my friend Dave's birthday dinner around March 5th or 6th."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a great choice — the Fenix 7X Sapphire Solar is one of Garmin's most capable multisport watches. The 51mm case gives you a big, readable display, and the sapphire lens should hold up well against scratches during outdoor activities. I've noted that you acquired it in early March, around the 5th or 6th. Since you mentioned wanting help with fitness tracking questions later, feel free to share any other details about your setup — accessories, preferred activities, watch settings — and I'll keep everything organized for you."
+        },
+        {
+          "role": "user",
+          "content": "Perfect. So about the watch face — I switched to the SolarFace watch face from Connect IQ. It just shows time, date, battery, and steps. I tried a super data-heavy face before that with like six complications crammed in, but I took it off after a single day. Way too cluttered. I really prefer a minimal look on my wrist."
+        },
+        {
+          "role": "assistant",
+          "content": "SolarFace is a solid pick, especially on the 7X Sapphire Solar since it can display the solar charging gauge alongside your essentials. Having just time, date, battery, and steps keeps the screen clean and glanceable, which sounds like exactly what you want. I can understand ditching the six-complication face after one day — on a 51mm screen you'd think there's room, but dense data fields still compete for attention. I've noted your current watch face as SolarFace from Connect IQ and your preference for minimal displays. Let me know if you want recommendations for other clean faces down the road."
+        },
+        {
+          "role": "user",
+          "content": "Will do. Oh, another thing — I also got a Garmin HRM-Pro Plus chest strap in mid-April to pair with it for running. Paid $129.99 at REI. I've been using it on my Tuesday and Thursday morning runs. It's been great for getting more accurate heart rate data during intervals compared to the wrist sensor alone."
+        },
+        {
+          "role": "assistant",
+          "content": "The HRM-Pro Plus is a fantastic pairing with the Fenix 7X. Chest straps are significantly more accurate than optical wrist sensors during high-intensity intervals, so your Tuesday and Thursday runs should give you much better HR zone data now. At $129.99 from REI that's right at the standard retail price, and REI's return policy is generous if you ever have issues. I've noted the HRM-Pro Plus as your chest strap accessory, purchased at REI. If you want, I can help you set up structured running workouts that leverage the chest strap's running dynamics data — cadence, ground contact time, and vertical oscillation."
+        },
+        {
+          "role": "user",
+          "content": "That would be cool, maybe later. For now I'm just building base fitness. I did a long hike at Red Rock Canyon on March 30th and logged 14.2 miles, which was a personal best for a single hike. The battery on the Fenix barely moved during that whole outing, which blew my mind honestly."
+        },
+        {
+          "role": "assistant",
+          "content": "A 14.2-mile hike at Red Rock Canyon is impressive — congratulations on the personal best! That trail system has some beautiful but demanding terrain, so sustaining that distance is a real accomplishment. The battery performance you're describing is one of the Fenix 7X's biggest selling points; with solar charging supplementing the already massive battery, multi-hour GPS activities barely make a dent. That kind of reliability removes a lot of mental overhead on long outings. I've noted your March 30th Red Rock Canyon hike and the 14.2-mile personal best. As you build your base fitness, that endurance foundation will serve you well when you start layering in structured workouts."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establish resting heart rate fact, then user requests it be forgotten; retained neighbors remain",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So here's an update on the health tracking side — my resting heart rate has been averaging about 58 bpm according to the watch, and my doctor confirmed that was good at my checkup on April 22nd. She said anything in the mid-50s to low-60s range is healthy for someone my age and activity level, so that was reassuring to hear."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a solid resting heart rate — 58 bpm puts you well within the athletic-to-fit range, and having your doctor confirm it adds good clinical validation. The Garmin's resting heart rate algorithm tends to be fairly reliable when it has several weeks of data, which you'd have by now since you've been wearing the Fenix since early March. I've noted your average resting heart rate as 58 bpm, confirmed at your April 22nd checkup. Over time, as your base fitness improves from those Tuesday/Thursday runs and weekend hikes, you might even see that number drop a few beats. It's a great long-term metric to track."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, I'm curious to see if it trends down. By the way, my coworker Priya just got a Garmin Venu 3 and she keeps asking me about Connect IQ apps. I told her about the SolarFace watch face but it's not compatible with her model. Do you know of any similar minimal faces that work on the Venu 3?"
+        },
+        {
+          "role": "assistant",
+          "content": "Good question! The Venu 3 uses Garmin's AMOLED display, which means watch faces designed for transflective MIP screens like SolarFace often aren't compatible. For a similar minimal aesthetic on the Venu 3, Priya could look at faces like 'Crystal' or 'Simply Clean' on Connect IQ — both emphasize time, date, battery, and steps without cramming in excessive data fields. There are also some community-built AMOLED-optimized faces that use dark backgrounds to save battery. I'd suggest she filters Connect IQ by Venu 3 compatibility and sorts by rating. If she wants, she can tell me her preferences and I can narrow it down further."
+        },
+        {
+          "role": "user",
+          "content": "Actually, can you forget that resting heart rate number I gave you? My doctor said those averages shift a lot and I don't want an outdated number sitting in your memory. It'll change week to week so there's no point in you holding onto a specific figure. Everything else about my setup is still accurate though."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, I've removed the 58 bpm resting heart rate figure from my memory. That makes sense — resting heart rate is a dynamic metric that fluctuates with training load, sleep quality, stress, and other factors, so a snapshot number can become misleading quickly. I still have all your other wearable details: the Garmin Fenix 7X Sapphire Solar (51mm), the SolarFace watch face from Connect IQ, and the HRM-Pro Plus chest strap from REI. If you ever want to share an updated heart rate trend or any other health metric for a specific purpose, just let me know and I can use it in context without storing it long-term."
+        },
+        {
+          "role": "user",
+          "content": "Perfect, that's exactly what I want. I turned off almost all phone notifications on the Fenix intentionally, by the way. I just want it to tell me the time and track my body — I don't need another screen nagging me. The simplicity is the whole reason I switched from the Apple Watch.\n\nExactly. I also really love the always-on transflective display. No awkward wrist-flick to check the time. It just sits there, readable in sunlight. That was a huge factor in my decision. Anyway, I think you've got a good picture of my wearable setup now. I'll check back when I need help planning workouts or analyzing my data."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really deliberate approach to wearable tech, and it aligns perfectly with your preference for the minimal SolarFace display. Turning off most notifications transforms the Fenix from a mini smartphone on your wrist into a dedicated fitness and time instrument. A lot of people underestimate how much cognitive overhead those constant buzzes and banners create. The fact that you chose the Garmin specifically to escape the Apple Watch's notification-heavy ecosystem says a lot about what you value in a wearable. I think your setup is well-tuned to your philosophy — minimal display, minimal interruptions, maximum focus on health and activity data.\n\nYou've built a really cohesive setup — the Fenix 7X with its always-on transflective display for constant readability, the SolarFace for clean information at a glance, the HRM-Pro Plus for accurate run data, and a strict notifications-off policy to keep everything distraction-free. It's clear you've thought carefully about what you want from your wearable. Whenever you're ready to start structuring workouts or want help interpreting your Garmin data — training load, VO2 max estimates, recovery metrics — just reach out. I've got all your current setup details ready to reference. Enjoy the trails and the Tuesday/Thursday runs!"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Continued wearable discussion with adversarial look-alike injection; retained neighbors reinforced naturally",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I'm back. I wanted to ask about setting up a structured 5K training plan that works with my Garmin. I've been doing those Tuesday and Thursday runs but they've been pretty unstructured — just going out and running at whatever pace feels right. I want something more systematic now that I have the chest strap for accurate heart rate zones."
+        },
+        {
+          "role": "assistant",
+          "content": "Great idea — moving from unstructured runs to a heart rate zone-based plan will accelerate your progress significantly. Since you have the HRM-Pro Plus paired with your Fenix 7X, you can push structured workouts directly to the watch via Garmin Connect. A typical beginner-to-intermediate 5K plan might run 8-10 weeks with three sessions per week: two quality sessions on your existing Tuesday/Thursday slots, plus an easy long run on the weekend. I can draft a week-by-week outline if you tell me your current comfortable pace and roughly how far you're running on those Tuesday/Thursday sessions. Also, have you done a lactate threshold test on the Garmin yet? That would calibrate your zones properly."
+        },
+        {
+          "role": "user",
+          "content": "I haven't done a lactate threshold test yet, no. My Tuesday and Thursday runs are usually about 3 miles each at roughly a 9:30 per mile pace. I'd love a week-by-week outline. I'm thinking I could add a Saturday morning easy run as the third session since my weekends are pretty open for outdoor stuff."
+        },
+        {
+          "role": "assistant",
+          "content": "Perfect — 3 miles at 9:30/mile gives us a good baseline. With Saturday as your third day, here's a rough framework. Weeks 1-3 would focus on building aerobic base: Tuesdays and Thursdays stay at 3 miles but you'd alternate between easy pace runs in Zone 2 and tempo intervals in Zone 3. Saturdays would start at 3.5 miles easy and build to 4.5 miles by week 3. Weeks 4-6 introduce speed work: one interval session per week with 400m or 800m repeats at Zone 4, one tempo run, and the Saturday long run extending to 5 miles. Weeks 7-8 are sharpening and taper. Before we finalize, I'd really recommend running the guided lactate threshold test on your Fenix — it takes about 25 minutes and will set your zones accurately with the chest strap data."
+        },
+        {
+          "role": "user",
+          "content": "That sounds like a solid plan. I'll do the lactate threshold test this weekend. Oh, speaking of Garmin stuff — Dave texted me a screenshot of his Fenix 7 Pro stats and he was bragging about his VO2 max estimate being 48. He's convinced his watch is more accurate than mine because of the flashlight sensor or something. I don't think that's how it works."
+        },
+        {
+          "role": "assistant",
+          "content": "Ha, Dave's enthusiasm is charming but the flashlight on the Fenix 7 Pro is just an LED light — it has nothing to do with sensor accuracy or VO2 max estimation. Both the Fenix 7 Pro and your Fenix 7X Sapphire Solar use the same Elevate v4 optical heart rate sensor for wrist-based readings, and since you're using the HRM-Pro Plus chest strap, your heart rate data during runs is actually more accurate than what Dave's getting from his wrist alone. VO2 max estimates on Garmin are derived from pace and heart rate data during outdoor runs, so the chest strap gives you cleaner input. A VO2 max of 48 is respectable for Dave, but without knowing his age and whether he's using a chest strap, it's hard to compare directly. Don't let him get in your head about it."
+        },
+        {
+          "role": "user",
+          "content": "Ha, yeah, Dave's always like that. Anyway, I'm really happy with my overall setup. The Fenix 7X with the SolarFace watch face and the chest strap for runs — it's exactly the combination I wanted. No notifications buzzing, no cluttered screen, just clean data when I need it. Can you summarize what you have on file for my wearable setup so I can make sure it's all correct?\n\nYep, that's all accurate. No changes needed. I'll report back after I do the lactate threshold test this weekend and we can finalize the training plan. Thanks for keeping everything straight — especially not mixing up my watch with Dave's Fenix 7 Pro. That would have been annoying."
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! Here's what I have for your current wearable setup: Your smartwatch is the Garmin Fenix 7X Sapphire Solar, the 51mm version, acquired in early March around the 5th or 6th. Your current watch face is SolarFace from Connect IQ, chosen for its minimal layout showing time, date, battery, and steps. You also have a Garmin HRM-Pro Plus chest strap purchased at REI for $129.99, which you use on Tuesday and Thursday morning runs. You've turned off almost all phone notifications on the watch intentionally. I don't have a resting heart rate number on file since you asked me to remove that. Oh, and I noticed Dave's Fenix 7 Pro came up — just to clarify, I have your model as the 7X Sapphire Solar, not the standard Fenix 7 Pro that Dave wears. Does everything look correct?\n\nYou're welcome — I'll make sure your Fenix 7X Sapphire Solar never gets confused with Dave's Fenix 7 Pro! Looking forward to hearing your lactate threshold results. Once we have those numbers, I can fine-tune the heart rate zones in your training plan and push more precise workout targets for your Tuesday, Thursday, and Saturday sessions. The HRM-Pro Plus will give us really clean data for that test, so the zones should be dialed in nicely. Enjoy the weekend run, and don't let Dave's flashlight flex distract you during the test. Talk soon!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize what I've told you about my wearable and fitness tracking setup — the devices, accessories, watch face preferences, and any health metrics I shared?",
+      "expected_answer": "You shared that you got a Garmin Fenix 7X Sapphire Solar (51mm) in early March around the 5th or 6th. You switched to the SolarFace watch face from Connect IQ for its minimal display of time, date, battery, and steps. You purchased a Garmin HRM-Pro Plus chest strap at REI for $129.99 in mid-April and use it on Tuesday and Thursday morning runs. You also shared an average resting heart rate reading confirmed at a doctor's checkup on April 22nd, and later asked that specific heart rate number to be removed from memory.",
+      "gold_memory_state": "Smartwatch: Garmin Fenix 7X Sapphire Solar (51mm), acquired early March. Watch face: SolarFace from Connect IQ. Chest strap: Garmin HRM-Pro Plus, $129.99 at REI. Resting heart rate: removed per user request.",
+      "judge_rubric": {
+        "must_include": [
+          "Garmin Fenix 7X Sapphire Solar",
+          "SolarFace",
+          "HRM-Pro Plus",
+          "REI",
+          "resting heart rate was shared then removed"
+        ],
+        "acceptable_paraphrases": [
+          "51mm version",
+          "chest strap",
+          "Connect IQ watch face"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "including the specific forgotten heart rate number as a current fact"
+        ],
+        "harmless_extra": [
+          "mention of 14.2-mile hike at Red Rock Canyon",
+          "mention of Tuesday/Thursday runs",
+          "mention of notifications being turned off"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the specific forgotten heart rate value is stated as currently stored.",
+        "over_forget": "Fails if the model claims no health metrics were ever discussed.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I picked up a Garmin Fenix 7X Sapphire Solar back in early March, the 51mm version"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I switched to the SolarFace watch face from Connect IQ. It just shows time, date, battery, and steps"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I also got a Garmin HRM-Pro Plus chest strap in mid-April to pair with it for running. Paid $129.99 at REI"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my resting heart rate has been averaging about 58 bpm according to the watch, and my doctor confirmed that was good at my checkup on April 22nd"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "can you forget that resting heart rate number I gave you? My doctor said those averages shift a lot and I don't want an outdated number sitting in your memory"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize what I've told you about my wearable and fitness tracking setup — the devices, accessories, watch face preferences, and any health metrics I shared?",
+      "expected_answer": "You shared that you got a Garmin Fenix 7X Sapphire Solar (51mm) in early March around the 5th or 6th. You switched to the SolarFace watch face from Connect IQ for its minimal display of time, date, battery, and steps. You purchased a Garmin HRM-Pro Plus chest strap at REI for $129.99 in mid-April and use it on Tuesday and Thursday morning runs. You also shared an average resting heart rate reading confirmed at a doctor's checkup on April 22nd, and later asked that specific heart rate number to be removed from memory.",
+      "gold_memory_state": "Smartwatch: Garmin Fenix 7X Sapphire Solar (51mm), acquired early March. Watch face: SolarFace from Connect IQ. Chest strap: Garmin HRM-Pro Plus, $129.99 at REI. Resting heart rate: removed per user request.",
+      "judge_rubric": {
+        "must_include": [
+          "Garmin Fenix 7X Sapphire Solar",
+          "SolarFace",
+          "HRM-Pro Plus",
+          "REI",
+          "resting heart rate was shared then removed"
+        ],
+        "acceptable_paraphrases": [
+          "51mm version",
+          "chest strap",
+          "Connect IQ watch face"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "including the specific forgotten heart rate number as a current fact"
+        ],
+        "harmless_extra": [
+          "mention of 14.2-mile hike at Red Rock Canyon",
+          "mention of Tuesday/Thursday runs",
+          "mention of notifications being turned off"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the specific forgotten heart rate value is stated as currently stored.",
+        "over_forget": "Fails if the model claims no health metrics were ever discussed.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I picked up a Garmin Fenix 7X Sapphire Solar back in early March, the 51mm version"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I switched to the SolarFace watch face from Connect IQ. It just shows time, date, battery, and steps"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I also got a Garmin HRM-Pro Plus chest strap in mid-April to pair with it for running. Paid $129.99 at REI"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my resting heart rate has been averaging about 58 bpm according to the watch, and my doctor confirmed that was good at my checkup on April 22nd"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "can you forget that resting heart rate number I gave you? My doctor said those averages shift a lot and I don't want an outdated number sitting in your memory"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to drop a specific health metric from my wearable profile. Which piece of information was that, and which other wearable-related details should remain completely unaffected?",
+      "expected_answer": "The removed item was the average resting heart rate reading. The smartwatch model (Garmin Fenix 7X Sapphire Solar, 51mm), the watch face (SolarFace from Connect IQ), and the chest strap accessory (Garmin HRM-Pro Plus, $129.99 at REI) all remain unaffected.",
+      "gold_memory_state": "Resting heart rate value: removed/unavailable. Smartwatch model, watch face, and chest strap accessory: all active and usable.",
+      "judge_rubric": {
+        "must_include": [
+          "resting heart rate was the removed item",
+          "Garmin Fenix 7X Sapphire Solar remains",
+          "SolarFace remains",
+          "HRM-Pro Plus remains"
+        ],
+        "acceptable_paraphrases": [
+          "heart rate average was deleted",
+          "heart rate figure was dropped"
+        ],
+        "must_not_include": [
+          "the specific numeric heart rate value as a current fact"
+        ],
+        "harmful_extra": [
+          "claiming the watch model was also removed",
+          "claiming the chest strap was removed",
+          "claiming the watch face was removed"
+        ],
+        "harmless_extra": [
+          "mention of REI purchase price",
+          "mention of 51mm size"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the specific forgotten heart rate number is restated as a usable value.",
+        "over_forget": "Fails if any retained wearable detail (watch, face, strap) is treated as removed or unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "can you forget that resting heart rate number I gave you? My doctor said those averages shift a lot and I don't want an outdated number sitting in your memory"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I picked up a Garmin Fenix 7X Sapphire Solar back in early March, the 51mm version"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I switched to the SolarFace watch face from Connect IQ. It just shows time, date, battery, and steps"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I also got a Garmin HRM-Pro Plus chest strap in mid-April to pair with it for running. Paid $129.99 at REI"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to drop a specific health metric from my wearable profile. Which piece of information was that, and which other wearable-related details should remain completely unaffected?",
+      "expected_answer": "The removed item was the average resting heart rate reading. The smartwatch model (Garmin Fenix 7X Sapphire Solar, 51mm), the watch face (SolarFace from Connect IQ), and the chest strap accessory (Garmin HRM-Pro Plus, $129.99 at REI) all remain unaffected.",
+      "gold_memory_state": "Resting heart rate value: removed/unavailable. Smartwatch model, watch face, and chest strap accessory: all active and usable.",
+      "judge_rubric": {
+        "must_include": [
+          "resting heart rate was the removed item",
+          "Garmin Fenix 7X Sapphire Solar remains",
+          "SolarFace remains",
+          "HRM-Pro Plus remains"
+        ],
+        "acceptable_paraphrases": [
+          "heart rate average was deleted",
+          "heart rate figure was dropped"
+        ],
+        "must_not_include": [
+          "the specific numeric heart rate value as a current fact"
+        ],
+        "harmful_extra": [
+          "claiming the watch model was also removed",
+          "claiming the chest strap was removed",
+          "claiming the watch face was removed"
+        ],
+        "harmless_extra": [
+          "mention of REI purchase price",
+          "mention of 51mm size"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the specific forgotten heart rate number is restated as a usable value.",
+        "over_forget": "Fails if any retained wearable detail (watch, face, strap) is treated as removed or unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "can you forget that resting heart rate number I gave you? My doctor said those averages shift a lot and I don't want an outdated number sitting in your memory"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I picked up a Garmin Fenix 7X Sapphire Solar back in early March, the 51mm version"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I switched to the SolarFace watch face from Connect IQ. It just shows time, date, battery, and steps"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I also got a Garmin HRM-Pro Plus chest strap in mid-April to pair with it for running. Paid $129.99 at REI"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "I'm putting together a quick gear inventory for my running club. What wearable equipment and configuration details of mine can you include?",
+      "expected_answer": "For the gear inventory: Garmin Fenix 7X Sapphire Solar (51mm) smartwatch, SolarFace watch face from Connect IQ, and Garmin HRM-Pro Plus chest strap purchased at REI for $129.99. The chest strap is used on Tuesday and Thursday morning runs.",
+      "gold_memory_state": "Active retained neighbors: (1) Garmin Fenix 7X Sapphire Solar, 51mm, acquired early March. (2) SolarFace watch face from Connect IQ. (3) Garmin HRM-Pro Plus chest strap, $129.99 at REI. Removed/unavailable: resting heart rate value.",
+      "judge_rubric": {
+        "must_include": [
+          "Garmin Fenix 7X Sapphire Solar",
+          "SolarFace",
+          "HRM-Pro Plus"
+        ],
+        "acceptable_paraphrases": [
+          "51mm Fenix 7X",
+          "Garmin chest strap"
+        ],
+        "must_not_include": [
+          "any specific numeric heart rate value presented as a current fact"
+        ],
+        "harmful_extra": [
+          "stating the removed heart rate number as part of the gear inventory"
+        ],
+        "harmless_extra": [
+          "mention of REI",
+          "mention of $129.99",
+          "mention of Tuesday/Thursday runs",
+          "mention of notifications off preference",
+          "mention of 51mm"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if any specific numeric resting heart rate value appears in the response.",
+        "over_forget": "Fails if the model refuses to list the smartwatch, watch face, or chest strap, or says it has no wearable information on file.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I picked up a Garmin Fenix 7X Sapphire Solar back in early March, the 51mm version"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I switched to the SolarFace watch face from Connect IQ. It just shows time, date, battery, and steps"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I also got a Garmin HRM-Pro Plus chest strap in mid-April to pair with it for running. Paid $129.99 at REI"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "I'm putting together a quick gear inventory for my running club. What wearable equipment and configuration details of mine can you include?",
+      "expected_answer": "For the gear inventory: Garmin Fenix 7X Sapphire Solar (51mm) smartwatch, SolarFace watch face from Connect IQ, and Garmin HRM-Pro Plus chest strap purchased at REI for $129.99. The chest strap is used on Tuesday and Thursday morning runs.",
+      "gold_memory_state": "Active retained neighbors: (1) Garmin Fenix 7X Sapphire Solar, 51mm, acquired early March. (2) SolarFace watch face from Connect IQ. (3) Garmin HRM-Pro Plus chest strap, $129.99 at REI. Removed/unavailable: resting heart rate value.",
+      "judge_rubric": {
+        "must_include": [
+          "Garmin Fenix 7X Sapphire Solar",
+          "SolarFace",
+          "HRM-Pro Plus"
+        ],
+        "acceptable_paraphrases": [
+          "51mm Fenix 7X",
+          "Garmin chest strap"
+        ],
+        "must_not_include": [
+          "any specific numeric heart rate value presented as a current fact"
+        ],
+        "harmful_extra": [
+          "stating the removed heart rate number as part of the gear inventory"
+        ],
+        "harmless_extra": [
+          "mention of REI",
+          "mention of $129.99",
+          "mention of Tuesday/Thursday runs",
+          "mention of notifications off preference",
+          "mention of 51mm"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if any specific numeric resting heart rate value appears in the response.",
+        "over_forget": "Fails if the model refuses to list the smartwatch, watch face, or chest strap, or says it has no wearable information on file.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I picked up a Garmin Fenix 7X Sapphire Solar back in early March, the 51mm version"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I switched to the SolarFace watch face from Connect IQ. It just shows time, date, battery, and steps"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I also got a Garmin HRM-Pro Plus chest strap in mid-April to pair with it for running. Paid $129.99 at REI"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "If I asked you for my resting heart rate, which of the following best describes what you'd be able to tell me?",
+      "candidate_options": [
+        "58 bpm",
+        "62 bpm",
+        "No specific resting heart rate value is available",
+        "55 bpm"
+      ],
+      "expected_answer": "No specific resting heart rate value is available",
+      "gold_memory_state": "Resting heart rate value has been removed per user request. No numeric heart rate figure should be retrievable.",
+      "judge_rubric": {
+        "must_include": [
+          "No specific resting heart rate value is available"
+        ],
+        "acceptable_paraphrases": [
+          "no heart rate on file",
+          "heart rate was removed",
+          "unavailable"
+        ],
+        "must_not_include": [
+          "58 bpm as a current value",
+          "62 bpm",
+          "55 bpm"
+        ],
+        "harmful_extra": [
+          "selecting any numeric heart rate value"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 62 bpm is a plausible nearby heart rate value that could be confused with the forgotten value. assistant echo: 58 bpm was mentioned by the assistant in the confirmation response before the forget request, making it an assistant-echo distractor. 55 bpm is a plausible value within the doctor's stated healthy range (mid-50s to low-60s).",
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects 58 bpm, which is the forgotten value.",
+        "over_forget": null,
+        "stale_value": "Fails if any specific numeric heart rate is selected as currently stored.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "can you forget that resting heart rate number I gave you? My doctor said those averages shift a lot and I don't want an outdated number sitting in your memory"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "If I asked you for my resting heart rate, which of the following best describes what you'd be able to tell me?",
+      "candidate_options": [
+        "58 bpm",
+        "62 bpm",
+        "No specific resting heart rate value is available",
+        "55 bpm"
+      ],
+      "expected_answer": "No specific resting heart rate value is available",
+      "gold_memory_state": "Resting heart rate value has been removed per user request. No numeric heart rate figure should be retrievable.",
+      "judge_rubric": {
+        "must_include": [
+          "No specific resting heart rate value is available"
+        ],
+        "acceptable_paraphrases": [
+          "no heart rate on file",
+          "heart rate was removed",
+          "unavailable"
+        ],
+        "must_not_include": [
+          "58 bpm as a current value",
+          "62 bpm",
+          "55 bpm"
+        ],
+        "harmful_extra": [
+          "selecting any numeric heart rate value"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 62 bpm is a plausible nearby heart rate value that could be confused with the forgotten value. assistant echo: 58 bpm was mentioned by the assistant in the confirmation response before the forget request, making it an assistant-echo distractor. 55 bpm is a plausible value within the doctor's stated healthy range (mid-50s to low-60s).",
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects 58 bpm, which is the forgotten value.",
+        "over_forget": null,
+        "stale_value": "Fails if any specific numeric heart rate is selected as currently stored.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "can you forget that resting heart rate number I gave you? My doctor said those averages shift a lot and I don't want an outdated number sitting in your memory"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to write a short social media post showing off my running setup — mention my watch, the watch face I use, and the heart rate accessory with how much I paid. Also include any biometric stats you have on file for me. Draft it in two or three sentences.",
+      "expected_answer": "Here's a draft: \"Loving my Garmin Fenix 7X Sapphire Solar (51mm) with the SolarFace watch face from Connect IQ — clean, minimal, and perfect for outdoor runs. Paired it with a Garmin HRM-Pro Plus chest strap ($129.99 from REI) for accurate heart rate data on my Tuesday and Thursday sessions.\" No specific biometric stats like resting heart rate are available to include.",
+      "gold_memory_state": "Active: Garmin Fenix 7X Sapphire Solar (51mm), SolarFace watch face from Connect IQ, Garmin HRM-Pro Plus chest strap at $129.99 from REI. Removed/unavailable: resting heart rate numeric value.",
+      "judge_rubric": {
+        "must_include": [
+          "Garmin Fenix 7X Sapphire Solar",
+          "SolarFace",
+          "HRM-Pro Plus",
+          "$129.99",
+          "no biometric stats or heart rate number available"
+        ],
+        "acceptable_paraphrases": [
+          "no resting heart rate on file",
+          "heart rate figure not available"
+        ],
+        "must_not_include": [
+          "any specific numeric heart rate value presented as a current stored fact"
+        ],
+        "harmful_extra": [
+          "including the forgotten heart rate number in the social media draft"
+        ],
+        "harmless_extra": [
+          "mention of REI",
+          "mention of 51mm",
+          "mention of Connect IQ",
+          "mention of Tuesday/Thursday runs"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the draft includes any specific numeric resting heart rate value.",
+        "over_forget": "Fails if the model refuses to include any wearable details or says it has no information about the user's setup.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User's smartwatch is the Garmin Fenix 7X Sapphire Solar, 51mm version.",
+        "Fact 2: User's watch face is SolarFace from Connect IQ, chosen for minimal display.",
+        "Fact 3: User's chest strap is the Garmin HRM-Pro Plus, purchased at REI for $129.99.",
+        "Fact 4: The resting heart rate number was removed at the user's request and is unavailable.",
+        "Inference: The social media post should combine the three retained equipment facts with the purchase price, and explicitly note that no biometric stat is available to include."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I picked up a Garmin Fenix 7X Sapphire Solar back in early March, the 51mm version"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I switched to the SolarFace watch face from Connect IQ. It just shows time, date, battery, and steps"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I also got a Garmin HRM-Pro Plus chest strap in mid-April to pair with it for running. Paid $129.99 at REI"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "can you forget that resting heart rate number I gave you? My doctor said those averages shift a lot and I don't want an outdated number sitting in your memory"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to write a short social media post showing off my running setup — mention my watch, the watch face I use, and the heart rate accessory with how much I paid. Also include any biometric stats you have on file for me. Draft it in two or three sentences.",
+      "expected_answer": "Here's a draft: \"Loving my Garmin Fenix 7X Sapphire Solar (51mm) with the SolarFace watch face from Connect IQ — clean, minimal, and perfect for outdoor runs. Paired it with a Garmin HRM-Pro Plus chest strap ($129.99 from REI) for accurate heart rate data on my Tuesday and Thursday sessions.\" No specific biometric stats like resting heart rate are available to include.",
+      "gold_memory_state": "Active: Garmin Fenix 7X Sapphire Solar (51mm), SolarFace watch face from Connect IQ, Garmin HRM-Pro Plus chest strap at $129.99 from REI. Removed/unavailable: resting heart rate numeric value.",
+      "judge_rubric": {
+        "must_include": [
+          "Garmin Fenix 7X Sapphire Solar",
+          "SolarFace",
+          "HRM-Pro Plus",
+          "$129.99",
+          "no biometric stats or heart rate number available"
+        ],
+        "acceptable_paraphrases": [
+          "no resting heart rate on file",
+          "heart rate figure not available"
+        ],
+        "must_not_include": [
+          "any specific numeric heart rate value presented as a current stored fact"
+        ],
+        "harmful_extra": [
+          "including the forgotten heart rate number in the social media draft"
+        ],
+        "harmless_extra": [
+          "mention of REI",
+          "mention of 51mm",
+          "mention of Connect IQ",
+          "mention of Tuesday/Thursday runs"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the draft includes any specific numeric resting heart rate value.",
+        "over_forget": "Fails if the model refuses to include any wearable details or says it has no information about the user's setup.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User's smartwatch is the Garmin Fenix 7X Sapphire Solar, 51mm version.",
+        "Fact 2: User's watch face is SolarFace from Connect IQ, chosen for minimal display.",
+        "Fact 3: User's chest strap is the Garmin HRM-Pro Plus, purchased at REI for $129.99.",
+        "Fact 4: The resting heart rate number was removed at the user's request and is unavailable.",
+        "Inference: The social media post should combine the three retained equipment facts with the purchase price, and explicitly note that no biometric stat is available to include."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I picked up a Garmin Fenix 7X Sapphire Solar back in early March, the 51mm version"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I switched to the SolarFace watch face from Connect IQ. It just shows time, date, battery, and steps"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I also got a Garmin HRM-Pro Plus chest strap in mid-April to pair with it for running. Paid $129.99 at REI"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "can you forget that resting heart rate number I gave you? My doctor said those averages shift a lot and I don't want an outdated number sitting in your memory"
+        }
+      ]
+    }
+  ]
+}

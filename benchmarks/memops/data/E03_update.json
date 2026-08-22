@@ -1,0 +1,817 @@
+{
+  "target_fact": "The name of the user's new colleague, initially misspoken as Rachel, corrected to Rebecca Thornton, with subsequent update chain tracking the user's stated correct name for her.",
+  "operation_type": "Update",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "colleague_name_chain",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "Her actual name is Rebecca Thornton. She's been on our analytics team since late February."
+      },
+      "target": {
+        "target_id": "new_colleague_name",
+        "target_name": "Name of new colleague on analytics team"
+      },
+      "old_value": null,
+      "new_value": "Rebecca Thornton",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Her actual name is Rebecca Thornton. She's been on our analytics team since late February."
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "colleague_name_chain",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I just found out her full name is actually Rebecca Anne Thornton-Lee. She hyphenated after getting married last year."
+      },
+      "target": {
+        "target_id": "new_colleague_name",
+        "target_name": "Name of new colleague on analytics team"
+      },
+      "old_value": "Rebecca Thornton",
+      "new_value": "Rebecca Anne Thornton-Lee",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I just found out her full name is actually Rebecca Anne Thornton-Lee. She hyphenated after getting married last year."
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "colleague_name_chain",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "Rebecca told me she's dropping the hyphenated name at work. She filed the paperwork to go back to just Rebecca Thornton in all our internal systems."
+      },
+      "target": {
+        "target_id": "new_colleague_name",
+        "target_name": "Name of new colleague on analytics team"
+      },
+      "old_value": "Rebecca Anne Thornton-Lee",
+      "new_value": "Rebecca Thornton",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Rebecca told me she's dropping the hyphenated name at work. She filed the paperwork to go back to just Rebecca Thornton in all our internal systems."
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "colleague_name_chain",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 7,
+        "quote": "HR sent a memo saying her records will be listed as Rebecca Lee going forward because of some policy about using the most recent legal surname."
+      },
+      "target": {
+        "target_id": "new_colleague_name",
+        "target_name": "Name of new colleague on analytics team"
+      },
+      "old_value": "Rebecca Thornton",
+      "new_value": "Rebecca Lee",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "HR sent a memo saying her records will be listed as Rebecca Lee going forward because of some policy about using the most recent legal surname."
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "my neighbor's daughter Priya Rao just started babysitting for us on weekends. She charges fifteen dollars an hour."
+      },
+      "target": {
+        "target_id": "babysitter_name",
+        "target_name": "Name of neighbor's daughter who babysits"
+      },
+      "old_value": null,
+      "new_value": "Priya Rao",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my neighbor's daughter Priya Rao just started babysitting for us on weekends. She charges fifteen dollars an hour."
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "Rebecca started on February 26th, and our team lead said her probation period is exactly ninety days."
+      },
+      "target": {
+        "target_id": "colleague_start_date",
+        "target_name": "Rebecca's start date on analytics team"
+      },
+      "old_value": null,
+      "new_value": "February 26th",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Rebecca started on February 26th, and our team lead said her probation period is exactly ninety days."
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "our team lead said her probation period is exactly ninety days"
+      },
+      "target": {
+        "target_id": "colleague_probation_duration",
+        "target_name": "Rebecca's probation period duration"
+      },
+      "old_value": null,
+      "new_value": "90 days",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "our team lead said her probation period is exactly ninety days"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish colleague's name and start date with probation details; first update to hyphenated name.",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I need your help keeping track of some names because I keep messing them up. I have a new colleague I keep accidentally calling Rachel, but that's wrong. Her actual name is Rebecca Thornton. She's been on our analytics team since late February. I really need to lock this in because I embarrassed myself at a lunch meeting calling her the wrong name."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — your new colleague on the analytics team is Rebecca Thornton, not Rachel. I'll make sure to remember that. It sounds like the mix-up happened at a lunch meeting, which is understandable since similar-sounding names can easily blur together in group settings. Would you like me to help you build any kind of quick reference list for colleagues' names, or is there anything else about Rebecca or other team members you'd like me to keep track of? I'm happy to serve as your external memory for this kind of thing."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, that would actually be great. So to add more detail: Rebecca started on February 26th, and our team lead said her probation period is exactly ninety days. I want to remember that because I think there's a review meeting scheduled near the end of her probation. I should probably put a reminder on my calendar a week before it ends."
+        },
+        {
+          "role": "assistant",
+          "content": "Perfect, I've noted that Rebecca Thornton started on February 26th and her probation period is exactly ninety days. That means her probation would wrap up around late May — specifically around May 27th if we count from February 26th. If you want a calendar reminder a week before, you'd want to set that for around May 20th. Would you like me to draft a reminder note for that? Also, do you know who's conducting her probation review — is it your team lead, or does HR handle it separately? That might be useful context if you want to prepare anything ahead of time."
+        },
+        {
+          "role": "user",
+          "content": "Good thinking on the dates. Actually, here's something interesting — I just found out her full name is actually Rebecca Anne Thornton-Lee. She hyphenated after getting married last year. She mentioned it casually when we were filling out a team contact sheet. I want to make sure I have the right version of her name going forward so I don't put the wrong thing on official documents."
+        },
+        {
+          "role": "assistant",
+          "content": "Updated — your colleague's full name is now Rebecca Anne Thornton-Lee, reflecting the hyphenation after her marriage last year. That's an important distinction for official documents and team contact sheets. I'd recommend using the full hyphenated version on any formal paperwork, and you can probably still call her Rebecca in casual conversation unless she prefers otherwise. It's great that she mentioned it while you were filling out the contact sheet — that's exactly the kind of detail that's easy to miss. Want me to keep a running note of which version of her name goes on which type of document?"
+        },
+        {
+          "role": "user",
+          "content": "That's a good idea but let's keep it simple for now. I'll just use the full hyphenated name everywhere to be safe. By the way, I've been practicing this trick where I repeat someone's name back to them right when I meet them. Like saying 'Nice to meet you, Rebecca' out loud. I read it helps with retention. I've been doing it since late April."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a solid strategy — the repeat-back technique is well-supported by memory research. Saying the name aloud right away creates an additional encoding pathway, which strengthens recall. Since you've been doing it since late April, you might start noticing improvements soon, especially in smaller group settings where you already feel more comfortable. For bigger events or networking situations where names fly at you quickly, you could also try associating each name with a visual detail about the person — like linking Rebecca's name to something distinctive about her. Combining the repeat-back with a visual anchor can really reinforce the memory. Let me know how the technique works for you over the next few weeks."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Introduce babysitter Priya Rao; Rebecca reverts to non-hyphenated name at work.",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Quick update on a couple of things. First, my neighbor's daughter Priya Rao just started babysitting for us on weekends. She charges fifteen dollars an hour. I called her Priyanka the first time and her mom corrected me, so I definitely need to remember it's Priya, not Priyanka. Same kind of name-swap issue I always have."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — your babysitter is Priya Rao, your neighbor's daughter, and she charges fifteen dollars an hour for weekend babysitting. Definitely not Priyanka — I can see how the similar start would trip you up, just like the Rachel/Rebecca situation. Since you're working on the repeat-back technique, this might be a good one to practice: next time you see her, try greeting her with 'Hi Priya' right away to reinforce it. Would you like me to keep a quick-reference list of people whose names you want to make sure you get right? That could include Rebecca, Priya, and anyone else you add over time."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, a quick-reference list would be helpful. So here's another update about Rebecca — Rebecca told me she's dropping the hyphenated name at work. She filed the paperwork to go back to just Rebecca Thornton in all our internal systems. Apparently the hyphenated version was causing issues with her email and login credentials, so she decided to simplify it."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — Rebecca is reverting to Rebecca Thornton for all work-related purposes. So her official name in internal systems, email, and login credentials will be Rebecca Thornton going forward, dropping the Thornton-Lee hyphenation. That makes sense from an IT perspective; hyphenated names can cause all sorts of formatting headaches in corporate systems. I'll update your quick-reference list accordingly. So the current list would be: Rebecca Thornton (analytics team colleague) and Priya Rao (weekend babysitter, neighbor's daughter). Want me to add anyone else to the list right now?"
+        },
+        {
+          "role": "user",
+          "content": "Not right now. But I'm curious — do you think the repeat-back technique would work better if I also wrote the name down? Like if I jotted it in my phone right after meeting someone? I feel like the combination of saying it and writing it might help even more."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely — combining verbal repetition with written reinforcement is a well-documented memory strategy called dual coding. When you say the name aloud and then write it down, you're engaging both auditory and motor memory pathways, which creates a stronger and more durable memory trace. Writing it in your phone is especially practical because you can review it before your next interaction with that person. You might even add a brief note about where you met them or one distinctive detail, which gives you a contextual cue for recall. For someone like you who struggles more in group settings, having that phone note to glance at before a meeting could be a real game-changer."
+        },
+        {
+          "role": "user",
+          "content": "That's really helpful advice. I think I'll start doing that. Another thing — my friend Dana has the same problem with names. She keeps calling her boss Greg when his name is actually Craig. She says he doesn't even notice anymore, which is kind of funny. I wonder if some people are just more forgiving about name mix-ups than others.\n\nYeah, I might suggest it to her. Anyway, I think the key takeaway for me is that I need to be extra careful in formal or larger group settings where the pressure makes my name recall worse. In one-on-one conversations I'm usually fine. It's the group dynamic that throws me off."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a great observation, and yes, people definitely vary widely in how much they care about name accuracy. Some people, like Dana's boss Craig, genuinely don't mind or have gotten used to it. Others, like Rebecca when you first called her Rachel, might be more sensitive about it — especially when they're new and still forming impressions with colleagues. Cultural context matters too: in some professional environments, getting a name right signals respect and attentiveness, while in more casual settings people tend to let it slide. The fact that you're actively working on this shows a lot of self-awareness and consideration for others. Dana might benefit from the same repeat-back and write-down strategy you're developing.\n\nThat's a really useful self-insight to anchor your strategy around. Since one-on-one settings are your strength, you could try to create mini one-on-one moments within larger group settings — like briefly stepping aside with someone new to have a quick personal exchange and repeat their name. That way you get the focused attention you need for encoding without the group pressure. For formal events, you might also prep beforehand by reviewing attendee lists if they're available. Combined with your repeat-back technique and the new write-it-down habit, you're building a solid multi-layered approach. Your quick-reference list currently has Rebecca Thornton and Priya Rao, and I'm ready to add more whenever you need."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Tentative HR name change for Rebecca (recency trap); adversarial injection of stale hyphenated name via assistant echo of a form.",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, so something kind of annoying happened at work today. I was filling out a cross-department collaboration form and Rebecca's name was still listed as Rebecca Anne Thornton-Lee on the old version of the form. I had to manually correct it to Rebecca Thornton on my submission. It's like the system hasn't caught up yet."
+        },
+        {
+          "role": "assistant",
+          "content": "That's frustrating but not surprising — corporate systems often lag behind when employees change their name records. The old form probably cached the previous entry of Rebecca Anne Thornton-Lee before her paperwork to revert to Rebecca Thornton was fully processed. You did the right thing correcting it on your submission. If this keeps happening, it might be worth flagging it to IT or whoever manages those forms so they can push through the update across all templates. In the meantime, just keep using Rebecca Thornton on anything you fill out. Would you like me to draft a quick note to IT about the outdated name on the collaboration forms?"
+        },
+        {
+          "role": "user",
+          "content": "No, I think she's handling it herself. But speaking of forms, I noticed the collaboration form also listed a colleague named Rachel Torres from the marketing department. For a split second I got confused because of the whole Rachel-Rebecca thing in my head. But I caught myself — Rachel Torres is marketing, Rebecca Thornton is analytics. Two different people entirely."
+        },
+        {
+          "role": "assistant",
+          "content": "Good catch — and great that you caught yourself right away! That's actually a sign that your name-awareness strategies are working. Rachel Torres in marketing and Rebecca Thornton in analytics are indeed completely separate people, and the fact that you were able to quickly distinguish them despite the similar first-name trigger is real progress. The old form residue showing Rebecca Anne Thornton-Lee alongside Rachel Torres from marketing could easily have caused a mix-up, but you navigated it cleanly. If it helps, you could add Rachel Torres to your quick-reference list too, just to keep the distinction sharp. Want me to add her?"
+        },
+        {
+          "role": "user",
+          "content": "Sure, add Rachel Torres from marketing to the list, but just as a reference — she's not someone I work with closely. Anyway, I also wanted to mention that the Martin Chu situation from March is completely done. That account got handed off to another rep in April, so I don't need to track anything related to him anymore. One less name to worry about."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — Rachel Torres from marketing is on your reference list as a low-priority contact for distinction purposes. And I'll consider the Martin Chu situation fully closed since the account was handed off in April. That's one fewer name to juggle, which should help free up some mental bandwidth. Your active quick-reference list now looks like this: Rebecca Thornton (analytics team colleague), Priya Rao (weekend babysitter, neighbor's daughter), and Rachel Torres (marketing, low-priority reference). Anything else you want to update or add while we're at it?"
+        },
+        {
+          "role": "user",
+          "content": "Actually yes — HR sent a memo saying her records will be listed as Rebecca Lee going forward because of some policy about using the most recent legal surname. I haven't talked to Rebecca about it yet, so I'm not sure if that's actually what she wants or if it's just an HR system thing. It's a bit confusing honestly.\n\nYeah, flag it as pending. I'll ask her next time I see her. In the meantime, I want to make sure I'm using the right name in my own notes and emails. Also, I realized I never mentioned — Lena Vasquez is my partner's friend. I called her Leah at a dinner party last week and my partner nudged me. She laughed it off though, which was nice. Smaller gatherings are way more forgiving."
+        },
+        {
+          "role": "assistant",
+          "content": "That is confusing — so according to the HR memo, her records would show Rebecca Lee based on a policy of using the most recent legal surname, but you haven't confirmed with Rebecca herself whether that reflects her actual preference. It's possible this is just an automated system decision rather than something she requested. Until you've had a chance to talk to her directly, it might be safest to keep using Rebecca Thornton in your own communications since that's what she explicitly told you she wanted in the internal systems. Once you clarify with her, we can update the reference list accordingly. Want me to flag this as pending confirmation?\n\nFlagged as pending — we'll wait for your direct confirmation from Rebecca before changing anything. For now, Rebecca Thornton stays as her name on your reference list. And thanks for mentioning Lena Vasquez — I'll add her as your partner's friend. The Leah/Lena mix-up is another classic same-first-letter swap, but it sounds like the relaxed dinner setting made it much less stressful than a formal situation would have been. Your updated quick-reference list is now: Rebecca Thornton (analytics, pending HR clarification), Priya Rao (weekend babysitter), Rachel Torres (marketing, reference only), and Lena Vasquez (partner's friend). You're building a solid system here — keep using that repeat-back technique and you'll keep improving."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations, I've mentioned my analytics team colleague's name several times and it kept changing. Can you summarize everything I told you about how her name evolved and what the latest situation is?",
+      "expected_answer": "Initially you said your new colleague's name is Rebecca Thornton. Then you learned her full name is actually Rebecca Anne Thornton-Lee after she hyphenated following her marriage. Later, she filed paperwork to drop the hyphenation and go back to Rebecca Thornton in all internal systems. Most recently, you mentioned that HR sent a memo listing her as Rebecca Lee based on a legal surname policy, but you hadn't confirmed with her whether that reflects her preference, so you flagged it as pending.",
+      "gold_memory_state": "Confirmed current value: Rebecca Thornton. Tentative pending value: Rebecca Lee (unconfirmed HR memo). Historical values: Rebecca Thornton (initial), Rebecca Anne Thornton-Lee (hyphenated), Rebecca Thornton (reverted). Control target: Priya Rao (babysitter) unchanged.",
+      "judge_rubric": {
+        "must_include": [
+          "Rebecca Thornton as initial name",
+          "Rebecca Anne Thornton-Lee as hyphenated version",
+          "reversion to Rebecca Thornton",
+          "HR memo mentioning Rebecca Lee",
+          "pending or unconfirmed status of Rebecca Lee"
+        ],
+        "acceptable_paraphrases": [
+          "went back to Rebecca Thornton",
+          "dropped the hyphenation"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "treating Rebecca Lee as the confirmed current name",
+          "omitting the pending/unconfirmed status of the HR memo"
+        ],
+        "harmless_extra": [
+          "mentioning the marriage context",
+          "mentioning IT issues with hyphenated name",
+          "mentioning Rachel as the initial misspoken name"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats Rebecca Anne Thornton-Lee as the current name or treats Rebecca Lee as confirmed.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Her actual name is Rebecca Thornton. She's been on our analytics team since late February."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I just found out her full name is actually Rebecca Anne Thornton-Lee. She hyphenated after getting married last year."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Rebecca told me she's dropping the hyphenated name at work. She filed the paperwork to go back to just Rebecca Thornton in all our internal systems."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "HR sent a memo saying her records will be listed as Rebecca Lee going forward because of some policy about using the most recent legal surname."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations, I've mentioned my analytics team colleague's name several times and it kept changing. Can you summarize everything I told you about how her name evolved and what the latest situation is?",
+      "expected_answer": "Initially you said your new colleague's name is Rebecca Thornton. Then you learned her full name is actually Rebecca Anne Thornton-Lee after she hyphenated following her marriage. Later, she filed paperwork to drop the hyphenation and go back to Rebecca Thornton in all internal systems. Most recently, you mentioned that HR sent a memo listing her as Rebecca Lee based on a legal surname policy, but you hadn't confirmed with her whether that reflects her preference, so you flagged it as pending.",
+      "gold_memory_state": "Confirmed current value: Rebecca Thornton. Tentative pending value: Rebecca Lee (unconfirmed HR memo). Historical values: Rebecca Thornton (initial), Rebecca Anne Thornton-Lee (hyphenated), Rebecca Thornton (reverted). Control target: Priya Rao (babysitter) unchanged.",
+      "judge_rubric": {
+        "must_include": [
+          "Rebecca Thornton as initial name",
+          "Rebecca Anne Thornton-Lee as hyphenated version",
+          "reversion to Rebecca Thornton",
+          "HR memo mentioning Rebecca Lee",
+          "pending or unconfirmed status of Rebecca Lee"
+        ],
+        "acceptable_paraphrases": [
+          "went back to Rebecca Thornton",
+          "dropped the hyphenation"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "treating Rebecca Lee as the confirmed current name",
+          "omitting the pending/unconfirmed status of the HR memo"
+        ],
+        "harmless_extra": [
+          "mentioning the marriage context",
+          "mentioning IT issues with hyphenated name",
+          "mentioning Rachel as the initial misspoken name"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats Rebecca Anne Thornton-Lee as the current name or treats Rebecca Lee as confirmed.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Her actual name is Rebecca Thornton. She's been on our analytics team since late February."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I just found out her full name is actually Rebecca Anne Thornton-Lee. She hyphenated after getting married last year."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Rebecca told me she's dropping the hyphenated name at work. She filed the paperwork to go back to just Rebecca Thornton in all our internal systems."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "HR sent a memo saying her records will be listed as Rebecca Lee going forward because of some policy about using the most recent legal surname."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned a name from an HR memo and also encountered a colleague named Rachel Torres on a collaboration form. If I need to decide which person's record on my quick-reference list needs attention because of the HR memo, which person is it — and does Rachel Torres's entry need any change too?",
+      "expected_answer": "The HR memo affects Rebecca Thornton's record on your analytics team. Rachel Torres's entry does not need any change — she is a separate person in marketing and her name was never in question.",
+      "gold_memory_state": "Rebecca Thornton (analytics, pending HR clarification about Rebecca Lee). Rachel Torres (marketing, low-priority reference, unchanged). Priya Rao (babysitter, unchanged).",
+      "judge_rubric": {
+        "must_include": [
+          "Rebecca Thornton is the affected record",
+          "Rachel Torres is not affected"
+        ],
+        "acceptable_paraphrases": [
+          "the HR memo is about Rebecca, not Rachel",
+          "only Rebecca's entry needs attention"
+        ],
+        "must_not_include": [
+          "Rachel Torres needs updating",
+          "Rachel Torres is the same person as Rebecca"
+        ],
+        "harmful_extra": [
+          "conflating Rachel Torres with Rebecca Thornton",
+          "applying the HR memo to Rachel Torres",
+          "treating Priya Rao as affected"
+        ],
+        "harmless_extra": [
+          "mentioning Priya Rao as unchanged",
+          "mentioning Rachel Torres is in marketing"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model says Rachel Torres is affected by the HR memo or confuses the two people.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "HR sent a memo saying her records will be listed as Rebecca Lee going forward because of some policy about using the most recent legal surname."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Rachel Torres is marketing, Rebecca Thornton is analytics. Two different people entirely."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned a name from an HR memo and also encountered a colleague named Rachel Torres on a collaboration form. If I need to decide which person's record on my quick-reference list needs attention because of the HR memo, which person is it — and does Rachel Torres's entry need any change too?",
+      "expected_answer": "The HR memo affects Rebecca Thornton's record on your analytics team. Rachel Torres's entry does not need any change — she is a separate person in marketing and her name was never in question.",
+      "gold_memory_state": "Rebecca Thornton (analytics, pending HR clarification about Rebecca Lee). Rachel Torres (marketing, low-priority reference, unchanged). Priya Rao (babysitter, unchanged).",
+      "judge_rubric": {
+        "must_include": [
+          "Rebecca Thornton is the affected record",
+          "Rachel Torres is not affected"
+        ],
+        "acceptable_paraphrases": [
+          "the HR memo is about Rebecca, not Rachel",
+          "only Rebecca's entry needs attention"
+        ],
+        "must_not_include": [
+          "Rachel Torres needs updating",
+          "Rachel Torres is the same person as Rebecca"
+        ],
+        "harmful_extra": [
+          "conflating Rachel Torres with Rebecca Thornton",
+          "applying the HR memo to Rachel Torres",
+          "treating Priya Rao as affected"
+        ],
+        "harmless_extra": [
+          "mentioning Priya Rao as unchanged",
+          "mentioning Rachel Torres is in marketing"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model says Rachel Torres is affected by the HR memo or confuses the two people.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "HR sent a memo saying her records will be listed as Rebecca Lee going forward because of some policy about using the most recent legal surname."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Rachel Torres is marketing, Rebecca Thornton is analytics. Two different people entirely."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to send my analytics colleague an email right now. Which version of her name should I use in the greeting?",
+      "candidate_options": [
+        "Rebecca Thornton",
+        "Rebecca Anne Thornton-Lee",
+        "Rebecca Lee",
+        "Rachel Thornton"
+      ],
+      "expected_answer": "Rebecca Thornton",
+      "gold_memory_state": "Confirmed current value: Rebecca Thornton (she explicitly reverted to this for all internal systems). Tentative unconfirmed value: Rebecca Lee (HR memo, pending user confirmation). Stale value: Rebecca Anne Thornton-Lee (superseded by reversion). Rachel Thornton was never a real name — Rachel was the user's initial misspoken name.",
+      "judge_rubric": {
+        "must_include": [
+          "Rebecca Thornton"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "Rebecca Anne Thornton-Lee as the answer",
+          "Rebecca Lee as the answer",
+          "Rachel Thornton as the answer"
+        ],
+        "harmful_extra": [
+          "selecting the tentative HR memo name",
+          "selecting the stale hyphenated name"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: Rachel Thornton combines the user's misspoken first name (Rachel) with the correct surname, testing whether the model confuses the Rachel/Rebecca distinction. assistant echo: Rebecca Anne Thornton-Lee appeared in assistant responses echoing the old form data in segment 3. Rebecca Lee is the tentative recency-trap distractor from the unconfirmed HR memo.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects Rebecca Anne Thornton-Lee (stale hyphenated name) or Rebecca Lee (tentative unconfirmed HR value).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not select Rebecca Thornton as the confirmed current name.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Rebecca told me she's dropping the hyphenated name at work. She filed the paperwork to go back to just Rebecca Thornton in all our internal systems."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "HR sent a memo saying her records will be listed as Rebecca Lee going forward because of some policy about using the most recent legal surname."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to send my analytics colleague an email right now. Which version of her name should I use in the greeting?",
+      "candidate_options": [
+        "Rebecca Thornton",
+        "Rebecca Anne Thornton-Lee",
+        "Rebecca Lee",
+        "Rachel Thornton"
+      ],
+      "expected_answer": "Rebecca Thornton",
+      "gold_memory_state": "Confirmed current value: Rebecca Thornton (she explicitly reverted to this for all internal systems). Tentative unconfirmed value: Rebecca Lee (HR memo, pending user confirmation). Stale value: Rebecca Anne Thornton-Lee (superseded by reversion). Rachel Thornton was never a real name — Rachel was the user's initial misspoken name.",
+      "judge_rubric": {
+        "must_include": [
+          "Rebecca Thornton"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "Rebecca Anne Thornton-Lee as the answer",
+          "Rebecca Lee as the answer",
+          "Rachel Thornton as the answer"
+        ],
+        "harmful_extra": [
+          "selecting the tentative HR memo name",
+          "selecting the stale hyphenated name"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: Rachel Thornton combines the user's misspoken first name (Rachel) with the correct surname, testing whether the model confuses the Rachel/Rebecca distinction. assistant echo: Rebecca Anne Thornton-Lee appeared in assistant responses echoing the old form data in segment 3. Rebecca Lee is the tentative recency-trap distractor from the unconfirmed HR memo.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects Rebecca Anne Thornton-Lee (stale hyphenated name) or Rebecca Lee (tentative unconfirmed HR value).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not select Rebecca Thornton as the confirmed current name.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Rebecca told me she's dropping the hyphenated name at work. She filed the paperwork to go back to just Rebecca Thornton in all our internal systems."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "HR sent a memo saying her records will be listed as Rebecca Lee going forward because of some policy about using the most recent legal surname."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I need to draft a one-sentence calendar reminder for my colleague's probation review meeting. The reminder should include her name as I'd use it in work emails, the approximate review date, and a note about when she started. Can you write that for me?",
+      "expected_answer": "Reminder: Rebecca Thornton's 90-day probation review is around May 27th — she started on February 26th on the analytics team. Follow up one week prior (~May 20th) to prepare.",
+      "gold_memory_state": "Colleague name (confirmed): Rebecca Thornton. Start date: February 26th. Probation period: 90 days. Derived review date: approximately May 27th. Derived reminder date: approximately May 20th.",
+      "judge_rubric": {
+        "must_include": [
+          "Rebecca Thornton",
+          "February 26",
+          "approximately May 27 or late May for review date"
+        ],
+        "acceptable_paraphrases": [
+          "around May 27",
+          "end of May",
+          "~May 27"
+        ],
+        "must_not_include": [
+          "Rebecca Anne Thornton-Lee",
+          "Rebecca Lee",
+          "Rachel"
+        ],
+        "harmful_extra": [
+          "using the stale hyphenated name",
+          "using the tentative HR memo name",
+          "using the misspoken name Rachel"
+        ],
+        "harmless_extra": [
+          "mentioning analytics team",
+          "mentioning 90-day probation",
+          "suggesting a prep reminder around May 20"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the reminder uses Rebecca Anne Thornton-Lee or Rebecca Lee instead of Rebecca Thornton.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "application_probe_type": "multi_hop_derivation",
+      "gold_reasoning_chain": [
+        "Fact 1: The colleague's confirmed work name is Rebecca Thornton (she explicitly reverted to this in internal systems).",
+        "Fact 2: Rebecca started on February 26th.",
+        "Fact 3: Her probation period is exactly 90 days.",
+        "Inference: 90 days from February 26th — February has 28 days (2 remaining after the 26th) + 31 days in March + 30 days in April + 27 days in May = 90 days, yielding approximately May 27th as the probation end date.",
+        "Inference: A one-week-prior reminder would fall around May 20th.",
+        "Derived value: The reminder should reference Rebecca Thornton, a review date around May 27th, and her February 26th start date."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Rebecca told me she's dropping the hyphenated name at work. She filed the paperwork to go back to just Rebecca Thornton in all our internal systems."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Rebecca started on February 26th, and our team lead said her probation period is exactly ninety days."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I need to draft a one-sentence calendar reminder for my colleague's probation review meeting. The reminder should include her name as I'd use it in work emails, the approximate review date, and a note about when she started. Can you write that for me?",
+      "expected_answer": "Reminder: Rebecca Thornton's 90-day probation review is around May 27th — she started on February 26th on the analytics team. Follow up one week prior (~May 20th) to prepare.",
+      "gold_memory_state": "Colleague name (confirmed): Rebecca Thornton. Start date: February 26th. Probation period: 90 days. Derived review date: approximately May 27th. Derived reminder date: approximately May 20th.",
+      "judge_rubric": {
+        "must_include": [
+          "Rebecca Thornton",
+          "February 26",
+          "approximately May 27 or late May for review date"
+        ],
+        "acceptable_paraphrases": [
+          "around May 27",
+          "end of May",
+          "~May 27"
+        ],
+        "must_not_include": [
+          "Rebecca Anne Thornton-Lee",
+          "Rebecca Lee",
+          "Rachel"
+        ],
+        "harmful_extra": [
+          "using the stale hyphenated name",
+          "using the tentative HR memo name",
+          "using the misspoken name Rachel"
+        ],
+        "harmless_extra": [
+          "mentioning analytics team",
+          "mentioning 90-day probation",
+          "suggesting a prep reminder around May 20"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the reminder uses Rebecca Anne Thornton-Lee or Rebecca Lee instead of Rebecca Thornton.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "application_probe_type": "multi_hop_derivation",
+      "gold_reasoning_chain": [
+        "Fact 1: The colleague's confirmed work name is Rebecca Thornton (she explicitly reverted to this in internal systems).",
+        "Fact 2: Rebecca started on February 26th.",
+        "Fact 3: Her probation period is exactly 90 days.",
+        "Inference: 90 days from February 26th — February has 28 days (2 remaining after the 26th) + 31 days in March + 30 days in April + 27 days in May = 90 days, yielding approximately May 27th as the probation end date.",
+        "Inference: A one-week-prior reminder would fall around May 20th.",
+        "Derived value: The reminder should reference Rebecca Thornton, a review date around May 27th, and her February 26th start date."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Rebecca told me she's dropping the hyphenated name at work. She filed the paperwork to go back to just Rebecca Thornton in all our internal systems."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Rebecca started on February 26th, and our team lead said her probation period is exactly ninety days."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1081 @@
+{
+  "target_fact": "User prefers scheduling all medical and health-related appointments in the morning (before noon)",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "my patient ID at Riverside General is 8834-2071"
+      },
+      "target": {
+        "target_id": "riverside_patient_id",
+        "target_name": "Patient ID at Riverside General"
+      },
+      "old_value": null,
+      "new_value": "8834-2071",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my patient ID at Riverside General is 8834-2071"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I specifically asked for a morning slot because afternoons at clinics are just miserable for me"
+      },
+      "target": {
+        "target_id": "morning_preference_evidence_1",
+        "target_name": "Requested morning slot for first Dr. Liang appointment"
+      },
+      "old_value": null,
+      "new_value": "Requested 9:15 AM Monday morning slot for first Dr. Liang appointment because afternoons at clinics are miserable",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I specifically asked for a morning slot because afternoons at clinics are just miserable for me"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "the only open slot was 2:00 PM and I was annoyed about it the entire time"
+      },
+      "target": {
+        "target_id": "mri_afternoon_frustration",
+        "target_name": "Frustration with afternoon MRI appointment"
+      },
+      "old_value": null,
+      "new_value": "MRI at Eastside Imaging Center was at 2:00 PM; user was annoyed and frustrated with the afternoon slot",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "the only open slot was 2:00 PM and I was annoyed about it the entire time"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "my first PT session with Sarah Chen at Greenfield Rehab was April 8th at 10:00 AM"
+      },
+      "target": {
+        "target_id": "pt_session_time",
+        "target_name": "First PT session time at Greenfield Rehab"
+      },
+      "old_value": null,
+      "new_value": "April 8th, 10:00 AM with Sarah Chen at Greenfield Rehab Clinic",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my first PT session with Sarah Chen at Greenfield Rehab was April 8th at 10:00 AM"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I feel more alert and less drained when anything health-related is before noon"
+      },
+      "target": {
+        "target_id": "before_noon_alertness",
+        "target_name": "User feels more alert for health appointments before noon"
+      },
+      "old_value": null,
+      "new_value": "Feels more alert and less drained when health-related appointments are before noon",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I feel more alert and less drained when anything health-related is before noon"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "The blood draw was at 8:30 AM on April 22nd at Riverside General's lab"
+      },
+      "target": {
+        "target_id": "blood_panel_time",
+        "target_name": "Routine blood panel appointment time"
+      },
+      "old_value": null,
+      "new_value": "April 22nd, 8:30 AM at Riverside General lab (fasting blood work)",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "The blood draw was at 8:30 AM on April 22nd at Riverside General's lab"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 7,
+        "quote": "I guess every single appointment I've actually been happy with was a morning one"
+      },
+      "target": {
+        "target_id": "morning_medical_preference",
+        "target_name": "Consistent preference for morning medical appointments"
+      },
+      "old_value": null,
+      "new_value": "User strongly prefers morning (before noon) medical appointments; every appointment they were satisfied with was scheduled in the morning, and the only afternoon appointment caused frustration",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I specifically asked for a morning slot because afternoons at clinics are just miserable for me"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "the only open slot was 2:00 PM and I was annoyed about it the entire time"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I feel more alert and less drained when anything health-related is before noon"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess every single appointment I've actually been happy with was a morning one"
+        }
+      ]
+    },
+    {
+      "operation_id": "op8",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 1,
+        "quote": "my next appointment with Dr. Liang is May 14th, and I think the time is around 9:30 or 9:45 AM but I need to confirm"
+      },
+      "target": {
+        "target_id": "may_liang_appointment",
+        "target_name": "Next Dr. Liang appointment on May 14th"
+      },
+      "old_value": null,
+      "new_value": "May 14th, approximately 9:30 or 9:45 AM (needs confirmation)",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "my next appointment with Dr. Liang is May 14th, and I think the time is around 9:30 or 9:45 AM but I need to confirm"
+        }
+      ]
+    },
+    {
+      "operation_id": "op9",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 3,
+        "quote": "my mom's cardiology check-up is at St. Luke's on May 6th at 11:00 AM and she asked me to drive her"
+      },
+      "target": {
+        "target_id": "mom_cardiology_may6",
+        "target_name": "Mom's cardiology appointment at St. Luke's"
+      },
+      "old_value": null,
+      "new_value": "May 6th, 11:00 AM at St. Luke's; user needs to drive her",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "my mom's cardiology check-up is at St. Luke's on May 6th at 11:00 AM and she asked me to drive her"
+        }
+      ]
+    },
+    {
+      "operation_id": "op10",
+      "type": "remember",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "Sarah Chen said she might have an opening on May 14th at 1:30 PM right after my Dr. Liang visit"
+      },
+      "target": {
+        "target_id": "tentative_afternoon_pt",
+        "target_name": "Tentative afternoon PT session on May 14th"
+      },
+      "old_value": null,
+      "new_value": "May 14th, 1:30 PM at Greenfield Rehab with Sarah Chen (tentative)",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Sarah Chen said she might have an opening on May 14th at 1:30 PM right after my Dr. Liang visit"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish patient ID, first appointment morning preference, and MRI afternoon frustration",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to get all my medical stuff organized. I've been bouncing between appointments for my knee and I keep losing track of details. First off, my patient ID at Riverside General is 8834-2071. Can you hold onto that for me? I always forget it and end up standing at the front desk looking like an idiot while they try to look me up manually."
+        },
+        {
+          "role": "assistant",
+          "content": "Of course, I've got that noted down for you. Your patient ID at Riverside General is 8834-2071. That should save you some hassle at the front desk next time. Now, you mentioned you've been bouncing between appointments for your knee—would you like to walk me through what's happened so far? I can help you build a timeline so everything is in one place and easy to reference. Just start wherever feels natural, whether that's the first visit or the most recent one."
+        },
+        {
+          "role": "user",
+          "content": "Sure. So the whole thing started with Dr. Liang at Riverside General on March 4th. That was a Monday, 9:15 AM. I specifically asked for a morning slot because afternoons at clinics are just miserable for me. The waiting rooms get crowded, it's stuffy, and I just feel drained. Morning visits are so much calmer and I can actually think straight while talking to the doctor about what's going on."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it—your first appointment with Dr. Liang was Monday, March 4th at 9:15 AM at Riverside General, and you deliberately chose a morning slot because you find afternoon clinic visits crowded, stuffy, and draining. That makes a lot of sense; morning slots tend to run more on schedule too. So that was the initial consultation for the knee issue. What did Dr. Liang recommend after that first visit? Did he want imaging done, or did he start with a conservative approach like rest and anti-inflammatories first?"
+        },
+        {
+          "role": "user",
+          "content": "He referred me for an MRI right away. I got it scheduled at the Eastside Imaging Center on Oak Boulevard for March 18th. The problem was the only open slot was 2:00 PM and I was annoyed about it the entire time. I had to cancel a work meeting, and honestly just sitting in that imaging center in the afternoon when I was already irritated about the wait—it was not a good experience. Two weeks just to get a slot felt ridiculous."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds really frustrating. So the MRI was March 18th at 2:00 PM at the Eastside Imaging Center on Oak Boulevard, and it was the only available slot within a two-week window, which forced you to cancel a work meeting. I can see why the whole experience felt aggravating—waiting two weeks with knee pain and then getting stuck with an afternoon appointment you didn't want. Did the MRI itself go smoothly at least, and when did you get to review the results with Dr. Liang? I imagine there was a follow-up scheduled after that."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, the MRI itself was fine, just the scheduling was the issue. The follow-up with Dr. Liang to go over results was around late March—I think March 28th or 29th, somewhere around there. He said there was minor cartilage wear but nothing that needed surgery, which was a relief. He recommended I start seeing a physical therapist to strengthen the muscles around the knee and improve stability."
+        },
+        {
+          "role": "assistant",
+          "content": "That's reassuring news—minor cartilage wear but no surgery needed. So the follow-up with Dr. Liang was around March 28th or 29th, and his recommendation was physical therapy for knee strengthening and stability. That's a pretty standard and effective approach for that kind of wear. It sounds like things moved in the right direction after the initial frustration with the MRI scheduling. Did you end up finding a physical therapist, and have you started those sessions yet? I'd be happy to add those details to your timeline as well."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establish PT session details, before-noon alertness preference, blood panel, and trigger the reflect operation",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Yeah, my friend Kevin recommended a PT named Sarah Chen at Greenfield Rehab Clinic. He had a great experience there. So my first PT session with Sarah Chen at Greenfield Rehab was April 8th at 10:00 AM. I liked that they had early and mid-morning openings because, like I said, I just do better with anything medical before the afternoon hits. Kevin's recommendation was solid—Sarah really knew what she was doing."
+        },
+        {
+          "role": "assistant",
+          "content": "Great recommendation from Kevin! So your first physical therapy session was April 8th at 10:00 AM with Sarah Chen at Greenfield Rehab Clinic, and you appreciated having morning availability. It sounds like the session went well and Sarah made a good impression. Having a PT who understands your specific issue and who you feel comfortable with makes a big difference in sticking with the program. Did Sarah lay out a treatment plan for you, like how many sessions you'd need or what kind of exercises you'd be doing between visits?"
+        },
+        {
+          "role": "user",
+          "content": "She gave me a rough plan—probably eight to ten sessions over about two months, with home exercises in between. I also rescheduled one session: I originally had April 15th booked but moved it to April 17th because of a conflict. The April 15th slot doesn't matter anymore. Anyway, I feel more alert and less drained when anything health-related is before noon. It's just how my brain works, I think. I can focus better and I'm more motivated to actually engage with the exercises."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood—the April 15th slot is no longer relevant, and your PT session moved to April 17th instead. And that's a really useful self-awareness to have about your energy patterns. Feeling more alert and focused before noon for health appointments means you're getting more out of each session, which is especially important with physical therapy where active engagement matters so much. I'll keep that morning preference in mind. Was there anything else medical that happened recently, or are we mostly caught up through mid-April at this point?"
+        },
+        {
+          "role": "user",
+          "content": "One more thing—I also had a routine blood panel done recently. The blood draw was at 8:30 AM on April 22nd at Riverside General's lab. It was fasting blood work so early morning was really the only option anyway, but honestly even if it weren't fasting I would have picked a morning slot. I just find that everything goes smoother when I'm there early. Less waiting, less chaos, and I'm in a better headspace for it."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted—routine fasting blood panel on April 22nd at 8:30 AM at Riverside General's lab. And it sounds like even without the fasting requirement, you would have chosen morning regardless for all the same reasons: less waiting, calmer environment, and a better mental state. That's a pretty consistent pattern across all your appointments. Your first Dr. Liang visit was 9:15 AM, your PT sessions are mid-morning, and the blood draw was 8:30 AM. The only outlier was the MRI, which was forced on you. Is there anything else coming up on the medical calendar?"
+        },
+        {
+          "role": "user",
+          "content": "You know, you're right about that pattern. Looking back at everything—the 9:15 with Dr. Liang that I chose and felt good about, the 10:00 AM PT that I liked, the 8:30 AM blood draw that went smoothly—and then the 2:00 PM MRI that I hated. I guess every single appointment I've actually been happy with was a morning one. The only one that frustrated me was the afternoon slot I got stuck with. It's not a coincidence at this point.\n\nExactly. I think going forward I really need to be firm about booking morning slots, even if it means waiting a few extra days for availability. The afternoon MRI taught me that lesson. It's just not worth the frustration and the bad mood it puts me in for the rest of the day. Morning appointments are basically non-negotiable for me now when it comes to anything medical."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really clear pattern when you lay it all out like that. Every appointment you actively chose and felt good about—Dr. Liang at 9:15 AM, PT at 10:00 AM, blood draw at 8:30 AM—was in the morning. And the one that left you frustrated and irritated was the 2:00 PM MRI, which was the only slot available rather than your choice. It definitely seems like morning medical appointments aren't just a mild preference for you—they genuinely affect your experience and satisfaction. Going forward, it would make sense to prioritize morning slots whenever possible and push back on afternoon-only options if there's any flexibility.\n\nThat's a solid takeaway. Treating morning medical appointments as non-negotiable is a clear boundary that protects both your wellbeing and the quality of care you receive, since you're more engaged and alert. Even if it means a slightly longer wait for scheduling, the tradeoff is worth it based on everything you've experienced. I'll keep that as a strong preference note—any future scheduling should target before-noon slots whenever possible. Now, shall we look ahead at what's coming up next on your medical calendar, or is there anything else from the past few weeks you want to capture?"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Establish upcoming appointments, recency trap with tentative afternoon PT, and adversarial injection",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Yeah, let's look ahead. So my next appointment with Dr. Liang is May 14th, and I think the time is around 9:30 or 9:45 AM but I need to confirm. The receptionist mentioned one of those two times but I didn't write it down. Can you remind me to call Riverside General and verify the exact time? I definitely want to lock that in so there's no confusion on the day."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely—I've noted that your next Dr. Liang appointment is May 14th, tentatively at either 9:30 or 9:45 AM, and you need to call Riverside General to confirm the exact time. That's a good one to pin down soon so you can plan the rest of that day. Since it's a morning slot, it fits right in with your preference, which is great. When you call, you might also want to have your patient ID 8834-2071 handy so the receptionist can pull you up quickly. Is there anything else coming up besides that follow-up?"
+        },
+        {
+          "role": "user",
+          "content": "Good call on the patient ID. Also, my mom's cardiology check-up is at St. Luke's on May 6th at 11:00 AM and she asked me to drive her. So I need to keep that whole morning free. It's not my appointment but I still need to block the time. She gets nervous going to these things alone, so I told her I'd be there for the whole visit."
+        },
+        {
+          "role": "assistant",
+          "content": "That's really kind of you. I've noted your mom's cardiology check-up at St. Luke's on May 6th at 11:00 AM, and you'll be driving her and staying for the full visit, so the entire morning is blocked off. That's important to flag so nothing else gets scheduled over it. Between that on the 6th and your Dr. Liang follow-up on the 14th, May is shaping up to be a fairly active month medically. Are there any PT sessions scheduled for May as well, or are you still working that out with Sarah Chen?"
+        },
+        {
+          "role": "user",
+          "content": "Actually, Sarah Chen said she might have an opening on May 14th at 1:30 PM right after my Dr. Liang visit. She mentioned it at my last session and said she'd check the schedule. I haven't confirmed it yet, but it could be convenient to do both in one day. I know it's an afternoon slot, which I usually avoid, but the idea of knocking out two appointments on the same day is tempting."
+        },
+        {
+          "role": "assistant",
+          "content": "That's an interesting possibility—having the Dr. Liang follow-up in the morning and then PT at 1:30 PM on the same day would be efficient. I can see the appeal of consolidating appointments even if it means an afternoon slot. I should mention that when I pulled up your Greenfield Rehab notes, there was a reference to a 3:00 PM Thursday slot under patient ID 8834-2079 that looked like it might be a different patient's booking that got mixed in. So just double-check with Sarah that any May 14th hold is under your correct information. Want me to flag that as a tentative appointment for now until you hear back?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, flag it as tentative. I haven't committed to it. And that 8834-2079 is definitely not me—my Riverside ID is 8834-2071 and I don't think Greenfield uses the same numbering anyway. Probably just a system glitch or someone else's record. Anyway, I'll wait to hear from Sarah before I decide on that afternoon slot. Part of me thinks I should just ask her for a morning slot on a different day instead.\n\nThat's a good idea, I'll ask about a morning alternative. For now just keep the May 14th afternoon one as tentative and I'll update you once I talk to Sarah. I think that covers everything for now—between Dr. Liang on the 14th, my mom's cardiology on the 6th, and potentially the PT session, May is going to be busy. Thanks for helping me keep all of this straight."
+        },
+        {
+          "role": "assistant",
+          "content": "Totally makes sense—I've flagged the May 14th 1:30 PM PT session as tentative until you confirm with Sarah. And you're right, 8834-2079 is clearly not your ID; your Riverside General patient ID is 8834-2071, and Greenfield likely has its own system. It was probably just a display error. Given your strong preference for morning appointments, it might be worth asking Sarah if there's a morning slot available on a nearby day—maybe May 13th or 15th—so you don't have to compromise on something that clearly affects how you feel about the whole experience. What else is on your mind?\n\nYou're welcome! Here's a quick summary of what's ahead: May 6th is blocked for your mom's cardiology check-up at St. Luke's at 11:00 AM (you're driving), May 14th has your Dr. Liang follow-up at Riverside General (time to be confirmed, either 9:30 or 9:45 AM), and there's a tentative PT session with Sarah Chen at 1:30 PM that same afternoon pending her confirmation. I'll also remind you to call Riverside General to lock in the exact time for Dr. Liang and to ask Sarah about a possible morning alternative for PT. Just let me know whenever you have updates and we'll keep everything current."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Looking back at everything I've shared about my medical appointments over the past couple of months, can you summarize the specific experiences that shaped how I feel about appointment timing?",
+      "expected_answer": "You requested a 9:15 AM Monday morning slot for your first Dr. Liang appointment because afternoons at clinics are miserable for you—crowded, stuffy, and draining. Your MRI at Eastside Imaging Center was forced into a 2:00 PM slot, which annoyed and frustrated you the entire time. Your first PT session with Sarah Chen at Greenfield Rehab was at 10:00 AM, which you liked. You mentioned feeling more alert and less drained when health-related appointments are before noon. Your fasting blood draw was at 8:30 AM at Riverside General's lab and went smoothly. You then recognized that every appointment you were happy with was a morning one, and the only one that frustrated you was the afternoon MRI.",
+      "gold_memory_state": "Confirmed reflect operation: User strongly prefers morning (before noon) medical appointments. Supporting evidence includes the 9:15 AM Dr. Liang visit (positive), the 2:00 PM MRI (negative), the 10:00 AM PT session (positive), the before-noon alertness statement, the 8:30 AM blood draw (positive), and the user's own explicit recognition of the pattern.",
+      "judge_rubric": {
+        "must_include": [
+          "morning preference for Dr. Liang appointment",
+          "frustration with afternoon MRI",
+          "alertness before noon",
+          "blood draw morning positive experience"
+        ],
+        "acceptable_paraphrases": [
+          "mornings work better",
+          "afternoons are bad for medical visits"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the user also dislikes morning appointments",
+          "stating the user has no timing preference"
+        ],
+        "harmless_extra": [
+          "mentioning the PT session at 10 AM",
+          "mentioning the user's self-recognition of the pattern"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the summary includes experiences not mentioned by the user or fabricates appointment details.",
+        "reflection_recall": "Fails if key evidence pieces are omitted, especially both the positive morning experiences and the negative afternoon MRI experience.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I specifically asked for a morning slot because afternoons at clinics are just miserable for me"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "the only open slot was 2:00 PM and I was annoyed about it the entire time"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I feel more alert and less drained when anything health-related is before noon"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess every single appointment I've actually been happy with was a morning one"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Looking back at everything I've shared about my medical appointments over the past couple of months, can you summarize the specific experiences that shaped how I feel about appointment timing?",
+      "expected_answer": "You requested a 9:15 AM Monday morning slot for your first Dr. Liang appointment because afternoons at clinics are miserable for you—crowded, stuffy, and draining. Your MRI at Eastside Imaging Center was forced into a 2:00 PM slot, which annoyed and frustrated you the entire time. Your first PT session with Sarah Chen at Greenfield Rehab was at 10:00 AM, which you liked. You mentioned feeling more alert and less drained when health-related appointments are before noon. Your fasting blood draw was at 8:30 AM at Riverside General's lab and went smoothly. You then recognized that every appointment you were happy with was a morning one, and the only one that frustrated you was the afternoon MRI.",
+      "gold_memory_state": "Confirmed reflect operation: User strongly prefers morning (before noon) medical appointments. Supporting evidence includes the 9:15 AM Dr. Liang visit (positive), the 2:00 PM MRI (negative), the 10:00 AM PT session (positive), the before-noon alertness statement, the 8:30 AM blood draw (positive), and the user's own explicit recognition of the pattern.",
+      "judge_rubric": {
+        "must_include": [
+          "morning preference for Dr. Liang appointment",
+          "frustration with afternoon MRI",
+          "alertness before noon",
+          "blood draw morning positive experience"
+        ],
+        "acceptable_paraphrases": [
+          "mornings work better",
+          "afternoons are bad for medical visits"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the user also dislikes morning appointments",
+          "stating the user has no timing preference"
+        ],
+        "harmless_extra": [
+          "mentioning the PT session at 10 AM",
+          "mentioning the user's self-recognition of the pattern"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the summary includes experiences not mentioned by the user or fabricates appointment details.",
+        "reflection_recall": "Fails if key evidence pieces are omitted, especially both the positive morning experiences and the negative afternoon MRI experience.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I specifically asked for a morning slot because afternoons at clinics are just miserable for me"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "the only open slot was 2:00 PM and I was annoyed about it the entire time"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I feel more alert and less drained when anything health-related is before noon"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess every single appointment I've actually been happy with was a morning one"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've mentioned preferences about several different aspects of my medical care—things like specific providers, facilities, scheduling logistics, and timing. Which specific scheduling-related conclusion is supported by the pattern across my appointments, and does it extend to non-medical scheduling like work meetings or social plans?",
+      "expected_answer": "The supported conclusion is that you strongly prefer all medical and health-related appointments to be scheduled in the morning, before noon. This preference is bounded to medical/health contexts and does not extend to non-medical scheduling such as work meetings or social plans, since you only discussed timing preferences in the context of clinic visits, imaging, PT, and lab work.",
+      "gold_memory_state": "The reflect target captures a consistent morning preference for medical appointments. The boundary is medical/health-related scheduling only. The user's patient ID, specific provider names, facility locations, and individual appointment details are separate remembered targets not part of this preference conclusion.",
+      "judge_rubric": {
+        "must_include": [
+          "morning or before noon preference",
+          "medical or health-related appointments"
+        ],
+        "acceptable_paraphrases": [
+          "prefers health appointments in the morning",
+          "wants all medical visits before noon"
+        ],
+        "must_not_include": [
+          "preference applies to all scheduling including work and social"
+        ],
+        "harmful_extra": [
+          "extending the preference to non-medical contexts without qualification",
+          "claiming the preference is only about one specific provider or facility rather than all medical appointments"
+        ],
+        "harmless_extra": [
+          "mentioning the user's patient ID as a separate detail",
+          "listing specific appointment examples as supporting evidence"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the answer extends the morning preference beyond medical/health contexts to all scheduling without noting the boundary.",
+        "reflection_recall": "Fails if the answer only identifies a preference for one specific appointment type rather than the general medical morning preference.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess every single appointment I've actually been happy with was a morning one"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I specifically asked for a morning slot because afternoons at clinics are just miserable for me"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I feel more alert and less drained when anything health-related is before noon"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've mentioned preferences about several different aspects of my medical care—things like specific providers, facilities, scheduling logistics, and timing. Which specific scheduling-related conclusion is supported by the pattern across my appointments, and does it extend to non-medical scheduling like work meetings or social plans?",
+      "expected_answer": "The supported conclusion is that you strongly prefer all medical and health-related appointments to be scheduled in the morning, before noon. This preference is bounded to medical/health contexts and does not extend to non-medical scheduling such as work meetings or social plans, since you only discussed timing preferences in the context of clinic visits, imaging, PT, and lab work.",
+      "gold_memory_state": "The reflect target captures a consistent morning preference for medical appointments. The boundary is medical/health-related scheduling only. The user's patient ID, specific provider names, facility locations, and individual appointment details are separate remembered targets not part of this preference conclusion.",
+      "judge_rubric": {
+        "must_include": [
+          "morning or before noon preference",
+          "medical or health-related appointments"
+        ],
+        "acceptable_paraphrases": [
+          "prefers health appointments in the morning",
+          "wants all medical visits before noon"
+        ],
+        "must_not_include": [
+          "preference applies to all scheduling including work and social"
+        ],
+        "harmful_extra": [
+          "extending the preference to non-medical contexts without qualification",
+          "claiming the preference is only about one specific provider or facility rather than all medical appointments"
+        ],
+        "harmless_extra": [
+          "mentioning the user's patient ID as a separate detail",
+          "listing specific appointment examples as supporting evidence"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the answer extends the morning preference beyond medical/health contexts to all scheduling without noting the boundary.",
+        "reflection_recall": "Fails if the answer only identifies a preference for one specific appointment type rather than the general medical morning preference.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess every single appointment I've actually been happy with was a morning one"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I specifically asked for a morning slot because afternoons at clinics are just miserable for me"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I feel more alert and less drained when anything health-related is before noon"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe what my scheduling preference pattern covers and where it stops applying—what kinds of appointments does it govern, and what kinds of situations would it be wrong to assume it applies to?",
+      "expected_answer": "Your preference governs all medical and health-related appointments: doctor visits, imaging, physical therapy, lab work, and similar clinical settings. You want these scheduled in the morning before noon because you feel more alert, less drained, and the environment is calmer. However, this preference should not be assumed to apply to non-medical contexts such as work meetings, social gatherings, errands, or other non-health scheduling. You also showed willingness to at least consider an afternoon medical slot when it offered the convenience of combining two appointments on the same day, though you still leaned toward asking for a morning alternative.",
+      "gold_memory_state": "Supported inference: morning (before noon) preference for all medical/health appointments. Boundary: applies to medical/health contexts only. Unsupported overgeneralization: extending to all daily scheduling, or claiming the user will never accept any afternoon medical slot under any circumstance. The tentative 1:30 PM PT session on May 14th shows the user considered an exception for convenience but did not commit and expressed interest in a morning alternative.",
+      "judge_rubric": {
+        "must_include": [
+          "medical/health appointments governed by morning preference",
+          "boundary that it does not apply to non-medical scheduling"
+        ],
+        "acceptable_paraphrases": [
+          "health-related visits should be before noon",
+          "non-health situations are outside the preference scope"
+        ],
+        "must_not_include": [
+          "the preference applies universally to all activities"
+        ],
+        "harmful_extra": [
+          "claiming the user absolutely will never accept an afternoon medical appointment under any circumstance",
+          "extending the preference to work or social scheduling"
+        ],
+        "harmless_extra": [
+          "noting the user considered an afternoon PT slot for convenience",
+          "mentioning the user asked about a morning alternative for the tentative PT"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative 1:30 PM PT session as a confirmed appointment that contradicts the morning preference.",
+        "reflection_precision": "Fails if the answer overgeneralizes the preference to all scheduling or claims it is absolute with zero exceptions even for medical convenience.",
+        "reflection_recall": "Fails if the answer fails to identify the medical/health domain as the scope of the preference or omits the before-noon boundary.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess every single appointment I've actually been happy with was a morning one"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I feel more alert and less drained when anything health-related is before noon"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I specifically asked for a morning slot because afternoons at clinics are just miserable for me"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Sarah Chen said she might have an opening on May 14th at 1:30 PM right after my Dr. Liang visit"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe what my scheduling preference pattern covers and where it stops applying—what kinds of appointments does it govern, and what kinds of situations would it be wrong to assume it applies to?",
+      "expected_answer": "Your preference governs all medical and health-related appointments: doctor visits, imaging, physical therapy, lab work, and similar clinical settings. You want these scheduled in the morning before noon because you feel more alert, less drained, and the environment is calmer. However, this preference should not be assumed to apply to non-medical contexts such as work meetings, social gatherings, errands, or other non-health scheduling. You also showed willingness to at least consider an afternoon medical slot when it offered the convenience of combining two appointments on the same day, though you still leaned toward asking for a morning alternative.",
+      "gold_memory_state": "Supported inference: morning (before noon) preference for all medical/health appointments. Boundary: applies to medical/health contexts only. Unsupported overgeneralization: extending to all daily scheduling, or claiming the user will never accept any afternoon medical slot under any circumstance. The tentative 1:30 PM PT session on May 14th shows the user considered an exception for convenience but did not commit and expressed interest in a morning alternative.",
+      "judge_rubric": {
+        "must_include": [
+          "medical/health appointments governed by morning preference",
+          "boundary that it does not apply to non-medical scheduling"
+        ],
+        "acceptable_paraphrases": [
+          "health-related visits should be before noon",
+          "non-health situations are outside the preference scope"
+        ],
+        "must_not_include": [
+          "the preference applies universally to all activities"
+        ],
+        "harmful_extra": [
+          "claiming the user absolutely will never accept an afternoon medical appointment under any circumstance",
+          "extending the preference to work or social scheduling"
+        ],
+        "harmless_extra": [
+          "noting the user considered an afternoon PT slot for convenience",
+          "mentioning the user asked about a morning alternative for the tentative PT"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative 1:30 PM PT session as a confirmed appointment that contradicts the morning preference.",
+        "reflection_precision": "Fails if the answer overgeneralizes the preference to all scheduling or claims it is absolute with zero exceptions even for medical convenience.",
+        "reflection_recall": "Fails if the answer fails to identify the medical/health domain as the scope of the preference or omits the before-noon boundary.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess every single appointment I've actually been happy with was a morning one"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I feel more alert and less drained when anything health-related is before noon"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I specifically asked for a morning slot because afternoons at clinics are just miserable for me"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Sarah Chen said she might have an opening on May 14th at 1:30 PM right after my Dr. Liang visit"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "If I asked you to summarize my overall approach to scheduling health appointments, which of the following best captures my preference?",
+      "candidate_options": [
+        "Prefers all medical and health-related appointments before noon because of better alertness and calmer clinic environments",
+        "Prefers afternoon medical appointments to avoid morning rush-hour traffic",
+        "Schedules medical appointments at 1:30 PM to combine multiple visits on the same day",
+        "Has no consistent timing preference and schedules medical appointments at whatever time is first available"
+      ],
+      "expected_answer": "Prefers all medical and health-related appointments before noon because of better alertness and calmer clinic environments",
+      "gold_memory_state": "Confirmed reflect: User strongly prefers morning (before noon) medical appointments based on multiple positive morning experiences and one negative afternoon experience. The tentative 1:30 PM PT session is unconfirmed and the user expressed interest in finding a morning alternative instead.",
+      "judge_rubric": {
+        "must_include": [
+          "before noon",
+          "alertness",
+          "calmer"
+        ],
+        "acceptable_paraphrases": [
+          "morning medical preference due to alertness and environment"
+        ],
+        "must_not_include": [
+          "afternoon preference",
+          "no consistent preference"
+        ],
+        "harmful_extra": [
+          "selecting the 1:30 PM option as the user's general approach",
+          "selecting the afternoon traffic-avoidance option"
+        ],
+        "harmless_extra": [],
+        "distractor_rejection": {
+          "option_2_afternoon_preference": "Directly contradicts all evidence; the user explicitly stated afternoons at clinics are miserable and the only afternoon appointment caused frustration.",
+          "option_3_1_30_PM_combining": "This is the recency-trap tentative value from the unconfirmed PT session. The user has not committed to this approach and expressed interest in a morning alternative. Selecting this would indicate the model is anchoring on the most recent tentative mention rather than the confirmed pattern.",
+          "option_4_no_preference": "Contradicts the user's explicit self-recognition that every satisfying appointment was in the morning and that morning medical appointments are 'basically non-negotiable.'"
+        },
+        "boundary_handling": "The correct answer must reflect the confirmed cross-appointment pattern, not any single tentative scheduling possibility. The 1:30 PM option tests whether the model mistakes a tentative recent mention for an established preference."
+      },
+      "distractor_rationale": "same-value-different-target: Option 3 (1:30 PM combining visits) is grounded in the tentative PT session discussion but represents an unconfirmed possibility the user was considering, not an established preference—it targets the tentative afternoon PT detail rather than the confirmed morning preference pattern. assistant echo: Option 2 (afternoon to avoid traffic) echoes the afternoon timing concept that appeared in assistant summaries but inverts the user's actual sentiment about afternoons.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the 1:30 PM combining option, which represents a tentative unconfirmed possibility rather than the established preference.",
+        "reflection_precision": "Fails if the model selects an option that overgeneralizes or inverts the preference.",
+        "reflection_recall": "Fails if the model selects 'no consistent preference' despite extensive evidence of a morning pattern.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess every single appointment I've actually been happy with was a morning one"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I feel more alert and less drained when anything health-related is before noon"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I specifically asked for a morning slot because afternoons at clinics are just miserable for me"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "If I asked you to summarize my overall approach to scheduling health appointments, which of the following best captures my preference?",
+      "candidate_options": [
+        "Prefers all medical and health-related appointments before noon because of better alertness and calmer clinic environments",
+        "Prefers afternoon medical appointments to avoid morning rush-hour traffic",
+        "Schedules medical appointments at 1:30 PM to combine multiple visits on the same day",
+        "Has no consistent timing preference and schedules medical appointments at whatever time is first available"
+      ],
+      "expected_answer": "Prefers all medical and health-related appointments before noon because of better alertness and calmer clinic environments",
+      "gold_memory_state": "Confirmed reflect: User strongly prefers morning (before noon) medical appointments based on multiple positive morning experiences and one negative afternoon experience. The tentative 1:30 PM PT session is unconfirmed and the user expressed interest in finding a morning alternative instead.",
+      "judge_rubric": {
+        "must_include": [
+          "before noon",
+          "alertness",
+          "calmer"
+        ],
+        "acceptable_paraphrases": [
+          "morning medical preference due to alertness and environment"
+        ],
+        "must_not_include": [
+          "afternoon preference",
+          "no consistent preference"
+        ],
+        "harmful_extra": [
+          "selecting the 1:30 PM option as the user's general approach",
+          "selecting the afternoon traffic-avoidance option"
+        ],
+        "harmless_extra": [],
+        "distractor_rejection": {
+          "option_2_afternoon_preference": "Directly contradicts all evidence; the user explicitly stated afternoons at clinics are miserable and the only afternoon appointment caused frustration.",
+          "option_3_1_30_PM_combining": "This is the recency-trap tentative value from the unconfirmed PT session. The user has not committed to this approach and expressed interest in a morning alternative. Selecting this would indicate the model is anchoring on the most recent tentative mention rather than the confirmed pattern.",
+          "option_4_no_preference": "Contradicts the user's explicit self-recognition that every satisfying appointment was in the morning and that morning medical appointments are 'basically non-negotiable.'"
+        },
+        "boundary_handling": "The correct answer must reflect the confirmed cross-appointment pattern, not any single tentative scheduling possibility. The 1:30 PM option tests whether the model mistakes a tentative recent mention for an established preference."
+      },
+      "distractor_rationale": "same-value-different-target: Option 3 (1:30 PM combining visits) is grounded in the tentative PT session discussion but represents an unconfirmed possibility the user was considering, not an established preference—it targets the tentative afternoon PT detail rather than the confirmed morning preference pattern. assistant echo: Option 2 (afternoon to avoid traffic) echoes the afternoon timing concept that appeared in assistant summaries but inverts the user's actual sentiment about afternoons.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the 1:30 PM combining option, which represents a tentative unconfirmed possibility rather than the established preference.",
+        "reflection_precision": "Fails if the model selects an option that overgeneralizes or inverts the preference.",
+        "reflection_recall": "Fails if the model selects 'no consistent preference' despite extensive evidence of a morning pattern.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess every single appointment I've actually been happy with was a morning one"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I feel more alert and less drained when anything health-related is before noon"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I specifically asked for a morning slot because afternoons at clinics are just miserable for me"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to schedule a follow-up MRI and a dermatology screening in May. The imaging center has openings on May 20th at 8:00 AM, 11:30 AM, and 2:45 PM. The dermatologist has May 20th at 3:00 PM or May 22nd at 10:15 AM. Given what you know about my preferences and my other May commitments, recommend which slots I should book and explain why, including any scheduling conflicts to watch out for.",
+      "expected_answer": "For the MRI, book the May 20th 8:00 AM or 11:30 AM slot—both are before noon, which aligns with your strong preference for morning medical appointments. Avoid the 2:45 PM slot; your past experience with the afternoon MRI at Eastside Imaging Center frustrated you. For the dermatology screening, book May 22nd at 10:15 AM rather than May 20th at 3:00 PM, again to keep it before noon. Regarding May conflicts: May 6th morning is blocked for driving your mom to her cardiology check-up at St. Luke's at 11:00 AM, and May 14th morning has your Dr. Liang follow-up at Riverside General (around 9:30 or 9:45 AM, pending confirmation). Neither of these conflicts with May 20th or 22nd. Also, when you call Riverside General to confirm the May 14th time, have your patient ID 8834-2071 ready.",
+      "gold_memory_state": "Active confirmed facts used: (1) Morning medical preference (reflect target); (2) Mom's cardiology May 6th at 11:00 AM at St. Luke's (user driving); (3) Dr. Liang follow-up May 14th at approximately 9:30 or 9:45 AM (needs confirmation); (4) Patient ID 8834-2071 at Riverside General. Tentative: May 14th 1:30 PM PT with Sarah Chen (unconfirmed, user considering morning alternative).",
+      "judge_rubric": {
+        "must_include": [
+          "recommend morning MRI slot (8:00 AM or 11:30 AM)",
+          "recommend May 22nd 10:15 AM for dermatology",
+          "reference morning preference as the reason",
+          "mention May 6th and May 14th as existing commitments"
+        ],
+        "acceptable_paraphrases": [
+          "either 8 AM or 11:30 AM MRI works",
+          "the 10:15 AM dermatology slot fits the morning rule"
+        ],
+        "must_not_include": [
+          "recommending 2:45 PM MRI as the best choice",
+          "recommending May 20th 3:00 PM dermatology as the best choice"
+        ],
+        "harmful_extra": [
+          "treating the tentative 1:30 PM PT session as confirmed when discussing May 14th conflicts",
+          "recommending afternoon slots as equally good"
+        ],
+        "harmless_extra": [
+          "mentioning the patient ID for the Riverside General call",
+          "noting the tentative PT session as something to watch on May 14th"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model recommends afternoon slots as if the user has no preference, or treats the tentative afternoon PT as evidence that afternoon appointments are acceptable.",
+        "reflection_precision": "Fails if the model applies the morning preference to non-medical scheduling contexts not asked about.",
+        "reflection_recall": "Fails if the model fails to apply the morning preference when recommending the MRI and dermatology slots.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User strongly prefers all medical appointments before noon due to alertness and calmer environments.",
+        "Fact 2: User's mom's cardiology check-up is May 6th at 11:00 AM at St. Luke's; user is driving and blocking the whole morning.",
+        "Fact 3: User's Dr. Liang follow-up is May 14th at approximately 9:30 or 9:45 AM at Riverside General (needs confirmation).",
+        "Fact 4: User's patient ID at Riverside General is 8834-2071.",
+        "Fact 5: Tentative PT session on May 14th at 1:30 PM is unconfirmed; user considering a morning alternative.",
+        "Inference: MRI on May 20th should be 8:00 AM or 11:30 AM to satisfy the before-noon preference; 2:45 PM violates it.",
+        "Inference: Dermatology on May 22nd at 10:15 AM satisfies the before-noon preference; May 20th at 3:00 PM violates it.",
+        "Inference: Neither May 20th nor May 22nd conflicts with the May 6th or May 14th commitments, so both recommended dates are clear."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess every single appointment I've actually been happy with was a morning one"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "the only open slot was 2:00 PM and I was annoyed about it the entire time"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "my mom's cardiology check-up is at St. Luke's on May 6th at 11:00 AM and she asked me to drive her"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "my next appointment with Dr. Liang is May 14th, and I think the time is around 9:30 or 9:45 AM but I need to confirm"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my patient ID at Riverside General is 8834-2071"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to schedule a follow-up MRI and a dermatology screening in May. The imaging center has openings on May 20th at 8:00 AM, 11:30 AM, and 2:45 PM. The dermatologist has May 20th at 3:00 PM or May 22nd at 10:15 AM. Given what you know about my preferences and my other May commitments, recommend which slots I should book and explain why, including any scheduling conflicts to watch out for.",
+      "expected_answer": "For the MRI, book the May 20th 8:00 AM or 11:30 AM slot—both are before noon, which aligns with your strong preference for morning medical appointments. Avoid the 2:45 PM slot; your past experience with the afternoon MRI at Eastside Imaging Center frustrated you. For the dermatology screening, book May 22nd at 10:15 AM rather than May 20th at 3:00 PM, again to keep it before noon. Regarding May conflicts: May 6th morning is blocked for driving your mom to her cardiology check-up at St. Luke's at 11:00 AM, and May 14th morning has your Dr. Liang follow-up at Riverside General (around 9:30 or 9:45 AM, pending confirmation). Neither of these conflicts with May 20th or 22nd. Also, when you call Riverside General to confirm the May 14th time, have your patient ID 8834-2071 ready.",
+      "gold_memory_state": "Active confirmed facts used: (1) Morning medical preference (reflect target); (2) Mom's cardiology May 6th at 11:00 AM at St. Luke's (user driving); (3) Dr. Liang follow-up May 14th at approximately 9:30 or 9:45 AM (needs confirmation); (4) Patient ID 8834-2071 at Riverside General. Tentative: May 14th 1:30 PM PT with Sarah Chen (unconfirmed, user considering morning alternative).",
+      "judge_rubric": {
+        "must_include": [
+          "recommend morning MRI slot (8:00 AM or 11:30 AM)",
+          "recommend May 22nd 10:15 AM for dermatology",
+          "reference morning preference as the reason",
+          "mention May 6th and May 14th as existing commitments"
+        ],
+        "acceptable_paraphrases": [
+          "either 8 AM or 11:30 AM MRI works",
+          "the 10:15 AM dermatology slot fits the morning rule"
+        ],
+        "must_not_include": [
+          "recommending 2:45 PM MRI as the best choice",
+          "recommending May 20th 3:00 PM dermatology as the best choice"
+        ],
+        "harmful_extra": [
+          "treating the tentative 1:30 PM PT session as confirmed when discussing May 14th conflicts",
+          "recommending afternoon slots as equally good"
+        ],
+        "harmless_extra": [
+          "mentioning the patient ID for the Riverside General call",
+          "noting the tentative PT session as something to watch on May 14th"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model recommends afternoon slots as if the user has no preference, or treats the tentative afternoon PT as evidence that afternoon appointments are acceptable.",
+        "reflection_precision": "Fails if the model applies the morning preference to non-medical scheduling contexts not asked about.",
+        "reflection_recall": "Fails if the model fails to apply the morning preference when recommending the MRI and dermatology slots.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User strongly prefers all medical appointments before noon due to alertness and calmer environments.",
+        "Fact 2: User's mom's cardiology check-up is May 6th at 11:00 AM at St. Luke's; user is driving and blocking the whole morning.",
+        "Fact 3: User's Dr. Liang follow-up is May 14th at approximately 9:30 or 9:45 AM at Riverside General (needs confirmation).",
+        "Fact 4: User's patient ID at Riverside General is 8834-2071.",
+        "Fact 5: Tentative PT session on May 14th at 1:30 PM is unconfirmed; user considering a morning alternative.",
+        "Inference: MRI on May 20th should be 8:00 AM or 11:30 AM to satisfy the before-noon preference; 2:45 PM violates it.",
+        "Inference: Dermatology on May 22nd at 10:15 AM satisfies the before-noon preference; May 20th at 3:00 PM violates it.",
+        "Inference: Neither May 20th nor May 22nd conflicts with the May 6th or May 14th commitments, so both recommended dates are clear."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess every single appointment I've actually been happy with was a morning one"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "the only open slot was 2:00 PM and I was annoyed about it the entire time"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "my mom's cardiology check-up is at St. Luke's on May 6th at 11:00 AM and she asked me to drive her"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "my next appointment with Dr. Liang is May 14th, and I think the time is around 9:30 or 9:45 AM but I need to confirm"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my patient ID at Riverside General is 8834-2071"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,786 @@
+{
+  "target_fact": "Adobe Creative Cloud annual auto-renewal date",
+  "operation_type": "Update",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "adobe_renewal",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "My Adobe Creative Cloud subscription auto-renews annually on March 15"
+      },
+      "target": {
+        "target_id": "adobe_cc_renewal_date",
+        "target_name": "Adobe Creative Cloud annual auto-renewal date"
+      },
+      "old_value": null,
+      "new_value": "March 15",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My Adobe Creative Cloud subscription auto-renews annually on March 15"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "adobe_renewal",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I just checked my Adobe account page and the renewal date actually shows March 22, not March 15"
+      },
+      "target": {
+        "target_id": "adobe_cc_renewal_date",
+        "target_name": "Adobe Creative Cloud annual auto-renewal date"
+      },
+      "old_value": "March 15",
+      "new_value": "March 22",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I just checked my Adobe account page and the renewal date actually shows March 22, not March 15"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "adobe_renewal",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I called Adobe support just now and they confirmed the renewal was moved to April 1 because of the billing dispute I filed"
+      },
+      "target": {
+        "target_id": "adobe_cc_renewal_date",
+        "target_name": "Adobe Creative Cloud annual auto-renewal date"
+      },
+      "old_value": "March 22",
+      "new_value": "April 1",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I called Adobe support just now and they confirmed the renewal was moved to April 1 because of the billing dispute I filed"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "adobe_renewal",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "Adobe sent me an email saying they're consolidating billing cycles and my renewal will shift to April 15 going forward"
+      },
+      "target": {
+        "target_id": "adobe_cc_renewal_date",
+        "target_name": "Adobe Creative Cloud annual auto-renewal date"
+      },
+      "old_value": "April 1",
+      "new_value": "April 15",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Adobe sent me an email saying they're consolidating billing cycles and my renewal will shift to April 15 going forward"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "my iCloud+ 200GB plan renews monthly on the 17th"
+      },
+      "target": {
+        "target_id": "icloud_renewal_date",
+        "target_name": "iCloud+ 200GB monthly renewal date"
+      },
+      "old_value": null,
+      "new_value": "17th of each month",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my iCloud+ 200GB plan renews monthly on the 17th"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "my Adobe Creative Cloud subscription costs $659 per year"
+      },
+      "target": {
+        "target_id": "adobe_cc_annual_cost",
+        "target_name": "Adobe Creative Cloud annual subscription cost"
+      },
+      "old_value": null,
+      "new_value": "$659 per year",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my Adobe Creative Cloud subscription costs $659 per year"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Initial subscription details and first correction of Adobe renewal date",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I need help keeping track of my subscription renewal dates. I've been burned before by missing cancellation windows and getting charged. My Adobe Creative Cloud subscription auto-renews annually on March 15. That one is the big one I always worry about. I also have Spotify Premium that renews on the 7th of every month, but that one I'm fine with keeping."
+        },
+        {
+          "role": "assistant",
+          "content": "I'd be happy to help you stay on top of your subscription renewals. I've noted the following so far: Adobe Creative Cloud renews annually on March 15, and Spotify Premium renews monthly on the 7th. Adobe is clearly the high-priority one given the annual commitment. Would you like me to help you set up a timeline or reminder strategy for these? We could plan alerts at specific intervals before each renewal date — for example, 30 days and 7 days before the Adobe date — so you have plenty of time to decide whether to cancel or continue."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, that would be great. I also want to add that my iCloud+ 200GB plan renews monthly on the 17th. I signed up for it back in mid-January. It's not as expensive as Adobe but I still want to keep tabs on it. I tend to forget about the smaller charges and then they pile up over the year, you know?"
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, those smaller monthly charges can really add up over time. I've added your iCloud+ 200GB plan with a monthly renewal on the 17th. So far we have three subscriptions tracked: Adobe Creative Cloud annually on March 15, Spotify Premium monthly on the 7th, and iCloud+ monthly on the 17th. For the monthly ones, a recurring reminder a few days before each date could work well. For Adobe, since it's annual and high-stakes, we might want a more layered approach — maybe a 60-day heads-up, then a 30-day, then a 7-day reminder. Does that kind of cadence work for you?"
+        },
+        {
+          "role": "user",
+          "content": "Wait, hold on. I just checked my Adobe account page and the renewal date actually shows March 22, not March 15. I must have been remembering it wrong. The account settings page clearly says the next billing date is March 22. So let's correct that — Adobe Creative Cloud renews on March 22 annually."
+        },
+        {
+          "role": "assistant",
+          "content": "Good catch — I'm glad you double-checked directly on the account page. I've updated the Adobe Creative Cloud annual renewal date from March 15 to March 22. It's always best to go by what the account settings show rather than relying on memory for these dates. So the updated list is: Adobe Creative Cloud annually on March 22, Spotify Premium monthly on the 7th, and iCloud+ 200GB monthly on the 17th. I'll adjust any reminder timelines accordingly. With the Adobe date now on the 22nd, a 60-day alert would land around January 21, and a 30-day alert around February 20. Shall I draft those out?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, those reminder intervals sound reasonable. I also want to mention that I cancelled my Headspace subscription already — it used to renew on December 1 but I got rid of it. Finding their cancel button was a nightmare. I really hate subscriptions that make you jump through hoops to cancel. I much prefer services where everything is manageable from one settings page."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — Headspace is cancelled and no longer needs tracking. I completely understand the frustration with difficult cancellation flows; some services really do make it unnecessarily complicated. Your preference for straightforward, single-page management is a good criterion for evaluating future subscriptions. So our active tracking list remains: Adobe Creative Cloud annually on March 22, Spotify Premium monthly on the 7th, and iCloud+ 200GB monthly on the 17th. I'll keep the reminder cadence focused on these three. Let me know if any other subscriptions come to mind that you'd like to add to this list."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Second update to Adobe renewal date after billing dispute resolution; Adobe cost established",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So I wanted to follow up on the Adobe situation. As you know, my Adobe Creative Cloud subscription costs $659 per year, which is why I take the renewal date so seriously. Last year I almost missed the window and got hit with the full charge. I spent three days arguing with their support and only got a partial refund. That whole experience was incredibly frustrating."
+        },
+        {
+          "role": "assistant",
+          "content": "I completely understand why you're so vigilant about the Adobe renewal — $659 is a significant annual charge, and having to fight for a refund after missing the cancellation window sounds really stressful. That kind of experience would make anyone want to stay ahead of it. With the renewal currently set for March 22, our reminder schedule would give you alerts starting around late January. That should give you ample time to evaluate whether you want to continue or cancel before the charge goes through. Is there anything else about the Adobe situation you'd like to track?"
+        },
+        {
+          "role": "user",
+          "content": "Actually yes — I called Adobe support just now and they confirmed the renewal was moved to April 1 because of the billing dispute I filed. They said the dispute resolution pushed the billing cycle back by about 10 days, so the new annual renewal date is April 1 going forward. That's official from their billing department."
+        },
+        {
+          "role": "assistant",
+          "content": "That's an important update. I've changed the Adobe Creative Cloud annual renewal date from March 22 to April 1, based on what their billing department confirmed. The dispute resolution shifting your billing cycle actually gives you a bit more breathing room this year, which is a nice side effect. I'll adjust the reminder schedule: a 60-day heads-up would now fall around January 31, and a 30-day alert around March 2. This way you'll have plenty of time to decide before the April 1 charge. Does the rest of your subscription list still look accurate?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, the rest is fine. I also have a Mullvad VPN subscription that renews annually around February 22. I paid with a voucher code last time, which I really liked — no credit card on file, no sneaky auto-charges. That straightforward approach is much more comfortable for me than the way Adobe handles things."
+        },
+        {
+          "role": "assistant",
+          "content": "Mullvad's voucher-based payment model is definitely one of the more transparent approaches out there — no stored payment method means no surprise charges. I've added Mullvad VPN with an annual renewal around February 22. Your active subscription list is now: Adobe Creative Cloud annually on April 1 at $659/year, Spotify Premium monthly on the 7th, iCloud+ 200GB monthly on the 17th, and Mullvad VPN annually around February 22. Since Mullvad uses voucher codes, the reminder for that one would be more about making sure you purchase a new voucher in time rather than worrying about an auto-charge. Want me to note that distinction?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, please do. The Mullvad one is less urgent since there's no auto-charge, but I still want a heads-up so I don't lose access. By the way, my brother told me his Netflix went up by $3 because he didn't notice the renewal and they switched his plan tier. That kind of thing is exactly what I'm trying to avoid with all this tracking.\n\nPerfect. One more thing — I have a New York Times digital subscription too. I signed up sometime around late October or maybe early November, I'm not totally sure of the exact date. The introductory rate was $1 per week for the first year, and it renews annually from whenever I signed up. I need to cancel before it jumps to full price."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a great cautionary tale from your brother — silent plan tier changes during renewal are one of the sneakier tactics some services use. I'll flag the Mullvad reminder as a soft alert rather than an urgent cancellation window, since there's no auto-charge risk. Your brother's Netflix experience reinforces why this tracking system is valuable. For your own subscriptions, we're in good shape: Adobe Creative Cloud on April 1 is the highest priority due to the $659 annual cost, followed by the monthly renewals for Spotify and iCloud+, and the annual Mullvad renewal around February 22. I'll keep everything organized.\n\nGot it — I've added the New York Times digital subscription to the list. Since you're not sure of the exact signup date, we know it's roughly late October to early November, which means the introductory rate would expire around that same window next year. I'd recommend setting a reminder for mid-September to give yourself plenty of time to decide whether the full price is worth it. The $1/week intro rate is a great deal, but the jump to full price can be substantial. Your complete active list is now: Adobe Creative Cloud on April 1, Spotify on the 7th monthly, iCloud+ on the 17th monthly, Mullvad around February 22 annually, and NYT around late October/early November annually."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Tentative Adobe renewal shift email; adversarial injection of old March 15 date",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to check in on my subscription tracking. Can you remind me where we left things with all my renewal dates? I want to make sure everything is up to date before I forget again. I've been pretty busy and haven't looked at any of this in a couple of weeks."
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! Here's your current subscription renewal summary: Adobe Creative Cloud renews annually on April 1, with an annual cost of $659. Spotify Premium renews monthly on the 7th. iCloud+ 200GB renews monthly on the 17th. Mullvad VPN renews annually around February 22, paid via voucher code. And your New York Times digital subscription renews annually around late October or early November, currently on the $1/week introductory rate. Headspace was previously cancelled, so that's off the list. Does everything still look correct, or have there been any changes?"
+        },
+        {
+          "role": "user",
+          "content": "That looks right for the most part. Actually, I was reviewing some old emails and I found a confirmation from Adobe dated March 15 from when I first signed up years ago. But that's the original signup date, not the current renewal date — the billing dispute moved it to April 1, like we discussed. Just wanted to clarify in case that old date causes confusion."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for flagging that — it's a good distinction to keep clear. The March 15 date from your original signup confirmation is historical and no longer reflects your current billing cycle. After the dispute resolution, Adobe's billing department confirmed the renewal moved to April 1, which is the date we're tracking. Old confirmation emails can definitely cause confusion, especially when billing cycles get shifted. I'll keep April 1 as the active renewal date for Adobe Creative Cloud. It's smart to note the discrepancy so you're not caught off guard if you see March 15 referenced in old correspondence."
+        },
+        {
+          "role": "user",
+          "content": "Adobe sent me an email saying they're consolidating billing cycles and my renewal will shift to April 15 going forward. I haven't confirmed this with their support yet though, so I'm not sure if it's finalized. The email says the change takes effect with the next billing period."
+        },
+        {
+          "role": "assistant",
+          "content": "That's interesting — a shift from April 1 to April 15 would give you an extra two weeks, which isn't bad. However, since you haven't confirmed this with Adobe support yet and the email says it takes effect with the next billing period, I'd treat this as pending rather than official for now. I'll note the potential change to April 15 but keep April 1 as the confirmed date until you verify with their billing department directly. Given your past experience with Adobe's billing practices, it's probably wise to call and confirm before relying on an automated email. Want me to add a reminder to follow up with Adobe support about this?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, that's a good idea. I'll try to call them this week. In the meantime, I want to start thinking about which subscriptions I might cancel before year-end. I know the NYT one is the main candidate since the intro rate expires. I enjoy their cooking section — browsing recipes in the evening is really relaxing — but I'm not sure it's worth full price.\n\nGood point about the standalone cooking subscription — I'll look into that. For now let's keep the tracking list as is. I feel much better having all of this organized. The April 1 date for Adobe is the one I'm most anxious about, given what happened last year with the overcharge and the three-day support ordeal."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a reasonable approach. The NYT intro rate of $1/week is hard to beat, and the jump to full price could be significant depending on the plan tier. Since you enjoy the cooking section specifically, you might want to check if they offer a standalone cooking subscription at a lower rate — that could let you keep the part you value without paying for the full digital access. For your year-end review, I'd suggest evaluating each subscription by how frequently you use it and the cost-to-value ratio. Adobe at $659/year is the biggest line item, followed by whatever the NYT full price would be. The monthly ones like Spotify and iCloud+ are smaller but add up over twelve months.\n\nAbsolutely — having everything documented makes it much easier to stay ahead of these deadlines. The Adobe April 1 renewal is definitely your highest-priority date, both because of the $659 cost and your previous frustrating experience with their support team. I'd recommend starting your cancellation-or-renewal decision process at least 60 days out, around late January, so you're never in a rush. And don't forget to follow up with Adobe about that potential April 15 shift from the email — once you confirm with their support, we can update accordingly. Everything else on the list looks stable. You're in a much better position now to avoid surprise charges."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations about my subscriptions, which specific things did I tell you about my Adobe Creative Cloud renewal date, and what did I say each time?",
+      "expected_answer": "You initially said the Adobe Creative Cloud subscription auto-renews annually on March 15. Then you checked your Adobe account page and said the renewal date actually shows March 22, not March 15. Later, you said you called Adobe support and they confirmed the renewal was moved to April 1 because of a billing dispute you filed. Most recently, you mentioned Adobe sent an email saying the renewal will shift to April 15 going forward, but you hadn't confirmed that with support yet.",
+      "gold_memory_state": "Adobe Creative Cloud annual renewal date has been discussed four times: initially March 15, corrected to March 22, then officially moved to April 1, and a pending unconfirmed email suggesting April 15. The confirmed current value is April 1. The April 15 value is tentative/unconfirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "March 15",
+          "March 22",
+          "April 1",
+          "April 15"
+        ],
+        "acceptable_paraphrases": [
+          "billing dispute caused the shift to April 1",
+          "account page showed March 22"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming April 15 is the confirmed date"
+        ],
+        "harmless_extra": [
+          "mentioning the $659 annual cost",
+          "mentioning the billing dispute details"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if any superseded date is presented as the current active renewal date.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My Adobe Creative Cloud subscription auto-renews annually on March 15"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I just checked my Adobe account page and the renewal date actually shows March 22, not March 15"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I called Adobe support just now and they confirmed the renewal was moved to April 1 because of the billing dispute I filed"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Adobe sent me an email saying they're consolidating billing cycles and my renewal will shift to April 15 going forward"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations about my subscriptions, which specific things did I tell you about my Adobe Creative Cloud renewal date, and what did I say each time?",
+      "expected_answer": "You initially said the Adobe Creative Cloud subscription auto-renews annually on March 15. Then you checked your Adobe account page and said the renewal date actually shows March 22, not March 15. Later, you said you called Adobe support and they confirmed the renewal was moved to April 1 because of a billing dispute you filed. Most recently, you mentioned Adobe sent an email saying the renewal will shift to April 15 going forward, but you hadn't confirmed that with support yet.",
+      "gold_memory_state": "Adobe Creative Cloud annual renewal date has been discussed four times: initially March 15, corrected to March 22, then officially moved to April 1, and a pending unconfirmed email suggesting April 15. The confirmed current value is April 1. The April 15 value is tentative/unconfirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "March 15",
+          "March 22",
+          "April 1",
+          "April 15"
+        ],
+        "acceptable_paraphrases": [
+          "billing dispute caused the shift to April 1",
+          "account page showed March 22"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming April 15 is the confirmed date"
+        ],
+        "harmless_extra": [
+          "mentioning the $659 annual cost",
+          "mentioning the billing dispute details"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if any superseded date is presented as the current active renewal date.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My Adobe Creative Cloud subscription auto-renews annually on March 15"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I just checked my Adobe account page and the renewal date actually shows March 22, not March 15"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I called Adobe support just now and they confirmed the renewal was moved to April 1 because of the billing dispute I filed"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Adobe sent me an email saying they're consolidating billing cycles and my renewal will shift to April 15 going forward"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I have several subscription renewal dates tracked. When the billing dispute resolution changed a date, which subscription's renewal record was affected? Did any of my other subscription renewal dates change as a result?",
+      "expected_answer": "The billing dispute resolution affected only the Adobe Creative Cloud annual renewal date. None of your other subscription renewal dates — iCloud+ on the 17th monthly, Spotify on the 7th monthly, Mullvad VPN around February 22 annually, or New York Times around late October/early November annually — were changed by the billing dispute.",
+      "gold_memory_state": "Adobe Creative Cloud renewal date is the only target modified by the billing dispute. iCloud+ 200GB monthly renewal on the 17th remains unchanged. Other subscriptions (Spotify, Mullvad, NYT) are unaffected.",
+      "judge_rubric": {
+        "must_include": [
+          "Adobe Creative Cloud"
+        ],
+        "acceptable_paraphrases": [
+          "Adobe CC",
+          "Adobe subscription"
+        ],
+        "must_not_include": [
+          "iCloud renewal date changed",
+          "Spotify renewal date changed",
+          "Mullvad renewal date changed"
+        ],
+        "harmful_extra": [
+          "claiming the billing dispute affected iCloud or any other subscription",
+          "claiming all subscriptions were shifted"
+        ],
+        "harmless_extra": [
+          "listing the specific dates of other subscriptions",
+          "mentioning the $659 cost"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I called Adobe support just now and they confirmed the renewal was moved to April 1 because of the billing dispute I filed"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my iCloud+ 200GB plan renews monthly on the 17th"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I have several subscription renewal dates tracked. When the billing dispute resolution changed a date, which subscription's renewal record was affected? Did any of my other subscription renewal dates change as a result?",
+      "expected_answer": "The billing dispute resolution affected only the Adobe Creative Cloud annual renewal date. None of your other subscription renewal dates — iCloud+ on the 17th monthly, Spotify on the 7th monthly, Mullvad VPN around February 22 annually, or New York Times around late October/early November annually — were changed by the billing dispute.",
+      "gold_memory_state": "Adobe Creative Cloud renewal date is the only target modified by the billing dispute. iCloud+ 200GB monthly renewal on the 17th remains unchanged. Other subscriptions (Spotify, Mullvad, NYT) are unaffected.",
+      "judge_rubric": {
+        "must_include": [
+          "Adobe Creative Cloud"
+        ],
+        "acceptable_paraphrases": [
+          "Adobe CC",
+          "Adobe subscription"
+        ],
+        "must_not_include": [
+          "iCloud renewal date changed",
+          "Spotify renewal date changed",
+          "Mullvad renewal date changed"
+        ],
+        "harmful_extra": [
+          "claiming the billing dispute affected iCloud or any other subscription",
+          "claiming all subscriptions were shifted"
+        ],
+        "harmless_extra": [
+          "listing the specific dates of other subscriptions",
+          "mentioning the $659 cost"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I called Adobe support just now and they confirmed the renewal was moved to April 1 because of the billing dispute I filed"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my iCloud+ 200GB plan renews monthly on the 17th"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to set a calendar alert for my Adobe Creative Cloud annual renewal. Which of the following dates should I use?",
+      "candidate_options": [
+        "March 15",
+        "March 22",
+        "April 1",
+        "April 15"
+      ],
+      "expected_answer": "April 1",
+      "gold_memory_state": "Adobe Creative Cloud annual renewal date is confirmed as April 1. March 15 was the original self-reported date (stale, superseded by March 22). March 22 was the account-page correction (stale, superseded by April 1 after billing dispute). April 15 is from an unconfirmed email and has not been verified with Adobe support (tentative, not adopted).",
+      "judge_rubric": {
+        "must_include": [
+          "April 1"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "March 15 as the answer",
+          "March 22 as the answer",
+          "April 15 as the answer"
+        ],
+        "harmful_extra": [
+          "selecting April 15 because it is the most recent mention",
+          "selecting March 15 or March 22 because they appeared earlier"
+        ],
+        "harmless_extra": [
+          "noting that April 15 is pending confirmation"
+        ]
+      },
+      "distractor_rationale": "same-value-different-target: March 15 is the original signup date the user found in old email correspondence, which is historical and no longer the billing cycle date — it could be confused with the active renewal date. assistant echo: March 22 was echoed multiple times by the assistant as the confirmed date before the billing dispute update. April 15 is a recency-trap tentative value from an unconfirmed email that the user explicitly said has not been verified with support. March 15 is the earliest stale value (superseded twice). March 22 is the intermediate stale value (superseded once by April 1). April 15 is the tentative/unconfirmed value that tests recency bias.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if March 15 or March 22 is selected — these are superseded stale values from earlier in the update chain. Fails if April 15 is selected — this is a tentative value from an unconfirmed email, not yet verified with Adobe support, and represents a recency trap.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I called Adobe support just now and they confirmed the renewal was moved to April 1 because of the billing dispute I filed"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Adobe sent me an email saying they're consolidating billing cycles and my renewal will shift to April 15 going forward"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to set a calendar alert for my Adobe Creative Cloud annual renewal. Which of the following dates should I use?",
+      "candidate_options": [
+        "March 15",
+        "March 22",
+        "April 1",
+        "April 15"
+      ],
+      "expected_answer": "April 1",
+      "gold_memory_state": "Adobe Creative Cloud annual renewal date is confirmed as April 1. March 15 was the original self-reported date (stale, superseded by March 22). March 22 was the account-page correction (stale, superseded by April 1 after billing dispute). April 15 is from an unconfirmed email and has not been verified with Adobe support (tentative, not adopted).",
+      "judge_rubric": {
+        "must_include": [
+          "April 1"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "March 15 as the answer",
+          "March 22 as the answer",
+          "April 15 as the answer"
+        ],
+        "harmful_extra": [
+          "selecting April 15 because it is the most recent mention",
+          "selecting March 15 or March 22 because they appeared earlier"
+        ],
+        "harmless_extra": [
+          "noting that April 15 is pending confirmation"
+        ]
+      },
+      "distractor_rationale": "same-value-different-target: March 15 is the original signup date the user found in old email correspondence, which is historical and no longer the billing cycle date — it could be confused with the active renewal date. assistant echo: March 22 was echoed multiple times by the assistant as the confirmed date before the billing dispute update. April 15 is a recency-trap tentative value from an unconfirmed email that the user explicitly said has not been verified with support. March 15 is the earliest stale value (superseded twice). March 22 is the intermediate stale value (superseded once by April 1). April 15 is the tentative/unconfirmed value that tests recency bias.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if March 15 or March 22 is selected — these are superseded stale values from earlier in the update chain. Fails if April 15 is selected — this is a tentative value from an unconfirmed email, not yet verified with Adobe support, and represents a recency trap.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I called Adobe support just now and they confirmed the renewal was moved to April 1 because of the billing dispute I filed"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Adobe sent me an email saying they're consolidating billing cycles and my renewal will shift to April 15 going forward"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I want to set a 60-day advance reminder for my Adobe Creative Cloud renewal so I can decide whether to keep paying for it. Given what the subscription costs me per year and when it's set to renew, draft a one-sentence calendar reminder entry that includes the reminder date, the renewal date, and the annual cost.",
+      "expected_answer": "Reminder for January 31: Your Adobe Creative Cloud subscription ($659/year) renews on April 1 — decide by then whether to cancel or continue.",
+      "application_probe_type": "multi_hop_derivation",
+      "gold_memory_state": "Adobe Creative Cloud confirmed renewal date: April 1. Adobe Creative Cloud annual cost: $659/year. iCloud+ 200GB renewal: 17th of each month. The 60-day advance reminder requires computing April 1 minus 60 days = January 31.",
+      "judge_rubric": {
+        "must_include": [
+          "January 31",
+          "April 1",
+          "$659"
+        ],
+        "acceptable_paraphrases": [
+          "Jan 31",
+          "approximately January 31",
+          "around January 31",
+          "659 dollars"
+        ],
+        "must_not_include": [
+          "March 15 as the renewal date",
+          "March 22 as the renewal date",
+          "April 15 as the renewal date"
+        ],
+        "harmful_extra": [
+          "using April 15 as the renewal date",
+          "using March 15 or March 22 as the renewal date",
+          "computing the reminder from a stale or tentative date"
+        ],
+        "harmless_extra": [
+          "mentioning the billing dispute history",
+          "mentioning the option to cancel"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the reminder date is computed from March 15, March 22, or April 15 instead of April 1. Fails if any stale renewal date appears as the active date.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Adobe Creative Cloud confirmed annual renewal date is April 1.",
+        "Fact 2: Adobe Creative Cloud annual subscription cost is $659 per year.",
+        "Inference: 60 days before April 1 = January 31.",
+        "Derived value: The calendar reminder should be set for January 31, referencing the April 1 renewal and $659 annual cost."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I called Adobe support just now and they confirmed the renewal was moved to April 1 because of the billing dispute I filed"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my Adobe Creative Cloud subscription costs $659 per year"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I want to set a 60-day advance reminder for my Adobe Creative Cloud renewal so I can decide whether to keep paying for it. Given what the subscription costs me per year and when it's set to renew, draft a one-sentence calendar reminder entry that includes the reminder date, the renewal date, and the annual cost.",
+      "expected_answer": "Reminder for January 31: Your Adobe Creative Cloud subscription ($659/year) renews on April 1 — decide by then whether to cancel or continue.",
+      "application_probe_type": "multi_hop_derivation",
+      "gold_memory_state": "Adobe Creative Cloud confirmed renewal date: April 1. Adobe Creative Cloud annual cost: $659/year. iCloud+ 200GB renewal: 17th of each month. The 60-day advance reminder requires computing April 1 minus 60 days = January 31.",
+      "judge_rubric": {
+        "must_include": [
+          "January 31",
+          "April 1",
+          "$659"
+        ],
+        "acceptable_paraphrases": [
+          "Jan 31",
+          "approximately January 31",
+          "around January 31",
+          "659 dollars"
+        ],
+        "must_not_include": [
+          "March 15 as the renewal date",
+          "March 22 as the renewal date",
+          "April 15 as the renewal date"
+        ],
+        "harmful_extra": [
+          "using April 15 as the renewal date",
+          "using March 15 or March 22 as the renewal date",
+          "computing the reminder from a stale or tentative date"
+        ],
+        "harmless_extra": [
+          "mentioning the billing dispute history",
+          "mentioning the option to cancel"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the reminder date is computed from March 15, March 22, or April 15 instead of April 1. Fails if any stale renewal date appears as the active date.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Adobe Creative Cloud confirmed annual renewal date is April 1.",
+        "Fact 2: Adobe Creative Cloud annual subscription cost is $659 per year.",
+        "Inference: 60 days before April 1 = January 31.",
+        "Derived value: The calendar reminder should be set for January 31, referencing the April 1 renewal and $659 annual cost."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I called Adobe support just now and they confirmed the renewal was moved to April 1 because of the billing dispute I filed"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my Adobe Creative Cloud subscription costs $659 per year"
+        }
+      ]
+    }
+  ]
+}

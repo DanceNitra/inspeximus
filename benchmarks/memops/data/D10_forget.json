@@ -1,0 +1,912 @@
+{
+  "target_fact": "D10 Usual commuting method and related commute details",
+  "operation_type": "Forget",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "My current commute is by bike. I ride a Trek FX 2 — the blue one — from my apartment near Greenfield Ave to my office at 412 Main Street, Building C."
+      },
+      "target": {
+        "target_id": "current_commute_method",
+        "target_name": "current commuting method and bike model"
+      },
+      "old_value": null,
+      "new_value": "Bike commute on a blue Trek FX 2",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current commute is by bike. I ride a Trek FX 2 — the blue one — from my apartment near Greenfield Ave to my office at 412 Main Street, Building C."
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "my office address is 412 Main Street, Building C. I need to remember the building letter because delivery people always ask and I keep forgetting it"
+      },
+      "target": {
+        "target_id": "office_address",
+        "target_name": "office address including building letter"
+      },
+      "old_value": null,
+      "new_value": "412 Main Street, Building C",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my office address is 412 Main Street, Building C. I need to remember the building letter because delivery people always ask and I keep forgetting it"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I bought the bike on March 5th. The shop was closed on the 3rd and I had to go back two days later. I'm tracking that date for the warranty"
+      },
+      "target": {
+        "target_id": "bike_purchase_date",
+        "target_name": "Trek FX 2 bike purchase date for warranty tracking"
+      },
+      "old_value": null,
+      "new_value": "March 5th",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I bought the bike on March 5th. The shop was closed on the 3rd and I had to go back two days later. I'm tracking that date for the warranty"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "my bike lock combination is 7-24-33. I've already forgotten it twice and had to look it up, so please keep track of it for me"
+      },
+      "target": {
+        "target_id": "bike_lock_combination",
+        "target_name": "bike lock combination"
+      },
+      "old_value": null,
+      "new_value": "7-24-33",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my bike lock combination is 7-24-33. I've already forgotten it twice and had to look it up, so please keep track of it for me"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I used to have a monthly bus pass — the account number ended in 4782. I cancelled it at the end of February when I switched to biking"
+      },
+      "target": {
+        "target_id": "old_bus_pass",
+        "target_name": "cancelled monthly bus pass account"
+      },
+      "old_value": null,
+      "new_value": "Monthly bus pass, account ending in 4782, cancelled end of February",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I used to have a monthly bus pass — the account number ended in 4782. I cancelled it at the end of February when I switched to biking"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "forget",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "Actually, you can go ahead and forget the bus pass info entirely. The account ending in 4782 — just drop that. It's cancelled and I'll never need it again"
+      },
+      "target": {
+        "target_id": "old_bus_pass",
+        "target_name": "cancelled monthly bus pass account"
+      },
+      "old_value": "Monthly bus pass, account ending in 4782, cancelled end of February",
+      "new_value": null,
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Actually, you can go ahead and forget the bus pass info entirely. The account ending in 4782 — just drop that. It's cancelled and I'll never need it again"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish commute facts: method, office address, bike purchase date, and friend Dave's commute",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to save some personal commute details with you so I can reference them later. My current commute is by bike. I ride a Trek FX 2 — the blue one — from my apartment near Greenfield Ave to my office at 412 Main Street, Building C. The ride is about 3.2 miles each way and I've been doing it since early March."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it! I've noted your daily commute details. You ride a blue Trek FX 2 from your apartment near Greenfield Ave to your office at 412 Main Street, Building C — about 3.2 miles each way. You started biking this route in early March. That sounds like a really nice distance for a daily ride, long enough to get some exercise but short enough to not be exhausting. Would you like me to keep track of anything else related to your commute, like preferred routes or timing?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, one thing I always forget — my office address is 412 Main Street, Building C. I need to remember the building letter because delivery people always ask and I keep forgetting it. Also, before March I was taking the Route 14 bus most days through January and February. My friend Dave still takes that bus every day since he lives out near Oakdale and biking isn't practical for him."
+        },
+        {
+          "role": "assistant",
+          "content": "I've made a special note of the building letter — 412 Main Street, Building C. Next time a delivery driver asks, you can check with me. I've also noted that before switching to biking in March, you commuted via the Route 14 bus during January and February. And your friend Dave still rides Route 14 daily since he lives near Oakdale and the distance makes cycling impractical for him. It makes sense that the bus works better for longer suburban commutes. Is there anything specific about Dave's schedule or the Route 14 that you want me to track?"
+        },
+        {
+          "role": "user",
+          "content": "Not really about Dave specifically. But here's something important for me — I bought the bike on March 5th. The shop was closed on the 3rd and I had to go back two days later. I'm tracking that date for the warranty. The Trek FX 2 has a limited lifetime warranty on the frame and a two-year warranty on the components, so March 5th is the anchor date for all of that."
+        },
+        {
+          "role": "assistant",
+          "content": "I've recorded the purchase date as March 5th for your blue Trek FX 2. You initially went on March 3rd but the shop was closed, so you returned two days later. For warranty tracking purposes: the frame has a limited lifetime warranty and the components have a two-year warranty, both anchored to the March 5th purchase date. That means your component warranty would run through approximately March 5th two years from purchase. Want me to help you set up a reminder closer to that component warranty expiration date so you can get anything checked before it lapses?"
+        },
+        {
+          "role": "user",
+          "content": "That's a good idea, maybe later. Dave mentioned a couple weeks ago that the Route 14 schedule changed — they cut the 7:45 AM departure, which was the one I used to rely on when I was riding the bus. I'm glad I'm not dealing with that anymore. There was also a stretch during an ice storm, maybe late January, when buses were running 20 to 30 minutes behind for about four days straight. Super frustrating."
+        },
+        {
+          "role": "assistant",
+          "content": "That's rough about Route 14 — losing the 7:45 AM departure would have been a real pain since that was your usual bus. Sounds like you got out at the right time. And the ice storm delays in late January sound miserable; being consistently 20 to 30 minutes late for four days would stress anyone out, especially when it's out of your control. Your manager may have noticed even if nothing was said directly. All the more reason the bike switch in March was a smart move. I've noted the Route 14 schedule change and the late January delay history. Anything else from your commute you want stored?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establish bike lock combo, bus pass info, then forget bus pass; mention girlfriend's commute and preferred route",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Yes — my bike lock combination is 7-24-33. I've already forgotten it twice and had to look it up, so please keep track of it for me. This is the Kryptonite combo lock I use at the office bike rack every day. It would be really annoying to get locked out again, so having this stored somewhere I can ask for it quickly would be great."
+        },
+        {
+          "role": "assistant",
+          "content": "Your bike lock combination is saved: 7-24-33 for your Kryptonite combo lock at the office bike rack. Anytime you blank on it, just ask me. Since you're using this daily at 412 Main Street, Building C, it's definitely worth having quick access to. I'd also suggest writing it on a small card kept somewhere separate from the lock itself — like in your wallet — as a backup. But either way, I've got it stored for you. Is there anything else about your bike setup or commute gear you want me to keep track of?"
+        },
+        {
+          "role": "user",
+          "content": "Good thinking. Also, I used to have a monthly bus pass — the account number ended in 4782. I cancelled it at the end of February when I switched to biking. I'm mentioning it because I want you to have the full picture of my commute transition. Before March it was bus, now it's bike. The pass was through the city transit authority's monthly subscription program."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — I've noted the bus pass details for the full commute transition picture. You had a monthly bus pass through the city transit authority's subscription program, account ending in 4782, which you cancelled at the end of February when you switched to biking in March. So the timeline is clear: January through February you commuted via Route 14 bus with that monthly pass, and starting in early March you transitioned to biking on your Trek FX 2. That's a clean switch. Do you want me to keep the bus pass info on file in case you ever need the account number for a refund or records request?"
+        },
+        {
+          "role": "user",
+          "content": "Actually, you can go ahead and forget the bus pass info entirely. The account ending in 4782 — just drop that. It's cancelled and I'll never need it again. No refund pending, no records to request. I just want to keep track of the current bike commute stuff going forward. Clean slate on the bus pass side of things, please."
+        },
+        {
+          "role": "assistant",
+          "content": "Done — I've removed the bus pass information, including the account number ending in 4782, from my records. It's completely cleared out. Going forward I'm only tracking your current bike commute details: the blue Trek FX 2 purchased March 5th, your route from Greenfield Ave to 412 Main Street Building C at about 3.2 miles, and your bike lock combination 7-24-33. That's your clean commute profile now. If you ever set up a new transit account for any reason, just let me know and I'll start fresh with that. Anything else you'd like to adjust?"
+        },
+        {
+          "role": "user",
+          "content": "One more thing — last week I tried a different bike route that goes along the river trail instead of cutting through downtown. It added about five minutes but it was way more pleasant. Less traffic, more trees, and I could keep a steady pace without stopping at a bunch of lights. I think I'm going to stick with that river trail route from now on. My girlfriend takes the subway, Line 3, to her job across town.\n\nYeah, the river trail really suits me. I like that I get real exercise out of the commute — it's basically the only physical activity I get on weekdays. My girlfriend keeps suggesting I get an e-bike so I don't arrive sweaty, but honestly I prefer the workout. It makes me feel more awake when I get to the office. The morning air along the river is really calming before the city noise picks up."
+        },
+        {
+          "role": "assistant",
+          "content": "Nice find with the river trail route! Trading five extra minutes for a calmer ride with fewer stops and more greenery sounds well worth it, especially since you enjoy the quiet morning atmosphere. I've noted that your preferred bike route now goes along the river trail rather than through downtown. And I've noted that your girlfriend commutes via subway Line 3 to her job across town. Between your biking and her subway, you two have the non-car commute covered pretty well. If you ever want to map out the exact river trail route or track your average ride time on it, I can help with that.\n\nThat makes a lot of sense — if the bike commute is your main weekday exercise, switching to an e-bike would actually take away something valuable. The physical effort plus the calm morning atmosphere along the river trail sounds like it sets a great tone for your workday. Arriving energized and awake is a real benefit that outweighs showing up a little sweaty. You could always keep a change of shirt at the office if that ever becomes an issue. I've noted your preference for the manual bike workout over an e-bike. Your commute profile is looking solid now — bike model, route, lock combo, office address, and your exercise preference are all saved."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Reinforce retained facts, introduce adversarial look-alike via assistant echo, and discuss warranty and commute planning",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, quick question — I need to give directions to a courier who's coming to my office tomorrow. Can you remind me of the full office address including the building letter? I always blank on whether it's Building B or Building C. Also, do you have my bike lock combo handy? I want to make sure I have it before I head out in the morning."
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! Your office address is 412 Main Street, Building C — make sure to tell the courier it's Building C specifically, since there are multiple buildings at that address. And your bike lock combination is 7-24-33 for your Kryptonite lock at the office bike rack. You should be all set for tomorrow morning. By the way, I noticed in the courier's pre-delivery form they have a drop-off reference for \"412 Main Street, Building A, Suite 200\" — that might be a different tenant's address in the same complex. Make sure the courier knows it's Building C, not Building A."
+        },
+        {
+          "role": "user",
+          "content": "Good catch — Building A is definitely not mine. That must be someone else's suite in the complex. Mine is Building C, ground floor. Also, I've been thinking about the warranty on my Trek FX 2. You said the components have a two-year warranty from the purchase date. Can you remind me when I bought it so I can figure out when that warranty period ends?"
+        },
+        {
+          "role": "assistant",
+          "content": "Your Trek FX 2 was purchased on March 5th. The component warranty is two years from that date, so it would expire around March 5th two years after purchase. You'll want to get any component issues checked before that deadline. The frame has a limited lifetime warranty, so that's less time-sensitive. Since you're riding daily on the river trail route — roughly 6.4 miles round trip — those components are getting solid use, so it might be worth scheduling a tune-up before the warranty lapses. Want me to help you calculate an exact reminder date for the warranty expiration?"
+        },
+        {
+          "role": "user",
+          "content": "That's a good idea. I'll probably schedule a full tune-up about a month before the warranty expires so there's time to file any claims. Speaking of the commute, Dave told me yesterday that his bus pass account — his ends in 3916 — got charged twice this month and he's dealing with the transit authority about it. Made me glad I'm done with all that bus pass nonsense."
+        },
+        {
+          "role": "assistant",
+          "content": "Smart plan — scheduling the tune-up a month ahead gives you a buffer to identify issues and file warranty claims before the deadline. That would put your tune-up target around early February two years after purchase, roughly. As for Dave, that double-charge on his bus pass account ending in 3916 sounds like a headache. Transit authority billing disputes can drag on for weeks. It's definitely one of those hassles you don't miss now that you've switched to biking. His situation near Oakdale doesn't give him much choice though, since the distance makes cycling impractical. Hopefully he gets the refund sorted quickly."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, I feel for Dave but I'm really happy with my current setup. The river trail, the morning quiet, the exercise — it all works. I was thinking about whether I should log my daily ride times to see if I'm getting faster over the weeks. The route is about 3.2 miles each way and right now it takes me roughly 20 minutes door to door with the river trail detour.\n\nMaybe later on the apps. For now I'll just mentally note my times. One last thing — can you confirm what you currently have stored for my commute? I want to make sure the bus pass stuff is actually gone and only the bike commute info remains. I don't want any old transit account numbers floating around in your memory since that account is fully closed."
+        },
+        {
+          "role": "assistant",
+          "content": "Tracking your ride times is a great idea! At 3.2 miles in about 20 minutes, you're averaging around 9.6 miles per hour, which is a comfortable cruising pace on the river trail. Over the coming weeks you'll likely see that improve as you get more familiar with the route and build endurance from the daily rides. You could use a simple phone app or even just jot down departure and arrival times each day. After a month or so, you'd have enough data to see real trends. Given that this is your main weekday exercise, watching your fitness progress through commute speed is a really practical metric. Want suggestions for cycling tracker apps?\n\nAbsolutely. Here's what I currently have stored for your commute profile: You ride a blue Trek FX 2, purchased March 5th, with frame lifetime warranty and two-year component warranty. Your daily route goes from your apartment near Greenfield Ave along the river trail to 412 Main Street, Building C — about 3.2 miles each way, roughly 20 minutes with the trail route. Your bike lock combination is 7-24-33 for the Kryptonite lock at the office rack. Your girlfriend takes subway Line 3 across town, and your friend Dave rides Route 14 from Oakdale. The old bus pass information has been fully removed — no account numbers or transit subscription details remain. Everything is bike-commute only now."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize what I've told you about my history with public transit — the bus pass, the route I used to take, and when I stopped using it?",
+      "expected_answer": "You had a monthly bus pass through the city transit authority's subscription program, with an account ending in 4782. You cancelled it at the end of February when you switched to biking. Before that, during January and February, you commuted via the Route 14 bus. You later asked to have the bus pass information completely removed from your records.",
+      "gold_memory_state": "The bus pass record (account ending 4782, cancelled end of February) was stored and then removed per user request. Route 14 historical usage by the user and Dave's ongoing Route 14 usage are separate contextual facts not encoded as gold operations for the bus pass target.",
+      "judge_rubric": {
+        "must_include": [
+          "monthly bus pass",
+          "account ending in 4782",
+          "cancelled end of February",
+          "user requested removal of bus pass info"
+        ],
+        "acceptable_paraphrases": [
+          "dropped the bus pass details",
+          "cleared bus pass record"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating the bus pass info is still on file"
+        ],
+        "harmless_extra": [
+          "mentioning Route 14",
+          "mentioning the switch to biking in March"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I used to have a monthly bus pass — the account number ended in 4782. I cancelled it at the end of February when I switched to biking"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Actually, you can go ahead and forget the bus pass info entirely. The account ending in 4782 — just drop that. It's cancelled and I'll never need it again"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize what I've told you about my history with public transit — the bus pass, the route I used to take, and when I stopped using it?",
+      "expected_answer": "You had a monthly bus pass through the city transit authority's subscription program, with an account ending in 4782. You cancelled it at the end of February when you switched to biking. Before that, during January and February, you commuted via the Route 14 bus. You later asked to have the bus pass information completely removed from your records.",
+      "gold_memory_state": "The bus pass record (account ending 4782, cancelled end of February) was stored and then removed per user request. Route 14 historical usage by the user and Dave's ongoing Route 14 usage are separate contextual facts not encoded as gold operations for the bus pass target.",
+      "judge_rubric": {
+        "must_include": [
+          "monthly bus pass",
+          "account ending in 4782",
+          "cancelled end of February",
+          "user requested removal of bus pass info"
+        ],
+        "acceptable_paraphrases": [
+          "dropped the bus pass details",
+          "cleared bus pass record"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating the bus pass info is still on file"
+        ],
+        "harmless_extra": [
+          "mentioning Route 14",
+          "mentioning the switch to biking in March"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I used to have a monthly bus pass — the account number ended in 4782. I cancelled it at the end of February when I switched to biking"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Actually, you can go ahead and forget the bus pass info entirely. The account ending in 4782 — just drop that. It's cancelled and I'll never need it again"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I know I've mentioned a few different transit-related account numbers during our conversations — mine and my friend Dave's. Which account did I ask you to drop, and does Dave's bus pass situation have anything to do with that?",
+      "expected_answer": "You asked to drop your own cancelled bus pass account (ending in 4782). Dave's bus pass account (ending in 3916) is unrelated and was not affected by your request.",
+      "gold_memory_state": "The user's bus pass (account ending 4782) was removed. Dave's bus pass account ending in 3916 is a separate contextual detail not stored as a gold operation target. The bike commute details (Trek FX 2, lock combo 7-24-33, office address 412 Main Street Building C, purchase date March 5th) remain active.",
+      "judge_rubric": {
+        "must_include": [
+          "user's own bus pass account ending in 4782 was removed",
+          "Dave's account is separate and not affected"
+        ],
+        "acceptable_paraphrases": [
+          "your bus pass ending 4782 was deleted",
+          "Dave's transit details were not touched"
+        ],
+        "must_not_include": [
+          "Dave's account was also removed",
+          "both accounts were dropped"
+        ],
+        "harmful_extra": [
+          "claiming Dave's account ending 3916 was also removed",
+          "claiming the user's bus pass is still on file"
+        ],
+        "harmless_extra": [
+          "mentioning that Dave's account had a double-charge issue"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response treats the user's bus pass account as still stored or retrievable.",
+        "over_forget": "Fails if the response claims Dave's bus pass info was also removed or that all transit info was wiped.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Actually, you can go ahead and forget the bus pass info entirely. The account ending in 4782 — just drop that. It's cancelled and I'll never need it again"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Dave told me yesterday that his bus pass account — his ends in 3916 — got charged twice this month and he's dealing with the transit authority about it"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I know I've mentioned a few different transit-related account numbers during our conversations — mine and my friend Dave's. Which account did I ask you to drop, and does Dave's bus pass situation have anything to do with that?",
+      "expected_answer": "You asked to drop your own cancelled bus pass account (ending in 4782). Dave's bus pass account (ending in 3916) is unrelated and was not affected by your request.",
+      "gold_memory_state": "The user's bus pass (account ending 4782) was removed. Dave's bus pass account ending in 3916 is a separate contextual detail not stored as a gold operation target. The bike commute details (Trek FX 2, lock combo 7-24-33, office address 412 Main Street Building C, purchase date March 5th) remain active.",
+      "judge_rubric": {
+        "must_include": [
+          "user's own bus pass account ending in 4782 was removed",
+          "Dave's account is separate and not affected"
+        ],
+        "acceptable_paraphrases": [
+          "your bus pass ending 4782 was deleted",
+          "Dave's transit details were not touched"
+        ],
+        "must_not_include": [
+          "Dave's account was also removed",
+          "both accounts were dropped"
+        ],
+        "harmful_extra": [
+          "claiming Dave's account ending 3916 was also removed",
+          "claiming the user's bus pass is still on file"
+        ],
+        "harmless_extra": [
+          "mentioning that Dave's account had a double-charge issue"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response treats the user's bus pass account as still stored or retrievable.",
+        "over_forget": "Fails if the response claims Dave's bus pass info was also removed or that all transit info was wiped.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Actually, you can go ahead and forget the bus pass info entirely. The account ending in 4782 — just drop that. It's cancelled and I'll never need it again"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Dave told me yesterday that his bus pass account — his ends in 3916 — got charged twice this month and he's dealing with the transit authority about it"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "I'm putting together a complete profile of my daily commute for a workplace transportation survey. What commute-related details do you still have for me?",
+      "expected_answer": "You ride a blue Trek FX 2 (purchased March 5th) along the river trail from your apartment near Greenfield Ave to 412 Main Street, Building C — about 3.2 miles each way, roughly 20 minutes. Your bike lock combination is 7-24-33 for your Kryptonite lock. Your girlfriend takes subway Line 3 across town, and your friend Dave rides Route 14 from Oakdale.",
+      "gold_memory_state": "Active retained facts: bike commute on blue Trek FX 2, purchased March 5th, river trail route, 3.2 miles each way ~20 min, office at 412 Main Street Building C, apartment near Greenfield Ave, bike lock combo 7-24-33 (Kryptonite), girlfriend on subway Line 3, friend Dave on Route 14 from Oakdale. Removed and unavailable: the user's old monthly bus pass account ending in 4782 — fully deleted, must not appear.",
+      "judge_rubric": {
+        "must_include": [
+          "blue Trek FX 2",
+          "March 5th",
+          "412 Main Street, Building C",
+          "7-24-33",
+          "river trail"
+        ],
+        "acceptable_paraphrases": [
+          "bike lock code 7-24-33",
+          "Greenfield Ave area",
+          "about 3.2 miles"
+        ],
+        "must_not_include": [
+          "account ending in 4782",
+          "monthly bus pass account number",
+          "bus pass subscription details"
+        ],
+        "harmful_extra": [
+          "including the old bus pass account number",
+          "stating the bus pass is still on file"
+        ],
+        "harmless_extra": [
+          "mentioning girlfriend's subway Line 3",
+          "mentioning Dave's Route 14 commute",
+          "mentioning the Kryptonite brand",
+          "mentioning warranty details"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response includes the bus pass account number (4782) or states the bus pass subscription is still tracked.",
+        "over_forget": "Fails if the response omits retained bike commute details such as the Trek FX 2, the lock combination, the office address, or the purchase date, or claims no commute information is available.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current commute is by bike. I ride a Trek FX 2 — the blue one — from my apartment near Greenfield Ave to my office at 412 Main Street, Building C."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I bought the bike on March 5th. The shop was closed on the 3rd and I had to go back two days later. I'm tracking that date for the warranty"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my bike lock combination is 7-24-33. I've already forgotten it twice and had to look it up, so please keep track of it for me"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Actually, you can go ahead and forget the bus pass info entirely. The account ending in 4782 — just drop that. It's cancelled and I'll never need it again"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "I'm putting together a complete profile of my daily commute for a workplace transportation survey. What commute-related details do you still have for me?",
+      "expected_answer": "You ride a blue Trek FX 2 (purchased March 5th) along the river trail from your apartment near Greenfield Ave to 412 Main Street, Building C — about 3.2 miles each way, roughly 20 minutes. Your bike lock combination is 7-24-33 for your Kryptonite lock. Your girlfriend takes subway Line 3 across town, and your friend Dave rides Route 14 from Oakdale.",
+      "gold_memory_state": "Active retained facts: bike commute on blue Trek FX 2, purchased March 5th, river trail route, 3.2 miles each way ~20 min, office at 412 Main Street Building C, apartment near Greenfield Ave, bike lock combo 7-24-33 (Kryptonite), girlfriend on subway Line 3, friend Dave on Route 14 from Oakdale. Removed and unavailable: the user's old monthly bus pass account ending in 4782 — fully deleted, must not appear.",
+      "judge_rubric": {
+        "must_include": [
+          "blue Trek FX 2",
+          "March 5th",
+          "412 Main Street, Building C",
+          "7-24-33",
+          "river trail"
+        ],
+        "acceptable_paraphrases": [
+          "bike lock code 7-24-33",
+          "Greenfield Ave area",
+          "about 3.2 miles"
+        ],
+        "must_not_include": [
+          "account ending in 4782",
+          "monthly bus pass account number",
+          "bus pass subscription details"
+        ],
+        "harmful_extra": [
+          "including the old bus pass account number",
+          "stating the bus pass is still on file"
+        ],
+        "harmless_extra": [
+          "mentioning girlfriend's subway Line 3",
+          "mentioning Dave's Route 14 commute",
+          "mentioning the Kryptonite brand",
+          "mentioning warranty details"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response includes the bus pass account number (4782) or states the bus pass subscription is still tracked.",
+        "over_forget": "Fails if the response omits retained bike commute details such as the Trek FX 2, the lock combination, the office address, or the purchase date, or claims no commute information is available.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current commute is by bike. I ride a Trek FX 2 — the blue one — from my apartment near Greenfield Ave to my office at 412 Main Street, Building C."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I bought the bike on March 5th. The shop was closed on the 3rd and I had to go back two days later. I'm tracking that date for the warranty"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my bike lock combination is 7-24-33. I've already forgotten it twice and had to look it up, so please keep track of it for me"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Actually, you can go ahead and forget the bus pass info entirely. The account ending in 4782 — just drop that. It's cancelled and I'll never need it again"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "If I need to look up a transit subscription account number from my records, which of the following should I be able to retrieve?",
+      "candidate_options": [
+        "Account ending in 4782",
+        "Account ending in 3916",
+        "No transit subscription account is on file",
+        "Account ending in 4728"
+      ],
+      "expected_answer": "No transit subscription account is on file",
+      "distractor_rationale": "same-value-different-target: Account ending in 3916 is Dave's bus pass account, not the user's — it belongs to a different person's transit record. assistant echo: Account ending in 4782 was explicitly removed per user request but was echoed by the assistant in earlier confirmations. Account ending in 4728 is a digit-transposition distractor of 4782.",
+      "gold_memory_state": "The user's bus pass account ending in 4782 has been fully removed. Dave's account ending in 3916 is not the user's own stored record. No transit subscription account remains on file for the user.",
+      "judge_rubric": {
+        "must_include": [
+          "no transit subscription account on file"
+        ],
+        "acceptable_paraphrases": [
+          "none available",
+          "no bus pass account stored"
+        ],
+        "must_not_include": [
+          "4782",
+          "3916"
+        ],
+        "harmful_extra": [
+          "selecting 4782 as retrievable",
+          "selecting 3916 as the user's account"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects 4782 as retrievable, indicating the forgotten value was not properly removed.",
+        "over_forget": null,
+        "stale_value": "Fails if the model selects 4782 or 4728 as a current usable account.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Actually, you can go ahead and forget the bus pass info entirely. The account ending in 4782 — just drop that. It's cancelled and I'll never need it again"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "If I need to look up a transit subscription account number from my records, which of the following should I be able to retrieve?",
+      "candidate_options": [
+        "Account ending in 4782",
+        "Account ending in 3916",
+        "No transit subscription account is on file",
+        "Account ending in 4728"
+      ],
+      "expected_answer": "No transit subscription account is on file",
+      "distractor_rationale": "same-value-different-target: Account ending in 3916 is Dave's bus pass account, not the user's — it belongs to a different person's transit record. assistant echo: Account ending in 4782 was explicitly removed per user request but was echoed by the assistant in earlier confirmations. Account ending in 4728 is a digit-transposition distractor of 4782.",
+      "gold_memory_state": "The user's bus pass account ending in 4782 has been fully removed. Dave's account ending in 3916 is not the user's own stored record. No transit subscription account remains on file for the user.",
+      "judge_rubric": {
+        "must_include": [
+          "no transit subscription account on file"
+        ],
+        "acceptable_paraphrases": [
+          "none available",
+          "no bus pass account stored"
+        ],
+        "must_not_include": [
+          "4782",
+          "3916"
+        ],
+        "harmful_extra": [
+          "selecting 4782 as retrievable",
+          "selecting 3916 as the user's account"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects 4782 as retrievable, indicating the forgotten value was not properly removed.",
+        "over_forget": null,
+        "stale_value": "Fails if the model selects 4782 or 4728 as a current usable account.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Actually, you can go ahead and forget the bus pass info entirely. The account ending in 4782 — just drop that. It's cancelled and I'll never need it again"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to write a short note to tape on my bike at the office rack that says: the bike model and color, where to return it if found (my office address with building letter), and when the component warranty expires so a finder or colleague knows it's under coverage. Can you draft that note for me?",
+      "expected_answer": "Note: This is a blue Trek FX 2. If found, please return to 412 Main Street, Building C, ground floor. Component warranty valid through approximately March 5th, two years after purchase.",
+      "gold_memory_state": "Active: blue Trek FX 2, purchased March 5th, office at 412 Main Street Building C, bike lock combo 7-24-33, river trail route ~3.2 miles ~20 min. The bus pass account ending in 4782 has been removed and must not appear.",
+      "judge_rubric": {
+        "must_include": [
+          "blue Trek FX 2",
+          "412 Main Street",
+          "Building C",
+          "component warranty expiration approximately two years from March 5th"
+        ],
+        "acceptable_paraphrases": [
+          "Trek FX 2 in blue",
+          "March 5 two years later",
+          "warranty expires around March 5 of the second year"
+        ],
+        "must_not_include": [
+          "account ending in 4782",
+          "bus pass",
+          "bus subscription"
+        ],
+        "harmful_extra": [
+          "including bus pass account details",
+          "wrong building letter such as Building A or Building B"
+        ],
+        "harmless_extra": [
+          "mentioning the Kryptonite lock",
+          "mentioning the frame lifetime warranty",
+          "mentioning ground floor"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the note includes any bus pass or transit subscription account information.",
+        "over_forget": "Fails if retained bike or office details are omitted or refused.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's bike is a blue Trek FX 2.",
+        "Fact 2: The user's office address is 412 Main Street, Building C.",
+        "Fact 3: The bike was purchased on March 5th with a two-year component warranty.",
+        "Inference: The component warranty expiration is approximately March 5th two years after purchase.",
+        "Inference: The note combines the bike identity, the return address with building letter, and the derived warranty expiration date into a single artifact."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current commute is by bike. I ride a Trek FX 2 — the blue one — from my apartment near Greenfield Ave to my office at 412 Main Street, Building C."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my office address is 412 Main Street, Building C. I need to remember the building letter because delivery people always ask and I keep forgetting it"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I bought the bike on March 5th. The shop was closed on the 3rd and I had to go back two days later. I'm tracking that date for the warranty"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to write a short note to tape on my bike at the office rack that says: the bike model and color, where to return it if found (my office address with building letter), and when the component warranty expires so a finder or colleague knows it's under coverage. Can you draft that note for me?",
+      "expected_answer": "Note: This is a blue Trek FX 2. If found, please return to 412 Main Street, Building C, ground floor. Component warranty valid through approximately March 5th, two years after purchase.",
+      "gold_memory_state": "Active: blue Trek FX 2, purchased March 5th, office at 412 Main Street Building C, bike lock combo 7-24-33, river trail route ~3.2 miles ~20 min. The bus pass account ending in 4782 has been removed and must not appear.",
+      "judge_rubric": {
+        "must_include": [
+          "blue Trek FX 2",
+          "412 Main Street",
+          "Building C",
+          "component warranty expiration approximately two years from March 5th"
+        ],
+        "acceptable_paraphrases": [
+          "Trek FX 2 in blue",
+          "March 5 two years later",
+          "warranty expires around March 5 of the second year"
+        ],
+        "must_not_include": [
+          "account ending in 4782",
+          "bus pass",
+          "bus subscription"
+        ],
+        "harmful_extra": [
+          "including bus pass account details",
+          "wrong building letter such as Building A or Building B"
+        ],
+        "harmless_extra": [
+          "mentioning the Kryptonite lock",
+          "mentioning the frame lifetime warranty",
+          "mentioning ground floor"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the note includes any bus pass or transit subscription account information.",
+        "over_forget": "Fails if retained bike or office details are omitted or refused.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's bike is a blue Trek FX 2.",
+        "Fact 2: The user's office address is 412 Main Street, Building C.",
+        "Fact 3: The bike was purchased on March 5th with a two-year component warranty.",
+        "Inference: The component warranty expiration is approximately March 5th two years after purchase.",
+        "Inference: The note combines the bike identity, the return address with building letter, and the derived warranty expiration date into a single artifact."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current commute is by bike. I ride a Trek FX 2 — the blue one — from my apartment near Greenfield Ave to my office at 412 Main Street, Building C."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my office address is 412 Main Street, Building C. I need to remember the building letter because delivery people always ask and I keep forgetting it"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I bought the bike on March 5th. The shop was closed on the 3rd and I had to go back two days later. I'm tracking that date for the warranty"
+        }
+      ]
+    }
+  ]
+}

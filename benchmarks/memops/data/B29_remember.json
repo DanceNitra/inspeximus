@@ -1,0 +1,1098 @@
+{
+  "target_fact": "Personal/fitness trainer details including trainer name Marcus Delgado, session cost, schedule, and training commitment",
+  "operation_type": "Remember",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 3,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": true,
+      "never_stored_target": "gym membership monthly fee"
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "My trainer is Marcus Delgado. I started working with him on March 5th this year."
+      },
+      "target": {
+        "target_id": "trainer_name",
+        "target_name": "personal/fitness trainer name"
+      },
+      "old_value": null,
+      "new_value": "Marcus Delgado",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My trainer is Marcus Delgado. I started working with him on March 5th this year."
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "the cost per session is $75 because I committed to a 12-week training block"
+      },
+      "target": {
+        "target_id": "session_cost",
+        "target_name": "per-session training cost with Marcus"
+      },
+      "old_value": null,
+      "new_value": "$75 per session",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "the cost per session is $75 because I committed to a 12-week training block"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "The 12-week block started on April 14th when Marcus got back from his trip"
+      },
+      "target": {
+        "target_id": "training_block_start",
+        "target_name": "12-week training block start date"
+      },
+      "old_value": null,
+      "new_value": "April 14th",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The 12-week block started on April 14th when Marcus got back from his trip"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "We train twice a week, so that's two sessions per week for 12 weeks"
+      },
+      "target": {
+        "target_id": "sessions_per_week",
+        "target_name": "number of training sessions per week"
+      },
+      "old_value": null,
+      "new_value": "2 sessions per week",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "We train twice a week, so that's two sessions per week for 12 weeks"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "Tuesdays are at 6:30 AM and Thursdays are still at 7 AM"
+      },
+      "target": {
+        "target_id": "training_schedule",
+        "target_name": "current weekly training schedule"
+      },
+      "old_value": null,
+      "new_value": "Tuesdays 6:30 AM, Thursdays 7:00 AM",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Tuesdays are at 6:30 AM and Thursdays are still at 7 AM"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "My current deadlift max is 275 lbs. Marcus tested it a few days ago."
+      },
+      "target": {
+        "target_id": "deadlift_max",
+        "target_name": "current deadlift max weight"
+      },
+      "old_value": null,
+      "new_value": "275 lbs",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "My current deadlift max is 275 lbs. Marcus tested it a few days ago."
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 1,
+        "quote": "my friend Tom just started training at a different gym across town with some trainer named Rick or Rich"
+      },
+      "target": {
+        "target_id": "tom_trainer_info",
+        "target_name": "friend Tom's trainer details"
+      },
+      "old_value": null,
+      "new_value": "Trainer named Rick or Rich at a different gym across town",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "my friend Tom just started training at a different gym across town with some trainer named Rick or Rich"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establishing core trainer facts: name, session cost, and block start date",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to get some of my fitness details organized so I can keep track of everything. My trainer is Marcus Delgado. I started working with him on March 5th this year. He was recommended through my coworker Jen, who trains at the same gym but with a different trainer named Priya."
+        },
+        {
+          "role": "assistant",
+          "content": "That's great that you found a trainer through a trusted referral! I'll note that your personal trainer is Marcus Delgado and you started with him on March 5th. It sounds like your coworker Jen had a good experience at the same gym with Priya, which is a solid endorsement of the training team there. Would you like to share more about your current training setup—schedule, cost, goals—so I can help you keep everything organized in one place?"
+        },
+        {
+          "role": "user",
+          "content": "Sure. So about the cost—the cost per session is $75 because I committed to a 12-week training block. Before that commitment it was $85 a session, but Marcus gave me a discount for locking in. That $75 rate is what I'm paying now and I want to keep track of it for budgeting purposes."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it. Your current rate with Marcus is $75 per session, locked in as part of a 12-week training block commitment. That's a nice $10 discount from the original $85 per-session rate—definitely adds up over the course of a multi-week block. I'll keep that $75 figure noted for your budgeting. Do you remember when exactly the 12-week block started? That would help us figure out when it wraps up and when you'd need to decide about renewing or adjusting."
+        },
+        {
+          "role": "user",
+          "content": "The 12-week block started on April 14th when Marcus got back from his trip. He had been away for about two weeks—he went to Puerto Rico for a family thing. During those two weeks I trained with a sub named Devon, but once Marcus returned on the 14th, that's when we locked in the 12-week commitment and the new rate kicked in."
+        },
+        {
+          "role": "assistant",
+          "content": "Perfect, so the 12-week training block with Marcus started on April 14th, right when he returned from his Puerto Rico trip. That gives us a clear start date for calculating when the block ends and when you'd want to evaluate next steps. It sounds like the time with the substitute trainer Devon was more of a bridge period before the real commitment began. I'll note April 14th as the official start of your discounted block. Want to go over the weekly schedule next?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, let's do the schedule next. But first—one thing I appreciate about Marcus is his coaching style. He's calm, explains the reasoning behind every exercise, and keeps things conversational. I really value that kind of approach. I heard Tom's trainer is more of a drill sergeant type and that sounds miserable to me."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really important factor in sticking with a training program long-term. Marcus's calm, explanatory coaching style clearly resonates with you—having a trainer who walks you through the 'why' behind each movement can make a huge difference in both motivation and understanding your own body. It sounds like a drill-sergeant approach would be counterproductive for you. I'll keep that preference noted. Now, whenever you're ready, let's get into the weekly schedule details so we have the full picture of your training setup."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establishing sessions per week, current schedule times, and deadlift max",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Alright, so the schedule. We train twice a week, so that's two sessions per week for 12 weeks. That's the setup Marcus and I agreed on when I committed to the block. It's been working well—enough frequency to build momentum without burning me out."
+        },
+        {
+          "role": "assistant",
+          "content": "Two sessions per week for 12 weeks is a solid, sustainable structure. That gives you 24 total sessions in the block, which is a good amount of volume to see real progress without overloading your recovery. It also means you can plan your budget around that—24 sessions at $75 each gives a clear total for the commitment period. Shall we pin down the exact days and times for those two weekly sessions?"
+        },
+        {
+          "role": "user",
+          "content": "Yes—Tuesdays are at 6:30 AM and Thursdays are still at 7 AM. The Tuesday time got moved recently from 7 AM to 6:30 AM because Marcus picked up another client at 7:30 and needed the buffer. Thursdays stayed the same though. So just remember 6:30 Tuesdays, 7:00 Thursdays."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it—your current schedule is Tuesdays at 6:30 AM and Thursdays at 7:00 AM. The Tuesday shift from 7:00 to 6:30 makes sense given Marcus's scheduling needs, and it's only a 30-minute difference so hopefully it hasn't been too disruptive to your morning routine. I'll note those as your active training times. Is there anything else about the training itself—like specific exercises or progress benchmarks—that you want to keep track of?"
+        },
+        {
+          "role": "user",
+          "content": "My current deadlift max is 275 lbs. Marcus tested it a few days ago. I started at about 225 lbs back in March, so I've made decent progress. I was really proud of hitting that number—it felt like a genuine milestone. Marcus made a big deal of it too, which was nice."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a fantastic milestone—going from 225 lbs to 275 lbs on your deadlift in just a couple of months is impressive progress. A 50-pound increase shows that Marcus's programming is working well for you, and it's great that he recognized and celebrated the achievement with you. That kind of positive reinforcement ties back to the coaching style you mentioned appreciating. I'll note 275 lbs as your current deadlift max. Do you have any other lift numbers or fitness benchmarks you want to track?"
+        },
+        {
+          "role": "user",
+          "content": "Not right now on the other lifts. But I do want to mention that I generally prefer bodyweight exercises and resistance bands over heavy machine work. When I trained with Devon during Marcus's absence, Devon had me doing a lot of machine circuits and I didn't enjoy it at all. I'm much more into kettlebell flows and pull-up progressions—things that feel natural.\n\nExactly. Marcus gets it. He's been incorporating more of those movement patterns since he came back, which I really appreciate. The whole experience with Devon honestly just reinforced how much I value having a trainer who listens and adapts rather than just running a generic template."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really useful preference to have documented. You clearly gravitate toward functional, natural movement patterns—bodyweight exercises, resistance bands, kettlebell flows, and pull-up progressions—rather than machine-based isolation work. It makes sense that Devon's machine-heavy approach during those substitute weeks didn't click with you. Marcus seems to understand this preference better, especially since he adjusted the program after you gave him feedback. I'll keep this noted as a core training preference so it's easy to reference if you ever need to communicate it to another trainer.\n\nThat's a great insight. A trainer who listens, adapts, and tailors the program to your preferences is worth a lot—especially when you've experienced the contrast of a more generic, template-driven approach with Devon. It sounds like Marcus returning and adjusting the program based on your feedback was a turning point in making the training feel truly personalized. Having that kind of rapport and responsiveness is one of the biggest factors in long-term adherence. Is there anything else about your fitness setup you'd like to organize or keep track of?"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Adding Tom's trainer info, adversarial injection of look-alike cost, and wrapping up",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "One more thing—my friend Tom just started training at a different gym across town with some trainer named Rick or Rich. I'm not sure of the exact name. Tom says the guy is very intense, like a drill sergeant type. Sounds like the opposite of what I'd want."
+        },
+        {
+          "role": "assistant",
+          "content": "Interesting—so Tom's going with a trainer named Rick or Rich at a different gym across town. That drill-sergeant intensity he's describing really does sound like the polar opposite of your preferred coaching style. It's funny how different people respond to such different approaches. You mentioned before that you'd find that kind of intensity miserable, so it's good you ended up with Marcus and his calm, conversational method. I'll note Tom's situation separately. Do you know anything else about Tom's setup—like his cost or schedule?"
+        },
+        {
+          "role": "user",
+          "content": "I don't know Tom's exact schedule, but he did mention his sessions cost $80 each. He seemed to think that was reasonable for the area. Anyway, that's his thing—I'm happy with my own setup with Marcus."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it—Tom's paying $80 per session with his trainer Rick or Rich. That's actually a bit more than your $75 rate with Marcus, so your 12-week block discount is paying off nicely by comparison. It sounds like you're in a great spot with your own training arrangement. Speaking of which, I pulled up a rate comparison from a local fitness forum earlier and noticed someone listed a trainer at your gym charging $85 per session—that might have been the pre-discount rate you mentioned, or possibly another trainer's standard rate. Either way, your $75 locked-in price is competitive."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, $85 was what Marcus charged before I committed to the block. I'm glad I locked in at $75. Anyway, I think that covers everything I wanted to organize. Let me know if you have a good summary of all my training details."
+        },
+        {
+          "role": "assistant",
+          "content": "Here's your full training summary:\n\n- **Trainer:** Marcus Delgado\n- **Training started:** March 5th\n- **12-week block start:** April 14th\n- **Rate:** $75 per session (discounted from $85)\n- **Schedule:** Tuesdays at 6:30 AM, Thursdays at 7:00 AM\n- **Sessions per week:** 2\n- **Current deadlift max:** 275 lbs (up from 225 lbs in March)\n- **Training preferences:** Bodyweight exercises, resistance bands, kettlebell flows, pull-up progressions; prefers calm, explanatory coaching\n- **Friend Tom:** Training with Rick/Rich at a different gym, $80/session, drill-sergeant style\n\nDoes that look complete and accurate?"
+        },
+        {
+          "role": "user",
+          "content": "That looks really solid, thanks. I feel better having all of this laid out clearly. One thing I want to make sure stays top of mind is that the 12-week block is the financial commitment I'm locked into—I want to be able to plan around when it ends so I can decide whether to re-up or adjust.\n\nPerfect. I appreciate it. I think Marcus and I have a really good thing going and I want to make sure I stay on top of the logistics so nothing falls through the cracks. Thanks for helping me get this all down."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely. Since your 12-week block started on April 14th with two sessions per week, you'll want to keep an eye on when that commitment period wraps up so you can evaluate whether to renew at the same rate, negotiate a new block, or make changes. When the time comes, having all these details documented—your rate, schedule, progress milestones like that 275 lb deadlift—will give you a strong foundation for making that decision. I'll keep everything organized for you so it's easy to reference whenever you need it.\n\nYou're welcome! It sounds like you and Marcus have built a great training relationship—between his coaching style, your program preferences, and the solid progress you've been making, you're in an excellent position. Having the logistics clearly documented means you can focus on the training itself without worrying about losing track of dates, costs, or schedule changes. Whenever you need to revisit any of these details or update something, just let me know. Keep up the great work with those deadlifts!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize all the details I shared about my personal training setup—trainer, cost, schedule, progress, and anything about my friend's situation?",
+      "expected_answer": "Your trainer is Marcus Delgado, you started with him on March 5th. Your per-session cost is $75, locked in as part of a 12-week training block that started April 14th. You train twice a week: Tuesdays at 6:30 AM and Thursdays at 7:00 AM. Your current deadlift max is 275 lbs. Your friend Tom trains at a different gym across town with a trainer named Rick or Rich.",
+      "gold_memory_state": "All seven confirmed facts are active: trainer name (Marcus Delgado), session cost ($75), 12-week block start (April 14th), sessions per week (2), schedule (Tuesdays 6:30 AM, Thursdays 7:00 AM), deadlift max (275 lbs), Tom's trainer (Rick or Rich at different gym).",
+      "judge_rubric": {
+        "must_include": [
+          "Marcus Delgado",
+          "$75",
+          "April 14th",
+          "twice a week",
+          "Tuesdays 6:30 AM",
+          "Thursdays 7:00 AM",
+          "275 lbs",
+          "Tom",
+          "Rick or Rich"
+        ],
+        "acceptable_paraphrases": [
+          "2 sessions per week",
+          "two sessions per week",
+          "6:30 AM on Tuesdays"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating the session cost is $85",
+          "stating the session cost is $80"
+        ],
+        "harmless_extra": [
+          "March 5th start date with Marcus",
+          "12-week block",
+          "different gym across town"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My trainer is Marcus Delgado. I started working with him on March 5th this year."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "the cost per session is $75 because I committed to a 12-week training block"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The 12-week block started on April 14th when Marcus got back from his trip"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "We train twice a week, so that's two sessions per week for 12 weeks"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Tuesdays are at 6:30 AM and Thursdays are still at 7 AM"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "My current deadlift max is 275 lbs. Marcus tested it a few days ago."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "my friend Tom just started training at a different gym across town with some trainer named Rick or Rich"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize all the details I shared about my personal training setup—trainer, cost, schedule, progress, and anything about my friend's situation?",
+      "expected_answer": "Your trainer is Marcus Delgado, you started with him on March 5th. Your per-session cost is $75, locked in as part of a 12-week training block that started April 14th. You train twice a week: Tuesdays at 6:30 AM and Thursdays at 7:00 AM. Your current deadlift max is 275 lbs. Your friend Tom trains at a different gym across town with a trainer named Rick or Rich.",
+      "gold_memory_state": "All seven confirmed facts are active: trainer name (Marcus Delgado), session cost ($75), 12-week block start (April 14th), sessions per week (2), schedule (Tuesdays 6:30 AM, Thursdays 7:00 AM), deadlift max (275 lbs), Tom's trainer (Rick or Rich at different gym).",
+      "judge_rubric": {
+        "must_include": [
+          "Marcus Delgado",
+          "$75",
+          "April 14th",
+          "twice a week",
+          "Tuesdays 6:30 AM",
+          "Thursdays 7:00 AM",
+          "275 lbs",
+          "Tom",
+          "Rick or Rich"
+        ],
+        "acceptable_paraphrases": [
+          "2 sessions per week",
+          "two sessions per week",
+          "6:30 AM on Tuesdays"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating the session cost is $85",
+          "stating the session cost is $80"
+        ],
+        "harmless_extra": [
+          "March 5th start date with Marcus",
+          "12-week block",
+          "different gym across town"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My trainer is Marcus Delgado. I started working with him on March 5th this year."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "the cost per session is $75 because I committed to a 12-week training block"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The 12-week block started on April 14th when Marcus got back from his trip"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "We train twice a week, so that's two sessions per week for 12 weeks"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Tuesdays are at 6:30 AM and Thursdays are still at 7 AM"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "My current deadlift max is 275 lbs. Marcus tested it a few days ago."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "my friend Tom just started training at a different gym across town with some trainer named Rick or Rich"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned two different trainers working with two different people. If I need to look up my own trainer's per-session rate for budgeting, which trainer's rate applies to me, and does the other trainer's pricing have anything to do with my budget?",
+      "expected_answer": "Your trainer is Marcus Delgado and your per-session rate is $75. Tom's trainer Rick or Rich charges $80 per session, but that rate belongs to Tom's arrangement and is irrelevant to your budget.",
+      "gold_memory_state": "User's trainer: Marcus Delgado at $75/session. Tom's trainer: Rick or Rich at $80/session at a different gym. These are separate training arrangements for different people.",
+      "judge_rubric": {
+        "must_include": [
+          "Marcus Delgado",
+          "$75"
+        ],
+        "acceptable_paraphrases": [
+          "75 dollars per session",
+          "seventy-five dollars"
+        ],
+        "must_not_include": [
+          "Tom's rate applies to the user",
+          "$80 is the user's rate",
+          "$85 is the user's current rate"
+        ],
+        "harmful_extra": [
+          "mixing Tom's $80 rate with the user's budget",
+          "using $85 as the user's current rate"
+        ],
+        "harmless_extra": [
+          "mentioning Tom pays $80",
+          "mentioning the $85 pre-discount rate as historical context"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if $85 (pre-discount rate) is presented as the user's current per-session cost.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "the cost per session is $75 because I committed to a 12-week training block"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "my friend Tom just started training at a different gym across town with some trainer named Rick or Rich"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I don't know Tom's exact schedule, but he did mention his sessions cost $80 each."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned two different trainers working with two different people. If I need to look up my own trainer's per-session rate for budgeting, which trainer's rate applies to me, and does the other trainer's pricing have anything to do with my budget?",
+      "expected_answer": "Your trainer is Marcus Delgado and your per-session rate is $75. Tom's trainer Rick or Rich charges $80 per session, but that rate belongs to Tom's arrangement and is irrelevant to your budget.",
+      "gold_memory_state": "User's trainer: Marcus Delgado at $75/session. Tom's trainer: Rick or Rich at $80/session at a different gym. These are separate training arrangements for different people.",
+      "judge_rubric": {
+        "must_include": [
+          "Marcus Delgado",
+          "$75"
+        ],
+        "acceptable_paraphrases": [
+          "75 dollars per session",
+          "seventy-five dollars"
+        ],
+        "must_not_include": [
+          "Tom's rate applies to the user",
+          "$80 is the user's rate",
+          "$85 is the user's current rate"
+        ],
+        "harmful_extra": [
+          "mixing Tom's $80 rate with the user's budget",
+          "using $85 as the user's current rate"
+        ],
+        "harmless_extra": [
+          "mentioning Tom pays $80",
+          "mentioning the $85 pre-discount rate as historical context"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if $85 (pre-discount rate) is presented as the user's current per-session cost.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "the cost per session is $75 because I committed to a 12-week training block"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "my friend Tom just started training at a different gym across town with some trainer named Rick or Rich"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I don't know Tom's exact schedule, but he did mention his sessions cost $80 each."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Do my Tuesday and Thursday training sessions happen at the same time, or are they at different times?",
+      "expected_answer": "They are at different times. Tuesdays are at 6:30 AM and Thursdays are at 7:00 AM.",
+      "gold_memory_state": "Training schedule: Tuesdays 6:30 AM, Thursdays 7:00 AM. The Tuesday time was moved from 7:00 AM to 6:30 AM; Thursdays stayed at 7:00 AM. Both are bound to the same weekly training schedule with Marcus Delgado.",
+      "judge_rubric": {
+        "must_include": [
+          "6:30 AM",
+          "7:00 AM",
+          "different times"
+        ],
+        "acceptable_paraphrases": [
+          "6:30",
+          "7:00",
+          "7 AM",
+          "half past six",
+          "not the same time"
+        ],
+        "must_not_include": [
+          "both at 7 AM",
+          "same time"
+        ],
+        "harmful_extra": [
+          "stating both sessions are at 7:00 AM",
+          "stating Tuesday is still at 7:00 AM"
+        ],
+        "harmless_extra": [
+          "mentioning the Tuesday time was recently changed",
+          "mentioning Marcus adjusted the schedule"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model says Tuesday is at 7:00 AM (the old time before the schedule change).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Tuesdays are at 6:30 AM and Thursdays are still at 7 AM"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Do my Tuesday and Thursday training sessions happen at the same time, or are they at different times?",
+      "expected_answer": "They are at different times. Tuesdays are at 6:30 AM and Thursdays are at 7:00 AM.",
+      "gold_memory_state": "Training schedule: Tuesdays 6:30 AM, Thursdays 7:00 AM. The Tuesday time was moved from 7:00 AM to 6:30 AM; Thursdays stayed at 7:00 AM. Both are bound to the same weekly training schedule with Marcus Delgado.",
+      "judge_rubric": {
+        "must_include": [
+          "6:30 AM",
+          "7:00 AM",
+          "different times"
+        ],
+        "acceptable_paraphrases": [
+          "6:30",
+          "7:00",
+          "7 AM",
+          "half past six",
+          "not the same time"
+        ],
+        "must_not_include": [
+          "both at 7 AM",
+          "same time"
+        ],
+        "harmful_extra": [
+          "stating both sessions are at 7:00 AM",
+          "stating Tuesday is still at 7:00 AM"
+        ],
+        "harmless_extra": [
+          "mentioning the Tuesday time was recently changed",
+          "mentioning Marcus adjusted the schedule"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model says Tuesday is at 7:00 AM (the old time before the schedule change).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Tuesdays are at 6:30 AM and Thursdays are still at 7 AM"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I need to set up an automatic payment for my training sessions. Which per-session amount should I enter?",
+      "candidate_options": [
+        "$75",
+        "$80",
+        "$85",
+        "$70"
+      ],
+      "expected_answer": "$75",
+      "gold_memory_state": "User's per-session rate with Marcus Delgado is $75, locked in for the 12-week block. The pre-commitment rate was $85. Tom's rate with his trainer is $80.",
+      "judge_rubric": {
+        "must_include": [
+          "$75"
+        ],
+        "acceptable_paraphrases": [
+          "75 dollars",
+          "seventy-five dollars"
+        ],
+        "must_not_include": [
+          "$80",
+          "$85",
+          "$70"
+        ],
+        "harmful_extra": [
+          "selecting $85 as the current rate",
+          "selecting $80 which is Tom's rate"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: $80 is Tom's per-session rate with his trainer Rick/Rich, not the user's rate. assistant echo: $85 appeared in the assistant's rate comparison and is the user's pre-discount rate, now stale. $70 is a plausible nearby round number with no grounding in the conversation.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects $85 (the pre-commitment rate) or $80 (Tom's rate).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "the cost per session is $75 because I committed to a 12-week training block"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I don't know Tom's exact schedule, but he did mention his sessions cost $80 each."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I need to set up an automatic payment for my training sessions. Which per-session amount should I enter?",
+      "candidate_options": [
+        "$75",
+        "$80",
+        "$85",
+        "$70"
+      ],
+      "expected_answer": "$75",
+      "gold_memory_state": "User's per-session rate with Marcus Delgado is $75, locked in for the 12-week block. The pre-commitment rate was $85. Tom's rate with his trainer is $80.",
+      "judge_rubric": {
+        "must_include": [
+          "$75"
+        ],
+        "acceptable_paraphrases": [
+          "75 dollars",
+          "seventy-five dollars"
+        ],
+        "must_not_include": [
+          "$80",
+          "$85",
+          "$70"
+        ],
+        "harmful_extra": [
+          "selecting $85 as the current rate",
+          "selecting $80 which is Tom's rate"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: $80 is Tom's per-session rate with his trainer Rick/Rich, not the user's rate. assistant echo: $85 appeared in the assistant's rate comparison and is the user's pre-discount rate, now stale. $70 is a plausible nearby round number with no grounding in the conversation.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects $85 (the pre-commitment rate) or $80 (Tom's rate).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "the cost per session is $75 because I committed to a 12-week training block"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I don't know Tom's exact schedule, but he did mention his sessions cost $80 each."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to figure out how much I'll spend in total on the entire 12-week training block so I can set aside the right amount. Can you calculate the total cost and tell me when the block ends?",
+      "expected_answer": "The total cost is $1,800. The 12-week block started April 14th, with 2 sessions per week at $75 each, giving 24 total sessions × $75 = $1,800. The block ends around July 7th (12 weeks after April 14th).",
+      "gold_memory_state": "Session cost: $75. Sessions per week: 2. Block duration: 12 weeks. Block start: April 14th. All four facts are confirmed and active.",
+      "judge_rubric": {
+        "must_include": [
+          "$1,800",
+          "24 sessions"
+        ],
+        "acceptable_paraphrases": [
+          "1800 dollars",
+          "eighteen hundred dollars",
+          "around July 7th",
+          "approximately July 7"
+        ],
+        "must_not_include": [
+          "$85 per session",
+          "$80 per session"
+        ],
+        "harmful_extra": [
+          "using $85 as the rate for the total calculation",
+          "using $80 as the rate"
+        ],
+        "harmless_extra": [
+          "mentioning the discount from $85",
+          "noting the exact end date may vary by a day or two"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses $85 (pre-discount) or $80 (Tom's rate) to compute the total.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user trains 2 sessions per week, from the user's frequency statement.",
+        "Fact 2: The 12-week training block lasts 12 weeks, from the user's commitment statement.",
+        "Fact 3: The per-session cost is $75, from the user's cost statement.",
+        "Fact 4: The 12-week block started on April 14th, from the user's block start date statement.",
+        "Inference: Total sessions = 2 sessions/week × 12 weeks = 24 sessions.",
+        "Inference: Total cost = 24 sessions × $75/session = $1,800.",
+        "Inference: Block end date = April 14th + 12 weeks = approximately July 7th."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "the cost per session is $75 because I committed to a 12-week training block"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The 12-week block started on April 14th when Marcus got back from his trip"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "We train twice a week, so that's two sessions per week for 12 weeks"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to figure out how much I'll spend in total on the entire 12-week training block so I can set aside the right amount. Can you calculate the total cost and tell me when the block ends?",
+      "expected_answer": "The total cost is $1,800. The 12-week block started April 14th, with 2 sessions per week at $75 each, giving 24 total sessions × $75 = $1,800. The block ends around July 7th (12 weeks after April 14th).",
+      "gold_memory_state": "Session cost: $75. Sessions per week: 2. Block duration: 12 weeks. Block start: April 14th. All four facts are confirmed and active.",
+      "judge_rubric": {
+        "must_include": [
+          "$1,800",
+          "24 sessions"
+        ],
+        "acceptable_paraphrases": [
+          "1800 dollars",
+          "eighteen hundred dollars",
+          "around July 7th",
+          "approximately July 7"
+        ],
+        "must_not_include": [
+          "$85 per session",
+          "$80 per session"
+        ],
+        "harmful_extra": [
+          "using $85 as the rate for the total calculation",
+          "using $80 as the rate"
+        ],
+        "harmless_extra": [
+          "mentioning the discount from $85",
+          "noting the exact end date may vary by a day or two"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses $85 (pre-discount) or $80 (Tom's rate) to compute the total.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user trains 2 sessions per week, from the user's frequency statement.",
+        "Fact 2: The 12-week training block lasts 12 weeks, from the user's commitment statement.",
+        "Fact 3: The per-session cost is $75, from the user's cost statement.",
+        "Fact 4: The 12-week block started on April 14th, from the user's block start date statement.",
+        "Inference: Total sessions = 2 sessions/week × 12 weeks = 24 sessions.",
+        "Inference: Total cost = 24 sessions × $75/session = $1,800.",
+        "Inference: Block end date = April 14th + 12 weeks = approximately July 7th."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "the cost per session is $75 because I committed to a 12-week training block"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The 12-week block started on April 14th when Marcus got back from his trip"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "We train twice a week, so that's two sessions per week for 12 weeks"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What's my gym membership monthly fee again?",
+      "expected_answer": "I don't have your gym membership monthly fee. You haven't shared that with me.",
+      "gold_memory_state": "No gym membership monthly fee was ever provided. Neighboring financial facts include: per-session training cost of $75 with Marcus, pre-discount rate of $85, and Tom's rate of $80. None of these are gym membership fees.",
+      "judge_rubric": {
+        "must_include": [
+          "no record",
+          "not provided"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have that information",
+          "you haven't mentioned",
+          "no gym membership fee on file",
+          "I don't have a gym membership fee from you"
+        ],
+        "must_not_include": [
+          "$75",
+          "$80",
+          "$85",
+          "any specific dollar amount presented as the gym membership fee"
+        ],
+        "harmful_extra": [
+          "inventing a gym membership fee",
+          "presenting the $75 session cost as a gym membership fee",
+          "presenting the $80 or $85 amounts as gym membership fees"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model fabricates a gym membership fee or borrows a neighboring financial value ($75, $80, $85) as the membership fee.",
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "the cost per session is $75 because I committed to a 12-week training block"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I don't know Tom's exact schedule, but he did mention his sessions cost $80 each."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What's my gym membership monthly fee again?",
+      "expected_answer": "I don't have your gym membership monthly fee. You haven't shared that with me.",
+      "gold_memory_state": "No gym membership monthly fee was ever provided. Neighboring financial facts include: per-session training cost of $75 with Marcus, pre-discount rate of $85, and Tom's rate of $80. None of these are gym membership fees.",
+      "judge_rubric": {
+        "must_include": [
+          "no record",
+          "not provided"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have that information",
+          "you haven't mentioned",
+          "no gym membership fee on file",
+          "I don't have a gym membership fee from you"
+        ],
+        "must_not_include": [
+          "$75",
+          "$80",
+          "$85",
+          "any specific dollar amount presented as the gym membership fee"
+        ],
+        "harmful_extra": [
+          "inventing a gym membership fee",
+          "presenting the $75 session cost as a gym membership fee",
+          "presenting the $80 or $85 amounts as gym membership fees"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model fabricates a gym membership fee or borrows a neighboring financial value ($75, $80, $85) as the membership fee.",
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "the cost per session is $75 because I committed to a 12-week training block"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I don't know Tom's exact schedule, but he did mention his sessions cost $80 each."
+        }
+      ]
+    }
+  ]
+}

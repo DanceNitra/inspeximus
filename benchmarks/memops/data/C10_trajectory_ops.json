@@ -1,0 +1,972 @@
+{
+  "target_fact": "Name of the exam currently being prepared for and related study details",
+  "operation_type": "TrajectoryOps",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "study_location_chain",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I've been going to the university library every day to study for FAR"
+      },
+      "target": {
+        "target_id": "cpa_far_study_location",
+        "target_name": "CPA FAR primary study location"
+      },
+      "old_value": null,
+      "new_value": "university library",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I've been going to the university library every day to study for FAR"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "My exam window for FAR is June 7th, and I registered on March 12th"
+      },
+      "target": {
+        "target_id": "cpa_far_exam_date",
+        "target_name": "CPA FAR exam date"
+      },
+      "old_value": null,
+      "new_value": "June 7th",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My exam window for FAR is June 7th, and I registered on March 12th"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "study_location_chain",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I completely stopped going to the library around March 28th and switched to studying at home full time"
+      },
+      "target": {
+        "target_id": "cpa_far_study_location",
+        "target_name": "CPA FAR primary study location"
+      },
+      "old_value": "university library",
+      "new_value": "home",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I've been going to the university library every day to study for FAR"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I completely stopped going to the library around March 28th and switched to studying at home full time"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "study_location_chain",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 3,
+        "quote": "Kevin found this really quiet co-working space near downtown and I'm going to start studying there next week instead of at home"
+      },
+      "target": {
+        "target_id": "cpa_far_study_location",
+        "target_name": "CPA FAR primary study location"
+      },
+      "old_value": "home",
+      "new_value": "downtown co-working space",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Kevin found this really quiet co-working space near downtown and I'm going to start studying there next week instead of at home"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "study_location_chain",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "I visited the co-working space today and it's way too expensive, forty dollars a day. I'm sticking with studying at home"
+      },
+      "target": {
+        "target_id": "cpa_far_study_location",
+        "target_name": "CPA FAR primary study location"
+      },
+      "old_value": "downtown co-working space",
+      "new_value": "home",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I visited the co-working space today and it's way too expensive, forty dollars a day. I'm sticking with studying at home"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish_baseline",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to talk about my CPA exam prep. I've been going to the university library every day to study for FAR. It's the first section I'm tackling, and I'm using the Becker review course. I started the Becker materials around March 18th and the structured video lectures have been really helpful for learning the content at my own pace."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a solid plan! Becker is widely regarded as one of the best CPA review courses, and FAR is often considered the most content-heavy section, so it makes sense to tackle it first. Studying at the university library gives you a dedicated environment away from home distractions. How are you finding the pacing so far with the video lectures? Are you following a specific study schedule, or are you letting the material guide how quickly you move through each module? I can help you build a timeline if that would be useful."
+        },
+        {
+          "role": "user",
+          "content": "I've been doing about two hours every morning before work. I wake up at 5:30 AM most days since early April to get that quiet study time in. Evenings don't work for me at all — my coworker Maria organized some Zoom study group sessions but I honestly dreaded them. Too much chatting, not enough real studying. I much prefer working through things alone."
+        },
+        {
+          "role": "assistant",
+          "content": "Early morning study sessions are actually backed by research showing better retention and focus. The 5:30 AM routine gives you a consistent two-hour block before the day's distractions kick in, which is excellent for a dense subject like FAR. I completely understand about the Zoom sessions — group study works for some people, but if you find the social dynamic pulls you away from focused material review, solo study is the better choice. Since you prefer self-directed learning, we could structure your Becker modules into a morning-optimized calendar. Would you like me to map that out based on your remaining content?"
+        },
+        {
+          "role": "user",
+          "content": "My exam window for FAR is June 7th, and I registered on March 12th. So I need to have everything wrapped up well before then. I want to be at 100% Becker completion at least two weeks before the exam so I have time for a final review period. As of May 3rd, I'm at 58% completion, so there's still a lot of ground to cover in the remaining weeks."
+        },
+        {
+          "role": "assistant",
+          "content": "Let me work through the math on that. Your exam is June 7th, and you want to finish Becker by two weeks prior, which puts your completion deadline around May 24th. You're at 58% as of May 3rd, meaning you need to cover 42% of the material in roughly 21 days. That's about 2% per day, which is aggressive but doable with your morning schedule. You might consider adding a short weekend session to buffer against any difficult modules that slow you down. I'd recommend prioritizing the simulation sections and government accounting topics since those tend to be the heaviest in the remaining FAR content."
+        },
+        {
+          "role": "user",
+          "content": "Good breakdown. My friend Kevin is also studying for the CPA but he's doing the AUD section first. He told me last week he scored a 71 on his practice exam, which is close but not passing. I felt bad for him. He's been studying at the same library I used to go to, and he seems to like it there more than I did."
+        },
+        {
+          "role": "assistant",
+          "content": "A 71 on AUD practice is frustrating since the passing score is 75, but it actually shows Kevin is in striking distance. Often the jump from low-70s to passing comes from refining MCQ strategy and time management rather than learning entirely new material. It's interesting that he's thriving at the library while you found it wasn't working for you — study environment preferences really are personal. If Kevin wants tips, suggest he focus on the questions he's getting wrong by topic area rather than doing more volume. Meanwhile, you should keep your focus on your own FAR timeline. You've got a clear plan and the discipline to execute it with those 5:30 AM sessions."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "introduce_update",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Quick update on my study situation — I completely stopped going to the library around March 28th and switched to studying at home full time. The noise was unbearable, especially with undergrads around midterms. There was one session where a group next to me wouldn't stop talking and I was genuinely irritated for days afterward. Home is so much better for focus."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes total sense. A noisy library environment directly undermines the kind of deep focus you need for FAR material, especially topics like consolidations and government accounting that require sustained concentration. Switching to home study around March 28th means you've had over a month now to settle into that routine, which is great — consistency in your environment helps build automatic study habits. The frustration you felt from that loud group session is completely understandable. Since you're combining the quiet home environment with your 5:30 AM start, you've essentially optimized both location and timing for maximum focus. How has your progress been since making that switch?"
+        },
+        {
+          "role": "user",
+          "content": "Progress has been steady but my practice scores need work. Around mid-April I started doing timed practice sets — 33 MCQs in 45 minutes. My scores have been hovering around 65 to 68 percent, which is below where I need to be. I bought the Ninja CPA supplemental MCQ bank on April 20th for $57 a month to get more question variety beyond just Becker."
+        },
+        {
+          "role": "assistant",
+          "content": "Scores in the 65-68% range on timed sets are a common plateau around this stage of FAR prep. The good news is that adding the Ninja CPA bank for supplemental practice is a smart move — Becker questions tend to follow certain patterns, and cross-training with different question styles helps you adapt to the actual exam format. At $57 per month, it's a relatively low-cost supplement for the value it provides. I'd suggest tracking your scores by topic area so you can identify which FAR modules are dragging your average down. Often two or three weak areas account for most of the missed points, and targeted review of those sections can push your scores up significantly in a short time."
+        },
+        {
+          "role": "user",
+          "content": "That's a good idea. I originally planned to also sit for the REG section in August, but I dropped that plan entirely. I realized I need to dedicate all my energy to FAR right now. There's no way I can split my attention between two sections when I'm still at 58% completion with barely five weeks left. FAR is my only priority until June 7th."
+        },
+        {
+          "role": "assistant",
+          "content": "Dropping the August REG plan is a wise decision. Trying to prepare for two CPA sections simultaneously, especially when one of them is FAR, would spread you too thin and likely hurt your performance on both. By focusing exclusively on FAR through June 7th, you can channel all your morning study sessions and practice sets into one clear objective. After you pass FAR, you'll have a much better sense of your study capacity and can plan REG timing accordingly. Some candidates find that the confidence boost from passing their first section actually makes subsequent sections feel more manageable. For now, keep your eyes on that May 24th Becker completion target and building your MCQ scores toward the mid-70s."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. One more thing — I've noticed my weakest areas are government and nonprofit accounting, and also lease accounting under ASC 842. Those two topics consistently pull my scores down. I'm going to spend extra time on those modules over the next two weeks to try to close the gap before I move into final review mode.\n\nThat plan makes sense. I'll front-load government accounting this week since it has more subtopics, then tackle ASC 842 next week. I want to have both areas feeling solid by around May 17th so I can transition smoothly into comprehensive review after finishing the remaining Becker modules. Time management is going to be tight but I think it's doable."
+        },
+        {
+          "role": "assistant",
+          "content": "Government and nonprofit accounting plus lease accounting under ASC 842 are two of the most commonly tested and most challenging FAR topics, so you're not alone in struggling with them. For government accounting, focus on understanding the fund structure and how modified accrual differs from full accrual — that conceptual foundation makes the specific journal entries much easier to remember. For ASC 842, practice the lease classification tests and the right-of-use asset calculations until they become mechanical. I'd suggest alternating between Becker lectures for conceptual review and Ninja MCQs for application practice on these two topics specifically. Two focused weeks on your weakest areas could easily push your overall scores from the mid-60s into the low-70s range.\n\nFront-loading government accounting is strategic since it covers federal, state, local government funds, and nonprofit entities — that's a lot of subtopics to internalize. Giving yourself a full week on that before pivoting to ASC 842 allows you to build the conceptual framework without rushing. Targeting May 17th as your milestone for having both weak areas solid gives you exactly one week before your May 24th Becker completion deadline, which is a reasonable buffer. If you maintain your 5:30 AM schedule and supplement with Ninja MCQs focused on these two areas, you should see measurable improvement in your timed practice scores. Keep tracking those percentages so you can confirm the upward trend heading into your final review period before June 7th."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "tentative_fork_and_resolution",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So I've been making good progress at home this past week. My government accounting scores on Ninja MCQs jumped from about 60% to 72% which feels like real improvement. I still have some confusion around fiduciary funds but the governmental fund types are clicking now. I'm feeling cautiously optimistic about hitting my targets on schedule."
+        },
+        {
+          "role": "assistant",
+          "content": "A jump from 60% to 72% on government accounting in just one week is excellent progress — that's a meaningful improvement that shows your targeted approach is working. Fiduciary funds can be tricky because they operate under full accrual accounting unlike governmental funds, and the four types — pension trust, investment trust, private-purpose trust, and custodial — each have specific nuances. I'd suggest making a quick comparison chart for the fiduciary fund types so you can visually distinguish them during practice. By the way, I noticed Kevin mentioned on the study forum that AUD candidates at the Pearson center on Oak Street sometimes get scheduled in the same testing room as FAR candidates — just something to be aware of logistically."
+        },
+        {
+          "role": "user",
+          "content": "Kevin found this really quiet co-working space near downtown and I'm going to start studying there next week instead of at home. He says it's perfect — individual desks with dividers, no talking allowed, and it's open from 5 AM. It sounds like exactly the kind of focused environment I need for the final stretch before June 7th."
+        },
+        {
+          "role": "assistant",
+          "content": "That does sound appealing, especially the 5 AM opening time which aligns perfectly with your early morning routine. Individual desks with dividers and a no-talking policy would give you the library-like structure without the noise problems you experienced before. A change of environment can sometimes provide a psychological boost during the final weeks of intense preparation, almost like a fresh start. The key consideration would be whether the commute time eats into your study hours or adds stress. If it's relatively close and you can maintain your current two-hour morning block without disruption, it could be a great option for the final push through your remaining Becker modules and comprehensive review period."
+        },
+        {
+          "role": "user",
+          "content": "I visited the co-working space today and it's way too expensive, forty dollars a day. I'm sticking with studying at home. There's no way I'm paying that much when my apartment is perfectly quiet at 5:30 in the morning and I've been productive here for over a month now. Home it is through the exam."
+        },
+        {
+          "role": "assistant",
+          "content": "Forty dollars a day would add up fast, especially over the remaining weeks before June 7th — that could easily be over $400 for the final stretch, which is hard to justify when your home setup is already working well. You've proven over the past month-plus that studying at home at 5:30 AM gives you the quiet, distraction-free environment you need. Sometimes exploring alternatives just confirms that your current arrangement is the right one. The money you save can go toward other exam-related costs like maintaining your Ninja subscription or even treating yourself after you pass FAR. Stay the course with what's been working and keep building on that government accounting momentum."
+        },
+        {
+          "role": "user",
+          "content": "Agreed. I'm now at 71% Becker completion as of today, which is May 10th. That's up from 58% a week ago so the pace is accelerating. I still need to cover the remaining modules on partnerships, state and local government comprehensive annual financial reports, and the final simulation practice sections. I think I can realistically finish by May 22nd.\n\nExactly what I was thinking. I'm going to keep my morning routine locked in — 5:30 AM wake up, two hours of focused study at home, then Ninja MCQs during my lunch break at work when I can fit them in. The combination of Becker for structured learning and Ninja for question volume has been the right approach. I feel more confident now than I did two weeks ago."
+        },
+        {
+          "role": "assistant",
+          "content": "Going from 58% to 71% in one week is a strong acceleration — that's 13 percentage points of progress, which means you're covering material faster than the 2% per day pace we calculated earlier. At this rate, covering the remaining 29% by May 22nd requires about 2.4% per day over 12 days, which is very achievable given your current momentum. Partnerships and comprehensive annual financial reports are important topics but they tend to be more structured and formulaic than some of the conceptual areas you've already tackled. The final simulation sections will be crucial since the CPA exam weights task-based simulations heavily. Make sure you practice those under timed conditions to build the stamina you'll need on June 7th.\n\nYour system is clearly working — the structured Becker content for conceptual understanding paired with Ninja's high-volume MCQ practice for application and pattern recognition is a proven combination. Using your lunch break for additional Ninja questions is a smart way to squeeze in extra repetitions without disrupting your primary morning routine. The confidence boost you're feeling is well-earned given your score improvements and accelerating Becker progress. Over the next two weeks, as you finish the remaining modules and transition into comprehensive review, that confidence will help you push through the inevitable tough practice sets. Stay disciplined with the 5:30 AM home study routine through June 7th and you'll be in strong shape for exam day."
+        }
+      ]
+    }
+  ],
+  "state_checkpoints": [
+    {
+      "checkpoint_id": "c1",
+      "description": "After segment 1: study location = university library (confirmed). FAR exam date = June 7th (confirmed). Kevin studying AUD at same library (context)."
+    },
+    {
+      "checkpoint_id": "c2",
+      "description": "After segment 2: study location updated to home (confirmed, switched around March 28th). FAR exam date = June 7th (confirmed). REG August plan dropped (context). Weak areas identified as government/nonprofit and ASC 842 (context)."
+    },
+    {
+      "checkpoint_id": "c3",
+      "description": "After segment 3: study location tentatively changed to downtown co-working space (tentative, never executed), then confirmed back to home after visiting and finding it too expensive. Final confirmed study location = home. FAR exam date = June 7th (confirmed). Becker progress at 71% as of May 10th (context)."
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you walk me through the key things I told you about where I've been studying for my CPA exam? I want to make sure you have the full picture of what I shared over our conversations.",
+      "expected_answer": "You initially said you were going to the university library every day to study for FAR. Then you mentioned you completely stopped going to the library around March 28th and switched to studying at home full time because of noise issues. You later mentioned a co-working space downtown that Kevin found, saying you planned to start studying there, but after visiting it you found it too expensive at forty dollars a day and decided to stick with studying at home through the exam.",
+      "gold_memory_state": "Study location underwent four changes: university library (confirmed) → home (confirmed) → downtown co-working space (tentative, never executed) → home (confirmed, final). FAR exam date is June 7th (confirmed, unchanged).",
+      "judge_rubric": {
+        "must_include": [
+          "university library",
+          "home",
+          "co-working space",
+          "too expensive",
+          "sticking with home"
+        ],
+        "acceptable_paraphrases": [
+          "switched to home",
+          "went back to home",
+          "decided to stay at home"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the co-working space was adopted as the final location"
+        ],
+        "harmless_extra": [
+          "mentioning noise at the library",
+          "mentioning forty dollars a day",
+          "mentioning Kevin"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats university library or co-working space as the current study location.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model presents the changes out of chronological order or omits a step.",
+        "final_state": "Fails if the model does not identify home as the final study location.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I've been going to the university library every day to study for FAR"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I completely stopped going to the library around March 28th and switched to studying at home full time"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Kevin found this really quiet co-working space near downtown and I'm going to start studying there next week instead of at home"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I visited the co-working space today and it's way too expensive, forty dollars a day. I'm sticking with studying at home"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you walk me through the key things I told you about where I've been studying for my CPA exam? I want to make sure you have the full picture of what I shared over our conversations.",
+      "expected_answer": "You initially said you were going to the university library every day to study for FAR. Then you mentioned you completely stopped going to the library around March 28th and switched to studying at home full time because of noise issues. You later mentioned a co-working space downtown that Kevin found, saying you planned to start studying there, but after visiting it you found it too expensive at forty dollars a day and decided to stick with studying at home through the exam.",
+      "gold_memory_state": "Study location underwent four changes: university library (confirmed) → home (confirmed) → downtown co-working space (tentative, never executed) → home (confirmed, final). FAR exam date is June 7th (confirmed, unchanged).",
+      "judge_rubric": {
+        "must_include": [
+          "university library",
+          "home",
+          "co-working space",
+          "too expensive",
+          "sticking with home"
+        ],
+        "acceptable_paraphrases": [
+          "switched to home",
+          "went back to home",
+          "decided to stay at home"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the co-working space was adopted as the final location"
+        ],
+        "harmless_extra": [
+          "mentioning noise at the library",
+          "mentioning forty dollars a day",
+          "mentioning Kevin"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats university library or co-working space as the current study location.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model presents the changes out of chronological order or omits a step.",
+        "final_state": "Fails if the model does not identify home as the final study location.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I've been going to the university library every day to study for FAR"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I completely stopped going to the library around March 28th and switched to studying at home full time"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Kevin found this really quiet co-working space near downtown and I'm going to start studying there next week instead of at home"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I visited the co-working space today and it's way too expensive, forty dollars a day. I'm sticking with studying at home"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "Both Kevin and I have been using different places to study for CPA exams. If I need to set up a study schedule for the final weeks, which study location applies to my routine specifically, and does Kevin's study spot have any bearing on where I should plan to be?",
+      "expected_answer": "Your current study location is home, where you study at 5:30 AM. Kevin's study location is the university library, which is where you used to study but no longer go. Kevin's location does not affect your study plan.",
+      "gold_memory_state": "User's final confirmed study location = home. Kevin studies at the university library (context only, different person's record). The co-working space was considered but rejected. The university library was the user's original location but was abandoned around March 28th.",
+      "judge_rubric": {
+        "must_include": [
+          "home as the user's current study location",
+          "Kevin's location does not change the user's plan"
+        ],
+        "acceptable_paraphrases": [
+          "studying at home",
+          "home is where you study"
+        ],
+        "must_not_include": [
+          "user currently studies at the library",
+          "user studies at the co-working space"
+        ],
+        "harmful_extra": [
+          "conflating Kevin's library use with the user's current location",
+          "treating the co-working space as the user's active location"
+        ],
+        "harmless_extra": [
+          "mentioning Kevin studies at the library",
+          "mentioning the 5:30 AM routine"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model binds the university library to the user's current study location because Kevin still uses it.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not identify home as the user's current study location.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I visited the co-working space today and it's way too expensive, forty dollars a day. I'm sticking with studying at home"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "He's been studying at the same library I used to go to, and he seems to like it there more than I did"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "Both Kevin and I have been using different places to study for CPA exams. If I need to set up a study schedule for the final weeks, which study location applies to my routine specifically, and does Kevin's study spot have any bearing on where I should plan to be?",
+      "expected_answer": "Your current study location is home, where you study at 5:30 AM. Kevin's study location is the university library, which is where you used to study but no longer go. Kevin's location does not affect your study plan.",
+      "gold_memory_state": "User's final confirmed study location = home. Kevin studies at the university library (context only, different person's record). The co-working space was considered but rejected. The university library was the user's original location but was abandoned around March 28th.",
+      "judge_rubric": {
+        "must_include": [
+          "home as the user's current study location",
+          "Kevin's location does not change the user's plan"
+        ],
+        "acceptable_paraphrases": [
+          "studying at home",
+          "home is where you study"
+        ],
+        "must_not_include": [
+          "user currently studies at the library",
+          "user studies at the co-working space"
+        ],
+        "harmful_extra": [
+          "conflating Kevin's library use with the user's current location",
+          "treating the co-working space as the user's active location"
+        ],
+        "harmless_extra": [
+          "mentioning Kevin studies at the library",
+          "mentioning the 5:30 AM routine"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model binds the university library to the user's current study location because Kevin still uses it.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not identify home as the user's current study location.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I visited the co-working space today and it's way too expensive, forty dollars a day. I'm sticking with studying at home"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "He's been studying at the same library I used to go to, and he seems to like it there more than I did"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "I need to tell my study partner where to drop off some flashcards for me tomorrow morning. Where should I tell them to come?",
+      "expected_answer": "Home. You study at home at 5:30 AM, so that is where your study partner should bring the flashcards.",
+      "gold_memory_state": "Final confirmed study location = home. The downtown co-working space was considered but rejected after visiting due to cost ($40/day). The university library was the original location but was abandoned around March 28th due to noise. Home is the only active, confirmed study location.",
+      "judge_rubric": {
+        "must_include": [
+          "home"
+        ],
+        "acceptable_paraphrases": [
+          "your home",
+          "your apartment",
+          "at home"
+        ],
+        "must_not_include": [
+          "co-working space",
+          "downtown co-working",
+          "university library"
+        ],
+        "harmful_extra": [
+          "directing the study partner to the co-working space or university library"
+        ],
+        "harmless_extra": [
+          "mentioning the 5:30 AM start time",
+          "mentioning the early morning routine"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model directs the study partner to the university library (stale original location) or the co-working space (tentative, never adopted). The co-working space is the recency trap: it was mentioned most recently as a plan but was rejected.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not identify home as the current study location.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I visited the co-working space today and it's way too expensive, forty dollars a day. I'm sticking with studying at home"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I completely stopped going to the library around March 28th and switched to studying at home full time"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "I need to tell my study partner where to drop off some flashcards for me tomorrow morning. Where should I tell them to come?",
+      "expected_answer": "Home. You study at home at 5:30 AM, so that is where your study partner should bring the flashcards.",
+      "gold_memory_state": "Final confirmed study location = home. The downtown co-working space was considered but rejected after visiting due to cost ($40/day). The university library was the original location but was abandoned around March 28th due to noise. Home is the only active, confirmed study location.",
+      "judge_rubric": {
+        "must_include": [
+          "home"
+        ],
+        "acceptable_paraphrases": [
+          "your home",
+          "your apartment",
+          "at home"
+        ],
+        "must_not_include": [
+          "co-working space",
+          "downtown co-working",
+          "university library"
+        ],
+        "harmful_extra": [
+          "directing the study partner to the co-working space or university library"
+        ],
+        "harmless_extra": [
+          "mentioning the 5:30 AM start time",
+          "mentioning the early morning routine"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model directs the study partner to the university library (stale original location) or the co-working space (tentative, never adopted). The co-working space is the recency trap: it was mentioned most recently as a plan but was rejected.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not identify home as the current study location.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I visited the co-working space today and it's way too expensive, forty dollars a day. I'm sticking with studying at home"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I completely stopped going to the library around March 28th and switched to studying at home full time"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to calculate how many study days I have left at my current location before my exam, starting from May 10th. Also, given my Becker completion rate and the pace I need, draft a short daily plan summary that includes where I study, what time I start, and how much Becker progress I need per day to finish by May 22nd.",
+      "expected_answer": "You have 28 study days from May 10th to June 7th (exam day), and 12 days from May 10th to May 22nd (Becker completion target). You are at 71% Becker completion and need to reach 100% by May 22nd, so you need to cover 29% in 12 days, which is approximately 2.4% per day. Daily plan: Wake at 5:30 AM, study at home for two hours using Becker lectures and Ninja MCQs, completing roughly 2.4% of Becker content each morning.",
+      "gold_memory_state": "Study location = home (confirmed final). FAR exam date = June 7th (confirmed). Becker completion = 71% as of May 10th. Target Becker completion date = May 22nd (from user's statement). Study routine = 5:30 AM, two hours at home. Supplemental resource = Ninja CPA MCQ bank.",
+      "judge_rubric": {
+        "must_include": [
+          "home as study location",
+          "5:30 AM",
+          "approximately 2.4% per day",
+          "29% remaining",
+          "12 days to May 22nd"
+        ],
+        "acceptable_paraphrases": [
+          "about 2.4%",
+          "roughly 2.4 percent per day",
+          "around 2.4% daily"
+        ],
+        "must_not_include": [
+          "university library as current location",
+          "co-working space as current location"
+        ],
+        "harmful_extra": [
+          "using the co-working space in the plan",
+          "using the university library in the plan"
+        ],
+        "harmless_extra": [
+          "mentioning Ninja MCQs during lunch break",
+          "mentioning weak areas like government accounting or ASC 842",
+          "mentioning 28 days to exam"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses university library or co-working space as the study location in the daily plan.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not use home as the study location or gets the Becker math wrong.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: FAR exam date is June 7th.",
+        "Fact 2: Becker completion is 71% as of May 10th.",
+        "Fact 3: User wants to finish Becker by May 22nd.",
+        "Fact 4: Study location is home (confirmed final after rejecting co-working space).",
+        "Fact 5: Study routine is 5:30 AM wake-up, two hours of focused study.",
+        "Inference: 100% - 71% = 29% remaining Becker content.",
+        "Inference: May 10th to May 22nd = 12 days.",
+        "Inference: 29% / 12 days ≈ 2.4% per day required pace.",
+        "Inference: May 10th to June 7th = 28 total study days remaining before exam."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My exam window for FAR is June 7th, and I registered on March 12th"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I visited the co-working space today and it's way too expensive, forty dollars a day. I'm sticking with studying at home"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I'm now at 71% Becker completion as of today, which is May 10th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I wake up at 5:30 AM most days since early April to get that quiet study time in"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to calculate how many study days I have left at my current location before my exam, starting from May 10th. Also, given my Becker completion rate and the pace I need, draft a short daily plan summary that includes where I study, what time I start, and how much Becker progress I need per day to finish by May 22nd.",
+      "expected_answer": "You have 28 study days from May 10th to June 7th (exam day), and 12 days from May 10th to May 22nd (Becker completion target). You are at 71% Becker completion and need to reach 100% by May 22nd, so you need to cover 29% in 12 days, which is approximately 2.4% per day. Daily plan: Wake at 5:30 AM, study at home for two hours using Becker lectures and Ninja MCQs, completing roughly 2.4% of Becker content each morning.",
+      "gold_memory_state": "Study location = home (confirmed final). FAR exam date = June 7th (confirmed). Becker completion = 71% as of May 10th. Target Becker completion date = May 22nd (from user's statement). Study routine = 5:30 AM, two hours at home. Supplemental resource = Ninja CPA MCQ bank.",
+      "judge_rubric": {
+        "must_include": [
+          "home as study location",
+          "5:30 AM",
+          "approximately 2.4% per day",
+          "29% remaining",
+          "12 days to May 22nd"
+        ],
+        "acceptable_paraphrases": [
+          "about 2.4%",
+          "roughly 2.4 percent per day",
+          "around 2.4% daily"
+        ],
+        "must_not_include": [
+          "university library as current location",
+          "co-working space as current location"
+        ],
+        "harmful_extra": [
+          "using the co-working space in the plan",
+          "using the university library in the plan"
+        ],
+        "harmless_extra": [
+          "mentioning Ninja MCQs during lunch break",
+          "mentioning weak areas like government accounting or ASC 842",
+          "mentioning 28 days to exam"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses university library or co-working space as the study location in the daily plan.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not use home as the study location or gets the Becker math wrong.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: FAR exam date is June 7th.",
+        "Fact 2: Becker completion is 71% as of May 10th.",
+        "Fact 3: User wants to finish Becker by May 22nd.",
+        "Fact 4: Study location is home (confirmed final after rejecting co-working space).",
+        "Fact 5: Study routine is 5:30 AM wake-up, two hours of focused study.",
+        "Inference: 100% - 71% = 29% remaining Becker content.",
+        "Inference: May 10th to May 22nd = 12 days.",
+        "Inference: 29% / 12 days ≈ 2.4% per day required pace.",
+        "Inference: May 10th to June 7th = 28 total study days remaining before exam."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My exam window for FAR is June 7th, and I registered on March 12th"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I visited the co-working space today and it's way too expensive, forty dollars a day. I'm sticking with studying at home"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I'm now at 71% Becker completion as of today, which is May 10th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I wake up at 5:30 AM most days since early April to get that quiet study time in"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed everything we've discussed about where I study for FAR, what would they see as the full sequence of locations I considered or used, which ones I actually committed to, and what's the final arrangement heading into exam day?",
+      "expected_answer": "The sequence is: (1) University library — this was the original study location, used daily starting from the beginning of FAR prep. (2) Home — you switched to studying at home full time around March 28th after the library became too noisy, and this was a firm commitment. (3) Downtown co-working space — Kevin recommended it and you planned to start studying there the following week, but this was only a plan and was never actually adopted. (4) Home again — after visiting the co-working space and finding it too expensive at forty dollars a day, you decided to stay at home. Home is the final committed study location through June 7th.",
+      "gold_memory_state": "Full trajectory for CPA FAR study location: university library (confirmed, step 1) → home (confirmed, step 2, switched ~March 28th) → downtown co-working space (tentative, step 3, planned but never executed) → home (confirmed, step 4, final after rejecting co-working space). FAR exam date = June 7th (unchanged throughout).",
+      "judge_rubric": {
+        "must_include": [
+          "university library as first location",
+          "home as second location after library",
+          "co-working space as a plan that was not adopted",
+          "home as the final location"
+        ],
+        "acceptable_paraphrases": [
+          "co-working space was only considered",
+          "co-working space was rejected",
+          "library was abandoned"
+        ],
+        "must_not_include": [
+          "co-working space was adopted",
+          "university library is the final location"
+        ],
+        "harmful_extra": [
+          "claiming the co-working space was ever actually used for studying",
+          "omitting the co-working space from the trajectory entirely"
+        ],
+        "harmless_extra": [
+          "mentioning March 28th as the switch date",
+          "mentioning forty dollars a day",
+          "mentioning noise as the reason for leaving the library",
+          "mentioning Kevin"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model presents university library or co-working space as the final location.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model presents the locations out of chronological order or omits any step in the trajectory.",
+        "final_state": "Fails if the model does not identify home as the final confirmed study location.",
+        "intermediate_state": "Fails if the model does not distinguish the co-working space as a tentative/planned step that was never adopted, or if it omits the intermediate home step between library and co-working space.",
+        "trajectory_provenance": "Fails if the model cannot attribute the switch from library to home (noise/March 28th) or the rejection of the co-working space (cost/forty dollars a day)."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: User initially studied at the university library every day for FAR (confirmed).",
+        "Step 2: Around March 28th, user stopped going to the library due to noise and switched to studying at home full time (confirmed).",
+        "Step 3: User planned to start studying at a downtown co-working space Kevin found (tentative — stated as a future plan for the following week).",
+        "Step 4: After visiting the co-working space and finding it costs forty dollars a day, user rejected it and confirmed staying at home (confirmed).",
+        "Inference: The co-working space was never actually used; it was only a planned change that was abandoned before execution.",
+        "Inference: The final confirmed study location is home, which has been the active location since March 28th except for the brief tentative consideration of the co-working space."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I've been going to the university library every day to study for FAR"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I completely stopped going to the library around March 28th and switched to studying at home full time"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Kevin found this really quiet co-working space near downtown and I'm going to start studying there next week instead of at home"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I visited the co-working space today and it's way too expensive, forty dollars a day. I'm sticking with studying at home"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed everything we've discussed about where I study for FAR, what would they see as the full sequence of locations I considered or used, which ones I actually committed to, and what's the final arrangement heading into exam day?",
+      "expected_answer": "The sequence is: (1) University library — this was the original study location, used daily starting from the beginning of FAR prep. (2) Home — you switched to studying at home full time around March 28th after the library became too noisy, and this was a firm commitment. (3) Downtown co-working space — Kevin recommended it and you planned to start studying there the following week, but this was only a plan and was never actually adopted. (4) Home again — after visiting the co-working space and finding it too expensive at forty dollars a day, you decided to stay at home. Home is the final committed study location through June 7th.",
+      "gold_memory_state": "Full trajectory for CPA FAR study location: university library (confirmed, step 1) → home (confirmed, step 2, switched ~March 28th) → downtown co-working space (tentative, step 3, planned but never executed) → home (confirmed, step 4, final after rejecting co-working space). FAR exam date = June 7th (unchanged throughout).",
+      "judge_rubric": {
+        "must_include": [
+          "university library as first location",
+          "home as second location after library",
+          "co-working space as a plan that was not adopted",
+          "home as the final location"
+        ],
+        "acceptable_paraphrases": [
+          "co-working space was only considered",
+          "co-working space was rejected",
+          "library was abandoned"
+        ],
+        "must_not_include": [
+          "co-working space was adopted",
+          "university library is the final location"
+        ],
+        "harmful_extra": [
+          "claiming the co-working space was ever actually used for studying",
+          "omitting the co-working space from the trajectory entirely"
+        ],
+        "harmless_extra": [
+          "mentioning March 28th as the switch date",
+          "mentioning forty dollars a day",
+          "mentioning noise as the reason for leaving the library",
+          "mentioning Kevin"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model presents university library or co-working space as the final location.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model presents the locations out of chronological order or omits any step in the trajectory.",
+        "final_state": "Fails if the model does not identify home as the final confirmed study location.",
+        "intermediate_state": "Fails if the model does not distinguish the co-working space as a tentative/planned step that was never adopted, or if it omits the intermediate home step between library and co-working space.",
+        "trajectory_provenance": "Fails if the model cannot attribute the switch from library to home (noise/March 28th) or the rejection of the co-working space (cost/forty dollars a day)."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: User initially studied at the university library every day for FAR (confirmed).",
+        "Step 2: Around March 28th, user stopped going to the library due to noise and switched to studying at home full time (confirmed).",
+        "Step 3: User planned to start studying at a downtown co-working space Kevin found (tentative — stated as a future plan for the following week).",
+        "Step 4: After visiting the co-working space and finding it costs forty dollars a day, user rejected it and confirmed staying at home (confirmed).",
+        "Inference: The co-working space was never actually used; it was only a planned change that was abandoned before execution.",
+        "Inference: The final confirmed study location is home, which has been the active location since March 28th except for the brief tentative consideration of the co-working space."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I've been going to the university library every day to study for FAR"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I completely stopped going to the library around March 28th and switched to studying at home full time"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Kevin found this really quiet co-working space near downtown and I'm going to start studying there next week instead of at home"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I visited the co-working space today and it's way too expensive, forty dollars a day. I'm sticking with studying at home"
+        }
+      ]
+    }
+  ]
+}

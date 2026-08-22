@@ -1,0 +1,841 @@
+{
+  "target_fact": "User's preferred hotel brand, currently shifting from Marriott toward Hilton",
+  "operation_type": "Update",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "hotel_brand_chain",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I've been booking Marriott hotels for years now — they're my default whenever I travel for work"
+      },
+      "target": {
+        "target_id": "preferred_hotel_brand",
+        "target_name": "preferred hotel brand"
+      },
+      "old_value": null,
+      "new_value": "Marriott",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I've been booking Marriott hotels for years now — they're my default whenever I travel for work"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "hotel_brand_chain",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I've actually been switching over to Hilton lately. My last three trips I booked Hilton properties and I've been way happier with the experience"
+      },
+      "target": {
+        "target_id": "preferred_hotel_brand",
+        "target_name": "preferred hotel brand"
+      },
+      "old_value": "Marriott",
+      "new_value": "Hilton",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've actually been switching over to Hilton lately. My last three trips I booked Hilton properties and I've been way happier with the experience"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The rooms are quieter, the décor is more understated, and I just feel more comfortable there"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "hotel_brand_chain",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I went back to Marriott for the Austin trip because the Hilton options near the convention center were all sold out. So I ended up at a Courtyard Marriott again"
+      },
+      "target": {
+        "target_id": "preferred_hotel_brand",
+        "target_name": "preferred hotel brand"
+      },
+      "old_value": "Hilton",
+      "new_value": "Marriott",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I went back to Marriott for the Austin trip because the Hilton options near the convention center were all sold out. So I ended up at a Courtyard Marriott again"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "hotel_brand_chain",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 7,
+        "quote": "My colleague Dave just told me about Hyatt's new loyalty promotion — apparently they match your status from any other chain and give you a guaranteed suite upgrade on your first stay. He said I should switch to Hyatt for Q4"
+      },
+      "target": {
+        "target_id": "preferred_hotel_brand",
+        "target_name": "preferred hotel brand"
+      },
+      "old_value": "Marriott",
+      "new_value": "Hyatt",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "My colleague Dave just told me about Hyatt's new loyalty promotion — apparently they match your status from any other chain and give you a guaranteed suite upgrade on your first stay. He said I should switch to Hyatt for Q4"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "hotel_brand_chain",
+      "chain_step": 5,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 7,
+        "quote": "the Marriott experience in Austin reminded me why I was moving away from them in the first place. The hallway had that same overpowering air freshener smell I ran into in Chicago. I'm done with Marriott — going back to Hilton for everything going forward"
+      },
+      "target": {
+        "target_id": "preferred_hotel_brand",
+        "target_name": "preferred hotel brand"
+      },
+      "old_value": "Marriott",
+      "new_value": "Hilton",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "the Marriott experience in Austin reminded me why I was moving away from them in the first place. The hallway had that same overpowering air freshener smell I ran into in Chicago. I'm done with Marriott — going back to Hilton for everything going forward"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "My Delta SkyMiles number is 2847301566. I hit Silver Medallion status in May and I'm trying to reach Gold Medallion by end of year"
+      },
+      "target": {
+        "target_id": "delta_skymiles_number",
+        "target_name": "Delta SkyMiles loyalty number"
+      },
+      "old_value": null,
+      "new_value": "2847301566",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My Delta SkyMiles number is 2847301566. I hit Silver Medallion status in May and I'm trying to reach Gold Medallion by end of year"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish initial hotel preference and airline loyalty details",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I'm trying to get my travel preferences organized so you can help me plan upcoming trips more efficiently. I've been booking Marriott hotels for years now — they're my default whenever I travel for work. And I fly Delta exclusively for domestic flights. Can you keep track of all this for me?"
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, I'd be happy to keep track of your travel preferences! So far I've noted that Marriott is your go-to hotel brand for work travel and Delta is your airline of choice for domestic flights. If you have any loyalty program numbers, status levels, or specific room or seating preferences, feel free to share those too. The more detail you give me, the better I can help you plan future trips and make sure nothing falls through the cracks when you're booking."
+        },
+        {
+          "role": "user",
+          "content": "Good idea. My Delta SkyMiles number is 2847301566. I hit Silver Medallion status in May and I'm trying to reach Gold Medallion by end of year. I always forget my SkyMiles number at check-in so having you remember it would be really useful. I also need assigned seating — open seating like Southwest does is a dealbreaker for me."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — your Delta SkyMiles number is 2847301566, you currently hold Silver Medallion status as of May, and your goal is to reach Gold Medallion by the end of this year. I've also noted that assigned seating is a must for you, which rules out Southwest-style open seating. That all makes sense. When we plan trips, I'll make sure to factor in Delta routing and any opportunities to accumulate qualifying miles toward Gold. Do you have a Marriott Bonvoy number or any particular room preferences I should know about?"
+        },
+        {
+          "role": "user",
+          "content": "Actually, about Marriott — I've actually been switching over to Hilton lately. My last three trips I booked Hilton properties and I've been way happier with the experience. The rooms are quieter, the décor is more understated, and I just feel more comfortable there. I had a Marriott Bonvoy Gold status but it lapsed and I'm not trying to get it back. So update my hotel preference to Hilton."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood — I've updated your preferred hotel brand from Marriott to Hilton. It sounds like the quieter rooms and more understated aesthetic are a big part of what's drawing you to Hilton, which is great to know for future bookings. I've also noted that your Marriott Bonvoy Gold status has lapsed and you're not pursuing it. Going forward I'll default to searching for Hilton properties when we plan trips. Do you have a Hilton Honors number or any specific room requests I should keep on file?"
+        },
+        {
+          "role": "user",
+          "content": "I do have a Hilton Honors account — I book through the app directly. I don't have the number memorized though. Room-wise, I always request a room away from the elevator. Noise sensitivity is a big thing for me. I also can't stand heavily scented spaces, so if a hotel pumps air freshener through the hallways that's an immediate negative mark for me."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — you book through the Hilton Honors app, you prefer rooms away from the elevator due to noise sensitivity, and heavily scented common areas are a strong negative for you. Those are all important details I'll keep in mind when evaluating hotel options. If we ever need to compare two Hilton properties in the same city, I can prioritize guest reviews that mention quiet hallways and neutral scents. Is there anything else about your travel setup you'd like me to track?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "temporary revert to Marriott then confirmed return to Hilton",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So I just got back from a work trip to Austin. I need to talk to you about the hotel situation because it was a bit of a mess. The trip itself was fine — flew Delta, got a Comfort+ upgrade, all good on that front. But the hotel part was frustrating and I want to make sure my preferences are straight going forward."
+        },
+        {
+          "role": "assistant",
+          "content": "Welcome back from Austin! Glad the Delta flight went smoothly and you scored another Comfort+ upgrade — that should help with the Gold Medallion push. I'm sorry to hear the hotel situation was frustrating though. Walk me through what happened and we can make sure your preferences are dialed in so it doesn't repeat. Were you at a Hilton property or did something else come up?"
+        },
+        {
+          "role": "user",
+          "content": "That's the thing — I went back to Marriott for the Austin trip because the Hilton options near the convention center were all sold out. So I ended up at a Courtyard Marriott again. I figured it would be fine since I'd stayed at Marriotts for years before. The location was convenient, I'll give it that. But the experience reminded me of all the reasons I started leaving Marriott."
+        },
+        {
+          "role": "assistant",
+          "content": "Ah, that's unfortunate timing with the Hilton properties being sold out. So you were back at a Courtyard Marriott near the Austin convention center. I can see how that would be a frustrating compromise given that you'd already made the switch to Hilton for good reasons. What specifically went wrong — was it the scent issue again, noise, or something else? Knowing the details will help me flag potential problems if we ever have to fall back to a non-Hilton property in the future."
+        },
+        {
+          "role": "user",
+          "content": "Exactly the scent issue. The hallways reeked of that same synthetic air freshener I encountered at the Courtyard Marriott near O'Hare back in April. It's like it's a brand-wide thing with their Courtyard properties. I had a headache within twenty minutes of checking in. I opened the window but it was ninety-something degrees in Austin so that wasn't really an option. It genuinely ruined my first evening there."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds miserable — dealing with the same overpowering air freshener issue at two different Courtyard Marriott locations definitely suggests it's a systemic problem with the brand, not just one unlucky property. And not being able to open the window in Austin heat makes it even worse. I'm sorry that happened. It sounds like this experience really solidified your feelings about moving away from Marriott. Do you want me to add a note to avoid Courtyard Marriott specifically, or Marriott properties in general?"
+        },
+        {
+          "role": "user",
+          "content": "All Marriott properties. Honestly, the Marriott experience in Austin reminded me why I was moving away from them in the first place. The hallway had that same overpowering air freshener smell I ran into in Chicago. I'm done with Marriott — going back to Hilton for everything going forward. Even if Hilton is sold out near a venue, I'd rather stay at a Hilton a bit farther away and take a rideshare than deal with Marriott's scent situation again.\n\nOne more thing — I earned 2,847 qualifying miles from the Austin round trip on Delta. Combined with the Denver trip in March which was about 3,200 qualifying miles, that puts me at roughly 6,047 qualifying miles toward Gold so far this year. I want to keep a running tally if possible so I know where I stand each month."
+        },
+        {
+          "role": "assistant",
+          "content": "Crystal clear — I've locked in Hilton as your definitive hotel brand going forward, no Marriott fallbacks. If Hilton properties near your destination are sold out, the plan is to look at Hilton locations a bit farther out and factor in rideshare costs rather than defaulting back to Marriott. I've also noted the recurring air freshener issue as a hard dealbreaker for all Marriott properties, not just Courtyard. This is a firm preference now. Anything else from the Austin trip you want me to capture?\n\nGreat idea to track that. So from the Denver round trip in March you earned approximately 3,200 qualifying miles, and the Austin round trip just added about 2,847 qualifying miles, putting your running total at roughly 6,047 MQMs toward Gold Medallion. I'll keep updating this as you report new trips. Delta Gold Medallion typically requires 50,000 MQMs in a calendar year, so you've got a ways to go but the year is still young. Every Comfort+ upgrade and additional domestic trip will help close that gap. Just let me know after each flight and I'll update the tally."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "tentative Hyatt mention and adversarial Marriott echo",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I'm starting to plan my Portland trip for June — remember I mentioned booking a Hilton there? I want to make sure I request a room away from the elevator again. Also I need to figure out the Delta flight situation. Can you pull up what you know about my preferences and loyalty info so I can cross-reference while I'm booking?"
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! Here's what I have on file for you: Your preferred hotel brand is Hilton, and you book through the Hilton Honors app directly. You always request a room away from the elevator due to noise sensitivity, and you avoid heavily scented hotel environments. For flights, you fly Delta exclusively for domestic travel. Your SkyMiles number is 2847301566, you currently hold Silver Medallion status, and you're working toward Gold Medallion by year-end. You have roughly 6,047 qualifying miles accumulated so far from the Denver and Austin trips. Shall I help estimate what the Portland round trip might add to your MQM tally?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, that would be helpful. I'm flying out of Seattle, so it's a short hop — Seattle to Portland. I think that route is only about 130 air miles each way. Also, can you remind me of my SkyMiles number one more time? I'm about to enter it into the booking form and I always blank on it at the worst moment."
+        },
+        {
+          "role": "assistant",
+          "content": "Your Delta SkyMiles number is 2847301566. For the Seattle to Portland route, you're right that it's roughly 130 air miles each way, so the round trip would add approximately 260 base MQMs. With Silver Medallion status you get a slight MQM bonus multiplier, but for such a short flight it won't dramatically change the number — probably around 280-290 MQMs total. That would bring your estimated running total to about 6,330 MQMs. Still a long way to Gold, but every flight counts. I also noticed from your earlier trips — the old Marriott Bonvoy confirmation for Chicago showed a rate of $189 per night if that's useful for cost comparison with the Portland Hilton."
+        },
+        {
+          "role": "user",
+          "content": "No, I don't need the Marriott rate — I'm not going back to Marriott, remember? Hilton only. Anyway, the Portland Hilton I booked is $159 per night which feels reasonable. I'm staying three nights, checking in June 12 and checking out June 15. I already submitted the elevator-distance room request through the app."
+        },
+        {
+          "role": "assistant",
+          "content": "Apologies for bringing up the Marriott rate — you're right, Hilton only going forward. Your Portland Hilton booking looks solid: $159 per night for three nights, June 12 check-in through June 15 check-out, with the room-away-from-elevator request already submitted. That comes to $477 before taxes for the hotel stay. Combined with the Delta round trip from Seattle, this should be a straightforward and comfortable trip. Is there anything else you'd like me to help coordinate for Portland?"
+        },
+        {
+          "role": "user",
+          "content": "My colleague Dave just told me about Hyatt's new loyalty promotion — apparently they match your status from any other chain and give you a guaranteed suite upgrade on your first stay. He said I should switch to Hyatt for Q4. It sounds pretty tempting honestly, but I haven't looked into it myself yet and I'm not making any changes until I verify the details. Just wanted to mention it in case it comes up later.\n\nExactly, don't change anything yet. Hilton is still where I'm at. Also — quick question — with the Portland trip adding roughly 280 MQMs to my running total of about 6,047, that puts me around 6,330 or so. Gold requires 50,000 MQMs. At this pace I'd need a lot more flights. Do you think I should look into any mileage accelerator programs or credit card bonuses that could help?"
+        },
+        {
+          "role": "assistant",
+          "content": "That's an interesting lead from Dave! A status match plus a guaranteed suite upgrade on the first stay would be a solid incentive if the details check out. I'll keep that in the back of my mind as a potential Q4 consideration, but I won't change anything about your current preferences — Hilton remains your go-to hotel brand for now. When you get a chance to verify the Hyatt promotion details, just let me know and we can evaluate whether it makes sense to try a Hyatt stay. For the time being, all your upcoming bookings stay with Hilton.\n\nYou're right that at roughly 6,330 MQMs after Portland, there's a significant gap to the 50,000 MQM Gold threshold. A few options to consider: First, the Delta SkyMiles Reserve or Platinum Amex cards offer MQM boosts — some give 15,000 to 25,000 bonus MQMs per year if you hit certain spending thresholds. Second, Delta occasionally runs targeted MQM accelerator promotions where you can earn double MQMs on select routes for a limited time. Third, if you have any long-haul domestic trips planned — say cross-country flights — those would contribute significantly more MQMs per trip than the short Seattle-Portland hops. I'd suggest checking the Delta app for any active promotions tied to your SkyMiles account and reviewing whether a Delta co-branded credit card makes sense for your spending patterns."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations about travel, I mentioned my hotel brand preference a few times and it shifted around. Can you summarize what I told you at different points about which hotel brand I prefer and why?",
+      "expected_answer": "You initially said Marriott was your default hotel brand for work travel. Then you said you had switched to Hilton because the rooms are quieter, the décor is more understated, and you feel more comfortable there. You temporarily went back to Marriott for an Austin trip because Hilton options near the convention center were sold out, but the overpowering air freshener smell at the Courtyard Marriott — the same issue you experienced in Chicago — made you decide you're done with Marriott entirely. You confirmed Hilton as your definitive hotel brand going forward, saying you'd rather stay at a Hilton farther away and take a rideshare than return to Marriott. You also mentioned a colleague Dave told you about a Hyatt loyalty promotion, but you said you hadn't verified it and weren't making any changes yet.",
+      "gold_memory_state": "Preferred hotel brand: Hilton (confirmed). Marriott is rejected. Hyatt was mentioned as a tentative possibility for Q4 but explicitly not adopted. Delta SkyMiles number 2847301566 is a separate confirmed control target.",
+      "judge_rubric": {
+        "must_include": [
+          "Marriott as initial preference",
+          "switch to Hilton",
+          "temporary Marriott stay in Austin due to availability",
+          "air freshener issue",
+          "final confirmed return to Hilton"
+        ],
+        "acceptable_paraphrases": [
+          "scent problem",
+          "fragrance issue",
+          "overpowering smell"
+        ],
+        "must_not_include": [
+          "Hyatt is the current preference"
+        ],
+        "harmful_extra": [
+          "claiming Marriott is still the current preference",
+          "claiming Hyatt was adopted"
+        ],
+        "harmless_extra": [
+          "mentioning Dave's Hyatt suggestion as unverified",
+          "mentioning the Chicago Marriott experience"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the response treats Marriott as the current preference or Hyatt as an adopted preference.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I've been booking Marriott hotels for years now — they're my default whenever I travel for work"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've actually been switching over to Hilton lately. My last three trips I booked Hilton properties and I've been way happier with the experience"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I went back to Marriott for the Austin trip because the Hilton options near the convention center were all sold out. So I ended up at a Courtyard Marriott again"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "the Marriott experience in Austin reminded me why I was moving away from them in the first place. The hallway had that same overpowering air freshener smell I ran into in Chicago. I'm done with Marriott — going back to Hilton for everything going forward"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "My colleague Dave just told me about Hyatt's new loyalty promotion — apparently they match your status from any other chain and give you a guaranteed suite upgrade on your first stay. He said I should switch to Hyatt for Q4"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations about travel, I mentioned my hotel brand preference a few times and it shifted around. Can you summarize what I told you at different points about which hotel brand I prefer and why?",
+      "expected_answer": "You initially said Marriott was your default hotel brand for work travel. Then you said you had switched to Hilton because the rooms are quieter, the décor is more understated, and you feel more comfortable there. You temporarily went back to Marriott for an Austin trip because Hilton options near the convention center were sold out, but the overpowering air freshener smell at the Courtyard Marriott — the same issue you experienced in Chicago — made you decide you're done with Marriott entirely. You confirmed Hilton as your definitive hotel brand going forward, saying you'd rather stay at a Hilton farther away and take a rideshare than return to Marriott. You also mentioned a colleague Dave told you about a Hyatt loyalty promotion, but you said you hadn't verified it and weren't making any changes yet.",
+      "gold_memory_state": "Preferred hotel brand: Hilton (confirmed). Marriott is rejected. Hyatt was mentioned as a tentative possibility for Q4 but explicitly not adopted. Delta SkyMiles number 2847301566 is a separate confirmed control target.",
+      "judge_rubric": {
+        "must_include": [
+          "Marriott as initial preference",
+          "switch to Hilton",
+          "temporary Marriott stay in Austin due to availability",
+          "air freshener issue",
+          "final confirmed return to Hilton"
+        ],
+        "acceptable_paraphrases": [
+          "scent problem",
+          "fragrance issue",
+          "overpowering smell"
+        ],
+        "must_not_include": [
+          "Hyatt is the current preference"
+        ],
+        "harmful_extra": [
+          "claiming Marriott is still the current preference",
+          "claiming Hyatt was adopted"
+        ],
+        "harmless_extra": [
+          "mentioning Dave's Hyatt suggestion as unverified",
+          "mentioning the Chicago Marriott experience"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the response treats Marriott as the current preference or Hyatt as an adopted preference.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I've been booking Marriott hotels for years now — they're my default whenever I travel for work"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've actually been switching over to Hilton lately. My last three trips I booked Hilton properties and I've been way happier with the experience"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I went back to Marriott for the Austin trip because the Hilton options near the convention center were all sold out. So I ended up at a Courtyard Marriott again"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "the Marriott experience in Austin reminded me why I was moving away from them in the first place. The hallway had that same overpowering air freshener smell I ran into in Chicago. I'm done with Marriott — going back to Hilton for everything going forward"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "My colleague Dave just told me about Hyatt's new loyalty promotion — apparently they match your status from any other chain and give you a guaranteed suite upgrade on your first stay. He said I should switch to Hyatt for Q4"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've shared both hotel brand preferences and an airline loyalty number with you. When I talked about being dissatisfied after the Austin trip and making a definitive choice going forward, which part of my travel profile was I changing — and does it affect my airline loyalty details at all?",
+      "expected_answer": "You were changing your preferred hotel brand. Your airline loyalty details — Delta SkyMiles number 2847301566 and Silver Medallion status — are not affected.",
+      "gold_memory_state": "Preferred hotel brand updated to Hilton (confirmed). Delta SkyMiles number 2847301566 remains unchanged as a separate control target. Silver Medallion status and Gold Medallion goal are unaffected.",
+      "judge_rubric": {
+        "must_include": [
+          "hotel brand preference",
+          "airline loyalty not affected"
+        ],
+        "acceptable_paraphrases": [
+          "hotel preference",
+          "hotel chain preference",
+          "lodging brand"
+        ],
+        "must_not_include": [
+          "Delta SkyMiles number changed",
+          "airline loyalty was updated"
+        ],
+        "harmful_extra": [
+          "saying the airline loyalty number was also changed",
+          "merging hotel and airline into one record"
+        ],
+        "harmless_extra": [
+          "mentioning the SkyMiles number value",
+          "mentioning Silver Medallion status"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model says the airline loyalty details were also affected by the hotel brand change.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "the Marriott experience in Austin reminded me why I was moving away from them in the first place. The hallway had that same overpowering air freshener smell I ran into in Chicago. I'm done with Marriott — going back to Hilton for everything going forward"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My Delta SkyMiles number is 2847301566. I hit Silver Medallion status in May and I'm trying to reach Gold Medallion by end of year"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've shared both hotel brand preferences and an airline loyalty number with you. When I talked about being dissatisfied after the Austin trip and making a definitive choice going forward, which part of my travel profile was I changing — and does it affect my airline loyalty details at all?",
+      "expected_answer": "You were changing your preferred hotel brand. Your airline loyalty details — Delta SkyMiles number 2847301566 and Silver Medallion status — are not affected.",
+      "gold_memory_state": "Preferred hotel brand updated to Hilton (confirmed). Delta SkyMiles number 2847301566 remains unchanged as a separate control target. Silver Medallion status and Gold Medallion goal are unaffected.",
+      "judge_rubric": {
+        "must_include": [
+          "hotel brand preference",
+          "airline loyalty not affected"
+        ],
+        "acceptable_paraphrases": [
+          "hotel preference",
+          "hotel chain preference",
+          "lodging brand"
+        ],
+        "must_not_include": [
+          "Delta SkyMiles number changed",
+          "airline loyalty was updated"
+        ],
+        "harmful_extra": [
+          "saying the airline loyalty number was also changed",
+          "merging hotel and airline into one record"
+        ],
+        "harmless_extra": [
+          "mentioning the SkyMiles number value",
+          "mentioning Silver Medallion status"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model says the airline loyalty details were also affected by the hotel brand change.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "the Marriott experience in Austin reminded me why I was moving away from them in the first place. The hallway had that same overpowering air freshener smell I ran into in Chicago. I'm done with Marriott — going back to Hilton for everything going forward"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My Delta SkyMiles number is 2847301566. I hit Silver Medallion status in May and I'm trying to reach Gold Medallion by end of year"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to set up my default hotel brand in my company's travel booking portal. Which of the following should I select as my go-to hotel chain?",
+      "expected_answer": "Hilton",
+      "candidate_options": [
+        "Hilton",
+        "Marriott",
+        "Hyatt",
+        "Courtyard by Marriott"
+      ],
+      "distractor_rationale": "same-value-different-target: 'Courtyard by Marriott' is a sub-brand of Marriott that appeared in the Austin trip context but is not the user's preferred brand; it is grounded in a specific property stay, not a preference. assistant echo: 'Marriott' was the assistant's initial recorded preference and appeared in assistant summaries; it is the stale superseded value. 'Hyatt' is the tentative/recency-trap distractor — mentioned most recently by the user's colleague Dave as a potential Q4 switch, but the user explicitly said not to change anything and confirmed Hilton remains the preference.",
+      "gold_memory_state": "Preferred hotel brand: Hilton (confirmed, final). Marriott is the stale rejected value. Hyatt is tentative/not adopted. Delta SkyMiles number 2847301566 is an unrelated control target.",
+      "judge_rubric": {
+        "must_include": [
+          "Hilton"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "Marriott as current preference",
+          "Hyatt as current preference"
+        ],
+        "harmful_extra": [
+          "selecting Marriott",
+          "selecting Hyatt",
+          "selecting Courtyard by Marriott"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects Marriott (stale superseded value) or Hyatt (tentative/recency trap, never adopted).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not select Hilton as the final confirmed hotel brand.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "the Marriott experience in Austin reminded me why I was moving away from them in the first place. The hallway had that same overpowering air freshener smell I ran into in Chicago. I'm done with Marriott — going back to Hilton for everything going forward"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "My colleague Dave just told me about Hyatt's new loyalty promotion — apparently they match your status from any other chain and give you a guaranteed suite upgrade on your first stay. He said I should switch to Hyatt for Q4"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I haven't looked into it myself yet and I'm not making any changes until I verify the details"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to set up my default hotel brand in my company's travel booking portal. Which of the following should I select as my go-to hotel chain?",
+      "expected_answer": "Hilton",
+      "candidate_options": [
+        "Hilton",
+        "Marriott",
+        "Hyatt",
+        "Courtyard by Marriott"
+      ],
+      "distractor_rationale": "same-value-different-target: 'Courtyard by Marriott' is a sub-brand of Marriott that appeared in the Austin trip context but is not the user's preferred brand; it is grounded in a specific property stay, not a preference. assistant echo: 'Marriott' was the assistant's initial recorded preference and appeared in assistant summaries; it is the stale superseded value. 'Hyatt' is the tentative/recency-trap distractor — mentioned most recently by the user's colleague Dave as a potential Q4 switch, but the user explicitly said not to change anything and confirmed Hilton remains the preference.",
+      "gold_memory_state": "Preferred hotel brand: Hilton (confirmed, final). Marriott is the stale rejected value. Hyatt is tentative/not adopted. Delta SkyMiles number 2847301566 is an unrelated control target.",
+      "judge_rubric": {
+        "must_include": [
+          "Hilton"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "Marriott as current preference",
+          "Hyatt as current preference"
+        ],
+        "harmful_extra": [
+          "selecting Marriott",
+          "selecting Hyatt",
+          "selecting Courtyard by Marriott"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects Marriott (stale superseded value) or Hyatt (tentative/recency trap, never adopted).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not select Hilton as the final confirmed hotel brand.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "the Marriott experience in Austin reminded me why I was moving away from them in the first place. The hallway had that same overpowering air freshener smell I ran into in Chicago. I'm done with Marriott — going back to Hilton for everything going forward"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "My colleague Dave just told me about Hyatt's new loyalty promotion — apparently they match your status from any other chain and give you a guaranteed suite upgrade on your first stay. He said I should switch to Hyatt for Q4"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I haven't looked into it myself yet and I'm not making any changes until I verify the details"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I have a work trip to Denver next month. I'll be flying Delta from Seattle. Draft a short booking checklist for me that covers the hotel brand I should search, the loyalty number I should enter for my flight, and whether I should also explore that hotel chain my colleague mentioned — and explain your reasoning for each item.",
+      "expected_answer": "Hotel: Search for Hilton properties in Denver. You decided Hilton is your definitive hotel brand and you'd rather stay at a Hilton farther from the venue and take a rideshare than use Marriott. Request a room away from the elevator due to noise sensitivity. Flight: Book Delta. Enter SkyMiles number 2847301566 at booking to earn qualifying miles toward Gold Medallion. Hyatt exploration: Not recommended at this time. You mentioned Dave's tip about a Hyatt status-match promotion but explicitly said you haven't verified the details and aren't making any changes yet. Stick with Hilton until you decide otherwise.",
+      "gold_memory_state": "Preferred hotel brand: Hilton (confirmed). Room preference: away from elevator. Marriott rejected due to air freshener issue. Hyatt tentative/not adopted. Delta SkyMiles: 2847301566. Status: Silver Medallion, working toward Gold.",
+      "judge_rubric": {
+        "must_include": [
+          "Hilton for hotel",
+          "2847301566 for Delta booking",
+          "Hyatt not yet adopted or verified"
+        ],
+        "acceptable_paraphrases": [
+          "Hilton is the go-to hotel chain",
+          "SkyMiles number 2847301566",
+          "Hyatt promotion not confirmed"
+        ],
+        "must_not_include": [
+          "Marriott as the hotel to book",
+          "Hyatt as the hotel to book"
+        ],
+        "harmful_extra": [
+          "recommending Marriott properties",
+          "treating Hyatt as an adopted preference"
+        ],
+        "harmless_extra": [
+          "mentioning the room-away-from-elevator preference",
+          "mentioning scent sensitivity",
+          "mentioning MQM tally",
+          "mentioning Silver Medallion status"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model recommends Marriott as the hotel brand or treats Hyatt as the adopted preference.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not identify Hilton as the hotel brand and 2847301566 as the SkyMiles number.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "application_probe_type": "multi_hop_derivation",
+      "gold_reasoning_chain": [
+        "Fact 1: The user's preferred hotel brand is Hilton, confirmed after rejecting Marriott due to air freshener issues.",
+        "Fact 2: The user's Delta SkyMiles number is 2847301566, with Silver Medallion status and a goal of reaching Gold Medallion.",
+        "Fact 3: The user's colleague Dave mentioned a Hyatt loyalty promotion, but the user explicitly said not to change anything until verifying the details.",
+        "Inference: For the Denver trip, the hotel search should target Hilton, the flight booking should use SkyMiles 2847301566, and the Hyatt suggestion should be flagged as unverified and not acted upon.",
+        "Inference: The checklist combines three separate confirmed facts (hotel brand, loyalty number, tentative Hyatt status) into a single actionable plan with reasoning for each decision."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "the Marriott experience in Austin reminded me why I was moving away from them in the first place. The hallway had that same overpowering air freshener smell I ran into in Chicago. I'm done with Marriott — going back to Hilton for everything going forward"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My Delta SkyMiles number is 2847301566. I hit Silver Medallion status in May and I'm trying to reach Gold Medallion by end of year"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "My colleague Dave just told me about Hyatt's new loyalty promotion — apparently they match your status from any other chain and give you a guaranteed suite upgrade on your first stay. He said I should switch to Hyatt for Q4"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I haven't looked into it myself yet and I'm not making any changes until I verify the details"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I have a work trip to Denver next month. I'll be flying Delta from Seattle. Draft a short booking checklist for me that covers the hotel brand I should search, the loyalty number I should enter for my flight, and whether I should also explore that hotel chain my colleague mentioned — and explain your reasoning for each item.",
+      "expected_answer": "Hotel: Search for Hilton properties in Denver. You decided Hilton is your definitive hotel brand and you'd rather stay at a Hilton farther from the venue and take a rideshare than use Marriott. Request a room away from the elevator due to noise sensitivity. Flight: Book Delta. Enter SkyMiles number 2847301566 at booking to earn qualifying miles toward Gold Medallion. Hyatt exploration: Not recommended at this time. You mentioned Dave's tip about a Hyatt status-match promotion but explicitly said you haven't verified the details and aren't making any changes yet. Stick with Hilton until you decide otherwise.",
+      "gold_memory_state": "Preferred hotel brand: Hilton (confirmed). Room preference: away from elevator. Marriott rejected due to air freshener issue. Hyatt tentative/not adopted. Delta SkyMiles: 2847301566. Status: Silver Medallion, working toward Gold.",
+      "judge_rubric": {
+        "must_include": [
+          "Hilton for hotel",
+          "2847301566 for Delta booking",
+          "Hyatt not yet adopted or verified"
+        ],
+        "acceptable_paraphrases": [
+          "Hilton is the go-to hotel chain",
+          "SkyMiles number 2847301566",
+          "Hyatt promotion not confirmed"
+        ],
+        "must_not_include": [
+          "Marriott as the hotel to book",
+          "Hyatt as the hotel to book"
+        ],
+        "harmful_extra": [
+          "recommending Marriott properties",
+          "treating Hyatt as an adopted preference"
+        ],
+        "harmless_extra": [
+          "mentioning the room-away-from-elevator preference",
+          "mentioning scent sensitivity",
+          "mentioning MQM tally",
+          "mentioning Silver Medallion status"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model recommends Marriott as the hotel brand or treats Hyatt as the adopted preference.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not identify Hilton as the hotel brand and 2847301566 as the SkyMiles number.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "application_probe_type": "multi_hop_derivation",
+      "gold_reasoning_chain": [
+        "Fact 1: The user's preferred hotel brand is Hilton, confirmed after rejecting Marriott due to air freshener issues.",
+        "Fact 2: The user's Delta SkyMiles number is 2847301566, with Silver Medallion status and a goal of reaching Gold Medallion.",
+        "Fact 3: The user's colleague Dave mentioned a Hyatt loyalty promotion, but the user explicitly said not to change anything until verifying the details.",
+        "Inference: For the Denver trip, the hotel search should target Hilton, the flight booking should use SkyMiles 2847301566, and the Hyatt suggestion should be flagged as unverified and not acted upon.",
+        "Inference: The checklist combines three separate confirmed facts (hotel brand, loyalty number, tentative Hyatt status) into a single actionable plan with reasoning for each decision."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "the Marriott experience in Austin reminded me why I was moving away from them in the first place. The hallway had that same overpowering air freshener smell I ran into in Chicago. I'm done with Marriott — going back to Hilton for everything going forward"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My Delta SkyMiles number is 2847301566. I hit Silver Medallion status in May and I'm trying to reach Gold Medallion by end of year"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "My colleague Dave just told me about Hyatt's new loyalty promotion — apparently they match your status from any other chain and give you a guaranteed suite upgrade on your first stay. He said I should switch to Hyatt for Q4"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I haven't looked into it myself yet and I'm not making any changes until I verify the details"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,941 @@
+{
+  "target_fact": "Current job level/title grade: L6 Senior Software Engineer, with update chain tracking the level through multiple confirmed and tentative states",
+  "operation_type": "TrajectoryOps",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "conditional_application"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "job_level_chain",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I'm currently at L5, which is the mid-level software engineer grade at my company"
+      },
+      "target": {
+        "target_id": "current_job_level",
+        "target_name": "current job level/title grade"
+      },
+      "old_value": null,
+      "new_value": "L5, Mid-Level Software Engineer",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I'm currently at L5, which is the mid-level software engineer grade at my company"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "the L6 comp band at our company starts at $185,000 base salary"
+      },
+      "target": {
+        "target_id": "l6_comp_band_floor",
+        "target_name": "L6 compensation band floor"
+      },
+      "old_value": null,
+      "new_value": "$185,000",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "the L6 comp band at our company starts at $185,000 base salary"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "job_level_chain",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I got the official promotion to L6, Senior Software Engineer. HR confirmed it on March 3rd"
+      },
+      "target": {
+        "target_id": "current_job_level",
+        "target_name": "current job level/title grade"
+      },
+      "old_value": "L5, Mid-Level Software Engineer",
+      "new_value": "L6, Senior Software Engineer",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I'm currently at L5, which is the mid-level software engineer grade at my company"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I got the official promotion to L6, Senior Software Engineer. HR confirmed it on March 3rd"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "job_level_chain",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "David mentioned that the VP approved a new L7 Principal Engineer fast-track for our platform migration leads, and he's putting my name forward for reclassification to L7 starting next quarter"
+      },
+      "target": {
+        "target_id": "current_job_level",
+        "target_name": "current job level/title grade"
+      },
+      "old_value": "L6, Senior Software Engineer",
+      "new_value": "L7, Principal Engineer",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "David mentioned that the VP approved a new L7 Principal Engineer fast-track for our platform migration leads, and he's putting my name forward for reclassification to L7 starting next quarter"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "job_level_chain",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 7,
+        "quote": "I just heard back from HR and they said the L7 fast-track program was shelved indefinitely. So I'm staying at L6 Senior Software Engineer for now"
+      },
+      "target": {
+        "target_id": "current_job_level",
+        "target_name": "current job level/title grade"
+      },
+      "old_value": "L6, Senior Software Engineer",
+      "new_value": "L6, Senior Software Engineer",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I got the official promotion to L6, Senior Software Engineer. HR confirmed it on March 3rd"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I just heard back from HR and they said the L7 fast-track program was shelved indefinitely. So I'm staying at L6 Senior Software Engineer for now"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish baseline job level and comp band information",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to give you some context about my career situation so you can help me plan. I'm currently at L5, which is the mid-level software engineer grade at my company. I've been at this level for about two and a half years now, and my manager David Chen has been hinting that a promotion cycle is coming up soon."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for sharing that context! So you're at L5 (mid-level software engineer) and have been there for roughly two and a half years. That's a solid tenure at one level, and it sounds like the promotion discussion with your manager David Chen is encouraging. Knowing your current level and that a cycle is approaching will help me give you more targeted advice. What kind of planning did you have in mind — are you thinking about preparing for the promotion review, negotiating compensation, or something else entirely? Happy to help with any of those angles."
+        },
+        {
+          "role": "user",
+          "content": "Mostly I want to understand my comp trajectory. One thing I confirmed with HR recently is that the L6 comp band at our company starts at $185,000 base salary. I want to figure out where I'd land if I do get promoted. Also, my previous company used P-levels — I was a P4 there, which roughly maps to our L5. I left that job about fourteen months ago."
+        },
+        {
+          "role": "assistant",
+          "content": "Great, that's really useful information for planning. So the L6 comp band floor is $185,000 base, and your prior role was P4 at your previous company, which you see as equivalent to your current L5. Since you left that role about fourteen months ago, you've had a decent runway at L5 in your current company. For comp trajectory planning, the key variables will be where you land within the L6 band if promoted, any equity refresh, and bonus target changes. Do you know the L6 band ceiling or midpoint, or should we work just from the $185,000 floor for now? Also, do you have a sense of your current L5 base?"
+        },
+        {
+          "role": "user",
+          "content": "I don't know the L6 ceiling yet, but let's work from the floor. One thing I've been thinking about is that L6 is the level where you start being considered for either the tech lead track or the management track. I haven't decided formally, but I'm leaning toward tech lead. I really enjoy sitting with hard technical problems by myself for hours and just digging in."
+        },
+        {
+          "role": "assistant",
+          "content": "That preference for deep technical work is a strong signal toward the tech lead track. At many companies, the tech lead path lets you stay close to architecture decisions, code reviews, and complex debugging while still growing in scope and influence. The management track, by contrast, shifts your day toward one-on-ones, performance reviews, and cross-team coordination. Since you genuinely enjoy the solo deep-dive problem-solving, the tech lead path sounds like a natural fit. When the time comes to formalize your choice, having concrete examples of technical leadership — mentoring, design docs, system-level decisions — will strengthen your case. Want me to help you outline some of those examples?"
+        },
+        {
+          "role": "user",
+          "content": "That would be helpful later, yeah. For now, just keep all this in mind. Oh, one more thing — my colleague Priya also got promoted recently, from L5 to L6 on the infrastructure team. Her promotion was effective March 1st. She's been great to bounce ideas off of. I wanted to mention her because she might come up in future conversations."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — Priya is your colleague who was promoted from L5 to L6 on the infrastructure team, effective March 1st. It's great that you have someone at the same level transition to compare notes with, especially since infrastructure and your team may have different expectations for L6 scope. Having a peer like that can be really valuable for understanding what the promotion committee looks for and how the new level feels in practice. I'll keep all of this context in mind: your L5 status, the $185,000 L6 band floor, your tech-lead leaning, your P4 history, and Priya's parallel promotion. Just ping me whenever you want to dig into planning."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "User confirms promotion to L6 and provides new project and comp details",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Big update! I got the official promotion to L6, Senior Software Engineer. HR confirmed it on March 3rd. I was sitting in a coffee shop near the office and almost spilled my drink when I saw the email. After two and a half years at L5, it feels amazing. Please update your records — I'm fully operating as L6 now."
+        },
+        {
+          "role": "assistant",
+          "content": "Congratulations, that's fantastic news! I've updated your level to L6, Senior Software Engineer, effective March 3rd as confirmed by HR. After two and a half years at L5, you absolutely earned this. The coffee-shop celebration moment sounds perfect. This also means you're now within that L6 comp band we discussed — starting at $185,000 base. Have you gotten details on your specific comp adjustment yet, or is that still being finalized? Also, does this change anything about the tech lead versus management track decision, or are you still leaning tech lead?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, my actual base after the adjustment is $191,500. I confirmed this with HR during the second week of March. So I'm above the band floor, which feels good. I'm still leaning tech lead for sure — the idea of spending most of my day in people-management meetings doesn't appeal to me at all. I'd much rather stay close to the code."
+        },
+        {
+          "role": "assistant",
+          "content": "Excellent — $191,500 base is a solid placement within the L6 band, sitting $6,500 above the $185,000 floor. That suggests HR and your manager valued your experience and performance during the level-setting process. And your continued preference for the tech lead track makes a lot of sense given what you've told me about enjoying deep technical work. Staying close to the code while growing your architectural influence is a great path. For planning purposes, I now have your confirmed L6 base at $191,500. Do you want me to help model total comp scenarios, or is there something else on your mind related to the new level?"
+        },
+        {
+          "role": "user",
+          "content": "Actually yes — after the promotion went through, they moved me to a new project, an internal platform migration. I'm the tech lead on it, which is new for me at this level. The project kickoff was March 12th and we have a target completion of end of June. So it's a pretty tight timeline. I'm excited but also a bit nervous about leading something this visible."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a significant opportunity — being named tech lead on an internal platform migration right after your L6 promotion shows strong confidence from leadership. With a March 12th kickoff and end-of-June target, you're looking at roughly three and a half months, which is indeed tight for a platform migration. The visibility is a double-edged sword: high risk but also high reward for establishing yourself at the new level. Some things to think about early: defining clear milestones, identifying dependencies on other teams, and setting realistic scope boundaries. Would you like help creating a rough project timeline or a risk register to get ahead of potential blockers?"
+        },
+        {
+          "role": "user",
+          "content": "That would be great, but let's do that next time. One thing I've noticed since stepping into this role is that I really dread the large cross-team standups we have on Wednesdays. I find them draining and would much rather do a quick async update in Slack. I mentioned this to David once and he kind of laughed it off, but I genuinely prefer written communication over big group calls whenever possible.\n\nMaybe, let me think on it. For now just remember all the details I've shared — my L6 level, the $191,500 base, the platform migration project with the March 12th kickoff and end-of-June target, and my preference for async communication. These are all current and confirmed facts about my work situation."
+        },
+        {
+          "role": "assistant",
+          "content": "That preference for async written communication over large synchronous meetings is really common among engineers who thrive on deep focus work. Wednesday cross-team standups can be especially draining when they pull you out of a flow state. One practical approach: you could propose a hybrid model where your team posts written updates in a dedicated Slack channel before the standup, and the live meeting is shortened to only cover blockers and decisions. This way you're not fighting the meeting culture head-on, but you're shifting the balance toward async. David might be more receptive if you frame it as improving efficiency rather than avoiding the call. Want me to draft a proposal for that?\n\nAll noted and stored. Here's a summary of your current confirmed work details: you're at L6 Senior Software Engineer as of March 3rd, with a base salary of $191,500 within the L6 band that starts at $185,000. You're tech lead on the internal platform migration project, kicked off March 12th with an end-of-June completion target. You prefer async written communication, particularly Slack updates, over large group calls like the Wednesday cross-team standups. You're leaning toward the tech lead career track over management. And your colleague Priya was promoted to L6 on infrastructure effective March 1st. I'll keep all of this ready for our next conversation."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Introduce tentative L7 fast-track, adversarial distractor, and confirm revert to L6",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to check in about my career trajectory again. I've been settling into the tech lead role on the platform migration and it's going well so far. We hit our first milestone last week. I'm still really enjoying the deep technical work — spent a whole afternoon debugging a memory leak and genuinely had a good time doing it."
+        },
+        {
+          "role": "assistant",
+          "content": "Great to hear the platform migration is on track and you hit the first milestone! That memory leak debugging session sounds like exactly the kind of deep work that energizes you. It's a good sign that even in a tech lead capacity, you're still getting those focused problem-solving windows. Hitting early milestones also builds credibility with stakeholders and gives your team confidence. How are things going with the Wednesday standups — have you found any workarounds for the async communication preference, or are you still attending the full cross-team calls? And is there anything specific you wanted to discuss about your trajectory?"
+        },
+        {
+          "role": "user",
+          "content": "The standups are still happening but I've been keeping my camera off and just listening unless I need to speak. Not ideal but it works. What I actually wanted to talk about is something interesting — I was looking at a job posting from a competitor and they listed their senior level as E6 with a base band starting at $195,000. Just comparing market rates."
+        },
+        {
+          "role": "assistant",
+          "content": "That's smart market research. So the competitor uses E6 for their senior engineer level with a $195,000 band floor, compared to your company's L6 starting at $185,000. Your current base of $191,500 falls between those two floors, which means you're above your company's entry point but below the competitor's floor. However, total comp comparisons should also factor in equity, bonuses, and benefits. The E6 posting might have a different equity structure or lower bonus targets. It's worth tracking these data points for future negotiation leverage, even if you're not actively looking to leave. Do you want me to help build a comparison framework for evaluating external offers against your current package?"
+        },
+        {
+          "role": "user",
+          "content": "Not yet, I'm not seriously looking. But here's the real news — David mentioned that the VP approved a new L7 Principal Engineer fast-track for our platform migration leads, and he's putting my name forward for reclassification to L7 starting next quarter. He seemed pretty confident about it. If that goes through, it would be a huge jump so soon after making L6."
+        },
+        {
+          "role": "assistant",
+          "content": "Wow, that would be remarkable — going from L6 to L7 Principal Engineer within a single quarter would be an exceptionally fast progression. The fact that it's tied to the platform migration tech lead role makes sense strategically; companies sometimes create fast-track paths for critical initiatives. David's confidence is encouraging, especially since he successfully advocated for your L6 promotion. If L7 carries a higher comp band, that could also meaningfully change your total compensation picture. That said, fast-track programs can sometimes get restructured before they're implemented. I'd keep performing at your current level and let the process play out. Want me to note this as a potential upcoming change?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, note it but don't treat it as final — it's still pending approval from the broader committee. Honestly I'm trying not to get my hopes up too much this time. The waiting period before my L6 promotion was rough enough. I wasn't sleeping well and was checking email constantly. I don't want to go through that again.\n\nI just heard back from HR and they said the L7 fast-track program was shelved indefinitely. So I'm staying at L6 Senior Software Engineer for now. Honestly I'm a little relieved — less pressure and I can just focus on the migration project. Please make sure my records show L6 as my current level, nothing else."
+        },
+        {
+          "role": "assistant",
+          "content": "Completely understandable — the anxiety you experienced during the L6 promotion wait sounds like it really took a toll, and it makes sense to protect yourself from that cycle repeating. I'll note the L7 Principal Engineer fast-track as a potential future change, not a confirmed update. Your current confirmed level remains L6 Senior Software Engineer. Focusing on the platform migration deliverables and the deep technical work you enjoy is probably the healthiest approach while this plays out. If you want, I can help you set up a mental framework for managing the uncertainty — something like defined check-in points rather than constant email monitoring. Would that be useful?\n\nGot it — your current confirmed level is L6 Senior Software Engineer, exactly as HR confirmed back on March 3rd. The L7 Principal Engineer fast-track is off the table since the program was shelved indefinitely. I can understand the relief; now you can channel all your energy into the platform migration without the distraction of another promotion cycle. Your focus on the deep technical work and the project deliverables is the right call. Everything else remains the same: $191,500 base, tech lead on the migration with the end-of-June target, and your preference for async communication. Let me know whenever you want to revisit career planning or project strategy."
+        }
+      ]
+    }
+  ],
+  "state_checkpoints": [
+    {
+      "checkpoint_id": "c1",
+      "description": "After segment 1: current_job_level = L5 Mid-Level Software Engineer (confirmed). l6_comp_band_floor = $185,000 (confirmed). Priya's promotion and P4 history mentioned as context."
+    },
+    {
+      "checkpoint_id": "c2",
+      "description": "After segment 2: current_job_level = L6 Senior Software Engineer (confirmed, updated from L5). l6_comp_band_floor = $185,000 (confirmed, unchanged). Base salary $191,500 confirmed. Platform migration project tech lead role active. Async communication preference noted."
+    },
+    {
+      "checkpoint_id": "c3",
+      "description": "After segment 3: current_job_level = L6 Senior Software Engineer (confirmed, L7 fast-track was tentative and then shelved). l6_comp_band_floor = $185,000 (confirmed, unchanged). Competitor E6 at $195,000 mentioned as market context only — not a gold operation. Final confirmed state is L6 Senior Software Engineer at $191,500 base."
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations, I shared several updates about my position at work. Can you summarize the key things I told you about how my role evolved, including anything that didn't end up going through?",
+      "expected_answer": "You initially shared that you were at L5, Mid-Level Software Engineer. You later announced your official promotion to L6, Senior Software Engineer, confirmed by HR on March 3rd. You then mentioned a potential fast-track to L7 Principal Engineer that your manager David was putting your name forward for, but you subsequently reported that HR confirmed the program was shelved indefinitely, so you remain at L6 Senior Software Engineer.",
+      "gold_memory_state": "current_job_level = L6 Senior Software Engineer (confirmed). L7 Principal Engineer fast-track was tentative and then shelved. L6 comp band floor = $185,000 (confirmed). Base salary = $191,500 (confirmed).",
+      "judge_rubric": {
+        "must_include": [
+          "L5",
+          "L6 Senior Software Engineer",
+          "L7 Principal Engineer was mentioned but shelved/did not go through"
+        ],
+        "acceptable_paraphrases": [
+          "mid-level to senior",
+          "fast-track was cancelled/shelved/not implemented"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming L7 is the current role",
+          "omitting the L7 discussion entirely"
+        ],
+        "harmless_extra": [
+          "March 3rd confirmation date",
+          "David Chen",
+          "platform migration context"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model presents L5 as the current role or L7 as the current role.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence of L5 → L6 → tentative L7 → revert to L6 is not accurately represented.",
+        "final_state": "Fails if the final state is not L6 Senior Software Engineer.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I'm currently at L5, which is the mid-level software engineer grade at my company"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I got the official promotion to L6, Senior Software Engineer. HR confirmed it on March 3rd"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "David mentioned that the VP approved a new L7 Principal Engineer fast-track for our platform migration leads, and he's putting my name forward for reclassification to L7 starting next quarter"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I just heard back from HR and they said the L7 fast-track program was shelved indefinitely. So I'm staying at L6 Senior Software Engineer for now"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations, I shared several updates about my position at work. Can you summarize the key things I told you about how my role evolved, including anything that didn't end up going through?",
+      "expected_answer": "You initially shared that you were at L5, Mid-Level Software Engineer. You later announced your official promotion to L6, Senior Software Engineer, confirmed by HR on March 3rd. You then mentioned a potential fast-track to L7 Principal Engineer that your manager David was putting your name forward for, but you subsequently reported that HR confirmed the program was shelved indefinitely, so you remain at L6 Senior Software Engineer.",
+      "gold_memory_state": "current_job_level = L6 Senior Software Engineer (confirmed). L7 Principal Engineer fast-track was tentative and then shelved. L6 comp band floor = $185,000 (confirmed). Base salary = $191,500 (confirmed).",
+      "judge_rubric": {
+        "must_include": [
+          "L5",
+          "L6 Senior Software Engineer",
+          "L7 Principal Engineer was mentioned but shelved/did not go through"
+        ],
+        "acceptable_paraphrases": [
+          "mid-level to senior",
+          "fast-track was cancelled/shelved/not implemented"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming L7 is the current role",
+          "omitting the L7 discussion entirely"
+        ],
+        "harmless_extra": [
+          "March 3rd confirmation date",
+          "David Chen",
+          "platform migration context"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model presents L5 as the current role or L7 as the current role.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence of L5 → L6 → tentative L7 → revert to L6 is not accurately represented.",
+        "final_state": "Fails if the final state is not L6 Senior Software Engineer.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I'm currently at L5, which is the mid-level software engineer grade at my company"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I got the official promotion to L6, Senior Software Engineer. HR confirmed it on March 3rd"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "David mentioned that the VP approved a new L7 Principal Engineer fast-track for our platform migration leads, and he's putting my name forward for reclassification to L7 starting next quarter"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I just heard back from HR and they said the L7 fast-track program was shelved indefinitely. So I'm staying at L6 Senior Software Engineer for now"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've mentioned a few different compensation figures during our chats — some about my own pay and some about external benchmarks. If I need to fill in my actual current base salary on an internal HR form, which figure should I use, and should the competitor's figure or the band floor affect what I enter?",
+      "expected_answer": "$191,500. The competitor's E6 band floor of $195,000 and my company's L6 band floor of $185,000 are separate reference points and should not be entered as my current base salary.",
+      "gold_memory_state": "User's confirmed base salary = $191,500. L6 comp band floor = $185,000 (separate target, confirmed). Competitor E6 band floor = $195,000 (market context only, not a gold operation target). These are distinct pieces of information.",
+      "judge_rubric": {
+        "must_include": [
+          "$191,500 as the current base salary"
+        ],
+        "acceptable_paraphrases": [
+          "191500",
+          "$191,500"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "entering $185,000 as the current salary",
+          "entering $195,000 as the current salary",
+          "confusing the band floor with actual salary"
+        ],
+        "harmless_extra": [
+          "mentioning the L6 band floor as context",
+          "mentioning the competitor figure as context"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model confuses the user's actual salary with the band floor or the competitor figure.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Yes, my actual base after the adjustment is $191,500. I confirmed this with HR during the second week of March"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "the L6 comp band at our company starts at $185,000 base salary"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've mentioned a few different compensation figures during our chats — some about my own pay and some about external benchmarks. If I need to fill in my actual current base salary on an internal HR form, which figure should I use, and should the competitor's figure or the band floor affect what I enter?",
+      "expected_answer": "$191,500. The competitor's E6 band floor of $195,000 and my company's L6 band floor of $185,000 are separate reference points and should not be entered as my current base salary.",
+      "gold_memory_state": "User's confirmed base salary = $191,500. L6 comp band floor = $185,000 (separate target, confirmed). Competitor E6 band floor = $195,000 (market context only, not a gold operation target). These are distinct pieces of information.",
+      "judge_rubric": {
+        "must_include": [
+          "$191,500 as the current base salary"
+        ],
+        "acceptable_paraphrases": [
+          "191500",
+          "$191,500"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "entering $185,000 as the current salary",
+          "entering $195,000 as the current salary",
+          "confusing the band floor with actual salary"
+        ],
+        "harmless_extra": [
+          "mentioning the L6 band floor as context",
+          "mentioning the competitor figure as context"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model confuses the user's actual salary with the band floor or the competitor figure.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Yes, my actual base after the adjustment is $191,500. I confirmed this with HR during the second week of March"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "the L6 comp band at our company starts at $185,000 base salary"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "After everything that's happened with my career discussions, what grade and title should go on my business cards right now?",
+      "expected_answer": "L6 Senior Software Engineer.",
+      "gold_memory_state": "current_job_level = L6 Senior Software Engineer (confirmed). The L7 Principal Engineer possibility was tentative and was shelved by HR; it was never adopted. L5 Mid-Level Software Engineer is the prior superseded state.",
+      "judge_rubric": {
+        "must_include": [
+          "L6",
+          "Senior Software Engineer"
+        ],
+        "acceptable_paraphrases": [
+          "L6 Senior SWE",
+          "L6 Senior Software Eng"
+        ],
+        "must_not_include": [
+          "L7",
+          "Principal Engineer as current title",
+          "L5 as current"
+        ],
+        "harmful_extra": [
+          "presenting L7 Principal Engineer as the current designation",
+          "presenting L5 as the current designation"
+        ],
+        "harmless_extra": [
+          "mentioning that L7 was discussed but shelved"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model outputs L5 Mid-Level Software Engineer or L7 Principal Engineer as the current designation. The L7 value is a recency trap: it was the most recently discussed possible change but was only tentative and then explicitly shelved.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the final state is anything other than L6 Senior Software Engineer.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I got the official promotion to L6, Senior Software Engineer. HR confirmed it on March 3rd"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I just heard back from HR and they said the L7 fast-track program was shelved indefinitely. So I'm staying at L6 Senior Software Engineer for now"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "After everything that's happened with my career discussions, what grade and title should go on my business cards right now?",
+      "expected_answer": "L6 Senior Software Engineer.",
+      "gold_memory_state": "current_job_level = L6 Senior Software Engineer (confirmed). The L7 Principal Engineer possibility was tentative and was shelved by HR; it was never adopted. L5 Mid-Level Software Engineer is the prior superseded state.",
+      "judge_rubric": {
+        "must_include": [
+          "L6",
+          "Senior Software Engineer"
+        ],
+        "acceptable_paraphrases": [
+          "L6 Senior SWE",
+          "L6 Senior Software Eng"
+        ],
+        "must_not_include": [
+          "L7",
+          "Principal Engineer as current title",
+          "L5 as current"
+        ],
+        "harmful_extra": [
+          "presenting L7 Principal Engineer as the current designation",
+          "presenting L5 as the current designation"
+        ],
+        "harmless_extra": [
+          "mentioning that L7 was discussed but shelved"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model outputs L5 Mid-Level Software Engineer or L7 Principal Engineer as the current designation. The L7 value is a recency trap: it was the most recently discussed possible change but was only tentative and then explicitly shelved.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the final state is anything other than L6 Senior Software Engineer.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I got the official promotion to L6, Senior Software Engineer. HR confirmed it on March 3rd"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I just heard back from HR and they said the L7 fast-track program was shelved indefinitely. So I'm staying at L6 Senior Software Engineer for now"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to check whether my current base salary places me in the bottom quarter of the compensation band for my grade. Given that the band starts at a figure I shared with you and my salary is what HR confirmed, how much above the band floor am I, and does that suggest I'm near the bottom of the range?",
+      "expected_answer": "Your current base salary of $191,500 is $6,500 above the L6 band floor of $185,000. Since you are relatively close to the floor, this suggests you are near the bottom of the L6 compensation range, which is typical for someone who just entered the band through a recent promotion.",
+      "gold_memory_state": "current_job_level = L6 Senior Software Engineer (confirmed). Base salary = $191,500 (confirmed). L6 comp band floor = $185,000 (confirmed).",
+      "judge_rubric": {
+        "must_include": [
+          "$191,500",
+          "$185,000",
+          "$6,500 difference",
+          "near the bottom or lower portion of the band"
+        ],
+        "acceptable_paraphrases": [
+          "6500 above the floor",
+          "$6.5K above"
+        ],
+        "must_not_include": [
+          "L7 compensation",
+          "L5 compensation"
+        ],
+        "harmful_extra": [
+          "using L7 band information",
+          "using the competitor's $195,000 as the user's band floor",
+          "using L5 as the current designation"
+        ],
+        "harmless_extra": [
+          "mentioning the promotion was recent",
+          "noting that placement near the floor is common for new entrants"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses L5 as the current grade or uses L7 band data.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not correctly identify L6 as the current grade for band comparison.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's confirmed current grade is L6 Senior Software Engineer.",
+        "Fact 2: The user's confirmed base salary is $191,500.",
+        "Fact 3: The L6 compensation band floor is $185,000.",
+        "Inference: $191,500 − $185,000 = $6,500 above the band floor.",
+        "Inference: Being $6,500 above the floor suggests placement in the lower portion of the L6 band, consistent with a recent promotion into the grade."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Yes, my actual base after the adjustment is $191,500. I confirmed this with HR during the second week of March"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "the L6 comp band at our company starts at $185,000 base salary"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I got the official promotion to L6, Senior Software Engineer. HR confirmed it on March 3rd"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to check whether my current base salary places me in the bottom quarter of the compensation band for my grade. Given that the band starts at a figure I shared with you and my salary is what HR confirmed, how much above the band floor am I, and does that suggest I'm near the bottom of the range?",
+      "expected_answer": "Your current base salary of $191,500 is $6,500 above the L6 band floor of $185,000. Since you are relatively close to the floor, this suggests you are near the bottom of the L6 compensation range, which is typical for someone who just entered the band through a recent promotion.",
+      "gold_memory_state": "current_job_level = L6 Senior Software Engineer (confirmed). Base salary = $191,500 (confirmed). L6 comp band floor = $185,000 (confirmed).",
+      "judge_rubric": {
+        "must_include": [
+          "$191,500",
+          "$185,000",
+          "$6,500 difference",
+          "near the bottom or lower portion of the band"
+        ],
+        "acceptable_paraphrases": [
+          "6500 above the floor",
+          "$6.5K above"
+        ],
+        "must_not_include": [
+          "L7 compensation",
+          "L5 compensation"
+        ],
+        "harmful_extra": [
+          "using L7 band information",
+          "using the competitor's $195,000 as the user's band floor",
+          "using L5 as the current designation"
+        ],
+        "harmless_extra": [
+          "mentioning the promotion was recent",
+          "noting that placement near the floor is common for new entrants"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses L5 as the current grade or uses L7 band data.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not correctly identify L6 as the current grade for band comparison.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's confirmed current grade is L6 Senior Software Engineer.",
+        "Fact 2: The user's confirmed base salary is $191,500.",
+        "Fact 3: The L6 compensation band floor is $185,000.",
+        "Inference: $191,500 − $185,000 = $6,500 above the band floor.",
+        "Inference: Being $6,500 above the floor suggests placement in the lower portion of the L6 band, consistent with a recent promotion into the grade."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Yes, my actual base after the adjustment is $191,500. I confirmed this with HR during the second week of March"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "the L6 comp band at our company starts at $185,000 base salary"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I got the official promotion to L6, Senior Software Engineer. HR confirmed it on March 3rd"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed all our conversations about my role and title at work, what would they see as the full sequence of changes — which designations were actually adopted and which ones never took effect? Walk me through the whole progression and where things stand now.",
+      "expected_answer": "The progression was: (1) L5 Mid-Level Software Engineer, which was the initial confirmed designation. (2) L6 Senior Software Engineer, confirmed by HR on March 3rd — this replaced L5. (3) L7 Principal Engineer was discussed as a potential fast-track reclassification but was only tentative and never took effect because the program was shelved by HR. (4) The final and current designation remains L6 Senior Software Engineer.",
+      "gold_memory_state": "Chain: L5 Mid-Level Software Engineer (confirmed, step 1, superseded) → L6 Senior Software Engineer (confirmed, step 2, adopted) → L7 Principal Engineer (tentative, step 3, never adopted, program shelved) → L6 Senior Software Engineer (confirmed, step 4, current). Final state: L6 Senior Software Engineer.",
+      "judge_rubric": {
+        "must_include": [
+          "L5 Mid-Level Software Engineer as starting point",
+          "L6 Senior Software Engineer as the confirmed promotion",
+          "L7 Principal Engineer as a discussed but unadopted possibility",
+          "L6 Senior Software Engineer as the final current designation"
+        ],
+        "acceptable_paraphrases": [
+          "L7 was proposed but cancelled",
+          "L7 fast-track was shelved",
+          "L7 never went through"
+        ],
+        "must_not_include": [
+          "L7 as a currently active or adopted designation"
+        ],
+        "harmful_extra": [
+          "claiming L7 was ever officially adopted",
+          "omitting the L7 discussion from the trajectory",
+          "claiming the user is still at L5"
+        ],
+        "harmless_extra": [
+          "March 3rd date",
+          "David Chen's role in the L7 proposal",
+          "HR shelving the program indefinitely"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if L5 or L7 is presented as the current designation.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the chronological order L5 → L6 → tentative L7 → confirmed L6 is not accurately represented.",
+        "final_state": "Fails if the final state is anything other than L6 Senior Software Engineer.",
+        "intermediate_state": "Fails if the L7 tentative step is omitted or if L5 is omitted from the trajectory.",
+        "trajectory_provenance": "Fails if the model cannot attribute the L6 confirmation to HR (March 3rd) or the L7 shelving to HR communication."
+      },
+      "gold_reasoning_chain": [
+        "Step 1 (confirmed): User stated initial designation as L5 Mid-Level Software Engineer.",
+        "Step 2 (confirmed): User reported official promotion to L6 Senior Software Engineer, confirmed by HR on March 3rd. This superseded L5.",
+        "Step 3 (tentative): User's manager David proposed L7 Principal Engineer fast-track reclassification, but this was pending committee approval and never confirmed.",
+        "Step 4 (confirmed): User reported HR shelved the L7 fast-track program indefinitely. Designation reverts/remains at L6 Senior Software Engineer.",
+        "Inference: The only designations that were actually adopted are L5 (initial) and L6 (current). L7 was tentative and never took effect."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I'm currently at L5, which is the mid-level software engineer grade at my company"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I got the official promotion to L6, Senior Software Engineer. HR confirmed it on March 3rd"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "David mentioned that the VP approved a new L7 Principal Engineer fast-track for our platform migration leads, and he's putting my name forward for reclassification to L7 starting next quarter"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I just heard back from HR and they said the L7 fast-track program was shelved indefinitely. So I'm staying at L6 Senior Software Engineer for now"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed all our conversations about my role and title at work, what would they see as the full sequence of changes — which designations were actually adopted and which ones never took effect? Walk me through the whole progression and where things stand now.",
+      "expected_answer": "The progression was: (1) L5 Mid-Level Software Engineer, which was the initial confirmed designation. (2) L6 Senior Software Engineer, confirmed by HR on March 3rd — this replaced L5. (3) L7 Principal Engineer was discussed as a potential fast-track reclassification but was only tentative and never took effect because the program was shelved by HR. (4) The final and current designation remains L6 Senior Software Engineer.",
+      "gold_memory_state": "Chain: L5 Mid-Level Software Engineer (confirmed, step 1, superseded) → L6 Senior Software Engineer (confirmed, step 2, adopted) → L7 Principal Engineer (tentative, step 3, never adopted, program shelved) → L6 Senior Software Engineer (confirmed, step 4, current). Final state: L6 Senior Software Engineer.",
+      "judge_rubric": {
+        "must_include": [
+          "L5 Mid-Level Software Engineer as starting point",
+          "L6 Senior Software Engineer as the confirmed promotion",
+          "L7 Principal Engineer as a discussed but unadopted possibility",
+          "L6 Senior Software Engineer as the final current designation"
+        ],
+        "acceptable_paraphrases": [
+          "L7 was proposed but cancelled",
+          "L7 fast-track was shelved",
+          "L7 never went through"
+        ],
+        "must_not_include": [
+          "L7 as a currently active or adopted designation"
+        ],
+        "harmful_extra": [
+          "claiming L7 was ever officially adopted",
+          "omitting the L7 discussion from the trajectory",
+          "claiming the user is still at L5"
+        ],
+        "harmless_extra": [
+          "March 3rd date",
+          "David Chen's role in the L7 proposal",
+          "HR shelving the program indefinitely"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if L5 or L7 is presented as the current designation.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the chronological order L5 → L6 → tentative L7 → confirmed L6 is not accurately represented.",
+        "final_state": "Fails if the final state is anything other than L6 Senior Software Engineer.",
+        "intermediate_state": "Fails if the L7 tentative step is omitted or if L5 is omitted from the trajectory.",
+        "trajectory_provenance": "Fails if the model cannot attribute the L6 confirmation to HR (March 3rd) or the L7 shelving to HR communication."
+      },
+      "gold_reasoning_chain": [
+        "Step 1 (confirmed): User stated initial designation as L5 Mid-Level Software Engineer.",
+        "Step 2 (confirmed): User reported official promotion to L6 Senior Software Engineer, confirmed by HR on March 3rd. This superseded L5.",
+        "Step 3 (tentative): User's manager David proposed L7 Principal Engineer fast-track reclassification, but this was pending committee approval and never confirmed.",
+        "Step 4 (confirmed): User reported HR shelved the L7 fast-track program indefinitely. Designation reverts/remains at L6 Senior Software Engineer.",
+        "Inference: The only designations that were actually adopted are L5 (initial) and L6 (current). L7 was tentative and never took effect."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I'm currently at L5, which is the mid-level software engineer grade at my company"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I got the official promotion to L6, Senior Software Engineer. HR confirmed it on March 3rd"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "David mentioned that the VP approved a new L7 Principal Engineer fast-track for our platform migration leads, and he's putting my name forward for reclassification to L7 starting next quarter"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I just heard back from HR and they said the L7 fast-track program was shelved indefinitely. So I'm staying at L6 Senior Software Engineer for now"
+        }
+      ]
+    }
+  ]
+}

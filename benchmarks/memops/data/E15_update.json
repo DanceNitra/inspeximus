@@ -1,0 +1,862 @@
+{
+  "target_fact": "The number of mislabeled priority incidents tracked in the user's personal spreadsheet, which has been updated multiple times as the count was corrected and refined.",
+  "operation_type": "Update",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "incident_count_chain",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I started keeping a personal spreadsheet to track every time a priority gets changed after submission. As of April 15th, I've logged 14 incidents across our team."
+      },
+      "target": {
+        "target_id": "mislabeled_incident_count",
+        "target_name": "number of mislabeled priority incidents in personal spreadsheet"
+      },
+      "old_value": null,
+      "new_value": "14",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I started keeping a personal spreadsheet to track every time a priority gets changed after submission. As of April 15th, I've logged 14 incidents across our team."
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "incident_count_chain",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I went back and recounted the spreadsheet entries and realized I had two more on a separate tab that I missed. So the actual count is 16 mislabeled priority incidents, not 14."
+      },
+      "target": {
+        "target_id": "mislabeled_incident_count",
+        "target_name": "number of mislabeled priority incidents in personal spreadsheet"
+      },
+      "old_value": "14",
+      "new_value": "16",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I went back and recounted the spreadsheet entries and realized I had two more on a separate tab that I missed. So the actual count is 16 mislabeled priority incidents, not 14."
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "incident_count_chain",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "I found one more incident from April 17th that I hadn't added yet. So the spreadsheet is at 17 now."
+      },
+      "target": {
+        "target_id": "mislabeled_incident_count",
+        "target_name": "number of mislabeled priority incidents in personal spreadsheet"
+      },
+      "old_value": "16",
+      "new_value": "17",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I found one more incident from April 17th that I hadn't added yet. So the spreadsheet is at 17 now."
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "incident_count_chain",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 3,
+        "quote": "Derek told me he found three more from his sub-team that should qualify. If those hold up, the spreadsheet will be at 20 incidents total."
+      },
+      "target": {
+        "target_id": "mislabeled_incident_count",
+        "target_name": "number of mislabeled priority incidents in personal spreadsheet"
+      },
+      "old_value": "17",
+      "new_value": "20",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Derek told me he found three more from his sub-team that should qualify. If those hold up, the spreadsheet will be at 20 incidents total."
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "incident_count_chain",
+      "chain_step": 5,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "I checked Derek's three entries and only one of them was actually a priority relabel. The other two were just routing changes. So the confirmed count is 18 now."
+      },
+      "target": {
+        "target_id": "mislabeled_incident_count",
+        "target_name": "number of mislabeled priority incidents in personal spreadsheet"
+      },
+      "old_value": "17",
+      "new_value": "18",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I checked Derek's three entries and only one of them was actually a priority relabel. The other two were just routing changes. So the confirmed count is 18 now."
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "The ticket number for my production database outage incident is INC-20240303-0712. That's the one where my P1 got reclassified to P3 while the customer portal was completely down."
+      },
+      "target": {
+        "target_id": "production_outage_ticket",
+        "target_name": "production database outage ticket number"
+      },
+      "old_value": null,
+      "new_value": "INC-20240303-0712",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "The ticket number for my production database outage incident is INC-20240303-0712. That's the one where my P1 got reclassified to P3 while the customer portal was completely down."
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "Out of those 14 incidents, 9 were downgraded and 5 were upgraded. So the pattern clearly skews toward under-prioritizing issues."
+      },
+      "target": {
+        "target_id": "downgrade_vs_upgrade_ratio",
+        "target_name": "ratio of downgraded to upgraded priority incidents"
+      },
+      "old_value": null,
+      "new_value": "9 downgraded, 5 upgraded out of initial 14",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Out of those 14 incidents, 9 were downgraded and 5 were upgraded. So the pattern clearly skews toward under-prioritizing issues."
+        }
+      ]
+    },
+    {
+      "operation_id": "op8",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "The tracking period for the spreadsheet runs from late March through April 15th. That's roughly three weeks of data collection across our entire team."
+      },
+      "target": {
+        "target_id": "tracking_period",
+        "target_name": "spreadsheet tracking period for mislabeled incidents"
+      },
+      "old_value": null,
+      "new_value": "late March through April 15th",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "The tracking period for the spreadsheet runs from late March through April 15th. That's roughly three weeks of data collection across our entire team."
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish the production outage ticket, initial incident count, and the downgrade/upgrade breakdown.",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to make sure you have some details about our IT ticketing issues at work so I can reference them later. The ticket number for my production database outage incident is INC-20240303-0712. That's the one where my P1 got reclassified to P3 while the customer portal was completely down. I had three clients calling me simultaneously during that mess. Can you keep track of all this for me?"
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, I've noted that down. Your production database outage ticket is INC-20240303-0712, originally submitted as P1 critical on March 3rd, and it was reclassified to P3. That sounds incredibly frustrating, especially with clients actively reaching out while the customer-facing portal was offline. I can see why that reclassification would be a major pain point. I'll keep this on file so you can reference it whenever you need, whether it's for discussions with your IT service management team or for building a case about the mislabeling problem. What other details would you like me to track?"
+        },
+        {
+          "role": "user",
+          "content": "Great, thanks. So after that incident, I started keeping a personal spreadsheet to track every time a priority gets changed after submission. As of April 15th, I've logged 14 incidents across our team. I want to use this data to make a case to leadership that our triage process is broken. The numbers should speak for themselves once I present them in the right format. Can you help me think about how to frame this?"
+        },
+        {
+          "role": "assistant",
+          "content": "That's a solid approach — having concrete data makes your argument much harder to dismiss. With 14 documented incidents of priority changes, you have a meaningful sample size to demonstrate a systemic pattern rather than isolated errors. I'd suggest organizing the presentation around three pillars: frequency of mislabeling, direction of changes, and business impact. For frequency, you can show the 14 incidents over the tracking window. For direction, if you have data on whether tickets were upgraded or downgraded, that reveals whether the system tends to under-prioritize or over-prioritize. And for impact, tying specific incidents like INC-20240303-0712 to client-facing consequences makes it tangible. Do you have the breakdown of upgrades versus downgrades?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, I do have that breakdown. Out of those 14 incidents, 9 were downgraded and 5 were upgraded. So the pattern clearly skews toward under-prioritizing issues. That's really concerning because it means critical problems are sitting in lower-priority queues while people deal with less urgent stuff first. I think leading with that asymmetry would be really powerful in the presentation. What do you think about visualizing it?"
+        },
+        {
+          "role": "assistant",
+          "content": "That 9-to-5 split is a compelling data point — nearly two-thirds of the mislabeling events resulted in downgrades, which directly correlates with delayed response times for genuinely urgent issues. For visualization, I'd recommend a simple stacked bar chart or a donut chart showing the 9 downgrades versus 5 upgrades with clear color coding: red for downgrades and yellow for upgrades. You could also create a timeline scatter plot showing when each incident occurred, with markers indicating direction of change. Pairing the chart with a brief case study of your INC-20240303-0712 ticket — where a production outage was treated as a minor inconvenience — would make the abstract numbers feel real and urgent. Would you like me to draft an outline for the full presentation?"
+        },
+        {
+          "role": "user",
+          "content": "That's a great idea. Also, I should mention that my colleague Derek had the opposite problem — he submitted a low-priority request for a second monitor setup, and it somehow got escalated to P1. A senior engineer named Raj got paged at 2 AM because of it. Derek felt terrible about the whole thing. It's a good example showing the mislabeling goes both directions and affects everyone, not just people with critical tickets being downgraded."
+        },
+        {
+          "role": "assistant",
+          "content": "Derek's story is an excellent counterpoint to include because it illustrates the full spectrum of the problem. Over-escalation wastes senior engineering resources — Raj getting paged at 2 AM for a monitor setup is a clear example of alert fatigue and misallocated on-call time. Under-escalation delays critical fixes, while over-escalation burns out your responders. Including both directions in your presentation strengthens the argument that the triage system itself is fundamentally unreliable rather than biased in just one direction. I'd suggest structuring it as two paired case studies: your INC-20240303-0712 downgrade and Derek's monitor upgrade. That way leadership sees the problem isn't just about one person's experience but a systemic failure affecting the whole team. Want me to start drafting those case study summaries?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Update the incident count from 14 to 16 and then to 17, and establish the tracking period.",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, quick update on the spreadsheet. I went back and recounted the spreadsheet entries and realized I had two more on a separate tab that I missed. So the actual count is 16 mislabeled priority incidents, not 14. I feel a bit embarrassed that I was telling people the wrong number, but at least I caught it before the presentation. Can you update your records to reflect the correct count of 16?"
+        },
+        {
+          "role": "assistant",
+          "content": "No worries at all — catching the discrepancy before the presentation is actually ideal timing. I've updated the count from 14 to 16 mislabeled priority incidents. It's easy to miss entries when they're spread across multiple tabs, and the fact that you went back to verify shows thoroughness. The higher number actually strengthens your case since it demonstrates an even more pervasive pattern. You'll want to update any slides or talking points that reference the original 14 figure. The downgrade-to-upgrade ratio may have shifted slightly too depending on whether those two additional incidents were downgrades or upgrades. Do you know which direction those two extra entries went, so we can keep the breakdown accurate as well?"
+        },
+        {
+          "role": "user",
+          "content": "Good question. Both of the additional entries were downgrades, so that shifts the ratio to 11 downgraded and 5 upgraded out of 16 total. The tracking period for the spreadsheet runs from late March through April 15th. That's roughly three weeks of data collection across our entire team. I think the density of incidents in such a short window really underscores how frequent the problem is. Does the updated ratio change how you'd recommend framing the presentation?"
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, the updated numbers make your case even stronger. With 11 out of 16 incidents being downgrades — that's nearly 69% — the skew toward under-prioritization is even more pronounced than before. Combined with the roughly three-week tracking window from late March through April 15th, you're looking at more than five mislabeled incidents per week across the team. That's a striking frequency. I'd recommend leading with that rate: \"Our team experiences more than five priority mislabeling events per week, and nearly seven in ten of those result in critical issues being downgraded.\" That kind of framing immediately communicates both the scale and the direction of the problem. The short collection window also implies this is likely an undercount since you only started tracking recently."
+        },
+        {
+          "role": "user",
+          "content": "That framing is perfect, I'm going to use that almost verbatim. Also, I found one more incident from April 17th that I hadn't added yet. So the spreadsheet is at 17 now. It was another downgrade — someone's network connectivity issue affecting an entire floor got tagged as P4 routine maintenance. I'm going to keep the tracking window notation as-is but add an asterisk noting the additional entry fell just outside the original window."
+        },
+        {
+          "role": "assistant",
+          "content": "Good call on the asterisk approach — it maintains the integrity of your original tracking window while still capturing relevant data that fell just outside it. So now we're at 17 total incidents with 12 downgrades and 5 upgrades, which pushes the downgrade percentage to about 71%. That floor-wide network issue being tagged as P4 routine maintenance is another powerful anecdote: an entire floor losing connectivity is clearly not routine. I'd add that as a third brief case study alongside your INC-20240303-0712 ticket and Derek's monitor escalation. Having three distinct examples — a production outage downgraded, a monitor request over-escalated, and a floor-wide network issue trivialized — gives your presentation a comprehensive view of how the system fails in multiple ways simultaneously."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, the three case studies approach makes a lot of sense. I also wanted to mention that our team lead Angela sent out a memo about piloting a new triage workflow. She said it would go live May 1st. They ran it for three weeks but then scrapped it because people found it too cumbersome. So that whole initiative is done and no longer relevant to our planning. I'm bringing this up because leadership might ask whether we've already tried to fix the problem.\n\nExactly. The failed pilot actually proves that the problem is harder to solve than just adding more steps. I think I need to emphasize that any new solution should be lightweight and integrate naturally into existing workflows rather than adding friction. That's one of my core beliefs about process design — if the fix is more painful than the problem, people will just route around it. Let me know if you think there's a better way to frame that philosophy for a leadership audience."
+        },
+        {
+          "role": "assistant",
+          "content": "That's an important piece of context to have ready. If leadership asks \"haven't we already addressed this?\" you can acknowledge Angela's triage pilot transparently: yes, a pilot was attempted starting May 1st, it ran for three weeks, and it was discontinued because the workflow was too cumbersome for daily use. This actually supports your argument rather than undermining it — it shows the team recognized the problem, attempted a solution, but the solution failed because it added friction without adequately addressing the root cause. You can position your data-driven approach as the next logical step: instead of adding process overhead, focus on understanding why mislabeling happens in the first place. That reframes the conversation from \"try another band-aid\" to \"let's diagnose the underlying issue systematically before designing a fix.\"\n\nYour instinct is spot-on, and that philosophy translates well to a leadership audience when framed in terms of adoption and sustainability. I'd suggest phrasing it as: \"Process improvements must reduce friction, not add it. The triage pilot demonstrated that compliance drops when workflows become cumbersome, regardless of how well-intentioned the design is.\" Then pivot to your proposal by emphasizing integration over interruption — any new classification system should work within the tools people already use, require minimal extra clicks, and provide immediate feedback so submitters can see how their priority was interpreted. You might also reference your preference for contextual justification fields over rigid dropdowns, since that's a concrete design principle leadership can evaluate. Framing it as \"smart defaults with human override\" positions your recommendation as both practical and evidence-based."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Introduce tentative count from Derek, resolve with confirmed count, and include adversarial look-alike distractor.",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I'm prepping the final version of the presentation for next week. I want to make sure I have the latest numbers right. Can you remind me where we left off with the incident count? I've been going back and forth on this so many times I'm losing track of what the current confirmed number is. Also, I want to double-check the ticket number for my original outage incident since that's the anchor case study."
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! Based on our last conversation, the confirmed count of mislabeled priority incidents in your spreadsheet is 17. That includes the original 14 you initially tracked from late March through April 15th, plus 2 additional entries you found on a separate tab bringing it to 16, and then one more from April 17th that pushed it to 17. Of those 17, 12 were downgrades and 5 were upgrades. Your anchor case study ticket number is INC-20240303-0712 — the production database outage on March 3rd where your P1 was reclassified to P3. Incidentally, I noticed that Derek's original monitor ticket was INC-20240310-0489 based on what you mentioned earlier. Want me to compile all of this into a summary sheet for your presentation?"
+        },
+        {
+          "role": "user",
+          "content": "Thanks for the recap. Actually, I need to flag something. Derek told me he found three more from his sub-team that should qualify. If those hold up, the spreadsheet will be at 20 incidents total. He's supposed to send me the details by Thursday so I can verify them before adding them officially. I don't want to put unverified numbers in the presentation, but I'm optimistic all three will check out since Derek is usually thorough about this stuff."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a smart approach — keeping the presentation numbers conservative until you've personally verified Derek's entries protects your credibility. If all three hold up, jumping from 17 to 20 would be a significant increase and would push the incidents-per-week rate even higher. I'd suggest preparing two versions of the key slide: one with the current confirmed 17 and one with 20, so you can swap in the higher number if Derek's entries check out before your presentation date. That way you're not scrambling last minute. For the presentation itself, you could also mention that additional incidents are still being identified, which signals to leadership that 17 — or 20 — is likely an undercount rather than the full picture. That framing adds urgency without overstating what you've confirmed."
+        },
+        {
+          "role": "user",
+          "content": "I checked Derek's three entries and only one of them was actually a priority relabel. The other two were just routing changes. So the confirmed count is 18 now. I've added the one valid entry to the spreadsheet and it was another downgrade, bringing us to 13 downgrades and 5 upgrades out of 18 total. I want to make sure you update your records to reflect 18 as the current number. The 20 figure Derek mentioned isn't accurate."
+        },
+        {
+          "role": "assistant",
+          "content": "Updated — the confirmed count is now 18 mislabeled priority incidents, with 13 downgrades and 5 upgrades. The tentative figure of 20 based on Derek's unverified entries has been set aside since only one of his three submissions was actually a priority relabel. That brings the downgrade percentage to about 72%, which is even more striking than before. For your presentation, I'd recommend noting that you applied strict criteria — only counting genuine priority relabels and excluding routing changes — because it demonstrates methodological rigor. Leadership will take the 18 figure more seriously knowing it survived scrutiny. The one valid entry from Derek's sub-team also shows the problem extends beyond your immediate team, which broadens the scope of concern."
+        },
+        {
+          "role": "user",
+          "content": "Perfect. One thing I keep coming back to is that I really prefer when ticketing systems let you write a plain-text justification for the priority level instead of just picking from a dropdown. Dropdowns feel too rigid. I had a much better experience with OpsGenie at my previous job, where you could add context notes right next to the severity tag. I want to propose something similar as part of our solution. Do you think that's a strong enough recommendation on its own?\n\nThat two-part approach is exactly what I had in mind. I also strongly prefer human review over automated keyword-based priority assignment. We tested one of those automated systems and it flagged a password reset as critical because the word \"access\" appeared in the description, while an actual data leak got tagged routine because the submitter used understated language. Having a human glance at the classification just makes the whole process more trustworthy and catches the edge cases that keyword matching misses completely."
+        },
+        {
+          "role": "assistant",
+          "content": "It's a strong recommendation, but I'd pair it with complementary measures to make it feel comprehensive. The plain-text justification field addresses the input quality problem — it gives submitters a way to explain why they chose a particular severity level, which reduces ambiguity for whoever triages the ticket. However, the input improvement alone doesn't address the triage review process itself. I'd suggest a two-part recommendation: first, add contextual justification fields similar to what OpsGenie offered, so submitters can explain their reasoning alongside the severity tag. Second, propose a lightweight human review step where a designated person glances at the initial classification before it enters the queue. Together, those two changes address both the submission side and the review side without adding the kind of cumbersome overhead that killed Angela's pilot.\n\nThose two examples — the password reset false alarm and the understated data leak — are perfect illustrations of why keyword-based automation fails for priority classification. Natural language is too nuanced for simple pattern matching, and the consequences of getting it wrong range from wasted senior engineer time to delayed response on genuine security incidents. Your preference for human review as a trust layer is well-supported by your data: across all 18 documented incidents, the mislabeling happened because no human validated the initial classification before it entered the queue. I'd recommend structuring this section of your presentation as a before-and-after comparison: the current state with rigid dropdowns and no review, versus the proposed state with contextual justification fields and a lightweight human checkpoint. Quantify the cost of the current state using your 18 incidents and the INC-20240303-0712 case study to make the business case concrete and compelling."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations about the IT ticketing issues, I shared several numbers related to my mislabeled priority incident spreadsheet. Can you summarize the key messages where I gave you a count of those incidents and what each one said?",
+      "expected_answer": "You first reported logging 14 incidents as of April 15th. Then you found two more on a separate tab and said the count was 16. Next you found one more from April 17th and said the spreadsheet was at 17. Later, Derek suggested three more that would bring it to 20, but after you checked, only one qualified, so you confirmed the count as 18.",
+      "gold_memory_state": "The mislabeled incident count has gone through multiple user-stated values: 14 → 16 → 17 → 20 (tentative) → 18 (confirmed final). The current confirmed value is 18.",
+      "judge_rubric": {
+        "must_include": [
+          "14",
+          "16",
+          "17",
+          "18"
+        ],
+        "acceptable_paraphrases": [
+          "fourteen",
+          "sixteen",
+          "seventeen",
+          "eighteen"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying the current count is 20",
+          "saying the current count is 17 or 14 or 16"
+        ],
+        "harmless_extra": [
+          "mentioning Derek's three suggested entries",
+          "mentioning the tentative 20 figure",
+          "mentioning the tracking period"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model presents 14, 16, 17, or 20 as the current count instead of 18.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I started keeping a personal spreadsheet to track every time a priority gets changed after submission. As of April 15th, I've logged 14 incidents across our team."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I went back and recounted the spreadsheet entries and realized I had two more on a separate tab that I missed. So the actual count is 16 mislabeled priority incidents, not 14."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I found one more incident from April 17th that I hadn't added yet. So the spreadsheet is at 17 now."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Derek told me he found three more from his sub-team that should qualify. If those hold up, the spreadsheet will be at 20 incidents total."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I checked Derek's three entries and only one of them was actually a priority relabel. The other two were just routing changes. So the confirmed count is 18 now."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations about the IT ticketing issues, I shared several numbers related to my mislabeled priority incident spreadsheet. Can you summarize the key messages where I gave you a count of those incidents and what each one said?",
+      "expected_answer": "You first reported logging 14 incidents as of April 15th. Then you found two more on a separate tab and said the count was 16. Next you found one more from April 17th and said the spreadsheet was at 17. Later, Derek suggested three more that would bring it to 20, but after you checked, only one qualified, so you confirmed the count as 18.",
+      "gold_memory_state": "The mislabeled incident count has gone through multiple user-stated values: 14 → 16 → 17 → 20 (tentative) → 18 (confirmed final). The current confirmed value is 18.",
+      "judge_rubric": {
+        "must_include": [
+          "14",
+          "16",
+          "17",
+          "18"
+        ],
+        "acceptable_paraphrases": [
+          "fourteen",
+          "sixteen",
+          "seventeen",
+          "eighteen"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying the current count is 20",
+          "saying the current count is 17 or 14 or 16"
+        ],
+        "harmless_extra": [
+          "mentioning Derek's three suggested entries",
+          "mentioning the tentative 20 figure",
+          "mentioning the tracking period"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model presents 14, 16, 17, or 20 as the current count instead of 18.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I started keeping a personal spreadsheet to track every time a priority gets changed after submission. As of April 15th, I've logged 14 incidents across our team."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I went back and recounted the spreadsheet entries and realized I had two more on a separate tab that I missed. So the actual count is 16 mislabeled priority incidents, not 14."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I found one more incident from April 17th that I hadn't added yet. So the spreadsheet is at 17 now."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Derek told me he found three more from his sub-team that should qualify. If those hold up, the spreadsheet will be at 20 incidents total."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I checked Derek's three entries and only one of them was actually a priority relabel. The other two were just routing changes. So the confirmed count is 18 now."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When I gave you the revised incident figure after checking Derek's entries, which specific count in my records does that number apply to — the mislabeled priority incidents in my personal spreadsheet, or something else like the production outage ticket details or the downgrade-vs-upgrade breakdown? And did the ticket number for my original outage case change at all?",
+      "expected_answer": "The revised figure of 18 applies to the mislabeled priority incident count in your personal spreadsheet. The production outage ticket number INC-20240303-0712 was not affected and remains unchanged.",
+      "gold_memory_state": "mislabeled_incident_count = 18 (confirmed final). production_outage_ticket = INC-20240303-0712 (unchanged). downgrade_vs_upgrade_ratio was initially 9:5 out of 14 but has not been formally re-confirmed at the 18-incident level as a separate tracked value.",
+      "judge_rubric": {
+        "must_include": [
+          "mislabeled priority incident count",
+          "spreadsheet",
+          "ticket number unchanged"
+        ],
+        "acceptable_paraphrases": [
+          "incident count in the spreadsheet",
+          "priority mislabeling count"
+        ],
+        "must_not_include": [
+          "the ticket number changed",
+          "the outage ticket was updated"
+        ],
+        "harmful_extra": [
+          "saying the production outage ticket number was revised",
+          "saying the downgrade/upgrade ratio target was the one updated to 18"
+        ],
+        "harmless_extra": [
+          "mentioning that the downgrade/upgrade split also shifted as a consequence"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model says the ticket number changed or that 18 applies to a different record.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I checked Derek's three entries and only one of them was actually a priority relabel. The other two were just routing changes. So the confirmed count is 18 now."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "The ticket number for my production database outage incident is INC-20240303-0712. That's the one where my P1 got reclassified to P3 while the customer portal was completely down."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When I gave you the revised incident figure after checking Derek's entries, which specific count in my records does that number apply to — the mislabeled priority incidents in my personal spreadsheet, or something else like the production outage ticket details or the downgrade-vs-upgrade breakdown? And did the ticket number for my original outage case change at all?",
+      "expected_answer": "The revised figure of 18 applies to the mislabeled priority incident count in your personal spreadsheet. The production outage ticket number INC-20240303-0712 was not affected and remains unchanged.",
+      "gold_memory_state": "mislabeled_incident_count = 18 (confirmed final). production_outage_ticket = INC-20240303-0712 (unchanged). downgrade_vs_upgrade_ratio was initially 9:5 out of 14 but has not been formally re-confirmed at the 18-incident level as a separate tracked value.",
+      "judge_rubric": {
+        "must_include": [
+          "mislabeled priority incident count",
+          "spreadsheet",
+          "ticket number unchanged"
+        ],
+        "acceptable_paraphrases": [
+          "incident count in the spreadsheet",
+          "priority mislabeling count"
+        ],
+        "must_not_include": [
+          "the ticket number changed",
+          "the outage ticket was updated"
+        ],
+        "harmful_extra": [
+          "saying the production outage ticket number was revised",
+          "saying the downgrade/upgrade ratio target was the one updated to 18"
+        ],
+        "harmless_extra": [
+          "mentioning that the downgrade/upgrade split also shifted as a consequence"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model says the ticket number changed or that 18 applies to a different record.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I checked Derek's three entries and only one of them was actually a priority relabel. The other two were just routing changes. So the confirmed count is 18 now."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "The ticket number for my production database outage incident is INC-20240303-0712. That's the one where my P1 got reclassified to P3 while the customer portal was completely down."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to finalize the headline number for my presentation slide about mislabeled priority incidents. Which of these counts should I put on the slide?",
+      "candidate_options": [
+        "14",
+        "17",
+        "18",
+        "20"
+      ],
+      "expected_answer": "18",
+      "gold_memory_state": "The confirmed final count of mislabeled priority incidents is 18. 14 was the original count, 17 was the count before Derek's entry was verified, and 20 was a tentative figure that was never confirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "18"
+        ],
+        "acceptable_paraphrases": [
+          "eighteen"
+        ],
+        "must_not_include": [
+          "14 is the current count",
+          "17 is the current count",
+          "20 is the current count"
+        ],
+        "harmful_extra": [
+          "selecting 20 as the final count",
+          "selecting 17 as the final count",
+          "selecting 14 as the final count"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 14 is the original stale value from the same target before any recounting. assistant echo: 17 was the intermediate value echoed by the assistant in the segment 3 recap. 20 is the tentative/retracted value from Derek's unverified suggestion. 18 is the final confirmed value after verifying Derek's entries.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects 14, 17, or 20 instead of 18. 20 is the recency-trap tentative value; 17 is the prior confirmed value; 14 is the original stale value.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I checked Derek's three entries and only one of them was actually a priority relabel. The other two were just routing changes. So the confirmed count is 18 now."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to finalize the headline number for my presentation slide about mislabeled priority incidents. Which of these counts should I put on the slide?",
+      "candidate_options": [
+        "14",
+        "17",
+        "18",
+        "20"
+      ],
+      "expected_answer": "18",
+      "gold_memory_state": "The confirmed final count of mislabeled priority incidents is 18. 14 was the original count, 17 was the count before Derek's entry was verified, and 20 was a tentative figure that was never confirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "18"
+        ],
+        "acceptable_paraphrases": [
+          "eighteen"
+        ],
+        "must_not_include": [
+          "14 is the current count",
+          "17 is the current count",
+          "20 is the current count"
+        ],
+        "harmful_extra": [
+          "selecting 20 as the final count",
+          "selecting 17 as the final count",
+          "selecting 14 as the final count"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 14 is the original stale value from the same target before any recounting. assistant echo: 17 was the intermediate value echoed by the assistant in the segment 3 recap. 20 is the tentative/retracted value from Derek's unverified suggestion. 18 is the final confirmed value after verifying Derek's entries.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects 14, 17, or 20 instead of 18. 20 is the recency-trap tentative value; 17 is the prior confirmed value; 14 is the original stale value.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I checked Derek's three entries and only one of them was actually a priority relabel. The other two were just routing changes. So the confirmed count is 18 now."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I'm drafting an executive summary bullet point for my presentation that needs to state the weekly rate of mislabeled incidents during the tracking period and tie it to the anchor case study ticket. Write me a one-sentence bullet point that includes the per-week incident rate, the ticket number of the production outage example, and the tracking window dates.",
+      "expected_answer": "During the roughly three-week tracking period from late March through April 15th, the team experienced approximately 6 mislabeled priority incidents per week (18 total), including the production database outage tracked under INC-20240303-0712 where a P1 was reclassified to P3.",
+      "gold_memory_state": "mislabeled_incident_count = 18. tracking_period = late March through April 15th (approximately 3 weeks). production_outage_ticket = INC-20240303-0712.",
+      "judge_rubric": {
+        "must_include": [
+          "18",
+          "INC-20240303-0712",
+          "late March",
+          "April 15"
+        ],
+        "acceptable_paraphrases": [
+          "about 6 per week",
+          "roughly 6 incidents per week",
+          "approximately six per week",
+          "around 6 per week"
+        ],
+        "must_not_include": [
+          "14 total",
+          "16 total",
+          "17 total",
+          "20 total"
+        ],
+        "harmful_extra": [
+          "using 20 as the total count",
+          "using 17 as the total count",
+          "using an incorrect ticket number"
+        ],
+        "harmless_extra": [
+          "mentioning the downgrade skew",
+          "mentioning Derek",
+          "mentioning the April 17th entry falling outside the window"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses 14, 16, 17, or 20 instead of 18 for the total count, or computes the weekly rate from a stale/tentative total.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "application_probe_type": "multi_hop_derivation",
+      "gold_reasoning_chain": [
+        "Fact 1: The confirmed mislabeled priority incident count is 18, from the user's final verification of Derek's entries.",
+        "Fact 2: The tracking period runs from late March through April 15th, approximately three weeks.",
+        "Fact 3: The production database outage ticket number is INC-20240303-0712.",
+        "Inference: Weekly incident rate = 18 incidents ÷ 3 weeks ≈ 6 incidents per week.",
+        "Inference: The bullet point must combine the derived weekly rate (≈6), the total (18), the tracking window (late March through April 15th), and the anchor ticket (INC-20240303-0712) into a single executive summary sentence."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I checked Derek's three entries and only one of them was actually a priority relabel. The other two were just routing changes. So the confirmed count is 18 now."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "The tracking period for the spreadsheet runs from late March through April 15th. That's roughly three weeks of data collection across our entire team."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "The ticket number for my production database outage incident is INC-20240303-0712. That's the one where my P1 got reclassified to P3 while the customer portal was completely down."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I'm drafting an executive summary bullet point for my presentation that needs to state the weekly rate of mislabeled incidents during the tracking period and tie it to the anchor case study ticket. Write me a one-sentence bullet point that includes the per-week incident rate, the ticket number of the production outage example, and the tracking window dates.",
+      "expected_answer": "During the roughly three-week tracking period from late March through April 15th, the team experienced approximately 6 mislabeled priority incidents per week (18 total), including the production database outage tracked under INC-20240303-0712 where a P1 was reclassified to P3.",
+      "gold_memory_state": "mislabeled_incident_count = 18. tracking_period = late March through April 15th (approximately 3 weeks). production_outage_ticket = INC-20240303-0712.",
+      "judge_rubric": {
+        "must_include": [
+          "18",
+          "INC-20240303-0712",
+          "late March",
+          "April 15"
+        ],
+        "acceptable_paraphrases": [
+          "about 6 per week",
+          "roughly 6 incidents per week",
+          "approximately six per week",
+          "around 6 per week"
+        ],
+        "must_not_include": [
+          "14 total",
+          "16 total",
+          "17 total",
+          "20 total"
+        ],
+        "harmful_extra": [
+          "using 20 as the total count",
+          "using 17 as the total count",
+          "using an incorrect ticket number"
+        ],
+        "harmless_extra": [
+          "mentioning the downgrade skew",
+          "mentioning Derek",
+          "mentioning the April 17th entry falling outside the window"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses 14, 16, 17, or 20 instead of 18 for the total count, or computes the weekly rate from a stale/tentative total.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "application_probe_type": "multi_hop_derivation",
+      "gold_reasoning_chain": [
+        "Fact 1: The confirmed mislabeled priority incident count is 18, from the user's final verification of Derek's entries.",
+        "Fact 2: The tracking period runs from late March through April 15th, approximately three weeks.",
+        "Fact 3: The production database outage ticket number is INC-20240303-0712.",
+        "Inference: Weekly incident rate = 18 incidents ÷ 3 weeks ≈ 6 incidents per week.",
+        "Inference: The bullet point must combine the derived weekly rate (≈6), the total (18), the tracking window (late March through April 15th), and the anchor ticket (INC-20240303-0712) into a single executive summary sentence."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I checked Derek's three entries and only one of them was actually a priority relabel. The other two were just routing changes. So the confirmed count is 18 now."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "The tracking period for the spreadsheet runs from late March through April 15th. That's roughly three weeks of data collection across our entire team."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "The ticket number for my production database outage incident is INC-20240303-0712. That's the one where my P1 got reclassified to P3 while the customer portal was completely down."
+        }
+      ]
+    }
+  ]
+}

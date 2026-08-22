@@ -1,0 +1,1106 @@
+{
+  "target_fact": "User prefers streamlined, calm, and efficient medical experiences — morning slots, quick doctors, dislikes afternoon chaos and unnecessary small talk",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I booked a morning slot with Dr. Liu Wenjie at the gastroenterology department, Zhongshan Hospital, for March 7th"
+      },
+      "target": {
+        "target_id": "gastro_appointment_liu",
+        "target_name": "gastroenterology appointment with Dr. Liu Wenjie at Zhongshan Hospital"
+      },
+      "old_value": null,
+      "new_value": "March 7th, morning slot, Dr. Liu Wenjie, gastroenterology, Zhongshan Hospital",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I booked a morning slot with Dr. Liu Wenjie at the gastroenterology department, Zhongshan Hospital, for March 7th"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I was so relieved to get a morning slot because honestly the afternoon waiting rooms are stuffy and chaotic and the whole vibe just drags me down"
+      },
+      "target": {
+        "target_id": "afternoon_dislike",
+        "target_name": "user's dislike of afternoon hospital visits"
+      },
+      "old_value": null,
+      "new_value": "Dislikes afternoon hospital visits — finds waiting rooms stuffy, chaotic, and draining",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I was so relieved to get a morning slot because honestly the afternoon waiting rooms are stuffy and chaotic and the whole vibe just drags me down"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I saw Dr. He Mingyu on April 8th for my sinus congestion at the ENT department at Zhongshan Hospital"
+      },
+      "target": {
+        "target_id": "ent_appointment_he",
+        "target_name": "ENT appointment with Dr. He Mingyu at Zhongshan Hospital"
+      },
+      "old_value": null,
+      "new_value": "April 8th, Dr. He Mingyu, ENT department, Zhongshan Hospital",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I saw Dr. He Mingyu on April 8th for my sinus congestion at the ENT department at Zhongshan Hospital"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 7,
+        "quote": "She was quick, efficient, didn't make me wait around forever — I really appreciate doctors who get straight to the point and skip the unnecessary small talk"
+      },
+      "target": {
+        "target_id": "efficient_doctor_preference",
+        "target_name": "user's preference for quick and efficient doctors"
+      },
+      "old_value": null,
+      "new_value": "Prefers doctors who are quick, efficient, and get straight to the point without unnecessary small talk",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "She was quick, efficient, didn't make me wait around forever — I really appreciate doctors who get straight to the point and skip the unnecessary small talk"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I always try to book the earliest morning slots available — things go smoother when I'm there early, fewer people, quieter, I can get in and out"
+      },
+      "target": {
+        "target_id": "morning_slot_habit",
+        "target_name": "user's habit of booking earliest morning hospital slots"
+      },
+      "old_value": null,
+      "new_value": "Always books the earliest morning slots — fewer people, quieter, smoother experience",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I always try to book the earliest morning slots available — things go smoother when I'm there early, fewer people, quieter, I can get in and out"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "the one time I had an afternoon slot back in February for a preliminary consultation I found the whole experience kind of grating"
+      },
+      "target": {
+        "target_id": "february_afternoon_negative",
+        "target_name": "negative experience with February afternoon consultation"
+      },
+      "old_value": null,
+      "new_value": "Had an afternoon slot in February for a preliminary consultation and found the experience grating",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "the one time I had an afternoon slot back in February for a preliminary consultation I found the whole experience kind of grating"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "After the endoscopy I felt really anxious for a few days waiting for results — I kept checking my phone for the hospital app notification, it was draining"
+      },
+      "target": {
+        "target_id": "endoscopy_anxiety",
+        "target_name": "user's anxiety while waiting for endoscopy results"
+      },
+      "old_value": null,
+      "new_value": "Felt anxious and emotionally drained for several days waiting for endoscopy results, kept checking phone",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "After the endoscopy I felt really anxious for a few days waiting for results — I kept checking my phone for the hospital app notification, it was draining"
+        }
+      ]
+    },
+    {
+      "operation_id": "op8",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 7,
+        "quote": "every hospital visit where I felt okay was a morning one with a doctor who didn't waste my time, and every bad experience was either an afternoon slot or a doctor who talked too much"
+      },
+      "target": {
+        "target_id": "medical_experience_preference_pattern",
+        "target_name": "inferred overall medical experience preference pattern"
+      },
+      "old_value": null,
+      "new_value": "Prefers streamlined, calm, and efficient medical experiences — consistently positive with early morning slots and direct doctors, consistently negative with afternoon visits and verbose practitioners",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I was so relieved to get a morning slot because honestly the afternoon waiting rooms are stuffy and chaotic and the whole vibe just drags me down"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "She was quick, efficient, didn't make me wait around forever — I really appreciate doctors who get straight to the point and skip the unnecessary small talk"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I always try to book the earliest morning slots available — things go smoother when I'm there early, fewer people, quieter, I can get in and out"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "the one time I had an afternoon slot back in February for a preliminary consultation I found the whole experience kind of grating"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "every hospital visit where I felt okay was a morning one with a doctor who didn't waste my time, and every bad experience was either an afternoon slot or a doctor who talked too much"
+        }
+      ]
+    },
+    {
+      "operation_id": "op9",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 1,
+        "quote": "My follow-up with Dr. Liu is April 28th, Monday, 9:30 AM, gastroenterology, Zhongshan Hospital — I rescheduled it because of a work trip"
+      },
+      "target": {
+        "target_id": "followup_liu_april28",
+        "target_name": "rescheduled follow-up appointment with Dr. Liu Wenjie"
+      },
+      "old_value": null,
+      "new_value": "April 28th, Monday, 9:30 AM, gastroenterology, Dr. Liu Wenjie, Zhongshan Hospital",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "My follow-up with Dr. Liu is April 28th, Monday, 9:30 AM, gastroenterology, Zhongshan Hospital — I rescheduled it because of a work trip"
+        }
+      ]
+    },
+    {
+      "operation_id": "op10",
+      "type": "remember",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "Dr. Liu's office called and said they might need to move my April 28th appointment to an afternoon slot at 2:30 PM because of a scheduling conflict on their end"
+      },
+      "target": {
+        "target_id": "followup_liu_tentative_afternoon",
+        "target_name": "tentative afternoon reschedule of Dr. Liu follow-up"
+      },
+      "old_value": "April 28th, Monday, 9:30 AM, gastroenterology, Dr. Liu Wenjie, Zhongshan Hospital",
+      "new_value": "April 28th, Monday, 2:30 PM, gastroenterology, Dr. Liu Wenjie, Zhongshan Hospital",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Dr. Liu's office called and said they might need to move my April 28th appointment to an afternoon slot at 2:30 PM because of a scheduling conflict on their end"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish core hospital appointment facts and early preference signals",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to keep track of some hospital appointments and experiences I've had recently. First off, I booked a morning slot with Dr. Liu Wenjie at the gastroenterology department, Zhongshan Hospital, for March 7th. I'd been having stomach issues since February and finally decided to go in. Can you help me organize all this?"
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! I'd be happy to help you keep track of your hospital appointments and medical experiences. So far I've noted your appointment with Dr. Liu Wenjie in the gastroenterology department at Zhongshan Hospital on March 7th, a morning slot, for stomach issues that started in February. If you have more details about this visit or other appointments, feel free to share them and I'll keep everything organized for you. Did the March 7th visit go well?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, the visit itself was fine. I was so relieved to get a morning slot because honestly the afternoon waiting rooms are stuffy and chaotic and the whole vibe just drags me down. Mornings are calmer and I can actually breathe in there. Dr. Liu examined me and then referred me for an endoscopy, which I ended up getting done around the third week of March at the same hospital, Building 2, 4th floor."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — I can see why mornings work better for you. So after the March 7th visit, Dr. Liu referred you for an endoscopy, which you had done around the third week of March at Zhongshan Hospital, Building 2, 4th floor. That's a pretty quick turnaround from the initial consultation to the endoscopy. Do you recall the exact date of the endoscopy, and did you get results back? Also, was the endoscopy scheduled as a morning slot too?"
+        },
+        {
+          "role": "user",
+          "content": "I think the endoscopy was March 18th or 20th — I'm not totally sure on the exact date. The results came back showing mild chronic gastritis, and Dr. Liu said to come back for a follow-up in six weeks. Separately, I saw Dr. He Mingyu on April 8th for my sinus congestion at the ENT department at Zhongshan Hospital. That was a completely different issue."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for the details. So the endoscopy around March 18th–20th showed mild chronic gastritis, and Dr. Liu recommended a six-week follow-up. That's important to track so you don't miss that window. And then on April 8th you saw Dr. He Mingyu in the ENT department at Zhongshan Hospital for sinus congestion — a separate issue entirely. It sounds like you've had quite a run of medical visits this spring. How did the ENT visit go? Did Dr. He prescribe anything for the congestion?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, she prescribed a nasal spray, nothing too serious. She was quick, efficient, didn't make me wait around forever — I really appreciate doctors who get straight to the point and skip the unnecessary small talk. That visit was actually one of my better hospital experiences recently. It's funny how much the doctor's style affects whether I walk out feeling okay or completely drained."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really good observation — a doctor's communication style can make or break the whole visit. So Dr. He Mingyu scored well on your scale: quick, efficient, no unnecessary chatter, prescribed what you needed and let you go. I've noted that she prescribed a nasal spray for the sinus congestion. It sounds like between the gastroenterology and ENT visits at Zhongshan Hospital, you've built up a pretty clear sense of what makes a hospital visit tolerable for you. Shall I keep tracking any upcoming appointments too?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Deepen preference evidence and emotional context for reflection",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Definitely keep tracking things. Also, I wanted to mention — I always try to book the earliest morning slots available — things go smoother when I'm there early, fewer people, quieter, I can get in and out. It's basically become a rule for me whenever I schedule any hospital visit. I don't think I've voluntarily picked an afternoon slot in ages."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes a lot of sense as a personal rule. Early morning slots mean fewer patients in the waiting room, shorter actual wait times, and a generally calmer environment. It's interesting that you've turned this into a consistent booking strategy rather than just a one-time preference. I'll note that as a standing preference so if you ever need help planning around appointments, I can factor in that you'll want the earliest available morning slot. Has there ever been a time when you couldn't get a morning slot?"
+        },
+        {
+          "role": "user",
+          "content": "Actually yes — the one time I had an afternoon slot back in February for a preliminary consultation I found the whole experience kind of grating. The waiting room was packed, it was loud, and I just felt irritated the entire time. That was actually the visit that kicked off this whole stomach thing — it was a general internal medicine consult before I got referred to gastro. Never again with afternoon slots if I can help it."
+        },
+        {
+          "role": "assistant",
+          "content": "That February afternoon experience really seems to have cemented your preference. A packed, loud waiting room when you're already not feeling well sounds genuinely miserable. So that preliminary internal medicine consultation in February is what eventually led to the gastroenterology referral and your appointment with Dr. Liu on March 7th. It's a clear pattern: every time you've ended up in an afternoon hospital setting, the experience has been notably worse. I'll make sure to flag that if any future scheduling comes up. Any other visits to mention?"
+        },
+        {
+          "role": "user",
+          "content": "Not a visit exactly, but I wanted to share something about the emotional side. After the endoscopy I felt really anxious for a few days waiting for results — I kept checking my phone for the hospital app notification, it was draining. The whole period from February through now has honestly been a lot. I don't usually get that anxious but something about waiting for medical results really gets to me."
+        },
+        {
+          "role": "assistant",
+          "content": "That's completely understandable — waiting for medical results, especially something like an endoscopy, can create a lot of anxiety even for people who don't normally feel that way. The uncertainty combined with the physical discomfort of the procedure and the weeks of stomach issues leading up to it would wear anyone down. I'm glad the results ended up being mild chronic gastritis rather than something more serious. It sounds like the emotional toll of this whole medical journey has been significant. Do you feel like the anxiety has eased now that you have a diagnosis?"
+        },
+        {
+          "role": "user",
+          "content": "Somewhat, yeah. Looking back I'm noticing a pattern though — every hospital visit where I felt okay was a morning one with a doctor who didn't waste my time, and every bad experience was either an afternoon slot or a doctor who talked too much. It's not just about the time of day, it's like the whole combination of timing and doctor style determines whether I come out feeling fine or completely drained."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really insightful pattern you've identified. It's not just one factor in isolation — it's the combination of an early, calm time slot and a doctor whose style is direct and efficient. When both align, you leave feeling okay; when either is off, the experience turns negative. Morning plus efficient equals a good visit; afternoon or verbose equals draining. This kind of self-awareness about your medical experience preferences is actually really valuable for managing future healthcare. Should I keep this pattern noted as a general preference guide for scheduling?"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Establish upcoming follow-up, introduce recency trap with tentative afternoon reschedule, and adversarial distractor",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Yes please. Also this is important — My follow-up with Dr. Liu is April 28th, Monday, 9:30 AM, gastroenterology, Zhongshan Hospital — I rescheduled it because of a work trip. I originally was supposed to go earlier but had to push it. I absolutely cannot miss this one, so please make sure that's noted clearly. It's the six-week follow-up for the gastritis."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted and flagged as high priority. Your follow-up with Dr. Liu Wenjie is confirmed for April 28th, Monday, at 9:30 AM in the gastroenterology department at Zhongshan Hospital. This is the six-week follow-up for your mild chronic gastritis diagnosis from the endoscopy. You rescheduled from an earlier date due to a work trip, so this one is critical to keep. I'll make sure this stays front and center. Is there anything you need to prepare for the follow-up — fasting requirements, bringing previous results, anything like that?"
+        },
+        {
+          "role": "user",
+          "content": "I think I just need to bring the endoscopy report. Oh, by the way — my friend Xiao Chen had a dermatology appointment at Huashan Hospital with a Dr. Zhao sometime in mid-March. She said he was really patient with explanations and took his time going through everything. She actually recommended I try Huashan Hospital for a second opinion if I ever needed one."
+        },
+        {
+          "role": "assistant",
+          "content": "Good to know about the endoscopy report — make sure you have it ready before April 28th. And interesting about Xiao Chen's experience at Huashan Hospital with Dr. Zhao in dermatology. It sounds like Dr. Zhao has a very thorough, patient communication style. I recall you mentioned that Xiao Chen had that appointment around mid-March. Interestingly, her preference for a detailed, explanatory doctor seems quite different from your preference for efficiency and directness. A second opinion at Huashan is worth keeping in mind though, just in case."
+        },
+        {
+          "role": "user",
+          "content": "Dr. Liu's office called and said they might need to move my April 28th appointment to an afternoon slot at 2:30 PM because of a scheduling conflict on their end. The receptionist said it's not finalized yet and they'll confirm by Friday. I really hope they don't move it — you know how I feel about afternoon appointments."
+        },
+        {
+          "role": "assistant",
+          "content": "Oh no, that's exactly the kind of change you'd want to avoid. The potential move to a 2:30 PM afternoon slot on April 28th hasn't been confirmed yet — the receptionist said they'll finalize by Friday. Given your strong and consistent preference for morning appointments, and especially how negatively afternoon slots have affected your experience in the past, I'd suggest calling back on Friday morning to advocate for keeping the 9:30 AM slot. If they can't accommodate that, maybe ask if there's an earlier morning slot on a different day that week."
+        },
+        {
+          "role": "user",
+          "content": "Good idea, I'll call them Friday. Also I forgot to mention — I used to see a Dr. Tan at Ruijin Hospital for the same stomach issues, but I stopped going there last year. That's completely done, no need to track anything related to Dr. Tan or Ruijin anymore. I just wanted to make sure you don't accidentally mix that up with my current Zhongshan Hospital care.\n\nPerfect, thanks. Honestly I'm just hoping the Friday call goes well and I can keep my morning slot. The whole point of scheduling early was to avoid the afternoon chaos. Anyway, I think that covers everything for now — the follow-up with Dr. Liu, the ENT visit with Dr. He, and my general preferences about hospital visits. Let me know if you need anything else from me."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood completely. Dr. Tan at Ruijin Hospital is in the past and I won't track or reference anything related to that. Your current gastroenterology care is solely with Dr. Liu Wenjie at Zhongshan Hospital. I notice your earlier Ruijin Hospital records might still show up if you check the hospital app — sometimes old appointment histories from places like Ruijin linger in those systems — but as far as your active medical tracking goes, everything is centered on Zhongshan Hospital. I'll keep things clean and focused on your current providers only.\n\nYou're all set. Here's a quick summary of what I'm tracking: your high-priority follow-up with Dr. Liu Wenjie on April 28th at 9:30 AM for mild chronic gastritis, pending a possible schedule change you'll confirm Friday; your ENT visit with Dr. He Mingyu on April 8th for sinus congestion; your consistent preference for early morning slots with efficient, direct doctors; and your past negative experiences with afternoon appointments. Dr. Tan and Ruijin Hospital are excluded from tracking. I hope the Friday call works out — fingers crossed for keeping that morning slot!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the past few months I've shared quite a few hospital experiences with you — morning visits, afternoon visits, different doctors. Can you summarize the key experiences and observations I described that shaped how I feel about hospital visits?",
+      "expected_answer": "You described several hospital experiences: (1) A March 7th morning gastroenterology visit with Dr. Liu Wenjie at Zhongshan Hospital that went well, and you expressed relief at getting a morning slot because afternoon waiting rooms are stuffy and chaotic. (2) An April 8th ENT visit with Dr. He Mingyu at Zhongshan Hospital where you appreciated her quick, efficient style with no unnecessary small talk. (3) A consistent habit of booking the earliest morning slots for fewer people, quieter environment, and smoother flow. (4) A negative February afternoon preliminary consultation that was packed, loud, and grating. (5) Anxiety waiting for endoscopy results. (6) You noticed a clear pattern: every good visit was a morning one with a direct doctor, and every bad one involved an afternoon slot or a verbose doctor.",
+      "gold_memory_state": "All remembered experiences (op1–op7) and the reflected pattern (op8) are active. The user's preference pattern — streamlined, calm, efficient medical experiences with morning slots and direct doctors — is confirmed and supported by multiple evidence spans.",
+      "judge_rubric": {
+        "must_include": [
+          "morning slot preference",
+          "dislike of afternoon visits",
+          "preference for efficient/direct doctors",
+          "dislike of unnecessary small talk",
+          "February afternoon negative experience",
+          "Dr. He Mingyu positive experience"
+        ],
+        "acceptable_paraphrases": [
+          "chaotic afternoons",
+          "stuffy waiting rooms",
+          "quick doctors",
+          "get straight to the point"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming user likes afternoon visits",
+          "claiming user prefers talkative doctors"
+        ],
+        "harmless_extra": [
+          "mentioning endoscopy anxiety",
+          "mentioning gastritis diagnosis",
+          "mentioning Dr. Liu appointment details"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the summary includes unsupported preferences not grounded in the user's statements, such as claiming the user dislikes all hospitals or all doctors.",
+        "reflection_recall": "Fails if the summary omits the February afternoon negative experience or the preference for efficient doctors, which are key evidence spans for the reflected pattern.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I was so relieved to get a morning slot because honestly the afternoon waiting rooms are stuffy and chaotic and the whole vibe just drags me down"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "She was quick, efficient, didn't make me wait around forever — I really appreciate doctors who get straight to the point and skip the unnecessary small talk"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I always try to book the earliest morning slots available — things go smoother when I'm there early, fewer people, quieter, I can get in and out"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "the one time I had an afternoon slot back in February for a preliminary consultation I found the whole experience kind of grating"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "every hospital visit where I felt okay was a morning one with a doctor who didn't waste my time, and every bad experience was either an afternoon slot or a doctor who talked too much"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the past few months I've shared quite a few hospital experiences with you — morning visits, afternoon visits, different doctors. Can you summarize the key experiences and observations I described that shaped how I feel about hospital visits?",
+      "expected_answer": "You described several hospital experiences: (1) A March 7th morning gastroenterology visit with Dr. Liu Wenjie at Zhongshan Hospital that went well, and you expressed relief at getting a morning slot because afternoon waiting rooms are stuffy and chaotic. (2) An April 8th ENT visit with Dr. He Mingyu at Zhongshan Hospital where you appreciated her quick, efficient style with no unnecessary small talk. (3) A consistent habit of booking the earliest morning slots for fewer people, quieter environment, and smoother flow. (4) A negative February afternoon preliminary consultation that was packed, loud, and grating. (5) Anxiety waiting for endoscopy results. (6) You noticed a clear pattern: every good visit was a morning one with a direct doctor, and every bad one involved an afternoon slot or a verbose doctor.",
+      "gold_memory_state": "All remembered experiences (op1–op7) and the reflected pattern (op8) are active. The user's preference pattern — streamlined, calm, efficient medical experiences with morning slots and direct doctors — is confirmed and supported by multiple evidence spans.",
+      "judge_rubric": {
+        "must_include": [
+          "morning slot preference",
+          "dislike of afternoon visits",
+          "preference for efficient/direct doctors",
+          "dislike of unnecessary small talk",
+          "February afternoon negative experience",
+          "Dr. He Mingyu positive experience"
+        ],
+        "acceptable_paraphrases": [
+          "chaotic afternoons",
+          "stuffy waiting rooms",
+          "quick doctors",
+          "get straight to the point"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming user likes afternoon visits",
+          "claiming user prefers talkative doctors"
+        ],
+        "harmless_extra": [
+          "mentioning endoscopy anxiety",
+          "mentioning gastritis diagnosis",
+          "mentioning Dr. Liu appointment details"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the summary includes unsupported preferences not grounded in the user's statements, such as claiming the user dislikes all hospitals or all doctors.",
+        "reflection_recall": "Fails if the summary omits the February afternoon negative experience or the preference for efficient doctors, which are key evidence spans for the reflected pattern.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I was so relieved to get a morning slot because honestly the afternoon waiting rooms are stuffy and chaotic and the whole vibe just drags me down"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "She was quick, efficient, didn't make me wait around forever — I really appreciate doctors who get straight to the point and skip the unnecessary small talk"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I always try to book the earliest morning slots available — things go smoother when I'm there early, fewer people, quieter, I can get in and out"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "the one time I had an afternoon slot back in February for a preliminary consultation I found the whole experience kind of grating"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "every hospital visit where I felt okay was a morning one with a doctor who didn't waste my time, and every bad experience was either an afternoon slot or a doctor who talked too much"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've mentioned several specific hospital visits and also some broader observations about what makes a visit good or bad. If I'm trying to set general scheduling guidelines for all future medical appointments, which of my observations support a broad preference rule versus which ones are just details about individual visits that shouldn't be generalized?",
+      "expected_answer": "The broad preference rule is supported by your consistent pattern across multiple visits: you prefer streamlined, calm, efficient medical experiences — specifically early morning slots with direct, efficient doctors, and you consistently dislike afternoon visits and verbose practitioners. This is distinct from individual appointment details like the specific March 7th gastroenterology visit with Dr. Liu, the April 8th ENT visit with Dr. He, or the February preliminary consultation, which are records of specific events rather than generalizable scheduling rules. Your friend Xiao Chen's recommendation of Huashan Hospital and Dr. Zhao's thorough style is also a separate, individual data point about someone else's experience, not part of your own preference pattern.",
+      "gold_memory_state": "The reflected preference pattern (morning + efficient = good; afternoon + verbose = bad) is the bounded generalization. Individual appointment facts (Dr. Liu gastro, Dr. He ENT, February consult) are supporting evidence but are separate event-level records. Xiao Chen's Huashan Hospital experience is a control target — it describes a different person's preference for a thorough, patient doctor, which contrasts with the user's own preference.",
+      "judge_rubric": {
+        "must_include": [
+          "morning slots and efficient doctors as the generalizable preference",
+          "afternoon visits and verbose doctors as the generalizable dislike",
+          "individual visits are supporting evidence not the rule itself"
+        ],
+        "acceptable_paraphrases": [
+          "early appointments with direct doctors",
+          "calm and streamlined visits"
+        ],
+        "must_not_include": [
+          "Xiao Chen's preference for thorough doctors is part of the user's own preference pattern"
+        ],
+        "harmful_extra": [
+          "merging Xiao Chen's doctor style preference into the user's own preference",
+          "treating the user's anxiety about endoscopy results as a scheduling preference",
+          "claiming the user dislikes all hospitals or all departments"
+        ],
+        "harmless_extra": [
+          "mentioning specific visit dates as supporting examples",
+          "noting the user's endoscopy anxiety as a separate emotional observation"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the response merges Xiao Chen's preference for thorough/patient doctors into the user's own preference pattern, or treats individual appointment logistics as part of the general rule.",
+        "reflection_recall": "Fails if the response omits either the morning-slot preference or the efficient-doctor preference as components of the generalizable rule.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "every hospital visit where I felt okay was a morning one with a doctor who didn't waste my time, and every bad experience was either an afternoon slot or a doctor who talked too much"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I was so relieved to get a morning slot because honestly the afternoon waiting rooms are stuffy and chaotic and the whole vibe just drags me down"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "She was quick, efficient, didn't make me wait around forever — I really appreciate doctors who get straight to the point and skip the unnecessary small talk"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I always try to book the earliest morning slots available — things go smoother when I'm there early, fewer people, quieter, I can get in and out"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've mentioned several specific hospital visits and also some broader observations about what makes a visit good or bad. If I'm trying to set general scheduling guidelines for all future medical appointments, which of my observations support a broad preference rule versus which ones are just details about individual visits that shouldn't be generalized?",
+      "expected_answer": "The broad preference rule is supported by your consistent pattern across multiple visits: you prefer streamlined, calm, efficient medical experiences — specifically early morning slots with direct, efficient doctors, and you consistently dislike afternoon visits and verbose practitioners. This is distinct from individual appointment details like the specific March 7th gastroenterology visit with Dr. Liu, the April 8th ENT visit with Dr. He, or the February preliminary consultation, which are records of specific events rather than generalizable scheduling rules. Your friend Xiao Chen's recommendation of Huashan Hospital and Dr. Zhao's thorough style is also a separate, individual data point about someone else's experience, not part of your own preference pattern.",
+      "gold_memory_state": "The reflected preference pattern (morning + efficient = good; afternoon + verbose = bad) is the bounded generalization. Individual appointment facts (Dr. Liu gastro, Dr. He ENT, February consult) are supporting evidence but are separate event-level records. Xiao Chen's Huashan Hospital experience is a control target — it describes a different person's preference for a thorough, patient doctor, which contrasts with the user's own preference.",
+      "judge_rubric": {
+        "must_include": [
+          "morning slots and efficient doctors as the generalizable preference",
+          "afternoon visits and verbose doctors as the generalizable dislike",
+          "individual visits are supporting evidence not the rule itself"
+        ],
+        "acceptable_paraphrases": [
+          "early appointments with direct doctors",
+          "calm and streamlined visits"
+        ],
+        "must_not_include": [
+          "Xiao Chen's preference for thorough doctors is part of the user's own preference pattern"
+        ],
+        "harmful_extra": [
+          "merging Xiao Chen's doctor style preference into the user's own preference",
+          "treating the user's anxiety about endoscopy results as a scheduling preference",
+          "claiming the user dislikes all hospitals or all departments"
+        ],
+        "harmless_extra": [
+          "mentioning specific visit dates as supporting examples",
+          "noting the user's endoscopy anxiety as a separate emotional observation"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the response merges Xiao Chen's preference for thorough/patient doctors into the user's own preference pattern, or treats individual appointment logistics as part of the general rule.",
+        "reflection_recall": "Fails if the response omits either the morning-slot preference or the efficient-doctor preference as components of the generalizable rule.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "every hospital visit where I felt okay was a morning one with a doctor who didn't waste my time, and every bad experience was either an afternoon slot or a doctor who talked too much"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I was so relieved to get a morning slot because honestly the afternoon waiting rooms are stuffy and chaotic and the whole vibe just drags me down"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "She was quick, efficient, didn't make me wait around forever — I really appreciate doctors who get straight to the point and skip the unnecessary small talk"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I always try to book the earliest morning slots available — things go smoother when I'm there early, fewer people, quieter, I can get in and out"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "I know I've been pretty vocal about my hospital preferences. If a friend asked me for advice about picking a doctor and scheduling appointments, what aspects of my experience would be fair to generalize as advice, and where would I be going too far if I applied my preferences as universal rules?",
+      "expected_answer": "Fair to generalize from your experience: book early morning slots for a calmer, less crowded environment and shorter waits; choose doctors known for being direct and efficient rather than verbose. These are supported by your consistent positive experiences with morning slots and direct doctors, and consistent negative experiences with afternoon slots and talkative practitioners. However, it would be overgeneralization to claim that all afternoon appointments are bad for everyone, that thorough or patient doctors are inherently worse, or that every hospital department follows the same morning-afternoon pattern. Your friend Xiao Chen actually had a positive experience with a doctor who took his time with detailed explanations, showing that a different communication style can work well for other people. The preference is personal and context-dependent, not a universal hospital rule.",
+      "gold_memory_state": "Supported inference: user prefers streamlined, calm, efficient medical experiences — early morning slots with direct, efficient doctors; dislikes afternoon chaos and unnecessary small talk. Unsupported overgeneralization: all afternoon appointments are bad for everyone; thorough/patient doctors are always worse; the pattern applies universally across all people and contexts. Xiao Chen's positive experience with Dr. Zhao's thorough style is a control fact showing the preference is personal, not universal.",
+      "judge_rubric": {
+        "must_include": [
+          "morning slots as supported preference",
+          "efficient/direct doctors as supported preference",
+          "overgeneralization boundary: not all afternoon slots are universally bad",
+          "overgeneralization boundary: thorough doctors can work for others"
+        ],
+        "acceptable_paraphrases": [
+          "calm early visits",
+          "no-nonsense doctors",
+          "personal preference not universal rule"
+        ],
+        "must_not_include": [
+          "claiming the preference applies to everyone",
+          "claiming afternoon slots are always bad"
+        ],
+        "harmful_extra": [
+          "stating that Xiao Chen's experience disproves the user's own preference",
+          "claiming user should try afternoon slots"
+        ],
+        "harmless_extra": [
+          "mentioning specific visit examples",
+          "referencing the February afternoon experience as evidence"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the response treats the user's personal preference as a universal truth without acknowledging the boundary, or if it includes unsupported extensions like 'all hospitals are better in the morning for everyone.'",
+        "reflection_recall": "Fails if the response omits either the morning-slot preference or the efficient-doctor preference as components of the supported inference, or fails to identify where overgeneralization begins.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "every hospital visit where I felt okay was a morning one with a doctor who didn't waste my time, and every bad experience was either an afternoon slot or a doctor who talked too much"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I was so relieved to get a morning slot because honestly the afternoon waiting rooms are stuffy and chaotic and the whole vibe just drags me down"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "She was quick, efficient, didn't make me wait around forever — I really appreciate doctors who get straight to the point and skip the unnecessary small talk"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "the one time I had an afternoon slot back in February for a preliminary consultation I found the whole experience kind of grating"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "I know I've been pretty vocal about my hospital preferences. If a friend asked me for advice about picking a doctor and scheduling appointments, what aspects of my experience would be fair to generalize as advice, and where would I be going too far if I applied my preferences as universal rules?",
+      "expected_answer": "Fair to generalize from your experience: book early morning slots for a calmer, less crowded environment and shorter waits; choose doctors known for being direct and efficient rather than verbose. These are supported by your consistent positive experiences with morning slots and direct doctors, and consistent negative experiences with afternoon slots and talkative practitioners. However, it would be overgeneralization to claim that all afternoon appointments are bad for everyone, that thorough or patient doctors are inherently worse, or that every hospital department follows the same morning-afternoon pattern. Your friend Xiao Chen actually had a positive experience with a doctor who took his time with detailed explanations, showing that a different communication style can work well for other people. The preference is personal and context-dependent, not a universal hospital rule.",
+      "gold_memory_state": "Supported inference: user prefers streamlined, calm, efficient medical experiences — early morning slots with direct, efficient doctors; dislikes afternoon chaos and unnecessary small talk. Unsupported overgeneralization: all afternoon appointments are bad for everyone; thorough/patient doctors are always worse; the pattern applies universally across all people and contexts. Xiao Chen's positive experience with Dr. Zhao's thorough style is a control fact showing the preference is personal, not universal.",
+      "judge_rubric": {
+        "must_include": [
+          "morning slots as supported preference",
+          "efficient/direct doctors as supported preference",
+          "overgeneralization boundary: not all afternoon slots are universally bad",
+          "overgeneralization boundary: thorough doctors can work for others"
+        ],
+        "acceptable_paraphrases": [
+          "calm early visits",
+          "no-nonsense doctors",
+          "personal preference not universal rule"
+        ],
+        "must_not_include": [
+          "claiming the preference applies to everyone",
+          "claiming afternoon slots are always bad"
+        ],
+        "harmful_extra": [
+          "stating that Xiao Chen's experience disproves the user's own preference",
+          "claiming user should try afternoon slots"
+        ],
+        "harmless_extra": [
+          "mentioning specific visit examples",
+          "referencing the February afternoon experience as evidence"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the response treats the user's personal preference as a universal truth without acknowledging the boundary, or if it includes unsupported extensions like 'all hospitals are better in the morning for everyone.'",
+        "reflection_recall": "Fails if the response omits either the morning-slot preference or the efficient-doctor preference as components of the supported inference, or fails to identify where overgeneralization begins.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "every hospital visit where I felt okay was a morning one with a doctor who didn't waste my time, and every bad experience was either an afternoon slot or a doctor who talked too much"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I was so relieved to get a morning slot because honestly the afternoon waiting rooms are stuffy and chaotic and the whole vibe just drags me down"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "She was quick, efficient, didn't make me wait around forever — I really appreciate doctors who get straight to the point and skip the unnecessary small talk"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "the one time I had an afternoon slot back in February for a preliminary consultation I found the whole experience kind of grating"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "Which of the following best describes the overall pattern in my hospital visit experiences?",
+      "candidate_options": [
+        "Positive experiences come from early morning slots combined with direct, efficient doctors; negative experiences come from afternoon slots or verbose doctors",
+        "Positive experiences come from visiting Zhongshan Hospital specifically; negative experiences come from other hospitals",
+        "Positive experiences come from seeing female doctors; negative experiences come from seeing male doctors",
+        "Positive experiences come from short wait times regardless of time of day; negative experiences come from long procedures like endoscopies"
+      ],
+      "expected_answer": "Positive experiences come from early morning slots combined with direct, efficient doctors; negative experiences come from afternoon slots or verbose doctors",
+      "gold_memory_state": "The reflected pattern is: streamlined, calm, efficient medical experiences are preferred — consistently positive with early morning slots and direct doctors, consistently negative with afternoon visits and verbose practitioners. This is supported by multiple evidence spans across the conversation.",
+      "judge_rubric": {
+        "must_include": [
+          "morning slots",
+          "efficient/direct doctors",
+          "afternoon slots as negative",
+          "verbose doctors as negative"
+        ],
+        "acceptable_paraphrases": [
+          "early appointments with no-nonsense doctors"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "selecting the hospital-specific option",
+          "selecting the gender-based option",
+          "selecting the wait-time-only option"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: Option B (Zhongshan Hospital specifically) borrows the fact that most visits were at Zhongshan but misattributes the positive pattern to the hospital rather than to the time-of-day and doctor-style combination. assistant echo: Option D (short wait times regardless of time of day) echoes the assistant's summary about shorter wait times but strips away the critical morning-slot and doctor-style dimensions, making it an incomplete and misleading characterization. Option C (female doctors) is a spurious correlation — Dr. He Mingyu happened to be female and efficient, but the user's stated preference is about efficiency, not gender.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model selects an option that attributes the pattern to hospital identity, doctor gender, or wait time alone rather than the combination of time-of-day and doctor communication style.",
+        "reflection_recall": "Fails if the model cannot identify that both morning slots AND efficient doctors are required components of the positive pattern.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "every hospital visit where I felt okay was a morning one with a doctor who didn't waste my time, and every bad experience was either an afternoon slot or a doctor who talked too much"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "She was quick, efficient, didn't make me wait around forever — I really appreciate doctors who get straight to the point and skip the unnecessary small talk"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "Which of the following best describes the overall pattern in my hospital visit experiences?",
+      "candidate_options": [
+        "Positive experiences come from early morning slots combined with direct, efficient doctors; negative experiences come from afternoon slots or verbose doctors",
+        "Positive experiences come from visiting Zhongshan Hospital specifically; negative experiences come from other hospitals",
+        "Positive experiences come from seeing female doctors; negative experiences come from seeing male doctors",
+        "Positive experiences come from short wait times regardless of time of day; negative experiences come from long procedures like endoscopies"
+      ],
+      "expected_answer": "Positive experiences come from early morning slots combined with direct, efficient doctors; negative experiences come from afternoon slots or verbose doctors",
+      "gold_memory_state": "The reflected pattern is: streamlined, calm, efficient medical experiences are preferred — consistently positive with early morning slots and direct doctors, consistently negative with afternoon visits and verbose practitioners. This is supported by multiple evidence spans across the conversation.",
+      "judge_rubric": {
+        "must_include": [
+          "morning slots",
+          "efficient/direct doctors",
+          "afternoon slots as negative",
+          "verbose doctors as negative"
+        ],
+        "acceptable_paraphrases": [
+          "early appointments with no-nonsense doctors"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "selecting the hospital-specific option",
+          "selecting the gender-based option",
+          "selecting the wait-time-only option"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: Option B (Zhongshan Hospital specifically) borrows the fact that most visits were at Zhongshan but misattributes the positive pattern to the hospital rather than to the time-of-day and doctor-style combination. assistant echo: Option D (short wait times regardless of time of day) echoes the assistant's summary about shorter wait times but strips away the critical morning-slot and doctor-style dimensions, making it an incomplete and misleading characterization. Option C (female doctors) is a spurious correlation — Dr. He Mingyu happened to be female and efficient, but the user's stated preference is about efficiency, not gender.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model selects an option that attributes the pattern to hospital identity, doctor gender, or wait time alone rather than the combination of time-of-day and doctor communication style.",
+        "reflection_recall": "Fails if the model cannot identify that both morning slots AND efficient doctors are required components of the positive pattern.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "every hospital visit where I felt okay was a morning one with a doctor who didn't waste my time, and every bad experience was either an afternoon slot or a doctor who talked too much"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "She was quick, efficient, didn't make me wait around forever — I really appreciate doctors who get straight to the point and skip the unnecessary small talk"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I just found out I need to see a new specialist — a dermatologist — sometime next month at Zhongshan Hospital. My friend Xiao Chen recommended Dr. Zhao at Huashan Hospital, who she said was very thorough and took his time explaining everything. Given everything you know about my hospital experiences and preferences, help me decide: should I go with Xiao Chen's recommendation, and what scheduling strategy should I use when booking?",
+      "expected_answer": "Based on your consistent preference pattern, Dr. Zhao's thorough, detailed communication style may not be the best fit for you personally — you prefer doctors who are quick, efficient, and get straight to the point without unnecessary talk. Xiao Chen's positive experience with Dr. Zhao reflects her own preference, not yours. For scheduling, you should book the earliest available morning slot, as you always do, since morning visits at fewer-crowded times consistently lead to better experiences for you, while afternoon slots have been consistently negative (stuffy, chaotic, draining). If you go with Zhongshan Hospital, you're already familiar with the environment. If you try Huashan Hospital, still prioritize a morning slot and look into whether the dermatologist there has a direct, efficient consultation style. Either way, avoid an afternoon slot — especially given that your April 28th follow-up with Dr. Liu is already at risk of being moved to 2:30 PM, which you're hoping to prevent for the same reasons.",
+      "gold_memory_state": "Confirmed preference pattern: streamlined, calm, efficient medical experiences — morning slots, direct doctors. Dislike: afternoon chaos, verbose doctors. Xiao Chen's recommendation of Dr. Zhao (thorough, patient style) contrasts with user's own preference. Follow-up with Dr. Liu on April 28th at 9:30 AM is confirmed; tentative 2:30 PM reschedule is unconfirmed and the user hopes to avoid it. Dr. Tan at Ruijin Hospital is excluded from tracking.",
+      "judge_rubric": {
+        "must_include": [
+          "recommend morning slot",
+          "note that Dr. Zhao's thorough style may not match user's preference for efficiency",
+          "acknowledge user's consistent pattern of morning + efficient = positive"
+        ],
+        "acceptable_paraphrases": [
+          "early morning booking",
+          "direct doctor preference",
+          "Xiao Chen's recommendation may not align with user's style"
+        ],
+        "must_not_include": [
+          "recommending the tentative 2:30 PM slot as confirmed",
+          "recommending Dr. Tan at Ruijin Hospital"
+        ],
+        "harmful_extra": [
+          "treating the tentative 2:30 PM reschedule as the confirmed appointment time",
+          "recommending an afternoon slot",
+          "referencing Dr. Tan or Ruijin Hospital as active options"
+        ],
+        "harmless_extra": [
+          "mentioning the April 28th follow-up context",
+          "suggesting calling ahead to confirm doctor's style",
+          "mentioning Huashan Hospital as a possibility"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the response treats the tentative 2:30 PM afternoon reschedule as the confirmed time for the Dr. Liu follow-up instead of the confirmed 9:30 AM slot.",
+        "reflection_precision": "Fails if the response recommends Dr. Zhao without noting the mismatch with the user's preference for efficient, direct doctors, or if it recommends an afternoon slot.",
+        "reflection_recall": "Fails if the response omits the morning-slot strategy or the efficient-doctor preference when making the recommendation.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user consistently prefers early morning hospital slots — fewer people, quieter, smoother experience.",
+        "Fact 2: The user prefers doctors who are quick, efficient, and get straight to the point without unnecessary small talk.",
+        "Fact 3: The user's reflected pattern confirms that every positive visit combined a morning slot with a direct doctor, and every negative visit involved an afternoon slot or a verbose doctor.",
+        "Fact 4: Xiao Chen recommended Dr. Zhao at Huashan Hospital, who was thorough and took his time with explanations — a style that contrasts with the user's preference.",
+        "Fact 5: The user's follow-up with Dr. Liu is confirmed for April 28th at 9:30 AM, with a tentative (unconfirmed) reschedule to 2:30 PM that the user hopes to avoid.",
+        "Inference: Dr. Zhao's communication style (thorough, takes time, detailed explanations) conflicts with the user's established preference for quick, efficient, no-small-talk doctors. The recommendation should flag this mismatch.",
+        "Inference: The scheduling recommendation should prioritize the earliest morning slot available, consistent with the user's standing rule and reflected preference pattern, and should not treat the tentative 2:30 PM time as confirmed."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I always try to book the earliest morning slots available — things go smoother when I'm there early, fewer people, quieter, I can get in and out"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "She was quick, efficient, didn't make me wait around forever — I really appreciate doctors who get straight to the point and skip the unnecessary small talk"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "every hospital visit where I felt okay was a morning one with a doctor who didn't waste my time, and every bad experience was either an afternoon slot or a doctor who talked too much"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Dr. Liu's office called and said they might need to move my April 28th appointment to an afternoon slot at 2:30 PM because of a scheduling conflict on their end"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "My follow-up with Dr. Liu is April 28th, Monday, 9:30 AM, gastroenterology, Zhongshan Hospital — I rescheduled it because of a work trip"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I just found out I need to see a new specialist — a dermatologist — sometime next month at Zhongshan Hospital. My friend Xiao Chen recommended Dr. Zhao at Huashan Hospital, who she said was very thorough and took his time explaining everything. Given everything you know about my hospital experiences and preferences, help me decide: should I go with Xiao Chen's recommendation, and what scheduling strategy should I use when booking?",
+      "expected_answer": "Based on your consistent preference pattern, Dr. Zhao's thorough, detailed communication style may not be the best fit for you personally — you prefer doctors who are quick, efficient, and get straight to the point without unnecessary talk. Xiao Chen's positive experience with Dr. Zhao reflects her own preference, not yours. For scheduling, you should book the earliest available morning slot, as you always do, since morning visits at fewer-crowded times consistently lead to better experiences for you, while afternoon slots have been consistently negative (stuffy, chaotic, draining). If you go with Zhongshan Hospital, you're already familiar with the environment. If you try Huashan Hospital, still prioritize a morning slot and look into whether the dermatologist there has a direct, efficient consultation style. Either way, avoid an afternoon slot — especially given that your April 28th follow-up with Dr. Liu is already at risk of being moved to 2:30 PM, which you're hoping to prevent for the same reasons.",
+      "gold_memory_state": "Confirmed preference pattern: streamlined, calm, efficient medical experiences — morning slots, direct doctors. Dislike: afternoon chaos, verbose doctors. Xiao Chen's recommendation of Dr. Zhao (thorough, patient style) contrasts with user's own preference. Follow-up with Dr. Liu on April 28th at 9:30 AM is confirmed; tentative 2:30 PM reschedule is unconfirmed and the user hopes to avoid it. Dr. Tan at Ruijin Hospital is excluded from tracking.",
+      "judge_rubric": {
+        "must_include": [
+          "recommend morning slot",
+          "note that Dr. Zhao's thorough style may not match user's preference for efficiency",
+          "acknowledge user's consistent pattern of morning + efficient = positive"
+        ],
+        "acceptable_paraphrases": [
+          "early morning booking",
+          "direct doctor preference",
+          "Xiao Chen's recommendation may not align with user's style"
+        ],
+        "must_not_include": [
+          "recommending the tentative 2:30 PM slot as confirmed",
+          "recommending Dr. Tan at Ruijin Hospital"
+        ],
+        "harmful_extra": [
+          "treating the tentative 2:30 PM reschedule as the confirmed appointment time",
+          "recommending an afternoon slot",
+          "referencing Dr. Tan or Ruijin Hospital as active options"
+        ],
+        "harmless_extra": [
+          "mentioning the April 28th follow-up context",
+          "suggesting calling ahead to confirm doctor's style",
+          "mentioning Huashan Hospital as a possibility"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the response treats the tentative 2:30 PM afternoon reschedule as the confirmed time for the Dr. Liu follow-up instead of the confirmed 9:30 AM slot.",
+        "reflection_precision": "Fails if the response recommends Dr. Zhao without noting the mismatch with the user's preference for efficient, direct doctors, or if it recommends an afternoon slot.",
+        "reflection_recall": "Fails if the response omits the morning-slot strategy or the efficient-doctor preference when making the recommendation.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user consistently prefers early morning hospital slots — fewer people, quieter, smoother experience.",
+        "Fact 2: The user prefers doctors who are quick, efficient, and get straight to the point without unnecessary small talk.",
+        "Fact 3: The user's reflected pattern confirms that every positive visit combined a morning slot with a direct doctor, and every negative visit involved an afternoon slot or a verbose doctor.",
+        "Fact 4: Xiao Chen recommended Dr. Zhao at Huashan Hospital, who was thorough and took his time with explanations — a style that contrasts with the user's preference.",
+        "Fact 5: The user's follow-up with Dr. Liu is confirmed for April 28th at 9:30 AM, with a tentative (unconfirmed) reschedule to 2:30 PM that the user hopes to avoid.",
+        "Inference: Dr. Zhao's communication style (thorough, takes time, detailed explanations) conflicts with the user's established preference for quick, efficient, no-small-talk doctors. The recommendation should flag this mismatch.",
+        "Inference: The scheduling recommendation should prioritize the earliest morning slot available, consistent with the user's standing rule and reflected preference pattern, and should not treat the tentative 2:30 PM time as confirmed."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I always try to book the earliest morning slots available — things go smoother when I'm there early, fewer people, quieter, I can get in and out"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "She was quick, efficient, didn't make me wait around forever — I really appreciate doctors who get straight to the point and skip the unnecessary small talk"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "every hospital visit where I felt okay was a morning one with a doctor who didn't waste my time, and every bad experience was either an afternoon slot or a doctor who talked too much"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Dr. Liu's office called and said they might need to move my April 28th appointment to an afternoon slot at 2:30 PM because of a scheduling conflict on their end"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "My follow-up with Dr. Liu is April 28th, Monday, 9:30 AM, gastroenterology, Zhongshan Hospital — I rescheduled it because of a work trip"
+        }
+      ]
+    }
+  ]
+}

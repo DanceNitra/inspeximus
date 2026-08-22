@@ -1,0 +1,1011 @@
+{
+  "target_fact": "B21 Spouse/partner occupation",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "David started his new position as a senior physical therapist at Greenfield Rehabilitation Center on February 12th"
+      },
+      "target": {
+        "target_id": "david_workplace",
+        "target_name": "David's current workplace"
+      },
+      "old_value": null,
+      "new_value": "Greenfield Rehabilitation Center",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "David started his new position as a senior physical therapist at Greenfield Rehabilitation Center on February 12th"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "his schedule at Greenfield is Tuesday through Saturday, with Mondays and Sundays off"
+      },
+      "target": {
+        "target_id": "david_schedule",
+        "target_name": "David's work schedule at Greenfield"
+      },
+      "old_value": null,
+      "new_value": "Tuesday through Saturday, with Mondays and Sundays off",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "his schedule at Greenfield is Tuesday through Saturday, with Mondays and Sundays off"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "he got assigned to work with the local university's track and field team as their consulting PT in early March"
+      },
+      "target": {
+        "target_id": "david_consulting_role",
+        "target_name": "David's consulting PT role"
+      },
+      "old_value": null,
+      "new_value": "Consulting physical therapist for local university track and field team, starting early March",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "he got assigned to work with the local university's track and field team as their consulting PT in early March"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "David's salary at Greenfield is $82,500 annually"
+      },
+      "target": {
+        "target_id": "david_salary",
+        "target_name": "David's annual salary at Greenfield"
+      },
+      "old_value": null,
+      "new_value": "$82,500 annually",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "David's salary at Greenfield is $82,500 annually"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "his OCS exam is scheduled for June 7th and he studies most evenings from around 8 to 10 PM"
+      },
+      "target": {
+        "target_id": "david_ocs_exam",
+        "target_name": "David's OCS exam date and study schedule"
+      },
+      "old_value": null,
+      "new_value": "OCS exam on June 7th; studies most evenings 8-10 PM",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "his OCS exam is scheduled for June 7th and he studies most evenings from around 8 to 10 PM"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 7,
+        "quote": "He went from general post-surgical rehab at his old clinic to sports recovery at Greenfield, picked up the university consulting gig almost immediately, and now he's pushing for the OCS certification on top of it all"
+      },
+      "target": {
+        "target_id": "david_career_trajectory_pattern",
+        "target_name": "David's career trajectory pattern since joining Greenfield"
+      },
+      "old_value": null,
+      "new_value": "David is on an accelerating professional growth trajectory: pivoted specialty focus, took on an external consulting role within weeks, and is pursuing advanced certification concurrently, suggesting deliberate career intensification rather than settling into a new job",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "David started his new position as a senior physical therapist at Greenfield Rehabilitation Center on February 12th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "he got assigned to work with the local university's track and field team as their consulting PT in early March"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "his OCS exam is scheduled for June 7th and he studies most evenings from around 8 to 10 PM"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "David told me last night that the clinic director Priya offered him a lead therapist title starting next quarter"
+      },
+      "target": {
+        "target_id": "david_lead_therapist_title",
+        "target_name": "David's potential lead therapist title at Greenfield"
+      },
+      "old_value": null,
+      "new_value": "Lead therapist title at Greenfield starting next quarter",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "David told me last night that the clinic director Priya offered him a lead therapist title starting next quarter"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establishing David's new workplace, schedule, and consulting role",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to fill you in on some things about my partner's work situation. David started his new position as a senior physical therapist at Greenfield Rehabilitation Center on February 12th. He'd been wanting to move into sports recovery for a while, so this was a big deal for us. We celebrated the night before with dinner."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a wonderful milestone for David—and for both of you, really. Transitioning from general post-surgical rehab into a sports-recovery-focused clinic is a meaningful shift, especially if it's something he's been working toward. February 12th is a great date to have noted; sometimes it's useful to remember start dates for things like benefits enrollment windows or anniversary celebrations at work. How has his adjustment been going so far at Greenfield?"
+        },
+        {
+          "role": "user",
+          "content": "It's been pretty smooth actually. One thing I had to get used to is his schedule at Greenfield is Tuesday through Saturday, with Mondays and Sundays off. His old place was Monday through Friday, so it was a change. But honestly I like having Mondays free together because everywhere is less crowded, and I've always preferred that."
+        },
+        {
+          "role": "assistant",
+          "content": "A Tuesday-through-Saturday schedule is definitely less conventional, but it sounds like you've found a real upside in having Mondays together. Running errands, going to restaurants, or visiting places that are packed on weekends—all of that is much more pleasant when the crowds thin out. It also means David gets a mid-week break of sorts on Sundays, which can be nice for recharging. Do you two have any regular Monday routines you've settled into, or is it more spontaneous?"
+        },
+        {
+          "role": "user",
+          "content": "We're still figuring that out. But here's some exciting news—he got assigned to work with the local university's track and field team as their consulting PT in early March. He was really pumped about it. I actually enjoy hearing him talk about it because he gets into the details, like gait mechanics and recovery protocols. It's way more interesting than office politics."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a fantastic development! Working with a university track and field program is a great opportunity for someone in sports-focused physical therapy. It gives David exposure to a wide range of athletic injuries and movement patterns, and consulting work like that can really build a strong professional reputation. I can see why you enjoy the technical conversations—there's something genuinely engaging about listening to someone break down the mechanics of how a body moves or heals. It sounds like his passion for the craft comes through when he talks about cases."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, it really does. I also wanted to mention that his colleague Priya just got promoted to clinic director at Greenfield last week. David seems to get along with her well and says she's been supportive of his sports rehab focus. It's nice that the leadership at the clinic is aligned with what he wants to do."
+        },
+        {
+          "role": "assistant",
+          "content": "Having a supportive clinic director can make an enormous difference in someone's professional development, especially when they're carving out a niche like sports rehabilitation within a broader clinic. The fact that Priya has been actively supportive of David's focus suggests the clinic values specialization and isn't just paying lip service to it. And a good working relationship with leadership often opens doors to things like additional training opportunities, conference attendance, or expanded patient caseloads in his area of interest. That's a really positive sign for his long-term trajectory there."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establishing salary, OCS exam details, and reflecting on career pattern",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "One thing I want to make sure you have right—David's salary at Greenfield is $82,500 annually. I might have mentioned a different number before but that's the correct figure. It was a decent bump from his previous position, which is part of why the move made sense financially too."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it—$82,500 annually at Greenfield Rehabilitation Center. That's a solid figure, and it makes sense that the financial improvement was part of the decision to switch clinics. A higher salary combined with a better professional fit in sports recovery is really the ideal scenario when making a career move. It sounds like David weighed both the financial and the professional development sides carefully before making the transition. Was the salary negotiation straightforward, or did he have to push for that number?"
+        },
+        {
+          "role": "user",
+          "content": "He negotiated a bit, but it wasn't too contentious. They recognized his experience. Anyway, I also wanted to mention something about his old clinic. He was at Lakewood Physical Therapy for about three years before switching. He wrapped up there at the end of January. That chapter's done now, so it's not really relevant anymore."
+        },
+        {
+          "role": "assistant",
+          "content": "Three years at Lakewood Physical Therapy is a solid tenure, and it's clear that chapter served its purpose in building the experience that made him attractive to Greenfield. Wrapping up at the end of January and starting at Greenfield on February 12th means he had about a two-week gap—hopefully he got a bit of rest in between. Since you've said Lakewood isn't relevant anymore, I'll focus on Greenfield as his current professional context going forward. Is there anything else about the transition you want to note?"
+        },
+        {
+          "role": "user",
+          "content": "Yes actually. He's been studying for his Orthopedic Clinical Specialist certification—the OCS. And his OCS exam is scheduled for June 7th and he studies most evenings from around 8 to 10 PM. I honestly don't mind the quiet. I like evenings where we're both doing our own thing in the same room without needing to fill the silence."
+        },
+        {
+          "role": "assistant",
+          "content": "The OCS certification is a significant credential in physical therapy—it would really solidify David's expertise in the orthopedic and sports recovery space. June 7th gives him a clear target date, and a consistent study window from 8 to 10 PM sounds like a sustainable routine. It's also really nice that you appreciate the parallel quiet time rather than feeling neglected by it. That kind of comfortable coexistence, where you're both focused on your own things but still together in the same space, says a lot about the quality of your relationship dynamic."
+        },
+        {
+          "role": "user",
+          "content": "I appreciate that. You know, thinking about it, David's been on a real tear professionally since the move. He went from general post-surgical rehab at his old clinic to sports recovery at Greenfield, picked up the university consulting gig almost immediately, and now he's pushing for the OCS certification on top of it all. It feels like he's really building momentum.\n\nThat's a really good way to put it. I think you're right that it's deliberate on his part. He's mentioned wanting to eventually open his own sports PT practice someday, so all of this probably feeds into that longer-term goal. For now though, he's focused on the exam and the day-to-day at Greenfield."
+        },
+        {
+          "role": "assistant",
+          "content": "You're picking up on something meaningful there. The pattern you're describing isn't just someone settling into a new job—it's someone who's actively accelerating. Pivoting his specialty focus, landing an external consulting role within weeks of starting, and simultaneously pursuing advanced certification all point to deliberate career intensification. David seems to be treating this move to Greenfield not as a destination but as a launching pad. That kind of momentum can be really exciting to watch from up close, and the fact that you're noticing and appreciating the trajectory speaks to how attuned you are to his professional growth.\n\nThat longer-term ambition of opening his own sports PT practice makes all the current moves even more coherent. The OCS certification adds credibility, the university consulting builds his network and reputation in the sports community, and the experience at Greenfield under a supportive director like Priya gives him operational knowledge of how a clinic runs. Each piece fits together as groundwork for eventual independence. But you're right that the immediate focus on the June 7th exam and daily work at Greenfield is where his energy needs to be right now. One step at a time, and each step is clearly intentional."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Introducing tentative future role, adversarial distractor, and wrapping up",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, quick update on the David front. Things are going well at Greenfield. He had a really good week with the track team—helped one of the sprinters resolve a chronic hamstring issue that had been bothering her all season. He was pretty proud of that one, and honestly I was too."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a great outcome, both for the sprinter and for David's confidence in his consulting role. Resolving a chronic hamstring issue that's persisted all season isn't a simple fix—it likely required careful assessment of her biomechanics, training load, and possibly compensatory movement patterns. The fact that he cracked it speaks to the depth of his clinical reasoning. I can see why you'd both feel proud. Moments like these probably reinforce that the move to Greenfield and the sports recovery focus were the right calls. Has the university team been giving him more athletes to work with?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, word is spreading among the athletes apparently. Oh, I also remembered—David had to attend a dry needling certification workshop in Portland back in late March. He was gone Friday through Sunday. I was a little annoyed because we had planned to check out a new farmers market that Saturday and he forgot to tell me about the workshop until two days before."
+        },
+        {
+          "role": "assistant",
+          "content": "That's understandable frustration. When you've made plans together and then find out at the last minute that your partner has a scheduling conflict they already knew about, it can feel like the plans you made together weren't prioritized. The dry needling certification is valuable for his practice—it's a useful technique in sports rehab—but the communication gap is the real issue there, not the workshop itself. A two-day heads-up for a full weekend away isn't much notice. I recall from a previous note that his salary at his old position was around $78,000—the bump to Greenfield clearly came with increased professional demands too."
+        },
+        {
+          "role": "user",
+          "content": "Right, exactly—it was the communication, not the workshop. Anyway, something new came up. David told me last night that the clinic director Priya offered him a lead therapist title starting next quarter. He seemed excited but said nothing is finalized yet and they still need to work out the details and get it approved by the ownership group."
+        },
+        {
+          "role": "assistant",
+          "content": "That's exciting news, even if it's still in the preliminary stages. A lead therapist title would formalize the leadership trajectory David has been building since he arrived at Greenfield. The fact that Priya is the one offering it makes sense given their good working relationship and her support of his sports rehab specialization. That said, since it still needs ownership approval and the details aren't worked out, it's wise to treat it as promising but not yet certain. These things can sometimes shift during the approval process. Has David mentioned whether the title would come with additional responsibilities or a salary adjustment?"
+        },
+        {
+          "role": "user",
+          "content": "He didn't get into specifics yet. He just said Priya brought it up and he's cautiously optimistic. I think he's trying not to get too ahead of himself, which I respect. For now he's staying focused on the OCS exam in June and his regular caseload. I think that's the smart approach.\n\nExactly. I just want to make sure you have the key details straight about David's current situation—Greenfield Rehabilitation Center, the Tuesday through Saturday schedule, the university consulting work, the OCS exam on June 7th, and the $82,500 salary. Those are the confirmed facts. The lead therapist thing is still up in the air."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a very grounded approach from David, and it sounds like you appreciate that quality in him. Keeping his focus on the OCS exam and his current responsibilities rather than getting swept up in a title that hasn't been formalized yet shows good professional discipline. The OCS certification will serve him regardless of what happens with the lead therapist offer—it strengthens his credentials whether he stays at Greenfield long-term or eventually pursues that independent practice goal. And if the lead title does come through, having the OCS on top of it would make his position even stronger.\n\nI've got all of that noted clearly. David's confirmed current situation: senior physical therapist at Greenfield Rehabilitation Center, working Tuesday through Saturday with Mondays and Sundays off, consulting PT for the local university's track and field team, studying for his OCS exam scheduled for June 7th, and earning $82,500 annually. The potential lead therapist title offered by clinic director Priya is noted as promising but not yet finalized, pending ownership approval and detail negotiations. I'll keep those confirmed facts as the baseline and treat the lead therapist possibility as a developing situation. Let me know when there's an update on that front."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "What are the key professional milestones David has achieved since starting at his current workplace that together suggest a broader career pattern?",
+      "expected_answer": "David started as a senior physical therapist at Greenfield Rehabilitation Center on February 12th, pivoting from general post-surgical rehab to sports recovery. Within weeks, he was assigned as consulting PT for the local university's track and field team in early March. He is also studying for his OCS (Orthopedic Clinical Specialist) exam scheduled for June 7th. Together, these milestones show he is deliberately intensifying his career rather than simply settling into a new position.",
+      "gold_memory_state": "Confirmed facts: David works at Greenfield Rehabilitation Center as senior PT (started Feb 12), works Tuesday through Saturday, consults for university track and field team (started early March), earns $82,500 annually, OCS exam June 7th with evening study 8-10 PM. Reflected pattern: accelerating professional growth trajectory with deliberate career intensification. Tentative (unconfirmed): potential lead therapist title next quarter.",
+      "judge_rubric": {
+        "must_include": [
+          "Greenfield Rehabilitation Center",
+          "university track and field consulting",
+          "OCS certification or exam"
+        ],
+        "acceptable_paraphrases": [
+          "sports recovery focus",
+          "orthopedic specialist certification"
+        ],
+        "must_not_include": [
+          "lead therapist title presented as confirmed"
+        ],
+        "harmful_extra": [
+          "treating the lead therapist offer as a confirmed milestone"
+        ],
+        "harmless_extra": [
+          "mentioning David's previous clinic Lakewood",
+          "mentioning Priya's support"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the response attributes milestones not supported by confirmed operations or conflates tentative offers with confirmed achievements.",
+        "reflection_recall": "Fails if the response omits any of the three key milestones: Greenfield start, university consulting, OCS pursuit.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "David started his new position as a senior physical therapist at Greenfield Rehabilitation Center on February 12th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "he got assigned to work with the local university's track and field team as their consulting PT in early March"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "his OCS exam is scheduled for June 7th and he studies most evenings from around 8 to 10 PM"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "He went from general post-surgical rehab at his old clinic to sports recovery at Greenfield, picked up the university consulting gig almost immediately, and now he's pushing for the OCS certification on top of it all"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "What are the key professional milestones David has achieved since starting at his current workplace that together suggest a broader career pattern?",
+      "expected_answer": "David started as a senior physical therapist at Greenfield Rehabilitation Center on February 12th, pivoting from general post-surgical rehab to sports recovery. Within weeks, he was assigned as consulting PT for the local university's track and field team in early March. He is also studying for his OCS (Orthopedic Clinical Specialist) exam scheduled for June 7th. Together, these milestones show he is deliberately intensifying his career rather than simply settling into a new position.",
+      "gold_memory_state": "Confirmed facts: David works at Greenfield Rehabilitation Center as senior PT (started Feb 12), works Tuesday through Saturday, consults for university track and field team (started early March), earns $82,500 annually, OCS exam June 7th with evening study 8-10 PM. Reflected pattern: accelerating professional growth trajectory with deliberate career intensification. Tentative (unconfirmed): potential lead therapist title next quarter.",
+      "judge_rubric": {
+        "must_include": [
+          "Greenfield Rehabilitation Center",
+          "university track and field consulting",
+          "OCS certification or exam"
+        ],
+        "acceptable_paraphrases": [
+          "sports recovery focus",
+          "orthopedic specialist certification"
+        ],
+        "must_not_include": [
+          "lead therapist title presented as confirmed"
+        ],
+        "harmful_extra": [
+          "treating the lead therapist offer as a confirmed milestone"
+        ],
+        "harmless_extra": [
+          "mentioning David's previous clinic Lakewood",
+          "mentioning Priya's support"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the response attributes milestones not supported by confirmed operations or conflates tentative offers with confirmed achievements.",
+        "reflection_recall": "Fails if the response omits any of the three key milestones: Greenfield start, university consulting, OCS pursuit.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "David started his new position as a senior physical therapist at Greenfield Rehabilitation Center on February 12th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "he got assigned to work with the local university's track and field team as their consulting PT in early March"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "his OCS exam is scheduled for June 7th and he studies most evenings from around 8 to 10 PM"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "He went from general post-surgical rehab at his old clinic to sports recovery at Greenfield, picked up the university consulting gig almost immediately, and now he's pushing for the OCS certification on top of it all"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When I described David's rapid professional momentum, which bounded conclusion about his career approach is supported by the evidence, and which broader conclusions about his personal life or long-term business plans go beyond what the evidence supports?",
+      "expected_answer": "The supported conclusion is that David is on a deliberate career intensification trajectory — he pivoted his specialty, took on external consulting, and is pursuing advanced certification concurrently, all within a few months. This conclusion is bounded to his professional growth pattern at Greenfield. Broader conclusions about his personal relationship dynamics, his readiness to open his own practice imminently, or predictions about his success in the OCS exam go beyond what is directly supported.",
+      "gold_memory_state": "The reflected target 'David's career trajectory pattern since joining Greenfield' captures the accelerating growth pattern. It is bounded to professional actions taken since February. It does not extend to personal life conclusions, guaranteed future outcomes, or the tentative lead therapist title.",
+      "judge_rubric": {
+        "must_include": [
+          "career intensification or accelerating professional growth",
+          "bounded to professional actions or career pattern"
+        ],
+        "acceptable_paraphrases": [
+          "deliberate career building",
+          "strategic professional momentum",
+          "rapid professional development"
+        ],
+        "must_not_include": [
+          "lead therapist title treated as part of the confirmed pattern",
+          "opening his own practice treated as imminent"
+        ],
+        "harmful_extra": [
+          "extending the pattern to personal relationship conclusions",
+          "treating the tentative lead therapist offer as confirmed evidence of the pattern",
+          "predicting OCS exam success as part of the pattern"
+        ],
+        "harmless_extra": [
+          "mentioning the long-term goal of opening a practice as context but not as confirmed"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the response extends the supported career pattern to unsupported domains like personal life or treats tentative information as confirmed.",
+        "reflection_recall": "Fails if the response fails to identify the core career intensification pattern or omits the boundary between supported and unsupported conclusions.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "He went from general post-surgical rehab at his old clinic to sports recovery at Greenfield, picked up the university consulting gig almost immediately, and now he's pushing for the OCS certification on top of it all"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "David started his new position as a senior physical therapist at Greenfield Rehabilitation Center on February 12th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "he got assigned to work with the local university's track and field team as their consulting PT in early March"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "his OCS exam is scheduled for June 7th and he studies most evenings from around 8 to 10 PM"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When I described David's rapid professional momentum, which bounded conclusion about his career approach is supported by the evidence, and which broader conclusions about his personal life or long-term business plans go beyond what the evidence supports?",
+      "expected_answer": "The supported conclusion is that David is on a deliberate career intensification trajectory — he pivoted his specialty, took on external consulting, and is pursuing advanced certification concurrently, all within a few months. This conclusion is bounded to his professional growth pattern at Greenfield. Broader conclusions about his personal relationship dynamics, his readiness to open his own practice imminently, or predictions about his success in the OCS exam go beyond what is directly supported.",
+      "gold_memory_state": "The reflected target 'David's career trajectory pattern since joining Greenfield' captures the accelerating growth pattern. It is bounded to professional actions taken since February. It does not extend to personal life conclusions, guaranteed future outcomes, or the tentative lead therapist title.",
+      "judge_rubric": {
+        "must_include": [
+          "career intensification or accelerating professional growth",
+          "bounded to professional actions or career pattern"
+        ],
+        "acceptable_paraphrases": [
+          "deliberate career building",
+          "strategic professional momentum",
+          "rapid professional development"
+        ],
+        "must_not_include": [
+          "lead therapist title treated as part of the confirmed pattern",
+          "opening his own practice treated as imminent"
+        ],
+        "harmful_extra": [
+          "extending the pattern to personal relationship conclusions",
+          "treating the tentative lead therapist offer as confirmed evidence of the pattern",
+          "predicting OCS exam success as part of the pattern"
+        ],
+        "harmless_extra": [
+          "mentioning the long-term goal of opening a practice as context but not as confirmed"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the response extends the supported career pattern to unsupported domains like personal life or treats tentative information as confirmed.",
+        "reflection_recall": "Fails if the response fails to identify the core career intensification pattern or omits the boundary between supported and unsupported conclusions.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "He went from general post-surgical rehab at his old clinic to sports recovery at Greenfield, picked up the university consulting gig almost immediately, and now he's pushing for the OCS certification on top of it all"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "David started his new position as a senior physical therapist at Greenfield Rehabilitation Center on February 12th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "he got assigned to work with the local university's track and field team as their consulting PT in early March"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "his OCS exam is scheduled for June 7th and he studies most evenings from around 8 to 10 PM"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe the boundary of what David's professional momentum pattern actually tells us about his career approach. Where does the supported characterization end, and what kinds of conclusions would stretch beyond the evidence?",
+      "expected_answer": "The supported characterization is that David is deliberately intensifying his career: he pivoted to sports recovery at Greenfield, quickly added a university consulting role, and is simultaneously pursuing OCS certification. This pattern supports the conclusion that he is strategically building credentials and diversifying his professional portfolio in a compressed timeframe. However, the pattern does not support conclusions that he will definitely pass the OCS exam, that he is guaranteed a leadership role, that he is ready to open his own practice now, or that his personal relationship is affected by his professional pace. The tentative lead therapist offer is not yet confirmed and should not be cited as evidence of the pattern.",
+      "gold_memory_state": "Supported inference: David is on an accelerating professional growth trajectory with deliberate career intensification (specialty pivot, external consulting, advanced certification pursuit). Unsupported overgeneralization: predictions about exam outcomes, imminent independent practice, confirmed promotions, or personal life impact. The tentative lead therapist title (op7) is not confirmed and must not be treated as part of the established pattern.",
+      "judge_rubric": {
+        "must_include": [
+          "supported pattern of deliberate career intensification",
+          "boundary excluding predictions about exam success or guaranteed promotions",
+          "tentative lead therapist offer is not confirmed evidence"
+        ],
+        "acceptable_paraphrases": [
+          "strategic career building",
+          "accelerating growth trajectory",
+          "professional momentum"
+        ],
+        "must_not_include": [
+          "lead therapist title as confirmed",
+          "opening own practice as imminent"
+        ],
+        "harmful_extra": [
+          "treating the lead therapist offer as confirmed evidence of the career pattern",
+          "predicting David will pass the OCS exam"
+        ],
+        "harmless_extra": [
+          "mentioning the long-term aspiration of opening a practice as stated context"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the tentative lead therapist title is presented as confirmed evidence of the career trajectory pattern.",
+        "reflection_precision": "Fails if the response includes unsupported conclusions (exam success predictions, guaranteed promotions, personal life impact) as part of the supported pattern.",
+        "reflection_recall": "Fails if the response omits the core supported pattern (specialty pivot, consulting role, OCS pursuit) or fails to articulate the boundary.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "He went from general post-surgical rehab at his old clinic to sports recovery at Greenfield, picked up the university consulting gig almost immediately, and now he's pushing for the OCS certification on top of it all"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "David started his new position as a senior physical therapist at Greenfield Rehabilitation Center on February 12th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "he got assigned to work with the local university's track and field team as their consulting PT in early March"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "his OCS exam is scheduled for June 7th and he studies most evenings from around 8 to 10 PM"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "David told me last night that the clinic director Priya offered him a lead therapist title starting next quarter"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe the boundary of what David's professional momentum pattern actually tells us about his career approach. Where does the supported characterization end, and what kinds of conclusions would stretch beyond the evidence?",
+      "expected_answer": "The supported characterization is that David is deliberately intensifying his career: he pivoted to sports recovery at Greenfield, quickly added a university consulting role, and is simultaneously pursuing OCS certification. This pattern supports the conclusion that he is strategically building credentials and diversifying his professional portfolio in a compressed timeframe. However, the pattern does not support conclusions that he will definitely pass the OCS exam, that he is guaranteed a leadership role, that he is ready to open his own practice now, or that his personal relationship is affected by his professional pace. The tentative lead therapist offer is not yet confirmed and should not be cited as evidence of the pattern.",
+      "gold_memory_state": "Supported inference: David is on an accelerating professional growth trajectory with deliberate career intensification (specialty pivot, external consulting, advanced certification pursuit). Unsupported overgeneralization: predictions about exam outcomes, imminent independent practice, confirmed promotions, or personal life impact. The tentative lead therapist title (op7) is not confirmed and must not be treated as part of the established pattern.",
+      "judge_rubric": {
+        "must_include": [
+          "supported pattern of deliberate career intensification",
+          "boundary excluding predictions about exam success or guaranteed promotions",
+          "tentative lead therapist offer is not confirmed evidence"
+        ],
+        "acceptable_paraphrases": [
+          "strategic career building",
+          "accelerating growth trajectory",
+          "professional momentum"
+        ],
+        "must_not_include": [
+          "lead therapist title as confirmed",
+          "opening own practice as imminent"
+        ],
+        "harmful_extra": [
+          "treating the lead therapist offer as confirmed evidence of the career pattern",
+          "predicting David will pass the OCS exam"
+        ],
+        "harmless_extra": [
+          "mentioning the long-term aspiration of opening a practice as stated context"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the tentative lead therapist title is presented as confirmed evidence of the career trajectory pattern.",
+        "reflection_precision": "Fails if the response includes unsupported conclusions (exam success predictions, guaranteed promotions, personal life impact) as part of the supported pattern.",
+        "reflection_recall": "Fails if the response omits the core supported pattern (specialty pivot, consulting role, OCS pursuit) or fails to articulate the boundary.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "He went from general post-surgical rehab at his old clinic to sports recovery at Greenfield, picked up the university consulting gig almost immediately, and now he's pushing for the OCS certification on top of it all"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "David started his new position as a senior physical therapist at Greenfield Rehabilitation Center on February 12th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "he got assigned to work with the local university's track and field team as their consulting PT in early March"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "his OCS exam is scheduled for June 7th and he studies most evenings from around 8 to 10 PM"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "David told me last night that the clinic director Priya offered him a lead therapist title starting next quarter"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best characterizes what David's recent professional actions collectively reveal about his career approach?",
+      "candidate_options": [
+        "David is on a deliberate career intensification trajectory, simultaneously building sports-recovery expertise, external consulting experience, and advanced certification",
+        "David is preparing to leave Greenfield imminently to open his own sports PT practice",
+        "David has been promoted to lead therapist and is now in a formal leadership role at Greenfield",
+        "David is spreading himself too thin and his career moves suggest lack of focus rather than strategy"
+      ],
+      "expected_answer": "David is on a deliberate career intensification trajectory, simultaneously building sports-recovery expertise, external consulting experience, and advanced certification",
+      "gold_memory_state": "The reflected pattern is deliberate career intensification based on confirmed actions: specialty pivot, university consulting, OCS pursuit. The lead therapist title is tentative and unconfirmed. Opening a practice is a long-term aspiration, not an imminent plan.",
+      "judge_rubric": {
+        "must_include": [
+          "deliberate career intensification"
+        ],
+        "acceptable_paraphrases": [
+          "strategic professional growth",
+          "accelerating career trajectory"
+        ],
+        "must_not_include": [
+          "leaving Greenfield imminently",
+          "already promoted to lead therapist",
+          "lack of focus"
+        ],
+        "harmful_extra": [
+          "selecting the option about imminent departure or confirmed promotion"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'David has been promoted to lead therapist' conflates the tentative, unconfirmed offer with a confirmed career pattern milestone. assistant echo: 'David is preparing to leave Greenfield imminently to open his own sports PT practice' inflates the assistant's mention of a long-term aspiration into an imminent plan. The 'spreading too thin' option is a plausible negative reframe of the same evidence but is not supported by the user's own characterization.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the option treating the tentative lead therapist title as confirmed.",
+        "reflection_precision": "Fails if the model selects an overgeneralized conclusion such as imminent departure or confirmed promotion.",
+        "reflection_recall": "Fails if the model does not select the option capturing the deliberate career intensification pattern.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "He went from general post-surgical rehab at his old clinic to sports recovery at Greenfield, picked up the university consulting gig almost immediately, and now he's pushing for the OCS certification on top of it all"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "David told me last night that the clinic director Priya offered him a lead therapist title starting next quarter"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best characterizes what David's recent professional actions collectively reveal about his career approach?",
+      "candidate_options": [
+        "David is on a deliberate career intensification trajectory, simultaneously building sports-recovery expertise, external consulting experience, and advanced certification",
+        "David is preparing to leave Greenfield imminently to open his own sports PT practice",
+        "David has been promoted to lead therapist and is now in a formal leadership role at Greenfield",
+        "David is spreading himself too thin and his career moves suggest lack of focus rather than strategy"
+      ],
+      "expected_answer": "David is on a deliberate career intensification trajectory, simultaneously building sports-recovery expertise, external consulting experience, and advanced certification",
+      "gold_memory_state": "The reflected pattern is deliberate career intensification based on confirmed actions: specialty pivot, university consulting, OCS pursuit. The lead therapist title is tentative and unconfirmed. Opening a practice is a long-term aspiration, not an imminent plan.",
+      "judge_rubric": {
+        "must_include": [
+          "deliberate career intensification"
+        ],
+        "acceptable_paraphrases": [
+          "strategic professional growth",
+          "accelerating career trajectory"
+        ],
+        "must_not_include": [
+          "leaving Greenfield imminently",
+          "already promoted to lead therapist",
+          "lack of focus"
+        ],
+        "harmful_extra": [
+          "selecting the option about imminent departure or confirmed promotion"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'David has been promoted to lead therapist' conflates the tentative, unconfirmed offer with a confirmed career pattern milestone. assistant echo: 'David is preparing to leave Greenfield imminently to open his own sports PT practice' inflates the assistant's mention of a long-term aspiration into an imminent plan. The 'spreading too thin' option is a plausible negative reframe of the same evidence but is not supported by the user's own characterization.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the option treating the tentative lead therapist title as confirmed.",
+        "reflection_precision": "Fails if the model selects an overgeneralized conclusion such as imminent departure or confirmed promotion.",
+        "reflection_recall": "Fails if the model does not select the option capturing the deliberate career intensification pattern.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "He went from general post-surgical rehab at his old clinic to sports recovery at Greenfield, picked up the university consulting gig almost immediately, and now he's pushing for the OCS certification on top of it all"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "David told me last night that the clinic director Priya offered him a lead therapist title starting next quarter"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "David wants to ask his clinic director for protected study time on workdays leading up to his certification exam. Help me draft a short request note that specifies which days he works, when the exam is, what his current evening study window is, and why accelerating his preparation fits with his broader professional trajectory at the clinic.",
+      "expected_answer": "Dear Priya,\n\nI'd like to request protected study time on my workdays (Tuesday through Saturday) as I prepare for my OCS exam on June 7th. I've been studying evenings from 8 to 10 PM, but with the exam approaching, additional daytime preparation would help me succeed. Earning the Orthopedic Clinical Specialist certification aligns with the professional direction I've been building since joining Greenfield — from my sports recovery caseload to the university track and field consulting role. This credential would strengthen both my clinical work here and the clinic's reputation in sports rehabilitation.\n\nThank you for considering this.\nDavid",
+      "gold_memory_state": "Confirmed: David works Tuesday through Saturday at Greenfield. OCS exam is June 7th. Evening study 8-10 PM. Career trajectory pattern: deliberate intensification (specialty pivot, consulting, certification). Clinic director is Priya. Tentative lead therapist title is not confirmed and should not be cited as a reason.",
+      "judge_rubric": {
+        "must_include": [
+          "Tuesday through Saturday work schedule",
+          "June 7th exam date",
+          "8 to 10 PM study window",
+          "career trajectory rationale connecting multiple professional moves"
+        ],
+        "acceptable_paraphrases": [
+          "Tues-Sat",
+          "OCS exam June 7",
+          "evenings 8-10"
+        ],
+        "must_not_include": [
+          "lead therapist title presented as confirmed justification",
+          "$82,500 salary in the note"
+        ],
+        "harmful_extra": [
+          "citing the lead therapist offer as a confirmed reason for the request",
+          "mentioning Lakewood as current workplace"
+        ],
+        "harmless_extra": [
+          "mentioning the university consulting role as part of the trajectory",
+          "mentioning sports recovery specialization"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the note cites the tentative lead therapist title as confirmed or uses Lakewood as the current workplace.",
+        "reflection_precision": "Fails if the career trajectory rationale extends beyond supported facts to unsupported predictions.",
+        "reflection_recall": "Fails if the note omits the work schedule, exam date, study window, or the career trajectory justification.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: David's work schedule at Greenfield is Tuesday through Saturday.",
+        "Fact 2: David's OCS exam is scheduled for June 7th.",
+        "Fact 3: David currently studies most evenings from 8 to 10 PM.",
+        "Fact 4: David's career trajectory since joining Greenfield shows deliberate intensification — specialty pivot, university consulting, and OCS pursuit.",
+        "Fact 5: The clinic director is Priya.",
+        "Inference: A study-time request should specify his Tue-Sat availability, the June 7th deadline, the existing evening study commitment, and frame the OCS as fitting his accelerating professional trajectory at the clinic.",
+        "Derived value: The note combines schedule, exam date, study window, and career trajectory pattern into a coherent professional request addressed to Priya."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "his schedule at Greenfield is Tuesday through Saturday, with Mondays and Sundays off"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "his OCS exam is scheduled for June 7th and he studies most evenings from around 8 to 10 PM"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "He went from general post-surgical rehab at his old clinic to sports recovery at Greenfield, picked up the university consulting gig almost immediately, and now he's pushing for the OCS certification on top of it all"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "he got assigned to work with the local university's track and field team as their consulting PT in early March"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "his colleague Priya just got promoted to clinic director at Greenfield last week"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "David wants to ask his clinic director for protected study time on workdays leading up to his certification exam. Help me draft a short request note that specifies which days he works, when the exam is, what his current evening study window is, and why accelerating his preparation fits with his broader professional trajectory at the clinic.",
+      "expected_answer": "Dear Priya,\n\nI'd like to request protected study time on my workdays (Tuesday through Saturday) as I prepare for my OCS exam on June 7th. I've been studying evenings from 8 to 10 PM, but with the exam approaching, additional daytime preparation would help me succeed. Earning the Orthopedic Clinical Specialist certification aligns with the professional direction I've been building since joining Greenfield — from my sports recovery caseload to the university track and field consulting role. This credential would strengthen both my clinical work here and the clinic's reputation in sports rehabilitation.\n\nThank you for considering this.\nDavid",
+      "gold_memory_state": "Confirmed: David works Tuesday through Saturday at Greenfield. OCS exam is June 7th. Evening study 8-10 PM. Career trajectory pattern: deliberate intensification (specialty pivot, consulting, certification). Clinic director is Priya. Tentative lead therapist title is not confirmed and should not be cited as a reason.",
+      "judge_rubric": {
+        "must_include": [
+          "Tuesday through Saturday work schedule",
+          "June 7th exam date",
+          "8 to 10 PM study window",
+          "career trajectory rationale connecting multiple professional moves"
+        ],
+        "acceptable_paraphrases": [
+          "Tues-Sat",
+          "OCS exam June 7",
+          "evenings 8-10"
+        ],
+        "must_not_include": [
+          "lead therapist title presented as confirmed justification",
+          "$82,500 salary in the note"
+        ],
+        "harmful_extra": [
+          "citing the lead therapist offer as a confirmed reason for the request",
+          "mentioning Lakewood as current workplace"
+        ],
+        "harmless_extra": [
+          "mentioning the university consulting role as part of the trajectory",
+          "mentioning sports recovery specialization"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the note cites the tentative lead therapist title as confirmed or uses Lakewood as the current workplace.",
+        "reflection_precision": "Fails if the career trajectory rationale extends beyond supported facts to unsupported predictions.",
+        "reflection_recall": "Fails if the note omits the work schedule, exam date, study window, or the career trajectory justification.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: David's work schedule at Greenfield is Tuesday through Saturday.",
+        "Fact 2: David's OCS exam is scheduled for June 7th.",
+        "Fact 3: David currently studies most evenings from 8 to 10 PM.",
+        "Fact 4: David's career trajectory since joining Greenfield shows deliberate intensification — specialty pivot, university consulting, and OCS pursuit.",
+        "Fact 5: The clinic director is Priya.",
+        "Inference: A study-time request should specify his Tue-Sat availability, the June 7th deadline, the existing evening study commitment, and frame the OCS as fitting his accelerating professional trajectory at the clinic.",
+        "Derived value: The note combines schedule, exam date, study window, and career trajectory pattern into a coherent professional request addressed to Priya."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "his schedule at Greenfield is Tuesday through Saturday, with Mondays and Sundays off"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "his OCS exam is scheduled for June 7th and he studies most evenings from around 8 to 10 PM"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "He went from general post-surgical rehab at his old clinic to sports recovery at Greenfield, picked up the university consulting gig almost immediately, and now he's pushing for the OCS certification on top of it all"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "he got assigned to work with the local university's track and field team as their consulting PT in early March"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "his colleague Priya just got promoted to clinic director at Greenfield last week"
+        }
+      ]
+    }
+  ]
+}

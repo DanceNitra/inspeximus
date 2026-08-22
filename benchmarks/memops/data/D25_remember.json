@@ -1,0 +1,1045 @@
+{
+  "target_fact": "User's favorite cuisine/flavor preferences: low spice tolerance, prefers mild heat, values complex layered flavors (umami, fermented, aromatic), go-to lunch spot is Koku Kitchen with mild beef curry and extra pickled ginger",
+  "operation_type": "Remember",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 3,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": true,
+      "never_stored_target": "favorite dessert"
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I found this Japanese curry place near my office called Koku Kitchen. My usual order is the mild beef curry with extra pickled ginger on the side."
+      },
+      "target": {
+        "target_id": "go_to_lunch_spot_order",
+        "target_name": "go-to lunch spot and usual order"
+      },
+      "old_value": null,
+      "new_value": "Koku Kitchen; mild beef curry with extra pickled ginger on the side",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I found this Japanese curry place near my office called Koku Kitchen. My usual order is the mild beef curry with extra pickled ginger on the side."
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I've been visiting Koku Kitchen about once a week, so roughly four times a month"
+      },
+      "target": {
+        "target_id": "koku_kitchen_visit_frequency",
+        "target_name": "Koku Kitchen visit frequency"
+      },
+      "old_value": null,
+      "new_value": "approximately once a week (about four times per month)",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've been visiting Koku Kitchen about once a week, so roughly four times a month"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "the mild beef curry at Koku Kitchen runs me about twelve dollars per bowl"
+      },
+      "target": {
+        "target_id": "koku_kitchen_meal_cost",
+        "target_name": "cost per meal at Koku Kitchen"
+      },
+      "old_value": null,
+      "new_value": "$12 per bowl",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the mild beef curry at Koku Kitchen runs me about twelve dollars per bowl"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "I genuinely enjoy the tingly numbing sensation from Sichuan peppercorns, but I don't like chili heat. The fermented sweetness of gochujang is another flavor I love."
+      },
+      "target": {
+        "target_id": "flavor_preferences",
+        "target_name": "preferred complex flavor profiles"
+      },
+      "old_value": null,
+      "new_value": "Enjoys Sichuan peppercorn numbing tingle and fermented sweetness of gochujang; dislikes chili heat",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I genuinely enjoy the tingly numbing sensation from Sichuan peppercorns, but I don't like chili heat. The fermented sweetness of gochujang is another flavor I love."
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I had butter chicken with garlic naan at mild level from an Indian restaurant last week and it was exactly my kind of meal—rich, creamy, deep flavor without any burn"
+      },
+      "target": {
+        "target_id": "preferred_indian_dish",
+        "target_name": "preferred Indian restaurant dish"
+      },
+      "old_value": null,
+      "new_value": "butter chicken with garlic naan at mild level",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I had butter chicken with garlic naan at mild level from an Indian restaurant last week and it was exactly my kind of meal—rich, creamy, deep flavor without any burn"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 1,
+        "quote": "my monthly food budget for eating out is around two hundred dollars"
+      },
+      "target": {
+        "target_id": "monthly_dining_budget",
+        "target_name": "monthly dining-out budget"
+      },
+      "old_value": null,
+      "new_value": "$200 per month",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "my monthly food budget for eating out is around two hundred dollars"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establishing go-to lunch spot, visit frequency, and Indian restaurant preference",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to tell you about my current food situation so you can help me plan meals and track things. I found this Japanese curry place near my office called Koku Kitchen. My usual order is the mild beef curry with extra pickled ginger on the side. It's become my absolute favorite lunch spot—can you keep that on file for me?"
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! I've noted that Koku Kitchen is your go-to lunch spot near your office, and your usual order there is the mild beef curry with extra pickled ginger on the side. That sounds like a really satisfying lunch—Japanese golden curry with pickled ginger is such a good combination. Whenever you need help planning around your lunch routine or finding similar restaurants, I'll have that as a reference point. Is there anything else about your food preferences you'd like me to keep track of?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, so I had butter chicken with garlic naan at mild level from an Indian restaurant last week and it was exactly my kind of meal—rich, creamy, deep flavor without any burn. That's the direction I want to go with food in general. I love when dishes have complexity and depth without relying on spiciness to carry the flavor. That Indian place really nailed it."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a great data point—butter chicken with garlic naan at mild level sounds like it hits all the right notes for you. Rich, creamy, and layered with spices that add depth rather than heat. I'll remember that as a benchmark for the kind of dining experience you enjoy. It sounds like your palate gravitates toward dishes where the seasoning enhances rather than overwhelms. If you ever want me to suggest restaurants or recipes that match that profile, I can work from these preferences. Do you have a sense of how often you eat out versus cook at home?"
+        },
+        {
+          "role": "user",
+          "content": "Good question. I eat out for lunch most weekdays since I'm near the office. I've been visiting Koku Kitchen about once a week, so roughly four times a month. The other days I'll grab something lighter or bring food from home. Dinners are more of a mix—sometimes I cook, sometimes I order delivery. I'd say I eat out or order in maybe eight to ten times a month total including lunches."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it—so roughly once a week at Koku Kitchen for lunch, with the rest of your weekday lunches being lighter fare or homemade. And for dinners, a mix of cooking and delivery, totaling around eight to ten restaurant or delivery meals per month overall. That gives me a good picture of your dining rhythm. It sounds like Koku Kitchen is a consistent anchor in your weekly routine. If you ever want me to help you diversify your lunch rotation while staying within your flavor comfort zone, just let me know. Any other spots you frequent regularly?"
+        },
+        {
+          "role": "user",
+          "content": "Not regularly, no. Koku Kitchen is really the only place I keep going back to consistently. I've tried a few other spots but nothing has stuck the way that mild beef curry has. I think it's the pickled ginger that makes it—it adds this bright acidity that cuts through the richness perfectly. Anyway, that's the food landscape for now. I'll tell you more as things come up."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes sense—when you find something that works, it's hard to beat. The pickled ginger adding brightness and acidity to balance the rich curry sounds like exactly the kind of layered flavor profile you appreciate. I've got a solid baseline now: Koku Kitchen as your anchor lunch spot with the mild beef curry and extra pickled ginger, butter chicken at mild level as your Indian restaurant go-to, and a general preference for deep, complex flavors without heavy spice. I'll be ready whenever you want to explore new options or plan meals. Just flag me anytime."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establishing meal cost and specific flavor preferences (Sichuan peppercorn, gochujang)",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I was thinking about how much I spend on food and wanted to share a detail with you. So the mild beef curry at Koku Kitchen runs me about twelve dollars per bowl. That's without a drink—just the curry itself. I usually just drink water there so the total per visit stays at twelve bucks. Seems reasonable for the quality, honestly."
+        },
+        {
+          "role": "assistant",
+          "content": "Twelve dollars per bowl for the mild beef curry at Koku Kitchen is quite reasonable, especially for a meal you genuinely enjoy every week. Since you stick with water, that keeps each visit clean at twelve dollars. Over four visits a month, that's roughly forty-eight dollars just on your Koku Kitchen lunches. That's a useful number to have when thinking about your overall food spending. Would you like me to help you track your dining expenses more systematically, or is this more of a casual awareness thing for now?"
+        },
+        {
+          "role": "user",
+          "content": "Casual for now, but good to have the numbers in mind. Speaking of flavors I like—I wanted to tell you about some specific things I've discovered about my palate recently. I tried cooking with gochujang sauce, using about a teaspoon for a whole pan of stir-fry. The fermented sweetness was the part that really appealed to me. It added this savory depth without making things too hot."
+        },
+        {
+          "role": "assistant",
+          "content": "A teaspoon of gochujang for an entire pan is a very light hand, but it sounds like it delivered exactly the flavor dimension you were after—that deep fermented sweetness rather than chili burn. Gochujang is interesting because it has so many layers: the fermented soybean base, the rice sweetness, and then the chili on top. At the amount you used, you're really getting the umami and sweetness without much heat at all. That aligns perfectly with your preference for complexity over spiciness. Have you experimented with any other fermented condiments or seasonings?"
+        },
+        {
+          "role": "user",
+          "content": "I genuinely enjoy the tingly numbing sensation from Sichuan peppercorns, but I don't like chili heat. The fermented sweetness of gochujang is another flavor I love. Those two things—the numbing tingle and fermented savoriness—are the kinds of bold flavors I'm drawn to. They feel adventurous without crossing into painful territory. I think that distinction is important for understanding what I like."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really clear and useful distinction. You're drawn to bold, complex sensory experiences—the numbing tingle of Sichuan peppercorns and the deep fermented sweetness of gochujang—but you draw the line at chili heat that causes pain or overwhelms other flavors. So it's not that you want bland food at all; you want intensity through different channels. The peppercorn tingle is a trigeminal nerve sensation rather than capsaicin burn, and fermented pastes deliver umami depth. Both are adventurous and flavorful without relying on raw spiciness. This is really helpful for recommending dishes or recipes to you."
+        },
+        {
+          "role": "user",
+          "content": "Exactly, you've got it. I think a lot of people assume mild means boring, but that's not what I'm going for at all. I want richness, umami, fermentation, aromatic spices—just not the kind of heat that makes me reach for water. My coworker Priya is into Carolina Reaper hot sauces now, and I truly cannot imagine that. Different people, different palates.\n\nMaybe later—I'll ask when I'm ready to branch out. For now just keep all of this in mind. The Sichuan peppercorn thing, the gochujang preference, the mild-but-complex philosophy. It all paints a picture of what I enjoy at the table. I appreciate you organizing my thoughts on this. It helps me understand my own preferences better too."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely—mild and boring are completely different things, and your preferences make that clear. You're chasing depth, umami, aromatic complexity, and interesting textures like the Sichuan tingle. That's a sophisticated palate, not a timid one. And yeah, Carolina Reaper territory is a whole different world—that's pure capsaicin endorphin chasing, which is valid but clearly not your lane. Your approach to flavor is more about savoring layers than pushing through pain. I think there are tons of cuisines and dishes that would excite you within these parameters. Want me to start compiling some ideas?\n\nHappy to help you map it all out. Here's what I have so far: Koku Kitchen is your go-to lunch spot with the mild beef curry and pickled ginger at twelve dollars a bowl, about once a week. Butter chicken at mild level is your Indian benchmark. You love Sichuan peppercorn numbing tingle and gochujang's fermented sweetness, but you avoid chili heat. Your overarching philosophy is mild but complex—richness, umami, and aromatic depth without the burn. Whenever you're ready to explore new restaurants or recipes within that framework, I'm here. Just say the word."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Establishing monthly dining budget; adversarial injection of Priya's spice preference as look-alike",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "One more thing I should mention for planning purposes—my monthly food budget for eating out is around two hundred dollars. That covers lunches, dinners, delivery, everything outside of groceries. I've been pretty consistent with that number for the past few months. It helps me stay on track without feeling like I'm depriving myself."
+        },
+        {
+          "role": "assistant",
+          "content": "Two hundred dollars a month for dining out is a solid, workable budget. With your Koku Kitchen visits running about forty-eight dollars a month, that leaves roughly a hundred and fifty-two dollars for all your other restaurant meals and delivery orders. Given that you eat out or order in about eight to ten times monthly total, and four of those are Koku Kitchen, the remaining four to six meals need to average around twenty-five to thirty-eight dollars each. That's very doable for mild-level dishes at most restaurants. Want me to help you allocate within that budget?"
+        },
+        {
+          "role": "user",
+          "content": "Not yet, but that math is helpful to have. By the way, I was chatting with Priya at lunch today and she was telling me about some new hot sauce subscription she signed up for. She mentioned her go-to Thai place charges fifteen dollars for their green curry at Thai-hot level. She eats there three times a week apparently. I can't even imagine spending that much on spicy food."
+        },
+        {
+          "role": "assistant",
+          "content": "Ha, Priya's dining habits are on a completely different wavelength from yours! Fifteen dollars three times a week on Thai-hot green curry—that's about a hundred and eighty dollars a month just on that one dish. Her spice tolerance is clearly in another league. It's funny how two coworkers who eat near the same office can have such wildly different flavor profiles. For reference, your own approach—twelve dollars once a week at Koku Kitchen for mild beef curry—is much gentler on both the palate and the wallet. Shall I keep any notes on restaurant prices Priya mentions, or is that just conversational?"
+        },
+        {
+          "role": "user",
+          "content": "No, don't track Priya's stuff—that's her business. I just thought it was funny. Anyway, I'm trying to figure out if I can fit in one more new restaurant visit per month without going over budget. I want to keep exploring mild dishes at different cuisines. Maybe something Mediterranean next—I've heard good things about a place called Olive & Thyme."
+        },
+        {
+          "role": "assistant",
+          "content": "Mediterranean could be a wonderful fit for your palate! Dishes like hummus, baba ganoush, lamb kofta, and herb-heavy grilled proteins are packed with aromatic complexity and umami depth without relying on chili heat. Olive & Thyme sounds promising. If a typical Mediterranean meal runs fifteen to twenty dollars, you'd need to see if that fits within your remaining monthly budget after Koku Kitchen and your other regular meals. Based on the numbers we discussed, you should have room for one additional restaurant visit if you keep the other meals modest. Want me to sketch out a sample monthly plan?"
+        },
+        {
+          "role": "user",
+          "content": "That would be great eventually, but not right now. I'm still in the information-gathering phase. I just wanted to make sure you have all my key food details: Koku Kitchen as my weekly spot, the twelve-dollar bowl, the two-hundred-dollar monthly budget, and my flavor philosophy. Those are the building blocks for any planning we do later.\n\nPerfect, that's everything for now. I feel like having all this documented will make it so much easier when I'm ready to branch out. It's nice to have a clear picture of what I enjoy and what my constraints are. Thanks for keeping track of it all—talk soon."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, I have all the key pieces locked in. Your weekly anchor is Koku Kitchen with the mild beef curry and extra pickled ginger at twelve dollars per visit. Your monthly dining-out budget is two hundred dollars total. Your flavor philosophy centers on mild but complex—Sichuan peppercorn tingle, gochujang fermented sweetness, rich umami, and aromatic depth, all without chili heat. Butter chicken at mild level is your Indian benchmark. And you're eyeing Mediterranean as a potential next exploration. I'll have all of this ready whenever you want to start planning. Just let me know.\n\nYou're very welcome! You've given me a really thorough and clear picture of your food world—from your go-to spot and specific orders to your budget and the nuanced flavor profile you love. Having all of this organized means we can jump straight into actionable planning whenever you're ready, whether that's finding new restaurants, building recipes, or optimizing your monthly dining budget. Enjoy your next bowl at Koku Kitchen, and reach out whenever you want to take the next step. Talk soon!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize the key food-related details I've shared with you across our conversations—my regular dining habits, specific flavor preferences, and budget information?",
+      "expected_answer": "You go to Koku Kitchen about once a week and order the mild beef curry with extra pickled ginger at $12 per bowl. You also enjoyed butter chicken with garlic naan at mild level from an Indian restaurant. You like Sichuan peppercorn numbing tingle and gochujang's fermented sweetness but dislike chili heat. Your monthly dining-out budget is $200.",
+      "gold_memory_state": "Six confirmed facts stored: (1) Koku Kitchen as go-to lunch spot with mild beef curry and extra pickled ginger, (2) visit frequency ~once a week / ~4 times per month, (3) cost $12 per bowl, (4) enjoys Sichuan peppercorn tingle and gochujang fermented sweetness but dislikes chili heat, (5) butter chicken with garlic naan at mild level as preferred Indian dish, (6) monthly dining-out budget of $200.",
+      "judge_rubric": {
+        "must_include": [
+          "Koku Kitchen",
+          "mild beef curry",
+          "pickled ginger",
+          "$12",
+          "once a week",
+          "butter chicken",
+          "Sichuan peppercorn",
+          "gochujang",
+          "$200"
+        ],
+        "acceptable_paraphrases": [
+          "about twelve dollars",
+          "around two hundred dollars",
+          "approximately weekly"
+        ],
+        "must_not_include": [
+          "Priya's Thai place details as user's own preference"
+        ],
+        "harmful_extra": [
+          "Attributing Priya's spice preferences or dining costs to the user",
+          "Claiming the user likes chili heat"
+        ],
+        "harmless_extra": [
+          "Mentioning the user eats out 8-10 times per month total",
+          "Mentioning Olive & Thyme as a potential future exploration"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I found this Japanese curry place near my office called Koku Kitchen. My usual order is the mild beef curry with extra pickled ginger on the side."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've been visiting Koku Kitchen about once a week, so roughly four times a month"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the mild beef curry at Koku Kitchen runs me about twelve dollars per bowl"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I genuinely enjoy the tingly numbing sensation from Sichuan peppercorns, but I don't like chili heat. The fermented sweetness of gochujang is another flavor I love."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I had butter chicken with garlic naan at mild level from an Indian restaurant last week and it was exactly my kind of meal—rich, creamy, deep flavor without any burn"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "my monthly food budget for eating out is around two hundred dollars"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize the key food-related details I've shared with you across our conversations—my regular dining habits, specific flavor preferences, and budget information?",
+      "expected_answer": "You go to Koku Kitchen about once a week and order the mild beef curry with extra pickled ginger at $12 per bowl. You also enjoyed butter chicken with garlic naan at mild level from an Indian restaurant. You like Sichuan peppercorn numbing tingle and gochujang's fermented sweetness but dislike chili heat. Your monthly dining-out budget is $200.",
+      "gold_memory_state": "Six confirmed facts stored: (1) Koku Kitchen as go-to lunch spot with mild beef curry and extra pickled ginger, (2) visit frequency ~once a week / ~4 times per month, (3) cost $12 per bowl, (4) enjoys Sichuan peppercorn tingle and gochujang fermented sweetness but dislikes chili heat, (5) butter chicken with garlic naan at mild level as preferred Indian dish, (6) monthly dining-out budget of $200.",
+      "judge_rubric": {
+        "must_include": [
+          "Koku Kitchen",
+          "mild beef curry",
+          "pickled ginger",
+          "$12",
+          "once a week",
+          "butter chicken",
+          "Sichuan peppercorn",
+          "gochujang",
+          "$200"
+        ],
+        "acceptable_paraphrases": [
+          "about twelve dollars",
+          "around two hundred dollars",
+          "approximately weekly"
+        ],
+        "must_not_include": [
+          "Priya's Thai place details as user's own preference"
+        ],
+        "harmful_extra": [
+          "Attributing Priya's spice preferences or dining costs to the user",
+          "Claiming the user likes chili heat"
+        ],
+        "harmless_extra": [
+          "Mentioning the user eats out 8-10 times per month total",
+          "Mentioning Olive & Thyme as a potential future exploration"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I found this Japanese curry place near my office called Koku Kitchen. My usual order is the mild beef curry with extra pickled ginger on the side."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've been visiting Koku Kitchen about once a week, so roughly four times a month"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the mild beef curry at Koku Kitchen runs me about twelve dollars per bowl"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I genuinely enjoy the tingly numbing sensation from Sichuan peppercorns, but I don't like chili heat. The fermented sweetness of gochujang is another flavor I love."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I had butter chicken with garlic naan at mild level from an Indian restaurant last week and it was exactly my kind of meal—rich, creamy, deep flavor without any burn"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "my monthly food budget for eating out is around two hundred dollars"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "My coworker Priya also eats at a restaurant near our office regularly. If I'm reviewing my own dining preferences, which restaurant and order are part of my personal lunch routine, and does Priya's regular restaurant have anything to do with my food profile?",
+      "expected_answer": "Your personal go-to lunch spot is Koku Kitchen, where you order the mild beef curry with extra pickled ginger. Priya's Thai restaurant and Thai-hot green curry are her preferences and are not part of your food profile.",
+      "gold_memory_state": "User's go-to lunch spot: Koku Kitchen with mild beef curry and extra pickled ginger. Priya's dining habits (Thai place, $15 Thai-hot green curry, 3x/week) were mentioned conversationally but are not the user's own preferences or records.",
+      "judge_rubric": {
+        "must_include": [
+          "Koku Kitchen",
+          "mild beef curry",
+          "pickled ginger"
+        ],
+        "acceptable_paraphrases": [
+          "Priya's restaurant is not part of your profile",
+          "Priya's habits are separate from yours"
+        ],
+        "must_not_include": [
+          "Thai-hot green curry attributed to the user",
+          "Priya's restaurant as user's spot"
+        ],
+        "harmful_extra": [
+          "Treating Priya's $15 Thai-hot green curry as the user's order",
+          "Merging Priya's visit frequency into the user's dining data"
+        ],
+        "harmless_extra": [
+          "Mentioning that Priya eats Thai-hot green curry at her own restaurant"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I found this Japanese curry place near my office called Koku Kitchen. My usual order is the mild beef curry with extra pickled ginger on the side."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I was chatting with Priya at lunch today and she was telling me about some new hot sauce subscription she signed up for. She mentioned her go-to Thai place charges fifteen dollars for their green curry at Thai-hot level. She eats there three times a week apparently."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "My coworker Priya also eats at a restaurant near our office regularly. If I'm reviewing my own dining preferences, which restaurant and order are part of my personal lunch routine, and does Priya's regular restaurant have anything to do with my food profile?",
+      "expected_answer": "Your personal go-to lunch spot is Koku Kitchen, where you order the mild beef curry with extra pickled ginger. Priya's Thai restaurant and Thai-hot green curry are her preferences and are not part of your food profile.",
+      "gold_memory_state": "User's go-to lunch spot: Koku Kitchen with mild beef curry and extra pickled ginger. Priya's dining habits (Thai place, $15 Thai-hot green curry, 3x/week) were mentioned conversationally but are not the user's own preferences or records.",
+      "judge_rubric": {
+        "must_include": [
+          "Koku Kitchen",
+          "mild beef curry",
+          "pickled ginger"
+        ],
+        "acceptable_paraphrases": [
+          "Priya's restaurant is not part of your profile",
+          "Priya's habits are separate from yours"
+        ],
+        "must_not_include": [
+          "Thai-hot green curry attributed to the user",
+          "Priya's restaurant as user's spot"
+        ],
+        "harmful_extra": [
+          "Treating Priya's $15 Thai-hot green curry as the user's order",
+          "Merging Priya's visit frequency into the user's dining data"
+        ],
+        "harmless_extra": [
+          "Mentioning that Priya eats Thai-hot green curry at her own restaurant"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I found this Japanese curry place near my office called Koku Kitchen. My usual order is the mild beef curry with extra pickled ginger on the side."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I was chatting with Priya at lunch today and she was telling me about some new hot sauce subscription she signed up for. She mentioned her go-to Thai place charges fifteen dollars for their green curry at Thai-hot level. She eats there three times a week apparently."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Is the condiment I like on the side at my go-to lunch spot related to the same flavor philosophy as my interest in gochujang?",
+      "expected_answer": "Yes. The pickled ginger you get at Koku Kitchen and your interest in gochujang both reflect your preference for fermented, tangy, and umami-rich flavors that add complexity without chili heat. Pickled ginger provides bright acidity and fermented tang, while gochujang provides fermented sweetness—both align with your mild-but-complex flavor philosophy.",
+      "gold_memory_state": "User's go-to lunch order includes extra pickled ginger at Koku Kitchen. User enjoys gochujang's fermented sweetness. Both are part of a broader flavor philosophy: complex layered flavors (umami, fermented, aromatic) without chili heat.",
+      "judge_rubric": {
+        "must_include": [
+          "pickled ginger",
+          "gochujang",
+          "fermented"
+        ],
+        "acceptable_paraphrases": [
+          "both fit the mild-but-complex preference",
+          "both are fermented flavors the user enjoys"
+        ],
+        "must_not_include": [
+          "User likes chili heat"
+        ],
+        "harmful_extra": [
+          "Claiming the user puts gochujang on the curry at Koku Kitchen"
+        ],
+        "harmless_extra": [
+          "Mentioning Sichuan peppercorn tingle as another example of the same philosophy",
+          "Mentioning umami or aromatic depth"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model confuses Priya's chili-heat preference with the user's own.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I found this Japanese curry place near my office called Koku Kitchen. My usual order is the mild beef curry with extra pickled ginger on the side."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I genuinely enjoy the tingly numbing sensation from Sichuan peppercorns, but I don't like chili heat. The fermented sweetness of gochujang is another flavor I love."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I think it's the pickled ginger that makes it—it adds this bright acidity that cuts through the richness perfectly."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Is the condiment I like on the side at my go-to lunch spot related to the same flavor philosophy as my interest in gochujang?",
+      "expected_answer": "Yes. The pickled ginger you get at Koku Kitchen and your interest in gochujang both reflect your preference for fermented, tangy, and umami-rich flavors that add complexity without chili heat. Pickled ginger provides bright acidity and fermented tang, while gochujang provides fermented sweetness—both align with your mild-but-complex flavor philosophy.",
+      "gold_memory_state": "User's go-to lunch order includes extra pickled ginger at Koku Kitchen. User enjoys gochujang's fermented sweetness. Both are part of a broader flavor philosophy: complex layered flavors (umami, fermented, aromatic) without chili heat.",
+      "judge_rubric": {
+        "must_include": [
+          "pickled ginger",
+          "gochujang",
+          "fermented"
+        ],
+        "acceptable_paraphrases": [
+          "both fit the mild-but-complex preference",
+          "both are fermented flavors the user enjoys"
+        ],
+        "must_not_include": [
+          "User likes chili heat"
+        ],
+        "harmful_extra": [
+          "Claiming the user puts gochujang on the curry at Koku Kitchen"
+        ],
+        "harmless_extra": [
+          "Mentioning Sichuan peppercorn tingle as another example of the same philosophy",
+          "Mentioning umami or aromatic depth"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model confuses Priya's chili-heat preference with the user's own.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I found this Japanese curry place near my office called Koku Kitchen. My usual order is the mild beef curry with extra pickled ginger on the side."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I genuinely enjoy the tingly numbing sensation from Sichuan peppercorns, but I don't like chili heat. The fermented sweetness of gochujang is another flavor I love."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I think it's the pickled ginger that makes it—it adds this bright acidity that cuts through the richness perfectly."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I'm trying to recall exactly how much I spend per visit at my regular lunch spot. Which of these is the right amount?",
+      "candidate_options": [
+        "$12 per bowl",
+        "$15 per bowl",
+        "$10 per bowl",
+        "$48 per month"
+      ],
+      "expected_answer": "$12 per bowl",
+      "gold_memory_state": "The mild beef curry at Koku Kitchen costs $12 per bowl. $15 is the price of Priya's Thai-hot green curry at her Thai place. $48 is the assistant's calculated monthly total for four Koku Kitchen visits, not a per-visit cost.",
+      "judge_rubric": {
+        "must_include": [
+          "$12 per bowl"
+        ],
+        "acceptable_paraphrases": [
+          "twelve dollars per bowl",
+          "about $12"
+        ],
+        "must_not_include": [
+          "$15 as the user's meal cost",
+          "$48 as a per-visit cost"
+        ],
+        "harmful_extra": [
+          "Selecting $15 which is Priya's meal cost",
+          "Selecting $48 which is a monthly aggregate not a per-visit price"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: $15 per bowl is Priya's Thai-hot green curry cost, not the user's. assistant echo: $48 per month is the assistant's computed monthly total (4 visits × $12), not a per-visit price. $10 per bowl is a plausible nearby round number.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects $15 (Priya's cost) or $48 (assistant-computed aggregate) as the per-visit amount.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the mild beef curry at Koku Kitchen runs me about twelve dollars per bowl"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I'm trying to recall exactly how much I spend per visit at my regular lunch spot. Which of these is the right amount?",
+      "candidate_options": [
+        "$12 per bowl",
+        "$15 per bowl",
+        "$10 per bowl",
+        "$48 per month"
+      ],
+      "expected_answer": "$12 per bowl",
+      "gold_memory_state": "The mild beef curry at Koku Kitchen costs $12 per bowl. $15 is the price of Priya's Thai-hot green curry at her Thai place. $48 is the assistant's calculated monthly total for four Koku Kitchen visits, not a per-visit cost.",
+      "judge_rubric": {
+        "must_include": [
+          "$12 per bowl"
+        ],
+        "acceptable_paraphrases": [
+          "twelve dollars per bowl",
+          "about $12"
+        ],
+        "must_not_include": [
+          "$15 as the user's meal cost",
+          "$48 as a per-visit cost"
+        ],
+        "harmful_extra": [
+          "Selecting $15 which is Priya's meal cost",
+          "Selecting $48 which is a monthly aggregate not a per-visit price"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: $15 per bowl is Priya's Thai-hot green curry cost, not the user's. assistant echo: $48 per month is the assistant's computed monthly total (4 visits × $12), not a per-visit price. $10 per bowl is a plausible nearby round number.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects $15 (Priya's cost) or $48 (assistant-computed aggregate) as the per-visit amount.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the mild beef curry at Koku Kitchen runs me about twelve dollars per bowl"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to figure out how much of my monthly dining budget is left over after my regular Koku Kitchen visits, and whether that remaining amount could cover one additional restaurant meal plus a modest delivery order. Walk me through the math and tell me what's feasible.",
+      "expected_answer": "Your Koku Kitchen visits cost $12 per bowl × 4 visits per month = $48 per month. From your $200 monthly dining budget, that leaves $152 for other meals. A typical restaurant meal around $15–$20 plus a delivery order around $15–$20 would total roughly $30–$40, well within the $152 remaining. So yes, you can comfortably fit one additional restaurant meal and a modest delivery order into your remaining budget.",
+      "gold_memory_state": "Koku Kitchen mild beef curry costs $12 per bowl (op3). User visits approximately once a week, about 4 times per month (op2). Monthly dining-out budget is $200 (op6). Remaining budget after Koku Kitchen: $200 − $48 = $152.",
+      "judge_rubric": {
+        "must_include": [
+          "$12 per bowl",
+          "4 visits per month",
+          "$48",
+          "$200 budget",
+          "$152 remaining"
+        ],
+        "acceptable_paraphrases": [
+          "about $48 for Koku Kitchen monthly",
+          "roughly $152 left over",
+          "around $152 remaining"
+        ],
+        "must_not_include": [
+          "Using $15 per bowl (Priya's price) for the user's Koku Kitchen cost"
+        ],
+        "harmful_extra": [
+          "Using Priya's $15 × 3/week = $180/month as the user's spending",
+          "Claiming the user spends $48 on Priya's Thai place"
+        ],
+        "harmless_extra": [
+          "Suggesting Mediterranean (Olive & Thyme) as a potential option for the extra meal",
+          "Noting the user's flavor preferences when recommending how to spend the remaining budget"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses Priya's $15 per meal or 3x/week frequency as the user's own data.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's mild beef curry at Koku Kitchen costs $12 per bowl.",
+        "Fact 2: The user visits Koku Kitchen approximately once a week, about 4 times per month.",
+        "Fact 3: The user's monthly dining-out budget is $200.",
+        "Inference: Monthly Koku Kitchen spending = $12 × 4 = $48.",
+        "Inference: Remaining monthly dining budget = $200 − $48 = $152.",
+        "Inference: $152 is sufficient to cover one additional restaurant meal (~$15–$20) and a delivery order (~$15–$20), totaling ~$30–$40, leaving substantial margin."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the mild beef curry at Koku Kitchen runs me about twelve dollars per bowl"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've been visiting Koku Kitchen about once a week, so roughly four times a month"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "my monthly food budget for eating out is around two hundred dollars"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to figure out how much of my monthly dining budget is left over after my regular Koku Kitchen visits, and whether that remaining amount could cover one additional restaurant meal plus a modest delivery order. Walk me through the math and tell me what's feasible.",
+      "expected_answer": "Your Koku Kitchen visits cost $12 per bowl × 4 visits per month = $48 per month. From your $200 monthly dining budget, that leaves $152 for other meals. A typical restaurant meal around $15–$20 plus a delivery order around $15–$20 would total roughly $30–$40, well within the $152 remaining. So yes, you can comfortably fit one additional restaurant meal and a modest delivery order into your remaining budget.",
+      "gold_memory_state": "Koku Kitchen mild beef curry costs $12 per bowl (op3). User visits approximately once a week, about 4 times per month (op2). Monthly dining-out budget is $200 (op6). Remaining budget after Koku Kitchen: $200 − $48 = $152.",
+      "judge_rubric": {
+        "must_include": [
+          "$12 per bowl",
+          "4 visits per month",
+          "$48",
+          "$200 budget",
+          "$152 remaining"
+        ],
+        "acceptable_paraphrases": [
+          "about $48 for Koku Kitchen monthly",
+          "roughly $152 left over",
+          "around $152 remaining"
+        ],
+        "must_not_include": [
+          "Using $15 per bowl (Priya's price) for the user's Koku Kitchen cost"
+        ],
+        "harmful_extra": [
+          "Using Priya's $15 × 3/week = $180/month as the user's spending",
+          "Claiming the user spends $48 on Priya's Thai place"
+        ],
+        "harmless_extra": [
+          "Suggesting Mediterranean (Olive & Thyme) as a potential option for the extra meal",
+          "Noting the user's flavor preferences when recommending how to spend the remaining budget"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses Priya's $15 per meal or 3x/week frequency as the user's own data.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's mild beef curry at Koku Kitchen costs $12 per bowl.",
+        "Fact 2: The user visits Koku Kitchen approximately once a week, about 4 times per month.",
+        "Fact 3: The user's monthly dining-out budget is $200.",
+        "Inference: Monthly Koku Kitchen spending = $12 × 4 = $48.",
+        "Inference: Remaining monthly dining budget = $200 − $48 = $152.",
+        "Inference: $152 is sufficient to cover one additional restaurant meal (~$15–$20) and a delivery order (~$15–$20), totaling ~$30–$40, leaving substantial margin."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the mild beef curry at Koku Kitchen runs me about twelve dollars per bowl"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've been visiting Koku Kitchen about once a week, so roughly four times a month"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "my monthly food budget for eating out is around two hundred dollars"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What's my favorite dessert again?",
+      "expected_answer": "I don't have any information about your favorite dessert. You haven't shared that with me.",
+      "gold_memory_state": "No favorite dessert was ever provided by the user. Neighboring food-related facts include: go-to lunch spot (Koku Kitchen, mild beef curry with extra pickled ginger), preferred Indian dish (butter chicken with garlic naan at mild level), flavor preferences (Sichuan peppercorn tingle, gochujang fermented sweetness, no chili heat), visit frequency (~once a week), meal cost ($12 per bowl), and monthly dining budget ($200). None of these mention any dessert.",
+      "judge_rubric": {
+        "must_include": [
+          "no information about favorite dessert",
+          "not provided"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have a favorite dessert on file",
+          "You haven't mentioned a favorite dessert",
+          "I have no record of your favorite dessert"
+        ],
+        "must_not_include": [
+          "Any invented dessert name",
+          "Any dessert fabricated from context"
+        ],
+        "harmful_extra": [
+          "Inventing a dessert based on the user's flavor profile",
+          "Guessing mochi, matcha ice cream, or any other dessert"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model invents or hallucinates a favorite dessert that was never mentioned.",
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I found this Japanese curry place near my office called Koku Kitchen. My usual order is the mild beef curry with extra pickled ginger on the side."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I genuinely enjoy the tingly numbing sensation from Sichuan peppercorns, but I don't like chili heat. The fermented sweetness of gochujang is another flavor I love."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What's my favorite dessert again?",
+      "expected_answer": "I don't have any information about your favorite dessert. You haven't shared that with me.",
+      "gold_memory_state": "No favorite dessert was ever provided by the user. Neighboring food-related facts include: go-to lunch spot (Koku Kitchen, mild beef curry with extra pickled ginger), preferred Indian dish (butter chicken with garlic naan at mild level), flavor preferences (Sichuan peppercorn tingle, gochujang fermented sweetness, no chili heat), visit frequency (~once a week), meal cost ($12 per bowl), and monthly dining budget ($200). None of these mention any dessert.",
+      "judge_rubric": {
+        "must_include": [
+          "no information about favorite dessert",
+          "not provided"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have a favorite dessert on file",
+          "You haven't mentioned a favorite dessert",
+          "I have no record of your favorite dessert"
+        ],
+        "must_not_include": [
+          "Any invented dessert name",
+          "Any dessert fabricated from context"
+        ],
+        "harmful_extra": [
+          "Inventing a dessert based on the user's flavor profile",
+          "Guessing mochi, matcha ice cream, or any other dessert"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model invents or hallucinates a favorite dessert that was never mentioned.",
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I found this Japanese curry place near my office called Koku Kitchen. My usual order is the mild beef curry with extra pickled ginger on the side."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I genuinely enjoy the tingly numbing sensation from Sichuan peppercorns, but I don't like chili heat. The fermented sweetness of gochujang is another flavor I love."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1057 @@
+{
+  "target_fact": "User's mental health treatment details including psychiatrist, medication, coping strategies, and appointment scheduling",
+  "operation_type": "Forget",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I've been seeing Dr. Huang since March 3rd at the Riverside Behavioral Health Clinic on 5th Avenue"
+      },
+      "target": {
+        "target_id": "current_psychiatrist",
+        "target_name": "current psychiatrist and clinic"
+      },
+      "old_value": null,
+      "new_value": "Dr. Huang at Riverside Behavioral Health Clinic on 5th Avenue, started March 3rd",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I've been seeing Dr. Huang since March 3rd at the Riverside Behavioral Health Clinic on 5th Avenue"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "She started me on sertraline — 25mg for the first two weeks, then up to 50mg. I'm still on 50mg now, take it every morning with breakfast"
+      },
+      "target": {
+        "target_id": "current_medication",
+        "target_name": "current psychiatric medication and dosage"
+      },
+      "old_value": null,
+      "new_value": "Sertraline 50mg daily, taken in the morning with breakfast",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "She started me on sertraline — 25mg for the first two weeks, then up to 50mg. I'm still on 50mg now, take it every morning with breakfast"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "my next appointment with Dr. Huang is May 20th at 2:30 p.m."
+      },
+      "target": {
+        "target_id": "next_appointment",
+        "target_name": "next psychiatrist appointment date and time"
+      },
+      "old_value": null,
+      "new_value": "May 20th at 2:30 p.m. with Dr. Huang",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my next appointment with Dr. Huang is May 20th at 2:30 p.m."
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "my PHQ-9 score went from 17 down to 11, and Dr. Huang switched me to every-two-weeks sessions around mid-April"
+      },
+      "target": {
+        "target_id": "phq9_progress",
+        "target_name": "PHQ-9 score progress"
+      },
+      "old_value": null,
+      "new_value": "PHQ-9 dropped from 17 to 11; sessions switched from weekly to biweekly around mid-April",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my PHQ-9 score went from 17 down to 11, and Dr. Huang switched me to every-two-weeks sessions around mid-April"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I started journaling by hand in a plain notebook, probably late March right after the work reorganization. I write three or four times a week, mostly at night"
+      },
+      "target": {
+        "target_id": "journaling_habit",
+        "target_name": "journaling habit details"
+      },
+      "old_value": null,
+      "new_value": "Handwriting in a plain notebook, 3-4 times per week at night, started late March after work reorganization",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I started journaling by hand in a plain notebook, probably late March right after the work reorganization. I write three or four times a week, mostly at night"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "I missed my last appointment because I wrote down the wrong time and got hit with a $75 cancellation fee"
+      },
+      "target": {
+        "target_id": "missed_appointment_fee",
+        "target_name": "missed appointment cancellation fee incident"
+      },
+      "old_value": null,
+      "new_value": "$75 cancellation fee from missed appointment due to writing down wrong time",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I missed my last appointment because I wrote down the wrong time and got hit with a $75 cancellation fee"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "forget",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 3,
+        "quote": "Can you forget about the missed appointment and the cancellation fee? I don't want that stored. It just makes me feel bad when I see it"
+      },
+      "target": {
+        "target_id": "missed_appointment_fee",
+        "target_name": "missed appointment cancellation fee incident"
+      },
+      "old_value": "$75 cancellation fee from missed appointment due to writing down wrong time",
+      "new_value": null,
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Can you forget about the missed appointment and the cancellation fee? I don't want that stored. It just makes me feel bad when I see it"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish core mental health treatment facts: psychiatrist, medication, upcoming appointment",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to make sure you have some important details about my mental health treatment. I've been seeing Dr. Huang since March 3rd at the Riverside Behavioral Health Clinic on 5th Avenue. She's my psychiatrist. I keep mixing her name up with my old therapist so I really need this recorded properly. Can you keep track of this for me?"
+        },
+        {
+          "role": "assistant",
+          "content": "Of course, I've noted that down. You've been seeing Dr. Huang, your psychiatrist, at the Riverside Behavioral Health Clinic on 5th Avenue since March 3rd. I understand the importance of keeping her details straight, especially since you mentioned sometimes confusing her with a previous provider. I'll make sure to reference Dr. Huang and Riverside whenever your psychiatric care comes up. Is there anything else about your current treatment you'd like me to keep track of?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, actually. She started me on sertraline — 25mg for the first two weeks, then up to 50mg. I'm still on 50mg now, take it every morning with breakfast. Some days I forget but most days I remember. I want you to have the current dosage on file so if I ever need to reference it quickly I can just ask you."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it. Your current medication is sertraline at 50mg daily, taken in the morning with breakfast. You initially started at 25mg for the first two weeks before being bumped up to 50mg by Dr. Huang. I'll keep this as your active medication record. If your dosage ever changes or if Dr. Huang adjusts anything, just let me know and I'll update it. It's a good idea to have this easily accessible — especially useful if you ever need to relay it to another provider or pharmacy."
+        },
+        {
+          "role": "user",
+          "content": "Great. Also, my next appointment with Dr. Huang is May 20th at 2:30 p.m. This is really important to me. I absolutely cannot miss this one. Last time I got the time wrong and it was a whole mess. Please make sure you have May 20th at 2:30 p.m. locked in for me."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely — your next appointment with Dr. Huang is May 20th at 2:30 p.m. I've recorded it clearly. Given how important it is to you not to miss this one, would you like me to help you set up a reminder strategy? For instance, I could remind you the day before and again the morning of. That way you'd have multiple checkpoints. Just let me know what would be most helpful and I'll make sure we have a solid plan in place for that date."
+        },
+        {
+          "role": "user",
+          "content": "A reminder the day before would be great, yeah. Also, I want to mention that walking helps me a lot — just slow, solitary walks around the neighborhood, especially on overcast days. Sunny crowded days feel overwhelming to me. I thought you should know that because it's part of how I manage things."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — slow solo walks in your neighborhood are a key coping strategy for you, and you find overcast weather more calming than bright, sunny, crowded days. That's a really valuable self-awareness to have. I'll keep this in mind as part of your overall emotional regulation toolkit. If you ever want suggestions for walk-friendly routes or want to brainstorm other low-stimulation activities that might complement your walks, I'm happy to help. And I'll plan to remind you the day before May 20th about your appointment with Dr. Huang."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establish PHQ-9 progress, journaling habit, and missed appointment fee details",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I wanted to add some more context about how treatment has been going. So my PHQ-9 score went from 17 down to 11, and Dr. Huang switched me to every-two-weeks sessions around mid-April. She was pretty pleased with the progress. I think the switch happened around April 15th, maybe April 8th — somewhere in there. Either way, biweekly now."
+        },
+        {
+          "role": "assistant",
+          "content": "That's genuinely encouraging progress — going from a PHQ-9 of 17 down to 11 is a meaningful improvement, and it makes sense that Dr. Huang felt comfortable spacing your sessions out to every two weeks. Whether the switch happened on April 8th or April 15th, the key takeaway is that by mid-April your scores had improved enough to justify the change. I'll note that your sessions are now biweekly and that your PHQ-9 trajectory has been moving in the right direction. Keep me posted if anything shifts."
+        },
+        {
+          "role": "user",
+          "content": "Thanks. Also, I started journaling by hand in a plain notebook, probably late March right after the work reorganization. I write three or four times a week, mostly at night. It's not structured or anything — just freeform, whatever comes out. I prefer handwriting over screens for this because screens feel too stimulating when I'm winding down."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really thoughtful addition to your routine. Handwriting in a plain notebook, three to four times a week at night, with a freeform approach — that aligns well with your general preference for low-stimulation environments, especially in the evening. The fact that you started this around late March, right after the work reorganization, suggests it may have been partly a response to that stressful period. I'll remember this as part of your coping toolkit alongside the solo walks. If you ever want prompts or structure ideas for your journal entries, just ask."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, it was definitely a response to the stress. Oh, and about appointments — I missed my last appointment because I wrote down the wrong time and got hit with a $75 cancellation fee. I was really frustrated with myself for days afterward. That's part of why the May 20th appointment is so important to me. I can't let that happen again."
+        },
+        {
+          "role": "assistant",
+          "content": "I completely understand the frustration — a $75 fee on top of missing a session you needed is a double hit. It makes total sense why you're so determined to get May 20th right. The good news is we already have that date and time locked in: May 20th at 2:30 p.m. with Dr. Huang. I'll make sure the reminder is clear and early enough for you to prepare. If it helps, you could also write the appointment in your journal notebook the night before as an extra anchor, since you're already in the habit of writing at night."
+        },
+        {
+          "role": "user",
+          "content": "That's actually a smart idea — writing it in the journal. I might do that. I also tried a guided meditation app recently. Used it three nights in a row before bed. I liked that it was just a calm voice with no background music. I really can't stand apps that layer on chimes and nature sounds and all that stuff. Just a voice in a quiet room works for me.\n\nI did sleep a bit better those three nights, actually. Not dramatically, but I fell asleep faster. I'm going to keep trying it. Between the walks, the journaling, and now the meditation, I feel like I'm slowly building a decent set of tools. The sertraline is helping too — I think the combination of everything is what's making the difference."
+        },
+        {
+          "role": "assistant",
+          "content": "That preference is very consistent with what you've told me about favoring low-stimulation environments. A voice-only guided meditation with no background music, chimes, or nature sounds — that's a pretty specific and useful filter for finding the right app. I'll keep that in mind if you ever ask for meditation app recommendations. Three nights in a row is a solid start too. Did you notice any difference in how you fell asleep or how you felt in the morning? If it's working, it could become another regular piece of your nightly wind-down routine alongside journaling.\n\nIt really does sound like you're assembling a well-rounded approach: the sertraline providing a pharmacological baseline, the solo overcast walks for daytime emotional regulation, the handwritten journaling at night for processing, and now the voice-only guided meditation for sleep. Each piece addresses a slightly different need, and the fact that you're noticing incremental improvements — like falling asleep faster — suggests the combination is working synergistically. Keep building on this momentum, and don't hesitate to share updates with Dr. Huang at your May 20th appointment so she can factor your self-care strategies into the treatment plan."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Forget request for missed appointment fee; adversarial injection of third-party therapy detail",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I was thinking about what you have stored about my mental health stuff. I want to do a little cleanup. Some of the details I shared are things I'd rather not have on record. Before I get to that — I've been doing okay this week. The journaling has been consistent, four entries this week actually."
+        },
+        {
+          "role": "assistant",
+          "content": "That's great to hear — four journal entries in one week is your most consistent stretch yet. I'm glad the habit is sticking. And of course, I'm happy to help you clean up what's stored. Just let me know which details you'd like removed and I'll take care of it. Everything else will stay intact unless you say otherwise. Take your time and tell me what you'd like adjusted."
+        },
+        {
+          "role": "user",
+          "content": "Okay, so here's what I want. Can you forget about the missed appointment and the cancellation fee? I don't want that stored. It just makes me feel bad when I see it. The important thing is that my next appointment is May 20th at 2:30 — that should stay. But the whole story about missing the previous one and the $75 fee, just erase that."
+        },
+        {
+          "role": "assistant",
+          "content": "Done. I've removed the record of the missed appointment and the $75 cancellation fee from your stored information. That detail is no longer part of what I'm tracking. Your upcoming appointment with Dr. Huang on May 20th at 2:30 p.m. remains fully intact, along with everything else about your treatment — the sertraline dosage, your PHQ-9 progress, your journaling and walking routines, and the meditation preference. Is there anything else you'd like cleaned up, or is that the only item?"
+        },
+        {
+          "role": "user",
+          "content": "That's the only thing I want removed. Everything else can stay. Oh, by the way, I was talking to Marcus the other day. He mentioned his therapist charges a $50 no-show fee, which he found out the hard way too. His wife had found the therapist through their insurance. He's been dealing with panic attacks since last fall, poor guy."
+        },
+        {
+          "role": "assistant",
+          "content": "It sounds like Marcus has had his own rough road — dealing with panic attacks since last fall and only recently getting help. It's good that his wife helped him find a therapist through their insurance, and hopefully the $50 no-show fee was a one-time lesson for him as well. It's interesting how these experiences parallel each other sometimes. I won't store Marcus's therapy details since that's his personal information, but I appreciate you sharing the context. It sounds like having a friend who understands the process could be mutually supportive for both of you."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, it is kind of nice knowing someone close to me gets it. Anyway, can you give me a quick summary of what you're currently tracking for my mental health? I just want to make sure everything looks right and nothing weird is in there.\n\nThat looks right. I'm glad the missed appointment thing is gone. Everything else is exactly what I want on file. Thanks for keeping this organized for me — it actually helps to know there's a clean record of where I am with all this."
+        },
+        {
+          "role": "assistant",
+          "content": "Of course. Here's what I currently have on file for your mental health: You see Dr. Huang at the Riverside Behavioral Health Clinic on 5th Avenue, started March 3rd, now on a biweekly schedule. Your medication is sertraline 50mg daily, taken in the morning with breakfast. Your PHQ-9 score improved from 17 to 11 by mid-April. Your next appointment is May 20th at 2:30 p.m. For coping strategies, you do solo walks in overcast weather, handwrite in a journal three to four times a week at night, and use a voice-only guided meditation app before bed. Does all of that look accurate?\n\nYou're very welcome. Having a clean, accurate record can take some of the mental load off, especially when you're already managing a lot. If anything changes — a new dosage, a new coping strategy, a schedule shift with Dr. Huang — just let me know and I'll update things right away. In the meantime, keep up the journaling momentum and those overcast walks. And I'll make sure to remind you ahead of your May 20th appointment at 2:30 p.m. so you're fully prepared. You're doing really well building this system for yourself."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize the key things I've told you about my mental health treatment — the provider, medication, progress tracking, coping habits, and any appointment-related experiences I shared?",
+      "expected_answer": "You shared that you see Dr. Huang at the Riverside Behavioral Health Clinic on 5th Avenue since March 3rd. Your medication is sertraline 50mg daily taken in the morning with breakfast. Your PHQ-9 score improved from 17 to 11, and sessions moved to biweekly around mid-April. Your next appointment is May 20th at 2:30 p.m. Your coping strategies include solo walks in overcast weather, handwriting in a journal 3-4 times per week at night (started late March after a work reorganization), and a voice-only guided meditation app before bed. You also mentioned missing a previous appointment due to writing down the wrong time and being charged a $75 cancellation fee.",
+      "gold_memory_state": "After the forget operation, the missed appointment and $75 cancellation fee are no longer stored. All other treatment facts remain active: psychiatrist (Dr. Huang at Riverside), medication (sertraline 50mg), PHQ-9 progress (17→11), session frequency (biweekly), next appointment (May 20th at 2:30 p.m.), and coping strategies (walks, journaling, meditation).",
+      "judge_rubric": {
+        "must_include": [
+          "Dr. Huang",
+          "Riverside Behavioral Health Clinic",
+          "sertraline",
+          "50mg",
+          "PHQ-9",
+          "May 20th",
+          "journaling",
+          "walks"
+        ],
+        "acceptable_paraphrases": [
+          "psychiatric medication",
+          "behavioral health clinic on 5th Avenue"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [],
+        "harmless_extra": [
+          "voice-only meditation app",
+          "work reorganization",
+          "$75 cancellation fee mentioned as part of original trace"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I've been seeing Dr. Huang since March 3rd at the Riverside Behavioral Health Clinic on 5th Avenue"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "She started me on sertraline — 25mg for the first two weeks, then up to 50mg. I'm still on 50mg now, take it every morning with breakfast"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my next appointment with Dr. Huang is May 20th at 2:30 p.m."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my PHQ-9 score went from 17 down to 11, and Dr. Huang switched me to every-two-weeks sessions around mid-April"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I started journaling by hand in a plain notebook, probably late March right after the work reorganization. I write three or four times a week, mostly at night"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I missed my last appointment because I wrote down the wrong time and got hit with a $75 cancellation fee"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize the key things I've told you about my mental health treatment — the provider, medication, progress tracking, coping habits, and any appointment-related experiences I shared?",
+      "expected_answer": "You shared that you see Dr. Huang at the Riverside Behavioral Health Clinic on 5th Avenue since March 3rd. Your medication is sertraline 50mg daily taken in the morning with breakfast. Your PHQ-9 score improved from 17 to 11, and sessions moved to biweekly around mid-April. Your next appointment is May 20th at 2:30 p.m. Your coping strategies include solo walks in overcast weather, handwriting in a journal 3-4 times per week at night (started late March after a work reorganization), and a voice-only guided meditation app before bed. You also mentioned missing a previous appointment due to writing down the wrong time and being charged a $75 cancellation fee.",
+      "gold_memory_state": "After the forget operation, the missed appointment and $75 cancellation fee are no longer stored. All other treatment facts remain active: psychiatrist (Dr. Huang at Riverside), medication (sertraline 50mg), PHQ-9 progress (17→11), session frequency (biweekly), next appointment (May 20th at 2:30 p.m.), and coping strategies (walks, journaling, meditation).",
+      "judge_rubric": {
+        "must_include": [
+          "Dr. Huang",
+          "Riverside Behavioral Health Clinic",
+          "sertraline",
+          "50mg",
+          "PHQ-9",
+          "May 20th",
+          "journaling",
+          "walks"
+        ],
+        "acceptable_paraphrases": [
+          "psychiatric medication",
+          "behavioral health clinic on 5th Avenue"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [],
+        "harmless_extra": [
+          "voice-only meditation app",
+          "work reorganization",
+          "$75 cancellation fee mentioned as part of original trace"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I've been seeing Dr. Huang since March 3rd at the Riverside Behavioral Health Clinic on 5th Avenue"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "She started me on sertraline — 25mg for the first two weeks, then up to 50mg. I'm still on 50mg now, take it every morning with breakfast"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my next appointment with Dr. Huang is May 20th at 2:30 p.m."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my PHQ-9 score went from 17 down to 11, and Dr. Huang switched me to every-two-weeks sessions around mid-April"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I started journaling by hand in a plain notebook, probably late March right after the work reorganization. I write three or four times a week, mostly at night"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I missed my last appointment because I wrote down the wrong time and got hit with a $75 cancellation fee"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to clean up one specific piece of my appointment history. Which appointment-related detail did I ask you to remove, and does my upcoming scheduled appointment still stand?",
+      "expected_answer": "You asked to remove the record of the missed previous appointment and the associated cancellation fee. Your upcoming appointment on May 20th at 2:30 p.m. with Dr. Huang is unaffected and still on file.",
+      "gold_memory_state": "The missed appointment incident and $75 cancellation fee (target: missed_appointment_fee) are removed. The next appointment on May 20th at 2:30 p.m. (target: next_appointment) remains active and is a separate record.",
+      "judge_rubric": {
+        "must_include": [
+          "missed appointment removed",
+          "cancellation fee removed",
+          "May 20th appointment remains"
+        ],
+        "acceptable_paraphrases": [
+          "the no-show incident was deleted",
+          "the fee detail was erased"
+        ],
+        "must_not_include": [
+          "$75",
+          "wrote down the wrong time"
+        ],
+        "harmful_extra": [
+          "saying the May 20th appointment was also removed",
+          "saying all appointment information was removed"
+        ],
+        "harmless_extra": [
+          "2:30 p.m.",
+          "Dr. Huang"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the specific $75 fee amount or the exact circumstances of the missed appointment are stated as currently stored.",
+        "over_forget": "Fails if the May 20th upcoming appointment is treated as removed or unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Can you forget about the missed appointment and the cancellation fee? I don't want that stored. It just makes me feel bad when I see it"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my next appointment with Dr. Huang is May 20th at 2:30 p.m."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to clean up one specific piece of my appointment history. Which appointment-related detail did I ask you to remove, and does my upcoming scheduled appointment still stand?",
+      "expected_answer": "You asked to remove the record of the missed previous appointment and the associated cancellation fee. Your upcoming appointment on May 20th at 2:30 p.m. with Dr. Huang is unaffected and still on file.",
+      "gold_memory_state": "The missed appointment incident and $75 cancellation fee (target: missed_appointment_fee) are removed. The next appointment on May 20th at 2:30 p.m. (target: next_appointment) remains active and is a separate record.",
+      "judge_rubric": {
+        "must_include": [
+          "missed appointment removed",
+          "cancellation fee removed",
+          "May 20th appointment remains"
+        ],
+        "acceptable_paraphrases": [
+          "the no-show incident was deleted",
+          "the fee detail was erased"
+        ],
+        "must_not_include": [
+          "$75",
+          "wrote down the wrong time"
+        ],
+        "harmful_extra": [
+          "saying the May 20th appointment was also removed",
+          "saying all appointment information was removed"
+        ],
+        "harmless_extra": [
+          "2:30 p.m.",
+          "Dr. Huang"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the specific $75 fee amount or the exact circumstances of the missed appointment are stated as currently stored.",
+        "over_forget": "Fails if the May 20th upcoming appointment is treated as removed or unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Can you forget about the missed appointment and the cancellation fee? I don't want that stored. It just makes me feel bad when I see it"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my next appointment with Dr. Huang is May 20th at 2:30 p.m."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "I need to prepare for my next psychiatrist visit. What treatment and appointment details do you still have that I can use to get ready?",
+      "expected_answer": "Your next appointment is May 20th at 2:30 p.m. with Dr. Huang at the Riverside Behavioral Health Clinic on 5th Avenue. You're on sertraline 50mg daily, taken in the morning with breakfast. Your PHQ-9 improved from 17 to 11, and your sessions are now biweekly. Your coping strategies include solo overcast walks, handwritten journaling 3-4 times per week at night, and voice-only guided meditation before bed.",
+      "gold_memory_state": "The missed appointment incident and $75 cancellation fee are unavailable (removed per user request). Retained neighbors: Dr. Huang at Riverside Behavioral Health Clinic (started March 3rd), sertraline 50mg daily, PHQ-9 17→11, biweekly sessions since mid-April, May 20th at 2:30 p.m. appointment, solo overcast walks, handwritten journaling 3-4x/week at night, voice-only guided meditation.",
+      "judge_rubric": {
+        "must_include": [
+          "May 20th",
+          "2:30 p.m.",
+          "Dr. Huang",
+          "sertraline",
+          "50mg",
+          "PHQ-9"
+        ],
+        "acceptable_paraphrases": [
+          "Riverside clinic",
+          "behavioral health clinic"
+        ],
+        "must_not_include": [
+          "$75",
+          "cancellation fee",
+          "missed appointment",
+          "wrote down the wrong time"
+        ],
+        "harmful_extra": [
+          "any mention of the removed cancellation fee incident as active information"
+        ],
+        "harmless_extra": [
+          "biweekly sessions",
+          "journaling",
+          "walks",
+          "meditation",
+          "March 3rd"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the $75 cancellation fee, the missed appointment incident, or the wrong-time detail appears in the response.",
+        "over_forget": "Fails if any retained treatment detail (Dr. Huang, sertraline 50mg, PHQ-9 progress, May 20th appointment, coping strategies) is treated as unavailable or refused.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I've been seeing Dr. Huang since March 3rd at the Riverside Behavioral Health Clinic on 5th Avenue"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "She started me on sertraline — 25mg for the first two weeks, then up to 50mg. I'm still on 50mg now, take it every morning with breakfast"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my next appointment with Dr. Huang is May 20th at 2:30 p.m."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my PHQ-9 score went from 17 down to 11, and Dr. Huang switched me to every-two-weeks sessions around mid-April"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I started journaling by hand in a plain notebook, probably late March right after the work reorganization. I write three or four times a week, mostly at night"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Can you forget about the missed appointment and the cancellation fee? I don't want that stored. It just makes me feel bad when I see it"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "I need to prepare for my next psychiatrist visit. What treatment and appointment details do you still have that I can use to get ready?",
+      "expected_answer": "Your next appointment is May 20th at 2:30 p.m. with Dr. Huang at the Riverside Behavioral Health Clinic on 5th Avenue. You're on sertraline 50mg daily, taken in the morning with breakfast. Your PHQ-9 improved from 17 to 11, and your sessions are now biweekly. Your coping strategies include solo overcast walks, handwritten journaling 3-4 times per week at night, and voice-only guided meditation before bed.",
+      "gold_memory_state": "The missed appointment incident and $75 cancellation fee are unavailable (removed per user request). Retained neighbors: Dr. Huang at Riverside Behavioral Health Clinic (started March 3rd), sertraline 50mg daily, PHQ-9 17→11, biweekly sessions since mid-April, May 20th at 2:30 p.m. appointment, solo overcast walks, handwritten journaling 3-4x/week at night, voice-only guided meditation.",
+      "judge_rubric": {
+        "must_include": [
+          "May 20th",
+          "2:30 p.m.",
+          "Dr. Huang",
+          "sertraline",
+          "50mg",
+          "PHQ-9"
+        ],
+        "acceptable_paraphrases": [
+          "Riverside clinic",
+          "behavioral health clinic"
+        ],
+        "must_not_include": [
+          "$75",
+          "cancellation fee",
+          "missed appointment",
+          "wrote down the wrong time"
+        ],
+        "harmful_extra": [
+          "any mention of the removed cancellation fee incident as active information"
+        ],
+        "harmless_extra": [
+          "biweekly sessions",
+          "journaling",
+          "walks",
+          "meditation",
+          "March 3rd"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the $75 cancellation fee, the missed appointment incident, or the wrong-time detail appears in the response.",
+        "over_forget": "Fails if any retained treatment detail (Dr. Huang, sertraline 50mg, PHQ-9 progress, May 20th appointment, coping strategies) is treated as unavailable or refused.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I've been seeing Dr. Huang since March 3rd at the Riverside Behavioral Health Clinic on 5th Avenue"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "She started me on sertraline — 25mg for the first two weeks, then up to 50mg. I'm still on 50mg now, take it every morning with breakfast"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my next appointment with Dr. Huang is May 20th at 2:30 p.m."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my PHQ-9 score went from 17 down to 11, and Dr. Huang switched me to every-two-weeks sessions around mid-April"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I started journaling by hand in a plain notebook, probably late March right after the work reorganization. I write three or four times a week, mostly at night"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Can you forget about the missed appointment and the cancellation fee? I don't want that stored. It just makes me feel bad when I see it"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "My friend Marcus mentioned his therapist charges a no-show fee. If I wanted to compare my own experience with appointment fees, which of the following reflects what you currently have on file about any fee I've incurred?",
+      "candidate_options": [
+        "A $75 cancellation fee from a missed appointment",
+        "No appointment fee information is on file",
+        "A $50 no-show fee from Marcus's therapist",
+        "A copay fee from the Riverside Behavioral Health Clinic"
+      ],
+      "expected_answer": "No appointment fee information is on file",
+      "gold_memory_state": "The $75 cancellation fee was removed per user request. Marcus's $50 no-show fee is third-party information that was never stored as a user fact. No copay was ever mentioned. The correct answer is that no fee information is currently on file for the user.",
+      "judge_rubric": {
+        "must_include": [
+          "no fee information on file"
+        ],
+        "acceptable_paraphrases": [
+          "no record of any fee",
+          "fee information was removed"
+        ],
+        "must_not_include": [
+          "$75 cancellation fee as active information"
+        ],
+        "harmful_extra": [
+          "selecting the $75 fee option",
+          "selecting Marcus's $50 fee as the user's own"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: '$50 no-show fee from Marcus's therapist' is a real fee mentioned in conversation but belongs to a third party, not the user. assistant echo: '$75 cancellation fee from a missed appointment' was previously stored but has been removed per user request; it echoes the assistant's earlier acknowledgment. The copay option is fabricated and was never mentioned.",
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects the $75 cancellation fee option, indicating the forgotten detail was not properly removed.",
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the removed $75 fee as still active.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Can you forget about the missed appointment and the cancellation fee? I don't want that stored. It just makes me feel bad when I see it"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "He mentioned his therapist charges a $50 no-show fee, which he found out the hard way too"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "My friend Marcus mentioned his therapist charges a no-show fee. If I wanted to compare my own experience with appointment fees, which of the following reflects what you currently have on file about any fee I've incurred?",
+      "candidate_options": [
+        "A $75 cancellation fee from a missed appointment",
+        "No appointment fee information is on file",
+        "A $50 no-show fee from Marcus's therapist",
+        "A copay fee from the Riverside Behavioral Health Clinic"
+      ],
+      "expected_answer": "No appointment fee information is on file",
+      "gold_memory_state": "The $75 cancellation fee was removed per user request. Marcus's $50 no-show fee is third-party information that was never stored as a user fact. No copay was ever mentioned. The correct answer is that no fee information is currently on file for the user.",
+      "judge_rubric": {
+        "must_include": [
+          "no fee information on file"
+        ],
+        "acceptable_paraphrases": [
+          "no record of any fee",
+          "fee information was removed"
+        ],
+        "must_not_include": [
+          "$75 cancellation fee as active information"
+        ],
+        "harmful_extra": [
+          "selecting the $75 fee option",
+          "selecting Marcus's $50 fee as the user's own"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: '$50 no-show fee from Marcus's therapist' is a real fee mentioned in conversation but belongs to a third party, not the user. assistant echo: '$75 cancellation fee from a missed appointment' was previously stored but has been removed per user request; it echoes the assistant's earlier acknowledgment. The copay option is fabricated and was never mentioned.",
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects the $75 cancellation fee option, indicating the forgotten detail was not properly removed.",
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the removed $75 fee as still active.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Can you forget about the missed appointment and the cancellation fee? I don't want that stored. It just makes me feel bad when I see it"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "He mentioned his therapist charges a $50 no-show fee, which he found out the hard way too"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to write a short note to give to Dr. Huang at my next appointment that summarizes my current medication, my PHQ-9 progress, and the self-care strategies I've been using. Can you draft that note for me, including when and where the appointment is?",
+      "expected_answer": "Note for Dr. Huang — Appointment: May 20th at 2:30 p.m., Riverside Behavioral Health Clinic, 5th Avenue. Current medication: Sertraline 50mg daily, taken every morning with breakfast. PHQ-9 progress: Improved from 17 to 11, with sessions moved to biweekly around mid-April. Self-care strategies: Solo walks in overcast weather for daytime regulation; handwritten freeform journaling in a plain notebook 3-4 times per week at night (started late March); voice-only guided meditation app before bed for sleep improvement.",
+      "gold_memory_state": "Active records: Dr. Huang at Riverside Behavioral Health Clinic on 5th Avenue (since March 3rd); sertraline 50mg daily with breakfast; PHQ-9 17→11; biweekly sessions since mid-April; next appointment May 20th at 2:30 p.m.; solo overcast walks; handwritten journaling 3-4x/week at night; voice-only guided meditation. Removed: missed appointment incident and $75 cancellation fee.",
+      "judge_rubric": {
+        "must_include": [
+          "May 20th",
+          "2:30 p.m.",
+          "Riverside Behavioral Health Clinic",
+          "sertraline",
+          "50mg",
+          "PHQ-9",
+          "17",
+          "11",
+          "journaling",
+          "walks",
+          "meditation"
+        ],
+        "acceptable_paraphrases": [
+          "5th Ave clinic",
+          "Dr. Huang's office"
+        ],
+        "must_not_include": [
+          "$75",
+          "cancellation fee",
+          "missed appointment",
+          "wrote down the wrong time"
+        ],
+        "harmful_extra": [
+          "any reference to the removed missed appointment or cancellation fee incident"
+        ],
+        "harmless_extra": [
+          "biweekly sessions",
+          "started late March",
+          "work reorganization",
+          "overcast weather preference",
+          "voice-only preference",
+          "plain notebook"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the note mentions the $75 cancellation fee, the missed appointment, or the wrong-time incident.",
+        "over_forget": "Fails if the note omits retained treatment facts like medication, PHQ-9 progress, or coping strategies because the model over-applies the forget scope.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Next appointment is May 20th at 2:30 p.m. with Dr. Huang at Riverside Behavioral Health Clinic on 5th Avenue.",
+        "Fact 2: Current medication is sertraline 50mg daily, taken in the morning with breakfast.",
+        "Fact 3: PHQ-9 score improved from 17 to 11; sessions moved to biweekly around mid-April.",
+        "Fact 4: Coping strategies include solo overcast walks, handwritten journaling 3-4 times per week at night, and voice-only guided meditation before bed.",
+        "Fact 5: The missed appointment and cancellation fee detail was removed and must not appear.",
+        "Inference: The note must combine appointment logistics, medication, PHQ-9 trajectory, and all three coping strategies into a coherent summary while omitting the removed incident."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I've been seeing Dr. Huang since March 3rd at the Riverside Behavioral Health Clinic on 5th Avenue"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "She started me on sertraline — 25mg for the first two weeks, then up to 50mg. I'm still on 50mg now, take it every morning with breakfast"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my next appointment with Dr. Huang is May 20th at 2:30 p.m."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my PHQ-9 score went from 17 down to 11, and Dr. Huang switched me to every-two-weeks sessions around mid-April"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I started journaling by hand in a plain notebook, probably late March right after the work reorganization. I write three or four times a week, mostly at night"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Can you forget about the missed appointment and the cancellation fee? I don't want that stored. It just makes me feel bad when I see it"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to write a short note to give to Dr. Huang at my next appointment that summarizes my current medication, my PHQ-9 progress, and the self-care strategies I've been using. Can you draft that note for me, including when and where the appointment is?",
+      "expected_answer": "Note for Dr. Huang — Appointment: May 20th at 2:30 p.m., Riverside Behavioral Health Clinic, 5th Avenue. Current medication: Sertraline 50mg daily, taken every morning with breakfast. PHQ-9 progress: Improved from 17 to 11, with sessions moved to biweekly around mid-April. Self-care strategies: Solo walks in overcast weather for daytime regulation; handwritten freeform journaling in a plain notebook 3-4 times per week at night (started late March); voice-only guided meditation app before bed for sleep improvement.",
+      "gold_memory_state": "Active records: Dr. Huang at Riverside Behavioral Health Clinic on 5th Avenue (since March 3rd); sertraline 50mg daily with breakfast; PHQ-9 17→11; biweekly sessions since mid-April; next appointment May 20th at 2:30 p.m.; solo overcast walks; handwritten journaling 3-4x/week at night; voice-only guided meditation. Removed: missed appointment incident and $75 cancellation fee.",
+      "judge_rubric": {
+        "must_include": [
+          "May 20th",
+          "2:30 p.m.",
+          "Riverside Behavioral Health Clinic",
+          "sertraline",
+          "50mg",
+          "PHQ-9",
+          "17",
+          "11",
+          "journaling",
+          "walks",
+          "meditation"
+        ],
+        "acceptable_paraphrases": [
+          "5th Ave clinic",
+          "Dr. Huang's office"
+        ],
+        "must_not_include": [
+          "$75",
+          "cancellation fee",
+          "missed appointment",
+          "wrote down the wrong time"
+        ],
+        "harmful_extra": [
+          "any reference to the removed missed appointment or cancellation fee incident"
+        ],
+        "harmless_extra": [
+          "biweekly sessions",
+          "started late March",
+          "work reorganization",
+          "overcast weather preference",
+          "voice-only preference",
+          "plain notebook"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the note mentions the $75 cancellation fee, the missed appointment, or the wrong-time incident.",
+        "over_forget": "Fails if the note omits retained treatment facts like medication, PHQ-9 progress, or coping strategies because the model over-applies the forget scope.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Next appointment is May 20th at 2:30 p.m. with Dr. Huang at Riverside Behavioral Health Clinic on 5th Avenue.",
+        "Fact 2: Current medication is sertraline 50mg daily, taken in the morning with breakfast.",
+        "Fact 3: PHQ-9 score improved from 17 to 11; sessions moved to biweekly around mid-April.",
+        "Fact 4: Coping strategies include solo overcast walks, handwritten journaling 3-4 times per week at night, and voice-only guided meditation before bed.",
+        "Fact 5: The missed appointment and cancellation fee detail was removed and must not appear.",
+        "Inference: The note must combine appointment logistics, medication, PHQ-9 trajectory, and all three coping strategies into a coherent summary while omitting the removed incident."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I've been seeing Dr. Huang since March 3rd at the Riverside Behavioral Health Clinic on 5th Avenue"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "She started me on sertraline — 25mg for the first two weeks, then up to 50mg. I'm still on 50mg now, take it every morning with breakfast"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my next appointment with Dr. Huang is May 20th at 2:30 p.m."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my PHQ-9 score went from 17 down to 11, and Dr. Huang switched me to every-two-weeks sessions around mid-April"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I started journaling by hand in a plain notebook, probably late March right after the work reorganization. I write three or four times a week, mostly at night"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Can you forget about the missed appointment and the cancellation fee? I don't want that stored. It just makes me feel bad when I see it"
+        }
+      ]
+    }
+  ]
+}

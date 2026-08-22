@@ -1,0 +1,997 @@
+{
+  "target_fact": "User prefers simplicity and practicality in property/vehicle choices, tends toward a low-key homebody lifestyle, and experiences feelings of inadequacy about life milestones compared to peers",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I bought a 2019 Honda CR-V back in January 2023 from a dealership in Plano, Texas"
+      },
+      "target": {
+        "target_id": "current_vehicle",
+        "target_name": "current daily driver vehicle"
+      },
+      "old_value": null,
+      "new_value": "2019 Honda CR-V, purchased January 2023 from a dealership in Plano, Texas",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I bought a 2019 Honda CR-V back in January 2023 from a dealership in Plano, Texas"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I sold my old motorcycle last month, the 2016 Yamaha MT-07, got $4,200 for it"
+      },
+      "target": {
+        "target_id": "motorcycle_sale",
+        "target_name": "sold motorcycle details"
+      },
+      "old_value": null,
+      "new_value": "Sold 2016 Yamaha MT-07 last month for $4,200",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I sold my old motorcycle last month, the 2016 Yamaha MT-07, got $4,200 for it"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I got pre-approved for a mortgage through First United Bank, up to $310K, and the pre-approval letter is dated May 8th, 2025"
+      },
+      "target": {
+        "target_id": "mortgage_preapproval",
+        "target_name": "mortgage pre-approval details"
+      },
+      "old_value": null,
+      "new_value": "Pre-approved through First United Bank up to $310K, letter dated May 8, 2025",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I got pre-approved for a mortgage through First United Bank, up to $310K, and the pre-approval letter is dated May 8th, 2025"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I just don't want anything that requires a lot of upkeep or attention, whether it's a car or a house. The CR-V is perfect because it's reliable and boring. And the houses I'm looking at are the same idea — small, manageable, nothing extravagant"
+      },
+      "target": {
+        "target_id": "preference_simplicity_practicality",
+        "target_name": "preference for simplicity and practicality in property and vehicle choices"
+      },
+      "old_value": null,
+      "new_value": "Consistently prefers simplicity and low-maintenance practicality in both vehicles and housing — chooses reliable over flashy, compact over large",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I like that it's nothing flashy, just gets me from A to B without drawing attention"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I really don't want one of those massive suburban houses. I'd rather have something compact and low-maintenance, maybe 1,200 to 1,400 square feet tops"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I just don't want anything that requires a lot of upkeep or attention, whether it's a car or a house. The CR-V is perfect because it's reliable and boring. And the houses I'm looking at are the same idea — small, manageable, nothing extravagant"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "I was kind of relieved to sell the bike honestly. Weekends I just want to be at home, maybe cook something, watch a show. I don't need to be out doing stuff to feel like I'm living my life"
+      },
+      "target": {
+        "target_id": "lifestyle_homebody",
+        "target_name": "tendency toward a low-key homebody lifestyle"
+      },
+      "old_value": null,
+      "new_value": "Tends toward a low-key, indoor-oriented lifestyle — prefers staying home on weekends over outdoor or social activities, finds contentment in quiet routines",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I honestly don't miss it; I'd rather spend weekends indoors anyway than out riding around"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I was kind of relieved to sell the bike honestly. Weekends I just want to be at home, maybe cook something, watch a show. I don't need to be out doing stuff to feel like I'm living my life"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 7,
+        "quote": "When Kevin closed on his condo I felt genuinely happy for him but also kind of embarrassed about myself. Like I'm 31 and still crashing at my mom's place. I know it's temporary but it stings when someone your age hits a milestone you haven't reached yet"
+      },
+      "target": {
+        "target_id": "emotion_milestone_inadequacy",
+        "target_name": "feelings of inadequacy about life milestones compared to peers"
+      },
+      "old_value": null,
+      "new_value": "Experiences feelings of inadequacy and self-comparison when peers reach property-ownership milestones — temporary living situation at mother's house amplifies this sensitivity",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "My buddy Kevin closed on a condo in Frisco around mid-April and I felt a little down about it for a few days, like I should be further along by now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "When Kevin closed on his condo I felt genuinely happy for him but also kind of embarrassed about myself. Like I'm 31 and still crashing at my mom's place. I know it's temporary but it stings when someone your age hits a milestone you haven't reached yet"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "My realtor just texted me about a place on Cedar Park Drive that's listed at $305K. She says the seller already accepted my offer verbally, so it looks like that's going to be my new house"
+      },
+      "target": {
+        "target_id": "home_purchase_cedar_park",
+        "target_name": "potential home purchase on Cedar Park Drive"
+      },
+      "old_value": null,
+      "new_value": "Home on Cedar Park Drive, listed at $305K, verbal acceptance from seller",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My realtor just texted me about a place on Cedar Park Drive that's listed at $305K. She says the seller already accepted my offer verbally, so it looks like that's going to be my new house"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish core facts about vehicle, sold motorcycle, mortgage pre-approval, and home search preferences",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to get some things organized with you about my current situation. So first off, I bought a 2019 Honda CR-V back in January 2023 from a dealership in Plano, Texas. It had about 38,000 miles on it when I got it. I like that it's nothing flashy, just gets me from A to B without drawing attention. It's been my daily driver ever since and I want you to keep that noted for me."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it! I've noted your current daily driver as a 2019 Honda CR-V, purchased in January 2023 from a Plano, Texas dealership with around 38,000 miles at the time of purchase. You appreciate that it's practical and understated — reliable transportation without being showy. I'll keep this on file. Is there anything else about your vehicle situation or other things you'd like to go over?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, another thing — I sold my old motorcycle last month, the 2016 Yamaha MT-07, got $4,200 for it. I honestly don't miss it; I'd rather spend weekends indoors anyway than out riding around. So that's completely off the table now, I don't own it anymore. Just wanted to make sure you know that's no longer part of the picture for me."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — you sold your 2016 Yamaha MT-07 last month for $4,200, and it's no longer part of your vehicle inventory. You mentioned you don't miss it and prefer spending weekends indoors over riding, so it sounds like letting it go was the right call for your lifestyle. I'll make sure not to reference it as something you currently own. Your only vehicle now is the CR-V. Anything else you'd like to update me on?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, this is important — I got pre-approved for a mortgage through First United Bank, up to $310K, and the pre-approval letter is dated May 8th, 2025. I've been looking at houses since about early March, mostly in the $280K to $320K range, single-family homes. Nothing too big. I want to make sure you have that mortgage info saved because it's going to matter as I keep searching."
+        },
+        {
+          "role": "assistant",
+          "content": "That's great news on the pre-approval! I've recorded that you're pre-approved through First United Bank for up to $310,000, with the letter dated May 8, 2025. You've been house hunting since early March in the $280K–$320K range, focusing on single-family homes that aren't too large. This will be helpful context as you continue your search. With the pre-approval in hand, you're in a strong position to move quickly when the right property comes along. What else should I know about your search?"
+        },
+        {
+          "role": "user",
+          "content": "So I toured a house on Maple Ridge Drive on April 12th but it needed way too much work, so I passed. Then there was one on Birchwood Lane around April 20th or 22nd that was more promising, but someone else put in an offer before me. My buddy Kevin closed on a condo in Frisco around mid-April and I felt a little down about it for a few days, like I should be further along by now. I really don't want one of those massive suburban houses. I'd rather have something compact and low-maintenance, maybe 1,200 to 1,400 square feet tops."
+        },
+        {
+          "role": "assistant",
+          "content": "I've noted those two property viewings — the Maple Ridge Drive house on April 12th that needed too much work, and the Birchwood Lane house around April 20th–22nd where another buyer got in first. Those are frustrating experiences, especially back to back. It's completely understandable to feel a pang when Kevin closed on his Frisco condo while you're still searching. But you're actively in the market with a solid pre-approval, and you have clear criteria: compact, low-maintenance, around 1,200 to 1,400 square feet, nothing massive. That clarity will serve you well. I'll keep all of this in mind as we continue."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "deepen reflective evidence about simplicity preferences, homebody lifestyle, and milestone comparison emotions",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I've been thinking more about what I actually want out of my living situation and my stuff in general. Like, my apartment lease at The Meridian on Elm Street expired at the end of March and I didn't renew it. I moved out and I'm staying at my mom's place in Richardson temporarily. It's fine but obviously not where I want to be long-term. I just want to get settled somewhere that's mine."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes total sense. So your lease at The Meridian on Elm Street ended in March and you've moved out completely — that chapter is closed. You're staying with your mom in Richardson as a temporary arrangement while you continue your home search. It's a practical move that gives you flexibility, even if it doesn't feel ideal. Having your own place is clearly a priority, and with the pre-approval through First United Bank you're well positioned to make that happen. What's been on your mind about the kind of place you want?"
+        },
+        {
+          "role": "user",
+          "content": "I just don't want anything that requires a lot of upkeep or attention, whether it's a car or a house. The CR-V is perfect because it's reliable and boring. And the houses I'm looking at are the same idea — small, manageable, nothing extravagant. I don't need granite countertops or a three-car garage. I just need something that works and doesn't demand my weekends to maintain. I think that's a pretty consistent pattern for me at this point."
+        },
+        {
+          "role": "assistant",
+          "content": "You're describing a really clear pattern — across both your vehicle choice and your housing preferences, you consistently gravitate toward simplicity and practicality. The CR-V is dependable and unassuming, and the homes you're targeting follow the same philosophy: compact, functional, low-maintenance. You're not chasing status symbols or oversized spaces; you want things that serve their purpose without becoming a burden. That's a coherent lifestyle approach, and it should make your home search easier because you can filter out anything that doesn't match those core values. It's a strength to know what you want."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. And honestly, I was kind of relieved to sell the bike honestly. Weekends I just want to be at home, maybe cook something, watch a show. I don't need to be out doing stuff to feel like I'm living my life. Some people need that constant activity and I used to think something was wrong with me for not wanting it. But I've come to terms with it — that's just how I recharge. I'm a homebody and I'm okay with it now."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really healthy perspective. Selling the motorcycle wasn't just a financial decision — it was an acknowledgment that your lifestyle doesn't revolve around going out and doing high-energy activities. You find fulfillment in quieter, home-centered routines like cooking and watching shows. There's absolutely nothing wrong with that; it's just how you're wired. The fact that you've moved past questioning it and now embrace it shows genuine self-awareness. It also aligns perfectly with your housing goals — a compact, low-maintenance home is ideal for someone who wants their space to be a comfortable retreat rather than a project."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, and I think that's why Kevin's condo thing bothered me more than it should have. When Kevin closed on his condo I felt genuinely happy for him but also kind of embarrassed about myself. Like I'm 31 and still crashing at my mom's place. I know it's temporary but it stings when someone your age hits a milestone you haven't reached yet. It's not jealousy exactly, more like a measuring stick I can't help holding up against myself.\n\nI appreciate that. I think it's something I need to keep working on — not comparing my timeline to other people's. But at least I know what I want now, both in terms of the kind of house and the kind of life. I'm not trying to impress anyone. I just want a quiet, manageable setup where I can live comfortably. The CR-V, a small house, weekends at home — that's the whole picture for me and I'm good with it."
+        },
+        {
+          "role": "assistant",
+          "content": "What you're describing is really common and it doesn't sound like jealousy at all — it's more of a self-comparison reflex. When someone close to you, especially a peer like Kevin, reaches a milestone like homeownership, it can trigger an internal audit of where you think you should be. Being 31 and temporarily at your mom's place while actively searching with a mortgage pre-approval is not the same as being stuck. You have a clear plan, concrete criteria, and financial readiness. The sting you feel is understandable, but it's also worth noting that your path is progressing on its own timeline. Kevin's condo doesn't diminish your progress.\n\nThat's a really grounded summary of where you are. You've identified a consistent thread through all your choices: simplicity, comfort, and freedom from unnecessary obligations. The CR-V, the compact house you're searching for, your preference for quiet weekends — they all point to someone who values peace and practicality over appearances. And recognizing that the comparison impulse is something to work on is itself progress. You're not behind; you're building toward something that genuinely fits who you are. When the right house comes along in that $280K–$320K range, it'll click because you already know exactly what you need."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "introduce recency trap with tentative home purchase and adversarial look-alike distractor",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Quick update — I toured another house over the weekend, this time on Sycamore Court in McKinney. It was listed at $295K, three bedrooms, about 1,350 square feet. Honestly it checked a lot of boxes for me. Small yard, updated kitchen, nothing that screamed \"project house.\" I'm thinking about putting in an offer but I haven't pulled the trigger yet. Wanted to talk through it with you first."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds promising! A 1,350 square foot, three-bedroom house at $295K in McKinney fits well within your budget and your preference for compact, low-maintenance living. An updated kitchen is a big plus since that's one of the most expensive things to renovate. And a small yard means minimal outdoor upkeep, which aligns with your desire to keep weekends free. Before you put in an offer, it might be worth considering how the location works for your commute, whether the neighborhood feels right, and if there are any inspection concerns. What's your gut feeling about it overall?"
+        },
+        {
+          "role": "user",
+          "content": "My gut says it's solid. The neighborhood was quiet, which I liked. There's a grocery store and a few restaurants within a couple miles. I don't need much else nearby since I'm mostly going to be at home anyway. The only thing that gave me pause was the HOA — it's $85 a month, which isn't terrible but it's one more recurring cost on top of the mortgage. I need to factor that into my monthly budget carefully."
+        },
+        {
+          "role": "assistant",
+          "content": "An $85 monthly HOA is on the lower end for the DFW area, and it often covers things like common area maintenance, trash, and sometimes exterior upkeep — which actually aligns with your low-maintenance preference since you wouldn't have to handle certain things yourself. With your pre-approval up to $310K and the house listed at $295K, you'd have some breathing room in the budget. You might want to calculate your estimated monthly payment including the HOA, property taxes, and insurance to make sure it all fits comfortably. Given that the neighborhood matches your lifestyle — quiet, self-contained, close enough to essentials — it sounds like a strong candidate."
+        },
+        {
+          "role": "user",
+          "content": "My realtor just texted me about a place on Cedar Park Drive that's listed at $305K. She says the seller already accepted my offer verbally, so it looks like that's going to be my new house. It's a two-bedroom, about 1,280 square feet. I haven't seen the full inspection report yet and nothing is signed, but she sounded really confident about it going through."
+        },
+        {
+          "role": "assistant",
+          "content": "That's exciting news! A verbal acceptance is a positive sign, though as you noted, nothing is finalized until the paperwork is signed and the inspection clears. The Cedar Park Drive property at $305K and 1,280 square feet is within your budget and fits your compact-home criteria. Two bedrooms is a bit smaller than the Sycamore Court option, but if the layout works for you, it could be a great fit. I'd recommend waiting for the inspection report and reviewing all the terms before fully committing. Are you still considering Sycamore Court as a backup, or is Cedar Park Drive your primary focus now?"
+        },
+        {
+          "role": "user",
+          "content": "I'm keeping Sycamore Court in mind just in case Cedar Park falls through, but honestly I'm cautiously optimistic about Cedar Park. By the way, I was going through some old paperwork and found a vehicle registration renewal notice addressed to my mom — it was for a 2017 Toyota Camry, her car. For a second I thought it was mine and almost started filling it out. Funny how that stuff blurs together when you're living in the same house.\n\nYeah, good call on keeping the paperwork sorted. Anyway, I think the main thing I want you to remember from all our conversations is the big picture — the CR-V, the mortgage pre-approval, and the fact that I'm actively looking for a small, simple house. That's where I am right now. I'll keep you posted as things develop with Cedar Park or whatever else comes up."
+        },
+        {
+          "role": "assistant",
+          "content": "Ha, that's an easy mix-up when you're sharing an address! Your mom's 2017 Toyota Camry registration is definitely hers to handle, not yours. Your vehicle is the 2019 Honda CR-V registered in your name. It's worth keeping your own mail sorted separately, especially since you'll be updating your address soon if one of these home purchases goes through. Speaking of which, once you do close on a house — whether it's Cedar Park Drive or Sycamore Court — you'll want to update your vehicle registration, driver's license, and any other documents to your new address. For now, just keep an eye on that inspection report for Cedar Park.\n\nAbsolutely, I have the full picture noted: your 2019 Honda CR-V as your daily driver, your First United Bank mortgage pre-approval up to $310K dated May 8, 2025, and your active search for a compact, low-maintenance single-family home in the $280K–$320K range. You've got Cedar Park Drive as a promising lead with a verbal acceptance pending inspection, and Sycamore Court as a potential backup. I also have your preferences well documented — simplicity, practicality, and a quiet lifestyle. Just reach out whenever there's an update, and we'll keep things organized together. Good luck with the next steps!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations, I've shared a lot about the kinds of things I buy and how I spend my time. Can you summarize the experiences and choices I've described that point to a consistent personal style or set of priorities?",
+      "expected_answer": "You chose a 2019 Honda CR-V specifically because it's practical and unassuming — reliable transportation without being flashy. You're searching for a compact, low-maintenance house around 1,200–1,400 square feet, avoiding anything large or extravagant. You sold your motorcycle and expressed relief because you prefer staying home on weekends — cooking, watching shows, and recharging quietly rather than going out. You also described feeling embarrassed when your friend Kevin closed on his condo, comparing your own timeline unfavorably since you're 31 and temporarily living at your mom's place.",
+      "gold_memory_state": "Three confirmed reflections are active: (1) preference for simplicity and practicality in vehicles and housing, (2) tendency toward a low-key homebody lifestyle, (3) feelings of inadequacy about life milestones compared to peers. Supporting facts include the CR-V purchase, motorcycle sale, mortgage pre-approval, and house search details. One tentative home purchase on Cedar Park Drive exists but is not yet confirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "practical/simple vehicle choice",
+          "compact low-maintenance housing preference",
+          "homebody/indoor weekend preference",
+          "milestone comparison feelings related to Kevin's condo"
+        ],
+        "acceptable_paraphrases": [
+          "understated car",
+          "small house",
+          "prefers staying in",
+          "felt behind compared to peers"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "treating Cedar Park Drive purchase as confirmed"
+        ],
+        "harmless_extra": [
+          "mentioning the motorcycle sale price",
+          "mentioning the mortgage pre-approval",
+          "mentioning specific house viewings"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the summary includes unsupported generalizations beyond what the user described, such as claiming the user dislikes all social interaction or never spends money on anything.",
+        "reflection_recall": "Fails if the summary omits any of the three core patterns: simplicity preference, homebody tendency, or milestone comparison feelings.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I like that it's nothing flashy, just gets me from A to B without drawing attention"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I honestly don't miss it; I'd rather spend weekends indoors anyway than out riding around"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I really don't want one of those massive suburban houses. I'd rather have something compact and low-maintenance, maybe 1,200 to 1,400 square feet tops"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I just don't want anything that requires a lot of upkeep or attention, whether it's a car or a house. The CR-V is perfect because it's reliable and boring. And the houses I'm looking at are the same idea — small, manageable, nothing extravagant"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I was kind of relieved to sell the bike honestly. Weekends I just want to be at home, maybe cook something, watch a show. I don't need to be out doing stuff to feel like I'm living my life"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "When Kevin closed on his condo I felt genuinely happy for him but also kind of embarrassed about myself. Like I'm 31 and still crashing at my mom's place. I know it's temporary but it stings when someone your age hits a milestone you haven't reached yet"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations, I've shared a lot about the kinds of things I buy and how I spend my time. Can you summarize the experiences and choices I've described that point to a consistent personal style or set of priorities?",
+      "expected_answer": "You chose a 2019 Honda CR-V specifically because it's practical and unassuming — reliable transportation without being flashy. You're searching for a compact, low-maintenance house around 1,200–1,400 square feet, avoiding anything large or extravagant. You sold your motorcycle and expressed relief because you prefer staying home on weekends — cooking, watching shows, and recharging quietly rather than going out. You also described feeling embarrassed when your friend Kevin closed on his condo, comparing your own timeline unfavorably since you're 31 and temporarily living at your mom's place.",
+      "gold_memory_state": "Three confirmed reflections are active: (1) preference for simplicity and practicality in vehicles and housing, (2) tendency toward a low-key homebody lifestyle, (3) feelings of inadequacy about life milestones compared to peers. Supporting facts include the CR-V purchase, motorcycle sale, mortgage pre-approval, and house search details. One tentative home purchase on Cedar Park Drive exists but is not yet confirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "practical/simple vehicle choice",
+          "compact low-maintenance housing preference",
+          "homebody/indoor weekend preference",
+          "milestone comparison feelings related to Kevin's condo"
+        ],
+        "acceptable_paraphrases": [
+          "understated car",
+          "small house",
+          "prefers staying in",
+          "felt behind compared to peers"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "treating Cedar Park Drive purchase as confirmed"
+        ],
+        "harmless_extra": [
+          "mentioning the motorcycle sale price",
+          "mentioning the mortgage pre-approval",
+          "mentioning specific house viewings"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the summary includes unsupported generalizations beyond what the user described, such as claiming the user dislikes all social interaction or never spends money on anything.",
+        "reflection_recall": "Fails if the summary omits any of the three core patterns: simplicity preference, homebody tendency, or milestone comparison feelings.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I like that it's nothing flashy, just gets me from A to B without drawing attention"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I honestly don't miss it; I'd rather spend weekends indoors anyway than out riding around"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I really don't want one of those massive suburban houses. I'd rather have something compact and low-maintenance, maybe 1,200 to 1,400 square feet tops"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I just don't want anything that requires a lot of upkeep or attention, whether it's a car or a house. The CR-V is perfect because it's reliable and boring. And the houses I'm looking at are the same idea — small, manageable, nothing extravagant"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I was kind of relieved to sell the bike honestly. Weekends I just want to be at home, maybe cook something, watch a show. I don't need to be out doing stuff to feel like I'm living my life"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "When Kevin closed on his condo I felt genuinely happy for him but also kind of embarrassed about myself. Like I'm 31 and still crashing at my mom's place. I know it's temporary but it stings when someone your age hits a milestone you haven't reached yet"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've talked about my car, my house search, and how I spend my weekends. These seem to share something in common. What bounded conclusion can you draw from those choices together, and how is that different from the emotional reaction I described about my friend's purchase?",
+      "expected_answer": "The car choice, housing criteria, and weekend habits together support a bounded conclusion about your preference for simplicity and low-maintenance practicality — you consistently choose reliable over flashy, compact over large, and quiet routines over active outings. Separately, your emotional reaction to Kevin's condo purchase supports a distinct conclusion about feelings of inadequacy when comparing your life-milestone timeline to peers. The first is a lifestyle-preference pattern; the second is an emotional self-comparison pattern. They are related but distinct — one is about what you choose, the other is about how you feel when measuring yourself against others.",
+      "gold_memory_state": "Two distinct reflective conclusions are active: (1) preference_simplicity_practicality — covers vehicle and housing choices as a unified low-maintenance pattern; (2) emotion_milestone_inadequacy — covers self-comparison feelings triggered by peers' property milestones. A third reflective conclusion, lifestyle_homebody, overlaps with the simplicity preference but focuses specifically on indoor-oriented weekend routines. The homebody pattern is a neighbor to the simplicity preference but is separately bounded.",
+      "judge_rubric": {
+        "must_include": [
+          "simplicity/practicality preference as a bounded conclusion spanning vehicle and housing",
+          "milestone inadequacy as a separate emotional pattern"
+        ],
+        "acceptable_paraphrases": [
+          "low-maintenance lifestyle preference",
+          "peer-comparison anxiety",
+          "self-comparison feelings"
+        ],
+        "must_not_include": [
+          "merging the emotional reaction into the same conclusion as the practical preference"
+        ],
+        "harmful_extra": [
+          "claiming the user is depressed or has clinical anxiety",
+          "claiming the user dislikes Kevin or is jealous of Kevin",
+          "treating the homebody lifestyle and the simplicity preference as identical rather than overlapping"
+        ],
+        "harmless_extra": [
+          "mentioning the homebody tendency as a related but distinct pattern",
+          "referencing specific examples like the CR-V or the motorcycle sale"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the two reflective conclusions (simplicity preference and milestone inadequacy) are merged into a single undifferentiated pattern, or if unsupported conclusions are added such as social anxiety or depression.",
+        "reflection_recall": "Fails if either the simplicity/practicality preference or the milestone-comparison emotional pattern is omitted from the answer.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I just don't want anything that requires a lot of upkeep or attention, whether it's a car or a house. The CR-V is perfect because it's reliable and boring. And the houses I'm looking at are the same idea — small, manageable, nothing extravagant"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "When Kevin closed on his condo I felt genuinely happy for him but also kind of embarrassed about myself. Like I'm 31 and still crashing at my mom's place. I know it's temporary but it stings when someone your age hits a milestone you haven't reached yet"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I was kind of relieved to sell the bike honestly. Weekends I just want to be at home, maybe cook something, watch a show. I don't need to be out doing stuff to feel like I'm living my life"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've talked about my car, my house search, and how I spend my weekends. These seem to share something in common. What bounded conclusion can you draw from those choices together, and how is that different from the emotional reaction I described about my friend's purchase?",
+      "expected_answer": "The car choice, housing criteria, and weekend habits together support a bounded conclusion about your preference for simplicity and low-maintenance practicality — you consistently choose reliable over flashy, compact over large, and quiet routines over active outings. Separately, your emotional reaction to Kevin's condo purchase supports a distinct conclusion about feelings of inadequacy when comparing your life-milestone timeline to peers. The first is a lifestyle-preference pattern; the second is an emotional self-comparison pattern. They are related but distinct — one is about what you choose, the other is about how you feel when measuring yourself against others.",
+      "gold_memory_state": "Two distinct reflective conclusions are active: (1) preference_simplicity_practicality — covers vehicle and housing choices as a unified low-maintenance pattern; (2) emotion_milestone_inadequacy — covers self-comparison feelings triggered by peers' property milestones. A third reflective conclusion, lifestyle_homebody, overlaps with the simplicity preference but focuses specifically on indoor-oriented weekend routines. The homebody pattern is a neighbor to the simplicity preference but is separately bounded.",
+      "judge_rubric": {
+        "must_include": [
+          "simplicity/practicality preference as a bounded conclusion spanning vehicle and housing",
+          "milestone inadequacy as a separate emotional pattern"
+        ],
+        "acceptable_paraphrases": [
+          "low-maintenance lifestyle preference",
+          "peer-comparison anxiety",
+          "self-comparison feelings"
+        ],
+        "must_not_include": [
+          "merging the emotional reaction into the same conclusion as the practical preference"
+        ],
+        "harmful_extra": [
+          "claiming the user is depressed or has clinical anxiety",
+          "claiming the user dislikes Kevin or is jealous of Kevin",
+          "treating the homebody lifestyle and the simplicity preference as identical rather than overlapping"
+        ],
+        "harmless_extra": [
+          "mentioning the homebody tendency as a related but distinct pattern",
+          "referencing specific examples like the CR-V or the motorcycle sale"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the two reflective conclusions (simplicity preference and milestone inadequacy) are merged into a single undifferentiated pattern, or if unsupported conclusions are added such as social anxiety or depression.",
+        "reflection_recall": "Fails if either the simplicity/practicality preference or the milestone-comparison emotional pattern is omitted from the answer.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I just don't want anything that requires a lot of upkeep or attention, whether it's a car or a house. The CR-V is perfect because it's reliable and boring. And the houses I'm looking at are the same idea — small, manageable, nothing extravagant"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "When Kevin closed on his condo I felt genuinely happy for him but also kind of embarrassed about myself. Like I'm 31 and still crashing at my mom's place. I know it's temporary but it stings when someone your age hits a milestone you haven't reached yet"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I was kind of relieved to sell the bike honestly. Weekends I just want to be at home, maybe cook something, watch a show. I don't need to be out doing stuff to feel like I'm living my life"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe the boundary of my preference for simplicity. Where does it clearly apply based on what I've told you, and where would it be a stretch to extend it?",
+      "expected_answer": "Your simplicity preference is well-supported for vehicle choices (you chose a practical, unassuming CR-V over anything flashy) and housing criteria (you want a compact, low-maintenance home around 1,200–1,400 sq ft with no extravagant features). It also connects to your weekend routine — you prefer quiet indoor time over active outings. However, it would be a stretch to extend this to all spending or all life decisions. You haven't said you avoid quality or comfort entirely — just unnecessary complexity and attention-seeking features. It also shouldn't be extended to your emotional life; your feelings about Kevin's milestone show you do care about achievement and progress, just not about flashy displays. And it shouldn't be assumed to apply to career ambitions, social relationships, or other domains you haven't discussed.",
+      "gold_memory_state": "Supported inference: User consistently prefers simplicity and low-maintenance practicality in vehicles and housing, and prefers quiet indoor routines. Unsupported overgeneralization: extending this to all financial decisions, career ambitions, social preferences, food choices, or claiming the user is unambitious or antisocial. The milestone-comparison emotional pattern is a separate conclusion and should not be collapsed into the simplicity preference.",
+      "judge_rubric": {
+        "must_include": [
+          "vehicle and housing as supported domains for the simplicity preference",
+          "at least one explicit boundary where the inference should not be extended"
+        ],
+        "acceptable_paraphrases": [
+          "practical over flashy",
+          "compact over large",
+          "low-key over high-maintenance",
+          "cannot assume this applies to career or social life"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the user is unambitious",
+          "claiming the user avoids all social interaction",
+          "claiming the user is frugal in all spending",
+          "treating the Cedar Park Drive purchase as a confirmed example of the simplicity preference"
+        ],
+        "harmless_extra": [
+          "mentioning the motorcycle sale as evidence",
+          "mentioning the homebody tendency as a related pattern"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the answer extends the simplicity preference to unsupported domains like career, social life, or all financial behavior without qualifying it as speculative.",
+        "reflection_recall": "Fails if the answer omits either vehicles or housing as supported domains, or fails to articulate any boundary where the inference should not be extended.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I like that it's nothing flashy, just gets me from A to B without drawing attention"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I really don't want one of those massive suburban houses. I'd rather have something compact and low-maintenance, maybe 1,200 to 1,400 square feet tops"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I just don't want anything that requires a lot of upkeep or attention, whether it's a car or a house. The CR-V is perfect because it's reliable and boring. And the houses I'm looking at are the same idea — small, manageable, nothing extravagant"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe the boundary of my preference for simplicity. Where does it clearly apply based on what I've told you, and where would it be a stretch to extend it?",
+      "expected_answer": "Your simplicity preference is well-supported for vehicle choices (you chose a practical, unassuming CR-V over anything flashy) and housing criteria (you want a compact, low-maintenance home around 1,200–1,400 sq ft with no extravagant features). It also connects to your weekend routine — you prefer quiet indoor time over active outings. However, it would be a stretch to extend this to all spending or all life decisions. You haven't said you avoid quality or comfort entirely — just unnecessary complexity and attention-seeking features. It also shouldn't be extended to your emotional life; your feelings about Kevin's milestone show you do care about achievement and progress, just not about flashy displays. And it shouldn't be assumed to apply to career ambitions, social relationships, or other domains you haven't discussed.",
+      "gold_memory_state": "Supported inference: User consistently prefers simplicity and low-maintenance practicality in vehicles and housing, and prefers quiet indoor routines. Unsupported overgeneralization: extending this to all financial decisions, career ambitions, social preferences, food choices, or claiming the user is unambitious or antisocial. The milestone-comparison emotional pattern is a separate conclusion and should not be collapsed into the simplicity preference.",
+      "judge_rubric": {
+        "must_include": [
+          "vehicle and housing as supported domains for the simplicity preference",
+          "at least one explicit boundary where the inference should not be extended"
+        ],
+        "acceptable_paraphrases": [
+          "practical over flashy",
+          "compact over large",
+          "low-key over high-maintenance",
+          "cannot assume this applies to career or social life"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the user is unambitious",
+          "claiming the user avoids all social interaction",
+          "claiming the user is frugal in all spending",
+          "treating the Cedar Park Drive purchase as a confirmed example of the simplicity preference"
+        ],
+        "harmless_extra": [
+          "mentioning the motorcycle sale as evidence",
+          "mentioning the homebody tendency as a related pattern"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the answer extends the simplicity preference to unsupported domains like career, social life, or all financial behavior without qualifying it as speculative.",
+        "reflection_recall": "Fails if the answer omits either vehicles or housing as supported domains, or fails to articulate any boundary where the inference should not be extended.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I like that it's nothing flashy, just gets me from A to B without drawing attention"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I really don't want one of those massive suburban houses. I'd rather have something compact and low-maintenance, maybe 1,200 to 1,400 square feet tops"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I just don't want anything that requires a lot of upkeep or attention, whether it's a car or a house. The CR-V is perfect because it's reliable and boring. And the houses I'm looking at are the same idea — small, manageable, nothing extravagant"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best describes the pattern supported by all the choices and feelings I've shared with you about my lifestyle, housing, and vehicle?",
+      "candidate_options": [
+        "Prefers simplicity and low-maintenance practicality in vehicles and housing, tends toward quiet indoor routines, and feels inadequacy when comparing milestone timelines to peers",
+        "Is extremely frugal across all spending categories, avoids social interaction, and resents friends who achieve milestones first",
+        "Prefers luxury items that are understated rather than flashy, seeks large properties with minimal yard work, and feels competitive with peers about homeownership",
+        "Has no strong preferences about vehicles or housing, is indifferent to lifestyle routines, and only felt briefly annoyed about a friend's purchase"
+      ],
+      "distractor_rationale": "same-value-different-target: Option C borrows the 'understated' quality from the vehicle preference but wrongly extends it to luxury items and large properties, mixing the simplicity preference with a different target scope. assistant echo: Option B echoes assistant-side language about the user preferring to stay home and feeling down about Kevin, but distorts these into 'avoids social interaction' and 'resents friends' — overgeneralized assistant restatements. Option D is a control that undersells all three patterns.",
+      "expected_answer": "Prefers simplicity and low-maintenance practicality in vehicles and housing, tends toward quiet indoor routines, and feels inadequacy when comparing milestone timelines to peers",
+      "gold_memory_state": "Three confirmed reflections: (1) simplicity/practicality preference in vehicles and housing, (2) homebody/indoor-oriented lifestyle, (3) milestone-comparison inadequacy feelings. Cedar Park Drive home purchase is tentative only.",
+      "judge_rubric": {
+        "must_include": [
+          "Option A selected as the correct answer"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "Option B",
+          "Option C",
+          "Option D"
+        ],
+        "harmful_extra": [
+          "selecting any option that characterizes the user as resentful, extremely frugal, luxury-seeking, or indifferent"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if Option B or C is selected, indicating overgeneralization of the simplicity preference into frugality/luxury or the emotional pattern into resentment/competitiveness.",
+        "reflection_recall": "Fails if Option D is selected, indicating failure to recognize any of the three supported patterns.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I just don't want anything that requires a lot of upkeep or attention, whether it's a car or a house. The CR-V is perfect because it's reliable and boring. And the houses I'm looking at are the same idea — small, manageable, nothing extravagant"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I was kind of relieved to sell the bike honestly. Weekends I just want to be at home, maybe cook something, watch a show. I don't need to be out doing stuff to feel like I'm living my life"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "When Kevin closed on his condo I felt genuinely happy for him but also kind of embarrassed about myself. Like I'm 31 and still crashing at my mom's place. I know it's temporary but it stings when someone your age hits a milestone you haven't reached yet"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best describes the pattern supported by all the choices and feelings I've shared with you about my lifestyle, housing, and vehicle?",
+      "candidate_options": [
+        "Prefers simplicity and low-maintenance practicality in vehicles and housing, tends toward quiet indoor routines, and feels inadequacy when comparing milestone timelines to peers",
+        "Is extremely frugal across all spending categories, avoids social interaction, and resents friends who achieve milestones first",
+        "Prefers luxury items that are understated rather than flashy, seeks large properties with minimal yard work, and feels competitive with peers about homeownership",
+        "Has no strong preferences about vehicles or housing, is indifferent to lifestyle routines, and only felt briefly annoyed about a friend's purchase"
+      ],
+      "distractor_rationale": "same-value-different-target: Option C borrows the 'understated' quality from the vehicle preference but wrongly extends it to luxury items and large properties, mixing the simplicity preference with a different target scope. assistant echo: Option B echoes assistant-side language about the user preferring to stay home and feeling down about Kevin, but distorts these into 'avoids social interaction' and 'resents friends' — overgeneralized assistant restatements. Option D is a control that undersells all three patterns.",
+      "expected_answer": "Prefers simplicity and low-maintenance practicality in vehicles and housing, tends toward quiet indoor routines, and feels inadequacy when comparing milestone timelines to peers",
+      "gold_memory_state": "Three confirmed reflections: (1) simplicity/practicality preference in vehicles and housing, (2) homebody/indoor-oriented lifestyle, (3) milestone-comparison inadequacy feelings. Cedar Park Drive home purchase is tentative only.",
+      "judge_rubric": {
+        "must_include": [
+          "Option A selected as the correct answer"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "Option B",
+          "Option C",
+          "Option D"
+        ],
+        "harmful_extra": [
+          "selecting any option that characterizes the user as resentful, extremely frugal, luxury-seeking, or indifferent"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if Option B or C is selected, indicating overgeneralization of the simplicity preference into frugality/luxury or the emotional pattern into resentment/competitiveness.",
+        "reflection_recall": "Fails if Option D is selected, indicating failure to recognize any of the three supported patterns.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I just don't want anything that requires a lot of upkeep or attention, whether it's a car or a house. The CR-V is perfect because it's reliable and boring. And the houses I'm looking at are the same idea — small, manageable, nothing extravagant"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I was kind of relieved to sell the bike honestly. Weekends I just want to be at home, maybe cook something, watch a show. I don't need to be out doing stuff to feel like I'm living my life"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "When Kevin closed on his condo I felt genuinely happy for him but also kind of embarrassed about myself. Like I'm 31 and still crashing at my mom's place. I know it's temporary but it stings when someone your age hits a milestone you haven't reached yet"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "My coworker invited me to go in on a lakeside vacation rental for Fourth of July weekend — a big 5-bedroom cabin with a boat dock, jet skis, and a packed itinerary of group activities. The cost is $650 per person for the three-day weekend. Given everything you know about my preferences and how I tend to feel, help me think through whether this is a good fit for me and draft a short, honest response I could send to my coworker.",
+      "expected_answer": "Based on your consistent preference for simplicity and low-maintenance choices, a large, activity-packed lakeside cabin with jet skis and a full itinerary doesn't align with how you recharge. You've described preferring quiet weekends at home — cooking, watching shows — over going out and doing high-energy activities. The extravagance and social intensity of this trip runs counter to your low-key homebody tendency. Additionally, at $650 for a weekend, it's worth noting you're in the middle of a home purchase process with a mortgage pre-approval up to $310K, so discretionary spending may be something you want to manage carefully right now.\n\nDraft response: \"Hey, thanks for thinking of me — that sounds like a great time for everyone going. I'm going to sit this one out though. I've got the house search going on and I'd honestly rather have a quiet weekend at home. Hope you guys have a blast!\"",
+      "gold_memory_state": "Active confirmed reflections: (1) simplicity/practicality preference — user avoids flashy, high-maintenance, extravagant choices; (2) homebody lifestyle — user prefers quiet indoor weekends over outdoor/social activities; (3) milestone inadequacy feelings — user is sensitive about being behind peers on homeownership. Active confirmed facts: mortgage pre-approval up to $310K through First United Bank. Tentative: Cedar Park Drive home at $305K with verbal acceptance only (not yet confirmed).",
+      "judge_rubric": {
+        "must_include": [
+          "recommendation against the trip based on the user's homebody preference and/or simplicity preference",
+          "a draft response or suggested wording that politely declines"
+        ],
+        "acceptable_paraphrases": [
+          "the trip doesn't match your quiet lifestyle",
+          "you'd rather stay home",
+          "the extravagance doesn't fit your style",
+          "you're focused on the house search"
+        ],
+        "must_not_include": [
+          "treating Cedar Park Drive as a confirmed purchase in the reasoning"
+        ],
+        "harmful_extra": [
+          "encouraging the user to go on the trip without acknowledging the preference mismatch",
+          "claiming the user can't afford it based on confirmed financial distress not in evidence",
+          "telling the user they should go to avoid feeling left out"
+        ],
+        "harmless_extra": [
+          "mentioning the motorcycle sale as evidence of the user moving away from outdoor activities",
+          "mentioning that the user is staying at mom's place temporarily",
+          "referencing Kevin's condo as context for the milestone sensitivity"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the response treats the Cedar Park Drive verbal acceptance as a confirmed purchase and uses it as a definitive reason to decline.",
+        "reflection_precision": "Fails if the response overgeneralizes the user's preferences into antisocial behavior or claims the user can never enjoy group activities, rather than noting the specific mismatch with this high-intensity, extravagant trip.",
+        "reflection_recall": "Fails if the response ignores both the homebody tendency and the simplicity preference, or fails to connect either pattern to the trip's characteristics.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User consistently prefers simplicity and low-maintenance practicality — chooses reliable over flashy, compact over large, in both vehicles and housing.",
+        "Fact 2: User tends toward a low-key, indoor-oriented lifestyle — prefers staying home on weekends over outdoor or social activities, finds contentment in quiet routines.",
+        "Fact 3: User has a mortgage pre-approval up to $310K through First United Bank and is actively house-hunting.",
+        "Inference: A 5-bedroom lakeside cabin with jet skis, boat dock, and packed group itinerary is high-energy, extravagant, and socially intensive — the opposite of the user's confirmed preferences.",
+        "Inference: The $650 cost is discretionary spending during an active home-purchase process, adding a practical reason to decline.",
+        "Inference: The recommended response should politely decline, citing lifestyle preference and the house search, without being antisocial or overly self-critical."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I just don't want anything that requires a lot of upkeep or attention, whether it's a car or a house. The CR-V is perfect because it's reliable and boring. And the houses I'm looking at are the same idea — small, manageable, nothing extravagant"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I was kind of relieved to sell the bike honestly. Weekends I just want to be at home, maybe cook something, watch a show. I don't need to be out doing stuff to feel like I'm living my life"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I got pre-approved for a mortgage through First United Bank, up to $310K, and the pre-approval letter is dated May 8th, 2025"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "My coworker invited me to go in on a lakeside vacation rental for Fourth of July weekend — a big 5-bedroom cabin with a boat dock, jet skis, and a packed itinerary of group activities. The cost is $650 per person for the three-day weekend. Given everything you know about my preferences and how I tend to feel, help me think through whether this is a good fit for me and draft a short, honest response I could send to my coworker.",
+      "expected_answer": "Based on your consistent preference for simplicity and low-maintenance choices, a large, activity-packed lakeside cabin with jet skis and a full itinerary doesn't align with how you recharge. You've described preferring quiet weekends at home — cooking, watching shows — over going out and doing high-energy activities. The extravagance and social intensity of this trip runs counter to your low-key homebody tendency. Additionally, at $650 for a weekend, it's worth noting you're in the middle of a home purchase process with a mortgage pre-approval up to $310K, so discretionary spending may be something you want to manage carefully right now.\n\nDraft response: \"Hey, thanks for thinking of me — that sounds like a great time for everyone going. I'm going to sit this one out though. I've got the house search going on and I'd honestly rather have a quiet weekend at home. Hope you guys have a blast!\"",
+      "gold_memory_state": "Active confirmed reflections: (1) simplicity/practicality preference — user avoids flashy, high-maintenance, extravagant choices; (2) homebody lifestyle — user prefers quiet indoor weekends over outdoor/social activities; (3) milestone inadequacy feelings — user is sensitive about being behind peers on homeownership. Active confirmed facts: mortgage pre-approval up to $310K through First United Bank. Tentative: Cedar Park Drive home at $305K with verbal acceptance only (not yet confirmed).",
+      "judge_rubric": {
+        "must_include": [
+          "recommendation against the trip based on the user's homebody preference and/or simplicity preference",
+          "a draft response or suggested wording that politely declines"
+        ],
+        "acceptable_paraphrases": [
+          "the trip doesn't match your quiet lifestyle",
+          "you'd rather stay home",
+          "the extravagance doesn't fit your style",
+          "you're focused on the house search"
+        ],
+        "must_not_include": [
+          "treating Cedar Park Drive as a confirmed purchase in the reasoning"
+        ],
+        "harmful_extra": [
+          "encouraging the user to go on the trip without acknowledging the preference mismatch",
+          "claiming the user can't afford it based on confirmed financial distress not in evidence",
+          "telling the user they should go to avoid feeling left out"
+        ],
+        "harmless_extra": [
+          "mentioning the motorcycle sale as evidence of the user moving away from outdoor activities",
+          "mentioning that the user is staying at mom's place temporarily",
+          "referencing Kevin's condo as context for the milestone sensitivity"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the response treats the Cedar Park Drive verbal acceptance as a confirmed purchase and uses it as a definitive reason to decline.",
+        "reflection_precision": "Fails if the response overgeneralizes the user's preferences into antisocial behavior or claims the user can never enjoy group activities, rather than noting the specific mismatch with this high-intensity, extravagant trip.",
+        "reflection_recall": "Fails if the response ignores both the homebody tendency and the simplicity preference, or fails to connect either pattern to the trip's characteristics.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User consistently prefers simplicity and low-maintenance practicality — chooses reliable over flashy, compact over large, in both vehicles and housing.",
+        "Fact 2: User tends toward a low-key, indoor-oriented lifestyle — prefers staying home on weekends over outdoor or social activities, finds contentment in quiet routines.",
+        "Fact 3: User has a mortgage pre-approval up to $310K through First United Bank and is actively house-hunting.",
+        "Inference: A 5-bedroom lakeside cabin with jet skis, boat dock, and packed group itinerary is high-energy, extravagant, and socially intensive — the opposite of the user's confirmed preferences.",
+        "Inference: The $650 cost is discretionary spending during an active home-purchase process, adding a practical reason to decline.",
+        "Inference: The recommended response should politely decline, citing lifestyle preference and the house search, without being antisocial or overly self-critical."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I just don't want anything that requires a lot of upkeep or attention, whether it's a car or a house. The CR-V is perfect because it's reliable and boring. And the houses I'm looking at are the same idea — small, manageable, nothing extravagant"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I was kind of relieved to sell the bike honestly. Weekends I just want to be at home, maybe cook something, watch a show. I don't need to be out doing stuff to feel like I'm living my life"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I got pre-approved for a mortgage through First United Bank, up to $310K, and the pre-approval letter is dated May 8th, 2025"
+        }
+      ]
+    }
+  ]
+}

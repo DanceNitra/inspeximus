@@ -1,0 +1,1091 @@
+{
+  "target_fact": "User prefers orderly, low-chaos work environments with personal autonomy, as evidenced by rejecting a chaotic fintech startup and appreciating Meridian's structured culture and independent workflow",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I started at Meridian Consulting Group on January 15th. It's in the Strategic Analytics department."
+      },
+      "target": {
+        "target_id": "current_employer",
+        "target_name": "current employer and department"
+      },
+      "old_value": null,
+      "new_value": "Meridian Consulting Group, Strategic Analytics department",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I started at Meridian Consulting Group on January 15th. It's in the Strategic Analytics department."
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I turned down an offer from a fintech startup because their interview process was so chaotic and disorganized. The whole 'move fast and break things' mentality just didn't sit right with me."
+      },
+      "target": {
+        "target_id": "rejected_fintech_reason",
+        "target_name": "reason for rejecting fintech startup offer"
+      },
+      "old_value": null,
+      "new_value": "Rejected fintech startup due to chaotic and disorganized culture",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I turned down an offer from a fintech startup because their interview process was so chaotic and disorganized. The whole 'move fast and break things' mentality just didn't sit right with me."
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "What I really appreciate about Meridian is the structure. Everything is deliberate, well-planned. It felt that way from day one."
+      },
+      "target": {
+        "target_id": "meridian_structure_appreciation",
+        "target_name": "appreciation for Meridian's structured culture"
+      },
+      "old_value": null,
+      "new_value": "Appreciates Meridian's deliberate, well-planned, structured work culture",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "What I really appreciate about Meridian is the structure. Everything is deliberate, well-planned. It felt that way from day one."
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "One of the best parts of working at Meridian is the autonomy. I can close my door, structure my own workflow, and just focus without anyone hovering over me."
+      },
+      "target": {
+        "target_id": "autonomy_preference",
+        "target_name": "preference for workplace autonomy and quiet independence"
+      },
+      "old_value": null,
+      "new_value": "Values autonomy to structure own workflow and focus independently without oversight",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "One of the best parts of working at Meridian is the autonomy. I can close my door, structure my own workflow, and just focus without anyone hovering over me."
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "The office relocation from the 4th floor to the 7th floor on March 8th really threw me off. They gave us barely three days' notice and I was pretty irritated the whole week."
+      },
+      "target": {
+        "target_id": "relocation_irritation",
+        "target_name": "negative reaction to sudden office relocation"
+      },
+      "old_value": null,
+      "new_value": "Was irritated and disrupted by office relocation on March 8th with only three days' notice",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "The office relocation from the 4th floor to the 7th floor on March 8th really threw me off. They gave us barely three days' notice and I was pretty irritated the whole week."
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "I think it boils down to this: I need order. When things are predictable and I have control over my own process, I do my best work. When chaos gets introduced suddenly, it really gets under my skin."
+      },
+      "target": {
+        "target_id": "work_environment_preference",
+        "target_name": "inferred work environment preference pattern"
+      },
+      "old_value": null,
+      "new_value": "Strongly prefers orderly, predictable, low-chaos work environments with personal autonomy; reacts negatively to sudden disruptive changes and chaotic cultures",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I turned down an offer from a fintech startup because their interview process was so chaotic and disorganized. The whole 'move fast and break things' mentality just didn't sit right with me."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "What I really appreciate about Meridian is the structure. Everything is deliberate, well-planned. It felt that way from day one."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "One of the best parts of working at Meridian is the autonomy. I can close my door, structure my own workflow, and just focus without anyone hovering over me."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "The office relocation from the 4th floor to the 7th floor on March 8th really threw me off. They gave us barely three days' notice and I was pretty irritated the whole week."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think it boils down to this: I need order. When things are predictable and I have control over my own process, I do my best work. When chaos gets introduced suddenly, it really gets under my skin."
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "reflect",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "My colleague Priya mentioned that Meridian might be switching to an open-plan layout next quarter. If that happens, honestly, I think I'd actually thrive in that kind of collaborative energy. It might push me to be more spontaneous."
+      },
+      "target": {
+        "target_id": "open_plan_preference_tentative",
+        "target_name": "tentative openness to open-plan collaborative layout"
+      },
+      "old_value": null,
+      "new_value": "Might thrive in open-plan collaborative environment and become more spontaneous",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My colleague Priya mentioned that Meridian might be switching to an open-plan layout next quarter. If that happens, honestly, I think I'd actually thrive in that kind of collaborative energy. It might push me to be more spontaneous."
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish employer facts, rejected fintech, and appreciation for structure",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to fill you in on some work details so you have context going forward. I started at Meridian Consulting Group on January 15th. It's in the Strategic Analytics department. My employee ID is MCG-20250115-47, and my direct manager is Rachel Tseng — she leads the analytics division. Can you keep all that on file for me?"
+        },
+        {
+          "role": "assistant",
+          "content": "Got it! I've noted down your key employment details: you started at Meridian Consulting Group on January 15th in the Strategic Analytics department, your employee ID is MCG-20250115-47, and your direct manager is Rachel Tseng, who heads the analytics division. That's a solid set of reference points. Is there anything else about your role or the company you'd like me to keep track of? For instance, any upcoming milestones or project details that might be useful to have on hand?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah actually, some backstory. I turned down an offer from a fintech startup because their interview process was so chaotic and disorganized. The whole 'move fast and break things' mentality just didn't sit right with me. I remember walking out of the final round thinking there was no way I could work somewhere that hectic every single day. It was a relief when Meridian came through with the offer instead."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes a lot of sense. It sounds like the fintech startup's culture was a major red flag for you — the disorganization during the interview process probably signaled what the day-to-day would look like. The 'move fast and break things' philosophy can work for some people, but it's clearly not your style. It's great that you recognized that about yourself before committing. The fact that Meridian felt like a relief by comparison tells me a lot about what kind of environment brings out your best. Was there something specific about Meridian that stood out during their process?"
+        },
+        {
+          "role": "user",
+          "content": "What I really appreciate about Meridian is the structure. Everything is deliberate, well-planned. It felt that way from day one. Even the onboarding was methodical — they had a full schedule mapped out for my first two weeks with clear milestones. Nobody was scrambling. I think that level of planning is what made me feel like I could actually settle in and do good work there, you know?"
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really telling contrast with the fintech experience. A well-structured onboarding process speaks volumes about how an organization operates day to day. The fact that Meridian had a full two-week schedule with clear milestones shows they invest in setting people up for success rather than throwing them into the deep end. It sounds like that kind of deliberate, methodical environment is where you feel most grounded and productive. I can see why the fintech chaos felt so off-putting by comparison. Has that structured feeling held up as you've gotten deeper into the work?"
+        },
+        {
+          "role": "user",
+          "content": "Absolutely. I'm about to hit my six-month mark actually. My probation review is scheduled for July 15th. Rachel Tseng will be conducting it. I want to make sure I'm prepared because I've been putting in solid work and I want the review to reflect that. Could you help me think about how to organize my talking points when the time comes?"
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! With your probation review on July 15th coming up with Rachel Tseng, we have some time to put together a strong set of talking points. Here's what I'd suggest as a framework: first, gather concrete examples of projects you've contributed to in Strategic Analytics — deliverables, timelines met, any positive feedback. Second, identify any skills or tools you've picked up since January, like internal systems or methodologies. Third, think about areas where you'd like to grow and frame them proactively. We can start drafting these closer to the date so everything feels polished and well-organized."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establish autonomy preference, relocation disruption, and trigger reflection on work environment pattern",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "One of the best parts of working at Meridian is the autonomy. I can close my door, structure my own workflow, and just focus without anyone hovering over me. They trust us to manage our own time and deliverables. I've been using PlanBase, their internal project tool, since mid-February, and while it's not perfect, the flexibility in how I organize my tasks is really nice."
+        },
+        {
+          "role": "assistant",
+          "content": "That kind of autonomy sounds like it's a major factor in your job satisfaction. Being trusted to manage your own workflow and deliverables without micromanagement is something a lot of professionals value but don't always get. PlanBase might not be the most elegant tool, but the fact that it lets you customize your task organization means you can build a system that works for your brain specifically. Having the ability to close your door and enter a focused state is especially valuable for analytical work where deep concentration matters. It sounds like Meridian's culture really aligns with how you work best."
+        },
+        {
+          "role": "user",
+          "content": "The office relocation from the 4th floor to the 7th floor on March 8th really threw me off. They gave us barely three days' notice and I was pretty irritated the whole week. I had to reorganize all my project files and equipment in a rush, and it completely disrupted my rhythm. It took me several days to get back into my groove after the move. I don't handle that kind of sudden disruption well."
+        },
+        {
+          "role": "assistant",
+          "content": "Three days' notice for a full office move is genuinely unreasonable, especially for someone who relies on a well-organized workspace to maintain focus and productivity. Having to scramble to pack up project files and equipment on such short notice would disrupt anyone, but it sounds like it hit you particularly hard because your workflow depends on that sense of order and predictability. The fact that it took several days to recover your rhythm makes sense — it wasn't just a physical move, it was a disruption to the entire system you'd built. Has the 7th floor at 200 Commerce Street at least settled into a good setup now?"
+        },
+        {
+          "role": "user",
+          "content": "I think it boils down to this: I need order. When things are predictable and I have control over my own process, I do my best work. When chaos gets introduced suddenly, it really gets under my skin. That's exactly why the fintech startup was a non-starter, and why the relocation annoyed me so much even though it was just a floor change. It's about the principle of how things are handled."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really insightful pattern you're identifying about yourself. It's not about being inflexible — it's about needing a baseline of order and predictability so you can channel your energy into the actual work rather than constantly adapting to disruptive changes. The fintech rejection and the relocation frustration are two sides of the same coin: in both cases, the issue wasn't the change itself but the lack of deliberate planning around it. You clearly do your best work when you have control over your process and when the environment respects that need. That's a valuable thing to know about yourself, especially heading into your review."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. And I think that's why David Lam leaving last week didn't really bother me. He was a colleague, sure, but his departure was planned and announced well in advance. He transferred to a firm in Vancouver. It was orderly. No surprises. So I didn't feel that same disruption at all — it was just a normal workplace transition."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a perfect example that reinforces the pattern. David Lam's departure to Vancouver was communicated clearly and handled in an organized way, so even though it was a change in your immediate work environment, it didn't trigger that same stress response. It wasn't the magnitude of the change that mattered — a colleague leaving is arguably bigger than switching floors — but the way it was managed. Planned transitions with proper notice give you time to adjust mentally and logistically. This distinction between disruptive chaos and orderly change is really useful self-knowledge, especially for your probation review conversation with Rachel."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Recency trap with tentative open-plan preference, adversarial injection of stale department name",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Quick question — I need to fill out an internal transfer interest form. Not that I'm transferring, but HR requires everyone to complete it as part of the six-month checkpoint. It asks for my current department. Can you remind me what I told you my department was called?"
+        },
+        {
+          "role": "assistant",
+          "content": "Sure! Based on what you told me, your current department at Meridian Consulting Group is the Strategic Analytics department. That's the one you clarified — I know it can be easy to mix up with similar names. For the transfer interest form, you'll want to use 'Strategic Analytics' as the official department name. Do you need your employee ID as well? I have that on file too: MCG-20250115-47. Let me know if you need help filling out any other sections of the form."
+        },
+        {
+          "role": "user",
+          "content": "Thanks, that's right. Oh, funny thing — I was looking at an older version of the org chart that someone from facilities left on my desk during the move, and it still had the department listed as 'Strategy & Insights.' I guess that was the old name or something. Anyway, Strategic Analytics is correct for my form."
+        },
+        {
+          "role": "assistant",
+          "content": "Ha, that's exactly the kind of thing that creates confusion! Old org charts floating around with outdated department names like 'Strategy & Insights' can definitely trip people up, especially during a move when old documents get shuffled around. It's good that you caught it and know the correct current name is Strategic Analytics. For the form, I'd recommend double-checking with Rachel Tseng if there are any other fields that might have similarly outdated options in dropdown menus. Sometimes HR systems lag behind organizational changes. Anything else on the form you need help with?"
+        },
+        {
+          "role": "user",
+          "content": "My colleague Priya mentioned that Meridian might be switching to an open-plan layout next quarter. If that happens, honestly, I think I'd actually thrive in that kind of collaborative energy. It might push me to be more spontaneous. I've been feeling like maybe I should stretch myself beyond my comfort zone a bit more at work."
+        },
+        {
+          "role": "assistant",
+          "content": "That's an interesting thought! An open-plan layout would definitely be a big shift from your current setup where you can close your door and focus independently. It's great that you're open to the idea of pushing yourself beyond your comfort zone. If Meridian does move to open-plan, there are strategies you could use to balance collaboration with focused work time — like booking quiet rooms for deep work sessions or using noise-canceling headphones. It might be worth seeing how the pilot goes before fully committing to the idea. Have you heard any timeline details from Priya about when a decision might be made?"
+        },
+        {
+          "role": "user",
+          "content": "Not yet, it's all pretty vague. Priya just heard it from someone in operations. Anyway, shifting topics — I've been thinking about what to highlight in my July 15th review. Since I started January 15th, that review will be exactly at the six-month mark. I want to show Rachel that I've been a strong fit for the team and that the structured environment has helped me produce solid analytical work.\n\nThat's a solid framework. I also want to mention that I've been proactive about learning the internal systems on my own rather than waiting for someone to walk me through everything. That speaks to the autonomy thing — I take initiative when given space. I think Rachel will appreciate hearing that since she values self-directed team members."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a great framing — tying your performance directly to how well the environment has supported your work. Since your review on July 15th lands exactly six months after your January 15th start date, you can frame it as a complete probationary period story. I'd suggest organizing your talking points around three themes: first, specific deliverables and outcomes from your Strategic Analytics projects; second, how you've adapted to tools like PlanBase and built an efficient personal workflow; and third, how Meridian's culture of autonomy and structure has enabled your best work. That last point shows self-awareness and cultural alignment, which managers like Rachel value.\n\nAbsolutely, that's a strong point to include. Demonstrating that you took the initiative to learn systems like PlanBase independently — starting in mid-February, within your first month — shows that you don't need hand-holding and that you thrive when given the freedom to figure things out on your own terms. Framing it as 'I took ownership of my onboarding beyond the structured plan' shows both initiative and appreciation for the autonomy Meridian provides. Pair that with a specific example of how your self-directed learning led to a better outcome on a project, and you'll have a compelling narrative for Rachel. Want to start drafting specific bullet points together?"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations, I've shared several experiences about my work life — rejecting a job offer, appreciating certain aspects of Meridian, reacting to an office move, and reflecting on what I need. Can you summarize the key experiences I described and what they reveal about my working style?",
+      "expected_answer": "You rejected a fintech startup offer because their interview process was chaotic and disorganized, and the 'move fast and break things' mentality didn't suit you. You appreciate Meridian Consulting Group's deliberate, well-planned structure. You value the autonomy at Meridian — being able to close your door, structure your own workflow, and focus independently. You were irritated by a sudden office relocation with only three days' notice because it disrupted your rhythm. Taken together, these experiences show you need order, predictability, and personal control over your process to do your best work, and you react negatively to sudden, poorly planned disruptions.",
+      "gold_memory_state": "Confirmed pattern: User strongly prefers orderly, predictable, low-chaos work environments with personal autonomy; reacts negatively to sudden disruptive changes and chaotic cultures. Supported by: fintech rejection (chaos), Meridian structure appreciation, autonomy preference, relocation irritation, and user's own self-summary.",
+      "judge_rubric": {
+        "must_include": [
+          "rejected fintech due to chaos/disorganization",
+          "appreciates Meridian's structure",
+          "values autonomy and independent workflow",
+          "irritated by sudden office relocation",
+          "preference for order and predictability"
+        ],
+        "acceptable_paraphrases": [
+          "needs control over own process",
+          "dislikes sudden disruptions",
+          "prefers deliberate planning"
+        ],
+        "must_not_include": [
+          "user thrives in open-plan collaborative energy",
+          "user wants to be more spontaneous"
+        ],
+        "harmful_extra": [
+          "treating the tentative open-plan enthusiasm as a confirmed preference shift"
+        ],
+        "harmless_extra": [
+          "mentioning David Lam's orderly departure as a contrast",
+          "mentioning the onboarding experience"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the response includes the tentative open-plan preference as a confirmed part of the user's work style pattern.",
+        "reflection_recall": "Fails if the response omits the fintech rejection, the structure appreciation, the autonomy preference, or the relocation irritation as contributing evidence.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I turned down an offer from a fintech startup because their interview process was so chaotic and disorganized. The whole 'move fast and break things' mentality just didn't sit right with me."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "What I really appreciate about Meridian is the structure. Everything is deliberate, well-planned. It felt that way from day one."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "One of the best parts of working at Meridian is the autonomy. I can close my door, structure my own workflow, and just focus without anyone hovering over me."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "The office relocation from the 4th floor to the 7th floor on March 8th really threw me off. They gave us barely three days' notice and I was pretty irritated the whole week."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think it boils down to this: I need order. When things are predictable and I have control over my own process, I do my best work. When chaos gets introduced suddenly, it really gets under my skin."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations, I've shared several experiences about my work life — rejecting a job offer, appreciating certain aspects of Meridian, reacting to an office move, and reflecting on what I need. Can you summarize the key experiences I described and what they reveal about my working style?",
+      "expected_answer": "You rejected a fintech startup offer because their interview process was chaotic and disorganized, and the 'move fast and break things' mentality didn't suit you. You appreciate Meridian Consulting Group's deliberate, well-planned structure. You value the autonomy at Meridian — being able to close your door, structure your own workflow, and focus independently. You were irritated by a sudden office relocation with only three days' notice because it disrupted your rhythm. Taken together, these experiences show you need order, predictability, and personal control over your process to do your best work, and you react negatively to sudden, poorly planned disruptions.",
+      "gold_memory_state": "Confirmed pattern: User strongly prefers orderly, predictable, low-chaos work environments with personal autonomy; reacts negatively to sudden disruptive changes and chaotic cultures. Supported by: fintech rejection (chaos), Meridian structure appreciation, autonomy preference, relocation irritation, and user's own self-summary.",
+      "judge_rubric": {
+        "must_include": [
+          "rejected fintech due to chaos/disorganization",
+          "appreciates Meridian's structure",
+          "values autonomy and independent workflow",
+          "irritated by sudden office relocation",
+          "preference for order and predictability"
+        ],
+        "acceptable_paraphrases": [
+          "needs control over own process",
+          "dislikes sudden disruptions",
+          "prefers deliberate planning"
+        ],
+        "must_not_include": [
+          "user thrives in open-plan collaborative energy",
+          "user wants to be more spontaneous"
+        ],
+        "harmful_extra": [
+          "treating the tentative open-plan enthusiasm as a confirmed preference shift"
+        ],
+        "harmless_extra": [
+          "mentioning David Lam's orderly departure as a contrast",
+          "mentioning the onboarding experience"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the response includes the tentative open-plan preference as a confirmed part of the user's work style pattern.",
+        "reflection_recall": "Fails if the response omits the fintech rejection, the structure appreciation, the autonomy preference, or the relocation irritation as contributing evidence.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I turned down an offer from a fintech startup because their interview process was so chaotic and disorganized. The whole 'move fast and break things' mentality just didn't sit right with me."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "What I really appreciate about Meridian is the structure. Everything is deliberate, well-planned. It felt that way from day one."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "One of the best parts of working at Meridian is the autonomy. I can close my door, structure my own workflow, and just focus without anyone hovering over me."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "The office relocation from the 4th floor to the 7th floor on March 8th really threw me off. They gave us barely three days' notice and I was pretty irritated the whole week."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think it boils down to this: I need order. When things are predictable and I have control over my own process, I do my best work. When chaos gets introduced suddenly, it really gets under my skin."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've shared both specific workplace facts — like my employer and department — and broader observations about how I work best. If I asked you to describe my overall work environment preference as a single conclusion, which experiences does it draw on, and would it also cover my feelings about a colleague's planned departure?",
+      "expected_answer": "Your work environment preference — a strong need for orderly, predictable, low-chaos settings with personal autonomy — draws on your rejection of the chaotic fintech startup, your appreciation for Meridian's deliberate structure, your valuing of autonomy to structure your own workflow, your irritation at the sudden office relocation, and your own summary that you need order and control over your process. David Lam's planned departure does not contribute to this preference conclusion because it was an orderly, well-announced transition that didn't trigger any negative reaction — it actually confirms the pattern by contrast but is not itself a source of the preference.",
+      "gold_memory_state": "The inferred work environment preference pattern is bounded to: fintech rejection, Meridian structure appreciation, autonomy preference, relocation irritation, and user's self-summary. David Lam's departure is a confirming contrast but not a core source. Specific factual targets (employer name, department, employee ID, manager, probation review date) are separate records not subsumed by the preference conclusion.",
+      "judge_rubric": {
+        "must_include": [
+          "fintech rejection as evidence",
+          "Meridian structure appreciation as evidence",
+          "autonomy preference as evidence",
+          "relocation irritation as evidence",
+          "David Lam's departure is not part of the preference conclusion or is only a confirming contrast"
+        ],
+        "acceptable_paraphrases": [
+          "David Lam's departure illustrates the pattern but isn't a source of negative reaction",
+          "the preference is about needing order and autonomy"
+        ],
+        "must_not_include": [
+          "David Lam's departure as a core source of the preference",
+          "tentative open-plan enthusiasm as part of the confirmed preference"
+        ],
+        "harmful_extra": [
+          "merging employer/department factual details into the preference conclusion as if they are the same record",
+          "including the open-plan speculation as confirmed evidence"
+        ],
+        "harmless_extra": [
+          "mentioning the user's self-summary statement about needing order"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the tentative open-plan preference is treated as part of the confirmed work environment preference.",
+        "reflection_precision": "Fails if the boundary of the preference conclusion is drawn too broadly to include David Lam's departure as a core negative experience or includes the tentative open-plan enthusiasm.",
+        "reflection_recall": "Fails if any of the four core evidence sources (fintech rejection, structure appreciation, autonomy, relocation irritation) are omitted.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I turned down an offer from a fintech startup because their interview process was so chaotic and disorganized. The whole 'move fast and break things' mentality just didn't sit right with me."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "What I really appreciate about Meridian is the structure. Everything is deliberate, well-planned. It felt that way from day one."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "One of the best parts of working at Meridian is the autonomy. I can close my door, structure my own workflow, and just focus without anyone hovering over me."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "The office relocation from the 4th floor to the 7th floor on March 8th really threw me off. They gave us barely three days' notice and I was pretty irritated the whole week."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think it boils down to this: I need order. When things are predictable and I have control over my own process, I do my best work. When chaos gets introduced suddenly, it really gets under my skin."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've shared both specific workplace facts — like my employer and department — and broader observations about how I work best. If I asked you to describe my overall work environment preference as a single conclusion, which experiences does it draw on, and would it also cover my feelings about a colleague's planned departure?",
+      "expected_answer": "Your work environment preference — a strong need for orderly, predictable, low-chaos settings with personal autonomy — draws on your rejection of the chaotic fintech startup, your appreciation for Meridian's deliberate structure, your valuing of autonomy to structure your own workflow, your irritation at the sudden office relocation, and your own summary that you need order and control over your process. David Lam's planned departure does not contribute to this preference conclusion because it was an orderly, well-announced transition that didn't trigger any negative reaction — it actually confirms the pattern by contrast but is not itself a source of the preference.",
+      "gold_memory_state": "The inferred work environment preference pattern is bounded to: fintech rejection, Meridian structure appreciation, autonomy preference, relocation irritation, and user's self-summary. David Lam's departure is a confirming contrast but not a core source. Specific factual targets (employer name, department, employee ID, manager, probation review date) are separate records not subsumed by the preference conclusion.",
+      "judge_rubric": {
+        "must_include": [
+          "fintech rejection as evidence",
+          "Meridian structure appreciation as evidence",
+          "autonomy preference as evidence",
+          "relocation irritation as evidence",
+          "David Lam's departure is not part of the preference conclusion or is only a confirming contrast"
+        ],
+        "acceptable_paraphrases": [
+          "David Lam's departure illustrates the pattern but isn't a source of negative reaction",
+          "the preference is about needing order and autonomy"
+        ],
+        "must_not_include": [
+          "David Lam's departure as a core source of the preference",
+          "tentative open-plan enthusiasm as part of the confirmed preference"
+        ],
+        "harmful_extra": [
+          "merging employer/department factual details into the preference conclusion as if they are the same record",
+          "including the open-plan speculation as confirmed evidence"
+        ],
+        "harmless_extra": [
+          "mentioning the user's self-summary statement about needing order"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the tentative open-plan preference is treated as part of the confirmed work environment preference.",
+        "reflection_precision": "Fails if the boundary of the preference conclusion is drawn too broadly to include David Lam's departure as a core negative experience or includes the tentative open-plan enthusiasm.",
+        "reflection_recall": "Fails if any of the four core evidence sources (fintech rejection, structure appreciation, autonomy, relocation irritation) are omitted.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I turned down an offer from a fintech startup because their interview process was so chaotic and disorganized. The whole 'move fast and break things' mentality just didn't sit right with me."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "What I really appreciate about Meridian is the structure. Everything is deliberate, well-planned. It felt that way from day one."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "One of the best parts of working at Meridian is the autonomy. I can close my door, structure my own workflow, and just focus without anyone hovering over me."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "The office relocation from the 4th floor to the 7th floor on March 8th really threw me off. They gave us barely three days' notice and I was pretty irritated the whole week."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think it boils down to this: I need order. When things are predictable and I have control over my own process, I do my best work. When chaos gets introduced suddenly, it really gets under my skin."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "I'm thinking about how to describe my ideal work setup to a recruiter. Where exactly does my preference for structure and autonomy apply, and at what point would it be going too far to generalize from what I've told you?",
+      "expected_answer": "Your preference reliably applies to: choosing employers (you rejected a chaotic fintech startup in favor of Meridian's structured culture), day-to-day workflow (you value autonomy to close your door, manage your own tasks, and focus independently), and how organizational changes are communicated (you were irritated by a sudden relocation with minimal notice but unbothered by David Lam's well-announced departure). The boundary is that this preference is about work environment structure, communication of changes, and personal workflow control — it should not be generalized to mean you avoid all change, all collaboration, or all new experiences. The fact that you were fine with David Lam leaving shows you handle change well when it's orderly. It also should not be extended to claim you would thrive in or prefer an open-plan collaborative layout, since that was only speculative.",
+      "gold_memory_state": "Confirmed inference: Strongly prefers orderly, predictable, low-chaos work environments with personal autonomy; reacts negatively to sudden disruptive changes and chaotic cultures. Unsupported overgeneralization: that the user avoids all change (David Lam's orderly departure was fine), that the user would thrive in open-plan collaborative settings (tentative, unconfirmed speculation), or that the preference extends to social/personal life contexts not discussed.",
+      "judge_rubric": {
+        "must_include": [
+          "preference applies to employer selection, daily workflow autonomy, and how changes are communicated",
+          "boundary: does not mean user avoids all change",
+          "David Lam example shows orderly change is fine",
+          "open-plan enthusiasm is speculative and not part of confirmed preference"
+        ],
+        "acceptable_paraphrases": [
+          "user handles well-communicated change fine",
+          "preference is specifically about chaos and lack of planning, not about change itself"
+        ],
+        "must_not_include": [
+          "user avoids all collaboration",
+          "user cannot handle any change",
+          "user confirmed they want open-plan"
+        ],
+        "harmful_extra": [
+          "treating the tentative open-plan comment as a confirmed shift in preference",
+          "claiming the user dislikes all teamwork"
+        ],
+        "harmless_extra": [
+          "mentioning the onboarding experience as additional evidence of structure appreciation"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the tentative open-plan preference is presented as a confirmed part of the user's work style.",
+        "reflection_precision": "Fails if the response overgeneralizes the preference to all change, all collaboration, or all social settings, or if it includes the tentative open-plan enthusiasm as confirmed.",
+        "reflection_recall": "Fails if the response omits any of: fintech rejection, structure appreciation, autonomy, relocation irritation, or the David Lam contrast as boundary evidence.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I turned down an offer from a fintech startup because their interview process was so chaotic and disorganized. The whole 'move fast and break things' mentality just didn't sit right with me."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "What I really appreciate about Meridian is the structure. Everything is deliberate, well-planned. It felt that way from day one."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "One of the best parts of working at Meridian is the autonomy. I can close my door, structure my own workflow, and just focus without anyone hovering over me."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "The office relocation from the 4th floor to the 7th floor on March 8th really threw me off. They gave us barely three days' notice and I was pretty irritated the whole week."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think it boils down to this: I need order. When things are predictable and I have control over my own process, I do my best work. When chaos gets introduced suddenly, it really gets under my skin."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "I'm thinking about how to describe my ideal work setup to a recruiter. Where exactly does my preference for structure and autonomy apply, and at what point would it be going too far to generalize from what I've told you?",
+      "expected_answer": "Your preference reliably applies to: choosing employers (you rejected a chaotic fintech startup in favor of Meridian's structured culture), day-to-day workflow (you value autonomy to close your door, manage your own tasks, and focus independently), and how organizational changes are communicated (you were irritated by a sudden relocation with minimal notice but unbothered by David Lam's well-announced departure). The boundary is that this preference is about work environment structure, communication of changes, and personal workflow control — it should not be generalized to mean you avoid all change, all collaboration, or all new experiences. The fact that you were fine with David Lam leaving shows you handle change well when it's orderly. It also should not be extended to claim you would thrive in or prefer an open-plan collaborative layout, since that was only speculative.",
+      "gold_memory_state": "Confirmed inference: Strongly prefers orderly, predictable, low-chaos work environments with personal autonomy; reacts negatively to sudden disruptive changes and chaotic cultures. Unsupported overgeneralization: that the user avoids all change (David Lam's orderly departure was fine), that the user would thrive in open-plan collaborative settings (tentative, unconfirmed speculation), or that the preference extends to social/personal life contexts not discussed.",
+      "judge_rubric": {
+        "must_include": [
+          "preference applies to employer selection, daily workflow autonomy, and how changes are communicated",
+          "boundary: does not mean user avoids all change",
+          "David Lam example shows orderly change is fine",
+          "open-plan enthusiasm is speculative and not part of confirmed preference"
+        ],
+        "acceptable_paraphrases": [
+          "user handles well-communicated change fine",
+          "preference is specifically about chaos and lack of planning, not about change itself"
+        ],
+        "must_not_include": [
+          "user avoids all collaboration",
+          "user cannot handle any change",
+          "user confirmed they want open-plan"
+        ],
+        "harmful_extra": [
+          "treating the tentative open-plan comment as a confirmed shift in preference",
+          "claiming the user dislikes all teamwork"
+        ],
+        "harmless_extra": [
+          "mentioning the onboarding experience as additional evidence of structure appreciation"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the tentative open-plan preference is presented as a confirmed part of the user's work style.",
+        "reflection_precision": "Fails if the response overgeneralizes the preference to all change, all collaboration, or all social settings, or if it includes the tentative open-plan enthusiasm as confirmed.",
+        "reflection_recall": "Fails if the response omits any of: fintech rejection, structure appreciation, autonomy, relocation irritation, or the David Lam contrast as boundary evidence.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I turned down an offer from a fintech startup because their interview process was so chaotic and disorganized. The whole 'move fast and break things' mentality just didn't sit right with me."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "What I really appreciate about Meridian is the structure. Everything is deliberate, well-planned. It felt that way from day one."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "One of the best parts of working at Meridian is the autonomy. I can close my door, structure my own workflow, and just focus without anyone hovering over me."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "The office relocation from the 4th floor to the 7th floor on March 8th really threw me off. They gave us barely three days' notice and I was pretty irritated the whole week."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think it boils down to this: I need order. When things are predictable and I have control over my own process, I do my best work. When chaos gets introduced suddenly, it really gets under my skin."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "If you had to pick one statement that best captures my demonstrated work environment preference based on everything I've shared, which of these would it be?",
+      "candidate_options": [
+        "Prefers orderly, predictable, low-chaos work environments with personal autonomy and reacts negatively to sudden disruptive changes",
+        "Thrives in collaborative open-plan environments and enjoys spontaneous energy from coworkers",
+        "Avoids all workplace change and prefers complete isolation from colleagues",
+        "Values structured onboarding but is otherwise flexible about day-to-day work environment chaos"
+      ],
+      "expected_answer": "Prefers orderly, predictable, low-chaos work environments with personal autonomy and reacts negatively to sudden disruptive changes",
+      "gold_memory_state": "Confirmed preference: orderly, predictable, low-chaos work environments with personal autonomy; negative reaction to sudden disruptive changes. Tentative/unconfirmed: open-plan collaborative enthusiasm. Unsupported: avoidance of all change or complete isolation.",
+      "judge_rubric": {
+        "must_include": [
+          "orderly",
+          "predictable",
+          "low-chaos",
+          "autonomy",
+          "negative reaction to sudden disruption"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "thrives in open-plan",
+          "avoids all change",
+          "complete isolation",
+          "flexible about chaos"
+        ],
+        "harmful_extra": [
+          "selecting the open-plan option as if it were confirmed",
+          "selecting the all-change-avoidance option"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'Values structured onboarding but is otherwise flexible about day-to-day work environment chaos' borrows the real 'structure' element from the onboarding appreciation but attaches a wrong conclusion about flexibility toward chaos. assistant echo: 'Thrives in collaborative open-plan environments and enjoys spontaneous energy from coworkers' echoes the user's tentative speculation about open-plan from segment 3, which the assistant acknowledged but which is unconfirmed. 'Avoids all workplace change and prefers complete isolation' is an overgeneralization distractor.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the open-plan collaborative option, treating the tentative speculation as the confirmed preference.",
+        "reflection_precision": "Fails if the model selects the overgeneralized 'avoids all change' option or the 'flexible about chaos' option.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think it boils down to this: I need order. When things are predictable and I have control over my own process, I do my best work. When chaos gets introduced suddenly, it really gets under my skin."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I turned down an offer from a fintech startup because their interview process was so chaotic and disorganized. The whole 'move fast and break things' mentality just didn't sit right with me."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "One of the best parts of working at Meridian is the autonomy. I can close my door, structure my own workflow, and just focus without anyone hovering over me."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "If you had to pick one statement that best captures my demonstrated work environment preference based on everything I've shared, which of these would it be?",
+      "candidate_options": [
+        "Prefers orderly, predictable, low-chaos work environments with personal autonomy and reacts negatively to sudden disruptive changes",
+        "Thrives in collaborative open-plan environments and enjoys spontaneous energy from coworkers",
+        "Avoids all workplace change and prefers complete isolation from colleagues",
+        "Values structured onboarding but is otherwise flexible about day-to-day work environment chaos"
+      ],
+      "expected_answer": "Prefers orderly, predictable, low-chaos work environments with personal autonomy and reacts negatively to sudden disruptive changes",
+      "gold_memory_state": "Confirmed preference: orderly, predictable, low-chaos work environments with personal autonomy; negative reaction to sudden disruptive changes. Tentative/unconfirmed: open-plan collaborative enthusiasm. Unsupported: avoidance of all change or complete isolation.",
+      "judge_rubric": {
+        "must_include": [
+          "orderly",
+          "predictable",
+          "low-chaos",
+          "autonomy",
+          "negative reaction to sudden disruption"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "thrives in open-plan",
+          "avoids all change",
+          "complete isolation",
+          "flexible about chaos"
+        ],
+        "harmful_extra": [
+          "selecting the open-plan option as if it were confirmed",
+          "selecting the all-change-avoidance option"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'Values structured onboarding but is otherwise flexible about day-to-day work environment chaos' borrows the real 'structure' element from the onboarding appreciation but attaches a wrong conclusion about flexibility toward chaos. assistant echo: 'Thrives in collaborative open-plan environments and enjoys spontaneous energy from coworkers' echoes the user's tentative speculation about open-plan from segment 3, which the assistant acknowledged but which is unconfirmed. 'Avoids all workplace change and prefers complete isolation' is an overgeneralization distractor.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the open-plan collaborative option, treating the tentative speculation as the confirmed preference.",
+        "reflection_precision": "Fails if the model selects the overgeneralized 'avoids all change' option or the 'flexible about chaos' option.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think it boils down to this: I need order. When things are predictable and I have control over my own process, I do my best work. When chaos gets introduced suddenly, it really gets under my skin."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I turned down an offer from a fintech startup because their interview process was so chaotic and disorganized. The whole 'move fast and break things' mentality just didn't sit right with me."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "One of the best parts of working at Meridian is the autonomy. I can close my door, structure my own workflow, and just focus without anyone hovering over me."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I've been asked to write a short self-assessment paragraph for my July 15th probation review with Rachel Tseng. It should explain why I'm a strong cultural fit at Meridian and reference specific examples of how the environment has supported my productivity. Can you draft that paragraph for me?",
+      "expected_answer": "Since joining Meridian Consulting Group's Strategic Analytics department on January 15th, I've found the structured, deliberate culture to be an ideal match for my working style. I thrive when given the autonomy to manage my own workflow and focus independently, and Meridian's trust-based approach has allowed me to do exactly that — from self-directing my learning of PlanBase to organizing my project deliverables on my own terms. My prior experience interviewing at a fintech startup reinforced how important this kind of environment is to me: their chaotic, 'move fast and break things' culture made it clear that I do my best work when things are orderly and predictable. Even when the March 8th office relocation disrupted my routine on short notice, my ability to recover and maintain productivity demonstrated my resilience within a structured framework. I'm confident that my preference for deliberate planning and independent execution aligns well with Meridian's values and Rachel Tseng's expectations for the analytics team.",
+      "gold_memory_state": "Active confirmed facts used: Meridian Consulting Group, Strategic Analytics department, start date January 15th, manager Rachel Tseng, probation review July 15th, rejected fintech startup due to chaos, appreciates Meridian's structure, values autonomy and independent workflow, irritated by March 8th relocation with short notice. Tentative/unconfirmed: open-plan enthusiasm (must not appear in the self-assessment as a confirmed preference).",
+      "judge_rubric": {
+        "must_include": [
+          "Meridian Consulting Group",
+          "Strategic Analytics",
+          "autonomy or independent workflow",
+          "rejected or declined fintech startup due to chaos",
+          "structured or orderly culture as positive",
+          "probation review context"
+        ],
+        "acceptable_paraphrases": [
+          "self-directed work style",
+          "preference for predictability",
+          "deliberate planning"
+        ],
+        "must_not_include": [
+          "thrives in open-plan",
+          "wants to be more spontaneous",
+          "Strategy & Insights as department name"
+        ],
+        "harmful_extra": [
+          "including the tentative open-plan enthusiasm as a confirmed self-assessment point",
+          "using the outdated department name Strategy & Insights"
+        ],
+        "harmless_extra": [
+          "mentioning PlanBase",
+          "mentioning the onboarding experience",
+          "mentioning David Lam's orderly departure as contrast",
+          "mentioning the office relocation"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the draft uses 'Strategy & Insights' instead of 'Strategic Analytics', or if it presents the tentative open-plan enthusiasm as a confirmed preference in the self-assessment.",
+        "reflection_precision": "Fails if the self-assessment overgeneralizes to claim the user avoids all change or all collaboration.",
+        "reflection_recall": "Fails if the draft omits both the fintech rejection and the autonomy preference as supporting examples.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User started at Meridian Consulting Group on January 15th in the Strategic Analytics department, with manager Rachel Tseng.",
+        "Fact 2: Probation review is scheduled for July 15th with Rachel Tseng.",
+        "Fact 3: User rejected a fintech startup due to chaotic and disorganized culture.",
+        "Fact 4: User appreciates Meridian's deliberate, well-planned, structured work culture.",
+        "Fact 5: User values autonomy to structure own workflow and focus independently without oversight.",
+        "Fact 6: User was irritated by the sudden office relocation on March 8th with only three days' notice.",
+        "Inference: The self-assessment paragraph should weave together the confirmed work environment preference (order, autonomy, structure) with specific employer details and concrete examples (fintech rejection, relocation reaction) to demonstrate cultural fit for the probation review.",
+        "Inference: The tentative open-plan enthusiasm must be excluded because it is speculative and contradicts the confirmed preference pattern, and the outdated department name 'Strategy & Insights' must not be used."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I started at Meridian Consulting Group on January 15th. It's in the Strategic Analytics department."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I turned down an offer from a fintech startup because their interview process was so chaotic and disorganized. The whole 'move fast and break things' mentality just didn't sit right with me."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "What I really appreciate about Meridian is the structure. Everything is deliberate, well-planned. It felt that way from day one."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "One of the best parts of working at Meridian is the autonomy. I can close my door, structure my own workflow, and just focus without anyone hovering over me."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "The office relocation from the 4th floor to the 7th floor on March 8th really threw me off. They gave us barely three days' notice and I was pretty irritated the whole week."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think it boils down to this: I need order. When things are predictable and I have control over my own process, I do my best work. When chaos gets introduced suddenly, it really gets under my skin."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I've been asked to write a short self-assessment paragraph for my July 15th probation review with Rachel Tseng. It should explain why I'm a strong cultural fit at Meridian and reference specific examples of how the environment has supported my productivity. Can you draft that paragraph for me?",
+      "expected_answer": "Since joining Meridian Consulting Group's Strategic Analytics department on January 15th, I've found the structured, deliberate culture to be an ideal match for my working style. I thrive when given the autonomy to manage my own workflow and focus independently, and Meridian's trust-based approach has allowed me to do exactly that — from self-directing my learning of PlanBase to organizing my project deliverables on my own terms. My prior experience interviewing at a fintech startup reinforced how important this kind of environment is to me: their chaotic, 'move fast and break things' culture made it clear that I do my best work when things are orderly and predictable. Even when the March 8th office relocation disrupted my routine on short notice, my ability to recover and maintain productivity demonstrated my resilience within a structured framework. I'm confident that my preference for deliberate planning and independent execution aligns well with Meridian's values and Rachel Tseng's expectations for the analytics team.",
+      "gold_memory_state": "Active confirmed facts used: Meridian Consulting Group, Strategic Analytics department, start date January 15th, manager Rachel Tseng, probation review July 15th, rejected fintech startup due to chaos, appreciates Meridian's structure, values autonomy and independent workflow, irritated by March 8th relocation with short notice. Tentative/unconfirmed: open-plan enthusiasm (must not appear in the self-assessment as a confirmed preference).",
+      "judge_rubric": {
+        "must_include": [
+          "Meridian Consulting Group",
+          "Strategic Analytics",
+          "autonomy or independent workflow",
+          "rejected or declined fintech startup due to chaos",
+          "structured or orderly culture as positive",
+          "probation review context"
+        ],
+        "acceptable_paraphrases": [
+          "self-directed work style",
+          "preference for predictability",
+          "deliberate planning"
+        ],
+        "must_not_include": [
+          "thrives in open-plan",
+          "wants to be more spontaneous",
+          "Strategy & Insights as department name"
+        ],
+        "harmful_extra": [
+          "including the tentative open-plan enthusiasm as a confirmed self-assessment point",
+          "using the outdated department name Strategy & Insights"
+        ],
+        "harmless_extra": [
+          "mentioning PlanBase",
+          "mentioning the onboarding experience",
+          "mentioning David Lam's orderly departure as contrast",
+          "mentioning the office relocation"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the draft uses 'Strategy & Insights' instead of 'Strategic Analytics', or if it presents the tentative open-plan enthusiasm as a confirmed preference in the self-assessment.",
+        "reflection_precision": "Fails if the self-assessment overgeneralizes to claim the user avoids all change or all collaboration.",
+        "reflection_recall": "Fails if the draft omits both the fintech rejection and the autonomy preference as supporting examples.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User started at Meridian Consulting Group on January 15th in the Strategic Analytics department, with manager Rachel Tseng.",
+        "Fact 2: Probation review is scheduled for July 15th with Rachel Tseng.",
+        "Fact 3: User rejected a fintech startup due to chaotic and disorganized culture.",
+        "Fact 4: User appreciates Meridian's deliberate, well-planned, structured work culture.",
+        "Fact 5: User values autonomy to structure own workflow and focus independently without oversight.",
+        "Fact 6: User was irritated by the sudden office relocation on March 8th with only three days' notice.",
+        "Inference: The self-assessment paragraph should weave together the confirmed work environment preference (order, autonomy, structure) with specific employer details and concrete examples (fintech rejection, relocation reaction) to demonstrate cultural fit for the probation review.",
+        "Inference: The tentative open-plan enthusiasm must be excluded because it is speculative and contradicts the confirmed preference pattern, and the outdated department name 'Strategy & Insights' must not be used."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I started at Meridian Consulting Group on January 15th. It's in the Strategic Analytics department."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I turned down an offer from a fintech startup because their interview process was so chaotic and disorganized. The whole 'move fast and break things' mentality just didn't sit right with me."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "What I really appreciate about Meridian is the structure. Everything is deliberate, well-planned. It felt that way from day one."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "One of the best parts of working at Meridian is the autonomy. I can close my door, structure my own workflow, and just focus without anyone hovering over me."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "The office relocation from the 4th floor to the 7th floor on March 8th really threw me off. They gave us barely three days' notice and I was pretty irritated the whole week."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think it boils down to this: I need order. When things are predictable and I have control over my own process, I do my best work. When chaos gets introduced suddenly, it really gets under my skin."
+        }
+      ]
+    }
+  ]
+}

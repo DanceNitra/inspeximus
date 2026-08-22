@@ -1,0 +1,1001 @@
+{
+  "target_fact": "User prefers low-maintenance, independent-natured pets based on choosing a Scottish Fold over a Ragdoll for its quieter temperament, enjoying Mochi's self-entertaining behavior, and abandoning the fish tank plan due to maintenance stress",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I ended up going with a Scottish Fold over a Ragdoll. I just kept gravitating toward the Folds because they're quieter and more independent."
+      },
+      "target": {
+        "target_id": "breed_selection_reason",
+        "target_name": "reason for choosing Scottish Fold over Ragdoll"
+      },
+      "old_value": null,
+      "new_value": "Chose Scottish Fold over Ragdoll because Folds are quieter and more independent",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I ended up going with a Scottish Fold over a Ragdoll. I just kept gravitating toward the Folds because they're quieter and more independent."
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I scrapped the fish tank idea entirely. Maintaining it felt like way too much ongoing stress for what I'd get out of it."
+      },
+      "target": {
+        "target_id": "fish_tank_plan_abandoned",
+        "target_name": "abandoned fish tank plan and reason"
+      },
+      "old_value": null,
+      "new_value": "Abandoned planned freshwater fish tank because maintenance felt too stressful",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I scrapped the fish tank idea entirely. Maintaining it felt like way too much ongoing stress for what I'd get out of it."
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "One thing I really love about Mochi is how she entertains herself. She bats a piece of kibble across the kitchen floor and then chases it around for like five minutes."
+      },
+      "target": {
+        "target_id": "mochi_self_entertaining",
+        "target_name": "Mochi's self-entertaining behavior user enjoys"
+      },
+      "old_value": null,
+      "new_value": "Mochi entertains herself by batting kibble across the floor and chasing it",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "One thing I really love about Mochi is how she entertains herself. She bats a piece of kibble across the kitchen floor and then chases it around for like five minutes."
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "I think when it comes to pets I just consistently gravitate toward ones that do their own thing. Like I don't want a pet that needs me to be its sole source of stimulation all the time."
+      },
+      "target": {
+        "target_id": "pet_preference_pattern",
+        "target_name": "user's overall pet preference pattern"
+      },
+      "old_value": null,
+      "new_value": "Consistently prefers low-maintenance, independent-natured pets that can entertain themselves rather than requiring constant owner attention",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I ended up going with a Scottish Fold over a Ragdoll. I just kept gravitating toward the Folds because they're quieter and more independent."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I scrapped the fish tank idea entirely. Maintaining it felt like way too much ongoing stress for what I'd get out of it."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "One thing I really love about Mochi is how she entertains herself. She bats a piece of kibble across the kitchen floor and then chases it around for like five minutes."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think when it comes to pets I just consistently gravitate toward ones that do their own thing. Like I don't want a pet that needs me to be its sole source of stimulation all the time."
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "Derek's French Bulldog Brisket has been having breathing issues already. Derek says the vet told him it's a brachycephalic thing and basically comes with the breed."
+      },
+      "target": {
+        "target_id": "derek_dog_health_issue",
+        "target_name": "Derek's French Bulldog Brisket's health issue"
+      },
+      "old_value": null,
+      "new_value": "Derek's French Bulldog Brisket has brachycephalic breathing issues",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Derek's French Bulldog Brisket has been having breathing issues already. Derek says the vet told him it's a brachycephalic thing and basically comes with the breed."
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "reflect",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "You know, I've been thinking — maybe I should look into getting a second cat eventually. A Bengal might be fun, they're really playful and active."
+      },
+      "target": {
+        "target_id": "possible_second_pet",
+        "target_name": "user's tentative interest in a second cat (Bengal)"
+      },
+      "old_value": null,
+      "new_value": "Considering getting a Bengal as a second cat",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "You know, I've been thinking — maybe I should look into getting a second cat eventually. A Bengal might be fun, they're really playful and active."
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish breed choice reasoning, fish tank abandonment, and Mochi's basic info",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to tell you about my new kitten. I ended up going with a Scottish Fold over a Ragdoll. I just kept gravitating toward the Folds because they're quieter and more independent. Ragdolls are sweet but they seemed a bit too clingy for my lifestyle. Her name is Mochi — she's a gray tabby female, and I brought her home around March 3rd from a breeder in Riverside."
+        },
+        {
+          "role": "assistant",
+          "content": "Congratulations on bringing Mochi home! A Scottish Fold is a wonderful choice, and it sounds like you put real thought into matching the breed's temperament to your preferences. Gray tabby Scottish Folds have such a distinctive, charming look with those folded ears. March 3rd is still pretty recent, so she's probably still settling in and getting comfortable with her new environment. Riverside is a bit of a drive, but it's great that you found a breeder you were happy with. How has the adjustment been going so far? Is she exploring the whole house or sticking to one spot?"
+        },
+        {
+          "role": "user",
+          "content": "She's been adjusting really well honestly. She explored every room within the first two days. I took her to the vet recently — I think it was around March 22nd or maybe the 29th, I can't quite remember the exact date. But the vet said she was healthy, weighed about 3.2 pounds, and was estimated to be around 11 weeks old at the time. That was reassuring to hear."
+        },
+        {
+          "role": "assistant",
+          "content": "That's great to hear that Mochi is healthy and settling in so quickly! A 3.2-pound kitten at around 11 weeks sounds like she's right on track growth-wise. Scottish Folds tend to be curious but measured in how they explore, so it makes sense she checked out every room methodically. Whether the vet visit was the 22nd or the 29th, the important thing is the clean bill of health. Did the vet give you any specific recommendations for food, vaccinations, or follow-up visits? Kittens at that age usually have a pretty packed schedule of checkups ahead."
+        },
+        {
+          "role": "user",
+          "content": "The vet said any AAFCO-approved kitten food would be fine. I've been feeding her Royal Canin Kitten dry food though — that's actually what the breeder recommended, and since Mochi was already used to it I just stuck with it. Also, I scrapped the fish tank idea entirely. Maintaining it felt like way too much ongoing stress for what I'd get out of it. Plus Mochi would probably just knock the whole thing over anyway, so it's for the best."
+        },
+        {
+          "role": "assistant",
+          "content": "Sticking with the Royal Canin makes a lot of sense since Mochi is already adjusted to it, and it does meet AAFCO standards so you're covered on the vet's recommendation too. Transitioning a kitten's food can sometimes cause digestive issues, so consistency is smart right now. As for the fish tank, that sounds like a practical decision on multiple fronts. Planted freshwater setups do require steady maintenance — water changes, algae management, fertilizer dosing — and adding a curious kitten to that equation would definitely make things harder. You can always revisit the idea later if your situation changes, but it sounds like your hands are full with Mochi for now."
+        },
+        {
+          "role": "user",
+          "content": "Yeah exactly. My friend Derek actually got a French Bulldog puppy around late February — he named it Brisket, which I think is a hilarious name for a dog. He's been posting about it constantly on social media. I know Derek loves that dog but honestly I could never deal with a high-maintenance breed like that. I've heard Frenchies need a lot of attention and have all sorts of health issues."
+        },
+        {
+          "role": "assistant",
+          "content": "Brisket is genuinely a top-tier pet name — I can see why Derek is proud enough to post nonstop about it. French Bulldogs are definitely lovable, but you're right that they come with a reputation for needing significant attention and veterinary care. Brachycephalic breeds like Frenchies often have breathing difficulties, skin fold infections, and heat sensitivity, so the ownership experience can be pretty hands-on compared to a Scottish Fold. It sounds like you and Derek have very different approaches to pet ownership, which is totally fine. Everyone has their own comfort level with how much daily maintenance they want from a pet. How's Mochi been doing with food and daily routines so far?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Deepen evidence of self-entertaining preference, introduce Derek's dog details, and trigger the reflect operation",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "One thing I really love about Mochi is how she entertains herself. She bats a piece of kibble across the kitchen floor and then chases it around for like five minutes. It's the funniest thing. I don't have to set up elaborate play sessions — she just finds ways to amuse herself. Watching her do that honestly makes my whole evening better after a long day at work."
+        },
+        {
+          "role": "assistant",
+          "content": "That kibble-chasing routine sounds absolutely adorable and is such a classic Scottish Fold behavior — they're known for being playful in these quiet, self-directed ways. It's really nice that you get that kind of low-key entertainment without having to orchestrate it. Some cats really do need structured interactive play to stay happy, but it sounds like Mochi has a natural talent for independent fun. Those small moments of watching a pet just be themselves can be incredibly restorative after a stressful day. Have you noticed any other quirky habits she's picked up since settling in?"
+        },
+        {
+          "role": "user",
+          "content": "She does this thing where she sits by the window and chirps at birds — it's pretty entertaining. Oh, speaking of other pets, Derek's French Bulldog Brisket has been having breathing issues already. Derek says the vet told him it's a brachycephalic thing and basically comes with the breed. He's spending a fortune on vet visits. I feel bad for him but also it kind of confirms my instinct about going with a lower-maintenance pet."
+        },
+        {
+          "role": "assistant",
+          "content": "The window chirping is classic cat behavior — Mochi sounds like she has a really rich inner world of entertainment between the kibble chasing and the bird watching. As for Brisket, that's unfortunately very common with French Bulldogs. Brachycephalic obstructive airway syndrome can range from mild snoring to serious respiratory distress, and many Frenchie owners end up dealing with it early on. The vet bills for managing those issues can really add up over time. It does sound like your experience with Mochi reinforces your preference for a pet that doesn't come with built-in health complications or constant demands. Derek's experience is a good contrast to yours right now."
+        },
+        {
+          "role": "user",
+          "content": "Yeah totally. I think when it comes to pets I just consistently gravitate toward ones that do their own thing. Like I don't want a pet that needs me to be its sole source of stimulation all the time. That's why I picked the Fold over the Ragdoll, that's why the fish tank felt like too much upkeep, and honestly that's why I enjoy Mochi so much — she's independent but still affectionate on her own terms."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really clear and self-aware pattern you've identified. Across all your recent pet decisions — choosing the Scottish Fold for its quiet independence, dropping the fish tank because of maintenance demands, and now appreciating Mochi's ability to entertain herself — there's a consistent thread of valuing low-maintenance companionship where the pet has its own personality and doesn't rely on you for constant engagement. It's not that you don't care deeply about your pets; it's that you want a relationship where both sides have some autonomy. That's a great framework for making future pet decisions too, since you clearly know what works for your lifestyle."
+        },
+        {
+          "role": "user",
+          "content": "Exactly, you nailed it. Oh by the way, I've been tracking Mochi's weight weekly and as of a few days ago she was 4.1 pounds. Growing fast. Her next vet appointment is scheduled for May 10th. Also my coworker Sana is thinking about adopting a Greyhound from a rescue — she asked me for advice but I told her I really only know cats. She's visiting the rescue this Saturday."
+        },
+        {
+          "role": "assistant",
+          "content": "Mochi is growing impressively — going from 3.2 pounds at her last vet visit to 4.1 pounds shows she's thriving on the Royal Canin and adjusting well. May 10th is noted for the next vet appointment; that should be a good checkpoint to see how she's developing. As for Sana and the Greyhound, retired racing Greyhounds are actually known for being surprisingly calm and low-energy house pets despite their athletic background. They're sometimes called 'couch potatoes.' But you're right to stick to what you know — cat ownership and dog ownership really are different worlds. Hopefully Sana's Saturday visit goes well and she finds a good match at the rescue."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Introduce tentative second-cat idea (recency trap), adversarial injection of third-party breed mention, and wrap up",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So Mochi had a little incident last week — she got into the bathroom cabinet and knocked over a bottle of hydrogen peroxide. She was fine, nothing happened to her, but I was genuinely upset with myself for not pet-proofing better. I felt really careless about it. I've since installed child locks on all the lower cabinets."
+        },
+        {
+          "role": "assistant",
+          "content": "I'm really glad Mochi was okay — hydrogen peroxide can be dangerous for cats if ingested, so that could have been a serious situation. It's completely understandable to feel frustrated with yourself, but the fact that you immediately took action by installing child locks shows you're a responsible pet owner. Kittens are incredibly resourceful at getting into places you wouldn't expect, so don't be too hard on yourself. Almost every cat owner has a story like this. The important thing is that you identified the vulnerability and fixed it. Have you checked other areas of the house too, like under the kitchen sink or anywhere she could access cleaning supplies?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah I did a full sweep of the house after that. Moved all cleaning products to upper shelves, secured any loose cords, and checked for small items she could swallow. I feel a lot better now. By the way, Sana told me today that the Greyhound rescue went well — she's apparently going to foster one first before committing to a full adoption. She's really excited about it."
+        },
+        {
+          "role": "assistant",
+          "content": "That thorough sweep was a great move — it sounds like you've really locked things down for Mochi's safety. Loose cords and small swallowable objects are definitely underrated hazards for kittens. And that's exciting news about Sana! Fostering before adopting is a really smart approach, especially with a breed she's unfamiliar with. It gives both her and the dog a trial period to see if the lifestyle fit works. Greyhounds can be wonderful companions — interestingly, they share some qualities with Scottish Folds in that they tend to be calm and independent. I remember reading that some rescue organizations specifically recommend Greyhounds for people who want a dog that behaves more like a cat in terms of energy levels."
+        },
+        {
+          "role": "user",
+          "content": "You know, I've been thinking — maybe I should look into getting a second cat eventually. A Bengal might be fun, they're really playful and active. I saw some videos of Bengals and they're gorgeous. I haven't decided anything though, it's just a thought that's been bouncing around in my head the last couple days."
+        },
+        {
+          "role": "assistant",
+          "content": "Bengals are absolutely stunning cats — their coat patterns are really striking and they do have incredibly dynamic personalities. They're known for being very high-energy, vocal, and needing a lot of stimulation though, which is quite different from the Scottish Fold temperament you've been enjoying with Mochi. A Bengal would likely demand a lot more interactive play and mental enrichment. It's definitely worth thinking through carefully given what you've told me about your preferences. There's no rush on that decision, and it might be worth waiting to see how Mochi's personality continues to develop as she matures before adding another cat to the household. Have you thought about what Mochi's reaction might be to a companion?"
+        },
+        {
+          "role": "user",
+          "content": "That's a fair point actually. I haven't thought about how Mochi would handle it. She's still young so maybe it's too early to even consider. For now I'm just focused on her. Oh — Derek sent me a video today of Brisket playing with a Ragdoll cat at his friend's house. The Ragdoll was just flopping around being super affectionate with the dog. Cute video but it reminded me exactly why I didn't go with a Ragdoll — way too needy for my taste."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a sweet image — Ragdolls are famous for going limp when you pick them up, which is actually where the breed name comes from. They're incredibly social and tend to follow their owners around like shadows, which some people absolutely love. But I can see how watching that would reinforce your original decision. The contrast between that Ragdoll's behavior and Mochi's independent kibble-chasing, bird-chirping routine is pretty clear. Focusing on Mochi right now is definitely the right call — she's still in a critical developmental window and giving her stable, consistent attention will help shape her personality for years to come. You can always revisit the second-cat idea down the road when the timing feels right."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "What are the different pet-related experiences I've shared with you that reveal a consistent theme in how I choose and enjoy pets?",
+      "expected_answer": "You chose a Scottish Fold over a Ragdoll because Folds are quieter and more independent. You abandoned a planned freshwater fish tank because the maintenance felt too stressful. You love that your cat Mochi entertains herself by batting kibble across the floor and chasing it. You explicitly said you consistently gravitate toward pets that do their own thing and don't need you as their sole source of stimulation.",
+      "gold_memory_state": "Confirmed facts: (1) Chose Scottish Fold over Ragdoll for quieter, more independent temperament. (2) Abandoned fish tank plan due to maintenance stress. (3) Enjoys Mochi's self-entertaining kibble-chasing behavior. (4) User explicitly articulated a pattern of preferring low-maintenance, independent-natured pets. Also stored: Derek's French Bulldog Brisket has brachycephalic breathing issues. Tentative only: considering a Bengal as a second cat.",
+      "judge_rubric": {
+        "must_include": [
+          "Scottish Fold over Ragdoll",
+          "quieter or more independent",
+          "fish tank abandoned or scrapped",
+          "maintenance",
+          "Mochi entertains herself or self-entertaining"
+        ],
+        "acceptable_paraphrases": [
+          "low-maintenance pets",
+          "independent pets",
+          "pets that don't need constant attention"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the Bengal interest is a confirmed decision"
+        ],
+        "harmless_extra": [
+          "mentioning Derek's dog as contrast",
+          "mentioning Ragdolls being clingy"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model includes unsupported conclusions beyond what the user's experiences demonstrate.",
+        "reflection_recall": "Fails if the model omits any of the three core experiences (breed choice, fish tank abandonment, Mochi's self-entertaining behavior).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I ended up going with a Scottish Fold over a Ragdoll. I just kept gravitating toward the Folds because they're quieter and more independent."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I scrapped the fish tank idea entirely. Maintaining it felt like way too much ongoing stress for what I'd get out of it."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "One thing I really love about Mochi is how she entertains herself. She bats a piece of kibble across the kitchen floor and then chases it around for like five minutes."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think when it comes to pets I just consistently gravitate toward ones that do their own thing. Like I don't want a pet that needs me to be its sole source of stimulation all the time."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "What are the different pet-related experiences I've shared with you that reveal a consistent theme in how I choose and enjoy pets?",
+      "expected_answer": "You chose a Scottish Fold over a Ragdoll because Folds are quieter and more independent. You abandoned a planned freshwater fish tank because the maintenance felt too stressful. You love that your cat Mochi entertains herself by batting kibble across the floor and chasing it. You explicitly said you consistently gravitate toward pets that do their own thing and don't need you as their sole source of stimulation.",
+      "gold_memory_state": "Confirmed facts: (1) Chose Scottish Fold over Ragdoll for quieter, more independent temperament. (2) Abandoned fish tank plan due to maintenance stress. (3) Enjoys Mochi's self-entertaining kibble-chasing behavior. (4) User explicitly articulated a pattern of preferring low-maintenance, independent-natured pets. Also stored: Derek's French Bulldog Brisket has brachycephalic breathing issues. Tentative only: considering a Bengal as a second cat.",
+      "judge_rubric": {
+        "must_include": [
+          "Scottish Fold over Ragdoll",
+          "quieter or more independent",
+          "fish tank abandoned or scrapped",
+          "maintenance",
+          "Mochi entertains herself or self-entertaining"
+        ],
+        "acceptable_paraphrases": [
+          "low-maintenance pets",
+          "independent pets",
+          "pets that don't need constant attention"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the Bengal interest is a confirmed decision"
+        ],
+        "harmless_extra": [
+          "mentioning Derek's dog as contrast",
+          "mentioning Ragdolls being clingy"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model includes unsupported conclusions beyond what the user's experiences demonstrate.",
+        "reflection_recall": "Fails if the model omits any of the three core experiences (breed choice, fish tank abandonment, Mochi's self-entertaining behavior).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I ended up going with a Scottish Fold over a Ragdoll. I just kept gravitating toward the Folds because they're quieter and more independent."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I scrapped the fish tank idea entirely. Maintaining it felt like way too much ongoing stress for what I'd get out of it."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "One thing I really love about Mochi is how she entertains herself. She bats a piece of kibble across the kitchen floor and then chases it around for like five minutes."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think when it comes to pets I just consistently gravitate toward ones that do their own thing. Like I don't want a pet that needs me to be its sole source of stimulation all the time."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When I look at all the pet-related choices I've described — the breed decision, the aquarium plan, and what I enjoy about my cat — which bounded conclusion about my preferences is actually supported? Could this also mean I dislike all social or affectionate pets entirely?",
+      "expected_answer": "The supported conclusion is that you consistently prefer low-maintenance, independent-natured pets that can entertain themselves rather than requiring constant owner attention. This does not mean you dislike all social or affectionate pets — Mochi is affectionate on her own terms, and you enjoy that. The conclusion is specifically about preferring independence and low maintenance demands, not about rejecting affection entirely.",
+      "gold_memory_state": "The bounded preference target covers: choosing Scottish Fold for independence, abandoning fish tank for maintenance stress, and enjoying Mochi's self-entertaining nature. The preference is about low-maintenance independence, not about rejecting all affection or social behavior. Derek's dog's health issues are a separate stored fact (control target) that reinforces the user's preference but is not the preference target itself. The tentative Bengal interest is not confirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "low-maintenance or independent pets",
+          "not a blanket rejection of affectionate pets"
+        ],
+        "acceptable_paraphrases": [
+          "prefers self-sufficient pets",
+          "values pet autonomy",
+          "doesn't want constant-attention pets"
+        ],
+        "must_not_include": [
+          "user dislikes all affectionate pets",
+          "user will never want a social pet"
+        ],
+        "harmful_extra": [
+          "claiming the preference extends to disliking all human-animal bonding",
+          "treating Derek's dog health issues as part of the user's preference target rather than a separate fact",
+          "treating the Bengal idea as a confirmed decision that contradicts the preference"
+        ],
+        "harmless_extra": [
+          "mentioning Mochi is affectionate on her own terms",
+          "noting the fish tank was too much upkeep"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model overgeneralizes to 'dislikes all affectionate pets' or 'avoids all social interaction with pets.'",
+        "reflection_recall": "Fails if the model does not identify the core bounded conclusion about low-maintenance independence.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I ended up going with a Scottish Fold over a Ragdoll. I just kept gravitating toward the Folds because they're quieter and more independent."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I scrapped the fish tank idea entirely. Maintaining it felt like way too much ongoing stress for what I'd get out of it."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "One thing I really love about Mochi is how she entertains herself. She bats a piece of kibble across the kitchen floor and then chases it around for like five minutes."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think when it comes to pets I just consistently gravitate toward ones that do their own thing. Like I don't want a pet that needs me to be its sole source of stimulation all the time."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When I look at all the pet-related choices I've described — the breed decision, the aquarium plan, and what I enjoy about my cat — which bounded conclusion about my preferences is actually supported? Could this also mean I dislike all social or affectionate pets entirely?",
+      "expected_answer": "The supported conclusion is that you consistently prefer low-maintenance, independent-natured pets that can entertain themselves rather than requiring constant owner attention. This does not mean you dislike all social or affectionate pets — Mochi is affectionate on her own terms, and you enjoy that. The conclusion is specifically about preferring independence and low maintenance demands, not about rejecting affection entirely.",
+      "gold_memory_state": "The bounded preference target covers: choosing Scottish Fold for independence, abandoning fish tank for maintenance stress, and enjoying Mochi's self-entertaining nature. The preference is about low-maintenance independence, not about rejecting all affection or social behavior. Derek's dog's health issues are a separate stored fact (control target) that reinforces the user's preference but is not the preference target itself. The tentative Bengal interest is not confirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "low-maintenance or independent pets",
+          "not a blanket rejection of affectionate pets"
+        ],
+        "acceptable_paraphrases": [
+          "prefers self-sufficient pets",
+          "values pet autonomy",
+          "doesn't want constant-attention pets"
+        ],
+        "must_not_include": [
+          "user dislikes all affectionate pets",
+          "user will never want a social pet"
+        ],
+        "harmful_extra": [
+          "claiming the preference extends to disliking all human-animal bonding",
+          "treating Derek's dog health issues as part of the user's preference target rather than a separate fact",
+          "treating the Bengal idea as a confirmed decision that contradicts the preference"
+        ],
+        "harmless_extra": [
+          "mentioning Mochi is affectionate on her own terms",
+          "noting the fish tank was too much upkeep"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model overgeneralizes to 'dislikes all affectionate pets' or 'avoids all social interaction with pets.'",
+        "reflection_recall": "Fails if the model does not identify the core bounded conclusion about low-maintenance independence.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I ended up going with a Scottish Fold over a Ragdoll. I just kept gravitating toward the Folds because they're quieter and more independent."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I scrapped the fish tank idea entirely. Maintaining it felt like way too much ongoing stress for what I'd get out of it."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "One thing I really love about Mochi is how she entertains herself. She bats a piece of kibble across the kitchen floor and then chases it around for like five minutes."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think when it comes to pets I just consistently gravitate toward ones that do their own thing. Like I don't want a pet that needs me to be its sole source of stimulation all the time."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe the boundary of what my pet experiences actually tell you about my preferences — where does the supported conclusion apply, and where would it be a stretch to extend it?",
+      "expected_answer": "Your experiences support a preference for low-maintenance, independent-natured pets that can self-entertain and don't require you to be their constant source of stimulation. This applies to decisions like choosing a quieter cat breed, rejecting high-upkeep setups like a fish tank, and appreciating self-directed play behavior. However, this cannot be extended to conclude you avoid all affection from pets — you enjoy Mochi's affection on her terms. It also cannot be extended to conclude you would never consider a more active or playful breed, since you mentioned interest in a Bengal, though that was only a passing thought. The preference is specifically about day-to-day maintenance burden and independence, not about rejecting engagement or bonding with pets altogether.",
+      "gold_memory_state": "Supported inference: consistently prefers low-maintenance, independent-natured pets that self-entertain rather than demanding constant owner attention. Supported boundary: applies to breed selection (Scottish Fold over Ragdoll), setup decisions (fish tank abandoned), and daily enjoyment (Mochi's kibble chasing). Unsupported overgeneralization: does not mean user avoids all affection, all playful breeds, or all pet engagement. The tentative Bengal interest (op6) is not confirmed and should not be treated as evidence of a shift in preference. Derek's dog's health issues are a separate control fact.",
+      "judge_rubric": {
+        "must_include": [
+          "low-maintenance independence preference is supported",
+          "boundary or limit of the conclusion"
+        ],
+        "acceptable_paraphrases": [
+          "preference for self-sufficient pets",
+          "applies to breed choice and maintenance decisions"
+        ],
+        "must_not_include": [
+          "user avoids all affection",
+          "user would never get a playful pet"
+        ],
+        "harmful_extra": [
+          "treating the Bengal interest as a confirmed shift in preference",
+          "claiming the user dislikes all social animals"
+        ],
+        "harmless_extra": [
+          "mentioning the Ragdoll was too clingy",
+          "mentioning Derek's Frenchie as a contrast example"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative Bengal consideration as a confirmed preference shift that overrides the low-maintenance pattern.",
+        "reflection_precision": "Fails if the model extends the conclusion to 'avoids all affectionate or playful pets' or 'will never consider another breed.'",
+        "reflection_recall": "Fails if the model cannot articulate the supported inference about low-maintenance, independent pet preference or fails to name at least two supporting experiences.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I ended up going with a Scottish Fold over a Ragdoll. I just kept gravitating toward the Folds because they're quieter and more independent."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I scrapped the fish tank idea entirely. Maintaining it felt like way too much ongoing stress for what I'd get out of it."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "One thing I really love about Mochi is how she entertains herself. She bats a piece of kibble across the kitchen floor and then chases it around for like five minutes."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think when it comes to pets I just consistently gravitate toward ones that do their own thing. Like I don't want a pet that needs me to be its sole source of stimulation all the time."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "You know, I've been thinking — maybe I should look into getting a second cat eventually. A Bengal might be fun, they're really playful and active."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe the boundary of what my pet experiences actually tell you about my preferences — where does the supported conclusion apply, and where would it be a stretch to extend it?",
+      "expected_answer": "Your experiences support a preference for low-maintenance, independent-natured pets that can self-entertain and don't require you to be their constant source of stimulation. This applies to decisions like choosing a quieter cat breed, rejecting high-upkeep setups like a fish tank, and appreciating self-directed play behavior. However, this cannot be extended to conclude you avoid all affection from pets — you enjoy Mochi's affection on her terms. It also cannot be extended to conclude you would never consider a more active or playful breed, since you mentioned interest in a Bengal, though that was only a passing thought. The preference is specifically about day-to-day maintenance burden and independence, not about rejecting engagement or bonding with pets altogether.",
+      "gold_memory_state": "Supported inference: consistently prefers low-maintenance, independent-natured pets that self-entertain rather than demanding constant owner attention. Supported boundary: applies to breed selection (Scottish Fold over Ragdoll), setup decisions (fish tank abandoned), and daily enjoyment (Mochi's kibble chasing). Unsupported overgeneralization: does not mean user avoids all affection, all playful breeds, or all pet engagement. The tentative Bengal interest (op6) is not confirmed and should not be treated as evidence of a shift in preference. Derek's dog's health issues are a separate control fact.",
+      "judge_rubric": {
+        "must_include": [
+          "low-maintenance independence preference is supported",
+          "boundary or limit of the conclusion"
+        ],
+        "acceptable_paraphrases": [
+          "preference for self-sufficient pets",
+          "applies to breed choice and maintenance decisions"
+        ],
+        "must_not_include": [
+          "user avoids all affection",
+          "user would never get a playful pet"
+        ],
+        "harmful_extra": [
+          "treating the Bengal interest as a confirmed shift in preference",
+          "claiming the user dislikes all social animals"
+        ],
+        "harmless_extra": [
+          "mentioning the Ragdoll was too clingy",
+          "mentioning Derek's Frenchie as a contrast example"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative Bengal consideration as a confirmed preference shift that overrides the low-maintenance pattern.",
+        "reflection_precision": "Fails if the model extends the conclusion to 'avoids all affectionate or playful pets' or 'will never consider another breed.'",
+        "reflection_recall": "Fails if the model cannot articulate the supported inference about low-maintenance, independent pet preference or fails to name at least two supporting experiences.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I ended up going with a Scottish Fold over a Ragdoll. I just kept gravitating toward the Folds because they're quieter and more independent."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I scrapped the fish tank idea entirely. Maintaining it felt like way too much ongoing stress for what I'd get out of it."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "One thing I really love about Mochi is how she entertains herself. She bats a piece of kibble across the kitchen floor and then chases it around for like five minutes."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think when it comes to pets I just consistently gravitate toward ones that do their own thing. Like I don't want a pet that needs me to be its sole source of stimulation all the time."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "You know, I've been thinking — maybe I should look into getting a second cat eventually. A Bengal might be fun, they're really playful and active."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best captures the overall pet preference pattern my experiences support?",
+      "candidate_options": [
+        "Prefers low-maintenance, independent-natured pets that can entertain themselves rather than requiring constant owner attention",
+        "Prefers high-energy, playful breeds like Bengals that provide active entertainment",
+        "Avoids all pets with health complications and prioritizes breed health above all else",
+        "Prefers quiet, solitary pets that rarely interact with their owner"
+      ],
+      "expected_answer": "Prefers low-maintenance, independent-natured pets that can entertain themselves rather than requiring constant owner attention",
+      "gold_memory_state": "Confirmed preference pattern: consistently prefers low-maintenance, independent-natured pets. Tentative Bengal interest is not confirmed and does not override this pattern. Derek's dog's health issues are a separate fact that reinforces the user's view but health avoidance is not the core of the preference.",
+      "judge_rubric": {
+        "must_include": [
+          "low-maintenance",
+          "independent",
+          "self-entertain or entertain themselves"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "high-energy playful breeds",
+          "avoids all pets with health issues",
+          "solitary pets that rarely interact"
+        ],
+        "harmful_extra": [
+          "selecting the Bengal option as if it were a confirmed preference"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'Avoids all pets with health complications' is grounded in Derek's Brisket having brachycephalic issues, but health avoidance is not the user's core preference target — it is a separate control fact about Derek's dog. assistant echo: 'Prefers quiet, solitary pets that rarely interact' echoes the assistant's paraphrase of independence but overgeneralizes to solitary and non-interactive, which contradicts the user enjoying Mochi's affection. The Bengal option exploits the recency trap of the tentative second-cat idea.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the Bengal option, treating the tentative interest as the confirmed preference.",
+        "reflection_precision": "Fails if the model selects health-avoidance or solitary-pet options, which are overgeneralizations.",
+        "reflection_recall": "Fails if the model cannot identify the low-maintenance independence pattern.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think when it comes to pets I just consistently gravitate toward ones that do their own thing. Like I don't want a pet that needs me to be its sole source of stimulation all the time."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I ended up going with a Scottish Fold over a Ragdoll. I just kept gravitating toward the Folds because they're quieter and more independent."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "You know, I've been thinking — maybe I should look into getting a second cat eventually. A Bengal might be fun, they're really playful and active."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best captures the overall pet preference pattern my experiences support?",
+      "candidate_options": [
+        "Prefers low-maintenance, independent-natured pets that can entertain themselves rather than requiring constant owner attention",
+        "Prefers high-energy, playful breeds like Bengals that provide active entertainment",
+        "Avoids all pets with health complications and prioritizes breed health above all else",
+        "Prefers quiet, solitary pets that rarely interact with their owner"
+      ],
+      "expected_answer": "Prefers low-maintenance, independent-natured pets that can entertain themselves rather than requiring constant owner attention",
+      "gold_memory_state": "Confirmed preference pattern: consistently prefers low-maintenance, independent-natured pets. Tentative Bengal interest is not confirmed and does not override this pattern. Derek's dog's health issues are a separate fact that reinforces the user's view but health avoidance is not the core of the preference.",
+      "judge_rubric": {
+        "must_include": [
+          "low-maintenance",
+          "independent",
+          "self-entertain or entertain themselves"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "high-energy playful breeds",
+          "avoids all pets with health issues",
+          "solitary pets that rarely interact"
+        ],
+        "harmful_extra": [
+          "selecting the Bengal option as if it were a confirmed preference"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'Avoids all pets with health complications' is grounded in Derek's Brisket having brachycephalic issues, but health avoidance is not the user's core preference target — it is a separate control fact about Derek's dog. assistant echo: 'Prefers quiet, solitary pets that rarely interact' echoes the assistant's paraphrase of independence but overgeneralizes to solitary and non-interactive, which contradicts the user enjoying Mochi's affection. The Bengal option exploits the recency trap of the tentative second-cat idea.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the Bengal option, treating the tentative interest as the confirmed preference.",
+        "reflection_precision": "Fails if the model selects health-avoidance or solitary-pet options, which are overgeneralizations.",
+        "reflection_recall": "Fails if the model cannot identify the low-maintenance independence pattern.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think when it comes to pets I just consistently gravitate toward ones that do their own thing. Like I don't want a pet that needs me to be its sole source of stimulation all the time."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I ended up going with a Scottish Fold over a Ragdoll. I just kept gravitating toward the Folds because they're quieter and more independent."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "You know, I've been thinking — maybe I should look into getting a second cat eventually. A Bengal might be fun, they're really playful and active."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "My neighbor is moving and needs to rehome two pets: a Siamese cat that's known for being very vocal and following its owner everywhere, and a British Shorthair that's calm, independent, and happy to lounge alone for hours. Given everything you know about my preferences and my current situation with Mochi, which pet would you recommend I consider adopting, and why? Also factor in what happened with my aquarium plans and what I've observed about Derek's experience.",
+      "expected_answer": "The British Shorthair would be a much better fit. Your consistent preference is for low-maintenance, independent pets — you chose a Scottish Fold over a Ragdoll specifically for its quieter, more independent temperament, you abandoned the fish tank because the maintenance was too stressful, and you love that Mochi entertains herself. The Siamese's vocal, clingy nature mirrors the traits you rejected in the Ragdoll. Derek's experience with Brisket's health issues further reinforces your aversion to high-demand pet ownership. The British Shorthair's calm, independent disposition aligns with the same qualities you value in Mochi.",
+      "gold_memory_state": "Active confirmed facts used: (1) Chose Scottish Fold over Ragdoll for quieter, independent temperament. (2) Abandoned fish tank due to maintenance stress. (3) Enjoys Mochi's self-entertaining behavior. (4) Confirmed preference pattern: low-maintenance, independent-natured pets. (5) Derek's French Bulldog Brisket has brachycephalic breathing issues — serves as a contrast example of high-maintenance pet ownership. Tentative Bengal interest is not confirmed and should not override the recommendation.",
+      "judge_rubric": {
+        "must_include": [
+          "recommend British Shorthair",
+          "low-maintenance or independent preference",
+          "reject Siamese for being clingy or vocal"
+        ],
+        "acceptable_paraphrases": [
+          "British Shorthair fits better",
+          "Siamese too demanding"
+        ],
+        "must_not_include": [
+          "recommend Siamese",
+          "recommend getting both"
+        ],
+        "harmful_extra": [
+          "recommending the Siamese because the user recently mentioned interest in a playful Bengal",
+          "ignoring the fish tank or Derek evidence"
+        ],
+        "harmless_extra": [
+          "mentioning that the user could revisit the Siamese idea later",
+          "noting that introducing a second cat to Mochi would need careful planning"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses the tentative Bengal interest to override the established low-maintenance preference and recommend the Siamese.",
+        "reflection_precision": "Fails if the model overgeneralizes the preference to mean the user avoids all cats, or recommends neither pet.",
+        "reflection_recall": "Fails if the model does not reference at least two of the three core supporting experiences (breed choice, fish tank, Mochi's behavior) plus Derek's experience.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User chose Scottish Fold over Ragdoll because Folds are quieter and more independent.",
+        "Fact 2: User abandoned a freshwater fish tank because the maintenance felt too stressful.",
+        "Fact 3: User loves that Mochi entertains herself by batting kibble and chasing it.",
+        "Fact 4: Derek's French Bulldog Brisket has brachycephalic breathing issues, reinforcing user's view that high-maintenance breeds are undesirable.",
+        "Inference: User's confirmed preference pattern is for low-maintenance, independent-natured pets that self-entertain.",
+        "Inference: The Siamese — vocal, clingy, follows owner everywhere — matches the traits the user rejected in the Ragdoll and conflicts with the preference pattern.",
+        "Inference: The British Shorthair — calm, independent, happy to lounge alone — matches the traits the user values in Mochi and the Scottish Fold breed.",
+        "Derived value: Recommend the British Shorthair as the better fit based on the convergence of breed-choice reasoning, maintenance aversion, enjoyment of independence, and contrast with Derek's high-maintenance experience."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I ended up going with a Scottish Fold over a Ragdoll. I just kept gravitating toward the Folds because they're quieter and more independent."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I scrapped the fish tank idea entirely. Maintaining it felt like way too much ongoing stress for what I'd get out of it."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "One thing I really love about Mochi is how she entertains herself. She bats a piece of kibble across the kitchen floor and then chases it around for like five minutes."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Derek's French Bulldog Brisket has been having breathing issues already. Derek says the vet told him it's a brachycephalic thing and basically comes with the breed."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think when it comes to pets I just consistently gravitate toward ones that do their own thing. Like I don't want a pet that needs me to be its sole source of stimulation all the time."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "My neighbor is moving and needs to rehome two pets: a Siamese cat that's known for being very vocal and following its owner everywhere, and a British Shorthair that's calm, independent, and happy to lounge alone for hours. Given everything you know about my preferences and my current situation with Mochi, which pet would you recommend I consider adopting, and why? Also factor in what happened with my aquarium plans and what I've observed about Derek's experience.",
+      "expected_answer": "The British Shorthair would be a much better fit. Your consistent preference is for low-maintenance, independent pets — you chose a Scottish Fold over a Ragdoll specifically for its quieter, more independent temperament, you abandoned the fish tank because the maintenance was too stressful, and you love that Mochi entertains herself. The Siamese's vocal, clingy nature mirrors the traits you rejected in the Ragdoll. Derek's experience with Brisket's health issues further reinforces your aversion to high-demand pet ownership. The British Shorthair's calm, independent disposition aligns with the same qualities you value in Mochi.",
+      "gold_memory_state": "Active confirmed facts used: (1) Chose Scottish Fold over Ragdoll for quieter, independent temperament. (2) Abandoned fish tank due to maintenance stress. (3) Enjoys Mochi's self-entertaining behavior. (4) Confirmed preference pattern: low-maintenance, independent-natured pets. (5) Derek's French Bulldog Brisket has brachycephalic breathing issues — serves as a contrast example of high-maintenance pet ownership. Tentative Bengal interest is not confirmed and should not override the recommendation.",
+      "judge_rubric": {
+        "must_include": [
+          "recommend British Shorthair",
+          "low-maintenance or independent preference",
+          "reject Siamese for being clingy or vocal"
+        ],
+        "acceptable_paraphrases": [
+          "British Shorthair fits better",
+          "Siamese too demanding"
+        ],
+        "must_not_include": [
+          "recommend Siamese",
+          "recommend getting both"
+        ],
+        "harmful_extra": [
+          "recommending the Siamese because the user recently mentioned interest in a playful Bengal",
+          "ignoring the fish tank or Derek evidence"
+        ],
+        "harmless_extra": [
+          "mentioning that the user could revisit the Siamese idea later",
+          "noting that introducing a second cat to Mochi would need careful planning"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses the tentative Bengal interest to override the established low-maintenance preference and recommend the Siamese.",
+        "reflection_precision": "Fails if the model overgeneralizes the preference to mean the user avoids all cats, or recommends neither pet.",
+        "reflection_recall": "Fails if the model does not reference at least two of the three core supporting experiences (breed choice, fish tank, Mochi's behavior) plus Derek's experience.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User chose Scottish Fold over Ragdoll because Folds are quieter and more independent.",
+        "Fact 2: User abandoned a freshwater fish tank because the maintenance felt too stressful.",
+        "Fact 3: User loves that Mochi entertains herself by batting kibble and chasing it.",
+        "Fact 4: Derek's French Bulldog Brisket has brachycephalic breathing issues, reinforcing user's view that high-maintenance breeds are undesirable.",
+        "Inference: User's confirmed preference pattern is for low-maintenance, independent-natured pets that self-entertain.",
+        "Inference: The Siamese — vocal, clingy, follows owner everywhere — matches the traits the user rejected in the Ragdoll and conflicts with the preference pattern.",
+        "Inference: The British Shorthair — calm, independent, happy to lounge alone — matches the traits the user values in Mochi and the Scottish Fold breed.",
+        "Derived value: Recommend the British Shorthair as the better fit based on the convergence of breed-choice reasoning, maintenance aversion, enjoyment of independence, and contrast with Derek's high-maintenance experience."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I ended up going with a Scottish Fold over a Ragdoll. I just kept gravitating toward the Folds because they're quieter and more independent."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I scrapped the fish tank idea entirely. Maintaining it felt like way too much ongoing stress for what I'd get out of it."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "One thing I really love about Mochi is how she entertains herself. She bats a piece of kibble across the kitchen floor and then chases it around for like five minutes."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Derek's French Bulldog Brisket has been having breathing issues already. Derek says the vet told him it's a brachycephalic thing and basically comes with the breed."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think when it comes to pets I just consistently gravitate toward ones that do their own thing. Like I don't want a pet that needs me to be its sole source of stimulation all the time."
+        }
+      ]
+    }
+  ]
+}

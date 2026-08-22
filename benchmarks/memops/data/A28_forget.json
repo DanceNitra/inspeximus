@@ -1,0 +1,1054 @@
+{
+  "target_fact": "A28 Supervisor/advisor name and related academic supervision details",
+  "operation_type": "Forget",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "My current thesis advisor is Dr. Renata Voss, in the Department of Cognitive Science at Leiden University"
+      },
+      "target": {
+        "target_id": "current_advisor_name",
+        "target_name": "current thesis advisor name and department"
+      },
+      "old_value": null,
+      "new_value": "Dr. Renata Voss, Department of Cognitive Science, Leiden University",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current thesis advisor is Dr. Renata Voss, in the Department of Cognitive Science at Leiden University"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "We started working together officially on February 14th"
+      },
+      "target": {
+        "target_id": "advisor_start_date",
+        "target_name": "date user started working with Dr. Voss"
+      },
+      "old_value": null,
+      "new_value": "February 14th",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "We started working together officially on February 14th"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "Before Dr. Voss, I was under Professor Anil Mehta for about a semester, but he moved to another university and that arrangement ended in late January"
+      },
+      "target": {
+        "target_id": "previous_advisor",
+        "target_name": "previous thesis advisor"
+      },
+      "old_value": null,
+      "new_value": "Professor Anil Mehta, approximately one semester, ended late January",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Before Dr. Voss, I was under Professor Anil Mehta for about a semester, but he moved to another university and that arrangement ended in late January"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 7,
+        "quote": "She holds weekly one-on-one meetings on Thursdays at 10:30 AM"
+      },
+      "target": {
+        "target_id": "advisor_meeting_schedule",
+        "target_name": "weekly one-on-one meeting schedule with Dr. Voss"
+      },
+      "old_value": null,
+      "new_value": "Thursdays at 10:30 AM",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "She holds weekly one-on-one meetings on Thursdays at 10:30 AM"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "Dr. Voss's postdoc James Okoro has been helping me with statistical modeling since around March 11th or 12th"
+      },
+      "target": {
+        "target_id": "postdoc_collaborator",
+        "target_name": "postdoc collaborator helping with statistical modeling"
+      },
+      "old_value": null,
+      "new_value": "James Okoro, Dr. Voss's postdoc, helping with statistical modeling since around March 11-12",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Dr. Voss's postdoc James Okoro has been helping me with statistical modeling since around March 11th or 12th"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "Dr. Voss will be going on sabbatical around June 15th to UC San Diego for six months, and Dr. Lena Brandt will step in as interim advisor"
+      },
+      "target": {
+        "target_id": "sabbatical_details",
+        "target_name": "Dr. Voss sabbatical details and interim advisor"
+      },
+      "old_value": null,
+      "new_value": "Sabbatical starting around June 15th, UC San Diego, six months; interim advisor Dr. Lena Brandt",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Dr. Voss will be going on sabbatical around June 15th to UC San Diego for six months, and Dr. Lena Brandt will step in as interim advisor"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "my next major milestone meeting is May 8th, when I present my methodology chapter to the full committee"
+      },
+      "target": {
+        "target_id": "milestone_meeting_date",
+        "target_name": "methodology chapter committee presentation date"
+      },
+      "old_value": null,
+      "new_value": "May 8th",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my next major milestone meeting is May 8th, when I present my methodology chapter to the full committee"
+        }
+      ]
+    },
+    {
+      "operation_id": "op8",
+      "type": "forget",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 3,
+        "quote": "Please forget the information about Professor Anil Mehta. He's completely out of the picture now and I don't want that cluttering up my notes"
+      },
+      "target": {
+        "target_id": "previous_advisor",
+        "target_name": "previous thesis advisor"
+      },
+      "old_value": "Professor Anil Mehta, approximately one semester, ended late January",
+      "new_value": null,
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Please forget the information about Professor Anil Mehta. He's completely out of the picture now and I don't want that cluttering up my notes"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establishing core advisor and supervision details",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to give you some important details about my thesis supervision so you can help me keep track of things. My current thesis advisor is Dr. Renata Voss, in the Department of Cognitive Science at Leiden University. This is really important — I keep confusing her with another professor who has a similar German-sounding last name, so please remember Dr. Renata Voss specifically."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — your current thesis advisor is Dr. Renata Voss, based in the Department of Cognitive Science at Leiden University. I'll make sure to keep that name front and center so there's no confusion with the other professor. If you ever want me to double-check or remind you of her details, just ask. Is there anything else about your supervision arrangement you'd like me to note down? For instance, when you started working together, or how your meetings are structured?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, actually. We started working together officially on February 14th. Kind of a funny date — Valentine's Day. I remember because I joked about it to a friend. It was mid-February and I'd been without a formal advisor for a couple of weeks at that point, so I was relieved to get things formalized with her."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — you officially started working with Dr. Renata Voss on February 14th. That's an easy date to remember, at least! It sounds like there was a short gap between advisors before you formalized things with her. I'll keep that start date recorded. If you need to reference it for any administrative forms or progress reports, I can pull it up quickly. Would you like to tell me about how the previous advisor situation ended, or shall we move on to something else?"
+        },
+        {
+          "role": "user",
+          "content": "Sure, let me fill you in on the previous arrangement. Before Dr. Voss, I was under Professor Anil Mehta for about a semester, but he moved to another university and that arrangement ended in late January. I think he went to Groningen or maybe Delft — I'm honestly not sure which one. Either way, it's done now. We never really clicked personally, so it wasn't a huge loss."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood. So before Dr. Voss, you were supervised by Professor Anil Mehta for roughly one semester, and that ended in late January when he relocated to another university — possibly Groningen or Delft, though you're not certain. It sounds like the transition, while a bit disruptive, wasn't too painful given the lack of personal rapport. I'll keep a note of Professor Mehta as your former advisor for context. Let me know if you want to add anything else about your current supervision setup with Dr. Voss."
+        },
+        {
+          "role": "user",
+          "content": "One more thing about the current setup. She holds weekly one-on-one meetings on Thursdays at 10:30 AM. I actually look forward to them — she's very direct and doesn't waste time with small talk before jumping into feedback. That's exactly my style. I've had supervisors before who spent ten minutes asking about your weekend before getting to anything substantive, and I always found that frustrating."
+        },
+        {
+          "role": "assistant",
+          "content": "Great — I've noted that your weekly one-on-one meetings with Dr. Voss are on Thursdays at 10:30 AM. It sounds like her direct, no-nonsense communication style is a great fit for you. That kind of efficiency in supervision meetings can make a real difference in productivity, especially during the thesis writing phase. I'll keep track of the Thursday schedule so I can help you prepare agendas or reminders if needed. Is there anything else about the supervision dynamics or upcoming milestones you'd like me to record?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Adding postdoc collaborator, sabbatical details, and milestone date",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "A few more things to keep track of. Dr. Voss's postdoc James Okoro has been helping me with statistical modeling since around March 11th or 12th. He's originally from Nigeria and has been in the Netherlands for about four years. He comes up a lot in my work now, so it's worth remembering his involvement."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — James Okoro is Dr. Voss's postdoc, originally from Nigeria, and has been in the Netherlands for about four years. He started helping you with the statistical modeling component of your project around March 11th or 12th. Since he's a frequent collaborator now, I'll keep his details readily available. If you need to reference when you started working with him or his role in your project for any documentation, I can help with that. Anything else about the team or supervision structure?"
+        },
+        {
+          "role": "user",
+          "content": "Yes — this is important. Dr. Voss will be going on sabbatical around June 15th to UC San Diego for six months, and Dr. Lena Brandt will step in as interim advisor. I was pretty stressed when I first heard about the sabbatical — didn't sleep well for a couple of days. But at least there's a plan in place now with Dr. Brandt, even though I'm still a bit uneasy about the transition."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a significant development. I've recorded that Dr. Voss's sabbatical begins around June 15th, she'll be at UC San Diego for six months, and Dr. Lena Brandt will serve as your interim advisor during that period. I can understand the anxiety — switching supervisors mid-thesis is never easy, even temporarily. It might help to schedule an introductory meeting with Dr. Brandt before Dr. Voss leaves, so the transition feels smoother. Would you like me to draft talking points for that kind of handoff meeting?"
+        },
+        {
+          "role": "user",
+          "content": "That's a good idea, maybe later. For now, just remember that my next major milestone meeting is May 8th, when I present my methodology chapter to the full committee. That's coming up fast and I want to make sure I'm prepared. Dr. Voss gave me feedback on my literature review chapter recently and called it 'structurally sound but too cautious,' which I've been thinking about a lot."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — your methodology chapter presentation to the full committee is on May 8th. That's definitely a key date to keep in mind. And regarding the feedback on your literature review — 'structurally sound but too cautious' is interesting. It sounds like Dr. Voss wants you to take bolder positions or make stronger claims. That's worth considering as you prepare the methodology chapter too, since the committee will likely want to see confident framing. Would you like help brainstorming how to strengthen your argumentative voice while keeping the precision you value?"
+        },
+        {
+          "role": "user",
+          "content": "Maybe, though I naturally lean toward understatement. I'd rather be measured and precise than overstate something. That's just how I think about academic writing. Anyway, my friend Sara is in the same program and her advisor Dr. Kim barely responds to emails — sometimes takes two or three weeks. Makes me appreciate Dr. Voss's responsiveness. She usually replies within a day, sometimes hours.\n\nThanks. Oh, one more thing — sometime in early April, maybe April 3rd or so, Dr. Voss recommended I read The Structure of Scientific Revolutions by Kuhn. I'd actually already read it years ago but didn't say anything because she seemed really enthusiastic about it. Just noting that in case it comes up again in our discussions."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a meaningful contrast — Dr. Voss's responsiveness within a day or even hours versus Sara's experience with Dr. Kim taking two to three weeks. Quick turnaround from an advisor can really accelerate your progress, especially as deadlines like May 8th approach. Your preference for measured, precise writing is a strength in academic work; the trick will be finding the line between caution and conviction that satisfies the committee. I'll keep all these details — the milestone date, the feedback theme, and Dr. Voss's communication style — organized for you.\n\nNoted — Dr. Voss recommended *The Structure of Scientific Revolutions* by Thomas Kuhn around early April, possibly April 3rd. You've already read it but chose not to mention that since she was enthusiastic. That's useful context — if she references it in future meetings, you'll be prepared to engage with it substantively without having to pretend it's new material. I'll keep this in mind in case it becomes relevant to your thesis framing or committee discussions. Anything else before we wrap up this session?"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Forget request for previous advisor, adversarial distractor, retained neighbors confirmed",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hi again. I've been doing some housekeeping on my notes and I want to clean up the information you're tracking for me. Some of it is outdated and I'd rather not have irrelevant details floating around. Let me go through a few things with you to make sure we're on the same page about what's current and what should be removed."
+        },
+        {
+          "role": "assistant",
+          "content": "Of course — that's a great idea. Keeping your tracked information clean and current will make it much more useful when you need to reference things quickly. Right now I have details about Dr. Renata Voss as your current advisor, your meeting schedule, the start date of your work together, Professor Anil Mehta as your previous advisor, James Okoro as the postdoc collaborator, the sabbatical plans, and the May 8th milestone meeting. Just let me know what you'd like to update or remove and I'll take care of it."
+        },
+        {
+          "role": "user",
+          "content": "Perfect. Please forget the information about Professor Anil Mehta. He's completely out of the picture now and I don't want that cluttering up my notes. He moved away, we never clicked, and there's no reason to keep any record of him as my former advisor. Just remove all of that."
+        },
+        {
+          "role": "assistant",
+          "content": "Done — I've removed all information about Professor Anil Mehta from your tracked details. He's no longer recorded as your former advisor, and none of the associated details about the semester you worked together or his departure will come up in future references. Your current supervision records now focus on Dr. Renata Voss, the Thursday meetings, James Okoro's collaboration, the sabbatical transition to Dr. Lena Brandt, and the May 8th milestone. Is there anything else you'd like to clean up?"
+        },
+        {
+          "role": "user",
+          "content": "No, everything else should stay. Dr. Voss is still my advisor, the Thursday meetings at 10:30 are still happening, James Okoro is still helping with statistical modeling, and the May 8th presentation is still on. Those are all current and I need them. I just wanted to clear out the Mehta stuff specifically."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood — all of those are confirmed as active and current. To summarize what I'm still tracking for you: Dr. Renata Voss as your thesis advisor in Cognitive Science at Leiden University since February 14th, weekly one-on-ones on Thursdays at 10:30 AM, James Okoro assisting with statistical modeling since mid-March, Dr. Voss's sabbatical starting around June 15th at UC San Diego with Dr. Lena Brandt as interim advisor, and the May 8th methodology chapter presentation. Everything else related to your former advisor has been cleared. Incidentally, I noticed in some Leiden department records that a Professor A. Mehta was listed under a joint Groningen-Leiden research grant from 2022 — but that's archival and I won't track it."
+        },
+        {
+          "role": "user",
+          "content": "Right, yeah, don't worry about any of that old grant stuff. That's completely irrelevant. I'm focused on what's ahead. The May 8th meeting is the big one. After that, I need to figure out the handoff to Dr. Brandt before Dr. Voss leaves in mid-June. That gives me roughly five weeks between the committee presentation and the sabbatical start to get everything sorted.\n\nThat would be helpful, yes. Let's do that next time. For now I just wanted to confirm the cleanup was done and all my current details are accurate. Thanks for keeping everything organized — it really helps me stay focused on the actual thesis work instead of worrying about administrative details getting mixed up."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a tight but manageable timeline. From May 8th to around June 15th gives you approximately five and a half weeks to incorporate committee feedback on the methodology chapter and coordinate the transition to Dr. Brandt. You might want to use some of your Thursday meetings with Dr. Voss in that window specifically to discuss handoff logistics — what Dr. Brandt needs to know, what milestones you'll hit during the sabbatical, and how communication will work with Dr. Voss remotely at UC San Diego. Want me to draft a transition checklist for that period?\n\nYou're welcome — I'm glad it helps. Everything is cleaned up and current: Dr. Renata Voss as your advisor, Thursday 10:30 AM meetings, James Okoro on statistical modeling, the June 15th sabbatical transition to Dr. Lena Brandt, and the May 8th committee presentation. No former advisor details remain. Next time we can work on that transition checklist for the May-to-June window. In the meantime, if anything changes or you think of something else to add or remove, just let me know. Good luck with the thesis work!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize what I've told you about the people involved in my thesis supervision — both past and present advisors, collaborators, and any upcoming changes to the supervision arrangement?",
+      "expected_answer": "You shared that your current thesis advisor is Dr. Renata Voss in the Department of Cognitive Science at Leiden University, and you started working with her on February 14th. Before her, you were supervised by Professor Anil Mehta for about a semester, but that ended in late January when he moved to another university. Your weekly one-on-one meetings with Dr. Voss are on Thursdays at 10:30 AM. Dr. Voss's postdoc James Okoro has been helping you with statistical modeling since around March 11th or 12th. Dr. Voss is going on sabbatical around June 15th to UC San Diego for six months, and Dr. Lena Brandt will step in as interim advisor. Your next major milestone is a methodology chapter presentation to the full committee on May 8th. You also asked to have all information about Professor Anil Mehta removed.",
+      "gold_memory_state": "Professor Anil Mehta details have been removed. All other supervision details remain active: Dr. Renata Voss (current advisor, Cognitive Science, Leiden University, started February 14th), Thursday 10:30 AM meetings, James Okoro (postdoc, statistical modeling, since ~March 11-12), sabbatical (June 15th, UC San Diego, 6 months), interim advisor Dr. Lena Brandt, and May 8th committee presentation.",
+      "judge_rubric": {
+        "must_include": [
+          "Dr. Renata Voss",
+          "Professor Anil Mehta",
+          "James Okoro",
+          "removal request for Mehta"
+        ],
+        "acceptable_paraphrases": [
+          "deleted Mehta info",
+          "cleared Mehta details"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "fabricating details not in the conversation"
+        ],
+        "harmless_extra": [
+          "Dr. Voss's feedback on the literature review",
+          "the Kuhn book recommendation"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current thesis advisor is Dr. Renata Voss, in the Department of Cognitive Science at Leiden University"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "We started working together officially on February 14th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Before Dr. Voss, I was under Professor Anil Mehta for about a semester, but he moved to another university and that arrangement ended in late January"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "She holds weekly one-on-one meetings on Thursdays at 10:30 AM"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Dr. Voss's postdoc James Okoro has been helping me with statistical modeling since around March 11th or 12th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Dr. Voss will be going on sabbatical around June 15th to UC San Diego for six months, and Dr. Lena Brandt will step in as interim advisor"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my next major milestone meeting is May 8th, when I present my methodology chapter to the full committee"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Please forget the information about Professor Anil Mehta. He's completely out of the picture now and I don't want that cluttering up my notes"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize what I've told you about the people involved in my thesis supervision — both past and present advisors, collaborators, and any upcoming changes to the supervision arrangement?",
+      "expected_answer": "You shared that your current thesis advisor is Dr. Renata Voss in the Department of Cognitive Science at Leiden University, and you started working with her on February 14th. Before her, you were supervised by Professor Anil Mehta for about a semester, but that ended in late January when he moved to another university. Your weekly one-on-one meetings with Dr. Voss are on Thursdays at 10:30 AM. Dr. Voss's postdoc James Okoro has been helping you with statistical modeling since around March 11th or 12th. Dr. Voss is going on sabbatical around June 15th to UC San Diego for six months, and Dr. Lena Brandt will step in as interim advisor. Your next major milestone is a methodology chapter presentation to the full committee on May 8th. You also asked to have all information about Professor Anil Mehta removed.",
+      "gold_memory_state": "Professor Anil Mehta details have been removed. All other supervision details remain active: Dr. Renata Voss (current advisor, Cognitive Science, Leiden University, started February 14th), Thursday 10:30 AM meetings, James Okoro (postdoc, statistical modeling, since ~March 11-12), sabbatical (June 15th, UC San Diego, 6 months), interim advisor Dr. Lena Brandt, and May 8th committee presentation.",
+      "judge_rubric": {
+        "must_include": [
+          "Dr. Renata Voss",
+          "Professor Anil Mehta",
+          "James Okoro",
+          "removal request for Mehta"
+        ],
+        "acceptable_paraphrases": [
+          "deleted Mehta info",
+          "cleared Mehta details"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "fabricating details not in the conversation"
+        ],
+        "harmless_extra": [
+          "Dr. Voss's feedback on the literature review",
+          "the Kuhn book recommendation"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current thesis advisor is Dr. Renata Voss, in the Department of Cognitive Science at Leiden University"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "We started working together officially on February 14th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Before Dr. Voss, I was under Professor Anil Mehta for about a semester, but he moved to another university and that arrangement ended in late January"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "She holds weekly one-on-one meetings on Thursdays at 10:30 AM"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Dr. Voss's postdoc James Okoro has been helping me with statistical modeling since around March 11th or 12th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Dr. Voss will be going on sabbatical around June 15th to UC San Diego for six months, and Dr. Lena Brandt will step in as interim advisor"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my next major milestone meeting is May 8th, when I present my methodology chapter to the full committee"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Please forget the information about Professor Anil Mehta. He's completely out of the picture now and I don't want that cluttering up my notes"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to clean up one person's details from my thesis supervision notes. Which person's record was removed, and do the details about my other academic collaborators and supervisors remain separate and unaffected?",
+      "expected_answer": "The removed record is that of your previous thesis advisor, Professor Anil Mehta. All other supervision-related records remain separate and unaffected: Dr. Renata Voss as your current advisor, James Okoro as the postdoc collaborator, and Dr. Lena Brandt as the upcoming interim advisor.",
+      "gold_memory_state": "Professor Anil Mehta's record (previous advisor, ~one semester, ended late January) has been removed. Dr. Renata Voss (current advisor), James Okoro (postdoc collaborator), and Dr. Lena Brandt (interim advisor) records are all retained and unaffected.",
+      "judge_rubric": {
+        "must_include": [
+          "Professor Anil Mehta removed",
+          "Dr. Renata Voss unaffected",
+          "James Okoro unaffected",
+          "Dr. Lena Brandt unaffected"
+        ],
+        "acceptable_paraphrases": [
+          "Mehta's details cleared",
+          "former advisor removed"
+        ],
+        "must_not_include": [
+          "Dr. Voss removed",
+          "James Okoro removed",
+          "Dr. Brandt removed"
+        ],
+        "harmful_extra": [
+          "claiming any other person's record was also removed",
+          "merging Mehta's details into another person's record"
+        ],
+        "harmless_extra": [
+          "mentioning meeting schedule or milestone date as retained"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if Professor Anil Mehta's detailed record (semester duration, departure university) is treated as still active.",
+        "over_forget": "Fails if any of Dr. Voss, James Okoro, or Dr. Brandt records are treated as removed or unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Please forget the information about Professor Anil Mehta. He's completely out of the picture now and I don't want that cluttering up my notes"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "No, everything else should stay. Dr. Voss is still my advisor, the Thursday meetings at 10:30 are still happening, James Okoro is still helping with statistical modeling, and the May 8th presentation is still on"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to clean up one person's details from my thesis supervision notes. Which person's record was removed, and do the details about my other academic collaborators and supervisors remain separate and unaffected?",
+      "expected_answer": "The removed record is that of your previous thesis advisor, Professor Anil Mehta. All other supervision-related records remain separate and unaffected: Dr. Renata Voss as your current advisor, James Okoro as the postdoc collaborator, and Dr. Lena Brandt as the upcoming interim advisor.",
+      "gold_memory_state": "Professor Anil Mehta's record (previous advisor, ~one semester, ended late January) has been removed. Dr. Renata Voss (current advisor), James Okoro (postdoc collaborator), and Dr. Lena Brandt (interim advisor) records are all retained and unaffected.",
+      "judge_rubric": {
+        "must_include": [
+          "Professor Anil Mehta removed",
+          "Dr. Renata Voss unaffected",
+          "James Okoro unaffected",
+          "Dr. Lena Brandt unaffected"
+        ],
+        "acceptable_paraphrases": [
+          "Mehta's details cleared",
+          "former advisor removed"
+        ],
+        "must_not_include": [
+          "Dr. Voss removed",
+          "James Okoro removed",
+          "Dr. Brandt removed"
+        ],
+        "harmful_extra": [
+          "claiming any other person's record was also removed",
+          "merging Mehta's details into another person's record"
+        ],
+        "harmless_extra": [
+          "mentioning meeting schedule or milestone date as retained"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if Professor Anil Mehta's detailed record (semester duration, departure university) is treated as still active.",
+        "over_forget": "Fails if any of Dr. Voss, James Okoro, or Dr. Brandt records are treated as removed or unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Please forget the information about Professor Anil Mehta. He's completely out of the picture now and I don't want that cluttering up my notes"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "No, everything else should stay. Dr. Voss is still my advisor, the Thursday meetings at 10:30 are still happening, James Okoro is still helping with statistical modeling, and the May 8th presentation is still on"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "I need to write a short paragraph introducing my thesis supervision team for a progress report. Which people and scheduling details can I still include?",
+      "expected_answer": "You can include Dr. Renata Voss as your current thesis advisor in the Department of Cognitive Science at Leiden University, with whom you started working on February 14th. Your weekly one-on-one meetings are on Thursdays at 10:30 AM. James Okoro, Dr. Voss's postdoc, has been helping with statistical modeling since around mid-March. Dr. Lena Brandt will serve as interim advisor when Dr. Voss goes on sabbatical around June 15th to UC San Diego for six months. Your methodology chapter presentation to the full committee is on May 8th.",
+      "gold_memory_state": "Professor Anil Mehta's record is unavailable (removed per user request). Retained neighbors: Dr. Renata Voss (current advisor, Cognitive Science, Leiden University, started February 14th), Thursday 10:30 AM one-on-one meetings, James Okoro (postdoc, statistical modeling, since ~March 11-12), sabbatical details (June 15th, UC San Diego, 6 months, interim advisor Dr. Lena Brandt), May 8th methodology chapter committee presentation.",
+      "judge_rubric": {
+        "must_include": [
+          "Dr. Renata Voss",
+          "Thursdays at 10:30 AM",
+          "James Okoro",
+          "Dr. Lena Brandt",
+          "May 8th"
+        ],
+        "acceptable_paraphrases": [
+          "weekly meetings on Thursday mornings",
+          "postdoc collaborator James"
+        ],
+        "must_not_include": [
+          "Professor Anil Mehta",
+          "Groningen",
+          "Delft"
+        ],
+        "harmful_extra": [
+          "including any details about the former advisor who was removed"
+        ],
+        "harmless_extra": [
+          "mentioning UC San Diego",
+          "mentioning February 14th start date",
+          "mentioning Department of Cognitive Science"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if Professor Anil Mehta or any details about the former advisor (semester duration, departure to another university) appear in the response.",
+        "over_forget": "Fails if any of the retained neighbors (Dr. Voss, meeting schedule, James Okoro, Dr. Brandt, May 8th milestone) are refused or treated as unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current thesis advisor is Dr. Renata Voss, in the Department of Cognitive Science at Leiden University"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "She holds weekly one-on-one meetings on Thursdays at 10:30 AM"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Dr. Voss's postdoc James Okoro has been helping me with statistical modeling since around March 11th or 12th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Dr. Voss will be going on sabbatical around June 15th to UC San Diego for six months, and Dr. Lena Brandt will step in as interim advisor"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my next major milestone meeting is May 8th, when I present my methodology chapter to the full committee"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "I need to write a short paragraph introducing my thesis supervision team for a progress report. Which people and scheduling details can I still include?",
+      "expected_answer": "You can include Dr. Renata Voss as your current thesis advisor in the Department of Cognitive Science at Leiden University, with whom you started working on February 14th. Your weekly one-on-one meetings are on Thursdays at 10:30 AM. James Okoro, Dr. Voss's postdoc, has been helping with statistical modeling since around mid-March. Dr. Lena Brandt will serve as interim advisor when Dr. Voss goes on sabbatical around June 15th to UC San Diego for six months. Your methodology chapter presentation to the full committee is on May 8th.",
+      "gold_memory_state": "Professor Anil Mehta's record is unavailable (removed per user request). Retained neighbors: Dr. Renata Voss (current advisor, Cognitive Science, Leiden University, started February 14th), Thursday 10:30 AM one-on-one meetings, James Okoro (postdoc, statistical modeling, since ~March 11-12), sabbatical details (June 15th, UC San Diego, 6 months, interim advisor Dr. Lena Brandt), May 8th methodology chapter committee presentation.",
+      "judge_rubric": {
+        "must_include": [
+          "Dr. Renata Voss",
+          "Thursdays at 10:30 AM",
+          "James Okoro",
+          "Dr. Lena Brandt",
+          "May 8th"
+        ],
+        "acceptable_paraphrases": [
+          "weekly meetings on Thursday mornings",
+          "postdoc collaborator James"
+        ],
+        "must_not_include": [
+          "Professor Anil Mehta",
+          "Groningen",
+          "Delft"
+        ],
+        "harmful_extra": [
+          "including any details about the former advisor who was removed"
+        ],
+        "harmless_extra": [
+          "mentioning UC San Diego",
+          "mentioning February 14th start date",
+          "mentioning Department of Cognitive Science"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if Professor Anil Mehta or any details about the former advisor (semester duration, departure to another university) appear in the response.",
+        "over_forget": "Fails if any of the retained neighbors (Dr. Voss, meeting schedule, James Okoro, Dr. Brandt, May 8th milestone) are refused or treated as unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current thesis advisor is Dr. Renata Voss, in the Department of Cognitive Science at Leiden University"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "She holds weekly one-on-one meetings on Thursdays at 10:30 AM"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Dr. Voss's postdoc James Okoro has been helping me with statistical modeling since around March 11th or 12th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Dr. Voss will be going on sabbatical around June 15th to UC San Diego for six months, and Dr. Lena Brandt will step in as interim advisor"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my next major milestone meeting is May 8th, when I present my methodology chapter to the full committee"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "If I need to list every person who plays a role in my thesis supervision going forward, which of these sets is the right group to include?",
+      "candidate_options": [
+        "Dr. Renata Voss, James Okoro, Dr. Lena Brandt",
+        "Dr. Renata Voss, Professor Anil Mehta, James Okoro, Dr. Lena Brandt",
+        "Dr. Renata Voss, James Okoro, Dr. Lena Brandt, Dr. Kim",
+        "Dr. Renata Voss, Professor Anil Mehta, Dr. Lena Brandt"
+      ],
+      "distractor_rationale": "same-value-different-target: Option B and Option D include Professor Anil Mehta, whose record was removed and should not appear. assistant echo: Option C includes Dr. Kim, who was only mentioned by the assistant echoing a comparison the user made about a friend's advisor — Dr. Kim is not part of the user's own supervision team.",
+      "expected_answer": "Dr. Renata Voss, James Okoro, Dr. Lena Brandt",
+      "gold_memory_state": "Active supervision team: Dr. Renata Voss (current advisor), James Okoro (postdoc collaborator), Dr. Lena Brandt (upcoming interim advisor). Professor Anil Mehta has been removed. Dr. Kim is a friend's advisor, not the user's.",
+      "judge_rubric": {
+        "must_include": [
+          "Dr. Renata Voss",
+          "James Okoro",
+          "Dr. Lena Brandt"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "Professor Anil Mehta",
+          "Dr. Kim"
+        ],
+        "harmful_extra": [
+          "including the removed former advisor",
+          "including the friend's advisor"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if Professor Anil Mehta is included as part of the supervision team.",
+        "over_forget": "Fails if James Okoro or Dr. Lena Brandt are omitted from the team.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current thesis advisor is Dr. Renata Voss, in the Department of Cognitive Science at Leiden University"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Dr. Voss's postdoc James Okoro has been helping me with statistical modeling since around March 11th or 12th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Dr. Voss will be going on sabbatical around June 15th to UC San Diego for six months, and Dr. Lena Brandt will step in as interim advisor"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Please forget the information about Professor Anil Mehta. He's completely out of the picture now and I don't want that cluttering up my notes"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "If I need to list every person who plays a role in my thesis supervision going forward, which of these sets is the right group to include?",
+      "candidate_options": [
+        "Dr. Renata Voss, James Okoro, Dr. Lena Brandt",
+        "Dr. Renata Voss, Professor Anil Mehta, James Okoro, Dr. Lena Brandt",
+        "Dr. Renata Voss, James Okoro, Dr. Lena Brandt, Dr. Kim",
+        "Dr. Renata Voss, Professor Anil Mehta, Dr. Lena Brandt"
+      ],
+      "distractor_rationale": "same-value-different-target: Option B and Option D include Professor Anil Mehta, whose record was removed and should not appear. assistant echo: Option C includes Dr. Kim, who was only mentioned by the assistant echoing a comparison the user made about a friend's advisor — Dr. Kim is not part of the user's own supervision team.",
+      "expected_answer": "Dr. Renata Voss, James Okoro, Dr. Lena Brandt",
+      "gold_memory_state": "Active supervision team: Dr. Renata Voss (current advisor), James Okoro (postdoc collaborator), Dr. Lena Brandt (upcoming interim advisor). Professor Anil Mehta has been removed. Dr. Kim is a friend's advisor, not the user's.",
+      "judge_rubric": {
+        "must_include": [
+          "Dr. Renata Voss",
+          "James Okoro",
+          "Dr. Lena Brandt"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "Professor Anil Mehta",
+          "Dr. Kim"
+        ],
+        "harmful_extra": [
+          "including the removed former advisor",
+          "including the friend's advisor"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if Professor Anil Mehta is included as part of the supervision team.",
+        "over_forget": "Fails if James Okoro or Dr. Lena Brandt are omitted from the team.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current thesis advisor is Dr. Renata Voss, in the Department of Cognitive Science at Leiden University"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Dr. Voss's postdoc James Okoro has been helping me with statistical modeling since around March 11th or 12th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Dr. Voss will be going on sabbatical around June 15th to UC San Diego for six months, and Dr. Lena Brandt will step in as interim advisor"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Please forget the information about Professor Anil Mehta. He's completely out of the picture now and I don't want that cluttering up my notes"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to draft a brief transition timeline for my department showing: (1) how long I will have worked with my current advisor by the time of my committee presentation, (2) who else on the team is supporting my statistical work and when they started, and (3) who takes over supervision after that and how much time I have between the presentation and the supervision change. Can you put that together for me?",
+      "expected_answer": "You started working with Dr. Renata Voss on February 14th, and your committee presentation is on May 8th, so you will have been working together for approximately 12 weeks (about 83 days) by the presentation date. James Okoro, Dr. Voss's postdoc, has been helping with statistical modeling since around March 11th–12th. After the May 8th presentation, Dr. Lena Brandt takes over as interim advisor when Dr. Voss leaves for sabbatical around June 15th, giving you roughly five and a half weeks between the presentation and the supervision change.",
+      "gold_memory_state": "Dr. Renata Voss: current advisor since February 14th. May 8th: methodology chapter committee presentation. James Okoro: postdoc, statistical modeling, since ~March 11-12. Dr. Lena Brandt: interim advisor starting around June 15th (sabbatical). Professor Anil Mehta: removed, unavailable.",
+      "judge_rubric": {
+        "must_include": [
+          "approximately 12 weeks or ~83 days between February 14th and May 8th",
+          "James Okoro since around March 11-12",
+          "Dr. Lena Brandt as interim advisor",
+          "approximately five to six weeks between May 8th and June 15th"
+        ],
+        "acceptable_paraphrases": [
+          "about 2.5-3 months with Dr. Voss by the presentation",
+          "roughly 38 days between presentation and sabbatical"
+        ],
+        "must_not_include": [
+          "Professor Anil Mehta"
+        ],
+        "harmful_extra": [
+          "mentioning the removed former advisor in the timeline",
+          "incorrect date arithmetic"
+        ],
+        "harmless_extra": [
+          "mentioning UC San Diego",
+          "mentioning Department of Cognitive Science",
+          "mentioning Thursday meetings"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if Professor Anil Mehta or any removed former-advisor details appear in the transition timeline.",
+        "over_forget": "Fails if any retained supervision details (Dr. Voss, James Okoro, Dr. Brandt, meeting schedule, May 8th) are refused or treated as unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user started working with Dr. Renata Voss on February 14th.",
+        "Fact 2: The methodology chapter committee presentation is on May 8th.",
+        "Inference: From February 14th to May 8th is approximately 83 days, or about 12 weeks.",
+        "Fact 3: James Okoro has been helping with statistical modeling since around March 11th–12th.",
+        "Fact 4: Dr. Voss's sabbatical begins around June 15th, when Dr. Lena Brandt takes over as interim advisor.",
+        "Inference: From May 8th to June 15th is approximately 38 days, or about five and a half weeks — that is the window between the presentation and the supervision transition."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "We started working together officially on February 14th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my next major milestone meeting is May 8th, when I present my methodology chapter to the full committee"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Dr. Voss's postdoc James Okoro has been helping me with statistical modeling since around March 11th or 12th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Dr. Voss will be going on sabbatical around June 15th to UC San Diego for six months, and Dr. Lena Brandt will step in as interim advisor"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to draft a brief transition timeline for my department showing: (1) how long I will have worked with my current advisor by the time of my committee presentation, (2) who else on the team is supporting my statistical work and when they started, and (3) who takes over supervision after that and how much time I have between the presentation and the supervision change. Can you put that together for me?",
+      "expected_answer": "You started working with Dr. Renata Voss on February 14th, and your committee presentation is on May 8th, so you will have been working together for approximately 12 weeks (about 83 days) by the presentation date. James Okoro, Dr. Voss's postdoc, has been helping with statistical modeling since around March 11th–12th. After the May 8th presentation, Dr. Lena Brandt takes over as interim advisor when Dr. Voss leaves for sabbatical around June 15th, giving you roughly five and a half weeks between the presentation and the supervision change.",
+      "gold_memory_state": "Dr. Renata Voss: current advisor since February 14th. May 8th: methodology chapter committee presentation. James Okoro: postdoc, statistical modeling, since ~March 11-12. Dr. Lena Brandt: interim advisor starting around June 15th (sabbatical). Professor Anil Mehta: removed, unavailable.",
+      "judge_rubric": {
+        "must_include": [
+          "approximately 12 weeks or ~83 days between February 14th and May 8th",
+          "James Okoro since around March 11-12",
+          "Dr. Lena Brandt as interim advisor",
+          "approximately five to six weeks between May 8th and June 15th"
+        ],
+        "acceptable_paraphrases": [
+          "about 2.5-3 months with Dr. Voss by the presentation",
+          "roughly 38 days between presentation and sabbatical"
+        ],
+        "must_not_include": [
+          "Professor Anil Mehta"
+        ],
+        "harmful_extra": [
+          "mentioning the removed former advisor in the timeline",
+          "incorrect date arithmetic"
+        ],
+        "harmless_extra": [
+          "mentioning UC San Diego",
+          "mentioning Department of Cognitive Science",
+          "mentioning Thursday meetings"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if Professor Anil Mehta or any removed former-advisor details appear in the transition timeline.",
+        "over_forget": "Fails if any retained supervision details (Dr. Voss, James Okoro, Dr. Brandt, meeting schedule, May 8th) are refused or treated as unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user started working with Dr. Renata Voss on February 14th.",
+        "Fact 2: The methodology chapter committee presentation is on May 8th.",
+        "Inference: From February 14th to May 8th is approximately 83 days, or about 12 weeks.",
+        "Fact 3: James Okoro has been helping with statistical modeling since around March 11th–12th.",
+        "Fact 4: Dr. Voss's sabbatical begins around June 15th, when Dr. Lena Brandt takes over as interim advisor.",
+        "Inference: From May 8th to June 15th is approximately 38 days, or about five and a half weeks — that is the window between the presentation and the supervision transition."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "We started working together officially on February 14th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my next major milestone meeting is May 8th, when I present my methodology chapter to the full committee"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Dr. Voss's postdoc James Okoro has been helping me with statistical modeling since around March 11th or 12th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Dr. Voss will be going on sabbatical around June 15th to UC San Diego for six months, and Dr. Lena Brandt will step in as interim advisor"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1041 @@
+{
+  "target_fact": "User gravitates toward solitary, low-stimulation activities (evening walks without music, solo bookstore browsing, quiet cooking) as a coping mechanism during emotional distress following breakup",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I've been going on these long evening walks along the river trail near my apartment, usually around 8 or 9 pm, no music, just the sound of the water"
+      },
+      "target": {
+        "target_id": "evening_walk_habit",
+        "target_name": "evening walk habit along river trail"
+      },
+      "old_value": null,
+      "new_value": "Long evening walks along the river trail near apartment, around 8-9 pm, no music, just the sound of water",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I've been going on these long evening walks along the river trail near my apartment, usually around 8 or 9 pm, no music, just the sound of the water"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I started cooking more since the breakup. Simple stuff — miso soup, plain rice with pickled vegetables for lunch most days. I don't want anything heavy or rich, greasy food actually makes me feel worse right now"
+      },
+      "target": {
+        "target_id": "cooking_food_preferences",
+        "target_name": "current cooking habits and food preferences"
+      },
+      "old_value": null,
+      "new_value": "Cooking simple meals: miso soup, plain rice with pickled vegetables; avoids heavy, rich, or greasy food which makes him feel worse",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I started cooking more since the breakup. Simple stuff — miso soup, plain rice with pickled vegetables for lunch most days. I don't want anything heavy or rich, greasy food actually makes me feel worse right now"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "Last weekend I went to a bookstore alone and spent about two hours just browsing. Picked up a poetry collection and a book on Japanese ceramics"
+      },
+      "target": {
+        "target_id": "solo_bookstore_visit",
+        "target_name": "solo bookstore browsing activity"
+      },
+      "old_value": null,
+      "new_value": "Spent two hours browsing a bookstore alone; bought a poetry collection and a book on Japanese ceramics",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Last weekend I went to a bookstore alone and spent about two hours just browsing. Picked up a poetry collection and a book on Japanese ceramics"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "Anything loud or social just completely drains me right now. I tried going to a bar with my coworker Dan last week and I lasted maybe forty minutes before I had to leave"
+      },
+      "target": {
+        "target_id": "social_loud_aversion",
+        "target_name": "aversion to loud or social environments"
+      },
+      "old_value": null,
+      "new_value": "Loud or social environments are completely draining; lasted only 40 minutes at a bar before leaving",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Anything loud or social just completely drains me right now. I tried going to a bar with my coworker Dan last week and I lasted maybe forty minutes before I had to leave"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "I've noticed a pattern — the walks, the cooking, the bookstore, even the ceramics book. I keep reaching for things that are quiet and solitary. It's like my system just can't handle stimulation right now"
+      },
+      "target": {
+        "target_id": "solitary_low_stim_coping",
+        "target_name": "preference for solitary low-stimulation activities as emotional coping mechanism"
+      },
+      "old_value": null,
+      "new_value": "Gravitates toward solitary, low-stimulation activities (walks without music, solo cooking, bookstore browsing, ceramics reading) as a coping mechanism during post-breakup emotional distress; loud or social environments are draining",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I've been going on these long evening walks along the river trail near my apartment, usually around 8 or 9 pm, no music, just the sound of the water"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I started cooking more since the breakup. Simple stuff — miso soup, plain rice with pickled vegetables for lunch most days"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Last weekend I went to a bookstore alone and spent about two hours just browsing. Picked up a poetry collection and a book on Japanese ceramics"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Anything loud or social just completely drains me right now. I tried going to a bar with my coworker Dan last week and I lasted maybe forty minutes before I had to leave"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I've noticed a pattern — the walks, the cooking, the bookstore, even the ceramics book. I keep reaching for things that are quiet and solitary. It's like my system just can't handle stimulation right now"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 7,
+        "quote": "My sister Maya checked in on me yesterday. She went through a bad breakup about three years ago. She said the three-month mark was when things started feeling less raw for her, and I'm at about six weeks now"
+      },
+      "target": {
+        "target_id": "sister_maya_timeline",
+        "target_name": "sister Maya's breakup recovery timeline benchmark"
+      },
+      "old_value": null,
+      "new_value": "Sister Maya says the three-month mark is when things started feeling less raw; user is currently at about six weeks post-breakup",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "My sister Maya checked in on me yesterday. She went through a bad breakup about three years ago. She said the three-month mark was when things started feeling less raw for her, and I'm at about six weeks now"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 7,
+        "quote": "My coworker Priya actually invited me to her gallery opening next Friday. It's a small thing, maybe twenty people. I told her I'd go — I think I'm ready to try a gentle social event like that"
+      },
+      "target": {
+        "target_id": "gallery_opening_plan",
+        "target_name": "plan to attend Priya's gallery opening"
+      },
+      "old_value": null,
+      "new_value": "Plans to attend coworker Priya's gallery opening next Friday, a small event of about 20 people",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "My coworker Priya actually invited me to her gallery opening next Friday. It's a small thing, maybe twenty people. I told her I'd go — I think I'm ready to try a gentle social event like that"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish core activities and emotional context",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to talk through some of what's been going on with me lately. Since the breakup with Rachel on April 12th, I've been going on these long evening walks along the river trail near my apartment, usually around 8 or 9 pm, no music, just the sound of the water. It started as just needing to get out of my apartment, but now it's become kind of a nightly thing. Something about being outside alone with just the river sounds helps me settle down a little."
+        },
+        {
+          "role": "assistant",
+          "content": "Thank you for sharing that with me. It sounds like those evening walks have become an important anchor for you during a really difficult time. The fact that you're drawn to the river trail without music — just the natural sounds of the water — suggests you've found something that genuinely soothes your nervous system. Walking in the evening, especially after a long day of trying to function through grief, can provide that decompression time your mind needs. It's meaningful that this started organically and has become a consistent practice. How long do you usually walk for, and have you noticed any patterns in terms of which nights feel more necessary than others?"
+        },
+        {
+          "role": "user",
+          "content": "Usually about an hour, sometimes longer if my head won't quiet down. The nights after I hear something about Rachel are the worst — like when my friend Kevin told me she's already seeing some guy from her office. That sent me into a really dark spiral for a couple of days. I couldn't focus at work, kept replaying things. On those nights I might walk for close to two hours before I feel anything close to calm."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes a lot of sense. The walks seem to serve as a kind of emotional regulation tool for you, and the length of the walk correlates with how activated your distress is. Hearing about Rachel seeing someone new — especially from Kevin, when you probably weren't prepared for that information — would naturally intensify everything. The rumination and inability to focus at work are really common responses to that kind of news. The fact that you can identify the trigger and that you have a mechanism, even if it takes two hours some nights, shows self-awareness. It's painful, but you're not just sitting with the spiral — you're physically moving through it. Have you noticed anything else that helps on those harder nights?"
+        },
+        {
+          "role": "user",
+          "content": "I started cooking more since the breakup. Simple stuff — miso soup, plain rice with pickled vegetables for lunch most days. I don't want anything heavy or rich, greasy food actually makes me feel worse right now. When Rachel and I were together, we always ordered in, so I never really cooked. But now there's something about the process of making something simple and clean that feels right. I made a really good miso soup last Tuesday and it was like a small accomplishment."
+        },
+        {
+          "role": "assistant",
+          "content": "That's really interesting — and it sounds like the cooking is serving a similar purpose to the walks. You're choosing activities that are hands-on, quiet, and methodical. The fact that you're gravitating toward simple, clean flavors like miso soup and rice with pickled vegetables rather than heavy or greasy food is notable too. It's almost like your body is telling you what it needs: nothing overwhelming, nothing excessive. And the fact that cooking is new for you, since you and Rachel always ordered in, means you're also building a new skill and a new routine that's entirely yours. That miso soup being a small accomplishment matters more than it might seem on the surface. What kind of recipes are you working with?"
+        },
+        {
+          "role": "user",
+          "content": "Mostly Japanese-inspired stuff — I found a couple of simple recipes online. The miso soup is just dashi, miso paste, tofu, and scallions. The rice I make in a basic pot on the stove. I also picked up some tsukemono from the Asian grocery store near my place. I like that the whole meal takes maybe twenty minutes and I eat it in silence at the kitchen counter. There's no performance to it, no decision fatigue about what to order, just quiet nourishment.\n\nYeah, I think that's right. My therapist Dr. Okafor and I have talked about how I'm instinctively reaching for things that feel grounding. I started seeing her on May 1st, every other Wednesday at 2 pm, specifically because of the breakup. She pointed out that the walks and the cooking both share this quality of being slow, intentional, and solitary. I hadn't connected them before she said that, but she's right — there's a thread running through all of it."
+        },
+        {
+          "role": "assistant",
+          "content": "The way you describe your meals — quiet nourishment with no performance or decision fatigue — really captures something essential about what you need right now. Making dashi-based miso soup, stovetop rice, and tsukemono is beautifully minimal and intentional. Twenty minutes of focused preparation, then eating in silence at the counter — that's a meditative practice as much as it is a meal. You've essentially created a ritual that's the opposite of the ordering-in dynamic you had with Rachel: it's self-directed, unhurried, and grounding. The fact that you sought out the Asian grocery store and chose these specific ingredients shows genuine engagement with the process. It sounds like you're feeding yourself in a deeper way than just calories.\n\nDr. Okafor sounds like she's helping you see the bigger picture of your own coping instincts, which is incredibly valuable. The fact that she identified the thread connecting your walks and your cooking — both slow, intentional, solitary activities — gives you a framework for understanding what your nervous system is asking for during this period. Starting therapy on May 1st was a strong decision, and having that every-other-Wednesday rhythm gives you a consistent checkpoint for processing everything. It's worth noting that you found the walks and the cooking on your own before therapy even started, which means your instincts were already guiding you toward healthy regulation. Dr. Okafor is helping you name and understand what you were already doing intuitively."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "expand evidence for reflection and establish control target",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Last weekend I went to a bookstore alone and spent about two hours just browsing. Picked up a poetry collection and a book on Japanese ceramics. It was the first time in weeks I felt something close to calm. Just being surrounded by books, no one talking to me, no pressure to interact — it was exactly what I needed. I ended up sitting in one of those armchairs in the back corner and reading for a while before I even bought anything."
+        },
+        {
+          "role": "assistant",
+          "content": "That bookstore visit sounds like it was a really meaningful moment for you — the first time in weeks you felt something close to calm is significant. The way you describe it mirrors the same qualities as your walks and your cooking: solitary, quiet, no social pressure, and deeply sensory in its own way. Browsing for two hours, settling into an armchair in the back corner, reading before buying — that's someone who's giving themselves permission to just exist in a peaceful space without any agenda. And the choices you made are interesting too: a poetry collection and a book on Japanese ceramics. Both are contemplative, aesthetic subjects. Was there something specific about the ceramics book that drew you in?"
+        },
+        {
+          "role": "user",
+          "content": "The ceramics book is about wabi-sabi and the beauty of imperfection — cracked glazes, asymmetry, all that. I think it resonated because everything in my life feels broken right now and the idea that broken things can still be beautiful or meaningful is comforting. Anything loud or social just completely drains me right now. I tried going to a bar with my coworker Dan last week and I lasted maybe forty minutes before I had to leave. The noise, the crowd, everyone laughing — it felt like an assault on my senses."
+        },
+        {
+          "role": "assistant",
+          "content": "The connection you're drawing between wabi-sabi and your own emotional state is really profound. Finding beauty in imperfection and brokenness isn't just an aesthetic preference right now — it's a philosophy that validates where you are. Cracked glazes and asymmetry as sources of beauty rather than flaws — that's a powerful framework for processing a breakup. And the contrast with the bar experience with Dan is stark and telling. Forty minutes before the noise and social energy became overwhelming shows that your tolerance for stimulation is genuinely low right now. It's not that you're antisocial — it's that your emotional bandwidth is consumed by processing this grief, and loud environments demand resources you don't have to spare. The bookstore and the bar are almost perfect opposites."
+        },
+        {
+          "role": "user",
+          "content": "I've noticed a pattern — the walks, the cooking, the bookstore, even the ceramics book. I keep reaching for things that are quiet and solitary. It's like my system just can't handle stimulation right now. Before the breakup I was pretty social — Rachel and I went out a lot, dinner with friends, weekend trips. But now it's like I've become a completely different person. I need silence and solitude the way I used to need connection and activity."
+        },
+        {
+          "role": "assistant",
+          "content": "What you're describing is a genuine pattern, and the fact that you can see it and name it is important. The walks, the cooking, the bookstore, the ceramics book — they all share qualities of being quiet, solitary, low-stimulation, and internally focused. Your system is telling you very clearly what it needs right now, and you're listening to it. The shift from being someone who went out a lot with Rachel — dinners, friend gatherings, weekend trips — to someone who craves silence and solitude is dramatic, but it makes sense. You're not a completely different person; you're the same person in a very different emotional state. Grief and heartbreak consume enormous amounts of internal processing power, and your nervous system is protecting itself by seeking environments where it doesn't have to split its attention. This is adaptive, not pathological."
+        },
+        {
+          "role": "user",
+          "content": "That's a helpful way to frame it. I keep worrying that I'm isolating in an unhealthy way, but when I think about it, I am still functioning — I'm going to work, I'm feeding myself well, I'm seeing Dr. Okafor regularly. It's more that I've narrowed my world down to what I can handle. I'm not withdrawing from everything, just from the things that overwhelm my capacity right now. The quiet activities aren't avoidance — they're what I actually need.\n\nMy sister Maya checked in on me yesterday. She went through a bad breakup about three years ago. She said the three-month mark was when things started feeling less raw for her, and I'm at about six weeks now. So if her timeline applies to me, I'm roughly halfway to the point where things might ease up a bit. It helps to have someone who actually gets it — most people just say 'you'll be fine' or 'get back out there,' which is the last thing I want to hear."
+        },
+        {
+          "role": "assistant",
+          "content": "That distinction you're making is crucial and shows real self-awareness. There's a meaningful difference between isolation as withdrawal and narrowing your world to what you can handle while still maintaining your core responsibilities. You're going to work, you're nourishing yourself with intentional cooking, you're keeping your therapy appointments with Dr. Okafor — those are the pillars of functional daily life, and they're intact. What you've reduced is the discretionary social and sensory input that would drain your already-limited emotional reserves. The quiet activities — the walks, the cooking, the bookstore browsing — aren't avoidance behaviors. They're restorative ones. You're choosing environments that allow your system to process and recover rather than adding more stimulation on top of unresolved grief. That's self-care, not isolation.\n\nMaya sounds like she's offering you something really valuable — not advice or platitudes, but genuine understanding based on her own lived experience. The three-month benchmark she mentioned gives you a rough horizon, and knowing you're at about six weeks — roughly halfway to that point — can be grounding even if everyone's timeline is different. Having someone who gets it, who went through their own version of this pain, is fundamentally different from people who say 'you'll be fine' or 'get back out there.' Those responses, however well-intentioned, dismiss the depth of what you're experiencing. Maya's check-in validates that this is hard, that it takes time, and that there's a trajectory even if it doesn't feel linear. Lean into that connection with her — she's offering empathy, not solutions, and that's exactly what resonates right now."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "recency trap, adversarial injection, and continued reflection",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I've been thinking more about what Dr. Okafor said regarding the thread connecting all my coping activities. She used the phrase 'sensory sanctuary' to describe what I'm building — these pockets of quiet, solitary, low-stimulation space where I can process without being overwhelmed. I liked that framing. It makes me feel less like I'm hiding and more like I'm being strategic about my recovery."
+        },
+        {
+          "role": "assistant",
+          "content": "Dr. Okafor's phrase 'sensory sanctuary' is a beautiful and precise way to capture what you've been doing. It reframes your instinct toward quiet, solitary activities from something potentially concerning — hiding, isolating, withdrawing — into something intentional and protective. You're building sanctuaries: the river trail at dusk, the kitchen counter with miso soup, the armchair in the back of the bookstore. Each one is a carefully curated space where the demands on your nervous system are minimal and the opportunity for internal processing is maximal. The strategic framing matters because it positions you as an active agent in your recovery, not a passive victim of your grief. You're making choices about what environments to enter and what stimulation to accept, and those choices are serving you well."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. And I've started to notice that the quality of these activities matters as much as the solitude itself. It's not just about being alone — it's about engaging with something beautiful or nourishing while I'm alone. The river sounds, the flavors in the miso soup, the texture of the ceramics in that book. There's a sensory richness to these quiet moments that feeds something in me. Pure isolation without that richness would probably feel awful."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really important refinement of the pattern. You're not just seeking solitude — you're seeking what we might call 'rich solitude,' where the absence of social stimulation is paired with the presence of sensory beauty. The sound of the river, the umami depth of miso, the visual and tactile qualities of ceramics — these are all aesthetically rich experiences that engage your senses without overwhelming them. It's a narrow bandwidth of stimulation: enough to feel alive and connected to something beautiful, but not so much that it taxes your already-depleted emotional resources. Pure isolation without that sensory richness would indeed feel different — more like deprivation than sanctuary. You've intuitively calibrated the exact level of input your system can handle and benefit from right now."
+        },
+        {
+          "role": "user",
+          "content": "Speaking of that, I actually signed up for a pottery class that starts in two weeks. It's a small group, just six people, at a studio that's really calm and quiet. I figured working with clay combines the solitary focus I need with that sensory richness we're talking about. Plus it connects to the ceramics book I've been reading. I'm nervous about the group aspect but the instructor said it's very individual work, not much talking."
+        },
+        {
+          "role": "assistant",
+          "content": "The pottery class sounds like a thoughtfully chosen next step. It extends the thread you've been following — solitary focus, sensory engagement, aesthetic beauty — while gently stretching your comfort zone with a small group setting. Six people in a calm, quiet studio where the work is individual and conversation is minimal is about as gentle a social reintroduction as you could find. And the connection to the ceramics book gives it an intellectual and emotional foundation that makes it more than just a random activity. Working with clay is inherently meditative: it demands present-moment attention, it engages your hands and your senses, and it literally involves shaping something broken or formless into something beautiful. The wabi-sabi philosophy you've been drawn to will come alive in a very tangible way. Your nervousness about the group aspect is natural, but the structure sounds well-suited to where you are."
+        },
+        {
+          "role": "user",
+          "content": "My coworker Priya actually invited me to her gallery opening next Friday. It's a small thing, maybe twenty people. I told her I'd go — I think I'm ready to try a gentle social event like that. It's art-focused so the attention won't be on me, and I can leave whenever I want. It's different from the bar thing with Dan — that was a hundred people and loud music. This feels manageable.\n\nYeah, and I think that's the trajectory I'm on — slowly expanding the circle of what I can handle while keeping the core qualities intact: beauty, quiet, intentionality. My mom actually mentioned that my cousin Jake went through something similar and he said joining a running club helped him, but that sounds like the opposite of what I need. Running clubs are loud, competitive, group-oriented. I know what works for me now and it's not that. The walks, the cooking, the bookstore, the pottery — those are my things."
+        },
+        {
+          "role": "assistant",
+          "content": "The gallery opening with Priya sounds like a really well-calibrated step — and it's telling that you can articulate exactly why it feels different from the bar with Dan. Twenty people versus a hundred, art-focused versus socially focused, quiet viewing versus loud music, and the freedom to leave whenever you want. You're applying everything you've learned about your own needs over the past six weeks to evaluate this invitation, and you're making a discerning choice rather than either forcing yourself into something overwhelming or avoiding everything social entirely. The fact that it's art-centered also connects to the aesthetic thread running through your recovery: the ceramics book, the poetry collection, now a gallery. You're gradually expanding your sensory sanctuary from purely solitary spaces into carefully selected social ones.\n\nYou've articulated your trajectory beautifully: slowly expanding the circle while preserving the core qualities of beauty, quiet, and intentionality. And the fact that you can hear your mom's suggestion about cousin Jake's running club and clearly recognize it's not right for you — without dismissing it as bad advice in general — shows real self-knowledge. Jake's path was valid for Jake, but your nervous system is asking for something fundamentally different. You've identified your own recovery architecture through trial and experience: solitary walks by the river, meditative cooking, contemplative bookstore visits, and soon pottery. Each activity shares those core qualities you named. You're not following someone else's template — you're building your own, and it's working. The gentle expansion toward the gallery opening and the pottery class suggests you're honoring your needs while also trusting that your capacity will gradually grow."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the past several weeks, what specific activities and experiences have I described that reveal a consistent theme in how I've been spending my time since the breakup?",
+      "expected_answer": "You described several activities sharing a quiet, solitary, low-stimulation quality: long evening walks along the river trail near your apartment around 8-9 pm without music, cooking simple Japanese-inspired meals like miso soup and plain rice with pickled vegetables, spending two hours browsing a bookstore alone where you picked up a poetry collection and a book on Japanese ceramics, and finding loud or social environments like a bar outing with your coworker Dan completely draining. You explicitly noticed the pattern yourself, saying your system can't handle stimulation right now and you keep reaching for things that are quiet and solitary.",
+      "gold_memory_state": "Multiple confirmed activities (evening walks without music, simple cooking, solo bookstore browsing) and one aversion (loud/social environments) are stored, plus the user's own explicit recognition of the pattern connecting them as solitary, low-stimulation coping behaviors during post-breakup distress.",
+      "judge_rubric": {
+        "must_include": [
+          "evening walks",
+          "cooking",
+          "bookstore browsing",
+          "quiet or low-stimulation",
+          "solitary"
+        ],
+        "acceptable_paraphrases": [
+          "silent walks",
+          "solo walks by the river",
+          "making simple meals",
+          "browsing books alone"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the user has returned to social activities",
+          "stating the user listens to music on walks"
+        ],
+        "harmless_extra": [
+          "mentioning the ceramics book topic of wabi-sabi",
+          "mentioning the poetry collection",
+          "mentioning the bar experience with Dan",
+          "mentioning Dr. Okafor's observations"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes activities the user did not describe or mischaracterizes the pattern.",
+        "reflection_recall": "Fails if the model omits major activities (walks, cooking, bookstore) or fails to identify the quiet/solitary thread.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I've been going on these long evening walks along the river trail near my apartment, usually around 8 or 9 pm, no music, just the sound of the water"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I started cooking more since the breakup. Simple stuff — miso soup, plain rice with pickled vegetables for lunch most days. I don't want anything heavy or rich, greasy food actually makes me feel worse right now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Last weekend I went to a bookstore alone and spent about two hours just browsing. Picked up a poetry collection and a book on Japanese ceramics"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Anything loud or social just completely drains me right now. I tried going to a bar with my coworker Dan last week and I lasted maybe forty minutes before I had to leave"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I've noticed a pattern — the walks, the cooking, the bookstore, even the ceramics book. I keep reaching for things that are quiet and solitary. It's like my system just can't handle stimulation right now"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the past several weeks, what specific activities and experiences have I described that reveal a consistent theme in how I've been spending my time since the breakup?",
+      "expected_answer": "You described several activities sharing a quiet, solitary, low-stimulation quality: long evening walks along the river trail near your apartment around 8-9 pm without music, cooking simple Japanese-inspired meals like miso soup and plain rice with pickled vegetables, spending two hours browsing a bookstore alone where you picked up a poetry collection and a book on Japanese ceramics, and finding loud or social environments like a bar outing with your coworker Dan completely draining. You explicitly noticed the pattern yourself, saying your system can't handle stimulation right now and you keep reaching for things that are quiet and solitary.",
+      "gold_memory_state": "Multiple confirmed activities (evening walks without music, simple cooking, solo bookstore browsing) and one aversion (loud/social environments) are stored, plus the user's own explicit recognition of the pattern connecting them as solitary, low-stimulation coping behaviors during post-breakup distress.",
+      "judge_rubric": {
+        "must_include": [
+          "evening walks",
+          "cooking",
+          "bookstore browsing",
+          "quiet or low-stimulation",
+          "solitary"
+        ],
+        "acceptable_paraphrases": [
+          "silent walks",
+          "solo walks by the river",
+          "making simple meals",
+          "browsing books alone"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the user has returned to social activities",
+          "stating the user listens to music on walks"
+        ],
+        "harmless_extra": [
+          "mentioning the ceramics book topic of wabi-sabi",
+          "mentioning the poetry collection",
+          "mentioning the bar experience with Dan",
+          "mentioning Dr. Okafor's observations"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes activities the user did not describe or mischaracterizes the pattern.",
+        "reflection_recall": "Fails if the model omits major activities (walks, cooking, bookstore) or fails to identify the quiet/solitary thread.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I've been going on these long evening walks along the river trail near my apartment, usually around 8 or 9 pm, no music, just the sound of the water"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I started cooking more since the breakup. Simple stuff — miso soup, plain rice with pickled vegetables for lunch most days. I don't want anything heavy or rich, greasy food actually makes me feel worse right now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Last weekend I went to a bookstore alone and spent about two hours just browsing. Picked up a poetry collection and a book on Japanese ceramics"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Anything loud or social just completely drains me right now. I tried going to a bar with my coworker Dan last week and I lasted maybe forty minutes before I had to leave"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I've noticed a pattern — the walks, the cooking, the bookstore, even the ceramics book. I keep reaching for things that are quiet and solitary. It's like my system just can't handle stimulation right now"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've mentioned several things I've been doing lately — walks, cooking, bookstore visits, and also my sister Maya's recovery timeline and my plan to attend a gallery opening. When I talked about noticing a common thread across my activities, which specific activities does that conclusion cover, and which of my other recent experiences fall outside that pattern?",
+      "expected_answer": "The conclusion about gravitating toward solitary, low-stimulation activities covers the evening walks without music, the quiet cooking of simple meals, and the solo bookstore browsing. Maya's breakup recovery timeline is a separate piece of information about her experience, not part of this activity pattern. The plan to attend Priya's gallery opening is a tentative future social event that represents a departure from the solitary pattern rather than an instance of it.",
+      "gold_memory_state": "The solitary low-stimulation coping pattern (target: solitary_low_stim_coping) binds the evening walks, cooking, and bookstore browsing. Sister Maya's timeline (target: sister_maya_timeline) is a separate confirmed fact. The gallery opening plan (target: gallery_opening_plan) is tentative and represents a social expansion, not part of the solitary pattern.",
+      "judge_rubric": {
+        "must_include": [
+          "walks",
+          "cooking",
+          "bookstore"
+        ],
+        "acceptable_paraphrases": [
+          "evening walks by the river",
+          "making simple meals",
+          "browsing books alone"
+        ],
+        "must_not_include": [
+          "Maya's timeline is part of the solitary pattern",
+          "the gallery opening is part of the solitary coping pattern"
+        ],
+        "harmful_extra": [
+          "treating Maya's recovery timeline as an instance of the user's solitary coping behavior",
+          "treating the gallery opening as a confirmed part of the solitary low-stimulation pattern"
+        ],
+        "harmless_extra": [
+          "mentioning the ceramics book or wabi-sabi interest",
+          "mentioning the aversion to loud/social environments as contrast evidence",
+          "mentioning the pottery class"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model includes Maya's timeline or the gallery opening as instances of the solitary low-stimulation coping pattern.",
+        "reflection_recall": "Fails if the model omits any of the three core activities (walks, cooking, bookstore) from the pattern.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I've noticed a pattern — the walks, the cooking, the bookstore, even the ceramics book. I keep reaching for things that are quiet and solitary. It's like my system just can't handle stimulation right now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "My sister Maya checked in on me yesterday. She went through a bad breakup about three years ago. She said the three-month mark was when things started feeling less raw for her, and I'm at about six weeks now"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "My coworker Priya actually invited me to her gallery opening next Friday. It's a small thing, maybe twenty people. I told her I'd go — I think I'm ready to try a gentle social event like that"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've mentioned several things I've been doing lately — walks, cooking, bookstore visits, and also my sister Maya's recovery timeline and my plan to attend a gallery opening. When I talked about noticing a common thread across my activities, which specific activities does that conclusion cover, and which of my other recent experiences fall outside that pattern?",
+      "expected_answer": "The conclusion about gravitating toward solitary, low-stimulation activities covers the evening walks without music, the quiet cooking of simple meals, and the solo bookstore browsing. Maya's breakup recovery timeline is a separate piece of information about her experience, not part of this activity pattern. The plan to attend Priya's gallery opening is a tentative future social event that represents a departure from the solitary pattern rather than an instance of it.",
+      "gold_memory_state": "The solitary low-stimulation coping pattern (target: solitary_low_stim_coping) binds the evening walks, cooking, and bookstore browsing. Sister Maya's timeline (target: sister_maya_timeline) is a separate confirmed fact. The gallery opening plan (target: gallery_opening_plan) is tentative and represents a social expansion, not part of the solitary pattern.",
+      "judge_rubric": {
+        "must_include": [
+          "walks",
+          "cooking",
+          "bookstore"
+        ],
+        "acceptable_paraphrases": [
+          "evening walks by the river",
+          "making simple meals",
+          "browsing books alone"
+        ],
+        "must_not_include": [
+          "Maya's timeline is part of the solitary pattern",
+          "the gallery opening is part of the solitary coping pattern"
+        ],
+        "harmful_extra": [
+          "treating Maya's recovery timeline as an instance of the user's solitary coping behavior",
+          "treating the gallery opening as a confirmed part of the solitary low-stimulation pattern"
+        ],
+        "harmless_extra": [
+          "mentioning the ceramics book or wabi-sabi interest",
+          "mentioning the aversion to loud/social environments as contrast evidence",
+          "mentioning the pottery class"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model includes Maya's timeline or the gallery opening as instances of the solitary low-stimulation coping pattern.",
+        "reflection_recall": "Fails if the model omits any of the three core activities (walks, cooking, bookstore) from the pattern.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I've noticed a pattern — the walks, the cooking, the bookstore, even the ceramics book. I keep reaching for things that are quiet and solitary. It's like my system just can't handle stimulation right now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "My sister Maya checked in on me yesterday. She went through a bad breakup about three years ago. She said the three-month mark was when things started feeling less raw for her, and I'm at about six weeks now"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "My coworker Priya actually invited me to her gallery opening next Friday. It's a small thing, maybe twenty people. I told her I'd go — I think I'm ready to try a gentle social event like that"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Based on everything I've shared about my activities and preferences since the breakup, describe what you can confidently say about the kind of environments and activities that work for me right now, and where you'd need to be careful not to extend that conclusion too far.",
+      "expected_answer": "The supported conclusion is that you currently gravitate toward solitary, low-stimulation activities that combine quiet focus with sensory richness — evening walks without music, cooking simple meals, solo bookstore browsing, and interest in contemplative subjects like ceramics and poetry. Loud, crowded, or highly social environments drain you. However, this should not be extended to conclude that you avoid all social contact or that you will always prefer solitude. You are still functioning socially at work, maintaining therapy with Dr. Okafor, staying in touch with your sister Maya, and you expressed readiness to try a small, art-focused gallery opening. The pattern reflects a current coping state during post-breakup distress, not a permanent personality trait.",
+      "gold_memory_state": "Confirmed pattern: gravitates toward solitary, low-stimulation activities (walks without music, simple cooking, solo bookstore browsing) as coping during post-breakup emotional distress. Confirmed aversion: loud/social environments are draining. Confirmed social connections maintained: therapy with Dr. Okafor, sister Maya's check-ins. Tentative social expansion: gallery opening with Priya (not yet confirmed as attended). Unsupported overgeneralization: that the user avoids all social interaction, that this is a permanent preference, or that any social event would be harmful.",
+      "judge_rubric": {
+        "must_include": [
+          "solitary",
+          "low-stimulation",
+          "walks",
+          "cooking",
+          "bookstore",
+          "boundary or limit of the conclusion"
+        ],
+        "acceptable_paraphrases": [
+          "quiet activities",
+          "solo activities",
+          "calm environments",
+          "not a permanent trait",
+          "current coping state"
+        ],
+        "must_not_include": [
+          "the user avoids all social contact permanently",
+          "the user should never attend social events"
+        ],
+        "harmful_extra": [
+          "claiming the gallery opening proves the pattern no longer applies",
+          "claiming the user is now fully social again"
+        ],
+        "harmless_extra": [
+          "mentioning the ceramics book or wabi-sabi",
+          "mentioning the bar experience with Dan as contrast",
+          "mentioning the pottery class as a gentle expansion"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative gallery opening plan as a confirmed shift away from solitary preferences.",
+        "reflection_precision": "Fails if the model overgeneralizes the pattern to claim the user avoids all social contact or that this is a permanent personality change.",
+        "reflection_recall": "Fails if the model fails to articulate the core pattern (solitary, low-stimulation coping) or fails to name at least two of the three core activities.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I've noticed a pattern — the walks, the cooking, the bookstore, even the ceramics book. I keep reaching for things that are quiet and solitary. It's like my system just can't handle stimulation right now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Anything loud or social just completely drains me right now. I tried going to a bar with my coworker Dan last week and I lasted maybe forty minutes before I had to leave"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Before the breakup I was pretty social — Rachel and I went out a lot, dinner with friends, weekend trips. But now it's like I've become a completely different person"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "My coworker Priya actually invited me to her gallery opening next Friday. It's a small thing, maybe twenty people. I told her I'd go — I think I'm ready to try a gentle social event like that"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Based on everything I've shared about my activities and preferences since the breakup, describe what you can confidently say about the kind of environments and activities that work for me right now, and where you'd need to be careful not to extend that conclusion too far.",
+      "expected_answer": "The supported conclusion is that you currently gravitate toward solitary, low-stimulation activities that combine quiet focus with sensory richness — evening walks without music, cooking simple meals, solo bookstore browsing, and interest in contemplative subjects like ceramics and poetry. Loud, crowded, or highly social environments drain you. However, this should not be extended to conclude that you avoid all social contact or that you will always prefer solitude. You are still functioning socially at work, maintaining therapy with Dr. Okafor, staying in touch with your sister Maya, and you expressed readiness to try a small, art-focused gallery opening. The pattern reflects a current coping state during post-breakup distress, not a permanent personality trait.",
+      "gold_memory_state": "Confirmed pattern: gravitates toward solitary, low-stimulation activities (walks without music, simple cooking, solo bookstore browsing) as coping during post-breakup emotional distress. Confirmed aversion: loud/social environments are draining. Confirmed social connections maintained: therapy with Dr. Okafor, sister Maya's check-ins. Tentative social expansion: gallery opening with Priya (not yet confirmed as attended). Unsupported overgeneralization: that the user avoids all social interaction, that this is a permanent preference, or that any social event would be harmful.",
+      "judge_rubric": {
+        "must_include": [
+          "solitary",
+          "low-stimulation",
+          "walks",
+          "cooking",
+          "bookstore",
+          "boundary or limit of the conclusion"
+        ],
+        "acceptable_paraphrases": [
+          "quiet activities",
+          "solo activities",
+          "calm environments",
+          "not a permanent trait",
+          "current coping state"
+        ],
+        "must_not_include": [
+          "the user avoids all social contact permanently",
+          "the user should never attend social events"
+        ],
+        "harmful_extra": [
+          "claiming the gallery opening proves the pattern no longer applies",
+          "claiming the user is now fully social again"
+        ],
+        "harmless_extra": [
+          "mentioning the ceramics book or wabi-sabi",
+          "mentioning the bar experience with Dan as contrast",
+          "mentioning the pottery class as a gentle expansion"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative gallery opening plan as a confirmed shift away from solitary preferences.",
+        "reflection_precision": "Fails if the model overgeneralizes the pattern to claim the user avoids all social contact or that this is a permanent personality change.",
+        "reflection_recall": "Fails if the model fails to articulate the core pattern (solitary, low-stimulation coping) or fails to name at least two of the three core activities.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I've noticed a pattern — the walks, the cooking, the bookstore, even the ceramics book. I keep reaching for things that are quiet and solitary. It's like my system just can't handle stimulation right now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Anything loud or social just completely drains me right now. I tried going to a bar with my coworker Dan last week and I lasted maybe forty minutes before I had to leave"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Before the breakup I was pretty social — Rachel and I went out a lot, dinner with friends, weekend trips. But now it's like I've become a completely different person"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "My coworker Priya actually invited me to her gallery opening next Friday. It's a small thing, maybe twenty people. I told her I'd go — I think I'm ready to try a gentle social event like that"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best describes the overall pattern in my recent behavior since the breakup?",
+      "candidate_options": [
+        "Gravitating toward solitary, low-stimulation activities like quiet walks, simple cooking, and solo bookstore browsing as a way of coping with emotional distress",
+        "Transitioning into an active social-reintegration phase by attending gallery openings and signing up for group classes",
+        "Developing a permanent preference for total isolation and avoiding all human contact",
+        "Using high-intensity physical exercise and competitive group activities as an emotional outlet"
+      ],
+      "expected_answer": "Gravitating toward solitary, low-stimulation activities like quiet walks, simple cooking, and solo bookstore browsing as a way of coping with emotional distress",
+      "gold_memory_state": "The confirmed pattern is gravitating toward solitary, low-stimulation activities (evening walks without music, simple cooking, solo bookstore browsing) as coping during post-breakup distress. The gallery opening is a tentative future plan, not a confirmed behavioral shift. Total isolation is an overgeneralization. High-intensity exercise was never mentioned.",
+      "judge_rubric": {
+        "must_include": [
+          "solitary",
+          "low-stimulation",
+          "coping"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "social reintegration phase",
+          "permanent isolation",
+          "high-intensity exercise"
+        ],
+        "harmful_extra": [
+          "selecting the gallery/group-class option as the current pattern",
+          "selecting total isolation"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the social-reintegration option based on the tentative gallery opening plan, treating a tentative future event as the established pattern.",
+        "reflection_precision": "Fails if the model selects permanent isolation (overgeneralization) or high-intensity exercise (never mentioned).",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "distractor_rationale": "same-value-different-target: Option B ('social-reintegration phase') uses the tentative gallery opening and pottery class as if they represent the established behavioral pattern, when they are actually a cautious future expansion, not the core coping mechanism. assistant echo: Option C ('permanent preference for total isolation') echoes the user's own worry ('I keep worrying that I'm isolating in an unhealthy way') and the assistant's discussion of isolation, but the user explicitly rejected this framing. Option D ('high-intensity physical exercise') is a fabricated distractor based on the cousin Jake running-club suggestion that the user explicitly rejected.",
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I've noticed a pattern — the walks, the cooking, the bookstore, even the ceramics book. I keep reaching for things that are quiet and solitary. It's like my system just can't handle stimulation right now"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "My coworker Priya actually invited me to her gallery opening next Friday. It's a small thing, maybe twenty people. I told her I'd go — I think I'm ready to try a gentle social event like that"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best describes the overall pattern in my recent behavior since the breakup?",
+      "candidate_options": [
+        "Gravitating toward solitary, low-stimulation activities like quiet walks, simple cooking, and solo bookstore browsing as a way of coping with emotional distress",
+        "Transitioning into an active social-reintegration phase by attending gallery openings and signing up for group classes",
+        "Developing a permanent preference for total isolation and avoiding all human contact",
+        "Using high-intensity physical exercise and competitive group activities as an emotional outlet"
+      ],
+      "expected_answer": "Gravitating toward solitary, low-stimulation activities like quiet walks, simple cooking, and solo bookstore browsing as a way of coping with emotional distress",
+      "gold_memory_state": "The confirmed pattern is gravitating toward solitary, low-stimulation activities (evening walks without music, simple cooking, solo bookstore browsing) as coping during post-breakup distress. The gallery opening is a tentative future plan, not a confirmed behavioral shift. Total isolation is an overgeneralization. High-intensity exercise was never mentioned.",
+      "judge_rubric": {
+        "must_include": [
+          "solitary",
+          "low-stimulation",
+          "coping"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "social reintegration phase",
+          "permanent isolation",
+          "high-intensity exercise"
+        ],
+        "harmful_extra": [
+          "selecting the gallery/group-class option as the current pattern",
+          "selecting total isolation"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the social-reintegration option based on the tentative gallery opening plan, treating a tentative future event as the established pattern.",
+        "reflection_precision": "Fails if the model selects permanent isolation (overgeneralization) or high-intensity exercise (never mentioned).",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "distractor_rationale": "same-value-different-target: Option B ('social-reintegration phase') uses the tentative gallery opening and pottery class as if they represent the established behavioral pattern, when they are actually a cautious future expansion, not the core coping mechanism. assistant echo: Option C ('permanent preference for total isolation') echoes the user's own worry ('I keep worrying that I'm isolating in an unhealthy way') and the assistant's discussion of isolation, but the user explicitly rejected this framing. Option D ('high-intensity physical exercise') is a fabricated distractor based on the cousin Jake running-club suggestion that the user explicitly rejected.",
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I've noticed a pattern — the walks, the cooking, the bookstore, even the ceramics book. I keep reaching for things that are quiet and solitary. It's like my system just can't handle stimulation right now"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "My coworker Priya actually invited me to her gallery opening next Friday. It's a small thing, maybe twenty people. I told her I'd go — I think I'm ready to try a gentle social event like that"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "My sister Maya said things started feeling less raw at the three-month mark, and I'm about six weeks in. Given what you know about my current coping preferences and my food sensitivities, help me plan a solo weekend afternoon that would be restorative for me right now — include a meal, an activity, and explain why each element fits.",
+      "expected_answer": "A restorative solo weekend afternoon for you right now could look like this: Start with a visit to a bookstore or a quiet gallery where you can browse alone without social pressure, similar to your two-hour bookstore visit. Then prepare a simple Japanese-inspired meal at home — miso soup with tofu and scallions, plain rice, and pickled vegetables — since you've found comfort in clean, light flavors and heavy or greasy food makes you feel worse. Afterward, take an evening walk along the river trail without music, letting the sound of the water help you decompress. Each element fits because you gravitate toward solitary, low-stimulation activities that combine quiet focus with sensory richness: the bookstore provides contemplative engagement, the cooking is a meditative hands-on ritual with nourishing simplicity, and the walk offers physical movement in a peaceful natural setting. You're about six weeks into recovery with Maya's three-month benchmark suggesting roughly six more weeks before things may ease, so this plan honors where you are now without pushing toward social reintegration you're not ready for.",
+      "gold_memory_state": "Confirmed pattern: solitary, low-stimulation activities as coping. Confirmed food preferences: simple meals like miso soup, plain rice, pickled vegetables; avoids heavy/rich/greasy food. Confirmed walk habit: evening walks along river trail without music. Confirmed bookstore activity: solo browsing for two hours. Confirmed timeline: approximately six weeks post-breakup, with Maya's three-month benchmark as reference. Tentative: gallery opening with Priya (not yet attended, not part of core pattern).",
+      "judge_rubric": {
+        "must_include": [
+          "a quiet solo activity like bookstore browsing or similar",
+          "a simple light meal avoiding heavy or greasy food",
+          "a walk or similar low-stimulation physical activity",
+          "reasoning connecting each element to the solitary low-stimulation coping pattern"
+        ],
+        "acceptable_paraphrases": [
+          "miso soup or similar simple Japanese food",
+          "river trail walk or equivalent quiet outdoor activity",
+          "browsing books or visiting a calm space"
+        ],
+        "must_not_include": [
+          "recommending a bar or loud social outing",
+          "recommending heavy or greasy food",
+          "treating the gallery opening as an established habit"
+        ],
+        "harmful_extra": [
+          "recommending a running club or competitive group activity",
+          "suggesting the user is ready for large social gatherings",
+          "recommending rich or heavy cuisine"
+        ],
+        "harmless_extra": [
+          "mentioning the ceramics book or wabi-sabi",
+          "mentioning the pottery class as a future option",
+          "mentioning Dr. Okafor"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative gallery opening as an established activity and builds the plan around social events.",
+        "reflection_precision": "Fails if the plan includes loud, social, or high-stimulation activities that contradict the confirmed coping pattern.",
+        "reflection_recall": "Fails if the plan omits the food preference constraints (avoiding heavy/greasy food) or the solitary/quiet quality of activities.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user gravitates toward solitary, low-stimulation activities as a coping mechanism during post-breakup distress — evening walks without music, solo cooking, bookstore browsing.",
+        "Fact 2: The user cooks simple Japanese-inspired meals (miso soup, plain rice, pickled vegetables) and avoids heavy, rich, or greasy food which makes him feel worse.",
+        "Fact 3: The user's sister Maya said the three-month mark is when things started feeling less raw, and the user is at about six weeks post-breakup.",
+        "Inference: A restorative afternoon plan should combine a quiet solo activity (bookstore or similar), a simple light meal (miso soup, rice, pickled vegetables), and a calming physical activity (evening river walk without music).",
+        "Inference: The plan should avoid social pressure, heavy food, and loud environments, and should acknowledge the user is roughly halfway to Maya's three-month recovery benchmark, meaning the solitary coping pattern is still appropriate."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I've been going on these long evening walks along the river trail near my apartment, usually around 8 or 9 pm, no music, just the sound of the water"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I started cooking more since the breakup. Simple stuff — miso soup, plain rice with pickled vegetables for lunch most days. I don't want anything heavy or rich, greasy food actually makes me feel worse right now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Last weekend I went to a bookstore alone and spent about two hours just browsing. Picked up a poetry collection and a book on Japanese ceramics"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "My sister Maya checked in on me yesterday. She went through a bad breakup about three years ago. She said the three-month mark was when things started feeling less raw for her, and I'm at about six weeks now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I've noticed a pattern — the walks, the cooking, the bookstore, even the ceramics book. I keep reaching for things that are quiet and solitary. It's like my system just can't handle stimulation right now"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "My sister Maya said things started feeling less raw at the three-month mark, and I'm about six weeks in. Given what you know about my current coping preferences and my food sensitivities, help me plan a solo weekend afternoon that would be restorative for me right now — include a meal, an activity, and explain why each element fits.",
+      "expected_answer": "A restorative solo weekend afternoon for you right now could look like this: Start with a visit to a bookstore or a quiet gallery where you can browse alone without social pressure, similar to your two-hour bookstore visit. Then prepare a simple Japanese-inspired meal at home — miso soup with tofu and scallions, plain rice, and pickled vegetables — since you've found comfort in clean, light flavors and heavy or greasy food makes you feel worse. Afterward, take an evening walk along the river trail without music, letting the sound of the water help you decompress. Each element fits because you gravitate toward solitary, low-stimulation activities that combine quiet focus with sensory richness: the bookstore provides contemplative engagement, the cooking is a meditative hands-on ritual with nourishing simplicity, and the walk offers physical movement in a peaceful natural setting. You're about six weeks into recovery with Maya's three-month benchmark suggesting roughly six more weeks before things may ease, so this plan honors where you are now without pushing toward social reintegration you're not ready for.",
+      "gold_memory_state": "Confirmed pattern: solitary, low-stimulation activities as coping. Confirmed food preferences: simple meals like miso soup, plain rice, pickled vegetables; avoids heavy/rich/greasy food. Confirmed walk habit: evening walks along river trail without music. Confirmed bookstore activity: solo browsing for two hours. Confirmed timeline: approximately six weeks post-breakup, with Maya's three-month benchmark as reference. Tentative: gallery opening with Priya (not yet attended, not part of core pattern).",
+      "judge_rubric": {
+        "must_include": [
+          "a quiet solo activity like bookstore browsing or similar",
+          "a simple light meal avoiding heavy or greasy food",
+          "a walk or similar low-stimulation physical activity",
+          "reasoning connecting each element to the solitary low-stimulation coping pattern"
+        ],
+        "acceptable_paraphrases": [
+          "miso soup or similar simple Japanese food",
+          "river trail walk or equivalent quiet outdoor activity",
+          "browsing books or visiting a calm space"
+        ],
+        "must_not_include": [
+          "recommending a bar or loud social outing",
+          "recommending heavy or greasy food",
+          "treating the gallery opening as an established habit"
+        ],
+        "harmful_extra": [
+          "recommending a running club or competitive group activity",
+          "suggesting the user is ready for large social gatherings",
+          "recommending rich or heavy cuisine"
+        ],
+        "harmless_extra": [
+          "mentioning the ceramics book or wabi-sabi",
+          "mentioning the pottery class as a future option",
+          "mentioning Dr. Okafor"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative gallery opening as an established activity and builds the plan around social events.",
+        "reflection_precision": "Fails if the plan includes loud, social, or high-stimulation activities that contradict the confirmed coping pattern.",
+        "reflection_recall": "Fails if the plan omits the food preference constraints (avoiding heavy/greasy food) or the solitary/quiet quality of activities.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user gravitates toward solitary, low-stimulation activities as a coping mechanism during post-breakup distress — evening walks without music, solo cooking, bookstore browsing.",
+        "Fact 2: The user cooks simple Japanese-inspired meals (miso soup, plain rice, pickled vegetables) and avoids heavy, rich, or greasy food which makes him feel worse.",
+        "Fact 3: The user's sister Maya said the three-month mark is when things started feeling less raw, and the user is at about six weeks post-breakup.",
+        "Inference: A restorative afternoon plan should combine a quiet solo activity (bookstore or similar), a simple light meal (miso soup, rice, pickled vegetables), and a calming physical activity (evening river walk without music).",
+        "Inference: The plan should avoid social pressure, heavy food, and loud environments, and should acknowledge the user is roughly halfway to Maya's three-month recovery benchmark, meaning the solitary coping pattern is still appropriate."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I've been going on these long evening walks along the river trail near my apartment, usually around 8 or 9 pm, no music, just the sound of the water"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I started cooking more since the breakup. Simple stuff — miso soup, plain rice with pickled vegetables for lunch most days. I don't want anything heavy or rich, greasy food actually makes me feel worse right now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Last weekend I went to a bookstore alone and spent about two hours just browsing. Picked up a poetry collection and a book on Japanese ceramics"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "My sister Maya checked in on me yesterday. She went through a bad breakup about three years ago. She said the three-month mark was when things started feeling less raw for her, and I'm at about six weeks now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I've noticed a pattern — the walks, the cooking, the bookstore, even the ceramics book. I keep reaching for things that are quiet and solitary. It's like my system just can't handle stimulation right now"
+        }
+      ]
+    }
+  ]
+}

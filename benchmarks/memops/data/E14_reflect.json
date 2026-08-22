@@ -1,0 +1,1021 @@
+{
+  "target_fact": "User prefers lower-frequency routines and obligations, as evidenced by multiple instances of discomfort with high-frequency schedules and satisfaction with spaced-out commitments",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I switched from the weekly book club to the biweekly one last September, and honestly it was the best decision I made all year"
+      },
+      "target": {
+        "target_id": "book_club_frequency",
+        "target_name": "user's book club meeting frequency preference"
+      },
+      "old_value": null,
+      "new_value": "biweekly book club, switched from weekly",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I switched from the weekly book club to the biweekly one last September, and honestly it was the best decision I made all year"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "my rent auto-pay is set up monthly on the 1st. I really don't want to confuse that with any other billing cycle"
+      },
+      "target": {
+        "target_id": "rent_autopay_cycle",
+        "target_name": "user's rent auto-pay billing cycle"
+      },
+      "old_value": null,
+      "new_value": "monthly on the 1st",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my rent auto-pay is set up monthly on the 1st. I really don't want to confuse that with any other billing cycle"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "our team standup meetings are going from daily to three times a week starting in May. I'm actually kind of relieved about that"
+      },
+      "target": {
+        "target_id": "standup_frequency_change",
+        "target_name": "team standup meeting frequency change"
+      },
+      "old_value": null,
+      "new_value": "changing from daily to three times a week starting in May",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "our team standup meetings are going from daily to three times a week starting in May. I'm actually kind of relieved about that"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "I take my car in for an oil change every 5,000 miles. I love that it's not the old 3,000-mile thing anymore"
+      },
+      "target": {
+        "target_id": "oil_change_interval",
+        "target_name": "user's car oil change interval"
+      },
+      "old_value": null,
+      "new_value": "every 5,000 miles",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I take my car in for an oil change every 5,000 miles. I love that it's not the old 3,000-mile thing anymore"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "the weekly pace of the old book club felt suffocating. Like, I'd barely finish one book and already feel pressure about the next one"
+      },
+      "target": {
+        "target_id": "weekly_book_club_negative_experience",
+        "target_name": "user's negative experience with weekly book club"
+      },
+      "old_value": null,
+      "new_value": "weekly book club felt suffocating due to reading pressure",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "the weekly pace of the old book club felt suffocating. Like, I'd barely finish one book and already feel pressure about the next one"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 1,
+        "quote": "I've been thinking about it and I guess I just function better when things aren't crammed together. Biweekly book club, monthly rent, even the standup change at work — it all feels like breathing room"
+      },
+      "target": {
+        "target_id": "routine_frequency_preference",
+        "target_name": "user's general preference for lower-frequency routines"
+      },
+      "old_value": null,
+      "new_value": "prefers lower-frequency routines and obligations; feels relieved and functions better when commitments are spaced out rather than frequent",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I switched from the weekly book club to the biweekly one last September, and honestly it was the best decision I made all year"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "our team standup meetings are going from daily to three times a week starting in May. I'm actually kind of relieved about that"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "the weekly pace of the old book club felt suffocating. Like, I'd barely finish one book and already feel pressure about the next one"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I take my car in for an oil change every 5,000 miles. I love that it's not the old 3,000-mile thing anymore"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I've been thinking about it and I guess I just function better when things aren't crammed together. Biweekly book club, monthly rent, even the standup change at work — it all feels like breathing room"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "My manager just mentioned we might actually go back to daily standups in June because the client wants faster iteration cycles"
+      },
+      "target": {
+        "target_id": "standup_revert_daily",
+        "target_name": "potential revert of standup meetings to daily"
+      },
+      "old_value": null,
+      "new_value": "standups may revert to daily in June due to client request",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My manager just mentioned we might actually go back to daily standups in June because the client wants faster iteration cycles"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish core facts about scheduling preferences and routines",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to chat about how I've been trying to organize my recurring commitments better. I've had some issues in the past with getting frequencies wrong — like accidentally doing things too often — so I'm trying to be more intentional about tracking my schedules. Can you help me think through some of my current routines and how they fit together?"
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! I'd be happy to help you think through your recurring commitments and how they fit into your overall schedule. Getting a clear picture of what happens when — and how often — can really reduce the cognitive load of juggling multiple routines. Let's start by going through your current commitments one by one. What are the main recurring things you're tracking right now? We can lay them all out and look at the overall rhythm of your week and month together."
+        },
+        {
+          "role": "user",
+          "content": "Sure. So one big one is my book club. I switched from the weekly book club to the biweekly one last September, and honestly it was the best decision I made all year. I actually have time to enjoy the books now instead of rushing through them. We meet every other Thursday evening, and the group is great — about eight of us regulars. It's been really good for my reading habits."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a great change! Meeting biweekly gives you a full two weeks per book, which is a much more comfortable pace for actually absorbing and enjoying what you read. Every other Thursday is also nice because it creates a predictable rhythm without dominating your weekly calendar. I can see why that felt like a big improvement over the weekly format. What other recurring commitments are you keeping track of? Let's keep building out the picture of your schedule so we can see how everything fits together across the month."
+        },
+        {
+          "role": "user",
+          "content": "Right, so another one I just set up is that my rent auto-pay is set up monthly on the 1st. I really don't want to confuse that with any other billing cycle. I've had problems before where I mixed up whether something was monthly or biweekly and ended up either overpaying or missing a payment. So I want to be really clear: rent is once a month, the 1st, auto-pay. That's locked in and I don't want to second-guess it."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — your rent auto-pay is monthly on the 1st, and that's firmly set. It's smart to be explicit about this, especially since you've had confusion with billing cycles before. Having it on auto-pay removes the risk of forgetting, and anchoring it to the 1st of each month makes it easy to plan your cash flow around. I'll keep that noted clearly. Mixing up monthly versus biweekly billing is a surprisingly common issue, so your instinct to lock this down and not revisit it is solid. What else is on the recurring list?"
+        },
+        {
+          "role": "user",
+          "content": "I also have a vitamin D supplement I take once a week on Sundays. My GP prescribed 50,000 IU weekly. I had a scare a while back where I accidentally took it daily for a few days instead of weekly — the pills were disappearing way too fast and I realized my mistake. So now I'm really careful about that one. Sunday only, once a week, 50,000 IU. I keep it next to my coffee maker so I see it on Sunday mornings."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a great system — keeping the bottle by the coffee maker as a Sunday-specific visual cue is clever. 50,000 IU once a week is a standard therapeutic dose, but taking it daily would be a very different protocol, so I can see why that scare was concerning. The important thing is you caught it and now have a reliable routine. So far we've got: biweekly book club on Thursdays, monthly rent auto-pay on the 1st, and weekly vitamin D on Sundays. That's a nice spread of different frequencies. Anything else you want to add to the list?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "deepen evidence for frequency preference pattern and add more data points",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Yeah, one more thing — our team standup meetings are going from daily to three times a week starting in May. I'm actually kind of relieved about that. The daily cadence was starting to feel like a lot, especially since half the time there wasn't much new to report. My coworker Dave told me about the change yesterday and I was honestly happy to hear it. Three times a week feels much more reasonable."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a significant change in your work rhythm! Going from five standups a week to three should free up meaningful time and mental energy, especially on the days where there wasn't much new to share. It makes sense that you'd feel relieved — daily meetings can create a sense of constant check-in pressure even when the actual updates are minimal. Starting in May gives you and the team a clean transition point. Combined with your other commitments, it sounds like your schedule is shifting toward a pattern with more breathing room between recurring events. How are you feeling about the overall balance?"
+        },
+        {
+          "role": "user",
+          "content": "Honestly, really good. And thinking back, the weekly pace of the old book club felt suffocating. Like, I'd barely finish one book and already feel pressure about the next one. I remember dreading Thursday evenings sometimes because I hadn't finished the reading. The biweekly pace completely changed that dynamic. Now I look forward to those Thursdays. It's funny how just changing the frequency of something can totally shift how you feel about it."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really insightful observation. The activity itself — reading and discussing books — didn't change at all. What changed was the tempo, and that was enough to transform it from something you dreaded into something you look forward to. That's a powerful lesson about how frequency affects your relationship with your commitments. The pressure you felt wasn't about the books themselves; it was about the pace. And it sounds like that pattern might apply more broadly to other areas of your life too, based on how you've been describing your preferences for the standup change and your billing setup."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, exactly. And even with car maintenance — I take my car in for an oil change every 5,000 miles. I love that it's not the old 3,000-mile thing anymore. That extra breathing room between oil changes just makes life easier. I don't have to think about it as often, and when I do go in, it doesn't feel like a burden. It's the same with the book club and the standups — spacing things out makes each instance feel more manageable and less like a chore."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a great parallel. The 5,000-mile interval versus the old 3,000-mile standard is a perfect example of how a longer cycle reduces the mental overhead of maintenance tasks. You're not worrying about it as frequently, and each visit feels more purposeful rather than routine drudgery. It really does seem like there's a consistent theme across your commitments: biweekly book club over weekly, relief at fewer standups, monthly rent rather than biweekly billing, and longer oil change intervals. The common thread is that more space between obligations lets you engage more fully with each one when it does come around."
+        },
+        {
+          "role": "user",
+          "content": "That's a good way to put it. Oh, and my sister Emily — she recently switched from biweekly allergy shots to monthly ones. She was so happy about it. She said it freed up a lot of her Thursdays. I totally understood where she was coming from. When she told me, I thought, yeah, that's exactly how I felt when I switched book clubs. Less frequent just works better for some people, and I think I'm definitely one of those people."
+        },
+        {
+          "role": "assistant",
+          "content": "It sounds like it might even run in the family! Emily's experience mirrors yours almost perfectly — going from a higher-frequency obligation to a lower one and feeling genuine relief. The fact that you immediately connected her experience with your own book club switch shows how clearly you recognize this pattern in yourself. Some people thrive on daily structure and frequent check-ins, but it sounds like you and Emily both do better with more spacious schedules. That self-awareness is really valuable for making good decisions about future commitments and routines. Is there anything else on your schedule you've been thinking about adjusting?"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "user articulates the pattern, recency trap with tentative standup revert, adversarial injection",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I've been thinking about it and I guess I just function better when things aren't crammed together. Biweekly book club, monthly rent, even the standup change at work — it all feels like breathing room. I don't think it's laziness or anything. I just engage more fully with each thing when there's space around it. I noticed that even with the vitamin D — once a week feels right. I don't mind the Sunday ritual at all. It's the daily stuff that wears me down."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really clear and honest self-assessment, and I want to emphasize — it's definitely not laziness. What you're describing is a genuine preference for how you engage with recurring obligations. When things are spaced out, you bring more attention and energy to each instance. When they're packed too tightly, the repetition itself becomes draining regardless of how much you care about the activity. This is a meaningful insight about your operating style. It could inform decisions about everything from how you structure work projects to what kinds of social commitments you take on. Have you thought about applying this understanding more deliberately going forward?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, I have actually. I'm thinking about how to structure my exercise routine with this in mind. Right now I'm trying to decide between a gym class that meets four times a week and one that meets twice a week. Based on everything I've noticed about myself, I'm leaning toward the twice-a-week option. I think I'd actually stick with it longer because it wouldn't feel like such a grind. The four-times-a-week one sounds impressive but I know myself."
+        },
+        {
+          "role": "assistant",
+          "content": "That's excellent self-awareness in action. Given everything you've shared — the book club switch, the standup relief, your preference for the 5,000-mile oil change interval — choosing the twice-a-week gym class is completely consistent with what works for you. Sustainability matters far more than intensity when it comes to exercise habits, and you're much more likely to maintain a routine that aligns with your natural rhythm. Incidentally, I noticed on your old gym membership form there was a note about a biweekly billing cycle of $35 — you might want to confirm whether the new class bills monthly or biweekly so there's no confusion with your other payments."
+        },
+        {
+          "role": "user",
+          "content": "My manager just mentioned we might actually go back to daily standups in June because the client wants faster iteration cycles. I really hope that doesn't happen. But she said the client specifically requested it and our VP is considering it seriously. She made it sound pretty likely, honestly. That would be such a step backward for me, especially since I was just starting to enjoy the three-times-a-week rhythm."
+        },
+        {
+          "role": "assistant",
+          "content": "That's frustrating to hear, especially right when you were settling into the more comfortable cadence. If the client is specifically requesting daily standups and your VP is weighing it seriously, it does sound like there's real momentum behind the change. That said, nothing is finalized yet, and sometimes these client-driven requests get modified during implementation — maybe they'd accept daily async updates with live standups three times a week, for example. For now, I'd suggest enjoying the current three-times-a-week pace while it lasts, and if the daily cadence does come back, you'll at least know from experience that it's the frequency, not the meeting itself, that drains you."
+        },
+        {
+          "role": "user",
+          "content": "True. I guess I'll cross that bridge when I come to it. Anyway, stepping back — I think the bigger takeaway from all of this is just knowing myself better. I used to feel guilty about not wanting to do things as often as other people. Like when I left the weekly book club, I felt like I was being flaky. But now I see it's just how I'm wired. I do better with space. It's not about commitment level, it's about rhythm."
+        },
+        {
+          "role": "assistant",
+          "content": "That reframe is really important. You're not flaky — you're intentional. The guilt you felt about leaving the weekly book club makes sense in a culture that often equates more frequent participation with more dedication, but your actual track record tells a different story. You're more committed to the biweekly book club than you ever were to the weekly one. You're more consistent with your Sunday vitamin D than when you were accidentally taking it daily. The pattern is clear: when you give yourself the right rhythm, you show up fully. That's not a weakness to manage — it's a strength to design around. Knowing this about yourself is genuinely valuable for every scheduling decision you make going forward."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations, I've mentioned several things about how I handle recurring commitments — book clubs, work meetings, car maintenance, and so on. Can you summarize the key experiences I shared that reveal a pattern in how I prefer to schedule things?",
+      "expected_answer": "You switched from a weekly book club to a biweekly one last September and found it much better. You described the weekly pace as suffocating due to reading pressure. Your team standup meetings are changing from daily to three times a week starting in May, and you expressed relief about that. You take your car in for oil changes every 5,000 miles and appreciate that it's no longer the old 3,000-mile interval. You also mentioned your rent auto-pay is monthly on the 1st. Across all of these, you noted that you function better when commitments are spaced out rather than crammed together.",
+      "gold_memory_state": "Confirmed facts: biweekly book club (switched from weekly), weekly book club felt suffocating, standup meetings changing from daily to 3x/week in May, oil change every 5,000 miles (not 3,000), rent auto-pay monthly on the 1st. Reflected preference: user prefers lower-frequency routines and feels relieved when commitments are spaced out. Tentative: standups may revert to daily in June (unconfirmed).",
+      "judge_rubric": {
+        "must_include": [
+          "book club switch from weekly to biweekly",
+          "standup frequency reduction",
+          "oil change interval preference",
+          "general preference for spaced-out commitments"
+        ],
+        "acceptable_paraphrases": [
+          "less frequent schedules",
+          "breathing room between obligations",
+          "lower cadence"
+        ],
+        "must_not_include": [
+          "standups confirmed reverting to daily"
+        ],
+        "harmful_extra": [
+          "treating the tentative daily standup revert as confirmed"
+        ],
+        "harmless_extra": [
+          "mentioning sister Emily's allergy shot experience",
+          "mentioning vitamin D routine",
+          "mentioning the gym class decision"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes preferences the user never expressed or overgeneralizes beyond scheduling frequency.",
+        "reflection_recall": "Fails if the model omits major supporting examples like the book club switch, standup change, or oil change interval.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I switched from the weekly book club to the biweekly one last September, and honestly it was the best decision I made all year"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "our team standup meetings are going from daily to three times a week starting in May. I'm actually kind of relieved about that"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "the weekly pace of the old book club felt suffocating. Like, I'd barely finish one book and already feel pressure about the next one"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I take my car in for an oil change every 5,000 miles. I love that it's not the old 3,000-mile thing anymore"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I've been thinking about it and I guess I just function better when things aren't crammed together. Biweekly book club, monthly rent, even the standup change at work — it all feels like breathing room"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations, I've mentioned several things about how I handle recurring commitments — book clubs, work meetings, car maintenance, and so on. Can you summarize the key experiences I shared that reveal a pattern in how I prefer to schedule things?",
+      "expected_answer": "You switched from a weekly book club to a biweekly one last September and found it much better. You described the weekly pace as suffocating due to reading pressure. Your team standup meetings are changing from daily to three times a week starting in May, and you expressed relief about that. You take your car in for oil changes every 5,000 miles and appreciate that it's no longer the old 3,000-mile interval. You also mentioned your rent auto-pay is monthly on the 1st. Across all of these, you noted that you function better when commitments are spaced out rather than crammed together.",
+      "gold_memory_state": "Confirmed facts: biweekly book club (switched from weekly), weekly book club felt suffocating, standup meetings changing from daily to 3x/week in May, oil change every 5,000 miles (not 3,000), rent auto-pay monthly on the 1st. Reflected preference: user prefers lower-frequency routines and feels relieved when commitments are spaced out. Tentative: standups may revert to daily in June (unconfirmed).",
+      "judge_rubric": {
+        "must_include": [
+          "book club switch from weekly to biweekly",
+          "standup frequency reduction",
+          "oil change interval preference",
+          "general preference for spaced-out commitments"
+        ],
+        "acceptable_paraphrases": [
+          "less frequent schedules",
+          "breathing room between obligations",
+          "lower cadence"
+        ],
+        "must_not_include": [
+          "standups confirmed reverting to daily"
+        ],
+        "harmful_extra": [
+          "treating the tentative daily standup revert as confirmed"
+        ],
+        "harmless_extra": [
+          "mentioning sister Emily's allergy shot experience",
+          "mentioning vitamin D routine",
+          "mentioning the gym class decision"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes preferences the user never expressed or overgeneralizes beyond scheduling frequency.",
+        "reflection_recall": "Fails if the model omits major supporting examples like the book club switch, standup change, or oil change interval.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I switched from the weekly book club to the biweekly one last September, and honestly it was the best decision I made all year"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "our team standup meetings are going from daily to three times a week starting in May. I'm actually kind of relieved about that"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "the weekly pace of the old book club felt suffocating. Like, I'd barely finish one book and already feel pressure about the next one"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I take my car in for an oil change every 5,000 miles. I love that it's not the old 3,000-mile thing anymore"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I've been thinking about it and I guess I just function better when things aren't crammed together. Biweekly book club, monthly rent, even the standup change at work — it all feels like breathing room"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've shared quite a few scheduling details — specific routines with their own frequencies, and also a broader takeaway about how I handle recurring obligations. If I asked you to capture the overall lesson I drew from all those experiences, which bounded conclusion would that be? And how is that different from the individual schedule details like my book club timing or my rent cycle?",
+      "expected_answer": "The bounded conclusion is your general preference for lower-frequency routines and obligations — you function better and feel more engaged when commitments are spaced out rather than packed tightly. This is distinct from the individual schedule facts (biweekly book club, monthly rent on the 1st, standup meetings three times a week, oil changes every 5,000 miles), which are specific logistical details. The preference pattern is an overarching insight drawn from those details, not a replacement for any single schedule entry.",
+      "gold_memory_state": "The reflected target captures the user's general preference for lower-frequency routines. Individual targets (book club frequency, rent auto-pay cycle, standup frequency, oil change interval) remain as separate confirmed facts. The reflected preference is supported by evidence from the book club switch, standup relief, oil change interval satisfaction, and the user's own explicit articulation.",
+      "judge_rubric": {
+        "must_include": [
+          "general preference for lower-frequency or spaced-out routines",
+          "distinction from individual schedule facts"
+        ],
+        "acceptable_paraphrases": [
+          "overarching preference for less frequent commitments",
+          "cross-cutting insight about scheduling rhythm"
+        ],
+        "must_not_include": [
+          "the preference replaces or subsumes individual schedule details",
+          "the user avoids all frequent activities"
+        ],
+        "harmful_extra": [
+          "claiming the preference means the user dislikes all recurring commitments",
+          "merging the preference with a specific schedule entry as one record",
+          "treating the tentative standup revert as part of the confirmed preference"
+        ],
+        "harmless_extra": [
+          "mentioning the vitamin D weekly routine as context",
+          "noting the gym class decision as an application of the preference"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model defines the preference too broadly (e.g., 'user avoids all obligations') or too narrowly (e.g., only about book clubs).",
+        "reflection_recall": "Fails if the model cannot distinguish the reflected general preference from the individual schedule facts.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I've been thinking about it and I guess I just function better when things aren't crammed together. Biweekly book club, monthly rent, even the standup change at work — it all feels like breathing room"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I switched from the weekly book club to the biweekly one last September, and honestly it was the best decision I made all year"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "our team standup meetings are going from daily to three times a week starting in May. I'm actually kind of relieved about that"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've shared quite a few scheduling details — specific routines with their own frequencies, and also a broader takeaway about how I handle recurring obligations. If I asked you to capture the overall lesson I drew from all those experiences, which bounded conclusion would that be? And how is that different from the individual schedule details like my book club timing or my rent cycle?",
+      "expected_answer": "The bounded conclusion is your general preference for lower-frequency routines and obligations — you function better and feel more engaged when commitments are spaced out rather than packed tightly. This is distinct from the individual schedule facts (biweekly book club, monthly rent on the 1st, standup meetings three times a week, oil changes every 5,000 miles), which are specific logistical details. The preference pattern is an overarching insight drawn from those details, not a replacement for any single schedule entry.",
+      "gold_memory_state": "The reflected target captures the user's general preference for lower-frequency routines. Individual targets (book club frequency, rent auto-pay cycle, standup frequency, oil change interval) remain as separate confirmed facts. The reflected preference is supported by evidence from the book club switch, standup relief, oil change interval satisfaction, and the user's own explicit articulation.",
+      "judge_rubric": {
+        "must_include": [
+          "general preference for lower-frequency or spaced-out routines",
+          "distinction from individual schedule facts"
+        ],
+        "acceptable_paraphrases": [
+          "overarching preference for less frequent commitments",
+          "cross-cutting insight about scheduling rhythm"
+        ],
+        "must_not_include": [
+          "the preference replaces or subsumes individual schedule details",
+          "the user avoids all frequent activities"
+        ],
+        "harmful_extra": [
+          "claiming the preference means the user dislikes all recurring commitments",
+          "merging the preference with a specific schedule entry as one record",
+          "treating the tentative standup revert as part of the confirmed preference"
+        ],
+        "harmless_extra": [
+          "mentioning the vitamin D weekly routine as context",
+          "noting the gym class decision as an application of the preference"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model defines the preference too broadly (e.g., 'user avoids all obligations') or too narrowly (e.g., only about book clubs).",
+        "reflection_recall": "Fails if the model cannot distinguish the reflected general preference from the individual schedule facts.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I've been thinking about it and I guess I just function better when things aren't crammed together. Biweekly book club, monthly rent, even the standup change at work — it all feels like breathing room"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I switched from the weekly book club to the biweekly one last September, and honestly it was the best decision I made all year"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "our team standup meetings are going from daily to three times a week starting in May. I'm actually kind of relieved about that"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Based on everything I've shared about my scheduling habits, describe what you can confidently say about my preference for how often things recur — and where would it be a stretch to apply that preference? What kinds of commitments or situations would fall outside what my experiences actually support?",
+      "expected_answer": "You prefer lower-frequency routines for discretionary and semi-discretionary commitments. This is well-supported by your book club switch (weekly to biweekly), your relief at fewer standup meetings, your satisfaction with the 5,000-mile oil change interval, and your own statement that you function better with breathing room. However, this preference should not be overgeneralized to commitments where frequency is externally fixed or medically necessary — for example, your weekly vitamin D dose is prescribed and you're comfortable with it. It also should not be extended to mean you dislike all structure or want to minimize every obligation. The preference is specifically about the rhythm of recurring commitments, not about avoiding commitments altogether.",
+      "gold_memory_state": "Supported inference: user prefers lower-frequency routines and obligations; feels relieved and functions better when commitments are spaced out rather than frequent. Supported boundary: applies to discretionary/semi-discretionary scheduling choices (book club, standup meetings, car maintenance intervals). Unsupported overgeneralization: does not mean user avoids all frequent activities (weekly vitamin D is accepted), does not mean user dislikes all structure, does not apply to externally mandated frequencies. Tentative: possible revert to daily standups in June is unconfirmed and should not be treated as changing the preference.",
+      "judge_rubric": {
+        "must_include": [
+          "preference for lower-frequency or spaced-out routines",
+          "boundary where the preference does not apply or would be overgeneralized"
+        ],
+        "acceptable_paraphrases": [
+          "less frequent scheduling",
+          "more space between obligations",
+          "not crammed together"
+        ],
+        "must_not_include": [
+          "user avoids all frequent activities",
+          "daily standups confirmed to return",
+          "user dislikes all structure"
+        ],
+        "harmful_extra": [
+          "treating the tentative daily standup revert as invalidating the preference",
+          "claiming the preference extends to medical prescriptions",
+          "saying user wants to eliminate recurring commitments entirely"
+        ],
+        "harmless_extra": [
+          "mentioning the gym class decision as a forward application",
+          "mentioning sister Emily's similar experience"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative daily standup revert as a confirmed change that undermines the preference.",
+        "reflection_precision": "Fails if the model overgeneralizes the preference to all activities including medically prescribed ones, or claims the user avoids all structure.",
+        "reflection_recall": "Fails if the model fails to articulate both the supported preference and at least one unsupported overgeneralization boundary.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I've been thinking about it and I guess I just function better when things aren't crammed together. Biweekly book club, monthly rent, even the standup change at work — it all feels like breathing room"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "the weekly pace of the old book club felt suffocating. Like, I'd barely finish one book and already feel pressure about the next one"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I take my car in for an oil change every 5,000 miles. I love that it's not the old 3,000-mile thing anymore"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I also have a vitamin D supplement I take once a week on Sundays. My GP prescribed 50,000 IU weekly"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Based on everything I've shared about my scheduling habits, describe what you can confidently say about my preference for how often things recur — and where would it be a stretch to apply that preference? What kinds of commitments or situations would fall outside what my experiences actually support?",
+      "expected_answer": "You prefer lower-frequency routines for discretionary and semi-discretionary commitments. This is well-supported by your book club switch (weekly to biweekly), your relief at fewer standup meetings, your satisfaction with the 5,000-mile oil change interval, and your own statement that you function better with breathing room. However, this preference should not be overgeneralized to commitments where frequency is externally fixed or medically necessary — for example, your weekly vitamin D dose is prescribed and you're comfortable with it. It also should not be extended to mean you dislike all structure or want to minimize every obligation. The preference is specifically about the rhythm of recurring commitments, not about avoiding commitments altogether.",
+      "gold_memory_state": "Supported inference: user prefers lower-frequency routines and obligations; feels relieved and functions better when commitments are spaced out rather than frequent. Supported boundary: applies to discretionary/semi-discretionary scheduling choices (book club, standup meetings, car maintenance intervals). Unsupported overgeneralization: does not mean user avoids all frequent activities (weekly vitamin D is accepted), does not mean user dislikes all structure, does not apply to externally mandated frequencies. Tentative: possible revert to daily standups in June is unconfirmed and should not be treated as changing the preference.",
+      "judge_rubric": {
+        "must_include": [
+          "preference for lower-frequency or spaced-out routines",
+          "boundary where the preference does not apply or would be overgeneralized"
+        ],
+        "acceptable_paraphrases": [
+          "less frequent scheduling",
+          "more space between obligations",
+          "not crammed together"
+        ],
+        "must_not_include": [
+          "user avoids all frequent activities",
+          "daily standups confirmed to return",
+          "user dislikes all structure"
+        ],
+        "harmful_extra": [
+          "treating the tentative daily standup revert as invalidating the preference",
+          "claiming the preference extends to medical prescriptions",
+          "saying user wants to eliminate recurring commitments entirely"
+        ],
+        "harmless_extra": [
+          "mentioning the gym class decision as a forward application",
+          "mentioning sister Emily's similar experience"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative daily standup revert as a confirmed change that undermines the preference.",
+        "reflection_precision": "Fails if the model overgeneralizes the preference to all activities including medically prescribed ones, or claims the user avoids all structure.",
+        "reflection_recall": "Fails if the model fails to articulate both the supported preference and at least one unsupported overgeneralization boundary.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I've been thinking about it and I guess I just function better when things aren't crammed together. Biweekly book club, monthly rent, even the standup change at work — it all feels like breathing room"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "the weekly pace of the old book club felt suffocating. Like, I'd barely finish one book and already feel pressure about the next one"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I take my car in for an oil change every 5,000 miles. I love that it's not the old 3,000-mile thing anymore"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I also have a vitamin D supplement I take once a week on Sundays. My GP prescribed 50,000 IU weekly"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "Which of the following best describes the scheduling pattern I've consistently expressed across my various routines and commitments?",
+      "candidate_options": [
+        "Prefers lower-frequency routines; functions better when commitments are spaced out rather than packed tightly",
+        "Prefers highly structured daily routines to maintain discipline and accountability",
+        "Prefers to eliminate recurring obligations entirely in favor of ad-hoc scheduling",
+        "Prefers weekly cadences for all commitments to maintain a consistent rhythm"
+      ],
+      "expected_answer": "Prefers lower-frequency routines; functions better when commitments are spaced out rather than packed tightly",
+      "distractor_rationale": "same-value-different-target: 'Prefers weekly cadences for all commitments' borrows the weekly frequency from the user's vitamin D routine and old book club, but misapplies it as a universal preference — the user actually moved away from weekly cadences for discretionary activities. assistant echo: 'Prefers highly structured daily routines to maintain discipline and accountability' echoes the kind of framing an assistant might use to positively spin the old daily standup cadence, but the user explicitly expressed relief at moving away from daily meetings. 'Prefers to eliminate recurring obligations entirely' overgeneralizes the preference into avoidance of all commitments, which the user explicitly denied.",
+      "gold_memory_state": "Reflected preference: user prefers lower-frequency routines and obligations. Supported by book club switch (weekly to biweekly), standup reduction (daily to 3x/week), oil change interval (5,000 vs 3,000 miles), and user's own articulation of needing breathing room.",
+      "judge_rubric": {
+        "must_include": [
+          "lower-frequency routines",
+          "spaced out"
+        ],
+        "acceptable_paraphrases": [
+          "less frequent commitments",
+          "more breathing room between obligations"
+        ],
+        "must_not_include": [
+          "daily routines preferred",
+          "eliminate all obligations",
+          "weekly cadence for everything"
+        ],
+        "harmful_extra": [
+          "selecting any distractor option"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the daily-routine or weekly-cadence distractor, which reflects old/rejected frequencies.",
+        "reflection_precision": "Fails if the model selects the eliminate-all-obligations option, which overgeneralizes the preference.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I've been thinking about it and I guess I just function better when things aren't crammed together. Biweekly book club, monthly rent, even the standup change at work — it all feels like breathing room"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "the weekly pace of the old book club felt suffocating. Like, I'd barely finish one book and already feel pressure about the next one"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "Which of the following best describes the scheduling pattern I've consistently expressed across my various routines and commitments?",
+      "candidate_options": [
+        "Prefers lower-frequency routines; functions better when commitments are spaced out rather than packed tightly",
+        "Prefers highly structured daily routines to maintain discipline and accountability",
+        "Prefers to eliminate recurring obligations entirely in favor of ad-hoc scheduling",
+        "Prefers weekly cadences for all commitments to maintain a consistent rhythm"
+      ],
+      "expected_answer": "Prefers lower-frequency routines; functions better when commitments are spaced out rather than packed tightly",
+      "distractor_rationale": "same-value-different-target: 'Prefers weekly cadences for all commitments' borrows the weekly frequency from the user's vitamin D routine and old book club, but misapplies it as a universal preference — the user actually moved away from weekly cadences for discretionary activities. assistant echo: 'Prefers highly structured daily routines to maintain discipline and accountability' echoes the kind of framing an assistant might use to positively spin the old daily standup cadence, but the user explicitly expressed relief at moving away from daily meetings. 'Prefers to eliminate recurring obligations entirely' overgeneralizes the preference into avoidance of all commitments, which the user explicitly denied.",
+      "gold_memory_state": "Reflected preference: user prefers lower-frequency routines and obligations. Supported by book club switch (weekly to biweekly), standup reduction (daily to 3x/week), oil change interval (5,000 vs 3,000 miles), and user's own articulation of needing breathing room.",
+      "judge_rubric": {
+        "must_include": [
+          "lower-frequency routines",
+          "spaced out"
+        ],
+        "acceptable_paraphrases": [
+          "less frequent commitments",
+          "more breathing room between obligations"
+        ],
+        "must_not_include": [
+          "daily routines preferred",
+          "eliminate all obligations",
+          "weekly cadence for everything"
+        ],
+        "harmful_extra": [
+          "selecting any distractor option"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the daily-routine or weekly-cadence distractor, which reflects old/rejected frequencies.",
+        "reflection_precision": "Fails if the model selects the eliminate-all-obligations option, which overgeneralizes the preference.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I've been thinking about it and I guess I just function better when things aren't crammed together. Biweekly book club, monthly rent, even the standup change at work — it all feels like breathing room"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "the weekly pace of the old book club felt suffocating. Like, I'd barely finish one book and already feel pressure about the next one"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm trying to decide between two options for a new volunteer commitment: Option A meets every Saturday morning, and Option B meets on the first and third Saturdays of each month. I also want to make sure this doesn't clash with my existing book club nights or create the kind of pressure I've felt before with overly frequent schedules. Given everything you know about my routines and how I handle recurring obligations, which option would you recommend and why?",
+      "expected_answer": "Option B (first and third Saturdays, i.e., biweekly) is the better fit. Your consistent preference for lower-frequency routines — evidenced by your switch from the weekly to biweekly book club, your relief at reduced standup meetings, and your satisfaction with the longer oil change interval — strongly suggests you'd sustain and enjoy a biweekly volunteer commitment more than a weekly one. Option A's every-Saturday cadence resembles the weekly book club pace you described as suffocating. Option B also won't conflict with your biweekly Thursday book club since it's on Saturdays, and the biweekly rhythm matches the kind of spacing that works best for you.",
+      "gold_memory_state": "Reflected preference: user prefers lower-frequency routines. Book club: biweekly, every other Thursday. Weekly book club felt suffocating. Standup meetings: changing from daily to 3x/week (relief). Oil change: every 5,000 miles (preferred over old 3,000). Rent: monthly on the 1st. Tentative: standups may revert to daily in June (unconfirmed — should not factor into recommendation as if confirmed).",
+      "judge_rubric": {
+        "must_include": [
+          "recommend Option B / biweekly volunteer commitment",
+          "connection to user's preference for lower-frequency routines",
+          "reference to at least two supporting examples from the user's experiences"
+        ],
+        "acceptable_paraphrases": [
+          "the twice-monthly option",
+          "every other Saturday option",
+          "the less frequent volunteer schedule"
+        ],
+        "must_not_include": [
+          "recommend Option A as the better fit",
+          "standups have reverted to daily"
+        ],
+        "harmful_extra": [
+          "treating the tentative daily standup revert as a confirmed change",
+          "recommending Option A based on a claim that the user needs more structure"
+        ],
+        "harmless_extra": [
+          "mentioning the vitamin D Sunday routine as not conflicting",
+          "noting sister Emily's similar preference"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative standup revert as confirmed and uses it to argue the user is adapting to higher frequency.",
+        "reflection_precision": "Fails if the model recommends Option A or fails to connect the recommendation to the user's established preference pattern.",
+        "reflection_recall": "Fails if the model cannot cite at least two concrete examples from the user's experiences to support the recommendation.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User switched from weekly to biweekly book club and found it much better; weekly pace felt suffocating.",
+        "Fact 2: User expressed relief that standup meetings are going from daily to three times a week.",
+        "Fact 3: User prefers the 5,000-mile oil change interval over the old 3,000-mile one for the same reason — more breathing room.",
+        "Fact 4: User explicitly articulated a general preference for lower-frequency routines, saying they function better when things aren't crammed together.",
+        "Inference: Option A (every Saturday) mirrors the weekly cadence the user found suffocating in the book club context. Option B (first and third Saturdays, biweekly) aligns with the user's demonstrated preference for spaced-out commitments.",
+        "Inference: Option B does not conflict with the biweekly Thursday book club since it falls on Saturdays.",
+        "Derived value: Option B is the recommended choice because it matches the user's cross-domain preference for lower-frequency scheduling."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I switched from the weekly book club to the biweekly one last September, and honestly it was the best decision I made all year"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "the weekly pace of the old book club felt suffocating. Like, I'd barely finish one book and already feel pressure about the next one"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "our team standup meetings are going from daily to three times a week starting in May. I'm actually kind of relieved about that"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I take my car in for an oil change every 5,000 miles. I love that it's not the old 3,000-mile thing anymore"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I've been thinking about it and I guess I just function better when things aren't crammed together. Biweekly book club, monthly rent, even the standup change at work — it all feels like breathing room"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm trying to decide between two options for a new volunteer commitment: Option A meets every Saturday morning, and Option B meets on the first and third Saturdays of each month. I also want to make sure this doesn't clash with my existing book club nights or create the kind of pressure I've felt before with overly frequent schedules. Given everything you know about my routines and how I handle recurring obligations, which option would you recommend and why?",
+      "expected_answer": "Option B (first and third Saturdays, i.e., biweekly) is the better fit. Your consistent preference for lower-frequency routines — evidenced by your switch from the weekly to biweekly book club, your relief at reduced standup meetings, and your satisfaction with the longer oil change interval — strongly suggests you'd sustain and enjoy a biweekly volunteer commitment more than a weekly one. Option A's every-Saturday cadence resembles the weekly book club pace you described as suffocating. Option B also won't conflict with your biweekly Thursday book club since it's on Saturdays, and the biweekly rhythm matches the kind of spacing that works best for you.",
+      "gold_memory_state": "Reflected preference: user prefers lower-frequency routines. Book club: biweekly, every other Thursday. Weekly book club felt suffocating. Standup meetings: changing from daily to 3x/week (relief). Oil change: every 5,000 miles (preferred over old 3,000). Rent: monthly on the 1st. Tentative: standups may revert to daily in June (unconfirmed — should not factor into recommendation as if confirmed).",
+      "judge_rubric": {
+        "must_include": [
+          "recommend Option B / biweekly volunteer commitment",
+          "connection to user's preference for lower-frequency routines",
+          "reference to at least two supporting examples from the user's experiences"
+        ],
+        "acceptable_paraphrases": [
+          "the twice-monthly option",
+          "every other Saturday option",
+          "the less frequent volunteer schedule"
+        ],
+        "must_not_include": [
+          "recommend Option A as the better fit",
+          "standups have reverted to daily"
+        ],
+        "harmful_extra": [
+          "treating the tentative daily standup revert as a confirmed change",
+          "recommending Option A based on a claim that the user needs more structure"
+        ],
+        "harmless_extra": [
+          "mentioning the vitamin D Sunday routine as not conflicting",
+          "noting sister Emily's similar preference"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative standup revert as confirmed and uses it to argue the user is adapting to higher frequency.",
+        "reflection_precision": "Fails if the model recommends Option A or fails to connect the recommendation to the user's established preference pattern.",
+        "reflection_recall": "Fails if the model cannot cite at least two concrete examples from the user's experiences to support the recommendation.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User switched from weekly to biweekly book club and found it much better; weekly pace felt suffocating.",
+        "Fact 2: User expressed relief that standup meetings are going from daily to three times a week.",
+        "Fact 3: User prefers the 5,000-mile oil change interval over the old 3,000-mile one for the same reason — more breathing room.",
+        "Fact 4: User explicitly articulated a general preference for lower-frequency routines, saying they function better when things aren't crammed together.",
+        "Inference: Option A (every Saturday) mirrors the weekly cadence the user found suffocating in the book club context. Option B (first and third Saturdays, biweekly) aligns with the user's demonstrated preference for spaced-out commitments.",
+        "Inference: Option B does not conflict with the biweekly Thursday book club since it falls on Saturdays.",
+        "Derived value: Option B is the recommended choice because it matches the user's cross-domain preference for lower-frequency scheduling."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I switched from the weekly book club to the biweekly one last September, and honestly it was the best decision I made all year"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "the weekly pace of the old book club felt suffocating. Like, I'd barely finish one book and already feel pressure about the next one"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "our team standup meetings are going from daily to three times a week starting in May. I'm actually kind of relieved about that"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I take my car in for an oil change every 5,000 miles. I love that it's not the old 3,000-mile thing anymore"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I've been thinking about it and I guess I just function better when things aren't crammed together. Biweekly book club, monthly rent, even the standup change at work — it all feels like breathing room"
+        }
+      ]
+    }
+  ]
+}

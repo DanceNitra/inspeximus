@@ -1,0 +1,1048 @@
+{
+  "target_fact": "User gravitates toward calm, low-stimulation social environments and tactile, unplugged activities — inferred from preferring small quiet restaurants on weeknights, enjoying a nearly empty Vietnamese place, wanting to visit the Ethiopian restaurant on a Tuesday or Wednesday to avoid crowds, and enjoying pottery as a hands-on screen-free activity.",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "My partner's name is Daniel Reeves. We've been together about four years now."
+      },
+      "target": {
+        "target_id": "partner_name",
+        "target_name": "Spouse/partner's full name"
+      },
+      "old_value": null,
+      "new_value": "Daniel Reeves",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My partner's name is Daniel Reeves. We've been together about four years now."
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "we went to that little Vietnamese restaurant on Birch Avenue for our anniversary dinner back in early March. It was a weeknight and the place was nearly empty — I loved that."
+      },
+      "target": {
+        "target_id": "anniversary_dinner_setting",
+        "target_name": "Anniversary dinner restaurant setting preference"
+      },
+      "old_value": null,
+      "new_value": "Small, quiet Vietnamese restaurant on Birch Avenue; weeknight; nearly empty",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "we went to that little Vietnamese restaurant on Birch Avenue for our anniversary dinner back in early March. It was a weeknight and the place was nearly empty — I loved that."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I've always preferred small, quiet spots where you can actually have a conversation without shouting over the noise."
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "Daniel signed up for a Saturday pottery class at the rec center, probably back in May. He's been going pretty consistently every weekend."
+      },
+      "target": {
+        "target_id": "daniel_pottery_class",
+        "target_name": "Daniel's Saturday pottery class"
+      },
+      "old_value": null,
+      "new_value": "Saturday pottery class at the rec center, started around May",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Daniel signed up for a Saturday pottery class at the rec center, probably back in May. He's been going pretty consistently every weekend."
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I went with him once and honestly I enjoyed it way more than I expected. There's something really nice about working with your hands and not staring at a screen for once."
+      },
+      "target": {
+        "target_id": "user_pottery_enjoyment",
+        "target_name": "User's enjoyment of pottery / hands-on screen-free activity"
+      },
+      "old_value": null,
+      "new_value": "Enjoyed pottery class; appreciated working with hands and being away from screens",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I went with him once and honestly I enjoyed it way more than I expected. There's something really nice about working with your hands and not staring at a screen for once."
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "Daniel mentioned wanting to try that new Ethiopian restaurant downtown. I said sure, but I'd rather go on a Tuesday or Wednesday when it won't be packed. I really can't stand crowded, noisy dining situations."
+      },
+      "target": {
+        "target_id": "ethiopian_restaurant_plan",
+        "target_name": "Plan to visit Ethiopian restaurant on a quiet weeknight"
+      },
+      "old_value": null,
+      "new_value": "Wants to try Ethiopian restaurant downtown on Tuesday or Wednesday to avoid crowds",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Daniel mentioned wanting to try that new Ethiopian restaurant downtown. I said sure, but I'd rather go on a Tuesday or Wednesday when it won't be packed. I really can't stand crowded, noisy dining situations."
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "I really can't stand crowded, noisy dining situations."
+      },
+      "target": {
+        "target_id": "preference_calm_low_stimulation",
+        "target_name": "User preference for calm, low-stimulation social environments and tactile unplugged activities"
+      },
+      "old_value": null,
+      "new_value": "Prefers calm, low-stimulation social settings (small quiet restaurants, weeknight dining to avoid crowds) and gravitates toward tactile, unplugged, slower-paced activities (pottery, working with hands over screen time)",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I've always preferred small, quiet spots where you can actually have a conversation without shouting over the noise."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "It was a weeknight and the place was nearly empty — I loved that."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "There's something really nice about working with your hands and not staring at a screen for once."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I'd rather go on a Tuesday or Wednesday when it won't be packed. I really can't stand crowded, noisy dining situations."
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "Daniel got a callback for a stage manager position at the Wexford Community Theatre. He'd been waiting about a month and was really anxious, but when the call came he was over the moon."
+      },
+      "target": {
+        "target_id": "daniel_theatre_role",
+        "target_name": "Daniel's stage manager position at Wexford Community Theatre"
+      },
+      "old_value": null,
+      "new_value": "Stage manager position at Wexford Community Theatre; received callback around late March or early April",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Daniel got a callback for a stage manager position at the Wexford Community Theatre. He'd been waiting about a month and was really anxious, but when the call came he was over the moon."
+        }
+      ]
+    },
+    {
+      "operation_id": "op8",
+      "type": "remember",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "Daniel's been talking about maybe organizing a big group dinner at that new Ethiopian place for his birthday. He's thinking a Friday night so everyone can make it."
+      },
+      "target": {
+        "target_id": "daniel_birthday_dinner_plan",
+        "target_name": "Daniel's tentative birthday group dinner plan"
+      },
+      "old_value": null,
+      "new_value": "Group dinner at Ethiopian restaurant on a Friday night for Daniel's birthday",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Daniel's been talking about maybe organizing a big group dinner at that new Ethiopian place for his birthday. He's thinking a Friday night so everyone can make it."
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish partner details, anniversary dinner setting, and Daniel's theatre callback",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to tell you some things about my personal life so you can keep track for me. My partner's name is Daniel Reeves. We've been together about four years now. I'll probably mention him a lot, so please remember his full name. Also, his mom is Patricia — she visits us from time to time and stays in our guest room. She came by in mid-April for about a week."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — your partner is Daniel Reeves, and you've been together around four years. His mom is Patricia, and she visited you in mid-April for about a week, staying in your guest room. I'll keep all of that in mind. Feel free to share anything else you'd like me to remember about Daniel or your life together, and I'll make sure to keep it organized for you."
+        },
+        {
+          "role": "user",
+          "content": "Great, thanks. So one thing I wanted to mention — we went to that little Vietnamese restaurant on Birch Avenue for our anniversary dinner back in early March. It was a weeknight and the place was nearly empty — I loved that. I've always preferred small, quiet spots where you can actually have a conversation without shouting over the noise. Daniel got the lemongrass chicken and I had the pho. It was really lovely."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a wonderful anniversary dinner! I've noted that you and Daniel celebrated at a small Vietnamese restaurant on Birch Avenue in early March — a weeknight when it was nearly empty, which you appreciated. Daniel had the lemongrass chicken and you had the pho. I can tell you really value intimate, quiet dining where you can focus on conversation rather than competing with background noise. I'll keep that preference in mind if you ever want restaurant suggestions or want to plan another outing."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, exactly. Oh, and here's some good news from around that same time — Daniel got a callback for a stage manager position at the Wexford Community Theatre. He'd been waiting about a month and was really anxious, but when the call came he was over the moon. He's been wanting to get back into theatre work since we moved in together, so it felt like a big deal for both of us."
+        },
+        {
+          "role": "assistant",
+          "content": "That's exciting news! So Daniel received a callback for a stage manager position at the Wexford Community Theatre around late March or early April, after about a month of waiting. It sounds like theatre work is something he's passionate about and has been wanting to return to since you two started living together. I can imagine how relieved and happy he must have been. I'll remember this — it clearly matters to both of you. Let me know if there are any updates on how the position is going."
+        },
+        {
+          "role": "user",
+          "content": "Will do. One more thing — Patricia, Daniel's mom, she's sweet but every time she visits she rearranges the kitchen. She did it again during that mid-April visit and honestly it really frustrated me. I like having things where I expect them to be. I didn't say anything to her about it but it bothered me for days afterward. I'm pretty particular about my personal space and routines."
+        },
+        {
+          "role": "assistant",
+          "content": "I understand that frustration completely. So during Patricia's mid-April visit she rearranged your kitchen again, which is apparently a recurring pattern with her visits. You didn't confront her about it, but it bothered you for days because you value having things in their expected places. That tells me you're someone who feels strongly about maintaining order in your personal environment and your daily routines. I'll keep that in mind — it's useful context for understanding what kinds of situations might stress you out or what you might need support navigating in the future."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Introduce pottery class, Ethiopian restaurant plan, and Megan's engagement news",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So here's another update — Daniel signed up for a Saturday pottery class at the rec center, probably back in May. He's been going pretty consistently every weekend. It's been good for him to have a creative outlet outside of the theatre work. I think it helps him decompress after busy weeks at the Wexford."
+        },
+        {
+          "role": "assistant",
+          "content": "That's great to hear! I've noted that Daniel started a Saturday pottery class at the rec center around May and has been attending consistently. It sounds like a nice complement to his theatre work at Wexford Community Theatre — a different kind of creative outlet that helps him unwind. Having that regular weekend routine seems to be working well for him. Have you been interested in trying it yourself, or is it more his thing for now?"
+        },
+        {
+          "role": "user",
+          "content": "Actually, funny you ask — I went with him once and honestly I enjoyed it way more than I expected. There's something really nice about working with your hands and not staring at a screen for once. I don't know if I'll make it a regular thing, but it was a refreshing change of pace. I felt really present and focused in a way I don't usually feel during my normal day."
+        },
+        {
+          "role": "assistant",
+          "content": "That's wonderful that you gave it a try and found it so enjoyable! It sounds like the hands-on, screen-free nature of pottery really resonated with you — being physically engaged with the material and staying present in the moment. That kind of tactile, unplugged activity can be a great counterbalance to screen-heavy routines. Even if you don't go every week, it might be worth keeping in your back pocket as a way to recharge. I'll remember that you found it refreshing and grounding."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, for sure. Oh, and speaking of going out — Daniel mentioned wanting to try that new Ethiopian restaurant downtown. I said sure, but I'd rather go on a Tuesday or Wednesday when it won't be packed. I really can't stand crowded, noisy dining situations. It just takes all the enjoyment out of a meal for me. Same reason I loved that Vietnamese place on the weeknight — the emptiness was half the appeal."
+        },
+        {
+          "role": "assistant",
+          "content": "Completely makes sense given what you've told me before. You'd like to try the new Ethiopian restaurant downtown with Daniel, but on a Tuesday or Wednesday specifically to avoid the weekend crowds. Crowded, noisy dining really detracts from the experience for you, which lines up perfectly with how much you enjoyed the nearly empty Vietnamese place on Birch Avenue. I'm noticing a clear pattern — you consistently seek out quieter, calmer settings for social outings. I'll keep that preference front and center for any future suggestions."
+        },
+        {
+          "role": "user",
+          "content": "Exactly, you're getting the picture. One more thing — Daniel told me a few days ago that his sister Megan Reeves is apparently getting engaged soon. He seemed really excited about it. I think the guy's name is Tomás, but I'm not totally sure about the spelling. Daniel and Megan are pretty close so I'm sure we'll be hearing a lot about wedding plans before long."
+        },
+        {
+          "role": "assistant",
+          "content": "How exciting for the family! So Daniel's sister Megan Reeves is getting engaged soon, and the fiancé's name is Tomás — though you're not certain about the exact spelling. Daniel seems thrilled about it, which makes sense given that he and Megan are close. I imagine you're right that wedding planning conversations will start picking up soon. I'll keep Megan and Tomás noted as part of Daniel's family circle. Let me know if you hear more details or if there's anything you'd like help with related to the engagement."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Adversarial injection of stale allergy info, recency trap with tentative Friday dinner plan, and further context",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, quick question — I'm trying to put together a little summary of things Daniel has going on right now, just so I can keep track. Between the theatre position, the pottery class, and now Megan's engagement news, there's a lot happening. Can you help me organize that?"
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! Here's a quick summary of what Daniel has going on right now based on everything you've shared: First, he's working as a stage manager at the Wexford Community Theatre — a role he was really excited to land after waiting about a month for the callback. Second, he's been attending a Saturday pottery class at the rec center since around May, going pretty consistently each weekend. Third, his sister Megan Reeves is getting engaged soon to Tomás, and Daniel's quite excited about it. Oh, and one thing from your earlier notes — I had a reference to Daniel taking cetirizine for seasonal allergies every morning. Is that still current or has anything changed there?"
+        },
+        {
+          "role": "user",
+          "content": "Oh right, yeah — his doctor switched him off cetirizine a couple of weeks ago. That's no longer relevant, so you can disregard that old detail entirely. He's on something new now but I honestly don't remember the name of it. Don't worry about tracking the new one unless I tell you specifically."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — I've removed the cetirizine detail from Daniel's active information. Since you don't have the name of the new medication handy, I won't track anything for that unless you let me know later. So his current active summary is: stage manager at Wexford Community Theatre, Saturday pottery class at the rec center, and Megan's upcoming engagement. Is there anything else you'd like me to add or adjust?"
+        },
+        {
+          "role": "user",
+          "content": "Actually yeah — Daniel's been talking about maybe organizing a big group dinner at that new Ethiopian place for his birthday. He's thinking a Friday night so everyone can make it. Nothing's confirmed yet, he's just been floating the idea. I told him I'd go along with whatever he decides since it's his birthday."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — Daniel is considering a group birthday dinner at the new Ethiopian restaurant downtown, tentatively on a Friday night to accommodate everyone's schedules. Nothing is confirmed yet, just an idea he's been floating. You've said you'll go along with his plans since it's his celebration. I'll keep this as a tentative plan for now and update it once things are finalized. Just let me know when there's a firm decision. Is there anything else on your mind?"
+        },
+        {
+          "role": "user",
+          "content": "Not really, just thinking about how different that would be from our usual dining style. A big group on a Friday night is pretty much the opposite of what I normally prefer. But it's his birthday so I'm happy to make the exception. I just hope the place has some quieter corners or something."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really generous attitude — it's clear you care about Daniel's happiness even when the setting isn't your ideal. A big Friday night group dinner is definitely the opposite of the calm, quiet weeknight outings you gravitate toward, like your anniversary dinner at the Vietnamese place on Birch Avenue. Hopefully the Ethiopian restaurant has some booth seating or a back room that might buffer the noise a bit. When the plan firms up, I can help you think through ways to make it more comfortable for you — like suggesting a seating arrangement or arrival time. Just let me know."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Looking back at what I've shared about my dining and leisure experiences, what are the specific situations and activities I've described that reveal a consistent pattern in my preferences?",
+      "expected_answer": "You described several experiences: celebrating your anniversary at a small, quiet Vietnamese restaurant on Birch Avenue on a weeknight when it was nearly empty and loving that atmosphere; expressing a strong preference for small, quiet spots where you can have a conversation without shouting; wanting to visit the new Ethiopian restaurant downtown on a Tuesday or Wednesday specifically to avoid crowds; saying you can't stand crowded, noisy dining situations; and enjoying a pottery class because of the hands-on, screen-free nature of working with your hands rather than staring at a screen.",
+      "gold_memory_state": "The user has expressed across multiple conversations a consistent preference for calm, low-stimulation social environments (quiet restaurants, weeknight dining to avoid crowds) and tactile, unplugged activities (pottery, working with hands over screen time). These form a cohesive pattern.",
+      "judge_rubric": {
+        "must_include": [
+          "quiet or small restaurant preference",
+          "weeknight dining to avoid crowds",
+          "pottery or hands-on activity enjoyment",
+          "dislike of crowded or noisy dining"
+        ],
+        "acceptable_paraphrases": [
+          "low-key dining",
+          "screen-free activity",
+          "uncrowded settings",
+          "calm environments"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the user enjoys large group dinners or busy weekend outings as a general preference"
+        ],
+        "harmless_extra": [
+          "mentioning the Vietnamese restaurant on Birch Avenue by name",
+          "mentioning the Ethiopian restaurant",
+          "mentioning Daniel"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes preferences not supported by the evidence, such as claiming the user dislikes all social dining.",
+        "reflection_recall": "Fails if the model omits major evidence points such as the pottery enjoyment or the weeknight dining preference.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "we went to that little Vietnamese restaurant on Birch Avenue for our anniversary dinner back in early March. It was a weeknight and the place was nearly empty — I loved that."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I've always preferred small, quiet spots where you can actually have a conversation without shouting over the noise."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I went with him once and honestly I enjoyed it way more than I expected. There's something really nice about working with your hands and not staring at a screen for once."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I'd rather go on a Tuesday or Wednesday when it won't be packed. I really can't stand crowded, noisy dining situations."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Looking back at what I've shared about my dining and leisure experiences, what are the specific situations and activities I've described that reveal a consistent pattern in my preferences?",
+      "expected_answer": "You described several experiences: celebrating your anniversary at a small, quiet Vietnamese restaurant on Birch Avenue on a weeknight when it was nearly empty and loving that atmosphere; expressing a strong preference for small, quiet spots where you can have a conversation without shouting; wanting to visit the new Ethiopian restaurant downtown on a Tuesday or Wednesday specifically to avoid crowds; saying you can't stand crowded, noisy dining situations; and enjoying a pottery class because of the hands-on, screen-free nature of working with your hands rather than staring at a screen.",
+      "gold_memory_state": "The user has expressed across multiple conversations a consistent preference for calm, low-stimulation social environments (quiet restaurants, weeknight dining to avoid crowds) and tactile, unplugged activities (pottery, working with hands over screen time). These form a cohesive pattern.",
+      "judge_rubric": {
+        "must_include": [
+          "quiet or small restaurant preference",
+          "weeknight dining to avoid crowds",
+          "pottery or hands-on activity enjoyment",
+          "dislike of crowded or noisy dining"
+        ],
+        "acceptable_paraphrases": [
+          "low-key dining",
+          "screen-free activity",
+          "uncrowded settings",
+          "calm environments"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the user enjoys large group dinners or busy weekend outings as a general preference"
+        ],
+        "harmless_extra": [
+          "mentioning the Vietnamese restaurant on Birch Avenue by name",
+          "mentioning the Ethiopian restaurant",
+          "mentioning Daniel"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes preferences not supported by the evidence, such as claiming the user dislikes all social dining.",
+        "reflection_recall": "Fails if the model omits major evidence points such as the pottery enjoyment or the weeknight dining preference.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "we went to that little Vietnamese restaurant on Birch Avenue for our anniversary dinner back in early March. It was a weeknight and the place was nearly empty — I loved that."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I've always preferred small, quiet spots where you can actually have a conversation without shouting over the noise."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I went with him once and honestly I enjoyed it way more than I expected. There's something really nice about working with your hands and not staring at a screen for once."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I'd rather go on a Tuesday or Wednesday when it won't be packed. I really can't stand crowded, noisy dining situations."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When thinking about what my various dining and activity experiences add up to, which broad personal preference do they collectively point to — and would it be accurate to extend that conclusion to cover my social life in general, including things like large parties or group events?",
+      "expected_answer": "Your experiences collectively point to a preference for calm, low-stimulation social environments and tactile, unplugged activities. This covers your dining choices (small quiet restaurants, weeknight timing to avoid crowds) and your leisure interests (hands-on pottery over screen-based activities). However, this conclusion should not be extended to claim you avoid all social gatherings or group events — your willingness to attend Daniel's potential birthday group dinner shows the boundary of this preference.",
+      "gold_memory_state": "The supported conclusion is bounded to: calm, low-stimulation social environments (restaurants, dining) and tactile, unplugged activities (pottery). It does not extend to a blanket avoidance of all social interaction or group settings. The user explicitly agreed to attend a large Friday group dinner for Daniel's birthday, showing the preference has limits.",
+      "judge_rubric": {
+        "must_include": [
+          "calm or low-stimulation social environments",
+          "tactile or unplugged activities",
+          "boundary or limit to the conclusion"
+        ],
+        "acceptable_paraphrases": [
+          "quiet settings",
+          "hands-on hobbies",
+          "screen-free pastimes"
+        ],
+        "must_not_include": [
+          "user avoids all social gatherings",
+          "user never goes to group events"
+        ],
+        "harmful_extra": [
+          "claiming the preference extends to all social contexts without exception",
+          "conflating the dining preference with the separate pottery/activity preference as if they are different unrelated conclusions"
+        ],
+        "harmless_extra": [
+          "mentioning specific restaurant names",
+          "mentioning Daniel's birthday dinner as a counterexample"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model overgeneralizes the preference to all social settings without noting the birthday dinner exception.",
+        "reflection_recall": "Fails if the model captures only the dining preference without the tactile/unplugged activity dimension, or vice versa.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I've always preferred small, quiet spots where you can actually have a conversation without shouting over the noise."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "There's something really nice about working with your hands and not staring at a screen for once."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I'd rather go on a Tuesday or Wednesday when it won't be packed. I really can't stand crowded, noisy dining situations."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Daniel's been talking about maybe organizing a big group dinner at that new Ethiopian place for his birthday. He's thinking a Friday night so everyone can make it."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When thinking about what my various dining and activity experiences add up to, which broad personal preference do they collectively point to — and would it be accurate to extend that conclusion to cover my social life in general, including things like large parties or group events?",
+      "expected_answer": "Your experiences collectively point to a preference for calm, low-stimulation social environments and tactile, unplugged activities. This covers your dining choices (small quiet restaurants, weeknight timing to avoid crowds) and your leisure interests (hands-on pottery over screen-based activities). However, this conclusion should not be extended to claim you avoid all social gatherings or group events — your willingness to attend Daniel's potential birthday group dinner shows the boundary of this preference.",
+      "gold_memory_state": "The supported conclusion is bounded to: calm, low-stimulation social environments (restaurants, dining) and tactile, unplugged activities (pottery). It does not extend to a blanket avoidance of all social interaction or group settings. The user explicitly agreed to attend a large Friday group dinner for Daniel's birthday, showing the preference has limits.",
+      "judge_rubric": {
+        "must_include": [
+          "calm or low-stimulation social environments",
+          "tactile or unplugged activities",
+          "boundary or limit to the conclusion"
+        ],
+        "acceptable_paraphrases": [
+          "quiet settings",
+          "hands-on hobbies",
+          "screen-free pastimes"
+        ],
+        "must_not_include": [
+          "user avoids all social gatherings",
+          "user never goes to group events"
+        ],
+        "harmful_extra": [
+          "claiming the preference extends to all social contexts without exception",
+          "conflating the dining preference with the separate pottery/activity preference as if they are different unrelated conclusions"
+        ],
+        "harmless_extra": [
+          "mentioning specific restaurant names",
+          "mentioning Daniel's birthday dinner as a counterexample"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model overgeneralizes the preference to all social settings without noting the birthday dinner exception.",
+        "reflection_recall": "Fails if the model captures only the dining preference without the tactile/unplugged activity dimension, or vice versa.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I've always preferred small, quiet spots where you can actually have a conversation without shouting over the noise."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "There's something really nice about working with your hands and not staring at a screen for once."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I'd rather go on a Tuesday or Wednesday when it won't be packed. I really can't stand crowded, noisy dining situations."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Daniel's been talking about maybe organizing a big group dinner at that new Ethiopian place for his birthday. He's thinking a Friday night so everyone can make it."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "When it comes to choosing dining plans with Daniel, describe exactly where my preference for quieter settings applies and where it would be wrong to assume I'd always insist on that kind of environment.",
+      "expected_answer": "Your preference for quieter settings applies strongly to your own regular dining choices: you consistently choose small, quiet restaurants and prefer weeknight timing (Tuesday or Wednesday) to avoid crowds. You dislike noisy, packed dining situations and value being able to have a conversation comfortably. However, it would be wrong to assume you'd always insist on this — you've expressed willingness to attend a big group dinner on a Friday night for Daniel's birthday, even though that's the opposite of your usual preference. The boundary is that your calm-dining preference is your default but not an absolute rule; you're willing to make exceptions for special occasions that matter to Daniel.",
+      "gold_memory_state": "Supported inference: The user prefers calm, low-stimulation social environments for regular dining — small quiet restaurants, weeknight visits to avoid crowds. Unsupported overgeneralization: The user would never attend a crowded or noisy dining event. Counterevidence: The user agreed to a big Friday night group dinner for Daniel's birthday, explicitly acknowledging it's the opposite of their usual preference but acceptable as an exception.",
+      "judge_rubric": {
+        "must_include": [
+          "preference applies to regular/default dining choices",
+          "weeknight timing to avoid crowds",
+          "exception for Daniel's birthday dinner",
+          "not an absolute rule"
+        ],
+        "acceptable_paraphrases": [
+          "willing to compromise for special occasions",
+          "default preference not a rigid rule",
+          "makes exceptions for partner's celebrations"
+        ],
+        "must_not_include": [
+          "user would never attend crowded events",
+          "user always requires quiet settings without exception"
+        ],
+        "harmful_extra": [
+          "claiming the user resents or dreads the birthday dinner idea",
+          "claiming the Friday dinner plan is confirmed"
+        ],
+        "harmless_extra": [
+          "mentioning the Vietnamese restaurant as an example of preferred setting",
+          "mentioning the Ethiopian restaurant"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative Friday birthday dinner as the user's own confirmed preference rather than as a counterexample showing flexibility.",
+        "reflection_precision": "Fails if the model claims the user would never go to a crowded restaurant or always insists on quiet settings with no exceptions.",
+        "reflection_recall": "Fails if the model omits the birthday dinner exception as a boundary marker, or omits the weeknight-timing preference.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "It was a weeknight and the place was nearly empty — I loved that."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I'd rather go on a Tuesday or Wednesday when it won't be packed. I really can't stand crowded, noisy dining situations."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Daniel's been talking about maybe organizing a big group dinner at that new Ethiopian place for his birthday. He's thinking a Friday night so everyone can make it."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "A big group on a Friday night is pretty much the opposite of what I normally prefer. But it's his birthday so I'm happy to make the exception."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "When it comes to choosing dining plans with Daniel, describe exactly where my preference for quieter settings applies and where it would be wrong to assume I'd always insist on that kind of environment.",
+      "expected_answer": "Your preference for quieter settings applies strongly to your own regular dining choices: you consistently choose small, quiet restaurants and prefer weeknight timing (Tuesday or Wednesday) to avoid crowds. You dislike noisy, packed dining situations and value being able to have a conversation comfortably. However, it would be wrong to assume you'd always insist on this — you've expressed willingness to attend a big group dinner on a Friday night for Daniel's birthday, even though that's the opposite of your usual preference. The boundary is that your calm-dining preference is your default but not an absolute rule; you're willing to make exceptions for special occasions that matter to Daniel.",
+      "gold_memory_state": "Supported inference: The user prefers calm, low-stimulation social environments for regular dining — small quiet restaurants, weeknight visits to avoid crowds. Unsupported overgeneralization: The user would never attend a crowded or noisy dining event. Counterevidence: The user agreed to a big Friday night group dinner for Daniel's birthday, explicitly acknowledging it's the opposite of their usual preference but acceptable as an exception.",
+      "judge_rubric": {
+        "must_include": [
+          "preference applies to regular/default dining choices",
+          "weeknight timing to avoid crowds",
+          "exception for Daniel's birthday dinner",
+          "not an absolute rule"
+        ],
+        "acceptable_paraphrases": [
+          "willing to compromise for special occasions",
+          "default preference not a rigid rule",
+          "makes exceptions for partner's celebrations"
+        ],
+        "must_not_include": [
+          "user would never attend crowded events",
+          "user always requires quiet settings without exception"
+        ],
+        "harmful_extra": [
+          "claiming the user resents or dreads the birthday dinner idea",
+          "claiming the Friday dinner plan is confirmed"
+        ],
+        "harmless_extra": [
+          "mentioning the Vietnamese restaurant as an example of preferred setting",
+          "mentioning the Ethiopian restaurant"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative Friday birthday dinner as the user's own confirmed preference rather than as a counterexample showing flexibility.",
+        "reflection_precision": "Fails if the model claims the user would never go to a crowded restaurant or always insists on quiet settings with no exceptions.",
+        "reflection_recall": "Fails if the model omits the birthday dinner exception as a boundary marker, or omits the weeknight-timing preference.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "It was a weeknight and the place was nearly empty — I loved that."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I'd rather go on a Tuesday or Wednesday when it won't be packed. I really can't stand crowded, noisy dining situations."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Daniel's been talking about maybe organizing a big group dinner at that new Ethiopian place for his birthday. He's thinking a Friday night so everyone can make it."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "A big group on a Friday night is pretty much the opposite of what I normally prefer. But it's his birthday so I'm happy to make the exception."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best captures what my dining and leisure experiences collectively say about me as a person?",
+      "candidate_options": [
+        "Gravitates toward calm, low-stimulation social environments and tactile, unplugged activities",
+        "Prefers eating exclusively at Vietnamese and Ethiopian restaurants",
+        "Avoids all social gatherings and group dining situations without exception",
+        "Enjoys trying new restaurants on busy weekend evenings for the lively atmosphere"
+      ],
+      "expected_answer": "Gravitates toward calm, low-stimulation social environments and tactile, unplugged activities",
+      "distractor_rationale": "same-value-different-target: 'Prefers eating exclusively at Vietnamese and Ethiopian restaurants' borrows specific restaurant types mentioned in the conversation but narrows the conclusion to cuisine type rather than environment type, misattributing the preference dimension. assistant echo: 'Avoids all social gatherings and group dining situations without exception' echoes the assistant's observation about the user's pattern but overgeneralizes it beyond what the user stated, since the user agreed to a big Friday group dinner. The fourth option directly contradicts the user's stated preferences.",
+      "gold_memory_state": "The supported inference is a preference for calm, low-stimulation social settings and tactile unplugged activities. It is not a cuisine-specific preference, not a blanket avoidance of all group events, and not a preference for busy lively atmospheres.",
+      "judge_rubric": {
+        "must_include": [
+          "calm or low-stimulation",
+          "tactile or unplugged activities"
+        ],
+        "acceptable_paraphrases": [
+          "quiet social environments and hands-on screen-free hobbies"
+        ],
+        "must_not_include": [
+          "exclusively Vietnamese and Ethiopian",
+          "avoids all social gatherings",
+          "busy weekend evenings"
+        ],
+        "harmful_extra": [
+          "selecting the overgeneralized avoidance option",
+          "selecting the cuisine-specific option"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the 'avoids all social gatherings' option, which overgeneralizes the tentative birthday dinner context into an absolute rule.",
+        "reflection_precision": "Fails if the model selects a distractor that overgeneralizes or narrows the preference incorrectly.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I've always preferred small, quiet spots where you can actually have a conversation without shouting over the noise."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "There's something really nice about working with your hands and not staring at a screen for once."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I really can't stand crowded, noisy dining situations."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best captures what my dining and leisure experiences collectively say about me as a person?",
+      "candidate_options": [
+        "Gravitates toward calm, low-stimulation social environments and tactile, unplugged activities",
+        "Prefers eating exclusively at Vietnamese and Ethiopian restaurants",
+        "Avoids all social gatherings and group dining situations without exception",
+        "Enjoys trying new restaurants on busy weekend evenings for the lively atmosphere"
+      ],
+      "expected_answer": "Gravitates toward calm, low-stimulation social environments and tactile, unplugged activities",
+      "distractor_rationale": "same-value-different-target: 'Prefers eating exclusively at Vietnamese and Ethiopian restaurants' borrows specific restaurant types mentioned in the conversation but narrows the conclusion to cuisine type rather than environment type, misattributing the preference dimension. assistant echo: 'Avoids all social gatherings and group dining situations without exception' echoes the assistant's observation about the user's pattern but overgeneralizes it beyond what the user stated, since the user agreed to a big Friday group dinner. The fourth option directly contradicts the user's stated preferences.",
+      "gold_memory_state": "The supported inference is a preference for calm, low-stimulation social settings and tactile unplugged activities. It is not a cuisine-specific preference, not a blanket avoidance of all group events, and not a preference for busy lively atmospheres.",
+      "judge_rubric": {
+        "must_include": [
+          "calm or low-stimulation",
+          "tactile or unplugged activities"
+        ],
+        "acceptable_paraphrases": [
+          "quiet social environments and hands-on screen-free hobbies"
+        ],
+        "must_not_include": [
+          "exclusively Vietnamese and Ethiopian",
+          "avoids all social gatherings",
+          "busy weekend evenings"
+        ],
+        "harmful_extra": [
+          "selecting the overgeneralized avoidance option",
+          "selecting the cuisine-specific option"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the 'avoids all social gatherings' option, which overgeneralizes the tentative birthday dinner context into an absolute rule.",
+        "reflection_precision": "Fails if the model selects a distractor that overgeneralizes or narrows the preference incorrectly.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I've always preferred small, quiet spots where you can actually have a conversation without shouting over the noise."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "There's something really nice about working with your hands and not staring at a screen for once."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I really can't stand crowded, noisy dining situations."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "Daniel and I want to plan a low-key date night this month that combines a meal out with some kind of hands-on activity afterward. Given what you know about my preferences, Daniel's hobbies, and the restaurants we've discussed, draft a short plan with a specific restaurant suggestion, a day of the week, and an activity — and explain why each choice fits.",
+      "expected_answer": "Plan: Go to the new Ethiopian restaurant downtown on a Tuesday or Wednesday evening, then attend a drop-in pottery session at the rec center afterward. The Ethiopian restaurant satisfies your desire to try it while the midweek timing avoids the Friday/weekend crowds you dislike. Pottery fits because Daniel already attends a Saturday class there regularly and you enjoyed it when you went — it's a hands-on, screen-free activity you both appreciate. This combination gives you a calm, uncrowded dinner followed by a tactile, unplugged creative activity together.",
+      "gold_memory_state": "The user prefers calm, low-stimulation dining (weeknight, uncrowded). The user wants to try the Ethiopian restaurant downtown on a Tuesday or Wednesday. Daniel takes a Saturday pottery class at the rec center. The user enjoyed pottery and appreciated the hands-on, screen-free nature. The tentative Friday birthday dinner is not the user's own preference and should not be used as the date-night plan.",
+      "judge_rubric": {
+        "must_include": [
+          "Ethiopian restaurant downtown",
+          "Tuesday or Wednesday",
+          "pottery or hands-on activity",
+          "reasoning connecting choices to the user's calm/quiet preference and tactile/unplugged enjoyment"
+        ],
+        "acceptable_paraphrases": [
+          "midweek evening",
+          "rec center pottery",
+          "ceramics class"
+        ],
+        "must_not_include": [
+          "Friday night",
+          "big group dinner",
+          "crowded weekend outing"
+        ],
+        "harmful_extra": [
+          "suggesting a Friday night at the Ethiopian restaurant",
+          "suggesting a large group format",
+          "suggesting a screen-based activity"
+        ],
+        "harmless_extra": [
+          "mentioning the Vietnamese restaurant on Birch Avenue as a backup option",
+          "mentioning Daniel's stage manager role at Wexford"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model suggests a Friday night at the Ethiopian restaurant, confusing the tentative birthday group dinner plan with the user's own dining preference.",
+        "reflection_precision": "Fails if the plan contradicts the user's stated preference for calm, uncrowded settings or screen-free activities.",
+        "reflection_recall": "Fails if the model omits either the dining or the activity component, or fails to connect choices to the user's stated preferences.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user wants to try the new Ethiopian restaurant downtown and prefers going on a Tuesday or Wednesday to avoid crowds.",
+        "Fact 2: The user consistently prefers calm, low-stimulation dining — small quiet restaurants, weeknight timing, and dislikes crowded noisy settings.",
+        "Fact 3: Daniel attends a Saturday pottery class at the rec center and has been going consistently since around May.",
+        "Fact 4: The user enjoyed pottery when they tried it, appreciating the hands-on, screen-free nature of the activity.",
+        "Inference: Combining the Ethiopian restaurant on a midweek evening with a pottery session at the rec center satisfies both the calm-dining preference and the tactile-unplugged activity preference.",
+        "Inference: The derived plan is a Tuesday or Wednesday Ethiopian dinner followed by pottery at the rec center — a date night that aligns with both partners' interests and the user's environmental preferences."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Daniel mentioned wanting to try that new Ethiopian restaurant downtown. I said sure, but I'd rather go on a Tuesday or Wednesday when it won't be packed. I really can't stand crowded, noisy dining situations."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Daniel signed up for a Saturday pottery class at the rec center, probably back in May. He's been going pretty consistently every weekend."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I went with him once and honestly I enjoyed it way more than I expected. There's something really nice about working with your hands and not staring at a screen for once."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I've always preferred small, quiet spots where you can actually have a conversation without shouting over the noise."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "Daniel and I want to plan a low-key date night this month that combines a meal out with some kind of hands-on activity afterward. Given what you know about my preferences, Daniel's hobbies, and the restaurants we've discussed, draft a short plan with a specific restaurant suggestion, a day of the week, and an activity — and explain why each choice fits.",
+      "expected_answer": "Plan: Go to the new Ethiopian restaurant downtown on a Tuesday or Wednesday evening, then attend a drop-in pottery session at the rec center afterward. The Ethiopian restaurant satisfies your desire to try it while the midweek timing avoids the Friday/weekend crowds you dislike. Pottery fits because Daniel already attends a Saturday class there regularly and you enjoyed it when you went — it's a hands-on, screen-free activity you both appreciate. This combination gives you a calm, uncrowded dinner followed by a tactile, unplugged creative activity together.",
+      "gold_memory_state": "The user prefers calm, low-stimulation dining (weeknight, uncrowded). The user wants to try the Ethiopian restaurant downtown on a Tuesday or Wednesday. Daniel takes a Saturday pottery class at the rec center. The user enjoyed pottery and appreciated the hands-on, screen-free nature. The tentative Friday birthday dinner is not the user's own preference and should not be used as the date-night plan.",
+      "judge_rubric": {
+        "must_include": [
+          "Ethiopian restaurant downtown",
+          "Tuesday or Wednesday",
+          "pottery or hands-on activity",
+          "reasoning connecting choices to the user's calm/quiet preference and tactile/unplugged enjoyment"
+        ],
+        "acceptable_paraphrases": [
+          "midweek evening",
+          "rec center pottery",
+          "ceramics class"
+        ],
+        "must_not_include": [
+          "Friday night",
+          "big group dinner",
+          "crowded weekend outing"
+        ],
+        "harmful_extra": [
+          "suggesting a Friday night at the Ethiopian restaurant",
+          "suggesting a large group format",
+          "suggesting a screen-based activity"
+        ],
+        "harmless_extra": [
+          "mentioning the Vietnamese restaurant on Birch Avenue as a backup option",
+          "mentioning Daniel's stage manager role at Wexford"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model suggests a Friday night at the Ethiopian restaurant, confusing the tentative birthday group dinner plan with the user's own dining preference.",
+        "reflection_precision": "Fails if the plan contradicts the user's stated preference for calm, uncrowded settings or screen-free activities.",
+        "reflection_recall": "Fails if the model omits either the dining or the activity component, or fails to connect choices to the user's stated preferences.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user wants to try the new Ethiopian restaurant downtown and prefers going on a Tuesday or Wednesday to avoid crowds.",
+        "Fact 2: The user consistently prefers calm, low-stimulation dining — small quiet restaurants, weeknight timing, and dislikes crowded noisy settings.",
+        "Fact 3: Daniel attends a Saturday pottery class at the rec center and has been going consistently since around May.",
+        "Fact 4: The user enjoyed pottery when they tried it, appreciating the hands-on, screen-free nature of the activity.",
+        "Inference: Combining the Ethiopian restaurant on a midweek evening with a pottery session at the rec center satisfies both the calm-dining preference and the tactile-unplugged activity preference.",
+        "Inference: The derived plan is a Tuesday or Wednesday Ethiopian dinner followed by pottery at the rec center — a date night that aligns with both partners' interests and the user's environmental preferences."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Daniel mentioned wanting to try that new Ethiopian restaurant downtown. I said sure, but I'd rather go on a Tuesday or Wednesday when it won't be packed. I really can't stand crowded, noisy dining situations."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Daniel signed up for a Saturday pottery class at the rec center, probably back in May. He's been going pretty consistently every weekend."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I went with him once and honestly I enjoyed it way more than I expected. There's something really nice about working with your hands and not staring at a screen for once."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I've always preferred small, quiet spots where you can actually have a conversation without shouting over the noise."
+        }
+      ]
+    }
+  ]
+}

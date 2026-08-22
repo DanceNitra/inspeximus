@@ -1,0 +1,928 @@
+{
+  "target_fact": "Baby's expected due date and nursery color preference trajectory",
+  "operation_type": "TrajectoryOps",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "nursery_color",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "We started talking about the nursery and my wife really wants lavender walls"
+      },
+      "target": {
+        "target_id": "nursery_color_choice",
+        "target_name": "chosen nursery wall color"
+      },
+      "old_value": null,
+      "new_value": "lavender",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my wife really wants lavender walls"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "the due date is July 19th"
+      },
+      "target": {
+        "target_id": "baby_due_date",
+        "target_name": "baby's due date"
+      },
+      "old_value": null,
+      "new_value": "July 19th",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "the due date is July 19th"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "nursery_color",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "we actually switched to soft sage green for the nursery instead of lavender"
+      },
+      "target": {
+        "target_id": "nursery_color_choice",
+        "target_name": "chosen nursery wall color"
+      },
+      "old_value": "lavender",
+      "new_value": "soft sage green",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my wife really wants lavender walls"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "we actually switched to soft sage green for the nursery instead of lavender"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "nursery_color",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 3,
+        "quote": "The paint store guy convinced us that a warm cream would pair better with the sunflower theme we're going for"
+      },
+      "target": {
+        "target_id": "nursery_color_choice",
+        "target_name": "chosen nursery wall color"
+      },
+      "old_value": "soft sage green",
+      "new_value": "warm cream",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "The paint store guy convinced us that a warm cream would pair better with the sunflower theme we're going for"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "nursery_color",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 7,
+        "quote": "we went back to the sage green after all. My wife tested the cream swatch and hated how it looked in natural light"
+      },
+      "target": {
+        "target_id": "nursery_color_choice",
+        "target_name": "chosen nursery wall color"
+      },
+      "old_value": "warm cream",
+      "new_value": "soft sage green",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "we went back to the sage green after all. My wife tested the cream swatch and hated how it looked in natural light"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establishing core facts: nursery color, due date, baby gender, and name shortlist",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to fill you in on a bunch of baby-related stuff so you can keep track for me. We found out on March 3rd that we're having a girl. The ultrasound was really clear and my wife and I are both excited. We've been going back and forth on names, and right now the shortlist is Elara, Margot, and Wren. My wife loves Margot."
+        },
+        {
+          "role": "assistant",
+          "content": "Congratulations on the wonderful news — a girl! That's so exciting for you and your wife. I'll make sure to keep that noted along with the name shortlist: Elara, Margot, and Wren, with your wife leaning toward Margot. When the time comes for any name-related brainstorming or comparisons, I'll have those ready. Do you have a personal favorite among the three, or are you still weighing them all equally? And is there a deadline for when you two want to finalize the name choice?"
+        },
+        {
+          "role": "user",
+          "content": "I like Wren, but I'm not pushing hard on it. We're supposed to decide by end of this month. Anyway, another thing — We started talking about the nursery and my wife really wants lavender walls. I'm not a huge fan of lavender personally but she's pretty set on it, so we're going with that for now. We want to get the room painted before mid-June."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — so the nursery plan right now is lavender walls, and you're aiming to have them painted before mid-June. That gives you a decent window to get supplies, prep the room, and get it done without rushing too close to the arrival. Since you mentioned you're not personally a huge fan of lavender, maybe you could suggest accent pieces or a complementary trim color that fits your taste more? That way you both feel represented in the space. I'll keep track of the lavender plan and the mid-June painting deadline. Anything else nursery-related on your mind?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, the due date is July 19th, so mid-June gives us about a month buffer. We ordered a little sunflower onesie from Etsy for $22 a few weeks ago. I love sunflowers — bright yellow just makes me happy. So I'm thinking of working some sunflower accents into the nursery decor somehow, even if the base color ends up being something I wouldn't have chosen myself."
+        },
+        {
+          "role": "assistant",
+          "content": "July 19th — I'll keep that due date noted. And the sunflower theme sounds like a lovely personal touch. Bright yellow sunflower accents against lavender walls could actually create a really cheerful contrast. You could look into sunflower wall decals, a small framed botanical print, or even a sunflower-patterned crib sheet to tie it together. Since the onesie already set the tone, leaning into that motif for the whole room could make the space feel cohesive and personal. It sounds like the sunflower angle is where your aesthetic really comes through. Want me to help brainstorm specific decor items later?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, that would be great down the line. Oh, one more thing — my brother-in-law Kevin and his wife are also expecting, due in August. They don't know the gender yet because they want it to be a surprise. I thought that was pretty cool actually. Kevin's been texting me a lot about baby gear recommendations, which has been kind of fun."
+        },
+        {
+          "role": "assistant",
+          "content": "That's really nice that you and Kevin get to go through this at the same time — having someone close who's on a similar timeline must make the whole experience feel a bit more shared. And the fact that they're keeping the gender a surprise adds a fun element. If Kevin keeps asking about gear, you could start a shared list or spreadsheet so you're both tracking what's worth buying versus skipping. I'll remember that Kevin and his wife are due in August and keeping the gender a surprise. Let me know whenever you want to dive into nursery decor planning or gear comparisons."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Update nursery color from lavender to sage green; discuss insurance issue and name decision timeline",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So quick update on the nursery situation — we actually switched to soft sage green for the nursery instead of lavender. My wife saw a few inspiration photos online and changed her mind. I'm honestly relieved because sage green is much more my style. It's earthy and muted, which is what I gravitate toward naturally. We picked up a couple of paint swatches last weekend."
+        },
+        {
+          "role": "assistant",
+          "content": "Oh that's a great turn of events for you! Soft sage green sounds like it'll create a really calming, natural atmosphere in the nursery, and it pairs beautifully with the sunflower accents you were already planning. The yellow and green combination is classic and warm without being overwhelming. I've updated my notes — nursery color is now soft sage green instead of lavender. Since you already grabbed swatches, are you planning to do the painting yourselves, or are you hiring someone? And are you still targeting mid-June to get it done before the July 19th due date?"
+        },
+        {
+          "role": "user",
+          "content": "We'll probably do it ourselves to save money, especially after the insurance mess. In early April the insurance company messed up our prenatal coverage and hit us with a $1,400 bill that wasn't ours. I was genuinely angry for days. It felt so stressful right when we should've been enjoying things. It's mostly sorted now but I'm still kind of bitter about the whole experience."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds incredibly frustrating, especially during what should be such a happy time. A surprise $1,400 bill when you're already budgeting for a baby is the last thing anyone needs. I'm glad it's mostly resolved, but it makes total sense that the bitterness lingers — dealing with insurance bureaucracy is exhausting even under normal circumstances. Doing the painting yourselves is a smart call given the unexpected financial stress. Sage green is also a forgiving color for DIY work since the muted tone hides minor imperfections. If you want, I can help you estimate how much paint you'll need based on the room dimensions whenever you're ready."
+        },
+        {
+          "role": "user",
+          "content": "That would be helpful, yeah. I'll measure the room this weekend. On the name front, we narrowed it down to three — Elara, Margot, and Wren — and we're supposed to pick by end of this month. My wife is really attached to Margot. I think it's a beautiful name too, honestly. I just also love how simple and nature-connected Wren feels. But I think Margot might win out."
+        },
+        {
+          "role": "assistant",
+          "content": "Both are gorgeous names with very different vibes. Margot has that elegant, timeless quality — it feels sophisticated without being fussy. Wren is minimal and earthy, which honestly fits perfectly with your aesthetic preferences given the sage green nursery and the sunflower accents. If Margot wins, you could always use Wren as a middle name — Margot Wren has a really lovely flow to it. Since the deadline is end of this month, you still have a little breathing room. Want me to look into the meanings or origins of all three names to help with the final decision?"
+        },
+        {
+          "role": "user",
+          "content": "Margot Wren actually sounds really nice together, I hadn't thought of that combination. I'll bring it up with my wife tonight. By the way, we tossed our old boy name list completely — we're only working with girl names going forward. There's no need to reference any boy names if I ever ask you about name stuff. Just wanted to be clear on that.\n\nWill do. I think we're getting close on all fronts — name, nursery, and just generally feeling more prepared. The insurance thing shook me but we're bouncing back. I'm trying to focus on the positive stuff, like the fact that Kevin and I get to be new dads around the same time. His wife is due in August, about a month after us."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — the boy name list is gone and I'll only reference girl names going forward. Margot Wren really does have a beautiful rhythm to it: the two syllables of Margot paired with the single syllable of Wren gives it a nice cadence. If your wife responds well to the combination tonight, that could simplify the whole decision. You'd get her top pick as the first name and your nature-inspired favorite as the middle name. It's a great compromise that honors both of your preferences. Let me know how the conversation goes, and whenever you're ready with those room measurements, I'll help with the paint estimate.\n\nThat's a really healthy mindset — focusing on the excitement rather than dwelling on the insurance frustration. And having Kevin going through the same journey just a month behind you is genuinely special. You'll be able to share real-time advice once your daughter arrives, and by the time their baby comes in August, you'll already have a few weeks of experience under your belt. It sounds like things are coming together nicely despite the bumps. I've got all your key details tracked — due date July 19th, sage green nursery, sunflower accents, girl names only, and the Margot Wren combination to discuss. Just reach out whenever you need anything."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Tentative color change to warm cream, adversarial injection of lavender via third party, revert to sage green confirmed",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, so we went to the paint store this past weekend to buy the sage green. It was a whole production — took us almost two hours because they had about forty different shades of green alone. We ended up getting two sample cans to test on the wall. My wife also grabbed a cream sample on impulse, which I didn't think much of at the time."
+        },
+        {
+          "role": "assistant",
+          "content": "Two hours in a paint store sounds about right when there are that many options — especially with greens, where the undertones can range from blue-ish to yellow-ish and completely change the feel of a room. Testing samples on the actual wall is the smartest move since paint looks so different under your specific lighting compared to the store. The impulse cream sample might actually be worth testing too, just to see how it plays against your sunflower accents. Sometimes a neutral base lets the accent colors pop even more. Did you get a chance to put any swatches up yet, or is that a project for this week?"
+        },
+        {
+          "role": "user",
+          "content": "We put them up Monday evening. The sage looked great honestly, exactly what I pictured. But then something unexpected happened at the store on Saturday. The paint store guy convinced us that a warm cream would pair better with the sunflower theme we're going for. He showed us this display room with cream walls and yellow accents and it looked stunning. So now we're kind of reconsidering."
+        },
+        {
+          "role": "assistant",
+          "content": "I can see how a well-staged display room could be persuasive — seeing the combination in a real space is very different from imagining it. Warm cream with sunflower yellow accents does sound like it could create a soft, sunny atmosphere. That said, the sage green you originally chose also pairs beautifully with yellow in a more earthy, botanical way. It might help to live with both swatches on the wall for a few days and see how they look at different times of day — morning light versus evening lamplight can really shift how a color reads. Which direction is the nursery window facing? That could influence which tone works better in the space."
+        },
+        {
+          "role": "user",
+          "content": "The window faces east, so it gets strong morning light. That's a good point about checking at different times. Oh, funny thing — Kevin's wife texted my wife a photo of their nursery progress. They went with lavender walls, which is kind of ironic since that's what we almost did. My wife said she's glad we moved away from lavender because it looked a bit too purple for her taste in their lighting."
+        },
+        {
+          "role": "assistant",
+          "content": "That is ironic — Kevin's wife choosing lavender after you two considered and moved past it! It's interesting how the same color can look completely different depending on the room's lighting and orientation. With your east-facing window, you'll get warm golden light in the mornings, which tends to make greens look vibrant and creams look cozy. In the afternoons, the indirect light might make cream feel a bit flat, while sage green could hold its character better throughout the day. Since your wife already confirmed she's happy moving away from the lavender direction, the real contest now is between sage green and warm cream. Give it a few days with both swatches up and see what feels right."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, we're going to give it through the weekend. I have a slight worry that the cream might feel too plain once the novelty of that display room wears off. I tend to like things with a bit more character — earthy tones, muted greens, that kind of palette. Cream feels safe but maybe too generic for what I want the room to feel like.\n\nYou're right. And actually — we went back to the sage green after all. My wife tested the cream swatch and hated how it looked in natural light. She said it washed out and felt bland compared to the green. So sage green is the final answer. We're buying the full cans tomorrow and painting next weekend, which should put us right on track for mid-June."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really self-aware observation. Display rooms are designed to sell paint, so they're styled to look perfect in that controlled environment. Your actual nursery has different dimensions, lighting, and furniture, so the effect won't be identical. Given your consistent preference for earthy, muted tones with character, sage green seems more aligned with your natural instincts. Cream can absolutely work as a beautiful nursery color, but if it feels generic to you now, it might not grow on you over time. Sometimes trusting your gut aesthetic sense is the best approach, especially for a room you'll spend a lot of time in during late-night feedings and early mornings. No rush though — the weekend test is a great plan.\n\nSage green for the win! It sounds like the cream detour actually reinforced your original choice, which is a good sign — you both came back to it independently after seeing the alternative in your actual space. Buying the cans tomorrow and painting next weekend keeps you well within your mid-June target, giving you plenty of buffer before the July 19th due date. With the sage green walls and sunflower accents, the nursery is going to have such a warm, natural feel. Once the painting is done, I can help you plan the decor layout — where to place the sunflower elements, what complementary textures might work, and any finishing touches. Exciting times ahead!"
+        }
+      ]
+    }
+  ],
+  "state_checkpoints": [
+    {
+      "checkpoint_id": "c1",
+      "description": "After segment 1: nursery_color_choice = lavender (confirmed), baby_due_date = July 19th (confirmed). Kevin and wife expecting in August, gender unknown."
+    },
+    {
+      "checkpoint_id": "c2",
+      "description": "After segment 2: nursery_color_choice = soft sage green (confirmed, updated from lavender), baby_due_date = July 19th (confirmed, unchanged)."
+    },
+    {
+      "checkpoint_id": "c3",
+      "description": "After segment 3: nursery_color_choice = soft sage green (confirmed, reverted from tentative warm cream back to sage green), baby_due_date = July 19th (confirmed, unchanged). Kevin's wife chose lavender for their nursery (adversarial third-party mention, not user's choice)."
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you walk me through what I've told you about the nursery wall color over our conversations? I feel like we went back and forth a few times and I want to make sure you have the full picture.",
+      "expected_answer": "Initially your wife wanted lavender walls for the nursery. You then switched to soft sage green after she saw inspiration photos online. At the paint store, the salesperson suggested warm cream to pair with your sunflower theme, which you briefly considered. After testing swatches at home, your wife disliked the cream in natural light, so you went back to soft sage green as the final choice. You're buying the full cans and painting next weekend.",
+      "gold_memory_state": "nursery_color_choice = soft sage green (confirmed, final). baby_due_date = July 19th (confirmed, unchanged). The color went through lavender → soft sage green → warm cream (tentative) → soft sage green (confirmed).",
+      "judge_rubric": {
+        "must_include": [
+          "lavender",
+          "soft sage green",
+          "warm cream",
+          "back to sage green"
+        ],
+        "acceptable_paraphrases": [
+          "sage green",
+          "sage",
+          "cream"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying warm cream is the current choice",
+          "saying lavender is the current choice"
+        ],
+        "harmless_extra": [
+          "mentioning sunflower accents",
+          "mentioning the paint store salesperson",
+          "mentioning mid-June painting deadline"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats lavender or warm cream as the current nursery color.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model gets the sequence of color changes wrong, e.g., placing warm cream before sage green or omitting the revert.",
+        "final_state": "Fails if the model does not identify soft sage green as the final confirmed color.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my wife really wants lavender walls"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "we actually switched to soft sage green for the nursery instead of lavender"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "The paint store guy convinced us that a warm cream would pair better with the sunflower theme we're going for"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "we went back to the sage green after all. My wife tested the cream swatch and hated how it looked in natural light"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you walk me through what I've told you about the nursery wall color over our conversations? I feel like we went back and forth a few times and I want to make sure you have the full picture.",
+      "expected_answer": "Initially your wife wanted lavender walls for the nursery. You then switched to soft sage green after she saw inspiration photos online. At the paint store, the salesperson suggested warm cream to pair with your sunflower theme, which you briefly considered. After testing swatches at home, your wife disliked the cream in natural light, so you went back to soft sage green as the final choice. You're buying the full cans and painting next weekend.",
+      "gold_memory_state": "nursery_color_choice = soft sage green (confirmed, final). baby_due_date = July 19th (confirmed, unchanged). The color went through lavender → soft sage green → warm cream (tentative) → soft sage green (confirmed).",
+      "judge_rubric": {
+        "must_include": [
+          "lavender",
+          "soft sage green",
+          "warm cream",
+          "back to sage green"
+        ],
+        "acceptable_paraphrases": [
+          "sage green",
+          "sage",
+          "cream"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying warm cream is the current choice",
+          "saying lavender is the current choice"
+        ],
+        "harmless_extra": [
+          "mentioning sunflower accents",
+          "mentioning the paint store salesperson",
+          "mentioning mid-June painting deadline"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats lavender or warm cream as the current nursery color.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model gets the sequence of color changes wrong, e.g., placing warm cream before sage green or omitting the revert.",
+        "final_state": "Fails if the model does not identify soft sage green as the final confirmed color.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my wife really wants lavender walls"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "we actually switched to soft sage green for the nursery instead of lavender"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "The paint store guy convinced us that a warm cream would pair better with the sunflower theme we're going for"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "we went back to the sage green after all. My wife tested the cream swatch and hated how it looked in natural light"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I know both our family and Kevin's family have been making nursery decisions. If I needed to describe each household's nursery color separately, which color belongs to which household right now?",
+      "expected_answer": "Your nursery color is soft sage green. Kevin's household chose lavender for their nursery.",
+      "gold_memory_state": "User's nursery_color_choice = soft sage green (confirmed final after trajectory). Kevin's nursery = lavender (third-party mention, not user's own target). baby_due_date = July 19th (unchanged).",
+      "judge_rubric": {
+        "must_include": [
+          "soft sage green for user's nursery",
+          "lavender for Kevin's nursery"
+        ],
+        "acceptable_paraphrases": [
+          "sage green",
+          "sage"
+        ],
+        "must_not_include": [
+          "lavender as user's current color",
+          "sage green as Kevin's color"
+        ],
+        "harmful_extra": [
+          "attributing lavender to the user's current nursery",
+          "attributing warm cream to either household as final"
+        ],
+        "harmless_extra": [
+          "mentioning that lavender was the user's original choice before switching"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model assigns lavender to the user's nursery (confusing the user's stale value with Kevin's current choice) or assigns warm cream to the user.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not correctly distinguish the two households' nursery colors.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "we went back to the sage green after all. My wife tested the cream swatch and hated how it looked in natural light"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Kevin's wife texted my wife a photo of their nursery progress. They went with lavender walls, which is kind of ironic since that's what we almost did."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I know both our family and Kevin's family have been making nursery decisions. If I needed to describe each household's nursery color separately, which color belongs to which household right now?",
+      "expected_answer": "Your nursery color is soft sage green. Kevin's household chose lavender for their nursery.",
+      "gold_memory_state": "User's nursery_color_choice = soft sage green (confirmed final after trajectory). Kevin's nursery = lavender (third-party mention, not user's own target). baby_due_date = July 19th (unchanged).",
+      "judge_rubric": {
+        "must_include": [
+          "soft sage green for user's nursery",
+          "lavender for Kevin's nursery"
+        ],
+        "acceptable_paraphrases": [
+          "sage green",
+          "sage"
+        ],
+        "must_not_include": [
+          "lavender as user's current color",
+          "sage green as Kevin's color"
+        ],
+        "harmful_extra": [
+          "attributing lavender to the user's current nursery",
+          "attributing warm cream to either household as final"
+        ],
+        "harmless_extra": [
+          "mentioning that lavender was the user's original choice before switching"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model assigns lavender to the user's nursery (confusing the user's stale value with Kevin's current choice) or assigns warm cream to the user.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not correctly distinguish the two households' nursery colors.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "we went back to the sage green after all. My wife tested the cream swatch and hated how it looked in natural light"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Kevin's wife texted my wife a photo of their nursery progress. They went with lavender walls, which is kind of ironic since that's what we almost did."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "After all the back-and-forth about the nursery walls, what color should I tell the hardware store we need when we go to buy the full-size cans?",
+      "expected_answer": "Soft sage green.",
+      "gold_memory_state": "nursery_color_choice = soft sage green (confirmed final). The warm cream suggestion from the paint store was only briefly considered and rejected after the swatch test. Lavender was the original choice but was abandoned earlier. The final confirmed value is soft sage green.",
+      "judge_rubric": {
+        "must_include": [
+          "soft sage green"
+        ],
+        "acceptable_paraphrases": [
+          "sage green",
+          "sage"
+        ],
+        "must_not_include": [
+          "warm cream",
+          "lavender"
+        ],
+        "harmful_extra": [
+          "recommending warm cream as the color to buy",
+          "recommending lavender as the color to buy"
+        ],
+        "harmless_extra": [
+          "mentioning that the painting is planned for next weekend"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model answers warm cream (recency trap: the paint store suggestion was the most recent-sounding alternative but was tentative and rejected) or lavender (earlier stale value).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not identify soft sage green as the final confirmed nursery color.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "we went back to the sage green after all. My wife tested the cream swatch and hated how it looked in natural light"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "After all the back-and-forth about the nursery walls, what color should I tell the hardware store we need when we go to buy the full-size cans?",
+      "expected_answer": "Soft sage green.",
+      "gold_memory_state": "nursery_color_choice = soft sage green (confirmed final). The warm cream suggestion from the paint store was only briefly considered and rejected after the swatch test. Lavender was the original choice but was abandoned earlier. The final confirmed value is soft sage green.",
+      "judge_rubric": {
+        "must_include": [
+          "soft sage green"
+        ],
+        "acceptable_paraphrases": [
+          "sage green",
+          "sage"
+        ],
+        "must_not_include": [
+          "warm cream",
+          "lavender"
+        ],
+        "harmful_extra": [
+          "recommending warm cream as the color to buy",
+          "recommending lavender as the color to buy"
+        ],
+        "harmless_extra": [
+          "mentioning that the painting is planned for next weekend"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model answers warm cream (recency trap: the paint store suggestion was the most recent-sounding alternative but was tentative and rejected) or lavender (earlier stale value).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not identify soft sage green as the final confirmed nursery color.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "we went back to the sage green after all. My wife tested the cream swatch and hated how it looked in natural light"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to order some custom nursery wall decals that match our final wall color and the accent theme I mentioned. The decal shop also wants to know the latest date they can ship by so the decals arrive at least two weeks before the baby comes. Can you draft a short order note for the shop with the wall color, the accent motif, and the ship-by date?",
+      "expected_answer": "Order note: Wall color is soft sage green. Accent motif is sunflowers. Please ship by July 5th to ensure arrival at least two weeks before the July 19th due date.",
+      "gold_memory_state": "nursery_color_choice = soft sage green (confirmed final). baby_due_date = July 19th (confirmed). Sunflower accents planned for nursery decor. Painting planned for next weekend targeting mid-June completion.",
+      "judge_rubric": {
+        "must_include": [
+          "soft sage green",
+          "sunflower",
+          "July 5"
+        ],
+        "acceptable_paraphrases": [
+          "sage green",
+          "sunflowers",
+          "July 5th",
+          "5th of July"
+        ],
+        "must_not_include": [
+          "lavender",
+          "warm cream"
+        ],
+        "harmful_extra": [
+          "using lavender as the wall color",
+          "using warm cream as the wall color",
+          "a ship-by date after July 5"
+        ],
+        "harmless_extra": [
+          "mentioning the mid-June painting timeline",
+          "mentioning the east-facing window"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses lavender or warm cream as the wall color in the order note.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not use soft sage green, sunflower motif, and a ship-by date of July 5th (or earlier).",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The final confirmed nursery wall color is soft sage green.",
+        "Fact 2: The user wants sunflower accents in the nursery decor, based on the sunflower onesie and stated love of sunflowers.",
+        "Fact 3: The baby's due date is July 19th.",
+        "Inference: Two weeks before July 19th is July 5th, so the decals must ship by July 5th at the latest.",
+        "Derived value: The order note should specify soft sage green walls, sunflower motif, and a ship-by date of July 5th."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "we went back to the sage green after all. My wife tested the cream swatch and hated how it looked in natural light"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "the due date is July 19th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I love sunflowers — bright yellow just makes me happy. So I'm thinking of working some sunflower accents into the nursery decor somehow"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to order some custom nursery wall decals that match our final wall color and the accent theme I mentioned. The decal shop also wants to know the latest date they can ship by so the decals arrive at least two weeks before the baby comes. Can you draft a short order note for the shop with the wall color, the accent motif, and the ship-by date?",
+      "expected_answer": "Order note: Wall color is soft sage green. Accent motif is sunflowers. Please ship by July 5th to ensure arrival at least two weeks before the July 19th due date.",
+      "gold_memory_state": "nursery_color_choice = soft sage green (confirmed final). baby_due_date = July 19th (confirmed). Sunflower accents planned for nursery decor. Painting planned for next weekend targeting mid-June completion.",
+      "judge_rubric": {
+        "must_include": [
+          "soft sage green",
+          "sunflower",
+          "July 5"
+        ],
+        "acceptable_paraphrases": [
+          "sage green",
+          "sunflowers",
+          "July 5th",
+          "5th of July"
+        ],
+        "must_not_include": [
+          "lavender",
+          "warm cream"
+        ],
+        "harmful_extra": [
+          "using lavender as the wall color",
+          "using warm cream as the wall color",
+          "a ship-by date after July 5"
+        ],
+        "harmless_extra": [
+          "mentioning the mid-June painting timeline",
+          "mentioning the east-facing window"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses lavender or warm cream as the wall color in the order note.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not use soft sage green, sunflower motif, and a ship-by date of July 5th (or earlier).",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The final confirmed nursery wall color is soft sage green.",
+        "Fact 2: The user wants sunflower accents in the nursery decor, based on the sunflower onesie and stated love of sunflowers.",
+        "Fact 3: The baby's due date is July 19th.",
+        "Inference: Two weeks before July 19th is July 5th, so the decals must ship by July 5th at the latest.",
+        "Derived value: The order note should specify soft sage green walls, sunflower motif, and a ship-by date of July 5th."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "we went back to the sage green after all. My wife tested the cream swatch and hated how it looked in natural light"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "the due date is July 19th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I love sunflowers — bright yellow just makes me happy. So I'm thinking of working some sunflower accents into the nursery decor somehow"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed everything we've discussed about the nursery wall color, what would they see as the full sequence of changes — which colors were seriously adopted, which were only briefly floated, and what's the final plan?",
+      "expected_answer": "The sequence was: (1) lavender was the original choice, adopted based on the wife's preference; (2) soft sage green replaced lavender after the wife found inspiration photos online — this was a confirmed switch; (3) warm cream was briefly considered after a paint store salesperson's recommendation, but it was only tentative and never fully adopted; (4) soft sage green was reconfirmed as the final choice after the wife tested the cream swatch and disliked it in natural light. The final plan is soft sage green.",
+      "gold_memory_state": "nursery_color_choice trajectory: lavender (confirmed, step 1) → soft sage green (confirmed, step 2) → warm cream (tentative, step 3, rejected) → soft sage green (confirmed, step 4, final). baby_due_date = July 19th (unchanged throughout).",
+      "judge_rubric": {
+        "must_include": [
+          "lavender as first choice",
+          "soft sage green as second choice",
+          "warm cream as briefly considered or tentative",
+          "soft sage green as final confirmed choice"
+        ],
+        "acceptable_paraphrases": [
+          "sage green",
+          "sage",
+          "cream"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying warm cream was ever fully adopted",
+          "saying lavender is the final color",
+          "omitting the warm cream detour entirely"
+        ],
+        "harmless_extra": [
+          "mentioning the wife's role in each decision",
+          "mentioning the paint store salesperson",
+          "mentioning the swatch test"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats warm cream or lavender as the final color.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model puts the steps in the wrong order, e.g., warm cream before the first sage green adoption, or omits a step.",
+        "final_state": "Fails if the model does not identify soft sage green as the final confirmed state.",
+        "intermediate_state": "Fails if the model does not correctly identify warm cream as tentative/not adopted and lavender as the superseded original choice.",
+        "trajectory_provenance": "Fails if the model attributes the color changes to the wrong causes, e.g., saying the wife chose warm cream or the user chose lavender."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: The wife wanted lavender walls — this was the first confirmed nursery color.",
+        "Step 2: The wife saw inspiration photos and they switched to soft sage green, a confirmed change replacing lavender.",
+        "Step 3: A paint store salesperson suggested warm cream to pair with the sunflower theme — this was tentative, never fully committed.",
+        "Step 4: The wife tested the cream swatch, disliked it in natural light, and they reverted to soft sage green — this is the final confirmed color.",
+        "Inference: The trajectory is lavender → soft sage green → warm cream (tentative) → soft sage green (final confirmed)."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my wife really wants lavender walls"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "we actually switched to soft sage green for the nursery instead of lavender"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "The paint store guy convinced us that a warm cream would pair better with the sunflower theme we're going for"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "we went back to the sage green after all. My wife tested the cream swatch and hated how it looked in natural light"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed everything we've discussed about the nursery wall color, what would they see as the full sequence of changes — which colors were seriously adopted, which were only briefly floated, and what's the final plan?",
+      "expected_answer": "The sequence was: (1) lavender was the original choice, adopted based on the wife's preference; (2) soft sage green replaced lavender after the wife found inspiration photos online — this was a confirmed switch; (3) warm cream was briefly considered after a paint store salesperson's recommendation, but it was only tentative and never fully adopted; (4) soft sage green was reconfirmed as the final choice after the wife tested the cream swatch and disliked it in natural light. The final plan is soft sage green.",
+      "gold_memory_state": "nursery_color_choice trajectory: lavender (confirmed, step 1) → soft sage green (confirmed, step 2) → warm cream (tentative, step 3, rejected) → soft sage green (confirmed, step 4, final). baby_due_date = July 19th (unchanged throughout).",
+      "judge_rubric": {
+        "must_include": [
+          "lavender as first choice",
+          "soft sage green as second choice",
+          "warm cream as briefly considered or tentative",
+          "soft sage green as final confirmed choice"
+        ],
+        "acceptable_paraphrases": [
+          "sage green",
+          "sage",
+          "cream"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying warm cream was ever fully adopted",
+          "saying lavender is the final color",
+          "omitting the warm cream detour entirely"
+        ],
+        "harmless_extra": [
+          "mentioning the wife's role in each decision",
+          "mentioning the paint store salesperson",
+          "mentioning the swatch test"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats warm cream or lavender as the final color.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model puts the steps in the wrong order, e.g., warm cream before the first sage green adoption, or omits a step.",
+        "final_state": "Fails if the model does not identify soft sage green as the final confirmed state.",
+        "intermediate_state": "Fails if the model does not correctly identify warm cream as tentative/not adopted and lavender as the superseded original choice.",
+        "trajectory_provenance": "Fails if the model attributes the color changes to the wrong causes, e.g., saying the wife chose warm cream or the user chose lavender."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: The wife wanted lavender walls — this was the first confirmed nursery color.",
+        "Step 2: The wife saw inspiration photos and they switched to soft sage green, a confirmed change replacing lavender.",
+        "Step 3: A paint store salesperson suggested warm cream to pair with the sunflower theme — this was tentative, never fully committed.",
+        "Step 4: The wife tested the cream swatch, disliked it in natural light, and they reverted to soft sage green — this is the final confirmed color.",
+        "Inference: The trajectory is lavender → soft sage green → warm cream (tentative) → soft sage green (final confirmed)."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my wife really wants lavender walls"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "we actually switched to soft sage green for the nursery instead of lavender"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "The paint store guy convinced us that a warm cream would pair better with the sunflower theme we're going for"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "we went back to the sage green after all. My wife tested the cream swatch and hated how it looked in natural light"
+        }
+      ]
+    }
+  ]
+}

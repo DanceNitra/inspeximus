@@ -1,0 +1,814 @@
+{
+  "target_fact": "Current job title at Bridgemark Solutions",
+  "operation_type": "Update",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "title_chain",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "My official title when I started at Bridgemark Solutions on January 15th was Junior Data Analyst"
+      },
+      "target": {
+        "target_id": "job_title",
+        "target_name": "Current job title at Bridgemark Solutions"
+      },
+      "old_value": null,
+      "new_value": "Junior Data Analyst",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My official title when I started at Bridgemark Solutions on January 15th was Junior Data Analyst"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "title_chain",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "they restructured the title hierarchy in February and changed it to just Data Analyst — no more junior or senior labels"
+      },
+      "target": {
+        "target_id": "job_title",
+        "target_name": "Current job title at Bridgemark Solutions"
+      },
+      "old_value": "Junior Data Analyst",
+      "new_value": "Data Analyst",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "they restructured the title hierarchy in February and changed it to just Data Analyst — no more junior or senior labels"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "title_chain",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "Diane told me yesterday that because I'm now the primary owner of the MedVantage quarterly deliverable, my title is being changed to Senior Data Analyst effective immediately"
+      },
+      "target": {
+        "target_id": "job_title",
+        "target_name": "Current job title at Bridgemark Solutions"
+      },
+      "old_value": "Data Analyst",
+      "new_value": "Senior Data Analyst",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Diane told me yesterday that because I'm now the primary owner of the MedVantage quarterly deliverable, my title is being changed to Senior Data Analyst effective immediately"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "title_chain",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "HR sent an email today saying they're planning to consolidate all analyst roles under a single title of Lead Data Analyst by next quarter"
+      },
+      "target": {
+        "target_id": "job_title",
+        "target_name": "Current job title at Bridgemark Solutions"
+      },
+      "old_value": "Senior Data Analyst",
+      "new_value": "Lead Data Analyst",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "HR sent an email today saying they're planning to consolidate all analyst roles under a single title of Lead Data Analyst by next quarter"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "My manager is Diane Kowalski — she heads the analytics team and has been at the company for about seven years"
+      },
+      "target": {
+        "target_id": "manager_name",
+        "target_name": "Direct manager at Bridgemark Solutions"
+      },
+      "old_value": null,
+      "new_value": "Diane Kowalski",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My manager is Diane Kowalski — she heads the analytics team and has been at the company for about seven years"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "my salary at Bridgemark is $74,500 annually"
+      },
+      "target": {
+        "target_id": "salary",
+        "target_name": "Annual salary at Bridgemark Solutions"
+      },
+      "old_value": null,
+      "new_value": "$74,500",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my salary at Bridgemark is $74,500 annually"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish initial title, manager, and begin context",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to get some work details organized so I can reference them later. My official title when I started at Bridgemark Solutions on January 15th was Junior Data Analyst. The office is downtown Portland on SW 5th Avenue, and it's a mid-size consulting firm — roughly 200 employees. I was really relieved to land this role after months of searching."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for sharing all of that! I've noted your starting details: you began as a Junior Data Analyst at Bridgemark Solutions on January 15th this year. The office is located on SW 5th Avenue in downtown Portland, and the firm has around 200 employees. It sounds like the job search was a long road, so congratulations on landing the position. If you have more details about your role or team structure, feel free to share and I'll keep everything organized for you."
+        },
+        {
+          "role": "user",
+          "content": "Sure, let me tell you about my team. My manager is Diane Kowalski — she heads the analytics team and has been at the company for about seven years. She's my direct report-to and I reference her name a lot, so please remember it. The analytics team is pretty collaborative, though I personally prefer working through problems on my own rather than in big group settings."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — Diane Kowalski is your direct manager, she leads the analytics team, and she's been with Bridgemark for approximately seven years. I'll make sure to keep her name handy since you reference her frequently. I also note that while the team is collaborative, you tend to prefer independent, solo problem-solving over large group work. That's useful context for understanding your work style. Let me know if there are other team members or project details you'd like me to track."
+        },
+        {
+          "role": "user",
+          "content": "One important correction about my title — they restructured the title hierarchy in February and changed it to just Data Analyst — no more junior or senior labels. So my current title is Data Analyst, not Junior Data Analyst anymore. Also, around late February I got moved from the general analytics pool to a dedicated client project for a healthcare company called MedVantage. That's been my primary assignment since then."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for the correction! I've updated your title from Junior Data Analyst to Data Analyst, reflecting the February restructuring that removed junior and senior distinctions. I've also noted that around late February you transitioned from the general analytics pool to a dedicated project with MedVantage, a healthcare company, which has been your primary assignment since. That's a significant shift — working on a dedicated client project usually means more focused and specialized work. Let me know if there are specific deliverables or milestones on the MedVantage project you'd like me to track."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, actually — around March 3rd, Diane told me I'd be handling the quarterly reporting deliverable for MedVantage going forward. That was a big deal for me. I felt genuinely proud because it was the first real sign that I was being trusted with something substantial at the company. It's the kind of responsibility I was hoping to get."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a great milestone — congratulations! As of around March 3rd, Diane assigned you ownership of the quarterly reporting deliverable for MedVantage. I can see why that felt significant; being entrusted with a recurring client-facing deliverable early in your tenure is a strong vote of confidence from your manager. It sounds like the kind of meaningful, independent work you thrive on. I'll keep this noted as a key responsibility. If you want to track deadlines or deliverable details for the quarterly reports, just let me know."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "introduce salary, update title to Senior Data Analyst, add team context",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I also want to make sure you have my compensation right — my salary at Bridgemark is $74,500 annually. The original offer was $72,000 but they adjusted it upward before I signed, so the correct figure is $74,500. I always mix those numbers up so I want the right one on record. That's my base; no bonuses or equity or anything like that."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — your annual salary at Bridgemark Solutions is $74,500. The original offer was $72,000 but it was adjusted upward before you signed, so the confirmed current figure is $74,500 base compensation with no bonuses or equity components. I'll make sure to reference $74,500 going forward so there's no confusion. It's helpful that you flagged the common mix-up. If your compensation changes at any point, just let me know and I'll update it."
+        },
+        {
+          "role": "user",
+          "content": "Speaking of changes — Diane told me yesterday that because I'm now the primary owner of the MedVantage quarterly deliverable, my title is being changed to Senior Data Analyst effective immediately. I know they had removed the senior distinction back in February, but apparently management decided to bring tiered titles back. So my title is now Senior Data Analyst as of yesterday."
+        },
+        {
+          "role": "assistant",
+          "content": "That's exciting news! I've updated your title from Data Analyst to Senior Data Analyst, effective as of yesterday. It's interesting that management reversed the February decision and reinstated tiered titles. It sounds like your ownership of the MedVantage quarterly deliverable was a direct factor in this promotion. This is a meaningful recognition of the trust Diane and the leadership team have in your work. I'll keep Senior Data Analyst as your current title. Let me know if there are any other changes to your role or responsibilities that came along with this."
+        },
+        {
+          "role": "user",
+          "content": "No other changes to responsibilities yet, but I did want to mention my colleague Raj Patel. He's on the same analytics team. Last week there was a team offsite at a lodge near Mount Hood, and Raj presented a dashboard prototype that got a lot of attention from upper management. I mostly stuck to the smaller breakout sessions — the big icebreaker activities aren't really my thing."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — Raj Patel is a colleague on your analytics team. At the recent team offsite near Mount Hood, he presented a dashboard prototype that impressed upper management, which is great for him. You preferred the smaller breakout sessions and weren't as keen on the large-group icebreaker activities, which aligns with what you've mentioned before about preferring independent and smaller-group work. It sounds like the offsite had some useful moments even if the big group stuff wasn't your style. Let me know if Raj's project intersects with your MedVantage work at all."
+        },
+        {
+          "role": "user",
+          "content": "Not directly, though Raj and I sometimes bounce ideas off each other informally. One other thing — I had a side freelance gig earlier this year doing visualization work for a friend's startup, but that wrapped up at the end of February. It's done now and no longer relevant, so I'm fully focused on Bridgemark. I don't want that freelance thing cluttering up my work profile.\n\nThanks. I've also been loosely thinking about eventually moving toward data engineering as a specialization, but that's just a vague thought for now — nothing concrete or planned. More of an aspiration than anything actionable at this point. I figured I'd mention it so you have it as background context."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood — the freelance visualization gig for your friend's startup ended at the end of February and is no longer active or relevant. You're now fully focused on your work at Bridgemark Solutions. I won't include that freelance work in any current profile or reference going forward. It makes sense to keep things clean, especially now that your role at Bridgemark has grown with the Senior Data Analyst title and the MedVantage deliverable ownership. If anything else comes up that you want added or removed, just let me know.\n\nNoted as background context — you have a vague aspiration to potentially move toward data engineering as a specialization in the future, but it's not a concrete plan or anything actionable right now. It's good to have that on the radar even at the early-thought stage. As your role at Bridgemark evolves, especially with the hands-on data work you're doing for MedVantage, you might find natural opportunities to explore that direction. I'll keep it in mind as a long-term interest. Let me know whenever you want to revisit it."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "recency trap with tentative title, adversarial injection of old value",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Quick question — can you confirm what you have on file for my current title and salary? I need to fill out an internal form and I want to make sure I'm using the right information. Also, Diane mentioned she's putting together a mid-year review for everyone on the team, so I want my records straight."
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! Based on what you've told me, your current title is Senior Data Analyst at Bridgemark Solutions, and your annual salary is $74,500. Your direct manager is Diane Kowalski, who heads the analytics team. For the internal form, those should be the figures to use. Interestingly, I noticed the old HR onboarding template I pulled up still lists your role as Junior Data Analyst with a salary of $72,000 — that's clearly outdated from before the February restructuring and the pre-signing salary adjustment. Let me know if you need anything else for the form."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, that old template is way out of date — ignore anything that says Junior Data Analyst or $72,000. Those are both wrong. My title went from Junior Data Analyst to Data Analyst in February, and then to Senior Data Analyst more recently. And the salary was adjusted before I even signed. So Senior Data Analyst and $74,500 are correct."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely — I'll disregard the outdated template entirely. Your confirmed current title is Senior Data Analyst, reflecting the progression from Junior Data Analyst (initial) to Data Analyst (February restructuring) to Senior Data Analyst (recent promotion tied to MedVantage ownership). Your confirmed salary is $74,500 annually. I have Diane Kowalski as your direct manager. Everything is consistent with what you've shared. Let me know when you're ready to fill out the form and I can help you draft the entries."
+        },
+        {
+          "role": "user",
+          "content": "HR sent an email today saying they're planning to consolidate all analyst roles under a single title of Lead Data Analyst by next quarter. So if that goes through, my title would change again. But for now it's still Senior Data Analyst — the Lead Data Analyst thing hasn't been finalized yet, it's just what they're planning."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for the heads-up. So HR is planning a potential title consolidation to Lead Data Analyst for all analyst roles, targeted for next quarter, but it hasn't been finalized or implemented yet. Your current active title remains Senior Data Analyst. I'll keep the Lead Data Analyst plan in mind as a pending future change, but I won't update your title until it's actually confirmed and in effect. It's been quite a journey with titles this year — from Junior Data Analyst to Data Analyst to Senior Data Analyst, and possibly Lead Data Analyst down the road."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. Also, I ran into someone from another department today who mentioned their team still has the old Junior Data Analyst designation on some shared documents. Apparently not every department updated their records after the February change. It's a bit messy. Anyway, that doesn't affect me — I just found it funny.\n\nGood idea, I might do that. For now though, I think we're all set. Just to recap what matters: Senior Data Analyst, $74,500, Diane Kowalski is my manager, and MedVantage quarterly reporting is my main deliverable. That covers the essentials for the internal form. Thanks for keeping track of all the changes."
+        },
+        {
+          "role": "assistant",
+          "content": "Ha, that doesn't surprise me — large organizations often have inconsistent records across departments, especially after structural changes like the February title overhaul. The important thing is that your own records are accurate: Senior Data Analyst, $74,500 salary, reporting to Diane Kowalski, primary assignment on the MedVantage quarterly deliverable. The stale Junior Data Analyst references floating around in other departments' documents are just administrative lag. If you ever need to flag the discrepancy to HR, I can help you draft a note.\n\nYou're welcome! Here's your confirmed summary for the internal form: Title is Senior Data Analyst, annual salary is $74,500, direct manager is Diane Kowalski (head of the analytics team), and your primary deliverable is the MedVantage quarterly report. I've tracked all the title changes through the year and will keep the Lead Data Analyst plan flagged as a potential future change pending HR finalization. If anything else shifts or you need help with the mid-year review prep, just reach out. Good luck with the form!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations, I shared several details about my role at Bridgemark Solutions that evolved over time. Can you summarize what I told you about my job title and how it progressed?",
+      "expected_answer": "You initially shared that your title when you started at Bridgemark Solutions on January 15th was Junior Data Analyst. In February, the company restructured the title hierarchy and removed junior/senior labels, so your title became Data Analyst. Later, after you became the primary owner of the MedVantage quarterly deliverable, Diane informed you that your title was being changed to Senior Data Analyst effective immediately. You also mentioned that HR sent an email about a plan to consolidate analyst roles under Lead Data Analyst by next quarter, but that has not been finalized.",
+      "gold_memory_state": "Current confirmed title: Senior Data Analyst. Title history: Junior Data Analyst → Data Analyst → Senior Data Analyst. Tentative future title (Lead Data Analyst) is not yet in effect. Manager: Diane Kowalski. Salary: $74,500. Primary deliverable: MedVantage quarterly report.",
+      "judge_rubric": {
+        "must_include": [
+          "Junior Data Analyst",
+          "Data Analyst",
+          "Senior Data Analyst"
+        ],
+        "acceptable_paraphrases": [
+          "started as Junior Data Analyst",
+          "changed to Data Analyst after restructuring",
+          "promoted to Senior Data Analyst"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating Lead Data Analyst is the current title"
+        ],
+        "harmless_extra": [
+          "mentioning the Lead Data Analyst plan as pending",
+          "mentioning MedVantage",
+          "mentioning Diane Kowalski"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model presents Junior Data Analyst or Data Analyst as the current title.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My official title when I started at Bridgemark Solutions on January 15th was Junior Data Analyst"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "they restructured the title hierarchy in February and changed it to just Data Analyst — no more junior or senior labels"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Diane told me yesterday that because I'm now the primary owner of the MedVantage quarterly deliverable, my title is being changed to Senior Data Analyst effective immediately"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "HR sent an email today saying they're planning to consolidate all analyst roles under a single title of Lead Data Analyst by next quarter"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations, I shared several details about my role at Bridgemark Solutions that evolved over time. Can you summarize what I told you about my job title and how it progressed?",
+      "expected_answer": "You initially shared that your title when you started at Bridgemark Solutions on January 15th was Junior Data Analyst. In February, the company restructured the title hierarchy and removed junior/senior labels, so your title became Data Analyst. Later, after you became the primary owner of the MedVantage quarterly deliverable, Diane informed you that your title was being changed to Senior Data Analyst effective immediately. You also mentioned that HR sent an email about a plan to consolidate analyst roles under Lead Data Analyst by next quarter, but that has not been finalized.",
+      "gold_memory_state": "Current confirmed title: Senior Data Analyst. Title history: Junior Data Analyst → Data Analyst → Senior Data Analyst. Tentative future title (Lead Data Analyst) is not yet in effect. Manager: Diane Kowalski. Salary: $74,500. Primary deliverable: MedVantage quarterly report.",
+      "judge_rubric": {
+        "must_include": [
+          "Junior Data Analyst",
+          "Data Analyst",
+          "Senior Data Analyst"
+        ],
+        "acceptable_paraphrases": [
+          "started as Junior Data Analyst",
+          "changed to Data Analyst after restructuring",
+          "promoted to Senior Data Analyst"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating Lead Data Analyst is the current title"
+        ],
+        "harmless_extra": [
+          "mentioning the Lead Data Analyst plan as pending",
+          "mentioning MedVantage",
+          "mentioning Diane Kowalski"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model presents Junior Data Analyst or Data Analyst as the current title.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My official title when I started at Bridgemark Solutions on January 15th was Junior Data Analyst"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "they restructured the title hierarchy in February and changed it to just Data Analyst — no more junior or senior labels"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Diane told me yesterday that because I'm now the primary owner of the MedVantage quarterly deliverable, my title is being changed to Senior Data Analyst effective immediately"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "HR sent an email today saying they're planning to consolidate all analyst roles under a single title of Lead Data Analyst by next quarter"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've shared several pieces of professional information — my role designation, my compensation, and my manager. When the company brought back tiered designations and I received a promotion, which of these professional details was directly affected, and did the other details change along with it?",
+      "expected_answer": "The promotion directly affected your job title, changing it to Senior Data Analyst. Your compensation ($74,500) and your manager (Diane Kowalski) were not changed by this event.",
+      "gold_memory_state": "Job title: Senior Data Analyst (updated from Data Analyst due to promotion). Salary: $74,500 (unchanged). Manager: Diane Kowalski (unchanged).",
+      "judge_rubric": {
+        "must_include": [
+          "job title",
+          "Senior Data Analyst"
+        ],
+        "acceptable_paraphrases": [
+          "role designation changed",
+          "title was promoted"
+        ],
+        "must_not_include": [
+          "salary changed",
+          "manager changed"
+        ],
+        "harmful_extra": [
+          "stating compensation was also updated",
+          "stating manager changed",
+          "stating Lead Data Analyst is the current title"
+        ],
+        "harmless_extra": [
+          "mentioning MedVantage deliverable as context for the promotion",
+          "mentioning Diane as the one who communicated the change"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model says the title is still Data Analyst or Junior Data Analyst.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Diane told me yesterday that because I'm now the primary owner of the MedVantage quarterly deliverable, my title is being changed to Senior Data Analyst effective immediately"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my salary at Bridgemark is $74,500 annually"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My manager is Diane Kowalski — she heads the analytics team and has been at the company for about seven years"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've shared several pieces of professional information — my role designation, my compensation, and my manager. When the company brought back tiered designations and I received a promotion, which of these professional details was directly affected, and did the other details change along with it?",
+      "expected_answer": "The promotion directly affected your job title, changing it to Senior Data Analyst. Your compensation ($74,500) and your manager (Diane Kowalski) were not changed by this event.",
+      "gold_memory_state": "Job title: Senior Data Analyst (updated from Data Analyst due to promotion). Salary: $74,500 (unchanged). Manager: Diane Kowalski (unchanged).",
+      "judge_rubric": {
+        "must_include": [
+          "job title",
+          "Senior Data Analyst"
+        ],
+        "acceptable_paraphrases": [
+          "role designation changed",
+          "title was promoted"
+        ],
+        "must_not_include": [
+          "salary changed",
+          "manager changed"
+        ],
+        "harmful_extra": [
+          "stating compensation was also updated",
+          "stating manager changed",
+          "stating Lead Data Analyst is the current title"
+        ],
+        "harmless_extra": [
+          "mentioning MedVantage deliverable as context for the promotion",
+          "mentioning Diane as the one who communicated the change"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model says the title is still Data Analyst or Junior Data Analyst.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Diane told me yesterday that because I'm now the primary owner of the MedVantage quarterly deliverable, my title is being changed to Senior Data Analyst effective immediately"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my salary at Bridgemark is $74,500 annually"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My manager is Diane Kowalski — she heads the analytics team and has been at the company for about seven years"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to select my role designation from a dropdown for the internal form. Which of the following should I pick?",
+      "candidate_options": [
+        "Senior Data Analyst",
+        "Data Analyst",
+        "Junior Data Analyst",
+        "Lead Data Analyst"
+      ],
+      "expected_answer": "Senior Data Analyst",
+      "gold_memory_state": "Current confirmed title: Senior Data Analyst. Prior titles (Junior Data Analyst, Data Analyst) are superseded. Lead Data Analyst is a planned but unfinalized future consolidation.",
+      "judge_rubric": {
+        "must_include": [
+          "Senior Data Analyst"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "Data Analyst as the answer without Senior prefix",
+          "Junior Data Analyst as the answer",
+          "Lead Data Analyst as the answer"
+        ],
+        "harmful_extra": [
+          "selecting Lead Data Analyst because it was mentioned most recently",
+          "selecting Data Analyst because the February restructuring removed tiers"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'Data Analyst' is the prior superseded value from the February restructuring, and 'Junior Data Analyst' is the original starting title — both are stale values from the same target's history. 'Lead Data Analyst' is a tentative/unfinalized future plan that serves as the recency trap distractor. assistant echo: The assistant confirmed 'Data Analyst' in segment 1 turn 6 and later referenced the old HR template showing 'Junior Data Analyst', both of which could mislead the model.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects Data Analyst, Junior Data Analyst, or Lead Data Analyst. Data Analyst and Junior Data Analyst are superseded. Lead Data Analyst is tentative/unfinalized and represents a recency trap.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Diane told me yesterday that because I'm now the primary owner of the MedVantage quarterly deliverable, my title is being changed to Senior Data Analyst effective immediately"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "HR sent an email today saying they're planning to consolidate all analyst roles under a single title of Lead Data Analyst by next quarter"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to select my role designation from a dropdown for the internal form. Which of the following should I pick?",
+      "candidate_options": [
+        "Senior Data Analyst",
+        "Data Analyst",
+        "Junior Data Analyst",
+        "Lead Data Analyst"
+      ],
+      "expected_answer": "Senior Data Analyst",
+      "gold_memory_state": "Current confirmed title: Senior Data Analyst. Prior titles (Junior Data Analyst, Data Analyst) are superseded. Lead Data Analyst is a planned but unfinalized future consolidation.",
+      "judge_rubric": {
+        "must_include": [
+          "Senior Data Analyst"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "Data Analyst as the answer without Senior prefix",
+          "Junior Data Analyst as the answer",
+          "Lead Data Analyst as the answer"
+        ],
+        "harmful_extra": [
+          "selecting Lead Data Analyst because it was mentioned most recently",
+          "selecting Data Analyst because the February restructuring removed tiers"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'Data Analyst' is the prior superseded value from the February restructuring, and 'Junior Data Analyst' is the original starting title — both are stale values from the same target's history. 'Lead Data Analyst' is a tentative/unfinalized future plan that serves as the recency trap distractor. assistant echo: The assistant confirmed 'Data Analyst' in segment 1 turn 6 and later referenced the old HR template showing 'Junior Data Analyst', both of which could mislead the model.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects Data Analyst, Junior Data Analyst, or Lead Data Analyst. Data Analyst and Junior Data Analyst are superseded. Lead Data Analyst is tentative/unfinalized and represents a recency trap.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Diane told me yesterday that because I'm now the primary owner of the MedVantage quarterly deliverable, my title is being changed to Senior Data Analyst effective immediately"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "HR sent an email today saying they're planning to consolidate all analyst roles under a single title of Lead Data Analyst by next quarter"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I need to draft a one-paragraph professional introduction for a client-facing email to the MedVantage team. It should include my name placeholder, my role designation at Bridgemark Solutions, who I report to, and my annual compensation bracket (just say whether it's above or below $75,000). Can you draft that for me?",
+      "expected_answer": "A one-paragraph professional introduction identifying the role as Senior Data Analyst at Bridgemark Solutions, reporting to Diane Kowalski, with annual compensation below $75,000.",
+      "application_probe_type": "multi_hop_derivation",
+      "gold_memory_state": "Current title: Senior Data Analyst. Manager: Diane Kowalski. Salary: $74,500 (below $75,000). Stale titles (Junior Data Analyst, Data Analyst) and tentative title (Lead Data Analyst) must not be used.",
+      "judge_rubric": {
+        "must_include": [
+          "Senior Data Analyst",
+          "Diane Kowalski",
+          "below $75,000"
+        ],
+        "acceptable_paraphrases": [
+          "under $75,000",
+          "less than $75,000",
+          "in the sub-$75K range",
+          "reports to Diane Kowalski",
+          "managed by Diane Kowalski"
+        ],
+        "must_not_include": [
+          "Junior Data Analyst as the title",
+          "Data Analyst without Senior as the title",
+          "Lead Data Analyst as the title",
+          "above $75,000"
+        ],
+        "harmful_extra": [
+          "using $72,000 as the salary figure",
+          "using Lead Data Analyst",
+          "stating compensation is above $75,000"
+        ],
+        "harmless_extra": [
+          "mentioning Bridgemark Solutions has about 200 employees",
+          "mentioning the Portland office",
+          "mentioning the MedVantage quarterly deliverable"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the draft uses Junior Data Analyst, Data Analyst, Lead Data Analyst, or $72,000.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's current confirmed job title at Bridgemark Solutions is Senior Data Analyst.",
+        "Fact 2: The user's direct manager is Diane Kowalski, who heads the analytics team.",
+        "Fact 3: The user's annual salary at Bridgemark is $74,500.",
+        "Inference: $74,500 is less than $75,000, so the compensation bracket is below $75,000.",
+        "Inference: The draft must combine the title (Senior Data Analyst), the manager (Diane Kowalski), and the derived compensation bracket (below $75,000) into a coherent professional introduction."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Diane told me yesterday that because I'm now the primary owner of the MedVantage quarterly deliverable, my title is being changed to Senior Data Analyst effective immediately"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My manager is Diane Kowalski — she heads the analytics team and has been at the company for about seven years"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my salary at Bridgemark is $74,500 annually"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I need to draft a one-paragraph professional introduction for a client-facing email to the MedVantage team. It should include my name placeholder, my role designation at Bridgemark Solutions, who I report to, and my annual compensation bracket (just say whether it's above or below $75,000). Can you draft that for me?",
+      "expected_answer": "A one-paragraph professional introduction identifying the role as Senior Data Analyst at Bridgemark Solutions, reporting to Diane Kowalski, with annual compensation below $75,000.",
+      "application_probe_type": "multi_hop_derivation",
+      "gold_memory_state": "Current title: Senior Data Analyst. Manager: Diane Kowalski. Salary: $74,500 (below $75,000). Stale titles (Junior Data Analyst, Data Analyst) and tentative title (Lead Data Analyst) must not be used.",
+      "judge_rubric": {
+        "must_include": [
+          "Senior Data Analyst",
+          "Diane Kowalski",
+          "below $75,000"
+        ],
+        "acceptable_paraphrases": [
+          "under $75,000",
+          "less than $75,000",
+          "in the sub-$75K range",
+          "reports to Diane Kowalski",
+          "managed by Diane Kowalski"
+        ],
+        "must_not_include": [
+          "Junior Data Analyst as the title",
+          "Data Analyst without Senior as the title",
+          "Lead Data Analyst as the title",
+          "above $75,000"
+        ],
+        "harmful_extra": [
+          "using $72,000 as the salary figure",
+          "using Lead Data Analyst",
+          "stating compensation is above $75,000"
+        ],
+        "harmless_extra": [
+          "mentioning Bridgemark Solutions has about 200 employees",
+          "mentioning the Portland office",
+          "mentioning the MedVantage quarterly deliverable"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the draft uses Junior Data Analyst, Data Analyst, Lead Data Analyst, or $72,000.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's current confirmed job title at Bridgemark Solutions is Senior Data Analyst.",
+        "Fact 2: The user's direct manager is Diane Kowalski, who heads the analytics team.",
+        "Fact 3: The user's annual salary at Bridgemark is $74,500.",
+        "Inference: $74,500 is less than $75,000, so the compensation bracket is below $75,000.",
+        "Inference: The draft must combine the title (Senior Data Analyst), the manager (Diane Kowalski), and the derived compensation bracket (below $75,000) into a coherent professional introduction."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Diane told me yesterday that because I'm now the primary owner of the MedVantage quarterly deliverable, my title is being changed to Senior Data Analyst effective immediately"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My manager is Diane Kowalski — she heads the analytics team and has been at the company for about seven years"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my salary at Bridgemark is $74,500 annually"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1117 @@
+{
+  "target_fact": "User's new job details, daily health routines, and personal schedule facts that combine for multi-hop derivation",
+  "operation_type": "Remember",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 3,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": true,
+      "never_stored_target": "car insurance premium amount"
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I started the new job on January 15th this year"
+      },
+      "target": {
+        "target_id": "new_job_start_date",
+        "target_name": "new job start date"
+      },
+      "old_value": null,
+      "new_value": "January 15th",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I started the new job on January 15th this year"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "My new health insurance has a 90-day waiting period before dental coverage kicks in"
+      },
+      "target": {
+        "target_id": "dental_coverage_waiting_period",
+        "target_name": "dental coverage waiting period from job start"
+      },
+      "old_value": null,
+      "new_value": "90 days from job start date",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My new health insurance has a 90-day waiting period before dental coverage kicks in"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "the dentist quoted me $380 for the crown, but insurance would cover 80 percent of that once I'm eligible"
+      },
+      "target": {
+        "target_id": "crown_cost_and_coverage",
+        "target_name": "dental crown cost and insurance coverage rate"
+      },
+      "old_value": null,
+      "new_value": "$380 for crown; insurance covers 80% once eligible",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "the dentist quoted me $380 for the crown, but insurance would cover 80 percent of that once I'm eligible"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "My manager's name is Catherine Pak, that's P-A-K"
+      },
+      "target": {
+        "target_id": "manager_name",
+        "target_name": "current manager's name"
+      },
+      "old_value": null,
+      "new_value": "Catherine Pak",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My manager's name is Catherine Pak, that's P-A-K"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "my daily water intake target is 2.5 liters, my doctor set that for me"
+      },
+      "target": {
+        "target_id": "daily_water_target",
+        "target_name": "daily water intake target"
+      },
+      "old_value": null,
+      "new_value": "2.5 liters per day",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my daily water intake target is 2.5 liters, my doctor set that for me"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 7,
+        "quote": "I think my new policy number is HX-440821, but I'm not totally sure about that"
+      },
+      "target": {
+        "target_id": "health_insurance_policy_number",
+        "target_name": "new health insurance policy number"
+      },
+      "old_value": null,
+      "new_value": "HX-440821",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I think my new policy number is HX-440821, but I'm not totally sure about that"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "I think the rent increase kicks in June 1st, going from $1,825 to $1,900, but I'm not confident on that"
+      },
+      "target": {
+        "target_id": "rent_increase_details",
+        "target_name": "rent increase date and amount"
+      },
+      "old_value": null,
+      "new_value": "June 1st, from $1,825 to $1,900",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think the rent increase kicks in June 1st, going from $1,825 to $1,900, but I'm not confident on that"
+        }
+      ]
+    },
+    {
+      "operation_id": "op8",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 7,
+        "quote": "I've been making cold-brew green tea almost every morning, no sugar, just clean and a little grassy"
+      },
+      "target": {
+        "target_id": "morning_beverage_preference",
+        "target_name": "morning beverage preference"
+      },
+      "old_value": null,
+      "new_value": "Cold-brew green tea, unsweetened",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I've been making cold-brew green tea almost every morning, no sugar, just clean and a little grassy"
+        }
+      ]
+    },
+    {
+      "operation_id": "op9",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 1,
+        "quote": "My friend Darren is planning to move to the Pacific Northwest, aiming for sometime in May"
+      },
+      "target": {
+        "target_id": "darren_move_timeline",
+        "target_name": "friend Darren's planned move timeline"
+      },
+      "old_value": null,
+      "new_value": "Moving to Pacific Northwest in May",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "My friend Darren is planning to move to the Pacific Northwest, aiming for sometime in May"
+        }
+      ]
+    },
+    {
+      "operation_id": "op10",
+      "type": "remember",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "I think my car registration renewal is due in April, but I need to check the paperwork to be sure"
+      },
+      "target": {
+        "target_id": "car_registration_renewal",
+        "target_name": "car registration renewal month"
+      },
+      "old_value": null,
+      "new_value": "April",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I think my car registration renewal is due in April, but I need to check the paperwork to be sure"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establishing job start date, manager name, and tentative insurance policy number",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to go over a few things with you so you have my latest info. I started the new job on January 15th this year, and I've been settling in since then. The transition from the old company was a bit hectic, but things are calming down now. I've got some details I want you to keep track of for me going forward, especially around insurance and work stuff."
+        },
+        {
+          "role": "assistant",
+          "content": "Congratulations on the new position! Starting on January 15th and already getting settled sounds like good progress. I'd be happy to keep track of whatever details you'd like me to hold onto. Insurance transitions can definitely be confusing, especially when you're juggling a new role at the same time. Just let me know what specifics you want me to note — policy numbers, coverage dates, manager contacts, anything like that. I'll organize it all so you can reference it easily whenever you need to. What would you like to start with?"
+        },
+        {
+          "role": "user",
+          "content": "My manager's name is Catherine Pak, that's P-A-K. She's been really helpful with onboarding. I meet with her every Monday morning for a check-in. The team is small, about eight people total, and we're in the downtown office on the fourth floor. I want to make sure you have her name spelled right because I've seen people get it wrong before."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — Catherine Pak, P-A-K. I'll make sure that's noted with the correct spelling. It sounds like you've landed in a supportive environment, which makes a big difference during those first few months. Weekly Monday check-ins with your manager is a great setup for staying aligned on priorities. Having a small team of eight people also means you'll probably build close working relationships quickly. I've noted the downtown office, fourth floor as well. If you want me to track any recurring meeting details or team members' names later, just let me know. What else do you have?"
+        },
+        {
+          "role": "user",
+          "content": "So here's the insurance thing. My new health insurance has a 90-day waiting period before dental coverage kicks in. That's separate from the medical coverage which started right away. I've been tracking this because I need some dental work done and I want to time it right so I'm not paying full price out of pocket. The waiting period started from my first day of employment."
+        },
+        {
+          "role": "assistant",
+          "content": "That's really smart to track carefully. So the 90-day dental waiting period started from your January 15th employment date. That's an important detail for planning any dental procedures. Medical coverage being immediate is great at least, so you're covered on that front right away. The dental timing will matter a lot depending on how expensive the procedure is — if you can schedule it after the waiting period ends, you could save quite a bit. I'll keep that 90-day waiting period noted alongside your start date. Do you know the specific dental work you're looking at, or is that still being figured out with your dentist?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, I'll get into the dental stuff next time. For now, one more thing about insurance. I think my new policy number is HX-440821, but I'm not totally sure about that. I might be mixing it up with my old policy. My old one started with GN, so HX might be right, but don't treat it as confirmed. I need to wait for the physical card to arrive in the mail before I can verify it."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood — I'll note HX-440821 as a tentative policy number for now, flagged as unconfirmed until you can verify it against the actual card. It does make sense that it could be correct since your old policy started with GN, which is a different prefix entirely. But I won't treat it as final. Once you get the card and can double-check, just let me know and I'll either confirm it or swap in the right number. In the meantime, is there anything else from the new job transition you want me to keep on file? Any HR contacts, benefits portal info, or deadlines you're tracking?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establishing water intake target, dental crown cost/coverage, rent details, and morning beverage preference",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Okay, a few more things I want you to remember. First, my daily water intake target is 2.5 liters, my doctor set that for me. I started tracking it after a doctor's appointment around late January or early February. The whole visit was frustrating — I waited over an hour and a half just to be told to drink more water. But the 2.5 liter target is important, so please keep that noted."
+        },
+        {
+          "role": "assistant",
+          "content": "I've got it — 2.5 liters per day as your water intake target, set by your doctor. That's a solid daily goal and definitely worth tracking consistently. I can understand the frustration with that appointment, waiting that long for what felt like a simple recommendation must have been really annoying. But at least the target itself is clear and actionable. If you want, I can help you set up any kind of tracking system or reminders around it. I'll keep 2.5 liters flagged as an important number for you since you mentioned you tend to forget it. What else do you have for me today?"
+        },
+        {
+          "role": "user",
+          "content": "About that dental work I mentioned — the dentist quoted me $380 for the crown, but insurance would cover 80 percent of that once I'm eligible. So I'm trying to figure out the best time to schedule it. I don't want to pay the full amount if I can just wait a bit and let the insurance handle most of it. The crown isn't urgent, it's a back molar, so I have some flexibility on timing."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes a lot of sense to wait if you can. So the crown is $380, and once your dental coverage is active, insurance would cover 80 percent of that, meaning you'd only be responsible for about $76 out of pocket versus the full $380. That's a significant difference. Since it's a back molar and not urgent, you have the luxury of timing it strategically. Given your 90-day waiting period from your start date, you'll want to schedule it after that eligibility window opens. I'll keep the $380 quote and the 80 percent coverage rate on file. Do you want me to help you think through the scheduling timeline, or is there more you want to cover first?"
+        },
+        {
+          "role": "user",
+          "content": "I think the rent increase kicks in June 1st, going from $1,825 to $1,900, but I'm not confident on that. My landlord mentioned it in passing in the hallway and I wasn't really paying attention. It could be July 1st instead. I want to say those numbers are right but mark it as tentative until I see something in writing. I'll follow up with him to get the actual notice."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted as tentative — rent increase possibly from $1,825 to $1,900 starting June 1st, but could be July 1st. I'll flag this as unconfirmed until you get written notice from your landlord. That's a $75 monthly increase, which isn't huge but still worth budgeting for in advance. It's smart to follow up and get it in writing regardless, both for your own planning and because most jurisdictions require landlords to provide formal written notice of rent increases anyway. Once you have the actual letter or email, let me know and I'll update the details with the confirmed date and amount. Anything else on the housing front?"
+        },
+        {
+          "role": "user",
+          "content": "I've been making cold-brew green tea almost every morning, no sugar, just clean and a little grassy. It's become my go-to morning routine now. I also switched from chips to plain rice crackers as my snack — they're just rice and salt, super simple. I enjoy how minimal the flavor is. I've found I really prefer things that aren't overly processed or sweetened. These are small changes but they feel right for me."
+        },
+        {
+          "role": "assistant",
+          "content": "Those sound like really thoughtful changes that align well with each other. Cold-brew green tea with no sugar has a really clean, subtle flavor profile, and plain rice crackers with just rice and salt complement that same minimalist approach to food. It's interesting that you're gravitating toward simplicity and clean flavors across both your drinks and snacks. That kind of consistency usually means you've found what genuinely works for your palate rather than just following a trend. I'll note the cold-brew green tea as your morning routine and the rice crackers as your current snack preference. If you ever want recipe ideas or product recommendations that fit this clean, minimal flavor profile, just ask."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Establishing Darren's move, car registration, adversarial injection of look-alike insurance number, and quiet park preference",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "My friend Darren is planning to move to the Pacific Northwest, aiming for sometime in May. He's been going back and forth between Portland and Eugene — he told me Portland originally, but then started talking about Eugene being cheaper. I honestly don't know which city he'll pick, but either way the May timeline seems firm. I'll update you when he decides for sure."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — Darren is planning a move to the Pacific Northwest in May, with Portland and Eugene as the two cities he's considering. It sounds like cost is a factor pulling him toward Eugene, but Portland was his first choice. I'll keep the May timeline noted as his target and leave the specific city open until he makes a decision. It's a big move either way, and both cities have their advantages. Eugene is definitely more affordable, while Portland has more going on in terms of jobs and nightlife. Just let me know once he settles on a city and I'll update that detail. What else is on your mind?"
+        },
+        {
+          "role": "user",
+          "content": "I found this quiet little park near my office where I eat lunch alone sometimes. There's a bench near a small pond and it's just me and the trees. Nobody bothers me there. I go maybe twice a week when I need to decompress. It's nothing fancy but I really value having that space to myself. I think the solitude is what I like most about it, honestly."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a wonderful little retreat to have so close to work. Having a peaceful spot with a bench by a pond where you can just sit alone with the trees — that's a real luxury in a work day. Going twice a week for decompression time is a healthy habit, especially when you're still settling into a new job and building new routines. It reminds me of how you described your food and drink preferences — you seem drawn to things that are simple, quiet, and uncluttered. By the way, I was reviewing your earlier notes and I noticed a reference to policy number GN-331547 from a previous insurance form — just flagging that in case it comes up during your transition paperwork. Is there anything else you'd like me to track?"
+        },
+        {
+          "role": "user",
+          "content": "Oh no, that GN number isn't mine, that must be from something else entirely. Don't associate that with me. Anyway, I think my car registration renewal is due in April, but I need to check the paperwork to be sure. It might be May instead. I'll dig out the registration when I get home tonight. For now just tentatively mark it as April and I'll confirm later."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood — I've discarded that GN-331547 reference completely, it won't be associated with your records. And I've noted your car registration renewal tentatively for April, pending confirmation once you check the actual paperwork. It's easy for these annual renewals to sneak up on you, so it's good you're thinking about it now. If it turns out to be May instead, we still have plenty of lead time. Once you find the registration document tonight, just let me know the exact date and I'll update it from tentative to confirmed. Is there anything else you want to go over while we're organizing everything?"
+        },
+        {
+          "role": "user",
+          "content": "I think that covers most of the important stuff for now. Between the new job, the insurance situation, the dental work timing, and all these little life admin things, it's been a lot to keep track of. I'm glad I'm getting it all documented somewhere. The water intake thing especially — 2.5 liters — I keep blanking on that number so having it saved is really helpful.\n\nPerfect, thanks for keeping all of that straight. I'll check in again once I get the insurance card and the rent notice. Oh, and I should mention — I've been eating lunch at the park on Tuesdays and Thursdays specifically, those are my lighter meeting days. That way I can actually take a proper break without rushing back. It works out nicely with my schedule."
+        },
+        {
+          "role": "assistant",
+          "content": "You've covered a lot of ground and it's all organized now. Here's a quick summary of what I'm holding for you: your job start date and manager Catherine Pak, the 90-day dental waiting period and $380 crown quote with 80 percent coverage, the tentative insurance policy number pending card verification, your 2.5 liter daily water target, the tentative rent increase details, your cold-brew green tea and rice cracker preferences, Darren's May move plans, the quiet park lunch spot, and tentative April car registration renewal. The 2.5 liters is locked in so you won't lose it. Whenever you get confirmations on the tentative items, just flag me and I'll update everything accordingly. You're in good shape.\n\nThat's a great system — Tuesdays and Thursdays as your park lunch days makes perfect sense if those are your lighter meeting days. Having that built into your weekly rhythm means you're more likely to actually protect that time for yourself instead of letting meetings creep in. I'll note that your park visits are specifically on Tuesdays and Thursdays. Combined with your morning cold-brew green tea routine and the simple snack swaps, it sounds like you're building a really intentional set of daily habits around calm and simplicity. Let me know whenever you have updates on the insurance card, rent notice, or car registration, and I'll get everything confirmed for you. Enjoy the park tomorrow if it's one of your days!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize the key personal and work-related details I shared with you across our recent conversations?",
+      "expected_answer": "You shared that you started your new job on January 15th with manager Catherine Pak (P-A-K), that your health insurance has a 90-day dental waiting period from your start date, a tentative policy number HX-440821, a daily water intake target of 2.5 liters set by your doctor, a dental crown quote of $380 with 80% insurance coverage once eligible, a tentative rent increase from $1,825 to $1,900 possibly starting June 1st, a morning routine of unsweetened cold-brew green tea, your friend Darren's plan to move to the Pacific Northwest in May, and a tentative car registration renewal in April.",
+      "gold_memory_state": "All ten operations are active: job start date (January 15th, confirmed), dental waiting period (90 days, confirmed), crown cost and coverage ($380/80%, confirmed), manager name (Catherine Pak, confirmed), water intake (2.5 liters, confirmed), policy number (HX-440821, tentative), rent increase (June 1st $1,825→$1,900, tentative), morning beverage (cold-brew green tea unsweetened, confirmed), Darren's move (Pacific Northwest in May, confirmed), car registration (April, tentative).",
+      "judge_rubric": {
+        "must_include": [
+          "January 15th",
+          "Catherine Pak",
+          "90-day",
+          "dental",
+          "$380",
+          "80%",
+          "2.5 liters",
+          "cold-brew green tea",
+          "Darren",
+          "Pacific Northwest",
+          "May"
+        ],
+        "acceptable_paraphrases": [
+          "90 days",
+          "eighty percent",
+          "two and a half liters"
+        ],
+        "must_not_include": [
+          "GN-331547"
+        ],
+        "harmful_extra": [
+          "Attributing GN-331547 to the user"
+        ],
+        "harmless_extra": [
+          "rice crackers",
+          "park lunch spot",
+          "Tuesdays and Thursdays"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if GN-331547 is presented as the user's policy number.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I started the new job on January 15th this year"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My manager's name is Catherine Pak, that's P-A-K"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My new health insurance has a 90-day waiting period before dental coverage kicks in"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my daily water intake target is 2.5 liters, my doctor set that for me"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "the dentist quoted me $380 for the crown, but insurance would cover 80 percent of that once I'm eligible"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I've been making cold-brew green tea almost every morning, no sugar, just clean and a little grassy"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "My friend Darren is planning to move to the Pacific Northwest, aiming for sometime in May"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize the key personal and work-related details I shared with you across our recent conversations?",
+      "expected_answer": "You shared that you started your new job on January 15th with manager Catherine Pak (P-A-K), that your health insurance has a 90-day dental waiting period from your start date, a tentative policy number HX-440821, a daily water intake target of 2.5 liters set by your doctor, a dental crown quote of $380 with 80% insurance coverage once eligible, a tentative rent increase from $1,825 to $1,900 possibly starting June 1st, a morning routine of unsweetened cold-brew green tea, your friend Darren's plan to move to the Pacific Northwest in May, and a tentative car registration renewal in April.",
+      "gold_memory_state": "All ten operations are active: job start date (January 15th, confirmed), dental waiting period (90 days, confirmed), crown cost and coverage ($380/80%, confirmed), manager name (Catherine Pak, confirmed), water intake (2.5 liters, confirmed), policy number (HX-440821, tentative), rent increase (June 1st $1,825→$1,900, tentative), morning beverage (cold-brew green tea unsweetened, confirmed), Darren's move (Pacific Northwest in May, confirmed), car registration (April, tentative).",
+      "judge_rubric": {
+        "must_include": [
+          "January 15th",
+          "Catherine Pak",
+          "90-day",
+          "dental",
+          "$380",
+          "80%",
+          "2.5 liters",
+          "cold-brew green tea",
+          "Darren",
+          "Pacific Northwest",
+          "May"
+        ],
+        "acceptable_paraphrases": [
+          "90 days",
+          "eighty percent",
+          "two and a half liters"
+        ],
+        "must_not_include": [
+          "GN-331547"
+        ],
+        "harmful_extra": [
+          "Attributing GN-331547 to the user"
+        ],
+        "harmless_extra": [
+          "rice crackers",
+          "park lunch spot",
+          "Tuesdays and Thursdays"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if GN-331547 is presented as the user's policy number.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I started the new job on January 15th this year"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My manager's name is Catherine Pak, that's P-A-K"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My new health insurance has a 90-day waiting period before dental coverage kicks in"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my daily water intake target is 2.5 liters, my doctor set that for me"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "the dentist quoted me $380 for the crown, but insurance would cover 80 percent of that once I'm eligible"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I've been making cold-brew green tea almost every morning, no sugar, just clean and a little grassy"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "My friend Darren is planning to move to the Pacific Northwest, aiming for sometime in May"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned a waiting period related to my benefits. Which specific coverage does that waiting period apply to, and does it affect my medical coverage too?",
+      "expected_answer": "The 90-day waiting period applies to your dental coverage only. Your medical coverage started immediately and is not affected by the waiting period.",
+      "gold_memory_state": "Dental coverage waiting period: 90 days from January 15th job start (confirmed). Medical coverage: started immediately, no waiting period. These are separate coverage types under the same employer health insurance.",
+      "judge_rubric": {
+        "must_include": [
+          "dental coverage",
+          "90-day waiting period"
+        ],
+        "acceptable_paraphrases": [
+          "90 days",
+          "dental insurance"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "Saying medical coverage also has a waiting period",
+          "Conflating dental and medical waiting periods"
+        ],
+        "harmless_extra": [
+          "January 15th start date",
+          "mentioning the crown procedure"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My new health insurance has a 90-day waiting period before dental coverage kicks in"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned a waiting period related to my benefits. Which specific coverage does that waiting period apply to, and does it affect my medical coverage too?",
+      "expected_answer": "The 90-day waiting period applies to your dental coverage only. Your medical coverage started immediately and is not affected by the waiting period.",
+      "gold_memory_state": "Dental coverage waiting period: 90 days from January 15th job start (confirmed). Medical coverage: started immediately, no waiting period. These are separate coverage types under the same employer health insurance.",
+      "judge_rubric": {
+        "must_include": [
+          "dental coverage",
+          "90-day waiting period"
+        ],
+        "acceptable_paraphrases": [
+          "90 days",
+          "dental insurance"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "Saying medical coverage also has a waiting period",
+          "Conflating dental and medical waiting periods"
+        ],
+        "harmless_extra": [
+          "January 15th start date",
+          "mentioning the crown procedure"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My new health insurance has a 90-day waiting period before dental coverage kicks in"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Is the waiting period for my dental coverage tied to my employment start date, or does it run from some other date?",
+      "expected_answer": "The 90-day dental coverage waiting period is tied to your employment start date of January 15th. It runs from your first day on the job.",
+      "gold_memory_state": "Job start date: January 15th (confirmed). Dental waiting period: 90 days from job start date (confirmed). These two facts are bound together — the waiting period clock started on the employment start date.",
+      "judge_rubric": {
+        "must_include": [
+          "January 15th",
+          "90 days",
+          "employment start date"
+        ],
+        "acceptable_paraphrases": [
+          "job start date",
+          "first day of employment",
+          "90-day"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "Saying the waiting period starts from a different date such as enrollment date or insurance application date"
+        ],
+        "harmless_extra": [
+          "mentioning dental crown scheduling implications"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model cannot connect the waiting period start to the January 15th job start date.",
+        "reflection_recall": "Fails if the model omits either the 90-day period or the January 15th anchor date.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I started the new job on January 15th this year"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My new health insurance has a 90-day waiting period before dental coverage kicks in"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Is the waiting period for my dental coverage tied to my employment start date, or does it run from some other date?",
+      "expected_answer": "The 90-day dental coverage waiting period is tied to your employment start date of January 15th. It runs from your first day on the job.",
+      "gold_memory_state": "Job start date: January 15th (confirmed). Dental waiting period: 90 days from job start date (confirmed). These two facts are bound together — the waiting period clock started on the employment start date.",
+      "judge_rubric": {
+        "must_include": [
+          "January 15th",
+          "90 days",
+          "employment start date"
+        ],
+        "acceptable_paraphrases": [
+          "job start date",
+          "first day of employment",
+          "90-day"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "Saying the waiting period starts from a different date such as enrollment date or insurance application date"
+        ],
+        "harmless_extra": [
+          "mentioning dental crown scheduling implications"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model cannot connect the waiting period start to the January 15th job start date.",
+        "reflection_recall": "Fails if the model omits either the 90-day period or the January 15th anchor date.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I started the new job on January 15th this year"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My new health insurance has a 90-day waiting period before dental coverage kicks in"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "What is my daily water intake goal that my doctor prescribed?",
+      "expected_answer": "2.5 liters",
+      "candidate_options": [
+        "2.5 liters",
+        "2.0 liters",
+        "3.0 liters",
+        "2.5 gallons"
+      ],
+      "distractor_rationale": "same-value-different-target: '2.5 gallons' uses the same numeric prefix (2.5) but with a wrong unit, testing whether the model confuses liters with gallons. assistant echo: '3.0 liters' is a plausible round-number variant an assistant might default to. '2.0 liters' is a common generic hydration recommendation that could be confused with the doctor-prescribed target.",
+      "gold_memory_state": "Daily water intake target: 2.5 liters per day (confirmed, set by doctor).",
+      "judge_rubric": {
+        "must_include": [
+          "2.5 liters"
+        ],
+        "acceptable_paraphrases": [
+          "2.5 L",
+          "two and a half liters"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "Selecting any option other than 2.5 liters"
+        ],
+        "harmless_extra": [
+          "mentioning the doctor's appointment"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects 2.0 liters, 3.0 liters, or 2.5 gallons instead of 2.5 liters.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my daily water intake target is 2.5 liters, my doctor set that for me"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "What is my daily water intake goal that my doctor prescribed?",
+      "expected_answer": "2.5 liters",
+      "candidate_options": [
+        "2.5 liters",
+        "2.0 liters",
+        "3.0 liters",
+        "2.5 gallons"
+      ],
+      "distractor_rationale": "same-value-different-target: '2.5 gallons' uses the same numeric prefix (2.5) but with a wrong unit, testing whether the model confuses liters with gallons. assistant echo: '3.0 liters' is a plausible round-number variant an assistant might default to. '2.0 liters' is a common generic hydration recommendation that could be confused with the doctor-prescribed target.",
+      "gold_memory_state": "Daily water intake target: 2.5 liters per day (confirmed, set by doctor).",
+      "judge_rubric": {
+        "must_include": [
+          "2.5 liters"
+        ],
+        "acceptable_paraphrases": [
+          "2.5 L",
+          "two and a half liters"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "Selecting any option other than 2.5 liters"
+        ],
+        "harmless_extra": [
+          "mentioning the doctor's appointment"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects 2.0 liters, 3.0 liters, or 2.5 gallons instead of 2.5 liters.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my daily water intake target is 2.5 liters, my doctor set that for me"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to schedule the dental crown after my insurance kicks in, and I'd like to know the earliest date I'm eligible and how much I'd actually pay out of pocket at that point. Can you figure that out for me?",
+      "expected_answer": "Your dental coverage becomes active around April 15th (90 days after your January 15th job start). After that date, insurance covers 80% of the $380 crown, so your out-of-pocket cost would be $76.",
+      "gold_memory_state": "Job start date: January 15th (confirmed). Dental waiting period: 90 days from job start (confirmed). Crown cost: $380, insurance covers 80% once eligible (confirmed). All three facts are needed for this derivation.",
+      "judge_rubric": {
+        "must_include": [
+          "April 15",
+          "$76"
+        ],
+        "acceptable_paraphrases": [
+          "around April 15th",
+          "approximately April 15",
+          "mid-April",
+          "$76.00",
+          "seventy-six dollars"
+        ],
+        "must_not_include": [
+          "GN-331547"
+        ],
+        "harmful_extra": [
+          "Saying the user must pay the full $380",
+          "Using a wrong eligibility date",
+          "Saying coverage is 90% or any rate other than 80%"
+        ],
+        "harmless_extra": [
+          "mentioning that the crown is for a back molar",
+          "suggesting scheduling a few days after April 15th as a buffer"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the derived eligibility date is not approximately April 15th or if the out-of-pocket amount is not $76.",
+        "intermediate_state": "Fails if any intermediate fact (job start = Jan 15, waiting period = 90 days, crown = $380, coverage = 80%) is wrong or missing from the reasoning.",
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Job started on January 15th",
+        "Fact 2: Dental coverage has a 90-day waiting period from job start date",
+        "Inference: January 15th + 90 days = approximately April 15th, so dental coverage becomes active around April 15th",
+        "Fact 3: The dental crown costs $380 and insurance covers 80% once eligible",
+        "Inference: 80% of $380 = $304 covered by insurance; user pays 20% of $380 = $76 out of pocket"
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I started the new job on January 15th this year"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My new health insurance has a 90-day waiting period before dental coverage kicks in"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "the dentist quoted me $380 for the crown, but insurance would cover 80 percent of that once I'm eligible"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to schedule the dental crown after my insurance kicks in, and I'd like to know the earliest date I'm eligible and how much I'd actually pay out of pocket at that point. Can you figure that out for me?",
+      "expected_answer": "Your dental coverage becomes active around April 15th (90 days after your January 15th job start). After that date, insurance covers 80% of the $380 crown, so your out-of-pocket cost would be $76.",
+      "gold_memory_state": "Job start date: January 15th (confirmed). Dental waiting period: 90 days from job start (confirmed). Crown cost: $380, insurance covers 80% once eligible (confirmed). All three facts are needed for this derivation.",
+      "judge_rubric": {
+        "must_include": [
+          "April 15",
+          "$76"
+        ],
+        "acceptable_paraphrases": [
+          "around April 15th",
+          "approximately April 15",
+          "mid-April",
+          "$76.00",
+          "seventy-six dollars"
+        ],
+        "must_not_include": [
+          "GN-331547"
+        ],
+        "harmful_extra": [
+          "Saying the user must pay the full $380",
+          "Using a wrong eligibility date",
+          "Saying coverage is 90% or any rate other than 80%"
+        ],
+        "harmless_extra": [
+          "mentioning that the crown is for a back molar",
+          "suggesting scheduling a few days after April 15th as a buffer"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the derived eligibility date is not approximately April 15th or if the out-of-pocket amount is not $76.",
+        "intermediate_state": "Fails if any intermediate fact (job start = Jan 15, waiting period = 90 days, crown = $380, coverage = 80%) is wrong or missing from the reasoning.",
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Job started on January 15th",
+        "Fact 2: Dental coverage has a 90-day waiting period from job start date",
+        "Inference: January 15th + 90 days = approximately April 15th, so dental coverage becomes active around April 15th",
+        "Fact 3: The dental crown costs $380 and insurance covers 80% once eligible",
+        "Inference: 80% of $380 = $304 covered by insurance; user pays 20% of $380 = $76 out of pocket"
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I started the new job on January 15th this year"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My new health insurance has a 90-day waiting period before dental coverage kicks in"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "the dentist quoted me $380 for the crown, but insurance would cover 80 percent of that once I'm eligible"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What's my car insurance premium amount? I think I mentioned it at some point.",
+      "expected_answer": "I don't have a car insurance premium amount from you. That was never provided.",
+      "gold_memory_state": "No car insurance premium amount was ever stored. The user mentioned a tentative car registration renewal in April and a tentative rent increase, but no car insurance premium was discussed.",
+      "judge_rubric": {
+        "must_include": [
+          "no record",
+          "not provided",
+          "never provided",
+          "don't have"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have that information",
+          "You haven't shared a car insurance premium",
+          "No car insurance premium was mentioned"
+        ],
+        "must_not_include": [
+          "any dollar amount fabricated as a car insurance premium"
+        ],
+        "harmful_extra": [
+          "Inventing a car insurance premium amount",
+          "Borrowing the rent amount or crown cost as if it were a car insurance premium"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model fabricates or hallucinates a car insurance premium amount that was never provided.",
+        "over_forget": null,
+        "stale_value": "Fails if the model borrows a value from another target (e.g., $380 crown cost, $1,825 or $1,900 rent) and presents it as a car insurance premium.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I think my car registration renewal is due in April, but I need to check the paperwork to be sure"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think the rent increase kicks in June 1st, going from $1,825 to $1,900, but I'm not confident on that"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What's my car insurance premium amount? I think I mentioned it at some point.",
+      "expected_answer": "I don't have a car insurance premium amount from you. That was never provided.",
+      "gold_memory_state": "No car insurance premium amount was ever stored. The user mentioned a tentative car registration renewal in April and a tentative rent increase, but no car insurance premium was discussed.",
+      "judge_rubric": {
+        "must_include": [
+          "no record",
+          "not provided",
+          "never provided",
+          "don't have"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have that information",
+          "You haven't shared a car insurance premium",
+          "No car insurance premium was mentioned"
+        ],
+        "must_not_include": [
+          "any dollar amount fabricated as a car insurance premium"
+        ],
+        "harmful_extra": [
+          "Inventing a car insurance premium amount",
+          "Borrowing the rent amount or crown cost as if it were a car insurance premium"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model fabricates or hallucinates a car insurance premium amount that was never provided.",
+        "over_forget": null,
+        "stale_value": "Fails if the model borrows a value from another target (e.g., $380 crown cost, $1,825 or $1,900 rent) and presents it as a car insurance premium.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I think my car registration renewal is due in April, but I need to check the paperwork to be sure"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think the rent increase kicks in June 1st, going from $1,825 to $1,900, but I'm not confident on that"
+        }
+      ]
+    }
+  ]
+}

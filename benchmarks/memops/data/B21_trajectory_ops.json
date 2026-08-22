@@ -1,0 +1,951 @@
+{
+  "target_fact": "David's salary at Greenfield Rehabilitation Center",
+  "operation_type": "TrajectoryOps",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "salary_chain",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "David's annual salary at Greenfield is $78,000"
+      },
+      "target": {
+        "target_id": "david_salary",
+        "target_name": "David's annual salary at Greenfield Rehabilitation Center"
+      },
+      "old_value": null,
+      "new_value": "$78,000",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "David's annual salary at Greenfield is $78,000"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "salary_chain",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I need to correct that salary number. It's actually $82,000, not $78,000"
+      },
+      "target": {
+        "target_id": "david_salary",
+        "target_name": "David's annual salary at Greenfield Rehabilitation Center"
+      },
+      "old_value": "$78,000",
+      "new_value": "$82,000",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "It's actually $82,000, not $78,000"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "salary_chain",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "Wait, I double-checked the offer letter last night. His salary is $82,500, not $82,000"
+      },
+      "target": {
+        "target_id": "david_salary",
+        "target_name": "David's annual salary at Greenfield Rehabilitation Center"
+      },
+      "old_value": "$82,000",
+      "new_value": "$82,500",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I double-checked the offer letter last night. His salary is $82,500, not $82,000"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "salary_chain",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "Priya told David that everyone on staff is getting bumped to $85,000 starting next quarter as part of a clinic-wide raise"
+      },
+      "target": {
+        "target_id": "david_salary",
+        "target_name": "David's annual salary at Greenfield Rehabilitation Center"
+      },
+      "old_value": "$82,500",
+      "new_value": "$85,000",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Priya told David that everyone on staff is getting bumped to $85,000 starting next quarter as part of a clinic-wide raise"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "David started at Greenfield Rehabilitation Center on February 12th as a senior physical therapist"
+      },
+      "target": {
+        "target_id": "david_workplace",
+        "target_name": "David's current workplace and start date"
+      },
+      "old_value": null,
+      "new_value": "Senior physical therapist at Greenfield Rehabilitation Center, started February 12th",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "David started at Greenfield Rehabilitation Center on February 12th as a senior physical therapist"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establishing David's workplace details and initial salary figure, then first salary correction",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to get some things on record about my partner David's job situation. He recently switched clinics and I want to make sure I have the details straight. David's annual salary at Greenfield is $78,000. That's what he told me when he first got the offer, and I just want to have it noted somewhere reliable."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it! I've noted that David's annual salary at Greenfield is $78,000. That's a helpful detail to keep track of, especially with a new position. If you have any other specifics about his role or the workplace, feel free to share them and I'll keep everything organized for you. New job transitions involve a lot of moving parts, so having a central place for these details can really help when you need to reference them later for budgeting, taxes, or other planning purposes."
+        },
+        {
+          "role": "user",
+          "content": "Right, so for context: David started at Greenfield Rehabilitation Center on February 12th as a senior physical therapist. He specifically wanted a clinic that focuses on sports recovery rather than general post-surgical rehab, and Greenfield fit that perfectly. We went out for a celebratory dinner the night before his first day. It was a nice moment for us."
+        },
+        {
+          "role": "assistant",
+          "content": "That's wonderful context. I've recorded that David began at Greenfield Rehabilitation Center on February 12th as a senior physical therapist, with the clinic's sports recovery focus being a key reason he made the switch. It sounds like it was a meaningful transition for both of you, and celebrating with dinner the night before was a great way to mark the occasion. If you'd like to add any details about his previous clinic or his specific responsibilities at Greenfield, I'm happy to keep building out this picture for you."
+        },
+        {
+          "role": "user",
+          "content": "Actually, I need to correct that salary number. It's actually $82,000, not $78,000. I think I was remembering the figure from an earlier conversation with David before he finalized the offer. The $78,000 was what they initially discussed but the final number was higher. Sorry about the confusion on that—please update it to $82,000."
+        },
+        {
+          "role": "assistant",
+          "content": "No problem at all—I've updated David's annual salary from $78,000 to $82,000. It makes sense that the initial discussion number and the final offer would differ, especially during negotiations. I'll keep $82,000 as the current figure going forward. It's good that you caught that early so we have the right number on file. If any other details need adjusting as you think through everything, just let me know and I'll make the corrections right away. Accuracy matters with financial details."
+        },
+        {
+          "role": "user",
+          "content": "Thanks. Also, his work schedule at Greenfield is Tuesday through Saturday, with Mondays and Sundays off. It took some adjusting since his old clinic had a standard Monday-to-Friday schedule. But honestly I've come to enjoy having Mondays free together—everywhere is less crowded and I prefer doing errands when there are fewer people around."
+        },
+        {
+          "role": "assistant",
+          "content": "I've noted David's schedule: Tuesday through Saturday, with Mondays and Sundays off. That's a meaningful shift from a traditional Monday-to-Friday routine, and I can see how it would take some getting used to. But it sounds like you've found a real upside in having Mondays together when places are quieter and less hectic. That's a nice silver lining of the schedule change. I'll keep this on record alongside his other Greenfield details. Let me know if there's anything else about his work setup you'd like to document."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Second salary correction to $82,500 and additional work details including OCS exam",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I wanted to follow up on some more of David's work details. A few weeks after he started at Greenfield, probably early March, he got assigned to consult with the local university's track and field team as their physical therapist. He was really excited about it—it aligns perfectly with his interest in sports recovery and athletic performance."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a great development for David! I've noted that around early March he was assigned as the consulting physical therapist for the local university's track and field team. That role sounds like an ideal extension of Greenfield's sports recovery focus and his personal interests. Working directly with collegiate athletes would give him consistent, specialized cases to work on. It also speaks well of how quickly the clinic recognized his strengths. If you have more details about this consulting arrangement or any other updates from Greenfield, I'm happy to add them."
+        },
+        {
+          "role": "user",
+          "content": "Wait, I double-checked the offer letter last night. His salary is $82,500, not $82,000. I keep getting this number slightly wrong. The offer letter clearly says $82,500 annually. Please make sure that's the number you have on file—$82,500. I want to stop going back and forth on this and just have the right figure locked in."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood—I've updated David's annual salary to $82,500 based on what you confirmed from the offer letter. That's now the figure I have on record, and I'll treat it as the definitive number going forward. It's completely normal to mix up exact figures, especially when numbers are close together. The important thing is you went back to the source document to verify. So to confirm: David's salary at Greenfield Rehabilitation Center is $82,500 annually. Let me know if there's anything else you'd like to clarify or add."
+        },
+        {
+          "role": "user",
+          "content": "Good, thanks. Another thing—David is studying for his OCS, the Orthopedic Clinical Specialist certification. His exam is scheduled for June 7th. He studies most evenings after dinner, usually from around 8 to 10 PM. I actually don't mind the quiet; I've always liked evenings where we're both doing our own thing in the same room without needing to fill the silence."
+        },
+        {
+          "role": "assistant",
+          "content": "I've recorded that David is preparing for his Orthopedic Clinical Specialist (OCS) certification exam, scheduled for June 7th, with his study routine being most evenings from approximately 8 to 10 PM after dinner. It sounds like those quiet parallel evenings work well for both of you—there's something grounding about shared space without the pressure of constant conversation. The June 7th date gives him a clear timeline to work toward, and having a consistent nightly study block is a disciplined approach. I'll keep this exam detail alongside his other professional information."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. And one more thing—his colleague Priya just got promoted to clinic director at Greenfield last week. David mentioned it over breakfast and seemed genuinely happy for her. He said she's been supportive of his sports rehab focus, so having her as clinic director could be a positive thing for his work going forward.\n\nYeah, I think David is in a good spot professionally right now. The combination of the sports rehab focus at Greenfield, the university track team consulting gig, and studying for the OCS all feel like they're pointing in the same direction. I'm glad the career move is working out. That's all I have for now on this topic."
+        },
+        {
+          "role": "assistant",
+          "content": "That's great news for the clinic dynamic. I've noted that Priya was recently promoted to clinic director at Greenfield Rehabilitation Center and that she's been supportive of David's sports rehab focus. Having an ally in a leadership position can make a real difference in terms of resources, scheduling flexibility, and the kinds of cases that get prioritized. It sounds like David is building a strong professional situation there between the university consulting role, his OCS preparation, and a supportive clinic director. Let me know if any other updates come up that you'd like tracked.\n\nIt really does sound like everything is aligning well for David professionally. The move to Greenfield, the university consulting role, the OCS certification track, and a supportive clinic director in Priya—those are all pieces that reinforce each other. It's clear this career transition was a well-considered decision, and it's nice to hear it's paying off. I've got all these details documented, so whenever you need to reference anything or want to add updates, just come back to it. I hope things continue going well for both of you."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Tentative salary change (recency trap), adversarial injection of old clinic salary, and conversation wrap-up",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to circle back on a couple of things about David's work situation. He had a dry needling certification workshop in Portland back in late March—he was gone Friday through Sunday. I was a little annoyed because we had planned to check out that new farmers market together on Saturday and he forgot to tell me about the workshop until two days before."
+        },
+        {
+          "role": "assistant",
+          "content": "I can understand the frustration there. Having plans disrupted at the last minute, especially when it's something you were looking forward to like the farmers market, is genuinely annoying. And the fact that he knew about the workshop but didn't communicate it until two days before makes it feel more like an oversight than an unavoidable conflict. I've noted the dry needling certification workshop in Portland in late March, Friday through Sunday. It's worth mentioning that at his previous clinic, Lakewood Physical Therapy, the benefits summary listed his salary there as $71,500—quite a jump to his current compensation at Greenfield."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, the communication thing bugged me for a couple of days. It wasn't a huge deal in the grand scheme but it's the kind of thing that matters to me—just a heads-up earlier would have been fine. Anyway, that's resolved now. I wanted to ask, do you have David's current salary on record? I need it for a form I'm filling out."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely. Based on what you confirmed from his offer letter, David's current annual salary at Greenfield Rehabilitation Center is $82,500. That's the most recent verified figure you provided. I completely understand your point about the communication issue—it's not about the severity of the conflict but about the principle of being kept in the loop with enough lead time. Even small scheduling oversights can feel dismissive when they affect shared plans. If you need any other details for the form you're filling out, like his start date or employer name, I have those on file too."
+        },
+        {
+          "role": "user",
+          "content": "Priya told David that everyone on staff is getting bumped to $85,000 starting next quarter as part of a clinic-wide raise. David was pretty excited when he told me about it. The raise hasn't taken effect yet but Priya said it's been approved by the ownership group. So it sounds like his salary will be going up soon, which is great news."
+        },
+        {
+          "role": "assistant",
+          "content": "That's exciting news! A clinic-wide raise to $85,000 starting next quarter sounds like a strong move by the ownership group, especially with Priya now in the clinic director role where she can advocate for the staff. It must feel validating for David, especially on top of everything else going well at Greenfield. Since the raise hasn't taken effect yet, I'll note it as an upcoming change rather than his current salary. For now, his confirmed annual salary remains $82,500 until the new rate officially kicks in. Let me know when it goes into effect and I'll update the record."
+        },
+        {
+          "role": "user",
+          "content": "That makes sense—keep $82,500 as the current number for now. The raise is good news but nothing's changed on paper yet. On a different note, I've been thinking about how much better David's work-life balance is now compared to the Lakewood days. He seems more energized and engaged with his cases. I think the sports focus really suits him.\n\nExactly. I'm also looking forward to getting past June 7th so the OCS studying winds down and we get our evenings back a little bit. Not that I mind the quiet, but it'll be nice to have more flexibility for spontaneous plans. Anyway, that's everything for now. Thanks for keeping track of all this."
+        },
+        {
+          "role": "assistant",
+          "content": "It's meaningful when you can see a tangible difference in someone's energy and engagement after a career move. The shift from general post-surgical rehab at Lakewood to sports recovery at Greenfield clearly aligns better with what motivates David professionally. And the consulting work with the university track team adds another layer of stimulation and purpose. Work-life balance isn't just about hours—it's also about whether the work itself feels fulfilling. It sounds like Greenfield checks both boxes for him. I'll continue to keep his current salary at $82,500 on record and update it when the raise officially takes effect.\n\nThat's a very understandable feeling—even when you enjoy the quiet study evenings, having the flexibility to be spontaneous again will be a welcome change after June 7th. And once David has that Orthopedic Clinical Specialist certification under his belt, it'll open even more doors in his sports rehab career. You've built a really comprehensive picture of his professional situation here: Greenfield, the university consulting role, Priya's support as clinic director, the OCS exam, and the upcoming raise. I've got it all documented. Whenever you need to reference or update anything, just let me know. Good luck to David with the exam prep!"
+        }
+      ]
+    }
+  ],
+  "state_checkpoints": [
+    {
+      "checkpoint_id": "c1",
+      "description": "After segment 1: David's salary is $82,000 (confirmed, corrected from initial $78,000). David works at Greenfield Rehabilitation Center as senior PT, started Feb 12th. Schedule is Tue-Sat."
+    },
+    {
+      "checkpoint_id": "c2",
+      "description": "After segment 2: David's salary is $82,500 (confirmed, corrected from $82,000 per offer letter). OCS exam June 7th. Priya promoted to clinic director. University track team consulting noted."
+    },
+    {
+      "checkpoint_id": "c3",
+      "description": "After segment 3: David's confirmed salary remains $82,500. A tentative raise to $85,000 next quarter has been mentioned by Priya but is not yet in effect. Workplace and start date unchanged. The $71,500 Lakewood salary mentioned by assistant is historical/adversarial noise."
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations, I shared several details about my partner David's compensation at his new clinic. Can you summarize what I told you about that topic and how the figure evolved?",
+      "expected_answer": "You initially stated David's annual salary was $78,000, then corrected it to $82,000, then verified from the offer letter that it is $82,500. You also mentioned that his clinic director Priya said everyone would be bumped to $85,000 starting next quarter, but that raise hasn't taken effect yet.",
+      "gold_memory_state": "David's confirmed salary is $82,500. The $85,000 raise is tentative and not yet in effect. Prior values of $78,000 and $82,000 are superseded.",
+      "judge_rubric": {
+        "must_include": [
+          "$78,000 as initial figure",
+          "$82,000 as first correction",
+          "$82,500 as offer-letter-verified figure",
+          "$85,000 as upcoming but not yet effective"
+        ],
+        "acceptable_paraphrases": [
+          "78k",
+          "82k",
+          "82.5k",
+          "85k"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "treating $85,000 as the current salary",
+          "omitting any of the four values from the sequence"
+        ],
+        "harmless_extra": [
+          "mentioning Priya's role as clinic director",
+          "mentioning the offer letter as the verification source"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if $78,000 or $82,000 is presented as the current salary.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence of salary values is presented out of order.",
+        "final_state": "Fails if $82,500 is not identified as the current confirmed salary.",
+        "intermediate_state": "Fails if any intermediate value ($78,000, $82,000) is omitted from the history.",
+        "trajectory_provenance": "Fails if the offer letter is not cited as the source for the $82,500 figure."
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "David's annual salary at Greenfield is $78,000"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "It's actually $82,000, not $78,000"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I double-checked the offer letter last night. His salary is $82,500, not $82,000"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Priya told David that everyone on staff is getting bumped to $85,000 starting next quarter as part of a clinic-wide raise"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations, I shared several details about my partner David's compensation at his new clinic. Can you summarize what I told you about that topic and how the figure evolved?",
+      "expected_answer": "You initially stated David's annual salary was $78,000, then corrected it to $82,000, then verified from the offer letter that it is $82,500. You also mentioned that his clinic director Priya said everyone would be bumped to $85,000 starting next quarter, but that raise hasn't taken effect yet.",
+      "gold_memory_state": "David's confirmed salary is $82,500. The $85,000 raise is tentative and not yet in effect. Prior values of $78,000 and $82,000 are superseded.",
+      "judge_rubric": {
+        "must_include": [
+          "$78,000 as initial figure",
+          "$82,000 as first correction",
+          "$82,500 as offer-letter-verified figure",
+          "$85,000 as upcoming but not yet effective"
+        ],
+        "acceptable_paraphrases": [
+          "78k",
+          "82k",
+          "82.5k",
+          "85k"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "treating $85,000 as the current salary",
+          "omitting any of the four values from the sequence"
+        ],
+        "harmless_extra": [
+          "mentioning Priya's role as clinic director",
+          "mentioning the offer letter as the verification source"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if $78,000 or $82,000 is presented as the current salary.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence of salary values is presented out of order.",
+        "final_state": "Fails if $82,500 is not identified as the current confirmed salary.",
+        "intermediate_state": "Fails if any intermediate value ($78,000, $82,000) is omitted from the history.",
+        "trajectory_provenance": "Fails if the offer letter is not cited as the source for the $82,500 figure."
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "David's annual salary at Greenfield is $78,000"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "It's actually $82,000, not $78,000"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I double-checked the offer letter last night. His salary is $82,500, not $82,000"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Priya told David that everyone on staff is getting bumped to $85,000 starting next quarter as part of a clinic-wide raise"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've shared both David's compensation details and his workplace/role information. If I need to file a benefits enrollment form, which record tracks the pay figure that keeps getting revised, and does his job title or start date belong to that same record or a separate one?",
+      "expected_answer": "The pay figure that has been revised multiple times is tracked as David's annual salary at his rehabilitation center. His job title (senior physical therapist) and start date (February 12th) belong to a separate workplace-and-role record, not the salary record.",
+      "gold_memory_state": "Target 1: David's annual salary at Greenfield Rehabilitation Center — current confirmed value $82,500, with tentative $85,000 not yet in effect. Target 2: David's current workplace and start date — senior physical therapist at Greenfield Rehabilitation Center, started February 12th. These are tracked as separate information records.",
+      "judge_rubric": {
+        "must_include": [
+          "salary record is separate from workplace/start-date record",
+          "salary has been revised",
+          "job title and start date are in a different record"
+        ],
+        "acceptable_paraphrases": [
+          "compensation record vs employment details record",
+          "pay vs role information"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "merging salary and start date into one single record",
+          "claiming the start date changed along with salary"
+        ],
+        "harmless_extra": [
+          "mentioning $82,500 as current salary",
+          "mentioning February 12th as start date",
+          "mentioning senior physical therapist as title"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model conflates the salary record with the workplace/start-date record.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "David's annual salary at Greenfield is $78,000"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "David started at Greenfield Rehabilitation Center on February 12th as a senior physical therapist"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've shared both David's compensation details and his workplace/role information. If I need to file a benefits enrollment form, which record tracks the pay figure that keeps getting revised, and does his job title or start date belong to that same record or a separate one?",
+      "expected_answer": "The pay figure that has been revised multiple times is tracked as David's annual salary at his rehabilitation center. His job title (senior physical therapist) and start date (February 12th) belong to a separate workplace-and-role record, not the salary record.",
+      "gold_memory_state": "Target 1: David's annual salary at Greenfield Rehabilitation Center — current confirmed value $82,500, with tentative $85,000 not yet in effect. Target 2: David's current workplace and start date — senior physical therapist at Greenfield Rehabilitation Center, started February 12th. These are tracked as separate information records.",
+      "judge_rubric": {
+        "must_include": [
+          "salary record is separate from workplace/start-date record",
+          "salary has been revised",
+          "job title and start date are in a different record"
+        ],
+        "acceptable_paraphrases": [
+          "compensation record vs employment details record",
+          "pay vs role information"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "merging salary and start date into one single record",
+          "claiming the start date changed along with salary"
+        ],
+        "harmless_extra": [
+          "mentioning $82,500 as current salary",
+          "mentioning February 12th as start date",
+          "mentioning senior physical therapist as title"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model conflates the salary record with the workplace/start-date record.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "David's annual salary at Greenfield is $78,000"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "David started at Greenfield Rehabilitation Center on February 12th as a senior physical therapist"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "I need David's annual pay figure for a financial planning worksheet I'm putting together right now. What number should I use?",
+      "expected_answer": "$82,500",
+      "gold_memory_state": "David's confirmed annual salary is $82,500, verified from the offer letter. A potential raise to $85,000 was mentioned by Priya as a clinic-wide adjustment starting next quarter, but it has not taken effect. The user explicitly asked to keep $82,500 as the current number. Prior values of $78,000 and $82,000 are superseded.",
+      "judge_rubric": {
+        "must_include": [
+          "$82,500"
+        ],
+        "acceptable_paraphrases": [
+          "82,500 dollars",
+          "82.5k"
+        ],
+        "must_not_include": [
+          "$85,000 as the current figure",
+          "$82,000",
+          "$78,000"
+        ],
+        "harmful_extra": [
+          "using $85,000 as the current salary",
+          "using $71,500 from the assistant's mention of a previous clinic"
+        ],
+        "harmless_extra": [
+          "noting that a raise to $85,000 is expected but not yet in effect"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if $78,000, $82,000, or $71,500 is given as the current salary.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if $85,000 (tentative, not yet in effect) is given as the current salary. This is the recency trap: $85,000 was mentioned most recently but is not yet adopted.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I double-checked the offer letter last night. His salary is $82,500, not $82,000"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "That makes sense—keep $82,500 as the current number for now"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "I need David's annual pay figure for a financial planning worksheet I'm putting together right now. What number should I use?",
+      "expected_answer": "$82,500",
+      "gold_memory_state": "David's confirmed annual salary is $82,500, verified from the offer letter. A potential raise to $85,000 was mentioned by Priya as a clinic-wide adjustment starting next quarter, but it has not taken effect. The user explicitly asked to keep $82,500 as the current number. Prior values of $78,000 and $82,000 are superseded.",
+      "judge_rubric": {
+        "must_include": [
+          "$82,500"
+        ],
+        "acceptable_paraphrases": [
+          "82,500 dollars",
+          "82.5k"
+        ],
+        "must_not_include": [
+          "$85,000 as the current figure",
+          "$82,000",
+          "$78,000"
+        ],
+        "harmful_extra": [
+          "using $85,000 as the current salary",
+          "using $71,500 from the assistant's mention of a previous clinic"
+        ],
+        "harmless_extra": [
+          "noting that a raise to $85,000 is expected but not yet in effect"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if $78,000, $82,000, or $71,500 is given as the current salary.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if $85,000 (tentative, not yet in effect) is given as the current salary. This is the recency trap: $85,000 was mentioned most recently but is not yet adopted.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I double-checked the offer letter last night. His salary is $82,500, not $82,000"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "That makes sense—keep $82,500 as the current number for now"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm drafting a brief professional summary for David to use when he introduces himself to the university track team. It should mention his role, where he works, when he started, and his monthly gross pay. Can you draft that for me?",
+      "expected_answer": "David is a senior physical therapist at Greenfield Rehabilitation Center, where he started on February 12th. His monthly gross pay is approximately $6,875.",
+      "gold_memory_state": "David's confirmed annual salary is $82,500. He is a senior physical therapist at Greenfield Rehabilitation Center, started February 12th. Monthly gross pay is derived by dividing $82,500 by 12.",
+      "judge_rubric": {
+        "must_include": [
+          "senior physical therapist",
+          "Greenfield Rehabilitation Center",
+          "February 12th",
+          "$6,875 or equivalent monthly figure derived from $82,500"
+        ],
+        "acceptable_paraphrases": [
+          "approx $6,875",
+          "about $6,875 per month",
+          "$6,875/month"
+        ],
+        "must_not_include": [
+          "$85,000 as the basis for monthly calculation",
+          "$82,000 as the basis",
+          "$78,000 as the basis",
+          "$71,500"
+        ],
+        "harmful_extra": [
+          "using $85,000 to compute monthly pay as ~$7,083",
+          "using $82,000 to compute monthly pay as ~$6,833"
+        ],
+        "harmless_extra": [
+          "mentioning the OCS certification exam",
+          "mentioning sports recovery focus"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if any superseded salary figure ($78,000, $82,000) or the tentative $85,000 is used for the monthly calculation.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the monthly pay does not correspond to $82,500 / 12 = $6,875.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: David is a senior physical therapist at Greenfield Rehabilitation Center, started February 12th.",
+        "Fact 2: David's confirmed annual salary is $82,500, verified from the offer letter.",
+        "Fact 3: The tentative raise to $85,000 has not taken effect yet, so current salary remains $82,500.",
+        "Inference: Monthly gross pay = $82,500 / 12 = $6,875.",
+        "Inference: The professional summary should use $6,875 as the monthly figure along with his role and start date."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "David started at Greenfield Rehabilitation Center on February 12th as a senior physical therapist"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I double-checked the offer letter last night. His salary is $82,500, not $82,000"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "That makes sense—keep $82,500 as the current number for now"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm drafting a brief professional summary for David to use when he introduces himself to the university track team. It should mention his role, where he works, when he started, and his monthly gross pay. Can you draft that for me?",
+      "expected_answer": "David is a senior physical therapist at Greenfield Rehabilitation Center, where he started on February 12th. His monthly gross pay is approximately $6,875.",
+      "gold_memory_state": "David's confirmed annual salary is $82,500. He is a senior physical therapist at Greenfield Rehabilitation Center, started February 12th. Monthly gross pay is derived by dividing $82,500 by 12.",
+      "judge_rubric": {
+        "must_include": [
+          "senior physical therapist",
+          "Greenfield Rehabilitation Center",
+          "February 12th",
+          "$6,875 or equivalent monthly figure derived from $82,500"
+        ],
+        "acceptable_paraphrases": [
+          "approx $6,875",
+          "about $6,875 per month",
+          "$6,875/month"
+        ],
+        "must_not_include": [
+          "$85,000 as the basis for monthly calculation",
+          "$82,000 as the basis",
+          "$78,000 as the basis",
+          "$71,500"
+        ],
+        "harmful_extra": [
+          "using $85,000 to compute monthly pay as ~$7,083",
+          "using $82,000 to compute monthly pay as ~$6,833"
+        ],
+        "harmless_extra": [
+          "mentioning the OCS certification exam",
+          "mentioning sports recovery focus"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if any superseded salary figure ($78,000, $82,000) or the tentative $85,000 is used for the monthly calculation.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the monthly pay does not correspond to $82,500 / 12 = $6,875.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: David is a senior physical therapist at Greenfield Rehabilitation Center, started February 12th.",
+        "Fact 2: David's confirmed annual salary is $82,500, verified from the offer letter.",
+        "Fact 3: The tentative raise to $85,000 has not taken effect yet, so current salary remains $82,500.",
+        "Inference: Monthly gross pay = $82,500 / 12 = $6,875.",
+        "Inference: The professional summary should use $6,875 as the monthly figure along with his role and start date."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "David started at Greenfield Rehabilitation Center on February 12th as a senior physical therapist"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I double-checked the offer letter last night. His salary is $82,500, not $82,000"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "That makes sense—keep $82,500 as the current number for now"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed everything we've discussed about David's annual compensation, what would they see as the full sequence of figures, which ones were actually adopted at each point, and which were only floated but never put into effect?",
+      "expected_answer": "The sequence is: (1) $78,000 was the initial figure, adopted briefly. (2) It was corrected to $82,000, which replaced $78,000 as the adopted figure. (3) After checking the offer letter, $82,000 was corrected to $82,500, which became and remains the adopted figure. (4) $85,000 was floated as a future clinic-wide raise but has not taken effect, so it was never adopted. The final usable figure is $82,500.",
+      "gold_memory_state": "Salary trajectory: $78,000 (confirmed, then superseded) → $82,000 (confirmed, then superseded) → $82,500 (confirmed, current) → $85,000 (tentative, not in effect). Final confirmed value: $82,500.",
+      "judge_rubric": {
+        "must_include": [
+          "$78,000 as initial",
+          "$82,000 as first correction",
+          "$82,500 as offer-letter-verified and current",
+          "$85,000 as not yet in effect or tentative",
+          "correct chronological order"
+        ],
+        "acceptable_paraphrases": [
+          "proposed but not adopted for $85,000",
+          "pending for $85,000",
+          "not yet active for $85,000"
+        ],
+        "must_not_include": [
+          "$85,000 as adopted or current"
+        ],
+        "harmful_extra": [
+          "treating $85,000 as the final adopted figure",
+          "omitting any step in the trajectory",
+          "presenting the steps out of order"
+        ],
+        "harmless_extra": [
+          "mentioning Priya as the source of the $85,000 figure",
+          "mentioning the offer letter as the source for $82,500"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if any superseded value is presented as current.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the four salary figures are not presented in the correct chronological order: $78,000 → $82,000 → $82,500 → $85,000 (tentative).",
+        "final_state": "Fails if $82,500 is not identified as the final adopted/current salary.",
+        "intermediate_state": "Fails if $78,000 or $82,000 is omitted as a historical intermediate state.",
+        "trajectory_provenance": "Fails if $82,500 is not attributed to the offer letter verification, or if $85,000 is not attributed to Priya's announcement about a future raise."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: User initially reported David's salary as $78,000. This was the first adopted value.",
+        "Step 2: User corrected the salary to $82,000, saying the initial figure was from before the offer was finalized. $82,000 replaced $78,000.",
+        "Step 3: User verified from the offer letter that the salary is $82,500, not $82,000. $82,500 replaced $82,000 as the adopted value.",
+        "Step 4: User reported that Priya mentioned a clinic-wide raise to $85,000 starting next quarter, but explicitly said it hasn't taken effect yet and asked to keep $82,500 as the current figure.",
+        "Inference: The trajectory has four values in order, but only three were ever adopted ($78,000, $82,000, $82,500), and $85,000 was never adopted. The final usable state is $82,500."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "David's annual salary at Greenfield is $78,000"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "It's actually $82,000, not $78,000"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I double-checked the offer letter last night. His salary is $82,500, not $82,000"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Priya told David that everyone on staff is getting bumped to $85,000 starting next quarter as part of a clinic-wide raise"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "That makes sense—keep $82,500 as the current number for now"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed everything we've discussed about David's annual compensation, what would they see as the full sequence of figures, which ones were actually adopted at each point, and which were only floated but never put into effect?",
+      "expected_answer": "The sequence is: (1) $78,000 was the initial figure, adopted briefly. (2) It was corrected to $82,000, which replaced $78,000 as the adopted figure. (3) After checking the offer letter, $82,000 was corrected to $82,500, which became and remains the adopted figure. (4) $85,000 was floated as a future clinic-wide raise but has not taken effect, so it was never adopted. The final usable figure is $82,500.",
+      "gold_memory_state": "Salary trajectory: $78,000 (confirmed, then superseded) → $82,000 (confirmed, then superseded) → $82,500 (confirmed, current) → $85,000 (tentative, not in effect). Final confirmed value: $82,500.",
+      "judge_rubric": {
+        "must_include": [
+          "$78,000 as initial",
+          "$82,000 as first correction",
+          "$82,500 as offer-letter-verified and current",
+          "$85,000 as not yet in effect or tentative",
+          "correct chronological order"
+        ],
+        "acceptable_paraphrases": [
+          "proposed but not adopted for $85,000",
+          "pending for $85,000",
+          "not yet active for $85,000"
+        ],
+        "must_not_include": [
+          "$85,000 as adopted or current"
+        ],
+        "harmful_extra": [
+          "treating $85,000 as the final adopted figure",
+          "omitting any step in the trajectory",
+          "presenting the steps out of order"
+        ],
+        "harmless_extra": [
+          "mentioning Priya as the source of the $85,000 figure",
+          "mentioning the offer letter as the source for $82,500"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if any superseded value is presented as current.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the four salary figures are not presented in the correct chronological order: $78,000 → $82,000 → $82,500 → $85,000 (tentative).",
+        "final_state": "Fails if $82,500 is not identified as the final adopted/current salary.",
+        "intermediate_state": "Fails if $78,000 or $82,000 is omitted as a historical intermediate state.",
+        "trajectory_provenance": "Fails if $82,500 is not attributed to the offer letter verification, or if $85,000 is not attributed to Priya's announcement about a future raise."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: User initially reported David's salary as $78,000. This was the first adopted value.",
+        "Step 2: User corrected the salary to $82,000, saying the initial figure was from before the offer was finalized. $82,000 replaced $78,000.",
+        "Step 3: User verified from the offer letter that the salary is $82,500, not $82,000. $82,500 replaced $82,000 as the adopted value.",
+        "Step 4: User reported that Priya mentioned a clinic-wide raise to $85,000 starting next quarter, but explicitly said it hasn't taken effect yet and asked to keep $82,500 as the current figure.",
+        "Inference: The trajectory has four values in order, but only three were ever adopted ($78,000, $82,000, $82,500), and $85,000 was never adopted. The final usable state is $82,500."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "David's annual salary at Greenfield is $78,000"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "It's actually $82,000, not $78,000"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I double-checked the offer letter last night. His salary is $82,500, not $82,000"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Priya told David that everyone on staff is getting bumped to $85,000 starting next quarter as part of a clinic-wide raise"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "That makes sense—keep $82,500 as the current number for now"
+        }
+      ]
+    }
+  ]
+}

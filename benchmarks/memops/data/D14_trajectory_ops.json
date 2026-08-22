@@ -1,0 +1,977 @@
+{
+  "target_fact": "User's primary bank account and payment methods, including Chase checking as main account with update chain on the high-yield savings APY",
+  "operation_type": "TrajectoryOps",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "marcus_apy_chain",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I opened a high-yield savings with Marcus by Goldman Sachs in mid-March, and the APY when I signed up was 4.5%"
+      },
+      "target": {
+        "target_id": "marcus_savings_apy",
+        "target_name": "Marcus by Goldman Sachs high-yield savings APY"
+      },
+      "old_value": null,
+      "new_value": "4.5%",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I opened a high-yield savings with Marcus by Goldman Sachs in mid-March, and the APY when I signed up was 4.5%"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "For everyday purchases I use Apple Pay linked to my Chase Sapphire Preferred card. I stopped carrying cash entirely about two months ago"
+      },
+      "target": {
+        "target_id": "everyday_payment_method",
+        "target_name": "everyday purchase payment method"
+      },
+      "old_value": null,
+      "new_value": "Apple Pay linked to Chase Sapphire Preferred card, no cash",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "For everyday purchases I use Apple Pay linked to my Chase Sapphire Preferred card. I stopped carrying cash entirely about two months ago"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "marcus_apy_chain",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I just checked the Marcus app and the APY dropped to 4.25%. Kind of annoying but still way better than Chase savings"
+      },
+      "target": {
+        "target_id": "marcus_savings_apy",
+        "target_name": "Marcus by Goldman Sachs high-yield savings APY"
+      },
+      "old_value": "4.5%",
+      "new_value": "4.25%",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I opened a high-yield savings with Marcus by Goldman Sachs in mid-March, and the APY when I signed up was 4.5%"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I just checked the Marcus app and the APY dropped to 4.25%. Kind of annoying but still way better than Chase savings"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "marcus_apy_chain",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 3,
+        "quote": "Marcus sent me an email saying my APY will be adjusted to 4.0% starting next billing cycle"
+      },
+      "target": {
+        "target_id": "marcus_savings_apy",
+        "target_name": "Marcus by Goldman Sachs high-yield savings APY"
+      },
+      "old_value": "4.25%",
+      "new_value": "4.0%",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Marcus sent me an email saying my APY will be adjusted to 4.0% starting next billing cycle"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "marcus_apy_chain",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 7,
+        "quote": "I logged in just now and the rate still shows 4.25%. So the 4.0% hasn't kicked in, and honestly I read some forums saying it might not drop that far after all"
+      },
+      "target": {
+        "target_id": "marcus_savings_apy",
+        "target_name": "Marcus by Goldman Sachs high-yield savings APY"
+      },
+      "old_value": "4.25%",
+      "new_value": "4.25%",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I just checked the Marcus app and the APY dropped to 4.25%. Kind of annoying but still way better than Chase savings"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I logged in just now and the rate still shows 4.25%. So the 4.0% hasn't kicked in, and honestly I read some forums saying it might not drop that far after all"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish primary bank details, Marcus savings account with initial APY, and everyday payment method",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to get my financial accounts organized. My main checking account is with Chase — I've had it since 2018. I opened it right before starting a job in Bellevue. My salary gets direct-deposited there every two weeks, and all my recurring bills auto-debit from that account. Rent, utilities, phone plan, everything comes out of Chase checking."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it! So your Chase checking account has been your primary account since 2018, opened before your Bellevue job. It receives your biweekly direct deposit and handles all recurring bill payments including rent, utilities, and your phone plan. That's a solid centralized setup — having everything auto-debit from one account makes tracking expenses much simpler. Do you have any savings accounts or other financial products linked to Chase, or are you using a different institution for savings? I'd like to get the full picture of your accounts before we organize everything."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, about savings — I opened a high-yield savings with Marcus by Goldman Sachs in mid-March, and the APY when I signed up was 4.5%. I moved about eight thousand dollars into it from my Chase savings, which was earning practically nothing. I'd been putting that off for months so it felt good to finally make the switch and start earning something meaningful on that money."
+        },
+        {
+          "role": "assistant",
+          "content": "Nice move! Your Marcus by Goldman Sachs high-yield savings account, opened mid-March with an initial transfer of $8,000 from Chase savings, is earning 4.5% APY. That's a significant improvement over the near-zero rate at Chase savings — on $8,000, you're looking at roughly $360 in annual interest versus almost nothing before. The fact that you consolidated your savings into a higher-yield vehicle is a smart step. I'll note that your Chase savings likely still exists but is mostly depleted now. Are there any other accounts or payment methods you want me to track as part of this financial overview?"
+        },
+        {
+          "role": "user",
+          "content": "For everyday purchases I use Apple Pay linked to my Chase Sapphire Preferred card. I stopped carrying cash entirely about two months ago. There's something satisfying about just tapping my phone and walking away. My friend Derek still insists on using cash for everything because he doesn't trust contactless payments, but I find that kind of baffling honestly. Digital payments are just so much more convenient."
+        },
+        {
+          "role": "assistant",
+          "content": "I've noted that your everyday spending goes through Apple Pay linked to your Chase Sapphire Preferred card, and you've been fully cashless for about two months now. The Sapphire Preferred is a great choice for everyday spending since it typically offers solid rewards on dining and travel categories. Combined with Apple Pay's convenience, you're getting both speed at checkout and points accumulation. Derek's cash-only approach is increasingly rare these days, though some people do prefer the tangible spending control it offers. Is there anything else in your payment ecosystem — like Venmo, Zelle, or any other transfer apps you use regularly for peer-to-peer payments?"
+        },
+        {
+          "role": "user",
+          "content": "I set up Zelle through the Chase app last week because my new landlord only accepts rent via Zelle or check. The setup was pretty painless actually. I used to have a Venmo account that I was fairly active on, but I deleted that sometime in February. So Venmo is completely done and no longer relevant to my financial setup at all."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood — Zelle is now set up through your Chase app for rent payments to your new landlord, who only accepts Zelle or check. And your Venmo account was deleted in February, so that's off the table entirely. Your payment ecosystem is looking pretty streamlined now: Chase checking for bills and direct deposit, Marcus for high-yield savings at 4.5% APY, Chase Sapphire Preferred via Apple Pay for everyday purchases, and Zelle for rent. That's a clean and efficient setup. If you want, I can help you create a monthly cash flow summary or set up any kind of tracking system based on these accounts. Just let me know what would be most useful."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Marcus APY drops to 4.25%, user discusses BECU account and auto-transfer glitch",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So there was this really annoying thing that happened after I switched to the Marcus savings account. Around late March or early April, one of my auto-transfers from Chase glitched and I got hit with an insufficient funds fee. I was pretty irritated because it was the bank's system that lagged, not anything I did wrong. I called Chase and they reversed it, but it still left a bad taste."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds really frustrating, especially since it wasn't your fault at all. System lag during the transition period between your Chase savings and Marcus probably caused a timing mismatch with the auto-transfer schedule. At least Chase reversed the insufficient funds fee, but I understand the annoyance — you shouldn't have to spend time on the phone fixing their error. It might be worth double-checking that all your auto-transfers have fully settled into the new routing now that a few weeks have passed. Have you noticed any other glitches since then, or was that a one-time issue with the system catching up to the new account structure?"
+        },
+        {
+          "role": "user",
+          "content": "I just checked the Marcus app and the APY dropped to 4.25%. Kind of annoying but still way better than Chase savings. I guess rates fluctuate and there's not much I can do about it. At least the eight thousand I moved over is still growing at a decent rate. I'm not planning to move the money anywhere else right now."
+        },
+        {
+          "role": "assistant",
+          "content": "A drop from 4.5% to 4.25% is a bit disappointing, but you're right that it's still vastly superior to what Chase savings was offering. On your $8,000 balance, you're still looking at roughly $340 in annual interest, which is only about $20 less than before. High-yield savings rates tend to follow the federal funds rate, so fluctuations are normal. Since you're not planning to move the money, it makes sense to just keep monitoring periodically. Some banks do promotional rate locks, but Marcus generally adjusts with the market. I'd suggest checking quarterly to make sure it stays competitive relative to other high-yield options out there."
+        },
+        {
+          "role": "user",
+          "content": "Oh, I also realized my old credit union account at BECU still has about two hundred dollars sitting in it. I opened that years ago when I lived in Seattle. I keep meaning to close it but haven't gotten around to it. It's not urgent, just one of those things on my to-do list that keeps getting pushed down. Do you think it's worth closing or should I just leave it?"
+        },
+        {
+          "role": "assistant",
+          "content": "That's a common situation — old accounts with small balances tend to linger. Whether to close your BECU account depends on a few factors. If there are no monthly maintenance fees eating into that $200, there's no real harm in leaving it open. However, having an unused account does add a small amount of complexity to your financial picture and could be a minor identity theft vector. If BECU charges any fees, you'd want to close it before the balance erodes. Since you're already managing Chase checking, Marcus savings, and your credit card through apps, one less account might simplify things. You could transfer the $200 to Marcus or Chase and close it when convenient."
+        },
+        {
+          "role": "user",
+          "content": "Good point. I'll probably just transfer the two hundred out and close BECU eventually. No rush though. By the way, I tend to prefer doing all my banking through apps rather than going into a branch. The one time I had to visit a Chase branch in person — it was in early March to notarize something — I found the whole experience pretty tedious. Waiting in line, fluorescent lighting, all of it. I'd much rather handle everything from my couch."
+        },
+        {
+          "role": "assistant",
+          "content": "That preference for app-based banking makes total sense given your setup — you're already using the Chase app for Zelle, checking your Marcus account on their app, and paying for everything through Apple Pay on your phone. Branch visits are increasingly unnecessary for most routine banking tasks. The notarization requirement is one of those rare exceptions where physical presence is still mandated. For future reference, some banks now offer remote online notarization services, and Chase has been expanding mobile notary options in certain markets. It might be worth checking if that's available in your area so you can avoid the fluorescent-lit waiting room next time something similar comes up."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Tentative APY drop email, adversarial injection of coworker's rate, and confirmed revert to 4.25%",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, quick update on my finances. My coworker Priya mentioned she switched to a Discover cashback checking account and loves it. I told her I'd look into it but honestly I'm not planning to switch from Chase. I'm pretty happy with my current setup and switching banks sounds like a huge hassle for minimal benefit when everything is already automated and running smoothly."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a reasonable stance. Discover's cashback checking does offer 1% cashback on debit card purchases up to a certain limit, which is a nice perk, but switching your entire banking infrastructure — direct deposit, auto-debits for rent, utilities, phone plan, plus your Zelle setup — would be a significant undertaking. The switching costs in terms of time and potential for missed payments during the transition probably outweigh the cashback benefit, especially since your Chase Sapphire Preferred already earns rewards on everyday purchases through Apple Pay. It makes sense to stick with what's working. You can always revisit the idea later if Chase changes its terms or if Discover offers something more compelling."
+        },
+        {
+          "role": "user",
+          "content": "Marcus sent me an email saying my APY will be adjusted to 4.0% starting next billing cycle. That's a bigger drop than I expected. I'm a little bummed about it but I guess I'll wait and see what actually happens when the cycle turns over. Maybe I should start looking at alternatives if rates keep sliding, but for now I'll hold tight and not make any rash decisions about it."
+        },
+        {
+          "role": "assistant",
+          "content": "A projected drop to 4.0% is notable — that would put your annual interest on $8,000 at about $320, down from the original $360 when you first opened at 4.5%. However, waiting to see the actual rate change before making moves is prudent. Email notices about upcoming rate adjustments don't always reflect the final number; sometimes the actual adjustment is slightly different from what's previewed. If it does drop to 4.0%, you'd still be earning meaningfully more than Chase savings. Alternatives like Ally, Wealthfront, or even a CD ladder could be worth researching in the meantime so you have options ready if rates continue declining. No need to rush though."
+        },
+        {
+          "role": "user",
+          "content": "Priya also told me her Marcus account is getting 4.15% right now, which confused me because I thought these rates were uniform. Maybe she opened at a different time or there's some kind of loyalty tier I don't know about. Anyway, I'm not going to worry about her rate versus mine since we probably have different account terms and comparing doesn't really help me make better decisions about my own savings."
+        },
+        {
+          "role": "assistant",
+          "content": "Rate differences between Marcus accounts can happen for a few reasons — promotional rates tied to account opening dates, balance tiers, or even regional offers that vary. Priya's 4.15% could reflect a different promotional window or a rate that already adjusted at a different time than yours. You're right that direct comparison isn't particularly productive since the terms may differ. What matters is whether your rate remains competitive relative to the broader high-yield savings market. If you do decide to shop around, the key benchmark is the national average for high-yield savings, which has been hovering around 4.0-4.5% depending on the institution. Your current situation is still solid."
+        },
+        {
+          "role": "user",
+          "content": "I logged in just now and the rate still shows 4.25%. So the 4.0% hasn't kicked in, and honestly I read some forums saying it might not drop that far after all. Some people are speculating Marcus will hold closer to 4.2% or 4.25% depending on the next Fed decision. Either way, right now my actual current rate is still 4.25% and that's what matters to me at this moment."
+        },
+        {
+          "role": "assistant",
+          "content": "Good to hear that the 4.0% adjustment hasn't materialized yet and your rate is still sitting at 4.25%. Forum speculation about Marcus holding near that level makes sense given the current interest rate environment — the Fed's decisions have a direct impact on these high-yield savings rates, and if there's no immediate cut, Marcus may not need to lower as aggressively as the email suggested. Your approach of focusing on the actual current rate rather than projected changes is smart. At 4.25% on $8,000, you're still earning roughly $340 annually, which is a great return for a liquid savings vehicle. I'll keep your Marcus APY noted at 4.25% as the current confirmed rate."
+        }
+      ]
+    }
+  ],
+  "state_checkpoints": [
+    {
+      "checkpoint_id": "c1",
+      "description": "After segment 1: Marcus savings APY is 4.5% (confirmed). Everyday payment method is Apple Pay linked to Chase Sapphire Preferred, no cash (confirmed). Zelle set up for rent. Venmo deleted."
+    },
+    {
+      "checkpoint_id": "c2",
+      "description": "After segment 2: Marcus savings APY updated to 4.25% (confirmed). BECU account mentioned with ~$200 balance but user plans to close it eventually. Everyday payment method unchanged."
+    },
+    {
+      "checkpoint_id": "c3",
+      "description": "After segment 3: Marcus savings APY had a tentative drop to 4.0% per email notice, but user confirmed current rate is still 4.25%. Final confirmed APY is 4.25%. Everyday payment method unchanged. Priya's 4.15% rate is third-party noise, not user's rate."
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Summarize everything I've told you about my savings account and how I pay for everyday purchases — what were the key details I shared across our conversations?",
+      "expected_answer": "You opened a high-yield savings account with Marcus by Goldman Sachs in mid-March, initially at 4.5% APY, transferring $8,000 from Chase savings. The APY later dropped to 4.25%. You also received an email projecting a further drop to 4.0%, but when you logged in the rate was still 4.25%, so the projected drop hadn't taken effect. For everyday purchases, you use Apple Pay linked to your Chase Sapphire Preferred card and stopped carrying cash about two months before mentioning it.",
+      "gold_memory_state": "Marcus savings APY: 4.25% (confirmed, after chain of 4.5% → 4.25% → tentative 4.0% → confirmed still 4.25%). Everyday payment: Apple Pay linked to Chase Sapphire Preferred, no cash.",
+      "judge_rubric": {
+        "must_include": [
+          "Marcus by Goldman Sachs",
+          "4.25%",
+          "Apple Pay",
+          "Chase Sapphire Preferred"
+        ],
+        "acceptable_paraphrases": [
+          "high-yield savings",
+          "Goldman Sachs savings"
+        ],
+        "must_not_include": [
+          "4.0% as current rate",
+          "4.5% as current rate"
+        ],
+        "harmful_extra": [
+          "stating 4.0% is the current APY",
+          "stating the APY reverted to 4.5%"
+        ],
+        "harmless_extra": [
+          "mentioning $8,000 transfer",
+          "mentioning Chase checking as primary",
+          "mentioning Zelle setup"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model states 4.5% or 4.0% as the current APY instead of 4.25%.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model does not reflect the sequence of APY changes or conflates the tentative 4.0% with a confirmed rate.",
+        "final_state": "Fails if the final APY is not reported as 4.25%.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I opened a high-yield savings with Marcus by Goldman Sachs in mid-March, and the APY when I signed up was 4.5%"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "For everyday purchases I use Apple Pay linked to my Chase Sapphire Preferred card. I stopped carrying cash entirely about two months ago"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I just checked the Marcus app and the APY dropped to 4.25%. Kind of annoying but still way better than Chase savings"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Marcus sent me an email saying my APY will be adjusted to 4.0% starting next billing cycle"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I logged in just now and the rate still shows 4.25%. So the 4.0% hasn't kicked in, and honestly I read some forums saying it might not drop that far after all"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Summarize everything I've told you about my savings account and how I pay for everyday purchases — what were the key details I shared across our conversations?",
+      "expected_answer": "You opened a high-yield savings account with Marcus by Goldman Sachs in mid-March, initially at 4.5% APY, transferring $8,000 from Chase savings. The APY later dropped to 4.25%. You also received an email projecting a further drop to 4.0%, but when you logged in the rate was still 4.25%, so the projected drop hadn't taken effect. For everyday purchases, you use Apple Pay linked to your Chase Sapphire Preferred card and stopped carrying cash about two months before mentioning it.",
+      "gold_memory_state": "Marcus savings APY: 4.25% (confirmed, after chain of 4.5% → 4.25% → tentative 4.0% → confirmed still 4.25%). Everyday payment: Apple Pay linked to Chase Sapphire Preferred, no cash.",
+      "judge_rubric": {
+        "must_include": [
+          "Marcus by Goldman Sachs",
+          "4.25%",
+          "Apple Pay",
+          "Chase Sapphire Preferred"
+        ],
+        "acceptable_paraphrases": [
+          "high-yield savings",
+          "Goldman Sachs savings"
+        ],
+        "must_not_include": [
+          "4.0% as current rate",
+          "4.5% as current rate"
+        ],
+        "harmful_extra": [
+          "stating 4.0% is the current APY",
+          "stating the APY reverted to 4.5%"
+        ],
+        "harmless_extra": [
+          "mentioning $8,000 transfer",
+          "mentioning Chase checking as primary",
+          "mentioning Zelle setup"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model states 4.5% or 4.0% as the current APY instead of 4.25%.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model does not reflect the sequence of APY changes or conflates the tentative 4.0% with a confirmed rate.",
+        "final_state": "Fails if the final APY is not reported as 4.25%.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I opened a high-yield savings with Marcus by Goldman Sachs in mid-March, and the APY when I signed up was 4.5%"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "For everyday purchases I use Apple Pay linked to my Chase Sapphire Preferred card. I stopped carrying cash entirely about two months ago"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I just checked the Marcus app and the APY dropped to 4.25%. Kind of annoying but still way better than Chase savings"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Marcus sent me an email saying my APY will be adjusted to 4.0% starting next billing cycle"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I logged in just now and the rate still shows 4.25%. So the 4.0% hasn't kicked in, and honestly I read some forums saying it might not drop that far after all"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "My coworker Priya also has a Marcus account and mentioned her rate. If I'm reviewing my own savings performance, which rate applies to my account and does Priya's rate have any bearing on my record?",
+      "expected_answer": "Your current Marcus savings APY is 4.25%. Priya's rate of 4.15% is her own account detail and does not apply to or change your savings record.",
+      "gold_memory_state": "User's Marcus APY: 4.25% (confirmed). Priya's Marcus APY: 4.15% (third-party, not user's rate). Everyday payment method: Apple Pay linked to Chase Sapphire Preferred (unchanged, separate target).",
+      "judge_rubric": {
+        "must_include": [
+          "4.25% as user's rate",
+          "Priya's rate does not apply to user's account"
+        ],
+        "acceptable_paraphrases": [
+          "Priya's 4.15% is irrelevant to your record",
+          "your rate is 4.25%, not Priya's 4.15%"
+        ],
+        "must_not_include": [
+          "4.15% as user's rate",
+          "4.0% as user's current rate",
+          "4.5% as user's current rate"
+        ],
+        "harmful_extra": [
+          "adopting Priya's rate as the user's own",
+          "treating 4.0% as the active rate"
+        ],
+        "harmless_extra": [
+          "mentioning that Marcus rates can vary by account"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses 4.5% or 4.0% as the user's current rate.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model conflates Priya's 4.15% with the user's 4.25%.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I just checked the Marcus app and the APY dropped to 4.25%. Kind of annoying but still way better than Chase savings"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Priya also told me her Marcus account is getting 4.15% right now, which confused me because I thought these rates were uniform"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I logged in just now and the rate still shows 4.25%. So the 4.0% hasn't kicked in, and honestly I read some forums saying it might not drop that far after all"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "My coworker Priya also has a Marcus account and mentioned her rate. If I'm reviewing my own savings performance, which rate applies to my account and does Priya's rate have any bearing on my record?",
+      "expected_answer": "Your current Marcus savings APY is 4.25%. Priya's rate of 4.15% is her own account detail and does not apply to or change your savings record.",
+      "gold_memory_state": "User's Marcus APY: 4.25% (confirmed). Priya's Marcus APY: 4.15% (third-party, not user's rate). Everyday payment method: Apple Pay linked to Chase Sapphire Preferred (unchanged, separate target).",
+      "judge_rubric": {
+        "must_include": [
+          "4.25% as user's rate",
+          "Priya's rate does not apply to user's account"
+        ],
+        "acceptable_paraphrases": [
+          "Priya's 4.15% is irrelevant to your record",
+          "your rate is 4.25%, not Priya's 4.15%"
+        ],
+        "must_not_include": [
+          "4.15% as user's rate",
+          "4.0% as user's current rate",
+          "4.5% as user's current rate"
+        ],
+        "harmful_extra": [
+          "adopting Priya's rate as the user's own",
+          "treating 4.0% as the active rate"
+        ],
+        "harmless_extra": [
+          "mentioning that Marcus rates can vary by account"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses 4.5% or 4.0% as the user's current rate.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model conflates Priya's 4.15% with the user's 4.25%.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I just checked the Marcus app and the APY dropped to 4.25%. Kind of annoying but still way better than Chase savings"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Priya also told me her Marcus account is getting 4.15% right now, which confused me because I thought these rates were uniform"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I logged in just now and the rate still shows 4.25%. So the 4.0% hasn't kicked in, and honestly I read some forums saying it might not drop that far after all"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "What APY should I use when estimating my savings interest for this month?",
+      "expected_answer": "4.25%",
+      "gold_memory_state": "Marcus savings APY is 4.25% (confirmed). The email-projected 4.0% was tentative and never took effect; the user verified the rate is still 4.25% by logging in. The original 4.5% is a superseded historical value.",
+      "judge_rubric": {
+        "must_include": [
+          "4.25%"
+        ],
+        "acceptable_paraphrases": [
+          "4.25 percent",
+          "four point two five percent"
+        ],
+        "must_not_include": [
+          "4.0%",
+          "4.5%",
+          "4.15%"
+        ],
+        "harmful_extra": [
+          "using 4.0% as the current rate",
+          "using 4.5% as the current rate",
+          "using Priya's 4.15%"
+        ],
+        "harmless_extra": [
+          "mentioning that the rate may change in the future"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses 4.5% (original rate) or 4.0% (tentative projected rate that never took effect) or 4.15% (Priya's rate).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model treats the tentative 4.0% email projection as the most recent and therefore current rate.",
+        "final_state": "Fails if the final confirmed rate of 4.25% is not selected.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I logged in just now and the rate still shows 4.25%. So the 4.0% hasn't kicked in, and honestly I read some forums saying it might not drop that far after all"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "What APY should I use when estimating my savings interest for this month?",
+      "expected_answer": "4.25%",
+      "gold_memory_state": "Marcus savings APY is 4.25% (confirmed). The email-projected 4.0% was tentative and never took effect; the user verified the rate is still 4.25% by logging in. The original 4.5% is a superseded historical value.",
+      "judge_rubric": {
+        "must_include": [
+          "4.25%"
+        ],
+        "acceptable_paraphrases": [
+          "4.25 percent",
+          "four point two five percent"
+        ],
+        "must_not_include": [
+          "4.0%",
+          "4.5%",
+          "4.15%"
+        ],
+        "harmful_extra": [
+          "using 4.0% as the current rate",
+          "using 4.5% as the current rate",
+          "using Priya's 4.15%"
+        ],
+        "harmless_extra": [
+          "mentioning that the rate may change in the future"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses 4.5% (original rate) or 4.0% (tentative projected rate that never took effect) or 4.15% (Priya's rate).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model treats the tentative 4.0% email projection as the most recent and therefore current rate.",
+        "final_state": "Fails if the final confirmed rate of 4.25% is not selected.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I logged in just now and the rate still shows 4.25%. So the 4.0% hasn't kicked in, and honestly I read some forums saying it might not drop that far after all"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to estimate how much interest my Marcus savings will earn over the next 12 months on the balance I transferred in, and I'd also like to know which card I should tap at the grocery store tomorrow. Can you give me both the estimated annual interest amount and the payment method?",
+      "expected_answer": "At 4.25% APY on your $8,000 balance, you would earn approximately $340 in interest over 12 months. For the grocery store, tap your phone using Apple Pay linked to your Chase Sapphire Preferred card.",
+      "gold_memory_state": "Marcus savings APY: 4.25% (confirmed). Balance transferred: $8,000. Everyday payment method: Apple Pay linked to Chase Sapphire Preferred card.",
+      "judge_rubric": {
+        "must_include": [
+          "approximately $340",
+          "4.25%",
+          "Apple Pay",
+          "Chase Sapphire Preferred"
+        ],
+        "acceptable_paraphrases": [
+          "~$340",
+          "about $340",
+          "around $340",
+          "$340 annually"
+        ],
+        "must_not_include": [
+          "4.0%",
+          "4.5%",
+          "$360",
+          "$320",
+          "Venmo",
+          "cash",
+          "Discover"
+        ],
+        "harmful_extra": [
+          "using 4.0% or 4.5% to compute interest",
+          "recommending a payment method the user does not use"
+        ],
+        "harmless_extra": [
+          "mentioning that the rate could change",
+          "mentioning rewards points on the Sapphire Preferred"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses 4.5% (yielding ~$360) or 4.0% (yielding ~$320) instead of the confirmed 4.25%.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the final APY used is not 4.25% or the payment method is not Apple Pay with Chase Sapphire Preferred.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user transferred $8,000 into their Marcus savings account.",
+        "Fact 2: The current confirmed Marcus APY is 4.25%, after the original 4.5% dropped and the tentative 4.0% never took effect.",
+        "Fact 3: The user pays for everyday purchases using Apple Pay linked to their Chase Sapphire Preferred card.",
+        "Inference: Annual interest = $8,000 × 0.0425 = $340.",
+        "Inference: The grocery payment method is Apple Pay via Chase Sapphire Preferred, combined with the $340 interest estimate."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I opened a high-yield savings with Marcus by Goldman Sachs in mid-March, and the APY when I signed up was 4.5%"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "For everyday purchases I use Apple Pay linked to my Chase Sapphire Preferred card. I stopped carrying cash entirely about two months ago"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I logged in just now and the rate still shows 4.25%. So the 4.0% hasn't kicked in, and honestly I read some forums saying it might not drop that far after all"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to estimate how much interest my Marcus savings will earn over the next 12 months on the balance I transferred in, and I'd also like to know which card I should tap at the grocery store tomorrow. Can you give me both the estimated annual interest amount and the payment method?",
+      "expected_answer": "At 4.25% APY on your $8,000 balance, you would earn approximately $340 in interest over 12 months. For the grocery store, tap your phone using Apple Pay linked to your Chase Sapphire Preferred card.",
+      "gold_memory_state": "Marcus savings APY: 4.25% (confirmed). Balance transferred: $8,000. Everyday payment method: Apple Pay linked to Chase Sapphire Preferred card.",
+      "judge_rubric": {
+        "must_include": [
+          "approximately $340",
+          "4.25%",
+          "Apple Pay",
+          "Chase Sapphire Preferred"
+        ],
+        "acceptable_paraphrases": [
+          "~$340",
+          "about $340",
+          "around $340",
+          "$340 annually"
+        ],
+        "must_not_include": [
+          "4.0%",
+          "4.5%",
+          "$360",
+          "$320",
+          "Venmo",
+          "cash",
+          "Discover"
+        ],
+        "harmful_extra": [
+          "using 4.0% or 4.5% to compute interest",
+          "recommending a payment method the user does not use"
+        ],
+        "harmless_extra": [
+          "mentioning that the rate could change",
+          "mentioning rewards points on the Sapphire Preferred"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses 4.5% (yielding ~$360) or 4.0% (yielding ~$320) instead of the confirmed 4.25%.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the final APY used is not 4.25% or the payment method is not Apple Pay with Chase Sapphire Preferred.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user transferred $8,000 into their Marcus savings account.",
+        "Fact 2: The current confirmed Marcus APY is 4.25%, after the original 4.5% dropped and the tentative 4.0% never took effect.",
+        "Fact 3: The user pays for everyday purchases using Apple Pay linked to their Chase Sapphire Preferred card.",
+        "Inference: Annual interest = $8,000 × 0.0425 = $340.",
+        "Inference: The grocery payment method is Apple Pay via Chase Sapphire Preferred, combined with the $340 interest estimate."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I opened a high-yield savings with Marcus by Goldman Sachs in mid-March, and the APY when I signed up was 4.5%"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "For everyday purchases I use Apple Pay linked to my Chase Sapphire Preferred card. I stopped carrying cash entirely about two months ago"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I logged in just now and the rate still shows 4.25%. So the 4.0% hasn't kicked in, and honestly I read some forums saying it might not drop that far after all"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed our entire conversation history about my Marcus savings rate, what would they see as the full sequence of rate changes — which values were actually in effect at each point, which were only projected, and what's the rate I should rely on now?",
+      "expected_answer": "The sequence was: (1) 4.5% APY when you first opened the account in mid-March — this was the initial confirmed rate. (2) The rate dropped to 4.25% as you verified in the Marcus app — this became the new confirmed rate. (3) You received an email projecting a further drop to 4.0% starting next billing cycle — this was only a projected future change and was never actually applied. (4) You logged in and confirmed the rate still shows 4.25%, meaning the 4.0% projection did not take effect. The rate you should rely on now is 4.25%.",
+      "gold_memory_state": "Marcus APY trajectory: 4.5% (confirmed, initial) → 4.25% (confirmed, app-verified drop) → 4.0% (tentative email projection, never took effect) → 4.25% (confirmed, user re-verified via login). Final confirmed value: 4.25%.",
+      "judge_rubric": {
+        "must_include": [
+          "4.5% as initial rate",
+          "4.25% as the confirmed drop",
+          "4.0% as projected but not applied",
+          "4.25% as the final current rate"
+        ],
+        "acceptable_paraphrases": [
+          "4.0% was only an email notice",
+          "4.0% never kicked in",
+          "4.0% was tentative"
+        ],
+        "must_not_include": [
+          "4.0% as the final rate",
+          "4.5% as the final rate",
+          "4.15% in the user's trajectory"
+        ],
+        "harmful_extra": [
+          "including Priya's 4.15% as part of the user's rate trajectory",
+          "treating 4.0% as a confirmed rate that was later reversed"
+        ],
+        "harmless_extra": [
+          "mentioning that rates follow the Fed funds rate",
+          "mentioning forum speculation about Marcus holding near 4.25%"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 4.5% or 4.0% is presented as the current usable rate.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence is out of order or if the tentative 4.0% step is omitted or placed incorrectly.",
+        "final_state": "Fails if the final rate is not 4.25%.",
+        "intermediate_state": "Fails if the model omits the 4.5% → 4.25% confirmed transition or the 4.0% tentative projection.",
+        "trajectory_provenance": "Fails if the model does not distinguish the email projection (tentative) from the app-verified rates (confirmed)."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: User opened Marcus account in mid-March at 4.5% APY (confirmed).",
+        "Step 2: User checked the Marcus app and found the rate had dropped to 4.25% (confirmed).",
+        "Step 3: User received an email from Marcus projecting a drop to 4.0% starting next billing cycle (tentative/projected only).",
+        "Step 4: User logged in and verified the rate still shows 4.25%; the 4.0% never took effect (confirmed revert to 4.25%).",
+        "Inference: The full trajectory is 4.5% → 4.25% → tentative 4.0% (not adopted) → 4.25% remains the final confirmed rate."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I opened a high-yield savings with Marcus by Goldman Sachs in mid-March, and the APY when I signed up was 4.5%"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I just checked the Marcus app and the APY dropped to 4.25%. Kind of annoying but still way better than Chase savings"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Marcus sent me an email saying my APY will be adjusted to 4.0% starting next billing cycle"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I logged in just now and the rate still shows 4.25%. So the 4.0% hasn't kicked in, and honestly I read some forums saying it might not drop that far after all"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed our entire conversation history about my Marcus savings rate, what would they see as the full sequence of rate changes — which values were actually in effect at each point, which were only projected, and what's the rate I should rely on now?",
+      "expected_answer": "The sequence was: (1) 4.5% APY when you first opened the account in mid-March — this was the initial confirmed rate. (2) The rate dropped to 4.25% as you verified in the Marcus app — this became the new confirmed rate. (3) You received an email projecting a further drop to 4.0% starting next billing cycle — this was only a projected future change and was never actually applied. (4) You logged in and confirmed the rate still shows 4.25%, meaning the 4.0% projection did not take effect. The rate you should rely on now is 4.25%.",
+      "gold_memory_state": "Marcus APY trajectory: 4.5% (confirmed, initial) → 4.25% (confirmed, app-verified drop) → 4.0% (tentative email projection, never took effect) → 4.25% (confirmed, user re-verified via login). Final confirmed value: 4.25%.",
+      "judge_rubric": {
+        "must_include": [
+          "4.5% as initial rate",
+          "4.25% as the confirmed drop",
+          "4.0% as projected but not applied",
+          "4.25% as the final current rate"
+        ],
+        "acceptable_paraphrases": [
+          "4.0% was only an email notice",
+          "4.0% never kicked in",
+          "4.0% was tentative"
+        ],
+        "must_not_include": [
+          "4.0% as the final rate",
+          "4.5% as the final rate",
+          "4.15% in the user's trajectory"
+        ],
+        "harmful_extra": [
+          "including Priya's 4.15% as part of the user's rate trajectory",
+          "treating 4.0% as a confirmed rate that was later reversed"
+        ],
+        "harmless_extra": [
+          "mentioning that rates follow the Fed funds rate",
+          "mentioning forum speculation about Marcus holding near 4.25%"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 4.5% or 4.0% is presented as the current usable rate.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence is out of order or if the tentative 4.0% step is omitted or placed incorrectly.",
+        "final_state": "Fails if the final rate is not 4.25%.",
+        "intermediate_state": "Fails if the model omits the 4.5% → 4.25% confirmed transition or the 4.0% tentative projection.",
+        "trajectory_provenance": "Fails if the model does not distinguish the email projection (tentative) from the app-verified rates (confirmed)."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: User opened Marcus account in mid-March at 4.5% APY (confirmed).",
+        "Step 2: User checked the Marcus app and found the rate had dropped to 4.25% (confirmed).",
+        "Step 3: User received an email from Marcus projecting a drop to 4.0% starting next billing cycle (tentative/projected only).",
+        "Step 4: User logged in and verified the rate still shows 4.25%; the 4.0% never took effect (confirmed revert to 4.25%).",
+        "Inference: The full trajectory is 4.5% → 4.25% → tentative 4.0% (not adopted) → 4.25% remains the final confirmed rate."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I opened a high-yield savings with Marcus by Goldman Sachs in mid-March, and the APY when I signed up was 4.5%"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I just checked the Marcus app and the APY dropped to 4.25%. Kind of annoying but still way better than Chase savings"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Marcus sent me an email saying my APY will be adjusted to 4.0% starting next billing cycle"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I logged in just now and the rate still shows 4.25%. So the 4.0% hasn't kicked in, and honestly I read some forums saying it might not drop that far after all"
+        }
+      ]
+    }
+  ]
+}

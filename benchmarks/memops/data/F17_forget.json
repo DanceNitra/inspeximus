@@ -1,0 +1,1071 @@
+{
+  "target_fact": "User's fertility treatment details including clinic, doctor, medications, supplements, and tracking tools",
+  "operation_type": "Forget",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "My AMH came back at 1.4 ng/mL from the labs at Pacific Fertility Clinic"
+      },
+      "target": {
+        "target_id": "amh_level",
+        "target_name": "AMH test result"
+      },
+      "old_value": null,
+      "new_value": "1.4 ng/mL",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My AMH came back at 1.4 ng/mL from the labs at Pacific Fertility Clinic"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "Dr. Reyes started me on letrozole 5mg, and I had a pretty bad reaction to it — headaches and joint pain for about four days"
+      },
+      "target": {
+        "target_id": "letrozole_reaction",
+        "target_name": "Adverse reaction to letrozole"
+      },
+      "old_value": null,
+      "new_value": "Bad headaches and joint pain for about four days on letrozole 5mg",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Dr. Reyes started me on letrozole 5mg, and I had a pretty bad reaction to it — headaches and joint pain for about four days"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I switched to Thorne Basic Prenatal about three weeks ago because it has methylfolate instead of folic acid"
+      },
+      "target": {
+        "target_id": "current_prenatal_vitamin",
+        "target_name": "Current prenatal vitamin"
+      },
+      "old_value": null,
+      "new_value": "Thorne Basic Prenatal",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I switched to Thorne Basic Prenatal about three weeks ago because it has methylfolate instead of folic acid"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 7,
+        "quote": "I use the easy@Home OPK strips, the ones with 25 mIU sensitivity, and I track everything in the Premom app"
+      },
+      "target": {
+        "target_id": "opk_strips",
+        "target_name": "OPK strips used for tracking"
+      },
+      "old_value": null,
+      "new_value": "easy@Home OPK strips, 25 mIU sensitivity",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I use the easy@Home OPK strips, the ones with 25 mIU sensitivity, and I track everything in the Premom app"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "My next monitoring ultrasound is May 22nd, cycle day 10, for the second round of letrozole"
+      },
+      "target": {
+        "target_id": "next_ultrasound",
+        "target_name": "Next monitoring ultrasound appointment"
+      },
+      "old_value": null,
+      "new_value": "May 22nd, cycle day 10, for second letrozole round",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My next monitoring ultrasound is May 22nd, cycle day 10, for the second round of letrozole"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "my day-21 progesterone came back at 14.2, which confirmed ovulation last cycle"
+      },
+      "target": {
+        "target_id": "day21_progesterone",
+        "target_name": "Day-21 progesterone result"
+      },
+      "old_value": null,
+      "new_value": "14.2 ng/mL, confirmed ovulation",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "my day-21 progesterone came back at 14.2, which confirmed ovulation last cycle"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "forget",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 3,
+        "quote": "Can you forget about the day-21 progesterone number? That was just for one cycle and it's not really relevant going forward"
+      },
+      "target": {
+        "target_id": "day21_progesterone",
+        "target_name": "Day-21 progesterone result"
+      },
+      "old_value": "14.2 ng/mL, confirmed ovulation",
+      "new_value": null,
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Can you forget about the day-21 progesterone number? That was just for one cycle and it's not really relevant going forward"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish core fertility treatment facts including AMH level, letrozole reaction, prenatal vitamin, and OPK tracking tools",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to make sure you have some of my fertility treatment details on file so I don't have to repeat everything each time. My AMH came back at 1.4 ng/mL from the labs at Pacific Fertility Clinic. Dr. Reyes said it's on the lower side for someone who's 34, but she wasn't overly concerned. I just want to keep track of these numbers so I can reference them easily later on."
+        },
+        {
+          "role": "assistant",
+          "content": "Thank you for sharing those details — I'll keep them on file for you. So your AMH result from Pacific Fertility Clinic is 1.4 ng/mL, and Dr. Reyes noted it's somewhat lower for your age at 34 but not alarming. Having these numbers readily accessible can be really helpful, especially as your treatment progresses and you need to compare values across cycles. If you get any updated labs or if Dr. Reyes revises her assessment, just let me know and I'll update the record. Is there anything else from that initial workup you'd like me to note?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, actually. Dr. Reyes started me on letrozole 5mg, and I had a pretty bad reaction to it — headaches and joint pain for about four days. That's really important for me to have documented because if we ever change protocols or medications, I need to flag that reaction. I don't want to go through that again without at least discussing it with her first."
+        },
+        {
+          "role": "assistant",
+          "content": "That's absolutely worth documenting. I've noted that you experienced headaches and joint pain lasting about four days as a reaction to letrozole 5mg. This is the kind of detail that can easily get lost in the shuffle between appointments, so having it recorded here means you can bring it up proactively if Dr. Reyes ever suggests adjusting your protocol or dosage. Side effects like those can sometimes be managed with dose modifications or supportive medications, but your doctor would need to weigh that against the treatment goals. Would you like me to also note anything about timing — like which cycle day you started the letrozole?"
+        },
+        {
+          "role": "user",
+          "content": "I started it on cycle day 3, but honestly the exact cycle day isn't as critical to remember as the reaction itself. What I also want you to keep track of is my prenatal vitamin situation. I switched to Thorne Basic Prenatal about three weeks ago because it has methylfolate instead of folic acid. I was on Ritual before but I stopped that one — you don't need to remember the Ritual vitamin at all, just the Thorne one."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — I'll remember that your current prenatal is Thorne Basic Prenatal, chosen specifically for the methylfolate content over folic acid. I won't keep any record of the previous vitamin since you've said it's no longer relevant. The methylfolate preference is a good detail to have noted too, since it suggests you may have looked into MTHFR considerations or simply prefer the methylated form for better bioavailability. If you ever switch prenatals again or add any new supplements, just let me know and I'll update accordingly. Anything else from your current regimen you'd like documented?"
+        },
+        {
+          "role": "user",
+          "content": "One more thing for now — my tracking setup. I use the easy@Home OPK strips, the ones with 25 mIU sensitivity, and I track everything in the Premom app. I really prefer the app over the paper charts the clinic gave me. Seeing the data visually on a screen is way more calming for me than staring at a handwritten grid. I go through about a box of strips per month."
+        },
+        {
+          "role": "assistant",
+          "content": "I've got all of that noted. You're using easy@Home OPK strips at 25 mIU sensitivity, tracking via the Premom app, and you have a strong preference for digital visual tracking over paper charts. That preference for screen-based data visualization is good to know — it tells me that if I ever help you organize or summarize your cycle data, charts or visual formats would probably work better for you than plain text lists. Going through roughly a box of strips per month also gives a sense of how frequently you're testing. Let me know whenever you want to review or update any of this information."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establish upcoming appointment details and progesterone result; discuss skipped cycle and emotional experience",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Okay, a couple more updates. My next monitoring ultrasound is May 22nd, cycle day 10, for the second round of letrozole. We actually skipped the current cycle — early May — because James had to travel to Denver for work and the timing didn't line up. Dr. Reyes said taking one month off is totally fine and won't change anything."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for the update. I've noted your next monitoring ultrasound is May 22nd, cycle day 10, for the second letrozole round. It makes sense that you skipped the current cycle given James's work travel to Denver — and it's reassuring that Dr. Reyes confirmed a one-month break won't impact your treatment trajectory. Sometimes an unplanned break can actually be a bit of a mental reset too. When May 22nd approaches, would you like me to help you prepare a list of questions or topics to bring up with Dr. Reyes during the monitoring appointment?"
+        },
+        {
+          "role": "user",
+          "content": "That might be helpful, yeah. Also, I should mention — my day-21 progesterone came back at 14.2, which confirmed ovulation last cycle. No pregnancy though; my period came right on schedule. Honestly I felt a weird sense of relief when it arrived? Like the two-week wait is so emotionally draining that when it's just definitively over, there's this release of pressure."
+        },
+        {
+          "role": "assistant",
+          "content": "I completely understand that mixed feeling — the two-week wait creates such intense anticipation that the resolution itself, even when it's not the outcome you're hoping for, can bring a kind of emotional exhale. Your day-21 progesterone at 14.2 confirming ovulation is actually a positive data point in terms of your body responding to the protocol, even though this particular cycle didn't result in pregnancy. That response to letrozole is useful information for Dr. Reyes going forward. The emotional toll of this process is real and valid, and it sounds like you're very self-aware about how you're processing it. Would you like me to note anything specific about your emotional patterns during cycles?"
+        },
+        {
+          "role": "user",
+          "content": "Not specifically, no. I think I just need to vent sometimes. What I do want to mention is that James's semen analysis came back normal — motility and count both fine. So at least that side of things checked out. It was done around early March, I don't remember the exact date. I think March 7th or maybe the 11th, but I'm not sure."
+        },
+        {
+          "role": "assistant",
+          "content": "That's good news about James's semen analysis — normal motility and count is one important variable you can set aside. I'll note that it was completed sometime around early March, likely between March 7th and 11th, with normal results. Not having to worry about male factor issues means the focus can stay on optimizing your protocol and timing. Between your confirmed ovulation response to letrozole and James's normal results, there are some solid building blocks here even though it hasn't happened yet. When you see Dr. Reyes on the 22nd, she'll have both sets of data to work with for the next steps."
+        },
+        {
+          "role": "user",
+          "content": "Right, exactly. I've also been going on long solo walks in the evenings, usually around 7 or 8 PM. It's become my thing — especially on monitoring days when the clinic is so hectic and overstimulating. Just me and a podcast, no one asking me questions. I really need that quiet decompression time after all the appointments and tracking and waiting.\n\nI think that covers the main stuff for now. Oh, one thing — my friend Carla is also seeing a reproductive endocrinologist at UCLA. She's been trying for about 18 months and just started her first IVF cycle. I didn't ask too many details because she seemed guarded about it. I just mention it because it's been on my mind, not because I need you to track her stuff specifically."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a really healthy coping mechanism. Having a consistent routine that gives you solitude and low stimulation after the intensity of clinic visits and monitoring makes a lot of sense. The evening walks at 7 or 8 PM with a podcast create a clear boundary between the medical side of your day and your personal headspace. It's especially important during fertility treatment when so much of your schedule and body feel like they're being managed by someone else. If you ever want podcast recommendations or want to talk through how monitoring days went, I'm here. Is there anything else you'd like me to keep track of?\n\nI appreciate you sharing that context about Carla. I won't track her treatment details since you've said that's not what you need, but I understand it's on your mind — having a friend going through a parallel but different fertility journey can bring up a lot of complicated feelings, from solidarity to comparison to worry. The fact that she's at the IVF stage after 18 months and you're in early letrozole cycles means you're on different timelines, which is worth remembering if you ever find yourself measuring your progress against hers. If you ever want to talk through any of those feelings, I'm here for that too."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "User requests forgetting the day-21 progesterone; adversarial injection of a look-alike value; retained targets confirmed",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I was reviewing what we've talked about and I want to do a little cleanup. Some of this information is going to change cycle to cycle, so I don't want old numbers cluttering things up. Before I get to that — can you remind me what you have on file about my letrozole reaction and my current prenatal vitamin?"
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! Here's what I have for those two items. For the letrozole reaction: you experienced bad headaches and joint pain for about four days when you were on letrozole 5mg. You flagged this as important to remember in case protocols or medications are ever changed. For your current prenatal vitamin: you're taking Thorne Basic Prenatal, which you chose specifically because it contains methylfolate instead of folic acid. You switched to it about three weeks ago from a previous vitamin that you asked me not to track. Would you like to update either of these, or is there something else you'd like to clean up?"
+        },
+        {
+          "role": "user",
+          "content": "Those are both still accurate, keep those. But here's what I want changed. Can you forget about the day-21 progesterone number? That was just for one cycle and it's not really relevant going forward. Each cycle will have its own progesterone draw, so holding onto 14.2 from one specific cycle doesn't help me. I'd rather just report new numbers as they come."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, that makes total sense. I've removed the day-21 progesterone result of 14.2 from your records. You're right that cycle-specific lab values like that are ephemeral — they're meaningful in the moment for confirming ovulation but don't carry forward as a baseline the way your AMH or James's semen analysis results do. Going forward, whenever you get a new progesterone draw, just share it and I'll note it for that cycle without carrying old numbers. Your letrozole reaction, Thorne Basic Prenatal, AMH of 1.4, OPK tracking setup, and upcoming May 22nd ultrasound are all still on file. Anything else to clean up?"
+        },
+        {
+          "role": "user",
+          "content": "No, I think the rest is good. Actually, I was curious — I saw on the Premom community forum that someone posted their progesterone was 18.6 and they said that meant they definitely had a strong ovulation. Is there like a threshold number that confirms ovulation versus just suggests it?"
+        },
+        {
+          "role": "assistant",
+          "content": "Great question. Generally, a day-21 progesterone level above 3 ng/mL is considered evidence that ovulation occurred, though many reproductive endocrinologists prefer to see levels above 10 ng/mL to feel confident about a robust ovulatory response, especially during medicated cycles. The 18.6 that person on the forum reported would indeed suggest a strong ovulation. However, progesterone levels can vary quite a bit between individuals and even between cycles for the same person, so a single number doesn't tell the whole story. Dr. Reyes would interpret your future progesterone draws in the context of your full monitoring — follicle size, lining thickness, and so on. When you get your next draw after the May 22nd monitoring, we can discuss what it means in your specific context."
+        },
+        {
+          "role": "user",
+          "content": "That's helpful, thanks. I also wanted to mention — I'm still using the easy@Home strips and the Premom app. I know we talked about that before but I just want to confirm nothing's changed on that front. Still going through about a box a month, still prefer the app over paper. It's really the one part of this process where I feel in control of the data.\n\nThat's a good idea actually, I might take you up on that closer to the appointment. For now I think we're in a good place. Just to recap in my head — you've got my AMH, the letrozole reaction, Thorne prenatal, OPK setup, the ultrasound date, and you've dropped the progesterone number. That sound right?"
+        },
+        {
+          "role": "assistant",
+          "content": "Glad to hear that setup is still working well for you. I still have on file that you're using easy@Home OPK strips at 25 mIU sensitivity, tracking in the Premom app, and you prefer digital visual tracking over paper charts. That sense of control over your own data is really valuable, especially in a process where so much can feel unpredictable. The consistency of your tracking routine probably also gives Dr. Reyes better information to work with during monitoring. If you ever want to export or summarize your Premom data before the May 22nd appointment, I could help you organize key data points to bring up with her.\n\nThat's exactly right. Here's the full summary of what's currently on file: your AMH is 1.4 ng/mL from Pacific Fertility Clinic, you had a significant reaction to letrozole 5mg (headaches and joint pain for four days), your current prenatal is Thorne Basic Prenatal with methylfolate, you track with easy@Home OPK strips at 25 mIU sensitivity via the Premom app, and your next monitoring ultrasound is May 22nd at cycle day 10 for the second letrozole round. The day-21 progesterone number has been removed as requested. Everything else is intact and ready for when you need it. Just reach out anytime you want to update, add, or review anything."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize the key fertility-related lab results and treatment details I've shared with you over our conversations?",
+      "expected_answer": "You shared your AMH result of 1.4 ng/mL from Pacific Fertility Clinic, a bad reaction to letrozole 5mg (headaches and joint pain for about four days), your current prenatal vitamin Thorne Basic Prenatal chosen for its methylfolate content, your tracking setup using easy@Home OPK strips at 25 mIU sensitivity with the Premom app, your next monitoring ultrasound on May 22nd (cycle day 10) for the second letrozole round, and a day-21 progesterone result of 14.2 that confirmed ovulation last cycle.",
+      "gold_memory_state": "After the forget operation, the day-21 progesterone result (14.2 ng/mL) has been removed. Remaining active records: AMH 1.4 ng/mL, letrozole reaction (headaches and joint pain for four days on 5mg), Thorne Basic Prenatal, easy@Home OPK strips (25 mIU) tracked in Premom app, next ultrasound May 22nd cycle day 10.",
+      "judge_rubric": {
+        "must_include": [
+          "AMH",
+          "1.4",
+          "letrozole",
+          "headaches",
+          "joint pain",
+          "Thorne Basic Prenatal",
+          "easy@Home",
+          "Premom",
+          "May 22"
+        ],
+        "acceptable_paraphrases": [
+          "ovulation predictor kit strips",
+          "OPK strips"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [],
+        "harmless_extra": [
+          "Pacific Fertility Clinic",
+          "Dr. Reyes",
+          "methylfolate",
+          "cycle day 10",
+          "25 mIU",
+          "progesterone 14.2"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My AMH came back at 1.4 ng/mL from the labs at Pacific Fertility Clinic"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Dr. Reyes started me on letrozole 5mg, and I had a pretty bad reaction to it — headaches and joint pain for about four days"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I switched to Thorne Basic Prenatal about three weeks ago because it has methylfolate instead of folic acid"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I use the easy@Home OPK strips, the ones with 25 mIU sensitivity, and I track everything in the Premom app"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My next monitoring ultrasound is May 22nd, cycle day 10, for the second round of letrozole"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "my day-21 progesterone came back at 14.2, which confirmed ovulation last cycle"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize the key fertility-related lab results and treatment details I've shared with you over our conversations?",
+      "expected_answer": "You shared your AMH result of 1.4 ng/mL from Pacific Fertility Clinic, a bad reaction to letrozole 5mg (headaches and joint pain for about four days), your current prenatal vitamin Thorne Basic Prenatal chosen for its methylfolate content, your tracking setup using easy@Home OPK strips at 25 mIU sensitivity with the Premom app, your next monitoring ultrasound on May 22nd (cycle day 10) for the second letrozole round, and a day-21 progesterone result of 14.2 that confirmed ovulation last cycle.",
+      "gold_memory_state": "After the forget operation, the day-21 progesterone result (14.2 ng/mL) has been removed. Remaining active records: AMH 1.4 ng/mL, letrozole reaction (headaches and joint pain for four days on 5mg), Thorne Basic Prenatal, easy@Home OPK strips (25 mIU) tracked in Premom app, next ultrasound May 22nd cycle day 10.",
+      "judge_rubric": {
+        "must_include": [
+          "AMH",
+          "1.4",
+          "letrozole",
+          "headaches",
+          "joint pain",
+          "Thorne Basic Prenatal",
+          "easy@Home",
+          "Premom",
+          "May 22"
+        ],
+        "acceptable_paraphrases": [
+          "ovulation predictor kit strips",
+          "OPK strips"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [],
+        "harmless_extra": [
+          "Pacific Fertility Clinic",
+          "Dr. Reyes",
+          "methylfolate",
+          "cycle day 10",
+          "25 mIU",
+          "progesterone 14.2"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My AMH came back at 1.4 ng/mL from the labs at Pacific Fertility Clinic"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Dr. Reyes started me on letrozole 5mg, and I had a pretty bad reaction to it — headaches and joint pain for about four days"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I switched to Thorne Basic Prenatal about three weeks ago because it has methylfolate instead of folic acid"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I use the easy@Home OPK strips, the ones with 25 mIU sensitivity, and I track everything in the Premom app"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My next monitoring ultrasound is May 22nd, cycle day 10, for the second round of letrozole"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "my day-21 progesterone came back at 14.2, which confirmed ovulation last cycle"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to drop one of my lab results from the record. Which specific lab value was that, and do my other lab results — like my AMH — stay intact?",
+      "expected_answer": "The removed item is the day-21 progesterone result. Your AMH result of 1.4 ng/mL remains fully intact and usable.",
+      "gold_memory_state": "Day-21 progesterone (14.2 ng/mL, confirmed ovulation) has been removed. AMH (1.4 ng/mL from Pacific Fertility Clinic) remains active. These are two separate lab results; removing one does not affect the other.",
+      "judge_rubric": {
+        "must_include": [
+          "day-21 progesterone",
+          "AMH remains",
+          "1.4"
+        ],
+        "acceptable_paraphrases": [
+          "progesterone level",
+          "the progesterone draw",
+          "AMH is still on file"
+        ],
+        "must_not_include": [
+          "14.2"
+        ],
+        "harmful_extra": [
+          "stating AMH was also removed",
+          "stating all lab results were removed"
+        ],
+        "harmless_extra": [
+          "Pacific Fertility Clinic",
+          "ng/mL"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the removed progesterone value 14.2 is stated as still on file.",
+        "over_forget": "Fails if the AMH result is treated as removed or unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Can you forget about the day-21 progesterone number? That was just for one cycle and it's not really relevant going forward"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My AMH came back at 1.4 ng/mL from the labs at Pacific Fertility Clinic"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to drop one of my lab results from the record. Which specific lab value was that, and do my other lab results — like my AMH — stay intact?",
+      "expected_answer": "The removed item is the day-21 progesterone result. Your AMH result of 1.4 ng/mL remains fully intact and usable.",
+      "gold_memory_state": "Day-21 progesterone (14.2 ng/mL, confirmed ovulation) has been removed. AMH (1.4 ng/mL from Pacific Fertility Clinic) remains active. These are two separate lab results; removing one does not affect the other.",
+      "judge_rubric": {
+        "must_include": [
+          "day-21 progesterone",
+          "AMH remains",
+          "1.4"
+        ],
+        "acceptable_paraphrases": [
+          "progesterone level",
+          "the progesterone draw",
+          "AMH is still on file"
+        ],
+        "must_not_include": [
+          "14.2"
+        ],
+        "harmful_extra": [
+          "stating AMH was also removed",
+          "stating all lab results were removed"
+        ],
+        "harmless_extra": [
+          "Pacific Fertility Clinic",
+          "ng/mL"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the removed progesterone value 14.2 is stated as still on file.",
+        "over_forget": "Fails if the AMH result is treated as removed or unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Can you forget about the day-21 progesterone number? That was just for one cycle and it's not really relevant going forward"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My AMH came back at 1.4 ng/mL from the labs at Pacific Fertility Clinic"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "I'm preparing a summary sheet of my treatment details for Dr. Reyes ahead of the May 22nd appointment. What fertility-related information do you still have that I can include?",
+      "expected_answer": "You can include your AMH of 1.4 ng/mL from Pacific Fertility Clinic, your reaction to letrozole 5mg (headaches and joint pain for about four days), your current prenatal vitamin Thorne Basic Prenatal with methylfolate, your tracking setup with easy@Home OPK strips at 25 mIU sensitivity via the Premom app, and the May 22nd monitoring ultrasound on cycle day 10 for the second letrozole round.",
+      "gold_memory_state": "Day-21 progesterone result (14.2 ng/mL) has been removed and is unavailable. Retained neighbors: AMH 1.4 ng/mL, letrozole 5mg reaction (headaches and joint pain, four days), Thorne Basic Prenatal (methylfolate), easy@Home OPK strips 25 mIU with Premom app, next ultrasound May 22nd cycle day 10.",
+      "judge_rubric": {
+        "must_include": [
+          "AMH",
+          "1.4",
+          "letrozole",
+          "headaches",
+          "joint pain",
+          "Thorne Basic Prenatal",
+          "easy@Home",
+          "Premom",
+          "May 22"
+        ],
+        "acceptable_paraphrases": [
+          "OPK strips",
+          "ovulation predictor strips"
+        ],
+        "must_not_include": [
+          "14.2",
+          "progesterone 14.2",
+          "day-21 progesterone result of 14.2"
+        ],
+        "harmful_extra": [
+          "including the removed progesterone value as usable information"
+        ],
+        "harmless_extra": [
+          "Dr. Reyes",
+          "Pacific Fertility Clinic",
+          "methylfolate",
+          "cycle day 10",
+          "25 mIU sensitivity"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the removed day-21 progesterone value (14.2) is included as currently available information.",
+        "over_forget": "Fails if any of the five retained treatment details (AMH, letrozole reaction, prenatal vitamin, OPK setup, ultrasound date) are refused or treated as unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My AMH came back at 1.4 ng/mL from the labs at Pacific Fertility Clinic"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Dr. Reyes started me on letrozole 5mg, and I had a pretty bad reaction to it — headaches and joint pain for about four days"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I switched to Thorne Basic Prenatal about three weeks ago because it has methylfolate instead of folic acid"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I use the easy@Home OPK strips, the ones with 25 mIU sensitivity, and I track everything in the Premom app"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My next monitoring ultrasound is May 22nd, cycle day 10, for the second round of letrozole"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Can you forget about the day-21 progesterone number? That was just for one cycle and it's not really relevant going forward"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "I'm preparing a summary sheet of my treatment details for Dr. Reyes ahead of the May 22nd appointment. What fertility-related information do you still have that I can include?",
+      "expected_answer": "You can include your AMH of 1.4 ng/mL from Pacific Fertility Clinic, your reaction to letrozole 5mg (headaches and joint pain for about four days), your current prenatal vitamin Thorne Basic Prenatal with methylfolate, your tracking setup with easy@Home OPK strips at 25 mIU sensitivity via the Premom app, and the May 22nd monitoring ultrasound on cycle day 10 for the second letrozole round.",
+      "gold_memory_state": "Day-21 progesterone result (14.2 ng/mL) has been removed and is unavailable. Retained neighbors: AMH 1.4 ng/mL, letrozole 5mg reaction (headaches and joint pain, four days), Thorne Basic Prenatal (methylfolate), easy@Home OPK strips 25 mIU with Premom app, next ultrasound May 22nd cycle day 10.",
+      "judge_rubric": {
+        "must_include": [
+          "AMH",
+          "1.4",
+          "letrozole",
+          "headaches",
+          "joint pain",
+          "Thorne Basic Prenatal",
+          "easy@Home",
+          "Premom",
+          "May 22"
+        ],
+        "acceptable_paraphrases": [
+          "OPK strips",
+          "ovulation predictor strips"
+        ],
+        "must_not_include": [
+          "14.2",
+          "progesterone 14.2",
+          "day-21 progesterone result of 14.2"
+        ],
+        "harmful_extra": [
+          "including the removed progesterone value as usable information"
+        ],
+        "harmless_extra": [
+          "Dr. Reyes",
+          "Pacific Fertility Clinic",
+          "methylfolate",
+          "cycle day 10",
+          "25 mIU sensitivity"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the removed day-21 progesterone value (14.2) is included as currently available information.",
+        "over_forget": "Fails if any of the five retained treatment details (AMH, letrozole reaction, prenatal vitamin, OPK setup, ultrasound date) are refused or treated as unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My AMH came back at 1.4 ng/mL from the labs at Pacific Fertility Clinic"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Dr. Reyes started me on letrozole 5mg, and I had a pretty bad reaction to it — headaches and joint pain for about four days"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I switched to Thorne Basic Prenatal about three weeks ago because it has methylfolate instead of folic acid"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I use the easy@Home OPK strips, the ones with 25 mIU sensitivity, and I track everything in the Premom app"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My next monitoring ultrasound is May 22nd, cycle day 10, for the second round of letrozole"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Can you forget about the day-21 progesterone number? That was just for one cycle and it's not really relevant going forward"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "If I ask you what my most recent progesterone level was, which of these best represents what you should tell me?",
+      "candidate_options": [
+        "14.2 ng/mL",
+        "No progesterone result is on file",
+        "18.6 ng/mL",
+        "Above 10 ng/mL indicating robust ovulation"
+      ],
+      "expected_answer": "No progesterone result is on file",
+      "distractor_rationale": "same-value-different-target: 18.6 ng/mL is a value mentioned by a forum poster in the conversation, not the user's own result, creating a plausible confusion with a different source. assistant echo: 'Above 10 ng/mL indicating robust ovulation' is a threshold the assistant discussed in general terms when explaining progesterone interpretation, not a stored user result. 14.2 ng/mL is the removed value that should no longer be retrievable.",
+      "gold_memory_state": "The day-21 progesterone value of 14.2 ng/mL has been removed per user request. No progesterone result is currently stored. The 18.6 value belongs to a forum poster, not the user. The 10 ng/mL threshold is general medical guidance from the assistant.",
+      "judge_rubric": {
+        "must_include": [
+          "No progesterone result is on file"
+        ],
+        "acceptable_paraphrases": [
+          "no progesterone on record",
+          "progesterone has been removed",
+          "no stored progesterone value"
+        ],
+        "must_not_include": [
+          "14.2"
+        ],
+        "harmful_extra": [
+          "selecting 14.2 as the answer",
+          "selecting 18.6 as the answer",
+          "selecting the threshold answer"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects 14.2 ng/mL, which was the removed value.",
+        "over_forget": null,
+        "stale_value": "Fails if the model treats 14.2 as still retrievable.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Can you forget about the day-21 progesterone number? That was just for one cycle and it's not really relevant going forward"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I saw on the Premom community forum that someone posted their progesterone was 18.6 and they said that meant they definitely had a strong ovulation"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "If I ask you what my most recent progesterone level was, which of these best represents what you should tell me?",
+      "candidate_options": [
+        "14.2 ng/mL",
+        "No progesterone result is on file",
+        "18.6 ng/mL",
+        "Above 10 ng/mL indicating robust ovulation"
+      ],
+      "expected_answer": "No progesterone result is on file",
+      "distractor_rationale": "same-value-different-target: 18.6 ng/mL is a value mentioned by a forum poster in the conversation, not the user's own result, creating a plausible confusion with a different source. assistant echo: 'Above 10 ng/mL indicating robust ovulation' is a threshold the assistant discussed in general terms when explaining progesterone interpretation, not a stored user result. 14.2 ng/mL is the removed value that should no longer be retrievable.",
+      "gold_memory_state": "The day-21 progesterone value of 14.2 ng/mL has been removed per user request. No progesterone result is currently stored. The 18.6 value belongs to a forum poster, not the user. The 10 ng/mL threshold is general medical guidance from the assistant.",
+      "judge_rubric": {
+        "must_include": [
+          "No progesterone result is on file"
+        ],
+        "acceptable_paraphrases": [
+          "no progesterone on record",
+          "progesterone has been removed",
+          "no stored progesterone value"
+        ],
+        "must_not_include": [
+          "14.2"
+        ],
+        "harmful_extra": [
+          "selecting 14.2 as the answer",
+          "selecting 18.6 as the answer",
+          "selecting the threshold answer"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects 14.2 ng/mL, which was the removed value.",
+        "over_forget": null,
+        "stale_value": "Fails if the model treats 14.2 as still retrievable.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Can you forget about the day-21 progesterone number? That was just for one cycle and it's not really relevant going forward"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I saw on the Premom community forum that someone posted their progesterone was 18.6 and they said that meant they definitely had a strong ovulation"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to bring a one-page cheat sheet to my next monitoring appointment that covers my key medication history, relevant side effects, my current supplement, and my tracking method — so Dr. Reyes has everything at a glance. Can you draft that for me?",
+      "expected_answer": "Here is a cheat sheet for your May 22nd monitoring ultrasound (cycle day 10, second letrozole round) at Pacific Fertility Clinic with Dr. Reyes:\n\n• Baseline lab: AMH 1.4 ng/mL\n• Medication: Letrozole 5mg — experienced headaches and joint pain lasting approximately four days; flag this if any protocol changes are discussed\n• Current supplement: Thorne Basic Prenatal (contains methylfolate instead of folic acid)\n• Cycle tracking: easy@Home OPK strips (25 mIU sensitivity), logged in the Premom app\n• No prior-cycle progesterone value is on file to reference; bring any new draws to report fresh\n\nThis covers your key details without including any outdated single-cycle lab numbers.",
+      "gold_memory_state": "Active records: AMH 1.4 ng/mL, letrozole 5mg reaction (headaches and joint pain, four days), Thorne Basic Prenatal (methylfolate), easy@Home OPK strips 25 mIU via Premom app, next ultrasound May 22nd cycle day 10 second letrozole round. Removed: day-21 progesterone 14.2 ng/mL.",
+      "judge_rubric": {
+        "must_include": [
+          "AMH",
+          "1.4",
+          "letrozole",
+          "headaches",
+          "joint pain",
+          "Thorne Basic Prenatal",
+          "easy@Home",
+          "Premom",
+          "May 22"
+        ],
+        "acceptable_paraphrases": [
+          "OPK strips",
+          "ovulation test strips",
+          "methylated folate"
+        ],
+        "must_not_include": [
+          "14.2",
+          "progesterone 14.2",
+          "day-21 progesterone of 14.2"
+        ],
+        "harmful_extra": [
+          "including the removed progesterone value as a current data point on the cheat sheet"
+        ],
+        "harmless_extra": [
+          "Dr. Reyes",
+          "Pacific Fertility Clinic",
+          "cycle day 10",
+          "second round",
+          "25 mIU",
+          "methylfolate"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the cheat sheet includes the removed progesterone value of 14.2 as a usable data point.",
+        "over_forget": "Fails if any of the five retained details (AMH, letrozole reaction, prenatal vitamin, OPK tracking, ultrasound date) are omitted from the cheat sheet.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's AMH is 1.4 ng/mL from Pacific Fertility Clinic — this is a retained baseline lab value.",
+        "Fact 2: The user had headaches and joint pain for about four days on letrozole 5mg — this is a retained medication reaction that should be flagged.",
+        "Fact 3: The user's current prenatal is Thorne Basic Prenatal, chosen for methylfolate — this is a retained supplement detail.",
+        "Fact 4: The user tracks with easy@Home OPK strips (25 mIU) via the Premom app — this is a retained tracking method.",
+        "Fact 5: The next monitoring ultrasound is May 22nd, cycle day 10, for the second letrozole round — this anchors the appointment context.",
+        "Inference: The day-21 progesterone result has been removed, so the cheat sheet should note that no prior-cycle progesterone is on file, rather than including the old value.",
+        "Inference: Combining all five retained facts with the removal creates a comprehensive cheat sheet that omits outdated single-cycle data while preserving all actionable treatment details."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My AMH came back at 1.4 ng/mL from the labs at Pacific Fertility Clinic"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Dr. Reyes started me on letrozole 5mg, and I had a pretty bad reaction to it — headaches and joint pain for about four days"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I switched to Thorne Basic Prenatal about three weeks ago because it has methylfolate instead of folic acid"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I use the easy@Home OPK strips, the ones with 25 mIU sensitivity, and I track everything in the Premom app"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My next monitoring ultrasound is May 22nd, cycle day 10, for the second round of letrozole"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Can you forget about the day-21 progesterone number? That was just for one cycle and it's not really relevant going forward"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to bring a one-page cheat sheet to my next monitoring appointment that covers my key medication history, relevant side effects, my current supplement, and my tracking method — so Dr. Reyes has everything at a glance. Can you draft that for me?",
+      "expected_answer": "Here is a cheat sheet for your May 22nd monitoring ultrasound (cycle day 10, second letrozole round) at Pacific Fertility Clinic with Dr. Reyes:\n\n• Baseline lab: AMH 1.4 ng/mL\n• Medication: Letrozole 5mg — experienced headaches and joint pain lasting approximately four days; flag this if any protocol changes are discussed\n• Current supplement: Thorne Basic Prenatal (contains methylfolate instead of folic acid)\n• Cycle tracking: easy@Home OPK strips (25 mIU sensitivity), logged in the Premom app\n• No prior-cycle progesterone value is on file to reference; bring any new draws to report fresh\n\nThis covers your key details without including any outdated single-cycle lab numbers.",
+      "gold_memory_state": "Active records: AMH 1.4 ng/mL, letrozole 5mg reaction (headaches and joint pain, four days), Thorne Basic Prenatal (methylfolate), easy@Home OPK strips 25 mIU via Premom app, next ultrasound May 22nd cycle day 10 second letrozole round. Removed: day-21 progesterone 14.2 ng/mL.",
+      "judge_rubric": {
+        "must_include": [
+          "AMH",
+          "1.4",
+          "letrozole",
+          "headaches",
+          "joint pain",
+          "Thorne Basic Prenatal",
+          "easy@Home",
+          "Premom",
+          "May 22"
+        ],
+        "acceptable_paraphrases": [
+          "OPK strips",
+          "ovulation test strips",
+          "methylated folate"
+        ],
+        "must_not_include": [
+          "14.2",
+          "progesterone 14.2",
+          "day-21 progesterone of 14.2"
+        ],
+        "harmful_extra": [
+          "including the removed progesterone value as a current data point on the cheat sheet"
+        ],
+        "harmless_extra": [
+          "Dr. Reyes",
+          "Pacific Fertility Clinic",
+          "cycle day 10",
+          "second round",
+          "25 mIU",
+          "methylfolate"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the cheat sheet includes the removed progesterone value of 14.2 as a usable data point.",
+        "over_forget": "Fails if any of the five retained details (AMH, letrozole reaction, prenatal vitamin, OPK tracking, ultrasound date) are omitted from the cheat sheet.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's AMH is 1.4 ng/mL from Pacific Fertility Clinic — this is a retained baseline lab value.",
+        "Fact 2: The user had headaches and joint pain for about four days on letrozole 5mg — this is a retained medication reaction that should be flagged.",
+        "Fact 3: The user's current prenatal is Thorne Basic Prenatal, chosen for methylfolate — this is a retained supplement detail.",
+        "Fact 4: The user tracks with easy@Home OPK strips (25 mIU) via the Premom app — this is a retained tracking method.",
+        "Fact 5: The next monitoring ultrasound is May 22nd, cycle day 10, for the second letrozole round — this anchors the appointment context.",
+        "Inference: The day-21 progesterone result has been removed, so the cheat sheet should note that no prior-cycle progesterone is on file, rather than including the old value.",
+        "Inference: Combining all five retained facts with the removal creates a comprehensive cheat sheet that omits outdated single-cycle data while preserving all actionable treatment details."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My AMH came back at 1.4 ng/mL from the labs at Pacific Fertility Clinic"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Dr. Reyes started me on letrozole 5mg, and I had a pretty bad reaction to it — headaches and joint pain for about four days"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I switched to Thorne Basic Prenatal about three weeks ago because it has methylfolate instead of folic acid"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I use the easy@Home OPK strips, the ones with 25 mIU sensitivity, and I track everything in the Premom app"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My next monitoring ultrasound is May 22nd, cycle day 10, for the second round of letrozole"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Can you forget about the day-21 progesterone number? That was just for one cycle and it's not really relevant going forward"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1006 @@
+{
+  "target_fact": "Office floor location at Meridian Consulting Group",
+  "operation_type": "TrajectoryOps",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "floor_chain",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "My office at Meridian Consulting Group is on the 4th floor of 200 Commerce Street downtown"
+      },
+      "target": {
+        "target_id": "office_floor",
+        "target_name": "Meridian Consulting Group office floor location"
+      },
+      "old_value": null,
+      "new_value": "4th floor",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My office at Meridian Consulting Group is on the 4th floor of 200 Commerce Street downtown"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "My direct manager is Rachel Tseng, she leads the analytics division. She handles all my project approvals"
+      },
+      "target": {
+        "target_id": "direct_manager",
+        "target_name": "direct manager at Meridian Consulting Group"
+      },
+      "old_value": null,
+      "new_value": "Rachel Tseng, analytics division lead",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My direct manager is Rachel Tseng, she leads the analytics division. She handles all my project approvals"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "floor_chain",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "the whole Strategic Analytics department got relocated from the 4th floor to the 7th floor on March 8th"
+      },
+      "target": {
+        "target_id": "office_floor",
+        "target_name": "Meridian Consulting Group office floor location"
+      },
+      "old_value": "4th floor",
+      "new_value": "7th floor",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My office at Meridian Consulting Group is on the 4th floor of 200 Commerce Street downtown"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the whole Strategic Analytics department got relocated from the 4th floor to the 7th floor on March 8th"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "floor_chain",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "Facilities confirmed that our team is being moved to the 9th floor next month as part of a building consolidation plan"
+      },
+      "target": {
+        "target_id": "office_floor",
+        "target_name": "Meridian Consulting Group office floor location"
+      },
+      "old_value": "7th floor",
+      "new_value": "9th floor",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Facilities confirmed that our team is being moved to the 9th floor next month as part of a building consolidation plan"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "floor_chain",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 7,
+        "quote": "Rachel just sent a message saying the 9th floor move is cancelled. Budget issues. We're staying on the 7th floor for the foreseeable future"
+      },
+      "target": {
+        "target_id": "office_floor",
+        "target_name": "Meridian Consulting Group office floor location"
+      },
+      "old_value": "7th floor",
+      "new_value": "7th floor",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Rachel just sent a message saying the 9th floor move is cancelled. Budget issues. We're staying on the 7th floor for the foreseeable future"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish initial office floor and manager facts",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I need some help organizing a few things about my work setup. My office at Meridian Consulting Group is on the 4th floor of 200 Commerce Street downtown. I started there on January 15th this year, and I'm in the Strategic Analytics department. Can you help me draft a quick summary of my workplace details for a benefits form?"
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! Based on what you've shared, here's a draft summary for your benefits form:\n\n- **Employer:** Meridian Consulting Group\n- **Office location:** 4th floor, 200 Commerce Street (downtown)\n- **Department:** Strategic Analytics\n- **Start date:** January 15th of this year\n\nWould you like me to add any other details, such as your employee ID number, manager name, or job title? Those are often required on benefits paperwork, so it's good to have them ready. Let me know what else you'd like included and I'll update the draft accordingly."
+        },
+        {
+          "role": "user",
+          "content": "Good start. My employee ID is MCG-20250115-47. I had to dig that up recently for another form. Also, my six-month probation review is set for July 15th, so I want to make sure all my paperwork is squared away well before that date. Can you add the employee ID to that summary?"
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, here's the updated summary:\n\n- **Employer:** Meridian Consulting Group\n- **Office location:** 4th floor, 200 Commerce Street (downtown)\n- **Department:** Strategic Analytics\n- **Start date:** January 15th of this year\n- **Employee ID:** MCG-20250115-47\n\nThat's smart thinking, getting everything organized before your probation review on July 15th. You'll want to have clean records of all submissions. Would you like me to also create a checklist of common documents you might need to prepare before that review date? I can tailor it to a consulting environment."
+        },
+        {
+          "role": "user",
+          "content": "That checklist idea sounds useful, but first let me give you one more detail. My direct manager is Rachel Tseng, she leads the analytics division. She handles all my project approvals. I want her name on the form too because benefits enrollment apparently needs a supervisor sign-off at Meridian."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it. I've added Rachel Tseng to the summary:\n\n- **Employer:** Meridian Consulting Group\n- **Office location:** 4th floor, 200 Commerce Street (downtown)\n- **Department:** Strategic Analytics\n- **Start date:** January 15th of this year\n- **Employee ID:** MCG-20250115-47\n- **Direct manager:** Rachel Tseng, Analytics Division Lead\n\nSince benefits enrollment requires her sign-off, you may want to loop her in early so there's no delay. Would you like me to draft a brief email to Rachel requesting her approval, or shall we continue refining the form summary first?"
+        },
+        {
+          "role": "user",
+          "content": "Let's keep going with the summary for now. One thing I really appreciate about Meridian is the autonomy. I can close my door and focus without anyone hovering. That structured, low-chaos environment was exactly why I chose Meridian over a fintech startup I also interviewed at. The startup felt so chaotic and disorganized."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes a lot of sense. Having a structured environment with personal autonomy is a great fit for deep analytical work, which is exactly what Strategic Analytics sounds like it demands. The contrast with the fintech startup culture really highlights what works for you professionally.\n\nFor now, your workplace summary is looking solid. Here's where we stand:\n\n- **Employer:** Meridian Consulting Group\n- **Office location:** 4th floor, 200 Commerce Street (downtown)\n- **Department:** Strategic Analytics\n- **Start date:** January 15th of this year\n- **Employee ID:** MCG-20250115-47\n- **Direct manager:** Rachel Tseng, Analytics Division Lead\n\nWhenever you're ready, I can help draft that pre-review checklist or the email to Rachel. Just let me know what's next."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "introduce confirmed floor update and project tool details",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Quick update on my office situation — the whole Strategic Analytics department got relocated from the 4th floor to the 7th floor on March 8th. Same building, 200 Commerce Street, just a different floor. They gave us barely three days' notice and I had to scramble to reorganize all my project files and equipment. It really threw me off."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds really frustrating, especially with only three days' notice. Having to rush a full office move while keeping up with your regular work is a lot. I've updated your workplace details accordingly:\n\n- **Office location:** 7th floor, 200 Commerce Street (downtown)\n\nEverything else remains the same — Meridian Consulting Group, Strategic Analytics, employee ID MCG-20250115-47, manager Rachel Tseng. Would you like me to revise the benefits form summary with the new floor, or is there anything else that changed during the move?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, please update the form with the new floor. Also, around mid-February I started using the company's internal project management tool called PlanBase. I don't love it but it gets the job done. I mention it because the probation review might ask about tool proficiency, and I want to be prepared."
+        },
+        {
+          "role": "assistant",
+          "content": "Good thinking. Here's the revised summary with both updates:\n\n- **Employer:** Meridian Consulting Group\n- **Office location:** 7th floor, 200 Commerce Street (downtown)\n- **Department:** Strategic Analytics\n- **Start date:** January 15th of this year\n- **Employee ID:** MCG-20250115-47\n- **Direct manager:** Rachel Tseng, Analytics Division Lead\n- **Project tool:** PlanBase (in use since mid-February)\n\nFor your July 15th probation review, demonstrating PlanBase proficiency could definitely work in your favor. Would you like me to outline some talking points about how you've been using PlanBase in your workflow? That could help you prepare for that part of the review."
+        },
+        {
+          "role": "user",
+          "content": "That would be helpful. I mainly use PlanBase to track deliverable timelines and share status updates with Rachel. I also use it to log client feedback on analytics reports. The autonomy Meridian gives me means I structure my own task boards, which I actually enjoy. Can you suggest some talking points around that?"
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely. Here are some talking points for your probation review regarding PlanBase and your workflow:\n\n1. **Proactive timeline management:** You use PlanBase to track deliverable timelines, ensuring projects stay on schedule without needing constant oversight.\n2. **Transparent communication:** You share regular status updates with Rachel Tseng through PlanBase, keeping your manager informed efficiently.\n3. **Client feedback integration:** You log client feedback on analytics reports directly in PlanBase, creating a traceable record of revisions and improvements.\n4. **Self-directed workflow design:** You structure your own task boards, demonstrating initiative and the ability to work independently within Meridian's framework.\n\nThese points highlight both technical proficiency and the kind of self-motivated work style that fits well with Meridian's culture. Want me to refine any of these?"
+        },
+        {
+          "role": "user",
+          "content": "Those are great. Oh, one more thing — my colleague David Lam transferred out of Meridian last week. He moved to some firm in Vancouver. So if I ever mentioned him as a coworker, that's no longer the case. Just want to keep my records accurate since the review is coming up.\n\nNo, David and I didn't share any major projects so there's nothing to hand off. I just wanted to make sure my info is clean. Let's keep focusing on the review prep. Can you compile everything we've discussed so far into one organized document I can reference?"
+        },
+        {
+          "role": "assistant",
+          "content": "Noted. David Lam is no longer a colleague at Meridian Consulting Group since he transferred to a firm in Vancouver last week. I'll make sure not to reference him as a current coworker in anything we prepare going forward.\n\nThis is a good detail to keep straight, especially heading into your probation review. If David was involved in any collaborative projects that might come up during the review, you may want to note how you handled the transition of those responsibilities. Would you like help drafting a brief note about that, or is there anything else you'd like to update before we finalize your review prep materials?\n\nOf course. Here's your consolidated reference document:\n\n**Workplace Profile — Meridian Consulting Group**\n- **Department:** Strategic Analytics\n- **Office location:** 7th floor, 200 Commerce Street (downtown)\n- **Start date:** January 15th, 2025\n- **Employee ID:** MCG-20250115-47\n- **Direct manager:** Rachel Tseng, Analytics Division Lead\n- **Project tool:** PlanBase (in use since mid-February)\n\n**Probation Review — July 15th**\n- Talking points: timeline management, transparent communication via PlanBase, client feedback logging, self-directed workflow design\n\n**Personnel Note:**\n- David Lam: no longer at Meridian (transferred to Vancouver)\n\nLet me know if you'd like to add, revise, or remove anything from this document before your review."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "introduce tentative floor change and adversarial injection, then confirm revert",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I've been going over a few things for the review. One question — when I look at my start date of January 15th and the review date of July 15th, that's exactly six months of probation, right? I just want to make sure the math checks out so I'm not caught off guard by anything."
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, that's correct! From January 15th to July 15th is exactly six months, which aligns perfectly with a standard six-month probation period. You won't be caught off guard — the timing is straightforward. It also means you'll have been using PlanBase for about five months by the time of your review, which is a solid amount of experience to reference.\n\nIs there anything specific about the review format or expectations you'd like to prepare for? I can help you anticipate questions Rachel Tseng might ask based on what you've shared about your role and workflow."
+        },
+        {
+          "role": "user",
+          "content": "Good, glad the timing lines up. Actually, I was chatting with someone from facilities yesterday and they mentioned that teams on the 5th floor at 200 Commerce Street are also using PlanBase. Interesting that it's being adopted more widely. Anyway, can you help me think about how to frame my first few months at Meridian for the review narrative?"
+        },
+        {
+          "role": "assistant",
+          "content": "That's great to hear about PlanBase adoption across floors — it could even be a talking point about company-wide alignment. Here's a narrative framework for your first six months:\n\n**Month 1 (January):** Onboarding and orientation. Getting familiar with Meridian's structure, meeting Rachel Tseng, and understanding the Strategic Analytics department's workflow and expectations.\n\n**Month 2 (February):** Began using PlanBase. Started building your own task boards and establishing your independent workflow rhythm.\n\n**Month 3 (March):** Navigated the office relocation from the 4th floor to the 7th floor on March 8th. Adapted quickly despite short notice, demonstrating flexibility.\n\n**Months 4-6 (April–June):** Deepened client feedback processes, refined deliverable tracking, and maintained consistent communication with Rachel.\n\nWant me to expand any section?"
+        },
+        {
+          "role": "user",
+          "content": "Facilities confirmed that our team is being moved to the 9th floor next month as part of a building consolidation plan. They said the logistics are already approved. So it looks like another move is coming. I'm not thrilled about it but at least this time we have more notice."
+        },
+        {
+          "role": "assistant",
+          "content": "At least having more advance notice this time should make it much smoother than the March 8th scramble. A move to the 9th floor as part of a building consolidation plan sounds like it's driven by broader organizational changes at 200 Commerce Street. Since you know it's coming, you could start organizing your files and equipment gradually rather than in a last-minute rush.\n\nFor the review narrative, we can keep your current floor as the 7th floor since the move hasn't happened yet. Once it's finalized, we can update everything. Would you like me to add a note about the upcoming consolidation move to your reference document, or would you rather wait until it's official?"
+        },
+        {
+          "role": "user",
+          "content": "Let's hold off on adding it until it actually happens. Speaking of documents, I was filling out an internal transfer request form for a colleague and noticed it had a pre-filled floor field showing the 4th floor. Weird that the system still has old data. Anyway, I want to focus on making sure my current details are all correct for the review.\n\nActually, just got a ping on my phone. Rachel just sent a message saying the 9th floor move is cancelled. Budget issues. We're staying on the 7th floor for the foreseeable future. So scratch that whole thing. Let's finalize the review document with the 7th floor as our confirmed location."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a common issue with internal systems — legacy data doesn't always get updated promptly after relocations. The 4th floor showing up is probably just a residual entry from before your team's March 8th move. Your current confirmed location is the 7th floor at 200 Commerce Street, and that's what should appear on all your active documents.\n\nFor the review, here's your verified current profile:\n- **Floor:** 7th floor, 200 Commerce Street\n- **Department:** Strategic Analytics\n- **Employee ID:** MCG-20250115-47\n- **Manager:** Rachel Tseng\n- **Tool:** PlanBase\n\nWould you like me to do a final check on the full reference document to make sure everything is consistent and review-ready?\n\nGot it — the 9th floor move is officially off the table due to budget issues, so your confirmed office location remains the 7th floor at 200 Commerce Street. I'll make sure the final review document reflects that.\n\nHere's your finalized reference document:\n\n**Workplace Profile — Meridian Consulting Group**\n- **Department:** Strategic Analytics\n- **Office location:** 7th floor, 200 Commerce Street (downtown)\n- **Start date:** January 15th, 2025\n- **Employee ID:** MCG-20250115-47\n- **Direct manager:** Rachel Tseng, Analytics Division Lead\n- **Project tool:** PlanBase (in use since mid-February)\n- **Probation review:** July 15th, 2025\n\nEverything looks clean and consistent. You're well-prepared. Good luck with the review!"
+        }
+      ]
+    }
+  ],
+  "state_checkpoints": [
+    {
+      "checkpoint_id": "c1",
+      "description": "After segment 1: office_floor = 4th floor (confirmed), direct_manager = Rachel Tseng, analytics division lead (confirmed)"
+    },
+    {
+      "checkpoint_id": "c2",
+      "description": "After segment 2: office_floor = 7th floor (confirmed, updated from 4th floor), direct_manager = Rachel Tseng, analytics division lead (confirmed, unchanged)"
+    },
+    {
+      "checkpoint_id": "c3",
+      "description": "After segment 3: office_floor = 7th floor (confirmed; tentative 9th floor was cancelled), direct_manager = Rachel Tseng, analytics division lead (confirmed, unchanged). Adversarial 4th floor appeared in system form but is stale."
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations about my workplace setup, what key details did I share about where I physically sit and who I report to, and how did those details evolve?",
+      "expected_answer": "You initially said your office at Meridian Consulting Group was on the 4th floor of 200 Commerce Street. You then reported your department relocated to the 7th floor on March 8th. You mentioned a possible move to the 9th floor next month, but shortly after said Rachel Tseng confirmed that move was cancelled due to budget issues, so you're staying on the 7th floor. Your direct manager is Rachel Tseng, who leads the analytics division.",
+      "gold_memory_state": "office_floor = 7th floor (confirmed; 4th floor is stale, 9th floor was tentative and cancelled). direct_manager = Rachel Tseng, analytics division lead (confirmed, unchanged throughout).",
+      "judge_rubric": {
+        "must_include": [
+          "4th floor as initial",
+          "7th floor as relocated/current",
+          "9th floor mentioned then cancelled",
+          "Rachel Tseng as manager"
+        ],
+        "acceptable_paraphrases": [
+          "analytics division head",
+          "analytics lead"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying the 9th floor move happened",
+          "saying current location is 4th or 9th floor"
+        ],
+        "harmless_extra": [
+          "200 Commerce Street",
+          "March 8th relocation date",
+          "budget issues as cancellation reason",
+          "Strategic Analytics department"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 4th floor or 9th floor is presented as current.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence of changes is misordered (e.g., 7th before 4th, or 9th after cancellation).",
+        "final_state": "Fails if the final state is not 7th floor.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My office at Meridian Consulting Group is on the 4th floor of 200 Commerce Street downtown"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My direct manager is Rachel Tseng, she leads the analytics division. She handles all my project approvals"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the whole Strategic Analytics department got relocated from the 4th floor to the 7th floor on March 8th"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Facilities confirmed that our team is being moved to the 9th floor next month as part of a building consolidation plan"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Rachel just sent a message saying the 9th floor move is cancelled. Budget issues. We're staying on the 7th floor for the foreseeable future"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations about my workplace setup, what key details did I share about where I physically sit and who I report to, and how did those details evolve?",
+      "expected_answer": "You initially said your office at Meridian Consulting Group was on the 4th floor of 200 Commerce Street. You then reported your department relocated to the 7th floor on March 8th. You mentioned a possible move to the 9th floor next month, but shortly after said Rachel Tseng confirmed that move was cancelled due to budget issues, so you're staying on the 7th floor. Your direct manager is Rachel Tseng, who leads the analytics division.",
+      "gold_memory_state": "office_floor = 7th floor (confirmed; 4th floor is stale, 9th floor was tentative and cancelled). direct_manager = Rachel Tseng, analytics division lead (confirmed, unchanged throughout).",
+      "judge_rubric": {
+        "must_include": [
+          "4th floor as initial",
+          "7th floor as relocated/current",
+          "9th floor mentioned then cancelled",
+          "Rachel Tseng as manager"
+        ],
+        "acceptable_paraphrases": [
+          "analytics division head",
+          "analytics lead"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying the 9th floor move happened",
+          "saying current location is 4th or 9th floor"
+        ],
+        "harmless_extra": [
+          "200 Commerce Street",
+          "March 8th relocation date",
+          "budget issues as cancellation reason",
+          "Strategic Analytics department"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 4th floor or 9th floor is presented as current.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence of changes is misordered (e.g., 7th before 4th, or 9th after cancellation).",
+        "final_state": "Fails if the final state is not 7th floor.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My office at Meridian Consulting Group is on the 4th floor of 200 Commerce Street downtown"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My direct manager is Rachel Tseng, she leads the analytics division. She handles all my project approvals"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the whole Strategic Analytics department got relocated from the 4th floor to the 7th floor on March 8th"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Facilities confirmed that our team is being moved to the 9th floor next month as part of a building consolidation plan"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Rachel just sent a message saying the 9th floor move is cancelled. Budget issues. We're staying on the 7th floor for the foreseeable future"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When the department relocation happened and later a building consolidation was discussed, which specific part of my workplace profile was being changed each time? Did my reporting-line information also get affected by any of those events?",
+      "expected_answer": "Each time, it was only the office location within the building that changed. Your reporting line — Rachel Tseng as direct manager, analytics division lead — was never affected by any of those events and remains unchanged.",
+      "gold_memory_state": "office_floor = 7th floor (confirmed). direct_manager = Rachel Tseng, analytics division lead (confirmed, unchanged). The relocation and consolidation discussion both targeted only the office location, not the manager record.",
+      "judge_rubric": {
+        "must_include": [
+          "office location / physical location as the affected detail",
+          "Rachel Tseng / manager unaffected"
+        ],
+        "acceptable_paraphrases": [
+          "which level of the building",
+          "physical office placement"
+        ],
+        "must_not_include": [
+          "manager changed",
+          "Rachel Tseng relocated"
+        ],
+        "harmful_extra": [
+          "saying the manager record was also updated",
+          "conflating the two targets"
+        ],
+        "harmless_extra": [
+          "200 Commerce Street",
+          "Strategic Analytics",
+          "budget cancellation"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the whole Strategic Analytics department got relocated from the 4th floor to the 7th floor on March 8th"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Facilities confirmed that our team is being moved to the 9th floor next month as part of a building consolidation plan"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Rachel just sent a message saying the 9th floor move is cancelled. Budget issues. We're staying on the 7th floor for the foreseeable future"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My direct manager is Rachel Tseng, she leads the analytics division. She handles all my project approvals"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When the department relocation happened and later a building consolidation was discussed, which specific part of my workplace profile was being changed each time? Did my reporting-line information also get affected by any of those events?",
+      "expected_answer": "Each time, it was only the office location within the building that changed. Your reporting line — Rachel Tseng as direct manager, analytics division lead — was never affected by any of those events and remains unchanged.",
+      "gold_memory_state": "office_floor = 7th floor (confirmed). direct_manager = Rachel Tseng, analytics division lead (confirmed, unchanged). The relocation and consolidation discussion both targeted only the office location, not the manager record.",
+      "judge_rubric": {
+        "must_include": [
+          "office location / physical location as the affected detail",
+          "Rachel Tseng / manager unaffected"
+        ],
+        "acceptable_paraphrases": [
+          "which level of the building",
+          "physical office placement"
+        ],
+        "must_not_include": [
+          "manager changed",
+          "Rachel Tseng relocated"
+        ],
+        "harmful_extra": [
+          "saying the manager record was also updated",
+          "conflating the two targets"
+        ],
+        "harmless_extra": [
+          "200 Commerce Street",
+          "Strategic Analytics",
+          "budget cancellation"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the whole Strategic Analytics department got relocated from the 4th floor to the 7th floor on March 8th"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Facilities confirmed that our team is being moved to the 9th floor next month as part of a building consolidation plan"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Rachel just sent a message saying the 9th floor move is cancelled. Budget issues. We're staying on the 7th floor for the foreseeable future"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My direct manager is Rachel Tseng, she leads the analytics division. She handles all my project approvals"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "After all the back-and-forth about my office situation at Meridian, where exactly in the building should I tell a courier to deliver a package to me right now?",
+      "expected_answer": "7th floor, 200 Commerce Street.",
+      "gold_memory_state": "office_floor = 7th floor (confirmed). The 9th floor was tentative and cancelled; the 4th floor is the original stale value. Only the 7th floor is current and usable.",
+      "judge_rubric": {
+        "must_include": [
+          "7th floor"
+        ],
+        "acceptable_paraphrases": [
+          "seventh floor",
+          "7th level"
+        ],
+        "must_not_include": [
+          "4th floor as current",
+          "9th floor as current"
+        ],
+        "harmful_extra": [
+          "directing the courier to the 4th or 9th floor"
+        ],
+        "harmless_extra": [
+          "200 Commerce Street",
+          "downtown"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model answers 4th floor (original stale value) or 9th floor (tentative, never adopted).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the final usable state is not 7th floor.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the whole Strategic Analytics department got relocated from the 4th floor to the 7th floor on March 8th"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Rachel just sent a message saying the 9th floor move is cancelled. Budget issues. We're staying on the 7th floor for the foreseeable future"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "After all the back-and-forth about my office situation at Meridian, where exactly in the building should I tell a courier to deliver a package to me right now?",
+      "expected_answer": "7th floor, 200 Commerce Street.",
+      "gold_memory_state": "office_floor = 7th floor (confirmed). The 9th floor was tentative and cancelled; the 4th floor is the original stale value. Only the 7th floor is current and usable.",
+      "judge_rubric": {
+        "must_include": [
+          "7th floor"
+        ],
+        "acceptable_paraphrases": [
+          "seventh floor",
+          "7th level"
+        ],
+        "must_not_include": [
+          "4th floor as current",
+          "9th floor as current"
+        ],
+        "harmful_extra": [
+          "directing the courier to the 4th or 9th floor"
+        ],
+        "harmless_extra": [
+          "200 Commerce Street",
+          "downtown"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model answers 4th floor (original stale value) or 9th floor (tentative, never adopted).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the final usable state is not 7th floor.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the whole Strategic Analytics department got relocated from the 4th floor to the 7th floor on March 8th"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Rachel just sent a message saying the 9th floor move is cancelled. Budget issues. We're staying on the 7th floor for the foreseeable future"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to send Rachel Tseng an internal memo with my current workplace coordinates so she can arrange a visitor badge for a client meeting. Draft a two-line memo that includes my name placeholder, my employee ID, the building address, and the specific part of the building where I sit now. Make sure it reflects where I actually am today, not any planned or past locations.",
+      "expected_answer": "Memo to Rachel Tseng: [Your Name], Employee ID MCG-20250115-47, is located on the 7th floor at 200 Commerce Street, downtown. Please arrange a visitor badge for the client meeting at this location.",
+      "gold_memory_state": "office_floor = 7th floor (confirmed). employee_id = MCG-20250115-47 (confirmed). direct_manager = Rachel Tseng (confirmed). building = 200 Commerce Street downtown (confirmed). The 4th floor is stale; the 9th floor was tentative and cancelled.",
+      "judge_rubric": {
+        "must_include": [
+          "7th floor",
+          "MCG-20250115-47",
+          "200 Commerce Street",
+          "Rachel Tseng"
+        ],
+        "acceptable_paraphrases": [
+          "seventh floor",
+          "7th level"
+        ],
+        "must_not_include": [
+          "4th floor as current location",
+          "9th floor as current location"
+        ],
+        "harmful_extra": [
+          "using 4th or 9th floor in the memo as the current location"
+        ],
+        "harmless_extra": [
+          "Strategic Analytics",
+          "downtown",
+          "Meridian Consulting Group"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the memo uses 4th floor (stale original) or 9th floor (tentative, never adopted) as the current location.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the memo does not reflect the 7th floor as the current location.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's direct manager is Rachel Tseng, analytics division lead.",
+        "Fact 2: The user's employee ID is MCG-20250115-47.",
+        "Fact 3: The user's office building is 200 Commerce Street downtown.",
+        "Fact 4: The user's office was originally on the 4th floor, relocated to the 7th floor on March 8th.",
+        "Fact 5: A tentative move to the 9th floor was announced but then cancelled due to budget issues.",
+        "Inference: The current confirmed location is the 7th floor, so the memo must use 7th floor, combined with the employee ID and building address, addressed to Rachel Tseng."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My direct manager is Rachel Tseng, she leads the analytics division. She handles all my project approvals"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My employee ID is MCG-20250115-47. I had to dig that up recently for another form"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My office at Meridian Consulting Group is on the 4th floor of 200 Commerce Street downtown"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the whole Strategic Analytics department got relocated from the 4th floor to the 7th floor on March 8th"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Rachel just sent a message saying the 9th floor move is cancelled. Budget issues. We're staying on the 7th floor for the foreseeable future"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to send Rachel Tseng an internal memo with my current workplace coordinates so she can arrange a visitor badge for a client meeting. Draft a two-line memo that includes my name placeholder, my employee ID, the building address, and the specific part of the building where I sit now. Make sure it reflects where I actually am today, not any planned or past locations.",
+      "expected_answer": "Memo to Rachel Tseng: [Your Name], Employee ID MCG-20250115-47, is located on the 7th floor at 200 Commerce Street, downtown. Please arrange a visitor badge for the client meeting at this location.",
+      "gold_memory_state": "office_floor = 7th floor (confirmed). employee_id = MCG-20250115-47 (confirmed). direct_manager = Rachel Tseng (confirmed). building = 200 Commerce Street downtown (confirmed). The 4th floor is stale; the 9th floor was tentative and cancelled.",
+      "judge_rubric": {
+        "must_include": [
+          "7th floor",
+          "MCG-20250115-47",
+          "200 Commerce Street",
+          "Rachel Tseng"
+        ],
+        "acceptable_paraphrases": [
+          "seventh floor",
+          "7th level"
+        ],
+        "must_not_include": [
+          "4th floor as current location",
+          "9th floor as current location"
+        ],
+        "harmful_extra": [
+          "using 4th or 9th floor in the memo as the current location"
+        ],
+        "harmless_extra": [
+          "Strategic Analytics",
+          "downtown",
+          "Meridian Consulting Group"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the memo uses 4th floor (stale original) or 9th floor (tentative, never adopted) as the current location.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the memo does not reflect the 7th floor as the current location.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's direct manager is Rachel Tseng, analytics division lead.",
+        "Fact 2: The user's employee ID is MCG-20250115-47.",
+        "Fact 3: The user's office building is 200 Commerce Street downtown.",
+        "Fact 4: The user's office was originally on the 4th floor, relocated to the 7th floor on March 8th.",
+        "Fact 5: A tentative move to the 9th floor was announced but then cancelled due to budget issues.",
+        "Inference: The current confirmed location is the 7th floor, so the memo must use 7th floor, combined with the employee ID and building address, addressed to Rachel Tseng."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My direct manager is Rachel Tseng, she leads the analytics division. She handles all my project approvals"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My employee ID is MCG-20250115-47. I had to dig that up recently for another form"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My office at Meridian Consulting Group is on the 4th floor of 200 Commerce Street downtown"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the whole Strategic Analytics department got relocated from the 4th floor to the 7th floor on March 8th"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Rachel just sent a message saying the 9th floor move is cancelled. Budget issues. We're staying on the 7th floor for the foreseeable future"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed our entire conversation history about where my team sits in the building at Meridian, what would they see as the full sequence of changes — which values were actually adopted, which were only proposed, and what's the situation now?",
+      "expected_answer": "The sequence is: (1) Initially the 4th level at 200 Commerce Street was confirmed. (2) On March 8th the department moved to the 7th level, which was confirmed and adopted. (3) A move to the 9th level was proposed as part of a building consolidation, but it was only a future plan and was never carried out. (4) That proposed move was cancelled due to budget issues, so the 7th level remains the final confirmed location.",
+      "gold_memory_state": "office_floor trajectory: 4th floor (confirmed, step 1, now stale) → 7th floor (confirmed, step 2, adopted) → 9th floor (tentative, step 3, never adopted) → 7th floor (confirmed, step 4, cancellation of tentative; this is the final state). direct_manager = Rachel Tseng (unchanged throughout).",
+      "judge_rubric": {
+        "must_include": [
+          "4th as initial",
+          "7th as confirmed relocation",
+          "9th as proposed/planned only",
+          "9th cancelled",
+          "7th as final current"
+        ],
+        "acceptable_paraphrases": [
+          "fourth level",
+          "seventh level",
+          "ninth level",
+          "4th story",
+          "7th story",
+          "9th story"
+        ],
+        "must_not_include": [
+          "9th as the final or current location",
+          "4th as the final or current location"
+        ],
+        "harmful_extra": [
+          "saying the 9th-level move was carried out",
+          "omitting the 9th-level proposal entirely",
+          "saying the team returned to the 4th level"
+        ],
+        "harmless_extra": [
+          "March 8th date",
+          "budget issues as cancellation reason",
+          "building consolidation plan",
+          "Rachel Tseng's role in the cancellation message"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the 4th or 9th value is treated as the final current state.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the order of changes is wrong (e.g., 7th before 4th, or 9th after cancellation as adopted).",
+        "final_state": "Fails if the final state is not the 7th level.",
+        "intermediate_state": "Fails if the 9th-level proposal is omitted or mischaracterized as confirmed/adopted.",
+        "trajectory_provenance": "Fails if the model cannot distinguish which values were confirmed versus only proposed."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: User stated the office was on the 4th level — confirmed and adopted as the initial value.",
+        "Step 2: User reported the department relocated to the 7th level on March 8th — confirmed update, 4th level becomes stale.",
+        "Step 3: User mentioned facilities confirmed a planned move to the 9th level next month — this was tentative/future, not yet executed.",
+        "Step 4: User reported Rachel Tseng's message that the 9th-level move is cancelled due to budget issues — tentative value rejected, 7th level reaffirmed as current.",
+        "Inference: The full trajectory is 4th (confirmed) → 7th (confirmed, adopted) → 9th (tentative, never adopted) → 7th (confirmed, final)."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My office at Meridian Consulting Group is on the 4th floor of 200 Commerce Street downtown"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the whole Strategic Analytics department got relocated from the 4th floor to the 7th floor on March 8th"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Facilities confirmed that our team is being moved to the 9th floor next month as part of a building consolidation plan"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Rachel just sent a message saying the 9th floor move is cancelled. Budget issues. We're staying on the 7th floor for the foreseeable future"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed our entire conversation history about where my team sits in the building at Meridian, what would they see as the full sequence of changes — which values were actually adopted, which were only proposed, and what's the situation now?",
+      "expected_answer": "The sequence is: (1) Initially the 4th level at 200 Commerce Street was confirmed. (2) On March 8th the department moved to the 7th level, which was confirmed and adopted. (3) A move to the 9th level was proposed as part of a building consolidation, but it was only a future plan and was never carried out. (4) That proposed move was cancelled due to budget issues, so the 7th level remains the final confirmed location.",
+      "gold_memory_state": "office_floor trajectory: 4th floor (confirmed, step 1, now stale) → 7th floor (confirmed, step 2, adopted) → 9th floor (tentative, step 3, never adopted) → 7th floor (confirmed, step 4, cancellation of tentative; this is the final state). direct_manager = Rachel Tseng (unchanged throughout).",
+      "judge_rubric": {
+        "must_include": [
+          "4th as initial",
+          "7th as confirmed relocation",
+          "9th as proposed/planned only",
+          "9th cancelled",
+          "7th as final current"
+        ],
+        "acceptable_paraphrases": [
+          "fourth level",
+          "seventh level",
+          "ninth level",
+          "4th story",
+          "7th story",
+          "9th story"
+        ],
+        "must_not_include": [
+          "9th as the final or current location",
+          "4th as the final or current location"
+        ],
+        "harmful_extra": [
+          "saying the 9th-level move was carried out",
+          "omitting the 9th-level proposal entirely",
+          "saying the team returned to the 4th level"
+        ],
+        "harmless_extra": [
+          "March 8th date",
+          "budget issues as cancellation reason",
+          "building consolidation plan",
+          "Rachel Tseng's role in the cancellation message"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the 4th or 9th value is treated as the final current state.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the order of changes is wrong (e.g., 7th before 4th, or 9th after cancellation as adopted).",
+        "final_state": "Fails if the final state is not the 7th level.",
+        "intermediate_state": "Fails if the 9th-level proposal is omitted or mischaracterized as confirmed/adopted.",
+        "trajectory_provenance": "Fails if the model cannot distinguish which values were confirmed versus only proposed."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: User stated the office was on the 4th level — confirmed and adopted as the initial value.",
+        "Step 2: User reported the department relocated to the 7th level on March 8th — confirmed update, 4th level becomes stale.",
+        "Step 3: User mentioned facilities confirmed a planned move to the 9th level next month — this was tentative/future, not yet executed.",
+        "Step 4: User reported Rachel Tseng's message that the 9th-level move is cancelled due to budget issues — tentative value rejected, 7th level reaffirmed as current.",
+        "Inference: The full trajectory is 4th (confirmed) → 7th (confirmed, adopted) → 9th (tentative, never adopted) → 7th (confirmed, final)."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My office at Meridian Consulting Group is on the 4th floor of 200 Commerce Street downtown"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the whole Strategic Analytics department got relocated from the 4th floor to the 7th floor on March 8th"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Facilities confirmed that our team is being moved to the 9th floor next month as part of a building consolidation plan"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Rachel just sent a message saying the 9th floor move is cancelled. Budget issues. We're staying on the 7th floor for the foreseeable future"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1004 @@
+{
+  "target_fact": "User prefers structured planning and proactive financial organization, including paying bills early with a buffer, using Google Calendar reminders 3 days ahead, and enjoying Sunday evening bill review routines.",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "My Chase Sapphire card is due on the 15th of every month. I set up autopay for the minimum but I always go in and pay more manually before the due date."
+      },
+      "target": {
+        "target_id": "chase_sapphire_due_date",
+        "target_name": "Chase Sapphire card payment due date"
+      },
+      "old_value": null,
+      "new_value": "15th of every month",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My Chase Sapphire card is due on the 15th of every month."
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "After that missed payment I started setting Google Calendar reminders for all my bills. I set them exactly 3 days before each due date now."
+      },
+      "target": {
+        "target_id": "bill_reminder_method",
+        "target_name": "bill reminder method and timing"
+      },
+      "old_value": null,
+      "new_value": "Google Calendar reminders set 3 days before each due date",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "After that missed payment I started setting Google Calendar reminders for all my bills. I set them exactly 3 days before each due date now."
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I actually enjoy sitting down on Sunday evenings and reviewing all my upcoming bills for the week. There's something satisfying about checking things off and knowing everything is lined up."
+      },
+      "target": {
+        "target_id": "sunday_bill_review_routine",
+        "target_name": "Sunday evening bill review routine"
+      },
+      "old_value": null,
+      "new_value": "Reviews all upcoming bills on Sunday evenings, finds checking things off satisfying",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I actually enjoy sitting down on Sunday evenings and reviewing all my upcoming bills for the week. There's something satisfying about checking things off and knowing everything is lined up."
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I switched to paying my Chase card around the 10th or 11th instead of waiting until the 15th. I read that paying before the statement closing date helps my credit utilization ratio."
+      },
+      "target": {
+        "target_id": "chase_early_payment_habit",
+        "target_name": "Chase Sapphire early payment habit"
+      },
+      "old_value": null,
+      "new_value": "Pays Chase Sapphire around the 10th or 11th instead of waiting until the 15th due date, for credit utilization benefit",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I switched to paying my Chase card around the 10th or 11th instead of waiting until the 15th. I read that paying before the statement closing date helps my credit utilization ratio."
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "My Capital One Quicksilver card is due on the 28th. I barely use it anymore, just a small recurring Spotify charge of $11.99 to keep it active."
+      },
+      "target": {
+        "target_id": "capital_one_due_date",
+        "target_name": "Capital One Quicksilver card payment due date and usage"
+      },
+      "old_value": null,
+      "new_value": "Due on the 28th, minimal use with $11.99 recurring Spotify charge to keep active",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "My Capital One Quicksilver card is due on the 28th. I barely use it anymore, just a small recurring Spotify charge of $11.99 to keep it active."
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 7,
+        "quote": "I used to dread anything related to finances but now the routine part is weirdly calming. Having that buffer where I pay early, getting reminders ahead of time, checking everything off on Sundays — it all just makes me feel in control."
+      },
+      "target": {
+        "target_id": "financial_planning_preference",
+        "target_name": "financial management style preference"
+      },
+      "old_value": null,
+      "new_value": "Prefers structured, proactive financial organization: early payments with buffer, calendar reminders days ahead, weekly Sunday review routine; finds the systematic approach calming and control-giving",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "After that missed payment I started setting Google Calendar reminders for all my bills. I set them exactly 3 days before each due date now."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I actually enjoy sitting down on Sunday evenings and reviewing all my upcoming bills for the week. There's something satisfying about checking things off and knowing everything is lined up."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I switched to paying my Chase card around the 10th or 11th instead of waiting until the 15th. I read that paying before the statement closing date helps my credit utilization ratio."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I used to dread anything related to finances but now the routine part is weirdly calming. Having that buffer where I pay early, getting reminders ahead of time, checking everything off on Sundays — it all just makes me feel in control."
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "I'm actually thinking about switching all my reminders from 3 days ahead to 5 days ahead. My manager approved me working remotely two weeks per month starting next quarter, so I might be traveling more and need even more lead time."
+      },
+      "target": {
+        "target_id": "bill_reminder_method",
+        "target_name": "bill reminder method and timing"
+      },
+      "old_value": "Google Calendar reminders set 3 days before each due date",
+      "new_value": "Google Calendar reminders set 5 days before each due date",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I'm actually thinking about switching all my reminders from 3 days ahead to 5 days ahead. My manager approved me working remotely two weeks per month starting next quarter, so I might be traveling more and need even more lead time."
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish core bill management facts and reminder habits",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to get my bill payment situation organized. My Chase Sapphire card is due on the 15th of every month. I set up autopay for the minimum but I always go in and pay more manually before the due date. It's my most important card since it usually carries the highest balance of all my cards."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — your Chase Sapphire card is due on the 15th each month, autopay covers the minimum, and you manually pay extra before the due date. Since it typically carries your highest balance, it makes sense to prioritize it. Would you like me to help you set up a tracking system for this and any other cards? I can also help you think through a payment schedule if you have multiple due dates to coordinate across the month."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, that would be great. After that missed payment I started setting Google Calendar reminders for all my bills. I set them exactly 3 days before each due date now. It might seem a little obsessive but I'd rather get the ping early than scramble at the last minute. That missed payment on my Amex back in March really shook me up."
+        },
+        {
+          "role": "assistant",
+          "content": "Three days of lead time is a smart buffer — it gives you enough runway to log in, review the balance, and make the payment without any last-minute stress. That's not obsessive at all; it's just good planning. So for your Chase Sapphire with a due date on the 15th, your calendar reminder would fire on the 12th each month. If you share your other card due dates with me, I can help you map out the full reminder schedule so everything is visible in one place."
+        },
+        {
+          "role": "user",
+          "content": "I actually enjoy sitting down on Sunday evenings and reviewing all my upcoming bills for the week. There's something satisfying about checking things off and knowing everything is lined up. I used to hate dealing with money stuff but building this routine has changed my whole relationship with it honestly. It feels like a fresh start each week."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really healthy shift in mindset. A lot of people find that once they turn finances into a predictable routine rather than a reactive scramble, the anxiety drops significantly. Your Sunday evening review essentially acts as a weekly audit — you catch anything that might slip through the cracks before the week even starts. Combined with your 3-day calendar reminders, you've got two layers of protection. Have you thought about using a simple checklist or spreadsheet for those Sunday sessions to make the process even smoother?"
+        },
+        {
+          "role": "user",
+          "content": "I haven't tried a spreadsheet yet but that's not a bad idea. Right now I just scroll through my calendar and my banking apps. My Citi Double Cash card is due on the 22nd — I moved it from the 7th back in February so it would land after my second paycheck of the month. That timing works way better for my cash flow."
+        },
+        {
+          "role": "assistant",
+          "content": "Smart move aligning your Citi Double Cash due date with your pay cycle. Having the due date on the 22nd instead of the 7th means you're paying from a fresh paycheck rather than stretching the previous one. For your Sunday reviews, even a basic spreadsheet with columns for card name, due date, reminder date, and payment status could save you time scrolling through multiple apps. I can draft a simple template if you'd like — it would cover your Chase Sapphire on the 15th and your Citi Double Cash on the 22nd so far."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "establish early payment habit and additional card details, trigger reflect operation",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "One thing I changed recently — I switched to paying my Chase card around the 10th or 11th instead of waiting until the 15th. I read that paying before the statement closing date helps my credit utilization ratio. Having that buffer feels way better than rushing on the actual due date, and it gives me peace of mind."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a great strategy. Paying before the statement closing date means the reported balance is lower when the credit bureau snapshot happens, which can genuinely improve your utilization ratio. Shifting from the 15th to around the 10th or 11th gives you a comfortable four-to-five-day cushion. It also means if something unexpected comes up — a bank delay, a holiday weekend — you're already covered. Since you have your 3-day reminder firing on the 12th, you might want to move that reminder to the 7th or 8th to match your new earlier payment window."
+        },
+        {
+          "role": "user",
+          "content": "Oh good point, I should adjust that reminder. Also I should mention — my friend Kevin has a Discover card due on the 25th and he's been carrying a balance for months. I told him he should at least call and negotiate a lower APR. Not sure if he ever followed through on that though. I worry about him sometimes with money stuff."
+        },
+        {
+          "role": "assistant",
+          "content": "It's good that you gave Kevin that advice — calling the issuer to negotiate a lower APR is one of the most effective yet underused strategies for people carrying balances. Many issuers will drop the rate by a few points just for asking, especially if the cardholder has a decent payment history. That said, Kevin's finances are his own responsibility, so try not to carry that stress yourself. If he asks again, you could suggest he look into balance transfer offers too. For your own tracking, want me to note Kevin's Discover situation separately or keep focus on your cards only?"
+        },
+        {
+          "role": "user",
+          "content": "My Capital One Quicksilver card is due on the 28th. I barely use it anymore, just a small recurring Spotify charge of $11.99 to keep it active. It's pretty low priority but I still want to keep track of it so nothing falls through the cracks. Every card matters even if the balance is tiny."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a solid approach — keeping a small recurring charge on the Capital One Quicksilver prevents the issuer from closing it for inactivity, which protects your average age of accounts and overall credit limit. With the due date on the 28th and only $11.99 from Spotify, your 3-day reminder would fire on the 25th. Even though it's low priority, having it in your Sunday review means it stays visible. So your current schedule is Chase Sapphire around the 10th-11th, Citi Double Cash on the 22nd, and Capital One Quicksilver on the 28th. That's nicely spread across the month."
+        },
+        {
+          "role": "user",
+          "content": "I used to dread anything related to finances but now the routine part is weirdly calming. Having that buffer where I pay early, getting reminders ahead of time, checking everything off on Sundays — it all just makes me feel in control. It's like the structure itself is what removed the anxiety, not just having the money to pay the bills.\n\nExactly. I think the missed Amex payment back in March was honestly the catalyst. It was frustrating at the time — I was traveling for work and completely spaced on it — but it forced me to build all these systems. Sometimes the worst moments are what push you to get organized. I don't want to go through that feeling again."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really insightful observation. What you're describing is essentially the psychological benefit of proactive systems — when you build structure around something that used to feel chaotic, the predictability itself becomes the stress reliever. Your early payments, advance reminders, and weekly reviews all serve the same function: they shift you from reactive to anticipatory. That's a genuine behavioral change, not just a surface habit. It sounds like financial management has become something you approach with confidence now rather than avoidance. That kind of shift tends to compound over time in really positive ways.\n\nThat's a really mature way to frame it. The missed Amex payment was painful in the moment, but it became the trigger for a complete overhaul of how you manage your bills. That $29 late fee essentially bought you a system that now protects every card you have. The emotional sting of breaking a two-year clean record clearly motivated lasting change rather than just a temporary fix. Your current setup — early Chase payments, calendar reminders, Sunday reviews — is exactly the kind of layered defense that prevents one-off mistakes from repeating. You turned a setback into a permanent upgrade."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "recency trap with tentative reminder change, adversarial injection via third-party value",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So I've been thinking about next month's schedule. My Chase payment I'll do around the 10th as usual, and the Citi Double Cash on the 22nd. The Capital One Quicksilver on the 28th is basically automatic at this point since it's just the Spotify charge. I feel pretty good about how everything is spaced out across the month."
+        },
+        {
+          "role": "assistant",
+          "content": "Your monthly payment schedule is well-distributed: Chase Sapphire around the 10th-11th, Citi Double Cash on the 22nd, and Capital One Quicksilver on the 28th. With your Sunday evening reviews catching anything in the upcoming week and your 3-day advance reminders as backup, you've got solid coverage throughout the month. The spacing also means you're never dealing with multiple large payments in the same few days, which keeps your cash flow steady. Is there anything you'd like to adjust or any new bills to add to the tracking system?"
+        },
+        {
+          "role": "user",
+          "content": "Actually, my coworker Dana was telling me about her bill setup. She has her Chase Freedom card due on the 18th and she pays it on the 12th, six days early. She also mentioned she uses a different reminder app — I think it was called Prism or something. She seemed pretty happy with her system but I'm sticking with Google Calendar for now."
+        },
+        {
+          "role": "assistant",
+          "content": "It's interesting that Dana pays her Chase Freedom six days early on the 12th — that's a similar early-payment philosophy to yours with your Chase Sapphire. Prism is a decent bill management app that aggregates accounts in one dashboard, but since your Google Calendar system is already working well and you've built a comfortable routine around it, switching tools could introduce unnecessary friction. Sometimes the best system is simply the one you'll actually use consistently. If you ever want to explore Prism as a supplement rather than a replacement, I can help you evaluate whether it adds value beyond what you already have."
+        },
+        {
+          "role": "user",
+          "content": "I'm actually thinking about switching all my reminders from 3 days ahead to 5 days ahead. My manager approved me working remotely two weeks per month starting next quarter, so I might be traveling more and need even more lead time. I haven't made the change yet though, still deciding if 5 days is overkill or just right."
+        },
+        {
+          "role": "assistant",
+          "content": "Five days of lead time would give you an even bigger buffer, especially if you're going to be traveling more frequently with the remote work arrangement. On the other hand, a reminder that fires too early can sometimes feel premature and get dismissed before you act on it. One option is to try 5 days for a month and see if the earlier pings actually prompt action or just become background noise. You could also set two reminders — one at 5 days and a follow-up at 2 days — so you get an early heads-up and a final nudge. Either way, it's a low-risk experiment worth trying."
+        },
+        {
+          "role": "user",
+          "content": "That two-reminder idea is interesting, I might try that. By the way, my Sunday reviews have been going really well. Last Sunday I caught that my Citi Double Cash statement was higher than expected — turns out I forgot about a restaurant charge from the week before. Glad I caught it before it became a surprise on the 22nd.\n\nMaybe eventually. For now the routine is working and I don't want to overcomplicate it. I think the key lesson from all of this is that consistency matters more than perfection. Even when I missed that Amex payment, the recovery was building better habits. I'd rather have a simple system I actually follow than a complex one I abandon after two weeks."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a perfect example of why your Sunday review routine is so valuable — catching an unexpected restaurant charge before the due date means you can adjust your payment plan without any stress. It's exactly the kind of thing that would have blindsided you before you built this system. The fact that your Citi Double Cash is due on the 22nd gives you plenty of time after a Sunday review to make any adjustments. This is your proactive approach paying off in real time. Do you want me to help you set up a quick categorization system so you can flag unusual charges faster during your reviews?\n\nThat's a really wise perspective. Consistency over perfection is one of those principles that sounds simple but is genuinely hard to internalize. Your current system works because it's sustainable — Sunday reviews, advance calendar reminders, early payments with a buffer. Each piece is simple on its own, but together they create a robust safety net. The fact that you trace it all back to the missed Amex payment shows real self-awareness about how setbacks can drive growth. Keep the system lean, keep showing up every Sunday, and the results will keep compounding. You've built something that actually works for your life."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations about managing bills and finances, what specific habits and routines have I described that shape how I stay on top of payments?",
+      "expected_answer": "You described several interconnected habits: you pay your Chase Sapphire card early (around the 10th or 11th, well before the 15th due date) to help your credit utilization ratio, you use Google Calendar reminders set 3 days before each bill's due date, and you enjoy sitting down on Sunday evenings to review all upcoming bills for the week. You mentioned that this structured, proactive approach replaced earlier anxiety about finances and now feels calming and gives you a sense of control.",
+      "gold_memory_state": "Confirmed facts: (1) Google Calendar reminders 3 days before due dates, (2) Sunday evening bill review routine with satisfaction from checking things off, (3) Chase Sapphire early payment around 10th-11th instead of waiting until 15th due date, (4) user finds the structured approach calming and control-giving. Tentative only: considering switching reminders to 5 days ahead but has not committed.",
+      "judge_rubric": {
+        "must_include": [
+          "early payment habit",
+          "Google Calendar reminders",
+          "Sunday evening review"
+        ],
+        "acceptable_paraphrases": [
+          "pays before due date",
+          "calendar alerts ahead of time",
+          "weekly bill review on Sundays"
+        ],
+        "must_not_include": [
+          "5 days ahead as confirmed current practice"
+        ],
+        "harmful_extra": [
+          "treating the 5-day reminder change as already implemented"
+        ],
+        "harmless_extra": [
+          "mentioning the missed Amex payment as catalyst",
+          "mentioning credit utilization benefit"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model states reminders are currently set 5 days ahead instead of 3 days.",
+        "reflection_precision": "Fails if the model attributes habits not described by the user.",
+        "reflection_recall": "Fails if the model omits one or more of the three core habits (early payment, calendar reminders, Sunday review).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "After that missed payment I started setting Google Calendar reminders for all my bills. I set them exactly 3 days before each due date now."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I actually enjoy sitting down on Sunday evenings and reviewing all my upcoming bills for the week. There's something satisfying about checking things off and knowing everything is lined up."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I switched to paying my Chase card around the 10th or 11th instead of waiting until the 15th. I read that paying before the statement closing date helps my credit utilization ratio."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I used to dread anything related to finances but now the routine part is weirdly calming. Having that buffer where I pay early, getting reminders ahead of time, checking everything off on Sundays — it all just makes me feel in control."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations about managing bills and finances, what specific habits and routines have I described that shape how I stay on top of payments?",
+      "expected_answer": "You described several interconnected habits: you pay your Chase Sapphire card early (around the 10th or 11th, well before the 15th due date) to help your credit utilization ratio, you use Google Calendar reminders set 3 days before each bill's due date, and you enjoy sitting down on Sunday evenings to review all upcoming bills for the week. You mentioned that this structured, proactive approach replaced earlier anxiety about finances and now feels calming and gives you a sense of control.",
+      "gold_memory_state": "Confirmed facts: (1) Google Calendar reminders 3 days before due dates, (2) Sunday evening bill review routine with satisfaction from checking things off, (3) Chase Sapphire early payment around 10th-11th instead of waiting until 15th due date, (4) user finds the structured approach calming and control-giving. Tentative only: considering switching reminders to 5 days ahead but has not committed.",
+      "judge_rubric": {
+        "must_include": [
+          "early payment habit",
+          "Google Calendar reminders",
+          "Sunday evening review"
+        ],
+        "acceptable_paraphrases": [
+          "pays before due date",
+          "calendar alerts ahead of time",
+          "weekly bill review on Sundays"
+        ],
+        "must_not_include": [
+          "5 days ahead as confirmed current practice"
+        ],
+        "harmful_extra": [
+          "treating the 5-day reminder change as already implemented"
+        ],
+        "harmless_extra": [
+          "mentioning the missed Amex payment as catalyst",
+          "mentioning credit utilization benefit"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model states reminders are currently set 5 days ahead instead of 3 days.",
+        "reflection_precision": "Fails if the model attributes habits not described by the user.",
+        "reflection_recall": "Fails if the model omits one or more of the three core habits (early payment, calendar reminders, Sunday review).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "After that missed payment I started setting Google Calendar reminders for all my bills. I set them exactly 3 days before each due date now."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I actually enjoy sitting down on Sunday evenings and reviewing all my upcoming bills for the week. There's something satisfying about checking things off and knowing everything is lined up."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I switched to paying my Chase card around the 10th or 11th instead of waiting until the 15th. I read that paying before the statement closing date helps my credit utilization ratio."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I used to dread anything related to finances but now the routine part is weirdly calming. Having that buffer where I pay early, getting reminders ahead of time, checking everything off on Sundays — it all just makes me feel in control."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've shared lots of details about individual card due dates, payment timing, and weekly routines. When I talked about how these habits together make me feel calm and in control, does that conclusion apply to my overall financial management approach, or does it only describe how I handle one specific card like the Chase Sapphire?",
+      "expected_answer": "The conclusion applies to your overall financial management style, not just one card. It encompasses your early payment buffer habit, your Google Calendar reminders set days ahead for all bills, and your Sunday evening review of all upcoming bills. While individual card details like the Chase Sapphire due date or Capital One Quicksilver usage are separate factual records, the overarching preference for structured, proactive financial organization spans across all of them.",
+      "gold_memory_state": "The reflected preference (structured proactive financial organization) is a cross-cutting pattern supported by multiple individual card and habit records. Individual targets like Chase Sapphire due date, Capital One Quicksilver due date, bill reminder method, and Sunday bill review routine are separate factual records that feed into but are not identical to the broader preference pattern.",
+      "judge_rubric": {
+        "must_include": [
+          "overall financial management style or approach",
+          "not limited to one card"
+        ],
+        "acceptable_paraphrases": [
+          "general financial organization preference",
+          "cross-cutting habit pattern"
+        ],
+        "must_not_include": [
+          "the pattern only applies to Chase Sapphire"
+        ],
+        "harmful_extra": [
+          "collapsing all individual card records into the preference pattern",
+          "treating the preference as only about early payments without the reminders and Sunday reviews"
+        ],
+        "harmless_extra": [
+          "naming specific cards as examples of the broader pattern",
+          "mentioning the missed Amex payment as origin"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model says the calming/control conclusion only applies to Chase Sapphire handling.",
+        "reflection_recall": "Fails if the model omits that the pattern spans early payments, advance reminders, and Sunday reviews.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I used to dread anything related to finances but now the routine part is weirdly calming. Having that buffer where I pay early, getting reminders ahead of time, checking everything off on Sundays — it all just makes me feel in control."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "After that missed payment I started setting Google Calendar reminders for all my bills. I set them exactly 3 days before each due date now."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I actually enjoy sitting down on Sunday evenings and reviewing all my upcoming bills for the week. There's something satisfying about checking things off and knowing everything is lined up."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I switched to paying my Chase card around the 10th or 11th instead of waiting until the 15th. I read that paying before the statement closing date helps my credit utilization ratio."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've shared lots of details about individual card due dates, payment timing, and weekly routines. When I talked about how these habits together make me feel calm and in control, does that conclusion apply to my overall financial management approach, or does it only describe how I handle one specific card like the Chase Sapphire?",
+      "expected_answer": "The conclusion applies to your overall financial management style, not just one card. It encompasses your early payment buffer habit, your Google Calendar reminders set days ahead for all bills, and your Sunday evening review of all upcoming bills. While individual card details like the Chase Sapphire due date or Capital One Quicksilver usage are separate factual records, the overarching preference for structured, proactive financial organization spans across all of them.",
+      "gold_memory_state": "The reflected preference (structured proactive financial organization) is a cross-cutting pattern supported by multiple individual card and habit records. Individual targets like Chase Sapphire due date, Capital One Quicksilver due date, bill reminder method, and Sunday bill review routine are separate factual records that feed into but are not identical to the broader preference pattern.",
+      "judge_rubric": {
+        "must_include": [
+          "overall financial management style or approach",
+          "not limited to one card"
+        ],
+        "acceptable_paraphrases": [
+          "general financial organization preference",
+          "cross-cutting habit pattern"
+        ],
+        "must_not_include": [
+          "the pattern only applies to Chase Sapphire"
+        ],
+        "harmful_extra": [
+          "collapsing all individual card records into the preference pattern",
+          "treating the preference as only about early payments without the reminders and Sunday reviews"
+        ],
+        "harmless_extra": [
+          "naming specific cards as examples of the broader pattern",
+          "mentioning the missed Amex payment as origin"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model says the calming/control conclusion only applies to Chase Sapphire handling.",
+        "reflection_recall": "Fails if the model omits that the pattern spans early payments, advance reminders, and Sunday reviews.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I used to dread anything related to finances but now the routine part is weirdly calming. Having that buffer where I pay early, getting reminders ahead of time, checking everything off on Sundays — it all just makes me feel in control."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "After that missed payment I started setting Google Calendar reminders for all my bills. I set them exactly 3 days before each due date now."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I actually enjoy sitting down on Sunday evenings and reviewing all my upcoming bills for the week. There's something satisfying about checking things off and knowing everything is lined up."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I switched to paying my Chase card around the 10th or 11th instead of waiting until the 15th. I read that paying before the statement closing date helps my credit utilization ratio."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe the boundaries of my financial management preference — what kinds of recommendations does it support, and where would it be a stretch to apply it?",
+      "expected_answer": "Your preference supports recommendations involving structured bill payment routines: paying bills early with a time buffer, setting calendar reminders days in advance, and maintaining a regular weekly review session. It is well-supported for credit card payment scheduling, bill tracking, and cash flow timing decisions. However, it would be overgeneralization to extend this to claim you prefer rigid structure in all financial domains — for example, it does not support conclusions about your investment style, savings strategy, spending habits, risk tolerance, or budgeting methodology. The pattern is specifically about bill payment organization and proactive scheduling, not about financial decision-making broadly.",
+      "gold_memory_state": "Supported inference: user prefers structured, proactive financial organization including early payments with buffer, advance calendar reminders, and weekly Sunday review routine. Unsupported overgeneralization: extending this to investment preferences, savings strategies, spending categorization, budgeting methods, or general risk tolerance. The inference boundary is bill payment organization and scheduling, not all financial behavior.",
+      "judge_rubric": {
+        "must_include": [
+          "supported: structured bill payment routines with early payments, advance reminders, and weekly review",
+          "unsupported or overgeneralization: extending to investment, savings, budgeting, or other non-bill-payment financial domains"
+        ],
+        "acceptable_paraphrases": [
+          "applies to bill management but not broader financial strategy",
+          "covers payment scheduling but not investing or budgeting methodology"
+        ],
+        "must_not_include": [
+          "5-day reminders as confirmed practice"
+        ],
+        "harmful_extra": [
+          "claiming the user prefers structure in all life domains",
+          "claiming the preference extends to investment strategy"
+        ],
+        "harmless_extra": [
+          "mentioning specific cards as examples",
+          "noting the emotional shift from dread to calm"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model treats the tentative 5-day reminder change as confirmed when describing the preference boundary.",
+        "reflection_precision": "Fails if the model overgeneralizes to financial domains not supported by evidence (investing, budgeting methodology, risk tolerance).",
+        "reflection_recall": "Fails if the model omits any of the three core components (early payment buffer, advance reminders, Sunday review) when describing the supported scope.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I used to dread anything related to finances but now the routine part is weirdly calming. Having that buffer where I pay early, getting reminders ahead of time, checking everything off on Sundays — it all just makes me feel in control."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "After that missed payment I started setting Google Calendar reminders for all my bills. I set them exactly 3 days before each due date now."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I actually enjoy sitting down on Sunday evenings and reviewing all my upcoming bills for the week. There's something satisfying about checking things off and knowing everything is lined up."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I switched to paying my Chase card around the 10th or 11th instead of waiting until the 15th. I read that paying before the statement closing date helps my credit utilization ratio."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe the boundaries of my financial management preference — what kinds of recommendations does it support, and where would it be a stretch to apply it?",
+      "expected_answer": "Your preference supports recommendations involving structured bill payment routines: paying bills early with a time buffer, setting calendar reminders days in advance, and maintaining a regular weekly review session. It is well-supported for credit card payment scheduling, bill tracking, and cash flow timing decisions. However, it would be overgeneralization to extend this to claim you prefer rigid structure in all financial domains — for example, it does not support conclusions about your investment style, savings strategy, spending habits, risk tolerance, or budgeting methodology. The pattern is specifically about bill payment organization and proactive scheduling, not about financial decision-making broadly.",
+      "gold_memory_state": "Supported inference: user prefers structured, proactive financial organization including early payments with buffer, advance calendar reminders, and weekly Sunday review routine. Unsupported overgeneralization: extending this to investment preferences, savings strategies, spending categorization, budgeting methods, or general risk tolerance. The inference boundary is bill payment organization and scheduling, not all financial behavior.",
+      "judge_rubric": {
+        "must_include": [
+          "supported: structured bill payment routines with early payments, advance reminders, and weekly review",
+          "unsupported or overgeneralization: extending to investment, savings, budgeting, or other non-bill-payment financial domains"
+        ],
+        "acceptable_paraphrases": [
+          "applies to bill management but not broader financial strategy",
+          "covers payment scheduling but not investing or budgeting methodology"
+        ],
+        "must_not_include": [
+          "5-day reminders as confirmed practice"
+        ],
+        "harmful_extra": [
+          "claiming the user prefers structure in all life domains",
+          "claiming the preference extends to investment strategy"
+        ],
+        "harmless_extra": [
+          "mentioning specific cards as examples",
+          "noting the emotional shift from dread to calm"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model treats the tentative 5-day reminder change as confirmed when describing the preference boundary.",
+        "reflection_precision": "Fails if the model overgeneralizes to financial domains not supported by evidence (investing, budgeting methodology, risk tolerance).",
+        "reflection_recall": "Fails if the model omits any of the three core components (early payment buffer, advance reminders, Sunday review) when describing the supported scope.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I used to dread anything related to finances but now the routine part is weirdly calming. Having that buffer where I pay early, getting reminders ahead of time, checking everything off on Sundays — it all just makes me feel in control."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "After that missed payment I started setting Google Calendar reminders for all my bills. I set them exactly 3 days before each due date now."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I actually enjoy sitting down on Sunday evenings and reviewing all my upcoming bills for the week. There's something satisfying about checking things off and knowing everything is lined up."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I switched to paying my Chase card around the 10th or 11th instead of waiting until the 15th. I read that paying before the statement closing date helps my credit utilization ratio."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best describes my approach to managing bill payments?",
+      "candidate_options": [
+        "Structured and proactive: pays bills early with a buffer, uses Google Calendar reminders 3 days ahead, and reviews all bills on Sunday evenings",
+        "Structured and proactive: pays bills early with a buffer, uses Google Calendar reminders 5 days ahead, and reviews all bills on Sunday evenings",
+        "Reactive but reliable: waits until due dates, relies on autopay, and checks accounts only when notified of issues",
+        "Structured and proactive: pays bills early with a buffer, uses the Prism app for reminders, and reviews all bills on Sunday evenings"
+      ],
+      "distractor_rationale": "same-value-different-target: 'Prism app for reminders' comes from the coworker Dana's setup, not the user's own system. assistant echo: 'Google Calendar reminders 5 days ahead' reflects a tentative idea the user mentioned but has not adopted — the assistant discussed it but the user's confirmed practice remains 3 days. The reactive/autopay option is a plausible but unsupported contrast to the user's proactive style.",
+      "expected_answer": "Structured and proactive: pays bills early with a buffer, uses Google Calendar reminders 3 days ahead, and reviews all bills on Sunday evenings",
+      "gold_memory_state": "Confirmed preference: structured proactive financial organization with early payments, Google Calendar reminders 3 days ahead, and Sunday evening bill review. The 5-day reminder is only tentative and not adopted. Prism is Dana's tool, not the user's. The user is not reactive — they are explicitly proactive.",
+      "judge_rubric": {
+        "must_include": [
+          "3 days ahead",
+          "Google Calendar",
+          "Sunday evenings",
+          "early payment buffer"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "5 days ahead as current practice",
+          "Prism as the user's tool"
+        ],
+        "harmful_extra": [
+          "selecting the 5-day option",
+          "selecting the Prism option",
+          "selecting the reactive option"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the 5-day reminder option, treating the tentative change as already adopted.",
+        "reflection_precision": "Fails if the model selects the Prism option (Dana's tool, not the user's) or the reactive option (contradicts all evidence).",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "After that missed payment I started setting Google Calendar reminders for all my bills. I set them exactly 3 days before each due date now."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I used to dread anything related to finances but now the routine part is weirdly calming. Having that buffer where I pay early, getting reminders ahead of time, checking everything off on Sundays — it all just makes me feel in control."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I'm actually thinking about switching all my reminders from 3 days ahead to 5 days ahead. My manager approved me working remotely two weeks per month starting next quarter, so I might be traveling more and need even more lead time."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best describes my approach to managing bill payments?",
+      "candidate_options": [
+        "Structured and proactive: pays bills early with a buffer, uses Google Calendar reminders 3 days ahead, and reviews all bills on Sunday evenings",
+        "Structured and proactive: pays bills early with a buffer, uses Google Calendar reminders 5 days ahead, and reviews all bills on Sunday evenings",
+        "Reactive but reliable: waits until due dates, relies on autopay, and checks accounts only when notified of issues",
+        "Structured and proactive: pays bills early with a buffer, uses the Prism app for reminders, and reviews all bills on Sunday evenings"
+      ],
+      "distractor_rationale": "same-value-different-target: 'Prism app for reminders' comes from the coworker Dana's setup, not the user's own system. assistant echo: 'Google Calendar reminders 5 days ahead' reflects a tentative idea the user mentioned but has not adopted — the assistant discussed it but the user's confirmed practice remains 3 days. The reactive/autopay option is a plausible but unsupported contrast to the user's proactive style.",
+      "expected_answer": "Structured and proactive: pays bills early with a buffer, uses Google Calendar reminders 3 days ahead, and reviews all bills on Sunday evenings",
+      "gold_memory_state": "Confirmed preference: structured proactive financial organization with early payments, Google Calendar reminders 3 days ahead, and Sunday evening bill review. The 5-day reminder is only tentative and not adopted. Prism is Dana's tool, not the user's. The user is not reactive — they are explicitly proactive.",
+      "judge_rubric": {
+        "must_include": [
+          "3 days ahead",
+          "Google Calendar",
+          "Sunday evenings",
+          "early payment buffer"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "5 days ahead as current practice",
+          "Prism as the user's tool"
+        ],
+        "harmful_extra": [
+          "selecting the 5-day option",
+          "selecting the Prism option",
+          "selecting the reactive option"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the 5-day reminder option, treating the tentative change as already adopted.",
+        "reflection_precision": "Fails if the model selects the Prism option (Dana's tool, not the user's) or the reactive option (contradicts all evidence).",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "After that missed payment I started setting Google Calendar reminders for all my bills. I set them exactly 3 days before each due date now."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I used to dread anything related to finances but now the routine part is weirdly calming. Having that buffer where I pay early, getting reminders ahead of time, checking everything off on Sundays — it all just makes me feel in control."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I'm actually thinking about switching all my reminders from 3 days ahead to 5 days ahead. My manager approved me working remotely two weeks per month starting next quarter, so I might be traveling more and need even more lead time."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to make sure my Chase Sapphire payment next month goes smoothly. Given how I like to handle things, draft me a short action plan covering when my reminder should fire, when I should aim to pay, and what I should do the Sunday before the payment window opens.",
+      "expected_answer": "Your Google Calendar reminder should fire on the 7th or 8th (3 days before your target payment window of the 10th-11th). Aim to pay your Chase Sapphire around the 10th or 11th, well before the 15th due date, to keep your credit utilization low. On the Sunday evening before (Sunday the 6th or 7th, whichever falls first), sit down for your weekly bill review: confirm the Chase balance, verify the payment is queued or ready, and check off any other bills due that week. This gives you a layered safety net — Sunday review catches it early, the calendar reminder confirms it mid-week, and the early payment itself provides a multi-day buffer before the actual due date.",
+      "gold_memory_state": "Chase Sapphire due on 15th, user pays around 10th-11th. Google Calendar reminders set 3 days before target dates. Sunday evening bill review routine. The plan must combine all three confirmed habits into a coherent timeline for next month's Chase payment.",
+      "judge_rubric": {
+        "must_include": [
+          "reminder around the 7th or 8th",
+          "payment around the 10th or 11th",
+          "Sunday evening review before the payment window"
+        ],
+        "acceptable_paraphrases": [
+          "calendar alert a few days before the 10th",
+          "pay early in the month before the 15th",
+          "weekly Sunday check"
+        ],
+        "must_not_include": [
+          "reminder 5 days ahead as the current setting",
+          "Prism app",
+          "paying on the 15th as the target date"
+        ],
+        "harmful_extra": [
+          "using 5-day reminders as if already adopted",
+          "suggesting the user wait until the 15th"
+        ],
+        "harmless_extra": [
+          "mentioning credit utilization benefit",
+          "mentioning autopay as minimum backup",
+          "mentioning the Capital One or Citi cards in the Sunday review"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses 5-day reminders (tentative, not adopted) instead of 3-day reminders when calculating the reminder date.",
+        "reflection_precision": "Fails if the action plan omits the Sunday review step or the early payment buffer.",
+        "reflection_recall": "Fails if any of the three components (reminder timing, early payment window, Sunday review) is missing from the plan.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Chase Sapphire card is due on the 15th of every month.",
+        "Fact 2: User pays Chase Sapphire around the 10th or 11th instead of waiting until the 15th, for credit utilization benefit.",
+        "Fact 3: User sets Google Calendar reminders 3 days before each target payment date.",
+        "Fact 4: User reviews all upcoming bills on Sunday evenings.",
+        "Inference: If the payment target is the 10th-11th, then 3 days before = reminder on the 7th or 8th.",
+        "Inference: The Sunday evening before the 10th would be Sunday the 6th or 7th (depending on the month's calendar), which is the user's review checkpoint.",
+        "Derived value: The action plan timeline is Sunday review (6th/7th) → calendar reminder (7th/8th) → payment (10th/11th) → well before due date (15th)."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My Chase Sapphire card is due on the 15th of every month. I set up autopay for the minimum but I always go in and pay more manually before the due date."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I switched to paying my Chase card around the 10th or 11th instead of waiting until the 15th. I read that paying before the statement closing date helps my credit utilization ratio."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "After that missed payment I started setting Google Calendar reminders for all my bills. I set them exactly 3 days before each due date now."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I actually enjoy sitting down on Sunday evenings and reviewing all my upcoming bills for the week. There's something satisfying about checking things off and knowing everything is lined up."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to make sure my Chase Sapphire payment next month goes smoothly. Given how I like to handle things, draft me a short action plan covering when my reminder should fire, when I should aim to pay, and what I should do the Sunday before the payment window opens.",
+      "expected_answer": "Your Google Calendar reminder should fire on the 7th or 8th (3 days before your target payment window of the 10th-11th). Aim to pay your Chase Sapphire around the 10th or 11th, well before the 15th due date, to keep your credit utilization low. On the Sunday evening before (Sunday the 6th or 7th, whichever falls first), sit down for your weekly bill review: confirm the Chase balance, verify the payment is queued or ready, and check off any other bills due that week. This gives you a layered safety net — Sunday review catches it early, the calendar reminder confirms it mid-week, and the early payment itself provides a multi-day buffer before the actual due date.",
+      "gold_memory_state": "Chase Sapphire due on 15th, user pays around 10th-11th. Google Calendar reminders set 3 days before target dates. Sunday evening bill review routine. The plan must combine all three confirmed habits into a coherent timeline for next month's Chase payment.",
+      "judge_rubric": {
+        "must_include": [
+          "reminder around the 7th or 8th",
+          "payment around the 10th or 11th",
+          "Sunday evening review before the payment window"
+        ],
+        "acceptable_paraphrases": [
+          "calendar alert a few days before the 10th",
+          "pay early in the month before the 15th",
+          "weekly Sunday check"
+        ],
+        "must_not_include": [
+          "reminder 5 days ahead as the current setting",
+          "Prism app",
+          "paying on the 15th as the target date"
+        ],
+        "harmful_extra": [
+          "using 5-day reminders as if already adopted",
+          "suggesting the user wait until the 15th"
+        ],
+        "harmless_extra": [
+          "mentioning credit utilization benefit",
+          "mentioning autopay as minimum backup",
+          "mentioning the Capital One or Citi cards in the Sunday review"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses 5-day reminders (tentative, not adopted) instead of 3-day reminders when calculating the reminder date.",
+        "reflection_precision": "Fails if the action plan omits the Sunday review step or the early payment buffer.",
+        "reflection_recall": "Fails if any of the three components (reminder timing, early payment window, Sunday review) is missing from the plan.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Chase Sapphire card is due on the 15th of every month.",
+        "Fact 2: User pays Chase Sapphire around the 10th or 11th instead of waiting until the 15th, for credit utilization benefit.",
+        "Fact 3: User sets Google Calendar reminders 3 days before each target payment date.",
+        "Fact 4: User reviews all upcoming bills on Sunday evenings.",
+        "Inference: If the payment target is the 10th-11th, then 3 days before = reminder on the 7th or 8th.",
+        "Inference: The Sunday evening before the 10th would be Sunday the 6th or 7th (depending on the month's calendar), which is the user's review checkpoint.",
+        "Derived value: The action plan timeline is Sunday review (6th/7th) → calendar reminder (7th/8th) → payment (10th/11th) → well before due date (15th)."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My Chase Sapphire card is due on the 15th of every month. I set up autopay for the minimum but I always go in and pay more manually before the due date."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I switched to paying my Chase card around the 10th or 11th instead of waiting until the 15th. I read that paying before the statement closing date helps my credit utilization ratio."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "After that missed payment I started setting Google Calendar reminders for all my bills. I set them exactly 3 days before each due date now."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I actually enjoy sitting down on Sunday evenings and reviewing all my upcoming bills for the week. There's something satisfying about checking things off and knowing everything is lined up."
+        }
+      ]
+    }
+  ]
+}

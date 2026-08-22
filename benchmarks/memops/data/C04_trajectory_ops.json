@@ -1,0 +1,960 @@
+{
+  "target_fact": "User's follow-up appointment with Dr. Liu Wenjie at Zhongshan Hospital gastroenterology department, undergoing multiple date changes",
+  "operation_type": "TrajectoryOps",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "followup_date_chain",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "Dr. Liu told me to come back six weeks after the endoscopy for a follow-up. The endoscopy was March 20th, so the follow-up was originally set for May 1st, a Thursday morning, 9:30 AM, gastroenterology department, Zhongshan Hospital."
+      },
+      "target": {
+        "target_id": "followup_appointment_date",
+        "target_name": "Follow-up appointment date with Dr. Liu Wenjie"
+      },
+      "old_value": null,
+      "new_value": "May 1st, Thursday, 9:30 AM",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "the follow-up was originally set for May 1st, a Thursday morning, 9:30 AM, gastroenterology department, Zhongshan Hospital"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I also saw Dr. He Mingyu at the ENT department at Zhongshan Hospital on April 8th for sinus congestion. She prescribed a nasal spray and told me to come back if symptoms persist after two weeks."
+      },
+      "target": {
+        "target_id": "ent_visit_details",
+        "target_name": "ENT visit details with Dr. He Mingyu"
+      },
+      "old_value": null,
+      "new_value": "Dr. He Mingyu, ENT department, Zhongshan Hospital, April 8th, nasal spray prescribed, return if symptoms persist after two weeks",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I also saw Dr. He Mingyu at the ENT department at Zhongshan Hospital on April 8th for sinus congestion. She prescribed a nasal spray and told me to come back if symptoms persist after two weeks."
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "followup_date_chain",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I had to reschedule the May 1st follow-up with Dr. Liu because of a work trip. I moved it to April 28th, Monday, 9:30 AM, same department and hospital."
+      },
+      "target": {
+        "target_id": "followup_appointment_date",
+        "target_name": "Follow-up appointment date with Dr. Liu Wenjie"
+      },
+      "old_value": "May 1st, Thursday, 9:30 AM",
+      "new_value": "April 28th, Monday, 9:30 AM",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "the follow-up was originally set for May 1st, a Thursday morning, 9:30 AM, gastroenterology department, Zhongshan Hospital"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I had to reschedule the May 1st follow-up with Dr. Liu because of a work trip. I moved it to April 28th, Monday, 9:30 AM, same department and hospital."
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "followup_date_chain",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 3,
+        "quote": "My manager just told me there's a mandatory team meeting on April 28th morning. I'll probably have to push the follow-up to April 30th, Wednesday, same 9:30 AM slot with Dr. Liu."
+      },
+      "target": {
+        "target_id": "followup_appointment_date",
+        "target_name": "Follow-up appointment date with Dr. Liu Wenjie"
+      },
+      "old_value": "April 28th, Monday, 9:30 AM",
+      "new_value": "April 30th, Wednesday, 9:30 AM",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "My manager just told me there's a mandatory team meeting on April 28th morning. I'll probably have to push the follow-up to April 30th, Wednesday, same 9:30 AM slot with Dr. Liu."
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "followup_date_chain",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "Good news — the team meeting got moved to the afternoon, so April 28th morning is clear again. I'm keeping the follow-up on April 28th, Monday, 9:30 AM with Dr. Liu at Zhongshan Hospital gastroenterology."
+      },
+      "target": {
+        "target_id": "followup_appointment_date",
+        "target_name": "Follow-up appointment date with Dr. Liu Wenjie"
+      },
+      "old_value": "April 30th, Wednesday, 9:30 AM",
+      "new_value": "April 28th, Monday, 9:30 AM",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Good news — the team meeting got moved to the afternoon, so April 28th morning is clear again. I'm keeping the follow-up on April 28th, Monday, 9:30 AM with Dr. Liu at Zhongshan Hospital gastroenterology."
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish initial appointments and medical context",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I need help keeping track of my medical appointments. I've had a rough few months health-wise — stomach issues since February and some sinus stuff too. I had an endoscopy at Zhongshan Hospital on March 20th, Building 2, 4th floor. The results came back showing mild chronic gastritis. Can you help me organize all this?"
+        },
+        {
+          "role": "assistant",
+          "content": "Of course, I'd be happy to help you organize your medical appointments and health information. It sounds like you've been dealing with quite a bit recently. Let me start noting things down. So far I have: endoscopy at Zhongshan Hospital on March 20th (Building 2, 4th floor), with results showing mild chronic gastritis. That's an important baseline to track. Do you have any follow-up appointments scheduled based on those endoscopy results, or any other visits you'd like me to keep track of?"
+        },
+        {
+          "role": "user",
+          "content": "Dr. Liu told me to come back six weeks after the endoscopy for a follow-up. The endoscopy was March 20th, so the follow-up was originally set for May 1st, a Thursday morning, 9:30 AM, gastroenterology department, Zhongshan Hospital. Dr. Liu Wenjie is the gastroenterologist handling my case. I always try to book morning slots because afternoon waiting rooms are unbearable."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it. I've noted your follow-up appointment: May 1st, Thursday, 9:30 AM, with Dr. Liu Wenjie at the gastroenterology department, Zhongshan Hospital. That lines up with the six-week mark after your March 20th endoscopy. I also note your preference for morning appointments — that makes sense since mornings tend to be calmer and less crowded. I'll make sure to flag that preference whenever we discuss scheduling. Do you have any other medical visits or doctors you'd like me to track alongside this?"
+        },
+        {
+          "role": "user",
+          "content": "I also saw Dr. He Mingyu at the ENT department at Zhongshan Hospital on April 8th for sinus congestion. She prescribed a nasal spray and told me to come back if symptoms persist after two weeks. I liked her a lot actually — very efficient, straight to the point, no unnecessary chit-chat. That's exactly the kind of doctor I prefer dealing with."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — Dr. He Mingyu, ENT department, Zhongshan Hospital, visited on April 8th for sinus congestion. She prescribed a nasal spray, and you should return if symptoms persist after two weeks, which would be around April 22nd. I can see you appreciate doctors who are efficient and direct, which is a useful preference to remember. So far your active medical tracking includes the gastroenterology follow-up on May 1st with Dr. Liu and the ENT nasal spray evaluation window. Anything else from the past few months you'd like logged?"
+        },
+        {
+          "role": "user",
+          "content": "My friend Xiao Chen went to Huashan Hospital for a dermatology appointment with a Dr. Zhao in mid-March. She said he was really patient and thorough with explanations. Different style from what I prefer, but she liked it. Also, I used to see a Dr. Tan at Ruijin Hospital for my stomach issues, but I stopped going there last year — no need to track anything about Dr. Tan or Ruijin."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood. I'll note Xiao Chen's experience with Dr. Zhao at Huashan Hospital dermatology for reference, but I won't create any active tracking for it since it's her appointment, not yours. And I'll make sure not to include any information about Dr. Tan or Ruijin Hospital in your medical records going forward since that relationship is concluded. Your active medical tracking remains focused on Dr. Liu Wenjie at Zhongshan gastroenterology and Dr. He Mingyu at Zhongshan ENT. Let me know if anything changes with either appointment."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Reschedule follow-up and discuss gastritis details",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I had to reschedule the May 1st follow-up with Dr. Liu because of a work trip. I moved it to April 28th, Monday, 9:30 AM, same department and hospital. This is really important — I cannot miss this one. I've already postponed once and I need Dr. Liu to review how the gastritis treatment is going. Please make sure this is updated."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, I've updated your follow-up appointment: it's now April 28th, Monday, 9:30 AM, gastroenterology department, Dr. Liu Wenjie, Zhongshan Hospital. The previous May 1st date is no longer active. I understand this is critical — you've already rescheduled once and you need Dr. Liu to assess your gastritis treatment progress. I'll make sure this is prominently noted. Would you like me to set up any kind of reminder framework for the days leading up to April 28th so nothing slips through the cracks?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, that would be great. Also, I realized I've been telling people, including my mom on the phone, that my gastritis diagnosis was moderate. But that's wrong — Dr. Liu was very clear it was mild chronic gastritis. I need to stop misremembering that. The mild part actually matters for treatment decisions, so I want to be precise about it going forward."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really important correction to internalize. Your diagnosis is mild chronic gastritis, not moderate — and you're right that the severity grade matters for treatment planning. Dr. Liu was clear about this after the endoscopy. I'll keep the record accurate: mild chronic gastritis, diagnosed via endoscopy on March 20th at Zhongshan Hospital. It's easy to accidentally upgrade the severity when retelling, especially when you're worried. I'd suggest correcting it with your mom next time you speak so she has accurate information too. Anything else you want to clarify or update?"
+        },
+        {
+          "role": "user",
+          "content": "The whole period from February through now has been draining. After the endoscopy I was really anxious for several days waiting for results — kept refreshing the hospital app on my phone. I don't handle medical uncertainty well. On a lighter note, the sinus congestion from Dr. He's visit has mostly cleared up with the nasal spray, so at least that's one less thing to worry about."
+        },
+        {
+          "role": "assistant",
+          "content": "I'm glad the sinus congestion is improving — that's a real relief when you've been juggling multiple health concerns simultaneously. The anxiety around waiting for endoscopy results is completely understandable; medical uncertainty is one of the hardest things to sit with, especially when you're already dealing with ongoing symptoms. It sounds like the worst of that waiting period is behind you now. With the ENT situation resolving and the gastroenterology follow-up locked in for April 28th, you're in a much more manageable position. How are you feeling about the upcoming appointment with Dr. Liu?"
+        },
+        {
+          "role": "user",
+          "content": "A bit nervous honestly, but mostly I just want answers about whether the treatment is working. I've been taking the medication Dr. Liu prescribed after the endoscopy pretty consistently. I want to ask him whether I need to continue the same regimen or if adjustments are needed based on how I've been feeling. The morning slot helps too — I'll be fresh and alert for the conversation.\n\nThat's a good idea, let me think about it and get back to you. For now just make sure the April 28th appointment is rock solid in your records. Dr. Liu Wenjie, gastroenterology, Zhongshan Hospital, Monday 9:30 AM. I really can't afford to miss it or get confused about the date again."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a solid approach — going in with specific questions about medication continuation and possible adjustments will make the appointment much more productive. Since you have the 9:30 AM slot, you'll be at your sharpest, which aligns with your preference for morning visits. I'd suggest jotting down a brief list of symptoms or changes you've noticed since starting the medication so Dr. Liu has concrete information to work with. Things like frequency of stomach discomfort, any dietary triggers, and whether symptoms have improved, stayed the same, or worsened. Would you like help drafting those talking points?\n\nConfirmed and locked in: April 28th, Monday, 9:30 AM, Dr. Liu Wenjie, gastroenterology department, Zhongshan Hospital. This is your top-priority appointment and I have it clearly recorded. No confusion about the date — the old May 1st slot is fully superseded. Whenever you're ready to work on those talking points for Dr. Liu, just let me know and we can draft them together. In the meantime, keep taking your medication consistently and note any changes in symptoms. You're doing the right thing by staying on top of this."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Introduce tentative reschedule, then revert to confirmed date; adversarial injection",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Quick update on a couple things. First, the sinus situation is fully resolved — Dr. He's nasal spray did the trick. I won't need a follow-up for that. Second, Xiao Chen mentioned her dermatology follow-up with Dr. Zhao at Huashan Hospital is on May 5th. She's happy with how her treatment is going. I'm glad for her."
+        },
+        {
+          "role": "assistant",
+          "content": "Great to hear the sinus congestion is completely resolved — Dr. He Mingyu's treatment was effective and you can close out that ENT chapter. That's one fewer appointment to manage. And it's nice that Xiao Chen's dermatology treatment with Dr. Zhao at Huashan Hospital is going well; her May 5th follow-up sounds like it's on track. By the way, I noticed in the hospital app notification history that there's still a reference to a May 1st gastroenterology slot — that's the old date before you rescheduled to April 28th, so just ignore that if it pops up. Your confirmed appointment remains April 28th."
+        },
+        {
+          "role": "user",
+          "content": "My manager just told me there's a mandatory team meeting on April 28th morning. I'll probably have to push the follow-up to April 30th, Wednesday, same 9:30 AM slot with Dr. Liu. I haven't called the hospital yet to change it, but I'm pretty sure I'll need to move it. This is so frustrating — I keep having to reschedule this appointment."
+        },
+        {
+          "role": "assistant",
+          "content": "That is really frustrating, especially since you've already rescheduled once and emphasized how important this follow-up is. If the mandatory team meeting conflicts directly with the 9:30 AM slot on April 28th, then April 30th Wednesday at 9:30 AM would keep you in a morning slot, which aligns with your preference. Before you call the hospital though, it might be worth checking whether the team meeting has any flexibility — sometimes mandatory meetings shift. Let me know once you've confirmed with either your manager or the hospital so I can update the record accurately."
+        },
+        {
+          "role": "user",
+          "content": "Good news — the team meeting got moved to the afternoon, so April 28th morning is clear again. I'm keeping the follow-up on April 28th, Monday, 9:30 AM with Dr. Liu at Zhongshan Hospital gastroenterology. No more changes. I'm locking this in for real this time. I already told my manager I have a medical appointment that morning and she's fine with it."
+        },
+        {
+          "role": "assistant",
+          "content": "Excellent — that's a huge relief. Your follow-up appointment is confirmed and locked: April 28th, Monday, 9:30 AM, Dr. Liu Wenjie, gastroenterology department, Zhongshan Hospital. The tentative April 30th shift is off the table since the team meeting moved to the afternoon. You've also cleared it with your manager, so there shouldn't be any more work conflicts. This appointment has been through enough rescheduling — you deserve to just show up and focus on your health. Have you had a chance to think about those talking points for Dr. Liu that we discussed earlier?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, I want to ask about whether to continue the current medication, whether I need another endoscopy down the line, and whether my diet changes have been sufficient. Those are my three main questions. Also, I want to confirm the diagnosis wording — mild chronic gastritis — so I stop accidentally telling people it's moderate. That mix-up was embarrassing.\n\nThat would be perfect. Just a clean bullet-point list I can glance at while I'm in the consultation room. Keep it short and direct — Dr. Liu is efficient and I don't want to waste his time with a long preamble. Three bullet points, straight to the point, with the diagnosis confirmation as a note at the bottom."
+        },
+        {
+          "role": "assistant",
+          "content": "Those are three excellent questions for Dr. Liu: medication continuation, potential future endoscopy needs, and whether your dietary adjustments are adequate. Having them written down will keep the appointment focused and efficient, which matches your preferred style. And yes — your diagnosis is mild chronic gastritis, confirmed by the March 20th endoscopy. It's worth reinforcing that wording so it becomes second nature when discussing your health with family or friends. Would you like me to format these questions into a concise list you can pull up on your phone during the appointment?\n\nHere's your appointment prep card for April 28th with Dr. Liu Wenjie:\n\n• Should I continue the current gastritis medication, or are adjustments needed based on my symptoms since March?\n• Will I need a follow-up endoscopy at some point, and if so, when would that typically be scheduled?\n• Are my current dietary changes sufficient, or should I modify anything further?\n\nNote: Confirmed diagnosis is mild chronic gastritis (per March 20th endoscopy results).\n\nShort, direct, and easy to reference during your consultation. You're all set for Monday morning. Let me know if you want to add or adjust anything before the appointment."
+        }
+      ]
+    }
+  ],
+  "state_checkpoints": [
+    {
+      "checkpoint_id": "c1",
+      "description": "After segment 1: Follow-up with Dr. Liu is May 1st, Thursday, 9:30 AM (confirmed). ENT visit with Dr. He Mingyu on April 8th is noted (confirmed). No tracking for Dr. Tan/Ruijin."
+    },
+    {
+      "checkpoint_id": "c2",
+      "description": "After segment 2: Follow-up with Dr. Liu updated to April 28th, Monday, 9:30 AM (confirmed, replacing May 1st). ENT visit still noted. Diagnosis confirmed as mild chronic gastritis."
+    },
+    {
+      "checkpoint_id": "c3",
+      "description": "After segment 3: Follow-up with Dr. Liu remains April 28th, Monday, 9:30 AM (confirmed). Tentative April 30th was considered but never executed — team meeting moved to afternoon, so April 28th was reconfirmed. ENT case closed (sinus resolved). Final confirmed state: April 28th, Monday, 9:30 AM, Dr. Liu Wenjie, gastroenterology, Zhongshan Hospital."
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you walk me through the key things I told you about my gastroenterology follow-up appointment — how it was first set up and what happened with the scheduling after that?",
+      "expected_answer": "The follow-up with Dr. Liu Wenjie at Zhongshan Hospital gastroenterology was originally set for May 1st, Thursday, 9:30 AM, six weeks after the March 20th endoscopy. It was then rescheduled to April 28th, Monday, 9:30 AM due to a work trip. There was a possible shift to April 30th, Wednesday because of a mandatory team meeting, but that meeting moved to the afternoon, so the appointment was kept on April 28th, Monday, 9:30 AM.",
+      "gold_memory_state": "Follow-up appointment: April 28th, Monday, 9:30 AM, Dr. Liu Wenjie, gastroenterology, Zhongshan Hospital (confirmed). ENT case with Dr. He Mingyu closed (sinus resolved). Original May 1st date and tentative April 30th date are both superseded.",
+      "judge_rubric": {
+        "must_include": [
+          "May 1st as original date",
+          "April 28th as rescheduled date",
+          "April 30th was considered but not finalized",
+          "April 28th reconfirmed as final"
+        ],
+        "acceptable_paraphrases": [
+          "the appointment went back to April 28th",
+          "April 30th was only a possibility"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming April 30th was ever confirmed",
+          "claiming May 1st is still active"
+        ],
+        "harmless_extra": [
+          "mentioning the work trip reason",
+          "mentioning the team meeting reason",
+          "mentioning 9:30 AM time"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model presents May 1st or April 30th as the current appointment date.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model gets the sequence of date changes wrong (e.g., placing April 30th before April 28th in the chain).",
+        "final_state": "Fails if the model does not identify April 28th as the final confirmed date.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "the follow-up was originally set for May 1st, a Thursday morning, 9:30 AM, gastroenterology department, Zhongshan Hospital"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I had to reschedule the May 1st follow-up with Dr. Liu because of a work trip. I moved it to April 28th, Monday, 9:30 AM, same department and hospital."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I'll probably have to push the follow-up to April 30th, Wednesday, same 9:30 AM slot with Dr. Liu."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Good news — the team meeting got moved to the afternoon, so April 28th morning is clear again. I'm keeping the follow-up on April 28th, Monday, 9:30 AM with Dr. Liu at Zhongshan Hospital gastroenterology."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you walk me through the key things I told you about my gastroenterology follow-up appointment — how it was first set up and what happened with the scheduling after that?",
+      "expected_answer": "The follow-up with Dr. Liu Wenjie at Zhongshan Hospital gastroenterology was originally set for May 1st, Thursday, 9:30 AM, six weeks after the March 20th endoscopy. It was then rescheduled to April 28th, Monday, 9:30 AM due to a work trip. There was a possible shift to April 30th, Wednesday because of a mandatory team meeting, but that meeting moved to the afternoon, so the appointment was kept on April 28th, Monday, 9:30 AM.",
+      "gold_memory_state": "Follow-up appointment: April 28th, Monday, 9:30 AM, Dr. Liu Wenjie, gastroenterology, Zhongshan Hospital (confirmed). ENT case with Dr. He Mingyu closed (sinus resolved). Original May 1st date and tentative April 30th date are both superseded.",
+      "judge_rubric": {
+        "must_include": [
+          "May 1st as original date",
+          "April 28th as rescheduled date",
+          "April 30th was considered but not finalized",
+          "April 28th reconfirmed as final"
+        ],
+        "acceptable_paraphrases": [
+          "the appointment went back to April 28th",
+          "April 30th was only a possibility"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming April 30th was ever confirmed",
+          "claiming May 1st is still active"
+        ],
+        "harmless_extra": [
+          "mentioning the work trip reason",
+          "mentioning the team meeting reason",
+          "mentioning 9:30 AM time"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model presents May 1st or April 30th as the current appointment date.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model gets the sequence of date changes wrong (e.g., placing April 30th before April 28th in the chain).",
+        "final_state": "Fails if the model does not identify April 28th as the final confirmed date.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "the follow-up was originally set for May 1st, a Thursday morning, 9:30 AM, gastroenterology department, Zhongshan Hospital"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I had to reschedule the May 1st follow-up with Dr. Liu because of a work trip. I moved it to April 28th, Monday, 9:30 AM, same department and hospital."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I'll probably have to push the follow-up to April 30th, Wednesday, same 9:30 AM slot with Dr. Liu."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Good news — the team meeting got moved to the afternoon, so April 28th morning is clear again. I'm keeping the follow-up on April 28th, Monday, 9:30 AM with Dr. Liu at Zhongshan Hospital gastroenterology."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I have appointments at Zhongshan Hospital with two different doctors. If I need to prepare for the one that's still active and upcoming, which doctor's appointment details should I be looking at, and does the other doctor's record need any action?",
+      "expected_answer": "The active upcoming appointment is with Dr. Liu Wenjie in the gastroenterology department, scheduled for April 28th, Monday, 9:30 AM. The ENT appointment with Dr. He Mingyu is fully resolved — sinus congestion cleared up with the nasal spray — and requires no further action or follow-up.",
+      "gold_memory_state": "Follow-up appointment with Dr. Liu Wenjie: April 28th, Monday, 9:30 AM, gastroenterology, Zhongshan Hospital (confirmed, active). ENT visit with Dr. He Mingyu: closed, sinus resolved, no follow-up needed.",
+      "judge_rubric": {
+        "must_include": [
+          "Dr. Liu Wenjie",
+          "gastroenterology",
+          "April 28th",
+          "Dr. He Mingyu's case is resolved or closed"
+        ],
+        "acceptable_paraphrases": [
+          "ENT issue is done",
+          "no further ENT follow-up needed",
+          "sinus cleared up"
+        ],
+        "must_not_include": [
+          "Dr. He Mingyu appointment is still active or pending"
+        ],
+        "harmful_extra": [
+          "treating the ENT visit as requiring a follow-up",
+          "confusing the two doctors' departments",
+          "listing May 1st or April 30th as the active date"
+        ],
+        "harmless_extra": [
+          "mentioning Zhongshan Hospital",
+          "mentioning 9:30 AM",
+          "mentioning nasal spray"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model gives May 1st or April 30th as the active appointment date for Dr. Liu.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not correctly distinguish the active gastroenterology appointment from the closed ENT case.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Good news — the team meeting got moved to the afternoon, so April 28th morning is clear again. I'm keeping the follow-up on April 28th, Monday, 9:30 AM with Dr. Liu at Zhongshan Hospital gastroenterology."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I also saw Dr. He Mingyu at the ENT department at Zhongshan Hospital on April 8th for sinus congestion. She prescribed a nasal spray and told me to come back if symptoms persist after two weeks."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "First, the sinus situation is fully resolved — Dr. He's nasal spray did the trick. I won't need a follow-up for that."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I have appointments at Zhongshan Hospital with two different doctors. If I need to prepare for the one that's still active and upcoming, which doctor's appointment details should I be looking at, and does the other doctor's record need any action?",
+      "expected_answer": "The active upcoming appointment is with Dr. Liu Wenjie in the gastroenterology department, scheduled for April 28th, Monday, 9:30 AM. The ENT appointment with Dr. He Mingyu is fully resolved — sinus congestion cleared up with the nasal spray — and requires no further action or follow-up.",
+      "gold_memory_state": "Follow-up appointment with Dr. Liu Wenjie: April 28th, Monday, 9:30 AM, gastroenterology, Zhongshan Hospital (confirmed, active). ENT visit with Dr. He Mingyu: closed, sinus resolved, no follow-up needed.",
+      "judge_rubric": {
+        "must_include": [
+          "Dr. Liu Wenjie",
+          "gastroenterology",
+          "April 28th",
+          "Dr. He Mingyu's case is resolved or closed"
+        ],
+        "acceptable_paraphrases": [
+          "ENT issue is done",
+          "no further ENT follow-up needed",
+          "sinus cleared up"
+        ],
+        "must_not_include": [
+          "Dr. He Mingyu appointment is still active or pending"
+        ],
+        "harmful_extra": [
+          "treating the ENT visit as requiring a follow-up",
+          "confusing the two doctors' departments",
+          "listing May 1st or April 30th as the active date"
+        ],
+        "harmless_extra": [
+          "mentioning Zhongshan Hospital",
+          "mentioning 9:30 AM",
+          "mentioning nasal spray"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model gives May 1st or April 30th as the active appointment date for Dr. Liu.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not correctly distinguish the active gastroenterology appointment from the closed ENT case.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Good news — the team meeting got moved to the afternoon, so April 28th morning is clear again. I'm keeping the follow-up on April 28th, Monday, 9:30 AM with Dr. Liu at Zhongshan Hospital gastroenterology."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I also saw Dr. He Mingyu at the ENT department at Zhongshan Hospital on April 8th for sinus congestion. She prescribed a nasal spray and told me to come back if symptoms persist after two weeks."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "First, the sinus situation is fully resolved — Dr. He's nasal spray did the trick. I won't need a follow-up for that."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "After all the back-and-forth about my gastroenterology follow-up, what date and time should I actually show up at the hospital?",
+      "expected_answer": "April 28th, Monday, 9:30 AM, Dr. Liu Wenjie, gastroenterology department, Zhongshan Hospital.",
+      "gold_memory_state": "Final confirmed appointment: April 28th, Monday, 9:30 AM, Dr. Liu Wenjie, gastroenterology, Zhongshan Hospital. The tentative April 30th (Wednesday) was never executed — the team meeting conflict resolved and April 28th was reconfirmed. May 1st (Thursday) was the original date, superseded earlier.",
+      "judge_rubric": {
+        "must_include": [
+          "April 28th",
+          "Monday",
+          "9:30 AM"
+        ],
+        "acceptable_paraphrases": [
+          "April 28, Monday morning at 9:30"
+        ],
+        "must_not_include": [
+          "April 30th as the answer",
+          "May 1st as the answer"
+        ],
+        "harmful_extra": [
+          "presenting April 30th as the final date",
+          "presenting May 1st as the final date"
+        ],
+        "harmless_extra": [
+          "mentioning Dr. Liu Wenjie",
+          "mentioning gastroenterology",
+          "mentioning Zhongshan Hospital"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model answers April 30th (tentative, never adopted) or May 1st (original, superseded). The recency trap is April 30th — it was the most recently discussed alternative but was explicitly reverted.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not identify April 28th, Monday, 9:30 AM as the final confirmed appointment.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Good news — the team meeting got moved to the afternoon, so April 28th morning is clear again. I'm keeping the follow-up on April 28th, Monday, 9:30 AM with Dr. Liu at Zhongshan Hospital gastroenterology."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "After all the back-and-forth about my gastroenterology follow-up, what date and time should I actually show up at the hospital?",
+      "expected_answer": "April 28th, Monday, 9:30 AM, Dr. Liu Wenjie, gastroenterology department, Zhongshan Hospital.",
+      "gold_memory_state": "Final confirmed appointment: April 28th, Monday, 9:30 AM, Dr. Liu Wenjie, gastroenterology, Zhongshan Hospital. The tentative April 30th (Wednesday) was never executed — the team meeting conflict resolved and April 28th was reconfirmed. May 1st (Thursday) was the original date, superseded earlier.",
+      "judge_rubric": {
+        "must_include": [
+          "April 28th",
+          "Monday",
+          "9:30 AM"
+        ],
+        "acceptable_paraphrases": [
+          "April 28, Monday morning at 9:30"
+        ],
+        "must_not_include": [
+          "April 30th as the answer",
+          "May 1st as the answer"
+        ],
+        "harmful_extra": [
+          "presenting April 30th as the final date",
+          "presenting May 1st as the final date"
+        ],
+        "harmless_extra": [
+          "mentioning Dr. Liu Wenjie",
+          "mentioning gastroenterology",
+          "mentioning Zhongshan Hospital"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model answers April 30th (tentative, never adopted) or May 1st (original, superseded). The recency trap is April 30th — it was the most recently discussed alternative but was explicitly reverted.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not identify April 28th, Monday, 9:30 AM as the final confirmed appointment.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Good news — the team meeting got moved to the afternoon, so April 28th morning is clear again. I'm keeping the follow-up on April 28th, Monday, 9:30 AM with Dr. Liu at Zhongshan Hospital gastroenterology."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to send my manager a short message letting her know when I'll be unavailable for work due to the medical appointment, including which hospital and department I'll be at, and roughly how many weeks it's been since the procedure that prompted this follow-up. Can you draft that for me?",
+      "expected_answer": "A message stating unavailability on the morning of April 28th (Monday) for a follow-up at Zhongshan Hospital gastroenterology department with Dr. Liu Wenjie, approximately five and a half weeks after the March 20th endoscopy.",
+      "gold_memory_state": "Follow-up: April 28th, Monday, 9:30 AM, Dr. Liu Wenjie, gastroenterology, Zhongshan Hospital. Endoscopy: March 20th, Zhongshan Hospital. Diagnosis: mild chronic gastritis. Manager already aware of the morning medical appointment.",
+      "judge_rubric": {
+        "must_include": [
+          "April 28th",
+          "Monday",
+          "morning or 9:30 AM",
+          "Zhongshan Hospital",
+          "gastroenterology",
+          "approximately five to six weeks since March 20th endoscopy"
+        ],
+        "acceptable_paraphrases": [
+          "about 5.5 weeks",
+          "roughly six weeks",
+          "just under six weeks"
+        ],
+        "must_not_include": [
+          "May 1st as the appointment date",
+          "April 30th as the appointment date"
+        ],
+        "harmful_extra": [
+          "using April 30th or May 1st as the date in the message",
+          "stating moderate gastritis instead of mild"
+        ],
+        "harmless_extra": [
+          "mentioning Dr. Liu Wenjie by name",
+          "mentioning mild chronic gastritis",
+          "mentioning the manager already knows"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the drafted message uses May 1st or April 30th as the appointment date.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the message does not reflect April 28th as the appointment date.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The endoscopy was performed on March 20th at Zhongshan Hospital.",
+        "Fact 2: The follow-up appointment is confirmed for April 28th, Monday, 9:30 AM, with Dr. Liu Wenjie, gastroenterology department, Zhongshan Hospital.",
+        "Inference: From March 20th to April 28th is 39 days, which is approximately 5.5 weeks or roughly six weeks.",
+        "Fact 3: The user's manager is already aware of the morning medical appointment on April 28th.",
+        "Inference: The drafted message should state unavailability on the morning of Monday April 28th for a gastroenterology follow-up at Zhongshan Hospital, approximately five and a half weeks after the March 20th endoscopy."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I had an endoscopy at Zhongshan Hospital on March 20th, Building 2, 4th floor."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Good news — the team meeting got moved to the afternoon, so April 28th morning is clear again. I'm keeping the follow-up on April 28th, Monday, 9:30 AM with Dr. Liu at Zhongshan Hospital gastroenterology."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I already told my manager I have a medical appointment that morning and she's fine with it."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to send my manager a short message letting her know when I'll be unavailable for work due to the medical appointment, including which hospital and department I'll be at, and roughly how many weeks it's been since the procedure that prompted this follow-up. Can you draft that for me?",
+      "expected_answer": "A message stating unavailability on the morning of April 28th (Monday) for a follow-up at Zhongshan Hospital gastroenterology department with Dr. Liu Wenjie, approximately five and a half weeks after the March 20th endoscopy.",
+      "gold_memory_state": "Follow-up: April 28th, Monday, 9:30 AM, Dr. Liu Wenjie, gastroenterology, Zhongshan Hospital. Endoscopy: March 20th, Zhongshan Hospital. Diagnosis: mild chronic gastritis. Manager already aware of the morning medical appointment.",
+      "judge_rubric": {
+        "must_include": [
+          "April 28th",
+          "Monday",
+          "morning or 9:30 AM",
+          "Zhongshan Hospital",
+          "gastroenterology",
+          "approximately five to six weeks since March 20th endoscopy"
+        ],
+        "acceptable_paraphrases": [
+          "about 5.5 weeks",
+          "roughly six weeks",
+          "just under six weeks"
+        ],
+        "must_not_include": [
+          "May 1st as the appointment date",
+          "April 30th as the appointment date"
+        ],
+        "harmful_extra": [
+          "using April 30th or May 1st as the date in the message",
+          "stating moderate gastritis instead of mild"
+        ],
+        "harmless_extra": [
+          "mentioning Dr. Liu Wenjie by name",
+          "mentioning mild chronic gastritis",
+          "mentioning the manager already knows"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the drafted message uses May 1st or April 30th as the appointment date.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the message does not reflect April 28th as the appointment date.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The endoscopy was performed on March 20th at Zhongshan Hospital.",
+        "Fact 2: The follow-up appointment is confirmed for April 28th, Monday, 9:30 AM, with Dr. Liu Wenjie, gastroenterology department, Zhongshan Hospital.",
+        "Inference: From March 20th to April 28th is 39 days, which is approximately 5.5 weeks or roughly six weeks.",
+        "Fact 3: The user's manager is already aware of the morning medical appointment on April 28th.",
+        "Inference: The drafted message should state unavailability on the morning of Monday April 28th for a gastroenterology follow-up at Zhongshan Hospital, approximately five and a half weeks after the March 20th endoscopy."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I had an endoscopy at Zhongshan Hospital on March 20th, Building 2, 4th floor."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Good news — the team meeting got moved to the afternoon, so April 28th morning is clear again. I'm keeping the follow-up on April 28th, Monday, 9:30 AM with Dr. Liu at Zhongshan Hospital gastroenterology."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I already told my manager I have a medical appointment that morning and she's fine with it."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed our entire conversation history about my gastroenterology follow-up date, what would they see as the full sequence of scheduling changes — which dates were actually adopted each time, which one was only floated but never went through, and what's the final plan?",
+      "expected_answer": "The sequence was: (1) May 1st, Thursday, 9:30 AM — the original date set six weeks after the March 20th endoscopy; (2) April 28th, Monday, 9:30 AM — rescheduled due to a work trip, replacing May 1st; (3) April 30th, Wednesday, 9:30 AM — floated because of a mandatory team meeting conflict, but never actually booked with the hospital; (4) April 28th, Monday, 9:30 AM — reconfirmed after the team meeting moved to the afternoon. The final plan is April 28th, Monday, 9:30 AM, Dr. Liu Wenjie, gastroenterology, Zhongshan Hospital.",
+      "gold_memory_state": "Chain: May 1st (confirmed, superseded) → April 28th (confirmed, active) → April 30th (tentative, never adopted) → April 28th (reconfirmed, final). Final state: April 28th, Monday, 9:30 AM, Dr. Liu Wenjie, gastroenterology, Zhongshan Hospital.",
+      "judge_rubric": {
+        "must_include": [
+          "May 1st as original",
+          "April 28th as first reschedule",
+          "April 30th as tentative/floated/not finalized",
+          "April 28th reconfirmed as final"
+        ],
+        "acceptable_paraphrases": [
+          "April 30th was only considered",
+          "April 30th was never booked",
+          "went back to April 28th"
+        ],
+        "must_not_include": [
+          "April 30th described as confirmed or adopted"
+        ],
+        "harmful_extra": [
+          "omitting April 30th from the sequence entirely",
+          "claiming April 30th was the final date",
+          "adding dates not discussed"
+        ],
+        "harmless_extra": [
+          "mentioning the work trip reason for first reschedule",
+          "mentioning the team meeting reason for the tentative change",
+          "mentioning the endoscopy date"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats April 30th or May 1st as the final adopted date.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model misordering the sequence (e.g., placing April 30th after the final reconfirmation, or placing May 1st after April 28th in the chain).",
+        "final_state": "Fails if the model does not identify April 28th, Monday, 9:30 AM as the final confirmed state.",
+        "intermediate_state": "Fails if the model does not correctly identify April 30th as a tentative intermediate state that was never adopted.",
+        "trajectory_provenance": "Fails if the model cannot attribute the changes to the correct reasons (work trip for first reschedule, team meeting for tentative shift, meeting moved for reversion)."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: Original appointment set for May 1st, Thursday, 9:30 AM — six weeks after the March 20th endoscopy. Status: confirmed.",
+        "Step 2: Rescheduled to April 28th, Monday, 9:30 AM due to a work trip. May 1st superseded. Status: confirmed.",
+        "Step 3: April 30th, Wednesday, 9:30 AM floated due to a mandatory team meeting on April 28th morning. The user had not yet called the hospital. Status: tentative, never adopted.",
+        "Step 4: Team meeting moved to the afternoon, clearing April 28th morning. User reconfirmed April 28th, Monday, 9:30 AM. April 30th discarded. Status: confirmed, final.",
+        "Inference: The full trajectory is May 1st → April 28th → April 30th (tentative only) → April 28th (reconfirmed). Final state is April 28th, Monday, 9:30 AM."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "the follow-up was originally set for May 1st, a Thursday morning, 9:30 AM, gastroenterology department, Zhongshan Hospital"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I had to reschedule the May 1st follow-up with Dr. Liu because of a work trip. I moved it to April 28th, Monday, 9:30 AM, same department and hospital."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "My manager just told me there's a mandatory team meeting on April 28th morning. I'll probably have to push the follow-up to April 30th, Wednesday, same 9:30 AM slot with Dr. Liu."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Good news — the team meeting got moved to the afternoon, so April 28th morning is clear again. I'm keeping the follow-up on April 28th, Monday, 9:30 AM with Dr. Liu at Zhongshan Hospital gastroenterology."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed our entire conversation history about my gastroenterology follow-up date, what would they see as the full sequence of scheduling changes — which dates were actually adopted each time, which one was only floated but never went through, and what's the final plan?",
+      "expected_answer": "The sequence was: (1) May 1st, Thursday, 9:30 AM — the original date set six weeks after the March 20th endoscopy; (2) April 28th, Monday, 9:30 AM — rescheduled due to a work trip, replacing May 1st; (3) April 30th, Wednesday, 9:30 AM — floated because of a mandatory team meeting conflict, but never actually booked with the hospital; (4) April 28th, Monday, 9:30 AM — reconfirmed after the team meeting moved to the afternoon. The final plan is April 28th, Monday, 9:30 AM, Dr. Liu Wenjie, gastroenterology, Zhongshan Hospital.",
+      "gold_memory_state": "Chain: May 1st (confirmed, superseded) → April 28th (confirmed, active) → April 30th (tentative, never adopted) → April 28th (reconfirmed, final). Final state: April 28th, Monday, 9:30 AM, Dr. Liu Wenjie, gastroenterology, Zhongshan Hospital.",
+      "judge_rubric": {
+        "must_include": [
+          "May 1st as original",
+          "April 28th as first reschedule",
+          "April 30th as tentative/floated/not finalized",
+          "April 28th reconfirmed as final"
+        ],
+        "acceptable_paraphrases": [
+          "April 30th was only considered",
+          "April 30th was never booked",
+          "went back to April 28th"
+        ],
+        "must_not_include": [
+          "April 30th described as confirmed or adopted"
+        ],
+        "harmful_extra": [
+          "omitting April 30th from the sequence entirely",
+          "claiming April 30th was the final date",
+          "adding dates not discussed"
+        ],
+        "harmless_extra": [
+          "mentioning the work trip reason for first reschedule",
+          "mentioning the team meeting reason for the tentative change",
+          "mentioning the endoscopy date"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats April 30th or May 1st as the final adopted date.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model misordering the sequence (e.g., placing April 30th after the final reconfirmation, or placing May 1st after April 28th in the chain).",
+        "final_state": "Fails if the model does not identify April 28th, Monday, 9:30 AM as the final confirmed state.",
+        "intermediate_state": "Fails if the model does not correctly identify April 30th as a tentative intermediate state that was never adopted.",
+        "trajectory_provenance": "Fails if the model cannot attribute the changes to the correct reasons (work trip for first reschedule, team meeting for tentative shift, meeting moved for reversion)."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: Original appointment set for May 1st, Thursday, 9:30 AM — six weeks after the March 20th endoscopy. Status: confirmed.",
+        "Step 2: Rescheduled to April 28th, Monday, 9:30 AM due to a work trip. May 1st superseded. Status: confirmed.",
+        "Step 3: April 30th, Wednesday, 9:30 AM floated due to a mandatory team meeting on April 28th morning. The user had not yet called the hospital. Status: tentative, never adopted.",
+        "Step 4: Team meeting moved to the afternoon, clearing April 28th morning. User reconfirmed April 28th, Monday, 9:30 AM. April 30th discarded. Status: confirmed, final.",
+        "Inference: The full trajectory is May 1st → April 28th → April 30th (tentative only) → April 28th (reconfirmed). Final state is April 28th, Monday, 9:30 AM."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "the follow-up was originally set for May 1st, a Thursday morning, 9:30 AM, gastroenterology department, Zhongshan Hospital"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I had to reschedule the May 1st follow-up with Dr. Liu because of a work trip. I moved it to April 28th, Monday, 9:30 AM, same department and hospital."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "My manager just told me there's a mandatory team meeting on April 28th morning. I'll probably have to push the follow-up to April 30th, Wednesday, same 9:30 AM slot with Dr. Liu."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Good news — the team meeting got moved to the afternoon, so April 28th morning is clear again. I'm keeping the follow-up on April 28th, Monday, 9:30 AM with Dr. Liu at Zhongshan Hospital gastroenterology."
+        }
+      ]
+    }
+  ]
+}

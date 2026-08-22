@@ -1,0 +1,949 @@
+{
+  "target_fact": "User's confirmed tree nut allergy details and allergist clinic location, with update chain on the clinic location and trajectory across dietary restriction targets",
+  "operation_type": "TrajectoryOps",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "allergist_clinic",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "My allergist appointment was at the clinic on Broadmoor Ave"
+      },
+      "target": {
+        "target_id": "allergist_clinic_location",
+        "target_name": "allergist clinic location"
+      },
+      "old_value": null,
+      "new_value": "Broadmoor Ave",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My allergist appointment was at the clinic on Broadmoor Ave"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "My EpiPen expires on September 15th and I only have one pen left since I used the other one"
+      },
+      "target": {
+        "target_id": "epipen_expiry",
+        "target_name": "EpiPen expiration date"
+      },
+      "old_value": null,
+      "new_value": "September 15th",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My EpiPen expires on September 15th and I only have one pen left since I used the other one"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "allergist_clinic",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I need to correct something I told you before. The allergist clinic wasn't on Broadmoor Ave — it was actually on Kensington Rd"
+      },
+      "target": {
+        "target_id": "allergist_clinic_location",
+        "target_name": "allergist clinic location"
+      },
+      "old_value": "Broadmoor Ave",
+      "new_value": "Kensington Rd",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The allergist clinic wasn't on Broadmoor Ave — it was actually on Kensington Rd. Broadmoor is where my dentist is"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "allergist_clinic",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 3,
+        "quote": "Dr. Patel's office sent me a letter saying the practice is relocating to their new building on Clearwater Blvd starting next month"
+      },
+      "target": {
+        "target_id": "allergist_clinic_location",
+        "target_name": "allergist clinic location"
+      },
+      "old_value": "Kensington Rd",
+      "new_value": "Clearwater Blvd",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Dr. Patel's office sent me a letter saying the practice is relocating to their new building on Clearwater Blvd starting next month"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "allergist_clinic",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "I just called and the receptionist confirmed they're staying at Kensington Rd after all. The Clearwater move got canceled due to some zoning issue"
+      },
+      "target": {
+        "target_id": "allergist_clinic_location",
+        "target_name": "allergist clinic location"
+      },
+      "old_value": "Clearwater Blvd",
+      "new_value": "Kensington Rd",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "the receptionist confirmed they're staying at Kensington Rd after all. The Clearwater move got canceled due to some zoning issue"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish initial allergy details, EpiPen info, and clinic location",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to make sure you have my allergy information on file. My allergist appointment was at the clinic on Broadmoor Ave back on March 6th. They confirmed I'm allergic to tree nuts — specifically walnuts with a Class 3 reaction and cashews with a Class 2 reaction. Dr. Patel was the allergist who did my testing after a referral from my GP."
+        },
+        {
+          "role": "assistant",
+          "content": "Thank you for sharing those details — I've noted them carefully. So your allergist appointment was on March 6th at the Broadmoor Ave clinic with Dr. Patel, who confirmed tree nut allergies: walnuts at Class 3 severity and cashews at Class 2 severity. That distinction between the two reaction classes is important, especially when you're explaining your allergies at restaurants or to new healthcare providers. Would you like me to help you draft a quick allergy summary card you could keep on your phone for easy reference when dining out?"
+        },
+        {
+          "role": "user",
+          "content": "That's a good idea, maybe later. I also wanted to mention that my GP, Dr. Chen, told me around mid-March to cut back on sodium because my blood pressure was borderline high at 138 over 88. She said if it's still elevated at my June check-up, we'd discuss medication. I've been cooking at home more since then, making steamed fish with ginger and simple lemon-olive oil dressings."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — Dr. Chen flagged your blood pressure at 138/88 and recommended reducing sodium intake, with a follow-up evaluation in June to decide about medication. It sounds like you've already been making meaningful changes with home cooking, which is great. Steamed fish with ginger is an excellent low-sodium option, and homemade lemon-olive oil dressings are a smart swap for bottled versions that tend to be sodium-heavy. If you'd like, I can help you track meal ideas or build a weekly meal plan that keeps sodium low while still being satisfying and varied."
+        },
+        {
+          "role": "user",
+          "content": "Maybe, yeah. One more critical thing — My EpiPen expires on September 15th and I only have one pen left since I used the other one during a reaction at a Thai restaurant in late April or early May. There were crushed cashews in the curry paste and my throat got tight. It really shook me up. I need to get a new prescription before September 15th for sure."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a really frightening experience — I'm glad you had the EpiPen available and that you're okay. I've noted that your EpiPen expires September 15th and you're down to a single pen after using the other one during the Thai restaurant incident involving hidden cashews in curry paste. Getting a refill prescription well before September 15th is essential, especially since you only have one pen remaining. Would you like me to help you set up a reminder for, say, mid-August, to contact Dr. Patel's office for that new prescription?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, a mid-August reminder would be perfect. Also, my sister just found out she's lactose intolerant — she got tested around mid-April after months of stomach issues. She's been complaining nonstop because she loves cheese, but at least she can manage it with enzyme pills. I feel for her but it's a different level than carrying an EpiPen everywhere."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, there's a big difference between managing lactose intolerance with enzyme supplements and carrying emergency epinephrine for anaphylaxis risk. I'm sorry your sister is dealing with the lactose intolerance diagnosis, but you're right that it's generally more manageable. I'll set a reminder note for mid-August to prompt you about the EpiPen prescription renewal before the September 15th expiration. In the meantime, it might also be worth asking Dr. Patel if you should carry two pens at all times given the severity of your walnut Class 3 reaction. Better safe than sorry."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "correct clinic location from Broadmoor Ave to Kensington Rd, discuss dietary progress",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I need to correct something I told you before. The allergist clinic wasn't on Broadmoor Ave — it was actually on Kensington Rd. Broadmoor is where my dentist is. I always mix those two locations up. So Dr. Patel's allergy clinic is on Kensington Rd, please update that. Everything else about the appointment details stays the same."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for the correction — I've updated the allergist clinic location from Broadmoor Ave to Kensington Rd. So your March 6th allergy appointment with Dr. Patel confirming the walnut Class 3 and cashew Class 2 reactions was at the Kensington Rd clinic. Broadmoor Ave is your dentist's location. It's easy to mix up medical office locations when you visit multiple providers, so I'm glad you caught that. I'll make sure any future references to Dr. Patel's office point to Kensington Rd. Is there anything else you'd like to correct or add?"
+        },
+        {
+          "role": "user",
+          "content": "Good, thanks for fixing that. I also wanted to share a positive update on the blood pressure situation. I've been doing home readings and my latest was 126 over 82, which is much better than the 138 over 88 from March. I've gotten the hang of watching my sodium intake, so I don't think I need to keep logging every meal anymore. The habit is just built in now."
+        },
+        {
+          "role": "assistant",
+          "content": "That's excellent progress — going from 138/88 down to 126/82 is a significant improvement, and it sounds like the dietary changes are really paying off. The fact that you've internalized the low-sodium habits well enough to stop daily logging is a great sign. You'll still want to keep an eye on it before your June check-up with Dr. Chen, but this trend should be reassuring to her as well. If you'd like, I can help you prepare a summary of your home readings and dietary changes to bring to that appointment so Dr. Chen has the full picture."
+        },
+        {
+          "role": "user",
+          "content": "That's a nice idea, I'll think about it. You know, I've honestly been surprised by how much I enjoy eating lighter food now. I used to think I'd hate giving up heavy sauces and rich dishes, but steamed vegetables with a little low-sodium soy sauce taste better to me now than anything smothered in cream or gravy. It's a real shift in my palate that I didn't expect at all."
+        },
+        {
+          "role": "assistant",
+          "content": "That kind of palate shift is really common once people commit to cleaner eating for a few weeks — your taste buds genuinely recalibrate. The fact that you're not just tolerating lighter food but actually preferring it makes the whole lifestyle change much more sustainable long-term. Steamed vegetables with low-sodium soy sauce is a perfect example of how simplicity can be deeply satisfying. If you ever want to explore more in that direction, things like miso-glazed eggplant or lightly seasoned roasted root vegetables could expand your repertoire while keeping sodium in check and flavors interesting."
+        },
+        {
+          "role": "user",
+          "content": "Those sound great actually. By the way, I've been thinking about the EpiPen situation more carefully. Since the Thai restaurant incident, I've been way more cautious about eating out. I always ask about tree nuts now and I try to stick to places where I can see the kitchen or talk to the chef directly. It's changed how I approach dining completely.\n\nActually yes, that would be really useful. I could hand it to the server when I sit down. Can you draft something that lists walnuts as Class 3 and cashews as Class 2, mentions I carry an EpiPen, and asks them to confirm no tree nuts are used in my dish? Keep it simple and clear so there's no confusion."
+        },
+        {
+          "role": "assistant",
+          "content": "That level of caution is completely warranted given what happened. Asking about tree nuts and choosing restaurants where you can communicate directly with kitchen staff are both excellent strategies. Some people also find it helpful to carry a printed allergy card — in multiple languages if you eat at international restaurants — that clearly states your walnut and cashew allergies with the severity levels. Given that the Thai restaurant incident involved hidden cashews in curry paste, having that written communication can be an extra safety layer beyond verbal requests. Would you like help drafting one?\n\nOf course! Here's a draft for your allergy card: \"FOOD ALLERGY ALERT — I have a confirmed tree nut allergy. Specifically: Walnuts (Class 3 reaction — severe) and Cashews (Class 2 reaction — moderate). Exposure can cause anaphylaxis. I carry an EpiPen. Please confirm that my order contains NO walnuts, cashews, or other tree nuts in any ingredients, sauces, garnishes, or cooking oils. If you are unsure, please check with the kitchen before preparing my food. Thank you.\" You could print this on a small card or save it as a note on your phone. Want me to adjust the wording at all?"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "introduce tentative clinic relocation, then confirm revert to Kensington Rd; adversarial injection via assistant echo",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, quick question — I was organizing my medical paperwork and I came across the referral letter from Dr. Chen to Dr. Patel. It has the appointment date as March 6th which matches what I told you. I also noticed the referral mentions that the blood work was processed at LabCorp on Meridian St. I don't think I mentioned that detail before but it's good to have on record."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for sharing that additional detail. So the blood work for your allergy testing was processed at the LabCorp location on Meridian St, which is helpful context for your medical records. It's good that the referral letter confirms the March 6th date as well — consistency across your paperwork is always reassuring. I should mention, I noticed in some older intake forms from your file that there's a Broadmoor Ave address listed for an allergy clinic — but as you corrected earlier, Dr. Patel's clinic is on Kensington Rd. Just flagging it in case that old address shows up on any future forms you need to fill out."
+        },
+        {
+          "role": "user",
+          "content": "Right, yeah, Broadmoor is the dentist. Thanks for catching that. But actually, here's something new — Dr. Patel's office sent me a letter saying the practice is relocating to their new building on Clearwater Blvd starting next month. So I guess I'll need to update the clinic address again soon. The letter looked official and had the new suite number and everything."
+        },
+        {
+          "role": "assistant",
+          "content": "Oh interesting — so Dr. Patel's practice is planning to move from Kensington Rd to Clearwater Blvd next month. That's good to know ahead of time, especially since you'll need to visit for the EpiPen prescription renewal before September 15th. Once the move is confirmed and you've actually been to the new location, we can formally update the address. In the meantime, I'll note that Clearwater Blvd is the upcoming planned location. Do you have the specific suite number from the letter, or would you like to verify it when you call to schedule your next appointment?"
+        },
+        {
+          "role": "user",
+          "content": "Actually, hold on — I just called and the receptionist confirmed they're staying at Kensington Rd after all. The Clearwater move got canceled due to some zoning issue. So forget what I said about Clearwater Blvd. The allergist clinic is still on Kensington Rd and that's where I'll go for my EpiPen renewal appointment. Good thing I checked before updating everything."
+        },
+        {
+          "role": "assistant",
+          "content": "Good thing you called to verify! I'll disregard the Clearwater Blvd information entirely — Dr. Patel's allergist clinic remains at Kensington Rd. It's the confirmed current location for your upcoming EpiPen prescription renewal visit, which needs to happen before September 15th. Zoning issues can derail relocation plans quickly, so it's smart that you double-checked before updating all your records. I'll keep Kensington Rd as the active address for Dr. Patel's practice. Is there anything else from that paperwork review you wanted to go over or update?"
+        },
+        {
+          "role": "user",
+          "content": "No, I think that covers the location stuff. One thing I've been meaning to ask — since my EpiPen expires September 15th and I need to schedule an appointment with Dr. Patel at Kensington Rd before then, when do you think I should actually call to book it? I want to leave enough buffer time in case there's a wait for appointments or any prescription processing delays."
+        },
+        {
+          "role": "assistant",
+          "content": "Given that your EpiPen expires September 15th, I'd recommend calling Dr. Patel's office at Kensington Rd by mid-July at the latest. That gives you roughly two months of buffer, which should be plenty to account for typical scheduling wait times, any follow-up visits Dr. Patel might want, and pharmacy processing time for the new prescription. If you want to be extra cautious — especially since you're down to just one pen — calling in early July would be even better. You already have the mid-August reminder we set earlier, but moving that up to early-to-mid July would add a comfortable safety margin. Want me to adjust that reminder?"
+        }
+      ]
+    }
+  ],
+  "state_checkpoints": [
+    {
+      "checkpoint_id": "c1",
+      "description": "After segment 1: allergist_clinic_location = Broadmoor Ave (confirmed); epipen_expiry = September 15th (confirmed). Two targets established."
+    },
+    {
+      "checkpoint_id": "c2",
+      "description": "After segment 2: allergist_clinic_location = Kensington Rd (confirmed, updated from Broadmoor Ave); epipen_expiry = September 15th (confirmed, unchanged)."
+    },
+    {
+      "checkpoint_id": "c3",
+      "description": "After segment 3 turn 3: allergist_clinic_location = Clearwater Blvd (tentative, pending relocation); epipen_expiry = September 15th (confirmed, unchanged)."
+    },
+    {
+      "checkpoint_id": "c4",
+      "description": "After segment 3 turn 5 (final): allergist_clinic_location = Kensington Rd (confirmed, reverted after Clearwater move canceled); epipen_expiry = September 15th (confirmed, unchanged). Clearwater Blvd was never adopted."
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Summarize everything I've told you about my allergist clinic's location over the course of our conversations — what did I initially say, what did I change, and where did things end up?",
+      "expected_answer": "You initially said your allergist appointment was at the clinic on Broadmoor Ave. You then corrected that, saying Broadmoor Ave was actually your dentist and that Dr. Patel's allergist clinic is on Kensington Rd. Later, you mentioned a letter about the practice relocating to Clearwater Blvd, but after calling the office you confirmed the Clearwater move was canceled due to a zoning issue and the clinic remains on Kensington Rd.",
+      "gold_memory_state": "allergist_clinic_location = Kensington Rd (confirmed). Broadmoor Ave was the initial mistaken value. Clearwater Blvd was a tentative relocation that was canceled. EpiPen expiry = September 15th (confirmed, unchanged).",
+      "judge_rubric": {
+        "must_include": [
+          "Broadmoor Ave as initial value",
+          "Kensington Rd as corrected and final value",
+          "Clearwater Blvd as a planned relocation that was canceled"
+        ],
+        "acceptable_paraphrases": [
+          "the move to Clearwater was called off",
+          "Clearwater relocation fell through"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying the clinic is currently on Clearwater Blvd",
+          "saying the clinic is currently on Broadmoor Ave"
+        ],
+        "harmless_extra": [
+          "mentioning zoning issue",
+          "mentioning Broadmoor is the dentist",
+          "mentioning Dr. Patel"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model states the clinic is on Broadmoor Ave or Clearwater Blvd as the current location.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model gets the order of changes wrong (e.g., saying Clearwater came before Kensington Rd correction).",
+        "final_state": "Fails if the model does not identify Kensington Rd as the final confirmed location.",
+        "intermediate_state": "Fails if the model omits the Broadmoor Ave initial state or the Clearwater Blvd tentative state.",
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My allergist appointment was at the clinic on Broadmoor Ave"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The allergist clinic wasn't on Broadmoor Ave — it was actually on Kensington Rd"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Dr. Patel's office sent me a letter saying the practice is relocating to their new building on Clearwater Blvd starting next month"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "the receptionist confirmed they're staying at Kensington Rd after all. The Clearwater move got canceled due to some zoning issue"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Summarize everything I've told you about my allergist clinic's location over the course of our conversations — what did I initially say, what did I change, and where did things end up?",
+      "expected_answer": "You initially said your allergist appointment was at the clinic on Broadmoor Ave. You then corrected that, saying Broadmoor Ave was actually your dentist and that Dr. Patel's allergist clinic is on Kensington Rd. Later, you mentioned a letter about the practice relocating to Clearwater Blvd, but after calling the office you confirmed the Clearwater move was canceled due to a zoning issue and the clinic remains on Kensington Rd.",
+      "gold_memory_state": "allergist_clinic_location = Kensington Rd (confirmed). Broadmoor Ave was the initial mistaken value. Clearwater Blvd was a tentative relocation that was canceled. EpiPen expiry = September 15th (confirmed, unchanged).",
+      "judge_rubric": {
+        "must_include": [
+          "Broadmoor Ave as initial value",
+          "Kensington Rd as corrected and final value",
+          "Clearwater Blvd as a planned relocation that was canceled"
+        ],
+        "acceptable_paraphrases": [
+          "the move to Clearwater was called off",
+          "Clearwater relocation fell through"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying the clinic is currently on Clearwater Blvd",
+          "saying the clinic is currently on Broadmoor Ave"
+        ],
+        "harmless_extra": [
+          "mentioning zoning issue",
+          "mentioning Broadmoor is the dentist",
+          "mentioning Dr. Patel"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model states the clinic is on Broadmoor Ave or Clearwater Blvd as the current location.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model gets the order of changes wrong (e.g., saying Clearwater came before Kensington Rd correction).",
+        "final_state": "Fails if the model does not identify Kensington Rd as the final confirmed location.",
+        "intermediate_state": "Fails if the model omits the Broadmoor Ave initial state or the Clearwater Blvd tentative state.",
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My allergist appointment was at the clinic on Broadmoor Ave"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The allergist clinic wasn't on Broadmoor Ave — it was actually on Kensington Rd"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Dr. Patel's office sent me a letter saying the practice is relocating to their new building on Clearwater Blvd starting next month"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "the receptionist confirmed they're staying at Kensington Rd after all. The Clearwater move got canceled due to some zoning issue"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I need to update my medical contact sheet. For the allergy-related clinic address, which location should I write down? And does the same address apply to my dental office, or is that somewhere else?",
+      "expected_answer": "For your allergy clinic (Dr. Patel's practice), use Kensington Rd. Your dental office is a separate location on Broadmoor Ave — it should not be changed.",
+      "gold_memory_state": "allergist_clinic_location = Kensington Rd (confirmed, final). Broadmoor Ave = dentist location (separate record, never changed). Clearwater Blvd was a tentative relocation that was canceled and should not be used. EpiPen expiry = September 15th (confirmed, separate target).",
+      "judge_rubric": {
+        "must_include": [
+          "Kensington Rd for the allergist clinic",
+          "Broadmoor Ave for the dentist as a separate location"
+        ],
+        "acceptable_paraphrases": [
+          "allergy clinic is on Kensington Rd",
+          "dentist is on Broadmoor"
+        ],
+        "must_not_include": [
+          "Clearwater Blvd as the allergist address",
+          "Broadmoor Ave as the allergist address"
+        ],
+        "harmful_extra": [
+          "treating Broadmoor Ave and Kensington Rd as the same record",
+          "using Clearwater Blvd for any current address"
+        ],
+        "harmless_extra": [
+          "mentioning Dr. Patel by name",
+          "noting the Clearwater move was canceled"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model assigns Broadmoor Ave or Clearwater Blvd to the allergist clinic.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not identify Kensington Rd as the current allergist clinic location.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The allergist clinic wasn't on Broadmoor Ave — it was actually on Kensington Rd"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I need to correct something I told you before. The allergist clinic wasn't on Broadmoor Ave — it was actually on Kensington Rd"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "the receptionist confirmed they're staying at Kensington Rd after all. The Clearwater move got canceled due to some zoning issue"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I need to update my medical contact sheet. For the allergy-related clinic address, which location should I write down? And does the same address apply to my dental office, or is that somewhere else?",
+      "expected_answer": "For your allergy clinic (Dr. Patel's practice), use Kensington Rd. Your dental office is a separate location on Broadmoor Ave — it should not be changed.",
+      "gold_memory_state": "allergist_clinic_location = Kensington Rd (confirmed, final). Broadmoor Ave = dentist location (separate record, never changed). Clearwater Blvd was a tentative relocation that was canceled and should not be used. EpiPen expiry = September 15th (confirmed, separate target).",
+      "judge_rubric": {
+        "must_include": [
+          "Kensington Rd for the allergist clinic",
+          "Broadmoor Ave for the dentist as a separate location"
+        ],
+        "acceptable_paraphrases": [
+          "allergy clinic is on Kensington Rd",
+          "dentist is on Broadmoor"
+        ],
+        "must_not_include": [
+          "Clearwater Blvd as the allergist address",
+          "Broadmoor Ave as the allergist address"
+        ],
+        "harmful_extra": [
+          "treating Broadmoor Ave and Kensington Rd as the same record",
+          "using Clearwater Blvd for any current address"
+        ],
+        "harmless_extra": [
+          "mentioning Dr. Patel by name",
+          "noting the Clearwater move was canceled"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model assigns Broadmoor Ave or Clearwater Blvd to the allergist clinic.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not identify Kensington Rd as the current allergist clinic location.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The allergist clinic wasn't on Broadmoor Ave — it was actually on Kensington Rd"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I need to correct something I told you before. The allergist clinic wasn't on Broadmoor Ave — it was actually on Kensington Rd"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "the receptionist confirmed they're staying at Kensington Rd after all. The Clearwater move got canceled due to some zoning issue"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "I'm about to book my next appointment with Dr. Patel to renew my EpiPen prescription. Which street should I head to for that visit?",
+      "expected_answer": "Kensington Rd.",
+      "gold_memory_state": "allergist_clinic_location = Kensington Rd (confirmed, final after revert). Clearwater Blvd was tentative and was canceled — it was never adopted as the active location. Broadmoor Ave was the initial incorrect value, later corrected. EpiPen expiry = September 15th (confirmed).",
+      "judge_rubric": {
+        "must_include": [
+          "Kensington Rd"
+        ],
+        "acceptable_paraphrases": [
+          "Kensington Road",
+          "the Kensington Rd clinic"
+        ],
+        "must_not_include": [
+          "Clearwater Blvd",
+          "Broadmoor Ave"
+        ],
+        "harmful_extra": [
+          "suggesting the clinic moved to Clearwater Blvd",
+          "suggesting the clinic is on Broadmoor Ave"
+        ],
+        "harmless_extra": [
+          "mentioning Dr. Patel",
+          "mentioning the EpiPen renewal"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model returns Clearwater Blvd (tentative, never adopted) or Broadmoor Ave (initial incorrect value).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not return Kensington Rd as the current location.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "the receptionist confirmed they're staying at Kensington Rd after all. The Clearwater move got canceled due to some zoning issue"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The allergist clinic wasn't on Broadmoor Ave — it was actually on Kensington Rd"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "I'm about to book my next appointment with Dr. Patel to renew my EpiPen prescription. Which street should I head to for that visit?",
+      "expected_answer": "Kensington Rd.",
+      "gold_memory_state": "allergist_clinic_location = Kensington Rd (confirmed, final after revert). Clearwater Blvd was tentative and was canceled — it was never adopted as the active location. Broadmoor Ave was the initial incorrect value, later corrected. EpiPen expiry = September 15th (confirmed).",
+      "judge_rubric": {
+        "must_include": [
+          "Kensington Rd"
+        ],
+        "acceptable_paraphrases": [
+          "Kensington Road",
+          "the Kensington Rd clinic"
+        ],
+        "must_not_include": [
+          "Clearwater Blvd",
+          "Broadmoor Ave"
+        ],
+        "harmful_extra": [
+          "suggesting the clinic moved to Clearwater Blvd",
+          "suggesting the clinic is on Broadmoor Ave"
+        ],
+        "harmless_extra": [
+          "mentioning Dr. Patel",
+          "mentioning the EpiPen renewal"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model returns Clearwater Blvd (tentative, never adopted) or Broadmoor Ave (initial incorrect value).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not return Kensington Rd as the current location.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "the receptionist confirmed they're staying at Kensington Rd after all. The Clearwater move got canceled due to some zoning issue"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The allergist clinic wasn't on Broadmoor Ave — it was actually on Kensington Rd"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to write a short note to stick on my fridge reminding me to call Dr. Patel's office for a new EpiPen prescription. Include the clinic street, what the prescription is for, the expiration deadline I need to beat, and a suggested call-by date with enough buffer. Draft it for me.",
+      "expected_answer": "Reminder: Call Dr. Patel's office on Kensington Rd to renew your EpiPen prescription before it expires on September 15th. Call by mid-July to allow at least two months of buffer for scheduling and pharmacy processing.",
+      "gold_memory_state": "allergist_clinic_location = Kensington Rd (confirmed, final). EpiPen expiry = September 15th (confirmed). User has only one EpiPen remaining. The user previously discussed calling by mid-July for buffer.",
+      "judge_rubric": {
+        "must_include": [
+          "Kensington Rd",
+          "EpiPen",
+          "September 15th",
+          "a call-by date approximately mid-July or early July"
+        ],
+        "acceptable_paraphrases": [
+          "Kensington Road",
+          "Sept 15",
+          "around July",
+          "by July"
+        ],
+        "must_not_include": [
+          "Clearwater Blvd",
+          "Broadmoor Ave"
+        ],
+        "harmful_extra": [
+          "using Clearwater Blvd or Broadmoor Ave as the clinic address"
+        ],
+        "harmless_extra": [
+          "mentioning only one pen remaining",
+          "mentioning the walnut/cashew allergy",
+          "mentioning the Thai restaurant incident"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the note uses Broadmoor Ave or Clearwater Blvd as the clinic address.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the note does not use Kensington Rd and September 15th.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The allergist clinic (Dr. Patel) is on Kensington Rd, confirmed after the Clearwater Blvd relocation was canceled.",
+        "Fact 2: The user's EpiPen expires on September 15th.",
+        "Fact 3: The user has only one EpiPen remaining after using one during a Thai restaurant incident.",
+        "Inference: To allow approximately two months of buffer for scheduling and pharmacy processing before September 15th, the user should call by approximately mid-July.",
+        "Inference: The fridge note should combine the Kensington Rd address, EpiPen prescription purpose, September 15th deadline, and a mid-July call-by date."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "the receptionist confirmed they're staying at Kensington Rd after all. The Clearwater move got canceled due to some zoning issue"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My EpiPen expires on September 15th and I only have one pen left since I used the other one"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The allergist clinic wasn't on Broadmoor Ave — it was actually on Kensington Rd"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to write a short note to stick on my fridge reminding me to call Dr. Patel's office for a new EpiPen prescription. Include the clinic street, what the prescription is for, the expiration deadline I need to beat, and a suggested call-by date with enough buffer. Draft it for me.",
+      "expected_answer": "Reminder: Call Dr. Patel's office on Kensington Rd to renew your EpiPen prescription before it expires on September 15th. Call by mid-July to allow at least two months of buffer for scheduling and pharmacy processing.",
+      "gold_memory_state": "allergist_clinic_location = Kensington Rd (confirmed, final). EpiPen expiry = September 15th (confirmed). User has only one EpiPen remaining. The user previously discussed calling by mid-July for buffer.",
+      "judge_rubric": {
+        "must_include": [
+          "Kensington Rd",
+          "EpiPen",
+          "September 15th",
+          "a call-by date approximately mid-July or early July"
+        ],
+        "acceptable_paraphrases": [
+          "Kensington Road",
+          "Sept 15",
+          "around July",
+          "by July"
+        ],
+        "must_not_include": [
+          "Clearwater Blvd",
+          "Broadmoor Ave"
+        ],
+        "harmful_extra": [
+          "using Clearwater Blvd or Broadmoor Ave as the clinic address"
+        ],
+        "harmless_extra": [
+          "mentioning only one pen remaining",
+          "mentioning the walnut/cashew allergy",
+          "mentioning the Thai restaurant incident"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the note uses Broadmoor Ave or Clearwater Blvd as the clinic address.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the note does not use Kensington Rd and September 15th.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The allergist clinic (Dr. Patel) is on Kensington Rd, confirmed after the Clearwater Blvd relocation was canceled.",
+        "Fact 2: The user's EpiPen expires on September 15th.",
+        "Fact 3: The user has only one EpiPen remaining after using one during a Thai restaurant incident.",
+        "Inference: To allow approximately two months of buffer for scheduling and pharmacy processing before September 15th, the user should call by approximately mid-July.",
+        "Inference: The fridge note should combine the Kensington Rd address, EpiPen prescription purpose, September 15th deadline, and a mid-July call-by date."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "the receptionist confirmed they're staying at Kensington Rd after all. The Clearwater move got canceled due to some zoning issue"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My EpiPen expires on September 15th and I only have one pen left since I used the other one"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The allergist clinic wasn't on Broadmoor Ave — it was actually on Kensington Rd"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed our entire conversation history about where my allergist's office is located, what would they see as the full sequence of addresses that came up, which ones were actually reliable at each point, and what's the final answer?",
+      "expected_answer": "First, you said the clinic was on Broadmoor Ave — that was treated as reliable at the time. Then you corrected yourself: Broadmoor Ave was your dentist, and the allergist clinic was actually on Kensington Rd, which became the reliable address. Next, you mentioned a relocation letter saying the practice would move to Clearwater Blvd, but that was only a planned move and not yet in effect. Finally, you called the office and learned the Clearwater move was canceled, so the clinic is still on Kensington Rd. The final reliable address is Kensington Rd.",
+      "gold_memory_state": "Trajectory: Broadmoor Ave (confirmed, step 1) → Kensington Rd (confirmed correction, step 2) → Clearwater Blvd (tentative planned relocation, step 3, never adopted) → Kensington Rd (confirmed revert, step 4, final). EpiPen expiry = September 15th (unchanged throughout).",
+      "judge_rubric": {
+        "must_include": [
+          "Broadmoor Ave as the initial value",
+          "Kensington Rd as the first correction",
+          "Clearwater Blvd as a planned/tentative relocation",
+          "Kensington Rd as the final confirmed value after the Clearwater move was canceled"
+        ],
+        "acceptable_paraphrases": [
+          "Clearwater was only a planned address",
+          "Clearwater was never actually adopted"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying Clearwater Blvd was ever the reliable/active address",
+          "omitting any of the four trajectory steps"
+        ],
+        "harmless_extra": [
+          "mentioning Dr. Patel",
+          "mentioning the zoning issue",
+          "mentioning Broadmoor is the dentist"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats Clearwater Blvd or Broadmoor Ave as the final current address.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model presents the steps out of chronological order (e.g., putting the Clearwater tentative step before the Broadmoor-to-Kensington correction).",
+        "final_state": "Fails if the model does not identify Kensington Rd as the final confirmed location.",
+        "intermediate_state": "Fails if the model omits the Broadmoor Ave initial state or the Clearwater Blvd tentative state.",
+        "trajectory_provenance": "Fails if the model does not distinguish that Clearwater Blvd was tentative/planned and never became the active address."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: User initially stated the allergist clinic was on Broadmoor Ave (confirmed at that time).",
+        "Step 2: User corrected the location to Kensington Rd, explaining Broadmoor Ave was the dentist (confirmed correction, Broadmoor Ave becomes stale for the allergist).",
+        "Step 3: User reported a relocation letter indicating a move to Clearwater Blvd starting next month (tentative — not yet in effect).",
+        "Step 4: User called the office and confirmed the Clearwater move was canceled due to a zoning issue; the clinic remains on Kensington Rd (confirmed revert, Clearwater Blvd was never adopted).",
+        "Inference: The full trajectory is Broadmoor Ave → Kensington Rd → Clearwater Blvd (tentative only) → Kensington Rd (final confirmed). Only Kensington Rd is currently reliable."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My allergist appointment was at the clinic on Broadmoor Ave"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The allergist clinic wasn't on Broadmoor Ave — it was actually on Kensington Rd"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Dr. Patel's office sent me a letter saying the practice is relocating to their new building on Clearwater Blvd starting next month"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "the receptionist confirmed they're staying at Kensington Rd after all. The Clearwater move got canceled due to some zoning issue"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed our entire conversation history about where my allergist's office is located, what would they see as the full sequence of addresses that came up, which ones were actually reliable at each point, and what's the final answer?",
+      "expected_answer": "First, you said the clinic was on Broadmoor Ave — that was treated as reliable at the time. Then you corrected yourself: Broadmoor Ave was your dentist, and the allergist clinic was actually on Kensington Rd, which became the reliable address. Next, you mentioned a relocation letter saying the practice would move to Clearwater Blvd, but that was only a planned move and not yet in effect. Finally, you called the office and learned the Clearwater move was canceled, so the clinic is still on Kensington Rd. The final reliable address is Kensington Rd.",
+      "gold_memory_state": "Trajectory: Broadmoor Ave (confirmed, step 1) → Kensington Rd (confirmed correction, step 2) → Clearwater Blvd (tentative planned relocation, step 3, never adopted) → Kensington Rd (confirmed revert, step 4, final). EpiPen expiry = September 15th (unchanged throughout).",
+      "judge_rubric": {
+        "must_include": [
+          "Broadmoor Ave as the initial value",
+          "Kensington Rd as the first correction",
+          "Clearwater Blvd as a planned/tentative relocation",
+          "Kensington Rd as the final confirmed value after the Clearwater move was canceled"
+        ],
+        "acceptable_paraphrases": [
+          "Clearwater was only a planned address",
+          "Clearwater was never actually adopted"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying Clearwater Blvd was ever the reliable/active address",
+          "omitting any of the four trajectory steps"
+        ],
+        "harmless_extra": [
+          "mentioning Dr. Patel",
+          "mentioning the zoning issue",
+          "mentioning Broadmoor is the dentist"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats Clearwater Blvd or Broadmoor Ave as the final current address.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model presents the steps out of chronological order (e.g., putting the Clearwater tentative step before the Broadmoor-to-Kensington correction).",
+        "final_state": "Fails if the model does not identify Kensington Rd as the final confirmed location.",
+        "intermediate_state": "Fails if the model omits the Broadmoor Ave initial state or the Clearwater Blvd tentative state.",
+        "trajectory_provenance": "Fails if the model does not distinguish that Clearwater Blvd was tentative/planned and never became the active address."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: User initially stated the allergist clinic was on Broadmoor Ave (confirmed at that time).",
+        "Step 2: User corrected the location to Kensington Rd, explaining Broadmoor Ave was the dentist (confirmed correction, Broadmoor Ave becomes stale for the allergist).",
+        "Step 3: User reported a relocation letter indicating a move to Clearwater Blvd starting next month (tentative — not yet in effect).",
+        "Step 4: User called the office and confirmed the Clearwater move was canceled due to a zoning issue; the clinic remains on Kensington Rd (confirmed revert, Clearwater Blvd was never adopted).",
+        "Inference: The full trajectory is Broadmoor Ave → Kensington Rd → Clearwater Blvd (tentative only) → Kensington Rd (final confirmed). Only Kensington Rd is currently reliable."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My allergist appointment was at the clinic on Broadmoor Ave"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The allergist clinic wasn't on Broadmoor Ave — it was actually on Kensington Rd"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Dr. Patel's office sent me a letter saying the practice is relocating to their new building on Clearwater Blvd starting next month"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "the receptionist confirmed they're staying at Kensington Rd after all. The Clearwater move got canceled due to some zoning issue"
+        }
+      ]
+    }
+  ]
+}

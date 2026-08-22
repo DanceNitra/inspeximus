@@ -1,0 +1,959 @@
+{
+  "target_fact": "The user's relationship label for Elaine has changed multiple times across forms and conversations, currently confirmed as 'long-term partner'",
+  "operation_type": "TrajectoryOps",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "elaine_label",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I listed Elaine as my \"wife\" on the emergency contact form at my new dentist's office back on March 3rd"
+      },
+      "target": {
+        "target_id": "elaine_relationship_label",
+        "target_name": "relationship label used for Elaine on official forms"
+      },
+      "old_value": null,
+      "new_value": "wife",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I listed Elaine as my \"wife\" on the emergency contact form at my new dentist's office back on March 3rd"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "elaine_label",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I corrected it right there at the desk — told the receptionist she's my partner, not my wife. The form is fixed now"
+      },
+      "target": {
+        "target_id": "elaine_relationship_label",
+        "target_name": "relationship label used for Elaine on official forms"
+      },
+      "old_value": "wife",
+      "new_value": "partner",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I corrected it right there at the desk — told the receptionist she's my partner, not my wife. The form is fixed now"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "Elaine and I started dating in June 2022, so we've been together about three years now"
+      },
+      "target": {
+        "target_id": "elaine_relationship_start",
+        "target_name": "start date of relationship with Elaine"
+      },
+      "old_value": null,
+      "new_value": "June 2022",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Elaine and I started dating in June 2022, so we've been together about three years now"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "elaine_label",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "on the apartment lease renewal we just did, we both wrote \"co-tenant\" and that's what I want to use going forward on all shared paperwork"
+      },
+      "target": {
+        "target_id": "elaine_relationship_label",
+        "target_name": "relationship label used for Elaine on official forms"
+      },
+      "old_value": "partner",
+      "new_value": "co-tenant",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "on the apartment lease renewal we just did, we both wrote \"co-tenant\" and that's what I want to use going forward on all shared paperwork"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "elaine_label",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "Elaine's mom told us she's already reserved the venue for next spring, so on the next round of forms I'll probably just put \"fiancée\" since it's basically official"
+      },
+      "target": {
+        "target_id": "elaine_relationship_label",
+        "target_name": "relationship label used for Elaine on official forms"
+      },
+      "old_value": "co-tenant",
+      "new_value": "fiancée",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Elaine's mom told us she's already reserved the venue for next spring, so on the next round of forms I'll probably just put \"fiancée\" since it's basically official"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish initial label and correction, plus relationship start date",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I need help organizing some personal admin stuff. So first thing — I listed Elaine as my \"wife\" on the emergency contact form at my new dentist's office back on March 3rd. We're not married though. It was a pretty embarrassing slip and the receptionist read it back to me out loud. Can you help me keep track of these label issues?"
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, I can help you track that. So on March 3rd you filled out a dentist's emergency contact form and listed Elaine as your wife, even though you two aren't married. That's the kind of small slip that can feel awkward in the moment, especially when someone reads it back. I'll note that as the label you initially used. Do you want me to also keep track of what the correct label should be, and flag any future forms where the same issue might come up? That way we can catch it before submission next time."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, exactly. I corrected it right there at the desk — told the receptionist she's my partner, not my wife. The form is fixed now. But I keep defaulting to \"wife\" in conversation and on paperwork and I really need to stop. It's not accurate and it bothers me when things aren't precise. Can you note that the corrected label is partner?"
+        },
+        {
+          "role": "assistant",
+          "content": "Got it. The dentist form has been corrected from \"wife\" to \"partner,\" and that's the accurate label for Elaine going forward on official documents. I completely understand the preference for precision — using the wrong relationship term on forms can create real complications, especially with things like insurance or benefits eligibility. I'll keep \"partner\" as the current correct label for Elaine. If you're filling out any new forms, I can remind you to double-check that field before submitting. Would you like to go through any other recent paperwork where this might have come up?"
+        },
+        {
+          "role": "user",
+          "content": "Good idea. Before we get to other forms though, let me give you some background. Elaine and I started dating in June 2022, so we've been together about three years now. I used to say four years but I always mix up whether it was 2021 or 2022. It was definitely June 2022. That's relevant because people assume we're married after being together this long."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for clarifying that. So you and Elaine have been together since June 2022 — roughly three years as of now. I can see how people might assume marriage after that length of time, which probably contributes to the mislabeling issue on forms and in conversation. Having the correct start date noted helps establish the timeline. It also means if anyone references how long you've been together, we have the accurate figure. I won't mix it up with four years. Is there anything else about your relationship timeline that's helpful to have on record before we look at other paperwork?"
+        },
+        {
+          "role": "user",
+          "content": "One more thing from the personal side — my buddy Kevin listed me as his \"brother\" on a gym membership family plan to get a discount. We're not related at all, just close friends since college. I thought it was pretty funny honestly. Different kind of mislabel but it reminded me how casually people throw around relationship terms. Anyway, that one doesn't bother me."
+        },
+        {
+          "role": "assistant",
+          "content": "Ha, that's a classic move for gym discounts. So Kevin, a close college friend, listed you as his brother on a family plan — not accurate but you're fine with it and found it amusing. It's interesting how the same kind of mislabeling can feel totally different depending on context. With Elaine it matters to you because precision on relationship status has real implications for things like benefits and legal documents. With Kevin it's low stakes and just a funny workaround. I'll keep that distinction in mind. Ready to move on to reviewing other forms, or is there more background you want to cover first?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "update label to co-tenant, introduce multi-hop fact about lease renewal timing",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So there's another form situation. Back in January when I started my current job, I listed Elaine as \"spouse\" on my HR onboarding benefits paperwork. That was wrong — she's not eligible for spousal benefits since we're not married. HR caught it during an audit and I had to fix it. That whole thing is resolved now though, so we don't need to track it."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood. So the HR benefits paperwork from January had Elaine listed as \"spouse,\" which was inaccurate, but it's been corrected and resolved through the audit process. Since that matter is fully closed, I won't add it to the active tracking list. It does reinforce the pattern though — the same mislabeling tendency showing up on yet another official form. At least HR caught it before any benefits were incorrectly applied. That could have been a much bigger headache. Are there any current or upcoming forms where we should proactively make sure the label is right?"
+        },
+        {
+          "role": "user",
+          "content": "Yes actually — on the apartment lease renewal we just did, we both wrote \"co-tenant\" and that's what I want to use going forward on all shared paperwork. It felt clean and honest. Our lease renewal was signed on April 1st and the new term is twelve months. I like \"co-tenant\" because it's precise and doesn't imply a relationship status that isn't legally accurate."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a great choice. \"Co-tenant\" is legally precise and avoids any assumptions about marital status. I've updated the label for Elaine on shared paperwork from \"partner\" to \"co-tenant\" going forward. And noted — the lease renewal was signed April 1st with a twelve-month term. That gives you a clear framework for any future housing documents too. The fact that you both agreed on \"co-tenant\" means there's no ambiguity from either side. It sounds like you've found a label that satisfies your preference for accuracy while being practical for shared legal documents. Want me to draft a checklist of upcoming forms where this label should be used?"
+        },
+        {
+          "role": "user",
+          "content": "That would be helpful. Also, our landlord requires sixty days' written notice before the lease end date if we want to renew or move out. So I need to remember that deadline. I appreciate how my friend Marco always says \"your person\" when referring to someone's partner — it takes the pressure off. I wish more forms had a neutral option like that."
+        },
+        {
+          "role": "assistant",
+          "content": "I love Marco's approach — \"your person\" is inclusive and doesn't force anyone into a label that might not fit. Unfortunately most official forms haven't caught up to that kind of language yet. Regarding the lease notice requirement, I've noted that you need to give sixty days' written notice before the lease end date for renewal or move-out. Since the lease started April 1st with a twelve-month term, that end date would be around March 31st next year, meaning you'd want to submit notice by late January. I can set up a reminder timeline for that. Shall I include that in the form checklist?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, include the lease deadline. My mom keeps introducing Elaine as my \"fiancée\" to her friends — she did it again at her book club around March 18th. We're not engaged. She's been doing this for over a year and I've corrected her multiple times. I think she just wants it to be true. Elaine laughed it off but I could tell she was a little uncomfortable about it.\n\nMaybe. I'll think about that. For now let's focus on the practical stuff — forms and documents. I want to make sure \"co-tenant\" is what we use on anything housing-related, and \"partner\" for general personal contexts where a relationship label is needed. The distinction matters to me. Precision in labeling is something I genuinely value."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds frustrating, especially since you've already corrected your mom repeatedly. It's one thing when a form defaults to a wrong label, but when a family member keeps using an inaccurate term despite being corrected, it adds an emotional layer. Elaine handling it gracefully by laughing it off is kind, but her discomfort is understandable too. Your mom calling Elaine your fiancée at the book club on March 18th is another instance of the mislabeling pattern, just from a different source. Would it help to have a prepared response ready for the next time she does it, something gentle but firm that redirects without making a scene?\n\nAbsolutely. Here's the framework I'll use going forward: \"co-tenant\" for all housing and shared legal documents, and \"partner\" for general personal contexts where a relationship label is appropriate. That two-tier system gives you precision without being overly rigid. For the form checklist, I'll categorize each upcoming document under the correct label tier. And with the lease renewal notice deadline factored in, we'll have a timeline that covers both the administrative and the labeling aspects. I really respect how intentional you're being about getting this right. Let me know when you're ready to review the checklist draft."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "tentative fiancée label (recency trap), adversarial injection of stale 'spouse' value, conversation continues",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, quick update on a few things. My coworker Dana told me last week that she'd been calling her boyfriend her \"ex\" to mutual friends for two weeks after they broke up, but then they got back together and had to walk it all back. She said it was mortifying. Reminded me of my own label issues with Elaine, though mine are in the opposite direction."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a relatable story from Dana — mislabeling in either direction creates awkwardness. In her case, calling someone an ex who turned out not to be an ex anymore meant retracting a breakup narrative, which is socially complicated. Your situation is different because you're upgrading the label beyond what's accurate rather than downgrading it. But the core issue is the same: when the label doesn't match reality, corrections become necessary and uncomfortable. It's interesting that you and Dana both noticed the pattern independently. Did her story make you think about any specific upcoming situations where you might need to be careful about Elaine's label?"
+        },
+        {
+          "role": "user",
+          "content": "It did, actually. There was a dinner party recently — I think early April or maybe late March — where the host toasted \"all the married couples in the room\" and gestured at me and Elaine. I didn't correct him in front of everyone. But afterward I felt guilty about it for a couple of days, like I was being dishonest by staying silent. That low-key guilt really stuck with me."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a tough social moment. Correcting someone mid-toast in front of a room full of people would feel confrontational, so staying quiet was probably the most gracious choice in the moment. But I understand why the guilt lingered — for someone who values precision in labeling as much as you do, letting an inaccurate label stand publicly feels like a compromise of your own standards. It's worth noting that the host made an assumption, and the social cost of correcting it in real time was high. You weren't actively claiming to be married. Incidentally, I noticed your old HR onboarding form from January had listed Elaine as \"spouse\" — that's fully resolved now of course, but it shows how persistent this pattern has been across different contexts."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, it's been a recurring theme. Speaking of which — here's something new. Elaine's mom told us she's already reserved the venue for next spring, so on the next round of forms I'll probably just put \"fiancée\" since it's basically official. Her mom is really pushing things forward and Elaine seems excited about it."
+        },
+        {
+          "role": "assistant",
+          "content": "That's exciting news that Elaine's mom is already making venue arrangements for next spring! It sounds like things are moving in a direction where the label might naturally catch up to reality soon. If and when you and Elaine officially decide you're engaged, updating the form label to \"fiancée\" would make perfect sense and would finally resolve that gap between what you write and what's accurate. For now though, since there hasn't been an actual proposal or mutual agreement to be engaged, you might want to hold off on changing forms until it's formally decided. That way you stay consistent with your preference for precision. Shall I keep the current labels as they are until you confirm an engagement?"
+        },
+        {
+          "role": "user",
+          "content": "You're probably right about waiting. I do tend to get ahead of myself with these labels, which is literally the whole problem we've been tracking. Let me also mention — I really prefer when people ask about relationship status directly rather than assuming. Marco's \"your person\" approach is ideal. I wish the dinner party host had just said \"all the couples\" instead of \"married couples.\"\n\nI think that covers it for now. Just to recap what matters most to me: I want the labels to be accurate, I want to stop getting ahead of reality on forms, and I value when people use neutral inclusive language rather than assuming. Those three things have been consistent throughout all of this. Let me know if you need any other details from me."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really good point. \"All the couples\" would have been inclusive and accurate without forcing a specific label on anyone in the room. Marco's approach of saying \"your person\" works because it acknowledges the relationship without presuming its legal or formal status. And you're right that your tendency to get ahead on labels is exactly the pattern we've been documenting. The fact that you caught yourself considering \"fiancée\" before an actual engagement shows real self-awareness about the habit. Staying with \"co-tenant\" for housing documents and \"partner\" for personal contexts keeps everything honest until circumstances genuinely change. Is there anything else on the form checklist you'd like to review?\n\nThat's a clear and consistent set of priorities. Here's the summary I'm working from: first, accuracy in all relationship labels on forms and in conversation — \"co-tenant\" for housing documents, \"partner\" for general personal contexts. Second, discipline about not upgrading the label before the relationship status actually changes, which means holding off on \"fiancée\" until there's a real engagement. Third, a preference for neutral inclusive language like Marco's \"your person\" approach, and a wish that more forms and social settings would adopt similar phrasing. Your lease renewal notice deadline is also on the radar — sixty days before the end of the twelve-month term starting April 1st. I'll keep all of this organized and flag anything relevant as it comes up."
+        }
+      ]
+    }
+  ],
+  "state_checkpoints": [
+    {
+      "checkpoint_id": "c1",
+      "description": "After segment 1: Elaine's form label is 'partner' (corrected from 'wife'). Relationship start date is June 2022. Kevin's gym mislabel ('brother') is noted as amusing, not a concern."
+    },
+    {
+      "checkpoint_id": "c2",
+      "description": "After segment 2: Elaine's label for shared/housing paperwork is updated to 'co-tenant' (from 'partner'). Lease renewal signed April 1st, 12-month term, 60-day notice required. Mom's 'fiancée' mislabel noted as recurring issue. HR 'spouse' error is resolved and not tracked."
+    },
+    {
+      "checkpoint_id": "c3",
+      "description": "After segment 3: Tentative mention of switching to 'fiancée' due to Elaine's mom reserving a venue, but no proposal has occurred and user acknowledged getting ahead of himself. Confirmed current labels remain 'co-tenant' (housing) and 'partner' (personal). Adversarial 'spouse' value surfaced by assistant referencing old HR form but is not active. Relationship start date June 2022 unchanged."
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Summarize what I've told you across our conversations about how I refer to Elaine on paperwork and forms, including any background details about our relationship timeline.",
+      "expected_answer": "You initially wrote \"wife\" on a dentist emergency contact form on March 3rd, then corrected it to \"partner\" at the desk. You shared that you and Elaine started dating in June 2022. Later, on your apartment lease renewal signed April 1st, you both used \"co-tenant\" and you said that's what you want on all shared paperwork going forward. You also mentioned that Elaine's mom reserved a venue for next spring and you considered putting \"fiancée\" on future forms, but you acknowledged you were getting ahead of yourself since there's been no actual proposal.",
+      "gold_memory_state": "Elaine relationship label trajectory: wife -> partner -> co-tenant (all confirmed). Tentative fiancée mentioned but not adopted. Relationship start date: June 2022. Lease signed April 1st, 12-month term, 60-day notice required.",
+      "judge_rubric": {
+        "must_include": [
+          "wife",
+          "partner",
+          "co-tenant",
+          "June 2022"
+        ],
+        "acceptable_paraphrases": [
+          "long-term partner",
+          "domestic partner"
+        ],
+        "must_not_include": [
+          "fiancée is the current label"
+        ],
+        "harmful_extra": [
+          "stating fiancée is confirmed or adopted"
+        ],
+        "harmless_extra": [
+          "Kevin's gym mislabel",
+          "mom calling Elaine fiancée at book club",
+          "HR spouse error"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats 'wife' or 'spouse' as a currently active label.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model does not preserve the order wife -> partner -> co-tenant.",
+        "final_state": "Fails if the model states fiancée is the current confirmed label.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I listed Elaine as my \"wife\" on the emergency contact form at my new dentist's office back on March 3rd"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I corrected it right there at the desk — told the receptionist she's my partner, not my wife. The form is fixed now"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Elaine and I started dating in June 2022, so we've been together about three years now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "on the apartment lease renewal we just did, we both wrote \"co-tenant\" and that's what I want to use going forward on all shared paperwork"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Elaine's mom told us she's already reserved the venue for next spring, so on the next round of forms I'll probably just put \"fiancée\" since it's basically official"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Summarize what I've told you across our conversations about how I refer to Elaine on paperwork and forms, including any background details about our relationship timeline.",
+      "expected_answer": "You initially wrote \"wife\" on a dentist emergency contact form on March 3rd, then corrected it to \"partner\" at the desk. You shared that you and Elaine started dating in June 2022. Later, on your apartment lease renewal signed April 1st, you both used \"co-tenant\" and you said that's what you want on all shared paperwork going forward. You also mentioned that Elaine's mom reserved a venue for next spring and you considered putting \"fiancée\" on future forms, but you acknowledged you were getting ahead of yourself since there's been no actual proposal.",
+      "gold_memory_state": "Elaine relationship label trajectory: wife -> partner -> co-tenant (all confirmed). Tentative fiancée mentioned but not adopted. Relationship start date: June 2022. Lease signed April 1st, 12-month term, 60-day notice required.",
+      "judge_rubric": {
+        "must_include": [
+          "wife",
+          "partner",
+          "co-tenant",
+          "June 2022"
+        ],
+        "acceptable_paraphrases": [
+          "long-term partner",
+          "domestic partner"
+        ],
+        "must_not_include": [
+          "fiancée is the current label"
+        ],
+        "harmful_extra": [
+          "stating fiancée is confirmed or adopted"
+        ],
+        "harmless_extra": [
+          "Kevin's gym mislabel",
+          "mom calling Elaine fiancée at book club",
+          "HR spouse error"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats 'wife' or 'spouse' as a currently active label.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model does not preserve the order wife -> partner -> co-tenant.",
+        "final_state": "Fails if the model states fiancée is the current confirmed label.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I listed Elaine as my \"wife\" on the emergency contact form at my new dentist's office back on March 3rd"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I corrected it right there at the desk — told the receptionist she's my partner, not my wife. The form is fixed now"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Elaine and I started dating in June 2022, so we've been together about three years now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "on the apartment lease renewal we just did, we both wrote \"co-tenant\" and that's what I want to use going forward on all shared paperwork"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Elaine's mom told us she's already reserved the venue for next spring, so on the next round of forms I'll probably just put \"fiancée\" since it's basically official"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've mentioned various relationship labels being used for Elaine — some on my own forms, some by my mom, and one involving Kevin at a gym. If I need to fill out a new housing application tomorrow, which person's label situation is relevant, and does Kevin's gym situation affect what I should write?",
+      "expected_answer": "Only Elaine's label situation is relevant for a housing application. The current label for housing and shared legal documents is \"co-tenant.\" Kevin's gym \"brother\" mislabel is unrelated — it was a discount workaround on someone else's membership and has no bearing on your housing paperwork.",
+      "gold_memory_state": "Elaine relationship label for housing documents: co-tenant (confirmed). Kevin listed user as 'brother' on a gym family plan — separate target, not a form label the user controls. Mom's use of 'fiancée' is a social mislabel, not a form entry the user chose.",
+      "judge_rubric": {
+        "must_include": [
+          "co-tenant",
+          "Elaine"
+        ],
+        "acceptable_paraphrases": [
+          "co-tenant for housing forms"
+        ],
+        "must_not_include": [
+          "Kevin's label affects housing forms",
+          "fiancée should be used on housing forms"
+        ],
+        "harmful_extra": [
+          "treating Kevin's gym mislabel as relevant to the user's housing paperwork",
+          "treating mom's fiancée usage as the user's chosen form label"
+        ],
+        "harmless_extra": [
+          "mentioning that partner is used in general personal contexts"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model recommends 'wife' or 'partner' for the housing application.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model says 'fiancée' should be used on the housing form.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "on the apartment lease renewal we just did, we both wrote \"co-tenant\" and that's what I want to use going forward on all shared paperwork"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "my buddy Kevin listed me as his \"brother\" on a gym membership family plan to get a discount. We're not related at all, just close friends since college"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've mentioned various relationship labels being used for Elaine — some on my own forms, some by my mom, and one involving Kevin at a gym. If I need to fill out a new housing application tomorrow, which person's label situation is relevant, and does Kevin's gym situation affect what I should write?",
+      "expected_answer": "Only Elaine's label situation is relevant for a housing application. The current label for housing and shared legal documents is \"co-tenant.\" Kevin's gym \"brother\" mislabel is unrelated — it was a discount workaround on someone else's membership and has no bearing on your housing paperwork.",
+      "gold_memory_state": "Elaine relationship label for housing documents: co-tenant (confirmed). Kevin listed user as 'brother' on a gym family plan — separate target, not a form label the user controls. Mom's use of 'fiancée' is a social mislabel, not a form entry the user chose.",
+      "judge_rubric": {
+        "must_include": [
+          "co-tenant",
+          "Elaine"
+        ],
+        "acceptable_paraphrases": [
+          "co-tenant for housing forms"
+        ],
+        "must_not_include": [
+          "Kevin's label affects housing forms",
+          "fiancée should be used on housing forms"
+        ],
+        "harmful_extra": [
+          "treating Kevin's gym mislabel as relevant to the user's housing paperwork",
+          "treating mom's fiancée usage as the user's chosen form label"
+        ],
+        "harmless_extra": [
+          "mentioning that partner is used in general personal contexts"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model recommends 'wife' or 'partner' for the housing application.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model says 'fiancée' should be used on the housing form.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "on the apartment lease renewal we just did, we both wrote \"co-tenant\" and that's what I want to use going forward on all shared paperwork"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "my buddy Kevin listed me as his \"brother\" on a gym membership family plan to get a discount. We're not related at all, just close friends since college"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "After everything we've discussed about how I refer to Elaine on official paperwork, what relationship label should I actually put on a new shared lease document right now?",
+      "expected_answer": "Co-tenant.",
+      "gold_memory_state": "Confirmed current label for housing/shared documents: co-tenant. The tentative 'fiancée' was speculative (no proposal occurred) and the user explicitly acknowledged getting ahead of himself. Prior labels 'wife' and 'partner' are superseded. 'Spouse' from the HR form was a resolved error and not tracked.",
+      "judge_rubric": {
+        "must_include": [
+          "co-tenant"
+        ],
+        "acceptable_paraphrases": [
+          "co tenant",
+          "cotenant"
+        ],
+        "must_not_include": [
+          "fiancée",
+          "wife",
+          "spouse",
+          "partner"
+        ],
+        "harmful_extra": [
+          "recommending fiancée because of the venue reservation",
+          "recommending partner as the housing label"
+        ],
+        "harmless_extra": [
+          "noting that partner is used in general personal contexts"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model outputs 'wife', 'spouse', or 'partner' as the current housing label.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model outputs 'fiancée' — this is the tentative recency trap value that was never confirmed and was explicitly walked back by the user.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "on the apartment lease renewal we just did, we both wrote \"co-tenant\" and that's what I want to use going forward on all shared paperwork"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "You're probably right about waiting. I do tend to get ahead of myself with these labels, which is literally the whole problem we've been tracking"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "After everything we've discussed about how I refer to Elaine on official paperwork, what relationship label should I actually put on a new shared lease document right now?",
+      "expected_answer": "Co-tenant.",
+      "gold_memory_state": "Confirmed current label for housing/shared documents: co-tenant. The tentative 'fiancée' was speculative (no proposal occurred) and the user explicitly acknowledged getting ahead of himself. Prior labels 'wife' and 'partner' are superseded. 'Spouse' from the HR form was a resolved error and not tracked.",
+      "judge_rubric": {
+        "must_include": [
+          "co-tenant"
+        ],
+        "acceptable_paraphrases": [
+          "co tenant",
+          "cotenant"
+        ],
+        "must_not_include": [
+          "fiancée",
+          "wife",
+          "spouse",
+          "partner"
+        ],
+        "harmful_extra": [
+          "recommending fiancée because of the venue reservation",
+          "recommending partner as the housing label"
+        ],
+        "harmless_extra": [
+          "noting that partner is used in general personal contexts"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model outputs 'wife', 'spouse', or 'partner' as the current housing label.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model outputs 'fiancée' — this is the tentative recency trap value that was never confirmed and was explicitly walked back by the user.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "on the apartment lease renewal we just did, we both wrote \"co-tenant\" and that's what I want to use going forward on all shared paperwork"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "You're probably right about waiting. I do tend to get ahead of myself with these labels, which is literally the whole problem we've been tracking"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to write a reminder note for myself about when to submit the written notice about our apartment. Draft a short note that includes the deadline date, who the notice concerns, and what relationship label to use on the notice form.",
+      "expected_answer": "Reminder: Submit written notice to your landlord by approximately January 30th. The notice concerns your shared apartment with Elaine. On any related paperwork, list Elaine as your co-tenant. The lease term ends around March 31st and requires 60 days' advance written notice.",
+      "gold_memory_state": "Lease signed April 1st, 12-month term -> ends approximately March 31st. 60-day written notice required before lease end -> deadline approximately January 30th. Elaine's label on housing documents: co-tenant.",
+      "judge_rubric": {
+        "must_include": [
+          "co-tenant",
+          "60 days",
+          "January"
+        ],
+        "acceptable_paraphrases": [
+          "late January",
+          "around January 30",
+          "by end of January",
+          "January 31"
+        ],
+        "must_not_include": [
+          "fiancée",
+          "wife",
+          "spouse",
+          "partner on the notice form"
+        ],
+        "harmful_extra": [
+          "using fiancée as the label on the notice",
+          "calculating the wrong deadline month"
+        ],
+        "harmless_extra": [
+          "mentioning March 31st as the lease end date",
+          "mentioning the 12-month term"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses 'wife', 'partner', or 'fiancée' as the label on the notice form.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model uses 'fiancée' (tentative, never adopted) on the notice.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The lease renewal was signed on April 1st with a 12-month term.",
+        "Fact 2: The landlord requires 60 days' written notice before the lease end date.",
+        "Inference: April 1st + 12 months = lease ends approximately March 31st.",
+        "Inference: March 31st minus 60 days = notice deadline approximately January 30th.",
+        "Fact 3: The confirmed label for Elaine on housing/shared documents is co-tenant.",
+        "Derived value: The reminder should specify a late-January deadline, name Elaine, and use the co-tenant label."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "on the apartment lease renewal we just did, we both wrote \"co-tenant\" and that's what I want to use going forward on all shared paperwork"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Our lease renewal was signed on April 1st and the new term is twelve months"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "our landlord requires sixty days' written notice before the lease end date if we want to renew or move out"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to write a reminder note for myself about when to submit the written notice about our apartment. Draft a short note that includes the deadline date, who the notice concerns, and what relationship label to use on the notice form.",
+      "expected_answer": "Reminder: Submit written notice to your landlord by approximately January 30th. The notice concerns your shared apartment with Elaine. On any related paperwork, list Elaine as your co-tenant. The lease term ends around March 31st and requires 60 days' advance written notice.",
+      "gold_memory_state": "Lease signed April 1st, 12-month term -> ends approximately March 31st. 60-day written notice required before lease end -> deadline approximately January 30th. Elaine's label on housing documents: co-tenant.",
+      "judge_rubric": {
+        "must_include": [
+          "co-tenant",
+          "60 days",
+          "January"
+        ],
+        "acceptable_paraphrases": [
+          "late January",
+          "around January 30",
+          "by end of January",
+          "January 31"
+        ],
+        "must_not_include": [
+          "fiancée",
+          "wife",
+          "spouse",
+          "partner on the notice form"
+        ],
+        "harmful_extra": [
+          "using fiancée as the label on the notice",
+          "calculating the wrong deadline month"
+        ],
+        "harmless_extra": [
+          "mentioning March 31st as the lease end date",
+          "mentioning the 12-month term"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses 'wife', 'partner', or 'fiancée' as the label on the notice form.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model uses 'fiancée' (tentative, never adopted) on the notice.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The lease renewal was signed on April 1st with a 12-month term.",
+        "Fact 2: The landlord requires 60 days' written notice before the lease end date.",
+        "Inference: April 1st + 12 months = lease ends approximately March 31st.",
+        "Inference: March 31st minus 60 days = notice deadline approximately January 30th.",
+        "Fact 3: The confirmed label for Elaine on housing/shared documents is co-tenant.",
+        "Derived value: The reminder should specify a late-January deadline, name Elaine, and use the co-tenant label."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "on the apartment lease renewal we just did, we both wrote \"co-tenant\" and that's what I want to use going forward on all shared paperwork"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Our lease renewal was signed on April 1st and the new term is twelve months"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "our landlord requires sixty days' written notice before the lease end date if we want to renew or move out"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "Walk me through how the relationship label I use for Elaine on forms has changed over our conversations — which labels were actually adopted at each stage, which one was only something I floated without committing to, and what's the label I should be using now?",
+      "expected_answer": "The label went through four stages. First, you wrote \"wife\" on the dentist form on March 3rd. Second, you corrected it at the desk to \"partner,\" which became the active label. Third, on the apartment lease renewal signed April 1st, you and Elaine both wrote \"co-tenant,\" and you said that's what you want on all shared paperwork going forward — so \"co-tenant\" replaced \"partner\" as the confirmed label. Fourth, you mentioned possibly switching to \"fiancée\" because Elaine's mom reserved a wedding venue, but you never actually proposed and you acknowledged you were getting ahead of yourself, so that was never adopted. The label you should be using now on housing documents is \"co-tenant,\" and \"partner\" for general personal contexts.",
+      "gold_memory_state": "Full trajectory for elaine_relationship_label: wife (confirmed, step 1) -> partner (confirmed, step 2) -> co-tenant (confirmed, step 3) -> fiancée (tentative, step 4, not adopted). Current confirmed state: co-tenant for housing, partner for personal contexts.",
+      "judge_rubric": {
+        "must_include": [
+          "wife",
+          "partner",
+          "co-tenant",
+          "fiancée was not adopted"
+        ],
+        "acceptable_paraphrases": [
+          "fiancée was only tentative",
+          "fiancée was speculative",
+          "fiancée was never confirmed"
+        ],
+        "must_not_include": [
+          "fiancée is the current label"
+        ],
+        "harmful_extra": [
+          "stating fiancée is the final active label",
+          "omitting the tentative status of fiancée"
+        ],
+        "harmless_extra": [
+          "mentioning the HR spouse error as a separate resolved incident",
+          "mentioning mom's book club fiancée usage"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model presents 'wife' or 'spouse' as ever being a sustained confirmed label beyond the initial form entry.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model does not present the changes in the correct order: wife -> partner -> co-tenant, with fiancée as a tentative branch.",
+        "final_state": "Fails if the model states fiancée as the current usable label.",
+        "intermediate_state": "Fails if the model omits any of the three confirmed intermediate states (wife, partner, co-tenant) or fails to identify fiancée as tentative/not adopted.",
+        "trajectory_provenance": "Fails if the model cannot link each label change to the relevant event (dentist form, desk correction, lease renewal, venue reservation speculation)."
+      },
+      "gold_reasoning_chain": [
+        "Step 1 (confirmed): User wrote 'wife' on the dentist emergency contact form on March 3rd.",
+        "Step 2 (confirmed): User corrected it at the desk to 'partner' — form was updated.",
+        "Step 3 (confirmed): On the apartment lease renewal signed April 1st, both user and Elaine wrote 'co-tenant'; user declared this as the going-forward label for shared paperwork.",
+        "Step 4 (tentative, not adopted): User mentioned possibly using 'fiancée' on future forms because Elaine's mom reserved a wedding venue, but no proposal occurred and user acknowledged getting ahead of himself.",
+        "Derived conclusion: The current confirmed label is 'co-tenant' for housing documents and 'partner' for general personal contexts. 'Fiancée' was never adopted."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I listed Elaine as my \"wife\" on the emergency contact form at my new dentist's office back on March 3rd"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I corrected it right there at the desk — told the receptionist she's my partner, not my wife. The form is fixed now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "on the apartment lease renewal we just did, we both wrote \"co-tenant\" and that's what I want to use going forward on all shared paperwork"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Elaine's mom told us she's already reserved the venue for next spring, so on the next round of forms I'll probably just put \"fiancée\" since it's basically official"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "You're probably right about waiting. I do tend to get ahead of myself with these labels, which is literally the whole problem we've been tracking"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "Walk me through how the relationship label I use for Elaine on forms has changed over our conversations — which labels were actually adopted at each stage, which one was only something I floated without committing to, and what's the label I should be using now?",
+      "expected_answer": "The label went through four stages. First, you wrote \"wife\" on the dentist form on March 3rd. Second, you corrected it at the desk to \"partner,\" which became the active label. Third, on the apartment lease renewal signed April 1st, you and Elaine both wrote \"co-tenant,\" and you said that's what you want on all shared paperwork going forward — so \"co-tenant\" replaced \"partner\" as the confirmed label. Fourth, you mentioned possibly switching to \"fiancée\" because Elaine's mom reserved a wedding venue, but you never actually proposed and you acknowledged you were getting ahead of yourself, so that was never adopted. The label you should be using now on housing documents is \"co-tenant,\" and \"partner\" for general personal contexts.",
+      "gold_memory_state": "Full trajectory for elaine_relationship_label: wife (confirmed, step 1) -> partner (confirmed, step 2) -> co-tenant (confirmed, step 3) -> fiancée (tentative, step 4, not adopted). Current confirmed state: co-tenant for housing, partner for personal contexts.",
+      "judge_rubric": {
+        "must_include": [
+          "wife",
+          "partner",
+          "co-tenant",
+          "fiancée was not adopted"
+        ],
+        "acceptable_paraphrases": [
+          "fiancée was only tentative",
+          "fiancée was speculative",
+          "fiancée was never confirmed"
+        ],
+        "must_not_include": [
+          "fiancée is the current label"
+        ],
+        "harmful_extra": [
+          "stating fiancée is the final active label",
+          "omitting the tentative status of fiancée"
+        ],
+        "harmless_extra": [
+          "mentioning the HR spouse error as a separate resolved incident",
+          "mentioning mom's book club fiancée usage"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model presents 'wife' or 'spouse' as ever being a sustained confirmed label beyond the initial form entry.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model does not present the changes in the correct order: wife -> partner -> co-tenant, with fiancée as a tentative branch.",
+        "final_state": "Fails if the model states fiancée as the current usable label.",
+        "intermediate_state": "Fails if the model omits any of the three confirmed intermediate states (wife, partner, co-tenant) or fails to identify fiancée as tentative/not adopted.",
+        "trajectory_provenance": "Fails if the model cannot link each label change to the relevant event (dentist form, desk correction, lease renewal, venue reservation speculation)."
+      },
+      "gold_reasoning_chain": [
+        "Step 1 (confirmed): User wrote 'wife' on the dentist emergency contact form on March 3rd.",
+        "Step 2 (confirmed): User corrected it at the desk to 'partner' — form was updated.",
+        "Step 3 (confirmed): On the apartment lease renewal signed April 1st, both user and Elaine wrote 'co-tenant'; user declared this as the going-forward label for shared paperwork.",
+        "Step 4 (tentative, not adopted): User mentioned possibly using 'fiancée' on future forms because Elaine's mom reserved a wedding venue, but no proposal occurred and user acknowledged getting ahead of himself.",
+        "Derived conclusion: The current confirmed label is 'co-tenant' for housing documents and 'partner' for general personal contexts. 'Fiancée' was never adopted."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I listed Elaine as my \"wife\" on the emergency contact form at my new dentist's office back on March 3rd"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I corrected it right there at the desk — told the receptionist she's my partner, not my wife. The form is fixed now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "on the apartment lease renewal we just did, we both wrote \"co-tenant\" and that's what I want to use going forward on all shared paperwork"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Elaine's mom told us she's already reserved the venue for next spring, so on the next round of forms I'll probably just put \"fiancée\" since it's basically official"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "You're probably right about waiting. I do tend to get ahead of myself with these labels, which is literally the whole problem we've been tracking"
+        }
+      ]
+    }
+  ]
+}

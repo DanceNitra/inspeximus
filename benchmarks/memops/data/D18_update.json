@@ -1,0 +1,810 @@
+{
+  "target_fact": "User's Gboard keyboard height setting, which changed from medium to tall, back to medium, with a tentative consideration of short",
+  "operation_type": "Update",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "keyboard_height",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I set my Gboard keyboard height to medium when I first installed it back in early March"
+      },
+      "target": {
+        "target_id": "gboard_keyboard_height",
+        "target_name": "Gboard keyboard height setting"
+      },
+      "old_value": null,
+      "new_value": "medium",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I set my Gboard keyboard height to medium when I first installed it back in early March"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "keyboard_height",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I bumped it up to tall about three weeks after switching to Gboard because I kept hitting the wrong keys on the smaller layout"
+      },
+      "target": {
+        "target_id": "gboard_keyboard_height",
+        "target_name": "Gboard keyboard height setting"
+      },
+      "old_value": "medium",
+      "new_value": "tall",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I set my Gboard keyboard height to medium when I first installed it back in early March"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I bumped it up to tall about three weeks after switching to Gboard because I kept hitting the wrong keys on the smaller layout"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "keyboard_height",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I just changed my keyboard height back to medium about a week ago. I realized the tall setting was causing me to mistype more, not less, so I reverted"
+      },
+      "target": {
+        "target_id": "gboard_keyboard_height",
+        "target_name": "Gboard keyboard height setting"
+      },
+      "old_value": "tall",
+      "new_value": "medium",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I bumped it up to tall about three weeks after switching to Gboard because I kept hitting the wrong keys on the smaller layout"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I just changed my keyboard height back to medium about a week ago. I realized the tall setting was causing me to mistype more, not less, so I reverted"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "keyboard_height",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "My coworker David showed me his Gboard set to short height and it looked really compact and efficient. He confirmed it works great for one-handed typing. I'm going to switch mine to short this weekend"
+      },
+      "target": {
+        "target_id": "gboard_keyboard_height",
+        "target_name": "Gboard keyboard height setting"
+      },
+      "old_value": "medium",
+      "new_value": "short",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My coworker David showed me his Gboard set to short height and it looked really compact and efficient. He confirmed it works great for one-handed typing. I'm going to switch mine to short this weekend"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I added Japanese as a secondary input language in Gboard around the second week of April. I'm doing some casual Japanese study and the globe key lets me toggle between English and Japanese"
+      },
+      "target": {
+        "target_id": "gboard_secondary_language",
+        "target_name": "Gboard secondary input language"
+      },
+      "old_value": null,
+      "new_value": "Japanese",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I added Japanese as a secondary input language in Gboard around the second week of April. I'm doing some casual Japanese study and the globe key lets me toggle between English and Japanese"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "On my laptop I set the Windows keyboard layout to US International on April 1st so I can type accented characters for my Spanish coursework"
+      },
+      "target": {
+        "target_id": "laptop_keyboard_layout",
+        "target_name": "Laptop Windows keyboard layout"
+      },
+      "old_value": null,
+      "new_value": "US International",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "On my laptop I set the Windows keyboard layout to US International on April 1st so I can type accented characters for my Spanish coursework"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish initial keyboard height and secondary language; begin update chain",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to keep track of some of my keyboard settings since I keep tweaking things and losing track. I set my Gboard keyboard height to medium when I first installed it back in early March. I switched to Gboard from SwiftKey because SwiftKey started lagging badly after an update and I was really frustrated about losing all my customized autocorrect entries. Can you help me keep notes on these settings going forward so I don't get confused?"
+        },
+        {
+          "role": "assistant",
+          "content": "Of course, I'd be happy to help you keep track of your keyboard settings! That sounds frustrating about SwiftKey — losing a carefully built autocorrect dictionary is never fun, especially after investing so much time in it. So to confirm what I have so far: you switched to Gboard in early March, and when you first set it up, you chose the medium keyboard height. I'll keep a running log of any changes you mention. Feel free to share any other settings you'd like me to track, whether it's themes, languages, gesture preferences, or anything else. That way you'll always have a reference point if you need to check what you're currently using."
+        },
+        {
+          "role": "user",
+          "content": "Great, thanks. So another thing — I added Japanese as a secondary input language in Gboard around the second week of April. I'm doing some casual Japanese study and the globe key lets me toggle between English and Japanese. That's still active and I want to keep it that way. It's been really helpful for practicing hiragana and katakana input while texting friends who also study Japanese. I don't want to accidentally remove it when I'm changing other settings around."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it! I've noted that you added Japanese as a secondary input language in Gboard around the second week of April, and it's currently active. The globe key toggle between English and Japanese is your switching mechanism. That's a smart way to practice — immersing yourself in the input method while actually communicating with friends makes the kana stick much faster than flashcards alone. I'll make sure to flag it if you ever mention removing languages, so you don't accidentally lose that setup. So far I have: Gboard installed early March, keyboard height set to medium initially, Japanese added as secondary language mid-April. Anything else you'd like me to note down right now?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, actually there's an update on the height setting. I bumped it up to tall about three weeks after switching to Gboard because I kept hitting the wrong keys on the smaller layout. At the time I thought bigger keys would solve the accuracy problem. I also set the Gboard theme to a plain dark gray background — I really can't stand flashy themes with gradients or pictures behind the keys, they feel way too cluttered for me. Minimalism is key when it comes to my keyboard appearance preferences."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted! So about three weeks after installing Gboard in early March, you changed the keyboard height from medium to tall, hoping the larger keys would improve your typing accuracy. I've updated that in my notes. And I've also recorded your theme preference: plain dark gray background, with a strong dislike for flashy gradient or picture-based themes. That minimalist approach makes a lot of sense — a clean keyboard face means fewer visual distractions while you're typing, which probably helps with focus and speed. Your current settings as of that change were: Gboard with tall keyboard height, dark gray theme, Japanese as secondary language, and English as primary. Let me know whenever something else changes."
+        },
+        {
+          "role": "user",
+          "content": "Perfect, that's all correct. Oh, I also turned off the emoji suggestions bar at the top of the keyboard because I prefer having more screen space for the actual text area. I find that those suggestion strips eat into the visible content area, especially on my phone which doesn't have the biggest screen. Every pixel of vertical space matters to me when I'm reading and replying to longer messages or editing documents on mobile. It's a small tweak but it makes a noticeable difference."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, I've added that — emoji suggestions bar is turned off to maximize screen real estate for the text area. That's a really practical choice, especially on a smaller screen where every bit of vertical space counts for reading context while composing replies. It aligns well with your overall minimalist approach to the keyboard setup. So here's your full current snapshot from this conversation: Gboard as default input method since early March, keyboard height changed from medium to tall, dark gray theme, emoji suggestions bar disabled, and Japanese added as secondary language in mid-April. I'll keep tracking any future changes you mention so you always have an accurate reference. Just let me know whenever you adjust something."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Revert keyboard height to medium; establish laptop layout as control target; multi-hop setup",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to update you on a couple of things. On my laptop I set the Windows keyboard layout to US International on April 1st so I can type accented characters for my Spanish coursework. That's completely separate from my phone Gboard setup — the laptop is still using the default Windows IME for English, just with the US International layout on top. I need both language setups because I'm studying both Japanese on my phone and Spanish through my laptop for different courses this semester."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for the update! I've noted your laptop setup: Windows default IME with the US International keyboard layout, configured on April 1st for typing accented Spanish characters. That's a smart separation — Japanese practice through Gboard on your phone, and Spanish through the US International layout on your laptop. Having dedicated input methods for each language on different devices probably helps you mentally switch contexts too. So your current device-specific language setup is: phone has Gboard with English primary and Japanese secondary via the globe key, and laptop has Windows IME with US International layout for Spanish. I'll keep these tracked separately so there's no confusion between the two platforms."
+        },
+        {
+          "role": "user",
+          "content": "Exactly, you've got it. Now here's the main update I wanted to share — I just changed my keyboard height back to medium about a week ago. I realized the tall setting was causing me to mistype more, not less, so I reverted. My thumbs had to stretch further on the tall layout and it was actually making things worse. Medium seems to be the sweet spot for my hand size and typing style. I'm pretty confident this is where I want to keep it now, at least for regular daily texting and typing on my phone."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really interesting discovery — sometimes bigger isn't better when it comes to keyboard sizing. I've updated your Gboard keyboard height from tall back to medium as of about a week ago. It makes sense that the tall layout would force your thumbs into less natural positions, especially during fast typing. The medium height gives you a good balance between key size and thumb reach without overextending. Your current Gboard settings are now: medium keyboard height, dark gray theme, emoji suggestions bar off, Japanese as secondary language, and English as primary. On the laptop side, you've got the US International layout for Spanish. Everything is tracked and up to date. Let me know if anything else changes."
+        },
+        {
+          "role": "user",
+          "content": "Thanks. You know, it's funny how much time I've spent tweaking keyboard settings over the past couple months. Between SwiftKey dying on me, switching to Gboard, adjusting the height twice, adding Japanese, and setting up the laptop for Spanish — it's been quite the journey. My friend Mei mentioned she uses RIME input method on her Linux machine for Chinese and loves the customizability. I thought that was cool but I don't need Chinese input myself. I'm happy with my current setup across both devices now."
+        },
+        {
+          "role": "assistant",
+          "content": "It really has been quite the input method odyssey! But honestly, taking the time to dial in your keyboard settings pays off in daily comfort and efficiency — you use your keyboard more than almost any other tool on your devices. RIME is indeed very popular among Chinese-language Linux users for its deep customization options, so I can see why Mei enjoys it. But since you don't need Chinese input, your current dual-device setup sounds well optimized for your actual needs. You've got Gboard handling English and Japanese on your phone with your preferred minimalist configuration, and Windows IME with US International covering Spanish on the laptop. Solid foundation for your language studies this semester."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. One more thing I want to mention — I started using Gboard's built-in translator feature occasionally when I'm reading Japanese messages. It's not perfect but it helps me check my comprehension without switching apps. I discovered it by accident while exploring the toolbar, which I appreciate because I like tools that let me find features organically rather than pushing notifications about them. That preference for non-pushy, discoverable features is really important to me across all my apps, not just keyboards."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a great find! Gboard's built-in translator is one of those hidden gems that many people don't even know about. It's perfect for your Japanese study workflow — being able to check translations inline without app-switching keeps you in the flow of the conversation. And I completely understand your preference for organic feature discovery over aggressive prompts and notifications. It aligns with your overall minimalist philosophy: clean interfaces that reward exploration without demanding attention. I've noted that preference as a general principle across your apps. Your setup really does reflect a consistent design philosophy — minimal visual clutter, maximum functional depth, and features that surface naturally when you need them rather than interrupting you when you don't."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Recency trap with tentative short height; adversarial injection of Fleksy tall setting; conversation continues on other topics",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, quick question — I was looking at some keyboard comparison articles and one of them mentioned that Gboard's medium height is roughly equivalent to SwiftKey's default height. That's interesting because I never felt like SwiftKey's default was too small back when I used it. It kind of validates my choice to stick with medium on Gboard. Anyway, I wanted to ask you something about my Japanese input setup. How long has it been since I added Japanese to my Gboard? I'm trying to figure out if I should sign up for the next level of my Japanese course."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a great observation about the height equivalence between Gboard's medium and SwiftKey's default — it makes sense that medium feels natural to you since you were comfortable with SwiftKey's sizing for over a year. Regarding your Japanese input timeline: you mentioned adding Japanese as a secondary language in Gboard around the second week of April. So depending on the current date, it's been roughly a few weeks to a couple of months since you set that up. If you've been actively practicing hiragana and katakana input during that entire period through texting with friends, that's a solid foundation of daily immersion. That consistent practice would definitely support moving to the next level of your Japanese course."
+        },
+        {
+          "role": "user",
+          "content": "That's helpful, thanks. Also, I was curious — my coworker David told me he recently configured Fleksy with the tall keyboard height and really likes it for gesture typing. He said the extra vertical space makes swipe gestures more accurate on Fleksy specifically. I thought that was interesting since tall didn't work well for me on Gboard, but I guess different apps handle the geometry differently. David's been on a real keyboard optimization kick lately, trying all sorts of configurations across different apps."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really interesting comparison! You're absolutely right that different keyboard apps can handle the same height setting very differently. Fleksy and Gboard have different key spacing algorithms, gesture recognition zones, and touch target calculations, so a tall setting on Fleksy might distribute the extra space in a way that genuinely improves swipe accuracy, whereas on Gboard it stretched your thumb reach uncomfortably. It sounds like David's finding his sweet spot with Fleksy's tall layout, which is great for him. The key takeaway is that keyboard height preferences aren't universal — they depend on the specific app's implementation, your hand size, your typing style, and whether you primarily tap or swipe. Your medium Gboard setup clearly works best for your particular combination of factors."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, that makes sense. Speaking of David, he actually showed me something interesting today. My coworker David showed me his Gboard set to short height and it looked really compact and efficient. He confirmed it works great for one-handed typing. I'm going to switch mine to short this weekend. He was demoing it on his phone and the amount of screen space you get back is impressive. It would give me even more room for the text area, which I know I care about a lot given that I already turned off the emoji bar for that exact reason."
+        },
+        {
+          "role": "assistant",
+          "content": "Oh interesting, so David has been experimenting with both Fleksy at tall and Gboard at short! The short height on Gboard would definitely maximize your screen real estate, which aligns with your preference for seeing more of the text area. And you make a good point about consistency with your emoji bar decision — both changes serve the same goal of reclaiming vertical space. That said, you've already been through the medium-to-tall-and-back journey, so you know how important it is to actually test a height setting for a few days of real typing before committing. If you do switch to short this weekend, maybe give it a full week of daily use before deciding whether to keep it. Your current medium setting has been working well, so there's no rush."
+        },
+        {
+          "role": "user",
+          "content": "Good advice. I'll try it out and see how it goes. Changing topics a bit — I've been thinking about whether I should add Korean as another secondary language in Gboard. A few of my Japanese study friends also study Korean and they've been sharing some beginner resources with me. But honestly I don't want to overload my language toggle with too many options right now. I think sticking with just English and Japanese on my phone is the right call for this semester, and keeping Spanish on the laptop through the US International layout keeps things clean and separated."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a very sensible decision. Adding too many languages to your Gboard toggle could make switching between them cumbersome, especially mid-conversation. The globe key toggle works smoothly with two languages, but with three or more it can become a mini-navigation task every time you want to switch. Your current separation strategy is elegant: English and Japanese on the phone through Gboard, and Spanish on the laptop through the US International layout. Each device has a focused language pair, which reduces cognitive switching overhead and keeps your input methods streamlined. If you do decide to pick up Korean later, you could always add it then — Gboard makes it easy to add and remove languages. But for this semester, keeping things minimal and focused is the right approach given your preference for clean, uncluttered setups."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "I've mentioned my Gboard keyboard height a few times across our conversations. Can you summarize what I told you about it — which values I mentioned and when?",
+      "expected_answer": "You initially set your Gboard keyboard height to medium when you first installed Gboard in early March. About three weeks later, you changed it to tall because you kept hitting the wrong keys. Then about a week ago you changed it back to medium because the tall setting was actually causing more mistypes. You also mentioned that your coworker David showed you the short height setting and you said you were thinking about trying short over the weekend, but you hadn't committed to that change yet.",
+      "gold_memory_state": "Gboard keyboard height: medium (confirmed). History: medium → tall → medium (all confirmed). Tentative consideration of short mentioned but not adopted.",
+      "judge_rubric": {
+        "must_include": [
+          "medium initially",
+          "changed to tall",
+          "reverted to medium",
+          "mentioned short or considering short"
+        ],
+        "acceptable_paraphrases": [
+          "went back to medium",
+          "switched back to medium",
+          "returned to medium"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming short is the current setting",
+          "claiming tall is the current setting"
+        ],
+        "harmless_extra": [
+          "mentioning the reasons for each change",
+          "mentioning David",
+          "mentioning the timeline details"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats tall or short as the current confirmed setting.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I set my Gboard keyboard height to medium when I first installed it back in early March"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I bumped it up to tall about three weeks after switching to Gboard because I kept hitting the wrong keys on the smaller layout"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I just changed my keyboard height back to medium about a week ago. I realized the tall setting was causing me to mistype more, not less, so I reverted"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My coworker David showed me his Gboard set to short height and it looked really compact and efficient. He confirmed it works great for one-handed typing. I'm going to switch mine to short this weekend"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "I've mentioned my Gboard keyboard height a few times across our conversations. Can you summarize what I told you about it — which values I mentioned and when?",
+      "expected_answer": "You initially set your Gboard keyboard height to medium when you first installed Gboard in early March. About three weeks later, you changed it to tall because you kept hitting the wrong keys. Then about a week ago you changed it back to medium because the tall setting was actually causing more mistypes. You also mentioned that your coworker David showed you the short height setting and you said you were thinking about trying short over the weekend, but you hadn't committed to that change yet.",
+      "gold_memory_state": "Gboard keyboard height: medium (confirmed). History: medium → tall → medium (all confirmed). Tentative consideration of short mentioned but not adopted.",
+      "judge_rubric": {
+        "must_include": [
+          "medium initially",
+          "changed to tall",
+          "reverted to medium",
+          "mentioned short or considering short"
+        ],
+        "acceptable_paraphrases": [
+          "went back to medium",
+          "switched back to medium",
+          "returned to medium"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming short is the current setting",
+          "claiming tall is the current setting"
+        ],
+        "harmless_extra": [
+          "mentioning the reasons for each change",
+          "mentioning David",
+          "mentioning the timeline details"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats tall or short as the current confirmed setting.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I set my Gboard keyboard height to medium when I first installed it back in early March"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I bumped it up to tall about three weeks after switching to Gboard because I kept hitting the wrong keys on the smaller layout"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I just changed my keyboard height back to medium about a week ago. I realized the tall setting was causing me to mistype more, not less, so I reverted"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My coworker David showed me his Gboard set to short height and it looked really compact and efficient. He confirmed it works great for one-handed typing. I'm going to switch mine to short this weekend"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When I talked about switching to a different height setting after seeing my coworker's phone, which of my keyboard configurations would that apply to? Would it also affect the keyboard layout I use on my laptop?",
+      "expected_answer": "That height change consideration applies only to your Gboard keyboard height setting on your phone. It does not affect your laptop's Windows keyboard layout, which is set to US International for Spanish — that is a completely separate configuration on a different device.",
+      "gold_memory_state": "Gboard keyboard height (phone): medium (confirmed), with tentative short consideration. Laptop Windows keyboard layout: US International (confirmed, unaffected).",
+      "judge_rubric": {
+        "must_include": [
+          "Gboard keyboard height on phone",
+          "laptop layout is separate and unaffected"
+        ],
+        "acceptable_paraphrases": [
+          "only applies to the phone keyboard",
+          "does not change the laptop setup"
+        ],
+        "must_not_include": [
+          "laptop layout changed",
+          "US International affected"
+        ],
+        "harmful_extra": [
+          "claiming the laptop keyboard height also changed",
+          "merging phone and laptop keyboard settings into one record"
+        ],
+        "harmless_extra": [
+          "mentioning US International by name",
+          "mentioning Spanish coursework"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My coworker David showed me his Gboard set to short height and it looked really compact and efficient. He confirmed it works great for one-handed typing. I'm going to switch mine to short this weekend"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "On my laptop I set the Windows keyboard layout to US International on April 1st so I can type accented characters for my Spanish coursework"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When I talked about switching to a different height setting after seeing my coworker's phone, which of my keyboard configurations would that apply to? Would it also affect the keyboard layout I use on my laptop?",
+      "expected_answer": "That height change consideration applies only to your Gboard keyboard height setting on your phone. It does not affect your laptop's Windows keyboard layout, which is set to US International for Spanish — that is a completely separate configuration on a different device.",
+      "gold_memory_state": "Gboard keyboard height (phone): medium (confirmed), with tentative short consideration. Laptop Windows keyboard layout: US International (confirmed, unaffected).",
+      "judge_rubric": {
+        "must_include": [
+          "Gboard keyboard height on phone",
+          "laptop layout is separate and unaffected"
+        ],
+        "acceptable_paraphrases": [
+          "only applies to the phone keyboard",
+          "does not change the laptop setup"
+        ],
+        "must_not_include": [
+          "laptop layout changed",
+          "US International affected"
+        ],
+        "harmful_extra": [
+          "claiming the laptop keyboard height also changed",
+          "merging phone and laptop keyboard settings into one record"
+        ],
+        "harmless_extra": [
+          "mentioning US International by name",
+          "mentioning Spanish coursework"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My coworker David showed me his Gboard set to short height and it looked really compact and efficient. He confirmed it works great for one-handed typing. I'm going to switch mine to short this weekend"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "On my laptop I set the Windows keyboard layout to US International on April 1st so I can type accented characters for my Spanish coursework"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "If I need to tell a friend which Gboard keyboard height I'm using right now so they can match my setup, which of these should I tell them?",
+      "candidate_options": [
+        "medium",
+        "tall",
+        "short",
+        "extra-tall"
+      ],
+      "expected_answer": "medium",
+      "distractor_rationale": "same-value-different-target: 'tall' is David's Fleksy keyboard height setting, not the user's current Gboard setting; it is also the user's own stale Gboard value. assistant echo: 'extra-tall' was never mentioned by the user but could be confused with 'tall' from the assistant's summary of settings. 'short' is the tentative value the user considered but never confirmed adopting — this is the recency trap distractor.",
+      "gold_memory_state": "Gboard keyboard height: medium (confirmed after revert from tall). Short was only tentatively considered for a future weekend trial, never confirmed as adopted.",
+      "judge_rubric": {
+        "must_include": [
+          "medium"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "tall",
+          "short",
+          "extra-tall"
+        ],
+        "harmful_extra": [
+          "selecting short because it was the most recently mentioned value",
+          "selecting tall because it was an intermediate setting"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects 'tall' (stale prior value) or 'short' (tentative, never confirmed). The recency trap is triggered if the model selects 'short' because it was mentioned most recently.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I just changed my keyboard height back to medium about a week ago. I realized the tall setting was causing me to mistype more, not less, so I reverted"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My coworker David showed me his Gboard set to short height and it looked really compact and efficient. He confirmed it works great for one-handed typing. I'm going to switch mine to short this weekend"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "If I need to tell a friend which Gboard keyboard height I'm using right now so they can match my setup, which of these should I tell them?",
+      "candidate_options": [
+        "medium",
+        "tall",
+        "short",
+        "extra-tall"
+      ],
+      "expected_answer": "medium",
+      "distractor_rationale": "same-value-different-target: 'tall' is David's Fleksy keyboard height setting, not the user's current Gboard setting; it is also the user's own stale Gboard value. assistant echo: 'extra-tall' was never mentioned by the user but could be confused with 'tall' from the assistant's summary of settings. 'short' is the tentative value the user considered but never confirmed adopting — this is the recency trap distractor.",
+      "gold_memory_state": "Gboard keyboard height: medium (confirmed after revert from tall). Short was only tentatively considered for a future weekend trial, never confirmed as adopted.",
+      "judge_rubric": {
+        "must_include": [
+          "medium"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "tall",
+          "short",
+          "extra-tall"
+        ],
+        "harmful_extra": [
+          "selecting short because it was the most recently mentioned value",
+          "selecting tall because it was an intermediate setting"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects 'tall' (stale prior value) or 'short' (tentative, never confirmed). The recency trap is triggered if the model selects 'short' because it was mentioned most recently.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I just changed my keyboard height back to medium about a week ago. I realized the tall setting was causing me to mistype more, not less, so I reverted"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My coworker David showed me his Gboard set to short height and it looked really compact and efficient. He confirmed it works great for one-handed typing. I'm going to switch mine to short this weekend"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I'm writing a quick guide for a friend who wants to replicate my exact phone keyboard setup for both typing comfort and language practice. Draft a short summary of the Gboard settings they should configure, including the height, secondary language, and which device handles which language study workflow.",
+      "expected_answer": "Your friend should configure Gboard with medium keyboard height, add Japanese as a secondary input language accessible via the globe key toggle, and use this phone setup for English and Japanese. Spanish language input is handled separately on your laptop using the US International keyboard layout through Windows IME, not through Gboard on the phone.",
+      "application_probe_type": "multi_hop_derivation",
+      "gold_memory_state": "Gboard keyboard height: medium (confirmed). Gboard secondary language: Japanese (confirmed). Laptop keyboard layout: US International for Spanish (confirmed, separate device). Tentative short height consideration is not adopted and should not appear in the guide.",
+      "judge_rubric": {
+        "must_include": [
+          "medium keyboard height",
+          "Japanese as secondary language",
+          "laptop handles Spanish with US International layout"
+        ],
+        "acceptable_paraphrases": [
+          "medium height",
+          "Japanese secondary input",
+          "US International on laptop for Spanish"
+        ],
+        "must_not_include": [
+          "short keyboard height as current setting",
+          "tall keyboard height as current setting"
+        ],
+        "harmful_extra": [
+          "recommending short height",
+          "recommending tall height",
+          "saying Spanish is on the phone",
+          "including tentative short as the setting to use"
+        ],
+        "harmless_extra": [
+          "mentioning the globe key toggle",
+          "mentioning dark gray theme",
+          "mentioning emoji bar is off",
+          "mentioning the phone vs laptop separation"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the guide recommends tall (stale) or short (tentative) as the keyboard height.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's Gboard keyboard height was reverted to medium and confirmed as the current setting.",
+        "Fact 2: The user added Japanese as a secondary input language in Gboard around mid-April, and it remains active.",
+        "Fact 3: The user's laptop uses the US International keyboard layout for Spanish coursework, separate from the phone.",
+        "Inference: A setup guide must combine the confirmed phone Gboard settings (medium height + Japanese) with the device-separation strategy (Spanish on laptop only), and must exclude the tentative short height that was never adopted."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I just changed my keyboard height back to medium about a week ago. I realized the tall setting was causing me to mistype more, not less, so I reverted"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I added Japanese as a secondary input language in Gboard around the second week of April. I'm doing some casual Japanese study and the globe key lets me toggle between English and Japanese"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "On my laptop I set the Windows keyboard layout to US International on April 1st so I can type accented characters for my Spanish coursework"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I'm writing a quick guide for a friend who wants to replicate my exact phone keyboard setup for both typing comfort and language practice. Draft a short summary of the Gboard settings they should configure, including the height, secondary language, and which device handles which language study workflow.",
+      "expected_answer": "Your friend should configure Gboard with medium keyboard height, add Japanese as a secondary input language accessible via the globe key toggle, and use this phone setup for English and Japanese. Spanish language input is handled separately on your laptop using the US International keyboard layout through Windows IME, not through Gboard on the phone.",
+      "application_probe_type": "multi_hop_derivation",
+      "gold_memory_state": "Gboard keyboard height: medium (confirmed). Gboard secondary language: Japanese (confirmed). Laptop keyboard layout: US International for Spanish (confirmed, separate device). Tentative short height consideration is not adopted and should not appear in the guide.",
+      "judge_rubric": {
+        "must_include": [
+          "medium keyboard height",
+          "Japanese as secondary language",
+          "laptop handles Spanish with US International layout"
+        ],
+        "acceptable_paraphrases": [
+          "medium height",
+          "Japanese secondary input",
+          "US International on laptop for Spanish"
+        ],
+        "must_not_include": [
+          "short keyboard height as current setting",
+          "tall keyboard height as current setting"
+        ],
+        "harmful_extra": [
+          "recommending short height",
+          "recommending tall height",
+          "saying Spanish is on the phone",
+          "including tentative short as the setting to use"
+        ],
+        "harmless_extra": [
+          "mentioning the globe key toggle",
+          "mentioning dark gray theme",
+          "mentioning emoji bar is off",
+          "mentioning the phone vs laptop separation"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the guide recommends tall (stale) or short (tentative) as the keyboard height.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's Gboard keyboard height was reverted to medium and confirmed as the current setting.",
+        "Fact 2: The user added Japanese as a secondary input language in Gboard around mid-April, and it remains active.",
+        "Fact 3: The user's laptop uses the US International keyboard layout for Spanish coursework, separate from the phone.",
+        "Inference: A setup guide must combine the confirmed phone Gboard settings (medium height + Japanese) with the device-separation strategy (Spanish on laptop only), and must exclude the tentative short height that was never adopted."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I just changed my keyboard height back to medium about a week ago. I realized the tall setting was causing me to mistype more, not less, so I reverted"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I added Japanese as a secondary input language in Gboard around the second week of April. I'm doing some casual Japanese study and the globe key lets me toggle between English and Japanese"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "On my laptop I set the Windows keyboard layout to US International on April 1st so I can type accented characters for my Spanish coursework"
+        }
+      ]
+    }
+  ]
+}

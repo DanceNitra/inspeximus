@@ -1,0 +1,965 @@
+{
+  "target_fact": "User's Thai food DoorDash pickup code, tracked through multiple corrections and changes",
+  "operation_type": "TrajectoryOps",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "inpost_pickup_code",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I had a package at the InPost locker on Greenfield Ave around March 3rd and the pickup code was 7724"
+      },
+      "target": {
+        "target_id": "inpost_pickup_code",
+        "target_name": "InPost locker pickup code"
+      },
+      "old_value": null,
+      "new_value": "7724",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "the pickup code was 7724"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I almost always use the InPost locker on Greenfield Ave, never the one by the train station"
+      },
+      "target": {
+        "target_id": "preferred_locker_location",
+        "target_name": "preferred InPost locker location"
+      },
+      "old_value": null,
+      "new_value": "Greenfield Ave",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I almost always use the InPost locker on Greenfield Ave, never the one by the train station"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "inpost_pickup_code",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I just realized I gave you the wrong InPost code earlier. It wasn't 7724, it was actually 7742"
+      },
+      "target": {
+        "target_id": "inpost_pickup_code",
+        "target_name": "InPost locker pickup code"
+      },
+      "old_value": "7724",
+      "new_value": "7742",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "It wasn't 7724, it was actually 7742"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "inpost_pickup_code",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 3,
+        "quote": "I just checked my email and it looks like the InPost code might have been 7740. The confirmation email subject line says 7740"
+      },
+      "target": {
+        "target_id": "inpost_pickup_code",
+        "target_name": "InPost locker pickup code"
+      },
+      "old_value": "7742",
+      "new_value": "7740",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "it looks like the InPost code might have been 7740. The confirmation email subject line says 7740"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "inpost_pickup_code",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 7,
+        "quote": "I opened the actual email body and the real code was 7742 after all. The subject line was just a typo from InPost's system"
+      },
+      "target": {
+        "target_id": "inpost_pickup_code",
+        "target_name": "InPost locker pickup code"
+      },
+      "old_value": "7742",
+      "new_value": "7742",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "the real code was 7742 after all. The subject line was just a typo from InPost's system"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish initial facts: InPost pickup code and preferred locker location",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I need to keep track of a few things. I had a package at the InPost locker on Greenfield Ave around March 3rd and the pickup code was 7724. I almost let it expire because those lockers only give you 48 hours. Can you note that down for me? I want to remember these codes in case I need to reference the transaction later."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it! I've noted that your InPost locker pickup code from around March 3rd was 7724, and that the locker was on Greenfield Ave. That's a tight window with the 48-hour expiration — glad you got to it in time. I'll keep this on file so you can reference it if needed for any transaction disputes or delivery confirmations. If you have any other codes or details you'd like me to track, just let me know and I'll add them to your notes."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, and please make a note that I almost always use the InPost locker on Greenfield Ave, never the one by the train station. That's my go-to spot because it's right near my office and I can grab packages during my lunch break. It's just more convenient and I've been using it consistently for the past year or so."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — your preferred InPost locker location is the one on Greenfield Ave near your office, not the one by the train station. That makes a lot of sense for lunchtime pickups. I'll keep that as your default location preference so if you ever need me to help with delivery instructions or locker reservations, I'll know to point to Greenfield Ave. It's helpful to have that pattern documented since you've been consistent with it for about a year now."
+        },
+        {
+          "role": "user",
+          "content": "Also, my mom called me around mid-March because she had a pharmacy verification code — it was 3058 — and she needed help with the kiosk. I walked her through it on the phone but I was kind of short with her because I'd had a bad day at work. I felt guilty about it for a few days afterward. Just noting that for context."
+        },
+        {
+          "role": "assistant",
+          "content": "I've noted that your mom's pharmacy verification code was 3058 from mid-March, and that you helped her over the phone with the kiosk process. I also understand that you felt guilty afterward for being short with her during the call after a rough work day. That kind of thing can definitely linger. It sounds like you care a lot about how you treat her, which says a lot. If you ever want to brainstorm a nice gesture to make it up to her, I'm happy to help with ideas."
+        },
+        {
+          "role": "user",
+          "content": "Thanks, I appreciate that. One more thing — my coworker Jenna was complaining last Tuesday that her gym locker combo resets every visit and hers was 2276 that day. I thought that was annoying on her behalf. I personally much prefer systems that use push notifications instead of timed digit codes. Way less stressful than racing against a clock."
+        },
+        {
+          "role": "assistant",
+          "content": "That does sound frustrating for Jenna — having to memorize a new gym locker combo every single visit with 2276 being the latest one. I can see why you'd find timed digit codes stressful in general. Your preference for push notification approval makes sense since it removes that time-pressure element entirely. You just tap to confirm and you're done. I'll keep that preference in mind. If you ever need recommendations for apps or services, I'll prioritize ones that offer push-based authentication over timed codes whenever possible."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "user corrects the InPost code from 7724 to 7742; additional context about locker expiration window",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, quick correction. I just realized I gave you the wrong InPost code earlier. It wasn't 7724, it was actually 7742. I mixed up the last two digits. I remember now because 42 is my lucky number and I noticed it when I punched it into the locker keypad. Sorry about the confusion on that one."
+        },
+        {
+          "role": "assistant",
+          "content": "No problem at all — I've updated your InPost locker pickup code from 7724 to 7742. The lucky number 42 is a great mnemonic, so that makes sense as a way to remember it. Your records now show the code as 7742 for the Greenfield Ave InPost locker pickup from around March 3rd. Thanks for catching that and letting me know. If any other details need correcting, just flag them whenever you think of it and I'll get them sorted right away."
+        },
+        {
+          "role": "user",
+          "content": "Perfect. You know, I was thinking about how these temporary codes work. The InPost lockers give you 48 hours, but my bank's two-factor codes expire in 30 seconds. I got one recently — 882471 — and I couldn't type it in fast enough. Had to request a whole new code. That 30-second window is brutal for a six-digit code."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a huge range in expiration windows — 48 hours for a physical locker versus 30 seconds for a bank authentication code. I can see why 882471 slipped through your fingers with that kind of time pressure on a six-digit string. It's especially frustrating when you have to restart the whole process. Between that experience and the gym combo situation Jenna described, it really reinforces your preference for push notification approvals. Those eliminate the typing-speed bottleneck entirely and let you authenticate at your own pace."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. Oh, I also wanted to mention that I did a Target click-and-collect pickup last week or maybe the week before. The code was 4821. I love doing pickup because I don't have to deal with the crowds or the fluorescent lighting inside the store. Just pull up, tap the code, and grab the bag. Super easy."
+        },
+        {
+          "role": "assistant",
+          "content": "I've noted your Target click-and-collect code as 4821 from roughly one to two weeks ago. Your preference for curbside pickup over going inside makes a lot of sense — avoiding crowds and harsh fluorescent lighting while still getting your items quickly is a real quality-of-life win. It pairs nicely with your general approach of minimizing friction and sensory overload in these kinds of transactions. Between the InPost locker pickups and Target click-and-collect, you've got a solid low-stress retrieval system going."
+        },
+        {
+          "role": "user",
+          "content": "Ha, yeah I guess I do have a pattern there. The Thai food DoorDash pickup code from last month was 941 by the way. I initially thought it was 914 but then I remembered I associated it with my apartment number 149 flipped upside down, so it's definitely 941. That mnemonic trick actually works really well for me.\n\nSpeaking of Derek, his old condo gate code was 5590 but that's completely expired now. He changed it because delivery drivers were sharing it around. So you can disregard that one entirely — no need to keep it on file. I just mentioned it for context but it's not useful anymore and I don't want outdated codes cluttering up my notes."
+        },
+        {
+          "role": "assistant",
+          "content": "Nice mnemonic! I've noted the DoorDash Thai food pickup code as 941, linked to your apartment number 149 reversed. That's a clever memory technique — anchoring codes to numbers you already know well. So your running list now includes the InPost code 7742, Target click-and-collect 4821, and DoorDash Thai pickup 941. Plus your mom's pharmacy code 3058 and the expired gate code for Derek's condo. You're building up quite a collection of temporary credentials. Let me know if you need to reference any of them.\n\nUnderstood — I've removed Derek's old condo gate code 5590 from your active records since it's been changed and is no longer valid. Makes sense that he'd update it if delivery drivers were circulating it. Your current active codes on file are: InPost locker 7742, Target click-and-collect 4821, DoorDash Thai pickup 941, and your mom's pharmacy verification 3058. The bank two-factor code 882471 was a one-time use so I'm treating that as expired as well. Let me know if anything else needs updating."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "tentative InPost code change appears then is resolved back to 7742; adversarial injection via assistant echo of third-party code",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, so I was organizing my email inbox today and found a bunch of old delivery notifications. I wanted to double-check a few things with you. First off, what do you have on file for my InPost pickup code from early March? I want to make sure my records match what's in my email before I archive everything and lose track of these confirmations."
+        },
+        {
+          "role": "assistant",
+          "content": "Sure! Based on our previous conversations, I have your InPost locker pickup code from around March 3rd recorded as 7742. That's for the Greenfield Ave location near your office. You originally mentioned 7724 but corrected it to 7742 because 42 is your lucky number and you remembered punching it into the keypad. I also have your preferred locker location noted as Greenfield Ave rather than the train station one. Does that match what you're seeing in your email confirmations?"
+        },
+        {
+          "role": "user",
+          "content": "Hmm, that's interesting. I just checked my email and it looks like the InPost code might have been 7740. The confirmation email subject line says 7740. That's weird because I was so sure it was 7742. Maybe I misread the keypad screen that day? Let me look more carefully at this email before I commit to changing it."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a good idea to look more carefully before making any changes. Email subject lines can sometimes be auto-generated with errors, especially from automated delivery systems. It's also possible the confirmation was for a different pickup or that the subject line got truncated. Your memory of physically typing 7742 into the keypad and associating it with your lucky number 42 is pretty strong evidence. Take your time reviewing the full email body and let me know what you find — I'll hold off on updating anything until you're sure."
+        },
+        {
+          "role": "user",
+          "content": "Good call. While I'm looking, I also noticed something funny — my coworker Jenna forwarded me a screenshot of her latest gym locker assignment and the code was 7741 this time. She was joking that we have almost-matching numbers since mine was in the 77-something range too. Small world. Anyway, I'm still reading through this InPost email carefully."
+        },
+        {
+          "role": "assistant",
+          "content": "Ha, that is a funny coincidence with Jenna's gym locker code being 7741 — just one digit off from your InPost range. Those near-matches can actually make things confusing though, so it's good you're being thorough about verifying your own code. With 7740 from the email subject, 7742 from your memory, and now 7741 floating around from Jenna's gym, there are a lot of similar numbers in play. Take your time with the full email body and we'll make sure your records are accurate before you archive everything."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, there are way too many similar numbers right now. Jenna's 7741 is definitely not mine though, that's her gym thing. Let me focus on my InPost situation. I'm scrolling through the email now and I can see the full confirmation details loading. Give me just a second to read the actual body text rather than just the subject line preview.\n\nOkay, I opened the actual email body and the real code was 7742 after all. The subject line was just a typo from InPost's system. The body clearly says pickup code 7742, Greenfield Ave location, March 3rd. So my memory was right the whole time. Glad I didn't rush to change it based on just the subject line. You can keep everything as is in my records."
+        },
+        {
+          "role": "assistant",
+          "content": "Take your time — the full email body should have the definitive code since those InPost confirmation emails typically include the exact pickup code along with the locker location and expiration time. The subject line might have been a system glitch or could reference a different transaction. Once you see the code in the body text alongside the Greenfield Ave location and the March 3rd date, that should settle it. I'll wait for your confirmation before making any changes to your records.\n\nGreat detective work! Your records stay as they are — InPost pickup code 7742 at the Greenfield Ave location from March 3rd. Your lucky-number-42 mnemonic really did serve you well here. It's a good reminder that email subject lines aren't always reliable and it's worth checking the full message body before making corrections. I'm glad you took the time to verify rather than rushing. Your active codes remain: InPost 7742, Target click-and-collect 4821, DoorDash Thai pickup 941, and your mom's pharmacy verification 3058. Everything's clean and confirmed."
+        }
+      ]
+    }
+  ],
+  "state_checkpoints": [
+    {
+      "checkpoint_id": "c1",
+      "description": "After segment 1: InPost pickup code = 7724 (confirmed), preferred locker location = Greenfield Ave (confirmed). Mom's pharmacy code 3058 noted as context. Jenna's gym code 2276 noted as third-party."
+    },
+    {
+      "checkpoint_id": "c2",
+      "description": "After segment 2: InPost pickup code updated to 7742 (confirmed). Preferred locker location still Greenfield Ave. Target code 4821 and DoorDash code 941 noted. Derek's gate code 5590 mentioned as expired/disregarded."
+    },
+    {
+      "checkpoint_id": "c3",
+      "description": "After segment 3: InPost pickup code tentatively questioned as 7740 (tentative, from email subject line) but then confirmed back to 7742 after checking email body. Jenna's gym code 7741 appeared as adversarial near-match distractor. Final confirmed InPost code = 7742. Preferred locker = Greenfield Ave."
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Walk me through the key things I told you about my package retrieval experiences — the codes, locations, and any back-and-forth about getting the details right. What were the main points I shared?",
+      "expected_answer": "You initially shared a four-digit retrieval code of 7724 for a package at the Greenfield Ave location around March 3rd. You also noted that Greenfield Ave is your preferred location, not the one by the train station. You later corrected the code to 7742, explaining that 42 is your lucky number. You then saw 7740 in an email subject line and questioned whether the code was wrong, but after checking the full email body you confirmed 7742 was correct all along.",
+      "gold_memory_state": "InPost pickup code = 7742 (confirmed after correction chain). Preferred locker location = Greenfield Ave (confirmed). The tentative value 7740 was rejected as a system typo.",
+      "judge_rubric": {
+        "must_include": [
+          "7724 as original value",
+          "7742 as corrected/final value",
+          "Greenfield Ave",
+          "7740 appeared but was rejected"
+        ],
+        "acceptable_paraphrases": [
+          "lucky number 42",
+          "email subject line typo"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating 7740 is the final code",
+          "stating 7724 is still valid"
+        ],
+        "harmless_extra": [
+          "March 3rd date",
+          "48-hour expiration window",
+          "near the office",
+          "train station as non-preferred"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 7724 or 7740 is presented as the current valid code.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence of changes is misordered — e.g., placing the 7740 tentative check before the 7724→7742 correction.",
+        "final_state": "Fails if the final confirmed code is not 7742.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "the pickup code was 7724"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I almost always use the InPost locker on Greenfield Ave, never the one by the train station"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "It wasn't 7724, it was actually 7742"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "it looks like the InPost code might have been 7740. The confirmation email subject line says 7740"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "the real code was 7742 after all. The subject line was just a typo from InPost's system"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Walk me through the key things I told you about my package retrieval experiences — the codes, locations, and any back-and-forth about getting the details right. What were the main points I shared?",
+      "expected_answer": "You initially shared a four-digit retrieval code of 7724 for a package at the Greenfield Ave location around March 3rd. You also noted that Greenfield Ave is your preferred location, not the one by the train station. You later corrected the code to 7742, explaining that 42 is your lucky number. You then saw 7740 in an email subject line and questioned whether the code was wrong, but after checking the full email body you confirmed 7742 was correct all along.",
+      "gold_memory_state": "InPost pickup code = 7742 (confirmed after correction chain). Preferred locker location = Greenfield Ave (confirmed). The tentative value 7740 was rejected as a system typo.",
+      "judge_rubric": {
+        "must_include": [
+          "7724 as original value",
+          "7742 as corrected/final value",
+          "Greenfield Ave",
+          "7740 appeared but was rejected"
+        ],
+        "acceptable_paraphrases": [
+          "lucky number 42",
+          "email subject line typo"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating 7740 is the final code",
+          "stating 7724 is still valid"
+        ],
+        "harmless_extra": [
+          "March 3rd date",
+          "48-hour expiration window",
+          "near the office",
+          "train station as non-preferred"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 7724 or 7740 is presented as the current valid code.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence of changes is misordered — e.g., placing the 7740 tentative check before the 7724→7742 correction.",
+        "final_state": "Fails if the final confirmed code is not 7742.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "the pickup code was 7724"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I almost always use the InPost locker on Greenfield Ave, never the one by the train station"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "It wasn't 7724, it was actually 7742"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "it looks like the InPost code might have been 7740. The confirmation email subject line says 7740"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "the real code was 7742 after all. The subject line was just a typo from InPost's system"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've mentioned several four-digit codes from different services during our conversations. If I need to retrieve a parcel from my usual locker spot, which specific code applies to that, and does my coworker's gym-related number have anything to do with it?",
+      "expected_answer": "The code for your parcel retrieval at the Greenfield Ave locker is 7742. Your coworker Jenna's gym number (7741) is unrelated and belongs to a completely separate context — her rotating gym locker assignment.",
+      "gold_memory_state": "InPost pickup code = 7742 (confirmed, for Greenfield Ave). Preferred locker = Greenfield Ave. Jenna's gym code 7741 is a third-party value, not the user's. DoorDash code 941 and Target code 4821 are separate service codes.",
+      "judge_rubric": {
+        "must_include": [
+          "7742 as the parcel retrieval code",
+          "Jenna's number is unrelated"
+        ],
+        "acceptable_paraphrases": [
+          "Jenna's gym code is separate",
+          "7741 is not yours"
+        ],
+        "must_not_include": [
+          "7741 as the user's parcel code",
+          "7740 as the user's parcel code",
+          "7724 as the current parcel code"
+        ],
+        "harmful_extra": [
+          "conflating Jenna's gym code with the user's locker code",
+          "treating 7740 or 7724 as current"
+        ],
+        "harmless_extra": [
+          "mentioning Greenfield Ave location",
+          "mentioning March 3rd"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 7724 or 7740 is given as the current parcel retrieval code.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the final code is not 7742.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "It wasn't 7724, it was actually 7742"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "the real code was 7742 after all. The subject line was just a typo from InPost's system"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Jenna's 7741 is definitely not mine though, that's her gym thing"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've mentioned several four-digit codes from different services during our conversations. If I need to retrieve a parcel from my usual locker spot, which specific code applies to that, and does my coworker's gym-related number have anything to do with it?",
+      "expected_answer": "The code for your parcel retrieval at the Greenfield Ave locker is 7742. Your coworker Jenna's gym number (7741) is unrelated and belongs to a completely separate context — her rotating gym locker assignment.",
+      "gold_memory_state": "InPost pickup code = 7742 (confirmed, for Greenfield Ave). Preferred locker = Greenfield Ave. Jenna's gym code 7741 is a third-party value, not the user's. DoorDash code 941 and Target code 4821 are separate service codes.",
+      "judge_rubric": {
+        "must_include": [
+          "7742 as the parcel retrieval code",
+          "Jenna's number is unrelated"
+        ],
+        "acceptable_paraphrases": [
+          "Jenna's gym code is separate",
+          "7741 is not yours"
+        ],
+        "must_not_include": [
+          "7741 as the user's parcel code",
+          "7740 as the user's parcel code",
+          "7724 as the current parcel code"
+        ],
+        "harmful_extra": [
+          "conflating Jenna's gym code with the user's locker code",
+          "treating 7740 or 7724 as current"
+        ],
+        "harmless_extra": [
+          "mentioning Greenfield Ave location",
+          "mentioning March 3rd"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 7724 or 7740 is given as the current parcel retrieval code.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the final code is not 7742.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "It wasn't 7724, it was actually 7742"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "the real code was 7742 after all. The subject line was just a typo from InPost's system"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Jenna's 7741 is definitely not mine though, that's her gym thing"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "After all the back-and-forth about my parcel locker code, what's the number I should actually use if I need to reference that transaction?",
+      "expected_answer": "7742",
+      "gold_memory_state": "InPost pickup code final confirmed value = 7742. The tentative value 7740 (from an email subject-line typo) was investigated and rejected. The original value 7724 was superseded. Jenna's 7741 is a third-party gym code.",
+      "judge_rubric": {
+        "must_include": [
+          "7742"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "7740",
+          "7724",
+          "7741"
+        ],
+        "harmful_extra": [
+          "presenting 7740 as the final code",
+          "presenting 7724 as the final code",
+          "presenting 7741 as the user's code"
+        ],
+        "harmless_extra": [
+          "Greenfield Ave",
+          "March 3rd",
+          "lucky number 42"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model outputs 7724 (original superseded value) or 7740 (tentative value from email subject line that was rejected). The recency trap is 7740 — it appeared most recently as a candidate but was never adopted.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the final value is not 7742.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "It wasn't 7724, it was actually 7742"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "the real code was 7742 after all. The subject line was just a typo from InPost's system"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "After all the back-and-forth about my parcel locker code, what's the number I should actually use if I need to reference that transaction?",
+      "expected_answer": "7742",
+      "gold_memory_state": "InPost pickup code final confirmed value = 7742. The tentative value 7740 (from an email subject-line typo) was investigated and rejected. The original value 7724 was superseded. Jenna's 7741 is a third-party gym code.",
+      "judge_rubric": {
+        "must_include": [
+          "7742"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "7740",
+          "7724",
+          "7741"
+        ],
+        "harmful_extra": [
+          "presenting 7740 as the final code",
+          "presenting 7724 as the final code",
+          "presenting 7741 as the user's code"
+        ],
+        "harmless_extra": [
+          "Greenfield Ave",
+          "March 3rd",
+          "lucky number 42"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model outputs 7724 (original superseded value) or 7740 (tentative value from email subject line that was rejected). The recency trap is 7740 — it appeared most recently as a candidate but was never adopted.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the final value is not 7742.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "It wasn't 7724, it was actually 7742"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "the real code was 7742 after all. The subject line was just a typo from InPost's system"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to send a quick message to my mom explaining how to find and use my preferred parcel locker — include the location, the code from my March transaction, and the pickup deadline info I mentioned. Draft a short text message I could send her.",
+      "expected_answer": "Hey Mom! If you ever need to pick up a package for me, go to the locker on Greenfield Ave (it's near my office). The code for my March package is 7742. Just remember you only have 48 hours from when the package arrives to pick it up before it expires. Let me know if you need help with the keypad!",
+      "gold_memory_state": "InPost pickup code = 7742 (confirmed). Preferred locker location = Greenfield Ave (near office, not the train station one). Lockers have a 48-hour expiration window. Mom's pharmacy code 3058 is a separate fact. DoorDash code 941 and Target code 4821 are separate services.",
+      "judge_rubric": {
+        "must_include": [
+          "7742",
+          "Greenfield Ave",
+          "48 hours or 48-hour window"
+        ],
+        "acceptable_paraphrases": [
+          "two-day window",
+          "two days to pick up"
+        ],
+        "must_not_include": [
+          "7724",
+          "7740",
+          "7741",
+          "3058"
+        ],
+        "harmful_extra": [
+          "using 7724 or 7740 as the code",
+          "directing mom to the train station locker",
+          "including mom's pharmacy code in the message"
+        ],
+        "harmless_extra": [
+          "near the office",
+          "lunch break pickup",
+          "mentioning the keypad"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 7724 or 7740 appears as the code in the drafted message.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the code in the message is not 7742 or the location is not Greenfield Ave.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's preferred locker location is Greenfield Ave, near the office.",
+        "Fact 2: The confirmed parcel code after all corrections is 7742.",
+        "Fact 3: The lockers have a 48-hour expiration window.",
+        "Inference: Combining all three facts into a single text message requires selecting the correct final code (not 7724 or 7740), the correct location (not the train station), and the correct time constraint."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I almost always use the InPost locker on Greenfield Ave, never the one by the train station"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "those lockers only give you 48 hours"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "the real code was 7742 after all. The subject line was just a typo from InPost's system"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to send a quick message to my mom explaining how to find and use my preferred parcel locker — include the location, the code from my March transaction, and the pickup deadline info I mentioned. Draft a short text message I could send her.",
+      "expected_answer": "Hey Mom! If you ever need to pick up a package for me, go to the locker on Greenfield Ave (it's near my office). The code for my March package is 7742. Just remember you only have 48 hours from when the package arrives to pick it up before it expires. Let me know if you need help with the keypad!",
+      "gold_memory_state": "InPost pickup code = 7742 (confirmed). Preferred locker location = Greenfield Ave (near office, not the train station one). Lockers have a 48-hour expiration window. Mom's pharmacy code 3058 is a separate fact. DoorDash code 941 and Target code 4821 are separate services.",
+      "judge_rubric": {
+        "must_include": [
+          "7742",
+          "Greenfield Ave",
+          "48 hours or 48-hour window"
+        ],
+        "acceptable_paraphrases": [
+          "two-day window",
+          "two days to pick up"
+        ],
+        "must_not_include": [
+          "7724",
+          "7740",
+          "7741",
+          "3058"
+        ],
+        "harmful_extra": [
+          "using 7724 or 7740 as the code",
+          "directing mom to the train station locker",
+          "including mom's pharmacy code in the message"
+        ],
+        "harmless_extra": [
+          "near the office",
+          "lunch break pickup",
+          "mentioning the keypad"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 7724 or 7740 appears as the code in the drafted message.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the code in the message is not 7742 or the location is not Greenfield Ave.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's preferred locker location is Greenfield Ave, near the office.",
+        "Fact 2: The confirmed parcel code after all corrections is 7742.",
+        "Fact 3: The lockers have a 48-hour expiration window.",
+        "Inference: Combining all three facts into a single text message requires selecting the correct final code (not 7724 or 7740), the correct location (not the train station), and the correct time constraint."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I almost always use the InPost locker on Greenfield Ave, never the one by the train station"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "those lockers only give you 48 hours"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "the real code was 7742 after all. The subject line was just a typo from InPost's system"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed our entire conversation history about my parcel locker code, what would they see as the full sequence of values that came up, which ones were actually adopted at each point, and what's the final reliable number?",
+      "expected_answer": "The sequence was: (1) 7724 was initially provided and adopted as the first value. (2) You corrected it to 7742, explaining 42 is your lucky number — 7742 became the adopted value and 7724 was discarded. (3) You saw 7740 in an email subject line and raised it as a possible alternative, but this was only tentative and never adopted. (4) After reading the full email body, you confirmed the code was 7742 all along — the subject line was a system typo. The final reliable number is 7742.",
+      "gold_memory_state": "Full trajectory: 7724 (confirmed, step 1) → 7742 (confirmed correction, step 2) → 7740 (tentative, never adopted, step 3) → 7742 (reconfirmed, step 4). Final state = 7742.",
+      "judge_rubric": {
+        "must_include": [
+          "7724 as initial value",
+          "7742 as the correction",
+          "7740 as tentative/never adopted",
+          "7742 as the final reconfirmed value",
+          "four-step or four-state sequence"
+        ],
+        "acceptable_paraphrases": [
+          "7740 was only considered but rejected",
+          "subject line typo",
+          "email body confirmed 7742"
+        ],
+        "must_not_include": [
+          "7740 as an adopted value",
+          "7741 as part of the user's code trajectory"
+        ],
+        "harmful_extra": [
+          "including Jenna's 7741 in the user's code trajectory",
+          "saying 7740 was ever the active code"
+        ],
+        "harmless_extra": [
+          "lucky number 42 mnemonic",
+          "Greenfield Ave location",
+          "March 3rd date"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 7724 or 7740 is presented as currently valid.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence is misordered (e.g., placing 7740 before the 7724→7742 correction, or omitting a step).",
+        "final_state": "Fails if the final value is not 7742.",
+        "intermediate_state": "Fails if the model does not identify 7740 as tentative/never adopted, or if it omits the 7724→7742 correction step.",
+        "trajectory_provenance": "Fails if the model cannot attribute the tentative 7740 to the email subject line or the correction to the user's lucky-number mnemonic."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: User initially stated the code was 7724 (confirmed at that time).",
+        "Step 2: User corrected to 7742, citing lucky number 42 as mnemonic. 7724 became stale.",
+        "Step 3: User found 7740 in an email subject line and raised it as a tentative possibility. 7742 remained the operative value pending verification.",
+        "Step 4: User checked the email body and confirmed 7742 was correct. 7740 was rejected as a system typo in the subject line.",
+        "Inference: The trajectory has four states with one tentative fork (7740) that was never adopted. Final confirmed value = 7742."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "the pickup code was 7724"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "It wasn't 7724, it was actually 7742"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "it looks like the InPost code might have been 7740. The confirmation email subject line says 7740"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "the real code was 7742 after all. The subject line was just a typo from InPost's system"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed our entire conversation history about my parcel locker code, what would they see as the full sequence of values that came up, which ones were actually adopted at each point, and what's the final reliable number?",
+      "expected_answer": "The sequence was: (1) 7724 was initially provided and adopted as the first value. (2) You corrected it to 7742, explaining 42 is your lucky number — 7742 became the adopted value and 7724 was discarded. (3) You saw 7740 in an email subject line and raised it as a possible alternative, but this was only tentative and never adopted. (4) After reading the full email body, you confirmed the code was 7742 all along — the subject line was a system typo. The final reliable number is 7742.",
+      "gold_memory_state": "Full trajectory: 7724 (confirmed, step 1) → 7742 (confirmed correction, step 2) → 7740 (tentative, never adopted, step 3) → 7742 (reconfirmed, step 4). Final state = 7742.",
+      "judge_rubric": {
+        "must_include": [
+          "7724 as initial value",
+          "7742 as the correction",
+          "7740 as tentative/never adopted",
+          "7742 as the final reconfirmed value",
+          "four-step or four-state sequence"
+        ],
+        "acceptable_paraphrases": [
+          "7740 was only considered but rejected",
+          "subject line typo",
+          "email body confirmed 7742"
+        ],
+        "must_not_include": [
+          "7740 as an adopted value",
+          "7741 as part of the user's code trajectory"
+        ],
+        "harmful_extra": [
+          "including Jenna's 7741 in the user's code trajectory",
+          "saying 7740 was ever the active code"
+        ],
+        "harmless_extra": [
+          "lucky number 42 mnemonic",
+          "Greenfield Ave location",
+          "March 3rd date"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 7724 or 7740 is presented as currently valid.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence is misordered (e.g., placing 7740 before the 7724→7742 correction, or omitting a step).",
+        "final_state": "Fails if the final value is not 7742.",
+        "intermediate_state": "Fails if the model does not identify 7740 as tentative/never adopted, or if it omits the 7724→7742 correction step.",
+        "trajectory_provenance": "Fails if the model cannot attribute the tentative 7740 to the email subject line or the correction to the user's lucky-number mnemonic."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: User initially stated the code was 7724 (confirmed at that time).",
+        "Step 2: User corrected to 7742, citing lucky number 42 as mnemonic. 7724 became stale.",
+        "Step 3: User found 7740 in an email subject line and raised it as a tentative possibility. 7742 remained the operative value pending verification.",
+        "Step 4: User checked the email body and confirmed 7742 was correct. 7740 was rejected as a system typo in the subject line.",
+        "Inference: The trajectory has four states with one tentative fork (7740) that was never adopted. Final confirmed value = 7742."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "the pickup code was 7724"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "It wasn't 7724, it was actually 7742"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "it looks like the InPost code might have been 7740. The confirmation email subject line says 7740"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "the real code was 7742 after all. The subject line was just a typo from InPost's system"
+        }
+      ]
+    }
+  ]
+}

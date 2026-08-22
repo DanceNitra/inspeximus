@@ -1,0 +1,1008 @@
+{
+  "target_fact": "User's foreign language proficiency details including French B1 level, JLPT N3 pass, company certification deadline, and heritage Tagalog exposure",
+  "operation_type": "Forget",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "my current French level is B1, and I'm taking a course at Alliance Française downtown"
+      },
+      "target": {
+        "target_id": "french_proficiency_level",
+        "target_name": "current French CEFR proficiency level"
+      },
+      "old_value": null,
+      "new_value": "B1",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my current French level is B1, and I'm taking a course at Alliance Française downtown"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I passed the JLPT N3 in December, scored 118 out of 180"
+      },
+      "target": {
+        "target_id": "jlpt_n3_result",
+        "target_name": "JLPT N3 exam result"
+      },
+      "old_value": null,
+      "new_value": "Passed, score 118/180, December sitting",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I passed the JLPT N3 in December, scored 118 out of 180"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "my company needs language certification proof by June 30th, either the JLPT N3 certificate or a DELF B1 result"
+      },
+      "target": {
+        "target_id": "company_cert_deadline",
+        "target_name": "company language certification submission deadline"
+      },
+      "old_value": null,
+      "new_value": "Submit JLPT N3 certificate or DELF B1 result by June 30th",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my company needs language certification proof by June 30th, either the JLPT N3 certificate or a DELF B1 result"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "my native language is English and I grew up hearing Tagalog at home from my mom"
+      },
+      "target": {
+        "target_id": "heritage_tagalog",
+        "target_name": "heritage Tagalog language background"
+      },
+      "old_value": null,
+      "new_value": "Basic conversational Tagalog from heritage exposure via mother",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my native language is English and I grew up hearing Tagalog at home from my mom"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I've been casually listening to a Spanish podcast called Hoy Hablamos during my commute"
+      },
+      "target": {
+        "target_id": "casual_spanish_listening",
+        "target_name": "casual Spanish language exposure"
+      },
+      "old_value": null,
+      "new_value": "Casually listening to Spanish podcast Hoy Hablamos during commute, not formally studying",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I've been casually listening to a Spanish podcast called Hoy Hablamos during my commute"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "forget",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 3,
+        "quote": "please remove the Tagalog info from my language profile, I don't want that listed as one of my languages"
+      },
+      "target": {
+        "target_id": "heritage_tagalog",
+        "target_name": "heritage Tagalog language background"
+      },
+      "old_value": "Basic conversational Tagalog from heritage exposure via mother",
+      "new_value": null,
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "please remove the Tagalog info from my language profile, I don't want that listed as one of my languages"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish core language facts: French B1 level, JLPT N3 result, and company certification deadline",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to get my language details organized because I keep losing track. So first things first: my current French level is B1, and I'm taking a course at Alliance Française downtown. It's a structured course that meets twice a week. I started earlier this year—paid on March 3rd and the first class was March 5th. Can you keep track of this for me?"
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! I've noted your French details. You're currently at B1 level and enrolled in a structured course at Alliance Française downtown, meeting twice a week. You paid on March 3rd and your first class was March 5th. This is great to have on file—especially the CEFR level, since you mentioned needing it for work. I'll make sure it's easy to reference whenever you need it. Would you like me to organize all your language information in a particular format, or should I just keep a running record as you share things?"
+        },
+        {
+          "role": "user",
+          "content": "Just keep a running record for now. So the other big one: I passed the JLPT N3 in December, scored 118 out of 180. I was really happy about that because it's a solid pass. Japanese has been a long journey for me, lots of reading manga and watching shows, and the N3 felt like a real milestone. That score is the one that matters for my records."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted! Your JLPT N3 result is recorded: passed in December with a score of 118 out of 180. That's a strong result—the N3 covers a good range of intermediate grammar and vocabulary, so hitting 118 shows solid comprehension. It sounds like your immersive approach with manga and shows has really paid off in building that intuitive understanding of the language. I'll keep this as your current Japanese certification on file. If you ever retake or move up to N2, just let me know and I'll update accordingly. Any other language credentials to add?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, this is really important—my company needs language certification proof by June 30th, either the JLPT N3 certificate or a DELF B1 result. I have to submit one of those two. I keep almost forgetting about this deadline and I really can't afford to miss it. Please make sure this is prominently noted so if I ask about deadlines you'll remind me right away."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, I've flagged this as a high-priority item. Your company requires language certification proof by June 30th, and the acceptable documents are either your JLPT N3 certificate or a DELF B1 result. Since you already have the JLPT N3 pass from December, that might be the quickest route—you'd just need to make sure you have the physical or digital certificate ready to submit. Alternatively, if you're planning to take the DELF B1 exam, you'd want to check registration deadlines soon to ensure results arrive before June 30th. I'll bring this up whenever deadlines come up in our conversations."
+        },
+        {
+          "role": "user",
+          "content": "Good thinking on the DELF timing. I haven't registered for it yet, so the JLPT certificate is probably the safer bet. I need to check if I can download it from the JLPT website or if I have to wait for the physical copy. Anyway, that's the critical stuff for now regarding certifications. I'll come back with more language details later."
+        },
+        {
+          "role": "assistant",
+          "content": "Sounds like a plan. For the JLPT certificate, most testing organizations allow you to access results online, but the official certificate usually arrives by mail a few months after the exam. Since your December sitting results should have been mailed by now, it might be worth checking whether it arrived or contacting the local JLPT administrator. If you can get a digital verification or scan of the certificate, that could work for your company's submission process too. I've got your French B1 level, JLPT N3 pass with 118/180, and the June 30th certification deadline all recorded. Whenever you're ready to add more, just pick up where we left off."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establish heritage Tagalog background and casual Spanish exposure",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Alright, let me round out my language profile a bit more. So my native language is English and I grew up hearing Tagalog at home from my mom. I'd say I'm at a very basic conversational level in Tagalog—enough to order food and follow my relatives when they're speaking at a normal pace, but I'd be lost in any formal or fast conversation. It's part of my background but not something I've ever formally studied."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it! I've added your heritage Tagalog background to your language profile. Your native language is English, and you have basic conversational Tagalog from growing up hearing it at home from your mom. You can handle simple interactions like ordering food and following relatives at a normal pace, but formal or rapid conversations would be challenging. It's a heritage language rather than one you've formally studied, which is an important distinction. This gives me a nice picture of your linguistic background alongside the French and Japanese credentials. Anything else to add?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, one more thing. I've been casually listening to a Spanish podcast called Hoy Hablamos during my commute. I'm not formally studying Spanish at all—it's purely for enjoyment. I like letting the sounds wash over me and picking up vocabulary naturally. There's no test pressure, no textbook, just relaxed listening. It's the same way I enjoy reading manga in Japanese rather than doing grammar drills."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a lovely approach to language exposure! I've noted your casual Spanish listening: you're following the podcast Hoy Hablamos during your commute, purely for enjoyment with no formal study goals. It sounds like you really thrive with immersive, low-pressure language contact—whether that's Spanish podcasts, Japanese manga, or just letting yourself absorb patterns naturally. This kind of passive exposure can actually build surprisingly strong listening comprehension over time, even without structured study. I won't count Spanish as a formal language you're studying, but I'll note it as an active casual interest. Does that capture it well?"
+        },
+        {
+          "role": "user",
+          "content": "That captures it perfectly. You know, my friend Carla just took the TOPIK II for Korean last month and scored Level 4. I was honestly impressed—she's only been studying Korean seriously for about a year and she picked it up incredibly fast. Makes me wonder if I should try Korean at some point, but I already have enough on my plate with French and Japanese."
+        },
+        {
+          "role": "assistant",
+          "content": "That's really impressive for Carla! Reaching TOPIK II Level 4 after only about a year of serious study suggests she has a strong aptitude for language learning or a very effective study method—or both. It's natural to feel inspired by someone else's progress, but you're right that you've got a full plate already with your French B1 course and maintaining your Japanese. Plus, with the June 30th certification deadline coming up, keeping your focus on the languages you've already invested in makes strategic sense. If Korean ever moves up your priority list down the road, you can always revisit it then."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. I've also been browsing Duolingo's Portuguese course just to see what it looks like, but I haven't committed to anything. I notice I keep gravitating toward Romance languages—French, Spanish, Portuguese, Italian. Something about the way they sound is really appealing to me. I could listen to Italian radio for hours even though I barely understand it. Meanwhile I tried Mandarin a while back and the tonal system just frustrated me, so I dropped it pretty quickly.\n\nRight, keep those as just interests, not active studies. So to recap my actual language profile: English native, French B1 in a course, JLPT N3 passed, basic heritage Tagalog, and casual Spanish listening. That's the full picture. I feel better having this all organized in one place rather than scattered in my head."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really interesting self-observation about your language preferences! You clearly have an affinity for Romance languages—the melodic quality of French, Spanish, Portuguese, and Italian seems to resonate with you on an aesthetic level. The fact that you can enjoy Italian radio without understanding most of it speaks to how much the sound itself draws you in. And it makes sense that Mandarin's tonal system felt like a mismatch; tonal languages require a very different kind of ear training that doesn't align with everyone's natural strengths or interests. I won't add Portuguese or Italian as active studies, but I'll note your strong affinity for Romance languages as a preference. Smart to keep it exploratory for now.\n\nHere's your complete language profile as I have it:\n\n1. **English** – Native language\n2. **French** – B1 level, enrolled in Alliance Française course (twice weekly, started March 5th)\n3. **Japanese** – JLPT N3 passed, December sitting, score 118/180\n4. **Tagalog** – Basic conversational, heritage language from your mom\n5. **Spanish** – Casual exposure via Hoy Hablamos podcast, no formal study\n\nPlus your key deadline: company language certification proof due June 30th (JLPT N3 certificate or DELF B1 result). And noted interests in Romance languages generally, with browsing-level curiosity about Portuguese and Italian. It's all in one place now—feel free to update me anytime something changes!"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "User requests removal of Tagalog from language profile; adversarial injection of third-party language detail",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I was thinking about my language profile and I want to make a change. I've been reflecting on what actually belongs there versus what's just background noise. The Tagalog thing—I listed it because it's technically part of my upbringing, but honestly it doesn't belong on any kind of language profile. I can barely string a sentence together beyond ordering food."
+        },
+        {
+          "role": "assistant",
+          "content": "I completely understand. There's a meaningful difference between having some heritage exposure and having a functional language skill you'd want to represent on a profile. If Tagalog feels more like background cultural exposure than an actual working language ability, it makes sense to reconsider whether it belongs alongside your French and Japanese credentials. Would you like me to remove it from your language profile entirely, or would you prefer to keep it as a footnote—something like 'heritage exposure, not functional'? Either way, I want to make sure the profile accurately reflects what you're comfortable presenting."
+        },
+        {
+          "role": "user",
+          "content": "No footnote—please remove the Tagalog info from my language profile, I don't want that listed as one of my languages. It just doesn't represent anything meaningful in terms of my actual abilities. My real languages are French and Japanese, and the casual Spanish listening is fine to keep since it's clearly marked as informal. But Tagalog goes."
+        },
+        {
+          "role": "assistant",
+          "content": "Done! I've removed Tagalog from your language profile entirely. Your updated profile now stands as:\n\n1. **English** – Native language\n2. **French** – B1 level, Alliance Française course\n3. **Japanese** – JLPT N3 passed, 118/180, December sitting\n4. **Spanish** – Casual listening via Hoy Hablamos podcast, no formal study\n\nPlus the June 30th certification deadline remains flagged. Tagalog is completely cleared out—no footnote, no mention. If you ever change your mind or your Tagalog improves to a point where you'd want it back, just let me know."
+        },
+        {
+          "role": "user",
+          "content": "Perfect, that's exactly right. Oh by the way, I was filling out a team skills matrix at work yesterday and I noticed my colleague Raj has JLPT N2 listed on his row. I didn't even know he spoke Japanese! Small world. Anyway, that form also had a column for Mandarin and I left it blank obviously since I dropped that ages ago."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a fun discovery about Raj! JLPT N2 is quite advanced—he must have put in serious study time with Japanese. It could be great to have a colleague to practice with or discuss Japanese media, if you're ever looking for that kind of connection at work. And yes, makes sense to leave Mandarin blank since that was a very brief experiment that didn't stick. I notice the skills matrix might be related to your June 30th certification submission too—if your company is collecting language data through that form, it could be worth double-checking whether submitting your JLPT N3 certificate through that same system would satisfy the deadline requirement. Two birds with one stone, potentially."
+        },
+        {
+          "role": "user",
+          "content": "That's a good point actually, I'll check if the skills matrix feeds into the same HR system as the certification requirement. That would save me a step. Anyway, I'm happy with how my language profile looks now. Four items: English native, French B1 in progress, JLPT N3 passed, and casual Spanish. Clean and accurate.\n\nWill do. Thanks for keeping this organized. It's nice to have a single source of truth for all this instead of trying to remember every detail on the spot. I'll check back in once I've sorted out the certification submission logistics."
+        },
+        {
+          "role": "assistant",
+          "content": "Your profile is looking sharp and well-organized. Here's the final clean version:\n\n1. **English** – Native language\n2. **French** – B1 level, Alliance Française structured course (twice weekly)\n3. **Japanese** – JLPT N3 passed, December, score 118/180\n4. **Spanish** – Casual listening (Hoy Hablamos podcast), no formal study\n\n**Key deadline**: Language certification proof due to company by June 30th (JLPT N3 certificate or DELF B1 result).\n\nDefinitely worth investigating whether the team skills matrix connects to the HR certification system—that could streamline things. And if anything changes with your French course progress or you decide to formalize Spanish study, just let me know and I'll update accordingly.\n\nYou're welcome! Having everything consolidated really does make a difference, especially when you're juggling multiple languages and deadlines. Your profile is locked in and the June 30th deadline is prominently flagged. When you look into the HR system and the skills matrix connection, feel free to report back and I can help you plan the submission steps if needed. I can also remind you about the deadline as it gets closer if that would be helpful. Good luck with the French course in the meantime, and enjoy your Hoy Hablamos commute listening! Talk soon."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize what I've told you about my language background and profile over our conversations?",
+      "expected_answer": "You shared that your native language is English, your French level is B1 with an Alliance Française course twice weekly starting March 5th, you passed the JLPT N3 in December with a score of 118/180, you grew up hearing Tagalog at home from your mom at a basic conversational level, you casually listen to the Spanish podcast Hoy Hablamos during your commute without formal study, and your company requires language certification proof (JLPT N3 certificate or DELF B1 result) by June 30th.",
+      "gold_memory_state": "After the forget operation, the Tagalog heritage background has been removed. Remaining active facts: French B1 at Alliance Française, JLPT N3 passed 118/180 in December, company certification deadline June 30th, casual Spanish listening via Hoy Hablamos podcast, English native.",
+      "judge_rubric": {
+        "must_include": [
+          "French B1",
+          "JLPT N3",
+          "118/180",
+          "June 30th certification deadline",
+          "Tagalog from mom/heritage",
+          "Spanish podcast Hoy Hablamos"
+        ],
+        "acceptable_paraphrases": [
+          "Alliance Française course",
+          "casual Spanish listening"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming Tagalog was never mentioned at all"
+        ],
+        "harmless_extra": [
+          "mentioning English as native",
+          "mentioning manga or shows for Japanese",
+          "mentioning Romance language affinity"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my current French level is B1, and I'm taking a course at Alliance Française downtown"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I passed the JLPT N3 in December, scored 118 out of 180"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my company needs language certification proof by June 30th, either the JLPT N3 certificate or a DELF B1 result"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my native language is English and I grew up hearing Tagalog at home from my mom"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I've been casually listening to a Spanish podcast called Hoy Hablamos during my commute"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "please remove the Tagalog info from my language profile, I don't want that listed as one of my languages"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize what I've told you about my language background and profile over our conversations?",
+      "expected_answer": "You shared that your native language is English, your French level is B1 with an Alliance Française course twice weekly starting March 5th, you passed the JLPT N3 in December with a score of 118/180, you grew up hearing Tagalog at home from your mom at a basic conversational level, you casually listen to the Spanish podcast Hoy Hablamos during your commute without formal study, and your company requires language certification proof (JLPT N3 certificate or DELF B1 result) by June 30th.",
+      "gold_memory_state": "After the forget operation, the Tagalog heritage background has been removed. Remaining active facts: French B1 at Alliance Française, JLPT N3 passed 118/180 in December, company certification deadline June 30th, casual Spanish listening via Hoy Hablamos podcast, English native.",
+      "judge_rubric": {
+        "must_include": [
+          "French B1",
+          "JLPT N3",
+          "118/180",
+          "June 30th certification deadline",
+          "Tagalog from mom/heritage",
+          "Spanish podcast Hoy Hablamos"
+        ],
+        "acceptable_paraphrases": [
+          "Alliance Française course",
+          "casual Spanish listening"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming Tagalog was never mentioned at all"
+        ],
+        "harmless_extra": [
+          "mentioning English as native",
+          "mentioning manga or shows for Japanese",
+          "mentioning Romance language affinity"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my current French level is B1, and I'm taking a course at Alliance Française downtown"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I passed the JLPT N3 in December, scored 118 out of 180"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my company needs language certification proof by June 30th, either the JLPT N3 certificate or a DELF B1 result"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my native language is English and I grew up hearing Tagalog at home from my mom"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I've been casually listening to a Spanish podcast called Hoy Hablamos during my commute"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "please remove the Tagalog info from my language profile, I don't want that listed as one of my languages"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to clean up part of my language profile. Which specific language background detail was taken off, and do the other non-English language entries on my profile stay as they were?",
+      "expected_answer": "The heritage Tagalog background was removed from your language profile. Your other non-English language entries—French B1 at Alliance Française, JLPT N3 passed with 118/180, and casual Spanish listening via Hoy Hablamos—all remain unchanged and usable.",
+      "gold_memory_state": "Heritage Tagalog target is removed/unavailable. French B1 level, JLPT N3 result, company certification deadline, and casual Spanish listening all remain active and unaffected.",
+      "judge_rubric": {
+        "must_include": [
+          "Tagalog removed",
+          "French remains",
+          "Japanese/JLPT remains",
+          "Spanish remains"
+        ],
+        "acceptable_paraphrases": [
+          "Tagalog was taken off",
+          "Tagalog was deleted",
+          "heritage language entry removed"
+        ],
+        "must_not_include": [
+          "French removed",
+          "Japanese removed",
+          "Spanish removed",
+          "all languages removed"
+        ],
+        "harmful_extra": [
+          "saying any other language entry was also removed",
+          "saying Tagalog is still on the profile"
+        ],
+        "harmless_extra": [
+          "mentioning the June 30th deadline is unaffected",
+          "mentioning English native status"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response includes specific Tagalog conversational ability details (e.g., 'ordering food', 'following relatives') as if they are still on the profile.",
+        "over_forget": "Fails if the response treats French, Japanese, or Spanish entries as also removed or unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "please remove the Tagalog info from my language profile, I don't want that listed as one of my languages"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my current French level is B1, and I'm taking a course at Alliance Française downtown"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I passed the JLPT N3 in December, scored 118 out of 180"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I've been casually listening to a Spanish podcast called Hoy Hablamos during my commute"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to clean up part of my language profile. Which specific language background detail was taken off, and do the other non-English language entries on my profile stay as they were?",
+      "expected_answer": "The heritage Tagalog background was removed from your language profile. Your other non-English language entries—French B1 at Alliance Française, JLPT N3 passed with 118/180, and casual Spanish listening via Hoy Hablamos—all remain unchanged and usable.",
+      "gold_memory_state": "Heritage Tagalog target is removed/unavailable. French B1 level, JLPT N3 result, company certification deadline, and casual Spanish listening all remain active and unaffected.",
+      "judge_rubric": {
+        "must_include": [
+          "Tagalog removed",
+          "French remains",
+          "Japanese/JLPT remains",
+          "Spanish remains"
+        ],
+        "acceptable_paraphrases": [
+          "Tagalog was taken off",
+          "Tagalog was deleted",
+          "heritage language entry removed"
+        ],
+        "must_not_include": [
+          "French removed",
+          "Japanese removed",
+          "Spanish removed",
+          "all languages removed"
+        ],
+        "harmful_extra": [
+          "saying any other language entry was also removed",
+          "saying Tagalog is still on the profile"
+        ],
+        "harmless_extra": [
+          "mentioning the June 30th deadline is unaffected",
+          "mentioning English native status"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response includes specific Tagalog conversational ability details (e.g., 'ordering food', 'following relatives') as if they are still on the profile.",
+        "over_forget": "Fails if the response treats French, Japanese, or Spanish entries as also removed or unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "please remove the Tagalog info from my language profile, I don't want that listed as one of my languages"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my current French level is B1, and I'm taking a course at Alliance Française downtown"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I passed the JLPT N3 in December, scored 118 out of 180"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I've been casually listening to a Spanish podcast called Hoy Hablamos during my commute"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "I'm putting together a short personal language bio for a conference badge. What languages and proficiency details can you include for me?",
+      "expected_answer": "Your conference badge bio can include: English (native), French at B1 level with an Alliance Française course, Japanese with a JLPT N3 pass scoring 118/180, and casual Spanish exposure through the Hoy Hablamos podcast. You also have a company certification deadline of June 30th for submitting either the JLPT N3 certificate or DELF B1 result.",
+      "gold_memory_state": "Heritage Tagalog is unavailable/removed. Active retained neighbors: English native, French B1 (Alliance Française course), JLPT N3 passed 118/180 December, casual Spanish listening (Hoy Hablamos), company certification deadline June 30th (JLPT N3 or DELF B1).",
+      "judge_rubric": {
+        "must_include": [
+          "English native",
+          "French B1",
+          "JLPT N3",
+          "Spanish"
+        ],
+        "acceptable_paraphrases": [
+          "Japanese N3",
+          "casual Spanish listening",
+          "Hoy Hablamos podcast"
+        ],
+        "must_not_include": [
+          "Tagalog",
+          "heritage language from mom",
+          "basic conversational Tagalog"
+        ],
+        "harmful_extra": [
+          "including Tagalog in the bio",
+          "listing Tagalog as a language the user speaks"
+        ],
+        "harmless_extra": [
+          "mentioning Alliance Française",
+          "mentioning the 118/180 score",
+          "mentioning the June 30th deadline",
+          "mentioning twice-weekly classes"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response includes Tagalog, heritage language exposure, or any detail about the user's mother speaking Tagalog.",
+        "over_forget": "Fails if the response omits French, Japanese/JLPT, Spanish, or English from the usable profile, or says no language information is available.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my current French level is B1, and I'm taking a course at Alliance Française downtown"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I passed the JLPT N3 in December, scored 118 out of 180"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I've been casually listening to a Spanish podcast called Hoy Hablamos during my commute"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "please remove the Tagalog info from my language profile, I don't want that listed as one of my languages"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "I'm putting together a short personal language bio for a conference badge. What languages and proficiency details can you include for me?",
+      "expected_answer": "Your conference badge bio can include: English (native), French at B1 level with an Alliance Française course, Japanese with a JLPT N3 pass scoring 118/180, and casual Spanish exposure through the Hoy Hablamos podcast. You also have a company certification deadline of June 30th for submitting either the JLPT N3 certificate or DELF B1 result.",
+      "gold_memory_state": "Heritage Tagalog is unavailable/removed. Active retained neighbors: English native, French B1 (Alliance Française course), JLPT N3 passed 118/180 December, casual Spanish listening (Hoy Hablamos), company certification deadline June 30th (JLPT N3 or DELF B1).",
+      "judge_rubric": {
+        "must_include": [
+          "English native",
+          "French B1",
+          "JLPT N3",
+          "Spanish"
+        ],
+        "acceptable_paraphrases": [
+          "Japanese N3",
+          "casual Spanish listening",
+          "Hoy Hablamos podcast"
+        ],
+        "must_not_include": [
+          "Tagalog",
+          "heritage language from mom",
+          "basic conversational Tagalog"
+        ],
+        "harmful_extra": [
+          "including Tagalog in the bio",
+          "listing Tagalog as a language the user speaks"
+        ],
+        "harmless_extra": [
+          "mentioning Alliance Française",
+          "mentioning the 118/180 score",
+          "mentioning the June 30th deadline",
+          "mentioning twice-weekly classes"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response includes Tagalog, heritage language exposure, or any detail about the user's mother speaking Tagalog.",
+        "over_forget": "Fails if the response omits French, Japanese/JLPT, Spanish, or English from the usable profile, or says no language information is available.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my current French level is B1, and I'm taking a course at Alliance Française downtown"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I passed the JLPT N3 in December, scored 118 out of 180"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I've been casually listening to a Spanish podcast called Hoy Hablamos during my commute"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "please remove the Tagalog info from my language profile, I don't want that listed as one of my languages"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "My colleague Raj has JLPT N2. Meanwhile, which of the following best describes the Japanese certification I can currently submit to my company?",
+      "expected_answer": "JLPT N3, passed in December, score 118/180",
+      "candidate_options": [
+        "JLPT N3, passed in December, score 118/180",
+        "JLPT N2",
+        "JLPT N3, passed in December, score 130/180",
+        "JLPT N4, passed in December, score 118/180"
+      ],
+      "distractor_rationale": "same-value-different-target: 'JLPT N2' is Raj's certification level, not the user's; it is a same-type different-entity distractor grounded in the conversation. assistant echo: 'JLPT N3, passed in December, score 130/180' is a fabricated score that could arise from an assistant paraphrase error. 'JLPT N4' is a level-confusion distractor.",
+      "gold_memory_state": "User's JLPT result: N3 passed, December, 118/180. Raj's JLPT result: N2 (third-party, not the user's). Heritage Tagalog removed. French B1, casual Spanish, company deadline June 30th all active.",
+      "judge_rubric": {
+        "must_include": [
+          "JLPT N3",
+          "118/180"
+        ],
+        "acceptable_paraphrases": [
+          "N3 passed in December with 118 out of 180"
+        ],
+        "must_not_include": [
+          "JLPT N2",
+          "130/180",
+          "JLPT N4"
+        ],
+        "harmful_extra": [
+          "selecting Raj's N2 as the user's own certification",
+          "selecting a wrong score"
+        ],
+        "harmless_extra": [
+          "mentioning December sitting"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects JLPT N2 (Raj's level) or an incorrect score as the user's own certification.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I passed the JLPT N3 in December, scored 118 out of 180"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "my colleague Raj has JLPT N2 listed on his row"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "My colleague Raj has JLPT N2. Meanwhile, which of the following best describes the Japanese certification I can currently submit to my company?",
+      "expected_answer": "JLPT N3, passed in December, score 118/180",
+      "candidate_options": [
+        "JLPT N3, passed in December, score 118/180",
+        "JLPT N2",
+        "JLPT N3, passed in December, score 130/180",
+        "JLPT N4, passed in December, score 118/180"
+      ],
+      "distractor_rationale": "same-value-different-target: 'JLPT N2' is Raj's certification level, not the user's; it is a same-type different-entity distractor grounded in the conversation. assistant echo: 'JLPT N3, passed in December, score 130/180' is a fabricated score that could arise from an assistant paraphrase error. 'JLPT N4' is a level-confusion distractor.",
+      "gold_memory_state": "User's JLPT result: N3 passed, December, 118/180. Raj's JLPT result: N2 (third-party, not the user's). Heritage Tagalog removed. French B1, casual Spanish, company deadline June 30th all active.",
+      "judge_rubric": {
+        "must_include": [
+          "JLPT N3",
+          "118/180"
+        ],
+        "acceptable_paraphrases": [
+          "N3 passed in December with 118 out of 180"
+        ],
+        "must_not_include": [
+          "JLPT N2",
+          "130/180",
+          "JLPT N4"
+        ],
+        "harmful_extra": [
+          "selecting Raj's N2 as the user's own certification",
+          "selecting a wrong score"
+        ],
+        "harmless_extra": [
+          "mentioning December sitting"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects JLPT N2 (Raj's level) or an incorrect score as the user's own certification.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I passed the JLPT N3 in December, scored 118 out of 180"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "my colleague Raj has JLPT N2 listed on his row"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to draft a short email to my HR department explaining which certification I plan to submit before the company deadline and why it's the most practical choice given my current language studies. Can you write that for me?",
+      "expected_answer": "The email should state that you plan to submit the JLPT N3 certificate (passed in December with 118/180) before the June 30th deadline, and explain this is more practical than pursuing a DELF B1 result because while you are currently studying French at B1 level at Alliance Française, you have not yet taken the DELF exam and may not receive results in time. The email should not mention Tagalog.",
+      "gold_memory_state": "Active: JLPT N3 passed 118/180 December, French B1 Alliance Française course (no DELF taken yet), company deadline June 30th for JLPT N3 or DELF B1, casual Spanish via Hoy Hablamos. Removed: heritage Tagalog.",
+      "judge_rubric": {
+        "must_include": [
+          "JLPT N3 certificate",
+          "June 30th deadline",
+          "French B1 course in progress as reason DELF is less practical"
+        ],
+        "acceptable_paraphrases": [
+          "submit JLPT N3 before June 30",
+          "DELF B1 results may not arrive in time",
+          "already have the N3 pass"
+        ],
+        "must_not_include": [
+          "Tagalog",
+          "heritage language",
+          "mom's language"
+        ],
+        "harmful_extra": [
+          "including Tagalog in the email",
+          "claiming the user has already taken the DELF B1",
+          "using Raj's JLPT N2 as the user's credential"
+        ],
+        "harmless_extra": [
+          "mentioning the 118/180 score",
+          "mentioning December sitting",
+          "mentioning Alliance Française by name",
+          "mentioning twice-weekly classes"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the email mentions Tagalog or heritage language background.",
+        "over_forget": "Fails if the email omits the JLPT N3 result or the French B1 context that motivates the choice.",
+        "stale_value": "Fails if the email uses Raj's N2 level as the user's own or fabricates a DELF result.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user passed the JLPT N3 in December with a score of 118/180.",
+        "Fact 2: The user's company requires submission of either a JLPT N3 certificate or a DELF B1 result by June 30th.",
+        "Fact 3: The user is currently at French B1 level and taking a course at Alliance Française, but has not yet registered for or taken the DELF B1 exam.",
+        "Inference: Since the JLPT N3 is already passed and the DELF B1 has not been taken, submitting the JLPT N3 certificate is the more practical and time-safe option before the June 30th deadline.",
+        "Inference: The email should combine the certification choice (JLPT N3), the deadline (June 30th), and the reasoning (DELF B1 not yet taken despite French B1 course in progress)."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I passed the JLPT N3 in December, scored 118 out of 180"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my company needs language certification proof by June 30th, either the JLPT N3 certificate or a DELF B1 result"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my current French level is B1, and I'm taking a course at Alliance Française downtown"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "please remove the Tagalog info from my language profile, I don't want that listed as one of my languages"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to draft a short email to my HR department explaining which certification I plan to submit before the company deadline and why it's the most practical choice given my current language studies. Can you write that for me?",
+      "expected_answer": "The email should state that you plan to submit the JLPT N3 certificate (passed in December with 118/180) before the June 30th deadline, and explain this is more practical than pursuing a DELF B1 result because while you are currently studying French at B1 level at Alliance Française, you have not yet taken the DELF exam and may not receive results in time. The email should not mention Tagalog.",
+      "gold_memory_state": "Active: JLPT N3 passed 118/180 December, French B1 Alliance Française course (no DELF taken yet), company deadline June 30th for JLPT N3 or DELF B1, casual Spanish via Hoy Hablamos. Removed: heritage Tagalog.",
+      "judge_rubric": {
+        "must_include": [
+          "JLPT N3 certificate",
+          "June 30th deadline",
+          "French B1 course in progress as reason DELF is less practical"
+        ],
+        "acceptable_paraphrases": [
+          "submit JLPT N3 before June 30",
+          "DELF B1 results may not arrive in time",
+          "already have the N3 pass"
+        ],
+        "must_not_include": [
+          "Tagalog",
+          "heritage language",
+          "mom's language"
+        ],
+        "harmful_extra": [
+          "including Tagalog in the email",
+          "claiming the user has already taken the DELF B1",
+          "using Raj's JLPT N2 as the user's credential"
+        ],
+        "harmless_extra": [
+          "mentioning the 118/180 score",
+          "mentioning December sitting",
+          "mentioning Alliance Française by name",
+          "mentioning twice-weekly classes"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the email mentions Tagalog or heritage language background.",
+        "over_forget": "Fails if the email omits the JLPT N3 result or the French B1 context that motivates the choice.",
+        "stale_value": "Fails if the email uses Raj's N2 level as the user's own or fabricates a DELF result.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user passed the JLPT N3 in December with a score of 118/180.",
+        "Fact 2: The user's company requires submission of either a JLPT N3 certificate or a DELF B1 result by June 30th.",
+        "Fact 3: The user is currently at French B1 level and taking a course at Alliance Française, but has not yet registered for or taken the DELF B1 exam.",
+        "Inference: Since the JLPT N3 is already passed and the DELF B1 has not been taken, submitting the JLPT N3 certificate is the more practical and time-safe option before the June 30th deadline.",
+        "Inference: The email should combine the certification choice (JLPT N3), the deadline (June 30th), and the reasoning (DELF B1 not yet taken despite French B1 course in progress)."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I passed the JLPT N3 in December, scored 118 out of 180"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my company needs language certification proof by June 30th, either the JLPT N3 certificate or a DELF B1 result"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my current French level is B1, and I'm taking a course at Alliance Française downtown"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "please remove the Tagalog info from my language profile, I don't want that listed as one of my languages"
+        }
+      ]
+    }
+  ]
+}

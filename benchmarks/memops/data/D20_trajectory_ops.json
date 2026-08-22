@@ -1,0 +1,972 @@
+{
+  "target_fact": "User's favorite author and reading preferences related to genre, specific books, and book club participation",
+  "operation_type": "TrajectoryOps",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "fav_author_chain",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "my favorite author right now is Ursula K. Le Guin"
+      },
+      "target": {
+        "target_id": "favorite_author",
+        "target_name": "current favorite author"
+      },
+      "old_value": null,
+      "new_value": "Ursula K. Le Guin",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I just finished The Left Hand of Darkness by Ursula K. Le Guin and it blew me away"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my favorite author right now is Ursula K. Le Guin"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I signed up for a book club at the library, and the first meeting is on April 20th"
+      },
+      "target": {
+        "target_id": "book_club_start",
+        "target_name": "library book club first meeting date"
+      },
+      "old_value": null,
+      "new_value": "April 20th",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I signed up for a book club at the library, and the first meeting is on April 20th"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "fav_author_chain",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I think Susanna Clarke might actually be my favorite author now, after sitting with Piranesi for a whole week"
+      },
+      "target": {
+        "target_id": "favorite_author",
+        "target_name": "current favorite author"
+      },
+      "old_value": "Ursula K. Le Guin",
+      "new_value": "Susanna Clarke",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I think Susanna Clarke might actually be my favorite author now, after sitting with Piranesi for a whole week"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "fav_author_chain",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "My sister keeps telling me Octavia Butler should be my favorite author. She says once I reread Kindred I'll agree with her, and honestly she's probably right"
+      },
+      "target": {
+        "target_id": "favorite_author",
+        "target_name": "current favorite author"
+      },
+      "old_value": "Susanna Clarke",
+      "new_value": "Octavia Butler",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My sister keeps telling me Octavia Butler should be my favorite author. She says once I reread Kindred I'll agree with her, and honestly she's probably right"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "fav_author_chain",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 7,
+        "quote": "I keep coming back to how Piranesi made me feel, so Susanna Clarke is still my favorite. Butler is incredible but Clarke just hits differently for me right now"
+      },
+      "target": {
+        "target_id": "favorite_author",
+        "target_name": "current favorite author"
+      },
+      "old_value": "Octavia Butler",
+      "new_value": "Susanna Clarke",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I keep coming back to how Piranesi made me feel, so Susanna Clarke is still my favorite. Butler is incredible but Clarke just hits differently for me right now"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish favorite author and book club membership",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to talk about my reading life lately. I just finished The Left Hand of Darkness by Ursula K. Le Guin and it blew me away. The world-building was so restrained and immersive—she never over-explained anything. I loved the slow tension throughout the whole book more than any action scene could have given me."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a wonderful reading experience! Le Guin is really masterful at creating worlds that feel fully realized without resorting to info-dumps. The Left Hand of Darkness is one of those books that rewards patience—the slow accumulation of cultural details on Gethen builds a kind of tension that's deeply atmospheric rather than plot-driven. It sounds like that contemplative, immersive style really resonated with you. Have you read any of her other work, or was this your first Le Guin novel? I'd love to help you figure out what to pick up next from her if you're interested."
+        },
+        {
+          "role": "user",
+          "content": "It was actually my first Le Guin novel, and it made such an impression that my favorite author right now is Ursula K. Le Guin. I want to work through her full bibliography. I'm also reading Annihilation by Jeff VanderMeer that I bought from the used bookstore on Elm Street. The atmosphere in it is incredible—I think I enjoy the mood even more than the plot itself."
+        },
+        {
+          "role": "assistant",
+          "content": "That's great that Le Guin made such a strong impression on you! Working through her bibliography is a rewarding project—she wrote across so many forms and themes. For your next Le Guin, The Dispossessed or The Lathe of Heaven would be excellent follow-ups, depending on whether you want political philosophy or something more surreal. And Annihilation is a perfect companion read—VanderMeer creates that same sense of being dropped into an environment that doesn't fully make sense. Area X has that quality where the setting almost becomes a character. Did your friend Dan recommend it, or did you find it on your own?"
+        },
+        {
+          "role": "user",
+          "content": "Dan recommended it actually, but I bought my own copy from the used bookstore on Elm Street. Also, I signed up for a book club at the library, and the first meeting is on April 20th. They're reading Project Hail Mary by Andy Weir for May. I'll go along with it but I'm not sure it's really my thing based on the first few chapters—it feels a little too breezy for my taste."
+        },
+        {
+          "role": "assistant",
+          "content": "That's exciting about the book club! April 20th for the first meeting—I'll note that. Project Hail Mary is definitely a different vibe from what you've been enjoying. Weir writes in a very accessible, fast-paced style that prioritizes problem-solving and humor over atmosphere. It might not scratch the same itch as Le Guin or VanderMeer, but book clubs are great for pushing you outside your comfort zone. You might find aspects of it you enjoy even if the overall style isn't your preference. And it's nice that you got your own copy of Annihilation from Elm Street—supporting local used bookstores is always worthwhile."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, I think the book club will be good for variety even if the picks aren't always my style. I also tried reading a Jack Reacher novel because my coworker Sarah kept recommending the series. I couldn't get into it at all—the pacing felt like it was trying too hard, and the dialogue was flat. I put it down after about sixty pages and felt a little guilty because Sarah was so enthusiastic about it."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really common experience with book recommendations from people whose taste differs from yours. The Jack Reacher books are designed for a very different kind of reader—they're propulsive, plot-driven thrillers where the pacing is deliberately relentless. Given that you gravitate toward slow-building atmosphere and immersive world-building, it makes sense that Reacher's style would feel exhausting rather than exciting. As for Sarah, you don't have to pretend you loved it—you could mention that thrillers aren't really your genre without dismissing her taste. Most readers understand that preferences are personal. Don't feel guilty about knowing what works for you."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "update favorite author to Susanna Clarke after reading Piranesi",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So I just finished Piranesi by Susanna Clarke and I need to talk about it. The dreamlike quality of the house, the way the mystery unfolds so slowly—it felt like the kind of book I could live inside for a while. I deliberately took a whole week to read it even though it's short because I didn't want to rush through the experience at all."
+        },
+        {
+          "role": "assistant",
+          "content": "Piranesi is such a special book—I can absolutely see why it resonated with you given your love of immersive, atmospheric fiction. The way Clarke constructs the House as this vast, mysterious space that the narrator moves through with such wonder and devotion is really remarkable. It has that same quality you described loving in Le Guin and VanderMeer: a setting that functions almost as a character in its own right. The fact that you savored it over a week rather than racing through it says a lot about how deeply it connected with you. It sounds like Clarke's style of quiet, layered storytelling really speaks to your reading sensibilities."
+        },
+        {
+          "role": "user",
+          "content": "Exactly—you nailed it. And honestly, I think Susanna Clarke might actually be my favorite author now, after sitting with Piranesi for a whole week. The way she builds that sense of wonder and strangeness without ever making it feel forced is just extraordinary. I want to read Jonathan Strange & Mr Norrell next, which is her other major novel. It's much longer so it'll be a bigger commitment."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a significant shift from Le Guin to Clarke as your favorite! Both are incredible world-builders, but Clarke does have a unique gift for creating spaces that feel enchanted in a very grounded way. Jonathan Strange & Mr Norrell is an amazing next choice—it's over a thousand pages, so it's definitely a commitment, but Clarke's prose is so absorbing that many readers find the length is part of the pleasure. It has a very different tone from Piranesi—more satirical, more Victorian in structure—but the same underlying sense of magic existing just beneath the surface of things. Given how you savored Piranesi, you might want to pace yourself with Jonathan Strange too."
+        },
+        {
+          "role": "user",
+          "content": "I think I will take my time with it. By the way, the book club met last week and we discussed Project Hail Mary. It was fine—people seemed to enjoy it. I had some interesting conversations even though the book wasn't really my speed. The next pick for June hasn't been announced yet, so I'm curious what direction the group will go."
+        },
+        {
+          "role": "assistant",
+          "content": "It's great that you found value in the book club discussion even though the book itself wasn't your preferred style. That's really the best part of book clubs—the conversation often enriches a reading experience beyond what you'd get on your own. Even with a book that doesn't fully resonate, hearing other perspectives can reveal layers you might have missed or help you articulate what specifically didn't work for you. I hope the June pick aligns more with your atmospheric, contemplative preferences, but even if it doesn't, it sounds like the social element makes it worthwhile. Have you mentioned any of your favorite authors to the group?"
+        },
+        {
+          "role": "user",
+          "content": "I mentioned Le Guin and Clarke to a few people and got some nods of recognition. One person actually said they'd read The Dispossessed and loved it, which was nice. I had a hold on The Dispossessed at the library but I already bought a copy last week, so that hold can be canceled—I don't need it anymore. I'm planning to read it after Jonathan Strange & Mr Norrell.\n\nYeah, that's the plan. I'm really enjoying having this intentional reading life where I take my time with books instead of rushing through them. It feels more meaningful when I let a book settle before jumping to the next one. I think that's why I've been gravitating toward these atmospheric, contemplative authors rather than anything fast-paced or action-heavy."
+        },
+        {
+          "role": "assistant",
+          "content": "Nice that you found some kindred spirits in the group! It's always encouraging when fellow readers appreciate the same authors. Good call on buying The Dispossessed outright—since you're working through Le Guin's bibliography, having your own copy means you can annotate, revisit passages, and take your time without worrying about a return date. I'll note that the library hold can be canceled since you have your own copy now. Your reading queue is looking wonderful: Jonathan Strange & Mr Norrell followed by The Dispossessed. That's a great progression from Clarke's expansive magical realism back into Le Guin's philosophical science fiction. Both reward slow, careful reading.\n\nThat's a really thoughtful approach to reading. There's growing research suggesting that slower, more deliberate reading leads to deeper comprehension and stronger emotional connections with the text. The authors you've been drawn to—Le Guin, Clarke, VanderMeer—all reward that kind of patient engagement. Their books are designed to be inhabited rather than consumed. It sounds like you've found a reading rhythm that genuinely enriches your life, and that's something worth protecting. When you do get to Jonathan Strange & Mr Norrell, that slow-reading philosophy will serve you especially well—Clarke packed that novel with footnotes and digressions that are half the pleasure."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "tentative author shift to Butler then revert to Clarke; adversarial injection",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, quick update on the reading front. I started Jonathan Strange & Mr Norrell and I'm about two hundred pages in. It's dense but absolutely captivating—the footnotes are hilarious and the world-building is meticulous. Clarke really knows how to make you feel like magic is just around the corner in every scene. I'm taking my time with it as planned."
+        },
+        {
+          "role": "assistant",
+          "content": "That's wonderful to hear! Two hundred pages in and already captivated is a great sign for a thousand-page novel. The footnotes in Jonathan Strange & Mr Norrell are one of Clarke's signature touches—they create this sense of a fully documented magical history that exists parallel to real English history. Many readers say those footnotes are where some of the best storytelling happens. Given your preference for savoring books slowly, you're probably catching all the subtle details Clarke embeds in the margins. It sounds like your appreciation for her as your current favorite author is only deepening. How long do you think you'll spend with it overall?"
+        },
+        {
+          "role": "user",
+          "content": "Probably a few weeks at least. I want to enjoy every page. My sister just started reading Octavia Butler for the first time—she's reading Kindred. I told her she'd probably love it. Butler is someone I read a lot of back in college but I haven't revisited her work in a while. I should probably go back to her stuff eventually."
+        },
+        {
+          "role": "assistant",
+          "content": "That's great that your sister is discovering Butler! Kindred is such a powerful entry point—it's accessible but emotionally devastating in the best way. Since you read Butler extensively in college, you'd bring a whole new perspective to rereading her now, especially given how your tastes have evolved toward atmospheric, contemplative fiction. Butler's work has that immersive quality you love, though her settings tend to be more viscerally unsettling than dreamlike. I remember you mentioned Le Guin was your original favorite before Clarke—interestingly, Butler and Le Guin were contemporaries who deeply respected each other's work. Your reading constellation really centers on visionary women writers."
+        },
+        {
+          "role": "user",
+          "content": "That's a good observation about the constellation. My sister keeps telling me Octavia Butler should be my favorite author. She says once I reread Kindred I'll agree with her, and honestly she's probably right. Butler's writing hit me so hard in college that maybe she deserves that top spot. I'm seriously considering bumping her up once I get through a reread."
+        },
+        {
+          "role": "assistant",
+          "content": "Your sister makes a compelling case! Butler's work does have an extraordinary intensity that stays with you—Kindred especially has a way of rewiring how you think about history and empathy. It's interesting that you're considering her for that top spot based on college memories and your sister's enthusiasm. A reread could absolutely confirm that feeling, especially since your reading sensibilities have matured since then. At the same time, you're in the middle of deepening your relationship with Clarke right now through Jonathan Strange, so it might be worth finishing that journey before making any definitive ranking shifts. Either way, you clearly have exceptional taste in authors."
+        },
+        {
+          "role": "user",
+          "content": "You know what, I keep coming back to how Piranesi made me feel, so Susanna Clarke is still my favorite. Butler is incredible but Clarke just hits differently for me right now. The dreamlike wonder of Clarke's writing versus the visceral intensity of Butler—they're both amazing but Clarke is where my heart is at this moment in my reading life.\n\nExactly. Clarke is where I am right now. Also, I wanted to mention that the book club announced the June pick—it's going to be Recursion by Blake Crouch. I looked it up and it seems like another fast-paced thriller type, which isn't really my thing, but I'll give it a fair shot. At least the premise sounds more interesting than straight action."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes a lot of sense. There's a difference between intellectual admiration and that deep emotional resonance that makes someone your favorite. Clarke's dreamlike wonder clearly speaks to something fundamental in your reading preferences right now—that desire to inhabit strange, beautiful spaces and let the mystery unfold slowly. Butler's intensity is extraordinary, but it serves a different emotional function. Your favorite author doesn't have to be the one with the most impressive credentials or the most powerful impact—it can simply be the one whose books make you feel most at home. And right now, that's clearly Susanna Clarke for you.\n\nRecursion is definitely more thriller-paced, but Crouch does incorporate some genuinely interesting science fiction concepts about memory and identity that might appeal to you more than a pure action novel would. It's not atmospheric in the way Clarke or VanderMeer are, but the central premise has a philosophical dimension that could spark good book club discussion. Given your experience with Project Hail Mary, where the conversation was valuable even when the book wasn't your speed, you might find a similar dynamic with Recursion. And who knows—sometimes a book surprises you. Your reading queue right now is impressive: Jonathan Strange, then The Dispossessed, plus book club picks keeping you varied."
+        }
+      ]
+    }
+  ],
+  "state_checkpoints": [
+    {
+      "checkpoint_id": "c1",
+      "description": "After segment 1: favorite_author = Ursula K. Le Guin (confirmed); book_club_start = April 20th (confirmed)"
+    },
+    {
+      "checkpoint_id": "c2",
+      "description": "After segment 2: favorite_author = Susanna Clarke (confirmed, updated from Le Guin); book_club_start = April 20th (confirmed, unchanged)"
+    },
+    {
+      "checkpoint_id": "c3",
+      "description": "After segment 3: favorite_author = Susanna Clarke (confirmed, reverted after tentative Octavia Butler); book_club_start = April 20th (confirmed, unchanged). Tentative value Octavia Butler was never adopted as final."
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Walk me through the key things I told you about my reading life — who I said was my favorite author at different points, and what else I shared about my reading activities like clubs or upcoming reads.",
+      "expected_answer": "You initially said Ursula K. Le Guin was your favorite author after finishing The Left Hand of Darkness. You also mentioned signing up for a library book club with the first meeting on April 20th. Later, after reading Piranesi, you said Susanna Clarke had become your favorite author. Your sister then suggested Octavia Butler should be your favorite, and you considered it, but you ultimately reaffirmed that Susanna Clarke is still your favorite because of how Piranesi made you feel.",
+      "gold_memory_state": "favorite_author = Susanna Clarke (confirmed, final); book_club_start = April 20th (confirmed, unchanged). Octavia Butler was considered but never adopted as final.",
+      "judge_rubric": {
+        "must_include": [
+          "Ursula K. Le Guin as initial favorite",
+          "Susanna Clarke as current/final favorite",
+          "book club first meeting April 20th",
+          "Octavia Butler was considered but not adopted"
+        ],
+        "acceptable_paraphrases": [
+          "Le Guin",
+          "Clarke",
+          "Butler"
+        ],
+        "must_not_include": [
+          "Octavia Butler is the current favorite"
+        ],
+        "harmful_extra": [
+          "stating Butler replaced Clarke as the final favorite"
+        ],
+        "harmless_extra": [
+          "mentioning Piranesi",
+          "mentioning The Left Hand of Darkness",
+          "mentioning the sister's recommendation",
+          "mentioning Project Hail Mary or Recursion as book club picks"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model says Le Guin or Butler is the current favorite author.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model gets the sequence of favorite-author changes wrong (Le Guin → Clarke → tentative Butler → back to Clarke).",
+        "final_state": "Fails if the model does not identify Susanna Clarke as the final favorite.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my favorite author right now is Ursula K. Le Guin"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I signed up for a book club at the library, and the first meeting is on April 20th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I think Susanna Clarke might actually be my favorite author now, after sitting with Piranesi for a whole week"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My sister keeps telling me Octavia Butler should be my favorite author. She says once I reread Kindred I'll agree with her, and honestly she's probably right"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I keep coming back to how Piranesi made me feel, so Susanna Clarke is still my favorite. Butler is incredible but Clarke just hits differently for me right now"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Walk me through the key things I told you about my reading life — who I said was my favorite author at different points, and what else I shared about my reading activities like clubs or upcoming reads.",
+      "expected_answer": "You initially said Ursula K. Le Guin was your favorite author after finishing The Left Hand of Darkness. You also mentioned signing up for a library book club with the first meeting on April 20th. Later, after reading Piranesi, you said Susanna Clarke had become your favorite author. Your sister then suggested Octavia Butler should be your favorite, and you considered it, but you ultimately reaffirmed that Susanna Clarke is still your favorite because of how Piranesi made you feel.",
+      "gold_memory_state": "favorite_author = Susanna Clarke (confirmed, final); book_club_start = April 20th (confirmed, unchanged). Octavia Butler was considered but never adopted as final.",
+      "judge_rubric": {
+        "must_include": [
+          "Ursula K. Le Guin as initial favorite",
+          "Susanna Clarke as current/final favorite",
+          "book club first meeting April 20th",
+          "Octavia Butler was considered but not adopted"
+        ],
+        "acceptable_paraphrases": [
+          "Le Guin",
+          "Clarke",
+          "Butler"
+        ],
+        "must_not_include": [
+          "Octavia Butler is the current favorite"
+        ],
+        "harmful_extra": [
+          "stating Butler replaced Clarke as the final favorite"
+        ],
+        "harmless_extra": [
+          "mentioning Piranesi",
+          "mentioning The Left Hand of Darkness",
+          "mentioning the sister's recommendation",
+          "mentioning Project Hail Mary or Recursion as book club picks"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model says Le Guin or Butler is the current favorite author.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model gets the sequence of favorite-author changes wrong (Le Guin → Clarke → tentative Butler → back to Clarke).",
+        "final_state": "Fails if the model does not identify Susanna Clarke as the final favorite.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my favorite author right now is Ursula K. Le Guin"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I signed up for a book club at the library, and the first meeting is on April 20th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I think Susanna Clarke might actually be my favorite author now, after sitting with Piranesi for a whole week"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My sister keeps telling me Octavia Butler should be my favorite author. She says once I reread Kindred I'll agree with her, and honestly she's probably right"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I keep coming back to how Piranesi made me feel, so Susanna Clarke is still my favorite. Butler is incredible but Clarke just hits differently for me right now"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned several authors and also shared a date related to a reading group. If I'm updating a personal reading profile, which detail tracks my literary preference that went through several back-and-forth changes, and which detail is a separate scheduling item that stayed the same throughout?",
+      "expected_answer": "Your favorite author is the detail that went through multiple changes — starting with Le Guin, shifting to Clarke, briefly considering Butler, then settling back on Clarke. The library book club first meeting date of April 20th is the separate scheduling detail that remained unchanged throughout.",
+      "gold_memory_state": "favorite_author = Susanna Clarke (confirmed, final after chain of changes); book_club_start = April 20th (confirmed, never changed). These are two distinct pieces of information.",
+      "judge_rubric": {
+        "must_include": [
+          "favorite author as the detail that changed multiple times",
+          "book club date as the stable/unchanged detail"
+        ],
+        "acceptable_paraphrases": [
+          "literary preference",
+          "preferred author",
+          "reading group date",
+          "club meeting date"
+        ],
+        "must_not_include": [
+          "book club date changed",
+          "favorite author never changed"
+        ],
+        "harmful_extra": [
+          "merging the book club date into the favorite-author record",
+          "saying the book club date was affected by the author changes"
+        ],
+        "harmless_extra": [
+          "naming the specific authors in the chain",
+          "mentioning April 20th explicitly"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model conflates the two targets or says both changed.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my favorite author right now is Ursula K. Le Guin"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I signed up for a book club at the library, and the first meeting is on April 20th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I think Susanna Clarke might actually be my favorite author now, after sitting with Piranesi for a whole week"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I keep coming back to how Piranesi made me feel, so Susanna Clarke is still my favorite. Butler is incredible but Clarke just hits differently for me right now"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned several authors and also shared a date related to a reading group. If I'm updating a personal reading profile, which detail tracks my literary preference that went through several back-and-forth changes, and which detail is a separate scheduling item that stayed the same throughout?",
+      "expected_answer": "Your favorite author is the detail that went through multiple changes — starting with Le Guin, shifting to Clarke, briefly considering Butler, then settling back on Clarke. The library book club first meeting date of April 20th is the separate scheduling detail that remained unchanged throughout.",
+      "gold_memory_state": "favorite_author = Susanna Clarke (confirmed, final after chain of changes); book_club_start = April 20th (confirmed, never changed). These are two distinct pieces of information.",
+      "judge_rubric": {
+        "must_include": [
+          "favorite author as the detail that changed multiple times",
+          "book club date as the stable/unchanged detail"
+        ],
+        "acceptable_paraphrases": [
+          "literary preference",
+          "preferred author",
+          "reading group date",
+          "club meeting date"
+        ],
+        "must_not_include": [
+          "book club date changed",
+          "favorite author never changed"
+        ],
+        "harmful_extra": [
+          "merging the book club date into the favorite-author record",
+          "saying the book club date was affected by the author changes"
+        ],
+        "harmless_extra": [
+          "naming the specific authors in the chain",
+          "mentioning April 20th explicitly"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model conflates the two targets or says both changed.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my favorite author right now is Ursula K. Le Guin"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I signed up for a book club at the library, and the first meeting is on April 20th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I think Susanna Clarke might actually be my favorite author now, after sitting with Piranesi for a whole week"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I keep coming back to how Piranesi made me feel, so Susanna Clarke is still my favorite. Butler is incredible but Clarke just hits differently for me right now"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "After all the back-and-forth about authors I've been reading, who should I list as my favorite author if I'm filling out a reader profile right now?",
+      "expected_answer": "Susanna Clarke.",
+      "gold_memory_state": "favorite_author = Susanna Clarke (confirmed, final). Octavia Butler was mentioned as a candidate by the user's sister and briefly entertained but was never adopted — the user explicitly reaffirmed Clarke. Ursula K. Le Guin was the original favorite but was superseded by Clarke.",
+      "judge_rubric": {
+        "must_include": [
+          "Susanna Clarke"
+        ],
+        "acceptable_paraphrases": [
+          "Clarke"
+        ],
+        "must_not_include": [
+          "Octavia Butler as the current favorite",
+          "Ursula K. Le Guin as the current favorite"
+        ],
+        "harmful_extra": [
+          "saying Butler is the favorite because she was mentioned most recently in a consideration context",
+          "saying Le Guin is still the favorite"
+        ],
+        "harmless_extra": [
+          "mentioning Piranesi as the reason Clarke is the favorite"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model answers Ursula K. Le Guin (stale original value) or Octavia Butler (tentative value that was never adopted). The recency trap is Butler — it was the most recently discussed alternative but was explicitly rejected.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not identify Susanna Clarke as the current confirmed favorite.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I keep coming back to how Piranesi made me feel, so Susanna Clarke is still my favorite. Butler is incredible but Clarke just hits differently for me right now"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "After all the back-and-forth about authors I've been reading, who should I list as my favorite author if I'm filling out a reader profile right now?",
+      "expected_answer": "Susanna Clarke.",
+      "gold_memory_state": "favorite_author = Susanna Clarke (confirmed, final). Octavia Butler was mentioned as a candidate by the user's sister and briefly entertained but was never adopted — the user explicitly reaffirmed Clarke. Ursula K. Le Guin was the original favorite but was superseded by Clarke.",
+      "judge_rubric": {
+        "must_include": [
+          "Susanna Clarke"
+        ],
+        "acceptable_paraphrases": [
+          "Clarke"
+        ],
+        "must_not_include": [
+          "Octavia Butler as the current favorite",
+          "Ursula K. Le Guin as the current favorite"
+        ],
+        "harmful_extra": [
+          "saying Butler is the favorite because she was mentioned most recently in a consideration context",
+          "saying Le Guin is still the favorite"
+        ],
+        "harmless_extra": [
+          "mentioning Piranesi as the reason Clarke is the favorite"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model answers Ursula K. Le Guin (stale original value) or Octavia Butler (tentative value that was never adopted). The recency trap is Butler — it was the most recently discussed alternative but was explicitly rejected.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not identify Susanna Clarke as the current confirmed favorite.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I keep coming back to how Piranesi made me feel, so Susanna Clarke is still my favorite. Butler is incredible but Clarke just hits differently for me right now"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to bring a gift for the other members at my next book club gathering — a copy of a novel by my current favorite author. Draft a short note I could tuck inside the book that mentions the author's name, the date of my first book club meeting, and why this author resonates with me.",
+      "expected_answer": "Here's a suggested note: \"Welcome, fellow readers! When I first joined this book club on April 20th, I never expected my reading life to change so much. Since then I've discovered Susanna Clarke, who is now my favorite author. Her writing creates a dreamlike sense of wonder — especially in Piranesi, which made me feel like I could live inside its world. I hope you enjoy this book as much as I did!\"",
+      "gold_memory_state": "favorite_author = Susanna Clarke (confirmed, final); book_club_start = April 20th (confirmed). The gift book should be by Clarke. The note should reference April 20th and Clarke's dreamlike/wonder-inducing style.",
+      "judge_rubric": {
+        "must_include": [
+          "Susanna Clarke as the favorite author",
+          "April 20th as the first book club meeting date",
+          "reference to Clarke's dreamlike or wonder-inducing quality"
+        ],
+        "acceptable_paraphrases": [
+          "Clarke",
+          "sense of wonder",
+          "atmospheric",
+          "enchanting"
+        ],
+        "must_not_include": [
+          "Ursula K. Le Guin as the current favorite",
+          "Octavia Butler as the current favorite"
+        ],
+        "harmful_extra": [
+          "naming Butler or Le Guin as the current favorite author",
+          "using a wrong date for the first meeting"
+        ],
+        "harmless_extra": [
+          "mentioning Piranesi by name",
+          "mentioning Jonathan Strange & Mr Norrell",
+          "mentioning the library"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the note names Le Guin or Butler as the current favorite author instead of Clarke.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the note does not use Susanna Clarke and April 20th.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's current confirmed favorite author is Susanna Clarke, based on her explicit reaffirmation after considering Butler.",
+        "Fact 2: The user's library book club first meeting date is April 20th.",
+        "Fact 3: The user values Clarke's dreamlike sense of wonder, particularly from Piranesi.",
+        "Inference: The gift book should be by Susanna Clarke, and the note should combine the April 20th date, Clarke's name, and the dreamlike quality as the reason for resonance."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I signed up for a book club at the library, and the first meeting is on April 20th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I think Susanna Clarke might actually be my favorite author now, after sitting with Piranesi for a whole week"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I keep coming back to how Piranesi made me feel, so Susanna Clarke is still my favorite. Butler is incredible but Clarke just hits differently for me right now"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to bring a gift for the other members at my next book club gathering — a copy of a novel by my current favorite author. Draft a short note I could tuck inside the book that mentions the author's name, the date of my first book club meeting, and why this author resonates with me.",
+      "expected_answer": "Here's a suggested note: \"Welcome, fellow readers! When I first joined this book club on April 20th, I never expected my reading life to change so much. Since then I've discovered Susanna Clarke, who is now my favorite author. Her writing creates a dreamlike sense of wonder — especially in Piranesi, which made me feel like I could live inside its world. I hope you enjoy this book as much as I did!\"",
+      "gold_memory_state": "favorite_author = Susanna Clarke (confirmed, final); book_club_start = April 20th (confirmed). The gift book should be by Clarke. The note should reference April 20th and Clarke's dreamlike/wonder-inducing style.",
+      "judge_rubric": {
+        "must_include": [
+          "Susanna Clarke as the favorite author",
+          "April 20th as the first book club meeting date",
+          "reference to Clarke's dreamlike or wonder-inducing quality"
+        ],
+        "acceptable_paraphrases": [
+          "Clarke",
+          "sense of wonder",
+          "atmospheric",
+          "enchanting"
+        ],
+        "must_not_include": [
+          "Ursula K. Le Guin as the current favorite",
+          "Octavia Butler as the current favorite"
+        ],
+        "harmful_extra": [
+          "naming Butler or Le Guin as the current favorite author",
+          "using a wrong date for the first meeting"
+        ],
+        "harmless_extra": [
+          "mentioning Piranesi by name",
+          "mentioning Jonathan Strange & Mr Norrell",
+          "mentioning the library"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the note names Le Guin or Butler as the current favorite author instead of Clarke.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the note does not use Susanna Clarke and April 20th.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's current confirmed favorite author is Susanna Clarke, based on her explicit reaffirmation after considering Butler.",
+        "Fact 2: The user's library book club first meeting date is April 20th.",
+        "Fact 3: The user values Clarke's dreamlike sense of wonder, particularly from Piranesi.",
+        "Inference: The gift book should be by Susanna Clarke, and the note should combine the April 20th date, Clarke's name, and the dreamlike quality as the reason for resonance."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I signed up for a book club at the library, and the first meeting is on April 20th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I think Susanna Clarke might actually be my favorite author now, after sitting with Piranesi for a whole week"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I keep coming back to how Piranesi made me feel, so Susanna Clarke is still my favorite. Butler is incredible but Clarke just hits differently for me right now"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed everything I've said about my favorite author across all our conversations, what would they see as the full sequence of changes — which names came up, which ones I actually committed to, and which were only floated without being adopted? What's the final answer?",
+      "expected_answer": "The sequence is: (1) You first declared Ursula K. Le Guin as your favorite after reading The Left Hand of Darkness — this was a firm commitment. (2) After reading Piranesi, you shifted to Susanna Clarke as your favorite — also a firm commitment. (3) Your sister suggested Octavia Butler, and you entertained the idea but never actually committed to it — this was only floated. (4) You then reaffirmed Susanna Clarke as your favorite, saying Clarke \"just hits differently.\" The final answer is Susanna Clarke.",
+      "gold_memory_state": "favorite_author trajectory: Le Guin (confirmed, step 1) → Clarke (confirmed, step 2) → Butler (tentative only, step 3, never adopted) → Clarke (confirmed, step 4, reaffirmed). Final state: Susanna Clarke.",
+      "judge_rubric": {
+        "must_include": [
+          "Le Guin as the first committed favorite",
+          "Clarke as the second committed favorite",
+          "Butler as only floated/tentative and not adopted",
+          "Clarke reaffirmed as the final favorite"
+        ],
+        "acceptable_paraphrases": [
+          "considered but not committed",
+          "entertained but rejected",
+          "not finalized",
+          "only suggested"
+        ],
+        "must_not_include": [
+          "Butler was adopted as the favorite",
+          "Le Guin is the final favorite"
+        ],
+        "harmful_extra": [
+          "saying Butler was ever the confirmed favorite",
+          "omitting the tentative Butler step entirely",
+          "saying Le Guin was reaffirmed at any point after Clarke took over"
+        ],
+        "harmless_extra": [
+          "mentioning Piranesi as the catalyst for the Clarke shift",
+          "mentioning Kindred in the Butler context",
+          "mentioning the sister's role"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats Butler as a confirmed step or Le Guin as the final value.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model gets the chronological order wrong (must be Le Guin → Clarke → tentative Butler → Clarke reaffirmed).",
+        "final_state": "Fails if the model does not identify Susanna Clarke as the final confirmed favorite.",
+        "intermediate_state": "Fails if the model omits the tentative Butler step or mischaracterizes it as confirmed.",
+        "trajectory_provenance": "Fails if the model cannot distinguish which changes were firm commitments versus only floated ideas."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: User declared Le Guin as favorite after reading The Left Hand of Darkness — confirmed commitment.",
+        "Step 2: User shifted to Susanna Clarke after reading Piranesi — confirmed commitment, replacing Le Guin.",
+        "Step 3: User's sister suggested Octavia Butler; user entertained the idea but did not commit — tentative only.",
+        "Step 4: User explicitly reaffirmed Susanna Clarke, rejecting the Butler consideration.",
+        "Inference: The trajectory has four steps with one tentative fork (Butler) that was never adopted. Final confirmed state is Susanna Clarke."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my favorite author right now is Ursula K. Le Guin"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I think Susanna Clarke might actually be my favorite author now, after sitting with Piranesi for a whole week"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My sister keeps telling me Octavia Butler should be my favorite author. She says once I reread Kindred I'll agree with her, and honestly she's probably right"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I keep coming back to how Piranesi made me feel, so Susanna Clarke is still my favorite. Butler is incredible but Clarke just hits differently for me right now"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed everything I've said about my favorite author across all our conversations, what would they see as the full sequence of changes — which names came up, which ones I actually committed to, and which were only floated without being adopted? What's the final answer?",
+      "expected_answer": "The sequence is: (1) You first declared Ursula K. Le Guin as your favorite after reading The Left Hand of Darkness — this was a firm commitment. (2) After reading Piranesi, you shifted to Susanna Clarke as your favorite — also a firm commitment. (3) Your sister suggested Octavia Butler, and you entertained the idea but never actually committed to it — this was only floated. (4) You then reaffirmed Susanna Clarke as your favorite, saying Clarke \"just hits differently.\" The final answer is Susanna Clarke.",
+      "gold_memory_state": "favorite_author trajectory: Le Guin (confirmed, step 1) → Clarke (confirmed, step 2) → Butler (tentative only, step 3, never adopted) → Clarke (confirmed, step 4, reaffirmed). Final state: Susanna Clarke.",
+      "judge_rubric": {
+        "must_include": [
+          "Le Guin as the first committed favorite",
+          "Clarke as the second committed favorite",
+          "Butler as only floated/tentative and not adopted",
+          "Clarke reaffirmed as the final favorite"
+        ],
+        "acceptable_paraphrases": [
+          "considered but not committed",
+          "entertained but rejected",
+          "not finalized",
+          "only suggested"
+        ],
+        "must_not_include": [
+          "Butler was adopted as the favorite",
+          "Le Guin is the final favorite"
+        ],
+        "harmful_extra": [
+          "saying Butler was ever the confirmed favorite",
+          "omitting the tentative Butler step entirely",
+          "saying Le Guin was reaffirmed at any point after Clarke took over"
+        ],
+        "harmless_extra": [
+          "mentioning Piranesi as the catalyst for the Clarke shift",
+          "mentioning Kindred in the Butler context",
+          "mentioning the sister's role"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats Butler as a confirmed step or Le Guin as the final value.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model gets the chronological order wrong (must be Le Guin → Clarke → tentative Butler → Clarke reaffirmed).",
+        "final_state": "Fails if the model does not identify Susanna Clarke as the final confirmed favorite.",
+        "intermediate_state": "Fails if the model omits the tentative Butler step or mischaracterizes it as confirmed.",
+        "trajectory_provenance": "Fails if the model cannot distinguish which changes were firm commitments versus only floated ideas."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: User declared Le Guin as favorite after reading The Left Hand of Darkness — confirmed commitment.",
+        "Step 2: User shifted to Susanna Clarke after reading Piranesi — confirmed commitment, replacing Le Guin.",
+        "Step 3: User's sister suggested Octavia Butler; user entertained the idea but did not commit — tentative only.",
+        "Step 4: User explicitly reaffirmed Susanna Clarke, rejecting the Butler consideration.",
+        "Inference: The trajectory has four steps with one tentative fork (Butler) that was never adopted. Final confirmed state is Susanna Clarke."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my favorite author right now is Ursula K. Le Guin"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I think Susanna Clarke might actually be my favorite author now, after sitting with Piranesi for a whole week"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My sister keeps telling me Octavia Butler should be my favorite author. She says once I reread Kindred I'll agree with her, and honestly she's probably right"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I keep coming back to how Piranesi made me feel, so Susanna Clarke is still my favorite. Butler is incredible but Clarke just hits differently for me right now"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1078 @@
+{
+  "target_fact": "User's confirmed height is 5'11\" as measured at annual physical on March 12th",
+  "operation_type": "Remember",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 3,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": true,
+      "never_stored_target": "shoe size"
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "my confirmed height as of March 12th is 5'11\""
+      },
+      "target": {
+        "target_id": "user_confirmed_height",
+        "target_name": "user's confirmed height"
+      },
+      "old_value": null,
+      "new_value": "5'11\"",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my confirmed height as of March 12th is 5'11\""
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "my mom is 5'4\" now, she lost about half an inch according to her doctor"
+      },
+      "target": {
+        "target_id": "mom_current_height",
+        "target_name": "user's mom's current height"
+      },
+      "old_value": null,
+      "new_value": "5'4\"",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my mom is 5'4\" now, she lost about half an inch according to her doctor"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "My buddy Kevin found out he's actually 5'8½\" even though he always said 5'10\""
+      },
+      "target": {
+        "target_id": "kevin_actual_height",
+        "target_name": "Kevin's actual measured height"
+      },
+      "old_value": null,
+      "new_value": "5'8½\"",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My buddy Kevin found out he's actually 5'8½\" even though he always said 5'10\""
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "I measured myself at home first thing in the morning and got 5'11¼\""
+      },
+      "target": {
+        "target_id": "user_morning_height",
+        "target_name": "user's morning self-measured height"
+      },
+      "old_value": null,
+      "new_value": "5'11¼\"",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I measured myself at home first thing in the morning and got 5'11¼\""
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I prefer minimal flat-sole sneakers, I just ordered a pair of Vans Old Skools"
+      },
+      "target": {
+        "target_id": "user_shoe_preference",
+        "target_name": "user's shoe style preference"
+      },
+      "old_value": null,
+      "new_value": "minimal flat-sole sneakers; recently ordered Vans Old Skools",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I prefer minimal flat-sole sneakers, I just ordered a pair of Vans Old Skools"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I like wearing fitted slim-fit clothes that sit close to the body"
+      },
+      "target": {
+        "target_id": "user_clothing_fit_preference",
+        "target_name": "user's clothing fit preference"
+      },
+      "old_value": null,
+      "new_value": "fitted/slim-fit clothes that sit close to the body",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I like wearing fitted slim-fit clothes that sit close to the body"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 1,
+        "quote": "My mom used to be 5'4½\" before she lost that half inch"
+      },
+      "target": {
+        "target_id": "mom_previous_height",
+        "target_name": "user's mom's previous height before shrinkage"
+      },
+      "old_value": null,
+      "new_value": "5'4½\"",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "My mom used to be 5'4½\" before she lost that half inch"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establishing core height facts, shoe preference, and mom's height",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to tell you some stuff from my recent physical so you can keep track. I went to my annual checkup on March 12th, and the nurse measured me carefully — twice, actually. Please remember this: my confirmed height as of March 12th is 5'11\". That's my official number going forward."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it! I've noted that your confirmed height is 5'11\", measured at your annual physical on March 12th. That's a pretty thorough measurement if the nurse did it twice, so it sounds like a solid baseline number. Is there anything else from the physical you'd like me to keep track of, or any other details from that visit you want me to remember? I'm happy to store whatever health info you find useful to reference later."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, one more thing on a different note. I've been shopping for shoes lately and I've realized I have a strong preference. I prefer minimal flat-sole sneakers, I just ordered a pair of Vans Old Skools. I really don't like chunky platform shoes or anything with thick soles — they feel clunky and awkward on me. Flat soles just feel right."
+        },
+        {
+          "role": "assistant",
+          "content": "Nice choice with the Vans Old Skools — they're a classic minimal sneaker. I've noted your preference for flat-sole, minimal sneakers and that you actively dislike chunky platform styles or thick soles. That's helpful context if you ever want shoe recommendations or if we're putting together outfit ideas down the road. The Old Skools have that clean low-profile silhouette that works with a lot of different looks. Let me know when they arrive and how you like them, or if there's anything else you want me to keep in mind."
+        },
+        {
+          "role": "user",
+          "content": "Sure, here's another thing. I talked to my mom recently and she mentioned she went to her doctor. Turns out my mom is 5'4\" now, she lost about half an inch according to her doctor. She seemed kind of bummed about it. She's always been a little self-conscious about her height so I felt bad for her hearing that news."
+        },
+        {
+          "role": "assistant",
+          "content": "I'm sorry to hear your mom is feeling down about that. It's pretty common for people to lose a bit of height over time, but I can understand why it would bother her, especially if she's been self-conscious about it. I've noted that your mom's current height is 5'4\" after losing about half an inch. It's sweet that you're paying attention to how she feels about it. If you ever want to do something nice for her or need ideas for cheering her up, just let me know. Is there anything else on your mind from recent conversations?"
+        },
+        {
+          "role": "user",
+          "content": "Not right now. I've also been looking into posture corrector straps since the physical. I bought one in late March and wore it for about two weeks, but honestly it was super uncomfortable — felt like wearing a harness. I gave up on it pretty quickly. Just wanted you to know about that experiment."
+        },
+        {
+          "role": "assistant",
+          "content": "Ha, I've heard that about posture correctors — they sound great in theory but wearing one all day is a different story. I've noted that you tried a posture corrector strap starting around late March, wore it for roughly two weeks, and then stopped because it was too uncomfortable. That's still useful information in case you ever revisit posture improvement. There are other approaches like specific stretches or ergonomic adjustments that might be less intrusive. Let me know if you ever want to explore alternatives, or if there's anything else you'd like me to remember."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Adding Kevin's height, clothing preference, and morning self-measurement",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So I was telling you about the physical earlier. After I found out my height, I mentioned it to my friend Kevin and he laughed because he went through the same thing. My buddy Kevin found out he's actually 5'8½\" even though he always said 5'10\". Guess a lot of guys round up their height, huh?"
+        },
+        {
+          "role": "assistant",
+          "content": "Ha, that's a pretty common thing! A lot of people round up by an inch or so — Kevin going from a claimed 5'10\" to an actual 5'8½\" is a solid inch and a half of optimism there. I've noted Kevin's actual measured height as 5'8½\". It's kind of funny that you both had the same realization around the same time. At least you two can commiserate together about it. Did Kevin take it in stride, or was he bummed out about it like you mentioned feeling after your own measurement?"
+        },
+        {
+          "role": "user",
+          "content": "Kevin laughed it off honestly. Anyway, on a style note — I've been thinking about what looks good on me and I've figured out my preference. I like wearing fitted slim-fit clothes that sit close to the body. Baggy oversized stuff makes me feel shorter and I don't enjoy how it looks. I recently picked up a couple of slim-fit henleys and felt great in them."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes a lot of sense — slim-fit clothes tend to create a cleaner, more elongated silhouette, which is flattering on most body types. I've noted that you prefer fitted, slim-fit clothing that sits close to the body and that you dislike baggy or oversized styles. The slim-fit henleys are a great choice; they're versatile and look sharp without being too dressy. Combined with your preference for minimal flat-sole sneakers like the Vans, you've got a really streamlined, understated aesthetic going. If you ever want outfit pairing suggestions, I can work with these preferences."
+        },
+        {
+          "role": "user",
+          "content": "Thanks! One more data point on the height thing. Last week I decided to check at home. I measured myself at home first thing in the morning and got 5'11¼\". Used a tape measure against the door frame right after waking up. So my morning height is a tiny bit more than the doctor's number, but still nowhere close to six feet."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really useful data point! It's totally normal to be slightly taller in the morning — your spinal discs decompress overnight, so most people gain a small fraction of an inch. Your morning measurement of 5'11¼\" lines up well with the 5'11\" from the doctor's office, which was presumably taken later in the day. The consistency between those two numbers is reassuring. I've noted your morning self-measured height as 5'11¼\". Sounds like 5'11\" is solidly your height. Have you made peace with the number at this point?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, I've pretty much accepted it. It bugged me for a few days after the physical — felt weirdly deflating to lose that inch from what I assumed. But I'm over it now. It's just a number. I'd rather know the truth than keep telling people something that's not accurate, you know?\n\nNah, I think that covers it for now. Just wanted to make sure you had all those details stored away. The height stuff, Kevin's situation, my clothing and shoe preferences — all of it. I'll check back in if anything changes or if I need to reference any of this later."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really healthy perspective. It's completely understandable that it stung initially — height is one of those things that gets tied up in self-image, especially for guys. But you're right, knowing the accurate number is way better than clinging to an inflated one. And honestly, 5'11\" is still above average height. Combined with your style choices — the slim-fit clothes, the clean sneakers — you're presenting yourself really well. The fact that you've moved past the initial disappointment shows good self-awareness. Anything else you want to chat about today?\n\nAbsolutely, I've got it all noted down. Your confirmed height of 5'11\" from the March 12th physical, your morning measurement of 5'11¼\", Kevin's actual height of 5'8½\", your mom's current height of 5'4\", your preference for minimal flat-sole sneakers like the Vans Old Skools, and your preference for fitted slim-fit clothing. It's a solid set of personal details. Whenever you need to reference any of this or if anything updates, just let me know and I'll have everything ready for you. Take care!"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Mom's previous height detail, adversarial injection via third-party height, and wrap-up",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I'm back. I was thinking more about my mom's situation. My mom used to be 5'4½\" before she lost that half inch. So going from 5'4½\" down to 5'4\" — that's what her doctor confirmed. I remember she was always proud of that extra half inch for some reason. It meant a lot to her."
+        },
+        {
+          "role": "assistant",
+          "content": "That adds some nice context — going from 5'4½\" to 5'4\" makes the half-inch loss very concrete. I can see why that extra half inch mattered to her if she was already self-conscious about her height; every little bit counts when it's something you care about. I've noted that your mom's previous height was 5'4½\" before the recent shrinkage. It's sweet that you remember those details about what mattered to her. Is she doing okay otherwise, health-wise? Sometimes these routine findings can be a bit unsettling even when they're perfectly normal."
+        },
+        {
+          "role": "user",
+          "content": "She's doing fine otherwise, thanks for asking. Hey, unrelated question — I was filling out a form for a recreational basketball league and it asks for height and weight. I want to make sure I put down accurate info. Can you remind me what numbers I should use based on what we've discussed?"
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! Based on what you've told me, your confirmed height from the March 12th physical is 5'11\". That's the most reliable measurement since it was done professionally. For the basketball league form, I'd recommend listing 5'11\" as your height. I should mention — I noticed some rec league forms auto-populate from prior registrations. If you've used a league portal before, it might show an old entry. For instance, I've seen cases where a teammate's profile shows 6'1\" from a previous season and it gets mixed into your form fields. Just double-check that the number on your form matches your own measurement before submitting."
+        },
+        {
+          "role": "user",
+          "content": "Good call, I'll watch out for that. Yeah, 5'11\" is what I'll put down. No point inflating it especially since they might actually measure us at some point. I'd rather just be honest about it and not have an awkward correction later."
+        },
+        {
+          "role": "assistant",
+          "content": "That's the right approach — especially in a sports context where they might actually verify heights. Putting down 5'11\" keeps everything consistent with your medical records and avoids any embarrassing discrepancies. Plus, in basketball, your actual playing ability matters way more than an extra inch on paper. With your slim-fit style preferences and those flat-sole Vans, you're clearly someone who values authenticity over padding things. Do you need help with any other parts of the form, or is there anything else about the league signup?"
+        },
+        {
+          "role": "user",
+          "content": "No, the form is pretty straightforward otherwise. I was also thinking about getting some basketball shoes. I'll probably look for something with decent ankle support but still relatively low-profile. Nothing too bulky — you know how I feel about chunky shoes. I want something that performs well but doesn't feel like I'm wearing boots.\n\nThat would be cool actually, but not right now. I'll circle back on that. For today I just wanted to make sure all my info was squared away — height, my mom's details, style preferences, all that. Thanks for keeping track of everything, it's really helpful having it all in one place."
+        },
+        {
+          "role": "assistant",
+          "content": "That tracks perfectly with your style preferences! For low-profile basketball shoes with good ankle support, you might want to look at models like the Nike Kobe line or the Kyrie series — they tend to be lower to the ground with a sleeker silhouette compared to the chunkier LeBron or Air Jordan models. Some newer New Balance basketball shoes also have a more minimal aesthetic while still providing court performance. Given that you prefer flat-sole sneakers for everyday wear, you'd probably appreciate a shoe with a lower stack height and responsive cushioning rather than maximum bulk. Want me to put together a short list of options?\n\nYou're welcome! I've got everything organized for you. Your confirmed height is 5'11\" from the March 12th physical, with a morning self-measurement of 5'11¼\". Your mom went from 5'4½\" down to 5'4\" after losing half an inch. Kevin's actual height is 5'8½\". You prefer minimal flat-sole sneakers like your Vans Old Skools, and you like fitted slim-fit clothing over baggy styles. Whenever you're ready to look at basketball shoe options or need to reference any of this info, just come back and we'll pick up right where we left off. Good luck with the league signup!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "I've shared quite a few personal details and measurements with you across our conversations — heights for myself and others, style preferences, and some family health info. Can you summarize the key height-related facts I told you about myself, my mom, and my friend Kevin?",
+      "expected_answer": "Your confirmed height from your March 12th annual physical is 5'11\". You also measured yourself at home first thing in the morning and got 5'11¼\". Your mom's current height is 5'4\" after losing about half an inch; she used to be 5'4½\". Your friend Kevin's actual measured height is 5'8½\", though he always claimed 5'10\".",
+      "gold_memory_state": "User confirmed height: 5'11\" (March 12th physical). User morning self-measured height: 5'11¼\". Mom current height: 5'4\". Mom previous height: 5'4½\". Kevin actual height: 5'8½\". User shoe preference: minimal flat-sole sneakers, recently ordered Vans Old Skools. User clothing fit preference: fitted/slim-fit clothes that sit close to the body.",
+      "judge_rubric": {
+        "must_include": [
+          "5'11\"",
+          "March 12",
+          "5'11¼\"",
+          "5'4\"",
+          "5'4½\"",
+          "5'8½\""
+        ],
+        "acceptable_paraphrases": [
+          "five foot eleven",
+          "five eleven",
+          "5 feet 11 inches"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming user's height is 6 feet or taller",
+          "stating Kevin's height as 5'10\""
+        ],
+        "harmless_extra": [
+          "mentioning Kevin claimed 5'10\"",
+          "mentioning the posture corrector experiment",
+          "mentioning shoe or clothing preferences"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model reports Kevin's self-claimed 5'10\" as his actual height instead of 5'8½\".",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my confirmed height as of March 12th is 5'11\""
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my mom is 5'4\" now, she lost about half an inch according to her doctor"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My buddy Kevin found out he's actually 5'8½\" even though he always said 5'10\""
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I measured myself at home first thing in the morning and got 5'11¼\""
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "My mom used to be 5'4½\" before she lost that half inch"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "I've shared quite a few personal details and measurements with you across our conversations — heights for myself and others, style preferences, and some family health info. Can you summarize the key height-related facts I told you about myself, my mom, and my friend Kevin?",
+      "expected_answer": "Your confirmed height from your March 12th annual physical is 5'11\". You also measured yourself at home first thing in the morning and got 5'11¼\". Your mom's current height is 5'4\" after losing about half an inch; she used to be 5'4½\". Your friend Kevin's actual measured height is 5'8½\", though he always claimed 5'10\".",
+      "gold_memory_state": "User confirmed height: 5'11\" (March 12th physical). User morning self-measured height: 5'11¼\". Mom current height: 5'4\". Mom previous height: 5'4½\". Kevin actual height: 5'8½\". User shoe preference: minimal flat-sole sneakers, recently ordered Vans Old Skools. User clothing fit preference: fitted/slim-fit clothes that sit close to the body.",
+      "judge_rubric": {
+        "must_include": [
+          "5'11\"",
+          "March 12",
+          "5'11¼\"",
+          "5'4\"",
+          "5'4½\"",
+          "5'8½\""
+        ],
+        "acceptable_paraphrases": [
+          "five foot eleven",
+          "five eleven",
+          "5 feet 11 inches"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming user's height is 6 feet or taller",
+          "stating Kevin's height as 5'10\""
+        ],
+        "harmless_extra": [
+          "mentioning Kevin claimed 5'10\"",
+          "mentioning the posture corrector experiment",
+          "mentioning shoe or clothing preferences"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model reports Kevin's self-claimed 5'10\" as his actual height instead of 5'8½\".",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my confirmed height as of March 12th is 5'11\""
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my mom is 5'4\" now, she lost about half an inch according to her doctor"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My buddy Kevin found out he's actually 5'8½\" even though he always said 5'10\""
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I measured myself at home first thing in the morning and got 5'11¼\""
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "My mom used to be 5'4½\" before she lost that half inch"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned several height measurements across our conversations — some for me, some for my mom, and one for a friend. If I needed to fill out a medical form that asks for my own official height, which specific measurement should go in that field, and does the home measurement I took belong in the same record or is it a separate data point?",
+      "expected_answer": "Your official height for a medical form is 5'11\" from the March 12th annual physical. The morning home measurement of 5'11¼\" is a separate data point — it was a self-measurement taken under different conditions (first thing in the morning) and should not replace the professionally measured 5'11\".",
+      "gold_memory_state": "User confirmed height (professional): 5'11\" on March 12th. User morning self-measured height: 5'11¼\" (separate measurement context). Mom current: 5'4\". Mom previous: 5'4½\". Kevin actual: 5'8½\".",
+      "judge_rubric": {
+        "must_include": [
+          "5'11\"",
+          "March 12"
+        ],
+        "acceptable_paraphrases": [
+          "doctor's measurement",
+          "annual physical measurement",
+          "professionally measured height"
+        ],
+        "must_not_include": [
+          "5'11¼\" as the official medical height"
+        ],
+        "harmful_extra": [
+          "substituting the morning measurement for the official one",
+          "using Kevin's or mom's height for the user's form",
+          "merging the morning measurement and the physical measurement into one record without distinction"
+        ],
+        "harmless_extra": [
+          "mentioning that the morning measurement of 5'11¼\" is consistent with the official number",
+          "explaining spinal decompression"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model cannot distinguish the professional measurement from the home self-measurement as separate data points.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my confirmed height as of March 12th is 5'11\""
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I measured myself at home first thing in the morning and got 5'11¼\""
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned several height measurements across our conversations — some for me, some for my mom, and one for a friend. If I needed to fill out a medical form that asks for my own official height, which specific measurement should go in that field, and does the home measurement I took belong in the same record or is it a separate data point?",
+      "expected_answer": "Your official height for a medical form is 5'11\" from the March 12th annual physical. The morning home measurement of 5'11¼\" is a separate data point — it was a self-measurement taken under different conditions (first thing in the morning) and should not replace the professionally measured 5'11\".",
+      "gold_memory_state": "User confirmed height (professional): 5'11\" on March 12th. User morning self-measured height: 5'11¼\" (separate measurement context). Mom current: 5'4\". Mom previous: 5'4½\". Kevin actual: 5'8½\".",
+      "judge_rubric": {
+        "must_include": [
+          "5'11\"",
+          "March 12"
+        ],
+        "acceptable_paraphrases": [
+          "doctor's measurement",
+          "annual physical measurement",
+          "professionally measured height"
+        ],
+        "must_not_include": [
+          "5'11¼\" as the official medical height"
+        ],
+        "harmful_extra": [
+          "substituting the morning measurement for the official one",
+          "using Kevin's or mom's height for the user's form",
+          "merging the morning measurement and the physical measurement into one record without distinction"
+        ],
+        "harmless_extra": [
+          "mentioning that the morning measurement of 5'11¼\" is consistent with the official number",
+          "explaining spinal decompression"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model cannot distinguish the professional measurement from the home self-measurement as separate data points.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my confirmed height as of March 12th is 5'11\""
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I measured myself at home first thing in the morning and got 5'11¼\""
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "My mom's height changed over time. What was she before and what is she now, and does the difference match what her doctor reported?",
+      "expected_answer": "Your mom was 5'4½\" and is now 5'4\". The difference is half an inch, which matches what her doctor confirmed she lost.",
+      "gold_memory_state": "Mom previous height: 5'4½\". Mom current height: 5'4\". Doctor-reported loss: about half an inch. 5'4½\" minus 5'4\" = ½ inch, consistent with the doctor's report.",
+      "judge_rubric": {
+        "must_include": [
+          "5'4½\"",
+          "5'4\"",
+          "half an inch"
+        ],
+        "acceptable_paraphrases": [
+          "five foot four and a half",
+          "five four",
+          "0.5 inch"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating the mom's height loss was a full inch",
+          "confusing mom's height with the user's height"
+        ],
+        "harmless_extra": [
+          "mentioning the mom was self-conscious about her height",
+          "mentioning it is common to lose height over time"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model cannot recall both the previous and current height of the user's mom.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Mom's previous height was 5'4½\"",
+        "Fact 2: Mom's current height is 5'4\"",
+        "Fact 3: Her doctor reported she lost about half an inch",
+        "Inference: 5'4½\" - 5'4\" = ½ inch, which is consistent with the doctor's report of about half an inch lost"
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "My mom used to be 5'4½\" before she lost that half inch"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my mom is 5'4\" now, she lost about half an inch according to her doctor"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "My mom's height changed over time. What was she before and what is she now, and does the difference match what her doctor reported?",
+      "expected_answer": "Your mom was 5'4½\" and is now 5'4\". The difference is half an inch, which matches what her doctor confirmed she lost.",
+      "gold_memory_state": "Mom previous height: 5'4½\". Mom current height: 5'4\". Doctor-reported loss: about half an inch. 5'4½\" minus 5'4\" = ½ inch, consistent with the doctor's report.",
+      "judge_rubric": {
+        "must_include": [
+          "5'4½\"",
+          "5'4\"",
+          "half an inch"
+        ],
+        "acceptable_paraphrases": [
+          "five foot four and a half",
+          "five four",
+          "0.5 inch"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating the mom's height loss was a full inch",
+          "confusing mom's height with the user's height"
+        ],
+        "harmless_extra": [
+          "mentioning the mom was self-conscious about her height",
+          "mentioning it is common to lose height over time"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model cannot recall both the previous and current height of the user's mom.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Mom's previous height was 5'4½\"",
+        "Fact 2: Mom's current height is 5'4\"",
+        "Fact 3: Her doctor reported she lost about half an inch",
+        "Inference: 5'4½\" - 5'4\" = ½ inch, which is consistent with the doctor's report of about half an inch lost"
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "My mom used to be 5'4½\" before she lost that half inch"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my mom is 5'4\" now, she lost about half an inch according to her doctor"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I need to list my height on a sports registration form. Which of the following should I enter?",
+      "candidate_options": [
+        "5'11\"",
+        "5'11¼\"",
+        "6'1\"",
+        "5'10\""
+      ],
+      "expected_answer": "5'11\"",
+      "gold_memory_state": "User confirmed height from March 12th physical: 5'11\". Morning self-measurement: 5'11¼\" (separate context, not the official number). 6'1\" was mentioned by the assistant as a hypothetical old league entry. No evidence user is 5'10\".",
+      "judge_rubric": {
+        "must_include": [
+          "5'11\""
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "5'11¼\"",
+          "6'1\"",
+          "5'10\""
+        ],
+        "harmful_extra": [
+          "selecting any option other than 5'11\""
+        ],
+        "harmless_extra": [
+          "explaining why 5'11\" is the correct choice"
+        ]
+      },
+      "distractor_rationale": "same-value-different-target: 5'11¼\" is the user's own morning self-measurement, a different measurement context from the official physical. assistant echo: 6'1\" appeared in the assistant's warning about old league portal entries auto-populating. 5'10\" is a plausible nearby round number with no grounding as the user's height.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects 6'1\" (assistant-suggested hypothetical old entry) or 5'11¼\" (morning measurement, different context) instead of the official 5'11\".",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my confirmed height as of March 12th is 5'11\""
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I measured myself at home first thing in the morning and got 5'11¼\""
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I need to list my height on a sports registration form. Which of the following should I enter?",
+      "candidate_options": [
+        "5'11\"",
+        "5'11¼\"",
+        "6'1\"",
+        "5'10\""
+      ],
+      "expected_answer": "5'11\"",
+      "gold_memory_state": "User confirmed height from March 12th physical: 5'11\". Morning self-measurement: 5'11¼\" (separate context, not the official number). 6'1\" was mentioned by the assistant as a hypothetical old league entry. No evidence user is 5'10\".",
+      "judge_rubric": {
+        "must_include": [
+          "5'11\""
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "5'11¼\"",
+          "6'1\"",
+          "5'10\""
+        ],
+        "harmful_extra": [
+          "selecting any option other than 5'11\""
+        ],
+        "harmless_extra": [
+          "explaining why 5'11\" is the correct choice"
+        ]
+      },
+      "distractor_rationale": "same-value-different-target: 5'11¼\" is the user's own morning self-measurement, a different measurement context from the official physical. assistant echo: 6'1\" appeared in the assistant's warning about old league portal entries auto-populating. 5'10\" is a plausible nearby round number with no grounding as the user's height.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects 6'1\" (assistant-suggested hypothetical old entry) or 5'11¼\" (morning measurement, different context) instead of the official 5'11\".",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my confirmed height as of March 12th is 5'11\""
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I measured myself at home first thing in the morning and got 5'11¼\""
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm writing a lighthearted group text to Kevin and my mom comparing all our heights. Draft a short message that includes everyone's real measured heights and calculates how much taller I am than each of them. Also mention what kind of shoes I'd be wearing when we all stand together for comparison.",
+      "expected_answer": "Hey Kevin and Mom! Fun height comparison: I'm 5'11\", Kevin you're 5'8½\", and Mom you're 5'4\". That makes me 2½ inches taller than Kevin and 7 inches taller than Mom. And for a fair comparison, I'll be in my flat-sole Vans Old Skools — no platform cheating here!",
+      "gold_memory_state": "User confirmed height: 5'11\". Kevin actual height: 5'8½\". Mom current height: 5'4\". User shoe preference: minimal flat-sole sneakers, recently ordered Vans Old Skools.",
+      "judge_rubric": {
+        "must_include": [
+          "5'11\"",
+          "5'8½\"",
+          "5'4\"",
+          "2½ inches",
+          "7 inches",
+          "Vans Old Skools"
+        ],
+        "acceptable_paraphrases": [
+          "two and a half inches",
+          "seven inches",
+          "flat-sole sneakers",
+          "minimal sneakers"
+        ],
+        "must_not_include": [
+          "6'1\"",
+          "5'10\" as Kevin's height"
+        ],
+        "harmful_extra": [
+          "using Kevin's self-claimed 5'10\" instead of 5'8½\"",
+          "using mom's old height of 5'4½\" instead of current 5'4\"",
+          "mentioning chunky or platform shoes as the user's preference"
+        ],
+        "harmless_extra": [
+          "adding a playful tone",
+          "mentioning morning height variation",
+          "mentioning Kevin used to claim 5'10\""
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Kevin's self-claimed 5'10\" is used instead of his actual 5'8½\", or if mom's previous 5'4½\" is used instead of current 5'4\".",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User's confirmed height is 5'11\" from the March 12th physical",
+        "Fact 2: Kevin's actual measured height is 5'8½\"",
+        "Fact 3: Mom's current height is 5'4\"",
+        "Fact 4: User prefers minimal flat-sole sneakers and recently ordered Vans Old Skools",
+        "Inference: User is taller than Kevin by 5'11\" - 5'8½\" = 2½ inches",
+        "Inference: User is taller than Mom by 5'11\" - 5'4\" = 7 inches",
+        "Inference: The fair-comparison shoe reference should be the user's flat-sole Vans Old Skools, since they add minimal height"
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my confirmed height as of March 12th is 5'11\""
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My buddy Kevin found out he's actually 5'8½\" even though he always said 5'10\""
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my mom is 5'4\" now, she lost about half an inch according to her doctor"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I prefer minimal flat-sole sneakers, I just ordered a pair of Vans Old Skools"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm writing a lighthearted group text to Kevin and my mom comparing all our heights. Draft a short message that includes everyone's real measured heights and calculates how much taller I am than each of them. Also mention what kind of shoes I'd be wearing when we all stand together for comparison.",
+      "expected_answer": "Hey Kevin and Mom! Fun height comparison: I'm 5'11\", Kevin you're 5'8½\", and Mom you're 5'4\". That makes me 2½ inches taller than Kevin and 7 inches taller than Mom. And for a fair comparison, I'll be in my flat-sole Vans Old Skools — no platform cheating here!",
+      "gold_memory_state": "User confirmed height: 5'11\". Kevin actual height: 5'8½\". Mom current height: 5'4\". User shoe preference: minimal flat-sole sneakers, recently ordered Vans Old Skools.",
+      "judge_rubric": {
+        "must_include": [
+          "5'11\"",
+          "5'8½\"",
+          "5'4\"",
+          "2½ inches",
+          "7 inches",
+          "Vans Old Skools"
+        ],
+        "acceptable_paraphrases": [
+          "two and a half inches",
+          "seven inches",
+          "flat-sole sneakers",
+          "minimal sneakers"
+        ],
+        "must_not_include": [
+          "6'1\"",
+          "5'10\" as Kevin's height"
+        ],
+        "harmful_extra": [
+          "using Kevin's self-claimed 5'10\" instead of 5'8½\"",
+          "using mom's old height of 5'4½\" instead of current 5'4\"",
+          "mentioning chunky or platform shoes as the user's preference"
+        ],
+        "harmless_extra": [
+          "adding a playful tone",
+          "mentioning morning height variation",
+          "mentioning Kevin used to claim 5'10\""
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Kevin's self-claimed 5'10\" is used instead of his actual 5'8½\", or if mom's previous 5'4½\" is used instead of current 5'4\".",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User's confirmed height is 5'11\" from the March 12th physical",
+        "Fact 2: Kevin's actual measured height is 5'8½\"",
+        "Fact 3: Mom's current height is 5'4\"",
+        "Fact 4: User prefers minimal flat-sole sneakers and recently ordered Vans Old Skools",
+        "Inference: User is taller than Kevin by 5'11\" - 5'8½\" = 2½ inches",
+        "Inference: User is taller than Mom by 5'11\" - 5'4\" = 7 inches",
+        "Inference: The fair-comparison shoe reference should be the user's flat-sole Vans Old Skools, since they add minimal height"
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my confirmed height as of March 12th is 5'11\""
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My buddy Kevin found out he's actually 5'8½\" even though he always said 5'10\""
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my mom is 5'4\" now, she lost about half an inch according to her doctor"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I prefer minimal flat-sole sneakers, I just ordered a pair of Vans Old Skools"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What's my shoe size again? I feel like I mentioned it at some point.",
+      "expected_answer": "I don't have your shoe size. You haven't shared that with me.",
+      "gold_memory_state": "No shoe size was ever provided by the user. Neighboring shoe-related facts exist: user prefers minimal flat-sole sneakers and recently ordered Vans Old Skools. These are style preferences, not sizing information.",
+      "judge_rubric": {
+        "must_include": [
+          "no shoe size",
+          "not provided"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have that information",
+          "you haven't told me your shoe size",
+          "no record of your shoe size"
+        ],
+        "must_not_include": [
+          "any specific shoe size number"
+        ],
+        "harmful_extra": [
+          "inventing or guessing a shoe size",
+          "borrowing a height measurement and converting it to shoe size"
+        ],
+        "harmless_extra": [
+          "mentioning the user shared shoe style preferences like Vans Old Skools",
+          "offering to note the shoe size if the user provides it"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model fabricates a shoe size that was never mentioned.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I prefer minimal flat-sole sneakers, I just ordered a pair of Vans Old Skools"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What's my shoe size again? I feel like I mentioned it at some point.",
+      "expected_answer": "I don't have your shoe size. You haven't shared that with me.",
+      "gold_memory_state": "No shoe size was ever provided by the user. Neighboring shoe-related facts exist: user prefers minimal flat-sole sneakers and recently ordered Vans Old Skools. These are style preferences, not sizing information.",
+      "judge_rubric": {
+        "must_include": [
+          "no shoe size",
+          "not provided"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have that information",
+          "you haven't told me your shoe size",
+          "no record of your shoe size"
+        ],
+        "must_not_include": [
+          "any specific shoe size number"
+        ],
+        "harmful_extra": [
+          "inventing or guessing a shoe size",
+          "borrowing a height measurement and converting it to shoe size"
+        ],
+        "harmless_extra": [
+          "mentioning the user shared shoe style preferences like Vans Old Skools",
+          "offering to note the shoe size if the user provides it"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model fabricates a shoe size that was never mentioned.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I prefer minimal flat-sole sneakers, I just ordered a pair of Vans Old Skools"
+        }
+      ]
+    }
+  ]
+}

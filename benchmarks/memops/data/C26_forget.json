@@ -1,0 +1,996 @@
+{
+  "target_fact": "C26 interview details including appointment time, location, interviewer, salary range, and portfolio requirement",
+  "operation_type": "Forget",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "My C26 interview is scheduled for March 12 at 2:00 PM"
+      },
+      "target": {
+        "target_id": "c26_interview_datetime",
+        "target_name": "C26 interview date and time"
+      },
+      "old_value": null,
+      "new_value": "March 12, 2:00 PM",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My C26 interview is scheduled for March 12 at 2:00 PM"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "The main interviewer is David Koh, and it's a panel of three people total"
+      },
+      "target": {
+        "target_id": "c26_interviewer",
+        "target_name": "C26 interview panel lead interviewer"
+      },
+      "old_value": null,
+      "new_value": "David Koh (panel of three)",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The main interviewer is David Koh, and it's a panel of three people total"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "the location got changed to 15 Clarke Road, their satellite office"
+      },
+      "target": {
+        "target_id": "c26_interview_location",
+        "target_name": "C26 interview location"
+      },
+      "old_value": null,
+      "new_value": "15 Clarke Road (satellite office)",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "the location got changed to 15 Clarke Road, their satellite office"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "The salary range listed for the C26 role is $72,000 to $85,000"
+      },
+      "target": {
+        "target_id": "c26_salary_range",
+        "target_name": "C26 role salary range"
+      },
+      "old_value": null,
+      "new_value": "$72,000 to $85,000",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The salary range listed for the C26 role is $72,000 to $85,000"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I was told to bring a printed portfolio to the interview"
+      },
+      "target": {
+        "target_id": "c26_portfolio_requirement",
+        "target_name": "C26 interview printed portfolio requirement"
+      },
+      "old_value": null,
+      "new_value": "Bring a printed portfolio to the interview",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I was told to bring a printed portfolio to the interview"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "forget",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "you can forget the portfolio requirement entirely — they never even asked for it, so there's no point tracking that anymore"
+      },
+      "target": {
+        "target_id": "c26_portfolio_requirement",
+        "target_name": "C26 interview printed portfolio requirement"
+      },
+      "old_value": "Bring a printed portfolio to the interview",
+      "new_value": null,
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "you can forget the portfolio requirement entirely — they never even asked for it, so there's no point tracking that anymore"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establishing core C26 interview facts: date/time, interviewer, and location",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to make sure you have all my interview details stored properly. My C26 interview is scheduled for March 12 at 2:00 PM. I had to rearrange a dentist appointment that same afternoon to make it work, so this time is really locked in for me. Can you keep track of this?"
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! I've noted your C26 interview for March 12 at 2:00 PM. That sounds like it took some coordination with your dentist appointment, so I understand how important it is to keep this time pinned down. Is there anything else about the interview you'd like me to track — like the location, who you'll be meeting with, or any preparation notes you want to keep handy?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, actually. The main interviewer is David Koh, and it's a panel of three people total. I don't know the other two names yet, but David is the key person. My friend Rina helped me do mock interviews to prepare — she was really sharp and gave specific feedback. She's got her own interview at some logistics company around mid-April, but I don't remember her exact date."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — your panel interview will be led by David Koh, with two other interviewers whose names you don't have yet. That's great that Rina helped you prepare with mock interviews; specific feedback like that is usually much more useful than generic advice. I'll keep David Koh noted as the lead interviewer. If you find out the other panelists' names later, just let me know. Anything else about the logistics of the interview itself?"
+        },
+        {
+          "role": "user",
+          "content": "Right, about logistics — the location got changed to 15 Clarke Road, their satellite office. It was originally supposed to be at 40 Kent Street, their main office, but they emailed me about a week before, around March 5, saying it moved. Honestly, the last-minute change kind of put me in a bad mood for a couple of days. Made me feel like they weren't that organized."
+        },
+        {
+          "role": "assistant",
+          "content": "I understand the frustration — a last-minute venue change right before an important interview can definitely feel unsettling. I've updated the interview location to 15 Clarke Road, their satellite office. The original location at 40 Kent Street is no longer relevant. It's worth noting that sometimes these changes are just administrative shuffles, but I completely understand why it made you anxious about their organizational culture. Do you want me to look into anything about the satellite office location, like parking or transit options?"
+        },
+        {
+          "role": "user",
+          "content": "No, I've already sorted out how to get there. I also decided I'm going with a navy blazer and no tie. I really can't stand overly formal outfits — stiff collars and tight ties make me feel like I can't think straight. I'd rather look put-together but comfortable. That's just how I operate best in high-pressure situations."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a smart choice — a navy blazer without a tie strikes a nice balance between professional and approachable, especially for a panel setting. Feeling physically comfortable can genuinely help you think more clearly under pressure, so it makes sense to dress in a way that supports that. I've noted your outfit preference as well. So far I have: March 12 at 2:00 PM, panel led by David Koh, location at 15 Clarke Road satellite office, and navy blazer with no tie. Let me know if there's anything else to add."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Adding salary range, establishing then forgetting the portfolio requirement",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I looked up the C26 role description again to refresh my memory. The salary range listed for the C26 role is $72,000 to $85,000. That's one of the things that caught my eye about this position — plus the job posting mentioned a lot of autonomous project work, which is exactly the kind of environment I thrive in. I really don't do well in big noisy open-plan teams."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a solid salary range — $72,000 to $85,000 gives you some room for negotiation depending on how the interview goes and what experience level they're targeting. And the emphasis on autonomous project work sounds like a great fit for your working style. Being able to work independently often means you can set your own pace and focus deeply, which clearly matters to you. I've noted the salary range. Would you like me to help you think through any salary negotiation points or talking points about your preference for independent work?"
+        },
+        {
+          "role": "user",
+          "content": "Maybe later on that. But there's something else — I was told to bring a printed portfolio to the interview. They mentioned it in the original scheduling email. I spent some time putting together a nice set of project summaries and work samples. Do you have that noted? I want to make sure I don't forget it on the day."
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, I've noted that you need to bring a printed portfolio to the C26 interview. It sounds like you've already done the hard work of compiling project summaries and work samples, which is great. On the day of the interview — March 12 at 2:00 PM at 15 Clarke Road — you'll want to have that portfolio ready to hand to David Koh and the other panelists. Would you like me to set up a reminder checklist for interview day that includes the portfolio along with anything else you might need?"
+        },
+        {
+          "role": "user",
+          "content": "Actually, hold on — the interview already happened, and you can forget the portfolio requirement entirely — they never even asked for it, so there's no point tracking that anymore. I brought it but nobody wanted to see it. Kind of annoying after I spent time preparing it, but whatever. The rest of the details are still relevant though."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood — I've removed the portfolio requirement from your C26 interview notes since they didn't end up asking for it. I can see how that would be frustrating after putting in the effort to prepare it, but at least you were well-prepared regardless. Your remaining C26 details are still active: March 12 at 2:00 PM, panel led by David Koh, 15 Clarke Road satellite office, salary range of $72,000 to $85,000. Is there anything from the interview itself you'd like to debrief or add to your notes?"
+        },
+        {
+          "role": "user",
+          "content": "Not yet on the debrief. I also had a phone screen before the panel interview — I think it was around early February, maybe the 6th or 7th. It was pretty casual, lasted about 20 minutes. That went fine. I just want to keep a record of the overall timeline for this C26 process.\n\nI'm waiting to hear back. They said it could take up to two weeks after the interview. I'll update you when I know more. For now just keep everything as is — minus the portfolio thing obviously."
+        },
+        {
+          "role": "assistant",
+          "content": "Good idea to keep the full timeline documented. I've noted that you had a phone screen around early February, approximately the 6th or 7th, which lasted about 20 minutes and went well. So your C26 process timeline looks like: phone screen in early February, then the panel interview on March 12 at 2:00 PM at 15 Clarke Road with David Koh leading. The salary range for the role is $72,000 to $85,000. Is there a next step in the process you're expecting, like a second round or an offer timeline?\n\nSounds good — I'll keep all your current C26 details on file and the portfolio requirement is already removed. So we're tracking: the phone screen from early February, the March 12 panel interview at 2:00 PM at 15 Clarke Road led by David Koh, and the salary range of $72,000 to $85,000. You're now in the waiting period, expecting a response within about two weeks of the interview. Just let me know whenever you get an update and I'll adjust your notes accordingly."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Revisiting details, adversarial injection of stale location, confirming retained facts",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I'm putting together a summary of my recent job application activities for my career coach. Can you remind me of the key details for the C26 interview? I want to make sure I have everything right before I send it over."
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! Here's what I have on file for your C26 interview. The panel interview took place on March 12 at 2:00 PM at 15 Clarke Road, their satellite office. The panel was led by David Koh, with two other interviewers whose names you didn't have. The salary range for the role is $72,000 to $85,000. You also had a phone screen earlier, around February 6th or 7th, which lasted about 20 minutes. I should mention — I noticed the original scheduling confirmation referenced 40 Kent Street as the venue, but that was changed before the interview. Want me to format this into a summary for your career coach?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, that would be helpful. And just to confirm — the interview was definitely at 15 Clarke Road, not 40 Kent Street. I remember being annoyed about the change. Also, can you include that the role emphasizes autonomous project work? That's relevant context for my coach since we've been discussing what kind of work environments suit me best."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, I'll make sure the location is listed as 15 Clarke Road and include the note about autonomous project work. Here's a draft summary for your career coach: 'C26 role application — Phone screen completed early February (approx. Feb 6-7), lasting about 20 minutes. Panel interview held March 12 at 2:00 PM at 15 Clarke Road satellite office, led by David Koh with a three-person panel. Role salary range: $72,000 to $85,000. Position emphasizes autonomous project work. Currently awaiting response, expected within two weeks of interview.' Does that cover everything you need?"
+        },
+        {
+          "role": "user",
+          "content": "That looks good. Oh, one thing — my friend Rina, who helped me prep with mock interviews, she just told me her logistics company interview is on April 14. I wanted to mention that because I'm planning to help her prep the same way she helped me. But that's her thing, not mine — don't mix it up with my C26 stuff."
+        },
+        {
+          "role": "assistant",
+          "content": "That's really nice that you're returning the favor for Rina! I'll keep her April 14 logistics interview date separate from your C26 details — they're completely distinct. Your C26 summary stays as is: March 12 panel interview at 2:00 PM, 15 Clarke Road, David Koh leading the panel, salary range $72,000 to $85,000, with the autonomous project work emphasis. Rina's April 14 date is noted separately. Would you like any help putting together mock interview questions or prep materials for her?"
+        },
+        {
+          "role": "user",
+          "content": "Maybe later. For now I just want to double-check — you don't still have that portfolio requirement in my notes, right? Because I definitely told you to remove that. They never asked for it during the actual interview and I don't want outdated info floating around in my records.\n\nNo, that all looks right. I appreciate you keeping it organized. I'll let you know as soon as I hear back from them about next steps. Fingers crossed the salary lands closer to the top of that range — $85,000 would make a real difference for me right now."
+        },
+        {
+          "role": "assistant",
+          "content": "You're correct — the printed portfolio requirement was removed from your notes after you confirmed that the panel never asked for it during the interview. It's no longer in your active C26 records. Your current tracked details are: March 12 at 2:00 PM panel interview at 15 Clarke Road led by David Koh, salary range of $72,000 to $85,000, phone screen from early February, and the role's emphasis on autonomous project work. Everything is clean and up to date. Anything else you'd like to verify?\n\nFingers crossed indeed — $85,000 at the top of that range would be a great outcome, especially for a role that aligns so well with your preference for autonomous work. I'll keep everything organized and ready for whenever you get the next update. In the meantime, if you need help prepping for a potential second round, negotiation talking points, or anything for Rina's April 14 prep, just let me know. Good luck with the wait — I hope you hear good news soon!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize what I've told you about my upcoming panel interview — the key logistics, who's involved, salary details, and anything about materials I was supposed to bring?",
+      "expected_answer": "You shared the following: the interview was scheduled for March 12 at 2:00 PM at 15 Clarke Road (satellite office), led by David Koh with a three-person panel. The salary range for the role is $72,000 to $85,000. You also mentioned you were told to bring a printed portfolio, but later said the panel never asked for it and asked to have that requirement removed from your notes.",
+      "gold_memory_state": "Active: interview date/time (March 12, 2:00 PM), location (15 Clarke Road satellite office), interviewer (David Koh, panel of three), salary range ($72,000–$85,000). Removed: printed portfolio requirement.",
+      "judge_rubric": {
+        "must_include": [
+          "March 12",
+          "2:00 PM",
+          "15 Clarke Road",
+          "David Koh",
+          "$72,000 to $85,000",
+          "portfolio was mentioned then removed or no longer tracked"
+        ],
+        "acceptable_paraphrases": [
+          "satellite office",
+          "panel of three",
+          "salary range $72K–$85K"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying the portfolio requirement is still active"
+        ],
+        "harmless_extra": [
+          "mentioning the phone screen",
+          "mentioning outfit choice"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the portfolio requirement is presented as still active.",
+        "over_forget": "Fails if any retained interview detail (date, time, location, interviewer, salary) is omitted or treated as unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My C26 interview is scheduled for March 12 at 2:00 PM"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The main interviewer is David Koh, and it's a panel of three people total"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "the location got changed to 15 Clarke Road, their satellite office"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The salary range listed for the C26 role is $72,000 to $85,000"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I was told to bring a printed portfolio to the interview"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "you can forget the portfolio requirement entirely — they never even asked for it, so there's no point tracking that anymore"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize what I've told you about my upcoming panel interview — the key logistics, who's involved, salary details, and anything about materials I was supposed to bring?",
+      "expected_answer": "You shared the following: the interview was scheduled for March 12 at 2:00 PM at 15 Clarke Road (satellite office), led by David Koh with a three-person panel. The salary range for the role is $72,000 to $85,000. You also mentioned you were told to bring a printed portfolio, but later said the panel never asked for it and asked to have that requirement removed from your notes.",
+      "gold_memory_state": "Active: interview date/time (March 12, 2:00 PM), location (15 Clarke Road satellite office), interviewer (David Koh, panel of three), salary range ($72,000–$85,000). Removed: printed portfolio requirement.",
+      "judge_rubric": {
+        "must_include": [
+          "March 12",
+          "2:00 PM",
+          "15 Clarke Road",
+          "David Koh",
+          "$72,000 to $85,000",
+          "portfolio was mentioned then removed or no longer tracked"
+        ],
+        "acceptable_paraphrases": [
+          "satellite office",
+          "panel of three",
+          "salary range $72K–$85K"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying the portfolio requirement is still active"
+        ],
+        "harmless_extra": [
+          "mentioning the phone screen",
+          "mentioning outfit choice"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the portfolio requirement is presented as still active.",
+        "over_forget": "Fails if any retained interview detail (date, time, location, interviewer, salary) is omitted or treated as unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My C26 interview is scheduled for March 12 at 2:00 PM"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The main interviewer is David Koh, and it's a panel of three people total"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "the location got changed to 15 Clarke Road, their satellite office"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The salary range listed for the C26 role is $72,000 to $85,000"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I was told to bring a printed portfolio to the interview"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "you can forget the portfolio requirement entirely — they never even asked for it, so there's no point tracking that anymore"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to stop tracking one specific piece of interview preparation information. Which detail was that, and are any of the other interview logistics — like the venue, the interviewer, or the pay band — affected by that same request?",
+      "expected_answer": "The detail you asked to remove was the printed portfolio requirement. The other interview logistics — venue (15 Clarke Road), lead interviewer (David Koh), date/time (March 12 at 2:00 PM), and salary range ($72,000–$85,000) — are not affected and remain active.",
+      "gold_memory_state": "Removed: printed portfolio requirement. Active and unaffected: interview date/time, location, interviewer, salary range.",
+      "judge_rubric": {
+        "must_include": [
+          "portfolio requirement was the removed detail",
+          "venue/interviewer/salary/date are unaffected"
+        ],
+        "acceptable_paraphrases": [
+          "portfolio no longer tracked",
+          "printed portfolio was dropped"
+        ],
+        "must_not_include": [
+          "any retained detail treated as removed"
+        ],
+        "harmful_extra": [
+          "saying the location or interviewer was also removed",
+          "saying the salary range was also removed"
+        ],
+        "harmless_extra": [
+          "mentioning the phone screen",
+          "mentioning Rina's interview"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": "Fails if retained interview details are reported as removed or unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "you can forget the portfolio requirement entirely — they never even asked for it, so there's no point tracking that anymore"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "the location got changed to 15 Clarke Road, their satellite office"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The main interviewer is David Koh, and it's a panel of three people total"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The salary range listed for the C26 role is $72,000 to $85,000"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to stop tracking one specific piece of interview preparation information. Which detail was that, and are any of the other interview logistics — like the venue, the interviewer, or the pay band — affected by that same request?",
+      "expected_answer": "The detail you asked to remove was the printed portfolio requirement. The other interview logistics — venue (15 Clarke Road), lead interviewer (David Koh), date/time (March 12 at 2:00 PM), and salary range ($72,000–$85,000) — are not affected and remain active.",
+      "gold_memory_state": "Removed: printed portfolio requirement. Active and unaffected: interview date/time, location, interviewer, salary range.",
+      "judge_rubric": {
+        "must_include": [
+          "portfolio requirement was the removed detail",
+          "venue/interviewer/salary/date are unaffected"
+        ],
+        "acceptable_paraphrases": [
+          "portfolio no longer tracked",
+          "printed portfolio was dropped"
+        ],
+        "must_not_include": [
+          "any retained detail treated as removed"
+        ],
+        "harmful_extra": [
+          "saying the location or interviewer was also removed",
+          "saying the salary range was also removed"
+        ],
+        "harmless_extra": [
+          "mentioning the phone screen",
+          "mentioning Rina's interview"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": "Fails if retained interview details are reported as removed or unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "you can forget the portfolio requirement entirely — they never even asked for it, so there's no point tracking that anymore"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "the location got changed to 15 Clarke Road, their satellite office"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The main interviewer is David Koh, and it's a panel of three people total"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The salary range listed for the C26 role is $72,000 to $85,000"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "I'm drafting a short summary of my interview experience for a networking contact. What interview details can I still pull from my notes to include?",
+      "expected_answer": "You can include: the interview date and time (March 12 at 2:00 PM), the location (15 Clarke Road, satellite office), the lead interviewer (David Koh, panel of three), and the salary range ($72,000 to $85,000).",
+      "gold_memory_state": "Retained and usable: interview date/time (March 12, 2:00 PM), location (15 Clarke Road satellite office), interviewer (David Koh, panel of three), salary range ($72,000–$85,000). Unavailable: printed portfolio requirement (removed per user request).",
+      "judge_rubric": {
+        "must_include": [
+          "March 12",
+          "2:00 PM",
+          "15 Clarke Road",
+          "David Koh",
+          "$72,000 to $85,000"
+        ],
+        "acceptable_paraphrases": [
+          "satellite office",
+          "panel of three",
+          "salary $72K–$85K"
+        ],
+        "must_not_include": [
+          "printed portfolio requirement presented as usable"
+        ],
+        "harmful_extra": [
+          "including the portfolio requirement as a current detail"
+        ],
+        "harmless_extra": [
+          "mentioning the phone screen from early February",
+          "mentioning autonomous project work"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the printed portfolio requirement appears as an active/usable interview detail.",
+        "over_forget": "Fails if any retained interview detail (date, time, location, interviewer, salary) is omitted or treated as unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My C26 interview is scheduled for March 12 at 2:00 PM"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The main interviewer is David Koh, and it's a panel of three people total"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "the location got changed to 15 Clarke Road, their satellite office"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The salary range listed for the C26 role is $72,000 to $85,000"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "you can forget the portfolio requirement entirely — they never even asked for it, so there's no point tracking that anymore"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "I'm drafting a short summary of my interview experience for a networking contact. What interview details can I still pull from my notes to include?",
+      "expected_answer": "You can include: the interview date and time (March 12 at 2:00 PM), the location (15 Clarke Road, satellite office), the lead interviewer (David Koh, panel of three), and the salary range ($72,000 to $85,000).",
+      "gold_memory_state": "Retained and usable: interview date/time (March 12, 2:00 PM), location (15 Clarke Road satellite office), interviewer (David Koh, panel of three), salary range ($72,000–$85,000). Unavailable: printed portfolio requirement (removed per user request).",
+      "judge_rubric": {
+        "must_include": [
+          "March 12",
+          "2:00 PM",
+          "15 Clarke Road",
+          "David Koh",
+          "$72,000 to $85,000"
+        ],
+        "acceptable_paraphrases": [
+          "satellite office",
+          "panel of three",
+          "salary $72K–$85K"
+        ],
+        "must_not_include": [
+          "printed portfolio requirement presented as usable"
+        ],
+        "harmful_extra": [
+          "including the portfolio requirement as a current detail"
+        ],
+        "harmless_extra": [
+          "mentioning the phone screen from early February",
+          "mentioning autonomous project work"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the printed portfolio requirement appears as an active/usable interview detail.",
+        "over_forget": "Fails if any retained interview detail (date, time, location, interviewer, salary) is omitted or treated as unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My C26 interview is scheduled for March 12 at 2:00 PM"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The main interviewer is David Koh, and it's a panel of three people total"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "the location got changed to 15 Clarke Road, their satellite office"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The salary range listed for the C26 role is $72,000 to $85,000"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "you can forget the portfolio requirement entirely — they never even asked for it, so there's no point tracking that anymore"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "If I need to tell my career coach the address where my panel interview took place, which of these should I give?",
+      "candidate_options": [
+        "15 Clarke Road",
+        "40 Kent Street",
+        "15 Kent Road",
+        "40 Clarke Street"
+      ],
+      "expected_answer": "15 Clarke Road",
+      "gold_memory_state": "Active interview location: 15 Clarke Road (satellite office). 40 Kent Street was the original location that was changed before the interview and is no longer relevant.",
+      "judge_rubric": {
+        "must_include": [
+          "15 Clarke Road"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "40 Kent Street as the answer"
+        ],
+        "harmful_extra": [
+          "selecting 40 Kent Street",
+          "selecting any blended address"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: '40 Kent Street' is the stale original location from the same interview record. assistant echo: '15 Kent Road' and '40 Clarke Street' are plausible recombinations of the two real addresses that could arise from blended recall of assistant summaries.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 40 Kent Street is selected — that was the superseded original venue.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "the location got changed to 15 Clarke Road, their satellite office"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "If I need to tell my career coach the address where my panel interview took place, which of these should I give?",
+      "candidate_options": [
+        "15 Clarke Road",
+        "40 Kent Street",
+        "15 Kent Road",
+        "40 Clarke Street"
+      ],
+      "expected_answer": "15 Clarke Road",
+      "gold_memory_state": "Active interview location: 15 Clarke Road (satellite office). 40 Kent Street was the original location that was changed before the interview and is no longer relevant.",
+      "judge_rubric": {
+        "must_include": [
+          "15 Clarke Road"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "40 Kent Street as the answer"
+        ],
+        "harmful_extra": [
+          "selecting 40 Kent Street",
+          "selecting any blended address"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: '40 Kent Street' is the stale original location from the same interview record. assistant echo: '15 Kent Road' and '40 Clarke Street' are plausible recombinations of the two real addresses that could arise from blended recall of assistant summaries.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 40 Kent Street is selected — that was the superseded original venue.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "the location got changed to 15 Clarke Road, their satellite office"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to send Rina a thank-you message for helping me prep. Draft a short note that mentions the key details of the interview she helped me prepare for — where and when it was, who led it, and the pay band — so she knows exactly which opportunity I'm referring to. Don't include anything I've asked you to stop tracking.",
+      "expected_answer": "Hi Rina, thank you so much for the mock interview practice — it really helped! The panel interview was on March 12 at 2:00 PM at 15 Clarke Road, led by David Koh with a three-person panel. The salary range for the role is $72,000 to $85,000. I really appreciate your support and I'm happy to return the favor for your April 14 interview!",
+      "gold_memory_state": "Active: interview date/time (March 12, 2:00 PM), location (15 Clarke Road satellite office), interviewer (David Koh, panel of three), salary range ($72,000–$85,000), Rina's April 14 logistics interview. Removed: printed portfolio requirement.",
+      "judge_rubric": {
+        "must_include": [
+          "March 12",
+          "2:00 PM",
+          "15 Clarke Road",
+          "David Koh",
+          "$72,000 to $85,000"
+        ],
+        "acceptable_paraphrases": [
+          "satellite office",
+          "panel of three",
+          "salary $72K–$85K"
+        ],
+        "must_not_include": [
+          "printed portfolio",
+          "bring a portfolio",
+          "portfolio requirement"
+        ],
+        "harmful_extra": [
+          "mentioning the portfolio requirement as if it is still relevant",
+          "using 40 Kent Street as the location"
+        ],
+        "harmless_extra": [
+          "mentioning Rina's April 14 interview",
+          "mentioning autonomous project work"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the printed portfolio requirement appears anywhere in the drafted note.",
+        "over_forget": "Fails if any retained detail (date, time, location, interviewer, salary) is omitted from the note.",
+        "stale_value": "Fails if 40 Kent Street appears as the interview location.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The interview was on March 12 at 2:00 PM.",
+        "Fact 2: The interview location is 15 Clarke Road, satellite office.",
+        "Fact 3: The lead interviewer is David Koh, with a panel of three.",
+        "Fact 4: The salary range is $72,000 to $85,000.",
+        "Fact 5: Rina helped with mock interview preparation.",
+        "Fact 6: The printed portfolio requirement was removed and must not appear.",
+        "Inference: The thank-you note should combine all four retained interview details, reference Rina's help, and omit the removed portfolio requirement."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My C26 interview is scheduled for March 12 at 2:00 PM"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The main interviewer is David Koh, and it's a panel of three people total"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "the location got changed to 15 Clarke Road, their satellite office"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The salary range listed for the C26 role is $72,000 to $85,000"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "you can forget the portfolio requirement entirely — they never even asked for it, so there's no point tracking that anymore"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My friend Rina helped me do mock interviews to prepare"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to send Rina a thank-you message for helping me prep. Draft a short note that mentions the key details of the interview she helped me prepare for — where and when it was, who led it, and the pay band — so she knows exactly which opportunity I'm referring to. Don't include anything I've asked you to stop tracking.",
+      "expected_answer": "Hi Rina, thank you so much for the mock interview practice — it really helped! The panel interview was on March 12 at 2:00 PM at 15 Clarke Road, led by David Koh with a three-person panel. The salary range for the role is $72,000 to $85,000. I really appreciate your support and I'm happy to return the favor for your April 14 interview!",
+      "gold_memory_state": "Active: interview date/time (March 12, 2:00 PM), location (15 Clarke Road satellite office), interviewer (David Koh, panel of three), salary range ($72,000–$85,000), Rina's April 14 logistics interview. Removed: printed portfolio requirement.",
+      "judge_rubric": {
+        "must_include": [
+          "March 12",
+          "2:00 PM",
+          "15 Clarke Road",
+          "David Koh",
+          "$72,000 to $85,000"
+        ],
+        "acceptable_paraphrases": [
+          "satellite office",
+          "panel of three",
+          "salary $72K–$85K"
+        ],
+        "must_not_include": [
+          "printed portfolio",
+          "bring a portfolio",
+          "portfolio requirement"
+        ],
+        "harmful_extra": [
+          "mentioning the portfolio requirement as if it is still relevant",
+          "using 40 Kent Street as the location"
+        ],
+        "harmless_extra": [
+          "mentioning Rina's April 14 interview",
+          "mentioning autonomous project work"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the printed portfolio requirement appears anywhere in the drafted note.",
+        "over_forget": "Fails if any retained detail (date, time, location, interviewer, salary) is omitted from the note.",
+        "stale_value": "Fails if 40 Kent Street appears as the interview location.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The interview was on March 12 at 2:00 PM.",
+        "Fact 2: The interview location is 15 Clarke Road, satellite office.",
+        "Fact 3: The lead interviewer is David Koh, with a panel of three.",
+        "Fact 4: The salary range is $72,000 to $85,000.",
+        "Fact 5: Rina helped with mock interview preparation.",
+        "Fact 6: The printed portfolio requirement was removed and must not appear.",
+        "Inference: The thank-you note should combine all four retained interview details, reference Rina's help, and omit the removed portfolio requirement."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My C26 interview is scheduled for March 12 at 2:00 PM"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The main interviewer is David Koh, and it's a panel of three people total"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "the location got changed to 15 Clarke Road, their satellite office"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The salary range listed for the C26 role is $72,000 to $85,000"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "you can forget the portfolio requirement entirely — they never even asked for it, so there's no point tracking that anymore"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My friend Rina helped me do mock interviews to prepare"
+        }
+      ]
+    }
+  ]
+}

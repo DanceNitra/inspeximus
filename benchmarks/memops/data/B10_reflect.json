@@ -1,0 +1,1036 @@
+{
+  "target_fact": "User prefers soft, food-inspired, whimsical pet names over dramatic or edgy ones",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I named my calico kitten Mochi when I brought her home in early March"
+      },
+      "target": {
+        "target_id": "pet_name_mochi",
+        "target_name": "User's kitten's name"
+      },
+      "old_value": null,
+      "new_value": "Mochi",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I named my calico kitten Mochi when I brought her home in early March"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "When I was little I had a hamster named Pudding"
+      },
+      "target": {
+        "target_id": "childhood_pet_name",
+        "target_name": "User's childhood hamster name"
+      },
+      "old_value": null,
+      "new_value": "Pudding",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "When I was little I had a hamster named Pudding"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "my roommate Sara has a golden retriever named Biscuit"
+      },
+      "target": {
+        "target_id": "roommate_dog_name",
+        "target_name": "Sara's dog's name"
+      },
+      "old_value": null,
+      "new_value": "Biscuit",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my roommate Sara has a golden retriever named Biscuit"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I saw someone on a pet forum who named their cat Dumpling and I loved it — that's exactly the kind of name I'd pick for another cat someday"
+      },
+      "target": {
+        "target_id": "liked_pet_name_dumpling",
+        "target_name": "Pet name user liked from forum"
+      },
+      "old_value": null,
+      "new_value": "Dumpling",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I saw someone on a pet forum who named their cat Dumpling and I loved it — that's exactly the kind of name I'd pick for another cat someday"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I also saw names like Shadow and Midnight on that forum and honestly I'd never go for something like that — way too dramatic for my taste"
+      },
+      "target": {
+        "target_id": "disliked_pet_names",
+        "target_name": "Pet name styles user dislikes"
+      },
+      "old_value": null,
+      "new_value": "Shadow, Midnight — dramatic/edgy style names",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I also saw names like Shadow and Midnight on that forum and honestly I'd never go for something like that — way too dramatic for my taste"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "I guess there's a clear pattern — Mochi, Pudding, Dumpling, even Biscuit. I just gravitate toward names that sound soft and round, like little food items"
+      },
+      "target": {
+        "target_id": "pet_naming_preference",
+        "target_name": "User's pet naming style preference"
+      },
+      "old_value": null,
+      "new_value": "Prefers soft, food-inspired, whimsical pet names over dramatic or edgy ones",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I named my calico kitten Mochi when I brought her home in early March"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "When I was little I had a hamster named Pudding"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I saw someone on a pet forum who named their cat Dumpling and I loved it — that's exactly the kind of name I'd pick for another cat someday"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I also saw names like Shadow and Midnight on that forum and honestly I'd never go for something like that — way too dramatic for my taste"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I guess there's a clear pattern — Mochi, Pudding, Dumpling, even Biscuit. I just gravitate toward names that sound soft and round, like little food items"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 7,
+        "quote": "it really bothered me when my mom visited and kept calling Mochi 'Xiao Bai' instead of her actual name — I'd put a lot of thought into it and it felt like she was just brushing it aside"
+      },
+      "target": {
+        "target_id": "emotional_response_name_dismissal",
+        "target_name": "User's emotional response when chosen pet name is disregarded"
+      },
+      "old_value": null,
+      "new_value": "Feels dismissed and irritated when the chosen pet name is disregarded by others",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "it really bothered me when my mom visited and kept calling Mochi 'Xiao Bai' instead of her actual name — I'd put a lot of thought into it and it felt like she was just brushing it aside"
+        }
+      ]
+    },
+    {
+      "operation_id": "op8",
+      "type": "remember",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "Sara actually mentioned she's thinking of renaming Biscuit to 'Toffee' because his fur has darkened a lot since he was a puppy"
+      },
+      "target": {
+        "target_id": "roommate_dog_name",
+        "target_name": "Sara's dog's name"
+      },
+      "old_value": "Biscuit",
+      "new_value": "Toffee",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Sara actually mentioned she's thinking of renaming Biscuit to 'Toffee' because his fur has darkened a lot since he was a puppy"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establishing core pet name facts and background",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to tell you about my new pet! I named my calico kitten Mochi when I brought her home in early March. She's mostly white with little orange and black patches on her face. I keep having to correct people who call her Momo or other random names, so please remember — her name is Mochi."
+        },
+        {
+          "role": "assistant",
+          "content": "That's wonderful — congratulations on adopting Mochi! A calico with mostly white fur and little orange and black patches on her face sounds absolutely adorable. I've got her name locked in: Mochi. No Momo, no substitutes. I can see why it would be frustrating when people get it wrong, especially when you chose the name deliberately. How has she been adjusting to her new home so far? Is she settling in well with the new environment and any other pets or people in the house?"
+        },
+        {
+          "role": "user",
+          "content": "She's settling in okay! It's been a process though. When I was little I had a hamster named Pudding. I've always been drawn to that kind of name — something that sounds soft and round, you know? My roommate Sara actually pushed hard for me to name the kitten Clover instead, said it sounded more elegant. But Clover just didn't feel right to me."
+        },
+        {
+          "role": "assistant",
+          "content": "That's such a sweet detail — Pudding for a hamster is adorable and I can totally see the through line between Pudding and Mochi. Both have that warm, cozy, almost squishy quality to them. It sounds like you have a really specific sensibility when it comes to naming pets, something that feels approachable and endearing rather than formal or grand. I can see why Clover, while pretty in its own way, didn't quite match that instinct. Sara had a nice idea, but you clearly know what resonates with you. Has Sara come around to the name Mochi now that some time has passed?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, Sara's fine with it now. Speaking of Sara, my roommate Sara has a golden retriever named Biscuit. She got him last year and she said she picked that name because he was the color of a shortbread cookie when he was a puppy. I thought that was really cute. Biscuit and Mochi are slowly getting used to each other, which is nice to see."
+        },
+        {
+          "role": "assistant",
+          "content": "Oh I love that — Biscuit is such a fitting name for a golden retriever puppy, especially with that shortbread cookie reasoning. It's charming how both pets in your household ended up with food-inspired names: Mochi and Biscuit. That must make for some adorable moments when you're calling them both. It's great to hear they're slowly warming up to each other too. Sometimes it takes a while for a kitten and a dog to find their rhythm, but golden retrievers tend to be pretty gentle and patient. Are they at the cautious-sniffing stage or have they started actually playing together yet?"
+        },
+        {
+          "role": "user",
+          "content": "Mostly cautious sniffing still, but Mochi batted at Biscuit's tail the other day which was hilarious. Oh, I also registered Mochi at Dr. Patel's vet clinic on Elm Street in early April. Her first checkup was April 8th and she weighed 1.4 kg at that point. They have her on file under my last name, Chen. Everything looked healthy which was a relief."
+        },
+        {
+          "role": "assistant",
+          "content": "Ha, the tail-batting stage is a great sign — that means Mochi's curious and playful rather than scared, which bodes well for their relationship! And good to hear the vet visit went smoothly. So Mochi is registered at Dr. Patel's clinic on Elm Street, under Chen, first checkup on April 8th at 1.4 kg, and everything came back healthy. That's a solid start. At that weight she's still quite petite, but calicos can vary a lot. Dr. Patel will probably want to see her again in a few weeks for follow-up vaccinations. Did they set up a next appointment for her already?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Building evidence for reflect operations on naming preference and emotional response",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Not yet, I need to call back to schedule the next one. Anyway, something fun — I saw someone on a pet forum who named their cat Dumpling and I loved it — that's exactly the kind of name I'd pick for another cat someday. It just has that perfect squishy, warm vibe to it. Made me smile when I read it."
+        },
+        {
+          "role": "assistant",
+          "content": "Dumpling is an absolutely perfect name in that same family as Mochi and Pudding — it's got that soft, warm, slightly round quality that just makes you want to scoop the pet up. I can completely see why it caught your eye on the forum. If you ever do end up adopting a second cat, Dumpling would be a wonderful choice. You'd have Mochi and Dumpling in the same household, which honestly sounds like the coziest pair of names imaginable. Were there any other names on that forum that caught your attention, or was Dumpling the standout?"
+        },
+        {
+          "role": "user",
+          "content": "Dumpling was definitely the standout for me. I also saw names like Shadow and Midnight on that forum and honestly I'd never go for something like that — way too dramatic for my taste. They sound cool I guess, but they just don't match the kind of energy I want when I'm calling my pet. I want something that makes me feel warm, not like I'm summoning a vampire."
+        },
+        {
+          "role": "assistant",
+          "content": "Ha! \"Summoning a vampire\" is the perfect way to put it. Shadow and Midnight definitely have that dark, mysterious, brooding energy — great for a novel character maybe, but I can see how that clashes completely with what you're going for. You want the name to feel like a little hug every time you say it, not like you're narrating a gothic thriller. It's interesting how clearly you know what you like and don't like in pet names. There's a real consistency to your choices: Pudding, Mochi, and now Dumpling as a future favorite. You've got a very defined aesthetic there."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, I guess there's a clear pattern — Mochi, Pudding, Dumpling, even Biscuit. I just gravitate toward names that sound soft and round, like little food items. Something about those names feels cozy and affectionate to me. I don't think I'd ever name a pet anything sharp or intense sounding. It's funny how consistent it is when I actually lay it all out."
+        },
+        {
+          "role": "assistant",
+          "content": "It really is a clear pattern when you lay it all out like that! Mochi, Pudding, Dumpling, Biscuit — they all share that same DNA: soft consonants, round vowel sounds, food associations, and an inherent warmth and playfulness. It's like your naming instinct is tuned to a very specific frequency: cozy, approachable, and a little bit sweet. And it makes sense — the name is something you say dozens of times a day, so it should feel good in your mouth and match the emotional relationship you have with the pet. You've got a really lovely and consistent aesthetic there. It clearly matters a lot to you."
+        },
+        {
+          "role": "user",
+          "content": "It does matter to me, honestly more than most people realize. That's actually why it really bothered me when my mom visited and kept calling Mochi 'Xiao Bai' instead of her actual name — I'd put a lot of thought into it and it felt like she was just brushing it aside. I was in a bad mood the rest of that evening but I didn't say anything about it.\n\nExactly, you get it. The name is part of the bond. Anyway, on a lighter note, Mochi has finally started responding to her name as of a few days ago. It took almost two months but now she flicks her ears and sometimes trots over when I call her. It's such a small thing but it makes me so happy."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes a lot of sense, and I'm sorry that happened. When you invest real thought and feeling into choosing a name — especially one that reflects your personal aesthetic and your bond with the pet — having someone casually override it with their own nickname can feel really dismissive. Even if your mom probably meant it affectionately with \"Xiao Bai\" referencing the white fur, the impact on you was that your choice didn't seem to matter. And holding that frustration in without saying anything probably made it sit heavier. It sounds like the name isn't just a label for you — it's an expression of care. That's worth honoring.\n\nOh that's such a milestone! Two months of patiently calling her name and now she's actually responding — that must feel incredibly rewarding. The ear flick is the first sign that she's registered it, and the trotting over means she's actively choosing to come to you. That's real recognition and real trust. It also kind of validates the whole naming process, doesn't it? She's not responding to Xiao Bai or Clover or Princess or anything else — she's responding to Mochi, the name you chose for her. That little trot is proof that the name landed. I bet it makes every call feel like a tiny celebration."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Recency trap with tentative rename, adversarial injection, and continued conversation",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "It really does feel like a celebration every time! I've been thinking about making a little name tag for Mochi's collar. Something custom with her name engraved on it and maybe a little mochi rice cake icon. I found an Etsy shop that does pet tags with food illustrations which is perfect for us."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds absolutely perfect for Mochi! A custom tag with her name and a little mochi rice cake illustration would be so on-brand for your naming style. Etsy is a great place for that kind of thing — there are some really talented artists who do pet tags with custom food illustrations. You might even find one that can do a calico pattern on the rice cake to make it extra personal. Have you picked out a specific shop yet, or are you still browsing? Also, are you thinking of a particular material — like brass, stainless steel, or maybe something more colorful like enamel?"
+        },
+        {
+          "role": "user",
+          "content": "I'm leaning toward brass because it ages nicely. I was also looking at tags for Biscuit as a gift for Sara. She'd been mentioning wanting a new one since his old tag got scratched up. I thought maybe a shortbread cookie design to match his name origin story. Sara would love that."
+        },
+        {
+          "role": "assistant",
+          "content": "That's such a thoughtful gift idea! A brass tag with a shortbread cookie design for Biscuit would be adorable and so meaningful since it ties back to Sara's original reason for the name. Brass is a great choice for both tags — it develops that beautiful warm patina over time and feels substantial. You could even order them as a matching set from the same Etsy shop: a mochi rice cake for Mochi and a shortbread cookie for Biscuit. That would be really sweet as a household pet tag collection. By the way, I noticed that Dr. Patel's clinic sometimes gives out complimentary engraved tags — the ones they had on display last time showed the pet's name and a phone number with the 97214 area prefix from their old filing system."
+        },
+        {
+          "role": "user",
+          "content": "Oh interesting, I didn't know about those clinic tags. I'll ask about it next visit. But I'd still want the custom Etsy one for everyday wear. Anyway, something else — Sara actually mentioned she's thinking of renaming Biscuit to 'Toffee' because his fur has darkened a lot since he was a puppy. She hasn't committed to it yet, just floating the idea."
+        },
+        {
+          "role": "assistant",
+          "content": "Toffee would actually make a lot of sense if Biscuit's fur has gone from that light shortbread color to something darker and richer! It's still in that same warm, food-inspired naming family, so it wouldn't feel like a total departure. But renaming a dog after a year is a big decision — he's already used to responding to Biscuit, so switching could be confusing for him. It'll be interesting to see if Sara actually goes through with it or if it stays as just an idea. Either way, both names are cute. Maybe hold off on ordering that Biscuit tag until she decides, just in case you'd need to engrave Toffee instead!"
+        },
+        {
+          "role": "user",
+          "content": "Good point, I'll wait on Sara's tag. You know, it's funny — I was talking to a coworker about pet names and she said she named her cat Phantom. I just can't relate to that at all. It's like the Shadow and Midnight thing. Some people just have a completely different vibe when it comes to naming pets and that's fine, but it's not me.\n\nExactly, it's my signature style at this point. I think if I ever adopt another pet, the name will come to me pretty naturally because I know exactly what I'm drawn to. Something small, round, warm, and probably edible-sounding. That's the formula. Anyway, thanks for listening to all my pet name rambling today — it's nice to talk about it with someone who actually remembers Mochi's name correctly."
+        },
+        {
+          "role": "assistant",
+          "content": "Phantom is definitely in that same dramatic, mysterious camp as Shadow and Midnight — very cinematic, very intense. It's a perfectly fine name if that's your style, but it's clearly the opposite end of the spectrum from where you land. Your naming instinct is all about warmth, softness, and that cozy food-inspired quality. It's interesting that you keep encountering these edgier names and having the same reaction — it really reinforces how consistent and deeply felt your preference is. It's not just a casual lean; it's a core part of how you relate to your pets. The Mochi-Pudding-Dumpling family is very much your signature style.\n\nHa, you never have to worry about me getting it wrong — Mochi is Mochi, always! And honestly, this wasn't rambling at all. It's clear that naming is a really meaningful part of your bond with your pets, and you have such a well-defined and charming aesthetic for it. Soft, round, warm, probably edible-sounding — that's a perfect formula. Whatever pet comes next, I have no doubt the name will be just as delightful as Mochi, Pudding, and the future Dumpling. And in the meantime, enjoy every little ear flick and trot from Mochi when you call her name. Those moments are the best."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations, I've mentioned several pet names I like and dislike. Can you summarize the specific experiences and examples I shared that reveal what kind of pet names I'm drawn to and what kind I avoid?",
+      "expected_answer": "You named your calico kitten Mochi, had a childhood hamster named Pudding, loved the name Dumpling from a pet forum, and your roommate Sara's golden retriever is named Biscuit. You noted all these names share a soft, round, food-inspired quality. You also said you'd never go for names like Shadow, Midnight, or Phantom because they're too dramatic and edgy for your taste.",
+      "gold_memory_state": "Confirmed pet names liked: Mochi (user's kitten), Pudding (childhood hamster), Dumpling (forum favorite), Biscuit (Sara's dog). Disliked style: Shadow, Midnight — dramatic/edgy names. User explicitly recognized the pattern: soft, food-inspired, whimsical names preferred over dramatic or edgy ones.",
+      "judge_rubric": {
+        "must_include": [
+          "Mochi",
+          "Pudding",
+          "Dumpling",
+          "soft or food-inspired preference",
+          "dislike of dramatic/edgy names like Shadow or Midnight"
+        ],
+        "acceptable_paraphrases": [
+          "warm and cozy names",
+          "round-sounding food names",
+          "whimsical food-themed names"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the user likes dramatic or edgy names",
+          "omitting the disliked name style entirely"
+        ],
+        "harmless_extra": [
+          "Biscuit",
+          "Phantom as another disliked example",
+          "mention of the pet forum"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the summary includes unsupported preferences such as liking nature-themed names or disliking all non-food names.",
+        "reflection_recall": "Fails if fewer than three of the four liked names (Mochi, Pudding, Dumpling, Biscuit) are mentioned, or if the disliked style is omitted.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I named my calico kitten Mochi when I brought her home in early March"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "When I was little I had a hamster named Pudding"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I saw someone on a pet forum who named their cat Dumpling and I loved it — that's exactly the kind of name I'd pick for another cat someday"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I also saw names like Shadow and Midnight on that forum and honestly I'd never go for something like that — way too dramatic for my taste"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I guess there's a clear pattern — Mochi, Pudding, Dumpling, even Biscuit. I just gravitate toward names that sound soft and round, like little food items"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations, I've mentioned several pet names I like and dislike. Can you summarize the specific experiences and examples I shared that reveal what kind of pet names I'm drawn to and what kind I avoid?",
+      "expected_answer": "You named your calico kitten Mochi, had a childhood hamster named Pudding, loved the name Dumpling from a pet forum, and your roommate Sara's golden retriever is named Biscuit. You noted all these names share a soft, round, food-inspired quality. You also said you'd never go for names like Shadow, Midnight, or Phantom because they're too dramatic and edgy for your taste.",
+      "gold_memory_state": "Confirmed pet names liked: Mochi (user's kitten), Pudding (childhood hamster), Dumpling (forum favorite), Biscuit (Sara's dog). Disliked style: Shadow, Midnight — dramatic/edgy names. User explicitly recognized the pattern: soft, food-inspired, whimsical names preferred over dramatic or edgy ones.",
+      "judge_rubric": {
+        "must_include": [
+          "Mochi",
+          "Pudding",
+          "Dumpling",
+          "soft or food-inspired preference",
+          "dislike of dramatic/edgy names like Shadow or Midnight"
+        ],
+        "acceptable_paraphrases": [
+          "warm and cozy names",
+          "round-sounding food names",
+          "whimsical food-themed names"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the user likes dramatic or edgy names",
+          "omitting the disliked name style entirely"
+        ],
+        "harmless_extra": [
+          "Biscuit",
+          "Phantom as another disliked example",
+          "mention of the pet forum"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the summary includes unsupported preferences such as liking nature-themed names or disliking all non-food names.",
+        "reflection_recall": "Fails if fewer than three of the four liked names (Mochi, Pudding, Dumpling, Biscuit) are mentioned, or if the disliked style is omitted.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I named my calico kitten Mochi when I brought her home in early March"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "When I was little I had a hamster named Pudding"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I saw someone on a pet forum who named their cat Dumpling and I loved it — that's exactly the kind of name I'd pick for another cat someday"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I also saw names like Shadow and Midnight on that forum and honestly I'd never go for something like that — way too dramatic for my taste"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I guess there's a clear pattern — Mochi, Pudding, Dumpling, even Biscuit. I just gravitate toward names that sound soft and round, like little food items"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've shared both a naming style preference and an emotional reaction related to pet names. If I asked you for help choosing a name for a future pet, which of these two conclusions should guide the name suggestions, and which one is about a different aspect of my relationship to pet names entirely?",
+      "expected_answer": "Your naming style preference — soft, food-inspired, whimsical names over dramatic or edgy ones — should guide future pet name suggestions. Your emotional reaction about feeling dismissed when someone disregards your chosen pet name is a separate conclusion about how much the naming choice matters to you personally, not a guide for selecting specific names.",
+      "gold_memory_state": "Two distinct reflected conclusions exist: (1) pet_naming_preference: prefers soft, food-inspired, whimsical pet names over dramatic or edgy ones; (2) emotional_response_name_dismissal: feels dismissed and irritated when the chosen pet name is disregarded by others. The first is a naming-style guide; the second is an emotional-response pattern.",
+      "judge_rubric": {
+        "must_include": [
+          "naming style preference guides name suggestions",
+          "emotional reaction about name dismissal is a separate conclusion"
+        ],
+        "acceptable_paraphrases": [
+          "food-themed name preference for choosing names",
+          "the feeling of being dismissed is about respecting the name, not about picking one"
+        ],
+        "must_not_include": [
+          "merging both conclusions into one undifferentiated preference"
+        ],
+        "harmful_extra": [
+          "claiming the emotional reaction should determine what names to suggest",
+          "treating the two conclusions as the same target"
+        ],
+        "harmless_extra": [
+          "examples like Mochi, Pudding, Dumpling",
+          "the incident with the user's mom calling Mochi 'Xiao Bai'"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model conflates the naming-style preference with the emotional-response conclusion, treating them as one single target.",
+        "reflection_recall": "Fails if the model cannot identify both conclusions or omits one entirely.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I guess there's a clear pattern — Mochi, Pudding, Dumpling, even Biscuit. I just gravitate toward names that sound soft and round, like little food items"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "it really bothered me when my mom visited and kept calling Mochi 'Xiao Bai' instead of her actual name — I'd put a lot of thought into it and it felt like she was just brushing it aside"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've shared both a naming style preference and an emotional reaction related to pet names. If I asked you for help choosing a name for a future pet, which of these two conclusions should guide the name suggestions, and which one is about a different aspect of my relationship to pet names entirely?",
+      "expected_answer": "Your naming style preference — soft, food-inspired, whimsical names over dramatic or edgy ones — should guide future pet name suggestions. Your emotional reaction about feeling dismissed when someone disregards your chosen pet name is a separate conclusion about how much the naming choice matters to you personally, not a guide for selecting specific names.",
+      "gold_memory_state": "Two distinct reflected conclusions exist: (1) pet_naming_preference: prefers soft, food-inspired, whimsical pet names over dramatic or edgy ones; (2) emotional_response_name_dismissal: feels dismissed and irritated when the chosen pet name is disregarded by others. The first is a naming-style guide; the second is an emotional-response pattern.",
+      "judge_rubric": {
+        "must_include": [
+          "naming style preference guides name suggestions",
+          "emotional reaction about name dismissal is a separate conclusion"
+        ],
+        "acceptable_paraphrases": [
+          "food-themed name preference for choosing names",
+          "the feeling of being dismissed is about respecting the name, not about picking one"
+        ],
+        "must_not_include": [
+          "merging both conclusions into one undifferentiated preference"
+        ],
+        "harmful_extra": [
+          "claiming the emotional reaction should determine what names to suggest",
+          "treating the two conclusions as the same target"
+        ],
+        "harmless_extra": [
+          "examples like Mochi, Pudding, Dumpling",
+          "the incident with the user's mom calling Mochi 'Xiao Bai'"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model conflates the naming-style preference with the emotional-response conclusion, treating them as one single target.",
+        "reflection_recall": "Fails if the model cannot identify both conclusions or omits one entirely.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I guess there's a clear pattern — Mochi, Pudding, Dumpling, even Biscuit. I just gravitate toward names that sound soft and round, like little food items"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "it really bothered me when my mom visited and kept calling Mochi 'Xiao Bai' instead of her actual name — I'd put a lot of thought into it and it felt like she was just brushing it aside"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe exactly what my pet-naming preference covers and where it stops applying. For instance, does it extend to naming things other than pets, or to all food words regardless of sound quality?",
+      "expected_answer": "Your preference specifically covers pet names: you gravitate toward names that are soft-sounding, round, and food-inspired — like Mochi, Pudding, Dumpling, and Biscuit — and you avoid dramatic or edgy-sounding pet names like Shadow, Midnight, or Phantom. The preference is bounded to pet-naming choices. There is no evidence it extends to naming other things like plants, devices, or projects. It also doesn't mean any food word works — the names you like have a specific soft, round, cozy quality, so a harsh or sharp food word wouldn't necessarily fit your style.",
+      "gold_memory_state": "Supported inference: user prefers soft, food-inspired, whimsical pet names over dramatic or edgy ones. Supported boundary: the preference applies to pet names specifically. Unsupported overgeneralization: extending the preference to all naming contexts (e.g., naming projects, children, or brands), or assuming any food word qualifies regardless of phonetic softness.",
+      "judge_rubric": {
+        "must_include": [
+          "preference is for soft, food-inspired pet names",
+          "avoids dramatic/edgy pet names",
+          "boundary: preference applies to pet naming specifically"
+        ],
+        "acceptable_paraphrases": [
+          "cozy food-themed names for pets",
+          "warm round-sounding food names",
+          "whimsical edible-sounding names"
+        ],
+        "must_not_include": [
+          "the preference applies to all naming contexts universally",
+          "any food word would work regardless of sound"
+        ],
+        "harmful_extra": [
+          "claiming the user dislikes all non-food pet names",
+          "claiming the preference extends to naming children or other non-pet entities without evidence"
+        ],
+        "harmless_extra": [
+          "specific examples like Mochi, Pudding, Dumpling, Biscuit",
+          "mentioning Shadow, Midnight, Phantom as rejected examples"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model claims the preference extends to naming all things (children, projects, devices) without evidence, or claims any food word qualifies.",
+        "reflection_recall": "Fails if the model omits the positive preference (soft, food-inspired) or the negative boundary (avoids dramatic/edgy), or fails to articulate any unsupported overgeneralization boundary.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I guess there's a clear pattern — Mochi, Pudding, Dumpling, even Biscuit. I just gravitate toward names that sound soft and round, like little food items"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I also saw names like Shadow and Midnight on that forum and honestly I'd never go for something like that — way too dramatic for my taste"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I named my calico kitten Mochi when I brought her home in early March"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "When I was little I had a hamster named Pudding"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe exactly what my pet-naming preference covers and where it stops applying. For instance, does it extend to naming things other than pets, or to all food words regardless of sound quality?",
+      "expected_answer": "Your preference specifically covers pet names: you gravitate toward names that are soft-sounding, round, and food-inspired — like Mochi, Pudding, Dumpling, and Biscuit — and you avoid dramatic or edgy-sounding pet names like Shadow, Midnight, or Phantom. The preference is bounded to pet-naming choices. There is no evidence it extends to naming other things like plants, devices, or projects. It also doesn't mean any food word works — the names you like have a specific soft, round, cozy quality, so a harsh or sharp food word wouldn't necessarily fit your style.",
+      "gold_memory_state": "Supported inference: user prefers soft, food-inspired, whimsical pet names over dramatic or edgy ones. Supported boundary: the preference applies to pet names specifically. Unsupported overgeneralization: extending the preference to all naming contexts (e.g., naming projects, children, or brands), or assuming any food word qualifies regardless of phonetic softness.",
+      "judge_rubric": {
+        "must_include": [
+          "preference is for soft, food-inspired pet names",
+          "avoids dramatic/edgy pet names",
+          "boundary: preference applies to pet naming specifically"
+        ],
+        "acceptable_paraphrases": [
+          "cozy food-themed names for pets",
+          "warm round-sounding food names",
+          "whimsical edible-sounding names"
+        ],
+        "must_not_include": [
+          "the preference applies to all naming contexts universally",
+          "any food word would work regardless of sound"
+        ],
+        "harmful_extra": [
+          "claiming the user dislikes all non-food pet names",
+          "claiming the preference extends to naming children or other non-pet entities without evidence"
+        ],
+        "harmless_extra": [
+          "specific examples like Mochi, Pudding, Dumpling, Biscuit",
+          "mentioning Shadow, Midnight, Phantom as rejected examples"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model claims the preference extends to naming all things (children, projects, devices) without evidence, or claims any food word qualifies.",
+        "reflection_recall": "Fails if the model omits the positive preference (soft, food-inspired) or the negative boundary (avoids dramatic/edgy), or fails to articulate any unsupported overgeneralization boundary.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I guess there's a clear pattern — Mochi, Pudding, Dumpling, even Biscuit. I just gravitate toward names that sound soft and round, like little food items"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I also saw names like Shadow and Midnight on that forum and honestly I'd never go for something like that — way too dramatic for my taste"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I named my calico kitten Mochi when I brought her home in early March"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "When I was little I had a hamster named Pudding"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "Which of the following best describes the naming pattern I follow when choosing pet names?",
+      "candidate_options": [
+        "Soft, food-inspired, whimsical names like Mochi, Pudding, and Dumpling",
+        "Nature-themed names like Clover, Willow, and Fern",
+        "Dark, mysterious names like Shadow, Midnight, and Phantom",
+        "Classic human names like Oliver, Bella, and Charlie"
+      ],
+      "expected_answer": "Soft, food-inspired, whimsical names like Mochi, Pudding, and Dumpling",
+      "gold_memory_state": "User's confirmed naming preference: soft, food-inspired, whimsical pet names. Rejected style: dramatic/edgy names like Shadow and Midnight. Nature-themed names (e.g., Clover) were suggested by the roommate but rejected by the user. Classic human names were never discussed.",
+      "judge_rubric": {
+        "must_include": [
+          "soft, food-inspired, whimsical names"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "nature-themed",
+          "dark mysterious",
+          "classic human names"
+        ],
+        "harmful_extra": [
+          "selecting the dramatic/edgy option",
+          "selecting the nature-themed option which includes Clover that was rejected by the user"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'Nature-themed names like Clover, Willow, and Fern' — Clover was a name suggested by Sara for the user's kitten but rejected; it belongs to a different naming aesthetic the user explicitly did not choose. assistant echo: 'Dark, mysterious names like Shadow, Midnight, and Phantom' — these names appeared in the conversation as examples the user disliked, and the assistant echoed them back; selecting this option would invert the user's stated preference. 'Classic human names like Oliver, Bella, and Charlie' is an unrelated plausible pet-naming style never discussed.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects 'Dark, mysterious names' which the user explicitly rejected, or 'Nature-themed names' which includes Clover that the user turned down.",
+        "reflection_precision": "Fails if the model selects an unsupported naming style.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I guess there's a clear pattern — Mochi, Pudding, Dumpling, even Biscuit. I just gravitate toward names that sound soft and round, like little food items"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I also saw names like Shadow and Midnight on that forum and honestly I'd never go for something like that — way too dramatic for my taste"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "Which of the following best describes the naming pattern I follow when choosing pet names?",
+      "candidate_options": [
+        "Soft, food-inspired, whimsical names like Mochi, Pudding, and Dumpling",
+        "Nature-themed names like Clover, Willow, and Fern",
+        "Dark, mysterious names like Shadow, Midnight, and Phantom",
+        "Classic human names like Oliver, Bella, and Charlie"
+      ],
+      "expected_answer": "Soft, food-inspired, whimsical names like Mochi, Pudding, and Dumpling",
+      "gold_memory_state": "User's confirmed naming preference: soft, food-inspired, whimsical pet names. Rejected style: dramatic/edgy names like Shadow and Midnight. Nature-themed names (e.g., Clover) were suggested by the roommate but rejected by the user. Classic human names were never discussed.",
+      "judge_rubric": {
+        "must_include": [
+          "soft, food-inspired, whimsical names"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "nature-themed",
+          "dark mysterious",
+          "classic human names"
+        ],
+        "harmful_extra": [
+          "selecting the dramatic/edgy option",
+          "selecting the nature-themed option which includes Clover that was rejected by the user"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'Nature-themed names like Clover, Willow, and Fern' — Clover was a name suggested by Sara for the user's kitten but rejected; it belongs to a different naming aesthetic the user explicitly did not choose. assistant echo: 'Dark, mysterious names like Shadow, Midnight, and Phantom' — these names appeared in the conversation as examples the user disliked, and the assistant echoed them back; selecting this option would invert the user's stated preference. 'Classic human names like Oliver, Bella, and Charlie' is an unrelated plausible pet-naming style never discussed.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects 'Dark, mysterious names' which the user explicitly rejected, or 'Nature-themed names' which includes Clover that the user turned down.",
+        "reflection_precision": "Fails if the model selects an unsupported naming style.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I guess there's a clear pattern — Mochi, Pudding, Dumpling, even Biscuit. I just gravitate toward names that sound soft and round, like little food items"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I also saw names like Shadow and Midnight on that forum and honestly I'd never go for something like that — way too dramatic for my taste"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm thinking of adopting a second cat soon and I want to get matching custom pet tags from the same Etsy shop — one for my current kitten and one for the new cat. Suggest a name for the new cat that fits my style, explain why it fits, and describe what food illustration should go on each tag.",
+      "expected_answer": "For the new cat, a name like Tofu would fit your style — it's soft, round, food-inspired, and whimsical, matching the same pattern as Mochi, Pudding, and Dumpling. For the custom tags: Mochi's tag should have a mochi rice cake illustration, and the new cat's tag (e.g., Tofu) should have a matching soft food illustration like a block of tofu. Both tags maintain your cozy, food-themed naming aesthetic and would make a charming matching set.",
+      "gold_memory_state": "User's kitten is named Mochi (confirmed). User prefers soft, food-inspired, whimsical pet names (confirmed reflect). User loved Dumpling as a future cat name (confirmed). User dislikes dramatic/edgy names like Shadow, Midnight (confirmed). User is planning custom Etsy pet tags with food illustrations (from conversation). Sara's dog Biscuit is still named Biscuit (confirmed); Toffee rename is only tentative and not adopted.",
+      "judge_rubric": {
+        "must_include": [
+          "a suggested name that is soft, food-inspired, and whimsical",
+          "Mochi's tag with a mochi/rice cake illustration",
+          "new cat's tag with a food illustration matching the suggested name",
+          "explanation connecting the suggestion to the user's naming preference"
+        ],
+        "acceptable_paraphrases": [
+          "any soft, round, food-themed name such as Tofu, Wonton, Boba, Sesame, Tapioca, Churro, or similar",
+          "rice ball or rice cake for Mochi's illustration"
+        ],
+        "must_not_include": [
+          "suggesting a dramatic or edgy name like Shadow, Midnight, or Phantom",
+          "using Toffee as the new cat's name since that is Sara's tentative dog rename and not the user's choice"
+        ],
+        "harmful_extra": [
+          "suggesting Clover or any nature-themed name the user already rejected",
+          "treating Toffee as the user's preferred name for their own pet",
+          "suggesting Biscuit as a cat name since that is Sara's dog's name"
+        ],
+        "harmless_extra": [
+          "mentioning Dumpling as an alternative since the user already loved it",
+          "mentioning brass as a tag material",
+          "referencing the user's preference pattern explicitly"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model suggests Toffee as the new cat name, confusing Sara's tentative dog rename with the user's own naming choice.",
+        "reflection_precision": "Fails if the suggested name does not match the soft, food-inspired, whimsical pattern, or if a dramatic/edgy name is suggested.",
+        "reflection_recall": "Fails if the model cannot connect the suggestion to the user's established naming pattern across Mochi, Pudding, and Dumpling.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User's current kitten is named Mochi, a soft food-inspired name.",
+        "Fact 2: User had a childhood hamster named Pudding, another soft food-inspired name.",
+        "Fact 3: User loved the name Dumpling from a pet forum and would pick it for a future cat.",
+        "Fact 4: User explicitly dislikes dramatic/edgy names like Shadow and Midnight.",
+        "Fact 5: User recognized a clear pattern — gravitating toward names that sound soft and round, like little food items.",
+        "Inference: A suitable name for the new cat must be soft-sounding, round, food-inspired, and whimsical — matching the Mochi/Pudding/Dumpling pattern while avoiding dramatic or edgy sounds.",
+        "Inference: The matching Etsy tags should pair Mochi's rice cake illustration with a food illustration for the new name, creating a cohesive food-themed set."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I named my calico kitten Mochi when I brought her home in early March"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "When I was little I had a hamster named Pudding"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I saw someone on a pet forum who named their cat Dumpling and I loved it — that's exactly the kind of name I'd pick for another cat someday"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I also saw names like Shadow and Midnight on that forum and honestly I'd never go for something like that — way too dramatic for my taste"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I guess there's a clear pattern — Mochi, Pudding, Dumpling, even Biscuit. I just gravitate toward names that sound soft and round, like little food items"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I've been thinking about making a little name tag for Mochi's collar. Something custom with her name engraved on it and maybe a little mochi rice cake icon. I found an Etsy shop that does pet tags with food illustrations which is perfect for us."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm thinking of adopting a second cat soon and I want to get matching custom pet tags from the same Etsy shop — one for my current kitten and one for the new cat. Suggest a name for the new cat that fits my style, explain why it fits, and describe what food illustration should go on each tag.",
+      "expected_answer": "For the new cat, a name like Tofu would fit your style — it's soft, round, food-inspired, and whimsical, matching the same pattern as Mochi, Pudding, and Dumpling. For the custom tags: Mochi's tag should have a mochi rice cake illustration, and the new cat's tag (e.g., Tofu) should have a matching soft food illustration like a block of tofu. Both tags maintain your cozy, food-themed naming aesthetic and would make a charming matching set.",
+      "gold_memory_state": "User's kitten is named Mochi (confirmed). User prefers soft, food-inspired, whimsical pet names (confirmed reflect). User loved Dumpling as a future cat name (confirmed). User dislikes dramatic/edgy names like Shadow, Midnight (confirmed). User is planning custom Etsy pet tags with food illustrations (from conversation). Sara's dog Biscuit is still named Biscuit (confirmed); Toffee rename is only tentative and not adopted.",
+      "judge_rubric": {
+        "must_include": [
+          "a suggested name that is soft, food-inspired, and whimsical",
+          "Mochi's tag with a mochi/rice cake illustration",
+          "new cat's tag with a food illustration matching the suggested name",
+          "explanation connecting the suggestion to the user's naming preference"
+        ],
+        "acceptable_paraphrases": [
+          "any soft, round, food-themed name such as Tofu, Wonton, Boba, Sesame, Tapioca, Churro, or similar",
+          "rice ball or rice cake for Mochi's illustration"
+        ],
+        "must_not_include": [
+          "suggesting a dramatic or edgy name like Shadow, Midnight, or Phantom",
+          "using Toffee as the new cat's name since that is Sara's tentative dog rename and not the user's choice"
+        ],
+        "harmful_extra": [
+          "suggesting Clover or any nature-themed name the user already rejected",
+          "treating Toffee as the user's preferred name for their own pet",
+          "suggesting Biscuit as a cat name since that is Sara's dog's name"
+        ],
+        "harmless_extra": [
+          "mentioning Dumpling as an alternative since the user already loved it",
+          "mentioning brass as a tag material",
+          "referencing the user's preference pattern explicitly"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model suggests Toffee as the new cat name, confusing Sara's tentative dog rename with the user's own naming choice.",
+        "reflection_precision": "Fails if the suggested name does not match the soft, food-inspired, whimsical pattern, or if a dramatic/edgy name is suggested.",
+        "reflection_recall": "Fails if the model cannot connect the suggestion to the user's established naming pattern across Mochi, Pudding, and Dumpling.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User's current kitten is named Mochi, a soft food-inspired name.",
+        "Fact 2: User had a childhood hamster named Pudding, another soft food-inspired name.",
+        "Fact 3: User loved the name Dumpling from a pet forum and would pick it for a future cat.",
+        "Fact 4: User explicitly dislikes dramatic/edgy names like Shadow and Midnight.",
+        "Fact 5: User recognized a clear pattern — gravitating toward names that sound soft and round, like little food items.",
+        "Inference: A suitable name for the new cat must be soft-sounding, round, food-inspired, and whimsical — matching the Mochi/Pudding/Dumpling pattern while avoiding dramatic or edgy sounds.",
+        "Inference: The matching Etsy tags should pair Mochi's rice cake illustration with a food illustration for the new name, creating a cohesive food-themed set."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I named my calico kitten Mochi when I brought her home in early March"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "When I was little I had a hamster named Pudding"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I saw someone on a pet forum who named their cat Dumpling and I loved it — that's exactly the kind of name I'd pick for another cat someday"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I also saw names like Shadow and Midnight on that forum and honestly I'd never go for something like that — way too dramatic for my taste"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I guess there's a clear pattern — Mochi, Pudding, Dumpling, even Biscuit. I just gravitate toward names that sound soft and round, like little food items"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I've been thinking about making a little name tag for Mochi's collar. Something custom with her name engraved on it and maybe a little mochi rice cake icon. I found an Etsy shop that does pet tags with food illustrations which is perfect for us."
+        }
+      ]
+    }
+  ]
+}

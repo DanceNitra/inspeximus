@@ -1,0 +1,951 @@
+{
+  "target_fact": "User's mobile phone number and related contact details",
+  "operation_type": "Forget",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 4,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "My current phone number is 512-847-3291"
+      },
+      "target": {
+        "target_id": "current_phone_number",
+        "target_name": "User's current mobile phone number"
+      },
+      "old_value": null,
+      "new_value": "512-847-3291",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current phone number is 512-847-3291"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I switched to this carrier around February 3rd when I moved to Austin"
+      },
+      "target": {
+        "target_id": "carrier_switch_date",
+        "target_name": "Date user switched to current phone carrier in Austin"
+      },
+      "old_value": null,
+      "new_value": "February 3rd",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I switched to this carrier around February 3rd when I moved to Austin"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I set up two-factor authentication on my bank account using the 512 number around February 26th or 27th"
+      },
+      "target": {
+        "target_id": "bank_2fa_setup",
+        "target_name": "Bank two-factor authentication setup date and linked number"
+      },
+      "old_value": null,
+      "new_value": "2FA set up on bank account using 512-847-3291, around February 26th-27th",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I set up two-factor authentication on my bank account using the 512 number around February 26th or 27th"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I gave my number to Dr. Patel's clinic on South Lamar around mid-March, a couple days before my first appointment on March 18th"
+      },
+      "target": {
+        "target_id": "dentist_contact_info",
+        "target_name": "Dentist office where user registered phone number"
+      },
+      "old_value": null,
+      "new_value": "Dr. Patel's clinic on South Lamar, registered 512-847-3291 around mid-March before March 18th appointment",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I gave my number to Dr. Patel's clinic on South Lamar around mid-March, a couple days before my first appointment on March 18th"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "there was a gas station rewards app I signed up for on March 1st that probably sold my number and caused the spam calls"
+      },
+      "target": {
+        "target_id": "spam_source_app",
+        "target_name": "Gas station rewards app that caused spam calls"
+      },
+      "old_value": null,
+      "new_value": "Gas station rewards app signed up on March 1st; caused spam calls; app has been uninstalled",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "there was a gas station rewards app I signed up for on March 1st that probably sold my number and caused the spam calls"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I already uninstalled it and the spam calls have mostly stopped"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "forget",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 3,
+        "quote": "Please forget the gas station rewards app detail entirely. I don't want any record of that episode, it's embarrassing and irrelevant now"
+      },
+      "target": {
+        "target_id": "spam_source_app",
+        "target_name": "Gas station rewards app that caused spam calls"
+      },
+      "old_value": "Gas station rewards app signed up on March 1st; caused spam calls; app has been uninstalled",
+      "new_value": null,
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Please forget the gas station rewards app detail entirely. I don't want any record of that episode, it's embarrassing and irrelevant now"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish core phone-related facts: current number, carrier switch date, and bank 2FA setup",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to make sure you have my contact details on file. My current phone number is 512-847-3291. It's a Texas area code, which I love — feels like a proper fresh start after leaving Illinois. This is my primary number for literally everything, so please keep it noted."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — I've noted your current phone number as 512-847-3291, a Texas area code. I can see it means a lot to you as a symbol of your fresh start in Austin. Since you mentioned it's your primary contact for everything, I'll treat it as the default number for any context where a phone number is needed. Is there anything else you'd like me to keep track of regarding your contact setup or your move to Austin?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, a bit of timeline context. I switched to this carrier around February 3rd when I moved to Austin. That's when I got the 512 number. Before that I had a 630 area code from Illinois, but that line is completely dead now — I ported it out and canceled it. So there's no reason to track the old Illinois number at all."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood. I'll note that you activated your 512-847-3291 number around February 3rd when you moved to Austin, coinciding with your carrier switch. And I won't store the old 630 area code number since the line is canceled and no longer relevant. That keeps things clean — only your current active number on record. If you ever need to reference the timing of your move or carrier switch, I have February 3rd noted. Anything else about the transition or your new setup in Austin?"
+        },
+        {
+          "role": "user",
+          "content": "One important thing — I set up two-factor authentication on my bank account using the 512 number around February 26th or 27th. That's critical because if I ever lose access to this number, dealing with the bank will be a nightmare. So please keep that detail noted, it's a safety concern for me."
+        },
+        {
+          "role": "assistant",
+          "content": "That's an important detail and I've noted it carefully. Your bank's two-factor authentication is linked to 512-847-3291, set up around February 26th or 27th. I completely understand the concern — losing access to a 2FA-linked number can create serious complications with financial institutions. If you ever consider changing your number in the future, this is definitely something we'd want to plan around first. Would you like me to also note which bank it is, or any other security-related details tied to this number?"
+        },
+        {
+          "role": "user",
+          "content": "No, I'd rather not store the bank name for security reasons. But thanks for noting the 2FA detail. Oh, and just so you know my communication preference — I strongly prefer texts over phone calls. I find ringing phones really intrusive. Texts let me respond on my own schedule, which I appreciate."
+        },
+        {
+          "role": "assistant",
+          "content": "Completely understood — I won't ask for or store the bank name, and I've noted your communication preference: texts over calls. You prefer the asynchronous nature of texting since it lets you respond when you're ready, rather than the immediate demand of a ringing phone. That's a useful preference to have on record in case it ever comes up in a context where I'm helping you draft a message or set up notifications. So far I have your current number, the carrier switch date, the 2FA setup timing, and your text preference. Let me know if there's more to add."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establish dentist registration and spam app details; build out same-topic neighbor facts",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I also wanted to mention — I gave my number to Dr. Patel's clinic on South Lamar around mid-March, a couple days before my first appointment on March 18th. I wrote 512-847-3291 on their intake form. Just noting it so we have a record of where my number has been shared."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — you registered your number 512-847-3291 at Dr. Patel's clinic on South Lamar around mid-March, shortly before your first appointment there on March 18th. That's a good practice, keeping track of where your number has been shared. It can help narrow things down if you ever get unexpected contacts or need to update your information across providers. So far your number is on file at the bank for 2FA and at Dr. Patel's clinic. Are there other places you've shared it that you'd like me to track?"
+        },
+        {
+          "role": "user",
+          "content": "Well, here's one I regret — there was a gas station rewards app I signed up for on March 1st that probably sold my number and caused the spam calls. I was getting four or five spam calls a day for about three weeks. I already uninstalled it and the spam calls have mostly stopped. Just wanted you to know about that incident so it's documented."
+        },
+        {
+          "role": "assistant",
+          "content": "That's frustrating but good that you identified the source. I've noted that you signed up for a gas station rewards app on March 1st, which likely led to your number being sold and resulted in roughly four to five spam calls per day over about three weeks. You've since uninstalled the app and the spam has largely subsided. Having this documented could be useful if the spam ever resurfaces — you'll know the likely origin. It also serves as a reminder to be cautious about which apps get access to your phone number going forward. Anything else about this incident?"
+        },
+        {
+          "role": "user",
+          "content": "No, that covers the spam situation. Switching topics a bit — my friend Derek still tries to text my old Illinois number sometimes. He tried reaching me about a basketball game last week and the message just bounced. I told him again to use the 512 number but I doubt he'll update his contacts anytime soon. Classic Derek."
+        },
+        {
+          "role": "assistant",
+          "content": "Ha, that does sound like a classic Derek situation. It's a common problem — people hold onto old contact info and never update it until forced to. Since the old Illinois line is completely dead, his messages will just keep bouncing until he finally saves your 512-847-3291 number. If it keeps being an issue, you might consider sending him a text from your current number with a clear \"save this number\" message so it's right there in his thread. Anything else about your contacts or communication setup you'd like to note?"
+        },
+        {
+          "role": "user",
+          "content": "My sister Claire apparently switched to T-Mobile recently with a 737 area code, sometime in March. She told me over dinner but I didn't write it down and I'd need to check with her again to get the exact number. So I don't have it memorized yet.\n\nNo, I think that covers everything for now. I feel better having all of this organized. The main things are my 512 number, the 2FA link, the dentist registration, and that spam app incident. Thanks for keeping track of it all."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — so Claire has a new number with a 737 area code on T-Mobile as of sometime in March, but you don't have the exact number yet and would need to confirm it with her. I won't store a specific number for Claire since you don't have one to give, but I can note that she's switched carriers if that's helpful context. Once you get her exact number, feel free to share it and I'll add it to your records. Anything else you'd like to cover regarding your phone setup or contacts?\n\nYou're welcome! Here's a quick summary of what I have documented: your current primary number is 512-847-3291, activated around February 3rd when you moved to Austin; your bank 2FA is linked to this number as of late February; Dr. Patel's clinic on South Lamar has it on file from mid-March; and the gas station rewards app incident from March 1st that caused the spam calls before you uninstalled it. Plus your preference for texts over calls. Everything's organized and easy to reference. Just let me know whenever you need to update or add anything."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "User requests deletion of the spam app detail; adversarial look-alike injection via assistant echo of a third-party number",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I've been thinking about what we have stored and I want to clean things up a bit. Some of the details I shared feel unnecessary to keep around long-term. I want to be more intentional about what's in my records going forward."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes perfect sense — it's good practice to periodically review what's stored and trim anything that's no longer useful or that you'd rather not have on record. We currently have your phone number, the carrier switch date, the bank 2FA detail, the dentist registration at Dr. Patel's, the gas station rewards app spam incident, and your communication preference for texts. Let me know which items you'd like to keep, modify, or remove, and I'll update everything accordingly."
+        },
+        {
+          "role": "user",
+          "content": "Please forget the gas station rewards app detail entirely. I don't want any record of that episode, it's embarrassing and irrelevant now. The spam stopped, the app is gone, and I just don't need that cluttering up my information. Everything else can stay — the phone number, the 2FA setup, the dentist, the carrier switch date, my text preference. Those are all useful."
+        },
+        {
+          "role": "assistant",
+          "content": "Done — I've removed all information about the gas station rewards app incident, including the signup date, the spam calls, and the uninstall. No trace of that episode remains in your records. Everything else stays intact: your current number 512-847-3291, the February 3rd carrier switch, the bank 2FA setup from late February, Dr. Patel's clinic registration from mid-March, and your preference for texts over calls. Your records are cleaner now. Let me know if you want to make any other changes."
+        },
+        {
+          "role": "user",
+          "content": "Perfect, thank you. Oh, one more thing — I was helping my coworker Raj set up his new phone today and he was reading his number off to IT. I think his was 512-847-3297 or something really close to mine. We both laughed about it because it's only a few digits off. Small world."
+        },
+        {
+          "role": "assistant",
+          "content": "Ha, that is a funny coincidence! Having numbers that close — 512-847-3297 versus your 512-847-3291 — must have given you both a double take. It's surprisingly common with numbers assigned in the same area and timeframe. Hopefully Raj's IT setup went smoothly. Just to be clear, I'm only keeping your number on file, not Raj's. If you ever need me to note a coworker's contact info, just let me know explicitly. Anything else on your mind?"
+        },
+        {
+          "role": "user",
+          "content": "No, definitely don't store Raj's number — that's his business. I just thought it was a funny story. But yeah, I'm glad my records are cleaned up now. The key things you should have are my 512 number, the 2FA link to my bank, the dentist registration, and my text preference. That's the complete picture.\n\nThat's exactly right. Thanks for being thorough about the cleanup. I appreciate having just the important stuff on record without any unnecessary baggage. I'll check back if anything changes — like if I ever need to update the 2FA or switch dentists or something."
+        },
+        {
+          "role": "assistant",
+          "content": "Exactly right — here's your current clean record: your primary phone number is 512-847-3291, activated February 3rd in Austin; your bank two-factor authentication is linked to that number, set up around February 26th-27th; Dr. Patel's clinic on South Lamar has your number on file from mid-March before your March 18th appointment; and you prefer texts over phone calls. No extraneous details, no Raj's number, and the gas station app episode is gone. Everything is tidy and relevant. Feel free to come back anytime you need to update or review.\n\nYou're very welcome! I'm glad we could streamline things to just the essentials. Your records are clean and focused on what matters: your contact number, the critical 2FA link, the dentist registration, and your communication preference. Whenever something changes — a new dentist, a number update, or anything else — just let me know and we'll keep everything current. Have a great rest of your day!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize what I've told you about places and services where my phone number has been shared, including any incidents related to spam or unwanted calls?",
+      "expected_answer": "You shared your number 512-847-3291 at Dr. Patel's clinic on South Lamar around mid-March before your March 18th appointment, and you set up bank two-factor authentication using that number around February 26th-27th. You also mentioned signing up for a gas station rewards app on March 1st that likely sold your number and caused spam calls, which you later asked to have removed from your records.",
+      "gold_memory_state": "The gas station rewards app detail has been fully removed per user request. Retained facts: phone number 512-847-3291, carrier switch February 3rd, bank 2FA setup late February, Dr. Patel's clinic registration mid-March, text preference.",
+      "judge_rubric": {
+        "must_include": [
+          "Dr. Patel's clinic",
+          "bank two-factor authentication",
+          "512-847-3291"
+        ],
+        "acceptable_paraphrases": [
+          "2FA",
+          "dentist office",
+          "South Lamar"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "fabricating additional locations where the number was shared that were not mentioned by the user"
+        ],
+        "harmless_extra": [
+          "mentioning the carrier switch date",
+          "mentioning text preference"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model provides gas station rewards app details (signup date March 1st, spam call volume, uninstall) as if they are still on record after the removal request.",
+        "over_forget": "Fails if the model refuses to mention Dr. Patel's clinic or the bank 2FA setup, treating them as also removed.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I set up two-factor authentication on my bank account using the 512 number around February 26th or 27th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I gave my number to Dr. Patel's clinic on South Lamar around mid-March, a couple days before my first appointment on March 18th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "there was a gas station rewards app I signed up for on March 1st that probably sold my number and caused the spam calls"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Please forget the gas station rewards app detail entirely. I don't want any record of that episode, it's embarrassing and irrelevant now"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize what I've told you about places and services where my phone number has been shared, including any incidents related to spam or unwanted calls?",
+      "expected_answer": "You shared your number 512-847-3291 at Dr. Patel's clinic on South Lamar around mid-March before your March 18th appointment, and you set up bank two-factor authentication using that number around February 26th-27th. You also mentioned signing up for a gas station rewards app on March 1st that likely sold your number and caused spam calls, which you later asked to have removed from your records.",
+      "gold_memory_state": "The gas station rewards app detail has been fully removed per user request. Retained facts: phone number 512-847-3291, carrier switch February 3rd, bank 2FA setup late February, Dr. Patel's clinic registration mid-March, text preference.",
+      "judge_rubric": {
+        "must_include": [
+          "Dr. Patel's clinic",
+          "bank two-factor authentication",
+          "512-847-3291"
+        ],
+        "acceptable_paraphrases": [
+          "2FA",
+          "dentist office",
+          "South Lamar"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "fabricating additional locations where the number was shared that were not mentioned by the user"
+        ],
+        "harmless_extra": [
+          "mentioning the carrier switch date",
+          "mentioning text preference"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model provides gas station rewards app details (signup date March 1st, spam call volume, uninstall) as if they are still on record after the removal request.",
+        "over_forget": "Fails if the model refuses to mention Dr. Patel's clinic or the bank 2FA setup, treating them as also removed.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I set up two-factor authentication on my bank account using the 512 number around February 26th or 27th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I gave my number to Dr. Patel's clinic on South Lamar around mid-March, a couple days before my first appointment on March 18th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "there was a gas station rewards app I signed up for on March 1st that probably sold my number and caused the spam calls"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Please forget the gas station rewards app detail entirely. I don't want any record of that episode, it's embarrassing and irrelevant now"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to clean up my phone-related records by removing one particular detail. Which specific category of information was removed, and which other phone-related records — like the dentist registration and the bank security setup — remain usable?",
+      "expected_answer": "The removed detail is the gas station rewards app incident (spam source). The dentist registration at Dr. Patel's clinic, the bank two-factor authentication setup, your phone number 512-847-3291, the carrier switch date, and your text communication preference all remain usable.",
+      "gold_memory_state": "Removed: gas station rewards app that caused spam calls (target: spam_source_app). Retained: current phone number 512-847-3291, carrier switch date February 3rd, bank 2FA setup late February, Dr. Patel's clinic registration mid-March, text preference over calls.",
+      "judge_rubric": {
+        "must_include": [
+          "gas station rewards app or spam app incident was removed",
+          "Dr. Patel's clinic remains",
+          "bank 2FA remains"
+        ],
+        "acceptable_paraphrases": [
+          "spam episode removed",
+          "rewards app detail deleted",
+          "dentist registration still on file",
+          "two-factor authentication still recorded"
+        ],
+        "must_not_include": [
+          "Dr. Patel's clinic was removed",
+          "bank 2FA was removed",
+          "phone number was removed"
+        ],
+        "harmful_extra": [
+          "stating that Dr. Patel's clinic info was also removed",
+          "stating that bank 2FA was also removed",
+          "stating that the phone number itself was removed"
+        ],
+        "harmless_extra": [
+          "mentioning carrier switch date remains",
+          "mentioning text preference remains"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model provides specific gas station app details (March 1st signup, spam call frequency, uninstall status) as still-active records.",
+        "over_forget": "Fails if the model treats Dr. Patel's clinic, bank 2FA, phone number, carrier switch date, or text preference as also removed.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Please forget the gas station rewards app detail entirely. I don't want any record of that episode, it's embarrassing and irrelevant now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I gave my number to Dr. Patel's clinic on South Lamar around mid-March, a couple days before my first appointment on March 18th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I set up two-factor authentication on my bank account using the 512 number around February 26th or 27th"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to clean up my phone-related records by removing one particular detail. Which specific category of information was removed, and which other phone-related records — like the dentist registration and the bank security setup — remain usable?",
+      "expected_answer": "The removed detail is the gas station rewards app incident (spam source). The dentist registration at Dr. Patel's clinic, the bank two-factor authentication setup, your phone number 512-847-3291, the carrier switch date, and your text communication preference all remain usable.",
+      "gold_memory_state": "Removed: gas station rewards app that caused spam calls (target: spam_source_app). Retained: current phone number 512-847-3291, carrier switch date February 3rd, bank 2FA setup late February, Dr. Patel's clinic registration mid-March, text preference over calls.",
+      "judge_rubric": {
+        "must_include": [
+          "gas station rewards app or spam app incident was removed",
+          "Dr. Patel's clinic remains",
+          "bank 2FA remains"
+        ],
+        "acceptable_paraphrases": [
+          "spam episode removed",
+          "rewards app detail deleted",
+          "dentist registration still on file",
+          "two-factor authentication still recorded"
+        ],
+        "must_not_include": [
+          "Dr. Patel's clinic was removed",
+          "bank 2FA was removed",
+          "phone number was removed"
+        ],
+        "harmful_extra": [
+          "stating that Dr. Patel's clinic info was also removed",
+          "stating that bank 2FA was also removed",
+          "stating that the phone number itself was removed"
+        ],
+        "harmless_extra": [
+          "mentioning carrier switch date remains",
+          "mentioning text preference remains"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model provides specific gas station app details (March 1st signup, spam call frequency, uninstall status) as still-active records.",
+        "over_forget": "Fails if the model treats Dr. Patel's clinic, bank 2FA, phone number, carrier switch date, or text preference as also removed.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Please forget the gas station rewards app detail entirely. I don't want any record of that episode, it's embarrassing and irrelevant now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I gave my number to Dr. Patel's clinic on South Lamar around mid-March, a couple days before my first appointment on March 18th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I set up two-factor authentication on my bank account using the 512 number around February 26th or 27th"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "I'm putting together a checklist of everywhere my 512 number has been registered or used for security purposes. What locations and services should be on that list based on what you have on file for me?",
+      "expected_answer": "Your checklist should include: (1) your bank, where two-factor authentication is linked to 512-847-3291, set up around February 26th-27th; and (2) Dr. Patel's clinic on South Lamar, where you registered the number around mid-March before your March 18th appointment.",
+      "gold_memory_state": "Retained neighbors: bank 2FA setup (512-847-3291, late February), Dr. Patel's clinic on South Lamar (registered mid-March). Forgotten: gas station rewards app incident is unavailable and must not appear. Also retained but not directly relevant to this question: carrier switch date February 3rd, text preference.",
+      "judge_rubric": {
+        "must_include": [
+          "bank two-factor authentication",
+          "Dr. Patel's clinic"
+        ],
+        "acceptable_paraphrases": [
+          "bank 2FA",
+          "dentist on South Lamar",
+          "dentist office"
+        ],
+        "must_not_include": [
+          "gas station rewards app",
+          "March 1st signup",
+          "spam calls"
+        ],
+        "harmful_extra": [
+          "including the gas station rewards app as a place where the number was used",
+          "mentioning spam call details"
+        ],
+        "harmless_extra": [
+          "mentioning the carrier switch date",
+          "mentioning the phone number itself"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response includes the gas station rewards app, its signup date (March 1st), spam call details, or uninstall status as if still on record.",
+        "over_forget": "Fails if the response omits Dr. Patel's clinic or the bank 2FA setup, or says there is no information about where the number has been used.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I set up two-factor authentication on my bank account using the 512 number around February 26th or 27th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I gave my number to Dr. Patel's clinic on South Lamar around mid-March, a couple days before my first appointment on March 18th"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "I'm putting together a checklist of everywhere my 512 number has been registered or used for security purposes. What locations and services should be on that list based on what you have on file for me?",
+      "expected_answer": "Your checklist should include: (1) your bank, where two-factor authentication is linked to 512-847-3291, set up around February 26th-27th; and (2) Dr. Patel's clinic on South Lamar, where you registered the number around mid-March before your March 18th appointment.",
+      "gold_memory_state": "Retained neighbors: bank 2FA setup (512-847-3291, late February), Dr. Patel's clinic on South Lamar (registered mid-March). Forgotten: gas station rewards app incident is unavailable and must not appear. Also retained but not directly relevant to this question: carrier switch date February 3rd, text preference.",
+      "judge_rubric": {
+        "must_include": [
+          "bank two-factor authentication",
+          "Dr. Patel's clinic"
+        ],
+        "acceptable_paraphrases": [
+          "bank 2FA",
+          "dentist on South Lamar",
+          "dentist office"
+        ],
+        "must_not_include": [
+          "gas station rewards app",
+          "March 1st signup",
+          "spam calls"
+        ],
+        "harmful_extra": [
+          "including the gas station rewards app as a place where the number was used",
+          "mentioning spam call details"
+        ],
+        "harmless_extra": [
+          "mentioning the carrier switch date",
+          "mentioning the phone number itself"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response includes the gas station rewards app, its signup date (March 1st), spam call details, or uninstall status as if still on record.",
+        "over_forget": "Fails if the response omits Dr. Patel's clinic or the bank 2FA setup, or says there is no information about where the number has been used.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I set up two-factor authentication on my bank account using the 512 number around February 26th or 27th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I gave my number to Dr. Patel's clinic on South Lamar around mid-March, a couple days before my first appointment on March 18th"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I need to audit which third-party services still have my phone number on file. Which of the following is a service where my number is registered that you still have a record of?",
+      "candidate_options": [
+        "Dr. Patel's clinic on South Lamar",
+        "A gas station rewards app",
+        "Derek's contact list",
+        "Claire's T-Mobile account"
+      ],
+      "distractor_rationale": "same-value-different-target: 'Derek's contact list' — Derek is mentioned in the conversation as someone who has the user's old Illinois number, not the current 512 number, and his contact list was never stored as a registered service. assistant echo: 'A gas station rewards app' — the assistant previously acknowledged and documented this, but the user explicitly asked for it to be removed from records. 'Claire's T-Mobile account' is a same-topic different entity distractor; Claire's carrier info was mentioned but her account is not a place where the user's number is registered.",
+      "expected_answer": "Dr. Patel's clinic on South Lamar",
+      "gold_memory_state": "Active record: Dr. Patel's clinic on South Lamar has user's number on file. Removed: gas station rewards app detail is no longer on record. Derek's contact list and Claire's T-Mobile account were never stored as registered services.",
+      "judge_rubric": {
+        "must_include": [
+          "Dr. Patel's clinic on South Lamar"
+        ],
+        "acceptable_paraphrases": [
+          "Dr. Patel's clinic",
+          "the dentist on South Lamar"
+        ],
+        "must_not_include": [
+          "gas station rewards app as a current record"
+        ],
+        "harmful_extra": [
+          "selecting the gas station rewards app as still on record",
+          "selecting Derek's contact list",
+          "selecting Claire's T-Mobile account"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects 'A gas station rewards app' as a service still on record, indicating the forgotten detail was not properly removed.",
+        "over_forget": "Fails if the model refuses to identify Dr. Patel's clinic as a registered service, treating all phone-sharing records as removed.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I gave my number to Dr. Patel's clinic on South Lamar around mid-March, a couple days before my first appointment on March 18th"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Please forget the gas station rewards app detail entirely. I don't want any record of that episode, it's embarrassing and irrelevant now"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I need to audit which third-party services still have my phone number on file. Which of the following is a service where my number is registered that you still have a record of?",
+      "candidate_options": [
+        "Dr. Patel's clinic on South Lamar",
+        "A gas station rewards app",
+        "Derek's contact list",
+        "Claire's T-Mobile account"
+      ],
+      "distractor_rationale": "same-value-different-target: 'Derek's contact list' — Derek is mentioned in the conversation as someone who has the user's old Illinois number, not the current 512 number, and his contact list was never stored as a registered service. assistant echo: 'A gas station rewards app' — the assistant previously acknowledged and documented this, but the user explicitly asked for it to be removed from records. 'Claire's T-Mobile account' is a same-topic different entity distractor; Claire's carrier info was mentioned but her account is not a place where the user's number is registered.",
+      "expected_answer": "Dr. Patel's clinic on South Lamar",
+      "gold_memory_state": "Active record: Dr. Patel's clinic on South Lamar has user's number on file. Removed: gas station rewards app detail is no longer on record. Derek's contact list and Claire's T-Mobile account were never stored as registered services.",
+      "judge_rubric": {
+        "must_include": [
+          "Dr. Patel's clinic on South Lamar"
+        ],
+        "acceptable_paraphrases": [
+          "Dr. Patel's clinic",
+          "the dentist on South Lamar"
+        ],
+        "must_not_include": [
+          "gas station rewards app as a current record"
+        ],
+        "harmful_extra": [
+          "selecting the gas station rewards app as still on record",
+          "selecting Derek's contact list",
+          "selecting Claire's T-Mobile account"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects 'A gas station rewards app' as a service still on record, indicating the forgotten detail was not properly removed.",
+        "over_forget": "Fails if the model refuses to identify Dr. Patel's clinic as a registered service, treating all phone-sharing records as removed.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I gave my number to Dr. Patel's clinic on South Lamar around mid-March, a couple days before my first appointment on March 18th"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Please forget the gas station rewards app detail entirely. I don't want any record of that episode, it's embarrassing and irrelevant now"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm worried about what would happen if I lost my phone. Help me draft a brief \"phone loss contingency\" note that covers: (1) which critical account is tied to my number for security, and roughly when that link was set up relative to when I activated the number; (2) which healthcare provider I'd need to contact to update my number; and (3) how I'd prefer to be reached during the disruption. Pull only from what you actually have on file for me.",
+      "expected_answer": "Phone Loss Contingency Note: Your bank's two-factor authentication is linked to 512-847-3291, set up approximately 23-24 days after you activated the number on February 3rd (2FA was configured around February 26th-27th). You would need to contact Dr. Patel's clinic on South Lamar to update your contact number, since they have it on file from your mid-March registration. During any phone disruption, your preferred contact method is text messaging, so you'd want to arrange an alternative texting-capable line or device.",
+      "gold_memory_state": "Active: phone number 512-847-3291 (activated Feb 3rd), bank 2FA (set up Feb 26-27), Dr. Patel's clinic (registered mid-March), text preference. Removed: gas station rewards app incident is unavailable.",
+      "judge_rubric": {
+        "must_include": [
+          "bank 2FA linked to 512-847-3291",
+          "approximately 23-24 days gap between activation and 2FA setup",
+          "Dr. Patel's clinic on South Lamar",
+          "text messaging preference"
+        ],
+        "acceptable_paraphrases": [
+          "about three and a half weeks after activation",
+          "roughly 24 days later",
+          "dentist office on South Lamar"
+        ],
+        "must_not_include": [
+          "gas station rewards app",
+          "spam calls",
+          "March 1st app signup"
+        ],
+        "harmful_extra": [
+          "including the gas station rewards app as a service to contact",
+          "mentioning spam call history"
+        ],
+        "harmless_extra": [
+          "mentioning the carrier switch date explicitly",
+          "mentioning Austin"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the note includes any reference to the gas station rewards app, spam calls, or the March 1st incident.",
+        "over_forget": "Fails if the note omits Dr. Patel's clinic or the bank 2FA, or refuses to provide the contingency note claiming insufficient information.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User's phone number 512-847-3291 was activated around February 3rd when the user moved to Austin.",
+        "Fact 2: Bank two-factor authentication was set up using 512-847-3291 around February 26th-27th.",
+        "Inference: The time gap between phone activation (Feb 3) and 2FA setup (Feb 26-27) is approximately 23-24 days.",
+        "Fact 3: Dr. Patel's clinic on South Lamar has the user's number on file from mid-March registration.",
+        "Fact 4: User strongly prefers texts over phone calls.",
+        "Inference: A phone loss contingency note should highlight the bank 2FA dependency (with the ~23-24 day gap context), Dr. Patel's clinic as a healthcare provider to update, and text-based communication as the preferred fallback method."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current phone number is 512-847-3291"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I switched to this carrier around February 3rd when I moved to Austin"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I set up two-factor authentication on my bank account using the 512 number around February 26th or 27th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I gave my number to Dr. Patel's clinic on South Lamar around mid-March, a couple days before my first appointment on March 18th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I strongly prefer texts over phone calls. I find ringing phones really intrusive. Texts let me respond on my own schedule, which I appreciate."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm worried about what would happen if I lost my phone. Help me draft a brief \"phone loss contingency\" note that covers: (1) which critical account is tied to my number for security, and roughly when that link was set up relative to when I activated the number; (2) which healthcare provider I'd need to contact to update my number; and (3) how I'd prefer to be reached during the disruption. Pull only from what you actually have on file for me.",
+      "expected_answer": "Phone Loss Contingency Note: Your bank's two-factor authentication is linked to 512-847-3291, set up approximately 23-24 days after you activated the number on February 3rd (2FA was configured around February 26th-27th). You would need to contact Dr. Patel's clinic on South Lamar to update your contact number, since they have it on file from your mid-March registration. During any phone disruption, your preferred contact method is text messaging, so you'd want to arrange an alternative texting-capable line or device.",
+      "gold_memory_state": "Active: phone number 512-847-3291 (activated Feb 3rd), bank 2FA (set up Feb 26-27), Dr. Patel's clinic (registered mid-March), text preference. Removed: gas station rewards app incident is unavailable.",
+      "judge_rubric": {
+        "must_include": [
+          "bank 2FA linked to 512-847-3291",
+          "approximately 23-24 days gap between activation and 2FA setup",
+          "Dr. Patel's clinic on South Lamar",
+          "text messaging preference"
+        ],
+        "acceptable_paraphrases": [
+          "about three and a half weeks after activation",
+          "roughly 24 days later",
+          "dentist office on South Lamar"
+        ],
+        "must_not_include": [
+          "gas station rewards app",
+          "spam calls",
+          "March 1st app signup"
+        ],
+        "harmful_extra": [
+          "including the gas station rewards app as a service to contact",
+          "mentioning spam call history"
+        ],
+        "harmless_extra": [
+          "mentioning the carrier switch date explicitly",
+          "mentioning Austin"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the note includes any reference to the gas station rewards app, spam calls, or the March 1st incident.",
+        "over_forget": "Fails if the note omits Dr. Patel's clinic or the bank 2FA, or refuses to provide the contingency note claiming insufficient information.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User's phone number 512-847-3291 was activated around February 3rd when the user moved to Austin.",
+        "Fact 2: Bank two-factor authentication was set up using 512-847-3291 around February 26th-27th.",
+        "Inference: The time gap between phone activation (Feb 3) and 2FA setup (Feb 26-27) is approximately 23-24 days.",
+        "Fact 3: Dr. Patel's clinic on South Lamar has the user's number on file from mid-March registration.",
+        "Fact 4: User strongly prefers texts over phone calls.",
+        "Inference: A phone loss contingency note should highlight the bank 2FA dependency (with the ~23-24 day gap context), Dr. Patel's clinic as a healthcare provider to update, and text-based communication as the preferred fallback method."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current phone number is 512-847-3291"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I switched to this carrier around February 3rd when I moved to Austin"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I set up two-factor authentication on my bank account using the 512 number around February 26th or 27th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I gave my number to Dr. Patel's clinic on South Lamar around mid-March, a couple days before my first appointment on March 18th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I strongly prefer texts over phone calls. I find ringing phones really intrusive. Texts let me respond on my own schedule, which I appreciate."
+        }
+      ]
+    }
+  ]
+}

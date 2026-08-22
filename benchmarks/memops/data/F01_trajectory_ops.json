@@ -1,0 +1,950 @@
+{
+  "target_fact": "F01 Monthly income/salary range",
+  "operation_type": "TrajectoryOps",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "monthly_net_salary",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "My current monthly take-home from Ridgeline Analytics is $6,200 after tax"
+      },
+      "target": {
+        "target_id": "current_monthly_net_salary",
+        "target_name": "current monthly net salary from Ridgeline Analytics"
+      },
+      "old_value": null,
+      "new_value": "$6,200",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current monthly take-home from Ridgeline Analytics is $6,200 after tax"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "my rent is $1,850 a month for the Maple Street apartment, and that's been fixed since January"
+      },
+      "target": {
+        "target_id": "monthly_rent",
+        "target_name": "monthly rent for Maple Street apartment"
+      },
+      "old_value": null,
+      "new_value": "$1,850",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my rent is $1,850 a month for the Maple Street apartment, and that's been fixed since January"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "monthly_net_salary",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "starting in May they adjusted the benefits deduction, so my net pay dropped to $6,080. I saw it on my May 15th pay stub"
+      },
+      "target": {
+        "target_id": "current_monthly_net_salary",
+        "target_name": "current monthly net salary from Ridgeline Analytics"
+      },
+      "old_value": "$6,200",
+      "new_value": "$6,080",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current monthly take-home from Ridgeline Analytics is $6,200 after tax"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "starting in May they adjusted the benefits deduction, so my net pay dropped to $6,080. I saw it on my May 15th pay stub"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "monthly_net_salary",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "HR confirmed that starting next month they're rolling back the benefits adjustment, so my net should go back up to $6,200"
+      },
+      "target": {
+        "target_id": "current_monthly_net_salary",
+        "target_name": "current monthly net salary from Ridgeline Analytics"
+      },
+      "old_value": "$6,080",
+      "new_value": "$6,200",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "HR confirmed that starting next month they're rolling back the benefits adjustment, so my net should go back up to $6,200"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "monthly_net_salary",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 7,
+        "quote": "I just checked my employee portal and the current deduction schedule still shows $6,080 for this pay period. So right now it's still $6,080"
+      },
+      "target": {
+        "target_id": "current_monthly_net_salary",
+        "target_name": "current monthly net salary from Ridgeline Analytics"
+      },
+      "old_value": "$6,080",
+      "new_value": "$6,080",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I just checked my employee portal and the current deduction schedule still shows $6,080 for this pay period. So right now it's still $6,080"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish salary and rent facts",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to get my finances organized. My current monthly take-home from Ridgeline Analytics is $6,200 after tax. I started there on March 3rd and it's been great so far. I'd like your help putting together a simple monthly budget based on what I know about my expenses so far."
+        },
+        {
+          "role": "assistant",
+          "content": "Congratulations on the role at Ridgeline Analytics! A $6,200 monthly take-home is a solid foundation for budgeting. To build something useful, I'll need to know your major fixed expenses—rent, utilities, subscriptions, insurance—and then we can figure out what's left for savings, discretionary spending, and any debt payments. Let's start with housing since that's usually the biggest line item. What's your current rent or mortgage payment, and do you have any other fixed monthly obligations you'd like to include right away?"
+        },
+        {
+          "role": "user",
+          "content": "Sure. Before I get to rent, I should mention I set up an automatic savings transfer of $1,500 per month back in April. That was a big deal for me because at my old consulting job I could barely save $300 a month. Having that automated transfer running feels really good."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a fantastic habit to build early in a new role. Automating $1,500 per month into savings means you're locking away nearly a quarter of your take-home before you even think about spending. At your previous pace of $300 a month, it would have taken five months to save what you're now saving in one. I'll pencil in $1,500 as a non-negotiable line item in the budget so it stays protected. Now, what about your housing costs and any other fixed monthly bills you want to account for?"
+        },
+        {
+          "role": "user",
+          "content": "Right, so my rent is $1,850 a month for the Maple Street apartment, and that's been fixed since January. The neighborhood is quiet and I can walk to the grocery store, which I genuinely enjoy. No car payment or anything like that. My utilities run about $120 a month on average, and I have a phone plan at $55."
+        },
+        {
+          "role": "assistant",
+          "content": "Great, those are nice clean numbers. So far we have rent at $1,850, utilities around $120, and a phone plan at $55, plus the $1,500 automatic savings transfer. That totals $3,525 in committed monthly outflows. Subtracting that from your $6,200 take-home leaves $2,675 for groceries, transportation, dining out, personal spending, and any irregular expenses. That's a comfortable cushion. Do you have a sense of what you typically spend on groceries and transportation each month, or should we estimate those?"
+        },
+        {
+          "role": "user",
+          "content": "Groceries are probably around $350 a month. I walk most places so transportation is minimal—maybe $40 a month for the occasional bus or rideshare. I also have a gym membership at $45. That's really the core of my spending. I don't have any debt payments, which is nice."
+        },
+        {
+          "role": "assistant",
+          "content": "Wonderful, no debt simplifies things enormously. Adding groceries at $350, transportation at $40, and the gym at $45 brings your total committed and semi-fixed spending to $3,960. That leaves you roughly $2,240 per month in true discretionary income for dining out, entertainment, clothing, gifts, and unexpected costs. That's a healthy margin. I'd suggest keeping a small buffer—maybe $200 to $300—earmarked for irregular expenses like medical copays or household items, so you still have around $1,940 to $2,040 of genuinely free spending money each month."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "update salary to $6,080 and add context",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to revisit the budget we started. My brother just got his first real job offer—$3,800 a month starting at a logistics company in Phoenix. My mom called me about it last Sunday and she sounded really proud. I'm happy for him, it's a solid start for entry level."
+        },
+        {
+          "role": "assistant",
+          "content": "That's great news for your brother! A $3,800 monthly starting salary at entry level in logistics is respectable, especially in Phoenix where the cost of living is more moderate than a lot of metro areas. Your mom has every right to be proud. If he's smart about expenses early on, he can build good habits quickly, much like you've done with your automatic savings transfer. Did you want to think about any family-related budget items—like helping him with a move or a congratulatory gift—or shall we keep focused on your own monthly plan?"
+        },
+        {
+          "role": "user",
+          "content": "Let's keep focused on mine for now. I need to correct something important: starting in May they adjusted the benefits deduction, so my net pay dropped to $6,080. I saw it on my May 15th pay stub. Not a huge difference from the $6,200 but I want the budget to reflect the accurate number going forward."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood, I'll update your monthly take-home to $6,080 effective May. That's a $120 reduction from the original $6,200 figure, which is modest but worth tracking accurately. With your committed spending at $3,960, you now have about $2,120 in discretionary income instead of $2,240. The savings transfer at $1,500 is still very manageable. It's smart to catch these changes early so the budget stays reliable. Do you want me to recalculate the full breakdown with the new number, or is there anything else that changed alongside the benefits adjustment?"
+        },
+        {
+          "role": "user",
+          "content": "No, the benefits adjustment is the only change. Everything else stays the same—rent, utilities, phone, groceries, gym. I also wanted to mention that I got a one-time relocation reimbursement of $2,000 in my first paycheck at Ridgeline, but that was a one-off. I don't want it mixed into the recurring budget."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, I'll keep the $2,000 relocation reimbursement separate—it's a one-time inflow that shouldn't inflate your monthly baseline. Your recurring monthly picture is now: $6,080 take-home minus $3,960 in committed costs, leaving $2,120 discretionary. If you like, we could earmark that relocation reimbursement for a specific purpose, like padding your emergency fund or covering a one-time purchase. Otherwise I'll just note it as a non-recurring deposit. Want to allocate it somewhere specific?"
+        },
+        {
+          "role": "user",
+          "content": "I put most of it into my savings account honestly. I'm the kind of person who'd rather have a stable predictable paycheck than chase variable commission. A couple recruiters reached out last week about roles with lower base but big commission potential, and I just wasn't interested at all.\n\nYes, let's finalize it. Just to recap: $6,080 take-home, $1,850 rent, $1,500 savings transfer, $120 utilities, $55 phone, $350 groceries, $40 transportation, $45 gym. I think that covers everything recurring. I appreciate you keeping this organized for me."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a perfectly valid financial philosophy, and it aligns well with how you've structured your budget—fixed savings, fixed rent, minimal variable costs. Commission-heavy roles can be lucrative but they introduce income volatility that makes budgeting much harder. With your current setup at Ridgeline, you know exactly what's coming in each month, which lets you plan confidently. Putting the relocation money straight into savings was a solid call too. Your emergency fund is probably growing nicely between that lump sum and the $1,500 monthly transfer. Shall we finalize the updated budget summary?\n\nHere's your finalized monthly budget at $6,080 take-home: Rent $1,850, Automatic Savings $1,500, Groceries $350, Utilities $120, Phone $55, Gym $45, Transportation $40. Total committed: $3,960. Remaining discretionary: $2,120. That discretionary amount covers dining out, entertainment, personal purchases, and a buffer for irregular expenses. I'd recommend keeping $200 to $300 of that as an unallocated cushion for surprises. Everything looks clean and sustainable. Let me know anytime you need to adjust a line item or if your income changes again."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "tentative salary revert and adversarial injection",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Quick question—I was looking at my budget and thinking about how much I can actually spend on dining out each month. I went to a nice dinner after my first full month at Ridgeline and spent about $90, and I felt guilty about it for days afterward. That anxiety from the lean months lingers."
+        },
+        {
+          "role": "assistant",
+          "content": "That kind of lingering financial anxiety is really common after a period of tight budgets—it doesn't just vanish when your income goes up. With $2,120 in discretionary income, a $90 dinner is well within reason, about four percent of your monthly free cash. One approach is to set a specific dining-out budget line, say $150 to $200 per month, so you have explicit permission to spend without guilt. Knowing the boundary is predefined can help quiet that anxious voice. Would you like me to add a dining-out category to your budget?"
+        },
+        {
+          "role": "user",
+          "content": "That's a good idea, let's earmark $175 a month for dining out. By the way, my friend Derek at Prism Solutions just got bumped to $7,500 a month gross. I don't know his exact net but he seemed happy about it. Good for him."
+        },
+        {
+          "role": "assistant",
+          "content": "Done—I've added a $175 dining-out line to your budget. That brings your committed spending to $4,135, leaving $1,945 in remaining discretionary funds. As for Derek's $7,500 gross at Prism Solutions, that's a nice bump for him. Depending on his tax bracket and deductions, his net could land anywhere from roughly $5,500 to $6,200, so your take-home figures might actually be comparable. It's always tricky comparing gross to net across different employers and benefit structures. Anything else you'd like to adjust in the budget?"
+        },
+        {
+          "role": "user",
+          "content": "HR confirmed that starting next month they're rolling back the benefits adjustment, so my net should go back up to $6,200. The HR rep sent me an email yesterday saying the new deduction schedule takes effect on the first of next month. That would be a nice little boost."
+        },
+        {
+          "role": "assistant",
+          "content": "That's welcome news! If the benefits rollback goes through as HR indicated, your take-home would return to $6,200, restoring that $120 difference. That would push your discretionary income back up to about $2,065 after the dining-out line item. I'll keep the budget at $6,080 for now since the change hasn't taken effect yet, and we can update it once you see the new figure on your actual pay stub. Does that approach work for you, or would you prefer to plan around the anticipated $6,200 already?"
+        },
+        {
+          "role": "user",
+          "content": "Good point, let's keep it at $6,080 until the change actually shows up. I'd rather plan conservatively. Also I was curious—do you have any record of what my freelance side income used to be? I stopped doing that when I started at Ridgeline so it's no longer relevant.\n\nI just checked my employee portal and the current deduction schedule still shows $6,080 for this pay period. So right now it's still $6,080. I'll let you know when and if it actually changes. For now keep the budget exactly as we have it."
+        },
+        {
+          "role": "assistant",
+          "content": "Smart approach—planning on confirmed income is exactly in line with your preference for stability and predictability. Regarding freelance income, you mentioned earlier that you used to pick up small data visualization projects on weekends that brought in roughly $400 to $600 extra per month, but you stopped taking freelance work after joining Ridgeline. Since that income stream is no longer active, it's not included in your current budget. I've kept it noted as historical context only. Is there anything else you'd like to review or adjust in the current plan?\n\nConfirmed—your current monthly take-home remains $6,080 per the employee portal, and the budget stays as-is: Rent $1,850, Savings $1,500, Groceries $350, Dining Out $175, Utilities $120, Phone $55, Gym $45, Transportation $40. Total committed: $4,135. Discretionary remainder: $1,945. Whenever the benefits rollback actually appears on a pay stub, just let me know and I'll update the take-home figure accordingly. In the meantime, everything is built on confirmed numbers. Let me know if anything else comes up."
+        }
+      ]
+    }
+  ],
+  "state_checkpoints": [
+    {
+      "checkpoint_id": "c1",
+      "description": "After segment 1: current_monthly_net_salary = $6,200 (confirmed), monthly_rent = $1,850 (confirmed)"
+    },
+    {
+      "checkpoint_id": "c2",
+      "description": "After segment 2: current_monthly_net_salary = $6,080 (confirmed, updated from $6,200 due to benefits deduction change), monthly_rent = $1,850 (confirmed, unchanged)"
+    },
+    {
+      "checkpoint_id": "c3",
+      "description": "After segment 3: current_monthly_net_salary = $6,080 (confirmed; tentative revert to $6,200 was mentioned as pending next month but user verified portal still shows $6,080), monthly_rent = $1,850 (confirmed, unchanged)"
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our budget conversations, what did I tell you about my monthly take-home pay and how it changed? Summarize the key things I said about my income from Ridgeline Analytics.",
+      "expected_answer": "You initially stated your monthly take-home from Ridgeline Analytics was $6,200 after tax. Later, you reported that a benefits deduction adjustment in May reduced your net pay to $6,080, confirmed by your May 15th pay stub. You mentioned HR said the benefits adjustment would be rolled back next month, potentially restoring $6,200, but you then checked your employee portal and confirmed the current pay period still shows $6,080. You asked to keep the budget at $6,080 until an actual change appears on a pay stub.",
+      "gold_memory_state": "current_monthly_net_salary = $6,080 (confirmed); the $6,200 revert is pending/tentative and not yet in effect; monthly_rent = $1,850 (confirmed, unchanged).",
+      "judge_rubric": {
+        "must_include": [
+          "$6,200 initial",
+          "$6,080 after benefits adjustment",
+          "portal still shows $6,080",
+          "HR mentioned rollback to $6,200 not yet in effect"
+        ],
+        "acceptable_paraphrases": [
+          "net pay dropped to $6,080",
+          "take-home reduced from $6,200 to $6,080"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the salary is currently $6,200",
+          "claiming the rollback has already taken effect"
+        ],
+        "harmless_extra": [
+          "mentioning the May 15th pay stub",
+          "mentioning the user's preference for conservative budgeting"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the response treats $6,200 as the current confirmed salary.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence of changes is misordered—e.g., placing the benefits adjustment before the initial $6,200 establishment, or placing the portal confirmation before the HR rollback mention.",
+        "final_state": "Fails if the final stated value is anything other than $6,080.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current monthly take-home from Ridgeline Analytics is $6,200 after tax"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "starting in May they adjusted the benefits deduction, so my net pay dropped to $6,080. I saw it on my May 15th pay stub"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "HR confirmed that starting next month they're rolling back the benefits adjustment, so my net should go back up to $6,200"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I just checked my employee portal and the current deduction schedule still shows $6,080 for this pay period. So right now it's still $6,080"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our budget conversations, what did I tell you about my monthly take-home pay and how it changed? Summarize the key things I said about my income from Ridgeline Analytics.",
+      "expected_answer": "You initially stated your monthly take-home from Ridgeline Analytics was $6,200 after tax. Later, you reported that a benefits deduction adjustment in May reduced your net pay to $6,080, confirmed by your May 15th pay stub. You mentioned HR said the benefits adjustment would be rolled back next month, potentially restoring $6,200, but you then checked your employee portal and confirmed the current pay period still shows $6,080. You asked to keep the budget at $6,080 until an actual change appears on a pay stub.",
+      "gold_memory_state": "current_monthly_net_salary = $6,080 (confirmed); the $6,200 revert is pending/tentative and not yet in effect; monthly_rent = $1,850 (confirmed, unchanged).",
+      "judge_rubric": {
+        "must_include": [
+          "$6,200 initial",
+          "$6,080 after benefits adjustment",
+          "portal still shows $6,080",
+          "HR mentioned rollback to $6,200 not yet in effect"
+        ],
+        "acceptable_paraphrases": [
+          "net pay dropped to $6,080",
+          "take-home reduced from $6,200 to $6,080"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the salary is currently $6,200",
+          "claiming the rollback has already taken effect"
+        ],
+        "harmless_extra": [
+          "mentioning the May 15th pay stub",
+          "mentioning the user's preference for conservative budgeting"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the response treats $6,200 as the current confirmed salary.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence of changes is misordered—e.g., placing the benefits adjustment before the initial $6,200 establishment, or placing the portal confirmation before the HR rollback mention.",
+        "final_state": "Fails if the final stated value is anything other than $6,080.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current monthly take-home from Ridgeline Analytics is $6,200 after tax"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "starting in May they adjusted the benefits deduction, so my net pay dropped to $6,080. I saw it on my May 15th pay stub"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "HR confirmed that starting next month they're rolling back the benefits adjustment, so my net should go back up to $6,200"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I just checked my employee portal and the current deduction schedule still shows $6,080 for this pay period. So right now it's still $6,080"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "If I need to fill out a financial planning form that asks for my personal monthly net income and also for a family member's monthly income, which income figure applies to my own entry and which applies to someone else? Does the other person's income affect my budget at all?",
+      "expected_answer": "Your personal monthly net income entry is $6,080 from Ridgeline Analytics. Your brother's $3,800 monthly salary from the logistics company in Phoenix is a separate person's income and does not affect your budget.",
+      "gold_memory_state": "current_monthly_net_salary = $6,080 (confirmed, user's own income from Ridgeline Analytics). Brother's income = $3,800 (mentioned as context, separate person, not part of user's budget). monthly_rent = $1,850 (confirmed, user's own expense).",
+      "judge_rubric": {
+        "must_include": [
+          "$6,080 as the user's own net income",
+          "brother's $3,800 is a separate person's income"
+        ],
+        "acceptable_paraphrases": [
+          "your take-home is $6,080",
+          "your brother earns $3,800 but that's not part of your budget"
+        ],
+        "must_not_include": [
+          "$6,200 as the user's current income"
+        ],
+        "harmful_extra": [
+          "treating brother's $3,800 as part of the user's household income or budget",
+          "using $6,200 as the user's current figure",
+          "confusing Derek's $7,500 gross with the user's income"
+        ],
+        "harmless_extra": [
+          "mentioning Ridgeline Analytics by name",
+          "mentioning the brother works in Phoenix"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the user's own income is given as $6,200 instead of $6,080.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the user's current net salary is not $6,080.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "starting in May they adjusted the benefits deduction, so my net pay dropped to $6,080. I saw it on my May 15th pay stub"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I just checked my employee portal and the current deduction schedule still shows $6,080 for this pay period. So right now it's still $6,080"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My brother just got his first real job offer—$3,800 a month starting at a logistics company in Phoenix"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "If I need to fill out a financial planning form that asks for my personal monthly net income and also for a family member's monthly income, which income figure applies to my own entry and which applies to someone else? Does the other person's income affect my budget at all?",
+      "expected_answer": "Your personal monthly net income entry is $6,080 from Ridgeline Analytics. Your brother's $3,800 monthly salary from the logistics company in Phoenix is a separate person's income and does not affect your budget.",
+      "gold_memory_state": "current_monthly_net_salary = $6,080 (confirmed, user's own income from Ridgeline Analytics). Brother's income = $3,800 (mentioned as context, separate person, not part of user's budget). monthly_rent = $1,850 (confirmed, user's own expense).",
+      "judge_rubric": {
+        "must_include": [
+          "$6,080 as the user's own net income",
+          "brother's $3,800 is a separate person's income"
+        ],
+        "acceptable_paraphrases": [
+          "your take-home is $6,080",
+          "your brother earns $3,800 but that's not part of your budget"
+        ],
+        "must_not_include": [
+          "$6,200 as the user's current income"
+        ],
+        "harmful_extra": [
+          "treating brother's $3,800 as part of the user's household income or budget",
+          "using $6,200 as the user's current figure",
+          "confusing Derek's $7,500 gross with the user's income"
+        ],
+        "harmless_extra": [
+          "mentioning Ridgeline Analytics by name",
+          "mentioning the brother works in Phoenix"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the user's own income is given as $6,200 instead of $6,080.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the user's current net salary is not $6,080.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "starting in May they adjusted the benefits deduction, so my net pay dropped to $6,080. I saw it on my May 15th pay stub"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I just checked my employee portal and the current deduction schedule still shows $6,080 for this pay period. So right now it's still $6,080"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My brother just got his first real job offer—$3,800 a month starting at a logistics company in Phoenix"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "After everything we discussed about my pay, what monthly take-home amount should I use right now when planning my spending for this pay period?",
+      "expected_answer": "$6,080",
+      "gold_memory_state": "current_monthly_net_salary = $6,080 (confirmed by employee portal for the current pay period). The tentative $6,200 revert mentioned by HR has not taken effect and was never adopted as the current value. The original $6,200 was superseded by the benefits adjustment in May. The only currently usable take-home figure is $6,080.",
+      "judge_rubric": {
+        "must_include": [
+          "$6,080"
+        ],
+        "acceptable_paraphrases": [
+          "6080",
+          "$6,080 per month",
+          "six thousand eighty dollars"
+        ],
+        "must_not_include": [
+          "$6,200 as the current usable amount"
+        ],
+        "harmful_extra": [
+          "stating that $6,200 is the current take-home",
+          "stating the rollback has already taken effect"
+        ],
+        "harmless_extra": [
+          "mentioning that HR indicated a future rollback",
+          "mentioning Ridgeline Analytics"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model returns $6,200. The tentative HR rollback to $6,200 was never adopted for the current pay period; the user explicitly confirmed via the employee portal that $6,080 remains in effect. Selecting $6,200 indicates a recency trap failure—the model followed the tentative mention instead of the confirmed portal check.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the answer is anything other than $6,080. The confirmed final state is $6,080.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I just checked my employee portal and the current deduction schedule still shows $6,080 for this pay period. So right now it's still $6,080"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "starting in May they adjusted the benefits deduction, so my net pay dropped to $6,080. I saw it on my May 15th pay stub"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "After everything we discussed about my pay, what monthly take-home amount should I use right now when planning my spending for this pay period?",
+      "expected_answer": "$6,080",
+      "gold_memory_state": "current_monthly_net_salary = $6,080 (confirmed by employee portal for the current pay period). The tentative $6,200 revert mentioned by HR has not taken effect and was never adopted as the current value. The original $6,200 was superseded by the benefits adjustment in May. The only currently usable take-home figure is $6,080.",
+      "judge_rubric": {
+        "must_include": [
+          "$6,080"
+        ],
+        "acceptable_paraphrases": [
+          "6080",
+          "$6,080 per month",
+          "six thousand eighty dollars"
+        ],
+        "must_not_include": [
+          "$6,200 as the current usable amount"
+        ],
+        "harmful_extra": [
+          "stating that $6,200 is the current take-home",
+          "stating the rollback has already taken effect"
+        ],
+        "harmless_extra": [
+          "mentioning that HR indicated a future rollback",
+          "mentioning Ridgeline Analytics"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model returns $6,200. The tentative HR rollback to $6,200 was never adopted for the current pay period; the user explicitly confirmed via the employee portal that $6,080 remains in effect. Selecting $6,200 indicates a recency trap failure—the model followed the tentative mention instead of the confirmed portal check.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the answer is anything other than $6,080. The confirmed final state is $6,080.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I just checked my employee portal and the current deduction schedule still shows $6,080 for this pay period. So right now it's still $6,080"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "starting in May they adjusted the benefits deduction, so my net pay dropped to $6,080. I saw it on my May 15th pay stub"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to know exactly how much discretionary money I have left each month after rent and my automatic savings transfer are taken out of my pay. Calculate that amount for me and show your reasoning.",
+      "expected_answer": "$2,730. Starting from the $6,080 monthly take-home, subtract $1,850 for rent and $1,500 for the automatic savings transfer: $6,080 − $1,850 − $1,500 = $2,730.",
+      "gold_memory_state": "current_monthly_net_salary = $6,080 (confirmed). monthly_rent = $1,850 (confirmed, Maple Street apartment). automatic_savings_transfer = $1,500 (mentioned by user, established in April).",
+      "judge_rubric": {
+        "must_include": [
+          "$2,730",
+          "$6,080",
+          "$1,850",
+          "$1,500"
+        ],
+        "acceptable_paraphrases": [
+          "2730",
+          "$2,730 remaining",
+          "two thousand seven hundred thirty"
+        ],
+        "must_not_include": [
+          "$6,200 as the income figure"
+        ],
+        "harmful_extra": [
+          "using $6,200 instead of $6,080 as the income base",
+          "omitting the savings transfer or rent from the calculation"
+        ],
+        "harmless_extra": [
+          "mentioning Ridgeline Analytics",
+          "mentioning Maple Street",
+          "noting the savings transfer was set up in April"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses $6,200 instead of $6,080, which would yield $2,850 instead of $2,730.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the derived amount is not $2,730.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's current confirmed monthly net salary from Ridgeline Analytics is $6,080.",
+        "Fact 2: The user's monthly rent for the Maple Street apartment is $1,850.",
+        "Fact 3: The user set up an automatic savings transfer of $1,500 per month in April.",
+        "Inference: $6,080 − $1,850 = $4,230 remaining after rent.",
+        "Inference: $4,230 − $1,500 = $2,730 remaining after rent and savings transfer."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I just checked my employee portal and the current deduction schedule still shows $6,080 for this pay period. So right now it's still $6,080"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my rent is $1,850 a month for the Maple Street apartment, and that's been fixed since January"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I should mention I set up an automatic savings transfer of $1,500 per month back in April"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to know exactly how much discretionary money I have left each month after rent and my automatic savings transfer are taken out of my pay. Calculate that amount for me and show your reasoning.",
+      "expected_answer": "$2,730. Starting from the $6,080 monthly take-home, subtract $1,850 for rent and $1,500 for the automatic savings transfer: $6,080 − $1,850 − $1,500 = $2,730.",
+      "gold_memory_state": "current_monthly_net_salary = $6,080 (confirmed). monthly_rent = $1,850 (confirmed, Maple Street apartment). automatic_savings_transfer = $1,500 (mentioned by user, established in April).",
+      "judge_rubric": {
+        "must_include": [
+          "$2,730",
+          "$6,080",
+          "$1,850",
+          "$1,500"
+        ],
+        "acceptable_paraphrases": [
+          "2730",
+          "$2,730 remaining",
+          "two thousand seven hundred thirty"
+        ],
+        "must_not_include": [
+          "$6,200 as the income figure"
+        ],
+        "harmful_extra": [
+          "using $6,200 instead of $6,080 as the income base",
+          "omitting the savings transfer or rent from the calculation"
+        ],
+        "harmless_extra": [
+          "mentioning Ridgeline Analytics",
+          "mentioning Maple Street",
+          "noting the savings transfer was set up in April"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses $6,200 instead of $6,080, which would yield $2,850 instead of $2,730.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the derived amount is not $2,730.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's current confirmed monthly net salary from Ridgeline Analytics is $6,080.",
+        "Fact 2: The user's monthly rent for the Maple Street apartment is $1,850.",
+        "Fact 3: The user set up an automatic savings transfer of $1,500 per month in April.",
+        "Inference: $6,080 − $1,850 = $4,230 remaining after rent.",
+        "Inference: $4,230 − $1,500 = $2,730 remaining after rent and savings transfer."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I just checked my employee portal and the current deduction schedule still shows $6,080 for this pay period. So right now it's still $6,080"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my rent is $1,850 a month for the Maple Street apartment, and that's been fixed since January"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I should mention I set up an automatic savings transfer of $1,500 per month back in April"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed all of our conversations about my Ridgeline Analytics pay, what would they see as the full sequence of changes to my take-home figure—which amounts were actually adopted at each point, which were only floated as possibilities, and where things stand now?",
+      "expected_answer": "The sequence is: (1) $6,200 was established as the initial confirmed monthly net salary. (2) $6,080 replaced it as the confirmed value after a benefits deduction adjustment in May. (3) $6,200 was mentioned again as a possible future revert based on an HR email, but this was only a pending/tentative change that had not taken effect. (4) $6,080 was reconfirmed as the current value after the user checked the employee portal. The final adopted figure is $6,080.",
+      "gold_memory_state": "current_monthly_net_salary trajectory: $6,200 (confirmed, initial) → $6,080 (confirmed, benefits adjustment) → $6,200 (tentative only, HR rollback pending next month, never adopted) → $6,080 (confirmed, employee portal verification). Final confirmed state: $6,080.",
+      "judge_rubric": {
+        "must_include": [
+          "$6,200 as the initial value",
+          "$6,080 as the post-adjustment value",
+          "$6,200 mentioned as pending/tentative/not yet in effect",
+          "$6,080 reconfirmed as the final current value"
+        ],
+        "acceptable_paraphrases": [
+          "the HR rollback was only planned",
+          "the revert to $6,200 hadn't happened yet",
+          "$6,080 is the final figure"
+        ],
+        "must_not_include": [
+          "$6,200 as the final adopted value"
+        ],
+        "harmful_extra": [
+          "claiming the HR rollback was confirmed and adopted",
+          "omitting the tentative $6,200 mention entirely",
+          "reversing the order of changes"
+        ],
+        "harmless_extra": [
+          "mentioning the May 15th pay stub",
+          "mentioning the employee portal",
+          "mentioning the HR email"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if $6,200 is presented as the final adopted value.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the four trajectory steps are not in the correct chronological order: $6,200 (initial) → $6,080 (adjustment) → $6,200 (tentative) → $6,080 (reconfirmed).",
+        "final_state": "Fails if the final state is not $6,080.",
+        "intermediate_state": "Fails if the response omits the tentative $6,200 step or fails to mark it as unadopted/pending.",
+        "trajectory_provenance": "Fails if the response does not attribute the $6,080 adjustment to the benefits deduction change, or does not attribute the tentative $6,200 to the HR communication, or does not attribute the final $6,080 to the employee portal check."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: User established $6,200 as the initial confirmed monthly net salary from Ridgeline Analytics.",
+        "Step 2: User reported a benefits deduction adjustment in May that reduced net pay to $6,080, confirmed by the May 15th pay stub. This is a confirmed update superseding $6,200.",
+        "Step 3: User relayed that HR said the benefits adjustment would be rolled back next month, potentially restoring $6,200. This is a tentative/pending change—not yet in effect.",
+        "Step 4: User checked the employee portal and confirmed the current deduction schedule still shows $6,080 for this pay period. This reconfirms $6,080 as the current value and the $6,200 revert remains unadopted.",
+        "Inference: The full trajectory is $6,200 → $6,080 → tentative $6,200 (never adopted) → $6,080 reconfirmed. Final confirmed state is $6,080."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current monthly take-home from Ridgeline Analytics is $6,200 after tax"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "starting in May they adjusted the benefits deduction, so my net pay dropped to $6,080. I saw it on my May 15th pay stub"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "HR confirmed that starting next month they're rolling back the benefits adjustment, so my net should go back up to $6,200"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I just checked my employee portal and the current deduction schedule still shows $6,080 for this pay period. So right now it's still $6,080"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed all of our conversations about my Ridgeline Analytics pay, what would they see as the full sequence of changes to my take-home figure—which amounts were actually adopted at each point, which were only floated as possibilities, and where things stand now?",
+      "expected_answer": "The sequence is: (1) $6,200 was established as the initial confirmed monthly net salary. (2) $6,080 replaced it as the confirmed value after a benefits deduction adjustment in May. (3) $6,200 was mentioned again as a possible future revert based on an HR email, but this was only a pending/tentative change that had not taken effect. (4) $6,080 was reconfirmed as the current value after the user checked the employee portal. The final adopted figure is $6,080.",
+      "gold_memory_state": "current_monthly_net_salary trajectory: $6,200 (confirmed, initial) → $6,080 (confirmed, benefits adjustment) → $6,200 (tentative only, HR rollback pending next month, never adopted) → $6,080 (confirmed, employee portal verification). Final confirmed state: $6,080.",
+      "judge_rubric": {
+        "must_include": [
+          "$6,200 as the initial value",
+          "$6,080 as the post-adjustment value",
+          "$6,200 mentioned as pending/tentative/not yet in effect",
+          "$6,080 reconfirmed as the final current value"
+        ],
+        "acceptable_paraphrases": [
+          "the HR rollback was only planned",
+          "the revert to $6,200 hadn't happened yet",
+          "$6,080 is the final figure"
+        ],
+        "must_not_include": [
+          "$6,200 as the final adopted value"
+        ],
+        "harmful_extra": [
+          "claiming the HR rollback was confirmed and adopted",
+          "omitting the tentative $6,200 mention entirely",
+          "reversing the order of changes"
+        ],
+        "harmless_extra": [
+          "mentioning the May 15th pay stub",
+          "mentioning the employee portal",
+          "mentioning the HR email"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if $6,200 is presented as the final adopted value.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the four trajectory steps are not in the correct chronological order: $6,200 (initial) → $6,080 (adjustment) → $6,200 (tentative) → $6,080 (reconfirmed).",
+        "final_state": "Fails if the final state is not $6,080.",
+        "intermediate_state": "Fails if the response omits the tentative $6,200 step or fails to mark it as unadopted/pending.",
+        "trajectory_provenance": "Fails if the response does not attribute the $6,080 adjustment to the benefits deduction change, or does not attribute the tentative $6,200 to the HR communication, or does not attribute the final $6,080 to the employee portal check."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: User established $6,200 as the initial confirmed monthly net salary from Ridgeline Analytics.",
+        "Step 2: User reported a benefits deduction adjustment in May that reduced net pay to $6,080, confirmed by the May 15th pay stub. This is a confirmed update superseding $6,200.",
+        "Step 3: User relayed that HR said the benefits adjustment would be rolled back next month, potentially restoring $6,200. This is a tentative/pending change—not yet in effect.",
+        "Step 4: User checked the employee portal and confirmed the current deduction schedule still shows $6,080 for this pay period. This reconfirms $6,080 as the current value and the $6,200 revert remains unadopted.",
+        "Inference: The full trajectory is $6,200 → $6,080 → tentative $6,200 (never adopted) → $6,080 reconfirmed. Final confirmed state is $6,080."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current monthly take-home from Ridgeline Analytics is $6,200 after tax"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "starting in May they adjusted the benefits deduction, so my net pay dropped to $6,080. I saw it on my May 15th pay stub"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "HR confirmed that starting next month they're rolling back the benefits adjustment, so my net should go back up to $6,200"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I just checked my employee portal and the current deduction schedule still shows $6,080 for this pay period. So right now it's still $6,080"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,983 @@
+{
+  "target_fact": "C25 conference paper submission details including submission ID, co-author, paper title, page limit, and rebuttal phase date",
+  "operation_type": "Forget",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "Our final submission ID for the C25 portal is #4782"
+      },
+      "target": {
+        "target_id": "c25_submission_id",
+        "target_name": "C25 portal submission ID"
+      },
+      "old_value": null,
+      "new_value": "#4782",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Our final submission ID for the C25 portal is #4782"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "My co-author is Dr. Elena Vasquez and she handled the literature review portion of the paper"
+      },
+      "target": {
+        "target_id": "c25_coauthor",
+        "target_name": "C25 paper co-author"
+      },
+      "old_value": null,
+      "new_value": "Dr. Elena Vasquez",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My co-author is Dr. Elena Vasquez and she handled the literature review portion of the paper"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "The paper title is \"Adaptive Threshold Mechanisms in Low-Resource Classification Pipelines\""
+      },
+      "target": {
+        "target_id": "c25_paper_title",
+        "target_name": "C25 paper title"
+      },
+      "old_value": null,
+      "new_value": "Adaptive Threshold Mechanisms in Low-Resource Classification Pipelines",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The paper title is \"Adaptive Threshold Mechanisms in Low-Resource Classification Pipelines\""
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "the main track page limit for C25 is 10 pages excluding references"
+      },
+      "target": {
+        "target_id": "c25_main_track_page_limit",
+        "target_name": "C25 main track page limit"
+      },
+      "old_value": null,
+      "new_value": "10 pages excluding references",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the main track page limit for C25 is 10 pages excluding references"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "The rebuttal phase opens on May 6 according to the C25 website timeline"
+      },
+      "target": {
+        "target_id": "c25_rebuttal_date",
+        "target_name": "C25 rebuttal phase opening date"
+      },
+      "old_value": null,
+      "new_value": "May 6",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "The rebuttal phase opens on May 6 according to the C25 website timeline"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "I also had an internal work report that was due February 9 and I submitted it on time"
+      },
+      "target": {
+        "target_id": "internal_report_deadline",
+        "target_name": "internal work report deadline and status"
+      },
+      "old_value": null,
+      "new_value": "due February 9, submitted on time",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I also had an internal work report that was due February 9 and I submitted it on time"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "forget",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 3,
+        "quote": "Please forget about that internal work report I mentioned, the one due February 9. That's completely done and I don't need you tracking it anymore"
+      },
+      "target": {
+        "target_id": "internal_report_deadline",
+        "target_name": "internal work report deadline and status"
+      },
+      "old_value": "due February 9, submitted on time",
+      "new_value": null,
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Please forget about that internal work report I mentioned, the one due February 9. That's completely done and I don't need you tracking it anymore"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish core C25 submission facts: submission ID, co-author, and paper title",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to make sure you have some important details about my recent conference submission. Our final submission ID for the C25 portal is #4782. That number is critical because if any issues come up during the review process, I'll need to reference it quickly. Can you keep track of that for me going forward?"
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, I've noted your C25 portal submission ID as #4782. That's a good call keeping it readily accessible—review processes can sometimes throw curveballs, and having the submission ID on hand means you won't have to dig through confirmation emails or portal history. If any correspondence comes up about the review status or if you need to file a query with the program committee, just let me know and I can help you draft something with the ID included. Is there anything else about the submission you'd like me to track?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, definitely. My co-author is Dr. Elena Vasquez and she handled the literature review portion of the paper. She sent me her draft on March 5 and it was solid overall, but I ended up trimming about 12 references from her section because it felt a bit over-cited. I prefer keeping things lean and essential in academic writing."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it—Dr. Elena Vasquez is your co-author, and she took the lead on the literature review. It sounds like you two have a complementary workflow: she's thorough with sourcing and you bring a sharp editorial eye to pare things down to what truly matters. Cutting 12 references is a significant trim, so the final bibliography must feel much tighter now. That minimalist approach usually reads better to reviewers too, since they can focus on the most relevant prior work. Do you want me to note anything specific about the division of labor for future reference, or shall we move on to other details?"
+        },
+        {
+          "role": "user",
+          "content": "Let me give you the paper title too. The paper title is \"Adaptive Threshold Mechanisms in Low-Resource Classification Pipelines\". We submitted on March 21, which was one day before the extended deadline of March 22. I was pretty stressed and sleep-deprived those last few days leading up to submission, but we got it in."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted—your paper is titled \"Adaptive Threshold Mechanisms in Low-Resource Classification Pipelines,\" submitted on March 21, one day ahead of the March 22 extended deadline. That's a solid buffer even if it didn't feel like it at the time. Submitting under pressure is exhausting, but the fact that you still had a day to spare means your planning held up. The title itself is clear and specific, which helps with discoverability in proceedings. I hope you managed to get some rest after hitting submit. Would you like me to also track any upcoming milestones for C25, like notification dates or rebuttal windows?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, I'll share those milestones next time. For now, I also want to mention that we used the official C25 LaTeX template on Overleaf for the whole paper. I really prefer rigid, clean templates over Word-based submissions because there's less room for visual clutter. Overleaf made collaboration with Elena much smoother than emailing .tex files back and forth."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes sense—LaTeX with Overleaf is a great combo for multi-author papers, especially when you value clean formatting. The official C25 template would enforce consistent margins, fonts, and section headings, so neither of you had to spend time on layout decisions. And real-time collaboration on Overleaf eliminates the versioning headaches that come with emailing files. It sounds like your workflow preferences align well: minimal visual noise, tight prose, and streamlined tooling. I'll keep in mind that you prefer LaTeX and Overleaf for conference work. Whenever you're ready to share the upcoming C25 milestones, just let me know and I'll add them to the timeline."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establish page limit, rebuttal date, and internal report; build multi-hop facts",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Alright, picking up where we left off. I wanted to clarify something: the main track page limit for C25 is 10 pages excluding references. The workshop track is 8 pages, but our paper is in the main track. I want to make sure you have the correct limit recorded since formatting compliance matters during review."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for clarifying—I've recorded that the C25 main track allows 10 pages excluding references, and your paper falls under that main track. You're right that formatting compliance is taken seriously; papers that exceed the limit can be desk-rejected before they even reach reviewers. Since you submitted using the official LaTeX template, you're likely in good shape, but it's still worth double-checking if you ever need to revise during a rebuttal or camera-ready stage. I'll keep the workshop track's 8-page limit noted separately in case it comes up. Anything else about the C25 formatting requirements?"
+        },
+        {
+          "role": "user",
+          "content": "Not about formatting, but about the timeline. The rebuttal phase opens on May 6 according to the C25 website timeline. I've already started compiling notes for it because last time at a different venue I scrambled during rebuttal and it showed in the quality. I want to be well-prepared this round."
+        },
+        {
+          "role": "assistant",
+          "content": "Smart move starting early. I've noted that the C25 rebuttal phase opens May 6. Having your notes organized in advance means you can respond to reviewer concerns quickly and thoughtfully instead of drafting under panic. Since you mentioned a previous experience where the rebuttal quality suffered from last-minute preparation, this proactive approach should make a real difference. You might consider categorizing your notes by potential critique areas—methodology assumptions, dataset limitations, comparison baselines—so you can pull from pre-drafted responses. Would you like help structuring a rebuttal preparation template before May 6 arrives?"
+        },
+        {
+          "role": "user",
+          "content": "That's a good idea, I might take you up on that soon. Separately, I also had an internal work report that was due February 9 and I submitted it on time. It was a routine internal review document, nothing dramatic. I just want you to have it on record since it was part of my workload earlier this year."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it—I've noted that you had an internal work report due February 9 that you submitted on time. It sounds like that was a straightforward deliverable without any complications, which is a nice contrast to the C25 crunch that followed. Having a record of your earlier deadlines can be useful for tracking your overall workload patterns, especially if you want to plan better around future conference submission periods. If you ever need to reference it for performance reviews or workload discussions, I'll have it handy. Is there anything else from earlier this year you'd like me to keep track of?"
+        },
+        {
+          "role": "user",
+          "content": "Not from earlier, no. But I should mention that reviewer assignments for C25 were completed around early April. My labmate Joon also submitted to C25 and told me his confirmation email about reviewer assignments came a day later than mine. We thought that was a bit odd but probably just a system queue thing.\n\nWill do. One more thing: we submitted using the official C25 LaTeX template, and our paper came in at 9.5 pages of main content plus about 1.5 pages of references. So we were comfortably within the 10-page main track limit. I felt good about the length—tight but thorough."
+        },
+        {
+          "role": "assistant",
+          "content": "Interesting—so reviewer assignments wrapped up around early April, and you received your confirmation before your labmate Joon got his. You're probably right that it's just a queue or batch-processing difference in the portal system rather than anything meaningful about the review process itself. It does suggest that your submission was processed in an earlier batch, which could mean reviews come back slightly earlier too, though that's speculative. Either way, knowing that reviewer assignments are done means the clock is ticking toward May 6. With your rebuttal notes already in progress, you're in a strong position. Let me know when you want to start on that rebuttal template.\n\nThat's a solid page count—9.5 pages of content with 1.5 pages of references keeps you well within the 10-page main track limit while still using the space effectively. Being half a page under the cap gives you a small buffer if reviewers request additions during rebuttal or camera-ready revisions, which is a nice position to be in. The fact that you trimmed Elena's literature review earlier probably helped keep the reference section compact too. Combined with the clean LaTeX formatting, it sounds like the submission is polished and professional. I'll keep the page breakdown noted alongside your other C25 details."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Forget the internal report; adversarial injection of look-alike submission ID",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, quick update. I've been going through my notes and organizing what I need you to keep versus what's no longer relevant. The C25 stuff is all still very active and important—submission ID, paper title, rebuttal date, all of that. But there's one thing I want cleaned up from your records."
+        },
+        {
+          "role": "assistant",
+          "content": "Of course, I'm happy to help you tidy things up. It makes sense to periodically review what's still relevant, especially with the rebuttal phase approaching on May 6. Your C25 details—submission ID #4782, the paper title, co-author information, page limits, and timeline milestones—are all clearly still in play. Just let me know which item you'd like removed and I'll take care of it right away. Keeping your memory lean and current will make it easier to focus on what matters for the review process."
+        },
+        {
+          "role": "user",
+          "content": "Please forget about that internal work report I mentioned, the one due February 9. That's completely done and I don't need you tracking it anymore. It has nothing to do with the C25 process and it's just cluttering things up. Everything else about C25 should stay exactly as is."
+        },
+        {
+          "role": "assistant",
+          "content": "Done—I've removed the internal work report (due February 9) from my records. You're right that it's no longer relevant to anything active, and keeping your tracked items focused on C25 makes things cleaner. Your remaining C25 details are all intact: submission ID #4782, co-author Dr. Elena Vasquez, paper title \"Adaptive Threshold Mechanisms in Low-Resource Classification Pipelines,\" main track page limit of 10 pages excluding references, and the rebuttal phase opening May 6. If you think of anything else to prune or add as you prepare for rebuttals, just let me know."
+        },
+        {
+          "role": "user",
+          "content": "Perfect, thanks. By the way, I was chatting with Joon earlier today and he mentioned his C25 submission ID is #4718. He was asking if the portal numbering is sequential because his number is lower than mine even though he says he submitted around the same time. I told him I wasn't sure how their system assigns IDs."
+        },
+        {
+          "role": "assistant",
+          "content": "That's an interesting question from Joon. Portal submission IDs aren't always strictly sequential—some systems assign IDs at the point of initial draft creation rather than final submission, so Joon's #4718 could reflect when he first started his submission entry rather than when he hit the final submit button. Other systems use batch allocation or even randomized blocks for anonymity. Since your ID is #4782 and his is #4718, the gap of 64 numbers could represent other submissions in between or just different draft creation times. Either way, it's probably not meaningful for the review process. The important thing is that both of you have valid submission confirmations."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, that's what I figured. I'm not worried about it. Anyway, I want to start mapping out my rebuttal preparation timeline. Since the rebuttal phase opens May 6 and I know reviewer assignments were completed in early April, I'm expecting reviews to arrive sometime in late April. I want to have my response framework ready before reviews even land.\n\nYes, let's do that soon. I also want to make sure Elena is looped in on rebuttal prep since she knows the literature landscape better than I do. If reviewers push back on any of the references we cut, she'd be the right person to justify those decisions. I'll message her this week to set up a working session before reviews arrive."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a proactive strategy. If reviewer assignments were finalized in early April and the rebuttal window opens May 6, reviewers likely have about four weeks to complete their evaluations, which means reviews could start trickling in during the last week of April. Having a response framework drafted before then gives you a head start. I'd suggest organizing your framework around three pillars: methodology justification, experimental scope and limitations, and positioning relative to prior work. Since you trimmed the literature review significantly, reviewers might ask about omitted references, so having a concise rationale for your citation choices could be valuable. Want me to help draft that framework structure?\n\nGreat plan—Elena's deep familiarity with the literature makes her essential for rebuttal prep, especially if reviewers question citation coverage. Setting up a working session this week gives you both time to review the 12 references you trimmed and prepare brief justifications for each omission. You might also ask her to identify two or three highly relevant papers published after your submission date that you could reference in the rebuttal to show awareness of the evolving landscape. Between your methodological expertise and her literature command, you should be able to craft a strong, well-rounded response. Let me know when you're ready to build that framework and I'll have a template waiting."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize all the key details I shared with you about my conference paper submission and any other work deadlines I mentioned?",
+      "expected_answer": "You shared the following details: your conference portal submission ID is #4782, your co-author is Dr. Elena Vasquez who handled the literature review, the paper title is \"Adaptive Threshold Mechanisms in Low-Resource Classification Pipelines,\" the main track page limit is 10 pages excluding references, the rebuttal phase opens May 6, and you also mentioned an internal work report that was due February 9 and submitted on time.",
+      "gold_memory_state": "All conference submission details remain active. The internal work report (due February 9, submitted on time) was later requested for removal and is no longer tracked.",
+      "judge_rubric": {
+        "must_include": [
+          "#4782",
+          "Dr. Elena Vasquez",
+          "Adaptive Threshold Mechanisms in Low-Resource Classification Pipelines",
+          "10 pages excluding references",
+          "May 6",
+          "internal work report",
+          "February 9"
+        ],
+        "acceptable_paraphrases": [
+          "submission number 4782",
+          "rebuttal opens May 6"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "inventing details not provided by the user"
+        ],
+        "harmless_extra": [
+          "mentioning the LaTeX template",
+          "mentioning Overleaf",
+          "mentioning submission date of March 21",
+          "mentioning Joon"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Our final submission ID for the C25 portal is #4782"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My co-author is Dr. Elena Vasquez and she handled the literature review portion of the paper"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The paper title is \"Adaptive Threshold Mechanisms in Low-Resource Classification Pipelines\""
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the main track page limit for C25 is 10 pages excluding references"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "The rebuttal phase opens on May 6 according to the C25 website timeline"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I also had an internal work report that was due February 9 and I submitted it on time"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize all the key details I shared with you about my conference paper submission and any other work deadlines I mentioned?",
+      "expected_answer": "You shared the following details: your conference portal submission ID is #4782, your co-author is Dr. Elena Vasquez who handled the literature review, the paper title is \"Adaptive Threshold Mechanisms in Low-Resource Classification Pipelines,\" the main track page limit is 10 pages excluding references, the rebuttal phase opens May 6, and you also mentioned an internal work report that was due February 9 and submitted on time.",
+      "gold_memory_state": "All conference submission details remain active. The internal work report (due February 9, submitted on time) was later requested for removal and is no longer tracked.",
+      "judge_rubric": {
+        "must_include": [
+          "#4782",
+          "Dr. Elena Vasquez",
+          "Adaptive Threshold Mechanisms in Low-Resource Classification Pipelines",
+          "10 pages excluding references",
+          "May 6",
+          "internal work report",
+          "February 9"
+        ],
+        "acceptable_paraphrases": [
+          "submission number 4782",
+          "rebuttal opens May 6"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "inventing details not provided by the user"
+        ],
+        "harmless_extra": [
+          "mentioning the LaTeX template",
+          "mentioning Overleaf",
+          "mentioning submission date of March 21",
+          "mentioning Joon"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Our final submission ID for the C25 portal is #4782"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My co-author is Dr. Elena Vasquez and she handled the literature review portion of the paper"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The paper title is \"Adaptive Threshold Mechanisms in Low-Resource Classification Pipelines\""
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the main track page limit for C25 is 10 pages excluding references"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "The rebuttal phase opens on May 6 according to the C25 website timeline"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I also had an internal work report that was due February 9 and I submitted it on time"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to stop tracking one item from my workload. Which specific piece of information was that, and does my conference submission information remain unaffected?",
+      "expected_answer": "The item you asked to stop tracking was the internal work report that was due February 9. All of your conference submission information—submission ID, co-author, paper title, page limit, and rebuttal date—remains fully intact and unaffected.",
+      "gold_memory_state": "The internal work report (due February 9, submitted on time) has been removed. Conference submission details remain: submission ID #4782, co-author Dr. Elena Vasquez, paper title, 10-page main track limit, rebuttal phase May 6.",
+      "judge_rubric": {
+        "must_include": [
+          "internal work report",
+          "February 9",
+          "conference submission information remains unaffected"
+        ],
+        "acceptable_paraphrases": [
+          "the report due Feb 9",
+          "internal report deadline"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying any conference detail was also removed",
+          "saying the internal report is still being tracked"
+        ],
+        "harmless_extra": [
+          "listing specific conference details that remain"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": "Fails if the model says conference submission details were also affected by the removal.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Please forget about that internal work report I mentioned, the one due February 9. That's completely done and I don't need you tracking it anymore"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I also had an internal work report that was due February 9 and I submitted it on time"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to stop tracking one item from my workload. Which specific piece of information was that, and does my conference submission information remain unaffected?",
+      "expected_answer": "The item you asked to stop tracking was the internal work report that was due February 9. All of your conference submission information—submission ID, co-author, paper title, page limit, and rebuttal date—remains fully intact and unaffected.",
+      "gold_memory_state": "The internal work report (due February 9, submitted on time) has been removed. Conference submission details remain: submission ID #4782, co-author Dr. Elena Vasquez, paper title, 10-page main track limit, rebuttal phase May 6.",
+      "judge_rubric": {
+        "must_include": [
+          "internal work report",
+          "February 9",
+          "conference submission information remains unaffected"
+        ],
+        "acceptable_paraphrases": [
+          "the report due Feb 9",
+          "internal report deadline"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying any conference detail was also removed",
+          "saying the internal report is still being tracked"
+        ],
+        "harmless_extra": [
+          "listing specific conference details that remain"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": "Fails if the model says conference submission details were also affected by the removal.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Please forget about that internal work report I mentioned, the one due February 9. That's completely done and I don't need you tracking it anymore"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I also had an internal work report that was due February 9 and I submitted it on time"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "I'm preparing a quick reference card for my upcoming conference rebuttal. What submission-related details do you still have that I can put on it?",
+      "expected_answer": "Your submission ID is #4782, your co-author is Dr. Elena Vasquez, the paper title is \"Adaptive Threshold Mechanisms in Low-Resource Classification Pipelines,\" the main track page limit is 10 pages excluding references, and the rebuttal phase opens May 6.",
+      "gold_memory_state": "The internal work report (due February 9) has been removed and is unavailable. Five conference submission details remain active: submission ID #4782, co-author Dr. Elena Vasquez, paper title \"Adaptive Threshold Mechanisms in Low-Resource Classification Pipelines,\" main track page limit 10 pages excluding references, rebuttal phase opening May 6.",
+      "judge_rubric": {
+        "must_include": [
+          "#4782",
+          "Dr. Elena Vasquez",
+          "Adaptive Threshold Mechanisms in Low-Resource Classification Pipelines",
+          "10 pages excluding references",
+          "May 6"
+        ],
+        "acceptable_paraphrases": [
+          "submission number 4782",
+          "ten pages not counting references",
+          "rebuttal starts May 6"
+        ],
+        "must_not_include": [
+          "internal work report",
+          "February 9",
+          "due February 9",
+          "submitted on time"
+        ],
+        "harmful_extra": [
+          "including the removed internal report deadline or status"
+        ],
+        "harmless_extra": [
+          "mentioning the LaTeX template or Overleaf",
+          "mentioning submission date March 21"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the internal work report details (February 9 deadline, submission status) appear in the response.",
+        "over_forget": "Fails if any of the five retained conference submission details are omitted or treated as unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Our final submission ID for the C25 portal is #4782"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My co-author is Dr. Elena Vasquez and she handled the literature review portion of the paper"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The paper title is \"Adaptive Threshold Mechanisms in Low-Resource Classification Pipelines\""
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the main track page limit for C25 is 10 pages excluding references"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "The rebuttal phase opens on May 6 according to the C25 website timeline"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "I'm preparing a quick reference card for my upcoming conference rebuttal. What submission-related details do you still have that I can put on it?",
+      "expected_answer": "Your submission ID is #4782, your co-author is Dr. Elena Vasquez, the paper title is \"Adaptive Threshold Mechanisms in Low-Resource Classification Pipelines,\" the main track page limit is 10 pages excluding references, and the rebuttal phase opens May 6.",
+      "gold_memory_state": "The internal work report (due February 9) has been removed and is unavailable. Five conference submission details remain active: submission ID #4782, co-author Dr. Elena Vasquez, paper title \"Adaptive Threshold Mechanisms in Low-Resource Classification Pipelines,\" main track page limit 10 pages excluding references, rebuttal phase opening May 6.",
+      "judge_rubric": {
+        "must_include": [
+          "#4782",
+          "Dr. Elena Vasquez",
+          "Adaptive Threshold Mechanisms in Low-Resource Classification Pipelines",
+          "10 pages excluding references",
+          "May 6"
+        ],
+        "acceptable_paraphrases": [
+          "submission number 4782",
+          "ten pages not counting references",
+          "rebuttal starts May 6"
+        ],
+        "must_not_include": [
+          "internal work report",
+          "February 9",
+          "due February 9",
+          "submitted on time"
+        ],
+        "harmful_extra": [
+          "including the removed internal report deadline or status"
+        ],
+        "harmless_extra": [
+          "mentioning the LaTeX template or Overleaf",
+          "mentioning submission date March 21"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the internal work report details (February 9 deadline, submission status) appear in the response.",
+        "over_forget": "Fails if any of the five retained conference submission details are omitted or treated as unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Our final submission ID for the C25 portal is #4782"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My co-author is Dr. Elena Vasquez and she handled the literature review portion of the paper"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The paper title is \"Adaptive Threshold Mechanisms in Low-Resource Classification Pipelines\""
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the main track page limit for C25 is 10 pages excluding references"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "The rebuttal phase opens on May 6 according to the C25 website timeline"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "My labmate asked me to double-check my conference portal submission number. Which of the following is my submission ID?",
+      "candidate_options": [
+        "#4782",
+        "#4718",
+        "#4728",
+        "#4872"
+      ],
+      "expected_answer": "#4782",
+      "gold_memory_state": "The user's submission ID is #4782. Joon's submission ID is #4718, which belongs to a different person. #4728 and #4872 are fabricated distractors.",
+      "judge_rubric": {
+        "must_include": [
+          "#4782"
+        ],
+        "acceptable_paraphrases": [
+          "4782"
+        ],
+        "must_not_include": [
+          "#4718",
+          "#4728",
+          "#4872"
+        ],
+        "harmful_extra": [
+          "selecting Joon's submission ID as the user's own"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: #4718 is Joon's submission ID mentioned in the adversarial injection segment, which could be confused with the user's own ID. assistant echo: #4872 is a digit-transposition of #4782 that could plausibly appear in an assistant summary. #4728 is a numeric blend of both IDs.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Our final submission ID for the C25 portal is #4782"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I was chatting with Joon earlier today and he mentioned his C25 submission ID is #4718"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "My labmate asked me to double-check my conference portal submission number. Which of the following is my submission ID?",
+      "candidate_options": [
+        "#4782",
+        "#4718",
+        "#4728",
+        "#4872"
+      ],
+      "expected_answer": "#4782",
+      "gold_memory_state": "The user's submission ID is #4782. Joon's submission ID is #4718, which belongs to a different person. #4728 and #4872 are fabricated distractors.",
+      "judge_rubric": {
+        "must_include": [
+          "#4782"
+        ],
+        "acceptable_paraphrases": [
+          "4782"
+        ],
+        "must_not_include": [
+          "#4718",
+          "#4728",
+          "#4872"
+        ],
+        "harmful_extra": [
+          "selecting Joon's submission ID as the user's own"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: #4718 is Joon's submission ID mentioned in the adversarial injection segment, which could be confused with the user's own ID. assistant echo: #4872 is a digit-transposition of #4782 that could plausibly appear in an assistant summary. #4728 is a numeric blend of both IDs.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Our final submission ID for the C25 portal is #4782"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I was chatting with Joon earlier today and he mentioned his C25 submission ID is #4718"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to send my co-author a brief message reminding her about the upcoming rebuttal window and asking her to prepare justifications for the references we trimmed. Draft a two-sentence message for me that includes the relevant submission number, her name, and the date she should be ready by.",
+      "expected_answer": "Hi Dr. Elena Vasquez, this is a reminder that the rebuttal phase for our submission #4782 opens on May 6—please have justifications ready for the trimmed references by then. Your expertise on the literature review will be essential for addressing any reviewer concerns about our citation choices.",
+      "gold_memory_state": "Active details: submission ID #4782, co-author Dr. Elena Vasquez (handled literature review), paper title \"Adaptive Threshold Mechanisms in Low-Resource Classification Pipelines,\" main track page limit 10 pages excluding references, rebuttal phase opens May 6. The internal work report is removed and unavailable.",
+      "judge_rubric": {
+        "must_include": [
+          "Dr. Elena Vasquez",
+          "#4782",
+          "May 6"
+        ],
+        "acceptable_paraphrases": [
+          "Elena Vasquez",
+          "submission 4782",
+          "May 6th"
+        ],
+        "must_not_include": [
+          "internal work report",
+          "February 9"
+        ],
+        "harmful_extra": [
+          "including the removed internal report in the message",
+          "using Joon's submission ID #4718"
+        ],
+        "harmless_extra": [
+          "mentioning the paper title",
+          "mentioning the literature review role",
+          "mentioning trimmed references"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the internal work report details appear in the drafted message.",
+        "over_forget": "Fails if any of the three required retained details (co-author name, submission ID, rebuttal date) are omitted.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's co-author is Dr. Elena Vasquez, who handled the literature review.",
+        "Fact 2: The user's conference submission ID is #4782.",
+        "Fact 3: The rebuttal phase opens on May 6.",
+        "Inference: The message must address Dr. Elena Vasquez by name, reference submission #4782, and set May 6 as the readiness deadline.",
+        "Inference: Since Elena handled the literature review and the user trimmed 12 references, she is the right person to justify citation decisions during rebuttal."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Our final submission ID for the C25 portal is #4782"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My co-author is Dr. Elena Vasquez and she handled the literature review portion of the paper"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "The rebuttal phase opens on May 6 according to the C25 website timeline"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to send my co-author a brief message reminding her about the upcoming rebuttal window and asking her to prepare justifications for the references we trimmed. Draft a two-sentence message for me that includes the relevant submission number, her name, and the date she should be ready by.",
+      "expected_answer": "Hi Dr. Elena Vasquez, this is a reminder that the rebuttal phase for our submission #4782 opens on May 6—please have justifications ready for the trimmed references by then. Your expertise on the literature review will be essential for addressing any reviewer concerns about our citation choices.",
+      "gold_memory_state": "Active details: submission ID #4782, co-author Dr. Elena Vasquez (handled literature review), paper title \"Adaptive Threshold Mechanisms in Low-Resource Classification Pipelines,\" main track page limit 10 pages excluding references, rebuttal phase opens May 6. The internal work report is removed and unavailable.",
+      "judge_rubric": {
+        "must_include": [
+          "Dr. Elena Vasquez",
+          "#4782",
+          "May 6"
+        ],
+        "acceptable_paraphrases": [
+          "Elena Vasquez",
+          "submission 4782",
+          "May 6th"
+        ],
+        "must_not_include": [
+          "internal work report",
+          "February 9"
+        ],
+        "harmful_extra": [
+          "including the removed internal report in the message",
+          "using Joon's submission ID #4718"
+        ],
+        "harmless_extra": [
+          "mentioning the paper title",
+          "mentioning the literature review role",
+          "mentioning trimmed references"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the internal work report details appear in the drafted message.",
+        "over_forget": "Fails if any of the three required retained details (co-author name, submission ID, rebuttal date) are omitted.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's co-author is Dr. Elena Vasquez, who handled the literature review.",
+        "Fact 2: The user's conference submission ID is #4782.",
+        "Fact 3: The rebuttal phase opens on May 6.",
+        "Inference: The message must address Dr. Elena Vasquez by name, reference submission #4782, and set May 6 as the readiness deadline.",
+        "Inference: Since Elena handled the literature review and the user trimmed 12 references, she is the right person to justify citation decisions during rebuttal."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Our final submission ID for the C25 portal is #4782"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My co-author is Dr. Elena Vasquez and she handled the literature review portion of the paper"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "The rebuttal phase opens on May 6 according to the C25 website timeline"
+        }
+      ]
+    }
+  ]
+}

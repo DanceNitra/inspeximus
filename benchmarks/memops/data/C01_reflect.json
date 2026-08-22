@@ -1,0 +1,992 @@
+{
+  "target_fact": "User is highly sensitive to ambient mechanical noise, which drives decisions about home appliances and repairs",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "The old exhaust fan in my bathroom started making this grinding noise, and it's been driving me absolutely crazy"
+      },
+      "target": {
+        "target_id": "bathroom_fan_noise_issue",
+        "target_name": "bathroom exhaust fan noise problem"
+      },
+      "old_value": null,
+      "new_value": "Bathroom exhaust fan making grinding noise, extremely bothersome to user",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "The old exhaust fan in my bathroom started making this grinding noise, and it's been driving me absolutely crazy"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I replaced my bedroom ceiling fan last year because the motor had this faint whir that kept me up at night"
+      },
+      "target": {
+        "target_id": "bedroom_fan_replacement",
+        "target_name": "previous bedroom ceiling fan replacement due to motor noise"
+      },
+      "old_value": null,
+      "new_value": "Replaced bedroom ceiling fan last year because of faint motor whir that disturbed sleep",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I replaced my bedroom ceiling fan last year because the motor had this faint whir that kept me up at night"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I picked up a Panasonic WhisperCeiling fan, the FV-0811VF5, specifically because it's rated as one of the quietest on the market"
+      },
+      "target": {
+        "target_id": "new_fan_model",
+        "target_name": "replacement bathroom fan model and selection reason"
+      },
+      "old_value": null,
+      "new_value": "Panasonic WhisperCeiling FV-0811VF5, chosen for ultra-quiet operation",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I picked up a Panasonic WhisperCeiling fan, the FV-0811VF5, specifically because it's rated as one of the quietest on the market"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "I also can't stand the hum from the mini fridge in my office. I actually unplug it during the day when I'm working because the compressor drone makes it hard to concentrate"
+      },
+      "target": {
+        "target_id": "office_fridge_noise",
+        "target_name": "office mini fridge noise intolerance"
+      },
+      "old_value": null,
+      "new_value": "Unplugs office mini fridge during workday because compressor hum disrupts concentration",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I also can't stand the hum from the mini fridge in my office. I actually unplug it during the day when I'm working because the compressor drone makes it hard to concentrate"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 7,
+        "quote": "I guess I just really can't handle any kind of persistent mechanical sound. It's like my brain locks onto it and won't let go"
+      },
+      "target": {
+        "target_id": "noise_sensitivity_pattern",
+        "target_name": "pattern of high sensitivity to ambient mechanical noise driving appliance decisions"
+      },
+      "old_value": null,
+      "new_value": "Highly sensitive to ambient mechanical noise; this sensitivity consistently drives appliance purchase, replacement, and usage decisions across multiple rooms and contexts",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "The old exhaust fan in my bathroom started making this grinding noise, and it's been driving me absolutely crazy"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I replaced my bedroom ceiling fan last year because the motor had this faint whir that kept me up at night"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I picked up a Panasonic WhisperCeiling fan, the FV-0811VF5, specifically because it's rated as one of the quietest on the market"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I also can't stand the hum from the mini fridge in my office. I actually unplug it during the day when I'm working because the compressor drone makes it hard to concentrate"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 1,
+        "quote": "I prefer going to the smaller hardware store on Elm Street for the duct tape and sealant. Big box stores are sensory overload for me"
+      },
+      "target": {
+        "target_id": "hardware_store_preference",
+        "target_name": "preferred hardware store and reason"
+      },
+      "old_value": null,
+      "new_value": "Prefers small hardware store on Elm Street; finds big box stores to be sensory overload",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I prefer going to the smaller hardware store on Elm Street for the duct tape and sealant. Big box stores are sensory overload for me"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 7,
+        "quote": "My coworker just told me about these noise-canceling panels you can mount on the wall, and I'm pretty sure I'm going to line my whole office with them next month"
+      },
+      "target": {
+        "target_id": "office_noise_panels_plan",
+        "target_name": "planned office noise-canceling wall panels"
+      },
+      "old_value": null,
+      "new_value": "Plans to install noise-canceling wall panels in office next month",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "My coworker just told me about these noise-canceling panels you can mount on the wall, and I'm pretty sure I'm going to line my whole office with them next month"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish bathroom fan noise problem and prior bedroom fan replacement as two independent noise-sensitivity data points",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I need some help planning out a home repair task. The old exhaust fan in my bathroom started making this grinding noise, and it's been driving me absolutely crazy. I've been putting off dealing with it for weeks now but I really need to get it sorted out. It started sometime before my birthday in early March and has only gotten worse since then."
+        },
+        {
+          "role": "assistant",
+          "content": "I'm sorry to hear about the grinding noise — that sounds really frustrating, especially over several weeks. Let's get a plan together so you can finally resolve this. To start, can you tell me a bit about what you've already done? Have you gotten any quotes from repair services, or are you considering replacing the fan yourself? Also, do you know the make or model of the current fan, or roughly how old it is? That'll help me figure out whether a simple repair might work or if a full replacement is the better route."
+        },
+        {
+          "role": "user",
+          "content": "I got a quote from a company called BrightFix Home Services — they said $240 for parts and labor to swap it out. I also had a lead on someone's cousin who does electrical work on the side, but that fell through and I don't need that contact anymore. I was leaning toward hiring someone at first but honestly the scheduling hassle was too much on top of everything else going on at work."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — $240 from BrightFix for the full replacement. And I understand that coordinating with contractors on top of a busy work schedule can feel like more trouble than it's worth. Since the side-job lead didn't pan out either, it sounds like you might be leaning toward a different approach. Are you thinking about tackling the installation yourself? If so, I can help you research fan models, walk through tools you'd need, and put together a step-by-step plan. A bathroom exhaust fan swap is definitely a manageable DIY project for most people, especially with the right preparation."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, I'm going the DIY route. But before we get into that, I should mention — this isn't the first time noise from an appliance has pushed me to take action. I replaced my bedroom ceiling fan last year because the motor had this faint whir that kept me up at night. Most people probably wouldn't even notice it, but it was unbearable for me. I just can't tolerate any kind of persistent hum or buzz from mechanical things."
+        },
+        {
+          "role": "assistant",
+          "content": "That's really helpful context. So the bedroom ceiling fan replacement last year was driven by the same kind of thing — a motor noise that most people would ignore but that genuinely disrupted your sleep. That tells me noise level should be a top priority when selecting your new bathroom fan, not just airflow capacity or price. There are fans specifically engineered for near-silent operation, rated at 0.3 sones or lower. When we look at models, I'll make sure we focus on the quietest options available. Do you already have a model in mind, or would you like me to suggest some?"
+        },
+        {
+          "role": "user",
+          "content": "I actually already bought one, but let's talk about that next time. For now, can you jot down the key details? The bathroom fan is grinding and needs replacing, the BrightFix quote was $240, I replaced the bedroom ceiling fan last year over a faint motor whir, and I'm going the DIY route. I want to keep all of this organized because I have a specific install date coming up."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, here's a summary of everything so far: (1) Your bathroom exhaust fan has been making a grinding noise since around late February or early March and needs replacing. (2) BrightFix Home Services quoted $240 for parts and labor, but you're not going with them. (3) You replaced your bedroom ceiling fan last year because of a faint motor whir that disturbed your sleep. (4) You're taking the DIY approach for the bathroom fan. (5) You have a specific installation date planned that we'll discuss next. I'll keep all of this organized for you. Whenever you're ready, we can dive into the fan model you bought and plan the install."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Introduce the specific fan model chosen for quietness, add office fridge noise example, and surface the user's self-observation about noise sensitivity pattern",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Okay, picking up where we left off. I picked up a Panasonic WhisperCeiling fan, the FV-0811VF5, specifically because it's rated as one of the quietest on the market. I got it from Home Depot on April 19th for $159. The whole reason I chose that particular model over cheaper options is the noise rating — it's supposedly near-silent at the lowest speed setting."
+        },
+        {
+          "role": "assistant",
+          "content": "Great choice. The Panasonic WhisperCeiling FV-0811VF5 is well-regarded for its extremely low noise output — it's rated around 0.3 sones, which is essentially inaudible in most bathrooms. At $159, that's also a significant saving compared to the $240 BrightFix quote, especially since you're doing the labor yourself. The fact that you prioritized noise rating over price really makes sense given what you told me about the bedroom fan situation last year. Do you have a timeline for when you want to get it installed? You mentioned a specific date earlier."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, I blocked out Saturday, May 10th to do the install. My friend Leah said her contractor did a similar fan in about 45 minutes, so I figure even with my amateur pace it shouldn't take more than a couple of hours. I just want to make sure I have all the supplies ready before that day so I'm not scrambling."
+        },
+        {
+          "role": "assistant",
+          "content": "Saturday, May 10th — noted. And Leah's 45-minute benchmark is encouraging; even doubling or tripling that for a first-timer puts you well within a half-day project. To make sure you're fully prepped, let's think about what you'll need beyond the fan unit itself. Typically for a bathroom exhaust fan replacement you'll want: duct tape for sealing connections, silicone sealant for the ceiling trim, a screwdriver set, wire nuts, and possibly a voltage tester if you don't already have one. Do you have most of those tools on hand, or do we need to add items to a shopping list?"
+        },
+        {
+          "role": "user",
+          "content": "I need duct tape and a tube of silicone sealant — those are the two things I still have to pick up. I have the basic tools already. But here's another thing that's been on my mind. I also can't stand the hum from the mini fridge in my office. I actually unplug it during the day when I'm working because the compressor drone makes it hard to concentrate. It's a totally different room and a totally different appliance, but it's the same issue."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really telling detail. So across three different situations — the bathroom exhaust fan grinding, the bedroom ceiling fan whir, and now the office mini fridge compressor — the common thread is that persistent mechanical noise significantly impacts your comfort and daily functioning. Unplugging the fridge during work hours is a pretty strong signal that this isn't just mild annoyance; it's actively disrupting your ability to focus. When we plan future appliance purchases or workspace setups, noise output should probably always be a primary filter. Would you like me to keep an eye out for ultra-quiet mini fridge alternatives as well?"
+        },
+        {
+          "role": "user",
+          "content": "Maybe eventually, but not right now. I guess I just really can't handle any kind of persistent mechanical sound. It's like my brain locks onto it and won't let go. Whether it's a fan, a fridge compressor, or anything with a motor — if it hums or buzzes continuously, I notice it and it bothers me until I do something about it. That's basically why every appliance decision I make comes down to noise first."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really clear self-assessment, and it aligns perfectly with the pattern across all the examples you've shared. Your brain essentially treats persistent mechanical sounds as a high-priority signal that can't be filtered out, which means noise tolerance isn't just a preference — it's a core factor in how you make decisions about your living and working environments. I'll keep that front and center for any future recommendations, whether it's appliances, tools, workspace equipment, or even things like HVAC systems. For now, let's make sure the May 10th bathroom fan install goes smoothly so you can eliminate one more noise source."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Establish hardware store preference, introduce tentative noise-panel plan as recency trap, and surface adversarial look-alike value via assistant echo",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Quick update before Saturday. I prefer going to the smaller hardware store on Elm Street for the duct tape and sealant. Big box stores are sensory overload for me — the fluorescent lighting, the crowds, the sheer size of the place. I'd rather just pop into a small shop where I know the layout, grab what I need, and leave in five minutes. It's the same reason I like doing things myself rather than coordinating with contractors."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes total sense, and it ties right into what you've described about how you handle stimulation in general. The small hardware store on Elm Street sounds like a much better fit — quick in-and-out, familiar layout, no sensory overload. I'll note that as your go-to for supplies. For your shopping list, you need: (1) duct tape, and (2) a tube of silicone sealant. Both should be easy to find at a neighborhood hardware store. Do you want me to look up whether the Elm Street store carries any specific brand of silicone sealant, or are you fine with whatever they have in stock?"
+        },
+        {
+          "role": "user",
+          "content": "Whatever they have is fine, I'm not picky about sealant brands. Hey, while I'm thinking about it — Leah mentioned that her contractor charged her $280 for the full install of her bathroom fan. She said the fan itself was included in that price. I thought that was interesting to compare with the BrightFix quote I got."
+        },
+        {
+          "role": "assistant",
+          "content": "That is an interesting comparison. So Leah's contractor charged $280 all-in — fan plus labor — while BrightFix quoted you $240 for parts and labor. Of course, the fan model and quality might differ between the two. You're coming out ahead regardless since you bought the Panasonic WhisperCeiling for $159 and you're doing the labor yourself. Even after adding duct tape and sealant — probably another $15–$20 — your total cost will be well under $180. That's a solid saving. By the way, I noticed in a review of BrightFix that one customer mentioned being quoted $220 for a similar job — so their pricing seems to vary a bit depending on the specific fan and ductwork involved."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, $220 sounds like what I initially misremembered their quote as before I double-checked. Anyway, that's all water under the bridge. I'm doing it myself on Saturday. Let's focus on making sure I'm prepped. Do I need to shut off the breaker before starting the install?"
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely — safety first. Before you touch any wiring, you need to shut off the circuit breaker that controls the bathroom fan. Here's a quick pre-install checklist: (1) Locate and switch off the correct breaker. (2) Use a voltage tester on the existing fan's wiring to confirm power is off. (3) Remove the old fan housing and disconnect the wires. (4) Check that the new Panasonic unit fits the existing ceiling cutout — the FV-0811VF5 is designed for standard openings but measure to be sure. (5) Connect the wiring per the included instructions. (6) Secure the housing, apply silicone sealant around the trim, and seal the duct connection with duct tape. (7) Restore power and test. Does that workflow make sense?"
+        },
+        {
+          "role": "user",
+          "content": "That's perfect, thanks. My coworker just told me about these noise-canceling panels you can mount on the wall, and I'm pretty sure I'm going to line my whole office with them next month. Apparently they cut ambient sound by like 60 percent. That would solve the fridge problem and any other mechanical noise in there without me having to unplug things constantly.\n\nThat'd be great, but let's table the panel research for now. This Saturday is the priority. So to recap: I've got the Panasonic WhisperCeiling ready to go, I'm hitting the Elm Street hardware store for duct tape and sealant beforehand, and I'll follow your breaker-first checklist. I think I'm all set. Thanks for keeping everything organized for me."
+        },
+        {
+          "role": "assistant",
+          "content": "Those acoustic panels can make a huge difference, especially in a home office setting where you're sensitive to compressor hum and other mechanical sounds. A 60 percent reduction in ambient noise would be significant. There are a few types — foam panels, fabric-wrapped fiberglass, and even decorative options that double as wall art. The key specs to look for are the NRC (Noise Reduction Coefficient) rating; you'd want something at 0.8 or higher for meaningful absorption. If you decide to go ahead with that next month, I can help you calculate how many panels you'd need based on your office dimensions and identify the best options for mechanical noise frequencies specifically.\n\nYou're all set for Saturday, May 10th. Here's your final checklist: (1) Stop by the Elm Street hardware store for duct tape and silicone sealant. (2) Have your Panasonic WhisperCeiling FV-0811VF5 unboxed and ready. (3) Shut off the bathroom circuit breaker before starting. (4) Follow the install steps: remove old fan, check fitment, wire the new unit, secure housing, seal with silicone and duct tape, restore power, and test. Given Leah's 45-minute contractor benchmark, budget yourself a couple of comfortable hours. And once that's done, you'll finally have a silent bathroom fan to match the quiet bedroom ceiling fan you installed last year. Good luck — I think you're going to enjoy the result!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize the different experiences I've shared with you where noise from appliances or equipment became a problem for me?",
+      "expected_answer": "You described four situations: (1) your bathroom exhaust fan developed a grinding noise that drove you crazy, (2) you replaced your bedroom ceiling fan last year because a faint motor whir kept you up at night, (3) you chose a Panasonic WhisperCeiling FV-0811VF5 specifically for its ultra-quiet rating, and (4) you unplug your office mini fridge during the workday because the compressor hum disrupts your concentration. You noted that your brain locks onto persistent mechanical sounds and won't let go, and that noise is the primary factor in every appliance decision you make.",
+      "gold_memory_state": "All four noise-related episodes are confirmed: bathroom fan grinding, bedroom ceiling fan replacement for motor whir, Panasonic WhisperCeiling chosen for quietness, office mini fridge unplugged during work. The user's self-observation that persistent mechanical noise drives all appliance decisions is the confirmed reflected pattern.",
+      "judge_rubric": {
+        "must_include": [
+          "bathroom exhaust fan grinding noise",
+          "bedroom ceiling fan replacement due to motor whir",
+          "Panasonic WhisperCeiling chosen for quiet operation",
+          "office mini fridge unplugged due to compressor hum"
+        ],
+        "acceptable_paraphrases": [
+          "bathroom fan noise",
+          "bedroom fan motor sound",
+          "quiet fan selection",
+          "fridge compressor noise"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the user is fine with some mechanical noises",
+          "treating noise-canceling wall panels as a confirmed action"
+        ],
+        "harmless_extra": [
+          "mentioning the user's self-description of brain locking onto sounds",
+          "mentioning noise as the primary appliance decision factor"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes noise complaints to appliances the user never mentioned or invents additional episodes.",
+        "reflection_recall": "Fails if the model omits one or more of the four confirmed noise-related episodes.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "The old exhaust fan in my bathroom started making this grinding noise, and it's been driving me absolutely crazy"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I replaced my bedroom ceiling fan last year because the motor had this faint whir that kept me up at night"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I picked up a Panasonic WhisperCeiling fan, the FV-0811VF5, specifically because it's rated as one of the quietest on the market"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I also can't stand the hum from the mini fridge in my office. I actually unplug it during the day when I'm working because the compressor drone makes it hard to concentrate"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess I just really can't handle any kind of persistent mechanical sound. It's like my brain locks onto it and won't let go"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize the different experiences I've shared with you where noise from appliances or equipment became a problem for me?",
+      "expected_answer": "You described four situations: (1) your bathroom exhaust fan developed a grinding noise that drove you crazy, (2) you replaced your bedroom ceiling fan last year because a faint motor whir kept you up at night, (3) you chose a Panasonic WhisperCeiling FV-0811VF5 specifically for its ultra-quiet rating, and (4) you unplug your office mini fridge during the workday because the compressor hum disrupts your concentration. You noted that your brain locks onto persistent mechanical sounds and won't let go, and that noise is the primary factor in every appliance decision you make.",
+      "gold_memory_state": "All four noise-related episodes are confirmed: bathroom fan grinding, bedroom ceiling fan replacement for motor whir, Panasonic WhisperCeiling chosen for quietness, office mini fridge unplugged during work. The user's self-observation that persistent mechanical noise drives all appliance decisions is the confirmed reflected pattern.",
+      "judge_rubric": {
+        "must_include": [
+          "bathroom exhaust fan grinding noise",
+          "bedroom ceiling fan replacement due to motor whir",
+          "Panasonic WhisperCeiling chosen for quiet operation",
+          "office mini fridge unplugged due to compressor hum"
+        ],
+        "acceptable_paraphrases": [
+          "bathroom fan noise",
+          "bedroom fan motor sound",
+          "quiet fan selection",
+          "fridge compressor noise"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the user is fine with some mechanical noises",
+          "treating noise-canceling wall panels as a confirmed action"
+        ],
+        "harmless_extra": [
+          "mentioning the user's self-description of brain locking onto sounds",
+          "mentioning noise as the primary appliance decision factor"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes noise complaints to appliances the user never mentioned or invents additional episodes.",
+        "reflection_recall": "Fails if the model omits one or more of the four confirmed noise-related episodes.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "The old exhaust fan in my bathroom started making this grinding noise, and it's been driving me absolutely crazy"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I replaced my bedroom ceiling fan last year because the motor had this faint whir that kept me up at night"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I picked up a Panasonic WhisperCeiling fan, the FV-0811VF5, specifically because it's rated as one of the quietest on the market"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I also can't stand the hum from the mini fridge in my office. I actually unplug it during the day when I'm working because the compressor drone makes it hard to concentrate"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess I just really can't handle any kind of persistent mechanical sound. It's like my brain locks onto it and won't let go"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've mentioned several specific appliance issues — the bathroom fan, the bedroom fan, the office fridge — and I've also described a broader personal tendency. If I'm building a profile of my home environment preferences, which conclusion ties all those individual appliance situations together, and does my preference for the small hardware store on Elm Street fall under that same conclusion?",
+      "expected_answer": "The conclusion that ties together the bathroom fan, bedroom fan, and office fridge situations is your high sensitivity to ambient mechanical noise, which consistently drives your appliance purchase, replacement, and usage decisions. Your preference for the Elm Street hardware store is a separate matter — it's about avoiding sensory overload from big box stores (fluorescent lighting, crowds, size), not about mechanical noise specifically.",
+      "gold_memory_state": "The reflected pattern (noise_sensitivity_pattern) covers mechanical noise sensitivity driving appliance decisions. The hardware store preference (hardware_store_preference) is a separate confirmed fact about avoiding sensory overload in retail environments, which is related to general sensory sensitivity but is not the same as the mechanical noise pattern.",
+      "judge_rubric": {
+        "must_include": [
+          "mechanical noise sensitivity as the unifying pattern across appliance decisions"
+        ],
+        "acceptable_paraphrases": [
+          "sensitivity to persistent mechanical sounds",
+          "noise intolerance driving appliance choices"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "collapsing the hardware store preference into the mechanical noise pattern without distinguishing them",
+          "treating the noise-canceling panel plan as a confirmed action under the pattern"
+        ],
+        "harmless_extra": [
+          "noting that the hardware store preference and noise sensitivity may both relate to broader sensory sensitivity",
+          "mentioning specific appliances as examples"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model treats the hardware store preference as part of the mechanical noise sensitivity pattern without distinguishing the two.",
+        "reflection_recall": "Fails if the model cannot articulate the unifying mechanical noise pattern across the bathroom fan, bedroom fan, and office fridge.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess I just really can't handle any kind of persistent mechanical sound. It's like my brain locks onto it and won't let go"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I prefer going to the smaller hardware store on Elm Street for the duct tape and sealant. Big box stores are sensory overload for me"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've mentioned several specific appliance issues — the bathroom fan, the bedroom fan, the office fridge — and I've also described a broader personal tendency. If I'm building a profile of my home environment preferences, which conclusion ties all those individual appliance situations together, and does my preference for the small hardware store on Elm Street fall under that same conclusion?",
+      "expected_answer": "The conclusion that ties together the bathroom fan, bedroom fan, and office fridge situations is your high sensitivity to ambient mechanical noise, which consistently drives your appliance purchase, replacement, and usage decisions. Your preference for the Elm Street hardware store is a separate matter — it's about avoiding sensory overload from big box stores (fluorescent lighting, crowds, size), not about mechanical noise specifically.",
+      "gold_memory_state": "The reflected pattern (noise_sensitivity_pattern) covers mechanical noise sensitivity driving appliance decisions. The hardware store preference (hardware_store_preference) is a separate confirmed fact about avoiding sensory overload in retail environments, which is related to general sensory sensitivity but is not the same as the mechanical noise pattern.",
+      "judge_rubric": {
+        "must_include": [
+          "mechanical noise sensitivity as the unifying pattern across appliance decisions"
+        ],
+        "acceptable_paraphrases": [
+          "sensitivity to persistent mechanical sounds",
+          "noise intolerance driving appliance choices"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "collapsing the hardware store preference into the mechanical noise pattern without distinguishing them",
+          "treating the noise-canceling panel plan as a confirmed action under the pattern"
+        ],
+        "harmless_extra": [
+          "noting that the hardware store preference and noise sensitivity may both relate to broader sensory sensitivity",
+          "mentioning specific appliances as examples"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model treats the hardware store preference as part of the mechanical noise sensitivity pattern without distinguishing the two.",
+        "reflection_recall": "Fails if the model cannot articulate the unifying mechanical noise pattern across the bathroom fan, bedroom fan, and office fridge.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess I just really can't handle any kind of persistent mechanical sound. It's like my brain locks onto it and won't let go"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I prefer going to the smaller hardware store on Elm Street for the duct tape and sealant. Big box stores are sensory overload for me"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe what you can confidently say about my relationship with noise and sound based on everything I've told you, and where you'd need to be careful not to stretch that conclusion too far when making recommendations.",
+      "expected_answer": "The supported conclusion is that you are highly sensitive to persistent ambient mechanical noise — specifically continuous hums, buzzes, whirs, and grinding sounds from motorized appliances — and this sensitivity consistently drives your decisions about purchasing, replacing, and using home and office appliances. The boundary is that this pattern is specifically about mechanical/motor-generated continuous sounds. It should not be overgeneralized to all types of sound or all sensory experiences. For example, your dislike of big box stores is about visual and spatial sensory overload (fluorescent lighting, crowds, size), not mechanical noise. Similarly, the pattern does not establish that you are bothered by intermittent sounds, human voices, music, or non-mechanical ambient noise.",
+      "gold_memory_state": "Supported inference: high sensitivity to persistent ambient mechanical noise drives appliance decisions across bathroom, bedroom, and office contexts. Unsupported overgeneralization: extending this to all sounds, all sensory stimuli, or non-mechanical noise sources. The hardware store preference is a separate sensory-overload fact (visual/spatial), not a mechanical-noise fact.",
+      "judge_rubric": {
+        "must_include": [
+          "persistent mechanical noise sensitivity as the supported pattern",
+          "appliance decisions driven by this sensitivity",
+          "boundary or limitation on how far this conclusion extends"
+        ],
+        "acceptable_paraphrases": [
+          "continuous motor sounds",
+          "ambient mechanical hum/buzz",
+          "noise from motorized equipment"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the user is sensitive to all sounds equally",
+          "treating the noise-canceling panel plan as evidence the pattern extends to non-mechanical noise",
+          "claiming the hardware store preference is driven by mechanical noise"
+        ],
+        "harmless_extra": [
+          "listing specific appliance examples as evidence",
+          "noting the user's own language about brain locking onto sounds"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model claims the noise sensitivity extends to all sounds, all sensory experiences, or non-mechanical ambient noise without distinguishing those as unsupported extensions.",
+        "reflection_recall": "Fails if the model cannot name at least three of the four confirmed mechanical noise episodes (bathroom fan, bedroom fan, fan model choice, office fridge) as evidence for the pattern.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess I just really can't handle any kind of persistent mechanical sound. It's like my brain locks onto it and won't let go"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "The old exhaust fan in my bathroom started making this grinding noise, and it's been driving me absolutely crazy"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I replaced my bedroom ceiling fan last year because the motor had this faint whir that kept me up at night"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I also can't stand the hum from the mini fridge in my office. I actually unplug it during the day when I'm working because the compressor drone makes it hard to concentrate"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I prefer going to the smaller hardware store on Elm Street for the duct tape and sealant. Big box stores are sensory overload for me"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe what you can confidently say about my relationship with noise and sound based on everything I've told you, and where you'd need to be careful not to stretch that conclusion too far when making recommendations.",
+      "expected_answer": "The supported conclusion is that you are highly sensitive to persistent ambient mechanical noise — specifically continuous hums, buzzes, whirs, and grinding sounds from motorized appliances — and this sensitivity consistently drives your decisions about purchasing, replacing, and using home and office appliances. The boundary is that this pattern is specifically about mechanical/motor-generated continuous sounds. It should not be overgeneralized to all types of sound or all sensory experiences. For example, your dislike of big box stores is about visual and spatial sensory overload (fluorescent lighting, crowds, size), not mechanical noise. Similarly, the pattern does not establish that you are bothered by intermittent sounds, human voices, music, or non-mechanical ambient noise.",
+      "gold_memory_state": "Supported inference: high sensitivity to persistent ambient mechanical noise drives appliance decisions across bathroom, bedroom, and office contexts. Unsupported overgeneralization: extending this to all sounds, all sensory stimuli, or non-mechanical noise sources. The hardware store preference is a separate sensory-overload fact (visual/spatial), not a mechanical-noise fact.",
+      "judge_rubric": {
+        "must_include": [
+          "persistent mechanical noise sensitivity as the supported pattern",
+          "appliance decisions driven by this sensitivity",
+          "boundary or limitation on how far this conclusion extends"
+        ],
+        "acceptable_paraphrases": [
+          "continuous motor sounds",
+          "ambient mechanical hum/buzz",
+          "noise from motorized equipment"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the user is sensitive to all sounds equally",
+          "treating the noise-canceling panel plan as evidence the pattern extends to non-mechanical noise",
+          "claiming the hardware store preference is driven by mechanical noise"
+        ],
+        "harmless_extra": [
+          "listing specific appliance examples as evidence",
+          "noting the user's own language about brain locking onto sounds"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model claims the noise sensitivity extends to all sounds, all sensory experiences, or non-mechanical ambient noise without distinguishing those as unsupported extensions.",
+        "reflection_recall": "Fails if the model cannot name at least three of the four confirmed mechanical noise episodes (bathroom fan, bedroom fan, fan model choice, office fridge) as evidence for the pattern.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess I just really can't handle any kind of persistent mechanical sound. It's like my brain locks onto it and won't let go"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "The old exhaust fan in my bathroom started making this grinding noise, and it's been driving me absolutely crazy"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I replaced my bedroom ceiling fan last year because the motor had this faint whir that kept me up at night"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I also can't stand the hum from the mini fridge in my office. I actually unplug it during the day when I'm working because the compressor drone makes it hard to concentrate"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I prefer going to the smaller hardware store on Elm Street for the duct tape and sealant. Big box stores are sensory overload for me"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best captures what consistently drives my appliance-related decisions across different rooms and situations?",
+      "candidate_options": [
+        "High sensitivity to persistent ambient mechanical noise, which drives appliance purchase, replacement, and usage decisions",
+        "General sensory overload from all environmental stimuli including lighting, crowds, and sounds",
+        "A preference for energy-efficient and cost-effective appliances across all categories",
+        "A plan to soundproof the home office with noise-canceling wall panels to address all noise issues"
+      ],
+      "expected_answer": "High sensitivity to persistent ambient mechanical noise, which drives appliance purchase, replacement, and usage decisions",
+      "gold_memory_state": "The confirmed reflected pattern is specifically about persistent mechanical noise driving appliance decisions. General sensory overload (option 2) conflates the hardware store preference with the noise pattern. Cost-effectiveness (option 3) is not the primary driver. The noise-canceling panel plan (option 4) is tentative and does not represent the underlying pattern.",
+      "judge_rubric": {
+        "must_include": [
+          "persistent ambient mechanical noise",
+          "drives appliance decisions"
+        ],
+        "acceptable_paraphrases": [
+          "mechanical noise sensitivity driving appliance choices"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "selecting the general sensory overload option",
+          "selecting the cost-effectiveness option",
+          "selecting the tentative panel plan option"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: Option 2 ('General sensory overload from all environmental stimuli') conflates the hardware store sensory-overload preference (a separate target about visual/spatial stimuli) with the mechanical noise pattern, broadening the scope beyond what is supported. assistant echo: Option 4 ('A plan to soundproof the home office with noise-canceling wall panels') echoes the assistant's enthusiastic response to the user's tentative panel idea, treating a tentative plan as the core pattern. Option 3 is a plausible but unsupported alternative motivation.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the tentative noise-canceling panel plan as the core pattern driving appliance decisions.",
+        "reflection_precision": "Fails if the model selects the overly broad 'general sensory overload' option, conflating the hardware store preference with mechanical noise sensitivity.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess I just really can't handle any kind of persistent mechanical sound. It's like my brain locks onto it and won't let go"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I prefer going to the smaller hardware store on Elm Street for the duct tape and sealant. Big box stores are sensory overload for me"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "My coworker just told me about these noise-canceling panels you can mount on the wall, and I'm pretty sure I'm going to line my whole office with them next month"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best captures what consistently drives my appliance-related decisions across different rooms and situations?",
+      "candidate_options": [
+        "High sensitivity to persistent ambient mechanical noise, which drives appliance purchase, replacement, and usage decisions",
+        "General sensory overload from all environmental stimuli including lighting, crowds, and sounds",
+        "A preference for energy-efficient and cost-effective appliances across all categories",
+        "A plan to soundproof the home office with noise-canceling wall panels to address all noise issues"
+      ],
+      "expected_answer": "High sensitivity to persistent ambient mechanical noise, which drives appliance purchase, replacement, and usage decisions",
+      "gold_memory_state": "The confirmed reflected pattern is specifically about persistent mechanical noise driving appliance decisions. General sensory overload (option 2) conflates the hardware store preference with the noise pattern. Cost-effectiveness (option 3) is not the primary driver. The noise-canceling panel plan (option 4) is tentative and does not represent the underlying pattern.",
+      "judge_rubric": {
+        "must_include": [
+          "persistent ambient mechanical noise",
+          "drives appliance decisions"
+        ],
+        "acceptable_paraphrases": [
+          "mechanical noise sensitivity driving appliance choices"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "selecting the general sensory overload option",
+          "selecting the cost-effectiveness option",
+          "selecting the tentative panel plan option"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: Option 2 ('General sensory overload from all environmental stimuli') conflates the hardware store sensory-overload preference (a separate target about visual/spatial stimuli) with the mechanical noise pattern, broadening the scope beyond what is supported. assistant echo: Option 4 ('A plan to soundproof the home office with noise-canceling wall panels') echoes the assistant's enthusiastic response to the user's tentative panel idea, treating a tentative plan as the core pattern. Option 3 is a plausible but unsupported alternative motivation.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the tentative noise-canceling panel plan as the core pattern driving appliance decisions.",
+        "reflection_precision": "Fails if the model selects the overly broad 'general sensory overload' option, conflating the hardware store preference with mechanical noise sensitivity.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess I just really can't handle any kind of persistent mechanical sound. It's like my brain locks onto it and won't let go"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I prefer going to the smaller hardware store on Elm Street for the duct tape and sealant. Big box stores are sensory overload for me"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "My coworker just told me about these noise-canceling panels you can mount on the wall, and I'm pretty sure I'm going to line my whole office with them next month"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm thinking about replacing the office mini fridge with something quieter, and I also need to pick up supplies for the bathroom fan install this weekend. Help me plan a single efficient Saturday errand run: where should I shop, what criteria should guide the fridge replacement, and what supplies do I still need for the fan project?",
+      "expected_answer": "For shopping, go to the small hardware store on Elm Street to pick up duct tape and silicone sealant for the bathroom fan install — you prefer it over big box stores because of sensory overload. For the fridge replacement, your top criterion should be noise output, specifically the quietest compressor available, since you unplug the current one during the workday because the hum disrupts your concentration. Apply the same noise-first selection approach you used when choosing the Panasonic WhisperCeiling FV-0811VF5 for the bathroom: look for published decibel or sone ratings and prioritize the lowest-noise model, even if it costs more. The hardware store may not carry mini fridges, so you may need to research quiet models online separately rather than visiting a big box store.",
+      "gold_memory_state": "Confirmed facts used: (1) Elm Street hardware store preferred, big box stores cause sensory overload. (2) Office mini fridge unplugged during work due to compressor hum. (3) Panasonic WhisperCeiling FV-0811VF5 chosen for ultra-quiet operation. (4) Duct tape and silicone sealant still needed for bathroom fan install. (5) Reflected pattern: noise sensitivity drives all appliance decisions. Tentative (not confirmed): noise-canceling wall panels for office.",
+      "judge_rubric": {
+        "must_include": [
+          "Elm Street hardware store for supplies",
+          "duct tape and silicone sealant as needed supplies",
+          "noise output as primary fridge replacement criterion",
+          "noise-first approach consistent with the Panasonic fan selection"
+        ],
+        "acceptable_paraphrases": [
+          "small hardware store on Elm Street",
+          "quiet compressor as top priority",
+          "same noise-driven selection strategy used for the bathroom fan"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "recommending a big box store for shopping",
+          "treating the noise-canceling wall panels as a confirmed purchase to add to the errand list",
+          "suggesting the user is fine with moderate fridge noise"
+        ],
+        "harmless_extra": [
+          "suggesting online research for quiet mini fridges",
+          "mentioning specific sone or decibel thresholds",
+          "noting the Saturday May 10th install date"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative noise-canceling panel plan as a confirmed errand item to purchase this Saturday.",
+        "reflection_precision": "Fails if the model does not apply the noise-sensitivity pattern to the fridge replacement recommendation.",
+        "reflection_recall": "Fails if the model forgets the Elm Street store preference or the specific supplies still needed.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User prefers the small hardware store on Elm Street and finds big box stores to be sensory overload.",
+        "Fact 2: User still needs duct tape and silicone sealant for the bathroom fan install.",
+        "Fact 3: User unplugs office mini fridge during workday because compressor hum disrupts concentration.",
+        "Fact 4: User chose the Panasonic WhisperCeiling FV-0811VF5 specifically for its ultra-quiet noise rating.",
+        "Fact 5: User's reflected pattern is that persistent mechanical noise sensitivity drives all appliance decisions.",
+        "Inference: The fridge replacement criterion should mirror the noise-first approach used for the fan — prioritize the lowest-noise compressor model available.",
+        "Inference: The errand plan should route through the Elm Street store for supplies but likely requires separate research for a quiet fridge, since the small hardware store probably doesn't stock mini fridges."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I prefer going to the smaller hardware store on Elm Street for the duct tape and sealant. Big box stores are sensory overload for me"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I also can't stand the hum from the mini fridge in my office. I actually unplug it during the day when I'm working because the compressor drone makes it hard to concentrate"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I picked up a Panasonic WhisperCeiling fan, the FV-0811VF5, specifically because it's rated as one of the quietest on the market"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess I just really can't handle any kind of persistent mechanical sound. It's like my brain locks onto it and won't let go"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm thinking about replacing the office mini fridge with something quieter, and I also need to pick up supplies for the bathroom fan install this weekend. Help me plan a single efficient Saturday errand run: where should I shop, what criteria should guide the fridge replacement, and what supplies do I still need for the fan project?",
+      "expected_answer": "For shopping, go to the small hardware store on Elm Street to pick up duct tape and silicone sealant for the bathroom fan install — you prefer it over big box stores because of sensory overload. For the fridge replacement, your top criterion should be noise output, specifically the quietest compressor available, since you unplug the current one during the workday because the hum disrupts your concentration. Apply the same noise-first selection approach you used when choosing the Panasonic WhisperCeiling FV-0811VF5 for the bathroom: look for published decibel or sone ratings and prioritize the lowest-noise model, even if it costs more. The hardware store may not carry mini fridges, so you may need to research quiet models online separately rather than visiting a big box store.",
+      "gold_memory_state": "Confirmed facts used: (1) Elm Street hardware store preferred, big box stores cause sensory overload. (2) Office mini fridge unplugged during work due to compressor hum. (3) Panasonic WhisperCeiling FV-0811VF5 chosen for ultra-quiet operation. (4) Duct tape and silicone sealant still needed for bathroom fan install. (5) Reflected pattern: noise sensitivity drives all appliance decisions. Tentative (not confirmed): noise-canceling wall panels for office.",
+      "judge_rubric": {
+        "must_include": [
+          "Elm Street hardware store for supplies",
+          "duct tape and silicone sealant as needed supplies",
+          "noise output as primary fridge replacement criterion",
+          "noise-first approach consistent with the Panasonic fan selection"
+        ],
+        "acceptable_paraphrases": [
+          "small hardware store on Elm Street",
+          "quiet compressor as top priority",
+          "same noise-driven selection strategy used for the bathroom fan"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "recommending a big box store for shopping",
+          "treating the noise-canceling wall panels as a confirmed purchase to add to the errand list",
+          "suggesting the user is fine with moderate fridge noise"
+        ],
+        "harmless_extra": [
+          "suggesting online research for quiet mini fridges",
+          "mentioning specific sone or decibel thresholds",
+          "noting the Saturday May 10th install date"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative noise-canceling panel plan as a confirmed errand item to purchase this Saturday.",
+        "reflection_precision": "Fails if the model does not apply the noise-sensitivity pattern to the fridge replacement recommendation.",
+        "reflection_recall": "Fails if the model forgets the Elm Street store preference or the specific supplies still needed.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User prefers the small hardware store on Elm Street and finds big box stores to be sensory overload.",
+        "Fact 2: User still needs duct tape and silicone sealant for the bathroom fan install.",
+        "Fact 3: User unplugs office mini fridge during workday because compressor hum disrupts concentration.",
+        "Fact 4: User chose the Panasonic WhisperCeiling FV-0811VF5 specifically for its ultra-quiet noise rating.",
+        "Fact 5: User's reflected pattern is that persistent mechanical noise sensitivity drives all appliance decisions.",
+        "Inference: The fridge replacement criterion should mirror the noise-first approach used for the fan — prioritize the lowest-noise compressor model available.",
+        "Inference: The errand plan should route through the Elm Street store for supplies but likely requires separate research for a quiet fridge, since the small hardware store probably doesn't stock mini fridges."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I prefer going to the smaller hardware store on Elm Street for the duct tape and sealant. Big box stores are sensory overload for me"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I also can't stand the hum from the mini fridge in my office. I actually unplug it during the day when I'm working because the compressor drone makes it hard to concentrate"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I picked up a Panasonic WhisperCeiling fan, the FV-0811VF5, specifically because it's rated as one of the quietest on the market"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess I just really can't handle any kind of persistent mechanical sound. It's like my brain locks onto it and won't let go"
+        }
+      ]
+    }
+  ]
+}

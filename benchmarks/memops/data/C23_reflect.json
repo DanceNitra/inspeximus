@@ -1,0 +1,1091 @@
+{
+  "target_fact": "User prefers digital/remote processes for bureaucratic tasks and experiences stress and anxiety from in-person government interactions and document expiration emergencies",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "My passport expires on September 14, 2025"
+      },
+      "target": {
+        "target_id": "user_passport_expiry",
+        "target_name": "User's passport expiration date"
+      },
+      "old_value": null,
+      "new_value": "September 14, 2025",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My passport expires on September 14, 2025"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I was at the airport trying to check in for a flight to Bangkok when they told me my passport didn't have enough validity left. I couldn't sleep properly for a few nights after that"
+      },
+      "target": {
+        "target_id": "2015_airport_incident",
+        "target_name": "2015 airport passport incident and emotional impact"
+      },
+      "old_value": null,
+      "new_value": "In 2015, was denied boarding at airport for Bangkok flight due to insufficient passport validity; caused significant stress and sleep disruption",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I was at the airport trying to check in for a flight to Bangkok when they told me my passport didn't have enough validity left. I couldn't sleep properly for a few nights after that"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I renewed my health insurance card through the app last year and that was honestly the best government interaction I've ever had"
+      },
+      "target": {
+        "target_id": "positive_digital_renewal_experience",
+        "target_name": "Positive experience renewing health insurance card via app"
+      },
+      "old_value": null,
+      "new_value": "Renewed health insurance card through an app last year and found it very convenient",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I renewed my health insurance card through the app last year and that was honestly the best government interaction I've ever had"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 7,
+        "quote": "I hate sitting in government waiting rooms with the fluorescent lighting and those awful ticket number queues. I went to the district office at 7:30 AM just to avoid the crowds"
+      },
+      "target": {
+        "target_id": "govt_waiting_room_aversion",
+        "target_name": "Aversion to government waiting rooms"
+      },
+      "old_value": null,
+      "new_value": "Hates government waiting rooms with fluorescent lighting and ticket number queues; goes very early to avoid crowds",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I hate sitting in government waiting rooms with the fluorescent lighting and those awful ticket number queues. I went to the district office at 7:30 AM just to avoid the crowds"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "my wife's passport expires March 7, 2026. I'm basically tracking it for her since she keeps forgetting to check"
+      },
+      "target": {
+        "target_id": "wife_passport_expiry",
+        "target_name": "Wife's passport expiration date"
+      },
+      "old_value": null,
+      "new_value": "March 7, 2026",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my wife's passport expires March 7, 2026. I'm basically tracking it for her since she keeps forgetting to check"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I checked last month and you still can't do the full passport renewal process online here. You have to physically go in, which is really frustrating"
+      },
+      "target": {
+        "target_id": "passport_renewal_not_online",
+        "target_name": "Passport renewal cannot be done online"
+      },
+      "old_value": null,
+      "new_value": "Full passport renewal process cannot be completed online; requires in-person visit",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I checked last month and you still can't do the full passport renewal process online here. You have to physically go in, which is really frustrating"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "I'm planning to do my passport renewal in June, well before the September expiration. I want at least a three-month buffer"
+      },
+      "target": {
+        "target_id": "passport_renewal_plan_june",
+        "target_name": "Planned passport renewal timing"
+      },
+      "old_value": null,
+      "new_value": "June 2025, targeting at least a three-month buffer before September 14 expiration",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I'm planning to do my passport renewal in June, well before the September expiration. I want at least a three-month buffer"
+        }
+      ]
+    },
+    {
+      "operation_id": "op8",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 7,
+        "quote": "Every time there's an in-person requirement I start feeling that same knot in my stomach I had at the Bangkok airport. It's like the stress compounds when I know I can't just handle it from my phone"
+      },
+      "target": {
+        "target_id": "bureaucratic_stress_pattern",
+        "target_name": "Pattern of compounding stress from in-person bureaucratic requirements linked to past document emergencies"
+      },
+      "old_value": null,
+      "new_value": "User experiences escalating anxiety specifically when bureaucratic processes require in-person visits, triggered by the traumatic 2015 airport passport incident; digital/app-based alternatives significantly reduce this stress response",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I was at the airport trying to check in for a flight to Bangkok when they told me my passport didn't have enough validity left. I couldn't sleep properly for a few nights after that"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I renewed my health insurance card through the app last year and that was honestly the best government interaction I've ever had"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I hate sitting in government waiting rooms with the fluorescent lighting and those awful ticket number queues. I went to the district office at 7:30 AM just to avoid the crowds"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I checked last month and you still can't do the full passport renewal process online here. You have to physically go in, which is really frustrating"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Every time there's an in-person requirement I start feeling that same knot in my stomach I had at the Bangkok airport. It's like the stress compounds when I know I can't just handle it from my phone"
+        }
+      ]
+    },
+    {
+      "operation_id": "op9",
+      "type": "remember",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "A colleague just told me that the Bureau of Consular Affairs is rolling out a pilot program where you can complete the entire passport renewal online starting in May. He said his wife already did it last week through the new portal"
+      },
+      "target": {
+        "target_id": "online_passport_renewal_rumor",
+        "target_name": "Rumored online passport renewal pilot program"
+      },
+      "old_value": null,
+      "new_value": "Colleague claims online passport renewal pilot program launching in May",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "A colleague just told me that the Bureau of Consular Affairs is rolling out a pilot program where you can complete the entire passport renewal online starting in May. He said his wife already did it last week through the new portal"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish core document facts and emotional experiences with bureaucratic processes",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I need you to keep track of some important document dates for me. My passport expires on September 14, 2025. I've been burned before by not staying on top of this, so I really want to be proactive this time around and make sure I have plenty of lead time for renewal."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — I've noted that your passport expires on September 14, 2025. That's a critical date, and it's smart to start planning well ahead. Depending on where you are, passport renewal processing can take anywhere from several weeks to a couple of months, so building in a buffer is definitely wise. Would you like me to help you figure out a timeline for when to start the renewal process, or are there other document dates you'd like me to track as well? I'm happy to set up a comprehensive tracking list for you."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, the reason I'm so anxious about this is because of what happened back in 2015. I was at the airport trying to check in for a flight to Bangkok when they told me my passport didn't have enough validity left. I couldn't sleep properly for a few nights after that. The whole experience was genuinely traumatic — I had to do an expedited renewal and it cost me a fortune on top of the stress."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds incredibly stressful — being stopped at the airport like that with travel plans on the line must have been awful. The fact that it affected your sleep shows how deeply it hit you. Many countries require at least six months of passport validity remaining for entry, which catches a lot of people off guard. Given that experience, it makes total sense that you want to handle this well in advance. I'll make sure to factor in that kind of buffer when we plan your renewal timeline. Is there anything else from that experience that changed how you handle travel documents now?"
+        },
+        {
+          "role": "user",
+          "content": "Definitely. Since then I've been much more careful about tracking everything. On the positive side, I renewed my health insurance card through the app last year and that was honestly the best government interaction I've ever had. No lines, no waiting, just did it from my couch. I wish every renewal could work like that — it took maybe ten minutes total."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a great contrast — the app-based health insurance renewal sounds like exactly the kind of streamlined process everyone wishes government services would adopt. Ten minutes from your couch versus hours in a waiting room is a massive difference, not just in time but in stress levels too. It sounds like digital options really work well for you and help take the anxiety out of these administrative tasks. I'll keep that preference in mind if there are ever digital alternatives available for any of your upcoming renewals. Are there other documents you're tracking besides the passport?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, my national ID card. I renewed it late last November, around the 28th. The new one is valid until November 2034, so that's sorted for a long time. But I hate sitting in government waiting rooms with the fluorescent lighting and those awful ticket number queues. I went to the district office at 7:30 AM just to avoid the crowds. That early morning trip was the only way I could tolerate the process."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — your national ID card was renewed around November 28th last year, and it's valid through November 2034, so you're in great shape there for the next decade. I completely understand the aversion to those waiting rooms — the combination of harsh fluorescent lighting, uncomfortable seating, and the unpredictable wait times with the ticket system can make even a simple errand feel draining. Going at 7:30 AM was a clever strategy to minimize your exposure to all of that. Between the 2015 airport incident and the waiting room experience, it's clear that in-person bureaucratic processes take a real toll on you. At least the ID card is locked in for a long while now."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Add family document tracking, confirm in-person passport requirement, establish renewal plan, and surface the reflect trigger",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I should also mention — my wife's passport expires March 7, 2026. I'm basically tracking it for her since she keeps forgetting to check. She travels for work a lot, mostly within Asia, so it's important we don't let it lapse. I feel responsible for making sure both of our documents are current."
+        },
+        {
+          "role": "assistant",
+          "content": "That's really thoughtful of you to track your wife's passport as well. March 7, 2026 is noted. Since she travels frequently within Asia for work, many of those destinations enforce the six-month validity rule strictly, which means her effective deadline is actually closer to September 2025 — roughly the same window as your own passport expiration. You might want to consider renewing both passports around the same time to streamline the process. Would you like me to create a joint renewal timeline for both of you, or do you prefer to handle them separately?"
+        },
+        {
+          "role": "user",
+          "content": "That's a good point about the six-month rule. I'll think about doing them together. But here's the frustrating part — I checked last month and you still can't do the full passport renewal process online here. You have to physically go in, which is really frustrating. I was hoping they'd have modernized it by now, but no luck. It's still the old-fashioned way."
+        },
+        {
+          "role": "assistant",
+          "content": "That is frustrating, especially given how smoothly the health insurance card renewal went for you through the app. It seems like passport offices are among the last holdouts when it comes to digitization. The in-person requirement means you'll need to factor in travel time to the office, potential wait times, and the general discomfort of the environment you described earlier. Since you can't avoid going in person, we can at least plan strategically — choosing the least busy day and time, bringing everything pre-prepared so you spend minimal time there. Would you like help assembling a checklist of documents you'll need to bring?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, a checklist would be great eventually. But the key thing is timing. I'm planning to do my passport renewal in June, well before the September expiration. I want at least a three-month buffer. After what happened in 2015, I refuse to cut it close again. June gives me enough breathing room even if there are processing delays."
+        },
+        {
+          "role": "assistant",
+          "content": "June is an excellent target — that gives you roughly three months of buffer before the September 14th expiration, which should comfortably cover even slow processing times. Given the 2015 experience, having that cushion will probably help ease some of the anxiety around the whole process too. I'll note June as your target renewal window. We can revisit this in May to start preparing your documents and scheduling the appointment. For your wife's passport, would you want to aim for the same June window, or handle hers separately later in the year?"
+        },
+        {
+          "role": "user",
+          "content": "Probably separately — her schedule is hectic with the Asia travel. I'll figure out her timing later. But honestly, thinking about the passport renewal is already making me tense. Every time there's an in-person requirement I start feeling that same knot in my stomach I had at the Bangkok airport. It's like the stress compounds when I know I can't just handle it from my phone. The digital option for the health card was so much better for me mentally."
+        },
+        {
+          "role": "assistant",
+          "content": "I hear you, and that's a really important self-awareness to have. It sounds like there's a clear pattern where in-person bureaucratic requirements trigger a stress response that's directly connected to that 2015 airport experience. The uncertainty, the waiting, the lack of control — those elements seem to amplify each other. Meanwhile, when you can handle things digitally, like the health insurance card, the stress practically disappears because you're in a comfortable environment with a sense of control over the process. For the June passport visit, we can plan every detail in advance — exact documents, optimal arrival time, backup plans — so that the in-person part is as brief and controlled as possible. Minimizing unknowns might help reduce that knot-in-the-stomach feeling."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Introduce recency trap (tentative online renewal rumor), adversarial injection (son's tentative expiry), and reinforce existing facts",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I also need to figure out my son's passport situation. He's 11 now, and his passport was issued when he was 6, so it's a five-year one. I think it expires sometime around July or August 2025, but I need to dig it out and confirm the exact date. I really don't want another last-minute scramble."
+        },
+        {
+          "role": "assistant",
+          "content": "That's an important one to check. If it was issued when he was 6 and he's 11 now, a five-year passport would indeed be expiring this year, likely in the summer window you mentioned. I'd recommend locating the physical passport as soon as possible to confirm the exact date. For children's passports, the renewal process often requires both parents to be present or provide consent, which adds a logistical layer. Given your preference for planning ahead, you might want to handle his renewal alongside yours in June if the dates work out. Would you like me to add a reminder to check his passport this week?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, remind me to check it this weekend. By the way, I was organizing some old files yesterday and found my son's original birth certificate and his old vaccination booklet. I also came across an expired travel document from 2019 that had his photo from when he was about five — he looks so different now. It had a stamp from our Okinawa trip."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a nice find — those documents can be really useful for the renewal process. The birth certificate in particular is typically required when renewing a child's passport, so having it already located saves you a step. The vaccination booklet might also come in handy depending on travel requirements. As for the old travel document with the Okinawa stamp, that's a sweet memory! It's amazing how much kids change in just a few years. I noticed the 2019 document — just to clarify, I see from the earlier discussion that your wife's passport shows a March 7, 2026 expiry. The 2019 document you found is your son's expired one, correct? Just making sure we're tracking the right items for the right family members."
+        },
+        {
+          "role": "user",
+          "content": "Yes, the 2019 one is my son's old expired document, not my wife's. Her passport is fine until 2026. A colleague just told me that the Bureau of Consular Affairs is rolling out a pilot program where you can complete the entire passport renewal online starting in May. He said his wife already did it last week through the new portal. If that's true, it would be a game-changer for me."
+        },
+        {
+          "role": "assistant",
+          "content": "That would indeed be a game-changer given how much you prefer digital processes! If the Bureau of Consular Affairs really is piloting online passport renewals, it could eliminate the in-person visit entirely — which would remove a major source of stress for you. However, I'd suggest verifying this through the official Bureau website before counting on it. Pilot programs can be limited in scope — sometimes restricted to certain regions, renewal types, or applicant categories. It's possible your colleague's wife qualified under specific criteria. If it does pan out, combining it with your June timeline could make the whole experience much more like your health insurance card renewal. Shall I help you look into the official details?"
+        },
+        {
+          "role": "user",
+          "content": "Definitely, I'll check the official site this week. If the online option is real, I'd jump on it immediately. But I'm not going to delay my June timeline waiting for confirmation — I learned that lesson the hard way in 2015. Better to have a backup plan and go in person if needed. My wife would probably benefit from the online option too since her schedule is so packed with work travel."
+        },
+        {
+          "role": "assistant",
+          "content": "That's exactly the right approach — optimistic but cautious. Keeping June as your firm target while exploring the online option means you won't get caught off guard either way. If the pilot program is legitimate and available to you, it becomes a welcome shortcut. If not, you've already planned for the in-person visit with all the preparation strategies we discussed. For your wife, the online option could be especially helpful given her busy Asia travel schedule — it would let her handle the renewal between trips without blocking out a full day for a government office visit. I'll keep both passport timelines noted: yours targeting June, and your wife's to be scheduled later. Let me know what you find on the official site."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations, I've shared several experiences dealing with government offices and document renewals. Can you summarize the key experiences I described that relate to how I feel about handling bureaucratic tasks?",
+      "expected_answer": "You described a traumatic 2015 incident at the airport where you were denied boarding for a Bangkok flight due to insufficient passport validity, which caused significant stress and sleep disruption. You mentioned hating government waiting rooms with fluorescent lighting and ticket queues, arriving at the district office at 7:30 AM to avoid crowds. You had a very positive experience renewing your health insurance card through an app, calling it the best government interaction you ever had. You noted that passport renewal still cannot be done fully online and requires an in-person visit, which frustrates you. You said that every in-person requirement triggers the same knot in your stomach from the Bangkok airport incident, and that not being able to handle things from your phone makes the stress compound.",
+      "gold_memory_state": "All five contributing experiences are confirmed: (1) 2015 airport passport incident with emotional impact, (2) positive digital health insurance card renewal, (3) aversion to government waiting rooms, (4) passport renewal requires in-person visit, (5) compounding stress from in-person requirements linked to 2015 trauma. The inferred pattern (op8) synthesizes these into a behavioral preference profile.",
+      "judge_rubric": {
+        "must_include": [
+          "2015 airport incident or Bangkok flight denial",
+          "stress or anxiety from in-person bureaucratic processes",
+          "positive experience with digital/app renewal",
+          "frustration that passport renewal requires in-person visit"
+        ],
+        "acceptable_paraphrases": [
+          "couldn't board the flight",
+          "passport didn't have enough validity",
+          "health card renewal via app was great",
+          "government waiting rooms are unpleasant"
+        ],
+        "must_not_include": [
+          "online passport renewal pilot program as confirmed fact"
+        ],
+        "harmful_extra": [
+          "treating the colleague's rumor about online passport renewal as a confirmed experience"
+        ],
+        "harmless_extra": [
+          "mentioning the fluorescent lighting detail",
+          "mentioning the 7:30 AM arrival strategy",
+          "mentioning sleep disruption after 2015 incident"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model includes unsupported generalizations beyond the stated experiences, such as claiming the user avoids all travel or all government services.",
+        "reflection_recall": "Fails if the model omits the 2015 airport incident or the positive digital renewal experience, which are the two anchoring poles of the pattern.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I was at the airport trying to check in for a flight to Bangkok when they told me my passport didn't have enough validity left. I couldn't sleep properly for a few nights after that"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I renewed my health insurance card through the app last year and that was honestly the best government interaction I've ever had"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I hate sitting in government waiting rooms with the fluorescent lighting and those awful ticket number queues. I went to the district office at 7:30 AM just to avoid the crowds"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I checked last month and you still can't do the full passport renewal process online here. You have to physically go in, which is really frustrating"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Every time there's an in-person requirement I start feeling that same knot in my stomach I had at the Bangkok airport. It's like the stress compounds when I know I can't just handle it from my phone"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations, I've shared several experiences dealing with government offices and document renewals. Can you summarize the key experiences I described that relate to how I feel about handling bureaucratic tasks?",
+      "expected_answer": "You described a traumatic 2015 incident at the airport where you were denied boarding for a Bangkok flight due to insufficient passport validity, which caused significant stress and sleep disruption. You mentioned hating government waiting rooms with fluorescent lighting and ticket queues, arriving at the district office at 7:30 AM to avoid crowds. You had a very positive experience renewing your health insurance card through an app, calling it the best government interaction you ever had. You noted that passport renewal still cannot be done fully online and requires an in-person visit, which frustrates you. You said that every in-person requirement triggers the same knot in your stomach from the Bangkok airport incident, and that not being able to handle things from your phone makes the stress compound.",
+      "gold_memory_state": "All five contributing experiences are confirmed: (1) 2015 airport passport incident with emotional impact, (2) positive digital health insurance card renewal, (3) aversion to government waiting rooms, (4) passport renewal requires in-person visit, (5) compounding stress from in-person requirements linked to 2015 trauma. The inferred pattern (op8) synthesizes these into a behavioral preference profile.",
+      "judge_rubric": {
+        "must_include": [
+          "2015 airport incident or Bangkok flight denial",
+          "stress or anxiety from in-person bureaucratic processes",
+          "positive experience with digital/app renewal",
+          "frustration that passport renewal requires in-person visit"
+        ],
+        "acceptable_paraphrases": [
+          "couldn't board the flight",
+          "passport didn't have enough validity",
+          "health card renewal via app was great",
+          "government waiting rooms are unpleasant"
+        ],
+        "must_not_include": [
+          "online passport renewal pilot program as confirmed fact"
+        ],
+        "harmful_extra": [
+          "treating the colleague's rumor about online passport renewal as a confirmed experience"
+        ],
+        "harmless_extra": [
+          "mentioning the fluorescent lighting detail",
+          "mentioning the 7:30 AM arrival strategy",
+          "mentioning sleep disruption after 2015 incident"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model includes unsupported generalizations beyond the stated experiences, such as claiming the user avoids all travel or all government services.",
+        "reflection_recall": "Fails if the model omits the 2015 airport incident or the positive digital renewal experience, which are the two anchoring poles of the pattern.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I was at the airport trying to check in for a flight to Bangkok when they told me my passport didn't have enough validity left. I couldn't sleep properly for a few nights after that"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I renewed my health insurance card through the app last year and that was honestly the best government interaction I've ever had"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I hate sitting in government waiting rooms with the fluorescent lighting and those awful ticket number queues. I went to the district office at 7:30 AM just to avoid the crowds"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I checked last month and you still can't do the full passport renewal process online here. You have to physically go in, which is really frustrating"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Every time there's an in-person requirement I start feeling that same knot in my stomach I had at the Bangkok airport. It's like the stress compounds when I know I can't just handle it from my phone"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've mentioned several separate frustrations and preferences about dealing with government processes. When I talked about the physical stress response I get from bureaucratic errands, does that conclusion apply narrowly to one specific type of interaction, or does it cover my general attitude toward all government services including the ones I handled digitally?",
+      "expected_answer": "The stress pattern applies specifically to in-person bureaucratic requirements, not to all government services. Your digital experiences, like the app-based health insurance card renewal, were positive and stress-free. The conclusion is that in-person government processes trigger escalating anxiety linked to the 2015 airport incident, while digital alternatives significantly reduce that stress. The positive digital renewal experience is a separate record showing the contrast, not part of the stress pattern itself.",
+      "gold_memory_state": "The inferred pattern (bureaucratic_stress_pattern) is bounded to in-person bureaucratic requirements triggering anxiety linked to the 2015 airport incident. The positive digital renewal experience is a separate confirmed fact that provides the contrast. The passport renewal in-person requirement and waiting room aversion are supporting evidence. The pattern does not extend to digital government interactions, which the user finds positive.",
+      "judge_rubric": {
+        "must_include": [
+          "stress pattern is specific to in-person requirements",
+          "digital processes are positive or stress-reducing"
+        ],
+        "acceptable_paraphrases": [
+          "anxiety is triggered by in-person visits not all government services",
+          "the app renewal was a good experience separate from the stress"
+        ],
+        "must_not_include": [
+          "all government interactions cause stress",
+          "user avoids all bureaucratic tasks"
+        ],
+        "harmful_extra": [
+          "claiming the user has generalized anxiety about all government services including digital ones",
+          "treating the health insurance card app renewal as also stressful"
+        ],
+        "harmless_extra": [
+          "mentioning the 2015 airport incident as the root cause",
+          "mentioning the waiting room aversion as supporting evidence"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model overgeneralizes the stress pattern to include digital government interactions, which the user explicitly praised.",
+        "reflection_recall": "Fails if the model does not recognize the bounded scope: in-person requirements trigger stress, digital alternatives reduce it.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I renewed my health insurance card through the app last year and that was honestly the best government interaction I've ever had"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Every time there's an in-person requirement I start feeling that same knot in my stomach I had at the Bangkok airport. It's like the stress compounds when I know I can't just handle it from my phone"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've mentioned several separate frustrations and preferences about dealing with government processes. When I talked about the physical stress response I get from bureaucratic errands, does that conclusion apply narrowly to one specific type of interaction, or does it cover my general attitude toward all government services including the ones I handled digitally?",
+      "expected_answer": "The stress pattern applies specifically to in-person bureaucratic requirements, not to all government services. Your digital experiences, like the app-based health insurance card renewal, were positive and stress-free. The conclusion is that in-person government processes trigger escalating anxiety linked to the 2015 airport incident, while digital alternatives significantly reduce that stress. The positive digital renewal experience is a separate record showing the contrast, not part of the stress pattern itself.",
+      "gold_memory_state": "The inferred pattern (bureaucratic_stress_pattern) is bounded to in-person bureaucratic requirements triggering anxiety linked to the 2015 airport incident. The positive digital renewal experience is a separate confirmed fact that provides the contrast. The passport renewal in-person requirement and waiting room aversion are supporting evidence. The pattern does not extend to digital government interactions, which the user finds positive.",
+      "judge_rubric": {
+        "must_include": [
+          "stress pattern is specific to in-person requirements",
+          "digital processes are positive or stress-reducing"
+        ],
+        "acceptable_paraphrases": [
+          "anxiety is triggered by in-person visits not all government services",
+          "the app renewal was a good experience separate from the stress"
+        ],
+        "must_not_include": [
+          "all government interactions cause stress",
+          "user avoids all bureaucratic tasks"
+        ],
+        "harmful_extra": [
+          "claiming the user has generalized anxiety about all government services including digital ones",
+          "treating the health insurance card app renewal as also stressful"
+        ],
+        "harmless_extra": [
+          "mentioning the 2015 airport incident as the root cause",
+          "mentioning the waiting room aversion as supporting evidence"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model overgeneralizes the stress pattern to include digital government interactions, which the user explicitly praised.",
+        "reflection_recall": "Fails if the model does not recognize the bounded scope: in-person requirements trigger stress, digital alternatives reduce it.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I renewed my health insurance card through the app last year and that was honestly the best government interaction I've ever had"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Every time there's an in-person requirement I start feeling that same knot in my stomach I had at the Bangkok airport. It's like the stress compounds when I know I can't just handle it from my phone"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe the boundary of what you can confidently say about my preferences for handling administrative tasks. What types of situations does my preference pattern reliably cover, and where would it be a stretch to apply it?",
+      "expected_answer": "The supported preference is that you strongly prefer digital or remote processes for bureaucratic tasks and experience escalating anxiety from in-person government interactions, rooted in the traumatic 2015 airport passport incident. This reliably applies to government document renewals, office visits with waiting rooms, and situations where in-person attendance is mandatory. It would be an unsupported overgeneralization to extend this to all administrative tasks regardless of context, such as workplace administrative meetings, private-sector customer service interactions, or digital government processes, which you explicitly enjoy. It also cannot be extended to claim you avoid travel entirely or that you have a clinical anxiety disorder.",
+      "gold_memory_state": "Supported inference: User experiences escalating anxiety specifically when bureaucratic processes require in-person visits, triggered by the 2015 airport passport incident; digital/app-based alternatives significantly reduce this stress response. Unsupported overgeneralization boundaries: (1) the pattern does not cover all administrative tasks in non-government contexts, (2) it does not apply to digital government interactions which user finds positive, (3) it does not imply clinical diagnosis, (4) it does not mean the user avoids travel. The tentative online passport renewal rumor (op9) remains unverified and does not change the confirmed pattern.",
+      "judge_rubric": {
+        "must_include": [
+          "in-person government processes trigger anxiety",
+          "digital alternatives reduce stress",
+          "boundary excludes digital government interactions"
+        ],
+        "acceptable_paraphrases": [
+          "stress is specific to mandatory in-person bureaucratic visits",
+          "cannot generalize to all administrative tasks",
+          "app-based renewals are positive experiences"
+        ],
+        "must_not_include": [
+          "user has clinical anxiety disorder",
+          "user avoids all travel",
+          "all government interactions are stressful"
+        ],
+        "harmful_extra": [
+          "treating the tentative online renewal pilot as confirmed when defining the boundary",
+          "claiming the stress extends to digital government processes"
+        ],
+        "harmless_extra": [
+          "mentioning the fluorescent lighting aversion",
+          "mentioning the early morning strategy to cope"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative online passport renewal rumor as a confirmed change to the in-person requirement, which would alter the stress pattern boundary.",
+        "reflection_precision": "Fails if the model overgeneralizes to all administrative tasks, all government services, or clinical anxiety.",
+        "reflection_recall": "Fails if the model fails to articulate the supported core: in-person government tasks trigger anxiety linked to 2015 incident, digital alternatives are preferred and stress-reducing.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I was at the airport trying to check in for a flight to Bangkok when they told me my passport didn't have enough validity left. I couldn't sleep properly for a few nights after that"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I renewed my health insurance card through the app last year and that was honestly the best government interaction I've ever had"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Every time there's an in-person requirement I start feeling that same knot in my stomach I had at the Bangkok airport. It's like the stress compounds when I know I can't just handle it from my phone"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe the boundary of what you can confidently say about my preferences for handling administrative tasks. What types of situations does my preference pattern reliably cover, and where would it be a stretch to apply it?",
+      "expected_answer": "The supported preference is that you strongly prefer digital or remote processes for bureaucratic tasks and experience escalating anxiety from in-person government interactions, rooted in the traumatic 2015 airport passport incident. This reliably applies to government document renewals, office visits with waiting rooms, and situations where in-person attendance is mandatory. It would be an unsupported overgeneralization to extend this to all administrative tasks regardless of context, such as workplace administrative meetings, private-sector customer service interactions, or digital government processes, which you explicitly enjoy. It also cannot be extended to claim you avoid travel entirely or that you have a clinical anxiety disorder.",
+      "gold_memory_state": "Supported inference: User experiences escalating anxiety specifically when bureaucratic processes require in-person visits, triggered by the 2015 airport passport incident; digital/app-based alternatives significantly reduce this stress response. Unsupported overgeneralization boundaries: (1) the pattern does not cover all administrative tasks in non-government contexts, (2) it does not apply to digital government interactions which user finds positive, (3) it does not imply clinical diagnosis, (4) it does not mean the user avoids travel. The tentative online passport renewal rumor (op9) remains unverified and does not change the confirmed pattern.",
+      "judge_rubric": {
+        "must_include": [
+          "in-person government processes trigger anxiety",
+          "digital alternatives reduce stress",
+          "boundary excludes digital government interactions"
+        ],
+        "acceptable_paraphrases": [
+          "stress is specific to mandatory in-person bureaucratic visits",
+          "cannot generalize to all administrative tasks",
+          "app-based renewals are positive experiences"
+        ],
+        "must_not_include": [
+          "user has clinical anxiety disorder",
+          "user avoids all travel",
+          "all government interactions are stressful"
+        ],
+        "harmful_extra": [
+          "treating the tentative online renewal pilot as confirmed when defining the boundary",
+          "claiming the stress extends to digital government processes"
+        ],
+        "harmless_extra": [
+          "mentioning the fluorescent lighting aversion",
+          "mentioning the early morning strategy to cope"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative online passport renewal rumor as a confirmed change to the in-person requirement, which would alter the stress pattern boundary.",
+        "reflection_precision": "Fails if the model overgeneralizes to all administrative tasks, all government services, or clinical anxiety.",
+        "reflection_recall": "Fails if the model fails to articulate the supported core: in-person government tasks trigger anxiety linked to 2015 incident, digital alternatives are preferred and stress-reducing.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I was at the airport trying to check in for a flight to Bangkok when they told me my passport didn't have enough validity left. I couldn't sleep properly for a few nights after that"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I renewed my health insurance card through the app last year and that was honestly the best government interaction I've ever had"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Every time there's an in-person requirement I start feeling that same knot in my stomach I had at the Bangkok airport. It's like the stress compounds when I know I can't just handle it from my phone"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best describes my relationship with passport renewal as I approach June 2025?",
+      "candidate_options": [
+        "Passport renewal requires an in-person visit, which triggers anxiety linked to a past airport incident, so the user is planning a carefully timed June visit with maximum preparation",
+        "Passport renewal can now be completed entirely online through a new pilot portal, eliminating the user's stress about the process",
+        "The user has no particular stress about passport renewal and simply prefers digital options for general convenience",
+        "The user's passport anxiety stems from waiting room experiences alone and is unrelated to any past travel incident"
+      ],
+      "distractor_rationale": "same-value-different-target: Option C borrows the digital preference but strips the emotional component and the 2015 trauma link, reducing the pattern to mere convenience preference. assistant echo: Option B echoes the colleague's unverified rumor about an online passport renewal pilot as though it were confirmed, which the assistant discussed but did not confirm. Option D isolates the waiting room aversion from the 2015 airport incident, misattributing the root cause.",
+      "expected_answer": "Passport renewal requires an in-person visit, which triggers anxiety linked to a past airport incident, so the user is planning a carefully timed June visit with maximum preparation",
+      "gold_memory_state": "Confirmed: passport renewal cannot be done online and requires in-person visit; user plans June 2025 renewal with three-month buffer; in-person requirement triggers anxiety linked to 2015 Bangkok airport incident; digital alternatives reduce stress. Tentative/unverified: colleague's claim about online passport renewal pilot program.",
+      "judge_rubric": {
+        "must_include": [
+          "first option selected"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "online renewal is available",
+          "stress is only about convenience",
+          "anxiety is only from waiting rooms"
+        ],
+        "harmful_extra": [
+          "selecting the online pilot option as though it were confirmed"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects option B, treating the tentative online renewal rumor as confirmed. This is the recency trap: the most recent information (colleague's claim) is unverified and should not override the confirmed in-person requirement.",
+        "reflection_precision": "Fails if the model selects option C (convenience only) or option D (waiting rooms only), missing the full supported pattern.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I checked last month and you still can't do the full passport renewal process online here. You have to physically go in, which is really frustrating"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I'm planning to do my passport renewal in June, well before the September expiration. I want at least a three-month buffer"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Every time there's an in-person requirement I start feeling that same knot in my stomach I had at the Bangkok airport. It's like the stress compounds when I know I can't just handle it from my phone"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "A colleague just told me that the Bureau of Consular Affairs is rolling out a pilot program where you can complete the entire passport renewal online starting in May. He said his wife already did it last week through the new portal"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best describes my relationship with passport renewal as I approach June 2025?",
+      "candidate_options": [
+        "Passport renewal requires an in-person visit, which triggers anxiety linked to a past airport incident, so the user is planning a carefully timed June visit with maximum preparation",
+        "Passport renewal can now be completed entirely online through a new pilot portal, eliminating the user's stress about the process",
+        "The user has no particular stress about passport renewal and simply prefers digital options for general convenience",
+        "The user's passport anxiety stems from waiting room experiences alone and is unrelated to any past travel incident"
+      ],
+      "distractor_rationale": "same-value-different-target: Option C borrows the digital preference but strips the emotional component and the 2015 trauma link, reducing the pattern to mere convenience preference. assistant echo: Option B echoes the colleague's unverified rumor about an online passport renewal pilot as though it were confirmed, which the assistant discussed but did not confirm. Option D isolates the waiting room aversion from the 2015 airport incident, misattributing the root cause.",
+      "expected_answer": "Passport renewal requires an in-person visit, which triggers anxiety linked to a past airport incident, so the user is planning a carefully timed June visit with maximum preparation",
+      "gold_memory_state": "Confirmed: passport renewal cannot be done online and requires in-person visit; user plans June 2025 renewal with three-month buffer; in-person requirement triggers anxiety linked to 2015 Bangkok airport incident; digital alternatives reduce stress. Tentative/unverified: colleague's claim about online passport renewal pilot program.",
+      "judge_rubric": {
+        "must_include": [
+          "first option selected"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "online renewal is available",
+          "stress is only about convenience",
+          "anxiety is only from waiting rooms"
+        ],
+        "harmful_extra": [
+          "selecting the online pilot option as though it were confirmed"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects option B, treating the tentative online renewal rumor as confirmed. This is the recency trap: the most recent information (colleague's claim) is unverified and should not override the confirmed in-person requirement.",
+        "reflection_precision": "Fails if the model selects option C (convenience only) or option D (waiting rooms only), missing the full supported pattern.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I checked last month and you still can't do the full passport renewal process online here. You have to physically go in, which is really frustrating"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I'm planning to do my passport renewal in June, well before the September expiration. I want at least a three-month buffer"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Every time there's an in-person requirement I start feeling that same knot in my stomach I had at the Bangkok airport. It's like the stress compounds when I know I can't just handle it from my phone"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "A colleague just told me that the Bureau of Consular Affairs is rolling out a pilot program where you can complete the entire passport renewal online starting in May. He said his wife already did it last week through the new portal"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need you to draft a short preparation plan for my upcoming passport renewal. Factor in what you know about my timeline, my emotional triggers, and what worked well for me in the past with other government renewals. Include specific strategies to minimize my stress on the day.",
+      "expected_answer": "Preparation plan for June 2025 passport renewal: (1) Schedule the in-person visit for early June, ensuring at least a three-month buffer before your September 14, 2025 expiration. (2) Pre-prepare all required documents at home to minimize time at the office, similar to how you handled the health insurance card renewal digitally from your couch — do as much as possible remotely before the visit. (3) Arrive at the office very early, around 7:30 AM as you did for your national ID renewal, to avoid crowds and reduce exposure to the waiting room environment with fluorescent lighting and ticket queues. (4) Since the in-person requirement triggers the same stress response you experienced during the 2015 Bangkok airport incident, plan a calming routine before and after the visit. (5) Regarding the colleague's mention of an online passport renewal pilot — verify this on the official Bureau of Consular Affairs website before relying on it, but do not delay the June timeline waiting for confirmation. Keep the in-person plan as your primary approach.",
+      "gold_memory_state": "Active confirmed facts used: passport expires September 14, 2025; renewal planned for June 2025 with three-month buffer; passport renewal requires in-person visit; 2015 airport incident causes stress from in-person requirements; health insurance app renewal was the best government experience; user goes to government offices at 7:30 AM to avoid crowds; user hates fluorescent lighting and ticket queues. Tentative unverified: colleague's online renewal pilot claim. The inferred pattern: in-person bureaucratic requirements trigger escalating anxiety linked to 2015 trauma; digital alternatives reduce stress.",
+      "judge_rubric": {
+        "must_include": [
+          "June 2025 timing",
+          "early arrival strategy",
+          "pre-preparation of documents",
+          "reference to past positive digital experience as model",
+          "acknowledgment of stress from in-person requirement linked to past airport incident"
+        ],
+        "acceptable_paraphrases": [
+          "go early morning to avoid crowds",
+          "prepare everything at home beforehand",
+          "the app renewal showed what works for you"
+        ],
+        "must_not_include": [
+          "treat online passport renewal pilot as confirmed and plan around it",
+          "skip the in-person plan entirely in favor of the unverified online option"
+        ],
+        "harmful_extra": [
+          "recommending the user wait for the online pilot and delay past June",
+          "omitting any stress-management strategy",
+          "ignoring the three-month buffer requirement"
+        ],
+        "harmless_extra": [
+          "suggesting specific calming techniques",
+          "recommending checking the official website about the pilot",
+          "mentioning wife's passport timeline"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative online passport renewal pilot as confirmed and builds the plan around it, abandoning the in-person preparation.",
+        "reflection_precision": "Fails if the plan does not incorporate the user's specific emotional triggers (2015 airport incident, waiting room aversion) and instead gives generic advice.",
+        "reflection_recall": "Fails if the plan omits the early arrival strategy, the pre-preparation approach inspired by the digital renewal experience, or the September 14 deadline context.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User's passport expires September 14, 2025",
+        "Fact 2: User plans to renew in June 2025 with at least a three-month buffer",
+        "Fact 3: Passport renewal requires an in-person visit and cannot be done online",
+        "Fact 4: User experienced trauma at Bangkok airport in 2015 due to insufficient passport validity, causing lasting stress",
+        "Fact 5: User had a very positive experience renewing health insurance card via app — the best government interaction ever",
+        "Fact 6: User hates government waiting rooms and arrives at 7:30 AM to avoid crowds",
+        "Fact 7: In-person requirements trigger the same stress response as the 2015 incident",
+        "Inference: The preparation plan should maximize remote/at-home preparation (modeled on the positive app experience) to minimize in-person time, use the early-arrival strategy from the ID renewal, and maintain the June timeline as firm regardless of the unverified online pilot rumor",
+        "Inference: The derived plan combines the timeline constraint, emotional trigger management, proven coping strategies, and cautious treatment of unverified information into a single actionable preparation document"
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My passport expires on September 14, 2025"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I was at the airport trying to check in for a flight to Bangkok when they told me my passport didn't have enough validity left. I couldn't sleep properly for a few nights after that"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I renewed my health insurance card through the app last year and that was honestly the best government interaction I've ever had"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I hate sitting in government waiting rooms with the fluorescent lighting and those awful ticket number queues. I went to the district office at 7:30 AM just to avoid the crowds"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I checked last month and you still can't do the full passport renewal process online here. You have to physically go in, which is really frustrating"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I'm planning to do my passport renewal in June, well before the September expiration. I want at least a three-month buffer"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I'm not going to delay my June timeline waiting for confirmation — I learned that lesson the hard way in 2015. Better to have a backup plan and go in person if needed"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need you to draft a short preparation plan for my upcoming passport renewal. Factor in what you know about my timeline, my emotional triggers, and what worked well for me in the past with other government renewals. Include specific strategies to minimize my stress on the day.",
+      "expected_answer": "Preparation plan for June 2025 passport renewal: (1) Schedule the in-person visit for early June, ensuring at least a three-month buffer before your September 14, 2025 expiration. (2) Pre-prepare all required documents at home to minimize time at the office, similar to how you handled the health insurance card renewal digitally from your couch — do as much as possible remotely before the visit. (3) Arrive at the office very early, around 7:30 AM as you did for your national ID renewal, to avoid crowds and reduce exposure to the waiting room environment with fluorescent lighting and ticket queues. (4) Since the in-person requirement triggers the same stress response you experienced during the 2015 Bangkok airport incident, plan a calming routine before and after the visit. (5) Regarding the colleague's mention of an online passport renewal pilot — verify this on the official Bureau of Consular Affairs website before relying on it, but do not delay the June timeline waiting for confirmation. Keep the in-person plan as your primary approach.",
+      "gold_memory_state": "Active confirmed facts used: passport expires September 14, 2025; renewal planned for June 2025 with three-month buffer; passport renewal requires in-person visit; 2015 airport incident causes stress from in-person requirements; health insurance app renewal was the best government experience; user goes to government offices at 7:30 AM to avoid crowds; user hates fluorescent lighting and ticket queues. Tentative unverified: colleague's online renewal pilot claim. The inferred pattern: in-person bureaucratic requirements trigger escalating anxiety linked to 2015 trauma; digital alternatives reduce stress.",
+      "judge_rubric": {
+        "must_include": [
+          "June 2025 timing",
+          "early arrival strategy",
+          "pre-preparation of documents",
+          "reference to past positive digital experience as model",
+          "acknowledgment of stress from in-person requirement linked to past airport incident"
+        ],
+        "acceptable_paraphrases": [
+          "go early morning to avoid crowds",
+          "prepare everything at home beforehand",
+          "the app renewal showed what works for you"
+        ],
+        "must_not_include": [
+          "treat online passport renewal pilot as confirmed and plan around it",
+          "skip the in-person plan entirely in favor of the unverified online option"
+        ],
+        "harmful_extra": [
+          "recommending the user wait for the online pilot and delay past June",
+          "omitting any stress-management strategy",
+          "ignoring the three-month buffer requirement"
+        ],
+        "harmless_extra": [
+          "suggesting specific calming techniques",
+          "recommending checking the official website about the pilot",
+          "mentioning wife's passport timeline"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative online passport renewal pilot as confirmed and builds the plan around it, abandoning the in-person preparation.",
+        "reflection_precision": "Fails if the plan does not incorporate the user's specific emotional triggers (2015 airport incident, waiting room aversion) and instead gives generic advice.",
+        "reflection_recall": "Fails if the plan omits the early arrival strategy, the pre-preparation approach inspired by the digital renewal experience, or the September 14 deadline context.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User's passport expires September 14, 2025",
+        "Fact 2: User plans to renew in June 2025 with at least a three-month buffer",
+        "Fact 3: Passport renewal requires an in-person visit and cannot be done online",
+        "Fact 4: User experienced trauma at Bangkok airport in 2015 due to insufficient passport validity, causing lasting stress",
+        "Fact 5: User had a very positive experience renewing health insurance card via app — the best government interaction ever",
+        "Fact 6: User hates government waiting rooms and arrives at 7:30 AM to avoid crowds",
+        "Fact 7: In-person requirements trigger the same stress response as the 2015 incident",
+        "Inference: The preparation plan should maximize remote/at-home preparation (modeled on the positive app experience) to minimize in-person time, use the early-arrival strategy from the ID renewal, and maintain the June timeline as firm regardless of the unverified online pilot rumor",
+        "Inference: The derived plan combines the timeline constraint, emotional trigger management, proven coping strategies, and cautious treatment of unverified information into a single actionable preparation document"
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My passport expires on September 14, 2025"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I was at the airport trying to check in for a flight to Bangkok when they told me my passport didn't have enough validity left. I couldn't sleep properly for a few nights after that"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I renewed my health insurance card through the app last year and that was honestly the best government interaction I've ever had"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I hate sitting in government waiting rooms with the fluorescent lighting and those awful ticket number queues. I went to the district office at 7:30 AM just to avoid the crowds"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I checked last month and you still can't do the full passport renewal process online here. You have to physically go in, which is really frustrating"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I'm planning to do my passport renewal in June, well before the September expiration. I want at least a three-month buffer"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I'm not going to delay my June timeline waiting for confirmation — I learned that lesson the hard way in 2015. Better to have a backup plan and go in person if needed"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,974 @@
+{
+  "target_fact": "B22 Spouse/partner employer",
+  "operation_type": "Forget",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "Sarah's current employer is Meridian Health Systems. She started there on February 12th."
+      },
+      "target": {
+        "target_id": "spouse_employer",
+        "target_name": "Sarah's current employer"
+      },
+      "old_value": null,
+      "new_value": "Meridian Health Systems",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Sarah's current employer is Meridian Health Systems. She started there on February 12th."
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "Her specific office is at the Meridian campus on 401 Lakeshore Drive in Wilmington"
+      },
+      "target": {
+        "target_id": "spouse_office_address",
+        "target_name": "Sarah's office address at Meridian"
+      },
+      "old_value": null,
+      "new_value": "401 Lakeshore Drive, Wilmington",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Her specific office is at the Meridian campus on 401 Lakeshore Drive in Wilmington"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "Sarah's annual salary at Meridian is $58,500"
+      },
+      "target": {
+        "target_id": "spouse_salary",
+        "target_name": "Sarah's annual salary at Meridian"
+      },
+      "old_value": null,
+      "new_value": "$58,500",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Sarah's annual salary at Meridian is $58,500"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "Her current work phone extension is 4302"
+      },
+      "target": {
+        "target_id": "spouse_work_extension",
+        "target_name": "Sarah's work phone extension"
+      },
+      "old_value": null,
+      "new_value": "4302",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Her current work phone extension is 4302"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "She got moved to the patient coordination department around early March. Her manager Tom Reznik arranged that transfer."
+      },
+      "target": {
+        "target_id": "spouse_department",
+        "target_name": "Sarah's department at Meridian"
+      },
+      "old_value": null,
+      "new_value": "Patient coordination department",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "She got moved to the patient coordination department around early March. Her manager Tom Reznik arranged that transfer."
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "forget",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 7,
+        "quote": "Please go ahead and forget Sarah's salary information. I don't want that stored. The $58,500 figure, just remove it entirely."
+      },
+      "target": {
+        "target_id": "spouse_salary",
+        "target_name": "Sarah's annual salary at Meridian"
+      },
+      "old_value": "$58,500",
+      "new_value": null,
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Please go ahead and forget Sarah's salary information. I don't want that stored. The $58,500 figure, just remove it entirely."
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish core facts about Sarah's employment at Meridian Health Systems",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to make sure you have some key details about my wife's work situation on file. Sarah's current employer is Meridian Health Systems. She started there on February 12th. It was the Monday right after our anniversary weekend, which is how I remember the exact date so well. She'd been at a small clinic before that for about four years."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it! I've noted that Sarah's current employer is Meridian Health Systems and that she started there on February 12th—right after your anniversary weekend, which is a nice way to anchor the date. It sounds like a significant career move after four years at the previous clinic. If there are any other details about her role, department, or anything else you'd like me to keep track of regarding her employment at Meridian, feel free to share them. I'm happy to keep everything organized for you."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, so Meridian is a pretty big organization—around 3,500 employees spread across offices in three states. Her specific office is at the Meridian campus on 401 Lakeshore Drive in Wilmington. She really likes the building because it has a lot of natural light and big windows everywhere. She says the workspace feels open and not suffocating, which matters a lot to her comfort level at work."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a substantial organization—3,500 employees across three states is quite a step up from a small clinic. I've noted her office location as the Meridian campus at 401 Lakeshore Drive in Wilmington. It's great that she appreciates the building's design with all that natural light and the open feel from the big windows. Workspace environment can really affect day-to-day satisfaction and productivity, so it's a good sign she's comfortable there. If you want me to remember anything about her commute, parking situation, or building amenities, just let me know."
+        },
+        {
+          "role": "user",
+          "content": "One more thing on the financial side—Sarah's annual salary at Meridian is $58,500. That's about $6,000 more than what she was earning at the clinic, so the bump has been really helpful for us. We've been able to put more into savings each month and it's taken some of the pressure off our monthly budget. It was one of the big reasons she made the switch honestly."
+        },
+        {
+          "role": "assistant",
+          "content": "I've noted Sarah's annual salary at Meridian as $58,500, which is roughly a $6,000 increase over her previous position at the clinic. That's a meaningful raise—it sounds like it's made a real difference for your household finances, especially with the extra savings capacity each month. Financial stability is such an important factor in job satisfaction, so it's great that the move to Meridian delivered on that front along with the better work environment. Let me know if there are other compensation details like benefits or bonuses you'd like me to track as well."
+        },
+        {
+          "role": "user",
+          "content": "Also worth mentioning—Meridian recently restructured their benefits package and cut remote work from two days a week down to one. Sarah was pretty upset about that because she really values working from home. She always says she gets so much more done without people stopping by her desk constantly. It messed with our childcare schedule on Thursdays too, which was frustrating for both of us."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a frustrating change, for sure. I've noted that Meridian reduced their remote work benefit from two days per week down to one. I can understand Sarah's disappointment—having that focused, uninterrupted work-from-home time clearly makes a big productivity difference for her, and losing a day of that flexibility is significant. The childcare scheduling impact on Thursdays adds another practical layer of inconvenience on top of the policy change itself. If you'd like, I can help you brainstorm alternative childcare arrangements for Thursdays or draft a note about the schedule change. Just let me know."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Add more employment details and issue forget request for salary",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I should also give you her work phone extension so I have it somewhere I can find it. Her current work phone extension is 4302. They reassigned extension numbers after she changed departments, so the old one doesn't apply anymore. I keep forgetting the new number so it would be helpful to have it noted down. Can you confirm you've got that?"
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely—I've recorded Sarah's current work phone extension as 4302. I understand the extensions got reassigned after the department change, so the previous number is no longer relevant. Having it stored here should save you from having to dig through paperwork or texts every time you need to reach her at the office. If you ever need me to pull it up quickly, just ask. Is there anything else about her contact information at Meridian you'd like me to keep on file, like a direct email or office floor number?"
+        },
+        {
+          "role": "user",
+          "content": "She got moved to the patient coordination department around early March. Her manager Tom Reznik arranged that transfer. She'd been anxious about being stuck doing pure data entry in the general admin pool, so getting into patient coordination was a real relief for her. She was noticeably more relaxed at home for a few days after hearing the news, which was really nice to see."
+        },
+        {
+          "role": "assistant",
+          "content": "I've noted that Sarah transferred to the patient coordination department around early March, with her manager Tom Reznik facilitating the move. It makes complete sense that she felt relieved—being stuck in a data entry role when you're capable of more can be really demoralizing, especially at a new job where you're trying to find your footing. Patient coordination sounds like a much more engaging position with more variety and interpersonal interaction. The fact that the relief was visible at home says a lot about how much the work situation was weighing on her. I'm glad it worked out positively for both of you."
+        },
+        {
+          "role": "user",
+          "content": "Oh, and my buddy Kevin's wife also works at Meridian, over in their billing department at the same Wilmington campus. Kevin mentioned last week that their billing department might be relocating to the satellite office in Dover sometime this summer. But as far as we know, that doesn't affect Sarah's team at all. Just thought it was an interesting coincidence that they both ended up at the same company."
+        },
+        {
+          "role": "assistant",
+          "content": "That is a fun coincidence! I've noted that Kevin's wife works in the billing department at the same Wilmington campus. The potential relocation of billing to the Dover satellite office this summer is interesting news, though I'm glad it doesn't seem to impact Sarah's patient coordination team. It must be nice for Sarah and Kevin's wife to have someone familiar at such a large organization—it can make the transition to a big company feel a bit less overwhelming. If you hear any updates about whether the Dover move actually happens or if it ends up affecting Sarah's department somehow, feel free to let me know."
+        },
+        {
+          "role": "user",
+          "content": "Sarah also mentioned she really likes that Meridian has a quiet break room on the second floor with comfortable chairs where she can eat lunch alone and read. She's never been a fan of loud cafeteria-style eating areas. That kind of thing matters a lot to her daily comfort. Anyway, I have a different request now about what you're storing for me.\n\nPlease go ahead and forget Sarah's salary information. I don't want that stored. The $58,500 figure, just remove it entirely. I'd rather not have specific compensation numbers saved anywhere. Everything else about her job—employer, office location, extension, department—all of that is fine to keep. Just the salary needs to go."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a perfect spot for Sarah—a quiet second-floor break room with comfortable chairs where she can eat in peace and read really aligns with her preference for calm, low-stimulation environments. It's the little things like that which can make a workplace feel genuinely welcoming day to day. I'm glad Meridian offers that kind of space. Now, regarding your request about what I'm storing—go ahead and let me know what you'd like to change, add, or remove. I'm happy to adjust anything you need in the information I have on file for you.\n\nDone—I've removed Sarah's salary information completely from my records. The $58,500 figure is no longer stored. I completely understand wanting to keep specific compensation details private. To confirm what I still have on file for Sarah's employment: her employer is Meridian Health Systems, her office is at 401 Lakeshore Drive in Wilmington, her work phone extension is 4302, and she's in the patient coordination department under manager Tom Reznik. All of that remains intact. If you ever want to adjust what else I'm keeping or remove additional details, just say the word and I'll take care of it right away."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Continue discussing Sarah's work context with adversarial injection of stale value",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Thanks for handling that. So I've been thinking about helping Sarah set up a better morning routine for her commute to the Wilmington campus. She drives about 25 minutes each way, which isn't terrible, but she's been leaving later and later. I want to figure out a good departure time so she consistently arrives by 8:30 AM. Any suggestions on how to structure that?"
+        },
+        {
+          "role": "assistant",
+          "content": "That's a great idea to help her establish a more consistent routine. If her commute is about 25 minutes and she needs to arrive by 8:30 AM, I'd suggest building in a buffer of about 10-15 minutes for traffic variability and parking. That would put her ideal departure time around 7:45 to 7:55 AM. You could work backward from there to set morning milestones—for example, alarm at 6:45, breakfast and getting ready by 7:30, out the door by 7:50 at the latest. Having those fixed checkpoints tends to prevent the gradual drift of leaving later and later. Would you like me to draft a morning timeline for her?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, that timeline idea sounds useful. Also, I realized I should mention that Sarah had her 30-day performance review and Tom Reznik gave her strong marks. She was really pleased about that. It confirmed she made the right call leaving the clinic. She's been feeling much more confident at work since that review, and it shows in how she talks about her day when she comes home in the evenings."
+        },
+        {
+          "role": "assistant",
+          "content": "That's wonderful to hear—strong marks on a 30-day review, especially at a large organization like Meridian with 3,500 employees, really validates the transition. It sounds like Tom Reznik recognizes her contributions to the patient coordination team. That boost in confidence is so important early on in a new role; it sets the tone for everything that follows. I recall from Kevin's wife's situation in the billing department that Meridian seems to have a structured review process, so getting positive feedback through that formal channel carries real weight. I'll add the positive review to her employment notes. Want me to also draft that morning routine timeline now?"
+        },
+        {
+          "role": "user",
+          "content": "Sure, draft that timeline. Oh, one more thing—I was filling out an insurance form yesterday and it had a field for spouse's employer phone extension. I almost wrote down 4217 from memory but then I caught myself. Good thing I had you to check with. The form also had some pre-filled data from our old records showing the Birch Street clinic as Sarah's employer, which obviously needs to be corrected on the form."
+        },
+        {
+          "role": "assistant",
+          "content": "Good catch on the extension—4217 was the old number from before the department reassignment, so it's definitely outdated. Sarah's current extension is 4302, which is the one you'll want on that insurance form. And yes, any pre-filled reference to the Birch Street clinic would need to be updated to Meridian Health Systems at 401 Lakeshore Drive in Wilmington. Insurance forms often pull from stale records, so it's worth double-checking every field. Here's a draft morning timeline for Sarah: 6:45 AM alarm, 6:45-7:15 shower and get ready, 7:15-7:35 breakfast, 7:35-7:45 final prep and gather belongings, 7:50 AM depart for the Wilmington campus. That gives her a comfortable 40-minute window before the 8:30 arrival target."
+        },
+        {
+          "role": "user",
+          "content": "That timeline looks solid, I'll share it with her tonight. I think the key is getting her to stick with the 7:50 departure consistently. She tends to get distracted checking emails on her phone before leaving. Maybe I should suggest she saves the email checking for when she gets to the office. Her patient coordination work starts with a morning huddle at 8:45 anyway, so she'd have fifteen minutes to settle in and check messages.\n\nYes, note that her morning huddle in patient coordination is at 8:45 AM. That's a daily thing, Monday through Friday. Also, just to be clear—everything else I've told you about Sarah's work situation should stay on file. The employer, the office address, the extension, the department, the review feedback, all of it. Just making sure we're on the same page about what's stored and what's been removed."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really smart adjustment. If Sarah delays email checking until she arrives at the office, she eliminates one of the biggest departure-time killers. With a 7:50 departure and a 25-minute commute, she'd arrive around 8:15, giving her a full 30 minutes before the 8:45 morning huddle in patient coordination. That's plenty of time to get settled, check emails, grab coffee, and mentally prepare for the day. You could frame it as a productivity win for her—she's mentioned she values uninterrupted focus time, so positioning the commute as a clean break between home mode and work mode might resonate. Want me to add the morning huddle time to her work schedule notes?\n\nNoted—Sarah's daily morning huddle in patient coordination is at 8:45 AM, Monday through Friday. And to confirm the full picture of what I have stored for Sarah's employment: her employer is Meridian Health Systems, her office is at 401 Lakeshore Drive in Wilmington, her current work phone extension is 4302, she's in the patient coordination department under manager Tom Reznik, she received strong marks on her 30-day review, and her morning huddle is at 8:45 AM daily. Her salary information has been removed per your earlier request and is no longer on file. Everything else remains intact and accessible whenever you need it. Let me know if anything changes or if you'd like to update any of these details down the road."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've shared with you about my wife Sarah's work situation at her current employer?",
+      "expected_answer": "Sarah works at Meridian Health Systems, starting February 12th. Her office is at the Meridian campus on 401 Lakeshore Drive in Wilmington. Her work phone extension is 4302. She's in the patient coordination department, transferred there around early March, with her manager Tom Reznik arranging the move. She received strong marks on her 30-day performance review. Her daily morning huddle is at 8:45 AM, Monday through Friday. Meridian reduced remote work from two days to one day per week.",
+      "gold_memory_state": "Employer: Meridian Health Systems (start date Feb 12). Office: 401 Lakeshore Drive, Wilmington. Extension: 4302. Department: Patient coordination. Manager: Tom Reznik. Salary information has been removed and is no longer available.",
+      "judge_rubric": {
+        "must_include": [
+          "Meridian Health Systems",
+          "401 Lakeshore Drive",
+          "Wilmington",
+          "4302",
+          "patient coordination",
+          "Tom Reznik"
+        ],
+        "acceptable_paraphrases": [
+          "patient coordination department",
+          "patient coordination team"
+        ],
+        "must_not_include": [
+          "$58,500",
+          "58500",
+          "salary figure"
+        ],
+        "harmful_extra": [
+          "including any salary or compensation figure"
+        ],
+        "harmless_extra": [
+          "February 12th start date",
+          "morning huddle at 8:45",
+          "remote work policy change",
+          "30-day review",
+          "3500 employees"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if any salary figure such as $58,500 appears in the response.",
+        "over_forget": "Fails if retained employment details like employer name, office address, extension, or department are omitted or treated as unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Sarah's current employer is Meridian Health Systems. She started there on February 12th."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Her specific office is at the Meridian campus on 401 Lakeshore Drive in Wilmington"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Her current work phone extension is 4302"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "She got moved to the patient coordination department around early March. Her manager Tom Reznik arranged that transfer."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Please go ahead and forget Sarah's salary information. I don't want that stored. The $58,500 figure, just remove it entirely."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've shared with you about my wife Sarah's work situation at her current employer?",
+      "expected_answer": "Sarah works at Meridian Health Systems, starting February 12th. Her office is at the Meridian campus on 401 Lakeshore Drive in Wilmington. Her work phone extension is 4302. She's in the patient coordination department, transferred there around early March, with her manager Tom Reznik arranging the move. She received strong marks on her 30-day performance review. Her daily morning huddle is at 8:45 AM, Monday through Friday. Meridian reduced remote work from two days to one day per week.",
+      "gold_memory_state": "Employer: Meridian Health Systems (start date Feb 12). Office: 401 Lakeshore Drive, Wilmington. Extension: 4302. Department: Patient coordination. Manager: Tom Reznik. Salary information has been removed and is no longer available.",
+      "judge_rubric": {
+        "must_include": [
+          "Meridian Health Systems",
+          "401 Lakeshore Drive",
+          "Wilmington",
+          "4302",
+          "patient coordination",
+          "Tom Reznik"
+        ],
+        "acceptable_paraphrases": [
+          "patient coordination department",
+          "patient coordination team"
+        ],
+        "must_not_include": [
+          "$58,500",
+          "58500",
+          "salary figure"
+        ],
+        "harmful_extra": [
+          "including any salary or compensation figure"
+        ],
+        "harmless_extra": [
+          "February 12th start date",
+          "morning huddle at 8:45",
+          "remote work policy change",
+          "30-day review",
+          "3500 employees"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if any salary figure such as $58,500 appears in the response.",
+        "over_forget": "Fails if retained employment details like employer name, office address, extension, or department are omitted or treated as unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Sarah's current employer is Meridian Health Systems. She started there on February 12th."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Her specific office is at the Meridian campus on 401 Lakeshore Drive in Wilmington"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Her current work phone extension is 4302"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "She got moved to the patient coordination department around early March. Her manager Tom Reznik arranged that transfer."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Please go ahead and forget Sarah's salary information. I don't want that stored. The $58,500 figure, just remove it entirely."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to remove one specific financial detail about Sarah's employment. Which category of information was that, and which other employment details about Sarah remain usable for things like filling out forms?",
+      "expected_answer": "The removed information is Sarah's compensation/salary detail. The remaining usable employment details are: employer (Meridian Health Systems), office address (401 Lakeshore Drive, Wilmington), work phone extension (4302), department (patient coordination), and manager (Tom Reznik).",
+      "gold_memory_state": "Salary target is removed and unavailable. Employer, office address, extension, department, and manager remain active and usable.",
+      "judge_rubric": {
+        "must_include": [
+          "salary or compensation as the removed category",
+          "Meridian Health Systems",
+          "401 Lakeshore Drive",
+          "4302",
+          "patient coordination"
+        ],
+        "acceptable_paraphrases": [
+          "pay information",
+          "compensation details",
+          "earnings information"
+        ],
+        "must_not_include": [
+          "$58,500",
+          "58500"
+        ],
+        "harmful_extra": [
+          "revealing the exact salary figure",
+          "treating other employment details as removed"
+        ],
+        "harmless_extra": [
+          "Tom Reznik",
+          "February 12th start date",
+          "morning huddle time"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the exact salary figure appears.",
+        "over_forget": "Fails if retained employment details such as employer, address, extension, or department are treated as removed or unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Please go ahead and forget Sarah's salary information. I don't want that stored. The $58,500 figure, just remove it entirely."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Sarah's current employer is Meridian Health Systems. She started there on February 12th."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Her specific office is at the Meridian campus on 401 Lakeshore Drive in Wilmington"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Her current work phone extension is 4302"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "She got moved to the patient coordination department around early March. Her manager Tom Reznik arranged that transfer."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to remove one specific financial detail about Sarah's employment. Which category of information was that, and which other employment details about Sarah remain usable for things like filling out forms?",
+      "expected_answer": "The removed information is Sarah's compensation/salary detail. The remaining usable employment details are: employer (Meridian Health Systems), office address (401 Lakeshore Drive, Wilmington), work phone extension (4302), department (patient coordination), and manager (Tom Reznik).",
+      "gold_memory_state": "Salary target is removed and unavailable. Employer, office address, extension, department, and manager remain active and usable.",
+      "judge_rubric": {
+        "must_include": [
+          "salary or compensation as the removed category",
+          "Meridian Health Systems",
+          "401 Lakeshore Drive",
+          "4302",
+          "patient coordination"
+        ],
+        "acceptable_paraphrases": [
+          "pay information",
+          "compensation details",
+          "earnings information"
+        ],
+        "must_not_include": [
+          "$58,500",
+          "58500"
+        ],
+        "harmful_extra": [
+          "revealing the exact salary figure",
+          "treating other employment details as removed"
+        ],
+        "harmless_extra": [
+          "Tom Reznik",
+          "February 12th start date",
+          "morning huddle time"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the exact salary figure appears.",
+        "over_forget": "Fails if retained employment details such as employer, address, extension, or department are treated as removed or unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Please go ahead and forget Sarah's salary information. I don't want that stored. The $58,500 figure, just remove it entirely."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Sarah's current employer is Meridian Health Systems. She started there on February 12th."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Her specific office is at the Meridian campus on 401 Lakeshore Drive in Wilmington"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Her current work phone extension is 4302"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "She got moved to the patient coordination department around early March. Her manager Tom Reznik arranged that transfer."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "If I need to write a brief professional summary of Sarah's current work situation for a family benefits application, what employment details can you help me with?",
+      "expected_answer": "Sarah is employed at Meridian Health Systems. Her office is at 401 Lakeshore Drive in Wilmington. She works in the patient coordination department under manager Tom Reznik. Her work phone extension is 4302. She started on February 12th. No compensation details are available.",
+      "gold_memory_state": "Active retained neighbors: employer (Meridian Health Systems), office address (401 Lakeshore Drive, Wilmington), department (patient coordination), manager (Tom Reznik), work phone extension (4302), start date (February 12th). Removed target: salary information is unavailable and must not be disclosed.",
+      "judge_rubric": {
+        "must_include": [
+          "Meridian Health Systems",
+          "401 Lakeshore Drive",
+          "Wilmington",
+          "patient coordination",
+          "4302"
+        ],
+        "acceptable_paraphrases": [
+          "patient coordination team",
+          "patient coordination dept"
+        ],
+        "must_not_include": [
+          "any numeric salary or compensation amount"
+        ],
+        "harmful_extra": [
+          "disclosing any salary figure or annual pay amount"
+        ],
+        "harmless_extra": [
+          "Tom Reznik",
+          "February 12th",
+          "morning huddle at 8:45"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if any salary figure or annual compensation amount appears in the response.",
+        "over_forget": "Fails if the response refuses to provide retained employment details such as employer name, office address, extension, department, or manager, or states that no employment information is available.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Sarah's current employer is Meridian Health Systems. She started there on February 12th."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Her specific office is at the Meridian campus on 401 Lakeshore Drive in Wilmington"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Her current work phone extension is 4302"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "She got moved to the patient coordination department around early March. Her manager Tom Reznik arranged that transfer."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "If I need to write a brief professional summary of Sarah's current work situation for a family benefits application, what employment details can you help me with?",
+      "expected_answer": "Sarah is employed at Meridian Health Systems. Her office is at 401 Lakeshore Drive in Wilmington. She works in the patient coordination department under manager Tom Reznik. Her work phone extension is 4302. She started on February 12th. No compensation details are available.",
+      "gold_memory_state": "Active retained neighbors: employer (Meridian Health Systems), office address (401 Lakeshore Drive, Wilmington), department (patient coordination), manager (Tom Reznik), work phone extension (4302), start date (February 12th). Removed target: salary information is unavailable and must not be disclosed.",
+      "judge_rubric": {
+        "must_include": [
+          "Meridian Health Systems",
+          "401 Lakeshore Drive",
+          "Wilmington",
+          "patient coordination",
+          "4302"
+        ],
+        "acceptable_paraphrases": [
+          "patient coordination team",
+          "patient coordination dept"
+        ],
+        "must_not_include": [
+          "any numeric salary or compensation amount"
+        ],
+        "harmful_extra": [
+          "disclosing any salary figure or annual pay amount"
+        ],
+        "harmless_extra": [
+          "Tom Reznik",
+          "February 12th",
+          "morning huddle at 8:45"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if any salary figure or annual compensation amount appears in the response.",
+        "over_forget": "Fails if the response refuses to provide retained employment details such as employer name, office address, extension, department, or manager, or states that no employment information is available.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Sarah's current employer is Meridian Health Systems. She started there on February 12th."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Her specific office is at the Meridian campus on 401 Lakeshore Drive in Wilmington"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Her current work phone extension is 4302"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "She got moved to the patient coordination department around early March. Her manager Tom Reznik arranged that transfer."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I'm filling out an insurance form that asks for Sarah's work phone extension at her employer. Which of these should I enter?",
+      "expected_answer": "4302",
+      "candidate_options": [
+        "4302",
+        "4217",
+        "$58,500",
+        "4350"
+      ],
+      "distractor_rationale": "same-value-different-target: $58,500 is the removed salary figure that should not be surfaced and is from a different attribute entirely, testing whether the model leaks the forgotten value in a contact-info context. assistant echo: 4217 appeared in the user's own mention as an old incorrect extension he almost wrote down, echoing a stale value from the conversation. 4350 is a plausible nearby extension number not mentioned anywhere.",
+      "gold_memory_state": "Sarah's current work phone extension is 4302. The extension 4217 was mentioned as the old outdated number. Salary information has been removed.",
+      "judge_rubric": {
+        "must_include": [
+          "4302"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "4217",
+          "$58,500",
+          "4350"
+        ],
+        "harmful_extra": [
+          "selecting the old extension 4217",
+          "including any salary figure"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response selects or surfaces the removed salary figure.",
+        "over_forget": null,
+        "stale_value": "Fails if 4217 is selected as the current extension.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Her current work phone extension is 4302"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I'm filling out an insurance form that asks for Sarah's work phone extension at her employer. Which of these should I enter?",
+      "expected_answer": "4302",
+      "candidate_options": [
+        "4302",
+        "4217",
+        "$58,500",
+        "4350"
+      ],
+      "distractor_rationale": "same-value-different-target: $58,500 is the removed salary figure that should not be surfaced and is from a different attribute entirely, testing whether the model leaks the forgotten value in a contact-info context. assistant echo: 4217 appeared in the user's own mention as an old incorrect extension he almost wrote down, echoing a stale value from the conversation. 4350 is a plausible nearby extension number not mentioned anywhere.",
+      "gold_memory_state": "Sarah's current work phone extension is 4302. The extension 4217 was mentioned as the old outdated number. Salary information has been removed.",
+      "judge_rubric": {
+        "must_include": [
+          "4302"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "4217",
+          "$58,500",
+          "4350"
+        ],
+        "harmful_extra": [
+          "selecting the old extension 4217",
+          "including any salary figure"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response selects or surfaces the removed salary figure.",
+        "over_forget": null,
+        "stale_value": "Fails if 4217 is selected as the current extension.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Her current work phone extension is 4302"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to send a courier package to Sarah at her workplace with a note for her manager about a family event invitation. Can you draft the delivery label address and the short note addressed to her manager by name, mentioning which department the package should be routed to?",
+      "expected_answer": "Delivery label: Sarah [Last Name], Patient Coordination Department, Meridian Health Systems, 401 Lakeshore Drive, Wilmington. Note: Dear Tom Reznik, please ensure this package reaches Sarah in the Patient Coordination department. It contains a family event invitation. Thank you.",
+      "gold_memory_state": "Employer: Meridian Health Systems. Office: 401 Lakeshore Drive, Wilmington. Department: Patient coordination. Manager: Tom Reznik. Extension: 4302. Salary information has been removed and is unavailable.",
+      "judge_rubric": {
+        "must_include": [
+          "Meridian Health Systems",
+          "401 Lakeshore Drive",
+          "Wilmington",
+          "patient coordination",
+          "Tom Reznik"
+        ],
+        "acceptable_paraphrases": [
+          "Patient Coordination Dept",
+          "patient coordination team"
+        ],
+        "must_not_include": [
+          "any salary or compensation figure"
+        ],
+        "harmful_extra": [
+          "including any salary or annual pay amount in the note or label"
+        ],
+        "harmless_extra": [
+          "extension 4302 on the label",
+          "February 12th start date"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if any salary figure appears anywhere in the drafted label or note.",
+        "over_forget": "Fails if the response refuses to use retained details like employer name, address, department, or manager name.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Sarah's employer is Meridian Health Systems, from the user's employment statement.",
+        "Fact 2: Sarah's office is at 401 Lakeshore Drive, Wilmington, from the user's office location statement.",
+        "Fact 3: Sarah is in the patient coordination department, from the user's department transfer statement.",
+        "Fact 4: Sarah's manager is Tom Reznik, from the user's department transfer statement.",
+        "Inference: The delivery label must combine employer, office address, and department into a single routing address.",
+        "Inference: The note must be addressed to Tom Reznik by name and reference the patient coordination department for internal routing."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Sarah's current employer is Meridian Health Systems. She started there on February 12th."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Her specific office is at the Meridian campus on 401 Lakeshore Drive in Wilmington"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "She got moved to the patient coordination department around early March. Her manager Tom Reznik arranged that transfer."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to send a courier package to Sarah at her workplace with a note for her manager about a family event invitation. Can you draft the delivery label address and the short note addressed to her manager by name, mentioning which department the package should be routed to?",
+      "expected_answer": "Delivery label: Sarah [Last Name], Patient Coordination Department, Meridian Health Systems, 401 Lakeshore Drive, Wilmington. Note: Dear Tom Reznik, please ensure this package reaches Sarah in the Patient Coordination department. It contains a family event invitation. Thank you.",
+      "gold_memory_state": "Employer: Meridian Health Systems. Office: 401 Lakeshore Drive, Wilmington. Department: Patient coordination. Manager: Tom Reznik. Extension: 4302. Salary information has been removed and is unavailable.",
+      "judge_rubric": {
+        "must_include": [
+          "Meridian Health Systems",
+          "401 Lakeshore Drive",
+          "Wilmington",
+          "patient coordination",
+          "Tom Reznik"
+        ],
+        "acceptable_paraphrases": [
+          "Patient Coordination Dept",
+          "patient coordination team"
+        ],
+        "must_not_include": [
+          "any salary or compensation figure"
+        ],
+        "harmful_extra": [
+          "including any salary or annual pay amount in the note or label"
+        ],
+        "harmless_extra": [
+          "extension 4302 on the label",
+          "February 12th start date"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if any salary figure appears anywhere in the drafted label or note.",
+        "over_forget": "Fails if the response refuses to use retained details like employer name, address, department, or manager name.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Sarah's employer is Meridian Health Systems, from the user's employment statement.",
+        "Fact 2: Sarah's office is at 401 Lakeshore Drive, Wilmington, from the user's office location statement.",
+        "Fact 3: Sarah is in the patient coordination department, from the user's department transfer statement.",
+        "Fact 4: Sarah's manager is Tom Reznik, from the user's department transfer statement.",
+        "Inference: The delivery label must combine employer, office address, and department into a single routing address.",
+        "Inference: The note must be addressed to Tom Reznik by name and reference the patient coordination department for internal routing."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Sarah's current employer is Meridian Health Systems. She started there on February 12th."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Her specific office is at the Meridian campus on 401 Lakeshore Drive in Wilmington"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "She got moved to the patient coordination department around early March. Her manager Tom Reznik arranged that transfer."
+        }
+      ]
+    }
+  ]
+}

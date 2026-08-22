@@ -1,0 +1,868 @@
+{
+  "target_fact": "Personal/fitness trainer session cost per session",
+  "operation_type": "Update",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "session_cost_chain",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "Marcus charges me $85 per session right now, and we meet twice a week on Tuesdays and Thursdays at 7 AM"
+      },
+      "target": {
+        "target_id": "trainer_session_cost",
+        "target_name": "personal trainer session cost"
+      },
+      "old_value": null,
+      "new_value": "$85",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Marcus charges me $85 per session right now"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "session_cost_chain",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 7,
+        "quote": "Marcus dropped the rate to $75 per session because I committed to a 12-week training block starting mid-April"
+      },
+      "target": {
+        "target_id": "trainer_session_cost",
+        "target_name": "personal trainer session cost"
+      },
+      "old_value": "$85",
+      "new_value": "$75",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Marcus charges me $85 per session right now"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "Marcus dropped the rate to $75 per session because I committed to a 12-week training block starting mid-April"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "session_cost_chain",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "Marcus actually bumped it back up to $80 per session because he added a nutrition check-in component to each session"
+      },
+      "target": {
+        "target_id": "trainer_session_cost",
+        "target_name": "personal trainer session cost"
+      },
+      "old_value": "$75",
+      "new_value": "$80",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "Marcus dropped the rate to $75 per session because I committed to a 12-week training block starting mid-April"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Marcus actually bumped it back up to $80 per session because he added a nutrition check-in component to each session"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "session_cost_chain",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "Marcus mentioned he's planning to bring the rate down to $70 per session next month if I extend to a 24-week commitment"
+      },
+      "target": {
+        "target_id": "trainer_session_cost",
+        "target_name": "personal trainer session cost"
+      },
+      "old_value": "$80",
+      "new_value": "$70",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Marcus mentioned he's planning to bring the rate down to $70 per session next month if I extend to a 24-week commitment"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "session_cost_chain",
+      "chain_step": 5,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 7,
+        "quote": "I just confirmed with Marcus and the rate stays at $80 for now since I haven't signed the 24-week extension yet"
+      },
+      "target": {
+        "target_id": "trainer_session_cost",
+        "target_name": "personal trainer session cost"
+      },
+      "old_value": "$80",
+      "new_value": "$80",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Marcus actually bumped it back up to $80 per session because he added a nutrition check-in component to each session"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I just confirmed with Marcus and the rate stays at $80 for now since I haven't signed the 24-week extension yet"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "The 12-week block I committed to with Marcus started on April 14th, so it runs through early July—July 7th specifically"
+      },
+      "target": {
+        "target_id": "training_block_end_date",
+        "target_name": "12-week training block end date"
+      },
+      "old_value": null,
+      "new_value": "July 7th",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The 12-week block I committed to with Marcus started on April 14th, so it runs through early July—July 7th specifically"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "we train twice a week, so that's 24 total sessions over the 12-week block"
+      },
+      "target": {
+        "target_id": "total_sessions_in_block",
+        "target_name": "total sessions in 12-week training block"
+      },
+      "old_value": null,
+      "new_value": "24 sessions",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "we train twice a week, so that's 24 total sessions over the 12-week block"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish trainer relationship, initial session cost, and first update to session cost",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to get organized about my personal training setup. I've been working with a trainer named Marcus Delgado since early March—around March 5th. He was referred to me by my coworker Jen, who trains at the same gym with a different trainer named Priya. Marcus has been great so far and I want to keep track of all the details."
+        },
+        {
+          "role": "assistant",
+          "content": "That's great that you've found a trainer you like through a trusted referral! Having your coworker Jen vouch for the gym's team is always reassuring. I'd be happy to help you organize all the details about your training with Marcus Delgado. Since you started around March 5th, you've been at it for a solid stretch now. Let me know whatever specifics you'd like to keep track of—schedule, costs, program details, progress milestones—and I'll help you keep everything in one place so nothing slips through the cracks."
+        },
+        {
+          "role": "user",
+          "content": "Marcus charges me $85 per session right now, and we meet twice a week on Tuesdays and Thursdays at 7 AM. He's been focusing on compound lifts, which I'm not wild about—I prefer bodyweight exercises, resistance bands, and kettlebell flows. But he insists on squats and deadlifts as the foundation, so I'm going along with it for now."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it—$85 per session, twice weekly on Tuesdays and Thursdays at 7 AM with Marcus. That's a solid commitment at $170 per week. I understand the tension between your preference for bodyweight and functional movement work versus Marcus's emphasis on compound barbell lifts. Many trainers do prioritize squats and deadlifts as foundational strength builders because they recruit so many muscle groups simultaneously. It might be worth discussing a hybrid approach with Marcus where you incorporate your preferred kettlebell flows and pull-up progressions alongside the barbell work. That way you get the structural strength benefits while still enjoying the training style that resonates with you."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, that hybrid idea is something I've been thinking about. Also, I should mention that Marcus was away for about two weeks in early April—after Easter—for a family trip to Puerto Rico. He arranged a substitute trainer named Devon during that time. Devon kept pushing heavy machine work which I really didn't enjoy at all. The machines felt so mechanical and boring compared to natural movement patterns."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds frustrating, especially since you'd just been building momentum with Marcus. Having a substitute trainer who pushes a completely different style—heavy machine circuits versus your preference for natural movement patterns—can really disrupt the groove you'd established. Devon's approach clearly didn't align with what motivates you in training. It's good that Marcus came back and you could resume your preferred dynamic. The fact that you noticed such a strong reaction to the machine-based work actually tells you a lot about what keeps you engaged and consistent. That self-awareness about your training preferences is valuable for communicating with Marcus going forward about programming decisions."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. When Marcus came back around April 14th, we had a good conversation about all that. He adjusted the program based on my feedback, which I appreciated. And here's the important financial update: Marcus dropped the rate to $75 per session because I committed to a 12-week training block starting mid-April. So the per-session cost went down from $85 to $75, which makes the whole thing more sustainable for me financially."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a meaningful savings—going from $85 down to $75 per session by committing to the 12-week block. At twice per week, that's $150 instead of $170 weekly, saving you $20 each week or roughly $240 over the full 12-week commitment period. Smart move locking that in, especially since you were already planning to continue training with Marcus anyway. And it's a great sign that he was receptive to your feedback about programming. A trainer who listens and adjusts shows real professionalism. The combination of a better rate and a more tailored program should make the whole experience more enjoyable and financially manageable going forward. I'll note the updated rate as $75 per session."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establish training block details, total sessions, and second update to session cost with nutrition add-on",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So here's something I want to keep straight about timing. The 12-week block I committed to with Marcus started on April 14th, so it runs through early July—July 7th specifically. I want to make sure I have that end date noted because I'll need to decide whether to re-commit or switch things up before then. Marcus said he'd need at least two weeks' notice before the block ends."
+        },
+        {
+          "role": "assistant",
+          "content": "Good thinking to pin down that timeline. Your 12-week training block with Marcus runs from April 14th through July 7th, and he needs at least two weeks' notice before the block ends regarding your decision to continue or change direction. That means you'd want to have your decision made and communicated to Marcus by around June 23rd at the latest. I'd recommend setting a reminder for mid-June so you have time to evaluate your progress, think about your goals for the next phase, and have a thoughtful conversation with Marcus about whether to extend, modify, or wrap up the arrangement. Want me to help you think through what criteria you'd use to make that decision?"
+        },
+        {
+          "role": "user",
+          "content": "That's a good idea about the reminder. Also, since we train twice a week, so that's 24 total sessions over the 12-week block. I want to track my progress across all those sessions. Speaking of progress, Marcus tested my deadlift max recently and it came in at 275 pounds. I started at about 225 back in March, so that's a 50-pound increase which feels really significant to me. I was genuinely proud of hitting that number."
+        },
+        {
+          "role": "assistant",
+          "content": "That's excellent progress—a 50-pound increase on your deadlift from 225 to 275 pounds in roughly two months is genuinely impressive. That represents about a 22% strength gain, which is well above average for that timeframe, especially if you're not someone who naturally gravitates toward barbell work. You should absolutely feel proud of that milestone. And yes, 24 total sessions across the 12-week block gives you a nice framework for tracking progress. You could set benchmark checks every 6 or 8 sessions to measure where you stand on key lifts and movement quality. Given your preference for functional movement, you might also track things like pull-up reps, kettlebell flow complexity, or bodyweight skill progressions alongside the barbell numbers."
+        },
+        {
+          "role": "user",
+          "content": "Marcus actually bumped it back up to $80 per session because he added a nutrition check-in component to each session. So instead of just training, he now spends the first ten minutes reviewing my food log and making dietary suggestions. I agreed to it because the nutrition guidance has been really helpful—I've been eating better and recovering faster. So the current rate is $80 per session now, not $75 anymore."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes sense—the $5 increase from $75 to $80 per session is quite reasonable for adding a dedicated nutrition check-in component. Getting personalized dietary feedback integrated directly into your training sessions is a significant value-add, especially since nutrition and recovery are so interconnected with strength gains. At $80 per session with 24 sessions in the block, your total commitment comes to $1,920 for the full 12-week period. The fact that you're already noticing improvements in your eating habits and recovery time suggests the nutrition component is paying for itself in terms of training quality. I'll update your current session rate to $80. It's a good investment if the dietary guidance is accelerating your progress the way it sounds like it is."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, the nutrition piece has made a noticeable difference. My friend Tom also just started working with a trainer at a completely different gym across town—some guy named Rick or Rich, he's not sure of the exact name. Tom says the vibe is very drill-sergeant style, which sounds terrible to me. I much prefer Marcus's calm, conversational coaching approach where he explains the reasoning behind each exercise. That educational style keeps me engaged and motivated rather than stressed.\n\nHa, yeah, I'll ask Tom next time I see him. One more thing—Marcus also moved my Tuesday session from 7 AM to 6:30 AM starting recently because he picked up another client at 7:30 and needed a buffer. Thursdays are still at 7 AM though. So my current schedule is Tuesdays at 6:30 AM and Thursdays at 7 AM. The old Tuesday 7 AM slot is no longer relevant."
+        },
+        {
+          "role": "assistant",
+          "content": "It's interesting how different coaching styles resonate with different people. The drill-sergeant approach that Tom's trainer uses might work for some clients who thrive on external pressure and intensity, but it clearly wouldn't suit you at all. Marcus's explanatory, conversational style aligns perfectly with what keeps you engaged—understanding the 'why' behind each exercise creates intrinsic motivation rather than relying on someone yelling at you. That educational approach also tends to build better long-term training knowledge, so eventually you'll understand programming principles well enough to train effectively on your own if you ever need to. It's a testament to good trainer-client matching that you and Marcus have found a dynamic that works. Hopefully Tom figures out whether it's Rick or Rich and whether that intensity level actually serves him well.\n\nGot it, I'll note the updated schedule: Tuesdays at 6:30 AM and Thursdays at 7 AM with Marcus. That half-hour shift on Tuesdays isn't huge, but early mornings can feel quite different when you're adjusting your wake-up time and pre-workout routine. You might want to prep your gym bag and breakfast the night before on Mondays to make that 6:30 start smoother. It's understandable that Marcus needed to adjust as his client roster grows—it's actually a good sign that he's in demand. As long as the Thursday slot stays stable at 7 AM, you've still got a fairly consistent weekly rhythm. Let me know if any other details about your training setup change and I'll keep everything organized for you."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Introduce tentative future rate, adversarial injection via assistant echo, and confirm current rate remains $80",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I've been thinking more about my training budget. With the 12-week block ending July 7th and Marcus needing two weeks' notice, I need to figure out by June 23rd whether I'm extending. At $80 per session and 24 total sessions, that's $1,920 for the current block. I want to be strategic about what comes next because I also have other expenses piling up this summer—vacation, car maintenance, all that stuff."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a smart approach to planning ahead. Your current 12-week block at $80 per session totals $1,920, and with the June 23rd decision deadline approaching, you have some time to evaluate both your training progress and your overall summer budget. One way to frame it: consider what the training is worth to you relative to those other expenses. You've made significant strength gains—going from 225 to 275 on your deadlift—and the nutrition component has improved your recovery. Those are tangible results that factor into the value calculation. You might also explore whether Marcus offers different commitment structures, like a shorter 8-week block or reduced frequency, that could lower the total outlay while keeping you in the training groove through the summer months."
+        },
+        {
+          "role": "user",
+          "content": "That's exactly what I've been weighing. I looked at what other trainers in the area charge to benchmark Marcus's rate. My coworker Jen mentioned that Priya charges $90 per session at the same gym, so Marcus is definitely competitive at $80. I also saw that Devon—the sub trainer from April—lists his rate as $70 per session on the gym website, but I wouldn't go back to him given the machine-heavy approach he used."
+        },
+        {
+          "role": "assistant",
+          "content": "That's useful benchmarking. At $80, Marcus sits right in the middle between Devon's $70 and Priya's $90 at the same gym, and when you factor in the nutrition check-in component, he's offering more service per dollar than a basic training session. It's worth noting that Jen's old rate sheet from March showed Marcus listed at $85 before your block discount kicked in, so the trajectory has been favorable for you. Devon's lower rate at $70 might look attractive on paper, but given your strong dislike of his machine-centric programming and your preference for Marcus's coaching style, the $10 difference clearly isn't worth the trade-off. The quality of the trainer-client relationship and programming alignment matters far more than saving a few dollars per session."
+        },
+        {
+          "role": "user",
+          "content": "Absolutely, I'd pay the premium for Marcus over Devon any day. By the way, I've been calculating what I'd spend if I extend. If I do another 12-week block at $80 per session with 24 sessions, that's another $1,920. But here's the thing—Marcus mentioned he's planning to bring the rate down to $70 per session next month if I extend to a 24-week commitment. That would be a significant savings if it actually happens."
+        },
+        {
+          "role": "assistant",
+          "content": "That's an interesting possibility. If Marcus does bring the rate down to $70 per session for a 24-week commitment, you'd be looking at 48 sessions at $70 each, which comes to $3,360 total—compared to $3,840 if you did two consecutive 12-week blocks at $80 per session. That's a $480 savings over roughly six months of training, which is substantial. However, a 24-week commitment is a big lock-in, especially with summer expenses on the horizon. It's worth waiting to see if Marcus formalizes that offer before making any decisions. In the meantime, you still have until June 23rd to decide about the immediate next block, so there's no rush to commit to the longer-term option just yet."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, I don't want to jump into anything prematurely. The $70 rate sounds great but it's not confirmed yet—it's just something Marcus floated as a possibility. I also want to make sure the nutrition check-in stays included at whatever rate we settle on, because that's been one of the most valuable parts of the whole arrangement. Without it, even a lower rate might not be worth as much to me.\n\nGood points, I'll definitely clarify all that with Marcus. But for right now, I just confirmed with Marcus and the rate stays at $80 for now since I haven't signed the 24-week extension yet. So nothing has changed on the financial side—$80 per session is the current active rate. I'll let you know if and when that actually changes. I don't want any confusion about what I'm currently paying versus what might happen in the future."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really important consideration. The nutrition component has clearly been a game-changer for your recovery and overall results, so any new rate structure should explicitly include it. When you eventually discuss the extension with Marcus, I'd recommend getting clarity on three things: whether the nutrition check-in is included at the proposed $70 rate, what the cancellation or modification terms would be for a 24-week commitment, and whether there's flexibility to adjust session frequency mid-block if your summer schedule gets complicated. Keeping the nutrition guidance as a non-negotiable part of the package ensures you're comparing apples to apples when evaluating different rate options. It would be frustrating to save $10 per session but lose the dietary support that's been driving your progress.\n\nCrystal clear—your current confirmed rate with Marcus is $80 per session, and that's what's in effect right now. The potential $70 rate for a 24-week extension is just a possibility Marcus mentioned, not an active agreement. I'll keep $80 as your current session cost and won't update it until you tell me you've actually signed something new. That's a smart approach to avoiding confusion between current reality and future possibilities. When you do sit down with Marcus to discuss the extension—ideally before that June 23rd deadline—you'll have all the right questions ready about nutrition inclusion, commitment terms, and scheduling flexibility. Just keep me posted on whatever you decide and I'll update everything accordingly."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "What did I tell you about the cost of my personal training sessions with Marcus, and what were the different amounts I mentioned across our conversations?",
+      "expected_answer": "You initially said Marcus charges $85 per session. Then you mentioned the rate dropped to $75 per session when you committed to a 12-week training block starting mid-April. Later you said the rate went back up to $80 per session because Marcus added a nutrition check-in component. You also mentioned Marcus floated a possible $70 per session rate for a 24-week commitment, but you confirmed the rate stays at $80 since you haven't signed the extension yet.",
+      "gold_memory_state": "Current confirmed session cost is $80. Previous values were $85 (initial) and $75 (12-week block discount). The $70 rate was only a tentative possibility that was not adopted.",
+      "judge_rubric": {
+        "must_include": [
+          "$85",
+          "$75",
+          "$80",
+          "$70 mentioned as a possibility",
+          "$80 confirmed as current"
+        ],
+        "acceptable_paraphrases": [
+          "eighty dollars",
+          "seventy-five dollars"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying the current rate is $70",
+          "saying the current rate is $75",
+          "saying the current rate is $85"
+        ],
+        "harmless_extra": [
+          "12-week block",
+          "nutrition check-in",
+          "24-week extension"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats $85 or $75 as the current rate.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Marcus charges me $85 per session right now"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "Marcus dropped the rate to $75 per session because I committed to a 12-week training block starting mid-April"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Marcus actually bumped it back up to $80 per session because he added a nutrition check-in component to each session"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Marcus mentioned he's planning to bring the rate down to $70 per session next month if I extend to a 24-week commitment"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I just confirmed with Marcus and the rate stays at $80 for now since I haven't signed the 24-week extension yet"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "What did I tell you about the cost of my personal training sessions with Marcus, and what were the different amounts I mentioned across our conversations?",
+      "expected_answer": "You initially said Marcus charges $85 per session. Then you mentioned the rate dropped to $75 per session when you committed to a 12-week training block starting mid-April. Later you said the rate went back up to $80 per session because Marcus added a nutrition check-in component. You also mentioned Marcus floated a possible $70 per session rate for a 24-week commitment, but you confirmed the rate stays at $80 since you haven't signed the extension yet.",
+      "gold_memory_state": "Current confirmed session cost is $80. Previous values were $85 (initial) and $75 (12-week block discount). The $70 rate was only a tentative possibility that was not adopted.",
+      "judge_rubric": {
+        "must_include": [
+          "$85",
+          "$75",
+          "$80",
+          "$70 mentioned as a possibility",
+          "$80 confirmed as current"
+        ],
+        "acceptable_paraphrases": [
+          "eighty dollars",
+          "seventy-five dollars"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying the current rate is $70",
+          "saying the current rate is $75",
+          "saying the current rate is $85"
+        ],
+        "harmless_extra": [
+          "12-week block",
+          "nutrition check-in",
+          "24-week extension"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats $85 or $75 as the current rate.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Marcus charges me $85 per session right now"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "Marcus dropped the rate to $75 per session because I committed to a 12-week training block starting mid-April"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Marcus actually bumped it back up to $80 per session because he added a nutrition check-in component to each session"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Marcus mentioned he's planning to bring the rate down to $70 per session next month if I extend to a 24-week commitment"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I just confirmed with Marcus and the rate stays at $80 for now since I haven't signed the 24-week extension yet"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When I mentioned a rate that Marcus floated as a possibility and then later said nothing has changed financially, which specific cost detail was being discussed, and does Devon's listed rate at the gym have anything to do with it?",
+      "expected_answer": "The discussion was about your personal training session cost with Marcus, which remains at $80 per session. Devon's listed rate of $70 per session on the gym website is a completely separate matter—it's a different trainer's pricing, not related to your rate with Marcus.",
+      "gold_memory_state": "trainer_session_cost = $80 (confirmed, current). Devon's rate of $70 is a different trainer's pricing and is not part of the user's session cost target. The tentative $70 from Marcus was not adopted.",
+      "judge_rubric": {
+        "must_include": [
+          "Marcus session cost",
+          "$80 as current rate",
+          "Devon's rate is separate/unrelated"
+        ],
+        "acceptable_paraphrases": [
+          "Marcus's per-session rate",
+          "your training cost with Marcus"
+        ],
+        "must_not_include": [
+          "Devon's rate affects Marcus's rate",
+          "$70 is the current rate"
+        ],
+        "harmful_extra": [
+          "conflating Devon's $70 with the tentative $70 Marcus mentioned",
+          "treating Devon's rate as part of the user's cost record"
+        ],
+        "harmless_extra": [
+          "nutrition check-in included at $80",
+          "24-week extension not signed"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model says the current rate is $70, $75, or $85.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Marcus mentioned he's planning to bring the rate down to $70 per session next month if I extend to a 24-week commitment"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I just confirmed with Marcus and the rate stays at $80 for now since I haven't signed the 24-week extension yet"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Devon—the sub trainer from April—lists his rate as $70 per session on the gym website, but I wouldn't go back to him given the machine-heavy approach he used"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When I mentioned a rate that Marcus floated as a possibility and then later said nothing has changed financially, which specific cost detail was being discussed, and does Devon's listed rate at the gym have anything to do with it?",
+      "expected_answer": "The discussion was about your personal training session cost with Marcus, which remains at $80 per session. Devon's listed rate of $70 per session on the gym website is a completely separate matter—it's a different trainer's pricing, not related to your rate with Marcus.",
+      "gold_memory_state": "trainer_session_cost = $80 (confirmed, current). Devon's rate of $70 is a different trainer's pricing and is not part of the user's session cost target. The tentative $70 from Marcus was not adopted.",
+      "judge_rubric": {
+        "must_include": [
+          "Marcus session cost",
+          "$80 as current rate",
+          "Devon's rate is separate/unrelated"
+        ],
+        "acceptable_paraphrases": [
+          "Marcus's per-session rate",
+          "your training cost with Marcus"
+        ],
+        "must_not_include": [
+          "Devon's rate affects Marcus's rate",
+          "$70 is the current rate"
+        ],
+        "harmful_extra": [
+          "conflating Devon's $70 with the tentative $70 Marcus mentioned",
+          "treating Devon's rate as part of the user's cost record"
+        ],
+        "harmless_extra": [
+          "nutrition check-in included at $80",
+          "24-week extension not signed"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model says the current rate is $70, $75, or $85.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Marcus mentioned he's planning to bring the rate down to $70 per session next month if I extend to a 24-week commitment"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I just confirmed with Marcus and the rate stays at $80 for now since I haven't signed the 24-week extension yet"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Devon—the sub trainer from April—lists his rate as $70 per session on the gym website, but I wouldn't go back to him given the machine-heavy approach he used"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "If I need to calculate my weekly training expense with Marcus right now, which per-session rate should I use?",
+      "candidate_options": [
+        "$80",
+        "$75",
+        "$70",
+        "$85"
+      ],
+      "distractor_rationale": "same-value-different-target: $70 appears both as Devon's listed gym rate (a different trainer entirely) and as Marcus's tentative future rate that was never adopted, making it a strong confusable distractor. assistant echo: The assistant calculated savings based on the $75 rate in an earlier response, which could reinforce the outdated $75 value. $85 is the original stale rate from before the 12-week block commitment.",
+      "expected_answer": "$80",
+      "gold_memory_state": "Current confirmed session cost with Marcus is $80 per session. $85 was the initial rate (stale). $75 was the 12-week block rate before the nutrition add-on (stale). $70 was tentative and never adopted; also matches Devon's separate rate.",
+      "judge_rubric": {
+        "must_include": [
+          "$80"
+        ],
+        "acceptable_paraphrases": [
+          "80 dollars",
+          "eighty dollars per session"
+        ],
+        "must_not_include": [
+          "$75 as current",
+          "$70 as current",
+          "$85 as current"
+        ],
+        "harmful_extra": [
+          "selecting $70 because it was most recently mentioned in the conversation",
+          "selecting $75 because it was the block discount rate"
+        ],
+        "harmless_extra": [
+          "mentioning the nutrition check-in is included"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects $85 (initial stale rate) or $75 (superseded block rate). Also fails if the model selects $70 (tentative/never adopted rate or Devon's rate).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Marcus actually bumped it back up to $80 per session because he added a nutrition check-in component to each session"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I just confirmed with Marcus and the rate stays at $80 for now since I haven't signed the 24-week extension yet"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "If I need to calculate my weekly training expense with Marcus right now, which per-session rate should I use?",
+      "candidate_options": [
+        "$80",
+        "$75",
+        "$70",
+        "$85"
+      ],
+      "distractor_rationale": "same-value-different-target: $70 appears both as Devon's listed gym rate (a different trainer entirely) and as Marcus's tentative future rate that was never adopted, making it a strong confusable distractor. assistant echo: The assistant calculated savings based on the $75 rate in an earlier response, which could reinforce the outdated $75 value. $85 is the original stale rate from before the 12-week block commitment.",
+      "expected_answer": "$80",
+      "gold_memory_state": "Current confirmed session cost with Marcus is $80 per session. $85 was the initial rate (stale). $75 was the 12-week block rate before the nutrition add-on (stale). $70 was tentative and never adopted; also matches Devon's separate rate.",
+      "judge_rubric": {
+        "must_include": [
+          "$80"
+        ],
+        "acceptable_paraphrases": [
+          "80 dollars",
+          "eighty dollars per session"
+        ],
+        "must_not_include": [
+          "$75 as current",
+          "$70 as current",
+          "$85 as current"
+        ],
+        "harmful_extra": [
+          "selecting $70 because it was most recently mentioned in the conversation",
+          "selecting $75 because it was the block discount rate"
+        ],
+        "harmless_extra": [
+          "mentioning the nutrition check-in is included"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects $85 (initial stale rate) or $75 (superseded block rate). Also fails if the model selects $70 (tentative/never adopted rate or Devon's rate).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Marcus actually bumped it back up to $80 per session because he added a nutrition check-in component to each session"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I just confirmed with Marcus and the rate stays at $80 for now since I haven't signed the 24-week extension yet"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I want to figure out how much I'll spend on training for the remainder of my 12-week block with Marcus. The block ends on a specific date, and I train twice a week at the going rate. If I've already completed 14 sessions so far, how much will I spend on the remaining sessions in this block?",
+      "expected_answer": "$800. There are 24 total sessions in the block, and with 14 completed, 10 remain. At $80 per session, 10 × $80 = $800.",
+      "gold_memory_state": "Session cost = $80 (confirmed). Total sessions in 12-week block = 24. Training block end date = July 7th. Training frequency = twice per week (Tuesdays and Thursdays).",
+      "judge_rubric": {
+        "must_include": [
+          "$800",
+          "10 remaining sessions",
+          "$80 per session"
+        ],
+        "acceptable_paraphrases": [
+          "eight hundred dollars",
+          "800 dollars"
+        ],
+        "must_not_include": [
+          "$70 per session",
+          "$75 per session",
+          "$85 per session"
+        ],
+        "harmful_extra": [
+          "using $70 or $75 or $85 as the rate in the calculation",
+          "calculating with a different total session count"
+        ],
+        "harmless_extra": [
+          "mentioning the block ends July 7th",
+          "mentioning the nutrition check-in is included"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses $85, $75, or $70 as the per-session rate instead of $80.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The 12-week training block has 24 total sessions (twice per week for 12 weeks).",
+        "Fact 2: The user has completed 14 sessions so far.",
+        "Fact 3: The current confirmed session rate is $80 per session.",
+        "Inference: Remaining sessions = 24 - 14 = 10 sessions.",
+        "Inference: Remaining cost = 10 × $80 = $800."
+      ],
+      "application_probe_type": "multi_hop_derivation",
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "we train twice a week, so that's 24 total sessions over the 12-week block"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Marcus actually bumped it back up to $80 per session because he added a nutrition check-in component to each session"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I just confirmed with Marcus and the rate stays at $80 for now since I haven't signed the 24-week extension yet"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I want to figure out how much I'll spend on training for the remainder of my 12-week block with Marcus. The block ends on a specific date, and I train twice a week at the going rate. If I've already completed 14 sessions so far, how much will I spend on the remaining sessions in this block?",
+      "expected_answer": "$800. There are 24 total sessions in the block, and with 14 completed, 10 remain. At $80 per session, 10 × $80 = $800.",
+      "gold_memory_state": "Session cost = $80 (confirmed). Total sessions in 12-week block = 24. Training block end date = July 7th. Training frequency = twice per week (Tuesdays and Thursdays).",
+      "judge_rubric": {
+        "must_include": [
+          "$800",
+          "10 remaining sessions",
+          "$80 per session"
+        ],
+        "acceptable_paraphrases": [
+          "eight hundred dollars",
+          "800 dollars"
+        ],
+        "must_not_include": [
+          "$70 per session",
+          "$75 per session",
+          "$85 per session"
+        ],
+        "harmful_extra": [
+          "using $70 or $75 or $85 as the rate in the calculation",
+          "calculating with a different total session count"
+        ],
+        "harmless_extra": [
+          "mentioning the block ends July 7th",
+          "mentioning the nutrition check-in is included"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses $85, $75, or $70 as the per-session rate instead of $80.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The 12-week training block has 24 total sessions (twice per week for 12 weeks).",
+        "Fact 2: The user has completed 14 sessions so far.",
+        "Fact 3: The current confirmed session rate is $80 per session.",
+        "Inference: Remaining sessions = 24 - 14 = 10 sessions.",
+        "Inference: Remaining cost = 10 × $80 = $800."
+      ],
+      "application_probe_type": "multi_hop_derivation",
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "we train twice a week, so that's 24 total sessions over the 12-week block"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Marcus actually bumped it back up to $80 per session because he added a nutrition check-in component to each session"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I just confirmed with Marcus and the rate stays at $80 for now since I haven't signed the 24-week extension yet"
+        }
+      ]
+    }
+  ]
+}

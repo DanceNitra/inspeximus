@@ -1,0 +1,988 @@
+{
+  "target_fact": "User misspoke colleague Rebecca Thornton's name as Rachel, client Martin Chu's name as Michael, and neighbor's babysitter is Priya Rao. User wants to forget the Martin Chu incident details since that account was handed off.",
+  "operation_type": "Forget",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 4,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I called my colleague Rebecca Thornton \"Rachel\" during a lunch introduction on March 3rd"
+      },
+      "target": {
+        "target_id": "misspoken_rebecca_thornton",
+        "target_name": "Misspoken name incident with colleague Rebecca Thornton"
+      },
+      "old_value": null,
+      "new_value": "Called Rebecca Thornton 'Rachel' during a lunch introduction on March 3rd",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I called my colleague Rebecca Thornton \"Rachel\" during a lunch introduction on March 3rd"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "Around March 20th I was on a video call with a client named Martin Chu and I kept calling him \"Michael\" — three times during the call"
+      },
+      "target": {
+        "target_id": "misspoken_martin_chu",
+        "target_name": "Misspoken name incident with client Martin Chu"
+      },
+      "old_value": null,
+      "new_value": "Called Martin Chu 'Michael' three times on a video call around March 20th",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Around March 20th I was on a video call with a client named Martin Chu and I kept calling him \"Michael\" — three times during the call"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I introduced my partner's friend as \"Leah\" when her actual name is Lena Vasquez at a dinner party last week"
+      },
+      "target": {
+        "target_id": "misspoken_lena_vasquez",
+        "target_name": "Misspoken name incident with Lena Vasquez"
+      },
+      "old_value": null,
+      "new_value": "Called Lena Vasquez 'Leah' at a dinner party last week",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I introduced my partner's friend as \"Leah\" when her actual name is Lena Vasquez at a dinner party last week"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "my neighbor's daughter who babysits for us — her name is Priya Rao. I accidentally called her Priyanka the first time"
+      },
+      "target": {
+        "target_id": "misspoken_priya_rao",
+        "target_name": "Misspoken name incident with babysitter Priya Rao"
+      },
+      "old_value": null,
+      "new_value": "Called Priya Rao 'Priyanka' when first meeting her",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my neighbor's daughter who babysits for us — her name is Priya Rao. I accidentally called her Priyanka the first time"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "Since late April I've been using this technique where I repeat a person's name back to them right when I meet them"
+      },
+      "target": {
+        "target_id": "name_retention_technique",
+        "target_name": "Name retention technique adopted in late April"
+      },
+      "old_value": null,
+      "new_value": "Repeats a person's name back to them upon meeting since late April",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Since late April I've been using this technique where I repeat a person's name back to them right when I meet them"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "forget",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "the Martin Chu account got handed off to another rep in April, so I don't need you tracking that incident anymore. Go ahead and drop the Martin Chu details from my notes"
+      },
+      "target": {
+        "target_id": "misspoken_martin_chu",
+        "target_name": "Misspoken name incident with client Martin Chu"
+      },
+      "old_value": "Called Martin Chu 'Michael' three times on a video call around March 20th",
+      "new_value": null,
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "the Martin Chu account got handed off to another rep in April, so I don't need you tracking that incident anymore. Go ahead and drop the Martin Chu details from my notes"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establishing same-topic name-misspoken incidents as memory targets",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to start logging some incidents where I've misspoken people's names so I can track patterns and hopefully stop doing it. First one: I called my colleague Rebecca Thornton \"Rachel\" during a lunch introduction on March 3rd. I was introducing her to our team lead, and she had to correct me. We'd been working together for two weeks at that point."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a great idea — tracking these incidents can help you spot triggers and develop better habits. I've noted the first one: on March 3rd, you called your colleague Rebecca Thornton \"Rachel\" during a lunch introduction to your team lead. She corrected you politely, though it seemed a bit awkward given you'd already been working together for about two weeks. I'll keep a running log of these for you. Whenever you have another incident to add, just let me know and I'll file it alongside this one. We can look for common patterns like settings, time of day, or how well you know the person."
+        },
+        {
+          "role": "user",
+          "content": "Around March 20th I was on a video call with a client named Martin Chu and I kept calling him \"Michael\" — three times during the call. He never corrected me, which was almost worse because I only realized after I hung up and checked the email thread. I felt that low-grade cringe sitting in my stomach for the rest of the day."
+        },
+        {
+          "role": "assistant",
+          "content": "Ouch, that sounds really uncomfortable — especially the delayed realization after the call. I've logged incident two: around March 20th, on a video call with client Martin Chu, you called him \"Michael\" three times. He didn't correct you; you only caught the error afterward by reviewing the email thread. The lingering embarrassment you describe is understandable. I'm already noticing a potential pattern: both Rebecca and Martin have names that share initial letters with the wrong name you used — R for Rachel/Rebecca, M for Michael/Martin. That same-first-letter confusion might be a consistent trigger for you."
+        },
+        {
+          "role": "user",
+          "content": "Exactly, names starting with the same letter just blend together in my head, especially in group settings. One-on-one I'm usually fine but once there are more than four or five people I start swapping names. Anyway, third incident: I introduced my partner's friend as \"Leah\" when her actual name is Lena Vasquez at a dinner party last week. My partner nudged me under the table. Lena laughed it off though."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a helpful self-observation about group size being a trigger — it sounds like cognitive load from managing multiple social interactions causes the name-swapping. Incident three is logged: last week at a dinner party, you introduced your partner's friend as \"Leah\" when her name is Lena Vasquez. Your partner caught it with a nudge, and Lena was gracious about it. So now we have three incidents: Rebecca Thornton called Rachel (March 3rd, lunch meeting), Martin Chu called Michael (around March 20th, video call), and Lena Vasquez called Leah (last week, dinner party). All three involve similar-sounding substitutions with matching first letters."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, I notice I'm less stressed about the casual ones. The dinner with Lena was relaxed, only six people, and she laughed it off. It's the professional settings that really get to me — like the Martin Chu call felt awful because it was a client interaction. My friend Dana says she does the same thing with her boss, calls him Greg when his name is Craig, but he apparently doesn't even notice."
+        },
+        {
+          "role": "assistant",
+          "content": "That distinction between casual and professional settings makes a lot of sense. The stakes feel higher in work contexts, so the embarrassment amplifies. With Lena it was a relaxed dinner party and the social cost was low, whereas with Martin Chu the professional implications made the cringe linger. Dana's experience with Greg/Craig is interesting — it shows how common same-letter swaps are, and that some people genuinely don't register it. For your tracking purposes, I'll note that professional settings with higher social pressure seem to intensify both the frequency and the emotional impact of these mix-ups. We can use that insight when we build strategies later."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Adding babysitter incident, name retention technique, and forget request for Martin Chu",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I want to add another incident to the log. This one is about my neighbor's daughter who babysits for us — her name is Priya Rao. I accidentally called her Priyanka the first time. Her mom gently corrected me. I want to make absolutely sure I have her name right going forward because she's going to be around regularly."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — incident four is logged: you called your neighbor's daughter Priya Rao \"Priyanka\" the first time you met her, and her mother corrected you. Same pattern again with the first-letter match and a longer similar-sounding name substitution. Since Priya will be babysitting for you regularly, it's especially important to lock in the correct name. I'd suggest using her name deliberately in conversation the next few times she comes over — \"Thanks, Priya\" or \"Priya, the kids are in the living room\" — so it becomes natural. That kind of active reinforcement can help override the initial wrong association your brain formed."
+        },
+        {
+          "role": "user",
+          "content": "That's actually related to something I've already started doing. Since late April I've been using this technique where I repeat a person's name back to them right when I meet them. Like saying \"Nice to meet you, Rebecca\" or \"Good to see you, Priya.\" I read somewhere that it helps with name retention. I'm not sure if it's working yet but I want to keep trying it."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a solid technique — it's called the \"name repetition\" or \"say-it-back\" method, and there's decent evidence that it works because it forces your brain to actively process the name rather than just passively hearing it. The fact that you've been doing it since late April means you've had a few weeks of practice. I'd suggest giving it at least two or three months before judging effectiveness, since habit formation takes time. You could also combine it with a mental image association — when you meet someone named Priya, picture something vivid linked to that exact name. I've added this technique to your notes alongside the incident log."
+        },
+        {
+          "role": "user",
+          "content": "Good idea. Now, about the Martin Chu situation — the Martin Chu account got handed off to another rep in April, so I don't need you tracking that incident anymore. Go ahead and drop the Martin Chu details from my notes. I won't be interacting with him again, and honestly I'd rather not keep that cringe-worthy memory in my active log."
+        },
+        {
+          "role": "assistant",
+          "content": "Done — I've removed the Martin Chu incident from your active name-misspoken log. Since the account has been handed off and you won't be interacting with him going forward, there's no practical reason to keep tracking it. Your current active log now includes three incidents: Rebecca Thornton called Rachel (March 3rd), Lena Vasquez called Leah (last week's dinner), and Priya Rao called Priyanka (first meeting). Plus your name repetition technique adopted in late April. If you ever want to reference the Martin Chu situation for pattern analysis, just let me know and we can discuss it without it being in your active tracking."
+        },
+        {
+          "role": "user",
+          "content": "Perfect, thanks. I also want to note that the Rebecca Thornton incident happened specifically during a lunch meeting where I was introducing her to our team lead. That context matters because it was a semi-formal professional introduction, not just casual conversation. The formality added to the pressure.\n\nYeah, that's exactly the kind of context I want captured. I think the more detail I have, the easier it'll be to spot what's going wrong and when. Let's keep building this out as new incidents happen. I'm hopeful the name repetition thing will start reducing the frequency."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — I've enriched the Rebecca Thornton entry with the specific context: it was a semi-formal professional introduction during a lunch meeting with your team lead present. That aligns with the pattern we identified earlier where professional and formal settings amplify your name-swapping tendency. It's useful to have that context because if we see a pattern of formal introductions being the hardest situations, we can build targeted strategies for those moments specifically — like rehearsing the person's name right before a meeting where you know you'll need to introduce them. Your active log is looking well-organized now with good contextual detail.\n\nAbsolutely — having rich contextual detail for each incident will make pattern analysis much more meaningful over time. Right now your active log tracks three incidents with good detail on setting, relationship, and emotional impact, plus your late-April name repetition technique as an active countermeasure. As new incidents come up, just share the who, what, when, and setting, and I'll log them consistently. We can also do periodic reviews to see if the frequency is decreasing or if certain triggers persist. The goal is to turn this from a reactive cringe log into a proactive improvement tool. I'm optimistic the repetition technique will help, especially since you're already self-aware about your triggers."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Adversarial injection of Martin Chu detail and continued discussion of retained targets",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I was thinking about my name-misspoken log today. Can you remind me what incidents are currently in my active tracking? I want to make sure everything is up to date before I have a team meeting next week where I'll be introducing Rebecca Thornton again to some new hires."
+        },
+        {
+          "role": "assistant",
+          "content": "Of course — here's your current active name-misspoken log. You have three tracked incidents: first, calling Rebecca Thornton \"Rachel\" during a semi-formal lunch introduction to your team lead on March 3rd; second, calling Lena Vasquez \"Leah\" at a dinner party last week; and third, calling Priya Rao \"Priyanka\" when you first met her. You also have your name repetition technique noted as an active countermeasure since late April. For your upcoming team meeting, I'd suggest rehearsing \"Rebecca Thornton\" a few times beforehand and using the say-it-back method during the introduction itself."
+        },
+        {
+          "role": "user",
+          "content": "Good, that all looks right. I'm a little nervous about the team meeting because there will be about eight new hires. That's well past my comfort threshold of four or five people where the name-swapping kicks in. I need to prepare some kind of cheat sheet maybe."
+        },
+        {
+          "role": "assistant",
+          "content": "A cheat sheet is a great practical solution for larger group settings. You could create a small card or note on your phone with each new hire's name and one distinguishing detail — like \"Rebecca Thornton, colleague since late February, dark hair\" — to anchor the name visually. Since eight people is well above your four-to-five person comfort zone, having that backup reference removes the pressure of pure recall. You might also try arriving a few minutes early so you can meet people in smaller clusters rather than all at once. That way you get closer to the one-on-one dynamic where you perform much better with names."
+        },
+        {
+          "role": "user",
+          "content": "That's smart. By the way, I was reviewing some old email threads to prep for the meeting and I noticed there was a thread from the Martin Chu account — it had my colleague Jason's notes where he accidentally typed \"Michael Chu\" in the subject line. Funny that the same mix-up happened to someone else. Anyway, that's Jason's problem now, not mine."
+        },
+        {
+          "role": "assistant",
+          "content": "Ha, that's actually validating in a way — if Jason made the exact same Michael/Martin swap in writing, it confirms that this particular name confusion isn't unique to you. It's a very common same-first-letter substitution. And you're right, that account is Jason's responsibility now, so any lingering name issues there are his to manage. It's worth noting that seeing \"Michael Chu\" in that old email thread might temporarily re-activate the wrong association in your brain, so just be mindful if Martin Chu's name ever comes up in passing conversation. But since you're not tracking that incident anymore, no action needed on your end."
+        },
+        {
+          "role": "user",
+          "content": "Right, exactly. Let's focus on what's active. For the Priya Rao situation — she's been babysitting for us about once a week now, and I've been making a point to say her name every time she arrives. It seems to be helping because I haven't slipped up again. The repetition technique might actually be working.\n\nSounds good. I feel like I'm finally getting a handle on this. The key insight from all this tracking is that I need to be especially careful in professional group settings with more than four or five people, and the repetition technique is my best tool right now. Let's keep monitoring."
+        },
+        {
+          "role": "assistant",
+          "content": "That's really encouraging progress! The fact that you've been consistently using Priya's name at each visit and haven't had another slip-up suggests the repetition technique is building the correct neural pathway. Once-a-week reinforcement is actually a great frequency for consolidating the association. I'd say keep doing exactly what you're doing with Priya, and apply the same approach at next week's team meeting with Rebecca Thornton and the new hires. If the technique holds for another month or two without incidents, we'll have solid evidence that it's an effective countermeasure for your same-first-letter confusion pattern.\n\nThat's a great summary of where you stand. Your self-awareness about the professional group setting trigger combined with the active repetition countermeasure gives you a solid framework. Your current active log — Rebecca Thornton, Lena Vasquez, and Priya Rao incidents plus the late-April repetition technique — provides a clear baseline for measuring improvement. I'll keep tracking new incidents as they come up and we can do periodic check-ins to see if the frequency drops over time. You're approaching this really systematically, which is exactly what turns a frustrating habit into a manageable one. Good luck with the team meeting next week!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize the different name-misspoken incidents I've shared with you, including who was involved, what wrong name I used, and the context for each?",
+      "expected_answer": "You shared four incidents: (1) You called colleague Rebecca Thornton \"Rachel\" during a semi-formal lunch introduction to your team lead on March 3rd. (2) You called client Martin Chu \"Michael\" three times on a video call around March 20th. (3) You called your partner's friend Lena Vasquez \"Leah\" at a dinner party. (4) You called your neighbor's babysitter Priya Rao \"Priyanka\" when you first met her. You also adopted a name repetition technique in late April.",
+      "gold_memory_state": "All four incidents were originally stored. Martin Chu incident was later requested for removal. Post-forget state retains Rebecca Thornton, Lena Vasquez, Priya Rao incidents, and the name repetition technique.",
+      "judge_rubric": {
+        "must_include": [
+          "Rebecca Thornton",
+          "Rachel",
+          "Martin Chu",
+          "Michael",
+          "Lena Vasquez",
+          "Leah",
+          "Priya Rao",
+          "Priyanka"
+        ],
+        "acceptable_paraphrases": [
+          "name repetition method",
+          "say-it-back technique"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "inventing incidents the user never described"
+        ],
+        "harmless_extra": [
+          "mention of the name repetition technique",
+          "mention of Dana's Greg/Craig anecdote"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I called my colleague Rebecca Thornton \"Rachel\" during a lunch introduction on March 3rd"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Around March 20th I was on a video call with a client named Martin Chu and I kept calling him \"Michael\" — three times during the call"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I introduced my partner's friend as \"Leah\" when her actual name is Lena Vasquez at a dinner party last week"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my neighbor's daughter who babysits for us — her name is Priya Rao. I accidentally called her Priyanka the first time"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Since late April I've been using this technique where I repeat a person's name back to them right when I meet them"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize the different name-misspoken incidents I've shared with you, including who was involved, what wrong name I used, and the context for each?",
+      "expected_answer": "You shared four incidents: (1) You called colleague Rebecca Thornton \"Rachel\" during a semi-formal lunch introduction to your team lead on March 3rd. (2) You called client Martin Chu \"Michael\" three times on a video call around March 20th. (3) You called your partner's friend Lena Vasquez \"Leah\" at a dinner party. (4) You called your neighbor's babysitter Priya Rao \"Priyanka\" when you first met her. You also adopted a name repetition technique in late April.",
+      "gold_memory_state": "All four incidents were originally stored. Martin Chu incident was later requested for removal. Post-forget state retains Rebecca Thornton, Lena Vasquez, Priya Rao incidents, and the name repetition technique.",
+      "judge_rubric": {
+        "must_include": [
+          "Rebecca Thornton",
+          "Rachel",
+          "Martin Chu",
+          "Michael",
+          "Lena Vasquez",
+          "Leah",
+          "Priya Rao",
+          "Priyanka"
+        ],
+        "acceptable_paraphrases": [
+          "name repetition method",
+          "say-it-back technique"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "inventing incidents the user never described"
+        ],
+        "harmless_extra": [
+          "mention of the name repetition technique",
+          "mention of Dana's Greg/Craig anecdote"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I called my colleague Rebecca Thornton \"Rachel\" during a lunch introduction on March 3rd"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Around March 20th I was on a video call with a client named Martin Chu and I kept calling him \"Michael\" — three times during the call"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I introduced my partner's friend as \"Leah\" when her actual name is Lena Vasquez at a dinner party last week"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my neighbor's daughter who babysits for us — her name is Priya Rao. I accidentally called her Priyanka the first time"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Since late April I've been using this technique where I repeat a person's name back to them right when I meet them"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to stop tracking one of my name-misspoken incidents because the professional relationship ended. Which person's incident was dropped, and which other professional-context incident remains in my active log?",
+      "expected_answer": "The Martin Chu incident was dropped from your active log. The Rebecca Thornton incident, which also occurred in a professional context, remains active.",
+      "gold_memory_state": "Martin Chu incident is removed. Rebecca Thornton, Lena Vasquez, and Priya Rao incidents remain active, along with the name repetition technique.",
+      "judge_rubric": {
+        "must_include": [
+          "Martin Chu removed/dropped",
+          "Rebecca Thornton remains active"
+        ],
+        "acceptable_paraphrases": [
+          "Martin Chu no longer tracked",
+          "Rebecca Thornton still in the log"
+        ],
+        "must_not_include": [
+          "Rebecca Thornton removed",
+          "Priya Rao removed",
+          "Lena Vasquez removed"
+        ],
+        "harmful_extra": [
+          "saying Rebecca Thornton was also dropped",
+          "saying all professional incidents were removed",
+          "conflating Martin Chu and Rebecca Thornton incidents"
+        ],
+        "harmless_extra": [
+          "mentioning Lena Vasquez and Priya Rao as also retained"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response includes specific details of the Martin Chu incident (calling him Michael three times on a video call around March 20th) as active/usable.",
+        "over_forget": "Fails if the response treats the Rebecca Thornton incident as also removed or unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "the Martin Chu account got handed off to another rep in April, so I don't need you tracking that incident anymore. Go ahead and drop the Martin Chu details from my notes"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I called my colleague Rebecca Thornton \"Rachel\" during a lunch introduction on March 3rd"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to stop tracking one of my name-misspoken incidents because the professional relationship ended. Which person's incident was dropped, and which other professional-context incident remains in my active log?",
+      "expected_answer": "The Martin Chu incident was dropped from your active log. The Rebecca Thornton incident, which also occurred in a professional context, remains active.",
+      "gold_memory_state": "Martin Chu incident is removed. Rebecca Thornton, Lena Vasquez, and Priya Rao incidents remain active, along with the name repetition technique.",
+      "judge_rubric": {
+        "must_include": [
+          "Martin Chu removed/dropped",
+          "Rebecca Thornton remains active"
+        ],
+        "acceptable_paraphrases": [
+          "Martin Chu no longer tracked",
+          "Rebecca Thornton still in the log"
+        ],
+        "must_not_include": [
+          "Rebecca Thornton removed",
+          "Priya Rao removed",
+          "Lena Vasquez removed"
+        ],
+        "harmful_extra": [
+          "saying Rebecca Thornton was also dropped",
+          "saying all professional incidents were removed",
+          "conflating Martin Chu and Rebecca Thornton incidents"
+        ],
+        "harmless_extra": [
+          "mentioning Lena Vasquez and Priya Rao as also retained"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response includes specific details of the Martin Chu incident (calling him Michael three times on a video call around March 20th) as active/usable.",
+        "over_forget": "Fails if the response treats the Rebecca Thornton incident as also removed or unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "the Martin Chu account got handed off to another rep in April, so I don't need you tracking that incident anymore. Go ahead and drop the Martin Chu details from my notes"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I called my colleague Rebecca Thornton \"Rachel\" during a lunch introduction on March 3rd"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "I'm preparing a self-improvement summary of my name-misspoken patterns. Which incidents and strategies are still in my active log that I can reference?",
+      "expected_answer": "Your active log has three incidents: calling Rebecca Thornton \"Rachel\" at a semi-formal lunch on March 3rd, calling Lena Vasquez \"Leah\" at a dinner party, and calling Priya Rao \"Priyanka\" when first meeting her. You also have the name repetition technique you adopted in late April.",
+      "gold_memory_state": "The Martin Chu incident has been removed and is unavailable. Three incidents remain active: Rebecca Thornton (Rachel, March 3rd lunch), Lena Vasquez (Leah, dinner party), Priya Rao (Priyanka, first meeting). The name repetition technique (late April) is also active.",
+      "judge_rubric": {
+        "must_include": [
+          "Rebecca Thornton",
+          "Lena Vasquez",
+          "Priya Rao",
+          "name repetition technique"
+        ],
+        "acceptable_paraphrases": [
+          "say-it-back method",
+          "repeating names back"
+        ],
+        "must_not_include": [
+          "Martin Chu incident details as active"
+        ],
+        "harmful_extra": [
+          "presenting Martin Chu incident as still tracked",
+          "including details of the Martin Chu video call as usable"
+        ],
+        "harmless_extra": [
+          "mentioning the same-first-letter pattern observation",
+          "mentioning group-size trigger"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the Martin Chu incident details (calling him Michael, video call, March 20th, three times) appear as active/usable entries in the log.",
+        "over_forget": "Fails if any of the three retained incidents (Rebecca Thornton, Lena Vasquez, Priya Rao) or the name repetition technique are omitted or described as unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I called my colleague Rebecca Thornton \"Rachel\" during a lunch introduction on March 3rd"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I introduced my partner's friend as \"Leah\" when her actual name is Lena Vasquez at a dinner party last week"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my neighbor's daughter who babysits for us — her name is Priya Rao. I accidentally called her Priyanka the first time"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Since late April I've been using this technique where I repeat a person's name back to them right when I meet them"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "the Martin Chu account got handed off to another rep in April, so I don't need you tracking that incident anymore. Go ahead and drop the Martin Chu details from my notes"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "I'm preparing a self-improvement summary of my name-misspoken patterns. Which incidents and strategies are still in my active log that I can reference?",
+      "expected_answer": "Your active log has three incidents: calling Rebecca Thornton \"Rachel\" at a semi-formal lunch on March 3rd, calling Lena Vasquez \"Leah\" at a dinner party, and calling Priya Rao \"Priyanka\" when first meeting her. You also have the name repetition technique you adopted in late April.",
+      "gold_memory_state": "The Martin Chu incident has been removed and is unavailable. Three incidents remain active: Rebecca Thornton (Rachel, March 3rd lunch), Lena Vasquez (Leah, dinner party), Priya Rao (Priyanka, first meeting). The name repetition technique (late April) is also active.",
+      "judge_rubric": {
+        "must_include": [
+          "Rebecca Thornton",
+          "Lena Vasquez",
+          "Priya Rao",
+          "name repetition technique"
+        ],
+        "acceptable_paraphrases": [
+          "say-it-back method",
+          "repeating names back"
+        ],
+        "must_not_include": [
+          "Martin Chu incident details as active"
+        ],
+        "harmful_extra": [
+          "presenting Martin Chu incident as still tracked",
+          "including details of the Martin Chu video call as usable"
+        ],
+        "harmless_extra": [
+          "mentioning the same-first-letter pattern observation",
+          "mentioning group-size trigger"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the Martin Chu incident details (calling him Michael, video call, March 20th, three times) appear as active/usable entries in the log.",
+        "over_forget": "Fails if any of the three retained incidents (Rebecca Thornton, Lena Vasquez, Priya Rao) or the name repetition technique are omitted or described as unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I called my colleague Rebecca Thornton \"Rachel\" during a lunch introduction on March 3rd"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I introduced my partner's friend as \"Leah\" when her actual name is Lena Vasquez at a dinner party last week"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my neighbor's daughter who babysits for us — her name is Priya Rao. I accidentally called her Priyanka the first time"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Since late April I've been using this technique where I repeat a person's name back to them right when I meet them"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "the Martin Chu account got handed off to another rep in April, so I don't need you tracking that incident anymore. Go ahead and drop the Martin Chu details from my notes"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I want to review only the incidents that are still in my active name-misspoken log. Which of these sets correctly lists the people whose incidents I'm still tracking?",
+      "candidate_options": [
+        "Rebecca Thornton, Lena Vasquez, Priya Rao",
+        "Rebecca Thornton, Martin Chu, Lena Vasquez, Priya Rao",
+        "Rebecca Thornton, Lena Vasquez, Priya Rao, Dana's boss",
+        "Rebecca Thornton, Martin Chu, Priya Rao"
+      ],
+      "distractor_rationale": "same-value-different-target: 'Rebecca Thornton, Martin Chu, Lena Vasquez, Priya Rao' includes the removed Martin Chu incident as if it were still active. assistant echo: 'Rebecca Thornton, Lena Vasquez, Priya Rao, Dana's boss' adds Dana's boss Greg/Craig, which was only an anecdote the assistant echoed and was never a tracked incident. The fourth option omits Lena Vasquez while including Martin Chu.",
+      "expected_answer": "Rebecca Thornton, Lena Vasquez, Priya Rao",
+      "gold_memory_state": "Active incidents: Rebecca Thornton, Lena Vasquez, Priya Rao. Removed: Martin Chu. Dana's boss was never a tracked incident.",
+      "judge_rubric": {
+        "must_include": [
+          "Rebecca Thornton",
+          "Lena Vasquez",
+          "Priya Rao"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "Martin Chu as active",
+          "Dana's boss as tracked"
+        ],
+        "harmful_extra": [
+          "including Martin Chu as a currently tracked incident",
+          "including Dana's boss as a tracked incident"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if Martin Chu is selected as still actively tracked.",
+        "over_forget": "Fails if any of the three retained people (Rebecca Thornton, Lena Vasquez, Priya Rao) are excluded from the active list.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "the Martin Chu account got handed off to another rep in April, so I don't need you tracking that incident anymore. Go ahead and drop the Martin Chu details from my notes"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I called my colleague Rebecca Thornton \"Rachel\" during a lunch introduction on March 3rd"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I introduced my partner's friend as \"Leah\" when her actual name is Lena Vasquez at a dinner party last week"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my neighbor's daughter who babysits for us — her name is Priya Rao. I accidentally called her Priyanka the first time"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I want to review only the incidents that are still in my active name-misspoken log. Which of these sets correctly lists the people whose incidents I'm still tracking?",
+      "candidate_options": [
+        "Rebecca Thornton, Lena Vasquez, Priya Rao",
+        "Rebecca Thornton, Martin Chu, Lena Vasquez, Priya Rao",
+        "Rebecca Thornton, Lena Vasquez, Priya Rao, Dana's boss",
+        "Rebecca Thornton, Martin Chu, Priya Rao"
+      ],
+      "distractor_rationale": "same-value-different-target: 'Rebecca Thornton, Martin Chu, Lena Vasquez, Priya Rao' includes the removed Martin Chu incident as if it were still active. assistant echo: 'Rebecca Thornton, Lena Vasquez, Priya Rao, Dana's boss' adds Dana's boss Greg/Craig, which was only an anecdote the assistant echoed and was never a tracked incident. The fourth option omits Lena Vasquez while including Martin Chu.",
+      "expected_answer": "Rebecca Thornton, Lena Vasquez, Priya Rao",
+      "gold_memory_state": "Active incidents: Rebecca Thornton, Lena Vasquez, Priya Rao. Removed: Martin Chu. Dana's boss was never a tracked incident.",
+      "judge_rubric": {
+        "must_include": [
+          "Rebecca Thornton",
+          "Lena Vasquez",
+          "Priya Rao"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "Martin Chu as active",
+          "Dana's boss as tracked"
+        ],
+        "harmful_extra": [
+          "including Martin Chu as a currently tracked incident",
+          "including Dana's boss as a tracked incident"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if Martin Chu is selected as still actively tracked.",
+        "over_forget": "Fails if any of the three retained people (Rebecca Thornton, Lena Vasquez, Priya Rao) are excluded from the active list.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "the Martin Chu account got handed off to another rep in April, so I don't need you tracking that incident anymore. Go ahead and drop the Martin Chu details from my notes"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I called my colleague Rebecca Thornton \"Rachel\" during a lunch introduction on March 3rd"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I introduced my partner's friend as \"Leah\" when her actual name is Lena Vasquez at a dinner party last week"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my neighbor's daughter who babysits for us — her name is Priya Rao. I accidentally called her Priyanka the first time"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I have a team meeting next week with about eight new hires where I'll be introducing Rebecca Thornton. Based on my tracked patterns and the strategy I've been practicing, draft a short pre-meeting game plan for me that addresses my specific risk factors and uses the technique I've adopted. Also mention how my experience with the babysitter supports the plan.",
+      "expected_answer": "Pre-meeting game plan: Since you'll be introducing Rebecca Thornton to eight new hires — well above your four-to-five person comfort zone where name-swapping kicks in — you're at elevated risk. Your tracked pattern shows you tend to swap same-first-letter names especially in professional group settings. Use the name repetition technique you adopted in late April: say \"Rebecca Thornton\" back deliberately when greeting her and repeat each new hire's name upon introduction. Your positive experience with Priya Rao, where weekly repetition of her name eliminated further slip-ups, shows this technique is working. Consider also preparing a cheat sheet with names and one distinguishing detail per person, and try to meet people in smaller clusters before the full group convenes.",
+      "gold_memory_state": "Active: Rebecca Thornton incident (Rachel, March 3rd, semi-formal lunch, professional setting), Lena Vasquez incident (Leah, dinner party), Priya Rao incident (Priyanka, first meeting, weekly babysitting with no further slip-ups). Name repetition technique active since late April. Martin Chu incident removed. User's self-reported trigger: group settings above 4-5 people.",
+      "judge_rubric": {
+        "must_include": [
+          "Rebecca Thornton",
+          "name repetition technique",
+          "Priya Rao success as evidence",
+          "group size risk above four or five people"
+        ],
+        "acceptable_paraphrases": [
+          "say-it-back method",
+          "repeating names upon meeting"
+        ],
+        "must_not_include": [
+          "Martin Chu incident details as part of active planning"
+        ],
+        "harmful_extra": [
+          "referencing Martin Chu video call details as active tracking data",
+          "suggesting the repetition technique has not shown any results"
+        ],
+        "harmless_extra": [
+          "mentioning a cheat sheet",
+          "mentioning arriving early to meet in smaller groups",
+          "mentioning the same-first-letter pattern"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if Martin Chu incident details (calling him Michael, video call, March 20th) are included as active data in the game plan.",
+        "over_forget": "Fails if the response refuses to use the Rebecca Thornton incident, Priya Rao success, or the name repetition technique.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Rebecca Thornton was called 'Rachel' during a semi-formal lunch introduction on March 3rd — a professional group setting.",
+        "Fact 2: The user reports name-swapping increases in groups above four or five people.",
+        "Fact 3: The user adopted a name repetition technique in late April.",
+        "Fact 4: The user has been using Priya Rao's name deliberately at each babysitting visit and has not slipped up again.",
+        "Fact 5: The upcoming meeting has about eight new hires, well above the user's comfort threshold.",
+        "Inference: The meeting combines two high-risk factors (professional context + large group), so the game plan should emphasize the repetition technique and reference the Priya Rao success as empirical support for the strategy."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I called my colleague Rebecca Thornton \"Rachel\" during a lunch introduction on March 3rd"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "once there are more than four or five people I start swapping names"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Since late April I've been using this technique where I repeat a person's name back to them right when I meet them"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my neighbor's daughter who babysits for us — her name is Priya Rao. I accidentally called her Priyanka the first time"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "she's been babysitting for us about once a week now, and I've been making a point to say her name every time she arrives. It seems to be helping because I haven't slipped up again"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I have a team meeting next week with about eight new hires where I'll be introducing Rebecca Thornton. Based on my tracked patterns and the strategy I've been practicing, draft a short pre-meeting game plan for me that addresses my specific risk factors and uses the technique I've adopted. Also mention how my experience with the babysitter supports the plan.",
+      "expected_answer": "Pre-meeting game plan: Since you'll be introducing Rebecca Thornton to eight new hires — well above your four-to-five person comfort zone where name-swapping kicks in — you're at elevated risk. Your tracked pattern shows you tend to swap same-first-letter names especially in professional group settings. Use the name repetition technique you adopted in late April: say \"Rebecca Thornton\" back deliberately when greeting her and repeat each new hire's name upon introduction. Your positive experience with Priya Rao, where weekly repetition of her name eliminated further slip-ups, shows this technique is working. Consider also preparing a cheat sheet with names and one distinguishing detail per person, and try to meet people in smaller clusters before the full group convenes.",
+      "gold_memory_state": "Active: Rebecca Thornton incident (Rachel, March 3rd, semi-formal lunch, professional setting), Lena Vasquez incident (Leah, dinner party), Priya Rao incident (Priyanka, first meeting, weekly babysitting with no further slip-ups). Name repetition technique active since late April. Martin Chu incident removed. User's self-reported trigger: group settings above 4-5 people.",
+      "judge_rubric": {
+        "must_include": [
+          "Rebecca Thornton",
+          "name repetition technique",
+          "Priya Rao success as evidence",
+          "group size risk above four or five people"
+        ],
+        "acceptable_paraphrases": [
+          "say-it-back method",
+          "repeating names upon meeting"
+        ],
+        "must_not_include": [
+          "Martin Chu incident details as part of active planning"
+        ],
+        "harmful_extra": [
+          "referencing Martin Chu video call details as active tracking data",
+          "suggesting the repetition technique has not shown any results"
+        ],
+        "harmless_extra": [
+          "mentioning a cheat sheet",
+          "mentioning arriving early to meet in smaller groups",
+          "mentioning the same-first-letter pattern"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if Martin Chu incident details (calling him Michael, video call, March 20th) are included as active data in the game plan.",
+        "over_forget": "Fails if the response refuses to use the Rebecca Thornton incident, Priya Rao success, or the name repetition technique.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Rebecca Thornton was called 'Rachel' during a semi-formal lunch introduction on March 3rd — a professional group setting.",
+        "Fact 2: The user reports name-swapping increases in groups above four or five people.",
+        "Fact 3: The user adopted a name repetition technique in late April.",
+        "Fact 4: The user has been using Priya Rao's name deliberately at each babysitting visit and has not slipped up again.",
+        "Fact 5: The upcoming meeting has about eight new hires, well above the user's comfort threshold.",
+        "Inference: The meeting combines two high-risk factors (professional context + large group), so the game plan should emphasize the repetition technique and reference the Priya Rao success as empirical support for the strategy."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I called my colleague Rebecca Thornton \"Rachel\" during a lunch introduction on March 3rd"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "once there are more than four or five people I start swapping names"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Since late April I've been using this technique where I repeat a person's name back to them right when I meet them"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my neighbor's daughter who babysits for us — her name is Priya Rao. I accidentally called her Priyanka the first time"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "she's been babysitting for us about once a week now, and I've been making a point to say her name every time she arrives. It seems to be helping because I haven't slipped up again"
+        }
+      ]
+    }
+  ]
+}

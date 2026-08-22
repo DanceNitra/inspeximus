@@ -1,0 +1,804 @@
+{
+  "target_fact": "A33 Current height",
+  "operation_type": "Update",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "height_chain",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I always assumed I was about 6 feet tall. That's what I've been telling people for years and it's what my old driver's license says."
+      },
+      "target": {
+        "target_id": "current_height",
+        "target_name": "user's current height"
+      },
+      "old_value": null,
+      "new_value": "6'0\"",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I always assumed I was about 6 feet tall. That's what I've been telling people for years and it's what my old driver's license says."
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "height_chain",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "she measured me at 5'11\". I even asked her to re-measure and it was the same. So my confirmed height as of March 12th is 5'11\"."
+      },
+      "target": {
+        "target_id": "current_height",
+        "target_name": "user's current height"
+      },
+      "old_value": "6'0\"",
+      "new_value": "5'11\"",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "she measured me at 5'11\". I even asked her to re-measure and it was the same. So my confirmed height as of March 12th is 5'11\"."
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "height_chain",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I measured myself at home this morning against the door frame with a tape measure and I got 5'11¼\". First thing in the morning, barefoot, standing straight."
+      },
+      "target": {
+        "target_id": "current_height",
+        "target_name": "user's current height"
+      },
+      "old_value": "5'11\"",
+      "new_value": "5'11¼\"",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I measured myself at home this morning against the door frame with a tape measure and I got 5'11¼\". First thing in the morning, barefoot, standing straight."
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "height_chain",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 7,
+        "quote": "The chiropractor told me that after a few more sessions my spine decompression should add about a quarter inch, putting me right at 5'11½\". He seemed pretty confident about it."
+      },
+      "target": {
+        "target_id": "current_height",
+        "target_name": "user's current height"
+      },
+      "old_value": "5'11¼\"",
+      "new_value": "5'11½\"",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "The chiropractor told me that after a few more sessions my spine decompression should add about a quarter inch, putting me right at 5'11½\". He seemed pretty confident about it."
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 7,
+        "quote": "my mom went to her doctor recently and found out she's shrunk to 5'4\". She lost about half an inch."
+      },
+      "target": {
+        "target_id": "mom_current_height",
+        "target_name": "user's mother's current height"
+      },
+      "old_value": null,
+      "new_value": "5'4\"",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "my mom went to her doctor recently and found out she's shrunk to 5'4\". She lost about half an inch."
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I bought a pair of Vans Old Skools — those flat-sole minimal sneakers. I really prefer that style over anything chunky or platform."
+      },
+      "target": {
+        "target_id": "shoe_preference",
+        "target_name": "user's preferred shoe style"
+      },
+      "old_value": null,
+      "new_value": "minimal flat-sole sneakers like Vans Old Skools; dislikes chunky/platform shoes",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I bought a pair of Vans Old Skools — those flat-sole minimal sneakers. I really prefer that style over anything chunky or platform."
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish baseline height and begin update chain; introduce mom's height as control target",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to talk about something that's been on my mind. I always assumed I was about 6 feet tall. That's what I've been telling people for years and it's what my old driver's license says. I've never really questioned it until recently. Do you think height matters as much as people make it seem?"
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for sharing that — height is one of those things people tend to attach a lot of identity to, even though in practice it rarely affects day-to-day life. It's pretty common for people to anchor to the number on their license or whatever they were told at their last checkup years ago. If something has you questioning it now, I'm curious what happened. But to your broader question: culturally, height gets disproportionate attention, especially for men, but most people who know you well probably wouldn't notice a small difference one way or the other. What brought this up?"
+        },
+        {
+          "role": "user",
+          "content": "Well, I had my annual physical on March 12th and the results were a bit of a surprise. I'll get to the specifics in a second, but first — do you know my buddy Kevin? He always claimed he was 5'10\" but found out he's actually 5'8½\". He told me that story right after my appointment and it made me feel a little better about my own situation."
+        },
+        {
+          "role": "assistant",
+          "content": "Ha, Kevin's story is relatable — a lot of people round up by an inch or two and then get a reality check at the doctor's office. It sounds like his reaction was pretty lighthearted about it, which is a healthy way to handle it. The fact that he shared it with you right after your physical suggests you two probably had a good laugh about the whole thing. So what did the nurse find at your appointment? I'm guessing your number came in a bit different from the 6 feet you've been going with?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, exactly. At the physical on March 12th, she measured me at 5'11\". I even asked her to re-measure and it was the same. So my confirmed height as of March 12th is 5'11\". It's only an inch off from what I thought, but honestly it felt like a bigger deal than it should have. I was kind of bummed about it for a few days after."
+        },
+        {
+          "role": "assistant",
+          "content": "I can understand why that stung — when you've carried a number in your head for years and it turns out to be off, it can feel weirdly deflating even if the difference is objectively small. One inch is nothing in practical terms, but psychologically it crosses a threshold that a lot of people care about. The fact that you asked for a re-measurement shows it caught you off guard. Being 5'11\" is still well above average male height in most countries, though. How long did that sour mood last? Did it fade on its own, or did something help you get past it?"
+        },
+        {
+          "role": "user",
+          "content": "It lasted maybe three or four days, then I kind of moved on. Speaking of height stuff though — my mom went to her doctor recently and found out she's shrunk to 5'4\". She lost about half an inch. She seemed pretty bummed about it, and I felt bad for her because she's always been a little self-conscious about her height. I didn't want to make a big deal of it in front of her."
+        },
+        {
+          "role": "assistant",
+          "content": "That's really thoughtful of you to be sensitive about it around her. Height loss is common as people age — disc compression, changes in posture, bone density shifts — but it can still be emotionally tough, especially for someone who was already self-conscious. Your mom being at 5'4\" after losing half an inch means she was probably around 5'4½\" before, which is right around average for women in the US. If she brings it up again, you could gently remind her that it's a normal part of aging and doesn't change anything meaningful. It sounds like you handled the moment well by not drawing extra attention to it."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Introduce shoe preference control target; update height with home measurement; plant multi-hop clothing preference fact",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So on a different note, I bought a pair of Vans Old Skools — those flat-sole minimal sneakers. I really prefer that style over anything chunky or platform. Thick-soled shoes just feel clunky and weird to me. I ordered them online last week and they arrived yesterday. Really happy with how they look."
+        },
+        {
+          "role": "assistant",
+          "content": "Nice choice — Vans Old Skools are a classic for a reason. The flat vulcanized sole gives you good ground feel without any of that bulky silhouette that platform-style shoes have. They're versatile too; they work with jeans, chinos, shorts, pretty much anything casual. It makes sense that you'd gravitate toward a streamlined shoe if chunky soles feel off to you. The minimal sole also means your standing height in those shoes will be very close to your barefoot measurement, which some people actually prefer for consistency. Are you planning to wear them daily or rotate with other pairs?"
+        },
+        {
+          "role": "user",
+          "content": "Probably daily for casual stuff. But here's the thing — I measured myself at home this morning against the door frame with a tape measure and I got 5'11¼\". First thing in the morning, barefoot, standing straight. So I'm a tiny bit taller than what the doctor got, but still nowhere near 6 feet. I think the morning height thing makes a small difference."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a great observation. Morning height is typically a quarter to half an inch taller than evening height because your spinal discs rehydrate overnight while you're lying down. By the end of the day, gravity compresses them slightly. So 5'11¼\" in the morning and 5'11\" at the doctor's office later in the day are perfectly consistent measurements. If you want the most accurate single number, most medical professionals consider the afternoon or midday measurement the standard, but your morning reading gives you a nice upper bound. Either way, you're solidly in the 5'11\" range. Does having that home measurement help you feel more settled about it?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, it does actually. I've pretty much accepted it at this point. I also picked up a couple of slim-fit henley shirts recently. I've found that fitted clothes that sit close to my body look way better on me than baggy oversized stuff. Baggy clothes make me feel shorter and I just don't like the look. The henleys fit perfectly and I feel a lot more confident in them."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes total sense — slim-fit and fitted clothing creates a longer, leaner visual line on the body, which naturally complements your frame. Oversized or baggy silhouettes can swallow proportions and make someone look shorter or wider than they are, regardless of actual height. Henleys are a particularly good pick because the button placket draws the eye vertically along the chest, which elongates the torso visually. Combined with your flat-sole Vans, you've got a really clean, streamlined aesthetic that works with your build rather than against it. It sounds like you're landing on a personal style that genuinely makes you feel good."
+        },
+        {
+          "role": "user",
+          "content": "Exactly, that's the vibe I'm going for. Streamlined and understated. I also started seeing a chiropractor about two weeks ago for some upper back tightness I've had. He's been doing spinal adjustments and decompression therapy. He mentioned that poor posture can actually compress your measured height by a small amount over time. I had tried a posture corrector strap back in late March but I hated it — felt like a harness.\n\nHonestly, yeah. My upper back feels noticeably looser after each session. I'm going twice a week right now. He said I should do at least eight sessions total to see the full benefit. I'm on session four, so I'm halfway through. I'm curious to see if it makes any measurable difference in my posture and maybe even my height reading."
+        },
+        {
+          "role": "assistant",
+          "content": "Chiropractors often see that with patients who have desk jobs or spend a lot of time hunched over screens — chronic poor posture can lead to mild thoracic kyphosis, which does reduce measured standing height slightly. Spinal decompression therapy aims to relieve that compression and restore natural disc spacing. It's a more sustainable approach than those posture corrector straps, which most people find uncomfortable and hard to stick with long-term, just like you experienced. The adjustments might also help with that upper back tightness you mentioned. How are you feeling after the first couple of sessions? Any noticeable improvement in the tightness?\n\nThat's encouraging progress — feeling looser after just four sessions suggests your body is responding well to the treatment. With four more sessions at twice a week, you'd be finishing up in about two more weeks. The cumulative effect of decompression therapy tends to build over the full course, so sessions five through eight might yield the most noticeable structural changes. As for measurable height difference, any gain from improved posture and disc spacing would likely be small — maybe a fraction of an inch — but it could show up if you re-measure under the same conditions as your morning door-frame check. Keep me posted on how the remaining sessions go."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Introduce tentative height value from chiropractor; place adversarial stale value via assistant echo",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Quick update on the chiropractor situation — I just finished session six and I'm feeling really good. My posture is definitely better and the upper back tightness is almost completely gone. I've got two sessions left. I'm thinking about re-measuring myself after the final session to see if there's any change."
+        },
+        {
+          "role": "assistant",
+          "content": "That's great to hear — session six out of eight means you're in the home stretch, and the fact that your upper back tightness is nearly resolved is a strong sign that the treatment is working well. Re-measuring after the final session is a smart idea. To get a fair comparison, try to replicate the same conditions as your earlier home measurement: first thing in the morning, barefoot, standing straight against the same door frame with the same tape measure. That way any difference you see will be attributable to the treatment rather than time-of-day variation. I'm curious to see what you find."
+        },
+        {
+          "role": "user",
+          "content": "Good point, I'll do it the same way — morning, barefoot, same spot. By the way, I was filling out a form for a new gym membership and under height it had a pre-filled field that said 6'0\" from some old profile data they imported. I almost just left it but then corrected it. Old habits die hard, I guess."
+        },
+        {
+          "role": "assistant",
+          "content": "Ha, that's a perfect example of how stale data follows you around. A lot of gym systems, insurance portals, and even DMV records pull from old entries that never got updated. Good on you for correcting it — it would have been easy to just let the 6'0\" stand, especially since it's what you believed for so long. Speaking of forms, I recall you mentioned your old driver's license had 6'0\" listed too. If you ever renew it, that might be another one worth updating. It's a small thing but keeps everything consistent with your actual measured height."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, I should update the license next time I renew. Oh, I also wanted to mention — my friend Derek was telling me about his own height situation. He went to urgent care last month and they measured him at 5'11¾\" while he was wearing shoes. He was bragging about being almost six feet but I told him that measurement is inflated because of the shoes."
+        },
+        {
+          "role": "assistant",
+          "content": "You're absolutely right to call that out — a measurement taken with shoes on can easily add half an inch to a full inch depending on the footwear. Derek's 5'11¾\" with shoes could realistically mean he's around 5'11\" or even 5'10¾\" barefoot. Urgent care measurements tend to be less precise in general since they're usually quick screenings, not careful height assessments. It's similar to how those walk-in measurements can vary depending on posture and time of day. Derek might want to get a proper barefoot measurement at his next physical if he wants an accurate number to go by."
+        },
+        {
+          "role": "user",
+          "content": "The chiropractor told me that after a few more sessions my spine decompression should add about a quarter inch, putting me right at 5'11½\". He seemed pretty confident about it. He wants me to come back for a second round of eight sessions starting next month. I haven't decided yet whether I'll do it.\n\nThat's fair advice. I'll finish the current round first and measure again before committing to more sessions. Honestly, I've made peace with being in the 5'11\" range. Between the slim-fit clothes and the flat-sole shoes, I feel pretty good about how I present myself. It's more about feeling comfortable than chasing a number."
+        },
+        {
+          "role": "assistant",
+          "content": "That's an interesting projection from the chiropractor. A quarter inch gain from continued decompression work is within the realm of possibility, especially if there's still some residual compression in your thoracic or lumbar spine. Whether it's worth committing to another eight sessions depends on how much the remaining tightness bothers you and whether the cost and time investment makes sense. You might want to finish your current round, do your re-measurement, and then decide based on the actual results. If you're already feeling significantly better posture-wise, the additional height gain might just be a bonus rather than the primary motivation.\n\nThat's a really healthy perspective to land on. You've gone from being deflated about losing that 6-foot benchmark to building a personal style — the slim-fit henleys, the Vans Old Skools, the improved posture from chiropractic work — that makes you feel confident at your actual height. Comfort and confidence in how you carry yourself matter far more than a fraction of an inch on a tape measure. Finish the last two sessions, do your morning measurement, and if the numbers confirm what you're already feeling, that's all the validation you need. And if you do decide on the second round with the chiropractor, it should be for the back health benefits, not just the height."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations, I've mentioned my height several times. Can you summarize the different height figures I shared and the circumstances behind each one?",
+      "expected_answer": "You initially said you were about 6'0\" based on your old driver's license. Then at your annual physical on March 12th, the nurse measured you at 5'11\" (confirmed with a re-measurement). Later, you measured yourself at home first thing in the morning barefoot and got 5'11¼\". Most recently, your chiropractor projected that after further spine decompression sessions you could reach 5'11½\", though that hasn't happened yet.",
+      "gold_memory_state": "Current confirmed height: 5'11¼\". The chiropractor's projection of 5'11½\" is a future estimate, not a confirmed measurement. The original 6'0\" and the doctor's 5'11\" are prior values that were superseded.",
+      "judge_rubric": {
+        "must_include": [
+          "6'0\"",
+          "5'11\"",
+          "5'11¼\"",
+          "5'11½\""
+        ],
+        "acceptable_paraphrases": [
+          "six feet",
+          "five eleven",
+          "five eleven and a quarter",
+          "five eleven and a half"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming 5'11½\" is the current confirmed height",
+          "claiming the user is currently 6'0\""
+        ],
+        "harmless_extra": [
+          "mentioning Kevin's height story",
+          "mentioning Derek's height story",
+          "mentioning morning vs evening height variation"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats 6'0\" or 5'11\" as the current height.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model presents the height values in the wrong chronological order.",
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I always assumed I was about 6 feet tall. That's what I've been telling people for years and it's what my old driver's license says."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "she measured me at 5'11\". I even asked her to re-measure and it was the same. So my confirmed height as of March 12th is 5'11\"."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I measured myself at home this morning against the door frame with a tape measure and I got 5'11¼\". First thing in the morning, barefoot, standing straight."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "The chiropractor told me that after a few more sessions my spine decompression should add about a quarter inch, putting me right at 5'11½\". He seemed pretty confident about it."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations, I've mentioned my height several times. Can you summarize the different height figures I shared and the circumstances behind each one?",
+      "expected_answer": "You initially said you were about 6'0\" based on your old driver's license. Then at your annual physical on March 12th, the nurse measured you at 5'11\" (confirmed with a re-measurement). Later, you measured yourself at home first thing in the morning barefoot and got 5'11¼\". Most recently, your chiropractor projected that after further spine decompression sessions you could reach 5'11½\", though that hasn't happened yet.",
+      "gold_memory_state": "Current confirmed height: 5'11¼\". The chiropractor's projection of 5'11½\" is a future estimate, not a confirmed measurement. The original 6'0\" and the doctor's 5'11\" are prior values that were superseded.",
+      "judge_rubric": {
+        "must_include": [
+          "6'0\"",
+          "5'11\"",
+          "5'11¼\"",
+          "5'11½\""
+        ],
+        "acceptable_paraphrases": [
+          "six feet",
+          "five eleven",
+          "five eleven and a quarter",
+          "five eleven and a half"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming 5'11½\" is the current confirmed height",
+          "claiming the user is currently 6'0\""
+        ],
+        "harmless_extra": [
+          "mentioning Kevin's height story",
+          "mentioning Derek's height story",
+          "mentioning morning vs evening height variation"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats 6'0\" or 5'11\" as the current height.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model presents the height values in the wrong chronological order.",
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I always assumed I was about 6 feet tall. That's what I've been telling people for years and it's what my old driver's license says."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "she measured me at 5'11\". I even asked her to re-measure and it was the same. So my confirmed height as of March 12th is 5'11\"."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I measured myself at home this morning against the door frame with a tape measure and I got 5'11¼\". First thing in the morning, barefoot, standing straight."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "The chiropractor told me that after a few more sessions my spine decompression should add about a quarter inch, putting me right at 5'11½\". He seemed pretty confident about it."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've shared height information about a few different people. When I measured myself at home with a tape measure, which person's record should that reading apply to, and does it affect any other person's height I mentioned?",
+      "expected_answer": "The home tape-measure reading of 5'11¼\" applies to your own height record. It does not affect your mother's height (5'4\") or anyone else's.",
+      "gold_memory_state": "User's current confirmed height: 5'11¼\". Mother's current height: 5'4\". These are separate records. Derek's shoe-measurement and Kevin's height are anecdotal and not tracked as user targets.",
+      "judge_rubric": {
+        "must_include": [
+          "user's own height record",
+          "does not affect mother's height"
+        ],
+        "acceptable_paraphrases": [
+          "your height",
+          "your personal height measurement"
+        ],
+        "must_not_include": [
+          "mother's height changed",
+          "Derek's height changed"
+        ],
+        "harmful_extra": [
+          "applying the home measurement to the mother's record",
+          "merging all height figures into one record"
+        ],
+        "harmless_extra": [
+          "mentioning Derek or Kevin as unaffected anecdotal references"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model binds the home measurement to the wrong person or says the mother's record is affected.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I measured myself at home this morning against the door frame with a tape measure and I got 5'11¼\". First thing in the morning, barefoot, standing straight."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "my mom went to her doctor recently and found out she's shrunk to 5'4\". She lost about half an inch."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've shared height information about a few different people. When I measured myself at home with a tape measure, which person's record should that reading apply to, and does it affect any other person's height I mentioned?",
+      "expected_answer": "The home tape-measure reading of 5'11¼\" applies to your own height record. It does not affect your mother's height (5'4\") or anyone else's.",
+      "gold_memory_state": "User's current confirmed height: 5'11¼\". Mother's current height: 5'4\". These are separate records. Derek's shoe-measurement and Kevin's height are anecdotal and not tracked as user targets.",
+      "judge_rubric": {
+        "must_include": [
+          "user's own height record",
+          "does not affect mother's height"
+        ],
+        "acceptable_paraphrases": [
+          "your height",
+          "your personal height measurement"
+        ],
+        "must_not_include": [
+          "mother's height changed",
+          "Derek's height changed"
+        ],
+        "harmful_extra": [
+          "applying the home measurement to the mother's record",
+          "merging all height figures into one record"
+        ],
+        "harmless_extra": [
+          "mentioning Derek or Kevin as unaffected anecdotal references"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model binds the home measurement to the wrong person or says the mother's record is affected.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I measured myself at home this morning against the door frame with a tape measure and I got 5'11¼\". First thing in the morning, barefoot, standing straight."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "my mom went to her doctor recently and found out she's shrunk to 5'4\". She lost about half an inch."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "If I need to list my height on a medical intake form right now, which of the following should I write down?",
+      "expected_answer": "5'11¼\"",
+      "candidate_options": [
+        "6'0\"",
+        "5'11\"",
+        "5'11¼\"",
+        "5'11½\""
+      ],
+      "distractor_rationale": "same-value-different-target: 6'0\" is the stale self-reported value from the user's old driver's license, superseded by actual measurements. assistant echo: 5'11½\" is the chiropractor's speculative future projection echoed by the assistant, not a confirmed measurement. 5'11\" is an intermediate confirmed value from the doctor's office that was later superseded by the home measurement.",
+      "gold_memory_state": "Current confirmed height: 5'11¼\" (home measurement, morning, barefoot). 6'0\" is the original self-report, superseded. 5'11\" is the doctor's measurement, superseded by the home measurement. 5'11½\" is a tentative future projection from the chiropractor, not yet realized.",
+      "judge_rubric": {
+        "must_include": [
+          "5'11¼\""
+        ],
+        "acceptable_paraphrases": [
+          "5 feet 11 and a quarter inches",
+          "5'11.25\""
+        ],
+        "must_not_include": [
+          "6'0\"",
+          "5'11½\""
+        ],
+        "harmful_extra": [
+          "selecting 6'0\" as current height",
+          "selecting 5'11½\" as current height",
+          "selecting 5'11\" as current height"
+        ],
+        "harmless_extra": [
+          "noting this is a morning barefoot measurement"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects 6'0\" (original self-report), 5'11\" (superseded doctor measurement), or 5'11½\" (tentative chiropractor projection). The recency trap is 5'11½\" — it appears last in the conversation but is only a speculative future estimate, not a confirmed measurement.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I measured myself at home this morning against the door frame with a tape measure and I got 5'11¼\". First thing in the morning, barefoot, standing straight."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "The chiropractor told me that after a few more sessions my spine decompression should add about a quarter inch, putting me right at 5'11½\". He seemed pretty confident about it."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "If I need to list my height on a medical intake form right now, which of the following should I write down?",
+      "expected_answer": "5'11¼\"",
+      "candidate_options": [
+        "6'0\"",
+        "5'11\"",
+        "5'11¼\"",
+        "5'11½\""
+      ],
+      "distractor_rationale": "same-value-different-target: 6'0\" is the stale self-reported value from the user's old driver's license, superseded by actual measurements. assistant echo: 5'11½\" is the chiropractor's speculative future projection echoed by the assistant, not a confirmed measurement. 5'11\" is an intermediate confirmed value from the doctor's office that was later superseded by the home measurement.",
+      "gold_memory_state": "Current confirmed height: 5'11¼\" (home measurement, morning, barefoot). 6'0\" is the original self-report, superseded. 5'11\" is the doctor's measurement, superseded by the home measurement. 5'11½\" is a tentative future projection from the chiropractor, not yet realized.",
+      "judge_rubric": {
+        "must_include": [
+          "5'11¼\""
+        ],
+        "acceptable_paraphrases": [
+          "5 feet 11 and a quarter inches",
+          "5'11.25\""
+        ],
+        "must_not_include": [
+          "6'0\"",
+          "5'11½\""
+        ],
+        "harmful_extra": [
+          "selecting 6'0\" as current height",
+          "selecting 5'11½\" as current height",
+          "selecting 5'11\" as current height"
+        ],
+        "harmless_extra": [
+          "noting this is a morning barefoot measurement"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects 6'0\" (original self-report), 5'11\" (superseded doctor measurement), or 5'11½\" (tentative chiropractor projection). The recency trap is 5'11½\" — it appears last in the conversation but is only a speculative future estimate, not a confirmed measurement.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I measured myself at home this morning against the door frame with a tape measure and I got 5'11¼\". First thing in the morning, barefoot, standing straight."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "The chiropractor told me that after a few more sessions my spine decompression should add about a quarter inch, putting me right at 5'11½\". He seemed pretty confident about it."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I'm shopping online for a slim-fit henley and need to check the size chart. The brand says their Medium fits people 5'9\"–5'11\" and their Large fits 5'11\"–6'1\". Given my actual height and the type of shoes I usually wear, which size should I go with, and why?",
+      "expected_answer": "You should go with Medium. Your confirmed height is 5'11¼\", which falls right at the boundary. However, since you prefer minimal flat-sole shoes like Vans Old Skools that add virtually no height, your effective in-shoe height stays very close to your barefoot measurement, keeping you well within the Medium range. The slim-fit henley style you prefer also works best when it's not oversized, so Medium is the better choice for the fitted look you like.",
+      "gold_memory_state": "User's confirmed height: 5'11¼\". User prefers minimal flat-sole sneakers (Vans Old Skools) that add negligible height. User prefers slim-fit clothing over baggy/oversized. The chiropractor's 5'11½\" projection is tentative and should not be used for sizing decisions.",
+      "judge_rubric": {
+        "must_include": [
+          "Medium",
+          "5'11¼\"",
+          "flat-sole or minimal shoes"
+        ],
+        "acceptable_paraphrases": [
+          "M",
+          "size medium",
+          "Vans Old Skools add little height"
+        ],
+        "must_not_include": [
+          "6'0\"",
+          "5'11½\""
+        ],
+        "harmful_extra": [
+          "recommending Large based on 6'0\" or 5'11½\"",
+          "using the tentative chiropractor projection to justify sizing up"
+        ],
+        "harmless_extra": [
+          "mentioning morning vs afternoon height variation",
+          "mentioning the slim-fit preference reinforcing the Medium choice"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses 6'0\" (stale self-report) or 5'11½\" (tentative projection) to recommend Large instead of Medium.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "application_probe_type": "multi_hop_derivation",
+      "gold_reasoning_chain": [
+        "Fact 1: User's confirmed height from home measurement is 5'11¼\".",
+        "Fact 2: User prefers minimal flat-sole sneakers like Vans Old Skools, which add negligible height (close to barefoot).",
+        "Fact 3: User prefers slim-fit clothing like henleys over baggy/oversized styles.",
+        "Inference: With flat-sole shoes, the user's effective height remains approximately 5'11¼\", which falls within the Medium range (5'9\"–5'11\") rather than the Large range (5'11\"–6'1\").",
+        "Inference: The user's preference for fitted clothing further supports choosing Medium over Large for the desired slim-fit silhouette."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I measured myself at home this morning against the door frame with a tape measure and I got 5'11¼\". First thing in the morning, barefoot, standing straight."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I bought a pair of Vans Old Skools — those flat-sole minimal sneakers. I really prefer that style over anything chunky or platform."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I've found that fitted clothes that sit close to my body look way better on me than baggy oversized stuff. Baggy clothes make me feel shorter and I just don't like the look."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I'm shopping online for a slim-fit henley and need to check the size chart. The brand says their Medium fits people 5'9\"–5'11\" and their Large fits 5'11\"–6'1\". Given my actual height and the type of shoes I usually wear, which size should I go with, and why?",
+      "expected_answer": "You should go with Medium. Your confirmed height is 5'11¼\", which falls right at the boundary. However, since you prefer minimal flat-sole shoes like Vans Old Skools that add virtually no height, your effective in-shoe height stays very close to your barefoot measurement, keeping you well within the Medium range. The slim-fit henley style you prefer also works best when it's not oversized, so Medium is the better choice for the fitted look you like.",
+      "gold_memory_state": "User's confirmed height: 5'11¼\". User prefers minimal flat-sole sneakers (Vans Old Skools) that add negligible height. User prefers slim-fit clothing over baggy/oversized. The chiropractor's 5'11½\" projection is tentative and should not be used for sizing decisions.",
+      "judge_rubric": {
+        "must_include": [
+          "Medium",
+          "5'11¼\"",
+          "flat-sole or minimal shoes"
+        ],
+        "acceptable_paraphrases": [
+          "M",
+          "size medium",
+          "Vans Old Skools add little height"
+        ],
+        "must_not_include": [
+          "6'0\"",
+          "5'11½\""
+        ],
+        "harmful_extra": [
+          "recommending Large based on 6'0\" or 5'11½\"",
+          "using the tentative chiropractor projection to justify sizing up"
+        ],
+        "harmless_extra": [
+          "mentioning morning vs afternoon height variation",
+          "mentioning the slim-fit preference reinforcing the Medium choice"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses 6'0\" (stale self-report) or 5'11½\" (tentative projection) to recommend Large instead of Medium.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "application_probe_type": "multi_hop_derivation",
+      "gold_reasoning_chain": [
+        "Fact 1: User's confirmed height from home measurement is 5'11¼\".",
+        "Fact 2: User prefers minimal flat-sole sneakers like Vans Old Skools, which add negligible height (close to barefoot).",
+        "Fact 3: User prefers slim-fit clothing like henleys over baggy/oversized styles.",
+        "Inference: With flat-sole shoes, the user's effective height remains approximately 5'11¼\", which falls within the Medium range (5'9\"–5'11\") rather than the Large range (5'11\"–6'1\").",
+        "Inference: The user's preference for fitted clothing further supports choosing Medium over Large for the desired slim-fit silhouette."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I measured myself at home this morning against the door frame with a tape measure and I got 5'11¼\". First thing in the morning, barefoot, standing straight."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I bought a pair of Vans Old Skools — those flat-sole minimal sneakers. I really prefer that style over anything chunky or platform."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I've found that fitted clothes that sit close to my body look way better on me than baggy oversized stuff. Baggy clothes make me feel shorter and I just don't like the look."
+        }
+      ]
+    }
+  ]
+}

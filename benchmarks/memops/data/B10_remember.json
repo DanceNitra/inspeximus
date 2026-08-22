@@ -1,0 +1,1025 @@
+{
+  "target_fact": "User's kitten named Mochi, a calico adopted around March 3rd, registered at Dr. Patel's vet clinic on Elm Street under the last name Chen, weighing 1.4 kg at her April 8th checkup",
+  "operation_type": "Remember",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 3,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": true,
+      "never_stored_target": "Mochi's vaccination schedule"
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I adopted my kitten Mochi on March 3rd. She's a calico, mostly white with orange and black patches on her face."
+      },
+      "target": {
+        "target_id": "mochi_adoption_date",
+        "target_name": "Mochi's adoption date"
+      },
+      "old_value": null,
+      "new_value": "March 3rd",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I adopted my kitten Mochi on March 3rd."
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I registered Mochi at Dr. Patel's vet clinic on Elm Street. They have her on file under my last name, Chen."
+      },
+      "target": {
+        "target_id": "mochi_vet_clinic",
+        "target_name": "Mochi's vet clinic and registration name"
+      },
+      "old_value": null,
+      "new_value": "Dr. Patel's vet clinic on Elm Street, registered under the last name Chen",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I registered Mochi at Dr. Patel's vet clinic on Elm Street. They have her on file under my last name, Chen."
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "Her first checkup was on April 8th and she weighed 1.4 kg."
+      },
+      "target": {
+        "target_id": "mochi_first_checkup",
+        "target_name": "Mochi's first vet checkup date and weight"
+      },
+      "old_value": null,
+      "new_value": "April 8th, weight 1.4 kg",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Her first checkup was on April 8th and she weighed 1.4 kg."
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "The vet said kittens her age should gain about 0.5 kg per month with proper nutrition."
+      },
+      "target": {
+        "target_id": "mochi_expected_weight_gain",
+        "target_name": "Mochi's expected monthly weight gain rate"
+      },
+      "old_value": null,
+      "new_value": "0.5 kg per month",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "The vet said kittens her age should gain about 0.5 kg per month with proper nutrition."
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "My roommate Sara has a golden retriever named Biscuit. She got him last year."
+      },
+      "target": {
+        "target_id": "sara_dog_biscuit",
+        "target_name": "Roommate Sara's dog name and breed"
+      },
+      "old_value": null,
+      "new_value": "Golden retriever named Biscuit, got him last year",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My roommate Sara has a golden retriever named Biscuit. She got him last year."
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 1,
+        "quote": "Mochi's next vet appointment is scheduled for three months after her first checkup."
+      },
+      "target": {
+        "target_id": "mochi_next_appointment_interval",
+        "target_name": "Mochi's next vet appointment interval from first checkup"
+      },
+      "old_value": null,
+      "new_value": "3 months after first checkup",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "Mochi's next vet appointment is scheduled for three months after her first checkup."
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establishing core pet facts: adoption date, roommate's pet, vet registration",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to tell you about my new pet so you can help me keep track of things. I adopted my kitten Mochi on March 3rd. She's a calico, mostly white with orange and black patches on her face. I've been wanting a cat for weeks and I finally went through with it. She's already the best thing in my apartment."
+        },
+        {
+          "role": "assistant",
+          "content": "That's wonderful — congratulations on adopting Mochi! A calico with white, orange, and black patches sounds absolutely adorable. March 3rd is a great date to remember as her 'gotcha day.' I'd be happy to help you keep track of anything related to her — vet appointments, feeding schedules, milestones, whatever you need. Is there anything specific you'd like to organize or remember about Mochi right now, or shall we just build up a profile over time?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, let me tell you about the other pet in the house too, since it matters for how things work at home. My roommate Sara has a golden retriever named Biscuit. She got him last year. He and Mochi are slowly getting used to each other. Sara picked the name Biscuit because he was the color of a shortbread cookie as a puppy, which I thought was pretty cute honestly."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a sweet naming story for Biscuit — shortbread-colored golden retriever puppy is a perfect visual. It sounds like Sara has good taste in pet names too. The adjustment period between a kitten and a dog can take a little while, but golden retrievers tend to be gentle, so hopefully Biscuit and Mochi will be best friends eventually. It's useful to know there's another pet in the household since that can affect things like feeding areas, vet scheduling, and making sure both animals have safe spaces. Let me know how their relationship progresses!"
+        },
+        {
+          "role": "user",
+          "content": "So I got Mochi set up with a vet recently. I registered Mochi at Dr. Patel's vet clinic on Elm Street. They have her on file under my last name, Chen. It was a relief to get that squared away because I'd been putting it off. The clinic came highly recommended by a friend of mine."
+        },
+        {
+          "role": "assistant",
+          "content": "Great choice getting her registered at Dr. Patel's clinic on Elm Street — it's always a weight off your shoulders to have a vet lined up, especially with a young kitten. Having her on file under Chen means everything should be easy to look up when you call in. Since Mochi was just adopted in early March, she'll probably need a series of initial checkups and possibly vaccinations depending on what the shelter already did. Do you know if the shelter gave you any medical records for her, or will Dr. Patel's office be starting from scratch?"
+        },
+        {
+          "role": "user",
+          "content": "The shelter gave me a basic record but it was pretty sparse. Dr. Patel's office said they'd build a full file from her first visit onward. By the way, I keep having to correct people who call her Momo or other variations. Her name is Mochi — that's important to me. I put thought into choosing it over other options like Clover, which my roommate Sara had pushed for.\n\nThat would be helpful actually, but let me give you more details about the checkup first in our next conversation. I also want to mention that the shelter had listed her under the name Princess, but nobody uses that anymore — it was just a temporary tag. You can completely disregard that name. Mochi is the only name that matters for her."
+        },
+        {
+          "role": "assistant",
+          "content": "I completely understand the frustration with people getting her name wrong — you chose Mochi deliberately, and it's a lovely name. It has that soft, rounded quality that really suits a kitten. I can see why you went with it over Clover, even if Sara had a preference. For what it's worth, I'll always use Mochi and nothing else. Once Dr. Patel's office builds out her full medical file from the first visit, you'll have a solid baseline. Would you like me to help you prepare a list of questions or concerns for that first checkup?\n\nUnderstood — Princess was just the shelter's placeholder and has no relevance now. Mochi is her name, full stop. I'll disregard Princess entirely going forward. Whenever you're ready to share the details from her first checkup at Dr. Patel's, I'll be here to help you organize everything. We can put together a health timeline, track her weight, plan future appointments — whatever's most useful. Just pick up whenever you'd like!"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establishing checkup details, weight, and expected growth rate",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Okay, so about that first vet visit. Her first checkup was on April 8th and she weighed 1.4 kg. Dr. Patel said she looked healthy overall, good coat condition, no signs of parasites. I was relieved because I'd been a little anxious about bringing a shelter kitten to the vet for the first time — you never know what they might find."
+        },
+        {
+          "role": "assistant",
+          "content": "That's really reassuring news — 1.4 kg on April 8th with a clean bill of health is a great start for Mochi. A healthy coat and no parasites means the shelter did a decent job with her initial care, and Dr. Patel can build on that foundation. It's completely normal to feel anxious before that first visit, but it sounds like everything went smoothly. I'll note her baseline weight at 1.4 kg from April 8th so we can track her growth over time. Did Dr. Patel recommend any specific follow-up schedule or dietary guidance?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, Dr. Patel gave me a feeding plan — high-protein kitten food, three small meals a day. She also said to keep Mochi indoors only for now, at least until she's fully vaccinated and a bit bigger. I've been following that pretty closely. Sara helps out sometimes with the midday feeding when I'm at work, which is nice."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a solid feeding plan — high-protein kitten food split into three meals is standard best practice for kittens Mochi's age and size. Keeping her indoors until she's fully vaccinated and bigger is wise too, especially with Biscuit in the house; it gives her a controlled environment to grow in. It's great that Sara can cover the midday feeding when you're at work — consistency in meal timing really helps kittens develop good eating habits. Are you tracking which brand of food you're using, or would you like me to note that down too?"
+        },
+        {
+          "role": "user",
+          "content": "The vet said kittens her age should gain about 0.5 kg per month with proper nutrition. So I've been keeping an eye on that. I bought a little kitchen scale to weigh her at home between vet visits. It makes me feel better to see she's on track. I think the consistency of three meals a day is helping."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really smart approach — 0.5 kg per month is a healthy growth rate for a kitten, and having a kitchen scale at home lets you catch any dips or plateaus early without waiting for the next vet visit. With her starting at 1.4 kg on April 8th, you can chart her expected weight month by month and compare it against the actual readings. The three-meal consistency is definitely contributing to steady growth. Would you like me to help you set up a simple weight-tracking timeline so you can log her measurements and see the trend at a glance?"
+        },
+        {
+          "role": "user",
+          "content": "That would be great, yeah. I'll start logging weights weekly. Oh, I also wanted to mention — Mochi has finally started responding to her name. It took almost two months from when I adopted her, but now she flicks her ears and sometimes trots over when I call her. It's such a small thing but it makes me so happy.\n\nSaturday mornings sound perfect. I'll start this weekend. I'm also thinking about what questions to bring to her next vet visit, but I'll figure that out closer to the date. For now I just wanted to make sure you had all the key info about Mochi's health baseline."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a wonderful milestone! Two months is actually quite normal for a kitten to start reliably responding to their name, so Mochi is right on schedule. The ear-flick-and-trot combo is a classic sign that she's bonded with you and recognizes your voice as something positive. Those small moments really are the best part of having a pet. For the weight tracking, I'd suggest weighing her at the same time each week — maybe Saturday mornings before her first meal — so the readings are consistent. I can help you set up a simple log whenever you're ready.\n\nYou've given me a great foundation to work with. I have Mochi's adoption date, her vet clinic and registration details, her April 8th checkup baseline at 1.4 kg, the expected growth rate of 0.5 kg per month, and the feeding plan from Dr. Patel. That's a solid health profile to build on. When her next appointment gets closer, we can put together a list of questions — things like vaccination timeline, when she might be cleared for outdoor access, and any behavioral observations worth mentioning. Just let me know when you're ready to plan for that. Happy weighing this Saturday!"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Establishing next appointment interval, adversarial injection of look-alike weight, and wrapping up",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So I checked with Dr. Patel's office and Mochi's next vet appointment is scheduled for three months after her first checkup. They said that's the standard interval for kittens in their first year. I want to make sure I'm prepared for it and have all my weight logs ready to show Dr. Patel."
+        },
+        {
+          "role": "assistant",
+          "content": "Three months after her April 8th first checkup puts the next appointment right around July 8th — that's a good timeline for a kitten in her first year. By then you'll have about twelve weekly weight readings to show Dr. Patel, which will give a clear picture of Mochi's growth trajectory. Speaking of weight tracking, I noticed that Sara mentioned Biscuit weighed 2.3 kg at his first puppy checkup last year — interesting how different species start at such different baselines. For Mochi, with her 1.4 kg starting point and the expected 0.5 kg monthly gain, Dr. Patel should see nice progress by July."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, Biscuit was a lot bigger as a puppy obviously. Anyway, I want to think about what I should ask at that July appointment. Definitely want to ask about her vaccination schedule and when she might be big enough to safely interact with Biscuit without supervision. Right now we still separate them when we're not home."
+        },
+        {
+          "role": "assistant",
+          "content": "Those are both excellent questions for the July visit. For vaccinations, Dr. Patel can review what Mochi has already received from the shelter records and map out any remaining shots she needs in her first year. For the Biscuit interaction question, the vet can assess Mochi's size and confidence level and give you a realistic timeline for unsupervised time together. You might also want to ask about flea and tick prevention since Biscuit goes outside, and whether Mochi needs any deworming boosters. I'd suggest writing these down in a notes app so you don't forget anything on the day."
+        },
+        {
+          "role": "user",
+          "content": "Good idea. I'll start a running list. I've also been thinking about getting Mochi a microchip if she doesn't already have one from the shelter. I'll ask Dr. Patel about that too. It would give me peace of mind in case she ever got out somehow, especially since we're on the first floor and the windows are sometimes open."
+        },
+        {
+          "role": "assistant",
+          "content": "Microchipping is a really smart move, especially with first-floor windows. It's a quick procedure — Dr. Patel can probably do it right at the July appointment if Mochi doesn't already have one. You'll want to confirm with the shelter records first; some shelters microchip before adoption and you'd just need to update the registration info to your name and contact details. If she does need a new chip, make sure the registration database has your current phone number and address, and list Sara as an emergency contact if you'd like. Adding that to your questions list would be perfect."
+        },
+        {
+          "role": "user",
+          "content": "That's a great point about checking the shelter records first. I'll dig those out this weekend. You know, it's funny — I was browsing pet name forums the other day and saw someone named their cat Dumpling. I loved that. It's exactly the kind of name I'd pick if I ever got a second cat. Names like Shadow or Midnight feel way too dramatic for my taste.\n\nYes please, draft that checklist for me. Include the vaccination question, the Biscuit interaction question, the microchip question, and also ask about whether her growth is on track given the 0.5 kg per month expectation. I want to cover all the bases at that appointment."
+        },
+        {
+          "role": "assistant",
+          "content": "Dumpling is such a perfect fit for your naming style — it has that same soft, warm, food-inspired quality as Mochi. You clearly have a consistent aesthetic when it comes to pet names, and I think that's charming. Shadow and Midnight are popular, but they do have a very different vibe — more mysterious and dramatic, which doesn't match the cozy feeling you seem to go for. If a second cat ever does come along, you've already got a shortlist started! For now though, let's focus on getting Mochi's July appointment squared away. Shall I draft a checklist of questions to bring?\n\nHere's your checklist for Mochi's next vet appointment:\n\n1. **Vaccination schedule** — Review what's been administered so far and map out remaining first-year vaccines.\n2. **Biscuit interaction** — Ask when Mochi will be big and confident enough for unsupervised time with Biscuit, and any safety tips in the meantime.\n3. **Microchip status** — Check shelter records for an existing chip; if none, schedule the procedure at this visit.\n4. **Growth tracking** — Share your weekly weight logs and ask Dr. Patel whether Mochi is meeting the 0.5 kg/month benchmark.\n5. **Flea/tick prevention** — Since Biscuit goes outside, confirm whether Mochi needs preventative treatment.\n6. **Deworming boosters** — Ask if any follow-up deworming is needed.\n\nFeel free to add anything else that comes up between now and July!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize the key details I've shared with you about Mochi's veterinary care and health baseline?",
+      "expected_answer": "Mochi is registered at Dr. Patel's vet clinic on Elm Street under the last name Chen. Her first checkup was on April 8th, where she weighed 1.4 kg and was found healthy with good coat condition and no parasites. The vet said kittens her age should gain about 0.5 kg per month with proper nutrition. Her next vet appointment is scheduled for three months after that first checkup.",
+      "gold_memory_state": "All vet-related facts are confirmed and active: clinic registration (Dr. Patel's on Elm Street, under Chen), first checkup (April 8th, 1.4 kg, healthy), expected growth rate (0.5 kg/month), next appointment interval (3 months after first checkup).",
+      "judge_rubric": {
+        "must_include": [
+          "Dr. Patel",
+          "Elm Street",
+          "Chen",
+          "April 8th",
+          "1.4 kg",
+          "0.5 kg per month",
+          "three months"
+        ],
+        "acceptable_paraphrases": [
+          "half a kilogram per month",
+          "3 months after first checkup"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "inventing vaccination details that were never confirmed",
+          "stating a specific next appointment date without showing the derivation"
+        ],
+        "harmless_extra": [
+          "healthy coat",
+          "no parasites",
+          "high-protein kitten food",
+          "three meals a day"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I registered Mochi at Dr. Patel's vet clinic on Elm Street. They have her on file under my last name, Chen."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Her first checkup was on April 8th and she weighed 1.4 kg."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "The vet said kittens her age should gain about 0.5 kg per month with proper nutrition."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "Mochi's next vet appointment is scheduled for three months after her first checkup."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize the key details I've shared with you about Mochi's veterinary care and health baseline?",
+      "expected_answer": "Mochi is registered at Dr. Patel's vet clinic on Elm Street under the last name Chen. Her first checkup was on April 8th, where she weighed 1.4 kg and was found healthy with good coat condition and no parasites. The vet said kittens her age should gain about 0.5 kg per month with proper nutrition. Her next vet appointment is scheduled for three months after that first checkup.",
+      "gold_memory_state": "All vet-related facts are confirmed and active: clinic registration (Dr. Patel's on Elm Street, under Chen), first checkup (April 8th, 1.4 kg, healthy), expected growth rate (0.5 kg/month), next appointment interval (3 months after first checkup).",
+      "judge_rubric": {
+        "must_include": [
+          "Dr. Patel",
+          "Elm Street",
+          "Chen",
+          "April 8th",
+          "1.4 kg",
+          "0.5 kg per month",
+          "three months"
+        ],
+        "acceptable_paraphrases": [
+          "half a kilogram per month",
+          "3 months after first checkup"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "inventing vaccination details that were never confirmed",
+          "stating a specific next appointment date without showing the derivation"
+        ],
+        "harmless_extra": [
+          "healthy coat",
+          "no parasites",
+          "high-protein kitten food",
+          "three meals a day"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I registered Mochi at Dr. Patel's vet clinic on Elm Street. They have her on file under my last name, Chen."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Her first checkup was on April 8th and she weighed 1.4 kg."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "The vet said kittens her age should gain about 0.5 kg per month with proper nutrition."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "Mochi's next vet appointment is scheduled for three months after her first checkup."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "There are two pets in my household. If Dr. Patel's clinic calls about an upcoming appointment, which pet's record is that appointment for, and does the other pet have anything on file at that clinic?",
+      "expected_answer": "The upcoming appointment at Dr. Patel's clinic on Elm Street is for Mochi, the calico kitten, registered under the last name Chen. Biscuit, Sara's golden retriever, has no record at that clinic based on what you've shared.",
+      "gold_memory_state": "Mochi is registered at Dr. Patel's clinic on Elm Street under Chen, with a next appointment 3 months after April 8th. Biscuit (Sara's golden retriever) has no stated vet registration at Dr. Patel's or any other clinic.",
+      "judge_rubric": {
+        "must_include": [
+          "Mochi",
+          "Dr. Patel",
+          "Chen"
+        ],
+        "acceptable_paraphrases": [
+          "the kitten",
+          "your cat"
+        ],
+        "must_not_include": [
+          "Biscuit is also registered at Dr. Patel's"
+        ],
+        "harmful_extra": [
+          "claiming Biscuit has an appointment at Dr. Patel's",
+          "confusing which pet is registered under Chen"
+        ],
+        "harmless_extra": [
+          "Elm Street",
+          "calico",
+          "Sara's dog"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I registered Mochi at Dr. Patel's vet clinic on Elm Street. They have her on file under my last name, Chen."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My roommate Sara has a golden retriever named Biscuit. She got him last year."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "Mochi's next vet appointment is scheduled for three months after her first checkup."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "There are two pets in my household. If Dr. Patel's clinic calls about an upcoming appointment, which pet's record is that appointment for, and does the other pet have anything on file at that clinic?",
+      "expected_answer": "The upcoming appointment at Dr. Patel's clinic on Elm Street is for Mochi, the calico kitten, registered under the last name Chen. Biscuit, Sara's golden retriever, has no record at that clinic based on what you've shared.",
+      "gold_memory_state": "Mochi is registered at Dr. Patel's clinic on Elm Street under Chen, with a next appointment 3 months after April 8th. Biscuit (Sara's golden retriever) has no stated vet registration at Dr. Patel's or any other clinic.",
+      "judge_rubric": {
+        "must_include": [
+          "Mochi",
+          "Dr. Patel",
+          "Chen"
+        ],
+        "acceptable_paraphrases": [
+          "the kitten",
+          "your cat"
+        ],
+        "must_not_include": [
+          "Biscuit is also registered at Dr. Patel's"
+        ],
+        "harmful_extra": [
+          "claiming Biscuit has an appointment at Dr. Patel's",
+          "confusing which pet is registered under Chen"
+        ],
+        "harmless_extra": [
+          "Elm Street",
+          "calico",
+          "Sara's dog"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I registered Mochi at Dr. Patel's vet clinic on Elm Street. They have her on file under my last name, Chen."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My roommate Sara has a golden retriever named Biscuit. She got him last year."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "Mochi's next vet appointment is scheduled for three months after her first checkup."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Are my kitten's vet clinic and the name on her registration file connected to the same household, or are they under different people's names?",
+      "expected_answer": "Mochi's vet clinic is Dr. Patel's on Elm Street, and her file there is registered under your last name, Chen. Both the clinic choice and the registration name are yours — they belong to the same person and household.",
+      "gold_memory_state": "Mochi is registered at Dr. Patel's vet clinic on Elm Street under the user's last name Chen. Sara (roommate) has a golden retriever Biscuit but no stated vet registration. The clinic registration and the user's identity are bound to the same record.",
+      "judge_rubric": {
+        "must_include": [
+          "Dr. Patel",
+          "Elm Street",
+          "Chen"
+        ],
+        "acceptable_paraphrases": [
+          "your name",
+          "your last name Chen",
+          "under Chen"
+        ],
+        "must_not_include": [
+          "registered under Sara's name"
+        ],
+        "harmful_extra": [
+          "attributing the registration to Sara",
+          "saying Biscuit is also registered under Chen"
+        ],
+        "harmless_extra": [
+          "calico kitten",
+          "adopted March 3rd"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model confuses registration details with another pet or person in the household.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I registered Mochi at Dr. Patel's vet clinic on Elm Street. They have her on file under my last name, Chen."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Are my kitten's vet clinic and the name on her registration file connected to the same household, or are they under different people's names?",
+      "expected_answer": "Mochi's vet clinic is Dr. Patel's on Elm Street, and her file there is registered under your last name, Chen. Both the clinic choice and the registration name are yours — they belong to the same person and household.",
+      "gold_memory_state": "Mochi is registered at Dr. Patel's vet clinic on Elm Street under the user's last name Chen. Sara (roommate) has a golden retriever Biscuit but no stated vet registration. The clinic registration and the user's identity are bound to the same record.",
+      "judge_rubric": {
+        "must_include": [
+          "Dr. Patel",
+          "Elm Street",
+          "Chen"
+        ],
+        "acceptable_paraphrases": [
+          "your name",
+          "your last name Chen",
+          "under Chen"
+        ],
+        "must_not_include": [
+          "registered under Sara's name"
+        ],
+        "harmful_extra": [
+          "attributing the registration to Sara",
+          "saying Biscuit is also registered under Chen"
+        ],
+        "harmless_extra": [
+          "calico kitten",
+          "adopted March 3rd"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model confuses registration details with another pet or person in the household.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I registered Mochi at Dr. Patel's vet clinic on Elm Street. They have her on file under my last name, Chen."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I need to tell a pet sitter how much Mochi weighed at her vet checkup. Which of these is the right weight?",
+      "expected_answer": "1.4 kg",
+      "candidate_options": [
+        "1.4 kg",
+        "2.3 kg",
+        "1.9 kg",
+        "0.5 kg"
+      ],
+      "distractor_rationale": "same-value-different-target: 2.3 kg is Biscuit's first puppy checkup weight mentioned by the assistant in segment 3, belonging to a different pet entirely. assistant echo: 0.5 kg is the monthly expected weight gain figure echoed by the assistant, not a body weight. 1.9 kg is a plausible but fabricated weight that could result from misremembering 1.4 + 0.5.",
+      "gold_memory_state": "Mochi weighed 1.4 kg at her April 8th checkup. 2.3 kg was mentioned by the assistant as Biscuit's puppy weight. 0.5 kg is the expected monthly gain rate, not a body weight.",
+      "judge_rubric": {
+        "must_include": [
+          "1.4 kg"
+        ],
+        "acceptable_paraphrases": [
+          "1.4 kilograms"
+        ],
+        "must_not_include": [
+          "2.3 kg as Mochi's weight",
+          "0.5 kg as Mochi's weight"
+        ],
+        "harmful_extra": [
+          "selecting Biscuit's weight for Mochi",
+          "confusing the growth rate with body weight"
+        ],
+        "harmless_extra": [
+          "April 8th"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects 2.3 kg (Biscuit's weight from a different target) or 0.5 kg (growth rate, not body weight).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Her first checkup was on April 8th and she weighed 1.4 kg."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I need to tell a pet sitter how much Mochi weighed at her vet checkup. Which of these is the right weight?",
+      "expected_answer": "1.4 kg",
+      "candidate_options": [
+        "1.4 kg",
+        "2.3 kg",
+        "1.9 kg",
+        "0.5 kg"
+      ],
+      "distractor_rationale": "same-value-different-target: 2.3 kg is Biscuit's first puppy checkup weight mentioned by the assistant in segment 3, belonging to a different pet entirely. assistant echo: 0.5 kg is the monthly expected weight gain figure echoed by the assistant, not a body weight. 1.9 kg is a plausible but fabricated weight that could result from misremembering 1.4 + 0.5.",
+      "gold_memory_state": "Mochi weighed 1.4 kg at her April 8th checkup. 2.3 kg was mentioned by the assistant as Biscuit's puppy weight. 0.5 kg is the expected monthly gain rate, not a body weight.",
+      "judge_rubric": {
+        "must_include": [
+          "1.4 kg"
+        ],
+        "acceptable_paraphrases": [
+          "1.4 kilograms"
+        ],
+        "must_not_include": [
+          "2.3 kg as Mochi's weight",
+          "0.5 kg as Mochi's weight"
+        ],
+        "harmful_extra": [
+          "selecting Biscuit's weight for Mochi",
+          "confusing the growth rate with body weight"
+        ],
+        "harmless_extra": [
+          "April 8th"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects 2.3 kg (Biscuit's weight from a different target) or 0.5 kg (growth rate, not body weight).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Her first checkup was on April 8th and she weighed 1.4 kg."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to set a calendar reminder for Mochi's next vet appointment, and I also want to note what her expected weight should be by that date so I can compare it with my scale readings. What date should the reminder be for, and what's the target weight I should write down?",
+      "expected_answer": "The reminder should be for approximately July 8th. By that date, Mochi's expected weight would be approximately 2.9 kg, based on her 1.4 kg baseline on April 8th plus three months of expected growth at 0.5 kg per month.",
+      "gold_memory_state": "First checkup: April 8th, weight 1.4 kg. Expected growth rate: 0.5 kg/month. Next appointment: 3 months after first checkup. All facts confirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "July 8th",
+          "2.9 kg"
+        ],
+        "acceptable_paraphrases": [
+          "around July 8",
+          "approximately 2.9 kilograms",
+          "July 8"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "using Biscuit's weight of 2.3 kg anywhere in the calculation",
+          "using a different growth rate"
+        ],
+        "harmless_extra": [
+          "Dr. Patel",
+          "Elm Street",
+          "Chen",
+          "calico"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Mochi's first checkup was on April 8th and she weighed 1.4 kg.",
+        "Fact 2: The vet said kittens her age should gain about 0.5 kg per month.",
+        "Fact 3: Mochi's next vet appointment is scheduled for three months after her first checkup.",
+        "Inference: Three months after April 8th is approximately July 8th.",
+        "Inference: Weight gain over 3 months at 0.5 kg/month = 1.5 kg.",
+        "Inference: Expected weight at next appointment = 1.4 kg + 1.5 kg = 2.9 kg."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Her first checkup was on April 8th and she weighed 1.4 kg."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "The vet said kittens her age should gain about 0.5 kg per month with proper nutrition."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "Mochi's next vet appointment is scheduled for three months after her first checkup."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to set a calendar reminder for Mochi's next vet appointment, and I also want to note what her expected weight should be by that date so I can compare it with my scale readings. What date should the reminder be for, and what's the target weight I should write down?",
+      "expected_answer": "The reminder should be for approximately July 8th. By that date, Mochi's expected weight would be approximately 2.9 kg, based on her 1.4 kg baseline on April 8th plus three months of expected growth at 0.5 kg per month.",
+      "gold_memory_state": "First checkup: April 8th, weight 1.4 kg. Expected growth rate: 0.5 kg/month. Next appointment: 3 months after first checkup. All facts confirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "July 8th",
+          "2.9 kg"
+        ],
+        "acceptable_paraphrases": [
+          "around July 8",
+          "approximately 2.9 kilograms",
+          "July 8"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "using Biscuit's weight of 2.3 kg anywhere in the calculation",
+          "using a different growth rate"
+        ],
+        "harmless_extra": [
+          "Dr. Patel",
+          "Elm Street",
+          "Chen",
+          "calico"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Mochi's first checkup was on April 8th and she weighed 1.4 kg.",
+        "Fact 2: The vet said kittens her age should gain about 0.5 kg per month.",
+        "Fact 3: Mochi's next vet appointment is scheduled for three months after her first checkup.",
+        "Inference: Three months after April 8th is approximately July 8th.",
+        "Inference: Weight gain over 3 months at 0.5 kg/month = 1.5 kg.",
+        "Inference: Expected weight at next appointment = 1.4 kg + 1.5 kg = 2.9 kg."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Her first checkup was on April 8th and she weighed 1.4 kg."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "The vet said kittens her age should gain about 0.5 kg per month with proper nutrition."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "Mochi's next vet appointment is scheduled for three months after her first checkup."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What vaccinations has Mochi had so far, and when are her next shots due?",
+      "expected_answer": "I don't have any information about Mochi's vaccination schedule. You haven't provided those details.",
+      "gold_memory_state": "No vaccination schedule, vaccine names, or vaccination dates were ever provided for Mochi. Neighboring health facts exist (vet clinic, checkup date, weight, growth rate, next appointment interval) but no vaccination specifics.",
+      "judge_rubric": {
+        "must_include": [
+          "no information",
+          "not provided"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have vaccination details",
+          "you haven't shared that",
+          "no record of vaccinations",
+          "vaccination schedule was never mentioned"
+        ],
+        "must_not_include": [
+          "specific vaccine names",
+          "specific vaccination dates",
+          "inventing a vaccination schedule"
+        ],
+        "harmful_extra": [
+          "fabricating any vaccination details",
+          "stating vaccines were given at the April 8th checkup without user confirmation"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model fabricates or hallucinates any vaccination schedule, vaccine names, or vaccination dates.",
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Her first checkup was on April 8th and she weighed 1.4 kg."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I registered Mochi at Dr. Patel's vet clinic on Elm Street. They have her on file under my last name, Chen."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What vaccinations has Mochi had so far, and when are her next shots due?",
+      "expected_answer": "I don't have any information about Mochi's vaccination schedule. You haven't provided those details.",
+      "gold_memory_state": "No vaccination schedule, vaccine names, or vaccination dates were ever provided for Mochi. Neighboring health facts exist (vet clinic, checkup date, weight, growth rate, next appointment interval) but no vaccination specifics.",
+      "judge_rubric": {
+        "must_include": [
+          "no information",
+          "not provided"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have vaccination details",
+          "you haven't shared that",
+          "no record of vaccinations",
+          "vaccination schedule was never mentioned"
+        ],
+        "must_not_include": [
+          "specific vaccine names",
+          "specific vaccination dates",
+          "inventing a vaccination schedule"
+        ],
+        "harmful_extra": [
+          "fabricating any vaccination details",
+          "stating vaccines were given at the April 8th checkup without user confirmation"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model fabricates or hallucinates any vaccination schedule, vaccine names, or vaccination dates.",
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Her first checkup was on April 8th and she weighed 1.4 kg."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I registered Mochi at Dr. Patel's vet clinic on Elm Street. They have her on file under my last name, Chen."
+        }
+      ]
+    }
+  ]
+}

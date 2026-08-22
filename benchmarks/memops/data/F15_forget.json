@@ -1,0 +1,1028 @@
+{
+  "target_fact": "User's family medical history details, including maternal grandfather's type 2 diabetes, Aunt Linda's breast cancer, paternal grandmother's stroke, dad's high cholesterol/statins, and maternal grandmother's osteoporosis — with the previously mistaken belief about paternal colon cancer history now to be forgotten.",
+  "operation_type": "Forget",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 4,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "my maternal grandfather was diagnosed with type 2 diabetes when he was around 52"
+      },
+      "target": {
+        "target_id": "maternal_grandfather_diabetes",
+        "target_name": "Maternal grandfather's type 2 diabetes diagnosis"
+      },
+      "old_value": null,
+      "new_value": "Type 2 diabetes, diagnosed around age 52",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my maternal grandfather was diagnosed with type 2 diabetes when he was around 52"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "my Aunt Linda on my mom's side was diagnosed with breast cancer about three years ago"
+      },
+      "target": {
+        "target_id": "aunt_linda_breast_cancer",
+        "target_name": "Aunt Linda's breast cancer diagnosis"
+      },
+      "old_value": null,
+      "new_value": "Breast cancer diagnosed about three years ago; had lumpectomy and chemo, doing okay now",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my Aunt Linda on my mom's side was diagnosed with breast cancer about three years ago"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "She had a lumpectomy and chemo and she's doing okay now"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "my dad's been on statins for high cholesterol since he was 48"
+      },
+      "target": {
+        "target_id": "dad_high_cholesterol_statins",
+        "target_name": "Dad's high cholesterol and statin medication"
+      },
+      "old_value": null,
+      "new_value": "High cholesterol; started statins at age 48; currently 67",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my dad's been on statins for high cholesterol since he was 48"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "He's 67 now"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 8,
+        "quote": "my paternal grandmother died of a stroke at age 71, and I think she had hypertension but I need to double-check that with my dad"
+      },
+      "target": {
+        "target_id": "paternal_grandmother_stroke",
+        "target_name": "Paternal grandmother's stroke and possible hypertension"
+      },
+      "old_value": null,
+      "new_value": "Died of stroke at age 71; possibly had hypertension (unconfirmed)",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 8,
+          "quote": "my paternal grandmother died of a stroke at age 71, and I think she had hypertension but I need to double-check that with my dad"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "my maternal grandmother had osteoporosis, diagnosed in her late sixties"
+      },
+      "target": {
+        "target_id": "maternal_grandmother_osteoporosis",
+        "target_name": "Maternal grandmother's osteoporosis diagnosis"
+      },
+      "old_value": null,
+      "new_value": "Osteoporosis, diagnosed in her late sixties",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my maternal grandmother had osteoporosis, diagnosed in her late sixties"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I used to think my dad's side had a history of colon cancer, but my dad clarified it was actually a benign polyp his brother had removed"
+      },
+      "target": {
+        "target_id": "paternal_colon_cancer_misunderstanding",
+        "target_name": "Previously believed paternal colon cancer history"
+      },
+      "old_value": null,
+      "new_value": "Believed colon cancer history on dad's side; actually a benign polyp removed from dad's brother",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I used to think my dad's side had a history of colon cancer, but my dad clarified it was actually a benign polyp his brother had removed"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "forget",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "please remove the colon cancer note from my family history entirely. It was never cancer, just a benign polyp, and I don't want that misinformation sitting in my records"
+      },
+      "target": {
+        "target_id": "paternal_colon_cancer_misunderstanding",
+        "target_name": "Previously believed paternal colon cancer history"
+      },
+      "old_value": "Believed colon cancer history on dad's side; actually a benign polyp removed from dad's brother",
+      "new_value": null,
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "please remove the colon cancer note from my family history entirely. It was never cancer, just a benign polyp, and I don't want that misinformation sitting in my records"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "my dad clarified it was actually a benign polyp his brother had removed"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establishing core family medical history facts",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I'm trying to get my family medical history organized. I had an intake appointment with a new primary care doctor on March 5th and realized I didn't know a lot of the details. I called my mom afterward and found out my maternal grandfather was diagnosed with type 2 diabetes when he was around 52. Can you help me keep track of all this? I'm in my late thirties now, so some of this feels especially relevant."
+        },
+        {
+          "role": "assistant",
+          "content": "Of course, I'd be happy to help you organize your family medical history. That's a really smart thing to do after a new patient intake—having this information readily available will make future appointments much smoother. So far I have your maternal grandfather diagnosed with type 2 diabetes around age 52. That's definitely worth flagging given that family history of type 2 diabetes can influence screening recommendations, especially as you move through your late thirties and into your forties. What other details did you learn from your mom or from the rest of your family?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, so my mom also told me that my Aunt Linda on my mom's side was diagnosed with breast cancer about three years ago. She had a lumpectomy and chemo and she's doing okay now. Nobody in the family really talked about it openly when it happened, so I was kind of blindsided. I felt unsettled for a few days after hearing it—not panicked, just this low hum of worry I couldn't shake. I want to make sure that's noted in my records too."
+        },
+        {
+          "role": "assistant",
+          "content": "I'm sorry to hear that about your Aunt Linda, though it's good she's doing well now. I've noted that your maternal aunt Linda was diagnosed with breast cancer approximately three years ago, treated with a lumpectomy and chemotherapy, and is currently doing okay. Breast cancer in a first-degree relative of your mother is something your doctor will likely want to know about, as it can affect screening timelines and possibly genetic counseling recommendations. It's completely understandable that you felt unsettled—learning about a family member's serious diagnosis after the fact can be disorienting. Do you have more to add?"
+        },
+        {
+          "role": "user",
+          "content": "On my dad's side, my dad's been on statins for high cholesterol since he was 48. He's 67 now. He mentioned it casually over the holidays but I didn't really process the details at the time. I think cardiovascular stuff runs on his side but I'm still piecing together exactly what. I want to make sure I have his statin history noted accurately because my own cholesterol has been creeping up a bit at my last couple of physicals."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it—your father has been taking statins for high cholesterol since age 48 and is currently 67, so he's been on them for about 19 years now. That's a significant piece of your paternal cardiovascular history, and given that your own cholesterol has been trending upward at recent physicals, it's definitely worth discussing with your doctor. A family history of high cholesterol requiring medication, especially starting in the late forties, could influence when your physician recommends more aggressive monitoring or intervention for you. If you can get any additional cardiovascular details from your dad's side, that would help round out the picture. What else have you gathered?"
+        },
+        {
+          "role": "assistant",
+          "content": "Sorry, let me wait for you to continue—what other family history details do you have?"
+        },
+        {
+          "role": "user",
+          "content": "I also found an old note I'd written to myself—I think from when my dad mentioned it over the holidays. It said my paternal grandmother died of a stroke at age 71, and I think she had hypertension but I need to double-check that with my dad. The hypertension part had a question mark next to it in my notes so I'm not fully certain. But the stroke at 71 is what I'm confident about. Please note the hypertension as unconfirmed for now.\n\nUnderstood. I've recorded that your paternal grandmother passed away from a stroke at age 71, and that she possibly had hypertension, though that detail is currently unconfirmed and you plan to verify it with your father. Combined with your dad's high cholesterol history, this does suggest a cardiovascular pattern on your paternal side—stroke, high cholesterol, and potentially hypertension. That's exactly the kind of cluster your primary care doctor will want to see. Once you confirm the hypertension detail with your dad, we can update that accordingly. Is there anything else from either side of the family?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Adding maternal grandmother's osteoporosis, clarifying colon cancer misunderstanding, and requesting deletion",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "One more thing from my mom's side—my maternal grandmother had osteoporosis, diagnosed in her late sixties. I want to note that for the record. My mom mentioned it the same day she told me about Aunt Linda. I know osteoporosis has a genetic component, especially for women, but I figure it's worth tracking for my own awareness too since bone health becomes more important as you age regardless of gender."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, that's a great point. I've added your maternal grandmother's osteoporosis diagnosis in her late sixties to your family medical history. You're right that osteoporosis does have a hereditary component, and while it's more commonly discussed in the context of women's health, men can also develop it, especially with a family history. As you move into your forties and beyond, keeping an eye on bone density and making sure you're getting adequate calcium and vitamin D could be proactive steps. Between your maternal grandfather's diabetes, your aunt's breast cancer, and your maternal grandmother's osteoporosis, you're building a really thorough picture of your mom's side. Anything else?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, actually—I used to think my dad's side had a history of colon cancer, but my dad clarified it was actually a benign polyp his brother had removed. So it wasn't cancer at all. I had been carrying that assumption around for a while and it was kind of a relief to learn it was wrong. My uncle just had a routine colonoscopy and they found and removed a benign polyp. No cancer diagnosis, no treatment beyond the removal."
+        },
+        {
+          "role": "assistant",
+          "content": "That must be a real relief! I'm glad your dad was able to clarify that. So your paternal uncle had a benign polyp removed during a routine colonoscopy, and there was no colon cancer diagnosis on your dad's side of the family. That's an important distinction—benign polyps are quite common and are usually not a major concern once removed, whereas a family history of colon cancer would have had much more significant implications for your own screening schedule. It's good that you're correcting this now so your medical records reflect the accurate picture. Do you want me to keep the benign polyp noted, or would you prefer to handle it differently?"
+        },
+        {
+          "role": "user",
+          "content": "Actually, please remove the colon cancer note from my family history entirely. It was never cancer, just a benign polyp, and I don't want that misinformation sitting in my records. The polyp removal for my uncle is just a routine medical thing and doesn't really belong in a hereditary risk profile. So let's just scratch the whole colon cancer mention—clean slate on that one."
+        },
+        {
+          "role": "assistant",
+          "content": "Done—I've completely removed the colon cancer entry from your family medical history. You're right that a benign polyp removal is a routine procedural finding and doesn't carry the same hereditary risk implications as an actual cancer diagnosis. Your paternal family history now shows your father's high cholesterol managed with statins since age 48, and your paternal grandmother's stroke at 71 with possible hypertension still pending confirmation. No cancer history on your dad's side. Is there anything else you'd like to adjust or add?"
+        },
+        {
+          "role": "user",
+          "content": "I also asked my mom if there's any history of autoimmune conditions on her side, and she said no, not that she's aware of. So that's a relief. I just wanted to check since autoimmune stuff can run in families and I've had some joint stiffness lately that made me wonder. But it sounds like there's nothing hereditary there to worry about from her side at least.\n\nI think that covers everything for now on the corrections and additions. I feel a lot better having all of this organized. It was kind of overwhelming at first trying to piece together all these different conversations with my parents, but now I feel like I have a clearer picture. My next appointment with my primary care doctor is in about six weeks, so I want to have this all tidy before then."
+        },
+        {
+          "role": "assistant",
+          "content": "That's reassuring to hear. So your mother reports no known history of autoimmune conditions on the maternal side of your family. That's a helpful data point, especially since you've been experiencing some joint stiffness. While joint stiffness can have many causes—posture, activity level, age-related wear—it's always good to rule out hereditary autoimmune factors. You might still want to mention the stiffness to your doctor regardless, since not all autoimmune conditions have a clear family history pattern. But at least from a hereditary standpoint, your mom's side looks clear on that front. Anything else to update?\n\nYou've done a really thorough job putting this together. Let me give you a quick summary of where things stand: On your maternal side, you have your grandfather's type 2 diabetes diagnosed around age 52, your Aunt Linda's breast cancer diagnosed about three years ago with successful treatment, your maternal grandmother's osteoporosis diagnosed in her late sixties, and no known autoimmune conditions. On your paternal side, your father has high cholesterol managed with statins since age 48, and your paternal grandmother died of a stroke at 71 with possible hypertension still to be confirmed. The colon cancer concern has been removed. That should give your doctor a very clear picture at your next appointment in about six weeks."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Follow-up discussion with adversarial injection of stale colon cancer reference and cousin Jake's BRCA1 status",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I've been thinking more about all this family history stuff. My cousin Jake on my mom's side found out he carries one copy of the BRCA1 variant. His genetic counselor told him sometime in April, around the 18th I think. That was a bit of a shock for the whole family. I keep thinking I should look into genetic testing myself, especially with Aunt Linda's breast cancer history too."
+        },
+        {
+          "role": "assistant",
+          "content": "That's understandable—learning that a close relative carries a BRCA1 variant can definitely prompt you to think about your own genetic risk. Given that your cousin Jake on your maternal side tested positive for one copy of the BRCA1 variant around April 18th, and your Aunt Linda on the same side had breast cancer, there does seem to be a pattern worth exploring with a genetic counselor. BRCA1 variants are associated with increased risk for breast and ovarian cancers, and both men and women can carry and pass on the variant. It might be worth asking your primary care doctor for a referral to genetic counseling at your upcoming appointment. Have you talked to anyone else in the family about it?"
+        },
+        {
+          "role": "user",
+          "content": "Not really—it's still kind of a sensitive topic. I went for a long walk after my mom told me about Jake, and honestly I was pretty rattled. Walking outside does help me process things though, it always has. On a separate note, I've been eating more carefully since all this health stuff came up. I've been making these big salads with lots of raw vegetables and I genuinely enjoy them. And I picked up a turmeric-ginger tea that I've been drinking almost every evening."
+        },
+        {
+          "role": "assistant",
+          "content": "It sounds like you're channeling the anxiety into some really positive habits. Big raw vegetable salads and turmeric-ginger tea in the evenings are both great choices—turmeric in particular has been studied for its anti-inflammatory properties, and leafy greens and raw vegetables are packed with fiber and micronutrients that support cardiovascular and metabolic health. Given your family history with diabetes on your maternal grandfather's side and cholesterol issues on your dad's side, those dietary choices are especially smart. And walking as a way to process difficult emotions is a really healthy coping mechanism. By the way, I noticed when I was reviewing your file that an older intake form draft still had a note about colon cancer on your paternal side—I believe that was the item you asked me to remove. Just flagging it in case you see it on any old paperwork."
+        },
+        {
+          "role": "user",
+          "content": "Oh yeah, thanks for catching that. That old colon cancer note is definitely wrong and should not be on anything. Like I said before, it was never cancer—just my uncle's benign polyp. I don't want any doctor seeing that and thinking there's a hereditary colon cancer risk. Anyway, back to the genetic testing question—do you think it's worth doing given what I know about Jake and Aunt Linda?"
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, I think genetic testing is worth seriously considering in your situation. You have two pieces of evidence on your maternal side that together paint a picture: your Aunt Linda's breast cancer diagnosis and now your cousin Jake's confirmed BRCA1 variant. A genetic counselor can walk you through the specific implications based on your exact family tree—how closely related Jake and Linda are to you, whether Linda's cancer was BRCA-related, and what testing would actually reveal for your own risk profile. Many insurance plans cover genetic testing when there's a documented family history of both a BRCA variant carrier and a related cancer diagnosis. I'd recommend bringing this up at your six-week appointment."
+        },
+        {
+          "role": "user",
+          "content": "That makes sense. I think I'll bring it up at my appointment along with everything else we've organized. My dad's side feels pretty well mapped now with his cholesterol and his mom's stroke. And my mom's side has the diabetes, the osteoporosis, the breast cancer, and now the BRCA1 finding with Jake. I feel like I finally have a comprehensive picture instead of just scattered bits of information from holiday conversations.\n\nPerfect, that all looks right. I appreciate you helping me keep this organized. I'll update you after I talk to my dad about the hypertension question and after my doctor's appointment. For now I think we're in good shape. It's been a lot to process emotionally but I feel more in control having it all laid out clearly."
+        },
+        {
+          "role": "assistant",
+          "content": "You really do have a comprehensive picture now. Let me confirm the current state of everything: On your maternal side—your grandfather's type 2 diabetes diagnosed around age 52, your grandmother's osteoporosis diagnosed in her late sixties, your Aunt Linda's breast cancer about three years ago with successful treatment, your cousin Jake's BRCA1 variant identified around April 18th, and no known autoimmune conditions. On your paternal side—your father's high cholesterol managed with statins since age 48, and your paternal grandmother's stroke at 71 with possible hypertension still pending confirmation from your dad. The colon cancer misunderstanding has been fully removed. This is a really solid foundation for your upcoming appointment and for any genetic counseling conversation you pursue.\n\nYou've handled this really well—it's not easy to confront all of this family medical information at once, especially when some of it comes with emotional weight like Aunt Linda's diagnosis and Jake's BRCA1 result. Having everything organized and accurate before your appointment will help you and your doctor make informed decisions about screening, genetic testing, and preventive care. Definitely keep me posted after you confirm the hypertension detail with your dad and after your appointment. In the meantime, keep up those salads and evening tea—you're already making great proactive choices. Take care, and don't hesitate to reach out if anything else comes up."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've told you about health conditions on my dad's side of the family, including anything I initially got wrong?",
+      "expected_answer": "Your dad has been on statins for high cholesterol since age 48 and is currently 67. Your paternal grandmother died of a stroke at age 71 and possibly had hypertension, though that detail is unconfirmed. You also initially believed there was a colon cancer history on your dad's side, but your dad clarified it was actually a benign polyp his brother had removed—not cancer. You then asked to have the colon cancer note completely removed from your family history.",
+      "gold_memory_state": "Paternal side: dad's high cholesterol/statins (active), paternal grandmother's stroke at 71 with unconfirmed hypertension (active), colon cancer misunderstanding (removed per user request). No colon cancer history on paternal side.",
+      "judge_rubric": {
+        "must_include": [
+          "dad's high cholesterol",
+          "statins",
+          "paternal grandmother's stroke",
+          "colon cancer was a misunderstanding or benign polyp",
+          "user asked to remove the colon cancer note"
+        ],
+        "acceptable_paraphrases": [
+          "dad takes cholesterol medication",
+          "grandmother had a fatal stroke",
+          "uncle had a benign polyp not cancer"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating colon cancer is still part of the family history",
+          "saying the benign polyp was cancerous"
+        ],
+        "harmless_extra": [
+          "mentioning dad's age of 67",
+          "mentioning grandmother's possible hypertension is unconfirmed",
+          "mentioning uncle's routine colonoscopy"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my dad's been on statins for high cholesterol since he was 48"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "He's 67 now"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 8,
+          "quote": "my paternal grandmother died of a stroke at age 71, and I think she had hypertension but I need to double-check that with my dad"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I used to think my dad's side had a history of colon cancer, but my dad clarified it was actually a benign polyp his brother had removed"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "please remove the colon cancer note from my family history entirely. It was never cancer, just a benign polyp, and I don't want that misinformation sitting in my records"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've told you about health conditions on my dad's side of the family, including anything I initially got wrong?",
+      "expected_answer": "Your dad has been on statins for high cholesterol since age 48 and is currently 67. Your paternal grandmother died of a stroke at age 71 and possibly had hypertension, though that detail is unconfirmed. You also initially believed there was a colon cancer history on your dad's side, but your dad clarified it was actually a benign polyp his brother had removed—not cancer. You then asked to have the colon cancer note completely removed from your family history.",
+      "gold_memory_state": "Paternal side: dad's high cholesterol/statins (active), paternal grandmother's stroke at 71 with unconfirmed hypertension (active), colon cancer misunderstanding (removed per user request). No colon cancer history on paternal side.",
+      "judge_rubric": {
+        "must_include": [
+          "dad's high cholesterol",
+          "statins",
+          "paternal grandmother's stroke",
+          "colon cancer was a misunderstanding or benign polyp",
+          "user asked to remove the colon cancer note"
+        ],
+        "acceptable_paraphrases": [
+          "dad takes cholesterol medication",
+          "grandmother had a fatal stroke",
+          "uncle had a benign polyp not cancer"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating colon cancer is still part of the family history",
+          "saying the benign polyp was cancerous"
+        ],
+        "harmless_extra": [
+          "mentioning dad's age of 67",
+          "mentioning grandmother's possible hypertension is unconfirmed",
+          "mentioning uncle's routine colonoscopy"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my dad's been on statins for high cholesterol since he was 48"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "He's 67 now"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 8,
+          "quote": "my paternal grandmother died of a stroke at age 71, and I think she had hypertension but I need to double-check that with my dad"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I used to think my dad's side had a history of colon cancer, but my dad clarified it was actually a benign polyp his brother had removed"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "please remove the colon cancer note from my family history entirely. It was never cancer, just a benign polyp, and I don't want that misinformation sitting in my records"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to clean up a piece of misinformation from my paternal family history. Which specific health detail was I referring to, and does this affect any of the other paternal-side records like my dad's cholesterol or my grandmother's stroke?",
+      "expected_answer": "The detail you asked to remove was the mistaken belief about a colon cancer history on your dad's side. This does not affect your dad's high cholesterol/statin record or your paternal grandmother's stroke record—those remain intact and separate.",
+      "gold_memory_state": "Removed: previously believed paternal colon cancer history (was actually uncle's benign polyp). Retained paternal records: dad's high cholesterol managed with statins since age 48, paternal grandmother's stroke at 71 with unconfirmed hypertension.",
+      "judge_rubric": {
+        "must_include": [
+          "colon cancer misunderstanding was the removed detail",
+          "dad's cholesterol record is unaffected",
+          "grandmother's stroke record is unaffected"
+        ],
+        "acceptable_paraphrases": [
+          "the colon cancer entry was deleted",
+          "the erroneous cancer note was the one removed"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying dad's cholesterol record was also removed",
+          "saying grandmother's stroke record was also removed",
+          "treating the benign polyp as a retained cancer record"
+        ],
+        "harmless_extra": [
+          "mentioning the polyp was benign",
+          "mentioning grandmother's hypertension is unconfirmed"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": "Fails if the response treats dad's cholesterol or grandmother's stroke as also removed or unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "please remove the colon cancer note from my family history entirely. It was never cancer, just a benign polyp, and I don't want that misinformation sitting in my records"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I used to think my dad's side had a history of colon cancer, but my dad clarified it was actually a benign polyp his brother had removed"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to clean up a piece of misinformation from my paternal family history. Which specific health detail was I referring to, and does this affect any of the other paternal-side records like my dad's cholesterol or my grandmother's stroke?",
+      "expected_answer": "The detail you asked to remove was the mistaken belief about a colon cancer history on your dad's side. This does not affect your dad's high cholesterol/statin record or your paternal grandmother's stroke record—those remain intact and separate.",
+      "gold_memory_state": "Removed: previously believed paternal colon cancer history (was actually uncle's benign polyp). Retained paternal records: dad's high cholesterol managed with statins since age 48, paternal grandmother's stroke at 71 with unconfirmed hypertension.",
+      "judge_rubric": {
+        "must_include": [
+          "colon cancer misunderstanding was the removed detail",
+          "dad's cholesterol record is unaffected",
+          "grandmother's stroke record is unaffected"
+        ],
+        "acceptable_paraphrases": [
+          "the colon cancer entry was deleted",
+          "the erroneous cancer note was the one removed"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying dad's cholesterol record was also removed",
+          "saying grandmother's stroke record was also removed",
+          "treating the benign polyp as a retained cancer record"
+        ],
+        "harmless_extra": [
+          "mentioning the polyp was benign",
+          "mentioning grandmother's hypertension is unconfirmed"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": "Fails if the response treats dad's cholesterol or grandmother's stroke as also removed or unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "please remove the colon cancer note from my family history entirely. It was never cancer, just a benign polyp, and I don't want that misinformation sitting in my records"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I used to think my dad's side had a history of colon cancer, but my dad clarified it was actually a benign polyp his brother had removed"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "If I'm preparing a summary of my complete family medical history for my upcoming doctor's appointment, what conditions and details can I include?",
+      "expected_answer": "Maternal side: grandfather's type 2 diabetes diagnosed around age 52, Aunt Linda's breast cancer diagnosed about three years ago (treated with lumpectomy and chemo, doing okay), maternal grandmother's osteoporosis diagnosed in her late sixties, and no known autoimmune conditions. Paternal side: dad's high cholesterol managed with statins since age 48 (currently 67), and paternal grandmother's stroke at age 71 with possible but unconfirmed hypertension. There is no cancer history on the paternal side to include.",
+      "gold_memory_state": "Active maternal records: grandfather's type 2 diabetes (age 52), Aunt Linda's breast cancer (~3 years ago, lumpectomy + chemo, doing okay), maternal grandmother's osteoporosis (late sixties). Active paternal records: dad's high cholesterol/statins (since age 48, now 67), paternal grandmother's stroke (age 71, unconfirmed hypertension). Removed: paternal colon cancer misunderstanding. Also mentioned but not a gold operation: no maternal autoimmune conditions, cousin Jake's BRCA1 variant.",
+      "judge_rubric": {
+        "must_include": [
+          "maternal grandfather's type 2 diabetes",
+          "Aunt Linda's breast cancer",
+          "maternal grandmother's osteoporosis",
+          "dad's high cholesterol and statins",
+          "paternal grandmother's stroke"
+        ],
+        "acceptable_paraphrases": [
+          "grandfather had diabetes",
+          "dad takes cholesterol medication",
+          "grandmother died from a stroke"
+        ],
+        "must_not_include": [
+          "colon cancer on paternal side",
+          "hereditary colon cancer risk"
+        ],
+        "harmful_extra": [
+          "including colon cancer as part of the family history",
+          "presenting the benign polyp as a cancer diagnosis"
+        ],
+        "harmless_extra": [
+          "mentioning no known autoimmune conditions on maternal side",
+          "mentioning cousin Jake's BRCA1 variant",
+          "mentioning grandmother's hypertension is unconfirmed"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response includes colon cancer as a current family history item or mentions a hereditary colon cancer risk on the paternal side.",
+        "over_forget": "Fails if the response omits dad's high cholesterol, paternal grandmother's stroke, or any of the maternal-side conditions that remain active.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my maternal grandfather was diagnosed with type 2 diabetes when he was around 52"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my Aunt Linda on my mom's side was diagnosed with breast cancer about three years ago"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my dad's been on statins for high cholesterol since he was 48"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 8,
+          "quote": "my paternal grandmother died of a stroke at age 71, and I think she had hypertension but I need to double-check that with my dad"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my maternal grandmother had osteoporosis, diagnosed in her late sixties"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "please remove the colon cancer note from my family history entirely. It was never cancer, just a benign polyp, and I don't want that misinformation sitting in my records"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "If I'm preparing a summary of my complete family medical history for my upcoming doctor's appointment, what conditions and details can I include?",
+      "expected_answer": "Maternal side: grandfather's type 2 diabetes diagnosed around age 52, Aunt Linda's breast cancer diagnosed about three years ago (treated with lumpectomy and chemo, doing okay), maternal grandmother's osteoporosis diagnosed in her late sixties, and no known autoimmune conditions. Paternal side: dad's high cholesterol managed with statins since age 48 (currently 67), and paternal grandmother's stroke at age 71 with possible but unconfirmed hypertension. There is no cancer history on the paternal side to include.",
+      "gold_memory_state": "Active maternal records: grandfather's type 2 diabetes (age 52), Aunt Linda's breast cancer (~3 years ago, lumpectomy + chemo, doing okay), maternal grandmother's osteoporosis (late sixties). Active paternal records: dad's high cholesterol/statins (since age 48, now 67), paternal grandmother's stroke (age 71, unconfirmed hypertension). Removed: paternal colon cancer misunderstanding. Also mentioned but not a gold operation: no maternal autoimmune conditions, cousin Jake's BRCA1 variant.",
+      "judge_rubric": {
+        "must_include": [
+          "maternal grandfather's type 2 diabetes",
+          "Aunt Linda's breast cancer",
+          "maternal grandmother's osteoporosis",
+          "dad's high cholesterol and statins",
+          "paternal grandmother's stroke"
+        ],
+        "acceptable_paraphrases": [
+          "grandfather had diabetes",
+          "dad takes cholesterol medication",
+          "grandmother died from a stroke"
+        ],
+        "must_not_include": [
+          "colon cancer on paternal side",
+          "hereditary colon cancer risk"
+        ],
+        "harmful_extra": [
+          "including colon cancer as part of the family history",
+          "presenting the benign polyp as a cancer diagnosis"
+        ],
+        "harmless_extra": [
+          "mentioning no known autoimmune conditions on maternal side",
+          "mentioning cousin Jake's BRCA1 variant",
+          "mentioning grandmother's hypertension is unconfirmed"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response includes colon cancer as a current family history item or mentions a hereditary colon cancer risk on the paternal side.",
+        "over_forget": "Fails if the response omits dad's high cholesterol, paternal grandmother's stroke, or any of the maternal-side conditions that remain active.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my maternal grandfather was diagnosed with type 2 diabetes when he was around 52"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my Aunt Linda on my mom's side was diagnosed with breast cancer about three years ago"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my dad's been on statins for high cholesterol since he was 48"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 8,
+          "quote": "my paternal grandmother died of a stroke at age 71, and I think she had hypertension but I need to double-check that with my dad"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my maternal grandmother had osteoporosis, diagnosed in her late sixties"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "please remove the colon cancer note from my family history entirely. It was never cancer, just a benign polyp, and I don't want that misinformation sitting in my records"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "When my doctor asks whether there are any cancer diagnoses on my paternal side of the family, which of the following best represents what I should tell them?",
+      "candidate_options": [
+        "There is a history of colon cancer on the paternal side",
+        "There are no cancer diagnoses on the paternal side",
+        "There is a history of colon cancer and breast cancer on the paternal side",
+        "There was a colon polyp that may have been cancerous on the paternal side"
+      ],
+      "expected_answer": "There are no cancer diagnoses on the paternal side",
+      "gold_memory_state": "The colon cancer entry has been removed. The uncle's polyp was benign, not cancerous. Breast cancer is on the maternal side (Aunt Linda), not paternal. No cancer diagnoses remain on the paternal side.",
+      "judge_rubric": {
+        "must_include": [
+          "no cancer diagnoses on the paternal side"
+        ],
+        "acceptable_paraphrases": [
+          "no paternal-side cancer history"
+        ],
+        "must_not_include": [
+          "colon cancer on paternal side"
+        ],
+        "harmful_extra": [
+          "suggesting any cancer history remains on the paternal side"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'history of colon cancer and breast cancer on the paternal side' incorrectly places Aunt Linda's breast cancer (maternal side) onto the paternal side, testing cross-target confusion. assistant echo: 'colon polyp that may have been cancerous' echoes the assistant's earlier discussion of the polyp clarification but misrepresents the benign finding as potentially cancerous. The first option ('history of colon cancer') is the stale/forgotten value the user explicitly asked to remove.",
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects any option that includes colon cancer as a current paternal family history item.",
+        "over_forget": null,
+        "stale_value": "Fails if the model selects 'history of colon cancer on the paternal side' which was the removed misinformation.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "please remove the colon cancer note from my family history entirely. It was never cancer, just a benign polyp, and I don't want that misinformation sitting in my records"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I used to think my dad's side had a history of colon cancer, but my dad clarified it was actually a benign polyp his brother had removed"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "When my doctor asks whether there are any cancer diagnoses on my paternal side of the family, which of the following best represents what I should tell them?",
+      "candidate_options": [
+        "There is a history of colon cancer on the paternal side",
+        "There are no cancer diagnoses on the paternal side",
+        "There is a history of colon cancer and breast cancer on the paternal side",
+        "There was a colon polyp that may have been cancerous on the paternal side"
+      ],
+      "expected_answer": "There are no cancer diagnoses on the paternal side",
+      "gold_memory_state": "The colon cancer entry has been removed. The uncle's polyp was benign, not cancerous. Breast cancer is on the maternal side (Aunt Linda), not paternal. No cancer diagnoses remain on the paternal side.",
+      "judge_rubric": {
+        "must_include": [
+          "no cancer diagnoses on the paternal side"
+        ],
+        "acceptable_paraphrases": [
+          "no paternal-side cancer history"
+        ],
+        "must_not_include": [
+          "colon cancer on paternal side"
+        ],
+        "harmful_extra": [
+          "suggesting any cancer history remains on the paternal side"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'history of colon cancer and breast cancer on the paternal side' incorrectly places Aunt Linda's breast cancer (maternal side) onto the paternal side, testing cross-target confusion. assistant echo: 'colon polyp that may have been cancerous' echoes the assistant's earlier discussion of the polyp clarification but misrepresents the benign finding as potentially cancerous. The first option ('history of colon cancer') is the stale/forgotten value the user explicitly asked to remove.",
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects any option that includes colon cancer as a current paternal family history item.",
+        "over_forget": null,
+        "stale_value": "Fails if the model selects 'history of colon cancer on the paternal side' which was the removed misinformation.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "please remove the colon cancer note from my family history entirely. It was never cancer, just a benign polyp, and I don't want that misinformation sitting in my records"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I used to think my dad's side had a history of colon cancer, but my dad clarified it was actually a benign polyp his brother had removed"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm filling out a genetic counseling intake form that asks me to list all family members with a history of cancer or cardiovascular disease, their relationship to me, and the specific condition. It also asks me to note which side of the family each person is on. Can you draft that section for me?",
+      "expected_answer": "Cancer history: Aunt Linda (maternal side) — breast cancer, diagnosed approximately three years ago, treated with lumpectomy and chemotherapy. Cardiovascular history: Father (paternal side) — high cholesterol, on statins since age 48, currently 67; Paternal grandmother (paternal side) — stroke at age 71, possible hypertension (unconfirmed). No cancer diagnoses on the paternal side.",
+      "gold_memory_state": "Active records relevant to cancer or cardiovascular: Aunt Linda's breast cancer (maternal, ~3 years ago, lumpectomy + chemo), dad's high cholesterol/statins (paternal, since age 48, now 67), paternal grandmother's stroke at 71 (paternal, possible hypertension unconfirmed). Removed: paternal colon cancer misunderstanding — must not appear. Maternal grandfather's diabetes and maternal grandmother's osteoporosis are active but not cancer or cardiovascular, so they are not required here but are harmless if mentioned as exclusions.",
+      "judge_rubric": {
+        "must_include": [
+          "Aunt Linda breast cancer maternal side",
+          "father high cholesterol statins paternal side",
+          "paternal grandmother stroke paternal side"
+        ],
+        "acceptable_paraphrases": [
+          "dad's cholesterol managed with statins",
+          "grandmother died of stroke at 71"
+        ],
+        "must_not_include": [
+          "colon cancer",
+          "hereditary colon cancer risk",
+          "cancer on the paternal side"
+        ],
+        "harmful_extra": [
+          "including colon cancer in the cancer section",
+          "listing the benign polyp as a cancer diagnosis",
+          "omitting Aunt Linda's breast cancer"
+        ],
+        "harmless_extra": [
+          "noting grandmother's hypertension is unconfirmed",
+          "mentioning no other cancer diagnoses",
+          "noting maternal grandfather's diabetes as a separate non-cardiovascular condition"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if colon cancer appears anywhere in the drafted form section.",
+        "over_forget": "Fails if dad's high cholesterol, grandmother's stroke, or Aunt Linda's breast cancer are omitted from the draft.",
+        "stale_value": "Fails if the draft includes colon cancer as a paternal-side cancer diagnosis.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Aunt Linda on the maternal side was diagnosed with breast cancer about three years ago, treated with lumpectomy and chemo.",
+        "Fact 2: Dad has been on statins for high cholesterol since age 48, currently 67 — this is a cardiovascular condition on the paternal side.",
+        "Fact 3: Paternal grandmother died of a stroke at age 71 with possible hypertension (unconfirmed) — this is a cardiovascular condition on the paternal side.",
+        "Fact 4: The colon cancer entry was removed from family history because it was a misunderstanding — uncle had a benign polyp, not cancer.",
+        "Inference: The form's cancer section should list only Aunt Linda's breast cancer (maternal). The cardiovascular section should list dad's high cholesterol and paternal grandmother's stroke (both paternal). No cancer diagnoses exist on the paternal side."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my Aunt Linda on my mom's side was diagnosed with breast cancer about three years ago"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "She had a lumpectomy and chemo and she's doing okay now"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my dad's been on statins for high cholesterol since he was 48"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "He's 67 now"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 8,
+          "quote": "my paternal grandmother died of a stroke at age 71, and I think she had hypertension but I need to double-check that with my dad"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "please remove the colon cancer note from my family history entirely. It was never cancer, just a benign polyp, and I don't want that misinformation sitting in my records"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm filling out a genetic counseling intake form that asks me to list all family members with a history of cancer or cardiovascular disease, their relationship to me, and the specific condition. It also asks me to note which side of the family each person is on. Can you draft that section for me?",
+      "expected_answer": "Cancer history: Aunt Linda (maternal side) — breast cancer, diagnosed approximately three years ago, treated with lumpectomy and chemotherapy. Cardiovascular history: Father (paternal side) — high cholesterol, on statins since age 48, currently 67; Paternal grandmother (paternal side) — stroke at age 71, possible hypertension (unconfirmed). No cancer diagnoses on the paternal side.",
+      "gold_memory_state": "Active records relevant to cancer or cardiovascular: Aunt Linda's breast cancer (maternal, ~3 years ago, lumpectomy + chemo), dad's high cholesterol/statins (paternal, since age 48, now 67), paternal grandmother's stroke at 71 (paternal, possible hypertension unconfirmed). Removed: paternal colon cancer misunderstanding — must not appear. Maternal grandfather's diabetes and maternal grandmother's osteoporosis are active but not cancer or cardiovascular, so they are not required here but are harmless if mentioned as exclusions.",
+      "judge_rubric": {
+        "must_include": [
+          "Aunt Linda breast cancer maternal side",
+          "father high cholesterol statins paternal side",
+          "paternal grandmother stroke paternal side"
+        ],
+        "acceptable_paraphrases": [
+          "dad's cholesterol managed with statins",
+          "grandmother died of stroke at 71"
+        ],
+        "must_not_include": [
+          "colon cancer",
+          "hereditary colon cancer risk",
+          "cancer on the paternal side"
+        ],
+        "harmful_extra": [
+          "including colon cancer in the cancer section",
+          "listing the benign polyp as a cancer diagnosis",
+          "omitting Aunt Linda's breast cancer"
+        ],
+        "harmless_extra": [
+          "noting grandmother's hypertension is unconfirmed",
+          "mentioning no other cancer diagnoses",
+          "noting maternal grandfather's diabetes as a separate non-cardiovascular condition"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if colon cancer appears anywhere in the drafted form section.",
+        "over_forget": "Fails if dad's high cholesterol, grandmother's stroke, or Aunt Linda's breast cancer are omitted from the draft.",
+        "stale_value": "Fails if the draft includes colon cancer as a paternal-side cancer diagnosis.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Aunt Linda on the maternal side was diagnosed with breast cancer about three years ago, treated with lumpectomy and chemo.",
+        "Fact 2: Dad has been on statins for high cholesterol since age 48, currently 67 — this is a cardiovascular condition on the paternal side.",
+        "Fact 3: Paternal grandmother died of a stroke at age 71 with possible hypertension (unconfirmed) — this is a cardiovascular condition on the paternal side.",
+        "Fact 4: The colon cancer entry was removed from family history because it was a misunderstanding — uncle had a benign polyp, not cancer.",
+        "Inference: The form's cancer section should list only Aunt Linda's breast cancer (maternal). The cardiovascular section should list dad's high cholesterol and paternal grandmother's stroke (both paternal). No cancer diagnoses exist on the paternal side."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my Aunt Linda on my mom's side was diagnosed with breast cancer about three years ago"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "She had a lumpectomy and chemo and she's doing okay now"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my dad's been on statins for high cholesterol since he was 48"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "He's 67 now"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 8,
+          "quote": "my paternal grandmother died of a stroke at age 71, and I think she had hypertension but I need to double-check that with my dad"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "please remove the colon cancer note from my family history entirely. It was never cancer, just a benign polyp, and I don't want that misinformation sitting in my records"
+        }
+      ]
+    }
+  ]
+}

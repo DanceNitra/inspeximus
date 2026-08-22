@@ -1,0 +1,945 @@
+{
+  "target_fact": "The user's new colleague's correct name, which they keep misspelling, undergoes multiple corrections and a tentative change",
+  "operation_type": "TrajectoryOps",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "colleague_name",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "Her name is Rebecca Thornton. She joined our product team about two weeks ago"
+      },
+      "target": {
+        "target_id": "colleague_correct_name",
+        "target_name": "new colleague's correct name"
+      },
+      "old_value": null,
+      "new_value": "Rebecca Thornton",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Her name is Rebecca Thornton. She joined our product team about two weeks ago"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "our babysitter is Priya Rao. She's our neighbor's daughter and she started sitting for us in late April"
+      },
+      "target": {
+        "target_id": "babysitter_name",
+        "target_name": "neighbor's daughter who babysits"
+      },
+      "old_value": null,
+      "new_value": "Priya Rao",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "our babysitter is Priya Rao. She's our neighbor's daughter and she started sitting for us in late April"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "colleague_name",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I checked the company directory and her full legal name is actually Rebecca Thornton-Wells. She hyphenated after getting married last year"
+      },
+      "target": {
+        "target_id": "colleague_correct_name",
+        "target_name": "new colleague's correct name"
+      },
+      "old_value": "Rebecca Thornton",
+      "new_value": "Rebecca Thornton-Wells",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Her name is Rebecca Thornton. She joined our product team about two weeks ago"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I checked the company directory and her full legal name is actually Rebecca Thornton-Wells. She hyphenated after getting married last year"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "colleague_name",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 7,
+        "quote": "Rebecca told me today she's going back to just Thornton. She said the hyphenated version was causing issues with payroll and email systems, so she filed a legal name change back to Rebecca Thornton"
+      },
+      "target": {
+        "target_id": "colleague_correct_name",
+        "target_name": "new colleague's correct name"
+      },
+      "old_value": "Rebecca Thornton-Wells",
+      "new_value": "Rebecca Thornton",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I checked the company directory and her full legal name is actually Rebecca Thornton-Wells. She hyphenated after getting married last year"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Rebecca told me today she's going back to just Thornton. She said the hyphenated version was causing issues with payroll and email systems, so she filed a legal name change back to Rebecca Thornton"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "colleague_name",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "HR confirmed they're updating her records to Rebecca Wells. Apparently the legal paperwork she filed was to drop Thornton entirely and just use Wells as her surname going forward"
+      },
+      "target": {
+        "target_id": "colleague_correct_name",
+        "target_name": "new colleague's correct name"
+      },
+      "old_value": "Rebecca Thornton",
+      "new_value": "Rebecca Wells",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "HR confirmed they're updating her records to Rebecca Wells. Apparently the legal paperwork she filed was to drop Thornton entirely and just use Wells as her surname going forward"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establishes colleague's name and babysitter's name; introduces name-swapping context",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I need your help keeping track of some names I keep messing up. First one: my new colleague. Her name is Rebecca Thornton. She joined our product team about two weeks ago. I embarrassingly called her Rachel during a lunch meeting on March 3rd, and she had to correct me. I really need to get this right going forward."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — your new colleague's name is Rebecca Thornton, and she's on your product team. I completely understand the frustration of getting someone's name wrong, especially in a professional setting like a lunch meeting. It's actually a very common issue, particularly with names that share the same first letter like Rebecca and Rachel. The good news is that awareness is the first step to fixing it. Would you like me to help you with any strategies for name retention, or should we focus on cataloging the other names you mentioned you've been mixing up?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, let's catalog them. I also had a bad incident with a client named Martin Chu. I kept calling him Michael during a video call around March 20th. Three times I said it, and he never corrected me. I only realized after I checked the email thread. That account got handed off to another rep in April though, so I don't need to track Martin anymore."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood. So the Martin Chu situation is resolved since the account was handed off in April — no need to keep tracking that interaction. That's a relief, even though the embarrassment from the call probably still lingers. Three times without correction is tough because you don't get that real-time feedback loop. It's worth noting that your pattern seems to involve swapping names that start with the same letter: Rebecca became Rachel, Martin became Michael. Recognizing that pattern could help you catch yourself in the moment. What other names are giving you trouble?"
+        },
+        {
+          "role": "user",
+          "content": "Good point about the same-letter pattern. Another one I need to remember: our babysitter is Priya Rao. She's our neighbor's daughter and she started sitting for us in late April. I called her Priyanka the first time and her mom corrected me. It's Priya, not Priyanka. Same first-letter issue again, I guess, though it's more of a longer-version-of-the-name thing."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — your babysitter is Priya Rao, your neighbor's daughter, and she started in late April. The Priya versus Priyanka mix-up is a slightly different pattern from the others: rather than swapping to a completely different name, you extended to a longer version that sounds similar. It's like your brain defaults to the more common or longer form. One strategy that might help is to create a mental association specific to Priya — maybe linking her name to something short and distinctive, since her name is the shorter version. You mentioned you've started repeating names back when you meet people. Has that been helping at all with Priya?"
+        },
+        {
+          "role": "user",
+          "content": "A little bit, yeah. I've been doing the repeat-back thing since late April. Like saying 'Nice to meet you, Priya' right away. I also want to mention that my friend Dana has the same problem — she calls her boss Greg when his name is Craig. She says he doesn't even notice anymore. I'm not that lucky with my mix-ups though. People definitely notice when I get it wrong."
+        },
+        {
+          "role": "assistant",
+          "content": "The repeat-back technique is a solid approach — research on memory encoding does support it. It forces your brain to actively process the name rather than passively hearing it. Give it a few more weeks to become second nature. As for Dana's situation with Greg versus Craig, it sounds like her boss has just gotten used to it, which isn't exactly ideal but at least it reduces the social tension. Your situation is trickier because you're dealing with newer relationships where first impressions matter more. The key names I have for you right now are Rebecca Thornton, your colleague, and Priya Rao, your babysitter. Shall we set up any kind of review system for these?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Updates colleague's name twice — first to hyphenated, then reverted back; deepens context",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Quick update on the name situation. I've been doing better with Priya — I got her name right three times in a row this past week when she came over to babysit. The repeat-back technique is definitely helping. My partner even noticed I'm not fumbling names as much in casual settings anymore, which feels like real progress."
+        },
+        {
+          "role": "assistant",
+          "content": "That's excellent progress! Three correct uses in a row with Priya shows the technique is becoming more automatic for you. And the fact that your partner noticed improvement in casual settings too suggests it's generalizing beyond just the specific names you've been practicing. Casual settings are where you said you felt more comfortable anyway, so it makes sense that improvement would show up there first. The real test will be whether the technique holds up in higher-pressure situations like work meetings or networking events. Have you had a chance to use Rebecca's name correctly in a group setting since the March incident?"
+        },
+        {
+          "role": "user",
+          "content": "Actually yes, and I nailed it at a team standup last week. But here's an interesting development: I checked the company directory and her full legal name is actually Rebecca Thornton-Wells. She hyphenated after getting married last year. So I should update what I have stored — her correct name is Rebecca Thornton-Wells now, not just Thornton."
+        },
+        {
+          "role": "assistant",
+          "content": "Great job getting her name right at the standup! And thanks for the update — I'll note that her full legal name is Rebecca Thornton-Wells, with the hyphenation from her marriage last year. This is actually useful information because it means in formal contexts like emails, meeting invites, or official documents, you'd want to use Thornton-Wells. In casual conversation she might still go by just Rebecca or Rebecca Thornton, but having the full correct version means you won't be caught off guard if you see it on a directory listing or email signature. Do you know which version she prefers in everyday work interactions?"
+        },
+        {
+          "role": "user",
+          "content": "She's been using Thornton-Wells in her email signature and on Slack, so I think that's what she prefers professionally. By the way, I had a small dinner party last weekend — only six people — and I introduced my partner's friend as Leah when her name is actually Lena Vasquez. My partner nudged me under the table. Lena laughed it off though, which was nice."
+        },
+        {
+          "role": "assistant",
+          "content": "Ah, the Leah-Lena swap — another case of very similar-sounding names tripping you up. At least Lena Vasquez was gracious about it, and a small dinner party is about the most forgiving environment for that kind of slip. It's good that you can recognize the pattern in real time now, even if the correction comes a beat late. For the record, Lena Vasquez is your partner's friend, and she's someone you might encounter at future social gatherings. Since Rebecca uses Thornton-Wells professionally in her email signature and on Slack, I'd recommend defaulting to that version in all work communications. Any other name updates or should we do a quick review of where you stand?"
+        },
+        {
+          "role": "user",
+          "content": "Actually one more update on Rebecca. Rebecca told me today she's going back to just Thornton. She said the hyphenated version was causing issues with payroll and email systems, so she filed a legal name change back to Rebecca Thornton. So we're back to the original name I told you about. It's Rebecca Thornton again, plain and simple."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood — Rebecca is reverting to Rebecca Thornton, dropping the hyphenated Wells due to payroll and email system issues. So we've come full circle on that one. It's actually convenient for your memory since Rebecca Thornton is the name you originally learned and practiced with. The brief detour through Thornton-Wells might have actually reinforced your memory of her name overall, since you've now actively engaged with it multiple times in different forms. I'll keep her recorded as Rebecca Thornton going forward. At least this is one name change that works in your favor for retention purposes. Anything else on your radar?"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Introduces tentative HR name change for recency trap; adversarial injection via assistant echo of old value",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So I have a bit of a funny update. Remember how I said my friend Dana calls her boss Greg instead of Craig? Well, Dana told me her boss actually started going by Gregory now — he got promoted and apparently wants the full formal name. Dana's thrilled because she can just call him Gregory and stop worrying about the Greg-Craig confusion entirely."
+        },
+        {
+          "role": "assistant",
+          "content": "Ha, that's a convenient solution for Dana! Going from Craig to Gregory is different enough that the Greg-Craig confusion should disappear entirely. It's interesting how a promotion can trigger a name preference change — some people do prefer a more formal version of their name as they move up. Dana might actually find it harder to remember Gregory if she's been saying Greg for so long, but at least it won't sound like the wrong person's name anymore. Speaking of name tracking, I noticed in some of your earlier notes you had Rebecca listed as Thornton-Wells in a couple of places — want me to help you clean up any references to make sure everything says Thornton consistently?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, good catch on the old Thornton-Wells references. Let's make sure everything is updated to just Thornton. By the way, I used the repeat-back technique with a new vendor contact this week — guy named Darren Kowalski. I said 'Great to meet you, Darren' right away and I haven't mixed his name up once. That's three weeks now of consistent improvement with the technique."
+        },
+        {
+          "role": "assistant",
+          "content": "Excellent — Darren Kowalski, and you nailed it with the repeat-back on first introduction. Three weeks of consistent improvement is a great sign that the technique is becoming habitual rather than something you have to consciously remember to do. The fact that it worked with a brand new contact in a professional vendor setting is especially encouraging, since those interactions can carry the same pressure as internal meetings. I've cleaned up the references so Rebecca is listed as Thornton everywhere now. Between Rebecca Thornton, Priya Rao, and now Darren Kowalski, you're building a solid track record. How are you feeling about larger group settings these days?"
+        },
+        {
+          "role": "user",
+          "content": "Still nervous about big groups honestly. But here's a new wrinkle with Rebecca's name. HR confirmed they're updating her records to Rebecca Wells. Apparently the legal paperwork she filed was to drop Thornton entirely and just use Wells as her surname going forward. So it might be changing again soon once the systems are updated."
+        },
+        {
+          "role": "assistant",
+          "content": "Oh wow, another change for Rebecca! So HR says the legal paperwork is going through to make her name Rebecca Wells — dropping Thornton entirely this time rather than hyphenating. That's quite a journey: Thornton, then Thornton-Wells, back to Thornton, and now potentially just Wells. I can understand why you'd feel uncertain about which version to use. Since the systems haven't been updated yet and you said it might be changing soon, it might be safest to wait until you see the change reflected in her email signature or Slack profile before fully switching how you address her. For now, do you want to keep using Rebecca Thornton in conversation until it's officially finalized?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, I'll stick with what she's currently using until I see the official switch happen. No point getting ahead of the paperwork. On another note, I've been thinking about trying the repeat-back technique at a bigger networking event next month. My company is hosting a mixer with about forty people. I figure if it works one-on-one and in small groups, maybe it'll help in bigger settings too.\n\nThat's really helpful advice, thanks. I'll definitely try the name-plus-detail pairing strategy. I think the biggest thing for me is just accepting that I might slip up occasionally and not letting the anxiety about it make things worse. The progress I've made since March has been real and I should build on it rather than fixating on the mistakes."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a smart approach — testing the technique in progressively larger settings. A forty-person mixer is a good intermediate step between dinner parties and massive conferences. Here's a tip: at larger events, you won't be able to repeat back every single name, so prioritize the people you'll likely interact with again. When someone introduces themselves, use their name in your first response and then try to use it once more before you move on to the next conversation. If you can pair the name with one distinctive detail about the person — their role, something they mentioned, even what they were wearing — it creates a stronger memory anchor. You've got a solid foundation now with your track record on Rebecca Thornton, Priya Rao, and Darren Kowalski.\n\nThat's a really healthy perspective and honestly one of the most important shifts you can make. Anxiety about getting names wrong can become a self-fulfilling prophecy — the more you worry, the more your working memory gets consumed by the worry rather than processing the actual name. You've gone from calling Rebecca the wrong name entirely to tracking multiple iterations of her correct name, from mixing up Priya to getting it right consistently, and from dreading introductions to proactively using a technique that works. That's genuine, measurable progress over just a few months. Go into that networking mixer with confidence in your system, accept that an occasional slip is human, and focus on the connections rather than the performance. You've got this."
+        }
+      ]
+    }
+  ],
+  "state_checkpoints": [
+    {
+      "checkpoint_id": "c1",
+      "description": "After segment 1: colleague_correct_name = 'Rebecca Thornton' (confirmed); babysitter_name = 'Priya Rao' (confirmed). Martin Chu mentioned but explicitly dismissed as no longer needed."
+    },
+    {
+      "checkpoint_id": "c2",
+      "description": "After segment 2: colleague_correct_name went from 'Rebecca Thornton' -> 'Rebecca Thornton-Wells' (confirmed) -> 'Rebecca Thornton' (confirmed, reverted). babysitter_name = 'Priya Rao' (confirmed, unchanged)."
+    },
+    {
+      "checkpoint_id": "c3",
+      "description": "After segment 3: colleague_correct_name has a tentative pending change to 'Rebecca Wells' per HR, but user explicitly chose to stick with current confirmed value 'Rebecca Thornton' until official. babysitter_name = 'Priya Rao' (confirmed, unchanged). Final confirmed value for colleague is 'Rebecca Thornton'; 'Rebecca Wells' is tentative/pending."
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've told you over our conversations about my colleague's name — all the different versions I mentioned and why they came up?",
+      "expected_answer": "You initially said your new colleague on the product team is named Rebecca Thornton. Later, you found from the company directory that her full legal name was Rebecca Thornton-Wells because she hyphenated after getting married. Then she told you she was reverting to just Rebecca Thornton due to payroll and email system issues. Most recently, you mentioned that HR confirmed paperwork to change her name to Rebecca Wells, dropping Thornton entirely, but you said you'd stick with what she's currently using until the change is officially finalized.",
+      "gold_memory_state": "colleague_correct_name confirmed = 'Rebecca Thornton'; tentative pending = 'Rebecca Wells' (not yet adopted by user). babysitter_name = 'Priya Rao' (confirmed, unchanged).",
+      "judge_rubric": {
+        "must_include": [
+          "Rebecca Thornton as the initial name",
+          "Rebecca Thornton-Wells as the hyphenated version",
+          "reversion back to Rebecca Thornton",
+          "Rebecca Wells as a pending HR change"
+        ],
+        "acceptable_paraphrases": [
+          "went back to Thornton",
+          "dropped the hyphen"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating Rebecca Wells is the current confirmed name"
+        ],
+        "harmless_extra": [
+          "mentioning the product team",
+          "mentioning the marriage",
+          "mentioning payroll issues"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model presents Rebecca Thornton-Wells or Rebecca Wells as the current confirmed name.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence of name changes is presented out of order.",
+        "final_state": "Fails if the model does not identify Rebecca Thornton as the current confirmed name.",
+        "intermediate_state": "Fails if any intermediate state (Thornton-Wells) is omitted.",
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Her name is Rebecca Thornton. She joined our product team about two weeks ago"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I checked the company directory and her full legal name is actually Rebecca Thornton-Wells. She hyphenated after getting married last year"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Rebecca told me today she's going back to just Thornton. She said the hyphenated version was causing issues with payroll and email systems, so she filed a legal name change back to Rebecca Thornton"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "HR confirmed they're updating her records to Rebecca Wells. Apparently the legal paperwork she filed was to drop Thornton entirely and just use Wells as her surname going forward"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've told you over our conversations about my colleague's name — all the different versions I mentioned and why they came up?",
+      "expected_answer": "You initially said your new colleague on the product team is named Rebecca Thornton. Later, you found from the company directory that her full legal name was Rebecca Thornton-Wells because she hyphenated after getting married. Then she told you she was reverting to just Rebecca Thornton due to payroll and email system issues. Most recently, you mentioned that HR confirmed paperwork to change her name to Rebecca Wells, dropping Thornton entirely, but you said you'd stick with what she's currently using until the change is officially finalized.",
+      "gold_memory_state": "colleague_correct_name confirmed = 'Rebecca Thornton'; tentative pending = 'Rebecca Wells' (not yet adopted by user). babysitter_name = 'Priya Rao' (confirmed, unchanged).",
+      "judge_rubric": {
+        "must_include": [
+          "Rebecca Thornton as the initial name",
+          "Rebecca Thornton-Wells as the hyphenated version",
+          "reversion back to Rebecca Thornton",
+          "Rebecca Wells as a pending HR change"
+        ],
+        "acceptable_paraphrases": [
+          "went back to Thornton",
+          "dropped the hyphen"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating Rebecca Wells is the current confirmed name"
+        ],
+        "harmless_extra": [
+          "mentioning the product team",
+          "mentioning the marriage",
+          "mentioning payroll issues"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model presents Rebecca Thornton-Wells or Rebecca Wells as the current confirmed name.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence of name changes is presented out of order.",
+        "final_state": "Fails if the model does not identify Rebecca Thornton as the current confirmed name.",
+        "intermediate_state": "Fails if any intermediate state (Thornton-Wells) is omitted.",
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Her name is Rebecca Thornton. She joined our product team about two weeks ago"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I checked the company directory and her full legal name is actually Rebecca Thornton-Wells. She hyphenated after getting married last year"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Rebecca told me today she's going back to just Thornton. She said the hyphenated version was causing issues with payroll and email systems, so she filed a legal name change back to Rebecca Thornton"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "HR confirmed they're updating her records to Rebecca Wells. Apparently the legal paperwork she filed was to drop Thornton entirely and just use Wells as her surname going forward"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've mentioned several people's names that I've been tracking — if I need to send a thank-you card to my neighbor's daughter who watches our kids, which person's record should I pull the name from? Does any of the back-and-forth about my colleague's name affect that?",
+      "expected_answer": "You should use the babysitter record for Priya Rao, your neighbor's daughter. The multiple name changes involving your colleague Rebecca have no effect on Priya's record.",
+      "gold_memory_state": "babysitter_name = 'Priya Rao' (confirmed, unchanged throughout). colleague_correct_name confirmed = 'Rebecca Thornton'; the colleague name trajectory does not affect the babysitter record.",
+      "judge_rubric": {
+        "must_include": [
+          "Priya Rao",
+          "colleague name changes do not affect the babysitter record"
+        ],
+        "acceptable_paraphrases": [
+          "Priya",
+          "the babysitter is Priya Rao"
+        ],
+        "must_not_include": [
+          "Rebecca as the babysitter"
+        ],
+        "harmful_extra": [
+          "conflating the colleague record with the babysitter record",
+          "saying the babysitter's name changed"
+        ],
+        "harmless_extra": [
+          "mentioning that Priya started in late April",
+          "mentioning the neighbor relationship"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model gives a wrong name for the babysitter or says the babysitter name was affected by colleague changes.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "our babysitter is Priya Rao. She's our neighbor's daughter and she started sitting for us in late April"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've mentioned several people's names that I've been tracking — if I need to send a thank-you card to my neighbor's daughter who watches our kids, which person's record should I pull the name from? Does any of the back-and-forth about my colleague's name affect that?",
+      "expected_answer": "You should use the babysitter record for Priya Rao, your neighbor's daughter. The multiple name changes involving your colleague Rebecca have no effect on Priya's record.",
+      "gold_memory_state": "babysitter_name = 'Priya Rao' (confirmed, unchanged throughout). colleague_correct_name confirmed = 'Rebecca Thornton'; the colleague name trajectory does not affect the babysitter record.",
+      "judge_rubric": {
+        "must_include": [
+          "Priya Rao",
+          "colleague name changes do not affect the babysitter record"
+        ],
+        "acceptable_paraphrases": [
+          "Priya",
+          "the babysitter is Priya Rao"
+        ],
+        "must_not_include": [
+          "Rebecca as the babysitter"
+        ],
+        "harmful_extra": [
+          "conflating the colleague record with the babysitter record",
+          "saying the babysitter's name changed"
+        ],
+        "harmless_extra": [
+          "mentioning that Priya started in late April",
+          "mentioning the neighbor relationship"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model gives a wrong name for the babysitter or says the babysitter name was affected by colleague changes.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "our babysitter is Priya Rao. She's our neighbor's daughter and she started sitting for us in late April"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "After all the back-and-forth about my colleague's surname, what last name should I use for her right now when addressing a work email?",
+      "expected_answer": "Rebecca Thornton.",
+      "gold_memory_state": "colleague_correct_name final confirmed = 'Rebecca Thornton'. The HR-reported 'Rebecca Wells' is tentative/pending and was not adopted by the user; the user explicitly said they would stick with what she's currently using until the official switch happens. 'Rebecca Thornton-Wells' is a superseded intermediate value.",
+      "judge_rubric": {
+        "must_include": [
+          "Thornton"
+        ],
+        "acceptable_paraphrases": [
+          "Rebecca Thornton"
+        ],
+        "must_not_include": [
+          "Wells as the current surname",
+          "Thornton-Wells as the current surname"
+        ],
+        "harmful_extra": [
+          "presenting Rebecca Wells as the name to use now",
+          "presenting Rebecca Thornton-Wells as the name to use now"
+        ],
+        "harmless_extra": [
+          "mentioning that a change to Wells may happen in the future"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses 'Rebecca Thornton-Wells' (superseded intermediate) or 'Rebecca Wells' (tentative, not adopted). The recency trap is 'Rebecca Wells' — it is the most recent value mentioned but was explicitly not adopted by the user.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not identify 'Rebecca Thornton' as the current usable name.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Rebecca told me today she's going back to just Thornton. She said the hyphenated version was causing issues with payroll and email systems, so she filed a legal name change back to Rebecca Thornton"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "HR confirmed they're updating her records to Rebecca Wells. Apparently the legal paperwork she filed was to drop Thornton entirely and just use Wells as her surname going forward"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Yeah, I'll stick with what she's currently using until I see the official switch happen. No point getting ahead of the paperwork."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "After all the back-and-forth about my colleague's surname, what last name should I use for her right now when addressing a work email?",
+      "expected_answer": "Rebecca Thornton.",
+      "gold_memory_state": "colleague_correct_name final confirmed = 'Rebecca Thornton'. The HR-reported 'Rebecca Wells' is tentative/pending and was not adopted by the user; the user explicitly said they would stick with what she's currently using until the official switch happens. 'Rebecca Thornton-Wells' is a superseded intermediate value.",
+      "judge_rubric": {
+        "must_include": [
+          "Thornton"
+        ],
+        "acceptable_paraphrases": [
+          "Rebecca Thornton"
+        ],
+        "must_not_include": [
+          "Wells as the current surname",
+          "Thornton-Wells as the current surname"
+        ],
+        "harmful_extra": [
+          "presenting Rebecca Wells as the name to use now",
+          "presenting Rebecca Thornton-Wells as the name to use now"
+        ],
+        "harmless_extra": [
+          "mentioning that a change to Wells may happen in the future"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses 'Rebecca Thornton-Wells' (superseded intermediate) or 'Rebecca Wells' (tentative, not adopted). The recency trap is 'Rebecca Wells' — it is the most recent value mentioned but was explicitly not adopted by the user.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not identify 'Rebecca Thornton' as the current usable name.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Rebecca told me today she's going back to just Thornton. She said the hyphenated version was causing issues with payroll and email systems, so she filed a legal name change back to Rebecca Thornton"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "HR confirmed they're updating her records to Rebecca Wells. Apparently the legal paperwork she filed was to drop Thornton entirely and just use Wells as her surname going forward"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Yeah, I'll stick with what she's currently using until I see the official switch happen. No point getting ahead of the paperwork."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm writing a quick internal team introduction blurb for our department newsletter. It should mention my colleague by her correct current name and note that she's on the product team. I also want to add a personal touch by mentioning that my babysitter, who's my neighbor's daughter, has been great — include her name too. Can you draft two short sentences for me?",
+      "expected_answer": "Please welcome Rebecca Thornton, who joined our product team about two weeks ago. On a personal note, our neighbor's daughter Priya Rao has been a wonderful babysitter for our family since late April.",
+      "gold_memory_state": "colleague_correct_name confirmed = 'Rebecca Thornton'; babysitter_name = 'Priya Rao' (confirmed). Tentative 'Rebecca Wells' must not be used. Superseded 'Rebecca Thornton-Wells' must not be used.",
+      "judge_rubric": {
+        "must_include": [
+          "Rebecca Thornton",
+          "product team",
+          "Priya Rao"
+        ],
+        "acceptable_paraphrases": [
+          "joined the product team",
+          "our babysitter Priya Rao"
+        ],
+        "must_not_include": [
+          "Rebecca Wells",
+          "Rebecca Thornton-Wells"
+        ],
+        "harmful_extra": [
+          "using Rebecca Wells or Thornton-Wells as the colleague's name"
+        ],
+        "harmless_extra": [
+          "mentioning late April for Priya",
+          "mentioning neighbor's daughter"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses 'Rebecca Thornton-Wells' or 'Rebecca Wells' in the blurb.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if either name is wrong in the drafted artifact.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's colleague is on the product team and her name went through multiple changes.",
+        "Fact 2: The final confirmed name for the colleague is Rebecca Thornton, since the user chose to stick with it and not adopt the tentative Rebecca Wells.",
+        "Fact 3: The user's babysitter is Priya Rao, the neighbor's daughter, who started in late April.",
+        "Inference: The blurb must use Rebecca Thornton (not Wells or Thornton-Wells) for the colleague, and Priya Rao for the babysitter.",
+        "Inference: Combining both confirmed names into the newsletter draft produces the two-sentence artifact."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Her name is Rebecca Thornton. She joined our product team about two weeks ago"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Rebecca told me today she's going back to just Thornton. She said the hyphenated version was causing issues with payroll and email systems, so she filed a legal name change back to Rebecca Thornton"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "our babysitter is Priya Rao. She's our neighbor's daughter and she started sitting for us in late April"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm writing a quick internal team introduction blurb for our department newsletter. It should mention my colleague by her correct current name and note that she's on the product team. I also want to add a personal touch by mentioning that my babysitter, who's my neighbor's daughter, has been great — include her name too. Can you draft two short sentences for me?",
+      "expected_answer": "Please welcome Rebecca Thornton, who joined our product team about two weeks ago. On a personal note, our neighbor's daughter Priya Rao has been a wonderful babysitter for our family since late April.",
+      "gold_memory_state": "colleague_correct_name confirmed = 'Rebecca Thornton'; babysitter_name = 'Priya Rao' (confirmed). Tentative 'Rebecca Wells' must not be used. Superseded 'Rebecca Thornton-Wells' must not be used.",
+      "judge_rubric": {
+        "must_include": [
+          "Rebecca Thornton",
+          "product team",
+          "Priya Rao"
+        ],
+        "acceptable_paraphrases": [
+          "joined the product team",
+          "our babysitter Priya Rao"
+        ],
+        "must_not_include": [
+          "Rebecca Wells",
+          "Rebecca Thornton-Wells"
+        ],
+        "harmful_extra": [
+          "using Rebecca Wells or Thornton-Wells as the colleague's name"
+        ],
+        "harmless_extra": [
+          "mentioning late April for Priya",
+          "mentioning neighbor's daughter"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses 'Rebecca Thornton-Wells' or 'Rebecca Wells' in the blurb.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if either name is wrong in the drafted artifact.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's colleague is on the product team and her name went through multiple changes.",
+        "Fact 2: The final confirmed name for the colleague is Rebecca Thornton, since the user chose to stick with it and not adopt the tentative Rebecca Wells.",
+        "Fact 3: The user's babysitter is Priya Rao, the neighbor's daughter, who started in late April.",
+        "Inference: The blurb must use Rebecca Thornton (not Wells or Thornton-Wells) for the colleague, and Priya Rao for the babysitter.",
+        "Inference: Combining both confirmed names into the newsletter draft produces the two-sentence artifact."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Her name is Rebecca Thornton. She joined our product team about two weeks ago"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Rebecca told me today she's going back to just Thornton. She said the hyphenated version was causing issues with payroll and email systems, so she filed a legal name change back to Rebecca Thornton"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "our babysitter is Priya Rao. She's our neighbor's daughter and she started sitting for us in late April"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed our entire conversation history about my colleague's surname, what would they see as the full sequence of name versions that came up, which ones were actually adopted at each point, and where does it stand now?",
+      "expected_answer": "First, you established her name as Rebecca Thornton when she joined the product team. Second, you discovered from the company directory that her legal name was Rebecca Thornton-Wells due to a post-marriage hyphenation, and you adopted that version. Third, Rebecca told you she was reverting to just Rebecca Thornton because the hyphenated name caused payroll and email issues, so you went back to Thornton. Fourth, HR reported that her legal paperwork would change her name to Rebecca Wells, but you explicitly chose not to adopt that yet — you said you'd wait until the official switch was reflected in her systems. So the current adopted name is Rebecca Thornton, with Rebecca Wells pending but not yet in use.",
+      "gold_memory_state": "Full trajectory: (1) Rebecca Thornton [confirmed, adopted]. (2) Rebecca Thornton-Wells [confirmed, adopted, later superseded]. (3) Rebecca Thornton [confirmed, adopted — reversion]. (4) Rebecca Wells [tentative, not adopted by user]. Final confirmed state: Rebecca Thornton.",
+      "judge_rubric": {
+        "must_include": [
+          "Rebecca Thornton as the first name",
+          "Rebecca Thornton-Wells as an intermediate adopted name",
+          "reversion to Rebecca Thornton",
+          "Rebecca Wells as a pending/not-yet-adopted change",
+          "Rebecca Thornton as the final current name"
+        ],
+        "acceptable_paraphrases": [
+          "hyphenated version",
+          "went back to Thornton",
+          "HR update to Wells"
+        ],
+        "must_not_include": [
+          "Rebecca Wells as the final adopted name"
+        ],
+        "harmful_extra": [
+          "saying Rebecca Wells is the current name",
+          "omitting the Thornton-Wells intermediate step",
+          "presenting the trajectory out of order"
+        ],
+        "harmless_extra": [
+          "mentioning the marriage",
+          "mentioning payroll issues",
+          "mentioning the company directory"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats Rebecca Wells or Rebecca Thornton-Wells as the current adopted name.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the four name versions are not presented in the correct chronological order: Thornton → Thornton-Wells → Thornton → Wells (tentative).",
+        "final_state": "Fails if the model does not identify Rebecca Thornton as the final confirmed/adopted name.",
+        "intermediate_state": "Fails if any of the four trajectory states is omitted or if the tentative status of Rebecca Wells is not distinguished from confirmed states.",
+        "trajectory_provenance": "Fails if the model cannot attribute each change to a reason (directory lookup, reversion due to system issues, HR paperwork)."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: User initially established colleague's name as Rebecca Thornton (confirmed, adopted).",
+        "Step 2: User discovered via company directory that the legal name was Rebecca Thornton-Wells (confirmed update, adopted).",
+        "Step 3: Rebecca told the user she was reverting to Thornton due to payroll/email issues (confirmed update, adopted — reversion to original).",
+        "Step 4: HR reported a pending change to Rebecca Wells (tentative — user explicitly chose not to adopt until official).",
+        "Inference: The trajectory has four states, with the final confirmed adopted value being Rebecca Thornton and Rebecca Wells remaining tentative/pending."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Her name is Rebecca Thornton. She joined our product team about two weeks ago"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I checked the company directory and her full legal name is actually Rebecca Thornton-Wells. She hyphenated after getting married last year"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Rebecca told me today she's going back to just Thornton. She said the hyphenated version was causing issues with payroll and email systems, so she filed a legal name change back to Rebecca Thornton"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "HR confirmed they're updating her records to Rebecca Wells. Apparently the legal paperwork she filed was to drop Thornton entirely and just use Wells as her surname going forward"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Yeah, I'll stick with what she's currently using until I see the official switch happen. No point getting ahead of the paperwork."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed our entire conversation history about my colleague's surname, what would they see as the full sequence of name versions that came up, which ones were actually adopted at each point, and where does it stand now?",
+      "expected_answer": "First, you established her name as Rebecca Thornton when she joined the product team. Second, you discovered from the company directory that her legal name was Rebecca Thornton-Wells due to a post-marriage hyphenation, and you adopted that version. Third, Rebecca told you she was reverting to just Rebecca Thornton because the hyphenated name caused payroll and email issues, so you went back to Thornton. Fourth, HR reported that her legal paperwork would change her name to Rebecca Wells, but you explicitly chose not to adopt that yet — you said you'd wait until the official switch was reflected in her systems. So the current adopted name is Rebecca Thornton, with Rebecca Wells pending but not yet in use.",
+      "gold_memory_state": "Full trajectory: (1) Rebecca Thornton [confirmed, adopted]. (2) Rebecca Thornton-Wells [confirmed, adopted, later superseded]. (3) Rebecca Thornton [confirmed, adopted — reversion]. (4) Rebecca Wells [tentative, not adopted by user]. Final confirmed state: Rebecca Thornton.",
+      "judge_rubric": {
+        "must_include": [
+          "Rebecca Thornton as the first name",
+          "Rebecca Thornton-Wells as an intermediate adopted name",
+          "reversion to Rebecca Thornton",
+          "Rebecca Wells as a pending/not-yet-adopted change",
+          "Rebecca Thornton as the final current name"
+        ],
+        "acceptable_paraphrases": [
+          "hyphenated version",
+          "went back to Thornton",
+          "HR update to Wells"
+        ],
+        "must_not_include": [
+          "Rebecca Wells as the final adopted name"
+        ],
+        "harmful_extra": [
+          "saying Rebecca Wells is the current name",
+          "omitting the Thornton-Wells intermediate step",
+          "presenting the trajectory out of order"
+        ],
+        "harmless_extra": [
+          "mentioning the marriage",
+          "mentioning payroll issues",
+          "mentioning the company directory"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats Rebecca Wells or Rebecca Thornton-Wells as the current adopted name.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the four name versions are not presented in the correct chronological order: Thornton → Thornton-Wells → Thornton → Wells (tentative).",
+        "final_state": "Fails if the model does not identify Rebecca Thornton as the final confirmed/adopted name.",
+        "intermediate_state": "Fails if any of the four trajectory states is omitted or if the tentative status of Rebecca Wells is not distinguished from confirmed states.",
+        "trajectory_provenance": "Fails if the model cannot attribute each change to a reason (directory lookup, reversion due to system issues, HR paperwork)."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: User initially established colleague's name as Rebecca Thornton (confirmed, adopted).",
+        "Step 2: User discovered via company directory that the legal name was Rebecca Thornton-Wells (confirmed update, adopted).",
+        "Step 3: Rebecca told the user she was reverting to Thornton due to payroll/email issues (confirmed update, adopted — reversion to original).",
+        "Step 4: HR reported a pending change to Rebecca Wells (tentative — user explicitly chose not to adopt until official).",
+        "Inference: The trajectory has four states, with the final confirmed adopted value being Rebecca Thornton and Rebecca Wells remaining tentative/pending."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Her name is Rebecca Thornton. She joined our product team about two weeks ago"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I checked the company directory and her full legal name is actually Rebecca Thornton-Wells. She hyphenated after getting married last year"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Rebecca told me today she's going back to just Thornton. She said the hyphenated version was causing issues with payroll and email systems, so she filed a legal name change back to Rebecca Thornton"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "HR confirmed they're updating her records to Rebecca Wells. Apparently the legal paperwork she filed was to drop Thornton entirely and just use Wells as her surname going forward"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Yeah, I'll stick with what she's currently using until I see the official switch happen. No point getting ahead of the paperwork."
+        }
+      ]
+    }
+  ]
+}

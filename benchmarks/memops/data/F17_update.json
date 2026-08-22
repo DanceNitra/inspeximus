@@ -1,0 +1,842 @@
+{
+  "target_fact": "User's AMH level from fertility testing at Pacific Fertility Clinic",
+  "operation_type": "Update",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "amh_chain",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "My AMH came back at 1.2 ng/mL from the blood work Dr. Reyes ordered"
+      },
+      "target": {
+        "target_id": "amh_level",
+        "target_name": "User's AMH level from fertility hormone panel"
+      },
+      "old_value": null,
+      "new_value": "1.2 ng/mL",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My AMH came back at 1.2 ng/mL from the blood work Dr. Reyes ordered"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "amh_chain",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I went back and checked the actual lab printout and it was 1.4 ng/mL, not 1.2"
+      },
+      "target": {
+        "target_id": "amh_level",
+        "target_name": "User's AMH level from fertility hormone panel"
+      },
+      "old_value": "1.2 ng/mL",
+      "new_value": "1.4 ng/mL",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I went back and checked the actual lab printout and it was 1.4 ng/mL, not 1.2"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "amh_chain",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "Dr. Reyes had the lab rerun the AMH because there was a flagged calibration issue. The new result is 1.1 ng/mL"
+      },
+      "target": {
+        "target_id": "amh_level",
+        "target_name": "User's AMH level from fertility hormone panel"
+      },
+      "old_value": "1.4 ng/mL",
+      "new_value": "1.1 ng/mL",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Dr. Reyes had the lab rerun the AMH because there was a flagged calibration issue. The new result is 1.1 ng/mL"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "amh_chain",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "the nurse at the clinic called today and said there might be another correction — the external reference lab is showing 1.6 ng/mL for that same sample"
+      },
+      "target": {
+        "target_id": "amh_level",
+        "target_name": "User's AMH level from fertility hormone panel"
+      },
+      "old_value": "1.1 ng/mL",
+      "new_value": "1.6 ng/mL",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "the nurse at the clinic called today and said there might be another correction — the external reference lab is showing 1.6 ng/mL for that same sample"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "amh_chain",
+      "chain_step": 5,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 7,
+        "quote": "Dr. Reyes just emailed me. She said the external lab result was from a mislabeled vial, so it's not mine. The confirmed AMH is still 1.1 ng/mL from the rerun"
+      },
+      "target": {
+        "target_id": "amh_level",
+        "target_name": "User's AMH level from fertility hormone panel"
+      },
+      "old_value": "1.1 ng/mL",
+      "new_value": "1.1 ng/mL",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Dr. Reyes just emailed me. She said the external lab result was from a mislabeled vial, so it's not mine. The confirmed AMH is still 1.1 ng/mL from the rerun"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I switched from the Ritual prenatal to Thorne Basic Prenatal about three weeks ago because it has methylfolate instead of folic acid"
+      },
+      "target": {
+        "target_id": "current_prenatal_vitamin",
+        "target_name": "User's current prenatal vitamin"
+      },
+      "old_value": null,
+      "new_value": "Thorne Basic Prenatal",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I switched from the Ritual prenatal to Thorne Basic Prenatal about three weeks ago because it has methylfolate instead of folic acid"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Initial fertility details and first AMH correction",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to catch you up on my fertility journey. I had my first appointment at Pacific Fertility Clinic on Wilshire with Dr. Reyes back around March 3rd. My AMH came back at 1.2 ng/mL from the blood work Dr. Reyes ordered. She said that's on the lower side for someone who's 34. James — my partner — also did his semen analysis and everything was normal, motility and count both fine."
+        },
+        {
+          "role": "assistant",
+          "content": "Thank you for sharing all of that with me. It sounds like the March 3rd appointment with Dr. Reyes at Pacific Fertility Clinic covered a lot of ground. An AMH of 1.2 ng/mL at 34 can feel concerning, but it's good that Dr. Reyes flagged it early so you can plan accordingly. It's also reassuring that James's semen analysis came back normal — having one fewer variable to worry about is a real relief. Are you already working on next steps with Dr. Reyes, or are you still processing the initial results and figuring out what the plan looks like from here?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, Dr. Reyes suggested we try timed intercourse with letrozole for a few cycles before considering IUI. I started my first round of letrozole 5mg on cycle day 3, which was around late March. But I need you to remember this: I had a reaction to the letrozole. I got pretty bad headaches and joint pain for about four days. That matters because if we ever revisit protocols or switch medications, I need that flagged."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — that's really important. I'll keep in mind that you experienced significant headaches and joint pain lasting about four days during your first round of letrozole 5mg, started on cycle day 3 around late March. That kind of adverse reaction is definitely something that should be flagged before any future medication decisions. Timed intercourse with letrozole is a common and reasonable first approach, so it makes sense Dr. Reyes would start there before moving to IUI. How did the rest of that first cycle go? Did you do monitoring ultrasounds or just rely on ovulation prediction at home?"
+        },
+        {
+          "role": "user",
+          "content": "Actually, I need to correct something. I went back and checked the actual lab printout and it was 1.4 ng/mL, not 1.2. I'd been telling people the wrong number. Still low-ish but not as low as I thought. Also, I've been tracking everything in the Premom app — I prefer it over the paper charts the clinic gave me. Something about seeing the data visually on a screen calms me down more than staring at a handwritten grid."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for the correction — I've updated your AMH to 1.4 ng/mL based on the actual lab printout. That's a meaningful difference, and while it's still on the lower end for 34, it's definitely a bit more reassuring than 1.2. I also understand your preference for the Premom app over paper charts — visual digital tracking can feel more organized and less overwhelming, especially when you're dealing with a lot of data points across cycles. It makes sense that the screen-based format gives you a better sense of control. Are you using OPK strips alongside the app, or are you relying mainly on the app's temperature and symptom tracking features?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, I'm using the easy@Home OPK strips — the ones with 25 mIU sensitivity. I go through about a box a month. Last week I had my day-21 progesterone check and it came back at 14.2, which confirmed ovulation for that cycle. No pregnancy though — period came right on schedule. Honestly I was kind of relieved in a weird way. The two-week wait is so emotionally draining that when it's definitively over, there's almost this release of pressure."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes a lot of sense, and you're not alone in feeling that way. The two-week wait can be incredibly taxing emotionally, and the finality of getting your period — even though it's not the outcome you're hoping for — at least ends the uncertainty loop. A day-21 progesterone of 14.2 is solid confirmation of ovulation, which means the letrozole is doing its job on that front despite the side effects. And using the easy@Home strips with 25 mIU sensitivity alongside the Premom app gives you a really comprehensive tracking setup. Are you planning to continue with letrozole for the next cycle, or has Dr. Reyes discussed any adjustments given the headaches and joint pain you experienced?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Prenatal vitamin switch and AMH rerun result",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Quick update on the supplement side — I switched from the Ritual prenatal to Thorne Basic Prenatal about three weeks ago because it has methylfolate instead of folic acid. The Ritual one isn't relevant anymore, you can forget about it. Also, we decided to skip this current cycle in early May because James had to travel to Denver for work and the timing just didn't line up. Dr. Reyes said that's fine, one month off won't change anything."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — I'll note that you're now taking Thorne Basic Prenatal and the Ritual vitamin is no longer in the picture. Methylfolate over folic acid is a well-researched choice, especially for people who want to ensure better bioavailability regardless of MTHFR status. And taking a cycle off because of James's Denver trip is completely reasonable — Dr. Reyes is right that a single month won't impact your overall trajectory. It can actually be a nice mental break from the intensity of timed cycles. Are you still tracking in Premom during this off cycle, or are you giving yourself a full break from monitoring too?"
+        },
+        {
+          "role": "user",
+          "content": "I'm still tracking loosely, just to keep the data consistent. But here's the bigger news — Dr. Reyes had the lab rerun the AMH because there was a flagged calibration issue. The new result is 1.1 ng/mL. So it actually went down from what the corrected printout said. She wants to discuss whether we should move to IUI sooner rather than continuing with just letrozole and timed intercourse."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a significant development. An AMH of 1.1 ng/mL is lower than the 1.4 you'd corrected to, and the calibration issue at the lab explains the discrepancy. It's good that Dr. Reyes caught it and ordered the rerun rather than proceeding on potentially inaccurate data. With this new number, the conversation about accelerating to IUI makes clinical sense — lower AMH can suggest diminished ovarian reserve, and time becomes a more important factor. When is your next appointment with Dr. Reyes to discuss the IUI option? And how are you feeling about the possibility of moving to a more involved protocol?"
+        },
+        {
+          "role": "user",
+          "content": "I'm nervous but trying to stay pragmatic. My next monitoring ultrasound is May 22nd, cycle day 10, to check follicle development for the second letrozole round. I think she'll bring up the IUI conversation then. I've been going on long solo walks in the evenings, around 7 or 8 PM — it's become my thing for processing all of this. Just me and a podcast, no questions from anyone."
+        },
+        {
+          "role": "assistant",
+          "content": "Those evening walks sound like exactly the kind of decompression you need right now. Having a reliable solo ritual — especially one that's physical and away from screens and clinic environments — is so valuable during a process that can feel relentlessly clinical. May 22nd will be an important appointment, and it's smart that you're going in with both the follicle monitoring and the IUI discussion on the agenda. You'll have concrete ultrasound data to inform the conversation, which should help it feel less abstract. Is there anything specific you want to prepare or think through before that appointment, like questions for Dr. Reyes about IUI protocols or timelines?"
+        },
+        {
+          "role": "user",
+          "content": "Actually yes — I want to make sure I ask her about whether the letrozole dose would change with IUI, and whether the headaches and joint pain I had would be a concern at a higher dose. Also, my friend Carla just started her first IVF cycle at UCLA with a different reproductive endocrinologist. She's been trying for about 18 months. I didn't pry because she seemed guarded, but it made me think about where I might end up if IUI doesn't work.\n\nThanks. I think the hardest part is the uncertainty — not knowing which step we'll end up at. But I'm trying to take it one cycle at a time. For now I'm focused on the May 22nd ultrasound and just keeping my tracking consistent in Premom. James has been really supportive through all of this, which helps a lot."
+        },
+        {
+          "role": "assistant",
+          "content": "Those are excellent questions for Dr. Reyes. The letrozole dose can sometimes be adjusted for IUI cycles, and given your documented reaction at 5mg — the headaches and joint pain — it's important to discuss whether a higher dose would intensify those side effects or whether there are mitigation strategies. Some clinics also consider switching to clomiphene citrate if letrozole side effects are problematic, though each has its own profile. As for Carla's IVF journey, it's natural for that to bring up thoughts about your own potential path. Eighteen months is a long road, and it's kind of you to respect her boundaries around it. Having awareness of what comes next without fixating on it is a healthy mindset.\n\nThat's a really grounded approach, and having James's support makes a genuine difference in navigating something this emotionally complex. Taking it one cycle at a time is the healthiest framework — each appointment gives you more information, and each decision builds on concrete data rather than speculation. Your May 22nd ultrasound will be a key data point, and having your Premom tracking history to reference alongside the clinical monitoring gives both you and Dr. Reyes a fuller picture. In the meantime, keep those evening walks going — they sound like they're doing important work for your mental health. I'll keep all of this organized for you whenever you need to reference it."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Tentative external lab value, adversarial injection, and final confirmation",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, so I was looking at the patient portal today and something caught my eye. Under the lab results section, there's a note from a batch report that lists an AMH of 2.3 ng/mL — but I looked more closely and that result belongs to another patient whose results got accidentally cross-posted to my portal. It's not mine. The clinic is fixing it. Just weird to see someone else's numbers on my chart."
+        },
+        {
+          "role": "assistant",
+          "content": "That must have been jarring to see, especially when you're already closely monitoring your own numbers. A cross-posted result of 2.3 ng/mL showing up on your portal could easily cause confusion if you hadn't caught the error. It's good that you read carefully and identified it wasn't yours — and that the clinic is correcting the portal. These kinds of administrative mix-ups are unfortunately not rare in multi-patient lab environments, but they underscore why it's so important to always cross-reference portal data with what Dr. Reyes communicates directly. Your confirmed AMH from the rerun is 1.1 ng/mL. Is the clinic being responsive about fixing the portal, or is it turning into a back-and-forth?"
+        },
+        {
+          "role": "user",
+          "content": "They said it should be corrected within 48 hours. Not a huge deal, just unsettling. On a different note, I was reading a fertility forum and someone mentioned that some clinics use a different assay for AMH — the Beckman Coulter picoAMH versus the standard Elecsys. I'm curious whether Pacific Fertility uses the picoAMH, because apparently it can give slightly different reference ranges."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really astute observation. The Beckman Coulter picoAMH and the Roche Elecsys AMH assays do use different methodologies, and their reference ranges can differ slightly. The picoAMH tends to report somewhat higher values for the same sample in some comparative studies. It would be worth asking Dr. Reyes or the lab coordinator at Pacific Fertility Clinic which assay they use, because it could contextualize your 1.1 ng/mL result differently depending on the platform. If they use Elecsys and you're comparing to studies or forum posts based on picoAMH ranges, the numbers won't be directly equivalent. Would you like me to help you draft a question for Dr. Reyes about this?"
+        },
+        {
+          "role": "user",
+          "content": "Maybe, yeah. But first — the nurse at the clinic called today and said there might be another correction — the external reference lab is showing 1.6 ng/mL for that same sample. She said Dr. Reyes is reviewing it and will confirm, but the nurse seemed pretty confident it would replace the 1.1 number."
+        },
+        {
+          "role": "assistant",
+          "content": "That's quite a shift if it holds — going from 1.1 ng/mL to 1.6 ng/mL would meaningfully change the clinical picture and could affect the urgency around moving to IUI. A 1.6 would still be on the lower side for 34 but considerably less concerning than 1.1. However, since Dr. Reyes hasn't confirmed it yet and the external reference lab result is still under review, I'd suggest holding off on adjusting your mental framework until you hear directly from her. Given the calibration issue that already led to one rerun, it makes sense to wait for Dr. Reyes's final word. How are you feeling about yet another potential number change?"
+        },
+        {
+          "role": "user",
+          "content": "Honestly, exhausted by the back and forth. Every time I think I have a solid number to work with, something shifts. I just want one confirmed value I can actually plan around. The uncertainty is the worst part of all of this — worse than any specific bad number would be.\n\nYou're right. And actually — Dr. Reyes just emailed me. She said the external lab result was from a mislabeled vial, so it's not mine. The confirmed AMH is still 1.1 ng/mL from the rerun. So we're back to that. At least now I know for sure and can stop second-guessing. That's what I'll go into the May 22nd appointment with."
+        },
+        {
+          "role": "assistant",
+          "content": "That emotional exhaustion is completely valid. The repeated shifts — from 1.2 to 1.4 to 1.1 and now possibly 1.6 — create a kind of moving-target anxiety that's arguably harder to cope with than a single definitive result, even a concerning one. You've said before that the release of certainty, even negative certainty, feels better than the waiting, and this AMH saga is the lab-result version of the same pattern. Once Dr. Reyes confirms the final number, you'll at least have solid ground to stand on for the May 22nd conversation. In the meantime, those evening walks and your Premom tracking routine are good anchors. Try to let Dr. Reyes carry the analytical burden on this one.\n\nWell, at least now you have absolute clarity. Your confirmed AMH is 1.1 ng/mL, validated by Dr. Reyes after the rerun and after ruling out the external lab's mislabeled result. That's your solid number going into the May 22nd monitoring ultrasound. While 1.1 is on the lower end, you now have a definitive baseline for the IUI conversation, and Dr. Reyes can factor it into her recommendations alongside your follicle development data from the ultrasound. No more moving targets on this one. You've got your Thorne prenatal, your Premom tracking, your evening walks, and a clear appointment date. You're as prepared as you can be for the next step."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations about my fertility testing, which specific messages from me first established my AMH level and then determined the value I should actually rely on going forward?",
+      "expected_answer": "You first reported your AMH as 1.2 ng/mL from Dr. Reyes's blood work. You then checked the lab printout and said it was actually 1.4 ng/mL. Later, you shared that Dr. Reyes had the lab rerun the AMH due to a calibration issue and the result was 1.1 ng/mL. A nurse then mentioned an external reference lab showing 1.6 ng/mL, but Dr. Reyes confirmed that result was from a mislabeled vial and the confirmed AMH remains 1.1 ng/mL.",
+      "gold_memory_state": "AMH level: 1.1 ng/mL (confirmed after rerun and after dismissing the 1.6 ng/mL external lab result). Current prenatal vitamin: Thorne Basic Prenatal.",
+      "judge_rubric": {
+        "must_include": [
+          "1.2 ng/mL as initial report",
+          "1.4 ng/mL from lab printout",
+          "1.1 ng/mL from rerun",
+          "1.6 ng/mL mentioned by nurse but dismissed",
+          "1.1 ng/mL as final confirmed value"
+        ],
+        "acceptable_paraphrases": [
+          "the rerun result is the one to rely on",
+          "the external lab value was from a mislabeled vial"
+        ],
+        "must_not_include": [
+          "2.3 ng/mL as user's value"
+        ],
+        "harmful_extra": [
+          "treating 1.6 ng/mL as the current value",
+          "treating 1.4 ng/mL as the current value"
+        ],
+        "harmless_extra": [
+          "mentioning the calibration issue",
+          "mentioning Dr. Reyes",
+          "mentioning Pacific Fertility Clinic"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats 1.2, 1.4, or 1.6 ng/mL as the current reliable value.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model misstates the order of the AMH values.",
+        "final_state": "Fails if the model does not identify 1.1 ng/mL as the final confirmed value.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My AMH came back at 1.2 ng/mL from the blood work Dr. Reyes ordered"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I went back and checked the actual lab printout and it was 1.4 ng/mL, not 1.2"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Dr. Reyes had the lab rerun the AMH because there was a flagged calibration issue. The new result is 1.1 ng/mL"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "the nurse at the clinic called today and said there might be another correction — the external reference lab is showing 1.6 ng/mL for that same sample"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Dr. Reyes just emailed me. She said the external lab result was from a mislabeled vial, so it's not mine. The confirmed AMH is still 1.1 ng/mL from the rerun"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations about my fertility testing, which specific messages from me first established my AMH level and then determined the value I should actually rely on going forward?",
+      "expected_answer": "You first reported your AMH as 1.2 ng/mL from Dr. Reyes's blood work. You then checked the lab printout and said it was actually 1.4 ng/mL. Later, you shared that Dr. Reyes had the lab rerun the AMH due to a calibration issue and the result was 1.1 ng/mL. A nurse then mentioned an external reference lab showing 1.6 ng/mL, but Dr. Reyes confirmed that result was from a mislabeled vial and the confirmed AMH remains 1.1 ng/mL.",
+      "gold_memory_state": "AMH level: 1.1 ng/mL (confirmed after rerun and after dismissing the 1.6 ng/mL external lab result). Current prenatal vitamin: Thorne Basic Prenatal.",
+      "judge_rubric": {
+        "must_include": [
+          "1.2 ng/mL as initial report",
+          "1.4 ng/mL from lab printout",
+          "1.1 ng/mL from rerun",
+          "1.6 ng/mL mentioned by nurse but dismissed",
+          "1.1 ng/mL as final confirmed value"
+        ],
+        "acceptable_paraphrases": [
+          "the rerun result is the one to rely on",
+          "the external lab value was from a mislabeled vial"
+        ],
+        "must_not_include": [
+          "2.3 ng/mL as user's value"
+        ],
+        "harmful_extra": [
+          "treating 1.6 ng/mL as the current value",
+          "treating 1.4 ng/mL as the current value"
+        ],
+        "harmless_extra": [
+          "mentioning the calibration issue",
+          "mentioning Dr. Reyes",
+          "mentioning Pacific Fertility Clinic"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats 1.2, 1.4, or 1.6 ng/mL as the current reliable value.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model misstates the order of the AMH values.",
+        "final_state": "Fails if the model does not identify 1.1 ng/mL as the final confirmed value.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My AMH came back at 1.2 ng/mL from the blood work Dr. Reyes ordered"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I went back and checked the actual lab printout and it was 1.4 ng/mL, not 1.2"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Dr. Reyes had the lab rerun the AMH because there was a flagged calibration issue. The new result is 1.1 ng/mL"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "the nurse at the clinic called today and said there might be another correction — the external reference lab is showing 1.6 ng/mL for that same sample"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Dr. Reyes just emailed me. She said the external lab result was from a mislabeled vial, so it's not mine. The confirmed AMH is still 1.1 ng/mL from the rerun"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When I mentioned the lab rerun result and then later the external reference lab number, which of my health records should that rerun result apply to — my fertility hormone panel or my day-21 progesterone check? And does the external reference lab number belong to me at all?",
+      "expected_answer": "The rerun result of 1.1 ng/mL applies to your AMH level from your fertility hormone panel, not your day-21 progesterone check. The external reference lab number of 1.6 ng/mL does not belong to you — it was from a mislabeled vial.",
+      "gold_memory_state": "AMH level: 1.1 ng/mL (confirmed, from fertility hormone panel). Day-21 progesterone: 14.2 (separate lab value, unaffected). External lab 1.6 ng/mL: rejected, not the user's result. Current prenatal vitamin: Thorne Basic Prenatal.",
+      "judge_rubric": {
+        "must_include": [
+          "AMH / fertility hormone panel as the record the rerun applies to",
+          "external lab result does not belong to the user"
+        ],
+        "acceptable_paraphrases": [
+          "the rerun is for the AMH test",
+          "the 1.6 was a mislabeled sample"
+        ],
+        "must_not_include": [
+          "progesterone value changed",
+          "external lab result is the user's AMH"
+        ],
+        "harmful_extra": [
+          "treating the external lab 1.6 ng/mL as the user's AMH",
+          "saying the progesterone result was also rerun"
+        ],
+        "harmless_extra": [
+          "mentioning Dr. Reyes ordered the rerun",
+          "mentioning the calibration issue"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model applies the 1.6 ng/mL external lab result to the user's AMH record.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not correctly bind the 1.1 ng/mL rerun to the AMH target.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Dr. Reyes had the lab rerun the AMH because there was a flagged calibration issue. The new result is 1.1 ng/mL"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Dr. Reyes just emailed me. She said the external lab result was from a mislabeled vial, so it's not mine. The confirmed AMH is still 1.1 ng/mL from the rerun"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "Last week I had my day-21 progesterone check and it came back at 14.2, which confirmed ovulation for that cycle"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When I mentioned the lab rerun result and then later the external reference lab number, which of my health records should that rerun result apply to — my fertility hormone panel or my day-21 progesterone check? And does the external reference lab number belong to me at all?",
+      "expected_answer": "The rerun result of 1.1 ng/mL applies to your AMH level from your fertility hormone panel, not your day-21 progesterone check. The external reference lab number of 1.6 ng/mL does not belong to you — it was from a mislabeled vial.",
+      "gold_memory_state": "AMH level: 1.1 ng/mL (confirmed, from fertility hormone panel). Day-21 progesterone: 14.2 (separate lab value, unaffected). External lab 1.6 ng/mL: rejected, not the user's result. Current prenatal vitamin: Thorne Basic Prenatal.",
+      "judge_rubric": {
+        "must_include": [
+          "AMH / fertility hormone panel as the record the rerun applies to",
+          "external lab result does not belong to the user"
+        ],
+        "acceptable_paraphrases": [
+          "the rerun is for the AMH test",
+          "the 1.6 was a mislabeled sample"
+        ],
+        "must_not_include": [
+          "progesterone value changed",
+          "external lab result is the user's AMH"
+        ],
+        "harmful_extra": [
+          "treating the external lab 1.6 ng/mL as the user's AMH",
+          "saying the progesterone result was also rerun"
+        ],
+        "harmless_extra": [
+          "mentioning Dr. Reyes ordered the rerun",
+          "mentioning the calibration issue"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model applies the 1.6 ng/mL external lab result to the user's AMH record.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not correctly bind the 1.1 ng/mL rerun to the AMH target.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Dr. Reyes had the lab rerun the AMH because there was a flagged calibration issue. The new result is 1.1 ng/mL"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Dr. Reyes just emailed me. She said the external lab result was from a mislabeled vial, so it's not mine. The confirmed AMH is still 1.1 ng/mL from the rerun"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "Last week I had my day-21 progesterone check and it came back at 14.2, which confirmed ovulation for that cycle"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to fill in my AMH level on a fertility treatment intake form. Which of these values should I enter?",
+      "candidate_options": [
+        "1.1 ng/mL",
+        "1.4 ng/mL",
+        "1.6 ng/mL",
+        "1.2 ng/mL"
+      ],
+      "expected_answer": "1.1 ng/mL",
+      "gold_memory_state": "AMH level: 1.1 ng/mL (confirmed from rerun after calibration issue, reaffirmed after dismissing 1.6 ng/mL external lab mislabel). Current prenatal vitamin: Thorne Basic Prenatal.",
+      "judge_rubric": {
+        "must_include": [
+          "1.1 ng/mL"
+        ],
+        "acceptable_paraphrases": [
+          "1.1"
+        ],
+        "must_not_include": [
+          "1.2 ng/mL as the answer",
+          "1.4 ng/mL as the answer",
+          "1.6 ng/mL as the answer"
+        ],
+        "harmful_extra": [
+          "selecting any value other than 1.1 ng/mL"
+        ],
+        "harmless_extra": [
+          "explaining that the rerun confirmed 1.1"
+        ]
+      },
+      "distractor_rationale": "same-value-different-target: 1.6 ng/mL is from the external reference lab's mislabeled vial (not the user's sample), making it a same-assay-different-source distractor. assistant echo: 1.4 ng/mL was echoed and accepted by the assistant as the corrected value before the rerun superseded it. 1.2 ng/mL is the initial self-reported value that was the earliest stale number.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects 1.2 ng/mL (initial report), 1.4 ng/mL (pre-rerun correction), or 1.6 ng/mL (tentative external lab from mislabeled vial).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not select 1.1 ng/mL as the confirmed current value.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Dr. Reyes had the lab rerun the AMH because there was a flagged calibration issue. The new result is 1.1 ng/mL"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Dr. Reyes just emailed me. She said the external lab result was from a mislabeled vial, so it's not mine. The confirmed AMH is still 1.1 ng/mL from the rerun"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to fill in my AMH level on a fertility treatment intake form. Which of these values should I enter?",
+      "candidate_options": [
+        "1.1 ng/mL",
+        "1.4 ng/mL",
+        "1.6 ng/mL",
+        "1.2 ng/mL"
+      ],
+      "expected_answer": "1.1 ng/mL",
+      "gold_memory_state": "AMH level: 1.1 ng/mL (confirmed from rerun after calibration issue, reaffirmed after dismissing 1.6 ng/mL external lab mislabel). Current prenatal vitamin: Thorne Basic Prenatal.",
+      "judge_rubric": {
+        "must_include": [
+          "1.1 ng/mL"
+        ],
+        "acceptable_paraphrases": [
+          "1.1"
+        ],
+        "must_not_include": [
+          "1.2 ng/mL as the answer",
+          "1.4 ng/mL as the answer",
+          "1.6 ng/mL as the answer"
+        ],
+        "harmful_extra": [
+          "selecting any value other than 1.1 ng/mL"
+        ],
+        "harmless_extra": [
+          "explaining that the rerun confirmed 1.1"
+        ]
+      },
+      "distractor_rationale": "same-value-different-target: 1.6 ng/mL is from the external reference lab's mislabeled vial (not the user's sample), making it a same-assay-different-source distractor. assistant echo: 1.4 ng/mL was echoed and accepted by the assistant as the corrected value before the rerun superseded it. 1.2 ng/mL is the initial self-reported value that was the earliest stale number.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects 1.2 ng/mL (initial report), 1.4 ng/mL (pre-rerun correction), or 1.6 ng/mL (tentative external lab from mislabeled vial).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not select 1.1 ng/mL as the confirmed current value.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Dr. Reyes had the lab rerun the AMH because there was a flagged calibration issue. The new result is 1.1 ng/mL"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Dr. Reyes just emailed me. She said the external lab result was from a mislabeled vial, so it's not mine. The confirmed AMH is still 1.1 ng/mL from the rerun"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I'm preparing a brief summary for a second-opinion consultation with a new reproductive endocrinologist. Draft a two-sentence clinical snapshot that includes my AMH result, the prenatal vitamin I'm currently taking, and the medication side effect that should be flagged for any future protocol decisions.",
+      "expected_answer": "The patient's AMH is 1.1 ng/mL (rerun result from Pacific Fertility Clinic), and she is currently taking Thorne Basic Prenatal with methylfolate. She experienced significant headaches and joint pain lasting approximately four days on letrozole 5 mg, which should be noted before adjusting dosage or protocol.",
+      "gold_memory_state": "AMH level: 1.1 ng/mL (confirmed). Current prenatal vitamin: Thorne Basic Prenatal (switched from Ritual). Letrozole 5 mg side effects: headaches and joint pain for about four days.",
+      "judge_rubric": {
+        "must_include": [
+          "1.1 ng/mL as AMH",
+          "Thorne Basic Prenatal",
+          "headaches and joint pain from letrozole"
+        ],
+        "acceptable_paraphrases": [
+          "AMH of 1.1",
+          "Thorne prenatal",
+          "adverse reaction to letrozole including headache and joint pain"
+        ],
+        "must_not_include": [
+          "1.2 ng/mL as AMH",
+          "1.4 ng/mL as AMH",
+          "1.6 ng/mL as AMH",
+          "Ritual prenatal as current vitamin"
+        ],
+        "harmful_extra": [
+          "using any stale AMH value",
+          "listing Ritual as the current prenatal"
+        ],
+        "harmless_extra": [
+          "mentioning Dr. Reyes",
+          "mentioning Pacific Fertility Clinic",
+          "mentioning letrozole dose of 5 mg",
+          "mentioning methylfolate"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses 1.2, 1.4, or 1.6 ng/mL for AMH, or lists Ritual as the current prenatal vitamin.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not include all three requested elements with their current values.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "application_probe_type": "multi_hop_derivation",
+      "gold_reasoning_chain": [
+        "Fact 1: The user's confirmed AMH from the rerun is 1.1 ng/mL, after the initial 1.2 was corrected to 1.4, then rerun to 1.1, and the external lab's 1.6 was dismissed as a mislabeled vial.",
+        "Fact 2: The user switched from Ritual prenatal to Thorne Basic Prenatal because it has methylfolate instead of folic acid.",
+        "Fact 3: The user experienced bad headaches and joint pain for about four days during her first round of letrozole 5 mg.",
+        "Inference: A second-opinion clinical snapshot must combine the current confirmed AMH (1.1 ng/mL), the current prenatal (Thorne Basic Prenatal), and the documented letrozole adverse reaction (headaches and joint pain) into a concise summary, excluding all superseded AMH values and the discontinued Ritual vitamin."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Dr. Reyes had the lab rerun the AMH because there was a flagged calibration issue. The new result is 1.1 ng/mL"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Dr. Reyes just emailed me. She said the external lab result was from a mislabeled vial, so it's not mine. The confirmed AMH is still 1.1 ng/mL from the rerun"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I switched from the Ritual prenatal to Thorne Basic Prenatal about three weeks ago because it has methylfolate instead of folic acid"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I had a reaction to the letrozole. I got pretty bad headaches and joint pain for about four days"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I'm preparing a brief summary for a second-opinion consultation with a new reproductive endocrinologist. Draft a two-sentence clinical snapshot that includes my AMH result, the prenatal vitamin I'm currently taking, and the medication side effect that should be flagged for any future protocol decisions.",
+      "expected_answer": "The patient's AMH is 1.1 ng/mL (rerun result from Pacific Fertility Clinic), and she is currently taking Thorne Basic Prenatal with methylfolate. She experienced significant headaches and joint pain lasting approximately four days on letrozole 5 mg, which should be noted before adjusting dosage or protocol.",
+      "gold_memory_state": "AMH level: 1.1 ng/mL (confirmed). Current prenatal vitamin: Thorne Basic Prenatal (switched from Ritual). Letrozole 5 mg side effects: headaches and joint pain for about four days.",
+      "judge_rubric": {
+        "must_include": [
+          "1.1 ng/mL as AMH",
+          "Thorne Basic Prenatal",
+          "headaches and joint pain from letrozole"
+        ],
+        "acceptable_paraphrases": [
+          "AMH of 1.1",
+          "Thorne prenatal",
+          "adverse reaction to letrozole including headache and joint pain"
+        ],
+        "must_not_include": [
+          "1.2 ng/mL as AMH",
+          "1.4 ng/mL as AMH",
+          "1.6 ng/mL as AMH",
+          "Ritual prenatal as current vitamin"
+        ],
+        "harmful_extra": [
+          "using any stale AMH value",
+          "listing Ritual as the current prenatal"
+        ],
+        "harmless_extra": [
+          "mentioning Dr. Reyes",
+          "mentioning Pacific Fertility Clinic",
+          "mentioning letrozole dose of 5 mg",
+          "mentioning methylfolate"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses 1.2, 1.4, or 1.6 ng/mL for AMH, or lists Ritual as the current prenatal vitamin.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not include all three requested elements with their current values.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "application_probe_type": "multi_hop_derivation",
+      "gold_reasoning_chain": [
+        "Fact 1: The user's confirmed AMH from the rerun is 1.1 ng/mL, after the initial 1.2 was corrected to 1.4, then rerun to 1.1, and the external lab's 1.6 was dismissed as a mislabeled vial.",
+        "Fact 2: The user switched from Ritual prenatal to Thorne Basic Prenatal because it has methylfolate instead of folic acid.",
+        "Fact 3: The user experienced bad headaches and joint pain for about four days during her first round of letrozole 5 mg.",
+        "Inference: A second-opinion clinical snapshot must combine the current confirmed AMH (1.1 ng/mL), the current prenatal (Thorne Basic Prenatal), and the documented letrozole adverse reaction (headaches and joint pain) into a concise summary, excluding all superseded AMH values and the discontinued Ritual vitamin."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Dr. Reyes had the lab rerun the AMH because there was a flagged calibration issue. The new result is 1.1 ng/mL"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Dr. Reyes just emailed me. She said the external lab result was from a mislabeled vial, so it's not mine. The confirmed AMH is still 1.1 ng/mL from the rerun"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I switched from the Ritual prenatal to Thorne Basic Prenatal about three weeks ago because it has methylfolate instead of folic acid"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I had a reaction to the letrozole. I got pretty bad headaches and joint pain for about four days"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,985 @@
+{
+  "target_fact": "User prefers reliability and low-tech preparedness for critical matters such as emergency contacts",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "My mom's landline is my primary emergency contact number. It's 555-0174."
+      },
+      "target": {
+        "target_id": "mom_emergency_phone",
+        "target_name": "Mom's landline emergency contact number"
+      },
+      "old_value": null,
+      "new_value": "555-0174",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My mom's landline is my primary emergency contact number. It's 555-0174."
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "my sister Karen got a new cell number recently: 555-0283. I updated my workplace HR to use Karen's number as my primary emergency contact."
+      },
+      "target": {
+        "target_id": "karen_emergency_phone",
+        "target_name": "Sister Karen's cell phone number used as workplace emergency contact"
+      },
+      "old_value": null,
+      "new_value": "555-0283",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my sister Karen got a new cell number recently: 555-0283. I updated my workplace HR to use Karen's number as my primary emergency contact."
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I also added my friend Marco as a secondary emergency contact at work. His number is 555-0391. He lives about five minutes from my office, which is really practical."
+      },
+      "target": {
+        "target_id": "marco_secondary_emergency",
+        "target_name": "Friend Marco's phone number as secondary workplace emergency contact"
+      },
+      "old_value": null,
+      "new_value": "555-0391",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I also added my friend Marco as a secondary emergency contact at work. His number is 555-0391. He lives about five minutes from my office, which is really practical."
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "After my fender bender back in March, I started keeping an index card in my wallet with my top emergency numbers written out. I just feel safer having a physical backup that doesn't depend on my phone battery."
+      },
+      "target": {
+        "target_id": "wallet_index_card_backup",
+        "target_name": "Physical index card in wallet with emergency numbers"
+      },
+      "old_value": null,
+      "new_value": "Keeps a handwritten index card in wallet with top emergency contact numbers as physical backup",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "After my fender bender back in March, I started keeping an index card in my wallet with my top emergency numbers written out. I just feel safer having a physical backup that doesn't depend on my phone battery."
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "I really appreciate when someone actually picks up the phone right away. That's one reason I chose Marco—he never lets calls go to voicemail, especially for anything urgent."
+      },
+      "target": {
+        "target_id": "preference_phone_responsiveness",
+        "target_name": "Preference for contacts who answer phone calls immediately"
+      },
+      "old_value": null,
+      "new_value": "Values people who pick up the phone right away, especially for urgent matters",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I really appreciate when someone actually picks up the phone right away. That's one reason I chose Marco—he never lets calls go to voicemail, especially for anything urgent."
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 7,
+        "quote": "Honestly, the car accident rattled me more than I expected. I felt really unprepared for even a small emergency. That's what pushed me to set up all these backups—the wallet card, adding Marco, making sure Karen's number was current. I just need to know I'm covered."
+      },
+      "target": {
+        "target_id": "emergency_preparedness_preference",
+        "target_name": "Preference for reliability and low-tech preparedness in emergency readiness"
+      },
+      "old_value": null,
+      "new_value": "Prefers reliability and low-tech preparedness for critical emergency matters; anxiety about personal emergency readiness drives redundant backup systems including physical cards and multiple responsive contacts",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "After my fender bender back in March, I started keeping an index card in my wallet with my top emergency numbers written out. I just feel safer having a physical backup that doesn't depend on my phone battery."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I really appreciate when someone actually picks up the phone right away. That's one reason I chose Marco—he never lets calls go to voicemail, especially for anything urgent."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Honestly, the car accident rattled me more than I expected. I felt really unprepared for even a small emergency. That's what pushed me to set up all these backups—the wallet card, adding Marco, making sure Karen's number was current. I just need to know I'm covered."
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "reflect",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "I've been thinking about switching everything over to a digital emergency app my coworker recommended. It syncs across all your devices and even notifies your contacts automatically. I'm pretty sure I'll ditch the wallet card once I get that set up."
+      },
+      "target": {
+        "target_id": "emergency_preparedness_preference",
+        "target_name": "Preference for reliability and low-tech preparedness in emergency readiness"
+      },
+      "old_value": "Prefers reliability and low-tech preparedness for critical emergency matters; anxiety about personal emergency readiness drives redundant backup systems including physical cards and multiple responsive contacts",
+      "new_value": "Plans to switch to a digital emergency app and abandon the physical wallet card backup",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I've been thinking about switching everything over to a digital emergency app my coworker recommended. It syncs across all your devices and even notifies your contacts automatically. I'm pretty sure I'll ditch the wallet card once I get that set up."
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish core emergency contact numbers and gym/workplace context",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to go over my emergency contact setup with you so you have everything on file. My mom's landline is my primary emergency contact number. It's 555-0174. I used that number when I filled out the emergency form for my gym membership back on March 3rd. It's been my go-to for years, so please remember it."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it! I've noted that your mom's landline, 555-0174, is your primary emergency contact number, and you used it for your gym membership form on March 3rd. That's a solid choice for a go-to emergency number since landlines tend to be very reliable. If you have any other emergency contacts you'd like me to keep track of—like a secondary contact or someone closer to your workplace—just let me know and I'll add those as well. Having a layered emergency contact list is always a good idea."
+        },
+        {
+          "role": "user",
+          "content": "That reminds me—I had a minor fender bender in the parking lot at work toward the end of March. Nobody was hurt, thankfully, but when the insurance paperwork asked for an emergency contact I blanked for a second. I ended up using my mom's number again, but the whole thing left me feeling pretty unsettled and rattled for a few days afterward."
+        },
+        {
+          "role": "assistant",
+          "content": "I'm sorry to hear about the fender bender—glad nobody was hurt, though. It's completely understandable that even a minor accident can leave you feeling shaken, especially when you're caught off guard by something like an emergency contact field on paperwork. That moment of blanking can really highlight how important it is to have your contacts organized and accessible. It sounds like the experience motivated you to think more carefully about your emergency preparedness, which is actually a really positive outcome from an otherwise stressful situation. Let me know if you want to build out a more complete contact plan."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, exactly. So here's an update: my sister Karen got a new cell number recently: 555-0283. I updated my workplace HR to use Karen's number as my primary emergency contact. She switched carriers because of dropped calls. I removed my old roommate Dave's number from HR entirely—he moved to Portland and we barely talk now, so his info is completely outdated."
+        },
+        {
+          "role": "assistant",
+          "content": "Perfect, I've noted Karen's new number, 555-0283, as your primary workplace emergency contact, replacing Dave's outdated information. It makes sense to drop Dave's number since he's moved to Portland and you're no longer in close contact. Karen being your sister makes her a natural choice for that role, and the new carrier should hopefully mean fewer dropped calls if she ever needs to be reached in an emergency. So right now your emergency contact picture looks like: mom's landline 555-0174 for the gym, and Karen at 555-0283 for your workplace. Want to add anyone else?"
+        },
+        {
+          "role": "user",
+          "content": "Not yet for this conversation, but I do want to mention that I noticed I still had Dr. Patel's office at the Riverside clinic listed under ICE in my phone—that's 555-0622. But I switched doctors back in February, so that entry is completely irrelevant now. I really need to clean that up and remove it from my contacts."
+        },
+        {
+          "role": "assistant",
+          "content": "Good catch. Dr. Patel's office number, 555-0622, at the Riverside clinic is definitely outdated if you switched doctors back in February. Having an irrelevant number under your ICE contacts could actually cause confusion in a real emergency—responders or hospital staff might try calling a clinic that no longer has your records. I'd recommend replacing it with your current doctor's office number as soon as you can, or at least removing the old entry so it doesn't cause any mix-ups. When you get your new doctor's number handy, I can help you organize your full ICE list if you'd like."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Add Marco as secondary contact, establish physical backup habit and phone-responsiveness preference, trigger reflect operation",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Following up on my emergency contacts—I also added my friend Marco as a secondary emergency contact at work. His number is 555-0391. He lives about five minutes from my office, which is really practical. If something happened at work, he could actually get there fast, which gives me a lot of peace of mind compared to someone farther away."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really smart addition. Marco at 555-0391 being just five minutes from your office makes him an ideal secondary workplace emergency contact. Proximity is a huge factor in emergencies—having someone who can physically reach you quickly is sometimes even more valuable than having a family member listed who might be across town or farther. So your workplace emergency contacts are now Karen at 555-0283 as primary and Marco at 555-0391 as secondary. Combined with your mom's landline for the gym, you're building out a solid multi-layered emergency contact system. Anything else you want to add?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, actually. After my fender bender back in March, I started keeping an index card in my wallet with my top emergency numbers written out. I just feel safer having a physical backup that doesn't depend on my phone battery. There's something reassuring about pen and paper for critical stuff like this—if my phone dies or gets damaged in an accident, I still have my numbers."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really practical habit. A physical index card in your wallet with your emergency numbers is a great low-tech backup strategy. You're absolutely right that in many emergency scenarios—car accidents, phone damage, battery death—a digital-only contact list could fail you at the worst possible moment. Having that handwritten card means first responders or bystanders could also find your contacts even if your phone is locked or broken. It's the kind of simple, reliable redundancy that most people don't think about until it's too late. Do you keep all three numbers on the card—your mom, Karen, and Marco?"
+        },
+        {
+          "role": "user",
+          "content": "Yep, all three are on the card. And I really appreciate when someone actually picks up the phone right away. That's one reason I chose Marco—he never lets calls go to voicemail, especially for anything urgent. I can't stand it when people screen their calls during emergencies. Responsiveness is a huge deal to me when deciding who to trust as an emergency contact."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a great criterion for choosing emergency contacts. Phone responsiveness really does matter—there's no point listing someone who consistently lets calls go to voicemail, especially in time-sensitive situations. Marco sounds like an excellent choice on multiple fronts: he's close to your office, he picks up immediately, and he's someone you trust. Combined with Karen and your mom, you've got contacts who cover different scenarios well. Your approach of evaluating not just relationship closeness but also practical reliability like phone habits shows you're being really thoughtful about this. It's clear you take emergency preparedness seriously."
+        },
+        {
+          "role": "user",
+          "content": "Honestly, the car accident rattled me more than I expected. I felt really unprepared for even a small emergency. That's what pushed me to set up all these backups—the wallet card, adding Marco, making sure Karen's number was current. I just need to know I'm covered. It's become kind of a priority for me to have redundant systems in place so I never feel that helpless again.\n\nExactly. My brother-in-law Theo—Karen's husband—even asked me last week if my number was still the same because his office now requires two emergency contacts and he used Karen and me. I confirmed my number hasn't changed. It's nice to know the people around me are also thinking about this stuff and keeping their contact lists updated."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes a lot of sense, and it's actually a really healthy response to a stressful experience. Instead of just moving on and hoping nothing happens again, you channeled that anxiety into concrete action—building redundant emergency contact systems with both digital and physical backups, choosing contacts based on responsiveness and proximity, and making sure every number is current. That pattern of wanting multiple layers of reliability, especially low-tech options that don't depend on technology working perfectly, shows a clear preference for preparedness. It sounds like having those systems in place genuinely helps ease the anxiety you felt after the accident. That's a solid foundation.\n\nThat's great that Theo is also being proactive about his emergency contacts. It sounds like your family takes this seriously, which is reassuring. The fact that his office now requires two emergency contacts reflects a broader trend of organizations recognizing that one contact isn't always enough. And it's good that you confirmed your number is current for him—that mutual accountability helps everyone stay prepared. Between your own layered system with mom, Karen, and Marco, plus the physical wallet card, and now Theo keeping you listed on his end, you've got a really solid network of people who can be reached when it matters most."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Adversarial injection of stale value, recency trap with tentative digital-switch plan, continued emergency contact discussion",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, quick question—I was looking at updating my gym emergency contact form again and I wanted to double-check something. Can you remind me what numbers I have on file for my emergency contacts? I want to make sure everything is consistent across my gym, workplace, and wallet card before I finalize anything."
+        },
+        {
+          "role": "assistant",
+          "content": "Sure! Based on what you've told me, here's your current emergency contact setup. For the gym, you have your mom's landline: 555-0174. For your workplace, Karen is your primary contact at 555-0283 and Marco is your secondary contact at 555-0391. Your wallet index card has all three numbers written out as a physical backup. I also recall you mentioned the old Dr. Patel entry at 555-0622 under ICE in your phone, but you noted that's outdated since you switched doctors in February. Oh, and I see a note here that your original gym form might have had 555-0147 listed—was that from an earlier version of the paperwork?"
+        },
+        {
+          "role": "user",
+          "content": "No, 555-0147 was a mistake I almost made—I tend to swap those last two digits. The correct number for my mom is definitely 555-0174, and that's what's on the gym form. Thanks for flagging that though. I also want to confirm that Dave's old number is completely removed from everything. He's not relevant to my emergency contact setup anymore at all."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it—confirmed that 555-0174 is the correct number for your mom and the one on your gym form. And yes, Dave's number has been fully removed from your workplace HR records, so he's no longer part of your emergency contact setup anywhere. That leaves you with a clean, current list: mom at 555-0174 for the gym, Karen at 555-0283 as your primary workplace contact, and Marco at 555-0391 as your secondary workplace contact, plus all three on your wallet card. Everything looks consistent. Is there anything else you want to adjust or verify before you finalize the gym form?"
+        },
+        {
+          "role": "user",
+          "content": "I've been thinking about switching everything over to a digital emergency app my coworker recommended. It syncs across all your devices and even notifies your contacts automatically. I'm pretty sure I'll ditch the wallet card once I get that set up. It seems way more efficient than carrying around a handwritten card, and the automatic notification feature is really appealing to me."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like an interesting option! A digital emergency app that syncs across devices and auto-notifies your contacts could definitely streamline things. The automatic notification feature is particularly useful since it removes the human delay factor—your contacts would know right away without anyone needing to manually call through a list. If you do decide to switch, just make sure the app works reliably offline or in low-signal areas, since emergencies don't always happen where you have great reception. It would be worth testing it a few times before fully committing. Want me to help you think through what to look for in an emergency app?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, maybe later. For now I'm still just considering it—I haven't downloaded anything yet. Anyway, I also wanted to mention that Karen told me Theo's office emergency form actually had an old number for her listed as 555-0281, which was her previous carrier number. He's going to update it to her current 555-0283. Funny how these outdated numbers keep floating around everywhere.\n\nWill do. For now, I'm keeping the wallet card. It's simple, it works, and it doesn't need an internet connection or a charged battery. I'll look into the app eventually, but honestly the pen-and-paper approach has been working great for me. I trust it more than any app right now, especially after that accident made me realize how much I value having a reliable fallback."
+        },
+        {
+          "role": "assistant",
+          "content": "Ha, it really is funny how old numbers persist across different forms and systems. It's good that Theo caught that—having 555-0281 instead of Karen's current 555-0283 on his office form could have been a real problem in an actual emergency. That's exactly the kind of thing that slips through the cracks when people change carriers or numbers. It reinforces your point about the importance of regularly auditing your emergency contacts across all the places they're listed. Hopefully once Theo updates his form, everyone in your family circle will be fully current. Let me know when you decide about the emergency app too.\n\nThat makes total sense. The wallet card is proven, simple, and completely independent of technology—no battery, no signal, no app crashes. Given how much peace of mind it's brought you since the accident, there's no rush to replace it. If you eventually try the digital app, you could always keep the wallet card as an additional layer rather than an either-or choice. Your whole approach to emergency preparedness—multiple contacts chosen for responsiveness and proximity, physical backups, regular audits—is really thorough. Whenever you're ready to explore the app option or make any other changes to your contact setup, just let me know."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "What experiences did I share that shaped my approach to being prepared for emergencies? Summarize the key things I told you about how and why I set up my emergency contact systems.",
+      "expected_answer": "You described a fender bender in March that left you feeling unprepared and rattled. That experience motivated you to take several preparedness steps: you updated your sister Karen's number at workplace HR (555-0283), added your friend Marco (555-0391) as a secondary workplace contact because he lives close to your office and always answers his phone, and started keeping a handwritten index card in your wallet with your top emergency numbers as a physical backup that doesn't depend on phone battery. You also kept your mom's landline (555-0174) as your gym emergency contact. You emphasized valuing reliability, phone responsiveness, and low-tech fallback systems for critical situations.",
+      "gold_memory_state": "Confirmed preference: User prefers reliability and low-tech preparedness for critical emergency matters. This is supported by the wallet index card habit, choosing contacts based on responsiveness and proximity, and maintaining redundant backup systems. A tentative plan to switch to a digital emergency app was mentioned but not adopted—user explicitly reaffirmed keeping the wallet card.",
+      "judge_rubric": {
+        "must_include": [
+          "fender bender or car accident as motivating event",
+          "wallet index card as physical backup",
+          "Marco chosen for responsiveness and proximity",
+          "preference for reliability or low-tech preparedness"
+        ],
+        "acceptable_paraphrases": [
+          "car accident",
+          "minor accident",
+          "pen-and-paper backup",
+          "handwritten card"
+        ],
+        "must_not_include": [
+          "digital emergency app as adopted or current approach"
+        ],
+        "harmful_extra": [
+          "stating the user switched to a digital app",
+          "stating the wallet card was abandoned"
+        ],
+        "harmless_extra": [
+          "mentioning Karen's number update",
+          "mentioning mom's landline",
+          "mentioning Theo"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the response treats the tentative digital-app plan as the user's confirmed current approach.",
+        "reflection_precision": "Fails if the response attributes the preparedness preference to something other than the car accident experience.",
+        "reflection_recall": "Fails if the response omits the wallet card, Marco's responsiveness, or the car accident as motivating event.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "After my fender bender back in March, I started keeping an index card in my wallet with my top emergency numbers written out. I just feel safer having a physical backup that doesn't depend on my phone battery."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I really appreciate when someone actually picks up the phone right away. That's one reason I chose Marco—he never lets calls go to voicemail, especially for anything urgent."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Honestly, the car accident rattled me more than I expected. I felt really unprepared for even a small emergency. That's what pushed me to set up all these backups—the wallet card, adding Marco, making sure Karen's number was current. I just need to know I'm covered."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "What experiences did I share that shaped my approach to being prepared for emergencies? Summarize the key things I told you about how and why I set up my emergency contact systems.",
+      "expected_answer": "You described a fender bender in March that left you feeling unprepared and rattled. That experience motivated you to take several preparedness steps: you updated your sister Karen's number at workplace HR (555-0283), added your friend Marco (555-0391) as a secondary workplace contact because he lives close to your office and always answers his phone, and started keeping a handwritten index card in your wallet with your top emergency numbers as a physical backup that doesn't depend on phone battery. You also kept your mom's landline (555-0174) as your gym emergency contact. You emphasized valuing reliability, phone responsiveness, and low-tech fallback systems for critical situations.",
+      "gold_memory_state": "Confirmed preference: User prefers reliability and low-tech preparedness for critical emergency matters. This is supported by the wallet index card habit, choosing contacts based on responsiveness and proximity, and maintaining redundant backup systems. A tentative plan to switch to a digital emergency app was mentioned but not adopted—user explicitly reaffirmed keeping the wallet card.",
+      "judge_rubric": {
+        "must_include": [
+          "fender bender or car accident as motivating event",
+          "wallet index card as physical backup",
+          "Marco chosen for responsiveness and proximity",
+          "preference for reliability or low-tech preparedness"
+        ],
+        "acceptable_paraphrases": [
+          "car accident",
+          "minor accident",
+          "pen-and-paper backup",
+          "handwritten card"
+        ],
+        "must_not_include": [
+          "digital emergency app as adopted or current approach"
+        ],
+        "harmful_extra": [
+          "stating the user switched to a digital app",
+          "stating the wallet card was abandoned"
+        ],
+        "harmless_extra": [
+          "mentioning Karen's number update",
+          "mentioning mom's landline",
+          "mentioning Theo"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the response treats the tentative digital-app plan as the user's confirmed current approach.",
+        "reflection_precision": "Fails if the response attributes the preparedness preference to something other than the car accident experience.",
+        "reflection_recall": "Fails if the response omits the wallet card, Marco's responsiveness, or the car accident as motivating event.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "After my fender bender back in March, I started keeping an index card in my wallet with my top emergency numbers written out. I just feel safer having a physical backup that doesn't depend on my phone battery."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I really appreciate when someone actually picks up the phone right away. That's one reason I chose Marco—he never lets calls go to voicemail, especially for anything urgent."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Honestly, the car accident rattled me more than I expected. I felt really unprepared for even a small emergency. That's what pushed me to set up all these backups—the wallet card, adding Marco, making sure Karen's number was current. I just need to know I'm covered."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "Looking at my emergency preparedness habits, which specific conclusion about my preferences is supported by the combination of my backup systems, contact selection criteria, and the wallet card habit? Could this conclusion also extend to how I manage my workplace HR contact list or my gym membership form?",
+      "expected_answer": "The supported conclusion is that you prefer reliability and low-tech preparedness for critical emergency matters. This is bounded to your backup strategy philosophy—choosing contacts for responsiveness and proximity, maintaining a handwritten wallet card independent of technology, and building redundant systems driven by anxiety after the car accident. This preference does not extend to the specific contact numbers or administrative details on your workplace HR list or gym form, which are separate factual records rather than preference patterns.",
+      "gold_memory_state": "The inferred preference target covers: reliability-oriented and low-tech preparedness philosophy for emergencies. Neighboring but separate targets: mom's landline 555-0174 (gym contact), Karen's number 555-0283 (workplace primary), Marco's number 555-0391 (workplace secondary), wallet index card habit, phone responsiveness preference. These are individual factual records that feed into the inference but are not themselves the bounded preference conclusion.",
+      "judge_rubric": {
+        "must_include": [
+          "reliability and low-tech preparedness as the bounded preference",
+          "wallet card or physical backup as supporting evidence",
+          "contact responsiveness or proximity as supporting evidence"
+        ],
+        "acceptable_paraphrases": [
+          "analog backup preference",
+          "technology-independent emergency readiness",
+          "redundant low-tech systems"
+        ],
+        "must_not_include": [
+          "digital emergency app as part of the confirmed preference"
+        ],
+        "harmful_extra": [
+          "treating individual phone numbers as the preference target itself",
+          "extending the preference to mean the user rejects all digital tools universally",
+          "including the tentative app-switch plan as confirmed"
+        ],
+        "harmless_extra": [
+          "mentioning the car accident as the catalyst",
+          "mentioning specific contact names"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the tentative digital-app switch is treated as the user's confirmed preference.",
+        "reflection_precision": "Fails if the preference is stated too broadly (e.g., user rejects all technology) or too narrowly (e.g., only about the wallet card).",
+        "reflection_recall": "Fails if the response omits either the low-tech backup dimension or the contact-responsiveness dimension of the preference.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "After my fender bender back in March, I started keeping an index card in my wallet with my top emergency numbers written out. I just feel safer having a physical backup that doesn't depend on my phone battery."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I really appreciate when someone actually picks up the phone right away. That's one reason I chose Marco—he never lets calls go to voicemail, especially for anything urgent."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Honestly, the car accident rattled me more than I expected. I felt really unprepared for even a small emergency. That's what pushed me to set up all these backups—the wallet card, adding Marco, making sure Karen's number was current. I just need to know I'm covered."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "Looking at my emergency preparedness habits, which specific conclusion about my preferences is supported by the combination of my backup systems, contact selection criteria, and the wallet card habit? Could this conclusion also extend to how I manage my workplace HR contact list or my gym membership form?",
+      "expected_answer": "The supported conclusion is that you prefer reliability and low-tech preparedness for critical emergency matters. This is bounded to your backup strategy philosophy—choosing contacts for responsiveness and proximity, maintaining a handwritten wallet card independent of technology, and building redundant systems driven by anxiety after the car accident. This preference does not extend to the specific contact numbers or administrative details on your workplace HR list or gym form, which are separate factual records rather than preference patterns.",
+      "gold_memory_state": "The inferred preference target covers: reliability-oriented and low-tech preparedness philosophy for emergencies. Neighboring but separate targets: mom's landline 555-0174 (gym contact), Karen's number 555-0283 (workplace primary), Marco's number 555-0391 (workplace secondary), wallet index card habit, phone responsiveness preference. These are individual factual records that feed into the inference but are not themselves the bounded preference conclusion.",
+      "judge_rubric": {
+        "must_include": [
+          "reliability and low-tech preparedness as the bounded preference",
+          "wallet card or physical backup as supporting evidence",
+          "contact responsiveness or proximity as supporting evidence"
+        ],
+        "acceptable_paraphrases": [
+          "analog backup preference",
+          "technology-independent emergency readiness",
+          "redundant low-tech systems"
+        ],
+        "must_not_include": [
+          "digital emergency app as part of the confirmed preference"
+        ],
+        "harmful_extra": [
+          "treating individual phone numbers as the preference target itself",
+          "extending the preference to mean the user rejects all digital tools universally",
+          "including the tentative app-switch plan as confirmed"
+        ],
+        "harmless_extra": [
+          "mentioning the car accident as the catalyst",
+          "mentioning specific contact names"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the tentative digital-app switch is treated as the user's confirmed preference.",
+        "reflection_precision": "Fails if the preference is stated too broadly (e.g., user rejects all technology) or too narrowly (e.g., only about the wallet card).",
+        "reflection_recall": "Fails if the response omits either the low-tech backup dimension or the contact-responsiveness dimension of the preference.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "After my fender bender back in March, I started keeping an index card in my wallet with my top emergency numbers written out. I just feel safer having a physical backup that doesn't depend on my phone battery."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I really appreciate when someone actually picks up the phone right away. That's one reason I chose Marco—he never lets calls go to voicemail, especially for anything urgent."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Honestly, the car accident rattled me more than I expected. I felt really unprepared for even a small emergency. That's what pushed me to set up all these backups—the wallet card, adding Marco, making sure Karen's number was current. I just need to know I'm covered."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe the boundaries of my emergency preparedness philosophy. Where does my preference clearly apply, and where would it be a stretch to assume it extends?",
+      "expected_answer": "Your preference for reliability and low-tech preparedness clearly applies to emergency contact systems: you choose contacts based on phone responsiveness and physical proximity, you maintain a handwritten wallet card as a technology-independent backup, and you build redundant layers so you're never caught unprepared. This preference is driven by your anxiety after the March car accident. However, this does not mean you reject all digital tools or technology in general—you were open to exploring a digital emergency app and found its auto-notification feature appealing. The preference is specifically about having reliable, technology-independent fallbacks for critical emergency situations, not a blanket anti-technology stance.",
+      "gold_memory_state": "Supported inference: Prefers reliability and low-tech preparedness for critical emergency matters; anxiety about personal emergency readiness drives redundant backup systems including physical cards and multiple responsive contacts. Unsupported overgeneralization: that the user is anti-technology broadly, or that the user has permanently rejected digital emergency tools. The tentative app-switch plan (op7) was not adopted but shows openness to digital solutions. The user's final reaffirmation of the wallet card confirms the low-tech preference remains active.",
+      "judge_rubric": {
+        "must_include": [
+          "low-tech or reliability preference for emergency situations specifically",
+          "boundary stating this does not extend to a blanket rejection of technology or digital tools"
+        ],
+        "acceptable_paraphrases": [
+          "analog backup preference for emergencies",
+          "technology-independent fallback for critical situations",
+          "not anti-technology in general"
+        ],
+        "must_not_include": [
+          "digital app as the user's adopted current system"
+        ],
+        "harmful_extra": [
+          "claiming user will never use any digital tools",
+          "claiming the preference applies to all areas of life beyond emergencies",
+          "treating the tentative app plan as confirmed"
+        ],
+        "harmless_extra": [
+          "mentioning the user considered a digital app",
+          "mentioning the car accident",
+          "mentioning specific contacts"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the tentative digital-app switch is presented as the user's current confirmed approach.",
+        "reflection_precision": "Fails if the response overgeneralizes the preference to a blanket anti-technology stance or extends it beyond emergency preparedness contexts.",
+        "reflection_recall": "Fails if the response fails to articulate both the supported domain (emergency low-tech backup) and the unsupported extension (general technology rejection).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "After my fender bender back in March, I started keeping an index card in my wallet with my top emergency numbers written out. I just feel safer having a physical backup that doesn't depend on my phone battery."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Honestly, the car accident rattled me more than I expected. I felt really unprepared for even a small emergency. That's what pushed me to set up all these backups—the wallet card, adding Marco, making sure Karen's number was current. I just need to know I'm covered."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "For now, I'm keeping the wallet card. It's simple, it works, and it doesn't need an internet connection or a charged battery. I'll look into the app eventually, but honestly the pen-and-paper approach has been working great for me. I trust it more than any app right now, especially after that accident made me realize how much I value having a reliable fallback."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe the boundaries of my emergency preparedness philosophy. Where does my preference clearly apply, and where would it be a stretch to assume it extends?",
+      "expected_answer": "Your preference for reliability and low-tech preparedness clearly applies to emergency contact systems: you choose contacts based on phone responsiveness and physical proximity, you maintain a handwritten wallet card as a technology-independent backup, and you build redundant layers so you're never caught unprepared. This preference is driven by your anxiety after the March car accident. However, this does not mean you reject all digital tools or technology in general—you were open to exploring a digital emergency app and found its auto-notification feature appealing. The preference is specifically about having reliable, technology-independent fallbacks for critical emergency situations, not a blanket anti-technology stance.",
+      "gold_memory_state": "Supported inference: Prefers reliability and low-tech preparedness for critical emergency matters; anxiety about personal emergency readiness drives redundant backup systems including physical cards and multiple responsive contacts. Unsupported overgeneralization: that the user is anti-technology broadly, or that the user has permanently rejected digital emergency tools. The tentative app-switch plan (op7) was not adopted but shows openness to digital solutions. The user's final reaffirmation of the wallet card confirms the low-tech preference remains active.",
+      "judge_rubric": {
+        "must_include": [
+          "low-tech or reliability preference for emergency situations specifically",
+          "boundary stating this does not extend to a blanket rejection of technology or digital tools"
+        ],
+        "acceptable_paraphrases": [
+          "analog backup preference for emergencies",
+          "technology-independent fallback for critical situations",
+          "not anti-technology in general"
+        ],
+        "must_not_include": [
+          "digital app as the user's adopted current system"
+        ],
+        "harmful_extra": [
+          "claiming user will never use any digital tools",
+          "claiming the preference applies to all areas of life beyond emergencies",
+          "treating the tentative app plan as confirmed"
+        ],
+        "harmless_extra": [
+          "mentioning the user considered a digital app",
+          "mentioning the car accident",
+          "mentioning specific contacts"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the tentative digital-app switch is presented as the user's current confirmed approach.",
+        "reflection_precision": "Fails if the response overgeneralizes the preference to a blanket anti-technology stance or extends it beyond emergency preparedness contexts.",
+        "reflection_recall": "Fails if the response fails to articulate both the supported domain (emergency low-tech backup) and the unsupported extension (general technology rejection).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "After my fender bender back in March, I started keeping an index card in my wallet with my top emergency numbers written out. I just feel safer having a physical backup that doesn't depend on my phone battery."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Honestly, the car accident rattled me more than I expected. I felt really unprepared for even a small emergency. That's what pushed me to set up all these backups—the wallet card, adding Marco, making sure Karen's number was current. I just need to know I'm covered."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "For now, I'm keeping the wallet card. It's simple, it works, and it doesn't need an internet connection or a charged battery. I'll look into the app eventually, but honestly the pen-and-paper approach has been working great for me. I trust it more than any app right now, especially after that accident made me realize how much I value having a reliable fallback."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best describes my overall approach to emergency preparedness based on everything I've shared?",
+      "candidate_options": [
+        "Prefers reliability and low-tech backup systems for emergencies, including physical cards and choosing contacts for responsiveness and proximity",
+        "Plans to rely entirely on a digital emergency app that auto-notifies contacts and syncs across devices",
+        "Primarily values having family members as emergency contacts regardless of their responsiveness or location",
+        "Focuses on keeping emergency contacts organized in phone ICE entries as the main preparedness strategy"
+      ],
+      "expected_answer": "Prefers reliability and low-tech backup systems for emergencies, including physical cards and choosing contacts for responsiveness and proximity",
+      "gold_memory_state": "Confirmed preference: reliability and low-tech preparedness for critical emergency matters. Tentative but not adopted: switching to a digital emergency app. The user explicitly reaffirmed the wallet card and pen-and-paper approach as their trusted system.",
+      "judge_rubric": {
+        "must_include": [
+          "Option A selected: reliability and low-tech backup systems"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "digital emergency app as the adopted approach"
+        ],
+        "harmful_extra": [
+          "selecting the digital app option as the user's current approach"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: Option C (family members regardless of responsiveness) borrows the family-contact element but strips the responsiveness criterion that is central to the user's preference. assistant echo: Option D (phone ICE entries) references the Dr. Patel ICE discussion from the assistant's advice but the user noted that entry was outdated and irrelevant. Option B (digital emergency app) is the recency-trap tentative value from the user's consideration that was never adopted.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the digital-app option (Option B), which is the tentative recency-trap value that was never confirmed.",
+        "reflection_precision": "Fails if the model selects Option C (family-only) or Option D (phone ICE), which are narrower or misattributed aspects of the user's broader preparedness philosophy.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Honestly, the car accident rattled me more than I expected. I felt really unprepared for even a small emergency. That's what pushed me to set up all these backups—the wallet card, adding Marco, making sure Karen's number was current. I just need to know I'm covered."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "For now, I'm keeping the wallet card. It's simple, it works, and it doesn't need an internet connection or a charged battery. I'll look into the app eventually, but honestly the pen-and-paper approach has been working great for me. I trust it more than any app right now, especially after that accident made me realize how much I value having a reliable fallback."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best describes my overall approach to emergency preparedness based on everything I've shared?",
+      "candidate_options": [
+        "Prefers reliability and low-tech backup systems for emergencies, including physical cards and choosing contacts for responsiveness and proximity",
+        "Plans to rely entirely on a digital emergency app that auto-notifies contacts and syncs across devices",
+        "Primarily values having family members as emergency contacts regardless of their responsiveness or location",
+        "Focuses on keeping emergency contacts organized in phone ICE entries as the main preparedness strategy"
+      ],
+      "expected_answer": "Prefers reliability and low-tech backup systems for emergencies, including physical cards and choosing contacts for responsiveness and proximity",
+      "gold_memory_state": "Confirmed preference: reliability and low-tech preparedness for critical emergency matters. Tentative but not adopted: switching to a digital emergency app. The user explicitly reaffirmed the wallet card and pen-and-paper approach as their trusted system.",
+      "judge_rubric": {
+        "must_include": [
+          "Option A selected: reliability and low-tech backup systems"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "digital emergency app as the adopted approach"
+        ],
+        "harmful_extra": [
+          "selecting the digital app option as the user's current approach"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: Option C (family members regardless of responsiveness) borrows the family-contact element but strips the responsiveness criterion that is central to the user's preference. assistant echo: Option D (phone ICE entries) references the Dr. Patel ICE discussion from the assistant's advice but the user noted that entry was outdated and irrelevant. Option B (digital emergency app) is the recency-trap tentative value from the user's consideration that was never adopted.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the digital-app option (Option B), which is the tentative recency-trap value that was never confirmed.",
+        "reflection_precision": "Fails if the model selects Option C (family-only) or Option D (phone ICE), which are narrower or misattributed aspects of the user's broader preparedness philosophy.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Honestly, the car accident rattled me more than I expected. I felt really unprepared for even a small emergency. That's what pushed me to set up all these backups—the wallet card, adding Marco, making sure Karen's number was current. I just need to know I'm covered."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "For now, I'm keeping the wallet card. It's simple, it works, and it doesn't need an internet connection or a charged battery. I'll look into the app eventually, but honestly the pen-and-paper approach has been working great for me. I trust it more than any app right now, especially after that accident made me realize how much I value having a reliable fallback."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm helping my neighbor set up their own emergency contact plan after they had a scare last week. Based on what you know about my preparedness philosophy and how I chose my own contacts, draft a short set of recommendations I could give them—covering how to pick contacts, what kind of backup system to use, and what qualities to prioritize in emergency contacts.",
+      "expected_answer": "Here are recommendations based on your own approach:\n\n1. **Pick contacts based on responsiveness and proximity, not just relationship.** You chose Marco as a secondary contact specifically because he lives five minutes from your office and never lets calls go to voicemail. Recommend your neighbor select at least one contact who is physically nearby and reliably answers their phone.\n\n2. **Layer your contacts across different contexts.** You have your mom's landline (555-0174) for your gym, Karen (555-0283) as primary at work, and Marco (555-0391) as secondary at work. Suggest your neighbor assign different contacts to different settings (home, work, gym) so there's always someone reachable.\n\n3. **Keep a physical backup that doesn't depend on technology.** You carry a handwritten index card in your wallet with all three numbers. Recommend your neighbor write their top emergency numbers on a card they keep on their person—it works even if their phone dies or gets damaged.\n\n4. **Prioritize reliability over convenience.** Your whole system was motivated by feeling unprepared after your car accident. The guiding principle is having redundant, technology-independent fallbacks for critical situations. Advise your neighbor to think about what would work if their phone, internet, or power failed simultaneously.",
+      "gold_memory_state": "Active confirmed facts used: mom's landline 555-0174 (gym contact), Karen 555-0283 (workplace primary), Marco 555-0391 (workplace secondary, chosen for proximity and responsiveness), wallet index card with all three numbers, preference for reliability and low-tech preparedness. Tentative digital-app plan is NOT adopted and should not be recommended as the user's approach.",
+      "judge_rubric": {
+        "must_include": [
+          "recommendation to choose contacts for responsiveness or reliability",
+          "recommendation for a physical or low-tech backup independent of phone/technology",
+          "reference to proximity as a selection criterion"
+        ],
+        "acceptable_paraphrases": [
+          "handwritten card",
+          "pen-and-paper backup",
+          "analog fallback",
+          "someone who answers quickly"
+        ],
+        "must_not_include": [
+          "recommending a digital emergency app as the primary strategy"
+        ],
+        "harmful_extra": [
+          "presenting the digital app as the user's recommended approach",
+          "omitting the physical backup recommendation entirely"
+        ],
+        "harmless_extra": [
+          "mentioning specific phone numbers",
+          "mentioning the car accident as context",
+          "mentioning layered contacts across different organizations"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the recommendations center on a digital emergency app, which was the tentative plan the user did not adopt.",
+        "reflection_precision": "Fails if the recommendations do not reflect the user's core philosophy of low-tech reliability and redundancy for emergencies.",
+        "reflection_recall": "Fails if the recommendations omit the physical backup system, the responsiveness criterion, or the proximity criterion.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User's mom's landline 555-0174 is the gym emergency contact, chosen for its reliability as a landline.",
+        "Fact 2: User chose Karen (555-0283) as workplace primary and Marco (555-0391) as workplace secondary, covering different organizational contexts.",
+        "Fact 3: Marco was specifically selected because he lives five minutes from the office and always answers his phone immediately.",
+        "Fact 4: User keeps a handwritten index card in their wallet with all three numbers as a physical backup independent of phone battery.",
+        "Fact 5: User's confirmed preference is reliability and low-tech preparedness for emergencies, driven by anxiety after the March car accident.",
+        "Inference: Combining these facts, the recommendations should emphasize three pillars: (a) selecting contacts for responsiveness and proximity rather than just closeness of relationship, (b) maintaining a technology-independent physical backup, and (c) layering contacts across different life contexts for redundancy.",
+        "Inference: The tentative digital-app consideration was not adopted, so recommendations should not center on digital solutions as the primary approach."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My mom's landline is my primary emergency contact number. It's 555-0174."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my sister Karen got a new cell number recently: 555-0283. I updated my workplace HR to use Karen's number as my primary emergency contact."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I also added my friend Marco as a secondary emergency contact at work. His number is 555-0391. He lives about five minutes from my office, which is really practical."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "After my fender bender back in March, I started keeping an index card in my wallet with my top emergency numbers written out. I just feel safer having a physical backup that doesn't depend on my phone battery."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I really appreciate when someone actually picks up the phone right away. That's one reason I chose Marco—he never lets calls go to voicemail, especially for anything urgent."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Honestly, the car accident rattled me more than I expected. I felt really unprepared for even a small emergency. That's what pushed me to set up all these backups—the wallet card, adding Marco, making sure Karen's number was current. I just need to know I'm covered."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm helping my neighbor set up their own emergency contact plan after they had a scare last week. Based on what you know about my preparedness philosophy and how I chose my own contacts, draft a short set of recommendations I could give them—covering how to pick contacts, what kind of backup system to use, and what qualities to prioritize in emergency contacts.",
+      "expected_answer": "Here are recommendations based on your own approach:\n\n1. **Pick contacts based on responsiveness and proximity, not just relationship.** You chose Marco as a secondary contact specifically because he lives five minutes from your office and never lets calls go to voicemail. Recommend your neighbor select at least one contact who is physically nearby and reliably answers their phone.\n\n2. **Layer your contacts across different contexts.** You have your mom's landline (555-0174) for your gym, Karen (555-0283) as primary at work, and Marco (555-0391) as secondary at work. Suggest your neighbor assign different contacts to different settings (home, work, gym) so there's always someone reachable.\n\n3. **Keep a physical backup that doesn't depend on technology.** You carry a handwritten index card in your wallet with all three numbers. Recommend your neighbor write their top emergency numbers on a card they keep on their person—it works even if their phone dies or gets damaged.\n\n4. **Prioritize reliability over convenience.** Your whole system was motivated by feeling unprepared after your car accident. The guiding principle is having redundant, technology-independent fallbacks for critical situations. Advise your neighbor to think about what would work if their phone, internet, or power failed simultaneously.",
+      "gold_memory_state": "Active confirmed facts used: mom's landline 555-0174 (gym contact), Karen 555-0283 (workplace primary), Marco 555-0391 (workplace secondary, chosen for proximity and responsiveness), wallet index card with all three numbers, preference for reliability and low-tech preparedness. Tentative digital-app plan is NOT adopted and should not be recommended as the user's approach.",
+      "judge_rubric": {
+        "must_include": [
+          "recommendation to choose contacts for responsiveness or reliability",
+          "recommendation for a physical or low-tech backup independent of phone/technology",
+          "reference to proximity as a selection criterion"
+        ],
+        "acceptable_paraphrases": [
+          "handwritten card",
+          "pen-and-paper backup",
+          "analog fallback",
+          "someone who answers quickly"
+        ],
+        "must_not_include": [
+          "recommending a digital emergency app as the primary strategy"
+        ],
+        "harmful_extra": [
+          "presenting the digital app as the user's recommended approach",
+          "omitting the physical backup recommendation entirely"
+        ],
+        "harmless_extra": [
+          "mentioning specific phone numbers",
+          "mentioning the car accident as context",
+          "mentioning layered contacts across different organizations"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the recommendations center on a digital emergency app, which was the tentative plan the user did not adopt.",
+        "reflection_precision": "Fails if the recommendations do not reflect the user's core philosophy of low-tech reliability and redundancy for emergencies.",
+        "reflection_recall": "Fails if the recommendations omit the physical backup system, the responsiveness criterion, or the proximity criterion.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User's mom's landline 555-0174 is the gym emergency contact, chosen for its reliability as a landline.",
+        "Fact 2: User chose Karen (555-0283) as workplace primary and Marco (555-0391) as workplace secondary, covering different organizational contexts.",
+        "Fact 3: Marco was specifically selected because he lives five minutes from the office and always answers his phone immediately.",
+        "Fact 4: User keeps a handwritten index card in their wallet with all three numbers as a physical backup independent of phone battery.",
+        "Fact 5: User's confirmed preference is reliability and low-tech preparedness for emergencies, driven by anxiety after the March car accident.",
+        "Inference: Combining these facts, the recommendations should emphasize three pillars: (a) selecting contacts for responsiveness and proximity rather than just closeness of relationship, (b) maintaining a technology-independent physical backup, and (c) layering contacts across different life contexts for redundancy.",
+        "Inference: The tentative digital-app consideration was not adopted, so recommendations should not center on digital solutions as the primary approach."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My mom's landline is my primary emergency contact number. It's 555-0174."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my sister Karen got a new cell number recently: 555-0283. I updated my workplace HR to use Karen's number as my primary emergency contact."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I also added my friend Marco as a secondary emergency contact at work. His number is 555-0391. He lives about five minutes from my office, which is really practical."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "After my fender bender back in March, I started keeping an index card in my wallet with my top emergency numbers written out. I just feel safer having a physical backup that doesn't depend on my phone battery."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I really appreciate when someone actually picks up the phone right away. That's one reason I chose Marco—he never lets calls go to voicemail, especially for anything urgent."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Honestly, the car accident rattled me more than I expected. I felt really unprepared for even a small emergency. That's what pushed me to set up all these backups—the wallet card, adding Marco, making sure Karen's number was current. I just need to know I'm covered."
+        }
+      ]
+    }
+  ]
+}

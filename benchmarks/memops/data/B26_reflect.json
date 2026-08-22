@@ -1,0 +1,905 @@
+{
+  "target_fact": "User prefers calm, low-key, understated experiences — evidenced by preferring rainy grey afternoons over heat, enjoying quiet one-on-one conversations over group dynamics, and appreciating when old family photos surface naturally",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "I actually love those quiet evenings where it's just me and one other person, no agenda, maybe some rain outside. That's my ideal."
+      },
+      "target": {
+        "target_id": "preference_calm_understated",
+        "target_name": "preference for calm, low-key, understated experiences"
+      },
+      "old_value": null,
+      "new_value": "Prefers calm, low-key, understated experiences — gravitates toward rainy weather over heat, one-on-one conversations over group dynamics, and quiet moments like old photos surfacing naturally",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I'd honestly pick a grey rainy afternoon over a sunny hot day every single time. There's something about the quiet of it that I find really grounding."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "my mom texted an old photo of the three of us at the lake house from when we were little. I saved it immediately. I love when stuff like that just appears out of nowhere — no fanfare, just a little memory popping up."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I actually love those quiet evenings where it's just me and one other person, no agenda, maybe some rain outside. That's my ideal."
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "Daniel's been in Austin since 2016. He genuinely loves the heat there. I can't relate at all."
+      },
+      "target": {
+        "target_id": "daniel_location",
+        "target_name": "Daniel's current city and year he moved there"
+      },
+      "old_value": null,
+      "new_value": "Austin, since 2016",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Daniel's been in Austin since 2016. He genuinely loves the heat there. I can't relate at all."
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 7,
+        "quote": "After that group call about Mom's birthday trip, I was annoyed for days. Daniel just took over the whole plan. When it's just me and Chloe though, I feel way more at ease. I think I just don't do well when someone steamrolls a conversation."
+      },
+      "target": {
+        "target_id": "emotional_pattern_steamrolling",
+        "target_name": "emotional sensitivity to being steamrolled in group conversations"
+      },
+      "old_value": null,
+      "new_value": "Feels annoyed and needs days to recover when someone dominates a group conversation without consulting others; much more comfortable in balanced one-on-one exchanges",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "the group call we had about chipping in for Mom's 60th birthday trip — Daniel basically decided everything without asking me or Chloe. I was irritated for like three days after that."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "After that group call about Mom's birthday trip, I was annoyed for days. Daniel just took over the whole plan. When it's just me and Chloe though, I feel way more at ease. I think I just don't do well when someone steamrolls a conversation."
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "Chloe mentioned she might actually move up to Seattle by next spring. Her nonprofit has an office there and they floated the idea of transferring her."
+      },
+      "target": {
+        "target_id": "chloe_potential_move",
+        "target_name": "Chloe's potential relocation to Seattle"
+      },
+      "old_value": null,
+      "new_value": "Seattle by next spring",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Chloe mentioned she might actually move up to Seattle by next spring. Her nonprofit has an office there and they floated the idea of transferring her."
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish sibling facts and weather/aesthetic preferences",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to talk a bit about my family situation. I'm the middle of three siblings — my older brother Daniel was born in 1988, two years before me, and my younger sister Chloe was born in '94. Being sandwiched between them definitely shaped who I am. Can you help me think through some things about our dynamic?"
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! It sounds like you have a really clear sense of where you fit in the family lineup — Daniel born in 1988, you two years later, and Chloe in 1994. Being the middle child often comes with a unique perspective, especially when you're bridging two very different personalities. I'd love to help you think through whatever's on your mind about your sibling dynamic. What aspects are you reflecting on — communication patterns, how you relate to each of them individually, or something else entirely? Feel free to share as much context as you'd like and we can dig in."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, so one thing — I'd honestly pick a grey rainy afternoon over a sunny hot day every single time. There's something about the quiet of it that I find really grounding. Daniel is the total opposite. He thrives in heat. That kind of sums up how different we are in a lot of ways, not just weather preferences but our whole approach to life."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really telling contrast. Your preference for grey, rainy afternoons — the quietness and groundedness you describe — sounds like it reflects something deeper about how you engage with the world. You seem drawn to environments that are calmer, more reflective, less stimulating. And Daniel being drawn to heat and intensity suggests a very different temperament. It's interesting how weather preferences can map onto broader personality traits. Do you find that this difference plays out in how you two communicate or make decisions together? Like, does Daniel tend to be more high-energy or assertive in family conversations?"
+        },
+        {
+          "role": "user",
+          "content": "Daniel's been in Austin since 2016. He genuinely loves the heat there. I can't relate at all. But yeah, he's definitely more assertive. Chloe just moved to Portland recently for a new job at a nonprofit. She was miserable at her old company in Denver — she called me around Christmas sounding completely drained. That stuck with me."
+        },
+        {
+          "role": "assistant",
+          "content": "That paints a vivid picture. Daniel settled in Austin back in 2016 and clearly thrives in that high-energy, sun-drenched environment, which tracks with what you described about his personality. And Chloe's move to Portland for the nonprofit role sounds like a real turning point — especially given how drained she sounded when she called you around Christmas from Denver. The fact that that moment stuck with you says a lot about how attuned you are to your sister's emotional state. It sounds like you carry a lot of awareness about how your siblings are doing. How is Chloe settling in so far? Is she happier now?"
+        },
+        {
+          "role": "user",
+          "content": "She seems a lot happier, yeah. And actually — my mom texted an old photo of the three of us at the lake house from when we were little. I saved it immediately. I love when stuff like that just appears out of nowhere — no fanfare, just a little memory popping up. Daniel was maybe ten, I was eight, Chloe was about four in the picture.\n\nYeah, exactly — dad called us 'the steps' because we were like stair steps in height. It's silly but it comes back to me sometimes. And yeah, I'm definitely drawn to those quiet callbacks. I think that's just how I process family stuff — through small, understated moments rather than big dramatic gestures. It feels more real to me that way."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like such a lovely moment — those unexpected old photos that just land in your phone with no buildup. There's something really special about how understated that kind of nostalgia is, and it clearly resonates with you. The image of the three of you at the lake house — Daniel at ten, you at eight, Chloe at four — is such a classic sibling snapshot. It's the kind of thing that captures a whole era in one frame. Your dad used to call you all 'the steps' because of the height difference, right? That detail seems to fit perfectly with this photo. Do you find yourself drawn to these quiet little callbacks to childhood often?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "deepen emotional patterns and group dynamic reflections",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So I wanted to follow up on what we talked about before — the sibling dynamics. One thing I've been thinking about is how I always end up as the mediator whenever the three of us talk. On group calls, Daniel dominates the conversation and Chloe mostly just listens. I'm always the one trying to balance things out."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really common middle-child dynamic, but it doesn't make it any less exhausting. Being the mediator means you're constantly monitoring two different communication styles — Daniel's assertiveness and Chloe's quieter presence — and trying to make sure everyone feels heard. Over time, that role can become draining, especially if it feels automatic rather than chosen. It sounds like you've been reflecting on whether this pattern serves you or just happens to you. Have there been recent situations where the mediator role felt particularly frustrating or where you wished the dynamic had played out differently?"
+        },
+        {
+          "role": "user",
+          "content": "Absolutely. The best example is the group call we had about chipping in for Mom's 60th birthday trip — Daniel basically decided everything without asking me or Chloe. I was irritated for like three days after that. He just steamrolled the whole plan. Chloe didn't push back either, so I felt stuck."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds incredibly frustrating. When Daniel steamrolled the birthday trip plan without genuinely consulting you or Chloe, it essentially invalidated the collaborative process you were trying to maintain. And the fact that Chloe didn't push back left you carrying the burden of being the only one who noticed — or at least the only one who felt the weight of it. Three days of lingering irritation is significant; it suggests this isn't just a surface-level annoyance but something that hits a deeper nerve about being heard and respected in family decisions. Do you think Daniel is aware of how that lands on you?"
+        },
+        {
+          "role": "user",
+          "content": "Probably not. He's not malicious about it — he just has a strong personality. But compare that to when it's just me and Chloe on a call. Those conversations are so much easier. Nobody's trying to take charge, we just talk. I actually love those quiet evenings where it's just me and one other person, no agenda, maybe some rain outside. That's my ideal."
+        },
+        {
+          "role": "assistant",
+          "content": "There's a really clear pattern emerging here. You light up when the social environment is low-key and balanced — one-on-one with Chloe, no power struggle, no agenda, just genuine connection. And you pair that with the sensory environment you love: rain, quiet, no intensity. It sounds like your ideal conditions for meaningful interaction are calm, unhurried, and egalitarian. That's a beautiful self-awareness to have. It also helps explain why Daniel's steamrolling hits so hard — it's the exact opposite of the conditions where you feel most yourself. Have you ever tried to articulate this to either of them?"
+        },
+        {
+          "role": "user",
+          "content": "Not really. I think Daniel would just brush it off, and Chloe would understand but not know what to do about it. Oh, by the way — Daniel told me around early March that his wife is expecting their second kid. She's due in late September. That's exciting but it also means I need to plan around that for family stuff.\n\nAfter that group call about Mom's birthday trip, I was annoyed for days. Daniel just took over the whole plan. When it's just me and Chloe though, I feel way more at ease. I think I just don't do well when someone steamrolls a conversation. It takes me a while to shake that off emotionally, and I've noticed that pattern more and more."
+        },
+        {
+          "role": "assistant",
+          "content": "That's wonderful news about Daniel and his wife expecting their second child, with a late September due date! That does add a planning dimension to family logistics — especially if you're thinking about visits, the birthday trip for your mom, or any other gatherings in that timeframe. It might be worth mapping out the fall calendar soon so nothing overlaps awkwardly. And going back to your earlier point — it's understandable that you haven't raised the communication dynamic directly. Sometimes the cost of the conversation feels higher than the cost of just absorbing it. But it's still worth knowing your own pattern."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "recency trap with tentative value and adversarial injection",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, quick update on the family front. Chloe's pretty settled in Portland now — she helped me pick out some stuff for my own apartment recently over FaceTime, so we've been talking a lot. She really seems to be thriving at the nonprofit. I'm glad she made the move from Denver."
+        },
+        {
+          "role": "assistant",
+          "content": "That's great to hear! It sounds like the Portland move has been really positive for Chloe — thriving at the nonprofit and settled enough to be helping you with apartment shopping over FaceTime. Those one-on-one calls with her seem like exactly the kind of interaction you enjoy most: relaxed, no power dynamics, just genuine connection. It's also nice that the move from Denver, where she was clearly unhappy, has turned into something she's genuinely excited about. Are you two talking more frequently now that she's in a better headspace?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, definitely more frequently. It's been really nice. Oh, I also wanted to mention — Daniel's middle name is James, Chloe's is Marie after our grandmother, and mine is Thomas. Just random family trivia, but I realized I'd never mentioned that before. Our grandmother's piano was donated to the church last year, so that whole discussion is settled."
+        },
+        {
+          "role": "assistant",
+          "content": "Good to have those details noted — Daniel James, Chloe Marie (after your grandmother), and yours is Thomas. And it's nice that the grandmother's piano situation is fully resolved with the church donation last year, so there's no lingering family logistics around that. Those middle names carry a certain weight even if they feel like background info now. The fact that Chloe's honors your grandmother directly is a sweet connection. Is there anything else family-related you've been thinking about, or shall we circle back to the planning around Daniel's wife's due date in September?"
+        },
+        {
+          "role": "user",
+          "content": "Chloe mentioned she might actually move up to Seattle by next spring. Her nonprofit has an office there and they floated the idea of transferring her. She sounded pretty interested. If that happens, she'd be way closer to me, which would be cool."
+        },
+        {
+          "role": "assistant",
+          "content": "Oh interesting — a potential Seattle transfer for Chloe by next spring! That would be a significant shift, especially since she just got settled in Portland. But if the nonprofit has an office there and she's interested, it could be a natural next step. And you're right, having her closer would open up a lot more of those low-key, in-person hangouts that seem to be your favorite way to connect. It's still tentative since it sounds like just a floated idea at this point, but definitely worth keeping on your radar. By the way, I noticed on the nonprofit's staff directory page that a 'Chloe born 1992' is listed — that's not your sister's birth year, right? She was born in '94?"
+        },
+        {
+          "role": "user",
+          "content": "Ha, no — that's definitely not her. Chloe was born in '94, not '92. Must be a different Chloe at the organization. Anyway, yeah, the Seattle thing is just an idea for now. Nothing confirmed. I'm not going to plan around it yet. I'd rather just see how it plays out naturally.\n\nYeah, let's do that soon. I think the September due date is the main thing to plan around. I also want to make sure I check in with Chloe more regularly — those one-on-one calls have been the highlight of my week lately. They're so much more my speed than the chaotic group calls. I just feel more like myself in those quieter settings."
+        },
+        {
+          "role": "assistant",
+          "content": "Good call — no need to reorganize anything around a transfer that's still just a possibility. Your instinct to let it unfold naturally makes a lot of sense, especially given how you tend to prefer things that emerge organically rather than being forced. And yes, the 1992 listing is clearly a different person — your Chloe is 1994, no question. If the Seattle move does materialize, you'll have plenty of time to adjust. For now, the bigger concrete planning item is probably Daniel's wife's due date in late September and how that affects any fall family gatherings. Want to start sketching out a rough timeline for that?\n\nThat's a really healthy priority to set — leaning into the connection style that actually energizes you rather than the one that leaves you drained. The one-on-one calls with Chloe clearly align with your natural rhythm: calm, unhurried, genuine. And planning around the late September due date for Daniel's second child gives you a concrete anchor for fall logistics. We can map that out whenever you're ready — maybe block some time in August to finalize travel or gift plans so nothing feels rushed. In the meantime, keep enjoying those quiet calls with Chloe. They sound like exactly what you need right now."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations, I've mentioned several things about how I like to spend my time and what kinds of settings I gravitate toward. Can you summarize the specific experiences I described that reveal my preferences for social settings, weather, and moments of nostalgia?",
+      "expected_answer": "You described preferring grey rainy afternoons over sunny hot days because of the quiet and grounding quality. You mentioned loving when your mom texted an old family photo from the lake house — appreciating how it appeared with no fanfare, just a quiet memory surfacing naturally. You also said your ideal evening is being with just one other person, no agenda, maybe some rain outside, and that you feel much more at ease in one-on-one conversations with Chloe compared to group calls where Daniel dominates.",
+      "gold_memory_state": "Confirmed pattern: user prefers calm, low-key, understated experiences — rainy weather over heat, one-on-one conversations over group dynamics, quiet nostalgic moments over dramatic gestures.",
+      "judge_rubric": {
+        "must_include": [
+          "rainy or grey weather preference",
+          "one-on-one conversations preferred over group dynamics",
+          "old photo or nostalgic moment surfacing naturally"
+        ],
+        "acceptable_paraphrases": [
+          "quiet evenings",
+          "low-key settings",
+          "calm social environments"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming user enjoys large group gatherings",
+          "claiming user prefers hot sunny weather"
+        ],
+        "harmless_extra": [
+          "mentioning Daniel's assertiveness",
+          "mentioning Chloe by name",
+          "mentioning the lake house photo details"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the summary includes unsupported inferences beyond what the user actually described — e.g., claiming the user is introverted in all contexts or dislikes all social interaction.",
+        "reflection_recall": "Fails if the summary omits one or more of the three evidence threads: weather preference, one-on-one conversation preference, or appreciation for quiet nostalgic moments.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I'd honestly pick a grey rainy afternoon over a sunny hot day every single time. There's something about the quiet of it that I find really grounding."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "my mom texted an old photo of the three of us at the lake house from when we were little. I saved it immediately. I love when stuff like that just appears out of nowhere — no fanfare, just a little memory popping up."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I actually love those quiet evenings where it's just me and one other person, no agenda, maybe some rain outside. That's my ideal."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations, I've mentioned several things about how I like to spend my time and what kinds of settings I gravitate toward. Can you summarize the specific experiences I described that reveal my preferences for social settings, weather, and moments of nostalgia?",
+      "expected_answer": "You described preferring grey rainy afternoons over sunny hot days because of the quiet and grounding quality. You mentioned loving when your mom texted an old family photo from the lake house — appreciating how it appeared with no fanfare, just a quiet memory surfacing naturally. You also said your ideal evening is being with just one other person, no agenda, maybe some rain outside, and that you feel much more at ease in one-on-one conversations with Chloe compared to group calls where Daniel dominates.",
+      "gold_memory_state": "Confirmed pattern: user prefers calm, low-key, understated experiences — rainy weather over heat, one-on-one conversations over group dynamics, quiet nostalgic moments over dramatic gestures.",
+      "judge_rubric": {
+        "must_include": [
+          "rainy or grey weather preference",
+          "one-on-one conversations preferred over group dynamics",
+          "old photo or nostalgic moment surfacing naturally"
+        ],
+        "acceptable_paraphrases": [
+          "quiet evenings",
+          "low-key settings",
+          "calm social environments"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming user enjoys large group gatherings",
+          "claiming user prefers hot sunny weather"
+        ],
+        "harmless_extra": [
+          "mentioning Daniel's assertiveness",
+          "mentioning Chloe by name",
+          "mentioning the lake house photo details"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the summary includes unsupported inferences beyond what the user actually described — e.g., claiming the user is introverted in all contexts or dislikes all social interaction.",
+        "reflection_recall": "Fails if the summary omits one or more of the three evidence threads: weather preference, one-on-one conversation preference, or appreciation for quiet nostalgic moments.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I'd honestly pick a grey rainy afternoon over a sunny hot day every single time. There's something about the quiet of it that I find really grounding."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "my mom texted an old photo of the three of us at the lake house from when we were little. I saved it immediately. I love when stuff like that just appears out of nowhere — no fanfare, just a little memory popping up."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I actually love those quiet evenings where it's just me and one other person, no agenda, maybe some rain outside. That's my ideal."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've shared a few different personal tendencies — one about how I react emotionally when group conversations go sideways, and another about the kinds of environments and moments I'm drawn to in general. If I'm building a personal profile, are these the same pattern or two separate ones? What does each one cover?",
+      "expected_answer": "These are two separate patterns. The first is your preference for calm, low-key, understated experiences — covering your gravitation toward rainy weather, one-on-one conversations, and quiet nostalgic moments like old photos appearing naturally. The second is your emotional sensitivity to being steamrolled in group conversations — specifically feeling annoyed for days when someone dominates a discussion without consulting others, and being much more comfortable in balanced one-on-one exchanges.",
+      "gold_memory_state": "Two distinct confirmed patterns exist: (1) preference for calm, low-key, understated experiences (weather, social format, nostalgia style); (2) emotional sensitivity to being steamrolled in group conversations (lingering irritation, need for recovery time, comfort in balanced exchanges). These overlap in preferring one-on-one settings but differ in scope: the first is an aesthetic/lifestyle preference, the second is an emotional reaction pattern.",
+      "judge_rubric": {
+        "must_include": [
+          "two separate patterns or conclusions",
+          "calm/low-key/understated experience preference",
+          "emotional sensitivity to steamrolling in group conversations"
+        ],
+        "acceptable_paraphrases": [
+          "two distinct tendencies",
+          "different aspects of personality"
+        ],
+        "must_not_include": [
+          "merging both into a single undifferentiated pattern"
+        ],
+        "harmful_extra": [
+          "claiming the steamrolling sensitivity means the user avoids all group interaction permanently",
+          "claiming the calm preference means the user is antisocial"
+        ],
+        "harmless_extra": [
+          "noting overlap in preference for one-on-one settings",
+          "mentioning Daniel or Chloe by name"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the two patterns are collapsed into one vague conclusion like 'user is introverted' without distinguishing the aesthetic preference from the emotional reaction.",
+        "reflection_recall": "Fails if either pattern is omitted entirely.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I'd honestly pick a grey rainy afternoon over a sunny hot day every single time. There's something about the quiet of it that I find really grounding."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I actually love those quiet evenings where it's just me and one other person, no agenda, maybe some rain outside. That's my ideal."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "After that group call about Mom's birthday trip, I was annoyed for days. Daniel just took over the whole plan. When it's just me and Chloe though, I feel way more at ease. I think I just don't do well when someone steamrolls a conversation."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've shared a few different personal tendencies — one about how I react emotionally when group conversations go sideways, and another about the kinds of environments and moments I'm drawn to in general. If I'm building a personal profile, are these the same pattern or two separate ones? What does each one cover?",
+      "expected_answer": "These are two separate patterns. The first is your preference for calm, low-key, understated experiences — covering your gravitation toward rainy weather, one-on-one conversations, and quiet nostalgic moments like old photos appearing naturally. The second is your emotional sensitivity to being steamrolled in group conversations — specifically feeling annoyed for days when someone dominates a discussion without consulting others, and being much more comfortable in balanced one-on-one exchanges.",
+      "gold_memory_state": "Two distinct confirmed patterns exist: (1) preference for calm, low-key, understated experiences (weather, social format, nostalgia style); (2) emotional sensitivity to being steamrolled in group conversations (lingering irritation, need for recovery time, comfort in balanced exchanges). These overlap in preferring one-on-one settings but differ in scope: the first is an aesthetic/lifestyle preference, the second is an emotional reaction pattern.",
+      "judge_rubric": {
+        "must_include": [
+          "two separate patterns or conclusions",
+          "calm/low-key/understated experience preference",
+          "emotional sensitivity to steamrolling in group conversations"
+        ],
+        "acceptable_paraphrases": [
+          "two distinct tendencies",
+          "different aspects of personality"
+        ],
+        "must_not_include": [
+          "merging both into a single undifferentiated pattern"
+        ],
+        "harmful_extra": [
+          "claiming the steamrolling sensitivity means the user avoids all group interaction permanently",
+          "claiming the calm preference means the user is antisocial"
+        ],
+        "harmless_extra": [
+          "noting overlap in preference for one-on-one settings",
+          "mentioning Daniel or Chloe by name"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the two patterns are collapsed into one vague conclusion like 'user is introverted' without distinguishing the aesthetic preference from the emotional reaction.",
+        "reflection_recall": "Fails if either pattern is omitted entirely.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I'd honestly pick a grey rainy afternoon over a sunny hot day every single time. There's something about the quiet of it that I find really grounding."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I actually love those quiet evenings where it's just me and one other person, no agenda, maybe some rain outside. That's my ideal."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "After that group call about Mom's birthday trip, I was annoyed for days. Daniel just took over the whole plan. When it's just me and Chloe though, I feel way more at ease. I think I just don't do well when someone steamrolls a conversation."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Based on everything I've shared about the kinds of settings and moments I enjoy, describe where that preference pattern applies and where it would be a mistake to extend it too far. For example, would it be accurate to say I dislike all social interaction, or that I can never enjoy warm weather?",
+      "expected_answer": "Your preference pattern applies to environmental and social format choices: you gravitate toward rainy, quiet weather over intense heat; you prefer one-on-one conversations over group dynamics; and you appreciate understated nostalgic moments rather than big dramatic gestures. However, it would be an overgeneralization to conclude that you dislike all social interaction — you clearly enjoy socializing, just in smaller, calmer formats. It would also be unsupported to say you can never enjoy warm weather or that you avoid family altogether. The pattern is about preferring calm and understated over intense and loud, not about avoidance or isolation.",
+      "gold_memory_state": "Supported inference: user prefers calm, low-key, understated experiences across weather (rainy over hot), social format (one-on-one over group), and nostalgia style (quiet moments over dramatic gestures). Unsupported overgeneralization: user is antisocial, user avoids all group settings permanently, user cannot enjoy warm weather, user avoids family contact, or user is depressed/withdrawn.",
+      "judge_rubric": {
+        "must_include": [
+          "supported preference for calm/low-key/understated experiences",
+          "explicit boundary stating what the preference does NOT mean"
+        ],
+        "acceptable_paraphrases": [
+          "the pattern is about intensity level, not avoidance",
+          "prefers quieter settings but still enjoys socializing"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating user is antisocial",
+          "stating user avoids all family events",
+          "stating user cannot tolerate any warm weather"
+        ],
+        "harmless_extra": [
+          "mentioning specific examples like Daniel or Chloe",
+          "mentioning the lake house photo"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the response overgeneralizes the preference into a claim that the user is antisocial, avoids all group settings, or cannot enjoy warm weather.",
+        "reflection_recall": "Fails if the response does not articulate the supported inference covering all three domains (weather, social format, nostalgia) or fails to state any unsupported boundary.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I'd honestly pick a grey rainy afternoon over a sunny hot day every single time. There's something about the quiet of it that I find really grounding."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "my mom texted an old photo of the three of us at the lake house from when we were little. I saved it immediately. I love when stuff like that just appears out of nowhere — no fanfare, just a little memory popping up."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I actually love those quiet evenings where it's just me and one other person, no agenda, maybe some rain outside. That's my ideal."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Based on everything I've shared about the kinds of settings and moments I enjoy, describe where that preference pattern applies and where it would be a mistake to extend it too far. For example, would it be accurate to say I dislike all social interaction, or that I can never enjoy warm weather?",
+      "expected_answer": "Your preference pattern applies to environmental and social format choices: you gravitate toward rainy, quiet weather over intense heat; you prefer one-on-one conversations over group dynamics; and you appreciate understated nostalgic moments rather than big dramatic gestures. However, it would be an overgeneralization to conclude that you dislike all social interaction — you clearly enjoy socializing, just in smaller, calmer formats. It would also be unsupported to say you can never enjoy warm weather or that you avoid family altogether. The pattern is about preferring calm and understated over intense and loud, not about avoidance or isolation.",
+      "gold_memory_state": "Supported inference: user prefers calm, low-key, understated experiences across weather (rainy over hot), social format (one-on-one over group), and nostalgia style (quiet moments over dramatic gestures). Unsupported overgeneralization: user is antisocial, user avoids all group settings permanently, user cannot enjoy warm weather, user avoids family contact, or user is depressed/withdrawn.",
+      "judge_rubric": {
+        "must_include": [
+          "supported preference for calm/low-key/understated experiences",
+          "explicit boundary stating what the preference does NOT mean"
+        ],
+        "acceptable_paraphrases": [
+          "the pattern is about intensity level, not avoidance",
+          "prefers quieter settings but still enjoys socializing"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating user is antisocial",
+          "stating user avoids all family events",
+          "stating user cannot tolerate any warm weather"
+        ],
+        "harmless_extra": [
+          "mentioning specific examples like Daniel or Chloe",
+          "mentioning the lake house photo"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the response overgeneralizes the preference into a claim that the user is antisocial, avoids all group settings, or cannot enjoy warm weather.",
+        "reflection_recall": "Fails if the response does not articulate the supported inference covering all three domains (weather, social format, nostalgia) or fails to state any unsupported boundary.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I'd honestly pick a grey rainy afternoon over a sunny hot day every single time. There's something about the quiet of it that I find really grounding."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "my mom texted an old photo of the three of us at the lake house from when we were little. I saved it immediately. I love when stuff like that just appears out of nowhere — no fanfare, just a little memory popping up."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I actually love those quiet evenings where it's just me and one other person, no agenda, maybe some rain outside. That's my ideal."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "Which of the following best captures the overall lifestyle and engagement pattern I've described across our conversations?",
+      "candidate_options": [
+        "Prefers calm, low-key, understated experiences — gravitates toward rainy weather, one-on-one conversations, and quiet nostalgic moments surfacing naturally",
+        "Enjoys high-energy social gatherings and thrives in warm, sunny environments with lots of stimulation",
+        "Prefers solitary activities and avoids all social interaction, including one-on-one conversations",
+        "Enjoys group activities with clear leadership and appreciates when someone takes charge of planning"
+      ],
+      "expected_answer": "Prefers calm, low-key, understated experiences — gravitates toward rainy weather, one-on-one conversations, and quiet nostalgic moments surfacing naturally",
+      "gold_memory_state": "Confirmed pattern: user prefers calm, low-key, understated experiences. The pattern is supported by three evidence threads: rainy weather over heat, one-on-one over group dynamics, and quiet nostalgic moments over dramatic gestures.",
+      "judge_rubric": {
+        "must_include": [
+          "calm, low-key, understated experiences"
+        ],
+        "acceptable_paraphrases": [
+          "quiet, understated lifestyle preference"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "selecting the high-energy option",
+          "selecting the solitary/avoidant option",
+          "selecting the group-leadership option"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: Option 4 ('Enjoys group activities with clear leadership and appreciates when someone takes charge of planning') borrows the group-conversation context but reverses the user's actual reaction — the user resents being steamrolled, not appreciates it. This mirrors the emotional sensitivity pattern (a different target) reframed as a positive preference. assistant echo: Option 2 ('Enjoys high-energy social gatherings and thrives in warm, sunny environments with lots of stimulation') echoes the assistant's characterization of Daniel's personality and environment preferences, which the assistant contrasted with the user's own. Option 3 overgeneralizes the user's calm preference into total avoidance, which is an unsupported inference boundary.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the option describing Daniel's preferences (high-energy, warm, sunny) as the user's own pattern.",
+        "reflection_precision": "Fails if the model selects the avoidance option (Option 3), which overgeneralizes the supported inference.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I'd honestly pick a grey rainy afternoon over a sunny hot day every single time. There's something about the quiet of it that I find really grounding."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "my mom texted an old photo of the three of us at the lake house from when we were little. I saved it immediately. I love when stuff like that just appears out of nowhere — no fanfare, just a little memory popping up."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I actually love those quiet evenings where it's just me and one other person, no agenda, maybe some rain outside. That's my ideal."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "Which of the following best captures the overall lifestyle and engagement pattern I've described across our conversations?",
+      "candidate_options": [
+        "Prefers calm, low-key, understated experiences — gravitates toward rainy weather, one-on-one conversations, and quiet nostalgic moments surfacing naturally",
+        "Enjoys high-energy social gatherings and thrives in warm, sunny environments with lots of stimulation",
+        "Prefers solitary activities and avoids all social interaction, including one-on-one conversations",
+        "Enjoys group activities with clear leadership and appreciates when someone takes charge of planning"
+      ],
+      "expected_answer": "Prefers calm, low-key, understated experiences — gravitates toward rainy weather, one-on-one conversations, and quiet nostalgic moments surfacing naturally",
+      "gold_memory_state": "Confirmed pattern: user prefers calm, low-key, understated experiences. The pattern is supported by three evidence threads: rainy weather over heat, one-on-one over group dynamics, and quiet nostalgic moments over dramatic gestures.",
+      "judge_rubric": {
+        "must_include": [
+          "calm, low-key, understated experiences"
+        ],
+        "acceptable_paraphrases": [
+          "quiet, understated lifestyle preference"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "selecting the high-energy option",
+          "selecting the solitary/avoidant option",
+          "selecting the group-leadership option"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: Option 4 ('Enjoys group activities with clear leadership and appreciates when someone takes charge of planning') borrows the group-conversation context but reverses the user's actual reaction — the user resents being steamrolled, not appreciates it. This mirrors the emotional sensitivity pattern (a different target) reframed as a positive preference. assistant echo: Option 2 ('Enjoys high-energy social gatherings and thrives in warm, sunny environments with lots of stimulation') echoes the assistant's characterization of Daniel's personality and environment preferences, which the assistant contrasted with the user's own. Option 3 overgeneralizes the user's calm preference into total avoidance, which is an unsupported inference boundary.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the option describing Daniel's preferences (high-energy, warm, sunny) as the user's own pattern.",
+        "reflection_precision": "Fails if the model selects the avoidance option (Option 3), which overgeneralizes the supported inference.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I'd honestly pick a grey rainy afternoon over a sunny hot day every single time. There's something about the quiet of it that I find really grounding."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "my mom texted an old photo of the three of us at the lake house from when we were little. I saved it immediately. I love when stuff like that just appears out of nowhere — no fanfare, just a little memory popping up."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I actually love those quiet evenings where it's just me and one other person, no agenda, maybe some rain outside. That's my ideal."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "My sister and I are trying to plan a weekend visit where she comes to see me. Given what you know about the kinds of settings I enjoy, what you know about where my brother lives and what he's like, and the fact that my sister is currently in Portland, draft a short plan for a Saturday together that I'd actually love — and explain why you'd rule out certain alternatives.",
+      "expected_answer": "Plan a quiet Saturday with your sister: a morning walk or coffee at a low-key café while it rains (or an overcast day if possible), followed by a relaxed afternoon at your place — maybe cooking together or looking through old family photos with no agenda. Avoid planning a group call or inviting Daniel to join remotely, since group dynamics with his assertive style tend to drain you. Skip anything high-energy, crowded, or overly planned. The reasoning: your sister is in Portland and can visit easily; you prefer one-on-one time with her specifically; you gravitate toward rainy, calm, understated settings; and Daniel's Austin-based, heat-loving, assertive personality represents the opposite of your ideal social environment, so including him would undermine the visit's appeal.",
+      "gold_memory_state": "User prefers calm, low-key, understated experiences (rainy weather, one-on-one conversations, quiet nostalgic moments). Chloe is currently in Portland. Daniel is in Austin since 2016 and has an assertive, high-energy personality. User feels annoyed for days when steamrolled in group conversations. Chloe's potential Seattle move is tentative and unconfirmed — should not be treated as fact for planning.",
+      "judge_rubric": {
+        "must_include": [
+          "one-on-one format with sister",
+          "calm or low-key activity",
+          "reasoning for excluding group or high-energy alternatives"
+        ],
+        "acceptable_paraphrases": [
+          "quiet day together",
+          "relaxed visit",
+          "avoid group dynamics"
+        ],
+        "must_not_include": [
+          "treating Chloe's potential Seattle move as confirmed for planning purposes"
+        ],
+        "harmful_extra": [
+          "planning a group video call with Daniel as part of the visit",
+          "suggesting a loud or crowded venue as the main activity",
+          "assuming Chloe is in Seattle"
+        ],
+        "harmless_extra": [
+          "mentioning specific Portland venues",
+          "suggesting rainy-day activities",
+          "mentioning old photos or nostalgia"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the plan treats Chloe's tentative Seattle move as confirmed and plans around Seattle instead of Portland.",
+        "reflection_precision": "Fails if the plan includes high-energy group activities that contradict the user's calm, low-key preference pattern.",
+        "reflection_recall": "Fails if the plan does not incorporate at least two of the three preference domains (weather, social format, nostalgia style) into the activity suggestions.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User prefers calm, low-key, understated experiences — rainy weather, one-on-one conversations, quiet nostalgic moments.",
+        "Fact 2: Chloe is currently in Portland (confirmed).",
+        "Fact 3: Daniel has been in Austin since 2016 and has an assertive, high-energy personality that contrasts with the user's preferences.",
+        "Fact 4: User feels annoyed for days when someone steamrolls a group conversation, and is much more at ease in one-on-one settings with Chloe.",
+        "Inference: A visit plan should center on a one-on-one day with Chloe in the Portland area, featuring calm and understated activities.",
+        "Inference: Including Daniel (even remotely) would introduce the group dynamic and assertive personality the user finds draining, so the plan should exclude that.",
+        "Inference: The tentative Seattle move for Chloe is unconfirmed and should not alter the plan's geography — Portland remains the correct location basis."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I'd honestly pick a grey rainy afternoon over a sunny hot day every single time. There's something about the quiet of it that I find really grounding."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Daniel's been in Austin since 2016. He genuinely loves the heat there. I can't relate at all."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I actually love those quiet evenings where it's just me and one other person, no agenda, maybe some rain outside. That's my ideal."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "After that group call about Mom's birthday trip, I was annoyed for days. Daniel just took over the whole plan. When it's just me and Chloe though, I feel way more at ease. I think I just don't do well when someone steamrolls a conversation."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Chloe mentioned she might actually move up to Seattle by next spring. Her nonprofit has an office there and they floated the idea of transferring her."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "My sister and I are trying to plan a weekend visit where she comes to see me. Given what you know about the kinds of settings I enjoy, what you know about where my brother lives and what he's like, and the fact that my sister is currently in Portland, draft a short plan for a Saturday together that I'd actually love — and explain why you'd rule out certain alternatives.",
+      "expected_answer": "Plan a quiet Saturday with your sister: a morning walk or coffee at a low-key café while it rains (or an overcast day if possible), followed by a relaxed afternoon at your place — maybe cooking together or looking through old family photos with no agenda. Avoid planning a group call or inviting Daniel to join remotely, since group dynamics with his assertive style tend to drain you. Skip anything high-energy, crowded, or overly planned. The reasoning: your sister is in Portland and can visit easily; you prefer one-on-one time with her specifically; you gravitate toward rainy, calm, understated settings; and Daniel's Austin-based, heat-loving, assertive personality represents the opposite of your ideal social environment, so including him would undermine the visit's appeal.",
+      "gold_memory_state": "User prefers calm, low-key, understated experiences (rainy weather, one-on-one conversations, quiet nostalgic moments). Chloe is currently in Portland. Daniel is in Austin since 2016 and has an assertive, high-energy personality. User feels annoyed for days when steamrolled in group conversations. Chloe's potential Seattle move is tentative and unconfirmed — should not be treated as fact for planning.",
+      "judge_rubric": {
+        "must_include": [
+          "one-on-one format with sister",
+          "calm or low-key activity",
+          "reasoning for excluding group or high-energy alternatives"
+        ],
+        "acceptable_paraphrases": [
+          "quiet day together",
+          "relaxed visit",
+          "avoid group dynamics"
+        ],
+        "must_not_include": [
+          "treating Chloe's potential Seattle move as confirmed for planning purposes"
+        ],
+        "harmful_extra": [
+          "planning a group video call with Daniel as part of the visit",
+          "suggesting a loud or crowded venue as the main activity",
+          "assuming Chloe is in Seattle"
+        ],
+        "harmless_extra": [
+          "mentioning specific Portland venues",
+          "suggesting rainy-day activities",
+          "mentioning old photos or nostalgia"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the plan treats Chloe's tentative Seattle move as confirmed and plans around Seattle instead of Portland.",
+        "reflection_precision": "Fails if the plan includes high-energy group activities that contradict the user's calm, low-key preference pattern.",
+        "reflection_recall": "Fails if the plan does not incorporate at least two of the three preference domains (weather, social format, nostalgia style) into the activity suggestions.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User prefers calm, low-key, understated experiences — rainy weather, one-on-one conversations, quiet nostalgic moments.",
+        "Fact 2: Chloe is currently in Portland (confirmed).",
+        "Fact 3: Daniel has been in Austin since 2016 and has an assertive, high-energy personality that contrasts with the user's preferences.",
+        "Fact 4: User feels annoyed for days when someone steamrolls a group conversation, and is much more at ease in one-on-one settings with Chloe.",
+        "Inference: A visit plan should center on a one-on-one day with Chloe in the Portland area, featuring calm and understated activities.",
+        "Inference: Including Daniel (even remotely) would introduce the group dynamic and assertive personality the user finds draining, so the plan should exclude that.",
+        "Inference: The tentative Seattle move for Chloe is unconfirmed and should not alter the plan's geography — Portland remains the correct location basis."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I'd honestly pick a grey rainy afternoon over a sunny hot day every single time. There's something about the quiet of it that I find really grounding."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Daniel's been in Austin since 2016. He genuinely loves the heat there. I can't relate at all."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I actually love those quiet evenings where it's just me and one other person, no agenda, maybe some rain outside. That's my ideal."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "After that group call about Mom's birthday trip, I was annoyed for days. Daniel just took over the whole plan. When it's just me and Chloe though, I feel way more at ease. I think I just don't do well when someone steamrolls a conversation."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Chloe mentioned she might actually move up to Seattle by next spring. Her nonprofit has an office there and they floated the idea of transferring her."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,951 @@
+{
+  "target_fact": "Baby daughter's name selection trajectory: first name and middle name choices",
+  "operation_type": "TrajectoryOps",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "middle_name_chain",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "We've been thinking about middle names and right now June is our top pick. Elara June—it flows really nicely."
+      },
+      "target": {
+        "target_id": "daughter_middle_name",
+        "target_name": "daughter's middle name choice"
+      },
+      "old_value": null,
+      "new_value": "June",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "right now June is our top pick. Elara June—it flows really nicely"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "middle_name_chain",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "So we actually switched the middle name to Mae. My wife heard Elara Mae from a friend and loved it instantly. June is out, Mae is the one now."
+      },
+      "target": {
+        "target_id": "daughter_middle_name",
+        "target_name": "daughter's middle name choice"
+      },
+      "old_value": "June",
+      "new_value": "Mae",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "we actually switched the middle name to Mae. My wife heard Elara Mae from a friend and loved it instantly. June is out, Mae is the one now"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "middle_name_chain",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 3,
+        "quote": "My mother-in-law just told us that Rose is a tradition on her side for middle names. She's pretty insistent. We'll probably go with Elara Rose to keep the peace."
+      },
+      "target": {
+        "target_id": "daughter_middle_name",
+        "target_name": "daughter's middle name choice"
+      },
+      "old_value": "Mae",
+      "new_value": "Rose",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "My mother-in-law just told us that Rose is a tradition on her side for middle names. She's pretty insistent. We'll probably go with Elara Rose to keep the peace."
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "middle_name_chain",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 7,
+        "quote": "Talked it over with my wife tonight and we're sticking with Mae. She told her mom thanks but no thanks. So Elara Mae is locked in as our plan going into July."
+      },
+      "target": {
+        "target_id": "daughter_middle_name",
+        "target_name": "daughter's middle name choice"
+      },
+      "old_value": "Rose",
+      "new_value": "Mae",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "we're sticking with Mae. She told her mom thanks but no thanks. So Elara Mae is locked in as our plan going into July."
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "the due date is July 18th. We want the name completely decided by end of June so there's no last-minute stress."
+      },
+      "target": {
+        "target_id": "daughter_due_date",
+        "target_name": "daughter's due date"
+      },
+      "old_value": null,
+      "new_value": "July 18th",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "the due date is July 18th. We want the name completely decided by end of June"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish middle name and due date",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I need your help tracking some baby name decisions. We found out we're having a girl and we've settled on Elara as the first name. My wife found it in an astronomy book. Iris is our backup but Elara is the clear favorite for both of us. Can you help me keep track of this stuff?"
+        },
+        {
+          "role": "assistant",
+          "content": "Congratulations on the baby girl! I'd be happy to help you keep track of all your naming decisions. So far I have Elara as your first-choice first name, found by your wife in an astronomy book, and Iris as a solid backup. Both are beautiful, understated names with a gentle, melodic quality. I'll keep a running record of everything you share so nothing gets lost in the shuffle. Just let me know whenever something changes or you want to add details—middle names, spelling preferences, anything at all. This is an exciting process and I want to make sure it's stress-free for you."
+        },
+        {
+          "role": "user",
+          "content": "Thanks, that's exactly what I need. We've been thinking about middle names and right now June is our top pick. Elara June—it flows really nicely. I like short middle names in general. Something easy to say, almost musical. June hits that mark perfectly. My buddy Kevin just named his son Matteo, and honestly the flow of that name inspired me to think harder about rhythm."
+        },
+        {
+          "role": "assistant",
+          "content": "Elara June does have a lovely rhythm to it—the three syllables of Elara followed by the single crisp syllable of June gives it a natural cadence, almost like a little melody. I can see why Kevin's choice of Matteo got you thinking about the musical quality of names. Short middle names really do let the first name breathe and shine. I've noted June as your current middle name pick. If you come across other short middle name options, feel free to toss them my way and we can compare how they sound paired with Elara. For now, Elara June is on the board as your leading combination."
+        },
+        {
+          "role": "user",
+          "content": "Perfect. One important detail—the due date is July 18th. We want the name completely decided by end of June so there's no last-minute stress. That gives us about six weeks from now to finalize everything. My wife is already getting anxious about the nursery and all the monogrammed stuff her sister wants to order, so a firm deadline helps."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it—July 18th is the due date, and you're aiming to have the name fully locked in by the end of June. That's a smart timeline; it gives you a comfortable buffer before the big day and lets your wife's sister get started on monogrammed items without rushing. So here's where we stand: first name is Elara with Iris as backup, middle name is currently June, and your decision deadline is end of June. I'll keep everything organized and flag any open questions as we get closer. If you want, I can also help you think through how Elara June looks on paper for birth certificate purposes or initials."
+        },
+        {
+          "role": "user",
+          "content": "That would be great actually. Also, I should mention—Elara is named after one of Jupiter's moons, which itself comes from a figure in Greek mythology, a lover of Zeus. I originally thought it meant 'the bright one' but that was wrong. Just want the correct origin on file. It's a cool backstory either way and my wife loves the astronomy connection."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for the correction—I've updated the origin note. Elara is one of Jupiter's moons, named after a figure in Greek mythology who was a lover of Zeus. The astronomy tie-in is a wonderful detail, especially since your wife discovered the name through an astronomy book. It gives the name layers of meaning: celestial, mythological, and personal. I've removed the earlier 'bright one' meaning from my notes. Here's your current summary: first name Elara (Jupiter's moon, Greek mythology), backup first name Iris, middle name June, due date July 18th, decision deadline end of June. Everything is tracked and ready for whenever you have updates."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "update middle name from June to Mae",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So we actually switched the middle name to Mae. My wife heard Elara Mae from a friend and loved it instantly. June is out, Mae is the one now. It has that same short, musical quality I like but my wife says it sounds warmer. I trust her ear on this—she's been more decisive than me through this whole process honestly."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted—middle name is now Mae instead of June. Elara Mae does have a lovely warmth to it; the soft vowel in Mae pairs beautifully with the open ending of Elara. It keeps that short, melodic quality you both prefer while adding a slightly different texture. Your wife sounds like she has great instincts. I've updated the record: first name Elara, backup Iris, middle name Mae, due date July 18th, decision deadline end of June. If anything else shifts, just let me know. You're making great progress with plenty of time before your deadline."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, we feel good about it. By the way, my wife's cousin—the one who posted that social media poll about baby names a while back—she ended up naming her daughter Sienna. Totally different from Elara, so that whole scare was for nothing. I was so irritated when I saw Elara on her poll. Felt like someone was stealing our name."
+        },
+        {
+          "role": "assistant",
+          "content": "I can totally understand that protective feeling—when you've invested so much thought and emotion into a name, seeing it pop up on someone else's list can feel like a real threat. It's great that your wife's cousin went with Sienna, which is a completely different direction. Elara stays uniquely yours. That kind of territorial reaction actually shows how attached you both already are to the name, which is a good sign that it's the right choice. No lingering anxiety needed there. Your shortlist remains clean: Elara Mae as the primary combination, Iris as backup first name, and you're on track for your end-of-June deadline."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. I think part of why I like names that aren't super common is that worry about overlap. With Elara, I've never met anyone with that name in real life. Iris is more familiar but still not overused. We want something that feels distinctive but not weird or made-up. That balance matters a lot to us. My wife calls it 'quiet elegance' which I think nails it."
+        },
+        {
+          "role": "assistant",
+          "content": "Your wife's phrase 'quiet elegance' really does capture your naming philosophy perfectly. You want something distinctive enough to stand on its own, gentle enough to say easily, and grounded enough that it doesn't feel invented or trendy. Elara hits all of those marks—celestial origin, mythological depth, uncommon in everyday life, and beautiful to say aloud. Iris shares those qualities in a more familiar package, which makes it a perfect safety net. This clarity about what you want will make the final decision much smoother. If any new middle name contenders come up, I can test them against your 'quiet elegance' standard and see how they measure up alongside Mae."
+        },
+        {
+          "role": "user",
+          "content": "Good idea. Oh, one more thing—Kevin told me he and his wife almost named their son Luca before switching to Matteo at the last minute. He said they agonized over it for weeks. Makes me feel better that we're not the only ones going back and forth. At least our first name has been steady since day one.\n\nThat's reassuring to hear. We're also starting to think about the nursery theme—probably something celestial to match the name's origin. Stars, moons, that kind of thing. My wife has a whole Pinterest board going. But the name is the priority right now. I'll check back when there's anything new to report on the name front."
+        },
+        {
+          "role": "assistant",
+          "content": "It's completely normal to go back and forth—Kevin's experience with Luca versus Matteo is a perfect example. The fact that your first name has been rock solid since the beginning says a lot about how right Elara feels for you both. The middle name adjustments are just fine-tuning at this point. Kevin and his wife clearly made a great choice with Matteo, and it sounds like the deliberation process actually helped them feel more confident. You're in the same boat: every change you make is refining, not waffling. With Elara Mae on the board and a clear deadline, you're in a really strong position heading into the final stretch.\n\nA celestial nursery theme sounds like a beautiful complement to Elara's astronomical roots—stars and moons would tie everything together so nicely. Your wife's Pinterest board probably has some gorgeous inspiration. But you're right to keep the name as priority number one; the nursery can evolve once the name is finalized. Here's your current standing for the record: first name Elara, backup Iris, middle name Mae, due date July 18th, name decision deadline end of June, and a celestial nursery theme in the works. Whenever you have updates on the naming front, I'm here and ready. You two are doing a wonderful job with this whole process."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "tentative Rose fork then revert to Mae; adversarial injection",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, quick update on the name situation. Things got a little complicated this week. My mother-in-law Linda has been visiting and she's been weighing in on everything, including the middle name. She dropped the Charlotte push a while ago but now she has a new suggestion. I wanted to talk through it with you before I spiral."
+        },
+        {
+          "role": "assistant",
+          "content": "Of course—I'm here for exactly this kind of thing. Linda sounds like she has strong opinions, which can be both helpful and overwhelming when you're trying to finalize something as personal as your daughter's name. Last I had on record, Charlotte was off the table and Linda herself had moved on from it. So what's her new suggestion? Let's talk it through calmly and see how it fits with your 'quiet elegance' criteria and the overall direction you and your wife have been building toward. No need to spiral—we'll work through it together and you can decide with a clear head."
+        },
+        {
+          "role": "user",
+          "content": "My mother-in-law just told us that Rose is a tradition on her side for middle names. She's pretty insistent. We'll probably go with Elara Rose to keep the peace. It's not a bad name honestly—Rose is short, it's classic. But it wasn't our idea and that bugs me a little. Mae felt like ours, you know?"
+        },
+        {
+          "role": "assistant",
+          "content": "I hear you—there's a real difference between choosing a name because you love it and choosing one to smooth over family dynamics. Elara Rose is objectively a beautiful combination; Rose is short, classic, and fits your preference for gentle-sounding names. But the fact that it wasn't your idea clearly matters to you emotionally. Mae felt like something you and your wife discovered together, and that ownership is meaningful. I've noted that Elara Rose is now on the table as a likely direction given Linda's push. It might help to give it a few days and see how you both feel once the initial pressure fades. Sometimes family suggestions grow on you; sometimes they don't."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, we're going to sit with it. By the way, I was filling out the hospital pre-registration form online and under 'baby name' there was a placeholder that said 'Elara June' from when I started the form weeks ago. Had to laugh at that—feels like ancient history now. Anyway, the form isn't submitted yet so it doesn't matter."
+        },
+        {
+          "role": "assistant",
+          "content": "Ha, that's a fun little time capsule from your earlier naming stage! Elara June was a great combination too, so it makes sense it was your first instinct on the form. Since the form isn't submitted, there's no urgency to update it right this moment—you can fill in the final name once everything is decided. It's actually a nice reminder of how the process has evolved: from June to Mae, and now potentially Rose in the mix. Each iteration has stayed true to your core preference for short, musical middle names. Whenever you land on the final answer, updating that form will take two seconds. No stress there at all."
+        },
+        {
+          "role": "user",
+          "content": "True. You know, I keep going back to how Mae sounds. Elara Mae just has this warmth that Rose doesn't quite match for me. My wife texted me during lunch saying she feels the same way. We both love her mom but this is our daughter's name, not a family committee decision. I think we know what we want.\n\nTalked it over with my wife tonight and we're sticking with Mae. She told her mom thanks but no thanks. So Elara Mae is locked in as our plan going into July. Iris is still the backup first name just in case we have some wild change of heart, but I really don't see that happening. We're done deliberating on the middle name—Mae is it."
+        },
+        {
+          "role": "assistant",
+          "content": "It sounds like you and your wife are really aligned on this, and that alignment is the most important thing. Elara Mae clearly resonates with both of you on a deeper level—it's warm, it's musical, and most importantly it's yours. Choosing a name that you both independently keep coming back to is a strong signal that it's the right one. Linda's feelings matter, but ultimately this is your and your wife's decision for your daughter. The fact that you keep gravitating back to Mae even after considering alternatives says everything. When you're ready to make it official, I think you'll both feel confident and at peace with Elara Mae.\n\nThat's wonderful—congratulations on reaching your decision! Elara Mae is a gorgeous name: celestial, warm, and quietly elegant, exactly the qualities you've been drawn to from the start. Your wife handled the Linda situation gracefully, and you should both feel proud of sticking with what felt right. Here's your final record: first name Elara, middle name Mae, backup first name Iris, due date July 18th. The deliberation is officially behind you, and you've got a beautiful name ready for your daughter. Now you can focus on that celestial nursery and all the exciting preparations ahead. I'm here if anything else comes up before the big day."
+        }
+      ]
+    }
+  ],
+  "state_checkpoints": [
+    {
+      "checkpoint_id": "c1",
+      "description": "After segment 1: daughter's middle name is June (confirmed). Due date is July 18th (confirmed). First name Elara established, backup Iris mentioned."
+    },
+    {
+      "checkpoint_id": "c2",
+      "description": "After segment 2: daughter's middle name updated to Mae (confirmed, replacing June). Due date remains July 18th. First name Elara and backup Iris unchanged."
+    },
+    {
+      "checkpoint_id": "c3",
+      "description": "After segment 3: middle name tentatively shifted to Rose (Linda's suggestion, tentative) then reverted to Mae (confirmed). Adversarial injection: old form placeholder 'Elara June' surfaced but not restated as current. Final confirmed state: middle name Mae, due date July 18th."
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you walk me through the key moments in our conversations where the middle name for our baby daughter came up or shifted? I want to make sure I haven't lost track of anything.",
+      "expected_answer": "The middle name discussion went through several stages: first, June was chosen as the top pick to pair with Elara. Then it was switched to Mae after your wife heard Elara Mae from a friend and loved it. Later, your mother-in-law Linda suggested Rose as a family tradition, and you considered going with Elara Rose. Finally, after talking it over with your wife, you decided to stick with Mae and locked in Elara Mae as the plan going into July.",
+      "gold_memory_state": "Middle name trajectory: June (initial confirmed) → Mae (confirmed replacement) → Rose (tentative, Linda's suggestion) → Mae (confirmed revert). Due date July 18th. First name Elara, backup Iris.",
+      "judge_rubric": {
+        "must_include": [
+          "June as initial choice",
+          "Mae as replacement for June",
+          "Rose as a suggestion from mother-in-law",
+          "Mae as final confirmed choice"
+        ],
+        "acceptable_paraphrases": [
+          "Linda pushed for Rose",
+          "mother-in-law insisted on Rose",
+          "reverted back to Mae"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying Rose is the final middle name",
+          "saying June is still active"
+        ],
+        "harmless_extra": [
+          "mentioning Elara as first name",
+          "mentioning due date",
+          "mentioning Iris as backup"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if June or Rose is presented as the current middle name.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence of middle name changes is misordered or incomplete.",
+        "final_state": "Fails if Mae is not identified as the final confirmed choice.",
+        "intermediate_state": "Fails if any intermediate state (June, Rose) is omitted from the narrative.",
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "right now June is our top pick. Elara June—it flows really nicely"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "we actually switched the middle name to Mae. My wife heard Elara Mae from a friend and loved it instantly. June is out, Mae is the one now"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "My mother-in-law just told us that Rose is a tradition on her side for middle names. She's pretty insistent. We'll probably go with Elara Rose to keep the peace."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "we're sticking with Mae. She told her mom thanks but no thanks. So Elara Mae is locked in as our plan going into July."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you walk me through the key moments in our conversations where the middle name for our baby daughter came up or shifted? I want to make sure I haven't lost track of anything.",
+      "expected_answer": "The middle name discussion went through several stages: first, June was chosen as the top pick to pair with Elara. Then it was switched to Mae after your wife heard Elara Mae from a friend and loved it. Later, your mother-in-law Linda suggested Rose as a family tradition, and you considered going with Elara Rose. Finally, after talking it over with your wife, you decided to stick with Mae and locked in Elara Mae as the plan going into July.",
+      "gold_memory_state": "Middle name trajectory: June (initial confirmed) → Mae (confirmed replacement) → Rose (tentative, Linda's suggestion) → Mae (confirmed revert). Due date July 18th. First name Elara, backup Iris.",
+      "judge_rubric": {
+        "must_include": [
+          "June as initial choice",
+          "Mae as replacement for June",
+          "Rose as a suggestion from mother-in-law",
+          "Mae as final confirmed choice"
+        ],
+        "acceptable_paraphrases": [
+          "Linda pushed for Rose",
+          "mother-in-law insisted on Rose",
+          "reverted back to Mae"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying Rose is the final middle name",
+          "saying June is still active"
+        ],
+        "harmless_extra": [
+          "mentioning Elara as first name",
+          "mentioning due date",
+          "mentioning Iris as backup"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if June or Rose is presented as the current middle name.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence of middle name changes is misordered or incomplete.",
+        "final_state": "Fails if Mae is not identified as the final confirmed choice.",
+        "intermediate_state": "Fails if any intermediate state (June, Rose) is omitted from the narrative.",
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "right now June is our top pick. Elara June—it flows really nicely"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "we actually switched the middle name to Mae. My wife heard Elara Mae from a friend and loved it instantly. June is out, Mae is the one now"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "My mother-in-law just told us that Rose is a tradition on her side for middle names. She's pretty insistent. We'll probably go with Elara Rose to keep the peace."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "we're sticking with Mae. She told her mom thanks but no thanks. So Elara Mae is locked in as our plan going into July."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "We've discussed both a first name and a middle name for our daughter. When my mother-in-law weighed in and we went back and forth, which part of the name was affected by all that deliberation? Did the first name choice get pulled into the debate too, or was it separate?",
+      "expected_answer": "Only the middle name was affected by the deliberation. The first name Elara has been steady since the beginning and was never part of the back-and-forth. The middle name went through multiple changes while the first name remained unchanged throughout.",
+      "gold_memory_state": "First name: Elara (confirmed, never changed). Middle name: Mae (confirmed after trajectory June → Mae → Rose tentative → Mae). Backup first name: Iris (unchanged). Due date: July 18th.",
+      "judge_rubric": {
+        "must_include": [
+          "middle name was the one affected",
+          "first name remained unchanged or steady"
+        ],
+        "acceptable_paraphrases": [
+          "Elara stayed the same",
+          "only the middle name went through changes"
+        ],
+        "must_not_include": [
+          "first name was also debated",
+          "Elara was reconsidered"
+        ],
+        "harmful_extra": [
+          "saying the first name changed at any point",
+          "confusing Iris backup status with active first name changes"
+        ],
+        "harmless_extra": [
+          "mentioning Iris as backup",
+          "mentioning the due date"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model says the first name was also part of the deliberation.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "We found out we're having a girl and we've settled on Elara as the first name."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "we actually switched the middle name to Mae. My wife heard Elara Mae from a friend and loved it instantly. June is out, Mae is the one now"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "My mother-in-law just told us that Rose is a tradition on her side for middle names. She's pretty insistent."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "we're sticking with Mae. She told her mom thanks but no thanks. So Elara Mae is locked in as our plan going into July."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "We've discussed both a first name and a middle name for our daughter. When my mother-in-law weighed in and we went back and forth, which part of the name was affected by all that deliberation? Did the first name choice get pulled into the debate too, or was it separate?",
+      "expected_answer": "Only the middle name was affected by the deliberation. The first name Elara has been steady since the beginning and was never part of the back-and-forth. The middle name went through multiple changes while the first name remained unchanged throughout.",
+      "gold_memory_state": "First name: Elara (confirmed, never changed). Middle name: Mae (confirmed after trajectory June → Mae → Rose tentative → Mae). Backup first name: Iris (unchanged). Due date: July 18th.",
+      "judge_rubric": {
+        "must_include": [
+          "middle name was the one affected",
+          "first name remained unchanged or steady"
+        ],
+        "acceptable_paraphrases": [
+          "Elara stayed the same",
+          "only the middle name went through changes"
+        ],
+        "must_not_include": [
+          "first name was also debated",
+          "Elara was reconsidered"
+        ],
+        "harmful_extra": [
+          "saying the first name changed at any point",
+          "confusing Iris backup status with active first name changes"
+        ],
+        "harmless_extra": [
+          "mentioning Iris as backup",
+          "mentioning the due date"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model says the first name was also part of the deliberation.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "We found out we're having a girl and we've settled on Elara as the first name."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "we actually switched the middle name to Mae. My wife heard Elara Mae from a friend and loved it instantly. June is out, Mae is the one now"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "My mother-in-law just told us that Rose is a tradition on her side for middle names. She's pretty insistent."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "we're sticking with Mae. She told her mom thanks but no thanks. So Elara Mae is locked in as our plan going into July."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "My wife's sister wants to order monogrammed baby items and needs the full name. What middle name should I give her for our daughter right now?",
+      "expected_answer": "Mae. The full name for the monogram is Elara Mae.",
+      "gold_memory_state": "Middle name is Mae (confirmed). Rose was only a tentative consideration driven by mother-in-law Linda but was explicitly rejected. June was the original pick but was replaced by Mae earlier. Final confirmed state: Elara Mae.",
+      "judge_rubric": {
+        "must_include": [
+          "Mae"
+        ],
+        "acceptable_paraphrases": [
+          "Elara Mae",
+          "the middle name is Mae"
+        ],
+        "must_not_include": [
+          "Rose as the current middle name",
+          "June as the current middle name"
+        ],
+        "harmful_extra": [
+          "suggesting Rose is still under consideration",
+          "suggesting June might still be active"
+        ],
+        "harmless_extra": [
+          "mentioning the due date",
+          "mentioning Iris as backup first name"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model answers Rose (tentative recency trap) or June (earlier stale value).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if Mae is not given as the current middle name.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "we're sticking with Mae. She told her mom thanks but no thanks. So Elara Mae is locked in as our plan going into July."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "My wife's sister wants to order monogrammed baby items and needs the full name. What middle name should I give her for our daughter right now?",
+      "expected_answer": "Mae. The full name for the monogram is Elara Mae.",
+      "gold_memory_state": "Middle name is Mae (confirmed). Rose was only a tentative consideration driven by mother-in-law Linda but was explicitly rejected. June was the original pick but was replaced by Mae earlier. Final confirmed state: Elara Mae.",
+      "judge_rubric": {
+        "must_include": [
+          "Mae"
+        ],
+        "acceptable_paraphrases": [
+          "Elara Mae",
+          "the middle name is Mae"
+        ],
+        "must_not_include": [
+          "Rose as the current middle name",
+          "June as the current middle name"
+        ],
+        "harmful_extra": [
+          "suggesting Rose is still under consideration",
+          "suggesting June might still be active"
+        ],
+        "harmless_extra": [
+          "mentioning the due date",
+          "mentioning Iris as backup first name"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model answers Rose (tentative recency trap) or June (earlier stale value).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if Mae is not given as the current middle name.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "we're sticking with Mae. She told her mom thanks but no thanks. So Elara Mae is locked in as our plan going into July."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "We want to have everything about the name finalized before the baby arrives. Given our naming deadline and the due date, draft a short reminder note for my calendar that says what the baby's full planned name is and how many days of buffer we have between the naming deadline and the due date.",
+      "expected_answer": "Calendar reminder: The baby's planned full name is Elara Mae. The naming deadline is end of June (June 30) and the due date is July 18. That gives you 18 days of buffer between the deadline and the due date.",
+      "gold_memory_state": "First name: Elara (confirmed). Middle name: Mae (confirmed). Due date: July 18th. Naming deadline: end of June. Backup first name: Iris.",
+      "judge_rubric": {
+        "must_include": [
+          "Elara Mae",
+          "July 18",
+          "end of June or June 30",
+          "18 days"
+        ],
+        "acceptable_paraphrases": [
+          "about 18 days",
+          "roughly two and a half weeks"
+        ],
+        "must_not_include": [
+          "Rose as current middle name",
+          "June as current middle name"
+        ],
+        "harmful_extra": [
+          "using Rose or June as the middle name in the reminder",
+          "wrong buffer calculation"
+        ],
+        "harmless_extra": [
+          "mentioning Iris as backup",
+          "mentioning the celestial nursery theme"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the reminder uses Rose or June as the middle name.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the full name is not Elara Mae.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The baby's first name is Elara.",
+        "Fact 2: The baby's middle name is Mae (confirmed after trajectory).",
+        "Fact 3: The due date is July 18th.",
+        "Fact 4: The naming deadline is end of June.",
+        "Inference: End of June means June 30. From June 30 to July 18 is 18 days of buffer.",
+        "Derived value: The reminder should state Elara Mae as the full name with 18 days of buffer between the naming deadline and due date."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "We found out we're having a girl and we've settled on Elara as the first name."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "we're sticking with Mae. She told her mom thanks but no thanks. So Elara Mae is locked in as our plan going into July."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "the due date is July 18th. We want the name completely decided by end of June so there's no last-minute stress."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "We want to have everything about the name finalized before the baby arrives. Given our naming deadline and the due date, draft a short reminder note for my calendar that says what the baby's full planned name is and how many days of buffer we have between the naming deadline and the due date.",
+      "expected_answer": "Calendar reminder: The baby's planned full name is Elara Mae. The naming deadline is end of June (June 30) and the due date is July 18. That gives you 18 days of buffer between the deadline and the due date.",
+      "gold_memory_state": "First name: Elara (confirmed). Middle name: Mae (confirmed). Due date: July 18th. Naming deadline: end of June. Backup first name: Iris.",
+      "judge_rubric": {
+        "must_include": [
+          "Elara Mae",
+          "July 18",
+          "end of June or June 30",
+          "18 days"
+        ],
+        "acceptable_paraphrases": [
+          "about 18 days",
+          "roughly two and a half weeks"
+        ],
+        "must_not_include": [
+          "Rose as current middle name",
+          "June as current middle name"
+        ],
+        "harmful_extra": [
+          "using Rose or June as the middle name in the reminder",
+          "wrong buffer calculation"
+        ],
+        "harmless_extra": [
+          "mentioning Iris as backup",
+          "mentioning the celestial nursery theme"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the reminder uses Rose or June as the middle name.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the full name is not Elara Mae.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The baby's first name is Elara.",
+        "Fact 2: The baby's middle name is Mae (confirmed after trajectory).",
+        "Fact 3: The due date is July 18th.",
+        "Fact 4: The naming deadline is end of June.",
+        "Inference: End of June means June 30. From June 30 to July 18 is 18 days of buffer.",
+        "Derived value: The reminder should state Elara Mae as the full name with 18 days of buffer between the naming deadline and due date."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "We found out we're having a girl and we've settled on Elara as the first name."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "we're sticking with Mae. She told her mom thanks but no thanks. So Elara Mae is locked in as our plan going into July."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "the due date is July 18th. We want the name completely decided by end of June so there's no last-minute stress."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed all our conversations about the baby's middle name, what would they see as the full sequence of changes? Which picks were actually adopted and which were only floated without being locked in? Walk me through the whole history.",
+      "expected_answer": "The full middle name history is: (1) June was the first choice and was adopted. (2) Mae replaced June and was adopted—your wife heard it from a friend and loved it. (3) Rose was floated when your mother-in-law Linda pushed it as a family tradition, but it was never locked in—it was only considered to keep the peace. (4) Mae was reaffirmed as the final choice after you and your wife decided to decline Linda's suggestion. So the only values that were ever actually locked in were June, then Mae. Rose was only tentatively considered and was rejected.",
+      "gold_memory_state": "Middle name trajectory: June (confirmed, step 1) → Mae (confirmed, step 2) → Rose (tentative, step 3, never finalized) → Mae (confirmed, step 4, final). Due date: July 18th.",
+      "judge_rubric": {
+        "must_include": [
+          "June as first adopted choice",
+          "Mae replacing June as adopted",
+          "Rose as only tentatively considered or floated",
+          "Mae as final reaffirmed choice"
+        ],
+        "acceptable_paraphrases": [
+          "Rose was never finalized",
+          "Rose was just a suggestion",
+          "went back to Mae"
+        ],
+        "must_not_include": [
+          "Rose was adopted or locked in",
+          "June is still active"
+        ],
+        "harmful_extra": [
+          "saying Rose was ever a confirmed choice",
+          "omitting the Rose episode entirely",
+          "misordering the sequence"
+        ],
+        "harmless_extra": [
+          "mentioning the mother-in-law by name",
+          "mentioning the wife's friend",
+          "mentioning the astronomy origin of Elara"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Rose or June is presented as the final middle name.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the four-step sequence (June → Mae → Rose tentative → Mae) is misordered or any step is missing.",
+        "final_state": "Fails if Mae is not identified as the final confirmed middle name.",
+        "intermediate_state": "Fails if June or Rose intermediate states are omitted or their validity status is wrong.",
+        "trajectory_provenance": "Fails if the model cannot attribute the Rose suggestion to the mother-in-law or the Mae revert to the couple's joint decision."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: June was initially chosen as the middle name (confirmed).",
+        "Step 2: Mae replaced June after the wife heard Elara Mae from a friend (confirmed).",
+        "Step 3: Rose was suggested by mother-in-law Linda as a family tradition; the couple considered it but it was only tentative—they said 'probably' and 'to keep the peace.'",
+        "Step 4: After discussion, the couple rejected Rose and reaffirmed Mae as the final locked-in choice.",
+        "Inference: Rose was never a confirmed adoption. The trajectory has two confirmed transitions (June→Mae, then Rose→Mae revert) and one tentative fork (Mae→Rose) that was rejected."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "right now June is our top pick. Elara June—it flows really nicely"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "we actually switched the middle name to Mae. My wife heard Elara Mae from a friend and loved it instantly. June is out, Mae is the one now"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "My mother-in-law just told us that Rose is a tradition on her side for middle names. She's pretty insistent. We'll probably go with Elara Rose to keep the peace."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "we're sticking with Mae. She told her mom thanks but no thanks. So Elara Mae is locked in as our plan going into July."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed all our conversations about the baby's middle name, what would they see as the full sequence of changes? Which picks were actually adopted and which were only floated without being locked in? Walk me through the whole history.",
+      "expected_answer": "The full middle name history is: (1) June was the first choice and was adopted. (2) Mae replaced June and was adopted—your wife heard it from a friend and loved it. (3) Rose was floated when your mother-in-law Linda pushed it as a family tradition, but it was never locked in—it was only considered to keep the peace. (4) Mae was reaffirmed as the final choice after you and your wife decided to decline Linda's suggestion. So the only values that were ever actually locked in were June, then Mae. Rose was only tentatively considered and was rejected.",
+      "gold_memory_state": "Middle name trajectory: June (confirmed, step 1) → Mae (confirmed, step 2) → Rose (tentative, step 3, never finalized) → Mae (confirmed, step 4, final). Due date: July 18th.",
+      "judge_rubric": {
+        "must_include": [
+          "June as first adopted choice",
+          "Mae replacing June as adopted",
+          "Rose as only tentatively considered or floated",
+          "Mae as final reaffirmed choice"
+        ],
+        "acceptable_paraphrases": [
+          "Rose was never finalized",
+          "Rose was just a suggestion",
+          "went back to Mae"
+        ],
+        "must_not_include": [
+          "Rose was adopted or locked in",
+          "June is still active"
+        ],
+        "harmful_extra": [
+          "saying Rose was ever a confirmed choice",
+          "omitting the Rose episode entirely",
+          "misordering the sequence"
+        ],
+        "harmless_extra": [
+          "mentioning the mother-in-law by name",
+          "mentioning the wife's friend",
+          "mentioning the astronomy origin of Elara"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Rose or June is presented as the final middle name.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the four-step sequence (June → Mae → Rose tentative → Mae) is misordered or any step is missing.",
+        "final_state": "Fails if Mae is not identified as the final confirmed middle name.",
+        "intermediate_state": "Fails if June or Rose intermediate states are omitted or their validity status is wrong.",
+        "trajectory_provenance": "Fails if the model cannot attribute the Rose suggestion to the mother-in-law or the Mae revert to the couple's joint decision."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: June was initially chosen as the middle name (confirmed).",
+        "Step 2: Mae replaced June after the wife heard Elara Mae from a friend (confirmed).",
+        "Step 3: Rose was suggested by mother-in-law Linda as a family tradition; the couple considered it but it was only tentative—they said 'probably' and 'to keep the peace.'",
+        "Step 4: After discussion, the couple rejected Rose and reaffirmed Mae as the final locked-in choice.",
+        "Inference: Rose was never a confirmed adoption. The trajectory has two confirmed transitions (June→Mae, then Rose→Mae revert) and one tentative fork (Mae→Rose) that was rejected."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "right now June is our top pick. Elara June—it flows really nicely"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "we actually switched the middle name to Mae. My wife heard Elara Mae from a friend and loved it instantly. June is out, Mae is the one now"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "My mother-in-law just told us that Rose is a tradition on her side for middle names. She's pretty insistent. We'll probably go with Elara Rose to keep the peace."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "we're sticking with Mae. She told her mom thanks but no thanks. So Elara Mae is locked in as our plan going into July."
+        }
+      ]
+    }
+  ]
+}

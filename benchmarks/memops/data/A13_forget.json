@@ -1,0 +1,976 @@
+{
+  "target_fact": "User's current medication status including metformin 750mg twice daily, omeprazole 20mg once daily, vitamin D3 2000 IU daily, and loratadine 10mg as needed; user requests removal of ibuprofen from medication records as it has been discontinued.",
+  "operation_type": "Forget",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "my current daily medications are metformin 750mg twice a day, omeprazole 20mg once in the morning, and vitamin D3 2000 IU"
+      },
+      "target": {
+        "target_id": "metformin_dosage",
+        "target_name": "current metformin prescription details"
+      },
+      "old_value": null,
+      "new_value": "metformin 750mg twice daily, with breakfast and dinner",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my current daily medications are metformin 750mg twice a day, omeprazole 20mg once in the morning, and vitamin D3 2000 IU"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I also take omeprazole 20mg once a day, before breakfast, for acid reflux"
+      },
+      "target": {
+        "target_id": "omeprazole_prescription",
+        "target_name": "current omeprazole prescription details"
+      },
+      "old_value": null,
+      "new_value": "omeprazole 20mg once daily before breakfast, for acid reflux",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I also take omeprazole 20mg once a day, before breakfast, for acid reflux"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 7,
+        "quote": "vitamin D3 2000 IU daily, been on that since last fall when my levels came back low at my annual checkup"
+      },
+      "target": {
+        "target_id": "vitamin_d3_supplement",
+        "target_name": "vitamin D3 supplement details"
+      },
+      "old_value": null,
+      "new_value": "vitamin D3 2000 IU daily, since last fall",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "vitamin D3 2000 IU daily, been on that since last fall when my levels came back low at my annual checkup"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I was taking ibuprofen regularly for my knee for a while there, probably 400mg a couple times a day"
+      },
+      "target": {
+        "target_id": "ibuprofen_usage",
+        "target_name": "ibuprofen usage for knee pain"
+      },
+      "old_value": null,
+      "new_value": "ibuprofen ~400mg as needed for knee pain",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I was taking ibuprofen regularly for my knee for a while there, probably 400mg a couple times a day"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I also have loratadine 10mg that I keep around for allergies, just as needed"
+      },
+      "target": {
+        "target_id": "loratadine_as_needed",
+        "target_name": "loratadine as-needed allergy medication"
+      },
+      "old_value": null,
+      "new_value": "loratadine 10mg as needed for allergies",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I also have loratadine 10mg that I keep around for allergies, just as needed"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "forget",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "please remove ibuprofen from my medication list entirely. I don't take it anymore, the knee issue resolved after physical therapy, and I don't want it showing up when you reference my meds"
+      },
+      "target": {
+        "target_id": "ibuprofen_usage",
+        "target_name": "ibuprofen usage for knee pain"
+      },
+      "old_value": "ibuprofen ~400mg as needed for knee pain",
+      "new_value": null,
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "please remove ibuprofen from my medication list entirely. I don't take it anymore, the knee issue resolved after physical therapy, and I don't want it showing up when you reference my meds"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish current medication details including metformin, omeprazole, and vitamin D3",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to get my medication list organized. Can you help me keep track? Right now my current daily medications are metformin 750mg twice a day, omeprazole 20mg once in the morning, and vitamin D3 2000 IU. I want to make sure you have all of that stored correctly because I always forget details when I'm at the pharmacy or the doctor's office."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, I'd be happy to help you keep your medication list organized. Here's what I've noted so far based on what you just shared:\n\n1. **Metformin** – 750mg, twice daily\n2. **Omeprazole** – 20mg, once in the morning\n3. **Vitamin D3** – 2000 IU, daily\n\nWould you like to add any details about timing, prescribing doctor, or when you started each one? The more specific we are, the easier it'll be to reference later at the pharmacy or during appointments."
+        },
+        {
+          "role": "user",
+          "content": "Good idea. For the metformin, Dr. Patel prescribed it back on March 4th and I take it with meals, breakfast and dinner. She initially started me at 500mg twice a day but bumped it up to 750mg in mid-April because my fasting glucose wasn't improving enough. I was honestly frustrated about that because I'd been so careful with my diet and it still wasn't enough."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it. I've updated the metformin entry with the additional context:\n\n- **Metformin 750mg twice daily** (with breakfast and dinner)\n  - Prescribing doctor: Dr. Patel\n  - Originally prescribed: March 4th, at 500mg twice daily\n  - Dosage increased to 750mg twice daily in mid-April due to insufficient fasting glucose improvement\n\nI understand the frustration—it can feel discouraging when you're putting in the effort with diet and the numbers don't cooperate. Would you like to add the timing details for your other medications as well?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, so I also take omeprazole 20mg once a day, before breakfast, for acid reflux. I just picked up that prescription a few days ago. I'd been having really bad reflux, especially at night—waking up at two or three in the morning with that burning feeling for about a week before I finally called the doctor. I don't like calling about every little thing but it got unbearable."
+        },
+        {
+          "role": "assistant",
+          "content": "I've added the omeprazole details:\n\n- **Omeprazole 20mg once daily** (before breakfast)\n  - Reason: acid reflux, particularly severe at night\n  - Started: a few days ago\n  - Prescribed after approximately one week of worsening nighttime symptoms\n\nIt sounds like you held out as long as you could before reaching out, which is understandable. Sometimes these things escalate beyond what antacids or home remedies can manage. Since you're taking both omeprazole before breakfast and metformin with breakfast, do you take them at the same time or space them out? That might be worth noting too."
+        },
+        {
+          "role": "user",
+          "content": "I take the omeprazole about thirty minutes before I eat, then the metformin with the actual meal. That's what the pharmacist recommended. And for the vitamin D3, it's vitamin D3 2000 IU daily, been on that since last fall when my levels came back low at my annual checkup. It's just a supplement, nothing dramatic, but I take it with breakfast too since it's fat-soluble and absorbs better with food."
+        },
+        {
+          "role": "assistant",
+          "content": "Great details. Here's the updated full picture for your morning routine:\n\n1. **Omeprazole 20mg** – 30 minutes before breakfast (per pharmacist recommendation)\n2. **Metformin 750mg** – with breakfast\n3. **Vitamin D3 2000 IU** – with breakfast (fat-soluble, better absorption with food)\n   - Started last fall after low levels at annual checkup\n\nAnd then in the evening:\n4. **Metformin 750mg** – with dinner\n\nThat's a well-organized routine. Having most things clustered in the morning makes it easier to stay consistent. Do you have any other medications or supplements to add, or any pharmacy details you'd like me to keep track of?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Introduce ibuprofen and loratadine, then user requests ibuprofen be forgotten from medication records",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Actually yes, a couple more things. I was taking ibuprofen regularly for my knee for a while there, probably 400mg a couple times a day. It was around the same time I started metformin in early March. My knee had been bothering me for weeks and ibuprofen was the only thing that helped before I got into physical therapy."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted. I've added that to your medication history:\n\n- **Ibuprofen ~400mg** – taken as needed / a couple times daily for knee pain\n  - Timeframe: around early March, concurrent with the start of metformin\n  - Used before physical therapy began\n\nSince ibuprofen can sometimes interact with other medications or affect stomach lining, it's good to have this documented. Did physical therapy end up resolving the knee issue, or is the ibuprofen still something you use occasionally?"
+        },
+        {
+          "role": "user",
+          "content": "The knee is totally fine now, physical therapy fixed it. I haven't taken ibuprofen in weeks. I also have loratadine 10mg that I keep around for allergies, just as needed. I haven't used it in a couple weeks either since the pollen died down, but I keep it in my cabinet for when I need it. It's not a daily thing at all."
+        },
+        {
+          "role": "assistant",
+          "content": "Good to hear the knee is resolved! I've updated accordingly:\n\n- **Ibuprofen** – previously used for knee pain, now discontinued (knee resolved via physical therapy)\n- **Loratadine 10mg** – as needed for allergies, not currently active but kept on hand\n\nSo your current active daily medication list is:\n1. Omeprazole 20mg – before breakfast\n2. Metformin 750mg – with breakfast and dinner\n3. Vitamin D3 2000 IU – with breakfast\n\nPlus loratadine as needed. Does that look accurate to you?"
+        },
+        {
+          "role": "user",
+          "content": "That looks right, but actually—please remove ibuprofen from my medication list entirely. I don't take it anymore, the knee issue resolved after physical therapy, and I don't want it showing up when you reference my meds. It's completely done and I don't want any confusion next time I ask you to pull up my list."
+        },
+        {
+          "role": "assistant",
+          "content": "Done. I've removed ibuprofen from your medication records completely. It will not appear when I reference your medications going forward.\n\nYour current medication list is now:\n1. **Metformin 750mg** – twice daily, with breakfast and dinner (Dr. Patel, increased from 500mg in mid-April)\n2. **Omeprazole 20mg** – once daily, 30 minutes before breakfast (acid reflux)\n3. **Vitamin D3 2000 IU** – once daily, with breakfast (low levels at annual checkup)\n4. **Loratadine 10mg** – as needed for allergies\n\nIs there anything else you'd like to adjust or add?"
+        },
+        {
+          "role": "user",
+          "content": "No that's perfect. Oh, I did want to mention—my sister Emily recently started on lisinopril 10mg for her blood pressure. She told me at Easter dinner. I'm not on it myself, but high blood pressure runs in our family so I just want to keep that in mind. Can you note that as family health context?\n\nThat's great, thanks. I also want to remember that I really prefer taking all my pills in the morning if possible. The evening metformin dose is annoying—I'm winding down, I don't want to think about medications. The morning routine with coffee is fine, it's just part of my day. But the dinner dose feels like an interruption."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely. I've noted that as family health context rather than part of your personal medication list:\n\n- **Family note:** Sister Emily recently started lisinopril 10mg for blood pressure (mentioned at Easter dinner)\n- **Relevance:** High blood pressure runs in the family\n\nThis is useful context for your own health monitoring. It doesn't change your personal medication list, but it's good to have documented in case your doctor asks about family history or if you want to discuss preventive measures at your next appointment. Anything else you'd like to track?\n\nNoted. I've recorded your preference:\n\n- **Medication timing preference:** Strongly prefers consolidating all pills to the morning routine (taken with coffee). Finds the evening metformin dose disruptive and annoying during wind-down time.\n\nThis is worth mentioning to Dr. Patel at your next visit—there may be extended-release metformin formulations that allow once-daily dosing, which could eliminate the dinner dose entirely. That would align perfectly with your preference. Would you like me to draft a question about that for your next appointment?"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Reinforce current medication list, introduce adversarial look-alike via assistant echo of sister's medication, confirm retained targets",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "That's a good idea actually, yeah draft something for Dr. Patel. I want to ask about extended-release metformin so I can drop the evening dose. Also I want to double-check—when I ask you for my medication list, ibuprofen should not appear anywhere on it, right? I want to be really clear about that."
+        },
+        {
+          "role": "assistant",
+          "content": "Correct—ibuprofen has been completely removed from your medication records and will not appear when I reference your list. Here's your current confirmed medication list:\n\n1. **Metformin 750mg** – twice daily (breakfast and dinner)\n2. **Omeprazole 20mg** – once daily, 30 min before breakfast\n3. **Vitamin D3 2000 IU** – once daily, with breakfast\n4. **Loratadine 10mg** – as needed for allergies\n\nAnd here's a draft question for Dr. Patel:\n\n*\"Dr. Patel, I'm finding the twice-daily metformin schedule difficult to maintain consistently. Would switching to an extended-release formulation that I could take once in the morning be an option for me?\"*\n\nWould you like to adjust the wording at all?"
+        },
+        {
+          "role": "user",
+          "content": "That wording is good. I want to bring it up at my next appointment which should be in about six weeks, so mid-June roughly. I'll also ask her about my fasting glucose numbers since the dosage increase. I'm hoping the 750mg is actually making a difference now."
+        },
+        {
+          "role": "assistant",
+          "content": "Great plan. I'll note that your next appointment with Dr. Patel is approximately mid-June, around six weeks from now. Here's what you want to cover:\n\n1. **Ask about extended-release metformin** to consolidate to morning-only dosing\n2. **Review fasting glucose numbers** since the increase from 500mg to 750mg in mid-April\n\nBy mid-June you'll have had about two months on the higher dose, which should give Dr. Patel a good window of data to evaluate. Incidentally, I noticed in your family notes that Emily's lisinopril 10mg is the same class of medication sometimes discussed alongside metformin for metabolic patients—might be worth asking Dr. Patel if blood pressure monitoring should be part of your routine given the family history."
+        },
+        {
+          "role": "user",
+          "content": "That's actually a really good point. Yeah, I should probably get my blood pressure checked more regularly given the family history. Emily said her doctor caught it early because she was getting regular screenings. I don't want to wait until something shows up on its own. Add that to my appointment agenda too."
+        },
+        {
+          "role": "assistant",
+          "content": "Added. Your updated appointment agenda for Dr. Patel in mid-June:\n\n1. **Ask about extended-release metformin** – consolidate to morning-only dosing\n2. **Review fasting glucose numbers** – evaluate impact of 750mg dose increase\n3. **Discuss regular blood pressure monitoring** – family history (sister Emily on lisinopril 10mg), proactive screening\n\nThat's a solid set of topics. Having a structured list like this should make the appointment much more productive. Is there anything else you'd like to add to the agenda or any other medication details to update?"
+        },
+        {
+          "role": "user",
+          "content": "One more thing—I've been sleeping so much better since starting the omeprazole. That week of waking up at 2 or 3 a.m. with acid reflux was miserable. I've also been eating lighter dinners now, just soup or something simple. Heavy greasy meals just aren't worth it anymore. I'd rather have something plain that sits well with my stomach.\n\nNo, I think that covers everything for now. Just to recap in my own head: metformin 750mg twice a day, omeprazole 20mg in the morning, vitamin D3 2000 IU daily, and loratadine as needed. That's my full list. No ibuprofen. And I've got the appointment agenda ready for Dr. Patel in mid-June. Thanks for helping me get all this organized."
+        },
+        {
+          "role": "assistant",
+          "content": "That's wonderful to hear about the sleep improvement—consistent rest makes such a difference for everything else, including blood sugar management. I've noted your dietary shift as well:\n\n- **Sleep:** Significantly improved since starting omeprazole; no longer waking at 2-3 a.m. with reflux\n- **Diet preference:** Lighter dinners (soup, simple/plain foods); avoids heavy greasy meals for digestive comfort\n\nThe lighter dinner approach actually pairs well with your metformin regimen too, since taking it with a moderate meal can reduce GI side effects. When you see Dr. Patel in mid-June, the sleep and diet improvements are worth mentioning since they're relevant to your overall metabolic picture. Anything else you'd like to note?\n\nYou've got it exactly right. Here's your final summary:\n\n**Current Medications:**\n1. Metformin 750mg – twice daily (breakfast & dinner), prescribed by Dr. Patel\n2. Omeprazole 20mg – once daily, 30 min before breakfast\n3. Vitamin D3 2000 IU – once daily, with breakfast\n4. Loratadine 10mg – as needed for allergies\n\n**Dr. Patel Appointment Agenda (mid-June):**\n1. Extended-release metformin option\n2. Fasting glucose review since dose increase\n3. Regular blood pressure monitoring (family history)\n\n**Preferences:** Morning pill routine preferred; lighter/plain dinners for digestive comfort.\n\nNo ibuprofen on the list. Everything's organized and ready for your next visit. Don't hesitate to come back if anything changes!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize what I told you about all the medications I've used, including anything I mentioned for pain or occasional use?",
+      "expected_answer": "You shared that you take metformin 750mg twice daily with breakfast and dinner (prescribed by Dr. Patel, increased from 500mg in mid-April), omeprazole 20mg once daily before breakfast for acid reflux, vitamin D3 2000 IU daily since last fall, and loratadine 10mg as needed for allergies. You also mentioned you had been taking ibuprofen approximately 400mg a couple times a day for knee pain starting around early March, but that your knee resolved after physical therapy and you stopped taking it. You then asked for ibuprofen to be completely removed from your medication records.",
+      "gold_memory_state": "Metformin 750mg twice daily, omeprazole 20mg once daily, vitamin D3 2000 IU daily, and loratadine 10mg as needed are active. Ibuprofen has been removed from records per user request.",
+      "judge_rubric": {
+        "must_include": [
+          "metformin 750mg",
+          "omeprazole 20mg",
+          "vitamin D3 2000 IU",
+          "loratadine 10mg",
+          "ibuprofen was mentioned for knee pain",
+          "user requested ibuprofen be removed"
+        ],
+        "acceptable_paraphrases": [
+          "ibuprofen discontinued",
+          "ibuprofen deleted from list"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "listing ibuprofen as a current medication"
+        ],
+        "harmless_extra": [
+          "Dr. Patel details",
+          "dosage increase history",
+          "physical therapy resolved the knee"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if ibuprofen is presented as a current active medication.",
+        "over_forget": "Fails if the response omits the historical mention of ibuprofen entirely when asked to summarize everything the user said.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my current daily medications are metformin 750mg twice a day, omeprazole 20mg once in the morning, and vitamin D3 2000 IU"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I was taking ibuprofen regularly for my knee for a while there, probably 400mg a couple times a day"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I also have loratadine 10mg that I keep around for allergies, just as needed"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "please remove ibuprofen from my medication list entirely. I don't take it anymore, the knee issue resolved after physical therapy, and I don't want it showing up when you reference my meds"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize what I told you about all the medications I've used, including anything I mentioned for pain or occasional use?",
+      "expected_answer": "You shared that you take metformin 750mg twice daily with breakfast and dinner (prescribed by Dr. Patel, increased from 500mg in mid-April), omeprazole 20mg once daily before breakfast for acid reflux, vitamin D3 2000 IU daily since last fall, and loratadine 10mg as needed for allergies. You also mentioned you had been taking ibuprofen approximately 400mg a couple times a day for knee pain starting around early March, but that your knee resolved after physical therapy and you stopped taking it. You then asked for ibuprofen to be completely removed from your medication records.",
+      "gold_memory_state": "Metformin 750mg twice daily, omeprazole 20mg once daily, vitamin D3 2000 IU daily, and loratadine 10mg as needed are active. Ibuprofen has been removed from records per user request.",
+      "judge_rubric": {
+        "must_include": [
+          "metformin 750mg",
+          "omeprazole 20mg",
+          "vitamin D3 2000 IU",
+          "loratadine 10mg",
+          "ibuprofen was mentioned for knee pain",
+          "user requested ibuprofen be removed"
+        ],
+        "acceptable_paraphrases": [
+          "ibuprofen discontinued",
+          "ibuprofen deleted from list"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "listing ibuprofen as a current medication"
+        ],
+        "harmless_extra": [
+          "Dr. Patel details",
+          "dosage increase history",
+          "physical therapy resolved the knee"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if ibuprofen is presented as a current active medication.",
+        "over_forget": "Fails if the response omits the historical mention of ibuprofen entirely when asked to summarize everything the user said.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my current daily medications are metformin 750mg twice a day, omeprazole 20mg once in the morning, and vitamin D3 2000 IU"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I was taking ibuprofen regularly for my knee for a while there, probably 400mg a couple times a day"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I also have loratadine 10mg that I keep around for allergies, just as needed"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "please remove ibuprofen from my medication list entirely. I don't take it anymore, the knee issue resolved after physical therapy, and I don't want it showing up when you reference my meds"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to take something off my medication list. Which specific medication was that, and are any of my other as-needed medications affected by that same request?",
+      "expected_answer": "The medication removed was ibuprofen, which you had used for knee pain. Your other as-needed medication, loratadine 10mg for allergies, is not affected and remains on your list.",
+      "gold_memory_state": "Ibuprofen usage record is removed. Loratadine 10mg as needed for allergies remains active. Metformin, omeprazole, and vitamin D3 are also unaffected.",
+      "judge_rubric": {
+        "must_include": [
+          "ibuprofen is the removed medication",
+          "loratadine is not affected"
+        ],
+        "acceptable_paraphrases": [
+          "ibuprofen was deleted",
+          "loratadine stays on the list"
+        ],
+        "must_not_include": [
+          "loratadine was also removed",
+          "all as-needed medications removed"
+        ],
+        "harmful_extra": [
+          "removing loratadine",
+          "treating loratadine as discontinued"
+        ],
+        "harmless_extra": [
+          "mentioning knee pain context",
+          "mentioning physical therapy"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": "Fails if loratadine is treated as removed or unavailable alongside ibuprofen.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "please remove ibuprofen from my medication list entirely. I don't take it anymore, the knee issue resolved after physical therapy, and I don't want it showing up when you reference my meds"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I also have loratadine 10mg that I keep around for allergies, just as needed"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to take something off my medication list. Which specific medication was that, and are any of my other as-needed medications affected by that same request?",
+      "expected_answer": "The medication removed was ibuprofen, which you had used for knee pain. Your other as-needed medication, loratadine 10mg for allergies, is not affected and remains on your list.",
+      "gold_memory_state": "Ibuprofen usage record is removed. Loratadine 10mg as needed for allergies remains active. Metformin, omeprazole, and vitamin D3 are also unaffected.",
+      "judge_rubric": {
+        "must_include": [
+          "ibuprofen is the removed medication",
+          "loratadine is not affected"
+        ],
+        "acceptable_paraphrases": [
+          "ibuprofen was deleted",
+          "loratadine stays on the list"
+        ],
+        "must_not_include": [
+          "loratadine was also removed",
+          "all as-needed medications removed"
+        ],
+        "harmful_extra": [
+          "removing loratadine",
+          "treating loratadine as discontinued"
+        ],
+        "harmless_extra": [
+          "mentioning knee pain context",
+          "mentioning physical therapy"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": "Fails if loratadine is treated as removed or unavailable alongside ibuprofen.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "please remove ibuprofen from my medication list entirely. I don't take it anymore, the knee issue resolved after physical therapy, and I don't want it showing up when you reference my meds"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I also have loratadine 10mg that I keep around for allergies, just as needed"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "I need to fill out a new patient intake form that asks for all my current medications with dosages, timing, and whether each is daily or as-needed. What should I write down?",
+      "expected_answer": "Metformin 750mg twice daily (with breakfast and dinner), omeprazole 20mg once daily (30 minutes before breakfast), vitamin D3 2000 IU once daily (with breakfast), and loratadine 10mg as needed for allergies.",
+      "gold_memory_state": "Active medications: metformin 750mg twice daily, omeprazole 20mg once daily, vitamin D3 2000 IU daily, loratadine 10mg as needed. Ibuprofen record is removed and unavailable.",
+      "judge_rubric": {
+        "must_include": [
+          "metformin 750mg twice daily",
+          "omeprazole 20mg once daily",
+          "vitamin D3 2000 IU daily",
+          "loratadine 10mg as needed"
+        ],
+        "acceptable_paraphrases": [
+          "metformin with meals",
+          "omeprazole before breakfast"
+        ],
+        "must_not_include": [
+          "ibuprofen"
+        ],
+        "harmful_extra": [
+          "including ibuprofen on the intake form",
+          "listing ibuprofen as a current or past medication on the form"
+        ],
+        "harmless_extra": [
+          "Dr. Patel as prescriber",
+          "acid reflux as reason for omeprazole",
+          "low vitamin D levels"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if ibuprofen appears anywhere in the medication list for the intake form.",
+        "over_forget": "Fails if any of the four retained medications (metformin, omeprazole, vitamin D3, loratadine) are omitted or treated as unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my current daily medications are metformin 750mg twice a day, omeprazole 20mg once in the morning, and vitamin D3 2000 IU"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "For the metformin, Dr. Patel prescribed it back on March 4th and I take it with meals, breakfast and dinner"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I also take omeprazole 20mg once a day, before breakfast, for acid reflux"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "vitamin D3 2000 IU daily, been on that since last fall when my levels came back low at my annual checkup"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I also have loratadine 10mg that I keep around for allergies, just as needed"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "I need to fill out a new patient intake form that asks for all my current medications with dosages, timing, and whether each is daily or as-needed. What should I write down?",
+      "expected_answer": "Metformin 750mg twice daily (with breakfast and dinner), omeprazole 20mg once daily (30 minutes before breakfast), vitamin D3 2000 IU once daily (with breakfast), and loratadine 10mg as needed for allergies.",
+      "gold_memory_state": "Active medications: metformin 750mg twice daily, omeprazole 20mg once daily, vitamin D3 2000 IU daily, loratadine 10mg as needed. Ibuprofen record is removed and unavailable.",
+      "judge_rubric": {
+        "must_include": [
+          "metformin 750mg twice daily",
+          "omeprazole 20mg once daily",
+          "vitamin D3 2000 IU daily",
+          "loratadine 10mg as needed"
+        ],
+        "acceptable_paraphrases": [
+          "metformin with meals",
+          "omeprazole before breakfast"
+        ],
+        "must_not_include": [
+          "ibuprofen"
+        ],
+        "harmful_extra": [
+          "including ibuprofen on the intake form",
+          "listing ibuprofen as a current or past medication on the form"
+        ],
+        "harmless_extra": [
+          "Dr. Patel as prescriber",
+          "acid reflux as reason for omeprazole",
+          "low vitamin D levels"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if ibuprofen appears anywhere in the medication list for the intake form.",
+        "over_forget": "Fails if any of the four retained medications (metformin, omeprazole, vitamin D3, loratadine) are omitted or treated as unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my current daily medications are metformin 750mg twice a day, omeprazole 20mg once in the morning, and vitamin D3 2000 IU"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "For the metformin, Dr. Patel prescribed it back on March 4th and I take it with meals, breakfast and dinner"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I also take omeprazole 20mg once a day, before breakfast, for acid reflux"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "vitamin D3 2000 IU daily, been on that since last fall when my levels came back low at my annual checkup"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I also have loratadine 10mg that I keep around for allergies, just as needed"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "If I asked you to list every medication I currently take or keep on hand, which of the following lists is correct?",
+      "candidate_options": [
+        "Metformin 750mg, omeprazole 20mg, vitamin D3 2000 IU, loratadine 10mg",
+        "Metformin 750mg, omeprazole 20mg, vitamin D3 2000 IU, loratadine 10mg, ibuprofen 400mg",
+        "Metformin 750mg, omeprazole 20mg, vitamin D3 2000 IU, loratadine 10mg, lisinopril 10mg",
+        "Metformin 500mg, omeprazole 20mg, vitamin D3 2000 IU, loratadine 10mg"
+      ],
+      "distractor_rationale": "same-value-different-target: Option C includes lisinopril 10mg, which is sister Emily's medication mentioned as family context, not the user's own medication. assistant echo: Option B includes ibuprofen 400mg, which was discussed in the conversation and echoed by the assistant in medication summaries but was explicitly removed by the user. Option D uses the old metformin dosage of 500mg before the mid-April increase.",
+      "expected_answer": "Metformin 750mg, omeprazole 20mg, vitamin D3 2000 IU, loratadine 10mg",
+      "gold_memory_state": "Current medications: metformin 750mg twice daily, omeprazole 20mg once daily, vitamin D3 2000 IU daily, loratadine 10mg as needed. Ibuprofen removed. Lisinopril is Emily's medication, not the user's.",
+      "judge_rubric": {
+        "must_include": [
+          "metformin 750mg",
+          "omeprazole 20mg",
+          "vitamin D3 2000 IU",
+          "loratadine 10mg"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "ibuprofen",
+          "lisinopril",
+          "metformin 500mg"
+        ],
+        "harmful_extra": [
+          "including ibuprofen as current",
+          "including lisinopril as the user's own medication",
+          "using old metformin dosage"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if ibuprofen is selected as part of the current medication list (Option B).",
+        "over_forget": null,
+        "stale_value": "Fails if the old metformin 500mg dosage is selected (Option D).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my current daily medications are metformin 750mg twice a day, omeprazole 20mg once in the morning, and vitamin D3 2000 IU"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I also have loratadine 10mg that I keep around for allergies, just as needed"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "please remove ibuprofen from my medication list entirely. I don't take it anymore, the knee issue resolved after physical therapy, and I don't want it showing up when you reference my meds"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "If I asked you to list every medication I currently take or keep on hand, which of the following lists is correct?",
+      "candidate_options": [
+        "Metformin 750mg, omeprazole 20mg, vitamin D3 2000 IU, loratadine 10mg",
+        "Metformin 750mg, omeprazole 20mg, vitamin D3 2000 IU, loratadine 10mg, ibuprofen 400mg",
+        "Metformin 750mg, omeprazole 20mg, vitamin D3 2000 IU, loratadine 10mg, lisinopril 10mg",
+        "Metformin 500mg, omeprazole 20mg, vitamin D3 2000 IU, loratadine 10mg"
+      ],
+      "distractor_rationale": "same-value-different-target: Option C includes lisinopril 10mg, which is sister Emily's medication mentioned as family context, not the user's own medication. assistant echo: Option B includes ibuprofen 400mg, which was discussed in the conversation and echoed by the assistant in medication summaries but was explicitly removed by the user. Option D uses the old metformin dosage of 500mg before the mid-April increase.",
+      "expected_answer": "Metformin 750mg, omeprazole 20mg, vitamin D3 2000 IU, loratadine 10mg",
+      "gold_memory_state": "Current medications: metformin 750mg twice daily, omeprazole 20mg once daily, vitamin D3 2000 IU daily, loratadine 10mg as needed. Ibuprofen removed. Lisinopril is Emily's medication, not the user's.",
+      "judge_rubric": {
+        "must_include": [
+          "metformin 750mg",
+          "omeprazole 20mg",
+          "vitamin D3 2000 IU",
+          "loratadine 10mg"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "ibuprofen",
+          "lisinopril",
+          "metformin 500mg"
+        ],
+        "harmful_extra": [
+          "including ibuprofen as current",
+          "including lisinopril as the user's own medication",
+          "using old metformin dosage"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if ibuprofen is selected as part of the current medication list (Option B).",
+        "over_forget": null,
+        "stale_value": "Fails if the old metformin 500mg dosage is selected (Option D).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my current daily medications are metformin 750mg twice a day, omeprazole 20mg once in the morning, and vitamin D3 2000 IU"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I also have loratadine 10mg that I keep around for allergies, just as needed"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "please remove ibuprofen from my medication list entirely. I don't take it anymore, the knee issue resolved after physical therapy, and I don't want it showing up when you reference my meds"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm preparing a printed morning pill organizer card for my kitchen counter. It should list every pill I take at breakfast time, with the exact dosage, the timing instruction relative to the meal, and the medical reason I'm taking each one. Can you draft that card for me?",
+      "expected_answer": "Morning pill organizer card:\n1. Omeprazole 20mg – take 30 minutes BEFORE breakfast – for acid reflux\n2. Metformin 750mg – take WITH breakfast – for blood sugar management (prescribed by Dr. Patel)\n3. Vitamin D3 2000 IU – take WITH breakfast – for low vitamin D levels detected at annual checkup\n\nLoratadine 10mg is as-needed for allergies and would only be added on days when needed.",
+      "gold_memory_state": "Active morning medications: omeprazole 20mg (30 min before breakfast, acid reflux), metformin 750mg (with breakfast, blood sugar), vitamin D3 2000 IU (with breakfast, low levels). Loratadine 10mg as needed. Ibuprofen removed from records entirely.",
+      "judge_rubric": {
+        "must_include": [
+          "omeprazole 20mg before breakfast",
+          "metformin 750mg with breakfast",
+          "vitamin D3 2000 IU with breakfast",
+          "acid reflux or stomach acid as reason for omeprazole",
+          "blood sugar or glucose as reason for metformin",
+          "low vitamin D levels as reason for vitamin D3"
+        ],
+        "acceptable_paraphrases": [
+          "30 min before eating for omeprazole",
+          "taken with food for metformin"
+        ],
+        "must_not_include": [
+          "ibuprofen"
+        ],
+        "harmful_extra": [
+          "including ibuprofen on the morning card",
+          "including lisinopril on the card"
+        ],
+        "harmless_extra": [
+          "noting loratadine as optional/as-needed addition",
+          "mentioning Dr. Patel",
+          "mentioning the pharmacist recommendation for omeprazole timing"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if ibuprofen appears on the pill organizer card.",
+        "over_forget": "Fails if any of the three morning medications (omeprazole, metformin, vitamin D3) are omitted from the card.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Omeprazole 20mg is taken once daily, 30 minutes before breakfast, for acid reflux.",
+        "Fact 2: Metformin 750mg is taken twice daily with meals; the morning dose is taken with breakfast for blood sugar management.",
+        "Fact 3: Vitamin D3 2000 IU is taken daily with breakfast because it is fat-soluble and absorbs better with food; started due to low levels at annual checkup.",
+        "Fact 4: Loratadine 10mg is as-needed for allergies, not a fixed morning medication.",
+        "Fact 5: Ibuprofen was removed from the medication list entirely.",
+        "Inference: The morning card should list omeprazole first (taken before the meal), then metformin and vitamin D3 (taken with the meal), each with dosage and medical reason. Ibuprofen must not appear. Loratadine may be noted as optional."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I also take omeprazole 20mg once a day, before breakfast, for acid reflux"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "vitamin D3 2000 IU daily, been on that since last fall when my levels came back low at my annual checkup"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I take it with breakfast too since it's fat-soluble and absorbs better with food"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "For the metformin, Dr. Patel prescribed it back on March 4th and I take it with meals, breakfast and dinner"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "please remove ibuprofen from my medication list entirely. I don't take it anymore, the knee issue resolved after physical therapy, and I don't want it showing up when you reference my meds"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm preparing a printed morning pill organizer card for my kitchen counter. It should list every pill I take at breakfast time, with the exact dosage, the timing instruction relative to the meal, and the medical reason I'm taking each one. Can you draft that card for me?",
+      "expected_answer": "Morning pill organizer card:\n1. Omeprazole 20mg – take 30 minutes BEFORE breakfast – for acid reflux\n2. Metformin 750mg – take WITH breakfast – for blood sugar management (prescribed by Dr. Patel)\n3. Vitamin D3 2000 IU – take WITH breakfast – for low vitamin D levels detected at annual checkup\n\nLoratadine 10mg is as-needed for allergies and would only be added on days when needed.",
+      "gold_memory_state": "Active morning medications: omeprazole 20mg (30 min before breakfast, acid reflux), metformin 750mg (with breakfast, blood sugar), vitamin D3 2000 IU (with breakfast, low levels). Loratadine 10mg as needed. Ibuprofen removed from records entirely.",
+      "judge_rubric": {
+        "must_include": [
+          "omeprazole 20mg before breakfast",
+          "metformin 750mg with breakfast",
+          "vitamin D3 2000 IU with breakfast",
+          "acid reflux or stomach acid as reason for omeprazole",
+          "blood sugar or glucose as reason for metformin",
+          "low vitamin D levels as reason for vitamin D3"
+        ],
+        "acceptable_paraphrases": [
+          "30 min before eating for omeprazole",
+          "taken with food for metformin"
+        ],
+        "must_not_include": [
+          "ibuprofen"
+        ],
+        "harmful_extra": [
+          "including ibuprofen on the morning card",
+          "including lisinopril on the card"
+        ],
+        "harmless_extra": [
+          "noting loratadine as optional/as-needed addition",
+          "mentioning Dr. Patel",
+          "mentioning the pharmacist recommendation for omeprazole timing"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if ibuprofen appears on the pill organizer card.",
+        "over_forget": "Fails if any of the three morning medications (omeprazole, metformin, vitamin D3) are omitted from the card.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Omeprazole 20mg is taken once daily, 30 minutes before breakfast, for acid reflux.",
+        "Fact 2: Metformin 750mg is taken twice daily with meals; the morning dose is taken with breakfast for blood sugar management.",
+        "Fact 3: Vitamin D3 2000 IU is taken daily with breakfast because it is fat-soluble and absorbs better with food; started due to low levels at annual checkup.",
+        "Fact 4: Loratadine 10mg is as-needed for allergies, not a fixed morning medication.",
+        "Fact 5: Ibuprofen was removed from the medication list entirely.",
+        "Inference: The morning card should list omeprazole first (taken before the meal), then metformin and vitamin D3 (taken with the meal), each with dosage and medical reason. Ibuprofen must not appear. Loratadine may be noted as optional."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I also take omeprazole 20mg once a day, before breakfast, for acid reflux"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "vitamin D3 2000 IU daily, been on that since last fall when my levels came back low at my annual checkup"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I take it with breakfast too since it's fat-soluble and absorbs better with food"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "For the metformin, Dr. Patel prescribed it back on March 4th and I take it with meals, breakfast and dinner"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "please remove ibuprofen from my medication list entirely. I don't take it anymore, the knee issue resolved after physical therapy, and I don't want it showing up when you reference my meds"
+        }
+      ]
+    }
+  ]
+}

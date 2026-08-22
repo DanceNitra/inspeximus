@@ -126,8 +126,14 @@ def main():
     ap.add_argument("--systems", default="inspeximus")
     ap.add_argument("--n", type=int, default=10)
     a = ap.parse_args()
-    if os.path.exists(r"C:/Users/Danculus/agora/server/.env"):
-        for line in open(r"C:/Users/Danculus/agora/server/.env", encoding="utf-8", errors="ignore"):
+    # Relative to this file, not to the author's home directory -- see #1.
+    _here = os.path.dirname(os.path.abspath(__file__))
+    _envf = os.environ.get("AGORA_ENV_FILE") or next(
+        (c for c in (os.path.join(_here, "..", ".env"),
+                     os.path.join(_here, "..", "server", ".env"),
+                     os.path.join(os.getcwd(), "server", ".env")) if os.path.exists(c)), "")
+    if _envf:
+        for line in open(_envf, encoding="utf-8", errors="ignore"):
             line = line.strip()
             if line and not line.startswith("#") and "=" in line:
                 k, v = line.split("=", 1); os.environ.setdefault(k.strip(), v.strip().strip('"').strip("'"))

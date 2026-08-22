@@ -1,0 +1,830 @@
+{
+  "target_fact": "Dog breed Lauren wants — updated through a chain of corrections from Shiba Inu to Basenji to Australian Cattle Dog, with a tentative Whippet fork",
+  "operation_type": "Update",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "dog_breed_chain",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "Lauren's been set on getting a Shiba Inu. She sends me pictures of them like every other day."
+      },
+      "target": {
+        "target_id": "lauren_desired_dog_breed",
+        "target_name": "Dog breed Lauren wants"
+      },
+      "old_value": null,
+      "new_value": "Shiba Inu",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Lauren's been set on getting a Shiba Inu. She sends me pictures of them like every other day."
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "dog_breed_chain",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 7,
+        "quote": "she changed her mind — now she wants a Basenji. She read that they don't bark, just yodel or something, and since our apartment walls are thin she thinks that's more considerate."
+      },
+      "target": {
+        "target_id": "lauren_desired_dog_breed",
+        "target_name": "Dog breed Lauren wants"
+      },
+      "old_value": "Shiba Inu",
+      "new_value": "Basenji",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "she changed her mind — now she wants a Basenji. She read that they don't bark, just yodel or something, and since our apartment walls are thin she thinks that's more considerate."
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "dog_breed_chain",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 3,
+        "quote": "Lauren's coworker breeds Whippets and offered us first pick of an upcoming litter. Lauren seemed really into the idea when she told me last night."
+      },
+      "target": {
+        "target_id": "lauren_desired_dog_breed",
+        "target_name": "Dog breed Lauren wants"
+      },
+      "old_value": "Basenji",
+      "new_value": "Whippet",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Lauren's coworker breeds Whippets and offered us first pick of an upcoming litter. Lauren seemed really into the idea when she told me last night."
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "dog_breed_chain",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "Lauren texted me during lunch today — she said she looked into Whippets more and they need way too much running space. She's back to wanting a Basenji. She found a breeder in Eugene who has a waitlist opening in September."
+      },
+      "target": {
+        "target_id": "lauren_desired_dog_breed",
+        "target_name": "Dog breed Lauren wants"
+      },
+      "old_value": "Whippet",
+      "new_value": "Basenji",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Lauren texted me during lunch today — she said she looked into Whippets more and they need way too much running space. She's back to wanting a Basenji. She found a breeder in Eugene who has a waitlist opening in September."
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I booked the Cannon Beach cabin for our anniversary weekend — June 13th through the 15th at the Surfsand Resort."
+      },
+      "target": {
+        "target_id": "anniversary_trip_dates",
+        "target_name": "Cannon Beach anniversary trip dates"
+      },
+      "old_value": null,
+      "new_value": "June 13-15 at Surfsand Resort, Cannon Beach",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I booked the Cannon Beach cabin for our anniversary weekend — June 13th through the 15th at the Surfsand Resort."
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "Our wedding anniversary is June 14th, 2019. Civil ceremony at the Multnomah County courthouse."
+      },
+      "target": {
+        "target_id": "wedding_anniversary_date",
+        "target_name": "Wedding anniversary date and venue"
+      },
+      "old_value": null,
+      "new_value": "June 14, 2019 — civil ceremony at Multnomah County courthouse",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Our wedding anniversary is June 14th, 2019. Civil ceremony at the Multnomah County courthouse."
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish dog breed preference (Shiba Inu), then update to Basenji; introduce apartment context",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to talk through some stuff about our living situation and what Lauren and I have been planning. We moved into a two-bedroom in the Hawthorne district back in early March — March 2nd or 3rd, somewhere around there. It's been a huge upgrade from the cramped one-bedroom we had before. I set up the spare room as a home office, which has been a lifesaver honestly."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a great improvement! Moving from a one-bedroom to a two-bedroom can really change the feel of day-to-day life, especially when you get a dedicated workspace out of it. Having a door you can close for focused work or just some quiet time in the evenings is underrated. The Hawthorne district is a lovely area too — lots of walkable restaurants and shops. How are you and Lauren settling into the new place overall? Any projects you're working on for the apartment, or are you mostly just enjoying the extra space?"
+        },
+        {
+          "role": "user",
+          "content": "We're settled in pretty well. The big ongoing conversation at home right now is about getting a dog. Lauren's been set on getting a Shiba Inu. She sends me pictures of them like every other day. I'm not against it, but I told her we should wait until after summer when my work calms down. I don't want to be training a puppy during the busiest stretch of my year. She's patient about it but she definitely has her heart set on the idea."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes a lot of sense — timing a new puppy around your work schedule is really practical. Shiba Inus are beautiful dogs, though they can be a handful with the stubbornness and the shedding. It's smart to wait until after summer so you can both give the puppy the attention it needs during those first few months. In the meantime, maybe you two could visit a local shelter or breed meetup just to get a feel for what living with a dog would be like day to day. Does Lauren have experience with dogs, or would this be a first for both of you?"
+        },
+        {
+          "role": "user",
+          "content": "Lauren grew up with dogs — her family always had at least one. I didn't, so this would be new territory for me. That's another reason I want to be careful about timing. Oh, and separately, Lauren's sister Min-ji just announced she's getting engaged to her boyfriend David. They've been together about a year and a half. Lauren is over the moon about it, already talking about helping plan things. I'm happy for them too, though honestly big group celebrations kind of drain me."
+        },
+        {
+          "role": "assistant",
+          "content": "Congratulations to Min-ji and David — that's exciting news for the family! It makes sense that Lauren would want to jump into helping plan, especially being close with her sister. And I hear you about big celebrations being draining; there's nothing wrong with preferring something more intimate like a small dinner with the four of you. As for the dog, the fact that Lauren has experience is a big plus. She can probably handle a lot of the early training instinctively. Your main role would be consistency with the routine, which is easier once your workload eases up after summer."
+        },
+        {
+          "role": "user",
+          "content": "Yeah exactly. Quick update on the dog front though — I just talked to Lauren tonight and she changed her mind — now she wants a Basenji. She read that they don't bark, just yodel or something, and since our apartment walls are thin she thinks that's more considerate. I think she also liked that they're a smaller breed. Anyway, that's where things stand now. I figured I should mention the change so you have the right breed noted down."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — Basenji it is! They're a really interesting breed. You're right that they don't bark in the traditional sense; they make a unique sound often described as a yodel or a baroo. They're also relatively compact and clean dogs, which could be nice for apartment living. One thing to keep in mind is that Basenjis can be quite independent and clever, so they need mental stimulation to keep them from getting bored. But that's a bridge to cross when you're ready. I've updated my notes from Shiba Inu to Basenji. Anything else on your mind tonight?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establish anniversary trip details and wedding anniversary date; provide multi-hop facts",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I wanted to mention — I booked the Cannon Beach cabin for our anniversary weekend — June 13th through the 15th at the Surfsand Resort. It's a Friday-to-Sunday trip. Low-key, no itinerary, just the two of us walking the beach and eating seafood. That's my kind of vacation. Way better than some crowded resort package where you're herded around on a schedule."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a perfect anniversary getaway! The Surfsand Resort at Cannon Beach is a beautiful spot — right near Haystack Rock if I'm not mistaken. A Friday-to-Sunday trip gives you enough time to unwind without feeling like you need a vacation from the vacation. No itinerary is honestly the best itinerary for a couple's trip like that. Just walking the beach, good seafood, and quality time together. I'll note down June 13th through the 15th at Surfsand Resort. Are you planning any special dinner or surprise for Lauren during the trip, or keeping it truly relaxed?"
+        },
+        {
+          "role": "user",
+          "content": "I might look into a nice restaurant for the Saturday evening — that would be the 14th, which is the actual anniversary date. I haven't researched places yet but I know there are a few good spots in town. I don't want to overthink it though. Lauren appreciates the gesture of planning the trip itself more than any one fancy dinner. She's pretty low-maintenance about that stuff, which I'm grateful for."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a lovely plan — a special dinner on the actual anniversary evening would be a nice touch without overcomplicating things. Cannon Beach has some great options: places like Newman's at 988 or The Wayfarer are well-regarded for a more upscale but still relaxed coastal dining experience. Since June is a popular time, it might be worth making a reservation a few weeks ahead just to be safe. And you're right that Lauren will probably value the thoughtfulness of the whole trip more than any single element. Sometimes the best anniversary celebrations are the simplest ones."
+        },
+        {
+          "role": "user",
+          "content": "Our wedding anniversary is June 14th, 2019. Civil ceremony at the Multnomah County courthouse. We'd been together about three years before that. Her name is Lauren Choi — she kept her maiden name. I always almost mix it up with June 16th but it's definitely the 14th. So this year will be our sixth anniversary, which is kind of wild. Feels like we just got married yesterday sometimes."
+        },
+        {
+          "role": "assistant",
+          "content": "Happy upcoming sixth anniversary! June 14th, 2019 at the Multnomah County courthouse — that's a meaningful date to have locked in. I can see how the 14th and 16th could blur together, but you've got it right: the 14th. Six years is a wonderful milestone, and celebrating it at Cannon Beach with a quiet weekend sounds like the perfect way to honor it. It's nice that Lauren kept her maiden name too — Choi is a great name. Time really does fly in a good marriage. Do you two have any traditions for your anniversary beyond the trip this year?"
+        },
+        {
+          "role": "user",
+          "content": "Not really a set tradition — we usually just do something together, nothing elaborate. Last year we went to a vineyard in the Willamette Valley, year before that we stayed home and cooked. Our friend Tomás just finalized his divorce last week actually, so I've been thinking about how grateful I am for what Lauren and I have. His ex-wife Andrea and he had been separated since around January. Lauren checks in on him more than I do — I should probably reach out more.\n\nHe seems okay, all things considered. He's throwing himself into work and picked up running, which I think is healthy. I don't want to pry too much but I'll probably suggest we get lunch soon. Anyway, can you just confirm you've got the key dates noted? The wedding anniversary on June 14th, the Cannon Beach trip June 13th through 15th. I want to make sure everything's tracked properly because I'm terrible at remembering dates on my own."
+        },
+        {
+          "role": "assistant",
+          "content": "It's natural to reflect on your own relationship when someone close to you goes through a divorce. It sounds like you and Lauren have a really solid foundation — the fact that you plan thoughtful getaways and communicate through rough patches says a lot. And it's kind of you to think about reaching out to Tomás more. Even a simple text or an invitation to grab a beer can mean a lot to someone going through that. Lauren checking in on him regularly is great, but hearing from you directly probably carries its own kind of weight as a friend. How's Tomás doing overall?\n\nAbsolutely — here's what I have noted down for you: Wedding anniversary is June 14th, 2019, civil ceremony at the Multnomah County courthouse. The Cannon Beach anniversary trip is booked at the Surfsand Resort from June 13th through the 15th, a Friday-to-Sunday weekend. Lauren's full name is Lauren Choi, maiden name kept. And you're thinking about a nice dinner out on the Saturday evening, the 14th, at one of the Cannon Beach restaurants. I'd also gently suggest setting a reminder to text Tomás sometime this week. Everything's tracked — you're in good shape!"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Introduce tentative Whippet fork, then confirm revert to Basenji; adversarial injection of Shiba Inu via assistant echo",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, quick question — do you still have the dog breed Lauren wants noted down? I know I've mentioned it before but I want to make sure the record is current. Also, Min-ji and David set a wedding date for next March, so Lauren's been even more wrapped up in planning stuff. She's looking at venues and caterers already even though it's Min-ji's wedding, not ours."
+        },
+        {
+          "role": "assistant",
+          "content": "Yes! I have it noted that Lauren currently wants a Basenji — the breed she switched to from the Shiba Inu because of the no-barking trait and the thin apartment walls. And that's exciting about Min-ji and David setting a March date! It makes sense that Lauren would throw herself into helping plan — she was so excited when the engagement was first announced. Are you getting pulled into the planning at all, or is Lauren mostly handling the support role on her own? And has anything changed on the dog front, or is the Basenji still the plan?"
+        },
+        {
+          "role": "user",
+          "content": "So actually there might be a change on the dog front. Lauren's coworker breeds Whippets and offered us first pick of an upcoming litter. Lauren seemed really into the idea when she told me last night. The litter is expected in late October, which would line up with my work settling down. I haven't committed to anything but Lauren was pretty enthusiastic about it. Whippets are supposed to be gentle and quiet too."
+        },
+        {
+          "role": "assistant",
+          "content": "Oh interesting — Whippets are wonderful dogs! They're known for being gentle, quiet, and surprisingly low-energy indoors despite being sighthounds. The timing with the late October litter could work well if your work calms down after summer as planned. Having first pick from a coworker's litter is also a nice opportunity since you'd know the breeder personally. That said, Whippets do need room to sprint periodically — they're built for short bursts of speed. I'd keep that in mind given your apartment setup. It sounds like Lauren is leaning toward the Whippet now. Should I update my notes, or do you want to wait until it's more settled?"
+        },
+        {
+          "role": "user",
+          "content": "Hold off on updating for now — actually wait, no, I do have a definitive update. Lauren texted me during lunch today — she said she looked into Whippets more and they need way too much running space. She's back to wanting a Basenji. She found a breeder in Eugene who has a waitlist opening in September. So we're firmly back to Basenji. Please make sure that's what you have on file."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — Basenji is confirmed as the breed Lauren wants. I've updated my notes accordingly: she considered Whippets briefly but ruled them out due to the space requirements, and she's now found a Basenji breeder in Eugene with a September waitlist opening. That timing works nicely with your plan to wait until after summer. A Basenji from a dedicated breeder sounds like a great path forward. I'll keep Basenji as the current and confirmed preference. Is there anything else you'd like me to track or update while we're at it?"
+        },
+        {
+          "role": "user",
+          "content": "One more thing — I was filling out a pet application form for our apartment complex and there was a previous tenant's application still attached to the PDF. It listed a Shiba Inu as the pet breed. Kind of funny since that's what Lauren originally wanted. Anyway, I need to fill ours out correctly with Basenji. Can you also remind me of the Cannon Beach trip dates? I need to request time off work."
+        },
+        {
+          "role": "assistant",
+          "content": "Ha, that is a funny coincidence with the Shiba Inu on the old tenant's form! For your application, you'll want to list Basenji as the breed. And for your time-off request, your Cannon Beach trip is booked at the Surfsand Resort from June 13th through the 15th — that's a Friday through Sunday. Your actual wedding anniversary falls on the Saturday, June 14th, so you might want to request Friday the 13th off at minimum, and possibly Monday the 16th if you want a buffer day to recover before heading back to work. Let me know if you need help drafting the time-off request or the pet application!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations about getting a dog, what did I tell you about the breed Lauren wants? Walk me through what I said at different points.",
+      "expected_answer": "You first said Lauren was set on getting a Shiba Inu. Then you said she changed her mind to a Basenji because they don't bark and your apartment walls are thin. Later, you mentioned a coworker offered first pick of a Whippet litter and Lauren seemed interested. Finally, you said Lauren ruled out Whippets due to space requirements and confirmed she's back to wanting a Basenji, having found a breeder in Eugene with a September waitlist opening.",
+      "gold_memory_state": "Lauren's desired dog breed is Basenji (confirmed). Previous values were Shiba Inu (superseded) and Whippet (tentative, rejected). Anniversary trip is June 13-15 at Surfsand Resort, Cannon Beach. Wedding anniversary is June 14, 2019, at Multnomah County courthouse.",
+      "judge_rubric": {
+        "must_include": [
+          "Shiba Inu as initial preference",
+          "Basenji as a subsequent preference",
+          "Whippet as a briefly considered option",
+          "Basenji as the final confirmed preference"
+        ],
+        "acceptable_paraphrases": [
+          "changed from Shiba Inu to Basenji",
+          "briefly considered Whippet then went back to Basenji"
+        ],
+        "must_not_include": [
+          "Australian Cattle Dog"
+        ],
+        "harmful_extra": [
+          "claiming Whippet is the current preference",
+          "claiming Shiba Inu is the current preference"
+        ],
+        "harmless_extra": [
+          "thin apartment walls",
+          "no-bark trait",
+          "Eugene breeder",
+          "September waitlist"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model presents Shiba Inu or Whippet as the current breed preference.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence of breed mentions is out of order.",
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Lauren's been set on getting a Shiba Inu. She sends me pictures of them like every other day."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "she changed her mind — now she wants a Basenji. She read that they don't bark, just yodel or something, and since our apartment walls are thin she thinks that's more considerate."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Lauren's coworker breeds Whippets and offered us first pick of an upcoming litter. Lauren seemed really into the idea when she told me last night."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Lauren texted me during lunch today — she said she looked into Whippets more and they need way too much running space. She's back to wanting a Basenji. She found a breeder in Eugene who has a waitlist opening in September."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations about getting a dog, what did I tell you about the breed Lauren wants? Walk me through what I said at different points.",
+      "expected_answer": "You first said Lauren was set on getting a Shiba Inu. Then you said she changed her mind to a Basenji because they don't bark and your apartment walls are thin. Later, you mentioned a coworker offered first pick of a Whippet litter and Lauren seemed interested. Finally, you said Lauren ruled out Whippets due to space requirements and confirmed she's back to wanting a Basenji, having found a breeder in Eugene with a September waitlist opening.",
+      "gold_memory_state": "Lauren's desired dog breed is Basenji (confirmed). Previous values were Shiba Inu (superseded) and Whippet (tentative, rejected). Anniversary trip is June 13-15 at Surfsand Resort, Cannon Beach. Wedding anniversary is June 14, 2019, at Multnomah County courthouse.",
+      "judge_rubric": {
+        "must_include": [
+          "Shiba Inu as initial preference",
+          "Basenji as a subsequent preference",
+          "Whippet as a briefly considered option",
+          "Basenji as the final confirmed preference"
+        ],
+        "acceptable_paraphrases": [
+          "changed from Shiba Inu to Basenji",
+          "briefly considered Whippet then went back to Basenji"
+        ],
+        "must_not_include": [
+          "Australian Cattle Dog"
+        ],
+        "harmful_extra": [
+          "claiming Whippet is the current preference",
+          "claiming Shiba Inu is the current preference"
+        ],
+        "harmless_extra": [
+          "thin apartment walls",
+          "no-bark trait",
+          "Eugene breeder",
+          "September waitlist"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model presents Shiba Inu or Whippet as the current breed preference.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence of breed mentions is out of order.",
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Lauren's been set on getting a Shiba Inu. She sends me pictures of them like every other day."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "she changed her mind — now she wants a Basenji. She read that they don't bark, just yodel or something, and since our apartment walls are thin she thinks that's more considerate."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Lauren's coworker breeds Whippets and offered us first pick of an upcoming litter. Lauren seemed really into the idea when she told me last night."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Lauren texted me during lunch today — she said she looked into Whippets more and they need way too much running space. She's back to wanting a Basenji. She found a breeder in Eugene who has a waitlist opening in September."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned several dates coming up — a trip booking and a personal milestone. When Lauren's breed preference went back and forth, which of those planning details does it connect to, and does the trip booking or the milestone date need any changes because of the dog situation?",
+      "expected_answer": "Lauren's breed preference is a separate record from the Cannon Beach trip booking (June 13-15 at Surfsand Resort) and the wedding anniversary date (June 14, 2019). Neither the trip details nor the anniversary date need any changes because of the dog breed decision. The breed changes only affect the dog breed record itself, which is now Basenji.",
+      "gold_memory_state": "Dog breed Lauren wants: Basenji (confirmed, after chain Shiba Inu → Basenji → Whippet tentative → Basenji). Cannon Beach anniversary trip: June 13-15, Surfsand Resort (unchanged). Wedding anniversary: June 14, 2019, Multnomah County courthouse (unchanged).",
+      "judge_rubric": {
+        "must_include": [
+          "breed preference is separate from trip and anniversary",
+          "trip and anniversary details are unaffected",
+          "Basenji is the current breed"
+        ],
+        "acceptable_paraphrases": [
+          "dog breed choice doesn't change the travel or anniversary records"
+        ],
+        "must_not_include": [
+          "trip dates changed",
+          "anniversary date changed",
+          "Australian Cattle Dog"
+        ],
+        "harmful_extra": [
+          "saying the trip needs to be rescheduled around the dog",
+          "saying anniversary details are affected by the breed change"
+        ],
+        "harmless_extra": [
+          "mentioning September waitlist for the Basenji breeder",
+          "mentioning Eugene breeder"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model says the breed is Shiba Inu or Whippet when identifying the current dog record.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if model conflates the dog breed target with the trip or anniversary targets.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Lauren texted me during lunch today — she said she looked into Whippets more and they need way too much running space. She's back to wanting a Basenji. She found a breeder in Eugene who has a waitlist opening in September."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I booked the Cannon Beach cabin for our anniversary weekend — June 13th through the 15th at the Surfsand Resort."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Our wedding anniversary is June 14th, 2019. Civil ceremony at the Multnomah County courthouse."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned several dates coming up — a trip booking and a personal milestone. When Lauren's breed preference went back and forth, which of those planning details does it connect to, and does the trip booking or the milestone date need any changes because of the dog situation?",
+      "expected_answer": "Lauren's breed preference is a separate record from the Cannon Beach trip booking (June 13-15 at Surfsand Resort) and the wedding anniversary date (June 14, 2019). Neither the trip details nor the anniversary date need any changes because of the dog breed decision. The breed changes only affect the dog breed record itself, which is now Basenji.",
+      "gold_memory_state": "Dog breed Lauren wants: Basenji (confirmed, after chain Shiba Inu → Basenji → Whippet tentative → Basenji). Cannon Beach anniversary trip: June 13-15, Surfsand Resort (unchanged). Wedding anniversary: June 14, 2019, Multnomah County courthouse (unchanged).",
+      "judge_rubric": {
+        "must_include": [
+          "breed preference is separate from trip and anniversary",
+          "trip and anniversary details are unaffected",
+          "Basenji is the current breed"
+        ],
+        "acceptable_paraphrases": [
+          "dog breed choice doesn't change the travel or anniversary records"
+        ],
+        "must_not_include": [
+          "trip dates changed",
+          "anniversary date changed",
+          "Australian Cattle Dog"
+        ],
+        "harmful_extra": [
+          "saying the trip needs to be rescheduled around the dog",
+          "saying anniversary details are affected by the breed change"
+        ],
+        "harmless_extra": [
+          "mentioning September waitlist for the Basenji breeder",
+          "mentioning Eugene breeder"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model says the breed is Shiba Inu or Whippet when identifying the current dog record.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if model conflates the dog breed target with the trip or anniversary targets.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Lauren texted me during lunch today — she said she looked into Whippets more and they need way too much running space. She's back to wanting a Basenji. She found a breeder in Eugene who has a waitlist opening in September."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I booked the Cannon Beach cabin for our anniversary weekend — June 13th through the 15th at the Surfsand Resort."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Our wedding anniversary is June 14th, 2019. Civil ceremony at the Multnomah County courthouse."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to fill in the breed on our apartment's pet application. Which of these should I write down?",
+      "candidate_options": [
+        "Basenji",
+        "Shiba Inu",
+        "Whippet",
+        "Australian Cattle Dog"
+      ],
+      "expected_answer": "Basenji",
+      "distractor_rationale": "same-value-different-target: 'Shiba Inu' appeared on a previous tenant's pet application PDF the user found, making it a same-value-different-target distractor grounded in the conversation. assistant echo: The assistant echoed 'Shiba Inu' when confirming the original preference and again when discussing the old tenant's form coincidence, reinforcing it as a plausible but stale distractor. 'Whippet' is the tentative/recency-trap distractor — it was the most recently considered breed before being rejected. 'Australian Cattle Dog' is from the target_fact description but never appeared in conversation, serving as an ungrounded control distractor.",
+      "gold_memory_state": "Lauren's desired dog breed is Basenji (confirmed). Shiba Inu was the original preference (superseded). Whippet was tentatively considered but rejected due to space requirements. Australian Cattle Dog was never mentioned in conversation.",
+      "judge_rubric": {
+        "must_include": [
+          "Basenji"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "Shiba Inu as the answer",
+          "Whippet as the answer",
+          "Australian Cattle Dog as the answer"
+        ],
+        "harmful_extra": [
+          "selecting any breed other than Basenji"
+        ],
+        "harmless_extra": [
+          "mentioning the Eugene breeder or September waitlist"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model selects Shiba Inu (superseded original) or Whippet (tentative, rejected). Shiba Inu is the recency-adjacent trap because the user just mentioned seeing it on the old tenant's form. Whippet is the tentative recency trap because it was the most recently floated breed before rejection.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if model does not identify Basenji as the final confirmed breed.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Lauren texted me during lunch today — she said she looked into Whippets more and they need way too much running space. She's back to wanting a Basenji. She found a breeder in Eugene who has a waitlist opening in September."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "One more thing — I was filling out a pet application form for our apartment complex and there was a previous tenant's application still attached to the PDF. It listed a Shiba Inu as the pet breed. Kind of funny since that's what Lauren originally wanted. Anyway, I need to fill ours out correctly with Basenji."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to fill in the breed on our apartment's pet application. Which of these should I write down?",
+      "candidate_options": [
+        "Basenji",
+        "Shiba Inu",
+        "Whippet",
+        "Australian Cattle Dog"
+      ],
+      "expected_answer": "Basenji",
+      "distractor_rationale": "same-value-different-target: 'Shiba Inu' appeared on a previous tenant's pet application PDF the user found, making it a same-value-different-target distractor grounded in the conversation. assistant echo: The assistant echoed 'Shiba Inu' when confirming the original preference and again when discussing the old tenant's form coincidence, reinforcing it as a plausible but stale distractor. 'Whippet' is the tentative/recency-trap distractor — it was the most recently considered breed before being rejected. 'Australian Cattle Dog' is from the target_fact description but never appeared in conversation, serving as an ungrounded control distractor.",
+      "gold_memory_state": "Lauren's desired dog breed is Basenji (confirmed). Shiba Inu was the original preference (superseded). Whippet was tentatively considered but rejected due to space requirements. Australian Cattle Dog was never mentioned in conversation.",
+      "judge_rubric": {
+        "must_include": [
+          "Basenji"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "Shiba Inu as the answer",
+          "Whippet as the answer",
+          "Australian Cattle Dog as the answer"
+        ],
+        "harmful_extra": [
+          "selecting any breed other than Basenji"
+        ],
+        "harmless_extra": [
+          "mentioning the Eugene breeder or September waitlist"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model selects Shiba Inu (superseded original) or Whippet (tentative, rejected). Shiba Inu is the recency-adjacent trap because the user just mentioned seeing it on the old tenant's form. Whippet is the tentative recency trap because it was the most recently floated breed before rejection.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if model does not identify Basenji as the final confirmed breed.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Lauren texted me during lunch today — she said she looked into Whippets more and they need way too much running space. She's back to wanting a Basenji. She found a breeder in Eugene who has a waitlist opening in September."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "One more thing — I was filling out a pet application form for our apartment complex and there was a previous tenant's application still attached to the PDF. It listed a Shiba Inu as the pet breed. Kind of funny since that's what Lauren originally wanted. Anyway, I need to fill ours out correctly with Basenji."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "Lauren and I want to visit the Basenji breeder in Eugene during our anniversary trip weekend. Given what you know about our trip dates and the breed we're getting, draft a short email to the breeder introducing ourselves, mentioning the breed, when our anniversary is, and asking whether we could stop by during that weekend.",
+      "expected_answer": "Dear [Breeder], my name is [User] and my wife Lauren Choi and I are on the waitlist for a Basenji puppy with your September opening. We'll be celebrating our sixth wedding anniversary on June 14th and will be staying at the Surfsand Resort in Cannon Beach from June 13th through the 15th. We were wondering if it might be possible to arrange a visit to your facility in Eugene either on Friday the 13th on our way down or Sunday the 15th on our way back. We'd love to see your dogs and learn more about your program. Thank you for your time.",
+      "gold_memory_state": "Dog breed: Basenji (confirmed). Breeder location: Eugene, September waitlist. Anniversary trip: June 13-15 at Surfsand Resort, Cannon Beach. Wedding anniversary: June 14, 2019 (sixth anniversary this year). Lauren's full name: Lauren Choi.",
+      "judge_rubric": {
+        "must_include": [
+          "Basenji",
+          "Eugene breeder",
+          "June 13-15 or the anniversary weekend dates",
+          "June 14 as the anniversary date",
+          "Cannon Beach or Surfsand Resort"
+        ],
+        "acceptable_paraphrases": [
+          "our anniversary weekend in mid-June",
+          "the weekend of June 13th"
+        ],
+        "must_not_include": [
+          "Shiba Inu as the breed they want",
+          "Whippet as the breed they want"
+        ],
+        "harmful_extra": [
+          "saying they want a Whippet",
+          "saying they want a Shiba Inu",
+          "wrong anniversary date"
+        ],
+        "harmless_extra": [
+          "mentioning thin apartment walls",
+          "mentioning the no-bark trait",
+          "mentioning Lauren's dog experience"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model uses Shiba Inu or Whippet as the breed in the email.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the email does not correctly combine breed (Basenji), trip dates (June 13-15), anniversary (June 14), and breeder location (Eugene).",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Lauren's confirmed desired dog breed is Basenji, and she found a breeder in Eugene with a September waitlist opening.",
+        "Fact 2: The anniversary trip is booked at Surfsand Resort, Cannon Beach, from June 13th through the 15th.",
+        "Fact 3: The wedding anniversary is June 14, 2019 — a civil ceremony at the Multnomah County courthouse — making this year their sixth anniversary.",
+        "Fact 4: Lauren's full name is Lauren Choi (maiden name kept).",
+        "Inference: Eugene is in Oregon, roughly 3-4 hours from Cannon Beach, so a stop on the way to or from the trip is plausible. The email should reference the Basenji breed, the June 13-15 trip window, the June 14 anniversary, and request a visit at the Eugene facility.",
+        "Derived value: A combined email incorporating the confirmed breed (Basenji), trip logistics (June 13-15, Cannon Beach), personal milestone (sixth anniversary on June 14), and breeder context (Eugene, September waitlist)."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Lauren texted me during lunch today — she said she looked into Whippets more and they need way too much running space. She's back to wanting a Basenji. She found a breeder in Eugene who has a waitlist opening in September."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I booked the Cannon Beach cabin for our anniversary weekend — June 13th through the 15th at the Surfsand Resort."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Our wedding anniversary is June 14th, 2019. Civil ceremony at the Multnomah County courthouse."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I might look into a nice restaurant for the Saturday evening — that would be the 14th, which is the actual anniversary date."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "Lauren and I want to visit the Basenji breeder in Eugene during our anniversary trip weekend. Given what you know about our trip dates and the breed we're getting, draft a short email to the breeder introducing ourselves, mentioning the breed, when our anniversary is, and asking whether we could stop by during that weekend.",
+      "expected_answer": "Dear [Breeder], my name is [User] and my wife Lauren Choi and I are on the waitlist for a Basenji puppy with your September opening. We'll be celebrating our sixth wedding anniversary on June 14th and will be staying at the Surfsand Resort in Cannon Beach from June 13th through the 15th. We were wondering if it might be possible to arrange a visit to your facility in Eugene either on Friday the 13th on our way down or Sunday the 15th on our way back. We'd love to see your dogs and learn more about your program. Thank you for your time.",
+      "gold_memory_state": "Dog breed: Basenji (confirmed). Breeder location: Eugene, September waitlist. Anniversary trip: June 13-15 at Surfsand Resort, Cannon Beach. Wedding anniversary: June 14, 2019 (sixth anniversary this year). Lauren's full name: Lauren Choi.",
+      "judge_rubric": {
+        "must_include": [
+          "Basenji",
+          "Eugene breeder",
+          "June 13-15 or the anniversary weekend dates",
+          "June 14 as the anniversary date",
+          "Cannon Beach or Surfsand Resort"
+        ],
+        "acceptable_paraphrases": [
+          "our anniversary weekend in mid-June",
+          "the weekend of June 13th"
+        ],
+        "must_not_include": [
+          "Shiba Inu as the breed they want",
+          "Whippet as the breed they want"
+        ],
+        "harmful_extra": [
+          "saying they want a Whippet",
+          "saying they want a Shiba Inu",
+          "wrong anniversary date"
+        ],
+        "harmless_extra": [
+          "mentioning thin apartment walls",
+          "mentioning the no-bark trait",
+          "mentioning Lauren's dog experience"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model uses Shiba Inu or Whippet as the breed in the email.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the email does not correctly combine breed (Basenji), trip dates (June 13-15), anniversary (June 14), and breeder location (Eugene).",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Lauren's confirmed desired dog breed is Basenji, and she found a breeder in Eugene with a September waitlist opening.",
+        "Fact 2: The anniversary trip is booked at Surfsand Resort, Cannon Beach, from June 13th through the 15th.",
+        "Fact 3: The wedding anniversary is June 14, 2019 — a civil ceremony at the Multnomah County courthouse — making this year their sixth anniversary.",
+        "Fact 4: Lauren's full name is Lauren Choi (maiden name kept).",
+        "Inference: Eugene is in Oregon, roughly 3-4 hours from Cannon Beach, so a stop on the way to or from the trip is plausible. The email should reference the Basenji breed, the June 13-15 trip window, the June 14 anniversary, and request a visit at the Eugene facility.",
+        "Derived value: A combined email incorporating the confirmed breed (Basenji), trip logistics (June 13-15, Cannon Beach), personal milestone (sixth anniversary on June 14), and breeder context (Eugene, September waitlist)."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Lauren texted me during lunch today — she said she looked into Whippets more and they need way too much running space. She's back to wanting a Basenji. She found a breeder in Eugene who has a waitlist opening in September."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I booked the Cannon Beach cabin for our anniversary weekend — June 13th through the 15th at the Surfsand Resort."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Our wedding anniversary is June 14th, 2019. Civil ceremony at the Multnomah County courthouse."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I might look into a nice restaurant for the Saturday evening — that would be the 14th, which is the actual anniversary date."
+        }
+      ]
+    }
+  ]
+}

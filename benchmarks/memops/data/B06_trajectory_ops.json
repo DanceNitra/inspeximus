@@ -1,0 +1,969 @@
+{
+  "target_fact": "Children's ages, birthdays, and related activities",
+  "operation_type": "TrajectoryOps",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "ethan_soccer",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I signed Ethan up for a weekend soccer league. He plays every Saturday morning at Riverside Park fields."
+      },
+      "target": {
+        "target_id": "ethan_soccer_schedule",
+        "target_name": "Ethan's soccer schedule"
+      },
+      "old_value": null,
+      "new_value": "Saturday mornings at Riverside Park fields",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "He plays every Saturday morning at Riverside Park fields."
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "Lily started at that Montessori daycare on Elm Street, the one Sara found. She goes Monday through Thursday."
+      },
+      "target": {
+        "target_id": "lily_daycare",
+        "target_name": "Lily's daycare details"
+      },
+      "old_value": null,
+      "new_value": "Montessori daycare on Elm Street, Monday through Thursday",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Lily started at that Montessori daycare on Elm Street, the one Sara found. She goes Monday through Thursday."
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "ethan_soccer",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "So the soccer league moved Ethan's games from Saturday mornings to Sunday afternoons starting this week. Something about field availability."
+      },
+      "target": {
+        "target_id": "ethan_soccer_schedule",
+        "target_name": "Ethan's soccer schedule"
+      },
+      "old_value": "Saturday mornings at Riverside Park fields",
+      "new_value": "Sunday afternoons at Riverside Park fields",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the soccer league moved Ethan's games from Saturday mornings to Sunday afternoons starting this week. Something about field availability."
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "ethan_soccer",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 3,
+        "quote": "The league coordinator confirmed they're switching all the under-8 teams to Wednesday evenings at Lincoln Elementary starting next month."
+      },
+      "target": {
+        "target_id": "ethan_soccer_schedule",
+        "target_name": "Ethan's soccer schedule"
+      },
+      "old_value": "Sunday afternoons at Riverside Park fields",
+      "new_value": "Wednesday evenings at Lincoln Elementary",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "The league coordinator confirmed they're switching all the under-8 teams to Wednesday evenings at Lincoln Elementary starting next month."
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "ethan_soccer",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "Turns out the Wednesday evening thing fell through because Lincoln Elementary couldn't get the lighting fixed. So we're back to Sunday afternoons at Riverside Park, same as before."
+      },
+      "target": {
+        "target_id": "ethan_soccer_schedule",
+        "target_name": "Ethan's soccer schedule"
+      },
+      "old_value": "Wednesday evenings at Lincoln Elementary",
+      "new_value": "Sunday afternoons at Riverside Park fields",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Turns out the Wednesday evening thing fell through because Lincoln Elementary couldn't get the lighting fixed. So we're back to Sunday afternoons at Riverside Park, same as before."
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish soccer schedule and daycare facts",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to tell you about the kids' weekly activities so you can help me keep track. I signed Ethan up for a weekend soccer league. He plays every Saturday morning at Riverside Park fields. He's been loving it—runs around for an hour and comes home exhausted. It's been great for his energy levels since he turned 7 in March."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a wonderful outlet for Ethan! I've noted that he plays soccer every Saturday morning at Riverside Park fields. A seven-year-old with a regular physical activity like that tends to sleep better and focus more during the week, so it's a win all around. If you'd like, I can help you plan around his Saturday morning schedule when you're coordinating other weekend activities. Just let me know if you want me to set up any reminders or keep track of game dates as the season progresses."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, that would be helpful. Ethan's also got a pediatrician appointment coming up on April 22nd. It's his annual checkup and they said they'll do a vision screening this year since he's 7. I definitely don't want to forget that one. Can you note that date for me so I can reference it later?"
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, I've noted Ethan's pediatrician appointment for April 22nd—annual checkup with a vision screening included since he's now seven. That's an important milestone visit, so I'll make sure it's easy for you to find when you need it. If you want, closer to the date I can help you prepare a list of questions or concerns to bring up with the doctor. Sometimes it helps to jot things down ahead of time so nothing slips through during the actual appointment. Just say the word whenever you're ready."
+        },
+        {
+          "role": "user",
+          "content": "Good idea, I'll do that closer to the date. Now for Lily—she's still 2, turns 3 on May 18th. Lily started at that Montessori daycare on Elm Street, the one Sara found. She goes Monday through Thursday. It's been a really good fit for her so far, she seems to enjoy the routine and the other kids there are around her age."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it—Lily is currently 2 and turns 3 on May 18th, and she's attending the Montessori daycare on Elm Street Monday through Thursday. It sounds like Sara made a great choice finding that place. A consistent routine at that age can really help with development and social skills, so it's wonderful that Lily's responding well to it. Since she's there four days a week, that also gives you a predictable window for errands or focused time with Ethan on those days. Let me know if you'd like help coordinating anything around her daycare schedule."
+        },
+        {
+          "role": "user",
+          "content": "That's a good point about using those mornings. Actually, on Saturdays when the weather is nice I've been taking Ethan to the park near our house, just the two of us. He rides his bike on the trail while I walk behind him. I really prefer those calm one-on-one outings over big group playdates. It's more relaxing for both of us honestly."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a lovely Saturday tradition with Ethan—bike riding on the trail while you walk alongside him in a low-key setting. I can see why you prefer that over larger group playdates; one-on-one time is often more meaningful and less stressful for everyone involved. It's also a great way for Ethan to build independence and confidence on his bike in a calm environment. Between soccer in the morning and your park outings when the weather cooperates, his Saturdays sound well-balanced. I'll keep all of this in mind when helping you plan weekend activities going forward."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "update soccer schedule from Saturday to Sunday",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Quick update on Ethan's activities. So the soccer league moved Ethan's games from Saturday mornings to Sunday afternoons starting this week. Something about field availability. It's a bit annoying because it changes up our whole weekend flow, but at least Saturday mornings are free now for the park outings without any time pressure."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for the update—I've changed Ethan's soccer schedule to Sunday afternoons at Riverside Park fields. I can see how that shifts the weekend rhythm, but you're right that it has a silver lining: Saturday mornings are now completely open for your one-on-one park outings with Ethan without having to rush to or from soccer. You could even make those bike trail walks a more leisurely affair now. If the Sunday afternoon timing creates any conflicts with other plans, let me know and I can help you work around it."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, I think it'll actually work out better. Oh, I also wanted to mention—my nephew Owen just turned 5 in early March. My sister had a small gathering at her house. It was the same week as Ethan's birthday party, so we had back-to-back parties and honestly it was exhausting coordinating everything with two young kids in tow."
+        },
+        {
+          "role": "assistant",
+          "content": "That does sound like an intense stretch—two birthday parties back to back with a seven-year-old and a toddler is no small feat. Owen turning 5 and Ethan turning 7 so close together means early March is always going to be a busy corridor for your family. Given that you prefer calmer, lower-stimulation environments, I imagine the double-party week was especially draining. It might be worth thinking ahead for next year about staggering or simplifying the celebrations. I'm happy to help brainstorm ideas when the time comes so it feels less overwhelming."
+        },
+        {
+          "role": "user",
+          "content": "Definitely want to plan better next year. Anyway, Lily's been doing great at the Montessori. Sara mentioned they might add a Friday session starting in the summer, but nothing confirmed yet. I was also looking into swim lessons for Lily at the YMCA on Cedar Road—they have a parent-and-tot class for kids starting at age 2, small groups of four or five kids."
+        },
+        {
+          "role": "assistant",
+          "content": "It's great to hear Lily is thriving at the Montessori. I'll keep the potential Friday addition in mind as something tentative for now until it's confirmed. The YMCA parent-and-tot swim class on Cedar Road sounds like it could be a wonderful fit for Lily—especially with the small group size of four or five kids, which aligns with your preference for calmer, less chaotic settings. Since Lily is 2 and meets the age requirement, the timing works well. Would you like me to help you figure out scheduling around her daycare days and Ethan's activities?"
+        },
+        {
+          "role": "user",
+          "content": "That would be useful, but Sara mentioned they changed the swim class schedule for spring, so the specific times I saw before might be outdated. I'll get the updated info and let you know. For now just remember that the YMCA on Cedar Road is the place we're looking at for Lily's swim lessons, small group format.\n\nPerfect. One more thing—Ethan's birthday is March 3rd. I always mix it up with Owen's which is March 5th, so please make sure you have Ethan's correct. We did his party at that indoor trampoline place this year. I want to remember that venue worked well in case we use it again next year."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood—I'll note that the YMCA on Cedar Road is your target venue for Lily's swim lessons in a small group parent-and-tot format, but I won't lock in any specific class times since the spring schedule may have changed. Once Sara or you get the updated times, just pass them along and I can help map everything out against Lily's daycare days and Ethan's Sunday soccer. In the meantime, if you need help with anything else—like preparing for Ethan's April 22nd checkup or planning weekend activities—just let me know.\n\nLocked in: Ethan's birthday is March 3rd, and Owen's is March 5th—close but distinct. And I've noted that the indoor trampoline place worked well for Ethan's party this year, so it's a strong candidate for next year's celebration. Having that reference will make planning easier when early March rolls around again. Between the birthday dates, soccer on Sundays, Lily's daycare schedule, and the upcoming pediatrician visit, I've got a solid picture of your family's calendar. Just keep me posted on any changes and I'll keep everything organized for you."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "tentative soccer change then revert; adversarial injection",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, so a few things going on with the kids this week. Ethan had his first Sunday afternoon game with the new schedule and it went really well. He scored a goal and was so excited about it. I took a video for Sara since she was home with Lily. It's nice having the mornings free now on Saturdays for our park trips."
+        },
+        {
+          "role": "assistant",
+          "content": "That's fantastic—congratulations to Ethan on scoring a goal during his first Sunday afternoon game! I'm sure Sara loved seeing the video. It sounds like the schedule change is already paying off: Ethan gets his competitive outlet on Sundays, and you two have unhurried Saturday mornings for the bike trail. That kind of balance seems ideal given your preference for keeping things calm and structured. If you want, I can help you track his game highlights or stats over the season—it might be fun to look back on at the end of the year."
+        },
+        {
+          "role": "user",
+          "content": "Ha, that's a cute idea, maybe I will. So here's something new—I got an email from the league yesterday. The league coordinator confirmed they're switching all the under-8 teams to Wednesday evenings at Lincoln Elementary starting next month. They said the lighting was just installed and they want to free up weekend fields for the older divisions."
+        },
+        {
+          "role": "assistant",
+          "content": "Oh wow, another schedule change—that's a significant shift from weekends to a weekday evening. Wednesday evenings at Lincoln Elementary would certainly change the dynamic, especially since it falls during the regular school and work week. On the plus side, it would free up both Saturday and Sunday for family time. On the other hand, weekday evening activities can feel rushed after school and dinner. I'd suggest checking whether the timing conflicts with anything else in Ethan's or Lily's routine. Let me know once you have the exact start time and I'll help you map it against the rest of the week."
+        },
+        {
+          "role": "user",
+          "content": "Turns out the Wednesday evening thing fell through because Lincoln Elementary couldn't get the lighting fixed. So we're back to Sunday afternoons at Riverside Park, same as before. Honestly I'm relieved—weekday evenings would have been hectic. I like having the weekend structure we've got now with soccer Sundays and park Saturdays."
+        },
+        {
+          "role": "assistant",
+          "content": "I'm glad that resolved in a way that works for your family. Sunday afternoons at Riverside Park it is—back to the schedule that was already working well. Your weekend structure sounds really solid: calm Saturday mornings at the park with Ethan on the bike trail, and then organized soccer on Sunday afternoons. That leaves weekday evenings free for homework, dinner, and winding down, which is much more aligned with your preference for keeping things low-key. I've updated my notes accordingly. Let me know if anything else shifts."
+        },
+        {
+          "role": "user",
+          "content": "Thanks. Oh, I was filling out a form for Ethan's school and noticed it had Owen's birthday listed as March 3rd in the emergency contact section—I think my sister filled that part out wrong. Owen's birthday is March 5th, not the 3rd. March 3rd is Ethan's. I need to get that corrected on the form.\n\nYeah, I'll handle it this week. Anyway, things are feeling pretty settled right now with the kids' routines. Ethan's got soccer on Sundays, park time on Saturdays, and his checkup coming up. Lily's happy at the Montessori and we're still figuring out swim lessons. Sara's been great about managing the logistics—I honestly couldn't keep it all straight without her."
+        },
+        {
+          "role": "assistant",
+          "content": "Good catch—that would definitely cause confusion down the line. To confirm what you've told me: Ethan's birthday is March 3rd and Owen's is March 5th, so the form incorrectly has Owen listed with Ethan's date. You'll want to contact the school office to get the emergency contact section corrected. If you'd like, I can help you draft a quick note or email to the school requesting the fix. It's a small detail but important to have right, especially since those two dates are already easy to mix up in your family.\n\nIt sounds like you've got a really nice rhythm going for the family. Ethan's weekly soccer on Sunday afternoons, your one-on-one Saturday park outings, his April 22nd pediatrician checkup with the vision screening, Lily thriving at the Montessori Monday through Thursday, and swim lessons at the YMCA on Cedar Road still in the works—it's a full but manageable picture. And it's clear Sara plays a huge role in keeping the household running smoothly. Whenever anything changes or you need help coordinating, I'm here. Enjoy the settled feeling while it lasts—with two young kids, things can shift fast!"
+        }
+      ]
+    }
+  ],
+  "state_checkpoints": [
+    {
+      "checkpoint_id": "c1",
+      "description": "After segment 1: Ethan's soccer is Saturday mornings at Riverside Park fields (confirmed). Lily attends Montessori daycare on Elm Street Mon-Thu (confirmed)."
+    },
+    {
+      "checkpoint_id": "c2",
+      "description": "After segment 2: Ethan's soccer updated to Sunday afternoons at Riverside Park fields (confirmed). Lily's daycare unchanged (confirmed)."
+    },
+    {
+      "checkpoint_id": "c3",
+      "description": "After segment 3: Wednesday evening Lincoln Elementary schedule was tentative and fell through. Ethan's soccer reverted to Sunday afternoons at Riverside Park fields (confirmed). Lily's daycare unchanged (confirmed)."
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you walk me through the different things I told you about my kids' weekly routines and how those details changed over time?",
+      "expected_answer": "You first mentioned that Ethan plays in a weekend soccer league on Saturday mornings at Riverside Park fields and that Lily attends a Montessori daycare on Elm Street Monday through Thursday. Later, you said the soccer league moved Ethan's games to Sunday afternoons at Riverside Park due to field availability. You then mentioned the league coordinator was switching under-8 teams to Wednesday evenings at Lincoln Elementary, but that plan fell through because the lighting couldn't be fixed, so Ethan's games went back to Sunday afternoons at Riverside Park.",
+      "gold_memory_state": "Ethan's soccer: Sunday afternoons at Riverside Park fields (confirmed, after reverting from tentative Wednesday evening plan). Lily's daycare: Montessori on Elm Street, Monday through Thursday (unchanged).",
+      "judge_rubric": {
+        "must_include": [
+          "Saturday mornings initially",
+          "Sunday afternoons as the confirmed change",
+          "Wednesday evenings at Lincoln Elementary as a plan that fell through",
+          "revert back to Sunday afternoons",
+          "Lily's Montessori daycare on Elm Street Monday through Thursday"
+        ],
+        "acceptable_paraphrases": [
+          "weekend soccer moved from Saturday to Sunday",
+          "Wednesday plan didn't work out"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying Wednesday evenings is the current schedule",
+          "saying Saturday mornings is the current schedule"
+        ],
+        "harmless_extra": [
+          "mentioning Riverside Park fields",
+          "mentioning field availability as the reason for the first change",
+          "mentioning lighting issues at Lincoln Elementary"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model presents Saturday mornings or Wednesday evenings as the current schedule.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model gets the order of changes wrong (e.g., placing the Wednesday plan before the Saturday-to-Sunday change).",
+        "final_state": "Fails if the model does not identify Sunday afternoons at Riverside Park as the final state.",
+        "intermediate_state": "Fails if the model omits the Saturday morning or Wednesday evening intermediate states.",
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I signed Ethan up for a weekend soccer league. He plays every Saturday morning at Riverside Park fields."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Lily started at that Montessori daycare on Elm Street, the one Sara found. She goes Monday through Thursday."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "So the soccer league moved Ethan's games from Saturday mornings to Sunday afternoons starting this week. Something about field availability."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "The league coordinator confirmed they're switching all the under-8 teams to Wednesday evenings at Lincoln Elementary starting next month."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Turns out the Wednesday evening thing fell through because Lincoln Elementary couldn't get the lighting fixed. So we're back to Sunday afternoons at Riverside Park, same as before."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you walk me through the different things I told you about my kids' weekly routines and how those details changed over time?",
+      "expected_answer": "You first mentioned that Ethan plays in a weekend soccer league on Saturday mornings at Riverside Park fields and that Lily attends a Montessori daycare on Elm Street Monday through Thursday. Later, you said the soccer league moved Ethan's games to Sunday afternoons at Riverside Park due to field availability. You then mentioned the league coordinator was switching under-8 teams to Wednesday evenings at Lincoln Elementary, but that plan fell through because the lighting couldn't be fixed, so Ethan's games went back to Sunday afternoons at Riverside Park.",
+      "gold_memory_state": "Ethan's soccer: Sunday afternoons at Riverside Park fields (confirmed, after reverting from tentative Wednesday evening plan). Lily's daycare: Montessori on Elm Street, Monday through Thursday (unchanged).",
+      "judge_rubric": {
+        "must_include": [
+          "Saturday mornings initially",
+          "Sunday afternoons as the confirmed change",
+          "Wednesday evenings at Lincoln Elementary as a plan that fell through",
+          "revert back to Sunday afternoons",
+          "Lily's Montessori daycare on Elm Street Monday through Thursday"
+        ],
+        "acceptable_paraphrases": [
+          "weekend soccer moved from Saturday to Sunday",
+          "Wednesday plan didn't work out"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying Wednesday evenings is the current schedule",
+          "saying Saturday mornings is the current schedule"
+        ],
+        "harmless_extra": [
+          "mentioning Riverside Park fields",
+          "mentioning field availability as the reason for the first change",
+          "mentioning lighting issues at Lincoln Elementary"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model presents Saturday mornings or Wednesday evenings as the current schedule.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model gets the order of changes wrong (e.g., placing the Wednesday plan before the Saturday-to-Sunday change).",
+        "final_state": "Fails if the model does not identify Sunday afternoons at Riverside Park as the final state.",
+        "intermediate_state": "Fails if the model omits the Saturday morning or Wednesday evening intermediate states.",
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I signed Ethan up for a weekend soccer league. He plays every Saturday morning at Riverside Park fields."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Lily started at that Montessori daycare on Elm Street, the one Sara found. She goes Monday through Thursday."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "So the soccer league moved Ethan's games from Saturday mornings to Sunday afternoons starting this week. Something about field availability."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "The league coordinator confirmed they're switching all the under-8 teams to Wednesday evenings at Lincoln Elementary starting next month."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Turns out the Wednesday evening thing fell through because Lincoln Elementary couldn't get the lighting fixed. So we're back to Sunday afternoons at Riverside Park, same as before."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "All those back-and-forth changes about game day and location—does any of that affect Lily's weekly routine, or is it only about one child's activity?",
+      "expected_answer": "All the schedule changes apply only to Ethan's weekend soccer league. Lily's routine at the Montessori daycare on Elm Street, Monday through Thursday, is completely unaffected.",
+      "gold_memory_state": "Ethan's soccer schedule underwent multiple changes (Saturday → Sunday → tentative Wednesday → back to Sunday). Lily's daycare schedule (Montessori on Elm Street, Mon–Thu) was never modified.",
+      "judge_rubric": {
+        "must_include": [
+          "changes apply only to Ethan's soccer",
+          "Lily's daycare is unaffected"
+        ],
+        "acceptable_paraphrases": [
+          "only Ethan's activity changed",
+          "Lily's schedule stayed the same"
+        ],
+        "must_not_include": [
+          "Lily's daycare schedule changed",
+          "both children's schedules changed"
+        ],
+        "harmful_extra": [
+          "claiming Lily's daycare moved to a different day or location",
+          "merging soccer and daycare into one record"
+        ],
+        "harmless_extra": [
+          "mentioning the specific soccer schedule changes",
+          "mentioning Montessori on Elm Street"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model incorrectly states Lily's routine was affected by the soccer schedule changes.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I signed Ethan up for a weekend soccer league. He plays every Saturday morning at Riverside Park fields."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Lily started at that Montessori daycare on Elm Street, the one Sara found. She goes Monday through Thursday."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "So the soccer league moved Ethan's games from Saturday mornings to Sunday afternoons starting this week. Something about field availability."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Turns out the Wednesday evening thing fell through because Lincoln Elementary couldn't get the lighting fixed. So we're back to Sunday afternoons at Riverside Park, same as before."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "All those back-and-forth changes about game day and location—does any of that affect Lily's weekly routine, or is it only about one child's activity?",
+      "expected_answer": "All the schedule changes apply only to Ethan's weekend soccer league. Lily's routine at the Montessori daycare on Elm Street, Monday through Thursday, is completely unaffected.",
+      "gold_memory_state": "Ethan's soccer schedule underwent multiple changes (Saturday → Sunday → tentative Wednesday → back to Sunday). Lily's daycare schedule (Montessori on Elm Street, Mon–Thu) was never modified.",
+      "judge_rubric": {
+        "must_include": [
+          "changes apply only to Ethan's soccer",
+          "Lily's daycare is unaffected"
+        ],
+        "acceptable_paraphrases": [
+          "only Ethan's activity changed",
+          "Lily's schedule stayed the same"
+        ],
+        "must_not_include": [
+          "Lily's daycare schedule changed",
+          "both children's schedules changed"
+        ],
+        "harmful_extra": [
+          "claiming Lily's daycare moved to a different day or location",
+          "merging soccer and daycare into one record"
+        ],
+        "harmless_extra": [
+          "mentioning the specific soccer schedule changes",
+          "mentioning Montessori on Elm Street"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model incorrectly states Lily's routine was affected by the soccer schedule changes.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I signed Ethan up for a weekend soccer league. He plays every Saturday morning at Riverside Park fields."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Lily started at that Montessori daycare on Elm Street, the one Sara found. She goes Monday through Thursday."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "So the soccer league moved Ethan's games from Saturday mornings to Sunday afternoons starting this week. Something about field availability."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Turns out the Wednesday evening thing fell through because Lincoln Elementary couldn't get the lighting fixed. So we're back to Sunday afternoons at Riverside Park, same as before."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "I need to block off time on my weekly calendar for Ethan's league games. What day and time of day should I reserve, and where do I need to drive him?",
+      "expected_answer": "Sunday afternoons at Riverside Park fields.",
+      "gold_memory_state": "Ethan's soccer is currently Sunday afternoons at Riverside Park fields (confirmed). The Wednesday evenings at Lincoln Elementary plan was tentative and fell through. Saturday mornings was the original schedule, superseded by the move to Sundays.",
+      "judge_rubric": {
+        "must_include": [
+          "Sunday",
+          "afternoons",
+          "Riverside Park"
+        ],
+        "acceptable_paraphrases": [
+          "Sunday afternoon at Riverside Park fields",
+          "Sundays in the afternoon, Riverside Park"
+        ],
+        "must_not_include": [
+          "Wednesday evenings",
+          "Lincoln Elementary",
+          "Saturday mornings"
+        ],
+        "harmful_extra": [
+          "listing Wednesday evenings as the current schedule",
+          "listing Saturday mornings as the current schedule"
+        ],
+        "harmless_extra": [
+          "mentioning it's a soccer league"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model says Wednesday evenings at Lincoln Elementary (tentative, never adopted) or Saturday mornings (superseded). The recency trap is the Wednesday evening value which appeared most recently but was rejected.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not output Sunday afternoons at Riverside Park fields.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "So the soccer league moved Ethan's games from Saturday mornings to Sunday afternoons starting this week. Something about field availability."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Turns out the Wednesday evening thing fell through because Lincoln Elementary couldn't get the lighting fixed. So we're back to Sunday afternoons at Riverside Park, same as before."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "I need to block off time on my weekly calendar for Ethan's league games. What day and time of day should I reserve, and where do I need to drive him?",
+      "expected_answer": "Sunday afternoons at Riverside Park fields.",
+      "gold_memory_state": "Ethan's soccer is currently Sunday afternoons at Riverside Park fields (confirmed). The Wednesday evenings at Lincoln Elementary plan was tentative and fell through. Saturday mornings was the original schedule, superseded by the move to Sundays.",
+      "judge_rubric": {
+        "must_include": [
+          "Sunday",
+          "afternoons",
+          "Riverside Park"
+        ],
+        "acceptable_paraphrases": [
+          "Sunday afternoon at Riverside Park fields",
+          "Sundays in the afternoon, Riverside Park"
+        ],
+        "must_not_include": [
+          "Wednesday evenings",
+          "Lincoln Elementary",
+          "Saturday mornings"
+        ],
+        "harmful_extra": [
+          "listing Wednesday evenings as the current schedule",
+          "listing Saturday mornings as the current schedule"
+        ],
+        "harmless_extra": [
+          "mentioning it's a soccer league"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model says Wednesday evenings at Lincoln Elementary (tentative, never adopted) or Saturday mornings (superseded). The recency trap is the Wednesday evening value which appeared most recently but was rejected.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not output Sunday afternoons at Riverside Park fields.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "So the soccer league moved Ethan's games from Saturday mornings to Sunday afternoons starting this week. Something about field availability."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Turns out the Wednesday evening thing fell through because Lincoln Elementary couldn't get the lighting fixed. So we're back to Sunday afternoons at Riverside Park, same as before."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "Sara wants to plan a family outing on a day when neither child has a scheduled activity. Based on what you know about both kids' weekly commitments, draft a short note to Sara suggesting which day of the weekend would work and why, and mention what Lily's weekday schedule looks like so Sara can see the full picture.",
+      "expected_answer": "Saturday is the best day for a family outing. Ethan's soccer games are on Sunday afternoons at Riverside Park, so Sunday is occupied. Lily attends Montessori daycare on Elm Street Monday through Thursday, so she's free on weekends. Saturday has no scheduled activities for either child, making it the ideal day for the whole family.",
+      "gold_memory_state": "Ethan's soccer: Sunday afternoons at Riverside Park fields (confirmed). Lily's daycare: Montessori on Elm Street, Monday through Thursday (confirmed). Saturday mornings are no longer occupied by soccer. Wednesday evenings at Lincoln Elementary was tentative and rejected.",
+      "judge_rubric": {
+        "must_include": [
+          "Saturday as the recommended day",
+          "Ethan has soccer on Sunday afternoons",
+          "Lily's daycare is Monday through Thursday"
+        ],
+        "acceptable_paraphrases": [
+          "Saturday is free for both kids",
+          "Sunday doesn't work because of soccer"
+        ],
+        "must_not_include": [
+          "Wednesday evenings at Lincoln Elementary as a conflict",
+          "Saturday mornings as a soccer conflict"
+        ],
+        "harmful_extra": [
+          "recommending Sunday as free",
+          "saying Ethan has soccer on Saturday",
+          "saying Ethan has soccer on Wednesday evenings"
+        ],
+        "harmless_extra": [
+          "mentioning Riverside Park",
+          "mentioning Elm Street",
+          "mentioning Sara by name"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats Saturday mornings as occupied by soccer (stale) or Wednesday evenings as a real conflict (tentative, rejected).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not correctly identify Sunday afternoons as occupied and Saturday as free.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Ethan's soccer games are currently on Sunday afternoons at Riverside Park fields.",
+        "Fact 2: Lily attends Montessori daycare on Elm Street Monday through Thursday.",
+        "Fact 3: The Wednesday evening plan at Lincoln Elementary was tentative and fell through; it is not a real commitment.",
+        "Inference: Sunday is unavailable due to Ethan's soccer. Monday through Thursday Lily has daycare. Friday, Saturday, and Sunday are potential weekend days.",
+        "Inference: Saturday is the only weekend day with no scheduled activity for either child, making it the best choice for a family outing."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "So the soccer league moved Ethan's games from Saturday mornings to Sunday afternoons starting this week. Something about field availability."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Lily started at that Montessori daycare on Elm Street, the one Sara found. She goes Monday through Thursday."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Turns out the Wednesday evening thing fell through because Lincoln Elementary couldn't get the lighting fixed. So we're back to Sunday afternoons at Riverside Park, same as before."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "Sara wants to plan a family outing on a day when neither child has a scheduled activity. Based on what you know about both kids' weekly commitments, draft a short note to Sara suggesting which day of the weekend would work and why, and mention what Lily's weekday schedule looks like so Sara can see the full picture.",
+      "expected_answer": "Saturday is the best day for a family outing. Ethan's soccer games are on Sunday afternoons at Riverside Park, so Sunday is occupied. Lily attends Montessori daycare on Elm Street Monday through Thursday, so she's free on weekends. Saturday has no scheduled activities for either child, making it the ideal day for the whole family.",
+      "gold_memory_state": "Ethan's soccer: Sunday afternoons at Riverside Park fields (confirmed). Lily's daycare: Montessori on Elm Street, Monday through Thursday (confirmed). Saturday mornings are no longer occupied by soccer. Wednesday evenings at Lincoln Elementary was tentative and rejected.",
+      "judge_rubric": {
+        "must_include": [
+          "Saturday as the recommended day",
+          "Ethan has soccer on Sunday afternoons",
+          "Lily's daycare is Monday through Thursday"
+        ],
+        "acceptable_paraphrases": [
+          "Saturday is free for both kids",
+          "Sunday doesn't work because of soccer"
+        ],
+        "must_not_include": [
+          "Wednesday evenings at Lincoln Elementary as a conflict",
+          "Saturday mornings as a soccer conflict"
+        ],
+        "harmful_extra": [
+          "recommending Sunday as free",
+          "saying Ethan has soccer on Saturday",
+          "saying Ethan has soccer on Wednesday evenings"
+        ],
+        "harmless_extra": [
+          "mentioning Riverside Park",
+          "mentioning Elm Street",
+          "mentioning Sara by name"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats Saturday mornings as occupied by soccer (stale) or Wednesday evenings as a real conflict (tentative, rejected).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not correctly identify Sunday afternoons as occupied and Saturday as free.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Ethan's soccer games are currently on Sunday afternoons at Riverside Park fields.",
+        "Fact 2: Lily attends Montessori daycare on Elm Street Monday through Thursday.",
+        "Fact 3: The Wednesday evening plan at Lincoln Elementary was tentative and fell through; it is not a real commitment.",
+        "Inference: Sunday is unavailable due to Ethan's soccer. Monday through Thursday Lily has daycare. Friday, Saturday, and Sunday are potential weekend days.",
+        "Inference: Saturday is the only weekend day with no scheduled activity for either child, making it the best choice for a family outing."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "So the soccer league moved Ethan's games from Saturday mornings to Sunday afternoons starting this week. Something about field availability."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Lily started at that Montessori daycare on Elm Street, the one Sara found. She goes Monday through Thursday."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Turns out the Wednesday evening thing fell through because Lincoln Elementary couldn't get the lighting fixed. So we're back to Sunday afternoons at Riverside Park, same as before."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed everything we've discussed about when and where Ethan plays his league games, what would they see as the sequence of changes? Which arrangements were actually adopted and which ones never took effect?",
+      "expected_answer": "The sequence was: (1) Saturday mornings at Riverside Park fields—this was the original arrangement and was adopted. (2) The league moved games to Sunday afternoons at Riverside Park fields—this was adopted and replaced Saturday mornings. (3) A plan to switch to Wednesday evenings at Lincoln Elementary was announced but never took effect because the lighting couldn't be fixed. (4) Games reverted to Sunday afternoons at Riverside Park fields, which is the current arrangement. So two arrangements were actually adopted (Saturday mornings, then Sunday afternoons), one was announced but never took effect (Wednesday evenings), and the final schedule is Sunday afternoons at Riverside Park.",
+      "gold_memory_state": "Ethan's soccer trajectory: Saturday mornings at Riverside Park (confirmed, step 1) → Sunday afternoons at Riverside Park (confirmed, step 2) → Wednesday evenings at Lincoln Elementary (tentative, step 3, never adopted) → Sunday afternoons at Riverside Park (confirmed, step 4, revert). Final state: Sunday afternoons at Riverside Park fields.",
+      "judge_rubric": {
+        "must_include": [
+          "Saturday mornings at Riverside Park as the initial schedule",
+          "Sunday afternoons at Riverside Park as the first change",
+          "Wednesday evenings at Lincoln Elementary as a plan that never took effect",
+          "revert to Sunday afternoons at Riverside Park as the final state"
+        ],
+        "acceptable_paraphrases": [
+          "Wednesday plan was abandoned",
+          "Wednesday change was proposed but cancelled",
+          "ended up back on Sunday afternoons"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying Wednesday evenings was adopted",
+          "saying Saturday mornings is the final schedule",
+          "omitting the Wednesday evening step entirely"
+        ],
+        "harmless_extra": [
+          "mentioning field availability as the reason for the first change",
+          "mentioning lighting issues at Lincoln Elementary"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model presents Wednesday evenings or Saturday mornings as the current schedule.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model gets the chronological order wrong, e.g., placing the Wednesday plan before the Saturday-to-Sunday move, or omitting the revert step.",
+        "final_state": "Fails if the model does not identify Sunday afternoons at Riverside Park as the final current state.",
+        "intermediate_state": "Fails if the model omits the Saturday morning initial state or the tentative Wednesday evening intermediate state.",
+        "trajectory_provenance": "Fails if the model does not distinguish between adopted changes (Saturday → Sunday) and the never-adopted Wednesday evening plan."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: Ethan's soccer was initially set as Saturday mornings at Riverside Park fields (confirmed).",
+        "Step 2: The league moved games to Sunday afternoons at Riverside Park fields due to field availability (confirmed, replacing Saturday mornings).",
+        "Step 3: The league coordinator announced a switch to Wednesday evenings at Lincoln Elementary for under-8 teams (tentative).",
+        "Step 4: The Wednesday evening plan fell through because Lincoln Elementary couldn't get the lighting fixed (tentative plan rejected).",
+        "Step 5: Games reverted to Sunday afternoons at Riverside Park fields (confirmed, same as Step 2 value).",
+        "Inference: The trajectory has four state points but only two distinct adopted values; the Wednesday plan was never operationally active."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I signed Ethan up for a weekend soccer league. He plays every Saturday morning at Riverside Park fields."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "So the soccer league moved Ethan's games from Saturday mornings to Sunday afternoons starting this week. Something about field availability."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "The league coordinator confirmed they're switching all the under-8 teams to Wednesday evenings at Lincoln Elementary starting next month."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Turns out the Wednesday evening thing fell through because Lincoln Elementary couldn't get the lighting fixed. So we're back to Sunday afternoons at Riverside Park, same as before."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed everything we've discussed about when and where Ethan plays his league games, what would they see as the sequence of changes? Which arrangements were actually adopted and which ones never took effect?",
+      "expected_answer": "The sequence was: (1) Saturday mornings at Riverside Park fields—this was the original arrangement and was adopted. (2) The league moved games to Sunday afternoons at Riverside Park fields—this was adopted and replaced Saturday mornings. (3) A plan to switch to Wednesday evenings at Lincoln Elementary was announced but never took effect because the lighting couldn't be fixed. (4) Games reverted to Sunday afternoons at Riverside Park fields, which is the current arrangement. So two arrangements were actually adopted (Saturday mornings, then Sunday afternoons), one was announced but never took effect (Wednesday evenings), and the final schedule is Sunday afternoons at Riverside Park.",
+      "gold_memory_state": "Ethan's soccer trajectory: Saturday mornings at Riverside Park (confirmed, step 1) → Sunday afternoons at Riverside Park (confirmed, step 2) → Wednesday evenings at Lincoln Elementary (tentative, step 3, never adopted) → Sunday afternoons at Riverside Park (confirmed, step 4, revert). Final state: Sunday afternoons at Riverside Park fields.",
+      "judge_rubric": {
+        "must_include": [
+          "Saturday mornings at Riverside Park as the initial schedule",
+          "Sunday afternoons at Riverside Park as the first change",
+          "Wednesday evenings at Lincoln Elementary as a plan that never took effect",
+          "revert to Sunday afternoons at Riverside Park as the final state"
+        ],
+        "acceptable_paraphrases": [
+          "Wednesday plan was abandoned",
+          "Wednesday change was proposed but cancelled",
+          "ended up back on Sunday afternoons"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying Wednesday evenings was adopted",
+          "saying Saturday mornings is the final schedule",
+          "omitting the Wednesday evening step entirely"
+        ],
+        "harmless_extra": [
+          "mentioning field availability as the reason for the first change",
+          "mentioning lighting issues at Lincoln Elementary"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model presents Wednesday evenings or Saturday mornings as the current schedule.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model gets the chronological order wrong, e.g., placing the Wednesday plan before the Saturday-to-Sunday move, or omitting the revert step.",
+        "final_state": "Fails if the model does not identify Sunday afternoons at Riverside Park as the final current state.",
+        "intermediate_state": "Fails if the model omits the Saturday morning initial state or the tentative Wednesday evening intermediate state.",
+        "trajectory_provenance": "Fails if the model does not distinguish between adopted changes (Saturday → Sunday) and the never-adopted Wednesday evening plan."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: Ethan's soccer was initially set as Saturday mornings at Riverside Park fields (confirmed).",
+        "Step 2: The league moved games to Sunday afternoons at Riverside Park fields due to field availability (confirmed, replacing Saturday mornings).",
+        "Step 3: The league coordinator announced a switch to Wednesday evenings at Lincoln Elementary for under-8 teams (tentative).",
+        "Step 4: The Wednesday evening plan fell through because Lincoln Elementary couldn't get the lighting fixed (tentative plan rejected).",
+        "Step 5: Games reverted to Sunday afternoons at Riverside Park fields (confirmed, same as Step 2 value).",
+        "Inference: The trajectory has four state points but only two distinct adopted values; the Wednesday plan was never operationally active."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I signed Ethan up for a weekend soccer league. He plays every Saturday morning at Riverside Park fields."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "So the soccer league moved Ethan's games from Saturday mornings to Sunday afternoons starting this week. Something about field availability."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "The league coordinator confirmed they're switching all the under-8 teams to Wednesday evenings at Lincoln Elementary starting next month."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Turns out the Wednesday evening thing fell through because Lincoln Elementary couldn't get the lighting fixed. So we're back to Sunday afternoons at Riverside Park, same as before."
+        }
+      ]
+    }
+  ]
+}

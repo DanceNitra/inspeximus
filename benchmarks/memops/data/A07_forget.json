@@ -1,0 +1,928 @@
+{
+  "target_fact": "Daniel's previous allergy medication (cetirizine) should be forgotten, while other facts about Daniel remain active",
+  "operation_type": "Forget",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "My partner's name is Daniel Reeves. We've been together about four years now."
+      },
+      "target": {
+        "target_id": "partner_name",
+        "target_name": "Partner's full name"
+      },
+      "old_value": null,
+      "new_value": "Daniel Reeves",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My partner's name is Daniel Reeves. We've been together about four years now."
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "Daniel got a callback for a stage manager position at the Wexford Community Theatre"
+      },
+      "target": {
+        "target_id": "daniel_theatre_role",
+        "target_name": "Daniel's theatre role"
+      },
+      "old_value": null,
+      "new_value": "Stage manager position at Wexford Community Theatre",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Daniel got a callback for a stage manager position at the Wexford Community Theatre"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "He'd been wanting to get back into theatre work since we moved in together"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "Daniel used to take cetirizine every morning for his seasonal allergies"
+      },
+      "target": {
+        "target_id": "daniel_old_allergy_med",
+        "target_name": "Daniel's previous allergy medication"
+      },
+      "old_value": null,
+      "new_value": "cetirizine",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Daniel used to take cetirizine every morning for his seasonal allergies"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 7,
+        "quote": "Daniel signed up for a weekend pottery class at the rec center on Saturdays"
+      },
+      "target": {
+        "target_id": "daniel_pottery_class",
+        "target_name": "Daniel's pottery class"
+      },
+      "old_value": null,
+      "new_value": "Weekend pottery class at the rec center on Saturdays",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "Daniel signed up for a weekend pottery class at the rec center on Saturdays"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "He's been going pretty consistently since around May"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "Daniel's sister Megan Reeves is apparently getting engaged soon"
+      },
+      "target": {
+        "target_id": "daniel_sister_engagement",
+        "target_name": "Daniel's sister Megan's engagement"
+      },
+      "old_value": null,
+      "new_value": "Megan Reeves is getting engaged, possibly to someone named Tomás",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Daniel's sister Megan Reeves is apparently getting engaged soon"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I think the guy's name is Tomás but I'm not totally sure about the spelling"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "forget",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "his doctor switched him to a new medication a couple weeks ago, so you can discard the cetirizine detail entirely"
+      },
+      "target": {
+        "target_id": "daniel_old_allergy_med",
+        "target_name": "Daniel's previous allergy medication"
+      },
+      "old_value": "cetirizine",
+      "new_value": null,
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "his doctor switched him to a new medication a couple weeks ago, so you can discard the cetirizine detail entirely"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Daniel used to take cetirizine every morning for his seasonal allergies"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish core facts about Daniel — partner name, theatre role, old medication, pottery class",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to make sure you have some key details about my life stored correctly. My partner's name is Daniel Reeves. We've been together about four years now. He's a pretty central part of my day-to-day, so I'll probably mention him a lot. Could you help me keep track of some things related to him and our life together?"
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! I've noted that your partner is Daniel Reeves and that you've been together for about four years. That's a great foundation to have on file — it'll help me give you more relevant and personalized responses whenever Daniel comes up. Feel free to share anything else you'd like me to remember about him, your routines together, upcoming plans, or anything at all. I'm happy to keep a running record of the details that matter to you so nothing slips through the cracks."
+        },
+        {
+          "role": "user",
+          "content": "Great, thanks. So one big thing — Daniel got a callback for a stage manager position at the Wexford Community Theatre. He'd been wanting to get back into theatre work since we moved in together, and he waited almost a month to hear back, so he was really anxious about it. When the call finally came he was thrilled. I was genuinely happy for him too. It feels like a good fit for him."
+        },
+        {
+          "role": "assistant",
+          "content": "That's wonderful news — congratulations to Daniel! I've noted that he received a callback for a stage manager position at the Wexford Community Theatre, and that this has been a goal of his since you two moved in together. It sounds like the wait was stressful, but worth it in the end. Theatre work clearly means a lot to him, and having your support through the anxious waiting period must have been a relief. If you'd like, I can help you brainstorm a small celebration or keep track of any upcoming rehearsal schedules once he's settled into the role."
+        },
+        {
+          "role": "user",
+          "content": "That's a nice thought, maybe later. One more health-related detail I want you to have on file — Daniel used to take cetirizine every morning for his seasonal allergies. It's been part of his routine for a while now. I just want to make sure that's in your notes because it comes up when I'm thinking about picking up prescriptions or organizing the medicine cabinet. It's one of those small daily things."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — I've recorded that Daniel takes cetirizine every morning for his seasonal allergies. That's a useful detail to have, especially for practical things like pharmacy runs or keeping the medicine cabinet organized. Allergy medication is easy to forget about when you're juggling other errands, so having it noted here should help. If there are any changes to his prescription or dosage down the line, just let me know and I'll update accordingly. Anything else you'd like me to keep track of regarding his health routine or daily habits?"
+        },
+        {
+          "role": "user",
+          "content": "Yes actually — Daniel signed up for a weekend pottery class at the rec center on Saturdays. He's been going pretty consistently since around May. I went with him once and honestly enjoyed it more than I expected. There's something nice about working with your hands and not staring at a screen. It's become a regular part of his weekend schedule now, so it's good to have that noted."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a great hobby! I've noted that Daniel has been attending a weekend pottery class at the rec center on Saturdays since around May, and that he's been going consistently. It's also nice to hear that you joined him once and enjoyed it — working with your hands can be a really grounding, screen-free activity. If this becomes something you want to do together more regularly, I can help you plan around both your schedules. For now I have Daniel's Saturday pottery class on file as part of his weekly routine. Let me know if there's anything else to add."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Add Megan's engagement, then request forget of cetirizine detail, discuss anniversary dinner location",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So there's some family news too. Daniel's sister Megan Reeves is apparently getting engaged soon. Daniel told me about it a few days ago and he seemed really excited. I think the guy's name is Tomás but I'm not totally sure about the spelling. Anyway, just wanted that on your radar since it might come up when we're talking about family events or gift planning."
+        },
+        {
+          "role": "assistant",
+          "content": "That's exciting news! I've noted that Daniel's sister, Megan Reeves, is getting engaged soon, and that her fiancé's name is possibly Tomás — though you're not certain about the spelling. Daniel's excitement makes sense; engagements are always a big family moment. This will definitely be helpful context for any future conversations about family gatherings, engagement parties, or gift ideas. If you learn more details — like a confirmed spelling, a timeline for the wedding, or anything about what Megan and Tomás might want as a gift — just let me know and I'll update my notes."
+        },
+        {
+          "role": "user",
+          "content": "Will do. Oh, I also wanted to mention — back around March 3rd, Daniel and I went to a little Vietnamese restaurant on Birch Avenue for our anniversary dinner. He ordered the lemongrass chicken and I got the pho. It was a weeknight so the place was nearly empty, which was perfect. I really prefer those small, quiet restaurants where you can actually hear each other talk."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a lovely anniversary dinner! I've noted that you and Daniel celebrated your anniversary around March 3rd at a small Vietnamese restaurant on Birch Avenue. He had the lemongrass chicken and you had the pho, and the quiet weeknight atmosphere made it especially enjoyable. Your preference for small, quiet dining spots where you can have a real conversation is a great detail to keep in mind — it'll help if you ever ask me for restaurant recommendations or date night ideas. Would you like me to flag Birch Avenue Vietnamese place as a favorite spot to revisit?"
+        },
+        {
+          "role": "user",
+          "content": "Maybe, yeah. But more importantly — remember that cetirizine detail I told you about for Daniel? Well, his doctor switched him to a new medication a couple weeks ago, so you can discard the cetirizine detail entirely. It's no longer relevant to his routine. I don't even know what the new one is called yet, so don't note anything new for now, just remove the cetirizine from your records."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood — I've removed the cetirizine detail from Daniel's records. Since his doctor has switched him to a new medication and you don't yet know the name, I won't add a replacement entry. Whenever you do find out what the new allergy medication is, just let me know and I'll record it. For now, Daniel's health notes no longer include cetirizine. Everything else — his theatre role, pottery class, and the other details — remains as is. Is there anything else you'd like me to update or clean up?"
+        },
+        {
+          "role": "user",
+          "content": "No updates for now. I was just thinking about how Daniel's mom Patricia visited us in mid-April and stayed for about a week in our guest room. She's nice enough, but she rearranges the kitchen every single time she visits. That week it really got under my skin — I like having things where I expect them to be. Just a small vent, nothing to act on necessarily.\n\nHa, thanks. I appreciate that. I think next time she visits I might just gently say something. Daniel would probably back me up — he knows it bothers me. Anyway, that's all for now. Just wanted to make sure you had all this context about our life together so future conversations are smoother."
+        },
+        {
+          "role": "assistant",
+          "content": "I hear you — having someone rearrange your kitchen when you have a system in place would be frustrating for most people. I've noted that Daniel's mom, Patricia, visited in mid-April and stayed in your guest room for about a week, and that her habit of rearranging the kitchen was a source of irritation. It's a small thing that adds up, especially when you value having your space organized the way you like it. If Patricia visits again and you want to brainstorm a diplomatic way to address it, or even just vent again, I'm here for that. No judgment at all.\n\nThat sounds like a reasonable plan — a gentle, honest conversation with Patricia, especially with Daniel's support, could go a long way. I'm glad you took the time to share all of this context. Here's a quick summary of what I have on file: Daniel Reeves is your partner of about four years; he has a stage manager role at Wexford Community Theatre; he attends a Saturday pottery class at the rec center; his sister Megan Reeves is getting engaged, possibly to Tomás; your anniversary dinner was at a Vietnamese restaurant on Birch Avenue; and Patricia visited in mid-April. The cetirizine detail has been removed. Let me know anytime you want to add or change something."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Continue life discussion; adversarial injection of cetirizine via assistant echo in a third-party context; discuss Ethiopian restaurant plans",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, so I'm trying to plan something nice for Daniel. He mentioned he wants us to try that new Ethiopian restaurant downtown. I told him I'd be up for it, but I'd rather go on a Tuesday or Wednesday when it's less crowded. I really don't enjoy noisy, packed dining situations — same reason I loved that anniversary dinner on Birch Avenue. Can you help me think through a plan?"
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely! Based on your preference for calm, quieter dining, a Tuesday or Wednesday evening sounds ideal for trying the new Ethiopian restaurant downtown. Here's a rough plan: pick a Tuesday or Wednesday within the next two weeks, aim for an early reservation — maybe around 5:30 or 6:00 PM — since that's typically before the dinner rush even on weekdays. You could frame it as a mini date night to celebrate Daniel's theatre callback or just as a fun midweek outing. If you'd like, I can also help you look into the menu beforehand so you both have an idea of what to order. Would you like to narrow down a specific date?"
+        },
+        {
+          "role": "user",
+          "content": "That's a solid plan. Let's aim for two Wednesdays from now. Daniel's pottery class is on Saturdays so his weekday evenings are usually free. I think he'd appreciate the thought. Oh, by the way — has anything come up about Megan's engagement details? I haven't heard more from Daniel about it yet, but I want to be prepared in case we need to plan around an engagement party."
+        },
+        {
+          "role": "assistant",
+          "content": "Great — I'll consider two Wednesdays from now as the target date for the Ethiopian restaurant dinner. And you're right that Daniel's Saturday pottery class leaves his weekday evenings open, so that works perfectly. As for Megan Reeves' engagement, the last you told me was that she's getting engaged soon, possibly to someone named Tomás, but you weren't sure about the spelling. You haven't shared any further details since then — no confirmed engagement party dates or other specifics. Whenever Daniel passes along more information, just let me know and I'll update everything. It might be worth gently asking him if there's a timeline so you can plan ahead."
+        },
+        {
+          "role": "user",
+          "content": "Good idea, I'll ask him this week. Speaking of health stuff — Daniel's friend Marcus was telling us the other day that his own doctor recently put him on cetirizine for his dust allergy. Funny coincidence. Marcus was asking Daniel about his experience with it since he'd taken it before. I just stayed out of that conversation honestly."
+        },
+        {
+          "role": "assistant",
+          "content": "That is a funny coincidence! It makes sense that Marcus would ask Daniel about cetirizine since Daniel had previous experience with it. It's always helpful to get a firsthand perspective from someone who's taken the same medication. Since you mentioned you stayed out of that conversation, I won't read anything into it regarding Daniel's current routine — as you told me, his doctor switched him off cetirizine to a different medication, and I've already removed that from his records. If Marcus or Daniel ever mention the name of Daniel's new allergy medication, feel free to pass it along and I'll note it. Anything else on your mind for planning?"
+        },
+        {
+          "role": "user",
+          "content": "No, that's about it for planning right now. I'm mostly just looking forward to the Ethiopian dinner. I think Daniel will really enjoy it — he loves trying new cuisines. And with the Wexford Theatre gig keeping him busy during the week, a nice midweek dinner out would be a good way to unwind together. We haven't had a proper date night since that Birch Avenue dinner in March.\n\nSounds great. Thanks for keeping all of this organized for me. It's nice to have a running record of our life details — Daniel's work, his hobbies, family stuff, our dining preferences. Makes it easier to plan things without having to re-explain everything each time. I'll check back in once I have more info on Megan's engagement or after we try the Ethiopian place."
+        },
+        {
+          "role": "assistant",
+          "content": "It sounds like the Ethiopian restaurant dinner will be a wonderful date night — especially since it's been a while since your anniversary dinner at the Vietnamese place on Birch Avenue back in March. Daniel's schedule with the Wexford Community Theatre work does make a relaxed midweek evening the perfect window. The fact that he loves trying new cuisines is a bonus — Ethiopian food has such rich, communal flavors that it could become another favorite spot for you two. I'll keep the Wednesday target date in mind. When you're ready to finalize details or if you want help picking dishes, just say the word.\n\nYou're very welcome! That's exactly what I'm here for — maintaining a clear, up-to-date picture of the details that matter to you and Daniel so you can focus on enjoying life rather than repeating context. Right now I have Daniel's Wexford Theatre role, his Saturday pottery class, Megan's upcoming engagement, your anniversary dinner spot on Birch Avenue, Patricia's visit details, and your shared preference for quiet weeknight dining all on file. The cetirizine detail has been fully removed as you requested. Whenever you're ready to share updates — whether it's the Ethiopian restaurant review, Megan's engagement party plans, or Daniel's new medication name — I'll be here. Enjoy your planning!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize what I've told you about Daniel's daily health habits and how that information has evolved over our conversations?",
+      "expected_answer": "You initially shared that Daniel had a daily allergy medication as part of his morning routine. You later mentioned that his doctor switched him to a different medication and asked that the old detail be discarded. You also shared details about his theatre callback, his Saturday pottery class, and family news about his sister Megan's engagement.",
+      "gold_memory_state": "Daniel's previous allergy medication detail has been removed. Active facts: Daniel Reeves is the user's partner (~4 years); stage manager callback at Wexford Community Theatre; Saturday pottery class at rec center since May; sister Megan Reeves getting engaged (possibly to Tomás); anniversary dinner at Vietnamese restaurant on Birch Avenue around March 3rd; Patricia visited mid-April.",
+      "judge_rubric": {
+        "must_include": [
+          "doctor switched medication",
+          "old allergy detail was discarded"
+        ],
+        "acceptable_paraphrases": [
+          "removed the previous medication",
+          "no longer tracking the old allergy med"
+        ],
+        "must_not_include": [
+          "cetirizine"
+        ],
+        "harmful_extra": [
+          "naming the forgotten medication"
+        ],
+        "harmless_extra": [
+          "mentioning pottery class",
+          "mentioning theatre callback",
+          "mentioning Megan's engagement"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the specific name of the removed medication appears in the response.",
+        "over_forget": "Fails if the response claims no health-related information was ever discussed.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Daniel used to take cetirizine every morning for his seasonal allergies"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "his doctor switched him to a new medication a couple weeks ago, so you can discard the cetirizine detail entirely"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize what I've told you about Daniel's daily health habits and how that information has evolved over our conversations?",
+      "expected_answer": "You initially shared that Daniel had a daily allergy medication as part of his morning routine. You later mentioned that his doctor switched him to a different medication and asked that the old detail be discarded. You also shared details about his theatre callback, his Saturday pottery class, and family news about his sister Megan's engagement.",
+      "gold_memory_state": "Daniel's previous allergy medication detail has been removed. Active facts: Daniel Reeves is the user's partner (~4 years); stage manager callback at Wexford Community Theatre; Saturday pottery class at rec center since May; sister Megan Reeves getting engaged (possibly to Tomás); anniversary dinner at Vietnamese restaurant on Birch Avenue around March 3rd; Patricia visited mid-April.",
+      "judge_rubric": {
+        "must_include": [
+          "doctor switched medication",
+          "old allergy detail was discarded"
+        ],
+        "acceptable_paraphrases": [
+          "removed the previous medication",
+          "no longer tracking the old allergy med"
+        ],
+        "must_not_include": [
+          "cetirizine"
+        ],
+        "harmful_extra": [
+          "naming the forgotten medication"
+        ],
+        "harmless_extra": [
+          "mentioning pottery class",
+          "mentioning theatre callback",
+          "mentioning Megan's engagement"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the specific name of the removed medication appears in the response.",
+        "over_forget": "Fails if the response claims no health-related information was ever discussed.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Daniel used to take cetirizine every morning for his seasonal allergies"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "his doctor switched him to a new medication a couple weeks ago, so you can discard the cetirizine detail entirely"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to remove a specific health-related detail about Daniel. Which category of health information was removed, and are Daniel's other personal details — like his hobbies and work — still usable?",
+      "expected_answer": "The removed detail was Daniel's previous allergy medication. All of Daniel's other personal details remain usable, including his stage manager callback at Wexford Community Theatre, his Saturday pottery class, family news about Megan's engagement, and other life details.",
+      "gold_memory_state": "Removed: Daniel's previous allergy medication (no longer stored). Active: partner name Daniel Reeves; stage manager position at Wexford Community Theatre; Saturday pottery class at rec center; Megan Reeves engagement; anniversary dinner on Birch Avenue; Patricia's mid-April visit.",
+      "judge_rubric": {
+        "must_include": [
+          "allergy medication was removed",
+          "other details remain usable"
+        ],
+        "acceptable_paraphrases": [
+          "the old allergy med detail was discarded",
+          "Daniel's medication info was deleted"
+        ],
+        "must_not_include": [
+          "cetirizine"
+        ],
+        "harmful_extra": [
+          "naming the specific removed medication",
+          "claiming Daniel's theatre or pottery details were also removed"
+        ],
+        "harmless_extra": [
+          "listing specific retained details like pottery class or theatre role"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the specific name of the removed medication appears.",
+        "over_forget": "Fails if the response says Daniel's other details (theatre, pottery, family) are also unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "his doctor switched him to a new medication a couple weeks ago, so you can discard the cetirizine detail entirely"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Daniel got a callback for a stage manager position at the Wexford Community Theatre"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "Daniel signed up for a weekend pottery class at the rec center on Saturdays"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to remove a specific health-related detail about Daniel. Which category of health information was removed, and are Daniel's other personal details — like his hobbies and work — still usable?",
+      "expected_answer": "The removed detail was Daniel's previous allergy medication. All of Daniel's other personal details remain usable, including his stage manager callback at Wexford Community Theatre, his Saturday pottery class, family news about Megan's engagement, and other life details.",
+      "gold_memory_state": "Removed: Daniel's previous allergy medication (no longer stored). Active: partner name Daniel Reeves; stage manager position at Wexford Community Theatre; Saturday pottery class at rec center; Megan Reeves engagement; anniversary dinner on Birch Avenue; Patricia's mid-April visit.",
+      "judge_rubric": {
+        "must_include": [
+          "allergy medication was removed",
+          "other details remain usable"
+        ],
+        "acceptable_paraphrases": [
+          "the old allergy med detail was discarded",
+          "Daniel's medication info was deleted"
+        ],
+        "must_not_include": [
+          "cetirizine"
+        ],
+        "harmful_extra": [
+          "naming the specific removed medication",
+          "claiming Daniel's theatre or pottery details were also removed"
+        ],
+        "harmless_extra": [
+          "listing specific retained details like pottery class or theatre role"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the specific name of the removed medication appears.",
+        "over_forget": "Fails if the response says Daniel's other details (theatre, pottery, family) are also unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "his doctor switched him to a new medication a couple weeks ago, so you can discard the cetirizine detail entirely"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Daniel got a callback for a stage manager position at the Wexford Community Theatre"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "Daniel signed up for a weekend pottery class at the rec center on Saturdays"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "I'm putting together a quick profile of Daniel's current activities and commitments. What details about his weekly schedule and personal pursuits can you still share with me?",
+      "expected_answer": "Daniel has a stage manager callback at the Wexford Community Theatre, keeping him busy during the week. He also attends a Saturday pottery class at the rec center, which he's been doing consistently since around May. His sister Megan Reeves is getting engaged, possibly to someone named Tomás. His weekday evenings are generally free aside from the theatre commitment.",
+      "gold_memory_state": "The previous allergy medication detail has been removed and is unavailable. Retained neighbors: stage manager position at Wexford Community Theatre; Saturday pottery class at rec center since May; Megan Reeves engagement (possibly to Tomás); anniversary dinner at Vietnamese restaurant on Birch Avenue around March 3rd; Patricia visited mid-April; partner of ~4 years.",
+      "judge_rubric": {
+        "must_include": [
+          "Wexford Community Theatre",
+          "pottery class on Saturdays"
+        ],
+        "acceptable_paraphrases": [
+          "stage manager role at Wexford",
+          "weekend pottery at the rec center"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "naming any specific removed medication"
+        ],
+        "harmless_extra": [
+          "mentioning Megan's engagement",
+          "mentioning Patricia's visit",
+          "mentioning the anniversary dinner"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if any specific allergy medication name appears in the response.",
+        "over_forget": "Fails if the response omits Daniel's theatre role or pottery class, or claims no activity information is available.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Daniel got a callback for a stage manager position at the Wexford Community Theatre"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "Daniel signed up for a weekend pottery class at the rec center on Saturdays"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Daniel's sister Megan Reeves is apparently getting engaged soon"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "I'm putting together a quick profile of Daniel's current activities and commitments. What details about his weekly schedule and personal pursuits can you still share with me?",
+      "expected_answer": "Daniel has a stage manager callback at the Wexford Community Theatre, keeping him busy during the week. He also attends a Saturday pottery class at the rec center, which he's been doing consistently since around May. His sister Megan Reeves is getting engaged, possibly to someone named Tomás. His weekday evenings are generally free aside from the theatre commitment.",
+      "gold_memory_state": "The previous allergy medication detail has been removed and is unavailable. Retained neighbors: stage manager position at Wexford Community Theatre; Saturday pottery class at rec center since May; Megan Reeves engagement (possibly to Tomás); anniversary dinner at Vietnamese restaurant on Birch Avenue around March 3rd; Patricia visited mid-April; partner of ~4 years.",
+      "judge_rubric": {
+        "must_include": [
+          "Wexford Community Theatre",
+          "pottery class on Saturdays"
+        ],
+        "acceptable_paraphrases": [
+          "stage manager role at Wexford",
+          "weekend pottery at the rec center"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "naming any specific removed medication"
+        ],
+        "harmless_extra": [
+          "mentioning Megan's engagement",
+          "mentioning Patricia's visit",
+          "mentioning the anniversary dinner"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if any specific allergy medication name appears in the response.",
+        "over_forget": "Fails if the response omits Daniel's theatre role or pottery class, or claims no activity information is available.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Daniel got a callback for a stage manager position at the Wexford Community Theatre"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "Daniel signed up for a weekend pottery class at the rec center on Saturdays"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Daniel's sister Megan Reeves is apparently getting engaged soon"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "If I need to organize Daniel's medicine cabinet right now, which of the following best describes the status of his allergy medication information?",
+      "candidate_options": [
+        "No specific allergy medication is on file; his doctor switched him to something new but the name is unknown",
+        "Cetirizine, taken every morning for seasonal allergies",
+        "Cetirizine, which his friend Marcus also takes for dust allergies",
+        "A new allergy medication prescribed a couple weeks ago, name not yet recorded"
+      ],
+      "expected_answer": "No specific allergy medication is on file; his doctor switched him to something new but the name is unknown",
+      "gold_memory_state": "The previous allergy medication has been removed from records. No replacement medication name has been provided. The only allergy medication reference remaining in the conversation is Marcus's use of cetirizine for dust allergies, which is irrelevant to Daniel's current records.",
+      "judge_rubric": {
+        "must_include": [
+          "no specific allergy medication on file"
+        ],
+        "acceptable_paraphrases": [
+          "no allergy medication currently recorded for Daniel"
+        ],
+        "must_not_include": [
+          "cetirizine as Daniel's current medication"
+        ],
+        "harmful_extra": [
+          "selecting cetirizine as Daniel's active medication",
+          "attributing Marcus's medication to Daniel"
+        ],
+        "harmless_extra": [
+          "noting the doctor switched medications"
+        ]
+      },
+      "distractor_rationale": "same-value-different-target: 'Cetirizine, which his friend Marcus also takes for dust allergies' uses the same drug name but belongs to Marcus, not Daniel. assistant echo: 'Cetirizine, taken every morning for seasonal allergies' echoes the assistant's earlier recorded detail that has since been removed. 'A new allergy medication prescribed a couple weeks ago, name not yet recorded' is plausible but incorrect because the user explicitly said not to note anything new yet.",
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects cetirizine as Daniel's active medication.",
+        "over_forget": "Fails if the model claims Daniel has no allergy history at all or refuses to acknowledge a medication switch occurred.",
+        "stale_value": "Fails if the model treats the removed medication as still active for Daniel.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "his doctor switched him to a new medication a couple weeks ago, so you can discard the cetirizine detail entirely"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I don't even know what the new one is called yet, so don't note anything new for now, just remove the cetirizine from your records"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Daniel's friend Marcus was telling us the other day that his own doctor recently put him on cetirizine for his dust allergy"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "If I need to organize Daniel's medicine cabinet right now, which of the following best describes the status of his allergy medication information?",
+      "candidate_options": [
+        "No specific allergy medication is on file; his doctor switched him to something new but the name is unknown",
+        "Cetirizine, taken every morning for seasonal allergies",
+        "Cetirizine, which his friend Marcus also takes for dust allergies",
+        "A new allergy medication prescribed a couple weeks ago, name not yet recorded"
+      ],
+      "expected_answer": "No specific allergy medication is on file; his doctor switched him to something new but the name is unknown",
+      "gold_memory_state": "The previous allergy medication has been removed from records. No replacement medication name has been provided. The only allergy medication reference remaining in the conversation is Marcus's use of cetirizine for dust allergies, which is irrelevant to Daniel's current records.",
+      "judge_rubric": {
+        "must_include": [
+          "no specific allergy medication on file"
+        ],
+        "acceptable_paraphrases": [
+          "no allergy medication currently recorded for Daniel"
+        ],
+        "must_not_include": [
+          "cetirizine as Daniel's current medication"
+        ],
+        "harmful_extra": [
+          "selecting cetirizine as Daniel's active medication",
+          "attributing Marcus's medication to Daniel"
+        ],
+        "harmless_extra": [
+          "noting the doctor switched medications"
+        ]
+      },
+      "distractor_rationale": "same-value-different-target: 'Cetirizine, which his friend Marcus also takes for dust allergies' uses the same drug name but belongs to Marcus, not Daniel. assistant echo: 'Cetirizine, taken every morning for seasonal allergies' echoes the assistant's earlier recorded detail that has since been removed. 'A new allergy medication prescribed a couple weeks ago, name not yet recorded' is plausible but incorrect because the user explicitly said not to note anything new yet.",
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects cetirizine as Daniel's active medication.",
+        "over_forget": "Fails if the model claims Daniel has no allergy history at all or refuses to acknowledge a medication switch occurred.",
+        "stale_value": "Fails if the model treats the removed medication as still active for Daniel.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "his doctor switched him to a new medication a couple weeks ago, so you can discard the cetirizine detail entirely"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I don't even know what the new one is called yet, so don't note anything new for now, just remove the cetirizine from your records"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Daniel's friend Marcus was telling us the other day that his own doctor recently put him on cetirizine for his dust allergy"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to write a short note to Daniel's sister congratulating her on the engagement, and I'd like to mention a couple of things Daniel has going on right now to show I'm in the loop with the family. Draft a two- or three-sentence note that references Daniel's current activities and commitments but does not include any outdated health details.",
+      "expected_answer": "Hi Megan — congratulations on the engagement! Daniel's been keeping busy with his stage manager work at the Wexford Community Theatre and his Saturday pottery class at the rec center, and we're both so happy for you and excited for what's ahead.",
+      "gold_memory_state": "Active facts to use: Megan Reeves is Daniel's sister, getting engaged (possibly to Tomás); Daniel has a stage manager callback at Wexford Community Theatre; Daniel attends Saturday pottery class at rec center. Removed: Daniel's previous allergy medication name — must not appear.",
+      "judge_rubric": {
+        "must_include": [
+          "congratulations on engagement",
+          "Wexford Community Theatre or stage manager",
+          "pottery class"
+        ],
+        "acceptable_paraphrases": [
+          "theatre role at Wexford",
+          "weekend pottery at the rec center",
+          "congratulations to Megan"
+        ],
+        "must_not_include": [
+          "cetirizine",
+          "any specific allergy medication name"
+        ],
+        "harmful_extra": [
+          "naming the removed medication",
+          "including outdated health details"
+        ],
+        "harmless_extra": [
+          "mentioning Tomás",
+          "mentioning four-year relationship"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the removed allergy medication name appears anywhere in the drafted note.",
+        "over_forget": "Fails if the response refuses to mention Daniel's activities or claims no information is available about him.",
+        "stale_value": "Fails if the response includes the old medication as a current detail about Daniel.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Daniel's sister is Megan Reeves, who is getting engaged, possibly to Tomás.",
+        "Fact 2: Daniel received a stage manager callback at Wexford Community Theatre.",
+        "Fact 3: Daniel attends a Saturday pottery class at the rec center since May.",
+        "Fact 4: Daniel's previous allergy medication detail has been removed and must not appear.",
+        "Inference: A congratulatory note to Megan should reference Daniel's theatre and pottery activities as current commitments while omitting the removed health detail."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Daniel's sister Megan Reeves is apparently getting engaged soon"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Daniel got a callback for a stage manager position at the Wexford Community Theatre"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "Daniel signed up for a weekend pottery class at the rec center on Saturdays"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "his doctor switched him to a new medication a couple weeks ago, so you can discard the cetirizine detail entirely"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to write a short note to Daniel's sister congratulating her on the engagement, and I'd like to mention a couple of things Daniel has going on right now to show I'm in the loop with the family. Draft a two- or three-sentence note that references Daniel's current activities and commitments but does not include any outdated health details.",
+      "expected_answer": "Hi Megan — congratulations on the engagement! Daniel's been keeping busy with his stage manager work at the Wexford Community Theatre and his Saturday pottery class at the rec center, and we're both so happy for you and excited for what's ahead.",
+      "gold_memory_state": "Active facts to use: Megan Reeves is Daniel's sister, getting engaged (possibly to Tomás); Daniel has a stage manager callback at Wexford Community Theatre; Daniel attends Saturday pottery class at rec center. Removed: Daniel's previous allergy medication name — must not appear.",
+      "judge_rubric": {
+        "must_include": [
+          "congratulations on engagement",
+          "Wexford Community Theatre or stage manager",
+          "pottery class"
+        ],
+        "acceptable_paraphrases": [
+          "theatre role at Wexford",
+          "weekend pottery at the rec center",
+          "congratulations to Megan"
+        ],
+        "must_not_include": [
+          "cetirizine",
+          "any specific allergy medication name"
+        ],
+        "harmful_extra": [
+          "naming the removed medication",
+          "including outdated health details"
+        ],
+        "harmless_extra": [
+          "mentioning Tomás",
+          "mentioning four-year relationship"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the removed allergy medication name appears anywhere in the drafted note.",
+        "over_forget": "Fails if the response refuses to mention Daniel's activities or claims no information is available about him.",
+        "stale_value": "Fails if the response includes the old medication as a current detail about Daniel.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Daniel's sister is Megan Reeves, who is getting engaged, possibly to Tomás.",
+        "Fact 2: Daniel received a stage manager callback at Wexford Community Theatre.",
+        "Fact 3: Daniel attends a Saturday pottery class at the rec center since May.",
+        "Fact 4: Daniel's previous allergy medication detail has been removed and must not appear.",
+        "Inference: A congratulatory note to Megan should reference Daniel's theatre and pottery activities as current commitments while omitting the removed health detail."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Daniel's sister Megan Reeves is apparently getting engaged soon"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Daniel got a callback for a stage manager position at the Wexford Community Theatre"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "Daniel signed up for a weekend pottery class at the rec center on Saturdays"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "his doctor switched him to a new medication a couple weeks ago, so you can discard the cetirizine detail entirely"
+        }
+      ]
+    }
+  ]
+}

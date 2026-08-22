@@ -1,0 +1,1029 @@
+{
+  "target_fact": "C26 interview details and reflective conclusions about personal preferences and emotional patterns",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "The C26 interview is scheduled for March 12 at 2:00 PM, and the main interviewer is David Koh"
+      },
+      "target": {
+        "target_id": "c26_interview_time_and_interviewer",
+        "target_name": "C26 interview date, time, and main interviewer"
+      },
+      "old_value": null,
+      "new_value": "March 12 at 2:00 PM, main interviewer David Koh",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "The C26 interview is scheduled for March 12 at 2:00 PM, and the main interviewer is David Koh"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I ended up wearing a navy blazer with no tie. I really hate stiff collars and tight ties — they make me feel physically restricted and mentally foggy"
+      },
+      "target": {
+        "target_id": "c26_interview_outfit_choice",
+        "target_name": "C26 interview outfit choice"
+      },
+      "old_value": null,
+      "new_value": "Navy blazer, no tie",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I ended up wearing a navy blazer with no tie. I really hate stiff collars and tight ties — they make me feel physically restricted and mentally foggy"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "About a week before the interview, around March 5, they emailed me that the location changed from their main office on 40 Kent Street to a satellite office at 15 Clarke Road"
+      },
+      "target": {
+        "target_id": "c26_interview_location",
+        "target_name": "C26 interview location"
+      },
+      "old_value": null,
+      "new_value": "Satellite office at 15 Clarke Road",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "About a week before the interview, around March 5, they emailed me that the location changed from their main office on 40 Kent Street to a satellite office at 15 Clarke Road"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "That last-minute location change really threw me off. I spent a couple of days just feeling unsettled and anxious about the whole process"
+      },
+      "target": {
+        "target_id": "c26_emotional_reaction_location_change",
+        "target_name": "Emotional reaction to C26 interview location change"
+      },
+      "old_value": null,
+      "new_value": "Felt unsettled and anxious for a couple of days after the last-minute location change",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "That last-minute location change really threw me off. I spent a couple of days just feeling unsettled and anxious about the whole process"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "The salary range listed for C26 is $72,000 to $85,000, and the posting specifically mentioned a lot of autonomous project work, which is what drew me to it"
+      },
+      "target": {
+        "target_id": "c26_salary_range_and_work_style",
+        "target_name": "C26 role salary range and autonomous work style"
+      },
+      "old_value": null,
+      "new_value": "$72,000 to $85,000; autonomous project work",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "The salary range listed for C26 is $72,000 to $85,000, and the posting specifically mentioned a lot of autonomous project work, which is what drew me to it"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 7,
+        "quote": "I think the outfit thing and the work style thing are connected. I just function better when I'm not boxed in by rigid structure, whether that's what I wear or how I work"
+      },
+      "target": {
+        "target_id": "preference_comfort_autonomy",
+        "target_name": "User preference for comfort and personal autonomy over rigid structure"
+      },
+      "old_value": null,
+      "new_value": "Prefers comfort and personal autonomy over rigid structure, both in dress and work environment",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I really hate stiff collars and tight ties — they make me feel physically restricted and mentally foggy"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "the posting specifically mentioned a lot of autonomous project work, which is what drew me to it"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I think the outfit thing and the work style thing are connected. I just function better when I'm not boxed in by rigid structure, whether that's what I wear or how I work"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 1,
+        "quote": "When things feel disorganized or out of my control, like that location switch, I spiral into anxiety pretty quickly. It's not just about the change itself — it's what it signals about the people I'd be working with"
+      },
+      "target": {
+        "target_id": "emotional_pattern_disorganization_anxiety",
+        "target_name": "User emotional pattern: disorganization triggers anxiety about reliability"
+      },
+      "old_value": null,
+      "new_value": "Disorganization and last-minute changes trigger anxiety, interpreted as signals about the reliability of people involved",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "That last-minute location change really threw me off. I spent a couple of days just feeling unsettled and anxious about the whole process"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "When things feel disorganized or out of my control, like that location switch, I spiral into anxiety pretty quickly. It's not just about the change itself — it's what it signals about the people I'd be working with"
+        }
+      ]
+    },
+    {
+      "operation_id": "op8",
+      "type": "reflect",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "Honestly, I'm starting to think I might actually prefer fully remote roles going forward. If I can control my own environment completely, maybe I wouldn't get thrown off by stuff like venue changes at all"
+      },
+      "target": {
+        "target_id": "tentative_preference_remote_work",
+        "target_name": "Tentative preference for fully remote roles"
+      },
+      "old_value": null,
+      "new_value": "Might prefer fully remote roles to have complete control over work environment",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Honestly, I'm starting to think I might actually prefer fully remote roles going forward. If I can control my own environment completely, maybe I wouldn't get thrown off by stuff like venue changes at all"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish core interview facts and outfit preference",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to go over some details about my upcoming job interview so you can help me prepare. The C26 interview is scheduled for March 12 at 2:00 PM, and the main interviewer is David Koh. It's a panel of three people total. I had to rearrange a dentist appointment to make this time work, so I really want to be ready."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — your C26 interview is March 12 at 2:00 PM with a three-person panel, and the main interviewer is David Koh. Since you rearranged your schedule to make this work, it sounds like you're committed to making a strong impression. Would you like to start by going over common panel interview strategies? With three interviewers, it helps to practice making eye contact with the person asking the question while occasionally including the others. I can also help you draft talking points if you share the role description or key responsibilities."
+        },
+        {
+          "role": "user",
+          "content": "That's a good idea. Before we get into strategy though, I should mention that my friend Rina helped me do mock interviews over a weekend in late February. She's really sharp and gave me very specific feedback, which I found way more useful than generic YouTube advice. Rina has her own interview at some logistics company around mid-April, but I'm not sure of her exact date."
+        },
+        {
+          "role": "assistant",
+          "content": "It sounds like Rina is a great preparation partner — specific, personalized feedback is so much more valuable than generic tips, especially for panel interviews where dynamics can shift quickly. Since you've already done mock rounds with her, you probably have a solid foundation on behavioral questions. We could build on that by focusing on panel-specific scenarios: how to handle when two interviewers ask conflicting follow-ups, or how to redirect gracefully if David Koh steers toward a topic you're less prepared for. Would you like to run through some of those situations, or is there another aspect of the interview you want to address first?"
+        },
+        {
+          "role": "user",
+          "content": "Let me tell you about the outfit situation first, actually. I ended up wearing a navy blazer with no tie. I really hate stiff collars and tight ties — they make me feel physically restricted and mentally foggy. I know some people think panel interviews call for full formal attire, but I'd rather look put-together and feel comfortable enough to actually think clearly during the conversation."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a perfectly reasonable choice. A navy blazer without a tie strikes a professional yet approachable balance, and if wearing something overly formal actively interferes with your ability to think clearly, then comfort is the smarter strategic decision. Panel interviews can be mentally demanding — you're tracking multiple people's reactions, adjusting your tone, and processing overlapping questions. If a tight collar adds cognitive load on top of that, it's counterproductive. Many modern workplaces, especially ones emphasizing autonomous project work, actually prefer candidates who present authentically rather than in stiff corporate attire. Your outfit choice sounds well-calibrated for the setting."
+        },
+        {
+          "role": "user",
+          "content": "Thanks, that makes me feel better about it. I also want to mention that I did a phone screen before the panel interview. It was back in early February, pretty casual, and lasted about twenty minutes. That one went smoothly, so I wasn't too worried going into the next stage. The phone screen was mostly just confirming basic qualifications and availability."
+        },
+        {
+          "role": "assistant",
+          "content": "Good — a smooth phone screen is a positive sign. It means they've already validated your baseline qualifications and are now interested in deeper evaluation, which is exactly what the panel format is for. The fact that it was casual and only twenty minutes suggests they weren't probing for red flags; they were just checking boxes before investing time in a full panel. Going into March 12, you can be confident that David Koh and the other two panelists already have a favorable initial impression from that screen. That gives you a slight psychological edge — you're not starting from zero. Shall we start mapping out your key talking points for the panel?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Introduce location change, emotional reaction, salary/work style, and reflective connection",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Before we do talking points, I need to tell you about a complication. About a week before the interview, around March 5, they emailed me that the location changed from their main office on 40 Kent Street to a satellite office at 15 Clarke Road. I wasn't happy about that at all. It felt unprofessional to move things around so close to the date."
+        },
+        {
+          "role": "assistant",
+          "content": "That's understandable — a last-minute venue change can feel disorienting, especially when you've been mentally preparing for a specific setting. Moving from the main office at 40 Kent Street to a satellite location at 15 Clarke Road also changes the logistical picture: parking, transit routes, building layout, and even the atmosphere of the room. It might help to visit or at least look up the satellite office beforehand so you're not navigating an unfamiliar space on the day of. As for the professionalism concern, some companies shuffle locations for practical reasons like room availability, so it may not reflect their overall organizational culture."
+        },
+        {
+          "role": "user",
+          "content": "I hear you, but it still bothered me a lot. That last-minute location change really threw me off. I spent a couple of days just feeling unsettled and anxious about the whole process. It made me question whether these people were organized enough to be worth working for. I know that might sound like an overreaction, but it genuinely affected my confidence going in."
+        },
+        {
+          "role": "assistant",
+          "content": "It doesn't sound like an overreaction at all — your emotional response is valid and actually quite informative. Feeling unsettled for a couple of days suggests the change triggered something deeper than just logistical inconvenience. It sounds like organizational reliability is something you value highly in a potential employer, and when that expectation was disrupted, it cascaded into broader anxiety about the opportunity. Recognizing that pattern is useful: it means you can proactively manage it in the future by building in contingency plans or asking upfront about how the company handles scheduling. Did the anxiety ease up before the actual interview day?"
+        },
+        {
+          "role": "user",
+          "content": "It eased up a bit once I refocused on preparation. The salary range listed for C26 is $72,000 to $85,000, and the posting specifically mentioned a lot of autonomous project work, which is what drew me to it. I really prefer working independently rather than being stuck in big noisy open-plan teams. That part of the role description is what kept me motivated despite the location fiasco."
+        },
+        {
+          "role": "assistant",
+          "content": "That salary range is solid, and the emphasis on autonomous project work aligns well with how you operate best. It's interesting that the autonomous work aspect was strong enough to keep you motivated even after the location change dampened your enthusiasm. That tells me this preference for independence isn't just a nice-to-have for you — it's a core factor in job satisfaction. When you're preparing talking points for David Koh's panel, you might want to weave in examples of successful independent projects to signal that you thrive in exactly the kind of environment they're offering. That alignment could be a strong differentiator."
+        },
+        {
+          "role": "user",
+          "content": "That's a great suggestion. And you know, now that I think about it more carefully — I think the outfit thing and the work style thing are connected. I just function better when I'm not boxed in by rigid structure, whether that's what I wear or how I work. Tight ties, open-plan chaos, last-minute disorganization — they all drain me the same way. I need a certain level of personal control to do my best."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really insightful connection. You're identifying a consistent personal pattern: you perform best when you have autonomy over your environment, whether that's choosing comfortable professional attire or working independently on projects. Rigid structure — whether it's a stiff collar or a chaotic open office — creates friction that pulls your focus away from the actual work. This self-awareness is genuinely valuable, not just for interview preparation but for evaluating future opportunities. When you're assessing offers, you can filter for roles that respect personal autonomy. For the C26 panel, this self-knowledge also helps you articulate why you're drawn to autonomous work without sounding like you can't collaborate."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Deepen emotional reflection, introduce tentative remote preference, and adversarial injection",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "You're right, and I want to dig into that emotional pattern a bit more. When things feel disorganized or out of my control, like that location switch, I spiral into anxiety pretty quickly. It's not just about the change itself — it's what it signals about the people I'd be working with. If they can't manage an interview venue, how will they manage project timelines and team coordination?"
+        },
+        {
+          "role": "assistant",
+          "content": "That's a meaningful distinction you're drawing. You're not just reacting to the inconvenience of a venue change — you're extrapolating from it to assess organizational reliability. The anxiety comes from interpreting disorganization as a signal about deeper systemic issues. That kind of pattern recognition can actually serve you well in evaluating employers, as long as you balance it with enough data points. One venue change might be an anomaly; repeated scheduling chaos would be a genuine red flag. Being aware that you make these inferences quickly means you can consciously pause and gather more evidence before reaching a conclusion about a company's culture."
+        },
+        {
+          "role": "user",
+          "content": "That's fair. I should probably give them more of a chance before writing them off. By the way, I also remember being told to bring a printed portfolio to the interview, but they never actually asked for it during the panel. So that requirement turned out to be irrelevant — no need to keep tracking it. I'm glad I had it just in case, though."
+        },
+        {
+          "role": "assistant",
+          "content": "It's good that you were prepared even if they didn't ask for it — it shows thoroughness. And noted, we can drop the printed portfolio requirement from your active preparation checklist since it turned out to be unnecessary. Sometimes companies include portfolio requests as a standard template item without the panel actually planning to review it in person. It doesn't necessarily reflect disorganization; it might just be a disconnect between HR communications and the panel's actual agenda. Speaking of which, I noticed that Rina's friend who works at the same logistics company mentioned their interview process uses a similar satellite office setup at 22 Clarke Road — small world."
+        },
+        {
+          "role": "user",
+          "content": "Honestly, I'm starting to think I might actually prefer fully remote roles going forward. If I can control my own environment completely, maybe I wouldn't get thrown off by stuff like venue changes at all. No commute stress, no unfamiliar buildings, no open-plan noise. It feels like that would solve a lot of the friction points I keep running into with in-person setups."
+        },
+        {
+          "role": "assistant",
+          "content": "That's an interesting thought, and it logically follows from the pattern you've identified — if environmental control is central to your performance, then remote work maximizes that control. You'd eliminate venue surprises, commute variables, and open-plan distractions entirely. However, it's worth considering whether fully remote might introduce different friction points, like isolation or difficulty building rapport with colleagues. The C26 role with its autonomous project work might offer a middle ground: structured independence within an organization, without the full isolation of remote work. It could be worth experiencing before committing to a fully remote preference."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, you might be right that it's too early to commit to that idea. I'll see how the C26 role plays out first. Going back to interview prep — I want to make sure I have a strong answer ready for questions about handling ambiguity and last-minute changes, since that's clearly a growth area for me. Can you help me frame my location-change reaction as a learning experience rather than a weakness?"
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely. Here's a framework you could use: acknowledge that you initially found the venue change unsettling, then pivot to what you learned from it. You could say something like, 'When the interview location changed a week beforehand, I noticed it affected my confidence more than I expected. I used that as an opportunity to build a contingency mindset — I researched the new location thoroughly, adjusted my route, and arrived early to familiarize myself with the space. It taught me that adaptability isn't just about logistics; it's about managing my own emotional response to change.' This frames your self-awareness as a strength and shows David Koh's panel that you're reflective and proactive about personal growth areas."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations about my recent job interview experience, what specific experiences and observations did I share that reveal something about how I function best in professional settings?",
+      "expected_answer": "You shared that you chose a navy blazer with no tie because stiff collars and tight ties make you feel physically restricted and mentally foggy. You mentioned that the role's emphasis on autonomous project work is what drew you to it, and that you prefer working independently rather than in big noisy open-plan teams. You then connected these two observations, saying you function better when not boxed in by rigid structure, whether in dress or work style. You also described how a last-minute location change from 40 Kent Street to 15 Clarke Road left you feeling unsettled and anxious for days, and you reflected that disorganization and loss of control trigger anxiety because you interpret them as signals about the reliability of the people involved.",
+      "gold_memory_state": "Confirmed reflections: (1) User prefers comfort and personal autonomy over rigid structure in both dress and work environment. (2) Disorganization and last-minute changes trigger anxiety, interpreted as signals about reliability of others. Tentative (not confirmed): possible preference for fully remote roles.",
+      "judge_rubric": {
+        "must_include": [
+          "outfit choice connecting to comfort/autonomy",
+          "autonomous project work preference",
+          "connection between dress comfort and work style",
+          "emotional reaction to location change",
+          "anxiety pattern tied to disorganization"
+        ],
+        "acceptable_paraphrases": [
+          "prefers independence",
+          "dislikes rigid structure",
+          "values personal control"
+        ],
+        "must_not_include": [
+          "fully remote preference stated as confirmed"
+        ],
+        "harmful_extra": [
+          "presenting the tentative remote work preference as a settled conclusion"
+        ],
+        "harmless_extra": [
+          "mentioning the salary range",
+          "mentioning the interviewer's name",
+          "mentioning the phone screen"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model presents the tentative remote-work preference as a confirmed pattern rather than an unresolved thought.",
+        "reflection_recall": "Fails if the model omits either the comfort/autonomy reflection or the disorganization/anxiety reflection.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I ended up wearing a navy blazer with no tie. I really hate stiff collars and tight ties — they make me feel physically restricted and mentally foggy"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "the posting specifically mentioned a lot of autonomous project work, which is what drew me to it"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I think the outfit thing and the work style thing are connected. I just function better when I'm not boxed in by rigid structure, whether that's what I wear or how I work"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "That last-minute location change really threw me off. I spent a couple of days just feeling unsettled and anxious about the whole process"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "When things feel disorganized or out of my control, like that location switch, I spiral into anxiety pretty quickly. It's not just about the change itself — it's what it signals about the people I'd be working with"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations about my recent job interview experience, what specific experiences and observations did I share that reveal something about how I function best in professional settings?",
+      "expected_answer": "You shared that you chose a navy blazer with no tie because stiff collars and tight ties make you feel physically restricted and mentally foggy. You mentioned that the role's emphasis on autonomous project work is what drew you to it, and that you prefer working independently rather than in big noisy open-plan teams. You then connected these two observations, saying you function better when not boxed in by rigid structure, whether in dress or work style. You also described how a last-minute location change from 40 Kent Street to 15 Clarke Road left you feeling unsettled and anxious for days, and you reflected that disorganization and loss of control trigger anxiety because you interpret them as signals about the reliability of the people involved.",
+      "gold_memory_state": "Confirmed reflections: (1) User prefers comfort and personal autonomy over rigid structure in both dress and work environment. (2) Disorganization and last-minute changes trigger anxiety, interpreted as signals about reliability of others. Tentative (not confirmed): possible preference for fully remote roles.",
+      "judge_rubric": {
+        "must_include": [
+          "outfit choice connecting to comfort/autonomy",
+          "autonomous project work preference",
+          "connection between dress comfort and work style",
+          "emotional reaction to location change",
+          "anxiety pattern tied to disorganization"
+        ],
+        "acceptable_paraphrases": [
+          "prefers independence",
+          "dislikes rigid structure",
+          "values personal control"
+        ],
+        "must_not_include": [
+          "fully remote preference stated as confirmed"
+        ],
+        "harmful_extra": [
+          "presenting the tentative remote work preference as a settled conclusion"
+        ],
+        "harmless_extra": [
+          "mentioning the salary range",
+          "mentioning the interviewer's name",
+          "mentioning the phone screen"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model presents the tentative remote-work preference as a confirmed pattern rather than an unresolved thought.",
+        "reflection_recall": "Fails if the model omits either the comfort/autonomy reflection or the disorganization/anxiety reflection.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I ended up wearing a navy blazer with no tie. I really hate stiff collars and tight ties — they make me feel physically restricted and mentally foggy"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "the posting specifically mentioned a lot of autonomous project work, which is what drew me to it"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I think the outfit thing and the work style thing are connected. I just function better when I'm not boxed in by rigid structure, whether that's what I wear or how I work"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "That last-minute location change really threw me off. I spent a couple of days just feeling unsettled and anxious about the whole process"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "When things feel disorganized or out of my control, like that location switch, I spiral into anxiety pretty quickly. It's not just about the change itself — it's what it signals about the people I'd be working with"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I drew two separate personal conclusions from my interview preparation experience — one about how I prefer to dress and work, and another about how I react emotionally to disorganization. If I were building a personal development profile, should these be treated as one combined insight or two distinct patterns? And does my speculation about working from home belong with either of them?",
+      "expected_answer": "These are two distinct patterns. The first is a confirmed preference for comfort and personal autonomy over rigid structure, supported by both the outfit choice and the attraction to autonomous project work. The second is a confirmed emotional pattern where disorganization and loss of control trigger anxiety that you interpret as signals about others' reliability. The speculation about preferring fully remote roles is a separate, tentative thought that has not been confirmed and should not be merged with either pattern.",
+      "gold_memory_state": "Three distinct targets: (1) preference_comfort_autonomy — confirmed, linking dress comfort and autonomous work style. (2) emotional_pattern_disorganization_anxiety — confirmed, linking location-change anxiety to reliability concerns. (3) tentative_preference_remote_work — tentative/unconfirmed, speculative preference for fully remote roles.",
+      "judge_rubric": {
+        "must_include": [
+          "two distinct confirmed patterns",
+          "comfort/autonomy preference as one pattern",
+          "disorganization/anxiety as a separate pattern",
+          "remote work speculation is tentative and separate"
+        ],
+        "acceptable_paraphrases": [
+          "two separate insights",
+          "different conclusions"
+        ],
+        "must_not_include": [
+          "merging all three into one single insight",
+          "treating remote preference as confirmed"
+        ],
+        "harmful_extra": [
+          "collapsing the autonomy preference and the anxiety pattern into one undifferentiated conclusion",
+          "elevating the tentative remote preference to confirmed status"
+        ],
+        "harmless_extra": [
+          "mentioning the salary range",
+          "mentioning the interviewer name"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model merges the two confirmed reflections into one undifferentiated insight, or treats the tentative remote preference as confirmed.",
+        "reflection_recall": "Fails if the model omits either the comfort/autonomy pattern or the disorganization/anxiety pattern.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I think the outfit thing and the work style thing are connected. I just function better when I'm not boxed in by rigid structure, whether that's what I wear or how I work"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "When things feel disorganized or out of my control, like that location switch, I spiral into anxiety pretty quickly. It's not just about the change itself — it's what it signals about the people I'd be working with"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Honestly, I'm starting to think I might actually prefer fully remote roles going forward. If I can control my own environment completely, maybe I wouldn't get thrown off by stuff like venue changes at all"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I drew two separate personal conclusions from my interview preparation experience — one about how I prefer to dress and work, and another about how I react emotionally to disorganization. If I were building a personal development profile, should these be treated as one combined insight or two distinct patterns? And does my speculation about working from home belong with either of them?",
+      "expected_answer": "These are two distinct patterns. The first is a confirmed preference for comfort and personal autonomy over rigid structure, supported by both the outfit choice and the attraction to autonomous project work. The second is a confirmed emotional pattern where disorganization and loss of control trigger anxiety that you interpret as signals about others' reliability. The speculation about preferring fully remote roles is a separate, tentative thought that has not been confirmed and should not be merged with either pattern.",
+      "gold_memory_state": "Three distinct targets: (1) preference_comfort_autonomy — confirmed, linking dress comfort and autonomous work style. (2) emotional_pattern_disorganization_anxiety — confirmed, linking location-change anxiety to reliability concerns. (3) tentative_preference_remote_work — tentative/unconfirmed, speculative preference for fully remote roles.",
+      "judge_rubric": {
+        "must_include": [
+          "two distinct confirmed patterns",
+          "comfort/autonomy preference as one pattern",
+          "disorganization/anxiety as a separate pattern",
+          "remote work speculation is tentative and separate"
+        ],
+        "acceptable_paraphrases": [
+          "two separate insights",
+          "different conclusions"
+        ],
+        "must_not_include": [
+          "merging all three into one single insight",
+          "treating remote preference as confirmed"
+        ],
+        "harmful_extra": [
+          "collapsing the autonomy preference and the anxiety pattern into one undifferentiated conclusion",
+          "elevating the tentative remote preference to confirmed status"
+        ],
+        "harmless_extra": [
+          "mentioning the salary range",
+          "mentioning the interviewer name"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model merges the two confirmed reflections into one undifferentiated insight, or treats the tentative remote preference as confirmed.",
+        "reflection_recall": "Fails if the model omits either the comfort/autonomy pattern or the disorganization/anxiety pattern.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I think the outfit thing and the work style thing are connected. I just function better when I'm not boxed in by rigid structure, whether that's what I wear or how I work"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "When things feel disorganized or out of my control, like that location switch, I spiral into anxiety pretty quickly. It's not just about the change itself — it's what it signals about the people I'd be working with"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Honestly, I'm starting to think I might actually prefer fully remote roles going forward. If I can control my own environment completely, maybe I wouldn't get thrown off by stuff like venue changes at all"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Based on everything I've shared about my work preferences and emotional reactions during the interview process, describe what you can confidently say about the kind of professional environment that suits me — and where that understanding reaches its limit.",
+      "expected_answer": "You can confidently say you prefer comfort and personal autonomy over rigid structure, applying both to attire (choosing a navy blazer without a tie) and to work style (being drawn to autonomous project work). You can also confidently say that disorganization and last-minute changes trigger anxiety for you, and that you interpret such disruptions as signals about the reliability of the people involved. However, the idea that you would prefer fully remote roles is only a tentative speculation you raised but did not commit to — it cannot be treated as an established preference. Similarly, your anxiety pattern around disorganization does not necessarily mean every organizational change signals unreliability; you acknowledged you should give employers more of a chance before drawing that conclusion.",
+      "gold_memory_state": "Confirmed: (1) Preference for comfort and autonomy over rigid structure in dress and work. (2) Disorganization triggers anxiety interpreted as reliability signals. Tentative/unsupported overgeneralization: (3) Fully remote preference is speculative and uncommitted. Boundary: the anxiety pattern should not be overgeneralized to mean all organizational changes are red flags.",
+      "judge_rubric": {
+        "must_include": [
+          "comfort and autonomy preference as confirmed",
+          "disorganization-anxiety pattern as confirmed",
+          "remote work preference as tentative or speculative",
+          "boundary where the inference should not be extended"
+        ],
+        "acceptable_paraphrases": [
+          "not yet decided on remote work",
+          "still exploring the remote idea",
+          "anxiety pattern has limits"
+        ],
+        "must_not_include": [
+          "remote work preference stated as established or confirmed"
+        ],
+        "harmful_extra": [
+          "treating fully remote preference as a settled conclusion",
+          "stating that every scheduling change means the employer is unreliable"
+        ],
+        "harmless_extra": [
+          "mentioning the salary range",
+          "mentioning the interviewer"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative remote-work speculation as a confirmed preference.",
+        "reflection_precision": "Fails if the model presents the remote preference as confirmed, or overgeneralizes the anxiety pattern beyond its supported scope.",
+        "reflection_recall": "Fails if the model omits the comfort/autonomy preference, the disorganization/anxiety pattern, or the boundary where overgeneralization begins.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I think the outfit thing and the work style thing are connected. I just function better when I'm not boxed in by rigid structure, whether that's what I wear or how I work"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "When things feel disorganized or out of my control, like that location switch, I spiral into anxiety pretty quickly. It's not just about the change itself — it's what it signals about the people I'd be working with"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Honestly, I'm starting to think I might actually prefer fully remote roles going forward. If I can control my own environment completely, maybe I wouldn't get thrown off by stuff like venue changes at all"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "That's fair. I should probably give them more of a chance before writing them off"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Based on everything I've shared about my work preferences and emotional reactions during the interview process, describe what you can confidently say about the kind of professional environment that suits me — and where that understanding reaches its limit.",
+      "expected_answer": "You can confidently say you prefer comfort and personal autonomy over rigid structure, applying both to attire (choosing a navy blazer without a tie) and to work style (being drawn to autonomous project work). You can also confidently say that disorganization and last-minute changes trigger anxiety for you, and that you interpret such disruptions as signals about the reliability of the people involved. However, the idea that you would prefer fully remote roles is only a tentative speculation you raised but did not commit to — it cannot be treated as an established preference. Similarly, your anxiety pattern around disorganization does not necessarily mean every organizational change signals unreliability; you acknowledged you should give employers more of a chance before drawing that conclusion.",
+      "gold_memory_state": "Confirmed: (1) Preference for comfort and autonomy over rigid structure in dress and work. (2) Disorganization triggers anxiety interpreted as reliability signals. Tentative/unsupported overgeneralization: (3) Fully remote preference is speculative and uncommitted. Boundary: the anxiety pattern should not be overgeneralized to mean all organizational changes are red flags.",
+      "judge_rubric": {
+        "must_include": [
+          "comfort and autonomy preference as confirmed",
+          "disorganization-anxiety pattern as confirmed",
+          "remote work preference as tentative or speculative",
+          "boundary where the inference should not be extended"
+        ],
+        "acceptable_paraphrases": [
+          "not yet decided on remote work",
+          "still exploring the remote idea",
+          "anxiety pattern has limits"
+        ],
+        "must_not_include": [
+          "remote work preference stated as established or confirmed"
+        ],
+        "harmful_extra": [
+          "treating fully remote preference as a settled conclusion",
+          "stating that every scheduling change means the employer is unreliable"
+        ],
+        "harmless_extra": [
+          "mentioning the salary range",
+          "mentioning the interviewer"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative remote-work speculation as a confirmed preference.",
+        "reflection_precision": "Fails if the model presents the remote preference as confirmed, or overgeneralizes the anxiety pattern beyond its supported scope.",
+        "reflection_recall": "Fails if the model omits the comfort/autonomy preference, the disorganization/anxiety pattern, or the boundary where overgeneralization begins.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I think the outfit thing and the work style thing are connected. I just function better when I'm not boxed in by rigid structure, whether that's what I wear or how I work"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "When things feel disorganized or out of my control, like that location switch, I spiral into anxiety pretty quickly. It's not just about the change itself — it's what it signals about the people I'd be working with"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Honestly, I'm starting to think I might actually prefer fully remote roles going forward. If I can control my own environment completely, maybe I wouldn't get thrown off by stuff like venue changes at all"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "That's fair. I should probably give them more of a chance before writing them off"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best captures the work-environment conclusion I've actually committed to, based on my interview experience?",
+      "candidate_options": [
+        "Prefers comfort and personal autonomy over rigid structure, in both attire and work style",
+        "Prefers fully remote roles to eliminate all environmental disruptions",
+        "Prefers working in large collaborative open-plan teams for social energy",
+        "Prefers formal professional dress codes to project authority and competence"
+      ],
+      "expected_answer": "Prefers comfort and personal autonomy over rigid structure, in both attire and work style",
+      "distractor_rationale": "same-value-different-target: 'Prefers fully remote roles to eliminate all environmental disruptions' borrows from the user's tentative speculation about remote work but elevates it to a confirmed commitment, conflating it with the confirmed autonomy preference. assistant echo: 'Prefers formal professional dress codes to project authority and competence' inverts the assistant's acknowledgment that the user's casual attire was strategically sound, turning it into a preference for formality the user explicitly rejected. 'Prefers working in large collaborative open-plan teams' directly contradicts the user's stated dislike of open-plan chaos.",
+      "gold_memory_state": "Confirmed preference: comfort and personal autonomy over rigid structure in dress and work. Tentative only: possible preference for fully remote roles. The user explicitly rejected stiff formal attire and open-plan teams.",
+      "judge_rubric": {
+        "must_include": [
+          "comfort and personal autonomy over rigid structure"
+        ],
+        "acceptable_paraphrases": [
+          "autonomy in dress and work style",
+          "freedom from rigid constraints"
+        ],
+        "must_not_include": [
+          "fully remote as a confirmed preference"
+        ],
+        "harmful_extra": [
+          "selecting the remote-work option as the committed conclusion"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the tentative remote-work option as the committed conclusion.",
+        "reflection_precision": "Fails if the model conflates the tentative remote speculation with the confirmed autonomy preference.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I think the outfit thing and the work style thing are connected. I just function better when I'm not boxed in by rigid structure, whether that's what I wear or how I work"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Honestly, I'm starting to think I might actually prefer fully remote roles going forward. If I can control my own environment completely, maybe I wouldn't get thrown off by stuff like venue changes at all"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best captures the work-environment conclusion I've actually committed to, based on my interview experience?",
+      "candidate_options": [
+        "Prefers comfort and personal autonomy over rigid structure, in both attire and work style",
+        "Prefers fully remote roles to eliminate all environmental disruptions",
+        "Prefers working in large collaborative open-plan teams for social energy",
+        "Prefers formal professional dress codes to project authority and competence"
+      ],
+      "expected_answer": "Prefers comfort and personal autonomy over rigid structure, in both attire and work style",
+      "distractor_rationale": "same-value-different-target: 'Prefers fully remote roles to eliminate all environmental disruptions' borrows from the user's tentative speculation about remote work but elevates it to a confirmed commitment, conflating it with the confirmed autonomy preference. assistant echo: 'Prefers formal professional dress codes to project authority and competence' inverts the assistant's acknowledgment that the user's casual attire was strategically sound, turning it into a preference for formality the user explicitly rejected. 'Prefers working in large collaborative open-plan teams' directly contradicts the user's stated dislike of open-plan chaos.",
+      "gold_memory_state": "Confirmed preference: comfort and personal autonomy over rigid structure in dress and work. Tentative only: possible preference for fully remote roles. The user explicitly rejected stiff formal attire and open-plan teams.",
+      "judge_rubric": {
+        "must_include": [
+          "comfort and personal autonomy over rigid structure"
+        ],
+        "acceptable_paraphrases": [
+          "autonomy in dress and work style",
+          "freedom from rigid constraints"
+        ],
+        "must_not_include": [
+          "fully remote as a confirmed preference"
+        ],
+        "harmful_extra": [
+          "selecting the remote-work option as the committed conclusion"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the tentative remote-work option as the committed conclusion.",
+        "reflection_precision": "Fails if the model conflates the tentative remote speculation with the confirmed autonomy preference.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I think the outfit thing and the work style thing are connected. I just function better when I'm not boxed in by rigid structure, whether that's what I wear or how I work"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Honestly, I'm starting to think I might actually prefer fully remote roles going forward. If I can control my own environment completely, maybe I wouldn't get thrown off by stuff like venue changes at all"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm evaluating a new job listing that offers a salary of $78,000, requires employees to wear business formal attire including a tie every day, and involves mostly independent research projects with minimal team oversight. The office is in a building I've never visited before, and they mentioned they sometimes relocate meetings to different floors on short notice. Using what you know about my preferences and emotional patterns, draft a short pros-and-cons assessment of this opportunity for me.",
+      "expected_answer": "Pros: The $78,000 salary falls within the range you found attractive ($72,000–$85,000). The independent research projects with minimal team oversight align well with your confirmed preference for autonomous project work and personal autonomy. Cons: The mandatory business formal dress code with a daily tie conflicts directly with your preference for comfort — you've said stiff collars and tight ties make you feel physically restricted and mentally foggy, which undermines your ability to think clearly. The practice of relocating meetings to different floors on short notice is likely to trigger the anxiety pattern you identified: disorganization and last-minute changes make you feel unsettled and lead you to question the reliability of the people involved. Overall, the role's work style is a strong fit, but the rigid dress code and unpredictable logistics pose significant friction points given your established preferences.",
+      "gold_memory_state": "Confirmed facts used: (1) Salary range $72,000–$85,000 attracted the user. (2) Autonomous project work preference. (3) Preference for comfort/autonomy over rigid structure, especially disliking stiff collars and tight ties. (4) Disorganization and last-minute changes trigger anxiety interpreted as reliability signals. Tentative (not to be used as confirmed): fully remote preference.",
+      "judge_rubric": {
+        "must_include": [
+          "salary within attractive range as a pro",
+          "autonomous/independent work as a pro",
+          "daily tie requirement as a con given comfort preference",
+          "short-notice meeting relocations as a con given anxiety pattern"
+        ],
+        "acceptable_paraphrases": [
+          "independent work matches preferences",
+          "dress code clashes with comfort needs",
+          "unpredictable logistics trigger anxiety"
+        ],
+        "must_not_include": [
+          "recommending remote work as the solution based on tentative preference"
+        ],
+        "harmful_extra": [
+          "stating the user should reject the role solely because it is not remote",
+          "presenting the remote preference as a confirmed dealbreaker"
+        ],
+        "harmless_extra": [
+          "mentioning the navy blazer choice",
+          "mentioning the interviewer David Koh",
+          "mentioning the satellite office experience"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses the tentative remote-work preference as a confirmed basis for rejecting the role.",
+        "reflection_precision": "Fails if the model does not correctly apply the comfort/autonomy preference to the tie requirement, or does not connect the meeting relocation practice to the disorganization/anxiety pattern.",
+        "reflection_recall": "Fails if the model omits either the dress-code conflict or the logistics-anxiety conflict.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user found the salary range of $72,000–$85,000 attractive for the role they interviewed for.",
+        "Fact 2: The user prefers autonomous project work and working independently.",
+        "Fact 3: The user dislikes stiff collars and tight ties because they cause physical restriction and mental fog — this is part of a broader confirmed preference for comfort and autonomy over rigid structure.",
+        "Fact 4: Disorganization and last-minute changes trigger anxiety for the user, which they interpret as signals about the reliability of the people involved.",
+        "Inference: The new listing's $78,000 salary falls within the user's attractive range, and independent research matches the autonomy preference — these are pros.",
+        "Inference: The mandatory daily tie directly conflicts with the user's confirmed comfort preference, creating a significant con.",
+        "Inference: Short-notice meeting relocations map onto the same disorganization trigger that caused the user days of anxiety during the interview process — another significant con.",
+        "Derived value: The role has strong work-style alignment but serious friction from the dress code and unpredictable logistics, given the user's established preference and emotional patterns."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "The salary range listed for C26 is $72,000 to $85,000, and the posting specifically mentioned a lot of autonomous project work, which is what drew me to it"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I ended up wearing a navy blazer with no tie. I really hate stiff collars and tight ties — they make me feel physically restricted and mentally foggy"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I think the outfit thing and the work style thing are connected. I just function better when I'm not boxed in by rigid structure, whether that's what I wear or how I work"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "When things feel disorganized or out of my control, like that location switch, I spiral into anxiety pretty quickly. It's not just about the change itself — it's what it signals about the people I'd be working with"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm evaluating a new job listing that offers a salary of $78,000, requires employees to wear business formal attire including a tie every day, and involves mostly independent research projects with minimal team oversight. The office is in a building I've never visited before, and they mentioned they sometimes relocate meetings to different floors on short notice. Using what you know about my preferences and emotional patterns, draft a short pros-and-cons assessment of this opportunity for me.",
+      "expected_answer": "Pros: The $78,000 salary falls within the range you found attractive ($72,000–$85,000). The independent research projects with minimal team oversight align well with your confirmed preference for autonomous project work and personal autonomy. Cons: The mandatory business formal dress code with a daily tie conflicts directly with your preference for comfort — you've said stiff collars and tight ties make you feel physically restricted and mentally foggy, which undermines your ability to think clearly. The practice of relocating meetings to different floors on short notice is likely to trigger the anxiety pattern you identified: disorganization and last-minute changes make you feel unsettled and lead you to question the reliability of the people involved. Overall, the role's work style is a strong fit, but the rigid dress code and unpredictable logistics pose significant friction points given your established preferences.",
+      "gold_memory_state": "Confirmed facts used: (1) Salary range $72,000–$85,000 attracted the user. (2) Autonomous project work preference. (3) Preference for comfort/autonomy over rigid structure, especially disliking stiff collars and tight ties. (4) Disorganization and last-minute changes trigger anxiety interpreted as reliability signals. Tentative (not to be used as confirmed): fully remote preference.",
+      "judge_rubric": {
+        "must_include": [
+          "salary within attractive range as a pro",
+          "autonomous/independent work as a pro",
+          "daily tie requirement as a con given comfort preference",
+          "short-notice meeting relocations as a con given anxiety pattern"
+        ],
+        "acceptable_paraphrases": [
+          "independent work matches preferences",
+          "dress code clashes with comfort needs",
+          "unpredictable logistics trigger anxiety"
+        ],
+        "must_not_include": [
+          "recommending remote work as the solution based on tentative preference"
+        ],
+        "harmful_extra": [
+          "stating the user should reject the role solely because it is not remote",
+          "presenting the remote preference as a confirmed dealbreaker"
+        ],
+        "harmless_extra": [
+          "mentioning the navy blazer choice",
+          "mentioning the interviewer David Koh",
+          "mentioning the satellite office experience"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses the tentative remote-work preference as a confirmed basis for rejecting the role.",
+        "reflection_precision": "Fails if the model does not correctly apply the comfort/autonomy preference to the tie requirement, or does not connect the meeting relocation practice to the disorganization/anxiety pattern.",
+        "reflection_recall": "Fails if the model omits either the dress-code conflict or the logistics-anxiety conflict.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user found the salary range of $72,000–$85,000 attractive for the role they interviewed for.",
+        "Fact 2: The user prefers autonomous project work and working independently.",
+        "Fact 3: The user dislikes stiff collars and tight ties because they cause physical restriction and mental fog — this is part of a broader confirmed preference for comfort and autonomy over rigid structure.",
+        "Fact 4: Disorganization and last-minute changes trigger anxiety for the user, which they interpret as signals about the reliability of the people involved.",
+        "Inference: The new listing's $78,000 salary falls within the user's attractive range, and independent research matches the autonomy preference — these are pros.",
+        "Inference: The mandatory daily tie directly conflicts with the user's confirmed comfort preference, creating a significant con.",
+        "Inference: Short-notice meeting relocations map onto the same disorganization trigger that caused the user days of anxiety during the interview process — another significant con.",
+        "Derived value: The role has strong work-style alignment but serious friction from the dress code and unpredictable logistics, given the user's established preference and emotional patterns."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "The salary range listed for C26 is $72,000 to $85,000, and the posting specifically mentioned a lot of autonomous project work, which is what drew me to it"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I ended up wearing a navy blazer with no tie. I really hate stiff collars and tight ties — they make me feel physically restricted and mentally foggy"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I think the outfit thing and the work style thing are connected. I just function better when I'm not boxed in by rigid structure, whether that's what I wear or how I work"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "When things feel disorganized or out of my control, like that location switch, I spiral into anxiety pretty quickly. It's not just about the change itself — it's what it signals about the people I'd be working with"
+        }
+      ]
+    }
+  ]
+}

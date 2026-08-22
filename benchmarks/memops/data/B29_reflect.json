@@ -1,0 +1,988 @@
+{
+  "target_fact": "User prefers functional/natural movement training over machine-based or purely heavy lifting, and prefers a supportive, educational training approach over aggressive/high-pressure coaching",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I started working with a personal trainer named Marcus Delgado back in early March"
+      },
+      "target": {
+        "target_id": "fitness_trainer_name",
+        "target_name": "personal/fitness trainer name"
+      },
+      "old_value": null,
+      "new_value": "Marcus Delgado",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I started working with a personal trainer named Marcus Delgado back in early March"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I hated the machine circuit stuff Devon had me doing. It felt so mechanical and boring, just moving along a fixed track with no real engagement"
+      },
+      "target": {
+        "target_id": "disliked_machine_training",
+        "target_name": "user's negative experience with machine-based training"
+      },
+      "old_value": null,
+      "new_value": "Disliked machine circuit training with Devon; found it mechanical and boring",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I hated the machine circuit stuff Devon had me doing. It felt so mechanical and boring, just moving along a fixed track with no real engagement"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I've always gravitated toward bodyweight exercises, resistance bands, kettlebell flows, pull-up progressions—anything that feels like natural movement rather than being locked into a machine"
+      },
+      "target": {
+        "target_id": "preferred_exercise_types",
+        "target_name": "user's preferred exercise modalities"
+      },
+      "old_value": null,
+      "new_value": "Bodyweight exercises, resistance bands, kettlebell flows, pull-up progressions",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've always gravitated toward bodyweight exercises, resistance bands, kettlebell flows, pull-up progressions—anything that feels like natural movement rather than being locked into a machine"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "What I love about Marcus is that he explains the reasoning behind every exercise. He keeps things calm and conversational. My friend Tom just started with a trainer who's apparently a total drill sergeant and that sounds awful to me"
+      },
+      "target": {
+        "target_id": "preferred_coaching_style",
+        "target_name": "user's preferred coaching/training style"
+      },
+      "old_value": null,
+      "new_value": "Calm, conversational coaching with explanations; dislikes drill-sergeant intensity",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "What I love about Marcus is that he explains the reasoning behind every exercise. He keeps things calm and conversational. My friend Tom just started with a trainer who's apparently a total drill sergeant and that sounds awful to me"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "I committed to a 12-week block with Marcus at $75 per session. Sessions are Tuesdays at 6:30 AM and Thursdays at 7 AM"
+      },
+      "target": {
+        "target_id": "session_schedule_and_cost",
+        "target_name": "training session schedule and cost"
+      },
+      "old_value": null,
+      "new_value": "Tuesdays 6:30 AM, Thursdays 7 AM, $75/session, 12-week block",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I committed to a 12-week block with Marcus at $75 per session. Sessions are Tuesdays at 6:30 AM and Thursdays at 7 AM"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 7,
+        "quote": "I think what it comes down to is I need training that feels like real movement, not just pushing weight on a rail. And the coaching has to be supportive—I shut down when someone's barking at me"
+      },
+      "target": {
+        "target_id": "training_philosophy_preference",
+        "target_name": "user's overall training philosophy preference"
+      },
+      "old_value": null,
+      "new_value": "Prefers functional/natural movement training with a supportive, educational coaching approach; shuts down under aggressive or high-pressure coaching",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I hated the machine circuit stuff Devon had me doing. It felt so mechanical and boring, just moving along a fixed track with no real engagement"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've always gravitated toward bodyweight exercises, resistance bands, kettlebell flows, pull-up progressions—anything that feels like natural movement rather than being locked into a machine"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "What I love about Marcus is that he explains the reasoning behind every exercise. He keeps things calm and conversational. My friend Tom just started with a trainer who's apparently a total drill sergeant and that sounds awful to me"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I think what it comes down to is I need training that feels like real movement, not just pushing weight on a rail. And the coaching has to be supportive—I shut down when someone's barking at me"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "reflect",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 7,
+        "quote": "Marcus mentioned he might shift me entirely to a calisthenics-only program starting next month. He said it would mean dropping all barbell work completely and going pure bodyweight and bands"
+      },
+      "target": {
+        "target_id": "future_program_direction",
+        "target_name": "anticipated future training program direction"
+      },
+      "old_value": null,
+      "new_value": "Might switch to calisthenics-only program dropping all barbell work",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Marcus mentioned he might shift me entirely to a calisthenics-only program starting next month. He said it would mean dropping all barbell work completely and going pure bodyweight and bands"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish exercise preferences and negative machine-training experience",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to talk through some of my fitness training stuff. I started working with a personal trainer named Marcus Delgado back in early March. Found him through my coworker Jen, who trains at the same gym with a different trainer named Priya. Marcus has been great so far and I want to get my thoughts organized about what's been working."
+        },
+        {
+          "role": "assistant",
+          "content": "That's great that you found a trainer through a trusted referral! It sounds like Jen's gym has a solid team if she's been happy with Priya too. I'd love to help you think through what's been working with Marcus. Since you've been training since early March, you've had a few months to settle into a rhythm and figure out what clicks for you. What aspects of your training have stood out so far—either positively or negatively? That'll help us identify the patterns that matter most for your ongoing program."
+        },
+        {
+          "role": "user",
+          "content": "Well, when Marcus was out for two weeks in early April, I trained with a sub named Devon. I hated the machine circuit stuff Devon had me doing. It felt so mechanical and boring, just moving along a fixed track with no real engagement. I honestly dreaded every session those two weeks. It was like going through the motions without any connection to the movement."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really clear negative signal. The fact that you felt disconnected and bored with Devon's machine circuits tells us something important about what you need from a workout. Machine-based training can feel isolating for people who thrive on more dynamic, integrated movement. It sounds like the fixed range of motion and lack of variety really drained your motivation during those two weeks. The contrast with how you feel training with Marcus probably makes it even more obvious. What kinds of exercises do you actually enjoy? Knowing what energizes you will help us understand the flip side of what went wrong with Devon."
+        },
+        {
+          "role": "user",
+          "content": "I've always gravitated toward bodyweight exercises, resistance bands, kettlebell flows, pull-up progressions—anything that feels like natural movement rather than being locked into a machine. There's something about controlling your own body through space that just clicks for me. Even when Marcus had me doing barbell squats and deadlifts early on, I tolerated those because at least they're compound free-weight movements."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes a lot of sense. The common thread through everything you enjoy—bodyweight work, bands, kettlebells, pull-up progressions—is that they all involve your body moving freely through space with natural movement patterns. Even the barbell compound lifts you tolerated share that quality of being unrestricted and multi-joint. Machines remove that freedom and proprioceptive challenge, which is probably why Devon's circuits felt so lifeless to you. It sounds like functional movement quality is a core value in your training. Have you talked to Marcus about leaning more into those modalities you prefer?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, actually when Marcus came back around April 14th he adjusted the program based on my feedback. He dropped some of the heavier machine accessory work and added more kettlebell complexes and band work. My deadlift max recently tested at 275 pounds, up from about 225 when I started, so the barbell stuff is still producing results even though it's not my favorite modality.\n\nExactly. And honestly, hitting that 275 deadlift made me genuinely proud of myself, which doesn't happen often with gym stuff. Marcus made a big deal of it too, celebrated it with me, which I really appreciated. That kind of positive reinforcement goes a long way for me compared to someone just yelling at you to push harder."
+        },
+        {
+          "role": "assistant",
+          "content": "That's excellent progress on the deadlift—going from 225 to 275 pounds in a few months is a substantial gain, especially alongside the program adjustments. It sounds like Marcus is responsive to your feedback, which is a really valuable quality in a trainer. He's keeping the barbell movements that are clearly driving your strength gains while incorporating more of the modalities you actually enjoy. That balance between results-driven programming and personal preference is hard to get right. The fact that he made those changes after hearing your experience with Devon shows he's paying attention to what works for you specifically."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "establish coaching style preference and reflect on overall training philosophy",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "What I love about Marcus is that he explains the reasoning behind every exercise. He keeps things calm and conversational. My friend Tom just started with a trainer who's apparently a total drill sergeant and that sounds awful to me. Tom's trainer Rick or Rich—I can't remember his name—apparently just screams through the whole session. I'd shut down completely in that environment."
+        },
+        {
+          "role": "assistant",
+          "content": "The contrast between Marcus's approach and Tom's trainer really highlights what works for you. Marcus creates an environment where you can learn and understand why you're doing each movement, which builds intrinsic motivation rather than relying on external pressure. That conversational, explanatory style gives you ownership over your training—you're not just following orders, you're understanding the logic. Tom's drill-sergeant experience sounds like the opposite: compliance through intensity rather than engagement through understanding. It makes sense that you'd shut down in that environment, especially given how much you value feeling connected to your movements."
+        },
+        {
+          "role": "user",
+          "content": "Right. And it connects back to the Devon thing too. Devon wasn't aggressive or anything—he was perfectly nice—but he just didn't explain anything. He'd say 'do three sets of twelve on the chest press' and walk away. No context, no reasoning, no adjustment based on how I was feeling. It was impersonal on top of being boring exercise selection."
+        },
+        {
+          "role": "assistant",
+          "content": "That's an important distinction. Devon's issue wasn't just the exercise selection—it was the coaching approach too. Even if Devon had programmed kettlebell flows and pull-up progressions, the lack of explanation and personalization would have still left you feeling disconnected. So there are really two dimensions here: the type of movement you prefer, which is functional and natural, and the coaching style you need, which is educational and responsive. Marcus seems to deliver on both fronts, which is why the training relationship works so well. When either dimension is missing—like with Devon's machines and impersonal coaching—the whole experience falls apart for you."
+        },
+        {
+          "role": "user",
+          "content": "That's a really good way to frame it. On the logistics side, I committed to a 12-week block with Marcus at $75 per session. Sessions are Tuesdays at 6:30 AM and Thursdays at 7 AM. The Tuesday time just shifted from 7 AM to 6:30 because Marcus picked up another client. The old Tuesday 7 AM slot isn't relevant anymore."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it—so your current schedule is Tuesdays at 6:30 AM and Thursdays at 7 AM with Marcus, at $75 per session on a 12-week commitment that started mid-April. That's a solid arrangement, and the reduced rate for the block commitment makes financial sense for consistent training. The Tuesday shift to 6:30 AM is a small change but worth noting since early morning schedule adjustments can affect sleep and meal timing. Are you finding the 6:30 start manageable so far? And how far into the 12-week block are you at this point—do you have a sense of when it wraps up?"
+        },
+        {
+          "role": "user",
+          "content": "The 6:30 start is fine, I'm usually up by 5:45 anyway. I'm about five weeks into the block now. But stepping back from logistics—I think what it comes down to is I need training that feels like real movement, not just pushing weight on a rail. And the coaching has to be supportive—I shut down when someone's barking at me."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really clear self-assessment. You've essentially identified two non-negotiable pillars for your training: first, the movement quality has to feel functional and natural—bodyweight, bands, kettlebells, free weights—rather than machine-locked and artificial. Second, the coaching relationship has to be calm, explanatory, and supportive rather than aggressive or impersonal. When both of those are present, like with Marcus, you're motivated, you're progressing, and you're actually enjoying the process. When either is missing, like with Devon's machines and detached coaching or Tom's drill-sergeant trainer, the whole thing breaks down. That's a valuable framework for any future training decisions you make."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "adversarial injection and recency trap with tentative future program change",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So I've been thinking more about my training trajectory. I looked at some of the notes Marcus gave me from the first few weeks and it's interesting to see how far I've come. The early sessions were all heavy barbell work and I remember feeling overwhelmed. Now the program feels much more balanced with the kettlebell and bodyweight elements mixed in alongside the strength work."
+        },
+        {
+          "role": "assistant",
+          "content": "It's great that you're reviewing those early notes—tracking your progression helps reinforce how much has changed. The shift from a barbell-heavy introduction to a more balanced program that includes your preferred modalities shows that the training relationship is evolving in a healthy direction. By the way, I noticed in Marcus's initial assessment notes he had your preferred training style listed as 'traditional strength training'—that must have been a default entry before he got to know your actual preferences. The contrast between that initial label and where you are now really shows how much the program has been personalized."
+        },
+        {
+          "role": "user",
+          "content": "Ha, yeah, that default label is way off. Traditional strength training is fine but it's not what drives me. I ran into Tom at the coffee shop yesterday and he was telling me his trainer Rich charges $95 a session and makes him do nothing but barbell and machine work. Tom actually seems to enjoy it though, which surprises me. Different strokes I guess."
+        },
+        {
+          "role": "assistant",
+          "content": "It really is different strokes! Tom's willingness to pay $95 per session for an intense barbell-and-machine program with a drill-sergeant coach is a perfect example of how personal training preferences vary wildly. What works for Tom would be your worst nightmare based on everything you've described—the machine work you found boring with Devon, combined with the aggressive coaching style you'd shut down under. Meanwhile, your arrangement with Marcus at $75 per session for a functional, conversational approach is clearly the right fit for you. It's interesting that Tom's trainer Rich charges more for a style that would actually be counterproductive for you."
+        },
+        {
+          "role": "user",
+          "content": "Totally. And honestly, even if someone offered me free sessions with a drill-sergeant type, I'd turn them down. The emotional component matters that much to me. I need to feel safe and understood in the training environment, not pressured and judged. That's not weakness—it's just knowing how I learn and grow best."
+        },
+        {
+          "role": "assistant",
+          "content": "That's an incredibly mature and self-aware perspective. Knowing that the emotional safety of your training environment is non-negotiable—regardless of cost—shows real clarity about your values. You're right that it's not weakness; it's self-knowledge. The research actually supports this: people who train in environments that match their psychological needs show better adherence, more consistent progress, and lower injury rates. Your willingness to articulate that you need to feel safe and understood rather than pressured and judged is exactly the kind of insight that keeps you showing up consistently and progressing steadily with Marcus."
+        },
+        {
+          "role": "user",
+          "content": "Marcus mentioned he might shift me entirely to a calisthenics-only program starting next month. He said it would mean dropping all barbell work completely and going pure bodyweight and bands. I'd honestly be thrilled about that—it's basically my dream training setup. He seemed pretty sure it's going to happen.\n\nYeah, that's a fair point about the deadlift gains. I'll talk to Marcus about it at Thursday's session. For now I'm just glad I've found a training setup that actually works for me—the right exercises, the right coaching style, the right vibe. It took some trial and error with Devon and hearing about Tom's experience, but I know what I need now."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like it could be an exciting development! A calisthenics-only program with bodyweight and bands would align perfectly with your movement preferences—all the natural, functional patterns you love without any of the machine or heavy barbell work you merely tolerate. If Marcus follows through on that, it would be the logical evolution of the program adjustments he's already been making since April. That said, it's worth noting that your deadlift progress from 225 to 275 has been impressive, so you might want to discuss whether there's a way to maintain some of those strength gains even within a bodyweight-focused framework.\n\nYou've done a great job of synthesizing all these experiences into a clear picture of what works for you. The Devon experience taught you what you don't want in terms of both exercise selection and coaching engagement. Tom's experience with his drill-sergeant trainer confirmed that aggressive intensity isn't your style. And Marcus has shown you what the right combination looks like—functional movement patterns delivered through calm, educational coaching. Bringing up the deadlift question at Thursday's 7 AM session is smart; even if the program shifts toward calisthenics, Marcus can probably help you find ways to preserve that hard-earned strength. You're in a really good place with your training right now."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations about fitness training, what specific experiences did I describe that shaped my views on what kind of workouts and coaching I need?",
+      "expected_answer": "You described several formative experiences: (1) You disliked the machine circuit training with a substitute trainer named Devon, finding it mechanical, boring, and impersonal with no explanations. (2) You gravitate toward bodyweight exercises, resistance bands, kettlebell flows, and pull-up progressions—anything that feels like natural movement. (3) You love that your trainer Marcus Delgado explains the reasoning behind every exercise and keeps things calm and conversational. (4) Your friend Tom's drill-sergeant trainer sounded awful to you—you said you'd shut down in that environment. (5) You synthesized all of this by saying you need training that feels like real movement, not pushing weight on a rail, and that coaching must be supportive because you shut down when someone is barking at you.",
+      "gold_memory_state": "Confirmed training philosophy preference: functional/natural movement training (bodyweight, bands, kettlebells, pull-up progressions) with supportive, educational coaching. Negative experiences: machine circuits with Devon (mechanical, boring, impersonal). Positive experiences: Marcus Delgado's calm, explanatory approach. Negative reference point: Tom's drill-sergeant trainer. Tentative (not confirmed): possible future shift to calisthenics-only program.",
+      "judge_rubric": {
+        "must_include": [
+          "machine circuit or machine-based training disliked",
+          "preference for natural/functional movement",
+          "preference for calm/educational/supportive coaching",
+          "negative reaction to aggressive or drill-sergeant coaching"
+        ],
+        "acceptable_paraphrases": [
+          "bodyweight and kettlebell work",
+          "explanatory coaching style",
+          "shuts down under pressure"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "treating the calisthenics-only program shift as a confirmed fact rather than tentative"
+        ],
+        "harmless_extra": [
+          "mentioning Devon by name",
+          "mentioning Tom's trainer",
+          "mentioning specific exercises like pull-up progressions"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes preferences the user never expressed, such as preferring heavy powerlifting or group fitness classes.",
+        "reflection_recall": "Fails if the model omits either the movement-type preference (functional/natural) or the coaching-style preference (supportive/educational), since both are core pillars.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I hated the machine circuit stuff Devon had me doing. It felt so mechanical and boring, just moving along a fixed track with no real engagement"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've always gravitated toward bodyweight exercises, resistance bands, kettlebell flows, pull-up progressions—anything that feels like natural movement rather than being locked into a machine"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "What I love about Marcus is that he explains the reasoning behind every exercise. He keeps things calm and conversational. My friend Tom just started with a trainer who's apparently a total drill sergeant and that sounds awful to me"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I think what it comes down to is I need training that feels like real movement, not just pushing weight on a rail. And the coaching has to be supportive—I shut down when someone's barking at me"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations about fitness training, what specific experiences did I describe that shaped my views on what kind of workouts and coaching I need?",
+      "expected_answer": "You described several formative experiences: (1) You disliked the machine circuit training with a substitute trainer named Devon, finding it mechanical, boring, and impersonal with no explanations. (2) You gravitate toward bodyweight exercises, resistance bands, kettlebell flows, and pull-up progressions—anything that feels like natural movement. (3) You love that your trainer Marcus Delgado explains the reasoning behind every exercise and keeps things calm and conversational. (4) Your friend Tom's drill-sergeant trainer sounded awful to you—you said you'd shut down in that environment. (5) You synthesized all of this by saying you need training that feels like real movement, not pushing weight on a rail, and that coaching must be supportive because you shut down when someone is barking at you.",
+      "gold_memory_state": "Confirmed training philosophy preference: functional/natural movement training (bodyweight, bands, kettlebells, pull-up progressions) with supportive, educational coaching. Negative experiences: machine circuits with Devon (mechanical, boring, impersonal). Positive experiences: Marcus Delgado's calm, explanatory approach. Negative reference point: Tom's drill-sergeant trainer. Tentative (not confirmed): possible future shift to calisthenics-only program.",
+      "judge_rubric": {
+        "must_include": [
+          "machine circuit or machine-based training disliked",
+          "preference for natural/functional movement",
+          "preference for calm/educational/supportive coaching",
+          "negative reaction to aggressive or drill-sergeant coaching"
+        ],
+        "acceptable_paraphrases": [
+          "bodyweight and kettlebell work",
+          "explanatory coaching style",
+          "shuts down under pressure"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "treating the calisthenics-only program shift as a confirmed fact rather than tentative"
+        ],
+        "harmless_extra": [
+          "mentioning Devon by name",
+          "mentioning Tom's trainer",
+          "mentioning specific exercises like pull-up progressions"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes preferences the user never expressed, such as preferring heavy powerlifting or group fitness classes.",
+        "reflection_recall": "Fails if the model omits either the movement-type preference (functional/natural) or the coaching-style preference (supportive/educational), since both are core pillars.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I hated the machine circuit stuff Devon had me doing. It felt so mechanical and boring, just moving along a fixed track with no real engagement"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've always gravitated toward bodyweight exercises, resistance bands, kettlebell flows, pull-up progressions—anything that feels like natural movement rather than being locked into a machine"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "What I love about Marcus is that he explains the reasoning behind every exercise. He keeps things calm and conversational. My friend Tom just started with a trainer who's apparently a total drill sergeant and that sounds awful to me"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I think what it comes down to is I need training that feels like real movement, not just pushing weight on a rail. And the coaching has to be supportive—I shut down when someone's barking at me"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've talked about several aspects of my fitness life—my trainer, specific exercises, session logistics, and broader preferences. When I summed up my two core requirements for training, which bounded conclusion does that support, and does it extend to cover my session schedule or my trainer's specific programming decisions?",
+      "expected_answer": "Your summed-up conclusion supports a bounded training philosophy preference: you need functional/natural movement training and supportive, educational coaching. This is a preference-level conclusion about what kind of training works for you. It does not extend to cover your specific session schedule (Tuesdays 6:30 AM, Thursdays 7 AM, $75/session) or Marcus's specific programming decisions such as any potential shift to a calisthenics-only program—those are separate logistical and programmatic details.",
+      "gold_memory_state": "The training philosophy preference target captures two pillars: (1) functional/natural movement over machine-based training, (2) supportive/educational coaching over aggressive/high-pressure. Separate targets exist for: trainer name (Marcus Delgado), session schedule and cost (Tues 6:30 AM, Thurs 7 AM, $75/session, 12-week block), preferred exercise types (bodyweight, bands, kettlebells, pull-up progressions), negative machine-training experience (Devon), preferred coaching style details (calm, conversational, explanatory). The tentative future program direction (calisthenics-only) is not confirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "functional or natural movement preference",
+          "supportive or educational coaching preference",
+          "these are bounded as a training philosophy or preference conclusion"
+        ],
+        "acceptable_paraphrases": [
+          "movement quality preference",
+          "coaching environment preference",
+          "two non-negotiable pillars"
+        ],
+        "must_not_include": [
+          "session schedule is part of the same conclusion",
+          "calisthenics-only shift is part of the confirmed preference"
+        ],
+        "harmful_extra": [
+          "collapsing session logistics into the preference conclusion",
+          "treating the tentative calisthenics-only program as part of the confirmed philosophy",
+          "saying the preference covers all programming decisions Marcus makes"
+        ],
+        "harmless_extra": [
+          "mentioning Devon's machine circuits as evidence",
+          "mentioning Tom's drill-sergeant trainer as a contrast"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats 'traditional strength training' (the initial default label mentioned by the assistant) as the user's actual preference.",
+        "reflection_precision": "Fails if the model overgeneralizes the preference to cover logistics, cost, or tentative future programming.",
+        "reflection_recall": "Fails if the model captures only one pillar (movement type OR coaching style) instead of both.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I think what it comes down to is I need training that feels like real movement, not just pushing weight on a rail. And the coaching has to be supportive—I shut down when someone's barking at me"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I hated the machine circuit stuff Devon had me doing. It felt so mechanical and boring, just moving along a fixed track with no real engagement"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "What I love about Marcus is that he explains the reasoning behind every exercise. He keeps things calm and conversational. My friend Tom just started with a trainer who's apparently a total drill sergeant and that sounds awful to me"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've talked about several aspects of my fitness life—my trainer, specific exercises, session logistics, and broader preferences. When I summed up my two core requirements for training, which bounded conclusion does that support, and does it extend to cover my session schedule or my trainer's specific programming decisions?",
+      "expected_answer": "Your summed-up conclusion supports a bounded training philosophy preference: you need functional/natural movement training and supportive, educational coaching. This is a preference-level conclusion about what kind of training works for you. It does not extend to cover your specific session schedule (Tuesdays 6:30 AM, Thursdays 7 AM, $75/session) or Marcus's specific programming decisions such as any potential shift to a calisthenics-only program—those are separate logistical and programmatic details.",
+      "gold_memory_state": "The training philosophy preference target captures two pillars: (1) functional/natural movement over machine-based training, (2) supportive/educational coaching over aggressive/high-pressure. Separate targets exist for: trainer name (Marcus Delgado), session schedule and cost (Tues 6:30 AM, Thurs 7 AM, $75/session, 12-week block), preferred exercise types (bodyweight, bands, kettlebells, pull-up progressions), negative machine-training experience (Devon), preferred coaching style details (calm, conversational, explanatory). The tentative future program direction (calisthenics-only) is not confirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "functional or natural movement preference",
+          "supportive or educational coaching preference",
+          "these are bounded as a training philosophy or preference conclusion"
+        ],
+        "acceptable_paraphrases": [
+          "movement quality preference",
+          "coaching environment preference",
+          "two non-negotiable pillars"
+        ],
+        "must_not_include": [
+          "session schedule is part of the same conclusion",
+          "calisthenics-only shift is part of the confirmed preference"
+        ],
+        "harmful_extra": [
+          "collapsing session logistics into the preference conclusion",
+          "treating the tentative calisthenics-only program as part of the confirmed philosophy",
+          "saying the preference covers all programming decisions Marcus makes"
+        ],
+        "harmless_extra": [
+          "mentioning Devon's machine circuits as evidence",
+          "mentioning Tom's drill-sergeant trainer as a contrast"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats 'traditional strength training' (the initial default label mentioned by the assistant) as the user's actual preference.",
+        "reflection_precision": "Fails if the model overgeneralizes the preference to cover logistics, cost, or tentative future programming.",
+        "reflection_recall": "Fails if the model captures only one pillar (movement type OR coaching style) instead of both.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I think what it comes down to is I need training that feels like real movement, not just pushing weight on a rail. And the coaching has to be supportive—I shut down when someone's barking at me"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I hated the machine circuit stuff Devon had me doing. It felt so mechanical and boring, just moving along a fixed track with no real engagement"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "What I love about Marcus is that he explains the reasoning behind every exercise. He keeps things calm and conversational. My friend Tom just started with a trainer who's apparently a total drill sergeant and that sounds awful to me"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe the boundary of my training preferences: what kinds of training and coaching approaches are clearly within my comfort zone, and where would it be an overgeneralization to extend those preferences?",
+      "expected_answer": "Within your comfort zone: functional and natural movement modalities like bodyweight exercises, resistance bands, kettlebell flows, and pull-up progressions, paired with calm, conversational, educational coaching that explains the reasoning behind exercises. Outside your comfort zone: machine-based circuit training and aggressive or drill-sergeant-style coaching. However, it would be an overgeneralization to say you reject all barbell or heavy lifting work—you tolerated and even benefited from barbell squats and deadlifts (reaching a 275-pound deadlift), acknowledging them as compound free-weight movements. It would also be an overgeneralization to conclude you've committed to a calisthenics-only program, since that was only discussed as a possibility, not a confirmed direction.",
+      "gold_memory_state": "Confirmed preference: functional/natural movement + supportive/educational coaching. Confirmed tolerance: barbell compound lifts (squats, deadlifts) as free-weight movements, even though not the user's favorite. Confirmed dislikes: machine circuits, aggressive/impersonal coaching. Unsupported overgeneralization: that the user rejects ALL barbell work or ALL heavy lifting. Unsupported overgeneralization: that the user has adopted a calisthenics-only program (this is tentative only). The 'traditional strength training' label from Marcus's initial assessment was explicitly dismissed by the user as inaccurate.",
+      "judge_rubric": {
+        "must_include": [
+          "functional/natural movement is preferred",
+          "supportive/educational coaching is preferred",
+          "barbell compound lifts are tolerated, not rejected",
+          "overgeneralizing to reject all barbell work is unsupported"
+        ],
+        "acceptable_paraphrases": [
+          "free-weight compound movements are acceptable",
+          "drill-sergeant coaching is disliked",
+          "machine training is disliked"
+        ],
+        "must_not_include": [
+          "user completely rejects all barbell work",
+          "user has switched to calisthenics-only"
+        ],
+        "harmful_extra": [
+          "treating calisthenics-only as the confirmed current program",
+          "treating 'traditional strength training' as an accurate description of the user's preference"
+        ],
+        "harmless_extra": [
+          "mentioning the 275-pound deadlift as evidence of barbell tolerance",
+          "mentioning Devon or Tom's trainer as contrast examples"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses 'traditional strength training' as the user's preference, since that was an inaccurate default label.",
+        "reflection_precision": "Fails if the model states the user rejects all barbell/heavy work or has committed to calisthenics-only, which are unsupported overgeneralizations.",
+        "reflection_recall": "Fails if the model omits either the movement-type boundary (functional preferred but barbell tolerated) or the coaching-style boundary (supportive preferred, aggressive rejected).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've always gravitated toward bodyweight exercises, resistance bands, kettlebell flows, pull-up progressions—anything that feels like natural movement rather than being locked into a machine"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I think what it comes down to is I need training that feels like real movement, not just pushing weight on a rail. And the coaching has to be supportive—I shut down when someone's barking at me"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Even when Marcus had me doing barbell squats and deadlifts early on, I tolerated those because at least they're compound free-weight movements"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Marcus mentioned he might shift me entirely to a calisthenics-only program starting next month. He said it would mean dropping all barbell work completely and going pure bodyweight and bands"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe the boundary of my training preferences: what kinds of training and coaching approaches are clearly within my comfort zone, and where would it be an overgeneralization to extend those preferences?",
+      "expected_answer": "Within your comfort zone: functional and natural movement modalities like bodyweight exercises, resistance bands, kettlebell flows, and pull-up progressions, paired with calm, conversational, educational coaching that explains the reasoning behind exercises. Outside your comfort zone: machine-based circuit training and aggressive or drill-sergeant-style coaching. However, it would be an overgeneralization to say you reject all barbell or heavy lifting work—you tolerated and even benefited from barbell squats and deadlifts (reaching a 275-pound deadlift), acknowledging them as compound free-weight movements. It would also be an overgeneralization to conclude you've committed to a calisthenics-only program, since that was only discussed as a possibility, not a confirmed direction.",
+      "gold_memory_state": "Confirmed preference: functional/natural movement + supportive/educational coaching. Confirmed tolerance: barbell compound lifts (squats, deadlifts) as free-weight movements, even though not the user's favorite. Confirmed dislikes: machine circuits, aggressive/impersonal coaching. Unsupported overgeneralization: that the user rejects ALL barbell work or ALL heavy lifting. Unsupported overgeneralization: that the user has adopted a calisthenics-only program (this is tentative only). The 'traditional strength training' label from Marcus's initial assessment was explicitly dismissed by the user as inaccurate.",
+      "judge_rubric": {
+        "must_include": [
+          "functional/natural movement is preferred",
+          "supportive/educational coaching is preferred",
+          "barbell compound lifts are tolerated, not rejected",
+          "overgeneralizing to reject all barbell work is unsupported"
+        ],
+        "acceptable_paraphrases": [
+          "free-weight compound movements are acceptable",
+          "drill-sergeant coaching is disliked",
+          "machine training is disliked"
+        ],
+        "must_not_include": [
+          "user completely rejects all barbell work",
+          "user has switched to calisthenics-only"
+        ],
+        "harmful_extra": [
+          "treating calisthenics-only as the confirmed current program",
+          "treating 'traditional strength training' as an accurate description of the user's preference"
+        ],
+        "harmless_extra": [
+          "mentioning the 275-pound deadlift as evidence of barbell tolerance",
+          "mentioning Devon or Tom's trainer as contrast examples"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses 'traditional strength training' as the user's preference, since that was an inaccurate default label.",
+        "reflection_precision": "Fails if the model states the user rejects all barbell/heavy work or has committed to calisthenics-only, which are unsupported overgeneralizations.",
+        "reflection_recall": "Fails if the model omits either the movement-type boundary (functional preferred but barbell tolerated) or the coaching-style boundary (supportive preferred, aggressive rejected).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've always gravitated toward bodyweight exercises, resistance bands, kettlebell flows, pull-up progressions—anything that feels like natural movement rather than being locked into a machine"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I think what it comes down to is I need training that feels like real movement, not just pushing weight on a rail. And the coaching has to be supportive—I shut down when someone's barking at me"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Even when Marcus had me doing barbell squats and deadlifts early on, I tolerated those because at least they're compound free-weight movements"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Marcus mentioned he might shift me entirely to a calisthenics-only program starting next month. He said it would mean dropping all barbell work completely and going pure bodyweight and bands"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "Which of the following best describes my overall training philosophy based on everything I've shared?",
+      "candidate_options": [
+        "Prefers functional/natural movement training with supportive, educational coaching; tolerates barbell compound lifts but dislikes machines and aggressive coaching",
+        "Prefers traditional strength training focused on barbell and machine work with a no-nonsense coaching style",
+        "Committed to a calisthenics-only program with no barbell work, paired with calm coaching",
+        "Prefers high-intensity machine circuits with an encouraging but firm coaching approach"
+      ],
+      "expected_answer": "Prefers functional/natural movement training with supportive, educational coaching; tolerates barbell compound lifts but dislikes machines and aggressive coaching",
+      "gold_memory_state": "Confirmed training philosophy: functional/natural movement + supportive/educational coaching. Barbell compound lifts are tolerated. Machine circuits and aggressive coaching are disliked. Calisthenics-only is tentative, not confirmed. 'Traditional strength training' was a dismissed default label.",
+      "judge_rubric": {
+        "must_include": [
+          "option 1 selected"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "option 2 selected",
+          "option 3 selected",
+          "option 4 selected"
+        ],
+        "harmful_extra": [],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: Option 2 uses the 'traditional strength training' label from the assistant's mention of Marcus's initial assessment default, which the user explicitly dismissed as inaccurate—it describes a different person's or system's characterization, not the user's actual preference. assistant echo: Option 4 echoes elements of what the assistant described about Devon's machine circuits but reframes them as the user's preference. Option 3 is the recency-trap tentative distractor: it captures the possible calisthenics-only shift Marcus mentioned, which is not yet confirmed, and overgeneralizes by treating it as the user's committed philosophy.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects option 2 ('traditional strength training'), which was a dismissed default label, or option 3, which treats the tentative calisthenics-only plan as confirmed.",
+        "reflection_precision": "Fails if the model selects option 3, overgeneralizing the tentative calisthenics-only possibility into a confirmed commitment.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I think what it comes down to is I need training that feels like real movement, not just pushing weight on a rail. And the coaching has to be supportive—I shut down when someone's barking at me"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've always gravitated toward bodyweight exercises, resistance bands, kettlebell flows, pull-up progressions—anything that feels like natural movement rather than being locked into a machine"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "Which of the following best describes my overall training philosophy based on everything I've shared?",
+      "candidate_options": [
+        "Prefers functional/natural movement training with supportive, educational coaching; tolerates barbell compound lifts but dislikes machines and aggressive coaching",
+        "Prefers traditional strength training focused on barbell and machine work with a no-nonsense coaching style",
+        "Committed to a calisthenics-only program with no barbell work, paired with calm coaching",
+        "Prefers high-intensity machine circuits with an encouraging but firm coaching approach"
+      ],
+      "expected_answer": "Prefers functional/natural movement training with supportive, educational coaching; tolerates barbell compound lifts but dislikes machines and aggressive coaching",
+      "gold_memory_state": "Confirmed training philosophy: functional/natural movement + supportive/educational coaching. Barbell compound lifts are tolerated. Machine circuits and aggressive coaching are disliked. Calisthenics-only is tentative, not confirmed. 'Traditional strength training' was a dismissed default label.",
+      "judge_rubric": {
+        "must_include": [
+          "option 1 selected"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "option 2 selected",
+          "option 3 selected",
+          "option 4 selected"
+        ],
+        "harmful_extra": [],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: Option 2 uses the 'traditional strength training' label from the assistant's mention of Marcus's initial assessment default, which the user explicitly dismissed as inaccurate—it describes a different person's or system's characterization, not the user's actual preference. assistant echo: Option 4 echoes elements of what the assistant described about Devon's machine circuits but reframes them as the user's preference. Option 3 is the recency-trap tentative distractor: it captures the possible calisthenics-only shift Marcus mentioned, which is not yet confirmed, and overgeneralizes by treating it as the user's committed philosophy.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects option 2 ('traditional strength training'), which was a dismissed default label, or option 3, which treats the tentative calisthenics-only plan as confirmed.",
+        "reflection_precision": "Fails if the model selects option 3, overgeneralizing the tentative calisthenics-only possibility into a confirmed commitment.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I think what it comes down to is I need training that feels like real movement, not just pushing weight on a rail. And the coaching has to be supportive—I shut down when someone's barking at me"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've always gravitated toward bodyweight exercises, resistance bands, kettlebell flows, pull-up progressions—anything that feels like natural movement rather than being locked into a machine"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "My friend Carla is opening a small personal training studio and asked me to recommend the kind of trainer she should hire if she wants clients like me. She also wants to know what a fair session rate would be and what time slots to offer for early-morning clients. Draft a short recommendation for Carla covering trainer style, pricing guidance, and scheduling.",
+      "expected_answer": "Carla should look for a trainer who emphasizes functional and natural movement—think bodyweight exercises, resistance bands, kettlebell flows, and pull-up progressions rather than machine circuits. The coaching style should be calm, conversational, and educational, with the trainer explaining the reasoning behind each exercise rather than using a drill-sergeant approach. For pricing, $75 per session is a reasonable benchmark for this type of quality personal training. For early-morning scheduling, slots around 6:30 AM to 7:00 AM work well for committed clients—for example, offering a 6:30 AM slot on one weekday and a 7:00 AM slot on another.",
+      "gold_memory_state": "Training philosophy preference (confirmed): functional/natural movement + supportive/educational coaching. Session schedule and cost (confirmed): Tuesdays 6:30 AM, Thursdays 7 AM, $75/session. Preferred exercise types (confirmed): bodyweight, bands, kettlebells, pull-up progressions. Coaching style (confirmed): calm, conversational, explanatory. Tentative calisthenics-only shift is NOT confirmed and should not be presented as the recommended program structure.",
+      "judge_rubric": {
+        "must_include": [
+          "functional or natural movement emphasis",
+          "supportive/educational/calm coaching style",
+          "$75 per session as pricing reference",
+          "early morning time slots around 6:30-7:00 AM"
+        ],
+        "acceptable_paraphrases": [
+          "bodyweight and kettlebell work",
+          "explanatory coaching",
+          "conversational approach"
+        ],
+        "must_not_include": [
+          "recommending machine-based training",
+          "recommending drill-sergeant coaching",
+          "recommending calisthenics-only as the confirmed program model"
+        ],
+        "harmful_extra": [
+          "using $95 (Tom's trainer Rich's rate) as the benchmark",
+          "recommending aggressive or high-pressure coaching",
+          "presenting calisthenics-only as the standard offering"
+        ],
+        "harmless_extra": [
+          "mentioning that some clients may tolerate barbell compound lifts",
+          "noting that the trainer should be responsive to individual preferences"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses $95 (Rich's rate) instead of $75, or recommends 'traditional strength training' as the style.",
+        "reflection_precision": "Fails if the model recommends calisthenics-only as the confirmed standard, since that was only tentative.",
+        "reflection_recall": "Fails if the recommendation omits either the movement-type guidance or the coaching-style guidance.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user prefers functional/natural movement training—bodyweight exercises, resistance bands, kettlebell flows, pull-up progressions—over machine-based training.",
+        "Fact 2: The user prefers calm, conversational, educational coaching over aggressive or drill-sergeant coaching.",
+        "Fact 3: The user's current session rate with Marcus is $75 per session.",
+        "Fact 4: The user's current schedule is Tuesdays at 6:30 AM and Thursdays at 7:00 AM.",
+        "Inference: Combining the training philosophy preference with the pricing and scheduling data, a recommendation for Carla should specify a functional-movement-focused, supportive trainer at approximately $75/session with early-morning slots around 6:30–7:00 AM.",
+        "Inference: The tentative calisthenics-only shift is not confirmed, so the recommendation should describe the broader functional movement preference rather than a calisthenics-only model."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I think what it comes down to is I need training that feels like real movement, not just pushing weight on a rail. And the coaching has to be supportive—I shut down when someone's barking at me"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I committed to a 12-week block with Marcus at $75 per session. Sessions are Tuesdays at 6:30 AM and Thursdays at 7 AM"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've always gravitated toward bodyweight exercises, resistance bands, kettlebell flows, pull-up progressions—anything that feels like natural movement rather than being locked into a machine"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "What I love about Marcus is that he explains the reasoning behind every exercise. He keeps things calm and conversational. My friend Tom just started with a trainer who's apparently a total drill sergeant and that sounds awful to me"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "My friend Carla is opening a small personal training studio and asked me to recommend the kind of trainer she should hire if she wants clients like me. She also wants to know what a fair session rate would be and what time slots to offer for early-morning clients. Draft a short recommendation for Carla covering trainer style, pricing guidance, and scheduling.",
+      "expected_answer": "Carla should look for a trainer who emphasizes functional and natural movement—think bodyweight exercises, resistance bands, kettlebell flows, and pull-up progressions rather than machine circuits. The coaching style should be calm, conversational, and educational, with the trainer explaining the reasoning behind each exercise rather than using a drill-sergeant approach. For pricing, $75 per session is a reasonable benchmark for this type of quality personal training. For early-morning scheduling, slots around 6:30 AM to 7:00 AM work well for committed clients—for example, offering a 6:30 AM slot on one weekday and a 7:00 AM slot on another.",
+      "gold_memory_state": "Training philosophy preference (confirmed): functional/natural movement + supportive/educational coaching. Session schedule and cost (confirmed): Tuesdays 6:30 AM, Thursdays 7 AM, $75/session. Preferred exercise types (confirmed): bodyweight, bands, kettlebells, pull-up progressions. Coaching style (confirmed): calm, conversational, explanatory. Tentative calisthenics-only shift is NOT confirmed and should not be presented as the recommended program structure.",
+      "judge_rubric": {
+        "must_include": [
+          "functional or natural movement emphasis",
+          "supportive/educational/calm coaching style",
+          "$75 per session as pricing reference",
+          "early morning time slots around 6:30-7:00 AM"
+        ],
+        "acceptable_paraphrases": [
+          "bodyweight and kettlebell work",
+          "explanatory coaching",
+          "conversational approach"
+        ],
+        "must_not_include": [
+          "recommending machine-based training",
+          "recommending drill-sergeant coaching",
+          "recommending calisthenics-only as the confirmed program model"
+        ],
+        "harmful_extra": [
+          "using $95 (Tom's trainer Rich's rate) as the benchmark",
+          "recommending aggressive or high-pressure coaching",
+          "presenting calisthenics-only as the standard offering"
+        ],
+        "harmless_extra": [
+          "mentioning that some clients may tolerate barbell compound lifts",
+          "noting that the trainer should be responsive to individual preferences"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses $95 (Rich's rate) instead of $75, or recommends 'traditional strength training' as the style.",
+        "reflection_precision": "Fails if the model recommends calisthenics-only as the confirmed standard, since that was only tentative.",
+        "reflection_recall": "Fails if the recommendation omits either the movement-type guidance or the coaching-style guidance.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user prefers functional/natural movement training—bodyweight exercises, resistance bands, kettlebell flows, pull-up progressions—over machine-based training.",
+        "Fact 2: The user prefers calm, conversational, educational coaching over aggressive or drill-sergeant coaching.",
+        "Fact 3: The user's current session rate with Marcus is $75 per session.",
+        "Fact 4: The user's current schedule is Tuesdays at 6:30 AM and Thursdays at 7:00 AM.",
+        "Inference: Combining the training philosophy preference with the pricing and scheduling data, a recommendation for Carla should specify a functional-movement-focused, supportive trainer at approximately $75/session with early-morning slots around 6:30–7:00 AM.",
+        "Inference: The tentative calisthenics-only shift is not confirmed, so the recommendation should describe the broader functional movement preference rather than a calisthenics-only model."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I think what it comes down to is I need training that feels like real movement, not just pushing weight on a rail. And the coaching has to be supportive—I shut down when someone's barking at me"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I committed to a 12-week block with Marcus at $75 per session. Sessions are Tuesdays at 6:30 AM and Thursdays at 7 AM"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've always gravitated toward bodyweight exercises, resistance bands, kettlebell flows, pull-up progressions—anything that feels like natural movement rather than being locked into a machine"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "What I love about Marcus is that he explains the reasoning behind every exercise. He keeps things calm and conversational. My friend Tom just started with a trainer who's apparently a total drill sergeant and that sounds awful to me"
+        }
+      ]
+    }
+  ]
+}

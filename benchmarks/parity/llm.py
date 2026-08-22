@@ -146,7 +146,12 @@ def _resident_ctx(base_url: str, model: str):
 
 def load_env(path: str | None = None) -> dict:
     """Read an agora-style .env. Secrets never appear on a command line; they are read from the file."""
-    p = pathlib.Path(path or os.environ.get("AGORA_ENV_FILE", r"C:/Users/Danculus/agora/server/.env"))
+    # Relative to this file, never the author's home directory -- see DanceNitra/inspeximus#1.
+    _here = pathlib.Path(__file__).resolve().parent
+    _fallbacks = (_here.parent.parent / ".env", _here.parent.parent / "server" / ".env",
+                  pathlib.Path.cwd() / "server" / ".env")
+    p = pathlib.Path(path or os.environ.get("AGORA_ENV_FILE")
+                     or next((str(c) for c in _fallbacks if c.exists()), ""))
     env: dict[str, str] = {}
     if p.exists():
         for line in p.read_text(encoding="utf-8", errors="replace").splitlines():

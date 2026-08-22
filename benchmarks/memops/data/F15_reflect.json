@@ -1,0 +1,1039 @@
+{
+  "target_fact": "User gravitates toward natural/holistic health-oriented lifestyle choices as a coping and prevention strategy in response to learning about family medical history",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "my maternal grandfather was diagnosed with type 2 diabetes when he was around 52"
+      },
+      "target": {
+        "target_id": "maternal_grandfather_diabetes",
+        "target_name": "maternal grandfather's type 2 diabetes diagnosis"
+      },
+      "old_value": null,
+      "new_value": "Type 2 diabetes, diagnosed around age 52",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my maternal grandfather was diagnosed with type 2 diabetes when he was around 52"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "my dad takes statins for high cholesterol and he started them when he was 48"
+      },
+      "target": {
+        "target_id": "father_cholesterol_statins",
+        "target_name": "father's high cholesterol and statin use"
+      },
+      "old_value": null,
+      "new_value": "High cholesterol, started statins at age 48, currently 67",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my dad takes statins for high cholesterol and he started them when he was 48"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I've been making these big raw vegetable salads almost every day and I genuinely enjoy them"
+      },
+      "target": {
+        "target_id": "salad_habit",
+        "target_name": "daily big raw vegetable salad habit"
+      },
+      "old_value": null,
+      "new_value": "Eats big raw vegetable salads almost daily and genuinely enjoys them",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've been making these big raw vegetable salads almost every day and I genuinely enjoy them"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I picked up this turmeric-ginger tea a few weeks ago and I drink it almost every evening now"
+      },
+      "target": {
+        "target_id": "turmeric_ginger_tea_habit",
+        "target_name": "nightly turmeric-ginger tea habit"
+      },
+      "old_value": null,
+      "new_value": "Drinks turmeric-ginger tea almost every evening",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I picked up this turmeric-ginger tea a few weeks ago and I drink it almost every evening now"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "when I heard about my cousin Jake's BRCA1 result I went for a long walk outside and that's how I processed it"
+      },
+      "target": {
+        "target_id": "walking_to_process_emotions",
+        "target_name": "uses walking outside to process difficult emotions"
+      },
+      "old_value": null,
+      "new_value": "Goes for walks outside to process difficult emotions; prefers moving outside over sitting and stewing",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "when I heard about my cousin Jake's BRCA1 result I went for a long walk outside and that's how I processed it"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "I think learning all this family health stuff has pushed me toward more natural, food-based, movement-based ways of taking care of myself rather than just waiting for a doctor to tell me what to do"
+      },
+      "target": {
+        "target_id": "holistic_health_orientation",
+        "target_name": "preference for natural/holistic health-oriented lifestyle choices"
+      },
+      "old_value": null,
+      "new_value": "Gravitates toward natural, food-based, and movement-based health strategies (raw vegetable salads, herbal teas, outdoor walks) as a proactive response to family medical history rather than relying solely on medical intervention",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've been making these big raw vegetable salads almost every day and I genuinely enjoy them"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I picked up this turmeric-ginger tea a few weeks ago and I drink it almost every evening now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "when I heard about my cousin Jake's BRCA1 result I went for a long walk outside and that's how I processed it"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 7,
+        "quote": "my nutritionist recommended I start taking a daily turmeric supplement capsule instead of the tea since the bioavailability is supposedly much higher"
+      },
+      "target": {
+        "target_id": "turmeric_supplement_switch",
+        "target_name": "potential switch from turmeric tea to turmeric supplement capsule"
+      },
+      "old_value": null,
+      "new_value": "Nutritionist recommended switching from turmeric-ginger tea to a daily turmeric supplement capsule for higher bioavailability",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "my nutritionist recommended I start taking a daily turmeric supplement capsule instead of the tea since the bioavailability is supposedly much higher"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish family medical history facts and initial health behavior changes",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to talk through some family medical history stuff I've been piecing together. I had a big intake appointment with my new primary care doctor back in early March, and afterward I called my mom to fill in gaps. She told me my maternal grandfather was diagnosed with type 2 diabetes when he was around 52. I hadn't known that before, and it's been on my mind since I'm in my late thirties now."
+        },
+        {
+          "role": "assistant",
+          "content": "Thank you for sharing that with me. It's really responsible of you to be gathering this information, especially at your age when preventive awareness can make a real difference. Your maternal grandfather being diagnosed with type 2 diabetes around age 52 is definitely a relevant data point for your own health planning. Family history of type 2 diabetes, especially in a first-degree or second-degree relative, is something your primary care doctor will want to factor into screening recommendations. Did your mom share anything else about your maternal side of the family during that call?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, she also mentioned my Aunt Linda on her side was diagnosed with breast cancer about three years ago. She had a lumpectomy and chemo and is doing okay now. But the big thing health-wise I wanted to note is that my dad takes statins for high cholesterol and he started them when he was 48. He's 67 now, so he's been on them nearly twenty years. That feels like something I should be tracking given I'm getting closer to that age range."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a lot of significant family health information to process. Your Aunt Linda's breast cancer diagnosis and your father's long-term statin use for high cholesterol are both important pieces of the picture. The fact that your dad started statins at 48 is particularly notable because it suggests he was dealing with elevated cholesterol relatively early. Since he's now 67 and has been managing it for roughly nineteen years, that gives your doctor a sense of the timeline and heritability risk. Combined with the type 2 diabetes on your maternal side, you're building a really thorough profile. Are you planning to share all of this with your new doctor?"
+        },
+        {
+          "role": "user",
+          "content": "Definitely, I'm putting together a summary for her. But honestly, even before I get back to the doctor, I've already been changing some habits. I've been making these big raw vegetable salads almost every day and I genuinely enjoy them. It's not some forced diet thing—I actually look forward to them. Lots of kale, bell peppers, shredded carrots, radishes. It makes me feel like I'm doing something proactive about all this family history stuff."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really positive response to what could feel overwhelming. The fact that you genuinely enjoy the salads rather than forcing yourself into a restrictive routine is a great sign—it means the habit is more likely to stick long-term. Kale, bell peppers, carrots, and radishes are all excellent choices: they're high in fiber, antioxidants, and various micronutrients that support cardiovascular and metabolic health. Given your family history with both diabetes and high cholesterol, a plant-rich diet is one of the most effective lifestyle interventions. It sounds like you're channeling the anxiety from these discoveries into something constructive and sustainable."
+        },
+        {
+          "role": "user",
+          "content": "That's exactly how it feels. I also found a note I'd written to myself—probably from the holidays—saying my paternal grandmother died of a stroke at 71, with 'hypertension' written next to it with a question mark. I think my dad mentioned she had high blood pressure but I'm not totally certain. I need to double-check with him. For now I'm just flagging it as possible but unconfirmed."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a smart approach—flagging it as possible but unconfirmed until you can verify with your dad. If your paternal grandmother did have hypertension that contributed to a stroke at 71, that would add another cardiovascular risk factor to your family picture alongside your father's high cholesterol. The combination of potential hypertension on one side and confirmed high cholesterol on the other would be worth discussing with your doctor in terms of when to start monitoring your own blood pressure and lipid panels more closely. When you do check with your dad, it might also be worth asking if she was on any blood pressure medication."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establish tea habit and walking habit; trigger the reflect operation on holistic health orientation",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I wanted to mention another thing I've been doing. I picked up this turmeric-ginger tea a few weeks ago and I drink it almost every evening now. There's something about having a warm herbal drink at night that just feels right—like a ritual. It's calming, and I read that turmeric has anti-inflammatory properties, so it feels like another small thing I can do for my health alongside the salads."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a lovely evening ritual. Turmeric and ginger both have well-documented anti-inflammatory and antioxidant properties, and the ritualistic aspect of preparing and drinking a warm beverage in the evening can also have genuine stress-reduction benefits. Chronic stress is itself a risk factor for cardiovascular disease and metabolic issues, so the calming effect you're describing isn't just psychological comfort—it's potentially protective. Combined with your daily salads, you're building a pattern of small, sustainable health-supportive habits. It's interesting how naturally you've gravitated toward food and drink-based interventions rather than jumping straight to supplements or medications."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, and it's not just food-related stuff. I mentioned my cousin Jake on my mom's side found out he carries one copy of the BRCA1 variant—his genetic counselor told him around April 18th. When I heard that news, when I heard about my cousin Jake's BRCA1 result I went for a long walk outside and that's how I processed it. I'd always rather be outside moving than sitting somewhere stewing on bad news. Walking just settles something in me."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really meaningful self-awareness to have—knowing that physical movement outdoors is your go-to for processing difficult emotions. Jake's BRCA1 result must have been quite a shock, especially given everything else you've been learning about your family's health history. The fact that you instinctively went for a walk rather than spiraling into worry or avoidance says a lot about your coping style. Research consistently shows that walking, especially in outdoor settings, reduces cortisol levels and activates parasympathetic nervous system responses. It sounds like you've intuitively built a toolkit—salads, herbal tea, outdoor walking—that centers on natural, body-based approaches to health."
+        },
+        {
+          "role": "user",
+          "content": "You're picking up on something I've been noticing about myself too. I think learning all this family health stuff has pushed me toward more natural, food-based, movement-based ways of taking care of myself rather than just waiting for a doctor to tell me what to do. It's not that I'm anti-medicine—my dad's statins have clearly helped him. But for me, right now, I feel most empowered when I'm doing things with my own hands and feet, if that makes sense."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes complete sense, and it's a really thoughtful self-observation. You're describing a proactive, holistic health orientation—one where you take ownership through daily choices like nutrition, herbal rituals, and movement rather than passively waiting for clinical intervention. It's not an either-or with medicine; it's about agency. Your father's statin use shows you respect medical treatment when it's needed, but your instinct is to build a preventive foundation through lifestyle first. Given your family history with diabetes, cholesterol, and now the BRCA1 finding in your cousin, this proactive stance positions you well. You're creating habits that address multiple risk factors simultaneously—inflammation, stress, cardiovascular health—through means you genuinely enjoy."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. Oh, and one more family thing—my mom confirmed there's no history of autoimmune conditions on her side, which is a relief. And my maternal grandmother had osteoporosis, diagnosed in her late sixties. I'm just adding that to the file for completeness. Between the diabetes, the breast cancer, the BRCA1 thing, and now the osteoporosis, there's a lot to keep track of on my mom's side."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a thorough update. It's good news about no autoimmune conditions on your maternal side—that's one less category to worry about. Your maternal grandmother's osteoporosis diagnosis in her late sixties is worth noting, especially since osteoporosis risk does have a hereditary component. The good news is that many of the lifestyle habits you're already building—nutrient-dense foods, regular physical activity—are also protective against bone density loss. Vitamin D and calcium intake, along with weight-bearing exercise like walking, are key preventive factors. You're right that your maternal side has a complex picture: type 2 diabetes in your grandfather, breast cancer in your aunt, BRCA1 in your cousin Jake, and osteoporosis in your grandmother. Having it all documented will be valuable for your doctor."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Adversarial injection of look-alike value; recency trap with tentative supplement recommendation; continued health discussion",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I've been putting together that summary document for my doctor and I realized I should also mention that the colon cancer thing on my dad's side was a misunderstanding. My dad clarified last month that his brother just had a benign polyp removed, not cancer. So that's actually off the table, which is a relief. I want the record to be accurate."
+        },
+        {
+          "role": "assistant",
+          "content": "That's an important correction to make. A benign polyp is quite different from colon cancer in terms of your hereditary risk profile, so removing that from your family history summary is the right call. It's actually good practice that your dad's brother had the polyp found and removed—it suggests the family is getting appropriate screenings. For your document, you might want to note that your paternal uncle had a benign polyp removed, just so your doctor has the full picture without the cancer misattribution. Interestingly, I recall you mentioned your maternal grandfather's diabetes diagnosis was around age 52—some intake forms ask for a similar-age-of-onset field for metabolic conditions, so you might want to include that detail."
+        },
+        {
+          "role": "user",
+          "content": "Good point, I'll include the polyp note. I've been looking at some family health risk assessment tools online too. One of them flagged that with a first-degree relative on statins before 50, I should probably get my first lipid panel by 35 if I haven't already. I'm 38, so I'm a bit overdue on that. I'll bring it up at my next appointment."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really proactive step. Given that your father started statins at 48, the recommendation to get a lipid panel by 35 makes sense under most cardiovascular screening guidelines. At 38, you're not drastically behind, but it's definitely something to prioritize at your next visit. Your doctor will likely want a fasting lipid panel that includes total cholesterol, LDL, HDL, and triglycerides. Given your family's combined cardiovascular risk factors—your father's high cholesterol and the possible hypertension in your paternal grandmother—establishing a baseline now will be really valuable. On a related note, I noticed that some of those online assessment tools reference a family history threshold of diabetes onset before age 55, which your maternal grandfather's diagnosis at 52 would meet."
+        },
+        {
+          "role": "user",
+          "content": "That's helpful, thank you. I've also been thinking about Jake's BRCA1 result and whether I should pursue genetic testing. My mom's side has the breast cancer with Aunt Linda and now Jake's carrier status. I keep going back and forth but I think I'll probably do it eventually. It's just a lot to take in all at once."
+        },
+        {
+          "role": "assistant",
+          "content": "It's completely understandable to feel overwhelmed. The combination of your Aunt Linda's breast cancer diagnosis and Jake's BRCA1 carrier status does create a reasonable basis for considering genetic counseling, especially since they're both on your maternal side. A genetic counselor could help you assess whether testing makes sense given your specific family pattern and could walk you through what different results would mean practically. There's no rush—many people take months or even years to decide, and the information will still be relevant whenever you're ready. In the meantime, the lifestyle foundation you've been building with your salads, turmeric-ginger tea, and regular walking is beneficial regardless of any genetic results."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, I'm not rushing it. Oh, speaking of the turmeric stuff—my nutritionist recommended I start taking a daily turmeric supplement capsule instead of the tea since the bioavailability is supposedly much higher. She said the concentrated curcumin extract is more effective than what you get from brewed tea. I haven't decided yet but she seemed pretty confident about it.\n\nThat's a good way to think about it. I do love the ritual aspect of the tea. Anyway, I feel like I have a much better handle on my family health picture now than I did before that March appointment. The diabetes, the cholesterol, Aunt Linda's breast cancer, Jake's BRCA1, the osteoporosis—it's a lot, but at least I know what I'm working with. And I feel good about the habits I've built."
+        },
+        {
+          "role": "assistant",
+          "content": "That's an interesting recommendation. Your nutritionist has a point about bioavailability—curcumin in supplement form, especially when paired with piperine or a lipid carrier, does have significantly higher absorption rates than what you'd get from brewed turmeric tea. However, your evening tea ritual clearly offers benefits beyond just curcumin intake: the calming routine, the warmth, the ginger component, and the stress-reduction aspect are all valuable. It doesn't necessarily have to be one or the other—some people take the supplement for the concentrated anti-inflammatory benefit and keep the tea as a relaxation ritual. It's worth considering what you'd lose experientially if you dropped the tea entirely.\n\nYou really have done an impressive job of pulling all of this together. In just a couple of months, you've gone from not knowing many specifics to having a comprehensive family health map that covers metabolic conditions like your maternal grandfather's diabetes, cardiovascular factors like your father's cholesterol management, oncological history with your Aunt Linda's breast cancer and Jake's BRCA1 carrier status, and musculoskeletal concerns with your maternal grandmother's osteoporosis. More importantly, you've responded to all of this by building sustainable, enjoyable health habits rather than just worrying. The salads, the tea, the walking—they're not just isolated healthy choices, they reflect a genuine orientation toward proactive, natural self-care. That's a really solid foundation to bring to your next doctor's visit."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "What specific experiences and habits have I shared with you that together reveal how I've been responding to learning about my family's health conditions?",
+      "expected_answer": "You shared three key habits that emerged in response to your family medical history: (1) making big raw vegetable salads almost every day with kale, bell peppers, shredded carrots, and radishes, which you genuinely enjoy; (2) drinking turmeric-ginger tea almost every evening as a calming ritual with perceived anti-inflammatory benefits; and (3) going for long walks outside to process difficult emotions, such as when you learned about your cousin Jake's BRCA1 result. You explicitly noted that learning about your family health history has pushed you toward natural, food-based, and movement-based self-care rather than passively waiting for medical intervention.",
+      "gold_memory_state": "Three confirmed behavioral habits (daily raw vegetable salads, nightly turmeric-ginger tea, outdoor walking for emotional processing) are stored. A reflect-level inference is confirmed: the user gravitates toward natural/holistic health-oriented lifestyle choices as a proactive response to family medical history. A tentative nutritionist recommendation to switch from tea to a turmeric supplement capsule exists but has not been adopted.",
+      "judge_rubric": {
+        "must_include": [
+          "raw vegetable salads",
+          "turmeric-ginger tea",
+          "walking outside",
+          "family health history as motivation"
+        ],
+        "acceptable_paraphrases": [
+          "herbal tea",
+          "evening tea ritual",
+          "outdoor walks",
+          "long walks"
+        ],
+        "must_not_include": [
+          "turmeric supplement capsule as an adopted habit"
+        ],
+        "harmful_extra": [
+          "claiming the user has switched to supplement capsules",
+          "claiming the user is anti-medicine"
+        ],
+        "harmless_extra": [
+          "mentioning specific vegetables like kale or bell peppers",
+          "mentioning cousin Jake's BRCA1 result as the walking trigger",
+          "mentioning the user's statement about not being anti-medicine"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the turmeric supplement capsule is presented as an adopted habit rather than an unresolved recommendation.",
+        "reflection_precision": "Fails if the model attributes habits to the user that were not mentioned (e.g., meditation, yoga, specific supplements).",
+        "reflection_recall": "Fails if the model omits one or more of the three core habits (salads, tea, walking) or fails to connect them to family health history.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've been making these big raw vegetable salads almost every day and I genuinely enjoy them"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I picked up this turmeric-ginger tea a few weeks ago and I drink it almost every evening now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "when I heard about my cousin Jake's BRCA1 result I went for a long walk outside and that's how I processed it"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think learning all this family health stuff has pushed me toward more natural, food-based, movement-based ways of taking care of myself rather than just waiting for a doctor to tell me what to do"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "What specific experiences and habits have I shared with you that together reveal how I've been responding to learning about my family's health conditions?",
+      "expected_answer": "You shared three key habits that emerged in response to your family medical history: (1) making big raw vegetable salads almost every day with kale, bell peppers, shredded carrots, and radishes, which you genuinely enjoy; (2) drinking turmeric-ginger tea almost every evening as a calming ritual with perceived anti-inflammatory benefits; and (3) going for long walks outside to process difficult emotions, such as when you learned about your cousin Jake's BRCA1 result. You explicitly noted that learning about your family health history has pushed you toward natural, food-based, and movement-based self-care rather than passively waiting for medical intervention.",
+      "gold_memory_state": "Three confirmed behavioral habits (daily raw vegetable salads, nightly turmeric-ginger tea, outdoor walking for emotional processing) are stored. A reflect-level inference is confirmed: the user gravitates toward natural/holistic health-oriented lifestyle choices as a proactive response to family medical history. A tentative nutritionist recommendation to switch from tea to a turmeric supplement capsule exists but has not been adopted.",
+      "judge_rubric": {
+        "must_include": [
+          "raw vegetable salads",
+          "turmeric-ginger tea",
+          "walking outside",
+          "family health history as motivation"
+        ],
+        "acceptable_paraphrases": [
+          "herbal tea",
+          "evening tea ritual",
+          "outdoor walks",
+          "long walks"
+        ],
+        "must_not_include": [
+          "turmeric supplement capsule as an adopted habit"
+        ],
+        "harmful_extra": [
+          "claiming the user has switched to supplement capsules",
+          "claiming the user is anti-medicine"
+        ],
+        "harmless_extra": [
+          "mentioning specific vegetables like kale or bell peppers",
+          "mentioning cousin Jake's BRCA1 result as the walking trigger",
+          "mentioning the user's statement about not being anti-medicine"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the turmeric supplement capsule is presented as an adopted habit rather than an unresolved recommendation.",
+        "reflection_precision": "Fails if the model attributes habits to the user that were not mentioned (e.g., meditation, yoga, specific supplements).",
+        "reflection_recall": "Fails if the model omits one or more of the three core habits (salads, tea, walking) or fails to connect them to family health history.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've been making these big raw vegetable salads almost every day and I genuinely enjoy them"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I picked up this turmeric-ginger tea a few weeks ago and I drink it almost every evening now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "when I heard about my cousin Jake's BRCA1 result I went for a long walk outside and that's how I processed it"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think learning all this family health stuff has pushed me toward more natural, food-based, movement-based ways of taking care of myself rather than just waiting for a doctor to tell me what to do"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've shared both specific daily health habits and also broader feelings about how I approach my well-being. If I were filling out a wellness coaching intake form that has a field for 'overall health philosophy or approach,' which of my statements captures that broader conclusion, and would my individual habit details like specific foods or drinks belong in that same field or in separate fields?",
+      "expected_answer": "The broader conclusion is your stated preference for natural, food-based, and movement-based ways of taking care of yourself as a proactive response to family medical history, rather than passively waiting for medical intervention. This belongs in the 'overall health philosophy' field. Your individual habits—daily raw vegetable salads, nightly turmeric-ginger tea, and outdoor walking—are the concrete evidence supporting that philosophy but would belong in separate habit-specific fields, not collapsed into the philosophy field.",
+      "gold_memory_state": "The holistic health orientation inference is a confirmed reflect-level conclusion supported by three confirmed behavioral habits. The individual habits (salads, tea, walking) are separate confirmed facts that serve as evidence for the inference but are distinct records. The tentative turmeric supplement recommendation is not part of the confirmed philosophy.",
+      "judge_rubric": {
+        "must_include": [
+          "natural/food-based/movement-based health approach as the broader conclusion",
+          "individual habits are separate supporting evidence"
+        ],
+        "acceptable_paraphrases": [
+          "holistic health orientation",
+          "proactive lifestyle-based health philosophy",
+          "preference for natural self-care"
+        ],
+        "must_not_include": [
+          "turmeric supplement capsule as part of the confirmed philosophy"
+        ],
+        "harmful_extra": [
+          "collapsing all habits into the philosophy field without distinguishing the abstract conclusion from concrete habits",
+          "including the tentative supplement switch as part of the confirmed approach"
+        ],
+        "harmless_extra": [
+          "naming specific habits as examples",
+          "mentioning that the user is not anti-medicine"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model treats a single habit (e.g., just salads) as the full bounded conclusion rather than recognizing the cross-habit pattern.",
+        "reflection_recall": "Fails if the model cannot distinguish the abstract preference from the concrete individual habits.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think learning all this family health stuff has pushed me toward more natural, food-based, movement-based ways of taking care of myself rather than just waiting for a doctor to tell me what to do"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've been making these big raw vegetable salads almost every day and I genuinely enjoy them"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I picked up this turmeric-ginger tea a few weeks ago and I drink it almost every evening now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "when I heard about my cousin Jake's BRCA1 result I went for a long walk outside and that's how I processed it"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've shared both specific daily health habits and also broader feelings about how I approach my well-being. If I were filling out a wellness coaching intake form that has a field for 'overall health philosophy or approach,' which of my statements captures that broader conclusion, and would my individual habit details like specific foods or drinks belong in that same field or in separate fields?",
+      "expected_answer": "The broader conclusion is your stated preference for natural, food-based, and movement-based ways of taking care of yourself as a proactive response to family medical history, rather than passively waiting for medical intervention. This belongs in the 'overall health philosophy' field. Your individual habits—daily raw vegetable salads, nightly turmeric-ginger tea, and outdoor walking—are the concrete evidence supporting that philosophy but would belong in separate habit-specific fields, not collapsed into the philosophy field.",
+      "gold_memory_state": "The holistic health orientation inference is a confirmed reflect-level conclusion supported by three confirmed behavioral habits. The individual habits (salads, tea, walking) are separate confirmed facts that serve as evidence for the inference but are distinct records. The tentative turmeric supplement recommendation is not part of the confirmed philosophy.",
+      "judge_rubric": {
+        "must_include": [
+          "natural/food-based/movement-based health approach as the broader conclusion",
+          "individual habits are separate supporting evidence"
+        ],
+        "acceptable_paraphrases": [
+          "holistic health orientation",
+          "proactive lifestyle-based health philosophy",
+          "preference for natural self-care"
+        ],
+        "must_not_include": [
+          "turmeric supplement capsule as part of the confirmed philosophy"
+        ],
+        "harmful_extra": [
+          "collapsing all habits into the philosophy field without distinguishing the abstract conclusion from concrete habits",
+          "including the tentative supplement switch as part of the confirmed approach"
+        ],
+        "harmless_extra": [
+          "naming specific habits as examples",
+          "mentioning that the user is not anti-medicine"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model treats a single habit (e.g., just salads) as the full bounded conclusion rather than recognizing the cross-habit pattern.",
+        "reflection_recall": "Fails if the model cannot distinguish the abstract preference from the concrete individual habits.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think learning all this family health stuff has pushed me toward more natural, food-based, movement-based ways of taking care of myself rather than just waiting for a doctor to tell me what to do"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've been making these big raw vegetable salads almost every day and I genuinely enjoy them"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I picked up this turmeric-ginger tea a few weeks ago and I drink it almost every evening now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "when I heard about my cousin Jake's BRCA1 result I went for a long walk outside and that's how I processed it"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe the boundary of what my health-related habits and choices actually tell you about my preferences. Where does the supported pattern end, and what broader claims about me would go too far?",
+      "expected_answer": "The supported pattern is that you gravitate toward natural, food-based, and movement-based health strategies—daily raw vegetable salads, nightly turmeric-ginger tea, and outdoor walking—as a proactive response to learning about family medical history (grandfather's diabetes, father's cholesterol, cousin Jake's BRCA1 status). You prefer taking ownership through hands-on lifestyle choices rather than passively waiting for clinical direction. However, you are not anti-medicine: you explicitly acknowledged your father's statins have helped him. The pattern should not be extended to conclude you would refuse medical treatment, avoid doctors, reject pharmaceuticals, or dismiss professional medical advice. It also should not be extended to assume you follow any specific dietary ideology such as veganism or raw foodism, or that you practice formal alternative medicine modalities like acupuncture or homeopathy.",
+      "gold_memory_state": "Confirmed inference: user gravitates toward natural, food-based, and movement-based health strategies as a proactive response to family medical history. Supported by three confirmed habits (salads, tea, walking). The user explicitly stated they are not anti-medicine and respect medical treatment when needed. Tentative: nutritionist's turmeric supplement recommendation is undecided. Unsupported overgeneralizations: anti-medicine stance, refusal of pharmaceuticals, adherence to a specific dietary ideology, practice of formal alternative medicine.",
+      "judge_rubric": {
+        "must_include": [
+          "natural/food-based/movement-based preference",
+          "proactive response to family medical history",
+          "not anti-medicine",
+          "boundary against overgeneralizing to rejection of medical treatment"
+        ],
+        "acceptable_paraphrases": [
+          "holistic lifestyle orientation",
+          "prefers hands-on self-care",
+          "lifestyle-first approach"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the user would refuse statins or other medications",
+          "claiming the user follows a specific dietary ideology like veganism",
+          "presenting the turmeric supplement switch as adopted"
+        ],
+        "harmless_extra": [
+          "naming specific family conditions as context",
+          "naming specific habits as evidence"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the turmeric supplement capsule is presented as an adopted change rather than a tentative undecided recommendation.",
+        "reflection_precision": "Fails if the model claims the user is anti-medicine, would refuse pharmaceuticals, follows a specific dietary ideology, or practices formal alternative medicine.",
+        "reflection_recall": "Fails if the model omits the supported inference (natural/holistic orientation) or fails to articulate the boundary against unsupported overgeneralization.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think learning all this family health stuff has pushed me toward more natural, food-based, movement-based ways of taking care of myself rather than just waiting for a doctor to tell me what to do"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "It's not that I'm anti-medicine—my dad's statins have clearly helped him"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've been making these big raw vegetable salads almost every day and I genuinely enjoy them"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I picked up this turmeric-ginger tea a few weeks ago and I drink it almost every evening now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "when I heard about my cousin Jake's BRCA1 result I went for a long walk outside and that's how I processed it"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe the boundary of what my health-related habits and choices actually tell you about my preferences. Where does the supported pattern end, and what broader claims about me would go too far?",
+      "expected_answer": "The supported pattern is that you gravitate toward natural, food-based, and movement-based health strategies—daily raw vegetable salads, nightly turmeric-ginger tea, and outdoor walking—as a proactive response to learning about family medical history (grandfather's diabetes, father's cholesterol, cousin Jake's BRCA1 status). You prefer taking ownership through hands-on lifestyle choices rather than passively waiting for clinical direction. However, you are not anti-medicine: you explicitly acknowledged your father's statins have helped him. The pattern should not be extended to conclude you would refuse medical treatment, avoid doctors, reject pharmaceuticals, or dismiss professional medical advice. It also should not be extended to assume you follow any specific dietary ideology such as veganism or raw foodism, or that you practice formal alternative medicine modalities like acupuncture or homeopathy.",
+      "gold_memory_state": "Confirmed inference: user gravitates toward natural, food-based, and movement-based health strategies as a proactive response to family medical history. Supported by three confirmed habits (salads, tea, walking). The user explicitly stated they are not anti-medicine and respect medical treatment when needed. Tentative: nutritionist's turmeric supplement recommendation is undecided. Unsupported overgeneralizations: anti-medicine stance, refusal of pharmaceuticals, adherence to a specific dietary ideology, practice of formal alternative medicine.",
+      "judge_rubric": {
+        "must_include": [
+          "natural/food-based/movement-based preference",
+          "proactive response to family medical history",
+          "not anti-medicine",
+          "boundary against overgeneralizing to rejection of medical treatment"
+        ],
+        "acceptable_paraphrases": [
+          "holistic lifestyle orientation",
+          "prefers hands-on self-care",
+          "lifestyle-first approach"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the user would refuse statins or other medications",
+          "claiming the user follows a specific dietary ideology like veganism",
+          "presenting the turmeric supplement switch as adopted"
+        ],
+        "harmless_extra": [
+          "naming specific family conditions as context",
+          "naming specific habits as evidence"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the turmeric supplement capsule is presented as an adopted change rather than a tentative undecided recommendation.",
+        "reflection_precision": "Fails if the model claims the user is anti-medicine, would refuse pharmaceuticals, follows a specific dietary ideology, or practices formal alternative medicine.",
+        "reflection_recall": "Fails if the model omits the supported inference (natural/holistic orientation) or fails to articulate the boundary against unsupported overgeneralization.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think learning all this family health stuff has pushed me toward more natural, food-based, movement-based ways of taking care of myself rather than just waiting for a doctor to tell me what to do"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "It's not that I'm anti-medicine—my dad's statins have clearly helped him"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've been making these big raw vegetable salads almost every day and I genuinely enjoy them"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I picked up this turmeric-ginger tea a few weeks ago and I drink it almost every evening now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "when I heard about my cousin Jake's BRCA1 result I went for a long walk outside and that's how I processed it"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "Which of the following best describes the overall pattern behind my recent health-related lifestyle changes?",
+      "candidate_options": [
+        "A proactive orientation toward natural, food-based, and movement-based health strategies motivated by family medical history, while remaining open to conventional medicine when needed",
+        "A strict anti-pharmaceutical stance that rejects all conventional medical treatments in favor of exclusively natural remedies",
+        "A nutritionist-directed supplement regimen replacing previous food and drink habits with concentrated capsule-based alternatives",
+        "A doctor-prescribed preventive care plan involving regular screenings and medication readiness based on hereditary risk factors"
+      ],
+      "expected_answer": "A proactive orientation toward natural, food-based, and movement-based health strategies motivated by family medical history, while remaining open to conventional medicine when needed",
+      "gold_memory_state": "The confirmed inference is that the user gravitates toward natural, food-based, and movement-based health strategies as a proactive response to family medical history. The user explicitly stated they are not anti-medicine. The nutritionist's turmeric supplement recommendation is tentative and undecided. No doctor-prescribed preventive plan has been described.",
+      "judge_rubric": {
+        "must_include": [
+          "natural/food-based/movement-based orientation",
+          "motivated by family medical history",
+          "open to conventional medicine"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "anti-pharmaceutical stance",
+          "supplement regimen replacing tea",
+          "doctor-prescribed plan"
+        ],
+        "harmful_extra": [
+          "selecting the anti-pharmaceutical option",
+          "selecting the supplement regimen option",
+          "selecting the doctor-prescribed plan option"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: Option D (doctor-prescribed preventive care plan) borrows the preventive health framing from the user's actual self-directed approach but incorrectly attributes it to a doctor's prescription, which is a different source/target. assistant echo: Option C (nutritionist-directed supplement regimen) echoes the assistant's discussion of the nutritionist's turmeric supplement recommendation but overgeneralizes it into a full regimen, and the user has not adopted this. Option B (anti-pharmaceutical stance) is an overgeneralization distractor that contradicts the user's explicit statement about not being anti-medicine.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the supplement regimen option, treating the tentative nutritionist recommendation as adopted.",
+        "reflection_precision": "Fails if the model selects the anti-pharmaceutical option, overgeneralizing the user's preference into an absolute rejection of medicine.",
+        "reflection_recall": "Fails if the model selects the doctor-prescribed option, missing that the user's approach is self-directed rather than clinician-directed.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think learning all this family health stuff has pushed me toward more natural, food-based, movement-based ways of taking care of myself rather than just waiting for a doctor to tell me what to do"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "It's not that I'm anti-medicine—my dad's statins have clearly helped him"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "Which of the following best describes the overall pattern behind my recent health-related lifestyle changes?",
+      "candidate_options": [
+        "A proactive orientation toward natural, food-based, and movement-based health strategies motivated by family medical history, while remaining open to conventional medicine when needed",
+        "A strict anti-pharmaceutical stance that rejects all conventional medical treatments in favor of exclusively natural remedies",
+        "A nutritionist-directed supplement regimen replacing previous food and drink habits with concentrated capsule-based alternatives",
+        "A doctor-prescribed preventive care plan involving regular screenings and medication readiness based on hereditary risk factors"
+      ],
+      "expected_answer": "A proactive orientation toward natural, food-based, and movement-based health strategies motivated by family medical history, while remaining open to conventional medicine when needed",
+      "gold_memory_state": "The confirmed inference is that the user gravitates toward natural, food-based, and movement-based health strategies as a proactive response to family medical history. The user explicitly stated they are not anti-medicine. The nutritionist's turmeric supplement recommendation is tentative and undecided. No doctor-prescribed preventive plan has been described.",
+      "judge_rubric": {
+        "must_include": [
+          "natural/food-based/movement-based orientation",
+          "motivated by family medical history",
+          "open to conventional medicine"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "anti-pharmaceutical stance",
+          "supplement regimen replacing tea",
+          "doctor-prescribed plan"
+        ],
+        "harmful_extra": [
+          "selecting the anti-pharmaceutical option",
+          "selecting the supplement regimen option",
+          "selecting the doctor-prescribed plan option"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: Option D (doctor-prescribed preventive care plan) borrows the preventive health framing from the user's actual self-directed approach but incorrectly attributes it to a doctor's prescription, which is a different source/target. assistant echo: Option C (nutritionist-directed supplement regimen) echoes the assistant's discussion of the nutritionist's turmeric supplement recommendation but overgeneralizes it into a full regimen, and the user has not adopted this. Option B (anti-pharmaceutical stance) is an overgeneralization distractor that contradicts the user's explicit statement about not being anti-medicine.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the supplement regimen option, treating the tentative nutritionist recommendation as adopted.",
+        "reflection_precision": "Fails if the model selects the anti-pharmaceutical option, overgeneralizing the user's preference into an absolute rejection of medicine.",
+        "reflection_recall": "Fails if the model selects the doctor-prescribed option, missing that the user's approach is self-directed rather than clinician-directed.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think learning all this family health stuff has pushed me toward more natural, food-based, movement-based ways of taking care of myself rather than just waiting for a doctor to tell me what to do"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "It's not that I'm anti-medicine—my dad's statins have clearly helped him"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I just got some unsettling news: my doctor called to say my fasting glucose came back slightly elevated and she wants to discuss next steps. Given everything you know about my family history, my current daily habits, and how I tend to cope with health-related stress, draft a short action plan for the next 48 hours that plays to my strengths.",
+      "expected_answer": "Given your elevated fasting glucose and your maternal grandfather's type 2 diabetes diagnosis around age 52, this result is especially relevant to monitor. Here is a 48-hour action plan aligned with your natural, proactive approach:\n\n1. Process the news your way: Take a long walk outside today to work through the emotions, as this is your preferred method for handling difficult health information.\n\n2. Double down on your dietary strengths: Continue your daily big raw vegetable salads—the fiber and nutrient density from kale, bell peppers, carrots, and radishes support blood sugar regulation. Consider making them your main meals for the next two days.\n\n3. Keep your evening ritual: Have your turmeric-ginger tea each evening for its calming and anti-inflammatory benefits. The stress-reduction aspect is especially important right now since cortisol can affect blood sugar.\n\n4. Prepare for your doctor conversation: Gather your family history summary—your grandfather's diabetes at 52, your father's statin use starting at 48 for high cholesterol—so you can have an informed discussion about screening frequency and whether lifestyle measures alone are sufficient at this stage.\n\n5. Stay open to medical guidance: While your instinct is to manage through food and movement first, this is exactly the kind of situation where your stated openness to conventional medicine when needed matters. Listen to what your doctor recommends and consider it alongside your lifestyle approach.",
+      "gold_memory_state": "Confirmed facts used: maternal grandfather's type 2 diabetes at ~52 (op1), father's high cholesterol with statins starting at 48 (op2), daily raw vegetable salad habit (op3), nightly turmeric-ginger tea (op4), outdoor walking to process difficult emotions (op5), and the confirmed holistic health orientation inference (op6). Tentative: turmeric supplement recommendation is undecided and should not be presented as adopted.",
+      "judge_rubric": {
+        "must_include": [
+          "outdoor walking as emotional coping strategy",
+          "daily raw vegetable salads",
+          "turmeric-ginger tea evening ritual",
+          "maternal grandfather's diabetes as relevant family history",
+          "openness to medical advice alongside lifestyle approach"
+        ],
+        "acceptable_paraphrases": [
+          "go for a walk to process",
+          "continue salad habit",
+          "evening herbal tea",
+          "family history of diabetes"
+        ],
+        "must_not_include": [
+          "turmeric supplement capsule as an adopted practice"
+        ],
+        "harmful_extra": [
+          "recommending the user refuse medical treatment",
+          "recommending the user switch to turmeric capsules as if already decided",
+          "dismissing the doctor's concern"
+        ],
+        "harmless_extra": [
+          "mentioning father's cholesterol/statins",
+          "mentioning specific vegetables",
+          "suggesting the user bring the family health summary to the appointment"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the turmeric supplement capsule is recommended as if the user has adopted it.",
+        "reflection_precision": "Fails if the plan assumes the user is anti-medicine and advises against following up with the doctor.",
+        "reflection_recall": "Fails if the plan omits key habits (walking, salads, or tea) or fails to connect the elevated glucose to the grandfather's diabetes history.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User's maternal grandfather was diagnosed with type 2 diabetes around age 52.",
+        "Fact 2: User's father started statins for high cholesterol at age 48.",
+        "Fact 3: User eats big raw vegetable salads almost daily and genuinely enjoys them.",
+        "Fact 4: User drinks turmeric-ginger tea almost every evening as a calming ritual.",
+        "Fact 5: User goes for long walks outside to process difficult health-related emotions.",
+        "Fact 6: User gravitates toward natural, food-based, and movement-based health strategies as a proactive response to family medical history, while remaining open to medicine when needed.",
+        "Inference: Elevated fasting glucose is especially concerning given the maternal grandfather's diabetes at 52 and the user being 38—within the window of hereditary metabolic risk.",
+        "Inference: The action plan should leverage the user's confirmed coping method (walking) for emotional processing, reinforce existing dietary habits (salads) that support blood sugar management, maintain the calming tea ritual for stress reduction, and prepare for the doctor visit by consolidating the family history—all while respecting the user's stated openness to conventional medicine."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my maternal grandfather was diagnosed with type 2 diabetes when he was around 52"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my dad takes statins for high cholesterol and he started them when he was 48"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've been making these big raw vegetable salads almost every day and I genuinely enjoy them"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I picked up this turmeric-ginger tea a few weeks ago and I drink it almost every evening now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "when I heard about my cousin Jake's BRCA1 result I went for a long walk outside and that's how I processed it"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think learning all this family health stuff has pushed me toward more natural, food-based, movement-based ways of taking care of myself rather than just waiting for a doctor to tell me what to do"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I just got some unsettling news: my doctor called to say my fasting glucose came back slightly elevated and she wants to discuss next steps. Given everything you know about my family history, my current daily habits, and how I tend to cope with health-related stress, draft a short action plan for the next 48 hours that plays to my strengths.",
+      "expected_answer": "Given your elevated fasting glucose and your maternal grandfather's type 2 diabetes diagnosis around age 52, this result is especially relevant to monitor. Here is a 48-hour action plan aligned with your natural, proactive approach:\n\n1. Process the news your way: Take a long walk outside today to work through the emotions, as this is your preferred method for handling difficult health information.\n\n2. Double down on your dietary strengths: Continue your daily big raw vegetable salads—the fiber and nutrient density from kale, bell peppers, carrots, and radishes support blood sugar regulation. Consider making them your main meals for the next two days.\n\n3. Keep your evening ritual: Have your turmeric-ginger tea each evening for its calming and anti-inflammatory benefits. The stress-reduction aspect is especially important right now since cortisol can affect blood sugar.\n\n4. Prepare for your doctor conversation: Gather your family history summary—your grandfather's diabetes at 52, your father's statin use starting at 48 for high cholesterol—so you can have an informed discussion about screening frequency and whether lifestyle measures alone are sufficient at this stage.\n\n5. Stay open to medical guidance: While your instinct is to manage through food and movement first, this is exactly the kind of situation where your stated openness to conventional medicine when needed matters. Listen to what your doctor recommends and consider it alongside your lifestyle approach.",
+      "gold_memory_state": "Confirmed facts used: maternal grandfather's type 2 diabetes at ~52 (op1), father's high cholesterol with statins starting at 48 (op2), daily raw vegetable salad habit (op3), nightly turmeric-ginger tea (op4), outdoor walking to process difficult emotions (op5), and the confirmed holistic health orientation inference (op6). Tentative: turmeric supplement recommendation is undecided and should not be presented as adopted.",
+      "judge_rubric": {
+        "must_include": [
+          "outdoor walking as emotional coping strategy",
+          "daily raw vegetable salads",
+          "turmeric-ginger tea evening ritual",
+          "maternal grandfather's diabetes as relevant family history",
+          "openness to medical advice alongside lifestyle approach"
+        ],
+        "acceptable_paraphrases": [
+          "go for a walk to process",
+          "continue salad habit",
+          "evening herbal tea",
+          "family history of diabetes"
+        ],
+        "must_not_include": [
+          "turmeric supplement capsule as an adopted practice"
+        ],
+        "harmful_extra": [
+          "recommending the user refuse medical treatment",
+          "recommending the user switch to turmeric capsules as if already decided",
+          "dismissing the doctor's concern"
+        ],
+        "harmless_extra": [
+          "mentioning father's cholesterol/statins",
+          "mentioning specific vegetables",
+          "suggesting the user bring the family health summary to the appointment"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the turmeric supplement capsule is recommended as if the user has adopted it.",
+        "reflection_precision": "Fails if the plan assumes the user is anti-medicine and advises against following up with the doctor.",
+        "reflection_recall": "Fails if the plan omits key habits (walking, salads, or tea) or fails to connect the elevated glucose to the grandfather's diabetes history.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User's maternal grandfather was diagnosed with type 2 diabetes around age 52.",
+        "Fact 2: User's father started statins for high cholesterol at age 48.",
+        "Fact 3: User eats big raw vegetable salads almost daily and genuinely enjoys them.",
+        "Fact 4: User drinks turmeric-ginger tea almost every evening as a calming ritual.",
+        "Fact 5: User goes for long walks outside to process difficult health-related emotions.",
+        "Fact 6: User gravitates toward natural, food-based, and movement-based health strategies as a proactive response to family medical history, while remaining open to medicine when needed.",
+        "Inference: Elevated fasting glucose is especially concerning given the maternal grandfather's diabetes at 52 and the user being 38—within the window of hereditary metabolic risk.",
+        "Inference: The action plan should leverage the user's confirmed coping method (walking) for emotional processing, reinforce existing dietary habits (salads) that support blood sugar management, maintain the calming tea ritual for stress reduction, and prepare for the doctor visit by consolidating the family history—all while respecting the user's stated openness to conventional medicine."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my maternal grandfather was diagnosed with type 2 diabetes when he was around 52"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my dad takes statins for high cholesterol and he started them when he was 48"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've been making these big raw vegetable salads almost every day and I genuinely enjoy them"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I picked up this turmeric-ginger tea a few weeks ago and I drink it almost every evening now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "when I heard about my cousin Jake's BRCA1 result I went for a long walk outside and that's how I processed it"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think learning all this family health stuff has pushed me toward more natural, food-based, movement-based ways of taking care of myself rather than just waiting for a doctor to tell me what to do"
+        }
+      ]
+    }
+  ]
+}

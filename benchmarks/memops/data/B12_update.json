@@ -1,0 +1,773 @@
+{
+  "target_fact": "B12 landlord Gerald Huang's cell phone number",
+  "operation_type": "Update",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "gerald_phone",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "Gerald Huang is the landlord for my unit, B12. He gave me his cell number on move-in day — it's 604-881-3742."
+      },
+      "target": {
+        "target_id": "gerald_phone_number",
+        "target_name": "Gerald Huang cell phone number"
+      },
+      "old_value": null,
+      "new_value": "604-881-3742",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Gerald Huang is the landlord for my unit, B12. He gave me his cell number on move-in day — it's 604-881-3742."
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "gerald_phone",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I double-checked the number Gerald gave me and it's actually 604-881-3724, not 3742. The last two digits are 2-4."
+      },
+      "target": {
+        "target_id": "gerald_phone_number",
+        "target_name": "Gerald Huang cell phone number"
+      },
+      "old_value": "604-881-3742",
+      "new_value": "604-881-3724",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I double-checked the number Gerald gave me and it's actually 604-881-3724, not 3742. The last two digits are 2-4."
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "gerald_phone",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "Gerald texted me from a new number today — 604-881-3790. He said he switched carriers and this is his new cell going forward."
+      },
+      "target": {
+        "target_id": "gerald_phone_number",
+        "target_name": "Gerald Huang cell phone number"
+      },
+      "old_value": "604-881-3724",
+      "new_value": "604-881-3790",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Gerald texted me from a new number today — 604-881-3790. He said he switched carriers and this is his new cell going forward."
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "gerald_phone",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "Gerald mentioned he might be porting his old number back — 604-881-3724 — because his brother Kevin already had 3790 saved and it was causing mix-ups. He said he'd confirm by end of week."
+      },
+      "target": {
+        "target_id": "gerald_phone_number",
+        "target_name": "Gerald Huang cell phone number"
+      },
+      "old_value": "604-881-3790",
+      "new_value": "604-881-3724",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Gerald mentioned he might be porting his old number back — 604-881-3724 — because his brother Kevin already had 3790 saved and it was causing mix-ups. He said he'd confirm by end of week."
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "Gerald is going to be traveling internationally from June 15 to July 10. His brother Kevin Huang will handle maintenance while he's gone."
+      },
+      "target": {
+        "target_id": "gerald_travel_period",
+        "target_name": "Gerald Huang international travel period"
+      },
+      "old_value": null,
+      "new_value": "June 15 to July 10",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Gerald is going to be traveling internationally from June 15 to July 10. His brother Kevin Huang will handle maintenance while he's gone."
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "initial_facts_and_first_correction",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I need to keep track of some landlord contact info. Gerald Huang is the landlord for my unit, B12. He gave me his cell number on move-in day — it's 604-881-3742. Move-in was March 3rd. He told me texting is the best way to reach him since he doesn't really check email."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it! I've noted down the following details for your unit B12 landlord:\n\n- **Name:** Gerald Huang\n- **Cell phone:** 604-881-3742\n- **Move-in date:** March 3rd\n- **Preferred contact method:** Text message (he doesn't check email regularly)\n\nWould you like me to store anything else about your rental setup, like lease terms or any maintenance contacts?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, one more thing — my friend Mei rents from Gerald too, a different unit in the same building. She mentioned that Gerald sometimes doesn't respond on weekends, so I should probably keep that in mind when I text him about anything urgent. Just something to remember."
+        },
+        {
+          "role": "assistant",
+          "content": "Good to know — I'll note that Gerald may be less responsive on weekends, based on your friend Mei's experience. Since Mei also rents from him in the same building, she probably has a solid sense of his communication habits. If you ever have a weekend emergency, you might want to plan for a possible delay. Is there an alternate emergency contact Gerald has provided, or is his cell the only option right now?"
+        },
+        {
+          "role": "user",
+          "content": "I double-checked the number Gerald gave me and it's actually 604-881-3724, not 3742. The last two digits are 2-4. I had written it down wrong somewhere. That's the number I need to use to reach him, so please correct that for me."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for catching that! I've updated Gerald Huang's cell phone number from 604-881-3742 to **604-881-3724** — last two digits 2-4, as you confirmed. That's the number on file now for reaching him via text. Good thing you double-checked before you needed it for something urgent. Everything else stays the same: unit B12 landlord, moved in March 3rd, texting preferred. Let me know if anything else needs correcting."
+        },
+        {
+          "role": "user",
+          "content": "Perfect, thanks. Oh, also — Gerald's email is g.huang.properties@gmail.com. I found it on my original lease. He barely uses it, but I figure it's worth having on file just in case. Probably wouldn't try to reach him there for anything time-sensitive though."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted! I've added Gerald's email as **g.huang.properties@gmail.com**, sourced from your original lease. I'll flag it as a low-priority contact method since he doesn't check it regularly — definitely not the route for urgent maintenance requests. Your primary contact channel remains texting him at 604-881-3724. Here's your updated landlord contact summary:\n\n- **Name:** Gerald Huang\n- **Cell:** 604-881-3724 (primary, text preferred)\n- **Email:** g.huang.properties@gmail.com (rarely checked)\n- **Unit:** B12, moved in March 3rd\n\nAnything else you'd like to add?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "travel_info_and_carrier_switch",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I wanted to mention something important. Gerald is going to be traveling internationally from June 15 to July 10. His brother Kevin Huang will handle maintenance while he's gone. Gerald said he'd send me Kevin's number before he leaves, but I don't have it yet."
+        },
+        {
+          "role": "assistant",
+          "content": "That's really important — thanks for the heads-up. I've noted that Gerald will be unavailable from June 15 to July 10 due to international travel, and his brother Kevin Huang will be the maintenance point of contact during that window. Once Gerald sends you Kevin's number, let me know and I'll add it right away. In the meantime, if anything comes up before June 15, you'd still text Gerald at 604-881-3724. Would you like me to set a reminder to follow up with Gerald about Kevin's number as the travel date approaches?"
+        },
+        {
+          "role": "user",
+          "content": "Gerald texted me from a new number today — 604-881-3790. He said he switched carriers and this is his new cell going forward. So update that for me. The old number 604-881-3724 is no longer active."
+        },
+        {
+          "role": "assistant",
+          "content": "Done! I've updated Gerald Huang's cell number to **604-881-3790** — the old number 604-881-3724 is now retired since he switched carriers. This is your new primary contact for texting him. Here's the updated info:\n\n- **Gerald Huang cell:** 604-881-3790 (new carrier, active)\n- **Email:** g.huang.properties@gmail.com (still rarely checked)\n- **Unavailable:** June 15 – July 10 (international travel)\n- **Backup contact during travel:** Kevin Huang (number pending)\n\nAnything else to update?"
+        },
+        {
+          "role": "user",
+          "content": "There was a billing issue I want you to note. Gerald accidentally double-charged me for April rent, which overdrew my checking account. It took almost a week to sort out. He did reimburse me $35 for the bank fee eventually, but those few days were really stressful."
+        },
+        {
+          "role": "assistant",
+          "content": "I'm sorry you had to deal with that — overdrawing your account because of someone else's billing mistake is incredibly frustrating. I've noted the incident: Gerald accidentally double-charged your April rent, it caused an overdraft, took nearly a week to resolve, and he reimbursed you $35 for the bank fee. If it helps, you might want to keep a screenshot of that reimbursement confirmation in case something similar happens again. At least he did cover the fee, but the stress of waiting was clearly the bigger issue. Want me to flag this as something to watch for in future billing cycles?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, I'd appreciate that. Also, I should mention — when the kitchen faucet started dripping in mid-March, I texted Gerald and he responded within an hour. He sent over a plumber named Danny the next day. I don't have Danny's last name but Gerald would have it. That was a pretty smooth experience.\n\nThat would be great, actually. I tend to prefer dealing with landlords who keep things digital — like online portals or shared docs for maintenance requests. Texting one person's cell feels kind of old-school and unreliable to me. But Gerald's been decent about it so far, I guess."
+        },
+        {
+          "role": "assistant",
+          "content": "Nice — that's a good data point about Gerald's responsiveness. I've noted the mid-March faucet repair: you texted Gerald, he replied within an hour, and a plumber named Danny came the next day. If you ever need Danny again, Gerald should have his full name and contact info on file. It's reassuring that for day-to-day maintenance Gerald is pretty on top of things, even if the billing side had that hiccup. Here's a quick maintenance log entry:\n\n- **Mid-March:** Kitchen faucet drip → texted Gerald → 1-hour response → plumber Danny dispatched next day\n\nWant me to keep a running log like this for future issues?\n\nTotally understandable — an online portal or shared document gives you a paper trail and doesn't depend on one person's phone being on. For now, since Gerald operates through direct texts, keeping our own maintenance log here is probably the best workaround. If Gerald ever does switch to a more formal system, that would align better with your preference. In the meantime, I'll track every maintenance request, response time, and resolution so you have a solid record. And if you ever need to escalate something — say, during Gerald's June-July travel window with Kevin — having this log will be really handy. Anything else on your mind?"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "tentative_revert_and_adversarial_noise",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, quick question — can you remind me of Gerald's current cell number? I need to text him about a hallway light that's been out for two days. I want to make sure I'm using the right one since it's changed before."
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! Gerald Huang's current cell number is **604-881-3790** — that's the one he gave you after switching carriers. The previous number, 604-881-3724, is no longer active. You should be good to text him at 3790 about the hallway light. Since it's a common-area issue, he might need to coordinate with building maintenance, so it could take a bit longer than the faucet fix. Let me know how it goes and I'll add it to your maintenance log!"
+        },
+        {
+          "role": "user",
+          "content": "Thanks. I texted him and he responded pretty quickly again. He said he'll send someone tomorrow. Oh, by the way — I was looking through some old texts and noticed that the temporary number Gerald once gave me for someone named Rachel at a property management company was 604-550-1180. But that's completely irrelevant now since he decided not to switch companies."
+        },
+        {
+          "role": "assistant",
+          "content": "Good to hear he's on it with the hallway light — I'll log that as another quick-response maintenance interaction. And yes, I see you mentioning Rachel's number, 604-550-1180, from that time Gerald considered switching property management companies. Since he ultimately decided to stay with his current setup, that number is indeed no longer relevant. I won't store it as an active contact. For reference, the only active landlord number remains Gerald's cell at 604-881-3790. Let me know when the hallway light gets fixed and I'll close out that maintenance entry."
+        },
+        {
+          "role": "user",
+          "content": "Gerald mentioned he might be porting his old number back — 604-881-3724 — because his brother Kevin already had 3790 saved and it was causing mix-ups. He said he'd confirm by end of week."
+        },
+        {
+          "role": "assistant",
+          "content": "Interesting — so Gerald is considering reverting to 604-881-3724 to avoid confusion with Kevin's contacts. That makes sense since Kevin will be handling maintenance during Gerald's June 15 to July 10 travel period, and having distinct numbers would reduce mix-ups. For now, I'll keep **604-881-3790** as his confirmed active number until he officially tells you the port is complete. Once he confirms the switch back, just let me know and I'll update it right away. In the meantime, 3790 is still the number to use."
+        },
+        {
+          "role": "user",
+          "content": "Makes sense. Also — I was filling out a tenant contact form for the building's fire safety records and I noticed they had a landlord phone number pre-filled as 604-881-3742. That's the very first number I wrote down incorrectly, right? I just left it blank and figured I'd fill it in once Gerald confirms his final number.\n\nYeah, exactly. For now let's just keep 3790 as the confirmed number. I'll update you once Gerald settles it. Can you give me a quick summary of all the landlord contact info we have on file right now?"
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, 604-881-3742 was the original number you initially noted on move-in day before you corrected it to 604-881-3724, and then Gerald later changed to 604-881-3790 after switching carriers. So the pre-filled 3742 on the fire safety form is definitely outdated. Smart move leaving it blank for now — once Gerald confirms whether he's staying with 3790 or porting back to 3724, you can fill it in with confidence. You definitely don't want an incorrect landlord number on an emergency contact form. Let me know as soon as he gives you the final word.\n\nAbsolutely! Here's your current landlord contact summary for unit B12:\n\n- **Landlord:** Gerald Huang\n- **Cell (confirmed active):** 604-881-3790\n- **Email (rarely checked):** g.huang.properties@gmail.com\n- **Travel absence:** June 15 – July 10 (international), brother Kevin Huang handling maintenance (Kevin's number pending)\n- **Preferred contact:** Text message\n- **Weekend note:** May be less responsive on weekends (per your friend Mei's experience)\n- **Pending:** Gerald may port back to 604-881-3724; awaiting confirmation by end of week\n\nI'll update the number as soon as you hear back from him. Anything else you need?"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations, I've shared Gerald Huang's cell phone number a few times. Can you walk me through what I told you about his number and how it evolved?",
+      "expected_answer": "You initially provided Gerald Huang's cell number as 604-881-3742 on move-in day. You then corrected it to 604-881-3724, saying you had written it down wrong. Later, Gerald switched carriers and texted you from 604-881-3790, which became his active number. Most recently, Gerald mentioned he might port back to 604-881-3724 due to mix-ups with his brother Kevin, but that was unconfirmed and pending his end-of-week confirmation.",
+      "gold_memory_state": "Gerald Huang's confirmed active cell number is 604-881-3790. The tentative revert to 604-881-3724 is pending confirmation and not adopted. Previous numbers 604-881-3742 and 604-881-3724 are retired.",
+      "judge_rubric": {
+        "must_include": [
+          "604-881-3742",
+          "604-881-3724",
+          "604-881-3790",
+          "carrier switch or new number",
+          "pending or unconfirmed revert"
+        ],
+        "acceptable_paraphrases": [
+          "wrote it down wrong",
+          "last two digits were swapped",
+          "switched carriers"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating the revert to 604-881-3724 is confirmed and active"
+        ],
+        "harmless_extra": [
+          "mentioning Kevin Huang",
+          "mentioning the move-in date"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats 604-881-3724 or 604-881-3742 as the current active number.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Gerald Huang is the landlord for my unit, B12. He gave me his cell number on move-in day — it's 604-881-3742."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I double-checked the number Gerald gave me and it's actually 604-881-3724, not 3742. The last two digits are 2-4."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Gerald texted me from a new number today — 604-881-3790. He said he switched carriers and this is his new cell going forward."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Gerald mentioned he might be porting his old number back — 604-881-3724 — because his brother Kevin already had 3790 saved and it was causing mix-ups. He said he'd confirm by end of week."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations, I've shared Gerald Huang's cell phone number a few times. Can you walk me through what I told you about his number and how it evolved?",
+      "expected_answer": "You initially provided Gerald Huang's cell number as 604-881-3742 on move-in day. You then corrected it to 604-881-3724, saying you had written it down wrong. Later, Gerald switched carriers and texted you from 604-881-3790, which became his active number. Most recently, Gerald mentioned he might port back to 604-881-3724 due to mix-ups with his brother Kevin, but that was unconfirmed and pending his end-of-week confirmation.",
+      "gold_memory_state": "Gerald Huang's confirmed active cell number is 604-881-3790. The tentative revert to 604-881-3724 is pending confirmation and not adopted. Previous numbers 604-881-3742 and 604-881-3724 are retired.",
+      "judge_rubric": {
+        "must_include": [
+          "604-881-3742",
+          "604-881-3724",
+          "604-881-3790",
+          "carrier switch or new number",
+          "pending or unconfirmed revert"
+        ],
+        "acceptable_paraphrases": [
+          "wrote it down wrong",
+          "last two digits were swapped",
+          "switched carriers"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating the revert to 604-881-3724 is confirmed and active"
+        ],
+        "harmless_extra": [
+          "mentioning Kevin Huang",
+          "mentioning the move-in date"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats 604-881-3724 or 604-881-3742 as the current active number.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Gerald Huang is the landlord for my unit, B12. He gave me his cell number on move-in day — it's 604-881-3742."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I double-checked the number Gerald gave me and it's actually 604-881-3724, not 3742. The last two digits are 2-4."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Gerald texted me from a new number today — 604-881-3790. He said he switched carriers and this is his new cell going forward."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Gerald mentioned he might be porting his old number back — 604-881-3724 — because his brother Kevin already had 3790 saved and it was causing mix-ups. He said he'd confirm by end of week."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've mentioned a few different phone numbers over our conversations — some for Gerald, one for a property management contact named Rachel, and I'm still waiting on Kevin's number. When Gerald gave me his latest cell number after switching carriers, which contact record should that number belong to, and are any of the other contacts' records affected?",
+      "expected_answer": "The carrier-switch number belongs to Gerald Huang's cell phone record only. Rachel's number (604-550-1180) is irrelevant and was never stored as an active contact. Kevin Huang's number has not been provided yet, so his record is unaffected.",
+      "gold_memory_state": "Gerald Huang's confirmed cell: 604-881-3790. Rachel's number 604-550-1180 was explicitly flagged as irrelevant by the user. Kevin Huang's number is pending and has not been shared.",
+      "judge_rubric": {
+        "must_include": [
+          "Gerald Huang's cell phone record",
+          "Rachel's number is not an active contact",
+          "Kevin's number is not yet provided"
+        ],
+        "acceptable_paraphrases": [
+          "Gerald's contact info",
+          "Gerald's landlord phone record"
+        ],
+        "must_not_include": [
+          "Kevin's number was updated",
+          "Rachel's number is Gerald's number"
+        ],
+        "harmful_extra": [
+          "treating Rachel's 604-550-1180 as Gerald's number",
+          "treating Kevin's record as having a number on file"
+        ],
+        "harmless_extra": [
+          "mentioning the travel period",
+          "mentioning Gerald's email"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Gerald texted me from a new number today — 604-881-3790. He said he switched carriers and this is his new cell going forward."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I was looking through some old texts and noticed that the temporary number Gerald once gave me for someone named Rachel at a property management company was 604-550-1180. But that's completely irrelevant now since he decided not to switch companies."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Gerald is going to be traveling internationally from June 15 to July 10. His brother Kevin Huang will handle maintenance while he's gone."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've mentioned a few different phone numbers over our conversations — some for Gerald, one for a property management contact named Rachel, and I'm still waiting on Kevin's number. When Gerald gave me his latest cell number after switching carriers, which contact record should that number belong to, and are any of the other contacts' records affected?",
+      "expected_answer": "The carrier-switch number belongs to Gerald Huang's cell phone record only. Rachel's number (604-550-1180) is irrelevant and was never stored as an active contact. Kevin Huang's number has not been provided yet, so his record is unaffected.",
+      "gold_memory_state": "Gerald Huang's confirmed cell: 604-881-3790. Rachel's number 604-550-1180 was explicitly flagged as irrelevant by the user. Kevin Huang's number is pending and has not been shared.",
+      "judge_rubric": {
+        "must_include": [
+          "Gerald Huang's cell phone record",
+          "Rachel's number is not an active contact",
+          "Kevin's number is not yet provided"
+        ],
+        "acceptable_paraphrases": [
+          "Gerald's contact info",
+          "Gerald's landlord phone record"
+        ],
+        "must_not_include": [
+          "Kevin's number was updated",
+          "Rachel's number is Gerald's number"
+        ],
+        "harmful_extra": [
+          "treating Rachel's 604-550-1180 as Gerald's number",
+          "treating Kevin's record as having a number on file"
+        ],
+        "harmless_extra": [
+          "mentioning the travel period",
+          "mentioning Gerald's email"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Gerald texted me from a new number today — 604-881-3790. He said he switched carriers and this is his new cell going forward."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I was looking through some old texts and noticed that the temporary number Gerald once gave me for someone named Rachel at a property management company was 604-550-1180. But that's completely irrelevant now since he decided not to switch companies."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Gerald is going to be traveling internationally from June 15 to July 10. His brother Kevin Huang will handle maintenance while he's gone."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to text Gerald about a leaking pipe right now. Which of these numbers should I use?",
+      "candidate_options": [
+        "604-881-3790",
+        "604-881-3724",
+        "604-881-3742",
+        "604-550-1180"
+      ],
+      "expected_answer": "604-881-3790",
+      "gold_memory_state": "Gerald Huang's confirmed active cell is 604-881-3790. 604-881-3724 was a prior number and is also the tentative revert target, but that revert is unconfirmed. 604-881-3742 was the original incorrect number. 604-550-1180 belongs to Rachel at a property management company and is irrelevant.",
+      "judge_rubric": {
+        "must_include": [
+          "604-881-3790"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "604-881-3724 as the answer",
+          "604-881-3742 as the answer",
+          "604-550-1180 as the answer"
+        ],
+        "harmful_extra": [
+          "selecting the tentative revert number as active",
+          "selecting the original incorrect number"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 604-550-1180 is Rachel's number at a property management company, not Gerald's. assistant echo: 604-881-3724 appeared in the assistant's summary as the pending/tentative revert and also as the prior corrected number; it is the recency-trap distractor because Gerald most recently mentioned possibly porting back to it. 604-881-3742 is the original mis-recorded number from the user's first message.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects 604-881-3724 (stale/tentative) or 604-881-3742 (original error).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Gerald texted me from a new number today — 604-881-3790. He said he switched carriers and this is his new cell going forward."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Gerald mentioned he might be porting his old number back — 604-881-3724 — because his brother Kevin already had 3790 saved and it was causing mix-ups. He said he'd confirm by end of week."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to text Gerald about a leaking pipe right now. Which of these numbers should I use?",
+      "candidate_options": [
+        "604-881-3790",
+        "604-881-3724",
+        "604-881-3742",
+        "604-550-1180"
+      ],
+      "expected_answer": "604-881-3790",
+      "gold_memory_state": "Gerald Huang's confirmed active cell is 604-881-3790. 604-881-3724 was a prior number and is also the tentative revert target, but that revert is unconfirmed. 604-881-3742 was the original incorrect number. 604-550-1180 belongs to Rachel at a property management company and is irrelevant.",
+      "judge_rubric": {
+        "must_include": [
+          "604-881-3790"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "604-881-3724 as the answer",
+          "604-881-3742 as the answer",
+          "604-550-1180 as the answer"
+        ],
+        "harmful_extra": [
+          "selecting the tentative revert number as active",
+          "selecting the original incorrect number"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 604-550-1180 is Rachel's number at a property management company, not Gerald's. assistant echo: 604-881-3724 appeared in the assistant's summary as the pending/tentative revert and also as the prior corrected number; it is the recency-trap distractor because Gerald most recently mentioned possibly porting back to it. 604-881-3742 is the original mis-recorded number from the user's first message.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects 604-881-3724 (stale/tentative) or 604-881-3742 (original error).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Gerald texted me from a new number today — 604-881-3790. He said he switched carriers and this is his new cell going forward."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Gerald mentioned he might be porting his old number back — 604-881-3724 — because his brother Kevin already had 3790 saved and it was causing mix-ups. He said he'd confirm by end of week."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "Gerald's international trip is coming up and I still don't have Kevin's number. Draft a short text message I can send to Gerald right now asking him for Kevin's contact info before he leaves, and include the dates he'll be away so he knows I'm on top of it. Use the right number to send it to.",
+      "expected_answer": "Send to 604-881-3790. Draft: \"Hi Gerald, just a reminder — you mentioned you'll be traveling internationally from June 15 to July 10 and that Kevin will handle maintenance while you're gone. Could you send me Kevin's phone number before you leave? I want to make sure I can reach him if anything comes up. Thanks!\"",
+      "gold_memory_state": "Gerald Huang's confirmed active cell: 604-881-3790. Gerald's travel period: June 15 to July 10 (international). Kevin Huang is the maintenance backup during that period. Kevin's number has not been provided yet.",
+      "judge_rubric": {
+        "must_include": [
+          "604-881-3790 as the send-to number",
+          "June 15",
+          "July 10",
+          "Kevin",
+          "request for Kevin's number"
+        ],
+        "acceptable_paraphrases": [
+          "asking for Kevin's contact details",
+          "Kevin Huang's phone number"
+        ],
+        "must_not_include": [
+          "604-881-3724 as the send-to number",
+          "604-881-3742 as the send-to number"
+        ],
+        "harmful_extra": [
+          "using a retired or tentative phone number to send the message",
+          "fabricating Kevin's phone number"
+        ],
+        "harmless_extra": [
+          "mentioning the carrier switch",
+          "mentioning that Gerald prefers texting"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses 604-881-3724 or 604-881-3742 as the send-to number.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Gerald Huang's confirmed active cell number is 604-881-3790, established after the carrier switch.",
+        "Fact 2: Gerald will be traveling internationally from June 15 to July 10.",
+        "Fact 3: Kevin Huang will handle maintenance during Gerald's absence, but Kevin's number has not yet been provided.",
+        "Inference: The text message must be sent to 604-881-3790, reference the June 15–July 10 travel window, and request Kevin's contact number before Gerald departs.",
+        "Derived value: A draft message combining the correct send-to number, the travel dates, and the request for Kevin's number — none of which appear together in any single user turn."
+      ],
+      "application_probe_type": "multi_hop_derivation",
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Gerald texted me from a new number today — 604-881-3790. He said he switched carriers and this is his new cell going forward."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Gerald is going to be traveling internationally from June 15 to July 10. His brother Kevin Huang will handle maintenance while he's gone."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "Gerald's international trip is coming up and I still don't have Kevin's number. Draft a short text message I can send to Gerald right now asking him for Kevin's contact info before he leaves, and include the dates he'll be away so he knows I'm on top of it. Use the right number to send it to.",
+      "expected_answer": "Send to 604-881-3790. Draft: \"Hi Gerald, just a reminder — you mentioned you'll be traveling internationally from June 15 to July 10 and that Kevin will handle maintenance while you're gone. Could you send me Kevin's phone number before you leave? I want to make sure I can reach him if anything comes up. Thanks!\"",
+      "gold_memory_state": "Gerald Huang's confirmed active cell: 604-881-3790. Gerald's travel period: June 15 to July 10 (international). Kevin Huang is the maintenance backup during that period. Kevin's number has not been provided yet.",
+      "judge_rubric": {
+        "must_include": [
+          "604-881-3790 as the send-to number",
+          "June 15",
+          "July 10",
+          "Kevin",
+          "request for Kevin's number"
+        ],
+        "acceptable_paraphrases": [
+          "asking for Kevin's contact details",
+          "Kevin Huang's phone number"
+        ],
+        "must_not_include": [
+          "604-881-3724 as the send-to number",
+          "604-881-3742 as the send-to number"
+        ],
+        "harmful_extra": [
+          "using a retired or tentative phone number to send the message",
+          "fabricating Kevin's phone number"
+        ],
+        "harmless_extra": [
+          "mentioning the carrier switch",
+          "mentioning that Gerald prefers texting"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses 604-881-3724 or 604-881-3742 as the send-to number.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Gerald Huang's confirmed active cell number is 604-881-3790, established after the carrier switch.",
+        "Fact 2: Gerald will be traveling internationally from June 15 to July 10.",
+        "Fact 3: Kevin Huang will handle maintenance during Gerald's absence, but Kevin's number has not yet been provided.",
+        "Inference: The text message must be sent to 604-881-3790, reference the June 15–July 10 travel window, and request Kevin's contact number before Gerald departs.",
+        "Derived value: A draft message combining the correct send-to number, the travel dates, and the request for Kevin's number — none of which appear together in any single user turn."
+      ],
+      "application_probe_type": "multi_hop_derivation",
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Gerald texted me from a new number today — 604-881-3790. He said he switched carriers and this is his new cell going forward."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Gerald is going to be traveling internationally from June 15 to July 10. His brother Kevin Huang will handle maintenance while he's gone."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1068 @@
+{
+  "target_fact": "CPA exam preparation details including FAR section exam date, Becker progress percentage and completion deadline, and Ninja CPA subscription cost",
+  "operation_type": "Remember",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 3,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": true,
+      "never_stored_target": "AUD section exam date"
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "My FAR exam window is June 7th"
+      },
+      "target": {
+        "target_id": "far_exam_date",
+        "target_name": "CPA FAR section exam date"
+      },
+      "old_value": null,
+      "new_value": "June 7th",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My FAR exam window is June 7th"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "my Becker progress for FAR is at 58% as of yesterday, May 3rd"
+      },
+      "target": {
+        "target_id": "becker_progress",
+        "target_name": "Becker FAR progress percentage and date"
+      },
+      "old_value": null,
+      "new_value": "58% as of May 3rd",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my Becker progress for FAR is at 58% as of yesterday, May 3rd"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I need to finish Becker 100% by at least two weeks before the exam so I have time for a final review pass"
+      },
+      "target": {
+        "target_id": "becker_completion_deadline_rule",
+        "target_name": "Becker completion deadline rule relative to exam"
+      },
+      "old_value": null,
+      "new_value": "100% completion at least 2 weeks before exam date",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I need to finish Becker 100% by at least two weeks before the exam so I have time for a final review pass"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "The Ninja CPA monthly subscription costs $57"
+      },
+      "target": {
+        "target_id": "ninja_cpa_cost",
+        "target_name": "Ninja CPA supplemental MCQ bank monthly subscription cost"
+      },
+      "old_value": null,
+      "new_value": "$57",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "The Ninja CPA monthly subscription costs $57"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "My friend Kevin is doing the CPA too but he's on the AUD section. He scored a 71 on his latest practice exam"
+      },
+      "target": {
+        "target_id": "kevin_aud_practice_score",
+        "target_name": "Kevin's AUD practice exam score"
+      },
+      "old_value": null,
+      "new_value": "71",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My friend Kevin is doing the CPA too but he's on the AUD section. He scored a 71 on his latest practice exam"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "my timed practice set scores have been around 65 to 68 percent on 33 MCQs in 45 minutes"
+      },
+      "target": {
+        "target_id": "far_practice_scores",
+        "target_name": "FAR timed practice set score range"
+      },
+      "old_value": null,
+      "new_value": "65-68% on 33 MCQs in 45 minutes",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "my timed practice set scores have been around 65 to 68 percent on 33 MCQs in 45 minutes"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "retracted",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 7,
+        "quote": "I had originally planned to sit for REG in August too, but I dropped that idea entirely"
+      },
+      "target": {
+        "target_id": "reg_august_plan",
+        "target_name": "Plan to sit for REG section in August"
+      },
+      "old_value": null,
+      "new_value": null,
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I had originally planned to sit for REG in August too, but I dropped that idea entirely"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establishing core CPA exam facts: FAR exam date, Kevin's AUD score, Becker progress, and dropped REG plan",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to get organized about my CPA exam prep. My FAR exam window is June 7th and I really need to build a solid study plan around that date. I registered on March 12th and I've been using Becker's review course since around March 18th. Can you help me think through a timeline?"
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, I'd be happy to help you build a study timeline for your FAR exam on June 7th. Since you registered on March 12th and started Becker around March 18th, you've already been at it for about six weeks or so. That's a solid foundation. Let me think about what milestones we should map out between now and exam day. We'll want to factor in when you should finish the Becker material, when to start doing full-length practice exams, and when to do a final review. Do you have a sense of where you currently stand in the Becker course material?"
+        },
+        {
+          "role": "user",
+          "content": "My friend Kevin is doing the CPA too but he's on the AUD section. He scored a 71 on his latest practice exam, which is so close to passing but not quite there. I felt pretty bad for him honestly. It made me realize I need to take my own practice scores more seriously so I don't end up in the same boat."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a tough spot for Kevin — a 71 on AUD when passing is 75 means he's really close but needs to tighten up a few areas. It's actually a useful cautionary tale for your own prep. The good news is that recognizing the importance of practice scores now, while you still have over a month before your June 7th FAR exam, gives you time to course-correct. When you do your own timed practice sets, try to identify which topic areas are dragging your average down so you can target those specifically. Speaking of which, do you know your current Becker completion percentage?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, actually my Becker progress for FAR is at 58% as of yesterday, May 3rd. I've been pretty consistent but I know I need to pick up the pace. I've been waking up at 5:30 AM most days since the beginning of April to get in about two hours of studying before work. Those early morning hours are golden for me — totally quiet, no distractions."
+        },
+        {
+          "role": "assistant",
+          "content": "Being at 58% completion as of May 3rd means you've covered more than half the Becker FAR material, which is encouraging. And waking up at 5:30 AM for two focused hours is a really disciplined routine — those distraction-free morning sessions are probably your highest-quality study time. With roughly five weeks until June 7th, you'll need to cover the remaining 42% of Becker content while also building in time for practice exams and review. That's about 8-9% per week of new content, which is doable if you maintain your current pace and maybe add a bit on weekends. Do you have any other exams on your calendar beyond FAR?"
+        },
+        {
+          "role": "user",
+          "content": "I had originally planned to sit for REG in August too, but I dropped that idea entirely. I realized I need all my energy focused on FAR right now. Spreading myself thin across two sections would be a mistake, especially since my practice scores aren't where I want them yet. So the August REG plan is completely off the table."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a smart and mature decision. Trying to prep for both FAR and REG simultaneously when your FAR practice scores still need improvement would almost certainly hurt your performance on both. By committing fully to FAR for the June 7th window, you're giving yourself the best chance to pass on the first attempt, which saves time and money in the long run. Once you clear FAR, you can reassess your timeline for REG and the other sections with a fresh perspective and one win under your belt. For now, let's keep all planning focused on maximizing your FAR readiness. Shall we map out a week-by-week Becker completion schedule?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establishing Becker completion deadline rule, practice score details, and Ninja CPA subscription cost",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So here's the thing — I need to finish Becker 100% by at least two weeks before the exam so I have time for a final review pass. That's my personal rule. I don't want to be learning new content in the last two weeks; I want that time purely for review, practice exams, and shoring up weak areas."
+        },
+        {
+          "role": "assistant",
+          "content": "That's an excellent strategy. Finishing all new Becker content two weeks before your exam gives you a dedicated review window where you can focus entirely on reinforcement rather than learning from scratch. Based on your June 7th exam date, that means your Becker completion target would be around May 24th. With your progress at 58% as of May 3rd, you'd need to cover the remaining 42% in about three weeks — roughly 14% per week, or about 2% per day. That's definitely an acceleration from your current pace, but it's achievable if you can add some weekend study blocks on top of your morning sessions. What does your practice testing look like right now?"
+        },
+        {
+          "role": "user",
+          "content": "I started doing timed practice sets around mid-April, and my timed practice set scores have been around 65 to 68 percent on 33 MCQs in 45 minutes. That's not great. I know the passing threshold is effectively around 75, so I have a real gap to close. I've been trying to analyze which topics trip me up the most."
+        },
+        {
+          "role": "assistant",
+          "content": "Scores in the 65-68% range on timed 33-question sets show you have a solid foundation but need targeted improvement to bridge that gap to 75%. The fact that you're already doing timed practice under exam-like conditions is great — many candidates skip that step. I'd suggest categorizing your missed questions by FAR topic area: governmental accounting, leases, bonds, consolidations, and revenue recognition tend to be the heaviest hitters. If you can identify two or three areas where you're consistently losing points, you can allocate extra morning sessions to those topics specifically. Have you considered supplementing Becker with any additional question banks for more variety?"
+        },
+        {
+          "role": "user",
+          "content": "Funny you mention that — I actually already did. The Ninja CPA monthly subscription costs $57 and I got it on April 20th specifically for the extra MCQ variety. The questions have a slightly different style from Becker which I think is good for building flexibility. I've been mixing in Ninja questions alongside my Becker sets during those morning sessions."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a great move. The Ninja CPA MCQ bank at $57 per month is one of the most cost-effective supplements out there, and the different question style really does help you adapt to the variety you'll see on the actual exam. Since you started it on April 20th, you've had about two weeks with it so far. I'd recommend using Ninja primarily for topic-specific drilling on your weak areas, while keeping Becker for your structured progression through the remaining 42% of content. That way you're getting the best of both platforms. How are you tracking which topics need the most attention? Are you keeping a log or spreadsheet of your scores by topic?"
+        },
+        {
+          "role": "user",
+          "content": "I've been keeping a simple spreadsheet where I log each practice set with the date, the topic focus, and my score. It's nothing fancy but it helps me see patterns. Governmental accounting and lease modifications are my two weakest areas right now — I'm scoring below 60% on those consistently. Everything else is closer to 70% or above.\n\nThat makes sense. I've also been thinking about whether I should do any full-length simulated exams before the real thing. I know the actual FAR section is four hours with a mix of MCQs and task-based simulations. I want to build up the stamina for that, not just the knowledge. Sitting for four hours straight requires a different kind of preparation."
+        },
+        {
+          "role": "assistant",
+          "content": "That spreadsheet approach is really effective for identifying exactly where to focus your limited study time. Governmental accounting and lease modifications being your weak spots at below 60% is actually useful information — those are both heavily tested on FAR, so improving in just those two areas could push your overall score significantly. I'd suggest dedicating at least three of your morning sessions per week specifically to governmental accounting and lease topics, using both Becker lectures for concept review and Ninja MCQs for practice drilling. With about five weeks until June 7th and your Becker completion deadline around May 24th, you have a tight but workable window to bring those weak areas up to at least 70%.\n\nAbsolutely — exam stamina is an underrated factor in CPA performance. I'd recommend scheduling at least two full-length simulated FAR exams during your two-week review window after you finish Becker. The first one could be around May 25th or 26th, giving you about ten days to address any issues it reveals. The second could be around June 1st or 2nd, close enough to exam day to simulate the real experience but with enough buffer to make final adjustments. Becker includes full-length practice exams in their platform, and you can set up a realistic four-hour block during a weekend morning when you're at your sharpest. That way you're testing both knowledge and endurance under real conditions."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Reinforcing study details with adversarial injection of Kevin's Ninja subscription cost look-alike",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I wanted to follow up on the study plan. I've been sticking to the 5:30 AM routine and it's been working really well. I managed to push through two more Becker modules this past week. I'm feeling more confident about the governmental accounting material after drilling it with Ninja questions."
+        },
+        {
+          "role": "assistant",
+          "content": "That's fantastic progress! Sticking with the 5:30 AM routine is clearly paying off, and it's great to hear that the targeted Ninja drilling on governmental accounting is building your confidence. Completing two more Becker modules in a week puts you on a good trajectory toward that May 24th completion target. By the way, I noticed when I was looking at some CPA prep community threads that subscription pricing varies — Kevin's Ninja subscription, for instance, was listed at $67 per month in one forum post about AUD prep bundles. Different sections sometimes have different pricing tiers. Are you planning to keep your Ninja subscription active through June, or cancel after the exam?"
+        },
+        {
+          "role": "user",
+          "content": "I'll probably keep it through June since my exam is June 7th and I want access right up until then. After that I'll cancel and resubscribe later when I start another section. No point paying for months I'm not actively using it. I want to be smart about the costs since this whole CPA journey adds up fast."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a practical approach. Keeping the subscription active through your June 7th exam ensures you have full access to the MCQ bank during your critical final review period, and canceling afterward saves you from paying for idle months. When you're ready to tackle your next section, you can resubscribe fresh. The cumulative cost of CPA prep materials is definitely something to manage carefully — between Becker and supplemental resources, it adds up quickly. Since you mentioned wanting to be strategic about costs, have you looked into whether your employer offers any CPA exam reimbursement or study material stipends?"
+        },
+        {
+          "role": "user",
+          "content": "My employer does offer partial reimbursement but only after you pass a section. So I need to pass FAR first before I can submit for any reimbursement. It's up to $500 per section passed, which would cover a good chunk of the Becker cost. But I have to front everything myself until then, which is why I'm being careful about extra subscriptions."
+        },
+        {
+          "role": "assistant",
+          "content": "A $500 per-section reimbursement upon passing is actually quite generous and gives you a strong financial incentive on top of the professional one. Since it's retroactive — only after passing — your strategy of minimizing upfront costs by managing subscription timing makes perfect sense. Once you pass FAR on June 7th, you can claim that reimbursement and use part of it to fund materials for your next section. It's essentially a reward loop: pass, get reimbursed, reinvest in the next section's prep. For now, the priority is maximizing your FAR score with the resources you already have — Becker and Ninja together should be more than sufficient."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. I also want to make sure I'm being realistic about the timeline. I know I said I need Becker done by two weeks before the exam, and with the exam on June 7th, that's a hard deadline I set for myself. I can't let the remaining modules drag on past that point or I'll compromise my review time.\n\nYeah, I might have to do that. Evenings are rough for me but if it comes down to it, I can push through for a few weeks. The goal is passing on the first attempt so I don't have to go through all of this again. Every retake costs time and money that I'd rather spend moving forward to the next section."
+        },
+        {
+          "role": "assistant",
+          "content": "You're absolutely right to hold firm on that deadline. With your exam on June 7th and your personal rule of finishing Becker content two weeks prior, May 24th is your non-negotiable content completion date. That gives you exactly two weeks of pure review, practice exams, and weak-area drilling before you walk into the testing center. If you find yourself falling behind on Becker modules, it might be worth temporarily increasing your study time — perhaps adding a short evening session on days when you have the energy, even though mornings are your prime time. The key is protecting that two-week review buffer at all costs.\n\nThat's the right mindset. A first-attempt pass saves you the $238 exam fee, additional months of subscription costs, and the psychological toll of restudying material you've already covered. Given your current trajectory — consistent 5:30 AM sessions, targeted weak-area drilling with Ninja, and a disciplined Becker completion schedule — you're setting yourself up well. The next three weeks are going to be intense, but staying focused on your May 24th content deadline and then using those final two weeks for comprehensive review should put you in strong position for June 7th. Keep tracking your practice scores in that spreadsheet so you can see the upward trend."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've told you about my CPA exam preparation — the specific dates, progress milestones, supplemental resources, and any plans I mentioned then decided against?",
+      "expected_answer": "You shared that your FAR exam window is June 7th, your Becker FAR progress was at 58% as of May 3rd, and you set a personal rule to finish Becker 100% at least two weeks before the exam for a final review pass. You also mentioned your Ninja CPA monthly subscription costs $57. Your friend Kevin is working on the AUD section and scored a 71 on his latest practice exam. Your timed FAR practice set scores have been around 65-68% on 33 MCQs in 45 minutes. You originally planned to sit for REG in August but dropped that idea entirely.",
+      "gold_memory_state": "FAR exam date: June 7th. Becker FAR progress: 58% as of May 3rd. Becker completion deadline rule: 100% at least 2 weeks before exam. Ninja CPA subscription cost: $57/month. Kevin's AUD practice score: 71. FAR timed practice scores: 65-68% on 33 MCQs in 45 minutes. REG August plan: retracted/dropped entirely.",
+      "judge_rubric": {
+        "must_include": [
+          "June 7th",
+          "58%",
+          "May 3rd",
+          "two weeks before exam",
+          "$57",
+          "Kevin",
+          "71",
+          "65-68%",
+          "REG plan dropped"
+        ],
+        "acceptable_paraphrases": [
+          "Ninja CPA costs $57 per month",
+          "complete Becker by two weeks prior to exam"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming REG is still planned for August",
+          "inventing an AUD exam date for the user"
+        ],
+        "harmless_extra": [
+          "mentioning 5:30 AM study routine",
+          "mentioning governmental accounting weakness",
+          "mentioning employer reimbursement"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My FAR exam window is June 7th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my Becker progress for FAR is at 58% as of yesterday, May 3rd"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I need to finish Becker 100% by at least two weeks before the exam so I have time for a final review pass"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "The Ninja CPA monthly subscription costs $57"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My friend Kevin is doing the CPA too but he's on the AUD section. He scored a 71 on his latest practice exam"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "my timed practice set scores have been around 65 to 68 percent on 33 MCQs in 45 minutes"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I had originally planned to sit for REG in August too, but I dropped that idea entirely"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've told you about my CPA exam preparation — the specific dates, progress milestones, supplemental resources, and any plans I mentioned then decided against?",
+      "expected_answer": "You shared that your FAR exam window is June 7th, your Becker FAR progress was at 58% as of May 3rd, and you set a personal rule to finish Becker 100% at least two weeks before the exam for a final review pass. You also mentioned your Ninja CPA monthly subscription costs $57. Your friend Kevin is working on the AUD section and scored a 71 on his latest practice exam. Your timed FAR practice set scores have been around 65-68% on 33 MCQs in 45 minutes. You originally planned to sit for REG in August but dropped that idea entirely.",
+      "gold_memory_state": "FAR exam date: June 7th. Becker FAR progress: 58% as of May 3rd. Becker completion deadline rule: 100% at least 2 weeks before exam. Ninja CPA subscription cost: $57/month. Kevin's AUD practice score: 71. FAR timed practice scores: 65-68% on 33 MCQs in 45 minutes. REG August plan: retracted/dropped entirely.",
+      "judge_rubric": {
+        "must_include": [
+          "June 7th",
+          "58%",
+          "May 3rd",
+          "two weeks before exam",
+          "$57",
+          "Kevin",
+          "71",
+          "65-68%",
+          "REG plan dropped"
+        ],
+        "acceptable_paraphrases": [
+          "Ninja CPA costs $57 per month",
+          "complete Becker by two weeks prior to exam"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming REG is still planned for August",
+          "inventing an AUD exam date for the user"
+        ],
+        "harmless_extra": [
+          "mentioning 5:30 AM study routine",
+          "mentioning governmental accounting weakness",
+          "mentioning employer reimbursement"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My FAR exam window is June 7th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my Becker progress for FAR is at 58% as of yesterday, May 3rd"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I need to finish Becker 100% by at least two weeks before the exam so I have time for a final review pass"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "The Ninja CPA monthly subscription costs $57"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My friend Kevin is doing the CPA too but he's on the AUD section. He scored a 71 on his latest practice exam"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "my timed practice set scores have been around 65 to 68 percent on 33 MCQs in 45 minutes"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I had originally planned to sit for REG in August too, but I dropped that idea entirely"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned a monthly subscription cost for a supplemental CPA study tool. Which resource does that cost belong to — mine or Kevin's? And does Kevin's exam prep involve the same supplemental tool?",
+      "expected_answer": "The $57/month subscription cost belongs to your Ninja CPA MCQ bank. Kevin is studying for the AUD section and scored a 71 on a practice exam, but there is no information about Kevin having a Ninja CPA subscription.",
+      "gold_memory_state": "User's Ninja CPA subscription: $57/month, started April 20th. Kevin: studying AUD section, scored 71 on latest practice exam. No Ninja CPA subscription information exists for Kevin.",
+      "judge_rubric": {
+        "must_include": [
+          "$57 belongs to the user's Ninja CPA subscription",
+          "Kevin's prep does not include Ninja CPA cost information"
+        ],
+        "acceptable_paraphrases": [
+          "the $57 is for your own Ninja subscription",
+          "Kevin has no recorded Ninja subscription"
+        ],
+        "must_not_include": [
+          "$67 as the user's Ninja subscription cost"
+        ],
+        "harmful_extra": [
+          "attributing the $67 forum price to the user's subscription",
+          "saying Kevin also uses Ninja CPA",
+          "confusing Kevin's AUD section with the user's FAR section"
+        ],
+        "harmless_extra": [
+          "mentioning that Kevin scored 71 on AUD practice"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses $67 (the assistant-echo forum price for Kevin's supposed Ninja subscription) as the user's Ninja cost.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "The Ninja CPA monthly subscription costs $57"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My friend Kevin is doing the CPA too but he's on the AUD section. He scored a 71 on his latest practice exam"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned a monthly subscription cost for a supplemental CPA study tool. Which resource does that cost belong to — mine or Kevin's? And does Kevin's exam prep involve the same supplemental tool?",
+      "expected_answer": "The $57/month subscription cost belongs to your Ninja CPA MCQ bank. Kevin is studying for the AUD section and scored a 71 on a practice exam, but there is no information about Kevin having a Ninja CPA subscription.",
+      "gold_memory_state": "User's Ninja CPA subscription: $57/month, started April 20th. Kevin: studying AUD section, scored 71 on latest practice exam. No Ninja CPA subscription information exists for Kevin.",
+      "judge_rubric": {
+        "must_include": [
+          "$57 belongs to the user's Ninja CPA subscription",
+          "Kevin's prep does not include Ninja CPA cost information"
+        ],
+        "acceptable_paraphrases": [
+          "the $57 is for your own Ninja subscription",
+          "Kevin has no recorded Ninja subscription"
+        ],
+        "must_not_include": [
+          "$67 as the user's Ninja subscription cost"
+        ],
+        "harmful_extra": [
+          "attributing the $67 forum price to the user's subscription",
+          "saying Kevin also uses Ninja CPA",
+          "confusing Kevin's AUD section with the user's FAR section"
+        ],
+        "harmless_extra": [
+          "mentioning that Kevin scored 71 on AUD practice"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses $67 (the assistant-echo forum price for Kevin's supposed Ninja subscription) as the user's Ninja cost.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "The Ninja CPA monthly subscription costs $57"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My friend Kevin is doing the CPA too but he's on the AUD section. He scored a 71 on his latest practice exam"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Given my Becker completion rule and my FAR exam date, by what specific date do I need to have Becker finished?",
+      "expected_answer": "May 24th. Your FAR exam is June 7th and your personal rule requires finishing Becker 100% at least two weeks before the exam, which means completion by May 24th.",
+      "gold_memory_state": "FAR exam date: June 7th. Becker completion rule: 100% at least 2 weeks before exam. Derived Becker completion deadline: May 24th (June 7th minus 2 weeks).",
+      "judge_rubric": {
+        "must_include": [
+          "May 24th"
+        ],
+        "acceptable_paraphrases": [
+          "May 24",
+          "around May 24th",
+          "by May 24th"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating a different deadline date",
+          "saying the deadline is flexible"
+        ],
+        "harmless_extra": [
+          "mentioning current progress at 58%",
+          "noting remaining 42% to cover"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": "Fails if the model cannot recall both the exam date (June 7th) and the two-week rule to derive May 24th.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: FAR exam date is June 7th",
+        "Fact 2: Becker completion rule is 100% at least 2 weeks before exam",
+        "Inference: June 7th minus 2 weeks = May 24th"
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My FAR exam window is June 7th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I need to finish Becker 100% by at least two weeks before the exam so I have time for a final review pass"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Given my Becker completion rule and my FAR exam date, by what specific date do I need to have Becker finished?",
+      "expected_answer": "May 24th. Your FAR exam is June 7th and your personal rule requires finishing Becker 100% at least two weeks before the exam, which means completion by May 24th.",
+      "gold_memory_state": "FAR exam date: June 7th. Becker completion rule: 100% at least 2 weeks before exam. Derived Becker completion deadline: May 24th (June 7th minus 2 weeks).",
+      "judge_rubric": {
+        "must_include": [
+          "May 24th"
+        ],
+        "acceptable_paraphrases": [
+          "May 24",
+          "around May 24th",
+          "by May 24th"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating a different deadline date",
+          "saying the deadline is flexible"
+        ],
+        "harmless_extra": [
+          "mentioning current progress at 58%",
+          "noting remaining 42% to cover"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": "Fails if the model cannot recall both the exam date (June 7th) and the two-week rule to derive May 24th.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: FAR exam date is June 7th",
+        "Fact 2: Becker completion rule is 100% at least 2 weeks before exam",
+        "Inference: June 7th minus 2 weeks = May 24th"
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My FAR exam window is June 7th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I need to finish Becker 100% by at least two weeks before the exam so I have time for a final review pass"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "How much am I paying per month for my supplemental MCQ bank subscription?",
+      "expected_answer": "$57",
+      "candidate_options": [
+        "$57",
+        "$67",
+        "$47",
+        "$77"
+      ],
+      "distractor_rationale": "same-value-different-target: $67 appeared in the assistant's mention of a forum post about Kevin's Ninja subscription pricing for AUD prep bundles, which is a different person and section. assistant echo: $67 is the assistant-generated forum price, not a user-stated value. $47 and $77 are plausible nearby price points that were never mentioned.",
+      "gold_memory_state": "User's Ninja CPA monthly subscription cost: $57. The $67 figure was introduced by the assistant referencing a forum post about Kevin's supposed Ninja pricing, not by the user.",
+      "judge_rubric": {
+        "must_include": [
+          "$57"
+        ],
+        "acceptable_paraphrases": [
+          "57 dollars",
+          "$57 per month",
+          "$57/month"
+        ],
+        "must_not_include": [
+          "$67"
+        ],
+        "harmful_extra": [
+          "selecting $67 as the user's subscription cost"
+        ],
+        "harmless_extra": [
+          "mentioning it is for Ninja CPA"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects $67, which is the assistant-injected forum price for a different person's subscription.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "The Ninja CPA monthly subscription costs $57"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "How much am I paying per month for my supplemental MCQ bank subscription?",
+      "expected_answer": "$57",
+      "candidate_options": [
+        "$57",
+        "$67",
+        "$47",
+        "$77"
+      ],
+      "distractor_rationale": "same-value-different-target: $67 appeared in the assistant's mention of a forum post about Kevin's Ninja subscription pricing for AUD prep bundles, which is a different person and section. assistant echo: $67 is the assistant-generated forum price, not a user-stated value. $47 and $77 are plausible nearby price points that were never mentioned.",
+      "gold_memory_state": "User's Ninja CPA monthly subscription cost: $57. The $67 figure was introduced by the assistant referencing a forum post about Kevin's supposed Ninja pricing, not by the user.",
+      "judge_rubric": {
+        "must_include": [
+          "$57"
+        ],
+        "acceptable_paraphrases": [
+          "57 dollars",
+          "$57 per month",
+          "$57/month"
+        ],
+        "must_not_include": [
+          "$67"
+        ],
+        "harmful_extra": [
+          "selecting $67 as the user's subscription cost"
+        ],
+        "harmless_extra": [
+          "mentioning it is for Ninja CPA"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects $67, which is the assistant-injected forum price for a different person's subscription.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "The Ninja CPA monthly subscription costs $57"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to figure out how much daily Becker progress I need to average from May 3rd through my content completion deadline. Given my current Becker percentage, my exam date, and my two-week pre-exam review rule, what's the approximate daily percentage I need to complete, and how many total days do I have to get it done?",
+      "expected_answer": "You need to cover 42% of Becker content (from 58% to 100%) in 21 days (May 3rd through May 24th). That works out to approximately 2% per day.",
+      "gold_memory_state": "FAR exam date: June 7th. Becker FAR progress: 58% as of May 3rd. Becker completion deadline rule: 100% at least 2 weeks before exam. Derived completion deadline: May 24th. Remaining content: 42%. Days available: 21 (May 3 to May 24 inclusive). Daily rate needed: ~2%/day.",
+      "judge_rubric": {
+        "must_include": [
+          "42%",
+          "May 24th",
+          "21 days",
+          "approximately 2% per day"
+        ],
+        "acceptable_paraphrases": [
+          "about 2% daily",
+          "roughly 2 percentage points per day",
+          "around 2%/day"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "using a wrong deadline date",
+          "calculating from a wrong starting percentage",
+          "ignoring the two-week review rule"
+        ],
+        "harmless_extra": [
+          "mentioning that weekends could be used for extra study",
+          "noting this is an acceleration from current pace"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": "Fails if the model cannot recall all three source facts: exam date (June 7th), current Becker progress (58% as of May 3rd), and the two-week completion rule.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: FAR exam date is June 7th",
+        "Fact 2: Becker FAR progress is 58% as of May 3rd",
+        "Fact 3: Becker must be 100% complete at least 2 weeks before the exam",
+        "Inference: Completion deadline = June 7th minus 2 weeks = May 24th",
+        "Inference: Remaining content = 100% - 58% = 42%",
+        "Inference: Days available = May 3rd to May 24th = 21 days",
+        "Derived value: Daily rate needed = 42% / 21 days = 2% per day"
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My FAR exam window is June 7th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my Becker progress for FAR is at 58% as of yesterday, May 3rd"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I need to finish Becker 100% by at least two weeks before the exam so I have time for a final review pass"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to figure out how much daily Becker progress I need to average from May 3rd through my content completion deadline. Given my current Becker percentage, my exam date, and my two-week pre-exam review rule, what's the approximate daily percentage I need to complete, and how many total days do I have to get it done?",
+      "expected_answer": "You need to cover 42% of Becker content (from 58% to 100%) in 21 days (May 3rd through May 24th). That works out to approximately 2% per day.",
+      "gold_memory_state": "FAR exam date: June 7th. Becker FAR progress: 58% as of May 3rd. Becker completion deadline rule: 100% at least 2 weeks before exam. Derived completion deadline: May 24th. Remaining content: 42%. Days available: 21 (May 3 to May 24 inclusive). Daily rate needed: ~2%/day.",
+      "judge_rubric": {
+        "must_include": [
+          "42%",
+          "May 24th",
+          "21 days",
+          "approximately 2% per day"
+        ],
+        "acceptable_paraphrases": [
+          "about 2% daily",
+          "roughly 2 percentage points per day",
+          "around 2%/day"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "using a wrong deadline date",
+          "calculating from a wrong starting percentage",
+          "ignoring the two-week review rule"
+        ],
+        "harmless_extra": [
+          "mentioning that weekends could be used for extra study",
+          "noting this is an acceleration from current pace"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": "Fails if the model cannot recall all three source facts: exam date (June 7th), current Becker progress (58% as of May 3rd), and the two-week completion rule.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: FAR exam date is June 7th",
+        "Fact 2: Becker FAR progress is 58% as of May 3rd",
+        "Fact 3: Becker must be 100% complete at least 2 weeks before the exam",
+        "Inference: Completion deadline = June 7th minus 2 weeks = May 24th",
+        "Inference: Remaining content = 100% - 58% = 42%",
+        "Inference: Days available = May 3rd to May 24th = 21 days",
+        "Derived value: Daily rate needed = 42% / 21 days = 2% per day"
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My FAR exam window is June 7th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my Becker progress for FAR is at 58% as of yesterday, May 3rd"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I need to finish Becker 100% by at least two weeks before the exam so I have time for a final review pass"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "When is my AUD section exam scheduled?",
+      "expected_answer": "I don't have an AUD section exam date from you. You haven't provided that information.",
+      "gold_memory_state": "No AUD section exam date was ever provided by the user. The user's own exam information is limited to FAR on June 7th. Kevin is studying for AUD but no AUD exam date was given for Kevin or the user.",
+      "judge_rubric": {
+        "must_include": [
+          "no AUD exam date was provided",
+          "not available"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have an AUD exam date",
+          "You haven't shared an AUD exam date",
+          "No AUD exam date on record"
+        ],
+        "must_not_include": [
+          "any specific AUD exam date"
+        ],
+        "harmful_extra": [
+          "inventing an AUD exam date",
+          "borrowing June 7th as an AUD date",
+          "stating Kevin's AUD exam date when none was given"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model fabricates an AUD exam date or borrows the FAR exam date (June 7th) for AUD.",
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model invents information that was never stated.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My FAR exam window is June 7th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My friend Kevin is doing the CPA too but he's on the AUD section. He scored a 71 on his latest practice exam"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "When is my AUD section exam scheduled?",
+      "expected_answer": "I don't have an AUD section exam date from you. You haven't provided that information.",
+      "gold_memory_state": "No AUD section exam date was ever provided by the user. The user's own exam information is limited to FAR on June 7th. Kevin is studying for AUD but no AUD exam date was given for Kevin or the user.",
+      "judge_rubric": {
+        "must_include": [
+          "no AUD exam date was provided",
+          "not available"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have an AUD exam date",
+          "You haven't shared an AUD exam date",
+          "No AUD exam date on record"
+        ],
+        "must_not_include": [
+          "any specific AUD exam date"
+        ],
+        "harmful_extra": [
+          "inventing an AUD exam date",
+          "borrowing June 7th as an AUD date",
+          "stating Kevin's AUD exam date when none was given"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model fabricates an AUD exam date or borrows the FAR exam date (June 7th) for AUD.",
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model invents information that was never stated.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My FAR exam window is June 7th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My friend Kevin is doing the CPA too but he's on the AUD section. He scored a 71 on his latest practice exam"
+        }
+      ]
+    }
+  ]
+}

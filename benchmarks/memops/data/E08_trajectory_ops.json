@@ -1,0 +1,997 @@
+{
+  "target_fact": "The user's correct Portland hotel total, which undergoes multiple reported-amount changes through corrections and tentative revisions",
+  "operation_type": "TrajectoryOps",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "hotel_total_chain",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I filed my quarterly expense report and listed the Portland hotel stay as $387 for two nights"
+      },
+      "target": {
+        "target_id": "portland_hotel_total",
+        "target_name": "reported Portland hotel total"
+      },
+      "old_value": null,
+      "new_value": "$387",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I filed my quarterly expense report and listed the Portland hotel stay as $387 for two nights"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "hotel_total_chain",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I dug up the original receipt and confirmed the correct amount was $378, so I resubmitted with that figure"
+      },
+      "target": {
+        "target_id": "portland_hotel_total",
+        "target_name": "reported Portland hotel total"
+      },
+      "old_value": "$387",
+      "new_value": "$378",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I filed my quarterly expense report and listed the Portland hotel stay as $387 for two nights"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I dug up the original receipt and confirmed the correct amount was $378, so I resubmitted with that figure"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 7,
+        "quote": "my current rule is to triple-check any dollar amount or headcount before submitting, and I never file reports after 4 PM"
+      },
+      "target": {
+        "target_id": "submission_rule",
+        "target_name": "personal report submission rule"
+      },
+      "old_value": null,
+      "new_value": "Triple-check any dollar amount or headcount before submitting; never file reports after 4 PM",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "my current rule is to triple-check any dollar amount or headcount before submitting, and I never file reports after 4 PM"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "hotel_total_chain",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I just got a revised folio from the Residence Inn showing a $4 parking surcharge I missed. The correct total for the Portland stay is now $382"
+      },
+      "target": {
+        "target_id": "portland_hotel_total",
+        "target_name": "reported Portland hotel total"
+      },
+      "old_value": "$378",
+      "new_value": "$382",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I dug up the original receipt and confirmed the correct amount was $378, so I resubmitted with that figure"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I just got a revised folio from the Residence Inn showing a $4 parking surcharge I missed. The correct total for the Portland stay is now $382"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "hotel_total_chain",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "The hotel loyalty program rep told me they're going to apply a 10% member discount retroactively, which would bring the total down to about $344"
+      },
+      "target": {
+        "target_id": "portland_hotel_total",
+        "target_name": "reported Portland hotel total"
+      },
+      "old_value": "$382",
+      "new_value": "$344",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The hotel loyalty program rep told me they're going to apply a 10% member discount retroactively, which would bring the total down to about $344"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish initial hotel amount, correct it, and introduce submission rule",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I need help organizing my expense report situation. I filed my quarterly expense report and listed the Portland hotel stay as $387 for two nights at the Residence Inn on SW Morrison Street. Finance flagged it about a week later, around March 12th. Now I have to resubmit the whole thing and it's been a headache. Can you help me keep track of these numbers?"
+        },
+        {
+          "role": "assistant",
+          "content": "I'd be happy to help you organize your expense report details. So far, here's what I have: you filed a quarterly expense report listing a Portland hotel stay at the Residence Inn on SW Morrison Street for two nights at $387, and Finance flagged the amount around March 12th. You're now working through a resubmission. Let me know the corrected amount when you have it, and I can help you build a clean summary for the resubmission. Do you also have other line items on this report that need attention, or is the hotel the main issue right now?"
+        },
+        {
+          "role": "user",
+          "content": "The hotel is the main issue. My friend Dave had something similar—he reported 12 attendees at a training session when the actual count was 14. His manager caught it during a review. I remember thinking I'd hate being called out like that publicly. Anyway, Dave's situation wasn't as annoying as mine because his fix was quick. My resubmission took almost two full days."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds frustrating—two days is a long time for a correction. Dave's situation with the attendee miscount (12 reported vs. 14 actual) is a good reminder that these numerical errors happen to everyone. At least his was resolved quickly. For your case, the two-day resubmission delay makes it even more important to get the numbers right the first time going forward. Once you confirm the corrected hotel total, I can draft a clean expense summary you can cross-reference before submitting. Do you have the original receipt handy, or do you still need to track it down?"
+        },
+        {
+          "role": "user",
+          "content": "I already found it. I dug up the original receipt and confirmed the correct amount was $378, so I resubmitted with that figure. That's for two nights at the Residence Inn on SW Morrison Street in Portland. The receipt was buried in my email, which is part of why it took so long. I'm also thinking about switching to a spreadsheet template to track everything before I submit. I hate filling in forms one field at a time."
+        },
+        {
+          "role": "assistant",
+          "content": "Great, so the corrected Portland hotel total is $378 for two nights at the Residence Inn on SW Morrison Street. I've noted that. A spreadsheet template is an excellent idea—having everything laid out in a grid makes it much easier to scan for errors visually before you submit. You could set up columns for each expense category, date, vendor, and amount, then add a simple sum formula at the bottom to catch discrepancies instantly. Would you like me to sketch out a template structure you could adapt? Also, are there other line items on this quarter's report you want to verify while we're at it?"
+        },
+        {
+          "role": "user",
+          "content": "Not right now on the template, but please remember this: my current rule is to triple-check any dollar amount or headcount before submitting, and I never file reports after 4 PM. I find that my error rate goes way up when I'm tired at end of day. Mornings with coffee are when I catch mistakes best. That quiet early window is really important to me for detail work."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted—your rule is to triple-check every dollar amount and headcount before submitting, and you never file reports after 4 PM. That's a smart approach, especially since you've identified that your error rate climbs when you're tired. Morning sessions with coffee sound like your optimal window for catching mistakes, which aligns well with doing a final review pass on your spreadsheet before anything gets submitted. I'll keep that rule in mind if you ever ask me to help you finalize a report. Anything else you'd like to go over regarding your expense tracking process right now?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "introduce revised hotel folio with parking surcharge, update total to $382, discuss mileage",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Quick update on my February driving log—I initially wrote 847 miles but realized it should have been 871 after double-checking everything post the hotel fiasco. I only caught it because I was being extra careful reviewing all my numbers. That mileage figure of 871 is the correct one for February. Can you note that?"
+        },
+        {
+          "role": "assistant",
+          "content": "Got it—your corrected February driving mileage is 871 miles, which you caught during your thorough review after the hotel resubmission. It's good that the hotel situation prompted you to audit everything else. Having the accurate 871-mile figure on record means your February log should be clean now. Are you planning to resubmit the driving log as well, or was the original already accepted with the 847 figure? Let me know if you need help formatting that correction too."
+        },
+        {
+          "role": "user",
+          "content": "I haven't resubmitted the driving log yet, but that's not the urgent thing. I just got a revised folio from the Residence Inn showing a $4 parking surcharge I missed. The correct total for the Portland stay is now $382. I need to update my expense report again with this new amount. This is really annoying—I thought I was done with this."
+        },
+        {
+          "role": "assistant",
+          "content": "That is frustrating, but at least you caught it before any audit. So the Portland hotel total is now $382, updated from $378 after the $4 parking surcharge from the revised Residence Inn folio. You'll need to resubmit the expense report with this corrected figure. Since you've already been through the resubmission process once, hopefully it'll go faster this time. Would you like me to draft a brief note to Finance explaining the update, something like 'revised folio received with previously omitted parking surcharge'? That might speed up their review."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, that would help. Also, I want to mention that I started using that spreadsheet template around mid-March. It's been really useful—I can see everything in columns and rows, and I scan across to spot errors visually. It's calming, honestly. I wish I'd started using it before the Portland trip. The grid layout just works better for me than filling in form fields one at a time."
+        },
+        {
+          "role": "assistant",
+          "content": "I'm glad the spreadsheet template is working well for you. Having that visual grid layout where you can scan across columns definitely suits your preference for structured, organized review. Here's a draft note for Finance: 'Please find attached a revised expense report reflecting an updated Portland hotel total of $382. A revised folio from the Residence Inn included a $4 parking surcharge not captured on the original receipt. All other line items remain unchanged.' Does that work, or would you like me to adjust the wording? And should I reference the original $378 figure for context?"
+        },
+        {
+          "role": "user",
+          "content": "That draft looks good, but don't reference the old $378 amount—I don't want to draw attention to how many times I've corrected this. Just state the current $382 figure. Also, regarding the Greenfield project, I submitted a client invoice that listed 40 billable hours when the actual number was 38. I caught it myself before the client saw it, thankfully. But I felt genuinely anxious for a couple of days afterward.\n\nYes, finalize it. And the anxiety about the Greenfield thing really did linger longer than I expected. I kept worrying I'd damaged the client relationship even though they never saw the error. It was disproportionate to what actually happened. Anyway, let's move on—I'll check back with you once Finance processes the updated report."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood—I'll keep the note clean with just the $382 figure, no mention of prior amounts. Regarding the Greenfield invoice, it's good you caught the 40-versus-38-hour discrepancy before the client saw it. That kind of self-catch is exactly what your morning review process is designed for. The anxiety you felt afterward is understandable, even when there's no real consequence—worrying about professional reputation is natural. Since you've now had errors on the hotel total, driving mileage, and the Greenfield hours, your triple-check rule and 4 PM cutoff seem more important than ever. Want me to finalize that Finance note?"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "introduce tentative loyalty discount, adversarial injection of Dave's hotel amount, recency trap",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I'm back. Finance accepted the $382 Portland hotel figure, so that's processed now. I also wanted to follow up on the PTO balance issue—HR had said I was off by one day, showing 10 days instead of my reported 11. Turns out I forgot to count two half-days. But that's all resolved on their end now, so you don't need to track my PTO balance anymore."
+        },
+        {
+          "role": "assistant",
+          "content": "Good to hear Finance accepted the $382 Portland hotel total—that chapter is finally closed. And I understand the PTO balance discrepancy with HR is fully resolved, so I won't track that going forward. It sounds like the two half-days you'd overlooked were the source of the one-day difference. With that settled, your outstanding items are the February driving log correction to 871 miles and your ongoing use of the spreadsheet template for future submissions. Is there anything else you'd like to update or review today?"
+        },
+        {
+          "role": "user",
+          "content": "Actually, I was talking to Dave yesterday and he mentioned his hotel stay in Seattle came to $385. He stayed at some Marriott downtown. Funny how close that number is to my original wrong amount of $387. Anyway, his expense report went through without any issues, which is kind of annoying given how much trouble mine caused. But his situation is his, not mine."
+        },
+        {
+          "role": "assistant",
+          "content": "Ha, that is a funny coincidence—Dave's Seattle Marriott stay at $385 is remarkably close to your original incorrect Portland figure of $387. But as you said, his situation is separate from yours. At least your corrected $382 is now processed and accepted. It sounds like Dave's expense workflow is smoother than yours has been this quarter, but your new spreadsheet system and triple-check rule should help prevent these headaches going forward. Is there anything else on your plate regarding expenses or reports that you'd like to work through?"
+        },
+        {
+          "role": "user",
+          "content": "The hotel loyalty program rep told me they're going to apply a 10% member discount retroactively, which would bring the total down to about $344. They said it should show up on my account within two weeks. If that happens, I'll need to adjust the expense report again. But I'm not going to do anything until I see the actual credit posted."
+        },
+        {
+          "role": "assistant",
+          "content": "That would be a nice savings if it comes through. A 10% retroactive member discount bringing the total to around $344 is significant. Smart move waiting until the credit actually posts before making any changes to your expense report—no point in going through another resubmission cycle until you have confirmation. When the credit does appear, you'll want to get a revised receipt or statement showing the discounted amount before approaching Finance again. Shall I set a reminder note for you to check on this in two weeks, or would you prefer to just follow up when you see it?"
+        },
+        {
+          "role": "user",
+          "content": "No reminder needed—I'll just check my loyalty account periodically. For now the accepted figure is still $382 since nothing has changed yet. I want to make sure we're on the same page about that. The $344 is just what the rep said might happen. I don't want to update anything prematurely and go through another resubmission nightmare.\n\nNo, I think we're good for now. I'll keep using my spreadsheet template and doing my morning reviews with coffee. That process has been working well since mid-March. I'll circle back once I know what's happening with the loyalty discount. Thanks for keeping track of all this."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, we're on the same page. Your current accepted Portland hotel total remains $382, which is what Finance has on file. The potential $344 figure from the loyalty program discount is pending and unconfirmed—you'll only act on it once the credit actually posts to your account. That's consistent with your triple-check philosophy: verify before submitting. I won't treat the $344 as your current amount. When and if the discount materializes, just let me know and we can prepare the documentation for another adjustment. Anything else you'd like to go over today?"
+        }
+      ]
+    }
+  ],
+  "state_checkpoints": [
+    {
+      "checkpoint_id": "c1",
+      "description": "After segment 1: Portland hotel total is $378 (confirmed, corrected from initial $387). Submission rule established: triple-check amounts/headcounts, never file after 4 PM."
+    },
+    {
+      "checkpoint_id": "c2",
+      "description": "After segment 2: Portland hotel total updated to $382 (confirmed, after $4 parking surcharge from revised folio). Submission rule unchanged. February mileage of 871 mentioned but not a chain target."
+    },
+    {
+      "checkpoint_id": "c3",
+      "description": "After segment 3: Portland hotel total remains $382 (confirmed and accepted by Finance). Tentative $344 from loyalty discount is pending and unconfirmed. Dave's $385 Seattle hotel is adversarial noise. Submission rule unchanged."
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Walk me through the key things I told you about my Portland hotel expense—what amounts did I mention over time, and what personal rule did I share about submitting reports?",
+      "expected_answer": "You initially reported the Portland hotel stay at $387 for two nights at the Residence Inn on SW Morrison Street. You then found the original receipt and corrected the amount to $378, resubmitting with that figure. Later, a revised folio from the Residence Inn revealed a $4 parking surcharge, bringing the total to $382, which Finance accepted. A loyalty program representative mentioned a possible 10% retroactive member discount that would bring the total to about $344, but you said you would not act on it until the credit actually posts. Separately, you shared your personal rule: triple-check any dollar amount or headcount before submitting, and never file reports after 4 PM.",
+      "gold_memory_state": "Portland hotel total: $382 (confirmed, accepted by Finance). Tentative $344 loyalty discount is pending and unconfirmed. Submission rule: triple-check amounts/headcounts, never file after 4 PM.",
+      "judge_rubric": {
+        "must_include": [
+          "$387",
+          "$378",
+          "$382",
+          "$344",
+          "triple-check",
+          "4 PM"
+        ],
+        "acceptable_paraphrases": [
+          "don't file after 4 PM",
+          "never submit after 4 PM"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "treating $344 as the current accepted amount"
+        ],
+        "harmless_extra": [
+          "mentioning the Residence Inn",
+          "mentioning SW Morrison Street",
+          "mentioning parking surcharge",
+          "mentioning Finance acceptance"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model presents $387 or $378 as the current accepted amount.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence of amounts is presented out of order ($387 → $378 → $382 → tentative $344).",
+        "final_state": "Fails if $382 is not identified as the current accepted figure.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I filed my quarterly expense report and listed the Portland hotel stay as $387 for two nights"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I dug up the original receipt and confirmed the correct amount was $378, so I resubmitted with that figure"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "my current rule is to triple-check any dollar amount or headcount before submitting, and I never file reports after 4 PM"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I just got a revised folio from the Residence Inn showing a $4 parking surcharge I missed. The correct total for the Portland stay is now $382"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The hotel loyalty program rep told me they're going to apply a 10% member discount retroactively, which would bring the total down to about $344"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Walk me through the key things I told you about my Portland hotel expense—what amounts did I mention over time, and what personal rule did I share about submitting reports?",
+      "expected_answer": "You initially reported the Portland hotel stay at $387 for two nights at the Residence Inn on SW Morrison Street. You then found the original receipt and corrected the amount to $378, resubmitting with that figure. Later, a revised folio from the Residence Inn revealed a $4 parking surcharge, bringing the total to $382, which Finance accepted. A loyalty program representative mentioned a possible 10% retroactive member discount that would bring the total to about $344, but you said you would not act on it until the credit actually posts. Separately, you shared your personal rule: triple-check any dollar amount or headcount before submitting, and never file reports after 4 PM.",
+      "gold_memory_state": "Portland hotel total: $382 (confirmed, accepted by Finance). Tentative $344 loyalty discount is pending and unconfirmed. Submission rule: triple-check amounts/headcounts, never file after 4 PM.",
+      "judge_rubric": {
+        "must_include": [
+          "$387",
+          "$378",
+          "$382",
+          "$344",
+          "triple-check",
+          "4 PM"
+        ],
+        "acceptable_paraphrases": [
+          "don't file after 4 PM",
+          "never submit after 4 PM"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "treating $344 as the current accepted amount"
+        ],
+        "harmless_extra": [
+          "mentioning the Residence Inn",
+          "mentioning SW Morrison Street",
+          "mentioning parking surcharge",
+          "mentioning Finance acceptance"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model presents $387 or $378 as the current accepted amount.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence of amounts is presented out of order ($387 → $378 → $382 → tentative $344).",
+        "final_state": "Fails if $382 is not identified as the current accepted figure.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I filed my quarterly expense report and listed the Portland hotel stay as $387 for two nights"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I dug up the original receipt and confirmed the correct amount was $378, so I resubmitted with that figure"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "my current rule is to triple-check any dollar amount or headcount before submitting, and I never file reports after 4 PM"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I just got a revised folio from the Residence Inn showing a $4 parking surcharge I missed. The correct total for the Portland stay is now $382"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The hotel loyalty program rep told me they're going to apply a 10% member discount retroactively, which would bring the total down to about $344"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned hotel expenses for two different people's trips. If I need to resubmit my own expense report, which hotel amount applies to my filing, and does Dave's hotel figure have any bearing on my report?",
+      "expected_answer": "Your own Portland hotel total of $382 is the figure for your expense report. Dave's $385 Seattle Marriott stay is entirely separate and has no bearing on your filing.",
+      "gold_memory_state": "Portland hotel total (user's own): $382, confirmed and accepted by Finance. Dave's Seattle Marriott: $385, separate person's expense, not part of user's report. Submission rule: triple-check amounts/headcounts, never file after 4 PM.",
+      "judge_rubric": {
+        "must_include": [
+          "$382",
+          "Dave's hotel amount is separate"
+        ],
+        "acceptable_paraphrases": [
+          "Dave's $385 does not affect your report",
+          "your figure is $382"
+        ],
+        "must_not_include": [
+          "$387 as user's current amount",
+          "$378 as user's current amount",
+          "$344 as user's current amount"
+        ],
+        "harmful_extra": [
+          "mixing Dave's $385 into the user's expense report",
+          "treating $385 and $382 as interchangeable"
+        ],
+        "harmless_extra": [
+          "mentioning Residence Inn",
+          "mentioning Seattle Marriott",
+          "mentioning Finance accepted the amount"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if $387 or $378 is given as the user's current hotel total.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if $382 is not identified as the user's current accepted Portland hotel total.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I just got a revised folio from the Residence Inn showing a $4 parking surcharge I missed. The correct total for the Portland stay is now $382"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I was talking to Dave yesterday and he mentioned his hotel stay in Seattle came to $385"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned hotel expenses for two different people's trips. If I need to resubmit my own expense report, which hotel amount applies to my filing, and does Dave's hotel figure have any bearing on my report?",
+      "expected_answer": "Your own Portland hotel total of $382 is the figure for your expense report. Dave's $385 Seattle Marriott stay is entirely separate and has no bearing on your filing.",
+      "gold_memory_state": "Portland hotel total (user's own): $382, confirmed and accepted by Finance. Dave's Seattle Marriott: $385, separate person's expense, not part of user's report. Submission rule: triple-check amounts/headcounts, never file after 4 PM.",
+      "judge_rubric": {
+        "must_include": [
+          "$382",
+          "Dave's hotel amount is separate"
+        ],
+        "acceptable_paraphrases": [
+          "Dave's $385 does not affect your report",
+          "your figure is $382"
+        ],
+        "must_not_include": [
+          "$387 as user's current amount",
+          "$378 as user's current amount",
+          "$344 as user's current amount"
+        ],
+        "harmful_extra": [
+          "mixing Dave's $385 into the user's expense report",
+          "treating $385 and $382 as interchangeable"
+        ],
+        "harmless_extra": [
+          "mentioning Residence Inn",
+          "mentioning Seattle Marriott",
+          "mentioning Finance accepted the amount"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if $387 or $378 is given as the user's current hotel total.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if $382 is not identified as the user's current accepted Portland hotel total.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I just got a revised folio from the Residence Inn showing a $4 parking surcharge I missed. The correct total for the Portland stay is now $382"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I was talking to Dave yesterday and he mentioned his hotel stay in Seattle came to $385"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "What should I put on the next expense report resubmission as my Portland hotel total right now?",
+      "expected_answer": "$382",
+      "gold_memory_state": "Portland hotel total is $382, confirmed and accepted by Finance. The tentative $344 loyalty discount was never adopted—the user explicitly stated the accepted figure remains $382 until the credit actually posts. The $344 value is pending and unconfirmed and must not be used.",
+      "judge_rubric": {
+        "must_include": [
+          "$382"
+        ],
+        "acceptable_paraphrases": [
+          "382 dollars",
+          "three hundred eighty-two dollars"
+        ],
+        "must_not_include": [
+          "$344",
+          "$387",
+          "$378"
+        ],
+        "harmful_extra": [
+          "using $344 as the current amount",
+          "using $387 or $378 as the current amount"
+        ],
+        "harmless_extra": [
+          "mentioning that a potential loyalty discount is pending",
+          "mentioning Residence Inn"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model outputs $387 or $378 as the current amount.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if $382 is not given. Especially fails if $344 (tentative, never adopted) is given instead—this is the recency trap. The user explicitly said the accepted figure is still $382.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I just got a revised folio from the Residence Inn showing a $4 parking surcharge I missed. The correct total for the Portland stay is now $382"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "Finance accepted the $382 Portland hotel figure, so that's processed now"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "For now the accepted figure is still $382 since nothing has changed yet"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "What should I put on the next expense report resubmission as my Portland hotel total right now?",
+      "expected_answer": "$382",
+      "gold_memory_state": "Portland hotel total is $382, confirmed and accepted by Finance. The tentative $344 loyalty discount was never adopted—the user explicitly stated the accepted figure remains $382 until the credit actually posts. The $344 value is pending and unconfirmed and must not be used.",
+      "judge_rubric": {
+        "must_include": [
+          "$382"
+        ],
+        "acceptable_paraphrases": [
+          "382 dollars",
+          "three hundred eighty-two dollars"
+        ],
+        "must_not_include": [
+          "$344",
+          "$387",
+          "$378"
+        ],
+        "harmful_extra": [
+          "using $344 as the current amount",
+          "using $387 or $378 as the current amount"
+        ],
+        "harmless_extra": [
+          "mentioning that a potential loyalty discount is pending",
+          "mentioning Residence Inn"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model outputs $387 or $378 as the current amount.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if $382 is not given. Especially fails if $344 (tentative, never adopted) is given instead—this is the recency trap. The user explicitly said the accepted figure is still $382.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I just got a revised folio from the Residence Inn showing a $4 parking surcharge I missed. The correct total for the Portland stay is now $382"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "Finance accepted the $382 Portland hotel figure, so that's processed now"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "For now the accepted figure is still $382 since nothing has changed yet"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to draft a short note to my manager explaining how much my Portland hotel expense changed from the original filing to the amount Finance has on record, and I want to mention my personal process rule that should have prevented the error. Can you write that note for me?",
+      "expected_answer": "The Portland hotel total changed by $5 from the original $387 filing down to the accepted $382. The note should reference the user's personal rule to triple-check any dollar amount or headcount before submitting and to never file reports after 4 PM, noting that following this rule more carefully could have prevented the initial error.",
+      "gold_memory_state": "Portland hotel total: $382 (confirmed, accepted by Finance). Original filing was $387. Submission rule: triple-check amounts/headcounts, never file after 4 PM. Tentative $344 is not adopted.",
+      "judge_rubric": {
+        "must_include": [
+          "$387",
+          "$382",
+          "$5 difference or equivalent arithmetic",
+          "triple-check",
+          "4 PM"
+        ],
+        "acceptable_paraphrases": [
+          "five dollar difference",
+          "decreased by five dollars",
+          "net change of negative five dollars"
+        ],
+        "must_not_include": [
+          "$344 as the accepted amount",
+          "$378 as the final amount"
+        ],
+        "harmful_extra": [
+          "using $344 as the current accepted total",
+          "omitting the submission rule"
+        ],
+        "harmless_extra": [
+          "mentioning the Residence Inn",
+          "mentioning the parking surcharge",
+          "mentioning the receipt correction"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if $378 or $344 is used as the final accepted amount in the note.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the note does not use $382 as the Finance-accepted amount.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user originally filed the Portland hotel stay as $387.",
+        "Fact 2: The current Finance-accepted Portland hotel total is $382.",
+        "Fact 3: The user's personal rule is to triple-check any dollar amount or headcount before submitting and never file reports after 4 PM.",
+        "Inference: The net change from original filing to accepted amount is $387 − $382 = $5 decrease.",
+        "Inference: The note should state the $5 reduction from $387 to $382 and reference the triple-check / 4 PM rule as the process safeguard that should have caught the original error."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I filed my quarterly expense report and listed the Portland hotel stay as $387 for two nights"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I just got a revised folio from the Residence Inn showing a $4 parking surcharge I missed. The correct total for the Portland stay is now $382"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "my current rule is to triple-check any dollar amount or headcount before submitting, and I never file reports after 4 PM"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to draft a short note to my manager explaining how much my Portland hotel expense changed from the original filing to the amount Finance has on record, and I want to mention my personal process rule that should have prevented the error. Can you write that note for me?",
+      "expected_answer": "The Portland hotel total changed by $5 from the original $387 filing down to the accepted $382. The note should reference the user's personal rule to triple-check any dollar amount or headcount before submitting and to never file reports after 4 PM, noting that following this rule more carefully could have prevented the initial error.",
+      "gold_memory_state": "Portland hotel total: $382 (confirmed, accepted by Finance). Original filing was $387. Submission rule: triple-check amounts/headcounts, never file after 4 PM. Tentative $344 is not adopted.",
+      "judge_rubric": {
+        "must_include": [
+          "$387",
+          "$382",
+          "$5 difference or equivalent arithmetic",
+          "triple-check",
+          "4 PM"
+        ],
+        "acceptable_paraphrases": [
+          "five dollar difference",
+          "decreased by five dollars",
+          "net change of negative five dollars"
+        ],
+        "must_not_include": [
+          "$344 as the accepted amount",
+          "$378 as the final amount"
+        ],
+        "harmful_extra": [
+          "using $344 as the current accepted total",
+          "omitting the submission rule"
+        ],
+        "harmless_extra": [
+          "mentioning the Residence Inn",
+          "mentioning the parking surcharge",
+          "mentioning the receipt correction"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if $378 or $344 is used as the final accepted amount in the note.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the note does not use $382 as the Finance-accepted amount.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user originally filed the Portland hotel stay as $387.",
+        "Fact 2: The current Finance-accepted Portland hotel total is $382.",
+        "Fact 3: The user's personal rule is to triple-check any dollar amount or headcount before submitting and never file reports after 4 PM.",
+        "Inference: The net change from original filing to accepted amount is $387 − $382 = $5 decrease.",
+        "Inference: The note should state the $5 reduction from $387 to $382 and reference the triple-check / 4 PM rule as the process safeguard that should have caught the original error."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I filed my quarterly expense report and listed the Portland hotel stay as $387 for two nights"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I just got a revised folio from the Residence Inn showing a $4 parking surcharge I missed. The correct total for the Portland stay is now $382"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "my current rule is to triple-check any dollar amount or headcount before submitting, and I never file reports after 4 PM"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed our entire conversation history about the Portland hotel reimbursement amount, what would they see as the sequence of figures, which ones were actually adopted at each stage, and which was only floated but never acted on?",
+      "expected_answer": "The sequence was: (1) $387 was the original filed amount; (2) $378 replaced it after the user found the original receipt and resubmitted; (3) $382 replaced $378 after a revised folio showed a $4 parking surcharge, and Finance accepted $382; (4) $344 was mentioned as a possible 10% loyalty discount but was never adopted—the user explicitly kept $382 as the accepted figure pending actual confirmation of the credit. The final usable amount is $382.",
+      "gold_memory_state": "Portland hotel total trajectory: $387 (initial, superseded) → $378 (receipt-corrected, superseded) → $382 (folio-corrected, confirmed and accepted by Finance, current) → $344 (tentative loyalty discount, never adopted). Final confirmed value: $382.",
+      "judge_rubric": {
+        "must_include": [
+          "$387",
+          "$378",
+          "$382",
+          "$344",
+          "correct chronological order",
+          "$382 as final accepted",
+          "$344 never adopted or only tentative"
+        ],
+        "acceptable_paraphrases": [
+          "$344 was not acted on",
+          "$344 is pending",
+          "$344 was only mentioned as a possibility"
+        ],
+        "must_not_include": [
+          "$344 as the final accepted amount"
+        ],
+        "harmful_extra": [
+          "presenting $344 as adopted",
+          "omitting $378 from the sequence",
+          "presenting the sequence out of order"
+        ],
+        "harmless_extra": [
+          "mentioning the Residence Inn",
+          "mentioning the parking surcharge details",
+          "mentioning Finance acceptance"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if any superseded value ($387, $378) is presented as currently active.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the four values are not listed in the correct chronological order: $387 → $378 → $382 → $344 (tentative).",
+        "final_state": "Fails if $382 is not identified as the current accepted amount.",
+        "intermediate_state": "Fails if $378 is omitted as an intermediate confirmed state between $387 and $382.",
+        "trajectory_provenance": "Fails if the model cannot attribute each change to its cause (initial filing, receipt correction, parking surcharge folio, loyalty discount mention)."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: User initially filed the Portland hotel as $387.",
+        "Step 2: User found the original receipt showing $378 and resubmitted, replacing $387.",
+        "Step 3: A revised folio added a $4 parking surcharge, updating the total from $378 to $382. Finance accepted $382.",
+        "Step 4: A loyalty program rep mentioned a potential 10% retroactive discount bringing the total to about $344, but the user explicitly stated this is unconfirmed and the accepted figure remains $382.",
+        "Inference: The full trajectory is $387 → $378 → $382 → $344 (tentative only). The final confirmed and adopted value is $382."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I filed my quarterly expense report and listed the Portland hotel stay as $387 for two nights"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I dug up the original receipt and confirmed the correct amount was $378, so I resubmitted with that figure"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I just got a revised folio from the Residence Inn showing a $4 parking surcharge I missed. The correct total for the Portland stay is now $382"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The hotel loyalty program rep told me they're going to apply a 10% member discount retroactively, which would bring the total down to about $344"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "For now the accepted figure is still $382 since nothing has changed yet"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed our entire conversation history about the Portland hotel reimbursement amount, what would they see as the sequence of figures, which ones were actually adopted at each stage, and which was only floated but never acted on?",
+      "expected_answer": "The sequence was: (1) $387 was the original filed amount; (2) $378 replaced it after the user found the original receipt and resubmitted; (3) $382 replaced $378 after a revised folio showed a $4 parking surcharge, and Finance accepted $382; (4) $344 was mentioned as a possible 10% loyalty discount but was never adopted—the user explicitly kept $382 as the accepted figure pending actual confirmation of the credit. The final usable amount is $382.",
+      "gold_memory_state": "Portland hotel total trajectory: $387 (initial, superseded) → $378 (receipt-corrected, superseded) → $382 (folio-corrected, confirmed and accepted by Finance, current) → $344 (tentative loyalty discount, never adopted). Final confirmed value: $382.",
+      "judge_rubric": {
+        "must_include": [
+          "$387",
+          "$378",
+          "$382",
+          "$344",
+          "correct chronological order",
+          "$382 as final accepted",
+          "$344 never adopted or only tentative"
+        ],
+        "acceptable_paraphrases": [
+          "$344 was not acted on",
+          "$344 is pending",
+          "$344 was only mentioned as a possibility"
+        ],
+        "must_not_include": [
+          "$344 as the final accepted amount"
+        ],
+        "harmful_extra": [
+          "presenting $344 as adopted",
+          "omitting $378 from the sequence",
+          "presenting the sequence out of order"
+        ],
+        "harmless_extra": [
+          "mentioning the Residence Inn",
+          "mentioning the parking surcharge details",
+          "mentioning Finance acceptance"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if any superseded value ($387, $378) is presented as currently active.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the four values are not listed in the correct chronological order: $387 → $378 → $382 → $344 (tentative).",
+        "final_state": "Fails if $382 is not identified as the current accepted amount.",
+        "intermediate_state": "Fails if $378 is omitted as an intermediate confirmed state between $387 and $382.",
+        "trajectory_provenance": "Fails if the model cannot attribute each change to its cause (initial filing, receipt correction, parking surcharge folio, loyalty discount mention)."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: User initially filed the Portland hotel as $387.",
+        "Step 2: User found the original receipt showing $378 and resubmitted, replacing $387.",
+        "Step 3: A revised folio added a $4 parking surcharge, updating the total from $378 to $382. Finance accepted $382.",
+        "Step 4: A loyalty program rep mentioned a potential 10% retroactive discount bringing the total to about $344, but the user explicitly stated this is unconfirmed and the accepted figure remains $382.",
+        "Inference: The full trajectory is $387 → $378 → $382 → $344 (tentative only). The final confirmed and adopted value is $382."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I filed my quarterly expense report and listed the Portland hotel stay as $387 for two nights"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I dug up the original receipt and confirmed the correct amount was $378, so I resubmitted with that figure"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I just got a revised folio from the Residence Inn showing a $4 parking surcharge I missed. The correct total for the Portland stay is now $382"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The hotel loyalty program rep told me they're going to apply a 10% member discount retroactively, which would bring the total down to about $344"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "For now the accepted figure is still $382 since nothing has changed yet"
+        }
+      ]
+    }
+  ]
+}

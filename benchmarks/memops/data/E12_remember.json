@@ -1,0 +1,1104 @@
+{
+  "target_fact": "Relationship labels and personal details about the user, their partner Elaine, and related social connections",
+  "operation_type": "Remember",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 3,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": true,
+      "never_stored_target": "Kevin's occupation"
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "Elaine and I started dating in June 2022"
+      },
+      "target": {
+        "target_id": "relationship_start_date",
+        "target_name": "start date of relationship with Elaine"
+      },
+      "old_value": null,
+      "new_value": "June 2022",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Elaine and I started dating in June 2022"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "Elaine's status is my long-term partner, not my spouse or fiancée"
+      },
+      "target": {
+        "target_id": "elaine_relationship_label",
+        "target_name": "correct relationship label for Elaine"
+      },
+      "old_value": null,
+      "new_value": "long-term partner",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Elaine's status is my long-term partner, not my spouse or fiancée"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "Kevin has been my close friend since our freshman year at the University of Michigan"
+      },
+      "target": {
+        "target_id": "kevin_friendship_origin",
+        "target_name": "origin of friendship with Kevin"
+      },
+      "old_value": null,
+      "new_value": "close friends since freshman year at the University of Michigan",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Kevin has been my close friend since our freshman year at the University of Michigan"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "Marco always uses the phrase 'your person' when referring to someone's partner, and I genuinely appreciate that neutral phrasing"
+      },
+      "target": {
+        "target_id": "marco_phrasing_preference",
+        "target_name": "preferred relationship phrasing from friend Marco"
+      },
+      "old_value": null,
+      "new_value": "Marco uses 'your person' as a neutral relationship label; user appreciates this phrasing",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Marco always uses the phrase 'your person' when referring to someone's partner, and I genuinely appreciate that neutral phrasing"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 7,
+        "quote": "We graduated from Michigan together in May 2018, so Kevin and I have known each other about six years now"
+      },
+      "target": {
+        "target_id": "michigan_graduation_date",
+        "target_name": "University of Michigan graduation date"
+      },
+      "old_value": null,
+      "new_value": "May 2018",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "We graduated from Michigan together in May 2018, so Kevin and I have known each other about six years now"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 1,
+        "quote": "Our apartment lease renewal just went through, and the new lease term is 14 months starting June 1st, 2025"
+      },
+      "target": {
+        "target_id": "lease_start_date",
+        "target_name": "new apartment lease start date"
+      },
+      "old_value": null,
+      "new_value": "June 1, 2025",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "the new lease term is 14 months starting June 1st, 2025"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "The lease is 14 months, and our landlord requires 90 days' written notice before the end if we want to renew again"
+      },
+      "target": {
+        "target_id": "lease_notice_rule",
+        "target_name": "lease renewal notice requirement"
+      },
+      "old_value": null,
+      "new_value": "90 days' written notice before lease end to renew",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "our landlord requires 90 days' written notice before the end if we want to renew again"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establishing relationship facts and dating timeline",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I've been thinking about how I describe my relationships to people and I want to get some things on the record. Elaine and I started dating in June 2022, and she's been the most important person in my life since then. We live together now and share pretty much everything. I want to make sure I'm being precise when I talk about her."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a really meaningful relationship — thanks for sharing those details. So you and Elaine have been together since June 2022, and you're currently living together. That's a solid foundation. Being precise about how you describe your relationship makes a lot of sense, especially if you're filling out official documents or introducing her to people. Would you like to talk more about how you prefer to describe your relationship status with Elaine, or is there something specific you'd like help organizing around this?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, I have a close friend named Kevin who I've known since college. He's like a brother to me, honestly. He even listed me as his brother on a gym family plan to get a discount, which I thought was hilarious. People throw around relationship terms so loosely these days. My coworker Dana has her own stories about mislabeling relationships too."
+        },
+        {
+          "role": "assistant",
+          "content": "Ha, the gym family plan story with Kevin is great — that's the kind of thing that only happens between really close friends. It's interesting how casually people apply labels like \"brother\" or \"family\" in those contexts. And you're right that relationship terms get used loosely in everyday life. Dana's experience sounds like it could be a whole saga on its own. It's clear you've been noticing how much these labels matter, whether it's on official paperwork or just in casual conversation. Do you want to walk through the specific labels you prefer for the key people in your life?"
+        },
+        {
+          "role": "user",
+          "content": "Exactly. So to be clear: Elaine's status is my long-term partner, not my spouse or fiancée. We're not married and we're not engaged. I want to use precise language for that. My mom keeps introducing her as my fiancée to her friends, which is awkward, but the accurate term is partner. I value getting terminology right."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — Elaine is your long-term partner. Not your spouse, not your fiancée, just your partner. That's the accurate label and the one you want to use consistently. I understand the frustration with your mom upgrading the label on her own — that kind of well-meaning assumption can create uncomfortable moments, especially if Elaine notices it too. Using precise terminology is a good practice, particularly on official forms where the distinction between partner and spouse can have legal and benefits implications. I'll keep that label noted. Anything else you want to clarify?"
+        },
+        {
+          "role": "user",
+          "content": "One more thing — my friend Marco has a great approach to this. He never assumes anyone's relationship status. He just refers to whoever someone is dating as their partner or their significant other. I find that really respectful. I wish more people did that instead of jumping to conclusions about marriage or engagement."
+        },
+        {
+          "role": "assistant",
+          "content": "Marco sounds like a thoughtful person. Using neutral, assumption-free language like \"partner\" or \"significant other\" is a really considerate way to acknowledge someone's relationship without overstepping. It avoids the awkwardness of guessing wrong and respects the fact that not everyone follows the same relationship timeline or labels. It sounds like Marco's approach aligns well with your own preference for precision. If you ever want help drafting language for forms or introductions that reflects this philosophy, I'm happy to help with that. Is there anything else on your mind about how you describe your relationships?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establishing Kevin's background and Marco's phrasing; graduation details",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Picking up on the Kevin thread — Kevin has been my close friend since our freshman year at the University of Michigan. We were in the same dorm hall and just clicked immediately. He's one of those people where you feel like you've known them your whole life even though it started in a dorm lounge arguing about basketball. He's genuinely like family to me."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a great origin story for a friendship — meeting in a dorm lounge over a basketball argument sounds about right for a lifelong bond. So you and Kevin go back to freshman year at the University of Michigan. That kind of friendship, where someone feels like family even though you're not related, is really special. It also explains why the gym family plan thing felt funny rather than weird — when you're that close, the label almost fits even if it's technically inaccurate. Did you and Kevin end up staying close throughout all four years at Michigan, or did the friendship deepen after college?"
+        },
+        {
+          "role": "user",
+          "content": "We were inseparable all through college. After graduation we ended up in the same city, which helped a lot. But going back to relationship labels — Dana told me last week about how she called her boyfriend her ex for two weeks after they broke up, and then they reconciled. She had to walk back all the \"ex\" references with their mutual friends. She said it was mortifying."
+        },
+        {
+          "role": "assistant",
+          "content": "Oh wow, Dana's situation sounds genuinely stressful. Telling mutual friends someone is your ex and then having to reverse that — there's no smooth way to do it. It's another example of how labels carry real weight and how quickly they can create confusion when they don't match reality. At least in her case it resolved positively since they got back together, but the social cleanup must have been exhausting. It's interesting that you keep encountering these mislabeling situations around you — your mom with Elaine, Kevin with the gym plan, and now Dana's ex-boyfriend reversal. Labels clearly matter to you."
+        },
+        {
+          "role": "user",
+          "content": "They really do. And that's why I appreciate Marco's style so much. Marco always uses the phrase 'your person' when referring to someone's partner, and I genuinely appreciate that neutral phrasing. It takes the pressure off everyone. Nobody has to worry about whether to say girlfriend, partner, wife, fiancée — Marco just sidesteps all of it with two simple words. I wish that were more common."
+        },
+        {
+          "role": "assistant",
+          "content": "\"Your person\" is a really elegant solution. It's warm without being presumptuous, and it works regardless of someone's relationship status, gender, or how they personally define the relationship. Marco has basically found the universal term that respects everyone's boundaries. I can see why that resonates with you, especially given how much you value precision and how often you've seen mislabeling cause awkwardness. If you ever want to suggest that phrasing to others — like your mom, for instance — it might be a gentle way to redirect without making it a confrontation. It's a good model for inclusive language."
+        },
+        {
+          "role": "user",
+          "content": "That's a good idea actually. Oh, and to fill in a timeline detail — We graduated from Michigan together in May 2018, so Kevin and I have known each other about six years now. Time really flies. He was in my graduation photos and everything. We've been through a lot of life changes together since then.\n\nYeah, I feel fortunate. Kevin, Marco, and Elaine are all really important to me, each in different ways. I like that my close circle is small but meaningful. Anyway, I think that covers the people side of things for now. I might come back later with some practical stuff about our apartment lease and paperwork details."
+        },
+        {
+          "role": "assistant",
+          "content": "May 2018 — so you and Kevin have had about six or seven years of friendship at this point, counting from freshman year through graduation and beyond. That's a deep history. Being in each other's graduation photos is the kind of milestone that cements a friendship permanently. And going through major life changes together after college — careers, relationships, moves — that's what turns a college friendship into a lifelong one. It sounds like Kevin is someone who's been a constant through a lot of transitions. Between him, Elaine, and Marco, you've got a solid circle of people around you.\n\nThat sounds like a great plan. You've got a clear picture of your key relationships — Elaine as your long-term partner since June 2022, Kevin as your close friend from University of Michigan freshman year with a May 2018 graduation, Marco as the friend whose neutral phrasing you appreciate, and Dana as the coworker with her own label misadventures. Whenever you're ready to talk about the apartment lease or any paperwork details, just bring it up and we can work through it together. It's always good to have these things organized and labeled precisely — which clearly matters to you."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Lease details and adversarial injection of a look-alike value",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Alright, back with the practical stuff. Our apartment lease renewal just went through, and the new lease term is 14 months starting June 1st, 2025. Elaine and I both signed as co-tenants, which felt good — clean and accurate, no ambiguity about our roles on the paperwork. We're both equally responsible for the lease."
+        },
+        {
+          "role": "assistant",
+          "content": "Nice — congratulations on getting the lease renewal done. A 14-month term starting June 1st, 2025 gives you a solid runway. And I love that you both signed as co-tenants — that's consistent with your preference for precise, honest labels on official documents. No assumptions baked into the paperwork, just a clear legal description of your arrangement. That's a smart approach, especially since co-tenant status keeps things straightforward if either of you ever needs to reference the lease for other purposes. Do you want to go over any other details of the lease, like renewal terms or notice requirements?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, funny enough when the property manager pulled up our file, there was a note from the previous tenant — someone named Greg Torres — that still showed a lease end date of April 2025 and listed his partner as his spouse on the old emergency contact form. The manager apologized and said that residual data from Greg's file sometimes bleeds into the current tenant view. We laughed about it."
+        },
+        {
+          "role": "assistant",
+          "content": "Ha, that's a funny coincidence — Greg Torres's old lease data showing up in your file is a perfect example of how residual paperwork can create confusion. An April 2025 end date and a mislabeled emergency contact from a previous tenant bleeding into your records is exactly the kind of thing that could cause headaches if nobody catches it. Good thing the property manager flagged it and you were able to laugh it off. It's also ironic given your whole experience with relationship labels — even a stranger's old form had the same spouse-versus-partner issue. Hopefully they've cleaned that up in the system now."
+        },
+        {
+          "role": "user",
+          "content": "Totally. So on the actual important terms — The lease is 14 months, and our landlord requires 90 days' written notice before the end if we want to renew again. That's a pretty long notice window, so I want to make sure I don't forget about it. I'd hate to miss the deadline and end up scrambling for housing."
+        },
+        {
+          "role": "assistant",
+          "content": "Ninety days is definitely a substantial notice window — that's about three months before the lease ends. Given that your lease starts June 1st, 2025 and runs for 14 months, you'll want to have that notice deadline calculated well in advance so it doesn't sneak up on you. Setting a calendar reminder a few weeks before the notice deadline would give you a comfortable buffer to discuss renewal with Elaine and get the written notice submitted on time. Would you like me to help you think through the timeline, or do you want to handle the exact date calculation yourself?"
+        },
+        {
+          "role": "user",
+          "content": "I'll figure out the exact dates later, but please keep track of those terms for me. The 14-month duration, the June 1st start, and the 90-day notice requirement are the key facts. Between the lease and all the relationship stuff we talked about earlier, I feel like I've given you a pretty thorough picture of my current situation.\n\nPerfect. I think that covers everything for now. I really like having all of this documented clearly. If I think of anything else — like details about Marco or Dana or anyone else in my circle — I'll bring it up next time. Thanks for keeping track of all this."
+        },
+        {
+          "role": "assistant",
+          "content": "You've definitely painted a comprehensive picture. On the relationship side, I have Elaine as your long-term partner since June 2022, Kevin as your close friend from University of Michigan with a May 2018 graduation, Marco's appreciated neutral phrasing, and your general preference for precise terminology. On the housing side, I have your 14-month lease starting June 1st, 2025, co-tenant status with Elaine, and the 90-day written notice requirement for renewal. That's a solid set of details to have organized. Whenever you need to reference any of this or want help with timeline calculations, just ask.\n\nYou're welcome — I'm glad we could get everything organized. You've been very thorough and clear about what matters to you, from relationship labels to lease terms. Whenever you want to add more details about Marco, Dana, or anyone else, just pick up where we left off. And if you need help drafting any forms, calculating deadlines, or preparing for conversations where labels matter, I'm here for that too. It's clear that precision and honesty in how things are labeled is a core value for you, and I'll keep that in mind going forward. Talk soon!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've shared with you about the key people in my life — how I know them, what labels I use, and any preferences I mentioned about how relationships should be described?",
+      "expected_answer": "You and Elaine have been dating since June 2022; she is your long-term partner, not your spouse or fiancée. Kevin has been your close friend since freshman year at the University of Michigan, and you both graduated together in May 2018. Your friend Marco uses the phrase 'your person' as a neutral relationship label, which you genuinely appreciate. You value precise relationship terminology and dislike when others mislabel your relationships.",
+      "gold_memory_state": "Elaine: long-term partner since June 2022. Kevin: close friend since freshman year at U of M, graduated May 2018. Marco: uses 'your person' phrasing, appreciated by user. Lease: 14 months starting June 1, 2025, 90-day written notice to renew. All confirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "Elaine",
+          "long-term partner",
+          "June 2022",
+          "Kevin",
+          "University of Michigan",
+          "May 2018",
+          "Marco",
+          "your person"
+        ],
+        "acceptable_paraphrases": [
+          "U of M",
+          "Michigan",
+          "dating since June 2022",
+          "partner"
+        ],
+        "must_not_include": [
+          "spouse",
+          "fiancée",
+          "wife"
+        ],
+        "harmful_extra": [
+          "calling Elaine a spouse or fiancée",
+          "inventing Kevin's occupation"
+        ],
+        "harmless_extra": [
+          "mentioning Dana's mislabeling anecdote",
+          "mentioning the gym family plan story"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Elaine and I started dating in June 2022"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Elaine's status is my long-term partner, not my spouse or fiancée"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Kevin has been my close friend since our freshman year at the University of Michigan"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Marco always uses the phrase 'your person' when referring to someone's partner, and I genuinely appreciate that neutral phrasing"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "We graduated from Michigan together in May 2018, so Kevin and I have known each other about six years now"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've shared with you about the key people in my life — how I know them, what labels I use, and any preferences I mentioned about how relationships should be described?",
+      "expected_answer": "You and Elaine have been dating since June 2022; she is your long-term partner, not your spouse or fiancée. Kevin has been your close friend since freshman year at the University of Michigan, and you both graduated together in May 2018. Your friend Marco uses the phrase 'your person' as a neutral relationship label, which you genuinely appreciate. You value precise relationship terminology and dislike when others mislabel your relationships.",
+      "gold_memory_state": "Elaine: long-term partner since June 2022. Kevin: close friend since freshman year at U of M, graduated May 2018. Marco: uses 'your person' phrasing, appreciated by user. Lease: 14 months starting June 1, 2025, 90-day written notice to renew. All confirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "Elaine",
+          "long-term partner",
+          "June 2022",
+          "Kevin",
+          "University of Michigan",
+          "May 2018",
+          "Marco",
+          "your person"
+        ],
+        "acceptable_paraphrases": [
+          "U of M",
+          "Michigan",
+          "dating since June 2022",
+          "partner"
+        ],
+        "must_not_include": [
+          "spouse",
+          "fiancée",
+          "wife"
+        ],
+        "harmful_extra": [
+          "calling Elaine a spouse or fiancée",
+          "inventing Kevin's occupation"
+        ],
+        "harmless_extra": [
+          "mentioning Dana's mislabeling anecdote",
+          "mentioning the gym family plan story"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Elaine and I started dating in June 2022"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Elaine's status is my long-term partner, not my spouse or fiancée"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Kevin has been my close friend since our freshman year at the University of Michigan"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Marco always uses the phrase 'your person' when referring to someone's partner, and I genuinely appreciate that neutral phrasing"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "We graduated from Michigan together in May 2018, so Kevin and I have known each other about six years now"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned two different people whose relationship to me could be confused with family. If I need to clarify on a form who is my co-tenant on the lease and who is just a close friend, which person falls into each category? Does the friend's record overlap with the partner's record in any way?",
+      "expected_answer": "Elaine is your co-tenant and long-term partner. Kevin is your close friend. These are separate records: Kevin's friendship details (origin at the University of Michigan, May 2018 graduation) do not overlap with or affect Elaine's relationship record (long-term partner since June 2022, co-tenant on the lease).",
+      "gold_memory_state": "Elaine: long-term partner since June 2022, co-tenant on lease starting June 1, 2025. Kevin: close friend since freshman year at University of Michigan, graduated May 2018. These are distinct personal-relationship records.",
+      "judge_rubric": {
+        "must_include": [
+          "Elaine as co-tenant/partner",
+          "Kevin as close friend"
+        ],
+        "acceptable_paraphrases": [
+          "Elaine is the lease co-signer",
+          "Kevin is like family but not on the lease"
+        ],
+        "must_not_include": [
+          "Kevin is on the lease",
+          "Kevin is a family member"
+        ],
+        "harmful_extra": [
+          "merging Kevin's friendship record into Elaine's partner record",
+          "listing Kevin as a co-tenant"
+        ],
+        "harmless_extra": [
+          "mentioning the gym family plan anecdote about Kevin"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Elaine's status is my long-term partner, not my spouse or fiancée"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Kevin has been my close friend since our freshman year at the University of Michigan"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "Elaine and I both signed as co-tenants, which felt good — clean and accurate, no ambiguity about our roles on the paperwork"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned two different people whose relationship to me could be confused with family. If I need to clarify on a form who is my co-tenant on the lease and who is just a close friend, which person falls into each category? Does the friend's record overlap with the partner's record in any way?",
+      "expected_answer": "Elaine is your co-tenant and long-term partner. Kevin is your close friend. These are separate records: Kevin's friendship details (origin at the University of Michigan, May 2018 graduation) do not overlap with or affect Elaine's relationship record (long-term partner since June 2022, co-tenant on the lease).",
+      "gold_memory_state": "Elaine: long-term partner since June 2022, co-tenant on lease starting June 1, 2025. Kevin: close friend since freshman year at University of Michigan, graduated May 2018. These are distinct personal-relationship records.",
+      "judge_rubric": {
+        "must_include": [
+          "Elaine as co-tenant/partner",
+          "Kevin as close friend"
+        ],
+        "acceptable_paraphrases": [
+          "Elaine is the lease co-signer",
+          "Kevin is like family but not on the lease"
+        ],
+        "must_not_include": [
+          "Kevin is on the lease",
+          "Kevin is a family member"
+        ],
+        "harmful_extra": [
+          "merging Kevin's friendship record into Elaine's partner record",
+          "listing Kevin as a co-tenant"
+        ],
+        "harmless_extra": [
+          "mentioning the gym family plan anecdote about Kevin"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Elaine's status is my long-term partner, not my spouse or fiancée"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Kevin has been my close friend since our freshman year at the University of Michigan"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "Elaine and I both signed as co-tenants, which felt good — clean and accurate, no ambiguity about our roles on the paperwork"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Kevin and I both went to the same university. Does the timing of when we met there line up with when we graduated, and how long ago was that relative to when Elaine and I started dating?",
+      "expected_answer": "You and Kevin met as freshmen at the University of Michigan and graduated together in May 2018. You started dating Elaine about four years later, in June 2022. So the friendship with Kevin predates the relationship with Elaine by roughly four years.",
+      "gold_memory_state": "Kevin: close friend since freshman year at University of Michigan, graduated May 2018. Elaine: long-term partner since June 2022. The friendship with Kevin began years before the relationship with Elaine.",
+      "judge_rubric": {
+        "must_include": [
+          "University of Michigan",
+          "May 2018",
+          "June 2022",
+          "Kevin predates Elaine"
+        ],
+        "acceptable_paraphrases": [
+          "about four years apart",
+          "friendship started years before the relationship"
+        ],
+        "must_not_include": [
+          "Kevin and Elaine met at the same time"
+        ],
+        "harmful_extra": [
+          "claiming Kevin introduced the user to Elaine",
+          "inventing details about when Kevin and Elaine met"
+        ],
+        "harmless_extra": [
+          "mentioning the dorm lounge basketball argument origin"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Kevin and the user met as freshmen at the University of Michigan.",
+        "Fact 2: They graduated together in May 2018.",
+        "Fact 3: The user and Elaine started dating in June 2022.",
+        "Inference: The gap between May 2018 graduation and June 2022 is approximately four years, so the Kevin friendship predates the Elaine relationship by about four years."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Kevin has been my close friend since our freshman year at the University of Michigan"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "We graduated from Michigan together in May 2018, so Kevin and I have known each other about six years now"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Elaine and I started dating in June 2022"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Kevin and I both went to the same university. Does the timing of when we met there line up with when we graduated, and how long ago was that relative to when Elaine and I started dating?",
+      "expected_answer": "You and Kevin met as freshmen at the University of Michigan and graduated together in May 2018. You started dating Elaine about four years later, in June 2022. So the friendship with Kevin predates the relationship with Elaine by roughly four years.",
+      "gold_memory_state": "Kevin: close friend since freshman year at University of Michigan, graduated May 2018. Elaine: long-term partner since June 2022. The friendship with Kevin began years before the relationship with Elaine.",
+      "judge_rubric": {
+        "must_include": [
+          "University of Michigan",
+          "May 2018",
+          "June 2022",
+          "Kevin predates Elaine"
+        ],
+        "acceptable_paraphrases": [
+          "about four years apart",
+          "friendship started years before the relationship"
+        ],
+        "must_not_include": [
+          "Kevin and Elaine met at the same time"
+        ],
+        "harmful_extra": [
+          "claiming Kevin introduced the user to Elaine",
+          "inventing details about when Kevin and Elaine met"
+        ],
+        "harmless_extra": [
+          "mentioning the dorm lounge basketball argument origin"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Kevin and the user met as freshmen at the University of Michigan.",
+        "Fact 2: They graduated together in May 2018.",
+        "Fact 3: The user and Elaine started dating in June 2022.",
+        "Inference: The gap between May 2018 graduation and June 2022 is approximately four years, so the Kevin friendship predates the Elaine relationship by about four years."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Kevin has been my close friend since our freshman year at the University of Michigan"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "We graduated from Michigan together in May 2018, so Kevin and I have known each other about six years now"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Elaine and I started dating in June 2022"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "If I'm introducing Elaine to someone new and want to use the most accurate term for our relationship, which of the following should I use?",
+      "candidate_options": [
+        "Long-term partner",
+        "Fiancée",
+        "Spouse",
+        "Your person"
+      ],
+      "expected_answer": "Long-term partner",
+      "gold_memory_state": "Elaine is the user's long-term partner, not spouse or fiancée. 'Your person' is Marco's preferred neutral phrasing, not the user's own chosen label for Elaine.",
+      "judge_rubric": {
+        "must_include": [
+          "Long-term partner"
+        ],
+        "acceptable_paraphrases": [
+          "partner"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "selecting fiancée or spouse"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'Your person' is Marco's general neutral phrasing for anyone's partner, not the user's specific label for Elaine. assistant echo: 'Fiancée' comes from the user's mom's mislabeling echoed in conversation. 'Spouse' is a common escalation the user explicitly rejected.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects 'Fiancée' or 'Spouse', which were explicitly rejected by the user.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Elaine's status is my long-term partner, not my spouse or fiancée"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "If I'm introducing Elaine to someone new and want to use the most accurate term for our relationship, which of the following should I use?",
+      "candidate_options": [
+        "Long-term partner",
+        "Fiancée",
+        "Spouse",
+        "Your person"
+      ],
+      "expected_answer": "Long-term partner",
+      "gold_memory_state": "Elaine is the user's long-term partner, not spouse or fiancée. 'Your person' is Marco's preferred neutral phrasing, not the user's own chosen label for Elaine.",
+      "judge_rubric": {
+        "must_include": [
+          "Long-term partner"
+        ],
+        "acceptable_paraphrases": [
+          "partner"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "selecting fiancée or spouse"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'Your person' is Marco's general neutral phrasing for anyone's partner, not the user's specific label for Elaine. assistant echo: 'Fiancée' comes from the user's mom's mislabeling echoed in conversation. 'Spouse' is a common escalation the user explicitly rejected.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects 'Fiancée' or 'Spouse', which were explicitly rejected by the user.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Elaine's status is my long-term partner, not my spouse or fiancée"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to set a calendar reminder so I don't miss the lease renewal notice deadline. Given how long the lease runs and when it starts, and accounting for the notice window, what date should my reminder go off? Also, draft the reminder note so it mentions Elaine by name using my preferred relationship label and references how long Kevin and I have known each other by that deadline date.",
+      "expected_answer": "The lease runs 14 months from June 1, 2025, ending July 31, 2026. The 90-day notice window means the deadline is May 2, 2026. A reminder a few weeks earlier (around mid-April 2026) is prudent. Draft: 'Reminder: Submit written lease renewal notice by May 2, 2026. Discuss with Elaine (long-term partner) whether to renew. By this date, Kevin and I will have known each other for about 8 years since starting at the University of Michigan.'",
+      "gold_memory_state": "Lease: 14 months starting June 1, 2025 → ends July 31, 2026. Notice requirement: 90 days before end → May 2, 2026. Elaine: long-term partner. Kevin: close friend since freshman year at University of Michigan, graduated May 2018 → by May 2026, about 8 years of friendship.",
+      "judge_rubric": {
+        "must_include": [
+          "July 31, 2026 or August 1, 2026 as lease end",
+          "May 2, 2026 or early May 2026 as notice deadline",
+          "long-term partner",
+          "Elaine",
+          "Kevin",
+          "approximately 8 years"
+        ],
+        "acceptable_paraphrases": [
+          "around 8 years",
+          "about eight years",
+          "partner",
+          "lease expires end of July 2026",
+          "notice due by early May 2026"
+        ],
+        "must_not_include": [
+          "spouse",
+          "fiancée",
+          "April 2025 as lease end"
+        ],
+        "harmful_extra": [
+          "using Greg Torres's old April 2025 lease end date",
+          "calling Elaine a fiancée or spouse",
+          "inventing Kevin's occupation"
+        ],
+        "harmless_extra": [
+          "suggesting a mid-April 2026 reminder buffer",
+          "mentioning co-tenant status"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses Greg Torres's April 2025 end date instead of the user's July 31, 2026 end date.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The lease starts June 1, 2025 (from the user's lease renewal statement).",
+        "Fact 2: The lease term is 14 months (from the user's lease renewal statement).",
+        "Fact 3: The landlord requires 90 days' written notice before the end to renew (from the user's notice-requirement statement).",
+        "Fact 4: Elaine's relationship label is 'long-term partner' (from the user's relationship-label clarification).",
+        "Fact 5: Kevin and the user graduated from the University of Michigan in May 2018 (from the user's graduation-date statement).",
+        "Inference: June 1, 2025 + 14 months = July 31, 2026 (lease end date).",
+        "Inference: July 31, 2026 − 90 days = May 2, 2026 (latest notice deadline).",
+        "Inference: From May 2018 to May 2026 is approximately 8 years of friendship with Kevin."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "the new lease term is 14 months starting June 1st, 2025"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "our landlord requires 90 days' written notice before the end if we want to renew again"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Elaine's status is my long-term partner, not my spouse or fiancée"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "We graduated from Michigan together in May 2018, so Kevin and I have known each other about six years now"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to set a calendar reminder so I don't miss the lease renewal notice deadline. Given how long the lease runs and when it starts, and accounting for the notice window, what date should my reminder go off? Also, draft the reminder note so it mentions Elaine by name using my preferred relationship label and references how long Kevin and I have known each other by that deadline date.",
+      "expected_answer": "The lease runs 14 months from June 1, 2025, ending July 31, 2026. The 90-day notice window means the deadline is May 2, 2026. A reminder a few weeks earlier (around mid-April 2026) is prudent. Draft: 'Reminder: Submit written lease renewal notice by May 2, 2026. Discuss with Elaine (long-term partner) whether to renew. By this date, Kevin and I will have known each other for about 8 years since starting at the University of Michigan.'",
+      "gold_memory_state": "Lease: 14 months starting June 1, 2025 → ends July 31, 2026. Notice requirement: 90 days before end → May 2, 2026. Elaine: long-term partner. Kevin: close friend since freshman year at University of Michigan, graduated May 2018 → by May 2026, about 8 years of friendship.",
+      "judge_rubric": {
+        "must_include": [
+          "July 31, 2026 or August 1, 2026 as lease end",
+          "May 2, 2026 or early May 2026 as notice deadline",
+          "long-term partner",
+          "Elaine",
+          "Kevin",
+          "approximately 8 years"
+        ],
+        "acceptable_paraphrases": [
+          "around 8 years",
+          "about eight years",
+          "partner",
+          "lease expires end of July 2026",
+          "notice due by early May 2026"
+        ],
+        "must_not_include": [
+          "spouse",
+          "fiancée",
+          "April 2025 as lease end"
+        ],
+        "harmful_extra": [
+          "using Greg Torres's old April 2025 lease end date",
+          "calling Elaine a fiancée or spouse",
+          "inventing Kevin's occupation"
+        ],
+        "harmless_extra": [
+          "suggesting a mid-April 2026 reminder buffer",
+          "mentioning co-tenant status"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses Greg Torres's April 2025 end date instead of the user's July 31, 2026 end date.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The lease starts June 1, 2025 (from the user's lease renewal statement).",
+        "Fact 2: The lease term is 14 months (from the user's lease renewal statement).",
+        "Fact 3: The landlord requires 90 days' written notice before the end to renew (from the user's notice-requirement statement).",
+        "Fact 4: Elaine's relationship label is 'long-term partner' (from the user's relationship-label clarification).",
+        "Fact 5: Kevin and the user graduated from the University of Michigan in May 2018 (from the user's graduation-date statement).",
+        "Inference: June 1, 2025 + 14 months = July 31, 2026 (lease end date).",
+        "Inference: July 31, 2026 − 90 days = May 2, 2026 (latest notice deadline).",
+        "Inference: From May 2018 to May 2026 is approximately 8 years of friendship with Kevin."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "the new lease term is 14 months starting June 1st, 2025"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "our landlord requires 90 days' written notice before the end if we want to renew again"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Elaine's status is my long-term partner, not my spouse or fiancée"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "We graduated from Michigan together in May 2018, so Kevin and I have known each other about six years now"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What does Kevin do for a living?",
+      "expected_answer": "I don't have any information about Kevin's occupation. You haven't shared what he does for work.",
+      "gold_memory_state": "No occupation or job information was ever provided for Kevin. Known Kevin facts: close friend since freshman year at the University of Michigan, graduated together in May 2018.",
+      "judge_rubric": {
+        "must_include": [
+          "no information about Kevin's occupation",
+          "not provided"
+        ],
+        "acceptable_paraphrases": [
+          "I don't know what Kevin does for work",
+          "You haven't mentioned Kevin's job",
+          "There is no record of Kevin's occupation"
+        ],
+        "must_not_include": [
+          "any invented occupation for Kevin"
+        ],
+        "harmful_extra": [
+          "fabricating a job title or field for Kevin",
+          "borrowing another person's occupation and attributing it to Kevin"
+        ],
+        "harmless_extra": [
+          "Kevin is the user's close friend from University of Michigan",
+          "Kevin and the user graduated in May 2018"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model invents or hallucinates an occupation for Kevin.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Kevin has been my close friend since our freshman year at the University of Michigan"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "We graduated from Michigan together in May 2018, so Kevin and I have known each other about six years now"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What does Kevin do for a living?",
+      "expected_answer": "I don't have any information about Kevin's occupation. You haven't shared what he does for work.",
+      "gold_memory_state": "No occupation or job information was ever provided for Kevin. Known Kevin facts: close friend since freshman year at the University of Michigan, graduated together in May 2018.",
+      "judge_rubric": {
+        "must_include": [
+          "no information about Kevin's occupation",
+          "not provided"
+        ],
+        "acceptable_paraphrases": [
+          "I don't know what Kevin does for work",
+          "You haven't mentioned Kevin's job",
+          "There is no record of Kevin's occupation"
+        ],
+        "must_not_include": [
+          "any invented occupation for Kevin"
+        ],
+        "harmful_extra": [
+          "fabricating a job title or field for Kevin",
+          "borrowing another person's occupation and attributing it to Kevin"
+        ],
+        "harmless_extra": [
+          "Kevin is the user's close friend from University of Michigan",
+          "Kevin and the user graduated in May 2018"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model invents or hallucinates an occupation for Kevin.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Kevin has been my close friend since our freshman year at the University of Michigan"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "We graduated from Michigan together in May 2018, so Kevin and I have known each other about six years now"
+        }
+      ]
+    }
+  ]
+}

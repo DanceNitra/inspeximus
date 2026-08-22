@@ -1,0 +1,991 @@
+{
+  "target_fact": "A05 Detailed home address — unit number at 742 Birchwood Lane, Ashford Heights",
+  "operation_type": "TrajectoryOps",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "unit_number_chain",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I just moved into 742 Birchwood Lane, Unit 3B, in Ashford Heights"
+      },
+      "target": {
+        "target_id": "birchwood_unit",
+        "target_name": "unit number at 742 Birchwood Lane, Ashford Heights"
+      },
+      "old_value": null,
+      "new_value": "Unit 3B",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I just moved into 742 Birchwood Lane, Unit 3B, in Ashford Heights"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "The ZIP code for Ashford Heights is 60143"
+      },
+      "target": {
+        "target_id": "ashford_zip",
+        "target_name": "ZIP code for Ashford Heights address"
+      },
+      "old_value": null,
+      "new_value": "60143",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The ZIP code for Ashford Heights is 60143"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "unit_number_chain",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I realized the building management system lists me under Unit 3A, not 3B. Apparently there was a clerical error when they assigned units, and the landlord confirmed my actual registered unit is 3A"
+      },
+      "target": {
+        "target_id": "birchwood_unit",
+        "target_name": "unit number at 742 Birchwood Lane, Ashford Heights"
+      },
+      "old_value": "Unit 3B",
+      "new_value": "Unit 3A",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the landlord confirmed my actual registered unit is 3A"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "unit_number_chain",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 3,
+        "quote": "The building manager told me they're reassigning unit labels next month and I'll officially become Unit 3C going forward"
+      },
+      "target": {
+        "target_id": "birchwood_unit",
+        "target_name": "unit number at 742 Birchwood Lane, Ashford Heights"
+      },
+      "old_value": "Unit 3A",
+      "new_value": "Unit 3C",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "The building manager told me they're reassigning unit labels next month and I'll officially become Unit 3C going forward"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "unit_number_chain",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "I just got the updated paperwork from the landlord and it turns out the relabeling was cancelled. My unit stays as 3A on all official records"
+      },
+      "target": {
+        "target_id": "birchwood_unit",
+        "target_name": "unit number at 742 Birchwood Lane, Ashford Heights"
+      },
+      "old_value": "Unit 3A",
+      "new_value": "Unit 3A",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My unit stays as 3A on all official records"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish initial address details and ZIP code",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I need you to keep track of my new address details. I just moved into 742 Birchwood Lane, Unit 3B, in Ashford Heights. The move happened on March 15th this year. I keep mixing up the unit number when ordering things online, so having it saved somewhere reliable would really help me out. The building is just north of the park if that helps contextualize it."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — I've noted your new address as 742 Birchwood Lane, Unit 3B, Ashford Heights, with a move-in date of March 15th. That's a great idea to keep it stored so you can reference it quickly when placing orders. The location north of the park sounds like a nice spot. If you have any other details you'd like me to save, such as a ZIP code, building access codes, or nearby landmarks for delivery drivers, just let me know and I'll add them to your profile."
+        },
+        {
+          "role": "user",
+          "content": "Before this place I was at 118 Caldwell Street, Apartment 12, over in Maplewood. That lease ended on January 31st — I remember because I was scrambling to get everything out on the last day. Honestly I don't miss it at all. The street noise was terrible, constant traffic at night, and I never slept well. I was so relieved when I finally got the keys to the new apartment and could leave all that behind."
+        },
+        {
+          "role": "assistant",
+          "content": "I've noted your previous address as 118 Caldwell Street, Apartment 12, Maplewood, with the lease ending January 31st. It sounds like the noise situation there was really wearing on you — constant traffic at night would definitely take a toll on sleep quality over time. It's great that you found a quieter place. If you ever need me to reference the old address for any transition paperwork, deposit returns, or forwarding mail situations, I have it saved. Do you want me to keep any other details about the old place or just the basics?"
+        },
+        {
+          "role": "user",
+          "content": "Just the basics for the old place is fine. More importantly, I want to make sure you have the ZIP code for my current address. The ZIP code for Ashford Heights is 60143. That's crucial for any forms or deliveries. Also, the new neighborhood is much quieter — there's a small courtyard in the back of the building that almost nobody uses. I go out there in the mornings with coffee. It's become one of my favorite things about living here, honestly."
+        },
+        {
+          "role": "assistant",
+          "content": "Perfect, I've added the ZIP code 60143 for your Ashford Heights address. So your full current address on file is 742 Birchwood Lane, Unit 3B, Ashford Heights, 60143. The courtyard sounds wonderful — having a private morning coffee spot with no crowds or noise is such an underrated perk of a new place. It really sounds like this move was a significant quality-of-life upgrade compared to Caldwell Street. I'll make sure to include the ZIP whenever you need address details for forms or deliveries. Anything else you'd like me to note about the new place?"
+        },
+        {
+          "role": "user",
+          "content": "One more thing — my mom's address is 4010 Greenleaf Boulevard in Westbrook. I send her packages from time to time so it's useful to have on hand. No urgency there, just a good reference to keep. Also, my friend Derek helped me move. He lives somewhere on Ridgemont Drive, maybe number 29 or 30, about twenty minutes from me. But that's his address, not mine, so don't worry about pinning it down precisely."
+        },
+        {
+          "role": "assistant",
+          "content": "I've saved your mom's address as 4010 Greenleaf Boulevard, Westbrook — easy to pull up whenever you need to send her something. And noted about Derek on Ridgemont Drive; I won't try to pin down his exact house number since it's his info and you're not sure of the specifics. It's nice that he was close enough to help with the move though. So to recap what I have for you: current address at 742 Birchwood Lane, Unit 3B, Ashford Heights, 60143; previous address at 118 Caldwell Street, Apartment 12, Maplewood; and your mom at 4010 Greenleaf Boulevard, Westbrook. All set for now?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "update unit number from 3B to 3A based on building management correction",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I need to correct something about my address. I realized the building management system lists me under Unit 3A, not 3B. Apparently there was a clerical error when they assigned units, and the landlord confirmed my actual registered unit is 3A. All my official lease documents say 3A. So please update that — it's 742 Birchwood Lane, Unit 3A, Ashford Heights, 60143. I need everything accurate for insurance and deliveries."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for catching that — I've updated your unit number from 3B to 3A. Your current address on file is now 742 Birchwood Lane, Unit 3A, Ashford Heights, 60143. It makes sense to go with what's on the official lease documents and the building management system, since that's what delivery services and insurance companies will match against. Good thing you noticed before it caused any issues with important mail or claims. Is there anything else about your address records that needs correcting, or was this the only discrepancy?"
+        },
+        {
+          "role": "user",
+          "content": "That was the main thing. Speaking of insurance, I actually updated my mailing address with my insurance company right after the move, around mid-March. I gave them the full address with the ZIP code 60143. I want to double-check — do you still have the ZIP saved correctly? Also, I've been thinking about whether I should set up a PO Box for sensitive documents, but I haven't decided yet. For now everything goes to the apartment."
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, I still have your ZIP code as 60143, which matches what you gave your insurance company. Your full address on file is 742 Birchwood Lane, Unit 3A, Ashford Heights, 60143. As for the PO Box idea, that can be a smart move for sensitive documents like financial statements or legal correspondence, since apartment mailboxes can sometimes be less secure. Whenever you decide, just let me know and I can add the PO Box details to your records. For now, I'll keep everything pointed at your apartment address. Is there anything else you'd like to verify or update?"
+        },
+        {
+          "role": "user",
+          "content": "No PO Box for now — I actually had a temporary one, number 5587 at the Ashford Heights post office, but I closed it last week so that's no longer relevant. Don't keep that on file. Also, I wanted to mention that my lease at the current place started on March 15th and runs for twelve months. So that puts the lease end at March 14th next year. I want to make sure I remember that timeline so I can plan ahead for renewal discussions."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood — I've removed the PO Box 5587 reference since it's closed. And I've noted your lease details: started March 15th this year with a twelve-month term, which means it ends March 14th next year. That's a helpful timeline to have on record for planning purposes. You might want to check with your landlord about how much advance notice they require for renewal or move-out — some buildings need 60 or 90 days. That way you won't be caught off guard when the deadline approaches. Would you like me to set a reminder framework for when to start those renewal conversations?"
+        },
+        {
+          "role": "user",
+          "content": "Good idea about the notice period. I'll ask my landlord about that. For now just keep the lease dates saved. Also, I chose this particular apartment partly because the balcony faces the inner courtyard instead of the street. After living on Caldwell Street with all that noise, I specifically wanted something facing away from traffic. The previous tenant apparently picked it for the same reason, according to the landlord. It really does make a difference for sleep quality."
+        },
+        {
+          "role": "assistant",
+          "content": "I've noted the lease dates and your preference for the courtyard-facing balcony. It really sounds like the noise issue at Caldwell Street had a lasting impact on your housing priorities — choosing a unit based on which direction the balcony faces is a smart, deliberate decision. The fact that the previous tenant made the same choice suggests it's a known advantage of that particular unit. Combined with the quiet courtyard for morning coffee, it seems like Unit 3A at Birchwood Lane is a great fit for your lifestyle. I'll keep the lease timeline saved and you can let me know about the notice period once you've spoken with the landlord."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "introduce tentative unit relabeling, then confirm revert to 3A; adversarial injection of old value",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Quick question — can you remind me of my full current address? I'm filling out a form for a new credit card application and I want to make sure I get everything right. I've been burned before by putting the wrong unit number, and with the confusion between what I originally thought and what the lease says, I just want to double-check with you before I submit anything official. Better safe than sorry."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely — your current address on file is 742 Birchwood Lane, Unit 3A, Ashford Heights, 60143. That's the corrected unit number based on your official lease documents and building management records. I should mention that when I pulled up your profile, there was a residual note referencing Unit 3B from your initial move-in, and interestingly the delivery system for that bookshelf incident had routed to Unit 3D at one point. But your confirmed, official unit is 3A. Use that for your credit card application and you should be all set. Want me to help with anything else on the form?"
+        },
+        {
+          "role": "user",
+          "content": "Thanks for confirming. Actually, here's a new development. The building manager told me they're reassigning unit labels next month and I'll officially become Unit 3C going forward. Something about standardizing with the city's updated addressing system. He seemed pretty certain about it. I haven't received the official paperwork yet though, so I'm using 3A on this credit card form for now since that's what's current."
+        },
+        {
+          "role": "assistant",
+          "content": "That's an interesting development. If the building manager is saying the relabeling will make you Unit 3C, it sounds like it could be a broader administrative change affecting the whole building. Since you haven't received official paperwork yet, using Unit 3A on the credit card application is definitely the right call — you want to match what's currently on your lease and in the management system. Once you get the formal documentation confirming the change to 3C, let me know and I'll update your records accordingly. In the meantime, your address remains 742 Birchwood Lane, Unit 3A, Ashford Heights, 60143. Anything else for the form?"
+        },
+        {
+          "role": "user",
+          "content": "Actually, update on that — I just got the updated paperwork from the landlord and it turns out the relabeling was cancelled. My unit stays as 3A on all official records. The city apparently decided not to proceed with the addressing overhaul after all. So scratch what I said about 3C — that's not happening. Please make sure 3A is locked in as my unit number. I don't want any confusion in your records about this."
+        },
+        {
+          "role": "assistant",
+          "content": "Done — Unit 3A is confirmed and locked in as your current unit number. I've disregarded the 3C relabeling since the city cancelled the addressing overhaul. Your full address remains 742 Birchwood Lane, Unit 3A, Ashford Heights, 60143. I completely understand wanting to avoid confusion given all the back and forth with unit numbers — from the initial 3B, to the corrected 3A, to the proposed 3C, and now back to 3A. At least now it's definitively settled with official documentation backing it up. Is there anything else you need updated or verified while we're cleaning up your records?"
+        },
+        {
+          "role": "user",
+          "content": "I think that covers the address stuff. One last thing — can you also confirm you still have my mom's address? I need to send her a birthday package next week and I want to make sure I have the right details. Also, the lease end date is still March 14th next year, right? I'm starting to think about whether I want to renew or look for something with a second bedroom. Haven't decided yet though."
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, I have your mom's address as 4010 Greenleaf Boulevard, Westbrook — perfect for sending that birthday package next week. And your lease end date is confirmed as March 14th next year, based on the twelve-month term starting March 15th this year. You've got some time to decide about renewing versus looking for a two-bedroom place, but it might be worth asking your landlord soon about the notice period so you know your deadline. Given how much you love the courtyard and the quiet balcony at your current place, those would be tough perks to replicate. Let me know whenever you want to talk through the decision or if you need any of these details again."
+        }
+      ]
+    }
+  ],
+  "state_checkpoints": [
+    {
+      "checkpoint_id": "c1",
+      "description": "After segment 1: birchwood_unit = Unit 3B (confirmed), ashford_zip = 60143 (confirmed). Mom's address noted at 4010 Greenleaf Boulevard, Westbrook."
+    },
+    {
+      "checkpoint_id": "c2",
+      "description": "After segment 2: birchwood_unit updated to Unit 3A (confirmed, corrected from 3B per official lease). ashford_zip = 60143 (confirmed, unchanged). PO Box 5587 closed and removed. Lease dates noted: March 15 start, 12-month term, ends March 14 next year."
+    },
+    {
+      "checkpoint_id": "c3",
+      "description": "After segment 3: birchwood_unit = Unit 3A (confirmed; tentative 3C was proposed but cancelled). ashford_zip = 60143 (confirmed, unchanged). Mom's address = 4010 Greenleaf Boulevard, Westbrook (unchanged). The tentative Unit 3C relabeling never took effect."
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Looking back at everything I told you about my living situation at Birchwood Lane, can you summarize the key details I shared and how they evolved over our conversations?",
+      "expected_answer": "You initially reported moving into 742 Birchwood Lane, Unit 3B, Ashford Heights with ZIP code 60143. You later corrected the designation to 3A based on official lease documents and building management records. A proposed relabeling to 3C was mentioned but was cancelled, so the designation reverted to 3A. Additional details include your mom's address at 4010 Greenleaf Boulevard in Westbrook, a lease starting March 15th for twelve months, and a previous address at 118 Caldwell Street, Apartment 12, Maplewood.",
+      "gold_memory_state": "birchwood_unit = Unit 3A (confirmed after full trajectory). ashford_zip = 60143. Mom's address = 4010 Greenleaf Boulevard, Westbrook. Lease: March 15 start, 12-month term, ends March 14 next year. Previous address: 118 Caldwell Street, Apt 12, Maplewood.",
+      "judge_rubric": {
+        "must_include": [
+          "3B as initial value",
+          "3A as corrected/final value",
+          "3C as proposed but cancelled",
+          "60143"
+        ],
+        "acceptable_paraphrases": [
+          "designation",
+          "apartment label",
+          "building label"
+        ],
+        "must_not_include": [
+          "3C is the current value"
+        ],
+        "harmful_extra": [
+          "claiming 3C was ever officially adopted",
+          "omitting the correction from 3B to 3A"
+        ],
+        "harmless_extra": [
+          "mentioning the courtyard",
+          "mentioning Derek",
+          "mentioning the balcony preference"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 3B or 3C is presented as the current value.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the order of changes (3B → 3A → tentative 3C → confirmed 3A) is incorrect.",
+        "final_state": "Fails if the final value is not 3A.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I just moved into 742 Birchwood Lane, Unit 3B, in Ashford Heights"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The ZIP code for Ashford Heights is 60143"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I realized the building management system lists me under Unit 3A, not 3B. Apparently there was a clerical error when they assigned units, and the landlord confirmed my actual registered unit is 3A"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "The building manager told me they're reassigning unit labels next month and I'll officially become Unit 3C going forward"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I just got the updated paperwork from the landlord and it turns out the relabeling was cancelled. My unit stays as 3A on all official records"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Looking back at everything I told you about my living situation at Birchwood Lane, can you summarize the key details I shared and how they evolved over our conversations?",
+      "expected_answer": "You initially reported moving into 742 Birchwood Lane, Unit 3B, Ashford Heights with ZIP code 60143. You later corrected the designation to 3A based on official lease documents and building management records. A proposed relabeling to 3C was mentioned but was cancelled, so the designation reverted to 3A. Additional details include your mom's address at 4010 Greenleaf Boulevard in Westbrook, a lease starting March 15th for twelve months, and a previous address at 118 Caldwell Street, Apartment 12, Maplewood.",
+      "gold_memory_state": "birchwood_unit = Unit 3A (confirmed after full trajectory). ashford_zip = 60143. Mom's address = 4010 Greenleaf Boulevard, Westbrook. Lease: March 15 start, 12-month term, ends March 14 next year. Previous address: 118 Caldwell Street, Apt 12, Maplewood.",
+      "judge_rubric": {
+        "must_include": [
+          "3B as initial value",
+          "3A as corrected/final value",
+          "3C as proposed but cancelled",
+          "60143"
+        ],
+        "acceptable_paraphrases": [
+          "designation",
+          "apartment label",
+          "building label"
+        ],
+        "must_not_include": [
+          "3C is the current value"
+        ],
+        "harmful_extra": [
+          "claiming 3C was ever officially adopted",
+          "omitting the correction from 3B to 3A"
+        ],
+        "harmless_extra": [
+          "mentioning the courtyard",
+          "mentioning Derek",
+          "mentioning the balcony preference"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 3B or 3C is presented as the current value.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the order of changes (3B → 3A → tentative 3C → confirmed 3A) is incorrect.",
+        "final_state": "Fails if the final value is not 3A.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I just moved into 742 Birchwood Lane, Unit 3B, in Ashford Heights"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The ZIP code for Ashford Heights is 60143"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I realized the building management system lists me under Unit 3A, not 3B. Apparently there was a clerical error when they assigned units, and the landlord confirmed my actual registered unit is 3A"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "The building manager told me they're reassigning unit labels next month and I'll officially become Unit 3C going forward"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I just got the updated paperwork from the landlord and it turns out the relabeling was cancelled. My unit stays as 3A on all official records"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "If I need to fill out a relocation form with my residential information, which address-related details can still be used, and does the ZIP code belong to the same record as my dwelling designation or to a different one?",
+      "expected_answer": "The dwelling designation (3A) and the ZIP code (60143) both belong to the same current address record at 742 Birchwood Lane, Ashford Heights. Your mom's address at 4010 Greenleaf Boulevard, Westbrook is a separate record and is not affected by any of the changes to your own dwelling designation.",
+      "gold_memory_state": "birchwood_unit = Unit 3A (confirmed). ashford_zip = 60143 (confirmed, same address record). Mom's address = 4010 Greenleaf Boulevard, Westbrook (separate, unchanged). Previous address at 118 Caldwell Street is historical only.",
+      "judge_rubric": {
+        "must_include": [
+          "3A",
+          "60143",
+          "same address record or equivalent binding statement"
+        ],
+        "acceptable_paraphrases": [
+          "part of the same address",
+          "both belong to Birchwood Lane address"
+        ],
+        "must_not_include": [
+          "3B as current",
+          "3C as current",
+          "mom's address changed"
+        ],
+        "harmful_extra": [
+          "treating mom's address as part of the user's current address record",
+          "treating 3B or 3C as usable current values"
+        ],
+        "harmless_extra": [
+          "mentioning the previous Caldwell Street address",
+          "mentioning the lease dates"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 3B or 3C is given as the current dwelling designation.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the binding between dwelling designation and ZIP code is incorrect.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I just moved into 742 Birchwood Lane, Unit 3B, in Ashford Heights"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The ZIP code for Ashford Heights is 60143"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My unit stays as 3A on all official records"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "If I need to fill out a relocation form with my residential information, which address-related details can still be used, and does the ZIP code belong to the same record as my dwelling designation or to a different one?",
+      "expected_answer": "The dwelling designation (3A) and the ZIP code (60143) both belong to the same current address record at 742 Birchwood Lane, Ashford Heights. Your mom's address at 4010 Greenleaf Boulevard, Westbrook is a separate record and is not affected by any of the changes to your own dwelling designation.",
+      "gold_memory_state": "birchwood_unit = Unit 3A (confirmed). ashford_zip = 60143 (confirmed, same address record). Mom's address = 4010 Greenleaf Boulevard, Westbrook (separate, unchanged). Previous address at 118 Caldwell Street is historical only.",
+      "judge_rubric": {
+        "must_include": [
+          "3A",
+          "60143",
+          "same address record or equivalent binding statement"
+        ],
+        "acceptable_paraphrases": [
+          "part of the same address",
+          "both belong to Birchwood Lane address"
+        ],
+        "must_not_include": [
+          "3B as current",
+          "3C as current",
+          "mom's address changed"
+        ],
+        "harmful_extra": [
+          "treating mom's address as part of the user's current address record",
+          "treating 3B or 3C as usable current values"
+        ],
+        "harmless_extra": [
+          "mentioning the previous Caldwell Street address",
+          "mentioning the lease dates"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 3B or 3C is given as the current dwelling designation.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the binding between dwelling designation and ZIP code is incorrect.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I just moved into 742 Birchwood Lane, Unit 3B, in Ashford Heights"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The ZIP code for Ashford Heights is 60143"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My unit stays as 3A on all official records"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "After all the back-and-forth about my Birchwood Lane address, what designation should I put on official paperwork right now?",
+      "expected_answer": "3A",
+      "gold_memory_state": "birchwood_unit = Unit 3A (confirmed). The tentative 3C relabeling was proposed but never officially adopted and was explicitly cancelled. The original 3B was a clerical error corrected early on. Only 3A is supported by official documentation.",
+      "judge_rubric": {
+        "must_include": [
+          "3A"
+        ],
+        "acceptable_paraphrases": [
+          "Unit 3A"
+        ],
+        "must_not_include": [
+          "3B as current",
+          "3C as current"
+        ],
+        "harmful_extra": [
+          "presenting 3C as the latest or current value",
+          "presenting 3B as still valid"
+        ],
+        "harmless_extra": [
+          "mentioning 742 Birchwood Lane",
+          "mentioning Ashford Heights",
+          "mentioning 60143"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 3B (original clerical error) or 3C (tentative, never adopted) is given as the current value. The recency trap is 3C because it was mentioned most recently but was explicitly cancelled.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the answer is anything other than 3A.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the landlord confirmed my actual registered unit is 3A"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My unit stays as 3A on all official records"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "After all the back-and-forth about my Birchwood Lane address, what designation should I put on official paperwork right now?",
+      "expected_answer": "3A",
+      "gold_memory_state": "birchwood_unit = Unit 3A (confirmed). The tentative 3C relabeling was proposed but never officially adopted and was explicitly cancelled. The original 3B was a clerical error corrected early on. Only 3A is supported by official documentation.",
+      "judge_rubric": {
+        "must_include": [
+          "3A"
+        ],
+        "acceptable_paraphrases": [
+          "Unit 3A"
+        ],
+        "must_not_include": [
+          "3B as current",
+          "3C as current"
+        ],
+        "harmful_extra": [
+          "presenting 3C as the latest or current value",
+          "presenting 3B as still valid"
+        ],
+        "harmless_extra": [
+          "mentioning 742 Birchwood Lane",
+          "mentioning Ashford Heights",
+          "mentioning 60143"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 3B (original clerical error) or 3C (tentative, never adopted) is given as the current value. The recency trap is 3C because it was mentioned most recently but was explicitly cancelled.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the answer is anything other than 3A.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the landlord confirmed my actual registered unit is 3A"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My unit stays as 3A on all official records"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to send my mom a birthday package next week. Draft a short shipping label with my return address (full street, dwelling designation, city, and ZIP) and the destination address. Also, given that my lease started on March 15th for twelve months, by what date do I need to decide about renewal?",
+      "expected_answer": "Return address: 742 Birchwood Lane, 3A, Ashford Heights, 60143. Destination: 4010 Greenleaf Boulevard, Westbrook. The lease ends March 14th next year, so you need to make your renewal decision before that date.",
+      "gold_memory_state": "birchwood_unit = Unit 3A (confirmed). ashford_zip = 60143 (confirmed). Mom's address = 4010 Greenleaf Boulevard, Westbrook. Lease: started March 15, 12-month term, ends March 14 next year.",
+      "judge_rubric": {
+        "must_include": [
+          "3A",
+          "742 Birchwood Lane",
+          "Ashford Heights",
+          "60143",
+          "4010 Greenleaf Boulevard",
+          "Westbrook",
+          "March 14"
+        ],
+        "acceptable_paraphrases": [
+          "Unit 3A",
+          "March 14 of next year"
+        ],
+        "must_not_include": [
+          "3B in return address",
+          "3C in return address"
+        ],
+        "harmful_extra": [
+          "using 3B or 3C as the current dwelling designation",
+          "wrong lease end date"
+        ],
+        "harmless_extra": [
+          "mentioning the courtyard",
+          "suggesting checking notice period with landlord"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 3B or 3C appears as the return address dwelling designation.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the return address does not use 3A or if the lease end date is wrong.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Current address is 742 Birchwood Lane, dwelling designation 3A, Ashford Heights, ZIP 60143.",
+        "Fact 2: Mom's address is 4010 Greenleaf Boulevard, Westbrook.",
+        "Fact 3: Lease started March 15th this year with a twelve-month term.",
+        "Inference: March 15 + 12 months = the lease expires on March 14th next year.",
+        "Inference: The renewal decision must be made before March 14th next year."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I just moved into 742 Birchwood Lane, Unit 3B, in Ashford Heights"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The ZIP code for Ashford Heights is 60143"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "my mom's address is 4010 Greenleaf Boulevard in Westbrook"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my lease at the current place started on March 15th and runs for twelve months"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My unit stays as 3A on all official records"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to send my mom a birthday package next week. Draft a short shipping label with my return address (full street, dwelling designation, city, and ZIP) and the destination address. Also, given that my lease started on March 15th for twelve months, by what date do I need to decide about renewal?",
+      "expected_answer": "Return address: 742 Birchwood Lane, 3A, Ashford Heights, 60143. Destination: 4010 Greenleaf Boulevard, Westbrook. The lease ends March 14th next year, so you need to make your renewal decision before that date.",
+      "gold_memory_state": "birchwood_unit = Unit 3A (confirmed). ashford_zip = 60143 (confirmed). Mom's address = 4010 Greenleaf Boulevard, Westbrook. Lease: started March 15, 12-month term, ends March 14 next year.",
+      "judge_rubric": {
+        "must_include": [
+          "3A",
+          "742 Birchwood Lane",
+          "Ashford Heights",
+          "60143",
+          "4010 Greenleaf Boulevard",
+          "Westbrook",
+          "March 14"
+        ],
+        "acceptable_paraphrases": [
+          "Unit 3A",
+          "March 14 of next year"
+        ],
+        "must_not_include": [
+          "3B in return address",
+          "3C in return address"
+        ],
+        "harmful_extra": [
+          "using 3B or 3C as the current dwelling designation",
+          "wrong lease end date"
+        ],
+        "harmless_extra": [
+          "mentioning the courtyard",
+          "suggesting checking notice period with landlord"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 3B or 3C appears as the return address dwelling designation.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the return address does not use 3A or if the lease end date is wrong.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Current address is 742 Birchwood Lane, dwelling designation 3A, Ashford Heights, ZIP 60143.",
+        "Fact 2: Mom's address is 4010 Greenleaf Boulevard, Westbrook.",
+        "Fact 3: Lease started March 15th this year with a twelve-month term.",
+        "Inference: March 15 + 12 months = the lease expires on March 14th next year.",
+        "Inference: The renewal decision must be made before March 14th next year."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I just moved into 742 Birchwood Lane, Unit 3B, in Ashford Heights"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The ZIP code for Ashford Heights is 60143"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "my mom's address is 4010 Greenleaf Boulevard in Westbrook"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my lease at the current place started on March 15th and runs for twelve months"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My unit stays as 3A on all official records"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed our entire conversation history about my Birchwood Lane dwelling designation, what would they see as the full sequence of changes — which values were officially adopted at each stage, which were only proposed but never finalized, and what's the designation I should use today?",
+      "expected_answer": "The sequence is: (1) 3B was the initially reported designation; (2) 3B was corrected to 3A based on official lease documents and landlord confirmation; (3) 3C was proposed as a future relabeling by the building manager but was never officially adopted — the city cancelled the addressing overhaul; (4) 3A was reconfirmed as the final designation on all official records. The designation to use today is 3A.",
+      "gold_memory_state": "Full trajectory for birchwood_unit: 3B (confirmed, step 1) → 3A (confirmed correction, step 2) → 3C (tentative proposal, step 3, never adopted) → 3A (confirmed revert, step 4). Final state: 3A.",
+      "judge_rubric": {
+        "must_include": [
+          "3B as initial",
+          "3A as corrected value",
+          "3C as proposed but not adopted/cancelled",
+          "3A as final"
+        ],
+        "acceptable_paraphrases": [
+          "3C was tentative",
+          "3C never took effect",
+          "relabeling was cancelled"
+        ],
+        "must_not_include": [
+          "3C was ever officially adopted",
+          "3B is still valid"
+        ],
+        "harmful_extra": [
+          "omitting the 3C tentative step entirely",
+          "presenting 3C as an adopted intermediate value",
+          "wrong chronological order"
+        ],
+        "harmless_extra": [
+          "mentioning the clerical error context for 3B→3A",
+          "mentioning the city addressing overhaul cancellation"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 3B or 3C is presented as the final usable value.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the chronological order of 3B → 3A → tentative 3C → confirmed 3A is wrong or if any step is omitted.",
+        "final_state": "Fails if the final designation is not 3A.",
+        "intermediate_state": "Fails if the tentative status of 3C is not identified, or if the correction from 3B to 3A is missing.",
+        "trajectory_provenance": "Fails if the reasons for changes (clerical error for 3B→3A, cancelled city overhaul for 3C rejection) are misattributed."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: The user initially reported their designation as 3B upon moving in.",
+        "Step 2: The user discovered a clerical error; the landlord and building management confirmed the registered designation is 3A. This is a confirmed correction replacing 3B.",
+        "Step 3: The building manager proposed a future relabeling to 3C as part of a city addressing overhaul. This was tentative — no official paperwork was received.",
+        "Step 4: The user received updated paperwork confirming the relabeling was cancelled. The designation remains 3A on all official records.",
+        "Inference: 3C was never officially adopted; it remained tentative and was explicitly revoked. The final confirmed designation is 3A."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I just moved into 742 Birchwood Lane, Unit 3B, in Ashford Heights"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the landlord confirmed my actual registered unit is 3A"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "The building manager told me they're reassigning unit labels next month and I'll officially become Unit 3C going forward"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I just got the updated paperwork from the landlord and it turns out the relabeling was cancelled. My unit stays as 3A on all official records"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed our entire conversation history about my Birchwood Lane dwelling designation, what would they see as the full sequence of changes — which values were officially adopted at each stage, which were only proposed but never finalized, and what's the designation I should use today?",
+      "expected_answer": "The sequence is: (1) 3B was the initially reported designation; (2) 3B was corrected to 3A based on official lease documents and landlord confirmation; (3) 3C was proposed as a future relabeling by the building manager but was never officially adopted — the city cancelled the addressing overhaul; (4) 3A was reconfirmed as the final designation on all official records. The designation to use today is 3A.",
+      "gold_memory_state": "Full trajectory for birchwood_unit: 3B (confirmed, step 1) → 3A (confirmed correction, step 2) → 3C (tentative proposal, step 3, never adopted) → 3A (confirmed revert, step 4). Final state: 3A.",
+      "judge_rubric": {
+        "must_include": [
+          "3B as initial",
+          "3A as corrected value",
+          "3C as proposed but not adopted/cancelled",
+          "3A as final"
+        ],
+        "acceptable_paraphrases": [
+          "3C was tentative",
+          "3C never took effect",
+          "relabeling was cancelled"
+        ],
+        "must_not_include": [
+          "3C was ever officially adopted",
+          "3B is still valid"
+        ],
+        "harmful_extra": [
+          "omitting the 3C tentative step entirely",
+          "presenting 3C as an adopted intermediate value",
+          "wrong chronological order"
+        ],
+        "harmless_extra": [
+          "mentioning the clerical error context for 3B→3A",
+          "mentioning the city addressing overhaul cancellation"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 3B or 3C is presented as the final usable value.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the chronological order of 3B → 3A → tentative 3C → confirmed 3A is wrong or if any step is omitted.",
+        "final_state": "Fails if the final designation is not 3A.",
+        "intermediate_state": "Fails if the tentative status of 3C is not identified, or if the correction from 3B to 3A is missing.",
+        "trajectory_provenance": "Fails if the reasons for changes (clerical error for 3B→3A, cancelled city overhaul for 3C rejection) are misattributed."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: The user initially reported their designation as 3B upon moving in.",
+        "Step 2: The user discovered a clerical error; the landlord and building management confirmed the registered designation is 3A. This is a confirmed correction replacing 3B.",
+        "Step 3: The building manager proposed a future relabeling to 3C as part of a city addressing overhaul. This was tentative — no official paperwork was received.",
+        "Step 4: The user received updated paperwork confirming the relabeling was cancelled. The designation remains 3A on all official records.",
+        "Inference: 3C was never officially adopted; it remained tentative and was explicitly revoked. The final confirmed designation is 3A."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I just moved into 742 Birchwood Lane, Unit 3B, in Ashford Heights"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the landlord confirmed my actual registered unit is 3A"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "The building manager told me they're reassigning unit labels next month and I'll officially become Unit 3C going forward"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I just got the updated paperwork from the landlord and it turns out the relabeling was cancelled. My unit stays as 3A on all official records"
+        }
+      ]
+    }
+  ]
+}

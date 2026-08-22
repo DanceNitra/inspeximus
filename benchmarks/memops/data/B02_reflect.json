@@ -1,0 +1,1059 @@
+{
+  "target_fact": "User values simplicity and low-friction communication/experiences, as evidenced by finding cluttered inboxes unbearable, preferring texting over phone calls, and enjoying no-frills meal spots over fancy places",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "Danny's new address is 2731 North Kedzie Avenue, Apartment 4B, in Logan Square, Chicago"
+      },
+      "target": {
+        "target_id": "danny_address",
+        "target_name": "Danny Kowalski's current home address"
+      },
+      "old_value": null,
+      "new_value": "2731 North Kedzie Avenue, Apartment 4B, Logan Square, Chicago",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Danny's new address is 2731 North Kedzie Avenue, Apartment 4B, in Logan Square, Chicago"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "His current email is d.kowalski@protonmail.com. He switched over after changing jobs and he told me he was just done with Gmail because the spam was out of control"
+      },
+      "target": {
+        "target_id": "danny_email",
+        "target_name": "Danny Kowalski's current email address"
+      },
+      "old_value": null,
+      "new_value": "d.kowalski@protonmail.com",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "His current email is d.kowalski@protonmail.com. He switched over after changing jobs and he told me he was just done with Gmail because the spam was out of control"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I honestly get it though, I find cluttered inboxes kind of unbearable myself. Like if my inbox has more than a handful of unread messages I start to feel stressed"
+      },
+      "target": {
+        "target_id": "user_inbox_preference",
+        "target_name": "User's feeling about cluttered inboxes"
+      },
+      "old_value": null,
+      "new_value": "Finds cluttered inboxes unbearable; feels stressed with more than a handful of unread messages",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I honestly get it though, I find cluttered inboxes kind of unbearable myself. Like if my inbox has more than a handful of unread messages I start to feel stressed"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "Danny strongly prefers texts over phone calls. I once called him about dinner plans and he just texted me back instead of picking up, which honestly made me laugh"
+      },
+      "target": {
+        "target_id": "danny_comm_preference",
+        "target_name": "Danny Kowalski's communication preference"
+      },
+      "old_value": null,
+      "new_value": "Strongly prefers texts over phone calls",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Danny strongly prefers texts over phone calls. I once called him about dinner plans and he just texted me back instead of picking up, which honestly made me laugh"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I'm kind of the same way honestly. I'd much rather send a quick text than have a whole phone conversation if I can avoid it"
+      },
+      "target": {
+        "target_id": "user_comm_preference",
+        "target_name": "User's communication preference"
+      },
+      "old_value": null,
+      "new_value": "Prefers texting over phone calls",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I'm kind of the same way honestly. I'd much rather send a quick text than have a whole phone conversation if I can avoid it"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "We went to this ramen place near his apartment and I really enjoyed it. There's just something about a simple, no-frills meal spot that appeals to me way more than anywhere fancy"
+      },
+      "target": {
+        "target_id": "user_dining_preference",
+        "target_name": "User's dining preference"
+      },
+      "old_value": null,
+      "new_value": "Enjoys simple, no-frills meal spots over fancy restaurants",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "We went to this ramen place near his apartment and I really enjoyed it. There's just something about a simple, no-frills meal spot that appeals to me way more than anywhere fancy"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 7,
+        "quote": "I guess I just gravitate toward things that are straightforward and low-hassle. Whether it's how I communicate, where I eat, or how I manage my inbox, I just want things simple and friction-free"
+      },
+      "target": {
+        "target_id": "user_simplicity_value",
+        "target_name": "User's overarching preference for simplicity and low-friction experiences"
+      },
+      "old_value": null,
+      "new_value": "Values simplicity and low-friction across communication, dining, and digital organization",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I honestly get it though, I find cluttered inboxes kind of unbearable myself. Like if my inbox has more than a handful of unread messages I start to feel stressed"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I'm kind of the same way honestly. I'd much rather send a quick text than have a whole phone conversation if I can avoid it"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "There's just something about a simple, no-frills meal spot that appeals to me way more than anywhere fancy"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess I just gravitate toward things that are straightforward and low-hassle. Whether it's how I communicate, where I eat, or how I manage my inbox, I just want things simple and friction-free"
+        }
+      ]
+    },
+    {
+      "operation_id": "op8",
+      "type": "remember",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "Danny mentioned he's thinking about switching to a new encrypted email service called Tuta. He said his company might require it, so he'll probably move everything over from Protonmail within the next few weeks"
+      },
+      "target": {
+        "target_id": "danny_email_tentative",
+        "target_name": "Danny Kowalski's potentially upcoming email address"
+      },
+      "old_value": null,
+      "new_value": "Tuta email (pending company requirement)",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Danny mentioned he's thinking about switching to a new encrypted email service called Tuta. He said his company might require it, so he'll probably move everything over from Protonmail within the next few weeks"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish Danny's core contact info and user's inbox aversion",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I need to get some contact info organized for my friend Danny Kowalski. He moved earlier this year and I keep losing track of his details. Danny's new address is 2731 North Kedzie Avenue, Apartment 4B, in Logan Square, Chicago. I need this for mailing him something next month and the apartment number keeps slipping my mind."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it! I'll keep Danny Kowalski's current address on file for you: 2731 North Kedzie Avenue, Apartment 4B, Logan Square, Chicago. That apartment number, 4B, is definitely the kind of detail that's easy to second-guess, so it's good to have it saved. When you're ready to send him something next month, just ask and I can pull it right up. Do you have any other contact details for Danny you'd like me to keep track of, like a phone number or email? Having everything in one place might make things easier for you going forward."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, definitely. His current email is d.kowalski@protonmail.com. He switched over after changing jobs and he told me he was just done with Gmail because the spam was out of control. His old Gmail was dannykowalski88@gmail.com but he barely checks that anymore so it's basically useless for reaching him now. The Protonmail one is the way to go."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — Danny's current email is d.kowalski@protonmail.com, and I won't bother with the old Gmail address since he's moved on from it. Switching to Protonmail makes a lot of sense if spam was the issue; it's generally much cleaner on that front. I'll treat the Protonmail address as the primary way to reach him electronically. So far I have his Logan Square address and the Protonmail email. If you want to add a phone number or anything else, just let me know. It sounds like you're building a solid little contact card for Danny, which should save you from scrambling next time you need to reach him."
+        },
+        {
+          "role": "user",
+          "content": "I honestly get it though, I find cluttered inboxes kind of unbearable myself. Like if my inbox has more than a handful of unread messages I start to feel stressed. It's one of those things that just bothers me disproportionately. Anyway, his phone number is 773-505-8241. I always mix up the last two digits but 8241 is the correct one. Make sure that's what gets saved."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a totally valid feeling about inboxes — some people can let hundreds of unread emails pile up, but if it stresses you out, it makes sense to stay on top of it. I'll remember that about you. And Danny's phone number is locked in: 773-505-8241. I can see how those last two digits could get swapped easily, but 8241 is the one. So the Danny Kowalski contact card so far has: address at 2731 North Kedzie Avenue, Apt 4B, Logan Square, Chicago; email d.kowalski@protonmail.com; and phone 773-505-8241. Anything else you want to add, like a work number or his birthday?"
+        },
+        {
+          "role": "user",
+          "content": "His birthday is October 17th. I almost forgot it last year and his sister Marta had to remind me, which was a little embarrassing honestly. Also, he recently started at an architecture firm and his direct work line there is 312-477-6600, extension 309. He texted me that number around the last week of April. He seemed really happy about the new gig."
+        },
+        {
+          "role": "assistant",
+          "content": "Great, I've added both. Danny's birthday is October 17th — maybe this year we can set a reminder ahead of time so you don't need a rescue from Marta again. And his work number at the architecture firm is 312-477-6600, extension 309. It's nice that he's in a good place professionally now, especially with a direct line, which suggests he's settling in well. So the full Danny Kowalski contact card now includes: home address in Logan Square, Protonmail email, personal cell 773-505-8241, work line 312-477-6600 ext 309, and birthday October 17th. That's a pretty comprehensive set of details. Let me know if anything changes or if you need to use any of this."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establish communication and dining preferences that build toward the reflect operation",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "One more thing about Danny — Danny strongly prefers texts over phone calls. I once called him about dinner plans and he just texted me back instead of picking up, which honestly made me laugh. It's worth remembering because if I ever need to reach him urgently, texting is still going to be faster than calling. He just won't answer a ring."
+        },
+        {
+          "role": "assistant",
+          "content": "Ha, that's a pretty strong signal when someone texts you back in response to a phone call. I'll note that Danny strongly prefers texts over calls — so if you need to get in touch with him, even urgently, a text message is the better bet. It's actually useful context for the contact info we saved earlier; knowing his phone number is 773-505-8241 is great, but knowing he won't pick up a voice call means you should default to texting that number rather than ringing it. It's a good behavioral detail to pair with the raw contact data. Do you have any other notes about how Danny likes to communicate, or is texting pretty much the universal rule with him?"
+        },
+        {
+          "role": "user",
+          "content": "I'm kind of the same way honestly. I'd much rather send a quick text than have a whole phone conversation if I can avoid it. There's something about phone calls that just feels like more effort than necessary most of the time. Like, if I can get the same information across in a thirty-second text exchange, why would I spend five minutes on a call? It just feels inefficient to me."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes a lot of sense, and it sounds like you and Danny are pretty well-matched communication-wise — neither of you wants to be stuck on a call when a text would do the job. Your reasoning about efficiency is really practical: if the information can be conveyed in a quick message, the overhead of a phone call does feel unnecessary. I'll keep that in mind for any recommendations I make too. If I ever suggest calling someone or setting up a phone meeting, I'll try to offer a text-based or async alternative first since that aligns better with how you naturally prefer to communicate. It's a useful preference to know about you."
+        },
+        {
+          "role": "user",
+          "content": "Speaking of Danny, I visited him in Logan Square sometime around mid-March after he moved in. We went to this ramen place near his apartment and I really enjoyed it. There's just something about a simple, no-frills meal spot that appeals to me way more than anywhere fancy. I'd take a good bowl of ramen at a counter seat over a three-course prix fixe dinner any day of the week."
+        },
+        {
+          "role": "assistant",
+          "content": "That mid-March visit sounds like it was a great time, and a good ramen spot in Logan Square is hard to beat. Your preference for no-frills dining really comes through — it sounds like the food quality and the relaxed atmosphere matter way more to you than presentation or formality. A counter-seat ramen place versus a prix fixe dinner is a pretty vivid contrast, and it's clear which side you land on. I'll keep that in mind if you ever ask for restaurant suggestions or if we're planning something food-related; I'd steer toward the unpretentious, quality-focused spots rather than anything that tries too hard to be upscale. It suits your style."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, exactly. I guess I just gravitate toward things that are straightforward and low-hassle. Whether it's how I communicate, where I eat, or how I manage my inbox, I just want things simple and friction-free. I don't need bells and whistles, I just need things to work without extra fuss. It's kind of a running theme with me if I think about it."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really clear self-awareness, and honestly it does tie together everything you've mentioned. The inbox stress, the preference for texting over calls, choosing a ramen counter over a fancy restaurant — it all points to the same underlying value: you prioritize simplicity and low friction in your daily life. You want communication to be efficient, food to be good without pretense, and your digital life to stay clean and manageable. It's a consistent thread, not just isolated preferences. I think that's genuinely useful for me to understand about you, because it means any suggestion I make should lean toward the streamlined, practical option rather than the elaborate one. It's a good principle to keep in mind across the board."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Adversarial injection and recency trap; reinforce Danny's info without restating confirmed values after tentative mention",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So I'm finally going to send Danny that package I've been putting off. I want to make sure I've got everything right before I address the envelope. Can you pull up what we have for his mailing address? I also want to include a little note with his birthday on it since it's coming up in a few months and I want to be ahead of it this year."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely! Here's what I have for Danny Kowalski's mailing details: his current address is 2731 North Kedzie Avenue, Apartment 4B, Logan Square, Chicago. And his birthday is October 17th, so you've got some time but getting ahead of it is a smart move, especially after last year's close call. For the note, you could mention something about looking forward to celebrating in October — that way it doubles as a heads-up that you actually remembered this time. Do you want me to help draft the note, or are you just confirming the address details before you write everything out yourself? Either way, you're all set on the mailing front now that his mailbox is active."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, I'll write the note myself, but thanks. Oh, actually, I was looking at an old envelope I had lying around from before Danny moved — it still had the 148 Birch Lane, Evanston address on it. For a second I almost used that one out of habit. Good thing I double-checked because that place hasn't been his since February. Definitely don't want to send anything there."
+        },
+        {
+          "role": "assistant",
+          "content": "Good catch — that 148 Birch Lane, Evanston address is definitely outdated and anything sent there would probably just get lost or returned. It's easy to default to an old address when you see it written on something physical, so it's great that you caught it before putting the package together. The correct one is the Logan Square address we have on file: 2731 North Kedzie Avenue, Apartment 4B. Since Danny confirmed his mailbox is set up at the new place, your package should reach him without any issues. If you have any other old envelopes or address labels with the Evanston address floating around, it might be worth tossing them so you don't accidentally grab one next time."
+        },
+        {
+          "role": "user",
+          "content": "Danny mentioned he's thinking about switching to a new encrypted email service called Tuta. He said his company might require it, so he'll probably move everything over from Protonmail within the next few weeks. I don't have a Tuta address for him yet though, so for now I'd still use the Protonmail one if I need to email him about anything."
+        },
+        {
+          "role": "assistant",
+          "content": "That's good to know as a heads-up. Since the Tuta switch is still pending and depends on his company's requirements, I'll keep his current confirmed email as d.kowalski@protonmail.com for now. If and when he actually makes the move and gives you a new Tuta address, just let me know and I'll update it right away. These kinds of transitions can sometimes take longer than expected, especially if the company is still rolling out the policy. In the meantime, Protonmail remains the reliable way to reach him. It's smart to flag it early though, so we're not caught off guard if he suddenly stops checking the Protonmail account one day."
+        },
+        {
+          "role": "user",
+          "content": "Totally. Oh, by the way, I was filling out a group dinner RSVP form and one of the pre-filled fields had a phone number listed as 773-505-8214 next to Danny's name. I think someone copied it wrong at some point. I didn't correct it on the form because it wasn't my form to edit, but I know the right number is different from what was on there.\n\nNo, I think I'm good for now. I'll get the package addressed and sent out this week. It's nice having all of Danny's info in one place finally — address, email, phone, birthday, work number. Makes everything so much easier when I don't have to dig through old texts every time I need something. Thanks for keeping track of all this."
+        },
+        {
+          "role": "assistant",
+          "content": "Yeah, that 773-505-8214 on the form is definitely wrong — it looks like someone swapped the last two digits, which is an easy mistake to make with numbers like that. The correct personal number you gave me for Danny is different from what appeared on that RSVP form, so you're right not to rely on whatever was pre-filled. If the form organizer reaches out or if you get a chance to mention it casually, it might be worth flagging so Danny doesn't miss any group communications. But you're all good on your end — you have the verified number saved with me. Is there anything else you need for the package or the dinner plans?\n\nYou're welcome! It really does make a difference having everything consolidated. Here's a quick recap of what we have for Danny Kowalski: home address at 2731 North Kedzie Avenue, Apartment 4B, Logan Square, Chicago; email at d.kowalski@protonmail.com; personal cell ending in the correct last four digits you verified; work line at 312-477-6600 extension 309 at his architecture firm; and birthday on October 17th. Plus we know he prefers texts over calls, which is handy context. Good luck getting the package out this week, and when October rolls around you'll be well prepared. Just ping me whenever you need any of this pulled up again."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations, I've mentioned several things about how I like to handle daily life — communication, eating out, managing my digital stuff. Can you summarize the specific experiences I shared that reveal a common thread in my preferences?",
+      "expected_answer": "You mentioned that cluttered inboxes stress you out and you find them unbearable when unread messages pile up. You said you'd much rather text than make phone calls because calls feel like unnecessary effort. You also said you prefer simple, no-frills meal spots over fancy restaurants, choosing a good bowl of ramen at a counter over a prix fixe dinner. You then tied these together by saying you gravitate toward things that are straightforward and low-hassle across communication, dining, and inbox management.",
+      "gold_memory_state": "User values simplicity and low-friction experiences. Supporting evidence: (1) finds cluttered inboxes unbearable, (2) prefers texting over phone calls, (3) enjoys no-frills meal spots over fancy restaurants. User explicitly stated this is a running theme.",
+      "judge_rubric": {
+        "must_include": [
+          "cluttered inboxes / inbox stress",
+          "texting over phone calls",
+          "simple or no-frills dining over fancy restaurants"
+        ],
+        "acceptable_paraphrases": [
+          "low-hassle",
+          "straightforward",
+          "friction-free",
+          "minimalist communication",
+          "casual dining"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the user dislikes all technology",
+          "claiming the user never eats out"
+        ],
+        "harmless_extra": [
+          "mentioning Danny also prefers texts",
+          "mentioning the ramen place in Logan Square"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes preferences the user never stated, such as disliking all social media or preferring only home-cooked meals.",
+        "reflection_recall": "Fails if the model omits one or more of the three supporting experiences (inbox aversion, texting preference, no-frills dining).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I honestly get it though, I find cluttered inboxes kind of unbearable myself. Like if my inbox has more than a handful of unread messages I start to feel stressed"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I'm kind of the same way honestly. I'd much rather send a quick text than have a whole phone conversation if I can avoid it"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "There's just something about a simple, no-frills meal spot that appeals to me way more than anywhere fancy"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess I just gravitate toward things that are straightforward and low-hassle. Whether it's how I communicate, where I eat, or how I manage my inbox, I just want things simple and friction-free"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations, I've mentioned several things about how I like to handle daily life — communication, eating out, managing my digital stuff. Can you summarize the specific experiences I shared that reveal a common thread in my preferences?",
+      "expected_answer": "You mentioned that cluttered inboxes stress you out and you find them unbearable when unread messages pile up. You said you'd much rather text than make phone calls because calls feel like unnecessary effort. You also said you prefer simple, no-frills meal spots over fancy restaurants, choosing a good bowl of ramen at a counter over a prix fixe dinner. You then tied these together by saying you gravitate toward things that are straightforward and low-hassle across communication, dining, and inbox management.",
+      "gold_memory_state": "User values simplicity and low-friction experiences. Supporting evidence: (1) finds cluttered inboxes unbearable, (2) prefers texting over phone calls, (3) enjoys no-frills meal spots over fancy restaurants. User explicitly stated this is a running theme.",
+      "judge_rubric": {
+        "must_include": [
+          "cluttered inboxes / inbox stress",
+          "texting over phone calls",
+          "simple or no-frills dining over fancy restaurants"
+        ],
+        "acceptable_paraphrases": [
+          "low-hassle",
+          "straightforward",
+          "friction-free",
+          "minimalist communication",
+          "casual dining"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the user dislikes all technology",
+          "claiming the user never eats out"
+        ],
+        "harmless_extra": [
+          "mentioning Danny also prefers texts",
+          "mentioning the ramen place in Logan Square"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes preferences the user never stated, such as disliking all social media or preferring only home-cooked meals.",
+        "reflection_recall": "Fails if the model omits one or more of the three supporting experiences (inbox aversion, texting preference, no-frills dining).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I honestly get it though, I find cluttered inboxes kind of unbearable myself. Like if my inbox has more than a handful of unread messages I start to feel stressed"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I'm kind of the same way honestly. I'd much rather send a quick text than have a whole phone conversation if I can avoid it"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "There's just something about a simple, no-frills meal spot that appeals to me way more than anywhere fancy"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess I just gravitate toward things that are straightforward and low-hassle. Whether it's how I communicate, where I eat, or how I manage my inbox, I just want things simple and friction-free"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I shared preferences about how I communicate, where I eat, and how I handle my inbox — and I also told you that Danny has his own communication style. If someone asked about the overall lifestyle principle I described, which person's broad preference pattern does that conclusion belong to, and does Danny's communication habit feed into that same conclusion?",
+      "expected_answer": "The overarching simplicity-and-low-friction principle belongs to you, the user. Danny's preference for texting over calls is a separate fact about Danny's communication style; it does not feed into the user's broader lifestyle conclusion, even though you share a similar communication preference.",
+      "gold_memory_state": "User's simplicity value is supported by three user-specific experiences: inbox aversion, texting preference, no-frills dining. Danny's texting preference is a separate target about Danny's communication habit, not a supporting fact for the user's lifestyle pattern.",
+      "judge_rubric": {
+        "must_include": [
+          "the broad simplicity/low-friction conclusion belongs to the user",
+          "Danny's communication preference is a separate detail about Danny"
+        ],
+        "acceptable_paraphrases": [
+          "Danny's texting habit is his own preference, not part of your lifestyle pattern",
+          "your overarching principle is yours, Danny has a similar but independent preference"
+        ],
+        "must_not_include": [
+          "Danny's preference is part of the user's lifestyle conclusion"
+        ],
+        "harmful_extra": [
+          "merging Danny's communication preference into the user's reflected value",
+          "attributing the user's dining or inbox preferences to Danny"
+        ],
+        "harmless_extra": [
+          "noting that the user and Danny share a texting preference"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model treats Danny's texting preference as evidence supporting the user's overarching simplicity value.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess I just gravitate toward things that are straightforward and low-hassle. Whether it's how I communicate, where I eat, or how I manage my inbox, I just want things simple and friction-free"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Danny strongly prefers texts over phone calls. I once called him about dinner plans and he just texted me back instead of picking up, which honestly made me laugh"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I'm kind of the same way honestly. I'd much rather send a quick text than have a whole phone conversation if I can avoid it"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I shared preferences about how I communicate, where I eat, and how I handle my inbox — and I also told you that Danny has his own communication style. If someone asked about the overall lifestyle principle I described, which person's broad preference pattern does that conclusion belong to, and does Danny's communication habit feed into that same conclusion?",
+      "expected_answer": "The overarching simplicity-and-low-friction principle belongs to you, the user. Danny's preference for texting over calls is a separate fact about Danny's communication style; it does not feed into the user's broader lifestyle conclusion, even though you share a similar communication preference.",
+      "gold_memory_state": "User's simplicity value is supported by three user-specific experiences: inbox aversion, texting preference, no-frills dining. Danny's texting preference is a separate target about Danny's communication habit, not a supporting fact for the user's lifestyle pattern.",
+      "judge_rubric": {
+        "must_include": [
+          "the broad simplicity/low-friction conclusion belongs to the user",
+          "Danny's communication preference is a separate detail about Danny"
+        ],
+        "acceptable_paraphrases": [
+          "Danny's texting habit is his own preference, not part of your lifestyle pattern",
+          "your overarching principle is yours, Danny has a similar but independent preference"
+        ],
+        "must_not_include": [
+          "Danny's preference is part of the user's lifestyle conclusion"
+        ],
+        "harmful_extra": [
+          "merging Danny's communication preference into the user's reflected value",
+          "attributing the user's dining or inbox preferences to Danny"
+        ],
+        "harmless_extra": [
+          "noting that the user and Danny share a texting preference"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model treats Danny's texting preference as evidence supporting the user's overarching simplicity value.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess I just gravitate toward things that are straightforward and low-hassle. Whether it's how I communicate, where I eat, or how I manage my inbox, I just want things simple and friction-free"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Danny strongly prefers texts over phone calls. I once called him about dinner plans and he just texted me back instead of picking up, which honestly made me laugh"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I'm kind of the same way honestly. I'd much rather send a quick text than have a whole phone conversation if I can avoid it"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Based on what you know about my preferences, describe where my preference for simplicity and low friction clearly applies and where it would be a stretch to extend that conclusion. For instance, would it be safe to assume I also dislike complex hobbies, or that I avoid detailed planning for things like travel?",
+      "expected_answer": "Your simplicity preference is well supported in three domains: digital organization (you find cluttered inboxes unbearable), communication (you prefer texting over phone calls for efficiency), and dining (you choose no-frills spots over fancy restaurants). It would be an overgeneralization to assume this extends to hobbies or travel planning, since you never mentioned anything about those areas. The pattern is specifically about wanting everyday interactions and routines to be low-hassle, not necessarily that you avoid complexity in all aspects of life.",
+      "gold_memory_state": "Supported inference: user values simplicity and low friction in communication (texting > calls), dining (no-frills > fancy), and digital life (clean inbox). Unsupported overgeneralization: extending this to hobbies, travel planning, work complexity, social life complexity, or any domain the user did not mention.",
+      "judge_rubric": {
+        "must_include": [
+          "supported domains: inbox/digital organization, communication/texting, dining",
+          "unsupported to extend to hobbies or travel planning without evidence"
+        ],
+        "acceptable_paraphrases": [
+          "the pattern covers everyday routines not all life domains",
+          "cannot assume the user avoids all complexity"
+        ],
+        "must_not_include": [
+          "the user avoids all complexity in every area of life",
+          "the user dislikes detailed planning universally"
+        ],
+        "harmful_extra": [
+          "claiming the user said they dislike complex hobbies",
+          "claiming the user avoids travel"
+        ],
+        "harmless_extra": [
+          "mentioning the specific ramen visit",
+          "mentioning the inbox threshold of a handful of unread messages"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model extends the simplicity preference to domains the user never mentioned (hobbies, travel, work tasks) without flagging that as unsupported.",
+        "reflection_recall": "Fails if the model omits any of the three confirmed supporting domains (inbox, communication, dining).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I honestly get it though, I find cluttered inboxes kind of unbearable myself. Like if my inbox has more than a handful of unread messages I start to feel stressed"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I'm kind of the same way honestly. I'd much rather send a quick text than have a whole phone conversation if I can avoid it"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "There's just something about a simple, no-frills meal spot that appeals to me way more than anywhere fancy"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess I just gravitate toward things that are straightforward and low-hassle. Whether it's how I communicate, where I eat, or how I manage my inbox, I just want things simple and friction-free"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Based on what you know about my preferences, describe where my preference for simplicity and low friction clearly applies and where it would be a stretch to extend that conclusion. For instance, would it be safe to assume I also dislike complex hobbies, or that I avoid detailed planning for things like travel?",
+      "expected_answer": "Your simplicity preference is well supported in three domains: digital organization (you find cluttered inboxes unbearable), communication (you prefer texting over phone calls for efficiency), and dining (you choose no-frills spots over fancy restaurants). It would be an overgeneralization to assume this extends to hobbies or travel planning, since you never mentioned anything about those areas. The pattern is specifically about wanting everyday interactions and routines to be low-hassle, not necessarily that you avoid complexity in all aspects of life.",
+      "gold_memory_state": "Supported inference: user values simplicity and low friction in communication (texting > calls), dining (no-frills > fancy), and digital life (clean inbox). Unsupported overgeneralization: extending this to hobbies, travel planning, work complexity, social life complexity, or any domain the user did not mention.",
+      "judge_rubric": {
+        "must_include": [
+          "supported domains: inbox/digital organization, communication/texting, dining",
+          "unsupported to extend to hobbies or travel planning without evidence"
+        ],
+        "acceptable_paraphrases": [
+          "the pattern covers everyday routines not all life domains",
+          "cannot assume the user avoids all complexity"
+        ],
+        "must_not_include": [
+          "the user avoids all complexity in every area of life",
+          "the user dislikes detailed planning universally"
+        ],
+        "harmful_extra": [
+          "claiming the user said they dislike complex hobbies",
+          "claiming the user avoids travel"
+        ],
+        "harmless_extra": [
+          "mentioning the specific ramen visit",
+          "mentioning the inbox threshold of a handful of unread messages"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model extends the simplicity preference to domains the user never mentioned (hobbies, travel, work tasks) without flagging that as unsupported.",
+        "reflection_recall": "Fails if the model omits any of the three confirmed supporting domains (inbox, communication, dining).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I honestly get it though, I find cluttered inboxes kind of unbearable myself. Like if my inbox has more than a handful of unread messages I start to feel stressed"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I'm kind of the same way honestly. I'd much rather send a quick text than have a whole phone conversation if I can avoid it"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "There's just something about a simple, no-frills meal spot that appeals to me way more than anywhere fancy"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess I just gravitate toward things that are straightforward and low-hassle. Whether it's how I communicate, where I eat, or how I manage my inbox, I just want things simple and friction-free"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "Which of the following best describes the overarching personal preference pattern I've shared with you?",
+      "candidate_options": [
+        "Values simplicity and low friction across communication, dining, and digital organization",
+        "Prefers premium, high-end experiences that feel exclusive and curated",
+        "Prioritizes deep social connection and long phone conversations with friends",
+        "Focuses on minimizing all screen time and digital engagement"
+      ],
+      "expected_answer": "Values simplicity and low friction across communication, dining, and digital organization",
+      "gold_memory_state": "User's reflected preference: values simplicity and low-friction experiences across communication (texting > calls), dining (no-frills > fancy), and digital organization (clean inbox). The other options contradict or overextend the evidence.",
+      "judge_rubric": {
+        "must_include": [
+          "simplicity and low friction across communication, dining, and digital organization"
+        ],
+        "acceptable_paraphrases": [
+          "straightforward low-hassle lifestyle across everyday domains"
+        ],
+        "must_not_include": [
+          "premium or high-end experiences",
+          "long phone conversations",
+          "minimizing all screen time"
+        ],
+        "harmful_extra": [
+          "selecting any distractor option"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'Prioritizes deep social connection and long phone conversations with friends' borrows the communication domain but inverts the preference direction, testing whether the model confuses Danny's or the user's phone-call aversion with a call-loving pattern. assistant echo: 'Focuses on minimizing all screen time and digital engagement' is an overgeneralization an assistant might echo from the inbox-aversion detail, extending it to all digital engagement which the user never said. 'Prefers premium, high-end experiences' directly contradicts the no-frills dining preference.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model selects the screen-time-minimization option (overgeneralization from inbox aversion) or the phone-conversation option (inversion of the texting preference).",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess I just gravitate toward things that are straightforward and low-hassle. Whether it's how I communicate, where I eat, or how I manage my inbox, I just want things simple and friction-free"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I honestly get it though, I find cluttered inboxes kind of unbearable myself. Like if my inbox has more than a handful of unread messages I start to feel stressed"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I'm kind of the same way honestly. I'd much rather send a quick text than have a whole phone conversation if I can avoid it"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "There's just something about a simple, no-frills meal spot that appeals to me way more than anywhere fancy"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "Which of the following best describes the overarching personal preference pattern I've shared with you?",
+      "candidate_options": [
+        "Values simplicity and low friction across communication, dining, and digital organization",
+        "Prefers premium, high-end experiences that feel exclusive and curated",
+        "Prioritizes deep social connection and long phone conversations with friends",
+        "Focuses on minimizing all screen time and digital engagement"
+      ],
+      "expected_answer": "Values simplicity and low friction across communication, dining, and digital organization",
+      "gold_memory_state": "User's reflected preference: values simplicity and low-friction experiences across communication (texting > calls), dining (no-frills > fancy), and digital organization (clean inbox). The other options contradict or overextend the evidence.",
+      "judge_rubric": {
+        "must_include": [
+          "simplicity and low friction across communication, dining, and digital organization"
+        ],
+        "acceptable_paraphrases": [
+          "straightforward low-hassle lifestyle across everyday domains"
+        ],
+        "must_not_include": [
+          "premium or high-end experiences",
+          "long phone conversations",
+          "minimizing all screen time"
+        ],
+        "harmful_extra": [
+          "selecting any distractor option"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'Prioritizes deep social connection and long phone conversations with friends' borrows the communication domain but inverts the preference direction, testing whether the model confuses Danny's or the user's phone-call aversion with a call-loving pattern. assistant echo: 'Focuses on minimizing all screen time and digital engagement' is an overgeneralization an assistant might echo from the inbox-aversion detail, extending it to all digital engagement which the user never said. 'Prefers premium, high-end experiences' directly contradicts the no-frills dining preference.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model selects the screen-time-minimization option (overgeneralization from inbox aversion) or the phone-conversation option (inversion of the texting preference).",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess I just gravitate toward things that are straightforward and low-hassle. Whether it's how I communicate, where I eat, or how I manage my inbox, I just want things simple and friction-free"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I honestly get it though, I find cluttered inboxes kind of unbearable myself. Like if my inbox has more than a handful of unread messages I start to feel stressed"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I'm kind of the same way honestly. I'd much rather send a quick text than have a whole phone conversation if I can avoid it"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "There's just something about a simple, no-frills meal spot that appeals to me way more than anywhere fancy"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to plan a birthday surprise for Danny. I need to send him a gift and also invite him to a casual dinner. Help me draft a short action plan that covers: how I should contact him about the dinner, what kind of restaurant I should pick, and how to get the gift to him. Make sure the plan fits what you know about both of us.",
+      "expected_answer": "Text Danny at his phone number (773-505-8241) to invite him to dinner — he strongly prefers texts over calls, and you also prefer texting, so this is the most natural channel for both of you. Choose a casual, no-frills restaurant rather than anywhere fancy, since you enjoy simple meal spots and would be more comfortable at a low-key place. Mail the gift to his address at 2731 North Kedzie Avenue, Apartment 4B, Logan Square, Chicago. Use his Protonmail email (d.kowalski@protonmail.com) if you need to coordinate any details in writing, since that is his active email — the potential Tuta switch has not happened yet. His birthday is October 17th, so plan accordingly.",
+      "gold_memory_state": "Danny's address: 2731 North Kedzie Avenue, Apt 4B, Logan Square, Chicago. Danny's email: d.kowalski@protonmail.com (confirmed; Tuta is only tentative/pending). Danny's phone: 773-505-8241. Danny's birthday: October 17th. Danny's comm preference: texts over calls. User's comm preference: texting over calls. User's dining preference: no-frills over fancy. User's overarching value: simplicity and low friction. The tentative Tuta email switch is not confirmed and should not replace Protonmail.",
+      "judge_rubric": {
+        "must_include": [
+          "contact Danny via text",
+          "choose a casual or no-frills restaurant",
+          "mail gift to 2731 North Kedzie Avenue, Apartment 4B, Logan Square, Chicago",
+          "use d.kowalski@protonmail.com as email"
+        ],
+        "acceptable_paraphrases": [
+          "text him instead of calling",
+          "pick a low-key dining spot",
+          "send the package to his Logan Square address"
+        ],
+        "must_not_include": [
+          "use a Tuta email address",
+          "call Danny on the phone",
+          "book a fancy or upscale restaurant"
+        ],
+        "harmful_extra": [
+          "using the old Evanston address (148 Birch Lane)",
+          "using the wrong phone number 773-505-8214",
+          "treating the Tuta email as Danny's active address"
+        ],
+        "harmless_extra": [
+          "mentioning the ramen place near his apartment as a possible venue",
+          "mentioning Danny's work number at the architecture firm",
+          "mentioning his sister Marta"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses the old Evanston address (148 Birch Lane), the wrong phone number (773-505-8214), or treats the tentative Tuta email as Danny's active address instead of Protonmail.",
+        "reflection_precision": "Fails if the plan recommends a fancy restaurant or phone calls, contradicting the user's stated simplicity value and both parties' texting preferences.",
+        "reflection_recall": "Fails if the plan does not incorporate the user's dining preference or communication preference.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Danny's birthday is October 17th, so the surprise should be planned around that date.",
+        "Fact 2: Danny strongly prefers texts over phone calls, so the dinner invitation should be sent via text.",
+        "Fact 3: The user also prefers texting over calls, reinforcing text as the natural communication channel.",
+        "Fact 4: The user values simplicity and no-frills dining over fancy restaurants.",
+        "Fact 5: Danny's mailing address is 2731 North Kedzie Avenue, Apartment 4B, Logan Square, Chicago.",
+        "Fact 6: Danny's active email is d.kowalski@protonmail.com; the Tuta switch is only tentative and pending.",
+        "Inference: The action plan must combine the contact method (text to 773-505-8241), restaurant style (casual/no-frills per user's reflected value), mailing destination (Logan Square address), and email (Protonmail, not Tuta) into a coherent plan that respects both parties' preferences and rejects tentative/stale information."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Danny strongly prefers texts over phone calls. I once called him about dinner plans and he just texted me back instead of picking up, which honestly made me laugh"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I'm kind of the same way honestly. I'd much rather send a quick text than have a whole phone conversation if I can avoid it"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "There's just something about a simple, no-frills meal spot that appeals to me way more than anywhere fancy"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess I just gravitate toward things that are straightforward and low-hassle. Whether it's how I communicate, where I eat, or how I manage my inbox, I just want things simple and friction-free"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Danny's new address is 2731 North Kedzie Avenue, Apartment 4B, in Logan Square, Chicago"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "His current email is d.kowalski@protonmail.com. He switched over after changing jobs and he told me he was just done with Gmail because the spam was out of control"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Danny mentioned he's thinking about switching to a new encrypted email service called Tuta. He said his company might require it, so he'll probably move everything over from Protonmail within the next few weeks"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to plan a birthday surprise for Danny. I need to send him a gift and also invite him to a casual dinner. Help me draft a short action plan that covers: how I should contact him about the dinner, what kind of restaurant I should pick, and how to get the gift to him. Make sure the plan fits what you know about both of us.",
+      "expected_answer": "Text Danny at his phone number (773-505-8241) to invite him to dinner — he strongly prefers texts over calls, and you also prefer texting, so this is the most natural channel for both of you. Choose a casual, no-frills restaurant rather than anywhere fancy, since you enjoy simple meal spots and would be more comfortable at a low-key place. Mail the gift to his address at 2731 North Kedzie Avenue, Apartment 4B, Logan Square, Chicago. Use his Protonmail email (d.kowalski@protonmail.com) if you need to coordinate any details in writing, since that is his active email — the potential Tuta switch has not happened yet. His birthday is October 17th, so plan accordingly.",
+      "gold_memory_state": "Danny's address: 2731 North Kedzie Avenue, Apt 4B, Logan Square, Chicago. Danny's email: d.kowalski@protonmail.com (confirmed; Tuta is only tentative/pending). Danny's phone: 773-505-8241. Danny's birthday: October 17th. Danny's comm preference: texts over calls. User's comm preference: texting over calls. User's dining preference: no-frills over fancy. User's overarching value: simplicity and low friction. The tentative Tuta email switch is not confirmed and should not replace Protonmail.",
+      "judge_rubric": {
+        "must_include": [
+          "contact Danny via text",
+          "choose a casual or no-frills restaurant",
+          "mail gift to 2731 North Kedzie Avenue, Apartment 4B, Logan Square, Chicago",
+          "use d.kowalski@protonmail.com as email"
+        ],
+        "acceptable_paraphrases": [
+          "text him instead of calling",
+          "pick a low-key dining spot",
+          "send the package to his Logan Square address"
+        ],
+        "must_not_include": [
+          "use a Tuta email address",
+          "call Danny on the phone",
+          "book a fancy or upscale restaurant"
+        ],
+        "harmful_extra": [
+          "using the old Evanston address (148 Birch Lane)",
+          "using the wrong phone number 773-505-8214",
+          "treating the Tuta email as Danny's active address"
+        ],
+        "harmless_extra": [
+          "mentioning the ramen place near his apartment as a possible venue",
+          "mentioning Danny's work number at the architecture firm",
+          "mentioning his sister Marta"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses the old Evanston address (148 Birch Lane), the wrong phone number (773-505-8214), or treats the tentative Tuta email as Danny's active address instead of Protonmail.",
+        "reflection_precision": "Fails if the plan recommends a fancy restaurant or phone calls, contradicting the user's stated simplicity value and both parties' texting preferences.",
+        "reflection_recall": "Fails if the plan does not incorporate the user's dining preference or communication preference.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Danny's birthday is October 17th, so the surprise should be planned around that date.",
+        "Fact 2: Danny strongly prefers texts over phone calls, so the dinner invitation should be sent via text.",
+        "Fact 3: The user also prefers texting over calls, reinforcing text as the natural communication channel.",
+        "Fact 4: The user values simplicity and no-frills dining over fancy restaurants.",
+        "Fact 5: Danny's mailing address is 2731 North Kedzie Avenue, Apartment 4B, Logan Square, Chicago.",
+        "Fact 6: Danny's active email is d.kowalski@protonmail.com; the Tuta switch is only tentative and pending.",
+        "Inference: The action plan must combine the contact method (text to 773-505-8241), restaurant style (casual/no-frills per user's reflected value), mailing destination (Logan Square address), and email (Protonmail, not Tuta) into a coherent plan that respects both parties' preferences and rejects tentative/stale information."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Danny strongly prefers texts over phone calls. I once called him about dinner plans and he just texted me back instead of picking up, which honestly made me laugh"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I'm kind of the same way honestly. I'd much rather send a quick text than have a whole phone conversation if I can avoid it"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "There's just something about a simple, no-frills meal spot that appeals to me way more than anywhere fancy"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess I just gravitate toward things that are straightforward and low-hassle. Whether it's how I communicate, where I eat, or how I manage my inbox, I just want things simple and friction-free"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Danny's new address is 2731 North Kedzie Avenue, Apartment 4B, in Logan Square, Chicago"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "His current email is d.kowalski@protonmail.com. He switched over after changing jobs and he told me he was just done with Gmail because the spam was out of control"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Danny mentioned he's thinking about switching to a new encrypted email service called Tuta. He said his company might require it, so he'll probably move everything over from Protonmail within the next few weeks"
+        }
+      ]
+    }
+  ]
+}

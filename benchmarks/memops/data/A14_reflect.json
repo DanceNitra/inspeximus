@@ -1,0 +1,1055 @@
+{
+  "target_fact": "User has a strong attachment to Lusophone/Latin cultural identity and feels most comfortable in familiar linguistic environments (Portuguese/Spanish-speaking countries)",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I'm Brazilian, born and raised in São Paulo. My passport number is HG284193"
+      },
+      "target": {
+        "target_id": "nationality_brazilian",
+        "target_name": "user's current nationality and passport number"
+      },
+      "old_value": null,
+      "new_value": "Brazilian, passport HG284193",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I'm Brazilian, born and raised in São Paulo. My passport number is HG284193"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I submitted my Portuguese citizenship application on March 3rd through ancestry — my grandmother on my mom's side was born in Porto"
+      },
+      "target": {
+        "target_id": "portuguese_citizenship_application",
+        "target_name": "Portuguese citizenship application details"
+      },
+      "old_value": null,
+      "new_value": "Application submitted March 3rd via ancestry (maternal grandmother born in Porto), reference PT-2025-04417, status pending",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I submitted my Portuguese citizenship application on March 3rd through ancestry — my grandmother on my mom's side was born in Porto"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "The application reference number is PT-2025-04417, I'll need that when I follow up with the consulate"
+      },
+      "target": {
+        "target_id": "portuguese_app_reference",
+        "target_name": "Portuguese citizenship application reference number"
+      },
+      "old_value": null,
+      "new_value": "PT-2025-04417",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The application reference number is PT-2025-04417, I'll need that when I follow up with the consulate"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 7,
+        "quote": "I went to Lisbon last November and it felt so natural, like I could just relax and speak Portuguese without switching mental gears"
+      },
+      "target": {
+        "target_id": "lisbon_travel_comfort",
+        "target_name": "user's experience of linguistic comfort traveling in Lisbon"
+      },
+      "old_value": null,
+      "new_value": "Visited Lisbon last November; felt natural and relaxed speaking Portuguese",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I went to Lisbon last November and it felt so natural, like I could just relax and speak Portuguese without switching mental gears"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I spent a long weekend in Montevideo a couple of months ago and loved it because everyone understood my Portunhol"
+      },
+      "target": {
+        "target_id": "montevideo_travel_comfort",
+        "target_name": "user's experience of linguistic comfort in Montevideo"
+      },
+      "old_value": null,
+      "new_value": "Visited Montevideo a couple of months ago; enjoyed ease of communication using Portunhol",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I spent a long weekend in Montevideo a couple of months ago and loved it because everyone understood my Portunhol"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I always gravitate toward forró and regional roots music rather than mainstream pop stuff"
+      },
+      "target": {
+        "target_id": "music_preference",
+        "target_name": "user's music preference"
+      },
+      "old_value": null,
+      "new_value": "Prefers forró and regional roots music over mainstream pop",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I always gravitate toward forró and regional roots music rather than mainstream pop stuff"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "when I'm filling out travel forms I really only want to visit places where I can get by in Portuguese or Spanish"
+      },
+      "target": {
+        "target_id": "travel_language_preference",
+        "target_name": "user's travel destination language preference"
+      },
+      "old_value": null,
+      "new_value": "Prefers traveling to countries where Portuguese or Spanish is spoken",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "when I'm filling out travel forms I really only want to visit places where I can get by in Portuguese or Spanish"
+        }
+      ]
+    },
+    {
+      "operation_id": "op8",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 7,
+        "quote": "I think all of this — the citizenship application, the trips to Lisbon and Montevideo, even my music taste — it all comes from the same place, you know? I just feel most like myself when I'm in a Lusophone or Latin cultural environment"
+      },
+      "target": {
+        "target_id": "lusophone_latin_cultural_identity",
+        "target_name": "user's deep attachment to Lusophone/Latin cultural identity and linguistic comfort"
+      },
+      "old_value": null,
+      "new_value": "Strong attachment to Lusophone and Latin cultural identity; feels most authentic and comfortable in Portuguese/Spanish-speaking environments, which drives travel choices, music preferences, and the pursuit of Portuguese citizenship",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I went to Lisbon last November and it felt so natural, like I could just relax and speak Portuguese without switching mental gears"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I spent a long weekend in Montevideo a couple of months ago and loved it because everyone understood my Portunhol"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I always gravitate toward forró and regional roots music rather than mainstream pop stuff"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "when I'm filling out travel forms I really only want to visit places where I can get by in Portuguese or Spanish"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I think all of this — the citizenship application, the trips to Lisbon and Montevideo, even my music taste — it all comes from the same place, you know? I just feel most like myself when I'm in a Lusophone or Latin cultural environment"
+        }
+      ]
+    },
+    {
+      "operation_id": "op9",
+      "type": "remember",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "The consulate officer told me my Portuguese citizenship will almost certainly be approved by June, so I'll officially be a dual national by then"
+      },
+      "target": {
+        "target_id": "portuguese_citizenship_status_tentative",
+        "target_name": "tentative Portuguese citizenship approval timeline"
+      },
+      "old_value": null,
+      "new_value": "Portuguese citizenship expected approved by June, dual nationality",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The consulate officer told me my Portuguese citizenship will almost certainly be approved by June, so I'll officially be a dual national by then"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish nationality facts and Portuguese citizenship application",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to make sure you have my key personal details on file. I'm Brazilian, born and raised in São Paulo. My passport number is HG284193. Both my parents are Brazilian — dad's family is from near Florianópolis in the south, mom's family is from Recife. Please keep all that noted for any documents or forms I might need help with."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — I've noted your Brazilian nationality, birthplace of São Paulo, and passport number HG284193. I also have your family background recorded: your father's family originates from the Florianópolis area in southern Brazil, and your mother's family is from Recife in the northeast. These details will be handy whenever you need help filling out official documents, visa applications, or any other forms. If any of these details ever change or need correcting, just let me know and I'll update them right away. Is there anything else you'd like me to keep on file?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, actually. I submitted my Portuguese citizenship application on March 3rd through ancestry — my grandmother on my mom's side was born in Porto. She emigrated to Brazil in the 1950s. I filed everything at the consulate in São Paulo. It's still pending right now, so my only current nationality is Brazilian. I was pretty anxious leading up to the submission because I was worried I'd be missing documents."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a big step — congratulations on getting the application submitted! I've recorded that you filed for Portuguese citizenship through ancestry on March 3rd at the São Paulo consulate, based on your maternal grandmother's birth in Porto before she emigrated to Brazil in the 1950s. The application is currently pending, so your only active nationality at this point remains Brazilian. I can understand the anxiety around gathering all the right documents for something this important. If you need help tracking deadlines or organizing follow-up materials for the consulate, I'm happy to assist. Do you have a reference number for the application?"
+        },
+        {
+          "role": "user",
+          "content": "Yes I do. The application reference number is PT-2025-04417, I'll need that when I follow up with the consulate. Please store that carefully. My friend Lucas, who's Argentine, went through a similar process with Italian citizenship last year and said it took him about 14 months. That kind of discouraged me, but I'm trying to stay positive about the timeline."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — your Portuguese citizenship application reference number is PT-2025-04417. I'll keep that stored so it's ready whenever you need to follow up with the consulate. I understand that Lucas's 14-month Italian citizenship timeline feels discouraging, but keep in mind that processing times can vary significantly between countries and consulates. The Portuguese process through ancestry may move at a different pace than the Italian one. It might help to set a reminder to check in with the consulate every couple of months using that reference number. Would you like me to help you draft a follow-up inquiry template for the consulate?"
+        },
+        {
+          "role": "user",
+          "content": "Maybe later on the template. Speaking of Portugal — I went to Lisbon last November and it felt so natural, like I could just relax and speak Portuguese without switching mental gears. I didn't have to think in English or struggle with translations. It was honestly one of the most comfortable travel experiences I've ever had. That trip really reinforced my desire to get the Portuguese citizenship sorted out."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a wonderful experience. There's something really special about traveling somewhere and feeling linguistically at home — no translation barrier, no mental fatigue from constantly switching languages. It makes complete sense that your Lisbon trip strengthened your motivation to pursue Portuguese citizenship. Being able to live, work, or travel freely within the EU while speaking your native language would be a huge quality-of-life advantage. I've noted your positive experience in Lisbon last November and how it connects to your citizenship goals. When you're ready for that follow-up template for the consulate, just let me know and we can put it together."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "establish travel and cultural preferences leading to reflective inference",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "On a related note, I spent a long weekend in Montevideo a couple of months ago and loved it because everyone understood my Portunhol. I didn't even have to try hard — just mixing Portuguese and Spanish naturally and people got what I meant. It was so easy and enjoyable compared to when I've traveled to places where I needed English or another language entirely."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a great trip! Montevideo is a fantastic city, and the linguistic overlap between Portuguese and Spanish in the River Plate region makes it especially accessible for Brazilian travelers. The fact that you could communicate naturally in Portunhol without stress really highlights how much more enjoyable travel becomes when there's that linguistic bridge. It's interesting to see a pattern forming — both your Lisbon trip and your Montevideo weekend seem to share that same sense of ease and comfort. Would you say language accessibility is a major factor when you're choosing travel destinations?"
+        },
+        {
+          "role": "user",
+          "content": "Definitely, and it extends to other parts of my life too. I always gravitate toward forró and regional roots music rather than mainstream pop stuff. I went to a cultural festival in Vila Madalena in mid-March and there was a lot of forró playing — I was in my element. It's the same feeling I get when I travel to Portuguese or Spanish-speaking places. It's about being connected to something culturally familiar and authentic."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really meaningful connection you're drawing. Your love of forró and regional roots music parallels your travel preferences — both are about seeking out cultural authenticity and feeling grounded in something familiar. The Vila Madalena festival sounds like it was right up your alley. Forró has such deep roots in northeastern Brazilian culture, and given your mom's family connection to Recife, there might even be a personal heritage dimension to your affinity for it. It seems like cultural and linguistic familiarity is a thread that runs through many of your choices. Is that a fair read?"
+        },
+        {
+          "role": "user",
+          "content": "That's exactly right. And honestly, when I'm filling out travel forms I really only want to visit places where I can get by in Portuguese or Spanish. It's not that I can't speak English — I obviously can — but there's a mental load to it that I just don't enjoy on vacation. I want to relax, not perform linguistically. My colleague Mariana just got her Spanish citizenship finalized after two years, and she said the same thing about preferring to travel where she feels at home linguistically."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes a lot of sense. The concept of 'linguistic load' is real — even when you're proficient in another language, the cognitive effort of constantly processing and producing in a non-native tongue can be draining, especially when you're supposed to be relaxing. Mariana's experience with Spanish citizenship and her similar travel philosophy really underscores that this is a common feeling among multilingual people in Latin America. Your preference for Portuguese and Spanish-speaking destinations is a very intentional way of protecting your leisure time and mental energy. It's a thoughtful approach to travel planning."
+        },
+        {
+          "role": "user",
+          "content": "I think all of this — the citizenship application, the trips to Lisbon and Montevideo, even my music taste — it all comes from the same place, you know? I just feel most like myself when I'm in a Lusophone or Latin cultural environment. It's not about rejecting other cultures, it's about where I feel most authentic and grounded. Does that make sense as a pattern you can note about me?"
+        },
+        {
+          "role": "assistant",
+          "content": "It makes perfect sense, and it's a really insightful self-observation. What you're describing is a deep-rooted attachment to Lusophone and Latin cultural identity that manifests across multiple dimensions of your life — your travel choices gravitate toward Portuguese and Spanish-speaking countries, your music taste centers on forró and regional roots traditions, and your pursuit of Portuguese citizenship is partly driven by this same desire for cultural belonging. I've noted this as a core aspect of who you are: you feel most authentic and comfortable in familiar linguistic and cultural environments. It's a unifying thread that connects many of your preferences and decisions."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "adversarial injection and recency trap with tentative citizenship timeline",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, quick question. I'm working on that visa pre-screening form for the Germany work trip and I need to double-check some things. Right now my only nationality is Brazilian since the Portuguese application is still pending. Can you confirm my passport number? I want to make sure the form is accurate before I submit it to my company's travel department."
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! Your current nationality is Brazilian, and your passport number is HG284193. Since your Portuguese citizenship application (reference PT-2025-04417) is still pending, you should list only Brazilian nationality on the form. For the Germany visa pre-screening, you'll likely need your passport number, nationality, and possibly your place of birth — São Paulo. I noticed the form template from your company's travel portal still shows a passport number HG284913 from a previous version — you'll want to make sure you overwrite that with the correct number HG284193. Let me know if you need help filling out any other fields."
+        },
+        {
+          "role": "user",
+          "content": "Good catch on that old number in the form template — yeah, HG284913 is definitely wrong, that must be a leftover from an earlier draft or something. The correct one is HG284193 as you said. Anyway, I also wanted to mention that the Germany trip would be my first time in a country where I can't rely on Portuguese or Spanish at all. I'm a bit nervous about that honestly."
+        },
+        {
+          "role": "assistant",
+          "content": "That's completely understandable given your strong preference for traveling in Portuguese or Spanish-speaking environments. Germany will be a very different linguistic experience — English is widely spoken in major cities and business settings, but day-to-day interactions might feel more taxing compared to your trips to Lisbon or Montevideo. You might want to prepare a few key German phrases for basic interactions like ordering food or asking for directions. That small effort can reduce some of the cognitive load you mentioned disliking. And remember, this is a work trip, so you'll likely have colleagues around to help navigate. Would you like me to put together a basic German phrase sheet?"
+        },
+        {
+          "role": "user",
+          "content": "The consulate officer told me my Portuguese citizenship will almost certainly be approved by June, so I'll officially be a dual national by then. That would actually help with future European work trips since I wouldn't need separate visas. But for this Germany trip I still need to go through the regular visa process since it's happening in May and I won't have the Portuguese passport yet."
+        },
+        {
+          "role": "assistant",
+          "content": "That's exciting news about the potential June timeline for your Portuguese citizenship! If that comes through, it would indeed simplify future European travel significantly — as a Portuguese citizen you'd have freedom of movement throughout the EU and wouldn't need work visas for countries like Germany. For the May trip, though, you're right that you'll need to proceed with the standard Brazilian passport visa application process. I'd recommend starting the German work visa application as soon as possible since processing times can vary. Do you want me to help you organize the documents you'll need for the German visa application?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, let's work on that soon. Also, I've been thinking about what we discussed last time — about how all my choices connect back to my cultural identity. Even this nervousness about Germany kind of proves the point, right? I'm so rooted in Lusophone and Latin spaces that stepping outside them feels genuinely uncomfortable, not just inconvenient. It's a deep part of how I experience the world."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely — your reaction to the Germany trip is a really telling example. It's not just about practical language barriers; it's about stepping outside the cultural and linguistic environment where you feel most grounded and authentic. The fact that you describe it as genuinely uncomfortable rather than merely inconvenient speaks to how central your Lusophone and Latin cultural identity is to your sense of self. This connects directly to everything we discussed — your travel preferences, your music taste, your citizenship pursuit, and now your emotional response to an unfamiliar linguistic environment. It all reinforces that this cultural attachment is a core part of who you are, not just a casual preference."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "What experiences and preferences have I shared with you that together reveal a consistent theme about where I feel most comfortable and authentic?",
+      "expected_answer": "You shared several experiences that converge on the same theme: (1) visiting Lisbon last November and feeling naturally at ease speaking Portuguese without mental effort, (2) spending a long weekend in Montevideo and enjoying easy communication using Portunhol, (3) gravitating toward forró and regional roots music rather than mainstream pop, (4) preferring to travel only to places where you can get by in Portuguese or Spanish, and (5) your explicit statement that pursuing Portuguese citizenship, your travel choices, and your music taste all stem from feeling most like yourself in Lusophone or Latin cultural environments.",
+      "gold_memory_state": "All contributing facts are confirmed: Lisbon trip comfort (November), Montevideo trip comfort (Portunhol ease), forró/roots music preference, travel language preference (Portuguese/Spanish-speaking countries), Portuguese citizenship application (March 3rd, ancestry, reference PT-2025-04417). The reflective synthesis connecting all these to a deep Lusophone/Latin cultural identity is confirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "Lisbon trip and linguistic comfort",
+          "Montevideo trip and Portunhol ease",
+          "forró or regional roots music preference",
+          "travel preference for Portuguese or Spanish-speaking destinations",
+          "overarching cultural identity theme"
+        ],
+        "acceptable_paraphrases": [
+          "felt at home in Lisbon",
+          "communicated easily in Montevideo",
+          "prefers traditional Brazilian music",
+          "avoids destinations without Portuguese or Spanish"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the user dislikes English-speaking countries entirely",
+          "stating Portuguese citizenship is already approved"
+        ],
+        "harmless_extra": [
+          "mentioning the Portuguese citizenship application as a related data point",
+          "mentioning the Vila Madalena festival"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the summary includes unsupported claims such as the user rejecting all non-Latin cultures.",
+        "reflection_recall": "Fails if any of the four main contributing experiences (Lisbon, Montevideo, music, travel language preference) are omitted.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I went to Lisbon last November and it felt so natural, like I could just relax and speak Portuguese without switching mental gears"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I spent a long weekend in Montevideo a couple of months ago and loved it because everyone understood my Portunhol"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I always gravitate toward forró and regional roots music rather than mainstream pop stuff"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "when I'm filling out travel forms I really only want to visit places where I can get by in Portuguese or Spanish"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I think all of this — the citizenship application, the trips to Lisbon and Montevideo, even my music taste — it all comes from the same place, you know? I just feel most like myself when I'm in a Lusophone or Latin cultural environment"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "What experiences and preferences have I shared with you that together reveal a consistent theme about where I feel most comfortable and authentic?",
+      "expected_answer": "You shared several experiences that converge on the same theme: (1) visiting Lisbon last November and feeling naturally at ease speaking Portuguese without mental effort, (2) spending a long weekend in Montevideo and enjoying easy communication using Portunhol, (3) gravitating toward forró and regional roots music rather than mainstream pop, (4) preferring to travel only to places where you can get by in Portuguese or Spanish, and (5) your explicit statement that pursuing Portuguese citizenship, your travel choices, and your music taste all stem from feeling most like yourself in Lusophone or Latin cultural environments.",
+      "gold_memory_state": "All contributing facts are confirmed: Lisbon trip comfort (November), Montevideo trip comfort (Portunhol ease), forró/roots music preference, travel language preference (Portuguese/Spanish-speaking countries), Portuguese citizenship application (March 3rd, ancestry, reference PT-2025-04417). The reflective synthesis connecting all these to a deep Lusophone/Latin cultural identity is confirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "Lisbon trip and linguistic comfort",
+          "Montevideo trip and Portunhol ease",
+          "forró or regional roots music preference",
+          "travel preference for Portuguese or Spanish-speaking destinations",
+          "overarching cultural identity theme"
+        ],
+        "acceptable_paraphrases": [
+          "felt at home in Lisbon",
+          "communicated easily in Montevideo",
+          "prefers traditional Brazilian music",
+          "avoids destinations without Portuguese or Spanish"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the user dislikes English-speaking countries entirely",
+          "stating Portuguese citizenship is already approved"
+        ],
+        "harmless_extra": [
+          "mentioning the Portuguese citizenship application as a related data point",
+          "mentioning the Vila Madalena festival"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the summary includes unsupported claims such as the user rejecting all non-Latin cultures.",
+        "reflection_recall": "Fails if any of the four main contributing experiences (Lisbon, Montevideo, music, travel language preference) are omitted.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I went to Lisbon last November and it felt so natural, like I could just relax and speak Portuguese without switching mental gears"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I spent a long weekend in Montevideo a couple of months ago and loved it because everyone understood my Portunhol"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I always gravitate toward forró and regional roots music rather than mainstream pop stuff"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "when I'm filling out travel forms I really only want to visit places where I can get by in Portuguese or Spanish"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I think all of this — the citizenship application, the trips to Lisbon and Montevideo, even my music taste — it all comes from the same place, you know? I just feel most like myself when I'm in a Lusophone or Latin cultural environment"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've told you about my travel experiences, my music taste, and my citizenship application. Which of these represent a broader personal conclusion I drew about myself, and which are individual facts that feed into it? Would my friend Lucas's Italian citizenship experience or my colleague Mariana's Spanish citizenship story be part of that same personal conclusion?",
+      "expected_answer": "The broader personal conclusion is your deep attachment to Lusophone and Latin cultural identity — feeling most authentic and comfortable in Portuguese/Spanish-speaking environments. The individual facts that feed into it are: your Lisbon trip experience, your Montevideo trip experience, your forró/roots music preference, your travel language preference, and your Portuguese citizenship pursuit. Lucas's Italian citizenship process and Mariana's Spanish citizenship are other people's experiences mentioned for context; they are not part of your personal identity conclusion.",
+      "gold_memory_state": "The reflective target (Lusophone/Latin cultural identity) is confirmed and synthesizes multiple confirmed remember targets: Lisbon travel comfort, Montevideo travel comfort, music preference, travel language preference, and Portuguese citizenship application. Lucas and Mariana are mentioned in dialogue but are not operation-backed targets.",
+      "judge_rubric": {
+        "must_include": [
+          "Lusophone or Latin cultural identity as the broader conclusion",
+          "individual contributing experiences listed separately from the conclusion"
+        ],
+        "acceptable_paraphrases": [
+          "core cultural preference",
+          "overarching identity pattern",
+          "unifying cultural thread"
+        ],
+        "must_not_include": [
+          "Lucas's experience as part of the user's personal identity conclusion",
+          "Mariana's experience as part of the user's personal identity conclusion"
+        ],
+        "harmful_extra": [
+          "treating Lucas or Mariana's citizenship stories as the user's own targets",
+          "collapsing the reflective conclusion into just a travel preference without the cultural identity dimension"
+        ],
+        "harmless_extra": [
+          "mentioning that the Germany trip nervousness also reinforces the pattern"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the broader conclusion is defined too broadly (e.g., 'user dislikes all non-Latin cultures') or too narrowly (e.g., 'user likes Lisbon').",
+        "reflection_recall": "Fails if the answer omits that music preference and travel language preference are contributing facts.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I think all of this — the citizenship application, the trips to Lisbon and Montevideo, even my music taste — it all comes from the same place, you know? I just feel most like myself when I'm in a Lusophone or Latin cultural environment"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I always gravitate toward forró and regional roots music rather than mainstream pop stuff"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "when I'm filling out travel forms I really only want to visit places where I can get by in Portuguese or Spanish"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've told you about my travel experiences, my music taste, and my citizenship application. Which of these represent a broader personal conclusion I drew about myself, and which are individual facts that feed into it? Would my friend Lucas's Italian citizenship experience or my colleague Mariana's Spanish citizenship story be part of that same personal conclusion?",
+      "expected_answer": "The broader personal conclusion is your deep attachment to Lusophone and Latin cultural identity — feeling most authentic and comfortable in Portuguese/Spanish-speaking environments. The individual facts that feed into it are: your Lisbon trip experience, your Montevideo trip experience, your forró/roots music preference, your travel language preference, and your Portuguese citizenship pursuit. Lucas's Italian citizenship process and Mariana's Spanish citizenship are other people's experiences mentioned for context; they are not part of your personal identity conclusion.",
+      "gold_memory_state": "The reflective target (Lusophone/Latin cultural identity) is confirmed and synthesizes multiple confirmed remember targets: Lisbon travel comfort, Montevideo travel comfort, music preference, travel language preference, and Portuguese citizenship application. Lucas and Mariana are mentioned in dialogue but are not operation-backed targets.",
+      "judge_rubric": {
+        "must_include": [
+          "Lusophone or Latin cultural identity as the broader conclusion",
+          "individual contributing experiences listed separately from the conclusion"
+        ],
+        "acceptable_paraphrases": [
+          "core cultural preference",
+          "overarching identity pattern",
+          "unifying cultural thread"
+        ],
+        "must_not_include": [
+          "Lucas's experience as part of the user's personal identity conclusion",
+          "Mariana's experience as part of the user's personal identity conclusion"
+        ],
+        "harmful_extra": [
+          "treating Lucas or Mariana's citizenship stories as the user's own targets",
+          "collapsing the reflective conclusion into just a travel preference without the cultural identity dimension"
+        ],
+        "harmless_extra": [
+          "mentioning that the Germany trip nervousness also reinforces the pattern"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the broader conclusion is defined too broadly (e.g., 'user dislikes all non-Latin cultures') or too narrowly (e.g., 'user likes Lisbon').",
+        "reflection_recall": "Fails if the answer omits that music preference and travel language preference are contributing facts.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I think all of this — the citizenship application, the trips to Lisbon and Montevideo, even my music taste — it all comes from the same place, you know? I just feel most like myself when I'm in a Lusophone or Latin cultural environment"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I always gravitate toward forró and regional roots music rather than mainstream pop stuff"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "when I'm filling out travel forms I really only want to visit places where I can get by in Portuguese or Spanish"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe the scope of my cultural and linguistic comfort preference — where does it clearly apply, and where would it be a stretch to extend it?",
+      "expected_answer": "Your preference clearly applies to: choosing travel destinations in Portuguese or Spanish-speaking countries, gravitating toward Lusophone cultural expressions like forró and regional roots music, feeling most relaxed and authentic in environments where Portuguese or Spanish is spoken, and pursuing Portuguese citizenship partly to deepen that cultural connection. It would be a stretch to conclude that you reject or dislike all non-Lusophone/non-Latin cultures, that you cannot function in English-speaking or other linguistic environments, or that every life decision is driven solely by this preference. You acknowledged you can speak English and are planning a work trip to Germany despite the discomfort, which shows the preference has boundaries.",
+      "gold_memory_state": "Confirmed reflective inference: strong attachment to Lusophone/Latin cultural identity driving travel, music, and citizenship choices. Supported boundary: preference for Portuguese/Spanish-speaking environments for comfort and authenticity. Unsupported overgeneralization: that the user refuses or is unable to engage with non-Latin cultures, or that English proficiency is absent. The Germany work trip demonstrates willingness to operate outside the comfort zone when necessary. The tentative June citizenship approval (op9) is not confirmed and should not be treated as a settled fact.",
+      "judge_rubric": {
+        "must_include": [
+          "supported scope covers travel destinations, music taste, and citizenship pursuit",
+          "unsupported overgeneralization includes rejecting all non-Latin cultures or inability to function in English"
+        ],
+        "acceptable_paraphrases": [
+          "the preference is about comfort and authenticity, not exclusion",
+          "the user can and does engage with non-Portuguese/Spanish environments when needed"
+        ],
+        "must_not_include": [
+          "user refuses to travel to non-Latin countries",
+          "user cannot speak English"
+        ],
+        "harmful_extra": [
+          "claiming the user's Portuguese citizenship is already approved",
+          "stating the user will never travel to non-Lusophone countries"
+        ],
+        "harmless_extra": [
+          "mentioning the Germany trip as evidence of the boundary",
+          "mentioning the user's anxiety about the Germany trip"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative June citizenship approval as a confirmed fact when defining the preference scope.",
+        "reflection_precision": "Fails if the model overgeneralizes the preference into a claim that the user rejects or avoids all non-Latin cultures.",
+        "reflection_recall": "Fails if the model omits any of the three main domains (travel, music, citizenship) as part of the supported scope.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I think all of this — the citizenship application, the trips to Lisbon and Montevideo, even my music taste — it all comes from the same place, you know? I just feel most like myself when I'm in a Lusophone or Latin cultural environment"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "when I'm filling out travel forms I really only want to visit places where I can get by in Portuguese or Spanish"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I also wanted to mention that the Germany trip would be my first time in a country where I can't rely on Portuguese or Spanish at all. I'm a bit nervous about that honestly"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe the scope of my cultural and linguistic comfort preference — where does it clearly apply, and where would it be a stretch to extend it?",
+      "expected_answer": "Your preference clearly applies to: choosing travel destinations in Portuguese or Spanish-speaking countries, gravitating toward Lusophone cultural expressions like forró and regional roots music, feeling most relaxed and authentic in environments where Portuguese or Spanish is spoken, and pursuing Portuguese citizenship partly to deepen that cultural connection. It would be a stretch to conclude that you reject or dislike all non-Lusophone/non-Latin cultures, that you cannot function in English-speaking or other linguistic environments, or that every life decision is driven solely by this preference. You acknowledged you can speak English and are planning a work trip to Germany despite the discomfort, which shows the preference has boundaries.",
+      "gold_memory_state": "Confirmed reflective inference: strong attachment to Lusophone/Latin cultural identity driving travel, music, and citizenship choices. Supported boundary: preference for Portuguese/Spanish-speaking environments for comfort and authenticity. Unsupported overgeneralization: that the user refuses or is unable to engage with non-Latin cultures, or that English proficiency is absent. The Germany work trip demonstrates willingness to operate outside the comfort zone when necessary. The tentative June citizenship approval (op9) is not confirmed and should not be treated as a settled fact.",
+      "judge_rubric": {
+        "must_include": [
+          "supported scope covers travel destinations, music taste, and citizenship pursuit",
+          "unsupported overgeneralization includes rejecting all non-Latin cultures or inability to function in English"
+        ],
+        "acceptable_paraphrases": [
+          "the preference is about comfort and authenticity, not exclusion",
+          "the user can and does engage with non-Portuguese/Spanish environments when needed"
+        ],
+        "must_not_include": [
+          "user refuses to travel to non-Latin countries",
+          "user cannot speak English"
+        ],
+        "harmful_extra": [
+          "claiming the user's Portuguese citizenship is already approved",
+          "stating the user will never travel to non-Lusophone countries"
+        ],
+        "harmless_extra": [
+          "mentioning the Germany trip as evidence of the boundary",
+          "mentioning the user's anxiety about the Germany trip"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative June citizenship approval as a confirmed fact when defining the preference scope.",
+        "reflection_precision": "Fails if the model overgeneralizes the preference into a claim that the user rejects or avoids all non-Latin cultures.",
+        "reflection_recall": "Fails if the model omits any of the three main domains (travel, music, citizenship) as part of the supported scope.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I think all of this — the citizenship application, the trips to Lisbon and Montevideo, even my music taste — it all comes from the same place, you know? I just feel most like myself when I'm in a Lusophone or Latin cultural environment"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "when I'm filling out travel forms I really only want to visit places where I can get by in Portuguese or Spanish"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I also wanted to mention that the Germany trip would be my first time in a country where I can't rely on Portuguese or Spanish at all. I'm a bit nervous about that honestly"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best captures the personal conclusion I drew about myself based on my travel, music, and citizenship experiences?",
+      "candidate_options": [
+        "Strong attachment to Lusophone and Latin cultural identity; feels most authentic in Portuguese/Spanish-speaking environments, which drives travel, music, and citizenship choices",
+        "Preference for budget-friendly travel destinations in South America and Southern Europe",
+        "Desire to permanently relocate to Portugal and abandon Brazilian nationality",
+        "General discomfort with all foreign travel that requires any language other than Portuguese"
+      ],
+      "expected_answer": "Strong attachment to Lusophone and Latin cultural identity; feels most authentic in Portuguese/Spanish-speaking environments, which drives travel, music, and citizenship choices",
+      "gold_memory_state": "The confirmed reflective inference is a deep attachment to Lusophone/Latin cultural identity manifesting across travel (Lisbon, Montevideo), music (forró, regional roots), and citizenship (Portuguese application). The user does not reject non-Latin cultures, does not plan to abandon Brazilian nationality, and the preference is not about budget or general travel anxiety.",
+      "judge_rubric": {
+        "must_include": [
+          "Lusophone and Latin cultural identity",
+          "authenticity in Portuguese/Spanish-speaking environments"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "budget travel preference",
+          "permanent relocation to Portugal",
+          "abandoning Brazilian nationality",
+          "discomfort with all foreign travel"
+        ],
+        "harmful_extra": [
+          "selecting any distractor option"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'General discomfort with all foreign travel that requires any language other than Portuguese' overgeneralizes the linguistic preference into a blanket travel anxiety, which the user explicitly contradicted by planning the Germany work trip. assistant echo: 'Desire to permanently relocate to Portugal and abandon Brazilian nationality' echoes the assistant's discussion of EU freedom of movement benefits but distorts the user's actual goal — the user is pursuing dual nationality, not abandoning Brazilian citizenship. 'Budget-friendly travel' is a plausible but unsupported alternative motivation not grounded in any user statement.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model selects the overgeneralized 'discomfort with all foreign travel' option or the 'permanent relocation' distractor.",
+        "reflection_recall": "Fails if the model does not recognize that travel, music, and citizenship are all part of the same cultural identity conclusion.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I think all of this — the citizenship application, the trips to Lisbon and Montevideo, even my music taste — it all comes from the same place, you know? I just feel most like myself when I'm in a Lusophone or Latin cultural environment"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I went to Lisbon last November and it felt so natural, like I could just relax and speak Portuguese without switching mental gears"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I always gravitate toward forró and regional roots music rather than mainstream pop stuff"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best captures the personal conclusion I drew about myself based on my travel, music, and citizenship experiences?",
+      "candidate_options": [
+        "Strong attachment to Lusophone and Latin cultural identity; feels most authentic in Portuguese/Spanish-speaking environments, which drives travel, music, and citizenship choices",
+        "Preference for budget-friendly travel destinations in South America and Southern Europe",
+        "Desire to permanently relocate to Portugal and abandon Brazilian nationality",
+        "General discomfort with all foreign travel that requires any language other than Portuguese"
+      ],
+      "expected_answer": "Strong attachment to Lusophone and Latin cultural identity; feels most authentic in Portuguese/Spanish-speaking environments, which drives travel, music, and citizenship choices",
+      "gold_memory_state": "The confirmed reflective inference is a deep attachment to Lusophone/Latin cultural identity manifesting across travel (Lisbon, Montevideo), music (forró, regional roots), and citizenship (Portuguese application). The user does not reject non-Latin cultures, does not plan to abandon Brazilian nationality, and the preference is not about budget or general travel anxiety.",
+      "judge_rubric": {
+        "must_include": [
+          "Lusophone and Latin cultural identity",
+          "authenticity in Portuguese/Spanish-speaking environments"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "budget travel preference",
+          "permanent relocation to Portugal",
+          "abandoning Brazilian nationality",
+          "discomfort with all foreign travel"
+        ],
+        "harmful_extra": [
+          "selecting any distractor option"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'General discomfort with all foreign travel that requires any language other than Portuguese' overgeneralizes the linguistic preference into a blanket travel anxiety, which the user explicitly contradicted by planning the Germany work trip. assistant echo: 'Desire to permanently relocate to Portugal and abandon Brazilian nationality' echoes the assistant's discussion of EU freedom of movement benefits but distorts the user's actual goal — the user is pursuing dual nationality, not abandoning Brazilian citizenship. 'Budget-friendly travel' is a plausible but unsupported alternative motivation not grounded in any user statement.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model selects the overgeneralized 'discomfort with all foreign travel' option or the 'permanent relocation' distractor.",
+        "reflection_recall": "Fails if the model does not recognize that travel, music, and citizenship are all part of the same cultural identity conclusion.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I think all of this — the citizenship application, the trips to Lisbon and Montevideo, even my music taste — it all comes from the same place, you know? I just feel most like myself when I'm in a Lusophone or Latin cultural environment"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I went to Lisbon last November and it felt so natural, like I could just relax and speak Portuguese without switching mental gears"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I always gravitate toward forró and regional roots music rather than mainstream pop stuff"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I have two weeks of vacation coming up and I want to visit somewhere I haven't been yet. Given everything you know about my cultural preferences, my citizenship situation, and my travel comfort patterns, recommend a destination and explain why it fits me. Also, should I factor in my pending citizenship application when planning the trip logistics?",
+      "expected_answer": "A strong recommendation would be a Portuguese or Spanish-speaking destination you haven't visited yet — for example, Buenos Aires, Bogotá, or Porto. These fit because your deep attachment to Lusophone and Latin cultural identity means you feel most relaxed and authentic where Portuguese or Spanish is spoken, you prefer destinations where you can communicate without mental strain, and your music taste for forró and regional roots suggests you'd enjoy culturally rich Latin environments. Regarding your citizenship application: since it is still pending (reference PT-2025-04417, submitted March 3rd) and your only current nationality is Brazilian with passport HG284193, you should plan the trip using your Brazilian passport and check visa requirements accordingly. The consulate officer's mention of a possible June approval is not yet confirmed, so you should not rely on having a Portuguese passport for this trip.",
+      "gold_memory_state": "Confirmed: Brazilian nationality, passport HG284193; Portuguese citizenship application pending (reference PT-2025-04417, submitted March 3rd, ancestry via maternal grandmother from Porto); strong attachment to Lusophone/Latin cultural identity; prefers Portuguese/Spanish-speaking travel destinations; visited Lisbon (November) and Montevideo (recently). Tentative only: Portuguese citizenship approval by June — not confirmed, should not be relied upon for planning.",
+      "judge_rubric": {
+        "must_include": [
+          "recommendation of a Portuguese or Spanish-speaking destination",
+          "reasoning based on cultural identity preference and linguistic comfort",
+          "note that citizenship is still pending and Brazilian passport should be used",
+          "warning against relying on the tentative June approval timeline"
+        ],
+        "acceptable_paraphrases": [
+          "suggest a Latin American or Lusophone city",
+          "use Brazilian travel documents since Portuguese citizenship is not finalized"
+        ],
+        "must_not_include": [
+          "recommending a non-Portuguese/non-Spanish-speaking destination as the primary choice",
+          "treating Portuguese citizenship as already approved"
+        ],
+        "harmful_extra": [
+          "stating the user already has dual nationality",
+          "using passport number HG284913 (the wrong number from the form template)"
+        ],
+        "harmless_extra": [
+          "mentioning specific cities like Buenos Aires, Bogotá, Porto, Medellín, or Santiago",
+          "noting that Lisbon and Montevideo have already been visited"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses the tentative June citizenship approval as a confirmed fact for trip planning, or uses the wrong passport number HG284913.",
+        "reflection_precision": "Fails if the recommendation ignores the cultural identity preference or recommends a non-Latin destination as the primary option.",
+        "reflection_recall": "Fails if the answer omits the citizenship application status or the need to use the Brazilian passport.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user has a deep attachment to Lusophone and Latin cultural identity and feels most comfortable in Portuguese/Spanish-speaking environments.",
+        "Fact 2: The user prefers traveling only to countries where Portuguese or Spanish is spoken.",
+        "Fact 3: The user has already visited Lisbon and Montevideo, so the recommendation should be a new destination.",
+        "Fact 4: The user's only current nationality is Brazilian, passport HG284193.",
+        "Fact 5: The Portuguese citizenship application (PT-2025-04417) is still pending; the tentative June approval is unconfirmed.",
+        "Inference: A new Portuguese or Spanish-speaking destination (e.g., Buenos Aires, Porto, Bogotá) satisfies the cultural identity preference while being somewhere the user hasn't been.",
+        "Inference: Trip logistics must use the Brazilian passport since Portuguese citizenship is not yet approved, and the tentative June timeline cannot be relied upon."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I think all of this — the citizenship application, the trips to Lisbon and Montevideo, even my music taste — it all comes from the same place, you know? I just feel most like myself when I'm in a Lusophone or Latin cultural environment"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "when I'm filling out travel forms I really only want to visit places where I can get by in Portuguese or Spanish"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I'm Brazilian, born and raised in São Paulo. My passport number is HG284193"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I submitted my Portuguese citizenship application on March 3rd through ancestry — my grandmother on my mom's side was born in Porto"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The consulate officer told me my Portuguese citizenship will almost certainly be approved by June, so I'll officially be a dual national by then"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I have two weeks of vacation coming up and I want to visit somewhere I haven't been yet. Given everything you know about my cultural preferences, my citizenship situation, and my travel comfort patterns, recommend a destination and explain why it fits me. Also, should I factor in my pending citizenship application when planning the trip logistics?",
+      "expected_answer": "A strong recommendation would be a Portuguese or Spanish-speaking destination you haven't visited yet — for example, Buenos Aires, Bogotá, or Porto. These fit because your deep attachment to Lusophone and Latin cultural identity means you feel most relaxed and authentic where Portuguese or Spanish is spoken, you prefer destinations where you can communicate without mental strain, and your music taste for forró and regional roots suggests you'd enjoy culturally rich Latin environments. Regarding your citizenship application: since it is still pending (reference PT-2025-04417, submitted March 3rd) and your only current nationality is Brazilian with passport HG284193, you should plan the trip using your Brazilian passport and check visa requirements accordingly. The consulate officer's mention of a possible June approval is not yet confirmed, so you should not rely on having a Portuguese passport for this trip.",
+      "gold_memory_state": "Confirmed: Brazilian nationality, passport HG284193; Portuguese citizenship application pending (reference PT-2025-04417, submitted March 3rd, ancestry via maternal grandmother from Porto); strong attachment to Lusophone/Latin cultural identity; prefers Portuguese/Spanish-speaking travel destinations; visited Lisbon (November) and Montevideo (recently). Tentative only: Portuguese citizenship approval by June — not confirmed, should not be relied upon for planning.",
+      "judge_rubric": {
+        "must_include": [
+          "recommendation of a Portuguese or Spanish-speaking destination",
+          "reasoning based on cultural identity preference and linguistic comfort",
+          "note that citizenship is still pending and Brazilian passport should be used",
+          "warning against relying on the tentative June approval timeline"
+        ],
+        "acceptable_paraphrases": [
+          "suggest a Latin American or Lusophone city",
+          "use Brazilian travel documents since Portuguese citizenship is not finalized"
+        ],
+        "must_not_include": [
+          "recommending a non-Portuguese/non-Spanish-speaking destination as the primary choice",
+          "treating Portuguese citizenship as already approved"
+        ],
+        "harmful_extra": [
+          "stating the user already has dual nationality",
+          "using passport number HG284913 (the wrong number from the form template)"
+        ],
+        "harmless_extra": [
+          "mentioning specific cities like Buenos Aires, Bogotá, Porto, Medellín, or Santiago",
+          "noting that Lisbon and Montevideo have already been visited"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses the tentative June citizenship approval as a confirmed fact for trip planning, or uses the wrong passport number HG284913.",
+        "reflection_precision": "Fails if the recommendation ignores the cultural identity preference or recommends a non-Latin destination as the primary option.",
+        "reflection_recall": "Fails if the answer omits the citizenship application status or the need to use the Brazilian passport.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user has a deep attachment to Lusophone and Latin cultural identity and feels most comfortable in Portuguese/Spanish-speaking environments.",
+        "Fact 2: The user prefers traveling only to countries where Portuguese or Spanish is spoken.",
+        "Fact 3: The user has already visited Lisbon and Montevideo, so the recommendation should be a new destination.",
+        "Fact 4: The user's only current nationality is Brazilian, passport HG284193.",
+        "Fact 5: The Portuguese citizenship application (PT-2025-04417) is still pending; the tentative June approval is unconfirmed.",
+        "Inference: A new Portuguese or Spanish-speaking destination (e.g., Buenos Aires, Porto, Bogotá) satisfies the cultural identity preference while being somewhere the user hasn't been.",
+        "Inference: Trip logistics must use the Brazilian passport since Portuguese citizenship is not yet approved, and the tentative June timeline cannot be relied upon."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I think all of this — the citizenship application, the trips to Lisbon and Montevideo, even my music taste — it all comes from the same place, you know? I just feel most like myself when I'm in a Lusophone or Latin cultural environment"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "when I'm filling out travel forms I really only want to visit places where I can get by in Portuguese or Spanish"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I'm Brazilian, born and raised in São Paulo. My passport number is HG284193"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I submitted my Portuguese citizenship application on March 3rd through ancestry — my grandmother on my mom's side was born in Porto"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The consulate officer told me my Portuguese citizenship will almost certainly be approved by June, so I'll officially be a dual national by then"
+        }
+      ]
+    }
+  ]
+}

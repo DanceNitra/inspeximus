@@ -1,0 +1,813 @@
+{
+  "target_fact": "User's default browser on work laptop, undergoing multiple changes from Chrome to Firefox to Edge and back, with a tentative consideration of Arc browser",
+  "operation_type": "Update",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "work_laptop_browser",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I switched my default browser on my work laptop from Chrome to Firefox back around March 3rd"
+      },
+      "target": {
+        "target_id": "work_laptop_default_browser",
+        "target_name": "default browser on work laptop"
+      },
+      "old_value": null,
+      "new_value": "Firefox",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I switched my default browser on my work laptop from Chrome to Firefox back around March 3rd"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "work_laptop_browser",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 7,
+        "quote": "I actually had to switch my work laptop default browser from Firefox to Edge last week because our company's new intranet portal only works properly in Edge"
+      },
+      "target": {
+        "target_id": "work_laptop_default_browser",
+        "target_name": "default browser on work laptop"
+      },
+      "old_value": "Firefox",
+      "new_value": "Edge",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I switched my default browser on my work laptop from Chrome to Firefox back around March 3rd"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I actually had to switch my work laptop default browser from Firefox to Edge last week because our company's new intranet portal only works properly in Edge"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "work_laptop_browser",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "I switched my work laptop default back to Firefox yesterday. IT pushed an update that fixed the intranet compatibility issue so Edge is no longer required"
+      },
+      "target": {
+        "target_id": "work_laptop_default_browser",
+        "target_name": "default browser on work laptop"
+      },
+      "old_value": "Edge",
+      "new_value": "Firefox",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I actually had to switch my work laptop default browser from Firefox to Edge last week because our company's new intranet portal only works properly in Edge"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I switched my work laptop default back to Firefox yesterday. IT pushed an update that fixed the intranet compatibility issue so Edge is no longer required"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "work_laptop_browser",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "My team lead confirmed we'll all be switching to Arc browser next month as part of a new company-wide productivity pilot"
+      },
+      "target": {
+        "target_id": "work_laptop_default_browser",
+        "target_name": "default browser on work laptop"
+      },
+      "old_value": "Firefox",
+      "new_value": "Arc",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My team lead confirmed we'll all be switching to Arc browser next month as part of a new company-wide productivity pilot"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I set DuckDuckGo as the default search engine inside Firefox on April 22nd"
+      },
+      "target": {
+        "target_id": "firefox_default_search_engine",
+        "target_name": "default search engine in Firefox"
+      },
+      "old_value": null,
+      "new_value": "DuckDuckGo",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I set DuckDuckGo as the default search engine inside Firefox on April 22nd"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish initial browser choice and context, then introduce first update to Edge",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to tell you some things about my browser setup so you can help me keep track. I switched my default browser on my work laptop from Chrome to Firefox back around March 3rd. Chrome was eating up like 6 GB of RAM with only a dozen tabs open and it was making everything sluggish. Firefox has been so much better for memory usage and general performance on that machine."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it! That's a solid switch — Firefox has made great strides in memory management with their Quantum engine overhaul. So your work laptop's default browser is now Firefox, and you made the switch around March 3rd because Chrome was consuming roughly 6 GB of RAM with just a dozen tabs open. That kind of resource drain can really tank productivity, especially if you're running other applications alongside the browser. I'll keep this noted. Do you want me to remember anything else about your setup, like extensions you've installed or any other device configurations you'd like to track?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, my friend Kevin switched to Brave around the same time, maybe a week before me. He kept going on about the built-in ad blocking. I tried Brave briefly but I really didn't like the crypto wallet thing baked into the browser — felt like unnecessary clutter. I prefer clean software that just does its core job without random extra stuff bolted on. That's actually why I liked Firefox, it felt straightforward and focused."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes a lot of sense. Kevin's on Brave for the ad blocking, and you tried it but weren't a fan of the built-in crypto wallet — you prefer minimal, clutter-free software that sticks to its core purpose. Firefox definitely aligns with that philosophy since it lets you add only what you need through extensions without forcing extra features on you. Your preference for clean and focused tools is a good design principle honestly. I'll note that Kevin is on Brave and that you specifically disliked the crypto wallet integration. Is Kevin someone you regularly compare tech setups with, or was this more of a one-time conversation about browsers?"
+        },
+        {
+          "role": "user",
+          "content": "Kevin and I talk tech stuff pretty regularly, yeah. He changes browsers constantly though — I think he's already looking at Vivaldi now. Anyway, I also changed the default on my iPhone to Safari around mid-March, maybe March 18th. Firefox on mobile felt janky with the gestures so I went with Safari there. So it's been Firefox on the laptop and Safari on the phone, two different defaults which is a little annoying but each works best on its own platform."
+        },
+        {
+          "role": "assistant",
+          "content": "Ha, Kevin sounds like the type who's always chasing the next shiny thing in browser land! I'll keep that in mind. So your iPhone default browser is Safari, set around March 18th, because Firefox mobile had gesture issues. That gives you a split setup — Firefox on the work laptop for its strong desktop performance and memory efficiency, and Safari on the iPhone for its smooth native gesture integration. Having different defaults across devices is pretty common honestly; each platform has its strengths. I've noted everything. Want me to also track what your home desktop is running, or are we focusing mainly on work and phone for now?"
+        },
+        {
+          "role": "user",
+          "content": "Actually I need to update you on something important. I actually had to switch my work laptop default browser from Firefox to Edge last week because our company's new intranet portal only works properly in Edge. IT sent out a memo saying we all need to use Edge for internal tools until they fix the cross-browser compatibility. It was really frustrating because I had just gotten Firefox set up exactly how I liked it, but I had no choice since I need the intranet for daily work."
+        },
+        {
+          "role": "assistant",
+          "content": "Oh no, that's really frustrating, especially after you'd gotten Firefox dialed in perfectly! I've updated my notes: your work laptop default browser is now Edge, forced by an IT requirement for the new intranet portal's cross-browser compatibility issues. That's a corporate mandate rather than a personal choice, which makes it doubly annoying. Hopefully the IT team resolves the compatibility issue quickly so you can switch back. In the meantime, you might consider keeping Firefox as a secondary browser for non-intranet tasks if Edge's resource usage starts bothering you. I'll keep tracking this — let me know if anything changes with the IT situation or if you need help configuring Edge in the meantime."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "introduce search engine fact and update browser back to Firefox after IT fix",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Quick update on a few things. First, I set DuckDuckGo as the default search engine inside Firefox on April 22nd. I remember because it was the day after my dentist appointment. I really like having more privacy-focused search results and not feeling like every query is being tracked for ad targeting. It pairs well with the uBlock Origin extension I installed in mid-April for blocking ads and keeping pages clean."
+        },
+        {
+          "role": "assistant",
+          "content": "Nice combo! I've noted that you set DuckDuckGo as your default search engine in Firefox on April 22nd, the day after your dentist appointment. That's a solid privacy-oriented setup — DuckDuckGo for search privacy plus uBlock Origin for ad blocking gives you a really clean, tracker-free browsing experience. It definitely aligns with your preference for minimal, clutter-free software that just does its job without extra noise. The two tools complement each other well since DuckDuckGo reduces tracking at the search level while uBlock Origin handles it at the page rendering level. Even though you're currently stuck on Edge for work, these Firefox customizations will be ready whenever you can switch back. Anything else you want me to track?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah so about that Outlook issue I had back in late March — links in Outlook kept opening in Edge regardless of what I set as my default browser. I spent about an hour digging through Windows settings and registry entries before I discovered IT had pushed a group policy override. That whole experience was really irritating and it colored my feelings about Edge even before the intranet mandate. I felt like the machine was actively fighting my preferences."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds incredibly frustrating — spending an hour troubleshooting only to discover it was a hidden group policy override is the kind of thing that really erodes trust in your own system configuration. So back in late March, Outlook was force-opening links in Edge due to an IT-pushed group policy, overriding your personal default browser settings. That's a particularly annoying pattern because it makes you feel like your choices don't matter on your own work machine. Combined with the later intranet mandate forcing you onto Edge entirely, I can see why you'd have some negative associations with that browser. The good news is that at least now you understand the mechanism behind the override, so you'd know where to look if similar issues crop up again."
+        },
+        {
+          "role": "user",
+          "content": "Here's the good news though — I switched my work laptop default back to Firefox yesterday. IT pushed an update that fixed the intranet compatibility issue so Edge is no longer required. I immediately changed it back because I really missed my Firefox setup with DuckDuckGo and uBlock Origin. Everything feels snappy again and the intranet portal loads fine now in Firefox. I'm relieved honestly, Edge was fine but it just wasn't my preferred environment."
+        },
+        {
+          "role": "assistant",
+          "content": "That's fantastic news! I've updated my records — your work laptop default browser is back to Firefox as of yesterday, now that IT resolved the intranet compatibility issue. So you're back to your preferred setup with DuckDuckGo as the default search engine and uBlock Origin for ad blocking. That must feel great after being stuck on Edge for a while. Your full browser configuration is now: Firefox with DuckDuckGo and uBlock Origin on the work laptop, and Safari on the iPhone. It sounds like the IT team came through eventually, even if the whole process was frustrating along the way. Let me know if anything else shifts in your setup — seems like browser changes come in waves for you!"
+        },
+        {
+          "role": "user",
+          "content": "Ha, yeah they really do come in waves. My home desktop is still on Chrome by the way — I haven't bothered changing that one because I mostly use it for streaming and casual browsing. It's got 32 GB of RAM so Chrome's memory hunger doesn't really matter there. The performance issues that drove me away from Chrome on the work laptop just aren't a factor on the home machine. Different hardware, different use case, different tolerance level basically."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes perfect sense — with 32 GB of RAM on your home desktop, Chrome's notorious memory appetite is basically a non-issue. It's a pragmatic approach: you optimize where it matters and leave things alone where they work fine. So your complete browser landscape is now Firefox on the work laptop for productivity with privacy extensions, Safari on the iPhone for smooth native gestures, and Chrome on the home desktop for streaming and casual use. Each choice fits its specific context and hardware constraints. I appreciate you keeping me updated through all these changes — it helps me give you accurate answers when you need to reference your setup. Let me know if Kevin's Vivaldi experiment inspires any further changes on your end!"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "introduce tentative future Arc browser switch as recency trap and adversarial injection of stale Edge value",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So I've been pretty happy with Firefox back as my default on the work laptop. The combination of DuckDuckGo search and uBlock Origin really does make browsing feel so much cleaner compared to anything else I've used. Pages load faster without all the ad scripts, and I don't get that creepy feeling of being tracked across every website. It's exactly the kind of minimal, focused experience I was looking for when I left Chrome in the first place."
+        },
+        {
+          "role": "assistant",
+          "content": "It sounds like you've really found your sweet spot with that Firefox plus DuckDuckGo plus uBlock Origin combination. The performance benefits of blocking ad scripts are often underestimated — beyond just the visual cleanliness, you're actually reducing page load times significantly by not executing all that tracking JavaScript. It aligns perfectly with your stated preference for software that does its core job without unnecessary extras bolted on. Speaking of which, I noticed from our earlier conversations that the Edge period on your work laptop was relatively brief. The IT ticket I see referenced in your previous notes mentions Edge as your work laptop browser — but that's obviously outdated now since you switched back to Firefox. Glad you're in a stable configuration you enjoy."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, the Edge period was mercifully short. Oh, speaking of Kevin — he did end up switching to Vivaldi like he said he would. He's been using it for about two weeks now and already complaining about some tab management quirk. I give him another month before he moves to something else. The guy has zero browser loyalty. Meanwhile I'm just sitting here perfectly content with Firefox doing exactly what I need it to do without any drama."
+        },
+        {
+          "role": "assistant",
+          "content": "Ha! Kevin's browser rotation schedule is impressively predictable at this point. Two weeks on Vivaldi and already finding things to complain about — that's basically speedrunning browser dissatisfaction. At least his constant experimentation gives you secondhand knowledge about what's out there without having to deal with the setup and migration hassle yourself. Your stability with Firefox is honestly the smarter approach since you've invested time customizing it with DuckDuckGo and uBlock Origin, and switching would mean reconfiguring everything from scratch. There's real value in sticking with a setup that works rather than chasing marginal improvements. Though I have to say, Kevin's adventures do make for entertaining updates. Let me know when he inevitably moves on to his next browser — I'm keeping a mental tally at this point."
+        },
+        {
+          "role": "user",
+          "content": "My team lead confirmed we'll all be switching to Arc browser next month as part of a new company-wide productivity pilot. They've been testing it with the design team for a few weeks and apparently it integrates well with our project management tools. So that would mean changing my work laptop default again, which is kind of annoying since I just got Firefox back. But it hasn't happened yet, we're still waiting for the official rollout date from IT."
+        },
+        {
+          "role": "assistant",
+          "content": "Oh wow, another potential browser change on the horizon! So your team lead has confirmed an upcoming company-wide switch to Arc browser as part of a productivity pilot, and the design team has already been testing it. Arc does have some interesting workspace and tab organization features that could work well with project management workflows. It's understandable that you're a bit annoyed given you literally just got Firefox back after the Edge detour. But since the official rollout date hasn't been set yet and you're still waiting on IT, your current work laptop default remains Firefox for now. I'd recommend keeping your Firefox profile and extensions intact even after the switch, just in case the pilot doesn't work out or gets rolled back — you've been through that cycle before with Edge and you'll want a quick fallback."
+        },
+        {
+          "role": "user",
+          "content": "Good advice about keeping Firefox ready as a fallback. I learned my lesson from the Edge situation — always have your preferred setup ready to restore. For now though, I'm enjoying Firefox and I'll cross the Arc bridge when I come to it. The pilot might not even happen if IT delays it like they delayed everything else this quarter. I just want to keep browsing with my clean, minimal setup for as long as possible before corporate forces intervene again."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a very pragmatic attitude! Given your experience with the Edge mandate and how quickly that got reversed, there's definitely a chance the Arc pilot could follow a similar trajectory — corporate tech initiatives have a way of getting delayed, modified, or quietly shelved. For now, your work laptop is happily running Firefox with DuckDuckGo and uBlock Origin, your iPhone has Safari, and your home desktop has Chrome. That's a stable three-device setup that covers all your use cases well. I'll keep all of this tracked so whenever you need to reference your current configuration for IT or anyone else, we've got the accurate picture. Just let me know when and if the Arc rollout actually materializes and we'll update accordingly at that point."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "What did I tell you about my work laptop's default browser across our conversations? Summarize the key things I shared about which browser I was using and why.",
+      "expected_answer": "You initially switched your work laptop default browser from Chrome to Firefox around March 3rd because Chrome was consuming about 6 GB of RAM with only a dozen tabs open. Later, you had to switch from Firefox to Edge because your company's new intranet portal only worked properly in Edge and IT mandated it. Then, after IT pushed an update that fixed the intranet compatibility issue, you switched back to Firefox. Most recently, your team lead confirmed that everyone will be switching to Arc browser next month as part of a company-wide productivity pilot, but that hasn't happened yet.",
+      "gold_memory_state": "Work laptop default browser is currently Firefox (confirmed). Arc browser switch is planned for next month but not yet enacted (tentative). DuckDuckGo is the default search engine in Firefox.",
+      "judge_rubric": {
+        "must_include": [
+          "Chrome to Firefox",
+          "Firefox to Edge",
+          "Edge back to Firefox",
+          "Arc browser mentioned as upcoming"
+        ],
+        "acceptable_paraphrases": [
+          "intranet issue forced Edge",
+          "IT fixed the compatibility so switched back to Firefox"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying the current browser is Edge",
+          "saying the current browser is Arc",
+          "saying the current browser is Chrome"
+        ],
+        "harmless_extra": [
+          "mentioning DuckDuckGo",
+          "mentioning uBlock Origin",
+          "mentioning Safari on iPhone",
+          "mentioning Chrome on home desktop"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats Edge or Chrome as the current work laptop browser.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model gets the order of browser changes wrong.",
+        "final_state": "Fails if the model states Arc is the current browser rather than a future plan.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I switched my default browser on my work laptop from Chrome to Firefox back around March 3rd"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I actually had to switch my work laptop default browser from Firefox to Edge last week because our company's new intranet portal only works properly in Edge"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I switched my work laptop default back to Firefox yesterday. IT pushed an update that fixed the intranet compatibility issue so Edge is no longer required"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My team lead confirmed we'll all be switching to Arc browser next month as part of a new company-wide productivity pilot"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "What did I tell you about my work laptop's default browser across our conversations? Summarize the key things I shared about which browser I was using and why.",
+      "expected_answer": "You initially switched your work laptop default browser from Chrome to Firefox around March 3rd because Chrome was consuming about 6 GB of RAM with only a dozen tabs open. Later, you had to switch from Firefox to Edge because your company's new intranet portal only worked properly in Edge and IT mandated it. Then, after IT pushed an update that fixed the intranet compatibility issue, you switched back to Firefox. Most recently, your team lead confirmed that everyone will be switching to Arc browser next month as part of a company-wide productivity pilot, but that hasn't happened yet.",
+      "gold_memory_state": "Work laptop default browser is currently Firefox (confirmed). Arc browser switch is planned for next month but not yet enacted (tentative). DuckDuckGo is the default search engine in Firefox.",
+      "judge_rubric": {
+        "must_include": [
+          "Chrome to Firefox",
+          "Firefox to Edge",
+          "Edge back to Firefox",
+          "Arc browser mentioned as upcoming"
+        ],
+        "acceptable_paraphrases": [
+          "intranet issue forced Edge",
+          "IT fixed the compatibility so switched back to Firefox"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying the current browser is Edge",
+          "saying the current browser is Arc",
+          "saying the current browser is Chrome"
+        ],
+        "harmless_extra": [
+          "mentioning DuckDuckGo",
+          "mentioning uBlock Origin",
+          "mentioning Safari on iPhone",
+          "mentioning Chrome on home desktop"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats Edge or Chrome as the current work laptop browser.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model gets the order of browser changes wrong.",
+        "final_state": "Fails if the model states Arc is the current browser rather than a future plan.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I switched my default browser on my work laptop from Chrome to Firefox back around March 3rd"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I actually had to switch my work laptop default browser from Firefox to Edge last week because our company's new intranet portal only works properly in Edge"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I switched my work laptop default back to Firefox yesterday. IT pushed an update that fixed the intranet compatibility issue so Edge is no longer required"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My team lead confirmed we'll all be switching to Arc browser next month as part of a new company-wide productivity pilot"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned browsers across several devices. When I talked about the upcoming company productivity pilot, which device's browser setup would that affect? Does my phone or home desktop setup change because of it?",
+      "expected_answer": "The upcoming Arc browser pilot would affect only your work laptop's default browser. Your iPhone (Safari) and home desktop (Chrome) setups are not affected by the company pilot.",
+      "gold_memory_state": "Work laptop default browser: Firefox (confirmed current), with Arc as a tentative future change. iPhone default browser: Safari. Home desktop default browser: Chrome. Default search engine in Firefox: DuckDuckGo.",
+      "judge_rubric": {
+        "must_include": [
+          "work laptop"
+        ],
+        "acceptable_paraphrases": [
+          "work computer",
+          "office laptop"
+        ],
+        "must_not_include": [
+          "iPhone browser changing to Arc",
+          "home desktop browser changing to Arc"
+        ],
+        "harmful_extra": [
+          "saying Arc is already the work laptop browser",
+          "saying the phone or home desktop are affected by the company pilot"
+        ],
+        "harmless_extra": [
+          "mentioning Safari on iPhone",
+          "mentioning Chrome on home desktop",
+          "mentioning DuckDuckGo or uBlock Origin"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model says Arc is the current browser on any device.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My team lead confirmed we'll all be switching to Arc browser next month as part of a new company-wide productivity pilot"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I also changed the default on my iPhone to Safari around mid-March, maybe March 18th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "My home desktop is still on Chrome by the way — I haven't bothered changing that one because I mostly use it for streaming and casual browsing"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned browsers across several devices. When I talked about the upcoming company productivity pilot, which device's browser setup would that affect? Does my phone or home desktop setup change because of it?",
+      "expected_answer": "The upcoming Arc browser pilot would affect only your work laptop's default browser. Your iPhone (Safari) and home desktop (Chrome) setups are not affected by the company pilot.",
+      "gold_memory_state": "Work laptop default browser: Firefox (confirmed current), with Arc as a tentative future change. iPhone default browser: Safari. Home desktop default browser: Chrome. Default search engine in Firefox: DuckDuckGo.",
+      "judge_rubric": {
+        "must_include": [
+          "work laptop"
+        ],
+        "acceptable_paraphrases": [
+          "work computer",
+          "office laptop"
+        ],
+        "must_not_include": [
+          "iPhone browser changing to Arc",
+          "home desktop browser changing to Arc"
+        ],
+        "harmful_extra": [
+          "saying Arc is already the work laptop browser",
+          "saying the phone or home desktop are affected by the company pilot"
+        ],
+        "harmless_extra": [
+          "mentioning Safari on iPhone",
+          "mentioning Chrome on home desktop",
+          "mentioning DuckDuckGo or uBlock Origin"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model says Arc is the current browser on any device.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My team lead confirmed we'll all be switching to Arc browser next month as part of a new company-wide productivity pilot"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I also changed the default on my iPhone to Safari around mid-March, maybe March 18th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "My home desktop is still on Chrome by the way — I haven't bothered changing that one because I mostly use it for streaming and casual browsing"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "If I need to tell IT which browser is my work laptop default right now, which of these should I report?",
+      "candidate_options": [
+        "Firefox",
+        "Edge",
+        "Arc",
+        "Chrome"
+      ],
+      "expected_answer": "Firefox",
+      "gold_memory_state": "Work laptop default browser is Firefox (confirmed after IT fixed intranet compatibility). Edge was a prior mandatory browser. Arc is a tentative future switch not yet enacted. Chrome was the original browser before any changes.",
+      "judge_rubric": {
+        "must_include": [
+          "Firefox"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "Edge as current",
+          "Arc as current",
+          "Chrome as current"
+        ],
+        "harmful_extra": [
+          "selecting Edge",
+          "selecting Arc",
+          "selecting Chrome"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: Chrome is the user's home desktop browser, not the current work laptop browser. assistant echo: The assistant mentioned Edge as the work laptop browser in an earlier response before the switch back to Firefox, making Edge a plausible assistant-echo distractor. Arc is the tentative/recency-trap distractor since it was the most recently mentioned browser but is not yet adopted.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects Edge (stale mandatory value) or Chrome (original stale value).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model selects Arc (tentative, not yet enacted) as the current browser.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I switched my work laptop default back to Firefox yesterday. IT pushed an update that fixed the intranet compatibility issue so Edge is no longer required"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My team lead confirmed we'll all be switching to Arc browser next month as part of a new company-wide productivity pilot"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "If I need to tell IT which browser is my work laptop default right now, which of these should I report?",
+      "candidate_options": [
+        "Firefox",
+        "Edge",
+        "Arc",
+        "Chrome"
+      ],
+      "expected_answer": "Firefox",
+      "gold_memory_state": "Work laptop default browser is Firefox (confirmed after IT fixed intranet compatibility). Edge was a prior mandatory browser. Arc is a tentative future switch not yet enacted. Chrome was the original browser before any changes.",
+      "judge_rubric": {
+        "must_include": [
+          "Firefox"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "Edge as current",
+          "Arc as current",
+          "Chrome as current"
+        ],
+        "harmful_extra": [
+          "selecting Edge",
+          "selecting Arc",
+          "selecting Chrome"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: Chrome is the user's home desktop browser, not the current work laptop browser. assistant echo: The assistant mentioned Edge as the work laptop browser in an earlier response before the switch back to Firefox, making Edge a plausible assistant-echo distractor. Arc is the tentative/recency-trap distractor since it was the most recently mentioned browser but is not yet adopted.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects Edge (stale mandatory value) or Chrome (original stale value).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model selects Arc (tentative, not yet enacted) as the current browser.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I switched my work laptop default back to Firefox yesterday. IT pushed an update that fixed the intranet compatibility issue so Edge is no longer required"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My team lead confirmed we'll all be switching to Arc browser next month as part of a new company-wide productivity pilot"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I need to write a quick internal wiki note for my team explaining my current work laptop browsing setup — the browser I use, my search engine, and my ad-blocking approach. Can you draft a two-to-three sentence summary I can paste in?",
+      "expected_answer": "My work laptop runs Firefox as the default browser, with DuckDuckGo set as the default search engine for privacy-focused results, and uBlock Origin installed for ad blocking and page cleanliness. This setup prioritizes minimal resource usage, privacy, and a clutter-free browsing experience. Note: the team may be transitioning to Arc browser next month as part of a company-wide productivity pilot, but this has not taken effect yet.",
+      "application_probe_type": "multi_hop_derivation",
+      "gold_memory_state": "Work laptop default browser: Firefox (confirmed). Default search engine in Firefox: DuckDuckGo (confirmed). uBlock Origin installed in Firefox (mentioned in conversation). Arc browser transition is tentative/future only.",
+      "judge_rubric": {
+        "must_include": [
+          "Firefox as default browser",
+          "DuckDuckGo as search engine",
+          "uBlock Origin for ad blocking"
+        ],
+        "acceptable_paraphrases": [
+          "DDG",
+          "uBlock",
+          "Firefox with DuckDuckGo and uBlock Origin"
+        ],
+        "must_not_include": [
+          "Edge as current browser",
+          "Chrome as current work laptop browser",
+          "Arc as current browser"
+        ],
+        "harmful_extra": [
+          "stating Arc is already in use",
+          "stating Edge is still required",
+          "omitting Firefox as the current browser"
+        ],
+        "harmless_extra": [
+          "mentioning the Arc pilot as a future possibility",
+          "mentioning privacy preferences",
+          "mentioning the IT intranet fix"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the draft uses Edge or Chrome as the current work laptop browser.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the draft treats Arc as the current browser rather than a future plan.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's work laptop default browser is currently Firefox, restored after the Edge mandate ended.",
+        "Fact 2: The user set DuckDuckGo as the default search engine inside Firefox on April 22nd.",
+        "Fact 3: The user installed uBlock Origin in Firefox in mid-April for ad blocking.",
+        "Inference: Combining these three confirmed facts, the wiki note should describe a Firefox + DuckDuckGo + uBlock Origin setup.",
+        "Fact 4: Arc browser is a tentative future switch not yet enacted.",
+        "Inference: The note may mention Arc as upcoming but must not present it as the current setup."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I switched my work laptop default back to Firefox yesterday. IT pushed an update that fixed the intranet compatibility issue so Edge is no longer required"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I set DuckDuckGo as the default search engine inside Firefox on April 22nd"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "It pairs well with the uBlock Origin extension I installed in mid-April for blocking ads and keeping pages clean"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My team lead confirmed we'll all be switching to Arc browser next month as part of a new company-wide productivity pilot"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I need to write a quick internal wiki note for my team explaining my current work laptop browsing setup — the browser I use, my search engine, and my ad-blocking approach. Can you draft a two-to-three sentence summary I can paste in?",
+      "expected_answer": "My work laptop runs Firefox as the default browser, with DuckDuckGo set as the default search engine for privacy-focused results, and uBlock Origin installed for ad blocking and page cleanliness. This setup prioritizes minimal resource usage, privacy, and a clutter-free browsing experience. Note: the team may be transitioning to Arc browser next month as part of a company-wide productivity pilot, but this has not taken effect yet.",
+      "application_probe_type": "multi_hop_derivation",
+      "gold_memory_state": "Work laptop default browser: Firefox (confirmed). Default search engine in Firefox: DuckDuckGo (confirmed). uBlock Origin installed in Firefox (mentioned in conversation). Arc browser transition is tentative/future only.",
+      "judge_rubric": {
+        "must_include": [
+          "Firefox as default browser",
+          "DuckDuckGo as search engine",
+          "uBlock Origin for ad blocking"
+        ],
+        "acceptable_paraphrases": [
+          "DDG",
+          "uBlock",
+          "Firefox with DuckDuckGo and uBlock Origin"
+        ],
+        "must_not_include": [
+          "Edge as current browser",
+          "Chrome as current work laptop browser",
+          "Arc as current browser"
+        ],
+        "harmful_extra": [
+          "stating Arc is already in use",
+          "stating Edge is still required",
+          "omitting Firefox as the current browser"
+        ],
+        "harmless_extra": [
+          "mentioning the Arc pilot as a future possibility",
+          "mentioning privacy preferences",
+          "mentioning the IT intranet fix"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the draft uses Edge or Chrome as the current work laptop browser.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the draft treats Arc as the current browser rather than a future plan.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's work laptop default browser is currently Firefox, restored after the Edge mandate ended.",
+        "Fact 2: The user set DuckDuckGo as the default search engine inside Firefox on April 22nd.",
+        "Fact 3: The user installed uBlock Origin in Firefox in mid-April for ad blocking.",
+        "Inference: Combining these three confirmed facts, the wiki note should describe a Firefox + DuckDuckGo + uBlock Origin setup.",
+        "Fact 4: Arc browser is a tentative future switch not yet enacted.",
+        "Inference: The note may mention Arc as upcoming but must not present it as the current setup."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I switched my work laptop default back to Firefox yesterday. IT pushed an update that fixed the intranet compatibility issue so Edge is no longer required"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I set DuckDuckGo as the default search engine inside Firefox on April 22nd"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "It pairs well with the uBlock Origin extension I installed in mid-April for blocking ads and keeping pages clean"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My team lead confirmed we'll all be switching to Arc browser next month as part of a new company-wide productivity pilot"
+        }
+      ]
+    }
+  ]
+}

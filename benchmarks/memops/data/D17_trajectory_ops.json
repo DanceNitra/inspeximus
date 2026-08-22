@@ -1,0 +1,969 @@
+{
+  "target_fact": "User's default browser on work laptop, tracking changes over time including Firefox, Chrome considerations, and related browser preferences",
+  "operation_type": "TrajectoryOps",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "work_laptop_browser",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I finally switched my default browser on my work laptop to Firefox back in early March"
+      },
+      "target": {
+        "target_id": "work_laptop_default_browser",
+        "target_name": "default browser on work laptop"
+      },
+      "old_value": null,
+      "new_value": "Firefox",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I finally switched my default browser on my work laptop to Firefox back in early March"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I set Safari as the default browser on my iPhone around mid-March because Firefox mobile felt clunky with the gestures"
+      },
+      "target": {
+        "target_id": "phone_default_browser",
+        "target_name": "default browser on iPhone"
+      },
+      "old_value": null,
+      "new_value": "Safari",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I set Safari as the default browser on my iPhone around mid-March because Firefox mobile felt clunky with the gestures"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "work_laptop_browser",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I actually switched my work laptop default browser from Firefox to Edge last week because our IT department started requiring it for the new SSO portal"
+      },
+      "target": {
+        "target_id": "work_laptop_default_browser",
+        "target_name": "default browser on work laptop"
+      },
+      "old_value": "Firefox",
+      "new_value": "Edge",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I finally switched my default browser on my work laptop to Firefox back in early March"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I actually switched my work laptop default browser from Firefox to Edge last week because our IT department started requiring it for the new SSO portal"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "work_laptop_browser",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 3,
+        "quote": "IT confirmed that starting next month, everyone's work laptops will be standardized on Chrome as the mandatory default browser"
+      },
+      "target": {
+        "target_id": "work_laptop_default_browser",
+        "target_name": "default browser on work laptop"
+      },
+      "old_value": "Edge",
+      "new_value": "Chrome",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "IT confirmed that starting next month, everyone's work laptops will be standardized on Chrome as the mandatory default browser"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "work_laptop_browser",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 7,
+        "quote": "the Chrome standardization got pushed back indefinitely because of licensing issues, so my work laptop default is still Edge for now"
+      },
+      "target": {
+        "target_id": "work_laptop_default_browser",
+        "target_name": "default browser on work laptop"
+      },
+      "old_value": "Edge",
+      "new_value": "Edge",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I actually switched my work laptop default browser from Firefox to Edge last week because our IT department started requiring it for the new SSO portal"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "the Chrome standardization got pushed back indefinitely because of licensing issues, so my work laptop default is still Edge for now"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish initial browser defaults and preferences",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to tell you about my browser setup so you can help me keep track. I finally switched my default browser on my work laptop to Firefox back in early March. Chrome was eating up like 6 GB of RAM with only a dozen tabs open and making everything sluggish, so I had to make a change. Can you remember that for me?"
+        },
+        {
+          "role": "assistant",
+          "content": "Got it! I'll remember that your default browser on your work laptop is Firefox, and that you switched from Chrome in early March due to excessive RAM usage — around 6 GB with just a dozen tabs. That's a pretty common complaint with Chrome, especially on work machines that might already be running resource-heavy enterprise software. If IT asks you again, you can point them my way and I'll confirm Firefox is what you're running. Do you want me to keep track of any extensions or settings you've configured in Firefox as well?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, that would be helpful. I also installed uBlock Origin on Firefox around mid-April. I really like having clean pages without pop-ups and banners cluttering everything up. Oh, and I set DuckDuckGo as my default search engine inside Firefox on April 22nd. I remember because it was the day after my dentist appointment. Please keep track of those details too."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted! So your Firefox setup on the work laptop includes uBlock Origin installed around mid-April for ad blocking, and DuckDuckGo set as your default search engine on April 22nd — the day after your dentist appointment, which is a handy memory anchor. It sounds like you really value a clean, minimal browsing experience without unnecessary clutter. That's consistent with choosing Firefox over Chrome and adding uBlock Origin. I'll keep all of these details together so you have a complete picture of your browser configuration whenever you need it."
+        },
+        {
+          "role": "user",
+          "content": "Exactly, I'm all about keeping things minimal. Speaking of different devices, I set Safari as the default browser on my iPhone around mid-March because Firefox mobile felt clunky with the gestures. So it's two different defaults on two different devices, which is a little annoying but I've gotten used to it. Safari just works better on iOS for everyday browsing and navigation."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood — so your iPhone default browser is Safari, set around mid-March, because Firefox on mobile didn't feel smooth with the gesture navigation. That gives you Firefox on the work laptop and Safari on the phone, two different defaults across devices. It's actually pretty common to split like that since mobile and desktop browsers have different strengths. Safari integrates really tightly with iOS features like Handoff and Keychain, so it makes sense for a phone default even if you prefer Firefox on the desktop side. I'll keep both tracked separately for you."
+        },
+        {
+          "role": "user",
+          "content": "Great. My friend Kevin switched to Brave around the same time I went to Firefox. He kept raving about the built-in ad blocking. I tried Brave briefly but I didn't love the crypto wallet thing baked into the browser — felt like unnecessary clutter to me. Kevin mentioned last week he's thinking about switching from Brave to Vivaldi now. That guy changes browsers constantly."
+        },
+        {
+          "role": "assistant",
+          "content": "Ha, Kevin sounds like quite the browser hopper! I'll note that your friend Kevin is currently on Brave but considering Vivaldi, and that you tried Brave yourself but weren't a fan of the built-in crypto wallet — it went against your preference for minimal, clutter-free software. That's a useful preference to remember because it tells me you'd probably also dislike browsers or extensions that bundle in cryptocurrency features, shopping tools, or other non-essential extras. Your philosophy seems clear: a browser should browse, and anything beyond that is noise. Let me know if Kevin actually makes the switch!"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "update work laptop browser to Edge due to IT requirement",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So I have an update for you about my work laptop browser situation. I actually switched my work laptop default browser from Firefox to Edge last week because our IT department started requiring it for the new SSO portal. The single sign-on system only works properly in Edge apparently, so I didn't really have a choice. Can you update that in your memory?"
+        },
+        {
+          "role": "assistant",
+          "content": "Updated! Your work laptop default browser is now Edge, switched from Firefox last week due to an IT requirement for the new SSO portal that only works properly in Edge. That's frustrating since you specifically chose Firefox for its lighter resource usage and clean experience, but IT mandates don't leave much room for personal preference. I'll keep the history that you were on Firefox before and switched to Edge for compliance reasons. Your iPhone default is still Safari, correct? And do you still have uBlock Origin and DuckDuckGo configured, or did those get wiped in the browser change?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, iPhone is still Safari. And unfortunately the uBlock Origin and DuckDuckGo setup was in Firefox, so those don't carry over to Edge. I haven't set up equivalent extensions in Edge yet. I'm honestly kind of annoyed about the whole thing because Edge keeps suggesting Microsoft services and has all these sidebar features I don't want. It feels bloated compared to what I had before."
+        },
+        {
+          "role": "assistant",
+          "content": "That's understandable — Edge has gotten better over the years but it does come with a lot of Microsoft integrations baked in, like the sidebar with Bing Chat, shopping tools, and news feeds. Given your strong preference for minimal, clutter-free browsing, that must be particularly irritating. You could try disabling some of those features in Edge's settings under the Appearance and Sidebar sections. For ad blocking, uBlock Origin is available on Edge through the Chrome Web Store since Edge is Chromium-based. And you can set DuckDuckGo as the default search engine in Edge's settings too. Want me to walk you through any of those?"
+        },
+        {
+          "role": "user",
+          "content": "That's actually helpful, I might do that this weekend. On a different note, my home desktop is still running Chrome as the default browser. I haven't bothered changing that one because I mostly use it for streaming and casual stuff, and my home machine has 32 GB of RAM so the performance issues don't really hit as hard there. Just wanted you to have the complete picture."
+        },
+        {
+          "role": "assistant",
+          "content": "Good to know! So your home desktop default browser remains Chrome, and the 32 GB of RAM on that machine means Chrome's notorious memory appetite isn't really a problem for streaming and casual use. That makes total sense — the RAM issue was specific to your work laptop where you were running other enterprise software alongside the browser. So the full picture now is: Edge on the work laptop (IT mandate), Safari on the iPhone, and Chrome on the home desktop. Three different browsers across three devices. I'll keep all of that tracked. Let me know if you end up configuring uBlock Origin and DuckDuckGo on Edge this weekend."
+        },
+        {
+          "role": "user",
+          "content": "Will do. Oh, I also wanted to mention that the Outlook-opening-links-in-Edge issue I had back in late March actually makes more sense now. At the time I was frustrated because I had Firefox set as default but Outlook kept opening links in Edge. I spent an hour digging through Windows settings and registry before finding an IT group policy override. Now that Edge is my actual default, that conflict is gone at least.\n\nExactly, it's the principle of the thing. I like choosing my own tools. Anyway, that's the browser situation as it stands right now. Edge on work laptop, Safari on phone, Chrome on home desktop. I'll let you know if anything changes, which knowing my IT department, it probably will sooner rather than later."
+        },
+        {
+          "role": "assistant",
+          "content": "Right, that's an ironic silver lining! The group policy that was overriding your Firefox default to force Edge for Outlook links is now consistent with your actual default browser setting. So that hour of frustration you went through in late March with the registry and Windows settings troubleshooting is at least no longer an active problem. It sounds like IT was already steering toward Edge standardization even back then, and the SSO portal requirement just made it official. At least you won't have that particular conflict anymore. Though I imagine it's still annoying that the choice was essentially made for you rather than being something you opted into willingly.\n\nHa, sounds like your IT department keeps you on your toes! I've got everything logged: Edge on the work laptop (switched from Firefox due to IT's SSO portal requirement), Safari on the iPhone (set in mid-March for better gesture support), and Chrome on the home desktop (unchanged, works fine with 32 GB RAM for streaming). Your browser preference philosophy is clear — minimal and clutter-free — even if IT doesn't always let you follow it. I'll be here whenever the next change drops, and I'll help you keep track of what you told IT versus what's actually current. Just ping me anytime."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "tentative Chrome standardization announcement and revert to Edge as confirmed current",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, quick question before I get into the browser stuff — do you remember what search engine I had set as default in Firefox before I switched to Edge? I need to set up something similar in Edge this weekend and I can't remember the exact date I configured it. I know it was tied to some appointment I had."
+        },
+        {
+          "role": "assistant",
+          "content": "Yes! You set DuckDuckGo as your default search engine inside Firefox on April 22nd. You mentioned you remembered the date because it was the day after your dentist appointment. Since Edge is Chromium-based, you can set DuckDuckGo as the default search engine there too — just go to Settings, then Privacy, Search, and Services, scroll down to the Address Bar section, and you can select DuckDuckGo from the search engine dropdown or add it manually. That way you'll have a consistent search experience even though you've changed browsers. Want me to also remind you about the uBlock Origin setup?"
+        },
+        {
+          "role": "user",
+          "content": "IT confirmed that starting next month, everyone's work laptops will be standardized on Chrome as the mandatory default browser. They're rolling out a managed Chrome enterprise deployment with pre-configured extensions and policies. So it looks like I'll be moving to Chrome on the work laptop soon. The IT director sent out the memo yesterday and it seemed pretty definitive."
+        },
+        {
+          "role": "assistant",
+          "content": "Interesting — so IT is planning to standardize everyone on Chrome enterprise starting next month. That's quite a shift, especially since they just pushed you to Edge for the SSO portal. A managed Chrome deployment would at least mean pre-configured extensions, which might save you the trouble of manually setting up ad blocking and search engine preferences. Though knowing your preference for minimal software, you might find Chrome's enterprise management features and forced extensions a bit heavy-handed. I wonder if the SSO portal compatibility issue that drove the Edge switch has been resolved for Chrome, or if they've rebuilt the portal to be browser-agnostic. Either way, I'll note this upcoming change."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, I'm not thrilled about going back to Chrome honestly, given the RAM issues I had before. But if it's managed enterprise with pre-set policies, maybe they've optimized it. My friend Kevin's setup sheet from his company actually listed Firefox as their corporate standard — I saw it on his desk last week. Different companies, different choices I guess. Anyway, we'll see how the Chrome thing plays out."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a fair concern about the RAM usage, though enterprise-managed Chrome deployments sometimes include policies that limit the number of background processes and pre-loaded extensions, which can help with memory management. It's interesting that Kevin's company went with Firefox as their corporate standard — that's actually becoming more common in organizations that prioritize privacy and lower resource overhead. Every IT department has their own priorities and vendor relationships driving these decisions. For now I still have your work laptop default as Edge since the Chrome standardization hasn't happened yet. I'll wait for you to confirm when and if the switch actually goes through before updating your records."
+        },
+        {
+          "role": "user",
+          "content": "Smart, yeah don't update it yet. Also I wanted to mention — I sold my old Android tablet back in April on eBay, so that Firefox bookmark sync issue I used to have between my laptop and tablet is completely resolved now. That's no longer relevant information. The tablet is gone and so is the problem. You can disregard anything about that sync issue.\n\nOne last thing — I just got an email from IT and the Chrome standardization got pushed back indefinitely because of licensing issues, so my work laptop default is still Edge for now. Figures. I swear they change direction every other week. So yeah, Edge is what I'm on and apparently staying on for the foreseeable future. That's the current state of things."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — I'll disregard the Firefox bookmark sync issue with the Android tablet since you sold the tablet in April on eBay. That problem is fully resolved and no longer relevant to your current setup. So your active devices for browser tracking are now: the work laptop (currently Edge), the iPhone (Safari), and the home desktop (Chrome). Three devices, three browsers. I'll keep the tablet-related sync information cleared from your active records. Is there anything else about your current browser setup you want me to update or keep track of?\n\nClassic IT! So the Chrome standardization is shelved indefinitely due to licensing issues, and your work laptop default browser remains Edge. I'll keep that as your confirmed current setup. Your complete browser picture is: Edge on the work laptop (IT-mandated for SSO portal), Safari on the iPhone (set mid-March for better gesture support), and Chrome on the home desktop (unchanged, works fine with 32 GB RAM). The tentative Chrome enterprise rollout is off the table for now. If IT comes around again with another browser mandate, just let me know and I'll update accordingly. At least Edge is working for you even if it's not your ideal choice."
+        }
+      ]
+    }
+  ],
+  "state_checkpoints": [
+    {
+      "checkpoint_id": "c1",
+      "description": "After segment 1: Work laptop default browser = Firefox (confirmed). iPhone default browser = Safari (confirmed). Friend Kevin on Brave, considering Vivaldi. User has uBlock Origin and DuckDuckGo configured in Firefox."
+    },
+    {
+      "checkpoint_id": "c2",
+      "description": "After segment 2: Work laptop default browser = Edge (confirmed, switched from Firefox due to IT SSO portal requirement). iPhone default browser = Safari (confirmed, unchanged). Home desktop default browser = Chrome (confirmed). Outlook-Edge conflict resolved since Edge is now the actual default."
+    },
+    {
+      "checkpoint_id": "c3",
+      "description": "After segment 3: Work laptop default browser = Edge (confirmed; Chrome standardization was announced as tentative but pushed back indefinitely due to licensing). iPhone default browser = Safari (confirmed, unchanged). Home desktop default browser = Chrome (confirmed, unchanged). Android tablet sold, sync issue no longer relevant."
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Walk me through what I've told you over time about the default browser on my work laptop — what were the key things I shared and how did the situation develop?",
+      "expected_answer": "You first mentioned switching your work laptop default browser to Firefox in early March because Chrome was using too much RAM. Later, you switched from Firefox to Edge because your IT department required it for the new SSO portal. Then IT announced Chrome would become the mandatory standard next month, but that plan was pushed back indefinitely due to licensing issues, so your work laptop default remained Edge.",
+      "gold_memory_state": "Work laptop default browser = Edge (confirmed). The trajectory was: Firefox (early March) → Edge (IT SSO requirement) → Chrome announced as future standard (tentative, never enacted) → Edge confirmed as still current. iPhone default = Safari. Home desktop default = Chrome.",
+      "judge_rubric": {
+        "must_include": [
+          "Firefox as initial browser",
+          "Edge as the IT-mandated replacement",
+          "Chrome standardization announced but pushed back",
+          "Edge as final current browser"
+        ],
+        "acceptable_paraphrases": [
+          "SSO portal requirement",
+          "IT requirement for Edge",
+          "licensing issues delayed Chrome"
+        ],
+        "must_not_include": [
+          "Chrome is the current work laptop browser"
+        ],
+        "harmful_extra": [
+          "claiming Chrome was ever actually adopted on the work laptop"
+        ],
+        "harmless_extra": [
+          "mentioning RAM issues with Chrome",
+          "mentioning uBlock Origin or DuckDuckGo in Firefox"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Firefox is reported as current work laptop browser",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the order of browser changes is incorrect (e.g., Edge before Firefox, or Chrome actually adopted)",
+        "final_state": "Fails if Edge is not identified as the final confirmed browser",
+        "intermediate_state": "Fails if Firefox as the initial browser or the tentative Chrome announcement is omitted",
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I finally switched my default browser on my work laptop to Firefox back in early March"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I actually switched my work laptop default browser from Firefox to Edge last week because our IT department started requiring it for the new SSO portal"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "IT confirmed that starting next month, everyone's work laptops will be standardized on Chrome as the mandatory default browser"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "the Chrome standardization got pushed back indefinitely because of licensing issues, so my work laptop default is still Edge for now"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Walk me through what I've told you over time about the default browser on my work laptop — what were the key things I shared and how did the situation develop?",
+      "expected_answer": "You first mentioned switching your work laptop default browser to Firefox in early March because Chrome was using too much RAM. Later, you switched from Firefox to Edge because your IT department required it for the new SSO portal. Then IT announced Chrome would become the mandatory standard next month, but that plan was pushed back indefinitely due to licensing issues, so your work laptop default remained Edge.",
+      "gold_memory_state": "Work laptop default browser = Edge (confirmed). The trajectory was: Firefox (early March) → Edge (IT SSO requirement) → Chrome announced as future standard (tentative, never enacted) → Edge confirmed as still current. iPhone default = Safari. Home desktop default = Chrome.",
+      "judge_rubric": {
+        "must_include": [
+          "Firefox as initial browser",
+          "Edge as the IT-mandated replacement",
+          "Chrome standardization announced but pushed back",
+          "Edge as final current browser"
+        ],
+        "acceptable_paraphrases": [
+          "SSO portal requirement",
+          "IT requirement for Edge",
+          "licensing issues delayed Chrome"
+        ],
+        "must_not_include": [
+          "Chrome is the current work laptop browser"
+        ],
+        "harmful_extra": [
+          "claiming Chrome was ever actually adopted on the work laptop"
+        ],
+        "harmless_extra": [
+          "mentioning RAM issues with Chrome",
+          "mentioning uBlock Origin or DuckDuckGo in Firefox"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Firefox is reported as current work laptop browser",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the order of browser changes is incorrect (e.g., Edge before Firefox, or Chrome actually adopted)",
+        "final_state": "Fails if Edge is not identified as the final confirmed browser",
+        "intermediate_state": "Fails if Firefox as the initial browser or the tentative Chrome announcement is omitted",
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I finally switched my default browser on my work laptop to Firefox back in early March"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I actually switched my work laptop default browser from Firefox to Edge last week because our IT department started requiring it for the new SSO portal"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "IT confirmed that starting next month, everyone's work laptops will be standardized on Chrome as the mandatory default browser"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "the Chrome standardization got pushed back indefinitely because of licensing issues, so my work laptop default is still Edge for now"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I have browsers set up on several devices. When IT made that browser requirement for the SSO portal, which device's browser setup was affected? Did the browser on my phone or home machine change because of that?",
+      "expected_answer": "Only the work laptop browser was affected by the IT SSO portal requirement — it changed to Edge. Your iPhone default browser remained Safari and your home desktop default browser remained Chrome; neither was affected by the IT mandate.",
+      "gold_memory_state": "Work laptop default browser = Edge (changed from Firefox due to IT SSO requirement). iPhone default browser = Safari (unchanged, set mid-March). Home desktop default browser = Chrome (unchanged). The IT requirement applied only to the work laptop.",
+      "judge_rubric": {
+        "must_include": [
+          "work laptop affected",
+          "Edge on work laptop",
+          "iPhone not affected",
+          "home desktop not affected"
+        ],
+        "acceptable_paraphrases": [
+          "only the work laptop changed",
+          "phone stayed Safari",
+          "home stayed Chrome"
+        ],
+        "must_not_include": [
+          "iPhone browser changed",
+          "home desktop browser changed"
+        ],
+        "harmful_extra": [
+          "claiming Safari or Chrome on other devices were affected by IT mandate",
+          "claiming Firefox is still the work laptop browser"
+        ],
+        "harmless_extra": [
+          "mentioning the SSO portal reason",
+          "mentioning Safari was set for gesture reasons"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Firefox is reported as the current work laptop browser",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the work laptop browser is not identified as Edge",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I actually switched my work laptop default browser from Firefox to Edge last week because our IT department started requiring it for the new SSO portal"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I set Safari as the default browser on my iPhone around mid-March because Firefox mobile felt clunky with the gestures"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I have browsers set up on several devices. When IT made that browser requirement for the SSO portal, which device's browser setup was affected? Did the browser on my phone or home machine change because of that?",
+      "expected_answer": "Only the work laptop browser was affected by the IT SSO portal requirement — it changed to Edge. Your iPhone default browser remained Safari and your home desktop default browser remained Chrome; neither was affected by the IT mandate.",
+      "gold_memory_state": "Work laptop default browser = Edge (changed from Firefox due to IT SSO requirement). iPhone default browser = Safari (unchanged, set mid-March). Home desktop default browser = Chrome (unchanged). The IT requirement applied only to the work laptop.",
+      "judge_rubric": {
+        "must_include": [
+          "work laptop affected",
+          "Edge on work laptop",
+          "iPhone not affected",
+          "home desktop not affected"
+        ],
+        "acceptable_paraphrases": [
+          "only the work laptop changed",
+          "phone stayed Safari",
+          "home stayed Chrome"
+        ],
+        "must_not_include": [
+          "iPhone browser changed",
+          "home desktop browser changed"
+        ],
+        "harmful_extra": [
+          "claiming Safari or Chrome on other devices were affected by IT mandate",
+          "claiming Firefox is still the work laptop browser"
+        ],
+        "harmless_extra": [
+          "mentioning the SSO portal reason",
+          "mentioning Safari was set for gesture reasons"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Firefox is reported as the current work laptop browser",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the work laptop browser is not identified as Edge",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I actually switched my work laptop default browser from Firefox to Edge last week because our IT department started requiring it for the new SSO portal"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I set Safari as the default browser on my iPhone around mid-March because Firefox mobile felt clunky with the gestures"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "After all the back-and-forth with my IT department about browsers, what should I put down as my work laptop's default browser if I need to fill out an equipment audit form right now?",
+      "expected_answer": "Edge.",
+      "gold_memory_state": "Work laptop default browser = Edge (confirmed). Chrome was announced as a future mandatory standard but that plan was pushed back indefinitely due to licensing issues and was never enacted. The tentative Chrome value was never adopted. Firefox was the original browser but was superseded by Edge.",
+      "judge_rubric": {
+        "must_include": [
+          "Edge"
+        ],
+        "acceptable_paraphrases": [
+          "Microsoft Edge"
+        ],
+        "must_not_include": [
+          "Chrome as current browser",
+          "Firefox as current browser"
+        ],
+        "harmful_extra": [
+          "stating Chrome is the current default",
+          "stating Firefox is the current default"
+        ],
+        "harmless_extra": [
+          "mentioning the IT SSO portal requirement as the reason for Edge"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Chrome (tentative, never adopted) or Firefox (superseded) is given as the current browser. Chrome is the recency-trap value — it was mentioned most recently as a planned standard but was never actually implemented.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if Edge is not identified as the current confirmed browser",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "the Chrome standardization got pushed back indefinitely because of licensing issues, so my work laptop default is still Edge for now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I actually switched my work laptop default browser from Firefox to Edge last week because our IT department started requiring it for the new SSO portal"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "After all the back-and-forth with my IT department about browsers, what should I put down as my work laptop's default browser if I need to fill out an equipment audit form right now?",
+      "expected_answer": "Edge.",
+      "gold_memory_state": "Work laptop default browser = Edge (confirmed). Chrome was announced as a future mandatory standard but that plan was pushed back indefinitely due to licensing issues and was never enacted. The tentative Chrome value was never adopted. Firefox was the original browser but was superseded by Edge.",
+      "judge_rubric": {
+        "must_include": [
+          "Edge"
+        ],
+        "acceptable_paraphrases": [
+          "Microsoft Edge"
+        ],
+        "must_not_include": [
+          "Chrome as current browser",
+          "Firefox as current browser"
+        ],
+        "harmful_extra": [
+          "stating Chrome is the current default",
+          "stating Firefox is the current default"
+        ],
+        "harmless_extra": [
+          "mentioning the IT SSO portal requirement as the reason for Edge"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Chrome (tentative, never adopted) or Firefox (superseded) is given as the current browser. Chrome is the recency-trap value — it was mentioned most recently as a planned standard but was never actually implemented.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if Edge is not identified as the current confirmed browser",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "the Chrome standardization got pushed back indefinitely because of licensing issues, so my work laptop default is still Edge for now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I actually switched my work laptop default browser from Firefox to Edge last week because our IT department started requiring it for the new SSO portal"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to write a quick note to my IT helpdesk explaining which browser I'm currently using on each of my devices and why I ended up on each one. Can you draft that for me?",
+      "expected_answer": "Hi IT Helpdesk — here's my current browser setup across devices: On my work laptop, I'm using Edge as the default, which I switched to from Firefox after your department required it for the new SSO portal. On my iPhone, I'm using Safari as the default, which I set in mid-March because the Firefox mobile app didn't work well with iOS gestures. On my home desktop, I'm using Chrome as the default — it works fine there since the machine has 32 GB of RAM and I mainly use it for streaming and casual browsing. Let me know if you need anything else.",
+      "gold_memory_state": "Work laptop = Edge (IT SSO mandate). iPhone = Safari (gesture preference, mid-March). Home desktop = Chrome (32 GB RAM, casual/streaming use). Chrome standardization on work laptop was tentative and shelved indefinitely.",
+      "judge_rubric": {
+        "must_include": [
+          "Edge on work laptop",
+          "Safari on iPhone",
+          "Chrome on home desktop",
+          "SSO portal or IT requirement as reason for Edge",
+          "gesture issues as reason for Safari on iPhone",
+          "RAM capacity or performance as reason for Chrome on home desktop"
+        ],
+        "acceptable_paraphrases": [
+          "single sign-on requirement",
+          "IT mandate for Edge",
+          "Firefox mobile gesture problems",
+          "32 GB RAM handles Chrome fine"
+        ],
+        "must_not_include": [
+          "Chrome as work laptop browser",
+          "Firefox as current work laptop browser"
+        ],
+        "harmful_extra": [
+          "listing Chrome as the work laptop default",
+          "listing Firefox as the current work laptop default",
+          "including the tentative Chrome standardization as if it happened"
+        ],
+        "harmless_extra": [
+          "mentioning the Android tablet was sold",
+          "mentioning uBlock Origin or DuckDuckGo were in Firefox"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Firefox is listed as current work laptop browser or Chrome is listed as current work laptop browser due to the tentative announcement",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if any device's current browser is wrong",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's work laptop default browser is Edge, switched from Firefox due to IT's SSO portal requirement.",
+        "Fact 2: The user's iPhone default browser is Safari, set in mid-March because Firefox mobile had gesture issues.",
+        "Fact 3: The user's home desktop default browser is Chrome, kept because the machine has 32 GB of RAM and is used for streaming.",
+        "Fact 4: The tentative Chrome standardization for the work laptop was pushed back indefinitely due to licensing issues — Edge remains the current work laptop browser.",
+        "Inference: A helpdesk note must combine all three device-browser pairs with their respective reasons, using only confirmed current values and excluding the tentative Chrome plan from the work laptop entry."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I actually switched my work laptop default browser from Firefox to Edge last week because our IT department started requiring it for the new SSO portal"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I set Safari as the default browser on my iPhone around mid-March because Firefox mobile felt clunky with the gestures"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my home desktop is still running Chrome as the default browser. I haven't bothered changing that one because I mostly use it for streaming and casual stuff, and my home machine has 32 GB of RAM so the performance issues don't really hit as hard there"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "the Chrome standardization got pushed back indefinitely because of licensing issues, so my work laptop default is still Edge for now"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to write a quick note to my IT helpdesk explaining which browser I'm currently using on each of my devices and why I ended up on each one. Can you draft that for me?",
+      "expected_answer": "Hi IT Helpdesk — here's my current browser setup across devices: On my work laptop, I'm using Edge as the default, which I switched to from Firefox after your department required it for the new SSO portal. On my iPhone, I'm using Safari as the default, which I set in mid-March because the Firefox mobile app didn't work well with iOS gestures. On my home desktop, I'm using Chrome as the default — it works fine there since the machine has 32 GB of RAM and I mainly use it for streaming and casual browsing. Let me know if you need anything else.",
+      "gold_memory_state": "Work laptop = Edge (IT SSO mandate). iPhone = Safari (gesture preference, mid-March). Home desktop = Chrome (32 GB RAM, casual/streaming use). Chrome standardization on work laptop was tentative and shelved indefinitely.",
+      "judge_rubric": {
+        "must_include": [
+          "Edge on work laptop",
+          "Safari on iPhone",
+          "Chrome on home desktop",
+          "SSO portal or IT requirement as reason for Edge",
+          "gesture issues as reason for Safari on iPhone",
+          "RAM capacity or performance as reason for Chrome on home desktop"
+        ],
+        "acceptable_paraphrases": [
+          "single sign-on requirement",
+          "IT mandate for Edge",
+          "Firefox mobile gesture problems",
+          "32 GB RAM handles Chrome fine"
+        ],
+        "must_not_include": [
+          "Chrome as work laptop browser",
+          "Firefox as current work laptop browser"
+        ],
+        "harmful_extra": [
+          "listing Chrome as the work laptop default",
+          "listing Firefox as the current work laptop default",
+          "including the tentative Chrome standardization as if it happened"
+        ],
+        "harmless_extra": [
+          "mentioning the Android tablet was sold",
+          "mentioning uBlock Origin or DuckDuckGo were in Firefox"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Firefox is listed as current work laptop browser or Chrome is listed as current work laptop browser due to the tentative announcement",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if any device's current browser is wrong",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's work laptop default browser is Edge, switched from Firefox due to IT's SSO portal requirement.",
+        "Fact 2: The user's iPhone default browser is Safari, set in mid-March because Firefox mobile had gesture issues.",
+        "Fact 3: The user's home desktop default browser is Chrome, kept because the machine has 32 GB of RAM and is used for streaming.",
+        "Fact 4: The tentative Chrome standardization for the work laptop was pushed back indefinitely due to licensing issues — Edge remains the current work laptop browser.",
+        "Inference: A helpdesk note must combine all three device-browser pairs with their respective reasons, using only confirmed current values and excluding the tentative Chrome plan from the work laptop entry."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I actually switched my work laptop default browser from Firefox to Edge last week because our IT department started requiring it for the new SSO portal"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I set Safari as the default browser on my iPhone around mid-March because Firefox mobile felt clunky with the gestures"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my home desktop is still running Chrome as the default browser. I haven't bothered changing that one because I mostly use it for streaming and casual stuff, and my home machine has 32 GB of RAM so the performance issues don't really hit as hard there"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "the Chrome standardization got pushed back indefinitely because of licensing issues, so my work laptop default is still Edge for now"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed everything we've discussed about my work laptop's default browser, what would they see as the full sequence of changes — which browsers were actually in use at each stage, which were only planned, and what's the situation now?",
+      "expected_answer": "The sequence was: (1) Firefox was set as the default in early March, replacing Chrome due to RAM issues — this was confirmed and active. (2) Edge replaced Firefox as the default because IT required it for the new SSO portal — this was confirmed and active. (3) IT announced Chrome would become the mandatory standard starting next month — this was only a planned future change and was never actually implemented. (4) The Chrome plan was pushed back indefinitely due to licensing issues, so Edge remained the confirmed default. The current situation is Edge as the work laptop default browser.",
+      "gold_memory_state": "Work laptop browser trajectory: Firefox (confirmed, early March) → Edge (confirmed, IT SSO requirement) → Chrome (tentative announcement, never enacted) → Edge (confirmed, unchanged after Chrome plan shelved). Final state: Edge.",
+      "judge_rubric": {
+        "must_include": [
+          "Firefox as first confirmed browser",
+          "Edge as second confirmed browser replacing Firefox",
+          "Chrome as a planned/announced change that never happened",
+          "Edge as the final current browser",
+          "licensing issues as reason Chrome was shelved"
+        ],
+        "acceptable_paraphrases": [
+          "Chrome was only announced but never rolled out",
+          "Chrome standardization was cancelled/postponed/delayed",
+          "Edge is still the default"
+        ],
+        "must_not_include": [
+          "Chrome was ever the actual default on the work laptop"
+        ],
+        "harmful_extra": [
+          "claiming Chrome was actively used as the work laptop default at any point",
+          "omitting the tentative Chrome step entirely"
+        ],
+        "harmless_extra": [
+          "mentioning RAM issues with Chrome as original motivation for Firefox",
+          "mentioning IT SSO portal details"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Chrome is presented as having been an active/confirmed work laptop browser",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the order Firefox → Edge → Chrome (tentative) → Edge (confirmed) is not correctly represented",
+        "final_state": "Fails if Edge is not identified as the final confirmed browser",
+        "intermediate_state": "Fails if Firefox as the initial state or the tentative Chrome announcement is omitted from the trajectory",
+        "trajectory_provenance": "Fails if the Chrome step is not distinguished from the confirmed steps (Firefox, Edge) by noting it was only planned/announced and never enacted"
+      },
+      "gold_reasoning_chain": [
+        "Step 1: User set Firefox as default in early March, confirmed — replacing Chrome due to RAM usage.",
+        "Step 2: User switched from Firefox to Edge due to IT SSO portal requirement, confirmed.",
+        "Step 3: IT announced Chrome as mandatory future standard starting next month — tentative, not yet enacted.",
+        "Step 4: Chrome standardization pushed back indefinitely due to licensing issues — tentative Chrome plan rejected.",
+        "Step 5: Edge remains the confirmed current default browser on the work laptop.",
+        "Inference: The trajectory has four state points, but only Firefox and Edge were ever active confirmed defaults; Chrome was a tentative fork that was never adopted."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I finally switched my default browser on my work laptop to Firefox back in early March"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I actually switched my work laptop default browser from Firefox to Edge last week because our IT department started requiring it for the new SSO portal"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "IT confirmed that starting next month, everyone's work laptops will be standardized on Chrome as the mandatory default browser"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "the Chrome standardization got pushed back indefinitely because of licensing issues, so my work laptop default is still Edge for now"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed everything we've discussed about my work laptop's default browser, what would they see as the full sequence of changes — which browsers were actually in use at each stage, which were only planned, and what's the situation now?",
+      "expected_answer": "The sequence was: (1) Firefox was set as the default in early March, replacing Chrome due to RAM issues — this was confirmed and active. (2) Edge replaced Firefox as the default because IT required it for the new SSO portal — this was confirmed and active. (3) IT announced Chrome would become the mandatory standard starting next month — this was only a planned future change and was never actually implemented. (4) The Chrome plan was pushed back indefinitely due to licensing issues, so Edge remained the confirmed default. The current situation is Edge as the work laptop default browser.",
+      "gold_memory_state": "Work laptop browser trajectory: Firefox (confirmed, early March) → Edge (confirmed, IT SSO requirement) → Chrome (tentative announcement, never enacted) → Edge (confirmed, unchanged after Chrome plan shelved). Final state: Edge.",
+      "judge_rubric": {
+        "must_include": [
+          "Firefox as first confirmed browser",
+          "Edge as second confirmed browser replacing Firefox",
+          "Chrome as a planned/announced change that never happened",
+          "Edge as the final current browser",
+          "licensing issues as reason Chrome was shelved"
+        ],
+        "acceptable_paraphrases": [
+          "Chrome was only announced but never rolled out",
+          "Chrome standardization was cancelled/postponed/delayed",
+          "Edge is still the default"
+        ],
+        "must_not_include": [
+          "Chrome was ever the actual default on the work laptop"
+        ],
+        "harmful_extra": [
+          "claiming Chrome was actively used as the work laptop default at any point",
+          "omitting the tentative Chrome step entirely"
+        ],
+        "harmless_extra": [
+          "mentioning RAM issues with Chrome as original motivation for Firefox",
+          "mentioning IT SSO portal details"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Chrome is presented as having been an active/confirmed work laptop browser",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the order Firefox → Edge → Chrome (tentative) → Edge (confirmed) is not correctly represented",
+        "final_state": "Fails if Edge is not identified as the final confirmed browser",
+        "intermediate_state": "Fails if Firefox as the initial state or the tentative Chrome announcement is omitted from the trajectory",
+        "trajectory_provenance": "Fails if the Chrome step is not distinguished from the confirmed steps (Firefox, Edge) by noting it was only planned/announced and never enacted"
+      },
+      "gold_reasoning_chain": [
+        "Step 1: User set Firefox as default in early March, confirmed — replacing Chrome due to RAM usage.",
+        "Step 2: User switched from Firefox to Edge due to IT SSO portal requirement, confirmed.",
+        "Step 3: IT announced Chrome as mandatory future standard starting next month — tentative, not yet enacted.",
+        "Step 4: Chrome standardization pushed back indefinitely due to licensing issues — tentative Chrome plan rejected.",
+        "Step 5: Edge remains the confirmed current default browser on the work laptop.",
+        "Inference: The trajectory has four state points, but only Firefox and Edge were ever active confirmed defaults; Chrome was a tentative fork that was never adopted."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I finally switched my default browser on my work laptop to Firefox back in early March"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I actually switched my work laptop default browser from Firefox to Edge last week because our IT department started requiring it for the new SSO portal"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "IT confirmed that starting next month, everyone's work laptops will be standardized on Chrome as the mandatory default browser"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "the Chrome standardization got pushed back indefinitely because of licensing issues, so my work laptop default is still Edge for now"
+        }
+      ]
+    }
+  ]
+}

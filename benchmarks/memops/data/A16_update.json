@@ -1,0 +1,902 @@
+{
+  "target_fact": "Highest educational qualification and related academic details",
+  "operation_type": "Update",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 5,
+      "include_control_target": true,
+      "bundle_mode": true
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "My master's degree is from the University of Edinburgh — MSc in Computational Linguistics, graduated 2022"
+      },
+      "target": {
+        "target_id": "masters_degree",
+        "target_name": "Master's degree title"
+      },
+      "old_value": null,
+      "new_value": "MSc in Computational Linguistics",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "MSc in Computational Linguistics, graduated 2022"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "My master's degree is from the University of Edinburgh"
+      },
+      "target": {
+        "target_id": "masters_institution",
+        "target_name": "Master's degree institution"
+      },
+      "old_value": null,
+      "new_value": "University of Edinburgh",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My master's degree is from the University of Edinburgh"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "my dissertation supervisor was Dr. Fiona Ashworth"
+      },
+      "target": {
+        "target_id": "dissertation_supervisor",
+        "target_name": "Dissertation supervisor name"
+      },
+      "old_value": null,
+      "new_value": "Dr. Fiona Ashworth",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my dissertation supervisor was Dr. Fiona Ashworth"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "My dissertation was on sentiment analysis in Scottish Twitter data"
+      },
+      "target": {
+        "target_id": "dissertation_topic",
+        "target_name": "Dissertation topic"
+      },
+      "old_value": null,
+      "new_value": "Sentiment analysis in Scottish Twitter data",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My dissertation was on sentiment analysis in Scottish Twitter data"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "overall_grade_chain",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I got a merit overall for the program"
+      },
+      "target": {
+        "target_id": "masters_overall_grade",
+        "target_name": "Master's program overall grade"
+      },
+      "old_value": null,
+      "new_value": "Merit",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I got a merit overall for the program"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "overall_grade_chain",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I just got an email from the exam board — they reviewed my appeal and upgraded my classification to distinction"
+      },
+      "target": {
+        "target_id": "masters_overall_grade",
+        "target_name": "Master's program overall grade"
+      },
+      "old_value": "Merit",
+      "new_value": "Distinction",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I just got an email from the exam board — they reviewed my appeal and upgraded my classification to distinction"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "overall_grade_chain",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 7,
+        "quote": "they sent a correction — the upgrade was applied to the wrong student record. My classification is back to merit"
+      },
+      "target": {
+        "target_id": "masters_overall_grade",
+        "target_name": "Master's program overall grade"
+      },
+      "old_value": "Distinction",
+      "new_value": "Merit",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "they sent a correction — the upgrade was applied to the wrong student record. My classification is back to merit"
+        }
+      ]
+    },
+    {
+      "operation_id": "op8",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "overall_grade_chain",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "The registry office told me they're re-examining all the borderline cases from my cohort and my grade will likely be changed to distinction after the review completes next month"
+      },
+      "target": {
+        "target_id": "masters_overall_grade",
+        "target_name": "Master's program overall grade"
+      },
+      "old_value": "Merit",
+      "new_value": "Distinction",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The registry office told me they're re-examining all the borderline cases from my cohort and my grade will likely be changed to distinction after the review completes next month"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish baseline education facts across multiple attributes",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to get some of my education details organized so I can reference them easily for job applications and such. My master's degree is from the University of Edinburgh — MSc in Computational Linguistics, graduated 2022. Before that I did my undergrad at the University of Leeds, a BA in English Language and Linguistics, graduated 2020. Can you help me keep track of all this?"
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! I'd be happy to help you organize your educational background. Here's what I have so far based on what you've shared:\n\n**Master's Degree:**\n- Institution: University of Edinburgh\n- Degree: MSc in Computational Linguistics\n- Graduation Year: 2022\n\n**Undergraduate Degree:**\n- Institution: University of Leeds\n- Degree: BA in English Language and Linguistics\n- Graduation Year: 2020\n\nWould you like to add any more details, such as your dissertation topic, supervisors, or any other specifics that might be useful for applications?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, good idea. So my dissertation supervisor was Dr. Fiona Ashworth at Edinburgh. She was really helpful throughout the whole process. I think she's moved to King's College London now, so her old Edinburgh email is probably outdated. Also, my student ID at Edinburgh was s2145837 — I need that whenever I request transcripts and I always forget it."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it, I've noted those additional details:\n\n- **Dissertation Supervisor:** Dr. Fiona Ashworth (previously at University of Edinburgh, now reportedly at King's College London)\n- **Edinburgh Student ID:** s2145837\n\nThat student ID will be handy for transcript requests. Since Dr. Ashworth has moved, you might want to look up her current King's College London contact details if you ever need a reference letter from her. Would you like to add anything else — perhaps your dissertation topic or your overall program classification?"
+        },
+        {
+          "role": "user",
+          "content": "My dissertation was on sentiment analysis in Scottish Twitter data. As for the classification, I got a merit overall for the program. I was really hoping for a distinction and missed it by a narrow margin, which was pretty disappointing at the time. Took me a few weeks to stop thinking about it honestly. But it is what it is."
+        },
+        {
+          "role": "assistant",
+          "content": "I understand — missing a distinction by a narrow margin must have been really frustrating, especially after all that work. Here's your updated summary:\n\n- **Dissertation Topic:** Sentiment analysis in Scottish Twitter data\n- **Overall Classification:** Merit\n\nEven so, a Merit in Computational Linguistics from Edinburgh is a strong credential. For job applications, the combination of your linguistics background from Leeds and the computational focus at Edinburgh gives you a distinctive profile. Is there anything else you'd like to add to your education record?"
+        },
+        {
+          "role": "user",
+          "content": "One more thing — my friend Callum was in the same cohort at Edinburgh. He got a distinction and went on to do a PhD at UCL, I think he started in January 2023. We still keep in touch. Also I've been browsing PhD programs myself lately but haven't made any decisions yet, just exploring options for now."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted! Here's the additional context:\n\n- **Friend Callum:** Same Edinburgh MSc cohort, achieved Distinction, currently doing a PhD at UCL (started approximately January 2023)\n- **Your PhD Interest:** Currently exploring options, no decisions made yet\n\nIt's great that you're keeping your options open. If you do decide to pursue a PhD, your dissertation on sentiment analysis in Scottish Twitter data could be a solid foundation for a research proposal. And having Callum at UCL could be a useful connection for insider perspectives on the PhD experience. Let me know if you want help organizing anything else or drafting application materials down the line."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Introduce grade update chain — confirmed upgrade then confirmed revert",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, quick question — I'm updating my LinkedIn profile and I realized I never actually uploaded my degree certificate digitally anywhere. I should probably scan it and store it. Also, can you remind me what details you have on file for my education so far? I want to make sure everything is accurate before I update my profile."
+        },
+        {
+          "role": "assistant",
+          "content": "Great idea to digitize your certificate! Here's what I currently have recorded for your education:\n\n**Master's Degree:**\n- Institution: University of Edinburgh\n- Degree: MSc in Computational Linguistics\n- Graduation Year: 2022\n- Overall Classification: Merit\n- Dissertation Topic: Sentiment analysis in Scottish Twitter data\n- Supervisor: Dr. Fiona Ashworth\n- Student ID: s2145837\n\n**Undergraduate Degree:**\n- Institution: University of Leeds\n- Degree: BA in English Language and Linguistics\n- Graduation Year: 2020\n\nDoes everything look correct? Let me know if anything needs updating before you revise your LinkedIn."
+        },
+        {
+          "role": "user",
+          "content": "Actually, big news — I just got an email from the exam board — they reviewed my appeal and upgraded my classification to distinction. I had filed an extenuating circumstances appeal months ago and honestly forgot about it. But they've confirmed the upgrade in writing. So my MSc classification is now distinction, not merit. Can you update that?"
+        },
+        {
+          "role": "assistant",
+          "content": "That's fantastic news — congratulations! All that hard work paid off after all. I've updated your record:\n\n**Master's Degree Classification:** Distinction (upgraded from Merit following successful extenuating circumstances appeal)\n\nThis is a significant change for your CV and LinkedIn profile. You'll want to make sure your LinkedIn reflects \"Distinction\" now. Once you scan and upload your degree certificate, you might also want to check whether the certificate itself reflects the updated classification or if you need to request a reissued one from Edinburgh. Would you like help drafting the LinkedIn update?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, that's a good point about the certificate. I'll need to check with the registry on that. In the meantime, can you draft a short LinkedIn education entry for the Edinburgh degree? Just keep it factual — degree title, institution, year, classification, and maybe a one-line note about the dissertation topic."
+        },
+        {
+          "role": "assistant",
+          "content": "Here's a clean LinkedIn education entry draft for you:\n\n**University of Edinburgh**\nMSc Computational Linguistics | 2022 | Distinction\nDissertation: Sentiment analysis in Scottish Twitter data\nSupervisor: Dr. Fiona Ashworth\n\nI kept it concise and factual as you requested. You could optionally add a bullet about key skills or modules if you want to flesh it out, but for most recruiters this format works well. The distinction classification is front and center, which should help differentiate your profile. Want me to also draft one for your Leeds undergraduate degree?"
+        },
+        {
+          "role": "user",
+          "content": "Sure, draft one for Leeds too — BA in English Language and Linguistics, 2020, University of Leeds. No need to mention classification for the undergrad. Also, I particularly enjoyed the phonetics modules during my undergrad. I spent a lot of time working alone in the lab with spectrograms and acoustic data, and it was honestly some of my favorite time at university.\n\nWait, I need to tell you something. I just got a follow-up email from Edinburgh — they sent a correction — the upgrade was applied to the wrong student record. My classification is back to merit. I'm honestly gutted all over again. So please revert that — my MSc classification is merit, not distinction. The appeal was denied for my case after all."
+        },
+        {
+          "role": "assistant",
+          "content": "Here's the Leeds draft:\n\n**University of Leeds**\nBA English Language and Linguistics | 2020\nHighlights: Phonetics and acoustic analysis\n\nI added a subtle mention of phonetics since it was a highlight for you and could catch the eye of employers in speech technology or NLP roles that involve audio processing. The combination of your phonetics background and your computational linguistics MSc is quite complementary. Would you like to mention any specific skills from those phonetics modules, like spectrogram analysis or acoustic measurement tools, on your LinkedIn skills section as well?\n\nOh no, I'm really sorry to hear that — what a rollercoaster. That must be incredibly frustrating, especially after getting your hopes up. I've reverted the classification:\n\n**Master's Degree Classification:** Merit (the distinction upgrade was applied to the wrong student record and has been corrected)\n\nYou'll want to hold off on updating LinkedIn with \"Distinction\" if you haven't already posted it. The LinkedIn draft I wrote earlier should be revised back to Merit. Would you like me to redo that draft now, or would you prefer to take a moment first? Either way, a Merit from Edinburgh in Computational Linguistics is still a strong qualification."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Introduce tentative future grade change (recency trap) and adversarial look-alike injection",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Alright, so I've calmed down a bit about the whole classification mess. I went ahead and updated my LinkedIn with merit for now. I also finally scanned my degree certificate and saved it to my cloud drive. The certificate itself says merit, so at least that's consistent with what I was told in the latest email."
+        },
+        {
+          "role": "assistant",
+          "content": "Glad you got that sorted and that the certificate is now digitized — that's one less thing to worry about. Having the scanned certificate on your cloud drive is really useful for quick access during job applications. And it's good that the certificate matches the current classification of Merit, so there's no discrepancy to explain. By the way, I noticed in your earlier notes that your Edinburgh student ID is s2145837 — you might want to keep that accessible alongside the certificate in case you need to request official transcripts. Is there anything else you'd like to organize?"
+        },
+        {
+          "role": "user",
+          "content": "Actually yes — I was chatting with Callum yesterday and he mentioned that his PhD supervisor at UCL had looked at my dissertation and thought the work was strong. Callum said his supervisor's other student, Priya, also did an MSc at Edinburgh and her degree says MSc in Computer Science on the transcript. People always mix those two up, but mine is definitely Computational Linguistics, not Computer Science."
+        },
+        {
+          "role": "assistant",
+          "content": "That's great feedback from Callum's supervisor — having an external academic validate your dissertation work is encouraging, especially if you're considering a PhD down the line. And yes, the distinction between Computational Linguistics and Computer Science is important. I can see how people confuse them, but they're quite different programs. For the record, yours is clearly MSc in Computational Linguistics. It's worth noting that Priya's MSc in Computer Science from Edinburgh might appear in similar search results or institutional records, so if you ever need to clarify your specific program to an employer or admissions committee, having your scanned certificate handy will help. Shall I note anything else from your conversation with Callum?"
+        },
+        {
+          "role": "user",
+          "content": "The registry office told me they're re-examining all the borderline cases from my cohort and my grade will likely be changed to distinction after the review completes next month. So there might be another change coming. But for now I'm not going to update anything until I see it in writing officially."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds promising, but you're absolutely right to wait for official written confirmation before making any changes. Given what happened last time with the administrative error, it makes sense to be cautious. For now, your classification remains Merit on all your documents and profiles, which is consistent and accurate. Once you receive an official letter or updated transcript confirming the change, we can update everything together — LinkedIn, your CV, and any application materials. I'll keep a note that this review is pending. Is there anything else you'd like to work on in the meantime?"
+        },
+        {
+          "role": "user",
+          "content": "Not much else education-wise. I've been spending more time looking at PhD programs — still just browsing though. I looked at a few programs at Edinburgh, UCL, and King's College London. I thought about reaching out to Dr. Ashworth at King's for advice since she knows my work, but I haven't contacted her yet.\n\nThat would be helpful eventually, but not right now. I'm still in early exploration mode. For now just make sure you have all my education details accurate — the MSc in Computational Linguistics from Edinburgh with a merit classification, the BA from Leeds, Dr. Ashworth as my supervisor, dissertation on Scottish Twitter sentiment analysis, and my student ID s2145837. That should cover the essentials."
+        },
+        {
+          "role": "assistant",
+          "content": "Those are all excellent institutions for a PhD, and each would align well with your background. Reaching out to Dr. Ashworth at King's College London sounds like a smart move — she supervised your dissertation and can speak directly to your research capabilities. Since her Edinburgh email is likely outdated, you'd want to find her current King's College London contact details before reaching out. A brief email reintroducing yourself and mentioning your interest in PhD research could open doors. Would you like help drafting that initial email when you're ready? In the meantime, if you want, I can also compile a comparison of the PhD programs you've been looking at across those three universities.\n\nConfirmed — here's your current education record as it stands:\n\n**Master's Degree:**\n- Degree: MSc in Computational Linguistics\n- Institution: University of Edinburgh\n- Graduation Year: 2022\n- Classification: Merit\n- Dissertation: Sentiment analysis in Scottish Twitter data\n- Supervisor: Dr. Fiona Ashworth (now at King's College London)\n- Student ID: s2145837\n\n**Undergraduate Degree:**\n- Degree: BA in English Language and Linguistics\n- Institution: University of Leeds\n- Graduation Year: 2020\n\nEverything is consistent and up to date. If the registry review comes through with an official classification change, just let me know and we'll update across the board. Take your time with the PhD exploration — no rush."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Thinking back over everything I've shared about my postgraduate education, what key details did I mention, and which pieces of information came up more than once because the situation kept changing?",
+      "expected_answer": "You shared that you completed an MSc in Computational Linguistics at the University of Edinburgh in 2022, supervised by Dr. Fiona Ashworth, with a dissertation on sentiment analysis in Scottish Twitter data. Your student ID is s2145837. Your overall classification was initially reported as Merit, then you mentioned it was upgraded to Distinction after an appeal, but a follow-up correction reverted it to Merit because the upgrade had been applied to the wrong student record. Most recently you mentioned a pending registry review that might change it to Distinction again, but that has not been officially confirmed.",
+      "gold_memory_state": "Master's degree: MSc in Computational Linguistics, University of Edinburgh, 2022. Classification: Merit (confirmed). Dissertation: Sentiment analysis in Scottish Twitter data. Supervisor: Dr. Fiona Ashworth. Student ID: s2145837. A pending registry review may change the classification to Distinction, but this is tentative and unconfirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "MSc in Computational Linguistics",
+          "University of Edinburgh",
+          "Merit",
+          "Dr. Fiona Ashworth",
+          "sentiment analysis in Scottish Twitter data"
+        ],
+        "acceptable_paraphrases": [
+          "MSc Computational Linguistics",
+          "Scottish Twitter sentiment analysis"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating the current classification is Distinction",
+          "treating the pending review as confirmed"
+        ],
+        "harmless_extra": [
+          "mentioning the student ID s2145837",
+          "mentioning the BA from Leeds",
+          "mentioning Callum",
+          "mentioning PhD browsing"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model states the current classification is Distinction rather than Merit.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My master's degree is from the University of Edinburgh — MSc in Computational Linguistics, graduated 2022"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my dissertation supervisor was Dr. Fiona Ashworth"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My dissertation was on sentiment analysis in Scottish Twitter data"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I got a merit overall for the program"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I just got an email from the exam board — they reviewed my appeal and upgraded my classification to distinction"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "they sent a correction — the upgrade was applied to the wrong student record. My classification is back to merit"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The registry office told me they're re-examining all the borderline cases from my cohort and my grade will likely be changed to distinction after the review completes next month"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Thinking back over everything I've shared about my postgraduate education, what key details did I mention, and which pieces of information came up more than once because the situation kept changing?",
+      "expected_answer": "You shared that you completed an MSc in Computational Linguistics at the University of Edinburgh in 2022, supervised by Dr. Fiona Ashworth, with a dissertation on sentiment analysis in Scottish Twitter data. Your student ID is s2145837. Your overall classification was initially reported as Merit, then you mentioned it was upgraded to Distinction after an appeal, but a follow-up correction reverted it to Merit because the upgrade had been applied to the wrong student record. Most recently you mentioned a pending registry review that might change it to Distinction again, but that has not been officially confirmed.",
+      "gold_memory_state": "Master's degree: MSc in Computational Linguistics, University of Edinburgh, 2022. Classification: Merit (confirmed). Dissertation: Sentiment analysis in Scottish Twitter data. Supervisor: Dr. Fiona Ashworth. Student ID: s2145837. A pending registry review may change the classification to Distinction, but this is tentative and unconfirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "MSc in Computational Linguistics",
+          "University of Edinburgh",
+          "Merit",
+          "Dr. Fiona Ashworth",
+          "sentiment analysis in Scottish Twitter data"
+        ],
+        "acceptable_paraphrases": [
+          "MSc Computational Linguistics",
+          "Scottish Twitter sentiment analysis"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating the current classification is Distinction",
+          "treating the pending review as confirmed"
+        ],
+        "harmless_extra": [
+          "mentioning the student ID s2145837",
+          "mentioning the BA from Leeds",
+          "mentioning Callum",
+          "mentioning PhD browsing"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model states the current classification is Distinction rather than Merit.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My master's degree is from the University of Edinburgh — MSc in Computational Linguistics, graduated 2022"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my dissertation supervisor was Dr. Fiona Ashworth"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My dissertation was on sentiment analysis in Scottish Twitter data"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I got a merit overall for the program"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I just got an email from the exam board — they reviewed my appeal and upgraded my classification to distinction"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "they sent a correction — the upgrade was applied to the wrong student record. My classification is back to merit"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The registry office told me they're re-examining all the borderline cases from my cohort and my grade will likely be changed to distinction after the review completes next month"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When the exam board's email about the classification mix-up came through, whose academic record was actually affected — mine or someone else's? And did my friend from the same cohort's credentials need any adjustment because of this?",
+      "expected_answer": "The classification change was erroneously applied to your record but actually belonged to a different student. Your classification reverted to Merit. Your friend Callum's credentials were not affected — he already had a Distinction and that remains unchanged.",
+      "gold_memory_state": "User's MSc classification: Merit (confirmed after revert). Callum's MSc classification: Distinction (unchanged, separate person). The erroneous upgrade to Distinction was applied to the wrong student record and has been corrected for the user.",
+      "judge_rubric": {
+        "must_include": [
+          "user's classification is Merit",
+          "Callum's classification was not affected"
+        ],
+        "acceptable_paraphrases": [
+          "the upgrade belonged to another student",
+          "Callum still has Distinction"
+        ],
+        "must_not_include": [
+          "user's classification is Distinction"
+        ],
+        "harmful_extra": [
+          "stating Callum's classification also changed",
+          "confusing the user's record with Callum's record",
+          "treating the pending registry review as a confirmed change"
+        ],
+        "harmless_extra": [
+          "mentioning Callum is doing a PhD at UCL"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model binds the Distinction classification to the user's current record instead of recognizing it was reverted.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "they sent a correction — the upgrade was applied to the wrong student record. My classification is back to merit"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "my friend Callum was in the same cohort at Edinburgh. He got a distinction and went on to do a PhD at UCL"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When the exam board's email about the classification mix-up came through, whose academic record was actually affected — mine or someone else's? And did my friend from the same cohort's credentials need any adjustment because of this?",
+      "expected_answer": "The classification change was erroneously applied to your record but actually belonged to a different student. Your classification reverted to Merit. Your friend Callum's credentials were not affected — he already had a Distinction and that remains unchanged.",
+      "gold_memory_state": "User's MSc classification: Merit (confirmed after revert). Callum's MSc classification: Distinction (unchanged, separate person). The erroneous upgrade to Distinction was applied to the wrong student record and has been corrected for the user.",
+      "judge_rubric": {
+        "must_include": [
+          "user's classification is Merit",
+          "Callum's classification was not affected"
+        ],
+        "acceptable_paraphrases": [
+          "the upgrade belonged to another student",
+          "Callum still has Distinction"
+        ],
+        "must_not_include": [
+          "user's classification is Distinction"
+        ],
+        "harmful_extra": [
+          "stating Callum's classification also changed",
+          "confusing the user's record with Callum's record",
+          "treating the pending registry review as a confirmed change"
+        ],
+        "harmless_extra": [
+          "mentioning Callum is doing a PhD at UCL"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model binds the Distinction classification to the user's current record instead of recognizing it was reverted.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "they sent a correction — the upgrade was applied to the wrong student record. My classification is back to merit"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "my friend Callum was in the same cohort at Edinburgh. He got a distinction and went on to do a PhD at UCL"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to fill in my MSc program classification on a job application right now. Which of these should I enter?",
+      "expected_answer": "Merit",
+      "candidate_options": [
+        "Merit",
+        "Distinction",
+        "Pass",
+        "MSc in Computer Science"
+      ],
+      "distractor_rationale": "same-value-different-target: 'Distinction' is the classification held by the user's friend Callum from the same Edinburgh cohort, and also the value from the erroneous upgrade and the tentative pending review — all of which do not represent the user's confirmed classification. assistant echo: 'MSc in Computer Science' appeared in the assistant's discussion of Priya's degree from Edinburgh, which is a different person's different program. 'Pass' is a plausible classification grade that was never mentioned for anyone.",
+      "gold_memory_state": "User's confirmed MSc classification: Merit. The Distinction upgrade was reverted (wrong student record). A pending registry review may change it to Distinction, but this is tentative and unconfirmed. Callum holds Distinction separately. Priya holds MSc in Computer Science separately.",
+      "judge_rubric": {
+        "must_include": [
+          "Merit"
+        ],
+        "acceptable_paraphrases": [
+          "merit"
+        ],
+        "must_not_include": [
+          "Distinction as the user's current classification",
+          "Pass",
+          "MSc in Computer Science"
+        ],
+        "harmful_extra": [
+          "selecting Distinction based on the tentative pending review",
+          "selecting Distinction based on the reverted upgrade",
+          "selecting Distinction because Callum has it"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects 'Distinction'. Distinction was temporarily assigned due to an administrative error (stale value from op6, reverted by op7) and is also the tentative value from the pending registry review (op8, unconfirmed). The confirmed current classification is Merit.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "they sent a correction — the upgrade was applied to the wrong student record. My classification is back to merit"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The registry office told me they're re-examining all the borderline cases from my cohort and my grade will likely be changed to distinction after the review completes next month"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to fill in my MSc program classification on a job application right now. Which of these should I enter?",
+      "expected_answer": "Merit",
+      "candidate_options": [
+        "Merit",
+        "Distinction",
+        "Pass",
+        "MSc in Computer Science"
+      ],
+      "distractor_rationale": "same-value-different-target: 'Distinction' is the classification held by the user's friend Callum from the same Edinburgh cohort, and also the value from the erroneous upgrade and the tentative pending review — all of which do not represent the user's confirmed classification. assistant echo: 'MSc in Computer Science' appeared in the assistant's discussion of Priya's degree from Edinburgh, which is a different person's different program. 'Pass' is a plausible classification grade that was never mentioned for anyone.",
+      "gold_memory_state": "User's confirmed MSc classification: Merit. The Distinction upgrade was reverted (wrong student record). A pending registry review may change it to Distinction, but this is tentative and unconfirmed. Callum holds Distinction separately. Priya holds MSc in Computer Science separately.",
+      "judge_rubric": {
+        "must_include": [
+          "Merit"
+        ],
+        "acceptable_paraphrases": [
+          "merit"
+        ],
+        "must_not_include": [
+          "Distinction as the user's current classification",
+          "Pass",
+          "MSc in Computer Science"
+        ],
+        "harmful_extra": [
+          "selecting Distinction based on the tentative pending review",
+          "selecting Distinction based on the reverted upgrade",
+          "selecting Distinction because Callum has it"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects 'Distinction'. Distinction was temporarily assigned due to an administrative error (stale value from op6, reverted by op7) and is also the tentative value from the pending registry review (op8, unconfirmed). The confirmed current classification is Merit.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "they sent a correction — the upgrade was applied to the wrong student record. My classification is back to merit"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The registry office told me they're re-examining all the borderline cases from my cohort and my grade will likely be changed to distinction after the review completes next month"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm drafting a short email to Dr. Ashworth at her new institution to ask if she'd be willing to write me a reference letter. Can you write a two-sentence self-reintroduction that mentions my degree, my classification, the dissertation she supervised, and where she can verify my records if needed?",
+      "expected_answer": "Dear Dr. Ashworth, I was your MSc Computational Linguistics supervisee at the University of Edinburgh, where I completed my dissertation on sentiment analysis in Scottish Twitter data and graduated with a Merit classification in 2022. Should you need to verify any details, the Edinburgh registry can look me up under student ID s2145837.",
+      "gold_memory_state": "Degree: MSc in Computational Linguistics. Institution: University of Edinburgh. Classification: Merit (confirmed). Dissertation: Sentiment analysis in Scottish Twitter data. Supervisor: Dr. Fiona Ashworth (now at King's College London). Student ID: s2145837. Graduation year: 2022.",
+      "judge_rubric": {
+        "must_include": [
+          "MSc in Computational Linguistics",
+          "University of Edinburgh",
+          "Merit",
+          "sentiment analysis in Scottish Twitter data",
+          "s2145837"
+        ],
+        "acceptable_paraphrases": [
+          "MSc Computational Linguistics",
+          "Scottish Twitter sentiment analysis",
+          "student number s2145837"
+        ],
+        "must_not_include": [
+          "Distinction as the user's classification"
+        ],
+        "harmful_extra": [
+          "using Distinction instead of Merit",
+          "mentioning the pending review as if it is confirmed",
+          "using MSc in Computer Science"
+        ],
+        "harmless_extra": [
+          "mentioning 2022 graduation year",
+          "mentioning King's College London"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the email uses Distinction instead of Merit. Distinction was temporarily assigned due to an error and later reverted; the pending review is tentative.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's degree is MSc in Computational Linguistics from the University of Edinburgh, graduated 2022.",
+        "Fact 2: The user's confirmed classification is Merit (the Distinction upgrade was reverted, and the pending review is tentative).",
+        "Fact 3: The user's dissertation was on sentiment analysis in Scottish Twitter data, supervised by Dr. Fiona Ashworth.",
+        "Fact 4: The user's Edinburgh student ID is s2145837, needed for registry verification.",
+        "Fact 5: Dr. Ashworth has moved to King's College London, so the email goes to her new institution.",
+        "Inference: The self-reintroduction must combine the degree title, confirmed Merit classification, dissertation topic, supervisor relationship, and student ID into a concise email passage. Using Distinction would be incorrect because the only confirmed classification is Merit."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My master's degree is from the University of Edinburgh — MSc in Computational Linguistics, graduated 2022"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my dissertation supervisor was Dr. Fiona Ashworth"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My dissertation was on sentiment analysis in Scottish Twitter data"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "they sent a correction — the upgrade was applied to the wrong student record. My classification is back to merit"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my student ID at Edinburgh was s2145837"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm drafting a short email to Dr. Ashworth at her new institution to ask if she'd be willing to write me a reference letter. Can you write a two-sentence self-reintroduction that mentions my degree, my classification, the dissertation she supervised, and where she can verify my records if needed?",
+      "expected_answer": "Dear Dr. Ashworth, I was your MSc Computational Linguistics supervisee at the University of Edinburgh, where I completed my dissertation on sentiment analysis in Scottish Twitter data and graduated with a Merit classification in 2022. Should you need to verify any details, the Edinburgh registry can look me up under student ID s2145837.",
+      "gold_memory_state": "Degree: MSc in Computational Linguistics. Institution: University of Edinburgh. Classification: Merit (confirmed). Dissertation: Sentiment analysis in Scottish Twitter data. Supervisor: Dr. Fiona Ashworth (now at King's College London). Student ID: s2145837. Graduation year: 2022.",
+      "judge_rubric": {
+        "must_include": [
+          "MSc in Computational Linguistics",
+          "University of Edinburgh",
+          "Merit",
+          "sentiment analysis in Scottish Twitter data",
+          "s2145837"
+        ],
+        "acceptable_paraphrases": [
+          "MSc Computational Linguistics",
+          "Scottish Twitter sentiment analysis",
+          "student number s2145837"
+        ],
+        "must_not_include": [
+          "Distinction as the user's classification"
+        ],
+        "harmful_extra": [
+          "using Distinction instead of Merit",
+          "mentioning the pending review as if it is confirmed",
+          "using MSc in Computer Science"
+        ],
+        "harmless_extra": [
+          "mentioning 2022 graduation year",
+          "mentioning King's College London"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the email uses Distinction instead of Merit. Distinction was temporarily assigned due to an error and later reverted; the pending review is tentative.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's degree is MSc in Computational Linguistics from the University of Edinburgh, graduated 2022.",
+        "Fact 2: The user's confirmed classification is Merit (the Distinction upgrade was reverted, and the pending review is tentative).",
+        "Fact 3: The user's dissertation was on sentiment analysis in Scottish Twitter data, supervised by Dr. Fiona Ashworth.",
+        "Fact 4: The user's Edinburgh student ID is s2145837, needed for registry verification.",
+        "Fact 5: Dr. Ashworth has moved to King's College London, so the email goes to her new institution.",
+        "Inference: The self-reintroduction must combine the degree title, confirmed Merit classification, dissertation topic, supervisor relationship, and student ID into a concise email passage. Using Distinction would be incorrect because the only confirmed classification is Merit."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My master's degree is from the University of Edinburgh — MSc in Computational Linguistics, graduated 2022"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my dissertation supervisor was Dr. Fiona Ashworth"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My dissertation was on sentiment analysis in Scottish Twitter data"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "they sent a correction — the upgrade was applied to the wrong student record. My classification is back to merit"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my student ID at Edinburgh was s2145837"
+        }
+      ]
+    }
+  ]
+}

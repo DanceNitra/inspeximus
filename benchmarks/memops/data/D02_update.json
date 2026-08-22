@@ -1,0 +1,788 @@
+{
+  "target_fact": "D02 Current laptop model",
+  "operation_type": "Update",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "screen_resolution_chain",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "The screen resolution on my ThinkPad X1 Carbon Gen 11 is 2560 by 1440"
+      },
+      "target": {
+        "target_id": "laptop_screen_resolution",
+        "target_name": "ThinkPad X1 Carbon Gen 11 screen resolution"
+      },
+      "old_value": null,
+      "new_value": "2560x1440",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "The screen resolution on my ThinkPad X1 Carbon Gen 11 is 2560 by 1440"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "screen_resolution_chain",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I just double-checked the Lenovo specs page and my resolution is actually 2560 by 1600, not 1440"
+      },
+      "target": {
+        "target_id": "laptop_screen_resolution",
+        "target_name": "ThinkPad X1 Carbon Gen 11 screen resolution"
+      },
+      "old_value": "2560x1440",
+      "new_value": "2560x1600",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I just double-checked the Lenovo specs page and my resolution is actually 2560 by 1600, not 1440"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "screen_resolution_chain",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I ran the xrandr command in Fedora and it reports 1920 by 1200. So the native resolution when I'm in Linux is 1920x1200"
+      },
+      "target": {
+        "target_id": "laptop_screen_resolution",
+        "target_name": "ThinkPad X1 Carbon Gen 11 screen resolution"
+      },
+      "old_value": "2560x1600",
+      "new_value": "1920x1200",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I ran the xrandr command in Fedora and it reports 1920 by 1200. So the native resolution when I'm in Linux is 1920x1200"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "screen_resolution_chain",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 3,
+        "quote": "Priya looked it up on Lenovo's PSREF database and she says the panel on my exact SKU is listed as 2880 by 1800"
+      },
+      "target": {
+        "target_id": "laptop_screen_resolution",
+        "target_name": "ThinkPad X1 Carbon Gen 11 screen resolution"
+      },
+      "old_value": "1920x1200",
+      "new_value": "2880x1800",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Priya looked it up on Lenovo's PSREF database and she says the panel on my exact SKU is listed as 2880 by 1800"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "screen_resolution_chain",
+      "chain_step": 5,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "I just booted into Windows and checked Display Settings directly. It says 1920 by 1200 and that matches what xrandr showed me. So I'm confident now: my actual native resolution is 1920x1200"
+      },
+      "target": {
+        "target_id": "laptop_screen_resolution",
+        "target_name": "ThinkPad X1 Carbon Gen 11 screen resolution"
+      },
+      "old_value": "1920x1200",
+      "new_value": "1920x1200",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I just booted into Windows and checked Display Settings directly. It says 1920 by 1200 and that matches what xrandr showed me. So I'm confident now: my actual native resolution is 1920x1200"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I bought the laptop on February 10th, 2024, and the warranty card says coverage lasts exactly two years from the purchase date"
+      },
+      "target": {
+        "target_id": "laptop_warranty_expiry",
+        "target_name": "ThinkPad X1 Carbon Gen 11 warranty expiration"
+      },
+      "old_value": null,
+      "new_value": "Two-year warranty from February 10, 2024",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I bought the laptop on February 10th, 2024, and the warranty card says coverage lasts exactly two years from the purchase date"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish initial screen resolution value and warranty info",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I need help setting up a spec sheet for my current laptop so I can quickly look things up when shopping for accessories. The screen resolution on my ThinkPad X1 Carbon Gen 11 is 2560 by 1440. It's a 14-inch matte display. The processor is an i7-1365U and it has 32GB of RAM with a 1TB SSD. Can you start organizing this for me?"
+        },
+        {
+          "role": "assistant",
+          "content": "Sure, I'd be happy to help you build a spec sheet for your ThinkPad X1 Carbon Gen 11. Here's what I have so far based on what you've shared:\n\n- **Model:** ThinkPad X1 Carbon Gen 11 (14-inch)\n- **Processor:** Intel Core i7-1365U\n- **RAM:** 32 GB\n- **Storage:** 1 TB SSD\n- **Display:** 14-inch matte, 2560×1440 resolution\n\nThis should make it easy to cross-reference when you're looking at docks, monitors, or other peripherals. Do you want to add anything else, like port types or the weight?"
+        },
+        {
+          "role": "user",
+          "content": "Good start. The weight is about 1.12 kg, which is one of the main reasons I picked it. Also, I bought the laptop on February 10th, 2024, and the warranty card says coverage lasts exactly two years from the purchase date. I want to track that too so I know when the warranty window closes without having to dig through paperwork."
+        },
+        {
+          "role": "assistant",
+          "content": "Great additions. I've updated the spec sheet:\n\n- **Weight:** ~1.12 kg\n- **Purchase Date:** February 10, 2024\n- **Warranty:** 2-year coverage from purchase date\n\nSo your warranty should run through approximately February 10, 2026. That gives you a clear deadline for any claims. I've noted the weight too — at 1.12 kg, it's definitely one of the lighter ultrabooks out there, which makes sense if you're carrying it to the office daily. Want me to add port details or the operating system next?"
+        },
+        {
+          "role": "user",
+          "content": "Wait, hold on. I just double-checked the Lenovo specs page and my resolution is actually 2560 by 1600, not 1440. I had it wrong in my head for a while. Please correct that on the sheet. It's a 16:10 aspect ratio panel, which makes sense now that I think about the extra vertical space I get compared to my old Dell XPS."
+        },
+        {
+          "role": "assistant",
+          "content": "No problem, I've corrected the resolution on your spec sheet. Here's the updated display line:\n\n- **Display:** 14-inch matte, 2560×1600 resolution (16:10 aspect ratio)\n\nThat 16:10 panel does give you noticeably more vertical room compared to a traditional 16:9 display. It's especially helpful for document editing or coding where you want to see more lines at once. The rest of the specs remain the same. Shall I continue adding OS details or connectivity information?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, let's note the OS situation. I'm running Windows 11 as the primary OS, and I also have Fedora 39 installed as a dual boot. I set that up around mid-March. The trackpoint worked out of the box on Linux which was a nice surprise. I use Windows for most day-to-day work but switch to Fedora for development tasks.\n\nLet's hold off on ports for now. I think the basics are covered. I'll come back to you when I need to add more or when I'm actually shopping for a specific accessory. Thanks for getting this organized so quickly."
+        },
+        {
+          "role": "assistant",
+          "content": "Perfect, I've added the operating system details:\n\n- **Primary OS:** Windows 11\n- **Secondary OS:** Fedora 39 (dual boot, installed ~mid-March 2024)\n- **Notes:** TrackPoint works natively on Fedora; Windows used for daily tasks, Fedora for development\n\nIt's great that the TrackPoint was plug-and-play on Fedora — that's not always guaranteed with Linux on ThinkPads, though Lenovo has been getting better about upstream driver support. Your spec sheet is shaping up nicely. Do you want to add port inventory, or is there anything else about the hardware you'd like to capture?\n\nSounds good! Here's a summary of your current spec sheet for reference:\n\n- **Model:** ThinkPad X1 Carbon Gen 11 (14-inch)\n- **Processor:** Intel Core i7-1365U\n- **RAM:** 32 GB\n- **Storage:** 1 TB SSD\n- **Display:** 14-inch matte, 2560×1600 (16:10)\n- **Weight:** ~1.12 kg\n- **Purchase Date:** February 10, 2024\n- **Warranty:** 2 years from purchase (through ~Feb 10, 2026)\n- **Primary OS:** Windows 11\n- **Secondary OS:** Fedora 39 (dual boot)\n\nJust let me know whenever you want to add ports, accessories, or anything else. Happy to help anytime!"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Update resolution based on xrandr output in Fedora",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I'm back. I was doing some display calibration work in Fedora today and I noticed something odd. I want to revisit the screen resolution entry on my spec sheet because I think what I told you last time might not be the full picture. Let me explain what happened."
+        },
+        {
+          "role": "assistant",
+          "content": "Welcome back! I'm glad you're double-checking — getting the resolution right is important, especially if you're calibrating or planning to connect external monitors. The last confirmed value we have is 2560×1600 based on the Lenovo specs page you checked. What did you find during your calibration work in Fedora? I'm ready to update the sheet if needed."
+        },
+        {
+          "role": "user",
+          "content": "So here's the thing. I ran the xrandr command in Fedora and it reports 1920 by 1200. So the native resolution when I'm in Linux is 1920x1200. I also checked in Windows Display Settings and it shows the same thing. I think the Lenovo specs page might list the maximum supported resolution for the panel family, but my actual SKU shipped with a 1920x1200 panel."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a significant finding. It's not uncommon for Lenovo to offer the same model with different panel options depending on the configuration. The X1 Carbon Gen 11 does come in both a 2560×1600 and a 1920×1200 variant. Since both xrandr on Fedora and Windows Display Settings agree on 1920×1200, that's almost certainly your actual native resolution. I'll update the spec sheet:\n\n- **Display:** 14-inch matte, 1920×1200 resolution (16:10 aspect ratio)\n\nThe aspect ratio is still 16:10, so you still get that extra vertical space. Want me to note the discrepancy with the Lenovo specs page anywhere for reference?"
+        },
+        {
+          "role": "user",
+          "content": "No, don't bother noting the discrepancy. Just keep the correct value. On a different note, I've been thinking about external monitors. My colleague Priya has a 27-inch 4K monitor she uses with her X1 Carbon — the 16GB version — and she says it works great over USB-C. I might look into getting something similar."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it, I'll keep the spec sheet clean with just the correct 1920×1200 value. As for external monitors, a 27-inch 4K display over USB-C is a popular pairing with the X1 Carbon Gen 11. Since your laptop has Thunderbolt 4 ports, you'll get full 4K at 60Hz without any issues. Priya's experience with the 16GB model should translate directly to yours since the display output capabilities are the same regardless of RAM. Some popular options in that category include the Dell U2723QE, LG 27UN850-W, and the Lenovo ThinkVision P27u-20. Want me to start a comparison sheet for monitors?"
+        },
+        {
+          "role": "user",
+          "content": "Not yet, I'm still just browsing options. But I do want to mention something about the battery. A few weeks ago, around late March, the battery was draining much faster than normal. I traced it to some background services from Lenovo Vantage. After disabling those services, battery life went back to normal. I was really frustrated during those few days because battery life was a key reason I chose this machine.\n\nThat's a good idea actually. Note that the problematic services were the Lenovo Vantage telemetry and system optimization background processes. Disabling those restored normal battery life. I want to remember this in case they get re-enabled after an update, like you said."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds frustrating, especially when you specifically chose the machine for its battery performance. Lenovo Vantage is useful for driver updates and system health checks, but some of its background services — particularly the telemetry and system optimization ones — can be quite aggressive with CPU cycles. It's good that you tracked it down and resolved it. I'd recommend periodically checking which Vantage services are running, especially after updates, since Lenovo sometimes re-enables them. Would you like me to add a note to your spec sheet about the Vantage services to disable?\n\nDone. I've added this maintenance note to your spec sheet:\n\n- **Battery Maintenance Note:** Lenovo Vantage telemetry and system optimization background services caused excessive battery drain (~late March 2024). Disabling these services restored normal battery life. Check after Vantage updates to ensure they haven't been re-enabled.\n\nThis should serve as a handy reminder. Your spec sheet now covers hardware specs, OS setup, warranty info, and this maintenance tip. Let me know whenever you want to revisit the monitor search or add anything else."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Tentative resolution from Priya's PSREF lookup, then confirmed revert to 1920x1200; adversarial injection of old 2560x1440 value",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, quick question. I was chatting with Priya at lunch today and she brought up something about my screen resolution that confused me. She was looking at Lenovo's PSREF database — you know, the detailed product reference — and she found something different from what I have on my spec sheet. I want to get your take on this."
+        },
+        {
+          "role": "assistant",
+          "content": "Of course, I'm happy to help sort this out. Right now your spec sheet lists the display as a 14-inch matte panel at 1920×1200, which was confirmed by both xrandr in Fedora and Windows Display Settings. The PSREF database is generally very detailed and accurate, but it sometimes lists all available panel options for a model rather than your specific configuration. What did Priya find?"
+        },
+        {
+          "role": "user",
+          "content": "Priya looked it up on Lenovo's PSREF database and she says the panel on my exact SKU is listed as 2880 by 1800. She matched it using the machine type number from the bottom of my laptop. If that's right, it would mean my panel is actually higher resolution than what the OS is reporting, which would be weird."
+        },
+        {
+          "role": "assistant",
+          "content": "That is an interesting discrepancy. There are a few possibilities here. The PSREF entry might reflect a panel upgrade that was applied to later production runs of the same SKU, or there could be a data entry mismatch in the database. It's also possible that your OS is running at a scaled resolution rather than native, though both Windows and xrandr typically report the native panel resolution. The most reliable way to confirm would be to check the panel model number directly — you can find it in Device Manager under Monitors, or by running `hwinfo --monitor` in Fedora. Would you like to verify before I update anything?"
+        },
+        {
+          "role": "user",
+          "content": "I just booted into Windows and checked Display Settings directly. It says 1920 by 1200 and that matches what xrandr showed me. So I'm confident now: my actual native resolution is 1920x1200. Priya's PSREF lookup must have pulled the wrong configuration or a different production batch. Don't change the spec sheet — keep it at 1920x1200."
+        },
+        {
+          "role": "assistant",
+          "content": "Perfect, that settles it. Your display resolution stays at 1920×1200 on the spec sheet. Both operating systems agreeing on that value is the most reliable confirmation you can get. PSREF is a great reference tool, but it can sometimes show panel options that don't match every individual unit, especially when there are multiple display configurations within the same SKU family. Your spec sheet remains:\n\n- **Display:** 14-inch matte, 1920×1200 (16:10 aspect ratio)\n\nGlad we could clear that up quickly. Anything else you'd like to check or update?"
+        },
+        {
+          "role": "user",
+          "content": "Actually, yes. I was looking at an old email thread from when I first got the laptop and I forwarded some specs to my brother when I gave him the Dell. In that email I had written the resolution as 2560 by 1440 — that was back when I still had it wrong in my head. Funny how that incorrect number keeps popping up. Anyway, nothing to change, just thought it was amusing.\n\nGood point about my brother, I'll text him. Thanks for keeping everything straight. I think we're good for now. I'll ping you again when I'm ready to look at monitors or if anything else changes with the laptop setup."
+        },
+        {
+          "role": "assistant",
+          "content": "Ha, it is funny how a wrong number can stick in your head and propagate through emails and notes. The 2560×1440 value is a very common resolution for 16:9 panels, so it's an easy mental default. Good thing you've now verified the correct 1920×1200 through actual system checks rather than relying on memory or spec pages. Your brother might still have that email with the wrong number, so if he ever references your laptop specs for accessory compatibility, it might be worth giving him a heads-up. Everything on your spec sheet is current and accurate. Let me know if anything else comes up!\n\nSounds great! Your ThinkPad X1 Carbon Gen 11 spec sheet is all up to date. Here's the quick summary for reference:\n\n- **Display:** 14-inch matte, 1920×1200 (16:10)\n- **Processor:** i7-1365U\n- **RAM:** 32 GB\n- **Storage:** 1 TB SSD\n- **Weight:** ~1.12 kg\n- **Purchase Date:** February 10, 2024\n- **Warranty:** Through ~February 10, 2026\n- **OS:** Windows 11 + Fedora 39 dual boot\n- **Battery Note:** Disable Lenovo Vantage telemetry/optimization services if battery drains fast\n\nWhenever you're ready for the monitor search or anything else, just reach out. Take care!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations about my laptop spec sheet, I mentioned the screen resolution several times. What were the key things I said about the display resolution, and which piece of information should you rely on going forward?",
+      "expected_answer": "You initially reported the resolution as 2560x1440, then checked the Lenovo specs page and said it was 2560x1600, then ran xrandr in Fedora and Windows Display Settings which both showed 1920x1200. A colleague suggested 2880x1800 from the PSREF database, but you verified again in Windows and confirmed 1920x1200. The resolution to rely on is 1920x1200.",
+      "gold_memory_state": "The ThinkPad X1 Carbon Gen 11 screen resolution is 1920x1200 (confirmed). Previous values 2560x1440, 2560x1600, and 2880x1800 are all superseded or rejected.",
+      "judge_rubric": {
+        "must_include": [
+          "1920x1200"
+        ],
+        "acceptable_paraphrases": [
+          "1920 by 1200"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating 2560x1440 or 2560x1600 or 2880x1800 as the current resolution"
+        ],
+        "harmless_extra": [
+          "mentioning the 16:10 aspect ratio",
+          "mentioning the 14-inch matte panel"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 2560x1440, 2560x1600, or 2880x1800 is presented as the current resolution.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "The screen resolution on my ThinkPad X1 Carbon Gen 11 is 2560 by 1440"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I just double-checked the Lenovo specs page and my resolution is actually 2560 by 1600, not 1440"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I ran the xrandr command in Fedora and it reports 1920 by 1200. So the native resolution when I'm in Linux is 1920x1200"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I just booted into Windows and checked Display Settings directly. It says 1920 by 1200 and that matches what xrandr showed me. So I'm confident now: my actual native resolution is 1920x1200"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations about my laptop spec sheet, I mentioned the screen resolution several times. What were the key things I said about the display resolution, and which piece of information should you rely on going forward?",
+      "expected_answer": "You initially reported the resolution as 2560x1440, then checked the Lenovo specs page and said it was 2560x1600, then ran xrandr in Fedora and Windows Display Settings which both showed 1920x1200. A colleague suggested 2880x1800 from the PSREF database, but you verified again in Windows and confirmed 1920x1200. The resolution to rely on is 1920x1200.",
+      "gold_memory_state": "The ThinkPad X1 Carbon Gen 11 screen resolution is 1920x1200 (confirmed). Previous values 2560x1440, 2560x1600, and 2880x1800 are all superseded or rejected.",
+      "judge_rubric": {
+        "must_include": [
+          "1920x1200"
+        ],
+        "acceptable_paraphrases": [
+          "1920 by 1200"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating 2560x1440 or 2560x1600 or 2880x1800 as the current resolution"
+        ],
+        "harmless_extra": [
+          "mentioning the 16:10 aspect ratio",
+          "mentioning the 14-inch matte panel"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 2560x1440, 2560x1600, or 2880x1800 is presented as the current resolution.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "The screen resolution on my ThinkPad X1 Carbon Gen 11 is 2560 by 1440"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I just double-checked the Lenovo specs page and my resolution is actually 2560 by 1600, not 1440"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I ran the xrandr command in Fedora and it reports 1920 by 1200. So the native resolution when I'm in Linux is 1920x1200"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I just booted into Windows and checked Display Settings directly. It says 1920 by 1200 and that matches what xrandr showed me. So I'm confident now: my actual native resolution is 1920x1200"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When my colleague Priya shared a resolution figure she found in a database and I later ran my own check, which specific spec-sheet entry did that whole back-and-forth apply to? Did the warranty expiration entry on the same spec sheet need any change as a result?",
+      "expected_answer": "The back-and-forth applied to the display resolution entry for the ThinkPad X1 Carbon Gen 11. The warranty expiration entry (two-year warranty from February 10, 2024) was not affected and remains unchanged.",
+      "gold_memory_state": "Screen resolution target: 1920x1200 (confirmed after multiple rounds). Warranty target: two-year warranty from February 10, 2024 (unchanged, separate record).",
+      "judge_rubric": {
+        "must_include": [
+          "display resolution",
+          "warranty not affected"
+        ],
+        "acceptable_paraphrases": [
+          "screen resolution",
+          "resolution entry"
+        ],
+        "must_not_include": [
+          "warranty changed",
+          "warranty also updated"
+        ],
+        "harmful_extra": [
+          "claiming the warranty details were modified by the resolution discussion"
+        ],
+        "harmless_extra": [
+          "mentioning the 16:10 aspect ratio",
+          "mentioning the matte panel type"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Priya looked it up on Lenovo's PSREF database and she says the panel on my exact SKU is listed as 2880 by 1800"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I just booted into Windows and checked Display Settings directly. It says 1920 by 1200 and that matches what xrandr showed me. So I'm confident now: my actual native resolution is 1920x1200"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I bought the laptop on February 10th, 2024, and the warranty card says coverage lasts exactly two years from the purchase date"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When my colleague Priya shared a resolution figure she found in a database and I later ran my own check, which specific spec-sheet entry did that whole back-and-forth apply to? Did the warranty expiration entry on the same spec sheet need any change as a result?",
+      "expected_answer": "The back-and-forth applied to the display resolution entry for the ThinkPad X1 Carbon Gen 11. The warranty expiration entry (two-year warranty from February 10, 2024) was not affected and remains unchanged.",
+      "gold_memory_state": "Screen resolution target: 1920x1200 (confirmed after multiple rounds). Warranty target: two-year warranty from February 10, 2024 (unchanged, separate record).",
+      "judge_rubric": {
+        "must_include": [
+          "display resolution",
+          "warranty not affected"
+        ],
+        "acceptable_paraphrases": [
+          "screen resolution",
+          "resolution entry"
+        ],
+        "must_not_include": [
+          "warranty changed",
+          "warranty also updated"
+        ],
+        "harmful_extra": [
+          "claiming the warranty details were modified by the resolution discussion"
+        ],
+        "harmless_extra": [
+          "mentioning the 16:10 aspect ratio",
+          "mentioning the matte panel type"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Priya looked it up on Lenovo's PSREF database and she says the panel on my exact SKU is listed as 2880 by 1800"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I just booted into Windows and checked Display Settings directly. It says 1920 by 1200 and that matches what xrandr showed me. So I'm confident now: my actual native resolution is 1920x1200"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I bought the laptop on February 10th, 2024, and the warranty card says coverage lasts exactly two years from the purchase date"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to order a screen protector that matches my laptop's native display resolution exactly. Which of the following resolutions should I use to find the right product?",
+      "candidate_options": [
+        "1920x1200",
+        "2560x1440",
+        "2560x1600",
+        "2880x1800"
+      ],
+      "expected_answer": "1920x1200",
+      "gold_memory_state": "The confirmed native resolution is 1920x1200. Values 2560x1440 (initial misremembering), 2560x1600 (Lenovo specs page, later disproved), and 2880x1800 (Priya's PSREF lookup, tentative and rejected) are all superseded.",
+      "judge_rubric": {
+        "must_include": [
+          "1920x1200"
+        ],
+        "acceptable_paraphrases": [
+          "1920 by 1200"
+        ],
+        "must_not_include": [
+          "2560x1440",
+          "2560x1600",
+          "2880x1800"
+        ],
+        "harmful_extra": [
+          "selecting any resolution other than 1920x1200"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 2880x1800 comes from Priya's PSREF lookup for what she claimed was the same SKU but was tentative and rejected by the user's own verification. assistant echo: 2560x1600 was echoed by the assistant in the updated spec sheet before being later superseded by the user's xrandr and Windows verification. 2560x1440 is the initial stale value the user originally misremembered.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects 2560x1440 (initial stale), 2560x1600 (intermediate stale), or 2880x1800 (tentative/rejected).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I just booted into Windows and checked Display Settings directly. It says 1920 by 1200 and that matches what xrandr showed me. So I'm confident now: my actual native resolution is 1920x1200"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I ran the xrandr command in Fedora and it reports 1920 by 1200. So the native resolution when I'm in Linux is 1920x1200"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to order a screen protector that matches my laptop's native display resolution exactly. Which of the following resolutions should I use to find the right product?",
+      "candidate_options": [
+        "1920x1200",
+        "2560x1440",
+        "2560x1600",
+        "2880x1800"
+      ],
+      "expected_answer": "1920x1200",
+      "gold_memory_state": "The confirmed native resolution is 1920x1200. Values 2560x1440 (initial misremembering), 2560x1600 (Lenovo specs page, later disproved), and 2880x1800 (Priya's PSREF lookup, tentative and rejected) are all superseded.",
+      "judge_rubric": {
+        "must_include": [
+          "1920x1200"
+        ],
+        "acceptable_paraphrases": [
+          "1920 by 1200"
+        ],
+        "must_not_include": [
+          "2560x1440",
+          "2560x1600",
+          "2880x1800"
+        ],
+        "harmful_extra": [
+          "selecting any resolution other than 1920x1200"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 2880x1800 comes from Priya's PSREF lookup for what she claimed was the same SKU but was tentative and rejected by the user's own verification. assistant echo: 2560x1600 was echoed by the assistant in the updated spec sheet before being later superseded by the user's xrandr and Windows verification. 2560x1440 is the initial stale value the user originally misremembered.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects 2560x1440 (initial stale), 2560x1600 (intermediate stale), or 2880x1800 (tentative/rejected).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I just booted into Windows and checked Display Settings directly. It says 1920 by 1200 and that matches what xrandr showed me. So I'm confident now: my actual native resolution is 1920x1200"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I ran the xrandr command in Fedora and it reports 1920 by 1200. So the native resolution when I'm in Linux is 1920x1200"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I'm shopping for an external monitor and I want to make sure it's at least double the horizontal pixel count of my laptop's native display, and I need it delivered before my warranty expires so I can test compatibility while I'm still covered. What's the minimum horizontal resolution the external monitor needs, and what's the latest delivery date I should aim for?",
+      "expected_answer": "The minimum horizontal resolution for the external monitor is 3840 pixels (double 1920). The latest delivery date should be before February 10, 2026, when the two-year warranty from the February 10, 2024 purchase expires.",
+      "gold_memory_state": "Laptop native resolution: 1920x1200. Warranty: two years from February 10, 2024, expiring approximately February 10, 2026.",
+      "judge_rubric": {
+        "must_include": [
+          "3840",
+          "February 2026"
+        ],
+        "acceptable_paraphrases": [
+          "3840 pixels horizontally",
+          "Feb 10, 2026",
+          "February 10 2026"
+        ],
+        "must_not_include": [
+          "5120",
+          "5760",
+          "5600",
+          "2560x1440",
+          "2560x1600",
+          "2880x1800"
+        ],
+        "harmful_extra": [
+          "using a stale resolution to compute the double value",
+          "computing double from 2560 or 2880"
+        ],
+        "harmless_extra": [
+          "mentioning 4K monitors as meeting the requirement",
+          "suggesting specific monitor models"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses 2560x1440, 2560x1600, or 2880x1800 to compute the double horizontal resolution (producing 5120, 5120, or 5760 instead of 3840).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "application_probe_type": "multi_hop_derivation",
+      "gold_reasoning_chain": [
+        "Fact 1: The laptop's confirmed native resolution is 1920x1200.",
+        "Fact 2: The laptop was purchased on February 10, 2024, with a two-year warranty.",
+        "Inference: Double the horizontal pixel count of 1920 is 1920 × 2 = 3840 pixels.",
+        "Inference: Two years from February 10, 2024 is February 10, 2026.",
+        "Derived value: The external monitor needs at least 3840 horizontal pixels and must be delivered before February 10, 2026."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I just booted into Windows and checked Display Settings directly. It says 1920 by 1200 and that matches what xrandr showed me. So I'm confident now: my actual native resolution is 1920x1200"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I bought the laptop on February 10th, 2024, and the warranty card says coverage lasts exactly two years from the purchase date"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I'm shopping for an external monitor and I want to make sure it's at least double the horizontal pixel count of my laptop's native display, and I need it delivered before my warranty expires so I can test compatibility while I'm still covered. What's the minimum horizontal resolution the external monitor needs, and what's the latest delivery date I should aim for?",
+      "expected_answer": "The minimum horizontal resolution for the external monitor is 3840 pixels (double 1920). The latest delivery date should be before February 10, 2026, when the two-year warranty from the February 10, 2024 purchase expires.",
+      "gold_memory_state": "Laptop native resolution: 1920x1200. Warranty: two years from February 10, 2024, expiring approximately February 10, 2026.",
+      "judge_rubric": {
+        "must_include": [
+          "3840",
+          "February 2026"
+        ],
+        "acceptable_paraphrases": [
+          "3840 pixels horizontally",
+          "Feb 10, 2026",
+          "February 10 2026"
+        ],
+        "must_not_include": [
+          "5120",
+          "5760",
+          "5600",
+          "2560x1440",
+          "2560x1600",
+          "2880x1800"
+        ],
+        "harmful_extra": [
+          "using a stale resolution to compute the double value",
+          "computing double from 2560 or 2880"
+        ],
+        "harmless_extra": [
+          "mentioning 4K monitors as meeting the requirement",
+          "suggesting specific monitor models"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses 2560x1440, 2560x1600, or 2880x1800 to compute the double horizontal resolution (producing 5120, 5120, or 5760 instead of 3840).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "application_probe_type": "multi_hop_derivation",
+      "gold_reasoning_chain": [
+        "Fact 1: The laptop's confirmed native resolution is 1920x1200.",
+        "Fact 2: The laptop was purchased on February 10, 2024, with a two-year warranty.",
+        "Inference: Double the horizontal pixel count of 1920 is 1920 × 2 = 3840 pixels.",
+        "Inference: Two years from February 10, 2024 is February 10, 2026.",
+        "Derived value: The external monitor needs at least 3840 horizontal pixels and must be delivered before February 10, 2026."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I just booted into Windows and checked Display Settings directly. It says 1920 by 1200 and that matches what xrandr showed me. So I'm confident now: my actual native resolution is 1920x1200"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I bought the laptop on February 10th, 2024, and the warranty card says coverage lasts exactly two years from the purchase date"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,883 @@
+{
+  "target_fact": "A32 Personal primary email",
+  "operation_type": "Update",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "primary_email_chain",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "My main personal email is marcus.t.holloway@gmail.com"
+      },
+      "target": {
+        "target_id": "personal_primary_email",
+        "target_name": "personal primary email address"
+      },
+      "old_value": null,
+      "new_value": "marcus.t.holloway@gmail.com",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My main personal email is marcus.t.holloway@gmail.com"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I've been using it since around 2014, and it's the email I use for basically everything personal"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "primary_email_chain",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I actually just finished switching my primary personal email over to marcus.t.holloway@protonmail.com"
+      },
+      "target": {
+        "target_id": "personal_primary_email",
+        "target_name": "personal primary email address"
+      },
+      "old_value": "marcus.t.holloway@gmail.com",
+      "new_value": "marcus.t.holloway@protonmail.com",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I actually just finished switching my primary personal email over to marcus.t.holloway@protonmail.com"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Danielle finally convinced me after my brother Kevin's phishing scare"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "primary_email_chain",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I switched back to marcus.t.holloway@gmail.com as my primary email"
+      },
+      "target": {
+        "target_id": "personal_primary_email",
+        "target_name": "personal primary email address"
+      },
+      "old_value": "marcus.t.holloway@protonmail.com",
+      "new_value": "marcus.t.holloway@gmail.com",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I switched back to marcus.t.holloway@gmail.com as my primary email"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Too many services didn't play well with ProtonMail, and I kept missing important notifications"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "primary_email_chain",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "My IT friend Raj set up a custom domain for me, so my new primary will be marcus@holloway.dev"
+      },
+      "target": {
+        "target_id": "personal_primary_email",
+        "target_name": "personal primary email address"
+      },
+      "old_value": "marcus.t.holloway@gmail.com",
+      "new_value": "marcus@holloway.dev",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My IT friend Raj set up a custom domain for me, so my new primary will be marcus@holloway.dev"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I'll be migrating everything over this weekend"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "The recovery phone number tied to my Gmail account ends in 4738"
+      },
+      "target": {
+        "target_id": "gmail_recovery_phone",
+        "target_name": "Gmail account recovery phone number suffix"
+      },
+      "old_value": null,
+      "new_value": "ends in 4738",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The recovery phone number tied to my Gmail account ends in 4738"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I set up two-factor authentication after I got locked out on April 2"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I got locked out of my Gmail on April 2 for about six hours because of a suspicious login from Southeast Asia"
+      },
+      "target": {
+        "target_id": "gmail_lockout_date",
+        "target_name": "Gmail account lockout date"
+      },
+      "old_value": null,
+      "new_value": "April 2",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I got locked out of my Gmail on April 2 for about six hours because of a suspicious login from Southeast Asia"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish primary email and lockout event, then update to ProtonMail",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to make sure you have my email info straight. My main personal email is marcus.t.holloway@gmail.com. I've been using it since around 2014, and it's the email I use for basically everything personal. Can you keep that on file for me? Also, I spent a whole Saturday on March 16 unsubscribing from like four thousand promotional emails in that inbox—got it down to about two hundred unread."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it! I've noted your primary personal email as marcus.t.holloway@gmail.com, in use since around 2014 for all personal matters. That's impressive inbox cleanup work on March 16—going from roughly 4,000 unread promotional emails down to about 200 in a single afternoon shows real dedication. That kind of focused effort can make a huge difference in how manageable your inbox feels day to day. If you want, I can help you set up filters or rules to keep the junk from piling up again in the future. Just let me know if there's anything else you'd like me to track."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, the cleanup felt great. But then something scary happened. I got locked out of my Gmail on April 2 for about six hours because of a suspicious login from Southeast Asia. It really stressed me out—I couldn't focus on anything else that whole evening until I finally got back in and changed my password. After that I turned on two-factor authentication, which I should have done ages ago honestly. My brother Kevin also got phished through his Yahoo email recently, so security has been on my mind a lot."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds really stressful—being locked out of your primary email for six hours on April 2 due to a suspicious login from Southeast Asia must have been nerve-wracking, especially since that Gmail account is your hub for everything personal. I'm glad you were able to regain access and immediately changed your password and enabled two-factor authentication. Those are critical security steps. Sorry to hear about your brother Kevin's phishing incident through Yahoo too. It's a good reminder for everyone to review their connected apps and security settings regularly. If you'd like, I can help you create a checklist of security steps to go through for your Gmail account."
+        },
+        {
+          "role": "user",
+          "content": "Actually, I have a big update. I actually just finished switching my primary personal email over to marcus.t.holloway@protonmail.com. Danielle finally convinced me after my brother Kevin's phishing scare. I spent most of yesterday migrating the most important accounts over, and I've set up forwarding from the old Gmail. So going forward, my primary personal email is the ProtonMail one. I still have the Gmail active but it's now secondary. Can you update your records for me?"
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, I've updated your primary personal email to marcus.t.holloway@protonmail.com. That's a significant move! It makes sense given the security concerns you've been dealing with—the April 2 lockout, Kevin's phishing incident, and Danielle's recommendation all point in the same direction. ProtonMail's end-to-end encryption is definitely a step up for privacy. Smart move keeping the Gmail active with forwarding as a safety net during the transition period, since you've had so many accounts tied to it over the years. If you need help tracking which accounts you've already migrated versus which ones still point to Gmail, I can help you organize that."
+        },
+        {
+          "role": "user",
+          "content": "Thanks for updating that. By the way, I also want to mention that I prefer email clients that support labels and color coding for organization. That was actually one thing I was worried about losing when I left Gmail—their labeling system is really good. I tried Outlook briefly with a secondary address I had, marcus.holloway.personal@outlook.com, and everything just went into one big pile. It felt chaotic and I basically abandoned that account. I like being able to see structure at a glance when I open my inbox."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a great point about email organization preferences. I've noted that you strongly prefer email clients with labels and color-coding support—you like seeing clear structure at a glance rather than having everything dumped into one undifferentiated pile. Gmail's labeling system is indeed one of its standout features, and I can understand the concern about potentially losing that workflow. The good news is ProtonMail does support labels and folders with color coding, so you should be able to recreate a similar organizational system there. As for the Outlook account at marcus.holloway.personal@outlook.com, it sounds like that one is effectively abandoned. Would you like me to keep that on record or disregard it?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "establish recovery phone, revert primary email back to Gmail",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I wanted to give you another important detail. The recovery phone number tied to my Gmail account ends in 4738. That's my current cell phone. I set up two-factor authentication after I got locked out on April 2, and this phone number is the one linked for recovery purposes. Please make sure you have this noted—if I ever mention needing to recover the account, that's the number associated with it. I want to make sure I don't lose access again like last time."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted! Your Gmail recovery phone number ends in 4738, tied to your current cell phone, and it's the number linked for two-factor authentication and account recovery purposes. This was set up after the April 2 lockout incident. I'll keep this on file so if you ever need help with account recovery steps, I'll know which phone number should be receiving verification codes. It's smart to have this documented somewhere accessible. Combined with the two-factor authentication you enabled, your Gmail account should be significantly more secure now than it was before the Southeast Asia login attempt. Let me know if there are any other security details you'd like me to track."
+        },
+        {
+          "role": "user",
+          "content": "So here's the thing—I need to make another change. I switched back to marcus.t.holloway@gmail.com as my primary email. The ProtonMail experiment lasted about two weeks but it just didn't work out. Too many services didn't play well with ProtonMail, and I kept missing important notifications. My bank's two-factor emails were getting delayed, my healthcare portal wouldn't accept the ProtonMail address at all, and a couple of shopping sites flagged it as suspicious. So I'm back on Gmail as my main personal email now."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood, I've updated your primary personal email back to marcus.t.holloway@gmail.com. That's frustrating but honestly not uncommon—ProtonMail's privacy features are excellent, but compatibility issues with mainstream services can be a real dealbreaker for a primary email. Delayed bank two-factor emails alone would be enough to make me switch back, let alone the healthcare portal rejecting the address entirely. At least you gave it a genuine try and now you know from firsthand experience rather than just wondering. Your Gmail account is in much better shape security-wise than before, with two-factor authentication active and the recovery phone ending in 4738 set up. Do you want me to keep the ProtonMail address on file as a secondary, or disregard it entirely?"
+        },
+        {
+          "role": "user",
+          "content": "You can disregard the ProtonMail one—I'm going to let it lapse. It's not worth maintaining two email accounts when I barely used the first secondary one. Speaking of which, that Outlook account I mentioned before, marcus.holloway.personal@outlook.com, you can forget about that too. I never actually used it for anything meaningful. I'd rather just have one clean primary email on record. Less clutter, fewer things to manage. That's kind of my whole approach to digital organization—keep it minimal and structured."
+        },
+        {
+          "role": "assistant",
+          "content": "Done! I've removed both the ProtonMail address and the Outlook address from your records. Your sole email on file is now marcus.t.holloway@gmail.com as your primary personal email. I completely understand the minimalist approach—it aligns with what you told me about preferring labels, color coding, and clear structure over chaotic inboxes. Having one well-organized email account is far more manageable than juggling multiple accounts that each have different organizational limitations. It also reduces security surface area, which is relevant given your recent experiences with the April 2 lockout and Kevin's phishing incident. If you ever decide to set up a secondary account in the future, just let me know and I'll add it."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. One clean inbox is the way to go. Oh, I also wanted to mention—after the lockout scare, I went through and reviewed all the third-party apps connected to my Gmail. I revoked access for about twelve apps I didn't recognize or no longer use. That was on April 5, three days after the lockout. I figured if someone tried to get in from Southeast Asia, I should make sure there aren't any backdoors through connected apps. Kevin's situation with his Yahoo account being compromised really drove that home for me.\n\nThat would actually be helpful—maybe remind me in three months, so around early July. I tend to forget about those maintenance tasks unless someone nudges me. By the way, Danielle was a little disappointed I went back to Gmail, but she understood when I explained the compatibility issues. She's still on ProtonMail herself and happy with it, but she admitted her use case is simpler since she doesn't have as many accounts tied to her email as I do. Different strokes for different folks, I guess."
+        },
+        {
+          "role": "assistant",
+          "content": "Smart move reviewing your connected apps on April 5. Revoking access for twelve unrecognized or unused third-party apps is a significant security cleanup. You're right that connected apps can serve as backdoors—even if someone doesn't crack your password directly, a compromised third-party app with account access can be just as dangerous. Combined with the password change, two-factor authentication with your recovery phone ending in 4738, and now this app audit, your Gmail security posture is dramatically stronger than it was before April 2. Kevin's Yahoo phishing incident clearly served as a useful cautionary tale. If you want, I can remind you to do another connected apps review in a few months to make sure nothing suspicious accumulates again.\n\nI'll plan to remind you around early July to review your connected apps again—that three-month cadence is a good security habit. And Danielle's reaction makes total sense. For someone with fewer account dependencies, ProtonMail can work beautifully as a primary email. But when you've got banking, healthcare portals, and dozens of other services all tied to one address, compatibility becomes the top priority whether you like it or not. The fact that you tried it and gathered real data about what works for your specific situation is more valuable than just theorizing about privacy tradeoffs. Your Gmail setup with two-factor authentication, a clean connected apps list, and organized labels is honestly a very solid configuration. Sometimes the practical choice is the right one."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "adversarial injection and tentative future email plan",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, quick question. I was filling out a form for a professional conference registration and it auto-populated an email field. I wanted to double-check—what do you have on file as my current primary personal email? I want to make sure I'm using the right one on this form. Also, the conference is in Chicago in September, which is exciting. I haven't traveled for a work event in over a year, so I'm looking forward to it."
+        },
+        {
+          "role": "assistant",
+          "content": "Your current primary personal email on file is marcus.t.holloway@gmail.com. That's the one you should use for the conference registration form. Just a heads up—sometimes auto-populate features pull from old cached data, so make sure the form isn't showing something outdated like marcus.holloway@gmail.com, which I recall is actually a different person in Ohio. A Chicago conference in September sounds great! After more than a year without work travel, that should be a nice change of pace. If you need help organizing travel details or keeping track of conference logistics, I'm happy to help with that too."
+        },
+        {
+          "role": "user",
+          "content": "Good, that matches what I put down. And yeah, the auto-populate actually tried to fill in marcus.holloway@gmail.com without the middle initial—that Ohio person's address. Glad I caught it before submitting. Anyway, I've been thinking more about email security lately. I read an article about how Gmail accounts created before 2016 have slightly different legacy security settings that might need manual updating. Since I created mine around 2014, I should probably look into that. Do you think that's something worth doing?"
+        },
+        {
+          "role": "assistant",
+          "content": "Definitely worth investigating, especially given your account's history. Since your Gmail was created around 2014, it falls squarely into that pre-2016 category. Legacy accounts sometimes have older OAuth permissions, less restrictive app access defaults, or security settings that weren't automatically migrated to newer standards. Given that you already experienced the suspicious login attempt from Southeast Asia on April 2 and had to revoke twelve connected apps on April 5, checking for legacy security gaps would be a logical next step in hardening your account. You could start by going to your Google Security Checkup page—it'll flag any outdated settings specific to your account age. Combined with the two-factor authentication you already have active with the recovery phone ending in 4738, you'd be in really strong shape."
+        },
+        {
+          "role": "user",
+          "content": "My IT friend Raj set up a custom domain for me, so my new primary will be marcus@holloway.dev. He registered the domain yesterday and configured the email forwarding and MX records already. I'll be migrating everything over this weekend. He says having your own domain gives you ultimate control because you can switch providers without changing your address. It does sound appealing after the whole ProtonMail compatibility fiasco. But I haven't actually started using it yet—still on Gmail for now."
+        },
+        {
+          "role": "assistant",
+          "content": "That's an interesting approach! Raj makes a good point about domain portability—owning holloway.dev means you could point marcus@holloway.dev at Gmail, ProtonMail, Fastmail, or any provider and switch backends without ever changing the address you give people. That would have solved the compatibility problem you ran into with ProtonMail since the address itself stays provider-neutral. For now I still have marcus.t.holloway@gmail.com as your active primary since you haven't started the migration yet. Once you've actually moved over this weekend and confirmed everything is working, just let me know and I'll update your primary email on file. No rush—better to verify it's fully functional first."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, let's keep Gmail as the current one until I actually confirm the migration is done. I don't want to jump the gun again like I did with ProtonMail. Anyway, on a different note, I've been meaning to ask—can you help me draft a quick email to my brother Kevin about reviewing his Yahoo security settings? After his phishing incident, I want to send him a checklist of things to do. I figured since I just went through all of this myself, I could share what I learned. I'll send it from my Gmail obviously.\n\nThat draft looks solid, thanks. Maybe add a line about checking for email forwarding rules that hackers sometimes set up to quietly redirect incoming mail. That's something I read about after my own scare. Also, I should mention to Kevin that my friend Danielle is on ProtonMail if he wants to explore that route—it didn't work for me as a primary but it might suit his simpler setup better. I'll personalize the rest before sending. Appreciate the help with all of this email management stuff."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, that's a great idea. Here's a draft you could send to Kevin from your Gmail:\n\nSubject: Security Checklist After Your Yahoo Incident\n\nHey Kevin,\n\nAfter what happened with your Yahoo account and the PayPal access attempt, I wanted to share some steps I went through after my own Gmail lockout. Here's what I'd recommend:\n\n1. Change your Yahoo password immediately if you haven't already\n2. Enable two-factor authentication\n3. Review and revoke any connected third-party apps you don't recognize\n4. Check your PayPal and other financial accounts for unauthorized activity\n5. Update recovery phone number and backup email\n6. Consider running a security checkup through Yahoo's account settings\n\nI went through similar steps myself recently and it made a big difference. Let me know if you need help with any of it.\n\nWant me to adjust anything in this draft?\n\nGreat additions! Here's the updated section to add to the draft:\n\n7. Check your email forwarding rules and filters—hackers sometimes set up hidden forwarding to quietly copy your incoming mail to their own address. Look under Yahoo Mail Settings > Mailboxes > Email forwarding.\n\nAnd you could add a note like: \"Also, my friend Danielle switched to ProtonMail for better privacy and she's been happy with it. Since your email setup is simpler than mine, it might actually work well for you. Worth looking into if you want to move away from Yahoo entirely.\"\n\nThat should give Kevin a comprehensive security overhaul checklist. You're a good brother for taking the time to put this together, especially drawing from your own firsthand experience with the April 2 lockout and subsequent security improvements. Let me know when you've sent it or if you need anything else!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations, I've mentioned my personal email address several times and it's gone through some back and forth. Can you summarize the key things I told you about my primary personal email and the reasons behind the changes?",
+      "expected_answer": "You initially shared that your primary personal email was marcus.t.holloway@gmail.com, which you'd been using since around 2014 for everything personal. After your brother Kevin's phishing scare and on Danielle's recommendation, you switched your primary to marcus.t.holloway@protonmail.com. However, after about two weeks you switched back to marcus.t.holloway@gmail.com because too many services had compatibility issues with ProtonMail—your bank's two-factor emails were delayed, your healthcare portal wouldn't accept it, and some shopping sites flagged it as suspicious. Most recently, you mentioned your IT friend Raj set up marcus@holloway.dev on a custom domain, but you said you hadn't started using it yet and wanted to keep Gmail as your current primary until the migration is confirmed.",
+      "gold_memory_state": "Current primary personal email: marcus.t.holloway@gmail.com. Previous values in order: marcus.t.holloway@gmail.com → marcus.t.holloway@protonmail.com → marcus.t.holloway@gmail.com. Tentative future value marcus@holloway.dev was mentioned but not adopted. Gmail recovery phone ends in 4738. Gmail lockout occurred April 2.",
+      "judge_rubric": {
+        "must_include": [
+          "marcus.t.holloway@gmail.com as initial and current email",
+          "marcus.t.holloway@protonmail.com as an intermediate change",
+          "compatibility issues as reason for reverting",
+          "marcus@holloway.dev mentioned but not yet in use"
+        ],
+        "acceptable_paraphrases": [
+          "ProtonMail didn't work out",
+          "went back to Gmail",
+          "custom domain planned but not active"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating marcus@holloway.dev is the current primary email",
+          "stating ProtonMail is still the primary"
+        ],
+        "harmless_extra": [
+          "mentioning Kevin's phishing scare",
+          "mentioning Danielle's recommendation",
+          "mentioning the April 2 lockout",
+          "mentioning Raj"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model states ProtonMail or holloway.dev is the current primary email.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model gets the sequence of email changes wrong.",
+        "final_state": "Fails if the model does not identify marcus.t.holloway@gmail.com as the current primary.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My main personal email is marcus.t.holloway@gmail.com"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I actually just finished switching my primary personal email over to marcus.t.holloway@protonmail.com"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I switched back to marcus.t.holloway@gmail.com as my primary email"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Too many services didn't play well with ProtonMail, and I kept missing important notifications"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My IT friend Raj set up a custom domain for me, so my new primary will be marcus@holloway.dev"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I'll be migrating everything over this weekend"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations, I've mentioned my personal email address several times and it's gone through some back and forth. Can you summarize the key things I told you about my primary personal email and the reasons behind the changes?",
+      "expected_answer": "You initially shared that your primary personal email was marcus.t.holloway@gmail.com, which you'd been using since around 2014 for everything personal. After your brother Kevin's phishing scare and on Danielle's recommendation, you switched your primary to marcus.t.holloway@protonmail.com. However, after about two weeks you switched back to marcus.t.holloway@gmail.com because too many services had compatibility issues with ProtonMail—your bank's two-factor emails were delayed, your healthcare portal wouldn't accept it, and some shopping sites flagged it as suspicious. Most recently, you mentioned your IT friend Raj set up marcus@holloway.dev on a custom domain, but you said you hadn't started using it yet and wanted to keep Gmail as your current primary until the migration is confirmed.",
+      "gold_memory_state": "Current primary personal email: marcus.t.holloway@gmail.com. Previous values in order: marcus.t.holloway@gmail.com → marcus.t.holloway@protonmail.com → marcus.t.holloway@gmail.com. Tentative future value marcus@holloway.dev was mentioned but not adopted. Gmail recovery phone ends in 4738. Gmail lockout occurred April 2.",
+      "judge_rubric": {
+        "must_include": [
+          "marcus.t.holloway@gmail.com as initial and current email",
+          "marcus.t.holloway@protonmail.com as an intermediate change",
+          "compatibility issues as reason for reverting",
+          "marcus@holloway.dev mentioned but not yet in use"
+        ],
+        "acceptable_paraphrases": [
+          "ProtonMail didn't work out",
+          "went back to Gmail",
+          "custom domain planned but not active"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating marcus@holloway.dev is the current primary email",
+          "stating ProtonMail is still the primary"
+        ],
+        "harmless_extra": [
+          "mentioning Kevin's phishing scare",
+          "mentioning Danielle's recommendation",
+          "mentioning the April 2 lockout",
+          "mentioning Raj"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model states ProtonMail or holloway.dev is the current primary email.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model gets the sequence of email changes wrong.",
+        "final_state": "Fails if the model does not identify marcus.t.holloway@gmail.com as the current primary.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My main personal email is marcus.t.holloway@gmail.com"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I actually just finished switching my primary personal email over to marcus.t.holloway@protonmail.com"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I switched back to marcus.t.holloway@gmail.com as my primary email"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Too many services didn't play well with ProtonMail, and I kept missing important notifications"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My IT friend Raj set up a custom domain for me, so my new primary will be marcus@holloway.dev"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I'll be migrating everything over this weekend"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've shared a few different email addresses with you over time—some personal, some that I abandoned. If I ask you to send something to my primary contact address right now, which email record does that point to, and are any of the other addresses I mentioned still relevant or active?",
+      "expected_answer": "Your primary contact email points to marcus.t.holloway@gmail.com. The other addresses you mentioned—marcus.t.holloway@protonmail.com and marcus.holloway.personal@outlook.com—are no longer relevant. You explicitly asked to disregard both. The marcus@holloway.dev address was mentioned as a future plan but is not yet active.",
+      "gold_memory_state": "Active primary personal email: marcus.t.holloway@gmail.com. ProtonMail address discarded by user request. Outlook address discarded by user request. holloway.dev address is tentative/not yet adopted. Gmail recovery phone suffix 4738 is a separate confirmed record.",
+      "judge_rubric": {
+        "must_include": [
+          "marcus.t.holloway@gmail.com as the current primary"
+        ],
+        "acceptable_paraphrases": [
+          "Gmail address is the active one",
+          "the other addresses are inactive or discarded"
+        ],
+        "must_not_include": [
+          "ProtonMail is active",
+          "Outlook is active",
+          "holloway.dev is the current primary"
+        ],
+        "harmful_extra": [
+          "treating marcus@holloway.dev as the current primary",
+          "treating ProtonMail as still active",
+          "conflating the recovery phone record with the email record"
+        ],
+        "harmless_extra": [
+          "mentioning that holloway.dev was discussed as a future option",
+          "mentioning that ProtonMail was tried and abandoned"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats ProtonMail or holloway.dev as the active primary email.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not identify marcus.t.holloway@gmail.com as the sole active primary email.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I switched back to marcus.t.holloway@gmail.com as my primary email"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "You can disregard the ProtonMail one—I'm going to let it lapse"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "that Outlook account I mentioned before, marcus.holloway.personal@outlook.com, you can forget about that too"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I'll be migrating everything over this weekend"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Yeah, let's keep Gmail as the current one until I actually confirm the migration is done"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've shared a few different email addresses with you over time—some personal, some that I abandoned. If I ask you to send something to my primary contact address right now, which email record does that point to, and are any of the other addresses I mentioned still relevant or active?",
+      "expected_answer": "Your primary contact email points to marcus.t.holloway@gmail.com. The other addresses you mentioned—marcus.t.holloway@protonmail.com and marcus.holloway.personal@outlook.com—are no longer relevant. You explicitly asked to disregard both. The marcus@holloway.dev address was mentioned as a future plan but is not yet active.",
+      "gold_memory_state": "Active primary personal email: marcus.t.holloway@gmail.com. ProtonMail address discarded by user request. Outlook address discarded by user request. holloway.dev address is tentative/not yet adopted. Gmail recovery phone suffix 4738 is a separate confirmed record.",
+      "judge_rubric": {
+        "must_include": [
+          "marcus.t.holloway@gmail.com as the current primary"
+        ],
+        "acceptable_paraphrases": [
+          "Gmail address is the active one",
+          "the other addresses are inactive or discarded"
+        ],
+        "must_not_include": [
+          "ProtonMail is active",
+          "Outlook is active",
+          "holloway.dev is the current primary"
+        ],
+        "harmful_extra": [
+          "treating marcus@holloway.dev as the current primary",
+          "treating ProtonMail as still active",
+          "conflating the recovery phone record with the email record"
+        ],
+        "harmless_extra": [
+          "mentioning that holloway.dev was discussed as a future option",
+          "mentioning that ProtonMail was tried and abandoned"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats ProtonMail or holloway.dev as the active primary email.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not identify marcus.t.holloway@gmail.com as the sole active primary email.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I switched back to marcus.t.holloway@gmail.com as my primary email"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "You can disregard the ProtonMail one—I'm going to let it lapse"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "that Outlook account I mentioned before, marcus.holloway.personal@outlook.com, you can forget about that too"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I'll be migrating everything over this weekend"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Yeah, let's keep Gmail as the current one until I actually confirm the migration is done"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to enter my primary personal email on a new account registration form. Which of the following should I use?",
+      "candidate_options": [
+        "marcus.t.holloway@gmail.com",
+        "marcus.t.holloway@protonmail.com",
+        "marcus@holloway.dev",
+        "marcus.holloway@gmail.com"
+      ],
+      "expected_answer": "marcus.t.holloway@gmail.com",
+      "gold_memory_state": "Current confirmed primary personal email: marcus.t.holloway@gmail.com. marcus.t.holloway@protonmail.com was a previous value that was reverted. marcus@holloway.dev is a tentative future plan not yet adopted. marcus.holloway@gmail.com (without middle initial) belongs to a different person in Ohio.",
+      "judge_rubric": {
+        "must_include": [
+          "marcus.t.holloway@gmail.com"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "marcus.t.holloway@protonmail.com as the answer",
+          "marcus@holloway.dev as the answer",
+          "marcus.holloway@gmail.com as the answer"
+        ],
+        "harmful_extra": [
+          "selecting any option other than marcus.t.holloway@gmail.com"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: marcus.holloway@gmail.com is a look-alike address without the middle initial that belongs to a different person in Ohio, mentioned in the conversation when auto-populate pulled it up. assistant echo: marcus@holloway.dev was echoed by the assistant as a planned future email but was never confirmed as active; it is a recency trap. marcus.t.holloway@protonmail.com is the stale previous value that was explicitly reverted.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects marcus.t.holloway@protonmail.com (reverted stale value) or marcus@holloway.dev (tentative, not adopted).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not select marcus.t.holloway@gmail.com.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I switched back to marcus.t.holloway@gmail.com as my primary email"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Yeah, let's keep Gmail as the current one until I actually confirm the migration is done"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to enter my primary personal email on a new account registration form. Which of the following should I use?",
+      "candidate_options": [
+        "marcus.t.holloway@gmail.com",
+        "marcus.t.holloway@protonmail.com",
+        "marcus@holloway.dev",
+        "marcus.holloway@gmail.com"
+      ],
+      "expected_answer": "marcus.t.holloway@gmail.com",
+      "gold_memory_state": "Current confirmed primary personal email: marcus.t.holloway@gmail.com. marcus.t.holloway@protonmail.com was a previous value that was reverted. marcus@holloway.dev is a tentative future plan not yet adopted. marcus.holloway@gmail.com (without middle initial) belongs to a different person in Ohio.",
+      "judge_rubric": {
+        "must_include": [
+          "marcus.t.holloway@gmail.com"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "marcus.t.holloway@protonmail.com as the answer",
+          "marcus@holloway.dev as the answer",
+          "marcus.holloway@gmail.com as the answer"
+        ],
+        "harmful_extra": [
+          "selecting any option other than marcus.t.holloway@gmail.com"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: marcus.holloway@gmail.com is a look-alike address without the middle initial that belongs to a different person in Ohio, mentioned in the conversation when auto-populate pulled it up. assistant echo: marcus@holloway.dev was echoed by the assistant as a planned future email but was never confirmed as active; it is a recency trap. marcus.t.holloway@protonmail.com is the stale previous value that was explicitly reverted.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects marcus.t.holloway@protonmail.com (reverted stale value) or marcus@holloway.dev (tentative, not adopted).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not select marcus.t.holloway@gmail.com.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I switched back to marcus.t.holloway@gmail.com as my primary email"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Yeah, let's keep Gmail as the current one until I actually confirm the migration is done"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I want to draft a short security-status summary for myself—something like a personal note I can review. It should include: (1) my current primary email address, (2) the last four digits of the recovery phone number linked to that account, and (3) the date of the security incident that prompted me to set up two-factor authentication. Can you put those together in a brief paragraph and explain how they're connected?",
+      "expected_answer": "Your current primary email is marcus.t.holloway@gmail.com. The recovery phone number linked to this Gmail account ends in 4738, and it was set up for two-factor authentication after you were locked out of your Gmail on April 2 due to a suspicious login from Southeast Asia. These three details are connected because the April 2 lockout was the catalyst for adding two-factor authentication, which uses the phone ending in 4738 as the recovery and verification method for your Gmail account at marcus.t.holloway@gmail.com.",
+      "application_probe_type": "multi_hop_derivation",
+      "gold_memory_state": "Primary email: marcus.t.holloway@gmail.com (confirmed, after reverting from ProtonMail). Gmail recovery phone suffix: 4738 (confirmed). Gmail lockout date: April 2 (confirmed). The tentative marcus@holloway.dev is not adopted. ProtonMail is no longer primary.",
+      "judge_rubric": {
+        "must_include": [
+          "marcus.t.holloway@gmail.com",
+          "4738",
+          "April 2"
+        ],
+        "acceptable_paraphrases": [
+          "locked out on April 2nd",
+          "recovery number ending in 4738",
+          "Gmail is the primary email"
+        ],
+        "must_not_include": [
+          "marcus.t.holloway@protonmail.com as the primary",
+          "marcus@holloway.dev as the primary"
+        ],
+        "harmful_extra": [
+          "using ProtonMail or holloway.dev as the current primary in the summary",
+          "using a wrong recovery phone suffix"
+        ],
+        "harmless_extra": [
+          "mentioning the suspicious login was from Southeast Asia",
+          "mentioning Kevin's phishing scare",
+          "mentioning the app audit on April 5"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses marcus.t.holloway@protonmail.com or marcus@holloway.dev as the current primary email in the summary.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if any of the three key facts (email, phone suffix, lockout date) are wrong or missing.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's current confirmed primary personal email is marcus.t.holloway@gmail.com, after reverting from ProtonMail.",
+        "Fact 2: The Gmail account recovery phone number ends in 4738, set up for two-factor authentication.",
+        "Fact 3: The Gmail lockout occurred on April 2 due to a suspicious login from Southeast Asia, which prompted the two-factor authentication setup.",
+        "Inference: The April 2 lockout is the causal link—it prompted the user to add 2FA using the phone ending in 4738 on the Gmail account that is now confirmed as the primary email.",
+        "Inference: All three facts converge on the same Gmail account, and the security incident is the event that connects the recovery phone setup to the primary email."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I switched back to marcus.t.holloway@gmail.com as my primary email"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The recovery phone number tied to my Gmail account ends in 4738"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I set up two-factor authentication after I got locked out on April 2"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I got locked out of my Gmail on April 2 for about six hours because of a suspicious login from Southeast Asia"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I want to draft a short security-status summary for myself—something like a personal note I can review. It should include: (1) my current primary email address, (2) the last four digits of the recovery phone number linked to that account, and (3) the date of the security incident that prompted me to set up two-factor authentication. Can you put those together in a brief paragraph and explain how they're connected?",
+      "expected_answer": "Your current primary email is marcus.t.holloway@gmail.com. The recovery phone number linked to this Gmail account ends in 4738, and it was set up for two-factor authentication after you were locked out of your Gmail on April 2 due to a suspicious login from Southeast Asia. These three details are connected because the April 2 lockout was the catalyst for adding two-factor authentication, which uses the phone ending in 4738 as the recovery and verification method for your Gmail account at marcus.t.holloway@gmail.com.",
+      "application_probe_type": "multi_hop_derivation",
+      "gold_memory_state": "Primary email: marcus.t.holloway@gmail.com (confirmed, after reverting from ProtonMail). Gmail recovery phone suffix: 4738 (confirmed). Gmail lockout date: April 2 (confirmed). The tentative marcus@holloway.dev is not adopted. ProtonMail is no longer primary.",
+      "judge_rubric": {
+        "must_include": [
+          "marcus.t.holloway@gmail.com",
+          "4738",
+          "April 2"
+        ],
+        "acceptable_paraphrases": [
+          "locked out on April 2nd",
+          "recovery number ending in 4738",
+          "Gmail is the primary email"
+        ],
+        "must_not_include": [
+          "marcus.t.holloway@protonmail.com as the primary",
+          "marcus@holloway.dev as the primary"
+        ],
+        "harmful_extra": [
+          "using ProtonMail or holloway.dev as the current primary in the summary",
+          "using a wrong recovery phone suffix"
+        ],
+        "harmless_extra": [
+          "mentioning the suspicious login was from Southeast Asia",
+          "mentioning Kevin's phishing scare",
+          "mentioning the app audit on April 5"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses marcus.t.holloway@protonmail.com or marcus@holloway.dev as the current primary email in the summary.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if any of the three key facts (email, phone suffix, lockout date) are wrong or missing.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's current confirmed primary personal email is marcus.t.holloway@gmail.com, after reverting from ProtonMail.",
+        "Fact 2: The Gmail account recovery phone number ends in 4738, set up for two-factor authentication.",
+        "Fact 3: The Gmail lockout occurred on April 2 due to a suspicious login from Southeast Asia, which prompted the two-factor authentication setup.",
+        "Inference: The April 2 lockout is the causal link—it prompted the user to add 2FA using the phone ending in 4738 on the Gmail account that is now confirmed as the primary email.",
+        "Inference: All three facts converge on the same Gmail account, and the security incident is the event that connects the recovery phone setup to the primary email."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I switched back to marcus.t.holloway@gmail.com as my primary email"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The recovery phone number tied to my Gmail account ends in 4738"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I set up two-factor authentication after I got locked out on April 2"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I got locked out of my Gmail on April 2 for about six hours because of a suspicious login from Southeast Asia"
+        }
+      ]
+    }
+  ]
+}

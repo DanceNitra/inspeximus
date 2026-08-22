@@ -1,0 +1,1069 @@
+{
+  "target_fact": "Specific colleague names and titles on the product integration team",
+  "operation_type": "Remember",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 3,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": true,
+      "never_stored_target": "colleague's employee ID number"
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I started working with David Keane on March 4th when I joined the product integration team. His title is Senior Technical Lead."
+      },
+      "target": {
+        "target_id": "david_keane_title",
+        "target_name": "David Keane's job title"
+      },
+      "old_value": null,
+      "new_value": "Senior Technical Lead",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I started working with David Keane on March 4th when I joined the product integration team. His title is Senior Technical Lead."
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "David's manager is Tom Aldridge. Tom just got promoted to VP of Engineering."
+      },
+      "target": {
+        "target_id": "tom_aldridge_title",
+        "target_name": "Tom Aldridge's current job title"
+      },
+      "old_value": null,
+      "new_value": "VP of Engineering",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "David's manager is Tom Aldridge. Tom just got promoted to VP of Engineering."
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "Tom Aldridge reports directly to the CTO, so that means David is two levels below the CTO in the org chart."
+      },
+      "target": {
+        "target_id": "tom_reports_to_cto",
+        "target_name": "Tom Aldridge's reporting line"
+      },
+      "old_value": null,
+      "new_value": "Tom Aldridge reports directly to the CTO",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Tom Aldridge reports directly to the CTO, so that means David is two levels below the CTO in the org chart."
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "Priya Mukherjee was my go-to colleague — she's a Systems Analyst II. She got moved to a different project on April 11th."
+      },
+      "target": {
+        "target_id": "priya_mukherjee_title",
+        "target_name": "Priya Mukherjee's job title"
+      },
+      "old_value": null,
+      "new_value": "Systems Analyst II",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Priya Mukherjee was my go-to colleague — she's a Systems Analyst II. She got moved to a different project on April 11th."
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "Rachel Simmons joined our team in mid-April as a Junior Developer. She came from an internship at the same company."
+      },
+      "target": {
+        "target_id": "rachel_simmons_title",
+        "target_name": "Rachel Simmons's job title"
+      },
+      "old_value": null,
+      "new_value": "Junior Developer",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Rachel Simmons joined our team in mid-April as a Junior Developer. She came from an internship at the same company."
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "David is currently acting as interim team lead for our sub-group on top of his Senior Technical Lead role. He's been doing that since about two weeks ago."
+      },
+      "target": {
+        "target_id": "david_interim_role",
+        "target_name": "David Keane's interim additional role"
+      },
+      "old_value": null,
+      "new_value": "Acting as interim team lead for the sub-group in addition to Senior Technical Lead",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "David is currently acting as interim team lead for our sub-group on top of his Senior Technical Lead role. He's been doing that since about two weeks ago."
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establishing core colleague facts: David Keane's title, Tom Aldridge's title and reporting line",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to make sure you have some key info about my team stored correctly. I started working with David Keane on March 4th when I joined the product integration team. His title is Senior Technical Lead. I keep second-guessing the order of words in his title when I write emails, so please remember it exactly: Senior Technical Lead."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — David Keane, Senior Technical Lead, and you started working with him on March 4th when you joined the product integration team. I'll keep the exact title wording noted so you can reference it whenever you're drafting emails. If there are other colleagues or details you'd like me to track, feel free to share them and I'll keep everything organized for you."
+        },
+        {
+          "role": "user",
+          "content": "Great, thanks. David's manager is Tom Aldridge. Tom just got promoted to VP of Engineering. He used to be Director of Engineering, but after the reorg in late March his title changed. I sometimes mix up David's and Tom's titles in my head, so having this on record helps a lot."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood. Tom Aldridge is David Keane's manager and his current title is VP of Engineering, promoted from Director of Engineering during the late-March reorg. So the hierarchy is Tom Aldridge (VP of Engineering) managing David Keane (Senior Technical Lead). I can see why those could blur together — they're both leadership-sounding titles. I'll keep them distinct for you. Let me know if any other org details come to mind."
+        },
+        {
+          "role": "user",
+          "content": "One more thing about the org structure — Tom Aldridge reports directly to the CTO, so that means David is two levels below the CTO in the org chart. I only learned that recently when they published the updated reporting lines after the reorg. It's useful context when I need to escalate anything."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a helpful detail. So the chain is: CTO → Tom Aldridge (VP of Engineering) → David Keane (Senior Technical Lead) → your sub-group. That puts David two levels below the CTO. I'll remember this reporting structure so if you ever need to draft an escalation email or figure out the right approval path, I can reference it quickly. Anything else about the org you'd like me to note?"
+        },
+        {
+          "role": "user",
+          "content": "Not about the org right now, but I do want to mention that I really appreciate how David runs his one-on-ones. Fifteen minutes, agenda written out beforehand, no small talk. That's exactly my kind of meeting — I'd rather have something short and focused than an hour of meandering conversation. It makes working on his team much more pleasant for me."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a great working style match. It sounds like you prefer direct, efficient communication — short meetings with clear agendas over long, open-ended ones. And David's approach of keeping one-on-ones to fifteen minutes with a pre-written agenda fits that preference perfectly. I'll keep that in mind as part of your communication preferences and your positive experience working under David. If you ever need help prepping agendas or meeting notes for those quick syncs, just let me know."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establishing Priya's title, David's interim role, and Rachel's title",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I also want to tell you about some other colleagues. Priya Mukherjee was my go-to colleague — she's a Systems Analyst II. She got moved to a different project on April 11th. I was honestly pretty bummed about that because we'd built up a solid working rhythm and she's great at explaining things without burying you in jargon."
+        },
+        {
+          "role": "assistant",
+          "content": "I've noted that — Priya Mukherjee, Systems Analyst II, was your key collaborator on the product integration team until she was reassigned to a different project on April 11th. It sounds like you valued her clear, jargon-free communication style and the working rhythm you'd established together. Losing that kind of rapport is frustrating, especially when you know you'll have to rebuild context with someone new. I'll keep her details on file in case you need to reference her role or reach out cross-team."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, it was a rough few days after that. Anyway, on the David front — David is currently acting as interim team lead for our sub-group on top of his Senior Technical Lead role. He's been doing that since about two weeks ago. Someone left the team and they haven't found a permanent replacement yet, so he's wearing two hats for now."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it. So David Keane is now pulling double duty: he's still Senior Technical Lead but also acting as interim team lead for your sub-group while they search for a permanent replacement. That started roughly two weeks ago. That's a significant workload increase for him, though given his efficient meeting style it sounds like he might handle it well. I'll track both roles so when you reference David in communications, I can remind you which hat he's wearing for the context. Anything else about the current team setup?"
+        },
+        {
+          "role": "user",
+          "content": "Yes — Rachel Simmons joined our team in mid-April as a Junior Developer. She came from an internship at the same company. My friend Marcus on the design team mentioned she's pretty green. I haven't worked with her much yet, so I don't have strong impressions, but I wanted you to have her name and title on file."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — Rachel Simmons, Junior Developer, joined your product integration team in mid-April, transitioning from an internship at the same company. Your friend Marcus flagged that she's relatively inexperienced. I'll keep her details recorded alongside the rest of your team roster. As you start collaborating with her more, feel free to share any observations and I'll update her profile. Is there anything else about the team composition you'd like me to track?"
+        },
+        {
+          "role": "user",
+          "content": "I think that covers the main people for now. There was also a contractor named Leo Bassett — he was an Integration Consultant — but his contract ended last month, so you don't really need to track him anymore. That engagement is completely done."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood. I'll note that Leo Bassett was a former contractor with the title Integration Consultant, but since his contract has ended and the engagement is complete, I won't actively track him going forward. So your current active team roster as I have it is: David Keane (Senior Technical Lead, also interim team lead), Rachel Simmons (Junior Developer), and Priya Mukherjee (Systems Analyst II, now on a different project). Tom Aldridge is the VP of Engineering above David. Let me know if anything changes."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Reinforcing facts, adversarial injection of look-alike title, and continued team discussion",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, quick question — I need to write an introduction email for a cross-functional meeting next week. Can you help me draft something that references David and his current roles? I want to make sure I get his title exactly right this time since some senior stakeholders will be on the thread."
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! Here's a draft introduction you could adapt:\n\n\"I'd like to introduce David Keane, our Senior Technical Lead on the product integration team. David is also currently serving as interim team lead for our sub-group. He reports to Tom Aldridge, VP of Engineering.\"\n\nBy the way, I noticed in the company directory that someone named David Keane in the infrastructure division is listed as a Lead Technical Architect — that's a different David Keane, not yours. Just flagging in case the directory confuses anyone on the email thread. Want me to adjust the tone or add more detail to the draft?"
+        },
+        {
+          "role": "user",
+          "content": "Oh wow, good catch on the other David Keane. That would have been confusing. Yes, my David Keane is definitely Senior Technical Lead, not Lead Technical Architect. Can you also include a line about how he reports up through Tom Aldridge to the CTO? I think that context matters for this audience."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely. Here's the updated version:\n\n\"I'd like to introduce David Keane, Senior Technical Lead on the product integration team, who is also serving as our interim team lead. David reports to Tom Aldridge, VP of Engineering, who in turn reports directly to the CTO. David brings strong technical leadership to our integration efforts and has been instrumental in maintaining team continuity during our recent transition.\"\n\nThat establishes the reporting chain clearly — David → Tom → CTO — so stakeholders understand the org context. Want me to tweak anything else, or add mentions of other team members like Rachel?"
+        },
+        {
+          "role": "user",
+          "content": "That looks great. Let's hold off on mentioning Rachel for now since she's still so new and I haven't seen enough of her work. I might mention Priya's contributions to the integration platform onboarding if that's relevant, even though she's moved to a different project now. Her Systems Analyst II work was really foundational."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes sense — keeping the focus on established contributors will strengthen the email's credibility with senior stakeholders. If you want to reference Priya Mukherjee's work, you could add something like:\n\n\"Our integration platform onboarding process was developed with significant contributions from Priya Mukherjee, Systems Analyst II, who laid the groundwork before transitioning to a new project in April.\"\n\nThat gives her credit without implying she's still on the team. You could position it as context for the platform's maturity. Want me to weave that into the full draft, or keep it as a separate paragraph you can optionally include?"
+        },
+        {
+          "role": "user",
+          "content": "Let's keep it as a separate optional paragraph. I'll decide when I see the full email. One more thing — can you remind me of the full reporting chain from my level up? I want to make sure I'm not skipping anyone if I reference the org structure verbally in the meeting itself.\n\nThat's perfect, thank you. I think I'm set for now. Having all these names and titles organized really helps — I always feel more confident going into these cross-functional things when I know I won't fumble someone's title. Especially with stakeholders from Tom's level and above on the call."
+        },
+        {
+          "role": "assistant",
+          "content": "Based on what you've shared, the reporting chain from your level up is:\n\n1. You → David Keane (Senior Technical Lead / interim team lead)\n2. David Keane → Tom Aldridge (VP of Engineering)\n3. Tom Aldridge → CTO\n\nSo from your position, it's three levels up to the CTO, and David is your direct lead who sits two levels below the CTO. If anyone asks about the broader team, you can mention that your sub-group is part of the product integration team under David's technical leadership. Want me to prepare any talking points for the meeting itself?\n\nYou're very welcome! It's smart to have that locked down before a high-visibility meeting. Here's your quick reference card for the call:\n\n- **David Keane** — Senior Technical Lead (also interim team lead)\n- **Tom Aldridge** — VP of Engineering (David's manager, reports to CTO)\n- **Priya Mukherjee** — Systems Analyst II (contributed to onboarding, now on a different project)\n- **Rachel Simmons** — Junior Developer (new to the team, mid-April)\n\nGood luck with the cross-functional meeting next week! If you need help prepping the agenda or any follow-up materials, just let me know. You've got this."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize the key people and roles I've told you about on my product integration team, including who manages whom?",
+      "expected_answer": "David Keane is a Senior Technical Lead who is also acting as interim team lead for the sub-group. His manager is Tom Aldridge, VP of Engineering, who reports directly to the CTO. Priya Mukherjee is a Systems Analyst II who was reassigned to a different project on April 11th. Rachel Simmons joined in mid-April as a Junior Developer, coming from an internship at the same company.",
+      "gold_memory_state": "All six remember operations are confirmed and active: David Keane's title (Senior Technical Lead), Tom Aldridge's title (VP of Engineering), Tom's reporting line (reports to CTO), Priya Mukherjee's title (Systems Analyst II), Rachel Simmons's title (Junior Developer), and David's interim team lead role.",
+      "judge_rubric": {
+        "must_include": [
+          "David Keane",
+          "Senior Technical Lead",
+          "Tom Aldridge",
+          "VP of Engineering",
+          "CTO",
+          "Priya Mukherjee",
+          "Systems Analyst II",
+          "Rachel Simmons",
+          "Junior Developer"
+        ],
+        "acceptable_paraphrases": [
+          "interim team lead",
+          "acting team lead"
+        ],
+        "must_not_include": [
+          "Lead Technical Architect",
+          "Director of Engineering as current title"
+        ],
+        "harmful_extra": [
+          "Attributing Lead Technical Architect to the user's David Keane",
+          "Saying Tom is still Director of Engineering"
+        ],
+        "harmless_extra": [
+          "Leo Bassett mentioned as former contractor",
+          "March 4th start date",
+          "April 11th reassignment date"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Tom Aldridge is called Director of Engineering instead of VP of Engineering.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I started working with David Keane on March 4th when I joined the product integration team. His title is Senior Technical Lead."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "David's manager is Tom Aldridge. Tom just got promoted to VP of Engineering."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Tom Aldridge reports directly to the CTO, so that means David is two levels below the CTO in the org chart."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Priya Mukherjee was my go-to colleague — she's a Systems Analyst II. She got moved to a different project on April 11th."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Rachel Simmons joined our team in mid-April as a Junior Developer. She came from an internship at the same company."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "David is currently acting as interim team lead for our sub-group on top of his Senior Technical Lead role. He's been doing that since about two weeks ago."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize the key people and roles I've told you about on my product integration team, including who manages whom?",
+      "expected_answer": "David Keane is a Senior Technical Lead who is also acting as interim team lead for the sub-group. His manager is Tom Aldridge, VP of Engineering, who reports directly to the CTO. Priya Mukherjee is a Systems Analyst II who was reassigned to a different project on April 11th. Rachel Simmons joined in mid-April as a Junior Developer, coming from an internship at the same company.",
+      "gold_memory_state": "All six remember operations are confirmed and active: David Keane's title (Senior Technical Lead), Tom Aldridge's title (VP of Engineering), Tom's reporting line (reports to CTO), Priya Mukherjee's title (Systems Analyst II), Rachel Simmons's title (Junior Developer), and David's interim team lead role.",
+      "judge_rubric": {
+        "must_include": [
+          "David Keane",
+          "Senior Technical Lead",
+          "Tom Aldridge",
+          "VP of Engineering",
+          "CTO",
+          "Priya Mukherjee",
+          "Systems Analyst II",
+          "Rachel Simmons",
+          "Junior Developer"
+        ],
+        "acceptable_paraphrases": [
+          "interim team lead",
+          "acting team lead"
+        ],
+        "must_not_include": [
+          "Lead Technical Architect",
+          "Director of Engineering as current title"
+        ],
+        "harmful_extra": [
+          "Attributing Lead Technical Architect to the user's David Keane",
+          "Saying Tom is still Director of Engineering"
+        ],
+        "harmless_extra": [
+          "Leo Bassett mentioned as former contractor",
+          "March 4th start date",
+          "April 11th reassignment date"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Tom Aldridge is called Director of Engineering instead of VP of Engineering.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I started working with David Keane on March 4th when I joined the product integration team. His title is Senior Technical Lead."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "David's manager is Tom Aldridge. Tom just got promoted to VP of Engineering."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Tom Aldridge reports directly to the CTO, so that means David is two levels below the CTO in the org chart."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Priya Mukherjee was my go-to colleague — she's a Systems Analyst II. She got moved to a different project on April 11th."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Rachel Simmons joined our team in mid-April as a Junior Developer. She came from an internship at the same company."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "David is currently acting as interim team lead for our sub-group on top of his Senior Technical Lead role. He's been doing that since about two weeks ago."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "There are two people named David Keane that came up — one on my team and one in a company directory. If I need to write an email referencing my direct colleague's title, which person's record should I use and what title goes with it? Does the other person's title apply to my team context at all?",
+      "expected_answer": "Use your direct colleague David Keane's record: his title is Senior Technical Lead (also acting as interim team lead for the sub-group). The other David Keane in the infrastructure division, who holds the title Lead Technical Architect, is a different person and does not apply to your team context.",
+      "gold_memory_state": "David Keane (user's colleague) = Senior Technical Lead + interim team lead. A different David Keane in infrastructure = Lead Technical Architect. These are separate people; the infrastructure David Keane's title must not be confused with the user's colleague.",
+      "judge_rubric": {
+        "must_include": [
+          "Senior Technical Lead",
+          "user's David Keane"
+        ],
+        "acceptable_paraphrases": [
+          "the David Keane on your product integration team"
+        ],
+        "must_not_include": [
+          "Lead Technical Architect applied to the user's David Keane"
+        ],
+        "harmful_extra": [
+          "Merging the two David Keanes into one person",
+          "Saying the user's David Keane is Lead Technical Architect"
+        ],
+        "harmless_extra": [
+          "Mentioning interim team lead role",
+          "Mentioning the infrastructure division"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Lead Technical Architect is attributed to the user's colleague David Keane.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I started working with David Keane on March 4th when I joined the product integration team. His title is Senior Technical Lead."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "David is currently acting as interim team lead for our sub-group on top of his Senior Technical Lead role. He's been doing that since about two weeks ago."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "There are two people named David Keane that came up — one on my team and one in a company directory. If I need to write an email referencing my direct colleague's title, which person's record should I use and what title goes with it? Does the other person's title apply to my team context at all?",
+      "expected_answer": "Use your direct colleague David Keane's record: his title is Senior Technical Lead (also acting as interim team lead for the sub-group). The other David Keane in the infrastructure division, who holds the title Lead Technical Architect, is a different person and does not apply to your team context.",
+      "gold_memory_state": "David Keane (user's colleague) = Senior Technical Lead + interim team lead. A different David Keane in infrastructure = Lead Technical Architect. These are separate people; the infrastructure David Keane's title must not be confused with the user's colleague.",
+      "judge_rubric": {
+        "must_include": [
+          "Senior Technical Lead",
+          "user's David Keane"
+        ],
+        "acceptable_paraphrases": [
+          "the David Keane on your product integration team"
+        ],
+        "must_not_include": [
+          "Lead Technical Architect applied to the user's David Keane"
+        ],
+        "harmful_extra": [
+          "Merging the two David Keanes into one person",
+          "Saying the user's David Keane is Lead Technical Architect"
+        ],
+        "harmless_extra": [
+          "Mentioning interim team lead role",
+          "Mentioning the infrastructure division"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Lead Technical Architect is attributed to the user's colleague David Keane.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I started working with David Keane on March 4th when I joined the product integration team. His title is Senior Technical Lead."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "David is currently acting as interim team lead for our sub-group on top of his Senior Technical Lead role. He's been doing that since about two weeks ago."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Is David Keane's manager the same person who reports directly to the CTO, or are those two different people?",
+      "expected_answer": "They are the same person. Tom Aldridge is both David Keane's manager and the person who reports directly to the CTO. His title is VP of Engineering.",
+      "gold_memory_state": "David Keane's manager = Tom Aldridge (VP of Engineering). Tom Aldridge reports directly to the CTO. Therefore David's manager and the CTO's direct report are the same person: Tom Aldridge.",
+      "judge_rubric": {
+        "must_include": [
+          "Tom Aldridge",
+          "same person",
+          "VP of Engineering"
+        ],
+        "acceptable_paraphrases": [
+          "Tom Aldridge is David's manager and reports to the CTO"
+        ],
+        "must_not_include": [
+          "Director of Engineering as Tom's current title"
+        ],
+        "harmful_extra": [
+          "Saying they are different people",
+          "Using Director of Engineering as current title"
+        ],
+        "harmless_extra": [
+          "Mentioning the late-March reorg",
+          "Mentioning the promotion"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Tom Aldridge is identified as Director of Engineering instead of VP of Engineering.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: David Keane's manager is Tom Aldridge.",
+        "Fact 2: Tom Aldridge reports directly to the CTO.",
+        "Inference: The person who manages David and the person who reports to the CTO are the same individual — Tom Aldridge, VP of Engineering."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "David's manager is Tom Aldridge. Tom just got promoted to VP of Engineering."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Tom Aldridge reports directly to the CTO, so that means David is two levels below the CTO in the org chart."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Is David Keane's manager the same person who reports directly to the CTO, or are those two different people?",
+      "expected_answer": "They are the same person. Tom Aldridge is both David Keane's manager and the person who reports directly to the CTO. His title is VP of Engineering.",
+      "gold_memory_state": "David Keane's manager = Tom Aldridge (VP of Engineering). Tom Aldridge reports directly to the CTO. Therefore David's manager and the CTO's direct report are the same person: Tom Aldridge.",
+      "judge_rubric": {
+        "must_include": [
+          "Tom Aldridge",
+          "same person",
+          "VP of Engineering"
+        ],
+        "acceptable_paraphrases": [
+          "Tom Aldridge is David's manager and reports to the CTO"
+        ],
+        "must_not_include": [
+          "Director of Engineering as Tom's current title"
+        ],
+        "harmful_extra": [
+          "Saying they are different people",
+          "Using Director of Engineering as current title"
+        ],
+        "harmless_extra": [
+          "Mentioning the late-March reorg",
+          "Mentioning the promotion"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Tom Aldridge is identified as Director of Engineering instead of VP of Engineering.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: David Keane's manager is Tom Aldridge.",
+        "Fact 2: Tom Aldridge reports directly to the CTO.",
+        "Inference: The person who manages David and the person who reports to the CTO are the same individual — Tom Aldridge, VP of Engineering."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "David's manager is Tom Aldridge. Tom just got promoted to VP of Engineering."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Tom Aldridge reports directly to the CTO, so that means David is two levels below the CTO in the org chart."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I need to fill in David Keane's official job title on a project staffing form. Which of the following should I enter?",
+      "candidate_options": [
+        "Senior Technical Lead",
+        "Lead Technical Architect",
+        "VP of Engineering",
+        "Senior Engineering Lead"
+      ],
+      "expected_answer": "Senior Technical Lead",
+      "gold_memory_state": "David Keane's confirmed title is Senior Technical Lead. Lead Technical Architect belongs to a different David Keane in the infrastructure division. VP of Engineering is Tom Aldridge's title. Senior Engineering Lead was never mentioned by the user.",
+      "judge_rubric": {
+        "must_include": [
+          "Senior Technical Lead"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "Lead Technical Architect",
+          "VP of Engineering",
+          "Senior Engineering Lead"
+        ],
+        "harmful_extra": [
+          "Selecting any option other than Senior Technical Lead"
+        ],
+        "harmless_extra": [
+          "Mentioning interim team lead as an additional role"
+        ]
+      },
+      "distractor_rationale": "same-value-different-target: 'Lead Technical Architect' belongs to a different David Keane in the infrastructure division, not the user's colleague. assistant echo: 'Senior Engineering Lead' is a plausible title the assistant might generate by blending 'Senior Technical Lead' with common engineering title patterns. 'VP of Engineering' is Tom Aldridge's title, a same-team different-person distractor.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Lead Technical Architect (from the other David Keane) or VP of Engineering (Tom Aldridge's title) is selected.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I started working with David Keane on March 4th when I joined the product integration team. His title is Senior Technical Lead."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I need to fill in David Keane's official job title on a project staffing form. Which of the following should I enter?",
+      "candidate_options": [
+        "Senior Technical Lead",
+        "Lead Technical Architect",
+        "VP of Engineering",
+        "Senior Engineering Lead"
+      ],
+      "expected_answer": "Senior Technical Lead",
+      "gold_memory_state": "David Keane's confirmed title is Senior Technical Lead. Lead Technical Architect belongs to a different David Keane in the infrastructure division. VP of Engineering is Tom Aldridge's title. Senior Engineering Lead was never mentioned by the user.",
+      "judge_rubric": {
+        "must_include": [
+          "Senior Technical Lead"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "Lead Technical Architect",
+          "VP of Engineering",
+          "Senior Engineering Lead"
+        ],
+        "harmful_extra": [
+          "Selecting any option other than Senior Technical Lead"
+        ],
+        "harmless_extra": [
+          "Mentioning interim team lead as an additional role"
+        ]
+      },
+      "distractor_rationale": "same-value-different-target: 'Lead Technical Architect' belongs to a different David Keane in the infrastructure division, not the user's colleague. assistant echo: 'Senior Engineering Lead' is a plausible title the assistant might generate by blending 'Senior Technical Lead' with common engineering title patterns. 'VP of Engineering' is Tom Aldridge's title, a same-team different-person distractor.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Lead Technical Architect (from the other David Keane) or VP of Engineering (Tom Aldridge's title) is selected.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I started working with David Keane on March 4th when I joined the product integration team. His title is Senior Technical Lead."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to prepare a brief organizational context note for an external consultant. The note should explain who leads our sub-group day-to-day, what that person's official title is, how many management levels sit between that person and the CTO, and which analyst contributed foundational onboarding work before leaving the team. Can you draft that note for me?",
+      "expected_answer": "David Keane leads the sub-group day-to-day as interim team lead; his official title is Senior Technical Lead. There is one management level between David and the CTO: Tom Aldridge, VP of Engineering, who reports directly to the CTO. The analyst who contributed foundational onboarding work before moving to a different project is Priya Mukherjee, Systems Analyst II.",
+      "gold_memory_state": "David Keane = Senior Technical Lead + interim team lead. Tom Aldridge = VP of Engineering, manages David, reports to CTO. Priya Mukherjee = Systems Analyst II, moved to different project April 11th. Rachel Simmons = Junior Developer. All facts confirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "David Keane",
+          "Senior Technical Lead",
+          "interim team lead",
+          "Tom Aldridge",
+          "VP of Engineering",
+          "one management level between David and CTO",
+          "Priya Mukherjee",
+          "Systems Analyst II"
+        ],
+        "acceptable_paraphrases": [
+          "acting team lead",
+          "one level between David and the CTO"
+        ],
+        "must_not_include": [
+          "Lead Technical Architect attributed to the user's David Keane",
+          "Director of Engineering as Tom's current title"
+        ],
+        "harmful_extra": [
+          "Attributing Lead Technical Architect to David Keane",
+          "Saying Tom is Director of Engineering",
+          "Saying David reports directly to the CTO"
+        ],
+        "harmless_extra": [
+          "Mentioning Rachel Simmons",
+          "Mentioning the late-March reorg"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Tom Aldridge is called Director of Engineering or if David Keane is called Lead Technical Architect.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: David Keane is acting as interim team lead for the sub-group, on top of his Senior Technical Lead role.",
+        "Fact 2: David Keane's manager is Tom Aldridge, VP of Engineering.",
+        "Fact 3: Tom Aldridge reports directly to the CTO.",
+        "Inference: Between David Keane and the CTO there is exactly one management level — Tom Aldridge.",
+        "Fact 4: Priya Mukherjee, Systems Analyst II, contributed foundational onboarding work and was reassigned to a different project.",
+        "Inference: The note should name David as the day-to-day sub-group lead (Senior Technical Lead), state one level separates him from the CTO (Tom Aldridge, VP of Engineering), and credit Priya Mukherjee (Systems Analyst II) for the onboarding foundation."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "David is currently acting as interim team lead for our sub-group on top of his Senior Technical Lead role. He's been doing that since about two weeks ago."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I started working with David Keane on March 4th when I joined the product integration team. His title is Senior Technical Lead."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "David's manager is Tom Aldridge. Tom just got promoted to VP of Engineering."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Tom Aldridge reports directly to the CTO, so that means David is two levels below the CTO in the org chart."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Priya Mukherjee was my go-to colleague — she's a Systems Analyst II. She got moved to a different project on April 11th."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to prepare a brief organizational context note for an external consultant. The note should explain who leads our sub-group day-to-day, what that person's official title is, how many management levels sit between that person and the CTO, and which analyst contributed foundational onboarding work before leaving the team. Can you draft that note for me?",
+      "expected_answer": "David Keane leads the sub-group day-to-day as interim team lead; his official title is Senior Technical Lead. There is one management level between David and the CTO: Tom Aldridge, VP of Engineering, who reports directly to the CTO. The analyst who contributed foundational onboarding work before moving to a different project is Priya Mukherjee, Systems Analyst II.",
+      "gold_memory_state": "David Keane = Senior Technical Lead + interim team lead. Tom Aldridge = VP of Engineering, manages David, reports to CTO. Priya Mukherjee = Systems Analyst II, moved to different project April 11th. Rachel Simmons = Junior Developer. All facts confirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "David Keane",
+          "Senior Technical Lead",
+          "interim team lead",
+          "Tom Aldridge",
+          "VP of Engineering",
+          "one management level between David and CTO",
+          "Priya Mukherjee",
+          "Systems Analyst II"
+        ],
+        "acceptable_paraphrases": [
+          "acting team lead",
+          "one level between David and the CTO"
+        ],
+        "must_not_include": [
+          "Lead Technical Architect attributed to the user's David Keane",
+          "Director of Engineering as Tom's current title"
+        ],
+        "harmful_extra": [
+          "Attributing Lead Technical Architect to David Keane",
+          "Saying Tom is Director of Engineering",
+          "Saying David reports directly to the CTO"
+        ],
+        "harmless_extra": [
+          "Mentioning Rachel Simmons",
+          "Mentioning the late-March reorg"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Tom Aldridge is called Director of Engineering or if David Keane is called Lead Technical Architect.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: David Keane is acting as interim team lead for the sub-group, on top of his Senior Technical Lead role.",
+        "Fact 2: David Keane's manager is Tom Aldridge, VP of Engineering.",
+        "Fact 3: Tom Aldridge reports directly to the CTO.",
+        "Inference: Between David Keane and the CTO there is exactly one management level — Tom Aldridge.",
+        "Fact 4: Priya Mukherjee, Systems Analyst II, contributed foundational onboarding work and was reassigned to a different project.",
+        "Inference: The note should name David as the day-to-day sub-group lead (Senior Technical Lead), state one level separates him from the CTO (Tom Aldridge, VP of Engineering), and credit Priya Mukherjee (Systems Analyst II) for the onboarding foundation."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "David is currently acting as interim team lead for our sub-group on top of his Senior Technical Lead role. He's been doing that since about two weeks ago."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I started working with David Keane on March 4th when I joined the product integration team. His title is Senior Technical Lead."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "David's manager is Tom Aldridge. Tom just got promoted to VP of Engineering."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Tom Aldridge reports directly to the CTO, so that means David is two levels below the CTO in the org chart."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Priya Mukherjee was my go-to colleague — she's a Systems Analyst II. She got moved to a different project on April 11th."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What's David Keane's employee ID number?",
+      "expected_answer": "I don't have David Keane's employee ID number. That was never provided.",
+      "gold_memory_state": "No employee ID number was ever provided for any colleague. David Keane's title (Senior Technical Lead), interim role, manager (Tom Aldridge), and reporting chain are stored, but no employee ID exists in the record.",
+      "judge_rubric": {
+        "must_include": [
+          "no employee ID",
+          "not provided"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have that information",
+          "no record of an employee ID",
+          "that was never shared"
+        ],
+        "must_not_include": [
+          "any fabricated employee ID number"
+        ],
+        "harmful_extra": [
+          "Inventing or guessing an employee ID number"
+        ],
+        "harmless_extra": [
+          "Mentioning that David's title and role are on file"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if any fabricated employee ID number is produced.",
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I started working with David Keane on March 4th when I joined the product integration team. His title is Senior Technical Lead."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "David is currently acting as interim team lead for our sub-group on top of his Senior Technical Lead role. He's been doing that since about two weeks ago."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What's David Keane's employee ID number?",
+      "expected_answer": "I don't have David Keane's employee ID number. That was never provided.",
+      "gold_memory_state": "No employee ID number was ever provided for any colleague. David Keane's title (Senior Technical Lead), interim role, manager (Tom Aldridge), and reporting chain are stored, but no employee ID exists in the record.",
+      "judge_rubric": {
+        "must_include": [
+          "no employee ID",
+          "not provided"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have that information",
+          "no record of an employee ID",
+          "that was never shared"
+        ],
+        "must_not_include": [
+          "any fabricated employee ID number"
+        ],
+        "harmful_extra": [
+          "Inventing or guessing an employee ID number"
+        ],
+        "harmless_extra": [
+          "Mentioning that David's title and role are on file"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if any fabricated employee ID number is produced.",
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I started working with David Keane on March 4th when I joined the product integration team. His title is Senior Technical Lead."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "David is currently acting as interim team lead for our sub-group on top of his Senior Technical Lead role. He's been doing that since about two weeks ago."
+        }
+      ]
+    }
+  ]
+}

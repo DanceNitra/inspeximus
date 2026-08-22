@@ -1,0 +1,1040 @@
+{
+  "target_fact": "User tends to substitute the wrong month when speaking dates aloud under pressure, due to a cognitive cross-talk pattern where a date they are thinking about bleeds into the date they are saying, and this pattern occurs across both professional and personal contexts",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "During the standup on March 3rd I told the team the server migration was scheduled for March 20th, but it was actually April 20th"
+      },
+      "target": {
+        "target_id": "standup_misspeak_incident",
+        "target_name": "March 3rd standup date misspeak incident"
+      },
+      "old_value": null,
+      "new_value": "Said March 20th instead of April 20th during team standup on March 3rd; manager Diane caught the error",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "During the standup on March 3rd I told the team the server migration was scheduled for March 20th, but it was actually April 20th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My manager Diane messaged me afterward and I had to post a correction to the whole channel"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "On the Henderson & Associates call I said the contract renewal was June 15th but it's actually July 15th"
+      },
+      "target": {
+        "target_id": "henderson_misspeak_incident",
+        "target_name": "Henderson & Associates call date misspeak incident"
+      },
+      "old_value": null,
+      "new_value": "Said June 15th instead of July 15th for contract renewal date on Henderson & Associates client call; colleague Raj flagged it privately and user sent correction email",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "On the Henderson & Associates call I said the contract renewal was June 15th but it's actually July 15th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Raj caught it and flagged it to me privately, and I sent the follow-up correction myself"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I started keeping a sticky note on my monitor with key dates before meetings, around mid-April"
+      },
+      "target": {
+        "target_id": "sticky_note_coping_strategy",
+        "target_name": "Sticky note date cheat sheet coping strategy"
+      },
+      "old_value": null,
+      "new_value": "Started keeping a sticky note cheat sheet of key dates on monitor before meetings, around mid-April",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I started keeping a sticky note on my monitor with key dates before meetings, around mid-April"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "I told my roommate Leo my dentist appointment was Tuesday the 7th but I meant Thursday the 9th"
+      },
+      "target": {
+        "target_id": "personal_misspeak_incident",
+        "target_name": "Dentist appointment date misspeak with roommate Leo"
+      },
+      "old_value": null,
+      "new_value": "Told roommate Leo dentist appointment was Tuesday the 7th instead of Thursday the 9th; same month-substitution pattern in personal context",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I told my roommate Leo my dentist appointment was Tuesday the 7th but I meant Thursday the 9th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Low stakes but it's exactly the same pattern showing up outside of work too"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "it's like my brain is running two date tracks simultaneously and the wrong one just wins the race to my mouth"
+      },
+      "target": {
+        "target_id": "verbal_date_substitution_pattern",
+        "target_name": "Recurring verbal date substitution pattern under cognitive load"
+      },
+      "old_value": null,
+      "new_value": "User has a consistent pattern of verbally substituting the wrong month or day when speaking dates aloud, caused by cognitive cross-talk where a date being internally processed overwrites the date being spoken; pattern is triggered by pressure or multitasking and occurs in both professional and personal settings; written communication does not trigger the pattern because it allows review before sending",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "During the standup on March 3rd I told the team the server migration was scheduled for March 20th, but it was actually April 20th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "On the Henderson & Associates call I said the contract renewal was June 15th but it's actually July 15th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "it's like my brain is running two date tracks simultaneously and the wrong one just wins the race to my mouth"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 7,
+        "quote": "Leo has the opposite problem — he's perfect with dates verbally but constantly writes the wrong ones down in his calendar"
+      },
+      "target": {
+        "target_id": "roommate_leo_date_quirk",
+        "target_name": "Roommate Leo's opposite date error pattern"
+      },
+      "old_value": null,
+      "new_value": "Roommate Leo is accurate with dates verbally but frequently writes wrong dates in his calendar — opposite of user's pattern",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Leo has the opposite problem — he's perfect with dates verbally but constantly writes the wrong ones down in his calendar"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 7,
+        "quote": "My therapist suggested I might have a mild processing speed issue and recommended I get a neuropsych evaluation done next month"
+      },
+      "target": {
+        "target_id": "neuropsych_eval_plan",
+        "target_name": "Planned neuropsych evaluation"
+      },
+      "old_value": null,
+      "new_value": "Therapist recommended neuropsych evaluation next month for possible mild processing speed issue",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "My therapist suggested I might have a mild processing speed issue and recommended I get a neuropsych evaluation done next month"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establishing two professional date-misspeak incidents and the user's emotional reaction to them",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to talk through something that's been bugging me about how I communicate at work. During the standup on March 3rd I told the team the server migration was scheduled for March 20th, but it was actually April 20th. My manager Diane messaged me afterward and I had to post a correction to the whole channel. It was honestly mortifying — I felt like everyone thought I was dropping the ball."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a really frustrating experience, and I can understand why it felt mortifying to have to send a correction to the whole channel. It's worth noting that catching and correcting mistakes quickly is actually a sign of professionalism, even if it doesn't feel that way in the moment. Diane flagging it privately rather than calling it out in the meeting itself also suggests she handled it supportively. Can you think of what might have caused the mix-up? Were you juggling multiple timelines at the time, or did it feel more like a slip of the tongue?"
+        },
+        {
+          "role": "user",
+          "content": "That's a good question. I think I was mentally reviewing a March deliverables list right before the standup, so when I went to say 'April 20th' for the migration, 'March' just came out instead. It's like the month I was thinking about hijacked what I was trying to say. I didn't even notice I'd said it wrong until Diane pinged me."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really insightful observation about what happened cognitively. It sounds like there was a kind of interference effect — you were holding 'March' in active working memory for the deliverables review, and when you went to produce a different month verbally, the more activated one won out. This is actually a well-documented phenomenon in speech production research. The fact that you didn't notice in real time is also typical; when we're in the flow of speaking, our self-monitoring can miss substitutions that preserve the sentence structure. Did anything similar happen before that incident, or was this a one-off?"
+        },
+        {
+          "role": "user",
+          "content": "It wasn't a one-off at all. On the Henderson & Associates call I said the contract renewal was June 15th but it's actually July 15th. Raj caught it and flagged it to me privately, and I sent the follow-up correction myself. That one really stressed me out because it was client-facing — I kept replaying the call in my head for days afterward worrying about whether it made us look sloppy."
+        },
+        {
+          "role": "assistant",
+          "content": "I can see why the Henderson incident would feel higher stakes — client-facing errors carry a different weight psychologically even when they're quickly corrected. The good news is that Raj caught it before it could cause any real downstream issues, and you sent the correction yourself, which shows ownership. The pattern you're describing is interesting though: in both cases you substituted an adjacent month — March for April, June for July — rather than a completely random one. That adjacency suggests it's not a general memory problem but something more specific to how months are retrieved during speech. How much time passed between the standup incident and the Henderson call?"
+        },
+        {
+          "role": "user",
+          "content": "I think it was about two to three weeks between them. And you're right, it's always an adjacent month — one off in one direction. I've been noticing that I'm much better when I write things down. Emails, Slack messages, documents — I can double-check dates before I hit send and I basically never get them wrong in writing. It's specifically the verbal, real-time delivery that trips me up."
+        },
+        {
+          "role": "assistant",
+          "content": "That distinction between written and verbal accuracy is really telling. In writing, you have a built-in review loop — you can see the date on screen, compare it against what you know, and correct before sending. Verbal delivery removes that buffer entirely; you're producing and monitoring simultaneously, and under the social pressure of a meeting, the monitoring system gets less bandwidth. The fact that your errors are consistently one-month-off substitutions rather than random mistakes suggests a very specific retrieval interference, not a broader issue with knowing your dates. Have you tried any strategies to give yourself that same kind of review buffer in verbal settings?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Introducing the sticky note strategy, a personal-context instance, and the user's self-theory about the pattern",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Actually yes — I started keeping a sticky note on my monitor with key dates before meetings, around mid-April. I write down every date I might need to reference, and I just glance at it when I'm talking. It's been helping a lot. I'd honestly rather over-prepare with written notes than wing it and risk another correction email."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really smart adaptation, and it directly addresses the core issue — it gives you an external visual reference that bypasses the internal retrieval competition. Instead of relying on your working memory to serve up the right month while you're also managing the social and cognitive demands of the meeting, you offload the date storage to the sticky note and just read from it. The fact that it's been helping confirms that your date knowledge itself is solid; it's the real-time verbal production channel that's unreliable. How detailed do you make the notes — just the dates, or do you include context like which project or client they belong to?"
+        },
+        {
+          "role": "user",
+          "content": "I write the client or project name next to each date, so it's like a quick lookup table. But here's what I've been thinking about — it's like my brain is running two date tracks simultaneously and the wrong one just wins the race to my mouth. If I'm thinking about one timeline and talking about another, the internal one leaks out. It's not that I don't know the correct date; I absolutely do. It's a production error, not a knowledge error."
+        },
+        {
+          "role": "assistant",
+          "content": "You've articulated that distinction really precisely — production error versus knowledge error. That's an important framing because it changes what kind of solution you need. You don't need to study your dates harder or review them more; you already know them. What you need is a way to prevent cross-talk between concurrent mental timelines during verbal output. Your sticky note strategy does exactly that by creating a single authoritative visual channel that overrides whatever your internal retrieval system might serve up in the moment. The lookup table format with client names is especially good because it means you can find the right date quickly without scanning. Has this pattern ever shown up outside of work?"
+        },
+        {
+          "role": "user",
+          "content": "Funny you should ask. Just last week — I told my roommate Leo my dentist appointment was Tuesday the 7th but I meant Thursday the 9th. Low stakes but it's exactly the same pattern showing up outside of work too. I wasn't under any particular pressure, just chatting casually, but I'd been thinking about a Tuesday deadline at work and 'Tuesday' just came out when I meant Thursday."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really valuable data point because it rules out the possibility that this is purely a stress or performance-anxiety phenomenon. If it were only triggered by high-pressure professional situations, you might attribute it to nerves. But the fact that it happens in a casual, low-stakes conversation with your roommate suggests the underlying mechanism — concurrent date processing causing verbal substitution — operates independently of stress level. The work situations just make the consequences more visible and the emotional aftermath more intense. It sounds like the Tuesday work deadline was occupying a mental track, and when you went to say Thursday, Tuesday won the competition. Same mechanism, different context."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. And what's kind of funny is that Leo has the opposite problem — he's perfect with dates verbally but constantly writes the wrong ones down in his calendar. He'll tell you the correct date in conversation and then put it in his phone wrong. We've actually started double-checking each other — I verify his calendar entries and he confirms my verbal statements.\n\nI think it's been fairly consistent for as long as I can remember, honestly. I recall misstating a weekend trip date to a friend back in early March — said it was the second weekend of April when I meant the third weekend. I caught that one myself at least. But the sticky note strategy has made the work situations much more manageable. I just wish I'd started doing it sooner instead of white-knuckling through meetings."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a wonderful complementary system you two have worked out! It's also a fascinating contrast — Leo's error channel is the written/input modality while yours is the verbal/output modality, but both of you have accurate internal representations of the dates. It really underscores that these are modality-specific production errors, not memory failures. The mutual checking arrangement is clever because each of you is strong exactly where the other is weak. You catch his written errors because your writing is reliable, and he catches your verbal errors because his verbal delivery is reliable. Have you noticed whether the pattern has gotten better or worse over time, or has it been fairly consistent?"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Deepening the reflection, introducing a tentative future development, and surfacing an adversarial distractor",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I've been thinking more about all of this and I want to make sure you have a clear picture of the pattern. It's not random — every single instance has been a substitution of an adjacent time unit. March for April, June for July, Tuesday for Thursday, second weekend for third weekend. Always one step off in the same direction, always the time frame I was internally processing overwriting the one I was trying to say out loud."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really precise characterization, and the consistency of the pattern across all your examples is striking. Every substitution is exactly one unit off — one month, one day-pair, one weekend — and always in the direction of whatever date was occupying your internal processing at the time. This level of regularity suggests a very specific and reliable cognitive mechanism rather than general carelessness or poor memory. The fact that you can now articulate the pattern so clearly is itself a form of metacognitive progress. When you're aware of the exact failure mode, you can design targeted interventions like your sticky note system rather than trying to broadly 'be more careful,' which rarely works for production-level errors."
+        },
+        {
+          "role": "user",
+          "content": "Right, and I think the key insight for me is that written communication completely eliminates the problem because it introduces a review step between retrieval and output. In speech, retrieval and output happen almost simultaneously, so there's no checkpoint. That's why I genuinely prefer written channels — emails, Slack, documents — for anything involving specific dates or numbers. It's not laziness; it's that I know my verbal channel is unreliable for this specific type of information."
+        },
+        {
+          "role": "assistant",
+          "content": "That's an important reframing — choosing written communication for date-sensitive information isn't avoidance or laziness, it's a strategically sound accommodation based on genuine self-knowledge. You've identified a specific, consistent vulnerability in your verbal output channel and you're routing critical information through a channel where you have built-in error correction. That's actually a sophisticated form of self-management. Many people would just keep making the same mistakes and feeling bad about them without ever analyzing the mechanism or adapting their communication strategy. For situations where verbal delivery is unavoidable, like standups or client calls, your sticky note system serves as an external checkpoint that mimics the review step you naturally get in writing."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. Oh — one thing I should mention. I was looking at an old meeting transcript from a colleague's project review, and it showed a note that said 'Henderson renewal: June 15.' That's actually the wrong date from my original misspeak that got transcribed before the correction went out. The actual renewal is July 15th. Just thought that was interesting to see the error preserved in someone else's notes."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really interesting artifact — your original verbal error from the Henderson call got captured in a colleague's transcript before Raj flagged the correction and you sent the follow-up email. It's a good reminder that verbal misstatements can propagate into written records if they're not caught quickly. The fact that June 15th is still sitting in someone's project review notes is exactly the kind of downstream consequence that makes your sticky note strategy so valuable — preventing the error at the source is far more efficient than chasing corrections through other people's documents afterward. Have you considered flagging that transcript so it gets updated?"
+        },
+        {
+          "role": "user",
+          "content": "My therapist suggested I might have a mild processing speed issue and recommended I get a neuropsych evaluation done next month. She thinks the date substitution thing could be related to how quickly my brain switches between concurrent tasks. I'm planning to go through with it — the appointment is already set up.\n\nYeah, I feel like I've got a solid handle on managing it day to day. The sticky notes, preferring written communication, having Leo as a verbal backup at home — those are all working. I just want to make sure all of this is noted so that if I bring up date-related stuff in the future, you have the context that my verbal statements about dates might not match what I actually mean, and my written ones are the reliable source."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a proactive step, and it makes sense given the consistency of the pattern you've described. A neuropsych evaluation could help clarify whether there's a measurable processing speed or task-switching component underlying the verbal substitution pattern. Even if the results come back within normal ranges, the evaluation itself can provide useful baseline data and might suggest additional targeted strategies beyond what you're already doing. The fact that your therapist connected it to task-switching speed aligns well with your own observation about running two date tracks simultaneously. Whatever the outcome, you already have effective compensatory strategies in place with the sticky notes and written-channel preference.\n\nAbsolutely — I've got a clear picture of the pattern and your strategies. To summarize: you have a consistent tendency to verbally substitute adjacent time units when your brain is concurrently processing multiple dates, and this happens in both professional and personal settings regardless of stress level. Your written communication is highly reliable because it includes a natural review step. Your current coping strategies include the sticky note date cheat sheet for meetings, preferring written channels like email and Slack for date-sensitive information, and mutual checking with Leo at home. And you have a neuropsych evaluation coming up that may provide additional insight. If you mention dates verbally in our conversations, I'll keep in mind that your written confirmations are the authoritative source."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "What experiences have I shared with you that illustrate a recurring issue I have when communicating dates?",
+      "expected_answer": "You described several incidents where you verbally stated the wrong date: (1) During a team standup on March 3rd, you said the server migration was March 20th instead of April 20th, and your manager Diane caught it; (2) On the Henderson & Associates client call, you said the contract renewal was June 15th instead of July 15th, and colleague Raj flagged it privately; (3) You told your roommate Leo your dentist appointment was Tuesday the 7th when you meant Thursday the 9th; (4) You recalled misstating a weekend trip date to a friend in early March. In each case, you substituted an adjacent time unit — one month or day off — because a date you were internally processing overwrote the one you were trying to say. You also noted that written communication never triggers this error because it allows review before sending.",
+      "gold_memory_state": "Four specific date-misspeak incidents are stored (standup, Henderson call, dentist/Leo, weekend trip). The user's self-theory about cognitive cross-talk causing adjacent-unit verbal substitution is stored. The observation that written communication is immune is stored. A sticky note coping strategy starting mid-April is stored. Roommate Leo's opposite pattern (verbal accurate, written inaccurate) is stored. A tentative neuropsych evaluation plan is stored but not confirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "standup or March 3rd incident with wrong month",
+          "Henderson or client call incident with wrong month",
+          "personal context incident such as dentist appointment with Leo",
+          "adjacent time unit substitution pattern",
+          "written communication does not trigger the error"
+        ],
+        "acceptable_paraphrases": [
+          "one month off",
+          "nearby month substitution",
+          "cognitive interference",
+          "cross-talk between date tracks"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the user has a general memory problem",
+          "claiming the user also makes errors in written communication"
+        ],
+        "harmless_extra": [
+          "mentioning the weekend trip date error",
+          "mentioning the sticky note strategy",
+          "mentioning Leo's opposite pattern"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the summary includes unsupported claims such as the user having a diagnosed condition or the pattern being random rather than adjacent-unit.",
+        "reflection_recall": "Fails if fewer than two specific incidents are recalled, or if the written-vs-verbal distinction is omitted.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "During the standup on March 3rd I told the team the server migration was scheduled for March 20th, but it was actually April 20th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "On the Henderson & Associates call I said the contract renewal was June 15th but it's actually July 15th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I told my roommate Leo my dentist appointment was Tuesday the 7th but I meant Thursday the 9th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "it's like my brain is running two date tracks simultaneously and the wrong one just wins the race to my mouth"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "What experiences have I shared with you that illustrate a recurring issue I have when communicating dates?",
+      "expected_answer": "You described several incidents where you verbally stated the wrong date: (1) During a team standup on March 3rd, you said the server migration was March 20th instead of April 20th, and your manager Diane caught it; (2) On the Henderson & Associates client call, you said the contract renewal was June 15th instead of July 15th, and colleague Raj flagged it privately; (3) You told your roommate Leo your dentist appointment was Tuesday the 7th when you meant Thursday the 9th; (4) You recalled misstating a weekend trip date to a friend in early March. In each case, you substituted an adjacent time unit — one month or day off — because a date you were internally processing overwrote the one you were trying to say. You also noted that written communication never triggers this error because it allows review before sending.",
+      "gold_memory_state": "Four specific date-misspeak incidents are stored (standup, Henderson call, dentist/Leo, weekend trip). The user's self-theory about cognitive cross-talk causing adjacent-unit verbal substitution is stored. The observation that written communication is immune is stored. A sticky note coping strategy starting mid-April is stored. Roommate Leo's opposite pattern (verbal accurate, written inaccurate) is stored. A tentative neuropsych evaluation plan is stored but not confirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "standup or March 3rd incident with wrong month",
+          "Henderson or client call incident with wrong month",
+          "personal context incident such as dentist appointment with Leo",
+          "adjacent time unit substitution pattern",
+          "written communication does not trigger the error"
+        ],
+        "acceptable_paraphrases": [
+          "one month off",
+          "nearby month substitution",
+          "cognitive interference",
+          "cross-talk between date tracks"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the user has a general memory problem",
+          "claiming the user also makes errors in written communication"
+        ],
+        "harmless_extra": [
+          "mentioning the weekend trip date error",
+          "mentioning the sticky note strategy",
+          "mentioning Leo's opposite pattern"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the summary includes unsupported claims such as the user having a diagnosed condition or the pattern being random rather than adjacent-unit.",
+        "reflection_recall": "Fails if fewer than two specific incidents are recalled, or if the written-vs-verbal distinction is omitted.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "During the standup on March 3rd I told the team the server migration was scheduled for March 20th, but it was actually April 20th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "On the Henderson & Associates call I said the contract renewal was June 15th but it's actually July 15th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I told my roommate Leo my dentist appointment was Tuesday the 7th but I meant Thursday the 9th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "it's like my brain is running two date tracks simultaneously and the wrong one just wins the race to my mouth"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've mentioned issues with dates in several situations — work standups, client calls, and casual conversations at home. When I describe my overall verbal date-substitution tendency, does that belong to the same record as any single incident like the client call mix-up, or is it a separate, broader conclusion? And does my roommate Leo's date quirk fall under the same conclusion?",
+      "expected_answer": "The overall verbal date-substitution pattern is a separate, broader conclusion drawn from all the individual incidents — it is not the same record as any single incident like the Henderson call mix-up. It captures the cross-context tendency to substitute adjacent time units when speaking under cognitive load. Leo's opposite pattern (accurate verbally, inaccurate in writing) is a separate observation about Leo, not part of your own verbal substitution conclusion.",
+      "gold_memory_state": "The recurring verbal date substitution pattern is a distinct inferred conclusion spanning both professional incidents (standup, Henderson call) and personal incidents (dentist/Leo). Individual incidents are stored as separate event records. Leo's opposite pattern is its own separate record about Leo's behavior.",
+      "judge_rubric": {
+        "must_include": [
+          "the verbal date-substitution pattern is a broader/separate conclusion from individual incidents",
+          "Leo's pattern is separate from the user's own pattern"
+        ],
+        "acceptable_paraphrases": [
+          "the overall pattern is an abstraction across incidents",
+          "Leo's quirk is a distinct observation"
+        ],
+        "must_not_include": [
+          "Leo's pattern is part of the user's verbal substitution conclusion",
+          "the overall pattern is the same record as a single incident"
+        ],
+        "harmful_extra": [
+          "merging Leo's written-error pattern into the user's verbal-error pattern",
+          "treating the overall pattern as identical to the Henderson incident record"
+        ],
+        "harmless_extra": [
+          "mentioning the sticky note coping strategy as a related but separate record"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model treats the broad pattern as the same granularity as a single incident record.",
+        "reflection_recall": "Fails if the model omits that the pattern spans both professional and personal contexts.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "it's like my brain is running two date tracks simultaneously and the wrong one just wins the race to my mouth"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Low stakes but it's exactly the same pattern showing up outside of work too"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Leo has the opposite problem — he's perfect with dates verbally but constantly writes the wrong ones down in his calendar"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've mentioned issues with dates in several situations — work standups, client calls, and casual conversations at home. When I describe my overall verbal date-substitution tendency, does that belong to the same record as any single incident like the client call mix-up, or is it a separate, broader conclusion? And does my roommate Leo's date quirk fall under the same conclusion?",
+      "expected_answer": "The overall verbal date-substitution pattern is a separate, broader conclusion drawn from all the individual incidents — it is not the same record as any single incident like the Henderson call mix-up. It captures the cross-context tendency to substitute adjacent time units when speaking under cognitive load. Leo's opposite pattern (accurate verbally, inaccurate in writing) is a separate observation about Leo, not part of your own verbal substitution conclusion.",
+      "gold_memory_state": "The recurring verbal date substitution pattern is a distinct inferred conclusion spanning both professional incidents (standup, Henderson call) and personal incidents (dentist/Leo). Individual incidents are stored as separate event records. Leo's opposite pattern is its own separate record about Leo's behavior.",
+      "judge_rubric": {
+        "must_include": [
+          "the verbal date-substitution pattern is a broader/separate conclusion from individual incidents",
+          "Leo's pattern is separate from the user's own pattern"
+        ],
+        "acceptable_paraphrases": [
+          "the overall pattern is an abstraction across incidents",
+          "Leo's quirk is a distinct observation"
+        ],
+        "must_not_include": [
+          "Leo's pattern is part of the user's verbal substitution conclusion",
+          "the overall pattern is the same record as a single incident"
+        ],
+        "harmful_extra": [
+          "merging Leo's written-error pattern into the user's verbal-error pattern",
+          "treating the overall pattern as identical to the Henderson incident record"
+        ],
+        "harmless_extra": [
+          "mentioning the sticky note coping strategy as a related but separate record"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model treats the broad pattern as the same granularity as a single incident record.",
+        "reflection_recall": "Fails if the model omits that the pattern spans both professional and personal contexts.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "it's like my brain is running two date tracks simultaneously and the wrong one just wins the race to my mouth"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Low stakes but it's exactly the same pattern showing up outside of work too"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Leo has the opposite problem — he's perfect with dates verbally but constantly writes the wrong ones down in his calendar"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe the specific scope of my date-communication difficulty — where exactly does it apply, and where would it be wrong to assume it extends?",
+      "expected_answer": "Your difficulty is specifically limited to verbal, real-time delivery of dates and time units. It manifests as adjacent-unit substitutions (one month off, one day-pair off) caused by cognitive cross-talk when you are internally processing one date while trying to say another. It applies across both professional settings (meetings, client calls) and personal settings (casual conversation), regardless of stress level. It does not extend to written communication — emails, Slack messages, and documents are reliable because they include a review step before sending. It also should not be generalized to a broader memory problem; you know the correct dates, and the issue is purely in the verbal output channel.",
+      "gold_memory_state": "Supported inference: The user has a consistent verbal date-substitution pattern caused by cognitive cross-talk, producing adjacent-unit errors in both professional and personal spoken contexts. Written communication is immune due to the built-in review step. Unsupported overgeneralization: Extending the pattern to written communication, treating it as a general memory deficit, or assuming it only occurs under high stress. The tentative neuropsych evaluation recommendation is not confirmed and does not change the supported inference boundary.",
+      "judge_rubric": {
+        "must_include": [
+          "verbal/spoken delivery only",
+          "adjacent time unit substitution",
+          "applies in both professional and personal contexts",
+          "written communication is not affected",
+          "not a memory or knowledge problem"
+        ],
+        "acceptable_paraphrases": [
+          "production error not knowledge error",
+          "speech output channel issue",
+          "writing provides a review buffer"
+        ],
+        "must_not_include": [
+          "the pattern extends to written communication",
+          "it is a general memory deficit",
+          "it only happens under stress or in professional settings"
+        ],
+        "harmful_extra": [
+          "claiming a diagnosed processing speed issue as confirmed",
+          "claiming the neuropsych evaluation has already occurred or yielded results"
+        ],
+        "harmless_extra": [
+          "mentioning the sticky note as a coping strategy",
+          "mentioning Leo's contrasting pattern as illustrative"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative neuropsych evaluation as a confirmed diagnosis that changes the inference boundary.",
+        "reflection_precision": "Fails if the model overgeneralizes the pattern to written communication, to a general memory deficit, or claims it is stress-dependent only.",
+        "reflection_recall": "Fails if the model omits that the pattern applies in personal contexts (not just professional), or omits that written communication is immune.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "it's like my brain is running two date tracks simultaneously and the wrong one just wins the race to my mouth"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I've been noticing that I'm much better when I write things down. Emails, Slack messages, documents — I can double-check dates before I hit send and I basically never get them wrong in writing. It's specifically the verbal, real-time delivery that trips me up."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Low stakes but it's exactly the same pattern showing up outside of work too"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "written communication completely eliminates the problem because it introduces a review step between retrieval and output"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe the specific scope of my date-communication difficulty — where exactly does it apply, and where would it be wrong to assume it extends?",
+      "expected_answer": "Your difficulty is specifically limited to verbal, real-time delivery of dates and time units. It manifests as adjacent-unit substitutions (one month off, one day-pair off) caused by cognitive cross-talk when you are internally processing one date while trying to say another. It applies across both professional settings (meetings, client calls) and personal settings (casual conversation), regardless of stress level. It does not extend to written communication — emails, Slack messages, and documents are reliable because they include a review step before sending. It also should not be generalized to a broader memory problem; you know the correct dates, and the issue is purely in the verbal output channel.",
+      "gold_memory_state": "Supported inference: The user has a consistent verbal date-substitution pattern caused by cognitive cross-talk, producing adjacent-unit errors in both professional and personal spoken contexts. Written communication is immune due to the built-in review step. Unsupported overgeneralization: Extending the pattern to written communication, treating it as a general memory deficit, or assuming it only occurs under high stress. The tentative neuropsych evaluation recommendation is not confirmed and does not change the supported inference boundary.",
+      "judge_rubric": {
+        "must_include": [
+          "verbal/spoken delivery only",
+          "adjacent time unit substitution",
+          "applies in both professional and personal contexts",
+          "written communication is not affected",
+          "not a memory or knowledge problem"
+        ],
+        "acceptable_paraphrases": [
+          "production error not knowledge error",
+          "speech output channel issue",
+          "writing provides a review buffer"
+        ],
+        "must_not_include": [
+          "the pattern extends to written communication",
+          "it is a general memory deficit",
+          "it only happens under stress or in professional settings"
+        ],
+        "harmful_extra": [
+          "claiming a diagnosed processing speed issue as confirmed",
+          "claiming the neuropsych evaluation has already occurred or yielded results"
+        ],
+        "harmless_extra": [
+          "mentioning the sticky note as a coping strategy",
+          "mentioning Leo's contrasting pattern as illustrative"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative neuropsych evaluation as a confirmed diagnosis that changes the inference boundary.",
+        "reflection_precision": "Fails if the model overgeneralizes the pattern to written communication, to a general memory deficit, or claims it is stress-dependent only.",
+        "reflection_recall": "Fails if the model omits that the pattern applies in personal contexts (not just professional), or omits that written communication is immune.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "it's like my brain is running two date tracks simultaneously and the wrong one just wins the race to my mouth"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I've been noticing that I'm much better when I write things down. Emails, Slack messages, documents — I can double-check dates before I hit send and I basically never get them wrong in writing. It's specifically the verbal, real-time delivery that trips me up."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Low stakes but it's exactly the same pattern showing up outside of work too"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "written communication completely eliminates the problem because it introduces a review step between retrieval and output"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best describes the conclusion supported by all of my date-related experiences?",
+      "candidate_options": [
+        "A consistent verbal substitution of adjacent time units caused by cognitive cross-talk between a date being internally processed and a date being spoken, occurring in both professional and personal contexts, with written communication unaffected",
+        "A stress-induced verbal error pattern that only occurs in high-pressure professional settings like client calls and team standups",
+        "A general memory deficit affecting both verbal and written recall of dates, numbers, and scheduling details",
+        "A mild processing speed issue that has been clinically identified and explains all date-related errors across modalities"
+      ],
+      "distractor_rationale": "same-value-different-target: Option B narrows the pattern to stress-only professional contexts, which contradicts the personal-context dentist incident with Leo. assistant echo: Option D echoes the therapist's tentative suggestion about processing speed as though it were a confirmed clinical finding, which it is not — the neuropsych evaluation has not yet occurred. Option C overgeneralizes to a memory deficit affecting written communication, which the user explicitly ruled out.",
+      "expected_answer": "A consistent verbal substitution of adjacent time units caused by cognitive cross-talk between a date being internally processed and a date being spoken, occurring in both professional and personal contexts, with written communication unaffected",
+      "gold_memory_state": "The supported conclusion is that the user has a verbal-only, adjacent-unit date substitution pattern driven by cognitive cross-talk, active in both professional and personal contexts. Written communication is unaffected. The neuropsych evaluation is tentative and has not produced any diagnosis.",
+      "judge_rubric": {
+        "must_include": [
+          "Option A or its full text"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "Option B",
+          "Option C",
+          "Option D"
+        ],
+        "harmful_extra": [
+          "selecting the stress-only option",
+          "selecting the general memory deficit option",
+          "selecting the clinically identified processing speed option"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects Option D, treating the tentative neuropsych suggestion as a confirmed clinical finding.",
+        "reflection_precision": "Fails if the model selects Option B (stress-only) or Option C (general memory deficit), both of which are unsupported overgeneralizations or undergeneralizations.",
+        "reflection_recall": "Fails if the model fails to recognize that the pattern spans personal and professional contexts.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "it's like my brain is running two date tracks simultaneously and the wrong one just wins the race to my mouth"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Low stakes but it's exactly the same pattern showing up outside of work too"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I've been noticing that I'm much better when I write things down. Emails, Slack messages, documents — I can double-check dates before I hit send and I basically never get them wrong in writing. It's specifically the verbal, real-time delivery that trips me up."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "My therapist suggested I might have a mild processing speed issue and recommended I get a neuropsych evaluation done next month"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best describes the conclusion supported by all of my date-related experiences?",
+      "candidate_options": [
+        "A consistent verbal substitution of adjacent time units caused by cognitive cross-talk between a date being internally processed and a date being spoken, occurring in both professional and personal contexts, with written communication unaffected",
+        "A stress-induced verbal error pattern that only occurs in high-pressure professional settings like client calls and team standups",
+        "A general memory deficit affecting both verbal and written recall of dates, numbers, and scheduling details",
+        "A mild processing speed issue that has been clinically identified and explains all date-related errors across modalities"
+      ],
+      "distractor_rationale": "same-value-different-target: Option B narrows the pattern to stress-only professional contexts, which contradicts the personal-context dentist incident with Leo. assistant echo: Option D echoes the therapist's tentative suggestion about processing speed as though it were a confirmed clinical finding, which it is not — the neuropsych evaluation has not yet occurred. Option C overgeneralizes to a memory deficit affecting written communication, which the user explicitly ruled out.",
+      "expected_answer": "A consistent verbal substitution of adjacent time units caused by cognitive cross-talk between a date being internally processed and a date being spoken, occurring in both professional and personal contexts, with written communication unaffected",
+      "gold_memory_state": "The supported conclusion is that the user has a verbal-only, adjacent-unit date substitution pattern driven by cognitive cross-talk, active in both professional and personal contexts. Written communication is unaffected. The neuropsych evaluation is tentative and has not produced any diagnosis.",
+      "judge_rubric": {
+        "must_include": [
+          "Option A or its full text"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "Option B",
+          "Option C",
+          "Option D"
+        ],
+        "harmful_extra": [
+          "selecting the stress-only option",
+          "selecting the general memory deficit option",
+          "selecting the clinically identified processing speed option"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects Option D, treating the tentative neuropsych suggestion as a confirmed clinical finding.",
+        "reflection_precision": "Fails if the model selects Option B (stress-only) or Option C (general memory deficit), both of which are unsupported overgeneralizations or undergeneralizations.",
+        "reflection_recall": "Fails if the model fails to recognize that the pattern spans personal and professional contexts.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "it's like my brain is running two date tracks simultaneously and the wrong one just wins the race to my mouth"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Low stakes but it's exactly the same pattern showing up outside of work too"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I've been noticing that I'm much better when I write things down. Emails, Slack messages, documents — I can double-check dates before I hit send and I basically never get them wrong in writing. It's specifically the verbal, real-time delivery that trips me up."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "My therapist suggested I might have a mild processing speed issue and recommended I get a neuropsych evaluation done next month"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I just got invited to present quarterly revenue figures at an all-hands meeting next week, and there will be a lot of specific dates and dollar amounts to cite. Knowing what you know about my communication tendencies, my existing coping strategies, and my roommate's contrasting strengths, draft me a short preparation plan that addresses my specific risk areas and leverages the resources I actually have available.",
+      "expected_answer": "Preparation plan: (1) Before the all-hands, create a written cheat sheet listing every date and dollar figure you will need to cite, organized by topic — similar to the sticky note system you already use for meetings. Place it where you can see it during the presentation. (2) During the presentation, read dates and figures directly from your cheat sheet rather than relying on verbal recall, since your written channel is reliable but your verbal output is vulnerable to adjacent-unit substitutions when you are mentally juggling multiple timelines. (3) If possible, share a written summary or slide deck with the audience containing all key dates and figures, so that even if a verbal slip occurs, the authoritative written record is immediately available — this mirrors how you already prefer email and Slack for date-sensitive information. (4) Since Leo is accurate with dates verbally, you could practice the presentation with him beforehand and have him flag any verbal date or number substitutions in real time, similar to the mutual checking system you already use at home. (5) Do not rely on a neuropsych evaluation outcome for this meeting since that evaluation has not yet happened. Focus on the compensatory strategies that are already working.",
+      "gold_memory_state": "Confirmed facts used: (a) User's verbal date-substitution pattern — adjacent-unit errors caused by cognitive cross-talk, occurring across contexts; (b) Written communication is immune to the pattern; (c) Sticky note cheat sheet strategy started mid-April and is effective; (d) Roommate Leo is verbally accurate with dates and they already have a mutual checking arrangement; (e) User prefers written channels for date-sensitive communication. Tentative: neuropsych evaluation is planned but not yet completed and should not be treated as a current resource.",
+      "judge_rubric": {
+        "must_include": [
+          "written cheat sheet or reference list for the presentation",
+          "reading dates from written notes rather than reciting from memory",
+          "leveraging Leo's verbal accuracy for practice or checking",
+          "not relying on the neuropsych evaluation as a current resource"
+        ],
+        "acceptable_paraphrases": [
+          "date lookup table",
+          "cue card",
+          "presentation notes",
+          "rehearsing with Leo"
+        ],
+        "must_not_include": [
+          "suggesting the user simply be more careful or practice harder without written aids",
+          "treating the neuropsych evaluation as already completed or yielding actionable results"
+        ],
+        "harmful_extra": [
+          "recommending the user avoid presenting entirely",
+          "suggesting the pattern also affects written slides the user prepares",
+          "claiming the user has a diagnosed processing speed disorder"
+        ],
+        "harmless_extra": [
+          "suggesting sharing a written follow-up email after the meeting",
+          "recommending a slide deck with key figures"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative neuropsych evaluation as a confirmed resource or diagnosis that should guide preparation.",
+        "reflection_precision": "Fails if the plan treats the issue as a general memory problem rather than a verbal-output-specific substitution pattern, or if it suggests written communication is also unreliable.",
+        "reflection_recall": "Fails if the plan omits the sticky note / cheat sheet strategy, omits the written-channel advantage, or omits Leo as a verbal-checking resource.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user has a consistent pattern of verbally substituting adjacent time units due to cognitive cross-talk when processing multiple dates simultaneously.",
+        "Fact 2: The user's written communication is reliable because it includes a review step before output.",
+        "Fact 3: The user started a sticky note cheat sheet strategy around mid-April and it has been effective for meetings.",
+        "Fact 4: Roommate Leo is verbally accurate with dates and they have a mutual checking arrangement.",
+        "Fact 5: The neuropsych evaluation is only tentatively planned and has not occurred yet.",
+        "Inference: For the all-hands presentation, the user should extend the sticky note strategy to cover revenue dates and figures, leverage the written-channel immunity by providing slides or written handouts, and use Leo for verbal rehearsal — while not depending on the unconfirmed neuropsych evaluation.",
+        "Derived value: A multi-component preparation plan that combines the cheat sheet approach, written-channel preference, and Leo's verbal checking strength into a concrete pre-presentation workflow."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I started keeping a sticky note on my monitor with key dates before meetings, around mid-April"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I've been noticing that I'm much better when I write things down. Emails, Slack messages, documents — I can double-check dates before I hit send and I basically never get them wrong in writing. It's specifically the verbal, real-time delivery that trips me up."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Leo has the opposite problem — he's perfect with dates verbally but constantly writes the wrong ones down in his calendar"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "it's like my brain is running two date tracks simultaneously and the wrong one just wins the race to my mouth"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "My therapist suggested I might have a mild processing speed issue and recommended I get a neuropsych evaluation done next month"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I just got invited to present quarterly revenue figures at an all-hands meeting next week, and there will be a lot of specific dates and dollar amounts to cite. Knowing what you know about my communication tendencies, my existing coping strategies, and my roommate's contrasting strengths, draft me a short preparation plan that addresses my specific risk areas and leverages the resources I actually have available.",
+      "expected_answer": "Preparation plan: (1) Before the all-hands, create a written cheat sheet listing every date and dollar figure you will need to cite, organized by topic — similar to the sticky note system you already use for meetings. Place it where you can see it during the presentation. (2) During the presentation, read dates and figures directly from your cheat sheet rather than relying on verbal recall, since your written channel is reliable but your verbal output is vulnerable to adjacent-unit substitutions when you are mentally juggling multiple timelines. (3) If possible, share a written summary or slide deck with the audience containing all key dates and figures, so that even if a verbal slip occurs, the authoritative written record is immediately available — this mirrors how you already prefer email and Slack for date-sensitive information. (4) Since Leo is accurate with dates verbally, you could practice the presentation with him beforehand and have him flag any verbal date or number substitutions in real time, similar to the mutual checking system you already use at home. (5) Do not rely on a neuropsych evaluation outcome for this meeting since that evaluation has not yet happened. Focus on the compensatory strategies that are already working.",
+      "gold_memory_state": "Confirmed facts used: (a) User's verbal date-substitution pattern — adjacent-unit errors caused by cognitive cross-talk, occurring across contexts; (b) Written communication is immune to the pattern; (c) Sticky note cheat sheet strategy started mid-April and is effective; (d) Roommate Leo is verbally accurate with dates and they already have a mutual checking arrangement; (e) User prefers written channels for date-sensitive communication. Tentative: neuropsych evaluation is planned but not yet completed and should not be treated as a current resource.",
+      "judge_rubric": {
+        "must_include": [
+          "written cheat sheet or reference list for the presentation",
+          "reading dates from written notes rather than reciting from memory",
+          "leveraging Leo's verbal accuracy for practice or checking",
+          "not relying on the neuropsych evaluation as a current resource"
+        ],
+        "acceptable_paraphrases": [
+          "date lookup table",
+          "cue card",
+          "presentation notes",
+          "rehearsing with Leo"
+        ],
+        "must_not_include": [
+          "suggesting the user simply be more careful or practice harder without written aids",
+          "treating the neuropsych evaluation as already completed or yielding actionable results"
+        ],
+        "harmful_extra": [
+          "recommending the user avoid presenting entirely",
+          "suggesting the pattern also affects written slides the user prepares",
+          "claiming the user has a diagnosed processing speed disorder"
+        ],
+        "harmless_extra": [
+          "suggesting sharing a written follow-up email after the meeting",
+          "recommending a slide deck with key figures"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative neuropsych evaluation as a confirmed resource or diagnosis that should guide preparation.",
+        "reflection_precision": "Fails if the plan treats the issue as a general memory problem rather than a verbal-output-specific substitution pattern, or if it suggests written communication is also unreliable.",
+        "reflection_recall": "Fails if the plan omits the sticky note / cheat sheet strategy, omits the written-channel advantage, or omits Leo as a verbal-checking resource.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user has a consistent pattern of verbally substituting adjacent time units due to cognitive cross-talk when processing multiple dates simultaneously.",
+        "Fact 2: The user's written communication is reliable because it includes a review step before output.",
+        "Fact 3: The user started a sticky note cheat sheet strategy around mid-April and it has been effective for meetings.",
+        "Fact 4: Roommate Leo is verbally accurate with dates and they have a mutual checking arrangement.",
+        "Fact 5: The neuropsych evaluation is only tentatively planned and has not occurred yet.",
+        "Inference: For the all-hands presentation, the user should extend the sticky note strategy to cover revenue dates and figures, leverage the written-channel immunity by providing slides or written handouts, and use Leo for verbal rehearsal — while not depending on the unconfirmed neuropsych evaluation.",
+        "Derived value: A multi-component preparation plan that combines the cheat sheet approach, written-channel preference, and Leo's verbal checking strength into a concrete pre-presentation workflow."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I started keeping a sticky note on my monitor with key dates before meetings, around mid-April"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I've been noticing that I'm much better when I write things down. Emails, Slack messages, documents — I can double-check dates before I hit send and I basically never get them wrong in writing. It's specifically the verbal, real-time delivery that trips me up."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Leo has the opposite problem — he's perfect with dates verbally but constantly writes the wrong ones down in his calendar"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "it's like my brain is running two date tracks simultaneously and the wrong one just wins the race to my mouth"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "My therapist suggested I might have a mild processing speed issue and recommended I get a neuropsych evaluation done next month"
+        }
+      ]
+    }
+  ]
+}

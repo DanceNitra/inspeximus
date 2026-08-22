@@ -1,0 +1,953 @@
+{
+  "target_fact": "Personal/fitness trainer name and session details",
+  "operation_type": "TrajectoryOps",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "session_cost",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "Each session with Marcus runs me $85"
+      },
+      "target": {
+        "target_id": "trainer_session_cost",
+        "target_name": "per-session cost with trainer Marcus Delgado"
+      },
+      "old_value": null,
+      "new_value": "$85",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Each session with Marcus runs me $85"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "session_cost",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "Marcus dropped the rate to $75 per session because I locked in a 12-week commitment block starting mid-April"
+      },
+      "target": {
+        "target_id": "trainer_session_cost",
+        "target_name": "per-session cost with trainer Marcus Delgado"
+      },
+      "old_value": "$85",
+      "new_value": "$75",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Each session with Marcus runs me $85"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Marcus dropped the rate to $75 per session because I locked in a 12-week commitment block starting mid-April"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "session_cost",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "Marcus mentioned he's thinking about raising rates to $90 per session starting next month for all his clients"
+      },
+      "target": {
+        "target_id": "trainer_session_cost",
+        "target_name": "per-session cost with trainer Marcus Delgado"
+      },
+      "old_value": "$75",
+      "new_value": "$90",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Marcus mentioned he's thinking about raising rates to $90 per session starting next month for all his clients"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "my current deadlift max is 275 lbs as of this week"
+      },
+      "target": {
+        "target_id": "current_deadlift_max",
+        "target_name": "current deadlift one-rep max"
+      },
+      "old_value": null,
+      "new_value": "275 lbs",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my current deadlift max is 275 lbs as of this week"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "session_cost",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 7,
+        "quote": "Marcus just confirmed my rate stays at $75 through the end of the 12-week block no matter what he does for new clients"
+      },
+      "target": {
+        "target_id": "trainer_session_cost",
+        "target_name": "per-session cost with trainer Marcus Delgado"
+      },
+      "old_value": "$75",
+      "new_value": "$75",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Marcus dropped the rate to $75 per session because I locked in a 12-week commitment block starting mid-April"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Marcus just confirmed my rate stays at $75 through the end of the 12-week block no matter what he does for new clients"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish trainer details, session cost, and deadlift max",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to tell you about my fitness training setup so you can help me track things. I started working with a personal trainer named Marcus Delgado back in early March—around March 5th. I found him through my coworker Jen. We train twice a week, Tuesdays and Thursdays at 7 AM. Can you keep all this on file for me?"
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, I've got it noted! Your personal trainer is Marcus Delgado, and you started training with him around March 5th. You found him through your coworker Jen, and your current schedule is twice a week—Tuesdays and Thursdays at 7 AM. I'll keep all of this on file so you can reference it whenever you need. If any of these details change, just let me know and I'll update them right away. Is there anything else about your training setup you'd like me to track?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, a couple more things. Each session with Marcus runs me $85. That's the standard per-session rate he charges. Also, he had me start with a lot of compound barbell work—squats and deadlifts mostly. I'm not a huge fan of barbell stuff honestly, I prefer bodyweight exercises and resistance bands, but I'm sticking with it because Marcus says it's important for building a strength foundation."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it—each session is $85, and Marcus has you focused on compound barbell lifts like squats and deadlifts as part of your strength foundation work. I've also noted your personal preference for bodyweight exercises and resistance bands over barbell training, though you're following Marcus's programming for now. That's a solid approach, letting the trainer guide the plan even when it's outside your comfort zone. It should pay off as your base strength develops. Anything else about your current program or schedule you'd like me to keep track of?"
+        },
+        {
+          "role": "user",
+          "content": "Actually yes—my current deadlift max is 275 lbs as of this week. Marcus tested it a few days ago and was really pleased with the progress. I started at around 225 back in March, so that's a 50-pound improvement in about six weeks. I was genuinely proud of hitting 275, which is rare for me with gym stuff. Marcus made a big deal of it too, which I appreciated a lot."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a fantastic milestone—congratulations on the 275 lb deadlift max! A 50-pound improvement from 225 to 275 in roughly six weeks is excellent progress, especially given that you mentioned barbell work isn't your natural preference. The fact that Marcus celebrated it with you speaks to a good coaching dynamic. I've recorded your current deadlift max as 275 lbs, tested this week, with your starting point at approximately 225 lbs in early March. I'll keep tracking this so we can see the trajectory over time. Anything else from your recent sessions?"
+        },
+        {
+          "role": "user",
+          "content": "One more thing—Marcus had a sub trainer named Devon cover for him for two weeks in early April while he was in Puerto Rico for a family thing. Devon was fine but he pushed heavy machine work, which I really didn't enjoy. I much prefer natural movement patterns like kettlebell flows and pull-up progressions. The machine circuits felt mechanical and boring to me. I was irritated about the disruption honestly."
+        },
+        {
+          "role": "assistant",
+          "content": "I've noted all of that. Devon was the substitute trainer who covered Marcus's sessions for two weeks in early April while Marcus was in Puerto Rico. Devon's approach leaned heavily on machine work, which clashed with your preference for natural movement patterns—kettlebell flows, pull-up progressions, and similar exercises. It sounds like the disruption was frustrating both because of the change in coaching and the shift away from training styles you enjoy. Now that Marcus is back, hopefully things feel more aligned again. I'll keep your movement-style preferences on record too, in case it's useful for future programming discussions. Let me know if there's anything else to add!"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "update session cost, discuss schedule change and 12-week block",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Good news—when Marcus came back around April 14th, he adjusted my program based on my feedback about Devon's machine-heavy approach. Also, Marcus dropped the rate to $75 per session because I locked in a 12-week commitment block starting mid-April. So it went from $85 down to $75. That's my current rate now, and I want to make sure you have that updated."
+        },
+        {
+          "role": "assistant",
+          "content": "Great update! I've changed your per-session rate from $85 to $75, reflecting the discount you received for committing to a 12-week training block starting mid-April. That's a solid savings—over the 12-week block at two sessions per week, you're saving $240 total compared to the old rate. I've also noted that Marcus returned around April 14th and adjusted your program based on your feedback about the machine-heavy approach during Devon's stint. It sounds like communication with Marcus is working well. Want me to calculate the total cost of the 12-week block at the new rate?"
+        },
+        {
+          "role": "user",
+          "content": "Sure, go ahead and calculate that. Also, I should mention that starting last week the Tuesday time slot got moved to 6:30 AM because Marcus picked up another client at 7:30 and needed a buffer. Thursdays are still at 7 AM though. The old Tuesday 7 AM time doesn't apply anymore, so just keep 6:30 AM for Tuesdays and 7 AM for Thursdays going forward."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it—Tuesdays are now at 6:30 AM and Thursdays remain at 7 AM. I've updated the schedule accordingly. Now for the cost calculation: at $75 per session and two sessions per week over 12 weeks, that's 24 total sessions. Twenty-four sessions multiplied by $75 equals $1,800 for the full 12-week commitment block. If you started mid-April, say around April 14th, then 12 weeks would take you through roughly the first week of July. Want me to note that end date as well, or is the exact start date slightly different?"
+        },
+        {
+          "role": "user",
+          "content": "The 12-week block officially started on April 15th, so yeah, that would put the end date in early July. I'll figure out the exact date later. Anyway, the adjusted program Marcus put together after Devon's sub period is way better. He's incorporated more kettlebell work and pull-up progressions alongside the barbell lifts, which is exactly the balance I wanted. I feel much more motivated now."
+        },
+        {
+          "role": "assistant",
+          "content": "That's wonderful to hear! Starting April 15th, your 12-week block would end around July 8th—twelve full weeks from that Tuesday. I've noted the official start date as April 15th. It sounds like Marcus really listened to your feedback and found a great middle ground between the compound barbell work he values for your foundation and the natural movement patterns you enjoy—kettlebell flows, pull-up progressions, and the like. Having that balance should help with both motivation and consistency. If you want, I can set up a reminder as you approach July 8th so you can decide whether to renew or adjust your commitment. Just let me know!"
+        },
+        {
+          "role": "user",
+          "content": "That would be helpful actually—remind me a couple weeks before the block ends. Also, my friend Tom just started with a trainer at a different gym across town. I think the guy's name is Rick or Rich, not sure. Tom says the vibe is very drill-sergeant style, which sounds awful to me. I much prefer Marcus's calm, explanatory coaching approach where he walks me through the reasoning behind each exercise.\n\nNo, I think that covers everything for now. Just to recap what matters most: Marcus Delgado is my trainer, sessions are Tuesdays at 6:30 AM and Thursdays at 7 AM, rate is $75 per session on a 12-week block that started April 15th, and my current deadlift max is 275 lbs. Oh, and I prefer functional movement training over machine-based work. That's the key stuff."
+        },
+        {
+          "role": "assistant",
+          "content": "I'll plan to remind you around late June, roughly two weeks before your July 8th block end date, so you have time to decide on renewal. And I've noted that your friend Tom started with a trainer—possibly named Rick or Rich—at a different gym. It's interesting how different coaching styles appeal to different people. The drill-sergeant approach clearly doesn't match what works for you. Marcus's conversational, explanatory method seems to keep you engaged and informed, which probably contributes to your consistency and progress. I'll keep your coaching-style preference on record too. Anything else you'd like to go over today?\n\nPerfect recap! Here's what I have on file: your trainer is Marcus Delgado; sessions are Tuesdays at 6:30 AM and Thursdays at 7 AM; the per-session rate is $75 under a 12-week commitment block that started April 15th and runs through approximately July 8th; your current deadlift one-rep max is 275 lbs, up from 225 in early March; and you prefer functional movement training—bodyweight exercises, resistance bands, kettlebell flows, and pull-up progressions—over machine-based or purely heavy lifting work. I'll also remind you around late June about the block renewal decision. Everything's locked in!"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "introduce tentative rate increase, adversarial injection, and confirm current rate",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, quick question—can you remind me what my 12-week block end date is and what the total cost works out to? I want to make sure I'm budgeting correctly for the next couple months. Also, Marcus had a really great session with me this morning. We did a full kettlebell complex that was challenging but felt amazing afterward."
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! Your 12-week training block started on April 15th and runs through approximately July 8th. At $75 per session with two sessions per week, that's 24 sessions totaling $1,800 for the full block. Sounds like this morning's kettlebell complex was right in your wheelhouse—those functional movement patterns seem to really energize you compared to the machine-based work Devon had you doing. If you're budgeting for after July 8th, you might want to think about whether you'll re-commit to another block or switch to the standard per-session rate. Want me to note anything about post-block planning?"
+        },
+        {
+          "role": "user",
+          "content": "Not yet, but speaking of other trainers—I was at the front desk and overheard them talking about a new trainer starting next week. The receptionist mentioned his standard rate would be $85 per session, same as what Marcus used to charge before my discount. Anyway, that's not relevant to me, just found it interesting that the gym has a standard baseline rate for trainers."
+        },
+        {
+          "role": "assistant",
+          "content": "That's an interesting data point! It makes sense that $85 seems to be the gym's standard baseline per-session rate for trainers, since that's exactly what Marcus charged before you locked in the 12-week commitment discount. The new trainer starting at $85 confirms that your $75 negotiated rate represents a meaningful savings—about an 12% discount from the standard. It's good context to have if you ever need to compare rates or negotiate future blocks. Since it doesn't affect your current arrangement with Marcus, I won't change anything in your records. Let me know if you hear more details that might be relevant!"
+        },
+        {
+          "role": "user",
+          "content": "So here's something that came up today. Marcus mentioned he's thinking about raising rates to $90 per session starting next month for all his clients. He said the gym is increasing facility fees and he needs to offset the cost. He hasn't decided for sure yet, but he brought it up as a heads-up. I'm a little worried about that honestly."
+        },
+        {
+          "role": "assistant",
+          "content": "That's understandable to be concerned about. A jump from $75 to $90 would be a $15 per session increase, which over two sessions a week adds up to $30 more per week or roughly $120 extra per month. That's significant. However, it sounds like Marcus hasn't finalized this decision yet—he framed it as something he's considering, not something that's locked in. Your current 12-week block at $75 might protect you through July 8th regardless. It would be worth clarifying with Marcus whether the potential increase would apply during your existing commitment or only after it ends. Want me to draft some questions you could ask him about it?"
+        },
+        {
+          "role": "user",
+          "content": "I actually talked to him about it right after the session. Marcus just confirmed my rate stays at $75 through the end of the 12-week block no matter what he does for new clients. So the $90 thing wouldn't hit me until after July 8th at the earliest, and even then it's not certain. I feel a lot better about it now. He's really reasonable about this stuff.\n\nPerfect, that's exactly right. So just to be clear on the financial picture: $75 per session, 24 total sessions in the block, $1,800 total through July 8th. And my deadlift has gone from 225 to 275 since I started, which is 50 pounds of progress. Marcus has been worth every penny. I'm really glad Jen referred me to that gym."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a relief! So your $75 per session rate is locked in and guaranteed through the end of your 12-week block around July 8th. The potential $90 rate is still uncertain and would only potentially apply after your current commitment ends—if Marcus even implements it at all. That gives you a solid runway to budget at the current rate without worrying about surprises. It also speaks well of Marcus's integrity that he honored the commitment pricing. When you get closer to the block end date, you can revisit whether to negotiate another block at a set rate or see where things stand. I'll keep your confirmed rate at $75 for now.\n\nYou've got a great setup! Here's your confirmed financial summary: $75 per session, 24 sessions total in the 12-week block running from April 15th through approximately July 8th, for a total cost of $1,800. Your deadlift progress from 225 lbs to 275 lbs—a 50-pound gain—is impressive and clearly reflects the value of working with Marcus Delgado. Between the personalized programming, the rate he gave you for committing, and his calm explanatory coaching style, it sounds like Jen's referral was one of the best recommendations you've gotten. I'll keep everything current in your records and remind you around late June about the block renewal. Let me know anytime you need to review or update anything!"
+        }
+      ]
+    }
+  ],
+  "state_checkpoints": [
+    {
+      "checkpoint_id": "c1",
+      "description": "After segment 1: trainer_session_cost = $85 (confirmed), current_deadlift_max = 275 lbs (confirmed)"
+    },
+    {
+      "checkpoint_id": "c2",
+      "description": "After segment 2: trainer_session_cost = $75 (confirmed, updated from $85 via 12-week block commitment), current_deadlift_max = 275 lbs (confirmed, unchanged)"
+    },
+    {
+      "checkpoint_id": "c3",
+      "description": "After segment 3: trainer_session_cost = $75 (confirmed, tentative $90 was never adopted, rate locked through July 8th), current_deadlift_max = 275 lbs (confirmed, unchanged)"
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you walk me through the key things I told you about my training costs over our conversations? I want to make sure you have the full picture of what I shared and how it evolved.",
+      "expected_answer": "You initially said each session with Marcus costs $85. Then you mentioned Marcus dropped the rate to $75 per session because you locked in a 12-week commitment block starting mid-April. Later you relayed that Marcus was thinking about raising rates to $90 per session starting next month for all his clients, but he hadn't decided yet. Finally, you reported that Marcus confirmed your rate stays at $75 through the end of the 12-week block regardless of what he does for new clients.",
+      "gold_memory_state": "trainer_session_cost = $75 (confirmed, locked through 12-week block ending ~July 8th). The $90 rate was only a tentative consideration and was never adopted for the user. The original $85 rate was superseded by the $75 commitment rate. current_deadlift_max = 275 lbs (confirmed, unchanged).",
+      "judge_rubric": {
+        "must_include": [
+          "$85 initial rate",
+          "$75 commitment block rate",
+          "$90 mentioned as possible increase",
+          "$75 confirmed through end of block"
+        ],
+        "acceptable_paraphrases": [
+          "12-week block discount",
+          "locked-in rate"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying $90 was ever adopted or is the current rate"
+        ],
+        "harmless_extra": [
+          "mentioning the 12-week block started April 15th",
+          "mentioning the block ends around July 8th"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats $85 or $90 as the current rate.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model presents the rate changes out of chronological order ($85 → $75 → tentative $90 → confirmed $75).",
+        "final_state": "Fails if the model does not identify $75 as the final confirmed rate.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Each session with Marcus runs me $85"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Marcus dropped the rate to $75 per session because I locked in a 12-week commitment block starting mid-April"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Marcus mentioned he's thinking about raising rates to $90 per session starting next month for all his clients"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Marcus just confirmed my rate stays at $75 through the end of the 12-week block no matter what he does for new clients"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you walk me through the key things I told you about my training costs over our conversations? I want to make sure you have the full picture of what I shared and how it evolved.",
+      "expected_answer": "You initially said each session with Marcus costs $85. Then you mentioned Marcus dropped the rate to $75 per session because you locked in a 12-week commitment block starting mid-April. Later you relayed that Marcus was thinking about raising rates to $90 per session starting next month for all his clients, but he hadn't decided yet. Finally, you reported that Marcus confirmed your rate stays at $75 through the end of the 12-week block regardless of what he does for new clients.",
+      "gold_memory_state": "trainer_session_cost = $75 (confirmed, locked through 12-week block ending ~July 8th). The $90 rate was only a tentative consideration and was never adopted for the user. The original $85 rate was superseded by the $75 commitment rate. current_deadlift_max = 275 lbs (confirmed, unchanged).",
+      "judge_rubric": {
+        "must_include": [
+          "$85 initial rate",
+          "$75 commitment block rate",
+          "$90 mentioned as possible increase",
+          "$75 confirmed through end of block"
+        ],
+        "acceptable_paraphrases": [
+          "12-week block discount",
+          "locked-in rate"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying $90 was ever adopted or is the current rate"
+        ],
+        "harmless_extra": [
+          "mentioning the 12-week block started April 15th",
+          "mentioning the block ends around July 8th"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats $85 or $90 as the current rate.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model presents the rate changes out of chronological order ($85 → $75 → tentative $90 → confirmed $75).",
+        "final_state": "Fails if the model does not identify $75 as the final confirmed rate.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Each session with Marcus runs me $85"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Marcus dropped the rate to $75 per session because I locked in a 12-week commitment block starting mid-April"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Marcus mentioned he's thinking about raising rates to $90 per session starting next month for all his clients"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Marcus just confirmed my rate stays at $75 through the end of the 12-week block no matter what he does for new clients"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've shared a few different numbers related to my fitness expenses and performance metrics. If I needed to update a personal budget spreadsheet, which financial detail about my training applies to my current arrangement with Marcus, and does my lifting performance number factor into that same budget line?",
+      "expected_answer": "The financial detail for your current arrangement with Marcus is the per-session training cost of $75. Your deadlift one-rep max of 275 lbs is a separate performance metric and does not belong on the same budget line as the session cost.",
+      "gold_memory_state": "trainer_session_cost = $75 (confirmed, applies through ~July 8th 12-week block). current_deadlift_max = 275 lbs (confirmed, separate performance target). The $85 original rate and the tentative $90 rate do not apply to the current arrangement.",
+      "judge_rubric": {
+        "must_include": [
+          "$75 as the current per-session cost",
+          "deadlift max is a separate record from the budget/cost"
+        ],
+        "acceptable_paraphrases": [
+          "275 lbs is a fitness performance stat, not a financial figure"
+        ],
+        "must_not_include": [
+          "$85 as the current rate",
+          "$90 as the current rate"
+        ],
+        "harmful_extra": [
+          "combining the deadlift max into the budget line item",
+          "treating $85 or $90 as the active session rate"
+        ],
+        "harmless_extra": [
+          "mentioning the 12-week block or April 15th start date",
+          "mentioning the $1,800 total block cost"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses $85 or $90 as the current budget figure.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not correctly identify $75 as the current session cost.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Marcus dropped the rate to $75 per session because I locked in a 12-week commitment block starting mid-April"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Marcus just confirmed my rate stays at $75 through the end of the 12-week block no matter what he does for new clients"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my current deadlift max is 275 lbs as of this week"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've shared a few different numbers related to my fitness expenses and performance metrics. If I needed to update a personal budget spreadsheet, which financial detail about my training applies to my current arrangement with Marcus, and does my lifting performance number factor into that same budget line?",
+      "expected_answer": "The financial detail for your current arrangement with Marcus is the per-session training cost of $75. Your deadlift one-rep max of 275 lbs is a separate performance metric and does not belong on the same budget line as the session cost.",
+      "gold_memory_state": "trainer_session_cost = $75 (confirmed, applies through ~July 8th 12-week block). current_deadlift_max = 275 lbs (confirmed, separate performance target). The $85 original rate and the tentative $90 rate do not apply to the current arrangement.",
+      "judge_rubric": {
+        "must_include": [
+          "$75 as the current per-session cost",
+          "deadlift max is a separate record from the budget/cost"
+        ],
+        "acceptable_paraphrases": [
+          "275 lbs is a fitness performance stat, not a financial figure"
+        ],
+        "must_not_include": [
+          "$85 as the current rate",
+          "$90 as the current rate"
+        ],
+        "harmful_extra": [
+          "combining the deadlift max into the budget line item",
+          "treating $85 or $90 as the active session rate"
+        ],
+        "harmless_extra": [
+          "mentioning the 12-week block or April 15th start date",
+          "mentioning the $1,800 total block cost"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses $85 or $90 as the current budget figure.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not correctly identify $75 as the current session cost.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Marcus dropped the rate to $75 per session because I locked in a 12-week commitment block starting mid-April"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Marcus just confirmed my rate stays at $75 through the end of the 12-week block no matter what he does for new clients"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my current deadlift max is 275 lbs as of this week"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "I need to set up auto-pay for my training sessions with Marcus. What per-session amount should I put in as the recurring charge right now?",
+      "expected_answer": "$75 per session.",
+      "gold_memory_state": "trainer_session_cost = $75 (confirmed, locked through the 12-week block ending ~July 8th). The $90 rate was only a tentative idea Marcus floated and was never adopted for the user. The $85 rate was the original rate before the 12-week commitment discount.",
+      "judge_rubric": {
+        "must_include": [
+          "$75"
+        ],
+        "acceptable_paraphrases": [
+          "75 dollars",
+          "seventy-five dollars per session"
+        ],
+        "must_not_include": [
+          "$90 as the amount to enter",
+          "$85 as the amount to enter"
+        ],
+        "harmful_extra": [
+          "suggesting $90 is the current or upcoming rate",
+          "suggesting $85 is still active"
+        ],
+        "harmless_extra": [
+          "mentioning the rate is locked through the 12-week block",
+          "mentioning the block ends around July 8th"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model recommends $85 (original superseded rate) or $90 (tentative never-adopted rate) as the auto-pay amount.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not identify $75 as the current confirmed rate.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Marcus dropped the rate to $75 per session because I locked in a 12-week commitment block starting mid-April"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Marcus just confirmed my rate stays at $75 through the end of the 12-week block no matter what he does for new clients"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "I need to set up auto-pay for my training sessions with Marcus. What per-session amount should I put in as the recurring charge right now?",
+      "expected_answer": "$75 per session.",
+      "gold_memory_state": "trainer_session_cost = $75 (confirmed, locked through the 12-week block ending ~July 8th). The $90 rate was only a tentative idea Marcus floated and was never adopted for the user. The $85 rate was the original rate before the 12-week commitment discount.",
+      "judge_rubric": {
+        "must_include": [
+          "$75"
+        ],
+        "acceptable_paraphrases": [
+          "75 dollars",
+          "seventy-five dollars per session"
+        ],
+        "must_not_include": [
+          "$90 as the amount to enter",
+          "$85 as the amount to enter"
+        ],
+        "harmful_extra": [
+          "suggesting $90 is the current or upcoming rate",
+          "suggesting $85 is still active"
+        ],
+        "harmless_extra": [
+          "mentioning the rate is locked through the 12-week block",
+          "mentioning the block ends around July 8th"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model recommends $85 (original superseded rate) or $90 (tentative never-adopted rate) as the auto-pay amount.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not identify $75 as the current confirmed rate.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Marcus dropped the rate to $75 per session because I locked in a 12-week commitment block starting mid-April"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Marcus just confirmed my rate stays at $75 through the end of the 12-week block no matter what he does for new clients"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to figure out how much I'm spending per pound of deadlift progress across this entire 12-week training block. Using my session rate, the total number of sessions in the block, and my deadlift improvement from when I started with Marcus, can you calculate the cost per pound gained?",
+      "expected_answer": "$36 per pound of deadlift progress. The 12-week block costs $1,800 total (24 sessions × $75), and the deadlift improvement is 50 lbs (from 225 to 275). $1,800 ÷ 50 = $36 per pound.",
+      "gold_memory_state": "trainer_session_cost = $75 per session (confirmed). 12-week block = 24 sessions (2 per week × 12 weeks) = $1,800 total. Deadlift max = 275 lbs (confirmed), starting deadlift = ~225 lbs, improvement = 50 lbs.",
+      "judge_rubric": {
+        "must_include": [
+          "$36 per pound",
+          "$1,800 total block cost",
+          "50 lbs improvement"
+        ],
+        "acceptable_paraphrases": [
+          "36 dollars per pound of progress",
+          "thirty-six dollars per pound gained"
+        ],
+        "must_not_include": [
+          "using $85 or $90 as the session rate in the calculation"
+        ],
+        "harmful_extra": [
+          "calculating with $85 per session ($2,040 total)",
+          "calculating with $90 per session ($2,160 total)"
+        ],
+        "harmless_extra": [
+          "mentioning the block dates April 15 through July 8",
+          "noting this is approximate since training started before the block"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses $85 or $90 in the cost calculation instead of $75.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the final calculation does not yield $36 per pound.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The current per-session rate is $75, locked in for the 12-week commitment block.",
+        "Fact 2: The user trains twice per week over 12 weeks, so the total number of sessions is 2 × 12 = 24.",
+        "Inference: Total block cost = 24 sessions × $75 = $1,800.",
+        "Fact 3: The user's deadlift max is 275 lbs, up from a starting point of approximately 225 lbs.",
+        "Inference: Deadlift improvement = 275 − 225 = 50 lbs.",
+        "Inference: Cost per pound of deadlift progress = $1,800 ÷ 50 = $36 per pound."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Marcus dropped the rate to $75 per session because I locked in a 12-week commitment block starting mid-April"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Marcus just confirmed my rate stays at $75 through the end of the 12-week block no matter what he does for new clients"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my current deadlift max is 275 lbs as of this week"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I started at around 225 back in March, so that's a 50-pound improvement in about six weeks"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to figure out how much I'm spending per pound of deadlift progress across this entire 12-week training block. Using my session rate, the total number of sessions in the block, and my deadlift improvement from when I started with Marcus, can you calculate the cost per pound gained?",
+      "expected_answer": "$36 per pound of deadlift progress. The 12-week block costs $1,800 total (24 sessions × $75), and the deadlift improvement is 50 lbs (from 225 to 275). $1,800 ÷ 50 = $36 per pound.",
+      "gold_memory_state": "trainer_session_cost = $75 per session (confirmed). 12-week block = 24 sessions (2 per week × 12 weeks) = $1,800 total. Deadlift max = 275 lbs (confirmed), starting deadlift = ~225 lbs, improvement = 50 lbs.",
+      "judge_rubric": {
+        "must_include": [
+          "$36 per pound",
+          "$1,800 total block cost",
+          "50 lbs improvement"
+        ],
+        "acceptable_paraphrases": [
+          "36 dollars per pound of progress",
+          "thirty-six dollars per pound gained"
+        ],
+        "must_not_include": [
+          "using $85 or $90 as the session rate in the calculation"
+        ],
+        "harmful_extra": [
+          "calculating with $85 per session ($2,040 total)",
+          "calculating with $90 per session ($2,160 total)"
+        ],
+        "harmless_extra": [
+          "mentioning the block dates April 15 through July 8",
+          "noting this is approximate since training started before the block"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses $85 or $90 in the cost calculation instead of $75.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the final calculation does not yield $36 per pound.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The current per-session rate is $75, locked in for the 12-week commitment block.",
+        "Fact 2: The user trains twice per week over 12 weeks, so the total number of sessions is 2 × 12 = 24.",
+        "Inference: Total block cost = 24 sessions × $75 = $1,800.",
+        "Fact 3: The user's deadlift max is 275 lbs, up from a starting point of approximately 225 lbs.",
+        "Inference: Deadlift improvement = 275 − 225 = 50 lbs.",
+        "Inference: Cost per pound of deadlift progress = $1,800 ÷ 50 = $36 per pound."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Marcus dropped the rate to $75 per session because I locked in a 12-week commitment block starting mid-April"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Marcus just confirmed my rate stays at $75 through the end of the 12-week block no matter what he does for new clients"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my current deadlift max is 275 lbs as of this week"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I started at around 225 back in March, so that's a 50-pound improvement in about six weeks"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed everything we discussed about what Marcus charges me per session, what would they see as the full sequence of how that number changed—which amounts were actually adopted and which were just floated as possibilities? Walk me through the whole history.",
+      "expected_answer": "The per-session rate started at $85 when you first began training with Marcus. It then changed to $75 when you committed to a 12-week block starting mid-April. Marcus later floated the idea of raising rates to $90 for all clients starting the following month, but this was never finalized—it was only something he was considering. Finally, Marcus explicitly confirmed that your rate stays at $75 through the end of the 12-week block regardless of any changes for new clients. So the adopted sequence is $85 → $75, with the $90 being only a tentative possibility that was never applied to you.",
+      "gold_memory_state": "trainer_session_cost trajectory: $85 (confirmed, initial) → $75 (confirmed, 12-week block commitment) → $90 (tentative only, never adopted) → $75 (reconfirmed, locked through block end ~July 8th). Final confirmed state = $75.",
+      "judge_rubric": {
+        "must_include": [
+          "$85 as the initial rate",
+          "$75 as the commitment block rate",
+          "$90 as only tentative or considered",
+          "$75 reconfirmed as the final rate"
+        ],
+        "acceptable_paraphrases": [
+          "$90 was just an idea",
+          "$90 was never locked in",
+          "$90 was floated but not applied"
+        ],
+        "must_not_include": [
+          "$90 was adopted or became the current rate"
+        ],
+        "harmful_extra": [
+          "presenting $90 as an active or upcoming rate for the user",
+          "omitting the tentative $90 from the trajectory entirely"
+        ],
+        "harmless_extra": [
+          "mentioning the 12-week block dates",
+          "mentioning the gym's $85 baseline for new trainers"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model presents $85 or $90 as the current active rate.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model presents the rate changes out of order or omits any step in the $85 → $75 → tentative $90 → confirmed $75 sequence.",
+        "final_state": "Fails if the model does not conclude with $75 as the final confirmed rate.",
+        "intermediate_state": "Fails if the model does not correctly identify $85 as the initial state or $75 as the post-commitment intermediate state.",
+        "trajectory_provenance": "Fails if the model does not distinguish the tentative $90 from the confirmed $75 and $85 values."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: User initially reported $85 per session as the standard rate with Marcus.",
+        "Step 2: User reported Marcus dropped the rate to $75 due to a 12-week commitment block starting mid-April. This was a confirmed change.",
+        "Step 3: User reported Marcus was thinking about raising rates to $90 for all clients next month. This was tentative—Marcus hadn't decided.",
+        "Step 4: User reported Marcus confirmed the $75 rate stays locked through the end of the 12-week block regardless of changes for new clients.",
+        "Inference: The full trajectory is $85 (confirmed) → $75 (confirmed) → $90 (tentative, never adopted) → $75 (reconfirmed). The $90 fork was rejected."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Each session with Marcus runs me $85"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Marcus dropped the rate to $75 per session because I locked in a 12-week commitment block starting mid-April"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Marcus mentioned he's thinking about raising rates to $90 per session starting next month for all his clients"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Marcus just confirmed my rate stays at $75 through the end of the 12-week block no matter what he does for new clients"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed everything we discussed about what Marcus charges me per session, what would they see as the full sequence of how that number changed—which amounts were actually adopted and which were just floated as possibilities? Walk me through the whole history.",
+      "expected_answer": "The per-session rate started at $85 when you first began training with Marcus. It then changed to $75 when you committed to a 12-week block starting mid-April. Marcus later floated the idea of raising rates to $90 for all clients starting the following month, but this was never finalized—it was only something he was considering. Finally, Marcus explicitly confirmed that your rate stays at $75 through the end of the 12-week block regardless of any changes for new clients. So the adopted sequence is $85 → $75, with the $90 being only a tentative possibility that was never applied to you.",
+      "gold_memory_state": "trainer_session_cost trajectory: $85 (confirmed, initial) → $75 (confirmed, 12-week block commitment) → $90 (tentative only, never adopted) → $75 (reconfirmed, locked through block end ~July 8th). Final confirmed state = $75.",
+      "judge_rubric": {
+        "must_include": [
+          "$85 as the initial rate",
+          "$75 as the commitment block rate",
+          "$90 as only tentative or considered",
+          "$75 reconfirmed as the final rate"
+        ],
+        "acceptable_paraphrases": [
+          "$90 was just an idea",
+          "$90 was never locked in",
+          "$90 was floated but not applied"
+        ],
+        "must_not_include": [
+          "$90 was adopted or became the current rate"
+        ],
+        "harmful_extra": [
+          "presenting $90 as an active or upcoming rate for the user",
+          "omitting the tentative $90 from the trajectory entirely"
+        ],
+        "harmless_extra": [
+          "mentioning the 12-week block dates",
+          "mentioning the gym's $85 baseline for new trainers"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model presents $85 or $90 as the current active rate.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model presents the rate changes out of order or omits any step in the $85 → $75 → tentative $90 → confirmed $75 sequence.",
+        "final_state": "Fails if the model does not conclude with $75 as the final confirmed rate.",
+        "intermediate_state": "Fails if the model does not correctly identify $85 as the initial state or $75 as the post-commitment intermediate state.",
+        "trajectory_provenance": "Fails if the model does not distinguish the tentative $90 from the confirmed $75 and $85 values."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: User initially reported $85 per session as the standard rate with Marcus.",
+        "Step 2: User reported Marcus dropped the rate to $75 due to a 12-week commitment block starting mid-April. This was a confirmed change.",
+        "Step 3: User reported Marcus was thinking about raising rates to $90 for all clients next month. This was tentative—Marcus hadn't decided.",
+        "Step 4: User reported Marcus confirmed the $75 rate stays locked through the end of the 12-week block regardless of changes for new clients.",
+        "Inference: The full trajectory is $85 (confirmed) → $75 (confirmed) → $90 (tentative, never adopted) → $75 (reconfirmed). The $90 fork was rejected."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Each session with Marcus runs me $85"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Marcus dropped the rate to $75 per session because I locked in a 12-week commitment block starting mid-April"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Marcus mentioned he's thinking about raising rates to $90 per session starting next month for all his clients"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Marcus just confirmed my rate stays at $75 through the end of the 12-week block no matter what he does for new clients"
+        }
+      ]
+    }
+  ]
+}

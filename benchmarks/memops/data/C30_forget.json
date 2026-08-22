@@ -1,0 +1,976 @@
+{
+  "target_fact": "User's recurring investment/transfer plans: weekly $150 Chase→Fidelity, biweekly $250 VTSAX auto-invest, monthly $50 BTC on Coinbase; the Marcus $75/month auto-transfer was canceled and should be forgotten.",
+  "operation_type": "Forget",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 4,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I set up a recurring weekly transfer of $150 from my Chase checking account into my Fidelity brokerage account every Monday starting March 4th"
+      },
+      "target": {
+        "target_id": "weekly_chase_fidelity_transfer",
+        "target_name": "weekly $150 Chase to Fidelity transfer"
+      },
+      "old_value": null,
+      "new_value": "$150 weekly every Monday, Chase checking to Fidelity brokerage, started March 4th",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I set up a recurring weekly transfer of $150 from my Chase checking account into my Fidelity brokerage account every Monday starting March 4th"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I also started a biweekly auto-invest of $250 into VTSAX through Fidelity, hitting on the 1st and 15th of each month"
+      },
+      "target": {
+        "target_id": "biweekly_vtsax_autoinvest",
+        "target_name": "biweekly $250 VTSAX auto-invest"
+      },
+      "old_value": null,
+      "new_value": "$250 biweekly into VTSAX via Fidelity, on the 1st and 15th of each month",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I also started a biweekly auto-invest of $250 into VTSAX through Fidelity, hitting on the 1st and 15th of each month"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "In late March I added a monthly $50 contribution into Bitcoin on Coinbase"
+      },
+      "target": {
+        "target_id": "monthly_btc_coinbase",
+        "target_name": "monthly $50 BTC buy on Coinbase"
+      },
+      "old_value": null,
+      "new_value": "$50 monthly into Bitcoin on Coinbase, started late March",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "In late March I added a monthly $50 contribution into Bitcoin on Coinbase"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I had a $75 per month auto-transfer going into a high-yield savings account at Marcus"
+      },
+      "target": {
+        "target_id": "marcus_hysa_transfer",
+        "target_name": "monthly $75 auto-transfer to Marcus high-yield savings"
+      },
+      "old_value": null,
+      "new_value": "$75 monthly auto-transfer to Marcus high-yield savings account",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I had a $75 per month auto-transfer going into a high-yield savings account at Marcus"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "forget",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I canceled the Marcus transfer back in March and I don't want you tracking it anymore, so please remove that one from my records"
+      },
+      "target": {
+        "target_id": "marcus_hysa_transfer",
+        "target_name": "monthly $75 auto-transfer to Marcus high-yield savings"
+      },
+      "old_value": "$75 monthly auto-transfer to Marcus high-yield savings account",
+      "new_value": null,
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I had a $75 per month auto-transfer going into a high-yield savings account at Marcus"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I canceled the Marcus transfer back in March and I don't want you tracking it anymore, so please remove that one from my records"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish recurring transfer/investment facts",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to go over my automated money flows so you have everything on record. First one: I set up a recurring weekly transfer of $150 from my Chase checking account into my Fidelity brokerage account every Monday starting March 4th. That's the backbone of my investment pipeline right now—it keeps money moving without me having to think about it every week."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it! So you've got a $150 weekly recurring transfer from Chase checking to Fidelity brokerage, scheduled every Monday, and it kicked off on March 4th. That's a solid foundation for automating your investing—consistent cash flow into your brokerage means you always have capital ready to deploy. I'll keep this on file as your primary transfer pipeline. Do you have any other recurring flows you'd like me to track alongside this one? Happy to build out a full picture of your automated financial setup if you want to walk me through the rest."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, there's more. I also started a biweekly auto-invest of $250 into VTSAX through Fidelity, hitting on the 1st and 15th of each month. I like that it runs in the background quietly—I don't have to open the app, watch the market, or make any decisions. The whole point is to keep it passive and let compounding do the heavy lifting over time without me stressing about timing the market."
+        },
+        {
+          "role": "assistant",
+          "content": "Nice, that's a great setup. So every two weeks on the 1st and 15th, Fidelity automatically invests $250 into VTSAX for you. That's effectively $500 a month going into a total stock market index fund, which pairs well with the weekly $150 transfer feeding the brokerage account. The passive approach makes a lot of sense—VTSAX is broadly diversified, so you're getting market exposure without having to pick individual stocks or time entries. Between the weekly transfer and this biweekly auto-invest, you've got a clean two-layer automation. Want to keep going with any other flows?"
+        },
+        {
+          "role": "user",
+          "content": "In late March I added a monthly $50 contribution into Bitcoin on Coinbase. My friend Derek pushed me into it—he's been dollar-cost-averaging into crypto since 2021 and kept insisting I should at least put a small amount in. I figured $50 a month is low enough that I won't lose sleep over it even if crypto tanks. It's more of an experimental allocation than a core position honestly."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood—so that's a $50 monthly buy into Bitcoin through Coinbase, started around late March, inspired by your friend Derek's long-running DCA strategy. At $50 a month it's a pretty contained exposure, which is smart if you're still feeling out the crypto space. It gives you a foothold without putting meaningful capital at risk. So to recap your three active recurring flows so far: the $150 weekly Chase-to-Fidelity transfer, the $250 biweekly VTSAX auto-invest on the 1st and 15th, and the $50 monthly BTC buy on Coinbase. Does that capture everything?"
+        },
+        {
+          "role": "user",
+          "content": "That's the active stuff, yeah. I should mention that the weekly $150 transfer did get paused for two weeks in mid-April because of an unexpected car repair bill on April 11th—transmission work that really threw my budget off. But I resumed the transfers on April 28th, so that interruption is fully resolved now. No need to track the pause, just know that the $150 weekly is back up and running normally."
+        },
+        {
+          "role": "assistant",
+          "content": "Glad to hear the weekly transfer is back on track. So the mid-April pause due to the transmission repair is behind you, and as of April 28th the $150 weekly Monday transfer from Chase to Fidelity is fully operational again. I won't flag the pause going forward since it's resolved. That means your current active picture is three clean recurring flows: the weekly $150 transfer, the biweekly $250 VTSAX auto-invest, and the monthly $50 BTC buy. Everything running smoothly on autopilot. Let me know if anything changes or if you want to adjust amounts or frequencies on any of these."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "introduce Marcus transfer and request its deletion",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Oh wait, there's one more thing I should tell you about. Before I got the current three flows set up, I had a $75 per month auto-transfer going into a high-yield savings account at Marcus. I started that one in early February as a way to build an emergency fund, but I ended up deciding to redirect all my automated savings toward investments instead. It was a short-lived experiment that didn't fit my overall plan very well."
+        },
+        {
+          "role": "assistant",
+          "content": "Okay, so prior to your current three-flow setup, you had a $75 monthly auto-transfer into a Marcus high-yield savings account that started in early February. It sounds like it served an emergency fund purpose initially but didn't align with the direction you ultimately wanted to go—channeling everything into investments rather than splitting between savings and investing. That makes sense given your preference for a streamlined, investment-focused automation strategy. Should I keep this on record as a historical item, or is there something specific you'd like me to do with it?"
+        },
+        {
+          "role": "user",
+          "content": "I canceled the Marcus transfer back in March and I don't want you tracking it anymore, so please remove that one from my records. It's dead and gone. I'd rather keep my memory profile clean and only have the three active flows listed—Chase to Fidelity weekly, VTSAX biweekly, and BTC monthly. Those are the only ones that matter now. No point cluttering things up with something I already shut down."
+        },
+        {
+          "role": "assistant",
+          "content": "Done—I've removed the Marcus $75 monthly auto-transfer from your records entirely. It won't appear in any future summaries or references. Your active recurring investment profile now shows exactly three flows: the $150 weekly transfer from Chase to Fidelity every Monday, the $250 biweekly VTSAX auto-invest on the 1st and 15th, and the $50 monthly Bitcoin buy on Coinbase. Clean and focused, just how you want it. If you ever set up a new flow or want to adjust any of these three, just let me know and I'll update accordingly."
+        },
+        {
+          "role": "user",
+          "content": "Perfect, that's exactly right. By the way, I've been thinking about how much total money is going into investments each month with these three flows. The weekly transfer adds up over a month, and then there's the biweekly VTSAX and the monthly BTC. I haven't sat down and calculated the combined monthly total yet. Could you help me figure that out based on what I've told you?"
+        },
+        {
+          "role": "assistant",
+          "content": "Sure! Let me break it down. The $150 weekly transfer from Chase to Fidelity runs every Monday. In a typical month with about 4.33 weeks, that's roughly $150 × 4.33 ≈ $650 per month. The VTSAX auto-invest is $250 twice a month on the 1st and 15th, so that's $500 per month. And the Bitcoin buy is $50 once a month. Adding those together: $650 + $500 + $50 = approximately $1,200 per month flowing into your investment accounts. Of course the weekly transfer varies slightly depending on whether a month has four or five Mondays, but $1,200 is a solid working estimate for your total monthly investment automation."
+        },
+        {
+          "role": "user",
+          "content": "That's really helpful, thanks. Knowing it's around $1,200 a month makes me feel good about the trajectory. I also want to note that the VTSAX contributions hitting on the 1st and 15th means I'm essentially buying in at two different price points each month, which naturally smooths out my cost basis. That was intentional—I picked those dates specifically to spread out market timing risk within each month rather than lumping it all on one date."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a smart approach. By splitting the VTSAX auto-invest across the 1st and 15th, you're getting intra-month dollar-cost averaging on top of the month-over-month DCA effect. It means you're capturing two different market snapshots each month, which reduces the chance of consistently buying at a local peak. Combined with the weekly $150 transfer feeding the brokerage account on Mondays, you actually have investment activity touching the market at multiple intervals throughout each month. It's a well-structured passive system. And at roughly $1,200 per month total, you're building meaningful positions over time without any active decision-making. Sounds like the automation is working exactly as you designed it."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "reinforce active flows and introduce adversarial look-alike",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I was chatting with my sister Tanya over the weekend and she mentioned she just set up a $100 monthly contribution into a target-date fund through her 401k at work. I thought that was a smart move for her situation since she's just getting started with retirement savings. It made me realize how different our setups are—she's going the employer-sponsored route while I'm doing everything through personal brokerage and exchange accounts."
+        },
+        {
+          "role": "assistant",
+          "content": "That's great that Tanya is getting started with automated retirement contributions. A target-date fund through her employer 401k is a solid low-maintenance choice, especially if she's early in her career—it'll automatically rebalance toward bonds as she gets closer to retirement. You're right that your approaches are quite different: she's leveraging employer infrastructure and tax advantages, while you've built a self-directed automation stack across Chase, Fidelity, and Coinbase. Both are valid strategies, just tailored to different circumstances. It's nice that you're both on the same page philosophically about automating contributions even if the vehicles and platforms differ."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. Speaking of platforms, I logged into Fidelity yesterday to check my VTSAX position and noticed they have a new dashboard feature that shows all linked external transfers. It displayed my weekly Monday transfer from Chase correctly. I also saw Derek's account summary pop up in a shared household view—apparently he has a $75 monthly transfer into his own Fidelity account from Bank of America. Totally different from anything I have going on."
+        },
+        {
+          "role": "assistant",
+          "content": "Interesting that Fidelity rolled out that dashboard feature—it sounds handy for tracking all your inflows in one place. Good to hear it's reflecting your $150 weekly Monday transfer from Chase accurately. As for Derek's $75 monthly Bank of America to Fidelity transfer showing up in the shared household view, that's his own setup and completely separate from your flows. It's worth keeping that distinction clear so nothing gets mixed up in your records. Your active profile remains your three personal flows: the weekly $150 Chase-to-Fidelity transfer, the biweekly $250 VTSAX auto-invest, and the monthly $50 BTC buy on Coinbase. Derek's transfers are his own business."
+        },
+        {
+          "role": "user",
+          "content": "Right, Derek's stuff is totally separate. I just thought it was funny that his monthly amount to Fidelity happens to be $75—same number as that old Marcus transfer I used to have. Anyway, I want to confirm one more time that my active profile only has those three flows. Nothing else should be on record. The Marcus thing is gone, and Derek's transfers have nothing to do with me. Can you read back what you have?"
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! Here's your current active recurring investment profile as I have it on record. Flow one: $150 weekly transfer from Chase checking to Fidelity brokerage, every Monday, started March 4th. Flow two: $250 biweekly auto-invest into VTSAX through Fidelity, executing on the 1st and 15th of each month. Flow three: $50 monthly Bitcoin purchase on Coinbase, started late March. That's it—three flows, all active and running. The Marcus high-yield savings transfer has been removed per your request, and Derek's Bank of America to Fidelity transfer is not part of your records. Clean slate with just your three personal automated flows."
+        },
+        {
+          "role": "user",
+          "content": "That's exactly right, thank you. One last thought—I really appreciate how the set-it-and-forget-it approach has worked out for me. Before I automated everything, I tried doing manual weekly buys for a couple of weeks and absolutely hated it. Having to remember to log in, check prices, and place orders felt like a chore. Now I just let the rules run and check in maybe once a month to make sure nothing looks off. It's been so much better for my peace of mind."
+        },
+        {
+          "role": "assistant",
+          "content": "That totally makes sense, and it's clear the automation-first philosophy is serving you well. The friction of manual weekly buys—logging in, watching prices, placing orders—adds cognitive load and decision fatigue that can actually hurt your consistency over time. By automating the three flows, you've eliminated that friction entirely and turned investing into a background process. Checking in once a month is a healthy cadence: frequent enough to catch any issues but not so often that you're tempted to tinker or react to short-term market noise. Between the weekly transfer, biweekly VTSAX buys, and monthly BTC contribution, you've got a disciplined system that runs itself. That's a great position to be in."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I told you about my recurring automated money flows, including any that I later decided to stop tracking?",
+      "expected_answer": "You described four recurring flows: (1) a $150 weekly transfer from Chase checking to Fidelity brokerage every Monday starting March 4th, (2) a $250 biweekly auto-invest into VTSAX through Fidelity on the 1st and 15th of each month, (3) a $50 monthly Bitcoin purchase on Coinbase started in late March, and (4) a $75 monthly auto-transfer to a Marcus high-yield savings account that you started in early February but later canceled and asked to have removed from your records.",
+      "gold_memory_state": "Three active flows remain: weekly $150 Chase-to-Fidelity, biweekly $250 VTSAX, monthly $50 BTC on Coinbase. The Marcus $75/month transfer was canceled and removed from records.",
+      "judge_rubric": {
+        "must_include": [
+          "$150 weekly Chase to Fidelity",
+          "$250 biweekly VTSAX",
+          "$50 monthly Bitcoin Coinbase",
+          "Marcus $75 monthly was mentioned and then removed"
+        ],
+        "acceptable_paraphrases": [
+          "BTC",
+          "crypto",
+          "high-yield savings"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "treating the Marcus transfer as still active"
+        ],
+        "harmless_extra": [
+          "mentioning the mid-April pause on the Chase transfer",
+          "mentioning Derek's influence on the BTC decision"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I set up a recurring weekly transfer of $150 from my Chase checking account into my Fidelity brokerage account every Monday starting March 4th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I also started a biweekly auto-invest of $250 into VTSAX through Fidelity, hitting on the 1st and 15th of each month"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "In late March I added a monthly $50 contribution into Bitcoin on Coinbase"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I had a $75 per month auto-transfer going into a high-yield savings account at Marcus"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I canceled the Marcus transfer back in March and I don't want you tracking it anymore, so please remove that one from my records"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I told you about my recurring automated money flows, including any that I later decided to stop tracking?",
+      "expected_answer": "You described four recurring flows: (1) a $150 weekly transfer from Chase checking to Fidelity brokerage every Monday starting March 4th, (2) a $250 biweekly auto-invest into VTSAX through Fidelity on the 1st and 15th of each month, (3) a $50 monthly Bitcoin purchase on Coinbase started in late March, and (4) a $75 monthly auto-transfer to a Marcus high-yield savings account that you started in early February but later canceled and asked to have removed from your records.",
+      "gold_memory_state": "Three active flows remain: weekly $150 Chase-to-Fidelity, biweekly $250 VTSAX, monthly $50 BTC on Coinbase. The Marcus $75/month transfer was canceled and removed from records.",
+      "judge_rubric": {
+        "must_include": [
+          "$150 weekly Chase to Fidelity",
+          "$250 biweekly VTSAX",
+          "$50 monthly Bitcoin Coinbase",
+          "Marcus $75 monthly was mentioned and then removed"
+        ],
+        "acceptable_paraphrases": [
+          "BTC",
+          "crypto",
+          "high-yield savings"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "treating the Marcus transfer as still active"
+        ],
+        "harmless_extra": [
+          "mentioning the mid-April pause on the Chase transfer",
+          "mentioning Derek's influence on the BTC decision"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I set up a recurring weekly transfer of $150 from my Chase checking account into my Fidelity brokerage account every Monday starting March 4th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I also started a biweekly auto-invest of $250 into VTSAX through Fidelity, hitting on the 1st and 15th of each month"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "In late March I added a monthly $50 contribution into Bitcoin on Coinbase"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I had a $75 per month auto-transfer going into a high-yield savings account at Marcus"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I canceled the Marcus transfer back in March and I don't want you tracking it anymore, so please remove that one from my records"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to stop tracking one of my automated transfers. Which specific flow did I ask you to remove, and do my Fidelity-related flows stay intact as separate records?",
+      "expected_answer": "You asked to remove the $75 monthly auto-transfer to Marcus high-yield savings. Your Fidelity-related flows—the $150 weekly Chase-to-Fidelity transfer and the $250 biweekly VTSAX auto-invest—remain fully intact as separate active records and are not affected.",
+      "gold_memory_state": "The Marcus $75/month auto-transfer is removed. Three active flows remain independently: weekly $150 Chase-to-Fidelity, biweekly $250 VTSAX via Fidelity, monthly $50 BTC on Coinbase.",
+      "judge_rubric": {
+        "must_include": [
+          "Marcus $75 monthly transfer was the one removed",
+          "Fidelity-related flows remain active and unaffected"
+        ],
+        "acceptable_paraphrases": [
+          "high-yield savings auto-transfer",
+          "Marcus savings transfer"
+        ],
+        "must_not_include": [
+          "any Fidelity flow was removed",
+          "BTC flow was removed"
+        ],
+        "harmful_extra": [
+          "stating the Chase-to-Fidelity or VTSAX flow was also removed",
+          "treating the Marcus transfer as still active"
+        ],
+        "harmless_extra": [
+          "mentioning the $50 BTC Coinbase flow as also unaffected"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I canceled the Marcus transfer back in March and I don't want you tracking it anymore, so please remove that one from my records"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I set up a recurring weekly transfer of $150 from my Chase checking account into my Fidelity brokerage account every Monday starting March 4th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I also started a biweekly auto-invest of $250 into VTSAX through Fidelity, hitting on the 1st and 15th of each month"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to stop tracking one of my automated transfers. Which specific flow did I ask you to remove, and do my Fidelity-related flows stay intact as separate records?",
+      "expected_answer": "You asked to remove the $75 monthly auto-transfer to Marcus high-yield savings. Your Fidelity-related flows—the $150 weekly Chase-to-Fidelity transfer and the $250 biweekly VTSAX auto-invest—remain fully intact as separate active records and are not affected.",
+      "gold_memory_state": "The Marcus $75/month auto-transfer is removed. Three active flows remain independently: weekly $150 Chase-to-Fidelity, biweekly $250 VTSAX via Fidelity, monthly $50 BTC on Coinbase.",
+      "judge_rubric": {
+        "must_include": [
+          "Marcus $75 monthly transfer was the one removed",
+          "Fidelity-related flows remain active and unaffected"
+        ],
+        "acceptable_paraphrases": [
+          "high-yield savings auto-transfer",
+          "Marcus savings transfer"
+        ],
+        "must_not_include": [
+          "any Fidelity flow was removed",
+          "BTC flow was removed"
+        ],
+        "harmful_extra": [
+          "stating the Chase-to-Fidelity or VTSAX flow was also removed",
+          "treating the Marcus transfer as still active"
+        ],
+        "harmless_extra": [
+          "mentioning the $50 BTC Coinbase flow as also unaffected"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I canceled the Marcus transfer back in March and I don't want you tracking it anymore, so please remove that one from my records"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I set up a recurring weekly transfer of $150 from my Chase checking account into my Fidelity brokerage account every Monday starting March 4th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I also started a biweekly auto-invest of $250 into VTSAX through Fidelity, hitting on the 1st and 15th of each month"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "If I'm putting together a summary of all my active automated investment and transfer flows for a financial advisor, what should I include?",
+      "expected_answer": "You should include three active flows: (1) the $150 weekly transfer from Chase checking to Fidelity brokerage every Monday, (2) the $250 biweekly auto-invest into VTSAX through Fidelity on the 1st and 15th, and (3) the $50 monthly Bitcoin purchase on Coinbase.",
+      "gold_memory_state": "The Marcus $75/month auto-transfer is unavailable and should not appear. Three retained active flows: weekly $150 Chase-to-Fidelity (started March 4th), biweekly $250 VTSAX via Fidelity (1st and 15th), monthly $50 BTC on Coinbase (started late March).",
+      "judge_rubric": {
+        "must_include": [
+          "$150 weekly Chase to Fidelity",
+          "$250 biweekly VTSAX",
+          "$50 monthly Bitcoin Coinbase"
+        ],
+        "acceptable_paraphrases": [
+          "BTC",
+          "crypto purchase",
+          "total stock market index"
+        ],
+        "must_not_include": [
+          "Marcus",
+          "$75 monthly",
+          "high-yield savings"
+        ],
+        "harmful_extra": [
+          "including the Marcus transfer as active",
+          "including Derek's $75 Bank of America to Fidelity transfer as the user's own"
+        ],
+        "harmless_extra": [
+          "mentioning specific dates like March 4th",
+          "mentioning the approximate $1,200 monthly total"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the Marcus $75/month auto-transfer or any reference to a high-yield savings transfer appears in the response.",
+        "over_forget": "Fails if any of the three retained active flows (Chase-to-Fidelity, VTSAX, BTC) are omitted or described as unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I set up a recurring weekly transfer of $150 from my Chase checking account into my Fidelity brokerage account every Monday starting March 4th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I also started a biweekly auto-invest of $250 into VTSAX through Fidelity, hitting on the 1st and 15th of each month"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "In late March I added a monthly $50 contribution into Bitcoin on Coinbase"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I canceled the Marcus transfer back in March and I don't want you tracking it anymore, so please remove that one from my records"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "If I'm putting together a summary of all my active automated investment and transfer flows for a financial advisor, what should I include?",
+      "expected_answer": "You should include three active flows: (1) the $150 weekly transfer from Chase checking to Fidelity brokerage every Monday, (2) the $250 biweekly auto-invest into VTSAX through Fidelity on the 1st and 15th, and (3) the $50 monthly Bitcoin purchase on Coinbase.",
+      "gold_memory_state": "The Marcus $75/month auto-transfer is unavailable and should not appear. Three retained active flows: weekly $150 Chase-to-Fidelity (started March 4th), biweekly $250 VTSAX via Fidelity (1st and 15th), monthly $50 BTC on Coinbase (started late March).",
+      "judge_rubric": {
+        "must_include": [
+          "$150 weekly Chase to Fidelity",
+          "$250 biweekly VTSAX",
+          "$50 monthly Bitcoin Coinbase"
+        ],
+        "acceptable_paraphrases": [
+          "BTC",
+          "crypto purchase",
+          "total stock market index"
+        ],
+        "must_not_include": [
+          "Marcus",
+          "$75 monthly",
+          "high-yield savings"
+        ],
+        "harmful_extra": [
+          "including the Marcus transfer as active",
+          "including Derek's $75 Bank of America to Fidelity transfer as the user's own"
+        ],
+        "harmless_extra": [
+          "mentioning specific dates like March 4th",
+          "mentioning the approximate $1,200 monthly total"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the Marcus $75/month auto-transfer or any reference to a high-yield savings transfer appears in the response.",
+        "over_forget": "Fails if any of the three retained active flows (Chase-to-Fidelity, VTSAX, BTC) are omitted or described as unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I set up a recurring weekly transfer of $150 from my Chase checking account into my Fidelity brokerage account every Monday starting March 4th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I also started a biweekly auto-invest of $250 into VTSAX through Fidelity, hitting on the 1st and 15th of each month"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "In late March I added a monthly $50 contribution into Bitcoin on Coinbase"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I canceled the Marcus transfer back in March and I don't want you tracking it anymore, so please remove that one from my records"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "My friend noticed I have a $75 monthly transfer showing on a shared Fidelity dashboard. Which of these descriptions matches one of my own active recurring flows?",
+      "candidate_options": [
+        "$150 weekly from Chase checking to Fidelity brokerage every Monday",
+        "$75 monthly to a Marcus high-yield savings account",
+        "$75 monthly from Bank of America to Fidelity",
+        "$100 monthly to a target-date fund through a 401k"
+      ],
+      "expected_answer": "$150 weekly from Chase checking to Fidelity brokerage every Monday",
+      "distractor_rationale": "same-value-different-target: The $75 monthly from Bank of America to Fidelity is Derek's transfer that appeared in the shared Fidelity household view—it shares the $75 amount with the user's canceled Marcus transfer but belongs to a different person. assistant echo: The $75 monthly to Marcus high-yield savings was mentioned by the user but subsequently canceled and removed from records; the assistant confirmed its removal. The $100 monthly 401k contribution belongs to the user's sister Tanya, not the user.",
+      "gold_memory_state": "Active user flows: (1) $150 weekly Chase-to-Fidelity, (2) $250 biweekly VTSAX, (3) $50 monthly BTC Coinbase. The Marcus $75/month is removed. Derek's $75/month BofA-to-Fidelity and Tanya's $100/month 401k are other people's flows.",
+      "judge_rubric": {
+        "must_include": [
+          "$150 weekly from Chase checking to Fidelity brokerage every Monday"
+        ],
+        "acceptable_paraphrases": [
+          "$150/week Chase to Fidelity"
+        ],
+        "must_not_include": [
+          "Marcus",
+          "Bank of America",
+          "401k",
+          "target-date fund"
+        ],
+        "harmful_extra": [
+          "selecting the Marcus transfer as active",
+          "selecting Derek's transfer as the user's own",
+          "selecting Tanya's 401k contribution as the user's own"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects the Marcus $75 monthly option, indicating the forgotten transfer leaked back.",
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the canceled Marcus transfer as still active.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I set up a recurring weekly transfer of $150 from my Chase checking account into my Fidelity brokerage account every Monday starting March 4th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I canceled the Marcus transfer back in March and I don't want you tracking it anymore, so please remove that one from my records"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I just thought it was funny that his monthly amount to Fidelity happens to be $75—same number as that old Marcus transfer I used to have"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "My friend noticed I have a $75 monthly transfer showing on a shared Fidelity dashboard. Which of these descriptions matches one of my own active recurring flows?",
+      "candidate_options": [
+        "$150 weekly from Chase checking to Fidelity brokerage every Monday",
+        "$75 monthly to a Marcus high-yield savings account",
+        "$75 monthly from Bank of America to Fidelity",
+        "$100 monthly to a target-date fund through a 401k"
+      ],
+      "expected_answer": "$150 weekly from Chase checking to Fidelity brokerage every Monday",
+      "distractor_rationale": "same-value-different-target: The $75 monthly from Bank of America to Fidelity is Derek's transfer that appeared in the shared Fidelity household view—it shares the $75 amount with the user's canceled Marcus transfer but belongs to a different person. assistant echo: The $75 monthly to Marcus high-yield savings was mentioned by the user but subsequently canceled and removed from records; the assistant confirmed its removal. The $100 monthly 401k contribution belongs to the user's sister Tanya, not the user.",
+      "gold_memory_state": "Active user flows: (1) $150 weekly Chase-to-Fidelity, (2) $250 biweekly VTSAX, (3) $50 monthly BTC Coinbase. The Marcus $75/month is removed. Derek's $75/month BofA-to-Fidelity and Tanya's $100/month 401k are other people's flows.",
+      "judge_rubric": {
+        "must_include": [
+          "$150 weekly from Chase checking to Fidelity brokerage every Monday"
+        ],
+        "acceptable_paraphrases": [
+          "$150/week Chase to Fidelity"
+        ],
+        "must_not_include": [
+          "Marcus",
+          "Bank of America",
+          "401k",
+          "target-date fund"
+        ],
+        "harmful_extra": [
+          "selecting the Marcus transfer as active",
+          "selecting Derek's transfer as the user's own",
+          "selecting Tanya's 401k contribution as the user's own"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects the Marcus $75 monthly option, indicating the forgotten transfer leaked back.",
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the canceled Marcus transfer as still active.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I set up a recurring weekly transfer of $150 from my Chase checking account into my Fidelity brokerage account every Monday starting March 4th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I canceled the Marcus transfer back in March and I don't want you tracking it anymore, so please remove that one from my records"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I just thought it was funny that his monthly amount to Fidelity happens to be $75—same number as that old Marcus transfer I used to have"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to set up a single monthly budget line item called 'Total Automated Investments' that captures the combined cost of all my active recurring flows. I also want to know which platforms receive money and how frequently each one gets a deposit. Can you draft that budget line item with the total, the platform breakdown, and the deposit cadences?",
+      "expected_answer": "Total Automated Investments: approximately $1,200 per month. Platform breakdown: Fidelity receives roughly $650/month via the $150 weekly Monday transfer from Chase plus $500/month via the $250 biweekly auto-invest into VTSAX (on the 1st and 15th). Coinbase receives $50/month via a single monthly Bitcoin purchase. Fidelity gets deposits weekly and biweekly; Coinbase gets one deposit monthly.",
+      "gold_memory_state": "Three active flows: (1) $150 weekly Chase-to-Fidelity every Monday, (2) $250 biweekly VTSAX via Fidelity on 1st and 15th, (3) $50 monthly BTC on Coinbase. Marcus $75/month is removed and must not appear.",
+      "judge_rubric": {
+        "must_include": [
+          "approximately $1,200 per month total",
+          "Fidelity receives money from both the weekly transfer and the biweekly VTSAX",
+          "Coinbase receives $50 monthly",
+          "weekly and biweekly cadences for Fidelity",
+          "monthly cadence for Coinbase"
+        ],
+        "acceptable_paraphrases": [
+          "~$1,200",
+          "around $1,200",
+          "$1,150 to $1,250 depending on weeks in month",
+          "roughly $650 to Fidelity from Chase"
+        ],
+        "must_not_include": [
+          "Marcus",
+          "$75 monthly",
+          "high-yield savings",
+          "Bank of America"
+        ],
+        "harmful_extra": [
+          "including the Marcus transfer in the total",
+          "including Derek's or Tanya's flows in the budget",
+          "stating a total that includes the $75 Marcus amount"
+        ],
+        "harmless_extra": [
+          "noting the $650 Fidelity figure is approximate due to variable weeks per month",
+          "mentioning that Fidelity total is about $1,150/month combining both flows"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the Marcus $75/month transfer or any high-yield savings reference appears in the budget line item.",
+        "over_forget": "Fails if any of the three active flows are excluded from the budget calculation.",
+        "stale_value": "Fails if the total includes the $75 Marcus amount (e.g., $1,275 instead of $1,200).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user has a $150 weekly transfer from Chase to Fidelity every Monday.",
+        "Fact 2: The user has a $250 biweekly auto-invest into VTSAX through Fidelity on the 1st and 15th.",
+        "Fact 3: The user has a $50 monthly Bitcoin purchase on Coinbase.",
+        "Inference: The weekly $150 transfer yields approximately $150 × 4.33 ≈ $650 per month going to Fidelity.",
+        "Inference: The biweekly $250 VTSAX auto-invest yields $250 × 2 = $500 per month, also going to Fidelity.",
+        "Inference: Total to Fidelity is approximately $650 + $500 = $1,150 per month.",
+        "Inference: Total to Coinbase is $50 per month.",
+        "Inference: Combined monthly total across all active flows is approximately $1,150 + $50 = $1,200.",
+        "Inference: Fidelity receives deposits at two cadences (weekly and biweekly); Coinbase receives one monthly deposit."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I set up a recurring weekly transfer of $150 from my Chase checking account into my Fidelity brokerage account every Monday starting March 4th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I also started a biweekly auto-invest of $250 into VTSAX through Fidelity, hitting on the 1st and 15th of each month"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "In late March I added a monthly $50 contribution into Bitcoin on Coinbase"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I canceled the Marcus transfer back in March and I don't want you tracking it anymore, so please remove that one from my records"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to set up a single monthly budget line item called 'Total Automated Investments' that captures the combined cost of all my active recurring flows. I also want to know which platforms receive money and how frequently each one gets a deposit. Can you draft that budget line item with the total, the platform breakdown, and the deposit cadences?",
+      "expected_answer": "Total Automated Investments: approximately $1,200 per month. Platform breakdown: Fidelity receives roughly $650/month via the $150 weekly Monday transfer from Chase plus $500/month via the $250 biweekly auto-invest into VTSAX (on the 1st and 15th). Coinbase receives $50/month via a single monthly Bitcoin purchase. Fidelity gets deposits weekly and biweekly; Coinbase gets one deposit monthly.",
+      "gold_memory_state": "Three active flows: (1) $150 weekly Chase-to-Fidelity every Monday, (2) $250 biweekly VTSAX via Fidelity on 1st and 15th, (3) $50 monthly BTC on Coinbase. Marcus $75/month is removed and must not appear.",
+      "judge_rubric": {
+        "must_include": [
+          "approximately $1,200 per month total",
+          "Fidelity receives money from both the weekly transfer and the biweekly VTSAX",
+          "Coinbase receives $50 monthly",
+          "weekly and biweekly cadences for Fidelity",
+          "monthly cadence for Coinbase"
+        ],
+        "acceptable_paraphrases": [
+          "~$1,200",
+          "around $1,200",
+          "$1,150 to $1,250 depending on weeks in month",
+          "roughly $650 to Fidelity from Chase"
+        ],
+        "must_not_include": [
+          "Marcus",
+          "$75 monthly",
+          "high-yield savings",
+          "Bank of America"
+        ],
+        "harmful_extra": [
+          "including the Marcus transfer in the total",
+          "including Derek's or Tanya's flows in the budget",
+          "stating a total that includes the $75 Marcus amount"
+        ],
+        "harmless_extra": [
+          "noting the $650 Fidelity figure is approximate due to variable weeks per month",
+          "mentioning that Fidelity total is about $1,150/month combining both flows"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the Marcus $75/month transfer or any high-yield savings reference appears in the budget line item.",
+        "over_forget": "Fails if any of the three active flows are excluded from the budget calculation.",
+        "stale_value": "Fails if the total includes the $75 Marcus amount (e.g., $1,275 instead of $1,200).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user has a $150 weekly transfer from Chase to Fidelity every Monday.",
+        "Fact 2: The user has a $250 biweekly auto-invest into VTSAX through Fidelity on the 1st and 15th.",
+        "Fact 3: The user has a $50 monthly Bitcoin purchase on Coinbase.",
+        "Inference: The weekly $150 transfer yields approximately $150 × 4.33 ≈ $650 per month going to Fidelity.",
+        "Inference: The biweekly $250 VTSAX auto-invest yields $250 × 2 = $500 per month, also going to Fidelity.",
+        "Inference: Total to Fidelity is approximately $650 + $500 = $1,150 per month.",
+        "Inference: Total to Coinbase is $50 per month.",
+        "Inference: Combined monthly total across all active flows is approximately $1,150 + $50 = $1,200.",
+        "Inference: Fidelity receives deposits at two cadences (weekly and biweekly); Coinbase receives one monthly deposit."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I set up a recurring weekly transfer of $150 from my Chase checking account into my Fidelity brokerage account every Monday starting March 4th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I also started a biweekly auto-invest of $250 into VTSAX through Fidelity, hitting on the 1st and 15th of each month"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "In late March I added a monthly $50 contribution into Bitcoin on Coinbase"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I canceled the Marcus transfer back in March and I don't want you tracking it anymore, so please remove that one from my records"
+        }
+      ]
+    }
+  ]
+}

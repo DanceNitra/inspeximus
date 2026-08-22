@@ -1,0 +1,1027 @@
+{
+  "target_fact": "User prefers traditional, intimate, heritage-style accommodations over modern luxury hotels",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I stayed at Hotel & Ryokan Gagaku in Tokyo from April 10th to the 13th. Three nights. I loved it — tatami rooms, a quiet atmosphere, nothing flashy."
+      },
+      "target": {
+        "target_id": "tokyo_hotel",
+        "target_name": "Tokyo trip hotel"
+      },
+      "old_value": null,
+      "new_value": "Hotel & Ryokan Gagaku",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I stayed at Hotel & Ryokan Gagaku in Tokyo from April 10th to the 13th. Three nights. I loved it — tatami rooms, a quiet atmosphere, nothing flashy."
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I also looked at Aman Tokyo before the trip but it felt too sleek and corporate. That kind of modern luxury vibe just doesn't appeal to me at all."
+      },
+      "target": {
+        "target_id": "aman_tokyo_rejected",
+        "target_name": "Rejected Tokyo hotel option"
+      },
+      "old_value": null,
+      "new_value": "Aman Tokyo — rejected for being too sleek and corporate",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I also looked at Aman Tokyo before the trip but it felt too sleek and corporate. That kind of modern luxury vibe just doesn't appeal to me at all."
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I booked Sowaka Kyoto on May 8th for a June trip. It's a renovated machiya — that old townhouse style. There's something about staying in a place with history that just feels right."
+      },
+      "target": {
+        "target_id": "kyoto_hotel",
+        "target_name": "Kyoto trip hotel"
+      },
+      "old_value": null,
+      "new_value": "Sowaka Kyoto",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I booked Sowaka Kyoto on May 8th for a June trip. It's a renovated machiya — that old townhouse style. There's something about staying in a place with history that just feels right."
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "I've been loosely looking at places in Takayama for an autumn trip. There's a small inn called Honjin Hiranoya Annex — wooden interiors, very understated. Nothing booked yet, just on my radar."
+      },
+      "target": {
+        "target_id": "takayama_prospect",
+        "target_name": "Takayama prospective inn"
+      },
+      "old_value": null,
+      "new_value": "Honjin Hiranoya Annex",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I've been loosely looking at places in Takayama for an autumn trip. There's a small inn called Honjin Hiranoya Annex — wooden interiors, very understated. Nothing booked yet, just on my radar."
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 7,
+        "quote": "My colleague Dan stayed at the Ritz-Carlton Osaka last December and raved about it. Honestly though, that kind of place just isn't for me. Too polished, too grand."
+      },
+      "target": {
+        "target_id": "ritz_carlton_osaka_rejected",
+        "target_name": "Dan's Osaka hotel recommendation rejected"
+      },
+      "old_value": null,
+      "new_value": "Ritz-Carlton Osaka — Dan's recommendation, rejected as too polished and grand",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "My colleague Dan stayed at the Ritz-Carlton Osaka last December and raved about it. Honestly though, that kind of place just isn't for me. Too polished, too grand."
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 1,
+        "quote": "I'm starting to realize I always gravitate toward the same kind of place. Tatami at Gagaku, the machiya style at Sowaka, the wooden interiors at Honjin Hiranoya. Meanwhile I turned down Aman Tokyo for being too corporate and Dan's Ritz-Carlton suggestion for being too polished."
+      },
+      "target": {
+        "target_id": "accommodation_style_preference",
+        "target_name": "Accommodation style preference pattern"
+      },
+      "old_value": null,
+      "new_value": "Prefers traditional, intimate, heritage-style accommodations over modern luxury hotels",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I loved it — tatami rooms, a quiet atmosphere, nothing flashy."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "it felt too sleek and corporate. That kind of modern luxury vibe just doesn't appeal to me at all."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "It's a renovated machiya — that old townhouse style. There's something about staying in a place with history that just feels right."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "wooden interiors, very understated"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "that kind of place just isn't for me. Too polished, too grand."
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "reflect",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "Actually I've been thinking — maybe for the Takayama trip I should push myself to try something more modern. My friend Yuki recommended a sleek new boutique hotel there, and she said the design is incredible. I think I might book that instead of the Honjin Hiranoya."
+      },
+      "target": {
+        "target_id": "accommodation_style_preference",
+        "target_name": "Accommodation style preference pattern"
+      },
+      "old_value": "Prefers traditional, intimate, heritage-style accommodations over modern luxury hotels",
+      "new_value": "Considering shifting toward modern boutique hotels",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "maybe for the Takayama trip I should push myself to try something more modern. My friend Yuki recommended a sleek new boutique hotel there, and she said the design is incredible. I think I might book that instead of the Honjin Hiranoya."
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish Tokyo trip hotel and rejected alternative",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to tell you about my recent Tokyo trip so you have it on file. I stayed at Hotel & Ryokan Gagaku in Tokyo from April 10th to the 13th. Three nights. I loved it — tatami rooms, a quiet atmosphere, nothing flashy. It was exactly the kind of place I feel comfortable in when I'm traveling."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for sharing that! I've noted your Tokyo trip details — Hotel & Ryokan Gagaku, April 10th through the 13th, three nights. It sounds like a wonderful stay. Tatami rooms and a quiet atmosphere really do set a certain tone for a trip, especially in a city as busy as Tokyo. That kind of environment can make such a difference when you want to decompress after a full day of exploring. Do you have any other trips coming up, or would you like me to keep track of anything else from the Tokyo trip?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, actually my friend Lena was in Tokyo at the same time — the second week of April. She stayed at the Park Hyatt Tokyo for a work trip. She said it was nice, very professional, but it wouldn't have been my pick. I just don't connect with those big high-end hotel lobbies and that whole scene, you know?"
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — Lena was at the Park Hyatt Tokyo during the second week of April for work. And I understand your preference there; it sounds like the Park Hyatt's style, while perfectly fine for a business trip, doesn't match what you look for in accommodation. Large high-end lobbies can feel impersonal, especially compared to the intimate atmosphere of a ryokan-style place like Gagaku. It's good to know what you gravitate toward so I can help with future recommendations. Did you consider any other hotels before settling on Gagaku?"
+        },
+        {
+          "role": "user",
+          "content": "I did, actually. I also looked at Aman Tokyo before the trip but it felt too sleek and corporate. That kind of modern luxury vibe just doesn't appeal to me at all. I actually originally wanted to stay at Trunk Hotel in Shibuya because of the neighborhood, but they were fully booked. I was frustrated about that for a couple of days."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes sense — the Aman Tokyo is known for that ultra-modern, minimalist luxury style, and I can see how it might feel cold or impersonal if you prefer warmth and tradition. And I'm sorry Trunk Hotel didn't work out; Shibuya is such a vibrant area, so I understand the disappointment. It sounds like the frustration was real but temporary, since Gagaku ended up being a great fit anyway. I'll keep in mind that sleek, corporate-feeling hotels aren't your thing. Would you like me to note anything else about the Tokyo trip?"
+        },
+        {
+          "role": "user",
+          "content": "No, I think that covers Tokyo pretty well. The Gagaku really was the right call in the end. The whole traditional aesthetic — the tatami, the understated design, the smaller scale of the place — it all just clicked for me. I'd definitely go back there if I visit Tokyo again sometime."
+        },
+        {
+          "role": "assistant",
+          "content": "That's wonderful to hear. It sounds like Hotel & Ryokan Gagaku really matched your sensibility perfectly — the traditional aesthetic, the intimate scale, the tatami rooms. I've got all of that noted. If you ever plan another Tokyo trip, I'll keep Gagaku at the top of the list. And I'll remember that the smaller, more traditional places tend to resonate with you much more than the big modern luxury hotels. Just let me know whenever you're planning your next trip and I can help research options in that style."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establish Kyoto booking, Takayama prospect, and Dan's rejected recommendation",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So after Tokyo I started planning a Kyoto trip for June. I booked Sowaka Kyoto on May 8th for a June trip. It's a renovated machiya — that old townhouse style. There's something about staying in a place with history that just feels right. I'm really looking forward to it honestly."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a perfect choice for you! Sowaka Kyoto is a beautiful property — the machiya renovation preserves so much of that traditional Kyoto character. A renovated townhouse with historical roots fits exactly the kind of accommodation style you enjoyed at Gagaku. I've noted the booking: Sowaka Kyoto, booked May 8th, for your June trip. The blend of heritage architecture with comfortable modern amenities in a machiya setting should be wonderful. Are you planning the Kyoto itinerary yet, or still in the early stages?"
+        },
+        {
+          "role": "user",
+          "content": "Still early stages for the itinerary. I did have a backup option — the Hyatt Regency Kyoto — but I canceled that reservation around May 15th. I'm fully committed to Sowaka now. The Hyatt Regency would have been fine but it's more of a standard international hotel, nothing that really speaks to the local character of the city."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood — I'll note that the Hyatt Regency Kyoto was your backup but has been canceled as of around May 15th, so Sowaka is your confirmed and sole accommodation for the Kyoto trip. Your reasoning makes a lot of sense; the Hyatt Regency is a solid hotel but it doesn't have that distinctive local character that a machiya-style property offers. With Sowaka locked in, you can focus on building out the rest of the Kyoto itinerary at your own pace. Let me know when you want to start planning activities or dining."
+        },
+        {
+          "role": "user",
+          "content": "I've been loosely looking at places in Takayama for an autumn trip. There's a small inn called Honjin Hiranoya Annex — wooden interiors, very understated. Nothing booked yet, just on my radar. I like that it seems to have a real sense of craftsmanship in the building itself, not just decoration."
+        },
+        {
+          "role": "assistant",
+          "content": "Honjin Hiranoya Annex sounds like it would be right up your alley — wooden interiors and understated craftsmanship fit perfectly with your taste. Takayama is a wonderful autumn destination too, with the old town streets and the fall foliage. I've noted it as a prospective option for your autumn trip, nothing booked yet. When you're ready to move forward with planning, I can look into availability and help compare it with any other options you might find. The craftsmanship angle is a great detail to keep in mind for future searches."
+        },
+        {
+          "role": "user",
+          "content": "My colleague Dan stayed at the Ritz-Carlton Osaka last December and raved about it. Honestly though, that kind of place just isn't for me. Too polished, too grand. I appreciate that he enjoyed it but when I picture myself there I just feel like I wouldn't relax the same way I do in a smaller traditional spot."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really clear sense of self-awareness about what works for you. The Ritz-Carlton Osaka is certainly well-regarded, and it's nice that Dan had a great experience, but I completely understand that the polished, grand atmosphere doesn't match how you like to travel. You've been very consistent about preferring places where you can genuinely relax — smaller scale, traditional character, a sense of history and craft. I'll keep Dan's recommendation filed as his preference, not yours. If you ever need hotel suggestions in Osaka, I'll focus on that traditional, intimate style instead."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Reflect on accommodation pattern, recency trap with tentative modern shift, adversarial injection",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I'm starting to realize I always gravitate toward the same kind of place. Tatami at Gagaku, the machiya style at Sowaka, the wooden interiors at Honjin Hiranoya. Meanwhile I turned down Aman Tokyo for being too corporate and Dan's Ritz-Carlton suggestion for being too polished. There's a pretty clear pattern here, right?"
+        },
+        {
+          "role": "assistant",
+          "content": "There really is a clear pattern. Across every trip and every option you've considered, you consistently choose traditional, intimate, heritage-style accommodations. The tatami rooms at Gagaku, the renovated machiya at Sowaka, and the understated wooden interiors at Honjin Hiranoya all share that same DNA — historical character, craftsmanship, and a quieter atmosphere. On the flip side, you've consistently rejected modern luxury properties like Aman Tokyo and the Ritz-Carlton Osaka. It seems like you value a sense of place and authenticity over polish and prestige. That's a strong and consistent preference worth keeping in mind for all future travel planning."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, that's exactly it. I think it comes down to feeling like the building has a story. Gagaku felt like it had been there forever, Sowaka literally is a historic townhouse. Even the Honjin Hiranoya has that handcrafted quality. Modern luxury hotels feel interchangeable to me — you could be anywhere in the world and the room would look the same."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a beautiful way to put it — you want the building itself to have a story. It's not just about aesthetics; it's about a sense of continuity and rootedness. Traditional accommodations like Gagaku and Sowaka carry the history of their location in their architecture and design. Modern luxury hotels, by contrast, often prioritize a universal standard of comfort that can feel placeless. Your preference is really about experiencing a destination through its built environment, not just sleeping somewhere convenient. I think that's a meaningful distinction that should guide every accommodation search we do together going forward."
+        },
+        {
+          "role": "user",
+          "content": "Actually I've been thinking — maybe for the Takayama trip I should push myself to try something more modern. My friend Yuki recommended a sleek new boutique hotel there, and she said the design is incredible. I think I might book that instead of the Honjin Hiranoya."
+        },
+        {
+          "role": "assistant",
+          "content": "That's interesting — it could be a worthwhile experiment to see how you feel in a more contemporary setting, especially with a personal recommendation behind it. Yuki's endorsement carries weight if she knows your taste. A sleek boutique hotel in Takayama would certainly be a departure from your usual picks. If you do decide to book it, you could always keep Honjin Hiranoya Annex as a mental backup in case you change your mind before the trip. Would you like me to look into both options so you can compare them side by side before committing?"
+        },
+        {
+          "role": "user",
+          "content": "Maybe, let me sit with it for a bit. Changing topic — can you remind me what hotel Lena stayed at in Tokyo? I want to mention it to another friend who's going there for a conference. I know it was one of the bigger international chains in Shinjuku.\n\nPerfect, that's the one. Thanks. I'll pass that along. And yeah, for my own trips I'll keep thinking about the Takayama situation. No rush on that one since autumn is still a ways off. I just want to make the right call for myself."
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! Lena stayed at the Park Hyatt Tokyo during the second week of April for her work trip. It's in Shinjuku and definitely fits the bill as a bigger international chain property. She said it was nice, so it could be a solid recommendation for your friend's conference trip, especially if they're looking for that professional, well-known hotel experience. Just keep in mind it's quite different from your own accommodation style, but for a conference visitor it might be exactly right. Let me know if you need any other details to pass along.\n\nAbsolutely, there's no need to rush the Takayama decision. Autumn gives you plenty of time to weigh your options and see what feels right. Whether you end up going with the modern boutique hotel Yuki suggested or sticking with Honjin Hiranoya Annex, you'll have time to reflect on what kind of experience you want for that trip. In the meantime, I've got all your confirmed bookings and preferences noted — Sowaka Kyoto for June, and your overall love of traditional, heritage-style places. Just reach out whenever you're ready to move forward on Takayama planning."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations about my Japan trips, what specific experiences and decisions shaped the kind of accommodation I tend to choose?",
+      "expected_answer": "You chose Hotel & Ryokan Gagaku in Tokyo for its tatami rooms, quiet atmosphere, and understated style. You booked Sowaka Kyoto because it's a renovated machiya with historical character. You were drawn to Honjin Hiranoya Annex in Takayama for its wooden interiors and craftsmanship. You rejected Aman Tokyo for being too sleek and corporate, and you dismissed your colleague Dan's Ritz-Carlton Osaka recommendation for being too polished and grand. Together, these choices show a consistent preference for traditional, intimate, heritage-style places over modern luxury hotels.",
+      "gold_memory_state": "Confirmed preference: traditional, intimate, heritage-style accommodations over modern luxury hotels. Supporting evidence includes three chosen/prospective traditional properties (Gagaku, Sowaka, Honjin Hiranoya Annex) and two rejected modern luxury properties (Aman Tokyo, Ritz-Carlton Osaka). A tentative consideration of a modern boutique hotel for Takayama was raised but not confirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "Hotel & Ryokan Gagaku",
+          "Sowaka Kyoto",
+          "Honjin Hiranoya Annex",
+          "Aman Tokyo rejected",
+          "Ritz-Carlton Osaka rejected",
+          "traditional or heritage preference"
+        ],
+        "acceptable_paraphrases": [
+          "heritage-style",
+          "traditional style",
+          "intimate accommodations",
+          "historic character"
+        ],
+        "must_not_include": [
+          "the tentative modern boutique shift is the confirmed preference"
+        ],
+        "harmful_extra": [
+          "presenting the tentative modern boutique consideration as the established pattern"
+        ],
+        "harmless_extra": [
+          "mentioning tatami rooms",
+          "mentioning machiya",
+          "mentioning wooden interiors",
+          "mentioning Dan",
+          "mentioning Yuki"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes the preference to modern luxury or includes the tentative modern shift as the confirmed pattern.",
+        "reflection_recall": "Fails if the model omits key supporting examples (chosen traditional places or rejected modern ones).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I stayed at Hotel & Ryokan Gagaku in Tokyo from April 10th to the 13th. Three nights. I loved it — tatami rooms, a quiet atmosphere, nothing flashy."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I also looked at Aman Tokyo before the trip but it felt too sleek and corporate. That kind of modern luxury vibe just doesn't appeal to me at all."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I booked Sowaka Kyoto on May 8th for a June trip. It's a renovated machiya — that old townhouse style. There's something about staying in a place with history that just feels right."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "There's a small inn called Honjin Hiranoya Annex — wooden interiors, very understated. Nothing booked yet, just on my radar."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "My colleague Dan stayed at the Ritz-Carlton Osaka last December and raved about it. Honestly though, that kind of place just isn't for me. Too polished, too grand."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I'm starting to realize I always gravitate toward the same kind of place. Tatami at Gagaku, the machiya style at Sowaka, the wooden interiors at Honjin Hiranoya. Meanwhile I turned down Aman Tokyo for being too corporate and Dan's Ritz-Carlton suggestion for being too polished."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations about my Japan trips, what specific experiences and decisions shaped the kind of accommodation I tend to choose?",
+      "expected_answer": "You chose Hotel & Ryokan Gagaku in Tokyo for its tatami rooms, quiet atmosphere, and understated style. You booked Sowaka Kyoto because it's a renovated machiya with historical character. You were drawn to Honjin Hiranoya Annex in Takayama for its wooden interiors and craftsmanship. You rejected Aman Tokyo for being too sleek and corporate, and you dismissed your colleague Dan's Ritz-Carlton Osaka recommendation for being too polished and grand. Together, these choices show a consistent preference for traditional, intimate, heritage-style places over modern luxury hotels.",
+      "gold_memory_state": "Confirmed preference: traditional, intimate, heritage-style accommodations over modern luxury hotels. Supporting evidence includes three chosen/prospective traditional properties (Gagaku, Sowaka, Honjin Hiranoya Annex) and two rejected modern luxury properties (Aman Tokyo, Ritz-Carlton Osaka). A tentative consideration of a modern boutique hotel for Takayama was raised but not confirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "Hotel & Ryokan Gagaku",
+          "Sowaka Kyoto",
+          "Honjin Hiranoya Annex",
+          "Aman Tokyo rejected",
+          "Ritz-Carlton Osaka rejected",
+          "traditional or heritage preference"
+        ],
+        "acceptable_paraphrases": [
+          "heritage-style",
+          "traditional style",
+          "intimate accommodations",
+          "historic character"
+        ],
+        "must_not_include": [
+          "the tentative modern boutique shift is the confirmed preference"
+        ],
+        "harmful_extra": [
+          "presenting the tentative modern boutique consideration as the established pattern"
+        ],
+        "harmless_extra": [
+          "mentioning tatami rooms",
+          "mentioning machiya",
+          "mentioning wooden interiors",
+          "mentioning Dan",
+          "mentioning Yuki"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes the preference to modern luxury or includes the tentative modern shift as the confirmed pattern.",
+        "reflection_recall": "Fails if the model omits key supporting examples (chosen traditional places or rejected modern ones).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I stayed at Hotel & Ryokan Gagaku in Tokyo from April 10th to the 13th. Three nights. I loved it — tatami rooms, a quiet atmosphere, nothing flashy."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I also looked at Aman Tokyo before the trip but it felt too sleek and corporate. That kind of modern luxury vibe just doesn't appeal to me at all."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I booked Sowaka Kyoto on May 8th for a June trip. It's a renovated machiya — that old townhouse style. There's something about staying in a place with history that just feels right."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "There's a small inn called Honjin Hiranoya Annex — wooden interiors, very understated. Nothing booked yet, just on my radar."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "My colleague Dan stayed at the Ritz-Carlton Osaka last December and raved about it. Honestly though, that kind of place just isn't for me. Too polished, too grand."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I'm starting to realize I always gravitate toward the same kind of place. Tatami at Gagaku, the machiya style at Sowaka, the wooden interiors at Honjin Hiranoya. Meanwhile I turned down Aman Tokyo for being too corporate and Dan's Ritz-Carlton suggestion for being too polished."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When I recognized a pattern across all my accommodation choices and rejections, which specific conclusion about my travel preferences does that support? Could that conclusion also extend to cover my dining or transportation preferences, or is it bounded to lodging?",
+      "expected_answer": "The supported conclusion is that you prefer traditional, intimate, heritage-style accommodations over modern luxury hotels. This is bounded to your lodging/accommodation preferences specifically. The evidence — choosing ryokan, machiya, and traditional inns while rejecting sleek corporate and grand luxury hotels — speaks only to where you stay, not to dining, transportation, or other travel dimensions.",
+      "gold_memory_state": "Confirmed target: accommodation style preference — prefers traditional, intimate, heritage-style accommodations over modern luxury hotels. This conclusion is supported by three positive examples (Gagaku, Sowaka, Honjin Hiranoya Annex) and two negative examples (Aman Tokyo, Ritz-Carlton Osaka). The tentative modern boutique consideration is not adopted. The conclusion is bounded to accommodation choices; no evidence supports extending it to dining or transportation.",
+      "judge_rubric": {
+        "must_include": [
+          "traditional/heritage accommodation preference",
+          "bounded to lodging or accommodation"
+        ],
+        "acceptable_paraphrases": [
+          "limited to where you stay",
+          "applies to hotels and inns only",
+          "accommodation-specific"
+        ],
+        "must_not_include": [
+          "the conclusion extends to dining preferences",
+          "the conclusion extends to transportation"
+        ],
+        "harmful_extra": [
+          "claiming the preference applies to all aspects of travel without qualification",
+          "treating the tentative modern shift as the supported conclusion"
+        ],
+        "harmless_extra": [
+          "naming specific hotels as examples",
+          "mentioning the rejected hotels"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model says the conclusion covers dining, transport, or all travel domains without evidence.",
+        "reflection_recall": "Fails if the model cannot articulate the traditional-over-modern lodging preference.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I'm starting to realize I always gravitate toward the same kind of place. Tatami at Gagaku, the machiya style at Sowaka, the wooden interiors at Honjin Hiranoya. Meanwhile I turned down Aman Tokyo for being too corporate and Dan's Ritz-Carlton suggestion for being too polished."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I think it comes down to feeling like the building has a story. Gagaku felt like it had been there forever, Sowaka literally is a historic townhouse. Even the Honjin Hiranoya has that handcrafted quality. Modern luxury hotels feel interchangeable to me — you could be anywhere in the world and the room would look the same."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When I recognized a pattern across all my accommodation choices and rejections, which specific conclusion about my travel preferences does that support? Could that conclusion also extend to cover my dining or transportation preferences, or is it bounded to lodging?",
+      "expected_answer": "The supported conclusion is that you prefer traditional, intimate, heritage-style accommodations over modern luxury hotels. This is bounded to your lodging/accommodation preferences specifically. The evidence — choosing ryokan, machiya, and traditional inns while rejecting sleek corporate and grand luxury hotels — speaks only to where you stay, not to dining, transportation, or other travel dimensions.",
+      "gold_memory_state": "Confirmed target: accommodation style preference — prefers traditional, intimate, heritage-style accommodations over modern luxury hotels. This conclusion is supported by three positive examples (Gagaku, Sowaka, Honjin Hiranoya Annex) and two negative examples (Aman Tokyo, Ritz-Carlton Osaka). The tentative modern boutique consideration is not adopted. The conclusion is bounded to accommodation choices; no evidence supports extending it to dining or transportation.",
+      "judge_rubric": {
+        "must_include": [
+          "traditional/heritage accommodation preference",
+          "bounded to lodging or accommodation"
+        ],
+        "acceptable_paraphrases": [
+          "limited to where you stay",
+          "applies to hotels and inns only",
+          "accommodation-specific"
+        ],
+        "must_not_include": [
+          "the conclusion extends to dining preferences",
+          "the conclusion extends to transportation"
+        ],
+        "harmful_extra": [
+          "claiming the preference applies to all aspects of travel without qualification",
+          "treating the tentative modern shift as the supported conclusion"
+        ],
+        "harmless_extra": [
+          "naming specific hotels as examples",
+          "mentioning the rejected hotels"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model says the conclusion covers dining, transport, or all travel domains without evidence.",
+        "reflection_recall": "Fails if the model cannot articulate the traditional-over-modern lodging preference.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I'm starting to realize I always gravitate toward the same kind of place. Tatami at Gagaku, the machiya style at Sowaka, the wooden interiors at Honjin Hiranoya. Meanwhile I turned down Aman Tokyo for being too corporate and Dan's Ritz-Carlton suggestion for being too polished."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I think it comes down to feeling like the building has a story. Gagaku felt like it had been there forever, Sowaka literally is a historic townhouse. Even the Honjin Hiranoya has that handcrafted quality. Modern luxury hotels feel interchangeable to me — you could be anywhere in the world and the room would look the same."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "I'm planning a trip to Kanazawa and want your help picking a place to stay. Describe the boundaries of what you know about my accommodation preferences — where does the pattern clearly apply, and where would you be going beyond what the evidence actually supports?",
+      "expected_answer": "Your supported preference is for traditional, intimate, heritage-style accommodations — places with historical character, craftsmanship, and a quiet atmosphere — over modern luxury hotels that feel sleek, corporate, or grand. This is well-supported by your choices of Gagaku, Sowaka, and Honjin Hiranoya Annex, and your rejections of Aman Tokyo and the Ritz-Carlton Osaka. For Kanazawa, recommending a traditional ryokan or heritage inn is solidly within this pattern. However, it would be an overgeneralization to assume you would reject all modern properties in every circumstance. You recently floated the idea of trying a modern boutique hotel for Takayama, which suggests some openness to experimenting. The pattern also cannot be extended to non-accommodation travel preferences like dining or activities, since there is no evidence about those.",
+      "gold_memory_state": "Confirmed inference: prefers traditional, intimate, heritage-style accommodations over modern luxury hotels. Supported by five data points across multiple trips. Unsupported overgeneralization: claiming the user would never try any modern accommodation (the user expressed tentative openness to a modern boutique hotel for Takayama). Also unsupported: extending the accommodation preference to dining, activities, or other travel domains.",
+      "judge_rubric": {
+        "must_include": [
+          "traditional/heritage preference is supported",
+          "boundary or limit of the inference"
+        ],
+        "acceptable_paraphrases": [
+          "the pattern applies to lodging choices",
+          "cannot assume total rejection of all modern options",
+          "no evidence for dining or activity preferences"
+        ],
+        "must_not_include": [
+          "the user has fully shifted to preferring modern boutique hotels"
+        ],
+        "harmful_extra": [
+          "treating the tentative modern boutique consideration as a confirmed new preference",
+          "claiming the preference definitely extends to dining or transportation"
+        ],
+        "harmless_extra": [
+          "naming specific hotels as examples",
+          "mentioning the Takayama tentative consideration as a caveat"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative modern boutique shift as the confirmed current preference, overriding the established traditional preference.",
+        "reflection_precision": "Fails if the model overgeneralizes the preference to all travel domains or claims the user would never consider any modern property.",
+        "reflection_recall": "Fails if the model fails to articulate the core traditional-over-modern accommodation preference or omits the boundary where the inference stops being supported.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I'm starting to realize I always gravitate toward the same kind of place. Tatami at Gagaku, the machiya style at Sowaka, the wooden interiors at Honjin Hiranoya. Meanwhile I turned down Aman Tokyo for being too corporate and Dan's Ritz-Carlton suggestion for being too polished."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I think it comes down to feeling like the building has a story. Gagaku felt like it had been there forever, Sowaka literally is a historic townhouse. Even the Honjin Hiranoya has that handcrafted quality. Modern luxury hotels feel interchangeable to me — you could be anywhere in the world and the room would look the same."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Actually I've been thinking — maybe for the Takayama trip I should push myself to try something more modern. My friend Yuki recommended a sleek new boutique hotel there, and she said the design is incredible. I think I might book that instead of the Honjin Hiranoya."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "I'm planning a trip to Kanazawa and want your help picking a place to stay. Describe the boundaries of what you know about my accommodation preferences — where does the pattern clearly apply, and where would you be going beyond what the evidence actually supports?",
+      "expected_answer": "Your supported preference is for traditional, intimate, heritage-style accommodations — places with historical character, craftsmanship, and a quiet atmosphere — over modern luxury hotels that feel sleek, corporate, or grand. This is well-supported by your choices of Gagaku, Sowaka, and Honjin Hiranoya Annex, and your rejections of Aman Tokyo and the Ritz-Carlton Osaka. For Kanazawa, recommending a traditional ryokan or heritage inn is solidly within this pattern. However, it would be an overgeneralization to assume you would reject all modern properties in every circumstance. You recently floated the idea of trying a modern boutique hotel for Takayama, which suggests some openness to experimenting. The pattern also cannot be extended to non-accommodation travel preferences like dining or activities, since there is no evidence about those.",
+      "gold_memory_state": "Confirmed inference: prefers traditional, intimate, heritage-style accommodations over modern luxury hotels. Supported by five data points across multiple trips. Unsupported overgeneralization: claiming the user would never try any modern accommodation (the user expressed tentative openness to a modern boutique hotel for Takayama). Also unsupported: extending the accommodation preference to dining, activities, or other travel domains.",
+      "judge_rubric": {
+        "must_include": [
+          "traditional/heritage preference is supported",
+          "boundary or limit of the inference"
+        ],
+        "acceptable_paraphrases": [
+          "the pattern applies to lodging choices",
+          "cannot assume total rejection of all modern options",
+          "no evidence for dining or activity preferences"
+        ],
+        "must_not_include": [
+          "the user has fully shifted to preferring modern boutique hotels"
+        ],
+        "harmful_extra": [
+          "treating the tentative modern boutique consideration as a confirmed new preference",
+          "claiming the preference definitely extends to dining or transportation"
+        ],
+        "harmless_extra": [
+          "naming specific hotels as examples",
+          "mentioning the Takayama tentative consideration as a caveat"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative modern boutique shift as the confirmed current preference, overriding the established traditional preference.",
+        "reflection_precision": "Fails if the model overgeneralizes the preference to all travel domains or claims the user would never consider any modern property.",
+        "reflection_recall": "Fails if the model fails to articulate the core traditional-over-modern accommodation preference or omits the boundary where the inference stops being supported.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I'm starting to realize I always gravitate toward the same kind of place. Tatami at Gagaku, the machiya style at Sowaka, the wooden interiors at Honjin Hiranoya. Meanwhile I turned down Aman Tokyo for being too corporate and Dan's Ritz-Carlton suggestion for being too polished."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I think it comes down to feeling like the building has a story. Gagaku felt like it had been there forever, Sowaka literally is a historic townhouse. Even the Honjin Hiranoya has that handcrafted quality. Modern luxury hotels feel interchangeable to me — you could be anywhere in the world and the room would look the same."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Actually I've been thinking — maybe for the Takayama trip I should push myself to try something more modern. My friend Yuki recommended a sleek new boutique hotel there, and she said the design is incredible. I think I might book that instead of the Honjin Hiranoya."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best describes my overall accommodation style when traveling in Japan?",
+      "candidate_options": [
+        "Prefers traditional, intimate, heritage-style accommodations with historical character over modern luxury hotels",
+        "Prefers sleek modern boutique hotels with cutting-edge design",
+        "Prefers large international chain hotels for their reliability and professional service",
+        "Has no consistent preference and chooses accommodation based purely on price and location"
+      ],
+      "expected_answer": "Prefers traditional, intimate, heritage-style accommodations with historical character over modern luxury hotels",
+      "gold_memory_state": "Confirmed inference: prefers traditional, intimate, heritage-style accommodations over modern luxury hotels. The tentative consideration of a modern boutique hotel for Takayama is not adopted as the established preference.",
+      "judge_rubric": {
+        "must_include": [
+          "traditional, intimate, heritage-style accommodations"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "sleek modern boutique hotels as the established preference"
+        ],
+        "harmful_extra": [
+          "selecting the modern boutique option based on the tentative Takayama consideration"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'Prefers large international chain hotels for their reliability and professional service' echoes properties like Park Hyatt Tokyo (Lena's choice) and Ritz-Carlton Osaka (Dan's recommendation), which are grounded in the conversation but belong to other people's preferences, not the user's. assistant echo: 'Prefers sleek modern boutique hotels with cutting-edge design' reflects the assistant's acknowledgment of Yuki's modern boutique recommendation and the user's tentative consideration, which was never confirmed as the user's established preference. 'Has no consistent preference' is a control distractor contradicted by the explicit pattern recognition in the conversation.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the modern boutique option based on the tentative recency-trap statement rather than the confirmed multi-evidence traditional preference.",
+        "reflection_precision": "Fails if the model selects an unsupported preference description.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I'm starting to realize I always gravitate toward the same kind of place. Tatami at Gagaku, the machiya style at Sowaka, the wooden interiors at Honjin Hiranoya. Meanwhile I turned down Aman Tokyo for being too corporate and Dan's Ritz-Carlton suggestion for being too polished."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I stayed at Hotel & Ryokan Gagaku in Tokyo from April 10th to the 13th. Three nights. I loved it — tatami rooms, a quiet atmosphere, nothing flashy."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I booked Sowaka Kyoto on May 8th for a June trip. It's a renovated machiya — that old townhouse style. There's something about staying in a place with history that just feels right."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best describes my overall accommodation style when traveling in Japan?",
+      "candidate_options": [
+        "Prefers traditional, intimate, heritage-style accommodations with historical character over modern luxury hotels",
+        "Prefers sleek modern boutique hotels with cutting-edge design",
+        "Prefers large international chain hotels for their reliability and professional service",
+        "Has no consistent preference and chooses accommodation based purely on price and location"
+      ],
+      "expected_answer": "Prefers traditional, intimate, heritage-style accommodations with historical character over modern luxury hotels",
+      "gold_memory_state": "Confirmed inference: prefers traditional, intimate, heritage-style accommodations over modern luxury hotels. The tentative consideration of a modern boutique hotel for Takayama is not adopted as the established preference.",
+      "judge_rubric": {
+        "must_include": [
+          "traditional, intimate, heritage-style accommodations"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "sleek modern boutique hotels as the established preference"
+        ],
+        "harmful_extra": [
+          "selecting the modern boutique option based on the tentative Takayama consideration"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'Prefers large international chain hotels for their reliability and professional service' echoes properties like Park Hyatt Tokyo (Lena's choice) and Ritz-Carlton Osaka (Dan's recommendation), which are grounded in the conversation but belong to other people's preferences, not the user's. assistant echo: 'Prefers sleek modern boutique hotels with cutting-edge design' reflects the assistant's acknowledgment of Yuki's modern boutique recommendation and the user's tentative consideration, which was never confirmed as the user's established preference. 'Has no consistent preference' is a control distractor contradicted by the explicit pattern recognition in the conversation.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the modern boutique option based on the tentative recency-trap statement rather than the confirmed multi-evidence traditional preference.",
+        "reflection_precision": "Fails if the model selects an unsupported preference description.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I'm starting to realize I always gravitate toward the same kind of place. Tatami at Gagaku, the machiya style at Sowaka, the wooden interiors at Honjin Hiranoya. Meanwhile I turned down Aman Tokyo for being too corporate and Dan's Ritz-Carlton suggestion for being too polished."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I stayed at Hotel & Ryokan Gagaku in Tokyo from April 10th to the 13th. Three nights. I loved it — tatami rooms, a quiet atmosphere, nothing flashy."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I booked Sowaka Kyoto on May 8th for a June trip. It's a renovated machiya — that old townhouse style. There's something about staying in a place with history that just feels right."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "A friend is visiting Japan for the first time and asked me to help pick a hotel in Osaka. She wants something with character and personality — not a cookie-cutter chain. Based on everything you know about my own accommodation experiences and preferences, draft a short recommendation note to her explaining what kind of place she should look for in Osaka, what kind of place to avoid, and why. Reference specific examples from my own trips to support the advice.",
+      "expected_answer": "Recommendation note: Look for a traditional, intimate property with historical character — something like a renovated machiya or a small inn with local architectural details. In my experience, Hotel & Ryokan Gagaku in Tokyo was perfect because of its tatami rooms and quiet atmosphere, and Sowaka Kyoto was wonderful as a renovated machiya with real historical roots. I also had my eye on Honjin Hiranoya Annex in Takayama for its wooden interiors and craftsmanship. Avoid large, polished luxury hotels — my colleague Dan stayed at the Ritz-Carlton Osaka and loved it, but that kind of grand, corporate-feeling place doesn't help you connect with the local character. Similarly, I rejected Aman Tokyo for being too sleek and impersonal. For Osaka, I'd suggest searching for a small heritage-style inn or a renovated traditional property in a neighborhood with local flavor, rather than a big international chain hotel.",
+      "gold_memory_state": "Confirmed preference: traditional, intimate, heritage-style accommodations. Positive examples: Gagaku (tatami, quiet), Sowaka (machiya, history), Honjin Hiranoya Annex (wooden interiors, craftsmanship). Negative examples: Aman Tokyo (too sleek/corporate), Ritz-Carlton Osaka (too polished/grand, Dan's recommendation). Tentative modern boutique consideration for Takayama is not confirmed and should not be presented as the user's recommendation style.",
+      "judge_rubric": {
+        "must_include": [
+          "recommend traditional/heritage-style accommodation",
+          "avoid modern luxury or grand chain hotels",
+          "at least two specific positive hotel examples from the user's trips",
+          "at least one specific rejected hotel as a negative example"
+        ],
+        "acceptable_paraphrases": [
+          "intimate inn",
+          "renovated historic property",
+          "small traditional place",
+          "stay away from polished corporate hotels"
+        ],
+        "must_not_include": [
+          "recommend modern boutique hotels as the user's preferred style"
+        ],
+        "harmful_extra": [
+          "presenting the tentative modern boutique shift as the user's recommendation approach",
+          "recommending the Ritz-Carlton Osaka as a good option for the friend"
+        ],
+        "harmless_extra": [
+          "mentioning Dan by name",
+          "mentioning Yuki's suggestion as a tentative aside",
+          "naming specific Osaka neighborhoods"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses the tentative modern boutique consideration as the basis for the recommendation, overriding the confirmed traditional preference.",
+        "reflection_precision": "Fails if the recommendation contradicts the established traditional preference or recommends modern luxury hotels.",
+        "reflection_recall": "Fails if the recommendation omits concrete examples from the user's trips to support the advice.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User chose Hotel & Ryokan Gagaku in Tokyo for tatami rooms, quiet atmosphere, nothing flashy.",
+        "Fact 2: User rejected Aman Tokyo as too sleek and corporate.",
+        "Fact 3: User booked Sowaka Kyoto, a renovated machiya, valuing its historical character.",
+        "Fact 4: User was drawn to Honjin Hiranoya Annex in Takayama for wooden interiors and craftsmanship.",
+        "Fact 5: User rejected Dan's Ritz-Carlton Osaka recommendation as too polished and grand.",
+        "Inference: The user's confirmed pattern is a strong preference for traditional, intimate, heritage-style accommodations over modern luxury hotels.",
+        "Inference: Applying this pattern to an Osaka recommendation for a friend means suggesting a traditional/heritage property and specifically warning against grand luxury chains like the Ritz-Carlton Osaka, using the user's own experiences as supporting evidence."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I stayed at Hotel & Ryokan Gagaku in Tokyo from April 10th to the 13th. Three nights. I loved it — tatami rooms, a quiet atmosphere, nothing flashy."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I also looked at Aman Tokyo before the trip but it felt too sleek and corporate. That kind of modern luxury vibe just doesn't appeal to me at all."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I booked Sowaka Kyoto on May 8th for a June trip. It's a renovated machiya — that old townhouse style. There's something about staying in a place with history that just feels right."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "There's a small inn called Honjin Hiranoya Annex — wooden interiors, very understated. Nothing booked yet, just on my radar."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "My colleague Dan stayed at the Ritz-Carlton Osaka last December and raved about it. Honestly though, that kind of place just isn't for me. Too polished, too grand."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I'm starting to realize I always gravitate toward the same kind of place. Tatami at Gagaku, the machiya style at Sowaka, the wooden interiors at Honjin Hiranoya. Meanwhile I turned down Aman Tokyo for being too corporate and Dan's Ritz-Carlton suggestion for being too polished."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "A friend is visiting Japan for the first time and asked me to help pick a hotel in Osaka. She wants something with character and personality — not a cookie-cutter chain. Based on everything you know about my own accommodation experiences and preferences, draft a short recommendation note to her explaining what kind of place she should look for in Osaka, what kind of place to avoid, and why. Reference specific examples from my own trips to support the advice.",
+      "expected_answer": "Recommendation note: Look for a traditional, intimate property with historical character — something like a renovated machiya or a small inn with local architectural details. In my experience, Hotel & Ryokan Gagaku in Tokyo was perfect because of its tatami rooms and quiet atmosphere, and Sowaka Kyoto was wonderful as a renovated machiya with real historical roots. I also had my eye on Honjin Hiranoya Annex in Takayama for its wooden interiors and craftsmanship. Avoid large, polished luxury hotels — my colleague Dan stayed at the Ritz-Carlton Osaka and loved it, but that kind of grand, corporate-feeling place doesn't help you connect with the local character. Similarly, I rejected Aman Tokyo for being too sleek and impersonal. For Osaka, I'd suggest searching for a small heritage-style inn or a renovated traditional property in a neighborhood with local flavor, rather than a big international chain hotel.",
+      "gold_memory_state": "Confirmed preference: traditional, intimate, heritage-style accommodations. Positive examples: Gagaku (tatami, quiet), Sowaka (machiya, history), Honjin Hiranoya Annex (wooden interiors, craftsmanship). Negative examples: Aman Tokyo (too sleek/corporate), Ritz-Carlton Osaka (too polished/grand, Dan's recommendation). Tentative modern boutique consideration for Takayama is not confirmed and should not be presented as the user's recommendation style.",
+      "judge_rubric": {
+        "must_include": [
+          "recommend traditional/heritage-style accommodation",
+          "avoid modern luxury or grand chain hotels",
+          "at least two specific positive hotel examples from the user's trips",
+          "at least one specific rejected hotel as a negative example"
+        ],
+        "acceptable_paraphrases": [
+          "intimate inn",
+          "renovated historic property",
+          "small traditional place",
+          "stay away from polished corporate hotels"
+        ],
+        "must_not_include": [
+          "recommend modern boutique hotels as the user's preferred style"
+        ],
+        "harmful_extra": [
+          "presenting the tentative modern boutique shift as the user's recommendation approach",
+          "recommending the Ritz-Carlton Osaka as a good option for the friend"
+        ],
+        "harmless_extra": [
+          "mentioning Dan by name",
+          "mentioning Yuki's suggestion as a tentative aside",
+          "naming specific Osaka neighborhoods"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses the tentative modern boutique consideration as the basis for the recommendation, overriding the confirmed traditional preference.",
+        "reflection_precision": "Fails if the recommendation contradicts the established traditional preference or recommends modern luxury hotels.",
+        "reflection_recall": "Fails if the recommendation omits concrete examples from the user's trips to support the advice.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User chose Hotel & Ryokan Gagaku in Tokyo for tatami rooms, quiet atmosphere, nothing flashy.",
+        "Fact 2: User rejected Aman Tokyo as too sleek and corporate.",
+        "Fact 3: User booked Sowaka Kyoto, a renovated machiya, valuing its historical character.",
+        "Fact 4: User was drawn to Honjin Hiranoya Annex in Takayama for wooden interiors and craftsmanship.",
+        "Fact 5: User rejected Dan's Ritz-Carlton Osaka recommendation as too polished and grand.",
+        "Inference: The user's confirmed pattern is a strong preference for traditional, intimate, heritage-style accommodations over modern luxury hotels.",
+        "Inference: Applying this pattern to an Osaka recommendation for a friend means suggesting a traditional/heritage property and specifically warning against grand luxury chains like the Ritz-Carlton Osaka, using the user's own experiences as supporting evidence."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I stayed at Hotel & Ryokan Gagaku in Tokyo from April 10th to the 13th. Three nights. I loved it — tatami rooms, a quiet atmosphere, nothing flashy."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I also looked at Aman Tokyo before the trip but it felt too sleek and corporate. That kind of modern luxury vibe just doesn't appeal to me at all."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I booked Sowaka Kyoto on May 8th for a June trip. It's a renovated machiya — that old townhouse style. There's something about staying in a place with history that just feels right."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "There's a small inn called Honjin Hiranoya Annex — wooden interiors, very understated. Nothing booked yet, just on my radar."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "My colleague Dan stayed at the Ritz-Carlton Osaka last December and raved about it. Honestly though, that kind of place just isn't for me. Too polished, too grand."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I'm starting to realize I always gravitate toward the same kind of place. Tatami at Gagaku, the machiya style at Sowaka, the wooden interiors at Honjin Hiranoya. Meanwhile I turned down Aman Tokyo for being too corporate and Dan's Ritz-Carlton suggestion for being too polished."
+        }
+      ]
+    }
+  ]
+}

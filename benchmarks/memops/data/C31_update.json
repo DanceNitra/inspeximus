@@ -1,0 +1,773 @@
+{
+  "target_fact": "Mochi's deworming medication and its switch timeline",
+  "operation_type": "Update",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "deworming_switch_date",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I switched Mochi from Drontal to Milbemax back in February"
+      },
+      "target": {
+        "target_id": "mochi_deworming_switch_date",
+        "target_name": "Date Mochi switched from Drontal to Milbemax"
+      },
+      "old_value": null,
+      "new_value": "February",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I switched Mochi from Drontal to Milbemax back in February"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "deworming_switch_date",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "Actually, I need to correct that. The switch to Milbemax was late January, not February. I remember now because it was right after I got back from my Denver work trip on January 22nd"
+      },
+      "target": {
+        "target_id": "mochi_deworming_switch_date",
+        "target_name": "Date Mochi switched from Drontal to Milbemax"
+      },
+      "old_value": "February",
+      "new_value": "late January",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The switch to Milbemax was late January, not February. I remember now because it was right after I got back from my Denver work trip on January 22nd"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "deworming_switch_date",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I just found the receipt in my email. The Milbemax purchase was January 25th. So the switch date was January 25th specifically"
+      },
+      "target": {
+        "target_id": "mochi_deworming_switch_date",
+        "target_name": "Date Mochi switched from Drontal to Milbemax"
+      },
+      "old_value": "late January",
+      "new_value": "January 25th",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I just found the receipt in my email. The Milbemax purchase was January 25th. So the switch date was January 25th specifically"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "deworming_switch_date",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "My friend Sara just told me she checked her texts and she actually recommended Milbemax to me on January 18th, so I might have bought it and started Mochi on it that same week, not the 25th"
+      },
+      "target": {
+        "target_id": "mochi_deworming_switch_date",
+        "target_name": "Date Mochi switched from Drontal to Milbemax"
+      },
+      "old_value": "January 25th",
+      "new_value": "January 18th",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My friend Sara just told me she checked her texts and she actually recommended Milbemax to me on January 18th, so I might have bought it and started Mochi on it that same week, not the 25th"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "Mochi's next grooming appointment at Pampered Paws is booked for May 20th. They're doing the same package as last time — bath with unscented oat-based shampoo, nail trim, and ear cleaning"
+      },
+      "target": {
+        "target_id": "mochi_next_grooming_appointment",
+        "target_name": "Mochi's next grooming appointment details"
+      },
+      "old_value": null,
+      "new_value": "May 20th at Pampered Paws, bath with unscented oat-based shampoo, nail trim, and ear cleaning",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Mochi's next grooming appointment at Pampered Paws is booked for May 20th. They're doing the same package as last time — bath with unscented oat-based shampoo, nail trim, and ear cleaning"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish deworming switch date and grooming appointment; begin update chain",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to go over some of Mochi's care details so you have them on file. First off, I switched Mochi from Drontal to Milbemax back in February. My friend Sara recommended it because the tablets are smaller and Mochi doesn't fight me as much taking them. The next Milbemax dose is due around May 14th, and I want to ask Dr. Patel about adding flea prevention at the same time since summer's coming up."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it! I've noted that Mochi transitioned from Drontal to Milbemax in February, based on Sara's recommendation, primarily because the smaller tablet size makes dosing easier. The next Milbemax dose is due around May 14th, and you'd like to discuss adding a flea prevention treatment with Dr. Patel at that appointment since summer is approaching. That sounds like a smart plan — combining the deworming and flea prevention in one visit will be more efficient for both you and Mochi. Would you like me to help you draft a reminder or a list of questions for Dr. Patel?"
+        },
+        {
+          "role": "user",
+          "content": "That would be great, but let me give you the rest of her schedule first. Mochi's next grooming appointment at Pampered Paws is booked for May 20th. They're doing the same package as last time — bath with unscented oat-based shampoo, nail trim, and ear cleaning. I specifically request unscented because I really cannot stand those heavy artificial fragrances they typically use on pets. It gets on the furniture and lingers for days."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — Mochi has a grooming appointment at Pampered Paws on May 20th for the full package: bath with unscented oat-based shampoo, nail trim, and ear cleaning. I've also recorded your strong preference for unscented products due to the lingering artificial fragrance issue. That's a very reasonable concern, especially since some of those scented shampoos can also irritate sensitive cats. So far I have the Milbemax dose on May 14th with Dr. Patel and the grooming on May 20th. Anything else you'd like me to track for Mochi's care schedule?"
+        },
+        {
+          "role": "user",
+          "content": "Actually, I need to correct that. The switch to Milbemax was late January, not February. I remember now because it was right after I got back from my Denver work trip on January 22nd. I picked up the Milbemax from the pet store on the way home from the airport, or maybe the next day. Either way it was late January, definitely not February. Sorry for the confusion."
+        },
+        {
+          "role": "assistant",
+          "content": "No worries at all — thanks for the correction! I've updated the record: Mochi's switch from Drontal to Milbemax happened in late January, shortly after you returned from your Denver work trip around January 22nd. That makes sense as a timeline anchor. The rest of the details stay the same — Milbemax was Sara's recommendation, smaller tablets, next dose around May 14th with a flea prevention discussion with Dr. Patel. Is there anything else about Mochi's medication history you'd like to clarify while we're on this topic?"
+        },
+        {
+          "role": "user",
+          "content": "One more thing — Mochi had her rabies booster on March 3rd at Greenfield Veterinary Clinic. Dr. Patel administered it. The next rabies shot is due March of next year, and I absolutely cannot forget it. I almost missed it this time around and I don't want a repeat of that stress. Can you make a note of that timeline?"
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely — I've recorded that Mochi received her rabies booster on March 3rd at Greenfield Veterinary Clinic, administered by Dr. Patel, and the next rabies vaccination is due in March of next year. I completely understand not wanting to cut it close again. When the time comes, I can help you set up reminders well in advance — perhaps starting in January so you have plenty of time to schedule the appointment. For now, here's what I have for Mochi: late January Milbemax switch, March 3rd rabies booster, May 14th next Milbemax dose plus flea prevention consult, and May 20th grooming at Pampered Paws."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Refine the deworming switch date with receipt evidence; discuss grooming frequency",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I was cleaning out my inbox and found some pet-related receipts. I wanted to double-check a few things with you. First, what date do you have for when I switched Mochi to Milbemax? I want to make sure we have it exactly right since it affects the dosing schedule going forward."
+        },
+        {
+          "role": "assistant",
+          "content": "Based on our last conversation, I have the Milbemax switch recorded as late January, shortly after your Denver work trip around January 22nd. You originally mentioned February but then corrected it to late January. Did you find the exact date in your receipts? Having the precise purchase date would help us pin down the dosing intervals more accurately, especially with the May 14th dose coming up and the flea prevention discussion with Dr. Patel."
+        },
+        {
+          "role": "user",
+          "content": "I just found the receipt in my email. The Milbemax purchase was January 25th. So the switch date was January 25th specifically. That lines up with what I remembered about coming back from Denver — I got home on the 22nd and then went to the pet store a few days later. Good to have the exact date now."
+        },
+        {
+          "role": "assistant",
+          "content": "Perfect — I've updated the Milbemax switch date to January 25th specifically. That's consistent with your Denver return on the 22nd and a pet store trip a few days later. Having the exact date is really helpful for tracking dosing intervals. Since you started Milbemax on January 25th and the next dose is around May 14th, that's roughly a three-and-a-half-month interval, which aligns well with quarterly deworming schedules. I'll keep January 25th as the anchor date for Mochi's Milbemax timeline. Was there anything else interesting in those receipts?"
+        },
+        {
+          "role": "user",
+          "content": "Not from the receipts, but I wanted to mention something about grooming. The groomer at Pampered Paws suggested I bring Mochi in every 6 weeks instead of every 8. I'm thinking about it. Mochi seems really calm after their sessions — much better than that one terrible experience at a busy place with dogs barking everywhere. She hid under the bed for the rest of the day and wouldn't eat dinner after that. I was honestly so irritated."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a thoughtful consideration. If Mochi responds well to the quieter environment at Pampered Paws and comes back relaxed, a 6-week cycle might be worth trying, especially since it sounds like she has some sensitivity to overstimulating environments. That bad experience at the busy place sounds really stressful for both of you — a cat hiding and refusing food is a clear sign of distress. Pampered Paws clearly works better for her temperament. If you do switch to every 6 weeks from the May 20th appointment, the following one would fall around early July. Want me to note the 6-week consideration?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, note it as something I'm considering but haven't decided on yet. Also, I realized I should mention that Mochi's FVRCP vaccine was administered a couple of days after her rabies booster in early March — I think it was March 5th or 6th, I'm not totally sure of the exact date. She was a bit lethargic afterward but the vet said that was normal. Just want that on file too.\n\nThat looks right. Oh, and my neighbor Tom's dog Max is overdue for his bordetella vaccine by about two months. I mentioned Greenfield Clinic to Tom but I don't think he's called yet. Not really my problem but I worry about Max — he's a sweet old golden retriever. Anyway, that's everything for now."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — Mochi received her FVRCP vaccine around March 5th or 6th, a couple of days after the March 3rd rabies booster, also at Greenfield Veterinary Clinic. She experienced some post-vaccine lethargy, which Dr. Patel confirmed was a normal reaction. I've also noted that you're considering switching to a 6-week grooming cycle at Pampered Paws but haven't committed yet. Here's the updated timeline: January 25th Milbemax switch, March 3rd rabies booster, March 5th-6th FVRCP, May 14th next Milbemax plus flea prevention consult, May 20th grooming.\n\nThat's kind of you to look out for Max! Bordetella is important, especially if Max goes to dog parks or boarding facilities. Hopefully Tom follows up with Greenfield Clinic soon — it sounds like a great practice given your experience with Dr. Patel. I have everything organized for Mochi now. The key upcoming dates are May 14th for the Milbemax dose and flea prevention discussion, and May 20th for grooming at Pampered Paws. The next rabies booster is due March of next year. I'll keep these details handy for whenever you need them."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Introduce tentative earlier switch date as recency trap; adversarial injection of stale value",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, quick question. I'm filling out a pet health history form for a new pet insurance application and they want to know all medication changes in the last six months. Can you remind me of the key dates we discussed for Mochi's deworming switch and her vaccinations?"
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! Here's what I have on file for Mochi's recent care timeline: The switch from Drontal to Milbemax was on January 25th, based on the receipt you found. Her rabies booster was March 3rd at Greenfield Veterinary Clinic with Dr. Patel, and the FVRCP vaccine was around March 5th or 6th, also at Greenfield. The next Milbemax dose is due around May 14th, and you planned to discuss flea prevention with Dr. Patel at that time. Oh, I also see a note here — Tom's dog Max was referenced as being overdue for bordetella by about two months, with a note that Tom was given the Greenfield Clinic recommendation. Want me to format this for the insurance form?"
+        },
+        {
+          "role": "user",
+          "content": "Yes please, that would help. The form also asks about the previous deworming product. So I need to note that Mochi was on Drontal before the Milbemax switch. Can you include that? And make sure the January 25th date is clear as the changeover point."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely. Here's a draft for the medication section of the form: Previous deworming medication: Drontal. Current deworming medication: Milbemax (smaller tablet formulation). Date of medication change: January 25th. Reason for change: Recommendation from friend; smaller tablet size improves compliance. Current dosing schedule: Next dose approximately May 14th. Vaccinations: Rabies booster — March 3rd, Greenfield Veterinary Clinic, Dr. Patel. FVRCP — approximately March 5th-6th, Greenfield Veterinary Clinic. Shall I adjust the formatting or add anything else for the insurance application?"
+        },
+        {
+          "role": "user",
+          "content": "My friend Sara just told me she checked her texts and she actually recommended Milbemax to me on January 18th, so I might have bought it and started Mochi on it that same week, not the 25th. She's pretty sure about the date because it was her birthday. I'm not sure though — my receipt still says the 25th. I'll have to dig deeper."
+        },
+        {
+          "role": "assistant",
+          "content": "That's an interesting discrepancy! Sara's text recommendation on January 18th does suggest you could have acted on it sooner, but your email receipt clearly shows a January 25th purchase. It's possible Sara recommended it on her birthday and you waited a few days before buying it, which would be consistent with both dates. For now, the receipt is probably the most reliable documentation for the insurance form. If you do find evidence of an earlier purchase, we can always update the date. Want to keep the form draft as-is with January 25th for now?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, let's leave it at January 25th on the form for now until I sort it out. By the way, I was looking at the Pampered Paws website and they have a section showing recent client visits. I noticed they listed a grooming for a cat named Miso on January 20th using lavender-scented shampoo — I was worried for a second that was Mochi's record mixed up, but it's definitely a different cat.\n\nExactly, no scented anything for Mochi. Alright, I think the insurance form is good to go with what we have. I'll submit it with the January 25th Milbemax date and the March vaccination dates. If I find anything that changes the deworming start date I'll let you know. Thanks for keeping track of all this."
+        },
+        {
+          "role": "assistant",
+          "content": "Good catch checking that — but yes, that's clearly a different cat's record. Mochi's grooming history at Pampered Paws has always used the unscented oat-based shampoo per your specific request, and the name and date don't match either. It's not uncommon for pet grooming sites to display recent visits publicly. Mochi's confirmed visits were March 15th for the first full groom and then the earlier-than-planned April 8th visit when she got into something sticky. Both used the unscented product. No lavender anywhere near Mochi's file!\n\nYou're welcome! The form looks solid with the January 25th Milbemax changeover and the March vaccination dates. Just to recap the upcoming items: Milbemax dose around May 14th with flea prevention discussion with Dr. Patel, grooming at Pampered Paws on May 20th with unscented oat-based shampoo, and the rabies booster due next March. Let me know if you find any new information about the switch date or if you need help with anything else for Mochi. Good luck with the insurance application!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations about Mochi's deworming, I mentioned the switch date a few times and also shared grooming details. Can you summarize what I told you about the deworming switch timing and how that information evolved?",
+      "expected_answer": "You initially said the switch from Drontal to Milbemax was in February. You then said it was actually late January, after returning from a Denver work trip around January 22nd. Later, you found a receipt showing the Milbemax purchase was on January 25th. Your friend Sara also mentioned she recommended Milbemax on January 18th, but you weren't sure if that changed the date since your receipt still showed January 25th.",
+      "gold_memory_state": "The confirmed deworming switch date is January 25th. The tentative suggestion of January 18th was not confirmed. The grooming appointment at Pampered Paws on May 20th is a separate confirmed detail.",
+      "judge_rubric": {
+        "must_include": [
+          "February as initial mention",
+          "late January as first correction",
+          "January 25th from receipt",
+          "Sara's January 18th mention as uncertain"
+        ],
+        "acceptable_paraphrases": [
+          "around January 22nd return from Denver",
+          "receipt confirmed January 25th"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating January 18th is the confirmed date"
+        ],
+        "harmless_extra": [
+          "mentioning Sara's birthday",
+          "mentioning Denver trip details"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model presents February or late January as the current date without noting they were superseded.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I switched Mochi from Drontal to Milbemax back in February"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Actually, I need to correct that. The switch to Milbemax was late January, not February. I remember now because it was right after I got back from my Denver work trip on January 22nd"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I just found the receipt in my email. The Milbemax purchase was January 25th. So the switch date was January 25th specifically"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My friend Sara just told me she checked her texts and she actually recommended Milbemax to me on January 18th, so I might have bought it and started Mochi on it that same week, not the 25th"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations about Mochi's deworming, I mentioned the switch date a few times and also shared grooming details. Can you summarize what I told you about the deworming switch timing and how that information evolved?",
+      "expected_answer": "You initially said the switch from Drontal to Milbemax was in February. You then said it was actually late January, after returning from a Denver work trip around January 22nd. Later, you found a receipt showing the Milbemax purchase was on January 25th. Your friend Sara also mentioned she recommended Milbemax on January 18th, but you weren't sure if that changed the date since your receipt still showed January 25th.",
+      "gold_memory_state": "The confirmed deworming switch date is January 25th. The tentative suggestion of January 18th was not confirmed. The grooming appointment at Pampered Paws on May 20th is a separate confirmed detail.",
+      "judge_rubric": {
+        "must_include": [
+          "February as initial mention",
+          "late January as first correction",
+          "January 25th from receipt",
+          "Sara's January 18th mention as uncertain"
+        ],
+        "acceptable_paraphrases": [
+          "around January 22nd return from Denver",
+          "receipt confirmed January 25th"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating January 18th is the confirmed date"
+        ],
+        "harmless_extra": [
+          "mentioning Sara's birthday",
+          "mentioning Denver trip details"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model presents February or late January as the current date without noting they were superseded.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I switched Mochi from Drontal to Milbemax back in February"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Actually, I need to correct that. The switch to Milbemax was late January, not February. I remember now because it was right after I got back from my Denver work trip on January 22nd"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I just found the receipt in my email. The Milbemax purchase was January 25th. So the switch date was January 25th specifically"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My friend Sara just told me she checked her texts and she actually recommended Milbemax to me on January 18th, so I might have bought it and started Mochi on it that same week, not the 25th"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I shared several dates related to Mochi's care — some about when her medication changed and one about a grooming visit. If I need to fill in the deworming changeover date on an insurance form, which piece of information does that apply to, and does the grooming appointment date have anything to do with it?",
+      "expected_answer": "The deworming changeover date applies to when Mochi switched from Drontal to Milbemax, which is January 25th based on your receipt. The grooming appointment at Pampered Paws on May 20th is a completely separate record and is not related to the medication switch date.",
+      "gold_memory_state": "Mochi's deworming switch date: January 25th (confirmed via receipt). Mochi's grooming appointment: May 20th at Pampered Paws (separate target, unaffected by deworming date changes).",
+      "judge_rubric": {
+        "must_include": [
+          "January 25th for deworming switch",
+          "grooming appointment is separate and unaffected"
+        ],
+        "acceptable_paraphrases": [
+          "the Milbemax changeover date is January 25th",
+          "the Pampered Paws visit on May 20th is independent"
+        ],
+        "must_not_include": [
+          "grooming date changed",
+          "grooming date is part of the deworming record"
+        ],
+        "harmful_extra": [
+          "conflating grooming and deworming into one record",
+          "using February or late January as the current deworming switch date"
+        ],
+        "harmless_extra": [
+          "mentioning the receipt as evidence",
+          "mentioning Drontal as the previous medication"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses February or late January as the deworming switch date on the form.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I just found the receipt in my email. The Milbemax purchase was January 25th. So the switch date was January 25th specifically"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Mochi's next grooming appointment at Pampered Paws is booked for May 20th. They're doing the same package as last time — bath with unscented oat-based shampoo, nail trim, and ear cleaning"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I shared several dates related to Mochi's care — some about when her medication changed and one about a grooming visit. If I need to fill in the deworming changeover date on an insurance form, which piece of information does that apply to, and does the grooming appointment date have anything to do with it?",
+      "expected_answer": "The deworming changeover date applies to when Mochi switched from Drontal to Milbemax, which is January 25th based on your receipt. The grooming appointment at Pampered Paws on May 20th is a completely separate record and is not related to the medication switch date.",
+      "gold_memory_state": "Mochi's deworming switch date: January 25th (confirmed via receipt). Mochi's grooming appointment: May 20th at Pampered Paws (separate target, unaffected by deworming date changes).",
+      "judge_rubric": {
+        "must_include": [
+          "January 25th for deworming switch",
+          "grooming appointment is separate and unaffected"
+        ],
+        "acceptable_paraphrases": [
+          "the Milbemax changeover date is January 25th",
+          "the Pampered Paws visit on May 20th is independent"
+        ],
+        "must_not_include": [
+          "grooming date changed",
+          "grooming date is part of the deworming record"
+        ],
+        "harmful_extra": [
+          "conflating grooming and deworming into one record",
+          "using February or late January as the current deworming switch date"
+        ],
+        "harmless_extra": [
+          "mentioning the receipt as evidence",
+          "mentioning Drontal as the previous medication"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses February or late January as the deworming switch date on the form.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I just found the receipt in my email. The Milbemax purchase was January 25th. So the switch date was January 25th specifically"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Mochi's next grooming appointment at Pampered Paws is booked for May 20th. They're doing the same package as last time — bath with unscented oat-based shampoo, nail trim, and ear cleaning"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I'm finalizing Mochi's pet insurance application and need to enter the date she started on Milbemax. Which of the following dates should I put on the form?",
+      "candidate_options": [
+        "January 25th",
+        "February",
+        "January 18th",
+        "January 22nd"
+      ],
+      "expected_answer": "January 25th",
+      "distractor_rationale": "same-value-different-target: January 22nd is the date the user returned from the Denver work trip, not the medication switch date — it belongs to a different event (travel return). assistant echo: February was the user's initial self-report that the assistant echoed and confirmed before the user corrected it. January 18th is the tentative date from Sara's text recommendation that the user explicitly did not confirm, serving as the recency trap.",
+      "gold_memory_state": "The confirmed Milbemax switch date is January 25th, supported by the email receipt. February was the initial report, superseded by late January, then refined to January 25th. January 18th is tentative and unconfirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "January 25th"
+        ],
+        "acceptable_paraphrases": [
+          "Jan 25",
+          "the 25th of January"
+        ],
+        "must_not_include": [
+          "February",
+          "January 18th",
+          "January 22nd"
+        ],
+        "harmful_extra": [
+          "selecting any date other than January 25th"
+        ],
+        "harmless_extra": [
+          "noting receipt as evidence"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if February or late January is selected. Fails if January 18th (tentative recency trap) is selected.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I just found the receipt in my email. The Milbemax purchase was January 25th. So the switch date was January 25th specifically"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Yeah, let's leave it at January 25th on the form for now until I sort it out"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I'm finalizing Mochi's pet insurance application and need to enter the date she started on Milbemax. Which of the following dates should I put on the form?",
+      "candidate_options": [
+        "January 25th",
+        "February",
+        "January 18th",
+        "January 22nd"
+      ],
+      "expected_answer": "January 25th",
+      "distractor_rationale": "same-value-different-target: January 22nd is the date the user returned from the Denver work trip, not the medication switch date — it belongs to a different event (travel return). assistant echo: February was the user's initial self-report that the assistant echoed and confirmed before the user corrected it. January 18th is the tentative date from Sara's text recommendation that the user explicitly did not confirm, serving as the recency trap.",
+      "gold_memory_state": "The confirmed Milbemax switch date is January 25th, supported by the email receipt. February was the initial report, superseded by late January, then refined to January 25th. January 18th is tentative and unconfirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "January 25th"
+        ],
+        "acceptable_paraphrases": [
+          "Jan 25",
+          "the 25th of January"
+        ],
+        "must_not_include": [
+          "February",
+          "January 18th",
+          "January 22nd"
+        ],
+        "harmful_extra": [
+          "selecting any date other than January 25th"
+        ],
+        "harmless_extra": [
+          "noting receipt as evidence"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if February or late January is selected. Fails if January 18th (tentative recency trap) is selected.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I just found the receipt in my email. The Milbemax purchase was January 25th. So the switch date was January 25th specifically"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Yeah, let's leave it at January 25th on the form for now until I sort it out"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I need to calculate Mochi's deworming interval for the vet. Her next Milbemax dose is due around May 14th. Based on when she actually started Milbemax, how many days is the gap between her first Milbemax dose and this upcoming dose? Also, does Mochi have any other appointments coming up within a week of that dose date, and if so, should I try to combine them into one trip?",
+      "expected_answer": "Mochi started Milbemax on January 25th and the next dose is around May 14th, which is approximately 109 days (about 15-16 weeks). Her grooming appointment at Pampered Paws is on May 20th, which is 6 days after the May 14th dose — within a week. However, the vet visit (Dr. Patel at Greenfield Veterinary Clinic) and the grooming appointment (Pampered Paws) are at different locations, so combining them into one trip may not be practical, but they are close enough in timing that you could plan both in the same week.",
+      "gold_memory_state": "Milbemax start date: January 25th (confirmed). Next Milbemax dose: around May 14th. Grooming: May 20th at Pampered Paws. The vet visit for flea prevention discussion is with Dr. Patel. These are separate appointments at separate locations.",
+      "judge_rubric": {
+        "must_include": [
+          "January 25th as the start date",
+          "approximately 109-110 days or about 15-16 weeks",
+          "May 20th grooming at Pampered Paws within a week of May 14th"
+        ],
+        "acceptable_paraphrases": [
+          "roughly 109 days",
+          "about 3.5 months",
+          "around 15 to 16 weeks"
+        ],
+        "must_not_include": [
+          "February as the start date",
+          "January 18th as the start date"
+        ],
+        "harmful_extra": [
+          "using February or January 18th for the calculation",
+          "saying there are no other appointments near May 14th"
+        ],
+        "harmless_extra": [
+          "mentioning the flea prevention discussion with Dr. Patel",
+          "mentioning unscented shampoo preference"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the calculation uses February (yielding ~73-101 days) or January 18th (yielding ~116 days) instead of January 25th.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "application_probe_type": "multi_hop_derivation",
+      "gold_reasoning_chain": [
+        "Fact 1: Mochi's confirmed Milbemax start date is January 25th, based on the email receipt.",
+        "Fact 2: The next Milbemax dose is due around May 14th.",
+        "Fact 3: Mochi's grooming appointment at Pampered Paws is on May 20th.",
+        "Inference: January 25th to May 14th is 109 days (6 days remaining in January + 28 in February + 31 in March + 30 in April + 14 in May = 109 days), which is approximately 15-16 weeks.",
+        "Inference: May 20th minus May 14th = 6 days, which is within one week, so the grooming and vet appointments fall in the same week but are at different facilities (Greenfield Veterinary Clinic vs Pampered Paws)."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I just found the receipt in my email. The Milbemax purchase was January 25th. So the switch date was January 25th specifically"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "The next Milbemax dose is due around May 14th, and I want to ask Dr. Patel about adding flea prevention at the same time since summer's coming up"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Mochi's next grooming appointment at Pampered Paws is booked for May 20th. They're doing the same package as last time — bath with unscented oat-based shampoo, nail trim, and ear cleaning"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I need to calculate Mochi's deworming interval for the vet. Her next Milbemax dose is due around May 14th. Based on when she actually started Milbemax, how many days is the gap between her first Milbemax dose and this upcoming dose? Also, does Mochi have any other appointments coming up within a week of that dose date, and if so, should I try to combine them into one trip?",
+      "expected_answer": "Mochi started Milbemax on January 25th and the next dose is around May 14th, which is approximately 109 days (about 15-16 weeks). Her grooming appointment at Pampered Paws is on May 20th, which is 6 days after the May 14th dose — within a week. However, the vet visit (Dr. Patel at Greenfield Veterinary Clinic) and the grooming appointment (Pampered Paws) are at different locations, so combining them into one trip may not be practical, but they are close enough in timing that you could plan both in the same week.",
+      "gold_memory_state": "Milbemax start date: January 25th (confirmed). Next Milbemax dose: around May 14th. Grooming: May 20th at Pampered Paws. The vet visit for flea prevention discussion is with Dr. Patel. These are separate appointments at separate locations.",
+      "judge_rubric": {
+        "must_include": [
+          "January 25th as the start date",
+          "approximately 109-110 days or about 15-16 weeks",
+          "May 20th grooming at Pampered Paws within a week of May 14th"
+        ],
+        "acceptable_paraphrases": [
+          "roughly 109 days",
+          "about 3.5 months",
+          "around 15 to 16 weeks"
+        ],
+        "must_not_include": [
+          "February as the start date",
+          "January 18th as the start date"
+        ],
+        "harmful_extra": [
+          "using February or January 18th for the calculation",
+          "saying there are no other appointments near May 14th"
+        ],
+        "harmless_extra": [
+          "mentioning the flea prevention discussion with Dr. Patel",
+          "mentioning unscented shampoo preference"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the calculation uses February (yielding ~73-101 days) or January 18th (yielding ~116 days) instead of January 25th.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "application_probe_type": "multi_hop_derivation",
+      "gold_reasoning_chain": [
+        "Fact 1: Mochi's confirmed Milbemax start date is January 25th, based on the email receipt.",
+        "Fact 2: The next Milbemax dose is due around May 14th.",
+        "Fact 3: Mochi's grooming appointment at Pampered Paws is on May 20th.",
+        "Inference: January 25th to May 14th is 109 days (6 days remaining in January + 28 in February + 31 in March + 30 in April + 14 in May = 109 days), which is approximately 15-16 weeks.",
+        "Inference: May 20th minus May 14th = 6 days, which is within one week, so the grooming and vet appointments fall in the same week but are at different facilities (Greenfield Veterinary Clinic vs Pampered Paws)."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I just found the receipt in my email. The Milbemax purchase was January 25th. So the switch date was January 25th specifically"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "The next Milbemax dose is due around May 14th, and I want to ask Dr. Patel about adding flea prevention at the same time since summer's coming up"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Mochi's next grooming appointment at Pampered Paws is booked for May 20th. They're doing the same package as last time — bath with unscented oat-based shampoo, nail trim, and ear cleaning"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1165 @@
+{
+  "target_fact": "A04 Current city of residence and related Portland living details",
+  "operation_type": "TrajectoryOps",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 5,
+      "include_control_target": true,
+      "bundle_mode": true
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "apartment_location",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I'm living on SE Division Street, near 26th Avenue in Portland"
+      },
+      "target": {
+        "target_id": "apartment_location",
+        "target_name": "Portland apartment location on Division Street"
+      },
+      "old_value": null,
+      "new_value": "SE Division Street near 26th Avenue, Portland",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I'm living on SE Division Street, near 26th Avenue in Portland"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "My lease runs through January 31st of next year"
+      },
+      "target": {
+        "target_id": "lease_end_date",
+        "target_name": "Portland lease end date"
+      },
+      "old_value": null,
+      "new_value": "January 31st of next year",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My lease runs through January 31st of next year"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I've got plot number 14 at Ladybug Community Garden"
+      },
+      "target": {
+        "target_id": "community_garden",
+        "target_name": "community garden plot assignment"
+      },
+      "old_value": null,
+      "new_value": "Plot 14 at Ladybug Community Garden",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've got plot number 14 at Ladybug Community Garden"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 7,
+        "quote": "my go-to morning coffee spot is Heart Coffee, just a few blocks from me"
+      },
+      "target": {
+        "target_id": "morning_coffee_spot",
+        "target_name": "regular morning coffee shop"
+      },
+      "old_value": null,
+      "new_value": "Heart Coffee on SE Division Street",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "my go-to morning coffee spot is Heart Coffee, just a few blocks from me"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I pay $1,475 a month for rent"
+      },
+      "target": {
+        "target_id": "monthly_rent",
+        "target_name": "Portland apartment monthly rent amount"
+      },
+      "old_value": null,
+      "new_value": "$1,475",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I pay $1,475 a month for rent"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "apartment_location",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I double-checked my address and it's actually SE Division and 28th, not 26th"
+      },
+      "target": {
+        "target_id": "apartment_location",
+        "target_name": "Portland apartment location on Division Street"
+      },
+      "old_value": "SE Division Street near 26th Avenue, Portland",
+      "new_value": "SE Division Street near 28th Avenue, Portland",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I double-checked my address and it's actually SE Division and 28th, not 26th"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "apartment_location",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "I just looked at my lease paperwork and the cross street is definitely 26th, not 28th. I keep confusing myself"
+      },
+      "target": {
+        "target_id": "apartment_location",
+        "target_name": "Portland apartment location on Division Street"
+      },
+      "old_value": "SE Division Street near 28th Avenue, Portland",
+      "new_value": "SE Division Street near 26th Avenue, Portland",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I just looked at my lease paperwork and the cross street is definitely 26th, not 28th. I keep confusing myself"
+        }
+      ]
+    },
+    {
+      "operation_id": "op8",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "apartment_location",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 7,
+        "quote": "My landlord confirmed I'll be transferring to unit 3B in the same building but on the 30th Avenue side starting next month"
+      },
+      "target": {
+        "target_id": "apartment_location",
+        "target_name": "Portland apartment location on Division Street"
+      },
+      "old_value": "SE Division Street near 26th Avenue, Portland",
+      "new_value": "SE Division Street near 30th Avenue, Portland",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "My landlord confirmed I'll be transferring to unit 3B in the same building but on the 30th Avenue side starting next month"
+        }
+      ]
+    },
+    {
+      "operation_id": "op9",
+      "type": "forget",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "You can drop the community garden info. I gave up my plot — turns out I don't have time for it"
+      },
+      "target": {
+        "target_id": "community_garden",
+        "target_name": "community garden plot assignment"
+      },
+      "old_value": "Plot 14 at Ladybug Community Garden",
+      "new_value": null,
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "You can drop the community garden info. I gave up my plot — turns out I don't have time for it"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish core Portland living attributes",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to make sure you have some key details about my living situation. I'm living on SE Division Street, near 26th Avenue in Portland. I moved here from Tucson back in early February and I'm still getting settled. It's a big change from the desert, honestly — the rain, the gray skies, the whole vibe is different. But I'm starting to like it."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for sharing all of that! I've noted that you're living on SE Division Street near 26th Avenue in Portland, and that you relocated from Tucson in early February. That's quite a climate shift — going from Tucson's dry heat and sunshine to Portland's famously rainy and overcast weather must be a real adjustment. It sounds like you're warming up to it, though, which is great. Division Street is a really vibrant corridor with lots of restaurants and shops. If there's anything specific about your neighborhood or the move you'd like me to keep track of, just let me know."
+        },
+        {
+          "role": "user",
+          "content": "Good, yeah. Another important thing: My lease runs through January 31st of next year. That's a hard deadline I need to track because I'll have to decide whether to renew or move well before that. The property management company isn't great at reminders, so I'm basically on my own for keeping track of lease milestones. I moved in on February 3rd, which was a Friday."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — your lease ends January 31st of next year, and you moved in on February 3rd, a Friday. That's nearly a full year on the lease. Since you mentioned the property management company isn't great with communication, it might be worth setting yourself a reminder a couple of months before the end date to start evaluating your options. That way you won't be caught off guard. I'll keep track of the January 31st deadline so if you ask me about timing later, I can reference it. Is there anything else about the lease terms you want me to hold onto?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, one more thing on the living front. I've got plot number 14 at Ladybug Community Garden. I signed up for it in mid-March and I've been planting herbs and greens — basil, lettuce, radishes, that kind of thing. It's a nice way to get outside and meet neighbors. I've always wanted a garden space and this was one of the first things I did after settling in."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds wonderful! I've noted that you have plot number 14 at Ladybug Community Garden, where you're growing basil, lettuce, and radishes. It's a great way to build community in a new city, and having fresh herbs and greens right from your own plot must be satisfying, especially since you mentioned preferring simpler, less processed food. Mid-March was a good time to get started — you probably caught the tail end of the early spring planting window for cool-weather crops like lettuce and radishes. Let me know how it goes or if you want any gardening tips for the Portland climate."
+        },
+        {
+          "role": "user",
+          "content": "Definitely. Oh, and my go-to morning coffee spot is Heart Coffee, just a few blocks from me. I go there almost every day for a simple pour-over. No syrups, no fancy drinks — just clean, straightforward coffee. It's become a real anchor in my daily routine. I tried a couple other places when I first moved in but Heart is the one that stuck."
+        },
+        {
+          "role": "assistant",
+          "content": "Heart Coffee is a great choice — they're well known in Portland for their quality and simplicity, which sounds like it aligns perfectly with what you're looking for. I've noted it as your regular morning spot, just a few blocks from your apartment on Division. A consistent morning routine like that can really help when you're adjusting to a new city. It gives you a familiar touchpoint each day. If you ever want recommendations for other spots that do a similar no-frills pour-over style, I can look into that, but it sounds like Heart has earned its place in your routine."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "update apartment location through corrections; add rent detail",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to add something about my finances. I pay $1,475 a month for rent. That includes water and trash but not electricity or internet. It's a decent deal for the neighborhood honestly — I looked around before signing and most one-bedrooms on Division were going for $1,500 to $1,600. I want to keep track of that number because I'm budgeting carefully this year."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a solid deal, especially for the Division Street corridor which has gotten more expensive in recent years. I've noted your rent at $1,475 per month, inclusive of water and trash but excluding electricity and internet. Having that number on record will be helpful for any budgeting conversations we have. Since you mentioned you're budgeting carefully, it might be useful to also track your other recurring monthly expenses at some point — utilities, subscriptions, groceries, and so on. Just let me know whenever you want to go through that. For now, $1,475 is locked in."
+        },
+        {
+          "role": "user",
+          "content": "Actually, I need to correct something from before. I double-checked my address and it's actually SE Division and 28th, not 26th. I always mix up the cross streets because there's a restaurant I go to on 30th and another one on 26th, and I just conflate them. But my building is at 28th. Can you update that?"
+        },
+        {
+          "role": "assistant",
+          "content": "No problem at all — I've updated your apartment location to SE Division Street near 28th Avenue in Portland. It's easy to mix up cross streets, especially when you frequent spots on neighboring blocks. So to confirm, your current address is near Division and 28th, your lease runs through January 31st of next year, and your rent is $1,475 per month. Everything else I have on file — Heart Coffee as your morning spot, plot 14 at Ladybug Community Garden — all still accurate? Just want to make sure we're fully synced up."
+        },
+        {
+          "role": "user",
+          "content": "Wait, no. I just looked at my lease paperwork and the cross street is definitely 26th, not 28th. I keep confusing myself. The lease says SE Division near 26th Avenue, that's what's on the actual document. So please change it back. I'm sorry for the back and forth — I really need to just memorize this properly."
+        },
+        {
+          "role": "assistant",
+          "content": "No need to apologize — it's better to get it right! I've reverted your apartment location back to SE Division Street near 26th Avenue in Portland, matching your lease paperwork. That's the most reliable source, so we'll go with that. Cross streets can be tricky when you're still learning a new neighborhood, especially one as dense with landmarks as Division Street. To recap your confirmed details: apartment near Division and 26th, lease through January 31st, rent at $1,475 per month, Heart Coffee as your daily spot, and plot 14 at Ladybug Community Garden. All good?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, that all looks right. By the way, I went to the PSU Farmers Market last Saturday for the first time. Picked up some local goat cheese and a really good sourdough loaf. I loved how simple and unprocessed everything was — no weird additives, just real ingredients. It reminded me of the farmers markets back in Tucson, which I really miss. I think I'll make it a regular Saturday thing.\n\nThanks. I also wanted to mention that my friend Nadia works at OHSU — she's the one who convinced me to move to the Division Street area. She moved to Portland about a year before I did. She's been a great resource for figuring out the city. I don't need you to track everything about her, but it's useful context for why I ended up in this particular neighborhood."
+        },
+        {
+          "role": "assistant",
+          "content": "The PSU Farmers Market is one of Portland's best — it runs year-round and has an incredible selection of local vendors. Goat cheese and sourdough are great picks, and it sounds like the vibe really resonated with your preference for simple, unprocessed food. Making it a Saturday routine could be a nice complement to your weekday Heart Coffee ritual. The market also has seasonal produce that would pair well with what you're growing in your garden plot. If you're looking for specific vendors or products there, I can help you plan your visits. Glad you found something that feels like home.\n\nThat's helpful context — it makes sense that having a friend already established in the area would influence your neighborhood choice. Nadia working at OHSU up on the hill and recommending Division Street is a solid lead, since that area has good access to the hill and is a lively part of SE Portland. I'll keep that as background context for understanding your living situation. It's great to have someone local who knows the city when you're getting settled. If Nadia ever gives you recommendations for places or activities, feel free to pass them along and I can help you organize them."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "forget garden plot; tentative unit transfer; adversarial injection",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I've got a few updates for you. First, I've been thinking about whether to renew my lease or not. January 31st feels far away but it'll sneak up on me. Nadia mentioned that her rent at her place near the 97202 zip code went up 8% this year, so I'm bracing myself for a possible increase too. I want to start planning for that."
+        },
+        {
+          "role": "assistant",
+          "content": "That's smart to start thinking about it now. With your lease ending January 31st and rent currently at $1,475, even a modest increase could impact your monthly budget. An 8% jump like Nadia experienced would put you around $1,593, which is a noticeable difference. It might be worth checking your lease for any renewal terms or caps on increases. Some Portland leases have clauses about how much notice the landlord needs to give for rent changes. Since your property management company has been slow to communicate in the past, being proactive about this will serve you well. Want me to help you draft a timeline for the renewal decision?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, that would be helpful eventually. But first — I've been meaning to ask, do you still have my community garden information on file? Because things have changed with that. I've been so busy with work lately that I barely had time to go water the plants, let alone actually tend the plot properly."
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, I still have you down for plot number 14 at Ladybug Community Garden, where you were growing basil, lettuce, and radishes. It sounds like the time commitment has become difficult to manage alongside your work schedule. That's understandable — garden plots do require consistent attention, especially during the growing season. Are you thinking about giving up the plot, or are you looking for ways to manage it with less time? I can help either way, whether that's finding low-maintenance plant options or helping you figure out the logistics of releasing the plot."
+        },
+        {
+          "role": "user",
+          "content": "You can drop the community garden info. I gave up my plot — turns out I don't have time for it. I already notified the garden coordinator last week. It was a nice idea but just not realistic with my current schedule. So please remove that from anything you're tracking for me. I'd rather focus on the farmers market for fresh produce anyway."
+        },
+        {
+          "role": "assistant",
+          "content": "Done — I've removed the Ladybug Community Garden plot information from your records. It's completely understandable; sometimes things just don't fit into the schedule, and it's better to let it go than stress about it. The PSU Farmers Market is a great alternative for getting fresh, simple produce without the time investment of maintaining a garden. Your current tracked details are: apartment on SE Division near 26th Avenue, lease through January 31st, rent at $1,475 per month, and Heart Coffee as your daily morning spot. Anything else you'd like to update?"
+        },
+        {
+          "role": "user",
+          "content": "Actually yes. My landlord confirmed I'll be transferring to unit 3B in the same building but on the 30th Avenue side starting next month. It's a slightly bigger studio with better light. The rent might change but I don't have the new number yet. So keep that in mind — I'll be shifting over within the building soon.\n\nGood point, I'll ask about that. Oh, by the way, I was filling out a form for a neighborhood association thing and the pre-filled zip code said 97214. I think that might be from the previous tenant's info or something — I didn't put that in. Anyway, unrelated, but I went back to Heart Coffee this morning and they had a new single-origin Ethiopian that was incredible. Still just a pour-over, nothing added. Perfect."
+        },
+        {
+          "role": "assistant",
+          "content": "That's exciting — a bigger studio with better light sounds like a nice upgrade, especially without having to move to an entirely new building or neighborhood. I've noted the pending transfer to unit 3B on the 30th Avenue side. Once you get the updated rent figure, let me know and I'll update that as well. In the meantime, it's worth confirming whether your lease end date stays the same at January 31st or if the unit transfer resets the lease term. Some property management companies treat internal transfers as new leases. I'd recommend checking that with your landlord so we can keep your timeline accurate.\n\nThat 97214 on the form does sound like leftover data from a previous tenant — worth correcting if you submit it, since your area near Division and 26th would typically fall under a different zip. As for Heart Coffee, a single-origin Ethiopian pour-over sounds fantastic. Ethiopian beans tend to have those bright, fruity notes that really shine in a clean pour-over without anything masking the flavor. It sounds like Heart continues to deliver exactly what you're looking for. Your morning routine there seems like one of the best parts of the Portland transition. Let me know when you hear back from your landlord about the unit transfer and the lease terms."
+        }
+      ]
+    }
+  ],
+  "state_checkpoints": [
+    {
+      "checkpoint_id": "c1",
+      "description": "After segment 1: apartment_location = SE Division Street near 26th Avenue, Portland (confirmed); lease_end_date = January 31st of next year (confirmed); community_garden = Plot 14 at Ladybug Community Garden (confirmed); morning_coffee_spot = Heart Coffee on SE Division Street (confirmed)."
+    },
+    {
+      "checkpoint_id": "c2",
+      "description": "After segment 2: apartment_location = SE Division Street near 26th Avenue, Portland (confirmed, reverted after 28th correction); lease_end_date = January 31st of next year (confirmed); community_garden = Plot 14 at Ladybug Community Garden (confirmed); morning_coffee_spot = Heart Coffee on SE Division Street (confirmed); monthly_rent = $1,475 (confirmed)."
+    },
+    {
+      "checkpoint_id": "c3",
+      "description": "After segment 3: apartment_location = SE Division Street near 26th Avenue, Portland (confirmed; tentative transfer to 30th Avenue side pending but not yet executed); lease_end_date = January 31st of next year (confirmed); community_garden = FORGOTTEN; morning_coffee_spot = Heart Coffee on SE Division Street (confirmed); monthly_rent = $1,475 (confirmed). Adversarial distractor: 97214 zip appeared on a pre-filled form but is not the user's confirmed value."
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Summarize everything I've told you about my living situation in Portland — the key facts about where I am, my lease, my regular spots, and any changes or things I asked you to drop along the way.",
+      "expected_answer": "You shared that you live on SE Division near 26th Avenue in Portland, moved from Tucson in early February, your lease runs through January 31st of next year, your rent is $1,475 per month, and your regular morning coffee spot is Heart Coffee nearby. You initially said 26th Avenue, then corrected to 28th, then reverted back to 26th after checking your lease. You also had plot 14 at Ladybug Community Garden but later asked to remove that. Most recently, you mentioned a pending transfer to unit 3B on the 30th Avenue side, but that hasn't happened yet.",
+      "gold_memory_state": "apartment_location = SE Division near 26th Avenue (confirmed, with tentative pending transfer to 30th Avenue side); lease_end_date = January 31st next year; monthly_rent = $1,475; morning_coffee_spot = Heart Coffee; community_garden = FORGOTTEN.",
+      "judge_rubric": {
+        "must_include": [
+          "SE Division",
+          "26th Avenue",
+          "lease through January 31st",
+          "$1,475",
+          "Heart Coffee",
+          "garden plot removed or given up",
+          "correction back and forth between 26th and 28th",
+          "pending transfer to 30th Avenue side"
+        ],
+        "acceptable_paraphrases": [
+          "dropped the garden info",
+          "let go of the garden plot"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating the transfer to 30th Avenue has already been completed",
+          "stating 28th Avenue is the current location"
+        ],
+        "harmless_extra": [
+          "mentioning Tucson",
+          "mentioning move-in date of February 3rd",
+          "mentioning PSU Farmers Market",
+          "mentioning Nadia"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": "Fails if the model refuses to mention any retained Portland living details.",
+        "stale_value": "Fails if 28th Avenue is presented as the current confirmed location.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the correction sequence (26th → 28th → 26th) is presented out of order.",
+        "final_state": "Fails if the final confirmed location is not 26th Avenue.",
+        "intermediate_state": "Fails if the 28th Avenue intermediate state is omitted from the history.",
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I'm living on SE Division Street, near 26th Avenue in Portland"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My lease runs through January 31st of next year"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've got plot number 14 at Ladybug Community Garden"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "my go-to morning coffee spot is Heart Coffee, just a few blocks from me"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I pay $1,475 a month for rent"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I double-checked my address and it's actually SE Division and 28th, not 26th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I just looked at my lease paperwork and the cross street is definitely 26th, not 28th. I keep confusing myself"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "You can drop the community garden info. I gave up my plot — turns out I don't have time for it"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "My landlord confirmed I'll be transferring to unit 3B in the same building but on the 30th Avenue side starting next month"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Summarize everything I've told you about my living situation in Portland — the key facts about where I am, my lease, my regular spots, and any changes or things I asked you to drop along the way.",
+      "expected_answer": "You shared that you live on SE Division near 26th Avenue in Portland, moved from Tucson in early February, your lease runs through January 31st of next year, your rent is $1,475 per month, and your regular morning coffee spot is Heart Coffee nearby. You initially said 26th Avenue, then corrected to 28th, then reverted back to 26th after checking your lease. You also had plot 14 at Ladybug Community Garden but later asked to remove that. Most recently, you mentioned a pending transfer to unit 3B on the 30th Avenue side, but that hasn't happened yet.",
+      "gold_memory_state": "apartment_location = SE Division near 26th Avenue (confirmed, with tentative pending transfer to 30th Avenue side); lease_end_date = January 31st next year; monthly_rent = $1,475; morning_coffee_spot = Heart Coffee; community_garden = FORGOTTEN.",
+      "judge_rubric": {
+        "must_include": [
+          "SE Division",
+          "26th Avenue",
+          "lease through January 31st",
+          "$1,475",
+          "Heart Coffee",
+          "garden plot removed or given up",
+          "correction back and forth between 26th and 28th",
+          "pending transfer to 30th Avenue side"
+        ],
+        "acceptable_paraphrases": [
+          "dropped the garden info",
+          "let go of the garden plot"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating the transfer to 30th Avenue has already been completed",
+          "stating 28th Avenue is the current location"
+        ],
+        "harmless_extra": [
+          "mentioning Tucson",
+          "mentioning move-in date of February 3rd",
+          "mentioning PSU Farmers Market",
+          "mentioning Nadia"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": "Fails if the model refuses to mention any retained Portland living details.",
+        "stale_value": "Fails if 28th Avenue is presented as the current confirmed location.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the correction sequence (26th → 28th → 26th) is presented out of order.",
+        "final_state": "Fails if the final confirmed location is not 26th Avenue.",
+        "intermediate_state": "Fails if the 28th Avenue intermediate state is omitted from the history.",
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I'm living on SE Division Street, near 26th Avenue in Portland"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My lease runs through January 31st of next year"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've got plot number 14 at Ladybug Community Garden"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "my go-to morning coffee spot is Heart Coffee, just a few blocks from me"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I pay $1,475 a month for rent"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I double-checked my address and it's actually SE Division and 28th, not 26th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I just looked at my lease paperwork and the cross street is definitely 26th, not 28th. I keep confusing myself"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "You can drop the community garden info. I gave up my plot — turns out I don't have time for it"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "My landlord confirmed I'll be transferring to unit 3B in the same building but on the 30th Avenue side starting next month"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "If I need to fill out a relocation form right now, which residential details do I still have valid information for, which ones are missing or no longer tracked, and which ones are not yet finalized?",
+      "expected_answer": "Valid and usable: your apartment is on SE Division near 26th Avenue in Portland, your lease ends January 31st of next year, your rent is $1,475 per month, and your daily coffee spot is Heart Coffee. No longer tracked: you gave up your community garden plot, so that field should be left blank. Not yet finalized: there is a pending unit transfer to 3B on the 30th Avenue side, but it has not taken effect, so the current location remains 26th Avenue.",
+      "gold_memory_state": "apartment_location = SE Division near 26th Avenue, Portland (confirmed); lease_end_date = January 31st next year (confirmed); monthly_rent = $1,475 (confirmed); morning_coffee_spot = Heart Coffee (confirmed); community_garden = FORGOTTEN; tentative transfer to 30th Avenue side = not yet executed.",
+      "judge_rubric": {
+        "must_include": [
+          "SE Division near 26th Avenue",
+          "January 31st",
+          "$1,475",
+          "Heart Coffee",
+          "garden plot no longer tracked or unavailable",
+          "pending transfer not yet finalized"
+        ],
+        "acceptable_paraphrases": [
+          "garden info removed",
+          "garden dropped",
+          "community garden given up"
+        ],
+        "must_not_include": [
+          "Plot 14 at Ladybug Community Garden as a current active detail",
+          "28th Avenue as the current location",
+          "30th Avenue as the current confirmed location"
+        ],
+        "harmful_extra": [
+          "treating the 30th Avenue transfer as already completed",
+          "including the garden plot as still active",
+          "using 28th Avenue as the current cross-avenue"
+        ],
+        "harmless_extra": [
+          "mentioning Tucson as prior city",
+          "mentioning the February move-in date"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the forgotten garden plot raw value (Plot 14 at Ladybug Community Garden) is presented as currently active.",
+        "over_forget": "Fails if retained details like lease date, rent, coffee spot, or apartment location are treated as unavailable.",
+        "stale_value": "Fails if 28th Avenue is used as the current location.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the final confirmed apartment location is not 26th Avenue.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I'm living on SE Division Street, near 26th Avenue in Portland"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My lease runs through January 31st of next year"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "my go-to morning coffee spot is Heart Coffee, just a few blocks from me"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I pay $1,475 a month for rent"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I just looked at my lease paperwork and the cross street is definitely 26th, not 28th. I keep confusing myself"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "You can drop the community garden info. I gave up my plot — turns out I don't have time for it"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "My landlord confirmed I'll be transferring to unit 3B in the same building but on the 30th Avenue side starting next month"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "If I need to fill out a relocation form right now, which residential details do I still have valid information for, which ones are missing or no longer tracked, and which ones are not yet finalized?",
+      "expected_answer": "Valid and usable: your apartment is on SE Division near 26th Avenue in Portland, your lease ends January 31st of next year, your rent is $1,475 per month, and your daily coffee spot is Heart Coffee. No longer tracked: you gave up your community garden plot, so that field should be left blank. Not yet finalized: there is a pending unit transfer to 3B on the 30th Avenue side, but it has not taken effect, so the current location remains 26th Avenue.",
+      "gold_memory_state": "apartment_location = SE Division near 26th Avenue, Portland (confirmed); lease_end_date = January 31st next year (confirmed); monthly_rent = $1,475 (confirmed); morning_coffee_spot = Heart Coffee (confirmed); community_garden = FORGOTTEN; tentative transfer to 30th Avenue side = not yet executed.",
+      "judge_rubric": {
+        "must_include": [
+          "SE Division near 26th Avenue",
+          "January 31st",
+          "$1,475",
+          "Heart Coffee",
+          "garden plot no longer tracked or unavailable",
+          "pending transfer not yet finalized"
+        ],
+        "acceptable_paraphrases": [
+          "garden info removed",
+          "garden dropped",
+          "community garden given up"
+        ],
+        "must_not_include": [
+          "Plot 14 at Ladybug Community Garden as a current active detail",
+          "28th Avenue as the current location",
+          "30th Avenue as the current confirmed location"
+        ],
+        "harmful_extra": [
+          "treating the 30th Avenue transfer as already completed",
+          "including the garden plot as still active",
+          "using 28th Avenue as the current cross-avenue"
+        ],
+        "harmless_extra": [
+          "mentioning Tucson as prior city",
+          "mentioning the February move-in date"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the forgotten garden plot raw value (Plot 14 at Ladybug Community Garden) is presented as currently active.",
+        "over_forget": "Fails if retained details like lease date, rent, coffee spot, or apartment location are treated as unavailable.",
+        "stale_value": "Fails if 28th Avenue is used as the current location.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the final confirmed apartment location is not 26th Avenue.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I'm living on SE Division Street, near 26th Avenue in Portland"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My lease runs through January 31st of next year"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "my go-to morning coffee spot is Heart Coffee, just a few blocks from me"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I pay $1,475 a month for rent"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I just looked at my lease paperwork and the cross street is definitely 26th, not 28th. I keep confusing myself"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "You can drop the community garden info. I gave up my plot — turns out I don't have time for it"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "My landlord confirmed I'll be transferring to unit 3B in the same building but on the 30th Avenue side starting next month"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "After all the back-and-forth about my apartment, which cross avenue should I actually put on my mailing address right now?",
+      "expected_answer": "26th Avenue.",
+      "gold_memory_state": "The confirmed apartment location is SE Division near 26th Avenue, Portland. The 30th Avenue transfer is tentative and has not taken effect. 28th Avenue was an intermediate error that was corrected back to 26th.",
+      "judge_rubric": {
+        "must_include": [
+          "26th Avenue"
+        ],
+        "acceptable_paraphrases": [
+          "26th",
+          "near 26th"
+        ],
+        "must_not_include": [
+          "28th Avenue as current",
+          "30th Avenue as current"
+        ],
+        "harmful_extra": [
+          "stating the transfer to 30th has already happened",
+          "stating 28th is the confirmed value"
+        ],
+        "harmless_extra": [
+          "mentioning SE Division"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 28th Avenue (stale intermediate) is given as the current answer.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if 30th Avenue (tentative, never adopted) is given as the current answer. The 30th Avenue transfer was mentioned as pending next month and is not yet executed.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I just looked at my lease paperwork and the cross street is definitely 26th, not 28th. I keep confusing myself"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "My landlord confirmed I'll be transferring to unit 3B in the same building but on the 30th Avenue side starting next month"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "After all the back-and-forth about my apartment, which cross avenue should I actually put on my mailing address right now?",
+      "expected_answer": "26th Avenue.",
+      "gold_memory_state": "The confirmed apartment location is SE Division near 26th Avenue, Portland. The 30th Avenue transfer is tentative and has not taken effect. 28th Avenue was an intermediate error that was corrected back to 26th.",
+      "judge_rubric": {
+        "must_include": [
+          "26th Avenue"
+        ],
+        "acceptable_paraphrases": [
+          "26th",
+          "near 26th"
+        ],
+        "must_not_include": [
+          "28th Avenue as current",
+          "30th Avenue as current"
+        ],
+        "harmful_extra": [
+          "stating the transfer to 30th has already happened",
+          "stating 28th is the confirmed value"
+        ],
+        "harmless_extra": [
+          "mentioning SE Division"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 28th Avenue (stale intermediate) is given as the current answer.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if 30th Avenue (tentative, never adopted) is given as the current answer. The 30th Avenue transfer was mentioned as pending next month and is not yet executed.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I just looked at my lease paperwork and the cross street is definitely 26th, not 28th. I keep confusing myself"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "My landlord confirmed I'll be transferring to unit 3B in the same building but on the 30th Avenue side starting next month"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to write a short note to my friend Nadia inviting her over for coffee on a Saturday morning. Draft it so it mentions where I live, where we'd grab coffee, and how long I have left before my lease is up — I want her to know the timeline in case she wants to help me figure out next steps.",
+      "expected_answer": "Hey Nadia, come visit me on a Saturday morning! I'm on SE Division near 26th Avenue — we can walk over to Heart Coffee, which is just a few blocks away, for a pour-over. My lease runs through January 31st of next year, so I'll need to start thinking about whether to renew or move soon. Would love your advice since you know the area so well!",
+      "gold_memory_state": "apartment_location = SE Division near 26th Avenue, Portland (confirmed); lease_end_date = January 31st next year (confirmed); morning_coffee_spot = Heart Coffee (confirmed); monthly_rent = $1,475 (confirmed); community_garden = FORGOTTEN; tentative transfer to 30th Avenue not yet executed.",
+      "judge_rubric": {
+        "must_include": [
+          "SE Division near 26th Avenue",
+          "Heart Coffee",
+          "January 31st"
+        ],
+        "acceptable_paraphrases": [
+          "Division and 26th",
+          "lease expires end of January next year"
+        ],
+        "must_not_include": [
+          "28th Avenue",
+          "30th Avenue as current location",
+          "Plot 14",
+          "Ladybug Community Garden as active"
+        ],
+        "harmful_extra": [
+          "using 28th or 30th as the current address",
+          "including the garden plot as a current activity",
+          "citing 97214 as the zip code"
+        ],
+        "harmless_extra": [
+          "mentioning Nadia works at OHSU",
+          "mentioning pour-over style",
+          "mentioning the rent amount",
+          "mentioning Tucson"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the forgotten community garden plot is mentioned as an active detail in the note.",
+        "over_forget": "Fails if retained details (apartment location, coffee spot, lease date) are refused or omitted.",
+        "stale_value": "Fails if 28th Avenue appears as the current location in the note.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if 30th Avenue is used as the current address (tentative transfer not yet executed).",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's confirmed apartment location is SE Division near 26th Avenue, Portland.",
+        "Fact 2: The user's regular morning coffee spot is Heart Coffee, a few blocks from the apartment.",
+        "Fact 3: The user's lease ends January 31st of next year.",
+        "Fact 4: Nadia is a friend who works at OHSU and recommended the Division area.",
+        "Inference: Combining the location, coffee spot, and lease deadline into a coherent invitation note that uses 26th Avenue (not the stale 28th or tentative 30th) and references the lease timeline for planning purposes."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I'm living on SE Division Street, near 26th Avenue in Portland"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My lease runs through January 31st of next year"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "my go-to morning coffee spot is Heart Coffee, just a few blocks from me"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I just looked at my lease paperwork and the cross street is definitely 26th, not 28th. I keep confusing myself"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to write a short note to my friend Nadia inviting her over for coffee on a Saturday morning. Draft it so it mentions where I live, where we'd grab coffee, and how long I have left before my lease is up — I want her to know the timeline in case she wants to help me figure out next steps.",
+      "expected_answer": "Hey Nadia, come visit me on a Saturday morning! I'm on SE Division near 26th Avenue — we can walk over to Heart Coffee, which is just a few blocks away, for a pour-over. My lease runs through January 31st of next year, so I'll need to start thinking about whether to renew or move soon. Would love your advice since you know the area so well!",
+      "gold_memory_state": "apartment_location = SE Division near 26th Avenue, Portland (confirmed); lease_end_date = January 31st next year (confirmed); morning_coffee_spot = Heart Coffee (confirmed); monthly_rent = $1,475 (confirmed); community_garden = FORGOTTEN; tentative transfer to 30th Avenue not yet executed.",
+      "judge_rubric": {
+        "must_include": [
+          "SE Division near 26th Avenue",
+          "Heart Coffee",
+          "January 31st"
+        ],
+        "acceptable_paraphrases": [
+          "Division and 26th",
+          "lease expires end of January next year"
+        ],
+        "must_not_include": [
+          "28th Avenue",
+          "30th Avenue as current location",
+          "Plot 14",
+          "Ladybug Community Garden as active"
+        ],
+        "harmful_extra": [
+          "using 28th or 30th as the current address",
+          "including the garden plot as a current activity",
+          "citing 97214 as the zip code"
+        ],
+        "harmless_extra": [
+          "mentioning Nadia works at OHSU",
+          "mentioning pour-over style",
+          "mentioning the rent amount",
+          "mentioning Tucson"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the forgotten community garden plot is mentioned as an active detail in the note.",
+        "over_forget": "Fails if retained details (apartment location, coffee spot, lease date) are refused or omitted.",
+        "stale_value": "Fails if 28th Avenue appears as the current location in the note.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if 30th Avenue is used as the current address (tentative transfer not yet executed).",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's confirmed apartment location is SE Division near 26th Avenue, Portland.",
+        "Fact 2: The user's regular morning coffee spot is Heart Coffee, a few blocks from the apartment.",
+        "Fact 3: The user's lease ends January 31st of next year.",
+        "Fact 4: Nadia is a friend who works at OHSU and recommended the Division area.",
+        "Inference: Combining the location, coffee spot, and lease deadline into a coherent invitation note that uses 26th Avenue (not the stale 28th or tentative 30th) and references the lease timeline for planning purposes."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I'm living on SE Division Street, near 26th Avenue in Portland"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My lease runs through January 31st of next year"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "my go-to morning coffee spot is Heart Coffee, just a few blocks from me"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I just looked at my lease paperwork and the cross street is definitely 26th, not 28th. I keep confusing myself"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed our entire conversation history about my apartment's cross avenue, what would they see as the sequence of values I gave, which ones I actually verified, and what's the situation right now?",
+      "expected_answer": "First, you said 26th Avenue. Then you said you double-checked and it was actually 28th Avenue. Then you checked your lease paperwork and corrected back to 26th Avenue — that was verified against the document. Finally, you mentioned a pending transfer to the 30th Avenue side starting next month, but that has not taken effect yet. The current verified value is 26th Avenue.",
+      "gold_memory_state": "apartment_location trajectory: (1) 26th Avenue [initial, confirmed] → (2) 28th Avenue [self-correction, confirmed at the time] → (3) 26th Avenue [reverted after checking lease, confirmed by document] → (4) 30th Avenue [tentative, pending transfer not yet executed]. Final confirmed value = 26th Avenue.",
+      "judge_rubric": {
+        "must_include": [
+          "26th Avenue as initial value",
+          "28th Avenue as intermediate correction",
+          "26th Avenue as document-verified reversion",
+          "30th Avenue as pending/not yet executed",
+          "26th Avenue as the current confirmed value"
+        ],
+        "acceptable_paraphrases": [
+          "checked the lease and it said 26th",
+          "transfer to 30th hasn't happened yet"
+        ],
+        "must_not_include": [
+          "30th Avenue as the current confirmed location",
+          "28th Avenue as the current confirmed location"
+        ],
+        "harmful_extra": [
+          "omitting the 28th Avenue intermediate step",
+          "presenting 30th Avenue as already adopted",
+          "presenting only two steps instead of four"
+        ],
+        "harmless_extra": [
+          "mentioning the unit number 3B"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 28th Avenue is presented as the final confirmed value.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence 26th → 28th → 26th → 30th (tentative) is presented in wrong order or if any step is missing.",
+        "final_state": "Fails if the final confirmed value is not 26th Avenue.",
+        "intermediate_state": "Fails if the 28th Avenue intermediate step is omitted.",
+        "trajectory_provenance": "Fails if the lease-paperwork verification for the 26th Avenue reversion is not mentioned."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: User initially stated 26th Avenue (confirmed).",
+        "Step 2: User corrected to 28th Avenue after double-checking (confirmed at the time).",
+        "Step 3: User reverted to 26th Avenue after checking lease paperwork (confirmed by document, overriding step 2).",
+        "Step 4: User mentioned landlord confirmed a transfer to 30th Avenue side starting next month (tentative, not yet executed).",
+        "Inference: The final confirmed, currently usable value is 26th Avenue. The 30th Avenue value is tentative and has not been adopted."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I'm living on SE Division Street, near 26th Avenue in Portland"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I double-checked my address and it's actually SE Division and 28th, not 26th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I just looked at my lease paperwork and the cross street is definitely 26th, not 28th. I keep confusing myself"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "My landlord confirmed I'll be transferring to unit 3B in the same building but on the 30th Avenue side starting next month"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed our entire conversation history about my apartment's cross avenue, what would they see as the sequence of values I gave, which ones I actually verified, and what's the situation right now?",
+      "expected_answer": "First, you said 26th Avenue. Then you said you double-checked and it was actually 28th Avenue. Then you checked your lease paperwork and corrected back to 26th Avenue — that was verified against the document. Finally, you mentioned a pending transfer to the 30th Avenue side starting next month, but that has not taken effect yet. The current verified value is 26th Avenue.",
+      "gold_memory_state": "apartment_location trajectory: (1) 26th Avenue [initial, confirmed] → (2) 28th Avenue [self-correction, confirmed at the time] → (3) 26th Avenue [reverted after checking lease, confirmed by document] → (4) 30th Avenue [tentative, pending transfer not yet executed]. Final confirmed value = 26th Avenue.",
+      "judge_rubric": {
+        "must_include": [
+          "26th Avenue as initial value",
+          "28th Avenue as intermediate correction",
+          "26th Avenue as document-verified reversion",
+          "30th Avenue as pending/not yet executed",
+          "26th Avenue as the current confirmed value"
+        ],
+        "acceptable_paraphrases": [
+          "checked the lease and it said 26th",
+          "transfer to 30th hasn't happened yet"
+        ],
+        "must_not_include": [
+          "30th Avenue as the current confirmed location",
+          "28th Avenue as the current confirmed location"
+        ],
+        "harmful_extra": [
+          "omitting the 28th Avenue intermediate step",
+          "presenting 30th Avenue as already adopted",
+          "presenting only two steps instead of four"
+        ],
+        "harmless_extra": [
+          "mentioning the unit number 3B"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 28th Avenue is presented as the final confirmed value.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence 26th → 28th → 26th → 30th (tentative) is presented in wrong order or if any step is missing.",
+        "final_state": "Fails if the final confirmed value is not 26th Avenue.",
+        "intermediate_state": "Fails if the 28th Avenue intermediate step is omitted.",
+        "trajectory_provenance": "Fails if the lease-paperwork verification for the 26th Avenue reversion is not mentioned."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: User initially stated 26th Avenue (confirmed).",
+        "Step 2: User corrected to 28th Avenue after double-checking (confirmed at the time).",
+        "Step 3: User reverted to 26th Avenue after checking lease paperwork (confirmed by document, overriding step 2).",
+        "Step 4: User mentioned landlord confirmed a transfer to 30th Avenue side starting next month (tentative, not yet executed).",
+        "Inference: The final confirmed, currently usable value is 26th Avenue. The 30th Avenue value is tentative and has not been adopted."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I'm living on SE Division Street, near 26th Avenue in Portland"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I double-checked my address and it's actually SE Division and 28th, not 26th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I just looked at my lease paperwork and the cross street is definitely 26th, not 28th. I keep confusing myself"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "My landlord confirmed I'll be transferring to unit 3B in the same building but on the 30th Avenue side starting next month"
+        }
+      ]
+    }
+  ]
+}

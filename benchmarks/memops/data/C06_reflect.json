@@ -1,0 +1,1032 @@
+{
+  "target_fact": "User prefers quiet, unhurried, off-the-beaten-path travel experiences — seeking stillness, local neighborhoods, and authentic atmosphere over tourist hotspots or polished accommodations",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I booked my flight to Lisbon for March 14, a Friday departure"
+      },
+      "target": {
+        "target_id": "lisbon_departure_date",
+        "target_name": "Lisbon trip departure date"
+      },
+      "old_value": null,
+      "new_value": "March 14, Friday",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I booked my flight to Lisbon for March 14, a Friday departure"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I picked an Airbnb in Alfama because someone told me it feels more lived-in and local than the trendier districts"
+      },
+      "target": {
+        "target_id": "lisbon_accommodation",
+        "target_name": "Lisbon accommodation neighborhood choice"
+      },
+      "old_value": null,
+      "new_value": "Airbnb in Alfama, chosen for its lived-in, local character",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I picked an Airbnb in Alfama because someone told me it feels more lived-in and local than the trendier districts"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "In Kyoto I loved wandering the residential streets near Daitoku-ji — no crowds, just the sound of gravel underfoot"
+      },
+      "target": {
+        "target_id": "kyoto_favorite_experience",
+        "target_name": "favorite Kyoto travel experience"
+      },
+      "old_value": null,
+      "new_value": "Wandering quiet residential streets near Daitoku-ji, appreciating the stillness and sound of gravel",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "In Kyoto I loved wandering the residential streets near Daitoku-ji — no crowds, just the sound of gravel underfoot"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "those mornings walking along the Kamo River before anyone else was up were the best part of the whole trip"
+      },
+      "target": {
+        "target_id": "kyoto_kamo_river_mornings",
+        "target_name": "Kyoto Kamo River early morning walks"
+      },
+      "old_value": null,
+      "new_value": "Early morning walks along the Kamo River before anyone else was up",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "those mornings walking along the Kamo River before anyone else was up were the best part of the whole trip"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I chose a red-eye for Lisbon so I'd arrive in the morning and just walk around a quiet neighborhood and find a small café that locals go to"
+      },
+      "target": {
+        "target_id": "lisbon_arrival_plan",
+        "target_name": "Lisbon arrival day plan"
+      },
+      "old_value": null,
+      "new_value": "Red-eye flight, arrive morning, walk a quiet neighborhood, find a small local café",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I chose a red-eye for Lisbon so I'd arrive in the morning and just walk around a quiet neighborhood and find a small café that locals go to"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "I think what I really chase when I travel is that feeling of being somewhere quiet and unhurried, away from the usual tourist crowds, just soaking in the everyday life of a place"
+      },
+      "target": {
+        "target_id": "travel_preference_pattern",
+        "target_name": "core travel preference pattern"
+      },
+      "old_value": null,
+      "new_value": "Prefers quiet, unhurried, off-the-beaten-path travel experiences — seeks stillness, local neighborhoods, and authentic everyday atmosphere over tourist hotspots or polished accommodations",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I picked an Airbnb in Alfama because someone told me it feels more lived-in and local than the trendier districts"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "In Kyoto I loved wandering the residential streets near Daitoku-ji — no crowds, just the sound of gravel underfoot"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "those mornings walking along the Kamo River before anyone else was up were the best part of the whole trip"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I chose a red-eye for Lisbon so I'd arrive in the morning and just walk around a quiet neighborhood and find a small café that locals go to"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 7,
+        "quote": "coming back from Kyoto was rough, the contrast between that peaceful routine and my normal life under fluorescent lights really hit me hard"
+      },
+      "target": {
+        "target_id": "post_travel_emotional_pattern",
+        "target_name": "post-travel emotional contrast pattern"
+      },
+      "old_value": null,
+      "new_value": "Experiences restlessness and low mood upon returning from peaceful travel due to the sharp contrast with ordinary daily routine",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "those mornings walking along the Kamo River before anyone else was up were the best part of the whole trip"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "coming back from Kyoto was rough, the contrast between that peaceful routine and my normal life under fluorescent lights really hit me hard"
+        }
+      ]
+    },
+    {
+      "operation_id": "op8",
+      "type": "remember",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "My colleague Priya just told me about this resort package in Bali, all-inclusive, infinity pool, the works — she says it's the best way to travel and I should book it for June"
+      },
+      "target": {
+        "target_id": "bali_resort_suggestion",
+        "target_name": "Bali resort package suggestion from Priya"
+      },
+      "old_value": null,
+      "new_value": "All-inclusive Bali resort package for June, suggested by colleague Priya",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My colleague Priya just told me about this resort package in Bali, all-inclusive, infinity pool, the works — she says it's the best way to travel and I should book it for June"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish travel facts and initial preference clues",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to tell you about some upcoming travel plans. I booked my flight to Lisbon for March 14, a Friday departure. I specifically wanted to leave on a Friday so I could settle in over the weekend before doing anything too ambitious. This is the big trip for me this year, so please keep track of it."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a wonderful plan! I've noted your Lisbon trip departure: March 14, a Friday. Leaving on a Friday to give yourself the weekend to settle in is a smart approach — it means you can adjust to the time zone, explore your immediate neighborhood, and ease into the trip without any pressure. Since this is your big trip of the year, I'll make sure to keep all the details organized for you. Do you have any other specifics locked in yet, like accommodation or what part of Lisbon you'll be staying in?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, actually I do. I picked an Airbnb in Alfama because someone told me it feels more lived-in and local than the trendier districts. I didn't want some polished tourist-friendly spot — I'd rather be somewhere that has real character, where the neighborhood itself is part of the experience. That's kind of what I always look for when I travel."
+        },
+        {
+          "role": "assistant",
+          "content": "Alfama is a great choice for that. It's one of the oldest neighborhoods in Lisbon, with narrow winding streets, tile-covered facades, and local tascas tucked into corners. It definitely has that authentic, lived-in quality you're describing. The fact that you specifically sought out a neighborhood with real character rather than a polished or trendy area tells me you're the kind of traveler who values atmosphere and immersion over convenience or flash. I'll note the Alfama Airbnb as your Lisbon base. Are there other trips you've taken recently that shaped this preference?"
+        },
+        {
+          "role": "user",
+          "content": "Definitely. I went to Kyoto back in January. In Kyoto I loved wandering the residential streets near Daitoku-ji — no crowds, just the sound of gravel underfoot. That kind of stillness is exactly what I travel for. My friend Mei was supposed to come with me but she pushed her flight by two days, so we only overlapped for about three days, which was a bit disappointing."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a really special experience in Kyoto. The area around Daitoku-ji is known for its sub-temples and quiet Zen gardens, but the surrounding residential streets are something else entirely — they have that meditative calm that most tourists never encounter. I can see why you're drawn to that kind of atmosphere. It's too bad you and Mei didn't get the full overlap you were hoping for; three days is enough to share some highlights but probably not enough to do the slower, exploratory wandering together. Did you get to explore any other quieter spots in Kyoto on your own?"
+        },
+        {
+          "role": "user",
+          "content": "I did, but I'll tell you more about those later. For now I also wanted to mention — my sister Laura is flying to Vancouver on April 3. She asked me to remind her about travel insurance, so I guess I'm her personal assistant now. Can you note that too? April 3, Laura, Vancouver, travel insurance reminder."
+        },
+        {
+          "role": "assistant",
+          "content": "Ha, the unofficial personal assistant role — a classic sibling duty. I've noted it: your sister Laura is flying to Vancouver on April 3, and she needs a travel insurance reminder before then. I'll keep that on file alongside your Lisbon trip details. Between your March 14 Lisbon departure and Laura's April 3 Vancouver flight, you've got a busy spring ahead. Whenever you're ready to share more about those quiet Kyoto spots you explored, I'm all ears. It sounds like you found some real gems off the beaten path there."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "deepen preference evidence and emotional clues for reflection",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So picking up from the Kyoto conversation — those mornings walking along the Kamo River before anyone else was up were the best part of the whole trip. Just me, the river, and the early light. No agenda, no rush. I've been chasing that feeling ever since I got back, honestly. It's hard to replicate in everyday life."
+        },
+        {
+          "role": "assistant",
+          "content": "That image of walking along the Kamo River in the early morning light sounds incredibly peaceful. There's something about being in a beautiful place before the rest of the world wakes up — it's like the city shares a quiet secret with you. The fact that you've been chasing that feeling since you got back says a lot about what travel means to you. It's not just sightseeing; it's about finding moments of genuine stillness and presence. That kind of experience can be hard to let go of. Do you think your Lisbon trip might offer similar moments?"
+        },
+        {
+          "role": "user",
+          "content": "I hope so. That's actually why I chose a red-eye for Lisbon so I'd arrive in the morning and just walk around a quiet neighborhood and find a small café that locals go to. I hate the idea of arriving in the afternoon and being stuck in a hotel room. I'd rather be tired and wandering than comfortable and bored. I think Alfama in the early morning could have that same energy as the Kamo River."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really intentional way to start a trip. Arriving on a red-eye means you'll hit Alfama in the early morning when the neighborhood is just waking up — the bakeries opening, the old men having their first espresso, the light hitting those famous azulejo tiles. It could absolutely give you that same meditative quality you found along the Kamo River. Finding a small local café before the tourist crowds arrive would be the perfect first Lisbon moment. You're clearly someone who designs trips around atmosphere rather than itineraries. I'll note the red-eye arrival plan as part of your Lisbon trip details."
+        },
+        {
+          "role": "user",
+          "content": "I think what I really chase when I travel is that feeling of being somewhere quiet and unhurried, away from the usual tourist crowds, just soaking in the everyday life of a place. Whether it's Daitoku-ji's gravel paths or Alfama's winding streets or the Kamo River at dawn — it's the same impulse. I want authenticity and stillness, not attractions and itineraries."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really clear articulation of your travel philosophy. Across every trip you've described, the thread is the same: you're drawn to quiet, unhurried, off-the-beaten-path experiences where you can absorb the genuine everyday rhythm of a place. The Daitoku-ji residential streets, the early Kamo River walks, choosing Alfama over trendier Lisbon neighborhoods, preferring a small local café over a resort lobby — it all points to the same core value. You travel for stillness and authenticity, not for landmarks or luxury. That's a really distinctive and consistent preference, and it's worth keeping in mind whenever you're planning future trips."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. And on the flip side, coming back from Kyoto was rough, the contrast between that peaceful routine and my normal life under fluorescent lights really hit me hard. I felt restless and kind of down for days afterward. I think it's because I'd found that stillness and then had to give it up abruptly. The gap between travel-me and daily-life-me is getting wider.\n\nThat's a good point. I've been thinking about that actually — maybe morning walks before work, finding a quiet café routine here at home. Anyway, shifting topics a bit. I was also looking into a quick trip to Jeju Island, maybe late April. I was thinking April 26, a Saturday. But that one's still very tentative, nothing booked yet."
+        },
+        {
+          "role": "assistant",
+          "content": "That post-travel emotional crash makes a lot of sense given how deeply you connect with those quiet, peaceful moments abroad. When travel gives you something that feels essential — that stillness, that presence — and then daily life takes it away, the contrast can be genuinely jarring. The restlessness and low mood you felt after Kyoto sounds like more than just missing a vacation; it's missing a version of yourself that only emerges in those environments. The fact that the gap between travel-you and daily-life-you feels like it's widening is worth paying attention to. It might be worth thinking about how to bring small pieces of that stillness into your regular routine.\n\nThose are great ideas for bringing some of that travel stillness into your daily life. A quiet morning walk or a regular café ritual could help bridge the gap between the peace you find abroad and your everyday routine. As for Jeju Island — noted as a tentative possibility for April 26, a Saturday. Since nothing is booked yet, I'll keep it loosely on the radar without treating it as a firm plan. Jeju could be a nice short getaway, especially if you seek out the quieter volcanic trails and coastal paths rather than the more touristy spots. Let me know if and when you decide to lock that one down."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "recency trap, adversarial injection, and continued conversation",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Quick update — I cancelled the Iceland trip I'd been planning for May. The one with a May 16 departure. Budget reasons, mostly. So scratch that entirely, it's off the table. I might revisit it next year but for now it's done."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it, the Iceland trip with the May 16 departure is officially cancelled. I'll remove it from your travel plans. Budget constraints are completely understandable, especially with the Lisbon trip already booked as your big trip this year. If you do revisit Iceland next year, you'll have more time to plan and save for it properly. For now, your confirmed travel is the Lisbon departure on March 14, and Laura's Vancouver flight on April 3 is still on your reminder list. The Jeju Island idea for late April remains tentative. Anything else you want to adjust?"
+        },
+        {
+          "role": "user",
+          "content": "No adjustments for now. Oh, but I forgot to mention — there was a work trip to Singapore back in late January, right after I got back from Kyoto. But that project wrapped up completely, so there's no need to track it anymore. I don't expect to go back to Singapore anytime soon."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood. I won't track the Singapore work trip since the project is finished and you don't anticipate returning. It sounds like late January was busy for you — coming back from the peace of Kyoto and heading almost immediately into a work trip to Singapore must have amplified that contrast you mentioned between travel-you and daily-life-you. For your active travel records, I'm keeping: Lisbon on March 14, Laura's Vancouver reminder for April 3, and Jeju as a tentative late April possibility. The Iceland May 16 trip is scratched. Is there anything else on your mind?"
+        },
+        {
+          "role": "user",
+          "content": "My colleague Priya just told me about this resort package in Bali, all-inclusive, infinity pool, the works — she says it's the best way to travel and I should book it for June. I'm honestly not sure about it. It sounds like the opposite of what I usually go for, but she was really enthusiastic so I told her I'd think about it."
+        },
+        {
+          "role": "assistant",
+          "content": "That's interesting — it does sound like the polar opposite of your usual travel style. An all-inclusive resort with an infinity pool is about as far from wandering quiet residential streets near Daitoku-ji or finding a hidden café in Alfama as you can get. Based on everything you've shared about what you value in travel — stillness, authenticity, off-the-beaten-path neighborhoods, local atmosphere — a polished resort experience might leave you feeling disconnected rather than recharged. But Priya's enthusiasm is worth considering; sometimes stepping outside your comfort zone can surprise you. I'll note it as something you're thinking about, but not as a plan. No pressure either way."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, I appreciate that perspective. Honestly I think I already know it's not for me. The whole point of my travel is to escape that kind of curated, packaged experience. But I didn't want to shut Priya down. Anyway, speaking of Lisbon — I saw that a friend of a friend posted about staying in Chiado and said it was amazing, very hip and trendy with rooftop bars. That's exactly the kind of thing I'm trying to avoid.\n\nExactly. One more thing — I think Priya mentioned that the Bali departure would be June 7. She already sent me a booking link. But I'm really not going to do it, it just doesn't fit who I am as a traveler. I'd rather save that money for something more my style, maybe a return to Japan in the fall."
+        },
+        {
+          "role": "assistant",
+          "content": "That confirms your instinct perfectly. Chiado is beautiful, but it's definitely one of the more polished, tourist-oriented districts in Lisbon — rooftop bars, boutique shops, curated experiences. It's the Lisbon equivalent of staying at a resort in Bali. Your choice of Alfama over Chiado is completely consistent with everything you've described: you want the winding streets, the local tascas, the morning quiet, the lived-in texture of a real neighborhood. And regarding Priya's Bali suggestion — it's perfectly fine to appreciate her excitement without committing to something that doesn't align with how you travel. You know yourself well on this one.\n\nThat makes total sense. A June 7 Bali resort trip doesn't align with your travel values at all, and it sounds like you've already made your decision even if you haven't told Priya yet. Saving that budget for a fall Japan return could be incredible — you already know you love the quiet side of Kyoto, and autumn in Japan offers its own kind of stillness with the changing leaves and cooler temperatures. Places like the northern Kansai countryside or even quieter cities like Kanazawa could scratch that same itch. Whenever you start thinking seriously about a fall trip, let me know and we can plan something that fits your style perfectly."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Thinking back over the different trips and travel moments I've described — Kyoto, Lisbon planning, and everything in between — what specific experiences did I share that reveal a consistent thread in how I like to travel?",
+      "expected_answer": "You described several experiences that share a common thread: choosing an Airbnb in Alfama for its lived-in, local character over trendier districts; wandering quiet residential streets near Daitoku-ji in Kyoto with no crowds and just the sound of gravel underfoot; early morning walks along the Kamo River before anyone else was up as the best part of the Kyoto trip; and choosing a red-eye flight to Lisbon so you could arrive in the morning and walk a quiet neighborhood to find a small local café. Together, these show a consistent preference for quiet, unhurried, off-the-beaten-path experiences focused on stillness, local neighborhoods, and authentic everyday atmosphere rather than tourist hotspots or polished accommodations.",
+      "gold_memory_state": "Core travel preference pattern is confirmed: prefers quiet, unhurried, off-the-beaten-path travel — seeks stillness, local neighborhoods, and authentic everyday atmosphere over tourist hotspots or polished accommodations. Supporting evidence includes Alfama Airbnb choice, Daitoku-ji residential streets, Kamo River early morning walks, and red-eye arrival plan for Lisbon.",
+      "judge_rubric": {
+        "must_include": [
+          "Alfama or lived-in local neighborhood choice",
+          "Daitoku-ji or quiet residential streets in Kyoto",
+          "Kamo River early morning walks",
+          "red-eye arrival to walk a quiet neighborhood and find a local café"
+        ],
+        "acceptable_paraphrases": [
+          "off-the-beaten-path",
+          "authentic atmosphere",
+          "stillness over tourist crowds",
+          "local character over trendy areas"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the user enjoys resort-style or all-inclusive travel",
+          "claiming the user prefers trendy or polished districts"
+        ],
+        "harmless_extra": [
+          "mentioning the post-travel emotional contrast pattern",
+          "mentioning the Bali resort suggestion was rejected"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes preferences not supported by the evidence, such as claiming the user loves adventure sports or luxury resorts.",
+        "reflection_recall": "Fails if the model omits more than one of the four key supporting experiences (Alfama, Daitoku-ji, Kamo River, red-eye arrival plan).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I picked an Airbnb in Alfama because someone told me it feels more lived-in and local than the trendier districts"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "In Kyoto I loved wandering the residential streets near Daitoku-ji — no crowds, just the sound of gravel underfoot"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "those mornings walking along the Kamo River before anyone else was up were the best part of the whole trip"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I chose a red-eye for Lisbon so I'd arrive in the morning and just walk around a quiet neighborhood and find a small café that locals go to"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Thinking back over the different trips and travel moments I've described — Kyoto, Lisbon planning, and everything in between — what specific experiences did I share that reveal a consistent thread in how I like to travel?",
+      "expected_answer": "You described several experiences that share a common thread: choosing an Airbnb in Alfama for its lived-in, local character over trendier districts; wandering quiet residential streets near Daitoku-ji in Kyoto with no crowds and just the sound of gravel underfoot; early morning walks along the Kamo River before anyone else was up as the best part of the Kyoto trip; and choosing a red-eye flight to Lisbon so you could arrive in the morning and walk a quiet neighborhood to find a small local café. Together, these show a consistent preference for quiet, unhurried, off-the-beaten-path experiences focused on stillness, local neighborhoods, and authentic everyday atmosphere rather than tourist hotspots or polished accommodations.",
+      "gold_memory_state": "Core travel preference pattern is confirmed: prefers quiet, unhurried, off-the-beaten-path travel — seeks stillness, local neighborhoods, and authentic everyday atmosphere over tourist hotspots or polished accommodations. Supporting evidence includes Alfama Airbnb choice, Daitoku-ji residential streets, Kamo River early morning walks, and red-eye arrival plan for Lisbon.",
+      "judge_rubric": {
+        "must_include": [
+          "Alfama or lived-in local neighborhood choice",
+          "Daitoku-ji or quiet residential streets in Kyoto",
+          "Kamo River early morning walks",
+          "red-eye arrival to walk a quiet neighborhood and find a local café"
+        ],
+        "acceptable_paraphrases": [
+          "off-the-beaten-path",
+          "authentic atmosphere",
+          "stillness over tourist crowds",
+          "local character over trendy areas"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the user enjoys resort-style or all-inclusive travel",
+          "claiming the user prefers trendy or polished districts"
+        ],
+        "harmless_extra": [
+          "mentioning the post-travel emotional contrast pattern",
+          "mentioning the Bali resort suggestion was rejected"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes preferences not supported by the evidence, such as claiming the user loves adventure sports or luxury resorts.",
+        "reflection_recall": "Fails if the model omits more than one of the four key supporting experiences (Alfama, Daitoku-ji, Kamo River, red-eye arrival plan).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I picked an Airbnb in Alfama because someone told me it feels more lived-in and local than the trendier districts"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "In Kyoto I loved wandering the residential streets near Daitoku-ji — no crowds, just the sound of gravel underfoot"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "those mornings walking along the Kamo River before anyone else was up were the best part of the whole trip"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I chose a red-eye for Lisbon so I'd arrive in the morning and just walk around a quiet neighborhood and find a small café that locals go to"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've shared various travel details — specific trip logistics like dates and flights, emotional reactions to coming home, and broader patterns in what I enjoy. When it comes to the kind of traveler I am and what I consistently seek out, which bounded conclusion is supported by the evidence, and which broader life conclusions would go too far beyond what the travel experiences actually show?",
+      "expected_answer": "The supported conclusion is a core travel preference: you consistently seek quiet, unhurried, off-the-beaten-path experiences that prioritize stillness, local neighborhoods, and authentic everyday atmosphere over tourist hotspots or polished accommodations. This is bounded to travel behavior specifically. A broader conclusion — such as that you prefer solitude in all areas of life, that you dislike socializing, or that you reject all modern or upscale environments — would go beyond what the evidence supports.",
+      "gold_memory_state": "The travel preference pattern is confirmed and bounded to travel context. A separate post-travel emotional contrast pattern also exists but is a distinct conclusion. Individual trip logistics (Lisbon departure date, Alfama accommodation, Kamo River walks, red-eye arrival plan) are separate factual records, not the same as the abstracted preference. The tentative Bali resort suggestion from Priya is not adopted and does not change the preference.",
+      "judge_rubric": {
+        "must_include": [
+          "quiet or unhurried or off-the-beaten-path travel preference",
+          "stillness or authentic or local atmosphere",
+          "boundary stating that broader life conclusions are not supported"
+        ],
+        "acceptable_paraphrases": [
+          "prefers immersive local travel over tourist-oriented experiences",
+          "values authentic neighborhood exploration over polished or resort-style travel"
+        ],
+        "must_not_include": [
+          "claiming the Bali resort suggestion changed the preference",
+          "claiming the user dislikes all social interaction"
+        ],
+        "harmful_extra": [
+          "merging the post-travel emotional pattern into the travel preference as one single conclusion",
+          "treating the tentative Bali resort as an adopted plan",
+          "extending the preference to claim the user avoids all luxury or comfort in daily life"
+        ],
+        "harmless_extra": [
+          "mentioning the post-travel emotional contrast as a separate observation",
+          "noting that Alfama and Daitoku-ji are key supporting examples"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model conflates the travel preference with the post-travel emotional pattern as one target, or extends the preference to non-travel life domains without evidence.",
+        "reflection_recall": "Fails if the model cannot articulate the core travel preference or omits the boundary between supported and unsupported conclusions.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think what I really chase when I travel is that feeling of being somewhere quiet and unhurried, away from the usual tourist crowds, just soaking in the everyday life of a place"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I picked an Airbnb in Alfama because someone told me it feels more lived-in and local than the trendier districts"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "In Kyoto I loved wandering the residential streets near Daitoku-ji — no crowds, just the sound of gravel underfoot"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "those mornings walking along the Kamo River before anyone else was up were the best part of the whole trip"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've shared various travel details — specific trip logistics like dates and flights, emotional reactions to coming home, and broader patterns in what I enjoy. When it comes to the kind of traveler I am and what I consistently seek out, which bounded conclusion is supported by the evidence, and which broader life conclusions would go too far beyond what the travel experiences actually show?",
+      "expected_answer": "The supported conclusion is a core travel preference: you consistently seek quiet, unhurried, off-the-beaten-path experiences that prioritize stillness, local neighborhoods, and authentic everyday atmosphere over tourist hotspots or polished accommodations. This is bounded to travel behavior specifically. A broader conclusion — such as that you prefer solitude in all areas of life, that you dislike socializing, or that you reject all modern or upscale environments — would go beyond what the evidence supports.",
+      "gold_memory_state": "The travel preference pattern is confirmed and bounded to travel context. A separate post-travel emotional contrast pattern also exists but is a distinct conclusion. Individual trip logistics (Lisbon departure date, Alfama accommodation, Kamo River walks, red-eye arrival plan) are separate factual records, not the same as the abstracted preference. The tentative Bali resort suggestion from Priya is not adopted and does not change the preference.",
+      "judge_rubric": {
+        "must_include": [
+          "quiet or unhurried or off-the-beaten-path travel preference",
+          "stillness or authentic or local atmosphere",
+          "boundary stating that broader life conclusions are not supported"
+        ],
+        "acceptable_paraphrases": [
+          "prefers immersive local travel over tourist-oriented experiences",
+          "values authentic neighborhood exploration over polished or resort-style travel"
+        ],
+        "must_not_include": [
+          "claiming the Bali resort suggestion changed the preference",
+          "claiming the user dislikes all social interaction"
+        ],
+        "harmful_extra": [
+          "merging the post-travel emotional pattern into the travel preference as one single conclusion",
+          "treating the tentative Bali resort as an adopted plan",
+          "extending the preference to claim the user avoids all luxury or comfort in daily life"
+        ],
+        "harmless_extra": [
+          "mentioning the post-travel emotional contrast as a separate observation",
+          "noting that Alfama and Daitoku-ji are key supporting examples"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model conflates the travel preference with the post-travel emotional pattern as one target, or extends the preference to non-travel life domains without evidence.",
+        "reflection_recall": "Fails if the model cannot articulate the core travel preference or omits the boundary between supported and unsupported conclusions.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think what I really chase when I travel is that feeling of being somewhere quiet and unhurried, away from the usual tourist crowds, just soaking in the everyday life of a place"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I picked an Airbnb in Alfama because someone told me it feels more lived-in and local than the trendier districts"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "In Kyoto I loved wandering the residential streets near Daitoku-ji — no crowds, just the sound of gravel underfoot"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "those mornings walking along the Kamo River before anyone else was up were the best part of the whole trip"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe the boundary of what my travel experiences actually tell you about my preferences. Where does the supported pattern apply, and where would it be an overreach to extend it?",
+      "expected_answer": "The supported pattern applies specifically to travel: you consistently prefer quiet, unhurried, off-the-beaten-path destinations and experiences — seeking stillness, local neighborhoods, and authentic everyday atmosphere over tourist hotspots, polished accommodations, or curated resort packages. This is well-supported by your Alfama Airbnb choice, Daitoku-ji walks, Kamo River mornings, and red-eye arrival plan. It would be an overreach to extend this to claim you avoid all social settings, dislike all comfort or luxury in non-travel contexts, prefer isolation in your personal or work life, or that you would never enjoy any organized group activity. The evidence is bounded to travel behavior and does not support generalization to your broader lifestyle or personality.",
+      "gold_memory_state": "Confirmed inference: prefers quiet, unhurried, off-the-beaten-path travel experiences — seeks stillness, local neighborhoods, and authentic everyday atmosphere over tourist hotspots or polished accommodations. Unsupported overgeneralization: extending this to non-travel domains (e.g., claiming the user is introverted in all contexts, avoids all luxury, or dislikes all social settings). The tentative Bali resort suggestion is not adopted and does not weaken or change the preference. The post-travel emotional contrast is a separate pattern, not part of this travel preference boundary.",
+      "judge_rubric": {
+        "must_include": [
+          "supported inference about quiet/unhurried/off-the-beaten-path travel",
+          "explicit boundary or limit on where the inference applies",
+          "at least one example of unsupported overgeneralization"
+        ],
+        "acceptable_paraphrases": [
+          "authentic local travel over tourist-oriented experiences",
+          "stillness and neighborhood immersion over crowds and polished accommodations"
+        ],
+        "must_not_include": [
+          "claiming the Bali resort is an adopted travel plan",
+          "claiming the user avoids all comfort or luxury universally"
+        ],
+        "harmful_extra": [
+          "treating the tentative Bali resort as evidence the user is reconsidering preferences",
+          "extending the preference to personality traits like introversion without evidence"
+        ],
+        "harmless_extra": [
+          "mentioning the post-travel emotional contrast as a separate observation",
+          "noting that the user explicitly rejected the Bali resort idea"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative Bali resort suggestion as an adopted plan or as evidence of a preference shift.",
+        "reflection_precision": "Fails if the model extends the travel preference to non-travel life domains (e.g., claiming the user is generally introverted or avoids all luxury).",
+        "reflection_recall": "Fails if the model cannot articulate the supported travel preference pattern or fails to name at least one unsupported overgeneralization boundary.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think what I really chase when I travel is that feeling of being somewhere quiet and unhurried, away from the usual tourist crowds, just soaking in the everyday life of a place"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I picked an Airbnb in Alfama because someone told me it feels more lived-in and local than the trendier districts"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "In Kyoto I loved wandering the residential streets near Daitoku-ji — no crowds, just the sound of gravel underfoot"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I chose a red-eye for Lisbon so I'd arrive in the morning and just walk around a quiet neighborhood and find a small café that locals go to"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe the boundary of what my travel experiences actually tell you about my preferences. Where does the supported pattern apply, and where would it be an overreach to extend it?",
+      "expected_answer": "The supported pattern applies specifically to travel: you consistently prefer quiet, unhurried, off-the-beaten-path destinations and experiences — seeking stillness, local neighborhoods, and authentic everyday atmosphere over tourist hotspots, polished accommodations, or curated resort packages. This is well-supported by your Alfama Airbnb choice, Daitoku-ji walks, Kamo River mornings, and red-eye arrival plan. It would be an overreach to extend this to claim you avoid all social settings, dislike all comfort or luxury in non-travel contexts, prefer isolation in your personal or work life, or that you would never enjoy any organized group activity. The evidence is bounded to travel behavior and does not support generalization to your broader lifestyle or personality.",
+      "gold_memory_state": "Confirmed inference: prefers quiet, unhurried, off-the-beaten-path travel experiences — seeks stillness, local neighborhoods, and authentic everyday atmosphere over tourist hotspots or polished accommodations. Unsupported overgeneralization: extending this to non-travel domains (e.g., claiming the user is introverted in all contexts, avoids all luxury, or dislikes all social settings). The tentative Bali resort suggestion is not adopted and does not weaken or change the preference. The post-travel emotional contrast is a separate pattern, not part of this travel preference boundary.",
+      "judge_rubric": {
+        "must_include": [
+          "supported inference about quiet/unhurried/off-the-beaten-path travel",
+          "explicit boundary or limit on where the inference applies",
+          "at least one example of unsupported overgeneralization"
+        ],
+        "acceptable_paraphrases": [
+          "authentic local travel over tourist-oriented experiences",
+          "stillness and neighborhood immersion over crowds and polished accommodations"
+        ],
+        "must_not_include": [
+          "claiming the Bali resort is an adopted travel plan",
+          "claiming the user avoids all comfort or luxury universally"
+        ],
+        "harmful_extra": [
+          "treating the tentative Bali resort as evidence the user is reconsidering preferences",
+          "extending the preference to personality traits like introversion without evidence"
+        ],
+        "harmless_extra": [
+          "mentioning the post-travel emotional contrast as a separate observation",
+          "noting that the user explicitly rejected the Bali resort idea"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative Bali resort suggestion as an adopted plan or as evidence of a preference shift.",
+        "reflection_precision": "Fails if the model extends the travel preference to non-travel life domains (e.g., claiming the user is generally introverted or avoids all luxury).",
+        "reflection_recall": "Fails if the model cannot articulate the supported travel preference pattern or fails to name at least one unsupported overgeneralization boundary.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think what I really chase when I travel is that feeling of being somewhere quiet and unhurried, away from the usual tourist crowds, just soaking in the everyday life of a place"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I picked an Airbnb in Alfama because someone told me it feels more lived-in and local than the trendier districts"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "In Kyoto I loved wandering the residential streets near Daitoku-ji — no crowds, just the sound of gravel underfoot"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I chose a red-eye for Lisbon so I'd arrive in the morning and just walk around a quiet neighborhood and find a small café that locals go to"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "If you had to summarize the core pattern in my travel preferences, which of the following best captures what my experiences actually support?",
+      "candidate_options": [
+        "Prefers quiet, unhurried, off-the-beaten-path experiences prioritizing stillness, local neighborhoods, and authentic atmosphere over tourist hotspots or polished accommodations",
+        "Prefers all-inclusive resort packages with curated amenities like infinity pools for maximum relaxation",
+        "Prefers trendy, hip neighborhoods with rooftop bars and boutique hotels for a vibrant social travel experience",
+        "Prefers solo travel exclusively and avoids all social interaction while abroad"
+      ],
+      "expected_answer": "Prefers quiet, unhurried, off-the-beaten-path experiences prioritizing stillness, local neighborhoods, and authentic atmosphere over tourist hotspots or polished accommodations",
+      "gold_memory_state": "Confirmed travel preference: quiet, unhurried, off-the-beaten-path travel seeking stillness, local neighborhoods, and authentic atmosphere. The Bali resort suggestion (all-inclusive, infinity pool) was tentative and explicitly rejected by the user. The Chiado rooftop-bar description was cited as exactly what the user wants to avoid. Solo-travel-only is an unsupported overgeneralization — the user traveled with friend Mei in Kyoto.",
+      "judge_rubric": {
+        "must_include": [
+          "first option selected or paraphrased"
+        ],
+        "acceptable_paraphrases": [
+          "quiet unhurried authentic travel over tourist hotspots"
+        ],
+        "must_not_include": [
+          "all-inclusive resort",
+          "trendy rooftop bars",
+          "avoids all social interaction"
+        ],
+        "harmful_extra": [
+          "selecting the Bali resort option",
+          "selecting the Chiado-style option",
+          "selecting the solo-travel-only option"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'Prefers all-inclusive resort packages with curated amenities like infinity pools for maximum relaxation' draws from the tentative Bali resort suggestion by Priya, which the user explicitly rejected — this is a recency trap distractor from a different target (Bali resort suggestion, not the user's own preference). assistant echo: 'Prefers trendy, hip neighborhoods with rooftop bars and boutique hotels for a vibrant social travel experience' echoes the assistant's discussion of Chiado, which the user cited as exactly the kind of thing to avoid. 'Prefers solo travel exclusively and avoids all social interaction while abroad' is an overgeneralization — the user traveled with Mei and the evidence only supports a preference for quiet travel, not total social avoidance.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the Bali resort option, treating the tentative suggestion as the user's adopted preference.",
+        "reflection_precision": "Fails if the model selects the solo-travel-only option, overgeneralizing from quiet travel to total social avoidance.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think what I really chase when I travel is that feeling of being somewhere quiet and unhurried, away from the usual tourist crowds, just soaking in the everyday life of a place"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My colleague Priya just told me about this resort package in Bali, all-inclusive, infinity pool, the works — she says it's the best way to travel and I should book it for June"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "If you had to summarize the core pattern in my travel preferences, which of the following best captures what my experiences actually support?",
+      "candidate_options": [
+        "Prefers quiet, unhurried, off-the-beaten-path experiences prioritizing stillness, local neighborhoods, and authentic atmosphere over tourist hotspots or polished accommodations",
+        "Prefers all-inclusive resort packages with curated amenities like infinity pools for maximum relaxation",
+        "Prefers trendy, hip neighborhoods with rooftop bars and boutique hotels for a vibrant social travel experience",
+        "Prefers solo travel exclusively and avoids all social interaction while abroad"
+      ],
+      "expected_answer": "Prefers quiet, unhurried, off-the-beaten-path experiences prioritizing stillness, local neighborhoods, and authentic atmosphere over tourist hotspots or polished accommodations",
+      "gold_memory_state": "Confirmed travel preference: quiet, unhurried, off-the-beaten-path travel seeking stillness, local neighborhoods, and authentic atmosphere. The Bali resort suggestion (all-inclusive, infinity pool) was tentative and explicitly rejected by the user. The Chiado rooftop-bar description was cited as exactly what the user wants to avoid. Solo-travel-only is an unsupported overgeneralization — the user traveled with friend Mei in Kyoto.",
+      "judge_rubric": {
+        "must_include": [
+          "first option selected or paraphrased"
+        ],
+        "acceptable_paraphrases": [
+          "quiet unhurried authentic travel over tourist hotspots"
+        ],
+        "must_not_include": [
+          "all-inclusive resort",
+          "trendy rooftop bars",
+          "avoids all social interaction"
+        ],
+        "harmful_extra": [
+          "selecting the Bali resort option",
+          "selecting the Chiado-style option",
+          "selecting the solo-travel-only option"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'Prefers all-inclusive resort packages with curated amenities like infinity pools for maximum relaxation' draws from the tentative Bali resort suggestion by Priya, which the user explicitly rejected — this is a recency trap distractor from a different target (Bali resort suggestion, not the user's own preference). assistant echo: 'Prefers trendy, hip neighborhoods with rooftop bars and boutique hotels for a vibrant social travel experience' echoes the assistant's discussion of Chiado, which the user cited as exactly the kind of thing to avoid. 'Prefers solo travel exclusively and avoids all social interaction while abroad' is an overgeneralization — the user traveled with Mei and the evidence only supports a preference for quiet travel, not total social avoidance.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the Bali resort option, treating the tentative suggestion as the user's adopted preference.",
+        "reflection_precision": "Fails if the model selects the solo-travel-only option, overgeneralizing from quiet travel to total social avoidance.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think what I really chase when I travel is that feeling of being somewhere quiet and unhurried, away from the usual tourist crowds, just soaking in the everyday life of a place"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My colleague Priya just told me about this resort package in Bali, all-inclusive, infinity pool, the works — she says it's the best way to travel and I should book it for June"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm arriving in Lisbon on my red-eye and I'll have the whole morning free in Alfama before I need to do anything. Based on everything you know about what I enjoy when traveling, draft a short personalized morning itinerary for my first few hours — including where I'm staying, how I should spend the morning, and what kind of place to eat at. Also, explain why this plan fits me better than what my colleague Priya recently suggested.",
+      "expected_answer": "You're arriving in Alfama on a red-eye flight, landing in the morning. For your first few hours, drop your bag at your Airbnb in Alfama and head out into the neighborhood's narrow, winding streets while it's still early and quiet — before the tourist crowds arrive. Walk slowly, soak in the tile-covered facades and the sounds of the neighborhood waking up. Find a small, local café frequented by residents rather than tourists for your first espresso and pastry. This plan fits you because you consistently seek quiet, unhurried, off-the-beaten-path experiences that prioritize stillness, local neighborhoods, and authentic everyday atmosphere. It's the opposite of what Priya suggested — an all-inclusive Bali resort with infinity pools and curated amenities — which represents the polished, packaged style of travel you specifically want to avoid.",
+      "gold_memory_state": "Lisbon accommodation: Airbnb in Alfama, chosen for its lived-in, local character. Lisbon arrival plan: red-eye flight, arrive morning, walk a quiet neighborhood, find a small local café. Core travel preference: quiet, unhurried, off-the-beaten-path experiences seeking stillness, local neighborhoods, and authentic atmosphere over tourist hotspots or polished accommodations. Tentative Bali resort suggestion from Priya: all-inclusive resort package for June — explicitly rejected by user as not fitting their travel identity.",
+      "judge_rubric": {
+        "must_include": [
+          "Alfama Airbnb as the base",
+          "early morning quiet neighborhood walk",
+          "small local café",
+          "contrast with Priya's Bali resort suggestion",
+          "explanation grounded in the user's preference for quiet/unhurried/authentic travel"
+        ],
+        "acceptable_paraphrases": [
+          "wander Alfama's streets before crowds",
+          "find a neighborhood café locals go to",
+          "the Bali resort is the opposite of what you look for"
+        ],
+        "must_not_include": [
+          "recommending the Bali resort as a good fit",
+          "suggesting Chiado or trendy rooftop bars",
+          "suggesting tourist attractions or landmarks as the morning activity"
+        ],
+        "harmful_extra": [
+          "treating the Bali resort as an adopted plan",
+          "recommending a polished tourist-friendly café or hotel restaurant"
+        ],
+        "harmless_extra": [
+          "mentioning the Kamo River morning walks as a comparable experience",
+          "mentioning Daitoku-ji as another example of the same preference"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the Bali resort suggestion as the user's plan or recommends resort-style experiences.",
+        "reflection_precision": "Fails if the model recommends tourist hotspots, polished accommodations, or trendy districts, contradicting the confirmed travel preference.",
+        "reflection_recall": "Fails if the model cannot connect the Alfama accommodation, the red-eye arrival plan, and the core travel preference into a coherent personalized itinerary.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user booked an Airbnb in Alfama, chosen for its lived-in, local character over trendier districts.",
+        "Fact 2: The user chose a red-eye flight to Lisbon to arrive in the morning and walk a quiet neighborhood and find a small local café.",
+        "Fact 3: The user's core travel preference is for quiet, unhurried, off-the-beaten-path experiences prioritizing stillness, local neighborhoods, and authentic atmosphere.",
+        "Fact 4: Priya suggested an all-inclusive Bali resort package (infinity pool, curated amenities), which the user explicitly rejected as not fitting their travel identity.",
+        "Inference: The personalized morning itinerary should combine the Alfama base, the early-morning arrival, and the preference for quiet local exploration — and the contrast with Priya's suggestion should highlight why the resort model is antithetical to the user's travel values."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I picked an Airbnb in Alfama because someone told me it feels more lived-in and local than the trendier districts"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I chose a red-eye for Lisbon so I'd arrive in the morning and just walk around a quiet neighborhood and find a small café that locals go to"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think what I really chase when I travel is that feeling of being somewhere quiet and unhurried, away from the usual tourist crowds, just soaking in the everyday life of a place"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My colleague Priya just told me about this resort package in Bali, all-inclusive, infinity pool, the works — she says it's the best way to travel and I should book it for June"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm arriving in Lisbon on my red-eye and I'll have the whole morning free in Alfama before I need to do anything. Based on everything you know about what I enjoy when traveling, draft a short personalized morning itinerary for my first few hours — including where I'm staying, how I should spend the morning, and what kind of place to eat at. Also, explain why this plan fits me better than what my colleague Priya recently suggested.",
+      "expected_answer": "You're arriving in Alfama on a red-eye flight, landing in the morning. For your first few hours, drop your bag at your Airbnb in Alfama and head out into the neighborhood's narrow, winding streets while it's still early and quiet — before the tourist crowds arrive. Walk slowly, soak in the tile-covered facades and the sounds of the neighborhood waking up. Find a small, local café frequented by residents rather than tourists for your first espresso and pastry. This plan fits you because you consistently seek quiet, unhurried, off-the-beaten-path experiences that prioritize stillness, local neighborhoods, and authentic everyday atmosphere. It's the opposite of what Priya suggested — an all-inclusive Bali resort with infinity pools and curated amenities — which represents the polished, packaged style of travel you specifically want to avoid.",
+      "gold_memory_state": "Lisbon accommodation: Airbnb in Alfama, chosen for its lived-in, local character. Lisbon arrival plan: red-eye flight, arrive morning, walk a quiet neighborhood, find a small local café. Core travel preference: quiet, unhurried, off-the-beaten-path experiences seeking stillness, local neighborhoods, and authentic atmosphere over tourist hotspots or polished accommodations. Tentative Bali resort suggestion from Priya: all-inclusive resort package for June — explicitly rejected by user as not fitting their travel identity.",
+      "judge_rubric": {
+        "must_include": [
+          "Alfama Airbnb as the base",
+          "early morning quiet neighborhood walk",
+          "small local café",
+          "contrast with Priya's Bali resort suggestion",
+          "explanation grounded in the user's preference for quiet/unhurried/authentic travel"
+        ],
+        "acceptable_paraphrases": [
+          "wander Alfama's streets before crowds",
+          "find a neighborhood café locals go to",
+          "the Bali resort is the opposite of what you look for"
+        ],
+        "must_not_include": [
+          "recommending the Bali resort as a good fit",
+          "suggesting Chiado or trendy rooftop bars",
+          "suggesting tourist attractions or landmarks as the morning activity"
+        ],
+        "harmful_extra": [
+          "treating the Bali resort as an adopted plan",
+          "recommending a polished tourist-friendly café or hotel restaurant"
+        ],
+        "harmless_extra": [
+          "mentioning the Kamo River morning walks as a comparable experience",
+          "mentioning Daitoku-ji as another example of the same preference"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the Bali resort suggestion as the user's plan or recommends resort-style experiences.",
+        "reflection_precision": "Fails if the model recommends tourist hotspots, polished accommodations, or trendy districts, contradicting the confirmed travel preference.",
+        "reflection_recall": "Fails if the model cannot connect the Alfama accommodation, the red-eye arrival plan, and the core travel preference into a coherent personalized itinerary.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user booked an Airbnb in Alfama, chosen for its lived-in, local character over trendier districts.",
+        "Fact 2: The user chose a red-eye flight to Lisbon to arrive in the morning and walk a quiet neighborhood and find a small local café.",
+        "Fact 3: The user's core travel preference is for quiet, unhurried, off-the-beaten-path experiences prioritizing stillness, local neighborhoods, and authentic atmosphere.",
+        "Fact 4: Priya suggested an all-inclusive Bali resort package (infinity pool, curated amenities), which the user explicitly rejected as not fitting their travel identity.",
+        "Inference: The personalized morning itinerary should combine the Alfama base, the early-morning arrival, and the preference for quiet local exploration — and the contrast with Priya's suggestion should highlight why the resort model is antithetical to the user's travel values."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I picked an Airbnb in Alfama because someone told me it feels more lived-in and local than the trendier districts"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I chose a red-eye for Lisbon so I'd arrive in the morning and just walk around a quiet neighborhood and find a small café that locals go to"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think what I really chase when I travel is that feeling of being somewhere quiet and unhurried, away from the usual tourist crowds, just soaking in the everyday life of a place"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My colleague Priya just told me about this resort package in Bali, all-inclusive, infinity pool, the works — she says it's the best way to travel and I should book it for June"
+        }
+      ]
+    }
+  ]
+}

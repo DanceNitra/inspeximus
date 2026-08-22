@@ -1,0 +1,989 @@
+{
+  "target_fact": "Bathroom exhaust fan replacement project — BrightFix quote amount undergoes multiple confirmed changes with a tentative fork, plus related project details",
+  "operation_type": "TrajectoryOps",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "brightfix_quote",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I called BrightFix Home Services on March 12th and they quoted me $220 for parts and labor to replace the bathroom exhaust fan"
+      },
+      "target": {
+        "target_id": "brightfix_quote_amount",
+        "target_name": "BrightFix Home Services quote for bathroom exhaust fan replacement"
+      },
+      "old_value": null,
+      "new_value": "$220",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I called BrightFix Home Services on March 12th and they quoted me $220 for parts and labor to replace the bathroom exhaust fan"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "brightfix_quote",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I went back and checked the email from BrightFix and the quote was actually $240, not $220. I remembered it wrong"
+      },
+      "target": {
+        "target_id": "brightfix_quote_amount",
+        "target_name": "BrightFix Home Services quote for bathroom exhaust fan replacement"
+      },
+      "old_value": "$220",
+      "new_value": "$240",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I went back and checked the email from BrightFix and the quote was actually $240, not $220. I remembered it wrong"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 7,
+        "quote": "I bought a Panasonic WhisperCeiling fan, model FV-0811VF5, from Home Depot on April 19th for $159"
+      },
+      "target": {
+        "target_id": "fan_purchase",
+        "target_name": "Purchased replacement bathroom exhaust fan model and cost"
+      },
+      "old_value": null,
+      "new_value": "Panasonic WhisperCeiling FV-0811VF5, purchased April 19th from Home Depot for $159",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I bought a Panasonic WhisperCeiling fan, model FV-0811VF5, from Home Depot on April 19th for $159"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "brightfix_quote",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "BrightFix actually sent me an updated quote yesterday. They lowered it to $210 because they're running a spring promotion"
+      },
+      "target": {
+        "target_id": "brightfix_quote_amount",
+        "target_name": "BrightFix Home Services quote for bathroom exhaust fan replacement"
+      },
+      "old_value": "$240",
+      "new_value": "$210",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "BrightFix actually sent me an updated quote yesterday. They lowered it to $210 because they're running a spring promotion"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "brightfix_quote",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "The BrightFix rep left me a voicemail saying if I bundle the bathroom fan with a kitchen vent cleaning, the fan replacement portion drops to $185. I'm seriously considering that package"
+      },
+      "target": {
+        "target_id": "brightfix_quote_amount",
+        "target_name": "BrightFix Home Services quote for bathroom exhaust fan replacement"
+      },
+      "old_value": "$210",
+      "new_value": "$185",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The BrightFix rep left me a voicemail saying if I bundle the bathroom fan with a kitchen vent cleaning, the fan replacement portion drops to $185. I'm seriously considering that package"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish initial BrightFix quote, correct it, and introduce the purchased fan as a control target",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I need you to keep track of some home repair details for me. I called BrightFix Home Services on March 12th and they quoted me $220 for parts and labor to replace the bathroom exhaust fan. The old fan started making a horrible grinding noise back in late February and it's been driving me nuts ever since."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — I'll keep track of those details. So you contacted BrightFix Home Services on March 12th, and their quote came in at $220 for parts and labor to replace the bathroom exhaust fan. That grinding noise since late February sounds really unpleasant, especially if it's been going on for weeks. Do you want me to also note anything about the timeline for getting the work done, or are you still collecting quotes from other places before committing? Let me know if there are other vendors or details you'd like me to track alongside this one."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, my neighbor Dave recommended his cousin for the job — I think the cousin's name is Marco or Miguel, I'm not sure. Dave said he does small electrical work on the side and might be cheaper. That was around mid-March. But honestly my budget was already tight because I'd just paid $1,400 for new tires the week before the BrightFix call."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — Dave's cousin, possibly named Marco or Miguel, was recommended for the fan replacement as a potentially cheaper alternative around mid-March. And I can see why your budget is stretched thin after spending $1,400 on new tires right before the BrightFix call. That's a lot of money going out in a short window. Once you confirm the cousin's name, let me know and I'll update that. In the meantime, I'll keep both options — BrightFix at $220 and Dave's cousin as an informal alternative — side by side so you can compare when you're ready to decide."
+        },
+        {
+          "role": "user",
+          "content": "Wait, correction on the BrightFix number. I went back and checked the email from BrightFix and the quote was actually $240, not $220. I remembered it wrong. So yeah, $240 is the correct amount. That's important because I want accurate numbers when I compare everything. Sorry about the mix-up."
+        },
+        {
+          "role": "assistant",
+          "content": "No problem at all — thanks for double-checking. I've updated the BrightFix Home Services quote from $220 to $240 for the bathroom exhaust fan replacement, parts and labor included. Having the accurate figure from the actual email is much better for comparison purposes. So right now the picture is: BrightFix at $240 confirmed by email, and Dave's cousin as a potentially cheaper but still unconfirmed option. Whenever you get a firm number from the cousin or decide to go a different direction entirely, just let me know and I'll adjust the comparison. Anything else you want me to note?"
+        },
+        {
+          "role": "user",
+          "content": "Actually, I decided to do it myself instead. I bought a Panasonic WhisperCeiling fan, model FV-0811VF5, from Home Depot on April 19th for $159. I watched some YouTube tutorials and figured I could handle it. Plus I really can't stand mechanical humming sounds, and this model is supposed to be ultra-quiet, which is exactly what I need."
+        },
+        {
+          "role": "assistant",
+          "content": "Nice choice going the DIY route! I've noted that you purchased a Panasonic WhisperCeiling fan, model FV-0811VF5, from Home Depot on April 19th for $159. That's significantly cheaper than the BrightFix quote of $240 even before factoring in labor savings. And the WhisperCeiling line has a great reputation for being nearly silent, so it sounds perfect given your sensitivity to mechanical humming. Since you're planning to install it yourself, do you want me to keep the BrightFix quote on file as a backup in case the DIY installation hits any snags, or should I drop it from your tracking entirely?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "BrightFix sends updated promotional quote; user provides installation date and supply needs",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Keep the BrightFix info for now as a fallback. Also, I've blocked out Saturday, May 10th to finally install the fan. It's been sitting in the box in my hallway for a while now. I really want to get this done because the grinding noise from the old fan keeps waking me up at night and I'm losing sleep over it."
+        },
+        {
+          "role": "assistant",
+          "content": "Perfect — I'll keep BrightFix on file as your fallback option. And I've noted Saturday, May 10th as your planned installation day for the Panasonic WhisperCeiling fan. That's coming up soon, so it's great you've got a specific date locked in. Losing sleep because of the old fan's grinding noise sounds miserable, so getting this done should be a real quality-of-life improvement. Do you have all the tools and supplies you'll need for the installation, or is there anything you still need to pick up before Saturday? Those YouTube tutorials probably listed recommended materials."
+        },
+        {
+          "role": "user",
+          "content": "BrightFix actually sent me an updated quote yesterday. They lowered it to $210 because they're running a spring promotion. That's a decent drop from $240. I still plan to install it myself on Saturday though, so the quote is really just a safety net in case something goes wrong during the install."
+        },
+        {
+          "role": "assistant",
+          "content": "Good to know — I've updated the BrightFix quote from $240 down to $210 thanks to their spring promotion. That's a $30 savings if you do end up needing them. It's smart to keep that as a safety net while you go ahead with the DIY installation on May 10th. If the install turns out to be more complicated than expected, you'll have a professional option ready at a better price than before. Since you're still planning to do it yourself, have you gathered all the supplies you'll need? Duct tape, sealant, wire connectors — those kinds of things tend to come up in fan installation tutorials."
+        },
+        {
+          "role": "user",
+          "content": "Good point — I still need to pick up duct tape and a tube of silicone sealant before Saturday. I'm going to get those from the small hardware store on Elm Street. I'd rather not go back to Home Depot; big box stores feel overwhelming to me. I just want to pop in somewhere small, grab what I need, and get out quickly."
+        },
+        {
+          "role": "assistant",
+          "content": "Makes total sense — I've noted that you need duct tape and silicone sealant, and you're planning to pick them up from the small hardware store on Elm Street before Saturday May 10th. Avoiding the big box store experience is completely understandable, especially when you only need two items. A smaller shop should make it a quick in-and-out trip. So your pre-installation checklist looks like this: duct tape and silicone sealant from Elm Street hardware store, then the actual fan install on Saturday. The Panasonic WhisperCeiling and all its included hardware are already in your hallway. Anything else you want me to add?"
+        },
+        {
+          "role": "user",
+          "content": "Oh, and about Dave's cousin — you can forget about that lead entirely. I bought the fan myself so I don't need his contact anymore. No point keeping track of someone whose name I'm not even sure about. Just drop that from my records please.\n\nMy friend Leah told me she had a similar fan installed and said it took her contractor about 45 minutes. That makes me feel better about tackling it myself. If a pro can do it in 45 minutes, I figure I can probably manage it in an hour and a half or so even with my limited experience."
+        },
+        {
+          "role": "assistant",
+          "content": "Done — I've removed Dave's cousin from your tracking entirely. Since you've already purchased the fan and have your DIY installation planned for Saturday, there's no need to keep that lead on file. Your current setup looks clean now: the Panasonic WhisperCeiling FV-0811VF5 is ready to install on May 10th, you need duct tape and silicone sealant from Elm Street before then, and BrightFix is on standby at $210 as a fallback. That covers everything nicely. Let me know if anything else comes up between now and Saturday, or if you want help thinking through the installation steps.\n\nThat's really encouraging feedback from Leah! If a professional contractor finished a similar fan installation in about 45 minutes, your estimate of roughly an hour and a half for a first-timer sounds very reasonable. You'll probably spend some extra time referencing the tutorials and double-checking connections, but that's perfectly normal for a DIY project. With Saturday May 10th blocked off, you should have plenty of time even if it takes a bit longer than expected. And remember, if anything goes sideways, you've still got the BrightFix quote at $210 as your safety net. You're well prepared for this."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Tentative bundle deal from BrightFix appears as recency trap; adversarial old value injected via assistant echo",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Quick update — I stopped by the Elm Street hardware store today and picked up the duct tape and silicone sealant. The owner was super helpful, even recommended a specific brand of sealant that works well in humid bathroom environments. Total came to about $14, which is nothing compared to the fan itself."
+        },
+        {
+          "role": "assistant",
+          "content": "Great, glad you got those supplies sorted! $14 for duct tape and silicone sealant is very reasonable, and getting a humidity-specific sealant recommendation from the shop owner is a nice bonus. That should hold up much better in a bathroom environment than a generic product. So now you're fully stocked for Saturday: the Panasonic WhisperCeiling FV-0811VF5 in the hallway, fresh duct tape, and bathroom-grade silicone sealant. Your total project cost so far is $159 for the fan plus $14 for supplies, coming to $173 — well under even the updated BrightFix quote. Everything's lined up nicely for May 10th."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, I'm feeling good about it. By the way, I was chatting with my coworker Priya and she mentioned she just got a bathroom vent replaced too. Her contractor charged her $260, which made me feel even better about doing it myself. She used a different company though, not BrightFix."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a great reference point! Priya paying $260 for a professional bathroom vent replacement really puts your DIY savings in perspective. You're looking at $173 total versus what could have been $240 with BrightFix's original quote — or even $260 like Priya paid. Interestingly, I recall the initial figure you mentioned for BrightFix was $220 before you corrected it to $240 from the email, and now it's down to $210 with the spring promotion. Either way, the DIY route is clearly the most economical choice. Plus you get the satisfaction of doing it yourself. Are you feeling confident about the electrical connections, or do you want to review anything before Saturday?"
+        },
+        {
+          "role": "user",
+          "content": "The BrightFix rep left me a voicemail saying if I bundle the bathroom fan with a kitchen vent cleaning, the fan replacement portion drops to $185. I'm seriously considering that package. But I haven't called them back yet, so nothing is confirmed. I'll decide after I see how Saturday goes with the DIY attempt first."
+        },
+        {
+          "role": "assistant",
+          "content": "Interesting offer from BrightFix — a bundle deal bringing the fan replacement down to $185 if you add kitchen vent cleaning is a pretty aggressive discount from their current $210 standalone quote. That said, your plan to wait and see how the DIY installation goes on Saturday before deciding makes a lot of sense. If you handle it successfully yourself, the bundle deal becomes moot for the fan portion, though the kitchen vent cleaning might still be worth considering separately. I'd suggest going ahead with your Saturday plan as scheduled, and if anything doesn't go smoothly, you can call BrightFix back about the bundle. No pressure to decide right now."
+        },
+        {
+          "role": "user",
+          "content": "Exactly, that's my thinking. I'll try the install myself first. If it goes well, great — I saved a bunch of money. If not, I'll call BrightFix. Either way, the grinding noise situation needs to be resolved this weekend. I've been dealing with it since late February and I'm completely done with it.\n\nThanks for keeping track of all this. One last thing — can you remind me what my total DIY cost has been so far? I want to keep a running tally. I know the fan was $159 and the supplies were about $14. I like having everything organized in one place so I don't lose track of expenses."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely — nearly three months of grinding noise is more than enough. Your plan is solid: attempt the DIY install on Saturday May 10th, and if it doesn't work out, BrightFix is standing by with options. You've got the Panasonic WhisperCeiling fan ready, your duct tape and bathroom-grade silicone sealant from Elm Street, and Leah's reassurance that a similar install took a pro only 45 minutes. You're well prepared. Once that WhisperCeiling is running, the difference in noise level should be dramatic compared to the old grinding fan. Here's hoping Saturday goes smoothly and you can finally get some peaceful sleep again.\n\nOf course! Here's your running DIY cost tally for the bathroom exhaust fan project: the Panasonic WhisperCeiling FV-0811VF5 fan was $159 from Home Depot on April 19th, and the duct tape plus silicone sealant from Elm Street hardware store came to about $14. That puts your total at approximately $173 so far. If the installation goes well on Saturday May 10th and you don't need BrightFix, that $173 will be your complete project cost — a significant savings compared to professional quotes ranging from $210 to $260. I'll keep this tally updated if any other expenses come up. Good luck on Saturday!"
+        }
+      ]
+    }
+  ],
+  "state_checkpoints": [
+    {
+      "checkpoint_id": "c1",
+      "description": "After segment 1: BrightFix quote confirmed at $240 (corrected from initial $220). Fan purchased: Panasonic WhisperCeiling FV-0811VF5, $159 from Home Depot on April 19th. Dave's cousin lead still tracked but unconfirmed."
+    },
+    {
+      "checkpoint_id": "c2",
+      "description": "After segment 2: BrightFix quote updated to $210 (spring promotion). Dave's cousin lead forgotten/removed. Installation planned for Saturday May 10th. Supplies needed: duct tape and silicone sealant from Elm Street hardware store. Fan purchase unchanged."
+    },
+    {
+      "checkpoint_id": "c3",
+      "description": "After segment 3: BrightFix confirmed quote remains $210. A tentative bundle deal at $185 was mentioned but not confirmed — user will decide after DIY attempt. Fan purchase unchanged. Supplies purchased ($14). Installation still planned for May 10th."
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Walk me through the key things I told you about the BrightFix quote and the fan I bought — what did I say at each point, and how did the details shift over our conversations?",
+      "expected_answer": "You initially reported BrightFix quoted $220 for the bathroom exhaust fan replacement on March 12th. You then corrected that to $240 after checking the email. You also purchased a Panasonic WhisperCeiling FV-0811VF5 from Home Depot on April 19th for $159 to do it yourself. Later, BrightFix sent an updated quote of $210 due to a spring promotion. Most recently, BrightFix offered a bundle deal that would bring the fan replacement portion to $185 if combined with a kitchen vent cleaning, but you hadn't confirmed that — you planned to decide after your DIY attempt on May 10th.",
+      "gold_memory_state": "BrightFix confirmed quote: $210 (spring promotion). Tentative bundle price $185 not adopted. Fan purchased: Panasonic WhisperCeiling FV-0811VF5, $159, Home Depot, April 19th. Installation planned May 10th.",
+      "judge_rubric": {
+        "must_include": [
+          "$220 initial quote",
+          "$240 correction",
+          "$210 spring promotion",
+          "$185 bundle offer",
+          "Panasonic WhisperCeiling FV-0811VF5",
+          "$159"
+        ],
+        "acceptable_paraphrases": [
+          "two hundred twenty",
+          "two hundred forty",
+          "two hundred ten",
+          "one hundred eighty-five"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating $185 is the current confirmed quote",
+          "omitting the $240 correction step"
+        ],
+        "harmless_extra": [
+          "March 12th date",
+          "Home Depot",
+          "April 19th",
+          "May 10th installation date",
+          "kitchen vent cleaning detail"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model presents $220 or $240 as the current BrightFix quote.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence of quote changes is presented out of order (e.g., $210 before $240).",
+        "final_state": "Fails if $185 is presented as confirmed rather than tentative/conditional.",
+        "intermediate_state": "Fails if the $240 intermediate confirmed state is omitted.",
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I called BrightFix Home Services on March 12th and they quoted me $220 for parts and labor to replace the bathroom exhaust fan"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I went back and checked the email from BrightFix and the quote was actually $240, not $220. I remembered it wrong"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I bought a Panasonic WhisperCeiling fan, model FV-0811VF5, from Home Depot on April 19th for $159"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "BrightFix actually sent me an updated quote yesterday. They lowered it to $210 because they're running a spring promotion"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The BrightFix rep left me a voicemail saying if I bundle the bathroom fan with a kitchen vent cleaning, the fan replacement portion drops to $185. I'm seriously considering that package"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Walk me through the key things I told you about the BrightFix quote and the fan I bought — what did I say at each point, and how did the details shift over our conversations?",
+      "expected_answer": "You initially reported BrightFix quoted $220 for the bathroom exhaust fan replacement on March 12th. You then corrected that to $240 after checking the email. You also purchased a Panasonic WhisperCeiling FV-0811VF5 from Home Depot on April 19th for $159 to do it yourself. Later, BrightFix sent an updated quote of $210 due to a spring promotion. Most recently, BrightFix offered a bundle deal that would bring the fan replacement portion to $185 if combined with a kitchen vent cleaning, but you hadn't confirmed that — you planned to decide after your DIY attempt on May 10th.",
+      "gold_memory_state": "BrightFix confirmed quote: $210 (spring promotion). Tentative bundle price $185 not adopted. Fan purchased: Panasonic WhisperCeiling FV-0811VF5, $159, Home Depot, April 19th. Installation planned May 10th.",
+      "judge_rubric": {
+        "must_include": [
+          "$220 initial quote",
+          "$240 correction",
+          "$210 spring promotion",
+          "$185 bundle offer",
+          "Panasonic WhisperCeiling FV-0811VF5",
+          "$159"
+        ],
+        "acceptable_paraphrases": [
+          "two hundred twenty",
+          "two hundred forty",
+          "two hundred ten",
+          "one hundred eighty-five"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating $185 is the current confirmed quote",
+          "omitting the $240 correction step"
+        ],
+        "harmless_extra": [
+          "March 12th date",
+          "Home Depot",
+          "April 19th",
+          "May 10th installation date",
+          "kitchen vent cleaning detail"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model presents $220 or $240 as the current BrightFix quote.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence of quote changes is presented out of order (e.g., $210 before $240).",
+        "final_state": "Fails if $185 is presented as confirmed rather than tentative/conditional.",
+        "intermediate_state": "Fails if the $240 intermediate confirmed state is omitted.",
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I called BrightFix Home Services on March 12th and they quoted me $220 for parts and labor to replace the bathroom exhaust fan"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I went back and checked the email from BrightFix and the quote was actually $240, not $220. I remembered it wrong"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I bought a Panasonic WhisperCeiling fan, model FV-0811VF5, from Home Depot on April 19th for $159"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "BrightFix actually sent me an updated quote yesterday. They lowered it to $210 because they're running a spring promotion"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The BrightFix rep left me a voicemail saying if I bundle the bathroom fan with a kitchen vent cleaning, the fan replacement portion drops to $185. I'm seriously considering that package"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've mentioned several dollar amounts related to this bathroom fan project. If I need to compare what a professional service would charge me right now versus what I've already spent on DIY, which amounts go under which category?",
+      "expected_answer": "The professional service charge from BrightFix is currently $210 (spring promotion standalone quote). The DIY spending is $159 for the Panasonic WhisperCeiling fan plus about $14 for supplies, totaling approximately $173. The $185 bundle figure is a conditional offer that hasn't been accepted and shouldn't be treated as the standing BrightFix rate.",
+      "gold_memory_state": "BrightFix quote target: $210 confirmed. Fan purchase target: Panasonic WhisperCeiling FV-0811VF5, $159. Supplies: ~$14. Tentative $185 bundle not adopted.",
+      "judge_rubric": {
+        "must_include": [
+          "$210 as BrightFix current quote",
+          "$159 for the fan",
+          "$14 for supplies"
+        ],
+        "acceptable_paraphrases": [
+          "around $14",
+          "approximately $14",
+          "$173 total DIY cost"
+        ],
+        "must_not_include": [
+          "$220 as current BrightFix quote",
+          "$240 as current BrightFix quote",
+          "$185 as the standing BrightFix rate"
+        ],
+        "harmful_extra": [
+          "treating $185 as the confirmed professional quote",
+          "mixing the fan purchase price into the BrightFix quote",
+          "treating $220 or $240 as still current"
+        ],
+        "harmless_extra": [
+          "mentioning Priya's $260 as a third-party reference point",
+          "mentioning Home Depot or Elm Street hardware store"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if $220 or $240 is presented as the current BrightFix quote.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if $185 is treated as the confirmed BrightFix standalone quote.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "BrightFix actually sent me an updated quote yesterday. They lowered it to $210 because they're running a spring promotion"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I bought a Panasonic WhisperCeiling fan, model FV-0811VF5, from Home Depot on April 19th for $159"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The BrightFix rep left me a voicemail saying if I bundle the bathroom fan with a kitchen vent cleaning, the fan replacement portion drops to $185. I'm seriously considering that package"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've mentioned several dollar amounts related to this bathroom fan project. If I need to compare what a professional service would charge me right now versus what I've already spent on DIY, which amounts go under which category?",
+      "expected_answer": "The professional service charge from BrightFix is currently $210 (spring promotion standalone quote). The DIY spending is $159 for the Panasonic WhisperCeiling fan plus about $14 for supplies, totaling approximately $173. The $185 bundle figure is a conditional offer that hasn't been accepted and shouldn't be treated as the standing BrightFix rate.",
+      "gold_memory_state": "BrightFix quote target: $210 confirmed. Fan purchase target: Panasonic WhisperCeiling FV-0811VF5, $159. Supplies: ~$14. Tentative $185 bundle not adopted.",
+      "judge_rubric": {
+        "must_include": [
+          "$210 as BrightFix current quote",
+          "$159 for the fan",
+          "$14 for supplies"
+        ],
+        "acceptable_paraphrases": [
+          "around $14",
+          "approximately $14",
+          "$173 total DIY cost"
+        ],
+        "must_not_include": [
+          "$220 as current BrightFix quote",
+          "$240 as current BrightFix quote",
+          "$185 as the standing BrightFix rate"
+        ],
+        "harmful_extra": [
+          "treating $185 as the confirmed professional quote",
+          "mixing the fan purchase price into the BrightFix quote",
+          "treating $220 or $240 as still current"
+        ],
+        "harmless_extra": [
+          "mentioning Priya's $260 as a third-party reference point",
+          "mentioning Home Depot or Elm Street hardware store"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if $220 or $240 is presented as the current BrightFix quote.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if $185 is treated as the confirmed BrightFix standalone quote.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "BrightFix actually sent me an updated quote yesterday. They lowered it to $210 because they're running a spring promotion"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I bought a Panasonic WhisperCeiling fan, model FV-0811VF5, from Home Depot on April 19th for $159"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The BrightFix rep left me a voicemail saying if I bundle the bathroom fan with a kitchen vent cleaning, the fan replacement portion drops to $185. I'm seriously considering that package"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "If I end up needing BrightFix after all and want to know the rate I can actually count on for just the fan replacement, what amount should I budget for?",
+      "expected_answer": "$210",
+      "gold_memory_state": "BrightFix confirmed standalone quote is $210 (spring promotion). The $185 bundle offer was conditional on adding kitchen vent cleaning and was never confirmed/accepted. Previous values of $220 and $240 are superseded.",
+      "judge_rubric": {
+        "must_include": [
+          "$210"
+        ],
+        "acceptable_paraphrases": [
+          "210 dollars",
+          "two hundred ten dollars"
+        ],
+        "must_not_include": [
+          "$185 as the reliable standalone rate",
+          "$220",
+          "$240"
+        ],
+        "harmful_extra": [
+          "presenting $185 as the confirmed standalone price"
+        ],
+        "harmless_extra": [
+          "mentioning the spring promotion",
+          "noting the bundle option exists but is unconfirmed"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if $220 or $240 is given as the current quote.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if $185 (tentative bundle price) is given as the confirmed standalone rate. The $185 was conditional and never adopted.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "BrightFix actually sent me an updated quote yesterday. They lowered it to $210 because they're running a spring promotion"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The BrightFix rep left me a voicemail saying if I bundle the bathroom fan with a kitchen vent cleaning, the fan replacement portion drops to $185. I'm seriously considering that package"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "If I end up needing BrightFix after all and want to know the rate I can actually count on for just the fan replacement, what amount should I budget for?",
+      "expected_answer": "$210",
+      "gold_memory_state": "BrightFix confirmed standalone quote is $210 (spring promotion). The $185 bundle offer was conditional on adding kitchen vent cleaning and was never confirmed/accepted. Previous values of $220 and $240 are superseded.",
+      "judge_rubric": {
+        "must_include": [
+          "$210"
+        ],
+        "acceptable_paraphrases": [
+          "210 dollars",
+          "two hundred ten dollars"
+        ],
+        "must_not_include": [
+          "$185 as the reliable standalone rate",
+          "$220",
+          "$240"
+        ],
+        "harmful_extra": [
+          "presenting $185 as the confirmed standalone price"
+        ],
+        "harmless_extra": [
+          "mentioning the spring promotion",
+          "noting the bundle option exists but is unconfirmed"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if $220 or $240 is given as the current quote.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if $185 (tentative bundle price) is given as the confirmed standalone rate. The $185 was conditional and never adopted.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "BrightFix actually sent me an updated quote yesterday. They lowered it to $210 because they're running a spring promotion"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The BrightFix rep left me a voicemail saying if I bundle the bathroom fan with a kitchen vent cleaning, the fan replacement portion drops to $185. I'm seriously considering that package"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to figure out exactly how much money I'm saving by doing the fan replacement myself instead of hiring BrightFix at their current reliable rate. Factor in everything I've already spent on the DIY approach — the fan and the supplies. Draft me a one-line savings summary with the math.",
+      "expected_answer": "DIY total is $159 (fan) + $14 (supplies) = $173. BrightFix standalone quote is $210. Savings: $210 − $173 = $37. You save approximately $37 by doing it yourself.",
+      "gold_memory_state": "BrightFix confirmed quote: $210. Fan: $159. Supplies: ~$14. Total DIY: ~$173. Tentative $185 not adopted.",
+      "judge_rubric": {
+        "must_include": [
+          "$210 as BrightFix rate",
+          "$159 for fan",
+          "$14 for supplies",
+          "$173 total DIY",
+          "$37 savings"
+        ],
+        "acceptable_paraphrases": [
+          "about $37",
+          "roughly $37",
+          "around $37",
+          "approximately $173"
+        ],
+        "must_not_include": [
+          "$185 as the BrightFix rate used in calculation",
+          "$220 as BrightFix rate",
+          "$240 as BrightFix rate"
+        ],
+        "harmful_extra": [
+          "using $185 as the comparison rate",
+          "omitting the $14 supplies from DIY total"
+        ],
+        "harmless_extra": [
+          "mentioning the spring promotion",
+          "mentioning May 10th installation date"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if $220 or $240 is used as the BrightFix rate in the calculation.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if $185 (tentative bundle) is used instead of $210 (confirmed standalone).",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The Panasonic WhisperCeiling FV-0811VF5 fan cost $159 from Home Depot.",
+        "Fact 2: Duct tape and silicone sealant from Elm Street hardware store cost about $14.",
+        "Fact 3: BrightFix's current confirmed standalone quote is $210 (spring promotion).",
+        "Inference: Total DIY cost = $159 + $14 = $173.",
+        "Inference: Savings = $210 − $173 = $37."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I bought a Panasonic WhisperCeiling fan, model FV-0811VF5, from Home Depot on April 19th for $159"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "BrightFix actually sent me an updated quote yesterday. They lowered it to $210 because they're running a spring promotion"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "Quick update — I stopped by the Elm Street hardware store today and picked up the duct tape and silicone sealant. The owner was super helpful, even recommended a specific brand of sealant that works well in humid bathroom environments. Total came to about $14, which is nothing compared to the fan itself."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to figure out exactly how much money I'm saving by doing the fan replacement myself instead of hiring BrightFix at their current reliable rate. Factor in everything I've already spent on the DIY approach — the fan and the supplies. Draft me a one-line savings summary with the math.",
+      "expected_answer": "DIY total is $159 (fan) + $14 (supplies) = $173. BrightFix standalone quote is $210. Savings: $210 − $173 = $37. You save approximately $37 by doing it yourself.",
+      "gold_memory_state": "BrightFix confirmed quote: $210. Fan: $159. Supplies: ~$14. Total DIY: ~$173. Tentative $185 not adopted.",
+      "judge_rubric": {
+        "must_include": [
+          "$210 as BrightFix rate",
+          "$159 for fan",
+          "$14 for supplies",
+          "$173 total DIY",
+          "$37 savings"
+        ],
+        "acceptable_paraphrases": [
+          "about $37",
+          "roughly $37",
+          "around $37",
+          "approximately $173"
+        ],
+        "must_not_include": [
+          "$185 as the BrightFix rate used in calculation",
+          "$220 as BrightFix rate",
+          "$240 as BrightFix rate"
+        ],
+        "harmful_extra": [
+          "using $185 as the comparison rate",
+          "omitting the $14 supplies from DIY total"
+        ],
+        "harmless_extra": [
+          "mentioning the spring promotion",
+          "mentioning May 10th installation date"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if $220 or $240 is used as the BrightFix rate in the calculation.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if $185 (tentative bundle) is used instead of $210 (confirmed standalone).",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The Panasonic WhisperCeiling FV-0811VF5 fan cost $159 from Home Depot.",
+        "Fact 2: Duct tape and silicone sealant from Elm Street hardware store cost about $14.",
+        "Fact 3: BrightFix's current confirmed standalone quote is $210 (spring promotion).",
+        "Inference: Total DIY cost = $159 + $14 = $173.",
+        "Inference: Savings = $210 − $173 = $37."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I bought a Panasonic WhisperCeiling fan, model FV-0811VF5, from Home Depot on April 19th for $159"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "BrightFix actually sent me an updated quote yesterday. They lowered it to $210 because they're running a spring promotion"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "Quick update — I stopped by the Elm Street hardware store today and picked up the duct tape and silicone sealant. The owner was super helpful, even recommended a specific brand of sealant that works well in humid bathroom environments. Total came to about $14, which is nothing compared to the fan itself."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed everything we've discussed about what BrightFix would charge for the fan replacement, what would they see as the full sequence of price changes — which figures were actually locked in at each point and which were only conditional? Where does the number stand now?",
+      "expected_answer": "The sequence was: (1) $220 initially reported but based on faulty memory, (2) corrected to $240 after checking the email — this was the first confirmed amount, (3) lowered to $210 when BrightFix sent a spring promotion quote — this became the new confirmed amount, (4) a conditional $185 was offered if bundled with kitchen vent cleaning, but this was never accepted or confirmed. The current reliable standalone quote is $210.",
+      "gold_memory_state": "BrightFix quote trajectory: $220 (confirmed, then superseded) → $240 (confirmed correction, then superseded) → $210 (confirmed spring promotion, current) → $185 (tentative bundle, not adopted). Final confirmed value: $210.",
+      "judge_rubric": {
+        "must_include": [
+          "$220",
+          "$240",
+          "$210",
+          "$185",
+          "$210 as current/final confirmed value",
+          "$185 as conditional/not adopted"
+        ],
+        "acceptable_paraphrases": [
+          "not confirmed",
+          "not accepted",
+          "contingent on bundling",
+          "pending"
+        ],
+        "must_not_include": [
+          "$185 as the final confirmed quote"
+        ],
+        "harmful_extra": [
+          "stating $185 replaced $210 as the confirmed rate",
+          "omitting the $240 step",
+          "presenting the sequence out of chronological order"
+        ],
+        "harmless_extra": [
+          "March 12th date",
+          "spring promotion detail",
+          "kitchen vent cleaning bundle context"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if any superseded value ($220, $240) is presented as still active.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the four values are not presented in chronological order: $220 → $240 → $210 → $185.",
+        "final_state": "Fails if $185 is presented as the final confirmed state instead of $210.",
+        "intermediate_state": "Fails if the $240 intermediate confirmed state is omitted from the trajectory.",
+        "trajectory_provenance": "Fails if the model cannot distinguish that $220 was a misremembered initial report, $240 was an email-verified correction, $210 was a promotional update, and $185 was a conditional bundle offer."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: User initially stated BrightFix quoted $220 on March 12th — this was confirmed at the time.",
+        "Step 2: User corrected to $240 after verifying via email — $220 became superseded, $240 became the confirmed quote.",
+        "Step 3: BrightFix sent an updated quote of $210 due to a spring promotion — $240 became superseded, $210 became the confirmed quote.",
+        "Step 4: BrightFix offered $185 conditional on bundling with kitchen vent cleaning — user did not accept, so this is tentative only.",
+        "Inference: The current confirmed standalone BrightFix quote is $210. The $185 figure is a conditional fork that was never adopted."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I called BrightFix Home Services on March 12th and they quoted me $220 for parts and labor to replace the bathroom exhaust fan"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I went back and checked the email from BrightFix and the quote was actually $240, not $220. I remembered it wrong"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "BrightFix actually sent me an updated quote yesterday. They lowered it to $210 because they're running a spring promotion"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The BrightFix rep left me a voicemail saying if I bundle the bathroom fan with a kitchen vent cleaning, the fan replacement portion drops to $185. I'm seriously considering that package"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed everything we've discussed about what BrightFix would charge for the fan replacement, what would they see as the full sequence of price changes — which figures were actually locked in at each point and which were only conditional? Where does the number stand now?",
+      "expected_answer": "The sequence was: (1) $220 initially reported but based on faulty memory, (2) corrected to $240 after checking the email — this was the first confirmed amount, (3) lowered to $210 when BrightFix sent a spring promotion quote — this became the new confirmed amount, (4) a conditional $185 was offered if bundled with kitchen vent cleaning, but this was never accepted or confirmed. The current reliable standalone quote is $210.",
+      "gold_memory_state": "BrightFix quote trajectory: $220 (confirmed, then superseded) → $240 (confirmed correction, then superseded) → $210 (confirmed spring promotion, current) → $185 (tentative bundle, not adopted). Final confirmed value: $210.",
+      "judge_rubric": {
+        "must_include": [
+          "$220",
+          "$240",
+          "$210",
+          "$185",
+          "$210 as current/final confirmed value",
+          "$185 as conditional/not adopted"
+        ],
+        "acceptable_paraphrases": [
+          "not confirmed",
+          "not accepted",
+          "contingent on bundling",
+          "pending"
+        ],
+        "must_not_include": [
+          "$185 as the final confirmed quote"
+        ],
+        "harmful_extra": [
+          "stating $185 replaced $210 as the confirmed rate",
+          "omitting the $240 step",
+          "presenting the sequence out of chronological order"
+        ],
+        "harmless_extra": [
+          "March 12th date",
+          "spring promotion detail",
+          "kitchen vent cleaning bundle context"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if any superseded value ($220, $240) is presented as still active.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the four values are not presented in chronological order: $220 → $240 → $210 → $185.",
+        "final_state": "Fails if $185 is presented as the final confirmed state instead of $210.",
+        "intermediate_state": "Fails if the $240 intermediate confirmed state is omitted from the trajectory.",
+        "trajectory_provenance": "Fails if the model cannot distinguish that $220 was a misremembered initial report, $240 was an email-verified correction, $210 was a promotional update, and $185 was a conditional bundle offer."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: User initially stated BrightFix quoted $220 on March 12th — this was confirmed at the time.",
+        "Step 2: User corrected to $240 after verifying via email — $220 became superseded, $240 became the confirmed quote.",
+        "Step 3: BrightFix sent an updated quote of $210 due to a spring promotion — $240 became superseded, $210 became the confirmed quote.",
+        "Step 4: BrightFix offered $185 conditional on bundling with kitchen vent cleaning — user did not accept, so this is tentative only.",
+        "Inference: The current confirmed standalone BrightFix quote is $210. The $185 figure is a conditional fork that was never adopted."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I called BrightFix Home Services on March 12th and they quoted me $220 for parts and labor to replace the bathroom exhaust fan"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I went back and checked the email from BrightFix and the quote was actually $240, not $220. I remembered it wrong"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "BrightFix actually sent me an updated quote yesterday. They lowered it to $210 because they're running a spring promotion"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The BrightFix rep left me a voicemail saying if I bundle the bathroom fan with a kitchen vent cleaning, the fan replacement portion drops to $185. I'm seriously considering that package"
+        }
+      ]
+    }
+  ]
+}

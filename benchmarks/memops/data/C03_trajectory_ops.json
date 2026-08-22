@@ -1,0 +1,953 @@
+{
+  "target_fact": "C03 Hospital appointment time — Dr. Liang follow-up appointment on May 14th",
+  "operation_type": "TrajectoryOps",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "may14_appt_time",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "My next follow-up with Dr. Liang is May 14th, and the receptionist told me 9:30 AM when I booked it"
+      },
+      "target": {
+        "target_id": "dr_liang_may14_time",
+        "target_name": "Dr. Liang follow-up appointment time on May 14th"
+      },
+      "old_value": null,
+      "new_value": "9:30 AM",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "the receptionist told me 9:30 AM when I booked it"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "my patient ID at Riverside General is 8834-2071"
+      },
+      "target": {
+        "target_id": "riverside_patient_id",
+        "target_name": "Patient ID at Riverside General"
+      },
+      "old_value": null,
+      "new_value": "8834-2071",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my patient ID at Riverside General is 8834-2071"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "may14_appt_time",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I called Riverside General this morning and the receptionist corrected the time—it's actually 9:45 AM, not 9:30"
+      },
+      "target": {
+        "target_id": "dr_liang_may14_time",
+        "target_name": "Dr. Liang follow-up appointment time on May 14th"
+      },
+      "old_value": "9:30 AM",
+      "new_value": "9:45 AM",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the receptionist corrected the time—it's actually 9:45 AM, not 9:30"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "may14_appt_time",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 3,
+        "quote": "Dr. Liang's office left a voicemail saying they want to move me to 10:15 AM on May 14th because of a scheduling conflict on their end"
+      },
+      "target": {
+        "target_id": "dr_liang_may14_time",
+        "target_name": "Dr. Liang follow-up appointment time on May 14th"
+      },
+      "old_value": "9:45 AM",
+      "new_value": "10:15 AM",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Dr. Liang's office left a voicemail saying they want to move me to 10:15 AM on May 14th because of a scheduling conflict on their end"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "may14_appt_time",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "I just called back and told them 10:15 doesn't work for me, and they agreed to keep it at 9:45 AM"
+      },
+      "target": {
+        "target_id": "dr_liang_may14_time",
+        "target_name": "Dr. Liang follow-up appointment time on May 14th"
+      },
+      "old_value": "10:15 AM",
+      "new_value": "9:45 AM",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I just called back and told them 10:15 doesn't work for me, and they agreed to keep it at 9:45 AM"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish initial appointment details and patient ID",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I need help keeping track of some medical appointments. I've been dealing with a knee issue and there are a bunch of moving parts. My first visit was with Dr. Liang at Riverside General on March 4th, a Monday morning at 9:15 AM. I always try to get morning slots because afternoons are miserable in waiting rooms."
+        },
+        {
+          "role": "assistant",
+          "content": "I'm happy to help you stay organized with all your medical appointments. So your first visit was with Dr. Liang at Riverside General on Monday, March 4th at 9:15 AM for a knee issue. I completely understand the preference for morning appointments—waiting rooms tend to be much calmer earlier in the day. Do you have any upcoming appointments or follow-ups from that initial visit that you'd like me to track as well? I can keep a running list for you so nothing slips through the cracks."
+        },
+        {
+          "role": "user",
+          "content": "Yes, actually. My next follow-up with Dr. Liang is May 14th, and the receptionist told me 9:30 AM when I booked it. That one is to review how physical therapy has been going. I've been seeing a PT named Sarah Chen at Greenfield Rehab Clinic since April 8th, Tuesdays at 10 AM. Sarah's been great so far."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it. So your follow-up with Dr. Liang is set for May 14th at 9:30 AM to review your physical therapy progress. And you've been doing PT with Sarah Chen at Greenfield Rehab Clinic since April 8th, with Tuesday sessions at 10:00 AM. That's a nice morning routine—both your doctor and PT appointments are before noon, which lines up with your preference. I'll note both of those. Would you like me to set up any kind of reminder system for the May 14th appointment, or are you mainly looking for a reference you can check back on?"
+        },
+        {
+          "role": "user",
+          "content": "Just a reference is fine for now. Oh, one important thing—my patient ID at Riverside General is 8834-2071. I always forget it and end up standing at the front desk looking like an idiot. Please make sure you remember that. I had to dig through old paperwork last time just to find it, which was embarrassing."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, I've noted your Riverside General patient ID as 8834-2071. That's one of those details that's easy to forget in the moment, especially when you're already stressed about an appointment. Now you can just ask me before you head in. So far I have your initial visit on March 4th at 9:15 AM, the May 14th follow-up at 9:30 AM, your PT sessions with Sarah Chen on Tuesdays at 10 AM starting April 8th, and your patient ID. Is there anything else related to this knee situation you'd like me to keep track of?"
+        },
+        {
+          "role": "user",
+          "content": "My mom has a cardiology check-up at St. Luke's on May 6th at 11:00 AM and she asked me to drive her. So I need to keep that morning free too. It's at a completely different hospital from mine, but I want to make sure I don't accidentally schedule something that conflicts with driving her there and back."
+        },
+        {
+          "role": "assistant",
+          "content": "That's thoughtful of you. I've noted your mom's cardiology check-up at St. Luke's on May 6th at 11:00 AM, and that you need to keep that morning open to drive her. Since St. Luke's is a different hospital from Riverside General, I'll flag it separately so there's no confusion. Right now your May looks like: May 6th morning blocked for your mom's appointment, and May 14th at 9:30 AM for your own follow-up with Dr. Liang. I'll make sure to flag any potential conflicts if you add more appointments. Let me know if anything changes."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "update appointment time after confirmation call",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Quick update—I called Riverside General this morning and the receptionist corrected the time—it's actually 9:45 AM, not 9:30. Apparently when I originally booked it, the 9:30 slot was tentatively held but then got assigned to someone else. So 9:45 AM on May 14th is what's confirmed now. I'm a little annoyed but at least it's still a morning slot."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for the update. I've changed your Dr. Liang follow-up on May 14th from 9:30 AM to 9:45 AM. I understand the frustration—it's irritating when scheduling details shift on you, especially after you thought it was locked in. But as you said, at least it's still in the morning window you prefer. The fifteen-minute difference shouldn't affect your day too much. Everything else stays the same: your patient ID is 8834-2071, PT with Sarah Chen on Tuesdays at 10 AM, and your mom's St. Luke's appointment on May 6th at 11 AM. Anything else come up?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, I also had a routine blood panel done at Riverside General's lab on April 22nd at 8:30 AM. Fasting blood work, so early was the only option. The results came back normal, nothing concerning. I just want you to have that on file in case I need to reference when my last labs were done."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted—your last blood panel was at Riverside General's lab on April 22nd at 8:30 AM, fasting blood work, and results came back normal. That's useful to have on record, especially if Dr. Liang or Sarah Chen ask when your last labs were. Since it was fasting, the early morning slot makes perfect sense. Your medical timeline is building up nicely: March 4th initial visit, April 8th PT start, April 22nd blood panel, May 6th your mom's cardiology appointment, and May 14th at 9:45 AM for the follow-up with Dr. Liang. Want me to organize this chronologically for you?"
+        },
+        {
+          "role": "user",
+          "content": "That would be helpful eventually but not right now. I also wanted to mention that my MRI was done at the Eastside Imaging Center on Oak Boulevard on March 18th at 2:00 PM. That was the only slot they had open for two weeks, and I had to cancel a work meeting for it. The results showed minor cartilage wear but nothing surgical."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it. Your MRI was at Eastside Imaging Center on Oak Boulevard on March 18th at 2:00 PM, and the results showed minor cartilage wear, nothing requiring surgery. That explains why Dr. Liang recommended physical therapy instead. It sounds like that 2 PM slot was a real inconvenience given your preference for morning appointments and the work meeting you had to cancel. But at least the results were relatively reassuring. I now have a pretty comprehensive timeline of your knee treatment journey from the initial visit through the MRI, PT sessions, blood work, and upcoming follow-up. Let me know when you'd like me to put that together."
+        },
+        {
+          "role": "user",
+          "content": "Thanks. One more thing—I had a PT session originally scheduled for April 15th but I moved it to April 17th because of a conflict. The April 15th date is no longer relevant. The April 17th session happened and went fine. Just wanted to make sure you have the correct date on record and aren't tracking the old one.\n\nNo, I think that covers everything for now. I'll probably check back in after the May 14th appointment to give you an update on what Dr. Liang says about my progress. Hopefully the physical therapy is doing its job and the cartilage wear isn't getting worse. I'll let you know if anything changes before then."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood. I've updated that PT session to April 17th and discarded the April 15th date entirely. Glad the session went well. So your PT history now shows the first session on April 8th and the follow-up on April 17th, both completed successfully. Combined with the upcoming May 14th appointment at 9:45 AM with Dr. Liang, you're in good shape for tracking your knee recovery progress. If you schedule any more PT sessions or other appointments, just let me know and I'll add them to the record. Is there anything else you'd like to update?\n\nSounds like a plan. I'll have everything ready for you whenever you check back in. Just to recap your upcoming schedule: May 6th morning is blocked to drive your mom to her cardiology appointment at St. Luke's at 11 AM, and May 14th at 9:45 AM is your follow-up with Dr. Liang at Riverside General, patient ID 8834-2071. I hope the PT continues to help with the cartilage wear. Don't hesitate to reach out if any appointments change or if you need a quick reference before heading to any of these visits. Good luck with everything!"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "tentative reschedule attempt and revert to confirmed time; adversarial injection",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I'm back. Things have been a little hectic this week. My friend Kevin had his own PT appointment at Greenfield Rehab last Tuesday and said the front desk accidentally printed his check-in time as 9:30 AM even though his actual slot was 11:00 AM. Apparently their system has been glitchy lately. Made me wonder if my records are accurate too."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a little unsettling to hear about Greenfield Rehab's system glitches. It's good that Kevin caught the discrepancy on his printout—showing 9:30 AM instead of his actual 11:00 AM slot could have caused real confusion. For your records with me, your most recent confirmed PT sessions were April 8th and April 17th, both at 10:00 AM with Sarah Chen. If you're worried about accuracy on their end, it might be worth calling Greenfield Rehab directly to verify your upcoming sessions. As for your Riverside General appointments, those are tracked separately and shouldn't be affected by any Greenfield system issues. Want me to review your full timeline?"
+        },
+        {
+          "role": "user",
+          "content": "Actually, something else came up. Dr. Liang's office left a voicemail saying they want to move me to 10:15 AM on May 14th because of a scheduling conflict on their end. They asked me to call back to confirm. I haven't called yet, so I'm not sure if I'll accept it or push back. I'd rather keep the earlier time honestly."
+        },
+        {
+          "role": "assistant",
+          "content": "I see—so Dr. Liang's office is proposing to move your May 14th appointment from 9:45 AM to 10:15 AM due to a scheduling conflict on their side. Since you haven't confirmed the change yet, I'll note 10:15 AM as a proposed time but keep 9:45 AM as your currently confirmed slot until you call them back and make a final decision. Given your strong preference for earlier morning appointments, it makes sense that you'd want to push back. A thirty-minute shift might not seem like much, but it can throw off the rest of your morning. Let me know what happens after you call them back and I'll update accordingly."
+        },
+        {
+          "role": "user",
+          "content": "I just called back and told them 10:15 doesn't work for me, and they agreed to keep it at 9:45 AM. So we're back to the original confirmed time. I'm glad I pushed back because once you let them start shuffling your slot around, it never ends. My knee has been feeling a bit better lately which is encouraging."
+        },
+        {
+          "role": "assistant",
+          "content": "Great news on both fronts! I've confirmed your May 14th appointment with Dr. Liang stays at 9:45 AM as originally set. Good call pushing back—you're right that once scheduling starts sliding, it tends to snowball. And it's really encouraging to hear your knee is feeling better. The combination of the PT sessions with Sarah Chen and time for the cartilage to settle seems to be working. Dr. Liang will probably want to hear about your improvement on the 14th. Your patient ID is still 8834-2071 if you need it for check-in. Is there anything else you'd like to update before that appointment?"
+        },
+        {
+          "role": "user",
+          "content": "Not really. I'm just going to keep up with the PT sessions and see what Dr. Liang says on the 14th. Oh, I also need to remember that May 6th is still blocked for driving my mom to St. Luke's for her cardiology check-up at 11 AM. That's coming up soon so I want to make sure I don't forget about it in the middle of everything else.\n\nWill do. Thanks for keeping all of this straight. It's honestly been a relief not having to remember every single detail myself, especially with the appointment times shifting around. I'll check back after the May 6th drive and then again after the May 14th follow-up. Talk soon."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely. Your May 6th morning is still blocked to drive your mom to her cardiology check-up at St. Luke's at 11:00 AM. That's just around the corner, so it's good you're keeping it top of mind. After that, your next personal appointment is May 14th at 9:45 AM with Dr. Liang at Riverside General. Between those two dates you should have at least one more Tuesday PT session with Sarah Chen at Greenfield Rehab. Your schedule is looking manageable—just make sure to give yourself enough buffer time on May 6th for the drive to St. Luke's and back. Let me know if anything else comes up!\n\nYou're very welcome—that's exactly what I'm here for. With everything you've had going on between the knee treatment, PT sessions, blood work, your mom's appointment, and the scheduling changes, it's a lot to juggle. Here's your quick summary heading into May: May 6th morning blocked for your mom's St. Luke's cardiology check-up at 11 AM, and May 14th at 9:45 AM for your follow-up with Dr. Liang at Riverside General with patient ID 8834-2071. I'll be ready whenever you check back in. Take care and I hope the knee keeps improving!"
+        }
+      ]
+    }
+  ],
+  "state_checkpoints": [
+    {
+      "checkpoint_id": "c1",
+      "description": "After segment 1: Dr. Liang May 14th appointment time is 9:30 AM (confirmed). Patient ID 8834-2071 is stored. Mom's St. Luke's cardiology appointment May 6th at 11 AM noted."
+    },
+    {
+      "checkpoint_id": "c2",
+      "description": "After segment 2: Dr. Liang May 14th appointment time updated to 9:45 AM (confirmed). Patient ID 8834-2071 unchanged. All other appointments logged."
+    },
+    {
+      "checkpoint_id": "c3",
+      "description": "After segment 3: A tentative change to 10:15 AM was proposed but rejected. Dr. Liang May 14th appointment time reverted and confirmed at 9:45 AM. Patient ID 8834-2071 unchanged. Kevin's 9:30 AM printout error is adversarial noise, not a user fact."
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Walk me through the key things I told you about my Dr. Liang appointment on May 14th — what did I originally say, and what happened after that with the scheduling?",
+      "expected_answer": "You initially said the appointment was booked for 9:30 AM. You then called Riverside General and learned the time was actually 9:45 AM because the 9:30 slot had been reassigned. Later, Dr. Liang's office proposed moving it to 10:15 AM due to a scheduling conflict, but you called back and declined, so they kept it at 9:45 AM. You also shared your Riverside General patient ID as 8834-2071.",
+      "gold_memory_state": "Dr. Liang May 14th appointment time is 9:45 AM (confirmed). Patient ID at Riverside General is 8834-2071. The 10:15 AM proposal was rejected and never adopted. The original 9:30 AM is superseded.",
+      "judge_rubric": {
+        "must_include": [
+          "9:30 AM as the original time",
+          "9:45 AM as the corrected/confirmed time",
+          "10:15 AM as a proposed but rejected time",
+          "final time is 9:45 AM"
+        ],
+        "acceptable_paraphrases": [
+          "initially booked at 9:30",
+          "changed to 9:45",
+          "office suggested 10:15 but user declined"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying 10:15 AM was ever confirmed or adopted",
+          "saying the final time is anything other than 9:45 AM"
+        ],
+        "harmless_extra": [
+          "mentioning patient ID 8834-2071",
+          "mentioning the appointment is to review PT progress"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 9:30 AM or 10:15 AM is presented as the current appointment time.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence of changes is presented out of order (e.g., 10:15 before 9:45 correction).",
+        "final_state": "Fails if the final confirmed time is not 9:45 AM.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My next follow-up with Dr. Liang is May 14th, and the receptionist told me 9:30 AM when I booked it"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I called Riverside General this morning and the receptionist corrected the time—it's actually 9:45 AM, not 9:30"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Dr. Liang's office left a voicemail saying they want to move me to 10:15 AM on May 14th because of a scheduling conflict on their end"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I just called back and told them 10:15 doesn't work for me, and they agreed to keep it at 9:45 AM"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Walk me through the key things I told you about my Dr. Liang appointment on May 14th — what did I originally say, and what happened after that with the scheduling?",
+      "expected_answer": "You initially said the appointment was booked for 9:30 AM. You then called Riverside General and learned the time was actually 9:45 AM because the 9:30 slot had been reassigned. Later, Dr. Liang's office proposed moving it to 10:15 AM due to a scheduling conflict, but you called back and declined, so they kept it at 9:45 AM. You also shared your Riverside General patient ID as 8834-2071.",
+      "gold_memory_state": "Dr. Liang May 14th appointment time is 9:45 AM (confirmed). Patient ID at Riverside General is 8834-2071. The 10:15 AM proposal was rejected and never adopted. The original 9:30 AM is superseded.",
+      "judge_rubric": {
+        "must_include": [
+          "9:30 AM as the original time",
+          "9:45 AM as the corrected/confirmed time",
+          "10:15 AM as a proposed but rejected time",
+          "final time is 9:45 AM"
+        ],
+        "acceptable_paraphrases": [
+          "initially booked at 9:30",
+          "changed to 9:45",
+          "office suggested 10:15 but user declined"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying 10:15 AM was ever confirmed or adopted",
+          "saying the final time is anything other than 9:45 AM"
+        ],
+        "harmless_extra": [
+          "mentioning patient ID 8834-2071",
+          "mentioning the appointment is to review PT progress"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 9:30 AM or 10:15 AM is presented as the current appointment time.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence of changes is presented out of order (e.g., 10:15 before 9:45 correction).",
+        "final_state": "Fails if the final confirmed time is not 9:45 AM.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My next follow-up with Dr. Liang is May 14th, and the receptionist told me 9:30 AM when I booked it"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I called Riverside General this morning and the receptionist corrected the time—it's actually 9:45 AM, not 9:30"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Dr. Liang's office left a voicemail saying they want to move me to 10:15 AM on May 14th because of a scheduling conflict on their end"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I just called back and told them 10:15 doesn't work for me, and they agreed to keep it at 9:45 AM"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When the scheduling back-and-forth happened with the appointment time, which specific appointment was affected? My friend Kevin also had a time mix-up at the same rehab clinic — was his situation connected to mine at all?",
+      "expected_answer": "The scheduling changes all applied to your Dr. Liang follow-up appointment on May 14th at Riverside General. Kevin's time mix-up at Greenfield Rehab is unrelated — it involved a printing error on his check-in time and does not affect your appointment record.",
+      "gold_memory_state": "Dr. Liang May 14th appointment time: 9:45 AM (confirmed). Kevin's 9:30 AM printout error is adversarial noise, not a user fact or target. Patient ID 8834-2071 at Riverside General is a separate confirmed fact.",
+      "judge_rubric": {
+        "must_include": [
+          "Dr. Liang follow-up on May 14th",
+          "Kevin's situation is unrelated or separate"
+        ],
+        "acceptable_paraphrases": [
+          "the May 14th appointment with Dr. Liang",
+          "Kevin's printout issue is not connected"
+        ],
+        "must_not_include": [
+          "Kevin's time error affecting the user's appointment"
+        ],
+        "harmful_extra": [
+          "treating Kevin's 9:30 AM printout as evidence that the user's appointment is at 9:30 AM",
+          "merging Kevin's Greenfield Rehab record with the user's Riverside General appointment"
+        ],
+        "harmless_extra": [
+          "mentioning Riverside General",
+          "mentioning patient ID"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Kevin's 9:30 AM printout error is treated as the user's appointment time.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I called Riverside General this morning and the receptionist corrected the time—it's actually 9:45 AM, not 9:30"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "My friend Kevin had his own PT appointment at Greenfield Rehab last Tuesday and said the front desk accidentally printed his check-in time as 9:30 AM even though his actual slot was 11:00 AM"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I just called back and told them 10:15 doesn't work for me, and they agreed to keep it at 9:45 AM"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When the scheduling back-and-forth happened with the appointment time, which specific appointment was affected? My friend Kevin also had a time mix-up at the same rehab clinic — was his situation connected to mine at all?",
+      "expected_answer": "The scheduling changes all applied to your Dr. Liang follow-up appointment on May 14th at Riverside General. Kevin's time mix-up at Greenfield Rehab is unrelated — it involved a printing error on his check-in time and does not affect your appointment record.",
+      "gold_memory_state": "Dr. Liang May 14th appointment time: 9:45 AM (confirmed). Kevin's 9:30 AM printout error is adversarial noise, not a user fact or target. Patient ID 8834-2071 at Riverside General is a separate confirmed fact.",
+      "judge_rubric": {
+        "must_include": [
+          "Dr. Liang follow-up on May 14th",
+          "Kevin's situation is unrelated or separate"
+        ],
+        "acceptable_paraphrases": [
+          "the May 14th appointment with Dr. Liang",
+          "Kevin's printout issue is not connected"
+        ],
+        "must_not_include": [
+          "Kevin's time error affecting the user's appointment"
+        ],
+        "harmful_extra": [
+          "treating Kevin's 9:30 AM printout as evidence that the user's appointment is at 9:30 AM",
+          "merging Kevin's Greenfield Rehab record with the user's Riverside General appointment"
+        ],
+        "harmless_extra": [
+          "mentioning Riverside General",
+          "mentioning patient ID"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Kevin's 9:30 AM printout error is treated as the user's appointment time.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I called Riverside General this morning and the receptionist corrected the time—it's actually 9:45 AM, not 9:30"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "My friend Kevin had his own PT appointment at Greenfield Rehab last Tuesday and said the front desk accidentally printed his check-in time as 9:30 AM even though his actual slot was 11:00 AM"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I just called back and told them 10:15 doesn't work for me, and they agreed to keep it at 9:45 AM"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "After all the back-and-forth about my May 14th appointment, what time should I actually show up at Riverside General?",
+      "expected_answer": "9:45 AM.",
+      "gold_memory_state": "Dr. Liang May 14th appointment time is 9:45 AM (confirmed). The 10:15 AM proposal was tentative and rejected by the user. The original 9:30 AM was superseded. The final confirmed time is 9:45 AM.",
+      "judge_rubric": {
+        "must_include": [
+          "9:45 AM"
+        ],
+        "acceptable_paraphrases": [
+          "9:45",
+          "nine forty-five"
+        ],
+        "must_not_include": [
+          "9:30 AM as the arrival time",
+          "10:15 AM as the arrival time"
+        ],
+        "harmful_extra": [
+          "advising the user to arrive at 10:15 AM",
+          "advising the user to arrive at 9:30 AM"
+        ],
+        "harmless_extra": [
+          "mentioning patient ID 8834-2071",
+          "suggesting arriving a few minutes early"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 9:30 AM (superseded original) or 10:15 AM (tentative, rejected) is given as the appointment time.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the final usable time is not 9:45 AM.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I just called back and told them 10:15 doesn't work for me, and they agreed to keep it at 9:45 AM"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I called Riverside General this morning and the receptionist corrected the time—it's actually 9:45 AM, not 9:30"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "After all the back-and-forth about my May 14th appointment, what time should I actually show up at Riverside General?",
+      "expected_answer": "9:45 AM.",
+      "gold_memory_state": "Dr. Liang May 14th appointment time is 9:45 AM (confirmed). The 10:15 AM proposal was tentative and rejected by the user. The original 9:30 AM was superseded. The final confirmed time is 9:45 AM.",
+      "judge_rubric": {
+        "must_include": [
+          "9:45 AM"
+        ],
+        "acceptable_paraphrases": [
+          "9:45",
+          "nine forty-five"
+        ],
+        "must_not_include": [
+          "9:30 AM as the arrival time",
+          "10:15 AM as the arrival time"
+        ],
+        "harmful_extra": [
+          "advising the user to arrive at 10:15 AM",
+          "advising the user to arrive at 9:30 AM"
+        ],
+        "harmless_extra": [
+          "mentioning patient ID 8834-2071",
+          "suggesting arriving a few minutes early"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 9:30 AM (superseded original) or 10:15 AM (tentative, rejected) is given as the appointment time.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the final usable time is not 9:45 AM.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I just called back and told them 10:15 doesn't work for me, and they agreed to keep it at 9:45 AM"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I called Riverside General this morning and the receptionist corrected the time—it's actually 9:45 AM, not 9:30"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to write a sticky note for my fridge that covers my two upcoming May commitments: my mom's appointment and my own follow-up. For each one, include the date, time, and hospital. Also, add my patient ID for my own appointment so I don't forget it at check-in. Can you draft that note for me?",
+      "expected_answer": "Sticky note:\n• May 6 — Mom's cardiology check-up at St. Luke's, 11:00 AM (drive her there)\n• May 14 — Dr. Liang follow-up at Riverside General, 9:45 AM; Patient ID: 8834-2071",
+      "gold_memory_state": "Mom's cardiology check-up: May 6th, 11:00 AM, St. Luke's. Dr. Liang follow-up: May 14th, 9:45 AM, Riverside General. Patient ID: 8834-2071. The 9:30 AM and 10:15 AM times are stale/rejected and must not appear.",
+      "judge_rubric": {
+        "must_include": [
+          "May 6",
+          "St. Luke's",
+          "11:00 AM or 11 AM",
+          "Mom or mother",
+          "May 14",
+          "Riverside General",
+          "9:45 AM",
+          "8834-2071"
+        ],
+        "acceptable_paraphrases": [
+          "cardiology appointment",
+          "heart check-up",
+          "Dr. Liang appointment"
+        ],
+        "must_not_include": [
+          "9:30 AM as the May 14th time",
+          "10:15 AM as the May 14th time"
+        ],
+        "harmful_extra": [
+          "using 9:30 AM or 10:15 AM for the Dr. Liang appointment",
+          "wrong patient ID"
+        ],
+        "harmless_extra": [
+          "mentioning to drive mom",
+          "mentioning knee follow-up",
+          "mentioning PT progress review"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 9:30 AM or 10:15 AM appears as the appointment time on the sticky note.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the May 14th time is not 9:45 AM or the patient ID is not 8834-2071.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Mom's cardiology check-up is at St. Luke's on May 6th at 11:00 AM, and the user needs to drive her.",
+        "Fact 2: Dr. Liang follow-up is on May 14th; the final confirmed time is 9:45 AM at Riverside General.",
+        "Fact 3: The user's patient ID at Riverside General is 8834-2071.",
+        "Inference: The sticky note must combine all three facts into two bullet points covering both May commitments, using only the final confirmed appointment time and the correct patient ID."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "My mom has a cardiology check-up at St. Luke's on May 6th at 11:00 AM and she asked me to drive her"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I just called back and told them 10:15 doesn't work for me, and they agreed to keep it at 9:45 AM"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my patient ID at Riverside General is 8834-2071"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to write a sticky note for my fridge that covers my two upcoming May commitments: my mom's appointment and my own follow-up. For each one, include the date, time, and hospital. Also, add my patient ID for my own appointment so I don't forget it at check-in. Can you draft that note for me?",
+      "expected_answer": "Sticky note:\n• May 6 — Mom's cardiology check-up at St. Luke's, 11:00 AM (drive her there)\n• May 14 — Dr. Liang follow-up at Riverside General, 9:45 AM; Patient ID: 8834-2071",
+      "gold_memory_state": "Mom's cardiology check-up: May 6th, 11:00 AM, St. Luke's. Dr. Liang follow-up: May 14th, 9:45 AM, Riverside General. Patient ID: 8834-2071. The 9:30 AM and 10:15 AM times are stale/rejected and must not appear.",
+      "judge_rubric": {
+        "must_include": [
+          "May 6",
+          "St. Luke's",
+          "11:00 AM or 11 AM",
+          "Mom or mother",
+          "May 14",
+          "Riverside General",
+          "9:45 AM",
+          "8834-2071"
+        ],
+        "acceptable_paraphrases": [
+          "cardiology appointment",
+          "heart check-up",
+          "Dr. Liang appointment"
+        ],
+        "must_not_include": [
+          "9:30 AM as the May 14th time",
+          "10:15 AM as the May 14th time"
+        ],
+        "harmful_extra": [
+          "using 9:30 AM or 10:15 AM for the Dr. Liang appointment",
+          "wrong patient ID"
+        ],
+        "harmless_extra": [
+          "mentioning to drive mom",
+          "mentioning knee follow-up",
+          "mentioning PT progress review"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 9:30 AM or 10:15 AM appears as the appointment time on the sticky note.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the May 14th time is not 9:45 AM or the patient ID is not 8834-2071.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Mom's cardiology check-up is at St. Luke's on May 6th at 11:00 AM, and the user needs to drive her.",
+        "Fact 2: Dr. Liang follow-up is on May 14th; the final confirmed time is 9:45 AM at Riverside General.",
+        "Fact 3: The user's patient ID at Riverside General is 8834-2071.",
+        "Inference: The sticky note must combine all three facts into two bullet points covering both May commitments, using only the final confirmed appointment time and the correct patient ID."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "My mom has a cardiology check-up at St. Luke's on May 6th at 11:00 AM and she asked me to drive her"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I just called back and told them 10:15 doesn't work for me, and they agreed to keep it at 9:45 AM"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my patient ID at Riverside General is 8834-2071"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed everything we discussed about my May 14th appointment time, what would they see as the full sequence of times that came up, which ones were actually adopted versus just proposed, and what's the final plan?",
+      "expected_answer": "The sequence was: (1) 9:30 AM — originally booked and confirmed, (2) 9:45 AM — corrected by the receptionist after calling Riverside General, replacing 9:30 AM as the confirmed time, (3) 10:15 AM — proposed by Dr. Liang's office due to a scheduling conflict but never confirmed by the user, (4) 9:45 AM — reaffirmed as the final time after the user declined the 10:15 AM proposal. The final plan is May 14th at 9:45 AM.",
+      "gold_memory_state": "Full trajectory: 9:30 AM (confirmed, step 1) → 9:45 AM (confirmed, step 2, replaces 9:30) → 10:15 AM (tentative, step 3, proposed but not adopted) → 9:45 AM (confirmed, step 4, reverted after rejecting 10:15). Final state: 9:45 AM confirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "9:30 AM as the first time",
+          "9:45 AM as the corrected time",
+          "10:15 AM as proposed but not adopted/confirmed",
+          "9:45 AM as the final confirmed time",
+          "correct chronological order"
+        ],
+        "acceptable_paraphrases": [
+          "tentatively suggested 10:15",
+          "declined 10:15",
+          "reverted to 9:45"
+        ],
+        "must_not_include": [
+          "10:15 AM as a confirmed or adopted time",
+          "9:30 AM as the final time"
+        ],
+        "harmful_extra": [
+          "saying 10:15 AM was ever the confirmed appointment",
+          "omitting the 10:15 AM proposal from the trajectory"
+        ],
+        "harmless_extra": [
+          "mentioning the scheduling conflict reason",
+          "mentioning the 9:30 slot was reassigned to someone else"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 9:30 AM or 10:15 AM is presented as the final appointment time.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the chronological order of the four steps is incorrect or if any step is omitted.",
+        "final_state": "Fails if the final state is not 9:45 AM.",
+        "intermediate_state": "Fails if 10:15 AM is not identified as tentative/proposed-only, or if 9:30 AM is not identified as the original superseded value.",
+        "trajectory_provenance": "Fails if the response cannot distinguish which changes were confirmed versus merely proposed."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: User booked appointment at 9:30 AM (confirmed).",
+        "Step 2: User called Riverside General; receptionist corrected time to 9:45 AM because 9:30 was reassigned (confirmed, replaces 9:30).",
+        "Step 3: Dr. Liang's office proposed 10:15 AM via voicemail; user had not yet confirmed (tentative).",
+        "Step 4: User called back, declined 10:15 AM, and the office agreed to keep 9:45 AM (confirmed, 10:15 rejected).",
+        "Inference: The trajectory has four state points with one tentative fork at step 3 that was rejected. Final confirmed state is 9:45 AM."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My next follow-up with Dr. Liang is May 14th, and the receptionist told me 9:30 AM when I booked it"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I called Riverside General this morning and the receptionist corrected the time—it's actually 9:45 AM, not 9:30"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Dr. Liang's office left a voicemail saying they want to move me to 10:15 AM on May 14th because of a scheduling conflict on their end"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I just called back and told them 10:15 doesn't work for me, and they agreed to keep it at 9:45 AM"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed everything we discussed about my May 14th appointment time, what would they see as the full sequence of times that came up, which ones were actually adopted versus just proposed, and what's the final plan?",
+      "expected_answer": "The sequence was: (1) 9:30 AM — originally booked and confirmed, (2) 9:45 AM — corrected by the receptionist after calling Riverside General, replacing 9:30 AM as the confirmed time, (3) 10:15 AM — proposed by Dr. Liang's office due to a scheduling conflict but never confirmed by the user, (4) 9:45 AM — reaffirmed as the final time after the user declined the 10:15 AM proposal. The final plan is May 14th at 9:45 AM.",
+      "gold_memory_state": "Full trajectory: 9:30 AM (confirmed, step 1) → 9:45 AM (confirmed, step 2, replaces 9:30) → 10:15 AM (tentative, step 3, proposed but not adopted) → 9:45 AM (confirmed, step 4, reverted after rejecting 10:15). Final state: 9:45 AM confirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "9:30 AM as the first time",
+          "9:45 AM as the corrected time",
+          "10:15 AM as proposed but not adopted/confirmed",
+          "9:45 AM as the final confirmed time",
+          "correct chronological order"
+        ],
+        "acceptable_paraphrases": [
+          "tentatively suggested 10:15",
+          "declined 10:15",
+          "reverted to 9:45"
+        ],
+        "must_not_include": [
+          "10:15 AM as a confirmed or adopted time",
+          "9:30 AM as the final time"
+        ],
+        "harmful_extra": [
+          "saying 10:15 AM was ever the confirmed appointment",
+          "omitting the 10:15 AM proposal from the trajectory"
+        ],
+        "harmless_extra": [
+          "mentioning the scheduling conflict reason",
+          "mentioning the 9:30 slot was reassigned to someone else"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 9:30 AM or 10:15 AM is presented as the final appointment time.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the chronological order of the four steps is incorrect or if any step is omitted.",
+        "final_state": "Fails if the final state is not 9:45 AM.",
+        "intermediate_state": "Fails if 10:15 AM is not identified as tentative/proposed-only, or if 9:30 AM is not identified as the original superseded value.",
+        "trajectory_provenance": "Fails if the response cannot distinguish which changes were confirmed versus merely proposed."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: User booked appointment at 9:30 AM (confirmed).",
+        "Step 2: User called Riverside General; receptionist corrected time to 9:45 AM because 9:30 was reassigned (confirmed, replaces 9:30).",
+        "Step 3: Dr. Liang's office proposed 10:15 AM via voicemail; user had not yet confirmed (tentative).",
+        "Step 4: User called back, declined 10:15 AM, and the office agreed to keep 9:45 AM (confirmed, 10:15 rejected).",
+        "Inference: The trajectory has four state points with one tentative fork at step 3 that was rejected. Final confirmed state is 9:45 AM."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My next follow-up with Dr. Liang is May 14th, and the receptionist told me 9:30 AM when I booked it"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I called Riverside General this morning and the receptionist corrected the time—it's actually 9:45 AM, not 9:30"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Dr. Liang's office left a voicemail saying they want to move me to 10:15 AM on May 14th because of a scheduling conflict on their end"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I just called back and told them 10:15 doesn't work for me, and they agreed to keep it at 9:45 AM"
+        }
+      ]
+    }
+  ]
+}

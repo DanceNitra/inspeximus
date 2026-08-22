@@ -16,7 +16,12 @@ import pandas as pd
 #   LLM_BASE_URL (e.g. https://api.openai.com/v1), LLM_API_KEY, LLM_MODEL.
 # Fallback (our setup): load Ollama Cloud creds from an agora server/.env if LLM_* are unset.
 if not os.environ.get("LLM_BASE_URL"):
-    _envf = os.environ.get("AGORA_ENV_FILE", r"C:/Users/Danculus/agora/server/.env")
+    # Relative to this file, never the author's home directory -- see DanceNitra/inspeximus#1.
+    _here = os.path.dirname(os.path.abspath(__file__))
+    _envf = os.environ.get("AGORA_ENV_FILE") or next(
+        (c for c in (os.path.join(_here, "..", ".env"),
+                     os.path.join(_here, "..", "server", ".env"),
+                     os.path.join(os.getcwd(), "server", ".env")) if os.path.exists(c)), "")
     if os.path.exists(_envf):
         for line in Path(_envf).read_text(encoding="utf-8", errors="ignore").splitlines():
             line = line.strip()

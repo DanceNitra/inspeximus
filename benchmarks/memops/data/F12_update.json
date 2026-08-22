@@ -1,0 +1,806 @@
+{
+  "target_fact": "User's credit score, tracked over time with multiple confirmed changes and one tentative fork",
+  "operation_type": "Update",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "credit_score_chain",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I checked my Experian credit score on March 3rd and it came back at 712"
+      },
+      "target": {
+        "target_id": "user_credit_score",
+        "target_name": "User's credit score"
+      },
+      "old_value": null,
+      "new_value": "712",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I checked my Experian credit score on March 3rd and it came back at 712"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "credit_score_chain",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "Credit Karma sent me a notification around the second week of April showing my score had dropped to 698"
+      },
+      "target": {
+        "target_id": "user_credit_score",
+        "target_name": "User's credit score"
+      },
+      "old_value": "712",
+      "new_value": "698",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Credit Karma sent me a notification around the second week of April showing my score had dropped to 698"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "the hard inquiry from the Chase Sapphire application plus the lower average account age probably caused it"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "credit_score_chain",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I pulled my score again last week and it's back up to 721"
+      },
+      "target": {
+        "target_id": "user_credit_score",
+        "target_name": "User's credit score"
+      },
+      "old_value": "698",
+      "new_value": "721",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I pulled my score again last week and it's back up to 721"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "credit_score_chain",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 7,
+        "quote": "My mom confirmed she's adding me as an authorized user on her card from 1998, and Credit Karma's simulator projects my score will jump to about 745 once that reports"
+      },
+      "target": {
+        "target_id": "user_credit_score",
+        "target_name": "User's credit score"
+      },
+      "old_value": "721",
+      "new_value": "745",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "My mom confirmed she's adding me as an authorized user on her card from 1998, and Credit Karma's simulator projects my score will jump to about 745 once that reports"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I set up autopay on all three of my credit cards — the Chase Sapphire Preferred, the Citi Double Cash, and the Discover It"
+      },
+      "target": {
+        "target_id": "autopay_setup",
+        "target_name": "Autopay configuration on user's credit cards"
+      },
+      "old_value": null,
+      "new_value": "Autopay active on Chase Sapphire Preferred, Citi Double Cash, and Discover It",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I set up autopay on all three of my credit cards — the Chase Sapphire Preferred, the Citi Double Cash, and the Discover It"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish initial credit score, Chase approval, and first update to score",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to start tracking some credit-related stuff with you so I have a running record. I checked my Experian credit score on March 3rd and it came back at 712. I was honestly a little surprised it wasn't higher since I've been pretty diligent about paying everything on time. Can you note that as my baseline?"
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, I've noted your Experian credit score as 712, checked on March 3rd. That's a solid score in the \"good\" range, so you're in decent shape even if it feels like it should be higher given your payment discipline. Tracking it over time is a smart move — small fluctuations are normal, but having a dated baseline helps you spot real trends versus noise. Would you like me to keep a simple timeline format, or would you prefer something more detailed with notes about what might have influenced each reading?"
+        },
+        {
+          "role": "user",
+          "content": "A timeline with notes would be great. So here's another thing: around mid-March I applied for a Chase Sapphire Preferred card. I really wanted it because I love earning points on dining out — that's where most of my discretionary spending goes. I got approved with a $9,500 credit limit. Pretty happy about that honestly."
+        },
+        {
+          "role": "assistant",
+          "content": "Nice, congratulations on the Chase Sapphire Preferred approval! A $9,500 limit is a strong starting line for that card. The Sapphire Preferred is excellent for dining rewards — you'll earn 3x points per dollar at restaurants, which adds up fast if dining is your main discretionary category. I'll add the mid-March Chase Sapphire Preferred approval to your credit timeline. One thing to keep in mind is that the hard inquiry from the application will temporarily affect your score, and the new account will lower your average account age. Both effects are usually short-lived though. Want me to flag that as a potential factor for your next score check?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, you should flag that because it already happened. Credit Karma sent me a notification around the second week of April showing my score had dropped to 698. That really bothered me for a few days. I figured out that the hard inquiry from the Chase Sapphire application plus the lower average account age probably caused it. It's frustrating because I didn't miss any payments or anything."
+        },
+        {
+          "role": "assistant",
+          "content": "I completely understand the frustration — seeing your score dip from 712 to 698 when you haven't missed a payment feels counterintuitive. But your diagnosis is almost certainly correct: the hard inquiry typically shaves 5-10 points, and the reduced average account age from the new Chase card compounds that. The good news is both factors diminish over time. The inquiry's impact fades within a few months, and your average age will naturally recover as the account matures. I've updated your timeline: March 3rd baseline was 712, and by the second week of April it had dropped to 698, attributed to the Chase hard inquiry and reduced average account age."
+        },
+        {
+          "role": "user",
+          "content": "Right, that makes sense. Oh, and before the Chase application, I had paid off my Best Buy credit card — the remaining balance was $380. That account is closed now. I also have a friend Kevin who got denied for a car loan because of a mystery collections account from an old 2021 medical bill. Made me want to check my own report more carefully."
+        },
+        {
+          "role": "assistant",
+          "content": "Good call paying off and closing the Best Buy card — that $380 balance is done and off your plate. Just keep in mind that closing an account can also affect your average account age and total available credit, so it may have contributed slightly to the score dip as well. As for Kevin's situation, that's unfortunately common with old medical debt — it can go to collections without clear notification. I'd strongly recommend pulling your full credit report from annualcreditreport.com to check for any surprise collections or errors. You're entitled to free reports from all three bureaus. Want me to set a reminder for you to do that?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establish autopay setup, confirm score recovery to 721, discuss utilization strategy",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So after that score dip I decided to be extra careful. I set up autopay on all three of my credit cards — the Chase Sapphire Preferred, the Citi Double Cash, and the Discover It. I never want to accidentally miss a payment. That's really important to me, so please make sure you have that noted down."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — autopay is now active on all three of your credit cards: the Chase Sapphire Preferred, the Citi Double Cash, and the Discover It. That's a really smart safety net. Even if you're normally on top of due dates, autopay ensures you're covered during busy weeks or if a notification gets buried. Payment history is the single largest factor in your credit score, so protecting a perfect record is worth the effort. I'll flag this in your credit notes as a structural change you made after the April dip. Do you have autopay set to minimum payment or full statement balance?"
+        },
+        {
+          "role": "user",
+          "content": "Full statement balance on all of them. I don't carry balances — I like seeing zero or near-zero after each cycle. It's like keeping a clean desk. Anyway, the good news: I pulled my score again last week and it's back up to 721. So it recovered past the original 712 baseline, which felt really validating."
+        },
+        {
+          "role": "assistant",
+          "content": "That's fantastic — 721 is a meaningful recovery and then some! Going from 712 to 698 and back up to 721 shows the system working as expected: the temporary ding from the hard inquiry and new account is fading, and your consistent on-time payments plus low utilization are pulling the number up. I've updated your timeline: March 3rd was 712, second week of April was 698, and now your latest check shows 721. Paying the full statement balance every cycle is the gold standard approach. You avoid interest entirely and keep utilization naturally low. How are you managing utilization across the three cards specifically?"
+        },
+        {
+          "role": "user",
+          "content": "I've been keeping utilization under 20% on each individual card, not just overall. I read that per-card utilization matters too, and it seems to be working. Between the three cards I try to spread my spending somewhat evenly. The Chase gets all dining, the Citi gets most everyday purchases, and the Discover rotates with whatever their quarterly bonus category is."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really disciplined strategy and you're right — per-card utilization does matter in scoring models, not just aggregate utilization. Keeping each card under 20% individually is a strong approach. Your spending allocation makes sense too: maximizing the Chase 3x on dining, using the Citi Double Cash for its flat 2% on everything else, and catching the Discover It quarterly 5% rotating bonuses. That's essentially optimizing rewards while simultaneously managing utilization. With autopay on full balance and sub-20% per-card utilization, you're covering both the payment history and credit utilization factors, which together account for roughly 65% of your FICO score."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. I also want to mention that my Chase Sapphire Preferred has a $9,500 limit, and I typically charge around $1,200 to $1,500 a month on it for dining and some travel. So that keeps me well under the 20% threshold on that card. The other two cards have lower limits but I spend less on them proportionally.\n\nSure, I'd be curious about that. But I also want you to remember that I'm specifically tracking this for the next few months because I might want to apply for a mortgage pre-approval by the end of the year. So every point matters. I want to make sure I don't do anything that tanks my score before then."
+        },
+        {
+          "role": "assistant",
+          "content": "That math checks out nicely — even at $1,500 on a $9,500 limit, you're at about 15.8% utilization on the Chase Sapphire, comfortably under your 20% target. And if your other cards have lower limits but proportionally lower spending, you're maintaining that discipline across the board. This is a really clean credit management setup. Between the autopay safety net, the per-card utilization control, and the strategic card allocation, you're covering all the major bases. Your score trajectory from 712 to 698 to 721 reflects that effort. Want me to project where your score might head if you maintain this pattern for another quarter?\n\nThat's a crucial detail — a potential mortgage pre-approval by year-end changes the strategy lens significantly. For mortgage applications, lenders typically look at your middle score across the three bureaus, and even a few points can affect the rate tier you qualify for. Given your current trajectory, here's what I'd recommend: avoid opening any new credit accounts between now and the application, keep utilization even lower if possible — some experts suggest under 10% for mortgage prep — and continue the autopay full-balance approach. I'll flag the mortgage timeline in your credit notes so we can evaluate every decision against that goal. Your 721 is a solid foundation, and with several months of clean history ahead, you're in a good position."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Tentative score projection from authorized user addition, adversarial injection of Kevin's score",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Quick update — I was talking to my mom over the weekend and she's now confirmed she's going to add me as an authorized user on her oldest credit card. She's had it since 1998, so that's over 25 years of history. I'm hoping that'll give my average account age a big boost."
+        },
+        {
+          "role": "assistant",
+          "content": "That's exciting news! Being added as an authorized user on a card with 25+ years of history could meaningfully increase your average account age, which is one of the factors that took a hit when you opened the Chase Sapphire. Since your mom has presumably maintained that card in good standing all these years, you'd inherit that positive payment history on your report as well. The impact varies by scoring model — FICO typically counts authorized user accounts, while some newer models weight them differently. Once it reports to the bureaus, you should see the effect within one to two billing cycles. This could be a nice boost heading into your mortgage prep timeline."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, that's what I'm thinking. By the way, Kevin finally got his credit situation sorted out — he disputed that old medical collections account and got it removed. He told me his score jumped up to 731 after the removal. Good for him honestly, he was really stressed about it."
+        },
+        {
+          "role": "assistant",
+          "content": "That's great to hear about Kevin! Disputing and removing an erroneous collections account can have a dramatic effect on a score — going from a denial to 731 is a solid recovery. Medical debt disputes have gotten somewhat easier too, since the bureaus agreed to remove paid medical collections and give more time before reporting unpaid ones. It probably also reinforces your own instinct to regularly check your full credit report for anything unexpected. Speaking of which, Kevin's 731 post-dispute is actually close to where you're tracking right now at 721. You're both in a good range heading into any major credit applications."
+        },
+        {
+          "role": "user",
+          "content": "Ha, yeah we compared numbers actually. His 731 is a bit ahead of me but I've got a cleaner history without any collections drama. Anyway, I wanted to ask — with the authorized user thing from my mom, how long do you think it'll take to show up on my report? I want to time things right for the mortgage."
+        },
+        {
+          "role": "assistant",
+          "content": "Typically, once your mom's card issuer adds you and reports to the bureaus, it shows up within one to two statement cycles — so roughly 30 to 60 days. Some issuers report authorized users to all three bureaus, while others may only report to one or two, so it's worth checking which bureaus her issuer reports to. For mortgage timing, you'd want this to be fully reflected at least two to three months before your pre-approval application so the score impact has time to stabilize. Given your potential year-end mortgage window, having her add you soon means it should be well established by then. The key variable is how quickly her card issuer processes and reports the addition."
+        },
+        {
+          "role": "user",
+          "content": "My mom confirmed she's adding me as an authorized user on her card from 1998, and Credit Karma's simulator projects my score will jump to about 745 once that reports. I'm pretty excited about that number — 745 would put me in a much better position for the mortgage rate tiers I've been researching.\n\nRight, I know the simulator isn't exact. For now I'm just going to keep everything steady — autopay running, utilization low, no new applications. I want to let things settle and see where the score actually lands once my mom's card reports. Can you give me a summary of my credit score timeline so far?"
+        },
+        {
+          "role": "assistant",
+          "content": "A projected 745 would indeed be a significant jump and would likely put you into better mortgage rate territory! Credit Karma's simulator is useful for directional estimates, though keep in mind it uses VantageScore rather than FICO, and mortgage lenders predominantly use FICO models. The actual impact could be somewhat different, but the general direction — a meaningful boost from inheriting 25+ years of account history — should hold true across models. It's encouraging to see the projection trending so positively. Once the authorized user status actually reports and you get a fresh score pull, we'll know the real number. In the meantime, keep doing what you're doing with the autopay and low utilization.\n\nHere's your credit score timeline based on everything you've shared: On March 3rd your Experian score was 712, which became your tracking baseline. Around mid-March you were approved for the Chase Sapphire Preferred with a $9,500 limit. By the second week of April, your score had dipped to 698, attributed to the hard inquiry and reduced average account age from the new Chase card. Your most recent confirmed pull showed 721, a recovery past your original baseline. You have autopay set to full statement balance on all three cards — Chase Sapphire Preferred, Citi Double Cash, and Discover It — and you're maintaining under 20% utilization per card. Credit Karma's simulator projects approximately 745 once your mom's authorized user addition reports, though that's pending and unconfirmed. Your goal is mortgage pre-approval by year-end."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations about my credit, I've mentioned my score a few times at different points. Can you walk me through what I told you about my credit score numbers and when I shared each one?",
+      "expected_answer": "You first shared that your Experian credit score was 712, checked on March 3rd. Then around the second week of April, you mentioned Credit Karma showed it had dropped to 698, which you attributed to the hard inquiry from the Chase Sapphire application and lower average account age. Later, you said you pulled your score again and it was back up to 721. Most recently, you mentioned that Credit Karma's simulator projects your score will jump to about 745 once your mom's authorized user addition reports, though that hasn't actually happened yet.",
+      "gold_memory_state": "Credit score chain: 712 (March 3, confirmed) → 698 (mid-April, confirmed) → 721 (latest confirmed pull) → 745 (projected/tentative, pending authorized user reporting). Autopay is active on Chase Sapphire Preferred, Citi Double Cash, and Discover It (confirmed, separate target).",
+      "judge_rubric": {
+        "must_include": [
+          "712",
+          "698",
+          "721",
+          "745"
+        ],
+        "acceptable_paraphrases": [
+          "score dropped to 698",
+          "recovered to 721",
+          "projected 745"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "treating 745 as a confirmed current score"
+        ],
+        "harmless_extra": [
+          "mention of hard inquiry cause",
+          "mention of authorized user addition",
+          "mention of Chase Sapphire application"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 712 or 698 is presented as the current score.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the chronological order of score values is incorrect.",
+        "final_state": "Fails if 745 is presented as confirmed rather than projected/tentative.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I checked my Experian credit score on March 3rd and it came back at 712"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Credit Karma sent me a notification around the second week of April showing my score had dropped to 698"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I pulled my score again last week and it's back up to 721"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Credit Karma's simulator projects my score will jump to about 745 once that reports"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations about my credit, I've mentioned my score a few times at different points. Can you walk me through what I told you about my credit score numbers and when I shared each one?",
+      "expected_answer": "You first shared that your Experian credit score was 712, checked on March 3rd. Then around the second week of April, you mentioned Credit Karma showed it had dropped to 698, which you attributed to the hard inquiry from the Chase Sapphire application and lower average account age. Later, you said you pulled your score again and it was back up to 721. Most recently, you mentioned that Credit Karma's simulator projects your score will jump to about 745 once your mom's authorized user addition reports, though that hasn't actually happened yet.",
+      "gold_memory_state": "Credit score chain: 712 (March 3, confirmed) → 698 (mid-April, confirmed) → 721 (latest confirmed pull) → 745 (projected/tentative, pending authorized user reporting). Autopay is active on Chase Sapphire Preferred, Citi Double Cash, and Discover It (confirmed, separate target).",
+      "judge_rubric": {
+        "must_include": [
+          "712",
+          "698",
+          "721",
+          "745"
+        ],
+        "acceptable_paraphrases": [
+          "score dropped to 698",
+          "recovered to 721",
+          "projected 745"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "treating 745 as a confirmed current score"
+        ],
+        "harmless_extra": [
+          "mention of hard inquiry cause",
+          "mention of authorized user addition",
+          "mention of Chase Sapphire application"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 712 or 698 is presented as the current score.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the chronological order of score values is incorrect.",
+        "final_state": "Fails if 745 is presented as confirmed rather than projected/tentative.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I checked my Experian credit score on March 3rd and it came back at 712"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Credit Karma sent me a notification around the second week of April showing my score had dropped to 698"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I pulled my score again last week and it's back up to 721"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Credit Karma's simulator projects my score will jump to about 745 once that reports"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've shared various credit-related numbers in our conversations — my own score readings at different times, and also my friend Kevin's score. If I'm preparing for my mortgage pre-approval, which specific score reading should I treat as my current baseline, and does Kevin's number have any bearing on my application?",
+      "expected_answer": "Your current confirmed credit score baseline is 721. Kevin's score of 731 is his own post-dispute number and has no bearing on your mortgage application.",
+      "gold_memory_state": "User's confirmed current credit score: 721. Kevin's score: 731 (different person, not the user's target). Tentative projected score of 745 is not yet confirmed. Autopay setup is a separate confirmed target unrelated to the score value.",
+      "judge_rubric": {
+        "must_include": [
+          "721 as the user's current score",
+          "Kevin's score does not apply to user's mortgage"
+        ],
+        "acceptable_paraphrases": [
+          "721 is the latest confirmed score",
+          "Kevin's 731 is irrelevant to your application"
+        ],
+        "must_not_include": [
+          "745 as the current baseline",
+          "712 as the current baseline",
+          "698 as the current baseline"
+        ],
+        "harmful_extra": [
+          "treating Kevin's 731 as the user's score",
+          "treating the projected 745 as confirmed and usable for mortgage prep"
+        ],
+        "harmless_extra": [
+          "mentioning that 745 is a projection pending the authorized user addition",
+          "mentioning Kevin's score context"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 712 or 698 is offered as the current baseline.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if 745 is treated as the confirmed current score or if Kevin's 731 is confused with the user's score.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I pulled my score again last week and it's back up to 721"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "He told me his score jumped up to 731 after the removal"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Credit Karma's simulator projects my score will jump to about 745 once that reports"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've shared various credit-related numbers in our conversations — my own score readings at different times, and also my friend Kevin's score. If I'm preparing for my mortgage pre-approval, which specific score reading should I treat as my current baseline, and does Kevin's number have any bearing on my application?",
+      "expected_answer": "Your current confirmed credit score baseline is 721. Kevin's score of 731 is his own post-dispute number and has no bearing on your mortgage application.",
+      "gold_memory_state": "User's confirmed current credit score: 721. Kevin's score: 731 (different person, not the user's target). Tentative projected score of 745 is not yet confirmed. Autopay setup is a separate confirmed target unrelated to the score value.",
+      "judge_rubric": {
+        "must_include": [
+          "721 as the user's current score",
+          "Kevin's score does not apply to user's mortgage"
+        ],
+        "acceptable_paraphrases": [
+          "721 is the latest confirmed score",
+          "Kevin's 731 is irrelevant to your application"
+        ],
+        "must_not_include": [
+          "745 as the current baseline",
+          "712 as the current baseline",
+          "698 as the current baseline"
+        ],
+        "harmful_extra": [
+          "treating Kevin's 731 as the user's score",
+          "treating the projected 745 as confirmed and usable for mortgage prep"
+        ],
+        "harmless_extra": [
+          "mentioning that 745 is a projection pending the authorized user addition",
+          "mentioning Kevin's score context"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 712 or 698 is offered as the current baseline.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if 745 is treated as the confirmed current score or if Kevin's 731 is confused with the user's score.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I pulled my score again last week and it's back up to 721"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "He told me his score jumped up to 731 after the removal"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Credit Karma's simulator projects my score will jump to about 745 once that reports"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I'm filling out a mortgage pre-approval application and it asks for my credit score. Which of these numbers should I enter?",
+      "candidate_options": [
+        "712",
+        "698",
+        "721",
+        "745"
+      ],
+      "expected_answer": "721",
+      "gold_memory_state": "The user's last confirmed credit score pull is 721. Prior values 712 and 698 are superseded. 745 is a Credit Karma simulator projection that has not yet been confirmed by an actual score pull.",
+      "judge_rubric": {
+        "must_include": [
+          "721"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "712 as the answer",
+          "698 as the answer",
+          "745 as the answer"
+        ],
+        "harmful_extra": [
+          "selecting 745 because it is the most recent number mentioned",
+          "selecting 712 as the original baseline"
+        ],
+        "harmless_extra": [
+          "noting that 745 may become the score later once the authorized user addition reports"
+        ]
+      },
+      "distractor_rationale": "same-value-different-target: 731 (Kevin's score) was considered but replaced by 745 (tentative projection) as a stronger recency-trap distractor. 712 is the earliest stale value. 698 is an intermediate stale value. assistant echo: The assistant summarized all four numbers in the final timeline recap; 745 appeared last in that recap, making it a strong recency trap. The 745 option is the tentative/projected value that has not been confirmed by an actual pull.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 712 or 698 is selected. Fails if 745 is selected (tentative recency trap).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model treats the projected 745 as the confirmed current score.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I pulled my score again last week and it's back up to 721"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Credit Karma's simulator projects my score will jump to about 745 once that reports"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I'm filling out a mortgage pre-approval application and it asks for my credit score. Which of these numbers should I enter?",
+      "candidate_options": [
+        "712",
+        "698",
+        "721",
+        "745"
+      ],
+      "expected_answer": "721",
+      "gold_memory_state": "The user's last confirmed credit score pull is 721. Prior values 712 and 698 are superseded. 745 is a Credit Karma simulator projection that has not yet been confirmed by an actual score pull.",
+      "judge_rubric": {
+        "must_include": [
+          "721"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "712 as the answer",
+          "698 as the answer",
+          "745 as the answer"
+        ],
+        "harmful_extra": [
+          "selecting 745 because it is the most recent number mentioned",
+          "selecting 712 as the original baseline"
+        ],
+        "harmless_extra": [
+          "noting that 745 may become the score later once the authorized user addition reports"
+        ]
+      },
+      "distractor_rationale": "same-value-different-target: 731 (Kevin's score) was considered but replaced by 745 (tentative projection) as a stronger recency-trap distractor. 712 is the earliest stale value. 698 is an intermediate stale value. assistant echo: The assistant summarized all four numbers in the final timeline recap; 745 appeared last in that recap, making it a strong recency trap. The 745 option is the tentative/projected value that has not been confirmed by an actual pull.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 712 or 698 is selected. Fails if 745 is selected (tentative recency trap).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model treats the projected 745 as the confirmed current score.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I pulled my score again last week and it's back up to 721"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Credit Karma's simulator projects my score will jump to about 745 once that reports"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I'm meeting with a mortgage broker next week and I want to bring a one-page credit snapshot. Can you draft a brief summary that includes my latest verified score, my payment automation setup across my cards, and a note about the score improvement I've seen since the April dip? I want the broker to see the upward trend and my risk-mitigation measures.",
+      "expected_answer": "Credit Snapshot: Latest verified credit score is 721, representing a recovery of 23 points from a mid-April low of 698. The April dip was caused by a hard inquiry and reduced average account age from a new Chase Sapphire Preferred card (approved mid-March with a $9,500 limit). To safeguard payment history, autopay is set to pay the full statement balance on all three credit cards: Chase Sapphire Preferred, Citi Double Cash, and Discover It. Per-card utilization is maintained under 20%. The score has recovered past the original March 3rd baseline of 712, showing a positive trend heading into mortgage preparation.",
+      "application_probe_type": "multi_hop_derivation",
+      "gold_memory_state": "Confirmed current credit score: 721. Confirmed previous scores: 712 (March 3), 698 (mid-April). Autopay active on Chase Sapphire Preferred, Citi Double Cash, and Discover It (full statement balance). Tentative projected score of 745 is unconfirmed and should not be presented as a verified figure to a mortgage broker.",
+      "judge_rubric": {
+        "must_include": [
+          "721 as the latest verified score",
+          "698 as the April low",
+          "autopay on all three cards",
+          "Chase Sapphire Preferred",
+          "Citi Double Cash",
+          "Discover It"
+        ],
+        "acceptable_paraphrases": [
+          "score recovered from 698 to 721",
+          "23-point improvement since April"
+        ],
+        "must_not_include": [
+          "745 presented as a verified or current score"
+        ],
+        "harmful_extra": [
+          "presenting 745 as the verified score to the broker",
+          "omitting the autopay setup",
+          "presenting 712 or 698 as the current score"
+        ],
+        "harmless_extra": [
+          "mentioning the potential authorized user boost",
+          "mentioning the mortgage pre-approval goal by year-end",
+          "mentioning utilization strategy under 20%"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 712 or 698 is presented as the current score. Fails if 745 is presented as the verified current score.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the score progression is described in incorrect chronological order.",
+        "final_state": "Fails if the snapshot does not use 721 as the latest verified score or if autopay cards are incorrect.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's latest confirmed credit score is 721.",
+        "Fact 2: The mid-April score was 698, which was the low point.",
+        "Fact 3: Autopay is active on Chase Sapphire Preferred, Citi Double Cash, and Discover It, set to full statement balance.",
+        "Inference: The score improvement since the April dip is 721 − 698 = 23 points.",
+        "Inference: The snapshot should present 721 as verified, show the 23-point recovery trend from 698, and list the three autopay-protected cards as risk-mitigation measures. The projected 745 must not be presented as verified since it depends on an authorized user addition that has not yet reported."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I pulled my score again last week and it's back up to 721"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Credit Karma sent me a notification around the second week of April showing my score had dropped to 698"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I set up autopay on all three of my credit cards — the Chase Sapphire Preferred, the Citi Double Cash, and the Discover It"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I checked my Experian credit score on March 3rd and it came back at 712"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I'm meeting with a mortgage broker next week and I want to bring a one-page credit snapshot. Can you draft a brief summary that includes my latest verified score, my payment automation setup across my cards, and a note about the score improvement I've seen since the April dip? I want the broker to see the upward trend and my risk-mitigation measures.",
+      "expected_answer": "Credit Snapshot: Latest verified credit score is 721, representing a recovery of 23 points from a mid-April low of 698. The April dip was caused by a hard inquiry and reduced average account age from a new Chase Sapphire Preferred card (approved mid-March with a $9,500 limit). To safeguard payment history, autopay is set to pay the full statement balance on all three credit cards: Chase Sapphire Preferred, Citi Double Cash, and Discover It. Per-card utilization is maintained under 20%. The score has recovered past the original March 3rd baseline of 712, showing a positive trend heading into mortgage preparation.",
+      "application_probe_type": "multi_hop_derivation",
+      "gold_memory_state": "Confirmed current credit score: 721. Confirmed previous scores: 712 (March 3), 698 (mid-April). Autopay active on Chase Sapphire Preferred, Citi Double Cash, and Discover It (full statement balance). Tentative projected score of 745 is unconfirmed and should not be presented as a verified figure to a mortgage broker.",
+      "judge_rubric": {
+        "must_include": [
+          "721 as the latest verified score",
+          "698 as the April low",
+          "autopay on all three cards",
+          "Chase Sapphire Preferred",
+          "Citi Double Cash",
+          "Discover It"
+        ],
+        "acceptable_paraphrases": [
+          "score recovered from 698 to 721",
+          "23-point improvement since April"
+        ],
+        "must_not_include": [
+          "745 presented as a verified or current score"
+        ],
+        "harmful_extra": [
+          "presenting 745 as the verified score to the broker",
+          "omitting the autopay setup",
+          "presenting 712 or 698 as the current score"
+        ],
+        "harmless_extra": [
+          "mentioning the potential authorized user boost",
+          "mentioning the mortgage pre-approval goal by year-end",
+          "mentioning utilization strategy under 20%"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 712 or 698 is presented as the current score. Fails if 745 is presented as the verified current score.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the score progression is described in incorrect chronological order.",
+        "final_state": "Fails if the snapshot does not use 721 as the latest verified score or if autopay cards are incorrect.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's latest confirmed credit score is 721.",
+        "Fact 2: The mid-April score was 698, which was the low point.",
+        "Fact 3: Autopay is active on Chase Sapphire Preferred, Citi Double Cash, and Discover It, set to full statement balance.",
+        "Inference: The score improvement since the April dip is 721 − 698 = 23 points.",
+        "Inference: The snapshot should present 721 as verified, show the 23-point recovery trend from 698, and list the three autopay-protected cards as risk-mitigation measures. The projected 745 must not be presented as verified since it depends on an authorized user addition that has not yet reported."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I pulled my score again last week and it's back up to 721"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Credit Karma sent me a notification around the second week of April showing my score had dropped to 698"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I set up autopay on all three of my credit cards — the Chase Sapphire Preferred, the Citi Double Cash, and the Discover It"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I checked my Experian credit score on March 3rd and it came back at 712"
+        }
+      ]
+    }
+  ]
+}

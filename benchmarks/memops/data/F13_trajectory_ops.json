@@ -1,0 +1,995 @@
+{
+  "target_fact": "User's home search budget and property/vehicle ownership trajectory",
+  "operation_type": "TrajectoryOps",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "budget_chain",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I've been searching for single-family homes in the $280K to $320K range"
+      },
+      "target": {
+        "target_id": "home_search_budget",
+        "target_name": "home search budget range"
+      },
+      "old_value": null,
+      "new_value": "$280K–$320K",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I've been searching for single-family homes in the $280K to $320K range"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "my daily driver is a 2019 Honda CR-V that I bought used in January 2023 from a dealership in Plano"
+      },
+      "target": {
+        "target_id": "current_vehicle",
+        "target_name": "current daily driver vehicle"
+      },
+      "old_value": null,
+      "new_value": "2019 Honda CR-V, purchased used January 2023 from Plano dealership",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my daily driver is a 2019 Honda CR-V that I bought used in January 2023 from a dealership in Plano"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "budget_chain",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I got pre-approved through First United Bank for up to $310K, so I'm narrowing my search to $290K to $310K now"
+      },
+      "target": {
+        "target_id": "home_search_budget",
+        "target_name": "home search budget range"
+      },
+      "old_value": "$280K–$320K",
+      "new_value": "$290K–$310K",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I've been searching for single-family homes in the $280K to $320K range"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I got pre-approved through First United Bank for up to $310K, so I'm narrowing my search to $290K to $310K now"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "budget_chain",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "My dad offered to chip in $25K as a gift toward the down payment, which would let me look at places up to maybe $340K"
+      },
+      "target": {
+        "target_id": "home_search_budget",
+        "target_name": "home search budget range"
+      },
+      "old_value": "$290K–$310K",
+      "new_value": "$340K",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My dad offered to chip in $25K as a gift toward the down payment, which would let me look at places up to maybe $340K"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "budget_chain",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 7,
+        "quote": "I talked to my loan officer and she said the pre-approval ceiling stays at $310K regardless of the gift, so my realistic range is still $290K to $310K"
+      },
+      "target": {
+        "target_id": "home_search_budget",
+        "target_name": "home search budget range"
+      },
+      "old_value": "$340K",
+      "new_value": "$290K–$310K",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I got pre-approved through First United Bank for up to $310K, so I'm narrowing my search to $290K to $310K now"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I talked to my loan officer and she said the pre-approval ceiling stays at $310K regardless of the gift, so my realistic range is still $290K to $310K"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish initial facts about home search budget and vehicle",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I could use some help organizing my home search. I've been searching for single-family homes in the $280K to $320K range, mostly around the north Dallas suburbs. I started browsing listings in early March and I want something compact and low-maintenance — no huge yards or McMansions. Can you help me keep track of what I'm looking at?"
+        },
+        {
+          "role": "assistant",
+          "content": "Of course, I'd be happy to help you stay organized during your home search! So you're looking at single-family homes priced between $280K and $320K in the north Dallas suburbs, with a preference for compact, low-maintenance properties. That's a solid, focused range. I can help you track listings you've toured, note pros and cons, and keep a running comparison. Do you have any specific neighborhoods or cities in mind, or any houses you've already visited that we should log first?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, I toured a place on Maple Ridge Drive on April 12th. It was listed at $295K but honestly it needed too much work — the roof looked rough and the kitchen was from the 1980s. Then around April 20th I saw a house on Birchwood Lane listed at $305K that was way more promising, but someone else beat me to the offer. Pretty frustrating."
+        },
+        {
+          "role": "assistant",
+          "content": "That is frustrating, especially when a place checks most of your boxes and then slips away. Let me log those two for you. The Maple Ridge Drive house toured April 12th at $295K is a pass due to the aging roof and outdated kitchen — too much renovation. The Birchwood Lane house toured around April 20th at $305K was more promising but lost to a competing offer. At least the Birchwood experience confirms that your price range and taste are realistic. Want me to set up criteria filters so we can quickly evaluate future listings against what you liked about Birchwood?"
+        },
+        {
+          "role": "user",
+          "content": "Good idea, let's do that. Also, for context, my daily driver is a 2019 Honda CR-V that I bought used in January 2023 from a dealership in Plano. It had about 38,000 miles on it when I got it. Nothing flashy, just reliable transportation. I mention it because I want a place with a garage or at least a covered carport — I'd rather not leave the CR-V outside all the time."
+        },
+        {
+          "role": "assistant",
+          "content": "Great, that's helpful context. I've noted that your current vehicle is a 2019 Honda CR-V purchased used in January 2023 from a Plano dealership with around 38K miles at purchase. Since protecting it matters to you, I'll add 'garage or covered carport' as a must-have filter for any listing we evaluate. That's a reasonable requirement in the north Dallas market at your price range — many homes in Frisco, McKinney, and Allen in that bracket do come with at least a single-car garage. Want me to add any other must-haves to the filter list?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, add single-story preferred and at least two bedrooms. Also I should mention I sold my old motorcycle last month — a 2016 Yamaha MT-07, got $4,200 for it. So I don't need extra garage space for a bike anymore. The CR-V is the only vehicle I own now. That sale freed up a little cash which I'm putting toward closing costs eventually."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it. I've added single-story preferred and minimum two bedrooms to your filter list. And noted that you sold your 2016 Yamaha MT-07 last month for $4,200, so the CR-V is your sole vehicle now. That simplifies the garage requirement — a standard single-car garage or covered carport should be sufficient. The $4,200 from the motorcycle sale going toward closing costs is smart planning. So far your search profile looks clean: $280K–$320K, compact single-family, single-story preferred, two-plus bedrooms, garage or carport, north Dallas suburbs. I'll use this as our baseline for evaluating new listings."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "narrow budget based on pre-approval and add mortgage details",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Good news — I got pre-approved through First United Bank for up to $310K, so I'm narrowing my search to $290K to $310K now. The pre-approval letter is dated May 8th, 2025. I figure there's no point looking at stuff above $310K since that's my ceiling, and below $290K the pickings are slim for what I want in this area. Does that make sense as a tighter range?"
+        },
+        {
+          "role": "assistant",
+          "content": "That makes perfect sense. Congratulations on the pre-approval! Narrowing to $290K–$310K is a smart move — it keeps you within your approved ceiling while filtering out listings that are likely too compromised in quality or location. I've updated your search range from the original $280K–$320K to the tighter $290K–$310K window. With the May 8th pre-approval letter from First United Bank in hand, you're in a strong position to make competitive offers quickly. Shall I re-evaluate any of the previously toured homes against this new range, or are we focused entirely on fresh listings going forward?"
+        },
+        {
+          "role": "user",
+          "content": "Fresh listings only. The Maple Ridge one was a definite no, and Birchwood is gone. I'm also currently staying at my mom's place in Richardson temporarily after my apartment lease at The Meridian on Elm Street expired at the end of March. So I'm not in a rush to the point of desperation, but I do want to find something in the next couple of months ideally."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood — fresh listings only going forward. It's good that you have a stable temporary situation at your mom's place in Richardson. That gives you breathing room to be selective rather than settling for the wrong house under time pressure. A two-month window is realistic in the current north Dallas market at your price point, especially since inventory tends to pick up through the summer. I'll keep our filters locked at $290K–$310K, single-family, single-story preferred, two-plus bedrooms, garage or carport. Want me to draft a weekly checklist format so we can quickly evaluate each new listing you find?"
+        },
+        {
+          "role": "user",
+          "content": "That'd be great, yeah. Also my buddy Kevin just closed on a two-bedroom condo in Frisco around mid-April. I'm happy for him but honestly it made me feel a bit behind, you know? Like I should have my own place by now. Anyway, his place was around $275K which is below my range, but condos aren't really what I'm after — I want a standalone house with no HOA drama if possible."
+        },
+        {
+          "role": "assistant",
+          "content": "I completely understand that feeling — seeing friends hit milestones can stir up comparison even when you're genuinely happy for them. But you're actively pre-approved and searching with clear criteria, which puts you further along than most people realize. Kevin's $275K condo in Frisco is a different product entirely from what you're targeting. Standalone single-family homes without HOA obligations are a distinct market segment, and your $290K–$310K range is well-positioned for that. I'll add 'no HOA preferred' to the filter list. Let me put together that weekly evaluation checklist — I'll include price, condition, garage status, lot size, and HOA status as the key columns."
+        },
+        {
+          "role": "user",
+          "content": "Perfect. One more thing — the motorcycle sale money plus some other savings gives me about $18,000 set aside for closing costs and the down payment. First United Bank quoted me a 6.75% rate on a 30-year fixed. I want to keep the monthly payment under $2,200 including taxes and insurance if possible. Can you factor that into the search criteria?\n\nThat's exactly what I need. Let's use $2,200 as a hard cap. If a listing pushes past that even slightly after estimating taxes and insurance, I want it flagged as over-budget. I'd rather be conservative and not stretch myself thin. Also, I want to keep at least $5,000 in reserve after closing — I don't want to drain every penny just to get the keys."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely. With $18,000 saved for closing costs and down payment, a 6.75% rate on a 30-year fixed, and a $2,200 monthly ceiling including taxes and insurance, we can estimate your comfortable purchase price. Rough math: at 6.75% on a $295K home with around 5% down, your principal and interest alone would be roughly $1,820, leaving about $380 for taxes and insurance — which is tight but feasible in Collin County. At $310K it gets tighter. I'll flag any listing where estimated total monthly cost exceeds $2,200 so you can see immediately whether it fits. This gives us a solid financial framework alongside the physical criteria we already have.\n\nSmart approach. I've set $2,200 as the hard monthly cap — anything above gets an automatic over-budget flag. And the $5,000 post-closing reserve requirement means your effective available funds for closing costs and down payment are $13,000, not $18,000. That's an important constraint. At 5% down on a $300K home, the down payment alone is $15,000, which already exceeds your $13,000 effective budget. So we may need to look at lower down payment options or focus on homes closer to $290K. I'll build the checklist with all these financial parameters baked in so every listing gets a quick pass-fail on affordability before we even look at the property details."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "introduce tentative budget increase and then confirm revert to $290K–$310K",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I found a new listing that just popped up — 4217 Cottonwood Trail in Allen, listed at $299K. Three bedrooms, single-story, no HOA, and it has a two-car garage. It checks every box on paper. The listing photos look clean too, updated kitchen and newer roof. I want to schedule a tour this weekend if possible. Can you note this one down?"
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds very promising! Let me log it: 4217 Cottonwood Trail, Allen, listed at $299K — three bedrooms, single-story, no HOA, two-car garage, updated kitchen, and a newer roof. At $299K it sits comfortably within your $290K–$310K range. Let me run a quick affordability check: at 6.75% on a 30-year fixed with roughly 5% down, the principal and interest would be approximately $1,845. Adding estimated Collin County taxes and insurance, you're likely around $2,150–$2,180 monthly, which squeaks under your $2,200 hard cap. This one looks like it deserves a serious look. Want me to draft a tour checklist specific to this property?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, draft that checklist. Also, I was looking at Kevin's closing paperwork he showed me — his lender was Lone Star Mortgage and they gave him a rate of 6.5% on his condo. I wonder if I should have shopped around more. But I'm sticking with First United Bank, their service has been good so far and I don't want to delay things by switching lenders mid-process."
+        },
+        {
+          "role": "assistant",
+          "content": "It's natural to second-guess rates when you see a friend's numbers, but Kevin's 6.5% through Lone Star Mortgage was for a condo, which sometimes prices differently than a single-family home loan. Plus, switching lenders now could mean a new application, another credit pull, and potential delays — none of which help when a strong listing like Cottonwood Trail just appeared. Sticking with First United Bank at 6.75% keeps your timeline intact and your pre-approval active. I'll draft the tour checklist focusing on: roof condition verification, kitchen appliance ages, garage dimensions for the CR-V, plumbing and electrical panel age, foundation inspection needs, and neighborhood noise levels. Sound good?"
+        },
+        {
+          "role": "user",
+          "content": "Sounds great. Oh, and here's something interesting — My dad offered to chip in $25K as a gift toward the down payment, which would let me look at places up to maybe $340K. He brought it up over dinner last night. I haven't confirmed anything with the bank yet but it's exciting to think about having more options. That could open up some nicer neighborhoods."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a generous offer from your dad! An extra $25K toward the down payment would significantly change your purchasing power and could open doors to neighborhoods that were previously just out of reach. At $340K with a larger down payment, your monthly payment might actually stay manageable depending on how the numbers work out. However, gift funds for mortgages usually require specific documentation — a gift letter, proof of transfer, and sometimes a paper trail showing the donor's ability to give. First United Bank will have their own requirements for this. Before you start browsing $340K listings, it would be wise to confirm with your loan officer how this affects your pre-approval ceiling and monthly estimates."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, you're right, I need to verify that first. But honestly even just thinking about it makes me feel like I have more breathing room. The $340K range would include some places in south Frisco that I'd written off before. Anyway, I'll call the bank tomorrow morning and see what they say about the gift funds and whether it changes anything.\n\nActually, I talked to my loan officer and she said the pre-approval ceiling stays at $310K regardless of the gift, so my realistic range is still $290K to $310K. The gift money would just help with the down payment and reserves, not increase what they'll lend me. So yeah, keep the filters where they are. Cottonwood Trail is still the best option on the table right now and I'm touring it Saturday."
+        },
+        {
+          "role": "assistant",
+          "content": "That's the right move — get official confirmation before adjusting your search parameters. South Frisco does have some appealing inventory in that range, so it's worth exploring if the numbers work out. In the meantime, let's keep 4217 Cottonwood Trail as your priority since it already fits your current confirmed budget. I'd hate for you to pass on a strong $299K listing while waiting on a potential budget expansion. We can always revisit the search range after your call with First United Bank. Want me to keep the current $290K–$310K filters active until you hear back, and just bookmark any $310K–$340K listings separately for review?\n\nGood to have that clarity. So the pre-approval ceiling remains $310K through First United Bank, and your dad's $25K gift would strengthen your down payment and post-closing reserves rather than expanding the purchase price range. That actually puts you in an even stronger position for the $290K–$310K range — a larger down payment means a lower loan amount, lower monthly payments, and a more competitive offer. For the Cottonwood Trail tour on Saturday, I'll finalize the checklist tonight. With your search range confirmed at $290K–$310K and a solid candidate at $299K, you're in great shape. Let me know how the tour goes and we'll evaluate next steps from there."
+        }
+      ]
+    }
+  ],
+  "state_checkpoints": [
+    {
+      "checkpoint_id": "c1",
+      "description": "After segment 1: home_search_budget = $280K–$320K (confirmed). current_vehicle = 2019 Honda CR-V purchased used January 2023 from Plano dealership (confirmed)."
+    },
+    {
+      "checkpoint_id": "c2",
+      "description": "After segment 2: home_search_budget narrowed to $290K–$310K (confirmed, updated from $280K–$320K based on pre-approval). current_vehicle unchanged."
+    },
+    {
+      "checkpoint_id": "c3",
+      "description": "After segment 3: home_search_budget tentatively expanded to $340K (tentative, based on dad's gift offer), then confirmed back to $290K–$310K after loan officer confirmation. current_vehicle unchanged. Final confirmed state: home_search_budget = $290K–$310K, current_vehicle = 2019 Honda CR-V."
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Walk me through what I've told you about my home search budget and my vehicle over the course of our conversations — what were the key things I shared and how did they develop?",
+      "expected_answer": "You initially said you were searching for single-family homes in the $280K to $320K range in north Dallas suburbs. You also mentioned your daily driver is a 2019 Honda CR-V purchased used in January 2023 from a Plano dealership. Later, after getting pre-approved through First United Bank for up to $310K, you narrowed your search range to $290K–$310K. Your dad then offered $25K toward the down payment, which you thought might let you look up to $340K, but after talking with your loan officer, the pre-approval ceiling stayed at $310K, so your range reverted to $290K–$310K. The CR-V remained your only vehicle throughout.",
+      "gold_memory_state": "home_search_budget = $290K–$310K (confirmed, after tentative $340K was rejected). current_vehicle = 2019 Honda CR-V, purchased used January 2023 from Plano dealership (unchanged throughout).",
+      "judge_rubric": {
+        "must_include": [
+          "initial range $280K–$320K",
+          "narrowed to $290K–$310K",
+          "dad's gift offer / $340K possibility",
+          "loan officer confirmed ceiling at $310K",
+          "final range $290K–$310K",
+          "2019 Honda CR-V"
+        ],
+        "acceptable_paraphrases": [
+          "$280K to $320K",
+          "two hundred eighty to three hundred twenty thousand"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying the budget is currently $340K",
+          "saying the CR-V was sold or replaced"
+        ],
+        "harmless_extra": [
+          "mentioning First United Bank",
+          "mentioning Plano dealership",
+          "mentioning the motorcycle sale"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model presents $340K as the current budget or $280K–$320K as the current range without noting those are past states.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model does not present the budget changes in chronological order: $280K–$320K → $290K–$310K → tentative $340K → confirmed $290K–$310K.",
+        "final_state": "Fails if the model does not end with $290K–$310K as the current budget.",
+        "intermediate_state": "Fails if the model omits the tentative $340K step or the initial $280K–$320K step.",
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I've been searching for single-family homes in the $280K to $320K range"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my daily driver is a 2019 Honda CR-V that I bought used in January 2023 from a dealership in Plano"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I got pre-approved through First United Bank for up to $310K, so I'm narrowing my search to $290K to $310K now"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My dad offered to chip in $25K as a gift toward the down payment, which would let me look at places up to maybe $340K"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I talked to my loan officer and she said the pre-approval ceiling stays at $310K regardless of the gift, so my realistic range is still $290K to $310K"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Walk me through what I've told you about my home search budget and my vehicle over the course of our conversations — what were the key things I shared and how did they develop?",
+      "expected_answer": "You initially said you were searching for single-family homes in the $280K to $320K range in north Dallas suburbs. You also mentioned your daily driver is a 2019 Honda CR-V purchased used in January 2023 from a Plano dealership. Later, after getting pre-approved through First United Bank for up to $310K, you narrowed your search range to $290K–$310K. Your dad then offered $25K toward the down payment, which you thought might let you look up to $340K, but after talking with your loan officer, the pre-approval ceiling stayed at $310K, so your range reverted to $290K–$310K. The CR-V remained your only vehicle throughout.",
+      "gold_memory_state": "home_search_budget = $290K–$310K (confirmed, after tentative $340K was rejected). current_vehicle = 2019 Honda CR-V, purchased used January 2023 from Plano dealership (unchanged throughout).",
+      "judge_rubric": {
+        "must_include": [
+          "initial range $280K–$320K",
+          "narrowed to $290K–$310K",
+          "dad's gift offer / $340K possibility",
+          "loan officer confirmed ceiling at $310K",
+          "final range $290K–$310K",
+          "2019 Honda CR-V"
+        ],
+        "acceptable_paraphrases": [
+          "$280K to $320K",
+          "two hundred eighty to three hundred twenty thousand"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying the budget is currently $340K",
+          "saying the CR-V was sold or replaced"
+        ],
+        "harmless_extra": [
+          "mentioning First United Bank",
+          "mentioning Plano dealership",
+          "mentioning the motorcycle sale"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model presents $340K as the current budget or $280K–$320K as the current range without noting those are past states.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model does not present the budget changes in chronological order: $280K–$320K → $290K–$310K → tentative $340K → confirmed $290K–$310K.",
+        "final_state": "Fails if the model does not end with $290K–$310K as the current budget.",
+        "intermediate_state": "Fails if the model omits the tentative $340K step or the initial $280K–$320K step.",
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I've been searching for single-family homes in the $280K to $320K range"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my daily driver is a 2019 Honda CR-V that I bought used in January 2023 from a dealership in Plano"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I got pre-approved through First United Bank for up to $310K, so I'm narrowing my search to $290K to $310K now"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My dad offered to chip in $25K as a gift toward the down payment, which would let me look at places up to maybe $340K"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I talked to my loan officer and she said the pre-approval ceiling stays at $310K regardless of the gift, so my realistic range is still $290K to $310K"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When my dad's gift offer came up and the numbers shifted, which piece of my profile was affected — the property search parameters or the vehicle details? And did the vehicle information change at any point during all of this?",
+      "expected_answer": "Only the home search budget range was affected by the gift offer discussion. Your vehicle information — the 2019 Honda CR-V purchased used in January 2023 from a Plano dealership — was never changed at any point.",
+      "gold_memory_state": "home_search_budget = $290K–$310K (confirmed). current_vehicle = 2019 Honda CR-V, purchased used January 2023 from Plano dealership (unchanged, control target).",
+      "judge_rubric": {
+        "must_include": [
+          "home search budget was affected",
+          "vehicle was not affected or changed"
+        ],
+        "acceptable_paraphrases": [
+          "budget range",
+          "price range",
+          "search range"
+        ],
+        "must_not_include": [
+          "vehicle details changed",
+          "CR-V was updated"
+        ],
+        "harmful_extra": [
+          "saying the vehicle was sold or replaced",
+          "saying the budget is $340K currently"
+        ],
+        "harmless_extra": [
+          "mentioning First United Bank pre-approval",
+          "mentioning $290K–$310K as current range"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model says the vehicle details changed or if it says the budget is currently $340K.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My dad offered to chip in $25K as a gift toward the down payment, which would let me look at places up to maybe $340K"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I talked to my loan officer and she said the pre-approval ceiling stays at $310K regardless of the gift, so my realistic range is still $290K to $310K"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my daily driver is a 2019 Honda CR-V that I bought used in January 2023 from a dealership in Plano"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When my dad's gift offer came up and the numbers shifted, which piece of my profile was affected — the property search parameters or the vehicle details? And did the vehicle information change at any point during all of this?",
+      "expected_answer": "Only the home search budget range was affected by the gift offer discussion. Your vehicle information — the 2019 Honda CR-V purchased used in January 2023 from a Plano dealership — was never changed at any point.",
+      "gold_memory_state": "home_search_budget = $290K–$310K (confirmed). current_vehicle = 2019 Honda CR-V, purchased used January 2023 from Plano dealership (unchanged, control target).",
+      "judge_rubric": {
+        "must_include": [
+          "home search budget was affected",
+          "vehicle was not affected or changed"
+        ],
+        "acceptable_paraphrases": [
+          "budget range",
+          "price range",
+          "search range"
+        ],
+        "must_not_include": [
+          "vehicle details changed",
+          "CR-V was updated"
+        ],
+        "harmful_extra": [
+          "saying the vehicle was sold or replaced",
+          "saying the budget is $340K currently"
+        ],
+        "harmless_extra": [
+          "mentioning First United Bank pre-approval",
+          "mentioning $290K–$310K as current range"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model says the vehicle details changed or if it says the budget is currently $340K.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My dad offered to chip in $25K as a gift toward the down payment, which would let me look at places up to maybe $340K"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I talked to my loan officer and she said the pre-approval ceiling stays at $310K regardless of the gift, so my realistic range is still $290K to $310K"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my daily driver is a 2019 Honda CR-V that I bought used in January 2023 from a dealership in Plano"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "After all the back-and-forth about my home buying finances, what price range should I actually be filtering listings by right now?",
+      "expected_answer": "$290K–$310K",
+      "gold_memory_state": "home_search_budget = $290K–$310K (confirmed). The tentative $340K possibility based on the dad's gift offer was not adopted because the loan officer confirmed the pre-approval ceiling stays at $310K. The original $280K–$320K range was superseded by the narrower range after pre-approval.",
+      "judge_rubric": {
+        "must_include": [
+          "$290K",
+          "$310K"
+        ],
+        "acceptable_paraphrases": [
+          "$290,000 to $310,000",
+          "290K to 310K",
+          "290 to 310 thousand"
+        ],
+        "must_not_include": [
+          "$340K as current range",
+          "$280K–$320K as current range"
+        ],
+        "harmful_extra": [
+          "presenting $340K as the active budget ceiling"
+        ],
+        "harmless_extra": [
+          "mentioning First United Bank",
+          "mentioning the pre-approval ceiling of $310K"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model says the current range is $340K (tentative recency trap) or $280K–$320K (original stale value).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not return $290K–$310K as the current filtering range.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I got pre-approved through First United Bank for up to $310K, so I'm narrowing my search to $290K to $310K now"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I talked to my loan officer and she said the pre-approval ceiling stays at $310K regardless of the gift, so my realistic range is still $290K to $310K"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "After all the back-and-forth about my home buying finances, what price range should I actually be filtering listings by right now?",
+      "expected_answer": "$290K–$310K",
+      "gold_memory_state": "home_search_budget = $290K–$310K (confirmed). The tentative $340K possibility based on the dad's gift offer was not adopted because the loan officer confirmed the pre-approval ceiling stays at $310K. The original $280K–$320K range was superseded by the narrower range after pre-approval.",
+      "judge_rubric": {
+        "must_include": [
+          "$290K",
+          "$310K"
+        ],
+        "acceptable_paraphrases": [
+          "$290,000 to $310,000",
+          "290K to 310K",
+          "290 to 310 thousand"
+        ],
+        "must_not_include": [
+          "$340K as current range",
+          "$280K–$320K as current range"
+        ],
+        "harmful_extra": [
+          "presenting $340K as the active budget ceiling"
+        ],
+        "harmless_extra": [
+          "mentioning First United Bank",
+          "mentioning the pre-approval ceiling of $310K"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model says the current range is $340K (tentative recency trap) or $280K–$320K (original stale value).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not return $290K–$310K as the current filtering range.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I got pre-approved through First United Bank for up to $310K, so I'm narrowing my search to $290K to $310K now"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I talked to my loan officer and she said the pre-approval ceiling stays at $310K regardless of the gift, so my realistic range is still $290K to $310K"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I found a listing at $308K and I want to figure out if I can afford it. Using my pre-approval details, my current vehicle situation, and the garage requirement, draft a quick affordability summary that tells me (1) whether $308K falls within my approved range, (2) what the estimated monthly principal-and-interest payment would be at my quoted rate, and (3) whether the listing needs to have a garage and why.",
+      "expected_answer": "Yes, $308K falls within your approved range of $290K–$310K. At 6.75% on a 30-year fixed mortgage, a $308K home with roughly 5% down ($15,400 down, ~$292,600 loan) would have an estimated monthly principal-and-interest payment of approximately $1,897. The listing does need a garage or covered carport because your only vehicle is a 2019 Honda CR-V and you specifically want covered parking for it.",
+      "gold_memory_state": "home_search_budget = $290K–$310K (confirmed). Mortgage rate = 6.75% 30-year fixed via First United Bank. current_vehicle = 2019 Honda CR-V (sole vehicle). Garage/carport is a must-have filter. Monthly payment hard cap = $2,200 including taxes and insurance.",
+      "judge_rubric": {
+        "must_include": [
+          "$308K is within the $290K–$310K range",
+          "6.75% rate",
+          "approximate monthly P&I around $1,850–$1,900",
+          "garage or carport needed",
+          "2019 Honda CR-V or sole vehicle"
+        ],
+        "acceptable_paraphrases": [
+          "within budget",
+          "within the approved range",
+          "covered parking"
+        ],
+        "must_not_include": [
+          "$340K as the budget ceiling",
+          "$280K–$320K as the current range"
+        ],
+        "harmful_extra": [
+          "saying the budget goes up to $340K",
+          "omitting the garage requirement"
+        ],
+        "harmless_extra": [
+          "mentioning the $2,200 monthly cap",
+          "mentioning $5,000 reserve requirement",
+          "mentioning the motorcycle was sold"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses $340K as the budget ceiling (tentative, rejected) or $280K–$320K (original, superseded).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not use $290K–$310K as the current range, 6.75% as the rate, or the CR-V as the vehicle requiring garage space.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's confirmed home search budget is $290K–$310K, based on First United Bank pre-approval ceiling of $310K.",
+        "Fact 2: The mortgage rate quoted by First United Bank is 6.75% on a 30-year fixed.",
+        "Fact 3: The user's sole vehicle is a 2019 Honda CR-V, and a garage or covered carport is a must-have.",
+        "Inference: $308K is within the $290K–$310K range, so it passes the budget filter.",
+        "Inference: At 5% down on $308K, the loan amount is approximately $292,600. At 6.75% over 30 years, the monthly P&I is approximately $1,897.",
+        "Inference: Since the CR-V is the user's only vehicle and they require covered parking, the listing must have a garage or carport."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I got pre-approved through First United Bank for up to $310K, so I'm narrowing my search to $290K to $310K now"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I talked to my loan officer and she said the pre-approval ceiling stays at $310K regardless of the gift, so my realistic range is still $290K to $310K"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my daily driver is a 2019 Honda CR-V that I bought used in January 2023 from a dealership in Plano"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "First United Bank quoted me a 6.75% rate on a 30-year fixed"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I found a listing at $308K and I want to figure out if I can afford it. Using my pre-approval details, my current vehicle situation, and the garage requirement, draft a quick affordability summary that tells me (1) whether $308K falls within my approved range, (2) what the estimated monthly principal-and-interest payment would be at my quoted rate, and (3) whether the listing needs to have a garage and why.",
+      "expected_answer": "Yes, $308K falls within your approved range of $290K–$310K. At 6.75% on a 30-year fixed mortgage, a $308K home with roughly 5% down ($15,400 down, ~$292,600 loan) would have an estimated monthly principal-and-interest payment of approximately $1,897. The listing does need a garage or covered carport because your only vehicle is a 2019 Honda CR-V and you specifically want covered parking for it.",
+      "gold_memory_state": "home_search_budget = $290K–$310K (confirmed). Mortgage rate = 6.75% 30-year fixed via First United Bank. current_vehicle = 2019 Honda CR-V (sole vehicle). Garage/carport is a must-have filter. Monthly payment hard cap = $2,200 including taxes and insurance.",
+      "judge_rubric": {
+        "must_include": [
+          "$308K is within the $290K–$310K range",
+          "6.75% rate",
+          "approximate monthly P&I around $1,850–$1,900",
+          "garage or carport needed",
+          "2019 Honda CR-V or sole vehicle"
+        ],
+        "acceptable_paraphrases": [
+          "within budget",
+          "within the approved range",
+          "covered parking"
+        ],
+        "must_not_include": [
+          "$340K as the budget ceiling",
+          "$280K–$320K as the current range"
+        ],
+        "harmful_extra": [
+          "saying the budget goes up to $340K",
+          "omitting the garage requirement"
+        ],
+        "harmless_extra": [
+          "mentioning the $2,200 monthly cap",
+          "mentioning $5,000 reserve requirement",
+          "mentioning the motorcycle was sold"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses $340K as the budget ceiling (tentative, rejected) or $280K–$320K (original, superseded).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not use $290K–$310K as the current range, 6.75% as the rate, or the CR-V as the vehicle requiring garage space.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's confirmed home search budget is $290K–$310K, based on First United Bank pre-approval ceiling of $310K.",
+        "Fact 2: The mortgage rate quoted by First United Bank is 6.75% on a 30-year fixed.",
+        "Fact 3: The user's sole vehicle is a 2019 Honda CR-V, and a garage or covered carport is a must-have.",
+        "Inference: $308K is within the $290K–$310K range, so it passes the budget filter.",
+        "Inference: At 5% down on $308K, the loan amount is approximately $292,600. At 6.75% over 30 years, the monthly P&I is approximately $1,897.",
+        "Inference: Since the CR-V is the user's only vehicle and they require covered parking, the listing must have a garage or carport."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I got pre-approved through First United Bank for up to $310K, so I'm narrowing my search to $290K to $310K now"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I talked to my loan officer and she said the pre-approval ceiling stays at $310K regardless of the gift, so my realistic range is still $290K to $310K"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my daily driver is a 2019 Honda CR-V that I bought used in January 2023 from a dealership in Plano"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "First United Bank quoted me a 6.75% rate on a 30-year fixed"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed our entire conversation history about my home search budget, what would they see as the full sequence of changes — which figures were actually adopted versus only floated as possibilities, and what's the final number I'm working with?",
+      "expected_answer": "The sequence was: (1) You started with $280K–$320K as your initial browsing range. (2) After getting pre-approved through First United Bank for up to $310K, you narrowed to $290K–$310K — this was adopted. (3) When your dad offered a $25K gift, you floated the idea of looking up to $340K, but this was never adopted — it was only a possibility you hadn't verified with the bank. (4) After speaking with your loan officer, who confirmed the pre-approval ceiling stays at $310K regardless of the gift, you confirmed your range back at $290K–$310K. The final working range is $290K–$310K.",
+      "gold_memory_state": "Budget trajectory: $280K–$320K (confirmed, step 1) → $290K–$310K (confirmed, step 2) → $340K (tentative only, step 3, never adopted) → $290K–$310K (confirmed, step 4, final). current_vehicle = 2019 Honda CR-V (unchanged throughout, control target).",
+      "judge_rubric": {
+        "must_include": [
+          "$280K–$320K as initial range",
+          "$290K–$310K as the narrowed range after pre-approval",
+          "$340K as a possibility that was not adopted",
+          "$290K–$310K as the final confirmed range"
+        ],
+        "acceptable_paraphrases": [
+          "floated",
+          "considered",
+          "explored",
+          "tentatively discussed",
+          "not confirmed"
+        ],
+        "must_not_include": [
+          "$340K was adopted or confirmed"
+        ],
+        "harmful_extra": [
+          "saying $340K became the active range",
+          "omitting the tentative $340K step entirely",
+          "saying the range went back to $280K–$320K at the end"
+        ],
+        "harmless_extra": [
+          "mentioning the dad's $25K gift",
+          "mentioning First United Bank",
+          "mentioning the loan officer"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model presents $340K as ever having been the adopted/confirmed budget.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model does not present the four steps in chronological order or conflates the order of changes.",
+        "final_state": "Fails if the model does not end with $290K–$310K as the final confirmed range.",
+        "intermediate_state": "Fails if the model omits the tentative $340K step or the initial $280K–$320K step.",
+        "trajectory_provenance": "Fails if the model cannot attribute the narrowing to the pre-approval or the revert to the loan officer's confirmation."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: User initially stated a search range of $280K–$320K for single-family homes in north Dallas suburbs. This was the confirmed starting point.",
+        "Step 2: User received pre-approval from First United Bank for up to $310K and narrowed the range to $290K–$310K. This was a confirmed change.",
+        "Step 3: User's dad offered $25K as a gift toward the down payment, and the user speculated this might allow looking up to $340K. This was tentative — the user had not verified it with the bank.",
+        "Step 4: User spoke with the loan officer, who confirmed the pre-approval ceiling stays at $310K regardless of the gift. The user confirmed the range back to $290K–$310K.",
+        "Inference: The $340K figure was never adopted as an active budget — it was only a tentative possibility that was rejected upon verification. The final confirmed state is $290K–$310K."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I've been searching for single-family homes in the $280K to $320K range"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I got pre-approved through First United Bank for up to $310K, so I'm narrowing my search to $290K to $310K now"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My dad offered to chip in $25K as a gift toward the down payment, which would let me look at places up to maybe $340K"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I talked to my loan officer and she said the pre-approval ceiling stays at $310K regardless of the gift, so my realistic range is still $290K to $310K"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed our entire conversation history about my home search budget, what would they see as the full sequence of changes — which figures were actually adopted versus only floated as possibilities, and what's the final number I'm working with?",
+      "expected_answer": "The sequence was: (1) You started with $280K–$320K as your initial browsing range. (2) After getting pre-approved through First United Bank for up to $310K, you narrowed to $290K–$310K — this was adopted. (3) When your dad offered a $25K gift, you floated the idea of looking up to $340K, but this was never adopted — it was only a possibility you hadn't verified with the bank. (4) After speaking with your loan officer, who confirmed the pre-approval ceiling stays at $310K regardless of the gift, you confirmed your range back at $290K–$310K. The final working range is $290K–$310K.",
+      "gold_memory_state": "Budget trajectory: $280K–$320K (confirmed, step 1) → $290K–$310K (confirmed, step 2) → $340K (tentative only, step 3, never adopted) → $290K–$310K (confirmed, step 4, final). current_vehicle = 2019 Honda CR-V (unchanged throughout, control target).",
+      "judge_rubric": {
+        "must_include": [
+          "$280K–$320K as initial range",
+          "$290K–$310K as the narrowed range after pre-approval",
+          "$340K as a possibility that was not adopted",
+          "$290K–$310K as the final confirmed range"
+        ],
+        "acceptable_paraphrases": [
+          "floated",
+          "considered",
+          "explored",
+          "tentatively discussed",
+          "not confirmed"
+        ],
+        "must_not_include": [
+          "$340K was adopted or confirmed"
+        ],
+        "harmful_extra": [
+          "saying $340K became the active range",
+          "omitting the tentative $340K step entirely",
+          "saying the range went back to $280K–$320K at the end"
+        ],
+        "harmless_extra": [
+          "mentioning the dad's $25K gift",
+          "mentioning First United Bank",
+          "mentioning the loan officer"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model presents $340K as ever having been the adopted/confirmed budget.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model does not present the four steps in chronological order or conflates the order of changes.",
+        "final_state": "Fails if the model does not end with $290K–$310K as the final confirmed range.",
+        "intermediate_state": "Fails if the model omits the tentative $340K step or the initial $280K–$320K step.",
+        "trajectory_provenance": "Fails if the model cannot attribute the narrowing to the pre-approval or the revert to the loan officer's confirmation."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: User initially stated a search range of $280K–$320K for single-family homes in north Dallas suburbs. This was the confirmed starting point.",
+        "Step 2: User received pre-approval from First United Bank for up to $310K and narrowed the range to $290K–$310K. This was a confirmed change.",
+        "Step 3: User's dad offered $25K as a gift toward the down payment, and the user speculated this might allow looking up to $340K. This was tentative — the user had not verified it with the bank.",
+        "Step 4: User spoke with the loan officer, who confirmed the pre-approval ceiling stays at $310K regardless of the gift. The user confirmed the range back to $290K–$310K.",
+        "Inference: The $340K figure was never adopted as an active budget — it was only a tentative possibility that was rejected upon verification. The final confirmed state is $290K–$310K."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I've been searching for single-family homes in the $280K to $320K range"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I got pre-approved through First United Bank for up to $310K, so I'm narrowing my search to $290K to $310K now"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My dad offered to chip in $25K as a gift toward the down payment, which would let me look at places up to maybe $340K"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I talked to my loan officer and she said the pre-approval ceiling stays at $310K regardless of the gift, so my realistic range is still $290K to $310K"
+        }
+      ]
+    }
+  ]
+}

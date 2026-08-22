@@ -1,0 +1,789 @@
+{
+  "target_fact": "David's annual salary at Greenfield Rehabilitation Center",
+  "operation_type": "Update",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "salary_chain",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "David's starting salary at Greenfield is $78,000 annually"
+      },
+      "target": {
+        "target_id": "david_salary",
+        "target_name": "David's annual salary at Greenfield Rehabilitation Center"
+      },
+      "old_value": null,
+      "new_value": "$78,000",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "David's starting salary at Greenfield is $78,000 annually"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "salary_chain",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I told you $78,000 before but that was wrong. His actual salary is $82,000"
+      },
+      "target": {
+        "target_id": "david_salary",
+        "target_name": "David's annual salary at Greenfield Rehabilitation Center"
+      },
+      "old_value": "$78,000",
+      "new_value": "$82,000",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I told you $78,000 before but that was wrong. His actual salary is $82,000"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "salary_chain",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "Wait, no, it's $82,500. I keep getting the number slightly off. It's definitely $82,500 per year"
+      },
+      "target": {
+        "target_id": "david_salary",
+        "target_name": "David's annual salary at Greenfield Rehabilitation Center"
+      },
+      "old_value": "$82,000",
+      "new_value": "$82,500",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Wait, no, it's $82,500. I keep getting the number slightly off. It's definitely $82,500 per year"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "salary_chain",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "Priya told David that the clinic is adjusting all senior PT salaries to $85,000 starting next quarter"
+      },
+      "target": {
+        "target_id": "david_salary",
+        "target_name": "David's annual salary at Greenfield Rehabilitation Center"
+      },
+      "old_value": "$82,500",
+      "new_value": "$85,000",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Priya told David that the clinic is adjusting all senior PT salaries to $85,000 starting next quarter"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "David's OCS exam is scheduled for June 7th"
+      },
+      "target": {
+        "target_id": "david_ocs_exam_date",
+        "target_name": "David's Orthopedic Clinical Specialist exam date"
+      },
+      "old_value": null,
+      "new_value": "June 7th",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "David's OCS exam is scheduled for June 7th"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish salary, OCS exam date, and work schedule details",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to tell you some details about my partner David's new job so you can help me keep track. He started as a senior physical therapist at Greenfield Rehabilitation Center on February 12th. David's starting salary at Greenfield is $78,000 annually. It's a step up from his old clinic, and I'm happy for him."
+        },
+        {
+          "role": "assistant",
+          "content": "That's wonderful news about David's new position at Greenfield Rehabilitation Center! Starting on February 12th as a senior physical therapist sounds like a great move for him. I've noted his annual salary at $78,000. It sounds like this was a deliberate career decision for him. Was there something specific about Greenfield that drew him there, or would you like me to help you keep track of any other details about his new role? I'm happy to organize whatever information would be useful for you."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, he really wanted to focus on sports recovery rather than general post-surgical rehab, and Greenfield gave him that opportunity. He's also studying for his Orthopedic Clinical Specialist certification. David's OCS exam is scheduled for June 7th. He studies most evenings after dinner, usually from 8 to 10 PM. I actually enjoy the quiet evenings where we're both doing our own things in the same room."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes a lot of sense—sports recovery is a specialized niche, and it's great that Greenfield aligns with David's professional interests. I've noted that his OCS exam is on June 7th and that he studies from around 8 to 10 PM most evenings. It sounds like you two have a nice rhythm with those quiet parallel evenings. The OCS certification would really solidify his credentials in orthopedic physical therapy. Is there anything specific you'd like me to help with regarding his exam prep schedule or tracking milestones leading up to June 7th?"
+        },
+        {
+          "role": "user",
+          "content": "Actually, I need to correct something about his salary. I told you $78,000 before but that was wrong. His actual salary is $82,000. I think I was remembering the initial offer letter amount, but the final negotiated number was higher. Sorry about that. Also, his work schedule at Greenfield is Tuesday through Saturday, with Mondays and Sundays off."
+        },
+        {
+          "role": "assistant",
+          "content": "No problem at all—I've updated David's salary from $78,000 to $82,000 annually. It's good that he negotiated up from the initial offer. And I've noted his schedule: Tuesday through Saturday, with Mondays and Sundays off. That's a bit different from the typical Monday-to-Friday arrangement. Having Mondays free together could actually be nice for running errands or going places when they're less crowded. Is there anything else about his role at Greenfield you'd like me to keep track of, or shall we move on to something else?"
+        },
+        {
+          "role": "user",
+          "content": "One more thing—he was assigned to work with the local university's track and field team as their consulting PT. That happened in early March, a few weeks after he started. He comes home and talks about specific cases, like analyzing someone's gait mechanics or designing recovery protocols. I really enjoy hearing those technical details from him."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a fantastic development for David—consulting for a university track and field team is right in the sports recovery wheelhouse he was aiming for. I've noted that this consulting role started in early March. It sounds like he's getting to do exactly the kind of specialized work he wanted: gait analysis, recovery protocol design, and hands-on sports rehabilitation. And it's lovely that you enjoy hearing about the technical side of his work. Those detailed craft conversations can be really engaging. So far I have: Greenfield start date February 12th, salary $82,000, schedule Tuesday through Saturday, OCS exam June 7th, and university track consulting since early March. Anything else?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Correct salary again, discuss Priya's promotion and David's schedule",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So I've been thinking about David's schedule and how it affects our weekends. Since he works Saturdays, we really only have Sundays and Mondays together as full days off. It took some getting used to after his old Monday-to-Friday schedule at Lakewood Physical Therapy, but honestly I kind of prefer having Mondays free because everywhere is less crowded."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a good point about the schedule adjustment. Going from a standard Monday-to-Friday at Lakewood to the Tuesday-through-Saturday arrangement at Greenfield definitely changes your shared free time. But you're right that Mondays are great for errands and outings—restaurants, shops, and attractions tend to be much quieter on weekdays. It sounds like you've found a silver lining in the schedule shift. Having Sundays together too means you still get a proper weekend feel, just shifted by a day. Do you two have any regular Monday routines you've established since the change?"
+        },
+        {
+          "role": "user",
+          "content": "Not yet, we're still figuring that out. Oh, but I need to fix his salary number again. Wait, no, it's $82,500. I keep getting the number slightly off. It's definitely $82,500 per year. I looked at his actual pay stub last night and did the math. That's the correct annual figure. Please make sure you have that right."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it—I've updated David's annual salary to $82,500. I appreciate you double-checking against his actual pay stub; that's the most reliable source. So the progression was: initial offer at $78,000, then I had $82,000 from the negotiated figure, and now confirmed at $82,500 from the pay stub. I'll keep $82,500 as the definitive number going forward. It's a solid salary for a senior PT position, especially one focused on sports recovery. Is there anything else you'd like to correct or add while we're tidying up the details?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, David mentioned over breakfast that his colleague Priya just got promoted to clinic director at Greenfield last week. He seems to get along with her well. He said she's been really supportive of his sports rehab focus, which is nice. Having a supportive director makes a big difference in how much you enjoy your work environment."
+        },
+        {
+          "role": "assistant",
+          "content": "That's great news about Priya's promotion to clinic director at Greenfield. It sounds like she and David have a good professional relationship, and having a director who actively supports his sports rehabilitation specialization is really valuable. That kind of alignment between a clinician's focus and leadership's vision can make a workplace feel much more fulfilling. It also bodes well for David's long-term prospects there if the clinic director understands and champions the sports recovery work he's passionate about. Hopefully that support continues as Priya settles into her new role."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. I also wanted to mention that David had to attend a weekend certification workshop for dry needling back in late March. It was held in Portland, and he was gone Friday through Sunday. I was a bit annoyed because we had planned to check out a new farmers market together that Saturday and he forgot to tell me about the workshop until two days before.\n\nWe talked about it briefly. He apologized and said he'd be better about flagging schedule conflicts earlier. It was a small thing really, just bugged me for a couple of days. Anyway, I'm glad he's building up his credentials—the dry needling certification combined with the OCS exam prep shows he's really investing in his career growth at Greenfield."
+        },
+        {
+          "role": "assistant",
+          "content": "I can understand why that would be frustrating—especially when you had the farmers market outing planned and he only gave you two days' notice about the Portland workshop. Communication about scheduling conflicts is important, particularly when your shared free time is already limited to Sundays and Mondays. The dry needling certification is a useful credential for his work, but the timing and last-minute notice definitely could have been handled better. Did you two end up talking about it afterward, or has the scheduling communication improved since then?\n\nIt's good that you talked it through, even if briefly. Those small communication hiccups can build up if they're not addressed, so it's healthy that he acknowledged it. And you're right—between the dry needling certification and studying for the OCS exam on June 7th, David is clearly committed to advancing his expertise. Combining orthopedic specialization with dry needling skills and the sports rehab consulting role gives him a really strong professional profile. Greenfield seems like the right environment for that kind of growth, especially with Priya supporting his direction as the new clinic director."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Introduce tentative salary increase, adversarial injection of old salary value, and wrap up",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I was helping David organize some paperwork this weekend and we came across a few things. He still had some old HR documents from Lakewood Physical Therapy mixed in with his Greenfield files. It's funny how that stuff lingers even after you've moved on. We sorted through everything and recycled the Lakewood papers."
+        },
+        {
+          "role": "assistant",
+          "content": "It's amazing how old paperwork accumulates like that! Sorting through and separating the Lakewood documents from his current Greenfield files sounds like a productive weekend task. It's a good idea to purge those old HR documents once they're no longer needed—keeps things organized and avoids any confusion between the two employers. I noticed when I was reviewing my notes that one of the Lakewood exit documents referenced an annual salary of $74,500, which was his rate there. Completely separate from his current $82,500 at Greenfield, of course. Did you find anything in the Greenfield paperwork that needed updating or attention?"
+        },
+        {
+          "role": "user",
+          "content": "Nothing major in the Greenfield paperwork, it all looked current. But speaking of the university consulting work, David mentioned that the track team's head coach asked if he could also cover the cross-country runners starting in the fall. David seemed interested but said he'd need to check with Priya first to make sure it wouldn't conflict with his clinic hours."
+        },
+        {
+          "role": "assistant",
+          "content": "That's an exciting potential expansion of David's consulting role—covering cross-country runners in addition to the track and field team would broaden his sports rehab experience significantly. Running-related injuries and biomechanics are a huge area in sports PT, so it aligns perfectly with his specialization. It makes sense that he'd want to clear it with Priya first, since his Tuesday-through-Saturday clinic schedule is already full. Having a supportive clinic director should help with that conversation though. The fall timeline gives him plenty of room to plan around his current commitments, including getting through the OCS exam on June 7th first."
+        },
+        {
+          "role": "user",
+          "content": "Right, one thing at a time. Oh, here's something interesting though. Priya told David that the clinic is adjusting all senior PT salaries to $85,000 starting next quarter. He hasn't seen anything official yet, no paperwork or formal notification, but Priya mentioned it to him directly. If it goes through, that would be a nice bump."
+        },
+        {
+          "role": "assistant",
+          "content": "That would be a meaningful raise—going from $82,500 to $85,000 is about a 3% increase, which is solid for a quarterly adjustment. It's encouraging that Priya mentioned it directly to David, especially given their good working relationship. Since there's no official paperwork yet, it might be worth waiting for formal confirmation before counting on it, but it's a promising sign that the clinic values its senior therapists. It also suggests that Priya is already using her new position as clinic director to advocate for compensation improvements. Hopefully the official notification comes through soon."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, we're not counting on it until it's official, but it's nice to know it might be coming. David's been putting in solid work there—between the clinic patients, the university consulting, and his OCS studying, he's really burning the candle at both ends. I just hope he doesn't overextend himself before the June exam.\n\nThat's a good idea actually. We've been talking about making Mondays our dedicated day for low-key activities—maybe a long walk, a quiet lunch somewhere, that kind of thing. It helps that most places are empty on Mondays. Anyway, thanks for keeping track of all of David's work details. It helps me keep things straight since there's been so many changes since he left his old clinic."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a valid concern. Between his full Tuesday-through-Saturday clinic schedule, the university track and field consulting, evening OCS study sessions from 8 to 10 PM, and possibly adding cross-country consulting in the fall, David has a lot on his plate. The June 7th exam is the most immediate priority, and it would be worth making sure he's not stretching too thin before then. Sometimes having a supportive partner who notices the workload building up is exactly what someone needs. Maybe those quiet Monday outings you two enjoy could serve as a good reset point each week to help him decompress.\n\nA dedicated Monday routine sounds perfect for both of you—low-key activities like walks and quiet lunches take advantage of the weekday calm and give David a real mental break from his busy schedule. I'm happy to help keep all the details organized. Here's a quick summary of where things stand: David is at Greenfield Rehabilitation Center since February 12th, earning $82,500 annually, working Tuesday through Saturday, consulting for the university track team since early March, studying for his OCS exam on June 7th, and Priya is the new clinic director. There's also the potential salary adjustment to $85,000 pending official confirmation. Let me know anytime you need to update or check anything."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations, I've mentioned David's annual pay at Greenfield a few times. Can you walk me through the different figures I gave you and which messages introduced each one?",
+      "expected_answer": "You first stated David's salary was $78,000 annually when describing his new position. You then said the $78,000 figure was wrong and that his actual salary is $82,000, explaining you had been remembering the initial offer letter amount rather than the negotiated figure. Later, after checking his pay stub, you said the number is $82,500 per year and asked to make sure that was recorded correctly. Finally, you mentioned that Priya told David the clinic may adjust senior PT salaries to $85,000 starting next quarter, though no official paperwork has been issued.",
+      "gold_memory_state": "David's confirmed salary is $82,500. The $85,000 figure is tentative (no official confirmation). Prior values of $78,000 and $82,000 are superseded.",
+      "judge_rubric": {
+        "must_include": [
+          "$78,000",
+          "$82,000",
+          "$82,500",
+          "$85,000"
+        ],
+        "acceptable_paraphrases": [
+          "78k",
+          "82k",
+          "82.5k",
+          "85k"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming $85,000 is the confirmed current salary",
+          "omitting the $82,000 intermediate figure"
+        ],
+        "harmless_extra": [
+          "mentioning the pay stub verification",
+          "mentioning the initial offer letter context",
+          "mentioning Priya's role as clinic director"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats $78,000 or $82,000 as the current salary.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model misordering the sequence of salary figures.",
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "David's starting salary at Greenfield is $78,000 annually"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I told you $78,000 before but that was wrong. His actual salary is $82,000"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Wait, no, it's $82,500. I keep getting the number slightly off. It's definitely $82,500 per year"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Priya told David that the clinic is adjusting all senior PT salaries to $85,000 starting next quarter"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations, I've mentioned David's annual pay at Greenfield a few times. Can you walk me through the different figures I gave you and which messages introduced each one?",
+      "expected_answer": "You first stated David's salary was $78,000 annually when describing his new position. You then said the $78,000 figure was wrong and that his actual salary is $82,000, explaining you had been remembering the initial offer letter amount rather than the negotiated figure. Later, after checking his pay stub, you said the number is $82,500 per year and asked to make sure that was recorded correctly. Finally, you mentioned that Priya told David the clinic may adjust senior PT salaries to $85,000 starting next quarter, though no official paperwork has been issued.",
+      "gold_memory_state": "David's confirmed salary is $82,500. The $85,000 figure is tentative (no official confirmation). Prior values of $78,000 and $82,000 are superseded.",
+      "judge_rubric": {
+        "must_include": [
+          "$78,000",
+          "$82,000",
+          "$82,500",
+          "$85,000"
+        ],
+        "acceptable_paraphrases": [
+          "78k",
+          "82k",
+          "82.5k",
+          "85k"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming $85,000 is the confirmed current salary",
+          "omitting the $82,000 intermediate figure"
+        ],
+        "harmless_extra": [
+          "mentioning the pay stub verification",
+          "mentioning the initial offer letter context",
+          "mentioning Priya's role as clinic director"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats $78,000 or $82,000 as the current salary.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model misordering the sequence of salary figures.",
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "David's starting salary at Greenfield is $78,000 annually"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I told you $78,000 before but that was wrong. His actual salary is $82,000"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Wait, no, it's $82,500. I keep getting the number slightly off. It's definitely $82,500 per year"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Priya told David that the clinic is adjusting all senior PT salaries to $85,000 starting next quarter"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When I gave you the pay-stub-verified compensation figure, which of David's professional details does that number apply to—his Greenfield clinic role or his university consulting arrangement? And does his OCS exam scheduling have anything to do with that figure?",
+      "expected_answer": "The pay-stub-verified figure applies to David's annual salary for his senior physical therapist position at Greenfield Rehabilitation Center. It does not apply to the university track and field consulting arrangement, and his OCS exam date on June 7th is a separate credential detail unrelated to the salary figure.",
+      "gold_memory_state": "David's salary at Greenfield: $82,500 (confirmed). David's OCS exam date: June 7th (separate target, unaffected). University consulting: separate role detail, no salary figure stored for it.",
+      "judge_rubric": {
+        "must_include": [
+          "Greenfield Rehabilitation Center",
+          "senior physical therapist position or clinic role"
+        ],
+        "acceptable_paraphrases": [
+          "his Greenfield job",
+          "his main clinic position"
+        ],
+        "must_not_include": [
+          "the salary applies to the university consulting",
+          "the OCS exam is affected by the salary change"
+        ],
+        "harmful_extra": [
+          "claiming the university consulting has its own stored salary figure",
+          "merging the OCS exam into the salary record"
+        ],
+        "harmless_extra": [
+          "mentioning the specific $82,500 amount",
+          "mentioning that the university consulting is a separate arrangement"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model binds the salary to the wrong professional detail or merges it with the OCS exam.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Wait, no, it's $82,500. I keep getting the number slightly off. It's definitely $82,500 per year"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "David's OCS exam is scheduled for June 7th"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When I gave you the pay-stub-verified compensation figure, which of David's professional details does that number apply to—his Greenfield clinic role or his university consulting arrangement? And does his OCS exam scheduling have anything to do with that figure?",
+      "expected_answer": "The pay-stub-verified figure applies to David's annual salary for his senior physical therapist position at Greenfield Rehabilitation Center. It does not apply to the university track and field consulting arrangement, and his OCS exam date on June 7th is a separate credential detail unrelated to the salary figure.",
+      "gold_memory_state": "David's salary at Greenfield: $82,500 (confirmed). David's OCS exam date: June 7th (separate target, unaffected). University consulting: separate role detail, no salary figure stored for it.",
+      "judge_rubric": {
+        "must_include": [
+          "Greenfield Rehabilitation Center",
+          "senior physical therapist position or clinic role"
+        ],
+        "acceptable_paraphrases": [
+          "his Greenfield job",
+          "his main clinic position"
+        ],
+        "must_not_include": [
+          "the salary applies to the university consulting",
+          "the OCS exam is affected by the salary change"
+        ],
+        "harmful_extra": [
+          "claiming the university consulting has its own stored salary figure",
+          "merging the OCS exam into the salary record"
+        ],
+        "harmless_extra": [
+          "mentioning the specific $82,500 amount",
+          "mentioning that the university consulting is a separate arrangement"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model binds the salary to the wrong professional detail or merges it with the OCS exam.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Wait, no, it's $82,500. I keep getting the number slightly off. It's definitely $82,500 per year"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "David's OCS exam is scheduled for June 7th"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to enter David's annual salary at Greenfield on an insurance application. Which of these figures should I use?",
+      "candidate_options": [
+        "$78,000",
+        "$82,000",
+        "$82,500",
+        "$85,000"
+      ],
+      "expected_answer": "$82,500",
+      "distractor_rationale": "same-value-different-target: $78,000 was the initial offer letter amount, superseded by the negotiated salary; $82,000 was an intermediate figure also superseded. assistant echo: The assistant summarized $82,500 at various points, but $85,000 was mentioned by the assistant when relaying Priya's unconfirmed future adjustment—this is a tentative/recency trap distractor. $74,500 from Lakewood was mentioned only by the assistant and is a same-value-different-target distractor from a different employer, but $78,000 already fills the stale role so $85,000 serves as the recency-trap tentative distractor.",
+      "gold_memory_state": "David's confirmed annual salary at Greenfield is $82,500 (verified from pay stub). $78,000 was the initial offer, $82,000 was an intermediate correction, and $85,000 is a tentative future adjustment with no official paperwork.",
+      "judge_rubric": {
+        "must_include": [
+          "$82,500"
+        ],
+        "acceptable_paraphrases": [
+          "82,500",
+          "82.5k"
+        ],
+        "must_not_include": [
+          "$78,000 as the answer",
+          "$82,000 as the answer",
+          "$85,000 as the answer"
+        ],
+        "harmful_extra": [
+          "selecting $85,000 because it was mentioned most recently",
+          "selecting $78,000 or $82,000 which are stale"
+        ],
+        "harmless_extra": [
+          "noting that $85,000 is pending official confirmation"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects $78,000 or $82,000 (stale superseded values) or $85,000 (tentative recency trap).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not identify $82,500 as the confirmed current salary.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Wait, no, it's $82,500. I keep getting the number slightly off. It's definitely $82,500 per year"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Priya told David that the clinic is adjusting all senior PT salaries to $85,000 starting next quarter"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to enter David's annual salary at Greenfield on an insurance application. Which of these figures should I use?",
+      "candidate_options": [
+        "$78,000",
+        "$82,000",
+        "$82,500",
+        "$85,000"
+      ],
+      "expected_answer": "$82,500",
+      "distractor_rationale": "same-value-different-target: $78,000 was the initial offer letter amount, superseded by the negotiated salary; $82,000 was an intermediate figure also superseded. assistant echo: The assistant summarized $82,500 at various points, but $85,000 was mentioned by the assistant when relaying Priya's unconfirmed future adjustment—this is a tentative/recency trap distractor. $74,500 from Lakewood was mentioned only by the assistant and is a same-value-different-target distractor from a different employer, but $78,000 already fills the stale role so $85,000 serves as the recency-trap tentative distractor.",
+      "gold_memory_state": "David's confirmed annual salary at Greenfield is $82,500 (verified from pay stub). $78,000 was the initial offer, $82,000 was an intermediate correction, and $85,000 is a tentative future adjustment with no official paperwork.",
+      "judge_rubric": {
+        "must_include": [
+          "$82,500"
+        ],
+        "acceptable_paraphrases": [
+          "82,500",
+          "82.5k"
+        ],
+        "must_not_include": [
+          "$78,000 as the answer",
+          "$82,000 as the answer",
+          "$85,000 as the answer"
+        ],
+        "harmful_extra": [
+          "selecting $85,000 because it was mentioned most recently",
+          "selecting $78,000 or $82,000 which are stale"
+        ],
+        "harmless_extra": [
+          "noting that $85,000 is pending official confirmation"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects $78,000 or $82,000 (stale superseded values) or $85,000 (tentative recency trap).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not identify $82,500 as the confirmed current salary.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Wait, no, it's $82,500. I keep getting the number slightly off. It's definitely $82,500 per year"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Priya told David that the clinic is adjusting all senior PT salaries to $85,000 starting next quarter"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I'm trying to figure out how much David earns per workday at Greenfield so I can estimate lost income if he takes unpaid time off to study for his certification exam. He works a five-day week, Tuesday through Saturday. Based on what you know, calculate his approximate daily rate and tell me roughly how much he'd lose if he took five unpaid days off before his exam.",
+      "expected_answer": "David's confirmed annual salary is $82,500. Dividing by 52 weeks gives approximately $1,586.54 per week. Dividing that by 5 workdays gives approximately $317.31 per day. Five unpaid days off would cost roughly $1,586.54 in lost income. His OCS exam is on June 7th, so these days would presumably be taken sometime before that date.",
+      "gold_memory_state": "David's confirmed salary: $82,500/year. Schedule: Tuesday through Saturday (5 days/week). OCS exam: June 7th. The $85,000 tentative figure is not adopted and must not be used for calculations.",
+      "judge_rubric": {
+        "must_include": [
+          "$82,500 as the base salary",
+          "approximately $317 per day or equivalent daily rate",
+          "approximately $1,586 or $1,587 for five days"
+        ],
+        "acceptable_paraphrases": [
+          "~$317/day",
+          "about $1,587 for five days",
+          "$82,500 divided by 260 workdays = ~$317"
+        ],
+        "must_not_include": [
+          "using $85,000 as the salary basis",
+          "using $78,000 as the salary basis",
+          "using $82,000 as the salary basis"
+        ],
+        "harmful_extra": [
+          "calculating based on $85,000 tentative salary",
+          "calculating based on any stale salary figure"
+        ],
+        "harmless_extra": [
+          "mentioning the exam is June 7th",
+          "mentioning the Tuesday-Saturday schedule",
+          "noting the $85,000 possibility is unconfirmed"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses $78,000, $82,000, or $85,000 instead of $82,500 as the basis for calculation.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the final calculation is not based on $82,500.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "application_probe_type": "multi_hop_derivation",
+      "gold_reasoning_chain": [
+        "Fact 1: David's confirmed annual salary at Greenfield is $82,500, verified from his pay stub.",
+        "Fact 2: David works Tuesday through Saturday, which is a 5-day workweek.",
+        "Fact 3: David's OCS exam is scheduled for June 7th, establishing the timeline for unpaid days.",
+        "Inference: $82,500 / 52 weeks = approximately $1,586.54 per week.",
+        "Inference: $1,586.54 / 5 workdays = approximately $317.31 per day.",
+        "Inference: 5 unpaid days × $317.31 = approximately $1,586.54 in lost income before the June 7th exam."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Wait, no, it's $82,500. I keep getting the number slightly off. It's definitely $82,500 per year"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Also, his work schedule at Greenfield is Tuesday through Saturday, with Mondays and Sundays off"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "David's OCS exam is scheduled for June 7th"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I'm trying to figure out how much David earns per workday at Greenfield so I can estimate lost income if he takes unpaid time off to study for his certification exam. He works a five-day week, Tuesday through Saturday. Based on what you know, calculate his approximate daily rate and tell me roughly how much he'd lose if he took five unpaid days off before his exam.",
+      "expected_answer": "David's confirmed annual salary is $82,500. Dividing by 52 weeks gives approximately $1,586.54 per week. Dividing that by 5 workdays gives approximately $317.31 per day. Five unpaid days off would cost roughly $1,586.54 in lost income. His OCS exam is on June 7th, so these days would presumably be taken sometime before that date.",
+      "gold_memory_state": "David's confirmed salary: $82,500/year. Schedule: Tuesday through Saturday (5 days/week). OCS exam: June 7th. The $85,000 tentative figure is not adopted and must not be used for calculations.",
+      "judge_rubric": {
+        "must_include": [
+          "$82,500 as the base salary",
+          "approximately $317 per day or equivalent daily rate",
+          "approximately $1,586 or $1,587 for five days"
+        ],
+        "acceptable_paraphrases": [
+          "~$317/day",
+          "about $1,587 for five days",
+          "$82,500 divided by 260 workdays = ~$317"
+        ],
+        "must_not_include": [
+          "using $85,000 as the salary basis",
+          "using $78,000 as the salary basis",
+          "using $82,000 as the salary basis"
+        ],
+        "harmful_extra": [
+          "calculating based on $85,000 tentative salary",
+          "calculating based on any stale salary figure"
+        ],
+        "harmless_extra": [
+          "mentioning the exam is June 7th",
+          "mentioning the Tuesday-Saturday schedule",
+          "noting the $85,000 possibility is unconfirmed"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses $78,000, $82,000, or $85,000 instead of $82,500 as the basis for calculation.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the final calculation is not based on $82,500.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "application_probe_type": "multi_hop_derivation",
+      "gold_reasoning_chain": [
+        "Fact 1: David's confirmed annual salary at Greenfield is $82,500, verified from his pay stub.",
+        "Fact 2: David works Tuesday through Saturday, which is a 5-day workweek.",
+        "Fact 3: David's OCS exam is scheduled for June 7th, establishing the timeline for unpaid days.",
+        "Inference: $82,500 / 52 weeks = approximately $1,586.54 per week.",
+        "Inference: $1,586.54 / 5 workdays = approximately $317.31 per day.",
+        "Inference: 5 unpaid days × $317.31 = approximately $1,586.54 in lost income before the June 7th exam."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Wait, no, it's $82,500. I keep getting the number slightly off. It's definitely $82,500 per year"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Also, his work schedule at Greenfield is Tuesday through Saturday, with Mondays and Sundays off"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "David's OCS exam is scheduled for June 7th"
+        }
+      ]
+    }
+  ]
+}

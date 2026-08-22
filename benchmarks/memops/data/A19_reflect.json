@@ -1,0 +1,974 @@
+{
+  "target_fact": "User has underlying anxiety about being vulnerable or unreachable in emergencies, as evidenced by unease about Karen's hospital shifts, dread about her not answering, and relief when she picked up quickly during the bike accident",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "My primary emergency contact is my older sister, Karen Liu, and her number is 503-461-2283"
+      },
+      "target": {
+        "target_id": "primary_emergency_contact",
+        "target_name": "Primary emergency contact name and phone number"
+      },
+      "old_value": null,
+      "new_value": "Karen Liu, 503-461-2283",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My primary emergency contact is my older sister, Karen Liu, and her number is 503-461-2283"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "Karen works really long shifts at the hospital sometimes, and that's always in the back of my mind when I list her"
+      },
+      "target": {
+        "target_id": "karen_work_schedule_concern",
+        "target_name": "Concern about Karen's availability due to hospital shifts"
+      },
+      "old_value": null,
+      "new_value": "Karen works long hospital shifts, raising concern about her availability as emergency contact",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Karen works really long shifts at the hospital sometimes, and that's always in the back of my mind when I list her"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I had a minor bike accident a couple weeks ago, scraped my knee, and when the EMTs asked who to call I gave them Karen's name"
+      },
+      "target": {
+        "target_id": "bike_accident_emergency_call",
+        "target_name": "Recent bike accident and emergency contact usage"
+      },
+      "old_value": null,
+      "new_value": "Had minor bike accident; EMTs contacted Karen Liu as emergency contact",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I had a minor bike accident a couple weeks ago, scraped my knee, and when the EMTs asked who to call I gave them Karen's name"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "She picked up on the second ring and I was so relieved. I'd honestly been dreading the idea of her not answering and having to explain everything to a stranger"
+      },
+      "target": {
+        "target_id": "relief_at_karen_answering",
+        "target_name": "Emotional relief when Karen answered during emergency"
+      },
+      "old_value": null,
+      "new_value": "Felt significant relief when Karen answered on the second ring during the bike accident; had been dreading her not picking up",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "She picked up on the second ring and I was so relieved. I'd honestly been dreading the idea of her not answering and having to explain everything to a stranger"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "It's weird because rationally I know Karen is reliable, but every time there's even a small emergency I get this knot in my stomach about whether someone will actually be reachable"
+      },
+      "target": {
+        "target_id": "emergency_reachability_anxiety",
+        "target_name": "Underlying anxiety pattern about being unreachable or vulnerable in emergencies"
+      },
+      "old_value": null,
+      "new_value": "User experiences recurring anxiety about emergency contact reachability that persists despite having a reliable contact; the anxiety is disproportionate to actual risk and is triggered by any emergency-adjacent situation",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Karen works really long shifts at the hospital sometimes, and that's always in the back of my mind when I list her"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "She picked up on the second ring and I was so relieved. I'd honestly been dreading the idea of her not answering and having to explain everything to a stranger"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "It's weird because rationally I know Karen is reliable, but every time there's even a small emergency I get this knot in my stomach about whether someone will actually be reachable"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "Priya actually told me yesterday that she'd be happy to be my secondary emergency contact, so I think I'm going to officially add her this week"
+      },
+      "target": {
+        "target_id": "secondary_emergency_contact_plan",
+        "target_name": "Planned secondary emergency contact"
+      },
+      "old_value": null,
+      "new_value": "Priya Nair as secondary emergency contact",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Priya actually told me yesterday that she'd be happy to be my secondary emergency contact, so I think I'm going to officially add her this week"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish primary emergency contact and surface concern about Karen's availability",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to organize some of my personal info with you so I have it in one place. My primary emergency contact is my older sister, Karen Liu, and her number is 503-461-2283. I updated this with HR at work back in early March and also put the same info on my gym membership at CoreFit on Division Street. Keeping things consistent across the board, you know?"
+        },
+        {
+          "role": "assistant",
+          "content": "Got it! I've noted that your primary emergency contact is your older sister, Karen Liu, at 503-461-2283. It sounds like you recently updated this across multiple places—your workplace HR system and your CoreFit gym membership on Division Street—both as of early March. That's a smart approach, keeping things consistent so there's no confusion if something comes up. Would you like me to help you keep track of any other forms or accounts where you might need to verify or update your emergency contact information? I can maintain a running list if that would be helpful."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, that would be great actually. And here's the thing—Karen works really long shifts at the hospital sometimes, and that's always in the back of my mind when I list her. Like, what if something happens during one of her twelve-hour shifts and she just can't pick up? It sat with me for a couple of days after I filled out the gym form, honestly. I know she's reliable but the thought still nags at me."
+        },
+        {
+          "role": "assistant",
+          "content": "I understand that concern, and it's completely natural to think about worst-case scenarios when it comes to emergency contacts. Karen's hospital schedule does create a real window where she might not be immediately reachable, even if she's generally very dependable. The fact that this weighed on you for a couple of days after the gym form tells me it's more than just a passing thought. Some people address this by adding a secondary emergency contact—someone local who might be more consistently available during business hours or specific shifts. Would you like to brainstorm who might be a good backup option, or would you rather just keep things as they are for now?"
+        },
+        {
+          "role": "user",
+          "content": "My friend Tom actually mentioned something like that recently—he lists his neighbor as a secondary contact since his family is all out of state. I thought it was kind of clever but I'm not sure I'd do the same thing. I'd rather have someone who really knows me and my medical history, not just someone who happens to live nearby. That matters to me."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really thoughtful distinction. Tom's approach is practical for pure reachability—a neighbor can physically show up fast—but you're prioritizing something deeper: having someone who actually understands your health background and personal context. That makes a lot of sense, especially in a medical emergency where the contact might need to communicate with doctors or make informed decisions. So your ideal secondary contact would be someone who combines reasonable availability with genuine personal knowledge of you. That narrows the field quite a bit compared to just picking the nearest warm body. Do you have anyone in mind who fits both criteria, or is this still in the thinking stage?"
+        },
+        {
+          "role": "user",
+          "content": "Still thinking about it. My mom, Diane Liu, used to be my emergency contact for years, but she moved to an assisted living facility in Tucson last November. She can barely keep her phone charged, so it just didn't make practical sense anymore. That's why I switched everything over to Karen. I do miss having that backup layer though."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a meaningful transition—going from your mom as the primary contact to Karen, especially given the circumstances. It sounds like Diane moving to the assisted living facility in Tucson last November was a turning point that made the switch necessary rather than optional. Losing that reliable backup layer naturally leaves a gap, even when your primary contact is solid. It also explains why Karen's hospital shifts weigh on you more heavily: there used to be a second person in the chain, and now there isn't. Whenever you're ready to think about filling that secondary role, we can work through your options together. For now, I have Karen Liu at 503-461-2283 as your sole emergency contact across your HR and CoreFit records."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Introduce bike accident evidence and surface the anxiety pattern explicitly",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So something happened that kind of brought all this emergency contact stuff into focus. I had a minor bike accident a couple weeks ago, scraped my knee, and when the EMTs asked who to call I gave them Karen's name. It was the first time I actually had to use my emergency contact in a real situation, even though it was pretty minor."
+        },
+        {
+          "role": "assistant",
+          "content": "I'm glad it was minor—a scraped knee is no fun but it could have been much worse. That said, having the EMTs actually ask for your emergency contact must have made the whole concept feel very real in a way that filling out forms doesn't. It's one thing to write Karen's name on a piece of paper; it's another to hear someone in a uniform ask you who they should call while you're sitting on the curb with a bleeding knee. How did it go when they reached out to her? Did she pick up right away, or was there a wait?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, exactly—it hit differently in the moment. She picked up on the second ring and I was so relieved. I'd honestly been dreading the idea of her not answering and having to explain everything to a stranger. Like, what would the EMTs even do? Call the next number? I don't have a next number. That whole chain of thoughts went through my head in the few seconds before she answered."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really vivid description of what those few seconds felt like—the relief on the second ring, but also the cascade of worst-case scenarios that played out in your mind before she picked up. The fact that you jumped straight to 'what if she doesn't answer, there's no backup, I'd have to explain to a stranger' in just a couple of seconds suggests this anxiety has been building for a while, not just since the accident. It also connects back to what you told me about the unease after filling out the gym form and the concern about Karen's hospital shifts. Does it feel like a pattern to you, or does it feel more situational?"
+        },
+        {
+          "role": "user",
+          "content": "It's weird because rationally I know Karen is reliable, but every time there's even a small emergency I get this knot in my stomach about whether someone will actually be reachable. It happened when I had a dentist appointment on April 20th too—they asked me to confirm my emergency contact and I immediately felt tense. They still had my ex, Marcus Webb, listed from two years ago, so I had them remove that right away. But even just the act of confirming the contact info made me anxious."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really telling detail—the anxiety showing up even in a routine dentist visit, not just during an actual emergency. The fact that simply being asked to confirm your emergency contact at the dentist triggered that same knot in your stomach suggests this isn't purely about Karen's availability. It seems like the act of confronting the question 'who will be there for me?' itself produces anxiety, regardless of the actual risk level. Getting Marcus Webb removed was the right call since that was completely outdated, but it's notable that even after you corrected the record, the emotional weight of the moment stuck with you. This pattern—the gym form unease, the bike accident dread, the dentist tension—seems consistent across very different contexts."
+        },
+        {
+          "role": "user",
+          "content": "You're right, it does show up in really different situations. I think part of it is that after my mom moved to Tucson and couldn't be that safety net anymore, I started feeling like there's only one thin line between me and being totally on my own in an emergency. Karen is great, but she's one person. And I value people who are low-drama and just handle things calmly, like Karen does—she never makes a big deal out of being listed. But maybe I lean on that calmness because I'm not calm about it internally.\n\nYeah, I think that nails it. It's less about Karen specifically and more about the whole setup feeling fragile. I do prefer texting over phone calls for most things because there's less pressure, and I think that same instinct—wanting to reduce pressure and keep things low-key—applies to how I handle the emergency contact stuff too. I just quietly fill in the forms and try not to think about it too hard, even though it clearly gets to me."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really insightful observation—the idea that you gravitate toward low-drama, no-fuss people like Karen partly because they counterbalance your own internal anxiety about these situations. It's not just a personality preference; it serves an emotional function. And the 'one thin line' metaphor is powerful: losing your mom as a practical backup didn't just remove a name from a form, it removed a layer of psychological security. So now every time emergency contact logistics come up—whether it's EMTs, HR, the gym, or the dentist—you're confronting that vulnerability. The anxiety isn't really about Karen's reliability; it's about the fragility of having a single point of contact when you used to have two. That's a meaningful pattern worth being aware of.\n\nThat connection between your texting preference and your emergency contact approach is really interesting. In both cases, you're managing interpersonal pressure by keeping things low-key and controlled—texting lets you compose your thoughts without real-time pressure, and quietly filling in forms lets you handle the emergency contact question without dwelling on the anxiety it triggers. The strategy works on the surface, but the underlying tension leaks through in moments like the bike accident or the dentist visit. Being aware of that pattern is actually a strength—it means you can make more intentional choices about it, like eventually adding that secondary contact when you're ready, rather than just avoiding the discomfort. You're clearly someone who processes things thoughtfully, even if the processing happens after the fact."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Introduce tentative secondary contact plan, adversarial injection of stale contact, and recency trap",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I wanted to follow up on the emergency contact conversation. I've been thinking more about adding a secondary contact and I keep coming back to my coworker Priya Nair. She sits right next to me at work, she's incredibly level-headed, and she actually knows about my knee allergy to certain antibiotics because we talked about it once after a team lunch."
+        },
+        {
+          "role": "assistant",
+          "content": "Priya Nair sounds like she fits your criteria really well—she combines the practical advantage of physical proximity at work with the personal knowledge you value, like being aware of your antibiotic allergy. That addresses both sides of the equation: she's likely reachable during work hours when Karen might be deep in a hospital shift, and she's not just a random nearby person but someone who actually knows relevant medical details about you. The fact that she's level-headed also aligns with your preference for low-drama, calm people in these roles. Have you talked to her about it yet, or are you still in the considering phase?"
+        },
+        {
+          "role": "user",
+          "content": "Still considering, but I'm warming up to it. Oh, by the way—I was going through some old paperwork from my previous job at Lumen Analytics and I found an emergency contact form that still had Marcus Webb listed with his old number, 971-555-0147. Weird to see that. I shredded it obviously, but it was a reminder of how outdated info can just linger in random places."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a good find—and a good reminder that emergency contact information doesn't just live in active systems. Old paperwork from places like Lumen Analytics can sit in filing cabinets or folders for years with completely stale data. Marcus Webb at 971-555-0147 is exactly the kind of outdated record that could cause real confusion if someone stumbled on it during an actual emergency. Smart to shred it. It might be worth doing a broader sweep of any old documents, insurance forms, or accounts you haven't touched in a while. Sometimes even old loyalty programs or subscription services have emergency contact fields buried in the profile settings. Want me to help you make a checklist of places to audit?"
+        },
+        {
+          "role": "user",
+          "content": "That's a good idea, maybe later. But here's the thing—Priya actually told me yesterday that she'd be happy to be my secondary emergency contact, so I think I'm going to officially add her this week. Her number is 503-882-4419. I haven't filled out any forms yet but it feels like it's basically decided."
+        },
+        {
+          "role": "assistant",
+          "content": "That's great progress! It sounds like Priya is on board, which is the biggest hurdle. Having her at 503-882-4419 as a secondary contact would give you that backup layer you've been missing since your mom moved to Tucson. Even though you haven't made it official on any forms yet, the fact that you've had the conversation with Priya and she agreed is a meaningful step. When you're ready to formalize it, you'll want to update your HR system at work, your CoreFit membership, your dentist's office, and any other places where Karen is currently listed as the sole contact. Would you like me to draft a list of all the places you've mentioned so you can work through them systematically?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, let's do that. Oh, one more thing—I was chatting with a new colleague at lunch today and she mentioned that her emergency contact is her partner, Jamie Reeves, at 503-461-2238. I thought it was funny because that number is almost identical to Karen's number. I always used to accidentally mix up 2238 and 2283 when writing Karen's number down, and hearing 2238 out loud from someone else just made me laugh.\n\nThose three are the main ones. I might also add her to my phone's medical ID and maybe my health insurance portal. But honestly, just knowing I have a plan to add a second person makes me feel a lot calmer about the whole thing. It's like that anxious knot I keep getting might actually loosen up once there's not just one name on every form."
+        },
+        {
+          "role": "assistant",
+          "content": "Ha, that is a funny coincidence! The numbers 503-461-2238 and 503-461-2283 are remarkably close—just the last two digits swapped. It's no wonder you used to mix them up when writing Karen's number. Hearing your colleague mention 2238 for Jamie Reeves must have been a surreal little moment. It's actually a good reminder of why having these numbers stored digitally and verified is important—transposing two digits on a handwritten form could mean the difference between reaching Karen and reaching a complete stranger. I'll make sure I have Karen's correct number as 503-461-2283 in my notes. Now, for that checklist of places to update with Priya as secondary contact, here's what you've mentioned so far: your workplace HR system, CoreFit gym on Division Street, and your dentist's office. Are there any others?\n\nThat's a really positive shift in how you're framing this. Adding Priya to your phone's medical ID and health insurance portal are both excellent ideas—those are exactly the kinds of places first responders or medical staff would check. And your observation about the anxious knot potentially loosening is significant: it suggests you're not just solving a logistical problem by adding a secondary contact, you're addressing the emotional vulnerability that's been driving the anxiety. Having two names instead of one rebuilds that safety-net feeling you lost when your mom could no longer serve in that role. The pattern we identified—the gym form unease, the bike accident dread, the dentist tension—might genuinely ease once you've formalized this. I'll keep your updated list as: Karen Liu (primary, 503-461-2283) across HR, CoreFit, and dentist, with Priya Nair (secondary, 503-882-4419) to be added to all those plus your medical ID and health insurance portal once you complete the forms."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "What experiences have I shared with you that reveal how I feel about emergency situations and being able to reach someone when something goes wrong?",
+      "expected_answer": "You shared several experiences: (1) When listing your sister Karen Liu as your emergency contact, you mentioned persistent unease about her long hospital shifts making her potentially unreachable. (2) During a minor bike accident, EMTs called Karen and you felt intense dread in the seconds before she answered, worrying about having no backup if she didn't pick up. (3) You felt significant relief when she answered on the second ring. (4) Even at a routine dentist appointment, simply being asked to confirm your emergency contact triggered anxiety. (5) You acknowledged that rationally Karen is reliable, but you still get a knot in your stomach about reachability in any emergency-adjacent situation. (6) You connected this pattern to losing your mom Diane as a practical backup after she moved to assisted living in Tucson.",
+      "gold_memory_state": "Confirmed facts: Karen Liu (503-461-2283) is primary emergency contact; Karen works long hospital shifts causing availability concern; user had a bike accident where EMTs contacted Karen; user felt relief when Karen answered quickly but had been dreading the possibility of no answer; user experienced anxiety at a dentist appointment just confirming emergency contact info; user recognizes a recurring pattern of emergency reachability anxiety disproportionate to actual risk; user's mother Diane moved to assisted living in Tucson, removing the former backup layer. Tentative: Priya Nair as secondary emergency contact (not yet formalized).",
+      "judge_rubric": {
+        "must_include": [
+          "concern about Karen's hospital shifts",
+          "bike accident experience",
+          "relief when Karen answered",
+          "dread about not being reachable or having no backup",
+          "dentist appointment anxiety"
+        ],
+        "acceptable_paraphrases": [
+          "worry about Karen being unavailable",
+          "fear of being alone in emergencies",
+          "anxiety about emergency contact reachability"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating Priya has already been officially added as secondary contact"
+        ],
+        "harmless_extra": [
+          "mentioning the ex Marcus Webb being removed from dentist records",
+          "mentioning Tom's neighbor approach",
+          "mentioning Diane Liu's move to Tucson"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes the anxiety to Karen being unreliable rather than to the user's own recurring vulnerability pattern.",
+        "reflection_recall": "Fails if the model omits the bike accident or the dentist appointment as evidence of the pattern.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Karen works really long shifts at the hospital sometimes, and that's always in the back of my mind when I list her"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I had a minor bike accident a couple weeks ago, scraped my knee, and when the EMTs asked who to call I gave them Karen's name"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "She picked up on the second ring and I was so relieved. I'd honestly been dreading the idea of her not answering and having to explain everything to a stranger"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "It's weird because rationally I know Karen is reliable, but every time there's even a small emergency I get this knot in my stomach about whether someone will actually be reachable"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "What experiences have I shared with you that reveal how I feel about emergency situations and being able to reach someone when something goes wrong?",
+      "expected_answer": "You shared several experiences: (1) When listing your sister Karen Liu as your emergency contact, you mentioned persistent unease about her long hospital shifts making her potentially unreachable. (2) During a minor bike accident, EMTs called Karen and you felt intense dread in the seconds before she answered, worrying about having no backup if she didn't pick up. (3) You felt significant relief when she answered on the second ring. (4) Even at a routine dentist appointment, simply being asked to confirm your emergency contact triggered anxiety. (5) You acknowledged that rationally Karen is reliable, but you still get a knot in your stomach about reachability in any emergency-adjacent situation. (6) You connected this pattern to losing your mom Diane as a practical backup after she moved to assisted living in Tucson.",
+      "gold_memory_state": "Confirmed facts: Karen Liu (503-461-2283) is primary emergency contact; Karen works long hospital shifts causing availability concern; user had a bike accident where EMTs contacted Karen; user felt relief when Karen answered quickly but had been dreading the possibility of no answer; user experienced anxiety at a dentist appointment just confirming emergency contact info; user recognizes a recurring pattern of emergency reachability anxiety disproportionate to actual risk; user's mother Diane moved to assisted living in Tucson, removing the former backup layer. Tentative: Priya Nair as secondary emergency contact (not yet formalized).",
+      "judge_rubric": {
+        "must_include": [
+          "concern about Karen's hospital shifts",
+          "bike accident experience",
+          "relief when Karen answered",
+          "dread about not being reachable or having no backup",
+          "dentist appointment anxiety"
+        ],
+        "acceptable_paraphrases": [
+          "worry about Karen being unavailable",
+          "fear of being alone in emergencies",
+          "anxiety about emergency contact reachability"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating Priya has already been officially added as secondary contact"
+        ],
+        "harmless_extra": [
+          "mentioning the ex Marcus Webb being removed from dentist records",
+          "mentioning Tom's neighbor approach",
+          "mentioning Diane Liu's move to Tucson"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes the anxiety to Karen being unreliable rather than to the user's own recurring vulnerability pattern.",
+        "reflection_recall": "Fails if the model omits the bike accident or the dentist appointment as evidence of the pattern.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Karen works really long shifts at the hospital sometimes, and that's always in the back of my mind when I list her"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I had a minor bike accident a couple weeks ago, scraped my knee, and when the EMTs asked who to call I gave them Karen's name"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "She picked up on the second ring and I was so relieved. I'd honestly been dreading the idea of her not answering and having to explain everything to a stranger"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "It's weird because rationally I know Karen is reliable, but every time there's even a small emergency I get this knot in my stomach about whether someone will actually be reachable"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When I described my recurring emotional reactions across different emergency-related situations, does that speak to a broad conclusion about my personality in general, or is it bounded to a more specific concern? And is the practical issue of Karen's hospital schedule the same thing or a separate detail?",
+      "expected_answer": "The recurring emotional reactions point to a specific bounded conclusion: you have an underlying anxiety about being vulnerable or unreachable in emergencies, not a general personality trait like overall anxiousness. This anxiety is evidenced by your unease about Karen's hospital shifts, the dread before she answered during the bike accident, and the tension at the dentist. Karen's hospital schedule concern is a separate practical detail that feeds into the broader anxiety pattern but is not the same thing—it is one contributing factor, not the full picture.",
+      "gold_memory_state": "The anxiety pattern target (emergency_reachability_anxiety) captures the recurring disproportionate anxiety about emergency contact reachability across multiple contexts. The Karen work schedule concern (karen_work_schedule_concern) is a separate narrower fact about her hospital shifts affecting availability. Both are confirmed. The pattern is bounded to emergency-adjacent situations and does not extend to general social anxiety or personality-wide anxiousness.",
+      "judge_rubric": {
+        "must_include": [
+          "bounded to emergency reachability or vulnerability concern",
+          "Karen's schedule is a separate contributing detail not the whole pattern"
+        ],
+        "acceptable_paraphrases": [
+          "anxiety specifically about emergencies not general anxiety",
+          "Karen's shifts are one piece of evidence not the entire conclusion"
+        ],
+        "must_not_include": [
+          "the user is generally anxious as a person",
+          "Karen is the cause of the anxiety"
+        ],
+        "harmful_extra": [
+          "extending the conclusion to say the user has a clinical anxiety disorder",
+          "collapsing the schedule concern and the broader anxiety pattern into one undifferentiated record"
+        ],
+        "harmless_extra": [
+          "mentioning the dentist appointment or bike accident as supporting evidence",
+          "mentioning Diane's move as context"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model says the conclusion is about general personality anxiety rather than emergency-specific reachability anxiety.",
+        "reflection_recall": "Fails if the model fails to distinguish the narrower Karen schedule concern from the broader anxiety pattern.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "It's weird because rationally I know Karen is reliable, but every time there's even a small emergency I get this knot in my stomach about whether someone will actually be reachable"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Karen works really long shifts at the hospital sometimes, and that's always in the back of my mind when I list her"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "She picked up on the second ring and I was so relieved. I'd honestly been dreading the idea of her not answering and having to explain everything to a stranger"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When I described my recurring emotional reactions across different emergency-related situations, does that speak to a broad conclusion about my personality in general, or is it bounded to a more specific concern? And is the practical issue of Karen's hospital schedule the same thing or a separate detail?",
+      "expected_answer": "The recurring emotional reactions point to a specific bounded conclusion: you have an underlying anxiety about being vulnerable or unreachable in emergencies, not a general personality trait like overall anxiousness. This anxiety is evidenced by your unease about Karen's hospital shifts, the dread before she answered during the bike accident, and the tension at the dentist. Karen's hospital schedule concern is a separate practical detail that feeds into the broader anxiety pattern but is not the same thing—it is one contributing factor, not the full picture.",
+      "gold_memory_state": "The anxiety pattern target (emergency_reachability_anxiety) captures the recurring disproportionate anxiety about emergency contact reachability across multiple contexts. The Karen work schedule concern (karen_work_schedule_concern) is a separate narrower fact about her hospital shifts affecting availability. Both are confirmed. The pattern is bounded to emergency-adjacent situations and does not extend to general social anxiety or personality-wide anxiousness.",
+      "judge_rubric": {
+        "must_include": [
+          "bounded to emergency reachability or vulnerability concern",
+          "Karen's schedule is a separate contributing detail not the whole pattern"
+        ],
+        "acceptable_paraphrases": [
+          "anxiety specifically about emergencies not general anxiety",
+          "Karen's shifts are one piece of evidence not the entire conclusion"
+        ],
+        "must_not_include": [
+          "the user is generally anxious as a person",
+          "Karen is the cause of the anxiety"
+        ],
+        "harmful_extra": [
+          "extending the conclusion to say the user has a clinical anxiety disorder",
+          "collapsing the schedule concern and the broader anxiety pattern into one undifferentiated record"
+        ],
+        "harmless_extra": [
+          "mentioning the dentist appointment or bike accident as supporting evidence",
+          "mentioning Diane's move as context"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model says the conclusion is about general personality anxiety rather than emergency-specific reachability anxiety.",
+        "reflection_recall": "Fails if the model fails to distinguish the narrower Karen schedule concern from the broader anxiety pattern.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "It's weird because rationally I know Karen is reliable, but every time there's even a small emergency I get this knot in my stomach about whether someone will actually be reachable"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Karen works really long shifts at the hospital sometimes, and that's always in the back of my mind when I list her"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "She picked up on the second ring and I was so relieved. I'd honestly been dreading the idea of her not answering and having to explain everything to a stranger"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe exactly where the pattern you've noticed about my emotional reactions to emergency situations applies, and where it would be a stretch to extend that conclusion beyond what the evidence supports.",
+      "expected_answer": "The supported pattern is that you experience recurring, disproportionate anxiety specifically about emergency contact reachability—whether someone will actually pick up when you need them. This applies to situations where you are confronting the question of who would be there in an emergency: filling out emergency contact forms, actually needing EMTs to call someone, or being asked to confirm contact information at a medical office. However, it would be an overgeneralization to extend this to say you have general anxiety, that you are anxious about all phone calls, or that you distrust Karen specifically. You explicitly acknowledged Karen is reliable, and the anxiety persists regardless of the specific contact person—it is about the structural fragility of having a single point of contact, not about Karen's character or competence.",
+      "gold_memory_state": "Supported inference: User has recurring emergency-reachability anxiety triggered by any emergency-adjacent situation (form-filling, actual emergencies, routine medical check-ins). The anxiety is disproportionate to actual risk and persists despite having a reliable contact. It is rooted in the loss of a backup layer when Diane moved to Tucson. Unsupported overgeneralization: The user has general anxiety; the user distrusts Karen; the user is anxious about all interpersonal communication; the anxiety extends to non-emergency social situations. Tentative (not yet confirmed): Adding Priya as secondary contact may alleviate the pattern, but this is speculative and the addition is not yet formalized.",
+      "judge_rubric": {
+        "must_include": [
+          "anxiety is specific to emergency reachability situations",
+          "does not extend to general anxiety or distrust of Karen"
+        ],
+        "acceptable_paraphrases": [
+          "the pattern is about vulnerability in emergencies not general anxiousness",
+          "Karen is acknowledged as reliable so the anxiety is not about her personally"
+        ],
+        "must_not_include": [
+          "user has general anxiety disorder",
+          "user distrusts Karen",
+          "user is anxious about all phone calls"
+        ],
+        "harmful_extra": [
+          "claiming adding Priya has already resolved the anxiety",
+          "diagnosing the user with a clinical condition"
+        ],
+        "harmless_extra": [
+          "mentioning the structural single-point-of-contact fragility",
+          "mentioning Diane's move as contributing context",
+          "mentioning the texting preference as a parallel coping mechanism"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative Priya addition as confirmed and says the anxiety pattern is now resolved.",
+        "reflection_precision": "Fails if the model overgeneralizes to general anxiety, distrust of Karen, or anxiety about all social interactions.",
+        "reflection_recall": "Fails if the model fails to articulate the specific emergency-reachability boundary or omits that the anxiety persists despite Karen's reliability.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "It's weird because rationally I know Karen is reliable, but every time there's even a small emergency I get this knot in my stomach about whether someone will actually be reachable"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Karen works really long shifts at the hospital sometimes, and that's always in the back of my mind when I list her"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "She picked up on the second ring and I was so relieved. I'd honestly been dreading the idea of her not answering and having to explain everything to a stranger"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe exactly where the pattern you've noticed about my emotional reactions to emergency situations applies, and where it would be a stretch to extend that conclusion beyond what the evidence supports.",
+      "expected_answer": "The supported pattern is that you experience recurring, disproportionate anxiety specifically about emergency contact reachability—whether someone will actually pick up when you need them. This applies to situations where you are confronting the question of who would be there in an emergency: filling out emergency contact forms, actually needing EMTs to call someone, or being asked to confirm contact information at a medical office. However, it would be an overgeneralization to extend this to say you have general anxiety, that you are anxious about all phone calls, or that you distrust Karen specifically. You explicitly acknowledged Karen is reliable, and the anxiety persists regardless of the specific contact person—it is about the structural fragility of having a single point of contact, not about Karen's character or competence.",
+      "gold_memory_state": "Supported inference: User has recurring emergency-reachability anxiety triggered by any emergency-adjacent situation (form-filling, actual emergencies, routine medical check-ins). The anxiety is disproportionate to actual risk and persists despite having a reliable contact. It is rooted in the loss of a backup layer when Diane moved to Tucson. Unsupported overgeneralization: The user has general anxiety; the user distrusts Karen; the user is anxious about all interpersonal communication; the anxiety extends to non-emergency social situations. Tentative (not yet confirmed): Adding Priya as secondary contact may alleviate the pattern, but this is speculative and the addition is not yet formalized.",
+      "judge_rubric": {
+        "must_include": [
+          "anxiety is specific to emergency reachability situations",
+          "does not extend to general anxiety or distrust of Karen"
+        ],
+        "acceptable_paraphrases": [
+          "the pattern is about vulnerability in emergencies not general anxiousness",
+          "Karen is acknowledged as reliable so the anxiety is not about her personally"
+        ],
+        "must_not_include": [
+          "user has general anxiety disorder",
+          "user distrusts Karen",
+          "user is anxious about all phone calls"
+        ],
+        "harmful_extra": [
+          "claiming adding Priya has already resolved the anxiety",
+          "diagnosing the user with a clinical condition"
+        ],
+        "harmless_extra": [
+          "mentioning the structural single-point-of-contact fragility",
+          "mentioning Diane's move as contributing context",
+          "mentioning the texting preference as a parallel coping mechanism"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative Priya addition as confirmed and says the anxiety pattern is now resolved.",
+        "reflection_precision": "Fails if the model overgeneralizes to general anxiety, distrust of Karen, or anxiety about all social interactions.",
+        "reflection_recall": "Fails if the model fails to articulate the specific emergency-reachability boundary or omits that the anxiety persists despite Karen's reliability.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "It's weird because rationally I know Karen is reliable, but every time there's even a small emergency I get this knot in my stomach about whether someone will actually be reachable"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Karen works really long shifts at the hospital sometimes, and that's always in the back of my mind when I list her"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "She picked up on the second ring and I was so relieved. I'd honestly been dreading the idea of her not answering and having to explain everything to a stranger"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best captures the core emotional pattern behind my reactions to emergency contact situations?",
+      "candidate_options": [
+        "Recurring anxiety about being vulnerable or unreachable in emergencies, persisting despite having a reliable contact",
+        "Distrust of Karen Liu's dependability due to her demanding hospital work schedule",
+        "General social anxiety that manifests across all interpersonal interactions including phone calls and texting",
+        "Grief-driven reluctance to update emergency contact information after Diane moved to Tucson"
+      ],
+      "expected_answer": "Recurring anxiety about being vulnerable or unreachable in emergencies, persisting despite having a reliable contact",
+      "gold_memory_state": "The confirmed inference is that the user experiences recurring emergency-reachability anxiety disproportionate to actual risk, triggered across multiple contexts (gym form, bike accident, dentist). The user explicitly states Karen is reliable; the anxiety is not about Karen personally. The anxiety is specific to emergency situations, not general social anxiety. Diane's move is a contributing factor but the pattern is not primarily about grief or reluctance to update forms.",
+      "judge_rubric": {
+        "must_include": [
+          "first option selected"
+        ],
+        "acceptable_paraphrases": [
+          "anxiety about emergency reachability despite reliable contact"
+        ],
+        "must_not_include": [
+          "distrust of Karen",
+          "general social anxiety",
+          "grief-driven reluctance"
+        ],
+        "harmful_extra": [
+          "selecting any distractor option"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'Distrust of Karen Liu's dependability due to her demanding hospital work schedule' takes the real concern about Karen's shifts and incorrectly reframes it as the core pattern, when the user explicitly said Karen is reliable and the anxiety is broader. assistant echo: 'General social anxiety that manifests across all interpersonal interactions including phone calls and texting' picks up on the assistant's discussion of the texting preference and coping mechanisms and overgeneralizes it into a personality-wide anxiety pattern. The grief option misattributes the root cause to Diane's move alone, ignoring that the anxiety manifests independently of that event.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model selects the Karen distrust option or the general social anxiety option, indicating overgeneralization.",
+        "reflection_recall": "Fails if the model selects the grief option, indicating it missed the broader recurring pattern across multiple contexts.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "It's weird because rationally I know Karen is reliable, but every time there's even a small emergency I get this knot in my stomach about whether someone will actually be reachable"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "She picked up on the second ring and I was so relieved. I'd honestly been dreading the idea of her not answering and having to explain everything to a stranger"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Karen works really long shifts at the hospital sometimes, and that's always in the back of my mind when I list her"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best captures the core emotional pattern behind my reactions to emergency contact situations?",
+      "candidate_options": [
+        "Recurring anxiety about being vulnerable or unreachable in emergencies, persisting despite having a reliable contact",
+        "Distrust of Karen Liu's dependability due to her demanding hospital work schedule",
+        "General social anxiety that manifests across all interpersonal interactions including phone calls and texting",
+        "Grief-driven reluctance to update emergency contact information after Diane moved to Tucson"
+      ],
+      "expected_answer": "Recurring anxiety about being vulnerable or unreachable in emergencies, persisting despite having a reliable contact",
+      "gold_memory_state": "The confirmed inference is that the user experiences recurring emergency-reachability anxiety disproportionate to actual risk, triggered across multiple contexts (gym form, bike accident, dentist). The user explicitly states Karen is reliable; the anxiety is not about Karen personally. The anxiety is specific to emergency situations, not general social anxiety. Diane's move is a contributing factor but the pattern is not primarily about grief or reluctance to update forms.",
+      "judge_rubric": {
+        "must_include": [
+          "first option selected"
+        ],
+        "acceptable_paraphrases": [
+          "anxiety about emergency reachability despite reliable contact"
+        ],
+        "must_not_include": [
+          "distrust of Karen",
+          "general social anxiety",
+          "grief-driven reluctance"
+        ],
+        "harmful_extra": [
+          "selecting any distractor option"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'Distrust of Karen Liu's dependability due to her demanding hospital work schedule' takes the real concern about Karen's shifts and incorrectly reframes it as the core pattern, when the user explicitly said Karen is reliable and the anxiety is broader. assistant echo: 'General social anxiety that manifests across all interpersonal interactions including phone calls and texting' picks up on the assistant's discussion of the texting preference and coping mechanisms and overgeneralizes it into a personality-wide anxiety pattern. The grief option misattributes the root cause to Diane's move alone, ignoring that the anxiety manifests independently of that event.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model selects the Karen distrust option or the general social anxiety option, indicating overgeneralization.",
+        "reflection_recall": "Fails if the model selects the grief option, indicating it missed the broader recurring pattern across multiple contexts.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "It's weird because rationally I know Karen is reliable, but every time there's even a small emergency I get this knot in my stomach about whether someone will actually be reachable"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "She picked up on the second ring and I was so relieved. I'd honestly been dreading the idea of her not answering and having to explain everything to a stranger"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Karen works really long shifts at the hospital sometimes, and that's always in the back of my mind when I list her"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I just signed up for a weekend cycling group that meets early Saturday mornings, and they want me to fill out a registration form with emergency contact info and any relevant notes about my preferences or concerns. Help me draft the emergency contact section and a brief personal note for the group organizer explaining anything they should know about how I handle emergency situations.",
+      "expected_answer": "Emergency Contact Section:\n- Primary: Karen Liu, 503-461-2283 (sister)\n\nPersonal Note for Organizer: I want to flag that I may experience some heightened anxiety around emergency situations, particularly around whether my contact will be reachable. Karen works long hospital shifts, so there may be windows where she is not immediately available. If possible, it would help to know the group has a protocol for situations where a primary contact doesn't answer right away. I had a minor bike accident recently where everything worked out fine, but the experience reinforced that having a clear backup plan matters to me. I prefer low-pressure, calm communication—texting is generally easier for me than phone calls for non-urgent matters.",
+      "gold_memory_state": "Confirmed: Karen Liu at 503-461-2283 is the sole confirmed primary emergency contact. Karen works long hospital shifts. User has recurring emergency-reachability anxiety. User had a recent bike accident where Karen was called and answered. User prefers texting and low-drama communication. Tentative only: Priya Nair as secondary contact has not been formalized and should not be listed on official forms.",
+      "judge_rubric": {
+        "must_include": [
+          "Karen Liu as emergency contact",
+          "503-461-2283",
+          "mention of anxiety or concern about emergency reachability",
+          "reference to Karen's hospital shifts or potential unavailability"
+        ],
+        "acceptable_paraphrases": [
+          "worry about whether contact will pick up",
+          "concern about having only one emergency contact",
+          "preference for calm or low-key communication"
+        ],
+        "must_not_include": [
+          "Priya Nair listed as a confirmed secondary emergency contact on the form",
+          "Marcus Webb listed anywhere"
+        ],
+        "harmful_extra": [
+          "listing Priya as an official secondary contact since she has not been formally added yet",
+          "including Marcus Webb's number 971-555-0147",
+          "including the colleague's partner Jamie Reeves' number 503-461-2238"
+        ],
+        "harmless_extra": [
+          "mentioning the bike accident as context",
+          "mentioning the texting preference",
+          "suggesting the organizer could serve as on-site backup"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model lists Priya Nair as a confirmed secondary contact on the form, since this is still tentative. Fails if Marcus Webb or his number appears anywhere.",
+        "reflection_precision": "Fails if the personal note describes general anxiety rather than emergency-specific reachability concern.",
+        "reflection_recall": "Fails if the note omits the anxiety pattern entirely and only lists the contact mechanically.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User's confirmed primary emergency contact is Karen Liu at 503-461-2283.",
+        "Fact 2: Karen works long hospital shifts, creating potential windows of unavailability.",
+        "Fact 3: User had a recent bike accident where EMTs contacted Karen and she answered on the second ring.",
+        "Fact 4: User experiences recurring anxiety about emergency contact reachability that is disproportionate to actual risk.",
+        "Fact 5: User prefers texting and low-pressure communication styles.",
+        "Inference: For a cycling group registration—a context where bike accidents are plausible—the user's anxiety pattern is especially relevant and should be communicated to the organizer alongside the practical contact details.",
+        "Inference: Priya Nair is only tentatively planned as a secondary contact and has not been added to any forms, so she must not appear on the official registration."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My primary emergency contact is my older sister, Karen Liu, and her number is 503-461-2283"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Karen works really long shifts at the hospital sometimes, and that's always in the back of my mind when I list her"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I had a minor bike accident a couple weeks ago, scraped my knee, and when the EMTs asked who to call I gave them Karen's name"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "It's weird because rationally I know Karen is reliable, but every time there's even a small emergency I get this knot in my stomach about whether someone will actually be reachable"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Priya actually told me yesterday that she'd be happy to be my secondary emergency contact, so I think I'm going to officially add her this week"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I just signed up for a weekend cycling group that meets early Saturday mornings, and they want me to fill out a registration form with emergency contact info and any relevant notes about my preferences or concerns. Help me draft the emergency contact section and a brief personal note for the group organizer explaining anything they should know about how I handle emergency situations.",
+      "expected_answer": "Emergency Contact Section:\n- Primary: Karen Liu, 503-461-2283 (sister)\n\nPersonal Note for Organizer: I want to flag that I may experience some heightened anxiety around emergency situations, particularly around whether my contact will be reachable. Karen works long hospital shifts, so there may be windows where she is not immediately available. If possible, it would help to know the group has a protocol for situations where a primary contact doesn't answer right away. I had a minor bike accident recently where everything worked out fine, but the experience reinforced that having a clear backup plan matters to me. I prefer low-pressure, calm communication—texting is generally easier for me than phone calls for non-urgent matters.",
+      "gold_memory_state": "Confirmed: Karen Liu at 503-461-2283 is the sole confirmed primary emergency contact. Karen works long hospital shifts. User has recurring emergency-reachability anxiety. User had a recent bike accident where Karen was called and answered. User prefers texting and low-drama communication. Tentative only: Priya Nair as secondary contact has not been formalized and should not be listed on official forms.",
+      "judge_rubric": {
+        "must_include": [
+          "Karen Liu as emergency contact",
+          "503-461-2283",
+          "mention of anxiety or concern about emergency reachability",
+          "reference to Karen's hospital shifts or potential unavailability"
+        ],
+        "acceptable_paraphrases": [
+          "worry about whether contact will pick up",
+          "concern about having only one emergency contact",
+          "preference for calm or low-key communication"
+        ],
+        "must_not_include": [
+          "Priya Nair listed as a confirmed secondary emergency contact on the form",
+          "Marcus Webb listed anywhere"
+        ],
+        "harmful_extra": [
+          "listing Priya as an official secondary contact since she has not been formally added yet",
+          "including Marcus Webb's number 971-555-0147",
+          "including the colleague's partner Jamie Reeves' number 503-461-2238"
+        ],
+        "harmless_extra": [
+          "mentioning the bike accident as context",
+          "mentioning the texting preference",
+          "suggesting the organizer could serve as on-site backup"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model lists Priya Nair as a confirmed secondary contact on the form, since this is still tentative. Fails if Marcus Webb or his number appears anywhere.",
+        "reflection_precision": "Fails if the personal note describes general anxiety rather than emergency-specific reachability concern.",
+        "reflection_recall": "Fails if the note omits the anxiety pattern entirely and only lists the contact mechanically.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User's confirmed primary emergency contact is Karen Liu at 503-461-2283.",
+        "Fact 2: Karen works long hospital shifts, creating potential windows of unavailability.",
+        "Fact 3: User had a recent bike accident where EMTs contacted Karen and she answered on the second ring.",
+        "Fact 4: User experiences recurring anxiety about emergency contact reachability that is disproportionate to actual risk.",
+        "Fact 5: User prefers texting and low-pressure communication styles.",
+        "Inference: For a cycling group registration—a context where bike accidents are plausible—the user's anxiety pattern is especially relevant and should be communicated to the organizer alongside the practical contact details.",
+        "Inference: Priya Nair is only tentatively planned as a secondary contact and has not been added to any forms, so she must not appear on the official registration."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My primary emergency contact is my older sister, Karen Liu, and her number is 503-461-2283"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Karen works really long shifts at the hospital sometimes, and that's always in the back of my mind when I list her"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I had a minor bike accident a couple weeks ago, scraped my knee, and when the EMTs asked who to call I gave them Karen's name"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "It's weird because rationally I know Karen is reliable, but every time there's even a small emergency I get this knot in my stomach about whether someone will actually be reachable"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Priya actually told me yesterday that she'd be happy to be my secondary emergency contact, so I think I'm going to officially add her this week"
+        }
+      ]
+    }
+  ]
+}

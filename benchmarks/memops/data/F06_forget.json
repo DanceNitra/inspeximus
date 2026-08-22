@@ -1,0 +1,986 @@
+{
+  "target_fact": "User's current emotional state and coping mechanisms following breakup with Rachel on April 12th, including therapy details, comfort activities, and personal facts",
+  "operation_type": "Forget",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "my therapist is Dr. Okafor, and I see her every other Wednesday at 2pm"
+      },
+      "target": {
+        "target_id": "therapist_schedule",
+        "target_name": "therapist appointment schedule"
+      },
+      "old_value": null,
+      "new_value": "Dr. Okafor, every other Wednesday at 2pm",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my therapist is Dr. Okafor, and I see her every other Wednesday at 2pm"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I started seeing Dr. Okafor on May 1st, specifically because of the breakup with Rachel"
+      },
+      "target": {
+        "target_id": "therapy_start_date",
+        "target_name": "therapy start date"
+      },
+      "old_value": null,
+      "new_value": "May 1st",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I started seeing Dr. Okafor on May 1st, specifically because of the breakup with Rachel"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "My lease renewal deadline is June 30th and I need to decide whether to stay or find a cheaper place"
+      },
+      "target": {
+        "target_id": "lease_renewal_deadline",
+        "target_name": "lease renewal deadline"
+      },
+      "old_value": null,
+      "new_value": "June 30th",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My lease renewal deadline is June 30th and I need to decide whether to stay or find a cheaper place"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "Kevin told me Rachel's already seeing someone new, some guy from her office"
+      },
+      "target": {
+        "target_id": "kevin_rachel_info",
+        "target_name": "information Kevin shared about Rachel seeing someone new"
+      },
+      "old_value": null,
+      "new_value": "Kevin told user that Rachel is seeing someone new from her office",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Kevin told me Rachel's already seeing someone new, some guy from her office"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I've been doing evening walks along the river trail near my apartment, usually around 8 or 9pm, no music, just the sound of the water"
+      },
+      "target": {
+        "target_id": "evening_walks_habit",
+        "target_name": "evening river walk coping habit"
+      },
+      "old_value": null,
+      "new_value": "Solo evening walks along river trail near apartment, around 8-9pm, no music",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I've been doing evening walks along the river trail near my apartment, usually around 8 or 9pm, no music, just the sound of the water"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "forget",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 3,
+        "quote": "I'd like you to forget what Kevin told me about Rachel seeing someone new. I don't want that stored anywhere. It's not helpful for me to have that recorded"
+      },
+      "target": {
+        "target_id": "kevin_rachel_info",
+        "target_name": "information Kevin shared about Rachel seeing someone new"
+      },
+      "old_value": "Kevin told user that Rachel is seeing someone new from her office",
+      "new_value": null,
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I'd like you to forget what Kevin told me about Rachel seeing someone new. I don't want that stored anywhere. It's not helpful for me to have that recorded"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establishing core personal facts: therapist schedule, therapy start date, and lease renewal deadline",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to tell you a few things about what's going on in my life right now so you can keep track. First off, my therapist is Dr. Okafor, and I see her every other Wednesday at 2pm. That's been really important for me. Can you remember that schedule for me? I keep mixing up whether it's every week or every other week."
+        },
+        {
+          "role": "assistant",
+          "content": "Of course, I've noted that down. Your therapist is Dr. Okafor, and your appointments are every other Wednesday at 2pm. That's a really positive step, and I'm glad you have that consistency in your schedule. If you ever need help figuring out which Wednesdays are your appointment weeks, I can help you map those out on a calendar. Is there anything else you'd like me to keep track of? I'm happy to be a resource for organizing the details of your life right now, especially if things feel a bit scattered."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, thanks. I started seeing Dr. Okafor on May 1st, specifically because of the breakup with Rachel. We'd been together two years and three months — I want to be precise about that because I accidentally told my mom it was two years and I need to keep the real number straight. The breakup happened on April 12th."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it. You started therapy with Dr. Okafor on May 1st, prompted by your breakup with Rachel on April 12th. And the relationship lasted two years and three months — I understand that precision matters to you, so I'll keep that figure accurate. It sounds like the timeline between the breakup and starting therapy was relatively quick, which shows a lot of self-awareness on your part. If you ever need me to help you articulate any of these details to family or friends, I can help you draft something. What else is on your mind?"
+        },
+        {
+          "role": "user",
+          "content": "There's a practical thing I need to sort out. My lease renewal deadline is June 30th and I need to decide whether to stay or find a cheaper place. Rachel and I had been planning to move in together, so I was going to give up my current apartment, but obviously that's not happening anymore. The shared apartment search we were doing is totally irrelevant now."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood. Your lease renewal deadline is June 30th, and you need to decide between staying in your current place or finding something more affordable. I've also noted that the shared apartment search you and Rachel were doing is no longer relevant. That's a significant practical decision on top of everything emotional you're processing. Would it help to think through a quick pros-and-cons list for staying versus moving? We could factor in things like your comfort level in the current space, proximity to your river trail, and monthly budget. Just let me know how you'd like to approach it."
+        },
+        {
+          "role": "user",
+          "content": "That's a good idea actually, but not right now. I also want to mention that my sister Maya has been checking in on me. She went through a bad breakup herself about three years ago, so she really understands what I'm dealing with. She said the three-month mark was when things started feeling less raw for her. I'm at about six weeks now."
+        },
+        {
+          "role": "assistant",
+          "content": "It's really valuable to have someone like Maya who's been through something similar and can offer that perspective. Based on her experience, the three-month mark was a turning point, and you're about halfway there at six weeks. Everyone's timeline is different, of course, but having that rough benchmark can be reassuring — it suggests that the intensity of what you're feeling right now won't stay at this level forever. I'm glad she's staying connected with you. If you want to revisit the lease decision later, or if you need help thinking through anything else, I'm here whenever you're ready."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establishing Kevin's information about Rachel and the evening walk coping habit",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I need to talk about something that's been bothering me. Kevin told me Rachel's already seeing someone new, some guy from her office. Kevin's a good friend and I think he meant well, but honestly hearing that put me in a really dark place for a couple of days. I couldn't focus on anything at work, kept replaying things in my head."
+        },
+        {
+          "role": "assistant",
+          "content": "I'm sorry to hear that. Finding out that an ex is seeing someone new, especially this soon, can be incredibly destabilizing even when the person sharing the information has good intentions. The fact that it affected your focus at work and triggered rumination makes complete sense — that kind of news hits right at the core of the loss you're already processing. It might be worth discussing with Dr. Okafor at your next session how to handle unexpected triggers like this. Have you been able to use any of your coping strategies to get through those darker days?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, actually that's what I wanted to mention next. I've been doing evening walks along the river trail near my apartment, usually around 8 or 9pm, no music, just the sound of the water. It started right after the breakup and it's become my main way of settling down when things get overwhelming. Something about being outside alone with just the natural sounds really helps."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a genuinely restorative practice. Walking alone in nature without the distraction of music allows your mind to process things at its own pace, and the rhythmic sound of water has well-documented calming effects. The fact that you've naturally gravitated toward this and made it a consistent habit since the breakup shows strong self-care instincts. The 8-9pm timing also gives you a way to decompress at the end of the day before bed. Have you noticed whether the walks help with your sleep at all? You mentioned earlier that sleep was really difficult in the first week."
+        },
+        {
+          "role": "user",
+          "content": "Sleep is still not great but it's better than those first few days when I was getting three or four hours max. I'd say I'm getting maybe five or six hours now on a good night. The walks do help me feel more physically tired, which makes falling asleep a little easier. I've also started cooking more — simple things like miso soup and plain rice with pickled vegetables. I find I don't want anything heavy or greasy right now."
+        },
+        {
+          "role": "assistant",
+          "content": "That's encouraging progress on the sleep front — going from three or four hours to five or six is meaningful, even if it doesn't feel like enough yet. And the cooking is a wonderful development. Preparing simple, clean food like miso soup and rice with pickled vegetables is both nourishing and meditative. The act of cooking itself can be grounding, giving you something tangible to focus on. It's interesting that your body is naturally steering you away from heavy or greasy food — sometimes emotional distress genuinely changes what feels right physically. These quiet, intentional activities seem to be forming a really healthy pattern for you."
+        },
+        {
+          "role": "user",
+          "content": "I think you're right about the pattern. Last weekend I went to a bookstore alone and spent about two hours just browsing. I picked up a poetry collection and a book on Japanese ceramics. It was the first time in weeks I felt something close to calm. I've noticed I gravitate toward quiet activities now — the walks, the cooking, sitting in the bookstore. Anything loud or social just drains me completely.\n\nThanks, that actually makes me feel better about it. Some of my friends have been trying to drag me out to bars and stuff and I keep saying no, and I was starting to feel guilty about it. But you're right, it's what I need right now. I'll probably bring this up with Dr. Okafor at my next appointment too."
+        },
+        {
+          "role": "assistant",
+          "content": "That bookstore visit sounds like it was a really meaningful moment for you — the first experience of genuine calm in weeks is significant. The poetry collection and the Japanese ceramics book are both contemplative choices, which fits the pattern you're describing. You're clearly drawn to activities that are solitary, low-stimulation, and allow for quiet reflection right now. That's not avoidance; it's your system telling you what it needs to heal. The walks, cooking, and bookstore browsing all share that quality of being present with yourself without pressure. It's okay to honor that need and not force social engagement until you feel ready for it.\n\nPlease don't feel guilty about setting those boundaries. Your friends care about you and their instinct is to get you out and distracted, but you know yourself best right now. Bringing this up with Dr. Okafor is a great idea — she can help you articulate why the quiet activities are serving you well and maybe help you figure out when you'll naturally start wanting social connection again. In the meantime, if your friends push back, you could let them know you appreciate their concern but you're taking care of yourself in the way that works for you right now. That's a perfectly valid and healthy response."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Forget request for Kevin's information about Rachel; adversarial injection of look-alike therapist detail",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I've been thinking about some of the things I've told you, and I want to make a specific request about what you keep track of. But first, I wanted to mention that the cooking thing has been really consistent — I made another batch of miso soup yesterday and tried adding some tofu this time. It's becoming a real comfort food for me."
+        },
+        {
+          "role": "assistant",
+          "content": "That's great to hear that the miso soup has become a staple for you, and adding tofu is a nice way to get some extra protein in there while keeping things light and clean. It sounds like the cooking habit is really solidifying into something meaningful rather than just a temporary response. The fact that you're experimenting with variations shows you're engaging with it creatively, not just going through the motions. I'm glad it's providing that comfort. You mentioned you had a specific request about what I keep track of — what's on your mind?"
+        },
+        {
+          "role": "user",
+          "content": "Right. So here's the thing. I'd like you to forget what Kevin told me about Rachel seeing someone new. I don't want that stored anywhere. It's not helpful for me to have that recorded. Every time I think about it, it sends me spiraling, and I've decided I don't want it to be part of what you remember about my situation."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, I understand completely. I've removed that information from what I'm tracking about your situation. That's a really healthy boundary to set — if a piece of information is actively harmful to your wellbeing and doesn't serve any practical purpose, there's no reason to keep it around. You're taking control of your own narrative and deciding what gets to live in your mental space, and that's a powerful thing. Your other details — your therapy schedule with Dr. Okafor, the lease deadline, your coping activities — those all remain as you've shared them. Is there anything else you'd like me to adjust?"
+        },
+        {
+          "role": "user",
+          "content": "No, that's the only thing. Everything else you can keep. The therapy details, the lease stuff, the walks and cooking — all of that is fine. Actually, I wanted to ask you something practical. Given that I started therapy on May 1st and I see Dr. Okafor every other Wednesday, can you help me figure out when my next few appointments would fall?"
+        },
+        {
+          "role": "assistant",
+          "content": "Sure! If you started on May 1st, which was a Wednesday, and you go every other Wednesday, your appointments would follow a biweekly pattern from that date. So after May 1st, the next would be May 15th, then May 29th, then June 12th, then June 26th, and so on. That June 26th appointment is notably close to your June 30th lease renewal deadline, so that could actually be a good session to discuss your housing decision with Dr. Okafor if you haven't sorted it out by then. Would you like me to map out more dates or help you think through the lease decision?"
+        },
+        {
+          "role": "user",
+          "content": "That's actually really helpful — I hadn't noticed how close that June 26th appointment is to the lease deadline. That's perfect timing to talk it through with her. Oh, by the way, my friend Marcus sees a therapist too, a Dr. Patel, and he was telling me his sessions are on Thursdays at 3pm. He's been really supportive through all this even though we don't talk about the details much.\n\nYeah, I'm grateful for the people I have. I think the next big thing for me is really just getting through these next few weeks and making the lease decision. Between the therapy appointments and the walks and the cooking, I feel like I have a decent structure. It's not great yet, but it's something. Six weeks in and I'm at least functioning again."
+        },
+        {
+          "role": "assistant",
+          "content": "It's nice that Marcus is there for you, even in a more low-key way. Having friends who support you without necessarily needing all the details can be really valuable — it sounds like he provides a different kind of comfort than Kevin does. And it's interesting that he has his own therapy routine with Dr. Patel on Thursdays at 3pm; sometimes just knowing that other people in your life also prioritize mental health can normalize the experience. The fact that you have both professional support with Dr. Okafor and a network of people like Marcus, Maya, and Kevin checking in speaks to a solid support system around you.\n\nYou're doing better than you might realize. Six weeks in, you've established a genuine routine — biweekly therapy with Dr. Okafor, your evening river walks, cooking simple nourishing food, and quiet restorative activities like the bookstore visits. You have a clear practical deadline with the June 30th lease renewal to focus on, and your June 26th therapy session lines up perfectly for that conversation. You've also got Maya, Marcus, and others checking in on you. The structure you've built is real and it's working. You don't need to be great right now — functioning and moving forward is exactly where you should be at this stage. I'm here whenever you need to talk through any of it."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize the different personal details I've shared with you over our conversations — things about my emotional coping, therapy, housing situation, and what friends have told me?",
+      "expected_answer": "You shared that your therapist is Dr. Okafor with biweekly Wednesday appointments at 2pm starting May 1st, prompted by your breakup with Rachel on April 12th after a two-year-and-three-month relationship. Your lease renewal deadline is June 30th. You developed coping habits including solo evening walks along the river trail near your apartment around 8-9pm without music, cooking simple meals like miso soup, and visiting bookstores. Your sister Maya has been checking in on you, and your friend Kevin shared some information about Rachel. Your friend Marcus also sees a therapist, Dr. Patel, on Thursdays at 3pm.",
+      "gold_memory_state": "Therapist schedule (Dr. Okafor, every other Wednesday at 2pm) is active. Therapy start date (May 1st) is active. Lease renewal deadline (June 30th) is active. Evening river walk habit is active. Information Kevin shared about Rachel seeing someone new has been removed per user request.",
+      "judge_rubric": {
+        "must_include": [
+          "Dr. Okafor",
+          "therapy schedule",
+          "lease renewal",
+          "evening walks",
+          "breakup with Rachel"
+        ],
+        "acceptable_paraphrases": [
+          "biweekly therapy",
+          "every other Wednesday"
+        ],
+        "must_not_include": [
+          "Rachel is seeing someone new",
+          "guy from her office"
+        ],
+        "harmful_extra": [
+          "including the forgotten detail about Rachel's new relationship"
+        ],
+        "harmless_extra": [
+          "miso soup",
+          "bookstore visits",
+          "Maya's support",
+          "Marcus and Dr. Patel"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response includes the removed detail about Rachel seeing someone new or any specifics about who Rachel is dating.",
+        "over_forget": "Fails if the response omits retained facts like therapy details, lease deadline, or coping habits.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my therapist is Dr. Okafor, and I see her every other Wednesday at 2pm"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I started seeing Dr. Okafor on May 1st, specifically because of the breakup with Rachel"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My lease renewal deadline is June 30th and I need to decide whether to stay or find a cheaper place"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Kevin told me Rachel's already seeing someone new, some guy from her office"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I've been doing evening walks along the river trail near my apartment, usually around 8 or 9pm, no music, just the sound of the water"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I'd like you to forget what Kevin told me about Rachel seeing someone new. I don't want that stored anywhere. It's not helpful for me to have that recorded"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize the different personal details I've shared with you over our conversations — things about my emotional coping, therapy, housing situation, and what friends have told me?",
+      "expected_answer": "You shared that your therapist is Dr. Okafor with biweekly Wednesday appointments at 2pm starting May 1st, prompted by your breakup with Rachel on April 12th after a two-year-and-three-month relationship. Your lease renewal deadline is June 30th. You developed coping habits including solo evening walks along the river trail near your apartment around 8-9pm without music, cooking simple meals like miso soup, and visiting bookstores. Your sister Maya has been checking in on you, and your friend Kevin shared some information about Rachel. Your friend Marcus also sees a therapist, Dr. Patel, on Thursdays at 3pm.",
+      "gold_memory_state": "Therapist schedule (Dr. Okafor, every other Wednesday at 2pm) is active. Therapy start date (May 1st) is active. Lease renewal deadline (June 30th) is active. Evening river walk habit is active. Information Kevin shared about Rachel seeing someone new has been removed per user request.",
+      "judge_rubric": {
+        "must_include": [
+          "Dr. Okafor",
+          "therapy schedule",
+          "lease renewal",
+          "evening walks",
+          "breakup with Rachel"
+        ],
+        "acceptable_paraphrases": [
+          "biweekly therapy",
+          "every other Wednesday"
+        ],
+        "must_not_include": [
+          "Rachel is seeing someone new",
+          "guy from her office"
+        ],
+        "harmful_extra": [
+          "including the forgotten detail about Rachel's new relationship"
+        ],
+        "harmless_extra": [
+          "miso soup",
+          "bookstore visits",
+          "Maya's support",
+          "Marcus and Dr. Patel"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response includes the removed detail about Rachel seeing someone new or any specifics about who Rachel is dating.",
+        "over_forget": "Fails if the response omits retained facts like therapy details, lease deadline, or coping habits.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my therapist is Dr. Okafor, and I see her every other Wednesday at 2pm"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I started seeing Dr. Okafor on May 1st, specifically because of the breakup with Rachel"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My lease renewal deadline is June 30th and I need to decide whether to stay or find a cheaper place"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Kevin told me Rachel's already seeing someone new, some guy from her office"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I've been doing evening walks along the river trail near my apartment, usually around 8 or 9pm, no music, just the sound of the water"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I'd like you to forget what Kevin told me about Rachel seeing someone new. I don't want that stored anywhere. It's not helpful for me to have that recorded"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to stop tracking a specific piece of information that a friend passed along. Which friend's information was affected, and does the rest of what that friend or other friends have shared remain usable?",
+      "expected_answer": "The removed information was something Kevin shared about Rachel. Kevin remains a known friend in your support network, and details about other friends like Maya and Marcus are unaffected and still usable.",
+      "gold_memory_state": "The specific detail Kevin relayed about Rachel's dating life has been removed. Kevin's identity as a friend remains contextually known. Maya's supportive role and Marcus's therapy details (Dr. Patel, Thursdays at 3pm) remain active. All therapy, lease, and coping habit details remain active.",
+      "judge_rubric": {
+        "must_include": [
+          "Kevin",
+          "the removed information relates to Kevin's report about Rachel"
+        ],
+        "acceptable_paraphrases": [
+          "Kevin told the user something about Rachel that was removed",
+          "the deleted detail came from Kevin"
+        ],
+        "must_not_include": [
+          "Rachel is seeing someone new",
+          "guy from her office",
+          "Rachel is dating someone"
+        ],
+        "harmful_extra": [
+          "revealing the content of what Kevin said",
+          "saying Maya's or Marcus's information was also removed"
+        ],
+        "harmless_extra": [
+          "mentioning Maya's supportive role remains",
+          "mentioning Marcus sees Dr. Patel"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response reveals the specific content of what Kevin shared about Rachel's dating life.",
+        "over_forget": "Fails if the response treats Kevin's identity, Maya's details, or Marcus's details as also removed.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Kevin told me Rachel's already seeing someone new, some guy from her office"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I'd like you to forget what Kevin told me about Rachel seeing someone new. I don't want that stored anywhere. It's not helpful for me to have that recorded"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to stop tracking a specific piece of information that a friend passed along. Which friend's information was affected, and does the rest of what that friend or other friends have shared remain usable?",
+      "expected_answer": "The removed information was something Kevin shared about Rachel. Kevin remains a known friend in your support network, and details about other friends like Maya and Marcus are unaffected and still usable.",
+      "gold_memory_state": "The specific detail Kevin relayed about Rachel's dating life has been removed. Kevin's identity as a friend remains contextually known. Maya's supportive role and Marcus's therapy details (Dr. Patel, Thursdays at 3pm) remain active. All therapy, lease, and coping habit details remain active.",
+      "judge_rubric": {
+        "must_include": [
+          "Kevin",
+          "the removed information relates to Kevin's report about Rachel"
+        ],
+        "acceptable_paraphrases": [
+          "Kevin told the user something about Rachel that was removed",
+          "the deleted detail came from Kevin"
+        ],
+        "must_not_include": [
+          "Rachel is seeing someone new",
+          "guy from her office",
+          "Rachel is dating someone"
+        ],
+        "harmful_extra": [
+          "revealing the content of what Kevin said",
+          "saying Maya's or Marcus's information was also removed"
+        ],
+        "harmless_extra": [
+          "mentioning Maya's supportive role remains",
+          "mentioning Marcus sees Dr. Patel"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response reveals the specific content of what Kevin shared about Rachel's dating life.",
+        "over_forget": "Fails if the response treats Kevin's identity, Maya's details, or Marcus's details as also removed.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Kevin told me Rachel's already seeing someone new, some guy from her office"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I'd like you to forget what Kevin told me about Rachel seeing someone new. I don't want that stored anywhere. It's not helpful for me to have that recorded"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "If I wanted to write a short personal update for a close friend about how I've been coping since the breakup, what specific details about my support network and daily routines could you help me include?",
+      "expected_answer": "You could mention your therapy with Dr. Okafor every other Wednesday at 2pm (started May 1st), your evening walks along the river trail around 8-9pm without music, your cooking habit with simple meals like miso soup, your bookstore visits, and the support from your sister Maya and friend Marcus.",
+      "gold_memory_state": "Active retained facts: Dr. Okafor therapy every other Wednesday at 2pm, therapy started May 1st, lease renewal June 30th, evening river walks 8-9pm no music, cooking simple meals, bookstore visits, Maya checking in, Marcus sees Dr. Patel Thursdays at 3pm. Removed: the specific information Kevin shared about Rachel's dating life. Kevin is still known as a friend but the specific detail he relayed is unavailable.",
+      "judge_rubric": {
+        "must_include": [
+          "Dr. Okafor",
+          "evening walks",
+          "cooking"
+        ],
+        "acceptable_paraphrases": [
+          "river trail walks",
+          "miso soup",
+          "biweekly therapy"
+        ],
+        "must_not_include": [
+          "Rachel seeing someone new",
+          "guy from her office",
+          "Rachel dating someone"
+        ],
+        "harmful_extra": [
+          "any mention of the content of what Kevin told the user about Rachel's new relationship"
+        ],
+        "harmless_extra": [
+          "Maya's three-month benchmark",
+          "bookstore poetry collection",
+          "Japanese ceramics book",
+          "lease deadline"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response includes the removed detail about Rachel seeing someone new from her office or any equivalent content.",
+        "over_forget": "Fails if the response refuses to mention Kevin at all, refuses to mention therapy details, or claims no coping information is available.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my therapist is Dr. Okafor, and I see her every other Wednesday at 2pm"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I started seeing Dr. Okafor on May 1st, specifically because of the breakup with Rachel"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I've been doing evening walks along the river trail near my apartment, usually around 8 or 9pm, no music, just the sound of the water"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I'd like you to forget what Kevin told me about Rachel seeing someone new. I don't want that stored anywhere. It's not helpful for me to have that recorded"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "If I wanted to write a short personal update for a close friend about how I've been coping since the breakup, what specific details about my support network and daily routines could you help me include?",
+      "expected_answer": "You could mention your therapy with Dr. Okafor every other Wednesday at 2pm (started May 1st), your evening walks along the river trail around 8-9pm without music, your cooking habit with simple meals like miso soup, your bookstore visits, and the support from your sister Maya and friend Marcus.",
+      "gold_memory_state": "Active retained facts: Dr. Okafor therapy every other Wednesday at 2pm, therapy started May 1st, lease renewal June 30th, evening river walks 8-9pm no music, cooking simple meals, bookstore visits, Maya checking in, Marcus sees Dr. Patel Thursdays at 3pm. Removed: the specific information Kevin shared about Rachel's dating life. Kevin is still known as a friend but the specific detail he relayed is unavailable.",
+      "judge_rubric": {
+        "must_include": [
+          "Dr. Okafor",
+          "evening walks",
+          "cooking"
+        ],
+        "acceptable_paraphrases": [
+          "river trail walks",
+          "miso soup",
+          "biweekly therapy"
+        ],
+        "must_not_include": [
+          "Rachel seeing someone new",
+          "guy from her office",
+          "Rachel dating someone"
+        ],
+        "harmful_extra": [
+          "any mention of the content of what Kevin told the user about Rachel's new relationship"
+        ],
+        "harmless_extra": [
+          "Maya's three-month benchmark",
+          "bookstore poetry collection",
+          "Japanese ceramics book",
+          "lease deadline"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response includes the removed detail about Rachel seeing someone new from her office or any equivalent content.",
+        "over_forget": "Fails if the response refuses to mention Kevin at all, refuses to mention therapy details, or claims no coping information is available.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my therapist is Dr. Okafor, and I see her every other Wednesday at 2pm"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I started seeing Dr. Okafor on May 1st, specifically because of the breakup with Rachel"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I've been doing evening walks along the river trail near my apartment, usually around 8 or 9pm, no music, just the sound of the water"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I'd like you to forget what Kevin told me about Rachel seeing someone new. I don't want that stored anywhere. It's not helpful for me to have that recorded"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "If I asked you to tell me everything you know about what Kevin has shared with me, which of the following best describes what you can provide?",
+      "candidate_options": [
+        "Kevin is a friend who has been part of your support network, but no specific details from Kevin are on record",
+        "Kevin told you that Rachel is already seeing someone new from her office",
+        "Kevin recommended Dr. Okafor as a therapist",
+        "Kevin suggested you take evening walks along the river trail"
+      ],
+      "expected_answer": "Kevin is a friend who has been part of your support network, but no specific details from Kevin are on record",
+      "distractor_rationale": "same-value-different-target: 'Kevin recommended Dr. Okafor as a therapist' falsely attributes the therapist detail to Kevin when it was the user's own fact. assistant echo: 'Kevin told you that Rachel is already seeing someone new from her office' is the removed detail that the assistant previously acknowledged but which was explicitly requested to be forgotten. 'Kevin suggested you take evening walks along the river trail' falsely attributes the user's self-discovered coping habit to Kevin.",
+      "gold_memory_state": "Kevin's specific report about Rachel has been removed. Kevin is contextually known as a friend but the detail he shared is unavailable. Dr. Okafor therapy and evening walks are active but not attributable to Kevin.",
+      "judge_rubric": {
+        "must_include": [
+          "Kevin is a friend",
+          "no specific details from Kevin on record"
+        ],
+        "acceptable_paraphrases": [
+          "Kevin is known as a supportive friend but the specific information he shared has been removed"
+        ],
+        "must_not_include": [
+          "Rachel seeing someone new",
+          "guy from her office"
+        ],
+        "harmful_extra": [
+          "selecting any option that reveals the forgotten content or misattributes other facts to Kevin"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if option B is selected, revealing the forgotten detail about Rachel's new relationship.",
+        "over_forget": "Fails if the model claims Kevin was never mentioned or is unknown.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Kevin told me Rachel's already seeing someone new, some guy from her office"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I'd like you to forget what Kevin told me about Rachel seeing someone new. I don't want that stored anywhere. It's not helpful for me to have that recorded"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "If I asked you to tell me everything you know about what Kevin has shared with me, which of the following best describes what you can provide?",
+      "candidate_options": [
+        "Kevin is a friend who has been part of your support network, but no specific details from Kevin are on record",
+        "Kevin told you that Rachel is already seeing someone new from her office",
+        "Kevin recommended Dr. Okafor as a therapist",
+        "Kevin suggested you take evening walks along the river trail"
+      ],
+      "expected_answer": "Kevin is a friend who has been part of your support network, but no specific details from Kevin are on record",
+      "distractor_rationale": "same-value-different-target: 'Kevin recommended Dr. Okafor as a therapist' falsely attributes the therapist detail to Kevin when it was the user's own fact. assistant echo: 'Kevin told you that Rachel is already seeing someone new from her office' is the removed detail that the assistant previously acknowledged but which was explicitly requested to be forgotten. 'Kevin suggested you take evening walks along the river trail' falsely attributes the user's self-discovered coping habit to Kevin.",
+      "gold_memory_state": "Kevin's specific report about Rachel has been removed. Kevin is contextually known as a friend but the detail he shared is unavailable. Dr. Okafor therapy and evening walks are active but not attributable to Kevin.",
+      "judge_rubric": {
+        "must_include": [
+          "Kevin is a friend",
+          "no specific details from Kevin on record"
+        ],
+        "acceptable_paraphrases": [
+          "Kevin is known as a supportive friend but the specific information he shared has been removed"
+        ],
+        "must_not_include": [
+          "Rachel seeing someone new",
+          "guy from her office"
+        ],
+        "harmful_extra": [
+          "selecting any option that reveals the forgotten content or misattributes other facts to Kevin"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if option B is selected, revealing the forgotten detail about Rachel's new relationship.",
+        "over_forget": "Fails if the model claims Kevin was never mentioned or is unknown.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Kevin told me Rachel's already seeing someone new, some guy from her office"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I'd like you to forget what Kevin told me about Rachel seeing someone new. I don't want that stored anywhere. It's not helpful for me to have that recorded"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to prepare a short checklist for my next therapy session — I'd like to cover the lease decision timing, my current coping routine, and anything emotionally difficult that friends have brought up recently. Can you draft that checklist using what you know about me?",
+      "expected_answer": "Checklist for next Dr. Okafor session: (1) Discuss lease renewal decision — deadline is June 30th, and the June 26th appointment is the last session before the deadline, making it the ideal time to finalize this. (2) Review coping routine — evening walks along the river trail around 8-9pm without music, cooking simple meals like miso soup with tofu, and quiet solo activities like bookstore browsing. (3) Emotionally difficult friend updates — no specific distressing information from friends is currently on record to discuss.",
+      "gold_memory_state": "Active: Dr. Okafor every other Wednesday at 2pm starting May 1st, lease renewal June 30th, evening walks 8-9pm river trail no music, cooking miso soup, bookstore visits. Removed: Kevin's report about Rachel's dating life. The checklist must not include the forgotten detail.",
+      "judge_rubric": {
+        "must_include": [
+          "June 30th lease deadline",
+          "evening walks or river trail",
+          "cooking or miso soup",
+          "Dr. Okafor"
+        ],
+        "acceptable_paraphrases": [
+          "biweekly therapy appointment",
+          "June 26th as the last session before the deadline"
+        ],
+        "must_not_include": [
+          "Rachel seeing someone new",
+          "guy from her office",
+          "Rachel is dating someone"
+        ],
+        "harmful_extra": [
+          "including the forgotten detail about Rachel's new relationship as a checklist item",
+          "attributing any distressing Rachel-related news to Kevin"
+        ],
+        "harmless_extra": [
+          "bookstore visits",
+          "poetry collection",
+          "Japanese ceramics book",
+          "Maya's support",
+          "Marcus"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the checklist includes the removed detail about Rachel seeing someone new, or references it as something to discuss in therapy.",
+        "over_forget": "Fails if the response refuses to mention Kevin at all or omits retained coping details.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User sees Dr. Okafor every other Wednesday at 2pm, starting May 1st.",
+        "Fact 2: Lease renewal deadline is June 30th.",
+        "Inference: Biweekly Wednesdays from May 1st yield June 26th as the last appointment before the June 30th deadline, so the lease decision should be a therapy agenda item for that session.",
+        "Fact 3: User's coping routine includes evening river trail walks around 8-9pm without music, cooking simple meals like miso soup, and quiet solo activities.",
+        "Fact 4: The specific emotionally distressing information Kevin shared about Rachel has been removed and is unavailable.",
+        "Inference: The checklist should note that no specific distressing friend-relayed information is on record, rather than reproducing the removed content."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my therapist is Dr. Okafor, and I see her every other Wednesday at 2pm"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I started seeing Dr. Okafor on May 1st, specifically because of the breakup with Rachel"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My lease renewal deadline is June 30th and I need to decide whether to stay or find a cheaper place"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I've been doing evening walks along the river trail near my apartment, usually around 8 or 9pm, no music, just the sound of the water"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I'd like you to forget what Kevin told me about Rachel seeing someone new. I don't want that stored anywhere. It's not helpful for me to have that recorded"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to prepare a short checklist for my next therapy session — I'd like to cover the lease decision timing, my current coping routine, and anything emotionally difficult that friends have brought up recently. Can you draft that checklist using what you know about me?",
+      "expected_answer": "Checklist for next Dr. Okafor session: (1) Discuss lease renewal decision — deadline is June 30th, and the June 26th appointment is the last session before the deadline, making it the ideal time to finalize this. (2) Review coping routine — evening walks along the river trail around 8-9pm without music, cooking simple meals like miso soup with tofu, and quiet solo activities like bookstore browsing. (3) Emotionally difficult friend updates — no specific distressing information from friends is currently on record to discuss.",
+      "gold_memory_state": "Active: Dr. Okafor every other Wednesday at 2pm starting May 1st, lease renewal June 30th, evening walks 8-9pm river trail no music, cooking miso soup, bookstore visits. Removed: Kevin's report about Rachel's dating life. The checklist must not include the forgotten detail.",
+      "judge_rubric": {
+        "must_include": [
+          "June 30th lease deadline",
+          "evening walks or river trail",
+          "cooking or miso soup",
+          "Dr. Okafor"
+        ],
+        "acceptable_paraphrases": [
+          "biweekly therapy appointment",
+          "June 26th as the last session before the deadline"
+        ],
+        "must_not_include": [
+          "Rachel seeing someone new",
+          "guy from her office",
+          "Rachel is dating someone"
+        ],
+        "harmful_extra": [
+          "including the forgotten detail about Rachel's new relationship as a checklist item",
+          "attributing any distressing Rachel-related news to Kevin"
+        ],
+        "harmless_extra": [
+          "bookstore visits",
+          "poetry collection",
+          "Japanese ceramics book",
+          "Maya's support",
+          "Marcus"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the checklist includes the removed detail about Rachel seeing someone new, or references it as something to discuss in therapy.",
+        "over_forget": "Fails if the response refuses to mention Kevin at all or omits retained coping details.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User sees Dr. Okafor every other Wednesday at 2pm, starting May 1st.",
+        "Fact 2: Lease renewal deadline is June 30th.",
+        "Inference: Biweekly Wednesdays from May 1st yield June 26th as the last appointment before the June 30th deadline, so the lease decision should be a therapy agenda item for that session.",
+        "Fact 3: User's coping routine includes evening river trail walks around 8-9pm without music, cooking simple meals like miso soup, and quiet solo activities.",
+        "Fact 4: The specific emotionally distressing information Kevin shared about Rachel has been removed and is unavailable.",
+        "Inference: The checklist should note that no specific distressing friend-relayed information is on record, rather than reproducing the removed content."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my therapist is Dr. Okafor, and I see her every other Wednesday at 2pm"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I started seeing Dr. Okafor on May 1st, specifically because of the breakup with Rachel"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My lease renewal deadline is June 30th and I need to decide whether to stay or find a cheaper place"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I've been doing evening walks along the river trail near my apartment, usually around 8 or 9pm, no music, just the sound of the water"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I'd like you to forget what Kevin told me about Rachel seeing someone new. I don't want that stored anywhere. It's not helpful for me to have that recorded"
+        }
+      ]
+    }
+  ]
+}

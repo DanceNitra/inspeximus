@@ -1,0 +1,826 @@
+{
+  "target_fact": "The user's packaging supplier name, which changes through a chain of corrections from GreenWrap Co. to GreenBox Supply to GreenWrap Supply (tentative) and back to GreenWrap Co.",
+  "operation_type": "Update",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "supplier_name",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "My packaging supplier is GreenWrap Co., they're based out of Portland"
+      },
+      "target": {
+        "target_id": "packaging_supplier_name",
+        "target_name": "candle business packaging supplier name"
+      },
+      "old_value": null,
+      "new_value": "GreenWrap Co.",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My packaging supplier is GreenWrap Co., they're based out of Portland"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "supplier_name",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I just double-checked my invoices and I've been saying the wrong name this whole time. The supplier is actually GreenBox Supply, not GreenWrap Co."
+      },
+      "target": {
+        "target_id": "packaging_supplier_name",
+        "target_name": "candle business packaging supplier name"
+      },
+      "old_value": "GreenWrap Co.",
+      "new_value": "GreenBox Supply",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I just double-checked my invoices and I've been saying the wrong name this whole time. The supplier is actually GreenBox Supply, not GreenWrap Co."
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "supplier_name",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I pulled up the actual purchase order PDF and the company header says GreenWrap Co. So my original name was right and the invoice I checked earlier must have been from a different vendor."
+      },
+      "target": {
+        "target_id": "packaging_supplier_name",
+        "target_name": "candle business packaging supplier name"
+      },
+      "old_value": "GreenBox Supply",
+      "new_value": "GreenWrap Co.",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I pulled up the actual purchase order PDF and the company header says GreenWrap Co. So my original name was right and the invoice I checked earlier must have been from a different vendor."
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "supplier_name",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "My contact at the company just emailed me and said they're rebranding next quarter to GreenWrap Supply. She said all future invoices will use the new name starting in July."
+      },
+      "target": {
+        "target_id": "packaging_supplier_name",
+        "target_name": "candle business packaging supplier name"
+      },
+      "old_value": "GreenWrap Co.",
+      "new_value": "GreenWrap Supply",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My contact at the company just emailed me and said they're rebranding next quarter to GreenWrap Supply. She said all future invoices will use the new name starting in July."
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I recently ordered 12 cases of mason jars from a new vendor, and each case holds 12 jars, so 144 jars total"
+      },
+      "target": {
+        "target_id": "mason_jar_order_quantity",
+        "target_name": "recent mason jar order total quantity"
+      },
+      "old_value": null,
+      "new_value": "144 jars (12 cases × 12 jars per case)",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I recently ordered 12 cases of mason jars from a new vendor, and each case holds 12 jars, so 144 jars total"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "each of my standard candles uses about 8 oz of wax, which in metric is roughly 227 grams"
+      },
+      "target": {
+        "target_id": "wax_per_candle",
+        "target_name": "wax amount per standard candle"
+      },
+      "old_value": null,
+      "new_value": "8 oz (approximately 227 grams)",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "each of my standard candles uses about 8 oz of wax, which in metric is roughly 227 grams"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish supplier name and jar order; first correction of supplier name",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I need some help organizing my candle business supply chain. My packaging supplier is GreenWrap Co., they're based out of Portland. I keep getting them confused with a different company called GreenBox, which is totally unrelated. Anyway, I had a rough experience back in March where I ordered 500 individual boxes when I actually meant 500 sleeves. Each sleeve holds 50 boxes, so I ended up way short. The whole production schedule got thrown off and I felt really dumb about it."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a really frustrating mix-up—ordering 500 boxes instead of 500 sleeves (which would have been 25,000 boxes) is a significant shortfall. I can see how that would throw off your entire production timeline. Let's get your supply chain organized so mistakes like that are easier to catch going forward. So to confirm, your packaging supplier is GreenWrap Co. out of Portland, and you've had issues distinguishing them from GreenBox, which is a separate company entirely. Would you like me to help set up a supplier reference sheet or an ordering checklist to prevent quantity confusion in the future?"
+        },
+        {
+          "role": "user",
+          "content": "That would be great, yeah. Also, I recently ordered 12 cases of mason jars from a new vendor, and each case holds 12 jars, so 144 jars total. I double-checked this time to make sure I got the units right. I actually prefer making smaller, more frequent orders like this rather than one massive bulk purchase. It feels less risky—if something goes wrong, I'm not stuck with a huge problem. I'd rather place four small orders than one giant one."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a smart approach, especially after the sleeve mix-up. So you've got 144 mason jars incoming from the new vendor—12 cases at 12 jars each. I'll note your preference for smaller, frequent orders over large bulk purchases. That risk-management strategy makes a lot of sense for a small business where one bad shipment can really set you back. For the supplier reference sheet, I'll start with GreenWrap Co. for packaging and this new jar vendor. Do you want to share the jar vendor's name as well, or should I just label them generically for now? And shall I build in a double-check column for unit verification on the order template?"
+        },
+        {
+          "role": "user",
+          "content": "Hold on—I just double-checked my invoices and I've been saying the wrong name this whole time. The supplier is actually GreenBox Supply, not GreenWrap Co. I always mix those two up, that's the whole problem. The invoice clearly says GreenBox Supply on the letterhead. So please update that. The jar vendor I can share later, I don't have their details handy right now."
+        },
+        {
+          "role": "assistant",
+          "content": "No problem at all—I've updated the packaging supplier name to GreenBox Supply. I can see why the names are confusing when you've got GreenWrap and GreenBox floating around in your head. So the corrected record is: your packaging supplier is GreenBox Supply, based in Portland. I'll hold off on adding the jar vendor until you have their info ready. In the meantime, I'll set up the ordering template with GreenBox Supply as the primary packaging source and include that unit-verification column we discussed. Should I also add a notes field where you can flag common confusion points, like the GreenWrap vs. GreenBox distinction?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, a notes field would be helpful. I also want to mention that I've fully migrated all my candle recipes to metric now—everything is in grams and milliliters. I had this whole mess before where my fragrance oil inventory was logged in milliliters but the invoices were in fluid ounces, so everything was off by a factor of about 29.6. But that's all been corrected and reconciled now, so you can disregard any old inventory numbers. I actually enjoy the tedious spreadsheet work, there's something satisfying about getting every cell right."
+        },
+        {
+          "role": "assistant",
+          "content": "That's great that you've completed the metric migration—having everything consistently in grams and milliliters should eliminate those unit-conversion headaches entirely. A factor-of-29.6 discrepancy in your fragrance oil inventory must have been a nightmare to untangle, so I'm glad that's behind you. I'll make sure any templates or references I create for you use metric units going forward. And I'll add a notes field to the ordering template for flagging things like the GreenWrap vs. GreenBox confusion. So far I have: packaging from GreenBox Supply in Portland, 144 mason jars from a new vendor (details pending), all recipes in metric, and a preference for smaller frequent orders. Anything else to add?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Introduce wax-per-candle fact; revert supplier name back to GreenWrap Co.",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "One more detail—each of my standard candles uses about 8 oz of wax, which in metric is roughly 227 grams. Since I have 144 jars coming in, I need to figure out how much wax to order for this batch. I'm also thinking about whether I need to reorder packaging soon or if I have enough from the last shipment. Can you help me think through the quantities?"
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely! So if each standard candle uses approximately 227 grams (8 oz) of wax and you have 144 jars incoming, you'd need roughly 144 × 227 = 32,688 grams of wax, which is about 32.7 kilograms or around 72 pounds. That's a solid amount—do you typically order wax in kilogram increments or by the pound? For the packaging side, we'd need to know how many boxes or sleeves you have left from the last GreenBox Supply order. Do you have a current count, or should we estimate based on your last order minus what you've used so far?"
+        },
+        {
+          "role": "user",
+          "content": "I pulled up the actual purchase order PDF and the company header says GreenWrap Co. So my original name was right and the invoice I checked earlier must have been from a different vendor. Sorry for the back and forth on this—it's exactly the kind of confusion I was talking about. GreenWrap Co. is definitely the packaging supplier. GreenBox is something else entirely, maybe a vendor Derek uses or something."
+        },
+        {
+          "role": "assistant",
+          "content": "No need to apologize—this is exactly why having a clear reference document matters! I've reverted the packaging supplier name back to GreenWrap Co., based in Portland, which matches the purchase order header. The earlier invoice you checked must have been from a different vendor, possibly something Derek works with. This is a perfect example of why that notes field will be useful: we can flag that GreenBox is NOT your packaging supplier to avoid future confusion. So the corrected and verified record is: GreenWrap Co. in Portland for packaging. Want me to note the GreenBox mix-up explicitly in the template as a warning?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, please flag that clearly. Also, I usually order wax by the kilogram since everything's metric now. I think I have about 10 kg on hand right now, so I'd need to order roughly 23 kg more to cover this batch of 144 candles. I'll probably round up to 25 kg to have a small buffer. Do you think that math checks out?"
+        },
+        {
+          "role": "assistant",
+          "content": "Let me verify: 144 candles × 227 grams each = 32,688 grams, or about 32.7 kg total. You have 10 kg on hand, so you'd need approximately 22.7 kg more. Rounding up to 25 kg gives you about 2.3 kg of buffer, which is enough for roughly 10 extra candles. That math checks out nicely and the buffer is reasonable—it accounts for any spillage or measurement variance during production. I'll note in the template that your wax orders should be in kilograms. Do you order wax from the same supplier as packaging, or is that a separate vendor?"
+        },
+        {
+          "role": "user",
+          "content": "Separate vendor for wax—I get that from a place called CandleCraft Wholesale. They're in Seattle. I've been with them for about a year now and they've been reliable. Anyway, I think the supply chain picture is coming together. Between GreenWrap Co. for packaging, CandleCraft Wholesale for wax, and the jar vendor I'll add later, that covers my main suppliers. I like having everything documented in one place."
+        },
+        {
+          "role": "assistant",
+          "content": "Great, so here's your current supplier lineup: GreenWrap Co. in Portland for packaging, CandleCraft Wholesale in Seattle for wax (about a year of reliable service), and the mason jar vendor to be added once you have their details. Combined with your production specs—227 grams of wax per candle, metric units throughout, preference for smaller frequent orders—you've got a solid foundation for the reference document. I'll draft the template with the GreenBox warning note, the unit-verification column, and all three supplier slots. Once the jar vendor info comes in, we can complete the picture. Anything else you'd like included?"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Tentative rebrand name appears; adversarial look-alike injection; wrap-up",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I wanted to circle back on the production planning. So with 144 jars and 25 kg of wax ordered, I should be set for this batch. I'm also going to need fragrance oil—I typically use about 10% fragrance load by weight, so for 227 grams of wax per candle, that's roughly 22.7 grams of fragrance oil each. Can you calculate the total fragrance oil I'll need for the full batch?"
+        },
+        {
+          "role": "assistant",
+          "content": "Sure! At a 10% fragrance load, you'd need about 22.7 grams of fragrance oil per candle. For 144 candles, that's 144 × 22.7 = approximately 3,269 grams, or about 3.27 kg of fragrance oil total. You might want to round up to 3.5 kg to account for any waste or testing. Since you mentioned you reconciled your fragrance oil inventory to metric, do you know how much you currently have on hand? That would let us figure out exactly how much to order. Also, I noticed in an old form from your records that a company called GreenWrap Supply was listed as a secondary packaging contact—is that related to GreenWrap Co., or is that yet another entity?"
+        },
+        {
+          "role": "user",
+          "content": "Hmm, I don't recognize GreenWrap Supply as a current vendor. That old form might be outdated or might be from Derek's records—he sometimes uses my templates. Let me check on my fragrance oil stock. I think I have about 1 kg left, so I'd need to order at least 2.5 kg, probably 3 kg to be safe. I'll get that from CandleCraft Wholesale too—they carry both wax and fragrance oils."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it—so you'd need roughly 3 kg of fragrance oil ordered from CandleCraft Wholesale in Seattle, on top of the 25 kg wax order. That's convenient that they supply both. I'll disregard that GreenWrap Supply reference since it seems to be from Derek's records or an outdated form. Your verified packaging supplier remains GreenWrap Co. in Portland. So for this production batch of 144 candles, your order list looks like: 25 kg wax and 3 kg fragrance oil from CandleCraft Wholesale, plus packaging from GreenWrap Co. once you confirm your current box inventory. Does that capture everything?"
+        },
+        {
+          "role": "user",
+          "content": "My contact at the company just emailed me and said they're rebranding next quarter to GreenWrap Supply. She said all future invoices will use the new name starting in July. So that old form reference you found might actually have been a preview of the new branding. Interesting timing. Anyway, I need to also think about labels for this batch—I print them myself on a thermal printer."
+        },
+        {
+          "role": "assistant",
+          "content": "Oh, interesting—so GreenWrap Co. is planning to rebrand to GreenWrap Supply starting in July. That would explain the form reference. I'll keep GreenWrap Co. as the current name for now since the rebrand hasn't taken effect yet, and we can update it once July rolls around. For labels, since you print them yourself on a thermal printer, we should factor in label stock as another supply to track. How many labels do you typically need per candle? Usually it's at least one front label and sometimes a bottom label with safety information. Do you need to order label rolls, or do you have enough on hand?"
+        },
+        {
+          "role": "user",
+          "content": "I use two labels per candle—one front brand label and one bottom safety label. So for 144 candles I need 288 labels. I have about a half roll left which has maybe 100 labels on it, so I'll need to order at least one more roll. Each roll has 500 labels. Derek mentioned he uses an Ohaus scale that cost him about $85—I think that's overkill for what he does, but whatever works for him. I'm happy with my Escali that goes up to 5 kg.\n\nYes, please finalize that checklist. Make sure the supplier reference clearly says GreenWrap Co. for packaging—I don't want any more name confusion. And include that note about GreenBox being a completely different company. I think we've got a solid plan for this production batch. I'll circle back once I count my remaining boxes and figure out the packaging order quantity."
+        },
+        {
+          "role": "assistant",
+          "content": "So you need 288 labels total (2 per candle × 144 candles), you have about 100 on hand, meaning you need at least 188 more. One roll of 500 labels would more than cover it and leave you with a nice surplus of about 312 labels for future batches. I'll add label rolls to the supply tracking template. Your Escali scale with the 5 kg capacity sounds well-suited for your batch sizes—227 grams per candle is well within range. Here's your complete order summary for this batch: 25 kg wax and 3 kg fragrance oil from CandleCraft Wholesale, packaging from GreenWrap Co. (quantity TBD based on current stock), and 1 roll of 500 thermal labels. Shall I finalize this into a proper order checklist?\n\nPerfect, here's your finalized order checklist for the 144-candle production batch: (1) Wax: 25 kg from CandleCraft Wholesale, Seattle; (2) Fragrance oil: 3 kg from CandleCraft Wholesale, Seattle; (3) Packaging: quantity TBD from GreenWrap Co., Portland—NOTE: GreenBox is a completely different company, do not confuse; (4) Thermal labels: 1 roll of 500 from your label supplier (details to be added). Production specs: 227 grams wax per candle, 22.7 grams fragrance oil per candle (10% load), 2 labels per candle, all measurements in metric. Once you count your remaining boxes, we can finalize the packaging line item. Just let me know when you're ready!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations about my candle business supply chain, which of my messages first establish the packaging supplier name and which later determine the name I should actually rely on going forward?",
+      "expected_answer": "You first said your packaging supplier is GreenWrap Co. based out of Portland. You then said you checked your invoices and the supplier is actually GreenBox Supply. Later, you pulled up the actual purchase order PDF and confirmed the company header says GreenWrap Co., reverting to the original name. Finally, you mentioned your contact emailed that the company is rebranding next quarter to GreenWrap Supply starting in July, but that rebrand hasn't taken effect yet. The name to rely on currently is GreenWrap Co.",
+      "gold_memory_state": "packaging_supplier_name = GreenWrap Co. (confirmed). GreenWrap Supply is a planned future rebrand (tentative, not yet in effect). GreenBox Supply was an intermediate error, now superseded. mason_jar_order_quantity = 144 jars. wax_per_candle = 8 oz (~227 grams).",
+      "judge_rubric": {
+        "must_include": [
+          "GreenWrap Co. as the initial and final confirmed name",
+          "GreenBox Supply as an intermediate value",
+          "GreenWrap Supply as a future rebrand not yet in effect"
+        ],
+        "acceptable_paraphrases": [
+          "the purchase order PDF confirmed GreenWrap Co.",
+          "the rebrand to GreenWrap Supply hasn't happened yet"
+        ],
+        "must_not_include": [
+          "GreenBox Supply as the current name",
+          "GreenWrap Supply as the current name"
+        ],
+        "harmful_extra": [
+          "saying GreenWrap Supply is the current name",
+          "saying GreenBox Supply is still valid"
+        ],
+        "harmless_extra": [
+          "mentioning Portland as the location",
+          "mentioning the mason jar order or wax details"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model treats GreenBox Supply or GreenWrap Supply as the current confirmed supplier name.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My packaging supplier is GreenWrap Co., they're based out of Portland"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I just double-checked my invoices and I've been saying the wrong name this whole time. The supplier is actually GreenBox Supply, not GreenWrap Co."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I pulled up the actual purchase order PDF and the company header says GreenWrap Co. So my original name was right and the invoice I checked earlier must have been from a different vendor."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My contact at the company just emailed me and said they're rebranding next quarter to GreenWrap Supply. She said all future invoices will use the new name starting in July."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations about my candle business supply chain, which of my messages first establish the packaging supplier name and which later determine the name I should actually rely on going forward?",
+      "expected_answer": "You first said your packaging supplier is GreenWrap Co. based out of Portland. You then said you checked your invoices and the supplier is actually GreenBox Supply. Later, you pulled up the actual purchase order PDF and confirmed the company header says GreenWrap Co., reverting to the original name. Finally, you mentioned your contact emailed that the company is rebranding next quarter to GreenWrap Supply starting in July, but that rebrand hasn't taken effect yet. The name to rely on currently is GreenWrap Co.",
+      "gold_memory_state": "packaging_supplier_name = GreenWrap Co. (confirmed). GreenWrap Supply is a planned future rebrand (tentative, not yet in effect). GreenBox Supply was an intermediate error, now superseded. mason_jar_order_quantity = 144 jars. wax_per_candle = 8 oz (~227 grams).",
+      "judge_rubric": {
+        "must_include": [
+          "GreenWrap Co. as the initial and final confirmed name",
+          "GreenBox Supply as an intermediate value",
+          "GreenWrap Supply as a future rebrand not yet in effect"
+        ],
+        "acceptable_paraphrases": [
+          "the purchase order PDF confirmed GreenWrap Co.",
+          "the rebrand to GreenWrap Supply hasn't happened yet"
+        ],
+        "must_not_include": [
+          "GreenBox Supply as the current name",
+          "GreenWrap Supply as the current name"
+        ],
+        "harmful_extra": [
+          "saying GreenWrap Supply is the current name",
+          "saying GreenBox Supply is still valid"
+        ],
+        "harmless_extra": [
+          "mentioning Portland as the location",
+          "mentioning the mason jar order or wax details"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model treats GreenBox Supply or GreenWrap Supply as the current confirmed supplier name.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My packaging supplier is GreenWrap Co., they're based out of Portland"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I just double-checked my invoices and I've been saying the wrong name this whole time. The supplier is actually GreenBox Supply, not GreenWrap Co."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I pulled up the actual purchase order PDF and the company header says GreenWrap Co. So my original name was right and the invoice I checked earlier must have been from a different vendor."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My contact at the company just emailed me and said they're rebranding next quarter to GreenWrap Supply. She said all future invoices will use the new name starting in July."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When I gave you a name from a purchase order PDF that differed from what I'd said earlier based on an invoice, which supplier record should that apply to—my packaging supplier or my wax supplier? And does the wax supplier's name need any change based on that?",
+      "expected_answer": "The purchase order PDF name applies to your packaging supplier record. Your wax supplier, CandleCraft Wholesale, is unaffected and does not need any change.",
+      "gold_memory_state": "packaging_supplier_name = GreenWrap Co. (confirmed, reverted via purchase order PDF). wax_supplier = CandleCraft Wholesale in Seattle (unchanged, separate vendor). mason_jar_order_quantity = 144 jars. wax_per_candle = 8 oz (~227 grams).",
+      "judge_rubric": {
+        "must_include": [
+          "packaging supplier record is the one affected",
+          "CandleCraft Wholesale is unaffected"
+        ],
+        "acceptable_paraphrases": [
+          "the name from the purchase order applies to packaging, not wax",
+          "wax supplier stays the same"
+        ],
+        "must_not_include": [
+          "CandleCraft Wholesale changed",
+          "wax supplier name was updated"
+        ],
+        "harmful_extra": [
+          "saying the wax supplier was also corrected",
+          "confusing packaging and wax supplier records"
+        ],
+        "harmless_extra": [
+          "mentioning Portland for packaging or Seattle for wax",
+          "mentioning GreenWrap Co. as the current packaging name"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I pulled up the actual purchase order PDF and the company header says GreenWrap Co. So my original name was right and the invoice I checked earlier must have been from a different vendor."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Separate vendor for wax—I get that from a place called CandleCraft Wholesale. They're in Seattle."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When I gave you a name from a purchase order PDF that differed from what I'd said earlier based on an invoice, which supplier record should that apply to—my packaging supplier or my wax supplier? And does the wax supplier's name need any change based on that?",
+      "expected_answer": "The purchase order PDF name applies to your packaging supplier record. Your wax supplier, CandleCraft Wholesale, is unaffected and does not need any change.",
+      "gold_memory_state": "packaging_supplier_name = GreenWrap Co. (confirmed, reverted via purchase order PDF). wax_supplier = CandleCraft Wholesale in Seattle (unchanged, separate vendor). mason_jar_order_quantity = 144 jars. wax_per_candle = 8 oz (~227 grams).",
+      "judge_rubric": {
+        "must_include": [
+          "packaging supplier record is the one affected",
+          "CandleCraft Wholesale is unaffected"
+        ],
+        "acceptable_paraphrases": [
+          "the name from the purchase order applies to packaging, not wax",
+          "wax supplier stays the same"
+        ],
+        "must_not_include": [
+          "CandleCraft Wholesale changed",
+          "wax supplier name was updated"
+        ],
+        "harmful_extra": [
+          "saying the wax supplier was also corrected",
+          "confusing packaging and wax supplier records"
+        ],
+        "harmless_extra": [
+          "mentioning Portland for packaging or Seattle for wax",
+          "mentioning GreenWrap Co. as the current packaging name"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I pulled up the actual purchase order PDF and the company header says GreenWrap Co. So my original name was right and the invoice I checked earlier must have been from a different vendor."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Separate vendor for wax—I get that from a place called CandleCraft Wholesale. They're in Seattle."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to place a packaging order right now. Which of the following is the company name I should use on the purchase order?",
+      "candidate_options": [
+        "GreenWrap Co.",
+        "GreenBox Supply",
+        "GreenWrap Supply",
+        "GreenBox Co."
+      ],
+      "expected_answer": "GreenWrap Co.",
+      "distractor_rationale": "same-value-different-target: GreenBox Supply was an erroneous name from a misread invoice, now superseded by the purchase order PDF confirmation. assistant echo: GreenBox Co. is a fabricated blend—the assistant mentioned 'GreenBox' as a separate unrelated company and the user's actual supplier has 'Co.' in the name, so this combines elements from different contexts. GreenWrap Supply is a tentative future rebrand not yet in effect (recency trap distractor).",
+      "gold_memory_state": "packaging_supplier_name = GreenWrap Co. (confirmed). GreenBox Supply = stale intermediate error. GreenWrap Supply = tentative future rebrand, not yet active. GreenBox Co. = never a real entity in the user's records.",
+      "judge_rubric": {
+        "must_include": [
+          "GreenWrap Co."
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "GreenBox Supply",
+          "GreenWrap Supply",
+          "GreenBox Co."
+        ],
+        "harmful_extra": [
+          "selecting the tentative rebrand name as current",
+          "selecting the stale invoice-based name"
+        ],
+        "harmless_extra": [
+          "mentioning Portland"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model selects GreenBox Supply (stale intermediate) or GreenWrap Supply (tentative future rebrand not yet adopted). The recency trap is GreenWrap Supply—it appeared most recently but is only tentative.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I pulled up the actual purchase order PDF and the company header says GreenWrap Co. So my original name was right and the invoice I checked earlier must have been from a different vendor."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My contact at the company just emailed me and said they're rebranding next quarter to GreenWrap Supply. She said all future invoices will use the new name starting in July."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to place a packaging order right now. Which of the following is the company name I should use on the purchase order?",
+      "candidate_options": [
+        "GreenWrap Co.",
+        "GreenBox Supply",
+        "GreenWrap Supply",
+        "GreenBox Co."
+      ],
+      "expected_answer": "GreenWrap Co.",
+      "distractor_rationale": "same-value-different-target: GreenBox Supply was an erroneous name from a misread invoice, now superseded by the purchase order PDF confirmation. assistant echo: GreenBox Co. is a fabricated blend—the assistant mentioned 'GreenBox' as a separate unrelated company and the user's actual supplier has 'Co.' in the name, so this combines elements from different contexts. GreenWrap Supply is a tentative future rebrand not yet in effect (recency trap distractor).",
+      "gold_memory_state": "packaging_supplier_name = GreenWrap Co. (confirmed). GreenBox Supply = stale intermediate error. GreenWrap Supply = tentative future rebrand, not yet active. GreenBox Co. = never a real entity in the user's records.",
+      "judge_rubric": {
+        "must_include": [
+          "GreenWrap Co."
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "GreenBox Supply",
+          "GreenWrap Supply",
+          "GreenBox Co."
+        ],
+        "harmful_extra": [
+          "selecting the tentative rebrand name as current",
+          "selecting the stale invoice-based name"
+        ],
+        "harmless_extra": [
+          "mentioning Portland"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model selects GreenBox Supply (stale intermediate) or GreenWrap Supply (tentative future rebrand not yet adopted). The recency trap is GreenWrap Supply—it appeared most recently but is only tentative.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I pulled up the actual purchase order PDF and the company header says GreenWrap Co. So my original name was right and the invoice I checked earlier must have been from a different vendor."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My contact at the company just emailed me and said they're rebranding next quarter to GreenWrap Supply. She said all future invoices will use the new name starting in July."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I'm preparing a combined purchase order for my next 144-candle production batch. Draft the supplier line items showing: (1) the packaging supplier name and city, (2) the wax and fragrance oil supplier name and city, and (3) the total wax needed in kilograms for 144 candles at my standard recipe, assuming I have 10 kg on hand. Round up the order quantity to the nearest 5 kg for a buffer.",
+      "expected_answer": "Line 1 – Packaging: GreenWrap Co., Portland. Line 2 – Wax & Fragrance Oil: CandleCraft Wholesale, Seattle. Line 3 – Wax order: 144 candles × 227 g = approximately 32.7 kg total needed; minus 10 kg on hand = approximately 22.7 kg to order; rounded up to 25 kg.",
+      "application_probe_type": "multi_hop_derivation",
+      "gold_memory_state": "packaging_supplier_name = GreenWrap Co. in Portland (confirmed). wax_supplier = CandleCraft Wholesale in Seattle. wax_per_candle = 227 grams. mason_jar_order_quantity = 144 jars. GreenBox Supply and GreenWrap Supply are not the current packaging supplier name.",
+      "judge_rubric": {
+        "must_include": [
+          "GreenWrap Co.",
+          "Portland",
+          "CandleCraft Wholesale",
+          "Seattle",
+          "25 kg wax order"
+        ],
+        "acceptable_paraphrases": [
+          "approximately 32.7 kg total",
+          "about 22.7 kg shortfall",
+          "round to 25 kg"
+        ],
+        "must_not_include": [
+          "GreenBox Supply as the packaging supplier",
+          "GreenWrap Supply as the packaging supplier"
+        ],
+        "harmful_extra": [
+          "using GreenBox Supply or GreenWrap Supply as the current packaging supplier name on the purchase order"
+        ],
+        "harmless_extra": [
+          "mentioning fragrance oil quantity of ~3.27 kg",
+          "mentioning the 10% fragrance load",
+          "mentioning label rolls"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model uses GreenBox Supply or GreenWrap Supply as the packaging supplier name on the purchase order.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The confirmed packaging supplier is GreenWrap Co. in Portland (from the purchase order PDF verification).",
+        "Fact 2: The wax and fragrance oil supplier is CandleCraft Wholesale in Seattle.",
+        "Fact 3: Each standard candle uses approximately 227 grams of wax.",
+        "Fact 4: The user has 144 jars incoming for this production batch.",
+        "Inference: Total wax needed = 144 × 227 g = 32,688 g ≈ 32.7 kg.",
+        "Fact 5: The user has 10 kg of wax on hand.",
+        "Inference: Wax to order = 32.7 kg − 10 kg = 22.7 kg; rounded up to 25 kg."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I pulled up the actual purchase order PDF and the company header says GreenWrap Co. So my original name was right and the invoice I checked earlier must have been from a different vendor."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Separate vendor for wax—I get that from a place called CandleCraft Wholesale. They're in Seattle."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "each of my standard candles uses about 8 oz of wax, which in metric is roughly 227 grams"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I recently ordered 12 cases of mason jars from a new vendor, and each case holds 12 jars, so 144 jars total"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think I have about 10 kg on hand right now, so I'd need to order roughly 23 kg more to cover this batch of 144 candles. I'll probably round up to 25 kg to have a small buffer."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I'm preparing a combined purchase order for my next 144-candle production batch. Draft the supplier line items showing: (1) the packaging supplier name and city, (2) the wax and fragrance oil supplier name and city, and (3) the total wax needed in kilograms for 144 candles at my standard recipe, assuming I have 10 kg on hand. Round up the order quantity to the nearest 5 kg for a buffer.",
+      "expected_answer": "Line 1 – Packaging: GreenWrap Co., Portland. Line 2 – Wax & Fragrance Oil: CandleCraft Wholesale, Seattle. Line 3 – Wax order: 144 candles × 227 g = approximately 32.7 kg total needed; minus 10 kg on hand = approximately 22.7 kg to order; rounded up to 25 kg.",
+      "application_probe_type": "multi_hop_derivation",
+      "gold_memory_state": "packaging_supplier_name = GreenWrap Co. in Portland (confirmed). wax_supplier = CandleCraft Wholesale in Seattle. wax_per_candle = 227 grams. mason_jar_order_quantity = 144 jars. GreenBox Supply and GreenWrap Supply are not the current packaging supplier name.",
+      "judge_rubric": {
+        "must_include": [
+          "GreenWrap Co.",
+          "Portland",
+          "CandleCraft Wholesale",
+          "Seattle",
+          "25 kg wax order"
+        ],
+        "acceptable_paraphrases": [
+          "approximately 32.7 kg total",
+          "about 22.7 kg shortfall",
+          "round to 25 kg"
+        ],
+        "must_not_include": [
+          "GreenBox Supply as the packaging supplier",
+          "GreenWrap Supply as the packaging supplier"
+        ],
+        "harmful_extra": [
+          "using GreenBox Supply or GreenWrap Supply as the current packaging supplier name on the purchase order"
+        ],
+        "harmless_extra": [
+          "mentioning fragrance oil quantity of ~3.27 kg",
+          "mentioning the 10% fragrance load",
+          "mentioning label rolls"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model uses GreenBox Supply or GreenWrap Supply as the packaging supplier name on the purchase order.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The confirmed packaging supplier is GreenWrap Co. in Portland (from the purchase order PDF verification).",
+        "Fact 2: The wax and fragrance oil supplier is CandleCraft Wholesale in Seattle.",
+        "Fact 3: Each standard candle uses approximately 227 grams of wax.",
+        "Fact 4: The user has 144 jars incoming for this production batch.",
+        "Inference: Total wax needed = 144 × 227 g = 32,688 g ≈ 32.7 kg.",
+        "Fact 5: The user has 10 kg of wax on hand.",
+        "Inference: Wax to order = 32.7 kg − 10 kg = 22.7 kg; rounded up to 25 kg."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I pulled up the actual purchase order PDF and the company header says GreenWrap Co. So my original name was right and the invoice I checked earlier must have been from a different vendor."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Separate vendor for wax—I get that from a place called CandleCraft Wholesale. They're in Seattle."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "each of my standard candles uses about 8 oz of wax, which in metric is roughly 227 grams"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I recently ordered 12 cases of mason jars from a new vendor, and each case holds 12 jars, so 144 jars total"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think I have about 10 kg on hand right now, so I'd need to order roughly 23 kg more to cover this batch of 144 candles. I'll probably round up to 25 kg to have a small buffer."
+        }
+      ]
+    }
+  ]
+}

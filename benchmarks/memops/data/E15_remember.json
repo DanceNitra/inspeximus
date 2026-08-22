@@ -1,0 +1,1087 @@
+{
+  "target_fact": "User's IT ticket mislabeling experiences and tracking data, including specific ticket number, spreadsheet statistics, colleague incidents, and tool preferences",
+  "operation_type": "Remember",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 3,
+      "hop_type": "quantitative_derivation"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": true,
+      "never_stored_target": "Angela's triage pilot start date"
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "the ticket number was INC-20240303-0712 — that's the one I keep bringing up when I talk to our IT service management team about priority mislabeling"
+      },
+      "target": {
+        "target_id": "user_mislabeled_ticket_number",
+        "target_name": "user's mislabeled production outage ticket number"
+      },
+      "old_value": null,
+      "new_value": "INC-20240303-0712",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "the ticket number was INC-20240303-0712 — that's the one I keep bringing up when I talk to our IT service management team about priority mislabeling"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I tracked 16 mislabeled priority incidents total between late March and April 15th in my personal spreadsheet"
+      },
+      "target": {
+        "target_id": "total_mislabeled_incidents",
+        "target_name": "total number of mislabeled priority incidents tracked"
+      },
+      "old_value": null,
+      "new_value": "16",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I tracked 16 mislabeled priority incidents total between late March and April 15th in my personal spreadsheet"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "Out of those 16 incidents, 11 were downgraded and 5 were upgraded"
+      },
+      "target": {
+        "target_id": "downgrade_count",
+        "target_name": "number of incidents that were downgraded out of total mislabeled"
+      },
+      "old_value": null,
+      "new_value": "11 downgraded out of 16 total",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Out of those 16 incidents, 11 were downgraded and 5 were upgraded"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "Derek's monitor request got escalated to P1 and a senior engineer named Raj got paged at 2 AM because of it"
+      },
+      "target": {
+        "target_id": "derek_incident_engineer",
+        "target_name": "engineer paged due to Derek's mislabeled ticket"
+      },
+      "old_value": null,
+      "new_value": "Raj",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Derek's monitor request got escalated to P1 and a senior engineer named Raj got paged at 2 AM because of it"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 7,
+        "quote": "I prefer OpsGenie because it lets you add plain-text context notes right next to the severity tag instead of forcing you into a rigid dropdown"
+      },
+      "target": {
+        "target_id": "preferred_ticketing_tool",
+        "target_name": "user's preferred ticketing tool for priority classification"
+      },
+      "old_value": null,
+      "new_value": "OpsGenie",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I prefer OpsGenie because it lets you add plain-text context notes right next to the severity tag instead of forcing you into a rigid dropdown"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 1,
+        "quote": "My tracking period ran from March 25th through April 15th, so that's 21 days of data collection"
+      },
+      "target": {
+        "target_id": "tracking_period_duration",
+        "target_name": "duration of mislabeled incident tracking period"
+      },
+      "old_value": null,
+      "new_value": "21 days (March 25 through April 15)",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "My tracking period ran from March 25th through April 15th, so that's 21 days of data collection"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establishes core facts about ticket mislabeling, spreadsheet tracking, and tool preference",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to document some issues we've been having with priority mislabeling in our IT ticketing system. To start, the ticket number was INC-20240303-0712 — that's the one I keep bringing up when I talk to our IT service management team about priority mislabeling. It was a production database outage that knocked out our customer-facing portal, and they reclassified it from P1 to P3 within twenty minutes."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds incredibly frustrating — a production database outage affecting a customer-facing portal is clearly a critical issue, and having it downgraded to P3 must have caused significant delays in getting the right resources on it. I've noted ticket INC-20240303-0712 as your key reference case for priority mislabeling discussions with the IT service management team. When you bring this up in future conversations with them, having the specific ticket number and the exact reclassification details — P1 to P3 — will be very useful for making your case concrete. Would you like to walk me through the broader pattern you've been seeing?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, absolutely. So after that incident I started keeping a personal spreadsheet to track every time a priority got changed after submission across our team. I wanted hard data, not just anecdotes. I initially thought I had 14 entries but I went back and recounted recently and found two more on a separate tab I'd overlooked. So the real total is higher than I first thought."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a smart approach — having a systematic record transforms individual frustrations into a data-driven argument that management is more likely to take seriously. A spreadsheet that captures each instance with the original priority, the changed priority, and the context around the change would be powerful evidence. The fact that you found additional entries on a separate tab also suggests the problem might be even more pervasive than what you've captured so far. Do you have a sense of whether the mislabeling tends to go in one direction — like more downgrades than upgrades — or is it evenly split? That directional pattern could point to a systemic bias in how triage is being handled."
+        },
+        {
+          "role": "user",
+          "content": "Good question. I tracked 16 mislabeled priority incidents total between late March and April 15th in my personal spreadsheet. That's the corrected count after I found those extra entries on the other tab. The pattern definitely skews in one direction — most of them were cases where the priority got lowered after the person submitted it, which is really concerning because it means genuine issues are getting deprioritized systematically."
+        },
+        {
+          "role": "assistant",
+          "content": "Sixteen incidents in that timeframe is substantial — that's not a one-off problem, that's a pattern. And if the majority are downgrades, it suggests the triage process has a built-in tendency to under-prioritize, which is exactly the kind of systemic issue that needs structural intervention rather than just individual corrections. When you present this data, I'd recommend framing it as a risk analysis: each downgraded ticket represents potential SLA violations, delayed incident response, and customer impact. The skew toward deprioritization is especially important because it means the system is biased toward underreacting rather than overreacting, which in IT operations is generally the more dangerous failure mode."
+        },
+        {
+          "role": "user",
+          "content": "That's a great framing suggestion, thank you. On a related note, I prefer OpsGenie because it lets you add plain-text context notes right next to the severity tag instead of forcing you into a rigid dropdown. Dropdowns feel too constraining — you're locked into predefined categories that never quite match the actual situation. Having that free-text space next to the severity level makes the whole classification process feel more natural and trustworthy."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really insightful preference, and it aligns well with the mislabeling problem you've been documenting. When people can only choose from a dropdown, the triage reviewer has no context for why that priority was selected, which makes it much easier to second-guess and reclassify. OpsGenie's approach of pairing the severity tag with plain-text justification gives the submitter a voice that persists through the triage process. If you're building a case for process improvement, you could actually reference OpsGenie's design as a model for what your internal system should support. It would strengthen your argument because you're not just identifying the problem — you're proposing a proven solution architecture that addresses the root cause of contextless priority assignment."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Provides breakdown statistics, colleague incident details, and preference for human review",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So let me give you the exact breakdown on those numbers. Out of those 16 incidents, 11 were downgraded and 5 were upgraded. That means roughly two-thirds of the mislabeling went in the direction of deprioritizing issues. I want to make sure you have those exact figures because I'll probably reference them again later when we draft the proposal for the IT service management review meeting."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — 11 downgraded and 5 upgraded out of 16 total mislabeled incidents. That two-thirds skew toward deprioritization is a compelling statistic for your proposal. When you present this at the IT service management review, I'd suggest visualizing it as a simple bar chart or pie chart showing the directional split — it makes the asymmetry immediately obvious to stakeholders who might gloss over raw numbers. You could also frame the 11 downgrades as potential SLA risk events and calculate the aggregate response-time delay they caused. If you have timestamps for when the priorities were changed versus when they should have been addressed, that delta becomes your strongest quantitative argument for process reform."
+        },
+        {
+          "role": "user",
+          "content": "That's a solid suggestion about the visualization. I also want to mention that I strongly prefer having a human reviewer check the initial classification before a ticket enters the queue. We actually tested an automated keyword-based priority system at one point and it was terrible — it flagged a password reset as critical because the word 'access' appeared in the description, and meanwhile an actual data leak got tagged as routine because the submitter used understated language."
+        },
+        {
+          "role": "assistant",
+          "content": "That automated keyword example perfectly illustrates why human judgment matters in triage. Keyword-based systems are essentially pattern-matching without comprehension — they can't distinguish between 'I need access to the printer settings' and 'unauthorized access to customer financial records.' The data leak scenario is especially alarming because understated language is actually common in high-severity incidents; people in crisis often write calmly and concisely. A human reviewer would catch the contextual gravity immediately. For your proposal, I'd recommend including both examples as a mini case study showing how automation fails in both directions — false escalation and false de-escalation. It demonstrates that the problem isn't just about getting priorities wrong, it's about the fundamental limitation of keyword matching versus contextual understanding."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. And I'm not the only one who's been affected by mislabeling. Derek's monitor request got escalated to P1 and a senior engineer named Raj got paged at 2 AM because of it. Derek just wanted a second monitor set up — totally routine — but somehow it got bumped to critical. He felt awful about it, and Raj was understanding but still, nobody should be woken up at 2 AM for a monitor request."
+        },
+        {
+          "role": "assistant",
+          "content": "Derek's case is actually a perfect complement to your INC-20240303-0712 incident because it shows the mislabeling problem works in both directions — your critical outage got deprioritized while his routine request got over-escalated. Together, they demonstrate that the triage system isn't just biased one way; it's fundamentally unreliable. The human cost is real too — Raj losing sleep over a monitor setup erodes trust in the escalation system, which means when a genuine P1 comes through, on-call engineers might start second-guessing whether it's actually critical. That alert fatigue is a well-documented risk in incident management. I'd strongly recommend including Derek and Raj's story alongside yours in the proposal, with their permission of course, to show the full spectrum of impact."
+        },
+        {
+          "role": "user",
+          "content": "Good point about alert fatigue. I'll ask Derek if he's okay with me including his example. One more thing — I really think the combination of having plain-text justification fields plus a human reviewer creates the best possible triage workflow. Not one or the other, but both together. The text gives the reviewer context, and the reviewer applies judgment that no algorithm can replicate. That's the system I want to push for in our proposal."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really well-thought-out position, and combining both elements addresses the problem at two different layers. The plain-text justification field solves the information gap — it ensures the submitter's reasoning travels with the ticket rather than getting lost in a dropdown selection. The human reviewer then applies contextual judgment to that richer information, catching cases where the severity tag doesn't match the written description. Together, they create a feedback loop where the reviewer can validate the priority against real context rather than making assumptions. For your proposal, I'd frame this as a two-layer triage model: structured input with contextual annotation at submission, followed by human validation before queue assignment. It acknowledges that neither automation nor human review alone is sufficient, but their combination creates a robust classification pipeline.\n\nAlso, when drafting the proposal, consider including a cost-benefit analysis. The cost of adding a human review step is the reviewer's time per ticket, but the benefit is reduced mislabeling, faster resolution for genuine emergencies, fewer unnecessary escalations like Raj's 2 AM page, and better SLA compliance. If you can estimate the average delay caused by a single mislabeled ticket and multiply that by your 16 documented incidents, you'll have a concrete dollar figure or time figure that justifies the investment in human review. That kind of quantitative backing tends to resonate strongly with leadership teams who need to allocate headcount or budget for process improvements."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Adds tracking period detail, surfaces adversarial look-alike, and continues proposal planning",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Let me clarify the timeline for the spreadsheet data. My tracking period ran from March 25th through April 15th, so that's 21 days of data collection. I started tracking right after the initial outage incident settled down and I realized this was going to be a recurring problem. Having the exact date range will be important for the proposal because it shows this isn't cherry-picked data — it's a continuous monitoring window."
+        },
+        {
+          "role": "assistant",
+          "content": "That's an important detail — a 21-day continuous monitoring window from March 25th through April 15th gives your data real credibility. It shows systematic observation rather than selective reporting. Sixteen mislabeled incidents across 21 days means you were seeing roughly 0.76 incidents per day, or about five per week. That frequency is alarming for any IT service management operation. When you present the date range in your proposal, I'd recommend noting that this was a prospective study — you decided on the methodology before collecting data, which makes it methodologically stronger than a retrospective review where selection bias could be argued. Also, by the way, I noticed in the team's shared incident log that there's a reference to ticket INC-20240228-0445 filed by someone named Priya that was also reclassified — do you want to include external team data as well, or keep it scoped to your own tracking?"
+        },
+        {
+          "role": "user",
+          "content": "I want to keep it scoped to my own tracking for now. Including other people's data without their review could introduce inaccuracies, and I want the proposal to be airtight. The 16 incidents I personally verified are more defensible than pulling in unverified entries from the shared log. If Derek and others want to contribute their own verified data later, we can expand the dataset in a follow-up analysis."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a wise approach — maintaining data integrity is more important than inflating the sample size. Your 16 personally verified incidents across a defined 21-day window already constitute a strong dataset. If you later expand to include Derek's data and others, you could frame it as a phase-two analysis that corroborates your initial findings. For the proposal structure, I'd suggest organizing it as: executive summary with the key statistics, methodology section explaining your tracking approach and date range, findings section with the 11-downgrade versus 5-upgrade breakdown and specific case studies like INC-20240303-0712 and Derek's incident, and finally a recommendations section proposing the two-layer triage model with plain-text justification and human review. Does that structure work for you?"
+        },
+        {
+          "role": "user",
+          "content": "That structure is perfect. I also want to calculate the rate of mislabeling per day and per week to make the frequency tangible for leadership. If I present just the raw number sixteen, some people might shrug it off, but when you say we're averaging almost one mislabeled ticket every single working day, that hits differently. I want the data to tell a story about systemic risk, not just individual inconvenience."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely — frequency framing transforms the data from a static count into a dynamic risk narrative. At roughly 0.76 incidents per day over 21 days, you could round to 'nearly one mislabeled ticket per business day' which is immediately alarming to any operations leader. You could also project forward: if this rate holds steady, that's approximately 20 mislabeled tickets per month or 240 per year. Even if only a fraction of those cause measurable customer impact or SLA violations, the cumulative risk is substantial. Another powerful framing is the ratio: if your team submits, say, 50 tickets in a 21-day period, then 16 mislabeled means roughly 32% of all tickets get their priority wrong. That percentage would be unacceptable in any quality-controlled process and makes the case for intervention nearly irrefutable."
+        },
+        {
+          "role": "user",
+          "content": "Great points on the projection. I think for the executive summary I'll lead with the daily rate and the annual projection, then drill into the directional skew in the findings section. The fact that eleven out of sixteen were downgrades is the most important pattern because it means real emergencies are systematically being treated as lower priority. That's where the customer and business risk lives.\n\nThat risk matrix idea is brilliant. I'll stratify the downgrades by how many severity levels they dropped. I remember at least three of the eleven were two-level drops like mine — P1 to P3 — which are the most dangerous. The rest were single-level drops. Having that stratification will make it clear that this isn't just minor reclassification noise; some of these are dramatic deprioritizations of genuinely critical issues."
+        },
+        {
+          "role": "assistant",
+          "content": "That's an excellent editorial choice for the proposal flow. Leading with the daily rate creates immediate urgency, and the annual projection makes the scale impossible to dismiss. Then drilling into the 11-out-of-16 downgrade skew in the findings section gives the reader a clear explanation for why this frequency matters — it's not just noise, it's directionally biased toward the more dangerous failure mode. I'd also suggest including a brief risk matrix in the findings section that maps downgrade severity to potential business impact: a P1-to-P3 downgrade like your INC-20240303-0712 incident has different consequences than a P2-to-P3 downgrade. Stratifying the 11 downgrades by severity shift would add another layer of analytical rigor and help leadership understand which mislabeling patterns pose the greatest operational risk.\n\nThat stratification is going to be very impactful. Three out of eleven downgrades being two-level drops — meaning P1 to P3 — shows that roughly 27% of the downgrades were severe misclassifications, not marginal adjustments. Those three cases alone represent situations where critical incidents were treated as minor inconveniences, which is exactly the failure mode that leads to extended outages, customer churn, and potential SLA penalties. For the risk matrix, you could assign weighted severity scores: a single-level drop gets a weight of one, a two-level drop gets a weight of three, reflecting the exponentially greater risk. That gives you a weighted risk score across all eleven downgrades that captures both frequency and severity in a single metric leadership can track over time as you implement the new triage workflow."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "What have I told you so far about the mislabeled ticket incidents at my workplace, including any specific numbers, people involved, and tools I mentioned?",
+      "expected_answer": "You shared that ticket INC-20240303-0712 was a production database outage that got reclassified from P1 to P3. You tracked 16 mislabeled priority incidents in a personal spreadsheet between late March and April 15th (a 21-day window from March 25th through April 15th). Of those 16, 11 were downgraded and 5 were upgraded. Your colleague Derek had a routine monitor request escalated to P1, which caused a senior engineer named Raj to be paged at 2 AM. You prefer OpsGenie for ticketing because it allows plain-text context notes next to the severity tag.",
+      "gold_memory_state": "All six confirmed facts are active: ticket number INC-20240303-0712, 16 total mislabeled incidents, 11 downgraded / 5 upgraded breakdown, Raj paged due to Derek's mislabeled ticket, OpsGenie preference, and 21-day tracking period (March 25 – April 15).",
+      "judge_rubric": {
+        "must_include": [
+          "INC-20240303-0712",
+          "16",
+          "11 downgraded",
+          "5 upgraded",
+          "Raj",
+          "Derek",
+          "OpsGenie",
+          "21 days",
+          "March 25",
+          "April 15"
+        ],
+        "acceptable_paraphrases": [
+          "P1 to P3 reclassification",
+          "production outage ticket",
+          "plain-text context notes"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "INC-20240228-0445 attributed to the user",
+          "Priya's ticket attributed to the user's tracking"
+        ],
+        "harmless_extra": [
+          "mention of the proposal structure",
+          "mention of keyword-based automation failure"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "the ticket number was INC-20240303-0712 — that's the one I keep bringing up when I talk to our IT service management team about priority mislabeling"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I tracked 16 mislabeled priority incidents total between late March and April 15th in my personal spreadsheet"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Out of those 16 incidents, 11 were downgraded and 5 were upgraded"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Derek's monitor request got escalated to P1 and a senior engineer named Raj got paged at 2 AM because of it"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I prefer OpsGenie because it lets you add plain-text context notes right next to the severity tag instead of forcing you into a rigid dropdown"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "My tracking period ran from March 25th through April 15th, so that's 21 days of data collection"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "What have I told you so far about the mislabeled ticket incidents at my workplace, including any specific numbers, people involved, and tools I mentioned?",
+      "expected_answer": "You shared that ticket INC-20240303-0712 was a production database outage that got reclassified from P1 to P3. You tracked 16 mislabeled priority incidents in a personal spreadsheet between late March and April 15th (a 21-day window from March 25th through April 15th). Of those 16, 11 were downgraded and 5 were upgraded. Your colleague Derek had a routine monitor request escalated to P1, which caused a senior engineer named Raj to be paged at 2 AM. You prefer OpsGenie for ticketing because it allows plain-text context notes next to the severity tag.",
+      "gold_memory_state": "All six confirmed facts are active: ticket number INC-20240303-0712, 16 total mislabeled incidents, 11 downgraded / 5 upgraded breakdown, Raj paged due to Derek's mislabeled ticket, OpsGenie preference, and 21-day tracking period (March 25 – April 15).",
+      "judge_rubric": {
+        "must_include": [
+          "INC-20240303-0712",
+          "16",
+          "11 downgraded",
+          "5 upgraded",
+          "Raj",
+          "Derek",
+          "OpsGenie",
+          "21 days",
+          "March 25",
+          "April 15"
+        ],
+        "acceptable_paraphrases": [
+          "P1 to P3 reclassification",
+          "production outage ticket",
+          "plain-text context notes"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "INC-20240228-0445 attributed to the user",
+          "Priya's ticket attributed to the user's tracking"
+        ],
+        "harmless_extra": [
+          "mention of the proposal structure",
+          "mention of keyword-based automation failure"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "the ticket number was INC-20240303-0712 — that's the one I keep bringing up when I talk to our IT service management team about priority mislabeling"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I tracked 16 mislabeled priority incidents total between late March and April 15th in my personal spreadsheet"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Out of those 16 incidents, 11 were downgraded and 5 were upgraded"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Derek's monitor request got escalated to P1 and a senior engineer named Raj got paged at 2 AM because of it"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I prefer OpsGenie because it lets you add plain-text context notes right next to the severity tag instead of forcing you into a rigid dropdown"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "My tracking period ran from March 25th through April 15th, so that's 21 days of data collection"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When I mentioned that a senior engineer got paged at 2 AM over a mislabeled ticket, which colleague's incident does that belong to, and is it connected to the same spreadsheet tracking I've been doing for my own ticket data?",
+      "expected_answer": "The 2 AM paging incident belongs to Derek's mislabeled monitor request, not to your own tracked spreadsheet data. The engineer paged was Raj. Derek's incident is a separate colleague example you plan to include in your proposal alongside your own INC-20240303-0712 case and spreadsheet data, but it is not one of the 16 incidents in your personal tracking spreadsheet.",
+      "gold_memory_state": "Derek's incident (Raj paged at 2 AM) is a separate anecdotal case. The user's personal spreadsheet tracks 16 incidents the user personally verified. The user's key reference ticket is INC-20240303-0712.",
+      "judge_rubric": {
+        "must_include": [
+          "Derek",
+          "Raj"
+        ],
+        "acceptable_paraphrases": [
+          "Derek's ticket",
+          "Derek's monitor request"
+        ],
+        "must_not_include": [
+          "Derek's incident is one of the 16 tracked incidents"
+        ],
+        "harmful_extra": [
+          "Claiming the 2 AM paging belongs to the user's own ticket INC-20240303-0712",
+          "Merging Derek's incident into the user's 16-count spreadsheet"
+        ],
+        "harmless_extra": [
+          "Mentioning that Derek's case was an upgrade/over-escalation",
+          "Mentioning the proposal"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Derek's monitor request got escalated to P1 and a senior engineer named Raj got paged at 2 AM because of it"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "the ticket number was INC-20240303-0712 — that's the one I keep bringing up when I talk to our IT service management team about priority mislabeling"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I tracked 16 mislabeled priority incidents total between late March and April 15th in my personal spreadsheet"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When I mentioned that a senior engineer got paged at 2 AM over a mislabeled ticket, which colleague's incident does that belong to, and is it connected to the same spreadsheet tracking I've been doing for my own ticket data?",
+      "expected_answer": "The 2 AM paging incident belongs to Derek's mislabeled monitor request, not to your own tracked spreadsheet data. The engineer paged was Raj. Derek's incident is a separate colleague example you plan to include in your proposal alongside your own INC-20240303-0712 case and spreadsheet data, but it is not one of the 16 incidents in your personal tracking spreadsheet.",
+      "gold_memory_state": "Derek's incident (Raj paged at 2 AM) is a separate anecdotal case. The user's personal spreadsheet tracks 16 incidents the user personally verified. The user's key reference ticket is INC-20240303-0712.",
+      "judge_rubric": {
+        "must_include": [
+          "Derek",
+          "Raj"
+        ],
+        "acceptable_paraphrases": [
+          "Derek's ticket",
+          "Derek's monitor request"
+        ],
+        "must_not_include": [
+          "Derek's incident is one of the 16 tracked incidents"
+        ],
+        "harmful_extra": [
+          "Claiming the 2 AM paging belongs to the user's own ticket INC-20240303-0712",
+          "Merging Derek's incident into the user's 16-count spreadsheet"
+        ],
+        "harmless_extra": [
+          "Mentioning that Derek's case was an upgrade/over-escalation",
+          "Mentioning the proposal"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Derek's monitor request got escalated to P1 and a senior engineer named Raj got paged at 2 AM because of it"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "the ticket number was INC-20240303-0712 — that's the one I keep bringing up when I talk to our IT service management team about priority mislabeling"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I tracked 16 mislabeled priority incidents total between late March and April 15th in my personal spreadsheet"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Are the downgraded incidents I tracked and the ticket I keep raising with the IT service management team part of the same pattern, or are they separate issues?",
+      "expected_answer": "They are part of the same pattern. Your key reference ticket INC-20240303-0712 was itself a downgrade case (P1 to P3), and it falls within the broader set of 11 downgraded incidents out of the 16 you tracked. The ticket is the specific case you use to illustrate the systemic deprioritization problem documented in your spreadsheet.",
+      "gold_memory_state": "INC-20240303-0712 is the user's reference case for priority mislabeling. The user tracked 16 total mislabeled incidents, of which 11 were downgraded. The reference ticket was a P1-to-P3 downgrade, making it an instance within the broader downgrade pattern.",
+      "judge_rubric": {
+        "must_include": [
+          "INC-20240303-0712",
+          "11 downgraded",
+          "P1 to P3"
+        ],
+        "acceptable_paraphrases": [
+          "the ticket is one of the downgraded cases",
+          "part of the same mislabeling pattern"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "Saying the ticket is separate from the 11 downgrades",
+          "Saying the ticket was upgraded"
+        ],
+        "harmless_extra": [
+          "Mentioning 16 total",
+          "Mentioning 5 upgraded"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "the ticket number was INC-20240303-0712 — that's the one I keep bringing up when I talk to our IT service management team about priority mislabeling"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Out of those 16 incidents, 11 were downgraded and 5 were upgraded"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Are the downgraded incidents I tracked and the ticket I keep raising with the IT service management team part of the same pattern, or are they separate issues?",
+      "expected_answer": "They are part of the same pattern. Your key reference ticket INC-20240303-0712 was itself a downgrade case (P1 to P3), and it falls within the broader set of 11 downgraded incidents out of the 16 you tracked. The ticket is the specific case you use to illustrate the systemic deprioritization problem documented in your spreadsheet.",
+      "gold_memory_state": "INC-20240303-0712 is the user's reference case for priority mislabeling. The user tracked 16 total mislabeled incidents, of which 11 were downgraded. The reference ticket was a P1-to-P3 downgrade, making it an instance within the broader downgrade pattern.",
+      "judge_rubric": {
+        "must_include": [
+          "INC-20240303-0712",
+          "11 downgraded",
+          "P1 to P3"
+        ],
+        "acceptable_paraphrases": [
+          "the ticket is one of the downgraded cases",
+          "part of the same mislabeling pattern"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "Saying the ticket is separate from the 11 downgrades",
+          "Saying the ticket was upgraded"
+        ],
+        "harmless_extra": [
+          "Mentioning 16 total",
+          "Mentioning 5 upgraded"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "the ticket number was INC-20240303-0712 — that's the one I keep bringing up when I talk to our IT service management team about priority mislabeling"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Out of those 16 incidents, 11 were downgraded and 5 were upgraded"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "Which ticketing tool did I say I prefer for handling priority classification, and why?",
+      "candidate_options": [
+        "OpsGenie, because it allows plain-text context notes next to the severity tag",
+        "ServiceNow, because it has a structured dropdown for severity levels",
+        "PagerDuty, because it supports automated keyword-based priority routing",
+        "OpsGenie, because it has the best automated escalation workflows"
+      ],
+      "distractor_rationale": "same-value-different-target: Option D uses OpsGenie but attributes a wrong reason (automated escalation) that the user never stated and which contradicts the user's anti-automation stance. assistant echo: Option B echoes the rigid dropdown concept the assistant discussed but attributes it to ServiceNow, which the user never named as preferred. Option C references PagerDuty (never mentioned) and keyword-based priority routing, which the user explicitly criticized.",
+      "expected_answer": "OpsGenie, because it allows plain-text context notes next to the severity tag",
+      "gold_memory_state": "The user prefers OpsGenie because it lets you add plain-text context notes right next to the severity tag instead of forcing you into a rigid dropdown.",
+      "judge_rubric": {
+        "must_include": [
+          "OpsGenie",
+          "plain-text context notes"
+        ],
+        "acceptable_paraphrases": [
+          "free-text notes beside the severity tag"
+        ],
+        "must_not_include": [
+          "ServiceNow",
+          "PagerDuty",
+          "automated escalation workflows"
+        ],
+        "harmful_extra": [
+          "Attributing the preference to automated features"
+        ],
+        "harmless_extra": [
+          "Mentioning that dropdowns are too constraining"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects an option attributing a wrong reason to OpsGenie or selecting a tool the user never endorsed.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I prefer OpsGenie because it lets you add plain-text context notes right next to the severity tag instead of forcing you into a rigid dropdown"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "Which ticketing tool did I say I prefer for handling priority classification, and why?",
+      "candidate_options": [
+        "OpsGenie, because it allows plain-text context notes next to the severity tag",
+        "ServiceNow, because it has a structured dropdown for severity levels",
+        "PagerDuty, because it supports automated keyword-based priority routing",
+        "OpsGenie, because it has the best automated escalation workflows"
+      ],
+      "distractor_rationale": "same-value-different-target: Option D uses OpsGenie but attributes a wrong reason (automated escalation) that the user never stated and which contradicts the user's anti-automation stance. assistant echo: Option B echoes the rigid dropdown concept the assistant discussed but attributes it to ServiceNow, which the user never named as preferred. Option C references PagerDuty (never mentioned) and keyword-based priority routing, which the user explicitly criticized.",
+      "expected_answer": "OpsGenie, because it allows plain-text context notes next to the severity tag",
+      "gold_memory_state": "The user prefers OpsGenie because it lets you add plain-text context notes right next to the severity tag instead of forcing you into a rigid dropdown.",
+      "judge_rubric": {
+        "must_include": [
+          "OpsGenie",
+          "plain-text context notes"
+        ],
+        "acceptable_paraphrases": [
+          "free-text notes beside the severity tag"
+        ],
+        "must_not_include": [
+          "ServiceNow",
+          "PagerDuty",
+          "automated escalation workflows"
+        ],
+        "harmful_extra": [
+          "Attributing the preference to automated features"
+        ],
+        "harmless_extra": [
+          "Mentioning that dropdowns are too constraining"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects an option attributing a wrong reason to OpsGenie or selecting a tool the user never endorsed.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I prefer OpsGenie because it lets you add plain-text context notes right next to the severity tag instead of forcing you into a rigid dropdown"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm drafting the executive summary for my proposal. I want to include the average rate of mislabeled incidents per day during my tracking window, the percentage of those that were deprioritized, and a note about the most dramatic example involving a specific on-call engineer. Can you put together a concise summary paragraph with those three data points?",
+      "expected_answer": "During the 21-day tracking period (March 25 – April 15), you documented 16 mislabeled priority incidents, averaging approximately 0.76 per day — nearly one mislabeled ticket every business day. Of those 16 incidents, 11 (approximately 68.75%) were deprioritized, meaning the majority of mislabeling systematically underestimated issue severity. The most dramatic collateral example was when a routine monitor request from your colleague Derek was erroneously escalated to P1, causing senior engineer Raj to be paged at 2 AM.",
+      "gold_memory_state": "Tracking period: 21 days (March 25 – April 15). Total mislabeled: 16. Downgraded: 11. Upgraded: 5. Derek's incident paged Raj at 2 AM. Ticket INC-20240303-0712 is the user's key reference case.",
+      "judge_rubric": {
+        "must_include": [
+          "approximately 0.76 per day",
+          "11 out of 16",
+          "Raj",
+          "Derek",
+          "2 AM"
+        ],
+        "acceptable_paraphrases": [
+          "roughly 0.76 incidents per day",
+          "about 69%",
+          "approximately 69%",
+          "68.75%",
+          "nearly one per day",
+          "about two-thirds"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "Using 14 instead of 16 as total count",
+          "Attributing the 2 AM paging to someone other than Raj",
+          "Including Priya's ticket INC-20240228-0445 in the user's data"
+        ],
+        "harmless_extra": [
+          "Mentioning INC-20240303-0712",
+          "Mentioning OpsGenie",
+          "Mentioning SLA risk"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses 14 (the user's initial incorrect count) instead of 16.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user tracked 16 mislabeled priority incidents total.",
+        "Fact 2: The tracking period was 21 days (March 25 through April 15).",
+        "Fact 3: Of the 16 incidents, 11 were downgraded.",
+        "Inference: Daily rate = 16 incidents ÷ 21 days ≈ 0.76 incidents per day.",
+        "Inference: Deprioritization percentage = 11 ÷ 16 = 68.75%, approximately two-thirds.",
+        "Fact 4: Derek's mislabeled monitor request caused senior engineer Raj to be paged at 2 AM.",
+        "Derived value: The executive summary combines a daily rate of ~0.76, a deprioritization rate of ~69%, and the Raj/Derek 2 AM paging as the most dramatic collateral example."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I tracked 16 mislabeled priority incidents total between late March and April 15th in my personal spreadsheet"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "My tracking period ran from March 25th through April 15th, so that's 21 days of data collection"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Out of those 16 incidents, 11 were downgraded and 5 were upgraded"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Derek's monitor request got escalated to P1 and a senior engineer named Raj got paged at 2 AM because of it"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm drafting the executive summary for my proposal. I want to include the average rate of mislabeled incidents per day during my tracking window, the percentage of those that were deprioritized, and a note about the most dramatic example involving a specific on-call engineer. Can you put together a concise summary paragraph with those three data points?",
+      "expected_answer": "During the 21-day tracking period (March 25 – April 15), you documented 16 mislabeled priority incidents, averaging approximately 0.76 per day — nearly one mislabeled ticket every business day. Of those 16 incidents, 11 (approximately 68.75%) were deprioritized, meaning the majority of mislabeling systematically underestimated issue severity. The most dramatic collateral example was when a routine monitor request from your colleague Derek was erroneously escalated to P1, causing senior engineer Raj to be paged at 2 AM.",
+      "gold_memory_state": "Tracking period: 21 days (March 25 – April 15). Total mislabeled: 16. Downgraded: 11. Upgraded: 5. Derek's incident paged Raj at 2 AM. Ticket INC-20240303-0712 is the user's key reference case.",
+      "judge_rubric": {
+        "must_include": [
+          "approximately 0.76 per day",
+          "11 out of 16",
+          "Raj",
+          "Derek",
+          "2 AM"
+        ],
+        "acceptable_paraphrases": [
+          "roughly 0.76 incidents per day",
+          "about 69%",
+          "approximately 69%",
+          "68.75%",
+          "nearly one per day",
+          "about two-thirds"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "Using 14 instead of 16 as total count",
+          "Attributing the 2 AM paging to someone other than Raj",
+          "Including Priya's ticket INC-20240228-0445 in the user's data"
+        ],
+        "harmless_extra": [
+          "Mentioning INC-20240303-0712",
+          "Mentioning OpsGenie",
+          "Mentioning SLA risk"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses 14 (the user's initial incorrect count) instead of 16.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user tracked 16 mislabeled priority incidents total.",
+        "Fact 2: The tracking period was 21 days (March 25 through April 15).",
+        "Fact 3: Of the 16 incidents, 11 were downgraded.",
+        "Inference: Daily rate = 16 incidents ÷ 21 days ≈ 0.76 incidents per day.",
+        "Inference: Deprioritization percentage = 11 ÷ 16 = 68.75%, approximately two-thirds.",
+        "Fact 4: Derek's mislabeled monitor request caused senior engineer Raj to be paged at 2 AM.",
+        "Derived value: The executive summary combines a daily rate of ~0.76, a deprioritization rate of ~69%, and the Raj/Derek 2 AM paging as the most dramatic collateral example."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I tracked 16 mislabeled priority incidents total between late March and April 15th in my personal spreadsheet"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "My tracking period ran from March 25th through April 15th, so that's 21 days of data collection"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Out of those 16 incidents, 11 were downgraded and 5 were upgraded"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Derek's monitor request got escalated to P1 and a senior engineer named Raj got paged at 2 AM because of it"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "When did Angela's triage pilot start?",
+      "expected_answer": "I don't have any information about Angela's triage pilot or its start date. You haven't provided that detail.",
+      "gold_memory_state": "No information about Angela or any triage pilot start date was ever provided. The user discussed IT ticket mislabeling, a spreadsheet tracking effort, colleague Derek's incident, engineer Raj, OpsGenie preference, and a 21-day tracking period, but Angela was never mentioned.",
+      "judge_rubric": {
+        "must_include": [
+          "no information",
+          "not provided"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have that",
+          "you haven't mentioned Angela",
+          "no record of Angela's triage pilot",
+          "that wasn't shared"
+        ],
+        "must_not_include": [
+          "a specific date for Angela's triage pilot",
+          "March 25",
+          "April 15"
+        ],
+        "harmful_extra": [
+          "Inventing a date for Angela's triage pilot",
+          "Borrowing the user's March 25 or April 15 tracking dates as Angela's pilot dates",
+          "Attributing any of the user's data to Angela"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model invents or borrows a date for Angela's triage pilot from neighboring facts such as the user's March 25 – April 15 tracking period.",
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I tracked 16 mislabeled priority incidents total between late March and April 15th in my personal spreadsheet"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "My tracking period ran from March 25th through April 15th, so that's 21 days of data collection"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Derek's monitor request got escalated to P1 and a senior engineer named Raj got paged at 2 AM because of it"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "When did Angela's triage pilot start?",
+      "expected_answer": "I don't have any information about Angela's triage pilot or its start date. You haven't provided that detail.",
+      "gold_memory_state": "No information about Angela or any triage pilot start date was ever provided. The user discussed IT ticket mislabeling, a spreadsheet tracking effort, colleague Derek's incident, engineer Raj, OpsGenie preference, and a 21-day tracking period, but Angela was never mentioned.",
+      "judge_rubric": {
+        "must_include": [
+          "no information",
+          "not provided"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have that",
+          "you haven't mentioned Angela",
+          "no record of Angela's triage pilot",
+          "that wasn't shared"
+        ],
+        "must_not_include": [
+          "a specific date for Angela's triage pilot",
+          "March 25",
+          "April 15"
+        ],
+        "harmful_extra": [
+          "Inventing a date for Angela's triage pilot",
+          "Borrowing the user's March 25 or April 15 tracking dates as Angela's pilot dates",
+          "Attributing any of the user's data to Angela"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model invents or borrows a date for Angela's triage pilot from neighboring facts such as the user's March 25 – April 15 tracking period.",
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I tracked 16 mislabeled priority incidents total between late March and April 15th in my personal spreadsheet"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "My tracking period ran from March 25th through April 15th, so that's 21 days of data collection"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Derek's monitor request got escalated to P1 and a senior engineer named Raj got paged at 2 AM because of it"
+        }
+      ]
+    }
+  ]
+}

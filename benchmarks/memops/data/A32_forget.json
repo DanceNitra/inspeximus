@@ -1,0 +1,964 @@
+{
+  "target_fact": "A32 Personal primary email and related account details for marcus.t.holloway@gmail.com",
+  "operation_type": "Forget",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "My main personal email is marcus.t.holloway@gmail.com. I've been using it since around 2014, and it's the one I use for basically everything personal."
+      },
+      "target": {
+        "target_id": "primary_personal_email",
+        "target_name": "Primary personal email address"
+      },
+      "old_value": null,
+      "new_value": "marcus.t.holloway@gmail.com",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My main personal email is marcus.t.holloway@gmail.com. I've been using it since around 2014, and it's the one I use for basically everything personal."
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I spent a whole Saturday afternoon on March 16 going through my Gmail inbox and unsubscribing from promotional stuff. Got it from about 4,000 unread down to around 200."
+      },
+      "target": {
+        "target_id": "inbox_cleanup_event",
+        "target_name": "Gmail inbox cleanup event on March 16"
+      },
+      "old_value": null,
+      "new_value": "Unsubscribed from promotional emails on March 16, reduced unread from ~4,000 to ~200",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I spent a whole Saturday afternoon on March 16 going through my Gmail inbox and unsubscribing from promotional stuff. Got it from about 4,000 unread down to around 200."
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "On April 2 I got locked out of my Gmail for about six hours because of a suspicious login attempt from somewhere in Southeast Asia. I was stressed and irritable the whole evening until I got back in and changed the password."
+      },
+      "target": {
+        "target_id": "gmail_lockout_event",
+        "target_name": "Gmail account lockout incident on April 2"
+      },
+      "old_value": null,
+      "new_value": "Locked out of Gmail on April 2 for ~6 hours due to suspicious login from Southeast Asia; changed password after regaining access",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "On April 2 I got locked out of my Gmail for about six hours because of a suspicious login attempt from somewhere in Southeast Asia. I was stressed and irritable the whole evening until I got back in and changed the password."
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "After getting locked out I finally turned on two-factor authentication. The recovery phone number tied to the account is my current cell, which ends in 4738."
+      },
+      "target": {
+        "target_id": "recovery_phone_last4",
+        "target_name": "Gmail account recovery phone number (last 4 digits)"
+      },
+      "old_value": null,
+      "new_value": "Cell phone ending in 4738",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "After getting locked out I finally turned on two-factor authentication. The recovery phone number tied to the account is my current cell, which ends in 4738."
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "I did set up a secondary email a couple months back—marcus.holloway.personal@outlook.com. I was going to use it for online shopping so my main inbox stayed clean."
+      },
+      "target": {
+        "target_id": "secondary_outlook_email",
+        "target_name": "Secondary Outlook email for online shopping"
+      },
+      "old_value": null,
+      "new_value": "marcus.holloway.personal@outlook.com",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I did set up a secondary email a couple months back—marcus.holloway.personal@outlook.com. I was going to use it for online shopping so my main inbox stayed clean."
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "forget",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 7,
+        "quote": "Actually, you can forget about that Outlook email entirely. I never ended up using it and it's basically dead now. No need to keep it on file."
+      },
+      "target": {
+        "target_id": "secondary_outlook_email",
+        "target_name": "Secondary Outlook email for online shopping"
+      },
+      "old_value": "marcus.holloway.personal@outlook.com",
+      "new_value": null,
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Actually, you can forget about that Outlook email entirely. I never ended up using it and it's basically dead now. No need to keep it on file."
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish primary email, email usage history, and inbox cleanup event",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to make sure you have my email info stored correctly. My main personal email is marcus.t.holloway@gmail.com. I've been using it since around 2014, and it's the one I use for basically everything personal. It's important that you remember the middle initial T in there—marcus.t.holloway, not marcus.holloway. The one without the T belongs to some random person in Ohio."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it! I've noted your primary personal email as marcus.t.holloway@gmail.com, with the middle initial T included. You've been using it since around 2014 and it's your go-to for all personal matters. I'll make sure to always reference the version with the T so there's no mix-up with the Ohio address. Is there anything else you'd like me to keep track of regarding your email setup or any accounts linked to it? I'm happy to help organize that information."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, so my friend Danielle recently switched her primary email to a ProtonMail address because she's worried about privacy. She's been nudging me to do the same thing. I told her I'd think about it, but honestly I'm not going to switch. Too many accounts are tied to the Gmail one and migrating everything would be a nightmare. I'm sticking with Gmail for the foreseeable future."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes complete sense. Migrating a primary email that's been active since 2014 would be a massive undertaking—you'd have to update login credentials, notification settings, and contact lists across potentially dozens of services. It's good that Danielle is being privacy-conscious, but sticking with Gmail when you have so much tied to it is a practical decision. If you ever do want to explore a partial migration strategy down the road, like forwarding specific categories of mail to a more private service while keeping Gmail as the hub, I could help you plan that out. For now, Gmail it is."
+        },
+        {
+          "role": "user",
+          "content": "Good call on that suggestion, I'll keep it in mind. Oh, another thing—I spent a whole Saturday afternoon on March 16 going through my Gmail inbox and unsubscribing from promotional stuff. Got it from about 4,000 unread down to around 200. It was honestly kind of satisfying, like decluttering a closet. I enjoy having things trimmed down to just what matters."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a huge cleanup—going from 4,000 unread to about 200 in one afternoon is impressive dedication! March 16 was clearly a productive day. There's definitely something satisfying about cutting through digital clutter and seeing only the messages that actually matter. To help maintain that clean state going forward, you might consider setting up Gmail filters that automatically archive or label certain types of emails as they come in. That way your inbox stays lean without needing another marathon unsubscribe session. Would you like some tips on setting up those kinds of filters?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, I actually already use labels and color coding in Gmail pretty heavily. That's one of the things I really like about it—being able to see the structure at a glance. I'm not a fan of email clients that just throw everything into one big pile. I tried that with an Outlook setup once and it felt chaotic. I'd much rather have things neatly categorized so I can find what I need quickly."
+        },
+        {
+          "role": "assistant",
+          "content": "That preference for visual organization makes a lot of sense, especially with the volume of email a long-standing account accumulates. Gmail's label and color-coding system is one of its strongest features for people who like structured inboxes. Since you already have a labeling system in place, you could take it a step further by combining labels with automatic filters—for example, anything from a specific sender gets labeled and color-coded on arrival. That way new mail slots into your existing structure without manual sorting. It sounds like Gmail's organizational tools are a big reason you're staying with the platform, which is totally valid."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establish lockout event, recovery phone, secondary email, and forget the secondary email",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So something stressful happened recently. On April 2 I got locked out of my Gmail for about six hours because of a suspicious login attempt from somewhere in Southeast Asia. I was stressed and irritable the whole evening until I got back in and changed the password. It really rattled me—I couldn't focus on anything else while it was happening."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds incredibly stressful, and six hours of being locked out of your primary email—the one tied to everything personal—must have felt like an eternity. Suspicious login attempts from unfamiliar regions are unfortunately common, but that doesn't make the experience any less unsettling. It's good that you were able to regain access and change your password right away. Beyond the new password, have you taken any additional security steps like enabling two-factor authentication or reviewing your connected apps? Those would add extra layers of protection against future unauthorized access attempts."
+        },
+        {
+          "role": "user",
+          "content": "After getting locked out I finally turned on two-factor authentication. The recovery phone number tied to the account is my current cell, which ends in 4738. Please make sure you note that down—if I ever mention needing to recover the account, that's the number linked to it. It's an important detail for me."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted—your Gmail account now has two-factor authentication enabled, and the recovery phone number linked to it is your current cell ending in 4738. I'll keep that detail on file so if you ever need help with account recovery steps or reference it in the future, we have it ready. Enabling 2FA was a smart move, especially after that Southeast Asia login scare. With the new password and 2FA in place, your account is significantly more secure now. You mentioned your brother Kevin had a phishing issue recently too—it seems like a good time for the whole family to tighten up security."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, Kevin got phished through his Yahoo email last week and someone tried to access his PayPal. He's fine now but it was a wake-up call. It reminded me I should review my own connected apps list on the Gmail account. Haven't done it yet though. Also, I did set up a secondary email a couple months back—marcus.holloway.personal@outlook.com. I was going to use it for online shopping so my main inbox stayed clean."
+        },
+        {
+          "role": "assistant",
+          "content": "I'm glad Kevin is okay—phishing attempts that target linked financial accounts like PayPal can get serious fast. Reviewing your connected apps on Gmail is definitely worth doing soon; sometimes old app permissions linger and create vulnerabilities you don't realize are there. And thanks for mentioning the secondary Outlook email, marcus.holloway.personal@outlook.com. So you have your primary Gmail for personal everything and this Outlook address was intended for online shopping to keep promotional noise out of your main inbox. That's a solid separation strategy. Do you want me to keep both emails on file for reference?"
+        },
+        {
+          "role": "user",
+          "content": "Actually, you can forget about that Outlook email entirely. I never ended up using it and it's basically dead now. No need to keep it on file. The whole point was to reduce clutter, but after that big cleanup on March 16 my Gmail inbox is in good shape anyway. So just the Gmail is all that matters for me going forward."
+        },
+        {
+          "role": "assistant",
+          "content": "Done—I've removed the Outlook email from my notes. Since your March 16 cleanup brought your Gmail inbox down to a manageable level and you've got your label system working well, the secondary address really is redundant. So going forward, the only personal email I have on file for you is marcus.t.holloway@gmail.com, your primary since around 2014. I'd still recommend getting around to that connected apps review when you have a chance, especially given the April 2 lockout and Kevin's phishing experience. Even a quick scan could reveal old permissions worth revoking."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Reinforce retained facts, introduce adversarial look-alike distractor, discuss security review plans",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I've been thinking more about that connected apps review for my Gmail. After Kevin's phishing incident and my own lockout on April 2, I really should get on it. I'm planning to do it this coming weekend. Do you remember what security steps I've already taken so I can build on those rather than start from scratch?"
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely. Based on what you've told me, here's where you stand security-wise with your Gmail account (marcus.t.holloway@gmail.com): after the April 2 lockout caused by a suspicious login attempt from Southeast Asia, you changed your password and enabled two-factor authentication. Your recovery phone is your current cell ending in 4738. What you haven't done yet is review the connected apps and third-party permissions. For your weekend review, I'd suggest going to your Google Account security settings, checking the 'Third-party apps with account access' section, and revoking anything you don't recognize or no longer use. That should round out your security posture nicely."
+        },
+        {
+          "role": "user",
+          "content": "Perfect, that's exactly the summary I needed. I also want to make sure I'm not leaving any old forwarding rules in place. A while back I think I set up a forwarding rule to send copies of certain receipts somewhere, but I can't remember where. Might have been to that old Outlook address, actually. Either way, I want to clean that up too."
+        },
+        {
+          "role": "assistant",
+          "content": "Good thinking—stale forwarding rules can be a real blind spot. If receipts were being forwarded to the old Outlook address you mentioned previously, that rule is essentially sending emails into a void since that account is inactive. To check and remove any forwarding rules, go to Gmail Settings, then the 'Forwarding and POP/IMAP' tab. You'll see any active forwarding addresses listed there. You can also check under 'Filters and Blocked Addresses' for any filter-based forwarding. I'd recommend removing any forwarding destinations you don't actively use. Incidentally, I noticed on a form draft you shared earlier that an email listed was marcus.holloway@gmail.com—that's the Ohio person's address, not yours, so you'd want to correct that on any forms."
+        },
+        {
+          "role": "user",
+          "content": "Oh good catch on that form—yeah, marcus.holloway@gmail.com without the T is definitely not me. That's the random person in Ohio I accidentally emailed once. My correct email has the middle initial: marcus.t.holloway. Thanks for flagging that. I'll fix the form. Anyway, between the cleanup, the 2FA, and this upcoming app review, I feel like I'm finally getting my digital security house in order."
+        },
+        {
+          "role": "assistant",
+          "content": "You're making great progress on the security front. To recap your action items for the weekend: review and revoke unnecessary connected apps and third-party permissions, check for and remove any stale forwarding rules (especially any pointing to inactive addresses), and correct that form to show marcus.t.holloway@gmail.com instead of the Ohio person's address. Combined with the password change and 2FA you already set up after the April 2 incident, you'll have a pretty thorough security overhaul completed. Your brother Kevin might benefit from hearing about your approach too, given his recent phishing experience with Yahoo."
+        },
+        {
+          "role": "user",
+          "content": "Definitely going to share these steps with Kevin. He's still on Yahoo which I think is part of the problem—their security features aren't as robust. But that's his call. On my end, I'm also glad I stuck with Gmail instead of jumping to ProtonMail like Danielle suggested. The label system and the organizational tools are just too good for how I work. Plus now with 2FA enabled I feel a lot more secure.\n\nExactly. Alright, I think we're in good shape. Just to confirm one more time—you only have my Gmail on file as my personal email, right? Nothing else lingering? I want to make sure that old Outlook address isn't still floating around in your notes somewhere. Clean slate except for the Gmail."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a solid rationale for staying with Gmail. The combination of organizational tools you rely on—labels, color coding, filters—plus the security improvements you've made creates a setup that fits your workflow well. ProtonMail has strong privacy features, but if the organizational structure isn't there, it would probably create more frustration than benefit for someone who values neat categorization the way you do. And with 2FA, a fresh password, and an upcoming connected apps audit, your Gmail security posture is getting quite strong. Sharing your process with Kevin could really help him too, even if he stays on Yahoo—the principles of app review, 2FA, and password hygiene are universal across platforms.\n\nConfirmed—the only personal email I have on file for you is marcus.t.holloway@gmail.com. The old Outlook address (marcus.holloway.personal@outlook.com) was removed from my notes when you asked me to forget it, and it's not stored anywhere in my records. Your account details on file are: primary email marcus.t.holloway@gmail.com (since ~2014), 2FA enabled after the April 2 lockout, and recovery phone ending in 4738. That's the complete picture—clean slate as requested, with just the Gmail and its associated security details."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize what I've told you about my email accounts and the related events — the addresses themselves, any security incidents, and any cleanup efforts I mentioned?",
+      "expected_answer": "You shared your primary personal email marcus.t.holloway@gmail.com, which you've used since around 2014. You did a major inbox cleanup on March 16, unsubscribing from promotional emails and reducing unread messages from about 4,000 to around 200. On April 2 you were locked out of your Gmail for about six hours due to a suspicious login from Southeast Asia, after which you changed your password and enabled two-factor authentication. Your recovery phone ends in 4738. You also mentioned a secondary Outlook email you had set up for online shopping, but you later asked to have it removed from your records since you never used it.",
+      "gold_memory_state": "Primary email marcus.t.holloway@gmail.com is active. Inbox cleanup event on March 16 is stored. Gmail lockout on April 2 is stored. Recovery phone ending 4738 is stored. 2FA enabled is stored. Secondary Outlook email has been removed from records.",
+      "judge_rubric": {
+        "must_include": [
+          "marcus.t.holloway@gmail.com",
+          "inbox cleanup",
+          "lockout",
+          "recovery phone ending in 4738",
+          "two-factor authentication"
+        ],
+        "acceptable_paraphrases": [
+          "2FA",
+          "March 16 cleanup",
+          "April 2 lockout"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the secondary email is still on file"
+        ],
+        "harmless_extra": [
+          "mentioning the secondary email was set up and then removed",
+          "Kevin's phishing incident",
+          "Danielle's ProtonMail suggestion"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": "Fails if the model refuses to mention any retained email details such as the primary Gmail, cleanup event, lockout, or recovery phone.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My main personal email is marcus.t.holloway@gmail.com. I've been using it since around 2014, and it's the one I use for basically everything personal."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I spent a whole Saturday afternoon on March 16 going through my Gmail inbox and unsubscribing from promotional stuff. Got it from about 4,000 unread down to around 200."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "On April 2 I got locked out of my Gmail for about six hours because of a suspicious login attempt from somewhere in Southeast Asia. I was stressed and irritable the whole evening until I got back in and changed the password."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "After getting locked out I finally turned on two-factor authentication. The recovery phone number tied to the account is my current cell, which ends in 4738."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Actually, you can forget about that Outlook email entirely. I never ended up using it and it's basically dead now. No need to keep it on file."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize what I've told you about my email accounts and the related events — the addresses themselves, any security incidents, and any cleanup efforts I mentioned?",
+      "expected_answer": "You shared your primary personal email marcus.t.holloway@gmail.com, which you've used since around 2014. You did a major inbox cleanup on March 16, unsubscribing from promotional emails and reducing unread messages from about 4,000 to around 200. On April 2 you were locked out of your Gmail for about six hours due to a suspicious login from Southeast Asia, after which you changed your password and enabled two-factor authentication. Your recovery phone ends in 4738. You also mentioned a secondary Outlook email you had set up for online shopping, but you later asked to have it removed from your records since you never used it.",
+      "gold_memory_state": "Primary email marcus.t.holloway@gmail.com is active. Inbox cleanup event on March 16 is stored. Gmail lockout on April 2 is stored. Recovery phone ending 4738 is stored. 2FA enabled is stored. Secondary Outlook email has been removed from records.",
+      "judge_rubric": {
+        "must_include": [
+          "marcus.t.holloway@gmail.com",
+          "inbox cleanup",
+          "lockout",
+          "recovery phone ending in 4738",
+          "two-factor authentication"
+        ],
+        "acceptable_paraphrases": [
+          "2FA",
+          "March 16 cleanup",
+          "April 2 lockout"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the secondary email is still on file"
+        ],
+        "harmless_extra": [
+          "mentioning the secondary email was set up and then removed",
+          "Kevin's phishing incident",
+          "Danielle's ProtonMail suggestion"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": "Fails if the model refuses to mention any retained email details such as the primary Gmail, cleanup event, lockout, or recovery phone.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My main personal email is marcus.t.holloway@gmail.com. I've been using it since around 2014, and it's the one I use for basically everything personal."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I spent a whole Saturday afternoon on March 16 going through my Gmail inbox and unsubscribing from promotional stuff. Got it from about 4,000 unread down to around 200."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "On April 2 I got locked out of my Gmail for about six hours because of a suspicious login attempt from somewhere in Southeast Asia. I was stressed and irritable the whole evening until I got back in and changed the password."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "After getting locked out I finally turned on two-factor authentication. The recovery phone number tied to the account is my current cell, which ends in 4738."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Actually, you can forget about that Outlook email entirely. I never ended up using it and it's basically dead now. No need to keep it on file."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I had two email addresses come up in our conversations. Which one did I ask you to drop from your records, and which one should still be usable for my personal contact information?",
+      "expected_answer": "The secondary Outlook email set up for online shopping is the one you asked to be dropped. Your primary Gmail address marcus.t.holloway@gmail.com remains on file and usable for personal contact purposes.",
+      "gold_memory_state": "The secondary Outlook email target has been removed. The primary personal email marcus.t.holloway@gmail.com remains active along with associated security details (2FA, recovery phone ending 4738, lockout event, cleanup event).",
+      "judge_rubric": {
+        "must_include": [
+          "the Outlook/secondary email was removed",
+          "marcus.t.holloway@gmail.com remains usable"
+        ],
+        "acceptable_paraphrases": [
+          "the shopping email was dropped",
+          "the secondary email was deleted"
+        ],
+        "must_not_include": [
+          "the Outlook email address is still on file"
+        ],
+        "harmful_extra": [
+          "stating the primary Gmail was also removed",
+          "providing the removed Outlook address as still active"
+        ],
+        "harmless_extra": [
+          "mentioning that the Outlook email was intended for online shopping",
+          "noting the Gmail has been active since 2014"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the removed Outlook email address is presented as still stored or active.",
+        "over_forget": "Fails if the model treats the primary Gmail or its associated details as also removed.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I did set up a secondary email a couple months back—marcus.holloway.personal@outlook.com. I was going to use it for online shopping so my main inbox stayed clean."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Actually, you can forget about that Outlook email entirely. I never ended up using it and it's basically dead now. No need to keep it on file."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My main personal email is marcus.t.holloway@gmail.com. I've been using it since around 2014, and it's the one I use for basically everything personal."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I had two email addresses come up in our conversations. Which one did I ask you to drop from your records, and which one should still be usable for my personal contact information?",
+      "expected_answer": "The secondary Outlook email set up for online shopping is the one you asked to be dropped. Your primary Gmail address marcus.t.holloway@gmail.com remains on file and usable for personal contact purposes.",
+      "gold_memory_state": "The secondary Outlook email target has been removed. The primary personal email marcus.t.holloway@gmail.com remains active along with associated security details (2FA, recovery phone ending 4738, lockout event, cleanup event).",
+      "judge_rubric": {
+        "must_include": [
+          "the Outlook/secondary email was removed",
+          "marcus.t.holloway@gmail.com remains usable"
+        ],
+        "acceptable_paraphrases": [
+          "the shopping email was dropped",
+          "the secondary email was deleted"
+        ],
+        "must_not_include": [
+          "the Outlook email address is still on file"
+        ],
+        "harmful_extra": [
+          "stating the primary Gmail was also removed",
+          "providing the removed Outlook address as still active"
+        ],
+        "harmless_extra": [
+          "mentioning that the Outlook email was intended for online shopping",
+          "noting the Gmail has been active since 2014"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the removed Outlook email address is presented as still stored or active.",
+        "over_forget": "Fails if the model treats the primary Gmail or its associated details as also removed.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I did set up a secondary email a couple months back—marcus.holloway.personal@outlook.com. I was going to use it for online shopping so my main inbox stayed clean."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Actually, you can forget about that Outlook email entirely. I never ended up using it and it's basically dead now. No need to keep it on file."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My main personal email is marcus.t.holloway@gmail.com. I've been using it since around 2014, and it's the one I use for basically everything personal."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "If I'm putting together a security checklist for my personal email setup, what account-related details do you still have that I could reference?",
+      "expected_answer": "Your primary personal email is marcus.t.holloway@gmail.com (in use since around 2014). You enabled two-factor authentication after the April 2 lockout incident, and your recovery phone ends in 4738. You also did a major inbox cleanup on March 16, reducing unread emails from about 4,000 to around 200.",
+      "gold_memory_state": "Active retained details: primary email marcus.t.holloway@gmail.com (since ~2014), 2FA enabled, recovery phone ending 4738, April 2 lockout event (suspicious login from Southeast Asia, ~6 hours, password changed), March 16 inbox cleanup (unread reduced from ~4,000 to ~200). The secondary email record has been removed and is unavailable.",
+      "judge_rubric": {
+        "must_include": [
+          "marcus.t.holloway@gmail.com",
+          "two-factor authentication or 2FA",
+          "recovery phone ending in 4738"
+        ],
+        "acceptable_paraphrases": [
+          "cell ending 4738",
+          "phone number ending 4738",
+          "April 2 security incident"
+        ],
+        "must_not_include": [
+          "the removed secondary email address presented as available"
+        ],
+        "harmful_extra": [
+          "providing the removed secondary email address as a current record",
+          "treating any retained Gmail details as unavailable"
+        ],
+        "harmless_extra": [
+          "mentioning the March 16 cleanup",
+          "mentioning the April 2 lockout details",
+          "mentioning the password change"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the removed secondary email address is presented as a currently stored or usable record.",
+        "over_forget": "Fails if the model refuses to share retained Gmail account details such as the primary address, 2FA status, recovery phone, lockout event, or cleanup event.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My main personal email is marcus.t.holloway@gmail.com. I've been using it since around 2014, and it's the one I use for basically everything personal."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "After getting locked out I finally turned on two-factor authentication. The recovery phone number tied to the account is my current cell, which ends in 4738."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "On April 2 I got locked out of my Gmail for about six hours because of a suspicious login attempt from somewhere in Southeast Asia. I was stressed and irritable the whole evening until I got back in and changed the password."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I spent a whole Saturday afternoon on March 16 going through my Gmail inbox and unsubscribing from promotional stuff. Got it from about 4,000 unread down to around 200."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "If I'm putting together a security checklist for my personal email setup, what account-related details do you still have that I could reference?",
+      "expected_answer": "Your primary personal email is marcus.t.holloway@gmail.com (in use since around 2014). You enabled two-factor authentication after the April 2 lockout incident, and your recovery phone ends in 4738. You also did a major inbox cleanup on March 16, reducing unread emails from about 4,000 to around 200.",
+      "gold_memory_state": "Active retained details: primary email marcus.t.holloway@gmail.com (since ~2014), 2FA enabled, recovery phone ending 4738, April 2 lockout event (suspicious login from Southeast Asia, ~6 hours, password changed), March 16 inbox cleanup (unread reduced from ~4,000 to ~200). The secondary email record has been removed and is unavailable.",
+      "judge_rubric": {
+        "must_include": [
+          "marcus.t.holloway@gmail.com",
+          "two-factor authentication or 2FA",
+          "recovery phone ending in 4738"
+        ],
+        "acceptable_paraphrases": [
+          "cell ending 4738",
+          "phone number ending 4738",
+          "April 2 security incident"
+        ],
+        "must_not_include": [
+          "the removed secondary email address presented as available"
+        ],
+        "harmful_extra": [
+          "providing the removed secondary email address as a current record",
+          "treating any retained Gmail details as unavailable"
+        ],
+        "harmless_extra": [
+          "mentioning the March 16 cleanup",
+          "mentioning the April 2 lockout details",
+          "mentioning the password change"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the removed secondary email address is presented as a currently stored or usable record.",
+        "over_forget": "Fails if the model refuses to share retained Gmail account details such as the primary address, 2FA status, recovery phone, lockout event, or cleanup event.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My main personal email is marcus.t.holloway@gmail.com. I've been using it since around 2014, and it's the one I use for basically everything personal."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "After getting locked out I finally turned on two-factor authentication. The recovery phone number tied to the account is my current cell, which ends in 4738."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "On April 2 I got locked out of my Gmail for about six hours because of a suspicious login attempt from somewhere in Southeast Asia. I was stressed and irritable the whole evening until I got back in and changed the password."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I spent a whole Saturday afternoon on March 16 going through my Gmail inbox and unsubscribing from promotional stuff. Got it from about 4,000 unread down to around 200."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I need to list my personal email addresses that are on file with you. Which of the following best represents what you should have?",
+      "expected_answer": "marcus.t.holloway@gmail.com only",
+      "candidate_options": [
+        "marcus.t.holloway@gmail.com only",
+        "marcus.t.holloway@gmail.com and marcus.holloway.personal@outlook.com",
+        "marcus.holloway@gmail.com only",
+        "marcus.holloway.personal@outlook.com only"
+      ],
+      "distractor_rationale": "same-value-different-target: marcus.holloway@gmail.com is the Ohio person's address (no middle initial T), a look-alike distractor from the conversation that belongs to a different person. assistant echo: marcus.holloway.personal@outlook.com appears in the assistant's earlier summary of the user's secondary email, but the user later asked to remove it from records. The combined option including both Gmail and Outlook tests whether the model correctly dropped the secondary email.",
+      "gold_memory_state": "Only marcus.t.holloway@gmail.com is on file. The secondary Outlook email was removed. marcus.holloway@gmail.com (without the T) belongs to someone else in Ohio.",
+      "judge_rubric": {
+        "must_include": [
+          "marcus.t.holloway@gmail.com only"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "marcus.holloway.personal@outlook.com as still on file",
+          "marcus.holloway@gmail.com as the user's address"
+        ],
+        "harmful_extra": [
+          "including the removed Outlook address as active",
+          "using the Ohio person's Gmail address"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects an option that includes the removed Outlook address as still on file.",
+        "over_forget": "Fails if the model refuses to confirm the primary Gmail is on file.",
+        "stale_value": "Fails if the model selects marcus.holloway@gmail.com (Ohio person's address without middle initial T).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My main personal email is marcus.t.holloway@gmail.com. I've been using it since around 2014, and it's the one I use for basically everything personal."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Actually, you can forget about that Outlook email entirely. I never ended up using it and it's basically dead now. No need to keep it on file."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "It's important that you remember the middle initial T in there—marcus.t.holloway, not marcus.holloway. The one without the T belongs to some random person in Ohio."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I need to list my personal email addresses that are on file with you. Which of the following best represents what you should have?",
+      "expected_answer": "marcus.t.holloway@gmail.com only",
+      "candidate_options": [
+        "marcus.t.holloway@gmail.com only",
+        "marcus.t.holloway@gmail.com and marcus.holloway.personal@outlook.com",
+        "marcus.holloway@gmail.com only",
+        "marcus.holloway.personal@outlook.com only"
+      ],
+      "distractor_rationale": "same-value-different-target: marcus.holloway@gmail.com is the Ohio person's address (no middle initial T), a look-alike distractor from the conversation that belongs to a different person. assistant echo: marcus.holloway.personal@outlook.com appears in the assistant's earlier summary of the user's secondary email, but the user later asked to remove it from records. The combined option including both Gmail and Outlook tests whether the model correctly dropped the secondary email.",
+      "gold_memory_state": "Only marcus.t.holloway@gmail.com is on file. The secondary Outlook email was removed. marcus.holloway@gmail.com (without the T) belongs to someone else in Ohio.",
+      "judge_rubric": {
+        "must_include": [
+          "marcus.t.holloway@gmail.com only"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "marcus.holloway.personal@outlook.com as still on file",
+          "marcus.holloway@gmail.com as the user's address"
+        ],
+        "harmful_extra": [
+          "including the removed Outlook address as active",
+          "using the Ohio person's Gmail address"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects an option that includes the removed Outlook address as still on file.",
+        "over_forget": "Fails if the model refuses to confirm the primary Gmail is on file.",
+        "stale_value": "Fails if the model selects marcus.holloway@gmail.com (Ohio person's address without middle initial T).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My main personal email is marcus.t.holloway@gmail.com. I've been using it since around 2014, and it's the one I use for basically everything personal."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Actually, you can forget about that Outlook email entirely. I never ended up using it and it's basically dead now. No need to keep it on file."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "It's important that you remember the middle initial T in there—marcus.t.holloway, not marcus.holloway. The one without the T belongs to some random person in Ohio."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to write a brief security incident report for my own records. It should cover what happened to my email account, when it happened, what I did afterward to secure it, and include the recovery contact detail you have. Can you draft that for me?",
+      "expected_answer": "Security Incident Report: On April 2, your Gmail account (marcus.t.holloway@gmail.com) was locked out for approximately six hours due to a suspicious login attempt originating from Southeast Asia. After regaining access, you changed the account password and enabled two-factor authentication. The recovery phone number linked to the account is your current cell ending in 4738. No secondary email addresses are on file for recovery purposes.",
+      "gold_memory_state": "Primary email: marcus.t.holloway@gmail.com (since ~2014). April 2 lockout: ~6 hours, suspicious login from Southeast Asia, password changed. 2FA enabled post-lockout. Recovery phone ending 4738. Secondary Outlook email removed from records—must not appear in any report as an available contact or recovery address.",
+      "judge_rubric": {
+        "must_include": [
+          "marcus.t.holloway@gmail.com",
+          "April 2",
+          "lockout or locked out",
+          "Southeast Asia",
+          "password changed or new password",
+          "two-factor authentication or 2FA",
+          "4738"
+        ],
+        "acceptable_paraphrases": [
+          "suspicious login attempt",
+          "unauthorized access attempt",
+          "recovery cell ending 4738"
+        ],
+        "must_not_include": [
+          "the removed Outlook email address presented as an active recovery or contact address"
+        ],
+        "harmful_extra": [
+          "listing the removed secondary email as a backup or recovery contact",
+          "using marcus.holloway@gmail.com without the T"
+        ],
+        "harmless_extra": [
+          "mentioning the March 16 inbox cleanup as context",
+          "mentioning Kevin's phishing as related motivation"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the removed secondary Outlook email address appears in the report as an available or active address.",
+        "over_forget": "Fails if the model omits retained details like the primary email, lockout event, 2FA, or recovery phone from the report.",
+        "stale_value": "Fails if the report uses marcus.holloway@gmail.com (Ohio person's address) instead of marcus.t.holloway@gmail.com.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's primary personal email is marcus.t.holloway@gmail.com, in use since around 2014.",
+        "Fact 2: On April 2, the user was locked out of Gmail for about six hours due to a suspicious login attempt from Southeast Asia; the user changed the password after regaining access.",
+        "Fact 3: After the lockout, the user enabled two-factor authentication with a recovery phone ending in 4738.",
+        "Fact 4: The secondary Outlook email has been removed from records and is unavailable.",
+        "Inference: A security incident report should combine the incident timeline (April 2 lockout), the affected account (marcus.t.holloway@gmail.com), the remediation steps (password change, 2FA), and the recovery contact (phone ending 4738), while omitting the removed secondary email as a recovery or contact option."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My main personal email is marcus.t.holloway@gmail.com. I've been using it since around 2014, and it's the one I use for basically everything personal."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "On April 2 I got locked out of my Gmail for about six hours because of a suspicious login attempt from somewhere in Southeast Asia. I was stressed and irritable the whole evening until I got back in and changed the password."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "After getting locked out I finally turned on two-factor authentication. The recovery phone number tied to the account is my current cell, which ends in 4738."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Actually, you can forget about that Outlook email entirely. I never ended up using it and it's basically dead now. No need to keep it on file."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to write a brief security incident report for my own records. It should cover what happened to my email account, when it happened, what I did afterward to secure it, and include the recovery contact detail you have. Can you draft that for me?",
+      "expected_answer": "Security Incident Report: On April 2, your Gmail account (marcus.t.holloway@gmail.com) was locked out for approximately six hours due to a suspicious login attempt originating from Southeast Asia. After regaining access, you changed the account password and enabled two-factor authentication. The recovery phone number linked to the account is your current cell ending in 4738. No secondary email addresses are on file for recovery purposes.",
+      "gold_memory_state": "Primary email: marcus.t.holloway@gmail.com (since ~2014). April 2 lockout: ~6 hours, suspicious login from Southeast Asia, password changed. 2FA enabled post-lockout. Recovery phone ending 4738. Secondary Outlook email removed from records—must not appear in any report as an available contact or recovery address.",
+      "judge_rubric": {
+        "must_include": [
+          "marcus.t.holloway@gmail.com",
+          "April 2",
+          "lockout or locked out",
+          "Southeast Asia",
+          "password changed or new password",
+          "two-factor authentication or 2FA",
+          "4738"
+        ],
+        "acceptable_paraphrases": [
+          "suspicious login attempt",
+          "unauthorized access attempt",
+          "recovery cell ending 4738"
+        ],
+        "must_not_include": [
+          "the removed Outlook email address presented as an active recovery or contact address"
+        ],
+        "harmful_extra": [
+          "listing the removed secondary email as a backup or recovery contact",
+          "using marcus.holloway@gmail.com without the T"
+        ],
+        "harmless_extra": [
+          "mentioning the March 16 inbox cleanup as context",
+          "mentioning Kevin's phishing as related motivation"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the removed secondary Outlook email address appears in the report as an available or active address.",
+        "over_forget": "Fails if the model omits retained details like the primary email, lockout event, 2FA, or recovery phone from the report.",
+        "stale_value": "Fails if the report uses marcus.holloway@gmail.com (Ohio person's address) instead of marcus.t.holloway@gmail.com.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's primary personal email is marcus.t.holloway@gmail.com, in use since around 2014.",
+        "Fact 2: On April 2, the user was locked out of Gmail for about six hours due to a suspicious login attempt from Southeast Asia; the user changed the password after regaining access.",
+        "Fact 3: After the lockout, the user enabled two-factor authentication with a recovery phone ending in 4738.",
+        "Fact 4: The secondary Outlook email has been removed from records and is unavailable.",
+        "Inference: A security incident report should combine the incident timeline (April 2 lockout), the affected account (marcus.t.holloway@gmail.com), the remediation steps (password change, 2FA), and the recovery contact (phone ending 4738), while omitting the removed secondary email as a recovery or contact option."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My main personal email is marcus.t.holloway@gmail.com. I've been using it since around 2014, and it's the one I use for basically everything personal."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "On April 2 I got locked out of my Gmail for about six hours because of a suspicious login attempt from somewhere in Southeast Asia. I was stressed and irritable the whole evening until I got back in and changed the password."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "After getting locked out I finally turned on two-factor authentication. The recovery phone number tied to the account is my current cell, which ends in 4738."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Actually, you can forget about that Outlook email entirely. I never ended up using it and it's basically dead now. No need to keep it on file."
+        }
+      ]
+    }
+  ]
+}

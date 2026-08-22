@@ -1,0 +1,977 @@
+{
+  "target_fact": "The user's packaging box order quantity from GreenWrap Co. has changed multiple times, and their candle weight unit labeling has evolved through corrections.",
+  "operation_type": "TrajectoryOps",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "box_order_qty",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I just placed a reorder with GreenWrap Co. for 500 boxes of packaging for my candle business"
+      },
+      "target": {
+        "target_id": "greenwrap_box_order_qty",
+        "target_name": "GreenWrap Co. packaging box reorder quantity"
+      },
+      "old_value": null,
+      "new_value": "500 boxes",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I just placed a reorder with GreenWrap Co. for 500 boxes of packaging for my candle business"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "box_order_qty",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I called GreenWrap and changed the order to 1,000 boxes because I realized 500 won't cover the next two months of production"
+      },
+      "target": {
+        "target_id": "greenwrap_box_order_qty",
+        "target_name": "GreenWrap Co. packaging box reorder quantity"
+      },
+      "old_value": "500 boxes",
+      "new_value": "1,000 boxes",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I just placed a reorder with GreenWrap Co. for 500 boxes of packaging for my candle business"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I called GreenWrap and changed the order to 1,000 boxes because I realized 500 won't cover the next two months of production"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "box_order_qty",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "GreenWrap confirmed they can only do 750 boxes on this shipment due to a stock issue, so I agreed to 750"
+      },
+      "target": {
+        "target_id": "greenwrap_box_order_qty",
+        "target_name": "GreenWrap Co. packaging box reorder quantity"
+      },
+      "old_value": "1,000 boxes",
+      "new_value": "750 boxes",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I called GreenWrap and changed the order to 1,000 boxes because I realized 500 won't cover the next two months of production"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "GreenWrap confirmed they can only do 750 boxes on this shipment due to a stock issue, so I agreed to 750"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "box_order_qty",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "GreenWrap's rep just emailed saying they restocked and can bump my order back up to 1,000 boxes if I confirm by Friday"
+      },
+      "target": {
+        "target_id": "greenwrap_box_order_qty",
+        "target_name": "GreenWrap Co. packaging box reorder quantity"
+      },
+      "old_value": "750 boxes",
+      "new_value": "1,000 boxes",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "GreenWrap's rep just emailed saying they restocked and can bump my order back up to 1,000 boxes if I confirm by Friday"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I ordered 12 cases of mason jars from a new vendor called JarSource, and each case has 12 jars, so 144 jars total"
+      },
+      "target": {
+        "target_id": "mason_jar_order",
+        "target_name": "mason jar order from JarSource"
+      },
+      "old_value": null,
+      "new_value": "12 cases of 12 jars each, 144 jars total, from JarSource",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I ordered 12 cases of mason jars from a new vendor called JarSource, and each case has 12 jars, so 144 jars total"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "initial_facts_and_first_update",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I need some help tracking my supply orders. I just placed a reorder with GreenWrap Co. for 500 boxes of packaging for my candle business. They're based out of Portland and I've been using them for about a year now. I keep mixing them up with GreenBox, which is a totally different company, so please remember it's GreenWrap."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it! I'll remember that your packaging supplier is GreenWrap Co. out of Portland, and you've placed a reorder for 500 boxes. I'll also keep in mind not to confuse them with GreenBox, which is a separate company. Since you've been working with GreenWrap for about a year, it sounds like you have a solid relationship with them. Would you like me to help you track this order alongside any other supply purchases, or is there something specific you'd like to organize around this reorder?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, let me also tell you about my production setup. I use an Escali kitchen scale that measures in grams, goes up to 5 kg. I switched all my candle recipes to metric recently—everything is in grams and milliliters now. I find grams way more precise than ounces for measuring small wax batches. It just feels cleaner to work in metric overall."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes a lot of sense for candle making where precision matters at small scales. I've noted that you use an Escali kitchen scale with a 5 kg capacity and that all your recipes are now fully in metric—grams for solids and milliliters for liquids. Working in metric definitely gives you finer granularity, especially when you're portioning wax and fragrance oils for individual batches. Since you've standardized on metric, would you like me to always default to metric units when we discuss recipe quantities or inventory calculations going forward?"
+        },
+        {
+          "role": "user",
+          "content": "Actually, hold on—I called GreenWrap and changed the order to 1,000 boxes because I realized 500 won't cover the next two months of production. I've got a big holiday push coming up and I need to be ahead of schedule. Last time I underordered it was a disaster, so I'm being more careful this time around. The 1,000 should carry me through the season."
+        },
+        {
+          "role": "assistant",
+          "content": "Smart move! I've updated your GreenWrap Co. order from 500 boxes to 1,000 boxes. Given that you've had past issues with underordering, doubling the quantity to cover the holiday production push sounds like solid planning. With 1,000 boxes you should have a comfortable buffer for the season. Do you want me to set up a rough timeline or checklist for your holiday production schedule? I can factor in the packaging delivery window from GreenWrap and help you map out when you'll need your other supplies like wax, wicks, and fragrance oils."
+        },
+        {
+          "role": "user",
+          "content": "That would be great actually. The holiday lineup is three scents: pine, cinnamon, and vanilla. Each scent gets a batch of about 50 candles per week, so roughly 150 candles a week total. I want to start production in early October and run through mid-November. That gives me about six weeks of production before the holiday rush really kicks in."
+        },
+        {
+          "role": "assistant",
+          "content": "Perfect, let me sketch that out. With 150 candles per week across three scents over six weeks from early October through mid-November, you're looking at roughly 900 candles total. At 1,000 boxes from GreenWrap, you'll have about 100 boxes of buffer beyond your production target, which is a nice cushion for any extras, replacements, or gift sets. I'd suggest confirming your GreenWrap delivery arrives by late September so you're not waiting on packaging when production starts. Want me to also estimate your wax and fragrance oil needs in metric for the full 900-candle run?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "new_order_and_second_update",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Before we get into the wax estimates, let me tell you about another order. I ordered 12 cases of mason jars from a new vendor called JarSource, and each case has 12 jars, so 144 jars total. I double-checked the quantities this time. I've been preferring smaller, more frequent orders lately—feels less risky than one giant bulk purchase. If something goes wrong it's easier to handle."
+        },
+        {
+          "role": "assistant",
+          "content": "Nice, I've noted the mason jar order: 12 cases of 12 jars each from JarSource, totaling 144 jars. And your preference for smaller, more frequent orders makes a lot of sense, especially after your past experience with quantity mix-ups. With 144 jars, that covers just under one full week of your 150-candle production rate, so you'll likely want to schedule follow-up orders from JarSource on a rolling basis. Should I build a recurring jar order reminder into your production timeline alongside the GreenWrap packaging schedule?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, do that. Also, quick update on the GreenWrap situation. GreenWrap confirmed they can only do 750 boxes on this shipment due to a stock issue, so I agreed to 750. It's not ideal but it still covers most of my production run. I'll just need to place a smaller follow-up order later to make up the difference. Hopefully they restock soon."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood, I've updated your GreenWrap order to 750 boxes. That's down from the 1,000 you requested, but with 900 candles planned over six weeks, 750 boxes still covers about 83% of your total production. You'd need roughly 150 more boxes in a follow-up order to hit full coverage. I'd recommend placing that follow-up order no later than mid-October so it arrives before your final production weeks. I'll add a reminder for that in the timeline. Does GreenWrap typically have quick turnaround on smaller orders?"
+        },
+        {
+          "role": "user",
+          "content": "Usually about a week for smaller orders, which is fine. By the way, my friend Derek just got a new Ohaus digital scale, said he paid about $85 for it. He uses it for his homebrew shop. I think it's overkill for what he does but that's his call. I'm sticking with my Escali—it does everything I need and I'm comfortable with it."
+        },
+        {
+          "role": "assistant",
+          "content": "A week turnaround for smaller GreenWrap orders is great—that means a mid-October follow-up order for the remaining 150 boxes should arrive well before your final production weeks in November. And yeah, the Ohaus scales are solid but they're really designed for lab-grade precision that's probably more than Derek needs for homebrewing. Your Escali with its 5 kg capacity and gram-level accuracy is perfect for candle batch work, especially since you've already standardized all your recipes in metric. No need to switch what's working. Want me to draft the full production timeline now with both the GreenWrap and JarSource delivery schedules?"
+        },
+        {
+          "role": "user",
+          "content": "Sure, draft it up. Oh, also—I've been thinking about my pricing. Each candle costs me about $4.50 in materials, and I sell them for $18 retail. I want to offer a holiday bundle: buy three candles for $45 instead of $54. That's roughly a 17% discount. I think it'll drive more volume during the holiday season without eating too much into my margins."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a solid bundle strategy. At $4.50 per candle in materials, a three-candle bundle at $45 gives you $31.50 gross profit per bundle versus $40.50 at full retail for three. You're trading about $9 per bundle for higher volume, which should work well during the holiday rush when customers are buying gifts. If even a third of your 900 candles sell as bundles, that's 100 bundles generating $3,150 in gross profit from those 300 candles alone. I'll factor the bundle pricing into the production timeline draft. Should I also estimate total revenue projections across bundled and individual sales?"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "tentative_update_and_adversarial_injection",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Let's hold off on the revenue projections for now. I want to focus on making sure all my supply orders are straight. Can you remind me where things stand with my GreenWrap box order and the JarSource mason jar order? I want to make sure I have the current numbers right before I update my spreadsheet. I love getting every cell right, honestly."
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! Here's where your supply orders currently stand. For GreenWrap Co. out of Portland, your packaging box order is at 750 boxes. That was adjusted down from your original request of 1,000 due to a stock issue on their end. You'll need a follow-up order of about 150 boxes to cover your full 900-candle holiday production run. For JarSource, you ordered 12 cases of mason jars at 12 jars per case, totaling 144 jars. You double-checked those quantities. You mentioned you prefer smaller, frequent orders over large bulk purchases. Want me to format this as a table for your spreadsheet?"
+        },
+        {
+          "role": "user",
+          "content": "That would be great. Also, I was looking at an old invoice from GreenWrap and noticed it listed a previous order of 500 sleeves—which is actually 25,000 boxes since each sleeve holds 50. That was from back in March. Totally different scale from what I'm ordering now. Funny how confusing units can be in this business."
+        },
+        {
+          "role": "assistant",
+          "content": "Ha, yeah, the sleeve-versus-box distinction is exactly the kind of thing that trips people up. That March order of 500 sleeves at 50 boxes per sleeve was 25,000 boxes—a massive bulk order compared to your current 750-box order. It really highlights why you've shifted to smaller, more manageable orders. Speaking of old invoices, I also see from your earlier notes that a GreenBox order for 600 units came through on a similar date—but that's the other company you mentioned, not GreenWrap. I want to make sure those stay separate in your records. Ready for the spreadsheet table format?"
+        },
+        {
+          "role": "user",
+          "content": "GreenWrap's rep just emailed saying they restocked and can bump my order back up to 1,000 boxes if I confirm by Friday. I haven't decided yet but it's tempting since it would eliminate the need for a follow-up order entirely. I'll probably know by Thursday. For now just note that it's a possibility but don't change the confirmed number yet."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted! GreenWrap has offered to increase your order back to 1,000 boxes now that they've restocked, but you haven't confirmed yet and the deadline is Friday. I'll keep your confirmed order at 750 boxes for now and flag the potential upgrade to 1,000 as pending your decision by Thursday. If you do confirm, it would neatly cover your full 900-candle run with a 100-box buffer and eliminate the need for a follow-up order. Just let me know when you've decided and I'll update accordingly. Anything else for the spreadsheet?"
+        },
+        {
+          "role": "user",
+          "content": "Nope, I think that covers the supply side. Let me also mention that my total material cost per candle breaks down to roughly $1.80 for wax, $1.50 for fragrance oil, $0.70 for the wick and label, and $0.50 for packaging. That adds up to the $4.50 I mentioned earlier. I like having that granular breakdown tracked so I can spot if any one component's cost creeps up."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a great breakdown to track. So your $4.50 per-candle material cost splits into wax at $1.80, fragrance oil at $1.50, wick and label at $0.70, and packaging at $0.50. Having each component itemized makes it easy to flag cost increases—for instance, if GreenWrap raises their box prices, you'd see it immediately in that $0.50 packaging line. With 900 candles planned, your total material outlay would be about $4,050. I'll add this cost breakdown to your spreadsheet alongside the order tracking. Let me know when you hear back about the GreenWrap upgrade decision!"
+        }
+      ]
+    }
+  ],
+  "state_checkpoints": [
+    {
+      "checkpoint_id": "c1",
+      "description": "After segment 1: GreenWrap box order is 1,000 boxes (confirmed, updated from initial 500). Mason jar order not yet placed. Escali scale and metric recipes noted."
+    },
+    {
+      "checkpoint_id": "c2",
+      "description": "After segment 2: GreenWrap box order is 750 boxes (confirmed, reduced from 1,000 due to stock issue). Mason jar order from JarSource is 144 jars (12 cases of 12). Holiday bundle pricing at $45 for three candles noted."
+    },
+    {
+      "checkpoint_id": "c3",
+      "description": "After segment 3: GreenWrap box order remains 750 boxes (confirmed). A tentative offer to bump back to 1,000 boxes exists but is unconfirmed pending user decision by Friday. Mason jar order from JarSource remains 144 jars (confirmed). Material cost breakdown per candle is $4.50."
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Summarize everything I've told you about my supply orders and how the quantities have shifted over our conversations.",
+      "expected_answer": "You placed an initial packaging box order with GreenWrap Co. for 500 boxes, then increased it to 1,000 boxes for the holiday push, then it was reduced to 750 boxes due to a stock issue on GreenWrap's end. There is also a pending offer to bump back to 1,000 boxes but you haven't confirmed it yet. Separately, you ordered 12 cases of mason jars from JarSource, with 12 jars per case totaling 144 jars.",
+      "gold_memory_state": "GreenWrap box order: 750 boxes (confirmed), with tentative offer of 1,000 pending. JarSource mason jar order: 144 jars (12 cases of 12). Both orders active.",
+      "judge_rubric": {
+        "must_include": [
+          "500 boxes initial",
+          "1,000 boxes increase",
+          "750 boxes stock issue reduction",
+          "tentative offer to go back to 1,000",
+          "12 cases of mason jars",
+          "144 jars total",
+          "JarSource"
+        ],
+        "acceptable_paraphrases": [
+          "packaging boxes from GreenWrap",
+          "jar order from JarSource"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating the tentative 1,000-box offer was confirmed",
+          "omitting the 750-box confirmed status"
+        ],
+        "harmless_extra": [
+          "mentioning Portland",
+          "mentioning holiday production",
+          "mentioning GreenWrap vs GreenBox distinction"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model states current GreenWrap order is 500 or 1,000 without distinguishing confirmed from tentative.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence 500 → 1,000 → 750 is presented out of order or if the tentative 1,000 offer is placed before the 750 reduction.",
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I just placed a reorder with GreenWrap Co. for 500 boxes of packaging for my candle business"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I called GreenWrap and changed the order to 1,000 boxes because I realized 500 won't cover the next two months of production"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "GreenWrap confirmed they can only do 750 boxes on this shipment due to a stock issue, so I agreed to 750"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "GreenWrap's rep just emailed saying they restocked and can bump my order back up to 1,000 boxes if I confirm by Friday"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I ordered 12 cases of mason jars from a new vendor called JarSource, and each case has 12 jars, so 144 jars total"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Summarize everything I've told you about my supply orders and how the quantities have shifted over our conversations.",
+      "expected_answer": "You placed an initial packaging box order with GreenWrap Co. for 500 boxes, then increased it to 1,000 boxes for the holiday push, then it was reduced to 750 boxes due to a stock issue on GreenWrap's end. There is also a pending offer to bump back to 1,000 boxes but you haven't confirmed it yet. Separately, you ordered 12 cases of mason jars from JarSource, with 12 jars per case totaling 144 jars.",
+      "gold_memory_state": "GreenWrap box order: 750 boxes (confirmed), with tentative offer of 1,000 pending. JarSource mason jar order: 144 jars (12 cases of 12). Both orders active.",
+      "judge_rubric": {
+        "must_include": [
+          "500 boxes initial",
+          "1,000 boxes increase",
+          "750 boxes stock issue reduction",
+          "tentative offer to go back to 1,000",
+          "12 cases of mason jars",
+          "144 jars total",
+          "JarSource"
+        ],
+        "acceptable_paraphrases": [
+          "packaging boxes from GreenWrap",
+          "jar order from JarSource"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating the tentative 1,000-box offer was confirmed",
+          "omitting the 750-box confirmed status"
+        ],
+        "harmless_extra": [
+          "mentioning Portland",
+          "mentioning holiday production",
+          "mentioning GreenWrap vs GreenBox distinction"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model states current GreenWrap order is 500 or 1,000 without distinguishing confirmed from tentative.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence 500 → 1,000 → 750 is presented out of order or if the tentative 1,000 offer is placed before the 750 reduction.",
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I just placed a reorder with GreenWrap Co. for 500 boxes of packaging for my candle business"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I called GreenWrap and changed the order to 1,000 boxes because I realized 500 won't cover the next two months of production"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "GreenWrap confirmed they can only do 750 boxes on this shipment due to a stock issue, so I agreed to 750"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "GreenWrap's rep just emailed saying they restocked and can bump my order back up to 1,000 boxes if I confirm by Friday"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I ordered 12 cases of mason jars from a new vendor called JarSource, and each case has 12 jars, so 144 jars total"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I need to update my supplier spreadsheet. The quantity that kept changing belongs to which vendor's order, and does the other vendor's order need any quantity adjustments too?",
+      "expected_answer": "The quantity that changed multiple times belongs to the GreenWrap Co. packaging box order. The JarSource mason jar order has not changed and remains at 144 jars (12 cases of 12).",
+      "gold_memory_state": "GreenWrap Co. box order: 750 boxes confirmed (went through 500 → 1,000 → 750, with a tentative offer back to 1,000 unconfirmed). JarSource mason jar order: 144 jars, unchanged since placed.",
+      "judge_rubric": {
+        "must_include": [
+          "GreenWrap Co.",
+          "packaging box order is the one with quantity changes",
+          "JarSource order unchanged"
+        ],
+        "acceptable_paraphrases": [
+          "GreenWrap boxes",
+          "mason jar order from JarSource stays the same"
+        ],
+        "must_not_include": [
+          "JarSource order also changed"
+        ],
+        "harmful_extra": [
+          "stating JarSource order quantity was modified",
+          "conflating GreenWrap and GreenBox"
+        ],
+        "harmless_extra": [
+          "mentioning the specific quantity trajectory of GreenWrap",
+          "mentioning Portland"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model incorrectly attributes the quantity changes to the JarSource order or says both orders changed.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I just placed a reorder with GreenWrap Co. for 500 boxes of packaging for my candle business"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I called GreenWrap and changed the order to 1,000 boxes because I realized 500 won't cover the next two months of production"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "GreenWrap confirmed they can only do 750 boxes on this shipment due to a stock issue, so I agreed to 750"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I ordered 12 cases of mason jars from a new vendor called JarSource, and each case has 12 jars, so 144 jars total"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I need to update my supplier spreadsheet. The quantity that kept changing belongs to which vendor's order, and does the other vendor's order need any quantity adjustments too?",
+      "expected_answer": "The quantity that changed multiple times belongs to the GreenWrap Co. packaging box order. The JarSource mason jar order has not changed and remains at 144 jars (12 cases of 12).",
+      "gold_memory_state": "GreenWrap Co. box order: 750 boxes confirmed (went through 500 → 1,000 → 750, with a tentative offer back to 1,000 unconfirmed). JarSource mason jar order: 144 jars, unchanged since placed.",
+      "judge_rubric": {
+        "must_include": [
+          "GreenWrap Co.",
+          "packaging box order is the one with quantity changes",
+          "JarSource order unchanged"
+        ],
+        "acceptable_paraphrases": [
+          "GreenWrap boxes",
+          "mason jar order from JarSource stays the same"
+        ],
+        "must_not_include": [
+          "JarSource order also changed"
+        ],
+        "harmful_extra": [
+          "stating JarSource order quantity was modified",
+          "conflating GreenWrap and GreenBox"
+        ],
+        "harmless_extra": [
+          "mentioning the specific quantity trajectory of GreenWrap",
+          "mentioning Portland"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model incorrectly attributes the quantity changes to the JarSource order or says both orders changed.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I just placed a reorder with GreenWrap Co. for 500 boxes of packaging for my candle business"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I called GreenWrap and changed the order to 1,000 boxes because I realized 500 won't cover the next two months of production"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "GreenWrap confirmed they can only do 750 boxes on this shipment due to a stock issue, so I agreed to 750"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I ordered 12 cases of mason jars from a new vendor called JarSource, and each case has 12 jars, so 144 jars total"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "How many packaging boxes should I put in my spreadsheet for the GreenWrap order right now?",
+      "expected_answer": "750 boxes.",
+      "gold_memory_state": "GreenWrap Co. box order is 750 boxes (confirmed). The offer to bump back to 1,000 boxes has not been accepted and remains pending the user's decision by Friday. The confirmed current quantity is 750.",
+      "judge_rubric": {
+        "must_include": [
+          "750"
+        ],
+        "acceptable_paraphrases": [
+          "750 boxes",
+          "seven hundred fifty boxes"
+        ],
+        "must_not_include": [
+          "1,000 as the current order",
+          "500 as the current order"
+        ],
+        "harmful_extra": [
+          "treating the tentative 1,000-box offer as the current confirmed quantity"
+        ],
+        "harmless_extra": [
+          "mentioning the pending offer to increase to 1,000",
+          "mentioning the need to decide by Friday"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model returns 1,000 (the tentative unconfirmed offer) or 500 (the original superseded quantity) as the current order.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not identify 750 as the current confirmed quantity.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "GreenWrap confirmed they can only do 750 boxes on this shipment due to a stock issue, so I agreed to 750"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "GreenWrap's rep just emailed saying they restocked and can bump my order back up to 1,000 boxes if I confirm by Friday"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "How many packaging boxes should I put in my spreadsheet for the GreenWrap order right now?",
+      "expected_answer": "750 boxes.",
+      "gold_memory_state": "GreenWrap Co. box order is 750 boxes (confirmed). The offer to bump back to 1,000 boxes has not been accepted and remains pending the user's decision by Friday. The confirmed current quantity is 750.",
+      "judge_rubric": {
+        "must_include": [
+          "750"
+        ],
+        "acceptable_paraphrases": [
+          "750 boxes",
+          "seven hundred fifty boxes"
+        ],
+        "must_not_include": [
+          "1,000 as the current order",
+          "500 as the current order"
+        ],
+        "harmful_extra": [
+          "treating the tentative 1,000-box offer as the current confirmed quantity"
+        ],
+        "harmless_extra": [
+          "mentioning the pending offer to increase to 1,000",
+          "mentioning the need to decide by Friday"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model returns 1,000 (the tentative unconfirmed offer) or 500 (the original superseded quantity) as the current order.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not identify 750 as the current confirmed quantity.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "GreenWrap confirmed they can only do 750 boxes on this shipment due to a stock issue, so I agreed to 750"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "GreenWrap's rep just emailed saying they restocked and can bump my order back up to 1,000 boxes if I confirm by Friday"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm planning my holiday candle production and need to figure out how many additional packaging boxes I'll need beyond what GreenWrap is actually delivering, and how many rounds of jar reorders from my other vendor I'll need to cover the full production run. Can you work that out for me?",
+      "expected_answer": "You need 150 additional packaging boxes beyond the 750 GreenWrap is delivering to cover 900 candles. For jars, since each JarSource order provides 144 jars and you need 900 total, you would need approximately 6.25 orders, meaning about 6 additional reorders beyond the first one already placed (7 total orders of 144 jars to reach at least 900).",
+      "gold_memory_state": "GreenWrap confirmed order: 750 boxes. Production target: ~900 candles (150/week × 6 weeks). JarSource order: 144 jars per order (12 cases × 12 jars). Tentative 1,000-box offer not confirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "150 additional boxes needed",
+          "900 candles total production",
+          "144 jars per JarSource order",
+          "multiple jar reorders needed"
+        ],
+        "acceptable_paraphrases": [
+          "about 6 more jar orders",
+          "7 total jar orders",
+          "roughly 6 to 7 jar reorders"
+        ],
+        "must_not_include": [
+          "using 1,000 boxes as the confirmed GreenWrap quantity",
+          "using 500 boxes as the GreenWrap quantity"
+        ],
+        "harmful_extra": [
+          "treating the tentative 1,000-box offer as confirmed and saying no additional boxes are needed"
+        ],
+        "harmless_extra": [
+          "mentioning the pending 1,000-box offer as a possibility that could reduce the shortfall",
+          "mentioning the mid-October follow-up timing"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model uses 500 or the tentative 1,000 as the base for the box gap calculation.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not use 750 as the confirmed box quantity for the gap calculation.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's holiday production plan is 150 candles per week for 6 weeks, totaling approximately 900 candles.",
+        "Fact 2: The confirmed GreenWrap packaging box order is 750 boxes.",
+        "Fact 3: The JarSource mason jar order is 144 jars per order (12 cases × 12 jars).",
+        "Inference: Box shortfall = 900 candles needed − 750 boxes on hand = 150 additional boxes required.",
+        "Inference: Jar orders needed = 900 jars needed ÷ 144 jars per order ≈ 6.25 orders, so 7 total orders (including the one already placed, that means 6 additional reorders)."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "GreenWrap confirmed they can only do 750 boxes on this shipment due to a stock issue, so I agreed to 750"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I ordered 12 cases of mason jars from a new vendor called JarSource, and each case has 12 jars, so 144 jars total"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "Each scent gets a batch of about 50 candles per week, so roughly 150 candles a week total. I want to start production in early October and run through mid-November. That gives me about six weeks of production before the holiday rush really kicks in."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm planning my holiday candle production and need to figure out how many additional packaging boxes I'll need beyond what GreenWrap is actually delivering, and how many rounds of jar reorders from my other vendor I'll need to cover the full production run. Can you work that out for me?",
+      "expected_answer": "You need 150 additional packaging boxes beyond the 750 GreenWrap is delivering to cover 900 candles. For jars, since each JarSource order provides 144 jars and you need 900 total, you would need approximately 6.25 orders, meaning about 6 additional reorders beyond the first one already placed (7 total orders of 144 jars to reach at least 900).",
+      "gold_memory_state": "GreenWrap confirmed order: 750 boxes. Production target: ~900 candles (150/week × 6 weeks). JarSource order: 144 jars per order (12 cases × 12 jars). Tentative 1,000-box offer not confirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "150 additional boxes needed",
+          "900 candles total production",
+          "144 jars per JarSource order",
+          "multiple jar reorders needed"
+        ],
+        "acceptable_paraphrases": [
+          "about 6 more jar orders",
+          "7 total jar orders",
+          "roughly 6 to 7 jar reorders"
+        ],
+        "must_not_include": [
+          "using 1,000 boxes as the confirmed GreenWrap quantity",
+          "using 500 boxes as the GreenWrap quantity"
+        ],
+        "harmful_extra": [
+          "treating the tentative 1,000-box offer as confirmed and saying no additional boxes are needed"
+        ],
+        "harmless_extra": [
+          "mentioning the pending 1,000-box offer as a possibility that could reduce the shortfall",
+          "mentioning the mid-October follow-up timing"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model uses 500 or the tentative 1,000 as the base for the box gap calculation.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not use 750 as the confirmed box quantity for the gap calculation.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's holiday production plan is 150 candles per week for 6 weeks, totaling approximately 900 candles.",
+        "Fact 2: The confirmed GreenWrap packaging box order is 750 boxes.",
+        "Fact 3: The JarSource mason jar order is 144 jars per order (12 cases × 12 jars).",
+        "Inference: Box shortfall = 900 candles needed − 750 boxes on hand = 150 additional boxes required.",
+        "Inference: Jar orders needed = 900 jars needed ÷ 144 jars per order ≈ 6.25 orders, so 7 total orders (including the one already placed, that means 6 additional reorders)."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "GreenWrap confirmed they can only do 750 boxes on this shipment due to a stock issue, so I agreed to 750"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I ordered 12 cases of mason jars from a new vendor called JarSource, and each case has 12 jars, so 144 jars total"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "Each scent gets a batch of about 50 candles per week, so roughly 150 candles a week total. I want to start production in early October and run through mid-November. That gives me about six weeks of production before the holiday rush really kicks in."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed our entire conversation history about the GreenWrap packaging order, what would they see as the sequence of quantity changes, which values were actually adopted each time, and where does the order stand now?",
+      "expected_answer": "The sequence was: (1) initially 500 boxes when the order was first placed, (2) increased to 1,000 boxes after the user called GreenWrap to change it for holiday coverage, (3) reduced to 750 boxes after GreenWrap said they could only fulfill that amount due to a stock issue and the user agreed, (4) GreenWrap offered to bump back to 1,000 boxes but the user has not accepted yet. Steps 1 through 3 were each adopted. Step 4 is pending and has not been adopted. The order currently stands at 750 boxes.",
+      "gold_memory_state": "GreenWrap box order trajectory: 500 (confirmed, step 1) → 1,000 (confirmed, step 2) → 750 (confirmed, step 3) → 1,000 (tentative, step 4, not adopted). Current confirmed value: 750 boxes.",
+      "judge_rubric": {
+        "must_include": [
+          "500 as initial value",
+          "1,000 as second value",
+          "750 as third value and current confirmed value",
+          "tentative/pending offer of 1,000 not yet accepted"
+        ],
+        "acceptable_paraphrases": [
+          "hasn't decided on the 1,000 yet",
+          "waiting to confirm the bump to 1,000",
+          "750 is the current active order"
+        ],
+        "must_not_include": [
+          "stating the current order is 1,000"
+        ],
+        "harmful_extra": [
+          "treating the tentative 1,000 offer as the final adopted value",
+          "omitting the 750 step entirely"
+        ],
+        "harmless_extra": [
+          "mentioning the Friday deadline",
+          "mentioning the stock issue reason",
+          "mentioning the holiday production context"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model presents 500 or 1,000 as the current confirmed quantity.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the four steps are presented out of chronological order or if any step is omitted.",
+        "final_state": "Fails if the model does not identify 750 as the current confirmed state.",
+        "intermediate_state": "Fails if the model omits the 1,000-box intermediate step (step 2) or the 750-box step (step 3).",
+        "trajectory_provenance": "Fails if the model cannot attribute each change to the correct reason (user request, stock issue, restocking offer)."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: User initially ordered 500 boxes from GreenWrap Co. — confirmed.",
+        "Step 2: User called GreenWrap and changed the order to 1,000 boxes because 500 wouldn't cover two months of holiday production — confirmed, supersedes 500.",
+        "Step 3: GreenWrap could only fulfill 750 boxes due to a stock issue, and the user agreed — confirmed, supersedes 1,000.",
+        "Step 4: GreenWrap offered to bump back to 1,000 boxes after restocking, but user has not confirmed yet — tentative, not adopted.",
+        "Inference: The current confirmed order quantity is 750 boxes. The tentative 1,000-box offer is pending and does not change the confirmed state."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I just placed a reorder with GreenWrap Co. for 500 boxes of packaging for my candle business"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I called GreenWrap and changed the order to 1,000 boxes because I realized 500 won't cover the next two months of production"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "GreenWrap confirmed they can only do 750 boxes on this shipment due to a stock issue, so I agreed to 750"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "GreenWrap's rep just emailed saying they restocked and can bump my order back up to 1,000 boxes if I confirm by Friday"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed our entire conversation history about the GreenWrap packaging order, what would they see as the sequence of quantity changes, which values were actually adopted each time, and where does the order stand now?",
+      "expected_answer": "The sequence was: (1) initially 500 boxes when the order was first placed, (2) increased to 1,000 boxes after the user called GreenWrap to change it for holiday coverage, (3) reduced to 750 boxes after GreenWrap said they could only fulfill that amount due to a stock issue and the user agreed, (4) GreenWrap offered to bump back to 1,000 boxes but the user has not accepted yet. Steps 1 through 3 were each adopted. Step 4 is pending and has not been adopted. The order currently stands at 750 boxes.",
+      "gold_memory_state": "GreenWrap box order trajectory: 500 (confirmed, step 1) → 1,000 (confirmed, step 2) → 750 (confirmed, step 3) → 1,000 (tentative, step 4, not adopted). Current confirmed value: 750 boxes.",
+      "judge_rubric": {
+        "must_include": [
+          "500 as initial value",
+          "1,000 as second value",
+          "750 as third value and current confirmed value",
+          "tentative/pending offer of 1,000 not yet accepted"
+        ],
+        "acceptable_paraphrases": [
+          "hasn't decided on the 1,000 yet",
+          "waiting to confirm the bump to 1,000",
+          "750 is the current active order"
+        ],
+        "must_not_include": [
+          "stating the current order is 1,000"
+        ],
+        "harmful_extra": [
+          "treating the tentative 1,000 offer as the final adopted value",
+          "omitting the 750 step entirely"
+        ],
+        "harmless_extra": [
+          "mentioning the Friday deadline",
+          "mentioning the stock issue reason",
+          "mentioning the holiday production context"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model presents 500 or 1,000 as the current confirmed quantity.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the four steps are presented out of chronological order or if any step is omitted.",
+        "final_state": "Fails if the model does not identify 750 as the current confirmed state.",
+        "intermediate_state": "Fails if the model omits the 1,000-box intermediate step (step 2) or the 750-box step (step 3).",
+        "trajectory_provenance": "Fails if the model cannot attribute each change to the correct reason (user request, stock issue, restocking offer)."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: User initially ordered 500 boxes from GreenWrap Co. — confirmed.",
+        "Step 2: User called GreenWrap and changed the order to 1,000 boxes because 500 wouldn't cover two months of holiday production — confirmed, supersedes 500.",
+        "Step 3: GreenWrap could only fulfill 750 boxes due to a stock issue, and the user agreed — confirmed, supersedes 1,000.",
+        "Step 4: GreenWrap offered to bump back to 1,000 boxes after restocking, but user has not confirmed yet — tentative, not adopted.",
+        "Inference: The current confirmed order quantity is 750 boxes. The tentative 1,000-box offer is pending and does not change the confirmed state."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I just placed a reorder with GreenWrap Co. for 500 boxes of packaging for my candle business"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I called GreenWrap and changed the order to 1,000 boxes because I realized 500 won't cover the next two months of production"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "GreenWrap confirmed they can only do 750 boxes on this shipment due to a stock issue, so I agreed to 750"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "GreenWrap's rep just emailed saying they restocked and can bump my order back up to 1,000 boxes if I confirm by Friday"
+        }
+      ]
+    }
+  ]
+}

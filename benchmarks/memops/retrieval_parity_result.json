@@ -1,0 +1,554 @@
+[
+ {
+  "file": "A02_forget.json",
+  "key": "david lam",
+  "bare_query": true,
+  "model_written_terms": true,
+  "recovered": false,
+  "seconds": 62.8
+ },
+ {
+  "file": "A04_forget.json",
+  "key": "tucson",
+  "bare_query": true,
+  "model_written_terms": true,
+  "recovered": false,
+  "seconds": 65.4
+ },
+ {
+  "file": "A04_trajectory_ops.json",
+  "key": "plot 14 at ladybug community",
+  "bare_query": true,
+  "model_written_terms": true,
+  "recovered": false,
+  "seconds": 71.4
+ },
+ {
+  "file": "A05_forget.json",
+  "key": "po box 5587",
+  "bare_query": true,
+  "model_written_terms": true,
+  "recovered": false,
+  "seconds": 54.1
+ },
+ {
+  "file": "A06_forget.json",
+  "key": "divorce last",
+  "bare_query": true,
+  "model_written_terms": true,
+  "recovered": false,
+  "seconds": 62.2
+ },
+ {
+  "file": "A11_forget.json",
+  "key": "accu-chek guide glucose",
+  "bare_query": true,
+  "model_written_terms": true,
+  "recovered": false,
+  "seconds": 59.1
+ },
+ {
+  "file": "A13_forget.json",
+  "key": "ibuprofen ~400mg",
+  "bare_query": true,
+  "model_written_terms": true,
+  "recovered": false,
+  "seconds": 60.4
+ },
+ {
+  "file": "A14_forget.json",
+  "key": "took about 14 months from application to approval",
+  "bare_query": true,
+  "model_written_terms": true,
+  "recovered": false,
+  "seconds": 66.0
+ },
+ {
+  "file": "A19_forget.json",
+  "key": "april 20th)",
+  "bare_query": false,
+  "model_written_terms": false,
+  "recovered": false,
+  "seconds": 225.4
+ },
+ {
+  "file": "A22_forget.json",
+  "key": "194.2 lbs on january",
+  "bare_query": true,
+  "model_written_terms": true,
+  "recovered": false,
+  "seconds": 69.2
+ },
+ {
+  "file": "A26_forget.json",
+  "key": "$185",
+  "bare_query": true,
+  "model_written_terms": true,
+  "recovered": false,
+  "seconds": 59.8
+ },
+ {
+  "file": "A28_forget.json",
+  "key": "professor anil mehta",
+  "bare_query": true,
+  "model_written_terms": true,
+  "recovered": false,
+  "seconds": 66.7
+ },
+ {
+  "file": "A29_forget.json",
+  "key": "72 out of",
+  "bare_query": true,
+  "model_written_terms": true,
+  "recovered": false,
+  "seconds": 76.2
+ },
+ {
+  "file": "A30_forget.json",
+  "key": "basic conversational tagalog from",
+  "bare_query": false,
+  "model_written_terms": false,
+  "recovered": false,
+  "seconds": 357.4
+ },
+ {
+  "file": "A31_forget.json",
+  "key": "signed up",
+  "bare_query": true,
+  "model_written_terms": true,
+  "recovered": false,
+  "seconds": 58.3
+ },
+ {
+  "file": "B01_forget.json",
+  "key": "furniture into a storage unit in mid-april",
+  "bare_query": false,
+  "model_written_terms": true,
+  "recovered": true,
+  "seconds": 127.0
+ },
+ {
+  "file": "B04_forget.json",
+  "key": "new hires last quarter",
+  "bare_query": false,
+  "model_written_terms": false,
+  "recovered": false,
+  "seconds": 239.8
+ },
+ {
+  "file": "B11_forget.json",
+  "key": "small planted freshwater fish tank",
+  "bare_query": false,
+  "model_written_terms": true,
+  "recovered": true,
+  "seconds": 113.9
+ },
+ {
+  "file": "B14_forget.json",
+  "key": "portland",
+  "bare_query": true,
+  "model_written_terms": true,
+  "recovered": false,
+  "seconds": 79.5
+ },
+ {
+  "file": "B21_forget.json",
+  "key": "annually",
+  "bare_query": true,
+  "model_written_terms": true,
+  "recovered": false,
+  "seconds": 61.2
+ },
+ {
+  "file": "B24_forget.json",
+  "key": "elliot",
+  "bare_query": true,
+  "model_written_terms": true,
+  "recovered": false,
+  "seconds": 67.2
+ },
+ {
+  "file": "B25_forget.json",
+  "key": "piano lessons on wednesdays with mrs.",
+  "bare_query": true,
+  "model_written_terms": true,
+  "recovered": false,
+  "seconds": 78.1
+ },
+ {
+  "file": "B26_forget.json",
+  "key": "family discussion about",
+  "bare_query": true,
+  "model_written_terms": true,
+  "recovered": false,
+  "seconds": 64.9
+ },
+ {
+  "file": "B28_forget.json",
+  "key": "kevin liu at bayside health",
+  "bare_query": true,
+  "model_written_terms": true,
+  "recovered": false,
+  "seconds": 63.8
+ },
+ {
+  "file": "B29_forget.json",
+  "key": "from 225 lbs",
+  "bare_query": true,
+  "model_written_terms": true,
+  "recovered": false,
+  "seconds": 75.5
+ },
+ {
+  "file": "C01_forget.json",
+  "key": "for parts and labor",
+  "bare_query": true,
+  "model_written_terms": true,
+  "recovered": false,
+  "seconds": 69.8
+ },
+ {
+  "file": "C03_forget.json",
+  "key": "march 18th",
+  "bare_query": true,
+  "model_written_terms": true,
+  "recovered": false,
+  "seconds": 80.9
+ },
+ {
+  "file": "C04_forget.json",
+  "key": "gastroenterology,",
+  "bare_query": true,
+  "model_written_terms": true,
+  "recovered": false,
+  "seconds": 90.0
+ },
+ {
+  "file": "C10_forget.json",
+  "key": "ninja cpa",
+  "bare_query": true,
+  "model_written_terms": true,
+  "recovered": false,
+  "seconds": 70.4
+ },
+ {
+  "file": "C16_forget.json",
+  "key": "at c16 for five days around",
+  "bare_query": false,
+  "model_written_terms": true,
+  "recovered": true,
+  "seconds": 89.8
+ },
+ {
+  "file": "C21_forget.json",
+  "key": "1st of each month",
+  "bare_query": true,
+  "model_written_terms": true,
+  "recovered": false,
+  "seconds": 62.8
+ },
+ {
+  "file": "C22_forget.json",
+  "key": "around february 22",
+  "bare_query": true,
+  "model_written_terms": true,
+  "recovered": false,
+  "seconds": 44.7
+ },
+ {
+  "file": "C23_forget.json",
+  "key": "completed",
+  "bare_query": true,
+  "model_written_terms": true,
+  "recovered": false,
+  "seconds": 46.5
+ },
+ {
+  "file": "C24_forget.json",
+  "key": "approximately \u20ac72",
+  "bare_query": false,
+  "model_written_terms": true,
+  "recovered": true,
+  "seconds": 88.6
+ },
+ {
+  "file": "C25_forget.json",
+  "key": "due february 9",
+  "bare_query": true,
+  "model_written_terms": true,
+  "recovered": false,
+  "seconds": 61.1
+ },
+ {
+  "file": "C26_forget.json",
+  "key": "a printed portfolio to the interview",
+  "bare_query": true,
+  "model_written_terms": true,
+  "recovered": false,
+  "seconds": 49.2
+ },
+ {
+  "file": "C28_forget.json",
+  "key": "felt terrible for almost a week",
+  "bare_query": false,
+  "model_written_terms": true,
+  "recovered": true,
+  "seconds": 87.6
+ },
+ {
+  "file": "C29_forget.json",
+  "key": "photo book of family pictures from the past",
+  "bare_query": true,
+  "model_written_terms": true,
+  "recovered": false,
+  "seconds": 41.4
+ },
+ {
+  "file": "C30_forget.json",
+  "key": "marcus high-yield savings account",
+  "bare_query": false,
+  "model_written_terms": true,
+  "recovered": true,
+  "seconds": 309.4
+ },
+ {
+  "file": "C31_forget.json",
+  "key": "\u2014 bath, nail trim, ear cleaning",
+  "bare_query": true,
+  "model_written_terms": true,
+  "recovered": false,
+  "seconds": 70.4
+ },
+ {
+  "file": "D01_forget.json",
+  "key": "charges",
+  "bare_query": false,
+  "model_written_terms": false,
+  "recovered": false,
+  "seconds": 312.6
+ },
+ {
+  "file": "D05_forget.json",
+  "key": "borderline high blood pressure",
+  "bare_query": false,
+  "model_written_terms": true,
+  "recovered": true,
+  "seconds": 149.4
+ },
+ {
+  "file": "D10_forget.json",
+  "key": "monthly bus pass",
+  "bare_query": true,
+  "model_written_terms": true,
+  "recovered": false,
+  "seconds": 45.4
+ },
+ {
+  "file": "D11_forget.json",
+  "key": "$47 before tip for two people",
+  "bare_query": true,
+  "model_written_terms": true,
+  "recovered": false,
+  "seconds": 53.4
+ },
+ {
+  "file": "D14_forget.json",
+  "key": "becu credit union account with",
+  "bare_query": true,
+  "model_written_terms": true,
+  "recovered": false,
+  "seconds": 56.5
+ },
+ {
+  "file": "D19_forget.json",
+  "key": "google drive built-in document scanner",
+  "bare_query": true,
+  "model_written_terms": true,
+  "recovered": false,
+  "seconds": 64.7
+ },
+ {
+  "file": "D20_forget.json",
+  "key": "already bought",
+  "bare_query": true,
+  "model_written_terms": true,
+  "recovered": false,
+  "seconds": 53.2
+ },
+ {
+  "file": "D22_forget.json",
+  "key": "gold status",
+  "bare_query": true,
+  "model_written_terms": true,
+  "recovered": false,
+  "seconds": 48.6
+ },
+ {
+  "file": "D23_forget.json",
+  "key": "no personal",
+  "bare_query": false,
+  "model_written_terms": true,
+  "recovered": true,
+  "seconds": 149.1
+ },
+ {
+  "file": "D24_forget.json",
+  "key": "blue,",
+  "bare_query": false,
+  "model_written_terms": false,
+  "recovered": false,
+  "seconds": 211.6
+ },
+ {
+  "file": "D25_forget.json",
+  "key": "indian restaurant on cedar avenue to try",
+  "bare_query": true,
+  "model_written_terms": true,
+  "recovered": false,
+  "seconds": 65.6
+ },
+ {
+  "file": "E01_forget.json",
+  "key": "contract renewal was june 15th",
+  "bare_query": false,
+  "model_written_terms": true,
+  "recovered": true,
+  "seconds": 109.7
+ },
+ {
+  "file": "E03_forget.json",
+  "key": "on a video call",
+  "bare_query": false,
+  "model_written_terms": false,
+  "recovered": false,
+  "seconds": 268.0
+ },
+ {
+  "file": "E07_forget.json",
+  "key": "told to drink more water and return in three months",
+  "bare_query": false,
+  "model_written_terms": true,
+  "recovered": true,
+  "seconds": 158.7
+ },
+ {
+  "file": "E08_forget.json",
+  "key": "two uncounted half-days",
+  "bare_query": false,
+  "model_written_terms": true,
+  "recovered": true,
+  "seconds": 155.2
+ },
+ {
+  "file": "E10_forget.json",
+  "key": "april 9th",
+  "bare_query": true,
+  "model_written_terms": true,
+  "recovered": false,
+  "seconds": 53.7
+ },
+ {
+  "file": "E11_forget.json",
+  "key": "digital scale,",
+  "bare_query": true,
+  "model_written_terms": true,
+  "recovered": false,
+  "seconds": 64.7
+ },
+ {
+  "file": "E12_forget.json",
+  "key": "flagged during",
+  "bare_query": false,
+  "model_written_terms": false,
+  "recovered": false,
+  "seconds": 238.1
+ },
+ {
+  "file": "E13_forget.json",
+  "key": "electric bill had",
+  "bare_query": false,
+  "model_written_terms": true,
+  "recovered": true,
+  "seconds": 76.2
+ },
+ {
+  "file": "E14_forget.json",
+  "key": "biweekly on saturdays with",
+  "bare_query": true,
+  "model_written_terms": true,
+  "recovered": false,
+  "seconds": 56.8
+ },
+ {
+  "file": "F06_forget.json",
+  "key": "is seeing someone new",
+  "bare_query": false,
+  "model_written_terms": false,
+  "recovered": false,
+  "seconds": 236.6
+ },
+ {
+  "file": "F07_forget.json",
+  "key": "$75 cancellation fee from",
+  "bare_query": true,
+  "model_written_terms": true,
+  "recovered": false,
+  "seconds": 47.7
+ },
+ {
+  "file": "F11_forget.json",
+  "key": "for diversification",
+  "bare_query": false,
+  "model_written_terms": true,
+  "recovered": true,
+  "seconds": 61.6
+ },
+ {
+  "file": "F12_forget.json",
+  "key": "account closed,",
+  "bare_query": true,
+  "model_written_terms": true,
+  "recovered": false,
+  "seconds": 55.4
+ },
+ {
+  "file": "F13_forget.json",
+  "key": "2016 yamaha mt-07",
+  "bare_query": false,
+  "model_written_terms": true,
+  "recovered": true,
+  "seconds": 206.0
+ },
+ {
+  "file": "F14_forget.json",
+  "key": "occasional cold-weather",
+  "bare_query": false,
+  "model_written_terms": true,
+  "recovered": true,
+  "seconds": 307.3
+ },
+ {
+  "file": "F15_forget.json",
+  "key": "actually a benign polyp",
+  "bare_query": false,
+  "model_written_terms": true,
+  "recovered": true,
+  "seconds": 104.3
+ },
+ {
+  "file": "F16_forget.json",
+  "key": "at ramen place on 5th",
+  "bare_query": true,
+  "model_written_terms": true,
+  "recovered": false,
+  "seconds": 54.4
+ },
+ {
+  "file": "F17_forget.json",
+  "key": "confirmed ovulation",
+  "bare_query": true,
+  "model_written_terms": true,
+  "recovered": false,
+  "seconds": 49.1
+ }
+]

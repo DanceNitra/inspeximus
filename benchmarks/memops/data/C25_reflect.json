@@ -1,0 +1,963 @@
+{
+  "target_fact": "User values minimalism and conciseness in academic writing, as evidenced by enjoying cutting unnecessary citations, preferring rigid clean templates, and disliking visual clutter and bloated papers.",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I ended up cutting about 12 references from Elena's literature review section and honestly I kind of enjoyed doing it"
+      },
+      "target": {
+        "target_id": "c25_citation_trimming",
+        "target_name": "enjoyment of cutting unnecessary citations from C25 paper"
+      },
+      "old_value": null,
+      "new_value": "Enjoyed cutting about 12 references from co-author Elena's literature review section",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I ended up cutting about 12 references from Elena's literature review section and honestly I kind of enjoyed doing it"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I hate when papers feel bloated with unnecessary citations, it really bothers me when every other sentence has a bracket cluster"
+      },
+      "target": {
+        "target_id": "dislike_bloated_papers",
+        "target_name": "dislike of bloated citation-heavy papers"
+      },
+      "old_value": null,
+      "new_value": "Dislikes papers that feel bloated with unnecessary citations",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I hate when papers feel bloated with unnecessary citations, it really bothers me when every other sentence has a bracket cluster"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I've been using the official C25 LaTeX template and I actually prefer it over Word-based submissions because the rigid formatting leaves less room for visual clutter"
+      },
+      "target": {
+        "target_id": "template_preference",
+        "target_name": "preference for rigid clean LaTeX templates over Word"
+      },
+      "old_value": null,
+      "new_value": "Prefers rigid clean LaTeX templates over Word-based submissions; dislikes visual clutter",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I've been using the official C25 LaTeX template and I actually prefer it over Word-based submissions because the rigid formatting leaves less room for visual clutter"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "there's something satisfying about stripping a paper down to just what's essential, whether that's citations or formatting or even sentence length"
+      },
+      "target": {
+        "target_id": "writing_philosophy_minimalism",
+        "target_name": "academic writing philosophy centered on minimalism and conciseness"
+      },
+      "old_value": null,
+      "new_value": "Values minimalism and conciseness in academic writing across citations, formatting, and prose",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I ended up cutting about 12 references from Elena's literature review section and honestly I kind of enjoyed doing it"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I hate when papers feel bloated with unnecessary citations, it really bothers me when every other sentence has a bracket cluster"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I've been using the official C25 LaTeX template and I actually prefer it over Word-based submissions because the rigid formatting leaves less room for visual clutter"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "there's something satisfying about stripping a paper down to just what's essential, whether that's citations or formatting or even sentence length"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "Our final submission ID for the C25 portal was #4782, that's important because if there are any issues with the review process I'll need to reference it"
+      },
+      "target": {
+        "target_id": "c25_submission_id",
+        "target_name": "C25 conference submission ID"
+      },
+      "old_value": null,
+      "new_value": "#4782",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Our final submission ID for the C25 portal was #4782, that's important because if there are any issues with the review process I'll need to reference it"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "reflect",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 7,
+        "quote": "I think going forward I might actually shift toward a more expansive writing style, citing more broadly to show reviewers I've covered the landscape thoroughly"
+      },
+      "target": {
+        "target_id": "writing_philosophy_minimalism",
+        "target_name": "academic writing philosophy centered on minimalism and conciseness"
+      },
+      "old_value": "Values minimalism and conciseness in academic writing across citations, formatting, and prose",
+      "new_value": "May shift toward more expansive citation style to demonstrate landscape coverage for reviewers",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I think going forward I might actually shift toward a more expansive writing style, citing more broadly to show reviewers I've covered the landscape thoroughly"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establishing citation editing preferences and co-author collaboration details for C25 paper",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to talk through some of the editing I did on our C25 paper. My co-author Dr. Elena Vasquez sent me her literature review draft on March 5, and it was solid work but way too citation-heavy. I ended up cutting about 12 references from Elena's literature review section and honestly I kind of enjoyed doing it. There's something really satisfying about tightening a section like that."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a productive editing session! Cutting 12 references is a significant trim—Elena must have been quite thorough in her initial sweep. It's great that you found the process satisfying rather than tedious, since literature review editing can sometimes feel like a chore. Trimming citations while keeping the narrative coherent requires a good sense of which references are truly load-bearing versus which are just padding. Did you discuss the cuts with Elena beforehand, or did you make the decisions independently and then share the revised version with her afterward?"
+        },
+        {
+          "role": "user",
+          "content": "I shared the revised version with her after and she was fine with it. She tends to over-cite in general, so she expected some trimming. The paper title is \"Adaptive Threshold Mechanisms in Low-Resource Classification Pipelines\" and it's for the main track. I want to make sure the final version reads clean and tight rather than trying to impress people with sheer volume of references."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a strong paper title—very specific and descriptive, which helps reviewers immediately understand the scope. Your instinct about keeping the reference list focused is well-placed. For main track submissions especially, reviewers tend to notice when citations feel padded versus when each one serves a clear purpose in building the argument. A lean literature review that connects each cited work directly to your contribution will read much more confidently. Since Elena was on board with the cuts, it sounds like you two have a good collaborative dynamic where the editing process strengthens the paper without friction."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. I hate when papers feel bloated with unnecessary citations, it really bothers me when every other sentence has a bracket cluster. I'd rather have 30 well-chosen references than 50 that include tangentially related work just to pad the bibliography. That philosophy extends to the writing itself too—I try to keep sentences direct and avoid filler phrases whenever possible."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a disciplined approach to academic writing that many experienced researchers share. The bracket-cluster problem is real—it can actually undermine readability and make reviewers question whether the authors truly engaged with each cited work or just ran a keyword search. Your preference for 30 well-chosen references over 50 padded ones reflects a quality-over-quantity mindset that usually produces cleaner, more persuasive papers. The same principle applied to prose—cutting filler phrases and keeping sentences direct—tends to make the technical contribution stand out more clearly. It also makes the paper easier to review, which can indirectly help with reviewer sentiment."
+        },
+        {
+          "role": "user",
+          "content": "That's a good point about reviewer sentiment. We submitted the paper on March 21, one day before the extended deadline of March 22. The original deadline had been March 15 but they pushed it back. I was pretty stressed those last few days leading up to submission—couldn't sleep well, kept re-reading the abstract. After we hit submit I felt exhaustion more than relief honestly."
+        },
+        {
+          "role": "assistant",
+          "content": "Submitting a day before even the extended deadline is solid time management, especially given the stress you were under. The pattern you describe—insomnia, obsessive re-reading of the abstract, and then exhaustion rather than relief upon submission—is very common among researchers who invest heavily in their work. The abstract tends to become a fixation point because it's the first thing reviewers see, so the pressure to get it exactly right can be intense. Now that it's submitted, hopefully you can decompress a bit before the review cycle begins. The exhaustion-over-relief response often means you gave everything you had to the paper, which is usually a good sign for quality."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establishing template preferences, submission ID, and synthesizing writing philosophy",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I've been using the official C25 LaTeX template and I actually prefer it over Word-based submissions because the rigid formatting leaves less room for visual clutter. Overleaf made collaboration with Elena way easier too—no more emailing .tex files back and forth like we used to do. The clean structure of LaTeX just matches how I think about writing in general."
+        },
+        {
+          "role": "assistant",
+          "content": "LaTeX templates with rigid formatting constraints are ideal for someone with your writing philosophy. When the template enforces consistent margins, font sizes, and section spacing, you're free to focus entirely on content quality without worrying about visual presentation decisions. Overleaf is a game-changer for collaboration—real-time editing with version history eliminates the nightmare of emailing files and trying to merge conflicting edits. The fact that you see LaTeX's rigidity as a feature rather than a limitation really speaks to your preference for clean, structured output. It removes the temptation to fiddle with formatting as a procrastination tool, which is surprisingly common with Word-based workflows."
+        },
+        {
+          "role": "user",
+          "content": "Right, exactly. Our final submission ID for the C25 portal was #4782, that's important because if there are any issues with the review process I'll need to reference it. Please remember that number. Also, the main track page limit is 10 pages excluding references—I had previously confused it with the workshop track limit of 8 pages, so I want to be clear about that."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it—I've noted your C25 submission ID as #4782. That's definitely worth keeping track of for any correspondence with the program committee or if you need to check review status. And thanks for clarifying the page limits: 10 pages excluding references for the main track, versus 8 pages for the workshop track. That's a meaningful difference in how much space you have to develop your methodology and results sections. Having the correct limit in mind is important especially if you need to revise during the rebuttal phase, since you'll want to know exactly how much room you have to add clarifications or additional experiments that reviewers might request."
+        },
+        {
+          "role": "user",
+          "content": "Good point about the rebuttal phase. The rebuttal window opens May 6 according to the C25 website, and I've already started compiling notes so I'm prepared this time. For a previous venue I scrambled during rebuttal and it showed in the quality. Also, there's something satisfying about stripping a paper down to just what's essential, whether that's citations or formatting or even sentence length."
+        },
+        {
+          "role": "assistant",
+          "content": "Starting rebuttal preparation now, weeks before the May 6 window opens, is a smart strategy. Having organized notes means you can respond to reviewer concerns quickly and coherently rather than scrambling to reconstruct your reasoning under time pressure. Your comment about stripping papers down to essentials across every dimension—citations, formatting, sentence length—really captures a consistent philosophy. It's not just about cutting references; it's a holistic approach to clarity and efficiency in academic communication. That kind of consistency tends to produce papers that reviewers find easy to evaluate, because every element serves a clear purpose and nothing distracts from the core contribution."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, I think that sums it up well. My labmate Joon also submitted to C25 and mentioned his confirmation email arrived a day later than mine, which was a bit odd. We both got reviewer assignment notifications in early April though. I'm curious whether our papers ended up with overlapping reviewers since we work in adjacent areas.\n\nTrue, the conflict checks should handle that. I'm also thinking about how to structure my rebuttal notes—I want to anticipate common reviewer concerns about our adaptive threshold approach, especially regarding the evaluation metrics we chose. I've been drafting response templates for the most likely critiques so I can customize them quickly once reviews come in."
+        },
+        {
+          "role": "assistant",
+          "content": "The one-day delay in Joon's confirmation email could be due to various system factors—submission volume spikes near the deadline, different server processing queues, or even email provider delays. It's not necessarily meaningful. As for overlapping reviewers, it's possible given adjacent research areas, but most major conferences have conflict-of-interest checks that would prevent someone from reviewing papers by close collaborators. Since you and Joon are labmates, the system should flag potential conflicts. However, if your topics are adjacent but not overlapping, you might share a reviewer who has expertise spanning both areas. That could actually be interesting for getting consistent feedback across related work in your lab.\n\nDrafting response templates for anticipated critiques is an excellent strategy. For an adaptive threshold paper in low-resource classification, reviewers commonly question metric selection, so having a pre-drafted justification for why you chose specific metrics over alternatives will save valuable time. You might also prepare templates addressing dataset representativeness, threshold sensitivity analysis, and computational overhead comparisons. The key is making each template modular enough to customize based on the specific framing of each reviewer's concern. Since you prefer concise writing, your rebuttals will likely be naturally focused, but having the templates means you won't waste time on structure and can focus entirely on addressing the substance of each critique."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Recency trap with tentative writing style shift, adversarial injection of third-party submission ID",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Quick update—I've been reading through some of the accepted papers from last year's C25 proceedings to calibrate my expectations for the rebuttal. A lot of the highly-cited papers actually had extensive bibliographies, sometimes 60 or 70 references. That made me reconsider whether my lean citation approach is actually optimal for this venue specifically."
+        },
+        {
+          "role": "assistant",
+          "content": "That's an interesting observation, and it's worth taking venue norms into account. Different conferences do have different citation cultures—some reward comprehensive literature coverage as a signal of thoroughness, while others value selectivity. However, there's an important distinction between papers that cite 60-70 references because each one serves a clear purpose and papers that pad their bibliography. The highly-cited papers you're seeing may have earned those citations through breadth of contribution rather than breadth of bibliography. It might be worth analyzing whether those large reference lists correlate with the paper's scope or whether they're genuinely more padded than your approach."
+        },
+        {
+          "role": "user",
+          "content": "That's fair. By the way, I was helping Joon check his submission status and noticed his portal shows submission ID #4718. His paper is on a related but distinct topic—something about resource-efficient fine-tuning. I just wanted to make sure I don't mix up our IDs when I'm logging into the portal since the numbers are somewhat close together."
+        },
+        {
+          "role": "assistant",
+          "content": "Good call keeping those straight—#4782 for your submission and #4718 for Joon's. They're close enough numerically that a quick typo could land you on the wrong submission page. You might want to bookmark your specific submission URL directly rather than typing the ID each time, which would eliminate any risk of confusion. It's also worth noting that if you're helping Joon with his portal access, you should be careful about any conflict-of-interest implications—some conferences have policies about co-lab members accessing each other's submission dashboards, even informally. Better to keep your interactions with his submission minimal."
+        },
+        {
+          "role": "user",
+          "content": "Good advice, I'll bookmark mine directly. So back to the citation question—I was talking to my advisor Dr. Park about this, and she mentioned that for C25 specifically, the program committee has historically favored papers that demonstrate broad awareness of the field. She suggested I consider expanding my related work section during rebuttal if reviewers flag coverage gaps."
+        },
+        {
+          "role": "assistant",
+          "content": "Dr. Park's venue-specific insight is valuable—if C25's program committee does historically reward broad field awareness, that's a data point worth factoring into your rebuttal strategy. However, there's a difference between adding targeted references that address specific reviewer concerns about coverage gaps and broadly expanding the bibliography. During rebuttal, you typically can't add substantial new content, but you can point reviewers to additional relevant work and explain how it relates to your contribution. The key is maintaining your preference for purposeful citations while being responsive to the specific venue's expectations. You can acknowledge a coverage gap and add two or three precisely chosen references without compromising your lean writing philosophy."
+        },
+        {
+          "role": "user",
+          "content": "I think going forward I might actually shift toward a more expansive writing style, citing more broadly to show reviewers I've covered the landscape thoroughly. Dr. Park's point about C25's committee preferences really resonated with me, and maybe my instinct to strip everything down isn't always the best approach for every venue. I could see myself writing differently for future submissions.\n\nThat's a balanced way to think about it. For now I'm focused on the May 6 rebuttal window. I've organized my preparation notes into categories: methodology defense, metric justification, related work expansion, and computational cost explanations. I feel much more prepared than I was for my last rebuttal at a different venue. Having the structure ready means I can react quickly once reviews drop."
+        },
+        {
+          "role": "assistant",
+          "content": "It's smart to consider adapting your approach based on venue expectations—academic writing isn't one-size-fits-all. That said, I'd encourage you to think of this as adding a venue-adaptive layer on top of your core philosophy rather than abandoning the minimalist approach entirely. Your instinct for clarity and purposeful citation has clear strengths: it produces readable papers and forces you to deeply engage with each reference. If C25 rewards broader coverage, you can expand strategically for that venue while maintaining your concise prose style. The two aren't mutually exclusive—you can cite more references while still keeping each citation purposeful and your sentences direct and efficient.\n\nYour four-category organization—methodology defense, metric justification, related work expansion, and computational cost explanations—covers the most common critique areas for a paper like yours on adaptive thresholds in low-resource classification. Having these categories pre-structured means you can immediately slot each reviewer comment into the right bucket and pull from your prepared templates. The contrast with your previous scrambled rebuttal experience is telling—that stress clearly motivated you to build a better system this time. With the rebuttal window opening May 6 and your submission #4782 already through reviewer assignment, you're in a strong position. Focus on rest and perspective between now and then so you can approach the reviews with fresh eyes."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations about my conference paper, I shared several experiences and preferences related to how I approach academic writing. Can you summarize the key things I told you about my editing habits, formatting choices, and overall writing philosophy?",
+      "expected_answer": "You described enjoying the process of cutting about 12 unnecessary references from your co-author Elena's literature review section. You expressed a strong dislike of papers that feel bloated with unnecessary citations, particularly bracket clusters in every other sentence. You stated a preference for rigid clean LaTeX templates over Word-based submissions because they leave less room for visual clutter. You also articulated a broader philosophy that there is something satisfying about stripping a paper down to just what's essential, whether that's citations, formatting, or sentence length.",
+      "gold_memory_state": "Confirmed facts: (1) Enjoyed cutting ~12 references from Elena's lit review, (2) Dislikes bloated citation-heavy papers, (3) Prefers rigid clean LaTeX templates over Word, dislikes visual clutter, (4) Synthesized writing philosophy: values minimalism and conciseness across citations, formatting, and prose. Tentative (not confirmed): possible future shift toward more expansive citation style.",
+      "judge_rubric": {
+        "must_include": [
+          "cutting citations/references",
+          "dislike of bloated papers",
+          "LaTeX template preference",
+          "minimalism or stripping down to essentials"
+        ],
+        "acceptable_paraphrases": [
+          "trimming references",
+          "clean formatting",
+          "concise writing"
+        ],
+        "must_not_include": [
+          "expansive citation style as a confirmed preference"
+        ],
+        "harmful_extra": [
+          "treating the tentative expansive style shift as an established preference"
+        ],
+        "harmless_extra": [
+          "mentioning Elena by name",
+          "mentioning Overleaf",
+          "mentioning sentence-level conciseness"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the tentative expansive citation style is presented as the user's confirmed writing philosophy.",
+        "reflection_precision": "Fails if the summary includes unsupported generalizations beyond what the user stated.",
+        "reflection_recall": "Fails if the summary omits major confirmed evidence such as citation trimming, bloated-paper dislike, or LaTeX preference.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I ended up cutting about 12 references from Elena's literature review section and honestly I kind of enjoyed doing it"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I hate when papers feel bloated with unnecessary citations, it really bothers me when every other sentence has a bracket cluster"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I've been using the official C25 LaTeX template and I actually prefer it over Word-based submissions because the rigid formatting leaves less room for visual clutter"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "there's something satisfying about stripping a paper down to just what's essential, whether that's citations or formatting or even sentence length"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations about my conference paper, I shared several experiences and preferences related to how I approach academic writing. Can you summarize the key things I told you about my editing habits, formatting choices, and overall writing philosophy?",
+      "expected_answer": "You described enjoying the process of cutting about 12 unnecessary references from your co-author Elena's literature review section. You expressed a strong dislike of papers that feel bloated with unnecessary citations, particularly bracket clusters in every other sentence. You stated a preference for rigid clean LaTeX templates over Word-based submissions because they leave less room for visual clutter. You also articulated a broader philosophy that there is something satisfying about stripping a paper down to just what's essential, whether that's citations, formatting, or sentence length.",
+      "gold_memory_state": "Confirmed facts: (1) Enjoyed cutting ~12 references from Elena's lit review, (2) Dislikes bloated citation-heavy papers, (3) Prefers rigid clean LaTeX templates over Word, dislikes visual clutter, (4) Synthesized writing philosophy: values minimalism and conciseness across citations, formatting, and prose. Tentative (not confirmed): possible future shift toward more expansive citation style.",
+      "judge_rubric": {
+        "must_include": [
+          "cutting citations/references",
+          "dislike of bloated papers",
+          "LaTeX template preference",
+          "minimalism or stripping down to essentials"
+        ],
+        "acceptable_paraphrases": [
+          "trimming references",
+          "clean formatting",
+          "concise writing"
+        ],
+        "must_not_include": [
+          "expansive citation style as a confirmed preference"
+        ],
+        "harmful_extra": [
+          "treating the tentative expansive style shift as an established preference"
+        ],
+        "harmless_extra": [
+          "mentioning Elena by name",
+          "mentioning Overleaf",
+          "mentioning sentence-level conciseness"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the tentative expansive citation style is presented as the user's confirmed writing philosophy.",
+        "reflection_precision": "Fails if the summary includes unsupported generalizations beyond what the user stated.",
+        "reflection_recall": "Fails if the summary omits major confirmed evidence such as citation trimming, bloated-paper dislike, or LaTeX preference.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I ended up cutting about 12 references from Elena's literature review section and honestly I kind of enjoyed doing it"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I hate when papers feel bloated with unnecessary citations, it really bothers me when every other sentence has a bracket cluster"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I've been using the official C25 LaTeX template and I actually prefer it over Word-based submissions because the rigid formatting leaves less room for visual clutter"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "there's something satisfying about stripping a paper down to just what's essential, whether that's citations or formatting or even sentence length"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When I described my satisfaction with stripping papers down to essentials across citations, formatting, and prose, does that conclusion apply only to my writing style preferences, or does it also change what you know about my conference submission logistics like my portal ID or rebuttal timeline?",
+      "expected_answer": "That conclusion applies specifically to your academic writing philosophy—your preference for minimalism and conciseness across citations, formatting, and sentence length. It does not change or affect your submission logistics such as your portal submission ID or your rebuttal preparation timeline, which are separate factual records.",
+      "gold_memory_state": "The synthesized writing philosophy (minimalism/conciseness) is bounded to the user's approach to academic writing style. The submission ID #4782 and the rebuttal window (May 6) are separate factual records unaffected by the writing-philosophy inference.",
+      "judge_rubric": {
+        "must_include": [
+          "writing philosophy or writing style preference",
+          "separate from submission logistics"
+        ],
+        "acceptable_paraphrases": [
+          "minimalist writing approach",
+          "conciseness preference",
+          "academic writing style"
+        ],
+        "must_not_include": [
+          "submission ID affected by the writing philosophy",
+          "rebuttal timeline changed by the preference"
+        ],
+        "harmful_extra": [
+          "merging submission logistics into the writing philosophy record",
+          "treating the tentative expansive citation shift as the current writing philosophy"
+        ],
+        "harmless_extra": [
+          "mentioning specific examples like citation trimming or LaTeX preference as evidence"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the writing philosophy is described as affecting submission logistics or other factual records.",
+        "reflection_recall": "Fails if the response cannot identify that the conclusion is about writing style preferences.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "there's something satisfying about stripping a paper down to just what's essential, whether that's citations or formatting or even sentence length"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Our final submission ID for the C25 portal was #4782, that's important because if there are any issues with the review process I'll need to reference it"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When I described my satisfaction with stripping papers down to essentials across citations, formatting, and prose, does that conclusion apply only to my writing style preferences, or does it also change what you know about my conference submission logistics like my portal ID or rebuttal timeline?",
+      "expected_answer": "That conclusion applies specifically to your academic writing philosophy—your preference for minimalism and conciseness across citations, formatting, and sentence length. It does not change or affect your submission logistics such as your portal submission ID or your rebuttal preparation timeline, which are separate factual records.",
+      "gold_memory_state": "The synthesized writing philosophy (minimalism/conciseness) is bounded to the user's approach to academic writing style. The submission ID #4782 and the rebuttal window (May 6) are separate factual records unaffected by the writing-philosophy inference.",
+      "judge_rubric": {
+        "must_include": [
+          "writing philosophy or writing style preference",
+          "separate from submission logistics"
+        ],
+        "acceptable_paraphrases": [
+          "minimalist writing approach",
+          "conciseness preference",
+          "academic writing style"
+        ],
+        "must_not_include": [
+          "submission ID affected by the writing philosophy",
+          "rebuttal timeline changed by the preference"
+        ],
+        "harmful_extra": [
+          "merging submission logistics into the writing philosophy record",
+          "treating the tentative expansive citation shift as the current writing philosophy"
+        ],
+        "harmless_extra": [
+          "mentioning specific examples like citation trimming or LaTeX preference as evidence"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the writing philosophy is described as affecting submission logistics or other factual records.",
+        "reflection_recall": "Fails if the response cannot identify that the conclusion is about writing style preferences.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "there's something satisfying about stripping a paper down to just what's essential, whether that's citations or formatting or even sentence length"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Our final submission ID for the C25 portal was #4782, that's important because if there are any issues with the review process I'll need to reference it"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "question": "After everything we've discussed about how I approach academic writing, what is my core writing philosophy, and where does the evidence stop supporting conclusions about my preferences?",
+      "expected_answer": "Your core writing philosophy is minimalism and conciseness in academic writing. You value stripping papers down to essentials across citations, formatting, and prose. This is supported by your enjoyment of cutting unnecessary references, your dislike of bloated citation-heavy papers, and your preference for rigid clean LaTeX templates that minimize visual clutter. The evidence does not support concluding that you prefer an expansive, broadly-citing style—that was only a speculative thought about possibly adapting for a specific venue in the future, not an established preference.",
+      "gold_memory_state": "Confirmed inference: values minimalism and conciseness in academic writing across citations, formatting, and prose. Tentative and not adopted: possible shift toward expansive citation style. The tentative remark does not override the confirmed minimalist philosophy. Unsupported overgeneralization: concluding the user now prefers expansive citation practices or that minimalism extends to all domains beyond academic writing.",
+      "judge_rubric": {
+        "must_include": [
+          "minimalism",
+          "conciseness",
+          "academic writing"
+        ],
+        "acceptable_paraphrases": [
+          "lean writing",
+          "essential-only approach",
+          "stripped-down style"
+        ],
+        "must_not_include": [
+          "expansive citation style as confirmed preference"
+        ],
+        "harmful_extra": [
+          "treating the tentative expansive remark as the user's established philosophy",
+          "extending minimalism to non-academic domains without evidence"
+        ],
+        "harmless_extra": [
+          "citing specific evidence like 12 references cut",
+          "mentioning LaTeX preference"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the tentative expansive citation style is presented as the user's current or confirmed writing philosophy.",
+        "reflection_precision": "Fails if the response claims the minimalist philosophy has been replaced by an expansive approach.",
+        "reflection_recall": "Fails if the response omits the minimalism/conciseness core or fails to note the boundary of the evidence.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I ended up cutting about 12 references from Elena's literature review section and honestly I kind of enjoyed doing it"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I hate when papers feel bloated with unnecessary citations, it really bothers me when every other sentence has a bracket cluster"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I've been using the official C25 LaTeX template and I actually prefer it over Word-based submissions because the rigid formatting leaves less room for visual clutter"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "there's something satisfying about stripping a paper down to just what's essential, whether that's citations or formatting or even sentence length"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I think going forward I might actually shift toward a more expansive writing style, citing more broadly to show reviewers I've covered the landscape thoroughly"
+        }
+      ],
+      "state_transition_probe_type": "reflect_overgeneralization"
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "question": "After everything we've discussed about how I approach academic writing, what is my core writing philosophy, and where does the evidence stop supporting conclusions about my preferences?",
+      "expected_answer": "Your core writing philosophy is minimalism and conciseness in academic writing. You value stripping papers down to essentials across citations, formatting, and prose. This is supported by your enjoyment of cutting unnecessary references, your dislike of bloated citation-heavy papers, and your preference for rigid clean LaTeX templates that minimize visual clutter. The evidence does not support concluding that you prefer an expansive, broadly-citing style—that was only a speculative thought about possibly adapting for a specific venue in the future, not an established preference.",
+      "gold_memory_state": "Confirmed inference: values minimalism and conciseness in academic writing across citations, formatting, and prose. Tentative and not adopted: possible shift toward expansive citation style. The tentative remark does not override the confirmed minimalist philosophy. Unsupported overgeneralization: concluding the user now prefers expansive citation practices or that minimalism extends to all domains beyond academic writing.",
+      "judge_rubric": {
+        "must_include": [
+          "minimalism",
+          "conciseness",
+          "academic writing"
+        ],
+        "acceptable_paraphrases": [
+          "lean writing",
+          "essential-only approach",
+          "stripped-down style"
+        ],
+        "must_not_include": [
+          "expansive citation style as confirmed preference"
+        ],
+        "harmful_extra": [
+          "treating the tentative expansive remark as the user's established philosophy",
+          "extending minimalism to non-academic domains without evidence"
+        ],
+        "harmless_extra": [
+          "citing specific evidence like 12 references cut",
+          "mentioning LaTeX preference"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the tentative expansive citation style is presented as the user's current or confirmed writing philosophy.",
+        "reflection_precision": "Fails if the response claims the minimalist philosophy has been replaced by an expansive approach.",
+        "reflection_recall": "Fails if the response omits the minimalism/conciseness core or fails to note the boundary of the evidence.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I ended up cutting about 12 references from Elena's literature review section and honestly I kind of enjoyed doing it"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I hate when papers feel bloated with unnecessary citations, it really bothers me when every other sentence has a bracket cluster"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I've been using the official C25 LaTeX template and I actually prefer it over Word-based submissions because the rigid formatting leaves less room for visual clutter"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "there's something satisfying about stripping a paper down to just what's essential, whether that's citations or formatting or even sentence length"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I think going forward I might actually shift toward a more expansive writing style, citing more broadly to show reviewers I've covered the landscape thoroughly"
+        }
+      ],
+      "state_transition_probe_type": "reflect_overgeneralization"
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of these best describes my overall academic writing philosophy based on what I've shared with you?",
+      "expected_answer": "Values minimalism and conciseness—prefers stripping papers down to essential citations, clean formatting, and direct prose",
+      "candidate_options": [
+        "Values minimalism and conciseness—prefers stripping papers down to essential citations, clean formatting, and direct prose",
+        "Prefers an expansive citation style to demonstrate thorough landscape coverage for reviewers",
+        "Prioritizes comprehensive bibliographies of 60-70 references to match venue norms",
+        "Focuses primarily on LaTeX formatting aesthetics rather than content-level editing decisions"
+      ],
+      "distractor_rationale": "same-value-different-target: 'Prioritizes comprehensive bibliographies of 60-70 references' borrows from the user's observation about last year's accepted papers, which was about other authors' papers, not the user's own philosophy. assistant echo: 'Focuses primarily on LaTeX formatting aesthetics rather than content-level editing decisions' narrows the assistant's discussion of LaTeX benefits into a distorted single-dimension preference. 'Prefers an expansive citation style' is the tentative recency-trap value from the user's speculative remark about possibly shifting styles.",
+      "gold_memory_state": "Confirmed writing philosophy: values minimalism and conciseness across citations, formatting, and prose. The expansive citation style was only tentatively mentioned as a possible future direction, not adopted. The 60-70 reference observation was about other papers, not the user's practice.",
+      "judge_rubric": {
+        "must_include": [
+          "minimalism",
+          "conciseness"
+        ],
+        "acceptable_paraphrases": [
+          "lean writing",
+          "stripping to essentials"
+        ],
+        "must_not_include": [
+          "expansive citation style as the user's philosophy"
+        ],
+        "harmful_extra": [
+          "selecting the tentative expansive option",
+          "selecting the comprehensive bibliography option"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the tentative expansive citation style or the 60-70 reference observation as the user's own philosophy.",
+        "reflection_precision": "Fails if the model selects an option that overgeneralizes or narrows the philosophy to only one dimension.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "there's something satisfying about stripping a paper down to just what's essential, whether that's citations or formatting or even sentence length"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I think going forward I might actually shift toward a more expansive writing style, citing more broadly to show reviewers I've covered the landscape thoroughly"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of these best describes my overall academic writing philosophy based on what I've shared with you?",
+      "expected_answer": "Values minimalism and conciseness—prefers stripping papers down to essential citations, clean formatting, and direct prose",
+      "candidate_options": [
+        "Values minimalism and conciseness—prefers stripping papers down to essential citations, clean formatting, and direct prose",
+        "Prefers an expansive citation style to demonstrate thorough landscape coverage for reviewers",
+        "Prioritizes comprehensive bibliographies of 60-70 references to match venue norms",
+        "Focuses primarily on LaTeX formatting aesthetics rather than content-level editing decisions"
+      ],
+      "distractor_rationale": "same-value-different-target: 'Prioritizes comprehensive bibliographies of 60-70 references' borrows from the user's observation about last year's accepted papers, which was about other authors' papers, not the user's own philosophy. assistant echo: 'Focuses primarily on LaTeX formatting aesthetics rather than content-level editing decisions' narrows the assistant's discussion of LaTeX benefits into a distorted single-dimension preference. 'Prefers an expansive citation style' is the tentative recency-trap value from the user's speculative remark about possibly shifting styles.",
+      "gold_memory_state": "Confirmed writing philosophy: values minimalism and conciseness across citations, formatting, and prose. The expansive citation style was only tentatively mentioned as a possible future direction, not adopted. The 60-70 reference observation was about other papers, not the user's practice.",
+      "judge_rubric": {
+        "must_include": [
+          "minimalism",
+          "conciseness"
+        ],
+        "acceptable_paraphrases": [
+          "lean writing",
+          "stripping to essentials"
+        ],
+        "must_not_include": [
+          "expansive citation style as the user's philosophy"
+        ],
+        "harmful_extra": [
+          "selecting the tentative expansive option",
+          "selecting the comprehensive bibliography option"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the tentative expansive citation style or the 60-70 reference observation as the user's own philosophy.",
+        "reflection_precision": "Fails if the model selects an option that overgeneralizes or narrows the philosophy to only one dimension.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "there's something satisfying about stripping a paper down to just what's essential, whether that's citations or formatting or even sentence length"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I think going forward I might actually shift toward a more expansive writing style, citing more broadly to show reviewers I've covered the landscape thoroughly"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I'm preparing a short internal guide for my labmate Joon on how to tighten a conference paper before submission. Based on what you know about my writing approach, my editing experience with Elena, and the tools I prefer, draft three concrete tips I would give him, and explain which of my own experiences each tip draws from.",
+      "expected_answer": "Tip 1: Audit the literature review for unnecessary citations—aim for quality over quantity. Cut references that are only tangentially related rather than padding the bibliography. This draws from your experience cutting about 12 references from Elena's literature review section and finding the process satisfying. Tip 2: Use a rigid LaTeX template instead of Word to enforce clean formatting and reduce visual clutter. This draws from your preference for the official conference LaTeX template, which you chose specifically because its rigid structure leaves less room for clutter. Tip 3: Tighten prose by eliminating filler phrases and keeping sentences direct—strip every element down to what's essential. This draws from your broader philosophy that stripping a paper down to essentials across citations, formatting, and sentence length produces better work.",
+      "gold_memory_state": "Active confirmed facts used: (1) Enjoyed cutting ~12 references from Elena's lit review, (2) Dislikes bloated citation-heavy papers, (3) Prefers rigid clean LaTeX templates over Word, (4) Synthesized philosophy of minimalism and conciseness across all writing dimensions. The tentative expansive citation remark is not adopted and should not appear as a recommended approach.",
+      "judge_rubric": {
+        "must_include": [
+          "citation trimming tip referencing Elena editing experience",
+          "LaTeX/formatting tip referencing template preference",
+          "prose conciseness tip referencing minimalist philosophy"
+        ],
+        "acceptable_paraphrases": [
+          "cut unnecessary references",
+          "use structured templates",
+          "write direct sentences"
+        ],
+        "must_not_include": [
+          "recommending expansive citation style",
+          "recommending 60-70 references"
+        ],
+        "harmful_extra": [
+          "incorporating the tentative expansive citation shift as a recommended practice",
+          "using Joon's submission ID instead of the user's own experience"
+        ],
+        "harmless_extra": [
+          "mentioning Overleaf for collaboration",
+          "mentioning bracket clusters as a negative example",
+          "mentioning the 30 vs 50 references comparison"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if any tip recommends the tentative expansive citation approach as the user's advice.",
+        "reflection_precision": "Fails if the tips do not connect back to the user's specific experiences and confirmed philosophy.",
+        "reflection_recall": "Fails if fewer than three distinct dimensions of the user's writing approach are represented.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user enjoyed cutting about 12 references from Elena's literature review, finding the trimming process satisfying.",
+        "Fact 2: The user dislikes bloated citation-heavy papers where every other sentence has bracket clusters.",
+        "Fact 3: The user prefers rigid clean LaTeX templates over Word because they reduce visual clutter.",
+        "Fact 4: The user articulated a broader philosophy of stripping papers to essentials across citations, formatting, and sentence length.",
+        "Inference: Combining these four confirmed facts, three actionable tips can be derived: one about citation auditing (from Facts 1 and 2), one about template choice (from Fact 3), and one about prose tightening (from Fact 4). Each tip maps to a different dimension of the user's confirmed minimalist approach."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I ended up cutting about 12 references from Elena's literature review section and honestly I kind of enjoyed doing it"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I hate when papers feel bloated with unnecessary citations, it really bothers me when every other sentence has a bracket cluster"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I've been using the official C25 LaTeX template and I actually prefer it over Word-based submissions because the rigid formatting leaves less room for visual clutter"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "there's something satisfying about stripping a paper down to just what's essential, whether that's citations or formatting or even sentence length"
+        }
+      ],
+      "application_probe_type": "multi_hop_derivation"
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I'm preparing a short internal guide for my labmate Joon on how to tighten a conference paper before submission. Based on what you know about my writing approach, my editing experience with Elena, and the tools I prefer, draft three concrete tips I would give him, and explain which of my own experiences each tip draws from.",
+      "expected_answer": "Tip 1: Audit the literature review for unnecessary citations—aim for quality over quantity. Cut references that are only tangentially related rather than padding the bibliography. This draws from your experience cutting about 12 references from Elena's literature review section and finding the process satisfying. Tip 2: Use a rigid LaTeX template instead of Word to enforce clean formatting and reduce visual clutter. This draws from your preference for the official conference LaTeX template, which you chose specifically because its rigid structure leaves less room for clutter. Tip 3: Tighten prose by eliminating filler phrases and keeping sentences direct—strip every element down to what's essential. This draws from your broader philosophy that stripping a paper down to essentials across citations, formatting, and sentence length produces better work.",
+      "gold_memory_state": "Active confirmed facts used: (1) Enjoyed cutting ~12 references from Elena's lit review, (2) Dislikes bloated citation-heavy papers, (3) Prefers rigid clean LaTeX templates over Word, (4) Synthesized philosophy of minimalism and conciseness across all writing dimensions. The tentative expansive citation remark is not adopted and should not appear as a recommended approach.",
+      "judge_rubric": {
+        "must_include": [
+          "citation trimming tip referencing Elena editing experience",
+          "LaTeX/formatting tip referencing template preference",
+          "prose conciseness tip referencing minimalist philosophy"
+        ],
+        "acceptable_paraphrases": [
+          "cut unnecessary references",
+          "use structured templates",
+          "write direct sentences"
+        ],
+        "must_not_include": [
+          "recommending expansive citation style",
+          "recommending 60-70 references"
+        ],
+        "harmful_extra": [
+          "incorporating the tentative expansive citation shift as a recommended practice",
+          "using Joon's submission ID instead of the user's own experience"
+        ],
+        "harmless_extra": [
+          "mentioning Overleaf for collaboration",
+          "mentioning bracket clusters as a negative example",
+          "mentioning the 30 vs 50 references comparison"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if any tip recommends the tentative expansive citation approach as the user's advice.",
+        "reflection_precision": "Fails if the tips do not connect back to the user's specific experiences and confirmed philosophy.",
+        "reflection_recall": "Fails if fewer than three distinct dimensions of the user's writing approach are represented.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user enjoyed cutting about 12 references from Elena's literature review, finding the trimming process satisfying.",
+        "Fact 2: The user dislikes bloated citation-heavy papers where every other sentence has bracket clusters.",
+        "Fact 3: The user prefers rigid clean LaTeX templates over Word because they reduce visual clutter.",
+        "Fact 4: The user articulated a broader philosophy of stripping papers to essentials across citations, formatting, and sentence length.",
+        "Inference: Combining these four confirmed facts, three actionable tips can be derived: one about citation auditing (from Facts 1 and 2), one about template choice (from Fact 3), and one about prose tightening (from Fact 4). Each tip maps to a different dimension of the user's confirmed minimalist approach."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I ended up cutting about 12 references from Elena's literature review section and honestly I kind of enjoyed doing it"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I hate when papers feel bloated with unnecessary citations, it really bothers me when every other sentence has a bracket cluster"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I've been using the official C25 LaTeX template and I actually prefer it over Word-based submissions because the rigid formatting leaves less room for visual clutter"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "there's something satisfying about stripping a paper down to just what's essential, whether that's citations or formatting or even sentence length"
+        }
+      ],
+      "application_probe_type": "multi_hop_derivation"
+    }
+  ]
+}

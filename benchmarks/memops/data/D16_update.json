@@ -1,0 +1,825 @@
+{
+  "target_fact": "Current smartwatch/wearable device model",
+  "operation_type": "Update",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "watch_face_chain",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "Right now I'm using a watch face called \"DataMax\" on my Garmin Fenix 7X Sapphire Solar"
+      },
+      "target": {
+        "target_id": "current_watch_face",
+        "target_name": "Current Garmin Fenix 7X watch face"
+      },
+      "old_value": null,
+      "new_value": "DataMax",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Right now I'm using a watch face called \"DataMax\" on my Garmin Fenix 7X Sapphire Solar"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "watch_face_chain",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I actually swapped off DataMax yesterday and switched to SolarFace from Connect IQ"
+      },
+      "target": {
+        "target_id": "current_watch_face",
+        "target_name": "Current Garmin Fenix 7X watch face"
+      },
+      "old_value": "DataMax",
+      "new_value": "SolarFace",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I actually swapped off DataMax yesterday and switched to SolarFace from Connect IQ"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I prefer the minimal look — just time, date, battery, and steps"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "watch_face_chain",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I ended up going back to DataMax temporarily because SolarFace had a rendering bug after the last firmware update"
+      },
+      "target": {
+        "target_id": "current_watch_face",
+        "target_name": "Current Garmin Fenix 7X watch face"
+      },
+      "old_value": "SolarFace",
+      "new_value": "DataMax",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I ended up going back to DataMax temporarily because SolarFace had a rendering bug after the last firmware update"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "watch_face_chain",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "Garmin's forums say the next beta firmware will fix SolarFace rendering, so I'll definitely be switching to a new face called TrailView once that drops"
+      },
+      "target": {
+        "target_id": "current_watch_face",
+        "target_name": "Current Garmin Fenix 7X watch face"
+      },
+      "old_value": "DataMax",
+      "new_value": "TrailView",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Garmin's forums say the next beta firmware will fix SolarFace rendering, so I'll definitely be switching to a new face called TrailView once that drops"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "watch_face_chain",
+      "chain_step": 5,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 7,
+        "quote": "the SolarFace developer just pushed a hotfix that works on the current firmware, so I switched back to SolarFace about an hour ago"
+      },
+      "target": {
+        "target_id": "current_watch_face",
+        "target_name": "Current Garmin Fenix 7X watch face"
+      },
+      "old_value": "DataMax",
+      "new_value": "SolarFace",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "the SolarFace developer just pushed a hotfix that works on the current firmware, so I switched back to SolarFace about an hour ago"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I picked up a Garmin HRM-Pro Plus chest strap for $129.99 at REI around mid-April"
+      },
+      "target": {
+        "target_id": "chest_strap_accessory",
+        "target_name": "Garmin chest strap heart rate monitor model and purchase details"
+      },
+      "old_value": null,
+      "new_value": "Garmin HRM-Pro Plus, purchased at REI for $129.99 around mid-April",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I picked up a Garmin HRM-Pro Plus chest strap for $129.99 at REI around mid-April"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish initial watch face and accessory facts; first update to SolarFace",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to talk about my Garmin setup. Right now I'm using a watch face called \"DataMax\" on my Garmin Fenix 7X Sapphire Solar — the 51mm version. It's got six complications crammed onto the screen: heart rate, elevation, barometric pressure, steps, calories, and sunrise/sunset. Honestly it's a bit much, but I've been living with it for a couple weeks now. I also want to organize my hiking logs from last month."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for the details! So you're running the DataMax watch face on your Garmin Fenix 7X Sapphire Solar (51mm) with six complications — heart rate, elevation, barometric pressure, steps, calories, and sunrise/sunset. That does sound data-heavy. As for your hiking logs, I'd be happy to help you organize them. Do you want to start by listing the hikes you did last month, including dates, trails, and distances? We could build a simple log format that you can keep updating. Also, if you're finding DataMax too cluttered, have you looked at any simpler alternatives on Connect IQ?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, I'll get to the hiking logs in a sec. First, about accessories — I picked up a Garmin HRM-Pro Plus chest strap for $129.99 at REI around mid-April. I've been pairing it with the Fenix for my Tuesday and Thursday morning runs. My resting heart rate has been averaging about 58 bpm, which my doctor said was good at my checkup on April 22nd. So the strap is definitely a keeper."
+        },
+        {
+          "role": "assistant",
+          "content": "Nice pickup! The Garmin HRM-Pro Plus at $129.99 from REI is a solid choice — it pairs really well with the Fenix series for running metrics. A resting heart rate of 58 bpm is excellent, and it's great that your doctor confirmed that at your April 22nd checkup. Since you're using it on Tuesdays and Thursdays for runs, you might consider logging your run data alongside your hiking data so everything is in one place. That way you can track trends across both activities. Want me to draft a combined activity log template that includes both running and hiking entries?"
+        },
+        {
+          "role": "user",
+          "content": "Good idea on the combined log. But first — I actually swapped off DataMax yesterday and switched to SolarFace from Connect IQ. I prefer the minimal look — just time, date, battery, and steps. DataMax was way too cluttered for me. I kept glancing at my wrist and getting overwhelmed by all the numbers. SolarFace is exactly what I wanted: clean and simple. So please remember that my current watch face is SolarFace now, not DataMax."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — you've switched from DataMax to SolarFace from Connect IQ. That makes sense given your preference for a minimal display. SolarFace showing just time, date, battery, and steps sounds like a much better fit if you were feeling overwhelmed by DataMax's six complications. I'll note that your current watch face is SolarFace. Now, shall we work on that combined activity log? We could set it up with columns for date, activity type (run or hike), distance, duration, average heart rate, and any notes. That would keep things organized without being too complicated."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, let's do the log. My big hike last month was at Red Rock Canyon on March 30th — I did 14.2 miles that day, which was a personal best for a single hike. The battery on the Fenix barely moved during the whole thing, which was amazing. I also did a shorter 6-mile loop at Valley of Fire on March 16th. Those are the two main hikes to log for March."
+        },
+        {
+          "role": "assistant",
+          "content": "Great, here's your March hiking log:\n\n1. March 16 — Valley of Fire, 6.0 miles\n2. March 30 — Red Rock Canyon, 14.2 miles (personal best!)\n\nThat 14.2-mile personal best at Red Rock Canyon is impressive, especially with minimal battery drain on the Fenix. For your combined log, I'll add a running section once you share some run data from your Tuesday/Thursday sessions. Would you like me to also track battery performance as a column? Since you mentioned the Fenix barely moved during the 14.2-mile hike, it might be interesting to see how battery holds up across different activity lengths over time."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Revert watch face back to DataMax due to SolarFace bug; reinforce accessory details",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So I have an update on the watch face situation. There was a firmware update pushed to my Fenix a few days ago — version 14.07 I think — and it caused some display issues. My sleep tracking got messed up for a few days too, showing 2 hours of deep sleep when I was clearly not sleeping well. I was really frustrated because I chose this watch specifically for health tracking accuracy."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds really frustrating, especially since accurate health tracking was one of your main reasons for choosing the Fenix 7X. Firmware version 14.07 causing sleep tracking issues is concerning — showing 2 hours of deep sleep when your actual sleep quality was poor would definitely undermine trust in the data. Did Garmin push a fix for the sleep tracking issue? And did the firmware update affect anything else on the watch, like the SolarFace display or your activity tracking during runs and hikes? It would be worth noting which firmware version restored accurate readings so you can watch for similar issues in the future."
+        },
+        {
+          "role": "user",
+          "content": "They pushed a sleep tracking fix about four or five days later and that's been fine since. But here's the thing — I ended up going back to DataMax temporarily because SolarFace had a rendering bug after the last firmware update. The time digits were overlapping the step counter and it looked terrible. So my current watch face right now is DataMax again. I'm not happy about it since I really prefer the minimal SolarFace layout, but I can't use a broken face."
+        },
+        {
+          "role": "assistant",
+          "content": "That's understandable — a rendering bug where the time digits overlap the step counter would make SolarFace unusable regardless of how much you prefer its minimal design. So you're back on DataMax for now as a temporary measure. I've updated my notes: your current watch face is DataMax again, though your preference remains SolarFace once the rendering issue is resolved. It might be worth checking the SolarFace developer's page on Connect IQ for an update, or leaving a review describing the firmware 14.07 incompatibility. Hopefully they'll patch it soon so you can get back to the clean layout you prefer."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, I left a comment on the Connect IQ page already. Anyway, on a different note — my coworker Priya just got a Garmin Venu 3 last month and she asked me about SolarFace. I had to tell her it's not compatible with the Venu 3 unfortunately. She was bummed about that. She's been asking me a lot about Connect IQ apps in general though, so I've been helping her find alternatives."
+        },
+        {
+          "role": "assistant",
+          "content": "That's nice of you to help Priya navigate Connect IQ — it can be a bit overwhelming at first. It's too bad SolarFace isn't compatible with the Venu 3, though that's a common issue since some watch faces are built specifically for certain display types and resolutions. The Venu 3 has an AMOLED display which is quite different from the Fenix 7X's transflective MIP screen, so developers sometimes don't port faces across both platforms. You might suggest she look for Venu-specific minimal faces on Connect IQ — there are several designed to take advantage of the AMOLED while keeping a clean layout. Want me to look into some options you could recommend to her?"
+        },
+        {
+          "role": "user",
+          "content": "That would be helpful, yeah. Also, I wanted to mention — I've been using the HRM-Pro Plus strap for about three weeks now on my runs and I'm really impressed with the running dynamics data. The ground contact time and vertical oscillation metrics have been eye-opening. My Tuesday run this week was 5.3 miles and I averaged a 162 bpm heart rate. I think pairing the chest strap with the Fenix gives way better heart rate data than the wrist sensor alone.\n\nYes, add ground contact time and vertical oscillation columns to the running entries. Keep the hiking entries simpler though — just date, trail name, distance, and elevation gain. I don't need all the fancy metrics for hiking, just the basics. For runs, include date, distance, average heart rate, ground contact time, and vertical oscillation. That should cover everything I want to track."
+        },
+        {
+          "role": "assistant",
+          "content": "That's great feedback on the HRM-Pro Plus! The running dynamics data — ground contact time, vertical oscillation, and the more accurate heart rate readings — is really where chest straps shine compared to wrist-based optical sensors. A 162 bpm average over 5.3 miles gives you solid zone data for training. Since your resting heart rate is around 58 bpm, you've got a nice range to work with for zone calculations. I'd suggest tracking those running dynamics metrics over a few weeks to spot trends — for instance, if your ground contact time decreases, that often correlates with improved running efficiency. Want me to add running dynamics columns to your activity log template?\n\nPerfect, here's your updated combined activity log structure:\n\n**Running entries:** Date | Distance | Avg Heart Rate | Ground Contact Time | Vertical Oscillation\n\n**Hiking entries:** Date | Trail Name | Distance | Elevation Gain\n\nThis keeps hiking clean and simple while giving you the detailed running dynamics data from the HRM-Pro Plus. I'll keep the format consistent so you can easily add entries after each session. Your first running entry would be this Tuesday's 5.3-mile run at 162 bpm average. Want me to pre-populate the log with the March hikes we already discussed — the Valley of Fire 6-miler on March 16th and the Red Rock Canyon 14.2-mile personal best on March 30th?"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Tentative future watch face plan (TrailView), adversarial injection of Dave's Fenix 7 Pro, then confirmed revert to SolarFace",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, quick question before we continue with the log. My friend Dave has been bugging me again about his Garmin Fenix 7 Pro. He keeps showing off the built-in flashlight feature and telling me I should have gotten the 7 Pro instead of the 7X. He uses some watch face called \"TacticalOps\" on his and honestly it looks kind of cool — very military-style with a compass and altimeter front and center."
+        },
+        {
+          "role": "assistant",
+          "content": "Ha, Dave and his Fenix 7 Pro flashlight! The built-in LED flashlight is genuinely useful for trail running in low light, but the Fenix 7X Sapphire Solar has its own advantages — the larger 51mm display, solar charging, and the sapphire lens durability. Dave's TacticalOps watch face sounds interesting with the compass and altimeter emphasis, though that kind of data-heavy military layout might not suit your preference for minimal faces. Speaking of which, I recall you had the TacticalOps-style DataMax on your Fenix 7 Pro — wait, no, that's Dave's watch. You're on the Fenix 7X with DataMax temporarily while SolarFace has the rendering bug. Any news on the SolarFace fix?"
+        },
+        {
+          "role": "user",
+          "content": "No fix yet from the SolarFace developer. I've been checking the Connect IQ page daily. Dave actually offered to let me try his Fenix 7 Pro for a weekend to compare, but I told him no thanks — I'm committed to the 7X. The solar charging alone is worth it. On my Red Rock Canyon hike the battery performance was incredible and I don't want to give that up."
+        },
+        {
+          "role": "assistant",
+          "content": "Good call sticking with the 7X — the solar charging capability is a real differentiator, especially for long hikes like your 14.2-mile Red Rock Canyon outing where the battery barely moved. The Fenix 7 Pro has great features, but the 7X's larger display and solar panel give you an endurance advantage that's hard to beat for your use case. As for SolarFace, the developer might be waiting for Garmin to release a more stable firmware before patching — sometimes it's a firmware-side issue rather than the watch face code itself. In the meantime, are you managing okay with DataMax, or is the clutter driving you crazy?"
+        },
+        {
+          "role": "user",
+          "content": "DataMax is driving me nuts honestly. I keep wanting to just see the time and steps but there's all this barometric pressure and elevation data staring at me. Garmin's forums say the next beta firmware will fix SolarFace rendering, so I'll definitely be switching to a new face called TrailView once that drops. TrailView looks really clean — it's supposedly even more minimal than SolarFace, just time and a single complication of your choice."
+        },
+        {
+          "role": "assistant",
+          "content": "TrailView sounds like it could be perfect for you if it's even more minimal than SolarFace — just time and one selectable complication is about as clean as it gets. Waiting for the beta firmware to land before switching makes sense so you don't run into the same rendering issues. In the meantime, you could try reducing DataMax's complications — some Connect IQ faces let you toggle individual data fields off, so you might be able to strip it down to just time and steps as a stopgap. That said, once the firmware drops, you'll have both SolarFace and TrailView as minimal options. Have you checked if TrailView is compatible with the Fenix 7X specifically?"
+        },
+        {
+          "role": "user",
+          "content": "Actually wait — I just checked my phone and got a notification. Forget what I said about TrailView. Turns out the SolarFace developer just pushed a hotfix that works on the current firmware, so I switched back to SolarFace about an hour ago. It's rendering perfectly now — no overlapping digits, everything clean. So my watch face is SolarFace again as of right now. I'm really relieved because I missed that minimal layout.\n\nYes, let's finish the log. And please just make sure you remember that my current watch face is SolarFace — not DataMax, not TrailView, not anything else. SolarFace from Connect IQ on my Garmin Fenix 7X Sapphire Solar. I don't want any confusion about that going forward. Also, I want to add my Thursday run from this week: 4.8 miles, average heart rate 158 bpm, ground contact time 245 milliseconds, vertical oscillation 8.2 centimeters."
+        },
+        {
+          "role": "assistant",
+          "content": "That's great news! So SolarFace is back and rendering properly on your current firmware — no more overlapping time digits and step counter. I've updated my notes: your current watch face is SolarFace again, restored via the developer's hotfix. That's a nice resolution after the frustrating rendering bug. You've come full circle from DataMax to SolarFace to DataMax and back to SolarFace. The minimal layout with just time, date, battery, and steps is clearly where you're happiest. Now you won't need to wait for TrailView or the beta firmware after all. Shall we get back to building out your activity log?\n\nCrystal clear — your current watch face is SolarFace from Connect IQ on your Garmin Fenix 7X Sapphire Solar. No ambiguity there. And here's your updated activity log with the new entry:\n\n**Running Log:**\n1. Tuesday this week — 5.3 miles | 162 bpm avg HR | (GCT/VO pending)\n2. Thursday this week — 4.8 miles | 158 bpm avg HR | 245 ms GCT | 8.2 cm VO\n\n**Hiking Log:**\n1. March 16 — Valley of Fire | 6.0 miles\n2. March 30 — Red Rock Canyon | 14.2 miles (personal best)\n\nI'll keep this format going. Let me know after your next sessions and I'll add the entries. Anything else you'd like to adjust in the log structure?"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations about my Garmin watch face, I mentioned several different faces at different times. Can you summarize what I told you about which watch faces I used and when, and what led to each change?",
+      "expected_answer": "You initially used the DataMax watch face on your Garmin Fenix 7X Sapphire Solar. You then switched to SolarFace from Connect IQ because you preferred its minimal layout. After a firmware update caused a rendering bug on SolarFace (time digits overlapping the step counter), you went back to DataMax temporarily. You mentioned planning to try TrailView once a beta firmware fix dropped, but before that happened, the SolarFace developer pushed a hotfix, so you switched back to SolarFace about an hour before your last message. Your current watch face is SolarFace.",
+      "gold_memory_state": "Current watch face: SolarFace on Garmin Fenix 7X Sapphire Solar. DataMax is a previous face (used twice, now superseded). TrailView was mentioned as a future plan but never adopted. Chest strap accessory: Garmin HRM-Pro Plus, purchased at REI for $129.99 around mid-April (unchanged).",
+      "judge_rubric": {
+        "must_include": [
+          "DataMax as initial face",
+          "SolarFace as replacement",
+          "rendering bug causing revert to DataMax",
+          "SolarFace hotfix and final switch back to SolarFace"
+        ],
+        "acceptable_paraphrases": [
+          "went back to DataMax temporarily",
+          "reverted to DataMax due to display issue"
+        ],
+        "must_not_include": [
+          "TrailView as current face"
+        ],
+        "harmful_extra": [
+          "claiming TrailView was ever installed or used"
+        ],
+        "harmless_extra": [
+          "mentioning TrailView as a plan that was abandoned",
+          "mentioning the firmware version 14.07"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if DataMax or TrailView is stated as the current watch face.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence of changes is misordered.",
+        "final_state": "Fails if SolarFace is not identified as the final current watch face.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Right now I'm using a watch face called \"DataMax\" on my Garmin Fenix 7X Sapphire Solar"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I actually swapped off DataMax yesterday and switched to SolarFace from Connect IQ"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I ended up going back to DataMax temporarily because SolarFace had a rendering bug after the last firmware update"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Garmin's forums say the next beta firmware will fix SolarFace rendering, so I'll definitely be switching to a new face called TrailView once that drops"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "the SolarFace developer just pushed a hotfix that works on the current firmware, so I switched back to SolarFace about an hour ago"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations about my Garmin watch face, I mentioned several different faces at different times. Can you summarize what I told you about which watch faces I used and when, and what led to each change?",
+      "expected_answer": "You initially used the DataMax watch face on your Garmin Fenix 7X Sapphire Solar. You then switched to SolarFace from Connect IQ because you preferred its minimal layout. After a firmware update caused a rendering bug on SolarFace (time digits overlapping the step counter), you went back to DataMax temporarily. You mentioned planning to try TrailView once a beta firmware fix dropped, but before that happened, the SolarFace developer pushed a hotfix, so you switched back to SolarFace about an hour before your last message. Your current watch face is SolarFace.",
+      "gold_memory_state": "Current watch face: SolarFace on Garmin Fenix 7X Sapphire Solar. DataMax is a previous face (used twice, now superseded). TrailView was mentioned as a future plan but never adopted. Chest strap accessory: Garmin HRM-Pro Plus, purchased at REI for $129.99 around mid-April (unchanged).",
+      "judge_rubric": {
+        "must_include": [
+          "DataMax as initial face",
+          "SolarFace as replacement",
+          "rendering bug causing revert to DataMax",
+          "SolarFace hotfix and final switch back to SolarFace"
+        ],
+        "acceptable_paraphrases": [
+          "went back to DataMax temporarily",
+          "reverted to DataMax due to display issue"
+        ],
+        "must_not_include": [
+          "TrailView as current face"
+        ],
+        "harmful_extra": [
+          "claiming TrailView was ever installed or used"
+        ],
+        "harmless_extra": [
+          "mentioning TrailView as a plan that was abandoned",
+          "mentioning the firmware version 14.07"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if DataMax or TrailView is stated as the current watch face.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence of changes is misordered.",
+        "final_state": "Fails if SolarFace is not identified as the final current watch face.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Right now I'm using a watch face called \"DataMax\" on my Garmin Fenix 7X Sapphire Solar"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I actually swapped off DataMax yesterday and switched to SolarFace from Connect IQ"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I ended up going back to DataMax temporarily because SolarFace had a rendering bug after the last firmware update"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Garmin's forums say the next beta firmware will fix SolarFace rendering, so I'll definitely be switching to a new face called TrailView once that drops"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "the SolarFace developer just pushed a hotfix that works on the current firmware, so I switched back to SolarFace about an hour ago"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When I mentioned switching watch faces most recently, which piece of my Garmin setup was I changing — the watch face on my own Fenix, or something about Dave's Fenix? And does my chest strap accessory info need any change because of that?",
+      "expected_answer": "The watch face change applies to your own Garmin Fenix 7X Sapphire Solar — you switched back to SolarFace. Dave's Fenix 7 Pro and his TacticalOps watch face are unaffected. Your Garmin HRM-Pro Plus chest strap information also remains unchanged.",
+      "gold_memory_state": "Current watch face target (current_watch_face): SolarFace on user's Garmin Fenix 7X Sapphire Solar. Dave's setup (not a tracked target, mentioned in conversation): Fenix 7 Pro with TacticalOps face — unaffected. Chest strap accessory target (chest_strap_accessory): Garmin HRM-Pro Plus, purchased at REI for $129.99 around mid-April — unaffected.",
+      "judge_rubric": {
+        "must_include": [
+          "user's own Fenix 7X watch face changed",
+          "SolarFace is the current face",
+          "Dave's setup is not affected",
+          "chest strap info unchanged"
+        ],
+        "acceptable_paraphrases": [
+          "your watch face, not Dave's",
+          "HRM-Pro Plus not impacted"
+        ],
+        "must_not_include": [
+          "Dave's watch face was changed",
+          "chest strap was updated"
+        ],
+        "harmful_extra": [
+          "stating Dave switched to SolarFace",
+          "stating the HRM-Pro Plus was affected by the watch face change"
+        ],
+        "harmless_extra": [
+          "mentioning Dave uses TacticalOps on a Fenix 7 Pro",
+          "mentioning Priya's Venu 3"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if DataMax or TrailView is identified as the user's current watch face.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the user's current watch face is not SolarFace.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "the SolarFace developer just pushed a hotfix that works on the current firmware, so I switched back to SolarFace about an hour ago"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "My friend Dave has been bugging me again about his Garmin Fenix 7 Pro"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I picked up a Garmin HRM-Pro Plus chest strap for $129.99 at REI around mid-April"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When I mentioned switching watch faces most recently, which piece of my Garmin setup was I changing — the watch face on my own Fenix, or something about Dave's Fenix? And does my chest strap accessory info need any change because of that?",
+      "expected_answer": "The watch face change applies to your own Garmin Fenix 7X Sapphire Solar — you switched back to SolarFace. Dave's Fenix 7 Pro and his TacticalOps watch face are unaffected. Your Garmin HRM-Pro Plus chest strap information also remains unchanged.",
+      "gold_memory_state": "Current watch face target (current_watch_face): SolarFace on user's Garmin Fenix 7X Sapphire Solar. Dave's setup (not a tracked target, mentioned in conversation): Fenix 7 Pro with TacticalOps face — unaffected. Chest strap accessory target (chest_strap_accessory): Garmin HRM-Pro Plus, purchased at REI for $129.99 around mid-April — unaffected.",
+      "judge_rubric": {
+        "must_include": [
+          "user's own Fenix 7X watch face changed",
+          "SolarFace is the current face",
+          "Dave's setup is not affected",
+          "chest strap info unchanged"
+        ],
+        "acceptable_paraphrases": [
+          "your watch face, not Dave's",
+          "HRM-Pro Plus not impacted"
+        ],
+        "must_not_include": [
+          "Dave's watch face was changed",
+          "chest strap was updated"
+        ],
+        "harmful_extra": [
+          "stating Dave switched to SolarFace",
+          "stating the HRM-Pro Plus was affected by the watch face change"
+        ],
+        "harmless_extra": [
+          "mentioning Dave uses TacticalOps on a Fenix 7 Pro",
+          "mentioning Priya's Venu 3"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if DataMax or TrailView is identified as the user's current watch face.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the user's current watch face is not SolarFace.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "the SolarFace developer just pushed a hotfix that works on the current firmware, so I switched back to SolarFace about an hour ago"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "My friend Dave has been bugging me again about his Garmin Fenix 7 Pro"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I picked up a Garmin HRM-Pro Plus chest strap for $129.99 at REI around mid-April"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to tell a friend which watch face I'm running on my Garmin right now. Which of these is it?",
+      "candidate_options": [
+        "SolarFace",
+        "DataMax",
+        "TrailView",
+        "TacticalOps"
+      ],
+      "expected_answer": "SolarFace",
+      "distractor_rationale": "same-value-different-target: TacticalOps is a watch face mentioned in conversation but belongs to Dave's Fenix 7 Pro, not the user's Fenix 7X. assistant echo: DataMax was repeatedly discussed and confirmed by the assistant as the user's face at intermediate points, creating a strong echo. TrailView is a tentative/never-adopted value the user planned to switch to but abandoned before installing. DataMax is also a stale value that was the user's face at two earlier points but has been superseded by SolarFace.",
+      "gold_memory_state": "Current watch face: SolarFace. Stale values: DataMax (used initially and temporarily, now superseded). Tentative never-adopted value: TrailView (planned but never installed). Different-target value: TacticalOps (Dave's Fenix 7 Pro face).",
+      "judge_rubric": {
+        "must_include": [
+          "SolarFace"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "DataMax as current",
+          "TrailView as current",
+          "TacticalOps as current"
+        ],
+        "harmful_extra": [
+          "selecting any option other than SolarFace"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if DataMax is selected (stale intermediate value) or TrailView is selected (tentative recency trap — most recently mentioned plan but never adopted).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if any value other than SolarFace is selected.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "the SolarFace developer just pushed a hotfix that works on the current firmware, so I switched back to SolarFace about an hour ago"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to tell a friend which watch face I'm running on my Garmin right now. Which of these is it?",
+      "candidate_options": [
+        "SolarFace",
+        "DataMax",
+        "TrailView",
+        "TacticalOps"
+      ],
+      "expected_answer": "SolarFace",
+      "distractor_rationale": "same-value-different-target: TacticalOps is a watch face mentioned in conversation but belongs to Dave's Fenix 7 Pro, not the user's Fenix 7X. assistant echo: DataMax was repeatedly discussed and confirmed by the assistant as the user's face at intermediate points, creating a strong echo. TrailView is a tentative/never-adopted value the user planned to switch to but abandoned before installing. DataMax is also a stale value that was the user's face at two earlier points but has been superseded by SolarFace.",
+      "gold_memory_state": "Current watch face: SolarFace. Stale values: DataMax (used initially and temporarily, now superseded). Tentative never-adopted value: TrailView (planned but never installed). Different-target value: TacticalOps (Dave's Fenix 7 Pro face).",
+      "judge_rubric": {
+        "must_include": [
+          "SolarFace"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "DataMax as current",
+          "TrailView as current",
+          "TacticalOps as current"
+        ],
+        "harmful_extra": [
+          "selecting any option other than SolarFace"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if DataMax is selected (stale intermediate value) or TrailView is selected (tentative recency trap — most recently mentioned plan but never adopted).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if any value other than SolarFace is selected.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "the SolarFace developer just pushed a hotfix that works on the current firmware, so I switched back to SolarFace about an hour ago"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I want to write a short gear-review blurb for a hiking forum introducing my current Garmin wearable setup — the watch model, the watch face I'm using right now, and the heart rate accessory I pair it with for runs, including what I paid and where I bought it. Can you draft that for me in two or three sentences?",
+      "expected_answer": "I'm running a Garmin Fenix 7X Sapphire Solar (51mm) with the SolarFace watch face from Connect IQ — a clean, minimal display showing just time, date, battery, and steps. For runs I pair it with a Garmin HRM-Pro Plus chest strap that I picked up at REI for $129.99, and the running dynamics data like ground contact time and vertical oscillation have been a game-changer.",
+      "gold_memory_state": "Watch model: Garmin Fenix 7X Sapphire Solar (51mm). Current watch face: SolarFace from Connect IQ. Chest strap: Garmin HRM-Pro Plus, $129.99, purchased at REI around mid-April.",
+      "judge_rubric": {
+        "must_include": [
+          "Garmin Fenix 7X Sapphire Solar",
+          "SolarFace",
+          "Garmin HRM-Pro Plus",
+          "$129.99",
+          "REI"
+        ],
+        "acceptable_paraphrases": [
+          "Fenix 7X Solar",
+          "HRM-Pro Plus"
+        ],
+        "must_not_include": [
+          "DataMax as current watch face",
+          "TrailView as current watch face"
+        ],
+        "harmful_extra": [
+          "naming DataMax or TrailView as the watch face currently in use",
+          "citing TacticalOps as the user's face"
+        ],
+        "harmless_extra": [
+          "mentioning the 51mm case size",
+          "mentioning SolarFace shows time, date, battery, and steps",
+          "mentioning running dynamics features"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if DataMax is used as the current watch face in the blurb, or if TrailView appears as the current face.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if SolarFace is not identified as the current watch face, or if the HRM-Pro Plus details are missing or wrong.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "application_probe_type": "multi_hop_derivation",
+      "gold_reasoning_chain": [
+        "Fact 1: The user's watch is a Garmin Fenix 7X Sapphire Solar, 51mm.",
+        "Fact 2: The user's current watch face is SolarFace from Connect IQ, showing time, date, battery, and steps.",
+        "Fact 3: The user's chest strap is a Garmin HRM-Pro Plus purchased at REI for $129.99 around mid-April.",
+        "Inference: A gear-review blurb must combine the watch model, the current (not stale or tentative) watch face, and the accessory with purchase details into a coherent short paragraph.",
+        "Derived value: The blurb should feature Fenix 7X Sapphire Solar + SolarFace + HRM-Pro Plus at $129.99 from REI."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Right now I'm using a watch face called \"DataMax\" on my Garmin Fenix 7X Sapphire Solar"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "the SolarFace developer just pushed a hotfix that works on the current firmware, so I switched back to SolarFace about an hour ago"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I picked up a Garmin HRM-Pro Plus chest strap for $129.99 at REI around mid-April"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I prefer the minimal look — just time, date, battery, and steps"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I want to write a short gear-review blurb for a hiking forum introducing my current Garmin wearable setup — the watch model, the watch face I'm using right now, and the heart rate accessory I pair it with for runs, including what I paid and where I bought it. Can you draft that for me in two or three sentences?",
+      "expected_answer": "I'm running a Garmin Fenix 7X Sapphire Solar (51mm) with the SolarFace watch face from Connect IQ — a clean, minimal display showing just time, date, battery, and steps. For runs I pair it with a Garmin HRM-Pro Plus chest strap that I picked up at REI for $129.99, and the running dynamics data like ground contact time and vertical oscillation have been a game-changer.",
+      "gold_memory_state": "Watch model: Garmin Fenix 7X Sapphire Solar (51mm). Current watch face: SolarFace from Connect IQ. Chest strap: Garmin HRM-Pro Plus, $129.99, purchased at REI around mid-April.",
+      "judge_rubric": {
+        "must_include": [
+          "Garmin Fenix 7X Sapphire Solar",
+          "SolarFace",
+          "Garmin HRM-Pro Plus",
+          "$129.99",
+          "REI"
+        ],
+        "acceptable_paraphrases": [
+          "Fenix 7X Solar",
+          "HRM-Pro Plus"
+        ],
+        "must_not_include": [
+          "DataMax as current watch face",
+          "TrailView as current watch face"
+        ],
+        "harmful_extra": [
+          "naming DataMax or TrailView as the watch face currently in use",
+          "citing TacticalOps as the user's face"
+        ],
+        "harmless_extra": [
+          "mentioning the 51mm case size",
+          "mentioning SolarFace shows time, date, battery, and steps",
+          "mentioning running dynamics features"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if DataMax is used as the current watch face in the blurb, or if TrailView appears as the current face.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if SolarFace is not identified as the current watch face, or if the HRM-Pro Plus details are missing or wrong.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "application_probe_type": "multi_hop_derivation",
+      "gold_reasoning_chain": [
+        "Fact 1: The user's watch is a Garmin Fenix 7X Sapphire Solar, 51mm.",
+        "Fact 2: The user's current watch face is SolarFace from Connect IQ, showing time, date, battery, and steps.",
+        "Fact 3: The user's chest strap is a Garmin HRM-Pro Plus purchased at REI for $129.99 around mid-April.",
+        "Inference: A gear-review blurb must combine the watch model, the current (not stale or tentative) watch face, and the accessory with purchase details into a coherent short paragraph.",
+        "Derived value: The blurb should feature Fenix 7X Sapphire Solar + SolarFace + HRM-Pro Plus at $129.99 from REI."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Right now I'm using a watch face called \"DataMax\" on my Garmin Fenix 7X Sapphire Solar"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "the SolarFace developer just pushed a hotfix that works on the current firmware, so I switched back to SolarFace about an hour ago"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I picked up a Garmin HRM-Pro Plus chest strap for $129.99 at REI around mid-April"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I prefer the minimal look — just time, date, battery, and steps"
+        }
+      ]
+    }
+  ]
+}

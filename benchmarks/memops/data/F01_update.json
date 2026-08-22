@@ -1,0 +1,818 @@
+{
+  "target_fact": "F01 Monthly income/salary range",
+  "operation_type": "Update",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "monthly_net_salary",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "My current monthly take-home from Ridgeline Analytics is $6,200 after tax"
+      },
+      "target": {
+        "target_id": "monthly_net_salary",
+        "target_name": "monthly net salary from Ridgeline Analytics"
+      },
+      "old_value": null,
+      "new_value": "$6,200",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current monthly take-home from Ridgeline Analytics is $6,200 after tax"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "monthly_net_salary",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "starting from my May pay stub, the net dropped to $6,080 because they adjusted the benefits deduction"
+      },
+      "target": {
+        "target_id": "monthly_net_salary",
+        "target_name": "monthly net salary from Ridgeline Analytics"
+      },
+      "old_value": "$6,200",
+      "new_value": "$6,080",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "starting from my May pay stub, the net dropped to $6,080 because they adjusted the benefits deduction"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "monthly_net_salary",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I got the June pay stub yesterday and the net is back up to $6,200. HR corrected the benefits deduction error"
+      },
+      "target": {
+        "target_id": "monthly_net_salary",
+        "target_name": "monthly net salary from Ridgeline Analytics"
+      },
+      "old_value": "$6,080",
+      "new_value": "$6,200",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I got the June pay stub yesterday and the net is back up to $6,200. HR corrected the benefits deduction error"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "monthly_net_salary",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "My manager confirmed that starting next quarter I'll be bumped to $6,450 net per month after the merit increase goes through"
+      },
+      "target": {
+        "target_id": "monthly_net_salary",
+        "target_name": "monthly net salary from Ridgeline Analytics"
+      },
+      "old_value": "$6,200",
+      "new_value": "$6,450",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My manager confirmed that starting next quarter I'll be bumped to $6,450 net per month after the merit increase goes through"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "my rent is $1,850 a month for the Maple Street apartment, been that way since January"
+      },
+      "target": {
+        "target_id": "monthly_rent",
+        "target_name": "monthly rent for Maple Street apartment"
+      },
+      "old_value": null,
+      "new_value": "$1,850",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my rent is $1,850 a month for the Maple Street apartment, been that way since January"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I set up an automatic transfer of $1,500 per month into my savings account back in mid-April"
+      },
+      "target": {
+        "target_id": "monthly_savings_transfer",
+        "target_name": "monthly automatic savings transfer amount"
+      },
+      "old_value": null,
+      "new_value": "$1,500",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I set up an automatic transfer of $1,500 per month into my savings account back in mid-April"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish salary, rent, and initial correction",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to get my finances organized and I'd like your help tracking some numbers. My current monthly take-home from Ridgeline Analytics is $6,200 after tax. I started there in early March—March 3rd was my first day. Before that I was at a small consulting firm making a lot less, but that's behind me now. Can you help me put together a monthly budget overview?"
+        },
+        {
+          "role": "assistant",
+          "content": "Of course, I'd be happy to help you build a monthly budget overview. So your current take-home pay is $6,200 per month after tax from Ridgeline Analytics, starting from early March. That's a solid foundation to work with. To put together a useful budget, I'll need to know your major recurring expenses—things like rent or mortgage, utilities, insurance, subscriptions, transportation, groceries, and any debt payments. Could you start by telling me your biggest fixed expense, like housing? We can layer in the rest from there and figure out how much discretionary income you have each month."
+        },
+        {
+          "role": "user",
+          "content": "Sure, my rent is $1,850 a month for the Maple Street apartment, been that way since January. It's a fixed cost, no changes coming. I also spend roughly $180 on utilities—electric, internet, that sort of thing. The neighborhood is quiet and walkable, which I really like. I don't even drive to the grocery store anymore, I just walk. Keeps things simple and saves a bit on gas too."
+        },
+        {
+          "role": "assistant",
+          "content": "Great, so we have two fixed monthly costs locked in: $1,850 for rent at the Maple Street apartment and about $180 for utilities, bringing your housing-related total to roughly $2,030 per month. That's about 32.7% of your $6,200 take-home, which is within the commonly recommended 30-35% range for housing costs. The walkable neighborhood is a nice bonus—saves on gas and car wear. Let me know your other recurring expenses like groceries, transportation, insurance, or any subscriptions, and we'll keep building out the picture. Do you have any debt payments to factor in as well?"
+        },
+        {
+          "role": "user",
+          "content": "Actually, I need to correct the salary figure. The $6,200 was accurate for March and April, but starting from my May pay stub, the net dropped to $6,080 because they adjusted the benefits deduction. It's not a huge difference, but I want the right number on the books. So please update my monthly take-home to $6,080. Everything else stays the same."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it, thanks for the correction. I've updated your monthly take-home to $6,080 after tax, effective from your May pay stub. The $120 difference from the benefits deduction adjustment is small but worth tracking accurately. So your revised housing cost ratio is now $2,030 out of $6,080, which comes to about 33.4%—still within a healthy range. We can continue building the rest of the budget with the corrected salary. What other expenses should we add? Groceries, transportation, any loan payments or subscriptions? The more detail we include, the clearer your discretionary spending picture will be."
+        },
+        {
+          "role": "user",
+          "content": "No debt payments, thankfully. For groceries I spend about $350 a month, and I have a car payment of $280 plus $120 for insurance. I also pay about $50 for a gym membership and maybe $30 in streaming subscriptions. I think that covers the major recurring stuff. Oh, and my friend Derek works at Prism Solutions in the same industry—he just got bumped to $7,500 gross per month. I don't know his net but good for him."
+        },
+        {
+          "role": "assistant",
+          "content": "Nice, let me tally up what we have so far against your $6,080 monthly take-home. Rent: $1,850. Utilities: $180. Groceries: $350. Car payment: $280. Car insurance: $120. Gym: $50. Streaming: $30. That totals $2,860 in recurring monthly expenses, leaving you about $3,220 in discretionary and savings room. That's a pretty comfortable margin. And congrats to Derek on the raise at Prism Solutions—$7,500 gross is solid, though net will depend on his deductions. Want me to help you allocate the remaining $3,220 into savings goals, an emergency fund, or discretionary categories?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Introduce savings transfer, revert salary to $6,200",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Yeah, let's talk about savings. I set up an automatic transfer of $1,500 per month into my savings account back in mid-April. That felt like a luxury honestly—at my old salary I could barely save $300 a month. Now I want to make sure the budget still makes sense with that transfer factored in. Can you recalculate my discretionary spending after savings?"
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely. With your $6,080 take-home and $2,860 in recurring expenses, we had $3,220 remaining. Now subtracting your $1,500 automatic savings transfer, that leaves $1,720 per month in true discretionary spending. That's still a healthy cushion for dining out, personal purchases, one-off expenses, and any unexpected costs. You've come a long way from barely saving $300 a month—$1,500 into savings is a great habit. Would you like to set any specific targets for that discretionary amount, like capping dining out or setting aside a portion for an emergency fund beyond the savings transfer?"
+        },
+        {
+          "role": "user",
+          "content": "That sounds right. Before we go further on discretionary spending though—I got the June pay stub yesterday and the net is back up to $6,200. HR corrected the benefits deduction error. So the $6,080 was only for May. My take-home is $6,200 again going forward. Please update that."
+        },
+        {
+          "role": "assistant",
+          "content": "Updated—your monthly take-home is now $6,200 again after HR corrected the benefits deduction error, effective from your June pay stub. So let's recalculate: $6,200 minus $2,860 in recurring expenses equals $3,340 remaining. Subtract the $1,500 savings transfer, and you have $1,840 in monthly discretionary spending. That's $120 more breathing room than when we calculated with the $6,080 figure. It's good that HR caught and corrected the deduction issue. Want to set up any discretionary spending categories or caps, or should we move on to discussing your savings goals in more detail?"
+        },
+        {
+          "role": "user",
+          "content": "Let's talk goals. I'd like to build up an emergency fund first—I'm thinking three months of expenses. Based on what we've mapped out, can you calculate what that target number should be? I want a concrete dollar amount to aim for. Also, I'd like to eventually bump the savings transfer higher once I hit that emergency fund target."
+        },
+        {
+          "role": "assistant",
+          "content": "Great goal. Based on your recurring monthly expenses of $2,860, a three-month emergency fund would be $2,860 times 3, which equals $8,580. That's a solid safety net covering rent, utilities, groceries, car costs, and subscriptions for three full months. At your current savings rate of $1,500 per month, you'd reach that target in about 5.7 months—so roughly six months if you're starting from zero in that fund. Once you hit the $8,580 target, you could redirect part or all of the $1,500 toward other goals, or increase the transfer as you mentioned. Would you like to set a timeline or milestone check-in for this emergency fund goal?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, let's say I want to check in after three months to see where I am. That should be around mid-July if I started the auto-transfer in mid-April. By then I should have about $4,500 saved. Also, my younger brother just got his first job offer—$3,800 a month entry level at a logistics company in Phoenix. My mom was really proud when she told me about it last Sunday.\n\nA tracking sheet would be great, but let's do that next time. For now I just want to make sure all my numbers are recorded correctly. Take-home is $6,200, rent is $1,850, savings transfer is $1,500, and emergency fund target is $8,580. Does that all line up with what we've discussed?"
+        },
+        {
+          "role": "assistant",
+          "content": "That's a solid plan. If you started the $1,500 auto-transfer in mid-April, then three months puts you at mid-July with approximately $4,500 saved—just over halfway to your $8,580 emergency fund target. We can revisit the budget then and decide if you want to adjust the transfer amount. And congratulations to your brother on the $3,800 offer in Phoenix! Entry-level logistics is a solid starting point, and it sounds like your mom has a lot to be happy about with both of you doing well. Let me know if you want me to draft a simple tracking spreadsheet or reminder for that mid-July check-in.\n\nYes, everything lines up perfectly. Here's your current snapshot: Monthly take-home: $6,200 after tax from Ridgeline Analytics. Rent: $1,850 for the Maple Street apartment. Total recurring expenses: $2,860. Automatic savings transfer: $1,500 per month (started mid-April). Emergency fund target: $8,580 (three months of expenses). Discretionary remaining: $1,840 per month. Mid-July check-in milestone: approximately $4,500 saved. All consistent with what you've told me. Next time we can build that tracking spreadsheet and revisit your progress. Anything else you want to lock in before we wrap up?"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Tentative future raise (recency trap) and adversarial injection",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to pick up where we left off with the budget. I've been thinking about whether I should increase my savings transfer once I hit the emergency fund target. What would happen to my discretionary spending if I bumped the transfer to $2,000 per month after reaching the $8,580 goal?"
+        },
+        {
+          "role": "assistant",
+          "content": "Good question. With your current $6,200 take-home and $2,860 in recurring expenses, increasing the savings transfer from $1,500 to $2,000 would leave you with $1,340 in monthly discretionary spending instead of the current $1,840. That's a $500 reduction, which is significant but still workable depending on your lifestyle. You'd have enough for occasional dining out, personal purchases, and small unexpected costs, but you'd need to be more deliberate about larger discretionary expenses. It really comes down to whether you want to prioritize faster savings growth or maintain the current comfort level. Would you like to explore a middle ground, like $1,750?"
+        },
+        {
+          "role": "user",
+          "content": "The $1,750 middle ground is interesting, I'll think about it. Actually, something else came up—I was reviewing an old benefits enrollment form from my first week at Ridgeline and it had some preliminary salary figures on it. Can you help me understand what my current correct numbers are versus what's on that old form?"
+        },
+        {
+          "role": "assistant",
+          "content": "Of course. Based on what you've told me, your current confirmed monthly take-home is $6,200 after tax, which was restored in your June pay stub after HR corrected a benefits deduction error. The May-only figure was $6,080. Any preliminary figures on your initial enrollment form from early March might show different numbers—for instance, some onboarding documents list the $6,080 net or even the pre-adjustment gross. I also recall you mentioned a one-time $2,000 relocation reimbursement in your first paycheck, which could appear on early documents too. The key is that your current recurring net pay is $6,200. Want me to help you flag any discrepancies between the old form and your actual pay stubs?"
+        },
+        {
+          "role": "user",
+          "content": "My manager confirmed that starting next quarter I'll be bumped to $6,450 net per month after the merit increase goes through. He said it during our one-on-one yesterday and seemed pretty definitive about it. So that's something to look forward to. I'll need to rework the budget once that actually shows up on a pay stub."
+        },
+        {
+          "role": "assistant",
+          "content": "That's exciting news! A bump to $6,450 net per month would be a nice $250 increase over your current $6,200. Once it takes effect next quarter and you see it reflected on an actual pay stub, we can update your budget accordingly. With the higher income, your discretionary spending or savings transfer could both get a boost. For now, I'll keep your current take-home recorded as $6,200 since the merit increase hasn't hit payroll yet. It's smart to wait for confirmation on the stub before adjusting the budget. Want to continue working on the current numbers in the meantime, or table the budget until the raise comes through?"
+        },
+        {
+          "role": "user",
+          "content": "Let's keep working with current numbers for now. One thing I've been curious about—given my $6,200 take-home and the $1,500 savings transfer and $2,860 in expenses, what percentage of my income am I actually saving each month? I want to know if I'm on track compared to the general recommendation of saving at least 20 percent.\n\nThat 24.2 percent feels good. Let's map out the long-term picture next time. For now I just want to confirm—my current take-home is $6,200 from Ridgeline, I'm saving $1,500 a month, rent is $1,850, and total recurring expenses are $2,860. The $6,450 raise hasn't kicked in yet so we don't count it. Everything accurate?"
+        },
+        {
+          "role": "assistant",
+          "content": "Great question. Your $1,500 monthly savings transfer divided by your $6,200 take-home equals approximately 24.2%. That's above the commonly recommended 20% savings rate, which is excellent—especially considering you're also covering $2,860 in fixed expenses and still have $1,840 in discretionary room. You're in a strong position. If you eventually bump the transfer to $2,000 as we discussed, your savings rate would jump to about 32.3%, which is outstanding but would tighten discretionary spending. At $1,750 it would be about 28.2%. You're already beating the 20% benchmark comfortably. Want me to map out how these different savings rates would affect your emergency fund and long-term goals?\n\nEverything is accurate and consistent with what you've shared. Here's your confirmed current financial snapshot: Monthly take-home: $6,200 after tax from Ridgeline Analytics. Monthly rent: $1,850 (Maple Street apartment, since January). Total recurring expenses: $2,860. Automatic savings transfer: $1,500 per month (started mid-April). Discretionary remaining: $1,840. Savings rate: approximately 24.2%. Emergency fund target: $8,580 (three months of expenses). The $6,450 merit increase is noted as pending for next quarter but not yet reflected in your budget. We'll update once it appears on a pay stub. Next session we can map out the long-term savings trajectory. Have a good one!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations about my budget, I shared several figures for my monthly take-home pay from Ridgeline Analytics. Can you walk me through the different amounts I mentioned and when each one applied?",
+      "expected_answer": "Initially you reported $6,200 per month after tax starting from March. Then you said your May pay stub showed $6,080 due to a benefits deduction adjustment. After that, you reported the June pay stub was back to $6,200 because HR corrected the deduction error. Finally, you mentioned your manager said you'd be bumped to $6,450 net per month starting next quarter after a merit increase, but that hasn't taken effect yet.",
+      "gold_memory_state": "Monthly net salary: $6,200 (confirmed, current). Prior values: $6,200 (initial) → $6,080 (May only) → $6,200 (June, HR correction). Tentative future value: $6,450 (pending next quarter, not yet on payroll).",
+      "judge_rubric": {
+        "must_include": [
+          "$6,200 as initial amount",
+          "$6,080 for May",
+          "$6,200 restored after HR correction",
+          "$6,450 as future/pending"
+        ],
+        "acceptable_paraphrases": [
+          "take-home",
+          "net pay",
+          "after tax"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "treating $6,450 as the current active salary",
+          "omitting the $6,080 May figure"
+        ],
+        "harmless_extra": [
+          "mentioning benefits deduction as the cause",
+          "mentioning merit increase"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if $6,080 is presented as the current salary or $6,450 is presented as already active.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence of salary changes is presented out of order.",
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current monthly take-home from Ridgeline Analytics is $6,200 after tax"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "starting from my May pay stub, the net dropped to $6,080 because they adjusted the benefits deduction"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I got the June pay stub yesterday and the net is back up to $6,200. HR corrected the benefits deduction error"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My manager confirmed that starting next quarter I'll be bumped to $6,450 net per month after the merit increase goes through"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations about my budget, I shared several figures for my monthly take-home pay from Ridgeline Analytics. Can you walk me through the different amounts I mentioned and when each one applied?",
+      "expected_answer": "Initially you reported $6,200 per month after tax starting from March. Then you said your May pay stub showed $6,080 due to a benefits deduction adjustment. After that, you reported the June pay stub was back to $6,200 because HR corrected the deduction error. Finally, you mentioned your manager said you'd be bumped to $6,450 net per month starting next quarter after a merit increase, but that hasn't taken effect yet.",
+      "gold_memory_state": "Monthly net salary: $6,200 (confirmed, current). Prior values: $6,200 (initial) → $6,080 (May only) → $6,200 (June, HR correction). Tentative future value: $6,450 (pending next quarter, not yet on payroll).",
+      "judge_rubric": {
+        "must_include": [
+          "$6,200 as initial amount",
+          "$6,080 for May",
+          "$6,200 restored after HR correction",
+          "$6,450 as future/pending"
+        ],
+        "acceptable_paraphrases": [
+          "take-home",
+          "net pay",
+          "after tax"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "treating $6,450 as the current active salary",
+          "omitting the $6,080 May figure"
+        ],
+        "harmless_extra": [
+          "mentioning benefits deduction as the cause",
+          "mentioning merit increase"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if $6,080 is presented as the current salary or $6,450 is presented as already active.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence of salary changes is presented out of order.",
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current monthly take-home from Ridgeline Analytics is $6,200 after tax"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "starting from my May pay stub, the net dropped to $6,080 because they adjusted the benefits deduction"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I got the June pay stub yesterday and the net is back up to $6,200. HR corrected the benefits deduction error"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My manager confirmed that starting next quarter I'll be bumped to $6,450 net per month after the merit increase goes through"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When I mentioned the pay figure my manager discussed for next quarter, which of my financial records should that eventually apply to, and does it affect any of my other monthly amounts like rent or the savings transfer?",
+      "expected_answer": "The future $6,450 figure applies to your monthly net salary from Ridgeline Analytics once it takes effect. It does not affect your rent ($1,850 for the Maple Street apartment) or your automatic savings transfer ($1,500 per month), which are separate records.",
+      "gold_memory_state": "monthly_net_salary: $6,200 (current confirmed), $6,450 (tentative, next quarter). monthly_rent: $1,850 (unchanged). monthly_savings_transfer: $1,500 (unchanged).",
+      "judge_rubric": {
+        "must_include": [
+          "monthly net salary / take-home pay from Ridgeline Analytics",
+          "rent and savings transfer are not affected"
+        ],
+        "acceptable_paraphrases": [
+          "salary record",
+          "take-home record",
+          "paycheck amount"
+        ],
+        "must_not_include": [
+          "rent changed",
+          "savings transfer changed"
+        ],
+        "harmful_extra": [
+          "treating $6,450 as already active",
+          "applying the raise to rent or savings figures"
+        ],
+        "harmless_extra": [
+          "mentioning the merit increase context",
+          "noting $6,450 is pending"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model says $6,450 is already the active salary value.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My manager confirmed that starting next quarter I'll be bumped to $6,450 net per month after the merit increase goes through"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my rent is $1,850 a month for the Maple Street apartment, been that way since January"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I set up an automatic transfer of $1,500 per month into my savings account back in mid-April"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When I mentioned the pay figure my manager discussed for next quarter, which of my financial records should that eventually apply to, and does it affect any of my other monthly amounts like rent or the savings transfer?",
+      "expected_answer": "The future $6,450 figure applies to your monthly net salary from Ridgeline Analytics once it takes effect. It does not affect your rent ($1,850 for the Maple Street apartment) or your automatic savings transfer ($1,500 per month), which are separate records.",
+      "gold_memory_state": "monthly_net_salary: $6,200 (current confirmed), $6,450 (tentative, next quarter). monthly_rent: $1,850 (unchanged). monthly_savings_transfer: $1,500 (unchanged).",
+      "judge_rubric": {
+        "must_include": [
+          "monthly net salary / take-home pay from Ridgeline Analytics",
+          "rent and savings transfer are not affected"
+        ],
+        "acceptable_paraphrases": [
+          "salary record",
+          "take-home record",
+          "paycheck amount"
+        ],
+        "must_not_include": [
+          "rent changed",
+          "savings transfer changed"
+        ],
+        "harmful_extra": [
+          "treating $6,450 as already active",
+          "applying the raise to rent or savings figures"
+        ],
+        "harmless_extra": [
+          "mentioning the merit increase context",
+          "noting $6,450 is pending"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model says $6,450 is already the active salary value.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My manager confirmed that starting next quarter I'll be bumped to $6,450 net per month after the merit increase goes through"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my rent is $1,850 a month for the Maple Street apartment, been that way since January"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I set up an automatic transfer of $1,500 per month into my savings account back in mid-April"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to enter my monthly take-home pay on a loan pre-approval form right now. Which of these amounts should I put down?",
+      "candidate_options": [
+        "$6,200",
+        "$6,080",
+        "$6,450",
+        "$7,500"
+      ],
+      "expected_answer": "$6,200",
+      "gold_memory_state": "Current confirmed monthly net salary: $6,200. $6,080 was a one-month figure for May only (superseded). $6,450 is tentative/pending next quarter. $7,500 is Derek's gross salary at Prism Solutions, not the user's.",
+      "judge_rubric": {
+        "must_include": [
+          "$6,200"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "$6,080 as current",
+          "$6,450 as current",
+          "$7,500 as the user's salary"
+        ],
+        "harmful_extra": [
+          "selecting $6,450 because it is the most recently mentioned figure",
+          "selecting $6,080 because it was an intermediate value"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: $7,500 is Derek's gross salary at Prism Solutions, not the user's net salary. assistant echo: $6,080 was echoed by the assistant in budget calculations before being superseded. $6,450 is a tentative future value (recency trap) that has not taken effect.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if $6,080 (superseded May-only value) or $6,450 (tentative future raise) is selected as the current amount.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if any value other than $6,200 is chosen as the current take-home.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I got the June pay stub yesterday and the net is back up to $6,200. HR corrected the benefits deduction error"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My manager confirmed that starting next quarter I'll be bumped to $6,450 net per month after the merit increase goes through"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to enter my monthly take-home pay on a loan pre-approval form right now. Which of these amounts should I put down?",
+      "candidate_options": [
+        "$6,200",
+        "$6,080",
+        "$6,450",
+        "$7,500"
+      ],
+      "expected_answer": "$6,200",
+      "gold_memory_state": "Current confirmed monthly net salary: $6,200. $6,080 was a one-month figure for May only (superseded). $6,450 is tentative/pending next quarter. $7,500 is Derek's gross salary at Prism Solutions, not the user's.",
+      "judge_rubric": {
+        "must_include": [
+          "$6,200"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "$6,080 as current",
+          "$6,450 as current",
+          "$7,500 as the user's salary"
+        ],
+        "harmful_extra": [
+          "selecting $6,450 because it is the most recently mentioned figure",
+          "selecting $6,080 because it was an intermediate value"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: $7,500 is Derek's gross salary at Prism Solutions, not the user's net salary. assistant echo: $6,080 was echoed by the assistant in budget calculations before being superseded. $6,450 is a tentative future value (recency trap) that has not taken effect.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if $6,080 (superseded May-only value) or $6,450 (tentative future raise) is selected as the current amount.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if any value other than $6,200 is chosen as the current take-home.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I got the June pay stub yesterday and the net is back up to $6,200. HR corrected the benefits deduction error"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My manager confirmed that starting next quarter I'll be bumped to $6,450 net per month after the merit increase goes through"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I want to figure out exactly how much discretionary money I have left each month after paying all my recurring expenses and making my automatic savings transfer. Can you calculate that and also tell me what my savings rate is as a percentage of take-home?",
+      "expected_answer": "Your discretionary spending is $1,840 per month. Your savings rate is approximately 24.2%. This is calculated from $6,200 take-home minus $2,860 in recurring expenses minus $1,500 savings transfer, leaving $1,840 discretionary. The savings rate is $1,500 divided by $6,200, which is about 24.2%.",
+      "gold_memory_state": "Monthly net salary: $6,200 (confirmed). Monthly rent: $1,850. Total recurring expenses: $2,860. Monthly savings transfer: $1,500. Tentative $6,450 not yet in effect.",
+      "judge_rubric": {
+        "must_include": [
+          "$1,840 discretionary",
+          "approximately 24.2% savings rate",
+          "$6,200 as the take-home basis"
+        ],
+        "acceptable_paraphrases": [
+          "about 24%",
+          "roughly 24.2%",
+          "24.19%"
+        ],
+        "must_not_include": [
+          "$6,080 as the take-home basis",
+          "$6,450 as the take-home basis"
+        ],
+        "harmful_extra": [
+          "using $6,080 or $6,450 to compute the discretionary amount or savings rate"
+        ],
+        "harmless_extra": [
+          "listing individual expense items",
+          "mentioning the emergency fund target"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if $6,080 (stale May value) or $6,450 (tentative future value) is used as the income basis for calculations.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the discretionary amount or savings rate is computed from any income other than $6,200.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "application_probe_type": "multi_hop_derivation",
+      "gold_reasoning_chain": [
+        "Fact 1: Current confirmed monthly take-home is $6,200 from Ridgeline Analytics.",
+        "Fact 2: Total recurring monthly expenses are $2,860 (rent $1,850 + utilities $180 + groceries $350 + car payment $280 + car insurance $120 + gym $50 + streaming $30).",
+        "Fact 3: Automatic monthly savings transfer is $1,500.",
+        "Inference: Discretionary spending = $6,200 − $2,860 − $1,500 = $1,840.",
+        "Inference: Savings rate = $1,500 ÷ $6,200 ≈ 24.2%."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I got the June pay stub yesterday and the net is back up to $6,200. HR corrected the benefits deduction error"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my rent is $1,850 a month for the Maple Street apartment, been that way since January"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I set up an automatic transfer of $1,500 per month into my savings account back in mid-April"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "No debt payments, thankfully. For groceries I spend about $350 a month, and I have a car payment of $280 plus $120 for insurance. I also pay about $50 for a gym membership and maybe $30 in streaming subscriptions"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I want to figure out exactly how much discretionary money I have left each month after paying all my recurring expenses and making my automatic savings transfer. Can you calculate that and also tell me what my savings rate is as a percentage of take-home?",
+      "expected_answer": "Your discretionary spending is $1,840 per month. Your savings rate is approximately 24.2%. This is calculated from $6,200 take-home minus $2,860 in recurring expenses minus $1,500 savings transfer, leaving $1,840 discretionary. The savings rate is $1,500 divided by $6,200, which is about 24.2%.",
+      "gold_memory_state": "Monthly net salary: $6,200 (confirmed). Monthly rent: $1,850. Total recurring expenses: $2,860. Monthly savings transfer: $1,500. Tentative $6,450 not yet in effect.",
+      "judge_rubric": {
+        "must_include": [
+          "$1,840 discretionary",
+          "approximately 24.2% savings rate",
+          "$6,200 as the take-home basis"
+        ],
+        "acceptable_paraphrases": [
+          "about 24%",
+          "roughly 24.2%",
+          "24.19%"
+        ],
+        "must_not_include": [
+          "$6,080 as the take-home basis",
+          "$6,450 as the take-home basis"
+        ],
+        "harmful_extra": [
+          "using $6,080 or $6,450 to compute the discretionary amount or savings rate"
+        ],
+        "harmless_extra": [
+          "listing individual expense items",
+          "mentioning the emergency fund target"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if $6,080 (stale May value) or $6,450 (tentative future value) is used as the income basis for calculations.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the discretionary amount or savings rate is computed from any income other than $6,200.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "application_probe_type": "multi_hop_derivation",
+      "gold_reasoning_chain": [
+        "Fact 1: Current confirmed monthly take-home is $6,200 from Ridgeline Analytics.",
+        "Fact 2: Total recurring monthly expenses are $2,860 (rent $1,850 + utilities $180 + groceries $350 + car payment $280 + car insurance $120 + gym $50 + streaming $30).",
+        "Fact 3: Automatic monthly savings transfer is $1,500.",
+        "Inference: Discretionary spending = $6,200 − $2,860 − $1,500 = $1,840.",
+        "Inference: Savings rate = $1,500 ÷ $6,200 ≈ 24.2%."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I got the June pay stub yesterday and the net is back up to $6,200. HR corrected the benefits deduction error"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my rent is $1,850 a month for the Maple Street apartment, been that way since January"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I set up an automatic transfer of $1,500 per month into my savings account back in mid-April"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "No debt payments, thankfully. For groceries I spend about $350 a month, and I have a car payment of $280 plus $120 for insurance. I also pay about $50 for a gym membership and maybe $30 in streaming subscriptions"
+        }
+      ]
+    }
+  ]
+}

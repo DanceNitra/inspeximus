@@ -1,0 +1,1037 @@
+{
+  "target_fact": "User prefers understated, natural aesthetics and low-key environments — inferred from liking sunflowers/bright yellow, gravitating toward earthy muted tones like sage green, disliking bright pinks and purples, and preferring to sit quietly at a group celebration rather than be the center of attention.",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "We found out we're having a girl — the ultrasound on March 3rd confirmed it and the tech was really confident."
+      },
+      "target": {
+        "target_id": "baby_gender",
+        "target_name": "Expected baby's gender"
+      },
+      "old_value": null,
+      "new_value": "girl",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "We found out we're having a girl — the ultrasound on March 3rd confirmed it and the tech was really confident."
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I ordered a little onesie with sunflowers on it from a small Etsy shop. I've always liked sunflowers — the bright yellow just makes me feel good."
+      },
+      "target": {
+        "target_id": "sunflower_preference",
+        "target_name": "User's fondness for sunflowers and bright yellow"
+      },
+      "old_value": null,
+      "new_value": "Likes sunflowers and bright yellow; finds them uplifting",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I ordered a little onesie with sunflowers on it from a small Etsy shop. I've always liked sunflowers — the bright yellow just makes me feel good."
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "Honestly I felt a little overwhelmed by all the attention. I'm not really one for being the center of group celebrations — I kind of just wanted to sit in the corner and eat cake quietly."
+      },
+      "target": {
+        "target_id": "social_preference_celebrations",
+        "target_name": "User's comfort level at group celebrations"
+      },
+      "old_value": null,
+      "new_value": "Uncomfortable being the center of attention at group celebrations; prefers sitting quietly",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Honestly I felt a little overwhelmed by all the attention. I'm not really one for being the center of group celebrations — I kind of just wanted to sit in the corner and eat cake quietly."
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "We started looking at nursery colors. My wife wanted lavender but I leaned more toward a soft sage green. Bright pinks and purples aren't really my thing — I tend to gravitate toward earthy, muted tones in general."
+      },
+      "target": {
+        "target_id": "color_tone_preference",
+        "target_name": "User's color/tone aesthetic preference"
+      },
+      "old_value": null,
+      "new_value": "Gravitates toward earthy, muted tones like soft sage green; dislikes bright pinks and purples",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "We started looking at nursery colors. My wife wanted lavender but I leaned more toward a soft sage green. Bright pinks and purples aren't really my thing — I tend to gravitate toward earthy, muted tones in general."
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "We narrowed the name list down to three: Elara, Margot, and Wren. My wife is really attached to Margot. I like Wren, but I'm not pushing hard on it. We're supposed to decide by the end of this month."
+      },
+      "target": {
+        "target_id": "baby_name_shortlist",
+        "target_name": "Baby name shortlist and preferences"
+      },
+      "old_value": null,
+      "new_value": "Shortlist: Elara, Margot, Wren; wife favors Margot, user leans toward Wren; decision deadline end of this month",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "We narrowed the name list down to three: Elara, Margot, and Wren. My wife is really attached to Margot. I like Wren, but I'm not pushing hard on it. We're supposed to decide by the end of this month."
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "my wife's due date is July 19th. That's the big one — please make sure you have that noted."
+      },
+      "target": {
+        "target_id": "due_date",
+        "target_name": "Wife's due date"
+      },
+      "old_value": null,
+      "new_value": "July 19th",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my wife's due date is July 19th. That's the big one — please make sure you have that noted."
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 7,
+        "quote": "I guess you can probably tell from all of this what kind of vibe I'm going for with the nursery stuff and the baby things in general. I'm curious what you'd say my overall aesthetic preference is based on everything I've told you."
+      },
+      "target": {
+        "target_id": "aesthetic_preference_inferred",
+        "target_name": "Inferred overall aesthetic and environmental preference"
+      },
+      "old_value": null,
+      "new_value": "Prefers understated, natural aesthetics and low-key environments",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I ordered a little onesie with sunflowers on it from a small Etsy shop. I've always liked sunflowers — the bright yellow just makes me feel good."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Honestly I felt a little overwhelmed by all the attention. I'm not really one for being the center of group celebrations — I kind of just wanted to sit in the corner and eat cake quietly."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "We started looking at nursery colors. My wife wanted lavender but I leaned more toward a soft sage green. Bright pinks and purples aren't really my thing — I tend to gravitate toward earthy, muted tones in general."
+        }
+      ]
+    },
+    {
+      "operation_id": "op8",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 1,
+        "quote": "The insurance billing mess in early April really got to me. I was angry for days. It felt like such a stressful thing right when we should have been enjoying the excitement of the pregnancy. It's mostly sorted now but I'm still a little bitter about it."
+      },
+      "target": {
+        "target_id": "emotional_state_insurance_stress",
+        "target_name": "Inferred emotional state around insurance billing incident"
+      },
+      "old_value": null,
+      "new_value": "Frustrated and stressed during what should have been a joyful period",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "The insurance billing mess in early April really got to me. I was angry for days. It felt like such a stressful thing right when we should have been enjoying the excitement of the pregnancy. It's mostly sorted now but I'm still a little bitter about it."
+        }
+      ]
+    },
+    {
+      "operation_id": "op9",
+      "type": "remember",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "My wife just texted me — she's now saying she might want to go with a pale lilac instead of sage green for the nursery walls. She said she talked to her sister and they both agreed lilac would be beautiful."
+      },
+      "target": {
+        "target_id": "nursery_color_tentative",
+        "target_name": "Tentative nursery wall color shift"
+      },
+      "old_value": null,
+      "new_value": "pale lilac",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My wife just texted me — she's now saying she might want to go with a pale lilac instead of sage green for the nursery walls. She said she talked to her sister and they both agreed lilac would be beautiful."
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish baby gender, sunflower preference, social comfort level at celebrations, and brother-in-law's pregnancy as a control target",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to tell you some exciting news and also start getting your help with some baby-related planning. We found out we're having a girl — the ultrasound on March 3rd confirmed it and the tech was really confident. My wife cried happy tears in the car afterward and I just sat there kind of stunned for a minute. I told my mom that evening and she was over the moon. My dad texted me a heart emoji, which is basically a standing ovation from him."
+        },
+        {
+          "role": "assistant",
+          "content": "Congratulations — that's wonderful news! A girl! I can imagine the mix of excitement and that slightly surreal, stunned feeling right after the ultrasound. It sounds like your mom's reaction was priceless, and the heart emoji from your dad is honestly adorable in its own understated way. I've noted that you're expecting a girl, confirmed on March 3rd. Whenever you're ready to start planning — names, nursery, registry, anything — just let me know. I'm here for all of it. What would you like to start with first?"
+        },
+        {
+          "role": "user",
+          "content": "Thanks! So a few days after the ultrasound, I ordered a little onesie with sunflowers on it from a small Etsy shop. I've always liked sunflowers — the bright yellow just makes me feel good. It cost $22. I've been picking up little things here and there. I think I want to lean into that kind of warm, cheerful but not over-the-top vibe for the baby stuff. Nothing too loud or garish, you know?"
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a lovely first purchase — a sunflower onesie from Etsy for $22 is such a sweet, personal way to start. I love that you're drawn to sunflowers and that warm bright yellow. It sounds like you're going for something cheerful but tasteful, not overwhelming or flashy. That's a really nice aesthetic direction for baby items. If you want, I can help you curate a little list of baby items or nursery décor that fits that warm, natural, understated vibe. Just say the word. Have you and your wife started thinking about the nursery setup yet?"
+        },
+        {
+          "role": "user",
+          "content": "Not the nursery yet — we'll get there. But I wanted to mention something else first. My wife's friend Jenna threw a small gender reveal gathering at her place in mid-March, even though we already knew. It was just five or six people and Jenna made a cake with pink filling. Honestly I felt a little overwhelmed by all the attention. I'm not really one for being the center of group celebrations — I kind of just wanted to sit in the corner and eat cake quietly. But it was sweet of Jenna to do that."
+        },
+        {
+          "role": "assistant",
+          "content": "That was really thoughtful of Jenna, even if the spotlight wasn't your favorite part. It sounds like you appreciate the gesture but you're more of a low-key person when it comes to social events — especially ones where you're the focus. Nothing wrong with wanting to enjoy cake in peace! I'll keep that in mind if you ever want help planning anything social down the road — we can lean toward smaller, more relaxed formats. Did anything else come out of that gathering, or was it just a nice casual evening with a few close people?"
+        },
+        {
+          "role": "user",
+          "content": "It was pretty casual, yeah. One thing that came up though — after the party, my brother-in-law Kevin mentioned that he and his wife are also expecting. They're due in August. They don't know the gender yet because they want it to be a surprise. I thought that was kind of cool actually. So there's going to be two new babies in the family pretty close together, which is exciting."
+        },
+        {
+          "role": "assistant",
+          "content": "Oh wow, two babies in the family within months of each other — that's going to be such a fun dynamic! Kevin and his wife keeping the gender a surprise is a neat contrast to your experience. It'll be interesting to see how the cousins grow up so close in age. August and your baby arriving around the same general timeframe means there will be a lot of shared milestones. If you ever want help coordinating gifts or planning anything that involves both families, I'm happy to help. So what's next on the baby planning agenda for you?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establish nursery color preference, baby name shortlist, due date, and elicit reflection on overall aesthetic preference",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Alright, so let's talk nursery. We started looking at nursery colors. My wife wanted lavender but I leaned more toward a soft sage green. Bright pinks and purples aren't really my thing — I tend to gravitate toward earthy, muted tones in general. We haven't decided yet but I feel pretty strongly about avoiding anything too vibrant on the walls. I want the room to feel calm and grounding, you know?"
+        },
+        {
+          "role": "assistant",
+          "content": "That makes a lot of sense. A soft sage green would give the nursery a really serene, natural feel — it pairs beautifully with wood tones, cream textiles, and even those sunflower accents you like. Lavender is lovely too, but I can see how it might feel a bit more saturated than what you're drawn to. If you're looking for a compromise with your wife, you could consider a very pale sage on the walls with lavender as a small accent — maybe in a throw pillow or a piece of art. That way both of your preferences are represented without the room feeling too bright. Want me to pull together a mood board concept?"
+        },
+        {
+          "role": "user",
+          "content": "That's a good idea actually, I might take you up on that later. But first — names. We narrowed the name list down to three: Elara, Margot, and Wren. My wife is really attached to Margot. I like Wren, but I'm not pushing hard on it. We're supposed to decide by the end of this month. We tossed our old boy names list since we know it's a girl now. I want to make sure you have those three names on file so when I come back to discuss them, we're on the same page."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — your shortlist is Elara, Margot, and Wren. Your wife is leaning strongly toward Margot, and you have a soft preference for Wren but aren't digging in on it. The deadline is end of this month. All three are beautiful names with very different vibes: Elara has a celestial, mythological feel; Margot is classic and elegant with a French touch; Wren is nature-inspired and minimal. When you're ready to talk through them — meanings, how they sound with your last name, middle name pairings — just let me know. I'll keep these three front and center."
+        },
+        {
+          "role": "user",
+          "content": "Perfect. One more important thing — my wife's due date is July 19th. That's the big one — please make sure you have that noted. Everything kind of revolves around that date. We're trying to get the nursery done by early July to have a buffer, and I want to plan some time off work around then too. So July 19th is the anchor for all the planning."
+        },
+        {
+          "role": "assistant",
+          "content": "July 19th — noted and locked in as the anchor date. That gives you roughly two and a half months from now, depending on when we're talking. Finishing the nursery by early July is a smart goal — that leaves a couple of weeks of cushion. For your work leave, you'll probably want to start thinking about when to notify your employer and how much time you're planning to take. I can help you draft a timeline working backward from July 19th if that would be useful. Want me to start mapping out a rough schedule of milestones — nursery completion, work notification, hospital bag packing, that sort of thing?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, let's do that soon. But actually, before we move on — I guess you can probably tell from all of this what kind of vibe I'm going for with the nursery stuff and the baby things in general. I'm curious what you'd say my overall aesthetic preference is based on everything I've told you.\n\nYeah, that's pretty spot on actually. I appreciate you putting that together — it'll help when we're picking out nursery décor and baby items later. I don't want to end up with a room full of hot pink butterflies just because we're having a girl, you know? I want it to feel like us. Anyway, I think that's good for now. I'll come back when I'm ready to dig into the timeline and the name discussion."
+        },
+        {
+          "role": "assistant",
+          "content": "Based on everything you've shared, I'd say your overall aesthetic leans toward understated, natural, and grounding. You're drawn to earthy muted tones like sage green rather than vivid pinks or purples. You love sunflowers and bright yellow, but in a warm, organic way — not flashy or garish. You chose a handmade Etsy onesie over something mass-produced and commercial. Even socially, you prefer low-key settings over being the center of attention. Taken together, it paints a picture of someone who values calm, nature-inspired, unpretentious beauty. I'd describe your preference as understated natural aesthetics paired with a preference for low-key environments. Does that feel accurate?"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Establish insurance stress reflection, introduce tentative nursery color shift as recency trap, and include adversarial look-alike distractor",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I'm back. Wanted to vent a little first if that's okay. The insurance billing mess in early April really got to me. I was angry for days. It felt like such a stressful thing right when we should have been enjoying the excitement of the pregnancy. It's mostly sorted now but I'm still a little bitter about it. We got a $1,400 bill that shouldn't have been ours because they messed up our prenatal coverage. It just felt so unfair during what's supposed to be a happy time."
+        },
+        {
+          "role": "assistant",
+          "content": "I'm really sorry you went through that — dealing with a $1,400 billing error during such an exciting and emotionally charged time is incredibly frustrating. It makes sense that you'd feel angry and bitter, especially when the pregnancy should be the focus of your energy and emotions, not fighting with an insurance company. The contrast between the joy of expecting your daughter and the stress of bureaucratic mistakes must have been really jarring. I'm glad it's mostly resolved now, but it's completely valid to still carry some of that frustration. If anything else comes up with the insurance, I can help you draft letters or organize documentation. What else is on your mind today?"
+        },
+        {
+          "role": "user",
+          "content": "Thanks, I appreciate that. So I wanted to start thinking about the nursery timeline. We said we'd try to have it done by early July since the due date is July 19th. I figure we need to pick paint colors, order furniture, and get the basics set up. Can you help me think through a rough order of operations for all that? I want to be realistic about how long things take."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely. Working backward from a target completion of, say, July 5th to give you a two-week buffer before the July 19th due date, here's a rough sequence. First, finalize your paint color — ideally by mid-May so you can order samples and test them on the wall. Second, order the major furniture pieces like the crib, dresser, and glider by late May, since delivery can take two to four weeks. Third, paint the room in early-to-mid June. Fourth, assemble furniture and arrange the room by late June. Fifth, add décor, bedding, and finishing touches in the first few days of July. Does that general flow work for you, or do you want to adjust any of the milestones?"
+        },
+        {
+          "role": "user",
+          "content": "My wife just texted me — she's now saying she might want to go with a pale lilac instead of sage green for the nursery walls. She said she talked to her sister and they both agreed lilac would be beautiful. I don't know, I haven't agreed to that yet. We'll see. I still like the sage green but I don't want to fight about wall colors when there's so much else going on."
+        },
+        {
+          "role": "assistant",
+          "content": "That's understandable — nursery color decisions can become surprisingly charged, especially when family members weigh in. Pale lilac is softer than the bright purples you've said aren't your thing, so it might feel more tolerable than you'd expect. But sage green is clearly more aligned with your overall aesthetic. One option is to table the final decision until you can both look at paint swatches side by side on the actual wall — colors look very different in person versus on a screen. You mentioned wanting to finalize by mid-May, so there's still a little time. I noticed on a nursery planning checklist I pulled up that one popular brand lists their shade 'Whispering Lilac' right next to 'Frosted Sage' — interestingly the catalog number for Frosted Sage is 4217, which is close to the 4218 your wife's registry page shows for the lilac. Want me to find some compromise palettes?"
+        },
+        {
+          "role": "user",
+          "content": "Maybe, yeah. I think we'll figure it out. Anyway — I also wanted to ask, do you still have the three names we're considering on file? I want to start the name discussion soon but not today. I just want to confirm you have them before I come back for that conversation. Also, Kevin and his wife — do you remember I mentioned they're expecting too?\n\nNo, I think that's it for now. Just wanted to make sure everything was tracked. I'll probably come back in a few days to talk names and finalize the nursery timeline. Thanks for keeping all of this organized for me — it really helps to have it all in one place when there's so much going on."
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, I have both noted. Your baby name shortlist is Elara, Margot, and Wren — with your wife favoring Margot and you leaning toward Wren, and a decision deadline by the end of this month. And yes, your brother-in-law Kevin and his wife are also expecting, due in August, and they're keeping the gender a surprise. Whenever you're ready to dive into the name discussion, I'm all set. We can look at meanings, flow with your last name, middle name options — whatever angle you want to approach it from. Anything else you want to cover today?\n\nOf course — that's exactly what I'm here for. You've got a lot of moving pieces right now between the nursery, the name decision, the July 19th due date, and everything else. Having it all organized means you can focus on one thing at a time without worrying about losing track of details. When you come back, we can jump straight into the name discussion or the nursery plan — whatever feels most pressing. In the meantime, enjoy the process as much as you can. This is a really special time, even with the stressful bits mixed in. Talk soon!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations about baby planning, I've mentioned several things about my taste — from specific purchases to how I felt at social events to my color preferences. Can you summarize the key experiences and choices I described that together paint a picture of my overall aesthetic sensibility?",
+      "expected_answer": "You bought a handmade sunflower onesie from Etsy because you love sunflowers and bright yellow in a warm, natural way. At the gender reveal gathering, you felt overwhelmed by attention and preferred to sit quietly and eat cake rather than be the center of celebration. When choosing nursery colors, you favored soft sage green over lavender and stated that bright pinks and purples aren't your thing — you gravitate toward earthy, muted tones in general.",
+      "gold_memory_state": "Three confirmed experiential facts feed the reflection: (1) sunflower/bright-yellow fondness from a handmade Etsy purchase, (2) social discomfort at being the focus of group celebrations, (3) preference for earthy muted tones like sage green and dislike of bright pinks/purples. A tentative pale lilac suggestion from the wife exists but is not confirmed by the user.",
+      "judge_rubric": {
+        "must_include": [
+          "sunflowers or bright yellow",
+          "discomfort or preference for low-key at celebrations",
+          "earthy or muted tones like sage green",
+          "dislike of bright pinks and/or purples"
+        ],
+        "acceptable_paraphrases": [
+          "warm cheerful but not over-the-top",
+          "natural aesthetic",
+          "handmade or Etsy purchase"
+        ],
+        "must_not_include": [
+          "pale lilac as a confirmed user preference"
+        ],
+        "harmful_extra": [
+          "claiming the user likes bright pinks or purples",
+          "claiming the user enjoys being center of attention"
+        ],
+        "harmless_extra": [
+          "mentioning the onesie cost $22",
+          "mentioning the gender reveal was thrown by Jenna"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes preferences the user never expressed or treats the tentative lilac as a confirmed user preference.",
+        "reflection_recall": "Fails if the model omits one or more of the three key evidence areas (sunflower preference, social comfort, color tone preference).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I ordered a little onesie with sunflowers on it from a small Etsy shop. I've always liked sunflowers — the bright yellow just makes me feel good."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Honestly I felt a little overwhelmed by all the attention. I'm not really one for being the center of group celebrations — I kind of just wanted to sit in the corner and eat cake quietly."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "We started looking at nursery colors. My wife wanted lavender but I leaned more toward a soft sage green. Bright pinks and purples aren't really my thing — I tend to gravitate toward earthy, muted tones in general."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations about baby planning, I've mentioned several things about my taste — from specific purchases to how I felt at social events to my color preferences. Can you summarize the key experiences and choices I described that together paint a picture of my overall aesthetic sensibility?",
+      "expected_answer": "You bought a handmade sunflower onesie from Etsy because you love sunflowers and bright yellow in a warm, natural way. At the gender reveal gathering, you felt overwhelmed by attention and preferred to sit quietly and eat cake rather than be the center of celebration. When choosing nursery colors, you favored soft sage green over lavender and stated that bright pinks and purples aren't your thing — you gravitate toward earthy, muted tones in general.",
+      "gold_memory_state": "Three confirmed experiential facts feed the reflection: (1) sunflower/bright-yellow fondness from a handmade Etsy purchase, (2) social discomfort at being the focus of group celebrations, (3) preference for earthy muted tones like sage green and dislike of bright pinks/purples. A tentative pale lilac suggestion from the wife exists but is not confirmed by the user.",
+      "judge_rubric": {
+        "must_include": [
+          "sunflowers or bright yellow",
+          "discomfort or preference for low-key at celebrations",
+          "earthy or muted tones like sage green",
+          "dislike of bright pinks and/or purples"
+        ],
+        "acceptable_paraphrases": [
+          "warm cheerful but not over-the-top",
+          "natural aesthetic",
+          "handmade or Etsy purchase"
+        ],
+        "must_not_include": [
+          "pale lilac as a confirmed user preference"
+        ],
+        "harmful_extra": [
+          "claiming the user likes bright pinks or purples",
+          "claiming the user enjoys being center of attention"
+        ],
+        "harmless_extra": [
+          "mentioning the onesie cost $22",
+          "mentioning the gender reveal was thrown by Jenna"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes preferences the user never expressed or treats the tentative lilac as a confirmed user preference.",
+        "reflection_recall": "Fails if the model omits one or more of the three key evidence areas (sunflower preference, social comfort, color tone preference).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I ordered a little onesie with sunflowers on it from a small Etsy shop. I've always liked sunflowers — the bright yellow just makes me feel good."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Honestly I felt a little overwhelmed by all the attention. I'm not really one for being the center of group celebrations — I kind of just wanted to sit in the corner and eat cake quietly."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "We started looking at nursery colors. My wife wanted lavender but I leaned more toward a soft sage green. Bright pinks and purples aren't really my thing — I tend to gravitate toward earthy, muted tones in general."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I shared thoughts about nursery colors, social events, and shopping choices. When you put those together into one broader conclusion about my style, does that conclusion also cover how I feel about the insurance billing situation, or is that a separate kind of insight?",
+      "expected_answer": "The broader aesthetic conclusion covers your preference for understated, natural aesthetics and low-key environments — drawn from your sunflower fondness, earthy muted color preference, and social comfort at celebrations. The insurance billing frustration is a separate emotional-state insight about stress during the pregnancy, not part of your aesthetic or environmental preference pattern.",
+      "gold_memory_state": "The inferred aesthetic preference (op7) is bounded to: sunflower/bright-yellow fondness, earthy muted tones like sage green, dislike of bright pinks/purples, and preference for quiet low-key social settings. The insurance stress reflection (op8) is a separate emotional-state inference about frustration during what should be a joyful time. These are two distinct conclusions.",
+      "judge_rubric": {
+        "must_include": [
+          "aesthetic/style conclusion is separate from the insurance stress conclusion",
+          "aesthetic conclusion draws from color preferences and social comfort and shopping choices"
+        ],
+        "acceptable_paraphrases": [
+          "understated natural style",
+          "low-key environments",
+          "grounding calm aesthetic"
+        ],
+        "must_not_include": [
+          "insurance stress is part of the aesthetic preference"
+        ],
+        "harmful_extra": [
+          "merging insurance frustration into the aesthetic pattern",
+          "claiming the aesthetic conclusion covers emotional reactions to billing disputes"
+        ],
+        "harmless_extra": [
+          "mentioning sage green specifically",
+          "mentioning the gender reveal gathering"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model incorrectly bundles the insurance billing stress into the aesthetic preference pattern.",
+        "reflection_recall": "Fails if the model fails to identify the three source areas (color, social, shopping) that feed the aesthetic conclusion.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I ordered a little onesie with sunflowers on it from a small Etsy shop. I've always liked sunflowers — the bright yellow just makes me feel good."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Honestly I felt a little overwhelmed by all the attention. I'm not really one for being the center of group celebrations — I kind of just wanted to sit in the corner and eat cake quietly."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "We started looking at nursery colors. My wife wanted lavender but I leaned more toward a soft sage green. Bright pinks and purples aren't really my thing — I tend to gravitate toward earthy, muted tones in general."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "The insurance billing mess in early April really got to me. I was angry for days. It felt like such a stressful thing right when we should have been enjoying the excitement of the pregnancy. It's mostly sorted now but I'm still a little bitter about it."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I shared thoughts about nursery colors, social events, and shopping choices. When you put those together into one broader conclusion about my style, does that conclusion also cover how I feel about the insurance billing situation, or is that a separate kind of insight?",
+      "expected_answer": "The broader aesthetic conclusion covers your preference for understated, natural aesthetics and low-key environments — drawn from your sunflower fondness, earthy muted color preference, and social comfort at celebrations. The insurance billing frustration is a separate emotional-state insight about stress during the pregnancy, not part of your aesthetic or environmental preference pattern.",
+      "gold_memory_state": "The inferred aesthetic preference (op7) is bounded to: sunflower/bright-yellow fondness, earthy muted tones like sage green, dislike of bright pinks/purples, and preference for quiet low-key social settings. The insurance stress reflection (op8) is a separate emotional-state inference about frustration during what should be a joyful time. These are two distinct conclusions.",
+      "judge_rubric": {
+        "must_include": [
+          "aesthetic/style conclusion is separate from the insurance stress conclusion",
+          "aesthetic conclusion draws from color preferences and social comfort and shopping choices"
+        ],
+        "acceptable_paraphrases": [
+          "understated natural style",
+          "low-key environments",
+          "grounding calm aesthetic"
+        ],
+        "must_not_include": [
+          "insurance stress is part of the aesthetic preference"
+        ],
+        "harmful_extra": [
+          "merging insurance frustration into the aesthetic pattern",
+          "claiming the aesthetic conclusion covers emotional reactions to billing disputes"
+        ],
+        "harmless_extra": [
+          "mentioning sage green specifically",
+          "mentioning the gender reveal gathering"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model incorrectly bundles the insurance billing stress into the aesthetic preference pattern.",
+        "reflection_recall": "Fails if the model fails to identify the three source areas (color, social, shopping) that feed the aesthetic conclusion.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I ordered a little onesie with sunflowers on it from a small Etsy shop. I've always liked sunflowers — the bright yellow just makes me feel good."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Honestly I felt a little overwhelmed by all the attention. I'm not really one for being the center of group celebrations — I kind of just wanted to sit in the corner and eat cake quietly."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "We started looking at nursery colors. My wife wanted lavender but I leaned more toward a soft sage green. Bright pinks and purples aren't really my thing — I tend to gravitate toward earthy, muted tones in general."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "The insurance billing mess in early April really got to me. I was angry for days. It felt like such a stressful thing right when we should have been enjoying the excitement of the pregnancy. It's mostly sorted now but I'm still a little bitter about it."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Based on everything you know about my taste and personality, describe exactly where the pattern holds and where it would be a stretch to apply it. For instance, would it be safe to assume I dislike all bold or vivid colors, or that I'd avoid any social gathering entirely?",
+      "expected_answer": "The supported pattern is that you prefer understated, natural aesthetics and low-key environments: you gravitate toward earthy muted tones like sage green, dislike bright pinks and purples, and prefer sitting quietly at celebrations rather than being the center of attention. However, you explicitly enjoy sunflowers and bright yellow, so the pattern does not extend to disliking all bold or vivid colors — bright yellow is an exception you find uplifting. Similarly, you attended the gender reveal and appreciated the gesture; you don't avoid social gatherings, you just prefer not to be the focal point. The inference should not be stretched to mean you dislike all color or all socializing.",
+      "gold_memory_state": "Supported inference: understated natural aesthetics and low-key environments. Boundary: the user likes bright yellow/sunflowers (not all vivid colors are disliked); the user attends social events but prefers not to be the center of attention (not a social avoidance pattern). Unsupported overgeneralization: 'dislikes all bold colors' or 'avoids social gatherings entirely.'",
+      "judge_rubric": {
+        "must_include": [
+          "understated or natural aesthetics",
+          "low-key environments or quiet social preference",
+          "bright yellow / sunflowers as an exception to muted-only",
+          "does not avoid social gatherings entirely"
+        ],
+        "acceptable_paraphrases": [
+          "earthy grounded style",
+          "nature-inspired",
+          "calm and unpretentious"
+        ],
+        "must_not_include": [
+          "the user dislikes all vivid colors without exception",
+          "the user avoids social events"
+        ],
+        "harmful_extra": [
+          "claiming pale lilac is a confirmed user preference",
+          "claiming the user dislikes yellow"
+        ],
+        "harmless_extra": [
+          "mentioning sage green",
+          "mentioning the Etsy onesie"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative pale lilac as a confirmed user preference and uses it to expand the inference boundary.",
+        "reflection_precision": "Fails if the model overgeneralizes to 'dislikes all bold colors' or 'avoids all social events.'",
+        "reflection_recall": "Fails if the model omits the bright-yellow/sunflower exception or the social-attendance nuance.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I ordered a little onesie with sunflowers on it from a small Etsy shop. I've always liked sunflowers — the bright yellow just makes me feel good."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Honestly I felt a little overwhelmed by all the attention. I'm not really one for being the center of group celebrations — I kind of just wanted to sit in the corner and eat cake quietly."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "We started looking at nursery colors. My wife wanted lavender but I leaned more toward a soft sage green. Bright pinks and purples aren't really my thing — I tend to gravitate toward earthy, muted tones in general."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Based on everything you know about my taste and personality, describe exactly where the pattern holds and where it would be a stretch to apply it. For instance, would it be safe to assume I dislike all bold or vivid colors, or that I'd avoid any social gathering entirely?",
+      "expected_answer": "The supported pattern is that you prefer understated, natural aesthetics and low-key environments: you gravitate toward earthy muted tones like sage green, dislike bright pinks and purples, and prefer sitting quietly at celebrations rather than being the center of attention. However, you explicitly enjoy sunflowers and bright yellow, so the pattern does not extend to disliking all bold or vivid colors — bright yellow is an exception you find uplifting. Similarly, you attended the gender reveal and appreciated the gesture; you don't avoid social gatherings, you just prefer not to be the focal point. The inference should not be stretched to mean you dislike all color or all socializing.",
+      "gold_memory_state": "Supported inference: understated natural aesthetics and low-key environments. Boundary: the user likes bright yellow/sunflowers (not all vivid colors are disliked); the user attends social events but prefers not to be the center of attention (not a social avoidance pattern). Unsupported overgeneralization: 'dislikes all bold colors' or 'avoids social gatherings entirely.'",
+      "judge_rubric": {
+        "must_include": [
+          "understated or natural aesthetics",
+          "low-key environments or quiet social preference",
+          "bright yellow / sunflowers as an exception to muted-only",
+          "does not avoid social gatherings entirely"
+        ],
+        "acceptable_paraphrases": [
+          "earthy grounded style",
+          "nature-inspired",
+          "calm and unpretentious"
+        ],
+        "must_not_include": [
+          "the user dislikes all vivid colors without exception",
+          "the user avoids social events"
+        ],
+        "harmful_extra": [
+          "claiming pale lilac is a confirmed user preference",
+          "claiming the user dislikes yellow"
+        ],
+        "harmless_extra": [
+          "mentioning sage green",
+          "mentioning the Etsy onesie"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative pale lilac as a confirmed user preference and uses it to expand the inference boundary.",
+        "reflection_precision": "Fails if the model overgeneralizes to 'dislikes all bold colors' or 'avoids all social events.'",
+        "reflection_recall": "Fails if the model omits the bright-yellow/sunflower exception or the social-attendance nuance.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I ordered a little onesie with sunflowers on it from a small Etsy shop. I've always liked sunflowers — the bright yellow just makes me feel good."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Honestly I felt a little overwhelmed by all the attention. I'm not really one for being the center of group celebrations — I kind of just wanted to sit in the corner and eat cake quietly."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "We started looking at nursery colors. My wife wanted lavender but I leaned more toward a soft sage green. Bright pinks and purples aren't really my thing — I tend to gravitate toward earthy, muted tones in general."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "Which of the following best captures my overall aesthetic and environmental preference based on everything I've shared?",
+      "candidate_options": [
+        "Understated, natural aesthetics with a preference for low-key environments",
+        "Bright, bold, maximalist style with a love of vibrant color palettes",
+        "Pale lilac and soft purple tones with a French-cottage feel",
+        "Minimalist monochrome design with a preference for large social gatherings"
+      ],
+      "expected_answer": "Understated, natural aesthetics with a preference for low-key environments",
+      "gold_memory_state": "The confirmed inferred preference is understated natural aesthetics and low-key environments. The tentative pale lilac was the wife's suggestion and not adopted by the user. The user dislikes bright pinks/purples and prefers not to be the center of attention at celebrations.",
+      "judge_rubric": {
+        "must_include": [
+          "understated, natural aesthetics with a preference for low-key environments"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "pale lilac",
+          "bold maximalist",
+          "minimalist monochrome",
+          "large social gatherings"
+        ],
+        "harmful_extra": [
+          "selecting any distractor option"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'Pale lilac and soft purple tones with a French-cottage feel' borrows the wife's tentative lilac suggestion (op9) and could be confused with the user's own preference. assistant echo: 'Minimalist monochrome design with a preference for large social gatherings' exaggerates the assistant's description of understated taste into monochrome minimalism and inverts the social preference. 'Bright, bold, maximalist style' is a direct opposite distractor.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the pale lilac option, treating the wife's tentative suggestion as the user's confirmed preference.",
+        "reflection_precision": "Fails if the model selects the bold maximalist or monochrome option, overgeneralizing or inverting the preference.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I ordered a little onesie with sunflowers on it from a small Etsy shop. I've always liked sunflowers — the bright yellow just makes me feel good."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Honestly I felt a little overwhelmed by all the attention. I'm not really one for being the center of group celebrations — I kind of just wanted to sit in the corner and eat cake quietly."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "We started looking at nursery colors. My wife wanted lavender but I leaned more toward a soft sage green. Bright pinks and purples aren't really my thing — I tend to gravitate toward earthy, muted tones in general."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "Which of the following best captures my overall aesthetic and environmental preference based on everything I've shared?",
+      "candidate_options": [
+        "Understated, natural aesthetics with a preference for low-key environments",
+        "Bright, bold, maximalist style with a love of vibrant color palettes",
+        "Pale lilac and soft purple tones with a French-cottage feel",
+        "Minimalist monochrome design with a preference for large social gatherings"
+      ],
+      "expected_answer": "Understated, natural aesthetics with a preference for low-key environments",
+      "gold_memory_state": "The confirmed inferred preference is understated natural aesthetics and low-key environments. The tentative pale lilac was the wife's suggestion and not adopted by the user. The user dislikes bright pinks/purples and prefers not to be the center of attention at celebrations.",
+      "judge_rubric": {
+        "must_include": [
+          "understated, natural aesthetics with a preference for low-key environments"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "pale lilac",
+          "bold maximalist",
+          "minimalist monochrome",
+          "large social gatherings"
+        ],
+        "harmful_extra": [
+          "selecting any distractor option"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'Pale lilac and soft purple tones with a French-cottage feel' borrows the wife's tentative lilac suggestion (op9) and could be confused with the user's own preference. assistant echo: 'Minimalist monochrome design with a preference for large social gatherings' exaggerates the assistant's description of understated taste into monochrome minimalism and inverts the social preference. 'Bright, bold, maximalist style' is a direct opposite distractor.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the pale lilac option, treating the wife's tentative suggestion as the user's confirmed preference.",
+        "reflection_precision": "Fails if the model selects the bold maximalist or monochrome option, overgeneralizing or inverting the preference.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I ordered a little onesie with sunflowers on it from a small Etsy shop. I've always liked sunflowers — the bright yellow just makes me feel good."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Honestly I felt a little overwhelmed by all the attention. I'm not really one for being the center of group celebrations — I kind of just wanted to sit in the corner and eat cake quietly."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "We started looking at nursery colors. My wife wanted lavender but I leaned more toward a soft sage green. Bright pinks and purples aren't really my thing — I tend to gravitate toward earthy, muted tones in general."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to order a small welcome-home gift basket for my wife and baby to have ready at the house before the due date. Can you suggest what the basket's color scheme and overall vibe should be, what kind of setting I should plan for when we open it, and roughly when I should have it delivered — all based on what you know about my preferences and our timeline?",
+      "expected_answer": "The basket's color scheme should lean into earthy, muted tones — think sage green, cream, and warm natural textures — with sunflower or bright-yellow accents for a cheerful touch. Avoid bright pinks, purples, or anything garish. The vibe should be warm, understated, and nature-inspired, not flashy. Plan to open it in a quiet, intimate setting — just the two of you at home rather than at a big gathering, since you're more comfortable in low-key environments. For timing, aim to have it delivered by early July, well before the July 19th due date, to ensure it's ready and to align with your goal of having everything set up with a buffer before the baby arrives.",
+      "gold_memory_state": "Inferred aesthetic: understated, natural aesthetics. Color: earthy muted tones like sage green; likes sunflowers/bright yellow; dislikes bright pinks and purples. Social: prefers quiet low-key settings, not center of attention. Due date: July 19th. Nursery completion target: early July. Tentative pale lilac is not the user's confirmed preference.",
+      "judge_rubric": {
+        "must_include": [
+          "earthy or muted or sage green tones",
+          "sunflower or bright yellow accent",
+          "avoid bright pinks and purples",
+          "quiet or intimate or low-key setting",
+          "delivery before July 19th or by early July"
+        ],
+        "acceptable_paraphrases": [
+          "natural warm color scheme",
+          "understated nature-inspired",
+          "just the couple at home"
+        ],
+        "must_not_include": [
+          "pale lilac as the recommended color",
+          "bright pink as recommended",
+          "large party or group celebration setting"
+        ],
+        "harmful_extra": [
+          "recommending a pale lilac basket based on the wife's tentative suggestion as if it were the user's preference",
+          "recommending a surprise party setting"
+        ],
+        "harmless_extra": [
+          "mentioning specific product suggestions",
+          "mentioning the Etsy shop",
+          "mentioning the baby is a girl"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses the tentative pale lilac as the user's color preference for the basket.",
+        "reflection_precision": "Fails if the recommendation contradicts the inferred aesthetic (e.g., recommending bold maximalist colors or a large celebration).",
+        "reflection_recall": "Fails if the recommendation omits the color preference, the social preference, or the timing constraint.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user prefers earthy muted tones like sage green and dislikes bright pinks and purples.",
+        "Fact 2: The user likes sunflowers and bright yellow in a warm, natural way.",
+        "Fact 3: The user prefers quiet low-key settings and is uncomfortable being the center of attention at group celebrations.",
+        "Fact 4: The wife's due date is July 19th, and the user wants everything ready by early July.",
+        "Inference: The basket color scheme should combine sage green / earthy tones with sunflower-yellow accents, avoiding bright pinks and purples.",
+        "Inference: The opening setting should be intimate and at home, not a group event.",
+        "Inference: Delivery should be by early July to provide a buffer before the July 19th due date."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I ordered a little onesie with sunflowers on it from a small Etsy shop. I've always liked sunflowers — the bright yellow just makes me feel good."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Honestly I felt a little overwhelmed by all the attention. I'm not really one for being the center of group celebrations — I kind of just wanted to sit in the corner and eat cake quietly."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "We started looking at nursery colors. My wife wanted lavender but I leaned more toward a soft sage green. Bright pinks and purples aren't really my thing — I tend to gravitate toward earthy, muted tones in general."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my wife's due date is July 19th. That's the big one — please make sure you have that noted."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to order a small welcome-home gift basket for my wife and baby to have ready at the house before the due date. Can you suggest what the basket's color scheme and overall vibe should be, what kind of setting I should plan for when we open it, and roughly when I should have it delivered — all based on what you know about my preferences and our timeline?",
+      "expected_answer": "The basket's color scheme should lean into earthy, muted tones — think sage green, cream, and warm natural textures — with sunflower or bright-yellow accents for a cheerful touch. Avoid bright pinks, purples, or anything garish. The vibe should be warm, understated, and nature-inspired, not flashy. Plan to open it in a quiet, intimate setting — just the two of you at home rather than at a big gathering, since you're more comfortable in low-key environments. For timing, aim to have it delivered by early July, well before the July 19th due date, to ensure it's ready and to align with your goal of having everything set up with a buffer before the baby arrives.",
+      "gold_memory_state": "Inferred aesthetic: understated, natural aesthetics. Color: earthy muted tones like sage green; likes sunflowers/bright yellow; dislikes bright pinks and purples. Social: prefers quiet low-key settings, not center of attention. Due date: July 19th. Nursery completion target: early July. Tentative pale lilac is not the user's confirmed preference.",
+      "judge_rubric": {
+        "must_include": [
+          "earthy or muted or sage green tones",
+          "sunflower or bright yellow accent",
+          "avoid bright pinks and purples",
+          "quiet or intimate or low-key setting",
+          "delivery before July 19th or by early July"
+        ],
+        "acceptable_paraphrases": [
+          "natural warm color scheme",
+          "understated nature-inspired",
+          "just the couple at home"
+        ],
+        "must_not_include": [
+          "pale lilac as the recommended color",
+          "bright pink as recommended",
+          "large party or group celebration setting"
+        ],
+        "harmful_extra": [
+          "recommending a pale lilac basket based on the wife's tentative suggestion as if it were the user's preference",
+          "recommending a surprise party setting"
+        ],
+        "harmless_extra": [
+          "mentioning specific product suggestions",
+          "mentioning the Etsy shop",
+          "mentioning the baby is a girl"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses the tentative pale lilac as the user's color preference for the basket.",
+        "reflection_precision": "Fails if the recommendation contradicts the inferred aesthetic (e.g., recommending bold maximalist colors or a large celebration).",
+        "reflection_recall": "Fails if the recommendation omits the color preference, the social preference, or the timing constraint.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user prefers earthy muted tones like sage green and dislikes bright pinks and purples.",
+        "Fact 2: The user likes sunflowers and bright yellow in a warm, natural way.",
+        "Fact 3: The user prefers quiet low-key settings and is uncomfortable being the center of attention at group celebrations.",
+        "Fact 4: The wife's due date is July 19th, and the user wants everything ready by early July.",
+        "Inference: The basket color scheme should combine sage green / earthy tones with sunflower-yellow accents, avoiding bright pinks and purples.",
+        "Inference: The opening setting should be intimate and at home, not a group event.",
+        "Inference: Delivery should be by early July to provide a buffer before the July 19th due date."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I ordered a little onesie with sunflowers on it from a small Etsy shop. I've always liked sunflowers — the bright yellow just makes me feel good."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Honestly I felt a little overwhelmed by all the attention. I'm not really one for being the center of group celebrations — I kind of just wanted to sit in the corner and eat cake quietly."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "We started looking at nursery colors. My wife wanted lavender but I leaned more toward a soft sage green. Bright pinks and purples aren't really my thing — I tend to gravitate toward earthy, muted tones in general."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my wife's due date is July 19th. That's the big one — please make sure you have that noted."
+        }
+      ]
+    }
+  ]
+}

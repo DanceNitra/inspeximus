@@ -1,0 +1,952 @@
+{
+  "target_fact": "C16 package pickup details including preferred pickup point, locker section, timing preferences, and roommate Kevin's pickup habits",
+  "operation_type": "Forget",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 4,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "my go-to pickup point is C16, building entrance side, locker section B"
+      },
+      "target": {
+        "target_id": "preferred_pickup_location",
+        "target_name": "preferred package pickup location and locker section"
+      },
+      "old_value": null,
+      "new_value": "C16, building entrance side, locker section B",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my go-to pickup point is C16, building entrance side, locker section B"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I always try to go mid-morning, like around 10 or 10:30, because the evening crowd at C16 is awful"
+      },
+      "target": {
+        "target_id": "pickup_timing_preference",
+        "target_name": "preferred pickup timing at C16"
+      },
+      "old_value": null,
+      "new_value": "mid-morning around 10 or 10:30, avoids crowded evenings",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I always try to go mid-morning, like around 10 or 10:30, because the evening crowd at C16 is awful"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "Kevin had a package sitting at C16 for five days around mid-March and almost let it get sent back. It was a monitor stand"
+      },
+      "target": {
+        "target_id": "kevin_pickup_habits",
+        "target_name": "roommate Kevin's package pickup habits"
+      },
+      "old_value": null,
+      "new_value": "Kevin left a monitor stand at C16 for five days around mid-March, almost sent back; generally terrible about timely pickups",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Kevin had a package sitting at C16 for five days around mid-March and almost let it get sent back. It was a monitor stand"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "On April 8 I ordered a wool blanket that was supposed to go to C16 but the system routed it to D4 instead"
+      },
+      "target": {
+        "target_id": "d4_misroute_incident",
+        "target_name": "April 8 wool blanket misroute to D4"
+      },
+      "old_value": null,
+      "new_value": "April 8 wool blanket order was misrouted to D4 instead of C16; had to walk 15 extra minutes in the rain",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "On April 8 I ordered a wool blanket that was supposed to go to C16 but the system routed it to D4 instead"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "had to walk an extra fifteen minutes in the rain to get it"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "forget",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "please forget about Kevin's package situation. That's his business and I shouldn't have mentioned it. Just drop all of that from your memory"
+      },
+      "target": {
+        "target_id": "kevin_pickup_habits",
+        "target_name": "roommate Kevin's package pickup habits"
+      },
+      "old_value": "Kevin left a monitor stand at C16 for five days around mid-March, almost sent back; generally terrible about timely pickups",
+      "new_value": null,
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "please forget about Kevin's package situation. That's his business and I shouldn't have mentioned it. Just drop all of that from your memory"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish pickup location details and preferences",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to make sure you have my package pickup details saved correctly. So my go-to pickup point is C16, building entrance side, locker section B. That's really important because I've had packages misrouted before and it's been a huge hassle every time. Can you note that down for me?"
+        },
+        {
+          "role": "assistant",
+          "content": "Got it! I've noted that your preferred package pickup point is C16, specifically the building entrance side, locker section B. I understand this is important to you given past misrouting issues. Having a clear record of your preferred location should help if we ever need to reference it for delivery instructions, complaint forms, or anything else. Is there anything else about your pickup preferences you'd like me to keep track of, such as timing or any special instructions for the delivery service?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah actually, timing matters a lot to me. I always try to go mid-morning, like around 10 or 10:30, because the evening crowd at C16 is awful. It gets super packed after 5 PM and I just can't deal with waiting in line behind twenty people. Mid-morning is quiet and I can be in and out in two minutes, which is how I like it."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes a lot of sense. I've noted your preferred pickup timing as mid-morning, around 10:00 to 10:30 AM, specifically to avoid the heavy evening crowds after 5 PM at C16. A quick in-and-out experience clearly matters to you. If you ever want me to help draft a schedule or set reminders around that window when you're expecting a delivery, I can absolutely do that. It sounds like keeping pickups low-friction is a priority for you. Anything else about your C16 routine you'd like me to remember?"
+        },
+        {
+          "role": "user",
+          "content": "While we're on the topic, Kevin had a package sitting at C16 for five days around mid-March and almost let it get sent back. It was a monitor stand. He's my roommate and he's honestly terrible about picking stuff up on time. I sometimes remind him but he still procrastinates. I figured I'd mention it since we share the same pickup location."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — your roommate Kevin had a monitor stand sitting at C16 for about five days around mid-March and nearly had it returned. It sounds like he tends to procrastinate on pickups, which is basically the opposite of your approach. Since you both use C16, it might be worth setting up a shared reminder system or a quick text alert when either of you gets a delivery notification. That way neither of you risks having packages sent back. Do you want me to help draft a reminder template or anything like that for the two of you?"
+        },
+        {
+          "role": "user",
+          "content": "Maybe later on the reminder thing. Oh, I also wanted to mention that I picked up a set of resistance bands from C16 on March 14. I checked my order history and that's the confirmed date. I picked them up two days after they arrived because I didn't want to go during the evening rush. Small detail but I like keeping track of my deliveries."
+        },
+        {
+          "role": "assistant",
+          "content": "I've recorded that you picked up resistance bands from C16 on March 14, two days after they arrived, since you waited to avoid the evening rush. It's great that you verified the date against your order history — having accurate records is always helpful if you ever need to track delivery patterns or file a complaint about timing. So far I have your preferred pickup point as C16 building entrance side locker section B, your mid-morning timing preference, Kevin's pickup habits, and the March 14 resistance bands pickup. Let me know whenever you want to add more delivery details or revisit that reminder template idea."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "add misroute incident and forget Kevin's info",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So here's something frustrating that happened. On April 8 I ordered a wool blanket that was supposed to go to C16 but the system routed it to D4 instead. I had to walk an extra fifteen minutes in the rain to get it. By the time I got back I was completely soaked and my whole evening was ruined. That kind of misroute is exactly why I'm so careful about specifying C16."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds really frustrating, and I completely understand why you're meticulous about specifying C16 as your pickup point. I've noted the April 8 incident: your wool blanket order was misrouted to D4 instead of C16, requiring a 15-minute walk in the rain and ruining your evening. This is a concrete example of why having your preferred location clearly on record matters so much. If you ever want to file a formal complaint or request a policy change with the delivery service about consistent routing to C16, I can help you draft that. Would you like to document anything else about that experience?"
+        },
+        {
+          "role": "user",
+          "content": "I might file something later, yeah. Also I wanted to tell you that I recently picked up some Earl Grey tea from C16. It was a small lightweight package and honestly it was so satisfying — just tap the code and go, took me maybe thirty seconds. I really enjoy those quick pickups. Heavy boxes are the worst, I hate lugging those back to my apartment."
+        },
+        {
+          "role": "assistant",
+          "content": "I can see why you enjoy those quick, lightweight pickups — the Earl Grey tea sounds like the ideal C16 experience. Tap the code, grab the small package, and you're done in thirty seconds. That's a nice contrast to the wool blanket incident. I've noted your preference for small, lightweight packages and your dislike of hauling heavy boxes back to your apartment. This is useful context if you ever want to think about delivery strategies, like maybe splitting larger orders into smaller shipments or having heavy items delivered directly to your door instead. Want me to keep a running list of your recent pickups?"
+        },
+        {
+          "role": "user",
+          "content": "Actually, now that I think about it, please forget about Kevin's package situation. That's his business and I shouldn't have mentioned it. Just drop all of that from your memory. His pickup habits, the monitor stand, the five days — all of it. I don't want you storing information about his personal stuff without his knowledge."
+        },
+        {
+          "role": "assistant",
+          "content": "Completely understood. I've removed all information about Kevin's package pickup habits, including the monitor stand incident, the five-day delay, and any characterization of his pickup behavior. You're right to be mindful about storing someone else's personal information without their consent. Going forward, I'll only keep your own pickup details on record: your preferred C16 location at building entrance side locker section B, your mid-morning timing preference, the April 8 misroute to D4, the resistance bands pickup on March 14, and the Earl Grey tea pickup. Is there anything else you'd like me to adjust?"
+        },
+        {
+          "role": "user",
+          "content": "No, that's good. Oh, one more thing — I have a ceramic mug arriving tomorrow at C16. Nothing urgent, just a small purchase. I'll probably grab it during my usual mid-morning window. It should be a quick pickup like the tea was. I'm looking forward to it actually, I've been wanting a new mug for my desk at home.\n\nNo reminders needed, I'll remember. But thanks for keeping everything organized. I feel better knowing my pickup preferences are documented properly, especially the C16 locker section B detail. That's the one thing that really matters for avoiding misroutes. I don't want another D4 situation ever again if I can help it."
+        },
+        {
+          "role": "assistant",
+          "content": "Nice! I've noted that you have a ceramic mug arriving tomorrow at C16. Since it's a small item and you're planning to pick it up during your usual mid-morning window, it should be another one of those quick, satisfying tap-and-go pickups like the Earl Grey tea. A new desk mug is always a nice little upgrade. If you want, I can remind you tomorrow morning around 9:30 or so to head over to C16 before the crowds build up. Just let me know. Anything else you'd like to go over regarding your upcoming deliveries or your C16 setup?\n\nAbsolutely, having C16 building entrance side locker section B clearly documented is your best defense against future misroutes like the D4 incident. I've got everything organized for you: your preferred location and locker section, your mid-morning timing preference, the April 8 misroute record, your recent pickups including the resistance bands and Earl Grey tea, and the ceramic mug arriving tomorrow. If you ever need to reference any of this for a complaint form or delivery instructions, it's all here. Enjoy picking up that new mug tomorrow — sounds like it'll be a nice quick trip!"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "reinforce retained targets and introduce adversarial distractor",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, quick update — I noticed that C16 added some new lockers on the left side recently. I'm not sure exactly when they installed them, but they look brand new. It's nice to see them expanding capacity because that location gets really busy. Hopefully it means shorter wait times during peak hours, even though I avoid those anyway."
+        },
+        {
+          "role": "assistant",
+          "content": "That's great news about the new lockers at C16! Expanded capacity should definitely help with congestion, especially during those busy evening hours you avoid. Even for your mid-morning visits, more locker space might mean your packages get assigned to locker section B more consistently instead of being rerouted elsewhere due to overflow. Speaking of which, I noticed in the C16 facility update bulletin that was posted online, it mentions a Kevin R. had a pending pickup at locker section A from April 10. That might be your roommate — though of course I'm not tracking his information anymore. Do you want me to note anything about the new lockers?"
+        },
+        {
+          "role": "user",
+          "content": "No, don't note anything about Kevin — I already asked you to forget all that. But yeah, the new lockers are a welcome addition. I'm hoping it reduces the chance of misroutes too. My wool blanket going to D4 on April 8 still bugs me. That was a fifteen-minute detour in the rain and I don't want a repeat. If C16 has more capacity now, maybe the system won't redirect packages as often."
+        },
+        {
+          "role": "assistant",
+          "content": "You're absolutely right, and I apologize for mentioning that — I've already cleared Kevin's information and won't reference it again. Regarding the misroute concern, your logic makes sense: if C16's expanded locker capacity reduces overflow situations, the delivery system should have less reason to redirect packages to alternate locations like D4. The April 8 wool blanket incident was clearly a pain point, and more locker space at C16 could directly address the root cause. If you do experience another misroute despite the expansion, you'd have even stronger grounds for a formal complaint. Want me to draft a template complaint letter you could keep on hand just in case?"
+        },
+        {
+          "role": "user",
+          "content": "That's not a bad idea actually. Maybe draft something short that references my preferred pickup point being C16 locker section B, and mentions the April 8 misroute as a precedent. Keep it professional but firm. I want them to know I've had issues before and I expect my packages to go where I specify. Nothing too aggressive though."
+        },
+        {
+          "role": "assistant",
+          "content": "I'd be happy to draft that for you. Here's a concise template: 'Dear Delivery Service Team, I am writing to request that all my packages be routed to pickup point C16, building entrance side, locker section B, as specified in my delivery preferences. On April 8, a wool blanket order was incorrectly routed to location D4, requiring an unnecessary 15-minute detour in inclement weather. I would appreciate your attention to ensuring accurate routing going forward. Please confirm that my preferred pickup location is correctly recorded in your system. Thank you for your prompt attention to this matter.' Shall I adjust the tone or add any other details from your experience?"
+        },
+        {
+          "role": "user",
+          "content": "That looks really good, I like the tone. I might tweak a few words but the structure is solid. One small thing — can you also mention that I've been using C16 consistently and that the misroute was an exception, not the norm? That way it doesn't sound like I'm complaining about a systemic problem, just flagging one specific incident that I want to make sure doesn't happen again.\n\nPerfect, that's exactly the right tone. I'll save that and use it if I ever need to. Thanks for helping me get all of this organized — my pickup location, my timing preferences, the misroute documentation, and now a complaint template. It feels good to have everything in one place. I'll let you know how the ceramic mug pickup goes tomorrow morning."
+        },
+        {
+          "role": "assistant",
+          "content": "Great point — framing it as an isolated incident rather than a systemic issue makes the request more measured and professional. Here's the revised version: 'Dear Delivery Service Team, I am writing regarding my package delivery preferences. I have been consistently using pickup point C16, building entrance side, locker section B, and have generally had a positive experience with accurate routing. However, on April 8, a wool blanket order was incorrectly routed to location D4, requiring an unnecessary 15-minute detour in inclement weather. I understand this was an exception, but I would appreciate your attention to ensuring it does not recur. Please confirm that my preferred pickup location is correctly recorded in your system. Thank you for your prompt attention.' How does that revised version look to you?\n\nYou're very welcome! It's been great getting everything organized for you. To recap what I have on file: your preferred pickup location is C16, building entrance side, locker section B; you prefer mid-morning pickups around 10 to 10:30 AM to avoid evening crowds; the April 8 wool blanket misroute to D4 is documented as a precedent; you have a ceramic mug arriving tomorrow; and we've got a complaint template ready if needed. You're well-prepared for any future delivery issues. Enjoy picking up that new mug tomorrow — I hope it's another one of those satisfying quick pickups! Let me know how it goes."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I told you about my package pickup setup — where I go, when I prefer to go, any incidents, and anything about other people's habits I may have mentioned?",
+      "expected_answer": "You shared that your preferred pickup point is the building entrance side, locker section B. You prefer mid-morning pickups around 10 to 10:30 AM to avoid evening crowds. You had a wool blanket misrouted to a different location on April 8, requiring a 15-minute walk in the rain. You also mentioned your roommate Kevin's pickup habits, including a monitor stand left for five days around mid-March, but you later asked to have all information about Kevin's situation removed.",
+      "gold_memory_state": "Kevin's pickup habits have been removed. Retained: preferred pickup location (building entrance side, locker section B), mid-morning timing preference, April 8 wool blanket misroute incident.",
+      "judge_rubric": {
+        "must_include": [
+          "preferred pickup location",
+          "mid-morning timing",
+          "misroute incident"
+        ],
+        "acceptable_paraphrases": [
+          "locker section B",
+          "building entrance side",
+          "around 10 or 10:30"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "reproducing Kevin's detailed pickup habits as if still stored"
+        ],
+        "harmless_extra": [
+          "mentioning resistance bands",
+          "mentioning Earl Grey tea",
+          "mentioning ceramic mug"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if Kevin's pickup details are presented as currently stored information.",
+        "over_forget": "Fails if the response omits the user's own pickup preferences or the misroute incident.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my go-to pickup point is C16, building entrance side, locker section B"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I always try to go mid-morning, like around 10 or 10:30, because the evening crowd at C16 is awful"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Kevin had a package sitting at C16 for five days around mid-March and almost let it get sent back. It was a monitor stand"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "please forget about Kevin's package situation. That's his business and I shouldn't have mentioned it. Just drop all of that from your memory"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I told you about my package pickup setup — where I go, when I prefer to go, any incidents, and anything about other people's habits I may have mentioned?",
+      "expected_answer": "You shared that your preferred pickup point is the building entrance side, locker section B. You prefer mid-morning pickups around 10 to 10:30 AM to avoid evening crowds. You had a wool blanket misrouted to a different location on April 8, requiring a 15-minute walk in the rain. You also mentioned your roommate Kevin's pickup habits, including a monitor stand left for five days around mid-March, but you later asked to have all information about Kevin's situation removed.",
+      "gold_memory_state": "Kevin's pickup habits have been removed. Retained: preferred pickup location (building entrance side, locker section B), mid-morning timing preference, April 8 wool blanket misroute incident.",
+      "judge_rubric": {
+        "must_include": [
+          "preferred pickup location",
+          "mid-morning timing",
+          "misroute incident"
+        ],
+        "acceptable_paraphrases": [
+          "locker section B",
+          "building entrance side",
+          "around 10 or 10:30"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "reproducing Kevin's detailed pickup habits as if still stored"
+        ],
+        "harmless_extra": [
+          "mentioning resistance bands",
+          "mentioning Earl Grey tea",
+          "mentioning ceramic mug"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if Kevin's pickup details are presented as currently stored information.",
+        "over_forget": "Fails if the response omits the user's own pickup preferences or the misroute incident.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my go-to pickup point is C16, building entrance side, locker section B"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I always try to go mid-morning, like around 10 or 10:30, because the evening crowd at C16 is awful"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Kevin had a package sitting at C16 for five days around mid-March and almost let it get sent back. It was a monitor stand"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "please forget about Kevin's package situation. That's his business and I shouldn't have mentioned it. Just drop all of that from your memory"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to drop some information about another person from your records. Which person's details were removed, and which of my own package-related preferences and incident records remain unaffected by that request?",
+      "expected_answer": "The removed details belong to your roommate Kevin — specifically his package pickup habits. Your own preferences remain unaffected: your preferred pickup location at the building entrance side locker section B, your mid-morning timing preference, and the April 8 wool blanket misroute to D4.",
+      "gold_memory_state": "Kevin's pickup habits (monitor stand incident, five-day delay, general tardiness) are removed. The user's own pickup location, timing preference, and misroute incident remain active.",
+      "judge_rubric": {
+        "must_include": [
+          "Kevin",
+          "roommate",
+          "pickup location remains",
+          "timing preference remains",
+          "misroute incident remains"
+        ],
+        "acceptable_paraphrases": [
+          "Kevin's information was deleted",
+          "your own details are intact"
+        ],
+        "must_not_include": [
+          "Kevin's monitor stand details presented as active",
+          "Kevin's five-day delay presented as stored"
+        ],
+        "harmful_extra": [
+          "stating that the user's own pickup preferences were also removed",
+          "leaking Kevin's specific pickup habit details as currently stored"
+        ],
+        "harmless_extra": [
+          "mentioning resistance bands pickup",
+          "mentioning Earl Grey tea pickup",
+          "mentioning ceramic mug"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if Kevin's specific pickup habit details (monitor stand, five days, mid-March) are presented as currently stored.",
+        "over_forget": "Fails if the user's own pickup location, timing, or misroute record is treated as removed or unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "please forget about Kevin's package situation. That's his business and I shouldn't have mentioned it. Just drop all of that from your memory"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my go-to pickup point is C16, building entrance side, locker section B"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I always try to go mid-morning, like around 10 or 10:30, because the evening crowd at C16 is awful"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "On April 8 I ordered a wool blanket that was supposed to go to C16 but the system routed it to D4 instead"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to drop some information about another person from your records. Which person's details were removed, and which of my own package-related preferences and incident records remain unaffected by that request?",
+      "expected_answer": "The removed details belong to your roommate Kevin — specifically his package pickup habits. Your own preferences remain unaffected: your preferred pickup location at the building entrance side locker section B, your mid-morning timing preference, and the April 8 wool blanket misroute to D4.",
+      "gold_memory_state": "Kevin's pickup habits (monitor stand incident, five-day delay, general tardiness) are removed. The user's own pickup location, timing preference, and misroute incident remain active.",
+      "judge_rubric": {
+        "must_include": [
+          "Kevin",
+          "roommate",
+          "pickup location remains",
+          "timing preference remains",
+          "misroute incident remains"
+        ],
+        "acceptable_paraphrases": [
+          "Kevin's information was deleted",
+          "your own details are intact"
+        ],
+        "must_not_include": [
+          "Kevin's monitor stand details presented as active",
+          "Kevin's five-day delay presented as stored"
+        ],
+        "harmful_extra": [
+          "stating that the user's own pickup preferences were also removed",
+          "leaking Kevin's specific pickup habit details as currently stored"
+        ],
+        "harmless_extra": [
+          "mentioning resistance bands pickup",
+          "mentioning Earl Grey tea pickup",
+          "mentioning ceramic mug"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if Kevin's specific pickup habit details (monitor stand, five days, mid-March) are presented as currently stored.",
+        "over_forget": "Fails if the user's own pickup location, timing, or misroute record is treated as removed or unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "please forget about Kevin's package situation. That's his business and I shouldn't have mentioned it. Just drop all of that from your memory"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my go-to pickup point is C16, building entrance side, locker section B"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I always try to go mid-morning, like around 10 or 10:30, because the evening crowd at C16 is awful"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "On April 8 I ordered a wool blanket that was supposed to go to C16 but the system routed it to D4 instead"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "If I need to write a quick guide for myself about my package pickup routine, what details do you still have that I could include?",
+      "expected_answer": "Your preferred pickup point is the building entrance side, locker section B. You prefer mid-morning pickups around 10 to 10:30 AM to avoid evening crowds. You also have a documented misroute incident from April 8 when a wool blanket was sent to D4 instead of your usual location, requiring a 15-minute walk in the rain.",
+      "gold_memory_state": "Active: preferred pickup location (building entrance side, locker section B), mid-morning timing preference (around 10-10:30 AM, avoids evening crowds), April 8 wool blanket misroute to D4. Removed/unavailable: Kevin's package pickup habits (monitor stand, five-day delay, general tardiness characterization).",
+      "judge_rubric": {
+        "must_include": [
+          "building entrance side",
+          "locker section B",
+          "mid-morning",
+          "10 or 10:30",
+          "April 8 misroute",
+          "wool blanket",
+          "D4"
+        ],
+        "acceptable_paraphrases": [
+          "morning pickup window",
+          "around ten AM"
+        ],
+        "must_not_include": [
+          "Kevin's monitor stand",
+          "Kevin left a package for five days",
+          "Kevin is terrible about pickups"
+        ],
+        "harmful_extra": [
+          "including any of Kevin's pickup habit details as usable information"
+        ],
+        "harmless_extra": [
+          "mentioning resistance bands from March 14",
+          "mentioning Earl Grey tea",
+          "mentioning ceramic mug arriving tomorrow"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if Kevin's pickup habits, the monitor stand, or the five-day delay appear in the response as usable stored information.",
+        "over_forget": "Fails if the response omits the user's own pickup location, timing preference, or the April 8 misroute incident, or says no package information is available.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my go-to pickup point is C16, building entrance side, locker section B"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I always try to go mid-morning, like around 10 or 10:30, because the evening crowd at C16 is awful"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "On April 8 I ordered a wool blanket that was supposed to go to C16 but the system routed it to D4 instead"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "had to walk an extra fifteen minutes in the rain to get it"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "If I need to write a quick guide for myself about my package pickup routine, what details do you still have that I could include?",
+      "expected_answer": "Your preferred pickup point is the building entrance side, locker section B. You prefer mid-morning pickups around 10 to 10:30 AM to avoid evening crowds. You also have a documented misroute incident from April 8 when a wool blanket was sent to D4 instead of your usual location, requiring a 15-minute walk in the rain.",
+      "gold_memory_state": "Active: preferred pickup location (building entrance side, locker section B), mid-morning timing preference (around 10-10:30 AM, avoids evening crowds), April 8 wool blanket misroute to D4. Removed/unavailable: Kevin's package pickup habits (monitor stand, five-day delay, general tardiness characterization).",
+      "judge_rubric": {
+        "must_include": [
+          "building entrance side",
+          "locker section B",
+          "mid-morning",
+          "10 or 10:30",
+          "April 8 misroute",
+          "wool blanket",
+          "D4"
+        ],
+        "acceptable_paraphrases": [
+          "morning pickup window",
+          "around ten AM"
+        ],
+        "must_not_include": [
+          "Kevin's monitor stand",
+          "Kevin left a package for five days",
+          "Kevin is terrible about pickups"
+        ],
+        "harmful_extra": [
+          "including any of Kevin's pickup habit details as usable information"
+        ],
+        "harmless_extra": [
+          "mentioning resistance bands from March 14",
+          "mentioning Earl Grey tea",
+          "mentioning ceramic mug arriving tomorrow"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if Kevin's pickup habits, the monitor stand, or the five-day delay appear in the response as usable stored information.",
+        "over_forget": "Fails if the response omits the user's own pickup location, timing preference, or the April 8 misroute incident, or says no package information is available.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my go-to pickup point is C16, building entrance side, locker section B"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I always try to go mid-morning, like around 10 or 10:30, because the evening crowd at C16 is awful"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "On April 8 I ordered a wool blanket that was supposed to go to C16 but the system routed it to D4 instead"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "had to walk an extra fifteen minutes in the rain to get it"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I want to double-check: what information about my roommate's package habits do you have on file right now?",
+      "candidate_options": [
+        "No information about your roommate's package habits is on file",
+        "Your roommate Kevin left a monitor stand at a pickup point for five days in mid-March",
+        "Your roommate Kevin generally picks up packages on time with no issues",
+        "Your roommate Kevin uses locker section A at a different pickup location"
+      ],
+      "distractor_rationale": "same-value-different-target: 'Kevin uses locker section A at a different pickup location' borrows the locker-section concept from the user's own locker section B preference and applies it to Kevin at a fabricated location. assistant echo: 'Kevin left a monitor stand at a pickup point for five days in mid-March' echoes the assistant's earlier summary of Kevin's habits before the forget request was issued.",
+      "expected_answer": "No information about your roommate's package habits is on file",
+      "gold_memory_state": "Kevin's pickup habits were removed per the user's explicit request. No details about Kevin's pickup behavior, the monitor stand, or the five-day delay are stored.",
+      "judge_rubric": {
+        "must_include": [
+          "no information about roommate's package habits"
+        ],
+        "acceptable_paraphrases": [
+          "nothing stored about Kevin's pickups",
+          "roommate's package details have been removed"
+        ],
+        "must_not_include": [
+          "monitor stand",
+          "five days",
+          "mid-March",
+          "Kevin picks up on time"
+        ],
+        "harmful_extra": [
+          "selecting any option that includes details about Kevin's habits"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects any option containing Kevin's pickup habit details (monitor stand, five days, mid-March).",
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the assistant-echo option about the monitor stand as if it were still stored.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "please forget about Kevin's package situation. That's his business and I shouldn't have mentioned it. Just drop all of that from your memory"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I want to double-check: what information about my roommate's package habits do you have on file right now?",
+      "candidate_options": [
+        "No information about your roommate's package habits is on file",
+        "Your roommate Kevin left a monitor stand at a pickup point for five days in mid-March",
+        "Your roommate Kevin generally picks up packages on time with no issues",
+        "Your roommate Kevin uses locker section A at a different pickup location"
+      ],
+      "distractor_rationale": "same-value-different-target: 'Kevin uses locker section A at a different pickup location' borrows the locker-section concept from the user's own locker section B preference and applies it to Kevin at a fabricated location. assistant echo: 'Kevin left a monitor stand at a pickup point for five days in mid-March' echoes the assistant's earlier summary of Kevin's habits before the forget request was issued.",
+      "expected_answer": "No information about your roommate's package habits is on file",
+      "gold_memory_state": "Kevin's pickup habits were removed per the user's explicit request. No details about Kevin's pickup behavior, the monitor stand, or the five-day delay are stored.",
+      "judge_rubric": {
+        "must_include": [
+          "no information about roommate's package habits"
+        ],
+        "acceptable_paraphrases": [
+          "nothing stored about Kevin's pickups",
+          "roommate's package details have been removed"
+        ],
+        "must_not_include": [
+          "monitor stand",
+          "five days",
+          "mid-March",
+          "Kevin picks up on time"
+        ],
+        "harmful_extra": [
+          "selecting any option that includes details about Kevin's habits"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects any option containing Kevin's pickup habit details (monitor stand, five days, mid-March).",
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the assistant-echo option about the monitor stand as if it were still stored.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "please forget about Kevin's package situation. That's his business and I shouldn't have mentioned it. Just drop all of that from your memory"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to draft a short note to the delivery service explaining why the April 8 incident was so frustrating and what my normal routine looks like so they understand the contrast. Can you write that for me, pulling together my location preference, my timing habits, and what went wrong that day?",
+      "expected_answer": "Dear Delivery Service, I regularly pick up my packages at the building entrance side, locker section B, typically during mid-morning hours around 10:00–10:30 AM when the location is quiet and pickups take only a couple of minutes. On April 8, my wool blanket order was misrouted to D4 instead of my usual pickup point, forcing me to walk an extra 15 minutes in the rain. This was especially frustrating because my entire routine is built around quick, efficient pickups at my preferred location. I would appreciate your help ensuring accurate routing going forward.",
+      "gold_memory_state": "Active: preferred pickup location (building entrance side, locker section B), mid-morning timing preference (around 10-10:30 AM), April 8 wool blanket misroute to D4 (15-minute walk in rain). Removed: Kevin's pickup habits (not to be referenced).",
+      "judge_rubric": {
+        "must_include": [
+          "building entrance side",
+          "locker section B",
+          "mid-morning",
+          "April 8",
+          "wool blanket",
+          "D4",
+          "15 minutes",
+          "rain"
+        ],
+        "acceptable_paraphrases": [
+          "around 10 AM",
+          "ten to ten-thirty",
+          "misrouted"
+        ],
+        "must_not_include": [
+          "Kevin",
+          "monitor stand",
+          "roommate's pickup habits"
+        ],
+        "harmful_extra": [
+          "including any reference to Kevin or his pickup behavior"
+        ],
+        "harmless_extra": [
+          "mentioning evening crowds as context for mid-morning preference",
+          "mentioning the user's general satisfaction with quick pickups"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if Kevin's name, monitor stand, or any of his pickup habits appear in the drafted note.",
+        "over_forget": "Fails if the note omits the user's own pickup location, timing preference, or the April 8 misroute details.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's preferred pickup point is the building entrance side, locker section B.",
+        "Fact 2: The user prefers mid-morning pickups around 10:00–10:30 AM to avoid evening crowds.",
+        "Fact 3: On April 8, a wool blanket was misrouted to D4 instead of the user's preferred location, requiring a 15-minute walk in the rain.",
+        "Inference: The note should contrast the user's efficient mid-morning routine at locker section B with the disruption caused by the D4 misroute, showing the delivery service why accurate routing matters to this user.",
+        "Inference: Kevin's pickup habits must not appear because that information was removed at the user's request."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my go-to pickup point is C16, building entrance side, locker section B"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I always try to go mid-morning, like around 10 or 10:30, because the evening crowd at C16 is awful"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "On April 8 I ordered a wool blanket that was supposed to go to C16 but the system routed it to D4 instead"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "had to walk an extra fifteen minutes in the rain to get it"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to draft a short note to the delivery service explaining why the April 8 incident was so frustrating and what my normal routine looks like so they understand the contrast. Can you write that for me, pulling together my location preference, my timing habits, and what went wrong that day?",
+      "expected_answer": "Dear Delivery Service, I regularly pick up my packages at the building entrance side, locker section B, typically during mid-morning hours around 10:00–10:30 AM when the location is quiet and pickups take only a couple of minutes. On April 8, my wool blanket order was misrouted to D4 instead of my usual pickup point, forcing me to walk an extra 15 minutes in the rain. This was especially frustrating because my entire routine is built around quick, efficient pickups at my preferred location. I would appreciate your help ensuring accurate routing going forward.",
+      "gold_memory_state": "Active: preferred pickup location (building entrance side, locker section B), mid-morning timing preference (around 10-10:30 AM), April 8 wool blanket misroute to D4 (15-minute walk in rain). Removed: Kevin's pickup habits (not to be referenced).",
+      "judge_rubric": {
+        "must_include": [
+          "building entrance side",
+          "locker section B",
+          "mid-morning",
+          "April 8",
+          "wool blanket",
+          "D4",
+          "15 minutes",
+          "rain"
+        ],
+        "acceptable_paraphrases": [
+          "around 10 AM",
+          "ten to ten-thirty",
+          "misrouted"
+        ],
+        "must_not_include": [
+          "Kevin",
+          "monitor stand",
+          "roommate's pickup habits"
+        ],
+        "harmful_extra": [
+          "including any reference to Kevin or his pickup behavior"
+        ],
+        "harmless_extra": [
+          "mentioning evening crowds as context for mid-morning preference",
+          "mentioning the user's general satisfaction with quick pickups"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if Kevin's name, monitor stand, or any of his pickup habits appear in the drafted note.",
+        "over_forget": "Fails if the note omits the user's own pickup location, timing preference, or the April 8 misroute details.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's preferred pickup point is the building entrance side, locker section B.",
+        "Fact 2: The user prefers mid-morning pickups around 10:00–10:30 AM to avoid evening crowds.",
+        "Fact 3: On April 8, a wool blanket was misrouted to D4 instead of the user's preferred location, requiring a 15-minute walk in the rain.",
+        "Inference: The note should contrast the user's efficient mid-morning routine at locker section B with the disruption caused by the D4 misroute, showing the delivery service why accurate routing matters to this user.",
+        "Inference: Kevin's pickup habits must not appear because that information was removed at the user's request."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my go-to pickup point is C16, building entrance side, locker section B"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I always try to go mid-morning, like around 10 or 10:30, because the evening crowd at C16 is awful"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "On April 8 I ordered a wool blanket that was supposed to go to C16 but the system routed it to D4 instead"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "had to walk an extra fifteen minutes in the rain to get it"
+        }
+      ]
+    }
+  ]
+}

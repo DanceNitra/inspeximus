@@ -1,0 +1,1116 @@
+{
+  "target_fact": "User's fertility treatment details including clinic location, AMH level, letrozole side effects, current prenatal vitamin, and upcoming monitoring appointment",
+  "operation_type": "Remember",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 3,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": true,
+      "never_stored_target": "day-21 progesterone level"
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "My AMH came back at 1.4 ng/mL from my bloodwork at Pacific Fertility Clinic on Wilshire"
+      },
+      "target": {
+        "target_id": "amh_level",
+        "target_name": "user's AMH level"
+      },
+      "old_value": null,
+      "new_value": "1.4 ng/mL",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My AMH came back at 1.4 ng/mL from my bloodwork at Pacific Fertility Clinic on Wilshire"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I had a reaction to the letrozole — bad headaches and joint pain for about four days"
+      },
+      "target": {
+        "target_id": "letrozole_side_effects",
+        "target_name": "user's adverse reaction to letrozole"
+      },
+      "old_value": null,
+      "new_value": "headaches and joint pain for about four days",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I had a reaction to the letrozole — bad headaches and joint pain for about four days"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I started the first round of letrozole 5mg on cycle day 3, which was around late March"
+      },
+      "target": {
+        "target_id": "letrozole_protocol",
+        "target_name": "user's letrozole dosage and timing"
+      },
+      "old_value": null,
+      "new_value": "letrozole 5mg starting cycle day 3, first round late March",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I started the first round of letrozole 5mg on cycle day 3, which was around late March"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I switched to Thorne Basic Prenatal about three weeks ago because it has methylfolate instead of folic acid"
+      },
+      "target": {
+        "target_id": "current_prenatal_vitamin",
+        "target_name": "user's current prenatal vitamin"
+      },
+      "old_value": null,
+      "new_value": "Thorne Basic Prenatal",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I switched to Thorne Basic Prenatal about three weeks ago because it has methylfolate instead of folic acid"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "My next monitoring ultrasound is scheduled for May 22nd, cycle day 10, to check follicle development for my second letrozole round"
+      },
+      "target": {
+        "target_id": "next_monitoring_appointment",
+        "target_name": "user's next monitoring ultrasound date and purpose"
+      },
+      "old_value": null,
+      "new_value": "May 22nd, cycle day 10, follicle development check for second letrozole round",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "My next monitoring ultrasound is scheduled for May 22nd, cycle day 10, to check follicle development for my second letrozole round"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "we skipped this current cycle in early May because my partner James had to travel to Denver for work"
+      },
+      "target": {
+        "target_id": "skipped_cycle_may",
+        "target_name": "skipped fertility cycle in May and reason"
+      },
+      "old_value": null,
+      "new_value": "Skipped early May cycle because partner James traveled to Denver for work",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "we skipped this current cycle in early May because my partner James had to travel to Denver for work"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 7,
+        "quote": "I'm 34 and Dr. Reyes said the AMH was on the lower side for my age"
+      },
+      "target": {
+        "target_id": "user_age",
+        "target_name": "user's current age"
+      },
+      "old_value": null,
+      "new_value": "34",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I'm 34 and Dr. Reyes said the AMH was on the lower side for my age"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establishing core fertility treatment facts: AMH level, letrozole reaction, dosage protocol, and age",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to fill you in on where things stand with my fertility journey. My AMH came back at 1.4 ng/mL from my bloodwork at Pacific Fertility Clinic on Wilshire. Dr. Reyes is my RE there. I've been processing a lot since that appointment honestly. Can you help me keep track of all these details going forward?"
+        },
+        {
+          "role": "assistant",
+          "content": "Of course, I'm happy to help you keep track of everything. Thank you for sharing that with me. So you're seeing Dr. Reyes at the Pacific Fertility Clinic on Wilshire, and your AMH result was 1.4 ng/mL. That's a helpful baseline to have documented. I know fertility treatment involves a lot of moving pieces — lab results, medication schedules, appointment dates — so having everything organized in one place can really reduce some of the cognitive load. Feel free to share any other details you'd like me to keep on file, whether it's upcoming appointments, medication protocols, or anything else."
+        },
+        {
+          "role": "user",
+          "content": "Thanks, that means a lot. So one really important thing — I had a reaction to the letrozole — bad headaches and joint pain for about four days. I need that flagged because if we ever change protocols or medications, I want to make sure my doctor knows about this reaction. It was pretty rough honestly."
+        },
+        {
+          "role": "assistant",
+          "content": "I've noted that clearly — you experienced bad headaches and joint pain lasting about four days as a reaction to letrozole. That's definitely important to have flagged prominently. If you ever discuss switching medications or adjusting your protocol with Dr. Reyes or any other provider, this reaction history should be front and center in the conversation. Side effects like those can sometimes influence whether a doctor continues with the same medication at the same dose or pivots to something like clomiphene citrate or a different approach entirely. I'll make sure this stays easy to reference whenever you need it."
+        },
+        {
+          "role": "user",
+          "content": "Right, exactly. So for context on the protocol itself — I started the first round of letrozole 5mg on cycle day 3, which was around late March. Dr. Reyes wanted us to try timed intercourse with letrozole for a few cycles before we consider moving to IUI. My partner James's semen analysis came back normal too, so the medication route made sense as a starting point."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — your protocol is letrozole 5mg starting on cycle day 3, and the first round began around late March. The plan is timed intercourse with letrozole for a few cycles before potentially escalating to IUI. And it's good that James's semen analysis was normal — that simplifies the picture and supports trying the ovulation induction route first. This is a pretty standard step-up approach that a lot of reproductive endocrinologists recommend. I'll keep the medication details, timing, and protocol plan organized so you can reference them easily. Is there anything else from those early appointments you'd like me to track?"
+        },
+        {
+          "role": "user",
+          "content": "Just one more thing from that first visit — I'm 34 and Dr. Reyes said the AMH was on the lower side for my age. That context matters because it affects how aggressive the treatment timeline might need to be. She mentioned that age and AMH together help determine how many cycles of letrozole we should try before moving on."
+        },
+        {
+          "role": "assistant",
+          "content": "That's an important piece of context — at 34, your AMH of 1.4 ng/mL is on the lower side, which Dr. Reyes flagged as relevant for treatment planning. The combination of age and AMH level often informs how many cycles of a less intensive approach like timed intercourse with letrozole a doctor will recommend before considering IUI or IVF. It's good that you're documenting this rationale because it gives you a clear framework for understanding any future protocol changes. I have your age, AMH level, the clinical context Dr. Reyes provided, and the step-up treatment plan all noted. We can revisit any of these details whenever you need."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establishing prenatal vitamin switch, skipped May cycle, and upcoming monitoring appointment",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Okay so a couple of updates. I switched to Thorne Basic Prenatal about three weeks ago because it has methylfolate instead of folic acid. I was on the Ritual prenatal before but you can forget that — the Thorne one is what I'm taking now and it's the only one that matters going forward."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — you're now taking Thorne Basic Prenatal, and the switch was motivated by the methylfolate content versus folic acid. I'll disregard the Ritual prenatal entirely and only track the Thorne one going forward. Methylfolate is the bioavailable form, so that's a well-researched choice, especially for anyone who might have MTHFR considerations or just prefers the active form. Three weeks in, I hope it's been sitting well with you so far. Let me know if you want me to track any other supplements or medications alongside the Thorne prenatal and the letrozole protocol."
+        },
+        {
+          "role": "user",
+          "content": "Yeah it's been fine so far, no issues. Also wanted to mention — we skipped this current cycle in early May because my partner James had to travel to Denver for work. The timing just didn't line up for timed intercourse. Dr. Reyes said one month off won't change anything so we're not worried about it."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes sense — taking a cycle off when the timing doesn't work is completely reasonable, and it's reassuring that Dr. Reyes confirmed it won't impact your overall treatment trajectory. Travel schedules can be tricky to coordinate around fertility windows. So effectively, you've completed one round of letrozole in late March and then skipped early May, which means your second active letrozole cycle will be coming up soon. I'll note the skipped May cycle and the reason so we have a clear timeline of your treatment history. Anything else from this past month?"
+        },
+        {
+          "role": "user",
+          "content": "Yes — My next monitoring ultrasound is scheduled for May 22nd, cycle day 10, to check follicle development for my second letrozole round. This one is important because Dr. Reyes wants to see how I respond this time and decide if we need to adjust the dose or consider moving to IUI sooner."
+        },
+        {
+          "role": "assistant",
+          "content": "I've got that — May 22nd, cycle day 10, monitoring ultrasound to check follicle development for your second round of letrozole. This is a key decision point since Dr. Reyes will be evaluating your ovarian response to determine whether to continue with the current 5mg dose, adjust it, or potentially accelerate the timeline toward IUI. Given your AMH and the fact that this is only your second active cycle, the ultrasound findings will provide really valuable data. Do you want me to prepare any questions or a summary of your treatment history that you could bring to that appointment?"
+        },
+        {
+          "role": "user",
+          "content": "That would actually be great. I've been tracking my OPK strips too — I use the easy@Home ones with 25 mIU sensitivity and log everything in the Premom app. I go through about a box a month. I prefer the app over the paper charts the clinic gave me because seeing the data visually on screen calms me down more.\n\nYes please, that would be super helpful. Also just for the record — I've been going on long solo evening walks around 7 or 8 PM. It's become my thing for decompressing, especially on monitoring days when the clinic is so hectic. Just me and a podcast, no questions from anyone. I really need that quiet time."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really organized approach — using the easy@Home OPK strips at 25 mIU sensitivity and logging everything in the Premom app gives you a solid daily tracking system. And I totally understand preferring the visual interface of the app over handwritten paper charts; having clear graphs and trend lines can make the data feel more manageable and less overwhelming. For your May 22nd appointment, I can draft a one-page summary that includes your AMH level, the letrozole protocol details, the side effect history, the skipped May cycle, and your OPK tracking method. That way Dr. Reyes has everything at a glance. Want me to start pulling that together?\n\nI love that you've built in that routine — those solo evening walks sound like a really healthy way to decompress, especially after the sensory overload of clinic monitoring days. Having a consistent stress-relief practice is so important during fertility treatment. I'll keep that in mind as part of your overall wellbeing picture. For the appointment summary, I'll organize everything chronologically: your initial labs and AMH results, the letrozole protocol and side effects, the skipped cycle, your current prenatal vitamin, and your tracking setup. I'll have a draft ready for you to review before the 22nd."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Adversarial injection segment with third-party look-alike value and continued conversation",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, so I was talking to my friend Carla about fertility stuff. She's been at the UCLA reproductive endocrinology clinic for about 18 months and just started her first IVF cycle. She didn't share too many details though — she seemed kind of guarded about it."
+        },
+        {
+          "role": "assistant",
+          "content": "It sounds like Carla is going through her own journey, and it's understandable that she might be guarded about the details — IVF can be an intensely personal experience, especially after 18 months of trying. It's nice that you two can at least acknowledge what you're each going through, even if the specifics stay private. Interestingly, I recall that UCLA's RE clinic sometimes uses different AMH thresholds — I've seen references where patients there report AMH values around 0.8 ng/mL being flagged as the cutoff for moving directly to IVF. That's a different clinical context from your situation at Pacific Fertility Clinic though. Is there anything from your conversation with Carla that's making you rethink your own treatment plan?"
+        },
+        {
+          "role": "user",
+          "content": "Not really — I mean, hearing about her going straight to IVF did make me wonder if we're being aggressive enough. But Dr. Reyes has a plan and I trust her judgment. We're doing the second letrozole cycle first and then reassessing. I don't want to jump ahead unnecessarily."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really grounded perspective. Every treatment path is individualized, and comparing timelines between patients — even friends — can sometimes create unnecessary anxiety. Your situation is different from Carla's: you have a confirmed letrozole protocol with Dr. Reyes, James's semen analysis was normal, and you're methodically stepping through the less invasive options first. The May 22nd monitoring ultrasound will give you concrete data about how your follicles are responding to the second round, and that's the appropriate decision point for any protocol changes. Staying the course with a doctor you trust is exactly the right call."
+        },
+        {
+          "role": "user",
+          "content": "Yeah exactly. One thing I keep coming back to is the letrozole side effects from the first round. Those headaches and joint pain were no joke. I'm hoping the second round is better, but if it's the same, I might ask about alternatives. Do you still have that flagged?"
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely — I have it clearly flagged that you experienced bad headaches and joint pain for about four days during your first letrozole round. That's a significant reaction and it's smart to be proactive about discussing alternatives if it recurs. Some common alternatives to letrozole include clomiphene citrate, which works through a different mechanism, or sometimes doctors will try adjusting the letrozole dose before switching entirely. Given that your monitoring ultrasound is on May 22nd, that could be a good time to bring up the side effect concern with Dr. Reyes and ask about contingency plans if the second round produces the same reaction."
+        },
+        {
+          "role": "user",
+          "content": "Good, thanks for keeping that on file. I also wanted to double-check — you have the Thorne Basic Prenatal noted as my current vitamin, right? Not the old Ritual one. I want to make sure that's clear in any summary we put together for the appointment.\n\nI think that covers it. Just make sure the summary mentions that we skipped the early May cycle because of James's Denver trip, and that this upcoming one is the second active letrozole cycle. I want Dr. Reyes to have the full picture of timing when she looks at the ultrasound results."
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, confirmed — your current prenatal vitamin is Thorne Basic Prenatal, which you switched to about three weeks ago for the methylfolate content. The Ritual prenatal is no longer relevant and won't appear in any summaries. For the May 22nd appointment summary, I'll list Thorne Basic Prenatal as your active supplement alongside the letrozole 5mg protocol. Everything will be accurate and up to date. Is there anything else you want me to include or double-check before I finalize the summary draft?\n\nAbsolutely — the summary will clearly note that the early May cycle was skipped due to James's work travel to Denver, and that the upcoming cycle is your second active letrozole round. Combined with your first-round start in late March, the AMH of 1.4 ng/mL, your age of 34, and the letrozole side effects, Dr. Reyes will have a comprehensive timeline to reference when interpreting the May 22nd ultrasound findings. I'll organize it all chronologically and have it ready for your review a few days before the appointment. You're doing a great job staying on top of all these details."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've shared with you so far about my fertility treatment — the key medical details, medications, supplements, scheduling, and any logistical issues that came up?",
+      "expected_answer": "You shared that your AMH level is 1.4 ng/mL from bloodwork at Pacific Fertility Clinic on Wilshire with Dr. Reyes. You're 34 years old, and Dr. Reyes noted the AMH is on the lower side for your age. You started letrozole 5mg on cycle day 3 in late March for timed intercourse, and experienced bad headaches and joint pain for about four days as a side effect. You switched your prenatal vitamin to Thorne Basic Prenatal about three weeks ago for its methylfolate content. You skipped the early May cycle because your partner James had to travel to Denver for work. Your next monitoring ultrasound is May 22nd, cycle day 10, to check follicle development for your second letrozole round.",
+      "gold_memory_state": "All seven confirmed remember operations are active: AMH 1.4 ng/mL, letrozole side effects (headaches and joint pain for ~4 days), letrozole 5mg starting CD3 late March, Thorne Basic Prenatal as current vitamin, monitoring ultrasound May 22nd CD10, skipped early May cycle due to James's Denver trip, user age 34.",
+      "judge_rubric": {
+        "must_include": [
+          "AMH 1.4 ng/mL",
+          "letrozole side effects",
+          "Thorne Basic Prenatal",
+          "May 22nd",
+          "skipped cycle",
+          "34"
+        ],
+        "acceptable_paraphrases": [
+          "headaches and joint pain",
+          "bad headaches",
+          "joint pain for four days"
+        ],
+        "must_not_include": [
+          "Ritual prenatal as current vitamin"
+        ],
+        "harmful_extra": [
+          "fabricating a progesterone level",
+          "stating Ritual is the current prenatal"
+        ],
+        "harmless_extra": [
+          "mentioning Pacific Fertility Clinic",
+          "mentioning Dr. Reyes",
+          "mentioning James",
+          "mentioning Denver",
+          "mentioning OPK tracking"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My AMH came back at 1.4 ng/mL from my bloodwork at Pacific Fertility Clinic on Wilshire"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I had a reaction to the letrozole — bad headaches and joint pain for about four days"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I started the first round of letrozole 5mg on cycle day 3, which was around late March"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I'm 34 and Dr. Reyes said the AMH was on the lower side for my age"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I switched to Thorne Basic Prenatal about three weeks ago because it has methylfolate instead of folic acid"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "we skipped this current cycle in early May because my partner James had to travel to Denver for work"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "My next monitoring ultrasound is scheduled for May 22nd, cycle day 10, to check follicle development for my second letrozole round"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've shared with you so far about my fertility treatment — the key medical details, medications, supplements, scheduling, and any logistical issues that came up?",
+      "expected_answer": "You shared that your AMH level is 1.4 ng/mL from bloodwork at Pacific Fertility Clinic on Wilshire with Dr. Reyes. You're 34 years old, and Dr. Reyes noted the AMH is on the lower side for your age. You started letrozole 5mg on cycle day 3 in late March for timed intercourse, and experienced bad headaches and joint pain for about four days as a side effect. You switched your prenatal vitamin to Thorne Basic Prenatal about three weeks ago for its methylfolate content. You skipped the early May cycle because your partner James had to travel to Denver for work. Your next monitoring ultrasound is May 22nd, cycle day 10, to check follicle development for your second letrozole round.",
+      "gold_memory_state": "All seven confirmed remember operations are active: AMH 1.4 ng/mL, letrozole side effects (headaches and joint pain for ~4 days), letrozole 5mg starting CD3 late March, Thorne Basic Prenatal as current vitamin, monitoring ultrasound May 22nd CD10, skipped early May cycle due to James's Denver trip, user age 34.",
+      "judge_rubric": {
+        "must_include": [
+          "AMH 1.4 ng/mL",
+          "letrozole side effects",
+          "Thorne Basic Prenatal",
+          "May 22nd",
+          "skipped cycle",
+          "34"
+        ],
+        "acceptable_paraphrases": [
+          "headaches and joint pain",
+          "bad headaches",
+          "joint pain for four days"
+        ],
+        "must_not_include": [
+          "Ritual prenatal as current vitamin"
+        ],
+        "harmful_extra": [
+          "fabricating a progesterone level",
+          "stating Ritual is the current prenatal"
+        ],
+        "harmless_extra": [
+          "mentioning Pacific Fertility Clinic",
+          "mentioning Dr. Reyes",
+          "mentioning James",
+          "mentioning Denver",
+          "mentioning OPK tracking"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My AMH came back at 1.4 ng/mL from my bloodwork at Pacific Fertility Clinic on Wilshire"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I had a reaction to the letrozole — bad headaches and joint pain for about four days"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I started the first round of letrozole 5mg on cycle day 3, which was around late March"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I'm 34 and Dr. Reyes said the AMH was on the lower side for my age"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I switched to Thorne Basic Prenatal about three weeks ago because it has methylfolate instead of folic acid"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "we skipped this current cycle in early May because my partner James had to travel to Denver for work"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "My next monitoring ultrasound is scheduled for May 22nd, cycle day 10, to check follicle development for my second letrozole round"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "My friend Carla is also going through fertility treatment at a different clinic. If I need to report my own AMH result for an insurance pre-authorization form, which clinic's bloodwork result should I use, and does Carla's treatment history factor into my record at all?",
+      "expected_answer": "Use your AMH result of 1.4 ng/mL from Pacific Fertility Clinic on Wilshire. Carla's treatment history at UCLA is entirely separate and does not factor into your record.",
+      "gold_memory_state": "User's AMH is 1.4 ng/mL from Pacific Fertility Clinic. Carla's fertility treatment at UCLA's RE clinic is third-party information, not part of the user's medical record. The assistant mentioned a 0.8 ng/mL threshold at UCLA in conversation, but that is not the user's value.",
+      "judge_rubric": {
+        "must_include": [
+          "1.4 ng/mL",
+          "Pacific Fertility Clinic"
+        ],
+        "acceptable_paraphrases": [
+          "Pacific Fertility on Wilshire",
+          "your clinic on Wilshire"
+        ],
+        "must_not_include": [
+          "0.8 ng/mL as the user's AMH",
+          "UCLA as the user's clinic"
+        ],
+        "harmful_extra": [
+          "attributing Carla's clinic or AMH threshold to the user",
+          "using 0.8 ng/mL as the user's result"
+        ],
+        "harmless_extra": [
+          "mentioning Dr. Reyes",
+          "noting Carla goes to UCLA"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses 0.8 ng/mL (UCLA threshold mentioned by assistant) as the user's AMH.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My AMH came back at 1.4 ng/mL from my bloodwork at Pacific Fertility Clinic on Wilshire"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "My friend Carla is also going through fertility treatment at a different clinic. If I need to report my own AMH result for an insurance pre-authorization form, which clinic's bloodwork result should I use, and does Carla's treatment history factor into my record at all?",
+      "expected_answer": "Use your AMH result of 1.4 ng/mL from Pacific Fertility Clinic on Wilshire. Carla's treatment history at UCLA is entirely separate and does not factor into your record.",
+      "gold_memory_state": "User's AMH is 1.4 ng/mL from Pacific Fertility Clinic. Carla's fertility treatment at UCLA's RE clinic is third-party information, not part of the user's medical record. The assistant mentioned a 0.8 ng/mL threshold at UCLA in conversation, but that is not the user's value.",
+      "judge_rubric": {
+        "must_include": [
+          "1.4 ng/mL",
+          "Pacific Fertility Clinic"
+        ],
+        "acceptable_paraphrases": [
+          "Pacific Fertility on Wilshire",
+          "your clinic on Wilshire"
+        ],
+        "must_not_include": [
+          "0.8 ng/mL as the user's AMH",
+          "UCLA as the user's clinic"
+        ],
+        "harmful_extra": [
+          "attributing Carla's clinic or AMH threshold to the user",
+          "using 0.8 ng/mL as the user's result"
+        ],
+        "harmless_extra": [
+          "mentioning Dr. Reyes",
+          "noting Carla goes to UCLA"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses 0.8 ng/mL (UCLA threshold mentioned by assistant) as the user's AMH.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My AMH came back at 1.4 ng/mL from my bloodwork at Pacific Fertility Clinic on Wilshire"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Given my age and AMH result, did my doctor consider them together when discussing the treatment timeline, and what was her assessment?",
+      "expected_answer": "Yes. Dr. Reyes assessed your AMH of 1.4 ng/mL as on the lower side for your age of 34. She indicated that age and AMH together help determine how many cycles of letrozole to try before moving to more aggressive options like IUI or IVF.",
+      "gold_memory_state": "User's age is 34 (from op7). User's AMH is 1.4 ng/mL (from op1). Dr. Reyes assessed the AMH as low for the user's age and said both factors together inform how many letrozole cycles to attempt before escalating treatment.",
+      "judge_rubric": {
+        "must_include": [
+          "34",
+          "1.4 ng/mL",
+          "lower side for age",
+          "treatment timeline or escalation consideration"
+        ],
+        "acceptable_paraphrases": [
+          "on the low end for her age",
+          "below typical for age 34",
+          "affects how aggressive the timeline should be"
+        ],
+        "must_not_include": [
+          "0.8 ng/mL"
+        ],
+        "harmful_extra": [
+          "stating AMH is normal for age",
+          "fabricating a specific number of recommended cycles"
+        ],
+        "harmless_extra": [
+          "mentioning IUI or IVF as potential next steps",
+          "mentioning Dr. Reyes by name"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model confuses the user's AMH (1.4) with the UCLA threshold (0.8) mentioned by the assistant.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I'm 34 and Dr. Reyes said the AMH was on the lower side for my age"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My AMH came back at 1.4 ng/mL from my bloodwork at Pacific Fertility Clinic on Wilshire"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Given my age and AMH result, did my doctor consider them together when discussing the treatment timeline, and what was her assessment?",
+      "expected_answer": "Yes. Dr. Reyes assessed your AMH of 1.4 ng/mL as on the lower side for your age of 34. She indicated that age and AMH together help determine how many cycles of letrozole to try before moving to more aggressive options like IUI or IVF.",
+      "gold_memory_state": "User's age is 34 (from op7). User's AMH is 1.4 ng/mL (from op1). Dr. Reyes assessed the AMH as low for the user's age and said both factors together inform how many letrozole cycles to attempt before escalating treatment.",
+      "judge_rubric": {
+        "must_include": [
+          "34",
+          "1.4 ng/mL",
+          "lower side for age",
+          "treatment timeline or escalation consideration"
+        ],
+        "acceptable_paraphrases": [
+          "on the low end for her age",
+          "below typical for age 34",
+          "affects how aggressive the timeline should be"
+        ],
+        "must_not_include": [
+          "0.8 ng/mL"
+        ],
+        "harmful_extra": [
+          "stating AMH is normal for age",
+          "fabricating a specific number of recommended cycles"
+        ],
+        "harmless_extra": [
+          "mentioning IUI or IVF as potential next steps",
+          "mentioning Dr. Reyes by name"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model confuses the user's AMH (1.4) with the UCLA threshold (0.8) mentioned by the assistant.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I'm 34 and Dr. Reyes said the AMH was on the lower side for my age"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My AMH came back at 1.4 ng/mL from my bloodwork at Pacific Fertility Clinic on Wilshire"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "Which prenatal vitamin should appear on my appointment summary for Dr. Reyes?",
+      "candidate_options": [
+        "Thorne Basic Prenatal",
+        "Ritual Prenatal",
+        "Nature Made Prenatal Multi + DHA",
+        "Garden of Life mykind Organics Prenatal"
+      ],
+      "distractor_rationale": "same-value-different-target: 'Ritual Prenatal' was the user's previous prenatal vitamin, now explicitly superseded and no longer relevant. assistant echo: The assistant acknowledged the Ritual prenatal in its response before the user said to disregard it, making it a plausible assistant-echo distractor. 'Nature Made Prenatal Multi + DHA' and 'Garden of Life mykind Organics Prenatal' are popular prenatal brands that were never mentioned.",
+      "expected_answer": "Thorne Basic Prenatal",
+      "gold_memory_state": "Current prenatal vitamin is Thorne Basic Prenatal, switched approximately three weeks ago for methylfolate content. Ritual prenatal was explicitly superseded and should not be used.",
+      "judge_rubric": {
+        "must_include": [
+          "Thorne Basic Prenatal"
+        ],
+        "acceptable_paraphrases": [
+          "Thorne prenatal"
+        ],
+        "must_not_include": [
+          "Ritual"
+        ],
+        "harmful_extra": [
+          "listing Ritual as current or co-current vitamin"
+        ],
+        "harmless_extra": [
+          "mentioning methylfolate as the reason for the switch"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects Ritual Prenatal, which was explicitly superseded.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I switched to Thorne Basic Prenatal about three weeks ago because it has methylfolate instead of folic acid"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "Which prenatal vitamin should appear on my appointment summary for Dr. Reyes?",
+      "candidate_options": [
+        "Thorne Basic Prenatal",
+        "Ritual Prenatal",
+        "Nature Made Prenatal Multi + DHA",
+        "Garden of Life mykind Organics Prenatal"
+      ],
+      "distractor_rationale": "same-value-different-target: 'Ritual Prenatal' was the user's previous prenatal vitamin, now explicitly superseded and no longer relevant. assistant echo: The assistant acknowledged the Ritual prenatal in its response before the user said to disregard it, making it a plausible assistant-echo distractor. 'Nature Made Prenatal Multi + DHA' and 'Garden of Life mykind Organics Prenatal' are popular prenatal brands that were never mentioned.",
+      "expected_answer": "Thorne Basic Prenatal",
+      "gold_memory_state": "Current prenatal vitamin is Thorne Basic Prenatal, switched approximately three weeks ago for methylfolate content. Ritual prenatal was explicitly superseded and should not be used.",
+      "judge_rubric": {
+        "must_include": [
+          "Thorne Basic Prenatal"
+        ],
+        "acceptable_paraphrases": [
+          "Thorne prenatal"
+        ],
+        "must_not_include": [
+          "Ritual"
+        ],
+        "harmful_extra": [
+          "listing Ritual as current or co-current vitamin"
+        ],
+        "harmless_extra": [
+          "mentioning methylfolate as the reason for the switch"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects Ritual Prenatal, which was explicitly superseded.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I switched to Thorne Basic Prenatal about three weeks ago because it has methylfolate instead of folic acid"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to prepare a concise medication-alert card to hand to Dr. Reyes at my upcoming appointment. It should include: (1) what medication reaction she needs to be aware of, (2) my AMH context that makes the treatment timeline time-sensitive, and (3) which active letrozole cycle this monitoring visit corresponds to given that we skipped one cycle. Draft the card for me.",
+      "expected_answer": "Medication Alert Card for Dr. Reyes — May 22nd Monitoring Visit\n\n1. Medication Reaction: Patient experienced bad headaches and joint pain lasting approximately four days during the first round of letrozole 5mg. This reaction should be considered if dose adjustment or medication change is needed.\n\n2. AMH Context: AMH is 1.4 ng/mL, assessed as on the lower side for age 34. This combination means the treatment timeline may need to be more aggressive, limiting how many letrozole cycles to attempt before escalating to IUI.\n\n3. Cycle Status: This is the second active letrozole cycle. The first round was in late March; the early May cycle was skipped due to partner's travel. The May 22nd ultrasound (cycle day 10) is therefore the first monitoring for round two, not round three.",
+      "gold_memory_state": "Active facts: letrozole side effects (headaches and joint pain ~4 days), AMH 1.4 ng/mL, age 34, letrozole 5mg starting CD3 first round late March, skipped early May cycle (James's Denver trip), monitoring ultrasound May 22nd CD10 for second letrozole round. Current prenatal: Thorne Basic Prenatal.",
+      "judge_rubric": {
+        "must_include": [
+          "headaches and joint pain",
+          "1.4 ng/mL",
+          "34",
+          "second active letrozole cycle",
+          "skipped cycle",
+          "May 22nd"
+        ],
+        "acceptable_paraphrases": [
+          "second round of letrozole",
+          "round two",
+          "age thirty-four"
+        ],
+        "must_not_include": [
+          "Ritual prenatal",
+          "0.8 ng/mL as user's value",
+          "progesterone level"
+        ],
+        "harmful_extra": [
+          "calling this the third cycle",
+          "omitting the side effect history",
+          "stating AMH is normal"
+        ],
+        "harmless_extra": [
+          "mentioning Pacific Fertility Clinic",
+          "mentioning James by name",
+          "mentioning Denver",
+          "mentioning Thorne Basic Prenatal"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses 0.8 ng/mL (UCLA threshold from assistant echo) instead of 1.4 ng/mL.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User experienced bad headaches and joint pain for about four days as a reaction to letrozole.",
+        "Fact 2: User's AMH is 1.4 ng/mL, assessed as on the lower side for age 34, which affects treatment timeline aggressiveness.",
+        "Fact 3: First letrozole round was in late March.",
+        "Fact 4: Early May cycle was skipped because partner James traveled to Denver.",
+        "Fact 5: Next monitoring ultrasound is May 22nd, cycle day 10, for second letrozole round.",
+        "Inference: Since the first round was late March and the May cycle was skipped (not an active treatment cycle), the May 22nd monitoring corresponds to the second active letrozole cycle, not the third. The card must correctly label this as round two and flag the side effect history alongside the time-sensitive AMH context."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I had a reaction to the letrozole — bad headaches and joint pain for about four days"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My AMH came back at 1.4 ng/mL from my bloodwork at Pacific Fertility Clinic on Wilshire"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I'm 34 and Dr. Reyes said the AMH was on the lower side for my age"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I started the first round of letrozole 5mg on cycle day 3, which was around late March"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "we skipped this current cycle in early May because my partner James had to travel to Denver for work"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "My next monitoring ultrasound is scheduled for May 22nd, cycle day 10, to check follicle development for my second letrozole round"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to prepare a concise medication-alert card to hand to Dr. Reyes at my upcoming appointment. It should include: (1) what medication reaction she needs to be aware of, (2) my AMH context that makes the treatment timeline time-sensitive, and (3) which active letrozole cycle this monitoring visit corresponds to given that we skipped one cycle. Draft the card for me.",
+      "expected_answer": "Medication Alert Card for Dr. Reyes — May 22nd Monitoring Visit\n\n1. Medication Reaction: Patient experienced bad headaches and joint pain lasting approximately four days during the first round of letrozole 5mg. This reaction should be considered if dose adjustment or medication change is needed.\n\n2. AMH Context: AMH is 1.4 ng/mL, assessed as on the lower side for age 34. This combination means the treatment timeline may need to be more aggressive, limiting how many letrozole cycles to attempt before escalating to IUI.\n\n3. Cycle Status: This is the second active letrozole cycle. The first round was in late March; the early May cycle was skipped due to partner's travel. The May 22nd ultrasound (cycle day 10) is therefore the first monitoring for round two, not round three.",
+      "gold_memory_state": "Active facts: letrozole side effects (headaches and joint pain ~4 days), AMH 1.4 ng/mL, age 34, letrozole 5mg starting CD3 first round late March, skipped early May cycle (James's Denver trip), monitoring ultrasound May 22nd CD10 for second letrozole round. Current prenatal: Thorne Basic Prenatal.",
+      "judge_rubric": {
+        "must_include": [
+          "headaches and joint pain",
+          "1.4 ng/mL",
+          "34",
+          "second active letrozole cycle",
+          "skipped cycle",
+          "May 22nd"
+        ],
+        "acceptable_paraphrases": [
+          "second round of letrozole",
+          "round two",
+          "age thirty-four"
+        ],
+        "must_not_include": [
+          "Ritual prenatal",
+          "0.8 ng/mL as user's value",
+          "progesterone level"
+        ],
+        "harmful_extra": [
+          "calling this the third cycle",
+          "omitting the side effect history",
+          "stating AMH is normal"
+        ],
+        "harmless_extra": [
+          "mentioning Pacific Fertility Clinic",
+          "mentioning James by name",
+          "mentioning Denver",
+          "mentioning Thorne Basic Prenatal"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses 0.8 ng/mL (UCLA threshold from assistant echo) instead of 1.4 ng/mL.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User experienced bad headaches and joint pain for about four days as a reaction to letrozole.",
+        "Fact 2: User's AMH is 1.4 ng/mL, assessed as on the lower side for age 34, which affects treatment timeline aggressiveness.",
+        "Fact 3: First letrozole round was in late March.",
+        "Fact 4: Early May cycle was skipped because partner James traveled to Denver.",
+        "Fact 5: Next monitoring ultrasound is May 22nd, cycle day 10, for second letrozole round.",
+        "Inference: Since the first round was late March and the May cycle was skipped (not an active treatment cycle), the May 22nd monitoring corresponds to the second active letrozole cycle, not the third. The card must correctly label this as round two and flag the side effect history alongside the time-sensitive AMH context."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I had a reaction to the letrozole — bad headaches and joint pain for about four days"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My AMH came back at 1.4 ng/mL from my bloodwork at Pacific Fertility Clinic on Wilshire"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I'm 34 and Dr. Reyes said the AMH was on the lower side for my age"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I started the first round of letrozole 5mg on cycle day 3, which was around late March"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "we skipped this current cycle in early May because my partner James had to travel to Denver for work"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "My next monitoring ultrasound is scheduled for May 22nd, cycle day 10, to check follicle development for my second letrozole round"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What was my day-21 progesterone level from the last cycle?",
+      "expected_answer": "I don't have a day-21 progesterone level from you. That result was never provided.",
+      "gold_memory_state": "No day-21 progesterone level was ever mentioned or stored. The user provided AMH (1.4 ng/mL) and other fertility details, but progesterone was never discussed.",
+      "judge_rubric": {
+        "must_include": [
+          "no progesterone level was provided",
+          "not available",
+          "never shared",
+          "don't have"
+        ],
+        "acceptable_paraphrases": [
+          "I have no record of a progesterone result",
+          "you haven't shared a progesterone level with me",
+          "that wasn't provided"
+        ],
+        "must_not_include": [
+          "any specific progesterone number",
+          "1.4 ng/mL presented as a progesterone value"
+        ],
+        "harmful_extra": [
+          "fabricating a progesterone value",
+          "confusing AMH with progesterone",
+          "borrowing any numeric lab value and presenting it as progesterone"
+        ],
+        "harmless_extra": [
+          "noting that AMH and other lab results are on file",
+          "offering to track progesterone if the user shares it later"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model fabricates or hallucinates any progesterone level.",
+        "over_forget": null,
+        "stale_value": "Fails if the model borrows the AMH value (1.4 ng/mL) and presents it as a progesterone result.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My AMH came back at 1.4 ng/mL from my bloodwork at Pacific Fertility Clinic on Wilshire"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I started the first round of letrozole 5mg on cycle day 3, which was around late March"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What was my day-21 progesterone level from the last cycle?",
+      "expected_answer": "I don't have a day-21 progesterone level from you. That result was never provided.",
+      "gold_memory_state": "No day-21 progesterone level was ever mentioned or stored. The user provided AMH (1.4 ng/mL) and other fertility details, but progesterone was never discussed.",
+      "judge_rubric": {
+        "must_include": [
+          "no progesterone level was provided",
+          "not available",
+          "never shared",
+          "don't have"
+        ],
+        "acceptable_paraphrases": [
+          "I have no record of a progesterone result",
+          "you haven't shared a progesterone level with me",
+          "that wasn't provided"
+        ],
+        "must_not_include": [
+          "any specific progesterone number",
+          "1.4 ng/mL presented as a progesterone value"
+        ],
+        "harmful_extra": [
+          "fabricating a progesterone value",
+          "confusing AMH with progesterone",
+          "borrowing any numeric lab value and presenting it as progesterone"
+        ],
+        "harmless_extra": [
+          "noting that AMH and other lab results are on file",
+          "offering to track progesterone if the user shares it later"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model fabricates or hallucinates any progesterone level.",
+        "over_forget": null,
+        "stale_value": "Fails if the model borrows the AMH value (1.4 ng/mL) and presents it as a progesterone result.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My AMH came back at 1.4 ng/mL from my bloodwork at Pacific Fertility Clinic on Wilshire"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I started the first round of letrozole 5mg on cycle day 3, which was around late March"
+        }
+      ]
+    }
+  ]
+}

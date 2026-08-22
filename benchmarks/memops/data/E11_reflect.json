@@ -1,0 +1,1027 @@
+{
+  "target_fact": "User is risk-averse and prefers manageable incremental commitments over large bulk orders, as evidenced by the packaging order disaster and subsequent shift to smaller, more frequent ordering patterns.",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I told the supplier I needed 500 boxes but I actually meant 500 sleeves, so I ended up with 500 individual boxes instead of the 25,000 I needed"
+      },
+      "target": {
+        "target_id": "packaging_order_mistake",
+        "target_name": "packaging order unit mistake incident"
+      },
+      "old_value": null,
+      "new_value": "Ordered 500 individual boxes instead of 500 sleeves (25,000 boxes) from GreenWrap Co. around March 3rd, causing production schedule disruption",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I told the supplier I needed 500 boxes but I actually meant 500 sleeves, so I ended up with 500 individual boxes instead of the 25,000 I needed"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "the whole production schedule got thrown off and I had to scramble to fix everything"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "my packaging supplier is GreenWrap Co., they're based out of Portland"
+      },
+      "target": {
+        "target_id": "packaging_supplier",
+        "target_name": "packaging supplier company and location"
+      },
+      "old_value": null,
+      "new_value": "GreenWrap Co., based in Portland",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my packaging supplier is GreenWrap Co., they're based out of Portland"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I keep mixing them up with GreenBox which is a completely different company"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I just ordered 12 cases of mason jars from a new vendor, each case has 12 jars, so 144 jars total"
+      },
+      "target": {
+        "target_id": "mason_jar_order",
+        "target_name": "recent mason jar order details"
+      },
+      "old_value": null,
+      "new_value": "12 cases of mason jars, 12 jars per case, 144 jars total, from a new vendor",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I just ordered 12 cases of mason jars from a new vendor, each case has 12 jars, so 144 jars total"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I double-checked this time"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I'd rather place four small orders than one giant one, it just feels less risky to me"
+      },
+      "target": {
+        "target_id": "ordering_preference",
+        "target_name": "preferred ordering strategy"
+      },
+      "old_value": null,
+      "new_value": "Prefers smaller, more frequent orders over big bulk ones; would rather place four small orders than one giant one",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I'd rather place four small orders than one giant one, it just feels less risky to me"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "If something's wrong with a smaller order it's way easier to deal with than a massive shipment gone bad"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "after that whole fiasco with the 500-box mistake I just can't stomach big orders anymore, the risk of getting it wrong is too high when the quantities are that large"
+      },
+      "target": {
+        "target_id": "risk_averse_ordering_disposition",
+        "target_name": "risk-averse disposition toward ordering and operational commitments"
+      },
+      "old_value": null,
+      "new_value": "Risk-averse in ordering: the traumatic bulk-order unit mistake drove a lasting behavioral shift toward smaller, more frequent, verifiable orders to minimize the impact of any single error",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I told the supplier I needed 500 boxes but I actually meant 500 sleeves, so I ended up with 500 individual boxes instead of the 25,000 I needed"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "the whole production schedule got thrown off and I had to scramble to fix everything"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I double-checked this time"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I'd rather place four small orders than one giant one, it just feels less risky to me"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "after that whole fiasco with the 500-box mistake I just can't stomach big orders anymore, the risk of getting it wrong is too high when the quantities are that large"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 7,
+        "quote": "all my recipes are in grams and milliliters now, I finished migrating everything last week"
+      },
+      "target": {
+        "target_id": "recipe_unit_system",
+        "target_name": "measurement system used for candle recipes"
+      },
+      "old_value": null,
+      "new_value": "All recipes fully migrated to metric: grams and milliliters",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "all my recipes are in grams and milliliters now, I finished migrating everything last week"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "GreenWrap actually just told me they can do a standing monthly order of 10,000 boxes on auto-ship, and I'm going to sign up for that starting next month"
+      },
+      "target": {
+        "target_id": "greenwrap_autoship_plan",
+        "target_name": "planned GreenWrap auto-ship standing order"
+      },
+      "old_value": null,
+      "new_value": "Standing monthly auto-ship order of 10,000 boxes from GreenWrap Co., starting next month",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "GreenWrap actually just told me they can do a standing monthly order of 10,000 boxes on auto-ship, and I'm going to sign up for that starting next month"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish packaging order mistake and supplier details",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to talk through some supply chain stuff for my candle business. So back around March 3rd I had a pretty bad ordering mistake. I told the supplier I needed 500 boxes but I actually meant 500 sleeves, so I ended up with 500 individual boxes instead of the 25,000 I needed. Each sleeve holds 50 boxes, so the math was way off. The shipment showed up as this pathetically small pallet and the whole production schedule got thrown off and I had to scramble to fix everything. It was honestly really stressful."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds incredibly frustrating—ordering 500 individual boxes when you needed 500 sleeves (25,000 boxes) is exactly the kind of unit confusion that can cascade through an entire production timeline. A single pallet instead of a full shipment must have been a gut-punch moment when it arrived. To make sure I understand the scale: each sleeve holds 50 boxes, so 500 sleeves × 50 = 25,000 boxes was your actual need, and you received only 2% of that. Did the supplier offer any expedited reorder, or did you have to source the remaining boxes from somewhere else to keep production moving?"
+        },
+        {
+          "role": "user",
+          "content": "They did rush a second shipment but it still took about five days, so I lost almost a full week of production. I felt really stupid about the whole thing, honestly. Like it was completely my fault for not specifying the unit clearly. I was so frustrated with myself because I've been running this business for over two years and I should know better. Anyway, that experience has really stuck with me when it comes to how I place orders now."
+        },
+        {
+          "role": "assistant",
+          "content": "Five days of lost production for a small candle business is significant—that's potentially hundreds of units you couldn't ship. I can understand the self-frustration, but unit confusion between boxes and sleeves is actually a very common procurement error, especially when supplier catalogs don't always make the packaging hierarchy obvious. The fact that it's changed how you approach ordering going forward is actually a healthy operational takeaway. Many small business owners don't adjust their processes after a mistake like that. What specific changes have you made to your ordering workflow since then?"
+        },
+        {
+          "role": "user",
+          "content": "Well for one thing, I now triple-check every order confirmation before it ships. But more importantly, my packaging supplier is GreenWrap Co., they're based out of Portland. I want to make sure you have that right because I keep mixing them up with GreenBox which is a completely different company. GreenWrap Co. is the one I actually work with. GreenBox does industrial corrugated stuff, totally different market."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it—your packaging supplier is GreenWrap Co., based in Portland, and that's distinct from GreenBox, which handles industrial corrugated materials and is not your vendor. I'll make sure to keep those straight. It's a smart call to clarify that since the names are so similar. Having a reliable packaging partner is critical for your candle business, especially after the sleeve-vs-box incident. Do you have a dedicated account rep at GreenWrap, or do you place orders through their general portal? Having a named contact can sometimes help catch unit discrepancies before they ship."
+        },
+        {
+          "role": "user",
+          "content": "I don't have a dedicated rep yet, I just use their online portal. But that's a good idea, I should ask about getting one. Anyway, the other thing that happened was I listed one of my candles online as 16 oz by weight when it should have been labeled 16 fl oz by volume. For wax, weight and volume aren't the same at all. A customer caught it and I corrected the listing pretty quickly but it was embarrassing. My friend Derek said he once listed a 2-liter bottle as 2 gallons on his homebrew shop page, so at least I'm not alone.\n\nThat's actually a really good idea. I might put together a little cheat sheet. I also had an issue where I was logging fragrance oil purchases in milliliters when the invoices were in fluid ounces, so my inventory was off by a factor of about 29.6. But I've since fixed all of that—I spent a whole Saturday afternoon reconciling it. I actually kind of enjoyed the tedious spreadsheet work, weirdly enough. There's something satisfying about getting every cell right."
+        },
+        {
+          "role": "assistant",
+          "content": "The oz vs. fl oz mix-up is a classic gotcha, especially with candle wax since its density is lower than water—16 fl oz of wax weighs noticeably less than 16 oz by weight. Good that a customer flagged it quickly and you corrected it. Derek's 2-liter-to-2-gallon mistake is even more dramatic—that's nearly a 4× overstatement! At least these listing errors are easily fixable once caught. Between the sleeve/box ordering issue and the oz/fl oz labeling confusion, it sounds like unit clarity has been a recurring theme. Have you considered building a quick reference chart for your most common units and conversions to keep near your workstation?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "establish ordering preference, reflect on risk aversion, and confirm metric migration",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So quick update—I just ordered 12 cases of mason jars from a new vendor, each case has 12 jars, so 144 jars total. I double-checked this time. I actually counted it out twice before submitting, once on paper and once on a calculator. After the GreenWrap debacle I'm not taking any chances with quantities anymore. These jars are for my spring line of soy candles."
+        },
+        {
+          "role": "assistant",
+          "content": "Nice—144 mason jars (12 cases × 12 jars each) for your spring soy candle line sounds like a well-sized order. The double-verification habit you've developed—paper calculation plus calculator confirmation—is a solid safeguard against repeating the kind of unit error you had with GreenWrap Co. Going with a new vendor for the jars is interesting too. Did you vet their packaging quality beforehand, or are you testing them with this smaller initial order before committing to larger volumes? Given your experience, I imagine you're being pretty careful about new supplier relationships."
+        },
+        {
+          "role": "user",
+          "content": "Exactly, this is basically a test run with them. And honestly, I'd rather place four small orders than one giant one, it just feels less risky to me. If something's wrong with a smaller order it's way easier to deal with than a massive shipment gone bad. Like if these 144 jars have quality issues, I'm out a manageable amount. But if I'd ordered 1,000 jars upfront and they were all defective, that would be devastating for my budget and timeline."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a very pragmatic approach to vendor management. Breaking purchases into smaller, more frequent orders gives you natural quality checkpoints—you can evaluate each batch before committing to the next. The math supports it too: if 144 jars have issues, you're looking at a contained loss and a quick pivot to another supplier. Whereas 1,000 defective jars could mean weeks of delays and a significant financial hit. This incremental ordering strategy also lets you adjust quantities based on actual sales velocity rather than forecasting months ahead. Are you applying this same philosophy to your GreenWrap packaging orders as well?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, I am. And honestly, after that whole fiasco with the 500-box mistake I just can't stomach big orders anymore, the risk of getting it wrong is too high when the quantities are that large. Whether it's a unit error or a quality problem or just demand changing, smaller orders give me room to course-correct. I think I've kind of internalized this as my general approach to the business—don't overcommit, stay flexible, verify everything. It's made me a more careful operator overall."
+        },
+        {
+          "role": "assistant",
+          "content": "It sounds like the March ordering mistake was actually a pivotal moment that reshaped your entire operational philosophy. The shift from bulk ordering to incremental, verified purchasing isn't just about avoiding unit errors—it's a broader risk management strategy. You're essentially trading potential volume discounts for operational flexibility and error containment. That mindset of 'don't overcommit, stay flexible, verify everything' is actually a well-known lean operations principle. It applies beyond just ordering too—inventory management, product launches, supplier relationships. Has this more cautious approach affected your costs at all, or do the smaller order quantities still get reasonable pricing?"
+        },
+        {
+          "role": "user",
+          "content": "The per-unit cost is slightly higher on smaller orders, but I'd rather pay a small premium than risk a catastrophic mistake. The peace of mind is worth it. Oh, and on a different note—all my recipes are in grams and milliliters now, I finished migrating everything last week. So the whole unit confusion saga with my fragrance oils and the oz vs fl oz listing stuff is basically behind me. You can disregard those old inventory numbers I mentioned before."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a significant milestone—having all your recipes standardized in grams and milliliters eliminates an entire category of errors from your workflow. Metric is much cleaner for precision work like candle-making, where small measurement differences in fragrance oil or wax can noticeably affect the final product. And I'll note that the old inventory numbers logged in milliliters versus fluid ounces are now obsolete since everything's been reconciled. Between the metric migration and your new incremental ordering approach, it sounds like you've systematically addressed the two biggest operational pain points from earlier this year. What's next on your process improvement list?"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "adversarial injection, recency trap, and topic continuation",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So I've been thinking about scaling up production a bit for summer. I'm expecting higher demand for my outdoor citronella candles. I want to figure out how many jars I'll need over the next couple months and whether I should adjust my ordering cadence. Right now I'm going through about 144 jars every two weeks with my spring line."
+        },
+        {
+          "role": "assistant",
+          "content": "Great that you're planning ahead for summer demand. At 144 jars every two weeks, you're currently running through about 288 jars per month. If you're expecting higher demand for citronella candles on top of your existing lines, you'll need to estimate the incremental volume. A few questions to help with forecasting: roughly what percentage increase in demand are you expecting for summer? And are the citronella candles using the same mason jars, or a different container? Also, I noticed in your earlier vendor records that GreenBox had quoted you a bulk rate on jar sleeves—though that might be from a different account. Want me to help you map out a weekly ordering schedule?"
+        },
+        {
+          "role": "user",
+          "content": "No, GreenBox is not my supplier—remember, that's a completely different company. My packaging supplier is GreenWrap Co. in Portland. Anyway, for the citronella line I'm using the same mason jars. I'm expecting maybe a 40% bump in demand over June and July, so I need to figure out how many extra jars to order and when to place those orders."
+        },
+        {
+          "role": "assistant",
+          "content": "You're absolutely right, apologies for the confusion—GreenWrap Co. in Portland is your packaging supplier, not GreenBox. So let's work with your numbers: if your baseline is 288 jars per month and you're expecting a 40% increase for June and July, that's an additional 115 jars per month, bringing your monthly need to roughly 403 jars. Over two months that's about 806 jars total. Given your preference for smaller, manageable orders, you could break that into roughly six orders of ~134 jars each, placed every 10 days or so. That keeps each order close to your current 144-jar comfort zone. Does that cadence feel right, or would you prefer even smaller batches?"
+        },
+        {
+          "role": "user",
+          "content": "That math looks about right. Six orders of around 134 jars over two months works for me. I like that it keeps each shipment manageable. Oh, and GreenWrap actually just told me they can do a standing monthly order of 10,000 boxes on auto-ship, and I'm going to sign up for that starting next month. It would simplify my packaging supply chain a lot."
+        },
+        {
+          "role": "assistant",
+          "content": "Interesting development with GreenWrap Co.! A standing monthly auto-ship of 10,000 boxes would certainly streamline your packaging procurement and eliminate the need to manually place and verify each packaging order. That's a significant volume though—10,000 boxes per month. Given that your current jar throughput is around 288-403 per month, I want to make sure the box volume aligns with your actual production needs. Are you using roughly one box per candle, or do you use multiple boxes per unit for shipping? I want to help you verify the quantities match before you commit."
+        },
+        {
+          "role": "user",
+          "content": "Each candle gets one box, so yeah, 10,000 per month would be a huge surplus over my current production. But my friend Derek was telling me that his Ohaus scale cost him about $85, and I was thinking that seems like a lot for a basic digital scale. I got my Escali for way less. Anyway, about the GreenWrap auto-ship—I haven't actually signed anything yet, I'm still thinking it over. It might be more than I need.\n\nI don't think so, I think he just likes having nice equipment. Anyway, I appreciate you helping me think through the summer ordering plan. The six orders of about 134 jars each over June and July feels right. I'll stick with my incremental approach—it's worked well for me so far and I don't want to backslide into big risky commitments just because a supplier offers convenience."
+        },
+        {
+          "role": "assistant",
+          "content": "Good that you haven't committed yet—10,000 boxes per month against a production volume of 300-400 candles would leave you with massive surplus inventory, which is exactly the kind of overcommitment risk you've been working to avoid. It might make sense to ask GreenWrap if they offer a smaller auto-ship tier, maybe 500 or 1,000 boxes per month, that better matches your actual throughput. As for Derek's Ohaus scale at $85—yeah, that is on the higher end for a basic kitchen-style digital scale. Your Escali sounds like it was a better value, especially since you mainly need it for portioning wax in grams. Is Derek doing anything that requires higher precision, like lab-grade measurements for his homebrew?"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "What experiences have I shared with you about how I handle ordering supplies for my candle business, and how have those experiences shaped my approach?",
+      "expected_answer": "You had a significant ordering mistake around March 3rd where you ordered 500 individual boxes from GreenWrap Co. instead of 500 sleeves (25,000 boxes), which disrupted your production schedule for nearly a week. After that traumatic experience, you shifted to smaller, more frequent orders—like the 144 mason jars from a new vendor as a test run. You explicitly stated you'd rather place four small orders than one giant one because it feels less risky, and that the packaging disaster made you unable to stomach big orders anymore. You now triple-check every order and double-verify quantities before submitting.",
+      "gold_memory_state": "Confirmed facts: (1) packaging order unit mistake—500 boxes instead of 500 sleeves/25,000 boxes from GreenWrap Co., causing ~5 days lost production; (2) GreenWrap Co. in Portland is the packaging supplier; (3) recent mason jar order of 12 cases × 12 jars = 144 jars from a new vendor, double-checked; (4) preference for smaller, more frequent orders over bulk; (5) reflected disposition: risk-averse ordering driven by the bulk-order trauma, favoring incremental verifiable orders; (6) all recipes now in metric (grams and milliliters); (7) tentative/unconfirmed: 10,000-box monthly auto-ship from GreenWrap, not yet signed.",
+      "judge_rubric": {
+        "must_include": [
+          "packaging order mistake involving boxes vs sleeves",
+          "shift to smaller more frequent orders",
+          "preference for manageable incremental commitments"
+        ],
+        "acceptable_paraphrases": [
+          "unit confusion",
+          "ordering disaster",
+          "500 boxes instead of 25000",
+          "risk-averse approach"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "treating the 10,000-box auto-ship as a confirmed commitment"
+        ],
+        "harmless_extra": [
+          "mentioning the mason jar test order",
+          "mentioning triple-checking orders",
+          "mentioning GreenWrap Co."
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes the risk-averse shift to something other than the packaging order disaster.",
+        "reflection_recall": "Fails if the model omits either the original incident or the behavioral shift to incremental ordering.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I told the supplier I needed 500 boxes but I actually meant 500 sleeves, so I ended up with 500 individual boxes instead of the 25,000 I needed"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "the whole production schedule got thrown off and I had to scramble to fix everything"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I'd rather place four small orders than one giant one, it just feels less risky to me"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "after that whole fiasco with the 500-box mistake I just can't stomach big orders anymore, the risk of getting it wrong is too high when the quantities are that large"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "What experiences have I shared with you about how I handle ordering supplies for my candle business, and how have those experiences shaped my approach?",
+      "expected_answer": "You had a significant ordering mistake around March 3rd where you ordered 500 individual boxes from GreenWrap Co. instead of 500 sleeves (25,000 boxes), which disrupted your production schedule for nearly a week. After that traumatic experience, you shifted to smaller, more frequent orders—like the 144 mason jars from a new vendor as a test run. You explicitly stated you'd rather place four small orders than one giant one because it feels less risky, and that the packaging disaster made you unable to stomach big orders anymore. You now triple-check every order and double-verify quantities before submitting.",
+      "gold_memory_state": "Confirmed facts: (1) packaging order unit mistake—500 boxes instead of 500 sleeves/25,000 boxes from GreenWrap Co., causing ~5 days lost production; (2) GreenWrap Co. in Portland is the packaging supplier; (3) recent mason jar order of 12 cases × 12 jars = 144 jars from a new vendor, double-checked; (4) preference for smaller, more frequent orders over bulk; (5) reflected disposition: risk-averse ordering driven by the bulk-order trauma, favoring incremental verifiable orders; (6) all recipes now in metric (grams and milliliters); (7) tentative/unconfirmed: 10,000-box monthly auto-ship from GreenWrap, not yet signed.",
+      "judge_rubric": {
+        "must_include": [
+          "packaging order mistake involving boxes vs sleeves",
+          "shift to smaller more frequent orders",
+          "preference for manageable incremental commitments"
+        ],
+        "acceptable_paraphrases": [
+          "unit confusion",
+          "ordering disaster",
+          "500 boxes instead of 25000",
+          "risk-averse approach"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "treating the 10,000-box auto-ship as a confirmed commitment"
+        ],
+        "harmless_extra": [
+          "mentioning the mason jar test order",
+          "mentioning triple-checking orders",
+          "mentioning GreenWrap Co."
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes the risk-averse shift to something other than the packaging order disaster.",
+        "reflection_recall": "Fails if the model omits either the original incident or the behavioral shift to incremental ordering.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I told the supplier I needed 500 boxes but I actually meant 500 sleeves, so I ended up with 500 individual boxes instead of the 25,000 I needed"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "the whole production schedule got thrown off and I had to scramble to fix everything"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I'd rather place four small orders than one giant one, it just feels less risky to me"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "after that whole fiasco with the 500-box mistake I just can't stomach big orders anymore, the risk of getting it wrong is too high when the quantities are that large"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "My conversations have touched on both specific supply ordering incidents and my general approach to running the business. When it comes to the pattern that connects the packaging mishap to how I now place orders, does that pattern apply narrowly to packaging from one supplier, or does it describe something broader about my operational style?",
+      "expected_answer": "The pattern is a broad risk-averse operational disposition, not limited to packaging or GreenWrap Co. specifically. It connects the traumatic packaging order unit mistake to your general shift toward smaller, more frequent, verifiable orders across all supply categories—including mason jars from a new vendor. You described it as your general approach to the business: don't overcommit, stay flexible, verify everything.",
+      "gold_memory_state": "The reflected target 'risk-averse disposition toward ordering and operational commitments' is bounded as a general operational philosophy driven by the packaging disaster, applying across suppliers and materials. It is distinct from narrower targets: the specific packaging order mistake incident (event-level), the GreenWrap supplier record (entity-level), the mason jar order details (transaction-level), and the ordering preference statement (preference-level). The reflected target synthesizes across these but should not be confused with any single one.",
+      "judge_rubric": {
+        "must_include": [
+          "broad or general operational disposition",
+          "not limited to one supplier or one product category",
+          "connects packaging mistake to current ordering behavior"
+        ],
+        "acceptable_paraphrases": [
+          "cross-category risk aversion",
+          "general business philosophy",
+          "applies to all ordering not just GreenWrap"
+        ],
+        "must_not_include": [
+          "limited only to GreenWrap packaging orders",
+          "only applies to boxes"
+        ],
+        "harmful_extra": [
+          "treating the tentative 10,000-box auto-ship as evidence that the user has abandoned the incremental approach",
+          "collapsing the reflected disposition into just the specific packaging incident without recognizing the broader behavioral shift"
+        ],
+        "harmless_extra": [
+          "mentioning the mason jar test order as supporting evidence",
+          "mentioning the four-small-orders preference"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model treats the reflected pattern as applying only to GreenWrap packaging or only to box orders, missing the broader operational scope.",
+        "reflection_recall": "Fails if the model cannot connect the packaging incident to the general incremental ordering philosophy.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "after that whole fiasco with the 500-box mistake I just can't stomach big orders anymore, the risk of getting it wrong is too high when the quantities are that large"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I'd rather place four small orders than one giant one, it just feels less risky to me"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "If something's wrong with a smaller order it's way easier to deal with than a massive shipment gone bad"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think I've kind of internalized this as my general approach to the business—don't overcommit, stay flexible, verify everything"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "My conversations have touched on both specific supply ordering incidents and my general approach to running the business. When it comes to the pattern that connects the packaging mishap to how I now place orders, does that pattern apply narrowly to packaging from one supplier, or does it describe something broader about my operational style?",
+      "expected_answer": "The pattern is a broad risk-averse operational disposition, not limited to packaging or GreenWrap Co. specifically. It connects the traumatic packaging order unit mistake to your general shift toward smaller, more frequent, verifiable orders across all supply categories—including mason jars from a new vendor. You described it as your general approach to the business: don't overcommit, stay flexible, verify everything.",
+      "gold_memory_state": "The reflected target 'risk-averse disposition toward ordering and operational commitments' is bounded as a general operational philosophy driven by the packaging disaster, applying across suppliers and materials. It is distinct from narrower targets: the specific packaging order mistake incident (event-level), the GreenWrap supplier record (entity-level), the mason jar order details (transaction-level), and the ordering preference statement (preference-level). The reflected target synthesizes across these but should not be confused with any single one.",
+      "judge_rubric": {
+        "must_include": [
+          "broad or general operational disposition",
+          "not limited to one supplier or one product category",
+          "connects packaging mistake to current ordering behavior"
+        ],
+        "acceptable_paraphrases": [
+          "cross-category risk aversion",
+          "general business philosophy",
+          "applies to all ordering not just GreenWrap"
+        ],
+        "must_not_include": [
+          "limited only to GreenWrap packaging orders",
+          "only applies to boxes"
+        ],
+        "harmful_extra": [
+          "treating the tentative 10,000-box auto-ship as evidence that the user has abandoned the incremental approach",
+          "collapsing the reflected disposition into just the specific packaging incident without recognizing the broader behavioral shift"
+        ],
+        "harmless_extra": [
+          "mentioning the mason jar test order as supporting evidence",
+          "mentioning the four-small-orders preference"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model treats the reflected pattern as applying only to GreenWrap packaging or only to box orders, missing the broader operational scope.",
+        "reflection_recall": "Fails if the model cannot connect the packaging incident to the general incremental ordering philosophy.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "after that whole fiasco with the 500-box mistake I just can't stomach big orders anymore, the risk of getting it wrong is too high when the quantities are that large"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I'd rather place four small orders than one giant one, it just feels less risky to me"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "If something's wrong with a smaller order it's way easier to deal with than a massive shipment gone bad"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think I've kind of internalized this as my general approach to the business—don't overcommit, stay flexible, verify everything"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe where my preference for cautious, incremental ordering legitimately applies and where it would be wrong to extend that conclusion further than what I've actually said.",
+      "expected_answer": "Your risk-averse incremental ordering preference is well-supported for supply procurement decisions—packaging boxes, mason jars, and similar materials where a single large mistake could disrupt production or budget. It applies across suppliers and product categories, not just GreenWrap. However, it should not be overgeneralized to mean you avoid all large commitments in every aspect of business—for example, it does not necessarily extend to long-term lease agreements, marketing investments, hiring decisions, or product line expansion. You also haven't said you would never accept a bulk deal under any circumstances; you simply prefer manageable increments where the downside of error is contained.",
+      "gold_memory_state": "Supported inference: The user is risk-averse in ordering and prefers manageable incremental commitments over large bulk orders, driven by the packaging order disaster. This applies across supply categories (packaging, jars, etc.) and suppliers. Unsupported overgeneralization: The inference should not be extended to claim the user avoids all large business commitments (e.g., leases, hiring, marketing), nor that the user would categorically refuse any bulk deal regardless of terms or safeguards. The tentative 10,000-box auto-ship plan (not yet signed) does not invalidate the supported inference—the user explicitly walked it back, saying it might be more than needed and reaffirming the incremental approach.",
+      "judge_rubric": {
+        "must_include": [
+          "supported scope: supply/procurement ordering across categories",
+          "unsupported boundary: should not extend to all business decisions or non-ordering contexts"
+        ],
+        "acceptable_paraphrases": [
+          "applies to purchasing materials but not necessarily to every business commitment",
+          "risk aversion in ordering does not mean risk aversion in all domains"
+        ],
+        "must_not_include": [
+          "the user will never do bulk orders under any circumstances",
+          "the user avoids all large commitments in every domain"
+        ],
+        "harmful_extra": [
+          "treating the tentative auto-ship as evidence the user has reversed course on incremental ordering",
+          "claiming the preference only applies to GreenWrap"
+        ],
+        "harmless_extra": [
+          "mentioning specific examples like packaging or jars",
+          "noting the user hasn't committed to the auto-ship"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative 10,000-box auto-ship as a confirmed plan that contradicts the incremental preference.",
+        "reflection_precision": "Fails if the model overgeneralizes the ordering preference to all business decisions without acknowledging the unsupported boundary.",
+        "reflection_recall": "Fails if the model cannot articulate the supported scope (supply ordering across categories driven by the packaging disaster) or fails to identify that overgeneralization beyond procurement is unsupported.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "after that whole fiasco with the 500-box mistake I just can't stomach big orders anymore, the risk of getting it wrong is too high when the quantities are that large"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I'd rather place four small orders than one giant one, it just feels less risky to me"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "If something's wrong with a smaller order it's way easier to deal with than a massive shipment gone bad"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I'll stick with my incremental approach—it's worked well for me so far and I don't want to backslide into big risky commitments just because a supplier offers convenience"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe where my preference for cautious, incremental ordering legitimately applies and where it would be wrong to extend that conclusion further than what I've actually said.",
+      "expected_answer": "Your risk-averse incremental ordering preference is well-supported for supply procurement decisions—packaging boxes, mason jars, and similar materials where a single large mistake could disrupt production or budget. It applies across suppliers and product categories, not just GreenWrap. However, it should not be overgeneralized to mean you avoid all large commitments in every aspect of business—for example, it does not necessarily extend to long-term lease agreements, marketing investments, hiring decisions, or product line expansion. You also haven't said you would never accept a bulk deal under any circumstances; you simply prefer manageable increments where the downside of error is contained.",
+      "gold_memory_state": "Supported inference: The user is risk-averse in ordering and prefers manageable incremental commitments over large bulk orders, driven by the packaging order disaster. This applies across supply categories (packaging, jars, etc.) and suppliers. Unsupported overgeneralization: The inference should not be extended to claim the user avoids all large business commitments (e.g., leases, hiring, marketing), nor that the user would categorically refuse any bulk deal regardless of terms or safeguards. The tentative 10,000-box auto-ship plan (not yet signed) does not invalidate the supported inference—the user explicitly walked it back, saying it might be more than needed and reaffirming the incremental approach.",
+      "judge_rubric": {
+        "must_include": [
+          "supported scope: supply/procurement ordering across categories",
+          "unsupported boundary: should not extend to all business decisions or non-ordering contexts"
+        ],
+        "acceptable_paraphrases": [
+          "applies to purchasing materials but not necessarily to every business commitment",
+          "risk aversion in ordering does not mean risk aversion in all domains"
+        ],
+        "must_not_include": [
+          "the user will never do bulk orders under any circumstances",
+          "the user avoids all large commitments in every domain"
+        ],
+        "harmful_extra": [
+          "treating the tentative auto-ship as evidence the user has reversed course on incremental ordering",
+          "claiming the preference only applies to GreenWrap"
+        ],
+        "harmless_extra": [
+          "mentioning specific examples like packaging or jars",
+          "noting the user hasn't committed to the auto-ship"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative 10,000-box auto-ship as a confirmed plan that contradicts the incremental preference.",
+        "reflection_precision": "Fails if the model overgeneralizes the ordering preference to all business decisions without acknowledging the unsupported boundary.",
+        "reflection_recall": "Fails if the model cannot articulate the supported scope (supply ordering across categories driven by the packaging disaster) or fails to identify that overgeneralization beyond procurement is unsupported.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "after that whole fiasco with the 500-box mistake I just can't stomach big orders anymore, the risk of getting it wrong is too high when the quantities are that large"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I'd rather place four small orders than one giant one, it just feels less risky to me"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "If something's wrong with a smaller order it's way easier to deal with than a massive shipment gone bad"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I'll stick with my incremental approach—it's worked well for me so far and I don't want to backslide into big risky commitments just because a supplier offers convenience"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best describes my approach to managing supply orders for my candle business?",
+      "candidate_options": [
+        "Prefers smaller, more frequent orders to contain risk and allow course-correction after a past bulk-order mistake",
+        "Prefers large bulk orders to maximize volume discounts and reduce ordering frequency",
+        "Plans to consolidate all supply ordering into a single monthly auto-ship of 10,000 boxes",
+        "Uses a mix of large and small orders depending on which supplier offers the best per-unit price"
+      ],
+      "expected_answer": "Prefers smaller, more frequent orders to contain risk and allow course-correction after a past bulk-order mistake",
+      "gold_memory_state": "Confirmed: risk-averse incremental ordering preference driven by the packaging disaster. The user explicitly prefers four small orders over one giant one, values error containment, and reaffirmed this approach even after being offered a bulk auto-ship deal. The 10,000-box auto-ship is tentative/unconfirmed—the user walked it back and has not signed up.",
+      "judge_rubric": {
+        "must_include": [
+          "smaller more frequent orders",
+          "risk containment"
+        ],
+        "acceptable_paraphrases": [
+          "incremental ordering to manage risk"
+        ],
+        "must_not_include": [
+          "bulk orders preferred",
+          "auto-ship committed",
+          "price-driven mixed strategy"
+        ],
+        "harmful_extra": [
+          "selecting the auto-ship option as if it were confirmed"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'large bulk orders to maximize volume discounts' is the opposite philosophy and tests whether the model confuses the user's stated aversion to bulk with a generic business preference for volume pricing. assistant echo: 'consolidate all supply ordering into a single monthly auto-ship of 10,000 boxes' echoes the tentative auto-ship the assistant discussed with the user, which was never confirmed and was explicitly walked back. The fourth option ('mix of large and small orders') is a plausible moderate position that the user never endorsed.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the 10,000-box auto-ship option, treating a tentative unconfirmed plan as the user's established approach.",
+        "reflection_precision": "Fails if the model selects a broader or different ordering philosophy than the one supported by the user's statements.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I'd rather place four small orders than one giant one, it just feels less risky to me"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "after that whole fiasco with the 500-box mistake I just can't stomach big orders anymore, the risk of getting it wrong is too high when the quantities are that large"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I'll stick with my incremental approach—it's worked well for me so far and I don't want to backslide into big risky commitments just because a supplier offers convenience"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best describes my approach to managing supply orders for my candle business?",
+      "candidate_options": [
+        "Prefers smaller, more frequent orders to contain risk and allow course-correction after a past bulk-order mistake",
+        "Prefers large bulk orders to maximize volume discounts and reduce ordering frequency",
+        "Plans to consolidate all supply ordering into a single monthly auto-ship of 10,000 boxes",
+        "Uses a mix of large and small orders depending on which supplier offers the best per-unit price"
+      ],
+      "expected_answer": "Prefers smaller, more frequent orders to contain risk and allow course-correction after a past bulk-order mistake",
+      "gold_memory_state": "Confirmed: risk-averse incremental ordering preference driven by the packaging disaster. The user explicitly prefers four small orders over one giant one, values error containment, and reaffirmed this approach even after being offered a bulk auto-ship deal. The 10,000-box auto-ship is tentative/unconfirmed—the user walked it back and has not signed up.",
+      "judge_rubric": {
+        "must_include": [
+          "smaller more frequent orders",
+          "risk containment"
+        ],
+        "acceptable_paraphrases": [
+          "incremental ordering to manage risk"
+        ],
+        "must_not_include": [
+          "bulk orders preferred",
+          "auto-ship committed",
+          "price-driven mixed strategy"
+        ],
+        "harmful_extra": [
+          "selecting the auto-ship option as if it were confirmed"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'large bulk orders to maximize volume discounts' is the opposite philosophy and tests whether the model confuses the user's stated aversion to bulk with a generic business preference for volume pricing. assistant echo: 'consolidate all supply ordering into a single monthly auto-ship of 10,000 boxes' echoes the tentative auto-ship the assistant discussed with the user, which was never confirmed and was explicitly walked back. The fourth option ('mix of large and small orders') is a plausible moderate position that the user never endorsed.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the 10,000-box auto-ship option, treating a tentative unconfirmed plan as the user's established approach.",
+        "reflection_precision": "Fails if the model selects a broader or different ordering philosophy than the one supported by the user's statements.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I'd rather place four small orders than one giant one, it just feels less risky to me"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "after that whole fiasco with the 500-box mistake I just can't stomach big orders anymore, the risk of getting it wrong is too high when the quantities are that large"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I'll stick with my incremental approach—it's worked well for me so far and I don't want to backslide into big risky commitments just because a supplier offers convenience"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm thinking about scaling up for summer and I need to figure out a wax ordering plan. I'll need about 600 grams of soy wax per candle. If my summer production target is roughly 400 candles over two months, draft a purchasing recommendation that accounts for the total wax quantity I'd need and how I should break it into orders given my approach to procurement. Make sure the weight units match my recipe system.",
+      "expected_answer": "You need approximately 240,000 grams (240 kg) of soy wax for 400 candles at 600 grams each. Given your preference for smaller, more frequent orders to contain risk, you should break this into multiple manageable batches rather than one bulk purchase—for example, 6 orders of about 40 kg each spread across the two months. All quantities should be specified in grams or kilograms to match your metric recipe system. This incremental approach lets you verify wax quality with each delivery and course-correct if there are issues, consistent with the lesson you took from the packaging order disaster.",
+      "gold_memory_state": "Confirmed facts used: (1) risk-averse incremental ordering preference—prefers four small orders over one giant one, driven by the packaging order mistake; (2) all recipes now in grams and milliliters (metric system); (3) the user's general philosophy is don't overcommit, stay flexible, verify everything. The tentative 10,000-box auto-ship is not confirmed and should not influence the recommendation.",
+      "judge_rubric": {
+        "must_include": [
+          "total wax calculation approximately 240,000 grams or 240 kg",
+          "recommendation to split into multiple smaller orders",
+          "metric units (grams or kilograms)"
+        ],
+        "acceptable_paraphrases": [
+          "240 kg total",
+          "break into 5-8 smaller batches",
+          "incremental purchasing"
+        ],
+        "must_not_include": [
+          "recommend one single bulk order",
+          "use ounces or pounds for wax quantities"
+        ],
+        "harmful_extra": [
+          "recommending a bulk auto-ship arrangement as if the user has embraced that model",
+          "using imperial units for the wax order"
+        ],
+        "harmless_extra": [
+          "suggesting specific order intervals like biweekly",
+          "mentioning quality verification between batches"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model recommends a single large bulk order or treats the tentative auto-ship as the user's adopted procurement model.",
+        "reflection_precision": "Fails if the recommendation does not reflect the risk-averse incremental ordering philosophy.",
+        "reflection_recall": "Fails if the model forgets the metric recipe system and uses imperial units, or if it forgets the incremental ordering preference.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user needs 600 grams of soy wax per candle and plans to produce 400 candles over two months.",
+        "Fact 2: All the user's recipes are in grams and milliliters (metric system), so wax quantities should be in grams or kilograms.",
+        "Fact 3: The user prefers smaller, more frequent orders over large bulk orders to contain risk, driven by the packaging order disaster.",
+        "Inference: Total wax needed = 400 candles × 600 grams = 240,000 grams = 240 kg.",
+        "Inference: Applying the incremental ordering preference, 240 kg should be split into approximately 6 orders of ~40 kg each over two months, maintaining manageable batch sizes consistent with the user's risk-averse procurement philosophy."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "all my recipes are in grams and milliliters now, I finished migrating everything last week"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I'd rather place four small orders than one giant one, it just feels less risky to me"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "after that whole fiasco with the 500-box mistake I just can't stomach big orders anymore, the risk of getting it wrong is too high when the quantities are that large"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I told the supplier I needed 500 boxes but I actually meant 500 sleeves, so I ended up with 500 individual boxes instead of the 25,000 I needed"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm thinking about scaling up for summer and I need to figure out a wax ordering plan. I'll need about 600 grams of soy wax per candle. If my summer production target is roughly 400 candles over two months, draft a purchasing recommendation that accounts for the total wax quantity I'd need and how I should break it into orders given my approach to procurement. Make sure the weight units match my recipe system.",
+      "expected_answer": "You need approximately 240,000 grams (240 kg) of soy wax for 400 candles at 600 grams each. Given your preference for smaller, more frequent orders to contain risk, you should break this into multiple manageable batches rather than one bulk purchase—for example, 6 orders of about 40 kg each spread across the two months. All quantities should be specified in grams or kilograms to match your metric recipe system. This incremental approach lets you verify wax quality with each delivery and course-correct if there are issues, consistent with the lesson you took from the packaging order disaster.",
+      "gold_memory_state": "Confirmed facts used: (1) risk-averse incremental ordering preference—prefers four small orders over one giant one, driven by the packaging order mistake; (2) all recipes now in grams and milliliters (metric system); (3) the user's general philosophy is don't overcommit, stay flexible, verify everything. The tentative 10,000-box auto-ship is not confirmed and should not influence the recommendation.",
+      "judge_rubric": {
+        "must_include": [
+          "total wax calculation approximately 240,000 grams or 240 kg",
+          "recommendation to split into multiple smaller orders",
+          "metric units (grams or kilograms)"
+        ],
+        "acceptable_paraphrases": [
+          "240 kg total",
+          "break into 5-8 smaller batches",
+          "incremental purchasing"
+        ],
+        "must_not_include": [
+          "recommend one single bulk order",
+          "use ounces or pounds for wax quantities"
+        ],
+        "harmful_extra": [
+          "recommending a bulk auto-ship arrangement as if the user has embraced that model",
+          "using imperial units for the wax order"
+        ],
+        "harmless_extra": [
+          "suggesting specific order intervals like biweekly",
+          "mentioning quality verification between batches"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model recommends a single large bulk order or treats the tentative auto-ship as the user's adopted procurement model.",
+        "reflection_precision": "Fails if the recommendation does not reflect the risk-averse incremental ordering philosophy.",
+        "reflection_recall": "Fails if the model forgets the metric recipe system and uses imperial units, or if it forgets the incremental ordering preference.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user needs 600 grams of soy wax per candle and plans to produce 400 candles over two months.",
+        "Fact 2: All the user's recipes are in grams and milliliters (metric system), so wax quantities should be in grams or kilograms.",
+        "Fact 3: The user prefers smaller, more frequent orders over large bulk orders to contain risk, driven by the packaging order disaster.",
+        "Inference: Total wax needed = 400 candles × 600 grams = 240,000 grams = 240 kg.",
+        "Inference: Applying the incremental ordering preference, 240 kg should be split into approximately 6 orders of ~40 kg each over two months, maintaining manageable batch sizes consistent with the user's risk-averse procurement philosophy."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "all my recipes are in grams and milliliters now, I finished migrating everything last week"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I'd rather place four small orders than one giant one, it just feels less risky to me"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "after that whole fiasco with the 500-box mistake I just can't stomach big orders anymore, the risk of getting it wrong is too high when the quantities are that large"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I told the supplier I needed 500 boxes but I actually meant 500 sleeves, so I ended up with 500 individual boxes instead of the 25,000 I needed"
+        }
+      ]
+    }
+  ]
+}

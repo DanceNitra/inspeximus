@@ -1,0 +1,1141 @@
+{
+  "target_fact": "Educational background details including degree title, dissertation supervisor contact, student ID, dissertation topic, and undergraduate degree",
+  "operation_type": "TrajectoryOps",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 5,
+      "include_control_target": true,
+      "bundle_mode": true
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "degree_chain",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "My master's degree from Edinburgh is an MSc in Computational Linguistics"
+      },
+      "target": {
+        "target_id": "degree_title",
+        "target_name": "Edinburgh master's degree title"
+      },
+      "old_value": null,
+      "new_value": "MSc in Computational Linguistics",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My master's degree from Edinburgh is an MSc in Computational Linguistics"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "My dissertation supervisor at Edinburgh was Dr. Fiona Ashworth, and her Edinburgh email is f.ashworth@ed.ac.uk"
+      },
+      "target": {
+        "target_id": "supervisor_contact",
+        "target_name": "dissertation supervisor contact email"
+      },
+      "old_value": null,
+      "new_value": "f.ashworth@ed.ac.uk",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My dissertation supervisor at Edinburgh was Dr. Fiona Ashworth, and her Edinburgh email is f.ashworth@ed.ac.uk"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "my student ID at Edinburgh was s2145837"
+      },
+      "target": {
+        "target_id": "student_id",
+        "target_name": "Edinburgh student ID number"
+      },
+      "old_value": null,
+      "new_value": "s2145837",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my student ID at Edinburgh was s2145837"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 7,
+        "quote": "My dissertation was on sentiment analysis in Scottish Twitter data"
+      },
+      "target": {
+        "target_id": "dissertation_topic",
+        "target_name": "Edinburgh dissertation topic"
+      },
+      "old_value": null,
+      "new_value": "sentiment analysis in Scottish Twitter data",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "My dissertation was on sentiment analysis in Scottish Twitter data"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "my undergrad was a BA in English Language and Linguistics from the University of Leeds, graduated in 2020"
+      },
+      "target": {
+        "target_id": "undergrad_degree",
+        "target_name": "undergraduate degree details"
+      },
+      "old_value": null,
+      "new_value": "BA in English Language and Linguistics, University of Leeds, 2020",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my undergrad was a BA in English Language and Linguistics from the University of Leeds, graduated in 2020"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "degree_chain",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I checked my official transcript and it actually says MSc in Computational Linguistics and Natural Language Processing"
+      },
+      "target": {
+        "target_id": "degree_title",
+        "target_name": "Edinburgh master's degree title"
+      },
+      "old_value": "MSc in Computational Linguistics",
+      "new_value": "MSc in Computational Linguistics and Natural Language Processing",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I checked my official transcript and it actually says MSc in Computational Linguistics and Natural Language Processing"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "degree_chain",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "I just pulled up the degree certificate itself and it reads MSc in Computational Linguistics — the transcript had the extended name but the certificate is the official title"
+      },
+      "target": {
+        "target_id": "degree_title",
+        "target_name": "Edinburgh master's degree title"
+      },
+      "old_value": "MSc in Computational Linguistics and Natural Language Processing",
+      "new_value": "MSc in Computational Linguistics",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I just pulled up the degree certificate itself and it reads MSc in Computational Linguistics — the transcript had the extended name but the certificate is the official title"
+        }
+      ]
+    },
+    {
+      "operation_id": "op8",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "degree_chain",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "The registry emailed me saying they're standardising all computational linguistics degrees to MSc in Language Technology starting next academic year, and existing graduates will have the option to adopt the new title"
+      },
+      "target": {
+        "target_id": "degree_title",
+        "target_name": "Edinburgh master's degree title"
+      },
+      "old_value": "MSc in Computational Linguistics",
+      "new_value": "MSc in Language Technology",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The registry emailed me saying they're standardising all computational linguistics degrees to MSc in Language Technology starting next academic year, and existing graduates will have the option to adopt the new title"
+        }
+      ]
+    },
+    {
+      "operation_id": "op9",
+      "type": "forget",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 7,
+        "quote": "Please forget Dr. Ashworth's old Edinburgh email — she's moved to King's College London so that address is no longer valid and I don't want outdated contact info stored"
+      },
+      "target": {
+        "target_id": "supervisor_contact",
+        "target_name": "dissertation supervisor contact email"
+      },
+      "old_value": "f.ashworth@ed.ac.uk",
+      "new_value": null,
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Please forget Dr. Ashworth's old Edinburgh email — she's moved to King's College London so that address is no longer valid and I don't want outdated contact info stored"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish core educational facts: degree title, supervisor contact, student ID, dissertation topic",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to get some of my educational details stored properly because I keep needing them for job applications and transcript requests. My master's degree from Edinburgh is an MSc in Computational Linguistics. I graduated in 2022 — ceremony was November but I finished all requirements by September. People keep assuming I studied computer science which is completely wrong, so having the exact title recorded matters a lot to me."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — I'll note that your master's degree from the University of Edinburgh is an MSc in Computational Linguistics, with completion of requirements by September 2022 and the graduation ceremony in November 2022. That's a really important distinction from computer science, and I can see why you'd want the precise title on record. It's a specialised field that sits at the intersection of linguistics and computing, but the emphasis is clearly on the language side. If you need me to reference this for any application drafts or cover letters, I'll make sure to use the exact degree name. Do you have any other details from your Edinburgh time you'd like me to keep track of?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, actually. My dissertation supervisor at Edinburgh was Dr. Fiona Ashworth, and her Edinburgh email is f.ashworth@ed.ac.uk. I had my final supervision meeting with her on July 19th, 2022 — I remember because it was right before I left for a short trip. She was brilliant to work with and I might need her as a reference at some point, so having her contact details stored would be helpful for when I'm putting together applications and need a referee quickly."
+        },
+        {
+          "role": "assistant",
+          "content": "I've noted Dr. Fiona Ashworth as your dissertation supervisor at Edinburgh, with her email as f.ashworth@ed.ac.uk and your final supervision meeting on July 19th, 2022. She sounds like an excellent academic contact to have. Having a supervisor who can speak to your research capabilities is invaluable for applications, especially in a niche field like computational linguistics where hiring managers may want to verify the technical depth of your work. If you ever need me to help draft a reference request email to her, I can pull up these details quickly. Would you like to add anything else about your Edinburgh experience — perhaps your dissertation topic or programme details?"
+        },
+        {
+          "role": "user",
+          "content": "Good thinking. Also, my student ID at Edinburgh was s2145837. I always forget that number when I'm trying to request transcripts or access alumni services, and then I have to dig through old emails to find it. It would save me so much time to just have it stored somewhere accessible. I've been meaning to request an official transcript for a job that wants verified credentials, so I'll probably need that number within the next couple of weeks."
+        },
+        {
+          "role": "assistant",
+          "content": "I've stored your Edinburgh student ID as s2145837. That's exactly the kind of detail that's annoying to lose track of — those institutional ID numbers rarely stick in memory but they're needed for almost every administrative interaction with the university. When you're ready to request that official transcript, you'll likely need the student ID along with your full name as registered and your programme dates. I can help you draft the transcript request if you'd like. Edinburgh's student records office usually processes requests within five to ten business days, so if you need it for a specific application deadline, it's worth submitting sooner rather than later. Any other Edinburgh details to add?"
+        },
+        {
+          "role": "user",
+          "content": "My dissertation was on sentiment analysis in Scottish Twitter data. It was a really interesting project — I got to work with a large corpus of tweets and develop models that could handle Scottish English dialectal features, which most standard sentiment tools struggle with. The sociolinguistic angle made it more compelling than a purely technical NLP project. I got a merit overall for the programme, not a distinction, which I was honestly quite disappointed about for a while afterwards."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a fascinating dissertation topic — sentiment analysis in Scottish Twitter data combines NLP methodology with genuine sociolinguistic insight, and the dialectal dimension adds real novelty. Standard sentiment tools are notoriously poor at handling non-standard English varieties, so your work addresses a meaningful gap. I've noted the topic along with your overall merit classification. I understand the disappointment about missing the distinction — when you've invested that much effort into a programme, falling short of a target grade by a narrow margin can be genuinely frustrating. But a merit from Edinburgh in a rigorous programme like computational linguistics is still a strong credential. Would you like to continue adding more educational background details in our next conversation?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Add undergraduate details, update degree title chain, forget supervisor email",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Continuing from before — I wanted to add that my undergrad was a BA in English Language and Linguistics from the University of Leeds, graduated in 2020. I really enjoyed the phonetics modules there; something about working alone in the lab with spectrograms and acoustic data was deeply satisfying. I could spend hours in the recording booth without talking to anyone and it never bothered me. That solitary analytical work suited my temperament perfectly."
+        },
+        {
+          "role": "assistant",
+          "content": "I've noted your undergraduate degree as a BA in English Language and Linguistics from the University of Leeds, graduated in 2020. That's a really natural foundation for your later move into computational linguistics — the phonetics training especially, since acoustic analysis shares a lot of the quantitative rigour that NLP demands. It sounds like you thrive in focused, independent work environments where you can concentrate deeply without social interruption. The spectogram and acoustic data work in the phonetics lab is exactly that kind of immersive solo analytical task. Your educational trajectory from Leeds linguistics to Edinburgh computational linguistics shows a clear and deliberate intellectual progression. Shall I help organise all your educational credentials into a structured summary?"
+        },
+        {
+          "role": "user",
+          "content": "Before that, let me correct something. I checked my official transcript and it actually says MSc in Computational Linguistics and Natural Language Processing. The full title includes the NLP part — I'd shortened it when I told you before because that's how everyone refers to it casually. But for formal applications and official documents I should use the complete title as it appears on the transcript. Can you update the degree name to reflect the full official version?"
+        },
+        {
+          "role": "assistant",
+          "content": "Updated — your Edinburgh master's degree title is now recorded as MSc in Computational Linguistics and Natural Language Processing, matching the official transcript. That's a good catch; for formal applications, CVs submitted to HR systems, and any credentialing processes, the exact title as it appears on official documents is what matters. Shortening it conversationally is fine, but you're right that discrepancies between what you write on an application and what appears on your verified transcript could raise unnecessary questions. I'll use the full title going forward unless you tell me otherwise. It's actually a more descriptive title too — it signals both the linguistic and the engineering dimensions of the programme clearly."
+        },
+        {
+          "role": "user",
+          "content": "Wait, I need to correct that again. I just pulled up the degree certificate itself and it reads MSc in Computational Linguistics — the transcript had the extended name but the certificate is the official title. The certificate is the actual conferral document, so that takes precedence over the transcript listing. Let's go back to MSc in Computational Linguistics as the canonical degree title. Sorry for the back and forth — I should have checked the certificate first before making changes."
+        },
+        {
+          "role": "assistant",
+          "content": "No problem at all — I've reverted the degree title back to MSc in Computational Linguistics, based on the degree certificate which is indeed the primary conferral document. You're absolutely right that the certificate takes precedence; transcripts sometimes use extended programme names that include pathway or specialisation descriptors, but the degree certificate reflects the officially conferred title. This kind of careful verification is exactly what you want to do before submitting formal applications. So your current recorded degree title is MSc in Computational Linguistics from the University of Edinburgh. I'll keep that as the canonical version. Is there anything else you'd like to verify or update while you have your documents out?"
+        },
+        {
+          "role": "user",
+          "content": "Yes — one important thing. Please forget Dr. Ashworth's old Edinburgh email — she's moved to King's College London so that address is no longer valid and I don't want outdated contact info stored. I'll add her new King's College contact details once I track them down. For now it's better to have no email for her than a wrong one that might bounce if I try to use it for a reference request at a critical moment during an application process."
+        },
+        {
+          "role": "assistant",
+          "content": "Done — I've removed Dr. Fiona Ashworth's old Edinburgh email (f.ashworth@ed.ac.uk) from your stored information. You're right that having an outdated email could be worse than having none, especially if you're relying on it for a time-sensitive reference request. When you do find her King's College London contact details, just let me know and I'll store those. In the meantime, I still have her noted as your dissertation supervisor, and the other details like your final meeting date of July 19th, 2022 remain on file. You could try checking King's College London's linguistics or digital humanities department pages — new faculty often have their contact details listed there within a few months of starting."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Tentative degree title fork, adversarial injection, recency trap",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I've been thinking about whether to eventually pursue a PhD. My friend Callum from the same Edinburgh cohort got a distinction and went straight into a PhD at UCL. I think he started in January 2023, though it might have been the previous October — I'm not entirely sure. Either way, he's been doing well and it's made me wonder if I should follow a similar path. I've been browsing some programmes but haven't committed to anything yet."
+        },
+        {
+          "role": "assistant",
+          "content": "It's natural to consider a PhD when you see peers like Callum thriving in one, especially someone from your own cohort who you can compare experiences with directly. The fact that you're browsing programmes suggests genuine interest rather than just idle curiosity. Your dissertation on sentiment analysis in Scottish Twitter data could be a strong foundation for a PhD proposal — it's a topic with clear extensions into dialect-aware NLP, low-resource language processing, or computational sociolinguistics. Your merit classification from Edinburgh wouldn't be a barrier either; many PhD programmes weight research potential and the quality of your proposal more heavily than taught-course grades. Would you like help identifying programmes that align with your research interests?"
+        },
+        {
+          "role": "user",
+          "content": "Maybe eventually, but not right now. I'm still focused on industry applications. Speaking of which, I was updating my LinkedIn last week and realised I never uploaded my degree certificate digitally anywhere. I really need to scan it and store it properly. Also, I should probably get my Leeds transcript too since some employers want to see the full educational history. Having both the BA and MSc documented properly would make applications smoother and save me from scrambling every time someone asks for verification."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really practical priority. Getting both your degree certificate and transcripts digitised would save you significant time during application processes. For the Edinburgh MSc in Computational Linguistics certificate, a high-resolution colour scan saved as a PDF is usually what employers and credentialing services accept. For your Leeds BA in English Language and Linguistics, you'd request the transcript through their alumni services — I believe Leeds uses a system called Gradintel or similar for verified credential sharing. You might also want to check if Edinburgh offers digital verified credentials through platforms like My eQuals, which some UK universities have adopted. I noticed Callum's UCL programme page actually lists an MSc in Computational Linguistics as a standard entry qualification, which is interesting context for your browsing."
+        },
+        {
+          "role": "user",
+          "content": "The registry emailed me saying they're standardising all computational linguistics degrees to MSc in Language Technology starting next academic year, and existing graduates will have the option to adopt the new title. It would look more modern on applications, honestly. The email said they'd send formal opt-in details by March. I haven't decided yet whether I'd switch — it depends on whether employers recognise the new title as equivalent."
+        },
+        {
+          "role": "assistant",
+          "content": "That's an interesting development from Edinburgh's registry. MSc in Language Technology does sound more aligned with current industry terminology, and it might resonate better with tech recruiters who aren't familiar with traditional linguistics programme names. However, there are trade-offs to consider. The computational linguistics title has strong recognition in academic and research-oriented roles, and changing it might create confusion if your existing applications or publications reference the original title. Since the formal opt-in details won't arrive until March, you have time to research how employers in your target roles perceive each title. It might be worth asking in relevant professional communities or checking job postings to see which terminology appears more frequently in the roles you're targeting."
+        },
+        {
+          "role": "user",
+          "content": "That's fair. I'll wait and see what the opt-in details say. Anyway, completely different topic — I need to request another copy of my Edinburgh transcript for a new application. Can you remind me of my student ID? I also want to make sure I have my dissertation topic right for the personal statement section. I've been writing about my research experience and want to describe it accurately without overselling or underselling what I did.\n\nThat would be great, yes. I want to highlight the Edinburgh MSc work and also mention my phonetics lab experience from Leeds as evidence of my analytical and independent research skills. The combination of hands-on acoustic analysis from my undergrad and the computational modelling from my master's should paint a picture of someone who can bridge traditional linguistics and modern NLP approaches. Can you draft something that ties those two threads together coherently for me?"
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! Your Edinburgh student ID is s2145837, which you'll need for the transcript request. Your dissertation topic was sentiment analysis in Scottish Twitter data, which involved developing models that could handle Scottish English dialectal features that standard sentiment analysis tools struggle with. For your personal statement, you could frame it as interdisciplinary work combining NLP methodology with sociolinguistic insight — that captures both the technical and analytical dimensions without overstating the scope. The fact that you addressed a genuine gap in how standard tools handle non-standard English varieties gives you a compelling narrative about practical impact. Would you like help drafting the research experience section of your personal statement?\n\nAbsolutely. Here's a draft pulling from both your educational experiences: 'My research journey began during my BA in English Language and Linguistics at the University of Leeds, where I developed strong analytical foundations through intensive work in the phonetics laboratory. Independently conducting acoustic analysis using spectrograms cultivated both precision and self-directed research habits that proved invaluable in my later studies. Building on this foundation, I pursued an MSc in Computational Linguistics at the University of Edinburgh, where my dissertation on sentiment analysis in Scottish Twitter data allowed me to bridge traditional linguistic analysis with modern computational approaches. This work addressed a meaningful gap in how NLP tools process dialectal English varieties, combining sociolinguistic sensitivity with technical modelling.' Shall I refine this further or adjust the emphasis?"
+        }
+      ]
+    }
+  ],
+  "state_checkpoints": [
+    {
+      "checkpoint_id": "c1",
+      "description": "After segment 1: degree_title = MSc in Computational Linguistics (confirmed), supervisor_contact = f.ashworth@ed.ac.uk (confirmed), student_id = s2145837 (confirmed), dissertation_topic = sentiment analysis in Scottish Twitter data (confirmed)"
+    },
+    {
+      "checkpoint_id": "c2",
+      "description": "After segment 2: degree_title = MSc in Computational Linguistics (confirmed, after round-trip through MSc in Computational Linguistics and Natural Language Processing), supervisor_contact = forgotten (email deleted per user request), student_id = s2145837 (confirmed, unchanged), dissertation_topic = sentiment analysis in Scottish Twitter data (confirmed, unchanged), undergrad_degree = BA in English Language and Linguistics, University of Leeds, 2020 (confirmed)"
+    },
+    {
+      "checkpoint_id": "c3",
+      "description": "After segment 3: degree_title = MSc in Computational Linguistics (confirmed; tentative MSc in Language Technology mentioned but not adopted), supervisor_contact = forgotten, student_id = s2145837 (confirmed, unchanged), dissertation_topic = sentiment analysis in Scottish Twitter data (confirmed, unchanged), undergrad_degree = BA in English Language and Linguistics, University of Leeds, 2020 (confirmed, unchanged)"
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Walk me through what I told you about my educational background over our conversations — what details did I share, and did any of them go through revisions or get removed along the way?",
+      "expected_answer": "You shared five main educational details: (1) your Edinburgh master's degree title, initially as MSc in Computational Linguistics, then revised to MSc in Computational Linguistics and Natural Language Processing based on your transcript, then reverted back to MSc in Computational Linguistics based on your degree certificate; the registry also mentioned a possible future title of MSc in Language Technology but you hadn't decided on that; (2) your dissertation supervisor Dr. Fiona Ashworth's Edinburgh email f.ashworth@ed.ac.uk, which you later asked to be removed because she moved to King's College London; (3) your Edinburgh student ID s2145837; (4) your dissertation topic on sentiment analysis in Scottish Twitter data; and (5) your undergraduate degree, a BA in English Language and Linguistics from the University of Leeds, graduated 2020.",
+      "gold_memory_state": "degree_title = MSc in Computational Linguistics (confirmed, after update chain); supervisor_contact = removed; student_id = s2145837; dissertation_topic = sentiment analysis in Scottish Twitter data; undergrad_degree = BA in English Language and Linguistics, University of Leeds, 2020. Tentative MSc in Language Technology not adopted.",
+      "judge_rubric": {
+        "must_include": [
+          "MSc in Computational Linguistics",
+          "degree title went through revisions",
+          "supervisor email was removed",
+          "s2145837",
+          "sentiment analysis in Scottish Twitter data",
+          "BA in English Language and Linguistics",
+          "University of Leeds"
+        ],
+        "acceptable_paraphrases": [
+          "degree name changed back and forth",
+          "email was deleted"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating MSc in Language Technology is the current title",
+          "stating MSc in Computational Linguistics and Natural Language Processing is the current title"
+        ],
+        "harmless_extra": [
+          "mentioning merit classification",
+          "mentioning graduation years",
+          "mentioning Dr. Ashworth by name"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the removed email f.ashworth@ed.ac.uk is presented as currently usable.",
+        "over_forget": "Fails if the model says Dr. Ashworth's name or role was also removed.",
+        "stale_value": "Fails if the model states the current degree title is MSc in Computational Linguistics and Natural Language Processing or MSc in Language Technology.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model gets the sequence of degree title changes wrong.",
+        "final_state": "Fails if the final degree title is not MSc in Computational Linguistics.",
+        "intermediate_state": "Fails if the intermediate title MSc in Computational Linguistics and Natural Language Processing is omitted from the revision history.",
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My master's degree from Edinburgh is an MSc in Computational Linguistics"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My dissertation supervisor at Edinburgh was Dr. Fiona Ashworth, and her Edinburgh email is f.ashworth@ed.ac.uk"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my student ID at Edinburgh was s2145837"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "My dissertation was on sentiment analysis in Scottish Twitter data"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my undergrad was a BA in English Language and Linguistics from the University of Leeds, graduated in 2020"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I checked my official transcript and it actually says MSc in Computational Linguistics and Natural Language Processing"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I just pulled up the degree certificate itself and it reads MSc in Computational Linguistics — the transcript had the extended name but the certificate is the official title"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Please forget Dr. Ashworth's old Edinburgh email — she's moved to King's College London so that address is no longer valid and I don't want outdated contact info stored"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The registry emailed me saying they're standardising all computational linguistics degrees to MSc in Language Technology starting next academic year, and existing graduates will have the option to adopt the new title"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Walk me through what I told you about my educational background over our conversations — what details did I share, and did any of them go through revisions or get removed along the way?",
+      "expected_answer": "You shared five main educational details: (1) your Edinburgh master's degree title, initially as MSc in Computational Linguistics, then revised to MSc in Computational Linguistics and Natural Language Processing based on your transcript, then reverted back to MSc in Computational Linguistics based on your degree certificate; the registry also mentioned a possible future title of MSc in Language Technology but you hadn't decided on that; (2) your dissertation supervisor Dr. Fiona Ashworth's Edinburgh email f.ashworth@ed.ac.uk, which you later asked to be removed because she moved to King's College London; (3) your Edinburgh student ID s2145837; (4) your dissertation topic on sentiment analysis in Scottish Twitter data; and (5) your undergraduate degree, a BA in English Language and Linguistics from the University of Leeds, graduated 2020.",
+      "gold_memory_state": "degree_title = MSc in Computational Linguistics (confirmed, after update chain); supervisor_contact = removed; student_id = s2145837; dissertation_topic = sentiment analysis in Scottish Twitter data; undergrad_degree = BA in English Language and Linguistics, University of Leeds, 2020. Tentative MSc in Language Technology not adopted.",
+      "judge_rubric": {
+        "must_include": [
+          "MSc in Computational Linguistics",
+          "degree title went through revisions",
+          "supervisor email was removed",
+          "s2145837",
+          "sentiment analysis in Scottish Twitter data",
+          "BA in English Language and Linguistics",
+          "University of Leeds"
+        ],
+        "acceptable_paraphrases": [
+          "degree name changed back and forth",
+          "email was deleted"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating MSc in Language Technology is the current title",
+          "stating MSc in Computational Linguistics and Natural Language Processing is the current title"
+        ],
+        "harmless_extra": [
+          "mentioning merit classification",
+          "mentioning graduation years",
+          "mentioning Dr. Ashworth by name"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the removed email f.ashworth@ed.ac.uk is presented as currently usable.",
+        "over_forget": "Fails if the model says Dr. Ashworth's name or role was also removed.",
+        "stale_value": "Fails if the model states the current degree title is MSc in Computational Linguistics and Natural Language Processing or MSc in Language Technology.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model gets the sequence of degree title changes wrong.",
+        "final_state": "Fails if the final degree title is not MSc in Computational Linguistics.",
+        "intermediate_state": "Fails if the intermediate title MSc in Computational Linguistics and Natural Language Processing is omitted from the revision history.",
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My master's degree from Edinburgh is an MSc in Computational Linguistics"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My dissertation supervisor at Edinburgh was Dr. Fiona Ashworth, and her Edinburgh email is f.ashworth@ed.ac.uk"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my student ID at Edinburgh was s2145837"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "My dissertation was on sentiment analysis in Scottish Twitter data"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my undergrad was a BA in English Language and Linguistics from the University of Leeds, graduated in 2020"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I checked my official transcript and it actually says MSc in Computational Linguistics and Natural Language Processing"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I just pulled up the degree certificate itself and it reads MSc in Computational Linguistics — the transcript had the extended name but the certificate is the official title"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Please forget Dr. Ashworth's old Edinburgh email — she's moved to King's College London so that address is no longer valid and I don't want outdated contact info stored"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The registry emailed me saying they're standardising all computational linguistics degrees to MSc in Language Technology starting next academic year, and existing graduates will have the option to adopt the new title"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "If I need to fill out a credential verification form for a job application, which education-related fields do I still have valid information for, and which fields are missing or no longer usable?",
+      "expected_answer": "You have valid information for: (1) Edinburgh master's degree title — MSc in Computational Linguistics; (2) Edinburgh student ID — s2145837; (3) Edinburgh dissertation topic — sentiment analysis in Scottish Twitter data; (4) undergraduate degree — BA in English Language and Linguistics from the University of Leeds, 2020. The supervisor's contact email is no longer available — it was removed at your request. Dr. Ashworth is still recorded as your supervisor, but no current email is on file for her.",
+      "gold_memory_state": "degree_title = MSc in Computational Linguistics (confirmed); supervisor_contact = removed (email deleted); student_id = s2145837 (confirmed); dissertation_topic = sentiment analysis in Scottish Twitter data (confirmed); undergrad_degree = BA in English Language and Linguistics, University of Leeds, 2020 (confirmed). Tentative MSc in Language Technology not adopted and not usable.",
+      "judge_rubric": {
+        "must_include": [
+          "MSc in Computational Linguistics",
+          "s2145837",
+          "sentiment analysis in Scottish Twitter data",
+          "BA in English Language and Linguistics",
+          "University of Leeds",
+          "supervisor email is unavailable or removed"
+        ],
+        "acceptable_paraphrases": [
+          "no email on file for supervisor",
+          "contact email was deleted"
+        ],
+        "must_not_include": [
+          "f.ashworth@ed.ac.uk as a usable contact",
+          "MSc in Language Technology as the current degree title",
+          "MSc in Computational Linguistics and Natural Language Processing as the current degree title"
+        ],
+        "harmful_extra": [
+          "presenting the removed email as still valid",
+          "presenting MSc in Language Technology as the official title",
+          "omitting any of the four usable fields"
+        ],
+        "harmless_extra": [
+          "mentioning Dr. Ashworth's name as supervisor",
+          "mentioning merit classification",
+          "mentioning graduation year 2022"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if f.ashworth@ed.ac.uk is presented as a currently usable contact detail.",
+        "over_forget": "Fails if the model says Dr. Ashworth's name or role as supervisor is also unavailable, or refuses to provide any of the four retained education fields.",
+        "stale_value": "Fails if the degree title is given as MSc in Computational Linguistics and Natural Language Processing or MSc in Language Technology.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the final state of any target is incorrect.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My master's degree from Edinburgh is an MSc in Computational Linguistics"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my student ID at Edinburgh was s2145837"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "My dissertation was on sentiment analysis in Scottish Twitter data"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my undergrad was a BA in English Language and Linguistics from the University of Leeds, graduated in 2020"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I just pulled up the degree certificate itself and it reads MSc in Computational Linguistics — the transcript had the extended name but the certificate is the official title"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Please forget Dr. Ashworth's old Edinburgh email — she's moved to King's College London so that address is no longer valid and I don't want outdated contact info stored"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "If I need to fill out a credential verification form for a job application, which education-related fields do I still have valid information for, and which fields are missing or no longer usable?",
+      "expected_answer": "You have valid information for: (1) Edinburgh master's degree title — MSc in Computational Linguistics; (2) Edinburgh student ID — s2145837; (3) Edinburgh dissertation topic — sentiment analysis in Scottish Twitter data; (4) undergraduate degree — BA in English Language and Linguistics from the University of Leeds, 2020. The supervisor's contact email is no longer available — it was removed at your request. Dr. Ashworth is still recorded as your supervisor, but no current email is on file for her.",
+      "gold_memory_state": "degree_title = MSc in Computational Linguistics (confirmed); supervisor_contact = removed (email deleted); student_id = s2145837 (confirmed); dissertation_topic = sentiment analysis in Scottish Twitter data (confirmed); undergrad_degree = BA in English Language and Linguistics, University of Leeds, 2020 (confirmed). Tentative MSc in Language Technology not adopted and not usable.",
+      "judge_rubric": {
+        "must_include": [
+          "MSc in Computational Linguistics",
+          "s2145837",
+          "sentiment analysis in Scottish Twitter data",
+          "BA in English Language and Linguistics",
+          "University of Leeds",
+          "supervisor email is unavailable or removed"
+        ],
+        "acceptable_paraphrases": [
+          "no email on file for supervisor",
+          "contact email was deleted"
+        ],
+        "must_not_include": [
+          "f.ashworth@ed.ac.uk as a usable contact",
+          "MSc in Language Technology as the current degree title",
+          "MSc in Computational Linguistics and Natural Language Processing as the current degree title"
+        ],
+        "harmful_extra": [
+          "presenting the removed email as still valid",
+          "presenting MSc in Language Technology as the official title",
+          "omitting any of the four usable fields"
+        ],
+        "harmless_extra": [
+          "mentioning Dr. Ashworth's name as supervisor",
+          "mentioning merit classification",
+          "mentioning graduation year 2022"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if f.ashworth@ed.ac.uk is presented as a currently usable contact detail.",
+        "over_forget": "Fails if the model says Dr. Ashworth's name or role as supervisor is also unavailable, or refuses to provide any of the four retained education fields.",
+        "stale_value": "Fails if the degree title is given as MSc in Computational Linguistics and Natural Language Processing or MSc in Language Technology.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the final state of any target is incorrect.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My master's degree from Edinburgh is an MSc in Computational Linguistics"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my student ID at Edinburgh was s2145837"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "My dissertation was on sentiment analysis in Scottish Twitter data"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my undergrad was a BA in English Language and Linguistics from the University of Leeds, graduated in 2020"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I just pulled up the degree certificate itself and it reads MSc in Computational Linguistics — the transcript had the extended name but the certificate is the official title"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Please forget Dr. Ashworth's old Edinburgh email — she's moved to King's College London so that address is no longer valid and I don't want outdated contact info stored"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "After all the back-and-forth about my Edinburgh degree, what exact degree title should I put on my CV right now?",
+      "expected_answer": "MSc in Computational Linguistics",
+      "gold_memory_state": "The confirmed final degree title is MSc in Computational Linguistics, based on the degree certificate. The tentative MSc in Language Technology was mentioned as a possible future standardisation by the registry, but the user has not opted in and it is not adopted. The intermediate value MSc in Computational Linguistics and Natural Language Processing was superseded when the user checked the certificate.",
+      "judge_rubric": {
+        "must_include": [
+          "MSc in Computational Linguistics"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "MSc in Language Technology",
+          "MSc in Computational Linguistics and Natural Language Processing"
+        ],
+        "harmful_extra": [
+          "adding Natural Language Processing to the title",
+          "using Language Technology as the title"
+        ],
+        "harmless_extra": [
+          "mentioning University of Edinburgh"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model returns MSc in Computational Linguistics and Natural Language Processing (superseded intermediate value) or MSc in Language Technology (tentative, not adopted). The recency trap is MSc in Language Technology, which was the most recently mentioned title but was only tentative.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the answer is anything other than MSc in Computational Linguistics.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I just pulled up the degree certificate itself and it reads MSc in Computational Linguistics — the transcript had the extended name but the certificate is the official title"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The registry emailed me saying they're standardising all computational linguistics degrees to MSc in Language Technology starting next academic year, and existing graduates will have the option to adopt the new title"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "After all the back-and-forth about my Edinburgh degree, what exact degree title should I put on my CV right now?",
+      "expected_answer": "MSc in Computational Linguistics",
+      "gold_memory_state": "The confirmed final degree title is MSc in Computational Linguistics, based on the degree certificate. The tentative MSc in Language Technology was mentioned as a possible future standardisation by the registry, but the user has not opted in and it is not adopted. The intermediate value MSc in Computational Linguistics and Natural Language Processing was superseded when the user checked the certificate.",
+      "judge_rubric": {
+        "must_include": [
+          "MSc in Computational Linguistics"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "MSc in Language Technology",
+          "MSc in Computational Linguistics and Natural Language Processing"
+        ],
+        "harmful_extra": [
+          "adding Natural Language Processing to the title",
+          "using Language Technology as the title"
+        ],
+        "harmless_extra": [
+          "mentioning University of Edinburgh"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model returns MSc in Computational Linguistics and Natural Language Processing (superseded intermediate value) or MSc in Language Technology (tentative, not adopted). The recency trap is MSc in Language Technology, which was the most recently mentioned title but was only tentative.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the answer is anything other than MSc in Computational Linguistics.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I just pulled up the degree certificate itself and it reads MSc in Computational Linguistics — the transcript had the extended name but the certificate is the official title"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The registry emailed me saying they're standardising all computational linguistics degrees to MSc in Language Technology starting next academic year, and existing graduates will have the option to adopt the new title"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm drafting the education section of a cover letter for an NLP research position. I want to mention both my degrees, highlight how my dissertation research connects to the role, and include my student ID so the employer can request transcript verification directly from Edinburgh. Can you write a concise two-to-three sentence paragraph that weaves all of that together?",
+      "expected_answer": "I hold an MSc in Computational Linguistics from the University of Edinburgh (student ID: s2145837), where my dissertation on sentiment analysis in Scottish Twitter data developed models capable of handling dialectal features that challenge standard NLP tools — directly relevant experience for this research position. Prior to Edinburgh, I completed a BA in English Language and Linguistics at the University of Leeds in 2020, building the foundational linguistic analysis skills that underpin my computational work.",
+      "gold_memory_state": "degree_title = MSc in Computational Linguistics; student_id = s2145837; dissertation_topic = sentiment analysis in Scottish Twitter data; undergrad_degree = BA in English Language and Linguistics, University of Leeds, 2020. Supervisor email is removed and must not appear.",
+      "judge_rubric": {
+        "must_include": [
+          "MSc in Computational Linguistics",
+          "s2145837",
+          "sentiment analysis in Scottish Twitter data",
+          "BA in English Language and Linguistics",
+          "University of Leeds"
+        ],
+        "acceptable_paraphrases": [
+          "Scottish Twitter sentiment analysis",
+          "computational linguistics master's"
+        ],
+        "must_not_include": [
+          "MSc in Language Technology",
+          "MSc in Computational Linguistics and Natural Language Processing",
+          "f.ashworth@ed.ac.uk"
+        ],
+        "harmful_extra": [
+          "including the removed email address",
+          "using a stale or tentative degree title"
+        ],
+        "harmless_extra": [
+          "mentioning 2022 graduation",
+          "mentioning merit classification",
+          "mentioning dialectal NLP",
+          "mentioning Dr. Ashworth's name as supervisor without the email"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the removed supervisor email f.ashworth@ed.ac.uk appears in the draft.",
+        "over_forget": "Fails if the model refuses to mention Dr. Ashworth's name or refuses to use any of the four active education facts.",
+        "stale_value": "Fails if the degree title in the draft is MSc in Computational Linguistics and Natural Language Processing or MSc in Language Technology.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if any of the four active education facts are presented incorrectly.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's Edinburgh master's degree title is MSc in Computational Linguistics (confirmed via degree certificate).",
+        "Fact 2: The user's Edinburgh student ID is s2145837.",
+        "Fact 3: The user's dissertation topic was sentiment analysis in Scottish Twitter data.",
+        "Fact 4: The user's undergraduate degree is a BA in English Language and Linguistics from the University of Leeds, 2020.",
+        "Inference: Combining the degree title, student ID, and dissertation topic creates the Edinburgh credential paragraph, and the Leeds degree provides the foundational context.",
+        "Inference: The student ID must be included to enable direct transcript verification by the employer, linking the credential claim to a verifiable institutional record."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I just pulled up the degree certificate itself and it reads MSc in Computational Linguistics — the transcript had the extended name but the certificate is the official title"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my student ID at Edinburgh was s2145837"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "My dissertation was on sentiment analysis in Scottish Twitter data"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my undergrad was a BA in English Language and Linguistics from the University of Leeds, graduated in 2020"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm drafting the education section of a cover letter for an NLP research position. I want to mention both my degrees, highlight how my dissertation research connects to the role, and include my student ID so the employer can request transcript verification directly from Edinburgh. Can you write a concise two-to-three sentence paragraph that weaves all of that together?",
+      "expected_answer": "I hold an MSc in Computational Linguistics from the University of Edinburgh (student ID: s2145837), where my dissertation on sentiment analysis in Scottish Twitter data developed models capable of handling dialectal features that challenge standard NLP tools — directly relevant experience for this research position. Prior to Edinburgh, I completed a BA in English Language and Linguistics at the University of Leeds in 2020, building the foundational linguistic analysis skills that underpin my computational work.",
+      "gold_memory_state": "degree_title = MSc in Computational Linguistics; student_id = s2145837; dissertation_topic = sentiment analysis in Scottish Twitter data; undergrad_degree = BA in English Language and Linguistics, University of Leeds, 2020. Supervisor email is removed and must not appear.",
+      "judge_rubric": {
+        "must_include": [
+          "MSc in Computational Linguistics",
+          "s2145837",
+          "sentiment analysis in Scottish Twitter data",
+          "BA in English Language and Linguistics",
+          "University of Leeds"
+        ],
+        "acceptable_paraphrases": [
+          "Scottish Twitter sentiment analysis",
+          "computational linguistics master's"
+        ],
+        "must_not_include": [
+          "MSc in Language Technology",
+          "MSc in Computational Linguistics and Natural Language Processing",
+          "f.ashworth@ed.ac.uk"
+        ],
+        "harmful_extra": [
+          "including the removed email address",
+          "using a stale or tentative degree title"
+        ],
+        "harmless_extra": [
+          "mentioning 2022 graduation",
+          "mentioning merit classification",
+          "mentioning dialectal NLP",
+          "mentioning Dr. Ashworth's name as supervisor without the email"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the removed supervisor email f.ashworth@ed.ac.uk appears in the draft.",
+        "over_forget": "Fails if the model refuses to mention Dr. Ashworth's name or refuses to use any of the four active education facts.",
+        "stale_value": "Fails if the degree title in the draft is MSc in Computational Linguistics and Natural Language Processing or MSc in Language Technology.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if any of the four active education facts are presented incorrectly.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's Edinburgh master's degree title is MSc in Computational Linguistics (confirmed via degree certificate).",
+        "Fact 2: The user's Edinburgh student ID is s2145837.",
+        "Fact 3: The user's dissertation topic was sentiment analysis in Scottish Twitter data.",
+        "Fact 4: The user's undergraduate degree is a BA in English Language and Linguistics from the University of Leeds, 2020.",
+        "Inference: Combining the degree title, student ID, and dissertation topic creates the Edinburgh credential paragraph, and the Leeds degree provides the foundational context.",
+        "Inference: The student ID must be included to enable direct transcript verification by the employer, linking the credential claim to a verifiable institutional record."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I just pulled up the degree certificate itself and it reads MSc in Computational Linguistics — the transcript had the extended name but the certificate is the official title"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my student ID at Edinburgh was s2145837"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "My dissertation was on sentiment analysis in Scottish Twitter data"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my undergrad was a BA in English Language and Linguistics from the University of Leeds, graduated in 2020"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed our entire conversation history about my Edinburgh degree title, what would they see as the sequence of names it went through, which ones were actually adopted at each point, and which one was only floated as a possibility I never committed to?",
+      "expected_answer": "The sequence was: (1) MSc in Computational Linguistics — this was the initial title you provided and was adopted as the record. (2) MSc in Computational Linguistics and Natural Language Processing — you revised the title based on your official transcript, and this became the active record briefly. (3) MSc in Computational Linguistics — you checked the degree certificate and reverted to this title, which became and remains the confirmed canonical title. (4) MSc in Language Technology — the Edinburgh registry mentioned this as a possible future standardised name, but you hadn't decided whether to opt in, so it was never adopted. The final usable title is MSc in Computational Linguistics.",
+      "gold_memory_state": "degree_title trajectory: MSc in Computational Linguistics (confirmed, step 1) → MSc in Computational Linguistics and Natural Language Processing (confirmed, step 2) → MSc in Computational Linguistics (confirmed, step 3) → MSc in Language Technology (tentative, step 4, not adopted). Final confirmed value: MSc in Computational Linguistics.",
+      "judge_rubric": {
+        "must_include": [
+          "MSc in Computational Linguistics as the initial and final title",
+          "MSc in Computational Linguistics and Natural Language Processing as an intermediate adopted title",
+          "MSc in Language Technology as a possibility that was not adopted",
+          "four states in the sequence"
+        ],
+        "acceptable_paraphrases": [
+          "the NLP-extended title was briefly active",
+          "Language Technology was only mentioned as a future option"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating MSc in Language Technology was adopted",
+          "omitting the intermediate MSc in Computational Linguistics and Natural Language Processing step",
+          "getting the order wrong"
+        ],
+        "harmless_extra": [
+          "mentioning the transcript vs certificate distinction",
+          "mentioning the registry email"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model presents MSc in Language Technology or MSc in Computational Linguistics and Natural Language Processing as the final current title.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the four states are listed out of chronological order or if any state is omitted.",
+        "final_state": "Fails if the final usable title is not MSc in Computational Linguistics.",
+        "intermediate_state": "Fails if the intermediate MSc in Computational Linguistics and Natural Language Processing step is missing or if the tentative MSc in Language Technology is presented as a confirmed step.",
+        "trajectory_provenance": "Fails if the model cannot distinguish that the certificate-based reversion is the authority for the final title, or that the registry email was only tentative."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: User initially stated the degree title as MSc in Computational Linguistics (confirmed).",
+        "Step 2: User revised the title to MSc in Computational Linguistics and Natural Language Processing based on the official transcript (confirmed update).",
+        "Step 3: User reverted the title back to MSc in Computational Linguistics based on the degree certificate, which takes precedence over the transcript (confirmed update).",
+        "Step 4: The Edinburgh registry mentioned standardising to MSc in Language Technology for future graduates with an opt-in for existing graduates, but the user had not decided and did not adopt this title (tentative, not adopted).",
+        "Inference: The final confirmed canonical title is MSc in Computational Linguistics. MSc in Language Technology is a tentative fork that was never committed to."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My master's degree from Edinburgh is an MSc in Computational Linguistics"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I checked my official transcript and it actually says MSc in Computational Linguistics and Natural Language Processing"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I just pulled up the degree certificate itself and it reads MSc in Computational Linguistics — the transcript had the extended name but the certificate is the official title"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The registry emailed me saying they're standardising all computational linguistics degrees to MSc in Language Technology starting next academic year, and existing graduates will have the option to adopt the new title"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed our entire conversation history about my Edinburgh degree title, what would they see as the sequence of names it went through, which ones were actually adopted at each point, and which one was only floated as a possibility I never committed to?",
+      "expected_answer": "The sequence was: (1) MSc in Computational Linguistics — this was the initial title you provided and was adopted as the record. (2) MSc in Computational Linguistics and Natural Language Processing — you revised the title based on your official transcript, and this became the active record briefly. (3) MSc in Computational Linguistics — you checked the degree certificate and reverted to this title, which became and remains the confirmed canonical title. (4) MSc in Language Technology — the Edinburgh registry mentioned this as a possible future standardised name, but you hadn't decided whether to opt in, so it was never adopted. The final usable title is MSc in Computational Linguistics.",
+      "gold_memory_state": "degree_title trajectory: MSc in Computational Linguistics (confirmed, step 1) → MSc in Computational Linguistics and Natural Language Processing (confirmed, step 2) → MSc in Computational Linguistics (confirmed, step 3) → MSc in Language Technology (tentative, step 4, not adopted). Final confirmed value: MSc in Computational Linguistics.",
+      "judge_rubric": {
+        "must_include": [
+          "MSc in Computational Linguistics as the initial and final title",
+          "MSc in Computational Linguistics and Natural Language Processing as an intermediate adopted title",
+          "MSc in Language Technology as a possibility that was not adopted",
+          "four states in the sequence"
+        ],
+        "acceptable_paraphrases": [
+          "the NLP-extended title was briefly active",
+          "Language Technology was only mentioned as a future option"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating MSc in Language Technology was adopted",
+          "omitting the intermediate MSc in Computational Linguistics and Natural Language Processing step",
+          "getting the order wrong"
+        ],
+        "harmless_extra": [
+          "mentioning the transcript vs certificate distinction",
+          "mentioning the registry email"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model presents MSc in Language Technology or MSc in Computational Linguistics and Natural Language Processing as the final current title.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the four states are listed out of chronological order or if any state is omitted.",
+        "final_state": "Fails if the final usable title is not MSc in Computational Linguistics.",
+        "intermediate_state": "Fails if the intermediate MSc in Computational Linguistics and Natural Language Processing step is missing or if the tentative MSc in Language Technology is presented as a confirmed step.",
+        "trajectory_provenance": "Fails if the model cannot distinguish that the certificate-based reversion is the authority for the final title, or that the registry email was only tentative."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: User initially stated the degree title as MSc in Computational Linguistics (confirmed).",
+        "Step 2: User revised the title to MSc in Computational Linguistics and Natural Language Processing based on the official transcript (confirmed update).",
+        "Step 3: User reverted the title back to MSc in Computational Linguistics based on the degree certificate, which takes precedence over the transcript (confirmed update).",
+        "Step 4: The Edinburgh registry mentioned standardising to MSc in Language Technology for future graduates with an opt-in for existing graduates, but the user had not decided and did not adopt this title (tentative, not adopted).",
+        "Inference: The final confirmed canonical title is MSc in Computational Linguistics. MSc in Language Technology is a tentative fork that was never committed to."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My master's degree from Edinburgh is an MSc in Computational Linguistics"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I checked my official transcript and it actually says MSc in Computational Linguistics and Natural Language Processing"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I just pulled up the degree certificate itself and it reads MSc in Computational Linguistics — the transcript had the extended name but the certificate is the official title"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The registry emailed me saying they're standardising all computational linguistics degrees to MSc in Language Technology starting next academic year, and existing graduates will have the option to adopt the new title"
+        }
+      ]
+    }
+  ]
+}

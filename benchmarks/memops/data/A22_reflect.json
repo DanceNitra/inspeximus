@@ -1,0 +1,1022 @@
+{
+  "target_fact": "A22 Current weight reported by the user",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "As of today, March 12th, my weight is 187.4 lbs"
+      },
+      "target": {
+        "target_id": "current_weight",
+        "target_name": "User's current weight"
+      },
+      "old_value": null,
+      "new_value": "187.4 lbs as of March 12",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "As of today, March 12th, my weight is 187.4 lbs"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "Back on January 6th I was at 194.2 lbs, that was my worst point"
+      },
+      "target": {
+        "target_id": "jan6_weight",
+        "target_name": "User's weight on January 6th"
+      },
+      "old_value": null,
+      "new_value": "194.2 lbs on January 6",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Back on January 6th I was at 194.2 lbs, that was my worst point"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "my goal is to get under 180 by the end of April"
+      },
+      "target": {
+        "target_id": "weight_goal",
+        "target_name": "User's weight goal"
+      },
+      "old_value": null,
+      "new_value": "Under 180 lbs by end of April",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my goal is to get under 180 by the end of April"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I've been losing weight at a pretty steady pace since early January — about 9 or 10 weeks now"
+      },
+      "target": {
+        "target_id": "weight_loss_timeframe",
+        "target_name": "Duration of user's weight loss effort"
+      },
+      "old_value": null,
+      "new_value": "About 9 to 10 weeks since early January",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I've been losing weight at a pretty steady pace since early January — about 9 or 10 weeks now"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "My sister Laura is at 142 lbs right now, trying to hit 135 before her wedding in April"
+      },
+      "target": {
+        "target_id": "sister_laura_weight",
+        "target_name": "Sister Laura's current weight and goal"
+      },
+      "old_value": null,
+      "new_value": "142 lbs, goal 135 lbs before April wedding",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "My sister Laura is at 142 lbs right now, trying to hit 135 before her wedding in April"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "I've been hovering around 187-188 for about two weeks now, so the rate has definitely slowed compared to the first month"
+      },
+      "target": {
+        "target_id": "weight_loss_rate_inference",
+        "target_name": "Inferred weekly weight loss rate and plateau status"
+      },
+      "old_value": null,
+      "new_value": "User lost about 6.8 lbs over roughly 9-10 weeks (approx 0.7 lbs/week average), but the rate has slowed and the user is currently plateauing around 187-188 lbs",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "As of today, March 12th, my weight is 187.4 lbs"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Back on January 6th I was at 194.2 lbs, that was my worst point"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I've been losing weight at a pretty steady pace since early January — about 9 or 10 weeks now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I've been hovering around 187-188 for about two weeks now, so the rate has definitely slowed compared to the first month"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 7,
+        "quote": "I think by next week I'll probably be around 186 even — Kevin's been telling me his fasting trick breaks plateaus fast"
+      },
+      "target": {
+        "target_id": "projected_next_week_weight",
+        "target_name": "User's projected weight next week"
+      },
+      "old_value": null,
+      "new_value": "186 lbs",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I think by next week I'll probably be around 186 even — Kevin's been telling me his fasting trick breaks plateaus fast"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish current weight, January starting weight, and weight goal as distinct facts",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to give you an update on my weight. As of today, March 12th, my weight is 187.4 lbs. I weighed myself this morning and that's the number. I've been pretty consistent around this range for a couple of weeks, which honestly feels good. I want you to keep track of this going forward — this is my baseline number."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — I've noted that your current weight as of March 12th is 187.4 lbs, and that's the baseline you want to track from here on out. It sounds like you've stabilized in this range, which can actually be a really positive sign that your body is adjusting. Whenever you want to log a new weigh-in or talk about progress, just let me know. Is there any other context you want me to keep in mind alongside this number, like how you've been feeling or any recent changes to your routine?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, so some context. Back on January 6th I was at 194.2 lbs, that was my worst point. I hadn't been that heavy in probably two years. It was a real wake-up call. I remember feeling awful that whole day — like genuinely defeated. I skipped lunch and just sat at my desk stewing over it. That was the moment I decided things had to change."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like it was a really tough day, but it clearly became a turning point for you. January 6th at 194.2 lbs — I've noted that as your starting point. Going from 194.2 down to 187.4 is a meaningful drop, especially over the span of about two months. The fact that it hit you emotionally shows how much this matters to you, and channeling that into action is something to be genuinely proud of. What kinds of changes did you start making after that January 6th weigh-in? I'd like to understand what's been working for you."
+        },
+        {
+          "role": "user",
+          "content": "I made a few changes. I cut out the nightly ramen bowls — I never really liked heavy greasy food anyway, it just made me sluggish. Switched to miso soup or steamed veggies in the evening, which I actually enjoy more. I also started doing morning walks on a trail near my apartment on Greenfield Road — it's about 2.1 miles. And my goal is to get under 180 by the end of April. That's the target I'm working toward."
+        },
+        {
+          "role": "assistant",
+          "content": "Those are really sustainable changes — swapping out heavy evening meals for lighter options you actually prefer, and adding a regular morning walk on a scenic trail. The Greenfield Road trail at 2.1 miles is a solid daily distance, especially if you're doing it consistently. And your goal of getting under 180 by the end of April gives you roughly seven weeks from now, which means you'd need to lose about 7.4 more pounds. That's a little over a pound per week, which is very achievable with the habits you've already built. Do you want me to help you think about pacing or any adjustments to stay on track?"
+        },
+        {
+          "role": "user",
+          "content": "Not yet, I just want to keep it simple for now. I used to track everything in an app called LoseIt but I deleted it about a month ago. It was making me obsessive about counting calories and stressing me out more than helping. Now I just use the scale and check in with you. That's the system I want to stick with — no apps, just the scale and our conversations."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes total sense. Ditching the calorie-tracking app in favor of a simpler approach — just the scale and our check-ins — sounds like a much healthier system for you mentally. Obsessive tracking can definitely backfire and create more anxiety than motivation. I'll be here whenever you want to log a new number or talk through how things are going. So to recap what I'm holding onto: your current weight is 187.4 lbs as of March 12th, you started at 194.2 on January 6th, and your goal is under 180 by end of April. Simple and clean. Just ping me whenever you're ready for the next check-in."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establish timeframe of weight loss effort, sister's weight info as control target, and trigger reflection on rate and plateau",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So I was thinking about how things have gone overall. I've been losing weight at a pretty steady pace since early January — about 9 or 10 weeks now. The first few weeks were the most dramatic. By early February, around the 5th, I was already down to 191 even. That felt like fast progress. The early momentum really kept me going through the harder stretches."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a great reflection. Nine to ten weeks of consistent effort is no small thing, and hitting 191.0 by February 5th — losing over 3 pounds in about a month — shows that the initial changes you made had a real impact quickly. Early momentum like that is so valuable psychologically because it reinforces that what you're doing is working. It sounds like the pace may have shifted a bit since then, which is completely normal as your body adapts. Would you say the progress from February onward felt different compared to that first month?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, definitely different. It slowed down. My sister Laura is at 142 lbs right now, trying to hit 135 before her wedding in April. She's doing some keto thing and apparently dropping weight fast. Meanwhile I feel like I'm crawling. But I know comparing doesn't help — we're totally different people with different bodies. I just need to stay focused on my own path."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really mature perspective. It's natural to compare, especially with someone close like your sister who's actively losing weight too, but you're right that the comparison isn't useful. Laura's situation — 142 aiming for 135 before her April wedding on keto — is a completely different context from yours. Her body composition, metabolism, starting point, and methods are all different. What matters is your trend, and yours has been consistently downward since January 6th. You've already lost nearly 7 pounds. Are you noticing any patterns in how the weight has been moving recently?"
+        },
+        {
+          "role": "user",
+          "content": "I've been hovering around 187-188 for about two weeks now, so the rate has definitely slowed compared to the first month. Around February 20th or so I was at 188.6, and now I'm at 187.4, so that's only about 1.2 pounds in roughly three weeks. The first month I dropped over 3 pounds. It's frustrating but I keep reminding myself that slower progress is still progress."
+        },
+        {
+          "role": "assistant",
+          "content": "You're absolutely right that slower progress is still progress. Looking at the numbers, going from 188.6 around February 20th to 187.4 on March 12th — about 1.2 pounds over roughly three weeks — does show a deceleration compared to the 3+ pounds you lost in January. Plateaus are incredibly common, especially after the initial water weight and easy gains come off. Your body is adjusting to your new habits, and the remaining weight will likely come off in smaller, less predictable increments. The important thing is the overall trajectory is still downward. Have you considered any small tweaks to push through this phase?"
+        },
+        {
+          "role": "user",
+          "content": "I've thought about it. I might add a longer walk on weekends or try a bike ride when the weather's nice — I love being out in the open air on a bike, just moving at my own pace. But I don't want to overhaul everything. The evening meal switch and the morning walks are working. I just need to be patient and let the process keep going. Consistency over intensity, that's my approach.\n\nSounds good. One more thing — I tried intermittent fasting for about two weeks in mid-January because my friend Kevin said he lost about 12 pounds doing it last fall. But it gave me headaches so I stopped. I don't want to try that again. Just want to note that so we don't circle back to it as a suggestion."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really solid philosophy — consistency over intensity. Adding a weekend bike ride when the weather cooperates sounds like a perfect low-pressure addition that you'd actually enjoy, which means you're more likely to stick with it. You've built a sustainable foundation with the evening meal changes and the Greenfield Road morning walks, and layering in occasional longer activities on weekends could give you just enough of a boost without disrupting what's already working. Your overall trend from 194.2 to 187.4 over about ten weeks is genuinely impressive. Let's keep tracking and see how the next few weeks play out.\n\nNoted — intermittent fasting is off the table. You gave it a fair shot for two weeks in mid-January based on Kevin's experience, but the headaches made it unsustainable for you, and that's completely valid. Everyone responds differently, and forcing a method that causes discomfort isn't worth it when you already have an approach that's working. I won't suggest intermittent fasting going forward. Your current system — lighter evening meals, morning walks, occasional weekend rides, and checking in here with the scale — is clearly producing results. I'll keep that as the framework for any future suggestions."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Recency trap with tentative future weight, adversarial injection of sister's weight near query context, continued tracking discussion",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Quick question — based on everything I've told you about my weight journey so far, how would you characterize my overall rate of loss? I want to understand the big picture before I plan out April. Like, what does the math say about how fast I've actually been losing weight on average versus where I'm at now?"
+        },
+        {
+          "role": "assistant",
+          "content": "Great question. Let me walk through the numbers you've given me. You started at 194.2 lbs on January 6th and you're at 187.4 lbs as of March 12th — that's a total loss of 6.8 lbs over roughly 9 to 10 weeks, which works out to approximately 0.7 lbs per week on average. However, that average masks a clear shift: in the first month you dropped over 3 pounds fairly quickly, and in the more recent weeks you've been hovering around 187-188, losing only about 1.2 pounds over three weeks. So while your overall average is solid, your current rate has slowed noticeably, which is very typical of a weight loss plateau after initial progress."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, that lines up with how it feels. The early weeks were encouraging and now it's more of a grind. I'm still committed though. I was looking at Laura's progress — she mentioned she weighed in at 142 last week — and I know her situation is totally different, but it just made me think about timelines. Anyway, I want to focus on what I can control."
+        },
+        {
+          "role": "assistant",
+          "content": "That's the right mindset. And just to keep the context clear — Laura's 142 lbs is her own journey toward 135 for her April wedding, and her keto approach and body composition are completely different variables. Your trajectory is its own story. The fact that you've maintained consistent downward movement from 194.2 to 187.4 through sustainable habit changes rather than a restrictive diet is actually a strength. For April planning, the key question is whether your current rate of about 0.4 lbs per week will get you to your under-180 goal, or whether you'd want to explore small adjustments. Want to map that out?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, let's think about it. So I've got roughly 7 weeks until end of April. I need to lose about 7.4 more pounds to get under 180. At my current slower rate that might not be enough. But I'm hoping the plateau breaks soon. I've read that plateaus usually last two to four weeks and then things start moving again."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a reasonable hope. If your plateau does break in the next week or two and you return closer to your earlier rate — even something like 1 lb per week rather than the initial faster pace — you'd lose about 5 to 7 pounds over the remaining 7 weeks, putting you somewhere between 180 and 182. Getting fully under 180 by end of April would require closer to 1.1 lbs per week consistently, which is ambitious but not impossible, especially if you add those weekend bike rides and the plateau resolves. The good news is you're already very close to that zone. Even if you land at 181 or 182, that's a massive improvement from 194.2."
+        },
+        {
+          "role": "user",
+          "content": "True. And honestly, I think by next week I'll probably be around 186 even — Kevin's been telling me his fasting trick breaks plateaus fast. I might give it one more shot for just a few days to jumpstart things. But I haven't decided yet, so don't hold me to that number. It's more of a hopeful prediction than anything concrete.\n\nRight, 187.4 is still the real number. I just want to stay optimistic. Anyway, I also wanted to mention that I really enjoy the weekend bike rides when the weather cooperates — there's something about the open road and the quiet that just clears my head. It's less about the exercise and more about the mental reset. That's important to me."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood — I'll treat 186 as a hopeful projection, not a confirmed weigh-in. And regarding trying Kevin's fasting approach again for a few days, I'll just gently remind you that intermittent fasting gave you headaches last time, so if you do try it, maybe a shorter or modified version could help you test the waters without committing fully. But there's no pressure either way. Your confirmed current weight remains 187.4 lbs as of March 12th, and we'll update that whenever you step on the scale and have a real number. For now, let's keep planning around that baseline.\n\nThat's a beautiful way to think about it — the bike rides as a mental reset rather than just a calorie-burning exercise. That kind of intrinsic enjoyment is exactly what makes a habit stick long-term. Combined with your morning walks on the Greenfield Road trail, you've built a routine that feeds both your physical and mental well-being. I've got everything noted: your current confirmed weight is 187.4 lbs, your goal is under 180 by end of April, and your approach centers on light evening meals, morning walks, and weekend rides when the weather allows. We'll update the number whenever you have a fresh weigh-in. Keep at it — you're doing great."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "What specific experiences and numbers have I shared with you about my weight loss journey that would help you characterize how my progress has evolved over time?",
+      "expected_answer": "You started at 194.2 lbs on January 6th and are currently at 187.4 lbs as of March 12th, a total loss of 6.8 lbs over about 9-10 weeks. You lost over 3 lbs in the first month (down to 191 by early February), but more recently you've been hovering around 187-188 for about two weeks, losing only about 1.2 lbs over roughly three weeks. The rate has slowed significantly compared to the initial pace.",
+      "gold_memory_state": "Current weight: 187.4 lbs (March 12). Starting weight: 194.2 lbs (January 6). Weight loss duration: ~9-10 weeks. Goal: under 180 by end of April. Plateau status: hovering 187-188 for ~2 weeks. Average rate: ~0.7 lbs/week overall, but recently much slower.",
+      "judge_rubric": {
+        "must_include": [
+          "194.2",
+          "187.4",
+          "plateau or slowing"
+        ],
+        "acceptable_paraphrases": [
+          "stalled",
+          "leveled off",
+          "rate decreased",
+          "progress slowed"
+        ],
+        "must_not_include": [
+          "186 as current weight"
+        ],
+        "harmful_extra": [
+          "treating 186 as a confirmed weight"
+        ],
+        "harmless_extra": [
+          "mentioning 191 by early February",
+          "mentioning 188.6 around February 20th",
+          "mentioning sister Laura's weight"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes weight loss patterns not supported by the user's data, such as claiming consistent 1 lb/week throughout.",
+        "reflection_recall": "Fails if the model omits either the initial faster pace or the recent plateau/slowdown.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "As of today, March 12th, my weight is 187.4 lbs"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Back on January 6th I was at 194.2 lbs, that was my worst point"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I've been losing weight at a pretty steady pace since early January — about 9 or 10 weeks now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I've been hovering around 187-188 for about two weeks now, so the rate has definitely slowed compared to the first month"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "What specific experiences and numbers have I shared with you about my weight loss journey that would help you characterize how my progress has evolved over time?",
+      "expected_answer": "You started at 194.2 lbs on January 6th and are currently at 187.4 lbs as of March 12th, a total loss of 6.8 lbs over about 9-10 weeks. You lost over 3 lbs in the first month (down to 191 by early February), but more recently you've been hovering around 187-188 for about two weeks, losing only about 1.2 lbs over roughly three weeks. The rate has slowed significantly compared to the initial pace.",
+      "gold_memory_state": "Current weight: 187.4 lbs (March 12). Starting weight: 194.2 lbs (January 6). Weight loss duration: ~9-10 weeks. Goal: under 180 by end of April. Plateau status: hovering 187-188 for ~2 weeks. Average rate: ~0.7 lbs/week overall, but recently much slower.",
+      "judge_rubric": {
+        "must_include": [
+          "194.2",
+          "187.4",
+          "plateau or slowing"
+        ],
+        "acceptable_paraphrases": [
+          "stalled",
+          "leveled off",
+          "rate decreased",
+          "progress slowed"
+        ],
+        "must_not_include": [
+          "186 as current weight"
+        ],
+        "harmful_extra": [
+          "treating 186 as a confirmed weight"
+        ],
+        "harmless_extra": [
+          "mentioning 191 by early February",
+          "mentioning 188.6 around February 20th",
+          "mentioning sister Laura's weight"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes weight loss patterns not supported by the user's data, such as claiming consistent 1 lb/week throughout.",
+        "reflection_recall": "Fails if the model omits either the initial faster pace or the recent plateau/slowdown.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "As of today, March 12th, my weight is 187.4 lbs"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Back on January 6th I was at 194.2 lbs, that was my worst point"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I've been losing weight at a pretty steady pace since early January — about 9 or 10 weeks now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I've been hovering around 187-188 for about two weeks now, so the rate has definitely slowed compared to the first month"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When looking at the weight-related conclusions that can be drawn from my journey, which specific pattern about my rate of progress is supported by the data I've shared, and how does that differ from my sister's weight situation or my own speculative projections?",
+      "expected_answer": "The supported conclusion is that your overall average weight loss rate is approximately 0.7 lbs per week, but with a clear two-phase pattern: faster initial loss in the first month and a current plateau around 187-188 lbs. This conclusion is bounded to your own weight data from January 6 through March 12. Laura's weight situation (142 lbs, targeting 135 for her April wedding on keto) is a completely separate record and does not inform your rate analysis. Your speculative projection of reaching 186 lbs next week is unconfirmed and does not change the current confirmed rate pattern.",
+      "gold_memory_state": "Inferred rate and plateau pattern: ~0.7 lbs/week average, slowing recently with a plateau at 187-188. User's own confirmed data: 194.2 (Jan 6) → 187.4 (Mar 12). Sister Laura's data: 142 lbs, goal 135, separate person/context. Tentative 186 projection: not confirmed, not usable as data point.",
+      "judge_rubric": {
+        "must_include": [
+          "rate of approximately 0.7 lbs per week or equivalent",
+          "plateau or slowdown around 187-188"
+        ],
+        "acceptable_paraphrases": [
+          "about 0.7 pounds weekly",
+          "roughly three-quarters of a pound per week",
+          "less than a pound per week on average"
+        ],
+        "must_not_include": [
+          "Laura's weight data used to characterize user's rate",
+          "186 treated as confirmed data"
+        ],
+        "harmful_extra": [
+          "merging Laura's progress into the user's rate calculation",
+          "treating the 186 projection as part of the confirmed trajectory",
+          "claiming the user's rate has been constant throughout"
+        ],
+        "harmless_extra": [
+          "mentioning Laura's data exists as a separate record",
+          "noting the 186 projection was speculative"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 186 is treated as a confirmed current or near-future weight.",
+        "reflection_precision": "Fails if the rate conclusion is applied to Laura's data or if Laura's keto results are blended into the user's pattern.",
+        "reflection_recall": "Fails if the plateau observation is omitted from the supported conclusion.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "As of today, March 12th, my weight is 187.4 lbs"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Back on January 6th I was at 194.2 lbs, that was my worst point"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I've been losing weight at a pretty steady pace since early January — about 9 or 10 weeks now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I've been hovering around 187-188 for about two weeks now, so the rate has definitely slowed compared to the first month"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "My sister Laura is at 142 lbs right now, trying to hit 135 before her wedding in April"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When looking at the weight-related conclusions that can be drawn from my journey, which specific pattern about my rate of progress is supported by the data I've shared, and how does that differ from my sister's weight situation or my own speculative projections?",
+      "expected_answer": "The supported conclusion is that your overall average weight loss rate is approximately 0.7 lbs per week, but with a clear two-phase pattern: faster initial loss in the first month and a current plateau around 187-188 lbs. This conclusion is bounded to your own weight data from January 6 through March 12. Laura's weight situation (142 lbs, targeting 135 for her April wedding on keto) is a completely separate record and does not inform your rate analysis. Your speculative projection of reaching 186 lbs next week is unconfirmed and does not change the current confirmed rate pattern.",
+      "gold_memory_state": "Inferred rate and plateau pattern: ~0.7 lbs/week average, slowing recently with a plateau at 187-188. User's own confirmed data: 194.2 (Jan 6) → 187.4 (Mar 12). Sister Laura's data: 142 lbs, goal 135, separate person/context. Tentative 186 projection: not confirmed, not usable as data point.",
+      "judge_rubric": {
+        "must_include": [
+          "rate of approximately 0.7 lbs per week or equivalent",
+          "plateau or slowdown around 187-188"
+        ],
+        "acceptable_paraphrases": [
+          "about 0.7 pounds weekly",
+          "roughly three-quarters of a pound per week",
+          "less than a pound per week on average"
+        ],
+        "must_not_include": [
+          "Laura's weight data used to characterize user's rate",
+          "186 treated as confirmed data"
+        ],
+        "harmful_extra": [
+          "merging Laura's progress into the user's rate calculation",
+          "treating the 186 projection as part of the confirmed trajectory",
+          "claiming the user's rate has been constant throughout"
+        ],
+        "harmless_extra": [
+          "mentioning Laura's data exists as a separate record",
+          "noting the 186 projection was speculative"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 186 is treated as a confirmed current or near-future weight.",
+        "reflection_precision": "Fails if the rate conclusion is applied to Laura's data or if Laura's keto results are blended into the user's pattern.",
+        "reflection_recall": "Fails if the plateau observation is omitted from the supported conclusion.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "As of today, March 12th, my weight is 187.4 lbs"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Back on January 6th I was at 194.2 lbs, that was my worst point"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I've been losing weight at a pretty steady pace since early January — about 9 or 10 weeks now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I've been hovering around 187-188 for about two weeks now, so the rate has definitely slowed compared to the first month"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "My sister Laura is at 142 lbs right now, trying to hit 135 before her wedding in April"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe what my weight data actually supports about my loss pattern going forward, and where someone might be overreading the data if they tried to make broader predictions about my future weekly rate or expected timeline.",
+      "expected_answer": "Your data supports that you lost about 6.8 lbs over 9-10 weeks (averaging ~0.7 lbs/week) with a distinctly faster first phase and a current plateau around 187-188 lbs lasting about two weeks. It would be an overgeneralization to assume the initial faster rate (~3 lbs in the first month) will resume after the plateau, or to project a steady 0.7 lbs/week going forward as if the rate were uniform. The data also does not support predicting exactly when the plateau will end or that any specific intervention (like fasting) will produce a particular result by a specific date.",
+      "gold_memory_state": "Supported inference: two-phase loss pattern with ~0.7 lbs/week average, initial faster loss, and current plateau at 187-188. Unsupported overgeneralization: assuming the early rate will resume, treating the average as a steady weekly rate, or predicting specific future weights or plateau-breaking timelines. The tentative 186 projection is not data-backed.",
+      "judge_rubric": {
+        "must_include": [
+          "supported pattern includes plateau and two different rates",
+          "overgeneralization includes assuming uniform rate or predicting specific future outcomes"
+        ],
+        "acceptable_paraphrases": [
+          "cannot extrapolate the early pace forward",
+          "the average masks two distinct phases",
+          "future rate is uncertain"
+        ],
+        "must_not_include": [
+          "186 treated as a supported data point"
+        ],
+        "harmful_extra": [
+          "claiming the user will definitely break the plateau soon",
+          "stating the user's rate will return to the January pace"
+        ],
+        "harmless_extra": [
+          "mentioning the user's goal of under 180 by end of April",
+          "noting that plateaus are common"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the tentative 186 projection is treated as a confirmed data point in the pattern analysis.",
+        "reflection_precision": "Fails if the model claims the data supports a specific future weekly rate or a definite plateau-breaking timeline.",
+        "reflection_recall": "Fails if the model omits either the two-phase nature of the loss or the current plateau from the supported pattern.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "As of today, March 12th, my weight is 187.4 lbs"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Back on January 6th I was at 194.2 lbs, that was my worst point"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I've been losing weight at a pretty steady pace since early January — about 9 or 10 weeks now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I've been hovering around 187-188 for about two weeks now, so the rate has definitely slowed compared to the first month"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe what my weight data actually supports about my loss pattern going forward, and where someone might be overreading the data if they tried to make broader predictions about my future weekly rate or expected timeline.",
+      "expected_answer": "Your data supports that you lost about 6.8 lbs over 9-10 weeks (averaging ~0.7 lbs/week) with a distinctly faster first phase and a current plateau around 187-188 lbs lasting about two weeks. It would be an overgeneralization to assume the initial faster rate (~3 lbs in the first month) will resume after the plateau, or to project a steady 0.7 lbs/week going forward as if the rate were uniform. The data also does not support predicting exactly when the plateau will end or that any specific intervention (like fasting) will produce a particular result by a specific date.",
+      "gold_memory_state": "Supported inference: two-phase loss pattern with ~0.7 lbs/week average, initial faster loss, and current plateau at 187-188. Unsupported overgeneralization: assuming the early rate will resume, treating the average as a steady weekly rate, or predicting specific future weights or plateau-breaking timelines. The tentative 186 projection is not data-backed.",
+      "judge_rubric": {
+        "must_include": [
+          "supported pattern includes plateau and two different rates",
+          "overgeneralization includes assuming uniform rate or predicting specific future outcomes"
+        ],
+        "acceptable_paraphrases": [
+          "cannot extrapolate the early pace forward",
+          "the average masks two distinct phases",
+          "future rate is uncertain"
+        ],
+        "must_not_include": [
+          "186 treated as a supported data point"
+        ],
+        "harmful_extra": [
+          "claiming the user will definitely break the plateau soon",
+          "stating the user's rate will return to the January pace"
+        ],
+        "harmless_extra": [
+          "mentioning the user's goal of under 180 by end of April",
+          "noting that plateaus are common"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the tentative 186 projection is treated as a confirmed data point in the pattern analysis.",
+        "reflection_precision": "Fails if the model claims the data supports a specific future weekly rate or a definite plateau-breaking timeline.",
+        "reflection_recall": "Fails if the model omits either the two-phase nature of the loss or the current plateau from the supported pattern.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "As of today, March 12th, my weight is 187.4 lbs"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Back on January 6th I was at 194.2 lbs, that was my worst point"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I've been losing weight at a pretty steady pace since early January — about 9 or 10 weeks now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I've been hovering around 187-188 for about two weeks now, so the rate has definitely slowed compared to the first month"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best describes my weight as of my most recent weigh-in?",
+      "expected_answer": "187.4 lbs",
+      "candidate_options": [
+        "187.4 lbs",
+        "186 lbs",
+        "194.2 lbs",
+        "142 lbs"
+      ],
+      "distractor_rationale": "same-value-different-target: 142 lbs is Laura's (sister's) weight, not the user's, testing cross-person confusion. assistant echo: 186 lbs was projected by the user as a hopeful next-week estimate echoed in assistant discussion, not a confirmed weigh-in. 194.2 lbs is the user's own starting weight from January 6, now stale as a current reading.",
+      "gold_memory_state": "User's confirmed current weight: 187.4 lbs as of March 12. Tentative projection of 186 is unconfirmed. 194.2 lbs is the January 6 starting weight. 142 lbs is sister Laura's weight.",
+      "judge_rubric": {
+        "must_include": [
+          "187.4"
+        ],
+        "acceptable_paraphrases": [
+          "187.4 pounds"
+        ],
+        "must_not_include": [
+          "186 as current weight",
+          "194.2 as current weight",
+          "142 as user's weight"
+        ],
+        "harmful_extra": [
+          "selecting 186 as the current weight based on the user's projection"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 194.2 (starting weight) or 186 (tentative projection) is selected as the current weight.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "As of today, March 12th, my weight is 187.4 lbs"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I think by next week I'll probably be around 186 even — Kevin's been telling me his fasting trick breaks plateaus fast"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best describes my weight as of my most recent weigh-in?",
+      "expected_answer": "187.4 lbs",
+      "candidate_options": [
+        "187.4 lbs",
+        "186 lbs",
+        "194.2 lbs",
+        "142 lbs"
+      ],
+      "distractor_rationale": "same-value-different-target: 142 lbs is Laura's (sister's) weight, not the user's, testing cross-person confusion. assistant echo: 186 lbs was projected by the user as a hopeful next-week estimate echoed in assistant discussion, not a confirmed weigh-in. 194.2 lbs is the user's own starting weight from January 6, now stale as a current reading.",
+      "gold_memory_state": "User's confirmed current weight: 187.4 lbs as of March 12. Tentative projection of 186 is unconfirmed. 194.2 lbs is the January 6 starting weight. 142 lbs is sister Laura's weight.",
+      "judge_rubric": {
+        "must_include": [
+          "187.4"
+        ],
+        "acceptable_paraphrases": [
+          "187.4 pounds"
+        ],
+        "must_not_include": [
+          "186 as current weight",
+          "194.2 as current weight",
+          "142 as user's weight"
+        ],
+        "harmful_extra": [
+          "selecting 186 as the current weight based on the user's projection"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 194.2 (starting weight) or 186 (tentative projection) is selected as the current weight.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "As of today, March 12th, my weight is 187.4 lbs"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I think by next week I'll probably be around 186 even — Kevin's been telling me his fasting trick breaks plateaus fast"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to draft a realistic weekly target plan for the remaining weeks until the end of April. Based on my actual weight data, how many pounds per week would I need to lose to hit my goal, and how does that compare to my demonstrated average rate? Should I adjust my expectations?",
+      "expected_answer": "You need to lose about 7.4 lbs (from 187.4 to under 180) over roughly 7 weeks, which requires about 1.06 lbs per week. Your demonstrated overall average has been approximately 0.7 lbs per week, and your recent rate during the plateau is even slower at roughly 0.4 lbs per week. The required rate of ~1.06 lbs/week is about 50% faster than your overall average and roughly 2.5 times your recent pace. You should consider adjusting your timeline expectation — reaching 180-182 by end of April is more realistic based on your data, or you could explore modest additions like weekend bike rides to try to close the gap.",
+      "gold_memory_state": "Current weight: 187.4 lbs (March 12). Goal: under 180 by end of April (~7 weeks away). Total needed: ~7.4 lbs. Overall average rate: ~0.7 lbs/week. Recent plateau rate: ~0.4 lbs/week. Required rate: ~1.06 lbs/week. Sister Laura's data is irrelevant to this calculation. Tentative 186 projection is not a confirmed data point.",
+      "judge_rubric": {
+        "must_include": [
+          "approximately 1 lb per week required or equivalent",
+          "current average around 0.7 lbs/week",
+          "required rate exceeds demonstrated rate"
+        ],
+        "acceptable_paraphrases": [
+          "about 1.1 lbs per week needed",
+          "roughly a pound a week",
+          "need to lose 7-8 more pounds in 7 weeks"
+        ],
+        "must_not_include": [
+          "186 used as a starting point for the calculation",
+          "Laura's data used in the plan"
+        ],
+        "harmful_extra": [
+          "using 186 instead of 187.4 as the current weight",
+          "claiming the goal is easily achievable at the current rate",
+          "incorporating Laura's keto approach as a recommendation"
+        ],
+        "harmless_extra": [
+          "mentioning weekend bike rides as a possible boost",
+          "noting that plateaus eventually break",
+          "mentioning the user prefers consistency over intensity"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 186 (tentative) is used as the starting weight for the calculation instead of the confirmed 187.4.",
+        "reflection_precision": "Fails if the model claims the current rate is sufficient to meet the goal without adjustment or acknowledgment of the gap.",
+        "reflection_recall": "Fails if the model omits the comparison between required rate and demonstrated rate.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User's confirmed current weight is 187.4 lbs as of March 12",
+        "Fact 2: User's goal is under 180 lbs by end of April",
+        "Fact 3: User started at 194.2 lbs on January 6, losing weight over about 9-10 weeks",
+        "Fact 4: User has been hovering around 187-188 for about two weeks, with the rate slowing compared to the first month",
+        "Inference: Weight remaining to lose = 187.4 - 180 = 7.4 lbs; time remaining ≈ 7 weeks; required rate ≈ 7.4 / 7 ≈ 1.06 lbs/week",
+        "Inference: Overall demonstrated average = 6.8 lbs / ~9.5 weeks ≈ 0.72 lbs/week; recent plateau rate ≈ 1.2 lbs / 3 weeks ≈ 0.4 lbs/week",
+        "Inference: Required rate (~1.06 lbs/week) significantly exceeds both the overall average (~0.72) and the recent plateau rate (~0.4), so the goal timeline may need adjustment or the user needs to accelerate progress"
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "As of today, March 12th, my weight is 187.4 lbs"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Back on January 6th I was at 194.2 lbs, that was my worst point"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my goal is to get under 180 by the end of April"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I've been losing weight at a pretty steady pace since early January — about 9 or 10 weeks now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I've been hovering around 187-188 for about two weeks now, so the rate has definitely slowed compared to the first month"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to draft a realistic weekly target plan for the remaining weeks until the end of April. Based on my actual weight data, how many pounds per week would I need to lose to hit my goal, and how does that compare to my demonstrated average rate? Should I adjust my expectations?",
+      "expected_answer": "You need to lose about 7.4 lbs (from 187.4 to under 180) over roughly 7 weeks, which requires about 1.06 lbs per week. Your demonstrated overall average has been approximately 0.7 lbs per week, and your recent rate during the plateau is even slower at roughly 0.4 lbs per week. The required rate of ~1.06 lbs/week is about 50% faster than your overall average and roughly 2.5 times your recent pace. You should consider adjusting your timeline expectation — reaching 180-182 by end of April is more realistic based on your data, or you could explore modest additions like weekend bike rides to try to close the gap.",
+      "gold_memory_state": "Current weight: 187.4 lbs (March 12). Goal: under 180 by end of April (~7 weeks away). Total needed: ~7.4 lbs. Overall average rate: ~0.7 lbs/week. Recent plateau rate: ~0.4 lbs/week. Required rate: ~1.06 lbs/week. Sister Laura's data is irrelevant to this calculation. Tentative 186 projection is not a confirmed data point.",
+      "judge_rubric": {
+        "must_include": [
+          "approximately 1 lb per week required or equivalent",
+          "current average around 0.7 lbs/week",
+          "required rate exceeds demonstrated rate"
+        ],
+        "acceptable_paraphrases": [
+          "about 1.1 lbs per week needed",
+          "roughly a pound a week",
+          "need to lose 7-8 more pounds in 7 weeks"
+        ],
+        "must_not_include": [
+          "186 used as a starting point for the calculation",
+          "Laura's data used in the plan"
+        ],
+        "harmful_extra": [
+          "using 186 instead of 187.4 as the current weight",
+          "claiming the goal is easily achievable at the current rate",
+          "incorporating Laura's keto approach as a recommendation"
+        ],
+        "harmless_extra": [
+          "mentioning weekend bike rides as a possible boost",
+          "noting that plateaus eventually break",
+          "mentioning the user prefers consistency over intensity"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 186 (tentative) is used as the starting weight for the calculation instead of the confirmed 187.4.",
+        "reflection_precision": "Fails if the model claims the current rate is sufficient to meet the goal without adjustment or acknowledgment of the gap.",
+        "reflection_recall": "Fails if the model omits the comparison between required rate and demonstrated rate.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User's confirmed current weight is 187.4 lbs as of March 12",
+        "Fact 2: User's goal is under 180 lbs by end of April",
+        "Fact 3: User started at 194.2 lbs on January 6, losing weight over about 9-10 weeks",
+        "Fact 4: User has been hovering around 187-188 for about two weeks, with the rate slowing compared to the first month",
+        "Inference: Weight remaining to lose = 187.4 - 180 = 7.4 lbs; time remaining ≈ 7 weeks; required rate ≈ 7.4 / 7 ≈ 1.06 lbs/week",
+        "Inference: Overall demonstrated average = 6.8 lbs / ~9.5 weeks ≈ 0.72 lbs/week; recent plateau rate ≈ 1.2 lbs / 3 weeks ≈ 0.4 lbs/week",
+        "Inference: Required rate (~1.06 lbs/week) significantly exceeds both the overall average (~0.72) and the recent plateau rate (~0.4), so the goal timeline may need adjustment or the user needs to accelerate progress"
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "As of today, March 12th, my weight is 187.4 lbs"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Back on January 6th I was at 194.2 lbs, that was my worst point"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my goal is to get under 180 by the end of April"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I've been losing weight at a pretty steady pace since early January — about 9 or 10 weeks now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I've been hovering around 187-188 for about two weeks now, so the rate has definitely slowed compared to the first month"
+        }
+      ]
+    }
+  ]
+}

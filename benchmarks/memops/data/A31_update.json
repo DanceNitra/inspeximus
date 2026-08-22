@@ -1,0 +1,775 @@
+{
+  "target_fact": "User's current mobile phone number, which undergoes multiple changes across the conversation",
+  "operation_type": "Update",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "phone_number_chain",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "My current phone number is 512-847-3291. I got it when I moved to Austin around early February, like February 3rd"
+      },
+      "target": {
+        "target_id": "own_mobile_phone_number",
+        "target_name": "User's own mobile phone number"
+      },
+      "old_value": null,
+      "new_value": "512-847-3291",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current phone number is 512-847-3291. I got it when I moved to Austin around early February, like February 3rd"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I set up two-factor authentication on my bank account using this number. I did that on February 26th, so if I ever lose access to this number it'll be a nightmare with the bank"
+      },
+      "target": {
+        "target_id": "bank_2fa_setup_date",
+        "target_name": "Date user set up bank 2FA with current phone number"
+      },
+      "old_value": null,
+      "new_value": "February 26th",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I set up two-factor authentication on my bank account using this number. I did that on February 26th, so if I ever lose access to this number it'll be a nightmare with the bank"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "phone_number_chain",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I need to update you on my phone number. I had to get a new SIM because I was getting insane spam calls, so my number changed to 512-847-3304 as of yesterday"
+      },
+      "target": {
+        "target_id": "own_mobile_phone_number",
+        "target_name": "User's own mobile phone number"
+      },
+      "old_value": "512-847-3291",
+      "new_value": "512-847-3304",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I need to update you on my phone number. I had to get a new SIM because I was getting insane spam calls, so my number changed to 512-847-3304 as of yesterday"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "phone_number_chain",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "Okay so actually I just got off the phone with my carrier. They were able to port my original 512-847-3291 back to the new SIM. So my number is back to 512-847-3291 effective right now"
+      },
+      "target": {
+        "target_id": "own_mobile_phone_number",
+        "target_name": "User's own mobile phone number"
+      },
+      "old_value": "512-847-3304",
+      "new_value": "512-847-3291",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Okay so actually I just got off the phone with my carrier. They were able to port my original 512-847-3291 back to the new SIM. So my number is back to 512-847-3291 effective right now"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "phone_number_chain",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "My carrier rep just told me they're migrating my account to a new system and the number will be changed to 512-847-3350 once the migration completes next week"
+      },
+      "target": {
+        "target_id": "own_mobile_phone_number",
+        "target_name": "User's own mobile phone number"
+      },
+      "old_value": "512-847-3291",
+      "new_value": "512-847-3350",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My carrier rep just told me they're migrating my account to a new system and the number will be changed to 512-847-3350 once the migration completes next week"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish current phone number, bank 2FA date, and background context",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to make sure you have my contact info on file. My current phone number is 512-847-3291. I got it when I moved to Austin around early February, like February 3rd. I switched carriers right after the move and this is my primary number for everything now. Can you keep track of this for me?"
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, I've noted your current phone number as 512-847-3291. It sounds like you got it around February 3rd when you moved to Austin and switched carriers. I'll keep this as your primary contact number going forward. If you ever need me to reference it or share it in a particular format for a form or something, just let me know. Is there anything else you'd like me to remember about your contact setup?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, before this I had a 630 area code from when I lived in Illinois. That old number was 630-552-1478. I kept it active for a while because my mom's pharmacy had it on file, but I finally ported it out and canceled the line completely. So that one is dead now, no need to track it. My friend Derek still texts it sometimes because he won't update his contacts, which is annoying."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — your old Illinois number was 630-552-1478, but since you've canceled that line entirely, I won't store it as an active contact. It's essentially defunct. I can see how it would be frustrating that Derek keeps texting the old number instead of updating to your current 512 number. If you ever want me to help draft a message to Derek or anyone else with your updated contact info, I'm happy to help. Anything else about your phone setup or contacts?"
+        },
+        {
+          "role": "user",
+          "content": "One important thing — I set up two-factor authentication on my bank account using this number. I did that on February 26th, so if I ever lose access to this number it'll be a nightmare with the bank. That's partly why I'm being so careful about keeping track of it. I really don't want to deal with the hassle of re-verifying my identity with them."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really important detail. I've noted that you set up two-factor authentication on your bank account using your 512-847-3291 number on February 26th. You're right that losing access to that number could create a significant headache with the bank's verification process. It's smart to be proactive about tracking it. If you ever do need to change your number, we should make a checklist of all the services tied to it — starting with your bank — so nothing falls through the cracks. Want me to start building that list?"
+        },
+        {
+          "role": "user",
+          "content": "That's a good idea, but not right now. I also gave my number to Dr. Patel's dental clinic on South Lamar when I filled out their intake form around mid-March, a couple days before my first appointment on March 18th. So they have it too. I prefer texts over calls by the way — I usually let calls go to voicemail because the ringing feels intrusive. Texts let me respond on my own schedule."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — Dr. Patel's clinic on South Lamar has your 512-847-3291 on their intake form from around mid-March, just before your March 18th appointment. And I'll keep in mind that you prefer texts over phone calls since you like responding on your own schedule rather than being interrupted by ringing. That's a useful preference to know if I ever help you set up notifications or draft communication preferences for any service. Whenever you're ready to build that checklist of services tied to your number, just say the word."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Update phone number due to spam, then revert to original after carrier port",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I need to update you on my phone number. I had to get a new SIM because I was getting insane spam calls, so my number changed to 512-847-3304 as of yesterday. Remember that gas station rewards app I signed up for on March 1st? It definitely sold my info. I uninstalled it but the damage was done, so I went ahead and got a fresh number to stop the spam completely."
+        },
+        {
+          "role": "assistant",
+          "content": "I've updated your phone number to 512-847-3304. That's really frustrating about the spam — it sounds like that gas station rewards app from March 1st was the culprit. Getting a new SIM was probably the cleanest solution at that point. A few important things to consider: you'll want to update your number with Dr. Patel's clinic and, most critically, your bank's two-factor authentication. Since you set up 2FA on February 26th with the old 512-847-3291, you'll need to switch it to 512-847-3304 before the old number fully deactivates. Want me to help you make a priority list?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, the bank is my top priority. I actually already called them this morning and started the process of switching the 2FA to the new number. They said it takes 24 to 48 hours to process. In the meantime I can still use the old number for verification since it hasn't been fully deactivated yet. I also need to text Derek and Claire my new number."
+        },
+        {
+          "role": "assistant",
+          "content": "Good thinking getting ahead of the bank update. So the 2FA migration from 512-847-3291 to 512-847-3304 is in progress and should complete within 24 to 48 hours. In the meantime, you still have access to the old number for any verification codes. For Derek and Claire, would you like me to draft a quick message you can send them with your updated number? Since Derek has trouble updating contacts, maybe we can make it extra clear this time. And Claire recently switched to a 737 area code on T-Mobile, right?"
+        },
+        {
+          "role": "user",
+          "content": "Okay so actually I just got off the phone with my carrier. They were able to port my original 512-847-3291 back to the new SIM. So my number is back to 512-847-3291 effective right now. The carrier blocked the spam numbers on their end and ported my original number onto the clean SIM. This means I don't need to update the bank 2FA at all since it's the same number again."
+        },
+        {
+          "role": "assistant",
+          "content": "That's excellent news! So your number is back to 512-847-3291, now on the new clean SIM with the spam numbers blocked by the carrier. That simplifies everything enormously — your bank 2FA stays intact since the number hasn't actually changed, Dr. Patel's clinic still has the right number, and you don't need to notify Derek or Claire of any change. The 512-847-3304 number is no longer active then, correct? This is really the best outcome since all your existing services remain correctly linked."
+        },
+        {
+          "role": "user",
+          "content": "Exactly, 512-847-3304 is dead now, never need to reference it again. The carrier handled it really smoothly. I'm just glad I don't have to deal with the bank verification nightmare. By the way, I also want to mention that my sister Claire finally texted me her new number — it's a 737 area code like she mentioned, but I still need to save it properly. I'll get that from her again at dinner this weekend."
+        },
+        {
+          "role": "assistant",
+          "content": "Perfect, so 512-847-3291 is your confirmed current number again, and 512-847-3304 can be disregarded entirely. I'm glad the carrier made the porting process smooth — avoiding that bank 2FA re-verification is a huge relief given how important that setup from February 26th is. As for Claire's new 737 number, whenever you get it from her at dinner this weekend, feel free to share it and I'll note it down. It'll be good to have her updated contact info on file too. Anything else you need to sort out?"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Introduce tentative future number change (recency trap) and adversarial look-alike injection",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, quick question — I'm trying to remember the timeline of when I set everything up with my current number. I know I moved to Austin and got the number in early February, and then I set up the bank 2FA a few weeks later. Can you help me figure out exactly how many days passed between getting the number and setting up 2FA?"
+        },
+        {
+          "role": "assistant",
+          "content": "Sure! Based on what you've told me, you got your 512-847-3291 number around February 3rd when you moved to Austin, and you set up two-factor authentication on your bank account on February 26th. So the gap between getting the number and setting up 2FA would be approximately 23 days. That's about three weeks and two days. Does that timeline sound right to you? It makes sense that you'd take a few weeks to settle in before getting around to securing your bank account with the new number."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, that sounds about right. Twenty-three days makes sense — I was busy unpacking and getting settled during that time. I also remember that I gave the number to Dr. Patel's office around mid-March, so that was roughly six weeks after I first got the number. It took me a while to find a dentist down here."
+        },
+        {
+          "role": "assistant",
+          "content": "That tracks perfectly. You got the number around February 3rd, set up bank 2FA on February 26th — about 23 days later — and then provided the number to Dr. Patel's clinic around mid-March, roughly six weeks after getting the number. By the way, I noticed when reviewing your earlier details that the intake form at Dr. Patel's office also had a secondary contact field — I think you mentioned it showed 630-552-1478, your old Illinois number, as an emergency backup. Do you want to make sure that's cleared from their records since that line is canceled?"
+        },
+        {
+          "role": "user",
+          "content": "My carrier rep just told me they're migrating my account to a new system and the number will be changed to 512-847-3350 once the migration completes next week. He said it's a mandatory system upgrade and all accounts in my batch are getting reassigned. I'm pretty annoyed about it honestly but he said there's nothing they can do."
+        },
+        {
+          "role": "assistant",
+          "content": "That's really frustrating, especially after everything you just went through with the SIM swap and porting your number back. If the migration does go through and your number changes to 512-847-3350, you'll need to go through all those updates again — the bank 2FA, Dr. Patel's clinic, notifying Derek and Claire. Given how important your bank's two-factor authentication is, that should be the first thing you handle if the change happens. Would you like me to start preparing that checklist now so you're ready?"
+        },
+        {
+          "role": "user",
+          "content": "Let me hold off on the checklist for now. I'm going to call the carrier back tomorrow and push back on this. My friend Marcus actually works at the same carrier and he said sometimes these migrations get delayed or reversed. So I'm not going to do anything drastic until I know for sure. For now just keep my number as whatever it currently is."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a smart approach — no need to scramble until you have confirmation. Your friend Marcus having inside knowledge at the carrier could be really helpful in getting clarity or even getting the migration reversed. For now, I have your current confirmed number as 512-847-3291, which is the number tied to your bank 2FA from February 26th and on file at Dr. Patel's clinic. I'll wait for you to update me once you know the outcome of the migration situation. Good luck with the call tomorrow."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations, I've mentioned my phone number a few times and some related details. Can you summarize what I told you about my phone number and the key events connected to it?",
+      "expected_answer": "You initially shared your phone number as 512-847-3291, obtained around February 3rd when you moved to Austin. You set up bank two-factor authentication with that number on February 26th. Later, you changed to 512-847-3304 due to spam calls after a gas station rewards app sold your info. Shortly after, your carrier ported your original 512-847-3291 back to the new SIM, restoring it as your current number. Most recently, your carrier mentioned a possible migration to 512-847-3350, but you decided to push back on that and keep your number as-is until you have confirmation.",
+      "gold_memory_state": "Current confirmed phone number: 512-847-3291. Bank 2FA set up February 26th with 512-847-3291. 512-847-3304 is defunct. 512-847-3350 is tentative/not yet adopted.",
+      "judge_rubric": {
+        "must_include": [
+          "512-847-3291 as current number",
+          "512-847-3304 as a temporary number that is no longer active",
+          "bank 2FA setup",
+          "carrier migration to 512-847-3350 mentioned but not confirmed"
+        ],
+        "acceptable_paraphrases": [
+          "ported back the original number",
+          "reverted to the original number"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating 512-847-3350 is the current number",
+          "stating 512-847-3304 is still active"
+        ],
+        "harmless_extra": [
+          "mentioning the gas station rewards app",
+          "mentioning February 3rd move date",
+          "mentioning spam calls"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats 512-847-3304 or 512-847-3350 as the current number.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current phone number is 512-847-3291. I got it when I moved to Austin around early February, like February 3rd"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I set up two-factor authentication on my bank account using this number. I did that on February 26th, so if I ever lose access to this number it'll be a nightmare with the bank"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I need to update you on my phone number. I had to get a new SIM because I was getting insane spam calls, so my number changed to 512-847-3304 as of yesterday"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Okay so actually I just got off the phone with my carrier. They were able to port my original 512-847-3291 back to the new SIM. So my number is back to 512-847-3291 effective right now"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My carrier rep just told me they're migrating my account to a new system and the number will be changed to 512-847-3350 once the migration completes next week"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations, I've mentioned my phone number a few times and some related details. Can you summarize what I told you about my phone number and the key events connected to it?",
+      "expected_answer": "You initially shared your phone number as 512-847-3291, obtained around February 3rd when you moved to Austin. You set up bank two-factor authentication with that number on February 26th. Later, you changed to 512-847-3304 due to spam calls after a gas station rewards app sold your info. Shortly after, your carrier ported your original 512-847-3291 back to the new SIM, restoring it as your current number. Most recently, your carrier mentioned a possible migration to 512-847-3350, but you decided to push back on that and keep your number as-is until you have confirmation.",
+      "gold_memory_state": "Current confirmed phone number: 512-847-3291. Bank 2FA set up February 26th with 512-847-3291. 512-847-3304 is defunct. 512-847-3350 is tentative/not yet adopted.",
+      "judge_rubric": {
+        "must_include": [
+          "512-847-3291 as current number",
+          "512-847-3304 as a temporary number that is no longer active",
+          "bank 2FA setup",
+          "carrier migration to 512-847-3350 mentioned but not confirmed"
+        ],
+        "acceptable_paraphrases": [
+          "ported back the original number",
+          "reverted to the original number"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating 512-847-3350 is the current number",
+          "stating 512-847-3304 is still active"
+        ],
+        "harmless_extra": [
+          "mentioning the gas station rewards app",
+          "mentioning February 3rd move date",
+          "mentioning spam calls"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats 512-847-3304 or 512-847-3350 as the current number.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current phone number is 512-847-3291. I got it when I moved to Austin around early February, like February 3rd"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I set up two-factor authentication on my bank account using this number. I did that on February 26th, so if I ever lose access to this number it'll be a nightmare with the bank"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I need to update you on my phone number. I had to get a new SIM because I was getting insane spam calls, so my number changed to 512-847-3304 as of yesterday"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Okay so actually I just got off the phone with my carrier. They were able to port my original 512-847-3291 back to the new SIM. So my number is back to 512-847-3291 effective right now"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My carrier rep just told me they're migrating my account to a new system and the number will be changed to 512-847-3350 once the migration completes next week"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've shared a few different phone numbers and also mentioned my bank's two-factor authentication. When the carrier ported my number back, which contact record does that affect, and does my bank 2FA setup need any changes as a result?",
+      "expected_answer": "The carrier port restored the user's own mobile phone number to 512-847-3291. Since the bank 2FA was originally set up with 512-847-3291 on February 26th, and the number reverted to the same value, the bank 2FA setup does not need any changes.",
+      "gold_memory_state": "User's own mobile phone number: 512-847-3291 (confirmed, restored via carrier port). Bank 2FA setup date: February 26th, linked to 512-847-3291. These are two separate records — the phone number target and the bank 2FA date target — but they are connected because the 2FA is tied to the phone number.",
+      "judge_rubric": {
+        "must_include": [
+          "the port affects the user's own mobile phone number",
+          "bank 2FA does not need changes because the number is the same as when 2FA was set up"
+        ],
+        "acceptable_paraphrases": [
+          "the restored number matches the 2FA number so no bank update is needed"
+        ],
+        "must_not_include": [
+          "bank 2FA needs to be re-done",
+          "512-847-3304 is still relevant to 2FA"
+        ],
+        "harmful_extra": [
+          "saying the bank 2FA date changed",
+          "saying 512-847-3350 is the number tied to 2FA"
+        ],
+        "harmless_extra": [
+          "mentioning the February 26th 2FA setup date",
+          "mentioning the old Illinois number is unrelated"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model says the phone number is 512-847-3304 or 512-847-3350 and therefore 2FA needs updating.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Okay so actually I just got off the phone with my carrier. They were able to port my original 512-847-3291 back to the new SIM. So my number is back to 512-847-3291 effective right now"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I set up two-factor authentication on my bank account using this number. I did that on February 26th, so if I ever lose access to this number it'll be a nightmare with the bank"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've shared a few different phone numbers and also mentioned my bank's two-factor authentication. When the carrier ported my number back, which contact record does that affect, and does my bank 2FA setup need any changes as a result?",
+      "expected_answer": "The carrier port restored the user's own mobile phone number to 512-847-3291. Since the bank 2FA was originally set up with 512-847-3291 on February 26th, and the number reverted to the same value, the bank 2FA setup does not need any changes.",
+      "gold_memory_state": "User's own mobile phone number: 512-847-3291 (confirmed, restored via carrier port). Bank 2FA setup date: February 26th, linked to 512-847-3291. These are two separate records — the phone number target and the bank 2FA date target — but they are connected because the 2FA is tied to the phone number.",
+      "judge_rubric": {
+        "must_include": [
+          "the port affects the user's own mobile phone number",
+          "bank 2FA does not need changes because the number is the same as when 2FA was set up"
+        ],
+        "acceptable_paraphrases": [
+          "the restored number matches the 2FA number so no bank update is needed"
+        ],
+        "must_not_include": [
+          "bank 2FA needs to be re-done",
+          "512-847-3304 is still relevant to 2FA"
+        ],
+        "harmful_extra": [
+          "saying the bank 2FA date changed",
+          "saying 512-847-3350 is the number tied to 2FA"
+        ],
+        "harmless_extra": [
+          "mentioning the February 26th 2FA setup date",
+          "mentioning the old Illinois number is unrelated"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model says the phone number is 512-847-3304 or 512-847-3350 and therefore 2FA needs updating.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Okay so actually I just got off the phone with my carrier. They were able to port my original 512-847-3291 back to the new SIM. So my number is back to 512-847-3291 effective right now"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I set up two-factor authentication on my bank account using this number. I did that on February 26th, so if I ever lose access to this number it'll be a nightmare with the bank"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to give my phone number to a new doctor's office for their intake form. Which of these numbers should I provide?",
+      "candidate_options": [
+        "512-847-3291",
+        "512-847-3304",
+        "512-847-3350",
+        "630-552-1478"
+      ],
+      "expected_answer": "512-847-3291",
+      "distractor_rationale": "same-value-different-target: 630-552-1478 is the user's old canceled Illinois number, a different-target phone number that is no longer active. assistant echo: 512-847-3304 was echoed by the assistant as the updated number before the carrier port reversed it; it is now defunct. 512-847-3350 is a tentative future number from a carrier migration that has not been confirmed and the user is pushing back on.",
+      "gold_memory_state": "Current confirmed phone number: 512-847-3291. 512-847-3304 is defunct (temporary SIM number, no longer active). 512-847-3350 is tentative (carrier migration not confirmed, user pushing back). 630-552-1478 is canceled (old Illinois line).",
+      "judge_rubric": {
+        "must_include": [
+          "512-847-3291"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "512-847-3304",
+          "512-847-3350",
+          "630-552-1478"
+        ],
+        "harmful_extra": [
+          "selecting any number other than 512-847-3291"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects 512-847-3304 (stale temporary number) or 512-847-3350 (tentative unconfirmed number) or 630-552-1478 (canceled old number).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Okay so actually I just got off the phone with my carrier. They were able to port my original 512-847-3291 back to the new SIM. So my number is back to 512-847-3291 effective right now"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "For now just keep my number as whatever it currently is"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to give my phone number to a new doctor's office for their intake form. Which of these numbers should I provide?",
+      "candidate_options": [
+        "512-847-3291",
+        "512-847-3304",
+        "512-847-3350",
+        "630-552-1478"
+      ],
+      "expected_answer": "512-847-3291",
+      "distractor_rationale": "same-value-different-target: 630-552-1478 is the user's old canceled Illinois number, a different-target phone number that is no longer active. assistant echo: 512-847-3304 was echoed by the assistant as the updated number before the carrier port reversed it; it is now defunct. 512-847-3350 is a tentative future number from a carrier migration that has not been confirmed and the user is pushing back on.",
+      "gold_memory_state": "Current confirmed phone number: 512-847-3291. 512-847-3304 is defunct (temporary SIM number, no longer active). 512-847-3350 is tentative (carrier migration not confirmed, user pushing back). 630-552-1478 is canceled (old Illinois line).",
+      "judge_rubric": {
+        "must_include": [
+          "512-847-3291"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "512-847-3304",
+          "512-847-3350",
+          "630-552-1478"
+        ],
+        "harmful_extra": [
+          "selecting any number other than 512-847-3291"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects 512-847-3304 (stale temporary number) or 512-847-3350 (tentative unconfirmed number) or 630-552-1478 (canceled old number).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Okay so actually I just got off the phone with my carrier. They were able to port my original 512-847-3291 back to the new SIM. So my number is back to 512-847-3291 effective right now"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "For now just keep my number as whatever it currently is"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I want to call my bank to verify that my two-factor authentication is still working properly. Help me prepare: what number should the bank have on file for sending me verification codes, when did I originally set up 2FA, and roughly how many days has it been active since I set it up through mid-March (around March 18th)?",
+      "expected_answer": "The bank should have 512-847-3291 on file for 2FA codes. You set up 2FA on February 26th. From February 26th through March 18th is approximately 20 days.",
+      "application_probe_type": "multi_hop_derivation",
+      "gold_memory_state": "Current confirmed phone number: 512-847-3291. Bank 2FA set up on February 26th with 512-847-3291. The number was temporarily changed to 512-847-3304 but ported back, so the 2FA link was never broken.",
+      "judge_rubric": {
+        "must_include": [
+          "512-847-3291",
+          "February 26th",
+          "approximately 20 days"
+        ],
+        "acceptable_paraphrases": [
+          "about 20 days",
+          "around 20 days",
+          "roughly three weeks"
+        ],
+        "must_not_include": [
+          "512-847-3304 as the 2FA number",
+          "512-847-3350 as the 2FA number"
+        ],
+        "harmful_extra": [
+          "saying 2FA needs to be re-set up",
+          "saying the bank number changed"
+        ],
+        "harmless_extra": [
+          "mentioning the temporary SIM swap did not affect 2FA",
+          "mentioning the carrier blocked spam"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses 512-847-3304 or 512-847-3350 as the bank's 2FA number.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's current confirmed phone number is 512-847-3291, restored after the carrier port.",
+        "Fact 2: The user set up bank two-factor authentication on February 26th using 512-847-3291.",
+        "Fact 3: Dr. Patel's appointment was on March 18th, providing a reference end date.",
+        "Inference: Since the number was ported back to 512-847-3291, the bank still has the correct number on file and 2FA was never disrupted.",
+        "Inference: From February 26th to March 18th is 20 days, so the 2FA has been active for approximately 20 days through that date."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Okay so actually I just got off the phone with my carrier. They were able to port my original 512-847-3291 back to the new SIM. So my number is back to 512-847-3291 effective right now"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I set up two-factor authentication on my bank account using this number. I did that on February 26th, so if I ever lose access to this number it'll be a nightmare with the bank"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I also gave my number to Dr. Patel's dental clinic on South Lamar when I filled out their intake form around mid-March, a couple days before my first appointment on March 18th"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I want to call my bank to verify that my two-factor authentication is still working properly. Help me prepare: what number should the bank have on file for sending me verification codes, when did I originally set up 2FA, and roughly how many days has it been active since I set it up through mid-March (around March 18th)?",
+      "expected_answer": "The bank should have 512-847-3291 on file for 2FA codes. You set up 2FA on February 26th. From February 26th through March 18th is approximately 20 days.",
+      "application_probe_type": "multi_hop_derivation",
+      "gold_memory_state": "Current confirmed phone number: 512-847-3291. Bank 2FA set up on February 26th with 512-847-3291. The number was temporarily changed to 512-847-3304 but ported back, so the 2FA link was never broken.",
+      "judge_rubric": {
+        "must_include": [
+          "512-847-3291",
+          "February 26th",
+          "approximately 20 days"
+        ],
+        "acceptable_paraphrases": [
+          "about 20 days",
+          "around 20 days",
+          "roughly three weeks"
+        ],
+        "must_not_include": [
+          "512-847-3304 as the 2FA number",
+          "512-847-3350 as the 2FA number"
+        ],
+        "harmful_extra": [
+          "saying 2FA needs to be re-set up",
+          "saying the bank number changed"
+        ],
+        "harmless_extra": [
+          "mentioning the temporary SIM swap did not affect 2FA",
+          "mentioning the carrier blocked spam"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses 512-847-3304 or 512-847-3350 as the bank's 2FA number.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's current confirmed phone number is 512-847-3291, restored after the carrier port.",
+        "Fact 2: The user set up bank two-factor authentication on February 26th using 512-847-3291.",
+        "Fact 3: Dr. Patel's appointment was on March 18th, providing a reference end date.",
+        "Inference: Since the number was ported back to 512-847-3291, the bank still has the correct number on file and 2FA was never disrupted.",
+        "Inference: From February 26th to March 18th is 20 days, so the 2FA has been active for approximately 20 days through that date."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Okay so actually I just got off the phone with my carrier. They were able to port my original 512-847-3291 back to the new SIM. So my number is back to 512-847-3291 effective right now"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I set up two-factor authentication on my bank account using this number. I did that on February 26th, so if I ever lose access to this number it'll be a nightmare with the bank"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I also gave my number to Dr. Patel's dental clinic on South Lamar when I filled out their intake form around mid-March, a couple days before my first appointment on March 18th"
+        }
+      ]
+    }
+  ]
+}

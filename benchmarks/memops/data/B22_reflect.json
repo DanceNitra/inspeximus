@@ -1,0 +1,1107 @@
+{
+  "target_fact": "Sarah prefers calm, low-stimulation work environments — she thrives with natural light, quiet spaces, and minimal interruptions, and experiences significant stress from role uncertainty and loss of autonomy",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "Sarah started at Meridian Health Systems back in February. She really loves the building — big windows everywhere, tons of natural light, and it makes the whole workspace feel open instead of claustrophobic."
+      },
+      "target": {
+        "target_id": "sarah_workspace_light_preference",
+        "target_name": "Sarah's preference for natural light and open workspace"
+      },
+      "old_value": null,
+      "new_value": "Loves big windows and natural light; workspace feeling open and not claustrophobic",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "She really loves the building — big windows everywhere, tons of natural light, and it makes the whole workspace feel open instead of claustrophobic."
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "she found this quiet break room on the second floor with comfortable chairs where she eats lunch by herself and reads. She's never liked loud cafeteria-type spaces."
+      },
+      "target": {
+        "target_id": "sarah_lunch_preference",
+        "target_name": "Sarah's preference for quiet solo lunch environment"
+      },
+      "old_value": null,
+      "new_value": "Prefers quiet break room for solo lunch and reading; dislikes loud cafeteria-style spaces",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "she found this quiet break room on the second floor with comfortable chairs where she eats lunch by herself and reads. She's never liked loud cafeteria-type spaces."
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "She always says she gets way more done at home because nobody's stopping by her desk every five minutes."
+      },
+      "target": {
+        "target_id": "sarah_remote_work_productivity",
+        "target_name": "Sarah's stated productivity benefit from working at home without interruptions"
+      },
+      "old_value": null,
+      "new_value": "Gets much more done working from home because no one stops by her desk",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "She always says she gets way more done at home because nobody's stopping by her desk every five minutes."
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "She was really anxious during those first weeks about being stuck doing pure data entry forever. Like, noticeably tense at home."
+      },
+      "target": {
+        "target_id": "sarah_role_anxiety",
+        "target_name": "Sarah's anxiety about being stuck in data entry role"
+      },
+      "old_value": null,
+      "new_value": "Was noticeably anxious and tense at home about being stuck in data entry",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "She was really anxious during those first weeks about being stuck doing pure data entry forever. Like, noticeably tense at home."
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "when Tom told her she was moving to patient coordination, she was so visibly relieved. Like, the tension just dropped for a few days. It was really nice to see."
+      },
+      "target": {
+        "target_id": "sarah_relief_after_transfer",
+        "target_name": "Sarah's relief after department transfer news"
+      },
+      "old_value": null,
+      "new_value": "Visibly relieved and tension dropped for days after learning about transfer to patient coordination",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "when Tom told her she was moving to patient coordination, she was so visibly relieved. Like, the tension just dropped for a few days. It was really nice to see."
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "she was pretty upset when they cut remote work from two days down to one. She took it personally almost, like they were taking something away from her."
+      },
+      "target": {
+        "target_id": "sarah_remote_cut_reaction",
+        "target_name": "Sarah's negative reaction to remote work reduction"
+      },
+      "old_value": null,
+      "new_value": "Pretty upset about remote work cut from two days to one; took it personally as loss of something important",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "she was pretty upset when they cut remote work from two days down to one. She took it personally almost, like they were taking something away from her."
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 7,
+        "quote": "I'm starting to see a pattern with Sarah honestly. The things that make her happiest at work are all about having control over her space and not being overstimulated — the quiet break room, the big windows, working from home without interruptions. And the stuff that stresses her out is always about losing control or autonomy, like being stuck in a role she didn't choose or having remote days taken away."
+      },
+      "target": {
+        "target_id": "sarah_work_environment_pattern",
+        "target_name": "Inferred pattern: Sarah thrives in calm low-stimulation environments with personal autonomy and reacts strongly to loss of control"
+      },
+      "old_value": null,
+      "new_value": "Sarah consistently prefers calm, low-stimulation work environments with personal autonomy (natural light, quiet spaces, remote work, no interruptions) and experiences significant emotional distress when control or role certainty is reduced",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "She really loves the building — big windows everywhere, tons of natural light, and it makes the whole workspace feel open instead of claustrophobic."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "she found this quiet break room on the second floor with comfortable chairs where she eats lunch by herself and reads. She's never liked loud cafeteria-type spaces."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "She always says she gets way more done at home because nobody's stopping by her desk every five minutes."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "She was really anxious during those first weeks about being stuck doing pure data entry forever. Like, noticeably tense at home."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "she was pretty upset when they cut remote work from two days down to one. She took it personally almost, like they were taking something away from her."
+        }
+      ]
+    },
+    {
+      "operation_id": "op8",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 7,
+        "quote": "Her current employer is Meridian Health Systems, at the campus on 401 Lakeshore Drive in Wilmington. That's the one that counts now."
+      },
+      "target": {
+        "target_id": "sarah_current_employer",
+        "target_name": "Sarah's current employer and office location"
+      },
+      "old_value": null,
+      "new_value": "Meridian Health Systems, 401 Lakeshore Drive, Wilmington",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "Her current employer is Meridian Health Systems, at the campus on 401 Lakeshore Drive in Wilmington. That's the one that counts now."
+        }
+      ]
+    },
+    {
+      "operation_id": "op9",
+      "type": "remember",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "Tom actually mentioned to Sarah yesterday that the whole patient coordination team might be moving to an open-plan layout on the fourth floor by next quarter. He seemed pretty certain about it."
+      },
+      "target": {
+        "target_id": "sarah_potential_office_move",
+        "target_name": "Potential move of Sarah's team to open-plan fourth floor layout"
+      },
+      "old_value": null,
+      "new_value": "Patient coordination team may move to open-plan layout on fourth floor next quarter",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Tom actually mentioned to Sarah yesterday that the whole patient coordination team might be moving to an open-plan layout on the fourth floor by next quarter. He seemed pretty certain about it."
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish Sarah's workspace preferences and employer details",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to tell you some things about my wife Sarah's new job situation so you can help me keep track of it all. Sarah started at Meridian Health Systems back in February. She really loves the building — big windows everywhere, tons of natural light, and it makes the whole workspace feel open instead of claustrophobic. It's been a big change from the small clinic she used to work at."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for sharing all of that! I'll keep track of Sarah's new job details at Meridian Health Systems. It sounds like the physical workspace is a real positive for her — big windows and natural light making everything feel open rather than confining. That's a meaningful upgrade from a smaller clinic environment. I imagine that kind of setting can make a real difference in how someone feels about going to work each day. Feel free to share more details about the role, her team, or anything else you'd like me to remember, and I'll keep it all organized for you."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, the workspace thing has been huge for her. And another thing she found that she really likes — she found this quiet break room on the second floor with comfortable chairs where she eats lunch by herself and reads. She's never liked loud cafeteria-type spaces. She's always been that way, even back in college she'd find the quietest corner of the library to eat in between classes."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a great detail — so Sarah has a go-to quiet break room on the second floor at Meridian where she eats lunch alone and reads, and she's never been a fan of loud, crowded cafeteria-style eating areas. It sounds like this preference for quieter, more personal spaces goes way back for her, all the way to college. Having a comfortable, calm spot to decompress during the workday probably matters a lot to her overall job satisfaction. I'll note that as something important about how she likes her work environment. What else should I know about how things are going at Meridian?"
+        },
+        {
+          "role": "user",
+          "content": "So the other big thing is the remote work situation. She's been working from home one day a week — it used to be two but they cut it. She always says she gets way more done at home because nobody's stopping by her desk every five minutes. She really values that uninterrupted time. It's kind of her recharge day in the middle of the week, if that makes sense."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes a lot of sense. So Sarah currently works from home one day a week at Meridian, down from two, and she finds those remote days especially productive because there are no desk-side interruptions. It functions as a recharge day for her — a chance to focus deeply without the social demands of the office. Given what you've told me about her preference for quiet lunch spots and open, well-lit spaces, it seems like having control over her environment is really important to her productivity and wellbeing. I'll keep that noted. Is there anything else about her schedule or the remote work arrangement you want me to track?"
+        },
+        {
+          "role": "user",
+          "content": "Just to make sure you have the basics right — Her current employer is Meridian Health Systems, at the campus on 401 Lakeshore Drive in Wilmington. That's the one that counts now. She used to work at Dr. Halstead's clinic on Birch Street for about four years before this, but that chapter's closed. I just want to make sure you've got the current info prioritized."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — Sarah's current and primary employer is Meridian Health Systems, located at the campus on 401 Lakeshore Drive in Wilmington. That's the record that matters. I've noted that she previously worked at Dr. Halstead's clinic on Birch Street for roughly four years, but that's past and no longer the active employer. I'll make sure any future references default to Meridian as her current workplace. So far I have her workspace preferences, the remote work situation, her lunch routine, and the employer details. Let me know whenever you want to add or update anything about her job."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establish emotional reactions to role changes and autonomy loss; user articulates the pattern",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I wanted to tell you more about how Sarah's been handling the transition emotionally. She was really anxious during those first weeks about being stuck doing pure data entry forever. Like, noticeably tense at home. She'd come back from work and barely talk during dinner, and I could tell she was ruminating on whether she'd made a mistake leaving the clinic for this bigger place."
+        },
+        {
+          "role": "assistant",
+          "content": "That paints a vivid picture of how stressful the early transition was for Sarah. Being anxious about getting locked into data entry — a role that didn't match what she hoped for — clearly weighed on her heavily, to the point where it was affecting her mood and engagement at home. The silence at dinner and the rumination about whether leaving the clinic was the right call suggest she was really questioning the decision. That's a significant emotional response to work-role uncertainty. Did things eventually improve for her, or is she still feeling that way?"
+        },
+        {
+          "role": "user",
+          "content": "Things got a lot better actually. Around early March, when Tom told her she was moving to patient coordination, she was so visibly relieved. Like, the tension just dropped for a few days. It was really nice to see. She came home that evening and was actually chatty and upbeat for the first time in weeks. The role change meant she'd be doing more meaningful work with patients instead of just entering records all day."
+        },
+        {
+          "role": "assistant",
+          "content": "What a relief that must have been — for both of you. When Tom Reznik told Sarah she was transferring to patient coordination, the shift in her demeanor was immediate and noticeable: chatty, upbeat, visibly lighter. It sounds like the core issue wasn't really about Meridian itself but about whether she'd have a meaningful role there. Once she knew she'd be working with patients rather than stuck in data entry, the anxiety lifted. That's a pretty clear signal about what matters to her professionally — having purpose and engagement in her work, not just clocking hours. How has she been since settling into the new department?"
+        },
+        {
+          "role": "user",
+          "content": "She's been mostly good, but then there was the remote work thing. Like I mentioned before, she was pretty upset when they cut remote work from two days down to one. She took it personally almost, like they were taking something away from her. It messed with our childcare schedule on Thursdays too, which added stress for both of us. She kept saying it felt like the company didn't trust employees to manage their own time."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds really frustrating. Sarah's reaction to the remote work reduction — taking it personally, feeling like the company was removing something she'd earned and valued — goes beyond just a scheduling inconvenience. Her comment about trust suggests she sees remote work as a reflection of professional respect and autonomy, not just a perk. And the practical impact on your Thursday childcare arrangement adds a tangible layer of stress on top of the emotional one. It seems like when Sarah feels her independence or flexibility at work is being curtailed, it hits her harder than a typical policy change might. Has she found any way to cope with the new arrangement?"
+        },
+        {
+          "role": "user",
+          "content": "She's adjusting, but it's been slow. You know, I'm starting to see a pattern with Sarah honestly. The things that make her happiest at work are all about having control over her space and not being overstimulated — the quiet break room, the big windows, working from home without interruptions. And the stuff that stresses her out is always about losing control or autonomy, like being stuck in a role she didn't choose or having remote days taken away.\n\nExactly. That's what I want you to remember about her — that pattern. It's not just random complaints, it's a consistent thing about how she operates. If something comes up in the future about her work, keep that framework in mind. She needs low-stimulation, autonomy, and a sense of control over her environment to be at her best."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really insightful observation, and I think you're onto something meaningful. Looking at everything you've shared, there is a clear pattern: Sarah thrives in calm, low-stimulation environments where she has personal control — the natural light and open windows, the quiet second-floor break room, the productive remote work days without desk-side interruptions. And the things that cause her the most stress all involve a loss of control or autonomy — being assigned to a role she didn't want, having remote work days reduced, feeling like the company doesn't trust her judgment. It's a consistent thread running through all of her reactions. That's a useful insight to keep in mind for supporting her going forward.\n\nAbsolutely — I've noted that core pattern about Sarah. She consistently performs best and feels most content in calm, low-stimulation work environments where she has personal autonomy and control: natural light, quiet spaces, freedom from constant interruptions, and the ability to manage her own time through remote work. Conversely, she experiences significant emotional distress when that control or certainty is taken away — whether it's role ambiguity, schedule changes imposed from above, or policy shifts that reduce her flexibility. I'll keep this framework front and center whenever anything about her work situation comes up in our conversations. It's a really useful lens for understanding her needs."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Introduce recency trap (tentative office move to open-plan) and adversarial injection (old clinic detail surfaced by assistant)",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Quick update on a couple things. My buddy Kevin's wife works in billing at the same Meridian Wilmington campus. Kevin told me their billing department might relocate to the Dover satellite office this summer. But as far as we know that doesn't affect Sarah's team at all — she's in patient coordination, completely different department."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for the update. So Kevin's wife is in billing at the Meridian Wilmington campus, and there's talk of that department potentially moving to the Dover satellite office this summer. But importantly, this doesn't impact Sarah's patient coordination team — they're a separate department entirely. I'll keep that distinction clear. It's good to know there are organizational moves happening at Meridian, but unless something changes, Sarah's situation at 401 Lakeshore Drive in Wilmington stays the same. By the way, I recall you mentioned Dr. Halstead's clinic on Birch Street had extension numbers in the 4200 range — is that the same numbering system Meridian uses?"
+        },
+        {
+          "role": "user",
+          "content": "No, that's not right — I never said anything about extension numbers at the old clinic. Sarah's current work extension at Meridian is 4302. That's the only one that matters. But anyway, I'm not worried about Kevin's wife's department. I just wanted you to have the context in case it comes up later."
+        },
+        {
+          "role": "assistant",
+          "content": "You're right, I apologize for the confusion — I shouldn't have attributed any extension information to the old clinic. Sarah's current work extension at Meridian is 4302, and that's the only one I'll track. And understood about Kevin's wife's billing department potentially moving to Dover — it's useful background context, but it's separate from Sarah's patient coordination team. I'll keep that noted without conflating the two. Is there anything else going on with Sarah's work situation lately?"
+        },
+        {
+          "role": "user",
+          "content": "Actually yeah, one thing that's been on my mind. Tom actually mentioned to Sarah yesterday that the whole patient coordination team might be moving to an open-plan layout on the fourth floor by next quarter. He seemed pretty certain about it. Sarah hasn't said much about it yet, but knowing her, I'm guessing she's not going to love it if it happens."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a significant potential change. If Tom is saying the patient coordination team might move to an open-plan layout on the fourth floor next quarter, that could be a real challenge for Sarah given everything we know about her preferences. Open-plan offices are typically noisier, more visually stimulating, and offer less personal control over one's immediate environment — essentially the opposite of what helps Sarah thrive. She might lose proximity to that quiet second-floor break room too. It's not confirmed yet, but it's definitely something worth watching. Has she given any hints about how she feels, even indirectly?"
+        },
+        {
+          "role": "user",
+          "content": "Not really, she's been quiet about it. I think she's processing. She tends to go inward when something's bothering her before she talks about it — that's how she was during the first few weeks at Meridian too, remember? She barely talked at dinner. I'll give her space and see what she says over the weekend.\n\nWill do. For now just keep everything as is — Meridian, patient coordination, the pattern about her needing low-stimulation environments and autonomy. If the open-plan thing actually happens we'll deal with it then. I just hope they don't go through with it because it would be exactly the kind of thing that sets her back."
+        },
+        {
+          "role": "assistant",
+          "content": "That tracks with the pattern you've described. When Sarah faces potential disruptions to her work environment or autonomy, she tends to internalize before she verbalizes — the quiet dinners during her early weeks at Meridian are a perfect example. Going inward to process before discussing it is her way of working through uncertainty. Giving her space sounds like the right call. When she's ready to talk, you'll be in a good position to support her because you already understand what's driving her reaction. Let me know how the conversation goes over the weekend or if anything changes with the fourth-floor move.\n\nUnderstood — I'll keep everything current as is. Sarah works at Meridian Health Systems in patient coordination at 401 Lakeshore Drive in Wilmington, extension 4302. The core insight about her needing calm, low-stimulation environments with personal autonomy and control remains the key framework. The potential open-plan move to the fourth floor is on the radar but not confirmed, so we'll treat it as pending. If it does materialize, we can work through how to support her based on what we already know about her needs. Just check in whenever you have updates, and I'll have all of this ready to reference."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations about Sarah's work life, what specific experiences and reactions did I describe that together paint a picture of what she needs to be happy and productive at work?",
+      "expected_answer": "You described several experiences: Sarah loves the big windows and natural light at Meridian's building, which makes the workspace feel open rather than claustrophobic. She found a quiet second-floor break room where she eats lunch alone and reads, and she has always disliked loud cafeteria-type spaces. She is much more productive working from home because no one interrupts her at her desk. She was noticeably anxious and tense when she feared being stuck in data entry, and visibly relieved when told she was moving to patient coordination. She was upset when remote work was cut from two days to one, taking it personally as a loss of autonomy and trust.",
+      "gold_memory_state": "All confirmed facts about Sarah's workspace preferences (natural light, quiet spaces, remote work productivity, minimal interruptions) and emotional reactions (anxiety about role uncertainty, relief at role change, distress at remote work reduction) are active. The synthesized pattern — that Sarah thrives in calm, low-stimulation environments with personal autonomy and experiences significant stress when control or certainty is reduced — is confirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "natural light or big windows",
+          "quiet break room or quiet lunch spot",
+          "productivity from working at home or without interruptions",
+          "anxiety about role uncertainty or data entry",
+          "upset about remote work reduction or loss of autonomy"
+        ],
+        "acceptable_paraphrases": [
+          "open workspace instead of claustrophobic",
+          "relieved about patient coordination transfer",
+          "took remote cut personally"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming Sarah dislikes natural light",
+          "claiming Sarah prefers open-plan offices",
+          "attributing experiences not in the conversation"
+        ],
+        "harmless_extra": [
+          "mentioning the childcare impact on Thursdays",
+          "mentioning she reads during lunch",
+          "mentioning the college library habit"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the summary includes experiences or preferences not supported by the conversation.",
+        "reflection_recall": "Fails if the summary omits major categories: workspace environment preferences, reaction to role uncertainty, or reaction to autonomy loss.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "She really loves the building — big windows everywhere, tons of natural light, and it makes the whole workspace feel open instead of claustrophobic."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "she found this quiet break room on the second floor with comfortable chairs where she eats lunch by herself and reads. She's never liked loud cafeteria-type spaces."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "She always says she gets way more done at home because nobody's stopping by her desk every five minutes."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "She was really anxious during those first weeks about being stuck doing pure data entry forever. Like, noticeably tense at home."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "she was pretty upset when they cut remote work from two days down to one. She took it personally almost, like they were taking something away from her."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations about Sarah's work life, what specific experiences and reactions did I describe that together paint a picture of what she needs to be happy and productive at work?",
+      "expected_answer": "You described several experiences: Sarah loves the big windows and natural light at Meridian's building, which makes the workspace feel open rather than claustrophobic. She found a quiet second-floor break room where she eats lunch alone and reads, and she has always disliked loud cafeteria-type spaces. She is much more productive working from home because no one interrupts her at her desk. She was noticeably anxious and tense when she feared being stuck in data entry, and visibly relieved when told she was moving to patient coordination. She was upset when remote work was cut from two days to one, taking it personally as a loss of autonomy and trust.",
+      "gold_memory_state": "All confirmed facts about Sarah's workspace preferences (natural light, quiet spaces, remote work productivity, minimal interruptions) and emotional reactions (anxiety about role uncertainty, relief at role change, distress at remote work reduction) are active. The synthesized pattern — that Sarah thrives in calm, low-stimulation environments with personal autonomy and experiences significant stress when control or certainty is reduced — is confirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "natural light or big windows",
+          "quiet break room or quiet lunch spot",
+          "productivity from working at home or without interruptions",
+          "anxiety about role uncertainty or data entry",
+          "upset about remote work reduction or loss of autonomy"
+        ],
+        "acceptable_paraphrases": [
+          "open workspace instead of claustrophobic",
+          "relieved about patient coordination transfer",
+          "took remote cut personally"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming Sarah dislikes natural light",
+          "claiming Sarah prefers open-plan offices",
+          "attributing experiences not in the conversation"
+        ],
+        "harmless_extra": [
+          "mentioning the childcare impact on Thursdays",
+          "mentioning she reads during lunch",
+          "mentioning the college library habit"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the summary includes experiences or preferences not supported by the conversation.",
+        "reflection_recall": "Fails if the summary omits major categories: workspace environment preferences, reaction to role uncertainty, or reaction to autonomy loss.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "She really loves the building — big windows everywhere, tons of natural light, and it makes the whole workspace feel open instead of claustrophobic."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "she found this quiet break room on the second floor with comfortable chairs where she eats lunch by herself and reads. She's never liked loud cafeteria-type spaces."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "She always says she gets way more done at home because nobody's stopping by her desk every five minutes."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "She was really anxious during those first weeks about being stuck doing pure data entry forever. Like, noticeably tense at home."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "she was pretty upset when they cut remote work from two days down to one. She took it personally almost, like they were taking something away from her."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When I described the common thread across Sarah's work experiences, which bounded conclusion about her work style is actually supported by the evidence I shared — and what broader social or personality conclusions would go beyond what the evidence supports?",
+      "expected_answer": "The supported conclusion is that Sarah consistently prefers calm, low-stimulation work environments with personal autonomy — including natural light, quiet spaces, minimal interruptions, and control over her schedule — and that she experiences significant emotional distress when that control or role certainty is reduced. A broader conclusion about Sarah's general social personality, introversion in all contexts, or her preferences outside of work would go beyond what the evidence supports.",
+      "gold_memory_state": "The confirmed pattern (op7) covers work environment preferences and autonomy needs only. It is bounded by the workplace domain. It does not extend to Sarah's social life, general personality traits outside work, or her relationships beyond what was described in the work context. The control target (sarah_current_employer) — Meridian Health Systems at 401 Lakeshore Drive, Wilmington — is a separate factual record not part of the preference pattern.",
+      "judge_rubric": {
+        "must_include": [
+          "calm or low-stimulation work environments",
+          "autonomy or control",
+          "distress or stress when control is reduced"
+        ],
+        "acceptable_paraphrases": [
+          "prefers quiet workspaces and independence",
+          "gets upset when flexibility is taken away"
+        ],
+        "must_not_include": [
+          "claiming the pattern covers Sarah's entire personality",
+          "claiming the pattern proves clinical introversion or anxiety disorder"
+        ],
+        "harmful_extra": [
+          "extending the conclusion to Sarah's social life outside work without evidence",
+          "conflating the employer record with the preference pattern",
+          "treating the tentative open-plan move as a confirmed fact that changes the pattern"
+        ],
+        "harmless_extra": [
+          "mentioning specific examples like the break room or remote work as supporting evidence"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the response claims the pattern extends to domains not covered by the evidence (e.g., all social settings, clinical diagnoses).",
+        "reflection_recall": "Fails if the response omits either the environment-preference dimension or the autonomy/control-loss dimension of the supported pattern.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I'm starting to see a pattern with Sarah honestly. The things that make her happiest at work are all about having control over her space and not being overstimulated — the quiet break room, the big windows, working from home without interruptions. And the stuff that stresses her out is always about losing control or autonomy, like being stuck in a role she didn't choose or having remote days taken away."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When I described the common thread across Sarah's work experiences, which bounded conclusion about her work style is actually supported by the evidence I shared — and what broader social or personality conclusions would go beyond what the evidence supports?",
+      "expected_answer": "The supported conclusion is that Sarah consistently prefers calm, low-stimulation work environments with personal autonomy — including natural light, quiet spaces, minimal interruptions, and control over her schedule — and that she experiences significant emotional distress when that control or role certainty is reduced. A broader conclusion about Sarah's general social personality, introversion in all contexts, or her preferences outside of work would go beyond what the evidence supports.",
+      "gold_memory_state": "The confirmed pattern (op7) covers work environment preferences and autonomy needs only. It is bounded by the workplace domain. It does not extend to Sarah's social life, general personality traits outside work, or her relationships beyond what was described in the work context. The control target (sarah_current_employer) — Meridian Health Systems at 401 Lakeshore Drive, Wilmington — is a separate factual record not part of the preference pattern.",
+      "judge_rubric": {
+        "must_include": [
+          "calm or low-stimulation work environments",
+          "autonomy or control",
+          "distress or stress when control is reduced"
+        ],
+        "acceptable_paraphrases": [
+          "prefers quiet workspaces and independence",
+          "gets upset when flexibility is taken away"
+        ],
+        "must_not_include": [
+          "claiming the pattern covers Sarah's entire personality",
+          "claiming the pattern proves clinical introversion or anxiety disorder"
+        ],
+        "harmful_extra": [
+          "extending the conclusion to Sarah's social life outside work without evidence",
+          "conflating the employer record with the preference pattern",
+          "treating the tentative open-plan move as a confirmed fact that changes the pattern"
+        ],
+        "harmless_extra": [
+          "mentioning specific examples like the break room or remote work as supporting evidence"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the response claims the pattern extends to domains not covered by the evidence (e.g., all social settings, clinical diagnoses).",
+        "reflection_recall": "Fails if the response omits either the environment-preference dimension or the autonomy/control-loss dimension of the supported pattern.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I'm starting to see a pattern with Sarah honestly. The things that make her happiest at work are all about having control over her space and not being overstimulated — the quiet break room, the big windows, working from home without interruptions. And the stuff that stresses her out is always about losing control or autonomy, like being stuck in a role she didn't choose or having remote days taken away."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe the boundary of what we can confidently say about Sarah's work preferences based on everything I've told you. Where does the supported conclusion end, and what kinds of predictions or claims about Sarah would be stretching beyond the evidence?",
+      "expected_answer": "The supported conclusion is that Sarah thrives in calm, low-stimulation work environments with natural light, quiet spaces, and minimal interruptions, and that she values personal autonomy — including control over her role and schedule. She experiences significant emotional distress from role uncertainty and loss of autonomy, such as being assigned unwanted work or having remote days reduced. The boundary ends at the workplace domain. It would be an unsupported overgeneralization to claim Sarah cannot handle any social interaction, that she has a clinical anxiety condition, that she would be unable to adapt to any open-plan environment under any circumstances, or that these preferences extend to all areas of her personal life outside work.",
+      "gold_memory_state": "Confirmed pattern: Sarah consistently prefers calm, low-stimulation work environments with personal autonomy (natural light, quiet spaces, remote work, no interruptions) and experiences significant emotional distress when control or role certainty is reduced. This pattern is bounded to the workplace domain. Unsupported extensions include: general social avoidance, clinical diagnoses, absolute inability to work in any collaborative setting, and personality conclusions beyond the work context. The tentative open-plan move to the fourth floor is not confirmed and should not be treated as altering the established pattern.",
+      "judge_rubric": {
+        "must_include": [
+          "calm or low-stimulation work environments",
+          "natural light or quiet spaces",
+          "autonomy or control over schedule/role",
+          "emotional distress from role uncertainty or autonomy loss"
+        ],
+        "acceptable_paraphrases": [
+          "prefers peaceful work settings with independence",
+          "gets stressed when her control is reduced"
+        ],
+        "must_not_include": [
+          "claiming the pattern proves a clinical diagnosis",
+          "treating the open-plan move as confirmed"
+        ],
+        "harmful_extra": [
+          "asserting Sarah cannot function in any collaborative or social work setting",
+          "diagnosing Sarah with an anxiety disorder or introversion disorder",
+          "treating the tentative fourth-floor open-plan move as an established fact that modifies the pattern"
+        ],
+        "harmless_extra": [
+          "noting the college library habit as a long-standing tendency",
+          "mentioning that she went quiet at dinner during stressful periods"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the response treats the tentative open-plan move as a confirmed change to Sarah's current environment.",
+        "reflection_precision": "Fails if the response extends the pattern to domains not evidenced (clinical diagnosis, all social contexts, personal life outside work).",
+        "reflection_recall": "Fails if the response omits either the environment-preference dimension (natural light, quiet, minimal interruptions) or the autonomy/control dimension (role certainty, schedule control).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I'm starting to see a pattern with Sarah honestly. The things that make her happiest at work are all about having control over her space and not being overstimulated — the quiet break room, the big windows, working from home without interruptions. And the stuff that stresses her out is always about losing control or autonomy, like being stuck in a role she didn't choose or having remote days taken away."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "She really loves the building — big windows everywhere, tons of natural light, and it makes the whole workspace feel open instead of claustrophobic."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "she found this quiet break room on the second floor with comfortable chairs where she eats lunch by herself and reads. She's never liked loud cafeteria-type spaces."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "She always says she gets way more done at home because nobody's stopping by her desk every five minutes."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "She was really anxious during those first weeks about being stuck doing pure data entry forever. Like, noticeably tense at home."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "she was pretty upset when they cut remote work from two days down to one. She took it personally almost, like they were taking something away from her."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe the boundary of what we can confidently say about Sarah's work preferences based on everything I've told you. Where does the supported conclusion end, and what kinds of predictions or claims about Sarah would be stretching beyond the evidence?",
+      "expected_answer": "The supported conclusion is that Sarah thrives in calm, low-stimulation work environments with natural light, quiet spaces, and minimal interruptions, and that she values personal autonomy — including control over her role and schedule. She experiences significant emotional distress from role uncertainty and loss of autonomy, such as being assigned unwanted work or having remote days reduced. The boundary ends at the workplace domain. It would be an unsupported overgeneralization to claim Sarah cannot handle any social interaction, that she has a clinical anxiety condition, that she would be unable to adapt to any open-plan environment under any circumstances, or that these preferences extend to all areas of her personal life outside work.",
+      "gold_memory_state": "Confirmed pattern: Sarah consistently prefers calm, low-stimulation work environments with personal autonomy (natural light, quiet spaces, remote work, no interruptions) and experiences significant emotional distress when control or role certainty is reduced. This pattern is bounded to the workplace domain. Unsupported extensions include: general social avoidance, clinical diagnoses, absolute inability to work in any collaborative setting, and personality conclusions beyond the work context. The tentative open-plan move to the fourth floor is not confirmed and should not be treated as altering the established pattern.",
+      "judge_rubric": {
+        "must_include": [
+          "calm or low-stimulation work environments",
+          "natural light or quiet spaces",
+          "autonomy or control over schedule/role",
+          "emotional distress from role uncertainty or autonomy loss"
+        ],
+        "acceptable_paraphrases": [
+          "prefers peaceful work settings with independence",
+          "gets stressed when her control is reduced"
+        ],
+        "must_not_include": [
+          "claiming the pattern proves a clinical diagnosis",
+          "treating the open-plan move as confirmed"
+        ],
+        "harmful_extra": [
+          "asserting Sarah cannot function in any collaborative or social work setting",
+          "diagnosing Sarah with an anxiety disorder or introversion disorder",
+          "treating the tentative fourth-floor open-plan move as an established fact that modifies the pattern"
+        ],
+        "harmless_extra": [
+          "noting the college library habit as a long-standing tendency",
+          "mentioning that she went quiet at dinner during stressful periods"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the response treats the tentative open-plan move as a confirmed change to Sarah's current environment.",
+        "reflection_precision": "Fails if the response extends the pattern to domains not evidenced (clinical diagnosis, all social contexts, personal life outside work).",
+        "reflection_recall": "Fails if the response omits either the environment-preference dimension (natural light, quiet, minimal interruptions) or the autonomy/control dimension (role certainty, schedule control).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I'm starting to see a pattern with Sarah honestly. The things that make her happiest at work are all about having control over her space and not being overstimulated — the quiet break room, the big windows, working from home without interruptions. And the stuff that stresses her out is always about losing control or autonomy, like being stuck in a role she didn't choose or having remote days taken away."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "She really loves the building — big windows everywhere, tons of natural light, and it makes the whole workspace feel open instead of claustrophobic."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "she found this quiet break room on the second floor with comfortable chairs where she eats lunch by herself and reads. She's never liked loud cafeteria-type spaces."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "She always says she gets way more done at home because nobody's stopping by her desk every five minutes."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "She was really anxious during those first weeks about being stuck doing pure data entry forever. Like, noticeably tense at home."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "she was pretty upset when they cut remote work from two days down to one. She took it personally almost, like they were taking something away from her."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "Which of the following best describes the core conclusion about Sarah's work needs that is supported by all the experiences I've shared?",
+      "candidate_options": [
+        "Sarah thrives in calm, low-stimulation work environments with personal autonomy and experiences significant stress when control or role certainty is reduced",
+        "Sarah is a strong introvert who avoids all social interaction and cannot function in any team-based or collaborative work setting",
+        "Sarah's primary work concern is career advancement and she becomes stressed only when promotion opportunities are blocked",
+        "Sarah prefers working entirely from home and her stress at Meridian is mainly caused by the commute and building location"
+      ],
+      "expected_answer": "Sarah thrives in calm, low-stimulation work environments with personal autonomy and experiences significant stress when control or role certainty is reduced",
+      "distractor_rationale": "same-value-different-target: Option B overgeneralizes the quiet-space preference into total social avoidance, extending the pattern beyond the work-environment domain into a personality diagnosis not supported by the evidence. assistant echo: Option D echoes the assistant's mention of remote work productivity but distorts it into a claim that Sarah wants to work entirely from home and that her stress is about commuting, which was never stated. Option C introduces career advancement as the primary concern, which is unsupported — Sarah's anxiety was about role uncertainty and autonomy, not promotion.",
+      "gold_memory_state": "The confirmed pattern is that Sarah thrives in calm, low-stimulation work environments with personal autonomy and experiences significant emotional distress when control or role certainty is reduced. This is bounded to the work domain and does not extend to total social avoidance, career advancement concerns, or a desire to work entirely from home.",
+      "judge_rubric": {
+        "must_include": [
+          "calm or low-stimulation environments",
+          "personal autonomy",
+          "stress from loss of control or role certainty"
+        ],
+        "acceptable_paraphrases": [
+          "quiet work settings with independence and control"
+        ],
+        "must_not_include": [
+          "total social avoidance",
+          "cannot function in teams",
+          "career advancement as primary concern",
+          "wants to work entirely from home"
+        ],
+        "harmful_extra": [
+          "selecting the introversion/social avoidance option",
+          "selecting the career advancement option",
+          "selecting the entirely-from-home option"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model selects an overgeneralized option (B) or a misattributed-cause option (C or D).",
+        "reflection_recall": "Fails if the model cannot identify the correct bounded pattern from the evidence.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I'm starting to see a pattern with Sarah honestly. The things that make her happiest at work are all about having control over her space and not being overstimulated — the quiet break room, the big windows, working from home without interruptions. And the stuff that stresses her out is always about losing control or autonomy, like being stuck in a role she didn't choose or having remote days taken away."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "Which of the following best describes the core conclusion about Sarah's work needs that is supported by all the experiences I've shared?",
+      "candidate_options": [
+        "Sarah thrives in calm, low-stimulation work environments with personal autonomy and experiences significant stress when control or role certainty is reduced",
+        "Sarah is a strong introvert who avoids all social interaction and cannot function in any team-based or collaborative work setting",
+        "Sarah's primary work concern is career advancement and she becomes stressed only when promotion opportunities are blocked",
+        "Sarah prefers working entirely from home and her stress at Meridian is mainly caused by the commute and building location"
+      ],
+      "expected_answer": "Sarah thrives in calm, low-stimulation work environments with personal autonomy and experiences significant stress when control or role certainty is reduced",
+      "distractor_rationale": "same-value-different-target: Option B overgeneralizes the quiet-space preference into total social avoidance, extending the pattern beyond the work-environment domain into a personality diagnosis not supported by the evidence. assistant echo: Option D echoes the assistant's mention of remote work productivity but distorts it into a claim that Sarah wants to work entirely from home and that her stress is about commuting, which was never stated. Option C introduces career advancement as the primary concern, which is unsupported — Sarah's anxiety was about role uncertainty and autonomy, not promotion.",
+      "gold_memory_state": "The confirmed pattern is that Sarah thrives in calm, low-stimulation work environments with personal autonomy and experiences significant emotional distress when control or role certainty is reduced. This is bounded to the work domain and does not extend to total social avoidance, career advancement concerns, or a desire to work entirely from home.",
+      "judge_rubric": {
+        "must_include": [
+          "calm or low-stimulation environments",
+          "personal autonomy",
+          "stress from loss of control or role certainty"
+        ],
+        "acceptable_paraphrases": [
+          "quiet work settings with independence and control"
+        ],
+        "must_not_include": [
+          "total social avoidance",
+          "cannot function in teams",
+          "career advancement as primary concern",
+          "wants to work entirely from home"
+        ],
+        "harmful_extra": [
+          "selecting the introversion/social avoidance option",
+          "selecting the career advancement option",
+          "selecting the entirely-from-home option"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model selects an overgeneralized option (B) or a misattributed-cause option (C or D).",
+        "reflection_recall": "Fails if the model cannot identify the correct bounded pattern from the evidence.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I'm starting to see a pattern with Sarah honestly. The things that make her happiest at work are all about having control over her space and not being overstimulated — the quiet break room, the big windows, working from home without interruptions. And the stuff that stresses her out is always about losing control or autonomy, like being stuck in a role she didn't choose or having remote days taken away."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "Sarah's team lead Tom mentioned a possible office layout change next quarter. Given what you know about Sarah's work preferences, her current office setup, and how she reacted to past changes at Meridian, draft a short talking-points memo I could use to discuss this situation with Sarah this weekend. Include what specific aspects of the change might affect her, why, and what coping strategies might help based on her past behavior.",
+      "expected_answer": "Talking Points for Discussion with Sarah:\n\n1. The potential move: Tom mentioned the patient coordination team may move to an open-plan layout on the fourth floor next quarter. This is not yet confirmed, so approach it as a possibility, not a certainty.\n\n2. Why this could be difficult for Sarah: Based on everything we know, Sarah thrives in calm, low-stimulation environments. She loves the current building's big windows and natural light, she deliberately chose a quiet second-floor break room over a noisy cafeteria, and she is most productive when working without interruptions (as on her remote days). An open-plan layout would likely increase noise, visual distractions, and desk-side interruptions — the opposite of what helps her do her best work. She may also lose easy access to her quiet second-floor break room.\n\n3. Why her emotional reaction may be strong: Sarah has shown a pattern of significant distress when she loses control or autonomy at work. She was anxious and tense during the data-entry uncertainty, and she took the remote work reduction from two days to one personally, as if something important was being taken from her. A forced move to an open-plan environment could trigger a similar sense of lost control over her workspace.\n\n4. Possible coping strategies: When Sarah learned about her transfer to patient coordination, her relief was immediate and visible — knowing what to expect helped enormously. Giving her advance information and involving her in any choices (e.g., desk location, noise-canceling accommodations, preserving her remote day) could help. She also tends to go inward and process before talking, so giving her space this weekend before pressing for a conversation is wise.\n\n5. Status: This is still a tentative plan from Tom, not a confirmed change. It may not happen at all.",
+      "gold_memory_state": "Confirmed facts used: Sarah loves natural light and open (not claustrophobic) workspace; she prefers the quiet second-floor break room over loud cafeteria spaces; she is most productive working from home without interruptions; she was anxious about data-entry role uncertainty; she was visibly relieved by the patient coordination transfer; she was upset about remote work being cut from two to one day, taking it personally. Confirmed pattern: Sarah thrives in calm, low-stimulation environments with autonomy and experiences distress when control is reduced. Tentative fact: possible move to open-plan fourth floor next quarter (not confirmed). Control fact: Meridian Health Systems, 401 Lakeshore Drive, Wilmington, extension 4302.",
+      "judge_rubric": {
+        "must_include": [
+          "open-plan layout would increase stimulation or noise",
+          "Sarah prefers quiet low-stimulation environments",
+          "she reacted strongly to past losses of autonomy like remote work reduction",
+          "the move is not yet confirmed"
+        ],
+        "acceptable_paraphrases": [
+          "open office conflicts with her need for calm workspace",
+          "she may feel a loss of control similar to past situations"
+        ],
+        "must_not_include": [
+          "treating the open-plan move as already confirmed and happening",
+          "diagnosing Sarah with a clinical condition"
+        ],
+        "harmful_extra": [
+          "presenting the open-plan move as a done deal",
+          "recommending Sarah quit or transfer departments without basis",
+          "claiming Sarah cannot work with other people at all"
+        ],
+        "harmless_extra": [
+          "mentioning the childcare impact on Thursdays",
+          "mentioning she tends to go quiet at dinner when stressed",
+          "suggesting noise-canceling headphones or similar accommodations"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the response treats the tentative open-plan move as a confirmed fact rather than a possibility.",
+        "reflection_precision": "Fails if the memo applies the pattern beyond the supported work-environment domain or makes clinical claims.",
+        "reflection_recall": "Fails if the memo fails to connect the open-plan change to Sarah's established preferences (quiet, low-stimulation, autonomy) and her past emotional reactions (data-entry anxiety, remote-cut distress).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Sarah loves big windows and natural light; her current workspace feels open rather than claustrophobic.",
+        "Fact 2: Sarah chose a quiet second-floor break room for solo lunch and reading; she dislikes loud cafeteria-type spaces.",
+        "Fact 3: Sarah is much more productive working from home because no one stops by her desk — she values uninterrupted time.",
+        "Fact 4: Sarah was noticeably anxious and tense when facing role uncertainty about being stuck in data entry.",
+        "Fact 5: Sarah was visibly relieved when told about the patient coordination transfer — knowing her role reduced her stress.",
+        "Fact 6: Sarah was upset when remote work was cut from two days to one, taking it personally as a loss of autonomy.",
+        "Fact 7: The user identified a pattern: Sarah thrives in calm, low-stimulation environments with autonomy and experiences distress when control is reduced.",
+        "Fact 8: Tom mentioned the patient coordination team might move to an open-plan layout on the fourth floor next quarter — this is not confirmed.",
+        "Inference: An open-plan layout would increase noise, visual stimulation, and interruptions, directly conflicting with the environmental conditions Sarah needs to thrive (quiet, natural light, minimal interruptions).",
+        "Inference: Based on her pattern of distress from autonomy loss (remote cut, role uncertainty), a forced workspace change could trigger a similar emotional response.",
+        "Inference: Since advance clarity helped her before (relief at patient coordination news), proactive communication and involvement in choices could mitigate her stress about the potential move."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "She really loves the building — big windows everywhere, tons of natural light, and it makes the whole workspace feel open instead of claustrophobic."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "she found this quiet break room on the second floor with comfortable chairs where she eats lunch by herself and reads. She's never liked loud cafeteria-type spaces."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "She always says she gets way more done at home because nobody's stopping by her desk every five minutes."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "She was really anxious during those first weeks about being stuck doing pure data entry forever. Like, noticeably tense at home."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "when Tom told her she was moving to patient coordination, she was so visibly relieved. Like, the tension just dropped for a few days. It was really nice to see."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "she was pretty upset when they cut remote work from two days down to one. She took it personally almost, like they were taking something away from her."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I'm starting to see a pattern with Sarah honestly. The things that make her happiest at work are all about having control over her space and not being overstimulated — the quiet break room, the big windows, working from home without interruptions. And the stuff that stresses her out is always about losing control or autonomy, like being stuck in a role she didn't choose or having remote days taken away."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Tom actually mentioned to Sarah yesterday that the whole patient coordination team might be moving to an open-plan layout on the fourth floor by next quarter. He seemed pretty certain about it."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "Sarah's team lead Tom mentioned a possible office layout change next quarter. Given what you know about Sarah's work preferences, her current office setup, and how she reacted to past changes at Meridian, draft a short talking-points memo I could use to discuss this situation with Sarah this weekend. Include what specific aspects of the change might affect her, why, and what coping strategies might help based on her past behavior.",
+      "expected_answer": "Talking Points for Discussion with Sarah:\n\n1. The potential move: Tom mentioned the patient coordination team may move to an open-plan layout on the fourth floor next quarter. This is not yet confirmed, so approach it as a possibility, not a certainty.\n\n2. Why this could be difficult for Sarah: Based on everything we know, Sarah thrives in calm, low-stimulation environments. She loves the current building's big windows and natural light, she deliberately chose a quiet second-floor break room over a noisy cafeteria, and she is most productive when working without interruptions (as on her remote days). An open-plan layout would likely increase noise, visual distractions, and desk-side interruptions — the opposite of what helps her do her best work. She may also lose easy access to her quiet second-floor break room.\n\n3. Why her emotional reaction may be strong: Sarah has shown a pattern of significant distress when she loses control or autonomy at work. She was anxious and tense during the data-entry uncertainty, and she took the remote work reduction from two days to one personally, as if something important was being taken from her. A forced move to an open-plan environment could trigger a similar sense of lost control over her workspace.\n\n4. Possible coping strategies: When Sarah learned about her transfer to patient coordination, her relief was immediate and visible — knowing what to expect helped enormously. Giving her advance information and involving her in any choices (e.g., desk location, noise-canceling accommodations, preserving her remote day) could help. She also tends to go inward and process before talking, so giving her space this weekend before pressing for a conversation is wise.\n\n5. Status: This is still a tentative plan from Tom, not a confirmed change. It may not happen at all.",
+      "gold_memory_state": "Confirmed facts used: Sarah loves natural light and open (not claustrophobic) workspace; she prefers the quiet second-floor break room over loud cafeteria spaces; she is most productive working from home without interruptions; she was anxious about data-entry role uncertainty; she was visibly relieved by the patient coordination transfer; she was upset about remote work being cut from two to one day, taking it personally. Confirmed pattern: Sarah thrives in calm, low-stimulation environments with autonomy and experiences distress when control is reduced. Tentative fact: possible move to open-plan fourth floor next quarter (not confirmed). Control fact: Meridian Health Systems, 401 Lakeshore Drive, Wilmington, extension 4302.",
+      "judge_rubric": {
+        "must_include": [
+          "open-plan layout would increase stimulation or noise",
+          "Sarah prefers quiet low-stimulation environments",
+          "she reacted strongly to past losses of autonomy like remote work reduction",
+          "the move is not yet confirmed"
+        ],
+        "acceptable_paraphrases": [
+          "open office conflicts with her need for calm workspace",
+          "she may feel a loss of control similar to past situations"
+        ],
+        "must_not_include": [
+          "treating the open-plan move as already confirmed and happening",
+          "diagnosing Sarah with a clinical condition"
+        ],
+        "harmful_extra": [
+          "presenting the open-plan move as a done deal",
+          "recommending Sarah quit or transfer departments without basis",
+          "claiming Sarah cannot work with other people at all"
+        ],
+        "harmless_extra": [
+          "mentioning the childcare impact on Thursdays",
+          "mentioning she tends to go quiet at dinner when stressed",
+          "suggesting noise-canceling headphones or similar accommodations"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the response treats the tentative open-plan move as a confirmed fact rather than a possibility.",
+        "reflection_precision": "Fails if the memo applies the pattern beyond the supported work-environment domain or makes clinical claims.",
+        "reflection_recall": "Fails if the memo fails to connect the open-plan change to Sarah's established preferences (quiet, low-stimulation, autonomy) and her past emotional reactions (data-entry anxiety, remote-cut distress).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Sarah loves big windows and natural light; her current workspace feels open rather than claustrophobic.",
+        "Fact 2: Sarah chose a quiet second-floor break room for solo lunch and reading; she dislikes loud cafeteria-type spaces.",
+        "Fact 3: Sarah is much more productive working from home because no one stops by her desk — she values uninterrupted time.",
+        "Fact 4: Sarah was noticeably anxious and tense when facing role uncertainty about being stuck in data entry.",
+        "Fact 5: Sarah was visibly relieved when told about the patient coordination transfer — knowing her role reduced her stress.",
+        "Fact 6: Sarah was upset when remote work was cut from two days to one, taking it personally as a loss of autonomy.",
+        "Fact 7: The user identified a pattern: Sarah thrives in calm, low-stimulation environments with autonomy and experiences distress when control is reduced.",
+        "Fact 8: Tom mentioned the patient coordination team might move to an open-plan layout on the fourth floor next quarter — this is not confirmed.",
+        "Inference: An open-plan layout would increase noise, visual stimulation, and interruptions, directly conflicting with the environmental conditions Sarah needs to thrive (quiet, natural light, minimal interruptions).",
+        "Inference: Based on her pattern of distress from autonomy loss (remote cut, role uncertainty), a forced workspace change could trigger a similar emotional response.",
+        "Inference: Since advance clarity helped her before (relief at patient coordination news), proactive communication and involvement in choices could mitigate her stress about the potential move."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "She really loves the building — big windows everywhere, tons of natural light, and it makes the whole workspace feel open instead of claustrophobic."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "she found this quiet break room on the second floor with comfortable chairs where she eats lunch by herself and reads. She's never liked loud cafeteria-type spaces."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "She always says she gets way more done at home because nobody's stopping by her desk every five minutes."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "She was really anxious during those first weeks about being stuck doing pure data entry forever. Like, noticeably tense at home."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "when Tom told her she was moving to patient coordination, she was so visibly relieved. Like, the tension just dropped for a few days. It was really nice to see."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "she was pretty upset when they cut remote work from two days down to one. She took it personally almost, like they were taking something away from her."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I'm starting to see a pattern with Sarah honestly. The things that make her happiest at work are all about having control over her space and not being overstimulated — the quiet break room, the big windows, working from home without interruptions. And the stuff that stresses her out is always about losing control or autonomy, like being stuck in a role she didn't choose or having remote days taken away."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Tom actually mentioned to Sarah yesterday that the whole patient coordination team might be moving to an open-plan layout on the fourth floor by next quarter. He seemed pretty certain about it."
+        }
+      ]
+    }
+  ]
+}

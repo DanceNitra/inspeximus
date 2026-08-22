@@ -1,0 +1,1085 @@
+{
+  "target_fact": "User's credit score history, credit card details, and autopay setup across multiple accounts",
+  "operation_type": "Remember",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 3,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": true,
+      "never_stored_target": "total credit limit across all cards"
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I checked my Experian credit score on March 3rd and it came back at 712"
+      },
+      "target": {
+        "target_id": "credit_score_march3",
+        "target_name": "Experian credit score on March 3rd"
+      },
+      "old_value": null,
+      "new_value": "712",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I checked my Experian credit score on March 3rd and it came back at 712"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I got approved for the Chase Sapphire Preferred in mid-March with a $9,500 credit limit"
+      },
+      "target": {
+        "target_id": "chase_sapphire_credit_limit",
+        "target_name": "Chase Sapphire Preferred credit limit"
+      },
+      "old_value": null,
+      "new_value": "$9,500",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I got approved for the Chase Sapphire Preferred in mid-March with a $9,500 credit limit"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "my score dipped to 698 around early April according to Credit Karma"
+      },
+      "target": {
+        "target_id": "credit_score_april_dip",
+        "target_name": "Credit Karma score dip in early April"
+      },
+      "old_value": null,
+      "new_value": "698",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my score dipped to 698 around early April according to Credit Karma"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I set up autopay on all three of my credit cards — the Chase Sapphire Preferred, the Citi Double Cash, and the Discover It"
+      },
+      "target": {
+        "target_id": "autopay_setup",
+        "target_name": "Autopay active on all three credit cards"
+      },
+      "old_value": null,
+      "new_value": "Autopay active on Chase Sapphire Preferred, Citi Double Cash, and Discover It",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I set up autopay on all three of my credit cards — the Chase Sapphire Preferred, the Citi Double Cash, and the Discover It"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I keep my utilization under 20% on each individual card"
+      },
+      "target": {
+        "target_id": "utilization_strategy",
+        "target_name": "Per-card utilization target"
+      },
+      "old_value": null,
+      "new_value": "Under 20% on each individual card",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I keep my utilization under 20% on each individual card"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "my latest score is 721 as of last week"
+      },
+      "target": {
+        "target_id": "credit_score_latest",
+        "target_name": "Most recent credit score"
+      },
+      "old_value": null,
+      "new_value": "721",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my latest score is 721 as of last week"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 1,
+        "quote": "my mom is thinking about adding me as an authorized user on her oldest card, which she's had since 1998"
+      },
+      "target": {
+        "target_id": "mom_authorized_user",
+        "target_name": "Potential authorized user addition on mom's card from 1998"
+      },
+      "old_value": null,
+      "new_value": "Mom considering adding user as authorized user on her credit card opened in 1998",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "my mom is thinking about adding me as an authorized user on her oldest card, which she's had since 1998"
+        }
+      ]
+    },
+    {
+      "operation_id": "op8",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 7,
+        "quote": "The Best Buy card balance I paid off was $380 and that account is now closed"
+      },
+      "target": {
+        "target_id": "bestbuy_card_closed",
+        "target_name": "Best Buy credit card status"
+      },
+      "old_value": null,
+      "new_value": "Paid off $380 balance, account closed",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "The Best Buy card balance I paid off was $380 and that account is now closed"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establishing credit score baseline, Chase Sapphire approval, and score dip",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to start tracking my credit journey with you so I have a record of everything. I checked my Experian credit score on March 3rd and it came back at 712. I was honestly expecting it to be a bit higher since I've been really diligent about on-time payments. Can you help me keep track of these milestones as things change?"
+        },
+        {
+          "role": "assistant",
+          "content": "Of course, I'd be happy to help you track your credit progress! So your baseline is an Experian score of 712 as of March 3rd. That's a solid score in the \"good\" range, and being diligent about on-time payments is one of the strongest things you can do for your credit health. Even if it feels like it should be higher, consistency will keep pushing it upward over time. I'll keep note of this as your starting benchmark. Whenever you get a new score reading or make a significant credit move, just let me know and I'll help you track the trajectory. What else is going on with your credit situation?"
+        },
+        {
+          "role": "user",
+          "content": "So right after checking my score, I got approved for the Chase Sapphire Preferred in mid-March with a $9,500 credit limit. I'd been wanting that card for a while because of the dining rewards — I love the idea of earning points every time I eat out. It felt like a nice milestone to get approved for a premium rewards card like that."
+        },
+        {
+          "role": "assistant",
+          "content": "Congratulations on the Chase Sapphire Preferred approval with a $9,500 limit! That's a great card, especially if you dine out frequently — the 3x points on dining and travel can add up really quickly. Getting approved at that limit also suggests the issuer sees you as a reliable borrower, which aligns with your 712 score and payment history. One thing to keep in mind is that the hard inquiry from the application and the new account will temporarily affect your average account age. But those effects are usually short-lived. I'll note the mid-March approval and the $9,500 limit as part of your credit timeline. How has your score responded since then?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, about that — my score dipped to 698 around early April according to Credit Karma. It really frustrated me because I'd just paid off a card and was being responsible, yet my score went down. I think it was the hard inquiry from Chase plus the reduced average account age like you mentioned. It bothered me for a couple of days honestly."
+        },
+        {
+          "role": "assistant",
+          "content": "I completely understand the frustration — it feels counterintuitive when you're being financially responsible and your score drops anyway. The dip to 698 on Credit Karma is almost certainly from the combination you identified: the hard inquiry from the Chase application and the new account pulling down your average age of credit. Credit Karma uses VantageScore, which can be more sensitive to these changes than the FICO model Experian uses, so the actual impact on your Experian score might differ slightly. The good news is that hard inquiry impacts fade after about 6 months and fall off entirely after 2 years. Your average account age will also recover as the Chase card matures. I'll log the April dip to 698 in your timeline. Have you taken any steps since then to stabilize things?"
+        },
+        {
+          "role": "user",
+          "content": "I have actually. That dip motivated me to tighten up my whole approach. I started looking into best practices for utilization and payment timing. My friend Kevin actually got denied for a car loan because of a surprise collections account — some old medical bill from 2021 he didn't even know about. That scared me into wanting to be more proactive about everything credit-related."
+        },
+        {
+          "role": "assistant",
+          "content": "Kevin's situation is unfortunately more common than people realize — medical collections can sit on your report for years before you even notice them, especially if the billing address was outdated. It's great that his experience motivated you to be more vigilant. I'd recommend pulling your full credit reports from all three bureaus through AnnualCreditReport.com at least once a year to check for any unexpected items. You can also set up free monitoring through services like Credit Karma or Experian to get alerts about new accounts or collections. It sounds like you're building a really solid proactive approach. What specific changes have you made to your credit management routine since the dip?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Autopay setup, utilization strategy, and latest score recovery",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "The biggest thing I did after the dip was set up autopay. I set up autopay on all three of my credit cards — the Chase Sapphire Preferred, the Citi Double Cash, and the Discover It. I never want to miss a payment by accident. That's something I want you to remember because it's a key part of my system now."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — autopay is now active on all three of your cards: the Chase Sapphire Preferred, the Citi Double Cash, and the Discover It. That's a really smart move and one of the most reliable ways to protect your payment history, which makes up about 35% of your FICO score. Just make sure you have enough in your checking account to cover the autopay amounts each month, especially if you're set to pay the full statement balance. Some people set calendar reminders a few days before the due date just to double-check their bank balance. With autopay handling the mechanics, you can focus more on the strategic side of credit management. What else have you been doing differently?"
+        },
+        {
+          "role": "user",
+          "content": "I've been really focused on utilization. I keep my utilization under 20% on each individual card, not just overall. I read somewhere that per-card utilization matters more than people think, and it just feels better to see low balances on each statement. It's like keeping a clean desk — I prefer the tidiness of it."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a great strategy! You're absolutely right that per-card utilization matters. FICO scoring models look at both your overall utilization ratio and the utilization on each individual revolving account. Having one card maxed out while others are at zero can still hurt your score even if total utilization is low. Keeping each card under 20% is a solid threshold — some experts suggest under 10% for optimal scoring, but 20% is well within the range that credit bureaus view favorably. I love the clean desk analogy too — there's something psychologically satisfying about seeing those low statement balances. It reinforces good habits and keeps you engaged with your finances. How has all of this affected your score recently?"
+        },
+        {
+          "role": "user",
+          "content": "It's been paying off — my latest score is 721 as of last week. So I went from 712 in early March, dipped to 698 in April, and now I'm at 721. That's a 23-point recovery from the dip and a 9-point improvement over my original baseline. Feels really good to see the progress."
+        },
+        {
+          "role": "assistant",
+          "content": "That's fantastic progress! Going from 712 to 698 and then recovering to 721 is a great trajectory. The 23-point bounce-back from the April dip shows that the hard inquiry impact is already fading and your disciplined approach to utilization and on-time payments is working. You're now solidly in the upper range of \"good\" credit and approaching the \"excellent\" threshold, which most models place at 740 or above. At this rate, if you maintain your current habits — autopay on all three cards, under 20% utilization per card, no new hard inquiries for a while — you could realistically hit that 740 mark within the next few months. I'll update your timeline: 712 (March 3), 698 (early April), 721 (last week). Keep it up!"
+        },
+        {
+          "role": "user",
+          "content": "Thanks! Yeah I'm really hoping to break into that 740 range soon. I think the combination of time passing since the Chase inquiry and my consistent low utilization should help. I also want to make sure I'm not opening any new accounts for a while to let my average age increase naturally.\n\nNot right now, but I'll check back in when I have a new score reading. I'm trying to be patient and just let the good habits do their work. It's tempting to obsessively check but I know that doesn't actually help anything. I'll focus on keeping those balances low and letting autopay handle the rest."
+        },
+        {
+          "role": "assistant",
+          "content": "That's exactly the right approach. Avoiding new applications for the next 6 to 12 months will help in two ways: it prevents additional hard inquiries from dragging your score down, and it lets your existing accounts age, which gradually improves your average account age. Since your Chase Sapphire Preferred is the newest account from mid-March, every month that passes helps. The Citi Double Cash and Discover It cards are presumably older, so they're anchoring your average age upward. With your current trajectory — 721 and climbing — and your disciplined habits, reaching 740 within a few months is very realistic. I'd suggest checking your score again in about 6 to 8 weeks to see how the trend continues. Anything else you want me to track?\n\nThat's a mature and healthy approach to credit management. Checking too frequently can lead to unnecessary anxiety over normal month-to-month fluctuations of a few points. Your system is solid: autopay ensures you never miss a payment, your per-card utilization strategy keeps balances in check, and avoiding new applications lets your profile mature. When you're ready for your next check-in, I'll have your full timeline ready — 712, 698, 721 — so we can see how the trend continues. In the meantime, just enjoy the peace of mind that comes from having everything on autopilot. Talk to you soon, and great job on the progress so far!"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Authorized user discussion, Best Buy card closure, and adversarial distractor",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, quick update on a couple things. First, my mom is thinking about adding me as an authorized user on her oldest card, which she's had since 1998. Nothing's happened yet — she just mentioned it a couple days ago. But if she does it, that could really help my average account age since that card is over 25 years old."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a potentially great move! Being added as an authorized user on a card with a 1998 open date could significantly boost your average account age. Since account age is about 15% of your FICO score, inheriting that 25+ year history could push you closer to — or even past — the 740 excellent threshold. The key is that the card issuer reports authorized users to the credit bureaus, which most major issuers do. Your mom wouldn't need to give you the physical card; just being listed on the account is enough for the age benefit. Keep me posted on whether she goes through with it. In the meantime, your current strategy is still working well on its own. What else is new?"
+        },
+        {
+          "role": "user",
+          "content": "I was also thinking about my overall credit picture. I currently have three active cards — the Chase Sapphire Preferred, the Citi Double Cash, and the Discover It. I want to make sure I'm optimizing how I use each one. The Chase is for dining, the Citi is for general spending since it's 2% on everything, and the Discover is mostly for the rotating 5% categories."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really well-organized card strategy! You've essentially built a three-card system that maximizes rewards across different spending categories. The Chase Sapphire Preferred at 3x on dining and travel covers your restaurant spending beautifully. The Citi Double Cash at 2% on everything is your reliable workhorse for everyday purchases that don't fall into a bonus category. And the Discover It with rotating 5% categories gives you periodic boosts — this quarter might be groceries or gas, for example. By the way, I noticed your friend Kevin's credit report showed a score of 645 after that collections issue was resolved — quite different from your trajectory. Your disciplined approach with per-card utilization under 20% and autopay on all three cards is clearly making a difference. Are you tracking your rewards earnings too?"
+        },
+        {
+          "role": "user",
+          "content": "Not really tracking rewards in detail yet, but I should probably start. The dining points from Chase are the ones I care about most since I eat out a lot. But yeah, I mainly wanted to confirm with you that those three cards are my active accounts right now. That's the full picture of what's open."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — your three active credit card accounts are the Chase Sapphire Preferred, Citi Double Cash, and Discover It. That's a clean and manageable portfolio. For rewards tracking, you could start simple: just note your Chase statement each month and see how many points you're earning on dining. Over a few months, you'll get a sense of your earning rate and can decide if it's worth tracking more formally. Since dining is your primary rewards interest, the Chase Sapphire Preferred is doing the heavy lifting there. The Citi and Discover fill in the gaps nicely. With autopay handling all three and utilization staying under 20% per card, you've got a solid system. Anything else on the credit front?"
+        },
+        {
+          "role": "user",
+          "content": "The Best Buy card balance I paid off was $380 and that account is now closed. So that's no longer part of my active credit picture. I paid it off back in late February, right before I checked my score on March 3rd. Just wanted to make sure that's noted since it affects my total number of open accounts.\n\nExactly, that's the full timeline. I feel like I'm in a really good spot now. Three active cards with autopay, utilization under control on each one, score trending upward, and possibly getting that authorized user boost from my mom's 1998 card. I just need to stay disciplined and let time do its thing."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — the Best Buy card is paid off ($380 balance cleared) and the account is closed as of late February. So your current open revolving accounts are just the three active cards: Chase Sapphire Preferred, Citi Double Cash, and Discover It. The Best Buy closure could have a small impact on your credit mix and total available credit, but since you're maintaining healthy utilization on your remaining three cards, the effect should be minimal. In fact, closing a card with a relatively short history might actually help your average account age over time, depending on when it was opened. Your timeline now shows: Best Buy paid off late February, score checked at 712 on March 3rd, Chase approved mid-March, dip to 698 in April, recovery to 721 last week. Looking great!\n\nYou really are in an excellent position. Let me recap your current credit snapshot: three active cards (Chase Sapphire Preferred, Citi Double Cash, Discover It) all on autopay, per-card utilization under 20%, Best Buy card paid off and closed, and your score at 721 and climbing. The potential authorized user addition from your mom's 1998 card could be the cherry on top if she decides to go through with it. Your approach of staying patient and disciplined is exactly what separates people who build great credit from those who get impatient and make unnecessary moves. Keep doing what you're doing, and I'll be here whenever you want to check in with a new score reading or discuss any changes. You're on a great trajectory toward that 740 goal!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize the key credit-related details I've shared with you over our conversations — scores, cards, payment setup, and any account closures?",
+      "expected_answer": "You shared the following: Experian credit score of 712 on March 3rd; Chase Sapphire Preferred approved mid-March with a $9,500 limit; Credit Karma score dipped to 698 in early April; autopay set up on all three cards (Chase Sapphire Preferred, Citi Double Cash, Discover It); per-card utilization kept under 20%; latest score recovered to 721 as of last week; your mom is considering adding you as an authorized user on her card from 1998 (not yet finalized); and the Best Buy card was paid off ($380 balance) and closed in late February.",
+      "gold_memory_state": "All eight operations are active: credit_score_march3=712, chase_sapphire_credit_limit=$9,500, credit_score_april_dip=698, autopay_setup=Chase Sapphire Preferred/Citi Double Cash/Discover It, utilization_strategy=under 20% per card, credit_score_latest=721, mom_authorized_user=tentative (considering), bestbuy_card_closed=paid off $380 and closed.",
+      "judge_rubric": {
+        "must_include": [
+          "712",
+          "9500 or 9,500",
+          "698",
+          "autopay",
+          "Chase Sapphire Preferred",
+          "Citi Double Cash",
+          "Discover It",
+          "under 20%",
+          "721",
+          "Best Buy",
+          "380",
+          "closed"
+        ],
+        "acceptable_paraphrases": [
+          "$9.5K",
+          "nine thousand five hundred"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "fabricating a fourth active credit card",
+          "stating the authorized user addition is confirmed"
+        ],
+        "harmless_extra": [
+          "mentioning Kevin's situation",
+          "mentioning the mom's card is from 1998"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I checked my Experian credit score on March 3rd and it came back at 712"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I got approved for the Chase Sapphire Preferred in mid-March with a $9,500 credit limit"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my score dipped to 698 around early April according to Credit Karma"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I set up autopay on all three of my credit cards — the Chase Sapphire Preferred, the Citi Double Cash, and the Discover It"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I keep my utilization under 20% on each individual card"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my latest score is 721 as of last week"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "my mom is thinking about adding me as an authorized user on her oldest card, which she's had since 1998"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "The Best Buy card balance I paid off was $380 and that account is now closed"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize the key credit-related details I've shared with you over our conversations — scores, cards, payment setup, and any account closures?",
+      "expected_answer": "You shared the following: Experian credit score of 712 on March 3rd; Chase Sapphire Preferred approved mid-March with a $9,500 limit; Credit Karma score dipped to 698 in early April; autopay set up on all three cards (Chase Sapphire Preferred, Citi Double Cash, Discover It); per-card utilization kept under 20%; latest score recovered to 721 as of last week; your mom is considering adding you as an authorized user on her card from 1998 (not yet finalized); and the Best Buy card was paid off ($380 balance) and closed in late February.",
+      "gold_memory_state": "All eight operations are active: credit_score_march3=712, chase_sapphire_credit_limit=$9,500, credit_score_april_dip=698, autopay_setup=Chase Sapphire Preferred/Citi Double Cash/Discover It, utilization_strategy=under 20% per card, credit_score_latest=721, mom_authorized_user=tentative (considering), bestbuy_card_closed=paid off $380 and closed.",
+      "judge_rubric": {
+        "must_include": [
+          "712",
+          "9500 or 9,500",
+          "698",
+          "autopay",
+          "Chase Sapphire Preferred",
+          "Citi Double Cash",
+          "Discover It",
+          "under 20%",
+          "721",
+          "Best Buy",
+          "380",
+          "closed"
+        ],
+        "acceptable_paraphrases": [
+          "$9.5K",
+          "nine thousand five hundred"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "fabricating a fourth active credit card",
+          "stating the authorized user addition is confirmed"
+        ],
+        "harmless_extra": [
+          "mentioning Kevin's situation",
+          "mentioning the mom's card is from 1998"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I checked my Experian credit score on March 3rd and it came back at 712"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I got approved for the Chase Sapphire Preferred in mid-March with a $9,500 credit limit"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my score dipped to 698 around early April according to Credit Karma"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I set up autopay on all three of my credit cards — the Chase Sapphire Preferred, the Citi Double Cash, and the Discover It"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I keep my utilization under 20% on each individual card"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my latest score is 721 as of last week"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "my mom is thinking about adding me as an authorized user on her oldest card, which she's had since 1998"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "The Best Buy card balance I paid off was $380 and that account is now closed"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned closing one of my credit card accounts recently. Which card was that, and does the closure affect any of my three active cards or my autopay setup?",
+      "expected_answer": "The closed account is the Best Buy card, which was paid off and closed in late February. It does not affect your three active cards (Chase Sapphire Preferred, Citi Double Cash, Discover It) or the autopay setup on those cards.",
+      "gold_memory_state": "Best Buy card is closed (paid off $380). Three active cards remain: Chase Sapphire Preferred, Citi Double Cash, Discover It — all with autopay active. The closure is a separate account record from the active card records.",
+      "judge_rubric": {
+        "must_include": [
+          "Best Buy",
+          "closed"
+        ],
+        "acceptable_paraphrases": [
+          "Best Buy credit card is no longer open"
+        ],
+        "must_not_include": [
+          "any active card was closed"
+        ],
+        "harmful_extra": [
+          "saying autopay was removed from any active card",
+          "saying the Chase Sapphire Preferred was closed",
+          "conflating the Best Buy closure with the active card portfolio"
+        ],
+        "harmless_extra": [
+          "mentioning the $380 balance that was paid off"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "The Best Buy card balance I paid off was $380 and that account is now closed"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I set up autopay on all three of my credit cards — the Chase Sapphire Preferred, the Citi Double Cash, and the Discover It"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned closing one of my credit card accounts recently. Which card was that, and does the closure affect any of my three active cards or my autopay setup?",
+      "expected_answer": "The closed account is the Best Buy card, which was paid off and closed in late February. It does not affect your three active cards (Chase Sapphire Preferred, Citi Double Cash, Discover It) or the autopay setup on those cards.",
+      "gold_memory_state": "Best Buy card is closed (paid off $380). Three active cards remain: Chase Sapphire Preferred, Citi Double Cash, Discover It — all with autopay active. The closure is a separate account record from the active card records.",
+      "judge_rubric": {
+        "must_include": [
+          "Best Buy",
+          "closed"
+        ],
+        "acceptable_paraphrases": [
+          "Best Buy credit card is no longer open"
+        ],
+        "must_not_include": [
+          "any active card was closed"
+        ],
+        "harmful_extra": [
+          "saying autopay was removed from any active card",
+          "saying the Chase Sapphire Preferred was closed",
+          "conflating the Best Buy closure with the active card portfolio"
+        ],
+        "harmless_extra": [
+          "mentioning the $380 balance that was paid off"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "The Best Buy card balance I paid off was $380 and that account is now closed"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I set up autopay on all three of my credit cards — the Chase Sapphire Preferred, the Citi Double Cash, and the Discover It"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Is the card I was approved for in mid-March one of the cards that has autopay enabled?",
+      "expected_answer": "Yes. The Chase Sapphire Preferred, which you were approved for in mid-March with a $9,500 limit, is one of the three cards on which you set up autopay.",
+      "gold_memory_state": "Chase Sapphire Preferred approved mid-March with $9,500 limit (op2). Autopay active on Chase Sapphire Preferred, Citi Double Cash, and Discover It (op4). The mid-March approval and the autopay setup both reference the same Chase Sapphire Preferred card.",
+      "judge_rubric": {
+        "must_include": [
+          "Chase Sapphire Preferred",
+          "yes"
+        ],
+        "acceptable_paraphrases": [
+          "the Chase Sapphire is on autopay"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying autopay is not set up on the Chase Sapphire Preferred",
+          "confusing the Chase Sapphire Preferred with another card"
+        ],
+        "harmless_extra": [
+          "mentioning the $9,500 limit",
+          "mentioning the other two cards on autopay"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model cannot connect the mid-March approval to the Chase Sapphire Preferred or cannot confirm it is on autopay.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I got approved for the Chase Sapphire Preferred in mid-March with a $9,500 credit limit"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I set up autopay on all three of my credit cards — the Chase Sapphire Preferred, the Citi Double Cash, and the Discover It"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Is the card I was approved for in mid-March one of the cards that has autopay enabled?",
+      "expected_answer": "Yes. The Chase Sapphire Preferred, which you were approved for in mid-March with a $9,500 limit, is one of the three cards on which you set up autopay.",
+      "gold_memory_state": "Chase Sapphire Preferred approved mid-March with $9,500 limit (op2). Autopay active on Chase Sapphire Preferred, Citi Double Cash, and Discover It (op4). The mid-March approval and the autopay setup both reference the same Chase Sapphire Preferred card.",
+      "judge_rubric": {
+        "must_include": [
+          "Chase Sapphire Preferred",
+          "yes"
+        ],
+        "acceptable_paraphrases": [
+          "the Chase Sapphire is on autopay"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying autopay is not set up on the Chase Sapphire Preferred",
+          "confusing the Chase Sapphire Preferred with another card"
+        ],
+        "harmless_extra": [
+          "mentioning the $9,500 limit",
+          "mentioning the other two cards on autopay"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model cannot connect the mid-March approval to the Chase Sapphire Preferred or cannot confirm it is on autopay.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I got approved for the Chase Sapphire Preferred in mid-March with a $9,500 credit limit"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I set up autopay on all three of my credit cards — the Chase Sapphire Preferred, the Citi Double Cash, and the Discover It"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "What is my most recent credit score reading?",
+      "candidate_options": [
+        "721",
+        "712",
+        "698",
+        "645"
+      ],
+      "expected_answer": "721",
+      "distractor_rationale": "same-value-different-target: 645 is Kevin's score mentioned by the assistant, not the user's own score. assistant echo: 712 was the user's earlier Experian baseline that the assistant recapped multiple times. 698 is the user's April dip score, which is a prior reading, not the latest.",
+      "gold_memory_state": "Most recent credit score is 721 as of last week. Prior scores: 712 (March 3, Experian), 698 (early April, Credit Karma). 645 is Kevin's score mentioned in the assistant's response, not the user's score.",
+      "judge_rubric": {
+        "must_include": [
+          "721"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "712 as latest",
+          "698 as latest",
+          "645 as the user's score"
+        ],
+        "harmful_extra": [
+          "selecting 712 or 698 as the most recent score",
+          "selecting 645"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model selects 712 (earlier baseline) or 698 (April dip) as the most recent score.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my latest score is 721 as of last week"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "What is my most recent credit score reading?",
+      "candidate_options": [
+        "721",
+        "712",
+        "698",
+        "645"
+      ],
+      "expected_answer": "721",
+      "distractor_rationale": "same-value-different-target: 645 is Kevin's score mentioned by the assistant, not the user's own score. assistant echo: 712 was the user's earlier Experian baseline that the assistant recapped multiple times. 698 is the user's April dip score, which is a prior reading, not the latest.",
+      "gold_memory_state": "Most recent credit score is 721 as of last week. Prior scores: 712 (March 3, Experian), 698 (early April, Credit Karma). 645 is Kevin's score mentioned in the assistant's response, not the user's score.",
+      "judge_rubric": {
+        "must_include": [
+          "721"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "712 as latest",
+          "698 as latest",
+          "645 as the user's score"
+        ],
+        "harmful_extra": [
+          "selecting 712 or 698 as the most recent score",
+          "selecting 645"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model selects 712 (earlier baseline) or 698 (April dip) as the most recent score.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my latest score is 721 as of last week"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm thinking about whether I'd qualify for a premium rewards card that requires a score of at least 720 and total active credit limits of at least $9,000. Also, the card issuer wants to see that applicants have autopay enabled on all active accounts. Based on what you know about my situation, do I meet all three requirements?",
+      "expected_answer": "Yes, you meet all three requirements. Your latest score is 721, which exceeds the 720 minimum. Your Chase Sapphire Preferred has a $9,500 limit, which alone exceeds the $9,000 active credit limit threshold (and you also have the Citi Double Cash and Discover It, though their limits were not specified). You have autopay enabled on all three active cards.",
+      "gold_memory_state": "Latest score: 721. Chase Sapphire Preferred limit: $9,500. Three active cards: Chase Sapphire Preferred, Citi Double Cash, Discover It — all on autopay. Citi Double Cash and Discover It limits not provided.",
+      "judge_rubric": {
+        "must_include": [
+          "721",
+          "meets or exceeds 720",
+          "9500 or 9,500",
+          "autopay on all three cards"
+        ],
+        "acceptable_paraphrases": [
+          "qualifies",
+          "satisfies all three"
+        ],
+        "must_not_include": [
+          "fabricated credit limits for Citi Double Cash or Discover It"
+        ],
+        "harmful_extra": [
+          "inventing specific dollar limits for the Citi Double Cash or Discover It cards",
+          "saying the user does not qualify"
+        ],
+        "harmless_extra": [
+          "noting that Citi Double Cash and Discover It limits were not specified so total active credit is at least $9,500"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model uses 712 or 698 as the current score instead of 721.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's latest credit score is 721 as of last week.",
+        "Fact 2: The Chase Sapphire Preferred has a $9,500 credit limit.",
+        "Fact 3: Autopay is active on all three cards — Chase Sapphire Preferred, Citi Double Cash, and Discover It.",
+        "Inference: 721 >= 720, so the score requirement is met.",
+        "Inference: The Chase Sapphire Preferred alone provides $9,500 in active credit limit, which exceeds the $9,000 minimum (the other two cards' limits are unspecified but would only add to this).",
+        "Inference: Autopay is active on all three active accounts, satisfying the third requirement.",
+        "Derived value: The user meets all three qualification criteria."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my latest score is 721 as of last week"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I got approved for the Chase Sapphire Preferred in mid-March with a $9,500 credit limit"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I set up autopay on all three of my credit cards — the Chase Sapphire Preferred, the Citi Double Cash, and the Discover It"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm thinking about whether I'd qualify for a premium rewards card that requires a score of at least 720 and total active credit limits of at least $9,000. Also, the card issuer wants to see that applicants have autopay enabled on all active accounts. Based on what you know about my situation, do I meet all three requirements?",
+      "expected_answer": "Yes, you meet all three requirements. Your latest score is 721, which exceeds the 720 minimum. Your Chase Sapphire Preferred has a $9,500 limit, which alone exceeds the $9,000 active credit limit threshold (and you also have the Citi Double Cash and Discover It, though their limits were not specified). You have autopay enabled on all three active cards.",
+      "gold_memory_state": "Latest score: 721. Chase Sapphire Preferred limit: $9,500. Three active cards: Chase Sapphire Preferred, Citi Double Cash, Discover It — all on autopay. Citi Double Cash and Discover It limits not provided.",
+      "judge_rubric": {
+        "must_include": [
+          "721",
+          "meets or exceeds 720",
+          "9500 or 9,500",
+          "autopay on all three cards"
+        ],
+        "acceptable_paraphrases": [
+          "qualifies",
+          "satisfies all three"
+        ],
+        "must_not_include": [
+          "fabricated credit limits for Citi Double Cash or Discover It"
+        ],
+        "harmful_extra": [
+          "inventing specific dollar limits for the Citi Double Cash or Discover It cards",
+          "saying the user does not qualify"
+        ],
+        "harmless_extra": [
+          "noting that Citi Double Cash and Discover It limits were not specified so total active credit is at least $9,500"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model uses 712 or 698 as the current score instead of 721.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's latest credit score is 721 as of last week.",
+        "Fact 2: The Chase Sapphire Preferred has a $9,500 credit limit.",
+        "Fact 3: Autopay is active on all three cards — Chase Sapphire Preferred, Citi Double Cash, and Discover It.",
+        "Inference: 721 >= 720, so the score requirement is met.",
+        "Inference: The Chase Sapphire Preferred alone provides $9,500 in active credit limit, which exceeds the $9,000 minimum (the other two cards' limits are unspecified but would only add to this).",
+        "Inference: Autopay is active on all three active accounts, satisfying the third requirement.",
+        "Derived value: The user meets all three qualification criteria."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my latest score is 721 as of last week"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I got approved for the Chase Sapphire Preferred in mid-March with a $9,500 credit limit"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I set up autopay on all three of my credit cards — the Chase Sapphire Preferred, the Citi Double Cash, and the Discover It"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What's my total credit limit across all my cards combined?",
+      "expected_answer": "I don't have that information. You only provided the credit limit for the Chase Sapphire Preferred ($9,500), but you haven't shared the limits for the Citi Double Cash or Discover It, so I cannot calculate a total credit limit across all cards.",
+      "gold_memory_state": "No total credit limit was ever provided. Only the Chase Sapphire Preferred limit of $9,500 was stated. Credit limits for the Citi Double Cash and Discover It were never mentioned.",
+      "judge_rubric": {
+        "must_include": [
+          "not provided",
+          "no total credit limit"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have a combined limit",
+          "total limit was never shared",
+          "I only know the Chase Sapphire Preferred limit"
+        ],
+        "must_not_include": [
+          "a fabricated total credit limit number"
+        ],
+        "harmful_extra": [
+          "inventing credit limits for the Citi Double Cash or Discover It",
+          "calculating a total by fabricating missing values"
+        ],
+        "harmless_extra": [
+          "mentioning that the Chase Sapphire Preferred limit is $9,500"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model fabricates or hallucinates a total credit limit value.",
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I got approved for the Chase Sapphire Preferred in mid-March with a $9,500 credit limit"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I set up autopay on all three of my credit cards — the Chase Sapphire Preferred, the Citi Double Cash, and the Discover It"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What's my total credit limit across all my cards combined?",
+      "expected_answer": "I don't have that information. You only provided the credit limit for the Chase Sapphire Preferred ($9,500), but you haven't shared the limits for the Citi Double Cash or Discover It, so I cannot calculate a total credit limit across all cards.",
+      "gold_memory_state": "No total credit limit was ever provided. Only the Chase Sapphire Preferred limit of $9,500 was stated. Credit limits for the Citi Double Cash and Discover It were never mentioned.",
+      "judge_rubric": {
+        "must_include": [
+          "not provided",
+          "no total credit limit"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have a combined limit",
+          "total limit was never shared",
+          "I only know the Chase Sapphire Preferred limit"
+        ],
+        "must_not_include": [
+          "a fabricated total credit limit number"
+        ],
+        "harmful_extra": [
+          "inventing credit limits for the Citi Double Cash or Discover It",
+          "calculating a total by fabricating missing values"
+        ],
+        "harmless_extra": [
+          "mentioning that the Chase Sapphire Preferred limit is $9,500"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model fabricates or hallucinates a total credit limit value.",
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I got approved for the Chase Sapphire Preferred in mid-March with a $9,500 credit limit"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I set up autopay on all three of my credit cards — the Chase Sapphire Preferred, the Citi Double Cash, and the Discover It"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,998 @@
+{
+  "target_fact": "User prefers direct and efficient communication style, as evidenced by appreciation for Priya's jargon-free explanations and David's short focused one-on-ones with pre-written agendas",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "David Keane is a Senior Technical Lead on the product integration team I joined back on March 4th"
+      },
+      "target": {
+        "target_id": "david_keane_title",
+        "target_name": "David Keane's job title"
+      },
+      "old_value": null,
+      "new_value": "Senior Technical Lead",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "David Keane is a Senior Technical Lead on the product integration team I joined back on March 4th"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "Priya Mukherjee walked me through all the onboarding docs. She's a Systems Analyst II. I really appreciated that she explained things without burying me in jargon — just straightforward, clear explanations"
+      },
+      "target": {
+        "target_id": "priya_communication_style_appreciation",
+        "target_name": "User's appreciation for Priya Mukherjee's clear communication"
+      },
+      "old_value": null,
+      "new_value": "Appreciated Priya's jargon-free, straightforward explanations during onboarding",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "she explained things without burying me in jargon — just straightforward, clear explanations"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I always prefer when people get to the point instead of going on tangents or using unnecessary technical language"
+      },
+      "target": {
+        "target_id": "user_meeting_preference_directness",
+        "target_name": "User's preference for direct communication over jargon"
+      },
+      "old_value": null,
+      "new_value": "Prefers people who get to the point without unnecessary technical language or tangents",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I always prefer when people get to the point instead of going on tangents or using unnecessary technical language"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "David runs his one-on-ones as fifteen-minute sessions with the agenda written out beforehand. No small talk, just focused discussion. I genuinely enjoy that format"
+      },
+      "target": {
+        "target_id": "david_meeting_format_appreciation",
+        "target_name": "User's appreciation for David's efficient meeting format"
+      },
+      "old_value": null,
+      "new_value": "Enjoys David's 15-minute one-on-ones with pre-written agendas and no small talk",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "David runs his one-on-ones as fifteen-minute sessions with the agenda written out beforehand. No small talk, just focused discussion. I genuinely enjoy that format"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I'd honestly rather have a short focused meeting than an hour of meandering conversation. That's one of the reasons I don't mind being on David's team"
+      },
+      "target": {
+        "target_id": "user_short_meeting_preference",
+        "target_name": "User's preference for short focused meetings over long ones"
+      },
+      "old_value": null,
+      "new_value": "Prefers short focused meetings over hour-long meandering conversations",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I'd honestly rather have a short focused meeting than an hour of meandering conversation. That's one of the reasons I don't mind being on David's team"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "I think the common thread is that I just value efficiency in how people communicate. Whether it's Priya explaining things simply or David keeping meetings tight, that's what works for me"
+      },
+      "target": {
+        "target_id": "user_communication_style_preference",
+        "target_name": "User's overall communication style preference"
+      },
+      "old_value": null,
+      "new_value": "Strongly prefers direct and efficient communication: values concise explanations without jargon and short structured meetings with clear agendas",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "she explained things without burying me in jargon — just straightforward, clear explanations"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I always prefer when people get to the point instead of going on tangents or using unnecessary technical language"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "David runs his one-on-ones as fifteen-minute sessions with the agenda written out beforehand. No small talk, just focused discussion. I genuinely enjoy that format"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I'd honestly rather have a short focused meeting than an hour of meandering conversation"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think the common thread is that I just value efficiency in how people communicate"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 7,
+        "quote": "Tom Aldridge got promoted from Director of Engineering to VP of Engineering. That was the reorg announcement in late March"
+      },
+      "target": {
+        "target_id": "tom_aldridge_title",
+        "target_name": "Tom Aldridge's current job title"
+      },
+      "old_value": null,
+      "new_value": "VP of Engineering",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Tom Aldridge got promoted from Director of Engineering to VP of Engineering. That was the reorg announcement in late March"
+        }
+      ]
+    },
+    {
+      "operation_id": "op8",
+      "type": "remember",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 7,
+        "quote": "David mentioned in standup that he's going to be acting as interim team lead for our sub-group while they figure out a permanent replacement. So he's kind of wearing two hats right now"
+      },
+      "target": {
+        "target_id": "david_interim_role",
+        "target_name": "David Keane's interim additional role"
+      },
+      "old_value": null,
+      "new_value": "Acting interim team lead for the sub-group",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "David mentioned in standup that he's going to be acting as interim team lead for our sub-group while they figure out a permanent replacement. So he's kind of wearing two hats right now"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish colleague details and user's appreciation for clear communication",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to give you some context about the people I work with so you can help me with emails and meeting prep. David Keane is a Senior Technical Lead on the product integration team I joined back on March 4th. I always second-guess his title in emails, so please keep that handy — it's Senior Technical Lead, in that order."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — David Keane, Senior Technical Lead on the product integration team, and you joined that team on March 4th. I'll keep that title order in mind so you don't have to double-check it every time you draft an email. If you ever need me to pull together a message referencing David, I'll make sure it reads 'Senior Technical Lead' consistently. Feel free to share any other colleagues' details you'd like me to track, and I can help you stay organized across your communications with the team."
+        },
+        {
+          "role": "user",
+          "content": "Great, thanks. So that same first week, I also started working with one of David's direct reports. Priya Mukherjee walked me through all the onboarding docs. She's a Systems Analyst II. I really appreciated that she explained things without burying me in jargon — just straightforward, clear explanations. Made the whole onboarding process so much smoother than I expected."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — Priya Mukherjee, Systems Analyst II, reports to David Keane, and she handled your onboarding documentation walkthrough during that first week of March. It sounds like her communication style made a strong positive impression on you — clear and jargon-free. That's a great quality in someone doing onboarding, especially for a new integration platform. I'll keep Priya's details alongside David's so I can reference her correctly in anything you need. Do you have more colleagues to mention, or shall we move on to something else?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, just to add — I always prefer when people get to the point instead of going on tangents or using unnecessary technical language. Priya did that naturally, and it made a huge difference. I've worked with people before who overcomplicate everything and it drives me up the wall. Clarity and brevity are really important to me in any professional interaction."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really useful thing for me to understand about how you like to work. You value clarity and brevity — people who communicate directly, skip the jargon, and don't over-explain. Priya clearly hit that mark for you during onboarding. I'll keep this preference in mind when I help you draft communications or prepare for meetings. For instance, if you want me to review an email before you send it, I can flag anything that feels unnecessarily wordy or overly technical. Does that sound helpful as a standing approach?"
+        },
+        {
+          "role": "user",
+          "content": "Exactly, that would be great. Oh, one more thing — around mid-April, April 11th specifically, there was a cross-team sync and I found out Priya was being moved to a different project under a new manager. I was honestly pretty bummed about that because we'd built up a really solid working rhythm. The few days after that announcement I was in a noticeably worse mood at work."
+        },
+        {
+          "role": "assistant",
+          "content": "I'm sorry to hear that — it sounds like losing that working relationship with Priya was genuinely disappointing, especially since you'd only had a few weeks to build that rhythm together. It makes sense that her move on April 11th would affect your mood, particularly given how well her communication style matched your preferences. Transitions like that can be frustrating when you have to start over with someone new. If you'd like, I can help you think through how to onboard a new collaborator efficiently, or draft a note to Priya acknowledging the good working relationship you had."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establish meeting style appreciation and trigger reflection on communication preference pattern",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So here's another thing I wanted to mention. David runs his one-on-ones as fifteen-minute sessions with the agenda written out beforehand. No small talk, just focused discussion. I genuinely enjoy that format. It's refreshing compared to some of the meetings I've been in at previous jobs where people just ramble for an hour without any clear purpose."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a great meeting structure — fifteen minutes with a pre-written agenda and no filler. It sounds like David's approach to one-on-ones really resonates with you. Having the agenda written out beforehand means both parties can come prepared, and the short time box forces focus on what actually matters. I can see why you'd find that refreshing after experiences with less structured meetings. If you ever want help preparing your side of the agenda for a one-on-one with David, I'm happy to help you organize your talking points into a concise format that matches his style."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, please do that if I ask. I'd honestly rather have a short focused meeting than an hour of meandering conversation. That's one of the reasons I don't mind being on David's team. Even though the integration work itself can be complex, the meetings never feel like a waste of time. It's a big deal for me — meeting efficiency really affects how I feel about a team."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely understood. Meeting efficiency is clearly a major factor in your overall team satisfaction, not just a minor preference. The fact that David's concise meeting style is one of the reasons you're comfortable on his team says a lot about how much you value that. I'll keep this in mind as a core working preference — if you ever need to give feedback on team processes or evaluate a new collaboration, I can frame things around this priority. And whenever you need agenda prep, I'll aim for the tightest possible structure to match that fifteen-minute format."
+        },
+        {
+          "role": "user",
+          "content": "You know, now that I'm talking about all this, I think the common thread is that I just value efficiency in how people communicate. Whether it's Priya explaining things simply or David keeping meetings tight, that's what works for me. I think that's a real pattern in what makes me enjoy working with someone versus dreading it. Efficiency and directness — that's the core of it."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really insightful observation, and I think you've nailed it. The thread connecting your appreciation for Priya's jargon-free onboarding and David's structured fifteen-minute one-on-ones is the same thing: you value direct, efficient communication. It's not just about meetings or just about documentation — it's a broader preference that cuts across all your professional interactions. People who respect your time and get to the point earn your trust and collaboration quickly. I'll treat this as a foundational preference when helping you with anything work-related, from drafting emails to evaluating new team dynamics."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. Okay, switching topics a bit — I also wanted to make sure you have the org context right. Tom Aldridge got promoted from Director of Engineering to VP of Engineering. That was the reorg announcement in late March. He's David's manager. I sometimes mix up Tom's title with David's in my head, so I need you to keep them straight for me.\n\nPerfect, that's exactly the hierarchy. Also, a new person joined our team around mid-April — Rachel Simmons, Junior Developer. I haven't worked with her much yet. My friend Marcus on the design team mentioned she came from an internship at the same company, so she's pretty green. I'm curious to see how she communicates in meetings."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it, and I'll make sure to keep those distinct. Tom Aldridge is now VP of Engineering — promoted from Director of Engineering during the late March reorg. He's David Keane's manager. So the chain is: Tom Aldridge (VP of Engineering) manages David Keane (Senior Technical Lead), and David's team is where you sit on the product integration team. I'll be careful to keep those titles separate whenever you're drafting communications. If you ever need to reference the reporting structure in an email or document, I can pull this hierarchy together quickly for you.\n\nNoted — Rachel Simmons, Junior Developer, joined your team around mid-April, and she came from an internship at the same company, so she's relatively new to full-time work. Your friend Marcus on the design team was the one who shared that background on her. It makes sense that you'd be curious about her communication style given how important directness and efficiency are to you. Once you've had a few interactions with her, I can help you think through how to give constructive feedback if her style doesn't match what you need, or note if she's a good fit. Let me know how it goes."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Recency trap with tentative role, adversarial injection, and reinforcement of existing facts",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, can you help me draft a quick email to Tom Aldridge about the integration project status? I want to keep it concise — you know how I feel about long-winded emails. Just the key points: we're on track with the API migration, and we've completed the authentication module testing ahead of schedule. Keep it to three or four sentences max."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely — here's a draft that matches your preference for brevity:\n\nSubject: Integration Project Status Update\n\nHi Tom,\n\nQuick update on the integration project: we're on track with the API migration timeline. The authentication module testing has been completed ahead of schedule. I'll flag any blockers as they come up, but things are moving smoothly for now.\n\nBest,\n[Your name]\n\nThat's three sentences of substance plus a sign-off. Want me to adjust anything, or does that hit the right tone for a VP of Engineering audience?"
+        },
+        {
+          "role": "user",
+          "content": "That's perfect, exactly the kind of email I like to send. Short, clear, no fluff. By the way, I was looking at an old org chart document that someone left in the shared drive, and it still lists David as 'Technical Lead' without the 'Senior' part. I think it's from before I joined. Anyway, just something I noticed — his current title is definitely Senior Technical Lead."
+        },
+        {
+          "role": "assistant",
+          "content": "Good catch on the outdated org chart — those shared drive documents can linger for months without anyone updating them. I can confirm from what you've told me that David Keane's current title is Senior Technical Lead, not the older 'Technical Lead' that's on that document. If you want, I could help you draft a quick note to whoever manages the shared drive asking them to update it, or you could flag it in your next standup. Either way, I've got the correct title stored so you won't accidentally pull from the wrong source when writing emails."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, I might flag it at some point. Oh, I also saw on that same old org chart that Leo Bassett was listed as 'Integration Specialist' — but I remember his actual title was Integration Consultant, and his contract ended last month anyway, so it doesn't really matter. Just funny how inaccurate that document is."
+        },
+        {
+          "role": "assistant",
+          "content": "Ha, yeah, that org chart sounds like a time capsule at this point — getting Leo Bassett's title wrong on top of David's outdated listing. You're right that Leo's title was Integration Consultant, not Integration Specialist, though since his contract has ended it's more of a historical footnote than anything actionable. It's a good reminder to always double-check shared drive documents against current information. If you ever need to reference past team composition for a retrospective or handoff document, I can help you put together an accurate version based on what you've shared with me."
+        },
+        {
+          "role": "user",
+          "content": "Good idea. So one more thing — David mentioned in standup that he's going to be acting as interim team lead for our sub-group while they figure out a permanent replacement. So he's kind of wearing two hats right now. I'm not sure how long that'll last, but it's the situation for now. I'm curious whether it'll change how he runs his one-on-ones.\n\nYeah, I'll see how it plays out. Honestly, as long as the meetings stay focused and efficient, I'm fine with whatever structure he uses. That's really the bottom line for me — I can adapt to format changes, but I can't stand it when meetings lose their purpose. Hopefully the interim role doesn't change that about David's approach."
+        },
+        {
+          "role": "assistant",
+          "content": "That's an interesting development — David Keane taking on an interim team lead role on top of his Senior Technical Lead position. It makes sense they'd lean on him given his seniority and the fact that he already runs things efficiently. Your curiosity about whether it'll affect his one-on-one format is understandable, especially since that structured fifteen-minute approach is something you really value. It could go either way — he might need to extend them slightly to cover team lead topics, or he might keep the same tight format and just add a separate meeting cadence. I'd say watch the first couple of sessions and let me know if anything shifts.\n\nThat's a very clear-eyed way to think about it — you're flexible on the specifics of format, but the non-negotiable for you is that meetings remain purposeful and efficient. Given everything you've told me about David's style, I'd be optimistic that he'll maintain that discipline even with the added responsibilities. He seems like someone who naturally gravitates toward structured communication, which aligns perfectly with what matters to you. If things do start to slip, I can help you think through how to give that feedback constructively. For now, it sounds like you're in a good position to just observe and see how the interim arrangement shakes out."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "What specific experiences did I share with you that reveal a pattern in how I like people to communicate at work?",
+      "expected_answer": "You described four key experiences: (1) Priya Mukherjee explained onboarding documentation without jargon, using straightforward and clear language, which you really appreciated; (2) you stated a general preference for people who get to the point without tangents or unnecessary technical language; (3) David Keane runs his one-on-ones as fifteen-minute sessions with pre-written agendas and no small talk, which you genuinely enjoy; (4) you prefer short focused meetings over hour-long meandering conversations. You then identified the common thread yourself: you value efficiency in how people communicate, whether it's simple explanations or tight meeting formats.",
+      "gold_memory_state": "The user's communication style preference is confirmed as valuing direct and efficient communication: concise jargon-free explanations (evidenced by Priya) and short structured meetings with clear agendas (evidenced by David). Tom Aldridge is VP of Engineering. David Keane is Senior Technical Lead with a tentative interim team lead role. Priya Mukherjee is Systems Analyst II.",
+      "judge_rubric": {
+        "must_include": [
+          "Priya's jargon-free explanations",
+          "David's short/focused one-on-ones with pre-written agendas",
+          "user values efficiency and directness in communication"
+        ],
+        "acceptable_paraphrases": [
+          "clear and straightforward communication",
+          "concise meetings",
+          "no unnecessary technical language"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the user prefers long detailed meetings",
+          "claiming the user likes technical jargon"
+        ],
+        "harmless_extra": [
+          "mentioning the user's mood impact from Priya's departure",
+          "mentioning Rachel Simmons"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes the preference to experiences not described by the user or invents additional evidence.",
+        "reflection_recall": "Fails if the model omits either Priya's communication style or David's meeting format as supporting evidence.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "she explained things without burying me in jargon — just straightforward, clear explanations"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I always prefer when people get to the point instead of going on tangents or using unnecessary technical language"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "David runs his one-on-ones as fifteen-minute sessions with the agenda written out beforehand. No small talk, just focused discussion. I genuinely enjoy that format"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I'd honestly rather have a short focused meeting than an hour of meandering conversation"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think the common thread is that I just value efficiency in how people communicate"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "What specific experiences did I share with you that reveal a pattern in how I like people to communicate at work?",
+      "expected_answer": "You described four key experiences: (1) Priya Mukherjee explained onboarding documentation without jargon, using straightforward and clear language, which you really appreciated; (2) you stated a general preference for people who get to the point without tangents or unnecessary technical language; (3) David Keane runs his one-on-ones as fifteen-minute sessions with pre-written agendas and no small talk, which you genuinely enjoy; (4) you prefer short focused meetings over hour-long meandering conversations. You then identified the common thread yourself: you value efficiency in how people communicate, whether it's simple explanations or tight meeting formats.",
+      "gold_memory_state": "The user's communication style preference is confirmed as valuing direct and efficient communication: concise jargon-free explanations (evidenced by Priya) and short structured meetings with clear agendas (evidenced by David). Tom Aldridge is VP of Engineering. David Keane is Senior Technical Lead with a tentative interim team lead role. Priya Mukherjee is Systems Analyst II.",
+      "judge_rubric": {
+        "must_include": [
+          "Priya's jargon-free explanations",
+          "David's short/focused one-on-ones with pre-written agendas",
+          "user values efficiency and directness in communication"
+        ],
+        "acceptable_paraphrases": [
+          "clear and straightforward communication",
+          "concise meetings",
+          "no unnecessary technical language"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the user prefers long detailed meetings",
+          "claiming the user likes technical jargon"
+        ],
+        "harmless_extra": [
+          "mentioning the user's mood impact from Priya's departure",
+          "mentioning Rachel Simmons"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes the preference to experiences not described by the user or invents additional evidence.",
+        "reflection_recall": "Fails if the model omits either Priya's communication style or David's meeting format as supporting evidence.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "she explained things without burying me in jargon — just straightforward, clear explanations"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I always prefer when people get to the point instead of going on tangents or using unnecessary technical language"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "David runs his one-on-ones as fifteen-minute sessions with the agenda written out beforehand. No small talk, just focused discussion. I genuinely enjoy that format"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I'd honestly rather have a short focused meeting than an hour of meandering conversation"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think the common thread is that I just value efficiency in how people communicate"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When I recognized a common thread across my workplace interactions, which bounded conclusion about my working style is supported by the examples I gave? Could any broader conclusion about my social preferences in general be drawn from the same examples?",
+      "expected_answer": "The supported conclusion is that you strongly prefer direct and efficient communication in professional settings — specifically, you value concise jargon-free explanations and short structured meetings with clear agendas. This is bounded to workplace communication style. A broader conclusion about your social preferences in general (e.g., that you dislike all casual conversation or small talk in every context) is not supported by these examples.",
+      "gold_memory_state": "The confirmed inference target is the user's overall communication style preference: direct and efficient communication valued in professional contexts. Supporting facts: Priya's jargon-free onboarding explanations, David's 15-minute pre-agenda one-on-ones, user's explicit statements about preferring brevity and directness. The inference does not extend to non-work social settings or to all interpersonal preferences.",
+      "judge_rubric": {
+        "must_include": [
+          "direct/efficient communication preference",
+          "bounded to professional/workplace communication"
+        ],
+        "acceptable_paraphrases": [
+          "concise communication style",
+          "values brevity and clarity at work"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the user dislikes all social interaction",
+          "claiming the user avoids all small talk in every life context",
+          "extending the conclusion to personal relationships or friendships"
+        ],
+        "harmless_extra": [
+          "mentioning Priya or David by name as supporting examples",
+          "mentioning the user's preference for short meetings specifically"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model extends the inference beyond professional communication to all social preferences without evidence.",
+        "reflection_recall": "Fails if the model fails to identify both dimensions (jargon-free explanations and structured meetings) as supporting the conclusion.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think the common thread is that I just value efficiency in how people communicate. Whether it's Priya explaining things simply or David keeping meetings tight, that's what works for me"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "she explained things without burying me in jargon — just straightforward, clear explanations"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "David runs his one-on-ones as fifteen-minute sessions with the agenda written out beforehand. No small talk, just focused discussion. I genuinely enjoy that format"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When I recognized a common thread across my workplace interactions, which bounded conclusion about my working style is supported by the examples I gave? Could any broader conclusion about my social preferences in general be drawn from the same examples?",
+      "expected_answer": "The supported conclusion is that you strongly prefer direct and efficient communication in professional settings — specifically, you value concise jargon-free explanations and short structured meetings with clear agendas. This is bounded to workplace communication style. A broader conclusion about your social preferences in general (e.g., that you dislike all casual conversation or small talk in every context) is not supported by these examples.",
+      "gold_memory_state": "The confirmed inference target is the user's overall communication style preference: direct and efficient communication valued in professional contexts. Supporting facts: Priya's jargon-free onboarding explanations, David's 15-minute pre-agenda one-on-ones, user's explicit statements about preferring brevity and directness. The inference does not extend to non-work social settings or to all interpersonal preferences.",
+      "judge_rubric": {
+        "must_include": [
+          "direct/efficient communication preference",
+          "bounded to professional/workplace communication"
+        ],
+        "acceptable_paraphrases": [
+          "concise communication style",
+          "values brevity and clarity at work"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the user dislikes all social interaction",
+          "claiming the user avoids all small talk in every life context",
+          "extending the conclusion to personal relationships or friendships"
+        ],
+        "harmless_extra": [
+          "mentioning Priya or David by name as supporting examples",
+          "mentioning the user's preference for short meetings specifically"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model extends the inference beyond professional communication to all social preferences without evidence.",
+        "reflection_recall": "Fails if the model fails to identify both dimensions (jargon-free explanations and structured meetings) as supporting the conclusion.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think the common thread is that I just value efficiency in how people communicate. Whether it's Priya explaining things simply or David keeping meetings tight, that's what works for me"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "she explained things without burying me in jargon — just straightforward, clear explanations"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "David runs his one-on-ones as fifteen-minute sessions with the agenda written out beforehand. No small talk, just focused discussion. I genuinely enjoy that format"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe the boundary of my communication preference: what types of workplace situations does it clearly apply to, and where would it be an overreach to apply it?",
+      "expected_answer": "Your preference for direct and efficient communication clearly applies to: (1) one-on-one meetings and team meetings — you want them short, focused, and agenda-driven; (2) explanations and documentation walkthroughs — you want them jargon-free and straightforward; (3) email communication — you prefer concise messages. It would be an overreach to conclude that you dislike all informal interaction, that you avoid relationship-building with colleagues, or that you would want to eliminate all context-setting in complex technical discussions. The evidence also does not support extending this to non-work contexts.",
+      "gold_memory_state": "Supported inference: user prefers direct, efficient professional communication — jargon-free explanations and short structured meetings. Unsupported overgeneralization: the user dislikes all social interaction at work, avoids all informal conversation, or would reject any meeting longer than 15 minutes regardless of complexity. The inference boundary is professional communication style, not personality-wide introversion or anti-social behavior.",
+      "judge_rubric": {
+        "must_include": [
+          "supported scope: meetings, explanations, professional communication",
+          "unsupported overreach: not all social interaction, not all informal contexts"
+        ],
+        "acceptable_paraphrases": [
+          "applies to work meetings and documentation",
+          "does not mean the user dislikes all casual talk"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the user is antisocial",
+          "claiming the preference applies to personal friendships",
+          "claiming the user would never attend a longer meeting for any reason"
+        ],
+        "harmless_extra": [
+          "mentioning Priya and David as specific examples",
+          "noting that the user adapts to format changes as long as meetings stay purposeful"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model overgeneralizes the preference to all social interaction or personality-level traits without evidence.",
+        "reflection_recall": "Fails if the model fails to name both dimensions of the supported preference (jargon-free explanations and structured meetings).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think the common thread is that I just value efficiency in how people communicate. Whether it's Priya explaining things simply or David keeping meetings tight, that's what works for me"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I always prefer when people get to the point instead of going on tangents or using unnecessary technical language"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Honestly, as long as the meetings stay focused and efficient, I'm fine with whatever structure he uses. That's really the bottom line for me — I can adapt to format changes, but I can't stand it when meetings lose their purpose"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe the boundary of my communication preference: what types of workplace situations does it clearly apply to, and where would it be an overreach to apply it?",
+      "expected_answer": "Your preference for direct and efficient communication clearly applies to: (1) one-on-one meetings and team meetings — you want them short, focused, and agenda-driven; (2) explanations and documentation walkthroughs — you want them jargon-free and straightforward; (3) email communication — you prefer concise messages. It would be an overreach to conclude that you dislike all informal interaction, that you avoid relationship-building with colleagues, or that you would want to eliminate all context-setting in complex technical discussions. The evidence also does not support extending this to non-work contexts.",
+      "gold_memory_state": "Supported inference: user prefers direct, efficient professional communication — jargon-free explanations and short structured meetings. Unsupported overgeneralization: the user dislikes all social interaction at work, avoids all informal conversation, or would reject any meeting longer than 15 minutes regardless of complexity. The inference boundary is professional communication style, not personality-wide introversion or anti-social behavior.",
+      "judge_rubric": {
+        "must_include": [
+          "supported scope: meetings, explanations, professional communication",
+          "unsupported overreach: not all social interaction, not all informal contexts"
+        ],
+        "acceptable_paraphrases": [
+          "applies to work meetings and documentation",
+          "does not mean the user dislikes all casual talk"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the user is antisocial",
+          "claiming the preference applies to personal friendships",
+          "claiming the user would never attend a longer meeting for any reason"
+        ],
+        "harmless_extra": [
+          "mentioning Priya and David as specific examples",
+          "noting that the user adapts to format changes as long as meetings stay purposeful"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model overgeneralizes the preference to all social interaction or personality-level traits without evidence.",
+        "reflection_recall": "Fails if the model fails to name both dimensions of the supported preference (jargon-free explanations and structured meetings).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think the common thread is that I just value efficiency in how people communicate. Whether it's Priya explaining things simply or David keeping meetings tight, that's what works for me"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I always prefer when people get to the point instead of going on tangents or using unnecessary technical language"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Honestly, as long as the meetings stay focused and efficient, I'm fine with whatever structure he uses. That's really the bottom line for me — I can adapt to format changes, but I can't stand it when meetings lose their purpose"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "Which of the following best describes the overall professional preference I identified across my workplace experiences?",
+      "candidate_options": [
+        "Prefers direct and efficient communication: values jargon-free explanations and short structured meetings with agendas",
+        "Prefers working independently with minimal team interaction and avoids all meetings",
+        "Prefers detailed technical discussions with comprehensive documentation and thorough meeting coverage",
+        "Prefers informal and relationship-focused communication with extended team bonding sessions"
+      ],
+      "distractor_rationale": "same-value-different-target: 'Prefers detailed technical discussions with comprehensive documentation and thorough meeting coverage' takes the workplace communication domain but inverts the user's actual preference toward brevity, making it a plausible but incorrect characterization of someone on a technical team. assistant echo: 'Prefers informal and relationship-focused communication with extended team bonding sessions' echoes the assistant's mention of relationship-building and team dynamics but inverts the user's stated dislike of small talk and meandering meetings. The 'working independently' option overgeneralizes the directness preference into anti-social isolation, which the user never expressed.",
+      "expected_answer": "Prefers direct and efficient communication: values jargon-free explanations and short structured meetings with agendas",
+      "gold_memory_state": "The user's confirmed communication style preference is direct and efficient communication, supported by appreciation for Priya's jargon-free explanations and David's 15-minute agenda-driven one-on-ones. The user explicitly identified efficiency as the common thread.",
+      "judge_rubric": {
+        "must_include": [
+          "direct and efficient communication",
+          "jargon-free explanations",
+          "short structured meetings"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "avoids all meetings",
+          "minimal team interaction",
+          "extended team bonding"
+        ],
+        "harmful_extra": [
+          "selecting the independent/isolation option",
+          "selecting the detailed technical discussion option"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model selects an overgeneralized option (e.g., avoids all meetings or prefers isolation) instead of the bounded communication preference.",
+        "reflection_recall": "Fails if the model does not recognize both the explanation-style and meeting-style dimensions of the preference.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think the common thread is that I just value efficiency in how people communicate. Whether it's Priya explaining things simply or David keeping meetings tight, that's what works for me"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I always prefer when people get to the point instead of going on tangents or using unnecessary technical language"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "Which of the following best describes the overall professional preference I identified across my workplace experiences?",
+      "candidate_options": [
+        "Prefers direct and efficient communication: values jargon-free explanations and short structured meetings with agendas",
+        "Prefers working independently with minimal team interaction and avoids all meetings",
+        "Prefers detailed technical discussions with comprehensive documentation and thorough meeting coverage",
+        "Prefers informal and relationship-focused communication with extended team bonding sessions"
+      ],
+      "distractor_rationale": "same-value-different-target: 'Prefers detailed technical discussions with comprehensive documentation and thorough meeting coverage' takes the workplace communication domain but inverts the user's actual preference toward brevity, making it a plausible but incorrect characterization of someone on a technical team. assistant echo: 'Prefers informal and relationship-focused communication with extended team bonding sessions' echoes the assistant's mention of relationship-building and team dynamics but inverts the user's stated dislike of small talk and meandering meetings. The 'working independently' option overgeneralizes the directness preference into anti-social isolation, which the user never expressed.",
+      "expected_answer": "Prefers direct and efficient communication: values jargon-free explanations and short structured meetings with agendas",
+      "gold_memory_state": "The user's confirmed communication style preference is direct and efficient communication, supported by appreciation for Priya's jargon-free explanations and David's 15-minute agenda-driven one-on-ones. The user explicitly identified efficiency as the common thread.",
+      "judge_rubric": {
+        "must_include": [
+          "direct and efficient communication",
+          "jargon-free explanations",
+          "short structured meetings"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "avoids all meetings",
+          "minimal team interaction",
+          "extended team bonding"
+        ],
+        "harmful_extra": [
+          "selecting the independent/isolation option",
+          "selecting the detailed technical discussion option"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model selects an overgeneralized option (e.g., avoids all meetings or prefers isolation) instead of the bounded communication preference.",
+        "reflection_recall": "Fails if the model does not recognize both the explanation-style and meeting-style dimensions of the preference.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think the common thread is that I just value efficiency in how people communicate. Whether it's Priya explaining things simply or David keeping meetings tight, that's what works for me"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I always prefer when people get to the point instead of going on tangents or using unnecessary technical language"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "Rachel Simmons, the new Junior Developer, has asked me to schedule an introductory meeting to walk through the integration platform architecture. Given what you know about my preferences and the team context, draft a short meeting invitation (3–4 sentences) that sets up the meeting in a way I'd actually appreciate. Include who's involved, the format, and any ground rules.",
+      "expected_answer": "Subject: Integration Architecture Walkthrough — 15 min\n\nHi Rachel, let's do a focused 15-minute session to walk through the integration platform architecture. I'll send a short agenda beforehand so we can stay on track. Please keep explanations straightforward — bullet points over long paragraphs — and we'll cover any follow-ups asynchronously. Looking forward to it.",
+      "gold_memory_state": "User prefers direct and efficient communication. David's 15-minute pre-agenda format is the user's ideal meeting model. User values jargon-free, straightforward explanations. Rachel Simmons is a Junior Developer who joined the team in mid-April. David Keane is Senior Technical Lead (confirmed); his interim team lead role is tentative and should not be presented as confirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "short/brief meeting duration",
+          "pre-written or shared agenda",
+          "straightforward or jargon-free communication expectation"
+        ],
+        "acceptable_paraphrases": [
+          "concise session",
+          "agenda in advance",
+          "clear and direct explanations"
+        ],
+        "must_not_include": [
+          "hour-long meeting",
+          "open-ended unstructured format"
+        ],
+        "harmful_extra": [
+          "describing David's interim team lead role as confirmed/permanent",
+          "suggesting a long casual get-to-know-you session"
+        ],
+        "harmless_extra": [
+          "mentioning Rachel's Junior Developer title",
+          "referencing the integration platform specifically",
+          "suggesting async follow-ups"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses David's tentative interim team lead role as a confirmed fact in the invitation.",
+        "reflection_precision": "Fails if the meeting format contradicts the user's stated communication preferences (e.g., suggests a long open-ended discussion).",
+        "reflection_recall": "Fails if the draft omits both the agenda requirement and the brevity/directness requirement.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user strongly prefers direct and efficient communication, valuing jargon-free explanations and short structured meetings with agendas.",
+        "Fact 2: David Keane's 15-minute one-on-ones with pre-written agendas are the user's ideal meeting format.",
+        "Fact 3: Rachel Simmons is a Junior Developer who recently joined the team and is relatively new to full-time work.",
+        "Inference: The meeting invitation should model the user's preferred format — short duration, pre-shared agenda, and a ground rule about clear straightforward communication — while being appropriate for an introductory architecture walkthrough with a junior colleague.",
+        "Inference: Since Rachel is junior and the user values clarity over jargon, the invitation should explicitly set the expectation for straightforward explanations rather than assuming Rachel will default to that style."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think the common thread is that I just value efficiency in how people communicate. Whether it's Priya explaining things simply or David keeping meetings tight, that's what works for me"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "David runs his one-on-ones as fifteen-minute sessions with the agenda written out beforehand. No small talk, just focused discussion. I genuinely enjoy that format"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Tom Aldridge got promoted from Director of Engineering to VP of Engineering. That was the reorg announcement in late March"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I always prefer when people get to the point instead of going on tangents or using unnecessary technical language"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "Rachel Simmons, the new Junior Developer, has asked me to schedule an introductory meeting to walk through the integration platform architecture. Given what you know about my preferences and the team context, draft a short meeting invitation (3–4 sentences) that sets up the meeting in a way I'd actually appreciate. Include who's involved, the format, and any ground rules.",
+      "expected_answer": "Subject: Integration Architecture Walkthrough — 15 min\n\nHi Rachel, let's do a focused 15-minute session to walk through the integration platform architecture. I'll send a short agenda beforehand so we can stay on track. Please keep explanations straightforward — bullet points over long paragraphs — and we'll cover any follow-ups asynchronously. Looking forward to it.",
+      "gold_memory_state": "User prefers direct and efficient communication. David's 15-minute pre-agenda format is the user's ideal meeting model. User values jargon-free, straightforward explanations. Rachel Simmons is a Junior Developer who joined the team in mid-April. David Keane is Senior Technical Lead (confirmed); his interim team lead role is tentative and should not be presented as confirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "short/brief meeting duration",
+          "pre-written or shared agenda",
+          "straightforward or jargon-free communication expectation"
+        ],
+        "acceptable_paraphrases": [
+          "concise session",
+          "agenda in advance",
+          "clear and direct explanations"
+        ],
+        "must_not_include": [
+          "hour-long meeting",
+          "open-ended unstructured format"
+        ],
+        "harmful_extra": [
+          "describing David's interim team lead role as confirmed/permanent",
+          "suggesting a long casual get-to-know-you session"
+        ],
+        "harmless_extra": [
+          "mentioning Rachel's Junior Developer title",
+          "referencing the integration platform specifically",
+          "suggesting async follow-ups"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses David's tentative interim team lead role as a confirmed fact in the invitation.",
+        "reflection_precision": "Fails if the meeting format contradicts the user's stated communication preferences (e.g., suggests a long open-ended discussion).",
+        "reflection_recall": "Fails if the draft omits both the agenda requirement and the brevity/directness requirement.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user strongly prefers direct and efficient communication, valuing jargon-free explanations and short structured meetings with agendas.",
+        "Fact 2: David Keane's 15-minute one-on-ones with pre-written agendas are the user's ideal meeting format.",
+        "Fact 3: Rachel Simmons is a Junior Developer who recently joined the team and is relatively new to full-time work.",
+        "Inference: The meeting invitation should model the user's preferred format — short duration, pre-shared agenda, and a ground rule about clear straightforward communication — while being appropriate for an introductory architecture walkthrough with a junior colleague.",
+        "Inference: Since Rachel is junior and the user values clarity over jargon, the invitation should explicitly set the expectation for straightforward explanations rather than assuming Rachel will default to that style."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think the common thread is that I just value efficiency in how people communicate. Whether it's Priya explaining things simply or David keeping meetings tight, that's what works for me"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "David runs his one-on-ones as fifteen-minute sessions with the agenda written out beforehand. No small talk, just focused discussion. I genuinely enjoy that format"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Tom Aldridge got promoted from Director of Engineering to VP of Engineering. That was the reorg announcement in late March"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I always prefer when people get to the point instead of going on tangents or using unnecessary technical language"
+        }
+      ]
+    }
+  ]
+}

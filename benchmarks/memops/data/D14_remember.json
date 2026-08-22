@@ -1,0 +1,1139 @@
+{
+  "target_fact": "User's banking and payment setup: Chase checking for direct deposit and recurring bills, Marcus by Goldman Sachs high-yield savings at 4.5% APY with $8,000 transferred, Apple Pay linked to Chase Sapphire Preferred for everyday purchases, Zelle set up through Chase for rent payments, and inactive BECU credit union account with ~$200.",
+  "operation_type": "Remember",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 3,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": true,
+      "never_stored_target": "cryptocurrency wallet"
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "My main checking account is with Chase, and my salary gets direct-deposited there every two weeks"
+      },
+      "target": {
+        "target_id": "chase_checking_account",
+        "target_name": "primary checking account and direct deposit setup"
+      },
+      "old_value": null,
+      "new_value": "Chase checking account, salary direct-deposited every two weeks, primary account for all recurring bills",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My main checking account is with Chase, and my salary gets direct-deposited there every two weeks"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I opened a high-yield savings account with Marcus by Goldman Sachs back in mid-March. The APY was 4.5% when I signed up"
+      },
+      "target": {
+        "target_id": "marcus_savings_account",
+        "target_name": "Marcus by Goldman Sachs high-yield savings account"
+      },
+      "old_value": null,
+      "new_value": "Marcus by Goldman Sachs high-yield savings, 4.5% APY at sign-up in mid-March",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I opened a high-yield savings account with Marcus by Goldman Sachs back in mid-March. The APY was 4.5% when I signed up"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I moved about $8,000 from my Chase savings into the Marcus account"
+      },
+      "target": {
+        "target_id": "marcus_transfer_amount",
+        "target_name": "amount transferred to Marcus savings from Chase"
+      },
+      "old_value": null,
+      "new_value": "$8,000 transferred from Chase savings to Marcus savings",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I moved about $8,000 from my Chase savings into the Marcus account"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "For everyday purchases I use Apple Pay linked to my Chase Sapphire Preferred card. I stopped carrying cash entirely about two months ago"
+      },
+      "target": {
+        "target_id": "everyday_payment_method",
+        "target_name": "everyday purchase payment method"
+      },
+      "old_value": null,
+      "new_value": "Apple Pay linked to Chase Sapphire Preferred card, no cash",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "For everyday purchases I use Apple Pay linked to my Chase Sapphire Preferred card. I stopped carrying cash entirely about two months ago"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I set up Zelle through the Chase app last week because my new landlord only accepts rent via Zelle or check"
+      },
+      "target": {
+        "target_id": "zelle_rent_setup",
+        "target_name": "Zelle setup for rent payment"
+      },
+      "old_value": null,
+      "new_value": "Zelle set up through Chase app, used for rent payment to new landlord",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I set up Zelle through the Chase app last week because my new landlord only accepts rent via Zelle or check"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "I deleted my Venmo account back in February. Completely done with it"
+      },
+      "target": {
+        "target_id": "venmo_account_status",
+        "target_name": "Venmo account status"
+      },
+      "old_value": null,
+      "new_value": "Venmo account deleted in February, no longer active",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I deleted my Venmo account back in February. Completely done with it"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 1,
+        "quote": "I still have a credit union account at BECU from when I lived in Seattle. There's about $200 sitting in it that I keep meaning to close out"
+      },
+      "target": {
+        "target_id": "becu_credit_union",
+        "target_name": "BECU credit union account status"
+      },
+      "old_value": null,
+      "new_value": "BECU credit union account from Seattle era, approximately $200 balance, intending to close",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I still have a credit union account at BECU from when I lived in Seattle. There's about $200 sitting in it that I keep meaning to close out"
+        }
+      ]
+    },
+    {
+      "operation_id": "op8",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "my Chase savings was earning basically 0.01% APY before I moved the money to Marcus"
+      },
+      "target": {
+        "target_id": "chase_savings_apy",
+        "target_name": "Chase savings account APY before Marcus transfer"
+      },
+      "old_value": null,
+      "new_value": "0.01% APY",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "my Chase savings was earning basically 0.01% APY before I moved the money to Marcus"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establishing primary banking details and savings account",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to organize my financial setup and could use your help keeping track of everything. My main checking account is with Chase, and my salary gets direct-deposited there every two weeks. I've had it since 2018 — opened it right before I started a job in Bellevue. All my recurring bills auto-debit from that Chase checking: rent, utilities, phone plan, everything."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a solid foundation! So your Chase checking account has been your financial hub since 2018, handling your biweekly salary deposits and serving as the central account for all your recurring bill payments including rent, utilities, and your phone plan. Having everything consolidated like that makes tracking expenses much easier. I'll keep note of Chase checking as your primary account. Would you like to walk me through any other accounts or financial tools you're using? We can build a comprehensive picture of your whole setup so nothing gets overlooked."
+        },
+        {
+          "role": "user",
+          "content": "Sure thing. I opened a high-yield savings account with Marcus by Goldman Sachs back in mid-March. The APY was 4.5% when I signed up. I'd been procrastinating on that for months honestly, but finally pulled the trigger because my Chase savings was earning practically nothing. It felt really good to finally get that done and start actually earning something meaningful on my savings."
+        },
+        {
+          "role": "assistant",
+          "content": "Great move opening that Marcus by Goldman Sachs account! A 4.5% APY is a significant upgrade from a standard savings account that typically offers very little. Mid-March was a good time to lock that in given where rates have been trending. It's completely understandable that it took a while — switching savings accounts isn't exactly thrilling, but the payoff in interest earnings makes it worthwhile. I've noted your Marcus high-yield savings at 4.5% APY, opened mid-March. How much did you end up moving over from your Chase savings? That'll help me understand the full picture of how your funds are distributed across accounts."
+        },
+        {
+          "role": "user",
+          "content": "I moved about $8,000 from my Chase savings into the Marcus account. That was basically the bulk of what I had sitting in Chase savings doing nothing. After the transfer my Chase savings balance dropped pretty significantly but I don't mind since the money is actually working for me now. I figured there was no point leaving it in an account earning almost zero interest when I could be getting a real return on it."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes perfect sense — $8,000 at 4.5% APY is going to generate noticeably more interest than it would sitting idle in a standard Chase savings account. Even conservatively, you're looking at roughly $360 in annual interest from Marcus versus maybe a few dollars from Chase savings. That's a meaningful difference over time, especially if rates stay elevated. So your current savings picture is: most liquid savings now in Marcus by Goldman Sachs at 4.5%, with your Chase savings significantly drawn down after the transfer. Between your Chase checking handling daily operations and Marcus handling your savings growth, you've got a clean two-account structure. Any other accounts or financial tools to add?"
+        },
+        {
+          "role": "user",
+          "content": "One thing that was annoying — after I set up the Marcus account, around late March or maybe early April, one of my auto-transfers from Chase glitched and I got hit with an insufficient funds fee. It was the bank's system that lagged, not anything I did wrong. I called Chase and they reversed the fee, but I was honestly pretty irritated about it for a few days. Systems should handle these transitions better."
+        },
+        {
+          "role": "assistant",
+          "content": "That's really frustrating, especially when it's clearly a system timing issue and not something you caused. Auto-transfer glitches during account transitions are unfortunately more common than they should be — when funds are moving between institutions, there can be settlement delays that trigger overdraft or insufficient funds fees. Good on you for calling and getting it reversed though. Most banks will accommodate that kind of request when it's obviously a processing lag. I'd recommend keeping a small buffer in your Chase savings for a few weeks after any major transfers to avoid similar hiccups in the future. At least the fee was reversed and your Marcus account is now up and running properly. Anything else come up during the transition?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Detailing everyday payment methods, Zelle setup, and Venmo deletion",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "For everyday purchases I use Apple Pay linked to my Chase Sapphire Preferred card. I stopped carrying cash entirely about two months ago. There's something really satisfying about just tapping my phone and walking away — it feels so seamless. My friend Derek still insists on using cash for everything because he doesn't trust contactless payments, which I find kind of baffling but to each their own I guess."
+        },
+        {
+          "role": "assistant",
+          "content": "Apple Pay with the Chase Sapphire Preferred is a great combo — you're getting the convenience of contactless payments plus the Sapphire Preferred's solid rewards structure on dining and travel. Going completely cashless makes a lot of sense these days, especially with how widely accepted contactless payments have become. The tap-and-go experience really is seamless once you're used to it. As for Derek, some people just prefer the tangibility and perceived control of physical cash — it's not uncommon, even if the security arguments for contactless are actually quite strong. I've noted Apple Pay linked to your Chase Sapphire Preferred as your everyday payment method. Are there any other payment platforms or cards you're actively using right now?"
+        },
+        {
+          "role": "user",
+          "content": "I set up Zelle through the Chase app last week because my new landlord only accepts rent via Zelle or check. The setup was pretty painless actually — took maybe five minutes. I much prefer Zelle over writing physical checks, so I'm glad that was an option. It integrates right into the Chase app which is convenient since I'm already managing everything through there. One less thing to worry about each month."
+        },
+        {
+          "role": "assistant",
+          "content": "That's convenient that Zelle integrates directly into the Chase app — it means you don't need yet another standalone payment app cluttering your phone. Since your rent auto-debits from Chase checking anyway as your primary bill-pay account, having Zelle built right in keeps everything centralized. Setting it up in five minutes is about right; Chase has made the enrollment process pretty streamlined. For your landlord's purposes, Zelle transfers are instant between major banks, so there's no waiting period like with mailed checks. Just make sure you have your landlord's correct email or phone number saved so each monthly payment goes through without a hitch. Any other payment tools or platforms in your current rotation?"
+        },
+        {
+          "role": "user",
+          "content": "Actually the opposite — I deleted my Venmo account back in February. Completely done with it. I used to be fairly active on Venmo for splitting bills and stuff with friends, but I just didn't need it anymore. Between Apple Pay, Zelle, and my Chase card, I have everything covered. Simplifying my financial tools has been a priority this year, and cutting Venmo was part of that effort to reduce the number of apps handling my money."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes a lot of sense as part of a simplification strategy. Venmo is useful for social splitting, but if you've already got Zelle for person-to-person transfers and Apple Pay for everyday purchases, there's genuine overlap that Venmo doesn't uniquely fill. Deleting it in February and consolidating around fewer platforms reduces your attack surface from a security perspective too — fewer apps with access to your bank details means fewer potential vulnerabilities. So your current active payment ecosystem is: Chase checking for bills and direct deposit, Apple Pay linked to Chase Sapphire Preferred for everyday spending, and Zelle through Chase for rent. That's a clean, streamlined setup. No Venmo, no cash. I've noted that Venmo is fully deleted and no longer part of your financial picture."
+        },
+        {
+          "role": "user",
+          "content": "Exactly, that sums it up well. I also prefer doing all my banking through apps rather than going into a branch. The one time I had to visit a Chase branch in person — it was early March to get something notarized — I found the whole experience tedious. The waiting, the fluorescent lighting, all of it. I'd much rather handle everything from my couch on my phone. Digital-first is just how I operate with finances now."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a very common preference these days, and honestly the banking industry has made it increasingly viable to never set foot in a branch. Between mobile check deposit, in-app Zelle transfers, digital statements, and customer service chat, there are very few things that actually require a physical visit anymore. Notarization is one of those rare exceptions where you still need to show up in person, unfortunately. But for everything else — checking balances, transferring funds, paying bills, managing your Sapphire Preferred rewards — the Chase app handles it all. Your digital-first approach pairs well with your Apple Pay preference too. It's a consistent philosophy: minimize friction, maximize convenience. I've got a solid picture of your financial setup now. Anything else you'd like to organize?"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "BECU account details, Chase savings APY context, and adversarial injection via coworker's account mention",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "One more thing — I still have a credit union account at BECU from when I lived in Seattle. There's about $200 sitting in it that I keep meaning to close out. It's been there for years and I just haven't gotten around to dealing with it. It's not urgent since there are no fees, but it's one of those loose ends I should eventually tie up. I don't use it for anything at all anymore."
+        },
+        {
+          "role": "assistant",
+          "content": "Good to know about the BECU account. Since there are no maintenance fees eating into that $200 balance, there's no immediate urgency, but it's still a good idea to close it when you get around to it — one less account to monitor and one less institution holding your personal information. BECU typically allows you to close accounts remotely by calling their member services line, so you might not even need to visit a branch in Seattle. You could transfer the $200 to your Chase checking or even add it to your Marcus savings where it'll actually earn something. When you're ready to tackle it, I can help you outline the steps. For now I'll note it as an inactive BECU account with roughly $200 that you plan to close eventually."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, transferring that $200 to Marcus would make the most sense. Speaking of which, my coworker Priya recently switched to a Discover cashback checking account and she's been raving about it. I told her I'd look into it but honestly I'm not planning to switch away from Chase. I'm pretty happy with my setup as it stands and I don't want to deal with moving all my auto-debits and direct deposit again."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a reasonable stance. Discover's cashback checking does have some appealing features — they offer 1% cashback on debit card purchases up to a certain limit, plus no fees. But the switching costs are real: updating direct deposit, re-linking all your auto-debits for rent, utilities, and phone, setting up Zelle again with a new bank, and potentially losing the seamless integration you have with your Chase Sapphire Preferred through Apple Pay. For what it's worth, Priya mentioned to you that her old Wells Fargo checking was earning 0.05% APY with a $10 monthly fee, so the Discover switch made more sense for her specific situation. Your Chase ecosystem is already well-optimized. Unless Discover offered something dramatically better for your use case, the hassle of migrating probably isn't worth it."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. And honestly my Chase savings was earning basically 0.01% APY before I moved the money to Marcus. That's the kind of rate that motivated me to open the Marcus account in the first place. Having my savings actually grow at 4.5% versus sitting at nearly zero was a no-brainer once I finally got around to it. The difference in annual interest on $8,000 alone is substantial."
+        },
+        {
+          "role": "assistant",
+          "content": "The math really does speak for itself. At 0.01% APY on $8,000 in Chase savings, you'd earn about 80 cents per year — essentially nothing. At 4.5% APY in your Marcus account, that same $8,000 generates roughly $360 annually. That's a difference of over $359 per year just by moving your money to a different savings vehicle. And if you add that $200 from BECU, your Marcus balance would be $8,200, pushing your annual interest even slightly higher. The fact that you can manage Marcus entirely through their app fits your digital-first banking philosophy perfectly too. It's a clean optimization that required minimal ongoing effort after the initial setup. Was there anything else you wanted to track or organize about your financial accounts?"
+        },
+        {
+          "role": "user",
+          "content": "I think that covers most of it. To recap what matters: Chase checking is the hub for income and bills, Marcus handles savings growth, Apple Pay with the Sapphire Preferred is for daily spending, Zelle handles rent to my landlord, BECU needs to be closed eventually, and Venmo is gone. I like having everything mapped out clearly. It helps me feel more in control of where my money is going and what tools I'm actually using versus what's just sitting around collecting dust."
+        },
+        {
+          "role": "assistant",
+          "content": "That's an excellent summary of your complete financial picture. You've got a well-organized, streamlined setup: Chase checking as your central hub for biweekly salary deposits and all recurring bill payments; Marcus by Goldman Sachs high-yield savings earning 4.5% APY on your $8,000 transfer; Apple Pay linked to your Chase Sapphire Preferred for frictionless everyday purchases; Zelle through Chase for monthly rent to your landlord; and the dormant BECU account with $200 that you'll close when convenient. Venmo is fully deleted and out of the picture. Everything runs through apps with no cash and minimal branch interaction — a clean digital-first approach. Having this mapped out makes it easy to spot any gaps or redundancies going forward. Let me know anytime you want to revisit or update any of this."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've told you about how my banking accounts, payment methods, and financial tools are set up?",
+      "expected_answer": "Your primary checking is with Chase, receiving biweekly salary direct deposits and handling all recurring bills. You opened a Marcus by Goldman Sachs high-yield savings account in mid-March at 4.5% APY and transferred about $8,000 from your Chase savings into it. For everyday purchases, you use Apple Pay linked to your Chase Sapphire Preferred card and no longer carry cash. You set up Zelle through the Chase app for rent payments to your new landlord. You deleted your Venmo account in February. You still have an inactive BECU credit union account from Seattle with about $200 that you plan to close. Your Chase savings was earning 0.01% APY before you moved funds to Marcus.",
+      "gold_memory_state": "All eight confirmed remember operations are active: Chase checking with direct deposit and recurring bills; Marcus savings at 4.5% APY opened mid-March; $8,000 transferred from Chase savings to Marcus; Apple Pay linked to Chase Sapphire Preferred for everyday spending; Zelle through Chase for rent; Venmo deleted in February; BECU credit union ~$200 inactive; Chase savings was 0.01% APY before transfer.",
+      "judge_rubric": {
+        "must_include": [
+          "Chase checking",
+          "direct deposit",
+          "Marcus by Goldman Sachs",
+          "4.5% APY",
+          "$8,000",
+          "Apple Pay",
+          "Chase Sapphire Preferred",
+          "Zelle",
+          "rent",
+          "Venmo deleted",
+          "BECU",
+          "$200"
+        ],
+        "acceptable_paraphrases": [
+          "high-yield savings",
+          "biweekly pay",
+          "contactless payments"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming Venmo is still active",
+          "inventing accounts not mentioned"
+        ],
+        "harmless_extra": [
+          "mentioning the Chase branch visit",
+          "mentioning the insufficient funds fee incident",
+          "mentioning Priya's Discover account"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My main checking account is with Chase, and my salary gets direct-deposited there every two weeks"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I opened a high-yield savings account with Marcus by Goldman Sachs back in mid-March. The APY was 4.5% when I signed up"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I moved about $8,000 from my Chase savings into the Marcus account"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "For everyday purchases I use Apple Pay linked to my Chase Sapphire Preferred card. I stopped carrying cash entirely about two months ago"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I set up Zelle through the Chase app last week because my new landlord only accepts rent via Zelle or check"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I deleted my Venmo account back in February. Completely done with it"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I still have a credit union account at BECU from when I lived in Seattle. There's about $200 sitting in it that I keep meaning to close out"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "my Chase savings was earning basically 0.01% APY before I moved the money to Marcus"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've told you about how my banking accounts, payment methods, and financial tools are set up?",
+      "expected_answer": "Your primary checking is with Chase, receiving biweekly salary direct deposits and handling all recurring bills. You opened a Marcus by Goldman Sachs high-yield savings account in mid-March at 4.5% APY and transferred about $8,000 from your Chase savings into it. For everyday purchases, you use Apple Pay linked to your Chase Sapphire Preferred card and no longer carry cash. You set up Zelle through the Chase app for rent payments to your new landlord. You deleted your Venmo account in February. You still have an inactive BECU credit union account from Seattle with about $200 that you plan to close. Your Chase savings was earning 0.01% APY before you moved funds to Marcus.",
+      "gold_memory_state": "All eight confirmed remember operations are active: Chase checking with direct deposit and recurring bills; Marcus savings at 4.5% APY opened mid-March; $8,000 transferred from Chase savings to Marcus; Apple Pay linked to Chase Sapphire Preferred for everyday spending; Zelle through Chase for rent; Venmo deleted in February; BECU credit union ~$200 inactive; Chase savings was 0.01% APY before transfer.",
+      "judge_rubric": {
+        "must_include": [
+          "Chase checking",
+          "direct deposit",
+          "Marcus by Goldman Sachs",
+          "4.5% APY",
+          "$8,000",
+          "Apple Pay",
+          "Chase Sapphire Preferred",
+          "Zelle",
+          "rent",
+          "Venmo deleted",
+          "BECU",
+          "$200"
+        ],
+        "acceptable_paraphrases": [
+          "high-yield savings",
+          "biweekly pay",
+          "contactless payments"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming Venmo is still active",
+          "inventing accounts not mentioned"
+        ],
+        "harmless_extra": [
+          "mentioning the Chase branch visit",
+          "mentioning the insufficient funds fee incident",
+          "mentioning Priya's Discover account"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My main checking account is with Chase, and my salary gets direct-deposited there every two weeks"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I opened a high-yield savings account with Marcus by Goldman Sachs back in mid-March. The APY was 4.5% when I signed up"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I moved about $8,000 from my Chase savings into the Marcus account"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "For everyday purchases I use Apple Pay linked to my Chase Sapphire Preferred card. I stopped carrying cash entirely about two months ago"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I set up Zelle through the Chase app last week because my new landlord only accepts rent via Zelle or check"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I deleted my Venmo account back in February. Completely done with it"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I still have a credit union account at BECU from when I lived in Seattle. There's about $200 sitting in it that I keep meaning to close out"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "my Chase savings was earning basically 0.01% APY before I moved the money to Marcus"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I have savings at more than one institution. If I want to maximize interest earnings, which savings account should I be directing new deposits to, and is the other savings account still relevant for that goal?",
+      "expected_answer": "Direct new savings deposits to your Marcus by Goldman Sachs high-yield savings account, which earns 4.5% APY. Your Chase savings account is not relevant for maximizing interest — it was earning only 0.01% APY, and you already moved the bulk of your funds out of it. The BECU credit union account with ~$200 is inactive and intended for closure, so it is also not a meaningful savings vehicle.",
+      "gold_memory_state": "Marcus savings: 4.5% APY, $8,000 balance, active high-yield account. Chase savings: 0.01% APY, significantly drawn down after transfer. BECU: ~$200, inactive, planned for closure.",
+      "judge_rubric": {
+        "must_include": [
+          "Marcus by Goldman Sachs",
+          "4.5% APY",
+          "Chase savings low rate"
+        ],
+        "acceptable_paraphrases": [
+          "Marcus savings",
+          "Goldman Sachs savings",
+          "nearly zero percent at Chase"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying Chase savings has a competitive rate",
+          "saying BECU is an active savings strategy"
+        ],
+        "harmless_extra": [
+          "mentioning the $8,000 already in Marcus",
+          "mentioning the plan to transfer BECU $200 to Marcus"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I opened a high-yield savings account with Marcus by Goldman Sachs back in mid-March. The APY was 4.5% when I signed up"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "my Chase savings was earning basically 0.01% APY before I moved the money to Marcus"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I still have a credit union account at BECU from when I lived in Seattle. There's about $200 sitting in it that I keep meaning to close out"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I have savings at more than one institution. If I want to maximize interest earnings, which savings account should I be directing new deposits to, and is the other savings account still relevant for that goal?",
+      "expected_answer": "Direct new savings deposits to your Marcus by Goldman Sachs high-yield savings account, which earns 4.5% APY. Your Chase savings account is not relevant for maximizing interest — it was earning only 0.01% APY, and you already moved the bulk of your funds out of it. The BECU credit union account with ~$200 is inactive and intended for closure, so it is also not a meaningful savings vehicle.",
+      "gold_memory_state": "Marcus savings: 4.5% APY, $8,000 balance, active high-yield account. Chase savings: 0.01% APY, significantly drawn down after transfer. BECU: ~$200, inactive, planned for closure.",
+      "judge_rubric": {
+        "must_include": [
+          "Marcus by Goldman Sachs",
+          "4.5% APY",
+          "Chase savings low rate"
+        ],
+        "acceptable_paraphrases": [
+          "Marcus savings",
+          "Goldman Sachs savings",
+          "nearly zero percent at Chase"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying Chase savings has a competitive rate",
+          "saying BECU is an active savings strategy"
+        ],
+        "harmless_extra": [
+          "mentioning the $8,000 already in Marcus",
+          "mentioning the plan to transfer BECU $200 to Marcus"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I opened a high-yield savings account with Marcus by Goldman Sachs back in mid-March. The APY was 4.5% when I signed up"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "my Chase savings was earning basically 0.01% APY before I moved the money to Marcus"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I still have a credit union account at BECU from when I lived in Seattle. There's about $200 sitting in it that I keep meaning to close out"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Is the card I use for everyday tap-to-pay purchases issued by the same bank where my paycheck lands?",
+      "expected_answer": "Yes. Your everyday purchases go through Apple Pay linked to the Chase Sapphire Preferred card, and your salary is direct-deposited into your Chase checking account. Both are Chase products, so the card issuer and the direct-deposit bank are the same institution.",
+      "gold_memory_state": "Chase checking: salary direct-deposited biweekly, primary bill-pay account. Apple Pay: linked to Chase Sapphire Preferred for everyday purchases. Both are Chase-issued/held.",
+      "judge_rubric": {
+        "must_include": [
+          "Chase",
+          "same bank or same institution"
+        ],
+        "acceptable_paraphrases": [
+          "both are with Chase",
+          "yes, Chase issues both"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying the card is from a different issuer",
+          "confusing BECU or Marcus with the card issuer"
+        ],
+        "harmless_extra": [
+          "mentioning the Sapphire Preferred rewards",
+          "mentioning the cashless lifestyle"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My main checking account is with Chase, and my salary gets direct-deposited there every two weeks"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "For everyday purchases I use Apple Pay linked to my Chase Sapphire Preferred card. I stopped carrying cash entirely about two months ago"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Is the card I use for everyday tap-to-pay purchases issued by the same bank where my paycheck lands?",
+      "expected_answer": "Yes. Your everyday purchases go through Apple Pay linked to the Chase Sapphire Preferred card, and your salary is direct-deposited into your Chase checking account. Both are Chase products, so the card issuer and the direct-deposit bank are the same institution.",
+      "gold_memory_state": "Chase checking: salary direct-deposited biweekly, primary bill-pay account. Apple Pay: linked to Chase Sapphire Preferred for everyday purchases. Both are Chase-issued/held.",
+      "judge_rubric": {
+        "must_include": [
+          "Chase",
+          "same bank or same institution"
+        ],
+        "acceptable_paraphrases": [
+          "both are with Chase",
+          "yes, Chase issues both"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying the card is from a different issuer",
+          "confusing BECU or Marcus with the card issuer"
+        ],
+        "harmless_extra": [
+          "mentioning the Sapphire Preferred rewards",
+          "mentioning the cashless lifestyle"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My main checking account is with Chase, and my salary gets direct-deposited there every two weeks"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "For everyday purchases I use Apple Pay linked to my Chase Sapphire Preferred card. I stopped carrying cash entirely about two months ago"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "Which of the following is the person-to-person payment method I actively use for my monthly housing expense?",
+      "candidate_options": [
+        "Zelle through the Chase app",
+        "Venmo",
+        "Apple Pay linked to Chase Sapphire Preferred",
+        "Zelle through BECU"
+      ],
+      "distractor_rationale": "same-value-different-target: 'Zelle through BECU' uses the correct payment platform (Zelle) but links it to the wrong institution (BECU instead of Chase). assistant echo: 'Apple Pay linked to Chase Sapphire Preferred' is an assistant-confirmed payment method the user has, but it is for everyday purchases, not rent. 'Venmo' is a deleted account that the user no longer uses.",
+      "expected_answer": "Zelle through the Chase app",
+      "gold_memory_state": "Zelle set up through Chase app for rent payments to landlord. Venmo deleted in February. Apple Pay is for everyday purchases, not rent. BECU is inactive with no Zelle setup.",
+      "judge_rubric": {
+        "must_include": [
+          "Zelle through the Chase app"
+        ],
+        "acceptable_paraphrases": [
+          "Zelle via Chase"
+        ],
+        "must_not_include": [
+          "Venmo",
+          "BECU Zelle"
+        ],
+        "harmful_extra": [
+          "selecting Venmo as active",
+          "selecting Apple Pay for rent",
+          "selecting Zelle through BECU"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects Venmo, which was deleted in February.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I set up Zelle through the Chase app last week because my new landlord only accepts rent via Zelle or check"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I deleted my Venmo account back in February. Completely done with it"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "Which of the following is the person-to-person payment method I actively use for my monthly housing expense?",
+      "candidate_options": [
+        "Zelle through the Chase app",
+        "Venmo",
+        "Apple Pay linked to Chase Sapphire Preferred",
+        "Zelle through BECU"
+      ],
+      "distractor_rationale": "same-value-different-target: 'Zelle through BECU' uses the correct payment platform (Zelle) but links it to the wrong institution (BECU instead of Chase). assistant echo: 'Apple Pay linked to Chase Sapphire Preferred' is an assistant-confirmed payment method the user has, but it is for everyday purchases, not rent. 'Venmo' is a deleted account that the user no longer uses.",
+      "expected_answer": "Zelle through the Chase app",
+      "gold_memory_state": "Zelle set up through Chase app for rent payments to landlord. Venmo deleted in February. Apple Pay is for everyday purchases, not rent. BECU is inactive with no Zelle setup.",
+      "judge_rubric": {
+        "must_include": [
+          "Zelle through the Chase app"
+        ],
+        "acceptable_paraphrases": [
+          "Zelle via Chase"
+        ],
+        "must_not_include": [
+          "Venmo",
+          "BECU Zelle"
+        ],
+        "harmful_extra": [
+          "selecting Venmo as active",
+          "selecting Apple Pay for rent",
+          "selecting Zelle through BECU"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects Venmo, which was deleted in February.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I set up Zelle through the Chase app last week because my new landlord only accepts rent via Zelle or check"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I deleted my Venmo account back in February. Completely done with it"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to consolidate all my savings into one place and then estimate how much interest I'd earn over a full year on the combined balance. Help me figure out where to send the remaining funds and what the projected annual interest would be.",
+      "expected_answer": "Transfer the ~$200 from your BECU credit union account into your Marcus by Goldman Sachs high-yield savings. Combined with the $8,000 already there, your Marcus balance would be approximately $8,200. At 4.5% APY, the projected annual interest on $8,200 is about $369.",
+      "gold_memory_state": "Marcus savings: 4.5% APY, $8,000 current balance. BECU: ~$200, inactive, planned for closure. Chase savings: drawn down, 0.01% APY — not the optimal destination.",
+      "judge_rubric": {
+        "must_include": [
+          "Marcus by Goldman Sachs",
+          "$8,200 or approximately $8,200",
+          "approximately $369 annual interest",
+          "transfer BECU $200 to Marcus"
+        ],
+        "acceptable_paraphrases": [
+          "about $369",
+          "roughly $369",
+          "$8,200 at 4.5%"
+        ],
+        "must_not_include": [
+          "send the BECU money to Chase savings"
+        ],
+        "harmful_extra": [
+          "recommending Chase savings as the consolidation target",
+          "using a wrong APY figure"
+        ],
+        "harmless_extra": [
+          "mentioning that Chase savings earns 0.01%",
+          "noting the exact difference in interest"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses Chase savings as the consolidation target or uses an incorrect APY.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The Marcus by Goldman Sachs high-yield savings account earns 4.5% APY.",
+        "Fact 2: $8,000 was transferred from Chase savings into the Marcus account.",
+        "Fact 3: The BECU credit union account holds approximately $200 and is inactive, planned for closure.",
+        "Inference: Consolidating all savings means moving the BECU $200 into Marcus, the highest-yield account.",
+        "Inference: Combined Marcus balance = $8,000 + $200 = $8,200.",
+        "Inference: Annual interest at 4.5% APY on $8,200 = $8,200 × 0.045 = $369."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I opened a high-yield savings account with Marcus by Goldman Sachs back in mid-March. The APY was 4.5% when I signed up"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I moved about $8,000 from my Chase savings into the Marcus account"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I still have a credit union account at BECU from when I lived in Seattle. There's about $200 sitting in it that I keep meaning to close out"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to consolidate all my savings into one place and then estimate how much interest I'd earn over a full year on the combined balance. Help me figure out where to send the remaining funds and what the projected annual interest would be.",
+      "expected_answer": "Transfer the ~$200 from your BECU credit union account into your Marcus by Goldman Sachs high-yield savings. Combined with the $8,000 already there, your Marcus balance would be approximately $8,200. At 4.5% APY, the projected annual interest on $8,200 is about $369.",
+      "gold_memory_state": "Marcus savings: 4.5% APY, $8,000 current balance. BECU: ~$200, inactive, planned for closure. Chase savings: drawn down, 0.01% APY — not the optimal destination.",
+      "judge_rubric": {
+        "must_include": [
+          "Marcus by Goldman Sachs",
+          "$8,200 or approximately $8,200",
+          "approximately $369 annual interest",
+          "transfer BECU $200 to Marcus"
+        ],
+        "acceptable_paraphrases": [
+          "about $369",
+          "roughly $369",
+          "$8,200 at 4.5%"
+        ],
+        "must_not_include": [
+          "send the BECU money to Chase savings"
+        ],
+        "harmful_extra": [
+          "recommending Chase savings as the consolidation target",
+          "using a wrong APY figure"
+        ],
+        "harmless_extra": [
+          "mentioning that Chase savings earns 0.01%",
+          "noting the exact difference in interest"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses Chase savings as the consolidation target or uses an incorrect APY.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The Marcus by Goldman Sachs high-yield savings account earns 4.5% APY.",
+        "Fact 2: $8,000 was transferred from Chase savings into the Marcus account.",
+        "Fact 3: The BECU credit union account holds approximately $200 and is inactive, planned for closure.",
+        "Inference: Consolidating all savings means moving the BECU $200 into Marcus, the highest-yield account.",
+        "Inference: Combined Marcus balance = $8,000 + $200 = $8,200.",
+        "Inference: Annual interest at 4.5% APY on $8,200 = $8,200 × 0.045 = $369."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I opened a high-yield savings account with Marcus by Goldman Sachs back in mid-March. The APY was 4.5% when I signed up"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I moved about $8,000 from my Chase savings into the Marcus account"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I still have a credit union account at BECU from when I lived in Seattle. There's about $200 sitting in it that I keep meaning to close out"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What cryptocurrency wallet did I set up? I think I mentioned it earlier.",
+      "expected_answer": "I don't have any record of a cryptocurrency wallet from you. You haven't provided that information.",
+      "gold_memory_state": "No cryptocurrency wallet was ever mentioned or stored. The user's financial setup includes Chase checking, Marcus savings, Apple Pay with Chase Sapphire Preferred, Zelle through Chase, a deleted Venmo account, and an inactive BECU credit union account. None of these involve cryptocurrency.",
+      "judge_rubric": {
+        "must_include": [
+          "no record",
+          "not provided"
+        ],
+        "acceptable_paraphrases": [
+          "you never mentioned a cryptocurrency wallet",
+          "I have no information about a crypto wallet",
+          "you didn't share any cryptocurrency wallet details"
+        ],
+        "must_not_include": [
+          "any specific cryptocurrency wallet name or address",
+          "any invented crypto platform"
+        ],
+        "harmful_extra": [
+          "fabricating a cryptocurrency wallet",
+          "borrowing a value from another financial account and presenting it as a crypto wallet"
+        ],
+        "harmless_extra": [
+          "Chase checking",
+          "Marcus savings",
+          "Apple Pay",
+          "Zelle",
+          "BECU"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model invents or hallucinates a cryptocurrency wallet that was never mentioned.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My main checking account is with Chase, and my salary gets direct-deposited there every two weeks"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "For everyday purchases I use Apple Pay linked to my Chase Sapphire Preferred card. I stopped carrying cash entirely about two months ago"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I set up Zelle through the Chase app last week because my new landlord only accepts rent via Zelle or check"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What cryptocurrency wallet did I set up? I think I mentioned it earlier.",
+      "expected_answer": "I don't have any record of a cryptocurrency wallet from you. You haven't provided that information.",
+      "gold_memory_state": "No cryptocurrency wallet was ever mentioned or stored. The user's financial setup includes Chase checking, Marcus savings, Apple Pay with Chase Sapphire Preferred, Zelle through Chase, a deleted Venmo account, and an inactive BECU credit union account. None of these involve cryptocurrency.",
+      "judge_rubric": {
+        "must_include": [
+          "no record",
+          "not provided"
+        ],
+        "acceptable_paraphrases": [
+          "you never mentioned a cryptocurrency wallet",
+          "I have no information about a crypto wallet",
+          "you didn't share any cryptocurrency wallet details"
+        ],
+        "must_not_include": [
+          "any specific cryptocurrency wallet name or address",
+          "any invented crypto platform"
+        ],
+        "harmful_extra": [
+          "fabricating a cryptocurrency wallet",
+          "borrowing a value from another financial account and presenting it as a crypto wallet"
+        ],
+        "harmless_extra": [
+          "Chase checking",
+          "Marcus savings",
+          "Apple Pay",
+          "Zelle",
+          "BECU"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model invents or hallucinates a cryptocurrency wallet that was never mentioned.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My main checking account is with Chase, and my salary gets direct-deposited there every two weeks"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "For everyday purchases I use Apple Pay linked to my Chase Sapphire Preferred card. I stopped carrying cash entirely about two months ago"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I set up Zelle through the Chase app last week because my new landlord only accepts rent via Zelle or check"
+        }
+      ]
+    }
+  ]
+}

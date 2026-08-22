@@ -1,0 +1,826 @@
+{
+  "target_fact": "User's favorite author, initially Ursula K. Le Guin, undergoes multiple updates through the conversation as reading experiences shift preferences.",
+  "operation_type": "Update",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "fav_author_chain",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "my favorite author right now is Ursula K. Le Guin"
+      },
+      "target": {
+        "target_id": "favorite_author",
+        "target_name": "user's current favorite author"
+      },
+      "old_value": null,
+      "new_value": "Ursula K. Le Guin",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my favorite author right now is Ursula K. Le Guin"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I'm trying to work through her full bibliography"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "fav_author_chain",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 7,
+        "quote": "I think Susanna Clarke has actually overtaken Le Guin as my favorite living author right now"
+      },
+      "target": {
+        "target_id": "favorite_author",
+        "target_name": "user's current favorite author"
+      },
+      "old_value": "Ursula K. Le Guin",
+      "new_value": "Susanna Clarke",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I think Susanna Clarke has actually overtaken Le Guin as my favorite living author right now"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "Piranesi really changed something for me"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "fav_author_chain",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "I need to update my favorite author back to Le Guin actually"
+      },
+      "target": {
+        "target_id": "favorite_author",
+        "target_name": "user's current favorite author"
+      },
+      "old_value": "Susanna Clarke",
+      "new_value": "Ursula K. Le Guin",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I need to update my favorite author back to Le Guin actually"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I finished The Dispossessed last night and it blew me away in a way that Piranesi didn't quite reach"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "fav_author_chain",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "my sister says once I read Parable of the Sower I'll switch my favorite to Octavia Butler for sure"
+      },
+      "target": {
+        "target_id": "favorite_author",
+        "target_name": "user's current favorite author"
+      },
+      "old_value": "Ursula K. Le Guin",
+      "new_value": "Octavia Butler",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "my sister says once I read Parable of the Sower I'll switch my favorite to Octavia Butler for sure"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "She's probably right honestly, Butler's stuff hit me hard in college"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I signed up for a book club at the library and our first meeting was April 20th"
+      },
+      "target": {
+        "target_id": "book_club_start_date",
+        "target_name": "library book club first meeting date"
+      },
+      "old_value": null,
+      "new_value": "April 20th",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I signed up for a book club at the library and our first meeting was April 20th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "We meet every two weeks on Sundays"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish favorite author and reading preferences",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to get your help organizing my reading life a bit. I've been on a real tear lately. First off, please note this down: my favorite author right now is Ursula K. Le Guin. That's important to me because I'm trying to work through her full bibliography. I just finished The Left Hand of Darkness back in early March and it confirmed everything I suspected about her writing."
+        },
+        {
+          "role": "assistant",
+          "content": "That's wonderful — I've noted that your favorite author right now is Ursula K. Le Guin, and that you're working through her complete bibliography. The Left Hand of Darkness is a remarkable starting point for that project; her world-building in that novel is famously immersive without being heavy-handed. Since you're planning to read everything she's written, would you like me to help you put together a reading order? She has quite a range — the Hainish Cycle novels, the Earthsea series, her short story collections, and her later experimental works. We could organize by publication date, thematic groupings, or series arcs. What sounds most useful to you?"
+        },
+        {
+          "role": "user",
+          "content": "Publication date would be great eventually, but let me tell you what else I've been reading first. After Le Guin I picked up Annihilation by Jeff VanderMeer. My friend Dan recommended it and I bought my own copy from that used bookstore on Elm Street. I read it in about two days. The atmosphere was incredible — honestly the mood affected me more than the actual plot did. I felt kind of unsettled for a day or two afterward."
+        },
+        {
+          "role": "assistant",
+          "content": "That tracks perfectly with someone who loves Le Guin's approach — VanderMeer's Southern Reach Trilogy shares that quality of dropping you into a deeply strange environment and letting the strangeness do the emotional work. The fact that you bought your own copy from the used bookstore on Elm Street rather than borrowing it suggests it might be a keeper for your shelf. Since Annihilation's mood lingered with you for days, you might want to continue with Authority and Acceptance to complete the trilogy, though fair warning: the sequels shift perspective and pacing significantly. Some readers find them even more atmospheric, others miss the tight claustrophobia of the first book. Would you like me to add VanderMeer to your reading tracker alongside Le Guin?"
+        },
+        {
+          "role": "user",
+          "content": "Sure, add VanderMeer to the tracker. Also, after Annihilation I read Piranesi by Susanna Clarke around mid-April. I absolutely loved it. The dreamlike quality of the house, the way the mystery unfolds slowly — it felt like the kind of book I could live inside. I deliberately took a whole week to read it even though it's short because I didn't want to rush through it. That book really got under my skin."
+        },
+        {
+          "role": "assistant",
+          "content": "Piranesi is a beautiful choice after Annihilation — both books create environments that function almost as characters in their own right. The way Clarke builds the House with its infinite halls and tidal floods has that same quality of immersive strangeness you clearly respond to. The fact that you slowed yourself down to a week for such a short book says a lot about how deeply it connected with you; that's the mark of a book that rewards contemplation over speed. I've added Susanna Clarke to your tracker alongside Le Guin and VanderMeer. Clarke's only other novel is Jonathan Strange & Mr Norrell, which is vastly different in scope — over a thousand pages of alternate-history English magic — but shares her gift for making impossible places feel real. Want me to note that as a future read?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, add Jonathan Strange to my list. And actually — I need to tell you something. I think Susanna Clarke has actually overtaken Le Guin as my favorite living author right now. Piranesi really changed something for me. The way she constructs that sense of wonder and mystery in such a compact book is unlike anything else I've read. So please update my favorite author to Susanna Clarke."
+        },
+        {
+          "role": "assistant",
+          "content": "Done — I've updated your favorite author from Ursula K. Le Guin to Susanna Clarke. That's a meaningful shift, and I can see why Piranesi prompted it. Clarke's ability to create that luminous sense of wonder within such a tight, carefully structured narrative is genuinely rare. It's interesting that the compactness of Piranesi is part of what moved you — it suggests you value precision and atmosphere over sprawl. I'll keep Le Guin prominently on your bibliography project since you're still working through her catalog, but Susanna Clarke now holds the top spot. If Clarke's work is resonating this strongly, you might also enjoy some of her short fiction — she published a collection called The Ladies of Grace Adieu that has a similar enchanted quality, though set in the Jonathan Strange universe."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "book club details and revert favorite author to Le Guin",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Quick update on a few things. I signed up for a book club at the library and our first meeting was April 20th. We meet every two weeks on Sundays. The first book they assigned is Project Hail Mary by Andy Weir. I'll read along but I'm not sure it's my thing — the first few chapters feel a little too breezy and plot-driven for my taste. Not enough atmosphere."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — I've noted your library book club with its first meeting on April 20th, meeting every two weeks on Sundays. Project Hail Mary is definitely a different gear from what you've been reading lately. Weir's style is very much driven by problem-solving momentum and conversational humor, which is almost the opposite of the slow atmospheric immersion you gravitate toward with Clarke, Le Guin, and VanderMeer. That said, book clubs are great for pushing you outside your comfort zone, and sometimes a breezier read can be a nice palate cleanser between more contemplative books. You might find the relationship dynamics in the second half more engaging than the early chapters suggest. Would you like me to track your book club reads separately from your personal reading list?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, keep the book club reads in a separate section. Speaking of my personal reading — I picked up The Dispossessed by Le Guin from the bookstore last week. I'd had a library hold on it but I canceled that since I bought my own copy. I started reading it immediately because I was so eager to continue with Le Guin's work after The Left Hand of Darkness."
+        },
+        {
+          "role": "assistant",
+          "content": "Perfect — I'll maintain a separate book club section for the Andy Weir read and any future club picks. And that's exciting about The Dispossessed! It's often considered Le Guin's masterwork alongside The Left Hand of Darkness. Both are part of the Hainish Cycle but they're very different in tone and focus. Where Left Hand explores gender and cultural alienation through Gethen's ice-bound world, The Dispossessed examines political philosophy and freedom through the lens of twin planets with radically different societies. It has that same quality of quiet immersion you loved in Left Hand — Le Guin never rushes her ideas. Since you bought your own copy and canceled the library hold, it sounds like this is one you want to keep on your shelf permanently. How far into it are you?"
+        },
+        {
+          "role": "user",
+          "content": "I actually finished it last night, and I need to update my favorite author back to Le Guin actually. I finished The Dispossessed last night and it blew me away in a way that Piranesi didn't quite reach. The depth of the political world-building, the way Shevek's journey mirrors the structure of the two societies — it's the most complete novel I've ever read. Clarke is still incredible but Le Guin operates on a different level. So my favorite author is Ursula K. Le Guin again."
+        },
+        {
+          "role": "assistant",
+          "content": "Updated — your favorite author is back to Ursula K. Le Guin. That's a fascinating round-trip: Le Guin to Clarke and back to Le Guin, each time deepened by a new reading experience. The Dispossessed has that effect on people; it's one of those novels that feels like it contains an entire philosophy rather than just a story. The dual-timeline structure mirroring Anarres and Urras is masterful — Le Guin makes you feel the weight of both societies without ever reducing either to a simple utopia or dystopia. It sounds like what distinguishes Le Guin for you is that combination of atmospheric world-building and intellectual depth. Clarke excels at wonder and mystery, but Le Guin adds that layer of philosophical rigor. Shall I prioritize the rest of the Hainish Cycle on your reading list?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, prioritize the Hainish Cycle. Also I wanted to mention — my coworker Sarah keeps recommending the Jack Reacher series by Lee Child. I tried one back in late March or early April and couldn't get into it at all. The pacing felt like it was trying too hard and the dialogue was flat. I put it down after about sixty pages. I feel a little guilty because Sarah is so enthusiastic about them."
+        },
+        {
+          "role": "assistant",
+          "content": "I've noted the Hainish Cycle as your top reading priority. And I totally understand the Jack Reacher experience — Lee Child's style is engineered for a very specific kind of propulsive momentum that's almost the antithesis of what you enjoy. The short punchy sentences and constant forward drive that thriller fans love can feel mechanical when you're someone who savors atmosphere and slow-building tension. Don't feel too guilty about Sarah's recommendation; reading taste is deeply personal, and sixty pages is a fair shot. If she asks, you could honestly say the writing style wasn't for you without dismissing what she loves about it. It actually reinforces your pattern — you consistently prefer books where the environment and mood carry the story rather than plot mechanics. That's a clear and well-developed reading identity."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "tentative future favorite author mention and adversarial injection",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So my sister just started reading Octavia Butler for the first time — she's reading Kindred right now. I told her she'd probably love it. Butler is someone I read a lot of back in college but I haven't revisited her work in a while. I keep meaning to go back to her stuff because I remember it being incredibly powerful."
+        },
+        {
+          "role": "assistant",
+          "content": "That's great that your sister is discovering Butler! Kindred is such a powerful entry point — it's visceral in a way that's different from the atmospheric immersion you usually prefer, but Butler's world-building has that same quality of making impossible situations feel terrifyingly real. Since you read her extensively in college, you probably covered Kindred, the Parable series, and maybe the Patternist or Xenogenesis books. Given how your tastes have deepened since then, revisiting Butler now could be a completely different experience. You might find new layers in her work that connect to what you love about Le Guin's political depth and Clarke's sense of wonder. Would you like me to add a Butler revisit section to your reading tracker?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, add a Butler revisit section. I read Kindred and the Xenogenesis trilogy in college but never got to the Parable books. Those are the ones I want to start with when I circle back. My sister is reading the edition with the new foreword — she mentioned the cover lists Susanna Clarke as one of the praise-quote authors, which is funny given how much I love Clarke too."
+        },
+        {
+          "role": "assistant",
+          "content": "I've added a Butler revisit section to your tracker, with Parable of the Sower and Parable of the Talents flagged as your starting points. That's a lovely coincidence about Clarke providing a praise quote for the Butler edition — it shows how these authors you love are part of the same literary conversation. The Parable books are interesting because they share Le Guin's political depth and Butler's characteristic unflinching realism, but they're set in a near-future California that feels increasingly prophetic. They're more plot-driven than Le Guin's Hainish novels but still deeply atmospheric in their own way. Given your reading patterns, I think Parable of the Sower will hit that sweet spot of immersive world-building with genuine philosophical weight. Shall I slot them in after you finish the Hainish Cycle priorities, or do you want to interleave them?"
+        },
+        {
+          "role": "user",
+          "content": "Interleave them I think. Oh and here's something interesting — my sister says once I read Parable of the Sower I'll switch my favorite to Octavia Butler for sure. She's probably right honestly, Butler's stuff hit me hard in college. But I haven't read it yet so I can't commit to that. For now Le Guin still holds the top spot."
+        },
+        {
+          "role": "assistant",
+          "content": "Ha — your sister sounds confident! It's a bold prediction but not an unreasonable one. Butler has a way of getting under your skin that's different from Le Guin's contemplative depth or Clarke's luminous mystery. If the Parable books land the way your sister expects, it could absolutely shift things. For now I'm keeping your favorite author as Ursula K. Le Guin since you haven't read the Parable series yet. It'll be interesting to see if your sister's prediction holds once you actually get into them. The interleaving plan is smart — alternating between Hainish Cycle novels and Butler revisits will give you natural comparison points between two very different approaches to speculative fiction world-building."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. One more thing — I noticed that the library book club's online profile page still shows Jeff VanderMeer as my listed favorite author from when I first signed up. I must have put that down before I'd really thought about it. That's outdated and doesn't reflect where I am now. Can you help me remember to fix that next time I'm at the library?"
+        },
+        {
+          "role": "assistant",
+          "content": "Of course — I've made a note for you to update your library book club profile's favorite author field. It currently shows Jeff VanderMeer from when you first registered, but that doesn't reflect your current preference. Next time you're at the library for a book club meeting, you'll want to change it to Ursula K. Le Guin to match your actual current favorite. It's easy to forget those profile details since you filled it out before you'd finished The Dispossessed and had that definitive experience with Le Guin. Your next book club meeting should be coming up soon given the every-two-weeks Sunday schedule from the April 20th start. Want me to also prepare a short summary of your current reading priorities so you have everything in one place?"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations about my reading life, which of my statements first established who my favorite author was, and which later statements shaped what that preference should be going forward?",
+      "expected_answer": "You first said your favorite author was Ursula K. Le Guin while discussing working through her bibliography. Later, after reading Piranesi, you said Susanna Clarke had overtaken Le Guin. Then, after finishing The Dispossessed, you said you needed to change your favorite author back to Le Guin. You also mentioned your sister predicted you'd switch to Octavia Butler after reading Parable of the Sower, but you said you couldn't commit to that yet and Le Guin still held the top spot.",
+      "gold_memory_state": "Current favorite author is Ursula K. Le Guin (confirmed). Octavia Butler was mentioned as a speculative future favorite but was never adopted.",
+      "judge_rubric": {
+        "must_include": [
+          "Ursula K. Le Guin as initial favorite",
+          "Susanna Clarke as intermediate favorite",
+          "reversion back to Le Guin",
+          "Octavia Butler mentioned speculatively but not adopted"
+        ],
+        "acceptable_paraphrases": [
+          "Le Guin",
+          "Clarke",
+          "Butler"
+        ],
+        "must_not_include": [
+          "Octavia Butler is the current favorite"
+        ],
+        "harmful_extra": [
+          "claiming Butler was ever confirmed as favorite"
+        ],
+        "harmless_extra": [
+          "mentioning Piranesi or The Dispossessed as reasons for changes",
+          "mentioning the sister's prediction"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats Susanna Clarke or Octavia Butler as the current favorite.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my favorite author right now is Ursula K. Le Guin"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I think Susanna Clarke has actually overtaken Le Guin as my favorite living author right now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I need to update my favorite author back to Le Guin actually"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "my sister says once I read Parable of the Sower I'll switch my favorite to Octavia Butler for sure"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations about my reading life, which of my statements first established who my favorite author was, and which later statements shaped what that preference should be going forward?",
+      "expected_answer": "You first said your favorite author was Ursula K. Le Guin while discussing working through her bibliography. Later, after reading Piranesi, you said Susanna Clarke had overtaken Le Guin. Then, after finishing The Dispossessed, you said you needed to change your favorite author back to Le Guin. You also mentioned your sister predicted you'd switch to Octavia Butler after reading Parable of the Sower, but you said you couldn't commit to that yet and Le Guin still held the top spot.",
+      "gold_memory_state": "Current favorite author is Ursula K. Le Guin (confirmed). Octavia Butler was mentioned as a speculative future favorite but was never adopted.",
+      "judge_rubric": {
+        "must_include": [
+          "Ursula K. Le Guin as initial favorite",
+          "Susanna Clarke as intermediate favorite",
+          "reversion back to Le Guin",
+          "Octavia Butler mentioned speculatively but not adopted"
+        ],
+        "acceptable_paraphrases": [
+          "Le Guin",
+          "Clarke",
+          "Butler"
+        ],
+        "must_not_include": [
+          "Octavia Butler is the current favorite"
+        ],
+        "harmful_extra": [
+          "claiming Butler was ever confirmed as favorite"
+        ],
+        "harmless_extra": [
+          "mentioning Piranesi or The Dispossessed as reasons for changes",
+          "mentioning the sister's prediction"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats Susanna Clarke or Octavia Butler as the current favorite.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my favorite author right now is Ursula K. Le Guin"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I think Susanna Clarke has actually overtaken Le Guin as my favorite living author right now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I need to update my favorite author back to Le Guin actually"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "my sister says once I read Parable of the Sower I'll switch my favorite to Octavia Butler for sure"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When I mentioned a specific author my sister thinks will become my new top pick, does that affect the author preference I've been actively maintaining with you, or is it a separate piece of information? And what about the book club profile that shows a different author — is that the same record?",
+      "expected_answer": "Your sister's prediction about a potential future favorite does not change your actively maintained author preference, which remains Ursula K. Le Guin. The library book club profile showing Jeff VanderMeer is a separate record — it's an outdated registration entry you noted needs correcting, not the same as your personal favorite author preference.",
+      "gold_memory_state": "favorite_author target: Ursula K. Le Guin (confirmed, after reversion from Susanna Clarke). Octavia Butler was speculatively mentioned but never adopted as the current value. Book club profile favorite author (VanderMeer) is a separate outdated registration detail, not the same target as the user's personal favorite.",
+      "judge_rubric": {
+        "must_include": [
+          "sister's prediction does not change current favorite",
+          "Le Guin is current favorite",
+          "book club profile is a separate record"
+        ],
+        "acceptable_paraphrases": [
+          "the speculation doesn't affect the preference",
+          "VanderMeer listing is outdated and separate"
+        ],
+        "must_not_include": [
+          "Octavia Butler is the current favorite",
+          "VanderMeer is the current favorite"
+        ],
+        "harmful_extra": [
+          "treating the sister's prediction as a confirmed change",
+          "merging the book club profile author with the personal favorite author into one record"
+        ],
+        "harmless_extra": [
+          "mentioning the book club profile needs to be updated to Le Guin"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model treats Octavia Butler or Susanna Clarke as the current favorite author, or treats VanderMeer as the personal favorite.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "my sister says once I read Parable of the Sower I'll switch my favorite to Octavia Butler for sure"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "But I haven't read it yet so I can't commit to that. For now Le Guin still holds the top spot."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I noticed that the library book club's online profile page still shows Jeff VanderMeer as my listed favorite author from when I first signed up"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When I mentioned a specific author my sister thinks will become my new top pick, does that affect the author preference I've been actively maintaining with you, or is it a separate piece of information? And what about the book club profile that shows a different author — is that the same record?",
+      "expected_answer": "Your sister's prediction about a potential future favorite does not change your actively maintained author preference, which remains Ursula K. Le Guin. The library book club profile showing Jeff VanderMeer is a separate record — it's an outdated registration entry you noted needs correcting, not the same as your personal favorite author preference.",
+      "gold_memory_state": "favorite_author target: Ursula K. Le Guin (confirmed, after reversion from Susanna Clarke). Octavia Butler was speculatively mentioned but never adopted as the current value. Book club profile favorite author (VanderMeer) is a separate outdated registration detail, not the same target as the user's personal favorite.",
+      "judge_rubric": {
+        "must_include": [
+          "sister's prediction does not change current favorite",
+          "Le Guin is current favorite",
+          "book club profile is a separate record"
+        ],
+        "acceptable_paraphrases": [
+          "the speculation doesn't affect the preference",
+          "VanderMeer listing is outdated and separate"
+        ],
+        "must_not_include": [
+          "Octavia Butler is the current favorite",
+          "VanderMeer is the current favorite"
+        ],
+        "harmful_extra": [
+          "treating the sister's prediction as a confirmed change",
+          "merging the book club profile author with the personal favorite author into one record"
+        ],
+        "harmless_extra": [
+          "mentioning the book club profile needs to be updated to Le Guin"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model treats Octavia Butler or Susanna Clarke as the current favorite author, or treats VanderMeer as the personal favorite.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "my sister says once I read Parable of the Sower I'll switch my favorite to Octavia Butler for sure"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "But I haven't read it yet so I can't commit to that. For now Le Guin still holds the top spot."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I noticed that the library book club's online profile page still shows Jeff VanderMeer as my listed favorite author from when I first signed up"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to fill in my favorite author on a reading-community profile. Which of these should I put down?",
+      "candidate_options": [
+        "Ursula K. Le Guin",
+        "Susanna Clarke",
+        "Octavia Butler",
+        "Jeff VanderMeer"
+      ],
+      "expected_answer": "Ursula K. Le Guin",
+      "gold_memory_state": "Current confirmed favorite author: Ursula K. Le Guin. Susanna Clarke was a prior confirmed favorite (now superseded). Octavia Butler was a speculative/tentative future favorite never adopted. Jeff VanderMeer appeared on the outdated book club profile and was never the user's stated personal favorite.",
+      "judge_rubric": {
+        "must_include": [
+          "Ursula K. Le Guin"
+        ],
+        "acceptable_paraphrases": [
+          "Le Guin"
+        ],
+        "must_not_include": [
+          "Susanna Clarke as current",
+          "Octavia Butler as current",
+          "Jeff VanderMeer as current"
+        ],
+        "harmful_extra": [
+          "selecting any author other than Le Guin"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: Jeff VanderMeer appeared as the user's listed favorite on the book club profile, which is a different record from the personal favorite author preference. assistant echo: The assistant mentioned VanderMeer in responses and confirmed Clarke as the updated favorite in an earlier exchange, both of which could mislead. Susanna Clarke is the stale prior value (superseded by the reversion to Le Guin). Octavia Butler is the tentative/speculative value from the sister's prediction, never adopted by the user.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model selects Susanna Clarke (stale prior value) or Octavia Butler (tentative never-adopted value) or Jeff VanderMeer (different-target outdated profile value).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I need to update my favorite author back to Le Guin actually"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "But I haven't read it yet so I can't commit to that. For now Le Guin still holds the top spot."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to fill in my favorite author on a reading-community profile. Which of these should I put down?",
+      "candidate_options": [
+        "Ursula K. Le Guin",
+        "Susanna Clarke",
+        "Octavia Butler",
+        "Jeff VanderMeer"
+      ],
+      "expected_answer": "Ursula K. Le Guin",
+      "gold_memory_state": "Current confirmed favorite author: Ursula K. Le Guin. Susanna Clarke was a prior confirmed favorite (now superseded). Octavia Butler was a speculative/tentative future favorite never adopted. Jeff VanderMeer appeared on the outdated book club profile and was never the user's stated personal favorite.",
+      "judge_rubric": {
+        "must_include": [
+          "Ursula K. Le Guin"
+        ],
+        "acceptable_paraphrases": [
+          "Le Guin"
+        ],
+        "must_not_include": [
+          "Susanna Clarke as current",
+          "Octavia Butler as current",
+          "Jeff VanderMeer as current"
+        ],
+        "harmful_extra": [
+          "selecting any author other than Le Guin"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: Jeff VanderMeer appeared as the user's listed favorite on the book club profile, which is a different record from the personal favorite author preference. assistant echo: The assistant mentioned VanderMeer in responses and confirmed Clarke as the updated favorite in an earlier exchange, both of which could mislead. Susanna Clarke is the stale prior value (superseded by the reversion to Le Guin). Octavia Butler is the tentative/speculative value from the sister's prediction, never adopted by the user.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model selects Susanna Clarke (stale prior value) or Octavia Butler (tentative never-adopted value) or Jeff VanderMeer (different-target outdated profile value).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I need to update my favorite author back to Le Guin actually"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "But I haven't read it yet so I can't commit to that. For now Le Guin still holds the top spot."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I want to fix my library book club profile and also write a short intro blurb for the other book club members. The blurb should mention my favorite author, when the club started meeting, and what I'm currently prioritizing on my personal reading list. Can you draft that blurb and tell me what to change on the profile?",
+      "expected_answer": "Change the book club profile's favorite author field from Jeff VanderMeer to Ursula K. Le Guin. Here's a draft blurb: 'Hi everyone! I joined the club at our first meeting on April 20th. My favorite author is Ursula K. Le Guin — I'm currently working through her Hainish Cycle as my top reading priority. I also love Susanna Clarke and am planning to revisit Octavia Butler's Parable series soon. Looking forward to discussing books with all of you!'",
+      "gold_memory_state": "Current favorite author: Ursula K. Le Guin. Book club first meeting: April 20th, meets every two weeks on Sundays. Reading priority: Hainish Cycle (Le Guin), interleaved with Octavia Butler revisits (Parable series). Book club profile currently shows Jeff VanderMeer (outdated).",
+      "judge_rubric": {
+        "must_include": [
+          "Ursula K. Le Guin as favorite author",
+          "April 20th as book club start",
+          "Hainish Cycle as reading priority",
+          "change profile from VanderMeer to Le Guin"
+        ],
+        "acceptable_paraphrases": [
+          "Le Guin",
+          "the Hainish novels",
+          "April 20"
+        ],
+        "must_not_include": [
+          "Susanna Clarke as current favorite",
+          "Octavia Butler as current favorite",
+          "Jeff VanderMeer as current favorite"
+        ],
+        "harmful_extra": [
+          "listing Susanna Clarke or Octavia Butler as the current favorite author",
+          "keeping VanderMeer on the profile"
+        ],
+        "harmless_extra": [
+          "mentioning Clarke or Butler as other authors the user enjoys",
+          "mentioning the every-two-weeks Sunday schedule",
+          "mentioning the Parable series or Butler revisit plan"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the blurb names Susanna Clarke or Octavia Butler as the favorite author, or if the profile recommendation keeps VanderMeer.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "application_probe_type": "multi_hop_derivation",
+      "gold_reasoning_chain": [
+        "Fact 1: The user's current confirmed favorite author is Ursula K. Le Guin, after reverting from Susanna Clarke.",
+        "Fact 2: The library book club's first meeting was April 20th, meeting every two weeks on Sundays.",
+        "Fact 3: The book club profile currently shows Jeff VanderMeer as favorite author, which the user flagged as outdated and needing correction.",
+        "Fact 4: The user's current reading priority is the Hainish Cycle by Le Guin, interleaved with Octavia Butler revisits.",
+        "Inference: The profile field must be changed from VanderMeer to Le Guin to match the current confirmed preference.",
+        "Inference: The blurb should combine the club start date (April 20th), the current favorite author (Le Guin), and the current reading priority (Hainish Cycle) into a coherent introduction."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I need to update my favorite author back to Le Guin actually"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I signed up for a book club at the library and our first meeting was April 20th"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I noticed that the library book club's online profile page still shows Jeff VanderMeer as my listed favorite author from when I first signed up"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Yes, prioritize the Hainish Cycle"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I want to fix my library book club profile and also write a short intro blurb for the other book club members. The blurb should mention my favorite author, when the club started meeting, and what I'm currently prioritizing on my personal reading list. Can you draft that blurb and tell me what to change on the profile?",
+      "expected_answer": "Change the book club profile's favorite author field from Jeff VanderMeer to Ursula K. Le Guin. Here's a draft blurb: 'Hi everyone! I joined the club at our first meeting on April 20th. My favorite author is Ursula K. Le Guin — I'm currently working through her Hainish Cycle as my top reading priority. I also love Susanna Clarke and am planning to revisit Octavia Butler's Parable series soon. Looking forward to discussing books with all of you!'",
+      "gold_memory_state": "Current favorite author: Ursula K. Le Guin. Book club first meeting: April 20th, meets every two weeks on Sundays. Reading priority: Hainish Cycle (Le Guin), interleaved with Octavia Butler revisits (Parable series). Book club profile currently shows Jeff VanderMeer (outdated).",
+      "judge_rubric": {
+        "must_include": [
+          "Ursula K. Le Guin as favorite author",
+          "April 20th as book club start",
+          "Hainish Cycle as reading priority",
+          "change profile from VanderMeer to Le Guin"
+        ],
+        "acceptable_paraphrases": [
+          "Le Guin",
+          "the Hainish novels",
+          "April 20"
+        ],
+        "must_not_include": [
+          "Susanna Clarke as current favorite",
+          "Octavia Butler as current favorite",
+          "Jeff VanderMeer as current favorite"
+        ],
+        "harmful_extra": [
+          "listing Susanna Clarke or Octavia Butler as the current favorite author",
+          "keeping VanderMeer on the profile"
+        ],
+        "harmless_extra": [
+          "mentioning Clarke or Butler as other authors the user enjoys",
+          "mentioning the every-two-weeks Sunday schedule",
+          "mentioning the Parable series or Butler revisit plan"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the blurb names Susanna Clarke or Octavia Butler as the favorite author, or if the profile recommendation keeps VanderMeer.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "application_probe_type": "multi_hop_derivation",
+      "gold_reasoning_chain": [
+        "Fact 1: The user's current confirmed favorite author is Ursula K. Le Guin, after reverting from Susanna Clarke.",
+        "Fact 2: The library book club's first meeting was April 20th, meeting every two weeks on Sundays.",
+        "Fact 3: The book club profile currently shows Jeff VanderMeer as favorite author, which the user flagged as outdated and needing correction.",
+        "Fact 4: The user's current reading priority is the Hainish Cycle by Le Guin, interleaved with Octavia Butler revisits.",
+        "Inference: The profile field must be changed from VanderMeer to Le Guin to match the current confirmed preference.",
+        "Inference: The blurb should combine the club start date (April 20th), the current favorite author (Le Guin), and the current reading priority (Hainish Cycle) into a coherent introduction."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I need to update my favorite author back to Le Guin actually"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I signed up for a book club at the library and our first meeting was April 20th"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I noticed that the library book club's online profile page still shows Jeff VanderMeer as my listed favorite author from when I first signed up"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Yes, prioritize the Hainish Cycle"
+        }
+      ]
+    }
+  ]
+}

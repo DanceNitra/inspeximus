@@ -1,0 +1,945 @@
+{
+  "target_fact": "User's current morning coffee order, tracked through multiple changes, plus gym membership details and communication preference",
+  "operation_type": "TrajectoryOps",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "coffee_order",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I switched my morning coffee order to black drip coffee about two weeks ago"
+      },
+      "target": {
+        "target_id": "morning_coffee_order",
+        "target_name": "user's current morning coffee order"
+      },
+      "old_value": null,
+      "new_value": "black drip coffee",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I switched my morning coffee order to black drip coffee about two weeks ago"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "coffee_order",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I've actually been getting a double shot of espresso in the black drip, so it's a red eye now"
+      },
+      "target": {
+        "target_id": "morning_coffee_order",
+        "target_name": "user's current morning coffee order"
+      },
+      "old_value": "black drip coffee",
+      "new_value": "red eye (black drip coffee with a double shot of espresso)",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've actually been getting a double shot of espresso in the black drip, so it's a red eye now"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "coffee_order",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "The espresso was giving me jitters so I dropped back to plain black drip coffee, no shots"
+      },
+      "target": {
+        "target_id": "morning_coffee_order",
+        "target_name": "user's current morning coffee order"
+      },
+      "old_value": "red eye (black drip coffee with a double shot of espresso)",
+      "new_value": "plain black drip coffee",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "The espresso was giving me jitters so I dropped back to plain black drip coffee, no shots"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "coffee_order",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "The barista told me they're discontinuing drip coffee at my location starting next month, so I'll probably have to switch to an Americano"
+      },
+      "target": {
+        "target_id": "morning_coffee_order",
+        "target_name": "user's current morning coffee order"
+      },
+      "old_value": "plain black drip coffee",
+      "new_value": "Americano",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The barista told me they're discontinuing drip coffee at my location starting next month, so I'll probably have to switch to an Americano"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "my gym membership at Iron & Oak Fitness renewed on April 1st, it's $45 a month and I go Monday, Wednesday, and Friday mornings"
+      },
+      "target": {
+        "target_id": "gym_membership",
+        "target_name": "user's gym membership details at Iron & Oak Fitness"
+      },
+      "old_value": null,
+      "new_value": "Iron & Oak Fitness, $45/month, renewed April 1st, attends Monday/Wednesday/Friday mornings",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my gym membership at Iron & Oak Fitness renewed on April 1st, it's $45 a month and I go Monday, Wednesday, and Friday mornings"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish coffee order and first update",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to make sure you have this right because last time it got mixed up. I switched my morning coffee order to black drip coffee about two weeks ago. No oat milk latte, no fancy stuff. Just plain black drip. I like keeping things simple and low-fuss, so please hold onto that accurately this time around."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — your current morning coffee order is black drip coffee. No oat milk latte, no flavored additions, just straightforward black drip. I understand this is important to you, especially after the previous mix-up where I incorrectly recalled it as an oat milk latte. I'll make sure this stays accurate going forward. Simple and low-fuss, just like you prefer. Is there anything else you'd like me to keep track of alongside this?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, while we're at it — I also want to mention that I prefer texting over phone calls when making appointments. Phone calls are draining for me and I'd rather handle scheduling through messages where I can think before I respond. Last time I asked for help booking something you suggested I call the place directly, which was frustrating."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood completely. Your preference is to handle appointment scheduling via text message rather than phone calls. You find phone calls draining and prefer the ability to compose your thoughts before responding, which texting allows. I apologize for the previous suggestion to call directly — that was the opposite of what you wanted. Going forward, whenever I help you schedule something, I'll default to text-based communication options first. I'll look for online booking, text lines, or messaging portals before ever suggesting a phone call. Does that approach work for you?"
+        },
+        {
+          "role": "user",
+          "content": "That works, thanks. Oh, one more thing — I've actually been getting a double shot of espresso in the black drip, so it's a red eye now. I started that maybe three or four days ago because I needed the extra kick for early gym mornings. Still no milk or sweetener though, just the drip plus the espresso shots. Keep it updated."
+        },
+        {
+          "role": "assistant",
+          "content": "Updated — your morning coffee order is now a red eye, which is black drip coffee with a double shot of espresso. No milk, no sweetener, just the drip base with the added espresso for that extra energy boost on early gym mornings. I've noted the change from plain black drip to the red eye. It sounds like the early morning workouts are driving that need for a stronger caffeine hit. I'll keep this as your current order. Let me know if anything else shifts in your routine."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. And speaking of routines, my brother Kevin's birthday is coming up in a few weeks. I need to order him a vinyl record — specifically the Coltrane album A Love Supreme. Not a book, not anything else. A vinyl record. I had an issue before where that got mixed up so I want to be really clear about it this time."
+        },
+        {
+          "role": "assistant",
+          "content": "Crystal clear — for your brother Kevin's upcoming birthday, you want to order a vinyl record of John Coltrane's A Love Supreme. Not a book about jazz, not any other format, specifically a vinyl record of that album. I completely understand why you're emphasizing this given the previous mix-up where it was incorrectly recalled as a book. I'll keep this noted accurately. Would you like me to help you find a good source for vinyl records, or do you have a preferred shop in mind? Let me know how you'd like to proceed."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "gym details and coffee revert to plain drip",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, quick update on a few things. First, my gym membership at Iron & Oak Fitness renewed on April 1st, it's $45 a month and I go Monday, Wednesday, and Friday mornings. I like the early slots when it's quiet and there aren't a lot of people around. That's my current ongoing schedule so please keep that on file."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — your gym membership at Iron & Oak Fitness renewed on April 1st at $45 per month. You attend Monday, Wednesday, and Friday mornings, preferring the early time slots when the gym is quiet and less crowded. That fits with your general preference for low-stimulation environments. I've got this recorded as your current ongoing schedule. Since you mentioned early gym mornings before in connection with your red eye coffee order, it sounds like those two routines are linked. Anything else you'd like me to update?"
+        },
+        {
+          "role": "user",
+          "content": "Actually yes — about the coffee. The espresso was giving me jitters so I dropped back to plain black drip coffee, no shots. I tried the red eye thing for about a week but it was too much caffeine for me. So we're back to just regular black drip, same as before I added the espresso. Simple is better for me honestly."
+        },
+        {
+          "role": "assistant",
+          "content": "Updated — your morning coffee order is back to plain black drip coffee, no espresso shots. The red eye was too much caffeine and was causing jitters, so you've reverted to the simpler option. Your order history has gone from oat milk latte (old, no longer current) to black drip, then briefly to a red eye, and now back to plain black drip. Simple and straightforward, just how you like it. I'll keep this as your current order going forward. Let me know if anything else changes."
+        },
+        {
+          "role": "user",
+          "content": "Good, thanks for tracking that. My coworker Diane had a similar issue with her assistant app — it kept suggesting she wanted almond milk when she'd switched to whole milk weeks before. We laughed about it but it's a real problem when these things don't stay current. Anyway, I also wanted to confirm my communication preference is still texting for appointments, right?"
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, absolutely — your preference for appointment scheduling is texting over phone calls. You find phone calls draining and prefer text-based communication where you can think before responding. That's still recorded and I'll continue to default to text options whenever helping you schedule anything. And I hear you about the frustration with assistants not keeping preferences current — Diane's almond milk versus whole milk situation sounds very similar to what you experienced. It's a common pain point and I want to make sure your information stays accurate here. Is there anything specific you'd like to schedule right now?"
+        },
+        {
+          "role": "user",
+          "content": "Not right now, but I might need to book a follow-up with Dr. Pham's office soon. That's the dentist on Elm Street. My April 9th appointment already happened though so you can forget about that one — it's done and over with. Just keep the general info about Dr. Pham in case I need to schedule again later."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — I'll disregard the April 9th appointment since that's already completed and in the past. I'll retain the general information that your dentist is Dr. Pham, located on Elm Street, for any future scheduling needs. When you're ready to book a follow-up, just let me know and I'll help you find a way to schedule via text or online portal, in line with your communication preference. No phone calls unless absolutely necessary. Is there anything else you'd like me to keep or update?"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "tentative future coffee change and adversarial injection",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to check in on a few things. This past weekend I stayed in and cooked a simple pasta — exactly the kind of low-key weekend I like. No big social plans, no restaurants, just quiet time at home. I think you suggested a restaurant and a group hike last time I asked for weekend help, so just remember I prefer staying in with something simple."
+        },
+        {
+          "role": "assistant",
+          "content": "I'm glad you had the kind of weekend you enjoy — staying in with a simple home-cooked pasta sounds perfect for you. I apologize for the previous suggestion of a restaurant reservation and group hike; that was clearly the opposite of what you wanted. Your preference is for low-key weekends at home with simple activities like cooking, no big social commitments or outings. I've reinforced that in my understanding of your preferences. Next time you ask for weekend planning help, I'll focus on at-home activities, simple meals, and quiet relaxation. What else is on your mind today?"
+        },
+        {
+          "role": "user",
+          "content": "Thanks. I also wanted to double-check — you still have my gym schedule right? Iron & Oak Fitness, Monday, Wednesday, Friday mornings? I want to make sure that didn't get lost. Also, Diane mentioned her coffee shop started carrying a new oat milk latte blend and she loves it, but that's her thing, not mine. I'm sticking with my drip coffee."
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, I still have your gym schedule — Iron & Oak Fitness, $45 per month, renewed April 1st, and you attend Monday, Wednesday, and Friday mornings during the early quiet slots. That's all intact. And noted that Diane's enjoying the new oat milk latte blend at her coffee shop, but that's her preference, not yours. Speaking of which, I see from an old note that your original order was listed as an oat milk latte — but I know that's outdated. Your current morning coffee order is plain black drip coffee. Everything checks out on my end. Anything else?"
+        },
+        {
+          "role": "user",
+          "content": "The barista told me they're discontinuing drip coffee at my location starting next month, so I'll probably have to switch to an Americano. That hasn't happened yet though, I'm still getting drip for now. Just a heads-up about what might be coming. Anyway, what do you have down for Kevin's birthday gift?"
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for the heads-up about the possible switch to an Americano if they discontinue drip coffee at your location next month. For now, your current order remains plain black drip coffee, and I'll keep an eye on that potential change. As for Kevin's birthday gift — you want to order him a vinyl record of John Coltrane's A Love Supreme. Specifically a vinyl record, not a book or any other format. You were very clear about that given the previous mix-up. Would you like help finding a good vinyl retailer, or have you already got a source in mind?"
+        },
+        {
+          "role": "user",
+          "content": "Not yet, I still need to find a good shop. I was thinking maybe an independent record store rather than ordering online. I like supporting local businesses when I can. Also, can you remind me — what's my monthly gym cost again? I'm trying to figure out my budget for the month and I need to factor that in along with Kevin's gift.\n\nThat's helpful, thanks. Let me think about the record store thing and I'll get back to you. For now just make sure everything we've talked about is saved correctly — the gym details, my coffee order as plain black drip, texting preference for appointments, and Kevin's vinyl record. I don't want any of this getting mixed up again like before."
+        },
+        {
+          "role": "assistant",
+          "content": "Your monthly gym membership at Iron & Oak Fitness is $45. So for your monthly budget, you'd want to factor in that $45 plus whatever the vinyl record of A Love Supreme ends up costing. Prices for new vinyl pressings of classic albums like that typically range from $25 to $40 depending on the pressing and retailer, though special editions can run higher. If you're looking for an independent record store, I can help you search for local options — just let me know your area and I'll find shops you could visit or text to check availability, keeping with your preference for text-based communication.\n\nAbsolutely, here's a summary of everything I have on file for you: Your gym membership is at Iron & Oak Fitness, $45 per month, renewed April 1st, and you go Monday, Wednesday, and Friday mornings during early quiet slots. Your current morning coffee order is plain black drip coffee — no espresso shots, no milk, no sweetener. Your preferred communication method for scheduling appointments is texting, not phone calls. And Kevin's birthday gift is a vinyl record of John Coltrane's A Love Supreme from an independent record store. All saved and accurate. I'll be here whenever you're ready to look into record shops."
+        }
+      ]
+    }
+  ],
+  "state_checkpoints": [
+    {
+      "checkpoint_id": "c1",
+      "description": "After segment 1: coffee order is red eye (black drip + double espresso), texting preference for appointments is confirmed, Kevin's gift is a vinyl record of A Love Supreme."
+    },
+    {
+      "checkpoint_id": "c2",
+      "description": "After segment 2: coffee order reverted to plain black drip coffee (no shots), gym membership at Iron & Oak Fitness ($45/month, Mon/Wed/Fri mornings) is confirmed, texting preference still active, Kevin's gift unchanged."
+    },
+    {
+      "checkpoint_id": "c3",
+      "description": "After segment 3: coffee order is still plain black drip coffee (confirmed current). Tentative future switch to Americano mentioned but not yet in effect. Gym membership unchanged. Texting preference unchanged. Kevin's vinyl record gift unchanged. Oat milk latte mentioned only as Diane's preference and old outdated note — not user's current order."
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've told you about my morning coffee preferences over our conversations, including any back-and-forth changes I made?",
+      "expected_answer": "You initially switched to black drip coffee, then added a double shot of espresso making it a red eye, then dropped the espresso and went back to plain black drip coffee because it was giving you jitters. You also mentioned that your location might discontinue drip coffee next month and you'd probably have to switch to an Americano, but that hasn't happened yet. Throughout all changes, you specified no milk and no sweetener.",
+      "gold_memory_state": "Coffee order trajectory: black drip coffee -> red eye (black drip + double espresso) -> plain black drip coffee (confirmed current). Tentative future: Americano (not yet in effect). Gym membership at Iron & Oak Fitness ($45/month, Mon/Wed/Fri mornings) confirmed. Texting preference for appointments confirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "black drip coffee as initial order",
+          "red eye or espresso addition as intermediate",
+          "revert to plain black drip",
+          "possible future Americano"
+        ],
+        "acceptable_paraphrases": [
+          "drip with double espresso",
+          "black coffee with espresso shots"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying Americano is the current order",
+          "saying oat milk latte is any current preference"
+        ],
+        "harmless_extra": [
+          "mentioning no milk or sweetener",
+          "mentioning jitters as reason for reverting",
+          "mentioning gym mornings as reason for red eye"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model states red eye or Americano as the current confirmed order.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence of changes is presented out of order.",
+        "final_state": "Fails if the final confirmed state is not plain black drip coffee.",
+        "intermediate_state": "Fails if the red eye intermediate state is omitted.",
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I switched my morning coffee order to black drip coffee about two weeks ago"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've actually been getting a double shot of espresso in the black drip, so it's a red eye now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "The espresso was giving me jitters so I dropped back to plain black drip coffee, no shots"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The barista told me they're discontinuing drip coffee at my location starting next month, so I'll probably have to switch to an Americano"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've told you about my morning coffee preferences over our conversations, including any back-and-forth changes I made?",
+      "expected_answer": "You initially switched to black drip coffee, then added a double shot of espresso making it a red eye, then dropped the espresso and went back to plain black drip coffee because it was giving you jitters. You also mentioned that your location might discontinue drip coffee next month and you'd probably have to switch to an Americano, but that hasn't happened yet. Throughout all changes, you specified no milk and no sweetener.",
+      "gold_memory_state": "Coffee order trajectory: black drip coffee -> red eye (black drip + double espresso) -> plain black drip coffee (confirmed current). Tentative future: Americano (not yet in effect). Gym membership at Iron & Oak Fitness ($45/month, Mon/Wed/Fri mornings) confirmed. Texting preference for appointments confirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "black drip coffee as initial order",
+          "red eye or espresso addition as intermediate",
+          "revert to plain black drip",
+          "possible future Americano"
+        ],
+        "acceptable_paraphrases": [
+          "drip with double espresso",
+          "black coffee with espresso shots"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying Americano is the current order",
+          "saying oat milk latte is any current preference"
+        ],
+        "harmless_extra": [
+          "mentioning no milk or sweetener",
+          "mentioning jitters as reason for reverting",
+          "mentioning gym mornings as reason for red eye"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model states red eye or Americano as the current confirmed order.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence of changes is presented out of order.",
+        "final_state": "Fails if the final confirmed state is not plain black drip coffee.",
+        "intermediate_state": "Fails if the red eye intermediate state is omitted.",
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I switched my morning coffee order to black drip coffee about two weeks ago"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've actually been getting a double shot of espresso in the black drip, so it's a red eye now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "The espresso was giving me jitters so I dropped back to plain black drip coffee, no shots"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The barista told me they're discontinuing drip coffee at my location starting next month, so I'll probably have to switch to an Americano"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "My coworker Diane recently started loving a new oat milk latte blend, and I also mentioned oat milk lattes came up in an old note. If I asked you to place a morning drink order for me right now, which drink record should you pull from — and does Diane's preference have any bearing on mine?",
+      "expected_answer": "Your current morning coffee order is plain black drip coffee. Diane's oat milk latte preference is her own and does not affect your order. The old oat milk latte note is outdated and not your current preference.",
+      "gold_memory_state": "User's current confirmed coffee order: plain black drip coffee. Diane's oat milk latte is a separate person's preference. Old oat milk latte reference is stale/outdated for the user. Gym membership at Iron & Oak Fitness is a separate target, unaffected.",
+      "judge_rubric": {
+        "must_include": [
+          "plain black drip coffee as user's current order",
+          "Diane's preference does not affect user's order"
+        ],
+        "acceptable_paraphrases": [
+          "regular black drip",
+          "black drip with no additions"
+        ],
+        "must_not_include": [
+          "oat milk latte as user's current order"
+        ],
+        "harmful_extra": [
+          "applying Diane's oat milk latte to the user's record",
+          "treating old oat milk latte note as current for the user"
+        ],
+        "harmless_extra": [
+          "mentioning no milk or sweetener",
+          "mentioning the red eye was a past order"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if oat milk latte is treated as the user's current order.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the final coffee order is not plain black drip coffee.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "The espresso was giving me jitters so I dropped back to plain black drip coffee, no shots"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Diane mentioned her coffee shop started carrying a new oat milk latte blend and she loves it, but that's her thing, not mine. I'm sticking with my drip coffee."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "My coworker Diane recently started loving a new oat milk latte blend, and I also mentioned oat milk lattes came up in an old note. If I asked you to place a morning drink order for me right now, which drink record should you pull from — and does Diane's preference have any bearing on mine?",
+      "expected_answer": "Your current morning coffee order is plain black drip coffee. Diane's oat milk latte preference is her own and does not affect your order. The old oat milk latte note is outdated and not your current preference.",
+      "gold_memory_state": "User's current confirmed coffee order: plain black drip coffee. Diane's oat milk latte is a separate person's preference. Old oat milk latte reference is stale/outdated for the user. Gym membership at Iron & Oak Fitness is a separate target, unaffected.",
+      "judge_rubric": {
+        "must_include": [
+          "plain black drip coffee as user's current order",
+          "Diane's preference does not affect user's order"
+        ],
+        "acceptable_paraphrases": [
+          "regular black drip",
+          "black drip with no additions"
+        ],
+        "must_not_include": [
+          "oat milk latte as user's current order"
+        ],
+        "harmful_extra": [
+          "applying Diane's oat milk latte to the user's record",
+          "treating old oat milk latte note as current for the user"
+        ],
+        "harmless_extra": [
+          "mentioning no milk or sweetener",
+          "mentioning the red eye was a past order"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if oat milk latte is treated as the user's current order.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the final coffee order is not plain black drip coffee.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "The espresso was giving me jitters so I dropped back to plain black drip coffee, no shots"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Diane mentioned her coffee shop started carrying a new oat milk latte blend and she loves it, but that's her thing, not mine. I'm sticking with my drip coffee."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "I need to tell my barista what to make for me tomorrow morning. What should I order?",
+      "expected_answer": "Plain black drip coffee.",
+      "gold_memory_state": "Current confirmed coffee order: plain black drip coffee. The possible future switch to Americano is tentative and not yet in effect — the user's location has not yet discontinued drip coffee. Red eye is a past order, no longer current.",
+      "judge_rubric": {
+        "must_include": [
+          "plain black drip coffee"
+        ],
+        "acceptable_paraphrases": [
+          "black drip",
+          "regular drip coffee",
+          "drip coffee no shots"
+        ],
+        "must_not_include": [
+          "Americano as current order",
+          "red eye as current order",
+          "oat milk latte"
+        ],
+        "harmful_extra": [
+          "treating the Americano as the current order because it was mentioned most recently",
+          "treating red eye as still active"
+        ],
+        "harmless_extra": [
+          "mentioning no milk or sweetener"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model outputs Americano (tentative/not yet adopted), red eye (superseded), or oat milk latte (outdated/different person).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the final usable state is not plain black drip coffee.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "The espresso was giving me jitters so I dropped back to plain black drip coffee, no shots"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The barista told me they're discontinuing drip coffee at my location starting next month, so I'll probably have to switch to an Americano"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "I need to tell my barista what to make for me tomorrow morning. What should I order?",
+      "expected_answer": "Plain black drip coffee.",
+      "gold_memory_state": "Current confirmed coffee order: plain black drip coffee. The possible future switch to Americano is tentative and not yet in effect — the user's location has not yet discontinued drip coffee. Red eye is a past order, no longer current.",
+      "judge_rubric": {
+        "must_include": [
+          "plain black drip coffee"
+        ],
+        "acceptable_paraphrases": [
+          "black drip",
+          "regular drip coffee",
+          "drip coffee no shots"
+        ],
+        "must_not_include": [
+          "Americano as current order",
+          "red eye as current order",
+          "oat milk latte"
+        ],
+        "harmful_extra": [
+          "treating the Americano as the current order because it was mentioned most recently",
+          "treating red eye as still active"
+        ],
+        "harmless_extra": [
+          "mentioning no milk or sweetener"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model outputs Americano (tentative/not yet adopted), red eye (superseded), or oat milk latte (outdated/different person).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the final usable state is not plain black drip coffee.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "The espresso was giving me jitters so I dropped back to plain black drip coffee, no shots"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The barista told me they're discontinuing drip coffee at my location starting next month, so I'll probably have to switch to an Americano"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm trying to put together a quick monthly budget summary. I need a line item for my gym membership and I also want to figure out: on the mornings I go to the gym, do I grab coffee beforehand? If so, include a note about what drink I get. Also, if I need to reschedule a gym session, how should the reminder reach me?",
+      "expected_answer": "Gym membership line item: $45/month at Iron & Oak Fitness, attending Monday, Wednesday, and Friday mornings. On those gym mornings you get a plain black drip coffee. If you need to reschedule a session, the reminder or scheduling should be handled via text message, not a phone call.",
+      "gold_memory_state": "Gym: Iron & Oak Fitness, $45/month, renewed April 1st, Mon/Wed/Fri mornings. Coffee: plain black drip coffee (confirmed current). Communication preference: texting for appointments. Tentative Americano not in effect. Red eye is superseded.",
+      "judge_rubric": {
+        "must_include": [
+          "$45",
+          "Iron & Oak Fitness",
+          "Monday Wednesday Friday mornings",
+          "plain black drip coffee",
+          "text or texting for scheduling"
+        ],
+        "acceptable_paraphrases": [
+          "45 dollars per month",
+          "M/W/F mornings",
+          "black drip",
+          "message-based scheduling"
+        ],
+        "must_not_include": [
+          "Americano as current drink",
+          "red eye as current drink",
+          "oat milk latte",
+          "phone call as default scheduling method"
+        ],
+        "harmful_extra": [
+          "using Americano as the current coffee order",
+          "suggesting phone calls for rescheduling"
+        ],
+        "harmless_extra": [
+          "mentioning April 1st renewal date",
+          "mentioning no milk or sweetener in the coffee",
+          "mentioning early quiet slots"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Americano, red eye, or oat milk latte appears as the current coffee order. Fails if phone call is suggested as the scheduling method.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the final coffee state or gym details are incorrect.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Gym membership is at Iron & Oak Fitness, $45/month, Monday/Wednesday/Friday mornings.",
+        "Fact 2: Current confirmed coffee order is plain black drip coffee (red eye was tried briefly but dropped due to jitters; Americano is only a tentative future possibility).",
+        "Fact 3: User prefers texting over phone calls for appointment scheduling.",
+        "Inference: Gym mornings (Mon/Wed/Fri) overlap with coffee routine, so the user gets plain black drip coffee on those mornings.",
+        "Inference: Any rescheduling communication should default to text, combining the gym schedule fact with the communication preference."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my gym membership at Iron & Oak Fitness renewed on April 1st, it's $45 a month and I go Monday, Wednesday, and Friday mornings"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "The espresso was giving me jitters so I dropped back to plain black drip coffee, no shots"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I also want to mention that I prefer texting over phone calls when making appointments"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm trying to put together a quick monthly budget summary. I need a line item for my gym membership and I also want to figure out: on the mornings I go to the gym, do I grab coffee beforehand? If so, include a note about what drink I get. Also, if I need to reschedule a gym session, how should the reminder reach me?",
+      "expected_answer": "Gym membership line item: $45/month at Iron & Oak Fitness, attending Monday, Wednesday, and Friday mornings. On those gym mornings you get a plain black drip coffee. If you need to reschedule a session, the reminder or scheduling should be handled via text message, not a phone call.",
+      "gold_memory_state": "Gym: Iron & Oak Fitness, $45/month, renewed April 1st, Mon/Wed/Fri mornings. Coffee: plain black drip coffee (confirmed current). Communication preference: texting for appointments. Tentative Americano not in effect. Red eye is superseded.",
+      "judge_rubric": {
+        "must_include": [
+          "$45",
+          "Iron & Oak Fitness",
+          "Monday Wednesday Friday mornings",
+          "plain black drip coffee",
+          "text or texting for scheduling"
+        ],
+        "acceptable_paraphrases": [
+          "45 dollars per month",
+          "M/W/F mornings",
+          "black drip",
+          "message-based scheduling"
+        ],
+        "must_not_include": [
+          "Americano as current drink",
+          "red eye as current drink",
+          "oat milk latte",
+          "phone call as default scheduling method"
+        ],
+        "harmful_extra": [
+          "using Americano as the current coffee order",
+          "suggesting phone calls for rescheduling"
+        ],
+        "harmless_extra": [
+          "mentioning April 1st renewal date",
+          "mentioning no milk or sweetener in the coffee",
+          "mentioning early quiet slots"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Americano, red eye, or oat milk latte appears as the current coffee order. Fails if phone call is suggested as the scheduling method.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the final coffee state or gym details are incorrect.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Gym membership is at Iron & Oak Fitness, $45/month, Monday/Wednesday/Friday mornings.",
+        "Fact 2: Current confirmed coffee order is plain black drip coffee (red eye was tried briefly but dropped due to jitters; Americano is only a tentative future possibility).",
+        "Fact 3: User prefers texting over phone calls for appointment scheduling.",
+        "Inference: Gym mornings (Mon/Wed/Fri) overlap with coffee routine, so the user gets plain black drip coffee on those mornings.",
+        "Inference: Any rescheduling communication should default to text, combining the gym schedule fact with the communication preference."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my gym membership at Iron & Oak Fitness renewed on April 1st, it's $45 a month and I go Monday, Wednesday, and Friday mornings"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "The espresso was giving me jitters so I dropped back to plain black drip coffee, no shots"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I also want to mention that I prefer texting over phone calls when making appointments"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed everything we've discussed about my morning drink, what would they see as the full sequence of changes — which versions were actually adopted and which were only mentioned as possibilities? Walk me through the whole timeline.",
+      "expected_answer": "First, you adopted black drip coffee. Then you changed to a red eye (black drip with a double shot of espresso) for extra energy on gym mornings. Then you reverted to plain black drip coffee because the espresso gave you jitters — that is your current order. Finally, you mentioned you might have to switch to an Americano in the future because your location may discontinue drip coffee, but that change has not happened yet and is only a possibility. So three versions were actually adopted in sequence (black drip, red eye, plain black drip), and one (Americano) was mentioned as a potential future change only.",
+      "gold_memory_state": "Trajectory: (1) black drip coffee [confirmed, adopted] -> (2) red eye with double espresso [confirmed, adopted, later superseded] -> (3) plain black drip coffee [confirmed, adopted, current] -> (4) Americano [tentative, not yet in effect]. Three confirmed transitions, one tentative fork.",
+      "judge_rubric": {
+        "must_include": [
+          "black drip coffee as first adopted order",
+          "red eye as second adopted order",
+          "plain black drip coffee as third and current adopted order",
+          "Americano as tentative or potential future only"
+        ],
+        "acceptable_paraphrases": [
+          "drip with double espresso for red eye",
+          "black coffee with espresso shots"
+        ],
+        "must_not_include": [
+          "Americano as an adopted or current order"
+        ],
+        "harmful_extra": [
+          "listing Americano as a confirmed change",
+          "omitting the red eye intermediate step",
+          "listing oat milk latte as part of the user's trajectory"
+        ],
+        "harmless_extra": [
+          "mentioning jitters as reason for reverting",
+          "mentioning gym mornings as reason for red eye",
+          "mentioning no milk or sweetener throughout"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Americano is listed as an adopted change rather than tentative.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the chronological order of changes is wrong (e.g., red eye before black drip, or plain drip before red eye).",
+        "final_state": "Fails if the final current state is not plain black drip coffee.",
+        "intermediate_state": "Fails if the red eye intermediate state is omitted from the trajectory.",
+        "trajectory_provenance": "Fails if the tentative Americano is not distinguished from confirmed changes."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: User established black drip coffee as the initial order (confirmed).",
+        "Step 2: User changed to red eye — black drip with a double shot of espresso (confirmed).",
+        "Step 3: User reverted to plain black drip coffee because espresso caused jitters (confirmed, current).",
+        "Step 4: User mentioned a possible future switch to Americano due to drip being discontinued at the location, but this has not happened yet (tentative only).",
+        "Inference: Three confirmed adopted states in sequence, plus one tentative fork. The final usable state is plain black drip coffee."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I switched my morning coffee order to black drip coffee about two weeks ago"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've actually been getting a double shot of espresso in the black drip, so it's a red eye now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "The espresso was giving me jitters so I dropped back to plain black drip coffee, no shots"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The barista told me they're discontinuing drip coffee at my location starting next month, so I'll probably have to switch to an Americano"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed everything we've discussed about my morning drink, what would they see as the full sequence of changes — which versions were actually adopted and which were only mentioned as possibilities? Walk me through the whole timeline.",
+      "expected_answer": "First, you adopted black drip coffee. Then you changed to a red eye (black drip with a double shot of espresso) for extra energy on gym mornings. Then you reverted to plain black drip coffee because the espresso gave you jitters — that is your current order. Finally, you mentioned you might have to switch to an Americano in the future because your location may discontinue drip coffee, but that change has not happened yet and is only a possibility. So three versions were actually adopted in sequence (black drip, red eye, plain black drip), and one (Americano) was mentioned as a potential future change only.",
+      "gold_memory_state": "Trajectory: (1) black drip coffee [confirmed, adopted] -> (2) red eye with double espresso [confirmed, adopted, later superseded] -> (3) plain black drip coffee [confirmed, adopted, current] -> (4) Americano [tentative, not yet in effect]. Three confirmed transitions, one tentative fork.",
+      "judge_rubric": {
+        "must_include": [
+          "black drip coffee as first adopted order",
+          "red eye as second adopted order",
+          "plain black drip coffee as third and current adopted order",
+          "Americano as tentative or potential future only"
+        ],
+        "acceptable_paraphrases": [
+          "drip with double espresso for red eye",
+          "black coffee with espresso shots"
+        ],
+        "must_not_include": [
+          "Americano as an adopted or current order"
+        ],
+        "harmful_extra": [
+          "listing Americano as a confirmed change",
+          "omitting the red eye intermediate step",
+          "listing oat milk latte as part of the user's trajectory"
+        ],
+        "harmless_extra": [
+          "mentioning jitters as reason for reverting",
+          "mentioning gym mornings as reason for red eye",
+          "mentioning no milk or sweetener throughout"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Americano is listed as an adopted change rather than tentative.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the chronological order of changes is wrong (e.g., red eye before black drip, or plain drip before red eye).",
+        "final_state": "Fails if the final current state is not plain black drip coffee.",
+        "intermediate_state": "Fails if the red eye intermediate state is omitted from the trajectory.",
+        "trajectory_provenance": "Fails if the tentative Americano is not distinguished from confirmed changes."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: User established black drip coffee as the initial order (confirmed).",
+        "Step 2: User changed to red eye — black drip with a double shot of espresso (confirmed).",
+        "Step 3: User reverted to plain black drip coffee because espresso caused jitters (confirmed, current).",
+        "Step 4: User mentioned a possible future switch to Americano due to drip being discontinued at the location, but this has not happened yet (tentative only).",
+        "Inference: Three confirmed adopted states in sequence, plus one tentative fork. The final usable state is plain black drip coffee."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I switched my morning coffee order to black drip coffee about two weeks ago"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've actually been getting a double shot of espresso in the black drip, so it's a red eye now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "The espresso was giving me jitters so I dropped back to plain black drip coffee, no shots"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The barista told me they're discontinuing drip coffee at my location starting next month, so I'll probably have to switch to an Americano"
+        }
+      ]
+    }
+  ]
+}

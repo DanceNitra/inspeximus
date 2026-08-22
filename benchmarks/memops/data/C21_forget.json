@@ -1,0 +1,1000 @@
+{
+  "target_fact": "User's credit card and bill payment due dates, with the ConEd electricity bill (due 1st, on autopay) being the target for forget, while Chase Sapphire (15th), Citi Double Cash (22nd), and Capital One Quicksilver (28th) remain active.",
+  "operation_type": "Forget",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 4,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "My Chase Sapphire card payment is due on the 15th of every month"
+      },
+      "target": {
+        "target_id": "chase_sapphire_due_date",
+        "target_name": "Chase Sapphire card payment due date"
+      },
+      "old_value": null,
+      "new_value": "15th of every month",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My Chase Sapphire card payment is due on the 15th of every month"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "my Citi Double Cash card due date is the 22nd now"
+      },
+      "target": {
+        "target_id": "citi_double_cash_due_date",
+        "target_name": "Citi Double Cash card payment due date"
+      },
+      "old_value": null,
+      "new_value": "22nd of every month",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my Citi Double Cash card due date is the 22nd now"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I called them back in February and moved it to the 22nd so it lines up after my second paycheck"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "My ConEd electricity bill is due on the 1st of each month"
+      },
+      "target": {
+        "target_id": "coned_electricity_due_date",
+        "target_name": "ConEd electricity bill due date"
+      },
+      "old_value": null,
+      "new_value": "1st of each month, autopay full statement balance",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My ConEd electricity bill is due on the 1st of each month"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "it's been on autopay full statement balance since I moved into this apartment"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "my Capital One Quicksilver card has a due date on the 28th"
+      },
+      "target": {
+        "target_id": "capital_one_quicksilver_due_date",
+        "target_name": "Capital One Quicksilver card payment due date"
+      },
+      "old_value": null,
+      "new_value": "28th of every month",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my Capital One Quicksilver card has a due date on the 28th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "mostly just a small recurring Spotify charge of $11.99 on it to keep it active"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I set Google Calendar reminders 3 days before each due date"
+      },
+      "target": {
+        "target_id": "calendar_reminder_rule",
+        "target_name": "Google Calendar reminder rule for bill due dates"
+      },
+      "old_value": null,
+      "new_value": "Google Calendar reminders set 3 days before each due date",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I set Google Calendar reminders 3 days before each due date"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "forget",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "you can go ahead and drop the ConEd electricity bill from my tracked bills"
+      },
+      "target": {
+        "target_id": "coned_electricity_due_date",
+        "target_name": "ConEd electricity bill due date"
+      },
+      "old_value": "1st of each month, autopay full statement balance",
+      "new_value": null,
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "you can go ahead and drop the ConEd electricity bill from my tracked bills"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "It's fully automated and I never think about it, so there's no point in tracking it"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish_targets",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to get all my recurring bill due dates organized so I can stay on top of everything. Let me start with the big one. My Chase Sapphire card payment is due on the 15th of every month. It usually carries the highest balance of all my cards, so that's the one I need to be most careful about. I have autopay set for the minimum, but I always try to pay more manually before it hits."
+        },
+        {
+          "role": "assistant",
+          "content": "Great, I've noted your Chase Sapphire card payment due date as the 15th of every month. Since it tends to carry your highest balance, it makes sense to prioritize it. Having autopay for the minimum is a solid safety net — it protects your payment history even if you forget to make the manual payment. Just to confirm, when you say you pay more manually, do you typically do that a few days before the 15th, or right on the due date itself? That might be useful for setting up reminders later."
+        },
+        {
+          "role": "user",
+          "content": "Good question — I'll get to my payment timing preference in a bit. Let me keep listing my bills first. Next up, my Citi Double Cash card due date is the 22nd now. It used to be the 7th, but I called them back in February and moved it to the 22nd so it lines up after my second paycheck. That way I always have enough cash in my checking account when it's time to pay."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — your Citi Double Cash card payment is now due on the 22nd of each month, updated from the 7th after you called in February. Smart move aligning it with your pay schedule; that's one of the best ways to avoid cash flow issues around bill time. So far I have two cards tracked: Chase Sapphire on the 15th and Citi Double Cash on the 22nd. Both are spaced nicely apart in the month. Go ahead and keep listing — I'll organize everything once we have the full picture."
+        },
+        {
+          "role": "user",
+          "content": "Perfect, thanks. Next one is a utility. My ConEd electricity bill is due on the 1st of each month. But honestly, it's been on autopay full statement balance since I moved into this apartment, so I never even look at it. It just processes automatically every month without any action from me. I almost forgot it existed until I started listing things out just now."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — your ConEd electricity bill is due on the 1st, and it's been on full autopay since you moved in. That's the most hands-off approach you can take, which is ideal for a recurring utility. Since you never have to intervene, it's essentially a set-and-forget bill. I'll include it in the list for now so we have a complete view of all your obligations. Currently tracking: Chase Sapphire on the 15th, Citi Double Cash on the 22nd, and ConEd electricity on the 1st. Anything else to add?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, a couple more. But actually, before I continue — my friend Kevin was telling me last week that his Discover card is due on the 25th and he's been carrying a balance for months. I told him he should call and negotiate a lower APR. Not sure if that's relevant, but it came up in conversation. Anyway, let me keep going with my own stuff in the next message."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a good tip you gave Kevin — negotiating APR can save a lot, especially on a revolving balance. I won't track Kevin's Discover card details since those are his, not yours, but it's good context. Whenever you're ready, go ahead and continue with your remaining bills. So far we have three of yours documented: Chase Sapphire on the 15th, Citi Double Cash on the 22nd, and ConEd electricity on the 1st. I'll keep adding as you go and we can review the full list together once you're done."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "expand_and_forget",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Okay, continuing from before. One more card — my Capital One Quicksilver card has a due date on the 28th. I barely use it anymore honestly; mostly just a small recurring Spotify charge of $11.99 on it to keep it active. Low priority but I still want it on the list so nothing falls through the cracks. It's the kind of card I'd forget about if I didn't track it."
+        },
+        {
+          "role": "assistant",
+          "content": "Added — Capital One Quicksilver due on the 28th, with a recurring Spotify charge of $11.99 to keep the account active. That's a smart strategy for maintaining the credit line without overextending. Even low-balance cards matter for your credit profile, so it's worth keeping on the radar. Updated list: Chase Sapphire on the 15th, Citi Double Cash on the 22nd, Capital One Quicksilver on the 28th, and ConEd electricity on the 1st. That gives you bills spread across the month. Any more to add, or shall we move on to organizing reminders?"
+        },
+        {
+          "role": "user",
+          "content": "Let's talk reminders. After I missed a payment on my Amex Blue Cash card back in mid-March — I was traveling for work and completely spaced on it — I started being way more proactive. Now I set Google Calendar reminders 3 days before each due date. So for example, the Chase reminder goes off on the 12th, the Citi one on the 19th, and so on. It might seem obsessive but I'd rather get the early ping than scramble."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really solid system, and not obsessive at all — three days of lead time gives you a comfortable window to review the balance, decide how much to pay, and actually process the payment before the deadline. After what happened with the Amex Blue Cash in March, it makes total sense you'd want that buffer. So your reminder schedule would be: the 12th for Chase Sapphire, the 19th for Citi Double Cash, the 25th for Capital One Quicksilver, and the 29th (or end of month) for ConEd. Want me to map all of those out for you?"
+        },
+        {
+          "role": "user",
+          "content": "Actually, about ConEd — you can go ahead and drop the ConEd electricity bill from my tracked bills. It's fully automated and I never think about it, so there's no point in tracking it. I don't need a reminder for something that handles itself. Just keep the three credit cards: Chase Sapphire, Citi Double Cash, and Capital One Quicksilver. Those are the ones that need my active attention."
+        },
+        {
+          "role": "assistant",
+          "content": "Done — I've removed the ConEd electricity bill from your tracked list. Since it's on full autopay and requires zero intervention from you, there's no need to clutter your reminders with it. Your active tracked bills are now: Chase Sapphire on the 15th (reminder on the 12th), Citi Double Cash on the 22nd (reminder on the 19th), and Capital One Quicksilver on the 28th (reminder on the 25th). Three cards, three reminders, each set 3 days ahead. Clean and manageable. Anything else you want to adjust?"
+        },
+        {
+          "role": "user",
+          "content": "One more thing about timing. I recently switched to paying my Chase Sapphire card a few days early — around the 10th or 11th instead of right on the 15th. I read that paying before the statement closing date can help lower my credit utilization ratio when it gets reported. So now I try to get it done by the 11th at the latest. It gives me a nice buffer and I feel way less stressed.\n\nGood idea, but let me think about whether to move the reminder. For now just keep it at 3 days before the official due date — the 12th. I'll manually adjust if needed. The main point is I have three active cards to track and a consistent reminder system. I feel a lot more in control of my finances now compared to a few months ago when I was flying blind."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a great strategy — paying before the statement closing date means a lower balance gets reported to the bureaus, which can directly improve your utilization ratio. Since your due date is the 15th and you're now targeting the 10th or 11th, that gives you a solid 4-5 day cushion. Combined with your Google Calendar reminder on the 12th, you might even want to shift that Chase reminder earlier to the 7th or 8th so it aligns with your new preferred payment window. Would you like me to note that adjustment to the reminder timing as well?\n\nUnderstood — I'll keep the reminder at the 12th for Chase Sapphire for now, and you can always shift it later if your early-payment habit sticks. Your final active tracking list is: Chase Sapphire due the 15th (reminder the 12th), Citi Double Cash due the 22nd (reminder the 19th), and Capital One Quicksilver due the 28th (reminder the 25th). ConEd is off the list. You've built a really solid system with the 3-day advance reminders and the early payment approach. Sounds like you're in a much better place than when you missed that Amex payment in March."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "adversarial_injection_and_confirmation",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So I was going through my bills this past Sunday evening — you know I've gotten into the habit of reviewing everything on Sundays — and I realized how much calmer I feel about money stuff now. Having the three cards laid out with their due dates and reminders makes everything feel manageable. No surprises, no scrambling. It's actually kind of satisfying to check things off."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really positive shift — going from dreading finances to finding the review process satisfying is a big change. Your Sunday evening routine sounds like it's become an anchor habit that keeps everything on track. With Chase Sapphire on the 15th, Citi Double Cash on the 22nd, and Capital One Quicksilver on the 28th all mapped out with 3-day advance reminders, you've essentially eliminated the chaos that led to the missed Amex payment. By the way, I noticed in an old billing summary you shared previously that there was a ConEd amount listed at $87 due on the 1st — just confirming that's still off your active tracking list as you requested, correct?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, ConEd is definitely still off the list. That's handled automatically and I don't need to think about it. Speaking of other people's bills though, I had lunch with Kevin again yesterday and he mentioned he finally called Discover about his rate. He said they moved his due date to the 18th as part of some promotional restructuring. Good for him, but that's his situation, not mine."
+        },
+        {
+          "role": "assistant",
+          "content": "Glad to hear Kevin took your advice and called Discover — sounds like he's making progress. And noted, his new due date of the 18th is his business, not something we need to track for you. Your active list remains exactly as established: Chase Sapphire on the 15th, Citi Double Cash on the 22nd, and Capital One Quicksilver on the 28th, each with a Google Calendar reminder 3 days prior. ConEd remains off the active list per your earlier request. Is there anything else you'd like to review or adjust during your Sunday session today?"
+        },
+        {
+          "role": "user",
+          "content": "Not really, I think everything is solid. I do want to mention — I saw an article that said the ideal number of active credit cards for building credit is five. I only have three that I'm actively using and tracking, so maybe at some point I'll open another one. But that's just an idea for the future, nothing concrete right now."
+        },
+        {
+          "role": "assistant",
+          "content": "That's an interesting data point about the five-card recommendation. It depends a lot on your spending patterns and ability to manage the accounts, but you've clearly shown you can handle a structured system. If you ever decide to add a fourth or fifth card, we can easily slot it into your existing reminder framework — just pick a due date that fills a gap in the month and set the 3-day advance alert. For now though, your three-card setup with Chase Sapphire, Citi Double Cash, and Capital One Quicksilver is working well and there's no rush to change it."
+        },
+        {
+          "role": "user",
+          "content": "Exactly, no rush. Oh, one random thought — I was looking at an old bank statement from January and saw a payment to Citi on the 7th. That was back when my Citi card was still due on the 7th before I moved it to the 22nd. Funny to see the old date on paper. Anyway, everything is current now and I'm happy with the setup. The 22nd works perfectly with my pay schedule.\n\nYeah, that Amex situation was a real wake-up call. But I've turned it into something positive with this whole system. Thanks for keeping track of everything for me — it really helps to have it all in one place. I'll check back in next Sunday as part of my routine. Have a good week!"
+        },
+        {
+          "role": "assistant",
+          "content": "Ha, that must have been a little time capsule moment seeing the old 7th due date on your January statement. It's a good reminder of why you made the switch — aligning the Citi Double Cash due date with your second paycheck on the 22nd was a smart financial move. Your current setup is clean and well-organized: Chase Sapphire on the 15th, Citi Double Cash on the 22nd, and Capital One Quicksilver on the 28th, all with 3-day advance Google Calendar reminders. ConEd is off the active list. You've come a long way from the mid-March Amex scare.\n\nYou've done a great job building this system from a tough experience. Your three active tracked cards — Chase Sapphire (15th), Citi Double Cash (22nd), and Capital One Quicksilver (28th) — are all set with your 3-day advance reminders, and your early payment strategy on the Chase card gives you extra buffer. Enjoy the rest of your Sunday evening, and I'll be here next week whenever you want to do your review. Have a great week!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize all the recurring bills and payment details I've shared with you so far, including any utilities and credit cards?",
+      "expected_answer": "You shared four recurring bills: Chase Sapphire card due on the 15th (autopay minimum, you manually pay more), Citi Double Cash card due on the 22nd (moved from the 7th in February to align with your second paycheck), ConEd electricity bill due on the 1st (on full autopay since you moved in), and Capital One Quicksilver card due on the 28th (small recurring Spotify charge of $11.99 to keep it active). You also set up Google Calendar reminders 3 days before each due date. You later asked to drop the ConEd bill from your tracked list since it's fully automated.",
+      "gold_memory_state": "Chase Sapphire (15th), Citi Double Cash (22nd), and Capital One Quicksilver (28th) are actively tracked. ConEd electricity bill (1st) was removed from tracking. Google Calendar reminders are set 3 days before each active due date.",
+      "judge_rubric": {
+        "must_include": [
+          "Chase Sapphire on the 15th",
+          "Citi Double Cash on the 22nd",
+          "Capital One Quicksilver on the 28th",
+          "ConEd electricity on the 1st",
+          "ConEd removed from tracking"
+        ],
+        "acceptable_paraphrases": [
+          "dropped ConEd",
+          "stopped tracking ConEd"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming ConEd is still actively tracked"
+        ],
+        "harmless_extra": [
+          "mentioning the Spotify charge on Capital One",
+          "mentioning the Google Calendar reminder system",
+          "mentioning the Citi due date was moved from the 7th"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": "Fails if the response refuses to acknowledge ConEd was ever mentioned or pretends it never existed.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My Chase Sapphire card payment is due on the 15th of every month"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my Citi Double Cash card due date is the 22nd now"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My ConEd electricity bill is due on the 1st of each month"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my Capital One Quicksilver card has a due date on the 28th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I set Google Calendar reminders 3 days before each due date"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "you can go ahead and drop the ConEd electricity bill from my tracked bills"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize all the recurring bills and payment details I've shared with you so far, including any utilities and credit cards?",
+      "expected_answer": "You shared four recurring bills: Chase Sapphire card due on the 15th (autopay minimum, you manually pay more), Citi Double Cash card due on the 22nd (moved from the 7th in February to align with your second paycheck), ConEd electricity bill due on the 1st (on full autopay since you moved in), and Capital One Quicksilver card due on the 28th (small recurring Spotify charge of $11.99 to keep it active). You also set up Google Calendar reminders 3 days before each due date. You later asked to drop the ConEd bill from your tracked list since it's fully automated.",
+      "gold_memory_state": "Chase Sapphire (15th), Citi Double Cash (22nd), and Capital One Quicksilver (28th) are actively tracked. ConEd electricity bill (1st) was removed from tracking. Google Calendar reminders are set 3 days before each active due date.",
+      "judge_rubric": {
+        "must_include": [
+          "Chase Sapphire on the 15th",
+          "Citi Double Cash on the 22nd",
+          "Capital One Quicksilver on the 28th",
+          "ConEd electricity on the 1st",
+          "ConEd removed from tracking"
+        ],
+        "acceptable_paraphrases": [
+          "dropped ConEd",
+          "stopped tracking ConEd"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming ConEd is still actively tracked"
+        ],
+        "harmless_extra": [
+          "mentioning the Spotify charge on Capital One",
+          "mentioning the Google Calendar reminder system",
+          "mentioning the Citi due date was moved from the 7th"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": "Fails if the response refuses to acknowledge ConEd was ever mentioned or pretends it never existed.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My Chase Sapphire card payment is due on the 15th of every month"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my Citi Double Cash card due date is the 22nd now"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My ConEd electricity bill is due on the 1st of each month"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my Capital One Quicksilver card has a due date on the 28th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I set Google Calendar reminders 3 days before each due date"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "you can go ahead and drop the ConEd electricity bill from my tracked bills"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to stop tracking one of my bills. Which bill was it, and are my credit card payment records affected by that change?",
+      "expected_answer": "The bill removed from tracking was the ConEd electricity bill. Your three credit card payment records — Chase Sapphire (15th), Citi Double Cash (22nd), and Capital One Quicksilver (28th) — are not affected and remain actively tracked.",
+      "gold_memory_state": "ConEd electricity bill due date is removed from active tracking. Chase Sapphire (15th), Citi Double Cash (22nd), and Capital One Quicksilver (28th) remain active. Google Calendar reminder rule remains active.",
+      "judge_rubric": {
+        "must_include": [
+          "ConEd electricity bill was the one removed",
+          "Chase Sapphire remains tracked",
+          "Citi Double Cash remains tracked",
+          "Capital One Quicksilver remains tracked"
+        ],
+        "acceptable_paraphrases": [
+          "ConEd was dropped",
+          "the utility bill was removed"
+        ],
+        "must_not_include": [
+          "any credit card was removed from tracking"
+        ],
+        "harmful_extra": [
+          "saying any credit card due date was also removed",
+          "saying all bills were removed"
+        ],
+        "harmless_extra": [
+          "mentioning the reminder system still applies to the three cards"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": "Fails if the response says credit card records were also affected or removed.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "you can go ahead and drop the ConEd electricity bill from my tracked bills"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Just keep the three credit cards: Chase Sapphire, Citi Double Cash, and Capital One Quicksilver"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to stop tracking one of my bills. Which bill was it, and are my credit card payment records affected by that change?",
+      "expected_answer": "The bill removed from tracking was the ConEd electricity bill. Your three credit card payment records — Chase Sapphire (15th), Citi Double Cash (22nd), and Capital One Quicksilver (28th) — are not affected and remain actively tracked.",
+      "gold_memory_state": "ConEd electricity bill due date is removed from active tracking. Chase Sapphire (15th), Citi Double Cash (22nd), and Capital One Quicksilver (28th) remain active. Google Calendar reminder rule remains active.",
+      "judge_rubric": {
+        "must_include": [
+          "ConEd electricity bill was the one removed",
+          "Chase Sapphire remains tracked",
+          "Citi Double Cash remains tracked",
+          "Capital One Quicksilver remains tracked"
+        ],
+        "acceptable_paraphrases": [
+          "ConEd was dropped",
+          "the utility bill was removed"
+        ],
+        "must_not_include": [
+          "any credit card was removed from tracking"
+        ],
+        "harmful_extra": [
+          "saying any credit card due date was also removed",
+          "saying all bills were removed"
+        ],
+        "harmless_extra": [
+          "mentioning the reminder system still applies to the three cards"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": "Fails if the response says credit card records were also affected or removed.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "you can go ahead and drop the ConEd electricity bill from my tracked bills"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Just keep the three credit cards: Chase Sapphire, Citi Double Cash, and Capital One Quicksilver"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "I'm setting up a monthly bill-pay checklist. Which bills do I still need to actively manage, and on what dates?",
+      "expected_answer": "You have three bills to actively manage: Chase Sapphire card due on the 15th, Citi Double Cash card due on the 22nd, and Capital One Quicksilver card due on the 28th.",
+      "gold_memory_state": "Active tracked bills: Chase Sapphire (15th), Citi Double Cash (22nd), Capital One Quicksilver (28th). ConEd electricity bill (1st, autopay) is no longer tracked and should not appear on the active checklist. Google Calendar reminders are set 3 days before each active due date.",
+      "judge_rubric": {
+        "must_include": [
+          "Chase Sapphire on the 15th",
+          "Citi Double Cash on the 22nd",
+          "Capital One Quicksilver on the 28th"
+        ],
+        "acceptable_paraphrases": [
+          "Chase due 15th",
+          "Citi due 22nd",
+          "Capital One due 28th"
+        ],
+        "must_not_include": [
+          "ConEd electricity bill as an active item on the checklist"
+        ],
+        "harmful_extra": [
+          "including ConEd on the active checklist",
+          "including ConEd due date as something to manage"
+        ],
+        "harmless_extra": [
+          "mentioning the 3-day advance reminder system",
+          "mentioning the Spotify charge on Capital One",
+          "mentioning Chase early payment habit around the 10th-11th"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if ConEd electricity bill due date (1st) or autopay details appear as an active tracked item.",
+        "over_forget": "Fails if any of the three retained credit card due dates are omitted or treated as unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My Chase Sapphire card payment is due on the 15th of every month"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my Citi Double Cash card due date is the 22nd now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my Capital One Quicksilver card has a due date on the 28th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "you can go ahead and drop the ConEd electricity bill from my tracked bills"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "I'm setting up a monthly bill-pay checklist. Which bills do I still need to actively manage, and on what dates?",
+      "expected_answer": "You have three bills to actively manage: Chase Sapphire card due on the 15th, Citi Double Cash card due on the 22nd, and Capital One Quicksilver card due on the 28th.",
+      "gold_memory_state": "Active tracked bills: Chase Sapphire (15th), Citi Double Cash (22nd), Capital One Quicksilver (28th). ConEd electricity bill (1st, autopay) is no longer tracked and should not appear on the active checklist. Google Calendar reminders are set 3 days before each active due date.",
+      "judge_rubric": {
+        "must_include": [
+          "Chase Sapphire on the 15th",
+          "Citi Double Cash on the 22nd",
+          "Capital One Quicksilver on the 28th"
+        ],
+        "acceptable_paraphrases": [
+          "Chase due 15th",
+          "Citi due 22nd",
+          "Capital One due 28th"
+        ],
+        "must_not_include": [
+          "ConEd electricity bill as an active item on the checklist"
+        ],
+        "harmful_extra": [
+          "including ConEd on the active checklist",
+          "including ConEd due date as something to manage"
+        ],
+        "harmless_extra": [
+          "mentioning the 3-day advance reminder system",
+          "mentioning the Spotify charge on Capital One",
+          "mentioning Chase early payment habit around the 10th-11th"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if ConEd electricity bill due date (1st) or autopay details appear as an active tracked item.",
+        "over_forget": "Fails if any of the three retained credit card due dates are omitted or treated as unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My Chase Sapphire card payment is due on the 15th of every month"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my Citi Double Cash card due date is the 22nd now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my Capital One Quicksilver card has a due date on the 28th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "you can go ahead and drop the ConEd electricity bill from my tracked bills"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I want to double-check: which of these bills is no longer on my active tracking list?",
+      "candidate_options": [
+        "ConEd electricity bill (due 1st)",
+        "Capital One Quicksilver card (due 28th)",
+        "Kevin's Discover card (due 18th)",
+        "Citi Double Cash card (due 22nd)"
+      ],
+      "expected_answer": "ConEd electricity bill (due 1st)",
+      "distractor_rationale": "same-value-different-target: Kevin's Discover card (due 18th) is another bill mentioned in conversation but belongs to Kevin, not the user, and was never tracked. assistant echo: Capital One Quicksilver (due 28th) and Citi Double Cash (due 22nd) are the user's own active cards that the assistant confirmed multiple times; selecting either would indicate over-forget.",
+      "gold_memory_state": "ConEd electricity bill was removed from active tracking. Chase Sapphire (15th), Citi Double Cash (22nd), and Capital One Quicksilver (28th) remain actively tracked. Kevin's Discover card was never tracked for the user.",
+      "judge_rubric": {
+        "must_include": [
+          "ConEd electricity bill"
+        ],
+        "acceptable_paraphrases": [
+          "ConEd",
+          "the electricity bill"
+        ],
+        "must_not_include": [
+          "Capital One Quicksilver removed",
+          "Citi Double Cash removed",
+          "Kevin's Discover card removed from user's list"
+        ],
+        "harmful_extra": [
+          "saying any of the three credit cards were removed"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": "Fails if the model selects Capital One Quicksilver or Citi Double Cash as removed, indicating it forgot retained targets.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "you can go ahead and drop the ConEd electricity bill from my tracked bills"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Just keep the three credit cards: Chase Sapphire, Citi Double Cash, and Capital One Quicksilver"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I want to double-check: which of these bills is no longer on my active tracking list?",
+      "candidate_options": [
+        "ConEd electricity bill (due 1st)",
+        "Capital One Quicksilver card (due 28th)",
+        "Kevin's Discover card (due 18th)",
+        "Citi Double Cash card (due 22nd)"
+      ],
+      "expected_answer": "ConEd electricity bill (due 1st)",
+      "distractor_rationale": "same-value-different-target: Kevin's Discover card (due 18th) is another bill mentioned in conversation but belongs to Kevin, not the user, and was never tracked. assistant echo: Capital One Quicksilver (due 28th) and Citi Double Cash (due 22nd) are the user's own active cards that the assistant confirmed multiple times; selecting either would indicate over-forget.",
+      "gold_memory_state": "ConEd electricity bill was removed from active tracking. Chase Sapphire (15th), Citi Double Cash (22nd), and Capital One Quicksilver (28th) remain actively tracked. Kevin's Discover card was never tracked for the user.",
+      "judge_rubric": {
+        "must_include": [
+          "ConEd electricity bill"
+        ],
+        "acceptable_paraphrases": [
+          "ConEd",
+          "the electricity bill"
+        ],
+        "must_not_include": [
+          "Capital One Quicksilver removed",
+          "Citi Double Cash removed",
+          "Kevin's Discover card removed from user's list"
+        ],
+        "harmful_extra": [
+          "saying any of the three credit cards were removed"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": "Fails if the model selects Capital One Quicksilver or Citi Double Cash as removed, indicating it forgot retained targets.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "you can go ahead and drop the ConEd electricity bill from my tracked bills"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Just keep the three credit cards: Chase Sapphire, Citi Double Cash, and Capital One Quicksilver"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to plan my payment workflow for next month. For each bill I'm actively tracking, tell me the Google Calendar reminder date and the due date, listed in chronological order through the month. Also note which card I should try to pay early and roughly when.",
+      "expected_answer": "In chronological order: Chase Sapphire reminder on the 12th, with the due date on the 15th (try to pay early around the 10th–11th); Citi Double Cash reminder on the 19th, with the due date on the 22nd; Capital One Quicksilver reminder on the 25th, with the due date on the 28th.",
+      "gold_memory_state": "Active tracked bills: Chase Sapphire (15th, reminder 12th, early payment target 10th-11th), Citi Double Cash (22nd, reminder 19th), Capital One Quicksilver (28th, reminder 25th). ConEd is not tracked. Google Calendar reminders are 3 days before each due date.",
+      "judge_rubric": {
+        "must_include": [
+          "Chase Sapphire reminder on 12th and due 15th",
+          "Citi Double Cash reminder on 19th and due 22nd",
+          "Capital One Quicksilver reminder on 25th and due 28th",
+          "Chase Sapphire early payment around 10th or 11th"
+        ],
+        "acceptable_paraphrases": [
+          "pay Chase early by the 11th",
+          "Chase early payment window 10th-11th"
+        ],
+        "must_not_include": [
+          "ConEd reminder on the 29th or any ConEd entry",
+          "ConEd due on the 1st as an active item"
+        ],
+        "harmful_extra": [
+          "including ConEd in the payment workflow",
+          "including Kevin's Discover card"
+        ],
+        "harmless_extra": [
+          "mentioning Spotify charge on Capital One",
+          "mentioning Chase carries the highest balance"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if ConEd electricity bill appears anywhere in the payment workflow.",
+        "over_forget": "Fails if any of the three retained credit cards or their reminder dates are omitted.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Chase Sapphire due date is the 15th of every month.",
+        "Fact 2: Citi Double Cash due date is the 22nd of every month.",
+        "Fact 3: Capital One Quicksilver due date is the 28th of every month.",
+        "Fact 4: Google Calendar reminders are set 3 days before each due date.",
+        "Inference: Chase Sapphire reminder = 15 - 3 = 12th; Citi Double Cash reminder = 22 - 3 = 19th; Capital One Quicksilver reminder = 28 - 3 = 25th.",
+        "Fact 5: User recently switched to paying Chase Sapphire early, around the 10th or 11th.",
+        "Inference: Chronological monthly order is Chase reminder (12th) → Chase due (15th), Citi reminder (19th) → Citi due (22nd), Capital One reminder (25th) → Capital One due (28th), with Chase early payment target around 10th-11th preceding even the reminder.",
+        "Derived value: The full chronological workflow is: Chase early pay ~10th-11th, Chase reminder 12th, Chase due 15th, Citi reminder 19th, Citi due 22nd, Capital One reminder 25th, Capital One due 28th."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My Chase Sapphire card payment is due on the 15th of every month"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my Citi Double Cash card due date is the 22nd now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my Capital One Quicksilver card has a due date on the 28th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I set Google Calendar reminders 3 days before each due date"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "you can go ahead and drop the ConEd electricity bill from my tracked bills"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I recently switched to paying my Chase Sapphire card a few days early — around the 10th or 11th instead of right on the 15th"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to plan my payment workflow for next month. For each bill I'm actively tracking, tell me the Google Calendar reminder date and the due date, listed in chronological order through the month. Also note which card I should try to pay early and roughly when.",
+      "expected_answer": "In chronological order: Chase Sapphire reminder on the 12th, with the due date on the 15th (try to pay early around the 10th–11th); Citi Double Cash reminder on the 19th, with the due date on the 22nd; Capital One Quicksilver reminder on the 25th, with the due date on the 28th.",
+      "gold_memory_state": "Active tracked bills: Chase Sapphire (15th, reminder 12th, early payment target 10th-11th), Citi Double Cash (22nd, reminder 19th), Capital One Quicksilver (28th, reminder 25th). ConEd is not tracked. Google Calendar reminders are 3 days before each due date.",
+      "judge_rubric": {
+        "must_include": [
+          "Chase Sapphire reminder on 12th and due 15th",
+          "Citi Double Cash reminder on 19th and due 22nd",
+          "Capital One Quicksilver reminder on 25th and due 28th",
+          "Chase Sapphire early payment around 10th or 11th"
+        ],
+        "acceptable_paraphrases": [
+          "pay Chase early by the 11th",
+          "Chase early payment window 10th-11th"
+        ],
+        "must_not_include": [
+          "ConEd reminder on the 29th or any ConEd entry",
+          "ConEd due on the 1st as an active item"
+        ],
+        "harmful_extra": [
+          "including ConEd in the payment workflow",
+          "including Kevin's Discover card"
+        ],
+        "harmless_extra": [
+          "mentioning Spotify charge on Capital One",
+          "mentioning Chase carries the highest balance"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if ConEd electricity bill appears anywhere in the payment workflow.",
+        "over_forget": "Fails if any of the three retained credit cards or their reminder dates are omitted.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Chase Sapphire due date is the 15th of every month.",
+        "Fact 2: Citi Double Cash due date is the 22nd of every month.",
+        "Fact 3: Capital One Quicksilver due date is the 28th of every month.",
+        "Fact 4: Google Calendar reminders are set 3 days before each due date.",
+        "Inference: Chase Sapphire reminder = 15 - 3 = 12th; Citi Double Cash reminder = 22 - 3 = 19th; Capital One Quicksilver reminder = 28 - 3 = 25th.",
+        "Fact 5: User recently switched to paying Chase Sapphire early, around the 10th or 11th.",
+        "Inference: Chronological monthly order is Chase reminder (12th) → Chase due (15th), Citi reminder (19th) → Citi due (22nd), Capital One reminder (25th) → Capital One due (28th), with Chase early payment target around 10th-11th preceding even the reminder.",
+        "Derived value: The full chronological workflow is: Chase early pay ~10th-11th, Chase reminder 12th, Chase due 15th, Citi reminder 19th, Citi due 22nd, Capital One reminder 25th, Capital One due 28th."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My Chase Sapphire card payment is due on the 15th of every month"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my Citi Double Cash card due date is the 22nd now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my Capital One Quicksilver card has a due date on the 28th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I set Google Calendar reminders 3 days before each due date"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "you can go ahead and drop the ConEd electricity bill from my tracked bills"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I recently switched to paying my Chase Sapphire card a few days early — around the 10th or 11th instead of right on the 15th"
+        }
+      ]
+    }
+  ]
+}

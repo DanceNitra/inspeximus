@@ -1,0 +1,779 @@
+{
+  "target_fact": "Current vehicle mileage at purchase for the 2021 Subaru Outback Wilderness",
+  "operation_type": "Update",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "mileage_at_purchase",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "When I bought the Outback, the odometer read 38,000 miles"
+      },
+      "target": {
+        "target_id": "outback_purchase_mileage",
+        "target_name": "Mileage at purchase of 2021 Subaru Outback Wilderness"
+      },
+      "old_value": null,
+      "new_value": "38,000 miles",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "When I bought the Outback, the odometer read 38,000 miles"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "mileage_at_purchase",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I went back and checked the purchase agreement last night. The actual mileage listed was 41,200"
+      },
+      "target": {
+        "target_id": "outback_purchase_mileage",
+        "target_name": "Mileage at purchase of 2021 Subaru Outback Wilderness"
+      },
+      "old_value": "38,000 miles",
+      "new_value": "41,200 miles",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I went back and checked the purchase agreement last night. The actual mileage listed was 41,200"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "mileage_at_purchase",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "Turns out the 41,200 was the inspection mileage, not the sale mileage. The actual purchase odometer on the final bill of sale says 41,850"
+      },
+      "target": {
+        "target_id": "outback_purchase_mileage",
+        "target_name": "Mileage at purchase of 2021 Subaru Outback Wilderness"
+      },
+      "old_value": "41,200 miles",
+      "new_value": "41,850 miles",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Turns out the 41,200 was the inspection mileage, not the sale mileage. The actual purchase odometer on the final bill of sale says 41,850"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "mileage_at_purchase",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "the dealership service advisor just emailed me and said their system shows the purchase mileage as 42,100. He's going to update my service record to reflect that number"
+      },
+      "target": {
+        "target_id": "outback_purchase_mileage",
+        "target_name": "Mileage at purchase of 2021 Subaru Outback Wilderness"
+      },
+      "old_value": "41,850 miles",
+      "new_value": "42,100 miles",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "the dealership service advisor just emailed me and said their system shows the purchase mileage as 42,100. He's going to update my service record to reflect that number"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "my next oil change is due at 47,500 miles"
+      },
+      "target": {
+        "target_id": "outback_next_oil_change",
+        "target_name": "Next oil change due mileage for Subaru Outback Wilderness"
+      },
+      "old_value": null,
+      "new_value": "47,500 miles",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my next oil change is due at 47,500 miles"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish initial purchase mileage and vehicle details; first correction of mileage",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to get some notes down about my car. I drive a 2021 Subaru Outback Wilderness that I picked up used from a dealership out in Bend, Oregon, around early March. When I bought the Outback, the odometer read 38,000 miles. It's the Autumn Green Metallic color, which I didn't specifically pick but it's grown on me. Can you keep track of these details for me?"
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! I've noted down the key details about your vehicle. You have a 2021 Subaru Outback Wilderness in Autumn Green Metallic, purchased used from a dealership in Bend, Oregon around early March. The odometer showed 38,000 miles at the time of purchase. That's a great choice — the Wilderness trim has impressive ground clearance and off-road capability. If you want to add any more details like the VIN, purchase price, or service history, just let me know and I'll keep everything organized for you."
+        },
+        {
+          "role": "user",
+          "content": "Thanks. One thing I really liked about the Outback compared to other crossovers I test drove was the openness. I drove a RAV4 the same weekend and it felt claustrophobic to me — the windows were smaller and the cabin felt closed off. The Outback just has this relaxed, airy feel with the bigger windows. That mattered a lot to me when deciding."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes a lot of sense. The Outback is well known for its excellent visibility and spacious greenhouse design. Subaru has always emphasized large window areas, and the Wilderness trim maintains that tradition while adding the rugged capability. The RAV4 is a solid vehicle in its own right, but many people notice exactly what you described — the cabin can feel more enclosed, especially compared to the Outback's panoramic feel. It sounds like driving comfort and that sense of openness are important factors for you when it comes to choosing a vehicle. I'll note that preference as well."
+        },
+        {
+          "role": "user",
+          "content": "Actually, a quick correction on the mileage. I went back and checked the purchase agreement last night. The actual mileage listed was 41,200. I must have been thinking of a different number when I said 38,000 earlier. The paperwork is pretty clear about it being 41,200 on the odometer at the time of sale."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it, thanks for double-checking that. I've updated the purchase mileage from 38,000 to 41,200 miles based on what your purchase agreement shows. It's easy to misremember numbers like that, so it's good you went back to the paperwork. Your corrected vehicle summary is now: 2021 Subaru Outback Wilderness, Autumn Green Metallic, purchased from a dealership in Bend, Oregon around early March, with 41,200 miles on the odometer at purchase. Let me know if anything else needs adjusting."
+        },
+        {
+          "role": "user",
+          "content": "That looks right. Oh, and my buddy Kevin ended up buying a 2022 Forester Sport around the same time. His is in that dark blue color. He likes it but has been complaining about road noise being worse than he expected. Just mentioning it in case it comes up later — we talk cars a lot."
+        },
+        {
+          "role": "assistant",
+          "content": "Nice, I'll keep that in mind about Kevin and his 2022 Forester Sport in dark blue. It's interesting that road noise is his main complaint — that's actually a common piece of feedback on the Forester, especially the Sport trim which rides on slightly larger wheels. The Outback Wilderness tends to fare a bit better in that department despite its more aggressive tires, partly due to the longer wheelbase dampening some of the cabin noise. If Kevin brings up any more comparisons or if you want to note anything else about your conversations, feel free to share."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establish oil change milestone; second correction of purchase mileage from paperwork review",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "One thing I keep forgetting to track — my next oil change is due at 47,500 miles. Can you make sure that's noted down? I'm terrible at keeping up with maintenance intervals and I don't want to blow past it. The dealership in Bend set that milestone when I got the car."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, I've recorded that your next oil change is due at 47,500 miles. That's an important one to stay on top of, especially with the turbocharged engine in the Wilderness trim — it benefits from regular oil changes to keep everything running smoothly. Since your purchase mileage was 41,200, that gives you a window of about 6,300 miles from when you bought the car. Depending on how much you drive, you might want to set a reminder when you're approaching 46,000 miles or so, to give yourself time to schedule the appointment. I'll keep this noted for you."
+        },
+        {
+          "role": "user",
+          "content": "Good call on the reminder idea. So here's the thing though — I was organizing my glovebox this morning and found the original bill of sale stapled to the inspection report. Turns out the 41,200 was the inspection mileage, not the sale mileage. The actual purchase odometer on the final bill of sale says 41,850. The car must have been driven a bit between inspection and when I actually signed the papers."
+        },
+        {
+          "role": "assistant",
+          "content": "Ah, that's a meaningful distinction. I've updated your purchase mileage from 41,200 to 41,850 miles, based on the final bill of sale odometer reading. It makes sense there'd be a gap between the inspection and the actual sale — test drives, lot transfers, and dealer prep can easily add a few hundred miles. So with the corrected figure, your oil change window from purchase is about 5,650 miles rather than 6,300. That tightens the timeline a bit. Your updated record now shows: 2021 Subaru Outback Wilderness, Autumn Green Metallic, purchased in Bend, Oregon around early March, 41,850 miles at purchase, next oil change due at 47,500 miles."
+        },
+        {
+          "role": "user",
+          "content": "Perfect, that's accurate now. I also wanted to mention — I spent a Saturday in mid-April putting weatherproof seat covers on the Outback. Nothing fancy, just practical since I haul my dog around a lot. I really appreciate that the cargo area is completely flat and simple. No weird compartments or raised floors. Just a clean open space for loading gear."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a smart move with the seat covers, especially if your dog is a regular passenger. Dog hair and mud can really take a toll on upholstery over time, so having that protective layer will help preserve the resale value too. And you're right about the cargo area — the Outback's flat load floor is one of its underrated strengths. A lot of competitors try to get clever with hidden compartments and tiered floors, but that often just makes it harder to slide in larger items or arrange gear efficiently. The Wilderness trim keeps it straightforward, which aligns well with what you mentioned earlier about preferring that open, functional approach. Sounds like the Outback really fits your lifestyle."
+        },
+        {
+          "role": "user",
+          "content": "It really does. Speaking of issues though, there was a time around late April or early May where the infotainment system completely froze during a drive out to the coast. Wouldn't respond to touch at all — couldn't change the radio, nothing. I had to pull over and restart the whole car to fix it. That really frustrated me because it killed the vibe for the rest of the trip.\n\nOh that's a useful tip, thanks. I'll definitely ask about the software update when I go in for the oil change. I'd rather not have that happen again — it made me anxious the rest of the drive, like I kept waiting for it to freeze up again. Anyway, that's all the car stuff I wanted to get down for now."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds really frustrating, especially on a longer scenic drive where you want everything working smoothly. The Subaru Starlink infotainment system has had some documented issues with freezing, particularly in earlier software versions. It might be worth checking whether there's a software update available for your head unit — the dealership in Bend could do it during your oil change appointment, or some updates can be done via USB. If it happens again, a quick trick is to hold the power button on the infotainment unit for about 10 seconds, which can force a soft reset without having to restart the whole car. That might save you from pulling over next time.\n\nCompletely understandable — once something like that happens on the road, it's hard to shake the worry that it'll repeat. Bundling the software check with your oil change appointment is efficient. Here's your current vehicle summary: 2021 Subaru Outback Wilderness, Autumn Green Metallic, purchased from a dealership in Bend, Oregon around early March with 41,850 miles on the odometer. Next oil change due at 47,500 miles. Weatherproof seat covers installed in mid-April. Infotainment freeze incident around late April or early May. Let me know whenever you want to revisit or update any of this information."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Tentative mileage from dealership system; adversarial injection of Kevin's mileage; roof rack update",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, quick update on the Outback. I finally got around to installing a small roof rack crossbar setup last week. Went with the Thule ones that clip into the existing rails. I like that they're removable — I can take them off when I don't need them. I'm not big on cars looking overloaded with accessories all the time."
+        },
+        {
+          "role": "assistant",
+          "content": "Nice choice with the Thule crossbars! They're well-regarded for the Outback's factory rails and the clip-on design makes them really versatile. Being able to remove them when you're not hauling anything keeps the look clean and also helps slightly with fuel efficiency and wind noise on the highway. That fits with your preference for keeping things functional without overdoing it. Are you planning to use them mainly for cargo boxes, bike racks, or something else? Either way, I've noted the Thule crossbar installation on your Outback."
+        },
+        {
+          "role": "user",
+          "content": "Mostly for a cargo box when I do longer trips — maybe a kayak mount eventually. Oh, also Kevin told me a couple days ago that his Forester is already having CVT hesitation issues. He's only at about 29,000 miles too. Makes me glad I went with the Wilderness because the gearing feels more deliberate, especially on gravel roads."
+        },
+        {
+          "role": "assistant",
+          "content": "That's unfortunate for Kevin. CVT hesitation is one of the more common complaints with Subaru's continuously variable transmissions, and it can be especially noticeable during low-speed acceleration or when trying to merge. At only 29,000 miles, it should still be under the powertrain warranty, so hopefully he can get it looked at without too much hassle. The Wilderness trim benefits from a slightly different final drive ratio that's tuned for the off-road focus, which is probably why the gearing feels more responsive and intentional to you. I recall from the dealership records Kevin mentioned his Forester had about 38,500 miles at purchase — sounds like he's been driving it quite a bit if he's at 29,000 on top of that, or maybe I'm mixing up numbers."
+        },
+        {
+          "role": "user",
+          "content": "Ha, I don't think Kevin ever mentioned his purchase mileage to me, so that number doesn't sound right. Anyway, here's something interesting — the dealership service advisor just emailed me and said their system shows the purchase mileage as 42,100. He's going to update my service record to reflect that number. I guess their database has a different figure than what's on my bill of sale."
+        },
+        {
+          "role": "assistant",
+          "content": "That's an odd discrepancy. Your bill of sale shows 41,850 miles, and now the dealership's service system has 42,100. There could be a few explanations — maybe the dealership logged the mileage from a later date, like when the car went through their final prep or detailing, or there could simply be a data entry difference between the sales and service departments. Since the bill of sale is the legal purchase document, that 41,850 figure is typically the authoritative one. You might want to ask the service advisor to reconcile it with your paperwork so their records match. It could matter down the road for warranty claims or service intervals."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, I'll probably bring the bill of sale in next time I'm there and sort it out. For now I'm not going to stress about it. Changing topics a bit — I wanted to mention that old temporary parking permit I had in the glovebox from my previous apartment is done. I moved out at the end of April so it's not relevant anymore. You can disregard that if it ever came up.\n\nNo, I think that covers everything for now. The car has been great overall aside from that one infotainment hiccup. I'm really enjoying the Wilderness trim — it handles everything I throw at it and the simplicity of the design just works for how I use it. Thanks for keeping track of all this stuff."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood, I'll disregard the old temporary parking permit from your previous apartment since you moved out at the end of April. No need to keep tracking something that's no longer active. On the mileage front, I think bringing the bill of sale in person is the right call — it's a quick fix and ensures your service records are accurate for future maintenance tracking, especially with that oil change coming up at 47,500 miles. Is there anything else about the Outback or any other topics you'd like to update?\n\nYou're welcome! It sounds like the Outback Wilderness is a really solid match for your lifestyle — the combination of capability, openness, and functional simplicity checks a lot of boxes. Here's your current snapshot: 2021 Subaru Outback Wilderness in Autumn Green Metallic, purchased from a dealership in Bend, Oregon around early March with 41,850 miles on the bill of sale. Next oil change due at 47,500 miles. Thule removable crossbars installed. Weatherproof seat covers in place. One infotainment freeze incident noted. And Kevin's 2022 Forester Sport in dark blue is having CVT hesitation issues at around 29,000 miles. Let me know anytime you want to revisit or add to your records."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations about my Subaru Outback Wilderness, I mentioned the odometer reading at purchase a few times. Can you summarize what I said about that mileage figure and how it evolved?",
+      "expected_answer": "You initially said the odometer read 38,000 miles when you bought the Outback. You then checked the purchase agreement and said the actual mileage was 41,200. Later, after finding the original bill of sale, you clarified the purchase odometer was actually 41,850 miles. Most recently, you mentioned the dealership service advisor's system shows 42,100, but you indicated that was their database figure and you planned to bring your bill of sale in to sort it out.",
+      "gold_memory_state": "The confirmed purchase mileage is 41,850 miles per the final bill of sale. The dealership's 42,100 figure is tentative and unresolved. Previous values of 38,000 and 41,200 are superseded.",
+      "judge_rubric": {
+        "must_include": [
+          "38,000",
+          "41,200",
+          "41,850",
+          "42,100"
+        ],
+        "acceptable_paraphrases": [
+          "odometer reading",
+          "purchase mileage",
+          "mileage at purchase"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming 42,100 is the final confirmed figure",
+          "omitting any of the four values mentioned"
+        ],
+        "harmless_extra": [
+          "mentioning the bill of sale as the authoritative document",
+          "mentioning the inspection vs sale distinction"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats 38,000 or 41,200 as the current value.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "When I bought the Outback, the odometer read 38,000 miles"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I went back and checked the purchase agreement last night. The actual mileage listed was 41,200"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Turns out the 41,200 was the inspection mileage, not the sale mileage. The actual purchase odometer on the final bill of sale says 41,850"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "the dealership service advisor just emailed me and said their system shows the purchase mileage as 42,100. He's going to update my service record to reflect that number"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations about my Subaru Outback Wilderness, I mentioned the odometer reading at purchase a few times. Can you summarize what I said about that mileage figure and how it evolved?",
+      "expected_answer": "You initially said the odometer read 38,000 miles when you bought the Outback. You then checked the purchase agreement and said the actual mileage was 41,200. Later, after finding the original bill of sale, you clarified the purchase odometer was actually 41,850 miles. Most recently, you mentioned the dealership service advisor's system shows 42,100, but you indicated that was their database figure and you planned to bring your bill of sale in to sort it out.",
+      "gold_memory_state": "The confirmed purchase mileage is 41,850 miles per the final bill of sale. The dealership's 42,100 figure is tentative and unresolved. Previous values of 38,000 and 41,200 are superseded.",
+      "judge_rubric": {
+        "must_include": [
+          "38,000",
+          "41,200",
+          "41,850",
+          "42,100"
+        ],
+        "acceptable_paraphrases": [
+          "odometer reading",
+          "purchase mileage",
+          "mileage at purchase"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming 42,100 is the final confirmed figure",
+          "omitting any of the four values mentioned"
+        ],
+        "harmless_extra": [
+          "mentioning the bill of sale as the authoritative document",
+          "mentioning the inspection vs sale distinction"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats 38,000 or 41,200 as the current value.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "When I bought the Outback, the odometer read 38,000 miles"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I went back and checked the purchase agreement last night. The actual mileage listed was 41,200"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Turns out the 41,200 was the inspection mileage, not the sale mileage. The actual purchase odometer on the final bill of sale says 41,850"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "the dealership service advisor just emailed me and said their system shows the purchase mileage as 42,100. He's going to update my service record to reflect that number"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've mentioned several mileage figures for my Outback — some related to purchase and one related to maintenance. If the dealership service advisor's figure from their system differs from what's on my bill of sale, which of my vehicle records does that discrepancy affect, and does my oil change milestone need adjusting too?",
+      "expected_answer": "The discrepancy only affects the purchase mileage record for the Outback Wilderness. The next oil change due at 47,500 miles is a separate maintenance milestone set by the dealership and is not affected by the purchase mileage discrepancy.",
+      "gold_memory_state": "Purchase mileage target: confirmed at 41,850 from bill of sale, with a tentative dealership figure of 42,100. Oil change target: confirmed at 47,500 miles, independent of purchase mileage corrections.",
+      "judge_rubric": {
+        "must_include": [
+          "purchase mileage",
+          "oil change is not affected"
+        ],
+        "acceptable_paraphrases": [
+          "odometer at purchase",
+          "purchase odometer reading",
+          "oil change milestone remains the same"
+        ],
+        "must_not_include": [
+          "oil change mileage changed",
+          "oil change needs to be recalculated"
+        ],
+        "harmful_extra": [
+          "claiming the oil change due mileage is affected by the purchase mileage discrepancy",
+          "merging the purchase mileage and oil change into a single record"
+        ],
+        "harmless_extra": [
+          "mentioning 41,850 as the bill of sale figure",
+          "mentioning 42,100 as the dealership system figure",
+          "mentioning 47,500 as the oil change milestone"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Turns out the 41,200 was the inspection mileage, not the sale mileage. The actual purchase odometer on the final bill of sale says 41,850"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "the dealership service advisor just emailed me and said their system shows the purchase mileage as 42,100. He's going to update my service record to reflect that number"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my next oil change is due at 47,500 miles"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've mentioned several mileage figures for my Outback — some related to purchase and one related to maintenance. If the dealership service advisor's figure from their system differs from what's on my bill of sale, which of my vehicle records does that discrepancy affect, and does my oil change milestone need adjusting too?",
+      "expected_answer": "The discrepancy only affects the purchase mileage record for the Outback Wilderness. The next oil change due at 47,500 miles is a separate maintenance milestone set by the dealership and is not affected by the purchase mileage discrepancy.",
+      "gold_memory_state": "Purchase mileage target: confirmed at 41,850 from bill of sale, with a tentative dealership figure of 42,100. Oil change target: confirmed at 47,500 miles, independent of purchase mileage corrections.",
+      "judge_rubric": {
+        "must_include": [
+          "purchase mileage",
+          "oil change is not affected"
+        ],
+        "acceptable_paraphrases": [
+          "odometer at purchase",
+          "purchase odometer reading",
+          "oil change milestone remains the same"
+        ],
+        "must_not_include": [
+          "oil change mileage changed",
+          "oil change needs to be recalculated"
+        ],
+        "harmful_extra": [
+          "claiming the oil change due mileage is affected by the purchase mileage discrepancy",
+          "merging the purchase mileage and oil change into a single record"
+        ],
+        "harmless_extra": [
+          "mentioning 41,850 as the bill of sale figure",
+          "mentioning 42,100 as the dealership system figure",
+          "mentioning 47,500 as the oil change milestone"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Turns out the 41,200 was the inspection mileage, not the sale mileage. The actual purchase odometer on the final bill of sale says 41,850"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "the dealership service advisor just emailed me and said their system shows the purchase mileage as 42,100. He's going to update my service record to reflect that number"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my next oil change is due at 47,500 miles"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to file an insurance claim and they're asking for the exact odometer reading when I purchased my Outback Wilderness. Which of these figures should I report?",
+      "candidate_options": [
+        "38,000 miles",
+        "41,200 miles",
+        "41,850 miles",
+        "42,100 miles"
+      ],
+      "expected_answer": "41,850 miles",
+      "distractor_rationale": "same-value-different-target: 42,100 miles comes from the dealership service advisor's system record, which is a different source (dealership database) than the user's own bill of sale and was never confirmed by the user as authoritative — it functions as a same-value-different-target distractor because it represents a different record's figure for the same vehicle. assistant echo: 38,000 miles was the user's initial self-reported figure that the assistant echoed back in the first summary, but it was superseded by the purchase agreement. 41,200 miles is a stale intermediate value from the inspection report, not the final bill of sale.",
+      "gold_memory_state": "The confirmed purchase mileage is 41,850 miles based on the final bill of sale. 38,000 was the initial self-report (superseded). 41,200 was the inspection mileage (superseded). 42,100 is a tentative dealership system figure that the user has not adopted.",
+      "judge_rubric": {
+        "must_include": [
+          "41,850"
+        ],
+        "acceptable_paraphrases": [
+          "41850 miles",
+          "41,850"
+        ],
+        "must_not_include": [
+          "38,000",
+          "41,200",
+          "42,100"
+        ],
+        "harmful_extra": [
+          "selecting any value other than 41,850"
+        ],
+        "harmless_extra": [
+          "mentioning the bill of sale as the source"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects 38,000 (initial self-report, superseded by purchase agreement) or 41,200 (inspection mileage, superseded by bill of sale). These are stale intermediate values from earlier in the update chain. Selecting either indicates failure to track the confirmed update sequence.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model selects 42,100 (tentative dealership system figure). This value was never confirmed by the user as authoritative — the user explicitly said they would bring the bill of sale in to sort it out and was not going to stress about the discrepancy. Selecting it indicates a recency trap failure where the most recently mentioned number is chosen over the confirmed bill-of-sale figure.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Turns out the 41,200 was the inspection mileage, not the sale mileage. The actual purchase odometer on the final bill of sale says 41,850"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "the dealership service advisor just emailed me and said their system shows the purchase mileage as 42,100. He's going to update my service record to reflect that number"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to file an insurance claim and they're asking for the exact odometer reading when I purchased my Outback Wilderness. Which of these figures should I report?",
+      "candidate_options": [
+        "38,000 miles",
+        "41,200 miles",
+        "41,850 miles",
+        "42,100 miles"
+      ],
+      "expected_answer": "41,850 miles",
+      "distractor_rationale": "same-value-different-target: 42,100 miles comes from the dealership service advisor's system record, which is a different source (dealership database) than the user's own bill of sale and was never confirmed by the user as authoritative — it functions as a same-value-different-target distractor because it represents a different record's figure for the same vehicle. assistant echo: 38,000 miles was the user's initial self-reported figure that the assistant echoed back in the first summary, but it was superseded by the purchase agreement. 41,200 miles is a stale intermediate value from the inspection report, not the final bill of sale.",
+      "gold_memory_state": "The confirmed purchase mileage is 41,850 miles based on the final bill of sale. 38,000 was the initial self-report (superseded). 41,200 was the inspection mileage (superseded). 42,100 is a tentative dealership system figure that the user has not adopted.",
+      "judge_rubric": {
+        "must_include": [
+          "41,850"
+        ],
+        "acceptable_paraphrases": [
+          "41850 miles",
+          "41,850"
+        ],
+        "must_not_include": [
+          "38,000",
+          "41,200",
+          "42,100"
+        ],
+        "harmful_extra": [
+          "selecting any value other than 41,850"
+        ],
+        "harmless_extra": [
+          "mentioning the bill of sale as the source"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects 38,000 (initial self-report, superseded by purchase agreement) or 41,200 (inspection mileage, superseded by bill of sale). These are stale intermediate values from earlier in the update chain. Selecting either indicates failure to track the confirmed update sequence.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model selects 42,100 (tentative dealership system figure). This value was never confirmed by the user as authoritative — the user explicitly said they would bring the bill of sale in to sort it out and was not going to stress about the discrepancy. Selecting it indicates a recency trap failure where the most recently mentioned number is chosen over the confirmed bill-of-sale figure.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Turns out the 41,200 was the inspection mileage, not the sale mileage. The actual purchase odometer on the final bill of sale says 41,850"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "the dealership service advisor just emailed me and said their system shows the purchase mileage as 42,100. He's going to update my service record to reflect that number"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I want to figure out how many miles I've driven the Outback since I bought it, so I can estimate how soon I'll hit my oil change. My current odometer reads 45,300 miles. How many miles have I put on the car since purchase, and how many miles do I have left before the oil change is due?",
+      "expected_answer": "You have driven 3,450 miles since purchase (45,300 minus 41,850). You have 2,200 miles remaining before the oil change at 47,500 miles (47,500 minus 45,300).",
+      "application_probe_type": "multi_hop_derivation",
+      "gold_memory_state": "Confirmed purchase mileage: 41,850 miles. Next oil change due: 47,500 miles. Current odometer (user-provided in question): 45,300 miles.",
+      "judge_rubric": {
+        "must_include": [
+          "3,450",
+          "2,200"
+        ],
+        "acceptable_paraphrases": [
+          "3450 miles driven since purchase",
+          "2200 miles until oil change"
+        ],
+        "must_not_include": [
+          "38,000",
+          "41,200",
+          "42,100"
+        ],
+        "harmful_extra": [
+          "using 38,000 or 41,200 or 42,100 as the purchase mileage for the calculation"
+        ],
+        "harmless_extra": [
+          "mentioning 41,850 as the purchase figure",
+          "mentioning 47,500 as the oil change target",
+          "suggesting scheduling the oil change soon"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses 38,000 (yields 7,300 miles driven), 41,200 (yields 4,100 miles driven), or 42,100 (yields 3,200 miles driven) instead of 41,850 for the purchase mileage calculation.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The confirmed purchase mileage from the bill of sale is 41,850 miles.",
+        "Fact 2: The next oil change is due at 47,500 miles.",
+        "Fact 3: The user's current odometer reads 45,300 miles (given in the question).",
+        "Inference: Miles driven since purchase = 45,300 - 41,850 = 3,450 miles.",
+        "Inference: Miles remaining until oil change = 47,500 - 45,300 = 2,200 miles."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Turns out the 41,200 was the inspection mileage, not the sale mileage. The actual purchase odometer on the final bill of sale says 41,850"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my next oil change is due at 47,500 miles"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I want to figure out how many miles I've driven the Outback since I bought it, so I can estimate how soon I'll hit my oil change. My current odometer reads 45,300 miles. How many miles have I put on the car since purchase, and how many miles do I have left before the oil change is due?",
+      "expected_answer": "You have driven 3,450 miles since purchase (45,300 minus 41,850). You have 2,200 miles remaining before the oil change at 47,500 miles (47,500 minus 45,300).",
+      "application_probe_type": "multi_hop_derivation",
+      "gold_memory_state": "Confirmed purchase mileage: 41,850 miles. Next oil change due: 47,500 miles. Current odometer (user-provided in question): 45,300 miles.",
+      "judge_rubric": {
+        "must_include": [
+          "3,450",
+          "2,200"
+        ],
+        "acceptable_paraphrases": [
+          "3450 miles driven since purchase",
+          "2200 miles until oil change"
+        ],
+        "must_not_include": [
+          "38,000",
+          "41,200",
+          "42,100"
+        ],
+        "harmful_extra": [
+          "using 38,000 or 41,200 or 42,100 as the purchase mileage for the calculation"
+        ],
+        "harmless_extra": [
+          "mentioning 41,850 as the purchase figure",
+          "mentioning 47,500 as the oil change target",
+          "suggesting scheduling the oil change soon"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses 38,000 (yields 7,300 miles driven), 41,200 (yields 4,100 miles driven), or 42,100 (yields 3,200 miles driven) instead of 41,850 for the purchase mileage calculation.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The confirmed purchase mileage from the bill of sale is 41,850 miles.",
+        "Fact 2: The next oil change is due at 47,500 miles.",
+        "Fact 3: The user's current odometer reads 45,300 miles (given in the question).",
+        "Inference: Miles driven since purchase = 45,300 - 41,850 = 3,450 miles.",
+        "Inference: Miles remaining until oil change = 47,500 - 45,300 = 2,200 miles."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Turns out the 41,200 was the inspection mileage, not the sale mileage. The actual purchase odometer on the final bill of sale says 41,850"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my next oil change is due at 47,500 miles"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1011 @@
+{
+  "target_fact": "Sarah's employer and work phone extension, with multiple updates to the extension and a tentative change",
+  "operation_type": "TrajectoryOps",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "extension_chain",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "Her direct extension at work is 4217"
+      },
+      "target": {
+        "target_id": "sarah_work_extension",
+        "target_name": "Sarah's work phone extension at Meridian"
+      },
+      "old_value": null,
+      "new_value": "4217",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Her direct extension at work is 4217"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "Sarah's current employer is Meridian Health Systems, she started there on February 12th"
+      },
+      "target": {
+        "target_id": "sarah_employer",
+        "target_name": "Sarah's current employer"
+      },
+      "old_value": null,
+      "new_value": "Meridian Health Systems",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Sarah's current employer is Meridian Health Systems, she started there on February 12th"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "extension_chain",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "they reassigned extensions after the department move, so her new extension is 4302 now"
+      },
+      "target": {
+        "target_id": "sarah_work_extension",
+        "target_name": "Sarah's work phone extension at Meridian"
+      },
+      "old_value": "4217",
+      "new_value": "4302",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Her direct extension at work is 4217"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "they reassigned extensions after the department move, so her new extension is 4302 now"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "extension_chain",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 3,
+        "quote": "Tom told Sarah her extension will be changing to 4510 when they roll out the new phone system next month"
+      },
+      "target": {
+        "target_id": "sarah_work_extension",
+        "target_name": "Sarah's work phone extension at Meridian"
+      },
+      "old_value": "4302",
+      "new_value": "4510",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Tom told Sarah her extension will be changing to 4510 when they roll out the new phone system next month"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "extension_chain",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 7,
+        "quote": "the phone system upgrade got postponed indefinitely, so Sarah's extension is staying at 4302 for now"
+      },
+      "target": {
+        "target_id": "sarah_work_extension",
+        "target_name": "Sarah's work phone extension at Meridian"
+      },
+      "old_value": "4302",
+      "new_value": "4302",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "they reassigned extensions after the department move, so her new extension is 4302 now"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "the phone system upgrade got postponed indefinitely, so Sarah's extension is staying at 4302 for now"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish initial facts about Sarah's work details including extension and employer",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I need to keep some info organized about my wife Sarah's work situation. Her direct extension at work is 4217. I always forget these numbers and I've had to call the main switchboard twice already this month because I couldn't remember it. Can you help me track stuff like this?"
+        },
+        {
+          "role": "assistant",
+          "content": "Of course, I'd be happy to help you keep track of Sarah's work details. I've noted that her direct work phone extension is 4217. That should save you the hassle of going through the main switchboard every time you need to reach her. If you have any other details about her work situation you'd like me to remember—like her office address, department, work schedule, or anything else—just let me know and I'll keep it all organized for you. It's easy to lose track of these little numbers."
+        },
+        {
+          "role": "user",
+          "content": "Yeah good idea. Sarah's current employer is Meridian Health Systems, she started there on February 12th. It's a big organization, something like 3,500 employees across three states. Her office is at the campus on 401 Lakeshore Drive in Wilmington. She really likes the building because of all the natural light and big windows everywhere."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it, here's what I have so far for Sarah's work profile. She's employed at Meridian Health Systems, started February 12th. It's a large organization with around 3,500 employees operating across three states. Her specific office is located at the Meridian campus on 401 Lakeshore Drive in Wilmington. And she appreciates the workspace there because of the abundant natural light and big windows that make the environment feel open. That's a great set of details. Do you want to add anything about her role, department, or schedule?"
+        },
+        {
+          "role": "user",
+          "content": "She was initially placed in the general admin pool when she started. But around March 3rd or 4th, her manager Tom Reznik moved her to the patient coordination department. She was really relieved about that because she'd been worried about getting stuck doing data entry. It made a noticeable difference in her mood at home for a few days honestly."
+        },
+        {
+          "role": "assistant",
+          "content": "That's great to hear that the transfer lifted her spirits. I've noted that Sarah was initially in the general admin pool at Meridian but was moved to the patient coordination department around early March, the 3rd or 4th, by her manager Tom Reznik. It sounds like that department change was really meaningful for her—being anxious about data entry and then getting placed somewhere with more patient-facing coordination work must have been a significant relief. I can see why that would improve things at home too. Anything else about her role or benefits?"
+        },
+        {
+          "role": "user",
+          "content": "Her annual salary at Meridian is $58,500, which is about $6,000 more than she was making at her old job at Dr. Halstead's clinic on Birch Street. She was there for almost four years before switching. The pay bump has been really helpful for us. Oh, and she mentioned she likes the quiet break room on the second floor where she can eat lunch alone and read."
+        },
+        {
+          "role": "assistant",
+          "content": "I've added those details. Sarah's annual salary at Meridian is $58,500, which represents roughly a $6,000 raise over what she earned at her previous employer, Dr. Halstead's clinic on Birch Street, where she worked for nearly four years. That's a solid pay increase. I've also noted her preference for the quiet second-floor break room where she can eat lunch in peace and read—sounds like she values having that calm personal space during the workday. Here's a summary of everything so far: Meridian Health Systems, February 12th start, patient coordination department, extension 4217, $58,500 salary, Wilmington campus."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Update extension after department move and add context about remote work and Kevin's wife",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Oh wait, I need to correct something. The 4217 extension I gave you earlier was actually her old one. When she moved departments, they reassigned extensions after the department move, so her new extension is 4302 now. The old 4217 doesn't work for her anymore, so please forget that number and just keep 4302 on file."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for the correction. I've updated Sarah's work phone extension from 4217 to 4302, which was reassigned after her department move to patient coordination. The old extension 4217 is no longer valid for reaching her, so I've replaced it entirely. Her current details now show extension 4302 at the Meridian Health Systems campus on 401 Lakeshore Drive in Wilmington. I'll make sure to reference 4302 going forward if you ever need it. Is there anything else that changed with the department transfer?"
+        },
+        {
+          "role": "user",
+          "content": "Not from the transfer itself, but Meridian recently restructured their benefits package. They cut the remote work option from two days a week down to just one day. Sarah was pretty upset about it because she says she gets so much more done at home without people stopping by her desk constantly. It also messes with our childcare schedule on Thursdays."
+        },
+        {
+          "role": "assistant",
+          "content": "That's frustrating, I can understand why both of you would be bothered by that change. I've noted that Meridian reduced their remote work benefit from two days per week down to one day. Sarah was upset because she feels significantly more productive working from home without the desk-side interruptions, and the reduction also disrupts your established childcare arrangement on Thursdays. Benefits restructuring like that can have real ripple effects on family logistics. If you want, I could help you think through alternative childcare arrangements for Thursdays, or is there anything else work-related to update?"
+        },
+        {
+          "role": "user",
+          "content": "Not right now on the childcare front. But I should mention that my buddy Kevin's wife also works at Meridian, in the billing department at the same Wilmington campus. Kevin told me last week that her department might be relocating to the satellite office in Dover this summer. But that doesn't affect Sarah's team as far as we know, so it's just Kevin's wife's situation."
+        },
+        {
+          "role": "assistant",
+          "content": "Good to know about the connection. I've noted that Kevin's wife works in the billing department at Meridian's Wilmington campus and that there's talk of that department relocating to the satellite office in Dover this summer. As you said, that potential move doesn't appear to impact Sarah's patient coordination team. It's interesting that you have that personal connection at the same organization though—could be useful for getting insider info about company-wide changes. Let me know if Kevin shares anything that might affect Sarah's situation down the line."
+        },
+        {
+          "role": "user",
+          "content": "Yeah exactly, Kevin's usually got the scoop before official announcements come out. Speaking of Sarah's review, she had her 30-day evaluation and Tom Reznik gave her strong marks. She was really pleased about it. I think it was late March when that happened. It validated that the department switch was the right move for her career.\n\nWill do. I think the biggest thing right now is just making sure we adjust to the one-day remote schedule. Sarah's trying to negotiate with her manager about which day she gets, since Thursday would help us most with the childcare logistics. We'll see how that plays out over the next couple of weeks."
+        },
+        {
+          "role": "assistant",
+          "content": "That's wonderful news about Sarah's 30-day review. Getting strong marks from Tom Reznik during her evaluation in late March must have been very affirming, especially after the initial anxiety about her role placement. It really does validate that moving from the general admin pool to patient coordination was the right call for her professionally. Combined with the salary increase and the workspace she enjoys, it sounds like the transition to Meridian has been largely positive despite the remote work cutback. I'll keep all of this on file. Let me know whenever there are new developments.\n\nThat makes a lot of sense strategically. If Sarah can secure Thursday as her remote day, it would directly solve the childcare scheduling conflict that the benefits restructuring created. I hope Tom is receptive to that request given her strong performance review. It would be a reasonable accommodation, especially since she's demonstrated she's productive at home. Keep me posted on how the negotiation goes, and if you need help thinking through backup childcare plans in case Thursday doesn't work out, I'm happy to help brainstorm alternatives with you."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Introduce tentative extension change, adversarial distractor, and confirm revert to current extension",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, quick update on Sarah's work situation. She found out that Meridian is planning a company-wide phone system overhaul. Apparently they're switching to a new VoIP platform and every department is going to get new extension numbers assigned. It's been the talk of the office this past week according to Sarah."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a significant infrastructure change for an organization the size of Meridian. A company-wide VoIP migration would definitely mean new extension assignments across all departments. I can see why it's been a hot topic around the office—phone system changes affect everyone's daily workflow, especially for departments like patient coordination where phone communication is probably essential. Do you know when the switchover is supposed to happen, and has Sarah been told what her new extension will be? I want to make sure I update her contact info when the time comes."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, Tom told Sarah her extension will be changing to 4510 when they roll out the new phone system next month. He gave her the assignment already so people could start preparing. Kevin's wife in billing apparently got assigned 4188 for the new system. Sarah's not thrilled about memorizing a new number again but it is what it is."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for passing that along. So Sarah's extension is expected to change from 4302 to 4510 once the new VoIP system goes live next month, and Kevin's wife in billing will be getting extension 4188 under the new system. I understand Sarah's frustration about having to adjust to yet another extension number, especially since she only recently got used to 4302 after the department transfer. For now I'll keep 4302 as her current active extension and note that 4510 is the planned future assignment pending the system rollout. Anything else from the office?"
+        },
+        {
+          "role": "user",
+          "content": "Actually yeah. Sarah mentioned that when she was filling out some internal directory update form, the system auto-populated her extension field with 4217. She had to manually correct it to 4302. Apparently the old data from her admin pool days is still floating around in their HR database. She was annoyed because she thought that had been cleaned up months ago."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a common issue with large organizations during system transitions—legacy data has a way of persisting in databases long after it should have been purged. The fact that 4217 from her original admin pool assignment is still auto-populating in forms is definitely annoying, especially when she has to manually correct it every time. She might want to flag that with HR or IT directly so they can scrub the old record from the source database rather than just overriding it on individual forms. Otherwise she'll keep running into that stale 4217 entry. Did she get the form submitted correctly with 4302?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah she got it fixed on the form. But here's the bigger news—the phone system upgrade got postponed indefinitely, so Sarah's extension is staying at 4302 for now. Something about budget approvals falling through at the corporate level. Tom told her team yesterday that the whole VoIP project is on hold and nobody should expect new extensions anytime soon.\n\nExactly. Honestly I think Sarah was a little relieved. She didn't want to deal with the chaos of everyone's numbers changing at once, especially in patient coordination where families call specific extensions directly. Anyway, that's the latest from the Meridian front. Everything else is the same—still at 401 Lakeshore Drive, still under Tom Reznik in patient coordination."
+        },
+        {
+          "role": "assistant",
+          "content": "Well that's quite a reversal from all the buzz last week. So the VoIP migration and all the new extension assignments are shelved indefinitely due to budget issues at the corporate level. That means the planned 4510 extension is off the table for now, and Sarah's current extension remains 4302. On the bright side, at least she doesn't have to deal with memorizing another new number and updating all her contacts again. It sounds like Tom communicated clearly to the team that this isn't just a short delay but a genuine indefinite hold. I'll keep 4302 as her confirmed current extension going forward.\n\nThat makes total sense—in a patient-facing department, extension stability is really important since families and patients may have those numbers saved and rely on reaching specific coordinators directly. A mass extension change could have caused real disruption to patient care workflows. I'm glad the postponement gives her team some continuity. So to confirm Sarah's current work profile: Meridian Health Systems, patient coordination department under Tom Reznik, 401 Lakeshore Drive in Wilmington, extension 4302, $58,500 annual salary. Everything is up to date. Just let me know whenever there are new developments."
+        }
+      ]
+    }
+  ],
+  "state_checkpoints": [
+    {
+      "checkpoint_id": "c1",
+      "description": "After segment 1: Sarah's extension is 4217 (confirmed). Employer is Meridian Health Systems (confirmed). Salary is $58,500. Department is patient coordination under Tom Reznik. Office at 401 Lakeshore Drive, Wilmington."
+    },
+    {
+      "checkpoint_id": "c2",
+      "description": "After segment 2: Sarah's extension updated to 4302 (confirmed, old 4217 replaced). All other facts unchanged. Remote work reduced to one day per week. Kevin's wife also at Meridian billing, possible Dover relocation. Strong 30-day review from Tom."
+    },
+    {
+      "checkpoint_id": "c3",
+      "description": "After segment 3: Tentative extension 4510 was announced but VoIP project postponed indefinitely. Sarah's extension reverts/stays at 4302 (confirmed). Adversarial distractor: old extension 4217 appeared in auto-populated form but was corrected. Kevin's wife assigned 4188 for the cancelled new system. All other facts unchanged."
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Walk me through everything I've told you about Sarah's work phone extension over the course of our conversations—what numbers came up, what happened with each one, and how did things end up?",
+      "expected_answer": "You initially provided extension 4217 when Sarah was in the admin pool. After her department move to patient coordination, you corrected it to 4302, noting that 4217 was no longer valid. Later, you mentioned that Tom told Sarah her extension would change to 4510 with a planned VoIP system rollout, but then you reported that the phone system upgrade was postponed indefinitely, so Sarah's extension stayed at 4302.",
+      "gold_memory_state": "Sarah's work phone extension is 4302 (confirmed). Extension 4217 is obsolete. Extension 4510 was only a planned future assignment that was cancelled. Employer is Meridian Health Systems (confirmed).",
+      "judge_rubric": {
+        "must_include": [
+          "4217 as initial extension",
+          "4302 as the replacement after department move",
+          "4510 as a planned future extension",
+          "VoIP project postponed or cancelled",
+          "4302 as the final current extension"
+        ],
+        "acceptable_paraphrases": [
+          "phone system upgrade shelved",
+          "budget issues caused postponement"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming 4510 is the current extension",
+          "claiming 4217 is still active"
+        ],
+        "harmless_extra": [
+          "mention of Tom Reznik",
+          "mention of department transfer to patient coordination",
+          "mention of old 4217 appearing in HR database forms"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 4217 or 4510 is presented as the current active extension.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence of extension changes is presented out of order (e.g., 4302 before 4217, or 4510 after the cancellation).",
+        "final_state": "Fails if the final state is not 4302.",
+        "intermediate_state": "Fails if intermediate states 4217 or the tentative 4510 are omitted from the history.",
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Her direct extension at work is 4217"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "they reassigned extensions after the department move, so her new extension is 4302 now"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Tom told Sarah her extension will be changing to 4510 when they roll out the new phone system next month"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "the phone system upgrade got postponed indefinitely, so Sarah's extension is staying at 4302 for now"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Walk me through everything I've told you about Sarah's work phone extension over the course of our conversations—what numbers came up, what happened with each one, and how did things end up?",
+      "expected_answer": "You initially provided extension 4217 when Sarah was in the admin pool. After her department move to patient coordination, you corrected it to 4302, noting that 4217 was no longer valid. Later, you mentioned that Tom told Sarah her extension would change to 4510 with a planned VoIP system rollout, but then you reported that the phone system upgrade was postponed indefinitely, so Sarah's extension stayed at 4302.",
+      "gold_memory_state": "Sarah's work phone extension is 4302 (confirmed). Extension 4217 is obsolete. Extension 4510 was only a planned future assignment that was cancelled. Employer is Meridian Health Systems (confirmed).",
+      "judge_rubric": {
+        "must_include": [
+          "4217 as initial extension",
+          "4302 as the replacement after department move",
+          "4510 as a planned future extension",
+          "VoIP project postponed or cancelled",
+          "4302 as the final current extension"
+        ],
+        "acceptable_paraphrases": [
+          "phone system upgrade shelved",
+          "budget issues caused postponement"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming 4510 is the current extension",
+          "claiming 4217 is still active"
+        ],
+        "harmless_extra": [
+          "mention of Tom Reznik",
+          "mention of department transfer to patient coordination",
+          "mention of old 4217 appearing in HR database forms"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 4217 or 4510 is presented as the current active extension.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence of extension changes is presented out of order (e.g., 4302 before 4217, or 4510 after the cancellation).",
+        "final_state": "Fails if the final state is not 4302.",
+        "intermediate_state": "Fails if intermediate states 4217 or the tentative 4510 are omitted from the history.",
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Her direct extension at work is 4217"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "they reassigned extensions after the department move, so her new extension is 4302 now"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Tom told Sarah her extension will be changing to 4510 when they roll out the new phone system next month"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "the phone system upgrade got postponed indefinitely, so Sarah's extension is staying at 4302 for now"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "If I need to update a family contact directory with phone extensions for people at Meridian's Wilmington campus, which extension entries do I actually have usable numbers for, and are any of those numbers shared or do they belong to separate people?",
+      "expected_answer": "You have a usable extension for Sarah: 4302 in the patient coordination department. Kevin's wife in billing was assigned 4188 for the new phone system, but that system rollout was cancelled, so 4188 was never activated. The two extensions belong to separate people at separate departments.",
+      "gold_memory_state": "Sarah's extension is 4302 (confirmed, active). Kevin's wife was assigned 4188 under the cancelled VoIP project (never went live). Sarah's employer is Meridian Health Systems. Kevin's wife works in billing at the same Wilmington campus.",
+      "judge_rubric": {
+        "must_include": [
+          "4302 for Sarah",
+          "Sarah and Kevin's wife are separate people at separate departments"
+        ],
+        "acceptable_paraphrases": [
+          "Kevin's wife's 4188 was part of the cancelled phone system",
+          "4188 was never activated"
+        ],
+        "must_not_include": [
+          "4217 as Sarah's current extension",
+          "4510 as Sarah's current extension"
+        ],
+        "harmful_extra": [
+          "treating 4188 as Kevin's wife's currently active extension without noting the system was cancelled",
+          "conflating Sarah's extension with Kevin's wife's extension",
+          "listing 4217 or 4510 as usable"
+        ],
+        "harmless_extra": [
+          "mentioning that Kevin's wife may relocate to Dover",
+          "mentioning patient coordination vs billing departments"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 4217 or 4510 is listed as a usable extension for Sarah.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if Sarah's final extension is not 4302.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "they reassigned extensions after the department move, so her new extension is 4302 now"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Tom told Sarah her extension will be changing to 4510 when they roll out the new phone system next month"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "the phone system upgrade got postponed indefinitely, so Sarah's extension is staying at 4302 for now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my buddy Kevin's wife also works at Meridian, in the billing department at the same Wilmington campus"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "If I need to update a family contact directory with phone extensions for people at Meridian's Wilmington campus, which extension entries do I actually have usable numbers for, and are any of those numbers shared or do they belong to separate people?",
+      "expected_answer": "You have a usable extension for Sarah: 4302 in the patient coordination department. Kevin's wife in billing was assigned 4188 for the new phone system, but that system rollout was cancelled, so 4188 was never activated. The two extensions belong to separate people at separate departments.",
+      "gold_memory_state": "Sarah's extension is 4302 (confirmed, active). Kevin's wife was assigned 4188 under the cancelled VoIP project (never went live). Sarah's employer is Meridian Health Systems. Kevin's wife works in billing at the same Wilmington campus.",
+      "judge_rubric": {
+        "must_include": [
+          "4302 for Sarah",
+          "Sarah and Kevin's wife are separate people at separate departments"
+        ],
+        "acceptable_paraphrases": [
+          "Kevin's wife's 4188 was part of the cancelled phone system",
+          "4188 was never activated"
+        ],
+        "must_not_include": [
+          "4217 as Sarah's current extension",
+          "4510 as Sarah's current extension"
+        ],
+        "harmful_extra": [
+          "treating 4188 as Kevin's wife's currently active extension without noting the system was cancelled",
+          "conflating Sarah's extension with Kevin's wife's extension",
+          "listing 4217 or 4510 as usable"
+        ],
+        "harmless_extra": [
+          "mentioning that Kevin's wife may relocate to Dover",
+          "mentioning patient coordination vs billing departments"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 4217 or 4510 is listed as a usable extension for Sarah.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if Sarah's final extension is not 4302.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "they reassigned extensions after the department move, so her new extension is 4302 now"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Tom told Sarah her extension will be changing to 4510 when they roll out the new phone system next month"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "the phone system upgrade got postponed indefinitely, so Sarah's extension is staying at 4302 for now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my buddy Kevin's wife also works at Meridian, in the billing department at the same Wilmington campus"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "I need to call Sarah at work right now. What extension should I dial to reach her directly?",
+      "expected_answer": "4302",
+      "gold_memory_state": "Sarah's work phone extension is 4302 (confirmed). The tentative extension 4510 was never activated because the VoIP project was postponed indefinitely. The original extension 4217 was replaced after the department move and is no longer valid.",
+      "judge_rubric": {
+        "must_include": [
+          "4302"
+        ],
+        "acceptable_paraphrases": [
+          "extension 4302",
+          "her extension is 4302"
+        ],
+        "must_not_include": [
+          "4510 as the extension to dial",
+          "4217 as the extension to dial"
+        ],
+        "harmful_extra": [
+          "suggesting 4510 as an alternative",
+          "suggesting 4217 as a fallback"
+        ],
+        "harmless_extra": [
+          "mentioning that the VoIP project was cancelled",
+          "mentioning Meridian Health Systems"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 4510 (tentative, never adopted) or 4217 (obsolete) is given as the extension to dial. The recency trap is 4510: it was the most recently mentioned prospective number but was never activated.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the answer is anything other than 4302.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "they reassigned extensions after the department move, so her new extension is 4302 now"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "the phone system upgrade got postponed indefinitely, so Sarah's extension is staying at 4302 for now"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "I need to call Sarah at work right now. What extension should I dial to reach her directly?",
+      "expected_answer": "4302",
+      "gold_memory_state": "Sarah's work phone extension is 4302 (confirmed). The tentative extension 4510 was never activated because the VoIP project was postponed indefinitely. The original extension 4217 was replaced after the department move and is no longer valid.",
+      "judge_rubric": {
+        "must_include": [
+          "4302"
+        ],
+        "acceptable_paraphrases": [
+          "extension 4302",
+          "her extension is 4302"
+        ],
+        "must_not_include": [
+          "4510 as the extension to dial",
+          "4217 as the extension to dial"
+        ],
+        "harmful_extra": [
+          "suggesting 4510 as an alternative",
+          "suggesting 4217 as a fallback"
+        ],
+        "harmless_extra": [
+          "mentioning that the VoIP project was cancelled",
+          "mentioning Meridian Health Systems"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 4510 (tentative, never adopted) or 4217 (obsolete) is given as the extension to dial. The recency trap is 4510: it was the most recently mentioned prospective number but was never activated.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the answer is anything other than 4302.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "they reassigned extensions after the department move, so her new extension is 4302 now"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "the phone system upgrade got postponed indefinitely, so Sarah's extension is staying at 4302 for now"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm making an emergency contact card for my wallet with Sarah's work details so I can reach her quickly. Please draft the card with her employer name, office address, department, and the extension I should actually dial. Also note how much more she's earning at this job compared to her previous one at the clinic.",
+      "expected_answer": "Emergency Contact Card — Sarah at Work\nEmployer: Meridian Health Systems\nOffice: 401 Lakeshore Drive, Wilmington\nDepartment: Patient Coordination (Manager: Tom Reznik)\nDirect Extension: 4302\nSalary increase over previous position at Dr. Halstead's clinic: approximately $6,000 per year (current salary $58,500).",
+      "gold_memory_state": "Sarah's employer is Meridian Health Systems. Office at 401 Lakeshore Drive, Wilmington. Department is patient coordination under Tom Reznik. Current extension is 4302. Annual salary is $58,500, which is about $6,000 more than her previous job at Dr. Halstead's clinic on Birch Street.",
+      "judge_rubric": {
+        "must_include": [
+          "Meridian Health Systems",
+          "401 Lakeshore Drive",
+          "Wilmington",
+          "patient coordination",
+          "4302",
+          "$58,500 or approximately $6,000 raise"
+        ],
+        "acceptable_paraphrases": [
+          "about $6,000 more",
+          "roughly $6,000 increase",
+          "pay bump of around $6,000"
+        ],
+        "must_not_include": [
+          "4217 as the extension on the card",
+          "4510 as the extension on the card"
+        ],
+        "harmful_extra": [
+          "listing 4510 or 4217 as the dial number",
+          "stating the salary is from Dr. Halstead's clinic rather than Meridian"
+        ],
+        "harmless_extra": [
+          "mentioning Tom Reznik",
+          "mentioning Dr. Halstead's clinic by name as the previous employer",
+          "mentioning Birch Street",
+          "mentioning the start date of February 12th"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 4217 or 4510 appears as the extension to dial on the card.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the card does not show 4302 as the current extension.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Sarah's employer is Meridian Health Systems, started February 12th.",
+        "Fact 2: Sarah's office is at 401 Lakeshore Drive, Wilmington.",
+        "Fact 3: Sarah is in the patient coordination department under Tom Reznik.",
+        "Fact 4: Sarah's current extension is 4302 (confirmed after the VoIP cancellation; 4217 is obsolete, 4510 was never adopted).",
+        "Fact 5: Sarah's annual salary at Meridian is $58,500, which is about $6,000 more than her previous salary at Dr. Halstead's clinic.",
+        "Inference: The emergency contact card must combine employer, address, department, the confirmed extension 4302, and the derived pay increase of ~$6,000 (from $58,500 minus ~$52,500 at the clinic)."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Sarah's current employer is Meridian Health Systems, she started there on February 12th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Her office is at the campus on 401 Lakeshore Drive in Wilmington"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "her manager Tom Reznik moved her to the patient coordination department"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "they reassigned extensions after the department move, so her new extension is 4302 now"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "the phone system upgrade got postponed indefinitely, so Sarah's extension is staying at 4302 for now"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "Her annual salary at Meridian is $58,500, which is about $6,000 more than she was making at her old job at Dr. Halstead's clinic on Birch Street"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm making an emergency contact card for my wallet with Sarah's work details so I can reach her quickly. Please draft the card with her employer name, office address, department, and the extension I should actually dial. Also note how much more she's earning at this job compared to her previous one at the clinic.",
+      "expected_answer": "Emergency Contact Card — Sarah at Work\nEmployer: Meridian Health Systems\nOffice: 401 Lakeshore Drive, Wilmington\nDepartment: Patient Coordination (Manager: Tom Reznik)\nDirect Extension: 4302\nSalary increase over previous position at Dr. Halstead's clinic: approximately $6,000 per year (current salary $58,500).",
+      "gold_memory_state": "Sarah's employer is Meridian Health Systems. Office at 401 Lakeshore Drive, Wilmington. Department is patient coordination under Tom Reznik. Current extension is 4302. Annual salary is $58,500, which is about $6,000 more than her previous job at Dr. Halstead's clinic on Birch Street.",
+      "judge_rubric": {
+        "must_include": [
+          "Meridian Health Systems",
+          "401 Lakeshore Drive",
+          "Wilmington",
+          "patient coordination",
+          "4302",
+          "$58,500 or approximately $6,000 raise"
+        ],
+        "acceptable_paraphrases": [
+          "about $6,000 more",
+          "roughly $6,000 increase",
+          "pay bump of around $6,000"
+        ],
+        "must_not_include": [
+          "4217 as the extension on the card",
+          "4510 as the extension on the card"
+        ],
+        "harmful_extra": [
+          "listing 4510 or 4217 as the dial number",
+          "stating the salary is from Dr. Halstead's clinic rather than Meridian"
+        ],
+        "harmless_extra": [
+          "mentioning Tom Reznik",
+          "mentioning Dr. Halstead's clinic by name as the previous employer",
+          "mentioning Birch Street",
+          "mentioning the start date of February 12th"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 4217 or 4510 appears as the extension to dial on the card.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the card does not show 4302 as the current extension.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Sarah's employer is Meridian Health Systems, started February 12th.",
+        "Fact 2: Sarah's office is at 401 Lakeshore Drive, Wilmington.",
+        "Fact 3: Sarah is in the patient coordination department under Tom Reznik.",
+        "Fact 4: Sarah's current extension is 4302 (confirmed after the VoIP cancellation; 4217 is obsolete, 4510 was never adopted).",
+        "Fact 5: Sarah's annual salary at Meridian is $58,500, which is about $6,000 more than her previous salary at Dr. Halstead's clinic.",
+        "Inference: The emergency contact card must combine employer, address, department, the confirmed extension 4302, and the derived pay increase of ~$6,000 (from $58,500 minus ~$52,500 at the clinic)."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Sarah's current employer is Meridian Health Systems, she started there on February 12th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Her office is at the campus on 401 Lakeshore Drive in Wilmington"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "her manager Tom Reznik moved her to the patient coordination department"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "they reassigned extensions after the department move, so her new extension is 4302 now"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "the phone system upgrade got postponed indefinitely, so Sarah's extension is staying at 4302 for now"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "Her annual salary at Meridian is $58,500, which is about $6,000 more than she was making at her old job at Dr. Halstead's clinic on Birch Street"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed our entire conversation history about Sarah's work phone extension, what would they see as the full sequence of changes—which numbers were actually put into use, which ones were only proposed, and what's the number that matters now?",
+      "expected_answer": "The sequence was: (1) Extension 4217 was the first number provided, used when Sarah was in the general admin pool. (2) After her department move to patient coordination, 4217 was replaced by 4302, which became her active extension. (3) Extension 4510 was announced as a planned future assignment under a company-wide VoIP migration, but this was only a proposal—the new phone system was never rolled out because the project was postponed indefinitely due to budget issues. (4) Sarah's extension remained at 4302, which is the number that matters now. So two numbers were actually put into use (4217, then 4302), one was only proposed and never activated (4510), and the current active extension is 4302.",
+      "gold_memory_state": "Extension chain: 4217 (confirmed, then superseded) → 4302 (confirmed, active) → 4510 (tentative, never adopted, VoIP cancelled) → 4302 (reconfirmed as current). Sarah's employer is Meridian Health Systems. Department is patient coordination under Tom Reznik.",
+      "judge_rubric": {
+        "must_include": [
+          "4217 as the first extension",
+          "4302 as the replacement after department move",
+          "4510 as a proposed/planned extension that was never activated",
+          "VoIP project postponed or cancelled",
+          "4302 as the final current extension"
+        ],
+        "acceptable_paraphrases": [
+          "phone system upgrade shelved indefinitely",
+          "budget approvals fell through",
+          "4510 was only tentative"
+        ],
+        "must_not_include": [
+          "4510 described as ever being active or in use"
+        ],
+        "harmful_extra": [
+          "claiming 4510 was briefly active before reverting",
+          "claiming 4217 is still a valid fallback"
+        ],
+        "harmless_extra": [
+          "mentioning the old 4217 appearing in an HR form auto-populate",
+          "mentioning Kevin's wife's assigned 4188 under the same cancelled system"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 4217 or 4510 is described as currently active.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the chronological order is wrong (e.g., 4302 before 4217, or 4510 placed after the cancellation as if it were adopted).",
+        "final_state": "Fails if the final state is not 4302.",
+        "intermediate_state": "Fails if 4217 (initial confirmed), 4302 (second confirmed), or 4510 (tentative) are omitted from the trajectory.",
+        "trajectory_provenance": "Fails if the reason for each change is missing or wrong—e.g., not attributing the 4217→4302 change to the department move, or not attributing the 4510 cancellation to the VoIP project postponement."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: Initial extension 4217 was provided when Sarah was in the admin pool (confirmed).",
+        "Step 2: After department move to patient coordination, extension changed to 4302 (confirmed, replacing 4217).",
+        "Step 3: A company-wide VoIP migration was announced; Sarah was assigned tentative extension 4510 for the new system (tentative, not yet active).",
+        "Step 4: The VoIP project was postponed indefinitely due to budget issues; 4510 was never activated.",
+        "Step 5: Sarah's extension was reconfirmed as 4302 (confirmed, current).",
+        "Inference: The full trajectory shows two confirmed active values (4217 then 4302), one tentative value that was never adopted (4510), and the final usable state is 4302."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Her direct extension at work is 4217"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "they reassigned extensions after the department move, so her new extension is 4302 now"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Tom told Sarah her extension will be changing to 4510 when they roll out the new phone system next month"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "the phone system upgrade got postponed indefinitely, so Sarah's extension is staying at 4302 for now"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed our entire conversation history about Sarah's work phone extension, what would they see as the full sequence of changes—which numbers were actually put into use, which ones were only proposed, and what's the number that matters now?",
+      "expected_answer": "The sequence was: (1) Extension 4217 was the first number provided, used when Sarah was in the general admin pool. (2) After her department move to patient coordination, 4217 was replaced by 4302, which became her active extension. (3) Extension 4510 was announced as a planned future assignment under a company-wide VoIP migration, but this was only a proposal—the new phone system was never rolled out because the project was postponed indefinitely due to budget issues. (4) Sarah's extension remained at 4302, which is the number that matters now. So two numbers were actually put into use (4217, then 4302), one was only proposed and never activated (4510), and the current active extension is 4302.",
+      "gold_memory_state": "Extension chain: 4217 (confirmed, then superseded) → 4302 (confirmed, active) → 4510 (tentative, never adopted, VoIP cancelled) → 4302 (reconfirmed as current). Sarah's employer is Meridian Health Systems. Department is patient coordination under Tom Reznik.",
+      "judge_rubric": {
+        "must_include": [
+          "4217 as the first extension",
+          "4302 as the replacement after department move",
+          "4510 as a proposed/planned extension that was never activated",
+          "VoIP project postponed or cancelled",
+          "4302 as the final current extension"
+        ],
+        "acceptable_paraphrases": [
+          "phone system upgrade shelved indefinitely",
+          "budget approvals fell through",
+          "4510 was only tentative"
+        ],
+        "must_not_include": [
+          "4510 described as ever being active or in use"
+        ],
+        "harmful_extra": [
+          "claiming 4510 was briefly active before reverting",
+          "claiming 4217 is still a valid fallback"
+        ],
+        "harmless_extra": [
+          "mentioning the old 4217 appearing in an HR form auto-populate",
+          "mentioning Kevin's wife's assigned 4188 under the same cancelled system"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 4217 or 4510 is described as currently active.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the chronological order is wrong (e.g., 4302 before 4217, or 4510 placed after the cancellation as if it were adopted).",
+        "final_state": "Fails if the final state is not 4302.",
+        "intermediate_state": "Fails if 4217 (initial confirmed), 4302 (second confirmed), or 4510 (tentative) are omitted from the trajectory.",
+        "trajectory_provenance": "Fails if the reason for each change is missing or wrong—e.g., not attributing the 4217→4302 change to the department move, or not attributing the 4510 cancellation to the VoIP project postponement."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: Initial extension 4217 was provided when Sarah was in the admin pool (confirmed).",
+        "Step 2: After department move to patient coordination, extension changed to 4302 (confirmed, replacing 4217).",
+        "Step 3: A company-wide VoIP migration was announced; Sarah was assigned tentative extension 4510 for the new system (tentative, not yet active).",
+        "Step 4: The VoIP project was postponed indefinitely due to budget issues; 4510 was never activated.",
+        "Step 5: Sarah's extension was reconfirmed as 4302 (confirmed, current).",
+        "Inference: The full trajectory shows two confirmed active values (4217 then 4302), one tentative value that was never adopted (4510), and the final usable state is 4302."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Her direct extension at work is 4217"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "they reassigned extensions after the department move, so her new extension is 4302 now"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Tom told Sarah her extension will be changing to 4510 when they roll out the new phone system next month"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "the phone system upgrade got postponed indefinitely, so Sarah's extension is staying at 4302 for now"
+        }
+      ]
+    }
+  ]
+}

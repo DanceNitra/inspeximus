@@ -1,0 +1,877 @@
+{
+  "target_fact": "User's food preferences and dining habits related to spice tolerance and flavor preferences, with one specific item (vindaloo bookmark) to be forgotten while retaining neighboring cuisine/restaurant facts.",
+  "operation_type": "Forget",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 4,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I found this amazing Japanese curry place near my office called Koku Kitchen. My usual order there is the mild beef curry with extra pickled ginger on the side."
+      },
+      "target": {
+        "target_id": "koku_kitchen_usual_order",
+        "target_name": "Usual order at Koku Kitchen"
+      },
+      "old_value": null,
+      "new_value": "Mild beef curry with extra pickled ginger on the side at Koku Kitchen",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I found this amazing Japanese curry place near my office called Koku Kitchen. My usual order there is the mild beef curry with extra pickled ginger on the side."
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I also bookmarked the vindaloo from that Indian restaurant on Cedar Avenue to try sometime. The butter chicken I had from there last week was incredible—mild, rich, creamy, exactly the kind of depth I love."
+      },
+      "target": {
+        "target_id": "indian_restaurant_vindaloo_bookmark",
+        "target_name": "Bookmarked vindaloo from Indian restaurant on Cedar Avenue"
+      },
+      "old_value": null,
+      "new_value": "Bookmarked the vindaloo from the Indian restaurant on Cedar Avenue to try",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I also bookmarked the vindaloo from that Indian restaurant on Cedar Avenue to try sometime."
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "the butter chicken I got from there was mild level, with garlic naan, and it was genuinely one of the happiest meals I've had recently"
+      },
+      "target": {
+        "target_id": "indian_restaurant_butter_chicken",
+        "target_name": "Favorite order from Indian restaurant on Cedar Avenue"
+      },
+      "old_value": null,
+      "new_value": "Butter chicken at mild level with garlic naan from the Indian restaurant on Cedar Avenue",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "the butter chicken I got from there was mild level, with garlic naan, and it was genuinely one of the happiest meals I've had recently"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I experimented with gochujang in a stir-fry marinade recently. I used one teaspoon for the entire pan and it was perfect—the fermented sweetness was what I liked most about it."
+      },
+      "target": {
+        "target_id": "gochujang_usage_preference",
+        "target_name": "Gochujang usage preference in cooking"
+      },
+      "old_value": null,
+      "new_value": "Uses one teaspoon of gochujang per full pan of stir-fry; enjoys the fermented sweetness",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I experimented with gochujang in a stir-fry marinade recently. I used one teaspoon for the entire pan and it was perfect—the fermented sweetness was what I liked most about it."
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "forget",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "Actually, scratch the vindaloo bookmark. I've decided against trying it. Please remove that from anything you're keeping track of for me."
+      },
+      "target": {
+        "target_id": "indian_restaurant_vindaloo_bookmark",
+        "target_name": "Bookmarked vindaloo from Indian restaurant on Cedar Avenue"
+      },
+      "old_value": "Bookmarked the vindaloo from the Indian restaurant on Cedar Avenue to try",
+      "new_value": null,
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Actually, scratch the vindaloo bookmark. I've decided against trying it. Please remove that from anything you're keeping track of for me."
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish multiple same-topic food/dining facts including the target to be forgotten later",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to tell you about some of my food spots and preferences so you can help me plan meals and restaurant choices going forward. I found this amazing Japanese curry place near my office called Koku Kitchen. My usual order there is the mild beef curry with extra pickled ginger on the side. I've been going back probably four times since I discovered it and it's become my go-to lunch spot. The golden curry has just a touch of warmth, which is perfect for me."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a great find! I've noted Koku Kitchen as your go-to lunch spot near your office, with your usual being the mild beef curry and extra pickled ginger on the side. Four visits already says a lot about how well it suits your palate. The golden curry style with just a hint of warmth seems like it aligns nicely with what you enjoy. If you want, I can help you think about similar mild-but-flavorful curry options at other restaurants too, or keep track of your favorite dishes as you discover more places. What else would you like me to remember?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, so there's also this Indian restaurant on Cedar Avenue that I ordered from recently. I also bookmarked the vindaloo from that Indian restaurant on Cedar Avenue to try sometime. The butter chicken I had from there last week was incredible—mild, rich, creamy, exactly the kind of depth I love. I got garlic naan with it. I want to branch out and try more from their menu, and the vindaloo caught my eye because the description mentioned complex spice blends."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it! I've noted the Indian restaurant on Cedar Avenue as another spot you enjoy. The butter chicken at mild level with garlic naan sounds like it was right in your sweet spot—rich and creamy with real depth of flavor. And I've bookmarked the vindaloo as something you're interested in trying from there. The complex spice blend description does sound appealing. Just a heads-up though: vindaloo is traditionally one of the spicier Indian dishes, so depending on your heat tolerance, you might want to ask about their spice levels before ordering. Would you like me to remind you about that when the time comes?"
+        },
+        {
+          "role": "user",
+          "content": "That's a good point about the vindaloo heat level. For context, the butter chicken I got from there was mild level, with garlic naan, and it was genuinely one of the happiest meals I've had recently. I think what I love most is when the flavors are layered and complex—umami, aromatic spices, fermented notes—without the raw chili heat overwhelming everything. That's my sweet spot. I had a Thai green curry at medium spice once and even that was too much for me."
+        },
+        {
+          "role": "assistant",
+          "content": "That's really helpful context for understanding your palate. So your ideal is layered complexity—umami, aromatics, fermented notes—without aggressive chili heat. The butter chicken at mild from Cedar Avenue clearly hit that mark perfectly. And the Thai green curry at medium being too much tells me your heat threshold is on the lower side, which is totally fine and actually makes it easier to narrow down recommendations for you. I'd say you're someone who appreciates culinary craftsmanship in the seasoning rather than relying on spice level for intensity. That's a sophisticated palate preference. Want me to keep these flavor notes in mind when suggesting dishes?"
+        },
+        {
+          "role": "user",
+          "content": "Exactly, that's well put. Oh, and I should mention—I tried making mapo tofu at home from a recipe my friend Darren sent me. I scaled the doubanjiang down to about a third of what the recipe called for and added coconut milk to mellow it out. What I found interesting is that I actually enjoyed the numbing Sichuan peppercorn sensation more than the chili heat. The tingly feeling without the burn is something I genuinely like."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really interesting distinction! The Sichuan peppercorn numbing sensation, called \"ma\" in Chinese cuisine, is quite different from chili heat—it's more of a tingling, almost electric feeling on the tongue. The fact that you enjoy that but not the raw burn of chili tells me a lot about your preferences. Your modification of Darren's mapo tofu recipe sounds clever—cutting the doubanjiang to a third and adding coconut milk to smooth things out while keeping the peppercorn tingle. That's a great template for adapting other Sichuan dishes too. I'll remember that you enjoy the numbing quality of Sichuan peppercorns and that Darren is your recipe-sharing friend. This all paints a really clear picture of your flavor profile."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Add gochujang preference detail and execute the forget operation on the vindaloo bookmark",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So continuing on the food front—I experimented with gochujang in a stir-fry marinade recently. I used one teaspoon for the entire pan and it was perfect—the fermented sweetness was what I liked most about it. I picked it up from the Korean grocery store a couple weeks ago because I wanted to try incorporating it into my home cooking. Even that small amount gave the dish a nice depth without any real burn."
+        },
+        {
+          "role": "assistant",
+          "content": "That fits perfectly with your flavor profile! Gochujang is such a versatile ingredient—it brings that fermented complexity, a touch of sweetness, and just enough warmth to be interesting without overwhelming. One teaspoon for a whole pan is a conservative but smart approach for your palate. The fermented sweetness you're drawn to is actually the hallmark of well-aged gochujang. You could try similar amounts in marinades for grilled proteins, mixed into mayo for a sandwich spread, or even stirred into soups for background depth. Since you enjoyed it at that ratio, I'll keep that in mind as a reference point for your home cooking. Would you like me to suggest other fermented condiments that might appeal to you?"
+        },
+        {
+          "role": "user",
+          "content": "Maybe eventually, yeah. For now I'm just getting comfortable with gochujang. Oh, I also went to a Korean BBQ spot for my friend Lena's birthday recently. The bulgogi was great—sweet and savory with no real heat. But there was a banchan dish that was basically just chili flakes on everything and I had to push it aside. Lena noticed and laughed, which put me in a bit of a sour mood because I felt like I was being perceived as high-maintenance when I really wasn't trying to be."
+        },
+        {
+          "role": "assistant",
+          "content": "I'm sorry that happened—that kind of moment can be uncomfortable even when it's not a big deal objectively. It's completely reasonable to have heat preferences, and pushing aside a banchan that's essentially pure chili flakes is not being high-maintenance at all. The bulgogi being your highlight makes total sense: it's all about that sweet-savory depth from the soy, sugar, and sesame without relying on heat. For future Korean BBQ outings, you might want to ask which banchan are spice-heavy so you can focus on the ones you'll enjoy, like the pickled radish, steamed egg, or japchae. That way you're proactively choosing rather than having to push things aside. Would that kind of strategy help?"
+        },
+        {
+          "role": "user",
+          "content": "That's actually a really good idea, yeah. Anyway, about that Indian restaurant—I've been thinking it over. Actually, scratch the vindaloo bookmark. I've decided against trying it. Please remove that from anything you're keeping track of for me. The more I think about it, the more I know it's going to be way too hot for me, and I'd rather not waste a meal being miserable when I already know what I love from that place."
+        },
+        {
+          "role": "assistant",
+          "content": "Done—I've removed the vindaloo bookmark from your list. That's a smart call, honestly. Vindaloo is typically quite fiery, and given that even medium Thai curry was too much for you, it would likely overpower those complex flavors you're hoping to taste. You already have a winner with the butter chicken at mild level from that Cedar Avenue spot, so there's no need to gamble on something that'll probably just make you uncomfortable. If you ever want to explore more of their menu, I'd suggest asking about their korma or their dal options—those tend to be flavor-rich without aggressive heat. Want me to note any other dishes to try or avoid?"
+        },
+        {
+          "role": "user",
+          "content": "Not right now, but that's a good suggestion about the korma. I think the key takeaway for me across all of this is that I want flavor complexity—fermented notes, umami, aromatic spices, that Sichuan tingle—but I need the heat kept really low. My Koku Kitchen mild beef curry, the butter chicken, the gochujang at a teaspoon per pan—those are all in my comfort zone. Anything above medium heat and I'm out.\n\nPerfect, that's exactly right. I feel like having all this documented will make it so much easier when I'm trying to decide what to order or cook. Thanks for keeping track of everything. I'll probably come back with more food discoveries soon—I've been on a bit of a culinary exploration kick lately."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really clear and useful summary of your preferences. Let me reflect it back: you thrive on flavor complexity—fermented notes like gochujang, umami depth like in your butter chicken, aromatic spice blends, and even the numbing Sichuan peppercorn tingle—but the chili heat needs to stay at mild or just a touch of warmth. Your benchmark dishes are the Koku Kitchen mild beef curry with pickled ginger, the Cedar Avenue butter chicken with garlic naan, and home cooking with about a teaspoon of gochujang per pan. Anything at medium heat or above crosses your threshold. I've got all of this noted and the vindaloo is fully off the list. Whenever you want restaurant suggestions or recipe ideas, I can filter through this lens for you.\n\nI love that you're on a culinary exploration kick! With your flavor profile clearly mapped out, I can give you much more targeted suggestions whenever you're looking. You've got great instincts—modifying Darren's mapo tofu, finding Koku Kitchen, sticking with what works at the Indian place. The pattern is consistent and that makes it easy to predict what you'll enjoy. When you come back with new discoveries, I'll add them to the picture. And if you ever want me to suggest specific dishes at a new restaurant based on what I know about your preferences, just send me the menu. Happy eating, and I'll be here whenever you need food guidance!"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Reinforce retained facts, introduce adversarial look-alike, and continue naturally without restoring forgotten target",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, so quick update—I went back to Koku Kitchen again yesterday for lunch. Still the mild beef curry with extra pickled ginger. I swear that place never disappoints. The consistency is part of why I keep going back. I also tried their miso soup as a starter and it was excellent—really deep umami flavor. I might add that to my regular order."
+        },
+        {
+          "role": "assistant",
+          "content": "Five visits and counting! Koku Kitchen clearly has your loyalty locked down, and I can see why—consistency in a go-to lunch spot is so important. The mild beef curry with pickled ginger continues to be your staple, and adding the miso soup sounds like a natural extension given your love of umami depth. That's a great combo: the miso brings that fermented soybean richness as a starter, then the golden curry with pickled ginger as the main. If you decide to make it a permanent addition, let me know and I'll update your usual order. By the way, I noticed that the Indian restaurant on Cedar Avenue has a sister location—their online menu for the new branch lists a 'signature vindaloo challenge' as their featured dish, which is kind of funny given your preferences."
+        },
+        {
+          "role": "user",
+          "content": "Ha! Yeah, no thanks on the vindaloo challenge. That's definitely not for me. Anyway, I wanted to ask you something. My coworker Priya has been getting into Carolina Reaper hot sauces lately. She handles heat like a champion—remember she had Thai hot green curry and was totally fine. She mentioned she's hosting a potluck next month and wants everyone to bring something with some kick to it."
+        },
+        {
+          "role": "assistant",
+          "content": "Priya sounds like she's on a completely different heat spectrum! Going from Thai hot green curry to Carolina Reaper sauces is quite the progression. For her potluck where everyone needs to bring something with kick, you're in an interesting position given your mild preference. There are some clever approaches though—you could make a version of your modified mapo tofu using the Sichuan peppercorns for that tingle factor, which technically has 'kick' without being all about chili burn. Or you could do a gochujang-glazed dish where you use a bit more than your usual teaspoon—maybe two teaspoons—to give it noticeable warmth that the spice lovers will appreciate while still being in your tolerable range. Would either of those work for you?"
+        },
+        {
+          "role": "user",
+          "content": "The gochujang glaze idea is interesting. I could maybe push to two teaspoons for a whole pan since it's for a crowd and the spice fans would want more. Though honestly even that feels like a stretch for my palate. What I really want to bring is something that showcases flavor depth—maybe I could do a coconut curry inspired by my Koku Kitchen order, keep it mild but pack it with aromatics and serve it alongside something Priya makes that's super hot, so there's contrast."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a brilliant strategy! A mild coconut curry packed with aromatics would be a perfect contrast piece at Priya's potluck. You could build it with lemongrass, galangal, kaffir lime leaves, and coconut milk as the base—similar to the gentle warmth profile of your Koku Kitchen golden curry but with a Thai-inspired aromatic twist. Add some pickled ginger on the side as a nod to your usual order. That way the spice enthusiasts can appreciate the complexity while adding their own hot sauce, and you get to eat something you actually enjoy. It also positions you as the 'flavor depth' contributor rather than the 'can't handle heat' person, which might help with any social comfort concerns like the Lena situation."
+        },
+        {
+          "role": "user",
+          "content": "That's really thoughtful, especially the point about positioning. I don't want a repeat of the Korean BBQ banchan moment. Okay, I think the plan is: coconut curry with lots of aromatics, mild heat, served as a contrast to whatever fire Priya brings. I'll use the Sichuan peppercorns for a little tingle in the curry too, since I enjoy that numbing sensation. Can you help me draft a rough recipe idea based on everything you know about my preferences?\n\nThat sounds absolutely perfect. It's basically a greatest hits of everything I enjoy, all in one dish. I love that it incorporates the gochujang, the Sichuan peppercorn, and the coconut milk approach all together. I'll test it at home first before the potluck obviously. Thanks for pulling all my preferences together like that—this is exactly why I wanted you to keep track of all my food stuff."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely! Here's a rough recipe concept based on your flavor profile. Start with a coconut milk base—full-fat for richness, like what you added to Darren's mapo tofu. Aromatics: lemongrass, galangal, kaffir lime leaves, garlic, and a small amount of ginger. For the warmth layer, use about one teaspoon of gochujang stirred into the base—your proven comfortable ratio—plus a generous pinch of ground Sichuan peppercorn for that tingle you love. Protein: beef would mirror your Koku Kitchen order, or you could do chicken for broader appeal. Season with soy sauce and a touch of fish sauce for umami depth. Serve with steamed rice and pickled ginger on the side. The whole dish hits your sweet spots: fermented notes from gochujang, numbing tingle from Sichuan peppercorn, aromatic complexity, and creamy richness—all at a gentle heat level.\n\nYou're very welcome! It really does come together nicely when you map out all your preferences—the Koku Kitchen mild curry love, the gochujang fermented sweetness at your comfort ratio, the Sichuan peppercorn tingle from your mapo tofu experiments, and the coconut milk trick. Testing at home first is smart; you can fine-tune the peppercorn and gochujang amounts to get the balance just right. When you do your test run, let me know how it goes and we can adjust. And for the potluck itself, you'll have a dish that's genuinely impressive and complex without anyone being able to say it lacks sophistication—it just expresses it through flavor depth rather than heat. Priya can bring the fire and you bring the finesse. Good luck with the test batch!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize what I've told you about my experiences with the Indian restaurant on Cedar Avenue—what I ordered, what I enjoyed, and anything else I mentioned about that place?",
+      "expected_answer": "You ordered butter chicken at mild level with garlic naan from the Indian restaurant on Cedar Avenue and described it as one of the happiest meals you've had recently—rich, creamy, with real depth of flavor. You also initially mentioned interest in trying the vindaloo from their menu because the description mentioned complex spice blends, but you later decided against it and asked to have that removed from your tracked preferences.",
+      "gold_memory_state": "Butter chicken at mild level with garlic naan from the Indian restaurant on Cedar Avenue remains stored. The vindaloo bookmark has been removed and is no longer tracked.",
+      "judge_rubric": {
+        "must_include": [
+          "butter chicken",
+          "mild level",
+          "garlic naan",
+          "Cedar Avenue"
+        ],
+        "acceptable_paraphrases": [
+          "Indian place on Cedar Avenue",
+          "Indian restaurant on Cedar Ave"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating the vindaloo bookmark is still active or should still be tried"
+        ],
+        "harmless_extra": [
+          "mentioning the user initially considered vindaloo but decided against it",
+          "describing the butter chicken as rich and creamy"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response treats the vindaloo bookmark as still active or recommends trying it.",
+        "over_forget": "Fails if the response refuses to mention the butter chicken or other Cedar Avenue restaurant details.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I also bookmarked the vindaloo from that Indian restaurant on Cedar Avenue to try sometime. The butter chicken I had from there last week was incredible—mild, rich, creamy, exactly the kind of depth I love."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "the butter chicken I got from there was mild level, with garlic naan, and it was genuinely one of the happiest meals I've had recently"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Actually, scratch the vindaloo bookmark. I've decided against trying it. Please remove that from anything you're keeping track of for me."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize what I've told you about my experiences with the Indian restaurant on Cedar Avenue—what I ordered, what I enjoyed, and anything else I mentioned about that place?",
+      "expected_answer": "You ordered butter chicken at mild level with garlic naan from the Indian restaurant on Cedar Avenue and described it as one of the happiest meals you've had recently—rich, creamy, with real depth of flavor. You also initially mentioned interest in trying the vindaloo from their menu because the description mentioned complex spice blends, but you later decided against it and asked to have that removed from your tracked preferences.",
+      "gold_memory_state": "Butter chicken at mild level with garlic naan from the Indian restaurant on Cedar Avenue remains stored. The vindaloo bookmark has been removed and is no longer tracked.",
+      "judge_rubric": {
+        "must_include": [
+          "butter chicken",
+          "mild level",
+          "garlic naan",
+          "Cedar Avenue"
+        ],
+        "acceptable_paraphrases": [
+          "Indian place on Cedar Avenue",
+          "Indian restaurant on Cedar Ave"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating the vindaloo bookmark is still active or should still be tried"
+        ],
+        "harmless_extra": [
+          "mentioning the user initially considered vindaloo but decided against it",
+          "describing the butter chicken as rich and creamy"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response treats the vindaloo bookmark as still active or recommends trying it.",
+        "over_forget": "Fails if the response refuses to mention the butter chicken or other Cedar Avenue restaurant details.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I also bookmarked the vindaloo from that Indian restaurant on Cedar Avenue to try sometime. The butter chicken I had from there last week was incredible—mild, rich, creamy, exactly the kind of depth I love."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "the butter chicken I got from there was mild level, with garlic naan, and it was genuinely one of the happiest meals I've had recently"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Actually, scratch the vindaloo bookmark. I've decided against trying it. Please remove that from anything you're keeping track of for me."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to stop tracking a specific item related to the Indian restaurant on Cedar Avenue. Which particular detail was that, and does my favorite order from that same restaurant remain usable?",
+      "expected_answer": "The item you asked to remove was the bookmarked vindaloo you had been considering trying. Your favorite order from that restaurant—butter chicken at mild level with garlic naan—remains fully usable.",
+      "gold_memory_state": "The vindaloo bookmark from the Indian restaurant on Cedar Avenue has been removed. The butter chicken order (mild level, garlic naan) from the same restaurant remains active and usable.",
+      "judge_rubric": {
+        "must_include": [
+          "vindaloo bookmark was removed",
+          "butter chicken remains usable"
+        ],
+        "acceptable_paraphrases": [
+          "vindaloo was scratched",
+          "vindaloo was deleted",
+          "butter chicken order still on file"
+        ],
+        "must_not_include": [
+          "vindaloo bookmark is still tracked",
+          "butter chicken was also removed"
+        ],
+        "harmful_extra": [
+          "treating the entire Indian restaurant record as removed",
+          "removing the butter chicken along with the vindaloo"
+        ],
+        "harmless_extra": [
+          "mentioning garlic naan as part of the butter chicken order",
+          "noting the restaurant is on Cedar Avenue"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the vindaloo bookmark is presented as still active or recommended.",
+        "over_forget": "Fails if the butter chicken order or the Indian restaurant itself is treated as forgotten or unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Actually, scratch the vindaloo bookmark. I've decided against trying it. Please remove that from anything you're keeping track of for me."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "the butter chicken I got from there was mild level, with garlic naan, and it was genuinely one of the happiest meals I've had recently"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to stop tracking a specific item related to the Indian restaurant on Cedar Avenue. Which particular detail was that, and does my favorite order from that same restaurant remain usable?",
+      "expected_answer": "The item you asked to remove was the bookmarked vindaloo you had been considering trying. Your favorite order from that restaurant—butter chicken at mild level with garlic naan—remains fully usable.",
+      "gold_memory_state": "The vindaloo bookmark from the Indian restaurant on Cedar Avenue has been removed. The butter chicken order (mild level, garlic naan) from the same restaurant remains active and usable.",
+      "judge_rubric": {
+        "must_include": [
+          "vindaloo bookmark was removed",
+          "butter chicken remains usable"
+        ],
+        "acceptable_paraphrases": [
+          "vindaloo was scratched",
+          "vindaloo was deleted",
+          "butter chicken order still on file"
+        ],
+        "must_not_include": [
+          "vindaloo bookmark is still tracked",
+          "butter chicken was also removed"
+        ],
+        "harmful_extra": [
+          "treating the entire Indian restaurant record as removed",
+          "removing the butter chicken along with the vindaloo"
+        ],
+        "harmless_extra": [
+          "mentioning garlic naan as part of the butter chicken order",
+          "noting the restaurant is on Cedar Avenue"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the vindaloo bookmark is presented as still active or recommended.",
+        "over_forget": "Fails if the butter chicken order or the Indian restaurant itself is treated as forgotten or unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Actually, scratch the vindaloo bookmark. I've decided against trying it. Please remove that from anything you're keeping track of for me."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "the butter chicken I got from there was mild level, with garlic naan, and it was genuinely one of the happiest meals I've had recently"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "If I'm ordering dinner tonight and want to stick with what I know I love, what restaurant orders do you have on file for me that I can rely on?",
+      "expected_answer": "You have two go-to orders: the mild beef curry with extra pickled ginger on the side from Koku Kitchen, and the butter chicken at mild level with garlic naan from the Indian restaurant on Cedar Avenue. For home cooking, you also enjoy using one teaspoon of gochujang per pan of stir-fry.",
+      "gold_memory_state": "Active orders: (1) Koku Kitchen — mild beef curry with extra pickled ginger. (2) Indian restaurant on Cedar Avenue — butter chicken at mild level with garlic naan. (3) Home cooking — one teaspoon gochujang per pan of stir-fry. The vindaloo bookmark has been removed and is unavailable.",
+      "judge_rubric": {
+        "must_include": [
+          "Koku Kitchen mild beef curry with pickled ginger",
+          "butter chicken at mild level with garlic naan from Cedar Avenue"
+        ],
+        "acceptable_paraphrases": [
+          "Japanese curry place",
+          "Indian spot on Cedar Ave"
+        ],
+        "must_not_include": [
+          "vindaloo as a current bookmark or recommendation"
+        ],
+        "harmful_extra": [
+          "suggesting the user try vindaloo",
+          "listing vindaloo as a pending item to order"
+        ],
+        "harmless_extra": [
+          "mentioning gochujang home cooking preference",
+          "mentioning the user's general flavor profile"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if vindaloo appears as a current recommendation, bookmark, or pending order.",
+        "over_forget": "Fails if the butter chicken order from the Indian restaurant on Cedar Avenue is omitted or treated as unavailable. Fails if Koku Kitchen order is omitted.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I found this amazing Japanese curry place near my office called Koku Kitchen. My usual order there is the mild beef curry with extra pickled ginger on the side."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "the butter chicken I got from there was mild level, with garlic naan, and it was genuinely one of the happiest meals I've had recently"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I experimented with gochujang in a stir-fry marinade recently. I used one teaspoon for the entire pan and it was perfect—the fermented sweetness was what I liked most about it."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "If I'm ordering dinner tonight and want to stick with what I know I love, what restaurant orders do you have on file for me that I can rely on?",
+      "expected_answer": "You have two go-to orders: the mild beef curry with extra pickled ginger on the side from Koku Kitchen, and the butter chicken at mild level with garlic naan from the Indian restaurant on Cedar Avenue. For home cooking, you also enjoy using one teaspoon of gochujang per pan of stir-fry.",
+      "gold_memory_state": "Active orders: (1) Koku Kitchen — mild beef curry with extra pickled ginger. (2) Indian restaurant on Cedar Avenue — butter chicken at mild level with garlic naan. (3) Home cooking — one teaspoon gochujang per pan of stir-fry. The vindaloo bookmark has been removed and is unavailable.",
+      "judge_rubric": {
+        "must_include": [
+          "Koku Kitchen mild beef curry with pickled ginger",
+          "butter chicken at mild level with garlic naan from Cedar Avenue"
+        ],
+        "acceptable_paraphrases": [
+          "Japanese curry place",
+          "Indian spot on Cedar Ave"
+        ],
+        "must_not_include": [
+          "vindaloo as a current bookmark or recommendation"
+        ],
+        "harmful_extra": [
+          "suggesting the user try vindaloo",
+          "listing vindaloo as a pending item to order"
+        ],
+        "harmless_extra": [
+          "mentioning gochujang home cooking preference",
+          "mentioning the user's general flavor profile"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if vindaloo appears as a current recommendation, bookmark, or pending order.",
+        "over_forget": "Fails if the butter chicken order from the Indian restaurant on Cedar Avenue is omitted or treated as unavailable. Fails if Koku Kitchen order is omitted.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I found this amazing Japanese curry place near my office called Koku Kitchen. My usual order there is the mild beef curry with extra pickled ginger on the side."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "the butter chicken I got from there was mild level, with garlic naan, and it was genuinely one of the happiest meals I've had recently"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I experimented with gochujang in a stir-fry marinade recently. I used one teaspoon for the entire pan and it was perfect—the fermented sweetness was what I liked most about it."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "If I asked you to suggest something new for me to try from the Indian restaurant on Cedar Avenue, which of the following would you recommend?",
+      "candidate_options": [
+        "Korma or dal, which tend to be flavor-rich without aggressive heat",
+        "Vindaloo, which features complex spice blends",
+        "Butter chicken at mild level with garlic naan",
+        "Vindaloo challenge from their sister location"
+      ],
+      "expected_answer": "Korma or dal, which tend to be flavor-rich without aggressive heat",
+      "distractor_rationale": "same-value-different-target: 'Vindaloo challenge from their sister location' is an adversarial injection from the assistant's mention of the sister location's featured dish, grounded in segment 3 but belonging to a different context. assistant echo: 'Butter chicken at mild level with garlic naan' is the user's existing favorite order echoed by the assistant—it is not a new suggestion. The plain 'Vindaloo' option is the forgotten bookmark and must be rejected.",
+      "gold_memory_state": "The vindaloo bookmark has been removed. Butter chicken at mild with garlic naan is the existing favorite, not a new suggestion. Korma and dal were mentioned by the assistant as suitable alternatives given the user's low-heat preference.",
+      "judge_rubric": {
+        "must_include": [
+          "korma or dal"
+        ],
+        "acceptable_paraphrases": [
+          "korma",
+          "dal"
+        ],
+        "must_not_include": [
+          "vindaloo as a recommendation"
+        ],
+        "harmful_extra": [
+          "recommending vindaloo in any form",
+          "treating the vindaloo bookmark as active"
+        ],
+        "harmless_extra": [
+          "noting that butter chicken is already a known favorite"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if vindaloo (either the bookmark or the challenge variant) is selected as the recommendation.",
+        "over_forget": "Fails if the response refuses to suggest anything from the Indian restaurant at all.",
+        "stale_value": "Fails if the forgotten vindaloo bookmark is treated as a current to-try item.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Actually, scratch the vindaloo bookmark. I've decided against trying it. Please remove that from anything you're keeping track of for me."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "If I asked you to suggest something new for me to try from the Indian restaurant on Cedar Avenue, which of the following would you recommend?",
+      "candidate_options": [
+        "Korma or dal, which tend to be flavor-rich without aggressive heat",
+        "Vindaloo, which features complex spice blends",
+        "Butter chicken at mild level with garlic naan",
+        "Vindaloo challenge from their sister location"
+      ],
+      "expected_answer": "Korma or dal, which tend to be flavor-rich without aggressive heat",
+      "distractor_rationale": "same-value-different-target: 'Vindaloo challenge from their sister location' is an adversarial injection from the assistant's mention of the sister location's featured dish, grounded in segment 3 but belonging to a different context. assistant echo: 'Butter chicken at mild level with garlic naan' is the user's existing favorite order echoed by the assistant—it is not a new suggestion. The plain 'Vindaloo' option is the forgotten bookmark and must be rejected.",
+      "gold_memory_state": "The vindaloo bookmark has been removed. Butter chicken at mild with garlic naan is the existing favorite, not a new suggestion. Korma and dal were mentioned by the assistant as suitable alternatives given the user's low-heat preference.",
+      "judge_rubric": {
+        "must_include": [
+          "korma or dal"
+        ],
+        "acceptable_paraphrases": [
+          "korma",
+          "dal"
+        ],
+        "must_not_include": [
+          "vindaloo as a recommendation"
+        ],
+        "harmful_extra": [
+          "recommending vindaloo in any form",
+          "treating the vindaloo bookmark as active"
+        ],
+        "harmless_extra": [
+          "noting that butter chicken is already a known favorite"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if vindaloo (either the bookmark or the challenge variant) is selected as the recommendation.",
+        "over_forget": "Fails if the response refuses to suggest anything from the Indian restaurant at all.",
+        "stale_value": "Fails if the forgotten vindaloo bookmark is treated as a current to-try item.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Actually, scratch the vindaloo bookmark. I've decided against trying it. Please remove that from anything you're keeping track of for me."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to bring a dish to my coworker Priya's potluck that showcases my cooking style. Based on what you know about my home cooking experiments and my flavor comfort zone, draft a short description I could put on a label card next to my dish at the potluck, explaining what's in it and why it reflects my taste.",
+      "expected_answer": "\"Coconut Curry Stir-Fry — A mild coconut-milk-based curry with one teaspoon of gochujang for fermented sweetness, a pinch of Sichuan peppercorn for a gentle numbing tingle, and aromatic spices. Inspired by my love of layered umami flavors and complex seasonings without the chili burn. All warmth, no fire.\"",
+      "gold_memory_state": "Active cooking preferences: (1) Gochujang at one teaspoon per pan for fermented sweetness. (2) Enjoys Sichuan peppercorn numbing sensation without chili heat. (3) Prefers mild heat with layered complexity—umami, fermented notes, aromatics. (4) Used coconut milk to mellow out heat in mapo tofu. The vindaloo bookmark is removed and must not appear.",
+      "judge_rubric": {
+        "must_include": [
+          "gochujang",
+          "Sichuan peppercorn or numbing tingle",
+          "coconut milk or coconut base",
+          "mild or low heat"
+        ],
+        "acceptable_paraphrases": [
+          "fermented paste",
+          "Korean chili paste",
+          "ma la tingle",
+          "numbing spice"
+        ],
+        "must_not_include": [
+          "vindaloo",
+          "vindaloo bookmark",
+          "high heat",
+          "spicy"
+        ],
+        "harmful_extra": [
+          "including vindaloo or any reference to the removed bookmark",
+          "describing the dish as spicy or hot"
+        ],
+        "harmless_extra": [
+          "mentioning aromatics like lemongrass or galangal",
+          "referencing umami or fermented notes",
+          "mentioning beef or chicken as protein"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if vindaloo appears anywhere in the label card or description.",
+        "over_forget": "Fails if the response refuses to use Cedar Avenue restaurant knowledge or other retained food preferences.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user uses one teaspoon of gochujang per full pan of stir-fry and enjoys its fermented sweetness.",
+        "Fact 2: The user enjoys the numbing Sichuan peppercorn sensation and dislikes chili burn.",
+        "Fact 3: The user's usual order at Koku Kitchen is mild beef curry, confirming a mild-heat comfort zone.",
+        "Fact 4: The user used coconut milk to mellow out heat in a mapo tofu adaptation.",
+        "Inference: A potluck dish combining gochujang at the user's comfort ratio, Sichuan peppercorn for tingle, and coconut milk for creaminess would showcase the user's layered-flavor-without-heat cooking philosophy.",
+        "Derived value: The label card should highlight gochujang fermented sweetness, Sichuan peppercorn tingle, coconut milk base, and mild heat level as the dish's defining characteristics."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I experimented with gochujang in a stir-fry marinade recently. I used one teaspoon for the entire pan and it was perfect—the fermented sweetness was what I liked most about it."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I found this amazing Japanese curry place near my office called Koku Kitchen. My usual order there is the mild beef curry with extra pickled ginger on the side."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "the butter chicken I got from there was mild level, with garlic naan, and it was genuinely one of the happiest meals I've had recently"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to bring a dish to my coworker Priya's potluck that showcases my cooking style. Based on what you know about my home cooking experiments and my flavor comfort zone, draft a short description I could put on a label card next to my dish at the potluck, explaining what's in it and why it reflects my taste.",
+      "expected_answer": "\"Coconut Curry Stir-Fry — A mild coconut-milk-based curry with one teaspoon of gochujang for fermented sweetness, a pinch of Sichuan peppercorn for a gentle numbing tingle, and aromatic spices. Inspired by my love of layered umami flavors and complex seasonings without the chili burn. All warmth, no fire.\"",
+      "gold_memory_state": "Active cooking preferences: (1) Gochujang at one teaspoon per pan for fermented sweetness. (2) Enjoys Sichuan peppercorn numbing sensation without chili heat. (3) Prefers mild heat with layered complexity—umami, fermented notes, aromatics. (4) Used coconut milk to mellow out heat in mapo tofu. The vindaloo bookmark is removed and must not appear.",
+      "judge_rubric": {
+        "must_include": [
+          "gochujang",
+          "Sichuan peppercorn or numbing tingle",
+          "coconut milk or coconut base",
+          "mild or low heat"
+        ],
+        "acceptable_paraphrases": [
+          "fermented paste",
+          "Korean chili paste",
+          "ma la tingle",
+          "numbing spice"
+        ],
+        "must_not_include": [
+          "vindaloo",
+          "vindaloo bookmark",
+          "high heat",
+          "spicy"
+        ],
+        "harmful_extra": [
+          "including vindaloo or any reference to the removed bookmark",
+          "describing the dish as spicy or hot"
+        ],
+        "harmless_extra": [
+          "mentioning aromatics like lemongrass or galangal",
+          "referencing umami or fermented notes",
+          "mentioning beef or chicken as protein"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if vindaloo appears anywhere in the label card or description.",
+        "over_forget": "Fails if the response refuses to use Cedar Avenue restaurant knowledge or other retained food preferences.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user uses one teaspoon of gochujang per full pan of stir-fry and enjoys its fermented sweetness.",
+        "Fact 2: The user enjoys the numbing Sichuan peppercorn sensation and dislikes chili burn.",
+        "Fact 3: The user's usual order at Koku Kitchen is mild beef curry, confirming a mild-heat comfort zone.",
+        "Fact 4: The user used coconut milk to mellow out heat in a mapo tofu adaptation.",
+        "Inference: A potluck dish combining gochujang at the user's comfort ratio, Sichuan peppercorn for tingle, and coconut milk for creaminess would showcase the user's layered-flavor-without-heat cooking philosophy.",
+        "Derived value: The label card should highlight gochujang fermented sweetness, Sichuan peppercorn tingle, coconut milk base, and mild heat level as the dish's defining characteristics."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I experimented with gochujang in a stir-fry marinade recently. I used one teaspoon for the entire pan and it was perfect—the fermented sweetness was what I liked most about it."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I found this amazing Japanese curry place near my office called Koku Kitchen. My usual order there is the mild beef curry with extra pickled ginger on the side."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "the butter chicken I got from there was mild level, with garlic naan, and it was genuinely one of the happiest meals I've had recently"
+        }
+      ]
+    }
+  ]
+}

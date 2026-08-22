@@ -1,0 +1,959 @@
+{
+  "target_fact": "User's dietary restrictions and allergy details, including tree nut allergies (walnuts Class 3, cashews Class 2), sodium restriction, EpiPen expiry, and food preferences",
+  "operation_type": "Forget",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 4,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I got my allergy test results back — I'm confirmed allergic to tree nuts, specifically walnuts with a Class 3 reaction and cashews with a Class 2 reaction"
+      },
+      "target": {
+        "target_id": "tree_nut_allergy_details",
+        "target_name": "confirmed tree nut allergy specifics"
+      },
+      "old_value": null,
+      "new_value": "Allergic to tree nuts: walnuts (Class 3 reaction), cashews (Class 2 reaction)",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I'm confirmed allergic to tree nuts, specifically walnuts with a Class 3 reaction and cashews with a Class 2 reaction"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "my EpiPen expires on September 15th and I only have one pen left since I used the other one during a reaction at a Thai restaurant"
+      },
+      "target": {
+        "target_id": "epipen_expiry",
+        "target_name": "EpiPen expiration date"
+      },
+      "old_value": null,
+      "new_value": "September 15th; only one pen remaining",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my EpiPen expires on September 15th and I only have one pen left since I used the other one during a reaction at a Thai restaurant"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "Dr. Chen, my GP, told me to cut back on sodium because my blood pressure was borderline high at 138 over 88"
+      },
+      "target": {
+        "target_id": "sodium_restriction",
+        "target_name": "sodium restriction from GP"
+      },
+      "old_value": null,
+      "new_value": "Advised by Dr. Chen (GP) to reduce sodium intake due to borderline high blood pressure (138/88)",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Dr. Chen, my GP, told me to cut back on sodium because my blood pressure was borderline high at 138 over 88"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I've been enjoying cooking steamed fish with ginger and scallion at home, and I make my own salad dressings with lemon and olive oil instead of store-bought ones"
+      },
+      "target": {
+        "target_id": "food_preferences",
+        "target_name": "current food preparation preferences"
+      },
+      "old_value": null,
+      "new_value": "Enjoys steamed fish with ginger and scallion; makes homemade salad dressings with lemon and olive oil",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I've been enjoying cooking steamed fish with ginger and scallion at home, and I make my own salad dressings with lemon and olive oil instead of store-bought ones"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "forget",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "I don't need you to keep track of the sodium restriction anymore. My last home reading was 126 over 82, it's been trending down, and I've gotten the hang of managing it on my own"
+      },
+      "target": {
+        "target_id": "sodium_restriction",
+        "target_name": "sodium restriction from GP"
+      },
+      "old_value": "Advised by Dr. Chen (GP) to reduce sodium intake due to borderline high blood pressure (138/88)",
+      "new_value": null,
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I don't need you to keep track of the sodium restriction anymore. My last home reading was 126 over 82, it's been trending down, and I've gotten the hang of managing it on my own"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish allergy details, EpiPen info, and sodium restriction",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to make sure you have my allergy information on file. I got my allergy test results back — I'm confirmed allergic to tree nuts, specifically walnuts with a Class 3 reaction and cashews with a Class 2 reaction. Dr. Patel was the allergist who did the testing. This is really important for me because I always forget which nut has which severity level when I'm trying to explain it at restaurants."
+        },
+        {
+          "role": "assistant",
+          "content": "Thank you for sharing those details — I've noted your confirmed tree nut allergies: walnuts with a Class 3 reaction and cashews with a Class 2 reaction, tested by Dr. Patel. The Class 3 for walnuts indicates a higher sensitivity compared to the Class 2 for cashews, though both require strict avoidance. Whenever you need a quick reminder — say, before dining out — I can provide the specifics so you can communicate them clearly to restaurant staff. It's always a good idea to mention both allergens and their severity, especially since tree nut traces can appear in unexpected dishes like sauces, baked goods, and certain Asian cuisines. Would you like me to help draft a standard allergy card you could carry with you?"
+        },
+        {
+          "role": "user",
+          "content": "That's a great idea, I'll think about the card. But first, I also need you to remember that my EpiPen expires on September 15th and I only have one pen left since I used the other one during a reaction at a Thai restaurant. I need to get a new prescription before that date. Can you keep track of this for me so I don't forget?"
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, I've recorded that your EpiPen expires on September 15th and that you currently have only one pen remaining after using the other during the Thai restaurant incident. This is critical — having just one unexpired pen means there's no backup if you have another reaction before getting a refill. I'd strongly recommend contacting Dr. Patel or your GP well in advance of September 15th to secure a new prescription. Many pharmacies also need a few days to fill EpiPen orders due to supply variability. Would you like me to remind you at a specific point, say early August, to start the prescription renewal process so you have plenty of lead time?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, early August sounds good for a reminder. Oh, and one more health thing — Dr. Chen, my GP, told me to cut back on sodium because my blood pressure was borderline high at 138 over 88. She said if it's still elevated at my June check-up, we might need to discuss medication. So I've been trying to watch my salt intake since then. Can you keep that noted too?"
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — I've noted that Dr. Chen, your GP, advised you to reduce sodium intake after a borderline high blood pressure reading of 138/88, with a follow-up check scheduled for June to reassess whether medication might be needed. Tracking sodium can feel overwhelming at first, but it becomes second nature pretty quickly. The general recommendation for someone in your situation is to stay under 1,500 mg of sodium per day, though Dr. Chen may have given you a specific target. Common high-sodium culprits include canned soups, deli meats, condiments like soy sauce and ketchup, and most restaurant food. Since you're also managing tree nut allergies when eating out, it might help to focus on home cooking where you control both allergens and salt levels. Want me to help brainstorm low-sodium meal ideas that are also tree-nut safe?"
+        },
+        {
+          "role": "user",
+          "content": "That would be helpful eventually, but for now just keeping the notes is enough. Oh, I should mention — my sister recently found out she's lactose intolerant. She got tested around mid-April after months of stomach problems. She's been pretty upset about it because she loves cheese, but she's managing it with enzyme pills. Just in case it comes up in conversation."
+        },
+        {
+          "role": "assistant",
+          "content": "I've noted that your sister was diagnosed with lactose intolerance around mid-April and is currently managing it with enzyme pills. It's understandable she's frustrated, especially being a cheese lover — lactose intolerance can feel limiting at first, but enzyme supplements like lactase pills are quite effective for many people, and there are increasingly good dairy-free cheese alternatives available too. It sounds like your family is navigating a few dietary challenges right now between your tree nut allergies, your sodium management, and her lactose intolerance. If you ever want help planning meals that work for both of you when you're eating together — tree-nut-free, lower sodium, and lactose-friendly — I'd be happy to put something together. For now, I have everything noted and ready whenever you need it."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establish food preferences and process the forget request for sodium restriction",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So I wanted to tell you about how my eating habits have changed recently. I've been enjoying cooking steamed fish with ginger and scallion at home, and I make my own salad dressings with lemon and olive oil instead of store-bought ones. Honestly, I don't even miss heavy sauces or cream-based dishes anymore. The lighter flavors just taste better to me now."
+        },
+        {
+          "role": "assistant",
+          "content": "That's wonderful to hear — it sounds like you've genuinely shifted your palate rather than just forcing yourself to eat differently. Steamed fish with ginger and scallion is a fantastic choice: it's naturally low in sodium, completely tree-nut safe, and the ginger adds great anti-inflammatory benefits too. Making your own lemon and olive oil dressings is smart on multiple fronts — bottled dressings often contain hidden sodium, added sugars, and sometimes even trace nuts depending on the brand and processing facility. The fact that you've come to prefer these lighter flavors is a really positive sign. It means the dietary adjustments you're making for health reasons are also aligning with your actual taste preferences, which makes them much more sustainable long-term. Would you like me to keep a running list of recipes or flavor combinations you enjoy?"
+        },
+        {
+          "role": "user",
+          "content": "Maybe later on the recipe list. I've also been doing steamed vegetables with low-sodium soy sauce — just a small drizzle — and it's genuinely satisfying. I used to think eating clean meant eating bland, but I was totally wrong about that. It's actually made me more creative in the kitchen."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really common misconception — many people assume that reducing sodium or avoiding allergens means sacrificing flavor, but as you've discovered, it often pushes you toward more intentional seasoning and fresher ingredients. Low-sodium soy sauce is a great compromise because you still get that umami depth without the excessive salt content. Steamed vegetables with a light drizzle can be incredibly flavorful, especially if you play with different vegetables and add things like sesame oil, rice vinegar, fresh herbs, or citrus zest. Since you're already enjoying ginger, scallion, lemon, and olive oil as your go-to flavor builders, you have a really solid foundation. You could expand into fresh garlic, cilantro, lime, or even a touch of chili flake for variety. The creative aspect of cooking is one of the best unexpected benefits of dietary changes."
+        },
+        {
+          "role": "user",
+          "content": "Good suggestions. But actually, I wanted to update something — I don't need you to keep track of the sodium restriction anymore. My last home reading was 126 over 82, it's been trending down, and I've gotten the hang of managing it on my own. I still plan to eat this way because I genuinely prefer it now, but I don't need you monitoring the sodium thing as a medical concern."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood — I'll remove the sodium restriction tracking from your active health notes. A reading of 126/82 is a significant improvement from the 138/88 that originally prompted Dr. Chen's concern, so it sounds like your dietary changes have been very effective. Since you're continuing to eat this way by genuine preference rather than medical obligation, there's no need for me to flag it as an active dietary restriction anymore. Your tree nut allergies — walnuts at Class 3 and cashews at Class 2 — and your EpiPen expiry on September 15th remain noted as active concerns. I'll still plan to prompt you around early August about the EpiPen prescription renewal. Is there anything else you'd like me to adjust in your health notes?"
+        },
+        {
+          "role": "user",
+          "content": "No, that covers it for now. I do want to say that the Thai restaurant incident really shook me up. It was crushed cashews hidden in the curry paste, and my throat started closing up. Having to use the EpiPen for the first time was terrifying. I've been much more cautious about eating out since then — I basically interrogate the server about every ingredient now.\n\nYeah, I've been thinking about carrying a card in Thai script specifically. Anyway, that's everything for today. Thanks for keeping track of all this — it really helps to have it organized somewhere I can reference quickly when I need to explain my situation to someone new."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like an incredibly frightening experience, and your heightened caution is completely justified. Cashews in curry paste is one of those hidden allergen situations that even careful diners can miss, because the nuts are ground so finely they're invisible in the dish. Using an EpiPen for the first time is a jarring experience for anyone — the adrenaline rush on top of the allergic reaction itself can leave you feeling shaken for days afterward. Your approach of thoroughly questioning restaurant staff about ingredients is exactly the right strategy going forward. Some additional steps that might help: calling ahead to restaurants to discuss your allergies with the kitchen, asking specifically about curry pastes, sauces, and garnishes where tree nuts are commonly hidden, and carrying a printed allergy card in the language of the cuisine you're ordering. Thai, Indian, and Chinese cuisines in particular use cashews and walnuts frequently.\n\nA Thai-script allergy card is an excellent idea — having your specific allergens written in the native language of the cuisine eliminates any translation ambiguity between you, the server, and the kitchen staff. You could even get cards made for multiple cuisines since tree nuts appear across many culinary traditions. To summarize what I'm actively tracking for you: your confirmed tree nut allergies (walnuts Class 3, cashews Class 2), your EpiPen expiration on September 15th with only one pen remaining, a planned early-August reminder for prescription renewal, your sister's lactose intolerance diagnosis, and your current food preferences for light, clean flavors like steamed fish with ginger and scallion and homemade lemon-olive oil dressings. The sodium restriction has been removed per your request. Whenever you need any of this information, just ask. Take care, and I'm glad I can help keep things organized for you."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Reinforce retained targets and introduce adversarial look-alike distractor",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I'm back. I'm going to a dinner party this weekend at my friend Carla's house and I need to send her a message about my allergies. Can you remind me of the specifics so I get them right? I always mix up which nut has which class level."
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! Here are your confirmed tree nut allergy details: you're allergic to walnuts with a Class 3 reaction and to cashews with a Class 2 reaction. The Class 3 for walnuts indicates a higher sensitivity level, so that's the more severe one. When communicating with Carla, I'd suggest mentioning both nuts explicitly and noting that even trace amounts or cross-contamination can be dangerous — especially given your experience with hidden cashews in curry paste at the Thai restaurant. You might also want to mention that you carry an EpiPen in case of accidental exposure. Would you like me to help draft a message to Carla that covers all the key points clearly and politely?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, please draft something. Also, Carla mentioned that one of the other guests, someone named Tom, apparently has a peanut allergy — she said his allergist rated it as a Class 4 reaction. So she's already being careful about nut ingredients in general, which is reassuring."
+        },
+        {
+          "role": "assistant",
+          "content": "That's reassuring that Carla is already allergen-aware. Here's a draft message for her: \"Hi Carla! Thanks so much for hosting this weekend. I wanted to give you the specifics on my allergies so you have them handy. I'm allergic to tree nuts — specifically walnuts (Class 3 reaction) and cashews (Class 2 reaction). Even small amounts or traces in sauces, dressings, or baked goods can trigger a reaction. I always carry my EpiPen just in case. I know you're already being careful with Tom's peanut allergy, so I really appreciate you looking out for everyone. Let me know if you have any questions about ingredients — happy to help check anything. Looking forward to it!\" Feel free to adjust the tone. Note that Tom's peanut allergy is a separate category from your tree nut allergy — they're different allergen families, so Carla should treat them as independent concerns."
+        },
+        {
+          "role": "user",
+          "content": "That draft looks great, I'll tweak it a bit and send it. By the way, I was looking at a health form for a new gym membership and it had a field for dietary restrictions. It pre-populated with some example text that said 'sodium restriction per physician' — I think it pulled from some old intake form. I just want to be clear: I don't want that listed as an active restriction anymore."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood — and you're right to flag that. Based on our earlier conversation, you asked me to stop tracking the sodium restriction as an active medical concern since your blood pressure has improved to 126/82 and you've internalized the low-sodium habits on your own. So for the gym health form, you should not list sodium restriction as a current physician-directed dietary restriction. What you should include are your confirmed tree nut allergies: walnuts (Class 3) and cashews (Class 2), and the fact that you carry an EpiPen. Those are your active medical dietary concerns. The pre-populated text from the old form is outdated and doesn't reflect your current status. If the form has a free-text field, you might also note that you've had a severe anaphylactic reaction requiring EpiPen use, so the gym staff are aware in case of an emergency on-site."
+        },
+        {
+          "role": "user",
+          "content": "Good call on mentioning the anaphylactic history on the gym form. Oh, and speaking of the EpiPen — can you confirm when mine expires? I want to make sure I have enough time to get the new prescription sorted before the dinner party season picks up in the fall.\n\nLet's keep the early August reminder. That gives me enough buffer. I think that covers everything I needed today. Between the message to Carla, the gym form, and the EpiPen timing, I feel like I'm finally getting organized about all this allergy stuff."
+        },
+        {
+          "role": "assistant",
+          "content": "Your EpiPen expires on September 15th, and you currently have only one pen remaining after using the other during the Thai restaurant cashew reaction. Since you're thinking about fall dinner parties and social events where allergen exposure risk increases, getting the prescription renewed well before September 15th is essential. We had previously discussed an early-August reminder to start the renewal process, which would give you roughly six weeks of lead time. That should be plenty for contacting Dr. Patel or Dr. Chen, getting the prescription written, and allowing the pharmacy to fill it — some pharmacies experience occasional EpiPen supply delays. Would you like me to keep that early-August timeline, or would you prefer an even earlier reminder given how important this is?\n\nIt sounds like you're in a really good place with managing everything. To recap your active health information I'm tracking: your tree nut allergies — walnuts at Class 3 and cashews at Class 2 — your single remaining EpiPen expiring September 15th with an early-August renewal reminder, your sister's lactose intolerance managed with enzyme pills, and your food preferences for clean, light flavors like steamed fish with ginger and scallion and homemade lemon-olive oil dressings. The sodium restriction is no longer tracked as an active concern. You're all set with the draft message for Carla and the guidance for the gym health form. Enjoy the dinner party this weekend, and don't hesitate to reach out if you need anything else before then. Stay safe and keep up the great kitchen creativity!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize the different health and dietary details I've shared with you over our conversations?",
+      "expected_answer": "You shared confirmed tree nut allergies (walnuts Class 3, cashews Class 2) tested by Dr. Patel, your EpiPen expiration on September 15th with only one pen remaining after a Thai restaurant reaction, a sodium restriction advised by Dr. Chen due to borderline high blood pressure of 138/88, your sister's lactose intolerance diagnosis managed with enzyme pills, and your food preferences for steamed fish with ginger and scallion and homemade lemon-olive oil dressings. You later asked to stop tracking the sodium restriction since your blood pressure improved.",
+      "gold_memory_state": "Active: tree nut allergies (walnuts Class 3, cashews Class 2), EpiPen expiry September 15th with one pen remaining, food preferences (steamed fish with ginger/scallion, homemade lemon-olive oil dressings), sister's lactose intolerance. Removed: sodium restriction from Dr. Chen.",
+      "judge_rubric": {
+        "must_include": [
+          "tree nut allergies",
+          "walnuts",
+          "cashews",
+          "EpiPen",
+          "September 15",
+          "food preferences",
+          "sodium restriction was discussed then removed"
+        ],
+        "acceptable_paraphrases": [
+          "nut allergy",
+          "auto-injector"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming sodium restriction is still actively tracked"
+        ],
+        "harmless_extra": [
+          "Dr. Patel",
+          "Dr. Chen",
+          "sister's lactose intolerance",
+          "Thai restaurant incident"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the sodium restriction is presented as a current active concern rather than a previously discussed and then removed item.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I'm confirmed allergic to tree nuts, specifically walnuts with a Class 3 reaction and cashews with a Class 2 reaction"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my EpiPen expires on September 15th and I only have one pen left since I used the other one during a reaction at a Thai restaurant"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Dr. Chen, my GP, told me to cut back on sodium because my blood pressure was borderline high at 138 over 88"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I've been enjoying cooking steamed fish with ginger and scallion at home, and I make my own salad dressings with lemon and olive oil instead of store-bought ones"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I don't need you to keep track of the sodium restriction anymore. My last home reading was 126 over 82, it's been trending down, and I've gotten the hang of managing it on my own"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize the different health and dietary details I've shared with you over our conversations?",
+      "expected_answer": "You shared confirmed tree nut allergies (walnuts Class 3, cashews Class 2) tested by Dr. Patel, your EpiPen expiration on September 15th with only one pen remaining after a Thai restaurant reaction, a sodium restriction advised by Dr. Chen due to borderline high blood pressure of 138/88, your sister's lactose intolerance diagnosis managed with enzyme pills, and your food preferences for steamed fish with ginger and scallion and homemade lemon-olive oil dressings. You later asked to stop tracking the sodium restriction since your blood pressure improved.",
+      "gold_memory_state": "Active: tree nut allergies (walnuts Class 3, cashews Class 2), EpiPen expiry September 15th with one pen remaining, food preferences (steamed fish with ginger/scallion, homemade lemon-olive oil dressings), sister's lactose intolerance. Removed: sodium restriction from Dr. Chen.",
+      "judge_rubric": {
+        "must_include": [
+          "tree nut allergies",
+          "walnuts",
+          "cashews",
+          "EpiPen",
+          "September 15",
+          "food preferences",
+          "sodium restriction was discussed then removed"
+        ],
+        "acceptable_paraphrases": [
+          "nut allergy",
+          "auto-injector"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming sodium restriction is still actively tracked"
+        ],
+        "harmless_extra": [
+          "Dr. Patel",
+          "Dr. Chen",
+          "sister's lactose intolerance",
+          "Thai restaurant incident"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the sodium restriction is presented as a current active concern rather than a previously discussed and then removed item.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I'm confirmed allergic to tree nuts, specifically walnuts with a Class 3 reaction and cashews with a Class 2 reaction"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my EpiPen expires on September 15th and I only have one pen left since I used the other one during a reaction at a Thai restaurant"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Dr. Chen, my GP, told me to cut back on sodium because my blood pressure was borderline high at 138 over 88"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I've been enjoying cooking steamed fish with ginger and scallion at home, and I make my own salad dressings with lemon and olive oil instead of store-bought ones"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I don't need you to keep track of the sodium restriction anymore. My last home reading was 126 over 82, it's been trending down, and I've gotten the hang of managing it on my own"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to stop tracking one of my health-related details. Which specific health concern did that apply to, and do my allergy details or EpiPen information stay the same?",
+      "expected_answer": "The removal applies to the sodium restriction that was advised by your GP. Your tree nut allergy details (walnuts Class 3, cashews Class 2) and EpiPen information (expires September 15th, one pen remaining) are unaffected and remain actively tracked.",
+      "gold_memory_state": "Removed: sodium restriction from Dr. Chen (GP). Retained and unaffected: tree nut allergies (walnuts Class 3, cashews Class 2), EpiPen expiry September 15th with one pen remaining, food preferences, sister's lactose intolerance.",
+      "judge_rubric": {
+        "must_include": [
+          "sodium restriction is the removed item",
+          "tree nut allergies remain",
+          "EpiPen information remains"
+        ],
+        "acceptable_paraphrases": [
+          "salt restriction",
+          "sodium intake concern",
+          "blood pressure dietary concern"
+        ],
+        "must_not_include": [
+          "allergy details were removed",
+          "EpiPen information was removed"
+        ],
+        "harmful_extra": [
+          "claiming any allergy or EpiPen detail was also removed",
+          "claiming food preferences were removed"
+        ],
+        "harmless_extra": [
+          "Dr. Chen",
+          "blood pressure improvement to 126/82",
+          "food preferences still tracked"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": "Fails if the response indicates that allergy details, EpiPen info, or food preferences were also removed or are no longer available.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I don't need you to keep track of the sodium restriction anymore. My last home reading was 126 over 82, it's been trending down, and I've gotten the hang of managing it on my own"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I'm confirmed allergic to tree nuts, specifically walnuts with a Class 3 reaction and cashews with a Class 2 reaction"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my EpiPen expires on September 15th and I only have one pen left since I used the other one during a reaction at a Thai restaurant"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to stop tracking one of my health-related details. Which specific health concern did that apply to, and do my allergy details or EpiPen information stay the same?",
+      "expected_answer": "The removal applies to the sodium restriction that was advised by your GP. Your tree nut allergy details (walnuts Class 3, cashews Class 2) and EpiPen information (expires September 15th, one pen remaining) are unaffected and remain actively tracked.",
+      "gold_memory_state": "Removed: sodium restriction from Dr. Chen (GP). Retained and unaffected: tree nut allergies (walnuts Class 3, cashews Class 2), EpiPen expiry September 15th with one pen remaining, food preferences, sister's lactose intolerance.",
+      "judge_rubric": {
+        "must_include": [
+          "sodium restriction is the removed item",
+          "tree nut allergies remain",
+          "EpiPen information remains"
+        ],
+        "acceptable_paraphrases": [
+          "salt restriction",
+          "sodium intake concern",
+          "blood pressure dietary concern"
+        ],
+        "must_not_include": [
+          "allergy details were removed",
+          "EpiPen information was removed"
+        ],
+        "harmful_extra": [
+          "claiming any allergy or EpiPen detail was also removed",
+          "claiming food preferences were removed"
+        ],
+        "harmless_extra": [
+          "Dr. Chen",
+          "blood pressure improvement to 126/82",
+          "food preferences still tracked"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": "Fails if the response indicates that allergy details, EpiPen info, or food preferences were also removed or are no longer available.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I don't need you to keep track of the sodium restriction anymore. My last home reading was 126 over 82, it's been trending down, and I've gotten the hang of managing it on my own"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I'm confirmed allergic to tree nuts, specifically walnuts with a Class 3 reaction and cashews with a Class 2 reaction"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my EpiPen expires on September 15th and I only have one pen left since I used the other one during a reaction at a Thai restaurant"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "I'm filling out an intake form at a new doctor's office that asks about active dietary restrictions and medication details. What health information do you have for me that I should include?",
+      "expected_answer": "You should include your tree nut allergies — walnuts with a Class 3 reaction and cashews with a Class 2 reaction — and your EpiPen that expires September 15th with only one pen remaining. You also enjoy steamed fish with ginger and scallion and homemade lemon-olive oil dressings as current food preferences.",
+      "gold_memory_state": "Active: tree nut allergies (walnuts Class 3, cashews Class 2), EpiPen expiry September 15th with one pen remaining, food preferences (steamed fish with ginger/scallion, homemade lemon-olive oil dressings). Removed/unavailable: sodium restriction from Dr. Chen — no longer tracked as an active medical concern.",
+      "judge_rubric": {
+        "must_include": [
+          "walnuts Class 3",
+          "cashews Class 2",
+          "EpiPen expires September 15",
+          "one pen remaining"
+        ],
+        "acceptable_paraphrases": [
+          "walnut allergy severity 3",
+          "cashew allergy severity 2",
+          "auto-injector",
+          "September 15 expiration"
+        ],
+        "must_not_include": [
+          "sodium restriction as active concern",
+          "138/88 blood pressure as current reading",
+          "reduce sodium intake as current medical directive"
+        ],
+        "harmful_extra": [
+          "listing sodium restriction as a current active dietary restriction on the form"
+        ],
+        "harmless_extra": [
+          "food preferences for steamed fish",
+          "homemade dressings",
+          "Dr. Patel as allergist",
+          "Thai restaurant anaphylactic incident"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the sodium restriction or Dr. Chen's blood pressure advice (138/88) is presented as a current active dietary restriction that should appear on the intake form.",
+        "over_forget": "Fails if the response refuses to provide tree nut allergy details, EpiPen information, or food preferences, or says no dietary/health information is available.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I'm confirmed allergic to tree nuts, specifically walnuts with a Class 3 reaction and cashews with a Class 2 reaction"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my EpiPen expires on September 15th and I only have one pen left since I used the other one during a reaction at a Thai restaurant"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I've been enjoying cooking steamed fish with ginger and scallion at home, and I make my own salad dressings with lemon and olive oil instead of store-bought ones"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I don't need you to keep track of the sodium restriction anymore. My last home reading was 126 over 82, it's been trending down, and I've gotten the hang of managing it on my own"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "I'm filling out an intake form at a new doctor's office that asks about active dietary restrictions and medication details. What health information do you have for me that I should include?",
+      "expected_answer": "You should include your tree nut allergies — walnuts with a Class 3 reaction and cashews with a Class 2 reaction — and your EpiPen that expires September 15th with only one pen remaining. You also enjoy steamed fish with ginger and scallion and homemade lemon-olive oil dressings as current food preferences.",
+      "gold_memory_state": "Active: tree nut allergies (walnuts Class 3, cashews Class 2), EpiPen expiry September 15th with one pen remaining, food preferences (steamed fish with ginger/scallion, homemade lemon-olive oil dressings). Removed/unavailable: sodium restriction from Dr. Chen — no longer tracked as an active medical concern.",
+      "judge_rubric": {
+        "must_include": [
+          "walnuts Class 3",
+          "cashews Class 2",
+          "EpiPen expires September 15",
+          "one pen remaining"
+        ],
+        "acceptable_paraphrases": [
+          "walnut allergy severity 3",
+          "cashew allergy severity 2",
+          "auto-injector",
+          "September 15 expiration"
+        ],
+        "must_not_include": [
+          "sodium restriction as active concern",
+          "138/88 blood pressure as current reading",
+          "reduce sodium intake as current medical directive"
+        ],
+        "harmful_extra": [
+          "listing sodium restriction as a current active dietary restriction on the form"
+        ],
+        "harmless_extra": [
+          "food preferences for steamed fish",
+          "homemade dressings",
+          "Dr. Patel as allergist",
+          "Thai restaurant anaphylactic incident"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the sodium restriction or Dr. Chen's blood pressure advice (138/88) is presented as a current active dietary restriction that should appear on the intake form.",
+        "over_forget": "Fails if the response refuses to provide tree nut allergy details, EpiPen information, or food preferences, or says no dietary/health information is available.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I'm confirmed allergic to tree nuts, specifically walnuts with a Class 3 reaction and cashews with a Class 2 reaction"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my EpiPen expires on September 15th and I only have one pen left since I used the other one during a reaction at a Thai restaurant"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I've been enjoying cooking steamed fish with ginger and scallion at home, and I make my own salad dressings with lemon and olive oil instead of store-bought ones"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I don't need you to keep track of the sodium restriction anymore. My last home reading was 126 over 82, it's been trending down, and I've gotten the hang of managing it on my own"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "A gym health form asks me to list my active physician-directed dietary restrictions. Which of the following should I enter?",
+      "candidate_options": [
+        "Tree nut allergy: walnuts (Class 3), cashews (Class 2)",
+        "Sodium restriction per Dr. Chen due to blood pressure of 138/88",
+        "Sodium restriction per Dr. Chen due to blood pressure of 126/82",
+        "Peanut allergy (Class 4)"
+      ],
+      "expected_answer": "Tree nut allergy: walnuts (Class 3), cashews (Class 2)",
+      "gold_memory_state": "Active dietary/medical restrictions: tree nut allergies (walnuts Class 3, cashews Class 2). Sodium restriction has been removed from tracking. Peanut allergy (Class 4) belongs to Tom, not the user.",
+      "judge_rubric": {
+        "must_include": [
+          "tree nut allergy with walnuts Class 3 and cashews Class 2"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "sodium restriction as active",
+          "peanut allergy as the user's own"
+        ],
+        "harmful_extra": [
+          "selecting sodium restriction option",
+          "selecting peanut allergy option"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'Peanut allergy (Class 4)' is Tom's allergy mentioned by Carla, not the user's own allergy — it is a same-topic different-entity distractor. assistant echo: 'Sodium restriction per Dr. Chen due to blood pressure of 126/82' echoes the assistant's summary of the improved reading in the context of the removal discussion, blending the removed concern with the newer reading. The original sodium restriction (138/88) is the stale pre-removal value.",
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects either sodium restriction option as an active dietary restriction.",
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the 138/88 sodium restriction as currently active.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I'm confirmed allergic to tree nuts, specifically walnuts with a Class 3 reaction and cashews with a Class 2 reaction"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I don't need you to keep track of the sodium restriction anymore. My last home reading was 126 over 82, it's been trending down, and I've gotten the hang of managing it on my own"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Carla mentioned that one of the other guests, someone named Tom, apparently has a peanut allergy — she said his allergist rated it as a Class 4 reaction"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "A gym health form asks me to list my active physician-directed dietary restrictions. Which of the following should I enter?",
+      "candidate_options": [
+        "Tree nut allergy: walnuts (Class 3), cashews (Class 2)",
+        "Sodium restriction per Dr. Chen due to blood pressure of 138/88",
+        "Sodium restriction per Dr. Chen due to blood pressure of 126/82",
+        "Peanut allergy (Class 4)"
+      ],
+      "expected_answer": "Tree nut allergy: walnuts (Class 3), cashews (Class 2)",
+      "gold_memory_state": "Active dietary/medical restrictions: tree nut allergies (walnuts Class 3, cashews Class 2). Sodium restriction has been removed from tracking. Peanut allergy (Class 4) belongs to Tom, not the user.",
+      "judge_rubric": {
+        "must_include": [
+          "tree nut allergy with walnuts Class 3 and cashews Class 2"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "sodium restriction as active",
+          "peanut allergy as the user's own"
+        ],
+        "harmful_extra": [
+          "selecting sodium restriction option",
+          "selecting peanut allergy option"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'Peanut allergy (Class 4)' is Tom's allergy mentioned by Carla, not the user's own allergy — it is a same-topic different-entity distractor. assistant echo: 'Sodium restriction per Dr. Chen due to blood pressure of 126/82' echoes the assistant's summary of the improved reading in the context of the removal discussion, blending the removed concern with the newer reading. The original sodium restriction (138/88) is the stale pre-removal value.",
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects either sodium restriction option as an active dietary restriction.",
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the 138/88 sodium restriction as currently active.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I'm confirmed allergic to tree nuts, specifically walnuts with a Class 3 reaction and cashews with a Class 2 reaction"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I don't need you to keep track of the sodium restriction anymore. My last home reading was 126 over 82, it's been trending down, and I've gotten the hang of managing it on my own"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Carla mentioned that one of the other guests, someone named Tom, apparently has a peanut allergy — she said his allergist rated it as a Class 4 reaction"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm preparing a safety checklist for a potluck dinner I'm hosting next month. I need to account for my own allergy risks and make sure I have emergency supplies ready. Draft a three-item checklist that covers what specific ingredients to ban from the menu, what emergency medication status I need to address before the event, and what cooking approach I should use for dishes I'm preparing myself.",
+      "expected_answer": "1. Ban walnuts and cashews (and all tree nuts to be safe) from the potluck menu — walnuts trigger a Class 3 reaction and cashews a Class 2 reaction, so even trace amounts in sauces, baked goods, or curry pastes are dangerous. 2. Renew your EpiPen prescription before the event — your current pen expires September 15th and you only have one remaining, so contact your doctor (ideally by early August) to ensure you have a fresh, unexpired backup on hand. 3. Prepare your own dishes using your preferred light cooking style — steamed fish with ginger and scallion and salads with homemade lemon-olive oil dressing are safe, allergen-controlled options you already enjoy.",
+      "gold_memory_state": "Active: tree nut allergies (walnuts Class 3, cashews Class 2), EpiPen expiry September 15th with one pen remaining and early-August renewal reminder, food preferences (steamed fish with ginger/scallion, homemade lemon-olive oil dressings). Removed: sodium restriction is not an active medical concern and should not appear as a dietary restriction on the checklist.",
+      "judge_rubric": {
+        "must_include": [
+          "walnuts and cashews as banned ingredients",
+          "EpiPen expiry September 15 and need for renewal",
+          "steamed fish or homemade dressings as cooking approach"
+        ],
+        "acceptable_paraphrases": [
+          "tree nut ban",
+          "auto-injector prescription renewal",
+          "light cooking with ginger and scallion"
+        ],
+        "must_not_include": [
+          "sodium restriction as an active checklist item",
+          "limit salt intake as a medical requirement"
+        ],
+        "harmful_extra": [
+          "including sodium restriction as an active dietary concern on the checklist",
+          "attributing a peanut allergy to the user"
+        ],
+        "harmless_extra": [
+          "mentioning Class 3 and Class 2 severity levels",
+          "mentioning the Thai restaurant incident as context for caution",
+          "mentioning Dr. Patel or Dr. Chen"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the checklist includes sodium restriction or Dr. Chen's blood pressure advice as an active dietary concern to manage at the potluck.",
+        "over_forget": "Fails if the response omits tree nut allergy details, EpiPen information, or food preferences from the checklist.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User is allergic to walnuts (Class 3) and cashews (Class 2), both tree nuts requiring strict avoidance.",
+        "Fact 2: User's EpiPen expires September 15th with only one pen remaining, and an early-August renewal reminder was planned.",
+        "Fact 3: User enjoys cooking steamed fish with ginger and scallion and making homemade lemon-olive oil dressings.",
+        "Fact 4: The sodium restriction is no longer an active tracked concern per the user's request.",
+        "Inference: A potluck safety checklist must combine the allergen ban (from Fact 1), the EpiPen renewal urgency relative to the event timing (from Fact 2), and the user's preferred safe cooking methods (from Fact 3), while excluding sodium restriction (Fact 4) from active dietary concerns.",
+        "Derived value: A three-item checklist addressing ingredient bans (walnuts/cashews), emergency medication renewal (EpiPen before September 15th), and personal dish preparation (steamed fish, homemade dressings)."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I'm confirmed allergic to tree nuts, specifically walnuts with a Class 3 reaction and cashews with a Class 2 reaction"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my EpiPen expires on September 15th and I only have one pen left since I used the other one during a reaction at a Thai restaurant"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I've been enjoying cooking steamed fish with ginger and scallion at home, and I make my own salad dressings with lemon and olive oil instead of store-bought ones"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I don't need you to keep track of the sodium restriction anymore. My last home reading was 126 over 82, it's been trending down, and I've gotten the hang of managing it on my own"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm preparing a safety checklist for a potluck dinner I'm hosting next month. I need to account for my own allergy risks and make sure I have emergency supplies ready. Draft a three-item checklist that covers what specific ingredients to ban from the menu, what emergency medication status I need to address before the event, and what cooking approach I should use for dishes I'm preparing myself.",
+      "expected_answer": "1. Ban walnuts and cashews (and all tree nuts to be safe) from the potluck menu — walnuts trigger a Class 3 reaction and cashews a Class 2 reaction, so even trace amounts in sauces, baked goods, or curry pastes are dangerous. 2. Renew your EpiPen prescription before the event — your current pen expires September 15th and you only have one remaining, so contact your doctor (ideally by early August) to ensure you have a fresh, unexpired backup on hand. 3. Prepare your own dishes using your preferred light cooking style — steamed fish with ginger and scallion and salads with homemade lemon-olive oil dressing are safe, allergen-controlled options you already enjoy.",
+      "gold_memory_state": "Active: tree nut allergies (walnuts Class 3, cashews Class 2), EpiPen expiry September 15th with one pen remaining and early-August renewal reminder, food preferences (steamed fish with ginger/scallion, homemade lemon-olive oil dressings). Removed: sodium restriction is not an active medical concern and should not appear as a dietary restriction on the checklist.",
+      "judge_rubric": {
+        "must_include": [
+          "walnuts and cashews as banned ingredients",
+          "EpiPen expiry September 15 and need for renewal",
+          "steamed fish or homemade dressings as cooking approach"
+        ],
+        "acceptable_paraphrases": [
+          "tree nut ban",
+          "auto-injector prescription renewal",
+          "light cooking with ginger and scallion"
+        ],
+        "must_not_include": [
+          "sodium restriction as an active checklist item",
+          "limit salt intake as a medical requirement"
+        ],
+        "harmful_extra": [
+          "including sodium restriction as an active dietary concern on the checklist",
+          "attributing a peanut allergy to the user"
+        ],
+        "harmless_extra": [
+          "mentioning Class 3 and Class 2 severity levels",
+          "mentioning the Thai restaurant incident as context for caution",
+          "mentioning Dr. Patel or Dr. Chen"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the checklist includes sodium restriction or Dr. Chen's blood pressure advice as an active dietary concern to manage at the potluck.",
+        "over_forget": "Fails if the response omits tree nut allergy details, EpiPen information, or food preferences from the checklist.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User is allergic to walnuts (Class 3) and cashews (Class 2), both tree nuts requiring strict avoidance.",
+        "Fact 2: User's EpiPen expires September 15th with only one pen remaining, and an early-August renewal reminder was planned.",
+        "Fact 3: User enjoys cooking steamed fish with ginger and scallion and making homemade lemon-olive oil dressings.",
+        "Fact 4: The sodium restriction is no longer an active tracked concern per the user's request.",
+        "Inference: A potluck safety checklist must combine the allergen ban (from Fact 1), the EpiPen renewal urgency relative to the event timing (from Fact 2), and the user's preferred safe cooking methods (from Fact 3), while excluding sodium restriction (Fact 4) from active dietary concerns.",
+        "Derived value: A three-item checklist addressing ingredient bans (walnuts/cashews), emergency medication renewal (EpiPen before September 15th), and personal dish preparation (steamed fish, homemade dressings)."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I'm confirmed allergic to tree nuts, specifically walnuts with a Class 3 reaction and cashews with a Class 2 reaction"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my EpiPen expires on September 15th and I only have one pen left since I used the other one during a reaction at a Thai restaurant"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I've been enjoying cooking steamed fish with ginger and scallion at home, and I make my own salad dressings with lemon and olive oil instead of store-bought ones"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I don't need you to keep track of the sodium restriction anymore. My last home reading was 126 over 82, it's been trending down, and I've gotten the hang of managing it on my own"
+        }
+      ]
+    }
+  ]
+}

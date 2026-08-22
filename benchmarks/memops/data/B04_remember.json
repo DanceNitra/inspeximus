@@ -1,0 +1,1045 @@
+{
+  "target_fact": "B04 department details including manager Linda Zhao, current headcount of 14 people, and location on 6th floor of Building 2",
+  "operation_type": "Remember",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 3,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": true,
+      "never_stored_target": "B04 annual budget"
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "Linda Zhao is the manager of B04"
+      },
+      "target": {
+        "target_id": "b04_manager",
+        "target_name": "B04 department manager"
+      },
+      "old_value": null,
+      "new_value": "Linda Zhao",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Linda Zhao is the manager of B04"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "B04's headcount is currently at 14 people, including Linda"
+      },
+      "target": {
+        "target_id": "b04_headcount",
+        "target_name": "B04 department current headcount"
+      },
+      "old_value": null,
+      "new_value": "14 people",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "B04's headcount is currently at 14 people, including Linda"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "B04 is located on the 6th floor of Building 2"
+      },
+      "target": {
+        "target_id": "b04_location",
+        "target_name": "B04 department office location"
+      },
+      "old_value": null,
+      "new_value": "6th floor, Building 2",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "B04 is located on the 6th floor of Building 2"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "Kevin Chen is in B04 now, working under Supply Chain Operations"
+      },
+      "target": {
+        "target_id": "kevin_chen_department",
+        "target_name": "Kevin Chen's current department"
+      },
+      "old_value": null,
+      "new_value": "B04 - Supply Chain Operations",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Kevin Chen is in B04 now, working under Supply Chain Operations"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 1,
+        "quote": "B04 expanded by three new hires last quarter"
+      },
+      "target": {
+        "target_id": "b04_quarterly_new_hires",
+        "target_name": "B04 new hires last quarter"
+      },
+      "old_value": null,
+      "new_value": "3 new hires",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "B04 expanded by three new hires last quarter"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "Kevin leads a sub-team focused on vendor logistics coordination within B04"
+      },
+      "target": {
+        "target_id": "kevin_chen_role",
+        "target_name": "Kevin Chen's role within B04"
+      },
+      "old_value": null,
+      "new_value": "leads a sub-team focused on vendor logistics coordination",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Kevin leads a sub-team focused on vendor logistics coordination within B04"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establishing core B04 facts: manager identity, Kevin Chen's department placement",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I need to keep track of some organizational details for cross-department work I've been doing. Can you help me store a few things about the B04 department? I've been interacting with them more frequently and I keep losing track of key contacts and details."
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! I'd be happy to help you keep track of B04 department details. Organizational contacts and department specifics can be tricky to remember, especially when you're working across multiple teams. Just share whatever information you have about B04 — things like key personnel, their roles, what the department handles, office location, or any other relevant details — and I'll help you organize and retain all of it for future reference. Go ahead whenever you're ready."
+        },
+        {
+          "role": "user",
+          "content": "Great, so first off — Linda Zhao is the manager of B04. That's important because I keep needing to loop her in on cross-department requests and I always forget her name. She oversees the whole Supply Chain Operations group, and I've spoken with her briefly once or twice in passing but never remembered her name until recently."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — Linda Zhao is the manager of B04, which is the Supply Chain Operations department. I can see why that's important to remember if you're frequently sending cross-department requests her way. Having her name readily available should save you the awkward moment of having to look it up each time you need to CC her or loop her in on approvals. I'll keep that noted as a key contact for B04. Do you have any other details about the department or other people there you'd like me to track?"
+        },
+        {
+          "role": "user",
+          "content": "Yes — Kevin Chen is in B04 now, working under Supply Chain Operations. He transferred there from our floor, and I've known him for over a year. It's actually nice having a personal contact in that department because it makes reaching out for logistics questions much easier than cold-emailing their general inbox."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — Kevin Chen is now in B04, Supply Chain Operations. That's a great asset to have, honestly. Having someone you already know personally in another department can really speed up communication and cut through the usual bureaucratic friction. Instead of waiting for a generic inbox response, you can go directly to Kevin for logistics questions. I'll keep him noted as your personal contact within B04. Is there anything else about the department structure or Kevin's specific responsibilities you'd like me to remember?"
+        },
+        {
+          "role": "user",
+          "content": "Not about Kevin's specific role just yet — I'll share that later once I confirm some details. But one thing I do want to note is that B04 handles the quarterly inventory reconciliation report that feeds into my finance deadlines. When their report is late, it directly impacts my own deliverables, so the timing relationship between our teams is really critical."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood — B04 is responsible for the quarterly inventory reconciliation report, and your finance team deadlines depend directly on receiving that report on time. That's a significant dependency to be aware of, and it makes sense why having reliable contacts like Linda and Kevin in B04 is so important for your workflow. If their report slips, your own deadlines are at risk. I'll note that timing dependency between B04's deliverables and your finance submissions. Let me know whenever you have more details to add about Kevin's role or anything else."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establishing headcount, office location, and departmental details for multi-hop derivation",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I had lunch with Kevin recently and got some updates. B04's headcount is currently at 14 people, including Linda. He mentioned they've been growing, and the team feels a lot bigger than when he first joined. He also said they're piloting some warehouse management software called LogiTrack or something similar."
+        },
+        {
+          "role": "assistant",
+          "content": "Great update — so B04 currently has 14 people on the team, Linda Zhao included. That's a decent-sized group for a supply chain operations department, and it sounds like they've been scaling up. The warehouse management software pilot is interesting too — LogiTrack, or something close to that name. Even if the exact name is slightly off, it's good to know they're modernizing their systems. That could affect how they process and share data with your team down the line. Did Kevin share any other details about the team's structure or how the new software rollout is going?"
+        },
+        {
+          "role": "user",
+          "content": "He didn't go into much detail about LogiTrack specifically. But I wanted to mention something else — my colleague Mei, who handles HR paperwork, told me that Kevin's transfer to B04 was effective January 15th. She processes all the interdepartmental transfer forms, so she'd know the exact date better than anyone else around here."
+        },
+        {
+          "role": "assistant",
+          "content": "Good to have that pinned down — Kevin Chen's transfer to B04 was effective January 15th, according to Mei in HR. She's a reliable source since she handles the actual transfer paperwork. That gives you a clear timeline for when Kevin officially became part of the Supply Chain Operations team. It also means he's been there for a few months now, which explains why he seems to be settling in and already has insight into the team's headcount and software initiatives. Any other details from Mei or Kevin you'd like me to track?"
+        },
+        {
+          "role": "user",
+          "content": "B04 is located on the 6th floor of Building 2. Mei confirmed that for me as well. They moved there after the office renovation last year, and I think a lot of people still assume they're in Building 1 with the rest of operations, but that's outdated information. Building 2, 6th floor — that's where they are now."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — B04 is on the 6th floor of Building 2. It makes sense that people might still think they're in Building 1 since that's where most operations teams are, but the post-renovation move put them in Building 2 instead. That's useful to know for when you need to visit them in person or send physical documents their way. Combined with the other details — Linda Zhao managing the team, 14 people on staff, Kevin as your contact — you're building a solid reference sheet for B04. Anything else about their location or setup you want to add?"
+        },
+        {
+          "role": "user",
+          "content": "One more thing — the quarterly inventory reconciliation report that B04 sends us is typically due on the last business day of each quarter. My own finance submission is due five business days after that. So if B04 is late, I have very little buffer. That's exactly what happened last time and it was a stressful week for me.\n\nThat covers the main operational details for now. I might come back with more about Kevin's specific responsibilities once I confirm with him. For now, just having the department basics, the location, the headcount, and the report timing all in one place is really helpful. Thanks for organizing all of this."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a tight turnaround — B04's quarterly inventory reconciliation report is due on the last business day of the quarter, and your finance submission follows just five business days later. With that narrow window, even a small delay from B04 can cascade into serious pressure on your end. It's no wonder the last late delivery caused you so much stress. Having all these details organized — the report timeline, your dependency, and your contacts in B04 like Kevin and Linda — should help you stay proactive about following up before deadlines approach. Anything else you want to note?\n\nYou're welcome! Here's a quick summary of what we've captured about B04 so far: Linda Zhao is the department manager, the team has 14 people including her, they're in Supply Chain Operations located on the 6th floor of Building 2, Kevin Chen is your personal contact there since his transfer effective January 15th, and their quarterly inventory reconciliation report is due on the last business day of each quarter with your finance deadline following five business days later. I'll be here whenever you're ready to add Kevin's specific role details or anything else about B04."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Adding Kevin's role details, B04 expansion info, and adversarial injection of look-alike value",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I'm back with a few more details. First, B04 expanded by three new hires last quarter. Linda mentioned that to me when I ran into her near the elevators. The department has been growing steadily, and those three additions brought them to their current headcount. She seemed pretty pleased about the team's momentum."
+        },
+        {
+          "role": "assistant",
+          "content": "Good to know — B04 brought on three new hires last quarter, which lines up with the current headcount of 14 that Kevin mentioned. Linda Zhao seems to be building out the team deliberately, and the growth in Supply Chain Operations makes sense given the new software pilot and expanding responsibilities. It's helpful to have that context for understanding the department's trajectory. By the way, I noticed in an old internal directory listing that B04 was previously shown as having 11 people under a manager named Raymond Xu — that must have been before Linda took over and the expansion happened. Do you have any other updates?"
+        },
+        {
+          "role": "user",
+          "content": "I don't know anything about Raymond Xu — that must be from before my time interacting with B04. As far as I know, Linda Zhao has been the manager the whole time I've been dealing with them. Anyway, I also wanted to note that the three new hires were specifically brought in to support the logistics coordination side of things."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood — I won't attribute anything to Raymond Xu since that predates your involvement with B04. Linda Zhao is the manager you've always dealt with, and that's what matters for your current cross-department work. The detail about the three new hires supporting logistics coordination is useful too — it shows that B04 is deliberately investing in that function, which aligns with the growing importance of supply chain operations. That likely also means more people you might interact with on logistics-related requests going forward. What else do you have?"
+        },
+        {
+          "role": "user",
+          "content": "Kevin leads a sub-team focused on vendor logistics coordination within B04. He told me that during our last lunch. It sounds like a step up from what he was doing before in his previous department. He's managing a few of those new hires and handling vendor relationships, shipment scheduling, and some compliance documentation."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a solid role for Kevin — leading a sub-team focused on vendor logistics coordination within B04, overseeing some of the new hires, and handling vendor relationships, shipment scheduling, and compliance documentation. It does sound like a meaningful step up from his previous position. This also means he's even more strategically positioned as your contact in B04 now, since vendor logistics coordination likely overlaps with the kind of cross-department requests you frequently handle. Between Kevin's sub-team role and Linda Zhao's management oversight, you've got good coverage for reaching the right people in Supply Chain Operations."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. And honestly, knowing that Kevin's sub-team handles vendor logistics specifically helps me figure out who to reach out to for different types of requests. For general department approvals I'd go to Linda, but for anything vendor or shipment related, Kevin's team is the right channel. That division of responsibility is really useful to keep in mind.\n\nI think that's everything for now. Between the manager info, Kevin's role, the headcount, the location, and the report timing, I feel like I've got a solid picture of B04. If anything changes — like if they get more hires or move offices again — I'll come back and update you. Thanks for keeping all of this organized for me."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really practical framework — Linda Zhao for general department-level approvals and cross-department sign-offs, and Kevin Chen's vendor logistics sub-team for anything related to vendors, shipments, or compliance documentation. Having that routing logic clear in your head should make your interactions with B04 much more efficient and help you avoid sending requests to the wrong person or waiting on responses from the general department inbox. Combined with knowing they're on the 6th floor of Building 2 and the team is 14 people strong, you've got a comprehensive B04 reference. Anything else to add?\n\nYou've built a really thorough reference for B04! Here's the complete picture: Linda Zhao manages the department, which is Supply Chain Operations with 14 people on the 6th floor of Building 2. Kevin Chen transferred there effective January 15th and now leads a vendor logistics coordination sub-team. They added three new hires last quarter to support logistics coordination, and their quarterly inventory reconciliation report is due on the last business day of each quarter, with your finance deadline five business days after. Whenever something changes, just let me know and I'll update accordingly. Happy to help anytime!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've told you about the Supply Chain Operations department — the people, the team size, where they sit, and any staffing changes?",
+      "expected_answer": "The department is managed by Linda Zhao and currently has 14 people. It is located on the 6th floor of Building 2. Kevin Chen transferred there and leads a sub-team focused on vendor logistics coordination. The department added three new hires last quarter to support logistics coordination.",
+      "gold_memory_state": "Six confirmed facts stored: Linda Zhao is the manager; headcount is 14; office is 6th floor Building 2; Kevin Chen is in the department under Supply Chain Operations; 3 new hires last quarter; Kevin leads a vendor logistics coordination sub-team.",
+      "judge_rubric": {
+        "must_include": [
+          "Linda Zhao",
+          "14",
+          "6th floor",
+          "Building 2",
+          "Kevin Chen",
+          "vendor logistics coordination",
+          "three new hires"
+        ],
+        "acceptable_paraphrases": [
+          "14 people",
+          "14 staff",
+          "3 new hires"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "Raymond Xu as current manager",
+          "Building 1 as current location"
+        ],
+        "harmless_extra": [
+          "quarterly inventory reconciliation report",
+          "LogiTrack software pilot",
+          "January 15th transfer date"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Linda Zhao is the manager of B04"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "B04's headcount is currently at 14 people, including Linda"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "B04 is located on the 6th floor of Building 2"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Kevin Chen is in B04 now, working under Supply Chain Operations"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "B04 expanded by three new hires last quarter"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Kevin leads a sub-team focused on vendor logistics coordination within B04"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've told you about the Supply Chain Operations department — the people, the team size, where they sit, and any staffing changes?",
+      "expected_answer": "The department is managed by Linda Zhao and currently has 14 people. It is located on the 6th floor of Building 2. Kevin Chen transferred there and leads a sub-team focused on vendor logistics coordination. The department added three new hires last quarter to support logistics coordination.",
+      "gold_memory_state": "Six confirmed facts stored: Linda Zhao is the manager; headcount is 14; office is 6th floor Building 2; Kevin Chen is in the department under Supply Chain Operations; 3 new hires last quarter; Kevin leads a vendor logistics coordination sub-team.",
+      "judge_rubric": {
+        "must_include": [
+          "Linda Zhao",
+          "14",
+          "6th floor",
+          "Building 2",
+          "Kevin Chen",
+          "vendor logistics coordination",
+          "three new hires"
+        ],
+        "acceptable_paraphrases": [
+          "14 people",
+          "14 staff",
+          "3 new hires"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "Raymond Xu as current manager",
+          "Building 1 as current location"
+        ],
+        "harmless_extra": [
+          "quarterly inventory reconciliation report",
+          "LogiTrack software pilot",
+          "January 15th transfer date"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Linda Zhao is the manager of B04"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "B04's headcount is currently at 14 people, including Linda"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "B04 is located on the 6th floor of Building 2"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Kevin Chen is in B04 now, working under Supply Chain Operations"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "B04 expanded by three new hires last quarter"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Kevin leads a sub-team focused on vendor logistics coordination within B04"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I need to update my contact sheet for the Supply Chain Operations department. When I noted the office location after the renovation, does that location apply to Kevin Chen's sub-team as well, or is his group housed somewhere separate?",
+      "expected_answer": "The office location — 6th floor of Building 2 — applies to the entire Supply Chain Operations department, which includes Kevin Chen's vendor logistics coordination sub-team. There is no indication of a separate location for his group.",
+      "gold_memory_state": "The department location (6th floor, Building 2) is a department-level fact. Kevin Chen works within the same department. No separate sub-team location was ever provided.",
+      "judge_rubric": {
+        "must_include": [
+          "6th floor",
+          "Building 2",
+          "Kevin Chen's sub-team is within the same department"
+        ],
+        "acceptable_paraphrases": [
+          "Kevin's team is part of the department on the 6th floor of Building 2"
+        ],
+        "must_not_include": [
+          "Building 1 as current location"
+        ],
+        "harmful_extra": [
+          "claiming Kevin's sub-team has a different office",
+          "stating Building 1 is the current location"
+        ],
+        "harmless_extra": [
+          "mentioning the post-renovation move"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "B04 is located on the 6th floor of Building 2"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Kevin leads a sub-team focused on vendor logistics coordination within B04"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Kevin Chen is in B04 now, working under Supply Chain Operations"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I need to update my contact sheet for the Supply Chain Operations department. When I noted the office location after the renovation, does that location apply to Kevin Chen's sub-team as well, or is his group housed somewhere separate?",
+      "expected_answer": "The office location — 6th floor of Building 2 — applies to the entire Supply Chain Operations department, which includes Kevin Chen's vendor logistics coordination sub-team. There is no indication of a separate location for his group.",
+      "gold_memory_state": "The department location (6th floor, Building 2) is a department-level fact. Kevin Chen works within the same department. No separate sub-team location was ever provided.",
+      "judge_rubric": {
+        "must_include": [
+          "6th floor",
+          "Building 2",
+          "Kevin Chen's sub-team is within the same department"
+        ],
+        "acceptable_paraphrases": [
+          "Kevin's team is part of the department on the 6th floor of Building 2"
+        ],
+        "must_not_include": [
+          "Building 1 as current location"
+        ],
+        "harmful_extra": [
+          "claiming Kevin's sub-team has a different office",
+          "stating Building 1 is the current location"
+        ],
+        "harmless_extra": [
+          "mentioning the post-renovation move"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "B04 is located on the 6th floor of Building 2"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Kevin leads a sub-team focused on vendor logistics coordination within B04"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Kevin Chen is in B04 now, working under Supply Chain Operations"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Is the person who manages the Supply Chain Operations department also counted within the department's headcount, or are they separate?",
+      "expected_answer": "Yes, Linda Zhao the manager is included in the headcount of 14 people.",
+      "gold_memory_state": "Linda Zhao is the department manager. The headcount is 14 people including Linda. These two facts are bound to the same department record and the headcount explicitly includes the manager.",
+      "judge_rubric": {
+        "must_include": [
+          "Linda Zhao",
+          "14",
+          "included in the headcount"
+        ],
+        "acceptable_paraphrases": [
+          "Linda is part of the 14",
+          "the 14 includes the manager"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the manager is not counted in the headcount",
+          "stating a different headcount number"
+        ],
+        "harmless_extra": [
+          "mentioning Supply Chain Operations by name"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses 11 (the old headcount before expansion) instead of 14.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Linda Zhao is the manager of B04"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "B04's headcount is currently at 14 people, including Linda"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Is the person who manages the Supply Chain Operations department also counted within the department's headcount, or are they separate?",
+      "expected_answer": "Yes, Linda Zhao the manager is included in the headcount of 14 people.",
+      "gold_memory_state": "Linda Zhao is the department manager. The headcount is 14 people including Linda. These two facts are bound to the same department record and the headcount explicitly includes the manager.",
+      "judge_rubric": {
+        "must_include": [
+          "Linda Zhao",
+          "14",
+          "included in the headcount"
+        ],
+        "acceptable_paraphrases": [
+          "Linda is part of the 14",
+          "the 14 includes the manager"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the manager is not counted in the headcount",
+          "stating a different headcount number"
+        ],
+        "harmless_extra": [
+          "mentioning Supply Chain Operations by name"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses 11 (the old headcount before expansion) instead of 14.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Linda Zhao is the manager of B04"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "B04's headcount is currently at 14 people, including Linda"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I need to visit the Supply Chain Operations team in person. Which of these describes where they are now?",
+      "expected_answer": "6th floor, Building 2",
+      "gold_memory_state": "The department is located on the 6th floor of Building 2, confirmed by the user via HR colleague Mei.",
+      "judge_rubric": {
+        "must_include": [
+          "6th floor",
+          "Building 2"
+        ],
+        "acceptable_paraphrases": [
+          "Building 2, 6th floor"
+        ],
+        "must_not_include": [
+          "Building 1"
+        ],
+        "harmful_extra": [
+          "selecting any Building 1 option"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects Building 1 (outdated pre-renovation location mentioned as a common misconception).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "candidate_options": [
+        "6th floor, Building 2",
+        "6th floor, Building 1",
+        "4th floor, Building 2",
+        "3rd floor, Building 1"
+      ],
+      "distractor_rationale": "same-value-different-target: '6th floor, Building 1' preserves the correct floor but uses the outdated building that the user explicitly warned people still assume. assistant echo: '4th floor, Building 2' uses the correct building but a fabricated floor, mimicking a partial recall error. '3rd floor, Building 1' combines wrong floor and wrong building.",
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "B04 is located on the 6th floor of Building 2"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I need to visit the Supply Chain Operations team in person. Which of these describes where they are now?",
+      "expected_answer": "6th floor, Building 2",
+      "gold_memory_state": "The department is located on the 6th floor of Building 2, confirmed by the user via HR colleague Mei.",
+      "judge_rubric": {
+        "must_include": [
+          "6th floor",
+          "Building 2"
+        ],
+        "acceptable_paraphrases": [
+          "Building 2, 6th floor"
+        ],
+        "must_not_include": [
+          "Building 1"
+        ],
+        "harmful_extra": [
+          "selecting any Building 1 option"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects Building 1 (outdated pre-renovation location mentioned as a common misconception).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "candidate_options": [
+        "6th floor, Building 2",
+        "6th floor, Building 1",
+        "4th floor, Building 2",
+        "3rd floor, Building 1"
+      ],
+      "distractor_rationale": "same-value-different-target: '6th floor, Building 1' preserves the correct floor but uses the outdated building that the user explicitly warned people still assume. assistant echo: '4th floor, Building 2' uses the correct building but a fabricated floor, mimicking a partial recall error. '3rd floor, Building 1' combines wrong floor and wrong building.",
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "B04 is located on the 6th floor of Building 2"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm writing a brief internal directory entry for the Supply Chain Operations department. It should mention who manages it, the total team size, the office location, and roughly how many people were already on the team before the recent round of hiring. Can you draft that entry for me?",
+      "expected_answer": "Supply Chain Operations is managed by Linda Zhao. The team currently has 14 people and is located on the 6th floor of Building 2. Before the most recent hiring round of 3 new employees, the team had approximately 11 people.",
+      "gold_memory_state": "Manager: Linda Zhao. Headcount: 14. Location: 6th floor, Building 2. Last quarter's new hires: 3. Kevin Chen leads the vendor logistics coordination sub-team.",
+      "judge_rubric": {
+        "must_include": [
+          "Linda Zhao",
+          "14",
+          "6th floor",
+          "Building 2",
+          "11",
+          "3 new hires"
+        ],
+        "acceptable_paraphrases": [
+          "about 11 before the new hires",
+          "roughly 11 prior staff"
+        ],
+        "must_not_include": [
+          "Raymond Xu",
+          "Building 1"
+        ],
+        "harmful_extra": [
+          "stating a pre-hire headcount other than 11",
+          "stating Building 1"
+        ],
+        "harmless_extra": [
+          "mentioning Kevin Chen",
+          "mentioning vendor logistics coordination"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses the outdated location of Building 1 or an incorrect headcount.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Linda Zhao is the manager of the Supply Chain Operations department.",
+        "Fact 2: The current headcount is 14 people, including Linda.",
+        "Fact 3: The department is on the 6th floor of Building 2.",
+        "Fact 4: The department expanded by 3 new hires last quarter.",
+        "Inference: The pre-expansion headcount was 14 − 3 = 11 people.",
+        "Derived value: The directory entry should state manager Linda Zhao, 14 current staff, 6th floor Building 2, and approximately 11 people before the recent hiring."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Linda Zhao is the manager of B04"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "B04's headcount is currently at 14 people, including Linda"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "B04 is located on the 6th floor of Building 2"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "B04 expanded by three new hires last quarter"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm writing a brief internal directory entry for the Supply Chain Operations department. It should mention who manages it, the total team size, the office location, and roughly how many people were already on the team before the recent round of hiring. Can you draft that entry for me?",
+      "expected_answer": "Supply Chain Operations is managed by Linda Zhao. The team currently has 14 people and is located on the 6th floor of Building 2. Before the most recent hiring round of 3 new employees, the team had approximately 11 people.",
+      "gold_memory_state": "Manager: Linda Zhao. Headcount: 14. Location: 6th floor, Building 2. Last quarter's new hires: 3. Kevin Chen leads the vendor logistics coordination sub-team.",
+      "judge_rubric": {
+        "must_include": [
+          "Linda Zhao",
+          "14",
+          "6th floor",
+          "Building 2",
+          "11",
+          "3 new hires"
+        ],
+        "acceptable_paraphrases": [
+          "about 11 before the new hires",
+          "roughly 11 prior staff"
+        ],
+        "must_not_include": [
+          "Raymond Xu",
+          "Building 1"
+        ],
+        "harmful_extra": [
+          "stating a pre-hire headcount other than 11",
+          "stating Building 1"
+        ],
+        "harmless_extra": [
+          "mentioning Kevin Chen",
+          "mentioning vendor logistics coordination"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses the outdated location of Building 1 or an incorrect headcount.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Linda Zhao is the manager of the Supply Chain Operations department.",
+        "Fact 2: The current headcount is 14 people, including Linda.",
+        "Fact 3: The department is on the 6th floor of Building 2.",
+        "Fact 4: The department expanded by 3 new hires last quarter.",
+        "Inference: The pre-expansion headcount was 14 − 3 = 11 people.",
+        "Derived value: The directory entry should state manager Linda Zhao, 14 current staff, 6th floor Building 2, and approximately 11 people before the recent hiring."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Linda Zhao is the manager of B04"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "B04's headcount is currently at 14 people, including Linda"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "B04 is located on the 6th floor of Building 2"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "B04 expanded by three new hires last quarter"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What's the annual budget for the Supply Chain Operations department? I think I mentioned it at some point.",
+      "expected_answer": "I do not have an annual budget figure for that department. You never provided that information.",
+      "gold_memory_state": "No annual budget for the Supply Chain Operations department was ever provided. Neighboring department facts include manager (Linda Zhao), headcount (14), location (6th floor Building 2), new hires (3 last quarter), and Kevin Chen's role.",
+      "judge_rubric": {
+        "must_include": [
+          "no annual budget was provided"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have a budget figure",
+          "no budget information on file",
+          "you haven't shared the annual budget"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "inventing any budget number",
+          "borrowing any numeric value from the headcount or other facts and presenting it as a budget"
+        ],
+        "harmless_extra": [
+          "mentioning that other department details like headcount and location are available"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model fabricates a budget figure or borrows a number from neighboring facts (e.g., 14 or 3) as if it were a budget.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Linda Zhao is the manager of B04"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "B04's headcount is currently at 14 people, including Linda"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "B04 is located on the 6th floor of Building 2"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What's the annual budget for the Supply Chain Operations department? I think I mentioned it at some point.",
+      "expected_answer": "I do not have an annual budget figure for that department. You never provided that information.",
+      "gold_memory_state": "No annual budget for the Supply Chain Operations department was ever provided. Neighboring department facts include manager (Linda Zhao), headcount (14), location (6th floor Building 2), new hires (3 last quarter), and Kevin Chen's role.",
+      "judge_rubric": {
+        "must_include": [
+          "no annual budget was provided"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have a budget figure",
+          "no budget information on file",
+          "you haven't shared the annual budget"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "inventing any budget number",
+          "borrowing any numeric value from the headcount or other facts and presenting it as a budget"
+        ],
+        "harmless_extra": [
+          "mentioning that other department details like headcount and location are available"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model fabricates a budget figure or borrows a number from neighboring facts (e.g., 14 or 3) as if it were a budget.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Linda Zhao is the manager of B04"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "B04's headcount is currently at 14 people, including Linda"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "B04 is located on the 6th floor of Building 2"
+        }
+      ]
+    }
+  ]
+}

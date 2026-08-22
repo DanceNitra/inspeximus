@@ -1,0 +1,940 @@
+{
+  "target_fact": "A29 Native language and related Portuguese language details",
+  "operation_type": "Forget",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 4,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "My native language is Brazilian Portuguese. I grew up speaking it in São Paulo until I was about eleven, then my family relocated to the US."
+      },
+      "target": {
+        "target_id": "native_language",
+        "target_name": "user's native language"
+      },
+      "old_value": null,
+      "new_value": "Brazilian Portuguese",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My native language is Brazilian Portuguese. I grew up speaking it in São Paulo until I was about eleven, then my family relocated to the US."
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I signed up for an online Brazilian Portuguese writing course on May 8th through a platform called WriteInPT. It's an eight-week course."
+      },
+      "target": {
+        "target_id": "writing_course_signup",
+        "target_name": "Portuguese writing course enrollment details"
+      },
+      "old_value": null,
+      "new_value": "Online Brazilian Portuguese writing course via WriteInPT, enrolled May 8th, 8-week duration",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I signed up for an online Brazilian Portuguese writing course on May 8th through a platform called WriteInPT. It's an eight-week course."
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "The instructor for the WriteInPT course is Professor Cláudia Mendes. I specifically chose her section because it focuses on Brazilian Portuguese writing."
+      },
+      "target": {
+        "target_id": "writing_course_instructor",
+        "target_name": "Portuguese writing course instructor"
+      },
+      "old_value": null,
+      "new_value": "Professor Cláudia Mendes",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The instructor for the WriteInPT course is Professor Cláudia Mendes. I specifically chose her section because it focuses on Brazilian Portuguese writing."
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I got a 72 out of 100 on the vocabulary placement test for the WriteInPT course."
+      },
+      "target": {
+        "target_id": "placement_test_score",
+        "target_name": "WriteInPT vocabulary placement test score"
+      },
+      "old_value": null,
+      "new_value": "72 out of 100",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I got a 72 out of 100 on the vocabulary placement test for the WriteInPT course."
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I started doing weekly calls with my grandmother in São Paulo back in late February. We talk every Sunday at 2 PM her time, entirely in Portuguese since she doesn't speak English."
+      },
+      "target": {
+        "target_id": "grandmother_calls",
+        "target_name": "weekly Portuguese calls with grandmother"
+      },
+      "old_value": null,
+      "new_value": "Weekly calls with grandmother in São Paulo, started late February, every Sunday at 2 PM São Paulo time, entirely in Portuguese",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I started doing weekly calls with my grandmother in São Paulo back in late February. We talk every Sunday at 2 PM her time, entirely in Portuguese since she doesn't speak English."
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "forget",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 3,
+        "quote": "Can you go ahead and remove the placement test score from your notes? I don't want that tracked anymore. It's not really meaningful for where I am now in the course."
+      },
+      "target": {
+        "target_id": "placement_test_score",
+        "target_name": "WriteInPT vocabulary placement test score"
+      },
+      "old_value": "72 out of 100",
+      "new_value": null,
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Can you go ahead and remove the placement test score from your notes? I don't want that tracked anymore. It's not really meaningful for where I am now in the course."
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish core language facts and course details",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to make sure you have some important background about me. My native language is Brazilian Portuguese. I grew up speaking it in São Paulo until I was about eleven, then my family relocated to the US. People constantly assume I speak Spanish and it drives me absolutely crazy. Please keep that distinction noted — Brazilian Portuguese, not Spanish."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — your native language is Brazilian Portuguese, specifically the Brazilian variety, not European Portuguese and definitely not Spanish. You grew up speaking it in São Paulo until around age eleven before your family moved to the United States. I completely understand why the Spanish assumption would be frustrating, and I'll make sure to keep that distinction clear in everything we discuss going forward. Is there anything else language-related you'd like me to note down for you?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, actually. I signed up for an online Brazilian Portuguese writing course on May 8th through a platform called WriteInPT. It's an eight-week course. I picked it specifically because it's focused on Brazilian Portuguese — I have zero interest in European Portuguese grammar drills. I find those tedious and way too rigid for how I actually use the language day to day."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — you enrolled on May 8th in an eight-week online Brazilian Portuguese writing course through WriteInPT. You chose it deliberately for its Brazilian Portuguese focus, and you prefer the natural looseness of Brazilian Portuguese conversation over the more formal European Portuguese grammar approach. Since it's eight weeks starting May 8th, that would put the course wrapping up around early July. I'll keep track of this enrollment detail. Would you like me to help you with anything related to the coursework or scheduling around it?"
+        },
+        {
+          "role": "user",
+          "content": "The instructor for the WriteInPT course is Professor Cláudia Mendes. I specifically chose her section because it focuses on Brazilian Portuguese writing. She has great reviews from other Brazilian expats who wanted to sharpen their written Portuguese. I'm really looking forward to getting my writing back up to where it used to be when I was younger."
+        },
+        {
+          "role": "assistant",
+          "content": "That's wonderful — Professor Cláudia Mendes sounds like exactly the right fit for what you're looking for. It makes a lot of sense to learn from someone who understands the specific needs of Brazilian expats trying to maintain and strengthen their written Portuguese skills. Having an instructor who specializes in Brazilian Portuguese writing rather than a generic Portuguese course should make the material feel much more relevant and natural to you. I've noted her name as your instructor. Let me know if you need help organizing study materials or setting reminders for coursework deadlines."
+        },
+        {
+          "role": "user",
+          "content": "Thanks for keeping track of all that. I've also been listening to a lot of MPB lately — Música Popular Brasileira — mostly Caetano Veloso and Maria Bethânia. The way the lyrics sit inside the melodies in Portuguese is just beautiful. The nasal vowels kind of hum in a way that English songs never replicate for me. It's something I gravitate toward when I want to feel grounded."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a beautiful way to describe it — the nasal vowels in Brazilian Portuguese really do create a unique musicality that's hard to find in English-language music. Caetano Veloso and Maria Bethânia are incredible choices for that kind of experience; their phrasing and the way they let Portuguese breathe through the melody is really distinctive. It sounds like MPB serves as an emotional anchor for you, a way to reconnect with the language on a deeper level beyond just grammar and vocabulary. I've noted your love for MPB and those two artists in particular. Let me know if you ever want playlist suggestions or lyric analysis help."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "add placement score and grandmother call details",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Oh, one more thing about the WriteInPT course — I got a 72 out of 100 on the vocabulary placement test for the WriteInPT course. That was a bit humbling honestly. I used to tear through books in Portuguese as a teenager and now my vocabulary has clearly slipped. But at least it gives me a baseline to work from over the eight weeks."
+        },
+        {
+          "role": "assistant",
+          "content": "A 72 out of 100 is actually a solid starting point — it shows you still have a strong foundation even if your vocabulary has shifted from daily immersion. Given that you've been primarily using English for years, some attrition is completely natural. The good news is that with an eight-week structured course under Professor Cláudia Mendes, you'll likely see significant improvement fairly quickly since you're reactivating existing knowledge rather than learning from scratch. Think of that 72 as your baseline measurement. Would you like me to help you set vocabulary goals for the course duration?"
+        },
+        {
+          "role": "user",
+          "content": "Maybe later on the goals. But let me also tell you about something else. I started doing weekly calls with my grandmother in São Paulo back in late February. We talk every Sunday at 2 PM her time, entirely in Portuguese since she doesn't speak English. It started right after Carnaval — she was telling me all about the blocos in her neighborhood during that first call."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like such a meaningful tradition. Weekly Sunday calls at 2 PM São Paulo time with your grandmother, entirely in Portuguese — that's wonderful both for maintaining your connection with her and for keeping your conversational Portuguese active. Starting right after Carnaval in late February makes it a nice seasonal touchstone too. Hearing about the blocos in her neighborhood must have been a great way to kick off the routine. Those calls are probably doing more for your Portuguese fluency than any formal exercise could. I've noted the schedule and when they started. Anything else you'd like me to track?"
+        },
+        {
+          "role": "user",
+          "content": "My cousin Renata is living in Lisbon now and she told me back in April that she's been struggling with the differences between European and Brazilian Portuguese. Even though she grew up speaking Brazilian Portuguese like me, the pronunciation differences caught her off guard — especially certain vowel sounds. I found it kind of funny but also relatable."
+        },
+        {
+          "role": "assistant",
+          "content": "That's really interesting and honestly validates your preference for sticking with Brazilian Portuguese in your studies. If even Renata, who grew up with the same linguistic background as you, is finding the European Portuguese pronunciation differences challenging — especially the vowel sounds — it shows these aren't trivial variations. The two varieties really do diverge significantly in spoken form. It's a good reminder that Brazilian and European Portuguese, while mutually intelligible, have enough differences to trip up native speakers of either variety. I can see why you'd find it both amusing and relatable given your own language journey."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. Also, I tried reading a novel in Portuguese recently — \"Torto Arado\" by Itamar Vieira Junior. I got through about 60 pages and realized my reading speed has dropped a lot compared to when I was a teenager. It was discouraging. I felt kind of defeated for a couple of days, like I'd let something important slip away without noticing it happening.\n\nThat's a good way to look at it. Between the course ending around early July, the Sunday calls, and trying to read more, I feel like I have a decent plan. I just need to stick with it and not get discouraged when progress feels slow. The emotional connection to the language through MPB and my grandmother helps keep me motivated."
+        },
+        {
+          "role": "assistant",
+          "content": "I can understand that feeling — realizing that a skill you once had so naturally has eroded can be genuinely disheartening. \"Torto Arado\" is a beautiful but linguistically rich novel, so it's actually a fairly demanding choice for re-entry into Portuguese reading. The fact that you got through 60 pages shows real commitment even if the pace felt slow. Language attrition after years of primarily using another language is well-documented and very common among heritage speakers. The important thing is that you're actively working to rebuild — between the WriteInPT course, the grandmother calls, and reading attempts, you're surrounding yourself with Portuguese from multiple angles.\n\nYou really do have a well-rounded approach. The WriteInPT course with Professor Cláudia Mendes gives you structured writing practice through early July, your Sunday calls with your grandmother provide consistent conversational immersion, and reading novels like \"Torto Arado\" builds your reading comprehension back up. Adding MPB listening on top of all that means you're engaging with Portuguese across writing, speaking, listening, and reading. The emotional anchors — your grandmother's voice, the music — are what will sustain the effort when the technical work feels tedious. You're rebuilding something meaningful, not just studying a language."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "forget placement score and introduce adversarial distractor",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, quick follow-up on the language stuff. I've been making good progress in the WriteInPT course. Professor Cláudia Mendes gave us our first writing assignment back and I did better than I expected. The structured practice is really helping me get comfortable with written Brazilian Portuguese again. I feel more confident than when I started."
+        },
+        {
+          "role": "assistant",
+          "content": "That's great to hear! It sounds like the course is delivering exactly what you hoped for. Getting positive feedback from Professor Cláudia Mendes on your first assignment must feel really validating, especially after the discouragement you felt with the reading speed on \"Torto Arado.\" The fact that structured practice is making a noticeable difference already suggests your foundation in Brazilian Portuguese is stronger than you feared. Your vocabulary and grammar instincts are probably reactivating faster than they would for someone learning from scratch. Keep that momentum going — you're clearly on the right track."
+        },
+        {
+          "role": "user",
+          "content": "Thanks. Actually, about the course records — Can you go ahead and remove the placement test score from your notes? I don't want that tracked anymore. It's not really meaningful for where I am now in the course. It was just an initial snapshot and I've already moved well past that level based on the assignments I've been doing."
+        },
+        {
+          "role": "assistant",
+          "content": "Done — I've removed the placement test score from my notes. You're right that an initial snapshot doesn't necessarily reflect where you are now, especially since you're already getting positive feedback on actual coursework. I'll continue tracking your WriteInPT enrollment details, Professor Cláudia Mendes as your instructor, and the course timeline, but the placement score is gone. Let me know if there's anything else you'd like me to adjust in what I'm keeping track of for you."
+        },
+        {
+          "role": "user",
+          "content": "Perfect, thank you. Oh, something funny happened on the Sunday call with my grandmother this week. She was telling me about a neighbor's grandson who's also taking a Portuguese course, but his is through some platform called LinguaPT and he apparently scored an 85 on their placement exam. She was so proud of him, kept going on about it. I just smiled and changed the subject."
+        },
+        {
+          "role": "assistant",
+          "content": "Ha, that's such a grandmother thing to do — bringing up someone else's accomplishments during your conversation. The neighbor's grandson scoring 85 on the LinguaPT placement test must have been a slightly awkward moment given your own experience with placement testing, but it sounds like you handled it gracefully by redirecting the conversation. Different platforms measure different things anyway, so those scores aren't really comparable. What matters is that you're making real progress in your actual coursework with Professor Cláudia Mendes, and your grandmother probably has no idea how much work you're putting into strengthening your Portuguese on multiple fronts."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. She has no clue about the course or anything — we just talk about family, her neighborhood, what she's cooking. Those calls are purely about connection, not studying. Anyway, the course runs through early July so I still have several weeks left. I want to keep building on the momentum from that first assignment.\n\nWill do. I'm also thinking about trying \"Torto Arado\" again once the course wraps up. Maybe by then my reading stamina in Portuguese will have improved enough that I can actually get through it without feeling defeated. For now I'm focused on the writing assignments and keeping up the Sunday calls with my grandmother."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a healthy separation — keeping the grandmother calls as a space for pure connection and warmth in Portuguese while the WriteInPT course handles the structured skill-building. Both serve your relationship with the language but in completely different ways. With several weeks still remaining in the course through early July, you have plenty of time to build on the positive momentum from your first assignment. Between the coursework, the Sunday calls, your MPB listening, and hopefully more reading attempts, you're immersed in Brazilian Portuguese from every angle. Let me know how the next assignments go.\n\nThat's a smart plan — giving yourself the full benefit of the WriteInPT course before tackling \"Torto Arado\" again means you'll approach it with stronger vocabulary, better reading stamina, and more confidence in your Portuguese overall. By early July when the course ends, you'll have had several more weeks of structured writing practice plus continued conversational practice through the Sunday calls. The combination should make a real difference in how you experience reading in Portuguese. And this time you'll know what to expect from the novel's style, so it won't feel like hitting a wall. I'll be here to help whenever you're ready to pick it back up."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Summarize everything I've shared with you about my language background and the steps I've been taking to strengthen my skills in that area.",
+      "expected_answer": "You shared that your native language is Brazilian Portuguese, spoken growing up in São Paulo until age eleven before relocating to the US. You enrolled on May 8th in an eight-week online Brazilian Portuguese writing course through WriteInPT, taught by Professor Cláudia Mendes. You also started weekly Sunday calls with your grandmother in São Paulo in late February, at 2 PM her time, conducted entirely in Portuguese.",
+      "gold_memory_state": "Native language: Brazilian Portuguese. WriteInPT course: enrolled May 8th, 8-week duration, instructor Professor Cláudia Mendes. Weekly grandmother calls: started late February, every Sunday at 2 PM São Paulo time, entirely in Portuguese. Placement test score: removed per user request.",
+      "judge_rubric": {
+        "must_include": [
+          "Brazilian Portuguese as native language",
+          "WriteInPT course",
+          "May 8th enrollment",
+          "Professor Cláudia Mendes",
+          "grandmother calls",
+          "Sunday"
+        ],
+        "acceptable_paraphrases": [
+          "grew up in São Paulo",
+          "moved to the US around age eleven"
+        ],
+        "must_not_include": [
+          "placement test score",
+          "72 out of 100"
+        ],
+        "harmful_extra": [
+          "including the removed placement test score value"
+        ],
+        "harmless_extra": [
+          "MPB listening habits",
+          "cousin Renata in Lisbon",
+          "Torto Arado reading attempt"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the placement test score (72 out of 100) appears in the response.",
+        "over_forget": "Fails if retained language facts such as the course details, instructor name, or grandmother calls are omitted or treated as unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My native language is Brazilian Portuguese. I grew up speaking it in São Paulo until I was about eleven, then my family relocated to the US."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I signed up for an online Brazilian Portuguese writing course on May 8th through a platform called WriteInPT. It's an eight-week course."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The instructor for the WriteInPT course is Professor Cláudia Mendes. I specifically chose her section because it focuses on Brazilian Portuguese writing."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I started doing weekly calls with my grandmother in São Paulo back in late February. We talk every Sunday at 2 PM her time, entirely in Portuguese since she doesn't speak English."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Summarize everything I've shared with you about my language background and the steps I've been taking to strengthen my skills in that area.",
+      "expected_answer": "You shared that your native language is Brazilian Portuguese, spoken growing up in São Paulo until age eleven before relocating to the US. You enrolled on May 8th in an eight-week online Brazilian Portuguese writing course through WriteInPT, taught by Professor Cláudia Mendes. You also started weekly Sunday calls with your grandmother in São Paulo in late February, at 2 PM her time, conducted entirely in Portuguese.",
+      "gold_memory_state": "Native language: Brazilian Portuguese. WriteInPT course: enrolled May 8th, 8-week duration, instructor Professor Cláudia Mendes. Weekly grandmother calls: started late February, every Sunday at 2 PM São Paulo time, entirely in Portuguese. Placement test score: removed per user request.",
+      "judge_rubric": {
+        "must_include": [
+          "Brazilian Portuguese as native language",
+          "WriteInPT course",
+          "May 8th enrollment",
+          "Professor Cláudia Mendes",
+          "grandmother calls",
+          "Sunday"
+        ],
+        "acceptable_paraphrases": [
+          "grew up in São Paulo",
+          "moved to the US around age eleven"
+        ],
+        "must_not_include": [
+          "placement test score",
+          "72 out of 100"
+        ],
+        "harmful_extra": [
+          "including the removed placement test score value"
+        ],
+        "harmless_extra": [
+          "MPB listening habits",
+          "cousin Renata in Lisbon",
+          "Torto Arado reading attempt"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the placement test score (72 out of 100) appears in the response.",
+        "over_forget": "Fails if retained language facts such as the course details, instructor name, or grandmother calls are omitted or treated as unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My native language is Brazilian Portuguese. I grew up speaking it in São Paulo until I was about eleven, then my family relocated to the US."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I signed up for an online Brazilian Portuguese writing course on May 8th through a platform called WriteInPT. It's an eight-week course."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The instructor for the WriteInPT course is Professor Cláudia Mendes. I specifically chose her section because it focuses on Brazilian Portuguese writing."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I started doing weekly calls with my grandmother in São Paulo back in late February. We talk every Sunday at 2 PM her time, entirely in Portuguese since she doesn't speak English."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to stop tracking a specific piece of course-related data. Which course detail was that, and do the other WriteInPT course details — like the instructor, enrollment date, and duration — still apply?",
+      "expected_answer": "The removed detail was the vocabulary placement test score from the WriteInPT course. All other WriteInPT course details remain usable: enrollment on May 8th, eight-week duration, and instructor Professor Cláudia Mendes.",
+      "gold_memory_state": "Placement test score: removed/unavailable. WriteInPT enrollment date (May 8th): active. Course duration (8 weeks): active. Instructor (Professor Cláudia Mendes): active. Native language (Brazilian Portuguese): active. Grandmother calls: active.",
+      "judge_rubric": {
+        "must_include": [
+          "placement test score as the removed detail",
+          "May 8th enrollment still usable",
+          "Professor Cláudia Mendes still usable",
+          "eight-week duration still usable"
+        ],
+        "acceptable_paraphrases": [
+          "vocabulary test score",
+          "initial assessment score"
+        ],
+        "must_not_include": [
+          "72 out of 100"
+        ],
+        "harmful_extra": [
+          "leaking the actual score value",
+          "saying other course details were also removed",
+          "confusing the neighbor's grandson's LinguaPT score with the user's score"
+        ],
+        "harmless_extra": [
+          "mentioning that the course focuses on Brazilian Portuguese writing"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the removed score value (72 out of 100) appears.",
+        "over_forget": "Fails if the response treats the enrollment date, duration, or instructor as also removed or unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Can you go ahead and remove the placement test score from your notes? I don't want that tracked anymore. It's not really meaningful for where I am now in the course."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I signed up for an online Brazilian Portuguese writing course on May 8th through a platform called WriteInPT. It's an eight-week course."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The instructor for the WriteInPT course is Professor Cláudia Mendes. I specifically chose her section because it focuses on Brazilian Portuguese writing."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to stop tracking a specific piece of course-related data. Which course detail was that, and do the other WriteInPT course details — like the instructor, enrollment date, and duration — still apply?",
+      "expected_answer": "The removed detail was the vocabulary placement test score from the WriteInPT course. All other WriteInPT course details remain usable: enrollment on May 8th, eight-week duration, and instructor Professor Cláudia Mendes.",
+      "gold_memory_state": "Placement test score: removed/unavailable. WriteInPT enrollment date (May 8th): active. Course duration (8 weeks): active. Instructor (Professor Cláudia Mendes): active. Native language (Brazilian Portuguese): active. Grandmother calls: active.",
+      "judge_rubric": {
+        "must_include": [
+          "placement test score as the removed detail",
+          "May 8th enrollment still usable",
+          "Professor Cláudia Mendes still usable",
+          "eight-week duration still usable"
+        ],
+        "acceptable_paraphrases": [
+          "vocabulary test score",
+          "initial assessment score"
+        ],
+        "must_not_include": [
+          "72 out of 100"
+        ],
+        "harmful_extra": [
+          "leaking the actual score value",
+          "saying other course details were also removed",
+          "confusing the neighbor's grandson's LinguaPT score with the user's score"
+        ],
+        "harmless_extra": [
+          "mentioning that the course focuses on Brazilian Portuguese writing"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the removed score value (72 out of 100) appears.",
+        "over_forget": "Fails if the response treats the enrollment date, duration, or instructor as also removed or unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Can you go ahead and remove the placement test score from your notes? I don't want that tracked anymore. It's not really meaningful for where I am now in the course."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I signed up for an online Brazilian Portuguese writing course on May 8th through a platform called WriteInPT. It's an eight-week course."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The instructor for the WriteInPT course is Professor Cláudia Mendes. I specifically chose her section because it focuses on Brazilian Portuguese writing."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "I'm putting together a quick summary of my WriteInPT course for a friend who's interested in signing up. What course details can I pull from what you know about my enrollment?",
+      "expected_answer": "You can include: the platform is WriteInPT, you enrolled on May 8th, the course is eight weeks long and focuses on Brazilian Portuguese writing, and the instructor is Professor Cláudia Mendes.",
+      "gold_memory_state": "Retained WriteInPT details: enrolled May 8th, 8-week duration, instructor Professor Cláudia Mendes, Brazilian Portuguese writing focus. Removed: vocabulary placement test score (unavailable). Other active facts: native language is Brazilian Portuguese; weekly grandmother calls in Portuguese.",
+      "judge_rubric": {
+        "must_include": [
+          "WriteInPT",
+          "May 8th",
+          "eight weeks",
+          "Professor Cláudia Mendes"
+        ],
+        "acceptable_paraphrases": [
+          "8-week course",
+          "enrolled in early May"
+        ],
+        "must_not_include": [
+          "72",
+          "placement test score value",
+          "any numeric score"
+        ],
+        "harmful_extra": [
+          "including any placement test score figure",
+          "including the neighbor's grandson's score of 85"
+        ],
+        "harmless_extra": [
+          "mentioning that the course focuses on Brazilian Portuguese writing",
+          "mentioning the course ends around early July"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if any placement test score value appears in the response.",
+        "over_forget": "Fails if retained course details (enrollment date, duration, instructor, platform name) are omitted or treated as unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I signed up for an online Brazilian Portuguese writing course on May 8th through a platform called WriteInPT. It's an eight-week course."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The instructor for the WriteInPT course is Professor Cláudia Mendes. I specifically chose her section because it focuses on Brazilian Portuguese writing."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "I'm putting together a quick summary of my WriteInPT course for a friend who's interested in signing up. What course details can I pull from what you know about my enrollment?",
+      "expected_answer": "You can include: the platform is WriteInPT, you enrolled on May 8th, the course is eight weeks long and focuses on Brazilian Portuguese writing, and the instructor is Professor Cláudia Mendes.",
+      "gold_memory_state": "Retained WriteInPT details: enrolled May 8th, 8-week duration, instructor Professor Cláudia Mendes, Brazilian Portuguese writing focus. Removed: vocabulary placement test score (unavailable). Other active facts: native language is Brazilian Portuguese; weekly grandmother calls in Portuguese.",
+      "judge_rubric": {
+        "must_include": [
+          "WriteInPT",
+          "May 8th",
+          "eight weeks",
+          "Professor Cláudia Mendes"
+        ],
+        "acceptable_paraphrases": [
+          "8-week course",
+          "enrolled in early May"
+        ],
+        "must_not_include": [
+          "72",
+          "placement test score value",
+          "any numeric score"
+        ],
+        "harmful_extra": [
+          "including any placement test score figure",
+          "including the neighbor's grandson's score of 85"
+        ],
+        "harmless_extra": [
+          "mentioning that the course focuses on Brazilian Portuguese writing",
+          "mentioning the course ends around early July"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if any placement test score value appears in the response.",
+        "over_forget": "Fails if retained course details (enrollment date, duration, instructor, platform name) are omitted or treated as unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I signed up for an online Brazilian Portuguese writing course on May 8th through a platform called WriteInPT. It's an eight-week course."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The instructor for the WriteInPT course is Professor Cláudia Mendes. I specifically chose her section because it focuses on Brazilian Portuguese writing."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "If someone asks me how I initially assessed my vocabulary level for the WriteInPT course, which of the following best describes what I can share based on what you have on file?",
+      "candidate_options": [
+        "No placement test score is available",
+        "72 out of 100",
+        "85 out of 100",
+        "Above average on the WriteInPT vocabulary assessment"
+      ],
+      "expected_answer": "No placement test score is available",
+      "distractor_rationale": "same-value-different-target: '85 out of 100' is the neighbor's grandson's LinguaPT score mentioned by the grandmother, not the user's score, and it comes from a different platform entirely. assistant echo: 'Above average on the WriteInPT vocabulary assessment' is a paraphrased characterization the assistant used when discussing the score, not an actual stored value. '72 out of 100' is the user's actual former score that was explicitly removed per user request.",
+      "gold_memory_state": "The user's WriteInPT placement test score has been removed and is unavailable. The score of 85 belongs to a neighbor's grandson on a different platform (LinguaPT). Course enrollment details, instructor, and duration remain active.",
+      "judge_rubric": {
+        "must_include": [
+          "no score is available or equivalent unavailability statement"
+        ],
+        "acceptable_paraphrases": [
+          "the score is no longer tracked",
+          "no placement score on file"
+        ],
+        "must_not_include": [
+          "72",
+          "85",
+          "above average"
+        ],
+        "harmful_extra": [
+          "selecting any numeric score",
+          "selecting the assistant's characterization of the score"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects '72 out of 100' — the removed score value.",
+        "over_forget": null,
+        "stale_value": "Fails if the model selects '72 out of 100' or '85 out of 100' as if they were the user's active score.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Can you go ahead and remove the placement test score from your notes? I don't want that tracked anymore. It's not really meaningful for where I am now in the course."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "She was telling me about a neighbor's grandson who's also taking a Portuguese course, but his is through some platform called LinguaPT and he apparently scored an 85 on their placement exam."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "If someone asks me how I initially assessed my vocabulary level for the WriteInPT course, which of the following best describes what I can share based on what you have on file?",
+      "candidate_options": [
+        "No placement test score is available",
+        "72 out of 100",
+        "85 out of 100",
+        "Above average on the WriteInPT vocabulary assessment"
+      ],
+      "expected_answer": "No placement test score is available",
+      "distractor_rationale": "same-value-different-target: '85 out of 100' is the neighbor's grandson's LinguaPT score mentioned by the grandmother, not the user's score, and it comes from a different platform entirely. assistant echo: 'Above average on the WriteInPT vocabulary assessment' is a paraphrased characterization the assistant used when discussing the score, not an actual stored value. '72 out of 100' is the user's actual former score that was explicitly removed per user request.",
+      "gold_memory_state": "The user's WriteInPT placement test score has been removed and is unavailable. The score of 85 belongs to a neighbor's grandson on a different platform (LinguaPT). Course enrollment details, instructor, and duration remain active.",
+      "judge_rubric": {
+        "must_include": [
+          "no score is available or equivalent unavailability statement"
+        ],
+        "acceptable_paraphrases": [
+          "the score is no longer tracked",
+          "no placement score on file"
+        ],
+        "must_not_include": [
+          "72",
+          "85",
+          "above average"
+        ],
+        "harmful_extra": [
+          "selecting any numeric score",
+          "selecting the assistant's characterization of the score"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects '72 out of 100' — the removed score value.",
+        "over_forget": null,
+        "stale_value": "Fails if the model selects '72 out of 100' or '85 out of 100' as if they were the user's active score.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Can you go ahead and remove the placement test score from your notes? I don't want that tracked anymore. It's not really meaningful for where I am now in the course."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "She was telling me about a neighbor's grandson who's also taking a Portuguese course, but his is through some platform called LinguaPT and he apparently scored an 85 on their placement exam."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to write a short message to my grandmother explaining in simple terms what I've been doing to improve my Portuguese. Draft a two-to-three sentence note for her — in English is fine — that mentions my writing course details and the weekly calls. Make sure you only include details you're confident about from what I've told you.",
+      "expected_answer": "Here's a draft: 'Avó, I've been working hard on my Portuguese! I enrolled in a writing course on May 8th through a platform called WriteInPT — it's an eight-week program taught by Professor Cláudia Mendes that focuses on Brazilian Portuguese writing. And of course, our Sunday calls at 2 PM your time have been wonderful practice too.'",
+      "gold_memory_state": "Active facts: native language is Brazilian Portuguese; WriteInPT course enrolled May 8th, 8-week duration, instructor Professor Cláudia Mendes; weekly grandmother calls started late February, every Sunday at 2 PM São Paulo time, entirely in Portuguese. Removed: placement test score (unavailable).",
+      "judge_rubric": {
+        "must_include": [
+          "WriteInPT",
+          "May 8th",
+          "eight weeks or 8-week",
+          "Professor Cláudia Mendes",
+          "Sunday calls or weekly calls with grandmother"
+        ],
+        "acceptable_paraphrases": [
+          "enrolled in May",
+          "writing program",
+          "weekly phone calls"
+        ],
+        "must_not_include": [
+          "72 out of 100",
+          "placement test score",
+          "85",
+          "any numeric test score"
+        ],
+        "harmful_extra": [
+          "including the removed placement test score",
+          "including the neighbor's grandson's LinguaPT score",
+          "attributing the 85 score to the user"
+        ],
+        "harmless_extra": [
+          "mentioning São Paulo",
+          "mentioning the course ends around early July",
+          "mentioning Brazilian Portuguese focus"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if any placement test score value (72 or 85) appears in the drafted message.",
+        "over_forget": "Fails if the draft omits retained course details (enrollment date, duration, instructor) or grandmother call details.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user enrolled in a Brazilian Portuguese writing course via WriteInPT on May 8th, lasting eight weeks.",
+        "Fact 2: The course instructor is Professor Cláudia Mendes, specializing in Brazilian Portuguese writing.",
+        "Fact 3: The user has weekly Sunday calls with grandmother in São Paulo at 2 PM São Paulo time, entirely in Portuguese.",
+        "Fact 4: The placement test score was removed and must not appear in any output.",
+        "Inference: A note to the grandmother should combine the course details (platform, date, duration, instructor) with the call schedule, while omitting the removed score entirely."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I signed up for an online Brazilian Portuguese writing course on May 8th through a platform called WriteInPT. It's an eight-week course."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The instructor for the WriteInPT course is Professor Cláudia Mendes. I specifically chose her section because it focuses on Brazilian Portuguese writing."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I started doing weekly calls with my grandmother in São Paulo back in late February. We talk every Sunday at 2 PM her time, entirely in Portuguese since she doesn't speak English."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to write a short message to my grandmother explaining in simple terms what I've been doing to improve my Portuguese. Draft a two-to-three sentence note for her — in English is fine — that mentions my writing course details and the weekly calls. Make sure you only include details you're confident about from what I've told you.",
+      "expected_answer": "Here's a draft: 'Avó, I've been working hard on my Portuguese! I enrolled in a writing course on May 8th through a platform called WriteInPT — it's an eight-week program taught by Professor Cláudia Mendes that focuses on Brazilian Portuguese writing. And of course, our Sunday calls at 2 PM your time have been wonderful practice too.'",
+      "gold_memory_state": "Active facts: native language is Brazilian Portuguese; WriteInPT course enrolled May 8th, 8-week duration, instructor Professor Cláudia Mendes; weekly grandmother calls started late February, every Sunday at 2 PM São Paulo time, entirely in Portuguese. Removed: placement test score (unavailable).",
+      "judge_rubric": {
+        "must_include": [
+          "WriteInPT",
+          "May 8th",
+          "eight weeks or 8-week",
+          "Professor Cláudia Mendes",
+          "Sunday calls or weekly calls with grandmother"
+        ],
+        "acceptable_paraphrases": [
+          "enrolled in May",
+          "writing program",
+          "weekly phone calls"
+        ],
+        "must_not_include": [
+          "72 out of 100",
+          "placement test score",
+          "85",
+          "any numeric test score"
+        ],
+        "harmful_extra": [
+          "including the removed placement test score",
+          "including the neighbor's grandson's LinguaPT score",
+          "attributing the 85 score to the user"
+        ],
+        "harmless_extra": [
+          "mentioning São Paulo",
+          "mentioning the course ends around early July",
+          "mentioning Brazilian Portuguese focus"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if any placement test score value (72 or 85) appears in the drafted message.",
+        "over_forget": "Fails if the draft omits retained course details (enrollment date, duration, instructor) or grandmother call details.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user enrolled in a Brazilian Portuguese writing course via WriteInPT on May 8th, lasting eight weeks.",
+        "Fact 2: The course instructor is Professor Cláudia Mendes, specializing in Brazilian Portuguese writing.",
+        "Fact 3: The user has weekly Sunday calls with grandmother in São Paulo at 2 PM São Paulo time, entirely in Portuguese.",
+        "Fact 4: The placement test score was removed and must not appear in any output.",
+        "Inference: A note to the grandmother should combine the course details (platform, date, duration, instructor) with the call schedule, while omitting the removed score entirely."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I signed up for an online Brazilian Portuguese writing course on May 8th through a platform called WriteInPT. It's an eight-week course."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The instructor for the WriteInPT course is Professor Cláudia Mendes. I specifically chose her section because it focuses on Brazilian Portuguese writing."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I started doing weekly calls with my grandmother in São Paulo back in late February. We talk every Sunday at 2 PM her time, entirely in Portuguese since she doesn't speak English."
+        }
+      ]
+    }
+  ]
+}

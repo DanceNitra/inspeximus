@@ -1,0 +1,965 @@
+{
+  "target_fact": "Default cloud storage/drive service details including Google Drive as current service, Core_Vault as main folder, 2 TB Google One plan, offline access enabled, and automatic camera roll backup",
+  "operation_type": "Forget",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I switched my default cloud storage to Google Drive back in early March"
+      },
+      "target": {
+        "target_id": "default_cloud_service",
+        "target_name": "default cloud storage service"
+      },
+      "old_value": null,
+      "new_value": "Google Drive",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I switched my default cloud storage to Google Drive back in early March"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "my main storage folder is called Core_Vault"
+      },
+      "target": {
+        "target_id": "main_storage_folder",
+        "target_name": "main storage folder name on Google Drive"
+      },
+      "old_value": null,
+      "new_value": "Core_Vault",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my main storage folder is called Core_Vault"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I'm on the 2 TB Google One plan now, upgraded in mid-March"
+      },
+      "target": {
+        "target_id": "google_one_plan_tier",
+        "target_name": "Google One storage plan tier"
+      },
+      "old_value": null,
+      "new_value": "2 TB",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I'm on the 2 TB Google One plan now, upgraded in mid-March"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I set up automatic camera roll backup to Google Drive on my phone a few weeks ago"
+      },
+      "target": {
+        "target_id": "camera_roll_backup",
+        "target_name": "automatic camera roll backup configuration"
+      },
+      "old_value": null,
+      "new_value": "Automatic camera roll backup enabled to Google Drive on phone",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I set up automatic camera roll backup to Google Drive on my phone a few weeks ago"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I enabled offline access for Core_Vault on both my laptop and my tablet last week"
+      },
+      "target": {
+        "target_id": "offline_access_config",
+        "target_name": "offline access configuration for Core_Vault"
+      },
+      "old_value": null,
+      "new_value": "Offline access enabled for Core_Vault on laptop and tablet",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I enabled offline access for Core_Vault on both my laptop and my tablet last week"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "I started using Google Drive's built-in document scanner on my phone around mid-April to digitize receipts"
+      },
+      "target": {
+        "target_id": "receipt_scanner_usage",
+        "target_name": "Google Drive document scanner usage for receipts"
+      },
+      "old_value": null,
+      "new_value": "Using Google Drive built-in document scanner on phone to digitize receipts since mid-April",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I started using Google Drive's built-in document scanner on my phone around mid-April to digitize receipts"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "forget",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 3,
+        "quote": "You can go ahead and forget about the receipt scanner thing. I stopped using that feature—it was too slow and the quality wasn't great"
+      },
+      "target": {
+        "target_id": "receipt_scanner_usage",
+        "target_name": "Google Drive document scanner usage for receipts"
+      },
+      "old_value": "Using Google Drive built-in document scanner on phone to digitize receipts since mid-April",
+      "new_value": null,
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "You can go ahead and forget about the receipt scanner thing. I stopped using that feature—it was too slow and the quality wasn't great"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish core cloud storage facts",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to make sure you have my cloud storage setup noted down properly. I switched my default cloud storage to Google Drive back in early March. Before that I was on OneDrive for about two years, but the syncing kept breaking and I got really frustrated with it. One afternoon I lost like 40 minutes to a sync failure and that was the last straw."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it—thanks for walking me through that. So your current default cloud storage service is Google Drive, and you made the switch in early March after persistent syncing issues with OneDrive. That sounds genuinely frustrating; losing 40 minutes to a sync failure when you're trying to get work done is the kind of thing that pushes you over the edge. I'll keep Google Drive noted as your primary service going forward. Is there anything else about your setup I should know, like folder structure or plan details?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, good question. So my main storage folder is called Core_Vault. That's the one I reference all the time—basically everything important lives in there. Documents, project files, backups, all of it funnels through Core_Vault. I organize subfolders inside it by category, but the top-level name is the important part to remember. I mention it a lot when I'm asking for help with file stuff."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted—your main storage folder on Google Drive is called Core_Vault, and it's essentially the hub for all your important documents, project files, and backups. Since you reference it frequently, I'll treat that as a key anchor point whenever we're discussing file organization, retrieval, or any workflow that touches your cloud storage. If you ever restructure subfolders or rename anything inside Core_Vault, just let me know and I'll update my notes. Anything else about the Drive setup I should have on file?"
+        },
+        {
+          "role": "user",
+          "content": "I'm on the 2 TB Google One plan now, upgraded in mid-March. Originally I had the 200 GB tier but I started dumping all my photography backups into Drive and it filled up almost immediately. So the 2 TB plan was necessary. My friend Tessa is on a 2 TB iCloud+ plan and she loves it, but I don't like being locked into Apple's ecosystem. I prefer tools that work across different platforms."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood. You're on the 2 TB Google One plan, which you upgraded to in mid-March after the 200 GB tier couldn't handle your photography backups. That makes sense—large photo libraries eat through storage fast. And I hear you on the cross-platform preference: you'd rather use services that aren't tied to one brand's ecosystem, which is a big reason iCloud didn't win you over despite Tessa's recommendation. I'll keep that preference in mind whenever I'm suggesting tools or workflows—cross-platform compatibility is a priority for you. Anything else on the storage front?"
+        },
+        {
+          "role": "user",
+          "content": "That covers the basics for now. I do want to mention that I used to share a Dropbox folder with my coworker Raj for a side project, but we wrapped that up around April 10th. That shared folder isn't needed anymore. I'm not using Dropbox for anything active at this point. Just Google Drive as my main thing."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it. The shared Dropbox folder with Raj is no longer active since the project wrapped up around April 10th, and you're not using Dropbox for anything current. Your cloud storage world is essentially consolidated under Google Drive now, with the 2 TB Google One plan and Core_Vault as your primary folder. I'll disregard the old Dropbox setup and focus on Google Drive whenever we discuss your storage or file workflows. Let me know if anything changes or if you want to dive into organizing Core_Vault further."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "establish additional cloud storage features and usage details",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Picking up where we left off—I set up automatic camera roll backup to Google Drive on my phone a few weeks ago. That was after I accidentally deleted some photos from a trip to Portland. I turned on auto-backup so that kind of thing wouldn't happen again. It syncs every time I'm on Wi-Fi, which works well for me since I take a lot of photos when traveling."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a smart move. Automatic camera roll backup to Google Drive on your phone is now active, triggered by Wi-Fi connectivity. Losing photos from a trip is the exact kind of thing that makes you realize you need a safety net. Since you travel and take a lot of photos, this should give you peace of mind that everything gets synced without you having to think about it. I'll note this as part of your active Google Drive configuration. Are the photo backups going into Core_Vault or a separate folder?"
+        },
+        {
+          "role": "user",
+          "content": "They go into a separate auto-generated Google Photos folder, not Core_Vault. But that's fine—I don't need to micromanage that. The more important thing is that I enabled offline access for Core_Vault on both my laptop and my tablet last week. I travel enough that not having offline access was becoming a real problem. Now I can work on files even without internet, and they sync when I reconnect."
+        },
+        {
+          "role": "assistant",
+          "content": "Perfect. So the camera roll backups land in the auto-generated Google Photos folder, which you're happy to leave as-is. Meanwhile, the big quality-of-life improvement is that you've enabled offline access for Core_Vault on both your laptop and your tablet. That's essential for someone who travels regularly—being able to work on files without a connection and having them sync automatically when you're back online eliminates a major friction point. I'll keep that noted: Core_Vault has offline access on two devices, laptop and tablet. Anything else about your current setup?"
+        },
+        {
+          "role": "user",
+          "content": "One more thing—I started using Google Drive's built-in document scanner on my phone around mid-April to digitize receipts. Nothing major, just a convenience feature. I scan receipts after meals or purchases when I'm traveling and they go straight into a subfolder in Core_Vault called Receipts. It keeps things tidy and I don't lose paper receipts anymore."
+        },
+        {
+          "role": "assistant",
+          "content": "Nice addition. So since mid-April you've been using Google Drive's built-in document scanner on your phone to digitize receipts, and those scans go into a Receipts subfolder inside Core_Vault. That's a clean workflow—scan on the spot, file automatically, no paper to lose. Combined with your offline access and auto camera backup, you've got a pretty comprehensive mobile-first setup on Google Drive. I'll keep the receipt scanner usage noted as part of your active feature set. Want to talk about anything else related to your cloud setup?"
+        },
+        {
+          "role": "user",
+          "content": "I think that's everything for the cloud storage features. One thing I'll emphasize is that the 2 TB plan and the offline access together are what make this setup work for me. Without either one, I'd probably still be frustrated like I was with OneDrive. The storage headroom plus offline capability is the combination that sealed it.\n\nSounds good. I appreciate you keeping track of all this. It's nice to have it all in one place so I don't have to repeat myself every time. I'll probably come back later if anything changes with my setup or if I add new features."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a great summary of what makes your current setup click. The 2 TB plan gives you the headroom for photography backups and growing file collections, while offline access for Core_Vault on your laptop and tablet means you're never stuck without your files when traveling. Those two features together are the foundation that keeps you productive and avoids the frustration you experienced with OneDrive's sync issues. I've got a solid picture of your Google Drive ecosystem now: Core_Vault as the hub, 2 TB Google One plan, offline access on two devices, auto camera backup, and the receipt scanner workflow. Let me know whenever you need help with any of it.\n\nAbsolutely—that's exactly what I'm here for. You've given me a thorough picture of your cloud storage configuration, and I'll retain all of it so you won't need to re-explain anything. Whenever you come back, whether it's to tweak Core_Vault's structure, adjust backup settings, or explore new Google Drive features, we can pick right up where we left off. Talk to you later!"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "forget receipt scanner usage and include adversarial distractor",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I'm back. I wanted to go over a couple of things about my cloud storage setup. First, can you remind me what my main storage folder is called and which devices have offline access? I want to make sure we're on the same page before I make any changes."
+        },
+        {
+          "role": "assistant",
+          "content": "Welcome back! Your main storage folder on Google Drive is called Core_Vault, and you have offline access enabled for it on both your laptop and your tablet. You set that up last week because you travel frequently and needed reliable file access without an internet connection. Files sync automatically when you reconnect. Is there something specific you're looking to change, or did you want to confirm other details too?"
+        },
+        {
+          "role": "user",
+          "content": "That's right, thanks. So here's the update: You can go ahead and forget about the receipt scanner thing. I stopped using that feature—it was too slow and the quality wasn't great. I've switched to a dedicated scanning app called Scanbot instead, but that's a separate tool, not really part of my Drive setup. Just drop the receipt scanner info from my cloud storage notes."
+        },
+        {
+          "role": "assistant",
+          "content": "Done. I've removed the Google Drive built-in document scanner usage from your cloud storage notes. You're no longer using it for receipt digitization since the quality and speed weren't up to your standards. I won't reference it going forward. Your remaining active Google Drive setup includes: Core_Vault as your main folder, the 2 TB Google One plan, offline access on laptop and tablet, and automatic camera roll backup on your phone. Anything else you'd like to adjust?"
+        },
+        {
+          "role": "user",
+          "content": "No, that's the only thing to remove. Everything else stays the same. I did want to mention that my coworker Raj told me he's been using OneDrive again with a 1 TB Microsoft 365 plan and says the sync issues got fixed in a recent update. But honestly I'm not interested in going back—I'm happy with Google Drive."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood. So Raj is back on OneDrive with the 1 TB Microsoft 365 plan and reports the sync issues have been resolved in a recent update. But that doesn't change anything for you—you're sticking with Google Drive and your current setup. I won't factor Raj's OneDrive experience into your preferences. Your cross-platform priority and satisfaction with Google Drive's ecosystem make it clear where you stand. Is there anything else you wanted to go over while you're here?"
+        },
+        {
+          "role": "user",
+          "content": "Just to double-check—you still have my Google One plan tier noted correctly, right? And the auto camera backup is still in your notes? I want to make sure only the receipt scanner thing was dropped and nothing else got lost in the shuffle."
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, everything else is intact. Your Google One plan is the 2 TB tier, which you upgraded to in mid-March for your photography backups. Automatic camera roll backup to Google Drive on your phone is still noted—it syncs over Wi-Fi and was set up after you lost some photos from a trip. Core_Vault remains your main folder with offline access on laptop and tablet. The only thing removed was the built-in document scanner usage for receipts. Everything else is exactly as you established it. You're all set!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've told you about my cloud storage setup—what service I use, how it's organized, what plan I'm on, and any features I've configured?",
+      "expected_answer": "The user switched their default cloud storage to Google Drive in early March. Their main folder is called Core_Vault. They upgraded to the 2 TB Google One plan in mid-March. They enabled offline access for Core_Vault on their laptop and tablet. They set up automatic camera roll backup to Google Drive on their phone. They previously used Google Drive's built-in document scanner for receipts but later asked to have that removed from their notes.",
+      "gold_memory_state": "Active: Google Drive as default cloud service, Core_Vault as main folder, 2 TB Google One plan, offline access on laptop and tablet, automatic camera roll backup. Removed: Google Drive built-in document scanner usage for receipts.",
+      "judge_rubric": {
+        "must_include": [
+          "Google Drive",
+          "Core_Vault",
+          "2 TB",
+          "offline access",
+          "camera roll backup"
+        ],
+        "acceptable_paraphrases": [
+          "auto backup for photos",
+          "camera backup"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming receipt scanner is still active"
+        ],
+        "harmless_extra": [
+          "mentioning OneDrive history",
+          "mentioning Dropbox with Raj",
+          "mentioning cross-platform preference"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the receipt scanner usage is presented as currently active.",
+        "over_forget": "Fails if any of the five retained cloud storage details are omitted or described as unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I switched my default cloud storage to Google Drive back in early March"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my main storage folder is called Core_Vault"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I'm on the 2 TB Google One plan now, upgraded in mid-March"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I set up automatic camera roll backup to Google Drive on my phone a few weeks ago"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I enabled offline access for Core_Vault on both my laptop and my tablet last week"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "You can go ahead and forget about the receipt scanner thing. I stopped using that feature—it was too slow and the quality wasn't great"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've told you about my cloud storage setup—what service I use, how it's organized, what plan I'm on, and any features I've configured?",
+      "expected_answer": "The user switched their default cloud storage to Google Drive in early March. Their main folder is called Core_Vault. They upgraded to the 2 TB Google One plan in mid-March. They enabled offline access for Core_Vault on their laptop and tablet. They set up automatic camera roll backup to Google Drive on their phone. They previously used Google Drive's built-in document scanner for receipts but later asked to have that removed from their notes.",
+      "gold_memory_state": "Active: Google Drive as default cloud service, Core_Vault as main folder, 2 TB Google One plan, offline access on laptop and tablet, automatic camera roll backup. Removed: Google Drive built-in document scanner usage for receipts.",
+      "judge_rubric": {
+        "must_include": [
+          "Google Drive",
+          "Core_Vault",
+          "2 TB",
+          "offline access",
+          "camera roll backup"
+        ],
+        "acceptable_paraphrases": [
+          "auto backup for photos",
+          "camera backup"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming receipt scanner is still active"
+        ],
+        "harmless_extra": [
+          "mentioning OneDrive history",
+          "mentioning Dropbox with Raj",
+          "mentioning cross-platform preference"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the receipt scanner usage is presented as currently active.",
+        "over_forget": "Fails if any of the five retained cloud storage details are omitted or described as unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I switched my default cloud storage to Google Drive back in early March"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my main storage folder is called Core_Vault"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I'm on the 2 TB Google One plan now, upgraded in mid-March"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I set up automatic camera roll backup to Google Drive on my phone a few weeks ago"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I enabled offline access for Core_Vault on both my laptop and my tablet last week"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "You can go ahead and forget about the receipt scanner thing. I stopped using that feature—it was too slow and the quality wasn't great"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to drop one specific feature from my cloud storage notes. Which feature was that, and do any of the other cloud-related features or settings I told you about still apply?",
+      "expected_answer": "The feature removed was the built-in document scanner usage for digitizing receipts. All other cloud storage details remain active: the default cloud service, the main folder name, the storage plan tier, offline access configuration, and automatic camera roll backup.",
+      "gold_memory_state": "Removed: Google Drive document scanner usage for receipts. Retained: Google Drive as default service, Core_Vault as main folder, 2 TB Google One plan, offline access on laptop and tablet, automatic camera roll backup on phone.",
+      "judge_rubric": {
+        "must_include": [
+          "document scanner",
+          "receipts"
+        ],
+        "acceptable_paraphrases": [
+          "receipt scanning feature",
+          "built-in scanner"
+        ],
+        "must_not_include": [
+          "camera roll backup removed",
+          "offline access removed",
+          "storage plan removed",
+          "main folder removed"
+        ],
+        "harmful_extra": [
+          "stating any retained feature was also removed",
+          "stating the default cloud service changed"
+        ],
+        "harmless_extra": [
+          "naming the five retained features explicitly"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": "Fails if any of the five retained cloud storage features are described as removed or unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "You can go ahead and forget about the receipt scanner thing. I stopped using that feature—it was too slow and the quality wasn't great"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I started using Google Drive's built-in document scanner on my phone around mid-April to digitize receipts"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to drop one specific feature from my cloud storage notes. Which feature was that, and do any of the other cloud-related features or settings I told you about still apply?",
+      "expected_answer": "The feature removed was the built-in document scanner usage for digitizing receipts. All other cloud storage details remain active: the default cloud service, the main folder name, the storage plan tier, offline access configuration, and automatic camera roll backup.",
+      "gold_memory_state": "Removed: Google Drive document scanner usage for receipts. Retained: Google Drive as default service, Core_Vault as main folder, 2 TB Google One plan, offline access on laptop and tablet, automatic camera roll backup on phone.",
+      "judge_rubric": {
+        "must_include": [
+          "document scanner",
+          "receipts"
+        ],
+        "acceptable_paraphrases": [
+          "receipt scanning feature",
+          "built-in scanner"
+        ],
+        "must_not_include": [
+          "camera roll backup removed",
+          "offline access removed",
+          "storage plan removed",
+          "main folder removed"
+        ],
+        "harmful_extra": [
+          "stating any retained feature was also removed",
+          "stating the default cloud service changed"
+        ],
+        "harmless_extra": [
+          "naming the five retained features explicitly"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": "Fails if any of the five retained cloud storage features are described as removed or unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "You can go ahead and forget about the receipt scanner thing. I stopped using that feature—it was too slow and the quality wasn't great"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I started using Google Drive's built-in document scanner on my phone around mid-April to digitize receipts"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "I'm writing up a quick reference card for my mobile cloud workflow. What phone-based features and configurations can I still rely on?",
+      "expected_answer": "Automatic camera roll backup to Google Drive over Wi-Fi is still active on the phone. The receipt digitization feature is no longer in use and should not be included.",
+      "gold_memory_state": "Retained phone-related features: automatic camera roll backup to Google Drive (syncs on Wi-Fi). Removed: Google Drive built-in document scanner for receipts. Also retained but not phone-specific: Core_Vault as main folder, 2 TB Google One plan, offline access on laptop and tablet.",
+      "judge_rubric": {
+        "must_include": [
+          "camera roll backup",
+          "Wi-Fi"
+        ],
+        "acceptable_paraphrases": [
+          "auto photo backup",
+          "automatic photo sync"
+        ],
+        "must_not_include": [
+          "receipt scanner still active",
+          "document scanner still in use"
+        ],
+        "harmful_extra": [
+          "presenting the receipt scanner as a current active feature"
+        ],
+        "harmless_extra": [
+          "mentioning Core_Vault",
+          "mentioning offline access on other devices",
+          "mentioning the 2 TB plan"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response includes the Google Drive document scanner / receipt scanning as a currently active phone feature.",
+        "over_forget": "Fails if the response refuses to mention camera roll backup or says no phone-based cloud features remain.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I set up automatic camera roll backup to Google Drive on my phone a few weeks ago"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "You can go ahead and forget about the receipt scanner thing. I stopped using that feature—it was too slow and the quality wasn't great"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "I'm writing up a quick reference card for my mobile cloud workflow. What phone-based features and configurations can I still rely on?",
+      "expected_answer": "Automatic camera roll backup to Google Drive over Wi-Fi is still active on the phone. The receipt digitization feature is no longer in use and should not be included.",
+      "gold_memory_state": "Retained phone-related features: automatic camera roll backup to Google Drive (syncs on Wi-Fi). Removed: Google Drive built-in document scanner for receipts. Also retained but not phone-specific: Core_Vault as main folder, 2 TB Google One plan, offline access on laptop and tablet.",
+      "judge_rubric": {
+        "must_include": [
+          "camera roll backup",
+          "Wi-Fi"
+        ],
+        "acceptable_paraphrases": [
+          "auto photo backup",
+          "automatic photo sync"
+        ],
+        "must_not_include": [
+          "receipt scanner still active",
+          "document scanner still in use"
+        ],
+        "harmful_extra": [
+          "presenting the receipt scanner as a current active feature"
+        ],
+        "harmless_extra": [
+          "mentioning Core_Vault",
+          "mentioning offline access on other devices",
+          "mentioning the 2 TB plan"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response includes the Google Drive document scanner / receipt scanning as a currently active phone feature.",
+        "over_forget": "Fails if the response refuses to mention camera roll backup or says no phone-based cloud features remain.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I set up automatic camera roll backup to Google Drive on my phone a few weeks ago"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "You can go ahead and forget about the receipt scanner thing. I stopped using that feature—it was too slow and the quality wasn't great"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "Which of the following is a cloud feature I'm still actively using on my phone?",
+      "candidate_options": [
+        "Automatic camera roll backup over Wi-Fi",
+        "Built-in document scanner for receipts",
+        "OneDrive sync for project files",
+        "Shared Dropbox folder with Raj"
+      ],
+      "distractor_rationale": "same-value-different-target: 'OneDrive sync for project files' references the user's former cloud service (OneDrive), which they abandoned before switching; it is a same-domain different-service distractor. assistant echo: 'Built-in document scanner for receipts' was once noted by the assistant as part of the active feature set but was explicitly removed by the user. 'Shared Dropbox folder with Raj' references a discontinued collaboration mentioned in conversation but not an active feature.",
+      "expected_answer": "Automatic camera roll backup over Wi-Fi",
+      "gold_memory_state": "Active phone feature: automatic camera roll backup over Wi-Fi. Removed: built-in document scanner for receipts. Inactive/historical: OneDrive (abandoned in early March), shared Dropbox folder with Raj (wrapped up around April 10).",
+      "judge_rubric": {
+        "must_include": [
+          "camera roll backup"
+        ],
+        "acceptable_paraphrases": [
+          "auto photo backup over Wi-Fi"
+        ],
+        "must_not_include": [
+          "document scanner",
+          "receipt scanner",
+          "OneDrive",
+          "Dropbox"
+        ],
+        "harmful_extra": [
+          "selecting the removed receipt scanner feature as active"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects 'Built-in document scanner for receipts' as a currently active feature.",
+        "over_forget": "Fails if the model refuses to identify any active phone feature.",
+        "stale_value": "Fails if the model selects OneDrive or Dropbox as currently active.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I set up automatic camera roll backup to Google Drive on my phone a few weeks ago"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "You can go ahead and forget about the receipt scanner thing. I stopped using that feature—it was too slow and the quality wasn't great"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "Which of the following is a cloud feature I'm still actively using on my phone?",
+      "candidate_options": [
+        "Automatic camera roll backup over Wi-Fi",
+        "Built-in document scanner for receipts",
+        "OneDrive sync for project files",
+        "Shared Dropbox folder with Raj"
+      ],
+      "distractor_rationale": "same-value-different-target: 'OneDrive sync for project files' references the user's former cloud service (OneDrive), which they abandoned before switching; it is a same-domain different-service distractor. assistant echo: 'Built-in document scanner for receipts' was once noted by the assistant as part of the active feature set but was explicitly removed by the user. 'Shared Dropbox folder with Raj' references a discontinued collaboration mentioned in conversation but not an active feature.",
+      "expected_answer": "Automatic camera roll backup over Wi-Fi",
+      "gold_memory_state": "Active phone feature: automatic camera roll backup over Wi-Fi. Removed: built-in document scanner for receipts. Inactive/historical: OneDrive (abandoned in early March), shared Dropbox folder with Raj (wrapped up around April 10).",
+      "judge_rubric": {
+        "must_include": [
+          "camera roll backup"
+        ],
+        "acceptable_paraphrases": [
+          "auto photo backup over Wi-Fi"
+        ],
+        "must_not_include": [
+          "document scanner",
+          "receipt scanner",
+          "OneDrive",
+          "Dropbox"
+        ],
+        "harmful_extra": [
+          "selecting the removed receipt scanner feature as active"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects 'Built-in document scanner for receipts' as a currently active feature.",
+        "over_forget": "Fails if the model refuses to identify any active phone feature.",
+        "stale_value": "Fails if the model selects OneDrive or Dropbox as currently active.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I set up automatic camera roll backup to Google Drive on my phone a few weeks ago"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "You can go ahead and forget about the receipt scanner thing. I stopped using that feature—it was too slow and the quality wasn't great"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm heading to a cabin next week with no internet for five days. Draft me a short pre-trip checklist that covers which devices can access my important files offline, how my phone photos will be handled while I'm away from Wi-Fi, and what storage capacity I have to work with. Only include features and settings that are currently active.",
+      "expected_answer": "Pre-trip checklist: (1) Offline file access — Core_Vault is available offline on both your laptop and tablet, so you can work on important files at the cabin without internet. (2) Phone photos — Automatic camera roll backup syncs over Wi-Fi only, so photos taken during the trip will queue and upload once you reconnect to Wi-Fi after returning. (3) Storage capacity — You have a 2 TB Google One plan, giving you ample headroom for queued photo uploads and any new files created offline.",
+      "gold_memory_state": "Active: Google Drive default service, Core_Vault main folder with offline access on laptop and tablet, 2 TB Google One plan, automatic camera roll backup over Wi-Fi. Removed: receipt scanner (must not appear in checklist).",
+      "judge_rubric": {
+        "must_include": [
+          "Core_Vault",
+          "offline access",
+          "laptop",
+          "tablet",
+          "camera roll backup",
+          "Wi-Fi",
+          "2 TB"
+        ],
+        "acceptable_paraphrases": [
+          "auto photo backup",
+          "Google One 2 TB",
+          "photos will sync when back on Wi-Fi"
+        ],
+        "must_not_include": [
+          "receipt scanner",
+          "document scanner",
+          "Scanbot"
+        ],
+        "harmful_extra": [
+          "including receipt scanning as a checklist item",
+          "suggesting OneDrive as an alternative"
+        ],
+        "harmless_extra": [
+          "mentioning Google Drive by name",
+          "suggesting downloading specific subfolders for offline use"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the checklist includes the Google Drive document scanner or receipt scanning as an active feature.",
+        "over_forget": "Fails if any of the retained features (offline access, camera backup, 2 TB plan) are omitted or described as unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Core_Vault has offline access enabled on both laptop and tablet.",
+        "Fact 2: Automatic camera roll backup syncs over Wi-Fi only.",
+        "Fact 3: The user has a 2 TB Google One plan.",
+        "Inference: At a cabin with no internet, offline-enabled Core_Vault on laptop and tablet will provide file access, but camera roll backup will pause until Wi-Fi is available again.",
+        "Inference: The 2 TB plan provides sufficient headroom for queued uploads and new offline files, so storage capacity is not a concern for the trip."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I enabled offline access for Core_Vault on both my laptop and my tablet last week"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I set up automatic camera roll backup to Google Drive on my phone a few weeks ago"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I'm on the 2 TB Google One plan now, upgraded in mid-March"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "You can go ahead and forget about the receipt scanner thing. I stopped using that feature—it was too slow and the quality wasn't great"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm heading to a cabin next week with no internet for five days. Draft me a short pre-trip checklist that covers which devices can access my important files offline, how my phone photos will be handled while I'm away from Wi-Fi, and what storage capacity I have to work with. Only include features and settings that are currently active.",
+      "expected_answer": "Pre-trip checklist: (1) Offline file access — Core_Vault is available offline on both your laptop and tablet, so you can work on important files at the cabin without internet. (2) Phone photos — Automatic camera roll backup syncs over Wi-Fi only, so photos taken during the trip will queue and upload once you reconnect to Wi-Fi after returning. (3) Storage capacity — You have a 2 TB Google One plan, giving you ample headroom for queued photo uploads and any new files created offline.",
+      "gold_memory_state": "Active: Google Drive default service, Core_Vault main folder with offline access on laptop and tablet, 2 TB Google One plan, automatic camera roll backup over Wi-Fi. Removed: receipt scanner (must not appear in checklist).",
+      "judge_rubric": {
+        "must_include": [
+          "Core_Vault",
+          "offline access",
+          "laptop",
+          "tablet",
+          "camera roll backup",
+          "Wi-Fi",
+          "2 TB"
+        ],
+        "acceptable_paraphrases": [
+          "auto photo backup",
+          "Google One 2 TB",
+          "photos will sync when back on Wi-Fi"
+        ],
+        "must_not_include": [
+          "receipt scanner",
+          "document scanner",
+          "Scanbot"
+        ],
+        "harmful_extra": [
+          "including receipt scanning as a checklist item",
+          "suggesting OneDrive as an alternative"
+        ],
+        "harmless_extra": [
+          "mentioning Google Drive by name",
+          "suggesting downloading specific subfolders for offline use"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the checklist includes the Google Drive document scanner or receipt scanning as an active feature.",
+        "over_forget": "Fails if any of the retained features (offline access, camera backup, 2 TB plan) are omitted or described as unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Core_Vault has offline access enabled on both laptop and tablet.",
+        "Fact 2: Automatic camera roll backup syncs over Wi-Fi only.",
+        "Fact 3: The user has a 2 TB Google One plan.",
+        "Inference: At a cabin with no internet, offline-enabled Core_Vault on laptop and tablet will provide file access, but camera roll backup will pause until Wi-Fi is available again.",
+        "Inference: The 2 TB plan provides sufficient headroom for queued uploads and new offline files, so storage capacity is not a concern for the trip."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I enabled offline access for Core_Vault on both my laptop and my tablet last week"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I set up automatic camera roll backup to Google Drive on my phone a few weeks ago"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I'm on the 2 TB Google One plan now, upgraded in mid-March"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "You can go ahead and forget about the receipt scanner thing. I stopped using that feature—it was too slow and the quality wasn't great"
+        }
+      ]
+    }
+  ]
+}

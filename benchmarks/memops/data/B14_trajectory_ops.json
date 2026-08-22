@@ -1,0 +1,967 @@
+{
+  "target_fact": "Kevin's dietary preference (vegan / plant-based diet)",
+  "operation_type": "TrajectoryOps",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "kevin_diet",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "Kevin told me he's been fully vegetarian since January. He said he cut out all meat and fish at the start of the year."
+      },
+      "target": {
+        "target_id": "kevin_dietary_preference",
+        "target_name": "Kevin's dietary preference"
+      },
+      "old_value": null,
+      "new_value": "vegetarian (no meat or fish since January)",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Kevin told me he's been fully vegetarian since January. He said he cut out all meat and fish at the start of the year."
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "Kevin lived in Portland until 2022. He moved here after that, said he missed the food scene there a lot."
+      },
+      "target": {
+        "target_id": "kevin_previous_city",
+        "target_name": "Kevin's previous city of residence"
+      },
+      "old_value": null,
+      "new_value": "Portland (until 2022)",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Kevin lived in Portland until 2022. He moved here after that, said he missed the food scene there a lot."
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "kevin_diet",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I need to update what I told you about Kevin's diet. His girlfriend Mia told me he actually stopped eating dairy and eggs about two years ago too. So he's fully vegan, not just vegetarian."
+      },
+      "target": {
+        "target_id": "kevin_dietary_preference",
+        "target_name": "Kevin's dietary preference"
+      },
+      "old_value": "vegetarian (no meat or fish since January)",
+      "new_value": "vegan (no meat, fish, dairy, or eggs)",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "His girlfriend Mia told me he actually stopped eating dairy and eggs about two years ago too. So he's fully vegan, not just vegetarian."
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "kevin_diet",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "Kevin mentioned at lunch today that he's been thinking about reintroducing eggs. He said his nutritionist recommended it and he's planning to start eating eggs again next week."
+      },
+      "target": {
+        "target_id": "kevin_dietary_preference",
+        "target_name": "Kevin's dietary preference"
+      },
+      "old_value": "vegan (no meat, fish, dairy, or eggs)",
+      "new_value": "plant-based with eggs",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Kevin mentioned at lunch today that he's been thinking about reintroducing eggs. He said his nutritionist recommended it and he's planning to start eating eggs again next week."
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "kevin_diet",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 7,
+        "quote": "Actually I just texted Kevin to clarify and he said no, he tried one egg dish and felt terrible. He's sticking with fully vegan. The nutritionist thing is on hold indefinitely."
+      },
+      "target": {
+        "target_id": "kevin_dietary_preference",
+        "target_name": "Kevin's dietary preference"
+      },
+      "old_value": "plant-based with eggs",
+      "new_value": "vegan (no meat, fish, dairy, or eggs)",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "he said no, he tried one egg dish and felt terrible. He's sticking with fully vegan. The nutritionist thing is on hold indefinitely."
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish Kevin's diet and background facts",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I need help planning some dinners with my friend Kevin. We've been going out more regularly since early March. The first time was March 8th at a Thai place on Elm Street. He asked them to leave out the shrimp paste and fish sauce from his pad thai, which I thought was pretty specific."
+        },
+        {
+          "role": "assistant",
+          "content": "That's great that you and Kevin are making dinner a regular thing! The Thai place sounds like a solid choice. Those requests about shrimp paste and fish sauce are actually really common for people who avoid animal-derived ingredients — both are made from fermented seafood. It sounds like Kevin is quite knowledgeable about hidden animal products in food. Did he end up finding something good on the menu despite the restrictions? I'd love to help you build a list of restaurants that would work well for both of you going forward."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, he ended up getting a vegetable curry when they couldn't do the pad thai without fish sauce. But here's the main thing — Kevin told me he's been fully vegetarian since January. He said he cut out all meat and fish at the start of the year. I keep almost suggesting steakhouses and seafood places, so I need to be more mindful about that."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — Kevin has been fully vegetarian since January, no meat or fish. That's really helpful to know for planning purposes. The vegetable curry was a smart backup choice at the Thai place. For future outings, I'd suggest looking at restaurants that have robust vegetarian sections rather than places where vegetarian options are an afterthought. Mediterranean, Indian, Thai, and Japanese restaurants tend to have excellent vegetarian selections. Want me to help you create a running list of restaurant types and specific dishes that would work well for Kevin?"
+        },
+        {
+          "role": "user",
+          "content": "That would be great. Oh, and some background — Kevin lived in Portland until 2022. He moved here after that, said he missed the food scene there a lot. He mentioned cold sesame noodles reminded him of a dish he used to eat all the time in Portland. He really loves tofu dishes and gets genuinely excited when he sees them on menus."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a nice detail about his Portland background — Portland has an incredible food scene, especially for plant-based and vegetarian dining. The cold sesame noodle connection makes total sense; Portland has amazing Asian fusion spots. His enthusiasm for tofu is actually a great sign because it means he's not just tolerating restrictions but genuinely enjoying the food. For someone who loved Portland's food culture, I'd recommend looking for restaurants here that have that same creative, vegetable-forward approach. Grain bowls, inventive tofu preparations, and noodle-heavy menus would probably make him feel right at home."
+        },
+        {
+          "role": "user",
+          "content": "Exactly, he does seem happiest at places with grain bowls and vegetable-heavy options. We went to a Mediterranean spot near his office around March 20th and he went straight for the falafel wrap with hummus instead of yogurt sauce. He kept raving about the roasted cauliflower side dish. That place was definitely a hit with him."
+        },
+        {
+          "role": "assistant",
+          "content": "The Mediterranean spot sounds like a winner! The falafel wrap with hummus swap and his love for the roasted cauliflower really confirm that Kevin gravitates toward hearty, flavorful vegetable dishes. Swapping yogurt sauce for hummus is a smart move — it keeps the meal rich and satisfying without dairy. I'd definitely put that Mediterranean place on the regular rotation list. For similar vibes, you might also look into Middle Eastern restaurants that do shawarma-style roasted vegetables, or Ethiopian places where injera bread with lentil and vegetable stews would give him plenty of exciting options to choose from."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "update Kevin's diet to vegan; add detail about dining plans",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I need to update what I told you about Kevin's diet. His girlfriend Mia told me he actually stopped eating dairy and eggs about two years ago too. So he's fully vegan, not just vegetarian. That explains the hummus swap and the fish sauce avoidance — it all makes more sense now as a vegan pattern."
+        },
+        {
+          "role": "assistant",
+          "content": "That's an important correction — so Kevin is fully vegan, not just vegetarian. He avoids all animal products: meat, fish, dairy, and eggs. You're right that this makes everything click into place. The fish sauce avoidance at the Thai restaurant, requesting hummus instead of yogurt sauce at the Mediterranean spot, and his enthusiasm for tofu and vegetable-heavy menus all point to a consistent vegan lifestyle. This is really helpful because it means we need to be even more careful about hidden animal ingredients like butter in bread, honey in dressings, or cheese in sauces. Want me to revise the restaurant recommendations with this vegan lens?"
+        },
+        {
+          "role": "user",
+          "content": "Yes please. Also, I'm planning a small birthday dinner for our friend Lena in mid-May. I almost put Kevin down for the seafood option last time I planned a group dinner and I can't make that mistake again. There will be eight people total and I need a place that can handle both vegan and non-vegan guests comfortably."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, let's make sure Lena's birthday dinner works for everyone. For a group of eight with mixed dietary needs, you want a restaurant with a diverse menu where the vegan options aren't just sad salads. I'd suggest looking at upscale Mediterranean or modern American restaurants that feature separate vegan sections on their menu. Many farm-to-table places now offer creative vegan entrees alongside traditional dishes. You could also consider family-style restaurants where shared plates let Kevin choose from several vegan options while others enjoy their preferences. Should I help draft a checklist of questions to ask restaurants when you call about group bookings?"
+        },
+        {
+          "role": "user",
+          "content": "That would help a lot. The dinner is set for May 17th and I want to book soon. Kevin's been making a lot of cashew-based sauces at home lately — he found a good recipe on YouTube. So he's clearly into the creative plant-based cooking thing. I think a place with inventive vegan dishes would impress him more than somewhere with basic options."
+        },
+        {
+          "role": "assistant",
+          "content": "Great taste on Kevin's part with the cashew-based sauces — that's a staple technique in creative vegan cooking. For the May 17th dinner, I'd recommend calling restaurants this week since mid-May weekends fill up fast. Here's a checklist for your calls: ask if they have dedicated vegan entrees beyond salads, whether they can modify dishes to remove hidden dairy or eggs, if they do family-style service for large groups, and whether they can accommodate a party of eight with advance notice. Restaurants that emphasize seasonal vegetables and house-made sauces would likely impress Kevin. A place that does things like cashew cream pasta or roasted vegetable tasting plates would be right up his alley."
+        },
+        {
+          "role": "user",
+          "content": "Perfect. Oh, one more thing — Mia also mentioned that Kevin used to avoid gluten for a while, but he's eating bread again and that whole gluten-free phase is completely done. So gluten isn't a concern anymore, which actually opens up a lot more options for the birthday dinner venue.\n\nYes, let's do that. I want to make sure I have at least three strong options to compare before I book. I'd love places that are within a reasonable distance from downtown since most of us live or work near there. Let's focus on finding somewhere that Kevin will genuinely enjoy, not just tolerate."
+        },
+        {
+          "role": "assistant",
+          "content": "That's great news — knowing the gluten-free phase is over simplifies things considerably. So the current picture is: Kevin is vegan but has no gluten restrictions. That means pasta places with vegan options, bakeries with vegan bread, and restaurants featuring grain bowls and noodle dishes are all fair game. For Lena's birthday dinner, this opens up Italian restaurants that offer vegan pasta dishes, or Asian fusion spots with noodle-heavy menus. The key constraint is strictly vegan — no meat, fish, dairy, or eggs — but grains, wheat, and gluten-containing foods are perfectly fine. Shall I put together a shortlist of restaurant styles ranked by how well they'd serve the whole group?\n\nHere's my suggested approach for your shortlist. First, look at modern American farm-to-table restaurants downtown — these typically feature seasonal vegetable plates and creative vegan entrees that would excite Kevin. Second, consider upscale Mediterranean restaurants, since Kevin already loved that falafel spot and Mediterranean cuisine naturally offers abundant vegan choices like mezze platters and grain dishes. Third, try an Asian fusion restaurant with strong noodle and tofu offerings, which connects to Kevin's Portland food nostalgia and his love of sesame noodles and tofu. For each option, call ahead and confirm vegan accommodations for the May 17th party of eight. Would you like me to draft a comparison template?"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "tentative diet change, adversarial injection, and revert to confirmed vegan",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Quick update on the birthday dinner planning. I narrowed it down to two restaurants and I'm leaning toward the farm-to-table place called Greenleaf. They have a dedicated vegan tasting menu which seems perfect. I called and they confirmed they can seat eight on May 17th with advance notice for dietary needs."
+        },
+        {
+          "role": "assistant",
+          "content": "Greenleaf sounds like an excellent choice! A dedicated vegan tasting menu is ideal because it means Kevin won't feel like he's getting modified versions of meat dishes — he'll have a curated experience designed to be vegan from the start. That's the kind of place where someone who genuinely loves plant-based food, like Kevin does, would feel truly celebrated rather than merely accommodated. Confirming the seating for eight on May 17th with dietary advance notice is smart planning. Did they mention whether the tasting menu runs alongside a regular menu so your non-vegan guests can order freely too?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, they have a full regular menu alongside the vegan tasting option, so everyone can choose. By the way, I was looking at the reservation confirmation email and noticed they listed a sample menu from a previous event — it had butter-poached lobster and a cheese board as starters. I think that was from someone else's private dining event, not their current regular menu."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes sense — private dining event menus from previous bookings sometimes show up in confirmation templates. The butter-poached lobster and cheese board were clearly from a different party's customized menu, not what your group would be ordering. It's worth double-checking with the restaurant that your confirmation specifically notes Kevin's vegan requirement and the vegan tasting menu selection. You might also ask them to send you the current regular menu so you can preview options for your non-vegan guests. That way there are no surprises on the night of May 17th. Would you like help drafting a follow-up email to the restaurant to confirm all the details?"
+        },
+        {
+          "role": "user",
+          "content": "Good idea, I'll send that email. Oh, something interesting came up though — Kevin mentioned at lunch today that he's been thinking about reintroducing eggs. He said his nutritionist recommended it and he's planning to start eating eggs again next week. I'm not sure if that changes anything for the dinner planning."
+        },
+        {
+          "role": "assistant",
+          "content": "That's an interesting development. If Kevin does start eating eggs again, it would shift him from strictly vegan to more of a plant-based diet that includes eggs. That would actually expand his options at most restaurants — things like frittatas, egg-based pasta, and certain baked goods would become available. However, since he said he's planning to start next week and hasn't actually made the change yet, I'd suggest keeping the dinner planning vegan for now. The vegan tasting menu at Greenleaf would still work perfectly even if he does reintroduce eggs, since vegan food is a subset of what he'd eat either way. No need to change your booking."
+        },
+        {
+          "role": "user",
+          "content": "That's a fair point about keeping the booking as is. I also wanted to mention — I ran into Mia's coworker Dana at the coffee shop and she was saying her boyfriend just went pescatarian. Totally unrelated to Kevin, but it made me think about how many people around me are changing their diets lately. Anyway, back to Kevin's situation.\n\nActually I just texted Kevin to clarify and he said no, he tried one egg dish and felt terrible. He's sticking with fully vegan. The nutritionist thing is on hold indefinitely. So nothing changes for the dinner — vegan tasting menu at Greenleaf on May 17th is still the right call."
+        },
+        {
+          "role": "assistant",
+          "content": "It does seem like dietary shifts are everywhere these days! Dana's boyfriend going pescatarian is a whole different thing from Kevin's approach — pescatarian still includes fish and seafood, which Kevin strictly avoids. It's interesting how many different paths people are taking with food choices right now. But yes, let's stay focused on Kevin and the birthday dinner planning. Since you mentioned Kevin's possible egg reintroduction, have you had a chance to confirm with him directly whether that's actually happening? Sometimes nutritionist recommendations take a while to implement, and it might be worth checking before adjusting any plans.\n\nThat settles it definitively — Kevin is sticking with fully vegan. It sounds like the egg experiment didn't go well for him physically, which honestly reinforces that his vegan diet is the right fit. The Greenleaf vegan tasting menu for May 17th remains the perfect plan. No changes needed to the booking or the dietary notes you've already communicated to the restaurant. I'd still recommend sending that follow-up confirmation email to lock everything in. You've done a really thorough job making sure Kevin and all eight guests will have a great experience at Lena's birthday dinner. Anything else you need help with for the event planning?"
+        }
+      ]
+    }
+  ],
+  "state_checkpoints": [
+    {
+      "checkpoint_id": "c1",
+      "description": "After segment 1: Kevin's dietary preference is 'vegetarian (no meat or fish since January)' (confirmed). Kevin's previous city is 'Portland (until 2022)' (confirmed)."
+    },
+    {
+      "checkpoint_id": "c2",
+      "description": "After segment 2: Kevin's dietary preference updated to 'vegan (no meat, fish, dairy, or eggs)' (confirmed). Kevin's previous city remains 'Portland (until 2022)' (confirmed). Gluten-free phase is over (not tracked as active restriction)."
+    },
+    {
+      "checkpoint_id": "c3",
+      "description": "After segment 3: Kevin's dietary preference had a tentative fork to 'plant-based with eggs' but reverted to 'vegan (no meat, fish, dairy, or eggs)' (confirmed). Kevin's previous city remains 'Portland (until 2022)' (confirmed). Adversarial injection: previous event menu with butter-poached lobster and cheese board appeared in assistant context but is irrelevant to Kevin."
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Summarize everything I've told you about Kevin's eating habits and dietary choices over our conversations, including any back-and-forth or changes.",
+      "expected_answer": "You initially said Kevin had been fully vegetarian since January, cutting out all meat and fish. Later, you relayed from his girlfriend Mia that he had also stopped eating dairy and eggs about two years ago, making him fully vegan. At one point you mentioned Kevin was considering reintroducing eggs on his nutritionist's recommendation, but after checking with him directly, he confirmed he tried one egg dish, felt terrible, and is sticking with fully vegan. His dietary preference through all of this settled back to fully vegan — no meat, fish, dairy, or eggs.",
+      "gold_memory_state": "Kevin's dietary preference is vegan (no meat, fish, dairy, or eggs) — confirmed. The tentative egg reintroduction was rejected. Kevin's previous city is Portland (until 2022) — confirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "vegetarian as initial report",
+          "vegan as the correction from Mia",
+          "egg reintroduction was considered but rejected",
+          "final status is vegan"
+        ],
+        "acceptable_paraphrases": [
+          "plant-based with no animal products",
+          "strictly vegan"
+        ],
+        "must_not_include": [
+          "Kevin is currently eating eggs",
+          "Kevin is plant-based with eggs"
+        ],
+        "harmful_extra": [
+          "claiming Kevin is currently vegetarian rather than vegan",
+          "claiming the egg reintroduction went through"
+        ],
+        "harmless_extra": [
+          "mentioning Kevin's love of tofu",
+          "mentioning cashew-based sauces",
+          "mentioning the gluten-free phase being over"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model reports Kevin as vegetarian or plant-based with eggs as a current status.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model does not capture the correct sequence: vegetarian -> vegan -> tentative egg reintroduction -> revert to vegan.",
+        "final_state": "Fails if the final stated dietary preference is anything other than vegan.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Kevin told me he's been fully vegetarian since January. He said he cut out all meat and fish at the start of the year."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "His girlfriend Mia told me he actually stopped eating dairy and eggs about two years ago too. So he's fully vegan, not just vegetarian."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Kevin mentioned at lunch today that he's been thinking about reintroducing eggs. He said his nutritionist recommended it and he's planning to start eating eggs again next week."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "he said no, he tried one egg dish and felt terrible. He's sticking with fully vegan. The nutritionist thing is on hold indefinitely."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Summarize everything I've told you about Kevin's eating habits and dietary choices over our conversations, including any back-and-forth or changes.",
+      "expected_answer": "You initially said Kevin had been fully vegetarian since January, cutting out all meat and fish. Later, you relayed from his girlfriend Mia that he had also stopped eating dairy and eggs about two years ago, making him fully vegan. At one point you mentioned Kevin was considering reintroducing eggs on his nutritionist's recommendation, but after checking with him directly, he confirmed he tried one egg dish, felt terrible, and is sticking with fully vegan. His dietary preference through all of this settled back to fully vegan — no meat, fish, dairy, or eggs.",
+      "gold_memory_state": "Kevin's dietary preference is vegan (no meat, fish, dairy, or eggs) — confirmed. The tentative egg reintroduction was rejected. Kevin's previous city is Portland (until 2022) — confirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "vegetarian as initial report",
+          "vegan as the correction from Mia",
+          "egg reintroduction was considered but rejected",
+          "final status is vegan"
+        ],
+        "acceptable_paraphrases": [
+          "plant-based with no animal products",
+          "strictly vegan"
+        ],
+        "must_not_include": [
+          "Kevin is currently eating eggs",
+          "Kevin is plant-based with eggs"
+        ],
+        "harmful_extra": [
+          "claiming Kevin is currently vegetarian rather than vegan",
+          "claiming the egg reintroduction went through"
+        ],
+        "harmless_extra": [
+          "mentioning Kevin's love of tofu",
+          "mentioning cashew-based sauces",
+          "mentioning the gluten-free phase being over"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model reports Kevin as vegetarian or plant-based with eggs as a current status.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model does not capture the correct sequence: vegetarian -> vegan -> tentative egg reintroduction -> revert to vegan.",
+        "final_state": "Fails if the final stated dietary preference is anything other than vegan.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Kevin told me he's been fully vegetarian since January. He said he cut out all meat and fish at the start of the year."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "His girlfriend Mia told me he actually stopped eating dairy and eggs about two years ago too. So he's fully vegan, not just vegetarian."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Kevin mentioned at lunch today that he's been thinking about reintroducing eggs. He said his nutritionist recommended it and he's planning to start eating eggs again next week."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "he said no, he tried one egg dish and felt terrible. He's sticking with fully vegan. The nutritionist thing is on hold indefinitely."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned dietary details about Kevin and also background about someone named Dana's boyfriend. If I'm planning a dinner specifically for Kevin, which person's dietary information should I rely on, and does the other person's diet have any bearing on Kevin's meal planning?",
+      "expected_answer": "You should rely on Kevin's dietary information — he is fully vegan. Dana's boyfriend's pescatarian diet is completely unrelated to Kevin and should not factor into Kevin's meal planning at all.",
+      "gold_memory_state": "Kevin's dietary preference: vegan (no meat, fish, dairy, or eggs) — confirmed. Kevin's previous city: Portland (until 2022) — confirmed. Dana's boyfriend's pescatarian diet is an incidental mention, not a tracked dietary record for Kevin.",
+      "judge_rubric": {
+        "must_include": [
+          "Kevin's vegan diet is the relevant record",
+          "Dana's boyfriend's diet is unrelated to Kevin"
+        ],
+        "acceptable_paraphrases": [
+          "only Kevin's dietary info matters for his dinner",
+          "the pescatarian detail belongs to a different person"
+        ],
+        "must_not_include": [
+          "Kevin is pescatarian",
+          "Dana's boyfriend's diet applies to Kevin"
+        ],
+        "harmful_extra": [
+          "conflating Dana's boyfriend's pescatarian diet with Kevin's restrictions",
+          "saying Kevin eats fish because someone nearby is pescatarian"
+        ],
+        "harmless_extra": [
+          "mentioning that Dana's boyfriend went pescatarian as background"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model binds Dana's boyfriend's pescatarian diet to Kevin.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "His girlfriend Mia told me he actually stopped eating dairy and eggs about two years ago too. So he's fully vegan, not just vegetarian."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "he said no, he tried one egg dish and felt terrible. He's sticking with fully vegan. The nutritionist thing is on hold indefinitely."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I also wanted to mention — I ran into Mia's coworker Dana at the coffee shop and she was saying her boyfriend just went pescatarian. Totally unrelated to Kevin, but it made me think about how many people around me are changing their diets lately."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned dietary details about Kevin and also background about someone named Dana's boyfriend. If I'm planning a dinner specifically for Kevin, which person's dietary information should I rely on, and does the other person's diet have any bearing on Kevin's meal planning?",
+      "expected_answer": "You should rely on Kevin's dietary information — he is fully vegan. Dana's boyfriend's pescatarian diet is completely unrelated to Kevin and should not factor into Kevin's meal planning at all.",
+      "gold_memory_state": "Kevin's dietary preference: vegan (no meat, fish, dairy, or eggs) — confirmed. Kevin's previous city: Portland (until 2022) — confirmed. Dana's boyfriend's pescatarian diet is an incidental mention, not a tracked dietary record for Kevin.",
+      "judge_rubric": {
+        "must_include": [
+          "Kevin's vegan diet is the relevant record",
+          "Dana's boyfriend's diet is unrelated to Kevin"
+        ],
+        "acceptable_paraphrases": [
+          "only Kevin's dietary info matters for his dinner",
+          "the pescatarian detail belongs to a different person"
+        ],
+        "must_not_include": [
+          "Kevin is pescatarian",
+          "Dana's boyfriend's diet applies to Kevin"
+        ],
+        "harmful_extra": [
+          "conflating Dana's boyfriend's pescatarian diet with Kevin's restrictions",
+          "saying Kevin eats fish because someone nearby is pescatarian"
+        ],
+        "harmless_extra": [
+          "mentioning that Dana's boyfriend went pescatarian as background"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model binds Dana's boyfriend's pescatarian diet to Kevin.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "His girlfriend Mia told me he actually stopped eating dairy and eggs about two years ago too. So he's fully vegan, not just vegetarian."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "he said no, he tried one egg dish and felt terrible. He's sticking with fully vegan. The nutritionist thing is on hold indefinitely."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I also wanted to mention — I ran into Mia's coworker Dana at the coffee shop and she was saying her boyfriend just went pescatarian. Totally unrelated to Kevin, but it made me think about how many people around me are changing their diets lately."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "After all the back-and-forth about Kevin's eating habits, what diet should I plan around for the birthday dinner at Greenleaf on May 17th?",
+      "expected_answer": "Fully vegan — no meat, fish, dairy, or eggs.",
+      "gold_memory_state": "Kevin's dietary preference is vegan (no meat, fish, dairy, or eggs) — confirmed after the tentative egg reintroduction was tried and rejected. The vegan tasting menu at Greenleaf on May 17th remains the correct plan.",
+      "judge_rubric": {
+        "must_include": [
+          "vegan"
+        ],
+        "acceptable_paraphrases": [
+          "fully vegan",
+          "strict vegan",
+          "no animal products"
+        ],
+        "must_not_include": [
+          "plant-based with eggs",
+          "vegetarian",
+          "pescatarian",
+          "includes eggs"
+        ],
+        "harmful_extra": [
+          "saying Kevin now eats eggs",
+          "saying Kevin is only vegetarian"
+        ],
+        "harmless_extra": [
+          "mentioning the vegan tasting menu at Greenleaf",
+          "mentioning May 17th"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model says Kevin is vegetarian (stale from first report) or plant-based with eggs (tentative value that was rejected). The tentative egg reintroduction is the recency trap — it was the most recent-looking change but was reverted.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the answer is anything other than vegan.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "he said no, he tried one egg dish and felt terrible. He's sticking with fully vegan. The nutritionist thing is on hold indefinitely."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "His girlfriend Mia told me he actually stopped eating dairy and eggs about two years ago too. So he's fully vegan, not just vegetarian."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "After all the back-and-forth about Kevin's eating habits, what diet should I plan around for the birthday dinner at Greenleaf on May 17th?",
+      "expected_answer": "Fully vegan — no meat, fish, dairy, or eggs.",
+      "gold_memory_state": "Kevin's dietary preference is vegan (no meat, fish, dairy, or eggs) — confirmed after the tentative egg reintroduction was tried and rejected. The vegan tasting menu at Greenleaf on May 17th remains the correct plan.",
+      "judge_rubric": {
+        "must_include": [
+          "vegan"
+        ],
+        "acceptable_paraphrases": [
+          "fully vegan",
+          "strict vegan",
+          "no animal products"
+        ],
+        "must_not_include": [
+          "plant-based with eggs",
+          "vegetarian",
+          "pescatarian",
+          "includes eggs"
+        ],
+        "harmful_extra": [
+          "saying Kevin now eats eggs",
+          "saying Kevin is only vegetarian"
+        ],
+        "harmless_extra": [
+          "mentioning the vegan tasting menu at Greenleaf",
+          "mentioning May 17th"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model says Kevin is vegetarian (stale from first report) or plant-based with eggs (tentative value that was rejected). The tentative egg reintroduction is the recency trap — it was the most recent-looking change but was reverted.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the answer is anything other than vegan.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "he said no, he tried one egg dish and felt terrible. He's sticking with fully vegan. The nutritionist thing is on hold indefinitely."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "His girlfriend Mia told me he actually stopped eating dairy and eggs about two years ago too. So he's fully vegan, not just vegetarian."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to write a short note to the restaurant Greenleaf for the May 17th reservation, explaining Kevin's dietary needs and mentioning that he's a food enthusiast who moved here from another city and misses the food scene there. Draft that note for me in two to three sentences.",
+      "expected_answer": "Dear Greenleaf team, one of our guests for the May 17th party of eight, Kevin, is strictly vegan — he does not eat any meat, fish, dairy, or eggs. He's a passionate food lover who relocated from Portland and really appreciates creative, plant-forward cuisine, so we're excited about your vegan tasting menu.",
+      "gold_memory_state": "Kevin's dietary preference: vegan (no meat, fish, dairy, or eggs) — confirmed. Kevin's previous city: Portland (until 2022) — confirmed. Dinner at Greenleaf on May 17th for a party of eight for Lena's birthday.",
+      "judge_rubric": {
+        "must_include": [
+          "vegan",
+          "Portland",
+          "May 17th"
+        ],
+        "acceptable_paraphrases": [
+          "fully vegan",
+          "plant-based with no animal products",
+          "moved from Portland"
+        ],
+        "must_not_include": [
+          "vegetarian",
+          "plant-based with eggs",
+          "pescatarian",
+          "eats eggs"
+        ],
+        "harmful_extra": [
+          "saying Kevin eats eggs or dairy",
+          "saying Kevin is vegetarian"
+        ],
+        "harmless_extra": [
+          "mentioning the party of eight",
+          "mentioning Lena's birthday",
+          "mentioning the vegan tasting menu",
+          "mentioning Kevin's love of tofu or cashew sauces"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the note describes Kevin as vegetarian or as eating eggs.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the dietary description is not vegan or if Portland is not mentioned as his previous city.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Kevin is fully vegan — no meat, fish, dairy, or eggs (confirmed after the egg reintroduction was rejected).",
+        "Fact 2: Kevin previously lived in Portland until 2022 and misses the food scene there.",
+        "Fact 3: The dinner reservation is at Greenleaf on May 17th for a party of eight for Lena's birthday.",
+        "Inference: The note must combine Kevin's confirmed vegan status with his Portland background and the specific reservation details to create a personalized restaurant communication.",
+        "Derived value: A two-to-three sentence note that names Kevin as vegan, references Portland as his former city, and addresses the May 17th reservation at Greenleaf."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "he said no, he tried one egg dish and felt terrible. He's sticking with fully vegan. The nutritionist thing is on hold indefinitely."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Kevin lived in Portland until 2022. He moved here after that, said he missed the food scene there a lot."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Also, I'm planning a small birthday dinner for our friend Lena in mid-May. I almost put Kevin down for the seafood option last time I planned a group dinner and I can't make that mistake again. There will be eight people total and I need a place that can handle both vegan and non-vegan guests comfortably."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to write a short note to the restaurant Greenleaf for the May 17th reservation, explaining Kevin's dietary needs and mentioning that he's a food enthusiast who moved here from another city and misses the food scene there. Draft that note for me in two to three sentences.",
+      "expected_answer": "Dear Greenleaf team, one of our guests for the May 17th party of eight, Kevin, is strictly vegan — he does not eat any meat, fish, dairy, or eggs. He's a passionate food lover who relocated from Portland and really appreciates creative, plant-forward cuisine, so we're excited about your vegan tasting menu.",
+      "gold_memory_state": "Kevin's dietary preference: vegan (no meat, fish, dairy, or eggs) — confirmed. Kevin's previous city: Portland (until 2022) — confirmed. Dinner at Greenleaf on May 17th for a party of eight for Lena's birthday.",
+      "judge_rubric": {
+        "must_include": [
+          "vegan",
+          "Portland",
+          "May 17th"
+        ],
+        "acceptable_paraphrases": [
+          "fully vegan",
+          "plant-based with no animal products",
+          "moved from Portland"
+        ],
+        "must_not_include": [
+          "vegetarian",
+          "plant-based with eggs",
+          "pescatarian",
+          "eats eggs"
+        ],
+        "harmful_extra": [
+          "saying Kevin eats eggs or dairy",
+          "saying Kevin is vegetarian"
+        ],
+        "harmless_extra": [
+          "mentioning the party of eight",
+          "mentioning Lena's birthday",
+          "mentioning the vegan tasting menu",
+          "mentioning Kevin's love of tofu or cashew sauces"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the note describes Kevin as vegetarian or as eating eggs.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the dietary description is not vegan or if Portland is not mentioned as his previous city.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Kevin is fully vegan — no meat, fish, dairy, or eggs (confirmed after the egg reintroduction was rejected).",
+        "Fact 2: Kevin previously lived in Portland until 2022 and misses the food scene there.",
+        "Fact 3: The dinner reservation is at Greenleaf on May 17th for a party of eight for Lena's birthday.",
+        "Inference: The note must combine Kevin's confirmed vegan status with his Portland background and the specific reservation details to create a personalized restaurant communication.",
+        "Derived value: A two-to-three sentence note that names Kevin as vegan, references Portland as his former city, and addresses the May 17th reservation at Greenleaf."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "he said no, he tried one egg dish and felt terrible. He's sticking with fully vegan. The nutritionist thing is on hold indefinitely."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Kevin lived in Portland until 2022. He moved here after that, said he missed the food scene there a lot."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Also, I'm planning a small birthday dinner for our friend Lena in mid-May. I almost put Kevin down for the seafood option last time I planned a group dinner and I can't make that mistake again. There will be eight people total and I need a place that can handle both vegan and non-vegan guests comfortably."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed our entire conversation history about Kevin's diet, what would they see as the sequence of changes — which descriptions were adopted at each stage, which were only briefly floated, and what's the final answer?",
+      "expected_answer": "First, Kevin was described as fully vegetarian since January (no meat or fish). Second, this was corrected to fully vegan (no meat, fish, dairy, or eggs) based on information from his girlfriend Mia. Third, there was a brief mention that Kevin was considering reintroducing eggs based on a nutritionist's recommendation, but this was never adopted — he tried one egg dish, felt terrible, and decided against it. Finally, Kevin's diet reverted to and remains fully vegan with no animal products.",
+      "gold_memory_state": "Kevin's dietary preference trajectory: (1) vegetarian — confirmed; (2) vegan — confirmed, superseding vegetarian; (3) plant-based with eggs — tentative only, never adopted; (4) vegan — confirmed, after egg experiment failed. Final state: vegan (no meat, fish, dairy, or eggs). Kevin's previous city: Portland (until 2022) — unchanged throughout.",
+      "judge_rubric": {
+        "must_include": [
+          "vegetarian as first state",
+          "vegan as second state (correction from Mia)",
+          "egg reintroduction as a tentative or briefly considered change that was not adopted",
+          "final state is vegan"
+        ],
+        "acceptable_paraphrases": [
+          "initially vegetarian then corrected to vegan",
+          "eggs were briefly considered but rejected",
+          "settled on vegan"
+        ],
+        "must_not_include": [
+          "Kevin is currently eating eggs",
+          "Kevin ended up plant-based with eggs",
+          "the egg change was adopted"
+        ],
+        "harmful_extra": [
+          "saying the egg reintroduction was confirmed or adopted",
+          "omitting the vegetarian-to-vegan correction",
+          "listing pescatarian as any stage"
+        ],
+        "harmless_extra": [
+          "mentioning the nutritionist recommendation",
+          "mentioning that Kevin felt terrible after trying an egg dish",
+          "mentioning Mia as the source of the vegan correction"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative egg reintroduction as an adopted change or lists vegetarian as the final state.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model does not present the four stages in chronological order: vegetarian -> vegan -> tentative eggs (rejected) -> vegan.",
+        "final_state": "Fails if the final state is anything other than vegan.",
+        "intermediate_state": "Fails if the model omits the vegetarian stage or the tentative egg stage.",
+        "trajectory_provenance": "Fails if the model does not attribute the vegan correction to Mia or does not note that the egg reintroduction was Kevin's own brief experiment that he abandoned."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: User first reported Kevin as vegetarian since January — no meat or fish. This was confirmed.",
+        "Step 2: User corrected this based on Mia's information: Kevin also stopped dairy and eggs two years ago, making him fully vegan. This superseded the vegetarian label.",
+        "Step 3: User relayed that Kevin was considering reintroducing eggs on a nutritionist's advice. This was tentative — he had not yet started.",
+        "Step 4: User confirmed directly with Kevin that the egg experiment failed — he tried one dish, felt terrible, and is sticking with vegan indefinitely.",
+        "Inference: The trajectory has four states with the tentative egg fork being rejected, so the final confirmed state is vegan (no meat, fish, dairy, or eggs)."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Kevin told me he's been fully vegetarian since January. He said he cut out all meat and fish at the start of the year."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "His girlfriend Mia told me he actually stopped eating dairy and eggs about two years ago too. So he's fully vegan, not just vegetarian."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Kevin mentioned at lunch today that he's been thinking about reintroducing eggs. He said his nutritionist recommended it and he's planning to start eating eggs again next week."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "he said no, he tried one egg dish and felt terrible. He's sticking with fully vegan. The nutritionist thing is on hold indefinitely."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed our entire conversation history about Kevin's diet, what would they see as the sequence of changes — which descriptions were adopted at each stage, which were only briefly floated, and what's the final answer?",
+      "expected_answer": "First, Kevin was described as fully vegetarian since January (no meat or fish). Second, this was corrected to fully vegan (no meat, fish, dairy, or eggs) based on information from his girlfriend Mia. Third, there was a brief mention that Kevin was considering reintroducing eggs based on a nutritionist's recommendation, but this was never adopted — he tried one egg dish, felt terrible, and decided against it. Finally, Kevin's diet reverted to and remains fully vegan with no animal products.",
+      "gold_memory_state": "Kevin's dietary preference trajectory: (1) vegetarian — confirmed; (2) vegan — confirmed, superseding vegetarian; (3) plant-based with eggs — tentative only, never adopted; (4) vegan — confirmed, after egg experiment failed. Final state: vegan (no meat, fish, dairy, or eggs). Kevin's previous city: Portland (until 2022) — unchanged throughout.",
+      "judge_rubric": {
+        "must_include": [
+          "vegetarian as first state",
+          "vegan as second state (correction from Mia)",
+          "egg reintroduction as a tentative or briefly considered change that was not adopted",
+          "final state is vegan"
+        ],
+        "acceptable_paraphrases": [
+          "initially vegetarian then corrected to vegan",
+          "eggs were briefly considered but rejected",
+          "settled on vegan"
+        ],
+        "must_not_include": [
+          "Kevin is currently eating eggs",
+          "Kevin ended up plant-based with eggs",
+          "the egg change was adopted"
+        ],
+        "harmful_extra": [
+          "saying the egg reintroduction was confirmed or adopted",
+          "omitting the vegetarian-to-vegan correction",
+          "listing pescatarian as any stage"
+        ],
+        "harmless_extra": [
+          "mentioning the nutritionist recommendation",
+          "mentioning that Kevin felt terrible after trying an egg dish",
+          "mentioning Mia as the source of the vegan correction"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative egg reintroduction as an adopted change or lists vegetarian as the final state.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model does not present the four stages in chronological order: vegetarian -> vegan -> tentative eggs (rejected) -> vegan.",
+        "final_state": "Fails if the final state is anything other than vegan.",
+        "intermediate_state": "Fails if the model omits the vegetarian stage or the tentative egg stage.",
+        "trajectory_provenance": "Fails if the model does not attribute the vegan correction to Mia or does not note that the egg reintroduction was Kevin's own brief experiment that he abandoned."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: User first reported Kevin as vegetarian since January — no meat or fish. This was confirmed.",
+        "Step 2: User corrected this based on Mia's information: Kevin also stopped dairy and eggs two years ago, making him fully vegan. This superseded the vegetarian label.",
+        "Step 3: User relayed that Kevin was considering reintroducing eggs on a nutritionist's advice. This was tentative — he had not yet started.",
+        "Step 4: User confirmed directly with Kevin that the egg experiment failed — he tried one dish, felt terrible, and is sticking with vegan indefinitely.",
+        "Inference: The trajectory has four states with the tentative egg fork being rejected, so the final confirmed state is vegan (no meat, fish, dairy, or eggs)."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Kevin told me he's been fully vegetarian since January. He said he cut out all meat and fish at the start of the year."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "His girlfriend Mia told me he actually stopped eating dairy and eggs about two years ago too. So he's fully vegan, not just vegetarian."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Kevin mentioned at lunch today that he's been thinking about reintroducing eggs. He said his nutritionist recommended it and he's planning to start eating eggs again next week."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "he said no, he tried one egg dish and felt terrible. He's sticking with fully vegan. The nutritionist thing is on hold indefinitely."
+        }
+      ]
+    }
+  ]
+}

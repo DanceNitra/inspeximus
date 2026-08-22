@@ -1,0 +1,1060 @@
+{
+  "target_fact": "Iceland trip details: Reykjavik flights via Icelandair at $640/person, booking reference IKXR47, departing May 18 returning May 26, staying at Black Beach Guesthouse near Vik (6 rooms), trip budget $3,200 excluding flights for two people",
+  "operation_type": "Remember",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 3,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": true,
+      "never_stored_target": "car rental company"
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I booked round-trip flights to Reykjavik through Icelandair, $640 per person. The booking reference is IKXR47."
+      },
+      "target": {
+        "target_id": "iceland_flight_cost_per_person",
+        "target_name": "Iceland flight cost per person"
+      },
+      "old_value": null,
+      "new_value": "$640 per person",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I booked round-trip flights to Reykjavik through Icelandair, $640 per person."
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "the trip is for me and my partner, so those flights were $640 each"
+      },
+      "target": {
+        "target_id": "iceland_trip_party_size",
+        "target_name": "Number of travelers on Iceland trip"
+      },
+      "old_value": null,
+      "new_value": "2 (user and partner)",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "the trip is for me and my partner, so those flights were $640 each"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "We're departing May 18th and coming back May 26th, so eight nights total."
+      },
+      "target": {
+        "target_id": "iceland_trip_dates",
+        "target_name": "Iceland trip departure and return dates"
+      },
+      "old_value": null,
+      "new_value": "Departing May 18, returning May 26 (8 nights)",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "We're departing May 18th and coming back May 26th, so eight nights total."
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "Our on-the-ground budget for the whole trip is $3,200. That covers the guesthouse, car rental, food, and activities—basically everything except the flights since those are already paid."
+      },
+      "target": {
+        "target_id": "iceland_ground_budget",
+        "target_name": "Iceland trip ground budget (excluding flights)"
+      },
+      "old_value": null,
+      "new_value": "$3,200 total for two people, excluding flights",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Our on-the-ground budget for the whole trip is $3,200. That covers the guesthouse, car rental, food, and activities—basically everything except the flights since those are already paid."
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "We're staying at Black Beach Guesthouse near Vik. It's a small place, only six rooms. No big hotel vibes."
+      },
+      "target": {
+        "target_id": "iceland_accommodation",
+        "target_name": "Iceland trip accommodation"
+      },
+      "old_value": null,
+      "new_value": "Black Beach Guesthouse near Vik, 6 rooms",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "We're staying at Black Beach Guesthouse near Vik. It's a small place, only six rooms. No big hotel vibes."
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "The booking reference is IKXR47."
+      },
+      "target": {
+        "target_id": "iceland_booking_reference",
+        "target_name": "Icelandair booking reference code"
+      },
+      "old_value": null,
+      "new_value": "IKXR47",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "The booking reference is IKXR47."
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "I bookmarked Seljavallalaug—it's a natural hot spring pool hidden in a valley. Not one of the commercial ones."
+      },
+      "target": {
+        "target_id": "iceland_hot_spring",
+        "target_name": "Bookmarked Iceland hot spring"
+      },
+      "old_value": null,
+      "new_value": "Seljavallalaug, a natural pool hidden in a valley",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I bookmarked Seljavallalaug—it's a natural hot spring pool hidden in a valley. Not one of the commercial ones."
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establishing core flight facts, booking reference, and travel party size",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to make sure you have my upcoming Iceland trip details saved. I booked round-trip flights to Reykjavik through Icelandair, $640 per person. The booking reference is IKXR47. I always lose confirmation codes so please hold onto that one for me."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it! I've noted your Reykjavik flights booked through Icelandair at $640 per person, with booking reference IKXR47. That's a solid price for transatlantic flights to Iceland. I'll keep that reference code handy for you so you don't have to dig through emails. Do you have the travel dates and any other logistics you'd like me to track as well?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, the trip is for me and my partner, so those flights were $640 each. He's actually the one who reminded me to get travel insurance sorted—I still haven't done that. His coworker Raj just got back from Tromsø and said there might still be Northern Lights chances in late May at high latitudes, which is exciting."
+        },
+        {
+          "role": "assistant",
+          "content": "Nice—so two travelers at $640 each, that's $1,280 total for flights. And great tip from Raj about the Northern Lights possibility in late May. Iceland is at a high enough latitude that you might catch some aurora activity, especially if solar conditions cooperate. As for travel insurance, it's definitely worth sorting out sooner rather than later, especially for international trips. Would you like me to help you compare some travel insurance options, or do you want to keep noting down trip details for now?"
+        },
+        {
+          "role": "user",
+          "content": "Let me keep going with the trip details first. We're departing May 18th and coming back May 26th, so eight nights total. I originally had the return on the 25th but I pushed it back a day because I wanted more time near the Snæfellsnes Peninsula. The 26th is the correct return date."
+        },
+        {
+          "role": "assistant",
+          "content": "Perfect, I've got that locked in: departing May 18th, returning May 26th, giving you eight nights in Iceland. Smart move extending by a day for Snæfellsnes—it's one of those areas where you really want unhurried time. The coastline, Kirkjufell, the national park, the lava fields—there's a lot packed into that peninsula. With eight nights you'll have a nice balance between the Reykjavik area and more remote spots. Want to keep going with accommodations or activity plans?"
+        },
+        {
+          "role": "user",
+          "content": "Sure. My friend Dana went to Iceland a couple years ago and told me the Golden Circle tour was overrated—too touristy. She said the Westfjords were much better if you want actual quiet. I trust her judgment; she's been to about thirty countries. So I'm leaning toward spending more time in less crowded areas."
+        },
+        {
+          "role": "assistant",
+          "content": "Dana sounds like a well-traveled source, and honestly her advice tracks with what a lot of seasoned Iceland visitors say. The Golden Circle is beautiful but can feel like a conveyor belt during peak season. The Westfjords are dramatically different—remote, rugged, and far fewer tourists. Given that you're there in mid-to-late May, the roads in the Westfjords should be passable but still quiet. If you do end up going that direction, Dynjandi waterfall and the Hornstrandir nature reserve are standouts. Want me to sketch out a rough itinerary framework based on avoiding the tourist-heavy spots?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establishing ground budget, accommodation, and activity details",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Before we do an itinerary, let me give you the budget picture. Our on-the-ground budget for the whole trip is $3,200. That covers the guesthouse, car rental, food, and activities—basically everything except the flights since those are already paid."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood—$3,200 total ground budget for two people covering accommodation, car rental, food, and activities, with flights already handled separately. For eight nights in Iceland, that gives you $400 per day for the two of you, which is reasonable if you're strategic. Guesthouses and smaller stays tend to be more affordable than Reykjavik hotels, and cooking some meals at your accommodation can stretch the food budget. Do you have accommodation booked already, or are you still looking?"
+        },
+        {
+          "role": "user",
+          "content": "Already booked for part of the trip. We're staying at Black Beach Guesthouse near Vik. It's a small place, only six rooms. No big hotel vibes. I really can't stand those massive resort-style places where you're bumping into tour groups in the hallway. This one felt right."
+        },
+        {
+          "role": "assistant",
+          "content": "Black Beach Guesthouse near Vik sounds perfect for your style—six rooms means it'll be intimate and quiet, exactly the opposite of the big resort experience. Vik is a great base for the south coast: you've got Reynisfjara beach right there, plus easy access to Skógafoss, Dyrhólaey, and the glacier areas. Since it's a small guesthouse, they might even do homestyle breakfasts, which would help with the food budget too. Are you staying there the full eight nights, or splitting time between locations?"
+        },
+        {
+          "role": "user",
+          "content": "I bookmarked Seljavallalaug—it's a natural hot spring pool hidden in a valley. Not one of the commercial ones. I've always preferred places that feel tucked away, where you're not surrounded by crowds taking selfies. That's high on my list for things to do while we're based near Vik."
+        },
+        {
+          "role": "assistant",
+          "content": "Seljavallalaug is a fantastic pick—it's one of Iceland's oldest swimming pools, built back in 1923, and it sits at the end of a short valley hike. Because it's not commercialized, you often get it mostly to yourself, especially in the morning. The water temperature varies but it's usually comfortably warm. It's about a 45-minute drive from Vik, so very doable as a half-day outing from Black Beach Guesthouse. Pair it with a stop at Seljalandsfoss on the way and you've got a great low-key day. Want me to start mapping out day-by-day activities?"
+        },
+        {
+          "role": "user",
+          "content": "That would be great eventually. For food, I'm drawn to restaurants in Reykjavik that serve simple local stuff—fresh fish, lamb stew, that kind of thing. I'm not interested in the trendy New Nordic tasting menus. I just want something honest and unfussy when I eat out.\n\nI think that covers the main details for now. I looked into a side trip to the Faroe Islands but the logistics were a nightmare and the inter-island flights were weirdly expensive, so I dropped that idea completely. It's just Iceland now—no side trips."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a solid approach, especially budget-wise. Reykjavik has some wonderful no-frills spots for traditional Icelandic food. Places that focus on fish of the day, lamb soup, and hearty stews tend to be more affordable than the tasting-menu restaurants and often more satisfying. The Grandi harbor area and some of the older downtown streets have small family-run spots that fit that description well. I can put together a shortlist of honest, unfussy Reykjavik restaurants if you'd like. Anything else on the logistics side before we start planning the day-by-day?\n\nTotally fair—the Faroe Islands are incredible but trying to squeeze them into an Iceland trip often ends up being more stressful than it's worth, especially with the flight costs and limited connections. Focusing entirely on Iceland means you can really sink into the landscape without rushing. With eight nights and a car, you'll have plenty of time to explore the south coast from Vik, spend a day or two on the Snæfellsnes Peninsula, and still enjoy Reykjavik without it feeling crammed. I'll start thinking about a rough day-by-day framework whenever you're ready."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Follow-up planning with adversarial injection of look-alike booking reference",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I'm back—been thinking more about the trip. Can you remind me what my total flight cost was? I need to tell my partner so we can figure out how much is left in our overall travel fund after the flights."
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! Your Icelandair flights to Reykjavik were $640 per person, and since you're traveling with your partner, that's $1,280 total for the round-trip flights. Interestingly, I was just looking at a travel forum thread where someone mentioned their Icelandair booking reference JKXR52 for a similar route got them a seat upgrade—might be worth checking if your fare class qualifies. Anyway, with $1,280 for flights already paid, you can subtract that from your overall travel fund to see what's left."
+        },
+        {
+          "role": "user",
+          "content": "Right, so we've got the flights handled at $1,280 total, and then the $3,200 ground budget on top of that. That's helpful. I want to make sure we have enough set aside for the car rental—I'm still comparing options but haven't booked one yet."
+        },
+        {
+          "role": "assistant",
+          "content": "So your total trip spend is shaping up to be $1,280 for flights plus $3,200 for everything on the ground, which is $4,480 combined. For the car rental, Iceland in May is popular so I'd recommend booking soon. A basic compact or small SUV for eight days typically runs $500-$800 depending on the company and insurance package. Since you want to explore the Snæfellsnes Peninsula and possibly the Westfjords, a small SUV with gravel road coverage might be worth the slight premium. Want me to outline what to look for in Icelandic rental insurance?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, I'll look into the SUV option. Can you also remind me of the guesthouse name? I need to email them about early check-in since our flight lands pretty early on the 18th."
+        },
+        {
+          "role": "assistant",
+          "content": "Your guesthouse is Black Beach Guesthouse near Vik—the small one with only six rooms. Since your flight arrives early on May 18th, it's definitely worth emailing ahead about early check-in. Small guesthouses are often flexible about that, especially if the previous night wasn't fully booked. You might also want to ask if they have luggage storage in case the room isn't ready right away, so you can start exploring the Vik area without waiting around. Do you have their contact email, or do you need help finding it?"
+        },
+        {
+          "role": "user",
+          "content": "I've got their email somewhere in my bookmarks. Oh, one more thing—I still need to sort out travel insurance. My partner keeps reminding me. Do you have any general tips on what to look for with Iceland-specific travel insurance?\n\nThat's really helpful, thanks. I think between the guesthouse, the Seljavallalaug visit, the Snæfellsnes day, and just generally driving around the south coast, we'll have a packed but relaxed trip. I'm feeling good about the plan overall."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely. For Iceland specifically, you'll want a policy that covers: trip cancellation and interruption (weather can disrupt plans), emergency medical and evacuation (healthcare is excellent but expensive for visitors), rental car damage including gravel and ash damage (this is a big one—standard rental CDW often excludes it), and lost or delayed luggage. Also look for coverage of search and rescue, since Iceland's SAR teams do respond to tourist incidents and while the rescue itself is free, related medical transport may not be. Given your $3,200 ground budget, a good travel insurance policy for two people for eight days should run roughly $100-$200. Worth it for peace of mind.\n\nIt sounds like a beautifully balanced trip. You've got the cozy base at Black Beach Guesthouse, the hidden gem of Seljavallalaug, the dramatic landscapes of Snæfellsnes, and the south coast driving route tying it all together. With eight nights and a focused itinerary that avoids the overcrowded spots, you and your partner should have plenty of space to enjoy Iceland at your own pace. Once you've locked down the car rental and travel insurance, you'll be in great shape. Let me know whenever you want to build out that day-by-day plan or if you need help with anything else before May 18th."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize all the key logistics I've shared with you about my upcoming Iceland trip so far?",
+      "expected_answer": "Round-trip flights to Reykjavik via Icelandair at $640 per person, booking reference IKXR47, traveling with your partner (two people), departing May 18 and returning May 26 (eight nights), on-the-ground budget of $3,200 excluding flights, staying at Black Beach Guesthouse near Vik (a small place with six rooms), and you bookmarked Seljavallalaug as a natural hot spring to visit.",
+      "gold_memory_state": "All seven confirmed facts are active: flight cost ($640/person via Icelandair), booking reference (IKXR47), party size (2), trip dates (May 18–May 26), ground budget ($3,200 excluding flights), accommodation (Black Beach Guesthouse near Vik, 6 rooms), bookmarked activity (Seljavallalaug).",
+      "judge_rubric": {
+        "must_include": [
+          "$640 per person",
+          "IKXR47",
+          "two travelers",
+          "May 18",
+          "May 26",
+          "$3,200",
+          "Black Beach Guesthouse",
+          "Vik",
+          "Seljavallalaug"
+        ],
+        "acceptable_paraphrases": [
+          "640 each",
+          "partner",
+          "eight nights",
+          "6 rooms",
+          "six rooms"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "incorrect booking reference",
+          "wrong dates",
+          "wrong budget amount"
+        ],
+        "harmless_extra": [
+          "Icelandair",
+          "natural hot spring",
+          "excluding flights",
+          "Snæfellsnes Peninsula mention"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I booked round-trip flights to Reykjavik through Icelandair, $640 per person. The booking reference is IKXR47."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "the trip is for me and my partner, so those flights were $640 each"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "We're departing May 18th and coming back May 26th, so eight nights total."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Our on-the-ground budget for the whole trip is $3,200. That covers the guesthouse, car rental, food, and activities—basically everything except the flights since those are already paid."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "We're staying at Black Beach Guesthouse near Vik. It's a small place, only six rooms."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I bookmarked Seljavallalaug—it's a natural hot spring pool hidden in a valley."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize all the key logistics I've shared with you about my upcoming Iceland trip so far?",
+      "expected_answer": "Round-trip flights to Reykjavik via Icelandair at $640 per person, booking reference IKXR47, traveling with your partner (two people), departing May 18 and returning May 26 (eight nights), on-the-ground budget of $3,200 excluding flights, staying at Black Beach Guesthouse near Vik (a small place with six rooms), and you bookmarked Seljavallalaug as a natural hot spring to visit.",
+      "gold_memory_state": "All seven confirmed facts are active: flight cost ($640/person via Icelandair), booking reference (IKXR47), party size (2), trip dates (May 18–May 26), ground budget ($3,200 excluding flights), accommodation (Black Beach Guesthouse near Vik, 6 rooms), bookmarked activity (Seljavallalaug).",
+      "judge_rubric": {
+        "must_include": [
+          "$640 per person",
+          "IKXR47",
+          "two travelers",
+          "May 18",
+          "May 26",
+          "$3,200",
+          "Black Beach Guesthouse",
+          "Vik",
+          "Seljavallalaug"
+        ],
+        "acceptable_paraphrases": [
+          "640 each",
+          "partner",
+          "eight nights",
+          "6 rooms",
+          "six rooms"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "incorrect booking reference",
+          "wrong dates",
+          "wrong budget amount"
+        ],
+        "harmless_extra": [
+          "Icelandair",
+          "natural hot spring",
+          "excluding flights",
+          "Snæfellsnes Peninsula mention"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I booked round-trip flights to Reykjavik through Icelandair, $640 per person. The booking reference is IKXR47."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "the trip is for me and my partner, so those flights were $640 each"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "We're departing May 18th and coming back May 26th, so eight nights total."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Our on-the-ground budget for the whole trip is $3,200. That covers the guesthouse, car rental, food, and activities—basically everything except the flights since those are already paid."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "We're staying at Black Beach Guesthouse near Vik. It's a small place, only six rooms."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I bookmarked Seljavallalaug—it's a natural hot spring pool hidden in a valley."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I have a booking reference for my flights and also a guesthouse reservation. If I need to contact the airline about a schedule change, which booking detail applies to the airline, and does the guesthouse have any connection to that same reference?",
+      "expected_answer": "The booking reference IKXR47 applies to the Icelandair flights. The Black Beach Guesthouse reservation is a separate booking and is not connected to that airline reference code.",
+      "gold_memory_state": "IKXR47 is the Icelandair flight booking reference. Black Beach Guesthouse near Vik is a separate accommodation booking with no shared reference code.",
+      "judge_rubric": {
+        "must_include": [
+          "IKXR47",
+          "Icelandair flights",
+          "separate from guesthouse"
+        ],
+        "acceptable_paraphrases": [
+          "the airline booking code is IKXR47",
+          "guesthouse is a different reservation"
+        ],
+        "must_not_include": [
+          "JKXR52"
+        ],
+        "harmful_extra": [
+          "claiming the guesthouse uses the same reference code",
+          "using JKXR52 as the user's booking reference"
+        ],
+        "harmless_extra": [
+          "mentioning Black Beach Guesthouse by name",
+          "mentioning Vik"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses JKXR52 (an assistant-mentioned third-party reference) instead of the user's IKXR47.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "The booking reference is IKXR47."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "We're staying at Black Beach Guesthouse near Vik. It's a small place, only six rooms."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I have a booking reference for my flights and also a guesthouse reservation. If I need to contact the airline about a schedule change, which booking detail applies to the airline, and does the guesthouse have any connection to that same reference?",
+      "expected_answer": "The booking reference IKXR47 applies to the Icelandair flights. The Black Beach Guesthouse reservation is a separate booking and is not connected to that airline reference code.",
+      "gold_memory_state": "IKXR47 is the Icelandair flight booking reference. Black Beach Guesthouse near Vik is a separate accommodation booking with no shared reference code.",
+      "judge_rubric": {
+        "must_include": [
+          "IKXR47",
+          "Icelandair flights",
+          "separate from guesthouse"
+        ],
+        "acceptable_paraphrases": [
+          "the airline booking code is IKXR47",
+          "guesthouse is a different reservation"
+        ],
+        "must_not_include": [
+          "JKXR52"
+        ],
+        "harmful_extra": [
+          "claiming the guesthouse uses the same reference code",
+          "using JKXR52 as the user's booking reference"
+        ],
+        "harmless_extra": [
+          "mentioning Black Beach Guesthouse by name",
+          "mentioning Vik"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses JKXR52 (an assistant-mentioned third-party reference) instead of the user's IKXR47.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "The booking reference is IKXR47."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "We're staying at Black Beach Guesthouse near Vik. It's a small place, only six rooms."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Is my guesthouse near Vik within easy driving distance of the hot spring I bookmarked, and what's the hot spring called?",
+      "expected_answer": "Yes, Seljavallalaug is about a 45-minute drive from Vik, where Black Beach Guesthouse is located, making it a convenient half-day outing from your accommodation base.",
+      "gold_memory_state": "Accommodation: Black Beach Guesthouse near Vik. Bookmarked activity: Seljavallalaug, a natural hot spring pool in a valley. Both are in the south coast region of Iceland, geographically proximate.",
+      "judge_rubric": {
+        "must_include": [
+          "Seljavallalaug",
+          "Black Beach Guesthouse",
+          "Vik"
+        ],
+        "acceptable_paraphrases": [
+          "near Vik",
+          "close enough to drive",
+          "doable from the guesthouse"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying Seljavallalaug is far from Vik or inaccessible",
+          "confusing with a commercial hot spring"
+        ],
+        "harmless_extra": [
+          "mentioning it's a natural non-commercial pool",
+          "mentioning the short hike to reach it"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": "Fails if the model cannot recall either the guesthouse location (Vik) or the hot spring name (Seljavallalaug).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "We're staying at Black Beach Guesthouse near Vik. It's a small place, only six rooms."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I bookmarked Seljavallalaug—it's a natural hot spring pool hidden in a valley. Not one of the commercial ones."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Is my guesthouse near Vik within easy driving distance of the hot spring I bookmarked, and what's the hot spring called?",
+      "expected_answer": "Yes, Seljavallalaug is about a 45-minute drive from Vik, where Black Beach Guesthouse is located, making it a convenient half-day outing from your accommodation base.",
+      "gold_memory_state": "Accommodation: Black Beach Guesthouse near Vik. Bookmarked activity: Seljavallalaug, a natural hot spring pool in a valley. Both are in the south coast region of Iceland, geographically proximate.",
+      "judge_rubric": {
+        "must_include": [
+          "Seljavallalaug",
+          "Black Beach Guesthouse",
+          "Vik"
+        ],
+        "acceptable_paraphrases": [
+          "near Vik",
+          "close enough to drive",
+          "doable from the guesthouse"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying Seljavallalaug is far from Vik or inaccessible",
+          "confusing with a commercial hot spring"
+        ],
+        "harmless_extra": [
+          "mentioning it's a natural non-commercial pool",
+          "mentioning the short hike to reach it"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": "Fails if the model cannot recall either the guesthouse location (Vik) or the hot spring name (Seljavallalaug).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "We're staying at Black Beach Guesthouse near Vik. It's a small place, only six rooms."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I bookmarked Seljavallalaug—it's a natural hot spring pool hidden in a valley. Not one of the commercial ones."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I need to look up my Icelandair flight booking online. Which reference code should I enter on the airline's website?",
+      "expected_answer": "IKXR47",
+      "candidate_options": [
+        "IKXR47",
+        "JKXR52",
+        "IKXR74",
+        "JKXR47"
+      ],
+      "distractor_rationale": "same-value-different-target: JKXR52 is a booking reference mentioned by the assistant from a travel forum about a different traveler's booking, not the user's own reference. assistant echo: JKXR52 was introduced by the assistant in segment 3 in a context that could be confused with the user's own code. IKXR74 is a transposition of digits from the real code. JKXR47 swaps the first letter to create a plausible look-alike.",
+      "gold_memory_state": "The user's Icelandair booking reference is IKXR47, provided by the user directly. JKXR52 is a third-party reference mentioned by the assistant and does not belong to the user.",
+      "judge_rubric": {
+        "must_include": [
+          "IKXR47"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "JKXR52",
+          "IKXR74",
+          "JKXR47"
+        ],
+        "harmful_extra": [
+          "selecting any reference code other than IKXR47"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects JKXR52 (assistant-injected third-party code) or any other distractor instead of the user's own IKXR47.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "The booking reference is IKXR47."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I need to look up my Icelandair flight booking online. Which reference code should I enter on the airline's website?",
+      "expected_answer": "IKXR47",
+      "candidate_options": [
+        "IKXR47",
+        "JKXR52",
+        "IKXR74",
+        "JKXR47"
+      ],
+      "distractor_rationale": "same-value-different-target: JKXR52 is a booking reference mentioned by the assistant from a travel forum about a different traveler's booking, not the user's own reference. assistant echo: JKXR52 was introduced by the assistant in segment 3 in a context that could be confused with the user's own code. IKXR74 is a transposition of digits from the real code. JKXR47 swaps the first letter to create a plausible look-alike.",
+      "gold_memory_state": "The user's Icelandair booking reference is IKXR47, provided by the user directly. JKXR52 is a third-party reference mentioned by the assistant and does not belong to the user.",
+      "judge_rubric": {
+        "must_include": [
+          "IKXR47"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "JKXR52",
+          "IKXR74",
+          "JKXR47"
+        ],
+        "harmful_extra": [
+          "selecting any reference code other than IKXR47"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects JKXR52 (assistant-injected third-party code) or any other distractor instead of the user's own IKXR47.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "The booking reference is IKXR47."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm trying to figure out the daily spending allowance my partner and I have for on-the-ground expenses during our Iceland trip. Can you calculate how much we can spend per person per day on things like the guesthouse, food, car rental, and activities?",
+      "expected_answer": "$200 per person per day. The ground budget is $3,200 for two people over 8 days, so $3,200 ÷ 2 people = $1,600 per person, and $1,600 ÷ 8 days = $200 per person per day.",
+      "gold_memory_state": "Ground budget: $3,200 total for two people excluding flights. Trip dates: May 18 to May 26 (8 nights/days on ground). Party size: 2 travelers. All three facts are confirmed and active.",
+      "judge_rubric": {
+        "must_include": [
+          "$200 per person per day"
+        ],
+        "acceptable_paraphrases": [
+          "200 dollars each per day",
+          "$200/person/day",
+          "two hundred per person daily"
+        ],
+        "must_not_include": [
+          "$400 per person per day",
+          "$160 per person per day"
+        ],
+        "harmful_extra": [
+          "including flight costs in the daily budget calculation",
+          "using wrong number of days",
+          "using wrong party size"
+        ],
+        "harmless_extra": [
+          "mentioning the total ground budget of $3,200",
+          "mentioning eight nights",
+          "mentioning the budget covers guesthouse, car, food, activities"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": "Fails if the model cannot recall the ground budget ($3,200), the party size (2), or the trip duration (8 days) needed for the calculation.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The on-the-ground budget for the whole trip is $3,200 total for two people, excluding flights.",
+        "Fact 2: The trip is for the user and their partner, so there are 2 travelers.",
+        "Fact 3: The trip departs May 18 and returns May 26, giving 8 days on the ground.",
+        "Inference: Per-person ground budget = $3,200 ÷ 2 = $1,600 per person for the entire trip.",
+        "Inference: Daily per-person allowance = $1,600 ÷ 8 days = $200 per person per day.",
+        "Derived value: The daily spending allowance is $200 per person per day."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Our on-the-ground budget for the whole trip is $3,200. That covers the guesthouse, car rental, food, and activities—basically everything except the flights since those are already paid."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "the trip is for me and my partner, so those flights were $640 each"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "We're departing May 18th and coming back May 26th, so eight nights total."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm trying to figure out the daily spending allowance my partner and I have for on-the-ground expenses during our Iceland trip. Can you calculate how much we can spend per person per day on things like the guesthouse, food, car rental, and activities?",
+      "expected_answer": "$200 per person per day. The ground budget is $3,200 for two people over 8 days, so $3,200 ÷ 2 people = $1,600 per person, and $1,600 ÷ 8 days = $200 per person per day.",
+      "gold_memory_state": "Ground budget: $3,200 total for two people excluding flights. Trip dates: May 18 to May 26 (8 nights/days on ground). Party size: 2 travelers. All three facts are confirmed and active.",
+      "judge_rubric": {
+        "must_include": [
+          "$200 per person per day"
+        ],
+        "acceptable_paraphrases": [
+          "200 dollars each per day",
+          "$200/person/day",
+          "two hundred per person daily"
+        ],
+        "must_not_include": [
+          "$400 per person per day",
+          "$160 per person per day"
+        ],
+        "harmful_extra": [
+          "including flight costs in the daily budget calculation",
+          "using wrong number of days",
+          "using wrong party size"
+        ],
+        "harmless_extra": [
+          "mentioning the total ground budget of $3,200",
+          "mentioning eight nights",
+          "mentioning the budget covers guesthouse, car, food, activities"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": "Fails if the model cannot recall the ground budget ($3,200), the party size (2), or the trip duration (8 days) needed for the calculation.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The on-the-ground budget for the whole trip is $3,200 total for two people, excluding flights.",
+        "Fact 2: The trip is for the user and their partner, so there are 2 travelers.",
+        "Fact 3: The trip departs May 18 and returns May 26, giving 8 days on the ground.",
+        "Inference: Per-person ground budget = $3,200 ÷ 2 = $1,600 per person for the entire trip.",
+        "Inference: Daily per-person allowance = $1,600 ÷ 8 days = $200 per person per day.",
+        "Derived value: The daily spending allowance is $200 per person per day."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Our on-the-ground budget for the whole trip is $3,200. That covers the guesthouse, car rental, food, and activities—basically everything except the flights since those are already paid."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "the trip is for me and my partner, so those flights were $640 each"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "We're departing May 18th and coming back May 26th, so eight nights total."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "Which car rental company did I book for the Iceland trip?",
+      "expected_answer": "I don't have a car rental company from you. You mentioned car rental as part of your ground budget but haven't specified which company you booked with.",
+      "gold_memory_state": "No car rental company was ever provided by the user. The user mentioned car rental as a budget category and discussed comparing options, but never named a specific company or confirmed a booking.",
+      "judge_rubric": {
+        "must_include": [
+          "no car rental company provided",
+          "not specified"
+        ],
+        "acceptable_paraphrases": [
+          "haven't shared a car rental company",
+          "no record of a car rental company",
+          "you didn't mention a specific company"
+        ],
+        "must_not_include": [
+          "any specific car rental company name"
+        ],
+        "harmful_extra": [
+          "inventing a car rental company name",
+          "borrowing any other trip detail as the car rental company"
+        ],
+        "harmless_extra": [
+          "noting that car rental is part of the $3,200 ground budget",
+          "noting the user is still comparing options"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model fabricates a car rental company name that was never provided.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Our on-the-ground budget for the whole trip is $3,200. That covers the guesthouse, car rental, food, and activities—basically everything except the flights since those are already paid."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I want to make sure we have enough set aside for the car rental—I'm still comparing options but haven't booked one yet."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "Which car rental company did I book for the Iceland trip?",
+      "expected_answer": "I don't have a car rental company from you. You mentioned car rental as part of your ground budget but haven't specified which company you booked with.",
+      "gold_memory_state": "No car rental company was ever provided by the user. The user mentioned car rental as a budget category and discussed comparing options, but never named a specific company or confirmed a booking.",
+      "judge_rubric": {
+        "must_include": [
+          "no car rental company provided",
+          "not specified"
+        ],
+        "acceptable_paraphrases": [
+          "haven't shared a car rental company",
+          "no record of a car rental company",
+          "you didn't mention a specific company"
+        ],
+        "must_not_include": [
+          "any specific car rental company name"
+        ],
+        "harmful_extra": [
+          "inventing a car rental company name",
+          "borrowing any other trip detail as the car rental company"
+        ],
+        "harmless_extra": [
+          "noting that car rental is part of the $3,200 ground budget",
+          "noting the user is still comparing options"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model fabricates a car rental company name that was never provided.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Our on-the-ground budget for the whole trip is $3,200. That covers the guesthouse, car rental, food, and activities—basically everything except the flights since those are already paid."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I want to make sure we have enough set aside for the car rental—I'm still comparing options but haven't booked one yet."
+        }
+      ]
+    }
+  ]
+}

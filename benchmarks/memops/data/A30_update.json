@@ -1,0 +1,814 @@
+{
+  "target_fact": "User's current French proficiency level (CEFR) undergoing updates from B1 through tentative and confirmed changes",
+  "operation_type": "Update",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "french_level_chain",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "My current French level is B1 according to the CEFR scale"
+      },
+      "target": {
+        "target_id": "french_cefr_level",
+        "target_name": "User's current French CEFR proficiency level"
+      },
+      "old_value": null,
+      "new_value": "B1",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current French level is B1 according to the CEFR scale"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "french_level_chain",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I just got my midterm results back and the instructor moved me up to B2 track"
+      },
+      "target": {
+        "target_id": "french_cefr_level",
+        "target_name": "User's current French CEFR proficiency level"
+      },
+      "old_value": "B1",
+      "new_value": "B2",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I just got my midterm results back and the instructor moved me up to B2 track"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "french_level_chain",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 3,
+        "quote": "The Alliance Française coordinator told me they're reclassifying me back to B1 for the summer intensive because they changed their placement criteria"
+      },
+      "target": {
+        "target_id": "french_cefr_level",
+        "target_name": "User's current French CEFR proficiency level"
+      },
+      "old_value": "B2",
+      "new_value": "B1",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "The Alliance Française coordinator told me they're reclassifying me back to B1 for the summer intensive because they changed their placement criteria"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "french_level_chain",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "I talked to my actual instructor today and she confirmed I'm staying in the B2 group. The coordinator was looking at the wrong student file"
+      },
+      "target": {
+        "target_id": "french_cefr_level",
+        "target_name": "User's current French CEFR proficiency level"
+      },
+      "old_value": "B1",
+      "new_value": "B2",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I talked to my actual instructor today and she confirmed I'm staying in the B2 group. The coordinator was looking at the wrong student file"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I passed the JLPT N3 in December with a score of 118 out of 180"
+      },
+      "target": {
+        "target_id": "jlpt_n3_result",
+        "target_name": "User's JLPT N3 exam result"
+      },
+      "old_value": null,
+      "new_value": "Passed JLPT N3 in December, score 118/180",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I passed the JLPT N3 in December with a score of 118 out of 180"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "my company deadline for submitting language certification proof is June 30th"
+      },
+      "target": {
+        "target_id": "company_language_cert_deadline",
+        "target_name": "Company language certification submission deadline"
+      },
+      "old_value": null,
+      "new_value": "June 30th",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my company deadline for submitting language certification proof is June 30th"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish baseline French level and JLPT result; set up multi-hop facts",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to get my language study details organized. My current French level is B1 according to the CEFR scale. I keep getting asked about it at work and I always forget the exact designation, so I really need this written down properly. I started a structured course this year and it's been going well so far."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it! I've noted that your current French proficiency level is B1 on the CEFR scale. That's the intermediate threshold—solid conversational ability with some complexity in reading and writing. It's great that you're in a structured course to build on that. I can help you keep track of any changes to your level as you progress. Would you like to tell me more about the course itself, or is there other language information you'd like me to organize?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, a bit more on the course. I'm in the B1-level course at Alliance Française downtown, we meet twice a week. I think the first class was March 5th—I'd originally thought March 3rd but that was actually when I paid the enrollment fee. The course has been pretty intense honestly, lots of listening exercises and dictation work that I wasn't expecting at this level."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for the details. So you're enrolled in a B1-level course at the downtown Alliance Française center, meeting twice weekly, with the first class on March 5th and enrollment payment on March 3rd. The listening and dictation focus sounds challenging but really useful for building comprehension skills at the B1 level. Those are often the hardest skills to develop because you can't control the pace the way you can with reading. Do you want me to note down any specific goals you have for this course, like target completion dates or exam plans?"
+        },
+        {
+          "role": "user",
+          "content": "Let me also mention my Japanese. I passed the JLPT N3 in December with a score of 118 out of 180. I was really pleased about that because I'd failed it once before—I think it was the previous summer, but honestly the timeline is blurry and the failed attempt doesn't matter anymore. The December pass is what counts. Japanese is something I mostly maintain through reading manga and watching shows rather than formal study."
+        },
+        {
+          "role": "assistant",
+          "content": "Congratulations on passing the JLPT N3 in December with 118 out of 180—that's a solid result! I've noted that down. I won't worry about the earlier failed attempt since you've said it's not relevant anymore. It sounds like your Japanese maintenance strategy is quite immersive—manga and shows are great for keeping vocabulary and grammar patterns fresh without the pressure of textbook drills. Between your French course and your Japanese proficiency, you've got a nice range going. Would you like to discuss anything else about your language background?"
+        },
+        {
+          "role": "user",
+          "content": "Just one more thing for now. My native language is English, and I grew up hearing Tagalog at home from my mom. I'd say I'm at a very basic conversational level in Tagalog—enough to order food and follow along when my relatives aren't speaking too fast, but nothing I'd call fluent. It's more of a heritage connection than a studied skill, if that makes sense."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes perfect sense. I've noted that English is your native language and that you have basic conversational Tagalog from growing up hearing it at home—functional for everyday interactions like ordering food and following family conversations at a moderate pace, but not at a fluent level. Heritage language exposure is valuable even at a basic level; it gives you phonological familiarity that formal learners often struggle to develop. So to summarize your language profile so far: English (native), French (B1, active structured study), Japanese (JLPT N3 passed), and Tagalog (basic conversational, heritage). Shall we continue organizing?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Update French level to B2; establish company certification deadline for multi-hop",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Big update on the French front! I just got my midterm results back and the instructor moved me up to B2 track. I wasn't expecting it at all—I thought the listening section had destroyed me, but apparently my overall performance was strong enough that she thinks I belong in the higher group. So my French level is now B2, not B1 anymore."
+        },
+        {
+          "role": "assistant",
+          "content": "That's fantastic news! I'm updating your French CEFR level from B1 to B2. It sounds like the listening challenges you experienced didn't hold you back as much as you feared—your reading, writing, and other skills must have been strong enough to demonstrate B2-level competence. Being moved up by your instructor is a great sign since she can see your day-to-day performance, not just one test score. This also changes your certification trajectory if you're planning to take the DELF. Would you like me to adjust any notes about your study plans?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, about that. She specifically told me during the feedback session—she said my reading and writing were solidly B2 already and the listening would catch up. She recommended I do extra podcast listening outside of class, which is funny because I've already been casually listening to a Spanish podcast called Hoy Hablamos during my commute. Maybe I should find a French equivalent."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a great endorsement from your instructor—having reading and writing solidly at B2 with listening expected to catch up is a strong position. And yes, finding a French equivalent of Hoy Hablamos could be really helpful. There are several good French podcasts at the B2 level: InnerFrench, Journal en français facile from RFI, and Français Authentique are popular choices. Since you already enjoy the immersive podcast format with Spanish, applying the same approach to French could accelerate your listening skills. Would you like me to note down any specific French podcast you choose, or shall we talk about the certification timeline?"
+        },
+        {
+          "role": "user",
+          "content": "Let's talk about the certification timeline actually, because this is critical. So my company deadline for submitting language certification proof is June 30th. That's a hard deadline from HR—no extensions. This is really important and I need to make sure I don't lose track of it. I've been meaning to figure out exactly what I need to submit."
+        },
+        {
+          "role": "assistant",
+          "content": "I've noted June 30th as your hard company deadline for language certification submission—no extensions. This is clearly a high-priority item. Let's make sure we're clear on what you need to prepare. You mentioned earlier that you passed the JLPT N3 in December, so you should already have that certificate or be able to request it. For French, if you're targeting a DELF certification, you'd need to check registration deadlines and available test dates before June 30th. Do you know yet which certification you plan to submit, or are you considering both options?"
+        },
+        {
+          "role": "user",
+          "content": "I need to submit either my JLPT N3 certificate or a DELF B1 result by that date. Those are the two options HR gave me—they accept either one. The JLPT certificate I already have physically, it arrived in February. The DELF is trickier because I'd have to register, take the test, and get results all before June 30th. Given that my level just got bumped to B2, I'm not sure if I should aim for DELF B1 or even try B2.\n\nThat's good advice. I think for safety I'll just submit the JLPT N3 certificate since I already have it. The DELF can wait until I feel more confident. By the way, my friend Carla just took TOPIK II for Korean last month and scored Level 4. I was honestly pretty impressed—she's only been studying Korean for about a year and she's already at that level. Makes me feel like I should be progressing faster in my own languages."
+        },
+        {
+          "role": "assistant",
+          "content": "Good that you already have the JLPT N3 certificate in hand—that's your safe fallback option. For the DELF situation, since HR specified DELF B1 as acceptable, taking the B1 exam would be the lower-risk choice even though you're now studying at B2 level. A DELF B2 would be more impressive but carries more risk if your listening isn't fully caught up yet. The practical question is whether DELF test dates and result turnaround fit within the June 30th window. I'd recommend checking Alliance Française's next available DELF session dates. Would you like help thinking through the timeline?\n\nThat sounds like a smart plan—submitting the JLPT N3 certificate you already have eliminates any risk of missing the June 30th deadline, and you can pursue the DELF at your own pace later. And wow, Level 4 on TOPIK II after just one year is genuinely impressive for your friend Carla! That said, don't compare your progress unfavorably to hers—different languages have different learning curves, and you're managing multiple languages simultaneously while she's focused on one. Your B2 advancement in French and your JLPT N3 pass are both significant achievements. Everyone's language journey has its own timeline."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Tentative B1 reclassification then confirmed B2 revert; adversarial injection of Carla's B1 level",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So something kind of stressful happened with my French course. I got an email from the Alliance Française administrative office and it was confusing. I need to sort out what's actually going on with my level placement because there seems to be some bureaucratic mix-up happening. Can you help me think through this?"
+        },
+        {
+          "role": "assistant",
+          "content": "Of course, I'm happy to help you sort this out. Administrative mix-ups with language schools can be really frustrating, especially when you've already been moved to a higher track. Walk me through what the email said and any other communications you've had. We can figure out what your actual current status is and what steps you might need to take to resolve any discrepancies. What exactly did the administrative office tell you?"
+        },
+        {
+          "role": "user",
+          "content": "The Alliance Française coordinator told me they're reclassifying me back to B1 for the summer intensive because they changed their placement criteria. She said the new criteria are stricter and that based on my listening scores, I'd be placed at B1 under the updated system. She sounded pretty definitive about it in the email."
+        },
+        {
+          "role": "assistant",
+          "content": "I can see why that's stressful—being told you're going back to B1 after your instructor specifically moved you to B2 is disorienting. However, there's an important distinction here: the coordinator is making an administrative placement decision based on updated institutional criteria, while your instructor made a pedagogical assessment based on your actual classroom performance. These can sometimes conflict. Before accepting this reclassification, I'd recommend reaching out directly to your instructor to get her perspective, since she's the one who evaluated your work firsthand. Have you had a chance to follow up with her?"
+        },
+        {
+          "role": "user",
+          "content": "I talked to my actual instructor today and she confirmed I'm staying in the B2 group. The coordinator was looking at the wrong student file. My instructor said she already contacted the office to correct the error, so the B1 reclassification isn't happening. I'm relieved honestly—I was worried I'd have to repeat material I've already covered."
+        },
+        {
+          "role": "assistant",
+          "content": "What a relief! So the reclassification to B1 was simply an administrative error—the coordinator had the wrong student file. Your instructor has confirmed you're staying in the B2 group and has already corrected the mistake with the office. I'm keeping your French level recorded as B2, which is consistent with your instructor's original assessment and her confirmation today. It's good that you followed up quickly rather than just accepting the email at face value. Administrative errors like that can cascade if they're not caught early. Is there anything else about your course you'd like to discuss?"
+        },
+        {
+          "role": "user",
+          "content": "Actually yes—I was chatting with Carla about all this drama and she mentioned that she's thinking about starting French too. She asked me about my course and I told her about Alliance Française. She said she'd probably start at A2 since she took some French in high school years ago. Oh, and she mentioned something interesting—apparently her Korean tutor also teaches French and rated Carla's French at B1, which surprised me. I think her tutor might be generous with ratings though.\n\nYeah, it would be fun to have a study buddy there. Anyway, I've been thinking more about the June 30th deadline. Since I'm confirmed at B2 now, part of me wonders if I should try to squeeze in a DELF B2 exam before the deadline instead of just submitting the JLPT. But that's probably too ambitious given the timeline. I'll stick with the JLPT N3 certificate plan."
+        },
+        {
+          "role": "assistant",
+          "content": "That's interesting that Carla is considering French! With her high school background, A2 could be a reasonable starting point, though if her Korean tutor rated her at B1 in French, she might have retained more than she thinks. That said, you're right that informal tutor assessments can vary—Alliance Française's placement test would give her a more standardized evaluation. It's worth noting that Carla's tutor-assessed B1 in French is quite different from a formally assessed level like yours, which came through structured coursework and midterm evaluation. If she does enroll at Alliance Française, she could be a great study partner for you down the line.\n\nI think sticking with the JLPT N3 certificate is the right call. Even though you're now confirmed at B2 in French, the logistics of registering for a DELF B2, taking it, and receiving results before June 30th would be extremely tight—DELF results typically take several weeks. You'd be adding unnecessary stress and risk. The JLPT N3 certificate is already in your hands and meets HR's requirements. You can always pursue the DELF B2 after the deadline pressure is off, which would actually let you perform better on it. Smart to keep the safe option and save the ambitious goal for later."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "What did I tell you about my French proficiency at different points, and what did I say most recently that should guide how you help me going forward?",
+      "expected_answer": "You initially said your French level was B1 on the CEFR scale. Later, you shared that your midterm results led your instructor to move you up to the B2 track. There was a brief mix-up where the Alliance Française coordinator referenced a B1 reclassification, but you then confirmed with your instructor that you are staying in the B2 group because the coordinator had the wrong student file. Your French level for future assistance should be B2.",
+      "gold_memory_state": "French CEFR level is B2 (confirmed). The B1 reclassification was an administrative error and was retracted. The original B1 baseline is superseded.",
+      "judge_rubric": {
+        "must_include": [
+          "B1 as original level",
+          "B2 as the level after midterm advancement",
+          "coordinator mix-up or wrong file",
+          "instructor confirmed B2"
+        ],
+        "acceptable_paraphrases": [
+          "moved to B2 track",
+          "promoted to B2",
+          "staying in B2 group"
+        ],
+        "must_not_include": [
+          "French level is B1 currently"
+        ],
+        "harmful_extra": [
+          "treating B1 reclassification as the final level"
+        ],
+        "harmless_extra": [
+          "mentioning the Alliance Française course details",
+          "mentioning listening challenges"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the response treats B1 as the current French level or omits the B2 confirmation.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current French level is B1 according to the CEFR scale"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I just got my midterm results back and the instructor moved me up to B2 track"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "The Alliance Française coordinator told me they're reclassifying me back to B1 for the summer intensive because they changed their placement criteria"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I talked to my actual instructor today and she confirmed I'm staying in the B2 group. The coordinator was looking at the wrong student file"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "What did I tell you about my French proficiency at different points, and what did I say most recently that should guide how you help me going forward?",
+      "expected_answer": "You initially said your French level was B1 on the CEFR scale. Later, you shared that your midterm results led your instructor to move you up to the B2 track. There was a brief mix-up where the Alliance Française coordinator referenced a B1 reclassification, but you then confirmed with your instructor that you are staying in the B2 group because the coordinator had the wrong student file. Your French level for future assistance should be B2.",
+      "gold_memory_state": "French CEFR level is B2 (confirmed). The B1 reclassification was an administrative error and was retracted. The original B1 baseline is superseded.",
+      "judge_rubric": {
+        "must_include": [
+          "B1 as original level",
+          "B2 as the level after midterm advancement",
+          "coordinator mix-up or wrong file",
+          "instructor confirmed B2"
+        ],
+        "acceptable_paraphrases": [
+          "moved to B2 track",
+          "promoted to B2",
+          "staying in B2 group"
+        ],
+        "must_not_include": [
+          "French level is B1 currently"
+        ],
+        "harmful_extra": [
+          "treating B1 reclassification as the final level"
+        ],
+        "harmless_extra": [
+          "mentioning the Alliance Française course details",
+          "mentioning listening challenges"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the response treats B1 as the current French level or omits the B2 confirmation.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current French level is B1 according to the CEFR scale"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I just got my midterm results back and the instructor moved me up to B2 track"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "The Alliance Française coordinator told me they're reclassifying me back to B1 for the summer intensive because they changed their placement criteria"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I talked to my actual instructor today and she confirmed I'm staying in the B2 group. The coordinator was looking at the wrong student file"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When there was back-and-forth about my language placement level, which specific language record of mine was affected? My friend Carla was also mentioned with a French rating—did her information change mine in any way?",
+      "expected_answer": "The placement back-and-forth affected only your own French CEFR proficiency record, which is now B2. Carla's tutor-assessed B1 French rating is a separate piece of information about a different person and does not change your French level record.",
+      "gold_memory_state": "User's French CEFR level: B2 (confirmed, after update chain). Carla's tutor-assessed French level (B1) is a separate, non-target fact about a different individual. User's JLPT N3 result is unaffected.",
+      "judge_rubric": {
+        "must_include": [
+          "user's own French CEFR record",
+          "B2 as current level",
+          "Carla's rating is separate and does not affect user's record"
+        ],
+        "acceptable_paraphrases": [
+          "only your French level was involved",
+          "Carla's B1 is independent"
+        ],
+        "must_not_include": [
+          "Carla's B1 changed user's level",
+          "user's French level is B1 because of Carla"
+        ],
+        "harmful_extra": [
+          "conflating Carla's B1 with user's level",
+          "saying user's JLPT record was affected by the placement dispute"
+        ],
+        "harmless_extra": [
+          "mentioning the coordinator error",
+          "mentioning Carla's TOPIK result"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Carla's B1 is treated as the user's current French level or if B1 is reported as the user's level.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I just got my midterm results back and the instructor moved me up to B2 track"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I talked to my actual instructor today and she confirmed I'm staying in the B2 group. The coordinator was looking at the wrong student file"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "apparently her Korean tutor also teaches French and rated Carla's French at B1, which surprised me"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When there was back-and-forth about my language placement level, which specific language record of mine was affected? My friend Carla was also mentioned with a French rating—did her information change mine in any way?",
+      "expected_answer": "The placement back-and-forth affected only your own French CEFR proficiency record, which is now B2. Carla's tutor-assessed B1 French rating is a separate piece of information about a different person and does not change your French level record.",
+      "gold_memory_state": "User's French CEFR level: B2 (confirmed, after update chain). Carla's tutor-assessed French level (B1) is a separate, non-target fact about a different individual. User's JLPT N3 result is unaffected.",
+      "judge_rubric": {
+        "must_include": [
+          "user's own French CEFR record",
+          "B2 as current level",
+          "Carla's rating is separate and does not affect user's record"
+        ],
+        "acceptable_paraphrases": [
+          "only your French level was involved",
+          "Carla's B1 is independent"
+        ],
+        "must_not_include": [
+          "Carla's B1 changed user's level",
+          "user's French level is B1 because of Carla"
+        ],
+        "harmful_extra": [
+          "conflating Carla's B1 with user's level",
+          "saying user's JLPT record was affected by the placement dispute"
+        ],
+        "harmless_extra": [
+          "mentioning the coordinator error",
+          "mentioning Carla's TOPIK result"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Carla's B1 is treated as the user's current French level or if B1 is reported as the user's level.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I just got my midterm results back and the instructor moved me up to B2 track"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I talked to my actual instructor today and she confirmed I'm staying in the B2 group. The coordinator was looking at the wrong student file"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "apparently her Korean tutor also teaches French and rated Carla's French at B1, which surprised me"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to list my French CEFR level on a professional development form. Which of the following should I write?",
+      "expected_answer": "B2",
+      "gold_memory_state": "French CEFR level is B2 (confirmed by instructor after resolving the coordinator's administrative error). B1 was the original baseline and was also the tentative reclassification that was retracted.",
+      "candidate_options": [
+        "B1",
+        "B2",
+        "A2",
+        "B1 (Alliance Française summer intensive)"
+      ],
+      "distractor_rationale": "same-value-different-target: A2 is Carla's estimated starting level for French, not the user's level. assistant echo: 'B1 (Alliance Française summer intensive)' echoes the coordinator's erroneous reclassification framing that appeared in the assistant's discussion. B1 without qualifier is the stale original baseline and also the tentative reclassification value, both superseded by the confirmed B2.",
+      "judge_rubric": {
+        "must_include": [
+          "B2"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "B1 as the answer"
+        ],
+        "harmful_extra": [
+          "selecting B1 in any form",
+          "selecting A2"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if B1 is selected. B1 is both the superseded original value and the retracted tentative reclassification. This is the recency trap: the coordinator's B1 reclassification was the most recent-looking change but was retracted.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I just got my midterm results back and the instructor moved me up to B2 track"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I talked to my actual instructor today and she confirmed I'm staying in the B2 group. The coordinator was looking at the wrong student file"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to list my French CEFR level on a professional development form. Which of the following should I write?",
+      "expected_answer": "B2",
+      "gold_memory_state": "French CEFR level is B2 (confirmed by instructor after resolving the coordinator's administrative error). B1 was the original baseline and was also the tentative reclassification that was retracted.",
+      "candidate_options": [
+        "B1",
+        "B2",
+        "A2",
+        "B1 (Alliance Française summer intensive)"
+      ],
+      "distractor_rationale": "same-value-different-target: A2 is Carla's estimated starting level for French, not the user's level. assistant echo: 'B1 (Alliance Française summer intensive)' echoes the coordinator's erroneous reclassification framing that appeared in the assistant's discussion. B1 without qualifier is the stale original baseline and also the tentative reclassification value, both superseded by the confirmed B2.",
+      "judge_rubric": {
+        "must_include": [
+          "B2"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "B1 as the answer"
+        ],
+        "harmful_extra": [
+          "selecting B1 in any form",
+          "selecting A2"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if B1 is selected. B1 is both the superseded original value and the retracted tentative reclassification. This is the recency trap: the coordinator's B1 reclassification was the most recent-looking change but was retracted.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I just got my midterm results back and the instructor moved me up to B2 track"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I talked to my actual instructor today and she confirmed I'm staying in the B2 group. The coordinator was looking at the wrong student file"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I'm preparing my language certification package for HR before the company deadline. Given my French proficiency and my Japanese exam result, draft a short cover memo that states which certification I plan to submit, by when, and what proficiency level I'd reference if HR asks about my French separately.",
+      "expected_answer": "The cover memo should state that you are submitting your JLPT N3 certificate (passed in December with a score of 118/180) by the June 30th deadline. If HR inquires about your French proficiency separately, you should reference CEFR B2 as your current level.",
+      "gold_memory_state": "French CEFR level: B2 (confirmed). JLPT N3: passed in December, score 118/180. Company language certification deadline: June 30th. User decided to submit the JLPT N3 certificate rather than pursue DELF before the deadline.",
+      "judge_rubric": {
+        "must_include": [
+          "JLPT N3 certificate as the submission",
+          "June 30th deadline",
+          "B2 as the French proficiency reference"
+        ],
+        "acceptable_paraphrases": [
+          "JLPT N3 cert",
+          "June 30 deadline",
+          "French level B2"
+        ],
+        "must_not_include": [
+          "B1 as French level",
+          "DELF B1 as the submission plan"
+        ],
+        "harmful_extra": [
+          "stating French level is B1",
+          "saying the user plans to take DELF before the deadline"
+        ],
+        "harmless_extra": [
+          "mentioning the score 118/180",
+          "mentioning that DELF can be pursued later",
+          "mentioning the user's decision rationale"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if French level is given as B1 instead of B2, or if the memo references the retracted coordinator reclassification as current.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User passed JLPT N3 in December with a score of 118/180 and already has the physical certificate.",
+        "Fact 2: Company language certification submission deadline is June 30th, a hard deadline with no extensions.",
+        "Fact 3: User's current French CEFR level is B2, confirmed by instructor after the coordinator's erroneous B1 reclassification was retracted.",
+        "Fact 4: User decided to submit the JLPT N3 certificate rather than attempt DELF before the deadline.",
+        "Inference: The cover memo must reference the JLPT N3 as the submitted certification, June 30th as the deadline, and B2 as the French proficiency if asked separately—not B1, which is the stale/retracted value."
+      ],
+      "application_probe_type": "multi_hop_derivation",
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I passed the JLPT N3 in December with a score of 118 out of 180"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my company deadline for submitting language certification proof is June 30th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I just got my midterm results back and the instructor moved me up to B2 track"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I talked to my actual instructor today and she confirmed I'm staying in the B2 group. The coordinator was looking at the wrong student file"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I'm preparing my language certification package for HR before the company deadline. Given my French proficiency and my Japanese exam result, draft a short cover memo that states which certification I plan to submit, by when, and what proficiency level I'd reference if HR asks about my French separately.",
+      "expected_answer": "The cover memo should state that you are submitting your JLPT N3 certificate (passed in December with a score of 118/180) by the June 30th deadline. If HR inquires about your French proficiency separately, you should reference CEFR B2 as your current level.",
+      "gold_memory_state": "French CEFR level: B2 (confirmed). JLPT N3: passed in December, score 118/180. Company language certification deadline: June 30th. User decided to submit the JLPT N3 certificate rather than pursue DELF before the deadline.",
+      "judge_rubric": {
+        "must_include": [
+          "JLPT N3 certificate as the submission",
+          "June 30th deadline",
+          "B2 as the French proficiency reference"
+        ],
+        "acceptable_paraphrases": [
+          "JLPT N3 cert",
+          "June 30 deadline",
+          "French level B2"
+        ],
+        "must_not_include": [
+          "B1 as French level",
+          "DELF B1 as the submission plan"
+        ],
+        "harmful_extra": [
+          "stating French level is B1",
+          "saying the user plans to take DELF before the deadline"
+        ],
+        "harmless_extra": [
+          "mentioning the score 118/180",
+          "mentioning that DELF can be pursued later",
+          "mentioning the user's decision rationale"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if French level is given as B1 instead of B2, or if the memo references the retracted coordinator reclassification as current.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User passed JLPT N3 in December with a score of 118/180 and already has the physical certificate.",
+        "Fact 2: Company language certification submission deadline is June 30th, a hard deadline with no extensions.",
+        "Fact 3: User's current French CEFR level is B2, confirmed by instructor after the coordinator's erroneous B1 reclassification was retracted.",
+        "Fact 4: User decided to submit the JLPT N3 certificate rather than attempt DELF before the deadline.",
+        "Inference: The cover memo must reference the JLPT N3 as the submitted certification, June 30th as the deadline, and B2 as the French proficiency if asked separately—not B1, which is the stale/retracted value."
+      ],
+      "application_probe_type": "multi_hop_derivation",
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I passed the JLPT N3 in December with a score of 118 out of 180"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my company deadline for submitting language certification proof is June 30th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I just got my midterm results back and the instructor moved me up to B2 track"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I talked to my actual instructor today and she confirmed I'm staying in the B2 group. The coordinator was looking at the wrong student file"
+        }
+      ]
+    }
+  ]
+}

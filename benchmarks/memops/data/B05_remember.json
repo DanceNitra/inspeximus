@@ -1,0 +1,1090 @@
+{
+  "target_fact": "Baby naming details: daughter named Elara (first choice) with Iris as backup, middle name options June or Mae, due date July 18th, naming preferences favor understated melodic elegant names",
+  "operation_type": "Remember",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 3,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": true,
+      "never_stored_target": "baby's nursery theme"
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "We found out at the ultrasound that we're having a girl, and our top name choice right now is Elara"
+      },
+      "target": {
+        "target_id": "daughter_first_name_choice",
+        "target_name": "daughter's first name (first choice)"
+      },
+      "old_value": null,
+      "new_value": "Elara",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "We found out at the ultrasound that we're having a girl, and our top name choice right now is Elara"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "Our backup name is Iris. Simple, natural, quiet elegance. My wife and I both prefer Elara, but Iris is a solid second"
+      },
+      "target": {
+        "target_id": "daughter_backup_name",
+        "target_name": "daughter's backup first name"
+      },
+      "old_value": null,
+      "new_value": "Iris",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Our backup name is Iris. Simple, natural, quiet elegance. My wife and I both prefer Elara, but Iris is a solid second"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 7,
+        "quote": "For the middle name we're deciding between June and Mae. I like how short middle names flow with Elara"
+      },
+      "target": {
+        "target_id": "daughter_middle_name_options",
+        "target_name": "daughter's middle name shortlist"
+      },
+      "old_value": null,
+      "new_value": "June or Mae",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "For the middle name we're deciding between June and Mae. I like how short middle names flow with Elara"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "The due date is July 18th, so we want the name completely locked in by the end of June"
+      },
+      "target": {
+        "target_id": "baby_due_date",
+        "target_name": "baby's due date"
+      },
+      "old_value": null,
+      "new_value": "July 18th",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The due date is July 18th, so we want the name completely locked in by the end of June"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "We want to finalize everything at least three weeks before the due date so we can get the monogrammed blanket ordered in time"
+      },
+      "target": {
+        "target_id": "name_finalization_lead_time",
+        "target_name": "name finalization lead time before due date"
+      },
+      "old_value": null,
+      "new_value": "at least 3 weeks before due date",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "We want to finalize everything at least three weeks before the due date so we can get the monogrammed blanket ordered in time"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "The monogram shop needs ten business days to process and ship after we place the order"
+      },
+      "target": {
+        "target_id": "monogram_processing_time",
+        "target_name": "monogram shop processing and shipping time"
+      },
+      "old_value": null,
+      "new_value": "10 business days",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "The monogram shop needs ten business days to process and ship after we place the order"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "my buddy Kevin just had a son in February and named him Matteo. They almost went with Luca but changed their minds last minute"
+      },
+      "target": {
+        "target_id": "kevin_son_name",
+        "target_name": "Kevin's son's name"
+      },
+      "old_value": null,
+      "new_value": "Matteo",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my buddy Kevin just had a son in February and named him Matteo. They almost went with Luca but changed their minds last minute"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish core baby naming facts: first choice name, backup name, middle name options, friend's baby name",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to tell you about the baby names my wife and I have been discussing. We found out at the ultrasound that we're having a girl, and our top name choice right now is Elara. My wife discovered it in an astronomy book she was reading, and we both loved it right away. It felt soft and not too common, which is exactly what we want."
+        },
+        {
+          "role": "assistant",
+          "content": "Congratulations on expecting a daughter! Elara is a beautiful name choice—it has a lovely, melodic quality to it and is certainly distinctive without being overly unusual. The astronomy connection is a wonderful origin story too. I can see why it appealed to both of you if you're drawn to names that feel gentle and understated. Have you started thinking about middle names yet, or are you focusing on locking down the first name before exploring those options? I'm happy to help you organize your thoughts around the naming process."
+        },
+        {
+          "role": "user",
+          "content": "Thanks! Yeah, we're pretty set on Elara as the frontrunner. On a different note, my buddy Kevin just had a son in February and named him Matteo. They almost went with Luca but changed their minds last minute. It got me thinking about how stressful naming can be. Kevin said he and his wife were going back and forth until the day they went to the hospital."
+        },
+        {
+          "role": "assistant",
+          "content": "Matteo is a great name—it has that warm, classic feel. It's funny how naming decisions can come down to the wire like that for Kevin and his wife. The pressure of choosing something permanent can really weigh on people. At least you and your wife seem to have a strong frontrunner early on, which should help reduce some of that last-minute stress. Did Kevin's experience with the naming process give you any insights or strategies you want to apply to your own decision? Sometimes hearing about other parents' journeys can help clarify your own priorities and timeline."
+        },
+        {
+          "role": "user",
+          "content": "It definitely made me want to have a backup ready. Our backup name is Iris. Simple, natural, quiet elegance. My wife and I both prefer Elara, but Iris is a solid second. I've always been drawn to names that have a gentle sound when you say them out loud—nothing harsh or clunky. Both Elara and Iris fit that perfectly for me."
+        },
+        {
+          "role": "assistant",
+          "content": "Iris is a wonderful backup choice and pairs beautifully with Elara in terms of style and feel. Both names share that quality of being understated yet distinctive—short enough to be memorable but with a lyrical softness to them. Having a solid backup like Iris takes a lot of pressure off, since you know you have two strong options. Your naming preferences are really consistent: gentle sounds, nothing flashy, melodic flow. That kind of clarity makes the decision process much smoother. Are you also thinking about how the first and middle names will sound together, or is that a separate step for you?"
+        },
+        {
+          "role": "user",
+          "content": "Great question. For the middle name we're deciding between June and Mae. I like how short middle names flow with Elara. Something easy to say, with a musical quality. Elara June or Elara Mae—both sound nice to me. We haven't picked between them yet but those are the two we keep coming back to."
+        },
+        {
+          "role": "assistant",
+          "content": "Both combinations sound lovely! Elara June has a clean, bright rhythm—the single syllable of June creates a nice pause before the last name. Elara Mae has a slightly warmer, softer feel with that open vowel sound. Either way, your instinct about short middle names is spot on; they complement a three-syllable first name like Elara really well without competing for attention. Since both options fit your preference for melodic, easy-to-say names, it might come down to personal associations or how each sounds with your surname. Would you like to talk through how they pair with your last name, or are you saving that decision for later?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establish due date, finalization timeline, and monogram processing details for multi-hop derivation",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So here's the timeline situation. The due date is July 18th, so we want the name completely locked in by the end of June. That gives us a comfortable buffer. My wife is pretty firm about not leaving it to the last minute—she wants everything decided well before the hospital bag is packed and we're in full preparation mode."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a smart approach. Having the name decided by the end of June gives you a solid two-and-a-half-week cushion before the July 18th due date. Your wife is right that you don't want to be debating names while also managing all the last-minute logistics. With Elara as your strong frontrunner and Iris as a reliable backup, you're already in great shape. The main open question seems to be the middle name—June versus Mae. Do you have a sense of when you want to make that final middle name call, or will it depend on how the next few weeks feel?"
+        },
+        {
+          "role": "user",
+          "content": "Actually, there's another factor. We want to finalize everything at least three weeks before the due date so we can get the monogrammed blanket ordered in time. My wife's sister is gifting us a custom baby blanket with the baby's initials, and she needs the full name to place the order. So the real deadline is earlier than end of June."
+        },
+        {
+          "role": "assistant",
+          "content": "Oh, that changes the math a bit! If you need the name finalized at least three weeks before the July 18th due date, that pushes your real decision deadline earlier. The monogrammed blanket is such a thoughtful gift from your wife's sister—it makes sense that she'd need the full name, including the middle name, before she can order it. So you'll want to have Elara versus Iris settled and the June versus Mae middle name question resolved by that earlier cutoff. Does your wife's sister have any lead time requirements from the monogram shop, or is the three-week buffer the only constraint you're working with?"
+        },
+        {
+          "role": "user",
+          "content": "Good point—yes, there's more to it. The monogram shop needs ten business days to process and ship after we place the order. So my wife's sister needs the name with enough time for that processing window too. We're trying to make sure everything arrives before the baby does. I'd rather be early than scrambling at the last minute."
+        },
+        {
+          "role": "assistant",
+          "content": "That's wise planning. So you've got multiple layers to work backward from: the July 18th due date, the three-week-before-due-date finalization goal, and then the ten business days the monogram shop needs for processing and shipping. Your wife's sister will need to place the order promptly once you share the name, so the earlier you decide, the more breathing room everyone has. It sounds like mid-to-late June might actually be cutting it close depending on how you count those business days. I'd recommend mapping out the exact dates so you know your hard deadline versus your comfortable deadline."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, I need to sit down and figure out the exact dates. It's a lot of little details to track. Anyway, on a lighter note, I've been browsing baby announcement card designs. I want something minimal and elegant—nothing over the top. Just the name, date of birth, and maybe a small botanical illustration. That matches the whole vibe we're going for with the name.\n\nStill browsing for now. I'll narrow it down once the name is final. My wife wants to see a few mockups with both Elara and Iris before we commit to the card design, which makes sense. No rush on that front—the cards go out after the baby is born anyway. Right now the priority is the name and the blanket timeline."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like it would be gorgeous! A minimal design with a botanical illustration would complement names like Elara or Iris beautifully—especially Iris, which is literally a flower, so a subtle botanical motif would tie in perfectly even if you go with Elara as the first name. Clean typography with plenty of white space tends to look the most elegant for birth announcements. You might look at letterpress printing if you want something with a tactile, premium feel. Have you found any specific card designers or shops you like, or are you still in the early browsing phase? I can help you think through design elements if you'd like.\n\nThat's a perfectly logical order of operations. Getting the name locked down first drives everything else—the blanket order, the card design, and your own peace of mind. Seeing mockups with both Elara and Iris is a great idea too; sometimes seeing a name in print helps you feel more confident about the choice. Since the cards go out postpartum, there's no time pressure on those at all. For now, I'd focus on the name finalization deadline and making sure your wife's sister has enough time for the monogram order. Once you've mapped out those exact dates, you'll know exactly how much runway you have left."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Reinforce naming details, introduce adversarial look-alike via assistant echo of Kevin's naming, continue planning",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Quick update—I talked to my wife last night and we're both still firmly on Elara as the first choice. No wavering there. She mentioned she likes how it sounds with both June and Mae, so she's not helping me narrow down the middle name at all. We're equally stuck on both options. I think we'll just have to sleep on it a few more times."
+        },
+        {
+          "role": "assistant",
+          "content": "It's great that you're both still aligned on Elara—that consistency says a lot about how right the name feels for you two. As for the middle name, being stuck between June and Mae is honestly a good problem to have since both are excellent choices. Sometimes the deciding factor ends up being something small, like how the full name sounds when you say it with your last name, or which initials you prefer. There's no rush to force it; you still have time before your finalization deadline. By the way, I recall you mentioned your friend Kevin's family almost went with Luca before settling on Matteo—sometimes these decisions really do come together at the last moment."
+        },
+        {
+          "role": "user",
+          "content": "Ha, yeah, Kevin's story keeps coming to mind. He texted me yesterday actually, asking how our name search is going. I told him we're set on Elara and he said it's a beautiful name. He also mentioned his neighbor just had a baby girl and named her Aurora. Pretty name, but a bit too popular for my taste. I like staying under the radar with names."
+        },
+        {
+          "role": "assistant",
+          "content": "It's nice that Kevin is following along with your naming journey! Aurora is indeed beautiful, but I can see why it doesn't quite fit your style—it's been climbing the popularity charts steadily and doesn't have that same under-the-radar quality you're drawn to. Elara hits that sweet spot of being recognizable but uncommon, which is exactly your preference. It's interesting how Kevin's neighbor chose Aurora; it shares some of that celestial, elegant energy with Elara but sits in a very different popularity bracket. Your instinct to stay distinctive without being obscure has served you well in landing on Elara and Iris as your shortlist."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. I want something people haven't heard a hundred times but that still feels like a real name, you know? Not invented, not trendy. Elara checks every box. Iris does too. I feel lucky we found two strong options so early. Most people I know struggled way longer than we did. My coworker Dan spent five months going back and forth."
+        },
+        {
+          "role": "assistant",
+          "content": "Five months of deliberation sounds exhausting! You and your wife clearly have well-aligned taste, which makes the process much smoother. Both Elara and Iris fit your criteria perfectly—established names with historical and natural roots, gentle sounds, and low frequency on the playground. The fact that you landed on them early and haven't wavered is a strong signal that your instincts are solid. Dan's experience is actually pretty common; a lot of couples struggle because they have very different naming styles or keep second-guessing themselves. You two seem to have avoided both pitfalls. Once the middle name clicks into place, you'll be completely set."
+        },
+        {
+          "role": "user",
+          "content": "That's the hope. I'm leaning slightly toward June for the middle name this week, but I keep going back and forth. Elara June just has this clean, bright sound. But Elara Mae is warmer. I genuinely can't decide. My wife says she'll be happy with either one, so it's basically on me at this point.\n\nThat's actually a brilliant idea—I'll try the mockup trick this weekend. I think seeing the name in print might be what finally tips the scale. Anyway, thanks for helping me think through all of this. It's been really useful having somewhere to organize all these naming details and timelines. I'll check back in once we've made the final call on the middle name."
+        },
+        {
+          "role": "assistant",
+          "content": "It sounds like you're circling closer to June, even if you're not fully committed yet. Your description of Elara June as \"clean and bright\" versus Elara Mae as \"warmer\" is a really useful distinction—it suggests the two options evoke slightly different moods. If you're drawn to brightness and clarity, June might be the natural fit. If you want something softer and cozier, Mae has that quality. One trick that sometimes helps: try writing each version on a card, like a birth announcement mockup, and see which one gives you that gut-level feeling of rightness. No pressure to decide today though.\n\nI'm glad the mockup idea resonated! Seeing the full name in a visual context can make a surprising difference—sometimes what sounds equal out loud looks clearly better in print. You've got a solid plan: finalize the middle name, share the full name with your wife's sister for the monogrammed blanket order, and then handle the birth announcement cards at your leisure after the baby arrives. You and your wife have done a wonderful job narrowing things down, and both Elara June and Elara Mae are gorgeous options. I'll be here whenever you're ready to check back in. Good luck this weekend with the mockups!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've shared with you about our baby naming plans, including the timeline and any practical details?",
+      "expected_answer": "You are expecting a daughter. Your top name choice is Elara, with Iris as a backup. The middle name options are June and Mae. The due date is July 18th. You want the name finalized at least three weeks before the due date so your wife's sister can order a monogrammed blanket, and the monogram shop needs ten business days to process and ship. Your friend Kevin named his son Matteo. You prefer understated, melodic, elegant names that are distinctive but not too common.",
+      "gold_memory_state": "All seven confirmed remember operations are active: daughter's first name choice (Elara), backup name (Iris), middle name options (June or Mae), due date (July 18th), finalization lead time (at least 3 weeks before due date), monogram processing time (10 business days), and Kevin's son's name (Matteo).",
+      "judge_rubric": {
+        "must_include": [
+          "Elara",
+          "Iris",
+          "June",
+          "Mae",
+          "July 18th",
+          "three weeks",
+          "ten business days",
+          "Matteo"
+        ],
+        "acceptable_paraphrases": [
+          "10 business days",
+          "3 weeks",
+          "monogrammed blanket",
+          "monogram blanket"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the name has been finalized",
+          "claiming a middle name has been chosen"
+        ],
+        "harmless_extra": [
+          "mentioning Kevin almost chose Luca",
+          "mentioning the baby announcement cards",
+          "mentioning the astronomy book origin of Elara"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "We found out at the ultrasound that we're having a girl, and our top name choice right now is Elara"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Our backup name is Iris. Simple, natural, quiet elegance. My wife and I both prefer Elara, but Iris is a solid second"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "For the middle name we're deciding between June and Mae. I like how short middle names flow with Elara"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The due date is July 18th, so we want the name completely locked in by the end of June"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "We want to finalize everything at least three weeks before the due date so we can get the monogrammed blanket ordered in time"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "The monogram shop needs ten business days to process and ship after we place the order"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my buddy Kevin just had a son in February and named him Matteo. They almost went with Luca but changed their minds last minute"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've shared with you about our baby naming plans, including the timeline and any practical details?",
+      "expected_answer": "You are expecting a daughter. Your top name choice is Elara, with Iris as a backup. The middle name options are June and Mae. The due date is July 18th. You want the name finalized at least three weeks before the due date so your wife's sister can order a monogrammed blanket, and the monogram shop needs ten business days to process and ship. Your friend Kevin named his son Matteo. You prefer understated, melodic, elegant names that are distinctive but not too common.",
+      "gold_memory_state": "All seven confirmed remember operations are active: daughter's first name choice (Elara), backup name (Iris), middle name options (June or Mae), due date (July 18th), finalization lead time (at least 3 weeks before due date), monogram processing time (10 business days), and Kevin's son's name (Matteo).",
+      "judge_rubric": {
+        "must_include": [
+          "Elara",
+          "Iris",
+          "June",
+          "Mae",
+          "July 18th",
+          "three weeks",
+          "ten business days",
+          "Matteo"
+        ],
+        "acceptable_paraphrases": [
+          "10 business days",
+          "3 weeks",
+          "monogrammed blanket",
+          "monogram blanket"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the name has been finalized",
+          "claiming a middle name has been chosen"
+        ],
+        "harmless_extra": [
+          "mentioning Kevin almost chose Luca",
+          "mentioning the baby announcement cards",
+          "mentioning the astronomy book origin of Elara"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "We found out at the ultrasound that we're having a girl, and our top name choice right now is Elara"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Our backup name is Iris. Simple, natural, quiet elegance. My wife and I both prefer Elara, but Iris is a solid second"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "For the middle name we're deciding between June and Mae. I like how short middle names flow with Elara"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The due date is July 18th, so we want the name completely locked in by the end of June"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "We want to finalize everything at least three weeks before the due date so we can get the monogrammed blanket ordered in time"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "The monogram shop needs ten business days to process and ship after we place the order"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my buddy Kevin just had a son in February and named him Matteo. They almost went with Luca but changed their minds last minute"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned two different baby names as options for my daughter—one as a primary and one as a fallback. If I'm filling out a hospital pre-registration form and need to enter just one preferred first name, which name goes in that field? Does the other name belong in the same field or somewhere else?",
+      "expected_answer": "Elara goes in the preferred first name field. Iris is the backup name and should not be entered as the primary choice; it belongs in a separate backup or alternate name field if one exists.",
+      "gold_memory_state": "Daughter's first name (first choice) = Elara (confirmed). Daughter's backup first name = Iris (confirmed, separate record). Both are active but serve different roles.",
+      "judge_rubric": {
+        "must_include": [
+          "Elara as the primary/preferred name"
+        ],
+        "acceptable_paraphrases": [
+          "Elara is the first choice",
+          "Elara for the main name field"
+        ],
+        "must_not_include": [
+          "Iris as the primary name"
+        ],
+        "harmful_extra": [
+          "treating Iris and Elara as interchangeable",
+          "putting Iris in the primary name field",
+          "claiming the name has already been finalized"
+        ],
+        "harmless_extra": [
+          "mentioning that both names are under consideration",
+          "noting Iris as a backup"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "We found out at the ultrasound that we're having a girl, and our top name choice right now is Elara"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Our backup name is Iris. Simple, natural, quiet elegance. My wife and I both prefer Elara, but Iris is a solid second"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned two different baby names as options for my daughter—one as a primary and one as a fallback. If I'm filling out a hospital pre-registration form and need to enter just one preferred first name, which name goes in that field? Does the other name belong in the same field or somewhere else?",
+      "expected_answer": "Elara goes in the preferred first name field. Iris is the backup name and should not be entered as the primary choice; it belongs in a separate backup or alternate name field if one exists.",
+      "gold_memory_state": "Daughter's first name (first choice) = Elara (confirmed). Daughter's backup first name = Iris (confirmed, separate record). Both are active but serve different roles.",
+      "judge_rubric": {
+        "must_include": [
+          "Elara as the primary/preferred name"
+        ],
+        "acceptable_paraphrases": [
+          "Elara is the first choice",
+          "Elara for the main name field"
+        ],
+        "must_not_include": [
+          "Iris as the primary name"
+        ],
+        "harmful_extra": [
+          "treating Iris and Elara as interchangeable",
+          "putting Iris in the primary name field",
+          "claiming the name has already been finalized"
+        ],
+        "harmless_extra": [
+          "mentioning that both names are under consideration",
+          "noting Iris as a backup"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "We found out at the ultrasound that we're having a girl, and our top name choice right now is Elara"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Our backup name is Iris. Simple, natural, quiet elegance. My wife and I both prefer Elara, but Iris is a solid second"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "My friend recently had a baby too. Is the name his family chose related at all to the names my wife and I are considering, or are they completely different naming styles?",
+      "expected_answer": "Kevin's son is named Matteo, while your top choices are Elara and Iris with middle name options June and Mae. These are quite different naming styles—Matteo is an Italian masculine name, while Elara and Iris are softer, more understated feminine names with celestial and botanical roots. They are not related in style.",
+      "gold_memory_state": "Kevin's son's name = Matteo (confirmed). Daughter's first name choice = Elara (confirmed). Daughter's backup name = Iris (confirmed). Middle name options = June or Mae (confirmed). The user's naming preference is understated, melodic, elegant names.",
+      "judge_rubric": {
+        "must_include": [
+          "Matteo",
+          "Elara"
+        ],
+        "acceptable_paraphrases": [
+          "Kevin named his son Matteo",
+          "your friend's son is Matteo"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming Kevin's son is named Luca",
+          "claiming Matteo and Elara are the same style"
+        ],
+        "harmless_extra": [
+          "mentioning Iris",
+          "mentioning June or Mae",
+          "noting Kevin almost chose Luca"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model says Kevin's son is named Luca (the name they almost chose but did not use).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my buddy Kevin just had a son in February and named him Matteo. They almost went with Luca but changed their minds last minute"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "We found out at the ultrasound that we're having a girl, and our top name choice right now is Elara"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Our backup name is Iris. Simple, natural, quiet elegance. My wife and I both prefer Elara, but Iris is a solid second"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "My friend recently had a baby too. Is the name his family chose related at all to the names my wife and I are considering, or are they completely different naming styles?",
+      "expected_answer": "Kevin's son is named Matteo, while your top choices are Elara and Iris with middle name options June and Mae. These are quite different naming styles—Matteo is an Italian masculine name, while Elara and Iris are softer, more understated feminine names with celestial and botanical roots. They are not related in style.",
+      "gold_memory_state": "Kevin's son's name = Matteo (confirmed). Daughter's first name choice = Elara (confirmed). Daughter's backup name = Iris (confirmed). Middle name options = June or Mae (confirmed). The user's naming preference is understated, melodic, elegant names.",
+      "judge_rubric": {
+        "must_include": [
+          "Matteo",
+          "Elara"
+        ],
+        "acceptable_paraphrases": [
+          "Kevin named his son Matteo",
+          "your friend's son is Matteo"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming Kevin's son is named Luca",
+          "claiming Matteo and Elara are the same style"
+        ],
+        "harmless_extra": [
+          "mentioning Iris",
+          "mentioning June or Mae",
+          "noting Kevin almost chose Luca"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model says Kevin's son is named Luca (the name they almost chose but did not use).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my buddy Kevin just had a son in February and named him Matteo. They almost went with Luca but changed their minds last minute"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "We found out at the ultrasound that we're having a girl, and our top name choice right now is Elara"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Our backup name is Iris. Simple, natural, quiet elegance. My wife and I both prefer Elara, but Iris is a solid second"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "Which of the following is the middle name pair my wife and I are choosing between for our daughter?",
+      "expected_answer": "June and Mae",
+      "candidate_options": [
+        "June and Mae",
+        "June and Iris",
+        "Mae and Rose",
+        "Luca and Mae"
+      ],
+      "distractor_rationale": "same-value-different-target: 'Iris' appears as the backup first name, not a middle name option, so 'June and Iris' conflates the backup first name with the middle name shortlist. assistant echo: The assistant mentioned botanical themes in connection with Iris, which could cause confusion with 'Mae and Rose' (Rose being a botanical name the assistant might plausibly echo). 'Luca and Mae' borrows Luca from Kevin's almost-chosen name, a same-value-different-target distractor from a friend's naming context.",
+      "gold_memory_state": "Daughter's middle name shortlist = June or Mae (confirmed). Iris is the backup first name, not a middle name. Luca was Kevin's almost-chosen name for his son, not related to the user's daughter.",
+      "judge_rubric": {
+        "must_include": [
+          "June and Mae"
+        ],
+        "acceptable_paraphrases": [
+          "June or Mae",
+          "Mae and June"
+        ],
+        "must_not_include": [
+          "Iris as a middle name option",
+          "Rose as a middle name option",
+          "Luca as a middle name option"
+        ],
+        "harmful_extra": [
+          "selecting any option other than June and Mae"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model selects 'Luca and Mae' (Luca is from Kevin's rejected name, not the user's naming context).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "For the middle name we're deciding between June and Mae. I like how short middle names flow with Elara"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "Which of the following is the middle name pair my wife and I are choosing between for our daughter?",
+      "expected_answer": "June and Mae",
+      "candidate_options": [
+        "June and Mae",
+        "June and Iris",
+        "Mae and Rose",
+        "Luca and Mae"
+      ],
+      "distractor_rationale": "same-value-different-target: 'Iris' appears as the backup first name, not a middle name option, so 'June and Iris' conflates the backup first name with the middle name shortlist. assistant echo: The assistant mentioned botanical themes in connection with Iris, which could cause confusion with 'Mae and Rose' (Rose being a botanical name the assistant might plausibly echo). 'Luca and Mae' borrows Luca from Kevin's almost-chosen name, a same-value-different-target distractor from a friend's naming context.",
+      "gold_memory_state": "Daughter's middle name shortlist = June or Mae (confirmed). Iris is the backup first name, not a middle name. Luca was Kevin's almost-chosen name for his son, not related to the user's daughter.",
+      "judge_rubric": {
+        "must_include": [
+          "June and Mae"
+        ],
+        "acceptable_paraphrases": [
+          "June or Mae",
+          "Mae and June"
+        ],
+        "must_not_include": [
+          "Iris as a middle name option",
+          "Rose as a middle name option",
+          "Luca as a middle name option"
+        ],
+        "harmful_extra": [
+          "selecting any option other than June and Mae"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model selects 'Luca and Mae' (Luca is from Kevin's rejected name, not the user's naming context).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "For the middle name we're deciding between June and Mae. I like how short middle names flow with Elara"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "application_probe_type": "multi_hop_derivation",
+      "difficulty": "hard",
+      "question": "I need to figure out the latest possible date I can tell my wife's sister the final baby name so she can place the monogram blanket order and still have it arrive before the baby comes. What date is that, and how did you work it out?",
+      "expected_answer": "The latest date to share the name with your wife's sister is approximately June 23rd. Working backward: the due date is July 18th, the name must be finalized at least three weeks before that (by June 27th), and the monogram shop needs ten business days to process and ship. Counting ten business days (two calendar weeks) back from July 18th lands around June 30th–July 1st for the order placement. But since the name must be finalized by June 27th (three weeks before July 18th), and the sister needs to place the order promptly, the real constraint is the three-week deadline of June 27th. To allow the full ten business days of processing before July 18th, the order should be placed no later than around July 2nd—but the finalization deadline of June 27th is earlier, so June 27th is the binding constraint for sharing the name.",
+      "gold_memory_state": "Due date = July 18th. Name finalization lead time = at least 3 weeks before due date. Monogram processing time = 10 business days. First name choice = Elara. Backup = Iris. Middle name options = June or Mae.",
+      "judge_rubric": {
+        "must_include": [
+          "June 27th as the binding finalization deadline"
+        ],
+        "acceptable_paraphrases": [
+          "by June 27",
+          "no later than June 27",
+          "around June 27",
+          "approximately June 27"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the name is already finalized",
+          "ignoring the three-week lead time constraint",
+          "ignoring the ten-business-day processing time"
+        ],
+        "harmless_extra": [
+          "mentioning both the monogram processing window and the three-week deadline separately",
+          "noting the monogram order could be placed as late as early July if only processing time mattered",
+          "mentioning the name options Elara or Iris"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The baby's due date is July 18th.",
+        "Fact 2: The name must be finalized at least three weeks before the due date.",
+        "Fact 3: The monogram shop needs ten business days to process and ship after the order is placed.",
+        "Inference: Three weeks before July 18th is June 27th—this is the name-finalization deadline.",
+        "Inference: Ten business days (approximately two calendar weeks) before July 18th is approximately July 2nd—this is the latest order-placement date for the monogram.",
+        "Inference: Since the finalization deadline (June 27th) is earlier than the latest order date (July 2nd), June 27th is the binding constraint. The name must be shared with the wife's sister by June 27th at the latest."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The due date is July 18th, so we want the name completely locked in by the end of June"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "We want to finalize everything at least three weeks before the due date so we can get the monogrammed blanket ordered in time"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "The monogram shop needs ten business days to process and ship after we place the order"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "application_probe_type": "multi_hop_derivation",
+      "difficulty": "hard",
+      "question": "I need to figure out the latest possible date I can tell my wife's sister the final baby name so she can place the monogram blanket order and still have it arrive before the baby comes. What date is that, and how did you work it out?",
+      "expected_answer": "The latest date to share the name with your wife's sister is approximately June 23rd. Working backward: the due date is July 18th, the name must be finalized at least three weeks before that (by June 27th), and the monogram shop needs ten business days to process and ship. Counting ten business days (two calendar weeks) back from July 18th lands around June 30th–July 1st for the order placement. But since the name must be finalized by June 27th (three weeks before July 18th), and the sister needs to place the order promptly, the real constraint is the three-week deadline of June 27th. To allow the full ten business days of processing before July 18th, the order should be placed no later than around July 2nd—but the finalization deadline of June 27th is earlier, so June 27th is the binding constraint for sharing the name.",
+      "gold_memory_state": "Due date = July 18th. Name finalization lead time = at least 3 weeks before due date. Monogram processing time = 10 business days. First name choice = Elara. Backup = Iris. Middle name options = June or Mae.",
+      "judge_rubric": {
+        "must_include": [
+          "June 27th as the binding finalization deadline"
+        ],
+        "acceptable_paraphrases": [
+          "by June 27",
+          "no later than June 27",
+          "around June 27",
+          "approximately June 27"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the name is already finalized",
+          "ignoring the three-week lead time constraint",
+          "ignoring the ten-business-day processing time"
+        ],
+        "harmless_extra": [
+          "mentioning both the monogram processing window and the three-week deadline separately",
+          "noting the monogram order could be placed as late as early July if only processing time mattered",
+          "mentioning the name options Elara or Iris"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The baby's due date is July 18th.",
+        "Fact 2: The name must be finalized at least three weeks before the due date.",
+        "Fact 3: The monogram shop needs ten business days to process and ship after the order is placed.",
+        "Inference: Three weeks before July 18th is June 27th—this is the name-finalization deadline.",
+        "Inference: Ten business days (approximately two calendar weeks) before July 18th is approximately July 2nd—this is the latest order-placement date for the monogram.",
+        "Inference: Since the finalization deadline (June 27th) is earlier than the latest order date (July 2nd), June 27th is the binding constraint. The name must be shared with the wife's sister by June 27th at the latest."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The due date is July 18th, so we want the name completely locked in by the end of June"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "We want to finalize everything at least three weeks before the due date so we can get the monogrammed blanket ordered in time"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "The monogram shop needs ten business days to process and ship after we place the order"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What nursery theme did we decide on for the baby's room?",
+      "expected_answer": "I don't have any information about a nursery theme from you. You haven't shared a nursery theme decision with me.",
+      "gold_memory_state": "No nursery theme was ever provided or discussed by the user. Neighboring baby-planning facts exist (name choices, due date, monogram blanket, announcement cards) but no nursery theme was mentioned.",
+      "judge_rubric": {
+        "must_include": [
+          "no nursery theme information available",
+          "not provided"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have a nursery theme on record",
+          "you haven't mentioned a nursery theme",
+          "no record of a nursery theme"
+        ],
+        "must_not_include": [
+          "any specific nursery theme name or description"
+        ],
+        "harmful_extra": [
+          "inventing a nursery theme",
+          "borrowing botanical or astronomy references from the naming discussion to fabricate a theme",
+          "claiming a theme was discussed"
+        ],
+        "harmless_extra": [
+          "offering to help choose a nursery theme"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model invents or hallucinates a nursery theme that was never provided.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "We found out at the ultrasound that we're having a girl, and our top name choice right now is Elara"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "For the middle name we're deciding between June and Mae. I like how short middle names flow with Elara"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "We want to finalize everything at least three weeks before the due date so we can get the monogrammed blanket ordered in time"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What nursery theme did we decide on for the baby's room?",
+      "expected_answer": "I don't have any information about a nursery theme from you. You haven't shared a nursery theme decision with me.",
+      "gold_memory_state": "No nursery theme was ever provided or discussed by the user. Neighboring baby-planning facts exist (name choices, due date, monogram blanket, announcement cards) but no nursery theme was mentioned.",
+      "judge_rubric": {
+        "must_include": [
+          "no nursery theme information available",
+          "not provided"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have a nursery theme on record",
+          "you haven't mentioned a nursery theme",
+          "no record of a nursery theme"
+        ],
+        "must_not_include": [
+          "any specific nursery theme name or description"
+        ],
+        "harmful_extra": [
+          "inventing a nursery theme",
+          "borrowing botanical or astronomy references from the naming discussion to fabricate a theme",
+          "claiming a theme was discussed"
+        ],
+        "harmless_extra": [
+          "offering to help choose a nursery theme"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model invents or hallucinates a nursery theme that was never provided.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "We found out at the ultrasound that we're having a girl, and our top name choice right now is Elara"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "For the middle name we're deciding between June and Mae. I like how short middle names flow with Elara"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "We want to finalize everything at least three weeks before the due date so we can get the monogrammed blanket ordered in time"
+        }
+      ]
+    }
+  ]
+}

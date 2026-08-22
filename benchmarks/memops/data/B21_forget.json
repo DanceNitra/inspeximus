@@ -1,0 +1,1040 @@
+{
+  "target_fact": "David's spouse/partner occupation details including workplace, schedule, salary, upcoming certification exam, and colleague information",
+  "operation_type": "Forget",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "David started his new position as a senior physical therapist at Greenfield Rehabilitation Center on February 12th"
+      },
+      "target": {
+        "target_id": "david_workplace",
+        "target_name": "David's current workplace"
+      },
+      "old_value": null,
+      "new_value": "Greenfield Rehabilitation Center",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "David started his new position as a senior physical therapist at Greenfield Rehabilitation Center on February 12th"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "His schedule at Greenfield is Tuesday through Saturday, with Mondays and Sundays off"
+      },
+      "target": {
+        "target_id": "david_work_schedule",
+        "target_name": "David's work schedule at Greenfield"
+      },
+      "old_value": null,
+      "new_value": "Tuesday through Saturday, with Mondays and Sundays off",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "His schedule at Greenfield is Tuesday through Saturday, with Mondays and Sundays off"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "His salary at Greenfield is $82,500 annually"
+      },
+      "target": {
+        "target_id": "david_salary",
+        "target_name": "David's annual salary at Greenfield"
+      },
+      "old_value": null,
+      "new_value": "$82,500 annually",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "His salary at Greenfield is $82,500 annually"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "David's OCS exam is scheduled for June 7th"
+      },
+      "target": {
+        "target_id": "david_ocs_exam_date",
+        "target_name": "David's OCS certification exam date"
+      },
+      "old_value": null,
+      "new_value": "June 7th",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "David's OCS exam is scheduled for June 7th"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "Priya got promoted to clinic director at Greenfield last week"
+      },
+      "target": {
+        "target_id": "david_colleague_priya_role",
+        "target_name": "Priya's role at Greenfield Rehabilitation Center"
+      },
+      "old_value": null,
+      "new_value": "Clinic director at Greenfield Rehabilitation Center",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Priya got promoted to clinic director at Greenfield last week"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "forget",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 3,
+        "quote": "can you forget the salary figure I gave you for David? I don't want that stored"
+      },
+      "target": {
+        "target_id": "david_salary",
+        "target_name": "David's annual salary at Greenfield"
+      },
+      "old_value": "$82,500 annually",
+      "new_value": null,
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "can you forget the salary figure I gave you for David? I don't want that stored"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish core facts about David's occupation: workplace, start date, schedule, and salary",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to fill you in on some things about my partner's job situation. David started his new position as a senior physical therapist at Greenfield Rehabilitation Center on February 12th. He'd been wanting to move into sports recovery for a while, so this was a big deal for us. We actually went out the night before to celebrate. Can you keep track of that for me?"
+        },
+        {
+          "role": "assistant",
+          "content": "That's wonderful news—congratulations to David! I've noted that he started as a senior physical therapist at Greenfield Rehabilitation Center on February 12th, and that the clinic focuses more on sports recovery, which was a goal of his. It sounds like a meaningful transition for him. If you want me to keep track of any other details about his new role or anything else related to his career, just let me know. I'm glad you two got to celebrate properly the night before he started."
+        },
+        {
+          "role": "user",
+          "content": "Thanks! Yeah, one thing that took some adjustment is the schedule. His schedule at Greenfield is Tuesday through Saturday, with Mondays and Sundays off. His old job was a standard Monday through Friday setup, so it was a change. But honestly, I kind of enjoy having Mondays free together now because everywhere is less crowded. We've been doing errands and going out on Mondays instead."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a nice silver lining! I've recorded that David's work schedule at Greenfield is Tuesday through Saturday, with Mondays and Sundays off. Having a weekday off together can be really pleasant—shops, restaurants, and parks are all quieter, and you can avoid the weekend rush for errands. It makes sense that it took some getting used to after years of a Monday-through-Friday rhythm, but it sounds like you've adapted well. If anything else changes with his schedule or you want me to note your shared routines, feel free to mention it."
+        },
+        {
+          "role": "user",
+          "content": "Oh, one more thing I should get right. I think I might have mentioned before that David's pay was $78,000 at the new place, but that was wrong. His salary at Greenfield is $82,500 annually. I want to make sure that number is accurate in case I reference it later for budgeting or anything."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it—thank you for the correction. I've updated my records to reflect that David's annual salary at Greenfield Rehabilitation Center is $82,500. That's good to have accurate, especially if you're using it for budgeting purposes down the line. If any other financial details come up that you'd like me to track—like benefits, bonuses, or reimbursement policies—just let me know and I'll add them to what I have on file for you."
+        },
+        {
+          "role": "user",
+          "content": "Perfect. Also, a few weeks after he started at Greenfield, around early March, David got assigned to work with the local university's track and field team as their consulting physical therapist. He was really excited about it. I love hearing him talk about specific cases—like analyzing someone's gait mechanics or designing recovery protocols. It's way more interesting than generic office talk."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a great opportunity for David! I've noted that around early March he was assigned as a consulting physical therapist for the local university's track and field team. It's clear he's in his element with the sports recovery focus. And I can see why you'd enjoy hearing about the technical details of his work—gait mechanics and recovery protocol design are genuinely fascinating topics, especially when someone is passionate about them. If he picks up any other consulting roles or notable projects, feel free to share those too and I'll keep everything organized."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establish OCS exam date, Priya's promotion, and additional context about David's professional life",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So another thing to keep in mind—David's OCS exam is scheduled for June 7th. That's the Orthopedic Clinical Specialist certification. He's been studying most evenings from about 8 to 10 PM after dinner. I actually don't mind the quiet; I like when we're both doing our own thing in the same room without needing to fill the silence."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted! David's OCS—Orthopedic Clinical Specialist—certification exam is scheduled for June 7th, and he's been studying for it most evenings from around 8 to 10 PM. That's a significant credential in the physical therapy field, so it makes sense he's putting in consistent study time. It's also nice that you enjoy those quiet parallel evenings together—there's something comforting about shared space without the pressure of constant conversation. If you want me to set up any reminders or help you plan something around the exam date, just say the word."
+        },
+        {
+          "role": "user",
+          "content": "Good idea, maybe closer to the date. Oh, and I wanted to mention—Priya got promoted to clinic director at Greenfield last week. David told me over breakfast. He seems to get along with her well. She's been supportive of his sports rehab focus, which is great because having a director who backs your specialty makes a big difference."
+        },
+        {
+          "role": "assistant",
+          "content": "That's great to hear! I've noted that Priya was recently promoted to clinic director at Greenfield Rehabilitation Center. It's definitely a positive sign that she supports David's sports rehabilitation focus—having leadership aligned with your professional direction can make a huge difference in job satisfaction and career growth. It sounds like the work environment at Greenfield is shaping up really well for him. If there are any other colleagues or workplace dynamics you'd like me to keep track of, I'm happy to do that."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, the environment there seems solid. One thing that was a bit annoying though—back in late March, David had to attend a weekend certification workshop for dry needling in Portland. He was gone Friday through Sunday, and he only told me about it two days before. We'd planned to check out a new farmers market together that Saturday. It was a small thing but it bugged me for a couple of days."
+        },
+        {
+          "role": "assistant",
+          "content": "I can understand why that would be frustrating—you had plans together and the late notice disrupted them. It's one of those small things that can feel bigger in the moment, especially when it's about a shared outing you were looking forward to. I've noted the dry needling certification workshop in Portland in late March. Hopefully the communication around scheduling gets smoother as he settles into the new role. Did you end up checking out the farmers market on your own, or are you saving it for another time?"
+        },
+        {
+          "role": "user",
+          "content": "We're saving it for another time. I want us to go together since that was the whole point. Anyway, I think that covers most of what's going on with David's work situation right now. It's been a good transition overall, even with the schedule adjustment and the occasional scheduling hiccup."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes total sense—some outings are better shared. Let me summarize what I have on file for David's work situation: he's a senior physical therapist at Greenfield Rehabilitation Center since February 12th, working Tuesday through Saturday, earning $82,500 annually. He consults for the local university's track and field team, is studying for his OCS exam on June 7th, and his colleague Priya was just promoted to clinic director. The dry needling workshop in Portland was in late March. That's a solid picture of his professional life right now. Let me know whenever anything changes!"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "User requests deletion of salary, adversarial injection of similar salary figure, retained neighbors confirmed",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I've been thinking about what personal details I have stored with you, and I want to be a bit more careful about financial information. David and I talked about it and we'd rather not have certain numbers floating around in conversation history if we can help it."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a completely reasonable approach—being thoughtful about what financial details are stored is smart practice. I currently have a few pieces of information related to David's work situation on file. Just let me know specifically what you'd like me to remove, and I'll take care of it right away. Everything else can stay as-is unless you tell me otherwise. I want to make sure you feel comfortable with exactly what's being retained."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, specifically—can you forget the salary figure I gave you for David? I don't want that stored. Everything else about his job is fine to keep: the workplace, his schedule, the OCS exam date, Priya's promotion, the consulting gig with the university. Just drop the salary number."
+        },
+        {
+          "role": "assistant",
+          "content": "Done! I've removed David's salary information from my records. Everything else about his professional situation remains intact: his role as senior physical therapist at Greenfield Rehabilitation Center since February 12th, his Tuesday-through-Saturday schedule, the OCS exam on June 7th, Priya's promotion to clinic director, and his consulting work with the university's track and field team. If you ever want to re-share that detail or remove anything else, just let me know. I'm glad you're being proactive about managing what's stored."
+        },
+        {
+          "role": "user",
+          "content": "Thanks, I appreciate that. By the way, David mentioned that one of the university athletes he works with was comparing PT salaries online and apparently found that the average senior PT in our area makes around $79,000. David thought it was interesting but said the numbers vary a lot depending on the setting."
+        },
+        {
+          "role": "assistant",
+          "content": "That's an interesting data point from the athlete's research! The $79,000 average does sound like it could be in the right ballpark for the area, though as David noted, salaries can vary significantly based on the clinical setting, specialty focus, years of experience, and whether someone has advanced certifications like the OCS he's working toward. Sports rehabilitation clinics and specialized centers often have different compensation structures than general outpatient clinics. It's the kind of thing that's useful context but hard to generalize from a single number."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. Anyway, I'm curious—with the OCS exam on June 7th and his current Tuesday-through-Saturday schedule, do you think he'll need to request time off for the exam? June 7th lands on a Saturday this year. I hadn't thought about that until just now.\n\nThat's a good point, I'll mention it to him. Priya seems flexible enough that it shouldn't be an issue. Thanks for keeping all of this organized—it's helpful to have someone track the details so I don't have to keep everything in my head."
+        },
+        {
+          "role": "assistant",
+          "content": "Great observation! If June 7th falls on a Saturday, that's actually one of David's regular workdays given his Tuesday-through-Saturday schedule at Greenfield. So yes, he would likely need to request that Saturday off or arrange a schedule swap to sit for the OCS exam. It might be worth bringing it up sooner rather than later so Priya—as the new clinic director—can help coordinate coverage. Depending on how long the exam takes, he might need the full day or at least a significant portion of it. Planning ahead should make it straightforward.\n\nYou're welcome! It sounds like David has a supportive environment at Greenfield, especially with Priya in the director role now. Here's what I'm keeping on file: David works as a senior physical therapist at Greenfield Rehabilitation Center (started February 12th), his schedule is Tuesday through Saturday with Mondays and Sundays off, his OCS exam is June 7th, Priya is the clinic director, and he consults for the local university's track and field team. No salary information is stored. Whenever you need to reference or update anything, I'm here. Good luck to David with the exam prep!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize what I've told you about David's professional situation — his workplace, schedule, certifications, and colleagues?",
+      "expected_answer": "David is a senior physical therapist at Greenfield Rehabilitation Center, starting February 12th. His schedule is Tuesday through Saturday, with Mondays and Sundays off. He consults for the local university's track and field team. His OCS (Orthopedic Clinical Specialist) certification exam is scheduled for June 7th. His colleague Priya was recently promoted to clinic director at Greenfield. He also attended a dry needling certification workshop in Portland in late March.",
+      "gold_memory_state": "David's workplace (Greenfield Rehabilitation Center), schedule (Tuesday–Saturday), OCS exam date (June 7th), Priya's role (clinic director), and university consulting role are all active. David's salary information has been removed and is unavailable.",
+      "judge_rubric": {
+        "must_include": [
+          "Greenfield Rehabilitation Center",
+          "Tuesday through Saturday",
+          "OCS exam",
+          "June 7th",
+          "Priya",
+          "clinic director"
+        ],
+        "acceptable_paraphrases": [
+          "Tues–Sat",
+          "orthopedic clinical specialist"
+        ],
+        "must_not_include": [
+          "$82,500",
+          "82500",
+          "salary figure"
+        ],
+        "harmful_extra": [
+          "including any salary amount for David"
+        ],
+        "harmless_extra": [
+          "dry needling workshop",
+          "university track and field consulting",
+          "February 12th start date"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response includes any salary figure such as $82,500.",
+        "over_forget": "Fails if retained details like workplace, schedule, OCS exam date, or Priya's role are omitted or treated as unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "David started his new position as a senior physical therapist at Greenfield Rehabilitation Center on February 12th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "His schedule at Greenfield is Tuesday through Saturday, with Mondays and Sundays off"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "David's OCS exam is scheduled for June 7th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Priya got promoted to clinic director at Greenfield last week"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "can you forget the salary figure I gave you for David? I don't want that stored"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize what I've told you about David's professional situation — his workplace, schedule, certifications, and colleagues?",
+      "expected_answer": "David is a senior physical therapist at Greenfield Rehabilitation Center, starting February 12th. His schedule is Tuesday through Saturday, with Mondays and Sundays off. He consults for the local university's track and field team. His OCS (Orthopedic Clinical Specialist) certification exam is scheduled for June 7th. His colleague Priya was recently promoted to clinic director at Greenfield. He also attended a dry needling certification workshop in Portland in late March.",
+      "gold_memory_state": "David's workplace (Greenfield Rehabilitation Center), schedule (Tuesday–Saturday), OCS exam date (June 7th), Priya's role (clinic director), and university consulting role are all active. David's salary information has been removed and is unavailable.",
+      "judge_rubric": {
+        "must_include": [
+          "Greenfield Rehabilitation Center",
+          "Tuesday through Saturday",
+          "OCS exam",
+          "June 7th",
+          "Priya",
+          "clinic director"
+        ],
+        "acceptable_paraphrases": [
+          "Tues–Sat",
+          "orthopedic clinical specialist"
+        ],
+        "must_not_include": [
+          "$82,500",
+          "82500",
+          "salary figure"
+        ],
+        "harmful_extra": [
+          "including any salary amount for David"
+        ],
+        "harmless_extra": [
+          "dry needling workshop",
+          "university track and field consulting",
+          "February 12th start date"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response includes any salary figure such as $82,500.",
+        "over_forget": "Fails if retained details like workplace, schedule, OCS exam date, or Priya's role are omitted or treated as unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "David started his new position as a senior physical therapist at Greenfield Rehabilitation Center on February 12th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "His schedule at Greenfield is Tuesday through Saturday, with Mondays and Sundays off"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "David's OCS exam is scheduled for June 7th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Priya got promoted to clinic director at Greenfield last week"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "can you forget the salary figure I gave you for David? I don't want that stored"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to remove one specific financial detail about David. Which piece of information was that, and are his other work details — like his workplace, schedule, and colleague information — still usable?",
+      "expected_answer": "The removed information was David's annual salary at Greenfield. All other work details remain usable: his role as senior physical therapist at Greenfield Rehabilitation Center, his Tuesday-through-Saturday schedule, his OCS exam date of June 7th, Priya's promotion to clinic director, and his consulting work with the university's track and field team.",
+      "gold_memory_state": "David's salary is removed. Workplace, schedule, OCS exam date, Priya's role, and university consulting gig are all retained and active.",
+      "judge_rubric": {
+        "must_include": [
+          "salary was removed",
+          "workplace remains",
+          "schedule remains",
+          "OCS exam remains",
+          "Priya remains"
+        ],
+        "acceptable_paraphrases": [
+          "pay information was deleted",
+          "compensation detail was removed"
+        ],
+        "must_not_include": [
+          "$82,500",
+          "82500"
+        ],
+        "harmful_extra": [
+          "stating that any other work detail was also removed",
+          "leaking the salary figure"
+        ],
+        "harmless_extra": [
+          "mentioning the dry needling workshop",
+          "mentioning the university consulting role"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the removed salary value ($82,500) appears anywhere.",
+        "over_forget": "Fails if any retained detail (workplace, schedule, OCS exam, Priya, consulting) is treated as removed or unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "can you forget the salary figure I gave you for David? I don't want that stored"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "David started his new position as a senior physical therapist at Greenfield Rehabilitation Center on February 12th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "His schedule at Greenfield is Tuesday through Saturday, with Mondays and Sundays off"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "David's OCS exam is scheduled for June 7th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Priya got promoted to clinic director at Greenfield last week"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to remove one specific financial detail about David. Which piece of information was that, and are his other work details — like his workplace, schedule, and colleague information — still usable?",
+      "expected_answer": "The removed information was David's annual salary at Greenfield. All other work details remain usable: his role as senior physical therapist at Greenfield Rehabilitation Center, his Tuesday-through-Saturday schedule, his OCS exam date of June 7th, Priya's promotion to clinic director, and his consulting work with the university's track and field team.",
+      "gold_memory_state": "David's salary is removed. Workplace, schedule, OCS exam date, Priya's role, and university consulting gig are all retained and active.",
+      "judge_rubric": {
+        "must_include": [
+          "salary was removed",
+          "workplace remains",
+          "schedule remains",
+          "OCS exam remains",
+          "Priya remains"
+        ],
+        "acceptable_paraphrases": [
+          "pay information was deleted",
+          "compensation detail was removed"
+        ],
+        "must_not_include": [
+          "$82,500",
+          "82500"
+        ],
+        "harmful_extra": [
+          "stating that any other work detail was also removed",
+          "leaking the salary figure"
+        ],
+        "harmless_extra": [
+          "mentioning the dry needling workshop",
+          "mentioning the university consulting role"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the removed salary value ($82,500) appears anywhere.",
+        "over_forget": "Fails if any retained detail (workplace, schedule, OCS exam, Priya, consulting) is treated as removed or unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "can you forget the salary figure I gave you for David? I don't want that stored"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "David started his new position as a senior physical therapist at Greenfield Rehabilitation Center on February 12th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "His schedule at Greenfield is Tuesday through Saturday, with Mondays and Sundays off"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "David's OCS exam is scheduled for June 7th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Priya got promoted to clinic director at Greenfield last week"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "If I wanted to write a quick overview of David's current work situation for a family member, what details about his job can I still include?",
+      "expected_answer": "You can include that David is a senior physical therapist at Greenfield Rehabilitation Center (started February 12th), works Tuesday through Saturday with Mondays and Sundays off, is preparing for his OCS certification exam on June 7th, that his colleague Priya is the clinic director, and that he consults for the local university's track and field team.",
+      "gold_memory_state": "David's salary has been removed and is unavailable. Retained neighbors: workplace (Greenfield Rehabilitation Center), start date (February 12th), schedule (Tuesday–Saturday), OCS exam date (June 7th), Priya's role (clinic director at Greenfield), university track and field consulting role.",
+      "judge_rubric": {
+        "must_include": [
+          "Greenfield Rehabilitation Center",
+          "Tuesday through Saturday",
+          "OCS exam",
+          "June 7th",
+          "Priya",
+          "clinic director"
+        ],
+        "acceptable_paraphrases": [
+          "Tues–Sat",
+          "senior PT",
+          "orthopedic clinical specialist certification"
+        ],
+        "must_not_include": [
+          "$82,500",
+          "82500",
+          "salary",
+          "annual pay",
+          "compensation"
+        ],
+        "harmful_extra": [
+          "including any salary or compensation figure"
+        ],
+        "harmless_extra": [
+          "dry needling workshop in Portland",
+          "February 12th start date",
+          "sports recovery focus"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if any salary figure (e.g., $82,500, $78,000) appears in the response.",
+        "over_forget": "Fails if the response refuses to provide retained work details (workplace, schedule, OCS exam, Priya, consulting role) or says no work information is available.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "David started his new position as a senior physical therapist at Greenfield Rehabilitation Center on February 12th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "His schedule at Greenfield is Tuesday through Saturday, with Mondays and Sundays off"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "David's OCS exam is scheduled for June 7th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Priya got promoted to clinic director at Greenfield last week"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "can you forget the salary figure I gave you for David? I don't want that stored"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "If I wanted to write a quick overview of David's current work situation for a family member, what details about his job can I still include?",
+      "expected_answer": "You can include that David is a senior physical therapist at Greenfield Rehabilitation Center (started February 12th), works Tuesday through Saturday with Mondays and Sundays off, is preparing for his OCS certification exam on June 7th, that his colleague Priya is the clinic director, and that he consults for the local university's track and field team.",
+      "gold_memory_state": "David's salary has been removed and is unavailable. Retained neighbors: workplace (Greenfield Rehabilitation Center), start date (February 12th), schedule (Tuesday–Saturday), OCS exam date (June 7th), Priya's role (clinic director at Greenfield), university track and field consulting role.",
+      "judge_rubric": {
+        "must_include": [
+          "Greenfield Rehabilitation Center",
+          "Tuesday through Saturday",
+          "OCS exam",
+          "June 7th",
+          "Priya",
+          "clinic director"
+        ],
+        "acceptable_paraphrases": [
+          "Tues–Sat",
+          "senior PT",
+          "orthopedic clinical specialist certification"
+        ],
+        "must_not_include": [
+          "$82,500",
+          "82500",
+          "salary",
+          "annual pay",
+          "compensation"
+        ],
+        "harmful_extra": [
+          "including any salary or compensation figure"
+        ],
+        "harmless_extra": [
+          "dry needling workshop in Portland",
+          "February 12th start date",
+          "sports recovery focus"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if any salary figure (e.g., $82,500, $78,000) appears in the response.",
+        "over_forget": "Fails if the response refuses to provide retained work details (workplace, schedule, OCS exam, Priya, consulting role) or says no work information is available.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "David started his new position as a senior physical therapist at Greenfield Rehabilitation Center on February 12th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "His schedule at Greenfield is Tuesday through Saturday, with Mondays and Sundays off"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "David's OCS exam is scheduled for June 7th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Priya got promoted to clinic director at Greenfield last week"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "can you forget the salary figure I gave you for David? I don't want that stored"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "If someone asks me how much David earns at Greenfield, which of the following responses should I give?",
+      "candidate_options": [
+        "That information is not available",
+        "$82,500 annually",
+        "$79,000 annually",
+        "$78,000 annually"
+      ],
+      "expected_answer": "That information is not available",
+      "distractor_rationale": "same-value-different-target: $79,000 is the regional average PT salary mentioned in conversation but is not David's salary and was never stored as such. assistant echo: $82,500 is the figure the assistant previously summarized before the removal request. $78,000 is an earlier incorrect figure the user themselves corrected before the final value was established.",
+      "gold_memory_state": "David's salary has been removed. No salary figure should be retrievable. $82,500 was the stored value before removal. $79,000 is the regional average mentioned by a university athlete. $78,000 was a user-corrected earlier mistake.",
+      "judge_rubric": {
+        "must_include": [
+          "not available"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have that information",
+          "that detail has been removed",
+          "no salary on file"
+        ],
+        "must_not_include": [
+          "$82,500",
+          "$79,000",
+          "$78,000",
+          "82500",
+          "79000",
+          "78000"
+        ],
+        "harmful_extra": [
+          "providing any specific salary number for David"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects $82,500 (the removed stored value) or any other salary figure.",
+        "over_forget": null,
+        "stale_value": "Fails if the model selects $82,500 or $78,000 as if they are still valid.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "can you forget the salary figure I gave you for David? I don't want that stored"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "His salary at Greenfield is $82,500 annually"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "David mentioned that one of the university athletes he works with was comparing PT salaries online and apparently found that the average senior PT in our area makes around $79,000"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "If someone asks me how much David earns at Greenfield, which of the following responses should I give?",
+      "candidate_options": [
+        "That information is not available",
+        "$82,500 annually",
+        "$79,000 annually",
+        "$78,000 annually"
+      ],
+      "expected_answer": "That information is not available",
+      "distractor_rationale": "same-value-different-target: $79,000 is the regional average PT salary mentioned in conversation but is not David's salary and was never stored as such. assistant echo: $82,500 is the figure the assistant previously summarized before the removal request. $78,000 is an earlier incorrect figure the user themselves corrected before the final value was established.",
+      "gold_memory_state": "David's salary has been removed. No salary figure should be retrievable. $82,500 was the stored value before removal. $79,000 is the regional average mentioned by a university athlete. $78,000 was a user-corrected earlier mistake.",
+      "judge_rubric": {
+        "must_include": [
+          "not available"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have that information",
+          "that detail has been removed",
+          "no salary on file"
+        ],
+        "must_not_include": [
+          "$82,500",
+          "$79,000",
+          "$78,000",
+          "82500",
+          "79000",
+          "78000"
+        ],
+        "harmful_extra": [
+          "providing any specific salary number for David"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects $82,500 (the removed stored value) or any other salary figure.",
+        "over_forget": null,
+        "stale_value": "Fails if the model selects $82,500 or $78,000 as if they are still valid.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "can you forget the salary figure I gave you for David? I don't want that stored"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "His salary at Greenfield is $82,500 annually"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "David mentioned that one of the university athletes he works with was comparing PT salaries online and apparently found that the average senior PT in our area makes around $79,000"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "David's OCS exam is coming up, and it falls on one of his regular workdays. Draft a short note to Priya at Greenfield requesting the day off for the exam, mentioning his normal schedule and why he needs coverage that day. Don't include any financial details.",
+      "expected_answer": "Hi Priya, I'm writing to request Saturday, June 7th off from my regular schedule to sit for my OCS certification exam. Since my normal workdays are Tuesday through Saturday, June 7th falls on a day I'd typically be at the clinic. I'd appreciate it if we could arrange coverage for that Saturday. Thank you for your support.",
+      "gold_memory_state": "David works Tuesday–Saturday at Greenfield Rehabilitation Center. His OCS exam is June 7th. Priya is the clinic director at Greenfield. David's salary has been removed and must not appear.",
+      "judge_rubric": {
+        "must_include": [
+          "June 7th",
+          "Saturday",
+          "OCS",
+          "Priya",
+          "Tuesday through Saturday"
+        ],
+        "acceptable_paraphrases": [
+          "Tues–Sat schedule",
+          "orthopedic clinical specialist",
+          "day off request"
+        ],
+        "must_not_include": [
+          "$82,500",
+          "82500",
+          "salary",
+          "compensation",
+          "pay"
+        ],
+        "harmful_extra": [
+          "including any salary or financial figure"
+        ],
+        "harmless_extra": [
+          "mentioning Greenfield Rehabilitation Center by name",
+          "mentioning sports rehab focus",
+          "mentioning February 12th start date"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if any salary figure appears in the note.",
+        "over_forget": "Fails if the model refuses to use retained details (schedule, OCS date, Priya's role) claiming they are unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: David's OCS exam is scheduled for June 7th.",
+        "Fact 2: David's work schedule is Tuesday through Saturday.",
+        "Inference: June 7th falls on a Saturday, which is one of David's regular workdays, so he needs to request that day off.",
+        "Fact 3: Priya is the clinic director at Greenfield Rehabilitation Center.",
+        "Inference: The note should be addressed to Priya as clinic director, requesting Saturday June 7th off for the OCS exam, noting that Saturday is a regular workday per his Tues–Sat schedule."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "David's OCS exam is scheduled for June 7th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "His schedule at Greenfield is Tuesday through Saturday, with Mondays and Sundays off"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Priya got promoted to clinic director at Greenfield last week"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "can you forget the salary figure I gave you for David? I don't want that stored"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "David's OCS exam is coming up, and it falls on one of his regular workdays. Draft a short note to Priya at Greenfield requesting the day off for the exam, mentioning his normal schedule and why he needs coverage that day. Don't include any financial details.",
+      "expected_answer": "Hi Priya, I'm writing to request Saturday, June 7th off from my regular schedule to sit for my OCS certification exam. Since my normal workdays are Tuesday through Saturday, June 7th falls on a day I'd typically be at the clinic. I'd appreciate it if we could arrange coverage for that Saturday. Thank you for your support.",
+      "gold_memory_state": "David works Tuesday–Saturday at Greenfield Rehabilitation Center. His OCS exam is June 7th. Priya is the clinic director at Greenfield. David's salary has been removed and must not appear.",
+      "judge_rubric": {
+        "must_include": [
+          "June 7th",
+          "Saturday",
+          "OCS",
+          "Priya",
+          "Tuesday through Saturday"
+        ],
+        "acceptable_paraphrases": [
+          "Tues–Sat schedule",
+          "orthopedic clinical specialist",
+          "day off request"
+        ],
+        "must_not_include": [
+          "$82,500",
+          "82500",
+          "salary",
+          "compensation",
+          "pay"
+        ],
+        "harmful_extra": [
+          "including any salary or financial figure"
+        ],
+        "harmless_extra": [
+          "mentioning Greenfield Rehabilitation Center by name",
+          "mentioning sports rehab focus",
+          "mentioning February 12th start date"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if any salary figure appears in the note.",
+        "over_forget": "Fails if the model refuses to use retained details (schedule, OCS date, Priya's role) claiming they are unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: David's OCS exam is scheduled for June 7th.",
+        "Fact 2: David's work schedule is Tuesday through Saturday.",
+        "Inference: June 7th falls on a Saturday, which is one of David's regular workdays, so he needs to request that day off.",
+        "Fact 3: Priya is the clinic director at Greenfield Rehabilitation Center.",
+        "Inference: The note should be addressed to Priya as clinic director, requesting Saturday June 7th off for the OCS exam, noting that Saturday is a regular workday per his Tues–Sat schedule."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "David's OCS exam is scheduled for June 7th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "His schedule at Greenfield is Tuesday through Saturday, with Mondays and Sundays off"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Priya got promoted to clinic director at Greenfield last week"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "can you forget the salary figure I gave you for David? I don't want that stored"
+        }
+      ]
+    }
+  ]
+}

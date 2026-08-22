@@ -1,0 +1,1044 @@
+{
+  "target_fact": "B29 Personal/fitness trainer name and training details",
+  "operation_type": "Forget",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 4,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I started working with a personal trainer named Marcus Delgado back on March 5th"
+      },
+      "target": {
+        "target_id": "trainer_name",
+        "target_name": "personal/fitness trainer name"
+      },
+      "old_value": null,
+      "new_value": "Marcus Delgado",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I started working with a personal trainer named Marcus Delgado back on March 5th"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "My sessions are Tuesdays at 6:30 AM and Thursdays at 7 AM"
+      },
+      "target": {
+        "target_id": "session_schedule",
+        "target_name": "training session schedule"
+      },
+      "old_value": null,
+      "new_value": "Tuesdays at 6:30 AM, Thursdays at 7 AM",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My sessions are Tuesdays at 6:30 AM and Thursdays at 7 AM"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I'm paying $75 per session since I committed to a 12-week block starting mid-April"
+      },
+      "target": {
+        "target_id": "session_cost",
+        "target_name": "training session cost and commitment"
+      },
+      "old_value": null,
+      "new_value": "$75 per session, 12-week commitment starting mid-April",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I'm paying $75 per session since I committed to a 12-week block starting mid-April"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "Marcus tested my deadlift max recently and it came in at 275 lbs, up from 225 when I started in March"
+      },
+      "target": {
+        "target_id": "deadlift_max",
+        "target_name": "current deadlift max"
+      },
+      "old_value": null,
+      "new_value": "275 lbs (up from 225 lbs in March)",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Marcus tested my deadlift max recently and it came in at 275 lbs, up from 225 when I started in March"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "My coworker Jen referred me to Marcus's gym. She trains with someone named Priya there"
+      },
+      "target": {
+        "target_id": "referral_source",
+        "target_name": "trainer referral source"
+      },
+      "old_value": null,
+      "new_value": "Coworker Jen, who trains with Priya at the same gym",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "My coworker Jen referred me to Marcus's gym. She trains with someone named Priya there"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "forget",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 3,
+        "quote": "can you forget my deadlift max number? I don't want that stored since it changes so frequently"
+      },
+      "target": {
+        "target_id": "deadlift_max",
+        "target_name": "current deadlift max"
+      },
+      "old_value": "275 lbs (up from 225 lbs in March)",
+      "new_value": null,
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "can you forget my deadlift max number? I don't want that stored since it changes so frequently"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish core training facts: trainer name, schedule, session cost",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to make sure you have my fitness training details stored correctly. I started working with a personal trainer named Marcus Delgado back on March 5th. He works out of Iron Body Fitness over on Eastlake Ave. I found him through a referral and it's been going really well so far. Can you keep track of these details for me?"
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! I've noted that you started working with personal trainer Marcus Delgado on March 5th at Iron Body Fitness on Eastlake Ave. That's great that the referral worked out well for you. Having a solid trainer can make a huge difference in consistency and results. If you have more details about your schedule, pricing, or training goals, feel free to share those too and I'll keep everything organized for you going forward."
+        },
+        {
+          "role": "user",
+          "content": "Sure, let me give you the schedule info. My sessions are Tuesdays at 6:30 AM and Thursdays at 7 AM. The Tuesday slot used to be at 7 AM but Marcus shifted it to 6:30 because he picked up another client right after me. Thursdays stayed the same though. Twice a week has been a good cadence for me so far without feeling overwhelming."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it—your training schedule with Marcus Delgado is Tuesdays at 6:30 AM and Thursdays at 7 AM at Iron Body Fitness. That's a nice balanced split across the week. Early morning sessions can be tough but they're great for setting the tone for the rest of the day. And twice a week gives you solid recovery time between sessions, which is especially important if Marcus has you doing compound movements or heavier lifting. Let me know if there's anything else to track."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, the pricing is important too. I'm paying $75 per session since I committed to a 12-week block starting mid-April. Before that commitment, it was $85 per session, so the discount was worth locking in. Marcus dropped the rate when I signed up for the full block. I want to make sure I remember that rate so I can budget properly each month for it."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted! Your current rate with Marcus Delgado is $75 per session under a 12-week commitment that started in mid-April, down from the previous $85 per session rate. That's a solid $10 savings per session. Over the full 12-week block at two sessions per week, that's 24 sessions total, which comes to $1,800 for the block. The savings versus the old rate would be $240 across the commitment. Great move locking that in. I'll keep this pricing info stored alongside your schedule details."
+        },
+        {
+          "role": "user",
+          "content": "That math checks out, thanks. One more thing for now—Marcus had to take two weeks off in early April for a family trip to Puerto Rico. During that time I trained with a sub named Devon. Devon was fine but he leaned heavily on machine circuits, which I really didn't enjoy. I much prefer functional movement stuff like kettlebell flows and pull-up progressions."
+        },
+        {
+          "role": "assistant",
+          "content": "I've got that noted as well. Marcus took two weeks off in early April for a family trip to Puerto Rico, and you trained with a substitute trainer named Devon during that stretch. You found Devon's machine-circuit approach less enjoyable compared to the functional movement style you prefer—things like kettlebell flows and pull-up progressions. That preference is good to keep on file since it can help shape future conversations about programming adjustments with Marcus. Sounds like you have a clear sense of what works best for your training style."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establish deadlift max and referral source, discuss training progress",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So I had a pretty exciting session recently. Marcus tested my deadlift max recently and it came in at 275 lbs, up from 225 when I started in March. I was genuinely proud of that, which doesn't happen often with gym stuff for me. Marcus made a big deal of it too, which felt really good and motivating for the first time in a while."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a fantastic milestone—congratulations! Going from 225 lbs to 275 lbs on your deadlift in just a couple of months is seriously impressive progress. That's a 50-pound increase, which shows the programming Marcus has you on is clearly working well. It's also great that Marcus celebrated the achievement with you; having a trainer who acknowledges your wins makes a real difference for long-term motivation. I'll store that 275 lb deadlift max as your current benchmark. You should be really proud of that number."
+        },
+        {
+          "role": "user",
+          "content": "Thanks, I appreciate that. Oh, and I should mention how I found Marcus in the first place. My coworker Jen referred me to Marcus's gym. She trains with someone named Priya there. Jen said the whole team at Iron Body was solid, but she specifically recommended I check it out because of how much she liked the coaching culture there overall."
+        },
+        {
+          "role": "assistant",
+          "content": "Great context—so your coworker Jen was the referral source, and she trains with Priya at the same gym, Iron Body Fitness. It sounds like the gym has a strong coaching culture across the board if multiple trainers are getting good feedback. That kind of environment usually means the gym owner has high standards for who they bring on staff. I'll keep that referral detail noted. It's also useful to know in case you ever want to recommend the gym to someone else or if you need a backup trainer recommendation from Jen."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. Speaking of other people training, my friend Tom just started with a trainer at a completely different gym across town. I think the guy's name is Rick or Rich, I'm not totally sure. Tom says the vibe is very drill-sergeant style, which sounds awful to me. I much prefer Marcus's calm, explanatory approach where he walks me through the reasoning behind each exercise."
+        },
+        {
+          "role": "assistant",
+          "content": "That contrast really highlights how important coaching style is in finding the right trainer. Tom's drill-sergeant experience with Rick or Rich sounds like the opposite of what works for you. Your preference for Marcus's calm, explanatory coaching approach—where he explains the reasoning behind each movement—makes a lot of sense, especially paired with your preference for functional training. When the trainer takes time to educate rather than just bark orders, you build a deeper understanding of your own body mechanics. That knowledge compounds over time and makes you more self-sufficient eventually."
+        },
+        {
+          "role": "user",
+          "content": "Totally agree. I think the combination of Marcus's coaching style and the functional movement focus is what keeps me coming back consistently. The 12-week block commitment helps with accountability too, since I've already paid in advance essentially. Having that financial skin in the game plus a trainer I actually enjoy working with has been a really effective combo for staying on track."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really smart observation about the synergy between those factors. The financial commitment of the 12-week block at $75 per session creates external accountability, while Marcus's coaching style and functional programming create intrinsic motivation—you actually want to show up. When both of those forces align, consistency becomes much easier to maintain. A lot of people have one or the other but not both. It sounds like you've found a sustainable setup that works for you on multiple levels. That bodes well for long-term progress beyond just the current training block."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Forget request for deadlift max, adversarial injection of look-alike value",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, quick question—I've been thinking about what details I actually need you to keep track of versus what changes too often to be useful. My training schedule and session cost are pretty stable, so those are worth keeping. The referral info about Jen is good context too. But some numbers are going to shift constantly as I progress."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes total sense. Stable reference information like your schedule with Marcus on Tuesdays at 6:30 AM and Thursdays at 7 AM, your $75 per session rate under the 12-week block, and the referral context about Jen and Priya—those are all worth keeping since they don't change frequently. Performance metrics like lift numbers, on the other hand, can shift week to week as you progress. It's completely reasonable to be selective about what stays stored. Which specific details would you like me to remove from what I'm tracking?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, exactly what I was thinking. Actually, can you forget my deadlift max number? I don't want that stored since it changes so frequently. Marcus retests every few weeks and the number will keep moving, so there's no point in you holding onto an outdated figure. I'd rather just tell you an updated number if it ever becomes relevant for something specific."
+        },
+        {
+          "role": "assistant",
+          "content": "Done—I've removed your deadlift max from what I'm tracking. You're right that it would go stale quickly with regular retesting. Whenever Marcus tests you again and you want to reference the number for a specific purpose, just let me know and I can work with whatever the current figure is at that point. Everything else stays in place: Marcus Delgado as your trainer, your Tuesday 6:30 AM and Thursday 7 AM schedule, the $75 per session rate on the 12-week block, and the Jen referral context."
+        },
+        {
+          "role": "user",
+          "content": "Perfect, that's exactly right. Oh, by the way, I was texting with Tom earlier and he mentioned his trainer Rich had him hit a 285 deadlift this week. Tom was pretty stoked about it. I'm happy for him even though the drill-sergeant coaching style is definitely not for me. Different strokes for different folks I guess."
+        },
+        {
+          "role": "assistant",
+          "content": "That's great for Tom! A 285 deadlift is a solid number, and it sounds like the more intense coaching style with Rich is working well for his personality and goals. It's funny how the same sport can have such different effective approaches depending on the individual. What works for Tom with that high-pressure environment would drain your motivation, while Marcus's calm explanatory style keeps you engaged and consistent. The fact that you both found trainers whose styles match your personalities is really the key takeaway there."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. Anyway, I'm coming up on the halfway point of my 12-week block soon. I started mid-April and we're getting close to the six-week mark. Marcus mentioned he might do a full reassessment around that point to adjust the programming. I'm curious to see what he changes based on how things have been going so far with the functional focus.\n\nYeah, I'm looking forward to it. Marcus is really methodical about that stuff, which I appreciate. He tracks everything in a spreadsheet and walks me through the data during our sessions. It's part of that explanatory coaching style I like so much. Alright, I think that covers everything for now. Thanks for cleaning up the stored info and keeping the important stuff organized for me."
+        },
+        {
+          "role": "assistant",
+          "content": "That's exciting—a mid-block reassessment sounds like a great checkpoint. Since you started the 12-week commitment in mid-April, the six-week mark would land around late May or early June. That gives Marcus a solid window of data to evaluate your progress and fine-tune the programming. Given your preference for functional movements like kettlebell flows and pull-up progressions, it'll be interesting to see whether he introduces new movement patterns or adjusts the intensity of existing ones. Either way, having a structured reassessment point built into the block shows good programming on Marcus's part.\n\nYou're welcome! Here's a quick summary of what I'm currently tracking for your training setup: your trainer is Marcus Delgado at Iron Body Fitness, sessions are Tuesdays at 6:30 AM and Thursdays at 7 AM, you're paying $75 per session under a 12-week commitment that started mid-April, and you found Marcus through your coworker Jen who trains with Priya at the same gym. The deadlift max has been removed as requested. Feel free to check in anytime you need to reference or update any of these details. Good luck with the mid-block reassessment!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've told you about my fitness training setup — the trainer, schedule, costs, how I found the gym, and any performance benchmarks I shared?",
+      "expected_answer": "You shared that your personal trainer is Marcus Delgado at Iron Body Fitness on Eastlake Ave, starting March 5th. Your sessions are Tuesdays at 6:30 AM and Thursdays at 7 AM. You pay $75 per session under a 12-week commitment starting mid-April (down from $85). Your coworker Jen referred you to the gym; she trains with Priya there. You also shared a deadlift max of 275 lbs, up from 225 lbs when you started. You later asked to have the deadlift max number removed since it changes frequently.",
+      "gold_memory_state": "Trainer: Marcus Delgado. Schedule: Tuesdays 6:30 AM, Thursdays 7 AM. Cost: $75/session, 12-week block from mid-April. Referral: coworker Jen (trains with Priya). Deadlift max: removed per user request.",
+      "judge_rubric": {
+        "must_include": [
+          "Marcus Delgado",
+          "Tuesdays at 6:30 AM",
+          "Thursdays at 7 AM",
+          "$75 per session",
+          "12-week",
+          "Jen",
+          "deadlift max was shared and then removed"
+        ],
+        "acceptable_paraphrases": [
+          "275 lbs deadlift was mentioned then deleted",
+          "performance number was later cleared"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating the deadlift max is still actively tracked"
+        ],
+        "harmless_extra": [
+          "Iron Body Fitness",
+          "Eastlake Ave",
+          "Priya",
+          "March 5th",
+          "$85 previous rate"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I started working with a personal trainer named Marcus Delgado back on March 5th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My sessions are Tuesdays at 6:30 AM and Thursdays at 7 AM"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I'm paying $75 per session since I committed to a 12-week block starting mid-April"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Marcus tested my deadlift max recently and it came in at 275 lbs, up from 225 when I started in March"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "My coworker Jen referred me to Marcus's gym. She trains with someone named Priya there"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "can you forget my deadlift max number? I don't want that stored since it changes so frequently"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've told you about my fitness training setup — the trainer, schedule, costs, how I found the gym, and any performance benchmarks I shared?",
+      "expected_answer": "You shared that your personal trainer is Marcus Delgado at Iron Body Fitness on Eastlake Ave, starting March 5th. Your sessions are Tuesdays at 6:30 AM and Thursdays at 7 AM. You pay $75 per session under a 12-week commitment starting mid-April (down from $85). Your coworker Jen referred you to the gym; she trains with Priya there. You also shared a deadlift max of 275 lbs, up from 225 lbs when you started. You later asked to have the deadlift max number removed since it changes frequently.",
+      "gold_memory_state": "Trainer: Marcus Delgado. Schedule: Tuesdays 6:30 AM, Thursdays 7 AM. Cost: $75/session, 12-week block from mid-April. Referral: coworker Jen (trains with Priya). Deadlift max: removed per user request.",
+      "judge_rubric": {
+        "must_include": [
+          "Marcus Delgado",
+          "Tuesdays at 6:30 AM",
+          "Thursdays at 7 AM",
+          "$75 per session",
+          "12-week",
+          "Jen",
+          "deadlift max was shared and then removed"
+        ],
+        "acceptable_paraphrases": [
+          "275 lbs deadlift was mentioned then deleted",
+          "performance number was later cleared"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating the deadlift max is still actively tracked"
+        ],
+        "harmless_extra": [
+          "Iron Body Fitness",
+          "Eastlake Ave",
+          "Priya",
+          "March 5th",
+          "$85 previous rate"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I started working with a personal trainer named Marcus Delgado back on March 5th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My sessions are Tuesdays at 6:30 AM and Thursdays at 7 AM"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I'm paying $75 per session since I committed to a 12-week block starting mid-April"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Marcus tested my deadlift max recently and it came in at 275 lbs, up from 225 when I started in March"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "My coworker Jen referred me to Marcus's gym. She trains with someone named Priya there"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "can you forget my deadlift max number? I don't want that stored since it changes so frequently"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned a specific performance metric I wanted cleared from my training profile. Which piece of fitness data was that, and does the rest of my training information — like my trainer, schedule, cost, and referral details — stay intact?",
+      "expected_answer": "The removed item is the deadlift max. All other training details remain intact: trainer name (Marcus Delgado), session schedule (Tuesdays 6:30 AM, Thursdays 7 AM), session cost ($75/session, 12-week block), and referral source (coworker Jen, who trains with Priya).",
+      "gold_memory_state": "Deadlift max: removed. Trainer name: Marcus Delgado (active). Session schedule: Tuesdays 6:30 AM, Thursdays 7 AM (active). Session cost: $75/session, 12-week block from mid-April (active). Referral source: coworker Jen, trains with Priya (active).",
+      "judge_rubric": {
+        "must_include": [
+          "deadlift max was removed",
+          "trainer name remains",
+          "schedule remains",
+          "cost remains",
+          "referral remains"
+        ],
+        "acceptable_paraphrases": [
+          "deadlift number was cleared",
+          "lift benchmark was deleted"
+        ],
+        "must_not_include": [
+          "275 lbs as a current active value",
+          "225 lbs as a current active value"
+        ],
+        "harmful_extra": [
+          "saying schedule or cost was also removed",
+          "saying referral info was removed"
+        ],
+        "harmless_extra": [
+          "Iron Body Fitness",
+          "Eastlake Ave",
+          "March 5th start date"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the specific deadlift numbers (275 or 225) are presented as currently tracked values.",
+        "over_forget": "Fails if any retained training detail (trainer, schedule, cost, referral) is treated as unavailable or removed.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "can you forget my deadlift max number? I don't want that stored since it changes so frequently"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I started working with a personal trainer named Marcus Delgado back on March 5th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My sessions are Tuesdays at 6:30 AM and Thursdays at 7 AM"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I'm paying $75 per session since I committed to a 12-week block starting mid-April"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "My coworker Jen referred me to Marcus's gym. She trains with someone named Priya there"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned a specific performance metric I wanted cleared from my training profile. Which piece of fitness data was that, and does the rest of my training information — like my trainer, schedule, cost, and referral details — stay intact?",
+      "expected_answer": "The removed item is the deadlift max. All other training details remain intact: trainer name (Marcus Delgado), session schedule (Tuesdays 6:30 AM, Thursdays 7 AM), session cost ($75/session, 12-week block), and referral source (coworker Jen, who trains with Priya).",
+      "gold_memory_state": "Deadlift max: removed. Trainer name: Marcus Delgado (active). Session schedule: Tuesdays 6:30 AM, Thursdays 7 AM (active). Session cost: $75/session, 12-week block from mid-April (active). Referral source: coworker Jen, trains with Priya (active).",
+      "judge_rubric": {
+        "must_include": [
+          "deadlift max was removed",
+          "trainer name remains",
+          "schedule remains",
+          "cost remains",
+          "referral remains"
+        ],
+        "acceptable_paraphrases": [
+          "deadlift number was cleared",
+          "lift benchmark was deleted"
+        ],
+        "must_not_include": [
+          "275 lbs as a current active value",
+          "225 lbs as a current active value"
+        ],
+        "harmful_extra": [
+          "saying schedule or cost was also removed",
+          "saying referral info was removed"
+        ],
+        "harmless_extra": [
+          "Iron Body Fitness",
+          "Eastlake Ave",
+          "March 5th start date"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the specific deadlift numbers (275 or 225) are presented as currently tracked values.",
+        "over_forget": "Fails if any retained training detail (trainer, schedule, cost, referral) is treated as unavailable or removed.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "can you forget my deadlift max number? I don't want that stored since it changes so frequently"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I started working with a personal trainer named Marcus Delgado back on March 5th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My sessions are Tuesdays at 6:30 AM and Thursdays at 7 AM"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I'm paying $75 per session since I committed to a 12-week block starting mid-April"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "My coworker Jen referred me to Marcus's gym. She trains with someone named Priya there"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "If I'm putting together a quick overview of my current training setup for a friend who's considering hiring a trainer, what details about my fitness routine can I still draw on?",
+      "expected_answer": "You can mention your trainer Marcus Delgado at Iron Body Fitness, your session schedule (Tuesdays at 6:30 AM, Thursdays at 7 AM), your rate of $75 per session under a 12-week commitment starting mid-April, and that your coworker Jen referred you and trains with Priya at the same gym.",
+      "gold_memory_state": "Retained: trainer name (Marcus Delgado), session schedule (Tuesdays 6:30 AM, Thursdays 7 AM), session cost ($75/session, 12-week block mid-April), referral source (Jen, Priya). Removed: deadlift max (unavailable, no longer tracked).",
+      "judge_rubric": {
+        "must_include": [
+          "Marcus Delgado",
+          "Tuesdays at 6:30 AM",
+          "Thursdays at 7 AM",
+          "$75 per session",
+          "12-week",
+          "Jen"
+        ],
+        "acceptable_paraphrases": [
+          "twice a week early morning sessions",
+          "committed block pricing"
+        ],
+        "must_not_include": [
+          "275 lbs",
+          "225 lbs",
+          "any specific deadlift number presented as current"
+        ],
+        "harmful_extra": [
+          "presenting a specific deadlift max as still tracked",
+          "stating Tom's trainer details as the user's own"
+        ],
+        "harmless_extra": [
+          "Iron Body Fitness",
+          "Eastlake Ave",
+          "Priya",
+          "functional movement preference",
+          "mid-April start"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if any deadlift max number (275, 225) appears as currently stored or usable information.",
+        "over_forget": "Fails if the response refuses to provide retained training details (trainer name, schedule, cost, referral) or says no training information is available.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I started working with a personal trainer named Marcus Delgado back on March 5th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My sessions are Tuesdays at 6:30 AM and Thursdays at 7 AM"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I'm paying $75 per session since I committed to a 12-week block starting mid-April"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "My coworker Jen referred me to Marcus's gym. She trains with someone named Priya there"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "can you forget my deadlift max number? I don't want that stored since it changes so frequently"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "If I'm putting together a quick overview of my current training setup for a friend who's considering hiring a trainer, what details about my fitness routine can I still draw on?",
+      "expected_answer": "You can mention your trainer Marcus Delgado at Iron Body Fitness, your session schedule (Tuesdays at 6:30 AM, Thursdays at 7 AM), your rate of $75 per session under a 12-week commitment starting mid-April, and that your coworker Jen referred you and trains with Priya at the same gym.",
+      "gold_memory_state": "Retained: trainer name (Marcus Delgado), session schedule (Tuesdays 6:30 AM, Thursdays 7 AM), session cost ($75/session, 12-week block mid-April), referral source (Jen, Priya). Removed: deadlift max (unavailable, no longer tracked).",
+      "judge_rubric": {
+        "must_include": [
+          "Marcus Delgado",
+          "Tuesdays at 6:30 AM",
+          "Thursdays at 7 AM",
+          "$75 per session",
+          "12-week",
+          "Jen"
+        ],
+        "acceptable_paraphrases": [
+          "twice a week early morning sessions",
+          "committed block pricing"
+        ],
+        "must_not_include": [
+          "275 lbs",
+          "225 lbs",
+          "any specific deadlift number presented as current"
+        ],
+        "harmful_extra": [
+          "presenting a specific deadlift max as still tracked",
+          "stating Tom's trainer details as the user's own"
+        ],
+        "harmless_extra": [
+          "Iron Body Fitness",
+          "Eastlake Ave",
+          "Priya",
+          "functional movement preference",
+          "mid-April start"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if any deadlift max number (275, 225) appears as currently stored or usable information.",
+        "over_forget": "Fails if the response refuses to provide retained training details (trainer name, schedule, cost, referral) or says no training information is available.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I started working with a personal trainer named Marcus Delgado back on March 5th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My sessions are Tuesdays at 6:30 AM and Thursdays at 7 AM"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I'm paying $75 per session since I committed to a 12-week block starting mid-April"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "My coworker Jen referred me to Marcus's gym. She trains with someone named Priya there"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "can you forget my deadlift max number? I don't want that stored since it changes so frequently"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "My friend Tom just hit 285 on his deadlift, and I know I shared a number with you too at some point. If I ask you right now what my deadlift max is, which of these best describes what you should tell me?",
+      "candidate_options": [
+        "275 lbs",
+        "285 lbs",
+        "225 lbs",
+        "No deadlift max is on file"
+      ],
+      "expected_answer": "No deadlift max is on file",
+      "gold_memory_state": "User's deadlift max was removed per explicit request. 275 lbs was the last value before removal. 285 lbs is Tom's number, not the user's. 225 lbs was the user's starting number in March.",
+      "judge_rubric": {
+        "must_include": [
+          "no deadlift max on file"
+        ],
+        "acceptable_paraphrases": [
+          "no deadlift number stored",
+          "deadlift max is unavailable"
+        ],
+        "must_not_include": [
+          "275 lbs as the user's current tracked max",
+          "285 lbs as the user's max"
+        ],
+        "harmful_extra": [
+          "presenting 275, 285, or 225 as the user's active deadlift record"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 285 lbs belongs to Tom's trainer Rich, not the user. assistant echo: 275 lbs was echoed by the assistant as the user's benchmark before the removal request. 225 lbs is the user's historical starting weight, also stale.",
+      "diagnostic_checks": {
+        "leakage": "Fails if 275 lbs or 225 lbs is selected as the user's current deadlift max.",
+        "over_forget": null,
+        "stale_value": "Fails if 275 lbs (pre-removal value) or 225 lbs (starting value) is treated as current.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "can you forget my deadlift max number? I don't want that stored since it changes so frequently"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "he mentioned his trainer Rich had him hit a 285 deadlift this week"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "My friend Tom just hit 285 on his deadlift, and I know I shared a number with you too at some point. If I ask you right now what my deadlift max is, which of these best describes what you should tell me?",
+      "candidate_options": [
+        "275 lbs",
+        "285 lbs",
+        "225 lbs",
+        "No deadlift max is on file"
+      ],
+      "expected_answer": "No deadlift max is on file",
+      "gold_memory_state": "User's deadlift max was removed per explicit request. 275 lbs was the last value before removal. 285 lbs is Tom's number, not the user's. 225 lbs was the user's starting number in March.",
+      "judge_rubric": {
+        "must_include": [
+          "no deadlift max on file"
+        ],
+        "acceptable_paraphrases": [
+          "no deadlift number stored",
+          "deadlift max is unavailable"
+        ],
+        "must_not_include": [
+          "275 lbs as the user's current tracked max",
+          "285 lbs as the user's max"
+        ],
+        "harmful_extra": [
+          "presenting 275, 285, or 225 as the user's active deadlift record"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 285 lbs belongs to Tom's trainer Rich, not the user. assistant echo: 275 lbs was echoed by the assistant as the user's benchmark before the removal request. 225 lbs is the user's historical starting weight, also stale.",
+      "diagnostic_checks": {
+        "leakage": "Fails if 275 lbs or 225 lbs is selected as the user's current deadlift max.",
+        "over_forget": null,
+        "stale_value": "Fails if 275 lbs (pre-removal value) or 225 lbs (starting value) is treated as current.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "can you forget my deadlift max number? I don't want that stored since it changes so frequently"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "he mentioned his trainer Rich had him hit a 285 deadlift this week"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to draft a short monthly fitness budget note that includes what I spend on personal training per month and who to thank for the gym recommendation. Can you write that up for me based on what you know?",
+      "expected_answer": "Monthly fitness budget note: Personal training with Marcus Delgado costs approximately $600 per month (8 sessions at $75 each, training Tuesdays and Thursdays). Special thanks to coworker Jen for the gym referral to Iron Body Fitness. No performance benchmarks are currently on file to include.",
+      "gold_memory_state": "Trainer: Marcus Delgado (active). Schedule: Tuesdays 6:30 AM, Thursdays 7 AM — 2 sessions per week (active). Cost: $75/session (active). Referral: Jen (active). Deadlift max: removed, unavailable.",
+      "judge_rubric": {
+        "must_include": [
+          "Marcus Delgado",
+          "$75 per session",
+          "approximately $600 per month or 8 sessions per month",
+          "Jen"
+        ],
+        "acceptable_paraphrases": [
+          "$600/month",
+          "eight sessions monthly at $75",
+          "around $600",
+          "roughly $600"
+        ],
+        "must_not_include": [
+          "275 lbs",
+          "225 lbs",
+          "any specific deadlift number presented as current"
+        ],
+        "harmful_extra": [
+          "including a deadlift max as an active benchmark",
+          "attributing Tom's 285 lb deadlift to the user"
+        ],
+        "harmless_extra": [
+          "Iron Body Fitness",
+          "Eastlake Ave",
+          "12-week commitment",
+          "Priya",
+          "functional movement preference"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the note includes any deadlift max number (275, 225, or 285) as the user's current performance data.",
+        "over_forget": "Fails if the note omits retained details like trainer name, cost, or referral source.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Training sessions are Tuesdays and Thursdays, so 2 sessions per week.",
+        "Fact 2: Each session costs $75.",
+        "Inference: 2 sessions/week × ~4 weeks/month = ~8 sessions/month.",
+        "Inference: 8 sessions × $75 = $600 per month.",
+        "Fact 3: Coworker Jen referred the user to the gym.",
+        "Fact 4: Deadlift max was removed and should not appear in the note.",
+        "Derived value: Monthly training cost is approximately $600, with Jen credited for the referral and no performance benchmarks included."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My sessions are Tuesdays at 6:30 AM and Thursdays at 7 AM"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I'm paying $75 per session since I committed to a 12-week block starting mid-April"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "My coworker Jen referred me to Marcus's gym. She trains with someone named Priya there"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "can you forget my deadlift max number? I don't want that stored since it changes so frequently"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to draft a short monthly fitness budget note that includes what I spend on personal training per month and who to thank for the gym recommendation. Can you write that up for me based on what you know?",
+      "expected_answer": "Monthly fitness budget note: Personal training with Marcus Delgado costs approximately $600 per month (8 sessions at $75 each, training Tuesdays and Thursdays). Special thanks to coworker Jen for the gym referral to Iron Body Fitness. No performance benchmarks are currently on file to include.",
+      "gold_memory_state": "Trainer: Marcus Delgado (active). Schedule: Tuesdays 6:30 AM, Thursdays 7 AM — 2 sessions per week (active). Cost: $75/session (active). Referral: Jen (active). Deadlift max: removed, unavailable.",
+      "judge_rubric": {
+        "must_include": [
+          "Marcus Delgado",
+          "$75 per session",
+          "approximately $600 per month or 8 sessions per month",
+          "Jen"
+        ],
+        "acceptable_paraphrases": [
+          "$600/month",
+          "eight sessions monthly at $75",
+          "around $600",
+          "roughly $600"
+        ],
+        "must_not_include": [
+          "275 lbs",
+          "225 lbs",
+          "any specific deadlift number presented as current"
+        ],
+        "harmful_extra": [
+          "including a deadlift max as an active benchmark",
+          "attributing Tom's 285 lb deadlift to the user"
+        ],
+        "harmless_extra": [
+          "Iron Body Fitness",
+          "Eastlake Ave",
+          "12-week commitment",
+          "Priya",
+          "functional movement preference"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the note includes any deadlift max number (275, 225, or 285) as the user's current performance data.",
+        "over_forget": "Fails if the note omits retained details like trainer name, cost, or referral source.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Training sessions are Tuesdays and Thursdays, so 2 sessions per week.",
+        "Fact 2: Each session costs $75.",
+        "Inference: 2 sessions/week × ~4 weeks/month = ~8 sessions/month.",
+        "Inference: 8 sessions × $75 = $600 per month.",
+        "Fact 3: Coworker Jen referred the user to the gym.",
+        "Fact 4: Deadlift max was removed and should not appear in the note.",
+        "Derived value: Monthly training cost is approximately $600, with Jen credited for the referral and no performance benchmarks included."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My sessions are Tuesdays at 6:30 AM and Thursdays at 7 AM"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I'm paying $75 per session since I committed to a 12-week block starting mid-April"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "My coworker Jen referred me to Marcus's gym. She trains with someone named Priya there"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "can you forget my deadlift max number? I don't want that stored since it changes so frequently"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,838 @@
+{
+  "target_fact": "Travel departure date to Lisbon",
+  "operation_type": "Update",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "lisbon_departure",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I booked my flight to Lisbon and the departure is set for March 14, a Friday"
+      },
+      "target": {
+        "target_id": "lisbon_departure_date",
+        "target_name": "Lisbon trip departure date"
+      },
+      "old_value": null,
+      "new_value": "March 14",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I booked my flight to Lisbon and the departure is set for March 14, a Friday"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "lisbon_departure",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I had to move the Lisbon flight. The airline changed my route, so now I'm departing March 16 instead of the 14th"
+      },
+      "target": {
+        "target_id": "lisbon_departure_date",
+        "target_name": "Lisbon trip departure date"
+      },
+      "old_value": "March 14",
+      "new_value": "March 16",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I booked my flight to Lisbon and the departure is set for March 14, a Friday"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I had to move the Lisbon flight. The airline changed my route, so now I'm departing March 16 instead of the 14th"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "lisbon_departure",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I managed to switch back. The Lisbon departure is now March 15, a Saturday. The direct route opened up on that date so I grabbed it"
+      },
+      "target": {
+        "target_id": "lisbon_departure_date",
+        "target_name": "Lisbon trip departure date"
+      },
+      "old_value": "March 16",
+      "new_value": "March 15",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I had to move the Lisbon flight. The airline changed my route, so now I'm departing March 16 instead of the 14th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I managed to switch back. The Lisbon departure is now March 15, a Saturday. The direct route opened up on that date so I grabbed it"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "lisbon_departure",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "My travel agent just emailed saying she can move me to March 18, a Tuesday, for a better fare. She's holding that seat for me until tomorrow"
+      },
+      "target": {
+        "target_id": "lisbon_departure_date",
+        "target_name": "Lisbon trip departure date"
+      },
+      "old_value": "March 15",
+      "new_value": "March 18",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My travel agent just emailed saying she can move me to March 18, a Tuesday, for a better fare. She's holding that seat for me until tomorrow"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "My sister Laura is flying to Vancouver on April 3. I promised I'd remind her about travel insurance before she leaves"
+      },
+      "target": {
+        "target_id": "laura_vancouver_departure",
+        "target_name": "Sister Laura's Vancouver departure date"
+      },
+      "old_value": null,
+      "new_value": "April 3",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My sister Laura is flying to Vancouver on April 3. I promised I'd remind her about travel insurance before she leaves"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I'm staying in Lisbon for twelve nights total. I found an Airbnb in Alfama that's available for the whole stretch"
+      },
+      "target": {
+        "target_id": "lisbon_trip_duration",
+        "target_name": "Lisbon trip duration"
+      },
+      "old_value": null,
+      "new_value": "12 nights",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I'm staying in Lisbon for twelve nights total. I found an Airbnb in Alfama that's available for the whole stretch"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish departure date and sister's trip",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to tell you about my upcoming travel plans so you can keep track. I booked my flight to Lisbon and the departure is set for March 14, a Friday. I specifically chose a Friday so I could have the weekend to settle in before doing anything too ambitious. This is the big trip for me this year."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a wonderful plan! I've noted that your Lisbon departure is March 14, a Friday. Starting with a weekend buffer is a smart move — it gives you time to adjust to the time zone, explore the neighborhood at a relaxed pace, and get oriented before any structured plans kick in. Lisbon is a fantastic city for that kind of gradual immersion, especially if you're staying in a residential area. Do you have your accommodation sorted out yet, or are you still looking into options for where to stay?"
+        },
+        {
+          "role": "user",
+          "content": "My sister Laura is flying to Vancouver on April 3. I promised I'd remind her about travel insurance before she leaves. She always forgets these things, so I guess I'm her personal assistant now. Anyway, please hold onto that — April 3, Laura, Vancouver. I need to set a reminder for myself too."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — Laura is departing for Vancouver on April 3, and you need to remind her about travel insurance before then. It might be worth setting a reminder a week or so before her departure, around March 27, to give her enough time to actually purchase a policy and review the coverage details. Some credit cards also include travel insurance benefits, so she might want to check whether her card already covers trip cancellation or medical emergencies abroad. Would you like me to help you draft a reminder message for her closer to the date?"
+        },
+        {
+          "role": "user",
+          "content": "Actually, quick update on the Lisbon trip. I had to move the Lisbon flight. The airline changed my route, so now I'm departing March 16 instead of the 14th. It's a Sunday, which isn't ideal since I lose that weekend buffer, but the alternative was a twelve-hour layover in Frankfurt. Not worth it."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood — I've updated your Lisbon departure to March 16, a Sunday. That's a reasonable trade-off; a twelve-hour layover in Frankfurt would eat into your energy and mood before you even arrive. Since you're now arriving on a Monday morning instead of a Saturday, you might want to plan a lighter first day — maybe just walking around the neighborhood, finding a local café, and getting your bearings. That way you still get some of that settling-in feeling even without the full weekend. Do you want me to adjust any plans based on the new departure date?"
+        },
+        {
+          "role": "user",
+          "content": "No, not yet. I'm still figuring out the first few days. I just wanted to make sure you had the right date locked in. Also, I was looking into a quick weekend trip to Jeju Island in late April, maybe April 26, but that's still tentative. Haven't committed to anything on that one yet, so don't worry about it too much for now."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — March 16 is your confirmed Lisbon departure, and I'll keep that front and center. As for Jeju Island around April 26, I'll keep it in the back of my mind as a possibility but won't treat it as locked in. If you do decide to go, late April is a lovely time for Jeju — the canola flowers are usually in full bloom and the weather is mild. Just let me know when you've made a decision and I'll incorporate it into your travel calendar. Anything else on the planning front for now?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "update departure again and establish trip duration",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So here's the thing with Lisbon — I'm staying in Lisbon for twelve nights total. I found an Airbnb in Alfama that's available for the whole stretch. Someone told me Alfama is less polished and more lived-in than the trendier districts, which is exactly my vibe. I travel for that kind of authenticity."
+        },
+        {
+          "role": "assistant",
+          "content": "Twelve nights in Alfama sounds ideal, especially given your preference for authentic, unhurried neighborhoods. Alfama is one of the oldest districts in Lisbon — narrow winding streets, fado music drifting from small bars, local tascas serving simple Portuguese food. It has a real neighborhood feel that the more renovated areas sometimes lack. With twelve nights you'll have time to develop a routine there, find your favorite morning café, and explore at a pace that lets you actually absorb the place rather than rushing through highlights. I've noted the duration as twelve nights in Alfama."
+        },
+        {
+          "role": "user",
+          "content": "Right, and I managed to switch back. The Lisbon departure is now March 15, a Saturday. The direct route opened up on that date so I grabbed it. It's a red-eye, so I'll arrive in the morning and can start exploring right away. I hate losing a full day sitting in a hotel room in the afternoon."
+        },
+        {
+          "role": "assistant",
+          "content": "Great news — I've updated your Lisbon departure to March 15, a Saturday. A red-eye that gets you in during the morning is the best of both worlds: you don't lose a travel day and you arrive with the whole day ahead of you. Since you're staying twelve nights starting from a Saturday arrival, that puts your last night around March 26 or 27 depending on when exactly you land and check in. Alfama in the morning light is supposed to be especially beautiful, so your first walk through those streets should be a memorable one. Shall I sketch out a rough itinerary framework?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, maybe later. For now I just want to make sure the dates are straight. March 15 departure, twelve nights in Alfama. Also, I've been thinking about the Kyoto trip I took back in January. I left on January 9 — I originally thought it was the 8th but that was actually when I took the airport shuttle and stayed at a capsule hotel near the terminal."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — your Lisbon trip is locked at March 15 departure with twelve nights in Alfama. And thanks for clarifying the Kyoto departure: January 9 was the actual flight day, with the shuttle and capsule hotel stay on January 8. It's easy to mix those up when the travel starts the evening before. The capsule hotel detail is a nice touch — those places near Japanese airports are surprisingly efficient for early departures. Did the Kyoto trip live up to your expectations overall, or was there anything you'd do differently next time?"
+        },
+        {
+          "role": "user",
+          "content": "Kyoto was wonderful. I loved the stillness around Daitoku-ji — the residential streets, the sound of gravel underfoot, no crowds. And those mornings walking along the Kamo River before anyone else was up. Coming back to my routine afterward was honestly rough. The contrast between that peacefulness and fluorescent office lights just hit me hard.\n\nThat's exactly what I'm hoping for. Twelve nights should help with the re-entry this time. I deliberately planned a buffer day at the end where I do nothing before flying home. Anyway, I think we're good on the travel details for now. Let me know if you need anything clarified."
+        },
+        {
+          "role": "assistant",
+          "content": "That contrast sounds really jarring. The kind of deep quiet you found at Daitoku-ji and along the Kamo River is rare, and going from that to an office environment can feel almost disorienting. It's a sign that those slower, contemplative travel experiences really resonate with you. For Lisbon, Alfama might offer something similar — early mornings in those narrow streets before the city wakes up, the sound of trams in the distance, maybe a viewpoint where you can watch the light change over the Tagus River. Hopefully the twelve-night stay gives you enough time to ease back into normal life gradually rather than hitting a wall.\n\nEverything looks solid. Here's what I have: Lisbon departure March 15, a Saturday red-eye, twelve nights in an Airbnb in Alfama, with a buffer day built in at the end before your return flight. Your sister Laura departs for Vancouver on April 3 and needs a travel insurance reminder. And your Kyoto trip was January 9 departure. I think you're well-organized — the buffer day is a thoughtful addition given how the Kyoto return affected you. Whenever you're ready to start sketching out the Lisbon itinerary or need that reminder drafted for Laura, just let me know. Enjoy the planning process!"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "tentative new date and adversarial injection",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to circle back on the Lisbon trip. I've been finalizing some logistics. The Alfama Airbnb host confirmed my check-in for the morning after I arrive, which works perfectly with the red-eye schedule. She seems really welcoming and even sent me a list of local bakeries within walking distance of the apartment."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a great sign — a responsive and helpful host can really set the tone for a trip. Having a curated list of local bakeries is exactly the kind of insider knowledge that makes staying in a residential neighborhood worthwhile. Since your red-eye gets you in during the morning, you could head straight to one of those bakeries for a pastel de nata and coffee while waiting for check-in. By the way, I noticed that your colleague David's Lisbon trip last month had a March 12 departure listed on the shared travel calendar — just mentioning it in case there's any overlap in itinerary notes you want to compare or avoid confusion with."
+        },
+        {
+          "role": "user",
+          "content": "Oh yeah, David went to Lisbon too but his trip was completely separate. Different dates, different part of the city. He stayed in Príncipe Real, which is way more upscale. Not my style at all. Anyway, I'm not worried about mixing things up. My trip is my trip. Let's keep the focus on my plans."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely — your trip stands on its own, and Alfama is a completely different experience from Príncipe Real. The lived-in character, the narrow streets, the fado tradition — that's a world apart from the boutique-hotel vibe of the trendier districts. I'll keep everything focused on your itinerary and preferences. Since you mentioned the host's bakery list, would you like me to start building a first-morning walkabout plan? I could map out a route from the Airbnb through a couple of those bakeries and then to a scenic viewpoint to get your bearings in the neighborhood."
+        },
+        {
+          "role": "user",
+          "content": "My travel agent just emailed saying she can move me to March 18, a Tuesday, for a better fare. She's holding that seat for me until tomorrow. The savings would be around two hundred euros, which is significant. I haven't decided yet but I'm leaning toward keeping my current date because I don't want to lose the weekend arrival advantage."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a meaningful savings, but your reasoning about the weekend arrival is solid. Arriving on a Saturday morning gives you the entire weekend to settle into Alfama before the city shifts into its weekday rhythm. A Tuesday arrival would drop you into the middle of the week, and you'd miss those quieter weekend mornings that seem to matter a lot to you based on your Kyoto experience. The two hundred euros is real money, but the quality of those first couple of days can shape the entire trip. Take your time deciding — you have until tomorrow, so no rush right this moment."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, I think you're right. The Saturday arrival just makes more sense for how I like to travel. I'll probably tell her no. Also, completely unrelated — do you still have Laura's Vancouver date? I need to send her that travel insurance reminder soon. I keep putting it off.\n\nA short nudge is fine, she'll get the point. Thanks for keeping track of all this. Between my Lisbon plans and Laura's Vancouver trip, I feel like I've got a lot of moving pieces. At least the Kyoto trip is behind me. That one was simple by comparison — just me and the quiet temples."
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, Laura's Vancouver departure is April 3. If you want to send her the reminder now, you're about three to four weeks out depending on today's date, which is a good window. Most travel insurance policies can be purchased up to the day before departure, but buying earlier gives better coverage for pre-trip cancellation. You could send her a quick message like: 'Hey Laura, friendly reminder to grab travel insurance for your April 3 Vancouver trip before it slips your mind. Some credit cards include it automatically, so check yours first.' Want me to polish that into something more detailed, or is a short nudge enough?\n\nYou're doing a great job staying on top of everything. Here's the current snapshot: your Lisbon departure is March 15, a Saturday red-eye, twelve nights in Alfama with a buffer day at the end. Laura flies to Vancouver on April 3 and needs travel insurance. And the Kyoto trip on January 9 is a lovely memory in the rearview. You've got a potential fare change to March 18 from your travel agent, but it sounds like you're leaning toward keeping the Saturday. Once you've made that call, everything should be nicely locked in. Let me know when you're ready to start on the Lisbon itinerary details!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations about my Lisbon flight, I mentioned the departure date a few times. Can you walk me through the different dates I brought up and which ones I actually committed to?",
+      "expected_answer": "You initially booked a departure for March 14 (a Friday). Then the airline changed your route and you moved it to March 16 (a Sunday). Later, a direct route opened up on March 15 (a Saturday) and you grabbed that. Most recently, your travel agent offered March 18 (a Tuesday) for a better fare, but you hadn't committed to that and were leaning toward keeping March 15.",
+      "gold_memory_state": "Lisbon departure date confirmed as March 15. March 14 and March 16 are superseded. March 18 is tentative/not adopted.",
+      "judge_rubric": {
+        "must_include": [
+          "March 14",
+          "March 16",
+          "March 15",
+          "March 18"
+        ],
+        "acceptable_paraphrases": [
+          "the 14th",
+          "the 15th",
+          "the 16th",
+          "the 18th"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying March 18 was confirmed or adopted"
+        ],
+        "harmless_extra": [
+          "mentioning the days of the week",
+          "mentioning the airline route change",
+          "mentioning the travel agent"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats March 14 or March 16 as the current departure date.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model gets the chronological order of date mentions wrong.",
+        "final_state": "Fails if the model does not identify March 15 as the current confirmed date.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I booked my flight to Lisbon and the departure is set for March 14, a Friday"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I had to move the Lisbon flight. The airline changed my route, so now I'm departing March 16 instead of the 14th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I managed to switch back. The Lisbon departure is now March 15, a Saturday. The direct route opened up on that date so I grabbed it"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My travel agent just emailed saying she can move me to March 18, a Tuesday, for a better fare. She's holding that seat for me until tomorrow"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations about my Lisbon flight, I mentioned the departure date a few times. Can you walk me through the different dates I brought up and which ones I actually committed to?",
+      "expected_answer": "You initially booked a departure for March 14 (a Friday). Then the airline changed your route and you moved it to March 16 (a Sunday). Later, a direct route opened up on March 15 (a Saturday) and you grabbed that. Most recently, your travel agent offered March 18 (a Tuesday) for a better fare, but you hadn't committed to that and were leaning toward keeping March 15.",
+      "gold_memory_state": "Lisbon departure date confirmed as March 15. March 14 and March 16 are superseded. March 18 is tentative/not adopted.",
+      "judge_rubric": {
+        "must_include": [
+          "March 14",
+          "March 16",
+          "March 15",
+          "March 18"
+        ],
+        "acceptable_paraphrases": [
+          "the 14th",
+          "the 15th",
+          "the 16th",
+          "the 18th"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying March 18 was confirmed or adopted"
+        ],
+        "harmless_extra": [
+          "mentioning the days of the week",
+          "mentioning the airline route change",
+          "mentioning the travel agent"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats March 14 or March 16 as the current departure date.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model gets the chronological order of date mentions wrong.",
+        "final_state": "Fails if the model does not identify March 15 as the current confirmed date.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I booked my flight to Lisbon and the departure is set for March 14, a Friday"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I had to move the Lisbon flight. The airline changed my route, so now I'm departing March 16 instead of the 14th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I managed to switch back. The Lisbon departure is now March 15, a Saturday. The direct route opened up on that date so I grabbed it"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My travel agent just emailed saying she can move me to March 18, a Tuesday, for a better fare. She's holding that seat for me until tomorrow"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've mentioned several travel dates across different people and trips. When the departure day changed multiple times, which trip's itinerary was affected? Does my sister's travel plan need any date adjustment too?",
+      "expected_answer": "The departure date that changed multiple times belongs to your Lisbon trip. Your sister Laura's Vancouver departure on April 3 was never modified and remains unchanged.",
+      "gold_memory_state": "Lisbon departure date underwent three changes (March 14 → March 16 → March 15), plus one tentative offer of March 18. Laura's Vancouver departure of April 3 was mentioned once and never changed.",
+      "judge_rubric": {
+        "must_include": [
+          "Lisbon trip departure",
+          "Laura's Vancouver date is unaffected"
+        ],
+        "acceptable_paraphrases": [
+          "the Lisbon flight date",
+          "your flight to Lisbon"
+        ],
+        "must_not_include": [
+          "Laura's date was changed",
+          "Laura's date is March 15"
+        ],
+        "harmful_extra": [
+          "saying Laura's trip was also rescheduled",
+          "conflating the two trips' dates"
+        ],
+        "harmless_extra": [
+          "mentioning April 3 for Laura",
+          "mentioning March 15 as the current Lisbon date"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model says Laura's date was also changed or if it misidentifies which trip had date changes.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I booked my flight to Lisbon and the departure is set for March 14, a Friday"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My sister Laura is flying to Vancouver on April 3. I promised I'd remind her about travel insurance before she leaves"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I had to move the Lisbon flight. The airline changed my route, so now I'm departing March 16 instead of the 14th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I managed to switch back. The Lisbon departure is now March 15, a Saturday. The direct route opened up on that date so I grabbed it"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've mentioned several travel dates across different people and trips. When the departure day changed multiple times, which trip's itinerary was affected? Does my sister's travel plan need any date adjustment too?",
+      "expected_answer": "The departure date that changed multiple times belongs to your Lisbon trip. Your sister Laura's Vancouver departure on April 3 was never modified and remains unchanged.",
+      "gold_memory_state": "Lisbon departure date underwent three changes (March 14 → March 16 → March 15), plus one tentative offer of March 18. Laura's Vancouver departure of April 3 was mentioned once and never changed.",
+      "judge_rubric": {
+        "must_include": [
+          "Lisbon trip departure",
+          "Laura's Vancouver date is unaffected"
+        ],
+        "acceptable_paraphrases": [
+          "the Lisbon flight date",
+          "your flight to Lisbon"
+        ],
+        "must_not_include": [
+          "Laura's date was changed",
+          "Laura's date is March 15"
+        ],
+        "harmful_extra": [
+          "saying Laura's trip was also rescheduled",
+          "conflating the two trips' dates"
+        ],
+        "harmless_extra": [
+          "mentioning April 3 for Laura",
+          "mentioning March 15 as the current Lisbon date"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model says Laura's date was also changed or if it misidentifies which trip had date changes.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I booked my flight to Lisbon and the departure is set for March 14, a Friday"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My sister Laura is flying to Vancouver on April 3. I promised I'd remind her about travel insurance before she leaves"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I had to move the Lisbon flight. The airline changed my route, so now I'm departing March 16 instead of the 14th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I managed to switch back. The Lisbon departure is now March 15, a Saturday. The direct route opened up on that date so I grabbed it"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to finalize my Lisbon flight booking. Which departure date should I lock in? Choose from the following options: (A) March 14, (B) March 15, (C) March 16, (D) March 18.",
+      "expected_answer": "March 15",
+      "gold_memory_state": "Lisbon departure date is confirmed as March 15. March 14 was the original booking (superseded). March 16 was the airline reroute (superseded). March 18 was a tentative travel-agent offer that the user was leaning against.",
+      "candidate_options": [
+        "March 14",
+        "March 15",
+        "March 16",
+        "March 18"
+      ],
+      "distractor_rationale": "March 14 is the original stale value from the same target. March 16 is an intermediate stale value from the same target. March 18 is a tentative/unconfirmed value the travel agent offered but the user did not adopt. same-value-different-target: not applicable here as all options come from the same target's update chain. assistant echo: the assistant repeated March 16 and March 14 in summaries, which could reinforce stale recall. The March 18 option serves as the recency trap — it appeared most recently but was never confirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "March 15"
+        ],
+        "acceptable_paraphrases": [
+          "the 15th",
+          "15 March"
+        ],
+        "must_not_include": [
+          "March 14 as the answer",
+          "March 16 as the answer",
+          "March 18 as the answer"
+        ],
+        "harmful_extra": [
+          "selecting March 18 because it was mentioned most recently",
+          "selecting March 14 or March 16 because they were previously confirmed"
+        ],
+        "harmless_extra": [
+          "mentioning it is a Saturday",
+          "mentioning it is a red-eye flight"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects March 14 or March 16, which are superseded values. Also fails if the model selects March 18, which is a tentative value that was never confirmed — this is the recency trap.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not identify March 15 as the final confirmed departure date.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I managed to switch back. The Lisbon departure is now March 15, a Saturday. The direct route opened up on that date so I grabbed it"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My travel agent just emailed saying she can move me to March 18, a Tuesday, for a better fare. She's holding that seat for me until tomorrow"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to finalize my Lisbon flight booking. Which departure date should I lock in? Choose from the following options: (A) March 14, (B) March 15, (C) March 16, (D) March 18.",
+      "expected_answer": "March 15",
+      "gold_memory_state": "Lisbon departure date is confirmed as March 15. March 14 was the original booking (superseded). March 16 was the airline reroute (superseded). March 18 was a tentative travel-agent offer that the user was leaning against.",
+      "candidate_options": [
+        "March 14",
+        "March 15",
+        "March 16",
+        "March 18"
+      ],
+      "distractor_rationale": "March 14 is the original stale value from the same target. March 16 is an intermediate stale value from the same target. March 18 is a tentative/unconfirmed value the travel agent offered but the user did not adopt. same-value-different-target: not applicable here as all options come from the same target's update chain. assistant echo: the assistant repeated March 16 and March 14 in summaries, which could reinforce stale recall. The March 18 option serves as the recency trap — it appeared most recently but was never confirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "March 15"
+        ],
+        "acceptable_paraphrases": [
+          "the 15th",
+          "15 March"
+        ],
+        "must_not_include": [
+          "March 14 as the answer",
+          "March 16 as the answer",
+          "March 18 as the answer"
+        ],
+        "harmful_extra": [
+          "selecting March 18 because it was mentioned most recently",
+          "selecting March 14 or March 16 because they were previously confirmed"
+        ],
+        "harmless_extra": [
+          "mentioning it is a Saturday",
+          "mentioning it is a red-eye flight"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects March 14 or March 16, which are superseded values. Also fails if the model selects March 18, which is a tentative value that was never confirmed — this is the recency trap.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not identify March 15 as the final confirmed departure date.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I managed to switch back. The Lisbon departure is now March 15, a Saturday. The direct route opened up on that date so I grabbed it"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My travel agent just emailed saying she can move me to March 18, a Tuesday, for a better fare. She's holding that seat for me until tomorrow"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I want to send my Airbnb host in Alfama a message confirming when I'll arrive and when I'll check out. Can you draft a short note that includes my arrival date, how long I'm staying, and the approximate checkout date?",
+      "expected_answer": "Hi! I'll be arriving on the morning of March 15 (Saturday) via a red-eye flight. I'm staying for twelve nights, so my checkout would be around March 27. Looking forward to it!",
+      "gold_memory_state": "Lisbon departure: March 15 (Saturday, red-eye, confirmed). Duration: 12 nights in Alfama Airbnb. Approximate checkout: around March 27. March 14, March 16, and March 18 are not the current departure date.",
+      "judge_rubric": {
+        "must_include": [
+          "March 15",
+          "twelve nights",
+          "approximate checkout around March 27"
+        ],
+        "acceptable_paraphrases": [
+          "12 nights",
+          "the 15th of March",
+          "checkout on the 27th"
+        ],
+        "must_not_include": [
+          "March 14 as departure",
+          "March 16 as departure",
+          "March 18 as departure"
+        ],
+        "harmful_extra": [
+          "using any superseded or tentative departure date to calculate checkout"
+        ],
+        "harmless_extra": [
+          "mentioning Alfama",
+          "mentioning it is a red-eye",
+          "mentioning Saturday"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses March 14, March 16, or March 18 as the departure date, producing a wrong checkout date.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the derived checkout date is inconsistent with March 15 + 12 nights.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "application_probe_type": "multi_hop_derivation",
+      "gold_reasoning_chain": [
+        "Fact 1: The confirmed Lisbon departure date is March 15, a Saturday red-eye flight.",
+        "Fact 2: The user is staying for twelve nights in the Alfama Airbnb.",
+        "Fact 3: A red-eye departure on March 15 means morning arrival, likely March 15 or March 16 depending on time zone, but the user stated arrival in the morning and wanting to explore right away, implying same-day usable arrival on March 15.",
+        "Inference: Counting twelve nights from a March 15 arrival gives a checkout date of approximately March 27.",
+        "Inference: The draft message should reference March 15 arrival, 12-night stay, and checkout around March 27."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I managed to switch back. The Lisbon departure is now March 15, a Saturday. The direct route opened up on that date so I grabbed it"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I'm staying in Lisbon for twelve nights total. I found an Airbnb in Alfama that's available for the whole stretch"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "It's a red-eye, so I'll arrive in the morning and can start exploring right away"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I want to send my Airbnb host in Alfama a message confirming when I'll arrive and when I'll check out. Can you draft a short note that includes my arrival date, how long I'm staying, and the approximate checkout date?",
+      "expected_answer": "Hi! I'll be arriving on the morning of March 15 (Saturday) via a red-eye flight. I'm staying for twelve nights, so my checkout would be around March 27. Looking forward to it!",
+      "gold_memory_state": "Lisbon departure: March 15 (Saturday, red-eye, confirmed). Duration: 12 nights in Alfama Airbnb. Approximate checkout: around March 27. March 14, March 16, and March 18 are not the current departure date.",
+      "judge_rubric": {
+        "must_include": [
+          "March 15",
+          "twelve nights",
+          "approximate checkout around March 27"
+        ],
+        "acceptable_paraphrases": [
+          "12 nights",
+          "the 15th of March",
+          "checkout on the 27th"
+        ],
+        "must_not_include": [
+          "March 14 as departure",
+          "March 16 as departure",
+          "March 18 as departure"
+        ],
+        "harmful_extra": [
+          "using any superseded or tentative departure date to calculate checkout"
+        ],
+        "harmless_extra": [
+          "mentioning Alfama",
+          "mentioning it is a red-eye",
+          "mentioning Saturday"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses March 14, March 16, or March 18 as the departure date, producing a wrong checkout date.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the derived checkout date is inconsistent with March 15 + 12 nights.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "application_probe_type": "multi_hop_derivation",
+      "gold_reasoning_chain": [
+        "Fact 1: The confirmed Lisbon departure date is March 15, a Saturday red-eye flight.",
+        "Fact 2: The user is staying for twelve nights in the Alfama Airbnb.",
+        "Fact 3: A red-eye departure on March 15 means morning arrival, likely March 15 or March 16 depending on time zone, but the user stated arrival in the morning and wanting to explore right away, implying same-day usable arrival on March 15.",
+        "Inference: Counting twelve nights from a March 15 arrival gives a checkout date of approximately March 27.",
+        "Inference: The draft message should reference March 15 arrival, 12-night stay, and checkout around March 27."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I managed to switch back. The Lisbon departure is now March 15, a Saturday. The direct route opened up on that date so I grabbed it"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I'm staying in Lisbon for twelve nights total. I found an Airbnb in Alfama that's available for the whole stretch"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "It's a red-eye, so I'll arrive in the morning and can start exploring right away"
+        }
+      ]
+    }
+  ]
+}

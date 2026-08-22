@@ -1,0 +1,955 @@
+{
+  "target_fact": "User's personal medication, supplement, and billing schedule details — with dog training class schedule to be forgotten while retaining retinoid schedule, vitamin D schedule, and rent auto-pay schedule",
+  "operation_type": "Forget",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 4,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "My dermatologist told me to apply my prescription retinoid every other night. I started that new routine on March 3rd when I had my first appointment with her."
+      },
+      "target": {
+        "target_id": "retinoid_schedule",
+        "target_name": "prescription retinoid application schedule"
+      },
+      "old_value": null,
+      "new_value": "every other night, started March 3rd",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My dermatologist told me to apply my prescription retinoid every other night. I started that new routine on March 3rd when I had my first appointment with her."
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I take my dog Biscuit to a training class with a trainer named Greg. The sessions are biweekly on Saturdays, and we started in early March."
+      },
+      "target": {
+        "target_id": "dog_training_schedule",
+        "target_name": "Biscuit's dog training class schedule"
+      },
+      "old_value": null,
+      "new_value": "biweekly on Saturdays with trainer Greg, started early March",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I take my dog Biscuit to a training class with a trainer named Greg. The sessions are biweekly on Saturdays, and we started in early March."
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 7,
+        "quote": "my GP prescribed me 50,000 IU of vitamin D to take once a week on Sundays"
+      },
+      "target": {
+        "target_id": "vitamin_d_schedule",
+        "target_name": "vitamin D supplement schedule"
+      },
+      "old_value": null,
+      "new_value": "50,000 IU once a week on Sundays",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "my GP prescribed me 50,000 IU of vitamin D to take once a week on Sundays"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I just set up auto-pay for my rent. It's due on the 1st of every month, so the payment goes out monthly on the 1st. I've had trouble confusing billing cycles before, so I really want to keep that straight."
+      },
+      "target": {
+        "target_id": "rent_autopay_schedule",
+        "target_name": "rent auto-pay billing cycle"
+      },
+      "old_value": null,
+      "new_value": "monthly on the 1st",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I just set up auto-pay for my rent. It's due on the 1st of every month, so the payment goes out monthly on the 1st. I've had trouble confusing billing cycles before, so I really want to keep that straight."
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "forget",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 7,
+        "quote": "We actually finished Biscuit's training cycle in mid-April. There's no reason to track that schedule anymore, so please go ahead and remove the dog training class info from your memory."
+      },
+      "target": {
+        "target_id": "dog_training_schedule",
+        "target_name": "Biscuit's dog training class schedule"
+      },
+      "old_value": "biweekly on Saturdays with trainer Greg, started early March",
+      "new_value": null,
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "We actually finished Biscuit's training cycle in mid-April. There's no reason to track that schedule anymore, so please go ahead and remove the dog training class info from your memory."
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish multiple recurring schedule facts across medical, pet, and supplement domains",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to get a few of my recurring schedules documented so I can reference them later. My dermatologist told me to apply my prescription retinoid every other night. I started that new routine on March 3rd when I had my first appointment with her. I'm really trying to be careful about sticking to the correct frequency this time around, because I know I can sometimes get confused about these things."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — I've noted that your prescription retinoid should be applied every other night, and that you began this schedule on March 3rd after your first dermatologist appointment. That's a smart move to keep these things documented. Retinoid application frequency matters a lot for skin tolerance, so having a clear reference point should help you stay on track. If you'd like, I can also help you set up a simple alternating-night checklist. Do you have other schedules you'd like me to keep track of as well?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, that would be great. I have a few more. But first — I also want to mention that my sister Emily gets allergy shots. She used to go every two weeks, but she recently told me she's down to once a month now. She was really happy because it freed up a lot of her Thursdays. I thought that was nice for her. Anyway, that's her thing, not mine, but I figured I'd mention it for context."
+        },
+        {
+          "role": "assistant",
+          "content": "That's great for Emily — going from biweekly to monthly allergy shots is a big quality-of-life improvement, especially if it was eating into her Thursdays regularly. I'll keep that as background context about your sister, though I won't track it as one of your personal schedules unless you want me to. It sounds like frequency reduction is a theme in your family's medical routines right now. Whenever you're ready, go ahead and share the next schedule you'd like me to document for you. I'm happy to organize everything in one place so it's easy to reference later on."
+        },
+        {
+          "role": "user",
+          "content": "Sure, next one: I take my dog Biscuit to a training class with a trainer named Greg. The sessions are biweekly on Saturdays, and we started in early March. I actually kept showing up every single Saturday for a few weeks before Greg pointed out I was coming twice as often as needed, which was a little embarrassing. But we got that sorted out and have been on the correct biweekly rhythm since then. Please remember that schedule for me."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — Biscuit's training sessions with Greg are biweekly on Saturdays, starting from early March. That's an easy mistake to make, honestly. \"Biweekly\" is one of those words that trips people up because it can technically mean twice a week or every two weeks depending on context. At least Greg caught it early and you've been on the right cadence since. I've got your retinoid schedule and Biscuit's training sessions logged now. If there's anything else — supplements, appointments, billing dates — just let me know and I'll add them to the list so you have everything in one spot."
+        },
+        {
+          "role": "user",
+          "content": "Yes, one more for today — my GP prescribed me 50,000 IU of vitamin D to take once a week on Sundays. That's a high-dose weekly protocol, not a daily thing. I actually messed that up initially too and took it daily for about four or five days before I realized the pills were disappearing way too fast. It turned out fine health-wise, but I was anxious for a few days worrying about it. So please remember: vitamin D, 50,000 IU, once weekly on Sundays."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood — your vitamin D supplement is 50,000 IU taken once a week on Sundays, as prescribed by your GP. That's a common high-dose weekly protocol for people with low vitamin D levels, so it makes sense that daily dosing would burn through the supply way too quickly and potentially cause concern. I'm glad it turned out fine health-wise. So to recap what I have so far: retinoid every other night starting March 3rd, Biscuit's training biweekly on Saturdays with Greg, and vitamin D 50,000 IU weekly on Sundays. I'll keep all of these documented for you. Let me know if anything changes or if you want to add more."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Add rent auto-pay schedule and request deletion of completed dog training schedule",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I'm back. I wanted to add another recurring schedule to the list. But before that, quick question — can you remind me what you have documented for my recurring schedules so far? I want to make sure everything looks right before I add more. I know I gave you a few things last time and I just want to double-check that it all got captured correctly, especially the frequencies and days."
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! Here's what I currently have documented for your recurring schedules: First, your prescription retinoid is applied every other night, and you started that routine on March 3rd after your first dermatologist appointment. Second, Biscuit's dog training sessions with trainer Greg are biweekly on Saturdays, which started in early March. Third, your vitamin D supplement is 50,000 IU taken once a week on Sundays, as prescribed by your GP. Those are the three personal schedules I have on file. I also have the background note that your sister Emily's allergy shots moved from biweekly to monthly. Does everything look accurate?"
+        },
+        {
+          "role": "user",
+          "content": "Yep, that all looks right. Okay so here's the new one: I just set up auto-pay for my rent. It's due on the 1st of every month, so the payment goes out monthly on the 1st. I've had trouble confusing billing cycles before, so I really want to keep that straight. It's monthly — not biweekly, not weekly, just once a month on the 1st. Please make sure that's clearly noted because billing cycle confusion has bitten me before and I want to avoid that headache."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely — I've noted that your rent auto-pay is set to go out monthly on the 1st. I completely understand the concern about billing cycle confusion; mixing up monthly and biweekly payments can lead to overdrafts or missed payments, so having it clearly documented is really smart. I'll make sure this one is flagged as a monthly cycle so there's no ambiguity. Your updated schedule list now includes: retinoid every other night, Biscuit's biweekly Saturday training, vitamin D weekly on Sundays, and rent auto-pay monthly on the 1st. That covers medical, pet, supplement, and financial schedules. Anything else you'd like to add or adjust?"
+        },
+        {
+          "role": "user",
+          "content": "Actually, I've been thinking about my preference for lower-frequency obligations in general. I really enjoy my biweekly book club much more than the weekly one I tried last year — the weekly pace felt suffocating. And I've always appreciated that my car only needs an oil change every 5,000 miles instead of the old 3,000-mile standard. There's just something nice about having more breathing room between commitments. I think that's why I gravitate toward schedules with more space between them."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes a lot of sense, and it's a really useful self-awareness to have. Preferring lower-frequency commitments isn't just about laziness — it's about giving yourself mental breathing room so each obligation doesn't feel like a burden. The biweekly book club versus the weekly one is a perfect example: same activity, but the pacing completely changes how it feels. And the oil change analogy is great too — fewer mandatory touchpoints means less cognitive overhead tracking when things are due. This preference probably also explains why the frequency mix-ups with your retinoid and vitamin D were so frustrating — accidentally doubling the frequency goes against your natural rhythm. I'll keep this preference noted as context."
+        },
+        {
+          "role": "user",
+          "content": "Yeah exactly, you nailed it. Oh also, my coworker Dave mentioned that our team standup meetings are shifting from daily to three times a week starting in May. I'm honestly kind of relieved about that — fits my preference for less frequent obligations. But that's a work thing, not really something I need you to track. I just thought it was funny how it ties into the pattern we were just talking about. Anyway, there's something I need to clean up in my schedule list.\n\nWe actually finished Biscuit's training cycle in mid-April. There's no reason to track that schedule anymore, so please go ahead and remove the dog training class info from your memory. I don't need it cluttering up my active schedules list. Everything else — the retinoid, the vitamin D, and the rent auto-pay — those should all stay. Just drop the dog training one since it's completed and no longer relevant to anything I'm doing going forward."
+        },
+        {
+          "role": "assistant",
+          "content": "Ha, that does fit the pattern perfectly — fewer standups probably feels like a weight off your shoulders, especially if you're someone who thrives with more breathing room between recurring commitments. And I totally get not needing to track work meeting schedules here; that's more of a calendar thing. I'm glad the shift is happening though, sounds like it'll be a better fit for your working style. You mentioned wanting to clean something up in your schedule list — go ahead and let me know what needs adjusting. I'm happy to update, remove, or reorganize anything you've got documented so everything stays current and accurate for you."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Confirm deletion, surface adversarial distractor, and continue schedule management discussion",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Thanks for removing that. Can you confirm what's still on my active schedules list now? I just want to verify that the dog training info is gone and that nothing else got accidentally removed in the process. I've had situations before where cleaning up one thing accidentally wiped out something else, so I like to double-check. Just list out what's still being tracked for me so I can make sure it all looks right."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely — here's your current active schedules list after removing Biscuit's training sessions: First, your prescription retinoid is applied every other night, starting from March 3rd. Second, your vitamin D supplement is 50,000 IU taken once a week on Sundays. Third, your rent auto-pay goes out monthly on the 1st. That's everything. The dog training class with Greg has been fully removed and is no longer tracked. Nothing else was affected by the deletion. These three items are your complete active recurring schedule list right now. Does everything look correct, or would you like to make any other changes?"
+        },
+        {
+          "role": "user",
+          "content": "Perfect, that looks exactly right. Hey, unrelated but my sister Emily was telling me about her friend who apparently takes a retinoid cream nightly without any issues. Different skin types I guess. Anyway, Emily also mentioned that her friend's dog goes to weekly obedience classes at the same facility where Biscuit went. Small world. I'm not asking you to track any of that — just sharing what came up in conversation with her yesterday."
+        },
+        {
+          "role": "assistant",
+          "content": "That is a small world! It's interesting how different people tolerate retinoids differently — nightly application works fine for some skin types, while others really need that every-other-night spacing to avoid irritation and peeling. Your dermatologist clearly knew what would work best for your skin. And it's kind of fun that Emily's friend's dog goes to the same training facility where Biscuit trained with Greg. Even though Biscuit's sessions are done, it sounds like that place has a good reputation if people keep going there. I won't track any of Emily's friend's details — just fun background color. Let me know if there's anything else you'd like to discuss or update regarding your own schedules."
+        },
+        {
+          "role": "user",
+          "content": "Actually, I was looking at some old paperwork and I found a note that said my rent payment was set to biweekly — but I think that was from a previous apartment's billing arrangement, not my current one. I definitely confirmed with my current landlord that it's monthly on the 1st. I just wanted to flag that in case that old paperwork ever causes confusion. My current setup is monthly, period. No changes needed, just wanted to mention the potential source of confusion."
+        },
+        {
+          "role": "assistant",
+          "content": "Good catch flagging that — old paperwork from a previous apartment could definitely cause confusion if you ever stumble across it again, especially given your history with billing cycle mix-ups. To be completely clear in my records: your current rent auto-pay is monthly on the 1st, as you confirmed with your current landlord. That biweekly notation on the old paperwork belongs to a previous living arrangement and has no bearing on your current setup. I won't update anything since your active record already reflects the correct monthly cycle. It's smart to proactively identify potential confusion sources like that. Is there anything else you'd like to clarify or document while we're doing this schedule hygiene?"
+        },
+        {
+          "role": "user",
+          "content": "No changes needed right now. I'm feeling pretty good about having everything organized. I think the key takeaway for me is that I need to be really deliberate about checking frequencies when I start any new routine. Between the retinoid mistake, the vitamin D mix-up, and showing up to Biscuit's training too often, I clearly have a pattern of defaulting to higher frequencies than what's actually prescribed or scheduled. Having these things documented should help me avoid that going forward.\n\nThat sounds like a plan. Thanks for helping me stay organized with all of this. I really appreciate having a reliable place to check my schedules. I'll definitely loop you in whenever I start something new so we can get the frequency right from day one. For now I think we're all set — the three active schedules are solid and I feel confident I won't mix them up again with everything documented like this."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really valuable insight, and honestly, recognizing the pattern is half the battle. You've identified a clear tendency to default to higher frequencies — nightly instead of every other night for the retinoid, daily instead of weekly for vitamin D, and weekly instead of biweekly for Biscuit's training. Now that you're aware of it, having these schedules documented gives you a reliable reference point to check against whenever you're unsure. Combined with your natural preference for lower-frequency obligations, it makes even more sense to have a single source of truth for all your recurring commitments. Your active list — retinoid every other night, vitamin D weekly on Sundays, and rent monthly on the 1st — is clean and current. Whenever you add a new routine, just run it by me and we'll get it logged correctly from the start.\n\nYou're very welcome — I'm glad this is helpful! Having a centralized, verified reference for your schedules takes a lot of the guesswork and anxiety out of managing recurring commitments. Your three active schedules are locked in: retinoid every other night starting March 3rd, vitamin D 50,000 IU weekly on Sundays, and rent auto-pay monthly on the 1st. Whenever you pick up a new routine — whether it's medical, financial, or anything else — just bring it here and we'll document the correct frequency right away so you don't have to rely on memory alone. That should help break the higher-frequency default pattern you noticed. Take care, and don't hesitate to reach out anytime you need to check or update your list!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize the different recurring schedules I've shared with you over our conversations, including anything related to skincare, supplements, pet activities, and billing?",
+      "expected_answer": "You shared four recurring schedules: (1) prescription retinoid applied every other night, started March 3rd; (2) Biscuit's dog training class with trainer Greg, biweekly on Saturdays, started early March; (3) vitamin D 50,000 IU once a week on Sundays; and (4) rent auto-pay monthly on the 1st. You later mentioned that Biscuit's training cycle finished in mid-April and asked to have that schedule removed.",
+      "gold_memory_state": "After all operations: retinoid schedule (every other night, started March 3rd), vitamin D schedule (50,000 IU weekly on Sundays), and rent auto-pay (monthly on the 1st) are active. Dog training schedule has been removed.",
+      "judge_rubric": {
+        "must_include": [
+          "retinoid every other night",
+          "March 3rd",
+          "vitamin D 50,000 IU weekly on Sundays",
+          "rent auto-pay monthly on the 1st",
+          "dog training completed or removed"
+        ],
+        "acceptable_paraphrases": [
+          "retinoid alternate nights",
+          "vitamin D once a week Sunday",
+          "rent on the first of each month"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming dog training is still active"
+        ],
+        "harmless_extra": [
+          "mentioning trainer Greg",
+          "mentioning Biscuit by name",
+          "mentioning the dermatologist or GP"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": "Fails if the response omits retinoid, vitamin D, or rent auto-pay schedules.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My dermatologist told me to apply my prescription retinoid every other night. I started that new routine on March 3rd when I had my first appointment with her."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I take my dog Biscuit to a training class with a trainer named Greg. The sessions are biweekly on Saturdays, and we started in early March."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "my GP prescribed me 50,000 IU of vitamin D to take once a week on Sundays"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I just set up auto-pay for my rent. It's due on the 1st of every month, so the payment goes out monthly on the 1st."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "We actually finished Biscuit's training cycle in mid-April. There's no reason to track that schedule anymore, so please go ahead and remove the dog training class info from your memory."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize the different recurring schedules I've shared with you over our conversations, including anything related to skincare, supplements, pet activities, and billing?",
+      "expected_answer": "You shared four recurring schedules: (1) prescription retinoid applied every other night, started March 3rd; (2) Biscuit's dog training class with trainer Greg, biweekly on Saturdays, started early March; (3) vitamin D 50,000 IU once a week on Sundays; and (4) rent auto-pay monthly on the 1st. You later mentioned that Biscuit's training cycle finished in mid-April and asked to have that schedule removed.",
+      "gold_memory_state": "After all operations: retinoid schedule (every other night, started March 3rd), vitamin D schedule (50,000 IU weekly on Sundays), and rent auto-pay (monthly on the 1st) are active. Dog training schedule has been removed.",
+      "judge_rubric": {
+        "must_include": [
+          "retinoid every other night",
+          "March 3rd",
+          "vitamin D 50,000 IU weekly on Sundays",
+          "rent auto-pay monthly on the 1st",
+          "dog training completed or removed"
+        ],
+        "acceptable_paraphrases": [
+          "retinoid alternate nights",
+          "vitamin D once a week Sunday",
+          "rent on the first of each month"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming dog training is still active"
+        ],
+        "harmless_extra": [
+          "mentioning trainer Greg",
+          "mentioning Biscuit by name",
+          "mentioning the dermatologist or GP"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": "Fails if the response omits retinoid, vitamin D, or rent auto-pay schedules.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My dermatologist told me to apply my prescription retinoid every other night. I started that new routine on March 3rd when I had my first appointment with her."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I take my dog Biscuit to a training class with a trainer named Greg. The sessions are biweekly on Saturdays, and we started in early March."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "my GP prescribed me 50,000 IU of vitamin D to take once a week on Sundays"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I just set up auto-pay for my rent. It's due on the 1st of every month, so the payment goes out monthly on the 1st."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "We actually finished Biscuit's training cycle in mid-April. There's no reason to track that schedule anymore, so please go ahead and remove the dog training class info from your memory."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to clean up one of my recurring schedules because it was completed. Which schedule did that apply to, and are my other recurring medical and billing schedules still intact?",
+      "expected_answer": "The cleanup applied to Biscuit's dog training class schedule. Your other three recurring schedules — retinoid application every other night, vitamin D 50,000 IU weekly on Sundays, and rent auto-pay monthly on the 1st — are all still intact and unaffected.",
+      "gold_memory_state": "Dog training schedule is removed. Retinoid schedule, vitamin D schedule, and rent auto-pay schedule remain active.",
+      "judge_rubric": {
+        "must_include": [
+          "dog training class",
+          "retinoid schedule still active",
+          "vitamin D schedule still active",
+          "rent auto-pay still active"
+        ],
+        "acceptable_paraphrases": [
+          "Biscuit's training sessions",
+          "skincare retinoid",
+          "vitamin D supplement"
+        ],
+        "must_not_include": [
+          "dog training is still being tracked"
+        ],
+        "harmful_extra": [
+          "claiming any of the three retained schedules were also removed",
+          "treating Emily's allergy shots as a tracked personal schedule"
+        ],
+        "harmless_extra": [
+          "mentioning Greg or Biscuit by name",
+          "mentioning the specific frequencies of retained schedules"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the dog training schedule details (biweekly Saturdays, trainer Greg, early March start) are presented as still active.",
+        "over_forget": "Fails if any of the three retained schedules (retinoid, vitamin D, rent) are treated as removed or unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "We actually finished Biscuit's training cycle in mid-April. There's no reason to track that schedule anymore, so please go ahead and remove the dog training class info from your memory."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My dermatologist told me to apply my prescription retinoid every other night. I started that new routine on March 3rd when I had my first appointment with her."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "my GP prescribed me 50,000 IU of vitamin D to take once a week on Sundays"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I just set up auto-pay for my rent. It's due on the 1st of every month, so the payment goes out monthly on the 1st."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to clean up one of my recurring schedules because it was completed. Which schedule did that apply to, and are my other recurring medical and billing schedules still intact?",
+      "expected_answer": "The cleanup applied to Biscuit's dog training class schedule. Your other three recurring schedules — retinoid application every other night, vitamin D 50,000 IU weekly on Sundays, and rent auto-pay monthly on the 1st — are all still intact and unaffected.",
+      "gold_memory_state": "Dog training schedule is removed. Retinoid schedule, vitamin D schedule, and rent auto-pay schedule remain active.",
+      "judge_rubric": {
+        "must_include": [
+          "dog training class",
+          "retinoid schedule still active",
+          "vitamin D schedule still active",
+          "rent auto-pay still active"
+        ],
+        "acceptable_paraphrases": [
+          "Biscuit's training sessions",
+          "skincare retinoid",
+          "vitamin D supplement"
+        ],
+        "must_not_include": [
+          "dog training is still being tracked"
+        ],
+        "harmful_extra": [
+          "claiming any of the three retained schedules were also removed",
+          "treating Emily's allergy shots as a tracked personal schedule"
+        ],
+        "harmless_extra": [
+          "mentioning Greg or Biscuit by name",
+          "mentioning the specific frequencies of retained schedules"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the dog training schedule details (biweekly Saturdays, trainer Greg, early March start) are presented as still active.",
+        "over_forget": "Fails if any of the three retained schedules (retinoid, vitamin D, rent) are treated as removed or unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "We actually finished Biscuit's training cycle in mid-April. There's no reason to track that schedule anymore, so please go ahead and remove the dog training class info from your memory."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My dermatologist told me to apply my prescription retinoid every other night. I started that new routine on March 3rd when I had my first appointment with her."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "my GP prescribed me 50,000 IU of vitamin D to take once a week on Sundays"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I just set up auto-pay for my rent. It's due on the 1st of every month, so the payment goes out monthly on the 1st."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "I need to write a weekly and monthly checklist of all my active recurring commitments. What schedules should appear on that checklist, and on which days?",
+      "expected_answer": "Your checklist should include three active schedules: (1) prescription retinoid every other night (started March 3rd), (2) vitamin D 50,000 IU on Sundays, and (3) rent auto-pay on the 1st of each month.",
+      "gold_memory_state": "Active schedules: retinoid every other night (started March 3rd), vitamin D 50,000 IU weekly on Sundays, rent auto-pay monthly on the 1st. Dog training schedule has been removed and is unavailable.",
+      "judge_rubric": {
+        "must_include": [
+          "retinoid every other night",
+          "vitamin D on Sundays",
+          "rent on the 1st"
+        ],
+        "acceptable_paraphrases": [
+          "retinoid alternate nights",
+          "vitamin D weekly Sunday",
+          "rent monthly first of month"
+        ],
+        "must_not_include": [
+          "dog training schedule",
+          "biweekly Saturday sessions",
+          "trainer Greg sessions on the checklist"
+        ],
+        "harmful_extra": [
+          "including dog training as an active schedule item",
+          "including Emily's allergy shots as a personal schedule"
+        ],
+        "harmless_extra": [
+          "mentioning March 3rd start for retinoid",
+          "mentioning 50,000 IU dosage",
+          "mentioning GP or dermatologist"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if dog training class details (biweekly Saturdays, trainer Greg) appear as an active checklist item.",
+        "over_forget": "Fails if any of the three retained schedules (retinoid, vitamin D, rent) are omitted or treated as unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My dermatologist told me to apply my prescription retinoid every other night. I started that new routine on March 3rd when I had my first appointment with her."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "my GP prescribed me 50,000 IU of vitamin D to take once a week on Sundays"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I just set up auto-pay for my rent. It's due on the 1st of every month, so the payment goes out monthly on the 1st."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "We actually finished Biscuit's training cycle in mid-April. There's no reason to track that schedule anymore, so please go ahead and remove the dog training class info from your memory."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "I need to write a weekly and monthly checklist of all my active recurring commitments. What schedules should appear on that checklist, and on which days?",
+      "expected_answer": "Your checklist should include three active schedules: (1) prescription retinoid every other night (started March 3rd), (2) vitamin D 50,000 IU on Sundays, and (3) rent auto-pay on the 1st of each month.",
+      "gold_memory_state": "Active schedules: retinoid every other night (started March 3rd), vitamin D 50,000 IU weekly on Sundays, rent auto-pay monthly on the 1st. Dog training schedule has been removed and is unavailable.",
+      "judge_rubric": {
+        "must_include": [
+          "retinoid every other night",
+          "vitamin D on Sundays",
+          "rent on the 1st"
+        ],
+        "acceptable_paraphrases": [
+          "retinoid alternate nights",
+          "vitamin D weekly Sunday",
+          "rent monthly first of month"
+        ],
+        "must_not_include": [
+          "dog training schedule",
+          "biweekly Saturday sessions",
+          "trainer Greg sessions on the checklist"
+        ],
+        "harmful_extra": [
+          "including dog training as an active schedule item",
+          "including Emily's allergy shots as a personal schedule"
+        ],
+        "harmless_extra": [
+          "mentioning March 3rd start for retinoid",
+          "mentioning 50,000 IU dosage",
+          "mentioning GP or dermatologist"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if dog training class details (biweekly Saturdays, trainer Greg) appear as an active checklist item.",
+        "over_forget": "Fails if any of the three retained schedules (retinoid, vitamin D, rent) are omitted or treated as unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My dermatologist told me to apply my prescription retinoid every other night. I started that new routine on March 3rd when I had my first appointment with her."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "my GP prescribed me 50,000 IU of vitamin D to take once a week on Sundays"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I just set up auto-pay for my rent. It's due on the 1st of every month, so the payment goes out monthly on the 1st."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "We actually finished Biscuit's training cycle in mid-April. There's no reason to track that schedule anymore, so please go ahead and remove the dog training class info from your memory."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I have a Saturday coming up and I'm wondering if there's a recurring commitment I should plan around. Which of the following best describes my Saturday obligations?",
+      "candidate_options": [
+        "No active recurring Saturday commitments",
+        "Biweekly Saturday dog training sessions",
+        "Weekly Saturday vitamin D dose",
+        "Monthly Saturday rent payment"
+      ],
+      "expected_answer": "No active recurring Saturday commitments",
+      "gold_memory_state": "Dog training (the only Saturday commitment) has been removed. Vitamin D is on Sundays, rent is on the 1st (not Saturday-specific).",
+      "judge_rubric": {
+        "must_include": [
+          "no active recurring Saturday commitments"
+        ],
+        "acceptable_paraphrases": [
+          "no Saturday obligations",
+          "nothing scheduled for Saturdays"
+        ],
+        "must_not_include": [
+          "biweekly Saturday dog training"
+        ],
+        "harmful_extra": [
+          "selecting dog training as still active"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'Weekly Saturday vitamin D dose' borrows the weekly frequency from the real vitamin D schedule but shifts it to Saturday instead of Sunday. assistant echo: 'Biweekly Saturday dog training sessions' echoes the assistant's earlier recaps of the now-removed dog training schedule. 'Monthly Saturday rent payment' conflates the rent schedule's monthly cycle with a Saturday anchor.",
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects 'Biweekly Saturday dog training sessions', indicating the removed schedule is still treated as active.",
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the dog training option based on residual memory of the removed schedule.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "We actually finished Biscuit's training cycle in mid-April. There's no reason to track that schedule anymore, so please go ahead and remove the dog training class info from your memory."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "my GP prescribed me 50,000 IU of vitamin D to take once a week on Sundays"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I just set up auto-pay for my rent. It's due on the 1st of every month, so the payment goes out monthly on the 1st."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I have a Saturday coming up and I'm wondering if there's a recurring commitment I should plan around. Which of the following best describes my Saturday obligations?",
+      "candidate_options": [
+        "No active recurring Saturday commitments",
+        "Biweekly Saturday dog training sessions",
+        "Weekly Saturday vitamin D dose",
+        "Monthly Saturday rent payment"
+      ],
+      "expected_answer": "No active recurring Saturday commitments",
+      "gold_memory_state": "Dog training (the only Saturday commitment) has been removed. Vitamin D is on Sundays, rent is on the 1st (not Saturday-specific).",
+      "judge_rubric": {
+        "must_include": [
+          "no active recurring Saturday commitments"
+        ],
+        "acceptable_paraphrases": [
+          "no Saturday obligations",
+          "nothing scheduled for Saturdays"
+        ],
+        "must_not_include": [
+          "biweekly Saturday dog training"
+        ],
+        "harmful_extra": [
+          "selecting dog training as still active"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'Weekly Saturday vitamin D dose' borrows the weekly frequency from the real vitamin D schedule but shifts it to Saturday instead of Sunday. assistant echo: 'Biweekly Saturday dog training sessions' echoes the assistant's earlier recaps of the now-removed dog training schedule. 'Monthly Saturday rent payment' conflates the rent schedule's monthly cycle with a Saturday anchor.",
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects 'Biweekly Saturday dog training sessions', indicating the removed schedule is still treated as active.",
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the dog training option based on residual memory of the removed schedule.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "We actually finished Biscuit's training cycle in mid-April. There's no reason to track that schedule anymore, so please go ahead and remove the dog training class info from your memory."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "my GP prescribed me 50,000 IU of vitamin D to take once a week on Sundays"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I just set up auto-pay for my rent. It's due on the 1st of every month, so the payment goes out monthly on the 1st."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm planning my routine for the upcoming Sunday, May 4th. I also want to figure out whether that night is a retinoid night. Can you draft a short evening plan for May 4th that covers all my active health-related routines and my monthly financial obligation, noting which ones actually fall on that specific date?",
+      "expected_answer": "On Sunday, May 4th: (1) Take your 50,000 IU vitamin D supplement — it falls on a Sunday, so it's a vitamin D day. (2) Apply your retinoid that evening — since you started every other night on March 3rd, counting forward, May 4th is an even number of days from March 3rd (62 days), so May 4th is a retinoid night. (3) Rent auto-pay is monthly on the 1st, so it does not apply on May 4th — your next rent payment already went out on May 1st. No dog training or other pet commitments apply.",
+      "gold_memory_state": "Active: retinoid every other night starting March 3rd, vitamin D 50,000 IU weekly on Sundays, rent auto-pay monthly on the 1st. Removed: dog training schedule.",
+      "judge_rubric": {
+        "must_include": [
+          "vitamin D on Sunday May 4th",
+          "retinoid applies that night",
+          "rent does not apply on May 4th"
+        ],
+        "acceptable_paraphrases": [
+          "vitamin D is due because it's Sunday",
+          "retinoid is on because of alternating night count from March 3rd",
+          "rent already paid on May 1st"
+        ],
+        "must_not_include": [
+          "dog training on Saturday",
+          "biweekly Saturday sessions"
+        ],
+        "harmful_extra": [
+          "including dog training as an active obligation",
+          "saying retinoid is not due that night without calculating",
+          "saying rent is due on May 4th"
+        ],
+        "harmless_extra": [
+          "mentioning the dermatologist",
+          "mentioning the GP",
+          "noting the dosage of vitamin D"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if dog training schedule details appear as an active obligation on or around May 4th.",
+        "over_forget": "Fails if any of the three retained schedules are omitted from the evening plan.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Retinoid is applied every other night, starting March 3rd.",
+        "Fact 2: Vitamin D 50,000 IU is taken once a week on Sundays.",
+        "Fact 3: Rent auto-pay goes out monthly on the 1st.",
+        "Inference: May 4th is a Sunday, so vitamin D is due that day.",
+        "Inference: From March 3rd to May 4th is 62 days. Since the retinoid started on March 3rd (night 0) and alternates every other night, even-numbered day offsets are retinoid nights. 62 is even, so May 4th is a retinoid night.",
+        "Inference: Rent auto-pay is on the 1st, so the May payment went out on May 1st; May 4th has no rent obligation.",
+        "Derived value: The May 4th evening plan includes vitamin D and retinoid but not rent."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My dermatologist told me to apply my prescription retinoid every other night. I started that new routine on March 3rd when I had my first appointment with her."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "my GP prescribed me 50,000 IU of vitamin D to take once a week on Sundays"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I just set up auto-pay for my rent. It's due on the 1st of every month, so the payment goes out monthly on the 1st."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm planning my routine for the upcoming Sunday, May 4th. I also want to figure out whether that night is a retinoid night. Can you draft a short evening plan for May 4th that covers all my active health-related routines and my monthly financial obligation, noting which ones actually fall on that specific date?",
+      "expected_answer": "On Sunday, May 4th: (1) Take your 50,000 IU vitamin D supplement — it falls on a Sunday, so it's a vitamin D day. (2) Apply your retinoid that evening — since you started every other night on March 3rd, counting forward, May 4th is an even number of days from March 3rd (62 days), so May 4th is a retinoid night. (3) Rent auto-pay is monthly on the 1st, so it does not apply on May 4th — your next rent payment already went out on May 1st. No dog training or other pet commitments apply.",
+      "gold_memory_state": "Active: retinoid every other night starting March 3rd, vitamin D 50,000 IU weekly on Sundays, rent auto-pay monthly on the 1st. Removed: dog training schedule.",
+      "judge_rubric": {
+        "must_include": [
+          "vitamin D on Sunday May 4th",
+          "retinoid applies that night",
+          "rent does not apply on May 4th"
+        ],
+        "acceptable_paraphrases": [
+          "vitamin D is due because it's Sunday",
+          "retinoid is on because of alternating night count from March 3rd",
+          "rent already paid on May 1st"
+        ],
+        "must_not_include": [
+          "dog training on Saturday",
+          "biweekly Saturday sessions"
+        ],
+        "harmful_extra": [
+          "including dog training as an active obligation",
+          "saying retinoid is not due that night without calculating",
+          "saying rent is due on May 4th"
+        ],
+        "harmless_extra": [
+          "mentioning the dermatologist",
+          "mentioning the GP",
+          "noting the dosage of vitamin D"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if dog training schedule details appear as an active obligation on or around May 4th.",
+        "over_forget": "Fails if any of the three retained schedules are omitted from the evening plan.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Retinoid is applied every other night, starting March 3rd.",
+        "Fact 2: Vitamin D 50,000 IU is taken once a week on Sundays.",
+        "Fact 3: Rent auto-pay goes out monthly on the 1st.",
+        "Inference: May 4th is a Sunday, so vitamin D is due that day.",
+        "Inference: From March 3rd to May 4th is 62 days. Since the retinoid started on March 3rd (night 0) and alternates every other night, even-numbered day offsets are retinoid nights. 62 is even, so May 4th is a retinoid night.",
+        "Inference: Rent auto-pay is on the 1st, so the May payment went out on May 1st; May 4th has no rent obligation.",
+        "Derived value: The May 4th evening plan includes vitamin D and retinoid but not rent."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My dermatologist told me to apply my prescription retinoid every other night. I started that new routine on March 3rd when I had my first appointment with her."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "my GP prescribed me 50,000 IU of vitamin D to take once a week on Sundays"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I just set up auto-pay for my rent. It's due on the 1st of every month, so the payment goes out monthly on the 1st."
+        }
+      ]
+    }
+  ]
+}

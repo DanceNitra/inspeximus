@@ -1,0 +1,926 @@
+{
+  "target_fact": "Default cloud storage/drive service and related configuration details",
+  "operation_type": "TrajectoryOps",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "storage_plan",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I switched over to Google Drive as my default cloud storage back in early March, and I'm on the 200 GB Google One plan right now"
+      },
+      "target": {
+        "target_id": "google_one_plan_tier",
+        "target_name": "Google One storage plan tier"
+      },
+      "old_value": null,
+      "new_value": "200 GB",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I'm on the 200 GB Google One plan right now"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "My main storage folder on Google Drive is called \"Core_Vault\" — that's where basically everything important goes"
+      },
+      "target": {
+        "target_id": "main_storage_folder",
+        "target_name": "Main Google Drive storage folder name"
+      },
+      "old_value": null,
+      "new_value": "Core_Vault",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My main storage folder on Google Drive is called \"Core_Vault\""
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "storage_plan",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I actually upgraded to the 2 TB plan in mid-March because I started dumping all my photography backups in there and the 200 GB filled up almost immediately"
+      },
+      "target": {
+        "target_id": "google_one_plan_tier",
+        "target_name": "Google One storage plan tier"
+      },
+      "old_value": "200 GB",
+      "new_value": "2 TB",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I'm on the 200 GB Google One plan right now"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I actually upgraded to the 2 TB plan in mid-March because I started dumping all my photography backups in there and the 200 GB filled up almost immediately"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "storage_plan",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "Google sent me a notification that I'm eligible to consolidate to the AI Premium plan at 2 TB for the same price, so my plan will be switching to that tier next billing cycle"
+      },
+      "target": {
+        "target_id": "google_one_plan_tier",
+        "target_name": "Google One storage plan tier"
+      },
+      "old_value": "2 TB",
+      "new_value": "AI Premium 2 TB",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Google sent me a notification that I'm eligible to consolidate to the AI Premium plan at 2 TB for the same price, so my plan will be switching to that tier next billing cycle"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "storage_plan",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 7,
+        "quote": "I just checked my Google One dashboard and it still shows the regular 2 TB plan as active. The AI Premium thing hasn't gone through yet and honestly I'm not sure it will, so for now just keep it as the standard 2 TB Google One plan"
+      },
+      "target": {
+        "target_id": "google_one_plan_tier",
+        "target_name": "Google One storage plan tier"
+      },
+      "old_value": "2 TB",
+      "new_value": "2 TB",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I just checked my Google One dashboard and it still shows the regular 2 TB plan as active. The AI Premium thing hasn't gone through yet and honestly I'm not sure it will, so for now just keep it as the standard 2 TB Google One plan"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "initial_establishment",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to get some of my cloud storage details organized. I switched over to Google Drive as my default cloud storage back in early March, and I'm on the 200 GB Google One plan right now. Before that I was using OneDrive for about two years, but the syncing kept breaking on my laptop and I got fed up after losing 40 minutes one afternoon trying to fix a folder sync issue."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — so your current default cloud storage is Google Drive, you're on the 200 GB Google One plan, and you made the switch in early March after ongoing frustration with OneDrive's syncing problems on your laptop. That sounds like a painful experience, especially losing 40 minutes to a single folder sync issue. I can help you organize your storage setup details and keep track of your configuration. Do you have a particular folder structure or naming convention you'd like me to note as well?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, definitely. My main storage folder on Google Drive is called \"Core_Vault\" — that's where basically everything important goes. I reference it constantly so please remember that name. I also set up automatic camera roll backup to Google Drive on my phone a few weeks ago, after I accidentally deleted some photos from a Portland trip."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — your primary folder is \"Core_Vault\" on Google Drive, and you've enabled automatic camera roll backup on your phone to prevent photo loss like what happened with the Portland trip pictures. That's a solid safeguard. Having a single central folder like Core_Vault makes it easier to manage permissions, sharing, and offline access down the line. If you want, I can help you draft a folder hierarchy inside Core_Vault or set up any tagging conventions. Is there anything else about your current setup you'd like to capture?"
+        },
+        {
+          "role": "user",
+          "content": "Good question. I actually upgraded to the 2 TB plan in mid-March because I started dumping all my photography backups in there and the 200 GB filled up almost immediately. So scratch what I said earlier about 200 GB — it's the 2 TB Google One plan now. That's been plenty of space so far for photos, documents, and project files combined."
+        },
+        {
+          "role": "assistant",
+          "content": "Updated — your Google One plan is the 2 TB tier, not 200 GB. You upgraded in mid-March to accommodate your photography backups, and the extra space has been sufficient for photos, documents, and project files. It makes sense that 200 GB would fill up fast with high-resolution photography. The 2 TB plan gives you a lot of headroom. I'll keep that as your current plan going forward. Would you like me to note anything about how you organize the photography backups within Core_Vault, or any sharing settings you use?"
+        },
+        {
+          "role": "user",
+          "content": "Not yet on the organization side. One more thing though — my friend Tessa uses iCloud, she's been on the 2 TB iCloud+ plan since January and loves it. She tried to convince me to switch, but I prefer tools that work across different platforms and don't tie me to one brand. That's a big reason I picked Google Drive over iCloud."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a clear preference — you value cross-platform compatibility and avoiding ecosystem lock-in, which is why you chose Google Drive over iCloud despite Tessa's recommendation. Tessa's been happy with her 2 TB iCloud+ plan since January, but the Apple-centric nature of iCloud doesn't fit your workflow. Google Drive's advantage there is solid: it works natively across Android, iOS, Windows, Mac, and the web without favoring one ecosystem. I'll keep that preference in mind if cloud storage comparisons come up again. Anything else you'd like to capture about your setup today?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "continued_context",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So I wanted to mention — I used to have a shared Dropbox folder with my coworker Raj for a side project we were working on together. We wrapped up that project around April 10th, so the shared Dropbox folder isn't needed anymore. You can forget about that one entirely, no need to track it."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood — I'll disregard the shared Dropbox folder with Raj since the side project wrapped up around April 10th and the folder is no longer in use. That simplifies your cloud storage picture: Google Drive with the 2 TB Google One plan is your sole active cloud service, with Core_Vault as the main folder. If you ever start another collaborative project that needs shared storage, just let me know and I can help you set something up. Is there anything else about your current workflow you'd like to update?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, as of last week I enabled offline access for my Core_Vault folder on both my laptop and my tablet. I travel enough that not having offline access was becoming a real problem — I'd be on a plane or in a hotel with spotty wifi and couldn't get to my files. That's been a game changer honestly."
+        },
+        {
+          "role": "assistant",
+          "content": "Great call — offline access for Core_Vault on both your laptop and tablet is now noted. That's especially important given your travel frequency; having your critical files available regardless of connectivity eliminates a major pain point. Google Drive's offline mode caches the files locally, so edits sync back automatically once you reconnect. Between the auto camera roll backup on your phone and offline Core_Vault access on your laptop and tablet, you've got a pretty robust setup across all your devices. Anything else you'd like to document about your configuration?"
+        },
+        {
+          "role": "user",
+          "content": "I also started using Google Drive's built-in document scanner on my phone around mid-April to digitize receipts. Nothing major, just a convenience thing. I scan them and drop them into a subfolder inside Core_Vault called \"Receipts_2024.\" It's been handy for tracking expenses without keeping paper copies around."
+        },
+        {
+          "role": "assistant",
+          "content": "Nice workflow addition — you're using Google Drive's document scanner on your phone since mid-April to digitize receipts, storing them in a Core_Vault subfolder called \"Receipts_2024.\" That's a clean way to handle expense tracking without paper clutter. Since those scans go directly into Core_Vault, they'll also benefit from the offline access you set up on your laptop and tablet. If you ever want to set up automatic categorization or tagging for those receipt scans, I can help brainstorm a system. Anything else you'd like to add to your storage setup notes?"
+        },
+        {
+          "role": "user",
+          "content": "One thing I appreciate about Google Drive is the clean, minimal interface. OneDrive's dashboard was way too cluttered for me — pop-ups asking me things every time I tried to drag and drop a file. Google Drive's web UI isn't perfect but it's much less noisy. That kind of simplicity matters a lot to me when I'm managing files daily.\n\nSure, go ahead and summarize what you've got. I think we've covered the main points. My setup is pretty straightforward at this point — Google Drive, 2 TB plan, Core_Vault as the main folder, offline access on laptop and tablet, auto camera backup on my phone, and the receipt scanner workflow."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a strong UX preference — you value a clean, minimal interface for file management, and Google Drive delivers that better than OneDrive did with its cluttered dashboard and frequent pop-ups. The ability to drag and drop without interruptions is clearly important to your daily workflow. This aligns with your broader preference for simple, open, cross-platform tools over ecosystem-locked or cluttered solutions. It sounds like the switch to Google Drive addressed both the technical syncing issues and the interface frustrations you had with OneDrive. Shall I summarize your full cloud storage profile as it stands now?\n\nHere's your current cloud storage profile: Your default cloud service is Google Drive, running on the 2 TB Google One plan that you upgraded to in mid-March. Your primary folder is Core_Vault, which has offline access enabled on both your laptop and tablet as of last week. Your phone has automatic camera roll backup to Google Drive, and you're using the built-in document scanner since mid-April to digitize receipts into a Core_Vault subfolder called Receipts_2024. You prefer cross-platform, minimal-interface tools, which drove your switch from OneDrive in early March. The shared Dropbox folder with Raj is retired. Let me know if anything changes."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "trajectory_update_and_traps",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Quick question — I was looking at some old notes and saw a reference to OneDrive being my primary storage. That's definitely outdated right? I just want to make sure your records reflect Google Drive as my current default. Sometimes I worry about stale info getting mixed in with the current stuff."
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, absolutely — your current default cloud storage is Google Drive, not OneDrive. OneDrive was your previous service for about two years before you switched in early March due to syncing issues and interface frustrations. I have Google Drive recorded as your active default with the 2 TB Google One plan, Core_Vault as your main folder, and all the configuration details we discussed. There's no OneDrive information in your current profile. You're right to double-check though — stale references can definitely cause confusion, especially if old notes or documents still mention the previous setup."
+        },
+        {
+          "role": "user",
+          "content": "Good. Also, my friend Tessa mentioned she recently upgraded to the iCloud+ 6 TB family plan and she's been pushing me again to try iCloud. She says the 6 TB tier is incredible for families. But I'm still firmly on Google Drive — I haven't changed anything about my setup. Cross-platform access is still my priority and Apple's ecosystem doesn't fit how I work."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood — Tessa has moved up to the iCloud+ 6 TB family plan and is enthusiastic about it, but you're staying with Google Drive. Your preference for cross-platform tools that aren't locked to one ecosystem hasn't changed, so iCloud still isn't a fit for your workflow regardless of the storage tier Tessa recommends. I'll keep your setup exactly as is: Google Drive with the 2 TB Google One plan, Core_Vault as the main folder, offline access on laptop and tablet, auto camera backup, and the receipt scanner workflow. No changes needed on your end."
+        },
+        {
+          "role": "user",
+          "content": "Google sent me a notification that I'm eligible to consolidate to the AI Premium plan at 2 TB for the same price, so my plan will be switching to that tier next billing cycle. It bundles Gemini Advanced and some extra AI features with the same 2 TB storage. I figured why not, if it's the same price."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a solid deal — the Google One AI Premium plan at 2 TB for the same price as your current plan, with Gemini Advanced and additional AI features bundled in. Since the storage amount stays the same and the cost doesn't change, there's really no downside. The Gemini Advanced integration could be useful for things like document summarization or smart search within your Core_Vault folder. I'll note that your plan will be transitioning to the AI Premium tier next billing cycle. Let me know once it officially switches over and I'll update your profile accordingly."
+        },
+        {
+          "role": "user",
+          "content": "I just checked my Google One dashboard and it still shows the regular 2 TB plan as active. The AI Premium thing hasn't gone through yet and honestly I'm not sure it will, so for now just keep it as the standard 2 TB Google One plan. I don't want to record something that hasn't actually happened yet. Let's stick with what's confirmed."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely — I'll keep your plan recorded as the standard 2 TB Google One plan since that's what's currently active on your dashboard. The AI Premium consolidation hasn't gone through and may not, so there's no reason to update your profile with something unconfirmed. Your current setup remains: Google Drive as your default cloud storage, standard 2 TB Google One plan, Core_Vault as the main folder with offline access on laptop and tablet, auto camera roll backup on your phone, and the receipt scanning workflow into Receipts_2024. Everything stays as confirmed. Just let me know if and when anything actually changes."
+        }
+      ]
+    }
+  ],
+  "state_checkpoints": [
+    {
+      "checkpoint_id": "c1",
+      "description": "After segment 1: Google One plan tier is 2 TB (confirmed, after initial 200 GB was corrected to 2 TB). Core_Vault folder is established. Tessa's iCloud usage noted as context but not user's own service."
+    },
+    {
+      "checkpoint_id": "c2",
+      "description": "After segment 2: Google One plan tier remains 2 TB (confirmed). Core_Vault has offline access on laptop and tablet. Auto camera backup active on phone. Receipts_2024 subfolder in use. Shared Dropbox with Raj is retired (no longer tracked)."
+    },
+    {
+      "checkpoint_id": "c3",
+      "description": "After segment 3: Google One plan tier is standard 2 TB (confirmed). The AI Premium 2 TB plan was mentioned as a pending switch (tentative) but user confirmed it hasn't gone through and reverted to standard 2 TB. All other settings unchanged. Tessa now on iCloud+ 6 TB family plan (third-party context, not user's service)."
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you walk me through the key things I told you about my cloud storage plan — specifically, how the plan tier evolved over our conversations?",
+      "expected_answer": "You initially mentioned being on a 200 GB Google One plan in early March when you switched to Google Drive. You then said you upgraded to the 2 TB Google One plan in mid-March because your photography backups quickly filled the 200 GB. Later, you mentioned a possible switch to the AI Premium 2 TB plan next billing cycle, but then confirmed that the AI Premium change hadn't gone through and your active plan is still the standard 2 TB Google One plan.",
+      "gold_memory_state": "Google One plan tier: standard 2 TB (confirmed). Previous values: 200 GB (superseded by 2 TB upgrade), AI Premium 2 TB (tentative, never adopted). Main folder: Core_Vault. Default service: Google Drive.",
+      "judge_rubric": {
+        "must_include": [
+          "200 GB as initial plan",
+          "2 TB as the upgrade",
+          "AI Premium mentioned but not adopted",
+          "standard 2 TB as current"
+        ],
+        "acceptable_paraphrases": [
+          "regular 2 TB",
+          "plain 2 TB Google One"
+        ],
+        "must_not_include": [
+          "AI Premium is the current plan"
+        ],
+        "harmful_extra": [
+          "stating the AI Premium switch went through"
+        ],
+        "harmless_extra": [
+          "mentioning photography backups as reason for upgrade",
+          "mentioning OneDrive as prior service"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 200 GB is presented as current or if AI Premium is presented as active.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence 200 GB -> 2 TB -> (tentative AI Premium) -> confirmed standard 2 TB is misordered.",
+        "final_state": "Fails if the final plan is not identified as standard 2 TB Google One.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I'm on the 200 GB Google One plan right now"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I actually upgraded to the 2 TB plan in mid-March because I started dumping all my photography backups in there and the 200 GB filled up almost immediately"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Google sent me a notification that I'm eligible to consolidate to the AI Premium plan at 2 TB for the same price, so my plan will be switching to that tier next billing cycle"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I just checked my Google One dashboard and it still shows the regular 2 TB plan as active. The AI Premium thing hasn't gone through yet and honestly I'm not sure it will, so for now just keep it as the standard 2 TB Google One plan"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you walk me through the key things I told you about my cloud storage plan — specifically, how the plan tier evolved over our conversations?",
+      "expected_answer": "You initially mentioned being on a 200 GB Google One plan in early March when you switched to Google Drive. You then said you upgraded to the 2 TB Google One plan in mid-March because your photography backups quickly filled the 200 GB. Later, you mentioned a possible switch to the AI Premium 2 TB plan next billing cycle, but then confirmed that the AI Premium change hadn't gone through and your active plan is still the standard 2 TB Google One plan.",
+      "gold_memory_state": "Google One plan tier: standard 2 TB (confirmed). Previous values: 200 GB (superseded by 2 TB upgrade), AI Premium 2 TB (tentative, never adopted). Main folder: Core_Vault. Default service: Google Drive.",
+      "judge_rubric": {
+        "must_include": [
+          "200 GB as initial plan",
+          "2 TB as the upgrade",
+          "AI Premium mentioned but not adopted",
+          "standard 2 TB as current"
+        ],
+        "acceptable_paraphrases": [
+          "regular 2 TB",
+          "plain 2 TB Google One"
+        ],
+        "must_not_include": [
+          "AI Premium is the current plan"
+        ],
+        "harmful_extra": [
+          "stating the AI Premium switch went through"
+        ],
+        "harmless_extra": [
+          "mentioning photography backups as reason for upgrade",
+          "mentioning OneDrive as prior service"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 200 GB is presented as current or if AI Premium is presented as active.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence 200 GB -> 2 TB -> (tentative AI Premium) -> confirmed standard 2 TB is misordered.",
+        "final_state": "Fails if the final plan is not identified as standard 2 TB Google One.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I'm on the 200 GB Google One plan right now"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I actually upgraded to the 2 TB plan in mid-March because I started dumping all my photography backups in there and the 200 GB filled up almost immediately"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Google sent me a notification that I'm eligible to consolidate to the AI Premium plan at 2 TB for the same price, so my plan will be switching to that tier next billing cycle"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I just checked my Google One dashboard and it still shows the regular 2 TB plan as active. The AI Premium thing hasn't gone through yet and honestly I'm not sure it will, so for now just keep it as the standard 2 TB Google One plan"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "My friend Tessa and I both use cloud storage with multi-terabyte plans. If I need to verify my own plan details for a billing inquiry, which plan record applies to me and which belongs to someone else? Does her plan change affect mine at all?",
+      "expected_answer": "Your plan is the standard 2 TB Google One plan on Google Drive. Tessa's plan is the iCloud+ 6 TB family plan, which is entirely separate and has no effect on your setup.",
+      "gold_memory_state": "User's Google One plan: standard 2 TB (confirmed). Tessa's iCloud+: 6 TB family plan (third-party context only). The two plans are independent records.",
+      "judge_rubric": {
+        "must_include": [
+          "standard 2 TB Google One as user's plan",
+          "Tessa's iCloud plan is separate"
+        ],
+        "acceptable_paraphrases": [
+          "regular 2 TB Google One",
+          "2 TB Google One"
+        ],
+        "must_not_include": [
+          "user is on iCloud",
+          "user's plan is AI Premium",
+          "user's plan is 200 GB"
+        ],
+        "harmful_extra": [
+          "conflating Tessa's plan tier with user's plan",
+          "saying user switched to iCloud"
+        ],
+        "harmless_extra": [
+          "mentioning Tessa upgraded from 2 TB iCloud+ to 6 TB family plan"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if user's plan is reported as 200 GB or AI Premium 2 TB.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if user's current plan is not standard 2 TB Google One.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I just checked my Google One dashboard and it still shows the regular 2 TB plan as active. The AI Premium thing hasn't gone through yet and honestly I'm not sure it will, so for now just keep it as the standard 2 TB Google One plan"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "my friend Tessa mentioned she recently upgraded to the iCloud+ 6 TB family plan and she's been pushing me again to try iCloud"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "My friend Tessa and I both use cloud storage with multi-terabyte plans. If I need to verify my own plan details for a billing inquiry, which plan record applies to me and which belongs to someone else? Does her plan change affect mine at all?",
+      "expected_answer": "Your plan is the standard 2 TB Google One plan on Google Drive. Tessa's plan is the iCloud+ 6 TB family plan, which is entirely separate and has no effect on your setup.",
+      "gold_memory_state": "User's Google One plan: standard 2 TB (confirmed). Tessa's iCloud+: 6 TB family plan (third-party context only). The two plans are independent records.",
+      "judge_rubric": {
+        "must_include": [
+          "standard 2 TB Google One as user's plan",
+          "Tessa's iCloud plan is separate"
+        ],
+        "acceptable_paraphrases": [
+          "regular 2 TB Google One",
+          "2 TB Google One"
+        ],
+        "must_not_include": [
+          "user is on iCloud",
+          "user's plan is AI Premium",
+          "user's plan is 200 GB"
+        ],
+        "harmful_extra": [
+          "conflating Tessa's plan tier with user's plan",
+          "saying user switched to iCloud"
+        ],
+        "harmless_extra": [
+          "mentioning Tessa upgraded from 2 TB iCloud+ to 6 TB family plan"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if user's plan is reported as 200 GB or AI Premium 2 TB.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if user's current plan is not standard 2 TB Google One.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I just checked my Google One dashboard and it still shows the regular 2 TB plan as active. The AI Premium thing hasn't gone through yet and honestly I'm not sure it will, so for now just keep it as the standard 2 TB Google One plan"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "my friend Tessa mentioned she recently upgraded to the iCloud+ 6 TB family plan and she's been pushing me again to try iCloud"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "I'm about to renew my Google One subscription and need to know exactly which plan tier I should expect on my next invoice. What plan am I on right now?",
+      "expected_answer": "Standard 2 TB Google One plan.",
+      "gold_memory_state": "Google One plan tier: standard 2 TB (confirmed active on dashboard). The AI Premium 2 TB plan was mentioned as a future possibility but was never activated and the user explicitly reverted to the standard 2 TB plan. The original 200 GB plan was superseded by the mid-March upgrade.",
+      "judge_rubric": {
+        "must_include": [
+          "standard 2 TB",
+          "Google One"
+        ],
+        "acceptable_paraphrases": [
+          "regular 2 TB Google One plan",
+          "2 TB Google One"
+        ],
+        "must_not_include": [
+          "AI Premium",
+          "200 GB"
+        ],
+        "harmful_extra": [
+          "stating the plan is AI Premium 2 TB",
+          "stating the plan is 200 GB"
+        ],
+        "harmless_extra": [
+          "mentioning it was upgraded from 200 GB in mid-March"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the answer gives AI Premium 2 TB (tentative, never adopted) or 200 GB (superseded). The recency trap is the AI Premium value which appeared most recently but was explicitly rejected.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the final plan is not standard 2 TB Google One.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I just checked my Google One dashboard and it still shows the regular 2 TB plan as active. The AI Premium thing hasn't gone through yet and honestly I'm not sure it will, so for now just keep it as the standard 2 TB Google One plan"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "I'm about to renew my Google One subscription and need to know exactly which plan tier I should expect on my next invoice. What plan am I on right now?",
+      "expected_answer": "Standard 2 TB Google One plan.",
+      "gold_memory_state": "Google One plan tier: standard 2 TB (confirmed active on dashboard). The AI Premium 2 TB plan was mentioned as a future possibility but was never activated and the user explicitly reverted to the standard 2 TB plan. The original 200 GB plan was superseded by the mid-March upgrade.",
+      "judge_rubric": {
+        "must_include": [
+          "standard 2 TB",
+          "Google One"
+        ],
+        "acceptable_paraphrases": [
+          "regular 2 TB Google One plan",
+          "2 TB Google One"
+        ],
+        "must_not_include": [
+          "AI Premium",
+          "200 GB"
+        ],
+        "harmful_extra": [
+          "stating the plan is AI Premium 2 TB",
+          "stating the plan is 200 GB"
+        ],
+        "harmless_extra": [
+          "mentioning it was upgraded from 200 GB in mid-March"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the answer gives AI Premium 2 TB (tentative, never adopted) or 200 GB (superseded). The recency trap is the AI Premium value which appeared most recently but was explicitly rejected.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the final plan is not standard 2 TB Google One.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I just checked my Google One dashboard and it still shows the regular 2 TB plan as active. The AI Premium thing hasn't gone through yet and honestly I'm not sure it will, so for now just keep it as the standard 2 TB Google One plan"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to draft a quick internal note for my team explaining my current personal cloud setup — specifically which service I use, what plan tier I'm on, and where they should look if they ever need to find shared files I've uploaded. Can you write that note for me?",
+      "expected_answer": "Here is a draft note: 'My personal cloud storage is Google Drive on the standard 2 TB Google One plan. Any shared files I upload will be located in my main folder called Core_Vault. If you need access to a specific file, let me know and I can share it from there.'",
+      "gold_memory_state": "Default cloud service: Google Drive. Plan tier: standard 2 TB Google One (confirmed). Main folder: Core_Vault. Offline access enabled on laptop and tablet. Auto camera backup on phone. Receipts_2024 subfolder in use.",
+      "judge_rubric": {
+        "must_include": [
+          "Google Drive",
+          "standard 2 TB Google One plan or equivalent",
+          "Core_Vault"
+        ],
+        "acceptable_paraphrases": [
+          "regular 2 TB Google One",
+          "2 TB Google One plan"
+        ],
+        "must_not_include": [
+          "AI Premium",
+          "200 GB",
+          "OneDrive as current service",
+          "iCloud as current service"
+        ],
+        "harmful_extra": [
+          "listing AI Premium as the plan",
+          "listing OneDrive or iCloud as user's service"
+        ],
+        "harmless_extra": [
+          "mentioning offline access",
+          "mentioning Receipts_2024 subfolder",
+          "mentioning camera roll backup"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the note says 200 GB, AI Premium, OneDrive, or iCloud as the user's own service/plan.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the note does not reflect Google Drive with standard 2 TB Google One and Core_Vault.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's default cloud storage service is Google Drive.",
+        "Fact 2: The user's Google One plan tier is the standard 2 TB plan (confirmed after the AI Premium possibility was rejected).",
+        "Fact 3: The user's main storage folder on Google Drive is called Core_Vault.",
+        "Inference: The internal note should combine all three facts — Google Drive as the service, standard 2 TB Google One as the plan, and Core_Vault as the folder where shared files are located."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I switched over to Google Drive as my default cloud storage back in early March, and I'm on the 200 GB Google One plan right now"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My main storage folder on Google Drive is called \"Core_Vault\" — that's where basically everything important goes"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I just checked my Google One dashboard and it still shows the regular 2 TB plan as active. The AI Premium thing hasn't gone through yet and honestly I'm not sure it will, so for now just keep it as the standard 2 TB Google One plan"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to draft a quick internal note for my team explaining my current personal cloud setup — specifically which service I use, what plan tier I'm on, and where they should look if they ever need to find shared files I've uploaded. Can you write that note for me?",
+      "expected_answer": "Here is a draft note: 'My personal cloud storage is Google Drive on the standard 2 TB Google One plan. Any shared files I upload will be located in my main folder called Core_Vault. If you need access to a specific file, let me know and I can share it from there.'",
+      "gold_memory_state": "Default cloud service: Google Drive. Plan tier: standard 2 TB Google One (confirmed). Main folder: Core_Vault. Offline access enabled on laptop and tablet. Auto camera backup on phone. Receipts_2024 subfolder in use.",
+      "judge_rubric": {
+        "must_include": [
+          "Google Drive",
+          "standard 2 TB Google One plan or equivalent",
+          "Core_Vault"
+        ],
+        "acceptable_paraphrases": [
+          "regular 2 TB Google One",
+          "2 TB Google One plan"
+        ],
+        "must_not_include": [
+          "AI Premium",
+          "200 GB",
+          "OneDrive as current service",
+          "iCloud as current service"
+        ],
+        "harmful_extra": [
+          "listing AI Premium as the plan",
+          "listing OneDrive or iCloud as user's service"
+        ],
+        "harmless_extra": [
+          "mentioning offline access",
+          "mentioning Receipts_2024 subfolder",
+          "mentioning camera roll backup"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the note says 200 GB, AI Premium, OneDrive, or iCloud as the user's own service/plan.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the note does not reflect Google Drive with standard 2 TB Google One and Core_Vault.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's default cloud storage service is Google Drive.",
+        "Fact 2: The user's Google One plan tier is the standard 2 TB plan (confirmed after the AI Premium possibility was rejected).",
+        "Fact 3: The user's main storage folder on Google Drive is called Core_Vault.",
+        "Inference: The internal note should combine all three facts — Google Drive as the service, standard 2 TB Google One as the plan, and Core_Vault as the folder where shared files are located."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I switched over to Google Drive as my default cloud storage back in early March, and I'm on the 200 GB Google One plan right now"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My main storage folder on Google Drive is called \"Core_Vault\" — that's where basically everything important goes"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I just checked my Google One dashboard and it still shows the regular 2 TB plan as active. The AI Premium thing hasn't gone through yet and honestly I'm not sure it will, so for now just keep it as the standard 2 TB Google One plan"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed everything we discussed about my Google One plan tier from start to finish, what would they see as the full sequence of changes — which tiers were actually in effect at each point, which one was only floated but never took hold, and what's the final answer?",
+      "expected_answer": "The sequence is: (1) You started on the 200 GB Google One plan in early March. (2) You upgraded to the standard 2 TB Google One plan in mid-March because your photography backups filled the 200 GB. (3) You mentioned a possible move to the AI Premium 2 TB plan next billing cycle, but this was only a future possibility and never took effect. (4) You checked your dashboard and confirmed the AI Premium switch hadn't gone through, so the plan remained the standard 2 TB Google One plan. The only tier that was floated but never adopted was AI Premium 2 TB. The final active plan is the standard 2 TB Google One plan.",
+      "gold_memory_state": "Google One plan trajectory: 200 GB (confirmed, early March) -> 2 TB standard (confirmed, mid-March upgrade) -> AI Premium 2 TB (tentative, mentioned as next billing cycle switch) -> 2 TB standard (confirmed, AI Premium rejected, dashboard still shows regular 2 TB). Final state: standard 2 TB Google One.",
+      "judge_rubric": {
+        "must_include": [
+          "200 GB as first tier",
+          "2 TB standard as the upgrade",
+          "AI Premium 2 TB as tentative/never adopted",
+          "standard 2 TB as final active plan"
+        ],
+        "acceptable_paraphrases": [
+          "regular 2 TB",
+          "plain 2 TB Google One"
+        ],
+        "must_not_include": [
+          "AI Premium as the final or active plan"
+        ],
+        "harmful_extra": [
+          "saying the AI Premium switch completed",
+          "omitting the tentative AI Premium step entirely"
+        ],
+        "harmless_extra": [
+          "mentioning photography backups as reason for 2 TB upgrade",
+          "mentioning the dashboard check"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 200 GB or AI Premium 2 TB is presented as the current active plan.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the four-step sequence (200 GB -> 2 TB -> tentative AI Premium -> confirmed 2 TB) is misordered or if any step is missing.",
+        "final_state": "Fails if the final state is not standard 2 TB Google One.",
+        "intermediate_state": "Fails if the 200 GB intermediate state or the tentative AI Premium fork is omitted.",
+        "trajectory_provenance": "Fails if the tentative AI Premium step is not identified as never adopted or if the 200 GB -> 2 TB transition is not attributed to the mid-March upgrade."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: User established 200 GB Google One plan in early March when switching to Google Drive.",
+        "Step 2: User upgraded to 2 TB Google One plan in mid-March due to photography backup storage needs — this superseded the 200 GB plan.",
+        "Step 3: User mentioned eligibility for AI Premium 2 TB plan at the same price, to switch next billing cycle — this was tentative/future only.",
+        "Step 4: User checked dashboard, confirmed AI Premium had not gone through, and explicitly asked to keep the record as standard 2 TB Google One.",
+        "Inference: The trajectory has four states with the AI Premium fork being tentative and rejected, making the final confirmed state the standard 2 TB Google One plan."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I'm on the 200 GB Google One plan right now"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I actually upgraded to the 2 TB plan in mid-March because I started dumping all my photography backups in there and the 200 GB filled up almost immediately"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Google sent me a notification that I'm eligible to consolidate to the AI Premium plan at 2 TB for the same price, so my plan will be switching to that tier next billing cycle"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I just checked my Google One dashboard and it still shows the regular 2 TB plan as active. The AI Premium thing hasn't gone through yet and honestly I'm not sure it will, so for now just keep it as the standard 2 TB Google One plan"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed everything we discussed about my Google One plan tier from start to finish, what would they see as the full sequence of changes — which tiers were actually in effect at each point, which one was only floated but never took hold, and what's the final answer?",
+      "expected_answer": "The sequence is: (1) You started on the 200 GB Google One plan in early March. (2) You upgraded to the standard 2 TB Google One plan in mid-March because your photography backups filled the 200 GB. (3) You mentioned a possible move to the AI Premium 2 TB plan next billing cycle, but this was only a future possibility and never took effect. (4) You checked your dashboard and confirmed the AI Premium switch hadn't gone through, so the plan remained the standard 2 TB Google One plan. The only tier that was floated but never adopted was AI Premium 2 TB. The final active plan is the standard 2 TB Google One plan.",
+      "gold_memory_state": "Google One plan trajectory: 200 GB (confirmed, early March) -> 2 TB standard (confirmed, mid-March upgrade) -> AI Premium 2 TB (tentative, mentioned as next billing cycle switch) -> 2 TB standard (confirmed, AI Premium rejected, dashboard still shows regular 2 TB). Final state: standard 2 TB Google One.",
+      "judge_rubric": {
+        "must_include": [
+          "200 GB as first tier",
+          "2 TB standard as the upgrade",
+          "AI Premium 2 TB as tentative/never adopted",
+          "standard 2 TB as final active plan"
+        ],
+        "acceptable_paraphrases": [
+          "regular 2 TB",
+          "plain 2 TB Google One"
+        ],
+        "must_not_include": [
+          "AI Premium as the final or active plan"
+        ],
+        "harmful_extra": [
+          "saying the AI Premium switch completed",
+          "omitting the tentative AI Premium step entirely"
+        ],
+        "harmless_extra": [
+          "mentioning photography backups as reason for 2 TB upgrade",
+          "mentioning the dashboard check"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 200 GB or AI Premium 2 TB is presented as the current active plan.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the four-step sequence (200 GB -> 2 TB -> tentative AI Premium -> confirmed 2 TB) is misordered or if any step is missing.",
+        "final_state": "Fails if the final state is not standard 2 TB Google One.",
+        "intermediate_state": "Fails if the 200 GB intermediate state or the tentative AI Premium fork is omitted.",
+        "trajectory_provenance": "Fails if the tentative AI Premium step is not identified as never adopted or if the 200 GB -> 2 TB transition is not attributed to the mid-March upgrade."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: User established 200 GB Google One plan in early March when switching to Google Drive.",
+        "Step 2: User upgraded to 2 TB Google One plan in mid-March due to photography backup storage needs — this superseded the 200 GB plan.",
+        "Step 3: User mentioned eligibility for AI Premium 2 TB plan at the same price, to switch next billing cycle — this was tentative/future only.",
+        "Step 4: User checked dashboard, confirmed AI Premium had not gone through, and explicitly asked to keep the record as standard 2 TB Google One.",
+        "Inference: The trajectory has four states with the AI Premium fork being tentative and rejected, making the final confirmed state the standard 2 TB Google One plan."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I'm on the 200 GB Google One plan right now"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I actually upgraded to the 2 TB plan in mid-March because I started dumping all my photography backups in there and the 200 GB filled up almost immediately"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Google sent me a notification that I'm eligible to consolidate to the AI Premium plan at 2 TB for the same price, so my plan will be switching to that tier next billing cycle"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I just checked my Google One dashboard and it still shows the regular 2 TB plan as active. The AI Premium thing hasn't gone through yet and honestly I'm not sure it will, so for now just keep it as the standard 2 TB Google One plan"
+        }
+      ]
+    }
+  ]
+}

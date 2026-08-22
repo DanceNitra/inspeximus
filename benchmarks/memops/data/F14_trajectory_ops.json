@@ -1,0 +1,971 @@
+{
+  "target_fact": "User's blood pressure reading reported by Dr. Simmons, undergoing multiple corrections and a tentative value",
+  "operation_type": "TrajectoryOps",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "bp_reading",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "Dr. Simmons checked my blood pressure at that appointment and it came back 138/88"
+      },
+      "target": {
+        "target_id": "bp_reading_simmons",
+        "target_name": "blood pressure reading from Dr. Simmons"
+      },
+      "old_value": null,
+      "new_value": "138/88",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Dr. Simmons checked my blood pressure at that appointment and it came back 138/88"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "bp_reading",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I misspoke earlier about the blood pressure. It was actually 142/88, not 138/88"
+      },
+      "target": {
+        "target_id": "bp_reading_simmons",
+        "target_name": "blood pressure reading from Dr. Simmons"
+      },
+      "old_value": "138/88",
+      "new_value": "142/88",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "It was actually 142/88, not 138/88"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "my gallbladder was removed by Dr. Patel at St. Luke's Medical Center back in late 2019 or early 2020"
+      },
+      "target": {
+        "target_id": "gallbladder_surgery",
+        "target_name": "gallbladder removal surgery details"
+      },
+      "old_value": null,
+      "new_value": "Laparoscopic cholecystectomy by Dr. Patel at St. Luke's Medical Center, late 2019 or early 2020",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my gallbladder was removed by Dr. Patel at St. Luke's Medical Center back in late 2019 or early 2020"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "bp_reading",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 3,
+        "quote": "My home monitor gave me 136/84 yesterday morning. I think my blood pressure is actually settling around that range now"
+      },
+      "target": {
+        "target_id": "bp_reading_simmons",
+        "target_name": "blood pressure reading from Dr. Simmons"
+      },
+      "old_value": "142/88",
+      "new_value": "136/84",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "My home monitor gave me 136/84 yesterday morning. I think my blood pressure is actually settling around that range now"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "bp_reading",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 7,
+        "quote": "Dr. Simmons's office just called and confirmed the official in-office reading they have on file is 142/88. So that's the one I should go by for now"
+      },
+      "target": {
+        "target_id": "bp_reading_simmons",
+        "target_name": "blood pressure reading from Dr. Simmons"
+      },
+      "old_value": "142/88",
+      "new_value": "142/88",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Dr. Simmons's office just called and confirmed the official in-office reading they have on file is 142/88"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish initial medical facts including blood pressure and gallbladder surgery",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to keep track of some medical stuff. I had a follow-up with my primary care doctor recently—Dr. Simmons. Dr. Simmons checked my blood pressure at that appointment and it came back 138/88. She said it was a bit elevated and wants me to monitor it for a couple of months before deciding on medication. I've been tracking it at home since then."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for sharing that. I've noted that Dr. Simmons recorded your blood pressure at 138/88 during your recent follow-up, and she'd like you to monitor it at home for a couple of months before making any medication decisions. That's a reasonable approach—home monitoring can give a more complete picture since single office readings can be influenced by white-coat effects or daily fluctuations. Are you using an automatic cuff monitor at home? And is there other medical history you'd like me to keep track of as well?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, I have one of those automatic wrist cuffs. Anyway, I also want you to remember that my gallbladder was removed by Dr. Patel at St. Luke's Medical Center back in late 2019 or early 2020. It was a laparoscopic cholecystectomy. Please remember Dr. Patel's name specifically—I might need it for records transfers or follow-ups down the line. He was a good surgeon."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it—I've recorded that you had a laparoscopic cholecystectomy performed by Dr. Patel at St. Luke's Medical Center, sometime in late 2019 or early 2020. I'll make sure Dr. Patel's name stays accessible for any future records requests or follow-up referrals. It sounds like the procedure went smoothly, which is great. Laparoscopic approaches generally have shorter recovery times compared to open surgery. Do you have any other surgical history or ongoing conditions you'd like me to note alongside these two items?"
+        },
+        {
+          "role": "user",
+          "content": "Actually, hold on—I misspoke earlier about the blood pressure. It was actually 142/88, not 138/88. I always mix up the numbers. Dr. Simmons definitely said 142 over 88. That's the reading she recorded and the one she's basing the monitoring period on. Sorry about the confusion, but please update that for me so it's accurate going forward."
+        },
+        {
+          "role": "assistant",
+          "content": "No problem at all—I've updated your blood pressure reading to 142/88 as recorded by Dr. Simmons. It's easy to transpose numbers, especially with medical figures. At 142/88, the systolic is in Stage 2 hypertension territory by some guidelines, though borderline, so it makes sense that Dr. Simmons wants a monitoring period rather than jumping straight to medication. Keeping consistent home readings over the next couple of months will give her a much clearer picture. Let me know if you want help organizing those home readings into a log format."
+        },
+        {
+          "role": "user",
+          "content": "That would be helpful eventually, yeah. I also had an emergency appendectomy when I was 22—that was around 2015, at Mercy General. It was the middle of the night, terrible pain on my right side, and they wheeled me into surgery at like 3 a.m. It really shook me up. I didn't sleep well for about two weeks after that experience. That's part of why I really value when doctors explain things thoroughly."
+        },
+        {
+          "role": "assistant",
+          "content": "I've noted the emergency appendectomy at Mercy General around 2015, when you were 22—middle-of-the-night surgery at approximately 3 a.m. following severe right-side pain. I can understand how that experience would be unsettling, especially being barely awake and in pain while being rushed into an operating room. The two weeks of disrupted sleep afterward sounds like a very normal stress response to emergency surgery. It also makes complete sense that thorough pre-procedure explanations became important to you after going through that. I'll keep all of this in your medical history notes."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Add mole removal details, colonoscopy plans, and sister's surgery information",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So on March 7 this year, I had a mole removed from my upper back. It was precautionary—the dermatologist said the borders looked a little irregular. The biopsy came back benign, which was a huge relief. My uncle on my dad's side had melanoma about five years ago and went through rough treatment, so our whole family is paranoid about skin stuff now. He's okay though."
+        },
+        {
+          "role": "assistant",
+          "content": "I've recorded the mole removal on March 7 of this year from your upper back, with a benign biopsy result. Given your family history with your uncle's melanoma diagnosis approximately five years ago, it's completely understandable that irregular-looking moles would cause heightened concern for your whole family. It's great news that the biopsy was benign, and it sounds like your dermatologist was being appropriately cautious by recommending removal. Regular skin checks are especially important with a first-degree relative's melanoma history. I'm glad your uncle is doing well now too. Anything else from that visit?"
+        },
+        {
+          "role": "user",
+          "content": "The one thing that bothered me about the mole removal was that the dermatologist's assistant just handed me a clipboard to sign and barely explained anything. That really bothered me, especially compared to my gallbladder surgery where the anesthesiologist sat with me for ten minutes beforehand and walked me through every detail. I strongly prefer thorough explanations before any procedure. Rushed consent processes make me anxious."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really important preference to document. I've noted that you strongly prefer thorough pre-procedure explanations and that rushed consent processes cause you anxiety. The contrast between your two experiences is striking—the anesthesiologist before your gallbladder surgery who spent ten minutes explaining everything versus the dermatologist's assistant who just handed you a clipboard with minimal explanation. Given your emergency appendectomy experience and how that affected you, it makes sense that feeling informed and in control during medical encounters is a priority for you. I can flag this preference whenever medical planning comes up."
+        },
+        {
+          "role": "user",
+          "content": "Good, please do. Also, Dr. Simmons suggested I get a baseline colonoscopy before I turn 40. I'm 38 now. My dad had polyps found during his screening at 50, so there's family history there. I've been putting it off because I really dislike fasting and the whole prep process—not being able to eat on a normal schedule throws my whole day off. But I know I need to schedule it."
+        },
+        {
+          "role": "assistant",
+          "content": "I've noted that Dr. Simmons recommended a baseline colonoscopy before you turn 40, given your father's history of polyps found at age 50 screening. At 38, you have a reasonable window to get it scheduled without rushing. I understand the aversion to the fasting and bowel prep—many people find that the most unpleasant part. Some newer prep protocols are a bit more tolerable than the traditional ones, so it might be worth asking Dr. Simmons's office about options. Would you like me to help you draft a reminder or set a timeline for getting that scheduled within the next few months?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, maybe a reminder in a month or so. Oh, my sister just had her second knee surgery—ACL reconstruction—around mid-April. She's doing physical therapy three times a week now, and I've been driving her to PT on Tuesdays. It's been a bit of a commitment but she's family, you know. Her surgeon is Dr. Nakamura at the university sports medicine clinic.\n\nI think that covers the main stuff for now. Oh wait—I already got my full medical records transferred from St. Luke's to Dr. Simmons's office. That's done, so no need to track that task anymore. It took a few weeks but everything went through. Now Dr. Simmons has the complete picture from the gallbladder surgery and everything else from that hospital."
+        },
+        {
+          "role": "assistant",
+          "content": "That's really good of you to help your sister with her recovery. I've noted that she had her second ACL reconstruction around mid-April with Dr. Nakamura at the university sports medicine clinic, and she's currently in physical therapy three times weekly. I've also noted that you're driving her on Tuesdays. ACL reconstruction recovery is typically a long process—usually six to nine months before full return to activity—so your Tuesday driving commitment may continue for a while. I'll set a mental note to remind you about scheduling the colonoscopy in about a month. Is there anything else medical you'd like to track?\n\nGreat, I'll note that the medical records transfer from St. Luke's to Dr. Simmons's office is complete and no longer needs tracking. That's an important administrative step—having your full surgical history from the cholecystectomy consolidated with your primary care records means Dr. Simmons can make better-informed decisions, especially as she monitors your blood pressure situation over the coming months. So to summarize your active medical tracking: blood pressure monitoring at 142/88 with home readings ongoing, colonoscopy scheduling needed before 40, and your sister's Tuesday PT drives. Let me know if anything changes."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Introduce tentative BP value, adversarial injection, and confirm final official BP reading",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, quick update on a few things. I've been diligent with the home blood pressure monitoring like Dr. Simmons asked. Most mornings the readings are in the 135 to 145 range systolic, so it's been fluctuating a bit. I'm trying to be consistent about taking it at the same time each morning, right when I wake up, before coffee or anything. I've got about three weeks of data now."
+        },
+        {
+          "role": "assistant",
+          "content": "That's excellent consistency—three weeks of morning readings taken before coffee gives Dr. Simmons a really reliable dataset to work with. A systolic range of 135 to 145 suggests some variability, which is normal, but the average is likely hovering around that elevated zone she flagged. Taking readings at the same time under the same conditions is exactly what clinicians want to see. When you eventually bring these to Dr. Simmons, she'll probably look at the average rather than any single reading. Are you logging them in a notebook or an app? I can help you organize the data if needed."
+        },
+        {
+          "role": "user",
+          "content": "I'm using a spreadsheet actually. Anyway, something interesting—My home monitor gave me 136/84 yesterday morning. I think my blood pressure is actually settling around that range now. The last few days have been lower than the first couple of weeks. Maybe cutting back on sodium is helping. I feel like 136/84 might be more representative of where I actually am right now."
+        },
+        {
+          "role": "assistant",
+          "content": "That's encouraging to see a downward trend, especially if dietary changes like reducing sodium are contributing. A reading of 136/84 is still slightly elevated but noticeably better than the 142/88 recorded in-office. However, I'd caution against anchoring too strongly to a single reading—home monitors can vary day to day based on hydration, stress, sleep quality, and even arm position. The overall trend across your three-plus weeks of data will be more meaningful than any individual measurement. Dr. Simmons will likely want to see the full spreadsheet rather than just the most recent number. Keep logging consistently and the picture will become clearer."
+        },
+        {
+          "role": "user",
+          "content": "That's fair advice. By the way, I was looking at some paperwork my sister brought home from her PT clinic and noticed they had a patient intake form with a sample blood pressure listed as 128/82. For a second I thought it was mine from somewhere, but it was just a template example on the form. Funny how your brain tries to connect random numbers to your own health data sometimes."
+        },
+        {
+          "role": "assistant",
+          "content": "Ha, that's a very relatable experience—when you're actively monitoring your own health metrics, your brain starts pattern-matching numbers everywhere. The 128/82 on your sister's PT intake form template is actually a fairly textbook normal reading that clinics often use as a placeholder example. It's completely unrelated to your own readings, of course. It's actually a good sign that you're paying close attention to numbers though—it means you're engaged with your health monitoring. Just try to keep your focus on your own logged data from your home cuff readings and the official in-office measurements from Dr. Simmons."
+        },
+        {
+          "role": "user",
+          "content": "Right, exactly. I also wanted to mention—I've been thinking about the colonoscopy and I realized I should probably ask Dr. Simmons about whether the slightly elevated blood pressure changes anything about the prep or timing. I know some procedures require stable vitals beforehand. I'll bring it up at my next appointment, which should be in about six weeks.\n\nGood to know. Oh, one more thing—Dr. Simmons's office just called and confirmed the official in-office reading they have on file is 142/88. So that's the one I should go by for now. The home readings are supplementary data, but for any medical decisions or referrals, 142/88 is the baseline they're working from until my next in-office check. I want to make sure that's what you have recorded too."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really thoughtful question to raise with Dr. Simmons. For a routine screening colonoscopy, mildly elevated blood pressure typically doesn't pose a significant procedural risk, but it's absolutely worth discussing—especially since you'll be under light sedation and the bowel prep can sometimes affect hydration and electrolyte balance, which can influence blood pressure readings. Bringing it up at your six-week appointment gives her time to review your full home monitoring data alongside the colonoscopy planning. She may want your BP more controlled before scheduling, or she may greenlight it as-is. Either way, you're being proactive about coordinating your care.\n\nConfirmed—I have 142/88 recorded as your official in-office blood pressure reading from Dr. Simmons, and that's the baseline being used for medical decisions and referrals until your next in-office visit. Your home readings are valuable supplementary data that will help show trends over time, but the clinical baseline remains 142/88. This is standard practice—in-office readings taken under controlled conditions are typically the reference point for treatment decisions. When you go in for your appointment in about six weeks, she'll likely take a new in-office reading and compare it against both the 142/88 baseline and your home monitoring log. I'll keep everything organized for you."
+        }
+      ]
+    }
+  ],
+  "state_checkpoints": [
+    {
+      "checkpoint_id": "c1",
+      "description": "After segment 1: BP reading corrected from 138/88 to 142/88 (confirmed). Gallbladder surgery by Dr. Patel at St. Luke's remembered (confirmed). Appendectomy at Mercy General ~2015 mentioned but not a tracked operation target."
+    },
+    {
+      "checkpoint_id": "c2",
+      "description": "After segment 2: BP reading still 142/88 (confirmed). Gallbladder surgery details unchanged. Mole removal, colonoscopy recommendation, sister's ACL surgery mentioned. Records transfer completed (no longer tracked)."
+    },
+    {
+      "checkpoint_id": "c3",
+      "description": "After segment 3: BP reading had a tentative shift to 136/84 (home monitor) but was reconfirmed at 142/88 as the official in-office baseline. Gallbladder surgery details unchanged. Adversarial 128/82 from sister's PT form template appeared but is not user's data."
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Walk me through the key medical details I shared with you over our conversations—specifically around my blood pressure and any surgical history. What did I tell you, and how did the blood pressure information evolve?",
+      "expected_answer": "You initially reported your blood pressure from Dr. Simmons as 138/88, then corrected it to 142/88. You also mentioned a home monitor reading of 136/84 that you thought might be more representative, but Dr. Simmons's office later confirmed the official in-office reading on file is 142/88. Separately, you shared that you had a laparoscopic cholecystectomy by Dr. Patel at St. Luke's Medical Center in late 2019 or early 2020.",
+      "gold_memory_state": "BP reading from Dr. Simmons: 142/88 (confirmed, official in-office baseline). Gallbladder surgery: laparoscopic cholecystectomy by Dr. Patel at St. Luke's Medical Center, late 2019 or early 2020 (confirmed). Home monitor reading of 136/84 was tentative and not adopted as official. Original 138/88 was superseded by 142/88.",
+      "judge_rubric": {
+        "must_include": [
+          "138/88 as initial value",
+          "142/88 as corrected/confirmed value",
+          "136/84 as home reading",
+          "gallbladder surgery by Dr. Patel",
+          "St. Luke's Medical Center"
+        ],
+        "acceptable_paraphrases": [
+          "cholecystectomy",
+          "gallbladder removal"
+        ],
+        "must_not_include": [
+          "128/82 as user's reading"
+        ],
+        "harmful_extra": [
+          "treating 136/84 as the official reading",
+          "treating 138/88 as the current reading"
+        ],
+        "harmless_extra": [
+          "mentioning the appendectomy",
+          "mentioning the mole removal",
+          "mentioning Dr. Simmons by name"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 138/88 is presented as the current BP or if 136/84 is presented as the official reading.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence of BP changes is misordered (e.g., 142/88 before 138/88, or 136/84 after the final confirmation).",
+        "final_state": "Fails if the final confirmed BP is not 142/88.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Dr. Simmons checked my blood pressure at that appointment and it came back 138/88"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I misspoke earlier about the blood pressure. It was actually 142/88, not 138/88"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my gallbladder was removed by Dr. Patel at St. Luke's Medical Center back in late 2019 or early 2020"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "My home monitor gave me 136/84 yesterday morning. I think my blood pressure is actually settling around that range now"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Dr. Simmons's office just called and confirmed the official in-office reading they have on file is 142/88"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Walk me through the key medical details I shared with you over our conversations—specifically around my blood pressure and any surgical history. What did I tell you, and how did the blood pressure information evolve?",
+      "expected_answer": "You initially reported your blood pressure from Dr. Simmons as 138/88, then corrected it to 142/88. You also mentioned a home monitor reading of 136/84 that you thought might be more representative, but Dr. Simmons's office later confirmed the official in-office reading on file is 142/88. Separately, you shared that you had a laparoscopic cholecystectomy by Dr. Patel at St. Luke's Medical Center in late 2019 or early 2020.",
+      "gold_memory_state": "BP reading from Dr. Simmons: 142/88 (confirmed, official in-office baseline). Gallbladder surgery: laparoscopic cholecystectomy by Dr. Patel at St. Luke's Medical Center, late 2019 or early 2020 (confirmed). Home monitor reading of 136/84 was tentative and not adopted as official. Original 138/88 was superseded by 142/88.",
+      "judge_rubric": {
+        "must_include": [
+          "138/88 as initial value",
+          "142/88 as corrected/confirmed value",
+          "136/84 as home reading",
+          "gallbladder surgery by Dr. Patel",
+          "St. Luke's Medical Center"
+        ],
+        "acceptable_paraphrases": [
+          "cholecystectomy",
+          "gallbladder removal"
+        ],
+        "must_not_include": [
+          "128/82 as user's reading"
+        ],
+        "harmful_extra": [
+          "treating 136/84 as the official reading",
+          "treating 138/88 as the current reading"
+        ],
+        "harmless_extra": [
+          "mentioning the appendectomy",
+          "mentioning the mole removal",
+          "mentioning Dr. Simmons by name"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 138/88 is presented as the current BP or if 136/84 is presented as the official reading.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence of BP changes is misordered (e.g., 142/88 before 138/88, or 136/84 after the final confirmation).",
+        "final_state": "Fails if the final confirmed BP is not 142/88.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Dr. Simmons checked my blood pressure at that appointment and it came back 138/88"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I misspoke earlier about the blood pressure. It was actually 142/88, not 138/88"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my gallbladder was removed by Dr. Patel at St. Luke's Medical Center back in late 2019 or early 2020"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "My home monitor gave me 136/84 yesterday morning. I think my blood pressure is actually settling around that range now"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Dr. Simmons's office just called and confirmed the official in-office reading they have on file is 142/88"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've mentioned several different blood pressure numbers across our conversations—some from the doctor's office, one from my home monitor, and even one from a random form at a PT clinic. If I need to fill out a medical intake form that asks for my primary care physician's recorded blood pressure, which reading should I use, and should any of the other numbers I mentioned go in that same field?",
+      "expected_answer": "Use 142/88, the reading recorded by Dr. Simmons at her office. The home monitor reading of 136/84 and the 128/82 from the PT clinic template form should not go in that field—136/84 is supplementary home data and 128/82 was never your reading at all.",
+      "gold_memory_state": "Official in-office BP from Dr. Simmons: 142/88 (confirmed). Home monitor reading 136/84 is supplementary, tentative, not the official baseline. 128/82 is from a PT clinic intake form template and is not the user's data. Gallbladder surgery details are a separate medical record.",
+      "judge_rubric": {
+        "must_include": [
+          "142/88 as the reading to use"
+        ],
+        "acceptable_paraphrases": [
+          "142 over 88",
+          "142/88 from Dr. Simmons"
+        ],
+        "must_not_include": [
+          "136/84 as the official reading",
+          "128/82 as the user's reading",
+          "138/88 as the current reading"
+        ],
+        "harmful_extra": [
+          "saying 136/84 should go in the physician's recorded field",
+          "saying 128/82 is the user's data"
+        ],
+        "harmless_extra": [
+          "mentioning that 136/84 could be noted separately as home monitoring data",
+          "mentioning Dr. Simmons by name"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 138/88 is selected as the physician's recorded reading.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if any value other than 142/88 is recommended for the physician's recorded BP field.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Dr. Simmons's office just called and confirmed the official in-office reading they have on file is 142/88"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "My home monitor gave me 136/84 yesterday morning. I think my blood pressure is actually settling around that range now"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I was looking at some paperwork my sister brought home from her PT clinic and noticed they had a patient intake form with a sample blood pressure listed as 128/82"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've mentioned several different blood pressure numbers across our conversations—some from the doctor's office, one from my home monitor, and even one from a random form at a PT clinic. If I need to fill out a medical intake form that asks for my primary care physician's recorded blood pressure, which reading should I use, and should any of the other numbers I mentioned go in that same field?",
+      "expected_answer": "Use 142/88, the reading recorded by Dr. Simmons at her office. The home monitor reading of 136/84 and the 128/82 from the PT clinic template form should not go in that field—136/84 is supplementary home data and 128/82 was never your reading at all.",
+      "gold_memory_state": "Official in-office BP from Dr. Simmons: 142/88 (confirmed). Home monitor reading 136/84 is supplementary, tentative, not the official baseline. 128/82 is from a PT clinic intake form template and is not the user's data. Gallbladder surgery details are a separate medical record.",
+      "judge_rubric": {
+        "must_include": [
+          "142/88 as the reading to use"
+        ],
+        "acceptable_paraphrases": [
+          "142 over 88",
+          "142/88 from Dr. Simmons"
+        ],
+        "must_not_include": [
+          "136/84 as the official reading",
+          "128/82 as the user's reading",
+          "138/88 as the current reading"
+        ],
+        "harmful_extra": [
+          "saying 136/84 should go in the physician's recorded field",
+          "saying 128/82 is the user's data"
+        ],
+        "harmless_extra": [
+          "mentioning that 136/84 could be noted separately as home monitoring data",
+          "mentioning Dr. Simmons by name"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 138/88 is selected as the physician's recorded reading.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if any value other than 142/88 is recommended for the physician's recorded BP field.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Dr. Simmons's office just called and confirmed the official in-office reading they have on file is 142/88"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "My home monitor gave me 136/84 yesterday morning. I think my blood pressure is actually settling around that range now"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I was looking at some paperwork my sister brought home from her PT clinic and noticed they had a patient intake form with a sample blood pressure listed as 128/82"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "difficulty": "hard",
+      "question": "After all the back-and-forth about my blood pressure, what reading should Dr. Simmons's office be working from as my baseline right now?",
+      "expected_answer": "142/88.",
+      "gold_memory_state": "The official in-office blood pressure baseline from Dr. Simmons is 142/88 (confirmed). The home monitor reading of 136/84 was tentative and was not adopted as the official baseline. The original 138/88 was superseded. 128/82 was never the user's reading.",
+      "judge_rubric": {
+        "must_include": [
+          "142/88"
+        ],
+        "acceptable_paraphrases": [
+          "142 over 88"
+        ],
+        "must_not_include": [
+          "136/84 as the baseline",
+          "138/88 as the baseline",
+          "128/82 as the baseline"
+        ],
+        "harmful_extra": [
+          "presenting 136/84 as the official baseline",
+          "presenting 138/88 as the current value"
+        ],
+        "harmless_extra": [
+          "mentioning that home readings are supplementary",
+          "mentioning Dr. Simmons by name"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 138/88 (original superseded value) is given as the current baseline.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if any value other than 142/88 is stated as the official baseline. The recency trap is 136/84, the most recent-looking value from the home monitor, which was tentative and never adopted as the official reading.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Dr. Simmons's office just called and confirmed the official in-office reading they have on file is 142/88"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I misspoke earlier about the blood pressure. It was actually 142/88, not 138/88"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "difficulty": "hard",
+      "question": "After all the back-and-forth about my blood pressure, what reading should Dr. Simmons's office be working from as my baseline right now?",
+      "expected_answer": "142/88.",
+      "gold_memory_state": "The official in-office blood pressure baseline from Dr. Simmons is 142/88 (confirmed). The home monitor reading of 136/84 was tentative and was not adopted as the official baseline. The original 138/88 was superseded. 128/82 was never the user's reading.",
+      "judge_rubric": {
+        "must_include": [
+          "142/88"
+        ],
+        "acceptable_paraphrases": [
+          "142 over 88"
+        ],
+        "must_not_include": [
+          "136/84 as the baseline",
+          "138/88 as the baseline",
+          "128/82 as the baseline"
+        ],
+        "harmful_extra": [
+          "presenting 136/84 as the official baseline",
+          "presenting 138/88 as the current value"
+        ],
+        "harmless_extra": [
+          "mentioning that home readings are supplementary",
+          "mentioning Dr. Simmons by name"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 138/88 (original superseded value) is given as the current baseline.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if any value other than 142/88 is stated as the official baseline. The recency trap is 136/84, the most recent-looking value from the home monitor, which was tentative and never adopted as the official reading.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Dr. Simmons's office just called and confirmed the official in-office reading they have on file is 142/88"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I misspoke earlier about the blood pressure. It was actually 142/88, not 138/88"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "application_probe_type": "multi_hop_derivation",
+      "difficulty": "hard",
+      "question": "I need to prepare a brief medical summary card to carry in my wallet for emergencies. It should include: (1) my official blood pressure baseline and the doctor who recorded it, (2) any past abdominal surgeries with the surgeon's name and facility, and (3) a note about whether the blood pressure puts me in a hypertension stage that an ER doctor should know about. Can you draft that card for me?",
+      "expected_answer": "Blood Pressure Baseline: 142/88, recorded by Dr. Simmons. Hypertension note: 142/88 places the systolic reading in the Stage 2 hypertension range (≥140 mmHg systolic), which is clinically relevant for emergency providers. Past Abdominal Surgery: Laparoscopic cholecystectomy performed by Dr. Patel at St. Luke's Medical Center, late 2019 or early 2020.",
+      "gold_memory_state": "Official BP: 142/88 (confirmed by Dr. Simmons's office). Gallbladder surgery: laparoscopic cholecystectomy by Dr. Patel at St. Luke's Medical Center, late 2019/early 2020 (confirmed). Home monitor 136/84 is supplementary and tentative—not for the official card. 138/88 is superseded.",
+      "judge_rubric": {
+        "must_include": [
+          "142/88",
+          "Dr. Simmons",
+          "Stage 2 hypertension or equivalent clinical classification",
+          "laparoscopic cholecystectomy or gallbladder removal",
+          "Dr. Patel",
+          "St. Luke's Medical Center"
+        ],
+        "acceptable_paraphrases": [
+          "142 over 88",
+          "gallbladder surgery",
+          "late 2019/early 2020",
+          "around 2019-2020"
+        ],
+        "must_not_include": [
+          "136/84 as the official baseline",
+          "138/88 as the current baseline",
+          "128/82 as the user's reading"
+        ],
+        "harmful_extra": [
+          "using 136/84 as the baseline on the card",
+          "omitting the hypertension classification",
+          "including 128/82 as a user reading"
+        ],
+        "harmless_extra": [
+          "mentioning the appendectomy at Mercy General",
+          "noting that home readings are supplementary"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 138/88 is used as the BP on the card or if 136/84 is presented as the official baseline.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the card does not show 142/88 as the official BP, Dr. Patel as the surgeon, or St. Luke's as the facility.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's official in-office blood pressure recorded by Dr. Simmons is 142/88.",
+        "Fact 2: The user had a laparoscopic cholecystectomy by Dr. Patel at St. Luke's Medical Center in late 2019 or early 2020.",
+        "Inference: A systolic reading of 142 mmHg falls at or above the 140 mmHg threshold for Stage 2 hypertension per standard clinical guidelines, which is relevant information for emergency providers.",
+        "Inference: The emergency wallet card should combine the confirmed BP baseline with its clinical classification and the confirmed surgical history with surgeon and facility names."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Dr. Simmons's office just called and confirmed the official in-office reading they have on file is 142/88"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my gallbladder was removed by Dr. Patel at St. Luke's Medical Center back in late 2019 or early 2020"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I misspoke earlier about the blood pressure. It was actually 142/88, not 138/88"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "application_probe_type": "multi_hop_derivation",
+      "difficulty": "hard",
+      "question": "I need to prepare a brief medical summary card to carry in my wallet for emergencies. It should include: (1) my official blood pressure baseline and the doctor who recorded it, (2) any past abdominal surgeries with the surgeon's name and facility, and (3) a note about whether the blood pressure puts me in a hypertension stage that an ER doctor should know about. Can you draft that card for me?",
+      "expected_answer": "Blood Pressure Baseline: 142/88, recorded by Dr. Simmons. Hypertension note: 142/88 places the systolic reading in the Stage 2 hypertension range (≥140 mmHg systolic), which is clinically relevant for emergency providers. Past Abdominal Surgery: Laparoscopic cholecystectomy performed by Dr. Patel at St. Luke's Medical Center, late 2019 or early 2020.",
+      "gold_memory_state": "Official BP: 142/88 (confirmed by Dr. Simmons's office). Gallbladder surgery: laparoscopic cholecystectomy by Dr. Patel at St. Luke's Medical Center, late 2019/early 2020 (confirmed). Home monitor 136/84 is supplementary and tentative—not for the official card. 138/88 is superseded.",
+      "judge_rubric": {
+        "must_include": [
+          "142/88",
+          "Dr. Simmons",
+          "Stage 2 hypertension or equivalent clinical classification",
+          "laparoscopic cholecystectomy or gallbladder removal",
+          "Dr. Patel",
+          "St. Luke's Medical Center"
+        ],
+        "acceptable_paraphrases": [
+          "142 over 88",
+          "gallbladder surgery",
+          "late 2019/early 2020",
+          "around 2019-2020"
+        ],
+        "must_not_include": [
+          "136/84 as the official baseline",
+          "138/88 as the current baseline",
+          "128/82 as the user's reading"
+        ],
+        "harmful_extra": [
+          "using 136/84 as the baseline on the card",
+          "omitting the hypertension classification",
+          "including 128/82 as a user reading"
+        ],
+        "harmless_extra": [
+          "mentioning the appendectomy at Mercy General",
+          "noting that home readings are supplementary"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 138/88 is used as the BP on the card or if 136/84 is presented as the official baseline.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the card does not show 142/88 as the official BP, Dr. Patel as the surgeon, or St. Luke's as the facility.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's official in-office blood pressure recorded by Dr. Simmons is 142/88.",
+        "Fact 2: The user had a laparoscopic cholecystectomy by Dr. Patel at St. Luke's Medical Center in late 2019 or early 2020.",
+        "Inference: A systolic reading of 142 mmHg falls at or above the 140 mmHg threshold for Stage 2 hypertension per standard clinical guidelines, which is relevant information for emergency providers.",
+        "Inference: The emergency wallet card should combine the confirmed BP baseline with its clinical classification and the confirmed surgical history with surgeon and facility names."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Dr. Simmons's office just called and confirmed the official in-office reading they have on file is 142/88"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my gallbladder was removed by Dr. Patel at St. Luke's Medical Center back in late 2019 or early 2020"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I misspoke earlier about the blood pressure. It was actually 142/88, not 138/88"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "trajectory_granularity": "full",
+      "difficulty": "hard",
+      "question": "If someone reviewed our entire conversation history about my blood pressure, what would they see as the full sequence of values that came up, which ones were actually adopted as official, which were only floated but never made it to official status, and what's the final number on record?",
+      "expected_answer": "The sequence was: (1) 138/88 was first reported as Dr. Simmons's reading—this was adopted initially but later corrected. (2) 142/88 replaced 138/88 after you realized you had misspoken—this became the confirmed official reading. (3) 136/84 came from a home monitor and you suggested it might be more representative, but it was never adopted as the official baseline. (4) 142/88 was reconfirmed by Dr. Simmons's office as the official in-office reading on file. The final official number is 142/88. Additionally, 128/82 appeared on a PT clinic template form but was never your reading.",
+      "gold_memory_state": "BP trajectory: 138/88 (initial, confirmed, then superseded) → 142/88 (confirmed correction) → 136/84 (tentative home reading, never adopted) → 142/88 (reconfirmed as official). 128/82 is adversarial noise from a PT form template. Gallbladder surgery by Dr. Patel at St. Luke's is a separate stable target with no trajectory changes.",
+      "judge_rubric": {
+        "must_include": [
+          "138/88 as initial value",
+          "142/88 as the correction replacing 138/88",
+          "136/84 as a home monitor value that was not adopted officially",
+          "142/88 as the final reconfirmed official reading"
+        ],
+        "acceptable_paraphrases": [
+          "138 over 88",
+          "142 over 88",
+          "136 over 84"
+        ],
+        "must_not_include": [
+          "128/82 as part of the user's BP trajectory",
+          "136/84 as the final official value"
+        ],
+        "harmful_extra": [
+          "presenting 136/84 as ever being adopted as the official reading",
+          "omitting the tentative status of 136/84",
+          "including 128/82 as a user reading in the trajectory"
+        ],
+        "harmless_extra": [
+          "mentioning that home readings serve as supplementary data",
+          "noting Dr. Simmons by name"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 138/88 is presented as still active or if 136/84 is presented as the adopted official value.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the chronological order of 138/88 → 142/88 → 136/84 (tentative) → 142/88 (reconfirmed) is not preserved.",
+        "final_state": "Fails if the final official BP is not stated as 142/88.",
+        "intermediate_state": "Fails if 136/84 is not identified as tentative/not adopted, or if the intermediate state after the first correction is not identified as 142/88.",
+        "trajectory_provenance": "Fails if the source of 136/84 (home monitor) is not distinguished from the source of 142/88 (Dr. Simmons's in-office reading)."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: User initially reported 138/88 as Dr. Simmons's BP reading (confirmed at that point).",
+        "Step 2: User corrected to 142/88, stating 138/88 was a mistake. 142/88 became the confirmed official reading.",
+        "Step 3: User reported a home monitor reading of 136/84 and speculated it might be more representative—this was tentative and from a different source (home cuff, not in-office).",
+        "Step 4: Dr. Simmons's office called and reconfirmed 142/88 as the official in-office reading on file, superseding the tentative 136/84 suggestion.",
+        "Inference: The full trajectory is 138/88 (superseded) → 142/88 (confirmed) → 136/84 (tentative, not adopted) → 142/88 (reconfirmed). Only 142/88 has official status."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Dr. Simmons checked my blood pressure at that appointment and it came back 138/88"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I misspoke earlier about the blood pressure. It was actually 142/88, not 138/88"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "My home monitor gave me 136/84 yesterday morning. I think my blood pressure is actually settling around that range now"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Dr. Simmons's office just called and confirmed the official in-office reading they have on file is 142/88"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "trajectory_granularity": "full",
+      "difficulty": "hard",
+      "question": "If someone reviewed our entire conversation history about my blood pressure, what would they see as the full sequence of values that came up, which ones were actually adopted as official, which were only floated but never made it to official status, and what's the final number on record?",
+      "expected_answer": "The sequence was: (1) 138/88 was first reported as Dr. Simmons's reading—this was adopted initially but later corrected. (2) 142/88 replaced 138/88 after you realized you had misspoken—this became the confirmed official reading. (3) 136/84 came from a home monitor and you suggested it might be more representative, but it was never adopted as the official baseline. (4) 142/88 was reconfirmed by Dr. Simmons's office as the official in-office reading on file. The final official number is 142/88. Additionally, 128/82 appeared on a PT clinic template form but was never your reading.",
+      "gold_memory_state": "BP trajectory: 138/88 (initial, confirmed, then superseded) → 142/88 (confirmed correction) → 136/84 (tentative home reading, never adopted) → 142/88 (reconfirmed as official). 128/82 is adversarial noise from a PT form template. Gallbladder surgery by Dr. Patel at St. Luke's is a separate stable target with no trajectory changes.",
+      "judge_rubric": {
+        "must_include": [
+          "138/88 as initial value",
+          "142/88 as the correction replacing 138/88",
+          "136/84 as a home monitor value that was not adopted officially",
+          "142/88 as the final reconfirmed official reading"
+        ],
+        "acceptable_paraphrases": [
+          "138 over 88",
+          "142 over 88",
+          "136 over 84"
+        ],
+        "must_not_include": [
+          "128/82 as part of the user's BP trajectory",
+          "136/84 as the final official value"
+        ],
+        "harmful_extra": [
+          "presenting 136/84 as ever being adopted as the official reading",
+          "omitting the tentative status of 136/84",
+          "including 128/82 as a user reading in the trajectory"
+        ],
+        "harmless_extra": [
+          "mentioning that home readings serve as supplementary data",
+          "noting Dr. Simmons by name"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 138/88 is presented as still active or if 136/84 is presented as the adopted official value.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the chronological order of 138/88 → 142/88 → 136/84 (tentative) → 142/88 (reconfirmed) is not preserved.",
+        "final_state": "Fails if the final official BP is not stated as 142/88.",
+        "intermediate_state": "Fails if 136/84 is not identified as tentative/not adopted, or if the intermediate state after the first correction is not identified as 142/88.",
+        "trajectory_provenance": "Fails if the source of 136/84 (home monitor) is not distinguished from the source of 142/88 (Dr. Simmons's in-office reading)."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: User initially reported 138/88 as Dr. Simmons's BP reading (confirmed at that point).",
+        "Step 2: User corrected to 142/88, stating 138/88 was a mistake. 142/88 became the confirmed official reading.",
+        "Step 3: User reported a home monitor reading of 136/84 and speculated it might be more representative—this was tentative and from a different source (home cuff, not in-office).",
+        "Step 4: Dr. Simmons's office called and reconfirmed 142/88 as the official in-office reading on file, superseding the tentative 136/84 suggestion.",
+        "Inference: The full trajectory is 138/88 (superseded) → 142/88 (confirmed) → 136/84 (tentative, not adopted) → 142/88 (reconfirmed). Only 142/88 has official status."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Dr. Simmons checked my blood pressure at that appointment and it came back 138/88"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I misspoke earlier about the blood pressure. It was actually 142/88, not 138/88"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "My home monitor gave me 136/84 yesterday morning. I think my blood pressure is actually settling around that range now"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Dr. Simmons's office just called and confirmed the official in-office reading they have on file is 142/88"
+        }
+      ]
+    }
+  ]
+}

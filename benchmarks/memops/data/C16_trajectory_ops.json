@@ -1,0 +1,965 @@
+{
+  "target_fact": "User's go-to pickup point location within C16, tracking changes from initial setup through corrections and tentative relocation",
+  "operation_type": "TrajectoryOps",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "pickup_locker",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "my go-to pickup point is C16, building entrance side, locker section A"
+      },
+      "target": {
+        "target_id": "c16_locker_section",
+        "target_name": "preferred locker section at C16 pickup point"
+      },
+      "old_value": null,
+      "new_value": "locker section A, building entrance side",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my go-to pickup point is C16, building entrance side, locker section A"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "pickup_locker",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I need to correct that — my locker section is actually B, not A. I always mix those up"
+      },
+      "target": {
+        "target_id": "c16_locker_section",
+        "target_name": "preferred locker section at C16 pickup point"
+      },
+      "old_value": "locker section A, building entrance side",
+      "new_value": "locker section B, building entrance side",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my go-to pickup point is C16, building entrance side, locker section A"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I need to correct that — my locker section is actually B, not A. I always mix those up"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "pickup_locker",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "they moved my assigned locker from section B to section C last week because of the renovation on the building entrance side"
+      },
+      "target": {
+        "target_id": "c16_locker_section",
+        "target_name": "preferred locker section at C16 pickup point"
+      },
+      "old_value": "locker section B, building entrance side",
+      "new_value": "locker section C, building entrance side",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I need to correct that — my locker section is actually B, not A. I always mix those up"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "they moved my assigned locker from section B to section C last week because of the renovation on the building entrance side"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "pickup_locker",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "The facility manager confirmed they'll be reassigning me back to section B once the renovation wraps up next month"
+      },
+      "target": {
+        "target_id": "c16_locker_section",
+        "target_name": "preferred locker section at C16 pickup point"
+      },
+      "old_value": "locker section C, building entrance side",
+      "new_value": "locker section B, building entrance side (post-renovation)",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The facility manager confirmed they'll be reassigning me back to section B once the renovation wraps up next month"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I always try to pick up packages mid-morning, ideally around 10 AM, because that's when C16 is the least crowded"
+      },
+      "target": {
+        "target_id": "preferred_pickup_time",
+        "target_name": "preferred package pickup time at C16"
+      },
+      "old_value": null,
+      "new_value": "mid-morning, around 10 AM",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I always try to pick up packages mid-morning, ideally around 10 AM, because that's when C16 is the least crowded"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish initial pickup details and correction",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to make sure you have my package pickup details saved correctly. So my go-to pickup point is C16, building entrance side, locker section A. I've been using that spot for a few months now and it's the most convenient for me since it's right by my apartment building. Can you note that down?"
+        },
+        {
+          "role": "assistant",
+          "content": "Got it! I've noted that your preferred pickup point is C16, specifically locker section A on the building entrance side. That sounds really convenient having it so close to your apartment. Since you've been using it for a few months, I imagine you've got the routine down pretty well by now. Would you like me to keep track of any upcoming deliveries headed to that location, or is there anything else about your pickup preferences you'd like me to remember?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, so I had a package misrouted to D4 around April 8th — a wool blanket that was supposed to go to C16. I had to walk fifteen minutes in the rain to get it and I was completely soaked by the time I got back. It honestly ruined my whole evening. That's why I'm being careful about making sure my pickup details are right."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds really frustrating — walking fifteen minutes in the rain for a misrouted package is no fun at all, especially when it was supposed to be at your regular C16 spot. I completely understand wanting to be meticulous about your pickup details to avoid that happening again. The D4 misrouting on April 8th for the wool blanket is a good reminder of why accuracy matters here. If you ever need me to help you draft a complaint or check delivery settings, just let me know. Is there anything else about your C16 setup I should have on file?"
+        },
+        {
+          "role": "user",
+          "content": "Actually wait — I need to correct that — my locker section is actually B, not A. I always mix those up. So it's C16, building entrance side, locker section B. That's the one I've been assigned to. Sorry about that, I want to make sure we have the right info stored because I've had stuff misrouted before and it's a real pain."
+        },
+        {
+          "role": "assistant",
+          "content": "No worries at all — I've updated your pickup details. Your go-to pickup point is C16, building entrance side, locker section B. I completely understand the importance of having the correct section on file, especially given your experience with the D4 misrouting. Having the wrong section could easily lead to similar headaches. I'll make sure to reference locker section B going forward whenever your C16 pickup comes up. Is there anything else you'd like me to correct or add to your pickup information?"
+        },
+        {
+          "role": "user",
+          "content": "One more thing — my roommate Kevin also uses C16 but he's in locker section D on the parking lot side. He's terrible about picking up packages on time. He once left a monitor stand sitting there for five days and almost had it sent back. Just mentioning it in case it ever comes up."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted! Your roommate Kevin uses C16 as well but he's in locker section D on the parking lot side. That's quite different from your section B on the building entrance side, so at least there shouldn't be any mix-ups between your packages. And five days for a monitor stand — that's cutting it really close! Most pickup points only hold packages for about a week before returning them. It's good to know Kevin's details in case anything comes up regarding shared deliveries or if a package accidentally gets routed to his section instead of yours. Anything else?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "establish pickup time preference and locker reassignment",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So about my pickup habits — I always try to pick up packages mid-morning, ideally around 10 AM, because that's when C16 is the least crowded. I really don't like going in the evening when everyone's there after work. The whole point is to make it quick and painless. I enjoy the lightweight packages where I just tap the code and go."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes a lot of sense — mid-morning around 10 AM is a smart strategy for avoiding the after-work rush at C16. I've noted your preferred pickup window. And I can see why lightweight packages are satisfying — just tap the code, grab the item, and you're done in seconds. It's a completely different experience from lugging a heavy box back to your apartment. I'll keep this timing preference in mind if you ever need me to help schedule pickups or set reminders. Would you like me to suggest a standard reminder for 10 AM on delivery days?"
+        },
+        {
+          "role": "user",
+          "content": "That's a good idea actually, but hold off on the reminder for now. More importantly, they moved my assigned locker from section B to section C last week because of the renovation on the building entrance side. So my current locker is now section C at C16. Everything else is the same — still the building entrance side, still my go-to spot."
+        },
+        {
+          "role": "assistant",
+          "content": "Updated! Your assigned locker at C16 is now section C on the building entrance side, due to the renovation that prompted the move from section B. Everything else about your pickup setup stays the same — C16 remains your go-to point and the building entrance side is still your access route. Renovations can be inconvenient but hopefully the new lockers they're putting in will be an improvement. I'll hold off on setting up the 10 AM reminder for now but just say the word whenever you're ready. Anything else about the renovation affecting your pickups?"
+        },
+        {
+          "role": "user",
+          "content": "Not really — the renovation is mostly cosmetic from what I can tell. Oh, I did pick up some Earl Grey tea from C16 a few days ago. Small package, super quick. That's the kind of pickup I love. Also I ordered a ceramic mug that should arrive tomorrow at C16. Nothing urgent, just a small household item."
+        },
+        {
+          "role": "assistant",
+          "content": "Nice — the Earl Grey tea pickup sounds like the ideal scenario for you: small, lightweight, quick tap-and-go. And the ceramic mug arriving tomorrow should be a similarly easy pickup since it's a small household item. Given your preference for the 10 AM window, that might be a perfect time to swing by C16 tomorrow and grab it from your section C locker. Since the renovation is mostly cosmetic, it sounds like it shouldn't disrupt your routine too much. Let me know if you want a reminder for the mug pickup tomorrow or if anything changes with the delivery."
+        },
+        {
+          "role": "user",
+          "content": "I'll just grab it when the notification comes in. By the way, I should mention that I had a return pickup completed back in March — a defective USB hub that was picked up from C16. The return was fully processed and refunded on March 22nd, so that's all done and you can disregard it if it ever comes up."
+        },
+        {
+          "role": "assistant",
+          "content": "Good to know — I'll treat the USB hub return as fully resolved since it was completed and refunded on March 22nd. No need to track that anymore. So to summarize your current C16 status: you're in locker section C on the building entrance side due to the renovation, you prefer mid-morning pickups around 10 AM, you have a ceramic mug arriving tomorrow, and the old USB hub return is closed out. That all sounds tidy. Let me know if any new deliveries come through or if the renovation situation changes anything about your locker assignment."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "tentative reassignment and adversarial distractor",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Quick update — I picked up the ceramic mug from C16 this morning. Section C locker, tapped the code, grabbed it, done in thirty seconds. Exactly the kind of pickup experience I prefer. The renovation scaffolding was still up but it didn't block anything. Mid-morning timing was perfect as usual, barely anyone there."
+        },
+        {
+          "role": "assistant",
+          "content": "Glad the mug pickup went smoothly! Thirty seconds from tap to done is the dream scenario, especially with the mid-morning timing keeping the crowds away. Good to hear the renovation scaffolding isn't causing any access issues for your section C locker on the building entrance side. That's one less thing to worry about while they finish up the work. Your C16 routine seems really dialed in at this point. Any other deliveries on the horizon, or are you all set for now?"
+        },
+        {
+          "role": "user",
+          "content": "Nothing incoming right now. Oh, I was chatting with Kevin yesterday and he mentioned that the facility posted a notice saying his section D lockers are being temporarily moved to section E on the south side. He was grumbling about it. I think the renovation is expanding to that side too now."
+        },
+        {
+          "role": "assistant",
+          "content": "Sounds like the renovation is spreading! Kevin's temporary move from section D to section E on the south side must be annoying, especially since he already struggles with timely pickups. Having to adjust to a new location on top of that probably won't help his track record. At least your section C assignment on the building entrance side seems stable for now. Hopefully the renovation doesn't keep expanding to affect your area too. If Kevin needs help keeping track of his new temporary section E assignment, feel free to pass along any details. Anything else going on with the C16 situation?"
+        },
+        {
+          "role": "user",
+          "content": "Actually yes — The facility manager confirmed they'll be reassigning me back to section B once the renovation wraps up next month. So I'll be back in my original locker section B soon. He said the building entrance side lockers in section B are getting completely refurbished with new digital panels and everything."
+        },
+        {
+          "role": "assistant",
+          "content": "That's great news! Getting reassigned back to section B with brand-new refurbished lockers and digital panels sounds like a real upgrade. It'll be nice to return to your original section once the renovation finishes next month. The new digital panels might even make your tap-and-go pickups even faster. For now you're still in section C on the building entrance side, and once the renovation wraps up you'll transition back to section B. I'll keep track of both the current and upcoming assignment. Let me know when the switch actually happens so I can update your details."
+        },
+        {
+          "role": "user",
+          "content": "Sounds good. Oh, one thing I noticed — when I was at C16 this morning, the system screen briefly showed a locker assignment summary and I saw Kevin's name listed under section A with a note about a package from last week. Must have been some old cached data or a glitch, since he's supposed to be in section E now.\n\nWill do. I think that covers everything for now. Just to recap what matters: I'm currently in section C at C16, building entrance side, I like mid-morning pickups around 10 AM, and the mug and tea are both picked up. The USB hub return is ancient history. I'll let you know when the section B reassignment actually goes through."
+        },
+        {
+          "role": "assistant",
+          "content": "That does sound like a system glitch or cached data — if Kevin's been officially moved to section E on the south side, seeing his name under section A is probably just the system not fully updating yet. Renovation transitions can cause all sorts of database lag with locker assignments. It's worth noting in case it causes any actual misrouting, but for now it seems like just a display artifact. Your own assignment to section C is current and confirmed, with the planned return to section B coming next month after the renovation. Let me know if you spot any other oddities on the system screen.\n\nPerfect recap! Here's what I have on file: your current locker assignment is section C at C16 on the building entrance side, your preferred pickup time is mid-morning around 10 AM, the ceramic mug and Earl Grey tea are both picked up, and the USB hub return was completed and refunded back on March 22nd — fully closed out. The upcoming reassignment back to section B is pending until the renovation finishes next month. I'll wait for your confirmation before updating the locker section. In the meantime, everything looks tidy and organized. Just reach out whenever something new comes in or when the section B switch happens!"
+        }
+      ]
+    }
+  ],
+  "state_checkpoints": [
+    {
+      "checkpoint_id": "c1",
+      "description": "After segment 1: C16 locker section is confirmed as B (building entrance side) after correction from A. Kevin's section D noted. Preferred pickup time not yet established."
+    },
+    {
+      "checkpoint_id": "c2",
+      "description": "After segment 2: C16 locker section updated to C (building entrance side) due to renovation. Preferred pickup time established as mid-morning around 10 AM. USB hub return is closed/irrelevant."
+    },
+    {
+      "checkpoint_id": "c3",
+      "description": "After segment 3: C16 locker section is still confirmed as C (building entrance side). Tentative future reassignment back to section B pending renovation completion next month — not yet in effect. Preferred pickup time remains mid-morning around 10 AM. Kevin's section A appearance on screen is a glitch/cached data, not a real assignment."
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Walk me through the key things I told you about my package pickup arrangement — what details did I share, and how did those details shift over the course of our conversations?",
+      "expected_answer": "You initially said your pickup spot is on the building entrance side in area A, then corrected it to area B because you always mix those up. Later you mentioned being reassigned to area C due to a renovation. You also mentioned a facility manager's plan to move you back to area B after the renovation finishes next month, though that hasn't happened yet. Separately, you shared that you prefer picking up packages mid-morning around 10 AM.",
+      "gold_memory_state": "Current confirmed locker assignment: section C, building entrance side. Tentative future: section B post-renovation. Preferred pickup time: mid-morning around 10 AM. Kevin's assignment: section E (temporary, moved from D). Section A was the initial mis-stated value, corrected early on.",
+      "judge_rubric": {
+        "must_include": [
+          "initial value corrected from A to B",
+          "reassignment to C due to renovation",
+          "future plan to return to B",
+          "mid-morning or 10 AM pickup preference"
+        ],
+        "acceptable_paraphrases": [
+          "area A corrected to area B",
+          "moved from B to C because of renovation work"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying the future reassignment back to B is already in effect",
+          "omitting the correction from A to B"
+        ],
+        "harmless_extra": [
+          "mentioning Kevin's locker details",
+          "mentioning the D4 misrouting incident"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats section A or section B as the current assignment instead of section C.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model gets the sequence wrong (e.g., placing the C assignment before the B correction).",
+        "final_state": "Fails if the model states the current assignment is anything other than section C.",
+        "intermediate_state": "Fails if the model omits the A→B correction step.",
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my go-to pickup point is C16, building entrance side, locker section A"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I need to correct that — my locker section is actually B, not A. I always mix those up"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "they moved my assigned locker from section B to section C last week because of the renovation on the building entrance side"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The facility manager confirmed they'll be reassigning me back to section B once the renovation wraps up next month"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I always try to pick up packages mid-morning, ideally around 10 AM, because that's when C16 is the least crowded"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Walk me through the key things I told you about my package pickup arrangement — what details did I share, and how did those details shift over the course of our conversations?",
+      "expected_answer": "You initially said your pickup spot is on the building entrance side in area A, then corrected it to area B because you always mix those up. Later you mentioned being reassigned to area C due to a renovation. You also mentioned a facility manager's plan to move you back to area B after the renovation finishes next month, though that hasn't happened yet. Separately, you shared that you prefer picking up packages mid-morning around 10 AM.",
+      "gold_memory_state": "Current confirmed locker assignment: section C, building entrance side. Tentative future: section B post-renovation. Preferred pickup time: mid-morning around 10 AM. Kevin's assignment: section E (temporary, moved from D). Section A was the initial mis-stated value, corrected early on.",
+      "judge_rubric": {
+        "must_include": [
+          "initial value corrected from A to B",
+          "reassignment to C due to renovation",
+          "future plan to return to B",
+          "mid-morning or 10 AM pickup preference"
+        ],
+        "acceptable_paraphrases": [
+          "area A corrected to area B",
+          "moved from B to C because of renovation work"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying the future reassignment back to B is already in effect",
+          "omitting the correction from A to B"
+        ],
+        "harmless_extra": [
+          "mentioning Kevin's locker details",
+          "mentioning the D4 misrouting incident"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats section A or section B as the current assignment instead of section C.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model gets the sequence wrong (e.g., placing the C assignment before the B correction).",
+        "final_state": "Fails if the model states the current assignment is anything other than section C.",
+        "intermediate_state": "Fails if the model omits the A→B correction step.",
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my go-to pickup point is C16, building entrance side, locker section A"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I need to correct that — my locker section is actually B, not A. I always mix those up"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "they moved my assigned locker from section B to section C last week because of the renovation on the building entrance side"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The facility manager confirmed they'll be reassigning me back to section B once the renovation wraps up next month"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I always try to pick up packages mid-morning, ideally around 10 AM, because that's when C16 is the least crowded"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "If I need to fill out a delivery preferences form, which pickup-related details are mine versus my roommate's, and which of my details are currently usable versus pending a future change?",
+      "expected_answer": "Your current pickup assignment is locker section C on the building entrance side — that is your active, usable detail. Your roommate Kevin is temporarily assigned to section E on the south side after being moved from section D. The planned reassignment back to section B for you is pending until the renovation finishes next month and is not yet in effect. Your preferred pickup time is mid-morning around 10 AM, which is also currently usable.",
+      "gold_memory_state": "User's current confirmed locker: section C, building entrance side. User's tentative future locker: section B (post-renovation, not yet active). Kevin's current locker: section E, south side (temporary). Kevin's original locker: section D, parking lot side. User's preferred pickup time: mid-morning around 10 AM.",
+      "judge_rubric": {
+        "must_include": [
+          "user's current assignment is section C",
+          "Kevin's current assignment is section E",
+          "future section B reassignment is not yet active",
+          "mid-morning or 10 AM preference"
+        ],
+        "acceptable_paraphrases": [
+          "area C on the building entrance side",
+          "Kevin is temporarily in area E"
+        ],
+        "must_not_include": [
+          "user is currently in section B",
+          "user is currently in section A"
+        ],
+        "harmful_extra": [
+          "treating the tentative section B reassignment as already active",
+          "assigning Kevin to section A based on the screen glitch",
+          "mixing up user's and Kevin's assignments"
+        ],
+        "harmless_extra": [
+          "mentioning Kevin was originally in section D"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model assigns section A or section B as the user's current detail.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not distinguish the user's current section C from the pending section B.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "they moved my assigned locker from section B to section C last week because of the renovation on the building entrance side"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The facility manager confirmed they'll be reassigning me back to section B once the renovation wraps up next month"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I always try to pick up packages mid-morning, ideally around 10 AM, because that's when C16 is the least crowded"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "my roommate Kevin also uses C16 but he's in locker section D on the parking lot side"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "If I need to fill out a delivery preferences form, which pickup-related details are mine versus my roommate's, and which of my details are currently usable versus pending a future change?",
+      "expected_answer": "Your current pickup assignment is locker section C on the building entrance side — that is your active, usable detail. Your roommate Kevin is temporarily assigned to section E on the south side after being moved from section D. The planned reassignment back to section B for you is pending until the renovation finishes next month and is not yet in effect. Your preferred pickup time is mid-morning around 10 AM, which is also currently usable.",
+      "gold_memory_state": "User's current confirmed locker: section C, building entrance side. User's tentative future locker: section B (post-renovation, not yet active). Kevin's current locker: section E, south side (temporary). Kevin's original locker: section D, parking lot side. User's preferred pickup time: mid-morning around 10 AM.",
+      "judge_rubric": {
+        "must_include": [
+          "user's current assignment is section C",
+          "Kevin's current assignment is section E",
+          "future section B reassignment is not yet active",
+          "mid-morning or 10 AM preference"
+        ],
+        "acceptable_paraphrases": [
+          "area C on the building entrance side",
+          "Kevin is temporarily in area E"
+        ],
+        "must_not_include": [
+          "user is currently in section B",
+          "user is currently in section A"
+        ],
+        "harmful_extra": [
+          "treating the tentative section B reassignment as already active",
+          "assigning Kevin to section A based on the screen glitch",
+          "mixing up user's and Kevin's assignments"
+        ],
+        "harmless_extra": [
+          "mentioning Kevin was originally in section D"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model assigns section A or section B as the user's current detail.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not distinguish the user's current section C from the pending section B.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "they moved my assigned locker from section B to section C last week because of the renovation on the building entrance side"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The facility manager confirmed they'll be reassigning me back to section B once the renovation wraps up next month"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I always try to pick up packages mid-morning, ideally around 10 AM, because that's when C16 is the least crowded"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "my roommate Kevin also uses C16 but he's in locker section D on the parking lot side"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "difficulty": "hard",
+      "question": "After all the back-and-forth about my locker assignment at the pickup facility, where should I actually go to collect a package right now?",
+      "expected_answer": "Locker section C on the building entrance side.",
+      "gold_memory_state": "Current confirmed assignment: locker section C, building entrance side. The facility manager mentioned a future reassignment back to section B after the renovation, but that has not taken effect yet. Section A was the user's initial misstatement, corrected to B, then B was reassigned to C due to renovation.",
+      "judge_rubric": {
+        "must_include": [
+          "section C",
+          "building entrance side"
+        ],
+        "acceptable_paraphrases": [
+          "area C on the building entrance side",
+          "locker area C"
+        ],
+        "must_not_include": [
+          "section B is the current assignment",
+          "section A is the current assignment"
+        ],
+        "harmful_extra": [
+          "treating the pending section B reassignment as already active"
+        ],
+        "harmless_extra": [
+          "mentioning that section B will be the future assignment after renovation"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model returns section A (initial misstatement) or section B (either the corrected-then-superseded value or the tentative future value) as the current assignment.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the answer is anything other than section C on the building entrance side.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "they moved my assigned locker from section B to section C last week because of the renovation on the building entrance side"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The facility manager confirmed they'll be reassigning me back to section B once the renovation wraps up next month"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "difficulty": "hard",
+      "question": "After all the back-and-forth about my locker assignment at the pickup facility, where should I actually go to collect a package right now?",
+      "expected_answer": "Locker section C on the building entrance side.",
+      "gold_memory_state": "Current confirmed assignment: locker section C, building entrance side. The facility manager mentioned a future reassignment back to section B after the renovation, but that has not taken effect yet. Section A was the user's initial misstatement, corrected to B, then B was reassigned to C due to renovation.",
+      "judge_rubric": {
+        "must_include": [
+          "section C",
+          "building entrance side"
+        ],
+        "acceptable_paraphrases": [
+          "area C on the building entrance side",
+          "locker area C"
+        ],
+        "must_not_include": [
+          "section B is the current assignment",
+          "section A is the current assignment"
+        ],
+        "harmful_extra": [
+          "treating the pending section B reassignment as already active"
+        ],
+        "harmless_extra": [
+          "mentioning that section B will be the future assignment after renovation"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model returns section A (initial misstatement) or section B (either the corrected-then-superseded value or the tentative future value) as the current assignment.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the answer is anything other than section C on the building entrance side.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "they moved my assigned locker from section B to section C last week because of the renovation on the building entrance side"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The facility manager confirmed they'll be reassigning me back to section B once the renovation wraps up next month"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "application_probe_type": "multi_hop_derivation",
+      "difficulty": "hard",
+      "question": "I have a friend visiting tomorrow who wants to pick up a package I ordered for them. Draft a short instruction note telling them exactly where to go and when to arrive so they avoid crowds, based on my pickup routine.",
+      "expected_answer": "Tell your friend to go to the pickup facility at the building entrance side, locker area C, and arrive around 10 AM mid-morning when it's least crowded. The note might read: 'Head to the building entrance side of the pickup point, find the lockers in area C, and try to get there around 10 AM — that's when it's quietest.'",
+      "gold_memory_state": "Current confirmed locker: section C, building entrance side. Preferred pickup time: mid-morning around 10 AM. Tentative future section B is not yet active and should not be used.",
+      "judge_rubric": {
+        "must_include": [
+          "section C or area C",
+          "building entrance side",
+          "mid-morning or around 10 AM"
+        ],
+        "acceptable_paraphrases": [
+          "locker area C",
+          "10 AM window",
+          "morning around ten"
+        ],
+        "must_not_include": [
+          "section A",
+          "section B as current location",
+          "section D",
+          "section E"
+        ],
+        "harmful_extra": [
+          "directing the friend to section B based on the tentative future reassignment",
+          "directing the friend to Kevin's locker area"
+        ],
+        "harmless_extra": [
+          "mentioning the renovation scaffolding",
+          "advising about tap-code pickup procedure"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the note directs the friend to section A or section B instead of section C.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the note does not reflect the current confirmed locker assignment (section C) and preferred timing (10 AM).",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's current confirmed locker assignment is section C on the building entrance side, due to the renovation-driven move from section B.",
+        "Fact 2: The user prefers mid-morning pickups around 10 AM because the facility is least crowded at that time.",
+        "Inference: Combining the current location (section C, building entrance side) with the optimal timing (around 10 AM) yields a complete instruction note for the visiting friend."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "they moved my assigned locker from section B to section C last week because of the renovation on the building entrance side"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I always try to pick up packages mid-morning, ideally around 10 AM, because that's when C16 is the least crowded"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "application_probe_type": "multi_hop_derivation",
+      "difficulty": "hard",
+      "question": "I have a friend visiting tomorrow who wants to pick up a package I ordered for them. Draft a short instruction note telling them exactly where to go and when to arrive so they avoid crowds, based on my pickup routine.",
+      "expected_answer": "Tell your friend to go to the pickup facility at the building entrance side, locker area C, and arrive around 10 AM mid-morning when it's least crowded. The note might read: 'Head to the building entrance side of the pickup point, find the lockers in area C, and try to get there around 10 AM — that's when it's quietest.'",
+      "gold_memory_state": "Current confirmed locker: section C, building entrance side. Preferred pickup time: mid-morning around 10 AM. Tentative future section B is not yet active and should not be used.",
+      "judge_rubric": {
+        "must_include": [
+          "section C or area C",
+          "building entrance side",
+          "mid-morning or around 10 AM"
+        ],
+        "acceptable_paraphrases": [
+          "locker area C",
+          "10 AM window",
+          "morning around ten"
+        ],
+        "must_not_include": [
+          "section A",
+          "section B as current location",
+          "section D",
+          "section E"
+        ],
+        "harmful_extra": [
+          "directing the friend to section B based on the tentative future reassignment",
+          "directing the friend to Kevin's locker area"
+        ],
+        "harmless_extra": [
+          "mentioning the renovation scaffolding",
+          "advising about tap-code pickup procedure"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the note directs the friend to section A or section B instead of section C.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the note does not reflect the current confirmed locker assignment (section C) and preferred timing (10 AM).",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's current confirmed locker assignment is section C on the building entrance side, due to the renovation-driven move from section B.",
+        "Fact 2: The user prefers mid-morning pickups around 10 AM because the facility is least crowded at that time.",
+        "Inference: Combining the current location (section C, building entrance side) with the optimal timing (around 10 AM) yields a complete instruction note for the visiting friend."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "they moved my assigned locker from section B to section C last week because of the renovation on the building entrance side"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I always try to pick up packages mid-morning, ideally around 10 AM, because that's when C16 is the least crowded"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "trajectory_granularity": "full",
+      "difficulty": "hard",
+      "question": "If someone reviewed everything we've discussed about my assigned locker area at the pickup facility, what would they see as the full sequence of changes — which assignments were adopted, which ones were just mistakes or not yet in effect, and what's the status right now?",
+      "expected_answer": "The sequence is: (1) Initially stated as area A on the building entrance side, but this was immediately corrected as a mix-up. (2) Corrected to area B on the building entrance side — this was the real assignment at the time. (3) Reassigned from B to area C on the building entrance side due to a renovation — this became the confirmed current assignment. (4) A facility manager indicated a planned return to area B with refurbished lockers after the renovation finishes next month, but this has not taken effect yet. The current usable assignment is area C on the building entrance side.",
+      "gold_memory_state": "Full trajectory: A (misstated, immediately corrected) → B (confirmed) → C (confirmed, current) → B post-renovation (tentative, not yet active). Current state: section C, building entrance side.",
+      "judge_rubric": {
+        "must_include": [
+          "A was a mistake or mix-up",
+          "B was the corrected value",
+          "C is the current confirmed assignment",
+          "future B reassignment is not yet in effect"
+        ],
+        "acceptable_paraphrases": [
+          "area A was an error",
+          "moved from B to C for the renovation",
+          "planned return to B is pending"
+        ],
+        "must_not_include": [
+          "section B is the current assignment",
+          "section A was ever a valid assignment"
+        ],
+        "harmful_extra": [
+          "omitting the A→B correction",
+          "treating the tentative B reassignment as already active",
+          "listing Kevin's assignments as part of the user's trajectory"
+        ],
+        "harmless_extra": [
+          "mentioning the renovation as the reason for the B→C move",
+          "mentioning the new digital panels planned for the refurbished area"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if any superseded value (A or the old B) is presented as currently active.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model misordering steps, e.g., placing C before B, or omitting the A→B correction.",
+        "final_state": "Fails if the model states the current assignment is anything other than area C.",
+        "intermediate_state": "Fails if the model omits the intermediate B state between A and C, or fails to note that A was a misstatement.",
+        "trajectory_provenance": "Fails if the model cannot distinguish the tentative future B from the earlier confirmed B."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: User initially stated area A on the building entrance side, but this was a self-admitted mix-up.",
+        "Step 2: User corrected to area B on the building entrance side — this was the confirmed assignment after correction.",
+        "Step 3: User reported being reassigned from B to area C on the building entrance side due to renovation — confirmed and currently active.",
+        "Step 4: Facility manager indicated a future reassignment back to area B with refurbished lockers after renovation completion next month — this is tentative and not yet in effect.",
+        "Inference: The full trajectory is A (error) → B (confirmed) → C (confirmed, current) → B post-renovation (tentative). Only C is the current usable value."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my go-to pickup point is C16, building entrance side, locker section A"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I need to correct that — my locker section is actually B, not A. I always mix those up"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "they moved my assigned locker from section B to section C last week because of the renovation on the building entrance side"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The facility manager confirmed they'll be reassigning me back to section B once the renovation wraps up next month"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "trajectory_granularity": "full",
+      "difficulty": "hard",
+      "question": "If someone reviewed everything we've discussed about my assigned locker area at the pickup facility, what would they see as the full sequence of changes — which assignments were adopted, which ones were just mistakes or not yet in effect, and what's the status right now?",
+      "expected_answer": "The sequence is: (1) Initially stated as area A on the building entrance side, but this was immediately corrected as a mix-up. (2) Corrected to area B on the building entrance side — this was the real assignment at the time. (3) Reassigned from B to area C on the building entrance side due to a renovation — this became the confirmed current assignment. (4) A facility manager indicated a planned return to area B with refurbished lockers after the renovation finishes next month, but this has not taken effect yet. The current usable assignment is area C on the building entrance side.",
+      "gold_memory_state": "Full trajectory: A (misstated, immediately corrected) → B (confirmed) → C (confirmed, current) → B post-renovation (tentative, not yet active). Current state: section C, building entrance side.",
+      "judge_rubric": {
+        "must_include": [
+          "A was a mistake or mix-up",
+          "B was the corrected value",
+          "C is the current confirmed assignment",
+          "future B reassignment is not yet in effect"
+        ],
+        "acceptable_paraphrases": [
+          "area A was an error",
+          "moved from B to C for the renovation",
+          "planned return to B is pending"
+        ],
+        "must_not_include": [
+          "section B is the current assignment",
+          "section A was ever a valid assignment"
+        ],
+        "harmful_extra": [
+          "omitting the A→B correction",
+          "treating the tentative B reassignment as already active",
+          "listing Kevin's assignments as part of the user's trajectory"
+        ],
+        "harmless_extra": [
+          "mentioning the renovation as the reason for the B→C move",
+          "mentioning the new digital panels planned for the refurbished area"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if any superseded value (A or the old B) is presented as currently active.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model misordering steps, e.g., placing C before B, or omitting the A→B correction.",
+        "final_state": "Fails if the model states the current assignment is anything other than area C.",
+        "intermediate_state": "Fails if the model omits the intermediate B state between A and C, or fails to note that A was a misstatement.",
+        "trajectory_provenance": "Fails if the model cannot distinguish the tentative future B from the earlier confirmed B."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: User initially stated area A on the building entrance side, but this was a self-admitted mix-up.",
+        "Step 2: User corrected to area B on the building entrance side — this was the confirmed assignment after correction.",
+        "Step 3: User reported being reassigned from B to area C on the building entrance side due to renovation — confirmed and currently active.",
+        "Step 4: Facility manager indicated a future reassignment back to area B with refurbished lockers after renovation completion next month — this is tentative and not yet in effect.",
+        "Inference: The full trajectory is A (error) → B (confirmed) → C (confirmed, current) → B post-renovation (tentative). Only C is the current usable value."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my go-to pickup point is C16, building entrance side, locker section A"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I need to correct that — my locker section is actually B, not A. I always mix those up"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "they moved my assigned locker from section B to section C last week because of the renovation on the building entrance side"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The facility manager confirmed they'll be reassigning me back to section B once the renovation wraps up next month"
+        }
+      ]
+    }
+  ]
+}

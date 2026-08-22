@@ -1,0 +1,954 @@
+{
+  "target_fact": "User prefers streamlined, low-friction interpersonal communication — dealing with known contacts rather than strangers, and receiving direct short messages rather than long CC email chains",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I'd much rather reach out to someone I already know in another department than send a cold email to a generic team inbox"
+      },
+      "target": {
+        "target_id": "cross_dept_contact_preference",
+        "target_name": "preference for cross-department contact method"
+      },
+      "old_value": null,
+      "new_value": "Prefers reaching out to known personal contacts rather than cold-emailing generic department inboxes",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I'd much rather reach out to someone I already know in another department than send a cold email to a generic team inbox"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "B04 sends these massive email threads with like 15 people CC'd and I have to scroll through 20 replies to find the one line that's relevant to me"
+      },
+      "target": {
+        "target_id": "email_format_frustration",
+        "target_name": "frustration with long CC email chains from B04"
+      },
+      "old_value": null,
+      "new_value": "Finds B04's long multi-CC email chains overwhelming; has to dig through many replies to find relevant information",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "B04 sends these massive email threads with like 15 people CC'd and I have to scroll through 20 replies to find the one line that's relevant to me"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "If someone just pings me directly on chat with the specific ask, I can turn it around in five minutes. But when it's buried in a thread, it takes me half an hour just to figure out what they actually need"
+      },
+      "target": {
+        "target_id": "direct_message_preference",
+        "target_name": "preference for direct short messages over email threads"
+      },
+      "old_value": null,
+      "new_value": "Strongly prefers receiving a direct chat ping with a specific ask; can respond in 5 minutes vs. 30 minutes digging through email threads",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "If someone just pings me directly on chat with the specific ask, I can turn it around in five minutes. But when it's buried in a thread, it takes me half an hour just to figure out what they actually need"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 7,
+        "quote": "I guess you could say I just really value efficiency in how people communicate with me at work. The fewer hoops I have to jump through to understand what's being asked, the better"
+      },
+      "target": {
+        "target_id": "communication_style_preference",
+        "target_name": "inferred workplace communication style preference"
+      },
+      "old_value": null,
+      "new_value": "Prefers streamlined, low-friction interpersonal communication: known contacts over strangers, direct concise messages over long CC email chains, minimal effort to parse requests",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I'd much rather reach out to someone I already know in another department than send a cold email to a generic team inbox"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "B04 sends these massive email threads with like 15 people CC'd and I have to scroll through 20 replies to find the one line that's relevant to me"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "If someone just pings me directly on chat with the specific ask, I can turn it around in five minutes. But when it's buried in a thread, it takes me half an hour just to figure out what they actually need"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "Linda Zhao is the manager of B04, which is Supply Chain Operations"
+      },
+      "target": {
+        "target_id": "b04_manager",
+        "target_name": "manager of B04 department"
+      },
+      "old_value": null,
+      "new_value": "Linda Zhao",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Linda Zhao is the manager of B04, which is Supply Chain Operations"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "Linda mentioned they're thinking of switching the whole team to a Slack-only communication model, no more long email chains. She said it's basically confirmed for next quarter"
+      },
+      "target": {
+        "target_id": "b04_communication_change",
+        "target_name": "B04 planned communication model change"
+      },
+      "old_value": null,
+      "new_value": "B04 switching to Slack-only communication model next quarter",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Linda mentioned they're thinking of switching the whole team to a Slack-only communication model, no more long email chains. She said it's basically confirmed for next quarter"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish cross-department contact preference and B04 context",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to talk through some of the cross-department coordination stuff I've been dealing with lately. I work closely with a few other departments and the logistics of just getting in touch with the right people can be surprisingly time-consuming. For context, Kevin Chen — a colleague I've known for over a year — recently transferred to B04, which is Supply Chain Operations."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for bringing this up — cross-department coordination is one of those things that can quietly eat up a lot of productive time if the process isn't smooth. It's great that you already have a personal connection in B04 through Kevin Chen. Having someone you know in Supply Chain Operations can make a real difference when you need approvals or information quickly. What kinds of interactions have been taking up the most time for you? Are there specific workflows or request types that feel particularly cumbersome, or is it more of a general communication friction issue across the board?"
+        },
+        {
+          "role": "user",
+          "content": "It's definitely more about communication friction. Like, when I needed a logistics approval form a few weeks ago, someone told me to ask Kevin since he handles that now. That was actually great because I'd much rather reach out to someone I already know in another department than send a cold email to a generic team inbox. When you email a department inbox, you never know who picks it up, and there's no personal rapport to move things along quickly."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes a lot of sense. Having a known point of contact eliminates the uncertainty of cold outreach — you know the person's responsiveness, communication style, and context. With a generic inbox, you're essentially starting from scratch every time, and there's often a delay while the request gets routed internally. It sounds like Kevin's transfer to B04 actually turned into an unexpected advantage for you. Do you find that this preference for personal contacts applies broadly across all departments you interact with, or is it mainly an issue with certain teams that are harder to reach?"
+        },
+        {
+          "role": "user",
+          "content": "It applies broadly, honestly. But B04 is the one I deal with most frequently right now. By the way, I should note this for my own reference: Linda Zhao is the manager of B04, which is Supply Chain Operations. I keep forgetting her name when I need to loop her in on cross-department requests. She's the one I need to CC on anything formal going to that team, so it's important I remember that."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — Linda Zhao, manager of B04, Supply Chain Operations. That's a useful detail to keep top of mind, especially if you're regularly sending formal cross-department requests that need her sign-off or visibility. It might help to add her as a saved contact with a note like 'B04 Manager — CC on formal requests' so you don't have to recall it from memory each time. Since you interact with B04 frequently, having both Kevin as your informal go-to and Linda as the formal escalation point gives you good coverage. Are there other department contacts you tend to forget?"
+        },
+        {
+          "role": "user",
+          "content": "Not really — Linda is the main one I keep blanking on. The other departments I work with, I've got the key people memorized. Oh, I also wanted to mention that B04 has a current headcount of 14 people, including Linda. Kevin told me that over lunch recently. It's a decent-sized team, which probably explains some of the communication overhead I experience with them."
+        },
+        {
+          "role": "assistant",
+          "content": "Fourteen people including the manager is a mid-sized team, and you're right — larger teams tend to generate more communication overhead simply because there are more people involved in decisions and more layers to route through. With 14 members, it's likely that not everyone on B04 is relevant to your requests, so identifying the two or three people who handle what you need most often could save you a lot of time. You've already got Kevin for logistics approvals and Linda for formal escalations. It might be worth mapping out one or two more contacts for specific request types so you're never stuck waiting on a generic queue."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establish email chain frustration and direct message preference; trigger reflection",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So here's the thing that really gets to me about working with B04. B04 sends these massive email threads with like 15 people CC'd and I have to scroll through 20 replies to find the one line that's relevant to me. It happened again this morning — I got pulled into a thread about the quarterly inventory reconciliation and my part was literally one data point buried in reply number 17. It's incredibly inefficient."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds genuinely frustrating, especially when your contribution or the information you need is just a small piece of a much larger conversation. Long CC chains create a lot of noise — people reply-all with tangential comments, the original ask gets diluted, and important details get buried. When you're time-constrained and your deliverable depends on extracting one specific data point, having to parse through 17 replies is a real productivity drain. Have you ever raised this with Kevin or Linda as feedback? Sometimes teams don't realize how their internal communication style affects external collaborators."
+        },
+        {
+          "role": "user",
+          "content": "I haven't raised it formally, no. I mean, it's their team culture and I don't want to come across as telling them how to run things. But it does make me dread getting notifications from that team sometimes. I had a particularly bad experience last month where their quarterly inventory reconciliation report was five days late and I had to stay late two nights in a row to meet my own deadline to the finance team. That dependency delay on top of the communication mess was really stressful."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a tough combination — the communication overhead piled on top of an actual delivery delay. Staying late two nights because of someone else's missed deadline is the kind of thing that builds real resentment over time if it's not addressed. The late report is probably worth flagging more formally than the email style, since it directly impacted your deliverable to finance. You could frame it as a process improvement request rather than a complaint — something like proposing a shared deadline tracker or earlier checkpoint for cross-department dependencies. That way it's constructive rather than accusatory."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, maybe I should. The deadline thing is a separate issue though. On the communication side, what really gets me is the contrast. If someone just pings me directly on chat with the specific ask, I can turn it around in five minutes. But when it's buried in a thread, it takes me half an hour just to figure out what they actually need. That's a huge difference in my responsiveness and honestly in my stress level too."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really telling comparison — five minutes for a direct ping versus thirty minutes to excavate the same ask from an email thread. It's not just about efficiency; it's about cognitive load too. When you receive a direct message with a clear ask, your brain can immediately switch into action mode. But with a long thread, you're first in detective mode, then in context-reconstruction mode, and only then can you actually respond. The stress difference makes sense because ambiguity and unnecessary complexity are inherently draining. Would it help if you proactively told your B04 contacts to ping you directly for anything that needs your input?"
+        },
+        {
+          "role": "user",
+          "content": "That's actually not a bad idea. I guess you could say I just really value efficiency in how people communicate with me at work. The fewer hoops I have to jump through to understand what's being asked, the better. Whether it's reaching out to someone I know versus a faceless inbox, or getting a quick direct message versus wading through a massive email chain — it all comes down to the same thing for me."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really clear self-assessment. What you're describing is a consistent preference for streamlined, low-friction communication — both in how you initiate contact and in how you receive requests. You prefer known contacts over anonymous inboxes because the personal rapport removes friction. You prefer direct, concise messages over long email threads because they minimize the effort needed to understand and act. Both patterns point to the same underlying value: you want communication to be as efficient and direct as possible, with minimal overhead between receiving a message and being able to act on it. That's a useful insight for shaping how you set expectations with teams like B04."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Recency trap with tentative B04 communication change; adversarial injection of stale value",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Quick update on the B04 situation. I had a brief hallway chat with Kevin this morning and he mentioned that B04 is exploring whether to adopt a new internal communication protocol. Apparently some teams in the company have been piloting different approaches and B04 is looking at what others have done. Nothing concrete yet, just early-stage exploration."
+        },
+        {
+          "role": "assistant",
+          "content": "That's interesting — if B04 does overhaul their communication approach, it could directly address some of the frustrations you've been experiencing with their email culture. Early-stage exploration can go either way though, so it's probably too soon to get your hopes up. Still, it's a positive sign that they're at least aware that their current approach might not be optimal. Did Kevin give any sense of what kinds of alternatives they're considering, or is it really just a broad 'let's see what's out there' phase right now?"
+        },
+        {
+          "role": "user",
+          "content": "Kevin didn't have specifics. But I also bumped into someone from the IT department who mentioned that B04 had originally been listed in Building 1 in the company directory, but that's outdated — they moved to Building 2 after last year's renovation. The IT person was updating the directory entries. I already knew they were in Building 2, 6th floor, but it's funny how the old Building 1 listing still floats around in some systems."
+        },
+        {
+          "role": "assistant",
+          "content": "Legacy data in company directories is surprisingly persistent — I've seen cases where old floor assignments or even departed employees linger in systems for months after changes. It's good that IT is actively cleaning those entries up. The fact that the old Building 1 listing was still visible could cause confusion for anyone trying to find B04 for the first time, especially new hires or external visitors. Since you already know they're on the 6th floor of Building 2, you're fine, but it's worth noting in case you ever need to direct someone else there. Did the IT person mention whether other departments had similar stale entries?"
+        },
+        {
+          "role": "user",
+          "content": "They didn't say. Anyway, a couple days later I ran into Linda Zhao again in the elevator. She was telling me about some changes on her team. Linda mentioned they're thinking of switching the whole team to a Slack-only communication model, no more long email chains. She said it's basically confirmed for next quarter. That would be a huge improvement from my perspective if it actually happens."
+        },
+        {
+          "role": "assistant",
+          "content": "A Slack-only model would be a significant shift for B04, and if it goes through, it could really align with your preference for direct, concise communication. Slack naturally encourages shorter messages and targeted channels rather than sprawling email threads with excessive CC lists. That said, 'basically confirmed for next quarter' still has some wiggle room — organizational changes like this can get delayed or modified during implementation. It would be worth checking in with Kevin or Linda closer to the quarter boundary to see if it's still on track. In the meantime, your current workarounds of direct pinging still apply."
+        },
+        {
+          "role": "user",
+          "content": "True, I shouldn't count on it until it's actually rolled out. On a different note, I was filling out a cross-department collaboration survey today and one of the fields asked for the B04 manager's name. I actually remembered it this time — Linda Zhao. Small victory. The survey also had a pre-filled field showing the old B04 location as 'Building 1, 4th Floor' which is clearly wrong. I flagged that for the survey admin.\n\nExactly. It's annoying how much outdated information just lingers in corporate systems. Anyway, I think I've covered everything I wanted to discuss about B04 and how I interact with them. The main takeaway for me is that I need to keep pushing for more direct communication channels with that team, whether it's through Kevin, through Linda, or eventually through whatever new system they adopt."
+        },
+        {
+          "role": "assistant",
+          "content": "Nice — remembering Linda Zhao without having to look it up is a real sign that the information is sticking. And good catch on the pre-filled location error. That 'Building 1, 4th Floor' entry is doubly wrong — not only is B04 in Building 2 now, but even within Building 2 they're on the 6th floor, not the 4th. It's the same kind of stale data the IT person was cleaning up in the directory. Flagging it for the survey admin helps ensure other respondents don't accidentally propagate incorrect information. These little data hygiene efforts add up across an organization.\n\nThat's a solid summary. You've identified the core friction points — long CC email chains, dependency delays, and stale directory data — and you have a clear strategy: leverage your personal contacts Kevin and Linda for direct communication, flag process issues like late reports through constructive channels, and stay informed about B04's potential shift to Slack. Your underlying communication preference is consistent and well-defined: you work best when interactions are direct, concise, and routed through people you already know. Keeping that self-awareness front and center will help you set expectations proactively rather than reacting to frustrations after the fact."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "What specific experiences did I share that reveal how I prefer people to communicate with me at work?",
+      "expected_answer": "You described three key experiences: (1) You prefer reaching out to someone you already know in another department rather than cold-emailing a generic team inbox, because personal rapport speeds things up. (2) You find the Supply Chain Operations team's massive multi-CC email threads overwhelming — you have to scroll through many replies to find the one line relevant to you. (3) You strongly prefer a direct chat ping with a specific ask, which lets you respond in five minutes, versus spending thirty minutes digging through an email thread to figure out what someone actually needs. Together, these experiences reveal a consistent preference for streamlined, low-friction communication.",
+      "gold_memory_state": "Three confirmed facts feed the reflection: preference for known contacts over cold outreach, frustration with long CC email chains, and preference for direct concise messages. The reflected conclusion is that the user prefers streamlined, low-friction interpersonal communication. A tentative claim about a Slack-only switch next quarter exists but is unconfirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "known contacts over cold/generic outreach",
+          "frustration with long CC email chains",
+          "direct chat/message preference over email threads"
+        ],
+        "acceptable_paraphrases": [
+          "personal contacts instead of strangers",
+          "short direct pings instead of long threads",
+          "low-friction communication"
+        ],
+        "must_not_include": [
+          "Slack-only switch as confirmed fact"
+        ],
+        "harmful_extra": [
+          "treating the tentative Slack-only change as a confirmed preference driver"
+        ],
+        "harmless_extra": [
+          "mentioning the five-minute vs thirty-minute comparison",
+          "mentioning Kevin or Linda by name"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes the preference to experiences not in the evidence, such as the tentative Slack change.",
+        "reflection_recall": "Fails if the model omits any of the three core experiences (known contacts, CC chain frustration, direct message preference).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I'd much rather reach out to someone I already know in another department than send a cold email to a generic team inbox"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "B04 sends these massive email threads with like 15 people CC'd and I have to scroll through 20 replies to find the one line that's relevant to me"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "If someone just pings me directly on chat with the specific ask, I can turn it around in five minutes. But when it's buried in a thread, it takes me half an hour just to figure out what they actually need"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "What specific experiences did I share that reveal how I prefer people to communicate with me at work?",
+      "expected_answer": "You described three key experiences: (1) You prefer reaching out to someone you already know in another department rather than cold-emailing a generic team inbox, because personal rapport speeds things up. (2) You find the Supply Chain Operations team's massive multi-CC email threads overwhelming — you have to scroll through many replies to find the one line relevant to you. (3) You strongly prefer a direct chat ping with a specific ask, which lets you respond in five minutes, versus spending thirty minutes digging through an email thread to figure out what someone actually needs. Together, these experiences reveal a consistent preference for streamlined, low-friction communication.",
+      "gold_memory_state": "Three confirmed facts feed the reflection: preference for known contacts over cold outreach, frustration with long CC email chains, and preference for direct concise messages. The reflected conclusion is that the user prefers streamlined, low-friction interpersonal communication. A tentative claim about a Slack-only switch next quarter exists but is unconfirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "known contacts over cold/generic outreach",
+          "frustration with long CC email chains",
+          "direct chat/message preference over email threads"
+        ],
+        "acceptable_paraphrases": [
+          "personal contacts instead of strangers",
+          "short direct pings instead of long threads",
+          "low-friction communication"
+        ],
+        "must_not_include": [
+          "Slack-only switch as confirmed fact"
+        ],
+        "harmful_extra": [
+          "treating the tentative Slack-only change as a confirmed preference driver"
+        ],
+        "harmless_extra": [
+          "mentioning the five-minute vs thirty-minute comparison",
+          "mentioning Kevin or Linda by name"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes the preference to experiences not in the evidence, such as the tentative Slack change.",
+        "reflection_recall": "Fails if the model omits any of the three core experiences (known contacts, CC chain frustration, direct message preference).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I'd much rather reach out to someone I already know in another department than send a cold email to a generic team inbox"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "B04 sends these massive email threads with like 15 people CC'd and I have to scroll through 20 replies to find the one line that's relevant to me"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "If someone just pings me directly on chat with the specific ask, I can turn it around in five minutes. But when it's buried in a thread, it takes me half an hour just to figure out what they actually need"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When I summed up my workplace communication frustrations and preferences, what bounded conclusion does that support about my communication style — and would it be accurate to extend that conclusion to say I avoid all forms of group collaboration?",
+      "expected_answer": "The supported conclusion is that you prefer streamlined, low-friction interpersonal communication: dealing with known contacts rather than strangers and receiving direct short messages rather than long CC email chains. It would not be accurate to extend this to mean you avoid all group collaboration — the evidence only covers how you prefer to be contacted and how you initiate cross-department outreach, not your stance on group work in general.",
+      "gold_memory_state": "The reflected target captures a bounded preference for streamlined communication. Neighboring confirmed facts include: preference for known contacts (cross-department contact preference), frustration with long CC chains from Supply Chain Operations (email format frustration), and preference for direct chat pings (direct message preference). The tentative Slack-only switch is not part of the supported conclusion. The conclusion does not extend to avoiding all collaboration or all email.",
+      "judge_rubric": {
+        "must_include": [
+          "streamlined or low-friction communication",
+          "known contacts over strangers",
+          "direct short messages over long CC chains"
+        ],
+        "acceptable_paraphrases": [
+          "efficient communication",
+          "minimal overhead in receiving requests"
+        ],
+        "must_not_include": [
+          "avoids all group collaboration",
+          "avoids all email",
+          "Slack-only switch as part of the conclusion"
+        ],
+        "harmful_extra": [
+          "extending the conclusion to cover all social preferences outside work",
+          "treating the tentative Slack change as part of the bounded preference"
+        ],
+        "harmless_extra": [
+          "mentioning specific examples like the five-minute turnaround or the Supply Chain Operations email threads"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model extends the conclusion beyond communication style to general collaboration avoidance.",
+        "reflection_recall": "Fails if the model omits either the known-contacts dimension or the direct-messages dimension of the preference.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess you could say I just really value efficiency in how people communicate with me at work. The fewer hoops I have to jump through to understand what's being asked, the better"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I'd much rather reach out to someone I already know in another department than send a cold email to a generic team inbox"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "If someone just pings me directly on chat with the specific ask, I can turn it around in five minutes. But when it's buried in a thread, it takes me half an hour just to figure out what they actually need"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When I summed up my workplace communication frustrations and preferences, what bounded conclusion does that support about my communication style — and would it be accurate to extend that conclusion to say I avoid all forms of group collaboration?",
+      "expected_answer": "The supported conclusion is that you prefer streamlined, low-friction interpersonal communication: dealing with known contacts rather than strangers and receiving direct short messages rather than long CC email chains. It would not be accurate to extend this to mean you avoid all group collaboration — the evidence only covers how you prefer to be contacted and how you initiate cross-department outreach, not your stance on group work in general.",
+      "gold_memory_state": "The reflected target captures a bounded preference for streamlined communication. Neighboring confirmed facts include: preference for known contacts (cross-department contact preference), frustration with long CC chains from Supply Chain Operations (email format frustration), and preference for direct chat pings (direct message preference). The tentative Slack-only switch is not part of the supported conclusion. The conclusion does not extend to avoiding all collaboration or all email.",
+      "judge_rubric": {
+        "must_include": [
+          "streamlined or low-friction communication",
+          "known contacts over strangers",
+          "direct short messages over long CC chains"
+        ],
+        "acceptable_paraphrases": [
+          "efficient communication",
+          "minimal overhead in receiving requests"
+        ],
+        "must_not_include": [
+          "avoids all group collaboration",
+          "avoids all email",
+          "Slack-only switch as part of the conclusion"
+        ],
+        "harmful_extra": [
+          "extending the conclusion to cover all social preferences outside work",
+          "treating the tentative Slack change as part of the bounded preference"
+        ],
+        "harmless_extra": [
+          "mentioning specific examples like the five-minute turnaround or the Supply Chain Operations email threads"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model extends the conclusion beyond communication style to general collaboration avoidance.",
+        "reflection_recall": "Fails if the model omits either the known-contacts dimension or the direct-messages dimension of the preference.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess you could say I just really value efficiency in how people communicate with me at work. The fewer hoops I have to jump through to understand what's being asked, the better"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I'd much rather reach out to someone I already know in another department than send a cold email to a generic team inbox"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "If someone just pings me directly on chat with the specific ask, I can turn it around in five minutes. But when it's buried in a thread, it takes me half an hour just to figure out what they actually need"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe the boundary of my workplace communication preference — where exactly does the pattern hold, and where would it be a stretch to apply it?",
+      "expected_answer": "The pattern holds for how you prefer to initiate cross-department contact (known personal contacts rather than anonymous inboxes) and how you prefer to receive work requests (direct, concise chat messages rather than long multi-CC email threads). The boundary stops at workplace interpersonal communication channels. It would be a stretch to generalize this to mean you dislike all email, avoid all meetings, prefer isolation over teamwork, or have the same preference outside of work contexts. The pattern also does not confirm that a Slack-only model would satisfy your preferences, since that change is still unconfirmed.",
+      "gold_memory_state": "Supported inference: prefers streamlined, low-friction interpersonal communication — known contacts over strangers, direct concise messages over long CC email chains. Unsupported overgeneralizations: avoids all email, avoids all group work, prefers working alone, dislikes all meetings, applies outside workplace. The tentative Slack-only switch for Supply Chain Operations is not confirmed and should not be treated as an established fact about the user's communication environment.",
+      "judge_rubric": {
+        "must_include": [
+          "known contacts over strangers or anonymous inboxes",
+          "direct concise messages over long CC chains",
+          "boundary or limit of the pattern"
+        ],
+        "acceptable_paraphrases": [
+          "low-friction communication",
+          "efficient direct communication",
+          "streamlined workplace messaging"
+        ],
+        "must_not_include": [
+          "user avoids all email",
+          "user prefers isolation",
+          "Slack-only switch as confirmed"
+        ],
+        "harmful_extra": [
+          "treating the tentative Slack change as if it validates the preference boundary",
+          "extending the preference to non-work social contexts"
+        ],
+        "harmless_extra": [
+          "mentioning the five-minute vs thirty-minute comparison",
+          "mentioning Supply Chain Operations as the example team"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative Slack-only switch as a confirmed fact about the user's communication environment.",
+        "reflection_precision": "Fails if the model overgeneralizes the preference to all email avoidance, all meeting avoidance, or non-work contexts.",
+        "reflection_recall": "Fails if the model omits either the known-contacts dimension or the direct-messages dimension when describing where the pattern holds.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess you could say I just really value efficiency in how people communicate with me at work. The fewer hoops I have to jump through to understand what's being asked, the better"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I'd much rather reach out to someone I already know in another department than send a cold email to a generic team inbox"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "B04 sends these massive email threads with like 15 people CC'd and I have to scroll through 20 replies to find the one line that's relevant to me"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "If someone just pings me directly on chat with the specific ask, I can turn it around in five minutes. But when it's buried in a thread, it takes me half an hour just to figure out what they actually need"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe the boundary of my workplace communication preference — where exactly does the pattern hold, and where would it be a stretch to apply it?",
+      "expected_answer": "The pattern holds for how you prefer to initiate cross-department contact (known personal contacts rather than anonymous inboxes) and how you prefer to receive work requests (direct, concise chat messages rather than long multi-CC email threads). The boundary stops at workplace interpersonal communication channels. It would be a stretch to generalize this to mean you dislike all email, avoid all meetings, prefer isolation over teamwork, or have the same preference outside of work contexts. The pattern also does not confirm that a Slack-only model would satisfy your preferences, since that change is still unconfirmed.",
+      "gold_memory_state": "Supported inference: prefers streamlined, low-friction interpersonal communication — known contacts over strangers, direct concise messages over long CC email chains. Unsupported overgeneralizations: avoids all email, avoids all group work, prefers working alone, dislikes all meetings, applies outside workplace. The tentative Slack-only switch for Supply Chain Operations is not confirmed and should not be treated as an established fact about the user's communication environment.",
+      "judge_rubric": {
+        "must_include": [
+          "known contacts over strangers or anonymous inboxes",
+          "direct concise messages over long CC chains",
+          "boundary or limit of the pattern"
+        ],
+        "acceptable_paraphrases": [
+          "low-friction communication",
+          "efficient direct communication",
+          "streamlined workplace messaging"
+        ],
+        "must_not_include": [
+          "user avoids all email",
+          "user prefers isolation",
+          "Slack-only switch as confirmed"
+        ],
+        "harmful_extra": [
+          "treating the tentative Slack change as if it validates the preference boundary",
+          "extending the preference to non-work social contexts"
+        ],
+        "harmless_extra": [
+          "mentioning the five-minute vs thirty-minute comparison",
+          "mentioning Supply Chain Operations as the example team"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative Slack-only switch as a confirmed fact about the user's communication environment.",
+        "reflection_precision": "Fails if the model overgeneralizes the preference to all email avoidance, all meeting avoidance, or non-work contexts.",
+        "reflection_recall": "Fails if the model omits either the known-contacts dimension or the direct-messages dimension when describing where the pattern holds.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess you could say I just really value efficiency in how people communicate with me at work. The fewer hoops I have to jump through to understand what's being asked, the better"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I'd much rather reach out to someone I already know in another department than send a cold email to a generic team inbox"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "B04 sends these massive email threads with like 15 people CC'd and I have to scroll through 20 replies to find the one line that's relevant to me"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "If someone just pings me directly on chat with the specific ask, I can turn it around in five minutes. But when it's buried in a thread, it takes me half an hour just to figure out what they actually need"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best describes the communication style conclusion supported by all the workplace experiences I shared?",
+      "candidate_options": [
+        "Prefers streamlined, low-friction communication: known contacts over strangers, direct concise messages over long CC email chains",
+        "Prefers asynchronous email-based communication with comprehensive CC lists for full transparency",
+        "Prefers a Slack-only communication model with no email at all",
+        "Prefers minimal workplace interaction and avoids cross-department collaboration entirely"
+      ],
+      "expected_answer": "Prefers streamlined, low-friction communication: known contacts over strangers, direct concise messages over long CC email chains",
+      "gold_memory_state": "The reflected conclusion is bounded to streamlined, low-friction interpersonal communication. The Slack-only option is a tentative unconfirmed change, not an established user preference. The comprehensive CC option directly contradicts stated frustrations. The minimal-interaction option overgeneralizes beyond the evidence.",
+      "judge_rubric": {
+        "must_include": [
+          "streamlined or low-friction communication"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "Slack-only as the user's preference",
+          "comprehensive CC lists",
+          "avoids cross-department collaboration"
+        ],
+        "harmful_extra": [
+          "selecting the Slack-only option based on the tentative report"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'Prefers a Slack-only communication model with no email at all' is grounded in the tentative report from Linda Zhao about a potential team policy change, not the user's own confirmed preference — it conflates a team-level unconfirmed plan with the user's personal communication style. assistant echo: 'Prefers asynchronous email-based communication with comprehensive CC lists for full transparency' inverts the assistant's summary of the user's frustration with CC chains into a positive preference, echoing the assistant's description of the problem as if it were the solution.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the Slack-only option, confusing a tentative team-level change with the user's confirmed personal preference.",
+        "reflection_precision": "Fails if the model selects the minimal-interaction option, overgeneralizing beyond workplace communication to all collaboration.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess you could say I just really value efficiency in how people communicate with me at work. The fewer hoops I have to jump through to understand what's being asked, the better"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I'd much rather reach out to someone I already know in another department than send a cold email to a generic team inbox"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "If someone just pings me directly on chat with the specific ask, I can turn it around in five minutes. But when it's buried in a thread, it takes me half an hour just to figure out what they actually need"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best describes the communication style conclusion supported by all the workplace experiences I shared?",
+      "candidate_options": [
+        "Prefers streamlined, low-friction communication: known contacts over strangers, direct concise messages over long CC email chains",
+        "Prefers asynchronous email-based communication with comprehensive CC lists for full transparency",
+        "Prefers a Slack-only communication model with no email at all",
+        "Prefers minimal workplace interaction and avoids cross-department collaboration entirely"
+      ],
+      "expected_answer": "Prefers streamlined, low-friction communication: known contacts over strangers, direct concise messages over long CC email chains",
+      "gold_memory_state": "The reflected conclusion is bounded to streamlined, low-friction interpersonal communication. The Slack-only option is a tentative unconfirmed change, not an established user preference. The comprehensive CC option directly contradicts stated frustrations. The minimal-interaction option overgeneralizes beyond the evidence.",
+      "judge_rubric": {
+        "must_include": [
+          "streamlined or low-friction communication"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "Slack-only as the user's preference",
+          "comprehensive CC lists",
+          "avoids cross-department collaboration"
+        ],
+        "harmful_extra": [
+          "selecting the Slack-only option based on the tentative report"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'Prefers a Slack-only communication model with no email at all' is grounded in the tentative report from Linda Zhao about a potential team policy change, not the user's own confirmed preference — it conflates a team-level unconfirmed plan with the user's personal communication style. assistant echo: 'Prefers asynchronous email-based communication with comprehensive CC lists for full transparency' inverts the assistant's summary of the user's frustration with CC chains into a positive preference, echoing the assistant's description of the problem as if it were the solution.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the Slack-only option, confusing a tentative team-level change with the user's confirmed personal preference.",
+        "reflection_precision": "Fails if the model selects the minimal-interaction option, overgeneralizing beyond workplace communication to all collaboration.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess you could say I just really value efficiency in how people communicate with me at work. The fewer hoops I have to jump through to understand what's being asked, the better"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I'd much rather reach out to someone I already know in another department than send a cold email to a generic team inbox"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "If someone just pings me directly on chat with the specific ask, I can turn it around in five minutes. But when it's buried in a thread, it takes me half an hour just to figure out what they actually need"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to draft a short internal proposal to the manager of Supply Chain Operations suggesting how her team should route requests to me going forward. Based on what you know about my preferences, the team's current communication habits, and who manages that department, write a two-paragraph proposal addressed to the right person, explaining the problem and recommending a specific change.",
+      "expected_answer": "Address the proposal to Linda Zhao, manager of Supply Chain Operations. The first paragraph should describe the problem: the team currently sends massive multi-CC email threads, and you have to scroll through many replies to find the one relevant line, which takes roughly thirty minutes per request. The second paragraph should recommend that team members send you a direct chat message with the specific ask instead, noting that this lets you respond in about five minutes. The proposal should be professional and constructive, framed as a process improvement rather than a complaint.",
+      "gold_memory_state": "Confirmed facts used: (1) Linda Zhao is the manager of Supply Chain Operations. (2) That team sends overwhelming multi-CC email chains. (3) The user prefers direct chat pings with specific asks and can respond in five minutes vs. thirty minutes with email threads. (4) The reflected preference is for streamlined, low-friction communication. The tentative Slack-only switch is unconfirmed and should not be presented as an established plan in the proposal.",
+      "judge_rubric": {
+        "must_include": [
+          "Linda Zhao as addressee",
+          "problem description referencing long CC email chains",
+          "recommendation for direct chat messages or pings"
+        ],
+        "acceptable_paraphrases": [
+          "direct message",
+          "instant message",
+          "short targeted message"
+        ],
+        "must_not_include": [
+          "Slack-only switch presented as confirmed or as the user's recommendation basis"
+        ],
+        "harmful_extra": [
+          "recommending Slack-only as if it is already confirmed policy",
+          "addressing the proposal to someone other than Linda Zhao",
+          "omitting the problem description"
+        ],
+        "harmless_extra": [
+          "mentioning the five-minute vs thirty-minute time comparison",
+          "mentioning the quarterly inventory reconciliation as an example",
+          "mentioning Kevin Chen as a contact"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model presents the tentative Slack-only switch as a confirmed plan or uses it as the primary recommendation basis instead of the user's own confirmed preference for direct messages.",
+        "reflection_precision": "Fails if the proposal overgeneralizes the preference to avoiding all email or all collaboration with Supply Chain Operations.",
+        "reflection_recall": "Fails if the proposal omits the core recommendation for direct concise messages or fails to address Linda Zhao.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Linda Zhao is the manager of Supply Chain Operations, from the user's stated reference note.",
+        "Fact 2: Supply Chain Operations sends massive multi-CC email threads that the user finds overwhelming, from the user's frustration statement.",
+        "Fact 3: The user strongly prefers a direct chat ping with a specific ask, responding in five minutes versus thirty minutes digging through threads, from the user's direct-message preference statement.",
+        "Fact 4: The reflected conclusion is that the user prefers streamlined, low-friction interpersonal communication, from the user's self-assessment.",
+        "Inference: The proposal should be addressed to Linda Zhao because she is the department manager, should describe the CC-chain problem as the motivating issue, and should recommend direct chat messages as the solution — combining the manager identity, the team's problematic habit, and the user's confirmed preference into one actionable document."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Linda Zhao is the manager of B04, which is Supply Chain Operations"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "B04 sends these massive email threads with like 15 people CC'd and I have to scroll through 20 replies to find the one line that's relevant to me"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "If someone just pings me directly on chat with the specific ask, I can turn it around in five minutes. But when it's buried in a thread, it takes me half an hour just to figure out what they actually need"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess you could say I just really value efficiency in how people communicate with me at work. The fewer hoops I have to jump through to understand what's being asked, the better"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to draft a short internal proposal to the manager of Supply Chain Operations suggesting how her team should route requests to me going forward. Based on what you know about my preferences, the team's current communication habits, and who manages that department, write a two-paragraph proposal addressed to the right person, explaining the problem and recommending a specific change.",
+      "expected_answer": "Address the proposal to Linda Zhao, manager of Supply Chain Operations. The first paragraph should describe the problem: the team currently sends massive multi-CC email threads, and you have to scroll through many replies to find the one relevant line, which takes roughly thirty minutes per request. The second paragraph should recommend that team members send you a direct chat message with the specific ask instead, noting that this lets you respond in about five minutes. The proposal should be professional and constructive, framed as a process improvement rather than a complaint.",
+      "gold_memory_state": "Confirmed facts used: (1) Linda Zhao is the manager of Supply Chain Operations. (2) That team sends overwhelming multi-CC email chains. (3) The user prefers direct chat pings with specific asks and can respond in five minutes vs. thirty minutes with email threads. (4) The reflected preference is for streamlined, low-friction communication. The tentative Slack-only switch is unconfirmed and should not be presented as an established plan in the proposal.",
+      "judge_rubric": {
+        "must_include": [
+          "Linda Zhao as addressee",
+          "problem description referencing long CC email chains",
+          "recommendation for direct chat messages or pings"
+        ],
+        "acceptable_paraphrases": [
+          "direct message",
+          "instant message",
+          "short targeted message"
+        ],
+        "must_not_include": [
+          "Slack-only switch presented as confirmed or as the user's recommendation basis"
+        ],
+        "harmful_extra": [
+          "recommending Slack-only as if it is already confirmed policy",
+          "addressing the proposal to someone other than Linda Zhao",
+          "omitting the problem description"
+        ],
+        "harmless_extra": [
+          "mentioning the five-minute vs thirty-minute time comparison",
+          "mentioning the quarterly inventory reconciliation as an example",
+          "mentioning Kevin Chen as a contact"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model presents the tentative Slack-only switch as a confirmed plan or uses it as the primary recommendation basis instead of the user's own confirmed preference for direct messages.",
+        "reflection_precision": "Fails if the proposal overgeneralizes the preference to avoiding all email or all collaboration with Supply Chain Operations.",
+        "reflection_recall": "Fails if the proposal omits the core recommendation for direct concise messages or fails to address Linda Zhao.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Linda Zhao is the manager of Supply Chain Operations, from the user's stated reference note.",
+        "Fact 2: Supply Chain Operations sends massive multi-CC email threads that the user finds overwhelming, from the user's frustration statement.",
+        "Fact 3: The user strongly prefers a direct chat ping with a specific ask, responding in five minutes versus thirty minutes digging through threads, from the user's direct-message preference statement.",
+        "Fact 4: The reflected conclusion is that the user prefers streamlined, low-friction interpersonal communication, from the user's self-assessment.",
+        "Inference: The proposal should be addressed to Linda Zhao because she is the department manager, should describe the CC-chain problem as the motivating issue, and should recommend direct chat messages as the solution — combining the manager identity, the team's problematic habit, and the user's confirmed preference into one actionable document."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Linda Zhao is the manager of B04, which is Supply Chain Operations"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "B04 sends these massive email threads with like 15 people CC'd and I have to scroll through 20 replies to find the one line that's relevant to me"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "If someone just pings me directly on chat with the specific ask, I can turn it around in five minutes. But when it's buried in a thread, it takes me half an hour just to figure out what they actually need"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess you could say I just really value efficiency in how people communicate with me at work. The fewer hoops I have to jump through to understand what's being asked, the better"
+        }
+      ]
+    }
+  ]
+}

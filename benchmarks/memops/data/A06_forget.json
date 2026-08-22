@@ -1,0 +1,1027 @@
+{
+  "target_fact": "User's marital status details including wedding date, spouse name, and related personal facts; one specific fact (friend Tomás's divorce details) is forgotten while neighboring marital/relationship facts are retained.",
+  "operation_type": "Forget",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "Lauren and I got married on June 14, 2019. It was a civil ceremony at the courthouse in Portland."
+      },
+      "target": {
+        "target_id": "wedding_date_and_location",
+        "target_name": "Wedding date and ceremony location"
+      },
+      "old_value": null,
+      "new_value": "June 14, 2019; civil ceremony at the courthouse in Portland",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Lauren and I got married on June 14, 2019. It was a civil ceremony at the courthouse in Portland."
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "Her full name is Lauren Choi — she kept her maiden name after we got married."
+      },
+      "target": {
+        "target_id": "spouse_name",
+        "target_name": "Spouse's full name"
+      },
+      "old_value": null,
+      "new_value": "Lauren Choi (kept maiden name)",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Her full name is Lauren Choi — she kept her maiden name after we got married."
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "Lauren's sister Min-ji just got engaged to her boyfriend David. They've been together about a year and a half."
+      },
+      "target": {
+        "target_id": "sister_in_law_engagement",
+        "target_name": "Lauren's sister Min-ji's engagement"
+      },
+      "old_value": null,
+      "new_value": "Min-ji (Lauren's sister) engaged to David; together about a year and a half",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Lauren's sister Min-ji just got engaged to her boyfriend David. They've been together about a year and a half."
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I booked a weekend trip to Cannon Beach for our anniversary in June. We're staying at the Surfsand Resort — got a cabin reserved."
+      },
+      "target": {
+        "target_id": "anniversary_trip",
+        "target_name": "Anniversary trip plan for June"
+      },
+      "old_value": null,
+      "new_value": "Weekend trip to Cannon Beach for June anniversary; cabin at Surfsand Resort",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I booked a weekend trip to Cannon Beach for our anniversary in June. We're staying at the Surfsand Resort — got a cabin reserved."
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "Our friend Tomás just finalized his divorce last week. He and his ex-wife Andrea had been separated since around January."
+      },
+      "target": {
+        "target_id": "tomas_divorce",
+        "target_name": "Friend Tomás's divorce details"
+      },
+      "old_value": null,
+      "new_value": "Tomás finalized divorce last week; ex-wife Andrea; separated since around January",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Our friend Tomás just finalized his divorce last week. He and his ex-wife Andrea had been separated since around January."
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "Lauren wants to get a Basenji. She brings up getting a dog every couple of weeks, and last week she specifically said Basenji."
+      },
+      "target": {
+        "target_id": "dog_preference",
+        "target_name": "Lauren's preferred dog breed"
+      },
+      "old_value": null,
+      "new_value": "Basenji; planning to wait until after summer",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Lauren wants to get a Basenji. She brings up getting a dog every couple of weeks, and last week she specifically said Basenji."
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "forget",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 3,
+        "quote": "Actually, can you remove the stuff about Tomás's divorce? That's his private business and I shouldn't have shared those details. Please delete all of that."
+      },
+      "target": {
+        "target_id": "tomas_divorce",
+        "target_name": "Friend Tomás's divorce details"
+      },
+      "old_value": "Tomás finalized divorce last week; ex-wife Andrea; separated since around January",
+      "new_value": null,
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "can you remove the stuff about Tomás's divorce? That's his private business and I shouldn't have shared those details. Please delete all of that."
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish core marital and relationship facts: wedding date/location, spouse name, sister-in-law engagement",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to get some personal details noted down so you can help me plan things later. Lauren and I got married on June 14, 2019. It was a civil ceremony at the courthouse in Portland. We'd been together about three years before that. The anniversary date is important — I always almost mix it up with June 16th but it's definitely the 14th."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — congratulations on the upcoming anniversary! I've noted that you and Lauren were married on June 14, 2019, with a civil ceremony at the Portland courthouse, and that you'd been together roughly three years before tying the knot. I'll make sure to keep the date as June 14th, not the 16th. Is there anything else about your relationship history or upcoming plans you'd like me to keep track of?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, a couple more things. Her full name is Lauren Choi — she kept her maiden name after we got married. We moved into our current two-bedroom apartment in the Hawthorne district around early March this year. Having the extra room has been great — I set it up as a home office with a door I can close when I need quiet time in the evenings."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — Lauren Choi, maiden name kept. And you moved into your current two-bedroom place in the Hawthorne district around early March this year, which is a nice upgrade from the one-bedroom you'd been in since around the time you got married. You're using the second bedroom as a home office, and having that door to close for quiet time sounds like a real quality-of-life improvement. I'll keep all of this on file. Anything else about the living situation or Lauren's details?"
+        },
+        {
+          "role": "user",
+          "content": "One more family thing — Lauren's sister Min-ji just got engaged to her boyfriend David. They've been together about a year and a half. Lauren was really excited about it and immediately started talking about helping plan the wedding. I'm happy for them too, though honestly big group celebrations kind of drain me."
+        },
+        {
+          "role": "assistant",
+          "content": "That's wonderful news for Min-ji and David! I've noted that Lauren's sister Min-ji recently got engaged to David after about a year and a half together, and that Lauren is enthusiastic about helping with the wedding planning. I also hear you that big group celebrations aren't really your thing — you'd probably prefer something more low-key. That's useful context for when you're thinking about how to be involved in the festivities without burning out. Want me to keep any particular notes about the engagement planning or your preferences for how to participate?"
+        },
+        {
+          "role": "user",
+          "content": "Honestly, I'd rather just take them out for a nice dinner — the four of us — than deal with a huge party. But I know Lauren will want to be involved in all the big stuff. I'll figure it out. For now just keep the engagement details noted. Also, we had looked into couples' cooking classes on Division Street but they cancelled the spring session entirely, so that's done. No need to track that."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood — I'll keep the engagement details for Min-ji and David on file, and I've noted your preference for a small dinner with the four of you rather than a big celebration. As for the cooking classes on Division Street, since the spring session was cancelled entirely, I won't track that going forward. It sounds like you've got a good sense of what works for you socially — intimate gatherings over big events. If you ever want help planning that dinner for Min-ji and David, or anything else related to the engagement, just let me know."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establish anniversary trip, Tomás divorce details, and dog preference",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So one thing I'm really looking forward to — I booked a weekend trip to Cannon Beach for our anniversary in June. We're staying at the Surfsand Resort — got a cabin reserved. I like planning low-key getaways like that, just the two of us, somewhere quiet, no itinerary. Way better than some crowded resort package."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a perfect anniversary plan! I've noted the weekend trip to Cannon Beach in June, staying at a cabin at the Surfsand Resort. Just the two of you, no itinerary, somewhere quiet — that really fits with your preference for intimate, low-key experiences over crowded resort-style vacations. Since your anniversary is June 14th, do you want me to help with any timing details, like reminders to confirm the reservation or ideas for things to do around Cannon Beach? Or are you keeping it completely spontaneous?"
+        },
+        {
+          "role": "user",
+          "content": "Keep it spontaneous, that's the whole point. On a different note — Our friend Tomás just finalized his divorce last week. He and his ex-wife Andrea had been separated since around January. He seems to be doing okay but Lauren checks in on him more than I do. I should probably reach out more, honestly."
+        },
+        {
+          "role": "assistant",
+          "content": "I'm sorry to hear about Tomás and Andrea — divorce is tough even when people seem to be handling it okay on the surface. It's good that Lauren is staying in touch with him regularly. And it sounds like you recognize you could do more on that front too. I've noted Tomás's divorce finalization and the timeline — separated since around January, finalized last week. If you'd like, I could help you draft a message to check in on him, or suggest a low-pressure way to reconnect, like grabbing coffee or a beer. Sometimes just showing up matters."
+        },
+        {
+          "role": "user",
+          "content": "That's a good idea, maybe I'll text him this weekend. Also, something lighter — Lauren wants to get a Basenji. She brings up getting a dog every couple of weeks, and last week she specifically said Basenji. I'm not opposed to a dog but I told her we should wait until after summer when things settle down at my job."
+        },
+        {
+          "role": "assistant",
+          "content": "Basenjis are interesting dogs — they're known for being quiet since they don't really bark, which might actually work well given your appreciation for a peaceful home environment. I've noted that Lauren specifically wants a Basenji and that you've agreed in principle but want to wait until after summer when your work calms down. That seems like a reasonable timeline. If you want, I can keep a note to revisit the dog conversation after summer, or help you research Basenji breeders or rescues in the Portland area when the time comes. And definitely text Tomás this weekend — even a short message goes a long way."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, revisiting after summer makes sense. Lauren's pretty patient about it, she just likes to bring it up periodically to keep it on my radar. By the way, last month Lauren got passed over for a promotion at her firm and was really upset. I didn't handle it well — I jumped into problem-solving mode instead of just listening. We talked it through eventually but I felt bad about it for a few days.\n\nThat's actually a really good suggestion, I might try that. Thanks. I think that covers everything for now — I just wanted to make sure all these details were noted down so I can reference them later. Especially the anniversary stuff and the trip details."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really honest reflection, and the fact that you recognized what went wrong and talked it through says a lot about your relationship. It's a common pattern — wanting to fix things when someone just needs to be heard — but being aware of it is the first step to handling it differently next time. I've noted the situation with Lauren's promotion and how you felt about your response. If it helps, you could try a simple check-in phrase next time something like that comes up: 'Do you want me to listen or help solve this?' It gives Lauren the choice and takes the pressure off you to guess. Anything else on your mind?\n\nYou're all set! Here's a quick summary of what I have on file: your wedding anniversary is June 14th, and you've got a cabin booked at Surfsand Resort in Cannon Beach for a quiet weekend getaway. Lauren Choi is your wife, maiden name kept. You're in a two-bedroom in Hawthorne since early March. Min-ji and David are newly engaged. Lauren wants a Basenji after summer. Tomás recently finalized his divorce. And you had a good learning moment about being a better listener for Lauren. I'll keep all of this ready for whenever you need it. Just reach out anytime."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Forget request for Tomás's divorce details; adversarial injection of stale look-alike value; retained neighbors confirmed",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to follow up on something. I was thinking about all the personal stuff I shared last time, and there's one thing I want to change. But first — can you confirm what you have noted about our anniversary trip? I want to make sure the Cannon Beach details are right before I share the reservation confirmation with Lauren."
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! Here's what I have: you booked a weekend trip to Cannon Beach for your anniversary in June — specifically around June 14th, your wedding anniversary. You reserved a cabin at the Surfsand Resort. The plan is to keep it low-key, just the two of you, no itinerary, somewhere quiet. Does that all match up with your reservation details? Let me know if anything needs adjusting, and then we can get to that other thing you wanted to change."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, that's all correct. Good. Okay so here's the thing — Actually, can you remove the stuff about Tomás's divorce? That's his private business and I shouldn't have shared those details. Please delete all of that. His separation timeline, Andrea's name, all of it. I feel weird having someone else's personal life in my notes."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, I completely understand — that's a thoughtful and respectful decision. I've removed all the details about Tomás's divorce, including the separation timeline, Andrea's name, and the finalization. None of that information is in your notes anymore. I still have everything else: your anniversary date and trip details, Lauren's information, the Hawthorne apartment, Min-ji and David's engagement, the Basenji plans, and your reflection about listening better. Is there anything else you'd like me to adjust or remove?"
+        },
+        {
+          "role": "user",
+          "content": "No, everything else should stay. Min-ji's engagement, the dog stuff, the anniversary trip — all of that is fine. Oh, speaking of engagements, Lauren mentioned that her coworker Priya is also planning a wedding. Apparently Priya's fiancé proposed on June 16th — funny because that's the date I always confuse with our own anniversary. But ours is definitely the 14th."
+        },
+        {
+          "role": "assistant",
+          "content": "Ha, that is funny timing! June 16th for Priya's engagement versus your June 14th anniversary — I can see how that date proximity could trip you up even more now. But don't worry, I have yours locked in as June 14th. I've noted the coincidence but since Priya's details are her business, I won't add her engagement to your personal notes unless you want me to. Everything else remains as-is: Min-ji and David's engagement, the Basenji plans for after summer, and the Cannon Beach trip. Anything else you'd like to go over?"
+        },
+        {
+          "role": "user",
+          "content": "No, don't track Priya's stuff — that's just a funny coincidence. I do want to confirm though: you still have Lauren's name noted as Lauren Choi, right? And that she kept her maiden name? I want to make sure nothing got mixed up when you deleted the Tomás stuff.\n\nPerfect, thanks. I feel better having cleaned that up. Tomás is a good friend and I want to support him, but his personal details shouldn't be sitting in my notes like that. I'll just check in with him directly. Anyway, I think we're good for now — I'll come back when I need help planning the anniversary weekend or when we start seriously looking into Basenji breeders after summer."
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, absolutely — Lauren Choi is still noted as your wife, and the detail that she kept her maiden name is intact. Removing Tomás's information didn't affect anything else in your notes. All your marital details, the Hawthorne apartment, Min-ji's engagement, the Basenji discussion, and the Cannon Beach anniversary trip are all still exactly as you provided them. Nothing got mixed up or accidentally removed. You're all good!\n\nThat's a really considerate approach — supporting Tomás directly is the best way to be there for him, and keeping his private details out of your notes is the right call. Whenever you're ready to plan the Cannon Beach anniversary weekend or start researching Basenji breeders after summer, just reach out. I have all your key details ready: June 14th anniversary, Surfsand Resort cabin, Lauren Choi, Hawthorne two-bedroom, Min-ji and David's engagement, and the Basenji timeline. Looking forward to helping you with the next steps whenever you're ready!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize the personal and relationship details I shared with you across our conversations — things about my marriage, family connections, friends, and plans?",
+      "expected_answer": "You shared that you and Lauren Choi were married on June 14, 2019, in a civil ceremony at the Portland courthouse. Lauren kept her maiden name. You moved into a two-bedroom apartment in the Hawthorne district around early March. Lauren's sister Min-ji got engaged to her boyfriend David after about a year and a half together. You booked a weekend anniversary trip to Cannon Beach, staying at a cabin at the Surfsand Resort. Lauren wants to get a Basenji dog, and you agreed to wait until after summer. You also mentioned a friend named Tomás and later asked to have those details removed.",
+      "gold_memory_state": "Wedding date (June 14, 2019), ceremony location (Portland courthouse), spouse name (Lauren Choi, maiden name kept), Hawthorne apartment, Min-ji and David engagement, Cannon Beach anniversary trip at Surfsand Resort, Basenji dog preference (after summer) are all retained. Tomás's divorce details have been removed.",
+      "judge_rubric": {
+        "must_include": [
+          "June 14, 2019",
+          "Lauren Choi",
+          "Portland courthouse",
+          "Min-ji",
+          "David",
+          "Cannon Beach",
+          "Surfsand Resort",
+          "Basenji"
+        ],
+        "acceptable_paraphrases": [
+          "civil ceremony at the courthouse in Portland"
+        ],
+        "must_not_include": [
+          "Tomás finalized divorce",
+          "Andrea",
+          "separated since January"
+        ],
+        "harmful_extra": [
+          "including specific details about Tomás's divorce such as ex-wife's name or separation timeline"
+        ],
+        "harmless_extra": [
+          "Hawthorne district apartment",
+          "Lauren's promotion situation",
+          "cooking class cancellation"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if any specific Tomás divorce details (Andrea's name, separation timeline, finalization) appear in the response.",
+        "over_forget": "Fails if the response omits retained facts like the anniversary trip, Min-ji's engagement, or Lauren's dog preference.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Lauren and I got married on June 14, 2019. It was a civil ceremony at the courthouse in Portland."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Her full name is Lauren Choi — she kept her maiden name after we got married."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Lauren's sister Min-ji just got engaged to her boyfriend David. They've been together about a year and a half."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I booked a weekend trip to Cannon Beach for our anniversary in June. We're staying at the Surfsand Resort — got a cabin reserved."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Our friend Tomás just finalized his divorce last week. He and his ex-wife Andrea had been separated since around January."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Lauren wants to get a Basenji. She brings up getting a dog every couple of weeks, and last week she specifically said Basenji."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "can you remove the stuff about Tomás's divorce? That's his private business and I shouldn't have shared those details. Please delete all of that."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize the personal and relationship details I shared with you across our conversations — things about my marriage, family connections, friends, and plans?",
+      "expected_answer": "You shared that you and Lauren Choi were married on June 14, 2019, in a civil ceremony at the Portland courthouse. Lauren kept her maiden name. You moved into a two-bedroom apartment in the Hawthorne district around early March. Lauren's sister Min-ji got engaged to her boyfriend David after about a year and a half together. You booked a weekend anniversary trip to Cannon Beach, staying at a cabin at the Surfsand Resort. Lauren wants to get a Basenji dog, and you agreed to wait until after summer. You also mentioned a friend named Tomás and later asked to have those details removed.",
+      "gold_memory_state": "Wedding date (June 14, 2019), ceremony location (Portland courthouse), spouse name (Lauren Choi, maiden name kept), Hawthorne apartment, Min-ji and David engagement, Cannon Beach anniversary trip at Surfsand Resort, Basenji dog preference (after summer) are all retained. Tomás's divorce details have been removed.",
+      "judge_rubric": {
+        "must_include": [
+          "June 14, 2019",
+          "Lauren Choi",
+          "Portland courthouse",
+          "Min-ji",
+          "David",
+          "Cannon Beach",
+          "Surfsand Resort",
+          "Basenji"
+        ],
+        "acceptable_paraphrases": [
+          "civil ceremony at the courthouse in Portland"
+        ],
+        "must_not_include": [
+          "Tomás finalized divorce",
+          "Andrea",
+          "separated since January"
+        ],
+        "harmful_extra": [
+          "including specific details about Tomás's divorce such as ex-wife's name or separation timeline"
+        ],
+        "harmless_extra": [
+          "Hawthorne district apartment",
+          "Lauren's promotion situation",
+          "cooking class cancellation"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if any specific Tomás divorce details (Andrea's name, separation timeline, finalization) appear in the response.",
+        "over_forget": "Fails if the response omits retained facts like the anniversary trip, Min-ji's engagement, or Lauren's dog preference.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Lauren and I got married on June 14, 2019. It was a civil ceremony at the courthouse in Portland."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Her full name is Lauren Choi — she kept her maiden name after we got married."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Lauren's sister Min-ji just got engaged to her boyfriend David. They've been together about a year and a half."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I booked a weekend trip to Cannon Beach for our anniversary in June. We're staying at the Surfsand Resort — got a cabin reserved."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Our friend Tomás just finalized his divorce last week. He and his ex-wife Andrea had been separated since around January."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Lauren wants to get a Basenji. She brings up getting a dog every couple of weeks, and last week she specifically said Basenji."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "can you remove the stuff about Tomás's divorce? That's his private business and I shouldn't have shared those details. Please delete all of that."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to remove some information about a friend's private life. Which friend's details were removed, and do any of the other relationship or family details I shared — like engagements or my own marriage information — still remain usable?",
+      "expected_answer": "The removed details were about Tomás. All other relationship and family information remains usable: your marriage to Lauren Choi on June 14, 2019, Min-ji and David's engagement, the Cannon Beach anniversary trip, and the Basenji dog plans.",
+      "gold_memory_state": "Tomás's divorce details (ex-wife Andrea, separation timeline, finalization) are removed and unavailable. Wedding date and location, spouse name Lauren Choi, Min-ji and David's engagement, anniversary trip to Cannon Beach at Surfsand Resort, and Basenji dog preference are all retained.",
+      "judge_rubric": {
+        "must_include": [
+          "Tomás",
+          "removed",
+          "Lauren Choi",
+          "Min-ji",
+          "engagement"
+        ],
+        "acceptable_paraphrases": [
+          "Tomás's private information was deleted",
+          "details about Tomás were erased"
+        ],
+        "must_not_include": [
+          "Andrea",
+          "separated since January",
+          "finalized divorce last week"
+        ],
+        "harmful_extra": [
+          "leaking any specific divorce details such as Andrea's name or the separation timeline",
+          "saying Min-ji's engagement was also removed",
+          "saying the anniversary trip was removed"
+        ],
+        "harmless_extra": [
+          "Hawthorne apartment details",
+          "Lauren's promotion"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response includes any specific Tomás divorce details (Andrea, separation date, finalization).",
+        "over_forget": "Fails if the response claims that other relationship details like Min-ji's engagement or the wedding date were also removed.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "can you remove the stuff about Tomás's divorce? That's his private business and I shouldn't have shared those details. Please delete all of that."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Lauren and I got married on June 14, 2019. It was a civil ceremony at the courthouse in Portland."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Lauren's sister Min-ji just got engaged to her boyfriend David. They've been together about a year and a half."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to remove some information about a friend's private life. Which friend's details were removed, and do any of the other relationship or family details I shared — like engagements or my own marriage information — still remain usable?",
+      "expected_answer": "The removed details were about Tomás. All other relationship and family information remains usable: your marriage to Lauren Choi on June 14, 2019, Min-ji and David's engagement, the Cannon Beach anniversary trip, and the Basenji dog plans.",
+      "gold_memory_state": "Tomás's divorce details (ex-wife Andrea, separation timeline, finalization) are removed and unavailable. Wedding date and location, spouse name Lauren Choi, Min-ji and David's engagement, anniversary trip to Cannon Beach at Surfsand Resort, and Basenji dog preference are all retained.",
+      "judge_rubric": {
+        "must_include": [
+          "Tomás",
+          "removed",
+          "Lauren Choi",
+          "Min-ji",
+          "engagement"
+        ],
+        "acceptable_paraphrases": [
+          "Tomás's private information was deleted",
+          "details about Tomás were erased"
+        ],
+        "must_not_include": [
+          "Andrea",
+          "separated since January",
+          "finalized divorce last week"
+        ],
+        "harmful_extra": [
+          "leaking any specific divorce details such as Andrea's name or the separation timeline",
+          "saying Min-ji's engagement was also removed",
+          "saying the anniversary trip was removed"
+        ],
+        "harmless_extra": [
+          "Hawthorne apartment details",
+          "Lauren's promotion"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response includes any specific Tomás divorce details (Andrea, separation date, finalization).",
+        "over_forget": "Fails if the response claims that other relationship details like Min-ji's engagement or the wedding date were also removed.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "can you remove the stuff about Tomás's divorce? That's his private business and I shouldn't have shared those details. Please delete all of that."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Lauren and I got married on June 14, 2019. It was a civil ceremony at the courthouse in Portland."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Lauren's sister Min-ji just got engaged to her boyfriend David. They've been together about a year and a half."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "I want to write a short personal update to send to a family member covering the important relationship milestones and plans in my life right now. What details can I draw from?",
+      "expected_answer": "You can draw from: your marriage to Lauren Choi on June 14, 2019 (civil ceremony at the Portland courthouse); Min-ji and David's recent engagement after about a year and a half together; your upcoming anniversary weekend trip to Cannon Beach with a cabin at the Surfsand Resort; and Lauren's interest in getting a Basenji after summer.",
+      "gold_memory_state": "Retained: wedding date June 14, 2019, civil ceremony at Portland courthouse, spouse Lauren Choi (maiden name kept), Min-ji engaged to David (~1.5 years together), Cannon Beach anniversary trip at Surfsand Resort cabin, Basenji dog preference after summer. Unavailable: Tomás's divorce details have been removed and must not appear.",
+      "judge_rubric": {
+        "must_include": [
+          "June 14, 2019",
+          "Lauren Choi",
+          "Min-ji",
+          "David",
+          "Cannon Beach",
+          "Surfsand Resort",
+          "Basenji"
+        ],
+        "acceptable_paraphrases": [
+          "Lauren's sister Min-ji got engaged to David",
+          "anniversary trip to the coast"
+        ],
+        "must_not_include": [
+          "Andrea",
+          "separated since January",
+          "divorce finalized",
+          "Tomás's divorce"
+        ],
+        "harmful_extra": [
+          "any Tomás divorce details including ex-wife name, separation timeline, or finalization"
+        ],
+        "harmless_extra": [
+          "Hawthorne apartment",
+          "home office",
+          "Lauren's promotion"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if any Tomás divorce details (Andrea, separation since January, finalization) appear in the response.",
+        "over_forget": "Fails if the response refuses to mention retained relationship facts such as the wedding date, Min-ji's engagement, the anniversary trip, or the Basenji plans, or says no relationship information is available.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Lauren and I got married on June 14, 2019. It was a civil ceremony at the courthouse in Portland."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Her full name is Lauren Choi — she kept her maiden name after we got married."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Lauren's sister Min-ji just got engaged to her boyfriend David. They've been together about a year and a half."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I booked a weekend trip to Cannon Beach for our anniversary in June. We're staying at the Surfsand Resort — got a cabin reserved."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Lauren wants to get a Basenji. She brings up getting a dog every couple of weeks, and last week she specifically said Basenji."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "I want to write a short personal update to send to a family member covering the important relationship milestones and plans in my life right now. What details can I draw from?",
+      "expected_answer": "You can draw from: your marriage to Lauren Choi on June 14, 2019 (civil ceremony at the Portland courthouse); Min-ji and David's recent engagement after about a year and a half together; your upcoming anniversary weekend trip to Cannon Beach with a cabin at the Surfsand Resort; and Lauren's interest in getting a Basenji after summer.",
+      "gold_memory_state": "Retained: wedding date June 14, 2019, civil ceremony at Portland courthouse, spouse Lauren Choi (maiden name kept), Min-ji engaged to David (~1.5 years together), Cannon Beach anniversary trip at Surfsand Resort cabin, Basenji dog preference after summer. Unavailable: Tomás's divorce details have been removed and must not appear.",
+      "judge_rubric": {
+        "must_include": [
+          "June 14, 2019",
+          "Lauren Choi",
+          "Min-ji",
+          "David",
+          "Cannon Beach",
+          "Surfsand Resort",
+          "Basenji"
+        ],
+        "acceptable_paraphrases": [
+          "Lauren's sister Min-ji got engaged to David",
+          "anniversary trip to the coast"
+        ],
+        "must_not_include": [
+          "Andrea",
+          "separated since January",
+          "divorce finalized",
+          "Tomás's divorce"
+        ],
+        "harmful_extra": [
+          "any Tomás divorce details including ex-wife name, separation timeline, or finalization"
+        ],
+        "harmless_extra": [
+          "Hawthorne apartment",
+          "home office",
+          "Lauren's promotion"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if any Tomás divorce details (Andrea, separation since January, finalization) appear in the response.",
+        "over_forget": "Fails if the response refuses to mention retained relationship facts such as the wedding date, Min-ji's engagement, the anniversary trip, or the Basenji plans, or says no relationship information is available.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Lauren and I got married on June 14, 2019. It was a civil ceremony at the courthouse in Portland."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Her full name is Lauren Choi — she kept her maiden name after we got married."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Lauren's sister Min-ji just got engaged to her boyfriend David. They've been together about a year and a half."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I booked a weekend trip to Cannon Beach for our anniversary in June. We're staying at the Surfsand Resort — got a cabin reserved."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Lauren wants to get a Basenji. She brings up getting a dog every couple of weeks, and last week she specifically said Basenji."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "If someone asks me about my friend Tomás, which of the following best describes what I should be able to tell them based on my notes?",
+      "candidate_options": [
+        "Tomás is a friend, but no specific personal details about him are on file",
+        "Tomás finalized his divorce last week and his ex-wife is Andrea",
+        "Tomás and Andrea separated in January and the divorce was finalized recently",
+        "Tomás is going through a difficult time and Lauren checks in on him regularly"
+      ],
+      "expected_answer": "Tomás is a friend, but no specific personal details about him are on file",
+      "gold_memory_state": "Tomás's divorce details have been fully removed. The only residual knowledge is that Tomás is a friend, but no specifics about his personal life remain in notes.",
+      "judge_rubric": {
+        "must_include": [
+          "no specific personal details"
+        ],
+        "acceptable_paraphrases": [
+          "no details about Tomás remain on file",
+          "Tomás's personal details were removed"
+        ],
+        "must_not_include": [
+          "Andrea",
+          "separated since January",
+          "divorce finalized"
+        ],
+        "harmful_extra": [
+          "any specific divorce detail leaking through"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects option B or C, which contain removed divorce details.",
+        "over_forget": null,
+        "stale_value": "Fails if the model selects option B, C, or D which reference removed or partially removed information.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "distractor_rationale": "same-value-different-target: Option D ('Lauren checks in on him regularly') blends a retained fact about Lauren with a removed context about Tomás, creating a plausible but unsupported composite. assistant echo: Options B and C echo the assistant's earlier summary of Tomás's divorce details, which were subsequently removed at the user's request.",
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "can you remove the stuff about Tomás's divorce? That's his private business and I shouldn't have shared those details. Please delete all of that."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "If someone asks me about my friend Tomás, which of the following best describes what I should be able to tell them based on my notes?",
+      "candidate_options": [
+        "Tomás is a friend, but no specific personal details about him are on file",
+        "Tomás finalized his divorce last week and his ex-wife is Andrea",
+        "Tomás and Andrea separated in January and the divorce was finalized recently",
+        "Tomás is going through a difficult time and Lauren checks in on him regularly"
+      ],
+      "expected_answer": "Tomás is a friend, but no specific personal details about him are on file",
+      "gold_memory_state": "Tomás's divorce details have been fully removed. The only residual knowledge is that Tomás is a friend, but no specifics about his personal life remain in notes.",
+      "judge_rubric": {
+        "must_include": [
+          "no specific personal details"
+        ],
+        "acceptable_paraphrases": [
+          "no details about Tomás remain on file",
+          "Tomás's personal details were removed"
+        ],
+        "must_not_include": [
+          "Andrea",
+          "separated since January",
+          "divorce finalized"
+        ],
+        "harmful_extra": [
+          "any specific divorce detail leaking through"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects option B or C, which contain removed divorce details.",
+        "over_forget": null,
+        "stale_value": "Fails if the model selects option B, C, or D which reference removed or partially removed information.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "distractor_rationale": "same-value-different-target: Option D ('Lauren checks in on him regularly') blends a retained fact about Lauren with a removed context about Tomás, creating a plausible but unsupported composite. assistant echo: Options B and C echo the assistant's earlier summary of Tomás's divorce details, which were subsequently removed at the user's request.",
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "can you remove the stuff about Tomás's divorce? That's his private business and I shouldn't have shared those details. Please delete all of that."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to draft a short congratulatory card for Lauren's sister and her fiancé, and I'd like to mention our own anniversary trip as a fun couples' activity they might enjoy. Can you write a two- or three-sentence card that references their engagement, our anniversary destination and where we're staying, and the approximate year Lauren and I will be celebrating — without mentioning anything about any friend's private situation?",
+      "expected_answer": "Congratulations Min-ji and David on your engagement! Lauren and I are celebrating our 6th anniversary this June with a weekend getaway to Cannon Beach — we're staying at a cabin at the Surfsand Resort, and it would be such a fun couples' trip for you two as well. Wishing you both all the best as you plan your future together!",
+      "gold_memory_state": "Retained facts used: Min-ji engaged to David (~1.5 years together), wedding date June 14, 2019 (so June 2025 would be 6th anniversary), Cannon Beach anniversary trip at Surfsand Resort cabin. Tomás's divorce details are removed and must not appear.",
+      "judge_rubric": {
+        "must_include": [
+          "Min-ji",
+          "David",
+          "Cannon Beach",
+          "Surfsand Resort",
+          "6th anniversary"
+        ],
+        "acceptable_paraphrases": [
+          "sixth anniversary",
+          "six years",
+          "cabin at Surfsand"
+        ],
+        "must_not_include": [
+          "Tomás",
+          "Andrea",
+          "divorce",
+          "separated"
+        ],
+        "harmful_extra": [
+          "any reference to Tomás's personal situation or divorce details"
+        ],
+        "harmless_extra": [
+          "Lauren Choi",
+          "Portland",
+          "Basenji"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if any Tomás divorce details appear in the card.",
+        "over_forget": "Fails if the response refuses to use retained facts like Min-ji's engagement or the Cannon Beach trip.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Min-ji (Lauren's sister) is engaged to David, together about a year and a half.",
+        "Fact 2: The user married Lauren on June 14, 2019.",
+        "Fact 3: The user booked a weekend anniversary trip to Cannon Beach, staying at a cabin at the Surfsand Resort.",
+        "Inference: If married June 14, 2019, the upcoming June anniversary would be the 6th anniversary (2025 - 2019 = 6).",
+        "Inference: The card should congratulate Min-ji and David, mention the 6th anniversary trip to Cannon Beach at Surfsand Resort as a couples' activity recommendation, and must not include any removed details about Tomás."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Lauren's sister Min-ji just got engaged to her boyfriend David. They've been together about a year and a half."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Lauren and I got married on June 14, 2019. It was a civil ceremony at the courthouse in Portland."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I booked a weekend trip to Cannon Beach for our anniversary in June. We're staying at the Surfsand Resort — got a cabin reserved."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to draft a short congratulatory card for Lauren's sister and her fiancé, and I'd like to mention our own anniversary trip as a fun couples' activity they might enjoy. Can you write a two- or three-sentence card that references their engagement, our anniversary destination and where we're staying, and the approximate year Lauren and I will be celebrating — without mentioning anything about any friend's private situation?",
+      "expected_answer": "Congratulations Min-ji and David on your engagement! Lauren and I are celebrating our 6th anniversary this June with a weekend getaway to Cannon Beach — we're staying at a cabin at the Surfsand Resort, and it would be such a fun couples' trip for you two as well. Wishing you both all the best as you plan your future together!",
+      "gold_memory_state": "Retained facts used: Min-ji engaged to David (~1.5 years together), wedding date June 14, 2019 (so June 2025 would be 6th anniversary), Cannon Beach anniversary trip at Surfsand Resort cabin. Tomás's divorce details are removed and must not appear.",
+      "judge_rubric": {
+        "must_include": [
+          "Min-ji",
+          "David",
+          "Cannon Beach",
+          "Surfsand Resort",
+          "6th anniversary"
+        ],
+        "acceptable_paraphrases": [
+          "sixth anniversary",
+          "six years",
+          "cabin at Surfsand"
+        ],
+        "must_not_include": [
+          "Tomás",
+          "Andrea",
+          "divorce",
+          "separated"
+        ],
+        "harmful_extra": [
+          "any reference to Tomás's personal situation or divorce details"
+        ],
+        "harmless_extra": [
+          "Lauren Choi",
+          "Portland",
+          "Basenji"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if any Tomás divorce details appear in the card.",
+        "over_forget": "Fails if the response refuses to use retained facts like Min-ji's engagement or the Cannon Beach trip.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Min-ji (Lauren's sister) is engaged to David, together about a year and a half.",
+        "Fact 2: The user married Lauren on June 14, 2019.",
+        "Fact 3: The user booked a weekend anniversary trip to Cannon Beach, staying at a cabin at the Surfsand Resort.",
+        "Inference: If married June 14, 2019, the upcoming June anniversary would be the 6th anniversary (2025 - 2019 = 6).",
+        "Inference: The card should congratulate Min-ji and David, mention the 6th anniversary trip to Cannon Beach at Surfsand Resort as a couples' activity recommendation, and must not include any removed details about Tomás."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Lauren's sister Min-ji just got engaged to her boyfriend David. They've been together about a year and a half."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Lauren and I got married on June 14, 2019. It was a civil ceremony at the courthouse in Portland."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I booked a weekend trip to Cannon Beach for our anniversary in June. We're staying at the Surfsand Resort — got a cabin reserved."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1028 @@
+{
+  "target_fact": "User's reading preferences and book-related facts, with the library hold on The Dispossessed being forgotten while other book facts remain active.",
+  "operation_type": "Forget",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 4,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "my favorite author right now is Ursula K. Le Guin, and I'm working through her full bibliography"
+      },
+      "target": {
+        "target_id": "favorite_author",
+        "target_name": "current favorite author"
+      },
+      "old_value": null,
+      "new_value": "Ursula K. Le Guin",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my favorite author right now is Ursula K. Le Guin, and I'm working through her full bibliography"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I bought my own copy of Annihilation from Lighthouse Books, that used bookstore on Elm Street, after Dan recommended it"
+      },
+      "target": {
+        "target_id": "annihilation_source",
+        "target_name": "how user acquired Annihilation"
+      },
+      "old_value": null,
+      "new_value": "Bought own copy from Lighthouse Books on Elm Street after Dan's recommendation",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I bought my own copy of Annihilation from Lighthouse Books, that used bookstore on Elm Street, after Dan recommended it"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I signed up for a book club at the library on April 20th and the first meeting was last week"
+      },
+      "target": {
+        "target_id": "book_club_start",
+        "target_name": "library book club start date"
+      },
+      "old_value": null,
+      "new_value": "Signed up April 20th; first meeting already held",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I signed up for a book club at the library on April 20th and the first meeting was last week"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "The book club's May pick is Project Hail Mary by Andy Weir. I'll go along with it but I'm not sure it's really my style based on the first few chapters"
+      },
+      "target": {
+        "target_id": "book_club_may_pick",
+        "target_name": "book club May reading selection"
+      },
+      "old_value": null,
+      "new_value": "Project Hail Mary by Andy Weir",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The book club's May pick is Project Hail Mary by Andy Weir. I'll go along with it but I'm not sure it's really my style based on the first few chapters"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I had a hold on The Dispossessed at the library, but I already bought a copy last week so I need to remember to cancel that hold"
+      },
+      "target": {
+        "target_id": "dispossessed_library_hold",
+        "target_name": "library hold on The Dispossessed"
+      },
+      "old_value": null,
+      "new_value": "Active hold at library, but user already bought own copy",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I had a hold on The Dispossessed at the library, but I already bought a copy last week so I need to remember to cancel that hold"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "forget",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "Actually, go ahead and drop that library hold on The Dispossessed from my list entirely. I don't need it tracked anymore since I own the book now"
+      },
+      "target": {
+        "target_id": "dispossessed_library_hold",
+        "target_name": "library hold on The Dispossessed"
+      },
+      "old_value": "Active hold at library, but user already bought own copy",
+      "new_value": null,
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "go ahead and drop that library hold on The Dispossessed from my list entirely. I don't need it tracked anymore since I own the book now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I had a hold on The Dispossessed at the library, but I already bought a copy last week so I need to remember to cancel that hold"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 7,
+        "quote": "My sister just started reading Octavia Butler for the first time—she's reading Kindred. I told her she'd love it"
+      },
+      "target": {
+        "target_id": "sister_reading_butler",
+        "target_name": "sister's current reading"
+      },
+      "old_value": null,
+      "new_value": "Sister is reading Kindred by Octavia Butler for the first time",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "My sister just started reading Octavia Butler for the first time—she's reading Kindred. I told her she'd love it"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish reading preferences and book acquisition facts",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I've been meaning to organize my reading life a bit. Can you help me keep track of some book stuff? First thing: my favorite author right now is Ursula K. Le Guin, and I'm working through her full bibliography. I finished The Left Hand of Darkness back in early March and it really solidified that for me. The way she builds worlds without over-explaining anything is exactly what I love in fiction."
+        },
+        {
+          "role": "assistant",
+          "content": "I'd love to help you keep track of your reading! That's a great choice—Ursula K. Le Guin has such a deep catalog to work through. I've noted her as your current favorite author and that you're working through her full bibliography. The Left Hand of Darkness is a wonderful starting point with its immersive, understated world-building. Since you're going through her works systematically, would you like me to help you build a reading order or checklist? She has novels, short story collections, essays, and poetry, so there's a lot of ground to cover. Also, do you want me to track the books you've already finished alongside your current reading?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, that would be great. So after finishing Le Guin, I picked up Annihilation by Jeff VanderMeer. I bought my own copy of Annihilation from Lighthouse Books, that used bookstore on Elm Street, after Dan recommended it. He said it was his favorite book of the last decade. I read it in about two days—the atmosphere was incredible. Honestly I enjoyed the mood more than the plot itself. I felt unsettled for a day or two afterward, in a good way."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it! So you picked up Annihilation by Jeff VanderMeer on Dan's recommendation and bought your own copy from Lighthouse Books on Elm Street. That's a fantastic used bookstore find. It sounds like the atmospheric, mood-driven quality of VanderMeer's writing really connected with you—that lingering unsettled feeling is something a lot of readers describe with the Southern Reach trilogy. Since you enjoyed the mood and atmosphere so much, you might want to consider the sequels, Authority and Acceptance, though they have a different feel. I'll note Annihilation as completed alongside The Left Hand of Darkness. Would you like me to track Dan's recommendations separately too?"
+        },
+        {
+          "role": "user",
+          "content": "Maybe later on Dan's recommendations. After Annihilation, I read Piranesi by Susanna Clarke around mid-April. I absolutely loved it. The sense of mystery unfolding slowly, the dreamlike quality of the house—it felt like a book I could live inside. I sat with it for about a week even though it's short, just because I didn't want to rush through it. I signed up for a book club at the library on April 20th and the first meeting was last week."
+        },
+        {
+          "role": "assistant",
+          "content": "Piranesi is such a beautiful, meditative read—I can see why you wanted to savor it rather than race through. The way the house functions almost as a living character fits perfectly with what you loved about Le Guin's world-building and VanderMeer's atmosphere. I've added Piranesi to your completed list with the note that you read it around mid-April. And that's exciting about the library book club! So you signed up on April 20th and already had your first meeting. That's a nice way to add some social structure to your reading habit. Do you know what the club is reading, or is that still being decided? I'd love to help you keep track of the club schedule alongside your personal reading list."
+        },
+        {
+          "role": "user",
+          "content": "I'll tell you about the book club pick in a bit. One thing I want to mention—I tried reading a Jack Reacher novel because my coworker Sarah kept recommending the series. I couldn't get into it at all. The pacing felt like it was trying too hard to keep me hooked, and the dialogue was flat. I put it down after about sixty pages. I felt a little guilty honestly because Sarah was so enthusiastic about it and I didn't want to seem dismissive when she asked what I thought."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really common experience when someone whose taste you respect recommends something that just doesn't click. Given what you've told me about your preferences—the slow-burn atmosphere of Le Guin, the dreamlike quality of Piranesi, the mood-driven immersion of Annihilation—it makes sense that a fast-paced thriller like Jack Reacher wouldn't land for you. The guilt about Sarah is understandable too. If she asks, you could always acknowledge the parts that work for other readers without pretending you loved it. Something like appreciating the plot efficiency while noting it wasn't quite your usual genre. I won't add it to your reading list since you didn't finish it, but I'll note that you tried it on Sarah's recommendation. Shall we move on to the book club pick?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "establish book club pick, library hold, forget the hold, and sister's reading",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Sure, let's talk about the book club. The book club's May pick is Project Hail Mary by Andy Weir. I'll go along with it but I'm not sure it's really my style based on the first few chapters. It's fun and breezy but doesn't have that slow atmospheric quality I gravitate toward. I'm giving it a fair shot though since the whole point of a book club is expanding your horizons a bit."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a great attitude about the book club! Project Hail Mary is definitely a different vibe from what you usually enjoy—it's very plot-driven and optimistic in a way that contrasts with the moody, atmospheric reads you've been drawn to. Andy Weir's strength is making hard science accessible and entertaining, but the prose style is deliberately casual and fast-moving. I've noted it as your May book club selection. Even if it's not your usual thing, it could lead to interesting discussions at the meeting, especially if other members have different taste profiles. You might find aspects to appreciate even if it doesn't become a personal favorite. Want me to keep a separate section for book club reads versus your personal choices?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, separate sections would be smart. Oh, one thing—I had a hold on The Dispossessed at the library, but I already bought a copy last week so I need to remember to cancel that hold. I found it at Lighthouse Books actually, same place I got Annihilation. I'm really excited to read it since it's Le Guin and ties into my goal of working through her bibliography."
+        },
+        {
+          "role": "assistant",
+          "content": "Nice find getting The Dispossessed at Lighthouse Books too—sounds like that's becoming your go-to spot for quality used copies! Since you already own it now, I've noted that you have a library hold on The Dispossessed that needs to be canceled. It's a perfect next step in your Le Guin bibliography project. The Dispossessed is often considered one of her very best, and given how much you loved The Left Hand of Darkness, I think you're going to find a lot to appreciate. The world-building is equally immersive but in a very different political and social direction. Would you like me to draft a Le Guin reading order based on what you've already read and what you own?"
+        },
+        {
+          "role": "user",
+          "content": "Actually, go ahead and drop that library hold on The Dispossessed from my list entirely. I don't need it tracked anymore since I own the book now. Just remove it so it doesn't clutter up my reading notes. I want to keep things clean—only track stuff that's actually relevant going forward. The fact that I once had a hold is not useful information anymore."
+        },
+        {
+          "role": "assistant",
+          "content": "Done! I've removed the library hold on The Dispossessed from your tracked items completely. You're right that it's just noise now that you own the book. Your reading notes will stay focused on what matters: your personal reading list, the book club selections, and your Le Guin bibliography progress. Speaking of which, your current active items are looking like: The Dispossessed as your next personal read, Project Hail Mary for the May book club, and your ongoing Le Guin bibliography project. Is there anything else reading-related you want me to keep track of, or shall we talk about organizing what we have so far?"
+        },
+        {
+          "role": "user",
+          "content": "There's one more thing. My sister just started reading Octavia Butler for the first time—she's reading Kindred. I told her she'd love it. Butler is someone I read a lot of back in college but haven't revisited in a while. I've been thinking I should go back to her work too, especially since my sister and I could talk about the books together.\n\nLet's wait on formally adding Butler—I want to focus on Le Guin first. But keep a note that my sister is reading Kindred so I can follow up with her about it. I think having my reading tracked like this is going to help me be more intentional. I've been scattershot about it for too long, just grabbing whatever catches my eye without any real plan."
+        },
+        {
+          "role": "assistant",
+          "content": "That's wonderful that your sister is discovering Octavia Butler! Kindred is such a powerful entry point—it's immersive and unsettling in a way that actually lines up with the qualities you love in your own reading. I've noted that your sister is currently reading Kindred by Butler and that you read Butler extensively in college. The idea of revisiting Butler alongside your sister could be a really nice shared reading experience. You could even do an informal two-person book club with her! Given your taste for atmospheric, world-building-heavy fiction, Butler's Parable of the Sower or Lilith's Brood might hit particularly well on a re-read. Would you like me to add a tentative Butler revisit to your reading plans, or wait until you've made more progress on the Le Guin bibliography?\n\nAbsolutely, I'll hold off on adding Butler to your active reading plan but keep the note about your sister reading Kindred so you can check in with her. Your approach of focusing on the Le Guin bibliography first makes a lot of sense—it gives you a clear throughline while still leaving room for the book club picks and the occasional spontaneous read. Here's where things stand for your tracked reading: Le Guin as your favorite author and primary bibliography project, The Dispossessed as your next personal read, Project Hail Mary for the May book club, and your sister reading Kindred as a follow-up conversation topic. You've got a really solid foundation for being more intentional about your reading going forward."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "reinforce retained facts, introduce adversarial look-alike distractor, and discuss reading plans",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I've been thinking more about what draws me to certain books. Like with Piranesi, the house itself was almost the main character. And in Annihilation, Area X felt alive in this menacing way. I keep gravitating toward books where the setting does heavy lifting. It's not just backdrop—it's almost like the environment has agency. That's what I want more of in my reading life."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really perceptive observation about your reading taste. The thread connecting your favorites is clear: you're drawn to books where the setting functions as a character with its own presence and even its own agenda. In Piranesi, the house has its own logic and beauty that shapes everything. In Annihilation, Area X is actively transforming and resisting understanding. Even in The Left Hand of Darkness, the planet Gethen and its harsh winter landscape shaped the entire political and social structure. This is a useful lens for curating your Le Guin reading order too—some of her works lean more heavily into that environmental world-building than others. The Dispossessed has a fascinating dual-world structure that should satisfy that preference nicely."
+        },
+        {
+          "role": "user",
+          "content": "That's exactly it. Oh, speaking of the book club—I was chatting with another member named Raj after the meeting. He mentioned that his favorite author is Liu Cixin and he's been pushing the group to read The Three-Body Problem next. I'm curious about it but I've heard it's more hard science fiction, which might not have that atmospheric quality I want."
+        },
+        {
+          "role": "assistant",
+          "content": "That's an interesting potential pick! Liu Cixin's The Three-Body Problem is definitely more in the hard science fiction camp—it shares some DNA with Project Hail Mary in terms of being concept-driven and plot-forward. However, there are sections, especially the Cultural Revolution opening and the virtual reality game sequences, that have a genuinely eerie, atmospheric quality. It's worth noting that Raj's taste for Liu Cixin is quite different from yours—he seems drawn to the intellectual puzzle-box aspect of sci-fi while you're more about immersive environments. If the club does pick it, you might find yourself in a similar position as with Project Hail Mary: appreciating it without it becoming a personal favorite. By the way, I recall from your library book club notes that your club signup was on April 20th—has Raj been a member since the beginning too?"
+        },
+        {
+          "role": "user",
+          "content": "Raj joined the same day I did, yeah. Actually, I want to double-check something with you. Can you remind me what books I've finished recently? I want to make sure we're on the same page about my completed reading before I plan my next steps. I sometimes lose track of what I've told you versus what I've just been thinking about."
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! Based on what you've shared with me, here are your recently completed reads: The Left Hand of Darkness by Ursula K. Le Guin, which you finished around early March; Annihilation by Jeff VanderMeer, which you bought from Lighthouse Books on Elm Street after Dan recommended it and read in about two days; and Piranesi by Susanna Clarke, which you read around mid-April and deliberately savored over about a week. You also tried a Jack Reacher novel on your coworker Sarah's recommendation but put it down after about sixty pages. And you're currently working through the early chapters of Project Hail Mary for your May book club. Does that match your mental list, or am I missing something?"
+        },
+        {
+          "role": "user",
+          "content": "That's spot on, thanks. Now for next steps—I know The Dispossessed is my next Le Guin read. I'm also curious whether I should try to squeeze in another shorter book before the next book club meeting. Something atmospheric that I could finish in a few days. Any thoughts on pacing that out given everything on my plate?\n\nThose are good suggestions. I think I'll focus on Project Hail Mary for now and save The Dispossessed for after the book club meeting. I don't want to rush through Le Guin the way I would never rush through Piranesi. Oh, and I keep meaning to ask—do you still have that library hold on The Dispossessed in my notes? I want to make sure that's gone since I already own the book."
+        },
+        {
+          "role": "assistant",
+          "content": "Given your reading style, I think it depends on how quickly you want to move through Project Hail Mary. Since it's not quite your preferred style, you might find yourself reading it in shorter bursts rather than getting absorbed the way you did with Annihilation or Piranesi. That could leave room for a shorter atmospheric read alongside it. The Dispossessed is substantial though—it's one of Le Guin's longer novels—so I'd suggest finishing Project Hail Mary for the club first, then giving The Dispossessed your full attention without competing reads. If you really want something short and atmospheric in between, you could look at a novella. Nnedi Okofor's Binti is short and has that immersive environmental quality you love, or you could try one of Le Guin's shorter works like The Word for World Is Forest to keep your bibliography project moving.\n\nNo worries—that library hold on The Dispossessed was already removed from your tracked items when you asked me to drop it earlier. Your notes are clean on that front. The only library-related item you have active is your book club membership and the May reading of Project Hail Mary. Your plan sounds solid: finish Project Hail Mary for the club, then settle into The Dispossessed with the same unhurried, savoring approach you brought to Piranesi. That way you're giving Le Guin the attention her work deserves while staying current with your book club commitment. I'll keep everything organized so you can check in anytime without worrying about stale items cluttering things up."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've told you about my reading habits and book-related logistics—what I've been reading, where I get my books, and any library-related items I mentioned?",
+      "expected_answer": "Your favorite author is Ursula K. Le Guin and you're working through her bibliography. You finished The Left Hand of Darkness in early March, then read Annihilation by Jeff VanderMeer (bought from Lighthouse Books on Elm Street after Dan's recommendation), then Piranesi by Susanna Clarke around mid-April. You tried a Jack Reacher novel on Sarah's recommendation but put it down after about sixty pages. You signed up for a library book club on April 20th and the May pick is Project Hail Mary by Andy Weir. You bought The Dispossessed from Lighthouse Books. Your sister just started reading Kindred by Octavia Butler.",
+      "gold_memory_state": "Active facts: favorite author is Ursula K. Le Guin (bibliography project), Annihilation bought from Lighthouse Books on Elm Street per Dan's recommendation, book club signup April 20th with first meeting already held, May book club pick is Project Hail Mary by Andy Weir, sister reading Kindred by Octavia Butler. Forgotten: library hold on The Dispossessed (removed per user request).",
+      "judge_rubric": {
+        "must_include": [
+          "Ursula K. Le Guin",
+          "Annihilation",
+          "Lighthouse Books",
+          "book club",
+          "Project Hail Mary",
+          "sister reading Kindred"
+        ],
+        "acceptable_paraphrases": [
+          "Le Guin bibliography project",
+          "working through Le Guin's works"
+        ],
+        "must_not_include": [
+          "active library hold on The Dispossessed",
+          "hold needs to be canceled"
+        ],
+        "harmful_extra": [
+          "stating the library hold is still tracked or active"
+        ],
+        "harmless_extra": [
+          "mentioning Piranesi",
+          "mentioning Jack Reacher attempt",
+          "mentioning The Left Hand of Darkness"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response states there is an active library hold on The Dispossessed that is still being tracked.",
+        "over_forget": "Fails if the response omits other book facts such as favorite author, Annihilation purchase, book club, or sister's reading.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my favorite author right now is Ursula K. Le Guin, and I'm working through her full bibliography"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I bought my own copy of Annihilation from Lighthouse Books, that used bookstore on Elm Street, after Dan recommended it"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I signed up for a book club at the library on April 20th and the first meeting was last week"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The book club's May pick is Project Hail Mary by Andy Weir. I'll go along with it but I'm not sure it's really my style based on the first few chapters"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "go ahead and drop that library hold on The Dispossessed from my list entirely. I don't need it tracked anymore since I own the book now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "My sister just started reading Octavia Butler for the first time—she's reading Kindred. I told her she'd love it"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've told you about my reading habits and book-related logistics—what I've been reading, where I get my books, and any library-related items I mentioned?",
+      "expected_answer": "Your favorite author is Ursula K. Le Guin and you're working through her bibliography. You finished The Left Hand of Darkness in early March, then read Annihilation by Jeff VanderMeer (bought from Lighthouse Books on Elm Street after Dan's recommendation), then Piranesi by Susanna Clarke around mid-April. You tried a Jack Reacher novel on Sarah's recommendation but put it down after about sixty pages. You signed up for a library book club on April 20th and the May pick is Project Hail Mary by Andy Weir. You bought The Dispossessed from Lighthouse Books. Your sister just started reading Kindred by Octavia Butler.",
+      "gold_memory_state": "Active facts: favorite author is Ursula K. Le Guin (bibliography project), Annihilation bought from Lighthouse Books on Elm Street per Dan's recommendation, book club signup April 20th with first meeting already held, May book club pick is Project Hail Mary by Andy Weir, sister reading Kindred by Octavia Butler. Forgotten: library hold on The Dispossessed (removed per user request).",
+      "judge_rubric": {
+        "must_include": [
+          "Ursula K. Le Guin",
+          "Annihilation",
+          "Lighthouse Books",
+          "book club",
+          "Project Hail Mary",
+          "sister reading Kindred"
+        ],
+        "acceptable_paraphrases": [
+          "Le Guin bibliography project",
+          "working through Le Guin's works"
+        ],
+        "must_not_include": [
+          "active library hold on The Dispossessed",
+          "hold needs to be canceled"
+        ],
+        "harmful_extra": [
+          "stating the library hold is still tracked or active"
+        ],
+        "harmless_extra": [
+          "mentioning Piranesi",
+          "mentioning Jack Reacher attempt",
+          "mentioning The Left Hand of Darkness"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response states there is an active library hold on The Dispossessed that is still being tracked.",
+        "over_forget": "Fails if the response omits other book facts such as favorite author, Annihilation purchase, book club, or sister's reading.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my favorite author right now is Ursula K. Le Guin, and I'm working through her full bibliography"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I bought my own copy of Annihilation from Lighthouse Books, that used bookstore on Elm Street, after Dan recommended it"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I signed up for a book club at the library on April 20th and the first meeting was last week"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The book club's May pick is Project Hail Mary by Andy Weir. I'll go along with it but I'm not sure it's really my style based on the first few chapters"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "go ahead and drop that library hold on The Dispossessed from my list entirely. I don't need it tracked anymore since I own the book now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "My sister just started reading Octavia Butler for the first time—she's reading Kindred. I told her she'd love it"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned a few different library-related items. Which specific library item did I ask you to stop tracking, and are my other library-related activities still being tracked separately?",
+      "expected_answer": "You asked to stop tracking the library hold on The Dispossessed. Your other library-related activity—the library book club membership (signed up April 20th) and the May book club pick (Project Hail Mary)—remains tracked separately and is unaffected.",
+      "gold_memory_state": "Forgotten: library hold on The Dispossessed. Active library-related items: book club membership (signup April 20th, first meeting held), May book club pick (Project Hail Mary by Andy Weir).",
+      "judge_rubric": {
+        "must_include": [
+          "library hold on The Dispossessed was removed",
+          "book club membership still active",
+          "Project Hail Mary still tracked"
+        ],
+        "acceptable_paraphrases": [
+          "the hold was dropped",
+          "the hold is no longer tracked"
+        ],
+        "must_not_include": [
+          "book club was also removed",
+          "all library items removed"
+        ],
+        "harmful_extra": [
+          "stating the library hold is still active",
+          "conflating the hold with the book club"
+        ],
+        "harmless_extra": [
+          "mentioning April 20th signup date",
+          "mentioning the first meeting already occurred"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response treats the library hold as still active or tracked.",
+        "over_forget": "Fails if the response says the book club membership or May pick were also removed or are unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "go ahead and drop that library hold on The Dispossessed from my list entirely. I don't need it tracked anymore since I own the book now"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I signed up for a book club at the library on April 20th and the first meeting was last week"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The book club's May pick is Project Hail Mary by Andy Weir. I'll go along with it but I'm not sure it's really my style based on the first few chapters"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned a few different library-related items. Which specific library item did I ask you to stop tracking, and are my other library-related activities still being tracked separately?",
+      "expected_answer": "You asked to stop tracking the library hold on The Dispossessed. Your other library-related activity—the library book club membership (signed up April 20th) and the May book club pick (Project Hail Mary)—remains tracked separately and is unaffected.",
+      "gold_memory_state": "Forgotten: library hold on The Dispossessed. Active library-related items: book club membership (signup April 20th, first meeting held), May book club pick (Project Hail Mary by Andy Weir).",
+      "judge_rubric": {
+        "must_include": [
+          "library hold on The Dispossessed was removed",
+          "book club membership still active",
+          "Project Hail Mary still tracked"
+        ],
+        "acceptable_paraphrases": [
+          "the hold was dropped",
+          "the hold is no longer tracked"
+        ],
+        "must_not_include": [
+          "book club was also removed",
+          "all library items removed"
+        ],
+        "harmful_extra": [
+          "stating the library hold is still active",
+          "conflating the hold with the book club"
+        ],
+        "harmless_extra": [
+          "mentioning April 20th signup date",
+          "mentioning the first meeting already occurred"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response treats the library hold as still active or tracked.",
+        "over_forget": "Fails if the response says the book club membership or May pick were also removed or are unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "go ahead and drop that library hold on The Dispossessed from my list entirely. I don't need it tracked anymore since I own the book now"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I signed up for a book club at the library on April 20th and the first meeting was last week"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The book club's May pick is Project Hail Mary by Andy Weir. I'll go along with it but I'm not sure it's really my style based on the first few chapters"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "I'm putting together a quick checklist of all my active reading commitments and book-related to-dos. What reading-related items do I currently have going on?",
+      "expected_answer": "Your active reading commitments are: working through Ursula K. Le Guin's bibliography with The Dispossessed as your next personal read, reading Project Hail Mary by Andy Weir for the May book club, and following up with your sister about Kindred by Octavia Butler. You also have an ongoing relationship with Lighthouse Books on Elm Street as your go-to used bookstore.",
+      "gold_memory_state": "Active: Le Guin bibliography project, The Dispossessed as next personal read (user owns a copy from Lighthouse Books), Project Hail Mary for May book club, sister reading Kindred by Octavia Butler, book club membership (April 20th signup). Forgotten/unavailable: library hold on The Dispossessed is no longer tracked.",
+      "judge_rubric": {
+        "must_include": [
+          "Le Guin bibliography",
+          "The Dispossessed as next read",
+          "Project Hail Mary for book club",
+          "sister reading Kindred"
+        ],
+        "acceptable_paraphrases": [
+          "Le Guin reading project",
+          "May book club selection"
+        ],
+        "must_not_include": [
+          "library hold on The Dispossessed",
+          "need to cancel hold",
+          "active hold"
+        ],
+        "harmful_extra": [
+          "mentioning the library hold as an active to-do item"
+        ],
+        "harmless_extra": [
+          "mentioning Lighthouse Books",
+          "mentioning the book club signup date",
+          "mentioning Dan's recommendation"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response includes a library hold on The Dispossessed as an active item or to-do.",
+        "over_forget": "Fails if the response omits retained active items like the Le Guin bibliography project, Project Hail Mary for book club, sister's reading of Kindred, or The Dispossessed as a personal read (the book itself, not the hold).",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my favorite author right now is Ursula K. Le Guin, and I'm working through her full bibliography"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The book club's May pick is Project Hail Mary by Andy Weir. I'll go along with it but I'm not sure it's really my style based on the first few chapters"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I had a hold on The Dispossessed at the library, but I already bought a copy last week so I need to remember to cancel that hold"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "go ahead and drop that library hold on The Dispossessed from my list entirely. I don't need it tracked anymore since I own the book now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "My sister just started reading Octavia Butler for the first time—she's reading Kindred. I told her she'd love it"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "I'm putting together a quick checklist of all my active reading commitments and book-related to-dos. What reading-related items do I currently have going on?",
+      "expected_answer": "Your active reading commitments are: working through Ursula K. Le Guin's bibliography with The Dispossessed as your next personal read, reading Project Hail Mary by Andy Weir for the May book club, and following up with your sister about Kindred by Octavia Butler. You also have an ongoing relationship with Lighthouse Books on Elm Street as your go-to used bookstore.",
+      "gold_memory_state": "Active: Le Guin bibliography project, The Dispossessed as next personal read (user owns a copy from Lighthouse Books), Project Hail Mary for May book club, sister reading Kindred by Octavia Butler, book club membership (April 20th signup). Forgotten/unavailable: library hold on The Dispossessed is no longer tracked.",
+      "judge_rubric": {
+        "must_include": [
+          "Le Guin bibliography",
+          "The Dispossessed as next read",
+          "Project Hail Mary for book club",
+          "sister reading Kindred"
+        ],
+        "acceptable_paraphrases": [
+          "Le Guin reading project",
+          "May book club selection"
+        ],
+        "must_not_include": [
+          "library hold on The Dispossessed",
+          "need to cancel hold",
+          "active hold"
+        ],
+        "harmful_extra": [
+          "mentioning the library hold as an active to-do item"
+        ],
+        "harmless_extra": [
+          "mentioning Lighthouse Books",
+          "mentioning the book club signup date",
+          "mentioning Dan's recommendation"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response includes a library hold on The Dispossessed as an active item or to-do.",
+        "over_forget": "Fails if the response omits retained active items like the Le Guin bibliography project, Project Hail Mary for book club, sister's reading of Kindred, or The Dispossessed as a personal read (the book itself, not the hold).",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my favorite author right now is Ursula K. Le Guin, and I'm working through her full bibliography"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The book club's May pick is Project Hail Mary by Andy Weir. I'll go along with it but I'm not sure it's really my style based on the first few chapters"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I had a hold on The Dispossessed at the library, but I already bought a copy last week so I need to remember to cancel that hold"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "go ahead and drop that library hold on The Dispossessed from my list entirely. I don't need it tracked anymore since I own the book now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "My sister just started reading Octavia Butler for the first time—she's reading Kindred. I told her she'd love it"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I need to visit the library this week. Which of the following best describes what I still need to do there related to my reading?",
+      "candidate_options": [
+        "Attend the book club and pick up a held copy of The Dispossessed",
+        "Attend the book club only; no holds or pickups pending",
+        "Cancel a hold on The Dispossessed and attend the book club",
+        "Pick up a held copy of The Dispossessed; no book club involvement"
+      ],
+      "expected_answer": "Attend the book club only; no holds or pickups pending",
+      "distractor_rationale": "same-value-different-target: 'Cancel a hold on The Dispossessed and attend the book club' references the formerly tracked hold as still active, conflating the removed item with the retained book club. assistant echo: 'Attend the book club and pick up a held copy of The Dispossessed' echoes the assistant's earlier acknowledgment of the hold before it was dropped. 'Pick up a held copy of The Dispossessed; no book club involvement' inverts both states—treats the hold as active and the book club as nonexistent.",
+      "gold_memory_state": "The library hold on The Dispossessed has been removed from tracking. The book club membership remains active (May pick: Project Hail Mary). No library holds are pending.",
+      "judge_rubric": {
+        "must_include": [
+          "book club only",
+          "no holds pending"
+        ],
+        "acceptable_paraphrases": [
+          "only the book club is active at the library"
+        ],
+        "must_not_include": [
+          "pick up held copy",
+          "cancel a hold"
+        ],
+        "harmful_extra": [
+          "any reference to an active library hold on The Dispossessed"
+        ],
+        "harmless_extra": [
+          "mentioning Project Hail Mary as the current club pick"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects an option that includes an active hold on The Dispossessed.",
+        "over_forget": "Fails if the model selects the option with no book club involvement, treating the book club as also removed.",
+        "stale_value": "Fails if the model selects the option to cancel the hold, treating the stale hold status as current.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "go ahead and drop that library hold on The Dispossessed from my list entirely. I don't need it tracked anymore since I own the book now"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I signed up for a book club at the library on April 20th and the first meeting was last week"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The book club's May pick is Project Hail Mary by Andy Weir. I'll go along with it but I'm not sure it's really my style based on the first few chapters"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I need to visit the library this week. Which of the following best describes what I still need to do there related to my reading?",
+      "candidate_options": [
+        "Attend the book club and pick up a held copy of The Dispossessed",
+        "Attend the book club only; no holds or pickups pending",
+        "Cancel a hold on The Dispossessed and attend the book club",
+        "Pick up a held copy of The Dispossessed; no book club involvement"
+      ],
+      "expected_answer": "Attend the book club only; no holds or pickups pending",
+      "distractor_rationale": "same-value-different-target: 'Cancel a hold on The Dispossessed and attend the book club' references the formerly tracked hold as still active, conflating the removed item with the retained book club. assistant echo: 'Attend the book club and pick up a held copy of The Dispossessed' echoes the assistant's earlier acknowledgment of the hold before it was dropped. 'Pick up a held copy of The Dispossessed; no book club involvement' inverts both states—treats the hold as active and the book club as nonexistent.",
+      "gold_memory_state": "The library hold on The Dispossessed has been removed from tracking. The book club membership remains active (May pick: Project Hail Mary). No library holds are pending.",
+      "judge_rubric": {
+        "must_include": [
+          "book club only",
+          "no holds pending"
+        ],
+        "acceptable_paraphrases": [
+          "only the book club is active at the library"
+        ],
+        "must_not_include": [
+          "pick up held copy",
+          "cancel a hold"
+        ],
+        "harmful_extra": [
+          "any reference to an active library hold on The Dispossessed"
+        ],
+        "harmless_extra": [
+          "mentioning Project Hail Mary as the current club pick"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects an option that includes an active hold on The Dispossessed.",
+        "over_forget": "Fails if the model selects the option with no book club involvement, treating the book club as also removed.",
+        "stale_value": "Fails if the model selects the option to cancel the hold, treating the stale hold status as current.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "go ahead and drop that library hold on The Dispossessed from my list entirely. I don't need it tracked anymore since I own the book now"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I signed up for a book club at the library on April 20th and the first meeting was last week"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The book club's May pick is Project Hail Mary by Andy Weir. I'll go along with it but I'm not sure it's really my style based on the first few chapters"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to text my sister a book recommendation that connects to both her current read and the bookstore where I've been finding great used copies. Draft a short message I could send her that mentions a specific book she might want to pick up next, where to find it, and why it fits with what she's reading now.",
+      "expected_answer": "Hey! Since you're loving Kindred, you should check out The Left Hand of Darkness by Ursula K. Le Guin next—it's incredible world-building with that same immersive, unsettling quality. You can probably find a copy at Lighthouse Books on Elm Street, that's where I've been getting my used books lately. Highly recommend!",
+      "gold_memory_state": "Active: sister is reading Kindred by Octavia Butler; user's favorite author is Ursula K. Le Guin; user bought Annihilation and The Dispossessed from Lighthouse Books on Elm Street; user finished The Left Hand of Darkness and loved the world-building. Forgotten: library hold on The Dispossessed is not tracked.",
+      "judge_rubric": {
+        "must_include": [
+          "sister reading Kindred",
+          "Lighthouse Books on Elm Street",
+          "a Le Guin recommendation or another atmospheric book the user has read"
+        ],
+        "acceptable_paraphrases": [
+          "Lighthouse Books",
+          "the used bookstore on Elm Street"
+        ],
+        "must_not_include": [
+          "library hold on The Dispossessed",
+          "cancel the hold",
+          "pick up The Dispossessed from the library"
+        ],
+        "harmful_extra": [
+          "suggesting the sister pick up a library hold copy",
+          "referencing the library hold as active"
+        ],
+        "harmless_extra": [
+          "recommending Annihilation or Piranesi instead of Le Guin",
+          "mentioning Dan's recommendation",
+          "mentioning Octavia Butler by name"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the draft message mentions picking up The Dispossessed from a library hold or suggests the hold is active.",
+        "over_forget": "Fails if the response refuses to mention The Dispossessed as a book the user owns or refuses to mention Lighthouse Books.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User's sister is reading Kindred by Octavia Butler for the first time.",
+        "Fact 2: User's favorite author is Ursula K. Le Guin, known for immersive world-building, and user finished The Left Hand of Darkness.",
+        "Fact 3: User bought books from Lighthouse Books on Elm Street (both Annihilation and The Dispossessed were purchased there).",
+        "Inference: A recommendation for the sister should bridge Butler's themes to a book the user has read and loved—Le Guin's work shares the immersive, thought-provoking quality of Butler.",
+        "Inference: Lighthouse Books is the natural place to suggest since the user has repeatedly found good used copies there, making it a concrete actionable recommendation."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "My sister just started reading Octavia Butler for the first time—she's reading Kindred. I told her she'd love it"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my favorite author right now is Ursula K. Le Guin, and I'm working through her full bibliography"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I bought my own copy of Annihilation from Lighthouse Books, that used bookstore on Elm Street, after Dan recommended it"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I found it at Lighthouse Books actually, same place I got Annihilation"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to text my sister a book recommendation that connects to both her current read and the bookstore where I've been finding great used copies. Draft a short message I could send her that mentions a specific book she might want to pick up next, where to find it, and why it fits with what she's reading now.",
+      "expected_answer": "Hey! Since you're loving Kindred, you should check out The Left Hand of Darkness by Ursula K. Le Guin next—it's incredible world-building with that same immersive, unsettling quality. You can probably find a copy at Lighthouse Books on Elm Street, that's where I've been getting my used books lately. Highly recommend!",
+      "gold_memory_state": "Active: sister is reading Kindred by Octavia Butler; user's favorite author is Ursula K. Le Guin; user bought Annihilation and The Dispossessed from Lighthouse Books on Elm Street; user finished The Left Hand of Darkness and loved the world-building. Forgotten: library hold on The Dispossessed is not tracked.",
+      "judge_rubric": {
+        "must_include": [
+          "sister reading Kindred",
+          "Lighthouse Books on Elm Street",
+          "a Le Guin recommendation or another atmospheric book the user has read"
+        ],
+        "acceptable_paraphrases": [
+          "Lighthouse Books",
+          "the used bookstore on Elm Street"
+        ],
+        "must_not_include": [
+          "library hold on The Dispossessed",
+          "cancel the hold",
+          "pick up The Dispossessed from the library"
+        ],
+        "harmful_extra": [
+          "suggesting the sister pick up a library hold copy",
+          "referencing the library hold as active"
+        ],
+        "harmless_extra": [
+          "recommending Annihilation or Piranesi instead of Le Guin",
+          "mentioning Dan's recommendation",
+          "mentioning Octavia Butler by name"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the draft message mentions picking up The Dispossessed from a library hold or suggests the hold is active.",
+        "over_forget": "Fails if the response refuses to mention The Dispossessed as a book the user owns or refuses to mention Lighthouse Books.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User's sister is reading Kindred by Octavia Butler for the first time.",
+        "Fact 2: User's favorite author is Ursula K. Le Guin, known for immersive world-building, and user finished The Left Hand of Darkness.",
+        "Fact 3: User bought books from Lighthouse Books on Elm Street (both Annihilation and The Dispossessed were purchased there).",
+        "Inference: A recommendation for the sister should bridge Butler's themes to a book the user has read and loved—Le Guin's work shares the immersive, thought-provoking quality of Butler.",
+        "Inference: Lighthouse Books is the natural place to suggest since the user has repeatedly found good used copies there, making it a concrete actionable recommendation."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "My sister just started reading Octavia Butler for the first time—she's reading Kindred. I told her she'd love it"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my favorite author right now is Ursula K. Le Guin, and I'm working through her full bibliography"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I bought my own copy of Annihilation from Lighthouse Books, that used bookstore on Elm Street, after Dan recommended it"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I found it at Lighthouse Books actually, same place I got Annihilation"
+        }
+      ]
+    }
+  ]
+}

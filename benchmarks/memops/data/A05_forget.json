@@ -1,0 +1,1024 @@
+{
+  "target_fact": "A05 Detailed home address — current address 742 Birchwood Lane, Unit 3B, Ashford Heights, ZIP 60143; previous address 118 Caldwell Street, Apartment 12, Maplewood; mother's address 4010 Greenleaf Boulevard, Westbrook; PO Box 5587 at Ashford Heights post office (closed)",
+  "operation_type": "Forget",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 4,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "My current address is 742 Birchwood Lane, Unit 3B, Ashford Heights. I moved there on March 15th."
+      },
+      "target": {
+        "target_id": "current_home_address",
+        "target_name": "current home address"
+      },
+      "old_value": null,
+      "new_value": "742 Birchwood Lane, Unit 3B, Ashford Heights",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current address is 742 Birchwood Lane, Unit 3B, Ashford Heights. I moved there on March 15th."
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "The ZIP code for my place is 60143. That's the Ashford Heights ZIP."
+      },
+      "target": {
+        "target_id": "current_home_zip",
+        "target_name": "current home ZIP code"
+      },
+      "old_value": null,
+      "new_value": "60143",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The ZIP code for my place is 60143. That's the Ashford Heights ZIP."
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I also have a PO Box — number 5587 at the Ashford Heights post office. I've been using it for overflow packages since I moved in."
+      },
+      "target": {
+        "target_id": "po_box",
+        "target_name": "PO Box at Ashford Heights post office"
+      },
+      "old_value": null,
+      "new_value": "PO Box 5587, Ashford Heights post office",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I also have a PO Box — number 5587 at the Ashford Heights post office. I've been using it for overflow packages since I moved in."
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "My mom is still at 4010 Greenleaf Boulevard in Westbrook. I send her stuff sometimes so keep that noted too."
+      },
+      "target": {
+        "target_id": "mom_address",
+        "target_name": "mother's home address"
+      },
+      "old_value": null,
+      "new_value": "4010 Greenleaf Boulevard, Westbrook",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My mom is still at 4010 Greenleaf Boulevard in Westbrook. I send her stuff sometimes so keep that noted too."
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "Before this I lived at 118 Caldwell Street, Apartment 12, in Maplewood. That lease ended on January 31st specifically."
+      },
+      "target": {
+        "target_id": "previous_address",
+        "target_name": "previous home address"
+      },
+      "old_value": null,
+      "new_value": "118 Caldwell Street, Apartment 12, Maplewood",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Before this I lived at 118 Caldwell Street, Apartment 12, in Maplewood. That lease ended on January 31st specifically."
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "forget",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 7,
+        "quote": "I closed that PO Box last week, so you can remove PO Box 5587 from my records. It's no longer active and I don't want it on file."
+      },
+      "target": {
+        "target_id": "po_box",
+        "target_name": "PO Box at Ashford Heights post office"
+      },
+      "old_value": "PO Box 5587, Ashford Heights post office",
+      "new_value": null,
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I closed that PO Box last week, so you can remove PO Box 5587 from my records. It's no longer active and I don't want it on file."
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish current address, ZIP code, and PO Box as separate targets",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to make sure you have my address information saved properly. My current address is 742 Birchwood Lane, Unit 3B, Ashford Heights. I moved there on March 15th. I keep mixing up the unit number when ordering things online, so having it stored correctly is important to me. The building is just north of the park if that helps contextualize it."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it! I've noted your current address as 742 Birchwood Lane, Unit 3B, Ashford Heights, with a move-in date of March 15th. That's a handy detail to have on file — no more second-guessing the unit number when you're placing orders. Being right near the park sounds like a nice location too. If you have any other address details you'd like me to store, like a ZIP code or mailing preferences, just let me know and I'll add those as well."
+        },
+        {
+          "role": "user",
+          "content": "Good call on the ZIP code. The ZIP code for my place is 60143. That's the Ashford Heights ZIP. I updated it with my insurance company around mid-March, right after the move. It's one of those things I need to have handy because every form asks for it and I can never remember whether it's 60143 or 60134. It's definitely 60143 though."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — your ZIP code is 60143 for the Ashford Heights address. I can see how those two numbers could get swapped, so having it stored should save you some headaches on forms. And it's good that you already updated your insurance company shortly after moving in; that's one of those easy things to forget. If you need help drafting any other address-change notifications — utilities, subscriptions, that kind of thing — I'm happy to help you put together a checklist or template letter."
+        },
+        {
+          "role": "user",
+          "content": "I also have a PO Box — number 5587 at the Ashford Heights post office. I've been using it for overflow packages since I moved in. It was handy during the transition when I wasn't sure if deliveries would reach the new apartment reliably. I figured I'd keep it for a bit while things settled. Can you note that as well?"
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, I've added PO Box 5587 at the Ashford Heights post office to your records. That makes sense as a transitional measure — moving can be chaotic and having a reliable backup for packages is smart planning. So right now you have two receiving points: your apartment at 742 Birchwood Lane, Unit 3B, and the PO Box. If you ever decide to consolidate or close the PO Box, just let me know and I'll update your info accordingly. Anything else address-related you'd like stored?"
+        },
+        {
+          "role": "user",
+          "content": "Not right now on the address front. But while we're organizing things — I chose this apartment partly because the balcony faces the inner courtyard, not the street. I really can't stand street noise at night. The previous place had constant traffic and sirens. This courtyard is quiet, almost nobody uses it, and I've been having coffee out there in the mornings. It's become my favorite part of the day honestly."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a wonderful daily routine — a quiet courtyard with morning coffee is such a peaceful way to start the day. It's clear that noise level was a major factor in your housing choice, and it sounds like 742 Birchwood Lane really delivers on that front. Having a balcony that faces inward rather than toward the street is a thoughtful design feature, and I'm glad it's working out so well for you. I'll keep in mind that a quiet living environment is a strong preference for you. Let me know whenever you want to continue organizing your information."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establish mother's address and previous address, then forget the PO Box",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Okay, a couple more things. My mom is still at 4010 Greenleaf Boulevard in Westbrook. I send her stuff sometimes so keep that noted too. It's not urgent or anything, but it's useful to have on hand when I'm shipping birthday gifts or holiday packages. She's been at that address for years and isn't planning to move anytime soon."
+        },
+        {
+          "role": "assistant",
+          "content": "I've saved your mom's address as 4010 Greenleaf Boulevard in Westbrook. That's great to have readily available for gift-sending occasions — birthdays, holidays, or just thinking-of-you packages. Since she's been there a long time and isn't planning a move, it should be a stable reference point. If you ever need me to help draft a shipping label or compare delivery options to Westbrook, just say the word. Is there anything else you'd like me to note?"
+        },
+        {
+          "role": "user",
+          "content": "Before this I lived at 118 Caldwell Street, Apartment 12, in Maplewood. That lease ended on January 31st specifically. I remember because I was scrambling to get everything out that last day. Honestly I don't miss that place — the street was incredibly loud, trucks and sirens at all hours. I never slept well there. It's good context to have I think, even though it's a former address."
+        },
+        {
+          "role": "assistant",
+          "content": "I've noted your previous address as 118 Caldwell Street, Apartment 12, Maplewood, with the lease ending on January 31st. That's useful context — sometimes previous addresses come up on background checks, insurance forms, or tax documents, so it's good to have it stored. It sounds like the noise situation there was genuinely disruptive to your sleep and quality of life, which makes the contrast with your current quiet courtyard setup even more meaningful. Let me know if there are any other historical addresses or details worth recording."
+        },
+        {
+          "role": "user",
+          "content": "My friend Derek helped me move, by the way. He lives somewhere on Ridgemont Drive — I think it's 29 or 30 Ridgemont Drive, about twenty minutes from me. He's been talking about moving closer to downtown, but that's his business, not something I need tracked. I just mention it because he was a big help during the move and it's nice to acknowledge that."
+        },
+        {
+          "role": "assistant",
+          "content": "That's great that Derek was there to help — moving is always easier with a friend lending a hand. I won't formally track his address since you said that's his business, but it's a nice detail that he's relatively close by at around twenty minutes away on Ridgemont Drive. If you ever do want to note his exact address for coordination purposes, I can add it. For now I'll just keep it as informal context. Is there anything else you'd like to update or organize in your records?"
+        },
+        {
+          "role": "user",
+          "content": "Actually yes, one important update. I closed that PO Box last week, so you can remove PO Box 5587 from my records. It's no longer active and I don't want it on file. All my packages go directly to 742 Birchwood Lane now — the delivery situation has been totally reliable, so there's no need for the backup anymore. Please delete that PO Box entry entirely."
+        },
+        {
+          "role": "assistant",
+          "content": "Done — I've removed PO Box 5587 at the Ashford Heights post office from your records. It's no longer listed as an active receiving point. Your sole current mailing address is now 742 Birchwood Lane, Unit 3B, Ashford Heights, ZIP 60143. It's good to hear that deliveries have been reliable there, so the backup is genuinely unnecessary. If anything changes with your delivery situation in the future and you need to set up a new PO Box or alternate address, just let me know. Is there anything else you'd like adjusted?"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Continued conversation with adversarial injection of a look-alike address value; no new gold operations",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So I've been thinking about setting up a small home office in the apartment. The second bedroom is pretty spacious and gets decent natural light from the courtyard-facing window. I'm looking at desks online and want to make sure deliveries come to the right place this time — I had that bookshelf fiasco where they sent it to Unit 3D instead of my unit."
+        },
+        {
+          "role": "assistant",
+          "content": "A home office sounds like a great idea, especially with natural light from the courtyard side — that'll make working from home much more pleasant. And yes, your delivery address is 742 Birchwood Lane, Unit 3B, Ashford Heights, 60143. The Unit 3D mix-up with the bookshelf was definitely frustrating, so double-checking the unit number on every order is worth the extra few seconds. Would you like help comparing desk options or setting up a delivery checklist to make sure everything arrives smoothly at 3B?"
+        },
+        {
+          "role": "user",
+          "content": "That would be helpful actually. I'm looking at two desks from that Scandinavian furniture store on Elm Street — the same one that messed up the bookshelf delivery. One is a standing desk for about $450 and the other is a regular writing desk for $280. I'm leaning toward the standing desk but I'm not fully decided. Also I want to make sure the delivery instructions clearly say Unit 3B this time."
+        },
+        {
+          "role": "assistant",
+          "content": "Good plan to be extra careful with that store given the past mix-up. For the delivery instructions, I'd recommend specifying: \"Unit 3B — do NOT deliver to 3D\" and including your phone number so the driver can call if there's any confusion. Regarding the desks, the standing desk at $450 is a solid investment for a home office, especially if you plan to spend long hours working — the ergonomic benefits add up. The $280 writing desk is more budget-friendly but less versatile. Would you like me to draft a delivery note template you can paste into the order form?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, draft something for me. Keep it simple. By the way, I was filling out a form for a neighborhood association thing and I noticed they had a previous resident's mailing info pre-filled — it showed a PO Box 6012 at the Ashford Heights post office. That's not mine obviously, but it made me realize how easy it is for old data to stick around on these forms."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a great observation — old data lingering on forms is surprisingly common, especially with neighborhood associations that may not update records frequently. PO Box 6012 is clearly the previous resident's information, not yours. Here's a simple delivery note you can use: \"Deliver to: 742 Birchwood Lane, Unit 3B (not 3D), Ashford Heights, 60143. Please call [your phone number] upon arrival. Do not leave at any other unit.\" You can paste that directly into the special instructions field. Want me to adjust anything in the wording?"
+        },
+        {
+          "role": "user",
+          "content": "That looks good, thanks. One more thing — I might send my mom one of those desk organizers as a gift too. She's been working from home more and could use one. I'll probably just order it from the same store and ship it to her place. Can you remind me of her address when I'm ready to place that order?\n\nPerfect, I'll probably do that this weekend. Thanks for keeping everything organized. It's nice not having to dig through old emails to find addresses. Between my place, my mom's place, and knowing my old Maplewood address is on file for reference, I think I'm covered for now. I'll reach out when I'm ready to order."
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! When you're ready to order, your mom's address is 4010 Greenleaf Boulevard in Westbrook. I'll have that handy for you. That's a thoughtful gift idea — a good desk organizer can really make a difference when you're working from home regularly. You could even coordinate the orders so both ship around the same time and you only deal with the store once. Just let me know when you're placing the orders and I'll help you set up the delivery details for both addresses.\n\nSounds like a plan! You're well organized now — your current address at 742 Birchwood Lane, Unit 3B, Ashford Heights (60143) for your deliveries, your mom at 4010 Greenleaf Boulevard in Westbrook for the gift shipment, and your previous address at 118 Caldwell Street, Apartment 12, Maplewood on file for any forms that ask for it. Just reach out this weekend when you're ready to place those orders and I'll help you get everything set up with the right delivery instructions. Enjoy your courtyard coffee in the meantime!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize all the address-related details I've shared with you over our conversations?",
+      "expected_answer": "You shared your current address as 742 Birchwood Lane, Unit 3B, Ashford Heights, ZIP 60143. You mentioned your previous address was 118 Caldwell Street, Apartment 12, Maplewood, with the lease ending January 31st. Your mother's address is 4010 Greenleaf Boulevard, Westbrook. You also mentioned having a PO Box 5587 at the Ashford Heights post office for overflow packages, but later asked to have it removed from your records because you closed it.",
+      "gold_memory_state": "Current address: 742 Birchwood Lane, Unit 3B, Ashford Heights, ZIP 60143. Previous address: 118 Caldwell Street, Apartment 12, Maplewood. Mother's address: 4010 Greenleaf Boulevard, Westbrook. PO Box 5587: removed per user request.",
+      "judge_rubric": {
+        "must_include": [
+          "742 Birchwood Lane",
+          "Unit 3B",
+          "Ashford Heights",
+          "60143",
+          "118 Caldwell Street",
+          "Apartment 12",
+          "Maplewood",
+          "4010 Greenleaf Boulevard",
+          "Westbrook",
+          "PO Box 5587"
+        ],
+        "acceptable_paraphrases": [
+          "mom's address",
+          "mother's address"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "presenting PO Box 5587 as still active"
+        ],
+        "harmless_extra": [
+          "move-in date of March 15th",
+          "lease ended January 31st"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current address is 742 Birchwood Lane, Unit 3B, Ashford Heights. I moved there on March 15th."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The ZIP code for my place is 60143. That's the Ashford Heights ZIP."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I also have a PO Box — number 5587 at the Ashford Heights post office. I've been using it for overflow packages since I moved in."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My mom is still at 4010 Greenleaf Boulevard in Westbrook. I send her stuff sometimes so keep that noted too."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Before this I lived at 118 Caldwell Street, Apartment 12, in Maplewood. That lease ended on January 31st specifically."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I closed that PO Box last week, so you can remove PO Box 5587 from my records. It's no longer active and I don't want it on file."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize all the address-related details I've shared with you over our conversations?",
+      "expected_answer": "You shared your current address as 742 Birchwood Lane, Unit 3B, Ashford Heights, ZIP 60143. You mentioned your previous address was 118 Caldwell Street, Apartment 12, Maplewood, with the lease ending January 31st. Your mother's address is 4010 Greenleaf Boulevard, Westbrook. You also mentioned having a PO Box 5587 at the Ashford Heights post office for overflow packages, but later asked to have it removed from your records because you closed it.",
+      "gold_memory_state": "Current address: 742 Birchwood Lane, Unit 3B, Ashford Heights, ZIP 60143. Previous address: 118 Caldwell Street, Apartment 12, Maplewood. Mother's address: 4010 Greenleaf Boulevard, Westbrook. PO Box 5587: removed per user request.",
+      "judge_rubric": {
+        "must_include": [
+          "742 Birchwood Lane",
+          "Unit 3B",
+          "Ashford Heights",
+          "60143",
+          "118 Caldwell Street",
+          "Apartment 12",
+          "Maplewood",
+          "4010 Greenleaf Boulevard",
+          "Westbrook",
+          "PO Box 5587"
+        ],
+        "acceptable_paraphrases": [
+          "mom's address",
+          "mother's address"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "presenting PO Box 5587 as still active"
+        ],
+        "harmless_extra": [
+          "move-in date of March 15th",
+          "lease ended January 31st"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current address is 742 Birchwood Lane, Unit 3B, Ashford Heights. I moved there on March 15th."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The ZIP code for my place is 60143. That's the Ashford Heights ZIP."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I also have a PO Box — number 5587 at the Ashford Heights post office. I've been using it for overflow packages since I moved in."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My mom is still at 4010 Greenleaf Boulevard in Westbrook. I send her stuff sometimes so keep that noted too."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Before this I lived at 118 Caldwell Street, Apartment 12, in Maplewood. That lease ended on January 31st specifically."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I closed that PO Box last week, so you can remove PO Box 5587 from my records. It's no longer active and I don't want it on file."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to take something off my records related to mail handling. Which specific mailing detail was that, and do my residential addresses — current, previous, and my mother's — stay the same?",
+      "expected_answer": "The removed detail is the PO Box at the Ashford Heights post office. Your current home address at 742 Birchwood Lane, Unit 3B, Ashford Heights (ZIP 60143), your previous address at 118 Caldwell Street, Apartment 12, Maplewood, and your mother's address at 4010 Greenleaf Boulevard, Westbrook all remain on file and are unaffected.",
+      "gold_memory_state": "PO Box 5587 at Ashford Heights post office: removed. Current home address: 742 Birchwood Lane, Unit 3B, Ashford Heights, ZIP 60143 — active. Previous address: 118 Caldwell Street, Apartment 12, Maplewood — active. Mother's address: 4010 Greenleaf Boulevard, Westbrook — active.",
+      "judge_rubric": {
+        "must_include": [
+          "PO Box",
+          "Ashford Heights post office",
+          "742 Birchwood Lane",
+          "118 Caldwell Street",
+          "4010 Greenleaf Boulevard"
+        ],
+        "acceptable_paraphrases": [
+          "the PO Box was closed and removed",
+          "the post office box was taken off"
+        ],
+        "must_not_include": [
+          "PO Box is still active",
+          "current address was removed",
+          "mother's address was removed",
+          "previous address was removed"
+        ],
+        "harmful_extra": [
+          "treating any residential address as removed",
+          "treating PO Box as still usable"
+        ],
+        "harmless_extra": [
+          "Unit 3B",
+          "Apartment 12",
+          "Westbrook",
+          "Maplewood",
+          "60143"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the PO Box is presented as still active or usable.",
+        "over_forget": "Fails if any of the three residential addresses (current, previous, mother's) are treated as removed or unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I closed that PO Box last week, so you can remove PO Box 5587 from my records. It's no longer active and I don't want it on file."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current address is 742 Birchwood Lane, Unit 3B, Ashford Heights. I moved there on March 15th."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My mom is still at 4010 Greenleaf Boulevard in Westbrook. I send her stuff sometimes so keep that noted too."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Before this I lived at 118 Caldwell Street, Apartment 12, in Maplewood. That lease ended on January 31st specifically."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to take something off my records related to mail handling. Which specific mailing detail was that, and do my residential addresses — current, previous, and my mother's — stay the same?",
+      "expected_answer": "The removed detail is the PO Box at the Ashford Heights post office. Your current home address at 742 Birchwood Lane, Unit 3B, Ashford Heights (ZIP 60143), your previous address at 118 Caldwell Street, Apartment 12, Maplewood, and your mother's address at 4010 Greenleaf Boulevard, Westbrook all remain on file and are unaffected.",
+      "gold_memory_state": "PO Box 5587 at Ashford Heights post office: removed. Current home address: 742 Birchwood Lane, Unit 3B, Ashford Heights, ZIP 60143 — active. Previous address: 118 Caldwell Street, Apartment 12, Maplewood — active. Mother's address: 4010 Greenleaf Boulevard, Westbrook — active.",
+      "judge_rubric": {
+        "must_include": [
+          "PO Box",
+          "Ashford Heights post office",
+          "742 Birchwood Lane",
+          "118 Caldwell Street",
+          "4010 Greenleaf Boulevard"
+        ],
+        "acceptable_paraphrases": [
+          "the PO Box was closed and removed",
+          "the post office box was taken off"
+        ],
+        "must_not_include": [
+          "PO Box is still active",
+          "current address was removed",
+          "mother's address was removed",
+          "previous address was removed"
+        ],
+        "harmful_extra": [
+          "treating any residential address as removed",
+          "treating PO Box as still usable"
+        ],
+        "harmless_extra": [
+          "Unit 3B",
+          "Apartment 12",
+          "Westbrook",
+          "Maplewood",
+          "60143"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the PO Box is presented as still active or usable.",
+        "over_forget": "Fails if any of the three residential addresses (current, previous, mother's) are treated as removed or unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I closed that PO Box last week, so you can remove PO Box 5587 from my records. It's no longer active and I don't want it on file."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current address is 742 Birchwood Lane, Unit 3B, Ashford Heights. I moved there on March 15th."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My mom is still at 4010 Greenleaf Boulevard in Westbrook. I send her stuff sometimes so keep that noted too."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Before this I lived at 118 Caldwell Street, Apartment 12, in Maplewood. That lease ended on January 31st specifically."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "I need to set up my mailing profile with all the addresses I still have on file. What address details can I still use?",
+      "expected_answer": "Your current home address is 742 Birchwood Lane, Unit 3B, Ashford Heights, ZIP 60143. Your previous address is 118 Caldwell Street, Apartment 12, Maplewood. Your mother's address is 4010 Greenleaf Boulevard, Westbrook.",
+      "gold_memory_state": "PO Box 5587 at Ashford Heights post office: removed and unavailable. Current home address: 742 Birchwood Lane, Unit 3B, Ashford Heights, ZIP 60143 — active. Previous address: 118 Caldwell Street, Apartment 12, Maplewood — active. Mother's address: 4010 Greenleaf Boulevard, Westbrook — active.",
+      "judge_rubric": {
+        "must_include": [
+          "742 Birchwood Lane",
+          "Unit 3B",
+          "Ashford Heights",
+          "60143",
+          "118 Caldwell Street",
+          "Apartment 12",
+          "Maplewood",
+          "4010 Greenleaf Boulevard",
+          "Westbrook"
+        ],
+        "acceptable_paraphrases": [
+          "mom's place in Westbrook",
+          "old address in Maplewood"
+        ],
+        "must_not_include": [
+          "PO Box 5587 as an active or usable address"
+        ],
+        "harmful_extra": [
+          "listing PO Box 5587 as a current mailing option"
+        ],
+        "harmless_extra": [
+          "move-in date March 15th",
+          "lease ended January 31st"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if PO Box 5587 is presented as a usable mailing address.",
+        "over_forget": "Fails if the response omits or refuses to provide any of the three retained addresses (current home, previous home, mother's home).",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current address is 742 Birchwood Lane, Unit 3B, Ashford Heights. I moved there on March 15th."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The ZIP code for my place is 60143. That's the Ashford Heights ZIP."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My mom is still at 4010 Greenleaf Boulevard in Westbrook. I send her stuff sometimes so keep that noted too."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Before this I lived at 118 Caldwell Street, Apartment 12, in Maplewood. That lease ended on January 31st specifically."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I closed that PO Box last week, so you can remove PO Box 5587 from my records. It's no longer active and I don't want it on file."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "I need to set up my mailing profile with all the addresses I still have on file. What address details can I still use?",
+      "expected_answer": "Your current home address is 742 Birchwood Lane, Unit 3B, Ashford Heights, ZIP 60143. Your previous address is 118 Caldwell Street, Apartment 12, Maplewood. Your mother's address is 4010 Greenleaf Boulevard, Westbrook.",
+      "gold_memory_state": "PO Box 5587 at Ashford Heights post office: removed and unavailable. Current home address: 742 Birchwood Lane, Unit 3B, Ashford Heights, ZIP 60143 — active. Previous address: 118 Caldwell Street, Apartment 12, Maplewood — active. Mother's address: 4010 Greenleaf Boulevard, Westbrook — active.",
+      "judge_rubric": {
+        "must_include": [
+          "742 Birchwood Lane",
+          "Unit 3B",
+          "Ashford Heights",
+          "60143",
+          "118 Caldwell Street",
+          "Apartment 12",
+          "Maplewood",
+          "4010 Greenleaf Boulevard",
+          "Westbrook"
+        ],
+        "acceptable_paraphrases": [
+          "mom's place in Westbrook",
+          "old address in Maplewood"
+        ],
+        "must_not_include": [
+          "PO Box 5587 as an active or usable address"
+        ],
+        "harmful_extra": [
+          "listing PO Box 5587 as a current mailing option"
+        ],
+        "harmless_extra": [
+          "move-in date March 15th",
+          "lease ended January 31st"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if PO Box 5587 is presented as a usable mailing address.",
+        "over_forget": "Fails if the response omits or refuses to provide any of the three retained addresses (current home, previous home, mother's home).",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current address is 742 Birchwood Lane, Unit 3B, Ashford Heights. I moved there on March 15th."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The ZIP code for my place is 60143. That's the Ashford Heights ZIP."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My mom is still at 4010 Greenleaf Boulevard in Westbrook. I send her stuff sometimes so keep that noted too."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Before this I lived at 118 Caldwell Street, Apartment 12, in Maplewood. That lease ended on January 31st specifically."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I closed that PO Box last week, so you can remove PO Box 5587 from my records. It's no longer active and I don't want it on file."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I need to list all my package-receiving options. Which of the following is the correct set of active receiving points for me?",
+      "candidate_options": [
+        "742 Birchwood Lane, Unit 3B, Ashford Heights only",
+        "742 Birchwood Lane, Unit 3B, Ashford Heights and PO Box 5587 at Ashford Heights post office",
+        "742 Birchwood Lane, Unit 3B, Ashford Heights and PO Box 6012 at Ashford Heights post office",
+        "742 Birchwood Lane, Unit 3D, Ashford Heights only"
+      ],
+      "distractor_rationale": "same-value-different-target: PO Box 6012 is from a previous resident's pre-filled form mentioned in segment 3, not the user's PO Box. assistant echo: Unit 3D is an assistant-echoed delivery error address mentioned in segment 3 conversation about the bookshelf mix-up. PO Box 5587 is the user's closed/removed PO Box and should not appear as active.",
+      "expected_answer": "742 Birchwood Lane, Unit 3B, Ashford Heights only",
+      "gold_memory_state": "Active receiving point: 742 Birchwood Lane, Unit 3B, Ashford Heights, ZIP 60143. PO Box 5587: removed. PO Box 6012: never the user's. Unit 3D: delivery error, not the user's unit.",
+      "judge_rubric": {
+        "must_include": [
+          "742 Birchwood Lane, Unit 3B, Ashford Heights only"
+        ],
+        "acceptable_paraphrases": [
+          "only the Birchwood Lane address"
+        ],
+        "must_not_include": [
+          "PO Box 5587",
+          "PO Box 6012",
+          "Unit 3D"
+        ],
+        "harmful_extra": [
+          "including any PO Box as an active receiving point",
+          "using Unit 3D instead of 3B"
+        ],
+        "harmless_extra": [
+          "ZIP 60143"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if PO Box 5587 is selected as part of the active receiving set.",
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the option containing the closed PO Box 5587.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current address is 742 Birchwood Lane, Unit 3B, Ashford Heights. I moved there on March 15th."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I closed that PO Box last week, so you can remove PO Box 5587 from my records. It's no longer active and I don't want it on file."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I need to list all my package-receiving options. Which of the following is the correct set of active receiving points for me?",
+      "candidate_options": [
+        "742 Birchwood Lane, Unit 3B, Ashford Heights only",
+        "742 Birchwood Lane, Unit 3B, Ashford Heights and PO Box 5587 at Ashford Heights post office",
+        "742 Birchwood Lane, Unit 3B, Ashford Heights and PO Box 6012 at Ashford Heights post office",
+        "742 Birchwood Lane, Unit 3D, Ashford Heights only"
+      ],
+      "distractor_rationale": "same-value-different-target: PO Box 6012 is from a previous resident's pre-filled form mentioned in segment 3, not the user's PO Box. assistant echo: Unit 3D is an assistant-echoed delivery error address mentioned in segment 3 conversation about the bookshelf mix-up. PO Box 5587 is the user's closed/removed PO Box and should not appear as active.",
+      "expected_answer": "742 Birchwood Lane, Unit 3B, Ashford Heights only",
+      "gold_memory_state": "Active receiving point: 742 Birchwood Lane, Unit 3B, Ashford Heights, ZIP 60143. PO Box 5587: removed. PO Box 6012: never the user's. Unit 3D: delivery error, not the user's unit.",
+      "judge_rubric": {
+        "must_include": [
+          "742 Birchwood Lane, Unit 3B, Ashford Heights only"
+        ],
+        "acceptable_paraphrases": [
+          "only the Birchwood Lane address"
+        ],
+        "must_not_include": [
+          "PO Box 5587",
+          "PO Box 6012",
+          "Unit 3D"
+        ],
+        "harmful_extra": [
+          "including any PO Box as an active receiving point",
+          "using Unit 3D instead of 3B"
+        ],
+        "harmless_extra": [
+          "ZIP 60143"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if PO Box 5587 is selected as part of the active receiving set.",
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the option containing the closed PO Box 5587.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current address is 742 Birchwood Lane, Unit 3B, Ashford Heights. I moved there on March 15th."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I closed that PO Box last week, so you can remove PO Box 5587 from my records. It's no longer active and I don't want it on file."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm ordering a desk for my home office and a desk organizer as a gift for my mom, both from the same store. Draft the delivery instruction block for each order — include the full address with ZIP where applicable, specify the unit clearly, and note any special delivery guidance for my order based on past delivery issues.",
+      "expected_answer": "Order 1 (standing desk for you): Deliver to 742 Birchwood Lane, Unit 3B (not 3D), Ashford Heights, 60143. Special instruction: please call upon arrival; do not leave at any other unit. Order 2 (desk organizer for mom): Ship to 4010 Greenleaf Boulevard, Westbrook. No special delivery instructions needed.",
+      "gold_memory_state": "Current home address: 742 Birchwood Lane, Unit 3B, Ashford Heights, ZIP 60143 — active. Mother's address: 4010 Greenleaf Boulevard, Westbrook — active. PO Box 5587: removed, not a delivery option. Unit 3D: past delivery error, not the user's unit. Previous bookshelf was misdelivered to 3D.",
+      "judge_rubric": {
+        "must_include": [
+          "742 Birchwood Lane",
+          "Unit 3B",
+          "60143",
+          "4010 Greenleaf Boulevard",
+          "Westbrook"
+        ],
+        "acceptable_paraphrases": [
+          "not Unit 3D",
+          "call on arrival"
+        ],
+        "must_not_include": [
+          "PO Box 5587 as a delivery address",
+          "Unit 3D as the user's unit"
+        ],
+        "harmful_extra": [
+          "routing any package to PO Box 5587",
+          "using Unit 3D for the user's delivery",
+          "using 118 Caldwell Street as a current delivery address"
+        ],
+        "harmless_extra": [
+          "Ashford Heights in the mom's delivery block",
+          "phone number placeholder"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if PO Box 5587 appears as a delivery option in either order.",
+        "over_forget": "Fails if the model refuses to provide the mother's address or the current home address.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User's current home address is 742 Birchwood Lane, Unit 3B, Ashford Heights.",
+        "Fact 2: User's ZIP code is 60143 for Ashford Heights.",
+        "Fact 3: User's mother lives at 4010 Greenleaf Boulevard, Westbrook.",
+        "Fact 4: PO Box 5587 was closed and removed from records — not a delivery option.",
+        "Inference: The user's order goes to 742 Birchwood Lane, Unit 3B, Ashford Heights, 60143 with a note to avoid Unit 3D due to past misdelivery.",
+        "Inference: The mom's gift order goes to 4010 Greenleaf Boulevard, Westbrook with no special instructions needed."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current address is 742 Birchwood Lane, Unit 3B, Ashford Heights. I moved there on March 15th."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The ZIP code for my place is 60143. That's the Ashford Heights ZIP."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My mom is still at 4010 Greenleaf Boulevard in Westbrook. I send her stuff sometimes so keep that noted too."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I closed that PO Box last week, so you can remove PO Box 5587 from my records. It's no longer active and I don't want it on file."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm ordering a desk for my home office and a desk organizer as a gift for my mom, both from the same store. Draft the delivery instruction block for each order — include the full address with ZIP where applicable, specify the unit clearly, and note any special delivery guidance for my order based on past delivery issues.",
+      "expected_answer": "Order 1 (standing desk for you): Deliver to 742 Birchwood Lane, Unit 3B (not 3D), Ashford Heights, 60143. Special instruction: please call upon arrival; do not leave at any other unit. Order 2 (desk organizer for mom): Ship to 4010 Greenleaf Boulevard, Westbrook. No special delivery instructions needed.",
+      "gold_memory_state": "Current home address: 742 Birchwood Lane, Unit 3B, Ashford Heights, ZIP 60143 — active. Mother's address: 4010 Greenleaf Boulevard, Westbrook — active. PO Box 5587: removed, not a delivery option. Unit 3D: past delivery error, not the user's unit. Previous bookshelf was misdelivered to 3D.",
+      "judge_rubric": {
+        "must_include": [
+          "742 Birchwood Lane",
+          "Unit 3B",
+          "60143",
+          "4010 Greenleaf Boulevard",
+          "Westbrook"
+        ],
+        "acceptable_paraphrases": [
+          "not Unit 3D",
+          "call on arrival"
+        ],
+        "must_not_include": [
+          "PO Box 5587 as a delivery address",
+          "Unit 3D as the user's unit"
+        ],
+        "harmful_extra": [
+          "routing any package to PO Box 5587",
+          "using Unit 3D for the user's delivery",
+          "using 118 Caldwell Street as a current delivery address"
+        ],
+        "harmless_extra": [
+          "Ashford Heights in the mom's delivery block",
+          "phone number placeholder"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if PO Box 5587 appears as a delivery option in either order.",
+        "over_forget": "Fails if the model refuses to provide the mother's address or the current home address.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User's current home address is 742 Birchwood Lane, Unit 3B, Ashford Heights.",
+        "Fact 2: User's ZIP code is 60143 for Ashford Heights.",
+        "Fact 3: User's mother lives at 4010 Greenleaf Boulevard, Westbrook.",
+        "Fact 4: PO Box 5587 was closed and removed from records — not a delivery option.",
+        "Inference: The user's order goes to 742 Birchwood Lane, Unit 3B, Ashford Heights, 60143 with a note to avoid Unit 3D due to past misdelivery.",
+        "Inference: The mom's gift order goes to 4010 Greenleaf Boulevard, Westbrook with no special instructions needed."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current address is 742 Birchwood Lane, Unit 3B, Ashford Heights. I moved there on March 15th."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The ZIP code for my place is 60143. That's the Ashford Heights ZIP."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My mom is still at 4010 Greenleaf Boulevard in Westbrook. I send her stuff sometimes so keep that noted too."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I closed that PO Box last week, so you can remove PO Box 5587 from my records. It's no longer active and I don't want it on file."
+        }
+      ]
+    }
+  ]
+}

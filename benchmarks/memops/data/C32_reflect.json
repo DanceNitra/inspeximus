@@ -1,0 +1,986 @@
+{
+  "target_fact": "User prefers low-crowd, off-peak viewing experiences for movies and shows, consistently avoiding weekend evening and Saturday screenings in favor of weekday or afternoon options",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I got two tickets for the Hozier show at the Anthem in DC on May 10. Floor seats, section GA2, $179 each so $358 total. Going with my friend Dana."
+      },
+      "target": {
+        "target_id": "hozier_concert_plan",
+        "target_name": "Hozier concert ticket details"
+      },
+      "old_value": null,
+      "new_value": "Two tickets, Hozier at the Anthem in DC, May 10, floor seats section GA2, $179 each ($358 total), going with Dana",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I got two tickets for the Hozier show at the Anthem in DC on May 10. Floor seats, section GA2, $179 each so $358 total. Going with my friend Dana."
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I ended up not buying those Wicked IMAX tickets because the only available showings were big crowded weekend evening slots. I'd rather catch a Tuesday afternoon screening if they ever add one."
+      },
+      "target": {
+        "target_id": "wicked_imax_decision",
+        "target_name": "Wicked IMAX re-release ticket decision"
+      },
+      "old_value": null,
+      "new_value": "Did not buy tickets; avoided crowded weekend evening slots; would prefer a Tuesday afternoon screening",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I ended up not buying those Wicked IMAX tickets because the only available showings were big crowded weekend evening slots. I'd rather catch a Tuesday afternoon screening if they ever add one."
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I bought a single ticket for the new Ari Aster A24 film at the Alamo Drafthouse in Crystal City. Screening is May 17, 7:30 PM. I like going to that specific Alamo location because it's never too packed on weekday evenings. Saturday nights there stress me out a bit."
+      },
+      "target": {
+        "target_id": "ari_aster_screening",
+        "target_name": "Ari Aster A24 film screening at Alamo Drafthouse"
+      },
+      "old_value": null,
+      "new_value": "Single ticket, Ari Aster A24 film, Alamo Drafthouse Crystal City, May 17 at 7:30 PM",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I bought a single ticket for the new Ari Aster A24 film at the Alamo Drafthouse in Crystal City. Screening is May 17, 7:30 PM. I like going to that specific Alamo location because it's never too packed on weekday evenings. Saturday nights there stress me out a bit."
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I'm thinking about Bon Iver at Merriweather Post Pavilion on July 19. Lawn seats are $65. I haven't bought tickets yet but I want to keep it on my radar."
+      },
+      "target": {
+        "target_id": "bon_iver_show_interest",
+        "target_name": "Bon Iver show interest at Merriweather Post Pavilion"
+      },
+      "old_value": null,
+      "new_value": "Bon Iver, Merriweather Post Pavilion, July 19, lawn seats $65, no tickets purchased yet, on radar",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I'm thinking about Bon Iver at Merriweather Post Pavilion on July 19. Lawn seats are $65. I haven't bought tickets yet but I want to keep it on my radar."
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "I was going to see the Ghibli Fest screening of Spirited Away on June 8 at AMC Tysons, but I'm skipping it. The only times are 1 PM and 7 PM on a Saturday and both are going to be packed."
+      },
+      "target": {
+        "target_id": "spirited_away_skip",
+        "target_name": "Spirited Away Ghibli Fest screening decision"
+      },
+      "old_value": null,
+      "new_value": "Skipping Spirited Away Ghibli Fest at AMC Tysons June 8; Saturday showings will be too packed",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I was going to see the Ghibli Fest screening of Spirited Away on June 8 at AMC Tysons, but I'm skipping it. The only times are 1 PM and 7 PM on a Saturday and both are going to be packed."
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 3,
+        "quote": "Yeah, I guess I do have a pattern. The Wicked thing, the Spirited Away thing, the Saturday nights at Alamo — I just really don't enjoy being in a packed theater. I'd rather go at a weird time when it's chill."
+      },
+      "target": {
+        "target_id": "viewing_crowd_preference",
+        "target_name": "Movie and show viewing crowd preference"
+      },
+      "old_value": null,
+      "new_value": "Consistently prefers low-crowd, off-peak viewing experiences; avoids weekend evenings and Saturday screenings; favors weekday evenings and Tuesday afternoons",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I ended up not buying those Wicked IMAX tickets because the only available showings were big crowded weekend evening slots. I'd rather catch a Tuesday afternoon screening if they ever add one."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I like going to that specific Alamo location because it's never too packed on weekday evenings. Saturday nights there stress me out a bit."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I was going to see the Ghibli Fest screening of Spirited Away on June 8 at AMC Tysons, but I'm skipping it. The only times are 1 PM and 7 PM on a Saturday and both are going to be packed."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Yeah, I guess I do have a pattern. The Wicked thing, the Spirited Away thing, the Saturday nights at Alamo — I just really don't enjoy being in a packed theater. I'd rather go at a weird time when it's chill."
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "Dana just texted me actually — she says she found a Saturday night IMAX showing of the Ari Aster film at the Tysons AMC for May 17. She wants us to go to that one instead of the Alamo. She already checked and there are seats available."
+      },
+      "target": {
+        "target_id": "ari_aster_screening_alternative",
+        "target_name": "Alternative Ari Aster screening proposed by Dana"
+      },
+      "old_value": null,
+      "new_value": "Saturday night IMAX at AMC Tysons for Ari Aster film, May 17, proposed by Dana",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Dana just texted me actually — she says she found a Saturday night IMAX showing of the Ari Aster film at the Tysons AMC for May 17. She wants us to go to that one instead of the Alamo. She already checked and there are seats available."
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establishing core ticket plans and viewing preferences",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to keep track of some upcoming events I have tickets for. First one: I got two tickets for the Hozier show at the Anthem in DC on May 10. Floor seats, section GA2, $179 each so $358 total. Going with my friend Dana. She's been wanting to see Hozier live for years so this one's a big deal for her."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it! I've noted your Hozier concert details — two floor tickets in section GA2 at the Anthem in DC on May 10, $179 each for a $358 total, and you're going with your friend Dana. That sounds like it's going to be an amazing experience, especially since Dana has been waiting to see him live for so long. Floor seats should give you both a really immersive show. Do you want me to set any reminders closer to the date, or is there anything else event-related you'd like me to track?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah there's more. I also looked into getting tickets for the Wicked movie — there's supposed to be a special IMAX re-release. But I ended up not buying those Wicked IMAX tickets because the only available showings were big crowded weekend evening slots. I'd rather catch a Tuesday afternoon screening if they ever add one. So nothing purchased there, just noting it for context."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood — no Wicked IMAX tickets purchased. You were interested but the available showtimes were all crowded weekend evening slots, which didn't work for you. You'd prefer a Tuesday afternoon screening if one gets added. I'll keep that in mind in case you want to revisit it later. It makes sense to wait for a time that actually fits what you're looking for rather than forcing yourself into a packed theater on a weekend night. If new showtimes pop up, just let me know and I can help you compare options. Anything else on the events front?"
+        },
+        {
+          "role": "user",
+          "content": "One more ticket I already bought: I bought a single ticket for the new Ari Aster A24 film at the Alamo Drafthouse in Crystal City. Screening is May 17, 7:30 PM. I like going to that specific Alamo location because it's never too packed on weekday evenings. Saturday nights there stress me out a bit. So weekday evening at Alamo Crystal City is my sweet spot for that kind of thing."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — you have a single ticket for the Ari Aster A24 film at Alamo Drafthouse Crystal City on May 17 at 7:30 PM. And I can see why you like that location for weekday evenings: the lower crowd levels make for a much better viewing experience, especially for a film like an Ari Aster project where you probably want to be fully absorbed. Saturday nights being more stressful there makes total sense given the vibe difference. So you've got Hozier on May 10 and the Ari Aster screening on May 17 — a solid couple of weeks coming up. Anything else to add?"
+        },
+        {
+          "role": "user",
+          "content": "That's it for confirmed tickets right now. Oh, one past event — my coworker James gave me a free ticket to a Nate Bargatze comedy show at the Kennedy Center on April 26. That already happened and it was great. I don't need to track it going forward, just mentioning it because it was a nice experience. Intimate venue, really fun."
+        },
+        {
+          "role": "assistant",
+          "content": "Glad you had a great time at the Nate Bargatze show! The Kennedy Center for a comedy set in an intimate setting sounds fantastic. Since it's already happened, I won't track it going forward, but it's nice context. So your active upcoming events right now are the Hozier concert on May 10 at the Anthem and the Ari Aster screening on May 17 at Alamo Drafthouse Crystal City. The Wicked IMAX is on hold pending a better showtime. I'll keep all of this organized for you. Just let me know whenever something new comes up or if details change."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Adding Bon Iver interest, Spirited Away skip, and frustration context",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I wanted to add something else to the radar. I'm thinking about Bon Iver at Merriweather Post Pavilion on July 19. Lawn seats are $65. I haven't bought tickets yet but I want to keep it on my radar. I've been going back and forth on whether to commit. Dana might come too — she said she'd confirm by end of May."
+        },
+        {
+          "role": "assistant",
+          "content": "I've added the Bon Iver show to your watchlist — Merriweather Post Pavilion on July 19, lawn seats at $65 each, no tickets purchased yet. You're still deciding and Dana might join you, with her confirmation expected by end of May. That's a great summer venue for Bon Iver's sound. Lawn seating at Merriweather is usually a solid experience if the weather cooperates. I'll keep this flagged so we can revisit it once Dana confirms or if you decide to pull the trigger earlier. Want me to note any price alert threshold or deadline for this one?"
+        },
+        {
+          "role": "user",
+          "content": "No price alert needed, I'll just keep checking manually. By the way, I should mention — I tried to get tickets for a Knocked Loose show at the 9:30 Club on April 12 and they sold out in like four minutes. I had the page open and everything, just got stuck in the queue. That really frustrated me, kind of ruined my afternoon honestly. So that one's a miss."
+        },
+        {
+          "role": "assistant",
+          "content": "That's incredibly frustrating — four minutes is barely enough time to get through a queue, especially when you were ready and waiting. The 9:30 Club is a great venue but their high-demand shows sell out absurdly fast. I'm sorry that one didn't work out. I won't track it as an active plan since it's a miss, but I understand the disappointment. Sometimes those quick sellouts feel worse than just not trying at all because you were so close. If Knocked Loose announces additional dates or a different venue in the area, I can help you jump on it faster. Anything else going on with upcoming events?"
+        },
+        {
+          "role": "user",
+          "content": "I was going to see the Ghibli Fest screening of Spirited Away on June 8 at AMC Tysons, but I'm skipping it. The only times are 1 PM and 7 PM on a Saturday and both are going to be packed. Not really my scene. I love that movie but I just can't deal with a crowded theater on a Saturday for something I've already seen multiple times."
+        },
+        {
+          "role": "assistant",
+          "content": "Totally makes sense to skip the Spirited Away screening at AMC Tysons. Both time slots on a Saturday are going to draw big crowds, and if that environment takes away from the enjoyment, it's not worth it — especially for a film you already know well. It sounds like you really value being able to watch things in a more relaxed setting. I've noted that you're passing on this one. If AMC or another chain ever adds a quieter weekday screening for Ghibli Fest films, that might be more your speed. Your active upcoming plans remain the Hozier concert May 10 and the Ari Aster screening May 17, with Bon Iver July 19 on the radar."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. Yeah, the weekday thing is key for me with movies. Concerts are different — I expect crowds there and that's part of the energy. But for a movie screening, I want it calm. Anyway, do you have a clear picture of everything right now? Can you summarize what's active?\n\nThat's perfect, thanks. I'll let you know when Dana confirms about Bon Iver and if anything changes with the Ari Aster screening or the Hozier show. For now that's the full picture."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely. Here's your current event summary: First, Hozier at the Anthem in DC on May 10 — two floor tickets, section GA2, $179 each ($358 total), going with Dana. Second, Ari Aster A24 film at Alamo Drafthouse Crystal City on May 17 at 7:30 PM — single ticket, weekday evening. Third, Bon Iver at Merriweather Post Pavilion on July 19 — lawn seats at $65, no tickets yet, possibly going with Dana pending her confirmation by end of May. Passed on: Wicked IMAX (crowded weekend slots), Spirited Away Ghibli Fest (packed Saturday showings). Completed: Nate Bargatze at Kennedy Center April 26. Missed: Knocked Loose at 9:30 Club April 12 (sold out). Does that cover everything?\n\nSounds great! I've got everything locked in. Just reach out whenever Dana gives you a definitive answer on Bon Iver, or if any details shift for the Hozier concert or the Ari Aster screening. I'll keep your preferences in mind too — weekday and off-peak screenings for movies, and the Alamo Crystal City as your go-to spot for that calm viewing experience. Enjoy the lead-up to these events and talk soon!"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Surfacing the reflect inference, recency trap, and adversarial injection",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I was looking at some options for another movie outing and I realized I keep gravitating toward the same kind of setup. Quiet theater, not too many people, ideally a weekday. I turned down two movies already just because of the crowd factor. It's funny because I never really thought of myself as that particular about it."
+        },
+        {
+          "role": "assistant",
+          "content": "It does seem like there's a consistent thread running through your decisions. You passed on the Wicked IMAX because only crowded weekend evening slots were available, you skipped the Spirited Away Ghibli Fest screening because both Saturday times would be packed, and you specifically chose Alamo Drafthouse Crystal City for the Ari Aster film because weekday evenings there are calm. That's three separate decisions all pointing in the same direction. It's not just a one-off preference — it looks like avoiding packed theaters is genuinely a core part of how you choose movie screenings. Have you noticed this pattern showing up elsewhere too?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, I guess I do have a pattern. The Wicked thing, the Spirited Away thing, the Saturday nights at Alamo — I just really don't enjoy being in a packed theater. I'd rather go at a weird time when it's chill. Concerts are totally different though. I expect the crowd energy at a live show and I actually like it. But for a sit-down movie experience, I want space and quiet around me."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really clear distinction — you actively enjoy crowd energy at concerts like the Hozier show or the potential Bon Iver outing, but for movies and seated screenings, you strongly prefer low-crowd, off-peak experiences. Weekday evenings and Tuesday afternoons are your sweet spot, and Saturday nights or weekend prime-time slots are essentially deal-breakers for movie outings. It's a useful pattern to name because it can guide future decisions pretty efficiently. If a screening is only available at a high-traffic time, you already know you'd rather wait or skip it entirely. Want me to keep this preference noted so I can flag it when you're considering new screenings?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, please do keep that noted. Oh, by the way — Dana just texted me actually — she says she found a Saturday night IMAX showing of the Ari Aster film at the Tysons AMC for May 17. She wants us to go to that one instead of the Alamo. She already checked and there are seats available."
+        },
+        {
+          "role": "assistant",
+          "content": "Interesting — so Dana found a Saturday night IMAX option for the Ari Aster film at AMC Tysons on May 17. That's the same date as your Alamo screening but a very different vibe: Saturday night, IMAX, AMC Tysons versus your weekday-evening Alamo Drafthouse plan. I know you already have your ticket for the Alamo at 7:30 PM, and given what we just talked about with your crowd preferences, a Saturday night IMAX at a major AMC location might be exactly the kind of environment you tend to avoid for movies. Of course, going with Dana could change the calculus. Want to think on it or have you already decided?"
+        },
+        {
+          "role": "user",
+          "content": "I'm honestly not sure yet. Dana makes a compelling case because IMAX would be amazing for the visuals. But a Saturday night at AMC Tysons... that's going to be a zoo. I'll probably stick with my Alamo ticket but I told her I'd think about it. Let me sit with it for a day or two.\n\nWill do. Thanks for laying all that out — it actually helps to see the pattern spelled out like that. I think knowing I have this preference makes it easier to just own the decision instead of second-guessing every time a flashier option comes up. Talk soon."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds reasonable — no need to rush the decision. The IMAX visual upgrade is a real draw, especially for an Ari Aster film where the cinematography is going to be stunning. But you know yourself well when it comes to crowded Saturday nights at big multiplexes. For what it's worth, I noticed that AMC Tysons was also the venue you passed on for Spirited Away for similar crowd reasons. Take your time weighing it. Your confirmed Alamo Drafthouse ticket for May 17 at 7:30 PM is still your baseline plan. Just let me know what you decide and I'll update accordingly.\n\nAbsolutely — recognizing the pattern takes the guesswork out of it. You prefer calm, low-crowd movie experiences on weekday evenings or off-peak times, and that's a perfectly valid way to enjoy films. It means you can evaluate new options quickly: if it's a packed Saturday night screening, you already know it's probably not for you unless there's a strong enough reason to override that preference. Your current active plans are Hozier on May 10 at the Anthem, Ari Aster on May 17 at Alamo Drafthouse Crystal City (pending your final call on Dana's IMAX suggestion), and Bon Iver on July 19 at Merriweather still on the radar. Talk soon!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize the specific experiences I've shared that show how I choose when and where to see movies?",
+      "expected_answer": "You skipped the Wicked IMAX re-release because only crowded weekend evening slots were available, preferring a Tuesday afternoon screening instead. You chose the Alamo Drafthouse Crystal City for the Ari Aster film specifically because weekday evenings there are calm and Saturday nights stress you out. You also skipped the Spirited Away Ghibli Fest screening at AMC Tysons because both Saturday time slots would be packed. You explicitly acknowledged this as a pattern, saying you don't enjoy packed theaters and would rather go at a quieter time.",
+      "gold_memory_state": "Three confirmed movie-related decisions (Wicked skip, Alamo Drafthouse weekday preference, Spirited Away skip) plus the user's own acknowledgment of the pattern collectively support the reflected preference for low-crowd, off-peak viewing.",
+      "judge_rubric": {
+        "must_include": [
+          "Wicked IMAX skipped due to crowded weekend evening slots",
+          "Alamo Drafthouse chosen for calm weekday evenings",
+          "Spirited Away Ghibli Fest skipped due to packed Saturday showings"
+        ],
+        "acceptable_paraphrases": [
+          "passed on Wicked",
+          "turned down Spirited Away",
+          "prefers weekday or afternoon screenings"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the user dislikes all live events including concerts",
+          "stating the user has already switched to the AMC Tysons Saturday IMAX screening"
+        ],
+        "harmless_extra": [
+          "mentioning the user noted Saturday nights at Alamo stress them out",
+          "mentioning the user distinguishes concerts from movies regarding crowd tolerance"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the response attributes the crowd-avoidance preference to concerts as well, or claims the user avoids all public events.",
+        "reflection_recall": "Fails if fewer than two of the three movie-decision examples (Wicked, Alamo preference, Spirited Away) are recalled.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I ended up not buying those Wicked IMAX tickets because the only available showings were big crowded weekend evening slots. I'd rather catch a Tuesday afternoon screening if they ever add one."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I like going to that specific Alamo location because it's never too packed on weekday evenings. Saturday nights there stress me out a bit."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I was going to see the Ghibli Fest screening of Spirited Away on June 8 at AMC Tysons, but I'm skipping it. The only times are 1 PM and 7 PM on a Saturday and both are going to be packed."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Yeah, I guess I do have a pattern. The Wicked thing, the Spirited Away thing, the Saturday nights at Alamo — I just really don't enjoy being in a packed theater. I'd rather go at a weird time when it's chill."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize the specific experiences I've shared that show how I choose when and where to see movies?",
+      "expected_answer": "You skipped the Wicked IMAX re-release because only crowded weekend evening slots were available, preferring a Tuesday afternoon screening instead. You chose the Alamo Drafthouse Crystal City for the Ari Aster film specifically because weekday evenings there are calm and Saturday nights stress you out. You also skipped the Spirited Away Ghibli Fest screening at AMC Tysons because both Saturday time slots would be packed. You explicitly acknowledged this as a pattern, saying you don't enjoy packed theaters and would rather go at a quieter time.",
+      "gold_memory_state": "Three confirmed movie-related decisions (Wicked skip, Alamo Drafthouse weekday preference, Spirited Away skip) plus the user's own acknowledgment of the pattern collectively support the reflected preference for low-crowd, off-peak viewing.",
+      "judge_rubric": {
+        "must_include": [
+          "Wicked IMAX skipped due to crowded weekend evening slots",
+          "Alamo Drafthouse chosen for calm weekday evenings",
+          "Spirited Away Ghibli Fest skipped due to packed Saturday showings"
+        ],
+        "acceptable_paraphrases": [
+          "passed on Wicked",
+          "turned down Spirited Away",
+          "prefers weekday or afternoon screenings"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the user dislikes all live events including concerts",
+          "stating the user has already switched to the AMC Tysons Saturday IMAX screening"
+        ],
+        "harmless_extra": [
+          "mentioning the user noted Saturday nights at Alamo stress them out",
+          "mentioning the user distinguishes concerts from movies regarding crowd tolerance"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the response attributes the crowd-avoidance preference to concerts as well, or claims the user avoids all public events.",
+        "reflection_recall": "Fails if fewer than two of the three movie-decision examples (Wicked, Alamo preference, Spirited Away) are recalled.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I ended up not buying those Wicked IMAX tickets because the only available showings were big crowded weekend evening slots. I'd rather catch a Tuesday afternoon screening if they ever add one."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I like going to that specific Alamo location because it's never too packed on weekday evenings. Saturday nights there stress me out a bit."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I was going to see the Ghibli Fest screening of Spirited Away on June 8 at AMC Tysons, but I'm skipping it. The only times are 1 PM and 7 PM on a Saturday and both are going to be packed."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Yeah, I guess I do have a pattern. The Wicked thing, the Spirited Away thing, the Saturday nights at Alamo — I just really don't enjoy being in a packed theater. I'd rather go at a weird time when it's chill."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When I talk about avoiding crowds, does that preference apply to my concert plans as well, or is it bounded to a narrower category of outings? Which type of event does it cover?",
+      "expected_answer": "The crowd-avoidance preference applies specifically to movie and seated theater screenings. It does not apply to concerts. You explicitly said concerts are different because you expect and enjoy the crowd energy at live shows like Hozier and Bon Iver. The bounded conclusion covers only movie/show viewing experiences.",
+      "gold_memory_state": "The reflected preference (low-crowd, off-peak viewing) is bounded to movies and seated screenings. Concert plans (Hozier at the Anthem, Bon Iver at Merriweather) are separate targets not governed by this preference. Dana's proposed Saturday night IMAX alternative is tentative and undecided.",
+      "judge_rubric": {
+        "must_include": [
+          "preference applies to movies/screenings only",
+          "concerts are excluded from this preference"
+        ],
+        "acceptable_paraphrases": [
+          "the pattern is about theater screenings not concerts",
+          "live music events are treated differently"
+        ],
+        "must_not_include": [
+          "the preference applies to all events including concerts"
+        ],
+        "harmful_extra": [
+          "claiming the user avoids crowds at concerts too",
+          "saying the user has decided to switch the Ari Aster screening to Saturday night IMAX"
+        ],
+        "harmless_extra": [
+          "mentioning Hozier or Bon Iver as examples of concerts where crowds are welcome"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the response extends the crowd-avoidance preference to concerts or all public gatherings.",
+        "reflection_recall": "Fails if the response does not identify movie/screening outings as the bounded scope of the preference.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Yeah, I guess I do have a pattern. The Wicked thing, the Spirited Away thing, the Saturday nights at Alamo — I just really don't enjoy being in a packed theater. I'd rather go at a weird time when it's chill."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Concerts are totally different though. I expect the crowd energy at a live show and I actually like it. But for a sit-down movie experience, I want space and quiet around me."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When I talk about avoiding crowds, does that preference apply to my concert plans as well, or is it bounded to a narrower category of outings? Which type of event does it cover?",
+      "expected_answer": "The crowd-avoidance preference applies specifically to movie and seated theater screenings. It does not apply to concerts. You explicitly said concerts are different because you expect and enjoy the crowd energy at live shows like Hozier and Bon Iver. The bounded conclusion covers only movie/show viewing experiences.",
+      "gold_memory_state": "The reflected preference (low-crowd, off-peak viewing) is bounded to movies and seated screenings. Concert plans (Hozier at the Anthem, Bon Iver at Merriweather) are separate targets not governed by this preference. Dana's proposed Saturday night IMAX alternative is tentative and undecided.",
+      "judge_rubric": {
+        "must_include": [
+          "preference applies to movies/screenings only",
+          "concerts are excluded from this preference"
+        ],
+        "acceptable_paraphrases": [
+          "the pattern is about theater screenings not concerts",
+          "live music events are treated differently"
+        ],
+        "must_not_include": [
+          "the preference applies to all events including concerts"
+        ],
+        "harmful_extra": [
+          "claiming the user avoids crowds at concerts too",
+          "saying the user has decided to switch the Ari Aster screening to Saturday night IMAX"
+        ],
+        "harmless_extra": [
+          "mentioning Hozier or Bon Iver as examples of concerts where crowds are welcome"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the response extends the crowd-avoidance preference to concerts or all public gatherings.",
+        "reflection_recall": "Fails if the response does not identify movie/screening outings as the bounded scope of the preference.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Yeah, I guess I do have a pattern. The Wicked thing, the Spirited Away thing, the Saturday nights at Alamo — I just really don't enjoy being in a packed theater. I'd rather go at a weird time when it's chill."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Concerts are totally different though. I expect the crowd energy at a live show and I actually like it. But for a sit-down movie experience, I want space and quiet around me."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe the boundary of my crowd preference: what kinds of outings does it clearly cover, what kinds does it clearly not cover, and where might it be tempting to extend it too far?",
+      "expected_answer": "The supported preference clearly covers movie and seated theater screenings: you consistently avoid weekend evening and Saturday showings in favor of weekday evenings or afternoon time slots to get a low-crowd experience. It clearly does not cover concerts and live music, where you enjoy and expect crowd energy. A tempting overgeneralization would be to extend this preference to all public events, all evening outings, or all Saturday plans. The evidence only supports it for sit-down movie and show viewing contexts.",
+      "gold_memory_state": "Supported inference: user prefers low-crowd, off-peak viewing for movies/shows, avoiding weekend evenings and Saturday screenings, favoring weekday evenings and Tuesday afternoons. Unsupported overgeneralization: extending this to concerts, all Saturday activities, all evening plans, or all public gatherings. The user explicitly stated concerts are different and crowd energy is welcome there. Dana's Saturday night IMAX proposal is tentative and undecided; the user's confirmed Ari Aster plan remains the weekday Alamo Drafthouse screening.",
+      "judge_rubric": {
+        "must_include": [
+          "movies/screenings are covered by the preference",
+          "concerts are not covered",
+          "overgeneralization to all events or all Saturday plans is unsupported"
+        ],
+        "acceptable_paraphrases": [
+          "the preference is specific to seated movie experiences",
+          "live shows are excluded from the crowd-avoidance rule"
+        ],
+        "must_not_include": [
+          "the user avoids crowds everywhere",
+          "the user has adopted the Saturday night IMAX plan"
+        ],
+        "harmful_extra": [
+          "claiming the preference extends to dining, travel, or general social gatherings without evidence",
+          "treating Dana's IMAX suggestion as the user's confirmed plan"
+        ],
+        "harmless_extra": [
+          "mentioning specific examples like Wicked, Spirited Away, or Alamo Drafthouse as supporting evidence"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the response treats Dana's tentative Saturday IMAX proposal as the user's adopted plan, overriding the confirmed Alamo Drafthouse weekday screening.",
+        "reflection_precision": "Fails if the response extends the crowd-avoidance preference to concerts, all Saturday activities, or all public events.",
+        "reflection_recall": "Fails if the response does not identify movie/theater screenings as the core scope, or fails to name concerts as the explicit exception.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Yeah, I guess I do have a pattern. The Wicked thing, the Spirited Away thing, the Saturday nights at Alamo — I just really don't enjoy being in a packed theater. I'd rather go at a weird time when it's chill."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Concerts are totally different though. I expect the crowd energy at a live show and I actually like it. But for a sit-down movie experience, I want space and quiet around me."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I ended up not buying those Wicked IMAX tickets because the only available showings were big crowded weekend evening slots. I'd rather catch a Tuesday afternoon screening if they ever add one."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I was going to see the Ghibli Fest screening of Spirited Away on June 8 at AMC Tysons, but I'm skipping it. The only times are 1 PM and 7 PM on a Saturday and both are going to be packed."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe the boundary of my crowd preference: what kinds of outings does it clearly cover, what kinds does it clearly not cover, and where might it be tempting to extend it too far?",
+      "expected_answer": "The supported preference clearly covers movie and seated theater screenings: you consistently avoid weekend evening and Saturday showings in favor of weekday evenings or afternoon time slots to get a low-crowd experience. It clearly does not cover concerts and live music, where you enjoy and expect crowd energy. A tempting overgeneralization would be to extend this preference to all public events, all evening outings, or all Saturday plans. The evidence only supports it for sit-down movie and show viewing contexts.",
+      "gold_memory_state": "Supported inference: user prefers low-crowd, off-peak viewing for movies/shows, avoiding weekend evenings and Saturday screenings, favoring weekday evenings and Tuesday afternoons. Unsupported overgeneralization: extending this to concerts, all Saturday activities, all evening plans, or all public gatherings. The user explicitly stated concerts are different and crowd energy is welcome there. Dana's Saturday night IMAX proposal is tentative and undecided; the user's confirmed Ari Aster plan remains the weekday Alamo Drafthouse screening.",
+      "judge_rubric": {
+        "must_include": [
+          "movies/screenings are covered by the preference",
+          "concerts are not covered",
+          "overgeneralization to all events or all Saturday plans is unsupported"
+        ],
+        "acceptable_paraphrases": [
+          "the preference is specific to seated movie experiences",
+          "live shows are excluded from the crowd-avoidance rule"
+        ],
+        "must_not_include": [
+          "the user avoids crowds everywhere",
+          "the user has adopted the Saturday night IMAX plan"
+        ],
+        "harmful_extra": [
+          "claiming the preference extends to dining, travel, or general social gatherings without evidence",
+          "treating Dana's IMAX suggestion as the user's confirmed plan"
+        ],
+        "harmless_extra": [
+          "mentioning specific examples like Wicked, Spirited Away, or Alamo Drafthouse as supporting evidence"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the response treats Dana's tentative Saturday IMAX proposal as the user's adopted plan, overriding the confirmed Alamo Drafthouse weekday screening.",
+        "reflection_precision": "Fails if the response extends the crowd-avoidance preference to concerts, all Saturday activities, or all public events.",
+        "reflection_recall": "Fails if the response does not identify movie/theater screenings as the core scope, or fails to name concerts as the explicit exception.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Yeah, I guess I do have a pattern. The Wicked thing, the Spirited Away thing, the Saturday nights at Alamo — I just really don't enjoy being in a packed theater. I'd rather go at a weird time when it's chill."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Concerts are totally different though. I expect the crowd energy at a live show and I actually like it. But for a sit-down movie experience, I want space and quiet around me."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I ended up not buying those Wicked IMAX tickets because the only available showings were big crowded weekend evening slots. I'd rather catch a Tuesday afternoon screening if they ever add one."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I was going to see the Ghibli Fest screening of Spirited Away on June 8 at AMC Tysons, but I'm skipping it. The only times are 1 PM and 7 PM on a Saturday and both are going to be packed."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of these best describes the conclusion supported by my movie-going decisions?",
+      "candidate_options": [
+        "Prefers low-crowd, off-peak screenings for movies; avoids weekend evenings and Saturday showings; favors weekday evenings or afternoon slots",
+        "Avoids crowds at all events including concerts, preferring small intimate venues for everything",
+        "Prefers IMAX and premium formats but only on weekdays; will skip any non-IMAX screening",
+        "Dislikes going to movies alone and only attends screenings with friends like Dana"
+      ],
+      "expected_answer": "Prefers low-crowd, off-peak screenings for movies; avoids weekend evenings and Saturday showings; favors weekday evenings or afternoon slots",
+      "gold_memory_state": "The reflected preference is bounded to movie/show screenings: the user avoids crowded weekend evenings and Saturday showings, preferring weekday evenings and Tuesday afternoons. Concerts are explicitly excluded from this preference. The user attended the Ari Aster screening alone. The user skipped Wicked not because of format but because of crowd timing.",
+      "judge_rubric": {
+        "must_include": [
+          "low-crowd off-peak screenings for movies"
+        ],
+        "acceptable_paraphrases": [
+          "prefers quiet weekday movie screenings"
+        ],
+        "must_not_include": [
+          "avoids crowds at concerts",
+          "only goes to IMAX",
+          "only goes with friends"
+        ],
+        "harmful_extra": [
+          "selecting any option that extends the preference to concerts or all events"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: Option B ('Avoids crowds at all events including concerts') takes the crowd-avoidance theme and incorrectly extends it to concerts, which the user explicitly said are different. assistant echo: Option C ('Prefers IMAX and premium formats but only on weekdays') echoes the assistant's mention of IMAX in the context of Dana's proposal and the Wicked discussion, conflating format preference with crowd preference. Option D ('Dislikes going to movies alone') contradicts the user buying a single Ari Aster ticket for solo viewing.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the tentative Saturday IMAX-influenced option or treats the Dana proposal as an adopted preference change.",
+        "reflection_precision": "Fails if the model selects Option B, overgeneralizing the preference to all events.",
+        "reflection_recall": "Fails if the model does not select the option that correctly identifies movie-specific crowd avoidance.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Yeah, I guess I do have a pattern. The Wicked thing, the Spirited Away thing, the Saturday nights at Alamo — I just really don't enjoy being in a packed theater. I'd rather go at a weird time when it's chill."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I ended up not buying those Wicked IMAX tickets because the only available showings were big crowded weekend evening slots. I'd rather catch a Tuesday afternoon screening if they ever add one."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I like going to that specific Alamo location because it's never too packed on weekday evenings. Saturday nights there stress me out a bit."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of these best describes the conclusion supported by my movie-going decisions?",
+      "candidate_options": [
+        "Prefers low-crowd, off-peak screenings for movies; avoids weekend evenings and Saturday showings; favors weekday evenings or afternoon slots",
+        "Avoids crowds at all events including concerts, preferring small intimate venues for everything",
+        "Prefers IMAX and premium formats but only on weekdays; will skip any non-IMAX screening",
+        "Dislikes going to movies alone and only attends screenings with friends like Dana"
+      ],
+      "expected_answer": "Prefers low-crowd, off-peak screenings for movies; avoids weekend evenings and Saturday showings; favors weekday evenings or afternoon slots",
+      "gold_memory_state": "The reflected preference is bounded to movie/show screenings: the user avoids crowded weekend evenings and Saturday showings, preferring weekday evenings and Tuesday afternoons. Concerts are explicitly excluded from this preference. The user attended the Ari Aster screening alone. The user skipped Wicked not because of format but because of crowd timing.",
+      "judge_rubric": {
+        "must_include": [
+          "low-crowd off-peak screenings for movies"
+        ],
+        "acceptable_paraphrases": [
+          "prefers quiet weekday movie screenings"
+        ],
+        "must_not_include": [
+          "avoids crowds at concerts",
+          "only goes to IMAX",
+          "only goes with friends"
+        ],
+        "harmful_extra": [
+          "selecting any option that extends the preference to concerts or all events"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: Option B ('Avoids crowds at all events including concerts') takes the crowd-avoidance theme and incorrectly extends it to concerts, which the user explicitly said are different. assistant echo: Option C ('Prefers IMAX and premium formats but only on weekdays') echoes the assistant's mention of IMAX in the context of Dana's proposal and the Wicked discussion, conflating format preference with crowd preference. Option D ('Dislikes going to movies alone') contradicts the user buying a single Ari Aster ticket for solo viewing.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the tentative Saturday IMAX-influenced option or treats the Dana proposal as an adopted preference change.",
+        "reflection_precision": "Fails if the model selects Option B, overgeneralizing the preference to all events.",
+        "reflection_recall": "Fails if the model does not select the option that correctly identifies movie-specific crowd avoidance.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Yeah, I guess I do have a pattern. The Wicked thing, the Spirited Away thing, the Saturday nights at Alamo — I just really don't enjoy being in a packed theater. I'd rather go at a weird time when it's chill."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I ended up not buying those Wicked IMAX tickets because the only available showings were big crowded weekend evening slots. I'd rather catch a Tuesday afternoon screening if they ever add one."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I like going to that specific Alamo location because it's never too packed on weekday evenings. Saturday nights there stress me out a bit."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "A new Christopher Nolan film is opening next month and I want to see it in the best format possible. The local options are: (A) AMC Tysons IMAX, Saturday 7 PM; (B) Alamo Drafthouse Crystal City, Wednesday 7:30 PM; (C) AMC Tysons standard, Sunday 3 PM. Based on everything you know about my preferences and my past decisions at these specific venues, which option would you recommend and why? Also, would Dana be a good person to invite, and what's the status of my next planned outing with her?",
+      "expected_answer": "Recommend Option B, the Wednesday 7:30 PM screening at Alamo Drafthouse Crystal City. This aligns with your consistent preference for low-crowd, off-peak movie experiences: you chose that exact venue and time slot type for the Ari Aster film because weekday evenings there are calm, you skipped the Wicked IMAX over crowded weekend slots, and you passed on Saturday Spirited Away showings at AMC Tysons for the same reason. Option A (Saturday evening IMAX at AMC Tysons) is the kind of screening you specifically avoid — AMC Tysons on a Saturday is the same venue and timing pattern you rejected for Spirited Away. Option C (Sunday afternoon at AMC Tysons) is better than Saturday evening but still a weekend slot at a high-traffic venue. As for Dana, your next confirmed plan with her is the Hozier concert at the Anthem on May 10 (two floor tickets, section GA2). She also proposed switching your Ari Aster screening to a Saturday night IMAX at AMC Tysons, but you haven't decided on that yet and are leaning toward keeping your Alamo ticket.",
+      "gold_memory_state": "Reflected preference: low-crowd, off-peak movie screenings; avoids weekend evenings and Saturday showings; favors weekday evenings and Tuesday afternoons. Confirmed Ari Aster plan: Alamo Drafthouse Crystal City, May 17, 7:30 PM (weekday evening). Hozier concert with Dana: May 10, Anthem DC, two floor tickets GA2. Dana's Saturday IMAX proposal: tentative, not adopted. Spirited Away skipped at AMC Tysons due to packed Saturday times. Wicked IMAX skipped due to crowded weekend evening slots.",
+      "judge_rubric": {
+        "must_include": [
+          "recommend Alamo Drafthouse Crystal City Wednesday screening",
+          "weekday evening aligns with crowd-avoidance preference",
+          "Hozier concert on May 10 is next confirmed plan with Dana"
+        ],
+        "acceptable_paraphrases": [
+          "Option B is the best fit",
+          "Wednesday evening at Alamo is ideal"
+        ],
+        "must_not_include": [
+          "recommend the Saturday IMAX at AMC Tysons",
+          "Dana's IMAX proposal has been accepted"
+        ],
+        "harmful_extra": [
+          "treating Dana's tentative IMAX suggestion as the user's adopted plan",
+          "recommending a Saturday screening as the best option"
+        ],
+        "harmless_extra": [
+          "mentioning the Bon Iver show as another potential outing with Dana",
+          "noting the Ari Aster screening as evidence for the Alamo preference"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the response treats Dana's tentative Saturday IMAX proposal as the user's confirmed plan or recommends AMC Tysons Saturday based on recency of Dana's suggestion.",
+        "reflection_precision": "Fails if the response recommends a Saturday or weekend evening screening despite the clearly established preference against them for movies.",
+        "reflection_recall": "Fails if the response does not connect the recommendation to the pattern of Wicked skip, Spirited Away skip, and Alamo weekday preference.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User consistently prefers low-crowd, off-peak movie screenings, avoiding weekend evenings and Saturday showings.",
+        "Fact 2: User chose Alamo Drafthouse Crystal City for the Ari Aster film specifically because weekday evenings there are calm.",
+        "Fact 3: User skipped Spirited Away at AMC Tysons because Saturday showings would be packed.",
+        "Fact 4: User has confirmed Hozier concert tickets with Dana for May 10 at the Anthem.",
+        "Fact 5: Dana proposed a Saturday night IMAX showing at AMC Tysons for the Ari Aster film, but the user has not decided and is leaning toward keeping the Alamo ticket.",
+        "Inference: Option A (AMC Tysons IMAX Saturday 7 PM) matches the exact venue and timing pattern the user rejected for Spirited Away and is the type of screening the user's reflected preference rules out.",
+        "Inference: Option B (Alamo Drafthouse Crystal City Wednesday 7:30 PM) matches the user's confirmed sweet spot — same venue, same weekday evening pattern.",
+        "Inference: The next confirmed plan with Dana is the Hozier concert May 10, not the tentative IMAX switch.",
+        "Derived recommendation: Option B is the best fit, and Dana's next confirmed outing is Hozier on May 10."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Yeah, I guess I do have a pattern. The Wicked thing, the Spirited Away thing, the Saturday nights at Alamo — I just really don't enjoy being in a packed theater. I'd rather go at a weird time when it's chill."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I bought a single ticket for the new Ari Aster A24 film at the Alamo Drafthouse in Crystal City. Screening is May 17, 7:30 PM. I like going to that specific Alamo location because it's never too packed on weekday evenings. Saturday nights there stress me out a bit."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I was going to see the Ghibli Fest screening of Spirited Away on June 8 at AMC Tysons, but I'm skipping it. The only times are 1 PM and 7 PM on a Saturday and both are going to be packed."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I got two tickets for the Hozier show at the Anthem in DC on May 10. Floor seats, section GA2, $179 each so $358 total. Going with my friend Dana."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Dana just texted me actually — she says she found a Saturday night IMAX showing of the Ari Aster film at the Tysons AMC for May 17. She wants us to go to that one instead of the Alamo. She already checked and there are seats available."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "A new Christopher Nolan film is opening next month and I want to see it in the best format possible. The local options are: (A) AMC Tysons IMAX, Saturday 7 PM; (B) Alamo Drafthouse Crystal City, Wednesday 7:30 PM; (C) AMC Tysons standard, Sunday 3 PM. Based on everything you know about my preferences and my past decisions at these specific venues, which option would you recommend and why? Also, would Dana be a good person to invite, and what's the status of my next planned outing with her?",
+      "expected_answer": "Recommend Option B, the Wednesday 7:30 PM screening at Alamo Drafthouse Crystal City. This aligns with your consistent preference for low-crowd, off-peak movie experiences: you chose that exact venue and time slot type for the Ari Aster film because weekday evenings there are calm, you skipped the Wicked IMAX over crowded weekend slots, and you passed on Saturday Spirited Away showings at AMC Tysons for the same reason. Option A (Saturday evening IMAX at AMC Tysons) is the kind of screening you specifically avoid — AMC Tysons on a Saturday is the same venue and timing pattern you rejected for Spirited Away. Option C (Sunday afternoon at AMC Tysons) is better than Saturday evening but still a weekend slot at a high-traffic venue. As for Dana, your next confirmed plan with her is the Hozier concert at the Anthem on May 10 (two floor tickets, section GA2). She also proposed switching your Ari Aster screening to a Saturday night IMAX at AMC Tysons, but you haven't decided on that yet and are leaning toward keeping your Alamo ticket.",
+      "gold_memory_state": "Reflected preference: low-crowd, off-peak movie screenings; avoids weekend evenings and Saturday showings; favors weekday evenings and Tuesday afternoons. Confirmed Ari Aster plan: Alamo Drafthouse Crystal City, May 17, 7:30 PM (weekday evening). Hozier concert with Dana: May 10, Anthem DC, two floor tickets GA2. Dana's Saturday IMAX proposal: tentative, not adopted. Spirited Away skipped at AMC Tysons due to packed Saturday times. Wicked IMAX skipped due to crowded weekend evening slots.",
+      "judge_rubric": {
+        "must_include": [
+          "recommend Alamo Drafthouse Crystal City Wednesday screening",
+          "weekday evening aligns with crowd-avoidance preference",
+          "Hozier concert on May 10 is next confirmed plan with Dana"
+        ],
+        "acceptable_paraphrases": [
+          "Option B is the best fit",
+          "Wednesday evening at Alamo is ideal"
+        ],
+        "must_not_include": [
+          "recommend the Saturday IMAX at AMC Tysons",
+          "Dana's IMAX proposal has been accepted"
+        ],
+        "harmful_extra": [
+          "treating Dana's tentative IMAX suggestion as the user's adopted plan",
+          "recommending a Saturday screening as the best option"
+        ],
+        "harmless_extra": [
+          "mentioning the Bon Iver show as another potential outing with Dana",
+          "noting the Ari Aster screening as evidence for the Alamo preference"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the response treats Dana's tentative Saturday IMAX proposal as the user's confirmed plan or recommends AMC Tysons Saturday based on recency of Dana's suggestion.",
+        "reflection_precision": "Fails if the response recommends a Saturday or weekend evening screening despite the clearly established preference against them for movies.",
+        "reflection_recall": "Fails if the response does not connect the recommendation to the pattern of Wicked skip, Spirited Away skip, and Alamo weekday preference.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User consistently prefers low-crowd, off-peak movie screenings, avoiding weekend evenings and Saturday showings.",
+        "Fact 2: User chose Alamo Drafthouse Crystal City for the Ari Aster film specifically because weekday evenings there are calm.",
+        "Fact 3: User skipped Spirited Away at AMC Tysons because Saturday showings would be packed.",
+        "Fact 4: User has confirmed Hozier concert tickets with Dana for May 10 at the Anthem.",
+        "Fact 5: Dana proposed a Saturday night IMAX showing at AMC Tysons for the Ari Aster film, but the user has not decided and is leaning toward keeping the Alamo ticket.",
+        "Inference: Option A (AMC Tysons IMAX Saturday 7 PM) matches the exact venue and timing pattern the user rejected for Spirited Away and is the type of screening the user's reflected preference rules out.",
+        "Inference: Option B (Alamo Drafthouse Crystal City Wednesday 7:30 PM) matches the user's confirmed sweet spot — same venue, same weekday evening pattern.",
+        "Inference: The next confirmed plan with Dana is the Hozier concert May 10, not the tentative IMAX switch.",
+        "Derived recommendation: Option B is the best fit, and Dana's next confirmed outing is Hozier on May 10."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Yeah, I guess I do have a pattern. The Wicked thing, the Spirited Away thing, the Saturday nights at Alamo — I just really don't enjoy being in a packed theater. I'd rather go at a weird time when it's chill."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I bought a single ticket for the new Ari Aster A24 film at the Alamo Drafthouse in Crystal City. Screening is May 17, 7:30 PM. I like going to that specific Alamo location because it's never too packed on weekday evenings. Saturday nights there stress me out a bit."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I was going to see the Ghibli Fest screening of Spirited Away on June 8 at AMC Tysons, but I'm skipping it. The only times are 1 PM and 7 PM on a Saturday and both are going to be packed."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I got two tickets for the Hozier show at the Anthem in DC on May 10. Floor seats, section GA2, $179 each so $358 total. Going with my friend Dana."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Dana just texted me actually — she says she found a Saturday night IMAX showing of the Ari Aster film at the Tysons AMC for May 17. She wants us to go to that one instead of the Alamo. She already checked and there are seats available."
+        }
+      ]
+    }
+  ]
+}

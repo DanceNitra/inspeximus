@@ -1,0 +1,806 @@
+{
+  "target_fact": "User's passport expiration date, undergoing multiple updates from September 14, 2025 through corrections and tentative changes",
+  "operation_type": "Update",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "passport_expiry_chain",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "My passport expires on September 14, 2025"
+      },
+      "target": {
+        "target_id": "user_passport_expiry",
+        "target_name": "User's passport expiration date"
+      },
+      "old_value": null,
+      "new_value": "September 14, 2025",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My passport expires on September 14, 2025"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "passport_expiry_chain",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I just double-checked the passport and I was off by a couple days — it actually expires on September 12, 2025, not the 14th"
+      },
+      "target": {
+        "target_id": "user_passport_expiry",
+        "target_name": "User's passport expiration date"
+      },
+      "old_value": "September 14, 2025",
+      "new_value": "September 12, 2025",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I just double-checked the passport and I was off by a couple days — it actually expires on September 12, 2025, not the 14th"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "passport_expiry_chain",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "Okay so I had my wife look at the passport too and she confirmed it's September 12, 2025. But here's the thing — I also noticed the passport office stamped an amendment page that extends the validity to October 31, 2025"
+      },
+      "target": {
+        "target_id": "user_passport_expiry",
+        "target_name": "User's passport expiration date"
+      },
+      "old_value": "September 12, 2025",
+      "new_value": "October 31, 2025",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I also noticed the passport office stamped an amendment page that extends the validity to October 31, 2025"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "passport_expiry_chain",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "The consular officer told me that with the new bilateral agreement, my passport validity will be recognized until December 31, 2025 for travel within the region"
+      },
+      "target": {
+        "target_id": "user_passport_expiry",
+        "target_name": "User's passport expiration date"
+      },
+      "old_value": "October 31, 2025",
+      "new_value": "December 31, 2025",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The consular officer told me that with the new bilateral agreement, my passport validity will be recognized until December 31, 2025 for travel within the region"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "my wife's passport expires on March 7, 2026"
+      },
+      "target": {
+        "target_id": "wife_passport_expiry",
+        "target_name": "Wife's passport expiration date"
+      },
+      "old_value": null,
+      "new_value": "March 7, 2026",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my wife's passport expires on March 7, 2026"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I'm planning to do my passport renewal in June, at least three months before the expiration"
+      },
+      "target": {
+        "target_id": "passport_renewal_target_window",
+        "target_name": "User's target window for passport renewal"
+      },
+      "old_value": null,
+      "new_value": "June 2025",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I'm planning to do my passport renewal in June, at least three months before the expiration"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish passport expiry and wife's passport expiry; first correction to passport date",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I need you to keep track of some important dates for me. My passport expires on September 14, 2025. This is critical because I had a horrible experience back in 2015 where I showed up at the airport for a flight to Bangkok and they told me my passport didn't have enough remaining validity. I never want to go through that again, so please note this down carefully."
+        },
+        {
+          "role": "assistant",
+          "content": "I've noted that your passport expires on September 14, 2025. That sounds like a really stressful experience at the airport in 2015 — definitely understandable that you want to stay ahead of it this time. I'll make sure to keep this date front and center. Would you like me to also help you plan a renewal timeline so you have plenty of buffer before that September date? Many countries require at least six months of passport validity for entry, so it might be worth factoring that in as well."
+        },
+        {
+          "role": "user",
+          "content": "Good idea. Also, while we're at it, please note that my wife's passport expires on March 7, 2026. She travels for work quite a bit, mostly within Asia, and she's terrible at keeping track of these things. I'm basically managing her documents at this point. She's got trips to Japan and Vietnam coming up later this year so we need to make sure her passport is in good shape too."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — your wife's passport expires on March 7, 2026. Since she travels frequently within Asia for work, that's definitely something to monitor. Many Asian countries require at least six months of remaining validity on your passport at the time of entry, so for her Japan and Vietnam trips later this year she should still be fine with a March 2026 expiration. But if she has any travel planned for late 2025 or early 2026, you'll want to start the renewal process well in advance. I'll keep both passport dates on file for you."
+        },
+        {
+          "role": "user",
+          "content": "Wait, hold on. I just double-checked the passport and I was off by a couple days — it actually expires on September 12, 2025, not the 14th. I had the wrong date in my head. Can you update that? September 12, 2025 is the correct expiration. Sorry about that, I should have looked at the actual document before telling you."
+        },
+        {
+          "role": "assistant",
+          "content": "No problem at all — it's better to catch that now than later! I've updated your passport expiration date from September 14, 2025 to September 12, 2025. Two days might not seem like much, but when you're cutting it close with travel plans or renewal deadlines, every day counts. I'm glad you went back and verified it against the actual document. Is there anything else you'd like me to track or correct while you have your documents out?"
+        },
+        {
+          "role": "user",
+          "content": "Actually yes — my national ID card was renewed in late November last year, around the 28th. I went to the district office on a Wednesday morning to beat the crowds. The new ID card is valid until November 2034, so that one is in good shape for a long time. I also updated my address on file to our new Xinyi district apartment when I was there."
+        },
+        {
+          "role": "assistant",
+          "content": "Great, I've noted that your national ID card was renewed around November 28 of last year at the district office, and it's valid until November 2034 — so you're set on that front for quite a while. It's smart that you went early on a Wednesday morning to avoid the long waits. And good thinking to update your address to the Xinyi district apartment at the same time. That's one less errand to worry about. So far I'm tracking your passport expiration at September 12, 2025, your wife's passport at March 7, 2026, and your ID card valid through November 2034."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establish renewal target window; discover amendment extending passport validity to October 31, 2025",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So here's my plan — I'm planning to do my passport renewal in June, at least three months before the expiration. I want a solid buffer this time. After that 2015 disaster I'm not taking any chances. June gives me about three months of cushion before the September 12 date, and that should be more than enough time even if there are processing delays."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a very sensible approach. Targeting June 2025 for your passport renewal gives you roughly three months before the September 12 expiration, which should be plenty of buffer even if the processing takes longer than expected. Since you mentioned that full online renewal isn't available yet and you'll need to go in person, you might want to schedule an appointment early in June to avoid peak summer crowds. Would you like me to remind you about this when June approaches, or help you prepare a checklist of documents you'll need for the renewal appointment?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, a checklist would be helpful eventually. But first, something interesting happened. Okay so I had my wife look at the passport too and she confirmed it's September 12, 2025. But here's the thing — I also noticed the passport office stamped an amendment page that extends the validity to October 31, 2025. I completely forgot about this. I think it was from when I had some kind of administrative correction done a couple years ago and they extended the validity as part of the process."
+        },
+        {
+          "role": "assistant",
+          "content": "Oh, that's a significant find! So your passport's effective expiration date is now October 31, 2025 rather than September 12, 2025, thanks to that amendment stamp. That gives you an extra seven weeks of validity, which is great news. Your June renewal plan still works perfectly — in fact, it gives you even more breathing room now. I've updated the passport expiration to October 31, 2025. It's worth keeping in mind that some countries or airlines might look at the original expiration on the biodata page rather than the amendment, so you may want to carry documentation about the extension when traveling internationally."
+        },
+        {
+          "role": "user",
+          "content": "That's a good point about airlines potentially not recognizing the amendment. I'll keep that in mind. By the way, I'm also thinking about my son's passport. He's 11 now and I'm pretty sure his passport was issued when he was 6, so it should be a five-year passport. That means it probably expires sometime around July or August 2025, but I need to dig it out and check the exact date. I really don't want another last-minute scramble."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a smart move to start thinking about your son's passport now. If he was 6 when it was issued and he's 11 now, a five-year children's passport would indeed be expiring sometime this year — your estimate of July or August 2025 sounds reasonable. I'd recommend finding the actual document as soon as you can so you know the exact date. If it does expire in July or August, that's coming up fast, and you might want to handle his renewal alongside yours in June. That way you could potentially do both appointments at the passport office on the same visit and save yourself a second trip."
+        },
+        {
+          "role": "user",
+          "content": "That's actually a brilliant idea — combining both renewals in one trip to the passport office in June. I hate going to those government offices more than once. The fluorescent lighting and the ticket number queuing system drive me crazy. I'd much rather handle things through an app if that were possible. Like when I renewed my health insurance card through the app last year, that was so smooth and easy."
+        },
+        {
+          "role": "assistant",
+          "content": "I completely understand — dealing with government offices in person is nobody's favorite activity, especially with the harsh lighting and endless waiting. It's frustrating that passport renewals still require a physical visit when other services like your health insurance card renewal have already moved to convenient app-based processes. Combining your renewal and your son's into one June trip is definitely the most efficient approach. When the time comes, I can help you prepare all the necessary documents for both applications so you can get in and out as quickly as possible. Is there anything else document-related you'd like me to keep track of?"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Adversarial injection of stale date; tentative recency trap with consular officer claim; conversation continues on other topics",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So I was at the travel agency yesterday booking some flights for a family trip and the agent was reviewing our documents. She pulled up some records and started confirming dates with me. She mentioned something about planning the itinerary around our passport situations. My wife is handling the hotel bookings on her end while I deal with flights and documents."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a productive visit to the travel agency. It's great that you and your wife are dividing the trip planning responsibilities. Having the agent review your document situations is a smart step — they often catch things that travelers overlook. I should mention that based on my records, your passport currently shows an expiration of October 31, 2025 with the amendment extension. I also noticed the agent might have older records on file — sometimes travel agencies have the original September 14, 2025 date from initial booking systems. Make sure they're working with the most current information including the amendment stamp."
+        },
+        {
+          "role": "user",
+          "content": "Right, the agent did actually have September 14 in her system from an old booking I made last year. I told her that's outdated. Anyway, the family trip we're planning is for late August, so we should be fine with the current passport validity. My wife's March 2026 expiration is well clear too. I want to make sure we have everything squared away."
+        },
+        {
+          "role": "assistant",
+          "content": "A late August family trip sounds wonderful, and you're right that both your passport (valid through October 31, 2025 with the amendment) and your wife's (March 7, 2026) should have plenty of remaining validity for that timeframe. Most destinations require at least six months of validity from the date of entry, and your wife's passport clears that easily. Yours would be tighter depending on the destination — with an October 31 expiration, some countries might flag it for an August trip. It might be worth confirming the specific entry requirements for wherever you're headed."
+        },
+        {
+          "role": "user",
+          "content": "The consular officer told me that with the new bilateral agreement, my passport validity will be recognized until December 31, 2025 for travel within the region. She said it's part of a new arrangement between several Asian countries to simplify travel document requirements. If that's the case, it would give me even more time before I absolutely need to renew."
+        },
+        {
+          "role": "assistant",
+          "content": "That's interesting news from the consular officer. If the bilateral agreement does extend recognition of your passport validity to December 31, 2025 for regional travel, that would indeed give you a more comfortable margin. However, I'd suggest treating this cautiously until you see it confirmed in writing or on an official government website — bilateral agreements can sometimes take time to be fully implemented, and individual airlines or border agents might not be aware of new arrangements right away. For now, your confirmed passport expiration remains October 31, 2025 based on the physical amendment stamp. Would you like to verify the agreement details before adjusting your plans?"
+        },
+        {
+          "role": "user",
+          "content": "You make a fair point about being cautious. I'll look into it more. Shifting topics a bit — I've been thinking about whether to also get my son a new national ID card while we're at it. He doesn't technically need one for travel, but it might be useful for domestic purposes. I'll figure that out later. For now, let's focus on making sure the June renewal plan is solid."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a pragmatic approach — getting your son a national ID card could be convenient for domestic identification, but it's not urgent like the passport situation. For the June renewal plan, here's what I'd suggest: schedule the appointment for early June to allow maximum processing time before any summer travel. Bring both your passport with the amendment page and your son's passport for simultaneous renewal. You'll want to prepare recent photos, your national ID card (valid until November 2034), proof of address in Xinyi district, and any required application forms. Since online renewal isn't available for passports, going in person with everything ready should help minimize your time in the office."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations about my passport, I mentioned the expiration date a few times. Can you walk me through what I said about it and which pieces of information should guide any future travel planning?",
+      "expected_answer": "You initially said your passport expires on September 14, 2025. You then checked the actual document and said it expires on September 12, 2025. Later, you discovered an amendment stamp extending validity to October 31, 2025. You also mentioned a consular officer's claim about a bilateral agreement recognizing validity until December 31, 2025, but that was unverified. The confirmed expiration to rely on is October 31, 2025.",
+      "gold_memory_state": "User's passport expiration: October 31, 2025 (confirmed via amendment stamp). Tentative December 31, 2025 claim from consular officer is not adopted. Wife's passport: March 7, 2026. Renewal target: June 2025.",
+      "judge_rubric": {
+        "must_include": [
+          "September 14, 2025",
+          "September 12, 2025",
+          "October 31, 2025",
+          "amendment"
+        ],
+        "acceptable_paraphrases": [
+          "extended to October 31",
+          "amendment page extended validity"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "treating December 31, 2025 as the confirmed expiration"
+        ],
+        "harmless_extra": [
+          "mentioning the consular officer's December 31 claim as unverified",
+          "mentioning renewal plans for June"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats September 14, 2025 or September 12, 2025 as the current expiration date.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model states December 31, 2025 as the confirmed expiration.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My passport expires on September 14, 2025"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I just double-checked the passport and I was off by a couple days — it actually expires on September 12, 2025, not the 14th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I also noticed the passport office stamped an amendment page that extends the validity to October 31, 2025"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The consular officer told me that with the new bilateral agreement, my passport validity will be recognized until December 31, 2025 for travel within the region"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations about my passport, I mentioned the expiration date a few times. Can you walk me through what I said about it and which pieces of information should guide any future travel planning?",
+      "expected_answer": "You initially said your passport expires on September 14, 2025. You then checked the actual document and said it expires on September 12, 2025. Later, you discovered an amendment stamp extending validity to October 31, 2025. You also mentioned a consular officer's claim about a bilateral agreement recognizing validity until December 31, 2025, but that was unverified. The confirmed expiration to rely on is October 31, 2025.",
+      "gold_memory_state": "User's passport expiration: October 31, 2025 (confirmed via amendment stamp). Tentative December 31, 2025 claim from consular officer is not adopted. Wife's passport: March 7, 2026. Renewal target: June 2025.",
+      "judge_rubric": {
+        "must_include": [
+          "September 14, 2025",
+          "September 12, 2025",
+          "October 31, 2025",
+          "amendment"
+        ],
+        "acceptable_paraphrases": [
+          "extended to October 31",
+          "amendment page extended validity"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "treating December 31, 2025 as the confirmed expiration"
+        ],
+        "harmless_extra": [
+          "mentioning the consular officer's December 31 claim as unverified",
+          "mentioning renewal plans for June"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats September 14, 2025 or September 12, 2025 as the current expiration date.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model states December 31, 2025 as the confirmed expiration.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My passport expires on September 14, 2025"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I just double-checked the passport and I was off by a couple days — it actually expires on September 12, 2025, not the 14th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I also noticed the passport office stamped an amendment page that extends the validity to October 31, 2025"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The consular officer told me that with the new bilateral agreement, my passport validity will be recognized until December 31, 2025 for travel within the region"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When I found the amendment stamp that changed the expiration, does that apply to my passport or my wife's passport? And does my wife's passport expiration need any adjustment because of it?",
+      "expected_answer": "The amendment stamp applies to your passport only, extending its expiration to October 31, 2025. Your wife's passport expiration remains March 7, 2026 and is not affected.",
+      "gold_memory_state": "User's passport expiration: October 31, 2025 (confirmed). Wife's passport expiration: March 7, 2026 (unchanged). Tentative December 31, 2025 not adopted for either passport.",
+      "judge_rubric": {
+        "must_include": [
+          "user's passport",
+          "October 31, 2025",
+          "wife's passport not affected",
+          "March 7, 2026"
+        ],
+        "acceptable_paraphrases": [
+          "only your passport",
+          "wife's stays at March 7, 2026"
+        ],
+        "must_not_include": [
+          "wife's passport also extended",
+          "wife's passport changed"
+        ],
+        "harmful_extra": [
+          "applying the amendment to both passports",
+          "changing wife's expiration date"
+        ],
+        "harmless_extra": [
+          "mentioning the original September 12 date before the amendment"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model says the user's passport still expires September 12 or September 14.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the amendment is applied to the wife's passport or if the user's passport is given as December 31, 2025.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I also noticed the passport office stamped an amendment page that extends the validity to October 31, 2025"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my wife's passport expires on March 7, 2026"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When I found the amendment stamp that changed the expiration, does that apply to my passport or my wife's passport? And does my wife's passport expiration need any adjustment because of it?",
+      "expected_answer": "The amendment stamp applies to your passport only, extending its expiration to October 31, 2025. Your wife's passport expiration remains March 7, 2026 and is not affected.",
+      "gold_memory_state": "User's passport expiration: October 31, 2025 (confirmed). Wife's passport expiration: March 7, 2026 (unchanged). Tentative December 31, 2025 not adopted for either passport.",
+      "judge_rubric": {
+        "must_include": [
+          "user's passport",
+          "October 31, 2025",
+          "wife's passport not affected",
+          "March 7, 2026"
+        ],
+        "acceptable_paraphrases": [
+          "only your passport",
+          "wife's stays at March 7, 2026"
+        ],
+        "must_not_include": [
+          "wife's passport also extended",
+          "wife's passport changed"
+        ],
+        "harmful_extra": [
+          "applying the amendment to both passports",
+          "changing wife's expiration date"
+        ],
+        "harmless_extra": [
+          "mentioning the original September 12 date before the amendment"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model says the user's passport still expires September 12 or September 14.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the amendment is applied to the wife's passport or if the user's passport is given as December 31, 2025.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I also noticed the passport office stamped an amendment page that extends the validity to October 31, 2025"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my wife's passport expires on March 7, 2026"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to fill in my passport expiration date on a travel insurance application. Which of these dates should I enter?",
+      "candidate_options": [
+        "October 31, 2025",
+        "September 14, 2025",
+        "September 12, 2025",
+        "December 31, 2025"
+      ],
+      "distractor_rationale": "same-value-different-target: September 14, 2025 is the original self-reported date that was superseded by the user's own correction — it is a stale value from the same target. September 12, 2025 is the intermediate corrected value before the amendment extension was discovered — also stale from the same target. assistant echo: The assistant mentioned September 14 in the travel agency context as an outdated booking-system value. December 31, 2025 is a tentative recency-trap value from the consular officer's unverified bilateral agreement claim — not adopted as the confirmed expiration.",
+      "expected_answer": "October 31, 2025",
+      "gold_memory_state": "User's passport expiration: October 31, 2025 (confirmed via amendment stamp). September 14, 2025 was the initial self-report (stale). September 12, 2025 was the first correction (stale, superseded by amendment). December 31, 2025 is tentative/unverified from consular officer claim (not adopted).",
+      "judge_rubric": {
+        "must_include": [
+          "October 31, 2025"
+        ],
+        "acceptable_paraphrases": [
+          "Oct 31, 2025",
+          "October 31 2025"
+        ],
+        "must_not_include": [
+          "September 14, 2025",
+          "September 12, 2025",
+          "December 31, 2025"
+        ],
+        "harmful_extra": [
+          "selecting any date other than October 31, 2025"
+        ],
+        "harmless_extra": [
+          "noting the amendment stamp as the source of this date"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects September 14, 2025 or September 12, 2025 — both are superseded stale values. Also fails if December 31, 2025 is selected, as it is a tentative unverified value.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if any date other than October 31, 2025 is chosen as the confirmed expiration.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I also noticed the passport office stamped an amendment page that extends the validity to October 31, 2025"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The consular officer told me that with the new bilateral agreement, my passport validity will be recognized until December 31, 2025 for travel within the region"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to fill in my passport expiration date on a travel insurance application. Which of these dates should I enter?",
+      "candidate_options": [
+        "October 31, 2025",
+        "September 14, 2025",
+        "September 12, 2025",
+        "December 31, 2025"
+      ],
+      "distractor_rationale": "same-value-different-target: September 14, 2025 is the original self-reported date that was superseded by the user's own correction — it is a stale value from the same target. September 12, 2025 is the intermediate corrected value before the amendment extension was discovered — also stale from the same target. assistant echo: The assistant mentioned September 14 in the travel agency context as an outdated booking-system value. December 31, 2025 is a tentative recency-trap value from the consular officer's unverified bilateral agreement claim — not adopted as the confirmed expiration.",
+      "expected_answer": "October 31, 2025",
+      "gold_memory_state": "User's passport expiration: October 31, 2025 (confirmed via amendment stamp). September 14, 2025 was the initial self-report (stale). September 12, 2025 was the first correction (stale, superseded by amendment). December 31, 2025 is tentative/unverified from consular officer claim (not adopted).",
+      "judge_rubric": {
+        "must_include": [
+          "October 31, 2025"
+        ],
+        "acceptable_paraphrases": [
+          "Oct 31, 2025",
+          "October 31 2025"
+        ],
+        "must_not_include": [
+          "September 14, 2025",
+          "September 12, 2025",
+          "December 31, 2025"
+        ],
+        "harmful_extra": [
+          "selecting any date other than October 31, 2025"
+        ],
+        "harmless_extra": [
+          "noting the amendment stamp as the source of this date"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects September 14, 2025 or September 12, 2025 — both are superseded stale values. Also fails if December 31, 2025 is selected, as it is a tentative unverified value.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if any date other than October 31, 2025 is chosen as the confirmed expiration.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I also noticed the passport office stamped an amendment page that extends the validity to October 31, 2025"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The consular officer told me that with the new bilateral agreement, my passport validity will be recognized until December 31, 2025 for travel within the region"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I want to figure out exactly how much time I have between when I plan to start the passport renewal and when the passport actually becomes invalid. Also, considering my wife's passport situation, whose passport is more urgent to renew first? Write me a short priority note covering both passports and the timing.",
+      "application_probe_type": "multi_hop_derivation",
+      "expected_answer": "Your passport expires October 31, 2025 and you plan to renew in June 2025, giving you roughly 4–5 months of buffer. Your wife's passport expires March 7, 2026, which is about 9–10 months from June 2025. Your passport is more urgent to renew first. A short priority note: 'Priority 1: Renew my passport in early June 2025 — expiration is October 31, 2025, giving approximately 4–5 months of cushion. Priority 2: Renew wife's passport later — expiration is March 7, 2026, giving approximately 9–10 months from June 2025, so less urgent.'",
+      "gold_memory_state": "User's passport expiration: October 31, 2025 (confirmed). Wife's passport expiration: March 7, 2026 (confirmed). Passport renewal target: June 2025. Tentative December 31, 2025 not adopted.",
+      "judge_rubric": {
+        "must_include": [
+          "October 31, 2025",
+          "June 2025",
+          "March 7, 2026",
+          "user's passport is more urgent"
+        ],
+        "acceptable_paraphrases": [
+          "about 4 to 5 months",
+          "roughly 5 months",
+          "approximately 4 months",
+          "about 9 to 10 months"
+        ],
+        "must_not_include": [
+          "September 14, 2025",
+          "September 12, 2025",
+          "December 31, 2025 as the confirmed expiration"
+        ],
+        "harmful_extra": [
+          "using December 31, 2025 as the expiration for buffer calculation",
+          "saying wife's passport is more urgent"
+        ],
+        "harmless_extra": [
+          "mentioning the son's passport situation",
+          "mentioning the six-month validity rule for international travel"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses September 14 or September 12 as the expiration for buffer calculation. Fails if the model uses December 31, 2025 as the confirmed expiration.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the priority ranking is wrong or if buffer calculations are based on a stale or tentative date.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User's passport expires October 31, 2025 (confirmed via amendment stamp).",
+        "Fact 2: User plans to renew passport in June 2025.",
+        "Fact 3: Wife's passport expires March 7, 2026.",
+        "Inference: Buffer for user's passport = October 31, 2025 minus June 2025 ≈ 4–5 months.",
+        "Inference: Buffer for wife's passport = March 7, 2026 minus June 2025 ≈ 9–10 months.",
+        "Inference: User's passport has less buffer, so it is the higher renewal priority."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I also noticed the passport office stamped an amendment page that extends the validity to October 31, 2025"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I'm planning to do my passport renewal in June, at least three months before the expiration"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my wife's passport expires on March 7, 2026"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I want to figure out exactly how much time I have between when I plan to start the passport renewal and when the passport actually becomes invalid. Also, considering my wife's passport situation, whose passport is more urgent to renew first? Write me a short priority note covering both passports and the timing.",
+      "application_probe_type": "multi_hop_derivation",
+      "expected_answer": "Your passport expires October 31, 2025 and you plan to renew in June 2025, giving you roughly 4–5 months of buffer. Your wife's passport expires March 7, 2026, which is about 9–10 months from June 2025. Your passport is more urgent to renew first. A short priority note: 'Priority 1: Renew my passport in early June 2025 — expiration is October 31, 2025, giving approximately 4–5 months of cushion. Priority 2: Renew wife's passport later — expiration is March 7, 2026, giving approximately 9–10 months from June 2025, so less urgent.'",
+      "gold_memory_state": "User's passport expiration: October 31, 2025 (confirmed). Wife's passport expiration: March 7, 2026 (confirmed). Passport renewal target: June 2025. Tentative December 31, 2025 not adopted.",
+      "judge_rubric": {
+        "must_include": [
+          "October 31, 2025",
+          "June 2025",
+          "March 7, 2026",
+          "user's passport is more urgent"
+        ],
+        "acceptable_paraphrases": [
+          "about 4 to 5 months",
+          "roughly 5 months",
+          "approximately 4 months",
+          "about 9 to 10 months"
+        ],
+        "must_not_include": [
+          "September 14, 2025",
+          "September 12, 2025",
+          "December 31, 2025 as the confirmed expiration"
+        ],
+        "harmful_extra": [
+          "using December 31, 2025 as the expiration for buffer calculation",
+          "saying wife's passport is more urgent"
+        ],
+        "harmless_extra": [
+          "mentioning the son's passport situation",
+          "mentioning the six-month validity rule for international travel"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses September 14 or September 12 as the expiration for buffer calculation. Fails if the model uses December 31, 2025 as the confirmed expiration.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the priority ranking is wrong or if buffer calculations are based on a stale or tentative date.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User's passport expires October 31, 2025 (confirmed via amendment stamp).",
+        "Fact 2: User plans to renew passport in June 2025.",
+        "Fact 3: Wife's passport expires March 7, 2026.",
+        "Inference: Buffer for user's passport = October 31, 2025 minus June 2025 ≈ 4–5 months.",
+        "Inference: Buffer for wife's passport = March 7, 2026 minus June 2025 ≈ 9–10 months.",
+        "Inference: User's passport has less buffer, so it is the higher renewal priority."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I also noticed the passport office stamped an amendment page that extends the validity to October 31, 2025"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I'm planning to do my passport renewal in June, at least three months before the expiration"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my wife's passport expires on March 7, 2026"
+        }
+      ]
+    }
+  ]
+}

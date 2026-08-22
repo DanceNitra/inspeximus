@@ -1,0 +1,783 @@
+{
+  "target_fact": "The exam currently being prepared for is CPA FAR, with the exam date undergoing multiple changes across the conversation.",
+  "operation_type": "Update",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "far_exam_date",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "My CPA FAR exam is scheduled for June 7th"
+      },
+      "target": {
+        "target_id": "cpa_far_exam_date",
+        "target_name": "CPA FAR exam date"
+      },
+      "old_value": null,
+      "new_value": "June 7th",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My CPA FAR exam is scheduled for June 7th"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "far_exam_date",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 7,
+        "quote": "Prometric had a scheduling conflict and bumped me to June 14th instead"
+      },
+      "target": {
+        "target_id": "cpa_far_exam_date",
+        "target_name": "CPA FAR exam date"
+      },
+      "old_value": "June 7th",
+      "new_value": "June 14th",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "Prometric had a scheduling conflict and bumped me to June 14th instead"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "far_exam_date",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "I just rescheduled my FAR exam to June 21st because I need more prep time"
+      },
+      "target": {
+        "target_id": "cpa_far_exam_date",
+        "target_name": "CPA FAR exam date"
+      },
+      "old_value": "June 14th",
+      "new_value": "June 21st",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I just rescheduled my FAR exam to June 21st because I need more prep time"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "far_exam_date",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "My manager confirmed I can take that Friday off, so I'm going to move the exam up to June 14th again"
+      },
+      "target": {
+        "target_id": "cpa_far_exam_date",
+        "target_name": "CPA FAR exam date"
+      },
+      "old_value": "June 21st",
+      "new_value": "June 14th",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My manager confirmed I can take that Friday off, so I'm going to move the exam up to June 14th again"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I started using Becker review materials on March 18th for my FAR prep"
+      },
+      "target": {
+        "target_id": "cpa_far_review_course",
+        "target_name": "CPA FAR review course and start date"
+      },
+      "old_value": null,
+      "new_value": "Becker review course, started March 18th",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I started using Becker review materials on March 18th for my FAR prep"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish initial exam date and study details",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I need some help organizing my study plan. My CPA FAR exam is scheduled for June 7th and I've been trying to figure out how to structure my remaining weeks. I registered back on March 12th and I want to make sure I'm covering all the major topics systematically rather than just randomly jumping around."
+        },
+        {
+          "role": "assistant",
+          "content": "Congratulations on getting your exam date set! June 7th gives you a solid window to prepare. Since you registered on March 12th, you've already had some time to get into a rhythm. To help you build a structured plan, could you tell me what review materials you're using, how far along you are in the content, and roughly how many hours per day you can dedicate to studying? That way I can help you map out a week-by-week breakdown that ensures you cover every FAR topic with time for review and practice exams before the big day."
+        },
+        {
+          "role": "user",
+          "content": "Sure. I started using Becker review materials on March 18th for my FAR prep. The structured video lectures have been really helpful because I can pause and rewatch at my own pace. I've been studying at home since late March because the library was too noisy. Right now I'm waking up at 5:30 AM to get two solid hours in before work, which has been my most productive time."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a great setup. Becker is one of the most comprehensive CPA review courses available, and the fact that you've been using it since March 18th means you've had roughly six weeks with the material already. Your early morning study routine at 5:30 AM is excellent — research consistently shows that distraction-free morning sessions yield better retention. Since you've moved to studying at home full-time, you've eliminated the library noise issue, which should help your focus. Can you tell me your current Becker progress percentage and how you're performing on the practice MCQs? That will help me gauge where to focus the remaining weeks."
+        },
+        {
+          "role": "user",
+          "content": "My Becker progress is at 58% completion for FAR as of May 3rd. I've also been doing timed practice sets — 33 MCQs in 45 minutes — and my scores are hovering around 65 to 68 percent. I bought the Ninja CPA supplemental MCQ bank on April 20th for $57 a month to get more variety in practice questions. I feel like I need to push those scores up to at least 75 percent before I feel confident."
+        },
+        {
+          "role": "assistant",
+          "content": "At 58% completion with scores in the 65-68% range, you're in a reasonable position but definitely need to accelerate. Your target of 75% on practice MCQs is a smart benchmark — most candidates who score above 75% on Becker and Ninja practice sets tend to pass the actual exam. With the Ninja supplement adding variety since April 20th, you're getting exposure to different question styles, which is valuable. I'd suggest aiming to finish the remaining 42% of Becker content within the next two weeks, then dedicating the final stretch entirely to practice exams and weak-area review. Want me to draft a detailed weekly schedule based on these numbers?"
+        },
+        {
+          "role": "user",
+          "content": "Actually, before you do that, I need to update you on something. Prometric had a scheduling conflict and bumped me to June 14th instead. I got the email this morning. It's annoying but honestly the extra week might be a blessing in disguise since I'm only at 58 percent. So plan everything around June 14th now, not June 7th."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — I've updated your exam date to June 14th. You're right that the extra week could work in your favor given your current 58% Becker progress. With June 14th as the target, you now have roughly five and a half weeks from May 3rd. I'd recommend finishing all Becker content by May 24th, which gives you three full weeks of pure review and practice before the exam. That aligns with your goal of being at 100% Becker completion at least two weeks before the test. I'll use June 14th as the anchor date for your study plan going forward. Want me to start building the weekly breakdown now?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "update exam date again and discuss friend Kevin's progress",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, quick update on my friend Kevin. He's also doing the CPA but he's working on the AUD section first. He told me last week he scored a 71 on his AUD practice exam, which is close but not passing. I felt bad for him because he's been putting in a lot of hours. I think he's using Wiley instead of Becker, which might be part of the issue."
+        },
+        {
+          "role": "assistant",
+          "content": "That's tough for Kevin — a 71 on a practice exam is frustrating because it's so close to the passing threshold of 75 but still short. Wiley is a solid review course in its own right, but some candidates find that its question style doesn't mirror the actual exam as closely as Becker or Ninja. If Kevin is open to suggestions, adding a supplemental MCQ bank like you did with Ninja could help him see different question formats and plug gaps. It might also be worth him analyzing which AUD topics are dragging his score down so he can do targeted review rather than broad re-study. How's your own prep going this week?"
+        },
+        {
+          "role": "user",
+          "content": "It's going okay but I've been struggling with the governmental accounting modules. Those GASB standards are really confusing to me. I've watched the Becker lectures on fund accounting three times and I still mix up governmental funds versus proprietary funds. My Ninja MCQ scores on that topic are around 55 percent, which is way below my overall average."
+        },
+        {
+          "role": "assistant",
+          "content": "Governmental accounting is one of the most commonly cited trouble areas for FAR candidates, so you're not alone. The distinction between governmental funds and proprietary funds trips up a lot of people. One approach that helps is creating a comparison chart: governmental funds use modified accrual and focus on current financial resources, while proprietary funds use full accrual and focus on economic resources, similar to commercial accounting. Since your Ninja scores on this topic are at 55%, I'd recommend dedicating at least 30 minutes of each morning session specifically to governmental MCQs until you bring that up to at least 70%. Would you like me to outline a focused governmental accounting mini-plan?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, that would help. But first — I just rescheduled my FAR exam to June 21st because I need more prep time. Those governmental accounting scores really shook my confidence. I went into Prometric's system and pushed it back another week. So the new date is June 21st. I know I keep moving it but I'd rather be prepared than rush in and fail."
+        },
+        {
+          "role": "assistant",
+          "content": "No judgment at all — it's much better to feel prepared than to rush into the exam and risk failing, which would cost you another exam fee and more study time in the long run. June 21st is your new target, and that gives you about seven weeks from May 3rd. With the extra time, you can dedicate a solid two weeks specifically to governmental accounting and other weak areas before moving into full-length practice exams. I'll recalibrate your study plan around June 21st. The good news is this gives you breathing room to hit 100% Becker completion by early June with two to three weeks of pure review afterward. Ready for that governmental accounting mini-plan?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, let's do it. Also, I dropped the idea of sitting for REG in August. I originally planned to take REG as my second section in August, but I realized I need to fully focus on FAR first. So the August REG plan is completely off the table. One exam at a time for now.\n\nThat sounds good. Let's flesh it out. Also, can you help me calculate how many study days I have left if I'm studying every day except Sundays? I want to be realistic about how much content I can cover per day between now and the exam."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a wise decision. Splitting your attention between FAR and REG prep would likely hurt both scores. By focusing exclusively on FAR for your June 21st exam, you can channel all your energy into mastering the material. Once you pass FAR, you'll have momentum and confidence to tackle REG or another section with a fresh study cycle. For the governmental accounting mini-plan, here's what I'd suggest: days one through three, review Becker's governmental accounting modules with the comparison chart approach; days four through seven, do 30 Ninja MCQs daily on governmental topics only; days eight through ten, take a timed mini-exam mixing governmental with your stronger topics. Want me to flesh that out with specific time blocks?\n\nAbsolutely. From May 3rd to June 21st is 49 calendar days. If you take every Sunday off, that's 7 Sundays in that span, leaving you with 42 study days. With your 5:30 AM routine giving you roughly 2 hours before work, plus any evening or weekend time you add, that's a minimum of 84 hours of dedicated study time. At 42% Becker content remaining, you'd need to cover about 1% of Becker per study day to finish the content by late May, leaving roughly two and a half weeks for pure review and practice exams. If you can add even one extra hour on Saturdays, that buffer grows significantly. I'll build the detailed schedule around these 42 study days with June 21st as the hard deadline."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "tentative date change and adversarial injection",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to talk about my study progress. I've been hitting the governmental accounting hard like we planned. My Ninja MCQ scores on that topic are up to about 68 percent now, which is a big improvement from 55 percent. I'm feeling more confident about distinguishing governmental and proprietary funds. The comparison chart approach really helped."
+        },
+        {
+          "role": "assistant",
+          "content": "That's fantastic progress! Going from 55% to 68% on governmental accounting in a focused period shows that the targeted approach is working. You're closing in on that 70% threshold we discussed, and with continued daily practice, you should be able to push past it soon. The fact that you're now more comfortable distinguishing governmental versus proprietary funds means the conceptual framework is clicking. Keep doing those daily Ninja MCQ sets on the topic — consistency is what will cement it. How are your scores looking on the other FAR topics? Are there any other weak spots emerging as you work through the remaining Becker content?"
+        },
+        {
+          "role": "user",
+          "content": "The other topics are actually pretty solid. Bond amortization and leases are around 73 percent, and revenue recognition is at 76 percent. My overall Becker progress is up to about 72 percent now, which feels good. I think the biggest remaining challenge after governmental is the consolidation and equity method stuff — I haven't gotten to those modules yet."
+        },
+        {
+          "role": "assistant",
+          "content": "Those are strong numbers across the board. Bond amortization and leases at 73% and revenue recognition at 76% are both in solid passing territory. Getting your overall Becker progress to 72% means you've covered a lot of ground since we last talked. Consolidations and the equity method are definitely topics that require careful attention — they tend to show up heavily on FAR. I'd suggest prioritizing those modules next so you can get through them while you still have time for review. By the way, I noticed Kevin's AUD exam was originally listed for June 7th on the study group schedule Maria shared — is he still on that date, or did he push it back too?"
+        },
+        {
+          "role": "user",
+          "content": "I'm not sure about Kevin's exact date honestly, I think he might have pushed it back but I haven't asked him recently. Anyway, I wanted to talk about something. My manager confirmed I can take that Friday off, so I'm going to move the exam up to June 14th again. I feel like the extra week of waiting until the 21st is just going to make me more anxious and I'll start second-guessing myself. Better to just go in while the material is fresh."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes sense — sometimes the extra waiting time can work against you psychologically, especially if you start overthinking things instead of trusting your preparation. Moving back to June 14th means you'd have about five and a half weeks total from May 3rd, which is still a reasonable window given your progress. You'd want to finish all Becker content by around May 31st to leave two weeks of pure review. Just make sure to confirm the reschedule on Prometric's site soon so the slot doesn't fill up. Have you already made the change in the system, or are you planning to do it this week?"
+        },
+        {
+          "role": "user",
+          "content": "I haven't made the change yet, I'm planning to call Prometric tomorrow to see if the June 14th slot is still available. If it's not, I'll stick with June 21st. Either way I need to keep pushing through the material. Can you help me figure out a revised timeline assuming I do get the June 14th slot? I want to see if the numbers work out.\n\nThat's helpful, thanks. Let me also think about this — with 36 study days and two hours each morning, that's 72 hours minimum. Plus I can probably add three hours on Saturdays. There are about five Saturdays in that window, so that's another 15 hours, giving me 87 hours total. That should be enough to finish the remaining content and do a thorough review, right?"
+        },
+        {
+          "role": "assistant",
+          "content": "Of course. If you move to June 14th, you'd have about 36 study days remaining from today (excluding Sundays) instead of 42. With Becker at 72% complete, you have 28% left to cover. At roughly 36 study days, that's less than 1% of Becker content per day, which is very manageable — you could finish all content by around May 24th and have nearly three weeks for review and practice exams. Your MCQ scores are trending well, so the review period would be about sharpening weak areas like governmental accounting and tackling consolidations. The math works if you maintain your current pace. I'd suggest having a backup plan for June 21st just in case the slot isn't available.\n\nYes, 87 hours is a solid amount for your remaining preparation. Most CPA review courses recommend between 300-400 total hours for FAR, and given that you've been studying since mid-March, you've likely already accumulated well over 200 hours. Adding 87 more hours would put you comfortably in that range. The key is allocation: I'd suggest spending about 35 of those hours finishing the remaining Becker content including consolidations and equity method, about 30 hours on targeted MCQ practice across all topics using both Becker and Ninja, and the final 22 hours on full-length practice exams and weak-area review. That breakdown ensures you're not just consuming content but actively testing yourself, which is what drives scores up most effectively."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations, I mentioned several scheduling details related to my exam preparation. Can you summarize the key scheduling statements I made and which ones should guide your future assistance?",
+      "expected_answer": "You initially stated your exam was scheduled for June 7th. You then reported that Prometric bumped you to June 14th due to a scheduling conflict. Later, you rescheduled to June 21st because you needed more prep time. Most recently, you mentioned wanting to move back to June 14th after your manager confirmed time off, but you had not yet confirmed the change with Prometric. The June 21st date remains the last confirmed scheduling statement.",
+      "gold_memory_state": "CPA FAR exam date: June 21st (last confirmed). June 14th was mentioned as a tentative plan pending Prometric availability. Review course: Becker, started March 18th (unchanged).",
+      "judge_rubric": {
+        "must_include": [
+          "June 7th as initial date",
+          "June 14th as second date from Prometric conflict",
+          "June 21st as rescheduled date",
+          "mention of intent to move back to June 14th without confirmation"
+        ],
+        "acceptable_paraphrases": [
+          "hasn't confirmed with Prometric yet",
+          "pending Prometric call",
+          "not yet finalized"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating June 14th is the current confirmed date",
+          "omitting that the latest change was not finalized"
+        ],
+        "harmless_extra": [
+          "mentioning Becker review course",
+          "mentioning study progress details"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats June 7th as current or treats the tentative June 14th as confirmed.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My CPA FAR exam is scheduled for June 7th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "Prometric had a scheduling conflict and bumped me to June 14th instead"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I just rescheduled my FAR exam to June 21st because I need more prep time"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My manager confirmed I can take that Friday off, so I'm going to move the exam up to June 14th again"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations, I mentioned several scheduling details related to my exam preparation. Can you summarize the key scheduling statements I made and which ones should guide your future assistance?",
+      "expected_answer": "You initially stated your exam was scheduled for June 7th. You then reported that Prometric bumped you to June 14th due to a scheduling conflict. Later, you rescheduled to June 21st because you needed more prep time. Most recently, you mentioned wanting to move back to June 14th after your manager confirmed time off, but you had not yet confirmed the change with Prometric. The June 21st date remains the last confirmed scheduling statement.",
+      "gold_memory_state": "CPA FAR exam date: June 21st (last confirmed). June 14th was mentioned as a tentative plan pending Prometric availability. Review course: Becker, started March 18th (unchanged).",
+      "judge_rubric": {
+        "must_include": [
+          "June 7th as initial date",
+          "June 14th as second date from Prometric conflict",
+          "June 21st as rescheduled date",
+          "mention of intent to move back to June 14th without confirmation"
+        ],
+        "acceptable_paraphrases": [
+          "hasn't confirmed with Prometric yet",
+          "pending Prometric call",
+          "not yet finalized"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating June 14th is the current confirmed date",
+          "omitting that the latest change was not finalized"
+        ],
+        "harmless_extra": [
+          "mentioning Becker review course",
+          "mentioning study progress details"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats June 7th as current or treats the tentative June 14th as confirmed.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My CPA FAR exam is scheduled for June 7th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "Prometric had a scheduling conflict and bumped me to June 14th instead"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I just rescheduled my FAR exam to June 21st because I need more prep time"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My manager confirmed I can take that Friday off, so I'm going to move the exam up to June 14th again"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've shared various dates and timelines related to my exam prep — some about when I started studying, some about when the test itself is happening. If I need to set a countdown timer for the test day, which piece of scheduling information should I use, and does my study start timeline need any adjustment?",
+      "expected_answer": "The countdown timer should be set based on the exam scheduling information, which was last confirmed as June 21st. Your study start timeline — Becker review beginning March 18th — is a separate record and does not need adjustment.",
+      "gold_memory_state": "CPA FAR exam date: June 21st (last confirmed; tentative June 14th not yet finalized with Prometric). CPA FAR review course: Becker, started March 18th (unchanged, separate record).",
+      "judge_rubric": {
+        "must_include": [
+          "June 21st as the date for the countdown",
+          "study start date is separate and unchanged"
+        ],
+        "acceptable_paraphrases": [
+          "March 18th study start is unaffected",
+          "review course timeline stays the same"
+        ],
+        "must_not_include": [
+          "June 14th as the confirmed countdown date"
+        ],
+        "harmful_extra": [
+          "treating the study start date as also rescheduled",
+          "conflating exam date changes with the review course start date"
+        ],
+        "harmless_extra": [
+          "mentioning that a potential move to June 14th is pending"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses June 7th or the unconfirmed June 14th as the countdown date.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I just rescheduled my FAR exam to June 21st because I need more prep time"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I started using Becker review materials on March 18th for my FAR prep"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My manager confirmed I can take that Friday off, so I'm going to move the exam up to June 14th again"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've shared various dates and timelines related to my exam prep — some about when I started studying, some about when the test itself is happening. If I need to set a countdown timer for the test day, which piece of scheduling information should I use, and does my study start timeline need any adjustment?",
+      "expected_answer": "The countdown timer should be set based on the exam scheduling information, which was last confirmed as June 21st. Your study start timeline — Becker review beginning March 18th — is a separate record and does not need adjustment.",
+      "gold_memory_state": "CPA FAR exam date: June 21st (last confirmed; tentative June 14th not yet finalized with Prometric). CPA FAR review course: Becker, started March 18th (unchanged, separate record).",
+      "judge_rubric": {
+        "must_include": [
+          "June 21st as the date for the countdown",
+          "study start date is separate and unchanged"
+        ],
+        "acceptable_paraphrases": [
+          "March 18th study start is unaffected",
+          "review course timeline stays the same"
+        ],
+        "must_not_include": [
+          "June 14th as the confirmed countdown date"
+        ],
+        "harmful_extra": [
+          "treating the study start date as also rescheduled",
+          "conflating exam date changes with the review course start date"
+        ],
+        "harmless_extra": [
+          "mentioning that a potential move to June 14th is pending"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses June 7th or the unconfirmed June 14th as the countdown date.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I just rescheduled my FAR exam to June 21st because I need more prep time"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I started using Becker review materials on March 18th for my FAR prep"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My manager confirmed I can take that Friday off, so I'm going to move the exam up to June 14th again"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to block off the right day on my work calendar for my exam. Which of the following dates should I mark?",
+      "candidate_options": [
+        "June 21st",
+        "June 14th",
+        "June 7th",
+        "June 28th"
+      ],
+      "expected_answer": "June 21st",
+      "gold_memory_state": "CPA FAR exam date: June 21st is the last confirmed date. The user expressed intent to move to June 14th but explicitly stated they had not yet called Prometric and would stick with June 21st if the slot was unavailable. June 7th was the original date, superseded by Prometric's reschedule. June 28th was never mentioned.",
+      "judge_rubric": {
+        "must_include": [
+          "June 21st"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "June 14th as the answer",
+          "June 7th as the answer"
+        ],
+        "harmful_extra": [
+          "selecting June 14th because it was mentioned most recently"
+        ],
+        "harmless_extra": [
+          "noting that June 14th may become the date if Prometric confirms"
+        ]
+      },
+      "distractor_rationale": "same-value-different-target: June 28th is a plausible next-Saturday extrapolation never mentioned in the trace. assistant echo: June 14th was echoed by the assistant in segment 3 as a planning date, making it a strong recency-trap distractor. June 7th is the original stale value. June 14th also serves as the tentative/retracted recency trap value.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects June 7th (original stale) or June 14th (tentative, not confirmed with Prometric).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I just rescheduled my FAR exam to June 21st because I need more prep time"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My manager confirmed I can take that Friday off, so I'm going to move the exam up to June 14th again"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I haven't made the change yet, I'm planning to call Prometric tomorrow to see if the June 14th slot is still available. If it's not, I'll stick with June 21st."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to block off the right day on my work calendar for my exam. Which of the following dates should I mark?",
+      "candidate_options": [
+        "June 21st",
+        "June 14th",
+        "June 7th",
+        "June 28th"
+      ],
+      "expected_answer": "June 21st",
+      "gold_memory_state": "CPA FAR exam date: June 21st is the last confirmed date. The user expressed intent to move to June 14th but explicitly stated they had not yet called Prometric and would stick with June 21st if the slot was unavailable. June 7th was the original date, superseded by Prometric's reschedule. June 28th was never mentioned.",
+      "judge_rubric": {
+        "must_include": [
+          "June 21st"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "June 14th as the answer",
+          "June 7th as the answer"
+        ],
+        "harmful_extra": [
+          "selecting June 14th because it was mentioned most recently"
+        ],
+        "harmless_extra": [
+          "noting that June 14th may become the date if Prometric confirms"
+        ]
+      },
+      "distractor_rationale": "same-value-different-target: June 28th is a plausible next-Saturday extrapolation never mentioned in the trace. assistant echo: June 14th was echoed by the assistant in segment 3 as a planning date, making it a strong recency-trap distractor. June 7th is the original stale value. June 14th also serves as the tentative/retracted recency trap value.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects June 7th (original stale) or June 14th (tentative, not confirmed with Prometric).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I just rescheduled my FAR exam to June 21st because I need more prep time"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My manager confirmed I can take that Friday off, so I'm going to move the exam up to June 14th again"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I haven't made the change yet, I'm planning to call Prometric tomorrow to see if the June 14th slot is still available. If it's not, I'll stick with June 21st."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I want to figure out how many weeks of prep time I've had with my review materials by the day I sit for the exam. Can you calculate that for me and tell me what the number is?",
+      "expected_answer": "You started Becker on March 18th and the exam is on June 21st. That is approximately 13 weeks and 4 days, or about 95 days of total prep time with Becker.",
+      "gold_memory_state": "CPA FAR exam date: June 21st (last confirmed). CPA FAR review course: Becker, started March 18th. Tentative June 14th not finalized.",
+      "judge_rubric": {
+        "must_include": [
+          "March 18th as the start date",
+          "June 21st as the exam date",
+          "approximately 13-14 weeks or 95 days"
+        ],
+        "acceptable_paraphrases": [
+          "roughly 13.5 weeks",
+          "about 95 days",
+          "nearly 14 weeks"
+        ],
+        "must_not_include": [
+          "June 14th as the exam date for the calculation",
+          "June 7th as the exam date"
+        ],
+        "harmful_extra": [
+          "using June 14th as the endpoint, which would yield approximately 12.5 weeks"
+        ],
+        "harmless_extra": [
+          "mentioning effective study hours",
+          "noting Sundays off"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses June 7th (yielding ~11.5 weeks) or the tentative June 14th (yielding ~12.5 weeks) instead of June 21st.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "application_probe_type": "multi_hop_derivation",
+      "gold_reasoning_chain": [
+        "Fact 1: The user started Becker review materials on March 18th.",
+        "Fact 2: The user's last confirmed exam date is June 21st.",
+        "Fact 3: The user mentioned wanting to move to June 14th but has not confirmed with Prometric, so June 21st remains the operative date.",
+        "Inference: From March 18th to June 21st is 95 days, which is approximately 13 weeks and 4 days.",
+        "Derived value: The total prep window with Becker is approximately 13 weeks and 4 days (95 days)."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I started using Becker review materials on March 18th for my FAR prep"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I just rescheduled my FAR exam to June 21st because I need more prep time"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I haven't made the change yet, I'm planning to call Prometric tomorrow to see if the June 14th slot is still available. If it's not, I'll stick with June 21st."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I want to figure out how many weeks of prep time I've had with my review materials by the day I sit for the exam. Can you calculate that for me and tell me what the number is?",
+      "expected_answer": "You started Becker on March 18th and the exam is on June 21st. That is approximately 13 weeks and 4 days, or about 95 days of total prep time with Becker.",
+      "gold_memory_state": "CPA FAR exam date: June 21st (last confirmed). CPA FAR review course: Becker, started March 18th. Tentative June 14th not finalized.",
+      "judge_rubric": {
+        "must_include": [
+          "March 18th as the start date",
+          "June 21st as the exam date",
+          "approximately 13-14 weeks or 95 days"
+        ],
+        "acceptable_paraphrases": [
+          "roughly 13.5 weeks",
+          "about 95 days",
+          "nearly 14 weeks"
+        ],
+        "must_not_include": [
+          "June 14th as the exam date for the calculation",
+          "June 7th as the exam date"
+        ],
+        "harmful_extra": [
+          "using June 14th as the endpoint, which would yield approximately 12.5 weeks"
+        ],
+        "harmless_extra": [
+          "mentioning effective study hours",
+          "noting Sundays off"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses June 7th (yielding ~11.5 weeks) or the tentative June 14th (yielding ~12.5 weeks) instead of June 21st.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "application_probe_type": "multi_hop_derivation",
+      "gold_reasoning_chain": [
+        "Fact 1: The user started Becker review materials on March 18th.",
+        "Fact 2: The user's last confirmed exam date is June 21st.",
+        "Fact 3: The user mentioned wanting to move to June 14th but has not confirmed with Prometric, so June 21st remains the operative date.",
+        "Inference: From March 18th to June 21st is 95 days, which is approximately 13 weeks and 4 days.",
+        "Derived value: The total prep window with Becker is approximately 13 weeks and 4 days (95 days)."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I started using Becker review materials on March 18th for my FAR prep"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I just rescheduled my FAR exam to June 21st because I need more prep time"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I haven't made the change yet, I'm planning to call Prometric tomorrow to see if the June 14th slot is still available. If it's not, I'll stick with June 21st."
+        }
+      ]
+    }
+  ]
+}

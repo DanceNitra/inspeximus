@@ -1,0 +1,1012 @@
+{
+  "target_fact": "Kevin follows a vegan diet (no meat, seafood, dairy, or eggs), based on multiple observed behaviors across different restaurants",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "He specifically asked them to leave out the shrimp paste and fish sauce from his pad thai, and when they said they couldn't do it without fish sauce he switched to the vegetable curry with tofu"
+      },
+      "target": {
+        "target_id": "kevin_avoids_seafood_products",
+        "target_name": "Kevin avoids seafood and fish-derived ingredients"
+      },
+      "old_value": null,
+      "new_value": "Kevin avoids seafood and fish-derived ingredients such as shrimp paste and fish sauce",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "He specifically asked them to leave out the shrimp paste and fish sauce from his pad thai, and when they said they couldn't do it without fish sauce he switched to the vegetable curry with tofu"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "He went straight for the falafel wrap but asked them to swap the yogurt sauce for hummus instead. He can't do dairy at all"
+      },
+      "target": {
+        "target_id": "kevin_no_dairy",
+        "target_name": "Kevin cannot eat dairy"
+      },
+      "old_value": null,
+      "new_value": "Kevin cannot eat dairy",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "He went straight for the falafel wrap but asked them to swap the yogurt sauce for hummus instead. He can't do dairy at all"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "his girlfriend Mia told me he stopped eating eggs about two years ago"
+      },
+      "target": {
+        "target_id": "kevin_no_eggs",
+        "target_name": "Kevin does not eat eggs"
+      },
+      "old_value": null,
+      "new_value": "Kevin stopped eating eggs about two years ago",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "his girlfriend Mia told me he stopped eating eggs about two years ago"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I was planning a small birthday dinner for another friend and I almost put Kevin down for the seafood option before I caught myself. He doesn't eat any meat either — at the Chinese place he got mapo tofu but asked them to make it without the ground pork"
+      },
+      "target": {
+        "target_id": "kevin_no_meat",
+        "target_name": "Kevin does not eat meat"
+      },
+      "old_value": null,
+      "new_value": "Kevin does not eat meat, including pork",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I was planning a small birthday dinner for another friend and I almost put Kevin down for the seafood option before I caught myself. He doesn't eat any meat either — at the Chinese place he got mapo tofu but asked them to make it without the ground pork"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "He seems to genuinely love tofu and vegetables — he gets excited when he sees grain bowls and vegetable-heavy menus. He kept raving about the roasted cauliflower at the Mediterranean spot"
+      },
+      "target": {
+        "target_id": "kevin_enjoys_plant_foods",
+        "target_name": "Kevin genuinely enjoys plant-based foods"
+      },
+      "old_value": null,
+      "new_value": "Kevin genuinely enjoys plant-based foods including tofu, grain bowls, roasted vegetables, and vegetable-heavy menus",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "He seems to genuinely love tofu and vegetables — he gets excited when he sees grain bowls and vegetable-heavy menus. He kept raving about the roasted cauliflower at the Mediterranean spot"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "So putting it all together — no dairy, no eggs, no meat, no seafood, and he genuinely prefers plant-based food. I think Kevin is fully vegan at this point"
+      },
+      "target": {
+        "target_id": "kevin_dietary_classification",
+        "target_name": "Kevin's overall dietary classification"
+      },
+      "old_value": null,
+      "new_value": "Kevin follows a vegan diet",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "He specifically asked them to leave out the shrimp paste and fish sauce from his pad thai, and when they said they couldn't do it without fish sauce he switched to the vegetable curry with tofu"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "He went straight for the falafel wrap but asked them to swap the yogurt sauce for hummus instead. He can't do dairy at all"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "his girlfriend Mia told me he stopped eating eggs about two years ago"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "He doesn't eat any meat either — at the Chinese place he got mapo tofu but asked them to make it without the ground pork"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "So putting it all together — no dairy, no eggs, no meat, no seafood, and he genuinely prefers plant-based food. I think Kevin is fully vegan at this point"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 7,
+        "quote": "Kevin lived in Portland until 2022. He mentioned the cold sesame noodles at the Chinese place reminded him of a dish he used to eat a lot there"
+      },
+      "target": {
+        "target_id": "kevin_portland_residence",
+        "target_name": "Kevin's previous city of residence"
+      },
+      "old_value": null,
+      "new_value": "Kevin lived in Portland until 2022",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Kevin lived in Portland until 2022. He mentioned the cold sesame noodles at the Chinese place reminded him of a dish he used to eat a lot there"
+        }
+      ]
+    },
+    {
+      "operation_id": "op8",
+      "type": "remember",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 7,
+        "quote": "Mia actually just told me yesterday that Kevin's been thinking about reintroducing honey into his diet. She said he's pretty much decided he's okay with it now"
+      },
+      "target": {
+        "target_id": "kevin_dietary_classification",
+        "target_name": "Kevin's overall dietary classification"
+      },
+      "old_value": "Kevin follows a vegan diet",
+      "new_value": "Kevin may be shifting to a plant-based diet that includes honey",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Mia actually just told me yesterday that Kevin's been thinking about reintroducing honey into his diet. She said he's pretty much decided he's okay with it now"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "evidence_planting",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I need some help thinking through restaurant options for my friend Kevin. We've been doing regular dinners since early March. The first time we went out was at a Thai place on Elm Street. He specifically asked them to leave out the shrimp paste and fish sauce from his pad thai, and when they said they couldn't do it without fish sauce he switched to the vegetable curry with tofu. I want to find better restaurants for us going forward."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a great idea to plan ahead! It sounds like Kevin is quite particular about avoiding certain seafood-derived ingredients — shrimp paste and fish sauce are common in Thai cooking, so that's a tricky cuisine for someone with those restrictions. The fact that he pivoted to a vegetable curry with tofu suggests he's comfortable with plant-based options. I can help you build a list of restaurants that would work well. Could you tell me more about what else he avoids or prefers? That way I can narrow down the best types of cuisine and specific places to recommend."
+        },
+        {
+          "role": "user",
+          "content": "Sure, so a couple weeks after the Thai place we went to a Mediterranean restaurant near his office. He went straight for the falafel wrap but asked them to swap the yogurt sauce for hummus instead. He can't do dairy at all. He also mentioned he's been making a lot of cashew-based sauces at home — found some recipe on YouTube. I keep almost suggesting pizza places and I really need to stop doing that."
+        },
+        {
+          "role": "assistant",
+          "content": "Good to know — so dairy is completely off the table for Kevin. That explains the yogurt-to-hummus swap at the Mediterranean place. Pizza restaurants would indeed be tough since most of their menu centers on cheese. The cashew-based sauces he's making at home are actually a really popular dairy alternative in plant-based cooking, so he clearly knows how to work around his restrictions. Mediterranean cuisine is actually a great fit since falafel, hummus, tabbouleh, and many grain-based dishes are naturally dairy-free. I'd suggest looking into more Mediterranean spots, or even Middle Eastern restaurants. Any other restrictions I should factor in?"
+        },
+        {
+          "role": "user",
+          "content": "Yes actually — his girlfriend Mia told me he stopped eating eggs about two years ago. She said it was a gradual thing, not overnight. That was a detail I didn't know before Mia mentioned it. So eggs are out too, which means a lot of brunch places are also probably not great options for him."
+        },
+        {
+          "role": "assistant",
+          "content": "That's an important piece of the puzzle. So Kevin avoids dairy and eggs, which rules out a lot of baked goods, breakfast items, and brunch-heavy menus unless they specifically offer egg-free and dairy-free alternatives. The fact that it was a gradual transition over time rather than sudden suggests it's a deeply considered personal choice rather than an allergy, though you'd still want to treat it with the same seriousness when choosing restaurants. Many brunch spots do have vegan sections now, but it varies widely. I'll keep that in mind as we build the list. Are there any other things he avoids that you've noticed?"
+        },
+        {
+          "role": "user",
+          "content": "I think that covers the avoidances I know about so far. Oh wait — Mia also mentioned a few days ago that Kevin used to avoid gluten for a while, but he's eating bread again and that whole gluten-free phase is completely done. So gluten is fine now, which actually opens up more options.\n\nYes, let's start brainstorming. But before we do, I want to make sure I give you the full picture — there are a couple more things I noticed about his eating that I want to tell you about in our next conversation. For now, can you just jot down what we have so far and maybe suggest two or three cuisine categories that tend to be friendly for someone with these restrictions?"
+        },
+        {
+          "role": "assistant",
+          "content": "That's actually helpful news — gluten being back on the table means places with great bread, pasta, noodle dishes, and grain bowls are all fair game, as long as they can accommodate his dairy, egg, and seafood restrictions. It would have been much harder to find restaurants that are simultaneously gluten-free, dairy-free, egg-free, and seafood-free. So to summarize what I have so far: Kevin avoids seafood-derived ingredients like fish sauce and shrimp paste, he can't do dairy at all, and he stopped eating eggs about two years ago. Gluten is fine again. That's a solid working profile. Want me to start suggesting restaurant types and specific cuisines that would work well?\n\nAbsolutely! Here's what I have noted about Kevin's dietary profile so far: he avoids seafood-derived ingredients including fish sauce and shrimp paste; he cannot eat dairy at all; he stopped eating eggs roughly two years ago; and his former gluten-free phase is over, so gluten is fine. Based on these restrictions, three cuisine categories that tend to work well are: (1) Mediterranean and Middle Eastern — naturally rich in legume-based proteins, grain dishes, and vegetable plates; (2) Indian — many regional dishes are dairy-free and egg-free, especially South Indian cuisine; and (3) Ethiopian — injera-based meals with lentil and vegetable stews that are often naturally free of dairy, eggs, and seafood. We can refine this further once you share the additional observations!"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "evidence_planting_continued",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Okay so picking up where we left off about Kevin's eating habits. I was planning a small birthday dinner for another friend and I almost put Kevin down for the seafood option before I caught myself. He doesn't eat any meat either — at the Chinese place he got mapo tofu but asked them to make it without the ground pork. That stressed me out honestly because I'd already half-confirmed the reservation with a set menu."
+        },
+        {
+          "role": "assistant",
+          "content": "Oh wow, good thing you caught that before finalizing! That would have been an awkward situation at the dinner. So Kevin avoids all meat as well — the mapo tofu without ground pork is a very telling order. That's a dish that traditionally relies heavily on the pork for flavor, so requesting it without means he's serious about avoiding meat entirely. Combined with what you told me before about the dairy, eggs, and seafood restrictions, his dietary profile is becoming very clear. For the birthday dinner situation, most restaurants with set menus can accommodate substitutions if you call ahead, though it can definitely be stressful. Did the restaurant end up being able to work with you on that?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah they managed to do a substitution eventually, but it was a whole ordeal with multiple phone calls. Anyway, back to Kevin specifically. He seems to genuinely love tofu and vegetables — he gets excited when he sees grain bowls and vegetable-heavy menus. He kept raving about the roasted cauliflower at the Mediterranean spot. It's not like he's just tolerating his restrictions, he actually lights up about this kind of food."
+        },
+        {
+          "role": "assistant",
+          "content": "That's such an important distinction and honestly makes restaurant selection much easier. When someone genuinely enjoys plant-based food rather than just enduring restrictions, you can focus on places that celebrate vegetables and plant proteins as the main event rather than just offering sad substitution plates. The fact that he raved about roasted cauliflower and gets excited about grain bowls tells me he'd probably love restaurants that specialize in creative vegetable-forward cooking. There are places now that do incredible things with whole roasted vegetables, inventive grain preparations, and house-made plant-based proteins. This is way more fun to plan for than just finding places where he can eat something."
+        },
+        {
+          "role": "user",
+          "content": "Exactly! And I suggested a steakhouse last month and he kind of went quiet and then suggested somewhere else. I didn't push it but looking back it makes total sense. So putting it all together — no dairy, no eggs, no meat, no seafood, and he genuinely prefers plant-based food. I think Kevin is fully vegan at this point. I just never thought to label it that way until now."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really natural conclusion based on everything you've described. When you list out all the individual observations — avoiding fish sauce and shrimp paste, swapping yogurt for hummus, no eggs for two years, requesting dishes without meat, going quiet at a steakhouse suggestion, and actively enjoying tofu, grain bowls, and roasted vegetables — it paints a very consistent picture of someone following a vegan diet. The fact that he hasn't explicitly labeled it that way to you doesn't change the pattern. Some people just live their dietary choices without announcing them. Now that you've connected the dots, planning dinners becomes much simpler: look for places with strong vegan options or fully vegan restaurants. Shall I suggest some specific spots?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, but first one more thing. I also want to keep track of some personal details about Kevin for gift ideas and conversation topics. Kevin lived in Portland until 2022. He mentioned the cold sesame noodles at the Chinese place reminded him of a dish he used to eat a lot there. I thought that was a sweet nostalgic moment.\n\nYes, let's do it. Focus on places that would work for someone who's vegan and who genuinely enjoys creative plant-based cooking. Bonus points if they have good noodle dishes since he clearly enjoys those. And keep in mind he's fine with gluten now so noodle places are totally on the table."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a lovely detail — food memories tied to places can be really powerful. So Kevin lived in Portland until 2022, and the cold sesame noodles triggered some nostalgia for him. Portland has an incredible food scene, especially for plant-based eating, so it makes sense that he'd have strong food memories from there. That could actually be useful for gift ideas too — maybe a cookbook from a famous Portland vegan restaurant, or if you ever find a place locally that has a Portland-inspired menu, that could be a great dinner spot. For conversation topics, asking him about his favorite Portland restaurants or dishes could be a nice way to connect. I'll note that alongside his dietary information. Ready for restaurant suggestions now?\n\nGreat parameters! Here are some directions to explore: First, look for dedicated vegan or plant-forward restaurants in your area — these tend to have the most creative and satisfying options since the entire menu is designed around plant ingredients. Second, Asian noodle houses are excellent choices: many Chinese, Japanese, and Korean noodle spots can do fully vegan bowls with rich broths made from mushrooms or kombu instead of meat. Since Kevin loves cold sesame noodles, a place specializing in hand-pulled or fresh noodles would be perfect. Third, consider modern grain-bowl restaurants that build meals around whole grains, roasted vegetables, and plant proteins. Fourth, Ethiopian restaurants remain a stellar option since injera with lentil and vegetable wats is naturally vegan and incredibly flavorful. I'd recommend checking menus online first to verify they can truly accommodate full vegan orders."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "recency_trap_and_adversarial",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I found a few restaurant options and I want to run them by you for Kevin. But first, I also want to plan a small cooking night at my place and I need to make sure I buy the right ingredients. Can you remind me of everything we've established about what Kevin eats and doesn't eat?"
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! Based on everything you've shared, here's the full picture for Kevin's dietary profile: He follows what we've identified as a vegan diet. Specifically, he avoids all seafood and fish-derived ingredients like shrimp paste and fish sauce; he cannot eat dairy at all, which rules out cheese, yogurt, butter, and milk-based sauces; he stopped eating eggs about two years ago; and he doesn't eat any meat including pork. He is fine with gluten now, so bread, pasta, and noodles are all good. On the positive side, he genuinely enjoys tofu, grain bowls, roasted vegetables like cauliflower, and noodle dishes — especially cold sesame noodles that remind him of his Portland days. For your cooking night, focus on building flavors with plant-based proteins and vegetables."
+        },
+        {
+          "role": "user",
+          "content": "Perfect, that all sounds right. For the cooking night I'm thinking of doing a big spread — maybe some cashew-cream pasta since he likes those cashew sauces, a roasted vegetable platter, and some kind of tofu dish. Do you think that would work? I want to make sure nothing slips through."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like an amazing menu that Kevin would love! The cashew-cream pasta is brilliant since you know he already makes cashew-based sauces at home, so he clearly enjoys that flavor profile and texture. For the roasted vegetable platter, consider including cauliflower since he raved about it at the Mediterranean place, along with seasonal vegetables roasted with good olive oil, herbs, and maybe a balsamic glaze. For the tofu dish, you could do something like a crispy sesame tofu that echoes the sesame noodles he loves, or a mapo-style preparation using mushrooms instead of pork for that umami depth. One tip: double-check any store-bought pasta for egg content, since some fresh pastas contain eggs. Dried pasta is usually just semolina and water, so that's the safer bet."
+        },
+        {
+          "role": "user",
+          "content": "Good call on checking the pasta for eggs. I also invited my coworker Raj to the cooking night. Raj is vegetarian — he does eat dairy and eggs, just no meat or fish. So the cashew pasta would work for both of them, which is convenient. I'll just need to maybe add a cheese option on the side for Raj."
+        },
+        {
+          "role": "assistant",
+          "content": "That works out nicely! Since Kevin's vegan diet is essentially a stricter subset of Raj's vegetarian diet, anything you make for Kevin will automatically work for Raj too. The cashew-cream pasta is a perfect shared dish. For Raj's cheese side option, you could put out some parmesan or a nice burrata alongside the pasta so he can add it to his own portion. Just make sure to keep Kevin's serving separate before adding any dairy garnishes. For the roasted vegetable platter, both of them can enjoy it as-is. The tofu dish works for both as well. You might also consider having some good bread on the table — I recall seeing on Raj's team profile page that he's from the 97214 area, which has some great bakeries — and since Kevin is fine with gluten again, everyone can enjoy fresh bread with olive oil."
+        },
+        {
+          "role": "user",
+          "content": "Oh interesting about the bakeries. Anyway, one more thing — Mia actually just told me yesterday that Kevin's been thinking about reintroducing honey into his diet. She said he's pretty much decided he's okay with it now. So maybe that opens up some dessert options with honey for the cooking night.\n\nThat's a smart approach — I'll do both dessert options. Actually can you help me put together a full shopping list for the cooking night? I want to make sure I have everything for the cashew-cream pasta, the roasted vegetable platter, the tofu dish, bread, and both dessert options. This is for three people — me, Kevin, and Raj."
+        },
+        {
+          "role": "assistant",
+          "content": "That could be a nice addition for dessert! Honey opens up some lovely options like a honey-drizzled baklava made with vegan-friendly phyllo dough, or roasted fruit with a honey glaze, or even a simple honey-tahini sauce over some kind of grain-based dessert. That said, since Mia mentioned he's been thinking about it and has pretty much decided, you might want to casually confirm with Kevin directly before building a whole dessert course around honey. Some people go back and forth on these decisions. For the cooking night, you could always prepare one honey-based dessert option alongside a fully vegan one — like a dark chocolate mousse made with aquafaba — so Kevin has choices regardless of where he lands on the honey question.\n\nHere's a comprehensive shopping list for three people: For the cashew-cream pasta: raw cashews (about 2 cups for soaking and blending), dried pasta (check the label — no eggs), garlic, nutritional yeast, lemon, olive oil, salt, and pepper. For the roasted vegetable platter: one head of cauliflower, assorted seasonal vegetables like bell peppers, zucchini, sweet potatoes, and red onion, olive oil, balsamic vinegar, and fresh herbs like rosemary or thyme. For the tofu dish: extra-firm tofu (two blocks), sesame oil, soy sauce, cornstarch for crisping, sesame seeds, scallions, and chili flakes. For bread: pick up a good artisan loaf and extra virgin olive oil for dipping. For desserts: dark chocolate, aquafaba or a can of chickpeas, honey, tahini, phyllo dough, and pistachios. For Raj's cheese side: a wedge of parmesan and fresh burrata. That should cover everything!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations about Kevin's eating habits, what specific experiences and observations did I share that built up a picture of his dietary choices?",
+      "expected_answer": "You shared several specific observations: (1) At a Thai restaurant, Kevin asked to remove shrimp paste and fish sauce from his pad thai and switched to vegetable curry with tofu when they couldn't accommodate him. (2) At a Mediterranean restaurant, he ordered a falafel wrap but swapped the yogurt sauce for hummus because he can't eat dairy. (3) His girlfriend Mia mentioned he stopped eating eggs about two years ago. (4) At a Chinese restaurant, he ordered mapo tofu but asked them to make it without ground pork, confirming he doesn't eat meat. (5) He genuinely enjoys plant-based food — he gets excited about grain bowls and vegetable-heavy menus and raved about roasted cauliflower at the Mediterranean spot.",
+      "gold_memory_state": "Five confirmed behavioral observations are stored: avoids seafood/fish-derived ingredients, avoids dairy, stopped eating eggs ~2 years ago, avoids all meat including pork, and genuinely enjoys plant-based foods. These collectively support the reflected conclusion that Kevin follows a vegan diet.",
+      "judge_rubric": {
+        "must_include": [
+          "seafood or fish sauce avoidance at Thai restaurant",
+          "dairy avoidance at Mediterranean restaurant",
+          "no eggs per Mia",
+          "no meat at Chinese restaurant",
+          "enjoys plant-based food"
+        ],
+        "acceptable_paraphrases": [
+          "switched to tofu curry",
+          "swapped yogurt for hummus",
+          "ordered mapo tofu without pork"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming Kevin has a food allergy rather than a dietary choice",
+          "stating Kevin eats honey as confirmed"
+        ],
+        "harmless_extra": [
+          "mentioning the steakhouse incident",
+          "mentioning Kevin lived in Portland",
+          "mentioning gluten is fine now"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes dietary restrictions Kevin does not have, or claims observations that were not shared.",
+        "reflection_recall": "Fails if the model omits more than one of the five key observations (seafood, dairy, eggs, meat, plant-food enjoyment).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "He specifically asked them to leave out the shrimp paste and fish sauce from his pad thai, and when they said they couldn't do it without fish sauce he switched to the vegetable curry with tofu"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "He went straight for the falafel wrap but asked them to swap the yogurt sauce for hummus instead. He can't do dairy at all"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "his girlfriend Mia told me he stopped eating eggs about two years ago"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "He doesn't eat any meat either — at the Chinese place he got mapo tofu but asked them to make it without the ground pork"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "He seems to genuinely love tofu and vegetables — he gets excited when he sees grain bowls and vegetable-heavy menus. He kept raving about the roasted cauliflower at the Mediterranean spot"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations about Kevin's eating habits, what specific experiences and observations did I share that built up a picture of his dietary choices?",
+      "expected_answer": "You shared several specific observations: (1) At a Thai restaurant, Kevin asked to remove shrimp paste and fish sauce from his pad thai and switched to vegetable curry with tofu when they couldn't accommodate him. (2) At a Mediterranean restaurant, he ordered a falafel wrap but swapped the yogurt sauce for hummus because he can't eat dairy. (3) His girlfriend Mia mentioned he stopped eating eggs about two years ago. (4) At a Chinese restaurant, he ordered mapo tofu but asked them to make it without ground pork, confirming he doesn't eat meat. (5) He genuinely enjoys plant-based food — he gets excited about grain bowls and vegetable-heavy menus and raved about roasted cauliflower at the Mediterranean spot.",
+      "gold_memory_state": "Five confirmed behavioral observations are stored: avoids seafood/fish-derived ingredients, avoids dairy, stopped eating eggs ~2 years ago, avoids all meat including pork, and genuinely enjoys plant-based foods. These collectively support the reflected conclusion that Kevin follows a vegan diet.",
+      "judge_rubric": {
+        "must_include": [
+          "seafood or fish sauce avoidance at Thai restaurant",
+          "dairy avoidance at Mediterranean restaurant",
+          "no eggs per Mia",
+          "no meat at Chinese restaurant",
+          "enjoys plant-based food"
+        ],
+        "acceptable_paraphrases": [
+          "switched to tofu curry",
+          "swapped yogurt for hummus",
+          "ordered mapo tofu without pork"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming Kevin has a food allergy rather than a dietary choice",
+          "stating Kevin eats honey as confirmed"
+        ],
+        "harmless_extra": [
+          "mentioning the steakhouse incident",
+          "mentioning Kevin lived in Portland",
+          "mentioning gluten is fine now"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes dietary restrictions Kevin does not have, or claims observations that were not shared.",
+        "reflection_recall": "Fails if the model omits more than one of the five key observations (seafood, dairy, eggs, meat, plant-food enjoyment).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "He specifically asked them to leave out the shrimp paste and fish sauce from his pad thai, and when they said they couldn't do it without fish sauce he switched to the vegetable curry with tofu"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "He went straight for the falafel wrap but asked them to swap the yogurt sauce for hummus instead. He can't do dairy at all"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "his girlfriend Mia told me he stopped eating eggs about two years ago"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "He doesn't eat any meat either — at the Chinese place he got mapo tofu but asked them to make it without the ground pork"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "He seems to genuinely love tofu and vegetables — he gets excited when he sees grain bowls and vegetable-heavy menus. He kept raving about the roasted cauliflower at the Mediterranean spot"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When I connected the dots about Kevin's eating patterns and drew a broader conclusion, does that conclusion apply only to Kevin's dietary profile, or does it also change what I know about Raj's eating habits?",
+      "expected_answer": "The conclusion applies only to Kevin's dietary profile — Kevin follows a vegan diet based on the accumulated observations. Raj's dietary information is separate: Raj is vegetarian and eats dairy and eggs. The conclusion about Kevin does not change or affect Raj's profile.",
+      "gold_memory_state": "Kevin's dietary classification target holds the reflected conclusion: Kevin follows a vegan diet. Raj's dietary profile is a separate control target: Raj is vegetarian and eats dairy and eggs. The honey consideration from Mia is tentative and not adopted into the confirmed classification.",
+      "judge_rubric": {
+        "must_include": [
+          "Kevin's vegan classification",
+          "Raj is not affected",
+          "Raj is vegetarian"
+        ],
+        "acceptable_paraphrases": [
+          "only applies to Kevin",
+          "Raj's diet is separate",
+          "Raj eats dairy and eggs"
+        ],
+        "must_not_include": [
+          "Raj is also vegan",
+          "Raj should avoid dairy"
+        ],
+        "harmful_extra": [
+          "applying Kevin's vegan restrictions to Raj",
+          "merging Kevin and Raj into one dietary profile",
+          "stating Kevin now eats honey as confirmed"
+        ],
+        "harmless_extra": [
+          "mentioning that vegan is a stricter subset of vegetarian"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model extends Kevin's vegan classification to Raj or conflates the two dietary profiles.",
+        "reflection_recall": "Fails if the model cannot state that Kevin's conclusion is vegan or that Raj remains vegetarian.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I also invited my coworker Raj to the cooking night. Raj is vegetarian — he does eat dairy and eggs, just no meat or fish"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "So putting it all together — no dairy, no eggs, no meat, no seafood, and he genuinely prefers plant-based food. I think Kevin is fully vegan at this point"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When I connected the dots about Kevin's eating patterns and drew a broader conclusion, does that conclusion apply only to Kevin's dietary profile, or does it also change what I know about Raj's eating habits?",
+      "expected_answer": "The conclusion applies only to Kevin's dietary profile — Kevin follows a vegan diet based on the accumulated observations. Raj's dietary information is separate: Raj is vegetarian and eats dairy and eggs. The conclusion about Kevin does not change or affect Raj's profile.",
+      "gold_memory_state": "Kevin's dietary classification target holds the reflected conclusion: Kevin follows a vegan diet. Raj's dietary profile is a separate control target: Raj is vegetarian and eats dairy and eggs. The honey consideration from Mia is tentative and not adopted into the confirmed classification.",
+      "judge_rubric": {
+        "must_include": [
+          "Kevin's vegan classification",
+          "Raj is not affected",
+          "Raj is vegetarian"
+        ],
+        "acceptable_paraphrases": [
+          "only applies to Kevin",
+          "Raj's diet is separate",
+          "Raj eats dairy and eggs"
+        ],
+        "must_not_include": [
+          "Raj is also vegan",
+          "Raj should avoid dairy"
+        ],
+        "harmful_extra": [
+          "applying Kevin's vegan restrictions to Raj",
+          "merging Kevin and Raj into one dietary profile",
+          "stating Kevin now eats honey as confirmed"
+        ],
+        "harmless_extra": [
+          "mentioning that vegan is a stricter subset of vegetarian"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model extends Kevin's vegan classification to Raj or conflates the two dietary profiles.",
+        "reflection_recall": "Fails if the model cannot state that Kevin's conclusion is vegan or that Raj remains vegetarian.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I also invited my coworker Raj to the cooking night. Raj is vegetarian — he does eat dairy and eggs, just no meat or fish"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "So putting it all together — no dairy, no eggs, no meat, no seafood, and he genuinely prefers plant-based food. I think Kevin is fully vegan at this point"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "If I'm picking a restaurant for Kevin, what dietary label best describes his eating pattern, and where does that label stop being reliable — what kinds of food decisions can't I confidently predict from it?",
+      "expected_answer": "Kevin follows a vegan diet — he avoids all meat, seafood, dairy, and eggs, and genuinely prefers plant-based foods. This label reliably predicts he will avoid any animal-derived main ingredients. However, the label should not be extended to predict his stance on every edge-case vegan concern such as honey, since there is only an unconfirmed indication he may be open to honey. It also should not be used to predict non-dietary preferences like restaurant ambiance, price range, or cuisine-type preferences beyond ingredient restrictions.",
+      "gold_memory_state": "Confirmed: Kevin follows a vegan diet (no meat, seafood, dairy, eggs; enjoys plant-based food). Tentative/unsupported: Kevin may reintroduce honey — this is not confirmed and should not shift the classification. Unsupported overgeneralization: assuming Kevin avoids all processed foods, avoids gluten (he's fine with gluten now), or that his preferences extend to specific cuisine types beyond ingredient restrictions.",
+      "judge_rubric": {
+        "must_include": [
+          "vegan",
+          "avoids meat, seafood, dairy, and eggs"
+        ],
+        "acceptable_paraphrases": [
+          "plant-based diet",
+          "no animal products"
+        ],
+        "must_not_include": [
+          "Kevin eats honey",
+          "Kevin is no longer vegan",
+          "Kevin avoids gluten"
+        ],
+        "harmful_extra": [
+          "treating the honey consideration as a confirmed change to his diet",
+          "claiming Kevin avoids gluten",
+          "overgeneralizing to all processed foods"
+        ],
+        "harmless_extra": [
+          "mentioning he enjoys tofu and grain bowls",
+          "noting the honey question is unresolved"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative honey reintroduction as a confirmed dietary change and shifts Kevin's classification away from vegan.",
+        "reflection_precision": "Fails if the model overgeneralizes beyond what the evidence supports — e.g., claiming Kevin avoids all processed food, avoids gluten, or avoids specific cuisines entirely.",
+        "reflection_recall": "Fails if the model cannot articulate the supported vegan classification or omits key restrictions (meat, seafood, dairy, eggs).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "So putting it all together — no dairy, no eggs, no meat, no seafood, and he genuinely prefers plant-based food. I think Kevin is fully vegan at this point"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "Mia also mentioned a few days ago that Kevin used to avoid gluten for a while, but he's eating bread again and that whole gluten-free phase is completely done"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Mia actually just told me yesterday that Kevin's been thinking about reintroducing honey into his diet. She said he's pretty much decided he's okay with it now"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "If I'm picking a restaurant for Kevin, what dietary label best describes his eating pattern, and where does that label stop being reliable — what kinds of food decisions can't I confidently predict from it?",
+      "expected_answer": "Kevin follows a vegan diet — he avoids all meat, seafood, dairy, and eggs, and genuinely prefers plant-based foods. This label reliably predicts he will avoid any animal-derived main ingredients. However, the label should not be extended to predict his stance on every edge-case vegan concern such as honey, since there is only an unconfirmed indication he may be open to honey. It also should not be used to predict non-dietary preferences like restaurant ambiance, price range, or cuisine-type preferences beyond ingredient restrictions.",
+      "gold_memory_state": "Confirmed: Kevin follows a vegan diet (no meat, seafood, dairy, eggs; enjoys plant-based food). Tentative/unsupported: Kevin may reintroduce honey — this is not confirmed and should not shift the classification. Unsupported overgeneralization: assuming Kevin avoids all processed foods, avoids gluten (he's fine with gluten now), or that his preferences extend to specific cuisine types beyond ingredient restrictions.",
+      "judge_rubric": {
+        "must_include": [
+          "vegan",
+          "avoids meat, seafood, dairy, and eggs"
+        ],
+        "acceptable_paraphrases": [
+          "plant-based diet",
+          "no animal products"
+        ],
+        "must_not_include": [
+          "Kevin eats honey",
+          "Kevin is no longer vegan",
+          "Kevin avoids gluten"
+        ],
+        "harmful_extra": [
+          "treating the honey consideration as a confirmed change to his diet",
+          "claiming Kevin avoids gluten",
+          "overgeneralizing to all processed foods"
+        ],
+        "harmless_extra": [
+          "mentioning he enjoys tofu and grain bowls",
+          "noting the honey question is unresolved"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative honey reintroduction as a confirmed dietary change and shifts Kevin's classification away from vegan.",
+        "reflection_precision": "Fails if the model overgeneralizes beyond what the evidence supports — e.g., claiming Kevin avoids all processed food, avoids gluten, or avoids specific cuisines entirely.",
+        "reflection_recall": "Fails if the model cannot articulate the supported vegan classification or omits key restrictions (meat, seafood, dairy, eggs).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "So putting it all together — no dairy, no eggs, no meat, no seafood, and he genuinely prefers plant-based food. I think Kevin is fully vegan at this point"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "Mia also mentioned a few days ago that Kevin used to avoid gluten for a while, but he's eating bread again and that whole gluten-free phase is completely done"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Mia actually just told me yesterday that Kevin's been thinking about reintroducing honey into his diet. She said he's pretty much decided he's okay with it now"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best describes Kevin's dietary pattern when I need to choose a restaurant for him right now?",
+      "candidate_options": [
+        "Vegan — avoids all meat, seafood, dairy, and eggs",
+        "Plant-based but open to honey and some bee products",
+        "Vegetarian — avoids meat and seafood but eats dairy and eggs",
+        "Pescatarian — avoids meat but eats seafood, dairy, and eggs"
+      ],
+      "expected_answer": "Vegan — avoids all meat, seafood, dairy, and eggs",
+      "gold_memory_state": "Kevin's confirmed dietary classification is vegan (no meat, seafood, dairy, or eggs). The honey reintroduction is tentative and unconfirmed, so the classification remains vegan. Raj is vegetarian (eats dairy and eggs) — this is a separate profile.",
+      "judge_rubric": {
+        "must_include": [
+          "Vegan"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "open to honey",
+          "vegetarian",
+          "pescatarian"
+        ],
+        "harmful_extra": [
+          "selecting the honey option as if it is confirmed",
+          "confusing Kevin's profile with Raj's vegetarian profile"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'Vegetarian' matches Raj's confirmed diet, not Kevin's. assistant echo: 'Plant-based but open to honey' reflects the assistant's speculative dessert planning around the tentative honey mention — the assistant discussed honey-based desserts but the underlying dietary shift is unconfirmed. 'Pescatarian' is a surface-plausible dietary category that contradicts Kevin's confirmed seafood avoidance.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the honey option, treating the tentative honey reintroduction as a confirmed change to Kevin's vegan classification.",
+        "reflection_precision": "Fails if the model selects vegetarian (Raj's profile) or pescatarian (contradicts seafood avoidance).",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "So putting it all together — no dairy, no eggs, no meat, no seafood, and he genuinely prefers plant-based food. I think Kevin is fully vegan at this point"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Mia actually just told me yesterday that Kevin's been thinking about reintroducing honey into his diet. She said he's pretty much decided he's okay with it now"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best describes Kevin's dietary pattern when I need to choose a restaurant for him right now?",
+      "candidate_options": [
+        "Vegan — avoids all meat, seafood, dairy, and eggs",
+        "Plant-based but open to honey and some bee products",
+        "Vegetarian — avoids meat and seafood but eats dairy and eggs",
+        "Pescatarian — avoids meat but eats seafood, dairy, and eggs"
+      ],
+      "expected_answer": "Vegan — avoids all meat, seafood, dairy, and eggs",
+      "gold_memory_state": "Kevin's confirmed dietary classification is vegan (no meat, seafood, dairy, or eggs). The honey reintroduction is tentative and unconfirmed, so the classification remains vegan. Raj is vegetarian (eats dairy and eggs) — this is a separate profile.",
+      "judge_rubric": {
+        "must_include": [
+          "Vegan"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "open to honey",
+          "vegetarian",
+          "pescatarian"
+        ],
+        "harmful_extra": [
+          "selecting the honey option as if it is confirmed",
+          "confusing Kevin's profile with Raj's vegetarian profile"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'Vegetarian' matches Raj's confirmed diet, not Kevin's. assistant echo: 'Plant-based but open to honey' reflects the assistant's speculative dessert planning around the tentative honey mention — the assistant discussed honey-based desserts but the underlying dietary shift is unconfirmed. 'Pescatarian' is a surface-plausible dietary category that contradicts Kevin's confirmed seafood avoidance.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the honey option, treating the tentative honey reintroduction as a confirmed change to Kevin's vegan classification.",
+        "reflection_precision": "Fails if the model selects vegetarian (Raj's profile) or pescatarian (contradicts seafood avoidance).",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "So putting it all together — no dairy, no eggs, no meat, no seafood, and he genuinely prefers plant-based food. I think Kevin is fully vegan at this point"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Mia actually just told me yesterday that Kevin's been thinking about reintroducing honey into his diet. She said he's pretty much decided he's okay with it now"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to surprise Kevin with a homemade birthday care package that includes a savory snack, a sweet treat, and a nostalgic food item tied to a city he used to live in. What should I put in the package, and what should I absolutely avoid including?",
+      "expected_answer": "For the savory snack, include something like roasted seasoned nuts, crispy tofu chips, or a homemade cashew-based cheese cracker — all vegan-friendly. For the sweet treat, choose a vegan dessert such as dark chocolate, a dairy-free and egg-free baked good, or fruit-based sweets — avoid honey-based items since his stance on honey is not confirmed. For the nostalgic item, include cold sesame noodles or a similar noodle-based dish that reminds him of Portland, where he lived until 2022. Avoid including anything with meat, seafood, dairy, or eggs throughout the entire package.",
+      "gold_memory_state": "Kevin follows a vegan diet (no meat, seafood, dairy, eggs). He lived in Portland until 2022 and has nostalgia for cold sesame noodles from there. He enjoys cashew-based sauces and plant-based cooking. Honey reintroduction is tentative and should not be relied upon. Gluten is fine.",
+      "judge_rubric": {
+        "must_include": [
+          "vegan-compatible items only",
+          "Portland connection for nostalgic item",
+          "avoid meat, seafood, dairy, eggs"
+        ],
+        "acceptable_paraphrases": [
+          "plant-based snacks",
+          "noodle dish tied to Portland"
+        ],
+        "must_not_include": [
+          "honey as a confirmed safe ingredient",
+          "dairy-based treats",
+          "meat-based snacks"
+        ],
+        "harmful_extra": [
+          "including honey desserts as safe",
+          "including dairy chocolate",
+          "including fish-sauce-based noodles",
+          "ignoring the Portland nostalgia connection"
+        ],
+        "harmless_extra": [
+          "mentioning cashew-based recipes",
+          "suggesting dark chocolate specifically",
+          "mentioning he likes grain bowls or roasted cauliflower"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats honey as confirmed safe and recommends honey-based sweets without caveat.",
+        "reflection_precision": "Fails if the model includes non-vegan items or ignores the Portland nostalgia element.",
+        "reflection_recall": "Fails if the model cannot connect Portland residence to the cold sesame noodle nostalgia, or omits any major restriction.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Kevin follows a vegan diet — no meat, seafood, dairy, or eggs.",
+        "Fact 2: Kevin lived in Portland until 2022 and the cold sesame noodles at the Chinese restaurant reminded him of a dish he used to eat a lot there.",
+        "Fact 3: Kevin enjoys cashew-based sauces and plant-based cooking.",
+        "Fact 4: The honey reintroduction is only tentative and not confirmed.",
+        "Inference: The savory snack must be fully vegan, the sweet treat must avoid dairy, eggs, and honey (unconfirmed), and the nostalgic item should be cold sesame noodles or a similar Portland-associated noodle dish.",
+        "Inference: Combining the vegan restriction with the Portland nostalgia fact yields a care package of vegan savory snack + vegan sweet treat + Portland-inspired cold sesame noodles."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "So putting it all together — no dairy, no eggs, no meat, no seafood, and he genuinely prefers plant-based food. I think Kevin is fully vegan at this point"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Kevin lived in Portland until 2022. He mentioned the cold sesame noodles at the Chinese place reminded him of a dish he used to eat a lot there"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "He also mentioned he's been making a lot of cashew-based sauces at home"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Mia actually just told me yesterday that Kevin's been thinking about reintroducing honey into his diet. She said he's pretty much decided he's okay with it now"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to surprise Kevin with a homemade birthday care package that includes a savory snack, a sweet treat, and a nostalgic food item tied to a city he used to live in. What should I put in the package, and what should I absolutely avoid including?",
+      "expected_answer": "For the savory snack, include something like roasted seasoned nuts, crispy tofu chips, or a homemade cashew-based cheese cracker — all vegan-friendly. For the sweet treat, choose a vegan dessert such as dark chocolate, a dairy-free and egg-free baked good, or fruit-based sweets — avoid honey-based items since his stance on honey is not confirmed. For the nostalgic item, include cold sesame noodles or a similar noodle-based dish that reminds him of Portland, where he lived until 2022. Avoid including anything with meat, seafood, dairy, or eggs throughout the entire package.",
+      "gold_memory_state": "Kevin follows a vegan diet (no meat, seafood, dairy, eggs). He lived in Portland until 2022 and has nostalgia for cold sesame noodles from there. He enjoys cashew-based sauces and plant-based cooking. Honey reintroduction is tentative and should not be relied upon. Gluten is fine.",
+      "judge_rubric": {
+        "must_include": [
+          "vegan-compatible items only",
+          "Portland connection for nostalgic item",
+          "avoid meat, seafood, dairy, eggs"
+        ],
+        "acceptable_paraphrases": [
+          "plant-based snacks",
+          "noodle dish tied to Portland"
+        ],
+        "must_not_include": [
+          "honey as a confirmed safe ingredient",
+          "dairy-based treats",
+          "meat-based snacks"
+        ],
+        "harmful_extra": [
+          "including honey desserts as safe",
+          "including dairy chocolate",
+          "including fish-sauce-based noodles",
+          "ignoring the Portland nostalgia connection"
+        ],
+        "harmless_extra": [
+          "mentioning cashew-based recipes",
+          "suggesting dark chocolate specifically",
+          "mentioning he likes grain bowls or roasted cauliflower"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats honey as confirmed safe and recommends honey-based sweets without caveat.",
+        "reflection_precision": "Fails if the model includes non-vegan items or ignores the Portland nostalgia element.",
+        "reflection_recall": "Fails if the model cannot connect Portland residence to the cold sesame noodle nostalgia, or omits any major restriction.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Kevin follows a vegan diet — no meat, seafood, dairy, or eggs.",
+        "Fact 2: Kevin lived in Portland until 2022 and the cold sesame noodles at the Chinese restaurant reminded him of a dish he used to eat a lot there.",
+        "Fact 3: Kevin enjoys cashew-based sauces and plant-based cooking.",
+        "Fact 4: The honey reintroduction is only tentative and not confirmed.",
+        "Inference: The savory snack must be fully vegan, the sweet treat must avoid dairy, eggs, and honey (unconfirmed), and the nostalgic item should be cold sesame noodles or a similar Portland-associated noodle dish.",
+        "Inference: Combining the vegan restriction with the Portland nostalgia fact yields a care package of vegan savory snack + vegan sweet treat + Portland-inspired cold sesame noodles."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "So putting it all together — no dairy, no eggs, no meat, no seafood, and he genuinely prefers plant-based food. I think Kevin is fully vegan at this point"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Kevin lived in Portland until 2022. He mentioned the cold sesame noodles at the Chinese place reminded him of a dish he used to eat a lot there"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "He also mentioned he's been making a lot of cashew-based sauces at home"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Mia actually just told me yesterday that Kevin's been thinking about reintroducing honey into his diet. She said he's pretty much decided he's okay with it now"
+        }
+      ]
+    }
+  ]
+}

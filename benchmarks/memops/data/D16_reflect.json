@@ -1,0 +1,999 @@
+{
+  "target_fact": "User prefers simplicity and minimal visual/digital clutter in wearable devices, as evidenced by choosing always-on transflective display, minimal watch face, disabling notifications, and rejecting data-heavy interfaces",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I'm wearing a Garmin Fenix 7X Sapphire Solar, the 51mm version"
+      },
+      "target": {
+        "target_id": "current_smartwatch_model",
+        "target_name": "current smartwatch/wearable device model"
+      },
+      "old_value": null,
+      "new_value": "Garmin Fenix 7X Sapphire Solar, 51mm",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I'm wearing a Garmin Fenix 7X Sapphire Solar, the 51mm version"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "the always-on transflective display was a huge deal for me. I hated how my old Apple Watch screen would go dark and I'd have to flick my wrist just to see the time"
+      },
+      "target": {
+        "target_id": "display_preference",
+        "target_name": "preferred watch display type"
+      },
+      "old_value": null,
+      "new_value": "always-on transflective display; dislikes screens that go dark requiring wrist-flick activation",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "the always-on transflective display was a huge deal for me. I hated how my old Apple Watch screen would go dark and I'd have to flick my wrist just to see the time"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I switched to the SolarFace watch face from Connect IQ. I like the minimal look — just time, date, battery, and steps"
+      },
+      "target": {
+        "target_id": "watch_face_preference",
+        "target_name": "preferred watch face style"
+      },
+      "old_value": null,
+      "new_value": "SolarFace from Connect IQ; minimal layout showing only time, date, battery, and steps",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I switched to the SolarFace watch face from Connect IQ. I like the minimal look — just time, date, battery, and steps"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I turned off almost all phone notifications on the Garmin. I just want it to tell me the time and track my body — I don't need another screen nagging me"
+      },
+      "target": {
+        "target_id": "notification_preference",
+        "target_name": "wearable notification preference"
+      },
+      "old_value": null,
+      "new_value": "almost all phone notifications disabled; wants watch only for time and body tracking, not alerts",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I turned off almost all phone notifications on the Garmin. I just want it to tell me the time and track my body — I don't need another screen nagging me"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "I guess when it comes to anything on my wrist, I just want it to be as invisible as possible. Show me what matters, nothing else. Like a good tool should just work and get out of the way"
+      },
+      "target": {
+        "target_id": "wearable_design_philosophy",
+        "target_name": "user's overarching wearable device design philosophy"
+      },
+      "old_value": null,
+      "new_value": "Strongly prefers simplicity and minimal visual/digital clutter in wearable devices — values passive, always-readable displays, minimal watch faces, and silenced notifications; rejects data-heavy interfaces and notification overload",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "the always-on transflective display was a huge deal for me. I hated how my old Apple Watch screen would go dark and I'd have to flick my wrist just to see the time"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I switched to the SolarFace watch face from Connect IQ. I like the minimal look — just time, date, battery, and steps"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I tried one of those data-heavy faces with like six complications crammed in and I took it off after a single day. Way too cluttered for me"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I turned off almost all phone notifications on the Garmin. I just want it to tell me the time and track my body — I don't need another screen nagging me"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I guess when it comes to anything on my wrist, I just want it to be as invisible as possible. Show me what matters, nothing else. Like a good tool should just work and get out of the way"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I picked up a Garmin HRM-Pro Plus chest strap from REI for $129.99 and I've been using it on my Tuesday and Thursday morning runs"
+      },
+      "target": {
+        "target_id": "heart_rate_accessory",
+        "target_name": "heart rate monitor accessory"
+      },
+      "old_value": null,
+      "new_value": "Garmin HRM-Pro Plus chest strap, purchased at REI for $129.99, used on Tuesday and Thursday morning runs",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I picked up a Garmin HRM-Pro Plus chest strap from REI for $129.99 and I've been using it on my Tuesday and Thursday morning runs"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "Garmin just announced the Fenix 8 series and my buddy Dave says the new AMOLED option on the Fenix 8 is incredible. I'm pretty set on upgrading to the Fenix 8 AMOLED when it drops"
+      },
+      "target": {
+        "target_id": "planned_next_watch",
+        "target_name": "planned next smartwatch"
+      },
+      "old_value": null,
+      "new_value": "Garmin Fenix 8 AMOLED",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Garmin just announced the Fenix 8 series and my buddy Dave says the new AMOLED option on the Fenix 8 is incredible. I'm pretty set on upgrading to the Fenix 8 AMOLED when it drops"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish core watch facts and display/face preferences",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to talk about my current watch setup. I'm wearing a Garmin Fenix 7X Sapphire Solar, the 51mm version. I got it around early March after my friend Dave's birthday dinner. Dave has a Fenix 7 Pro — he loves the flashlight feature on his — but mine's the 7X Sapphire Solar. Could you help me think through how to optimize my settings?"
+        },
+        {
+          "role": "assistant",
+          "content": "Nice choice with the Garmin Fenix 7X Sapphire Solar! The 51mm version is the full-size model, so you've got the largest display and the best battery life in the Fenix 7 lineup, plus the solar charging capability. Since you mentioned optimizing settings, there are several areas we could look at — battery management, activity profiles, display settings, watch faces, notification controls, and health tracking configuration. Where would you like to start? Also, it's interesting that your friend Dave has the Fenix 7 Pro — that's a solid watch too, though the 7X Sapphire Solar has some distinct advantages, especially with the sapphire lens and solar panel. What's been your experience so far?"
+        },
+        {
+          "role": "user",
+          "content": "Well for starters, the always-on transflective display was a huge deal for me. I hated how my old Apple Watch screen would go dark and I'd have to flick my wrist just to see the time. With the Garmin, the screen is just always there, readable in sunlight without any backlight. That alone made the switch worth it for me. I gave the Apple Watch Series 8 to my sister at the end of February."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really common reason people switch from the Apple Watch to a Garmin. The transflective memory-in-pixel display on the Fenix 7X is designed to be always visible, especially outdoors, since it uses reflected ambient light rather than emitting its own. You never have to do the raise-to-wake gesture, and it's perfectly legible even in direct sunlight. The tradeoff is that the display isn't as vibrant or colorful as the Apple Watch's OLED, but it sounds like that's not something you miss. And that's generous of you to pass the Series 8 to your sister — she'll enjoy it. Since the display matters so much to you, do you want to talk about watch face selection and what data you like to see at a glance?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, good timing on that question. I switched to the SolarFace watch face from Connect IQ. I like the minimal look — just time, date, battery, and steps. That's all I need on the main screen. Nothing else. I don't need heart rate or weather or elevation staring at me all day. The cleaner the better honestly."
+        },
+        {
+          "role": "assistant",
+          "content": "SolarFace is a great pick for what you're describing. It's one of the more popular minimal faces on Connect IQ precisely because it gives you just the essentials without visual noise. Having time, date, battery, and steps covers the basics you'd glance at throughout the day, and anything else — heart rate, elevation, weather — you can always pull up through the widget glances when you actually need them. Since you value that clean look, you might also want to check your widget order and remove any you don't use regularly, so swiping through them stays fast. Have you experimented with other watch faces before settling on SolarFace, or was this your first Connect IQ download?"
+        },
+        {
+          "role": "user",
+          "content": "Oh I definitely experimented. I tried one of those data-heavy faces with like six complications crammed in and I took it off after a single day. Way too cluttered for me. I couldn't even find the time quickly because there was so much competing information on the screen. It felt like looking at a cockpit dashboard. SolarFace was the opposite — clean, quiet, exactly what I wanted."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a perfect analogy — the cockpit dashboard effect is real with some of those watch faces. When there are six or more data fields competing for attention, your eyes have to hunt for the most basic piece of information, which defeats the purpose of a watch. It sounds like you have a very clear sense of what works for you: a calm, focused display where the time is immediately obvious and only the most essential stats are present. That's actually a design principle called progressive disclosure — show the minimum by default and let the user dig deeper on demand. Your approach with SolarFace follows that perfectly. Want to move on to activity tracking settings, or is there something else about the daily wear experience you'd like to refine?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establish notification preference, accessory, and articulate overarching philosophy",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Before we get into activity stuff, there's one more daily wear thing. I turned off almost all phone notifications on the Garmin. I just want it to tell me the time and track my body — I don't need another screen nagging me. The only thing I left on is phone calls, because those might actually be urgent. Everything else — texts, emails, app alerts — all off."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really deliberate choice and honestly one that a lot of Garmin users end up making. The Fenix is built as a fitness and outdoor tool first, not a smartphone mirror. By turning off texts, emails, and app alerts, you're keeping the watch focused on its core strengths — timekeeping and biometric tracking — without the constant interruption cycle that plagues most smartwatch users. Keeping phone calls enabled is a smart middle ground since those tend to be more time-sensitive. If you ever want to fine-tune further, you can set up Do Not Disturb schedules or allow notifications only from specific contacts. But it sounds like your current setup is already working well for your workflow. Ready to talk about your activity and health tracking setup?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah let's do that. So I picked up a Garmin HRM-Pro Plus chest strap from REI for $129.99 and I've been using it on my Tuesday and Thursday morning runs. The optical heart rate on the watch is fine for daily wear but I wanted more accuracy during runs. My resting heart rate has been averaging about 58 bpm, which my doctor said was good at my checkup on April 22nd."
+        },
+        {
+          "role": "assistant",
+          "content": "Great addition to your setup. The HRM-Pro Plus is Garmin's top-tier chest strap and it gives you significantly more accurate heart rate data during high-intensity activities compared to the wrist-based optical sensor. It also captures running dynamics like ground contact time, stride length, and vertical oscillation, which can help you refine your running form over time. A resting heart rate of 58 bpm is indeed a healthy sign — it suggests solid cardiovascular fitness, especially if you're maintaining that consistently. Since you're running twice a week on Tuesdays and Thursdays, you might want to set up a structured running activity profile with the chest strap auto-connecting. That way you don't have to manually pair it each time. Want me to walk you through optimizing your run profile?"
+        },
+        {
+          "role": "user",
+          "content": "Sure, but first I want to step back and think about something bigger. I guess when it comes to anything on my wrist, I just want it to be as invisible as possible. Show me what matters, nothing else. Like a good tool should just work and get out of the way. That's why I chose the always-on display, the minimal face, turned off notifications. It's all the same instinct."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really coherent philosophy and it's interesting that you've identified the thread connecting all your choices. The always-on transflective display means you never have to interact with the watch just to read the time — it's passively available. The minimal SolarFace means your eyes aren't processing unnecessary data. Turning off notifications means your attention isn't being hijacked. Every choice you've made reduces friction and cognitive load. It's essentially a \"tool, not a toy\" mindset: the watch should serve you silently and only demand your attention when you explicitly ask it to. That's a pretty mature approach to wearable tech. Would you say the same principle extends to other tech in your life, or is it specific to what's on your wrist?"
+        },
+        {
+          "role": "user",
+          "content": "Mostly wrist stuff for now. My phone is a different story — I have plenty of apps and notifications there. But the watch is personal, it's literally touching my skin all day. I want that experience to be calm. Oh, I also did a long hike at Red Rock Canyon on March 30th and logged 14.2 miles, which was a personal best. The battery barely moved even with GPS tracking the whole time. That reliability is part of the same thing — I don't want to worry about charging.\n\nYeah, I'd like to do that. I want a hiking profile that shows elapsed time, distance, elevation gain, and heart rate — but only during the activity. On the main watch face day-to-day, I still just want SolarFace with the four fields. Keep the complexity contained to when I'm actually doing something active."
+        },
+        {
+          "role": "assistant",
+          "content": "That distinction makes a lot of sense — the phone is your productivity hub where you accept the noise, but the watch occupies a more intimate space, literally on your body, so you want it to be serene and dependable. And 14.2 miles at Red Rock Canyon is a serious hike — congratulations on the personal best! The fact that the battery barely moved during a full GPS-tracked hike speaks to the Fenix 7X's excellent power management, especially with the solar charging supplementing it in an outdoor environment like Red Rock. That kind of worry-free endurance aligns perfectly with your philosophy: you don't want to think about the tool, you just want to use it. Do you want to set up a dedicated hiking activity profile to capture that kind of data more effectively?\n\nThat's a perfect way to structure it. You can create a custom hiking activity profile on the Fenix 7X that displays exactly those four data fields — elapsed time, distance, elevation gain, and heart rate — across one or two data screens. You can even add a second screen with things like pace or a map if you want, but keep the primary screen to those four essentials. Meanwhile, your daily SolarFace stays untouched with just time, date, battery, and steps. The Fenix handles this cleanly because activity data screens are completely independent from your watch face. So you get the detailed metrics when you're on the trail and the calm minimal display the rest of the time. I can outline the exact steps to configure this hiking profile if you'd like to set it up right now."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Introduce firmware issue, recency trap with tentative upgrade plan, and adversarial look-alike",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "One thing that really bugged me — in the first week of April there was a firmware update on the Fenix that messed up my sleep tracking. It was showing I was getting like 2 hours of deep sleep when I clearly wasn't sleeping well at all. I specifically chose this watch for health tracking accuracy, so when the data was wrong I was genuinely frustrated and couldn't trust it for those few days."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a legitimately frustrating experience, especially since health data accuracy was one of your primary reasons for choosing the Fenix 7X. Sleep tracking relies on a combination of accelerometer data, heart rate variability, and Garmin's proprietary algorithms, so when a firmware update disrupts that pipeline, the results can be wildly inaccurate. Showing 2 hours of deep sleep when your subjective experience was poor sleep is exactly the kind of discrepancy that erodes trust in the device. It's good that Garmin pushed a fix within four or five days, but those few days of unreliable data are essentially lost. Did the fix fully restore your confidence in the sleep tracking, or are you still somewhat skeptical of those numbers?"
+        },
+        {
+          "role": "user",
+          "content": "The fix did help. Sleep data has been consistent and matches how I feel since then, so I trust it again. But it was a reminder that these devices aren't infallible. My coworker Priya just got a Garmin Venu 3 and she asked me about watch faces. I told her about SolarFace but it's not compatible with the Venu 3 unfortunately."
+        },
+        {
+          "role": "assistant",
+          "content": "Glad the fix restored accuracy — and you're right, it's a healthy reminder that even premium devices depend on software that can introduce regressions. At least Garmin tends to patch things relatively quickly compared to some competitors. As for Priya's Venu 3, that's a great watch in its own right, though the Connect IQ ecosystem varies by model. SolarFace was designed with the transflective MIP displays in mind, so it makes sense it wouldn't be available for the Venu 3's AMOLED screen. She might want to look at faces like Crystal or Infocal on Connect IQ — those tend to have good Venu 3 support and offer clean layouts. By the way, I noticed in Priya's Garmin Connect profile she shared with you, her device firmware shows version 14.12 — the Venu 3 has a different update cadence than the Fenix line."
+        },
+        {
+          "role": "user",
+          "content": "Garmin just announced the Fenix 8 series and my buddy Dave says the new AMOLED option on the Fenix 8 is incredible. I'm pretty set on upgrading to the Fenix 8 AMOLED when it drops. Dave's already pre-ordered his. The AMOLED display would be a big change from my transflective screen but Dave swears the always-on mode works well enough."
+        },
+        {
+          "role": "assistant",
+          "content": "The Fenix 8 AMOLED is generating a lot of excitement. The display is significantly more vibrant than the MIP transflective screens, and Garmin has included an always-on mode, though it does consume more battery than the traditional transflective always-on. Dave's enthusiasm makes sense — the visual upgrade is dramatic. That said, it's worth considering how the AMOLED always-on compares to what you currently have. The transflective display on your Fenix 7X is truly passive — it uses zero power to stay visible. The AMOLED always-on still draws from the battery continuously, which could affect that worry-free multi-day battery life you experienced on your Red Rock Canyon hike. It's a tradeoff between visual richness and the effortless endurance you've come to rely on."
+        },
+        {
+          "role": "user",
+          "content": "That's a fair point. I haven't fully decided yet — it's more of a strong leaning than a done deal. I'd want to see battery life benchmarks first. Anyway, going back to my current setup, I'm still really happy with the Fenix 7X day to day. The combination of the transflective display, SolarFace, and notifications off makes it feel like a proper instrument rather than a gadget."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a wise approach — waiting for real-world battery benchmarks before committing, especially since battery endurance is clearly central to your satisfaction with a wearable. And your summary of the current Fenix 7X setup really captures what makes it work for you: the transflective display that's always readable without power draw, the SolarFace watch face that shows only what matters, and the silenced notifications that keep your wrist free from digital noise. Together, those choices create a device that functions like a reliable instrument — present when needed, invisible when not. It's a setup that reflects a very clear personal philosophy about how technology should interact with your body and attention. If you do eventually test the Fenix 8 AMOLED, it'll be interesting to see whether it can match that standard."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "What specific experiences and choices did I describe that reveal how I like my wearable device to look and behave on a daily basis?",
+      "expected_answer": "You described several interconnected choices: you chose the Garmin Fenix 7X Sapphire Solar specifically for its always-on transflective display because you hated having to flick your wrist to wake your old Apple Watch screen. You switched to the SolarFace watch face from Connect IQ for its minimal layout showing only time, date, battery, and steps. You tried a data-heavy watch face with six complications but removed it after one day because it was too cluttered. You turned off almost all phone notifications on the Garmin, keeping only phone calls, because you didn't want another screen nagging you. You summarized this as wanting anything on your wrist to be as invisible as possible — showing only what matters and getting out of the way like a good tool.",
+      "gold_memory_state": "The reflect operation synthesizes five evidence points: always-on transflective display preference, minimal SolarFace watch face, rejection of data-heavy faces, disabling notifications, and the explicit philosophy statement about invisibility and simplicity.",
+      "judge_rubric": {
+        "must_include": [
+          "always-on transflective display",
+          "minimal watch face or SolarFace",
+          "turned off notifications",
+          "rejected data-heavy or cluttered interface"
+        ],
+        "acceptable_paraphrases": [
+          "screen that doesn't go dark",
+          "simple watch face",
+          "silenced alerts",
+          "too much information on screen"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the user dislikes all technology or all screens",
+          "saying the user wants no data at all on the watch"
+        ],
+        "harmless_extra": [
+          "mentioning the Apple Watch comparison",
+          "mentioning the cockpit dashboard analogy",
+          "mentioning the tool philosophy"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes preferences the user never expressed, such as disliking fitness tracking or wanting no screen at all.",
+        "reflection_recall": "Fails if the model omits major evidence points such as the notification choice or the display type preference.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "the always-on transflective display was a huge deal for me. I hated how my old Apple Watch screen would go dark and I'd have to flick my wrist just to see the time"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I switched to the SolarFace watch face from Connect IQ. I like the minimal look — just time, date, battery, and steps"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I tried one of those data-heavy faces with like six complications crammed in and I took it off after a single day. Way too cluttered for me"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I turned off almost all phone notifications on the Garmin. I just want it to tell me the time and track my body — I don't need another screen nagging me"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I guess when it comes to anything on my wrist, I just want it to be as invisible as possible. Show me what matters, nothing else. Like a good tool should just work and get out of the way"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "What specific experiences and choices did I describe that reveal how I like my wearable device to look and behave on a daily basis?",
+      "expected_answer": "You described several interconnected choices: you chose the Garmin Fenix 7X Sapphire Solar specifically for its always-on transflective display because you hated having to flick your wrist to wake your old Apple Watch screen. You switched to the SolarFace watch face from Connect IQ for its minimal layout showing only time, date, battery, and steps. You tried a data-heavy watch face with six complications but removed it after one day because it was too cluttered. You turned off almost all phone notifications on the Garmin, keeping only phone calls, because you didn't want another screen nagging you. You summarized this as wanting anything on your wrist to be as invisible as possible — showing only what matters and getting out of the way like a good tool.",
+      "gold_memory_state": "The reflect operation synthesizes five evidence points: always-on transflective display preference, minimal SolarFace watch face, rejection of data-heavy faces, disabling notifications, and the explicit philosophy statement about invisibility and simplicity.",
+      "judge_rubric": {
+        "must_include": [
+          "always-on transflective display",
+          "minimal watch face or SolarFace",
+          "turned off notifications",
+          "rejected data-heavy or cluttered interface"
+        ],
+        "acceptable_paraphrases": [
+          "screen that doesn't go dark",
+          "simple watch face",
+          "silenced alerts",
+          "too much information on screen"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the user dislikes all technology or all screens",
+          "saying the user wants no data at all on the watch"
+        ],
+        "harmless_extra": [
+          "mentioning the Apple Watch comparison",
+          "mentioning the cockpit dashboard analogy",
+          "mentioning the tool philosophy"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes preferences the user never expressed, such as disliking fitness tracking or wanting no screen at all.",
+        "reflection_recall": "Fails if the model omits major evidence points such as the notification choice or the display type preference.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "the always-on transflective display was a huge deal for me. I hated how my old Apple Watch screen would go dark and I'd have to flick my wrist just to see the time"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I switched to the SolarFace watch face from Connect IQ. I like the minimal look — just time, date, battery, and steps"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I tried one of those data-heavy faces with like six complications crammed in and I took it off after a single day. Way too cluttered for me"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I turned off almost all phone notifications on the Garmin. I just want it to tell me the time and track my body — I don't need another screen nagging me"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I guess when it comes to anything on my wrist, I just want it to be as invisible as possible. Show me what matters, nothing else. Like a good tool should just work and get out of the way"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "My choices about display type, watch face, and notifications all point toward a broader conclusion about how I use wearables. Does this conclusion also apply to my choice of heart rate accessories or my activity profile data screens?",
+      "expected_answer": "The overarching conclusion — a strong preference for simplicity and minimal visual/digital clutter in wearable devices — is supported by the display, watch face, and notification choices. It does not extend to the heart rate accessory choice or the activity profile data screens. The chest strap was chosen for accuracy during runs, not for simplicity. The hiking activity profile deliberately shows four data fields (elapsed time, distance, elevation gain, heart rate) during active use, which the user explicitly wants to keep separate from the minimal daily watch face.",
+      "gold_memory_state": "The design philosophy target encompasses display preference, watch face preference, and notification preference. The heart rate accessory target and activity data screens are separate targets driven by different motivations (accuracy and activity-specific detail).",
+      "judge_rubric": {
+        "must_include": [
+          "simplicity or minimal clutter as the bounded conclusion",
+          "display and watch face and notifications as supporting evidence"
+        ],
+        "acceptable_paraphrases": [
+          "low visual noise preference",
+          "invisible tool philosophy",
+          "clean and quiet wearable experience"
+        ],
+        "must_not_include": [
+          "the design philosophy applies to all tech choices universally",
+          "the philosophy governs heart rate accessory selection"
+        ],
+        "harmful_extra": [
+          "extending the minimal clutter conclusion to the user's phone habits",
+          "claiming the user avoids all detailed data during activities"
+        ],
+        "harmless_extra": [
+          "mentioning the user accepts complexity during active hiking or running"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model extends the design philosophy to cover the heart rate accessory choice or claims the user avoids all data fields during activities.",
+        "reflection_recall": "Fails if the model does not identify display, watch face, and notification choices as the core supporting evidence for the conclusion.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I guess when it comes to anything on my wrist, I just want it to be as invisible as possible. Show me what matters, nothing else. Like a good tool should just work and get out of the way"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I picked up a Garmin HRM-Pro Plus chest strap from REI for $129.99 and I've been using it on my Tuesday and Thursday morning runs"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "My choices about display type, watch face, and notifications all point toward a broader conclusion about how I use wearables. Does this conclusion also apply to my choice of heart rate accessories or my activity profile data screens?",
+      "expected_answer": "The overarching conclusion — a strong preference for simplicity and minimal visual/digital clutter in wearable devices — is supported by the display, watch face, and notification choices. It does not extend to the heart rate accessory choice or the activity profile data screens. The chest strap was chosen for accuracy during runs, not for simplicity. The hiking activity profile deliberately shows four data fields (elapsed time, distance, elevation gain, heart rate) during active use, which the user explicitly wants to keep separate from the minimal daily watch face.",
+      "gold_memory_state": "The design philosophy target encompasses display preference, watch face preference, and notification preference. The heart rate accessory target and activity data screens are separate targets driven by different motivations (accuracy and activity-specific detail).",
+      "judge_rubric": {
+        "must_include": [
+          "simplicity or minimal clutter as the bounded conclusion",
+          "display and watch face and notifications as supporting evidence"
+        ],
+        "acceptable_paraphrases": [
+          "low visual noise preference",
+          "invisible tool philosophy",
+          "clean and quiet wearable experience"
+        ],
+        "must_not_include": [
+          "the design philosophy applies to all tech choices universally",
+          "the philosophy governs heart rate accessory selection"
+        ],
+        "harmful_extra": [
+          "extending the minimal clutter conclusion to the user's phone habits",
+          "claiming the user avoids all detailed data during activities"
+        ],
+        "harmless_extra": [
+          "mentioning the user accepts complexity during active hiking or running"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model extends the design philosophy to cover the heart rate accessory choice or claims the user avoids all data fields during activities.",
+        "reflection_recall": "Fails if the model does not identify display, watch face, and notification choices as the core supporting evidence for the conclusion.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I guess when it comes to anything on my wrist, I just want it to be as invisible as possible. Show me what matters, nothing else. Like a good tool should just work and get out of the way"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I picked up a Garmin HRM-Pro Plus chest strap from REI for $129.99 and I've been using it on my Tuesday and Thursday morning runs"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe the boundary of my wearable design preference — where exactly does it apply and where would it be wrong to extend it?",
+      "expected_answer": "The preference for simplicity and minimal clutter applies specifically to the daily passive wearable experience: the always-visible display type, the resting watch face layout, and notification management. It applies to anything that is constantly visible on the wrist during non-activity time. It does not apply to activity-specific data screens during workouts or hikes, where you deliberately want detailed metrics like elapsed time, distance, elevation gain, and heart rate. It also does not apply to your phone, which you acknowledged is a different story with plenty of apps and notifications. And it does not apply to accessory choices like the chest strap, which was chosen for data accuracy rather than visual simplicity.",
+      "gold_memory_state": "Supported inference: user strongly prefers simplicity and minimal visual/digital clutter for the daily passive wearable experience (display type, watch face, notifications). Unsupported overgeneralization: extending this to activity data screens, phone usage, or accessory selection. The user explicitly stated the phone is different and explicitly requested detailed activity screens during hikes.",
+      "judge_rubric": {
+        "must_include": [
+          "the preference applies to daily passive wearable experience",
+          "it does not apply to activity-specific data screens",
+          "it does not apply to the user's phone"
+        ],
+        "acceptable_paraphrases": [
+          "ambient or at-rest wrist experience",
+          "non-workout watch face",
+          "day-to-day display"
+        ],
+        "must_not_include": [
+          "the user prefers simplicity in all technology",
+          "the user avoids detailed data in all contexts"
+        ],
+        "harmful_extra": [
+          "claiming the preference means the user should avoid the Fenix 8 AMOLED",
+          "claiming the user dislikes fitness tracking"
+        ],
+        "harmless_extra": [
+          "mentioning the cockpit dashboard analogy",
+          "mentioning the tool philosophy quote"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model overgeneralizes the preference to cover all technology, phone usage, activity data screens, or accessory choices.",
+        "reflection_recall": "Fails if the model does not identify the core supported domain (daily passive wearable experience including display, watch face, notifications) or fails to name at least one unsupported extension.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I guess when it comes to anything on my wrist, I just want it to be as invisible as possible. Show me what matters, nothing else. Like a good tool should just work and get out of the way"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Mostly wrist stuff for now. My phone is a different story — I have plenty of apps and notifications there. But the watch is personal, it's literally touching my skin all day. I want that experience to be calm."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe the boundary of my wearable design preference — where exactly does it apply and where would it be wrong to extend it?",
+      "expected_answer": "The preference for simplicity and minimal clutter applies specifically to the daily passive wearable experience: the always-visible display type, the resting watch face layout, and notification management. It applies to anything that is constantly visible on the wrist during non-activity time. It does not apply to activity-specific data screens during workouts or hikes, where you deliberately want detailed metrics like elapsed time, distance, elevation gain, and heart rate. It also does not apply to your phone, which you acknowledged is a different story with plenty of apps and notifications. And it does not apply to accessory choices like the chest strap, which was chosen for data accuracy rather than visual simplicity.",
+      "gold_memory_state": "Supported inference: user strongly prefers simplicity and minimal visual/digital clutter for the daily passive wearable experience (display type, watch face, notifications). Unsupported overgeneralization: extending this to activity data screens, phone usage, or accessory selection. The user explicitly stated the phone is different and explicitly requested detailed activity screens during hikes.",
+      "judge_rubric": {
+        "must_include": [
+          "the preference applies to daily passive wearable experience",
+          "it does not apply to activity-specific data screens",
+          "it does not apply to the user's phone"
+        ],
+        "acceptable_paraphrases": [
+          "ambient or at-rest wrist experience",
+          "non-workout watch face",
+          "day-to-day display"
+        ],
+        "must_not_include": [
+          "the user prefers simplicity in all technology",
+          "the user avoids detailed data in all contexts"
+        ],
+        "harmful_extra": [
+          "claiming the preference means the user should avoid the Fenix 8 AMOLED",
+          "claiming the user dislikes fitness tracking"
+        ],
+        "harmless_extra": [
+          "mentioning the cockpit dashboard analogy",
+          "mentioning the tool philosophy quote"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model overgeneralizes the preference to cover all technology, phone usage, activity data screens, or accessory choices.",
+        "reflection_recall": "Fails if the model does not identify the core supported domain (daily passive wearable experience including display, watch face, notifications) or fails to name at least one unsupported extension.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I guess when it comes to anything on my wrist, I just want it to be as invisible as possible. Show me what matters, nothing else. Like a good tool should just work and get out of the way"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Mostly wrist stuff for now. My phone is a different story — I have plenty of apps and notifications there. But the watch is personal, it's literally touching my skin all day. I want that experience to be calm."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best captures my overall wearable design philosophy based on everything I've shared?",
+      "candidate_options": [
+        "Prefers simplicity and minimal visual/digital clutter on the wrist — values passive always-readable displays, minimal watch faces, and silenced notifications; rejects data-heavy interfaces and notification overload during daily wear",
+        "Prefers the most advanced display technology available, prioritizing vibrant AMOLED screens and rich data visualization on the wrist",
+        "Avoids all fitness tracking and health data on wearables, preferring a purely analog timekeeping experience",
+        "Prefers wearable devices that mirror smartphone functionality with full notification support and maximum data complications"
+      ],
+      "expected_answer": "Prefers simplicity and minimal visual/digital clutter on the wrist — values passive always-readable displays, minimal watch faces, and silenced notifications; rejects data-heavy interfaces and notification overload during daily wear",
+      "gold_memory_state": "The supported inference is that the user strongly prefers simplicity and minimal clutter for daily wearable use. The user's tentative interest in the Fenix 8 AMOLED does not change the confirmed design philosophy. The user actively uses fitness tracking and health data, so avoidance of all tracking is incorrect. The user explicitly disabled most notifications, so full notification support is incorrect.",
+      "judge_rubric": {
+        "must_include": [
+          "simplicity and minimal clutter"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "AMOLED preference as the core philosophy",
+          "avoidance of all fitness tracking",
+          "full notification mirroring"
+        ],
+        "harmful_extra": [
+          "selecting the AMOLED option based on the tentative Fenix 8 interest"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: Option B ('most advanced display technology / AMOLED') exploits the user's tentative interest in the Fenix 8 AMOLED from a different target (planned_next_watch) to create confusion with the confirmed design philosophy. assistant echo: Option D ('mirror smartphone functionality with full notification support') echoes the assistant's discussion of smartphone mirroring capability, which the user explicitly rejected by turning off notifications.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the AMOLED preference option based on the tentative Fenix 8 interest, treating an unconfirmed upgrade plan as the established design philosophy.",
+        "reflection_precision": "Fails if the model selects an option that overgeneralizes (avoids all tracking) or contradicts the evidence (full notification support).",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I guess when it comes to anything on my wrist, I just want it to be as invisible as possible. Show me what matters, nothing else. Like a good tool should just work and get out of the way"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "the always-on transflective display was a huge deal for me. I hated how my old Apple Watch screen would go dark and I'd have to flick my wrist just to see the time"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I turned off almost all phone notifications on the Garmin. I just want it to tell me the time and track my body — I don't need another screen nagging me"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best captures my overall wearable design philosophy based on everything I've shared?",
+      "candidate_options": [
+        "Prefers simplicity and minimal visual/digital clutter on the wrist — values passive always-readable displays, minimal watch faces, and silenced notifications; rejects data-heavy interfaces and notification overload during daily wear",
+        "Prefers the most advanced display technology available, prioritizing vibrant AMOLED screens and rich data visualization on the wrist",
+        "Avoids all fitness tracking and health data on wearables, preferring a purely analog timekeeping experience",
+        "Prefers wearable devices that mirror smartphone functionality with full notification support and maximum data complications"
+      ],
+      "expected_answer": "Prefers simplicity and minimal visual/digital clutter on the wrist — values passive always-readable displays, minimal watch faces, and silenced notifications; rejects data-heavy interfaces and notification overload during daily wear",
+      "gold_memory_state": "The supported inference is that the user strongly prefers simplicity and minimal clutter for daily wearable use. The user's tentative interest in the Fenix 8 AMOLED does not change the confirmed design philosophy. The user actively uses fitness tracking and health data, so avoidance of all tracking is incorrect. The user explicitly disabled most notifications, so full notification support is incorrect.",
+      "judge_rubric": {
+        "must_include": [
+          "simplicity and minimal clutter"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "AMOLED preference as the core philosophy",
+          "avoidance of all fitness tracking",
+          "full notification mirroring"
+        ],
+        "harmful_extra": [
+          "selecting the AMOLED option based on the tentative Fenix 8 interest"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: Option B ('most advanced display technology / AMOLED') exploits the user's tentative interest in the Fenix 8 AMOLED from a different target (planned_next_watch) to create confusion with the confirmed design philosophy. assistant echo: Option D ('mirror smartphone functionality with full notification support') echoes the assistant's discussion of smartphone mirroring capability, which the user explicitly rejected by turning off notifications.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the AMOLED preference option based on the tentative Fenix 8 interest, treating an unconfirmed upgrade plan as the established design philosophy.",
+        "reflection_precision": "Fails if the model selects an option that overgeneralizes (avoids all tracking) or contradicts the evidence (full notification support).",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I guess when it comes to anything on my wrist, I just want it to be as invisible as possible. Show me what matters, nothing else. Like a good tool should just work and get out of the way"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "the always-on transflective display was a huge deal for me. I hated how my old Apple Watch screen would go dark and I'd have to flick my wrist just to see the time"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I turned off almost all phone notifications on the Garmin. I just want it to tell me the time and track my body — I don't need another screen nagging me"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "A friend is buying me a gift and asks you what kind of smartwatch accessory or watch face I'd appreciate. They're considering three options: a premium AMOLED screen protector for a future watch, a Connect IQ watch face with 8 data complications and live weather radar, or a simple analog-style Connect IQ face that shows only time and date with no complications. Write a short gift recommendation explaining which option fits me best and why, taking into account my current watch, my watch face preferences, and my broader wearable philosophy.",
+      "expected_answer": "Recommend the simple analog-style Connect IQ face showing only time and date. The user wears a Garmin Fenix 7X Sapphire Solar and chose the SolarFace watch face specifically for its minimal layout with just time, date, battery, and steps. They tried a data-heavy face with six complications and removed it after one day because it was too cluttered. Their overarching wearable philosophy is that anything on the wrist should be as invisible as possible, showing only what matters. The 8-complication weather radar face directly contradicts this preference. The AMOLED screen protector targets a potential future watch the user hasn't committed to buying yet — it's only a tentative interest, not a confirmed plan. The simple analog-style face aligns perfectly with the user's established preference for minimal, clean displays.",
+      "gold_memory_state": "Current watch: Garmin Fenix 7X Sapphire Solar 51mm. Watch face: SolarFace from Connect IQ, minimal layout. Design philosophy: simplicity and minimal clutter for daily wearable use. Tentative Fenix 8 AMOLED interest is not confirmed and should not drive gift decisions.",
+      "judge_rubric": {
+        "must_include": [
+          "recommend the simple analog-style face",
+          "reference to the user's minimal watch face preference",
+          "reference to the user's design philosophy about simplicity or invisibility"
+        ],
+        "acceptable_paraphrases": [
+          "the clean face",
+          "the minimalist option",
+          "the low-complication face"
+        ],
+        "must_not_include": [
+          "recommend the 8-complication face",
+          "recommend the AMOLED screen protector as the primary gift"
+        ],
+        "harmful_extra": [
+          "treating the Fenix 8 AMOLED upgrade as confirmed and recommending the screen protector accordingly",
+          "saying the user would enjoy a data-rich watch face"
+        ],
+        "harmless_extra": [
+          "mentioning the AMOLED protector could be a secondary gift if the user confirms the upgrade",
+          "noting the user's SolarFace has four fields not zero"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative Fenix 8 AMOLED plan as confirmed and recommends the screen protector as the primary gift.",
+        "reflection_precision": "Fails if the model recommends the data-heavy watch face, contradicting the established minimal-clutter philosophy.",
+        "reflection_recall": "Fails if the model does not reference the user's watch face preference or design philosophy when justifying the recommendation.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's current watch is a Garmin Fenix 7X Sapphire Solar, 51mm.",
+        "Fact 2: The user chose the SolarFace watch face for its minimal layout showing only time, date, battery, and steps, and rejected a data-heavy face after one day.",
+        "Fact 3: The user's overarching wearable philosophy is simplicity and minimal visual/digital clutter — the watch should be invisible and show only what matters.",
+        "Fact 4: The user expressed tentative interest in a Fenix 8 AMOLED but has not confirmed the purchase and wants to see battery benchmarks first.",
+        "Inference: The 8-complication weather radar face contradicts the established minimal-clutter philosophy and would be rejected like the previous data-heavy face.",
+        "Inference: The AMOLED screen protector targets an unconfirmed future device and is not a reliable gift choice.",
+        "Inference: The simple analog-style face with only time and date aligns with the user's confirmed preference for minimal wrist displays and is the best gift option."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I'm wearing a Garmin Fenix 7X Sapphire Solar, the 51mm version"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I switched to the SolarFace watch face from Connect IQ. I like the minimal look — just time, date, battery, and steps"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I tried one of those data-heavy faces with like six complications crammed in and I took it off after a single day. Way too cluttered for me"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I guess when it comes to anything on my wrist, I just want it to be as invisible as possible. Show me what matters, nothing else. Like a good tool should just work and get out of the way"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Garmin just announced the Fenix 8 series and my buddy Dave says the new AMOLED option on the Fenix 8 is incredible. I'm pretty set on upgrading to the Fenix 8 AMOLED when it drops"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "That's a fair point. I haven't fully decided yet — it's more of a strong leaning than a done deal. I'd want to see battery life benchmarks first."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "A friend is buying me a gift and asks you what kind of smartwatch accessory or watch face I'd appreciate. They're considering three options: a premium AMOLED screen protector for a future watch, a Connect IQ watch face with 8 data complications and live weather radar, or a simple analog-style Connect IQ face that shows only time and date with no complications. Write a short gift recommendation explaining which option fits me best and why, taking into account my current watch, my watch face preferences, and my broader wearable philosophy.",
+      "expected_answer": "Recommend the simple analog-style Connect IQ face showing only time and date. The user wears a Garmin Fenix 7X Sapphire Solar and chose the SolarFace watch face specifically for its minimal layout with just time, date, battery, and steps. They tried a data-heavy face with six complications and removed it after one day because it was too cluttered. Their overarching wearable philosophy is that anything on the wrist should be as invisible as possible, showing only what matters. The 8-complication weather radar face directly contradicts this preference. The AMOLED screen protector targets a potential future watch the user hasn't committed to buying yet — it's only a tentative interest, not a confirmed plan. The simple analog-style face aligns perfectly with the user's established preference for minimal, clean displays.",
+      "gold_memory_state": "Current watch: Garmin Fenix 7X Sapphire Solar 51mm. Watch face: SolarFace from Connect IQ, minimal layout. Design philosophy: simplicity and minimal clutter for daily wearable use. Tentative Fenix 8 AMOLED interest is not confirmed and should not drive gift decisions.",
+      "judge_rubric": {
+        "must_include": [
+          "recommend the simple analog-style face",
+          "reference to the user's minimal watch face preference",
+          "reference to the user's design philosophy about simplicity or invisibility"
+        ],
+        "acceptable_paraphrases": [
+          "the clean face",
+          "the minimalist option",
+          "the low-complication face"
+        ],
+        "must_not_include": [
+          "recommend the 8-complication face",
+          "recommend the AMOLED screen protector as the primary gift"
+        ],
+        "harmful_extra": [
+          "treating the Fenix 8 AMOLED upgrade as confirmed and recommending the screen protector accordingly",
+          "saying the user would enjoy a data-rich watch face"
+        ],
+        "harmless_extra": [
+          "mentioning the AMOLED protector could be a secondary gift if the user confirms the upgrade",
+          "noting the user's SolarFace has four fields not zero"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative Fenix 8 AMOLED plan as confirmed and recommends the screen protector as the primary gift.",
+        "reflection_precision": "Fails if the model recommends the data-heavy watch face, contradicting the established minimal-clutter philosophy.",
+        "reflection_recall": "Fails if the model does not reference the user's watch face preference or design philosophy when justifying the recommendation.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's current watch is a Garmin Fenix 7X Sapphire Solar, 51mm.",
+        "Fact 2: The user chose the SolarFace watch face for its minimal layout showing only time, date, battery, and steps, and rejected a data-heavy face after one day.",
+        "Fact 3: The user's overarching wearable philosophy is simplicity and minimal visual/digital clutter — the watch should be invisible and show only what matters.",
+        "Fact 4: The user expressed tentative interest in a Fenix 8 AMOLED but has not confirmed the purchase and wants to see battery benchmarks first.",
+        "Inference: The 8-complication weather radar face contradicts the established minimal-clutter philosophy and would be rejected like the previous data-heavy face.",
+        "Inference: The AMOLED screen protector targets an unconfirmed future device and is not a reliable gift choice.",
+        "Inference: The simple analog-style face with only time and date aligns with the user's confirmed preference for minimal wrist displays and is the best gift option."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I'm wearing a Garmin Fenix 7X Sapphire Solar, the 51mm version"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I switched to the SolarFace watch face from Connect IQ. I like the minimal look — just time, date, battery, and steps"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I tried one of those data-heavy faces with like six complications crammed in and I took it off after a single day. Way too cluttered for me"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I guess when it comes to anything on my wrist, I just want it to be as invisible as possible. Show me what matters, nothing else. Like a good tool should just work and get out of the way"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Garmin just announced the Fenix 8 series and my buddy Dave says the new AMOLED option on the Fenix 8 is incredible. I'm pretty set on upgrading to the Fenix 8 AMOLED when it drops"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "That's a fair point. I haven't fully decided yet — it's more of a strong leaning than a done deal. I'd want to see battery life benchmarks first."
+        }
+      ]
+    }
+  ]
+}

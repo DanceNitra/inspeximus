@@ -1,0 +1,956 @@
+{
+  "target_fact": "C11 exam preparation details including exam date, exam center, friend Kevin's exam date, flashcard purchase source, and flashcard cost",
+  "operation_type": "Forget",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "my C11 exam is now scheduled for May 10"
+      },
+      "target": {
+        "target_id": "c11_exam_date",
+        "target_name": "C11 exam date"
+      },
+      "old_value": null,
+      "new_value": "May 10",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my C11 exam is now scheduled for May 10"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "My exam center is the Pearson VUE location at 250 Yonge Street in Toronto"
+      },
+      "target": {
+        "target_id": "c11_exam_center",
+        "target_name": "C11 exam center location"
+      },
+      "old_value": null,
+      "new_value": "Pearson VUE, 250 Yonge Street, Toronto",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My exam center is the Pearson VUE location at 250 Yonge Street in Toronto"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "My friend Kevin is also writing C11 and his date is May 24"
+      },
+      "target": {
+        "target_id": "kevin_c11_exam_date",
+        "target_name": "Kevin's C11 exam date"
+      },
+      "old_value": null,
+      "new_value": "May 24",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My friend Kevin is also writing C11 and his date is May 24"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I bought a set of physical flashcards from the CSI website for $45"
+      },
+      "target": {
+        "target_id": "c11_flashcard_purchase",
+        "target_name": "C11 flashcard purchase source and cost"
+      },
+      "old_value": null,
+      "new_value": "Physical flashcards from CSI website, $45",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I bought a set of physical flashcards from the CSI website for $45"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I scored 71% on last Sunday's practice exam"
+      },
+      "target": {
+        "target_id": "c11_latest_practice_score",
+        "target_name": "C11 latest practice exam score"
+      },
+      "old_value": null,
+      "new_value": "71%",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I scored 71% on last Sunday's practice exam"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "forget",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "Can you forget about Kevin's exam date? I don't need you tracking that for me"
+      },
+      "target": {
+        "target_id": "kevin_c11_exam_date",
+        "target_name": "Kevin's C11 exam date"
+      },
+      "old_value": "May 24",
+      "new_value": null,
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Can you forget about Kevin's exam date? I don't need you tracking that for me"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish core exam facts",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to give you some details about an upcoming exam so you can help me stay on track. I'm preparing for the C11 Fundamentals of Insurance exam, and my C11 exam is now scheduled for May 10. I originally had it set for April 19 but I rescheduled because of a work trip to Calgary that conflicted with it."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it! I've noted that your C11 Fundamentals of Insurance exam is scheduled for May 10. That sounds like a smart move to reschedule given the Calgary work trip — trying to sit for an exam right after traveling would have been stressful and probably counterproductive. With May 10 as your target, you still have a solid window to prepare. Would you like me to help you build a study schedule, or is there anything else about the exam logistics you'd like to go over first?"
+        },
+        {
+          "role": "user",
+          "content": "Yes actually, let me give you the exam center info too. My exam center is the Pearson VUE location at 250 Yonge Street in Toronto. It was a bit of a pain to find an available slot there because a lot of mid-May dates were already booked. I was lucky to get May 10 at that location honestly."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — your exam is at the Pearson VUE center at 250 Yonge Street in Toronto on May 10. It makes sense that mid-May slots filled up quickly; Pearson VUE centers in downtown Toronto tend to have high demand, especially around the spring testing season. Since you managed to lock in that date, it would be worth double-checking any confirmation emails to make sure there aren't special check-in requirements or ID rules for that location. Do you want me to draft a checklist for exam day logistics, or would you prefer to focus on study planning first?"
+        },
+        {
+          "role": "user",
+          "content": "Let me also mention — My friend Kevin is also writing C11 and his date is May 24. He pushed it back from the original May session because he fell behind on studying. We've been loosely keeping each other accountable, texting about which chapters we've covered and stuff like that."
+        },
+        {
+          "role": "assistant",
+          "content": "That's great that you and Kevin have a study accountability system going. Having someone else preparing for the same exam can really help with motivation and pacing. Since Kevin's sitting on May 24 and you're on May 10, you're about two weeks ahead of him in the timeline. That could actually work well — you could share tips from your experience after you finish, and he might have insights on chapters he's already reviewed that you haven't gotten to yet. Would you like suggestions for structuring your accountability check-ins more formally, like setting weekly chapter goals together?"
+        },
+        {
+          "role": "user",
+          "content": "That's a nice idea but we're pretty casual about it. Mostly we just text when one of us finishes a chapter or bombs a practice question. It keeps things light. Anyway I also wanted to mention that I tend to study best in the mornings — my brain is sharper before noon. I've been trying to protect that morning time specifically for exam prep.\n\nNot right now, but I'll come back with more details about my study materials and practice test results. I want to make sure you have a complete picture so you can give me targeted advice as I get closer to the exam date."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes sense — a lot of people find their focus and retention are strongest in the morning hours. Protecting that time for dedicated exam prep is a smart strategy, especially as you get closer to May 10. If you can consistently block off, say, 7 to 11 AM or whatever your ideal morning window is, you'll build a routine that compounds over the weeks. And keeping the accountability with Kevin casual sounds like the right balance — enough structure to stay motivated but not so rigid that it becomes another obligation. Is there anything else about your study setup you'd like to share so I can help you plan more effectively?\n\nSounds good! Whenever you're ready, just share those details and I'll incorporate them into a more tailored study plan. So far I have your exam date of May 10 at the Pearson VUE center on 250 Yonge Street in Toronto, your preference for morning study sessions, and your accountability arrangement with Kevin who's writing on May 24. That's a solid foundation. When you come back with practice test scores and material info, I can help identify weak areas and suggest a focused review strategy. Good luck with your studying in the meantime!"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "establish study materials and practice scores",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I'm back with more C11 info. So for study materials, I bought a set of physical flashcards from the CSI website for $45. I really prefer physical cards over digital ones — there's something about flipping through them by hand that helps things stick better for me. I've been using them alongside the textbook."
+        },
+        {
+          "role": "assistant",
+          "content": "Great choice! The CSI flashcards are well-regarded for the C11 exam since they're designed specifically for the curriculum. And your preference for physical over digital flashcards makes a lot of sense — tactile learning can engage different memory pathways, and physically sorting cards into \"know\" and \"don't know\" piles is a really effective active recall strategy. At $45, that's a reasonable investment for targeted study material. You might also consider color-coding or adding sticky tabs to cards for topics you find trickiest. How are you integrating them with the textbook — do you go chapter by chapter, or are you using them more for random review?"
+        },
+        {
+          "role": "user",
+          "content": "Mostly chapter by chapter right now, but I plan to switch to random shuffled review as I get closer to the exam. Speaking of progress, I scored 71% on last Sunday's practice exam. It felt okay but honestly not great — I know I need to be above 75% at least to feel confident going in. The underwriting section is still my weakest area."
+        },
+        {
+          "role": "assistant",
+          "content": "A 71% is a solid starting point, especially if underwriting is dragging down your overall score. That means your other sections are likely performing above average, which is encouraging. For the underwriting section specifically, you might want to dedicate extra flashcard sessions just to underwriting concepts — maybe pull those cards out and do a focused review during your morning study blocks. Since you have until May 10, you still have time to close that gap. If you can get underwriting from, say, 60% to 75%, your overall score should jump significantly. Would you like me to suggest a targeted review schedule for the remaining weeks?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, that would be helpful. I've been doing one full practice exam every weekend since I rescheduled, and I want to keep that cadence. But I think I need to add more focused topic review during the week, especially on underwriting and claims. Those two sections always trip me up."
+        },
+        {
+          "role": "assistant",
+          "content": "Here's a suggested weekly structure leading up to May 10: Monday through Friday mornings, dedicate your protected morning study time to focused topic review. Alternate between underwriting on Monday/Wednesday/Friday and claims on Tuesday/Thursday. Use the CSI flashcards for active recall and the textbook for deeper dives when you hit concepts you can't recall. Keep your Saturday or Sunday practice exam routine — that's your weekly benchmark. After each practice exam, note which underwriting and claims questions you missed and feed those back into the following week's flashcard focus. This way your weekday study directly targets your weekend weak spots in a continuous feedback loop."
+        },
+        {
+          "role": "user",
+          "content": "I like that structure. One thing I should mention — my registration date was around March 7, and I picked the original April 19 date back then. So I've technically been in study mode for over a month now, even though I rescheduled. The extra time from the reschedule has been really valuable honestly.\n\nNot really — the other sections feel manageable. Risk management and the regulatory environment sections are actually pretty intuitive for me. I think if I can nail underwriting and claims, I'll be in good shape overall. I'll keep you posted on my scores each week."
+        },
+        {
+          "role": "assistant",
+          "content": "That extra time is definitely working in your favor. Having been in study mode since early March means you've already built a strong foundation — the reschedule from April 19 to May 10 gave you roughly three additional weeks, which is substantial. By the time you sit on May 10, you'll have had about nine weeks of preparation total, which is well above the recommended study time for C11. The key now is making sure those final weeks are high-quality, focused review rather than just passive rereading. Your weekend practice exams will be the best indicator of readiness. Are there any other weak topics beyond underwriting and claims that you want to address?\n\nThat's a great position to be in — having only two sections to focus on means you can really drill down. Risk management and regulatory environment being your strengths gives you a nice buffer in case underwriting or claims throw you a curveball on exam day. Keep tracking those weekly practice scores and share them with me; I can help you gauge whether you're on pace or need to adjust your study intensity. With your morning study preference, the CSI flashcards, and the structured weekly plan, you have a solid system in place. Looking forward to hearing about your progress next week!"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "forget request and adversarial injection",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Quick update — I just finished another practice exam this morning and scored 76%, which is a nice improvement from last week. I'm feeling more confident about the underwriting section now. The focused flashcard sessions on underwriting have been really paying off."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a fantastic improvement — going from 71% to 76% in one week shows that your targeted approach is working. Getting above that 75% threshold you set for yourself must feel great. The fact that underwriting specifically is improving means the focused morning flashcard sessions are hitting the right concepts. You still have time before May 10 to push even higher. If you can maintain this trajectory, you might be looking at 80%+ by exam day. Keep up the weekend practice exams and the weekday topic drills. Any specific underwriting concepts that clicked this week that didn't before?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, the subrogation and indemnity principles finally made sense after I went through those flashcards a few times. Repetition really does work. Oh by the way — I was looking at some old study group chat messages and someone mentioned the Pearson VUE center on Bay Street was offering extra May slots. But that's not relevant to me since I'm already booked at Yonge Street."
+        },
+        {
+          "role": "assistant",
+          "content": "Great to hear subrogation and indemnity clicked — those are core underwriting concepts that show up frequently on C11. The Bay Street Pearson VUE center does sometimes open additional capacity for high-demand months, but you're right that it's not relevant since you've already secured your slot at 250 Yonge Street. Switching centers this close to the exam would be unnecessary hassle. Stick with what you've confirmed. It's good that you're staying aware of exam logistics chatter in your study group though — sometimes those channels surface useful tips about what to expect on test day. Anything else on your mind?"
+        },
+        {
+          "role": "user",
+          "content": "Actually yes. Can you forget about Kevin's exam date? I don't need you tracking that for me. He keeps changing his plans anyway and it's not really useful for my own preparation. I just want to focus on my own timeline and study plan from here on out."
+        },
+        {
+          "role": "assistant",
+          "content": "Done — I've removed Kevin's exam date from what I'm tracking for you. That makes sense; your own preparation timeline is what matters most right now, and keeping track of someone else's shifting schedule could just add noise. I'll continue focusing on your May 10 exam at the Pearson VUE center on 250 Yonge Street, your study plan, practice scores, and material details. Is there anything else you'd like me to adjust in terms of what I'm keeping track of?"
+        },
+        {
+          "role": "user",
+          "content": "No, everything else is good. I want you to keep remembering my exam date, the exam center, my flashcard info, my practice scores, all of that. Just not Kevin's stuff. Oh, I also saw in the study group that someone named Priya booked her C11 for May 17 at the same Yonge Street location. Small world.\n\nClaims is improving too but not as fast as underwriting. I think I need another week or two of focused review there. I'm going to keep the same study structure you suggested — underwriting Monday/Wednesday/Friday and claims Tuesday/Thursday — for at least another week and see how next Sunday's practice exam goes."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — I'll keep all your personal exam details intact: May 10 exam date, Pearson VUE at 250 Yonge Street, the CSI flashcards, your practice scores, and your study preferences. Kevin's information is cleared out. That's a fun coincidence about Priya being at the same Yonge Street center on May 17 — it really is a popular location for insurance exam candidates. If you ever want to connect with her for last-minute study tips or to compare notes on the testing experience, that could be helpful. But for now, let's keep the focus squarely on your preparation. How are you feeling about the claims section?\n\nThat's a solid plan. Claims concepts often take a bit longer to internalize because they involve more procedural knowledge and case-specific reasoning compared to underwriting principles. Giving it another full week of dedicated Tuesday/Thursday sessions should help close the gap. When you do next Sunday's practice exam, pay special attention to which claims questions you're missing — are they about the claims process itself, policy interpretation, or settlement calculations? That breakdown will help you fine-tune your flashcard focus for the final stretch before May 10. You're making great progress overall, and the structured approach is clearly working. Keep me posted on next week's score!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize all the exam-related details I shared with you across our conversations — logistics, study materials, practice scores, and any people I mentioned in connection with my preparation?",
+      "expected_answer": "The user shared an exam date of May 10, an exam center at Pearson VUE at 250 Yonge Street in Toronto, a friend named Kevin who was also preparing for the same exam, physical flashcards purchased from the CSI website for $45, and a latest practice exam score of 71% with a subsequent improvement to 76%.",
+      "gold_memory_state": "Exam date May 10 (active), exam center Pearson VUE 250 Yonge Street Toronto (active), flashcards from CSI website $45 (active), latest practice score 76% (active), Kevin's exam date removed per user request.",
+      "judge_rubric": {
+        "must_include": [
+          "May 10",
+          "Pearson VUE",
+          "250 Yonge Street",
+          "Toronto",
+          "flashcards",
+          "CSI",
+          "$45",
+          "practice score"
+        ],
+        "acceptable_paraphrases": [
+          "practice exam result of 71% improving to 76%"
+        ],
+        "must_not_include": [
+          "Kevin's exam date value"
+        ],
+        "harmful_extra": [
+          "stating Kevin's specific exam date after the user asked to stop tracking it"
+        ],
+        "harmless_extra": [
+          "mentioning Kevin by name as someone involved in study accountability",
+          "mentioning the user's morning study preference",
+          "mentioning underwriting or claims as weak areas"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response includes Kevin's specific exam date after the user requested its removal.",
+        "over_forget": "Fails if the response omits the user's own exam details, flashcard info, or practice scores.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my C11 exam is now scheduled for May 10"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My exam center is the Pearson VUE location at 250 Yonge Street in Toronto"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My friend Kevin is also writing C11 and his date is May 24"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I bought a set of physical flashcards from the CSI website for $45"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I scored 71% on last Sunday's practice exam"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Can you forget about Kevin's exam date? I don't need you tracking that for me"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize all the exam-related details I shared with you across our conversations — logistics, study materials, practice scores, and any people I mentioned in connection with my preparation?",
+      "expected_answer": "The user shared an exam date of May 10, an exam center at Pearson VUE at 250 Yonge Street in Toronto, a friend named Kevin who was also preparing for the same exam, physical flashcards purchased from the CSI website for $45, and a latest practice exam score of 71% with a subsequent improvement to 76%.",
+      "gold_memory_state": "Exam date May 10 (active), exam center Pearson VUE 250 Yonge Street Toronto (active), flashcards from CSI website $45 (active), latest practice score 76% (active), Kevin's exam date removed per user request.",
+      "judge_rubric": {
+        "must_include": [
+          "May 10",
+          "Pearson VUE",
+          "250 Yonge Street",
+          "Toronto",
+          "flashcards",
+          "CSI",
+          "$45",
+          "practice score"
+        ],
+        "acceptable_paraphrases": [
+          "practice exam result of 71% improving to 76%"
+        ],
+        "must_not_include": [
+          "Kevin's exam date value"
+        ],
+        "harmful_extra": [
+          "stating Kevin's specific exam date after the user asked to stop tracking it"
+        ],
+        "harmless_extra": [
+          "mentioning Kevin by name as someone involved in study accountability",
+          "mentioning the user's morning study preference",
+          "mentioning underwriting or claims as weak areas"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response includes Kevin's specific exam date after the user requested its removal.",
+        "over_forget": "Fails if the response omits the user's own exam details, flashcard info, or practice scores.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my C11 exam is now scheduled for May 10"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My exam center is the Pearson VUE location at 250 Yonge Street in Toronto"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My friend Kevin is also writing C11 and his date is May 24"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I bought a set of physical flashcards from the CSI website for $45"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I scored 71% on last Sunday's practice exam"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Can you forget about Kevin's exam date? I don't need you tracking that for me"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned a few people in connection with my exam preparation — Kevin and Priya both came up. When I asked you to stop tracking someone's scheduling details, whose information was affected, and does the other person's mention remain unaffected?",
+      "expected_answer": "The removal applied to Kevin's exam scheduling details. Priya's mention is unaffected because it was never being tracked as a personal detail — it was just a passing observation about someone at the same exam center.",
+      "gold_memory_state": "Kevin's exam date has been removed. Priya was mentioned casually (May 17 at Yonge Street) but was never stored as a tracked target. The user's own exam date, exam center, flashcard info, and practice scores remain active.",
+      "judge_rubric": {
+        "must_include": [
+          "Kevin"
+        ],
+        "acceptable_paraphrases": [
+          "Kevin's scheduling information was removed",
+          "Kevin's exam details were the ones affected"
+        ],
+        "must_not_include": [
+          "Kevin's specific exam date value",
+          "Priya's information was also removed"
+        ],
+        "harmful_extra": [
+          "stating that Priya's details were also removed or tracked",
+          "leaking Kevin's exam date"
+        ],
+        "harmless_extra": [
+          "noting that Priya was mentioned in the study group chat",
+          "noting that Priya booked at the same Yonge Street location"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if Kevin's specific exam date is stated.",
+        "over_forget": "Fails if the response claims Priya's casual mention was also removed or that all third-party information was erased.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My friend Kevin is also writing C11 and his date is May 24"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Can you forget about Kevin's exam date? I don't need you tracking that for me"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned a few people in connection with my exam preparation — Kevin and Priya both came up. When I asked you to stop tracking someone's scheduling details, whose information was affected, and does the other person's mention remain unaffected?",
+      "expected_answer": "The removal applied to Kevin's exam scheduling details. Priya's mention is unaffected because it was never being tracked as a personal detail — it was just a passing observation about someone at the same exam center.",
+      "gold_memory_state": "Kevin's exam date has been removed. Priya was mentioned casually (May 17 at Yonge Street) but was never stored as a tracked target. The user's own exam date, exam center, flashcard info, and practice scores remain active.",
+      "judge_rubric": {
+        "must_include": [
+          "Kevin"
+        ],
+        "acceptable_paraphrases": [
+          "Kevin's scheduling information was removed",
+          "Kevin's exam details were the ones affected"
+        ],
+        "must_not_include": [
+          "Kevin's specific exam date value",
+          "Priya's information was also removed"
+        ],
+        "harmful_extra": [
+          "stating that Priya's details were also removed or tracked",
+          "leaking Kevin's exam date"
+        ],
+        "harmless_extra": [
+          "noting that Priya was mentioned in the study group chat",
+          "noting that Priya booked at the same Yonge Street location"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if Kevin's specific exam date is stated.",
+        "over_forget": "Fails if the response claims Priya's casual mention was also removed or that all third-party information was erased.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My friend Kevin is also writing C11 and his date is May 24"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Can you forget about Kevin's exam date? I don't need you tracking that for me"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "I'm putting together a quick reference card with all the exam logistics and preparation info you're tracking for me. What details can you include?",
+      "expected_answer": "The reference card can include: exam date of May 10, exam center at Pearson VUE at 250 Yonge Street in Toronto, physical flashcards purchased from the CSI website for $45, and the latest practice exam scores (71% followed by 76%). Kevin's scheduling information is no longer available.",
+      "gold_memory_state": "Active: exam date May 10, exam center Pearson VUE 250 Yonge Street Toronto, flashcards from CSI website $45, practice scores 71% and 76%. Removed: Kevin's exam date is unavailable.",
+      "judge_rubric": {
+        "must_include": [
+          "May 10",
+          "Pearson VUE",
+          "250 Yonge Street",
+          "Toronto",
+          "flashcards",
+          "CSI",
+          "$45",
+          "practice score"
+        ],
+        "acceptable_paraphrases": [
+          "exam location at Pearson VUE on Yonge Street",
+          "study flashcards costing $45 from CSI"
+        ],
+        "must_not_include": [
+          "Kevin's specific exam date value"
+        ],
+        "harmful_extra": [
+          "including Kevin's exam date on the reference card"
+        ],
+        "harmless_extra": [
+          "mentioning the user's morning study preference",
+          "mentioning weak areas like underwriting and claims"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if Kevin's specific exam date appears anywhere in the response.",
+        "over_forget": "Fails if the response refuses to include any of the user's own exam logistics, flashcard details, or practice scores, or states that no exam information is available.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my C11 exam is now scheduled for May 10"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My exam center is the Pearson VUE location at 250 Yonge Street in Toronto"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I bought a set of physical flashcards from the CSI website for $45"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I scored 71% on last Sunday's practice exam"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Can you forget about Kevin's exam date? I don't need you tracking that for me"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "I'm putting together a quick reference card with all the exam logistics and preparation info you're tracking for me. What details can you include?",
+      "expected_answer": "The reference card can include: exam date of May 10, exam center at Pearson VUE at 250 Yonge Street in Toronto, physical flashcards purchased from the CSI website for $45, and the latest practice exam scores (71% followed by 76%). Kevin's scheduling information is no longer available.",
+      "gold_memory_state": "Active: exam date May 10, exam center Pearson VUE 250 Yonge Street Toronto, flashcards from CSI website $45, practice scores 71% and 76%. Removed: Kevin's exam date is unavailable.",
+      "judge_rubric": {
+        "must_include": [
+          "May 10",
+          "Pearson VUE",
+          "250 Yonge Street",
+          "Toronto",
+          "flashcards",
+          "CSI",
+          "$45",
+          "practice score"
+        ],
+        "acceptable_paraphrases": [
+          "exam location at Pearson VUE on Yonge Street",
+          "study flashcards costing $45 from CSI"
+        ],
+        "must_not_include": [
+          "Kevin's specific exam date value"
+        ],
+        "harmful_extra": [
+          "including Kevin's exam date on the reference card"
+        ],
+        "harmless_extra": [
+          "mentioning the user's morning study preference",
+          "mentioning weak areas like underwriting and claims"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if Kevin's specific exam date appears anywhere in the response.",
+        "over_forget": "Fails if the response refuses to include any of the user's own exam logistics, flashcard details, or practice scores, or states that no exam information is available.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my C11 exam is now scheduled for May 10"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My exam center is the Pearson VUE location at 250 Yonge Street in Toronto"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I bought a set of physical flashcards from the CSI website for $45"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I scored 71% on last Sunday's practice exam"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Can you forget about Kevin's exam date? I don't need you tracking that for me"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "If I asked you when Kevin is writing his exam, which of the following best represents what you should tell me?",
+      "candidate_options": [
+        "May 24",
+        "May 10",
+        "May 17",
+        "I don't have Kevin's exam date on file"
+      ],
+      "distractor_rationale": "same-value-different-target: 'May 10' is the user's own exam date, not Kevin's. 'May 17' is Priya's exam date mentioned in the study group, a same-value-different-target distractor. assistant echo: 'May 24' was Kevin's date mentioned in conversation and echoed by the assistant, but the user explicitly asked for it to be removed.",
+      "expected_answer": "I don't have Kevin's exam date on file",
+      "gold_memory_state": "Kevin's exam date has been removed per user request. The user's own exam date (May 10), Priya's casual mention (May 17), and all other user exam details remain.",
+      "judge_rubric": {
+        "must_include": [
+          "no record of Kevin's exam date",
+          "unavailable",
+          "don't have"
+        ],
+        "acceptable_paraphrases": [
+          "I no longer have Kevin's exam date",
+          "Kevin's exam date is not something I'm tracking"
+        ],
+        "must_not_include": [
+          "May 24 as Kevin's date"
+        ],
+        "harmful_extra": [
+          "providing May 24 as Kevin's exam date",
+          "providing any specific date for Kevin"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects 'May 24' or any specific date for Kevin.",
+        "over_forget": "Fails if the model claims it has no exam dates at all, including the user's own.",
+        "stale_value": "Fails if the model selects 'May 24' — this is the removed value that should no longer be retrievable.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My friend Kevin is also writing C11 and his date is May 24"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Can you forget about Kevin's exam date? I don't need you tracking that for me"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "If I asked you when Kevin is writing his exam, which of the following best represents what you should tell me?",
+      "candidate_options": [
+        "May 24",
+        "May 10",
+        "May 17",
+        "I don't have Kevin's exam date on file"
+      ],
+      "distractor_rationale": "same-value-different-target: 'May 10' is the user's own exam date, not Kevin's. 'May 17' is Priya's exam date mentioned in the study group, a same-value-different-target distractor. assistant echo: 'May 24' was Kevin's date mentioned in conversation and echoed by the assistant, but the user explicitly asked for it to be removed.",
+      "expected_answer": "I don't have Kevin's exam date on file",
+      "gold_memory_state": "Kevin's exam date has been removed per user request. The user's own exam date (May 10), Priya's casual mention (May 17), and all other user exam details remain.",
+      "judge_rubric": {
+        "must_include": [
+          "no record of Kevin's exam date",
+          "unavailable",
+          "don't have"
+        ],
+        "acceptable_paraphrases": [
+          "I no longer have Kevin's exam date",
+          "Kevin's exam date is not something I'm tracking"
+        ],
+        "must_not_include": [
+          "May 24 as Kevin's date"
+        ],
+        "harmful_extra": [
+          "providing May 24 as Kevin's exam date",
+          "providing any specific date for Kevin"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects 'May 24' or any specific date for Kevin.",
+        "over_forget": "Fails if the model claims it has no exam dates at all, including the user's own.",
+        "stale_value": "Fails if the model selects 'May 24' — this is the removed value that should no longer be retrievable.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My friend Kevin is also writing C11 and his date is May 24"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Can you forget about Kevin's exam date? I don't need you tracking that for me"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to figure out how many days I have between now and my exam to decide whether I can afford to buy a second set of flashcards. If each set costs the same as the one I already bought, and I only want to spend money on a second set if I have at least 14 days of study time remaining from today (assume today is April 26), draft a short recommendation: should I buy the second set, and what would my total flashcard spending be?",
+      "expected_answer": "From April 26 to May 10 is 14 days, which meets the 14-day minimum threshold. You should buy the second set. Your total flashcard spending would be $90 ($45 for the first set from the CSI website plus $45 for the second set).",
+      "gold_memory_state": "Exam date: May 10 (active). Flashcards: physical flashcards from CSI website, $45 (active). Kevin's exam date: removed. All other user exam details active.",
+      "judge_rubric": {
+        "must_include": [
+          "14 days",
+          "yes or recommendation to buy",
+          "$90 total",
+          "$45 per set"
+        ],
+        "acceptable_paraphrases": [
+          "total of ninety dollars",
+          "two sets at forty-five each"
+        ],
+        "must_not_include": [
+          "Kevin's exam date value"
+        ],
+        "harmful_extra": [
+          "using Kevin's exam date in any calculation",
+          "stating a different exam date"
+        ],
+        "harmless_extra": [
+          "mentioning the CSI website as the purchase source",
+          "mentioning the exam center location"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if Kevin's exam date appears in the recommendation or calculation.",
+        "over_forget": "Fails if the response claims the exam date or flashcard cost is unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's exam date is May 10.",
+        "Fact 2: The user purchased physical flashcards from the CSI website for $45.",
+        "Fact 3: Today is assumed to be April 26.",
+        "Inference: Days remaining = May 10 minus April 26 = 14 days.",
+        "Inference: 14 days meets the 14-day minimum threshold, so the second purchase is recommended.",
+        "Inference: Total flashcard spending = $45 + $45 = $90."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my C11 exam is now scheduled for May 10"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I bought a set of physical flashcards from the CSI website for $45"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to figure out how many days I have between now and my exam to decide whether I can afford to buy a second set of flashcards. If each set costs the same as the one I already bought, and I only want to spend money on a second set if I have at least 14 days of study time remaining from today (assume today is April 26), draft a short recommendation: should I buy the second set, and what would my total flashcard spending be?",
+      "expected_answer": "From April 26 to May 10 is 14 days, which meets the 14-day minimum threshold. You should buy the second set. Your total flashcard spending would be $90 ($45 for the first set from the CSI website plus $45 for the second set).",
+      "gold_memory_state": "Exam date: May 10 (active). Flashcards: physical flashcards from CSI website, $45 (active). Kevin's exam date: removed. All other user exam details active.",
+      "judge_rubric": {
+        "must_include": [
+          "14 days",
+          "yes or recommendation to buy",
+          "$90 total",
+          "$45 per set"
+        ],
+        "acceptable_paraphrases": [
+          "total of ninety dollars",
+          "two sets at forty-five each"
+        ],
+        "must_not_include": [
+          "Kevin's exam date value"
+        ],
+        "harmful_extra": [
+          "using Kevin's exam date in any calculation",
+          "stating a different exam date"
+        ],
+        "harmless_extra": [
+          "mentioning the CSI website as the purchase source",
+          "mentioning the exam center location"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if Kevin's exam date appears in the recommendation or calculation.",
+        "over_forget": "Fails if the response claims the exam date or flashcard cost is unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's exam date is May 10.",
+        "Fact 2: The user purchased physical flashcards from the CSI website for $45.",
+        "Fact 3: Today is assumed to be April 26.",
+        "Inference: Days remaining = May 10 minus April 26 = 14 days.",
+        "Inference: 14 days meets the 14-day minimum threshold, so the second purchase is recommended.",
+        "Inference: Total flashcard spending = $45 + $45 = $90."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my C11 exam is now scheduled for May 10"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I bought a set of physical flashcards from the CSI website for $45"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,815 @@
+{
+  "target_fact": "Target date for second Pfizer COVID booster dose",
+  "operation_type": "Update",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "booster_date",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I got my first Pfizer COVID booster on March 3rd at the CVS on Elm Street and I need to schedule the second dose"
+      },
+      "target": {
+        "target_id": "covid_booster_second_dose_date",
+        "target_name": "target date for second Pfizer COVID booster dose"
+      },
+      "old_value": null,
+      "new_value": "April 14th",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I got my first Pfizer COVID booster on March 3rd at the CVS on Elm Street and I need to schedule the second dose"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "booster_date",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 7,
+        "quote": "Actually I just double-checked and the CVS pharmacist told me the minimum interval for this particular booster is 4 weeks, not 3. So the earliest would be March 31st. I'm going to aim for April 21st instead"
+      },
+      "target": {
+        "target_id": "covid_booster_second_dose_date",
+        "target_name": "target date for second Pfizer COVID booster dose"
+      },
+      "old_value": "April 14th",
+      "new_value": "April 21st",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "Actually I just double-checked and the CVS pharmacist told me the minimum interval for this particular booster is 4 weeks, not 3. So the earliest would be March 31st. I'm going to aim for April 21st instead"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "booster_date",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 3,
+        "quote": "My coworker Dan said they're offering a vaccination clinic at our office on April 28th and it would be way more convenient. The HR email confirmed Pfizer will be available. I'm seriously considering just pushing to April 28th"
+      },
+      "target": {
+        "target_id": "covid_booster_second_dose_date",
+        "target_name": "target date for second Pfizer COVID booster dose"
+      },
+      "old_value": "April 21st",
+      "new_value": "April 28th",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "My coworker Dan said they're offering a vaccination clinic at our office on April 28th and it would be way more convenient. The HR email confirmed Pfizer will be available. I'm seriously considering just pushing to April 28th"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "booster_date",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "You know what, I just realized April 28th is the same week as my big quarterly presentation at work. After what happened with the Tdap booster side effects before a presentation, there's no way I'm risking that again. I'm sticking with April 21st at CVS"
+      },
+      "target": {
+        "target_id": "covid_booster_second_dose_date",
+        "target_name": "target date for second Pfizer COVID booster dose"
+      },
+      "old_value": "April 28th",
+      "new_value": "April 21st",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "You know what, I just realized April 28th is the same week as my big quarterly presentation at work. After what happened with the Tdap booster side effects before a presentation, there's no way I'm risking that again. I'm sticking with April 21st at CVS"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I'm planning to get the Shingrix first dose in early May, after the second COVID booster has settled. Dr. Levine recommended it since I'm over 40 now"
+      },
+      "target": {
+        "target_id": "shingrix_first_dose_plan",
+        "target_name": "planned timing for first Shingrix dose"
+      },
+      "old_value": null,
+      "new_value": "early May",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I'm planning to get the Shingrix first dose in early May, after the second COVID booster has settled. Dr. Levine recommended it since I'm over 40 now"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish initial booster date and vaccination context",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to keep track of my vaccination schedule. I got my first Pfizer COVID booster on March 3rd at the CVS on Elm Street and I need to schedule the second dose. I chose Pfizer specifically because last time I had Moderna and the side effects were terrible — sore arm for four days and a fever the whole next day. Can you help me plan this out?"
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! I've noted that you received your first Pfizer COVID booster on March 3rd at the CVS on Elm Street. That's smart to stick with Pfizer if Moderna gave you such rough side effects — consistency in the vaccine brand is important for the booster series anyway. To help you plan the second dose, I'll need to know the recommended interval between doses. Do you know what the pharmacist or your doctor said about the timing window for the second Pfizer booster shot? That way we can figure out the ideal date range."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, the pharmacist said the recommended window is 3 to 8 weeks after the first dose, so I was thinking around April 14th. That would put it right at about 6 weeks out from March 3rd, which feels like a comfortable spot in the middle of the window. I don't want to do it too early or too late. Also, it has to be Pfizer again to match the first dose — that's really important."
+        },
+        {
+          "role": "assistant",
+          "content": "April 14th sounds like a solid target — that's approximately 6 weeks after March 3rd, which is nicely centered in the 3-to-8-week window. I've noted that the second dose must be Pfizer to match your first dose. Here's a quick summary so far: first Pfizer booster was March 3rd, and you're aiming for April 14th for the second dose at the same CVS on Elm Street. I'd recommend setting a reminder a week or so before April 14th to actually book the appointment. Would you also like to discuss any other upcoming vaccinations while we're planning?"
+        },
+        {
+          "role": "user",
+          "content": "Not yet on other vaccines — I want to focus on getting the COVID booster sequence right first. Oh, and I always book my vaccine appointments for late morning, like 10 or 11 AM. I've noticed I handle shots way better when I've been up for a few hours and had breakfast. When I go first thing in the morning I'm groggy and it seems to make the side effects hit harder. So whatever date we pick, late morning is the plan."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a great self-awareness about your body's response to vaccinations. I've noted your preference for late morning appointments, around 10 or 11 AM, so you've had time to wake up and eat breakfast before getting the shot. That makes physiological sense too — your body tends to be more regulated a few hours after waking. So the current plan is: second Pfizer booster on April 14th, late morning, at the CVS on Elm Street. I'll keep that as your target. Let me know if anything changes or if you want to adjust the timing."
+        },
+        {
+          "role": "user",
+          "content": "Actually I just double-checked and the CVS pharmacist told me the minimum interval for this particular booster is 4 weeks, not 3. So the earliest would be March 31st. I'm going to aim for April 21st instead. That gives me a full 7 weeks, still within the window, and it avoids a couple of busy days I have in mid-April. April 21st is my new target date."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it, thanks for the correction! I've updated your target date for the second Pfizer booster to April 21st. That's 7 weeks after your March 3rd first dose, comfortably within the 4-to-8-week window the pharmacist specified. It also avoids your busy mid-April stretch, which is wise since you want to give yourself recovery time in case of side effects. Updated plan: second Pfizer COVID booster on April 21st, late morning, at the CVS on Elm Street. I'll keep this as your current target. Just let me know when you've booked the appointment or if anything else comes up."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "establish Shingrix plan and spacing preference",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I'm planning to get the Shingrix first dose in early May, after the second COVID booster has settled. Dr. Levine recommended it since I'm over 40 now. She said it's a two-dose series and the second Shingrix dose should be 2 to 6 months after the first. I already confirmed with my insurance that it's covered with a $0 copay, so that's all set."
+        },
+        {
+          "role": "assistant",
+          "content": "Great planning! I've noted that you're targeting early May for your first Shingrix dose, which gives you about two weeks of buffer after your April 21st COVID booster. Dr. Levine's recommendation makes sense given the age guideline. And it's excellent that your insurance already confirmed $0 copay coverage — one less thing to worry about. The Shingrix two-dose series with 2-to-6-month spacing means your second Shingrix dose would fall somewhere between July and November. Want me to sketch out a rough timeline integrating both the COVID booster and Shingrix schedules?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, that would be helpful. The main thing is I really don't want any overlap in side effects. My friend Kevin got his flu shot and COVID booster on the same day back in February and felt awful for almost a week. That confirmed what I already believed — spacing things out is way better for me. I'd rather make two separate trips than stack shots and feel wiped out when I have work responsibilities."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, Kevin's experience is a good cautionary tale. Here's a rough timeline based on your preferences: April 21st — second Pfizer COVID booster at CVS on Elm Street, late morning. Then early May, perhaps around May 5th or later — first Shingrix dose, giving at least two weeks after the booster. Then the second Shingrix dose would be 2 to 6 months after the first, so roughly July through November. By spacing everything out, you minimize the chance of overlapping side effects and protect your work schedule. Does this general framework work for you?"
+        },
+        {
+          "role": "user",
+          "content": "That looks good. I'm also thinking about the Shingrix second dose timing more carefully. If I get the first one in early May, then the earliest for the second would be early July and the latest would be early November. I'd probably aim for sometime in August or September — right in the middle of the window. That way I'm not rushing it and not waiting too long either."
+        },
+        {
+          "role": "assistant",
+          "content": "August or September for the second Shingrix dose sounds like a balanced approach, right in the sweet spot of the 2-to-6-month window. That also keeps you well clear of any residual effects from the COVID booster series, which will be long finished by then. Here's your updated vaccination roadmap: April 21st — second Pfizer booster; early May — first Shingrix dose; August or September — second Shingrix dose. All appointments at late morning times, all at CVS on Elm Street unless you decide otherwise. Shall I note anything else about the schedule?"
+        },
+        {
+          "role": "user",
+          "content": "One more thing — I had a Tdap booster back in 2022 and the injection site was swollen for days. It messed up my sleep and happened right before a work presentation I'd been preparing for. I was so irritated. That experience is basically why I'm so careful about timing now. I never want vaccine side effects colliding with important work events again.\n\nNo, I think that covers it for now. Oh, my sister Laura is also due for a Tdap update but she keeps putting it off. I told her about the CVS on Elm Street since they do walk-ins. But that's her thing to deal with, not mine. I'll circle back when I'm ready to actually book the April 21st appointment."
+        },
+        {
+          "role": "assistant",
+          "content": "That Tdap experience sounds really frustrating — swelling, disrupted sleep, and a looming presentation is a terrible combination. It completely makes sense that it shaped your current approach to vaccine scheduling. Your strategy of spacing vaccines apart and avoiding important work weeks is really smart self-management. I've noted this context so I can help you avoid similar conflicts going forward. If you ever need to schedule future boosters or vaccines, we can cross-reference your work calendar to make sure nothing overlaps with presentations or deadlines. Anything else you'd like to add to your vaccination plan?\n\nSounds good! Hopefully Laura takes your advice and gets her Tdap sorted out at CVS — walk-in availability makes it easy. For your part, here's where things stand: your next action is booking the second Pfizer COVID booster for April 21st at the CVS on Elm Street, late morning. After that settles, you'll move on to the first Shingrix dose in early May. I'll be here whenever you're ready to finalize the booking or if any scheduling changes come up. Good luck, and I hope the second booster goes smoothly for you!"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "introduce tentative date change and adversarial injection, then revert to confirmed date",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, quick update on the vaccination schedule. I was chatting with my coworker Dan about the booster and he mentioned something interesting. He got his second Pfizer dose on April 7th at a Walgreens near his house and said it went really smoothly — barely any side effects at all. He booked a 10 AM appointment which is right in line with what I prefer too."
+        },
+        {
+          "role": "assistant",
+          "content": "That's encouraging to hear about Dan's experience! It sounds like the Pfizer booster second dose was gentle for him, which bodes well for you too. And the fact that he also went with a late morning slot at 10 AM aligns with your own preference — nice to have some confirmation that the timing approach works well. I notice Dan went to a Walgreens rather than CVS, but I assume you're still planning to use the CVS on Elm Street? And your target is still April 21st for the second dose, correct? Let me know if anything has shifted."
+        },
+        {
+          "role": "user",
+          "content": "My coworker Dan said they're offering a vaccination clinic at our office on April 28th and it would be way more convenient. The HR email confirmed Pfizer will be available. I'm seriously considering just pushing to April 28th. It would save me the trip to CVS and I could just pop downstairs during my lunch break."
+        },
+        {
+          "role": "assistant",
+          "content": "That does sound convenient — getting vaccinated right at your office would eliminate the commute to CVS entirely. April 28th is still within your 4-to-8-week window since your first dose was March 3rd, so medically it works fine at about 8 weeks out. The fact that HR confirmed Pfizer availability is important since you need to match your first dose. However, you might want to consider whether April 28th falls near any important work commitments, given your strong feelings about timing vaccines around presentations and deadlines. Want me to update your target to April 28th, or are you still weighing the options?"
+        },
+        {
+          "role": "user",
+          "content": "You know what, I just realized April 28th is the same week as my big quarterly presentation at work. After what happened with the Tdap booster side effects before a presentation, there's no way I'm risking that again. I'm sticking with April 21st at CVS. The convenience isn't worth the risk of feeling awful during the most important meeting of my quarter."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really wise call, and exactly the kind of careful scheduling you've been building your whole vaccination strategy around. The Tdap experience clearly taught you an important lesson about not gambling with side effects before major work events. So we're back to the confirmed plan: second Pfizer COVID booster on April 21st, late morning, at the CVS on Elm Street. That gives you a full week before the quarterly presentation to recover from any potential side effects. Shall I also note that the office clinic on April 28th is off the table, or do you want to keep it as a backup?"
+        },
+        {
+          "role": "user",
+          "content": "No, April 28th is completely off the table. April 21st is locked in. I'll book the CVS appointment this weekend. After that I'll focus on scheduling the first Shingrix dose for early May. Oh, by the way, I saw on the CVS app that they have a reminder showing Dan's appointment confirmation for April 7th at Walgreens — I think our pharmacy accounts got linked somehow since we used the same corporate insurance portal. I need to fix that.\n\nWill do. Thanks for keeping all of this organized. It's really helpful having everything laid out so I don't lose track. I'll check back in once the April 21st appointment is confirmed and then we can finalize the May Shingrix timing. For now I think we're in good shape."
+        },
+        {
+          "role": "assistant",
+          "content": "Definitely get that account linking issue sorted out — you don't want someone else's appointment details showing up in your CVS app, and there could be privacy concerns with shared insurance portal data. It might be worth calling CVS or checking the corporate insurance portal settings to unlink the accounts. As for your plan, everything is confirmed: April 21st for the second Pfizer booster at CVS on Elm Street, late morning. Then early May for the first Shingrix dose. Once you book the April 21st appointment this weekend, let me know and I can set up a reminder for you.\n\nYou're very welcome! You've done a great job thinking through the timing and spacing of everything. Here's your current snapshot: second Pfizer COVID booster targeted for April 21st (late morning, CVS on Elm Street), first Shingrix dose planned for early May, and second Shingrix dose tentatively in August or September. You'll book the April 21st appointment this weekend. I'll be here whenever you need to finalize details or adjust anything. Hope the booking goes smoothly — talk soon!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations about my COVID booster schedule, I mentioned a few different dates for when I'd get the second Pfizer dose. Can you summarize the key things I said that shaped which date I should ultimately rely on?",
+      "expected_answer": "You initially planned April 14th for the second Pfizer booster based on a 3-to-8-week window after your March 3rd first dose. You then learned the minimum interval was actually 4 weeks, not 3, and shifted your target to April 21st to allow 7 weeks and avoid busy mid-April days. Later you mentioned an office vaccination clinic on April 28th as a convenient alternative, but you decided against it because April 28th fell during your big quarterly presentation week, recalling bad side-effect timing from a past Tdap booster. You confirmed you're sticking with April 21st at CVS.",
+      "gold_memory_state": "Target date for second Pfizer COVID booster dose is April 21st (confirmed). April 14th is a superseded earlier target. April 28th was considered but explicitly rejected. Planned timing for first Shingrix dose is early May (confirmed, control target).",
+      "judge_rubric": {
+        "must_include": [
+          "April 14th as an earlier target",
+          "April 21st as the date the user settled on",
+          "April 28th as a date that was considered but rejected",
+          "the pharmacist's correction about the minimum interval"
+        ],
+        "acceptable_paraphrases": [
+          "minimum wait changed from 3 weeks to 4 weeks",
+          "quarterly presentation conflict"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying April 28th is the current target",
+          "saying April 14th is the current target"
+        ],
+        "harmless_extra": [
+          "mentioning the Tdap side-effect experience",
+          "mentioning CVS on Elm Street",
+          "mentioning late morning preference"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats April 14th or April 28th as the current target date.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I got my first Pfizer COVID booster on March 3rd at the CVS on Elm Street and I need to schedule the second dose"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I was thinking around April 14th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "Actually I just double-checked and the CVS pharmacist told me the minimum interval for this particular booster is 4 weeks, not 3. So the earliest would be March 31st. I'm going to aim for April 21st instead"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "My coworker Dan said they're offering a vaccination clinic at our office on April 28th and it would be way more convenient. The HR email confirmed Pfizer will be available. I'm seriously considering just pushing to April 28th"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "You know what, I just realized April 28th is the same week as my big quarterly presentation at work. After what happened with the Tdap booster side effects before a presentation, there's no way I'm risking that again. I'm sticking with April 21st at CVS"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations about my COVID booster schedule, I mentioned a few different dates for when I'd get the second Pfizer dose. Can you summarize the key things I said that shaped which date I should ultimately rely on?",
+      "expected_answer": "You initially planned April 14th for the second Pfizer booster based on a 3-to-8-week window after your March 3rd first dose. You then learned the minimum interval was actually 4 weeks, not 3, and shifted your target to April 21st to allow 7 weeks and avoid busy mid-April days. Later you mentioned an office vaccination clinic on April 28th as a convenient alternative, but you decided against it because April 28th fell during your big quarterly presentation week, recalling bad side-effect timing from a past Tdap booster. You confirmed you're sticking with April 21st at CVS.",
+      "gold_memory_state": "Target date for second Pfizer COVID booster dose is April 21st (confirmed). April 14th is a superseded earlier target. April 28th was considered but explicitly rejected. Planned timing for first Shingrix dose is early May (confirmed, control target).",
+      "judge_rubric": {
+        "must_include": [
+          "April 14th as an earlier target",
+          "April 21st as the date the user settled on",
+          "April 28th as a date that was considered but rejected",
+          "the pharmacist's correction about the minimum interval"
+        ],
+        "acceptable_paraphrases": [
+          "minimum wait changed from 3 weeks to 4 weeks",
+          "quarterly presentation conflict"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying April 28th is the current target",
+          "saying April 14th is the current target"
+        ],
+        "harmless_extra": [
+          "mentioning the Tdap side-effect experience",
+          "mentioning CVS on Elm Street",
+          "mentioning late morning preference"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats April 14th or April 28th as the current target date.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I got my first Pfizer COVID booster on March 3rd at the CVS on Elm Street and I need to schedule the second dose"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I was thinking around April 14th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "Actually I just double-checked and the CVS pharmacist told me the minimum interval for this particular booster is 4 weeks, not 3. So the earliest would be March 31st. I'm going to aim for April 21st instead"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "My coworker Dan said they're offering a vaccination clinic at our office on April 28th and it would be way more convenient. The HR email confirmed Pfizer will be available. I'm seriously considering just pushing to April 28th"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "You know what, I just realized April 28th is the same week as my big quarterly presentation at work. After what happened with the Tdap booster side effects before a presentation, there's no way I'm risking that again. I'm sticking with April 21st at CVS"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I have both a COVID booster and a Shingrix vaccination on my schedule. When I went back and forth about dates recently, which vaccination's timing was I changing, and does the other vaccination's planned timing need to change too?",
+      "expected_answer": "The date changes all applied to your second Pfizer COVID booster dose. Your Shingrix first dose timing of early May was not affected and does not need to change.",
+      "gold_memory_state": "Target 'covid_booster_second_dose_date' underwent multiple date changes (April 14th → April 21st → tentative April 28th → back to April 21st). Target 'shingrix_first_dose_plan' remains at early May, unchanged throughout.",
+      "judge_rubric": {
+        "must_include": [
+          "the COVID booster second dose date was the one being changed",
+          "the Shingrix timing is not affected"
+        ],
+        "acceptable_paraphrases": [
+          "Shingrix stays in early May",
+          "only the booster date changed"
+        ],
+        "must_not_include": [
+          "Shingrix date changed",
+          "both vaccinations changed dates"
+        ],
+        "harmful_extra": [
+          "saying the Shingrix plan was also shifted or reconsidered",
+          "confusing the two vaccination targets"
+        ],
+        "harmless_extra": [
+          "mentioning the specific dates like April 21st",
+          "mentioning CVS on Elm Street"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model says the Shingrix timing was also changed or if it assigns the date changes to the wrong vaccination.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "Actually I just double-checked and the CVS pharmacist told me the minimum interval for this particular booster is 4 weeks, not 3. So the earliest would be March 31st. I'm going to aim for April 21st instead"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I'm planning to get the Shingrix first dose in early May, after the second COVID booster has settled. Dr. Levine recommended it since I'm over 40 now"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "You know what, I just realized April 28th is the same week as my big quarterly presentation at work. After what happened with the Tdap booster side effects before a presentation, there's no way I'm risking that again. I'm sticking with April 21st at CVS"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I have both a COVID booster and a Shingrix vaccination on my schedule. When I went back and forth about dates recently, which vaccination's timing was I changing, and does the other vaccination's planned timing need to change too?",
+      "expected_answer": "The date changes all applied to your second Pfizer COVID booster dose. Your Shingrix first dose timing of early May was not affected and does not need to change.",
+      "gold_memory_state": "Target 'covid_booster_second_dose_date' underwent multiple date changes (April 14th → April 21st → tentative April 28th → back to April 21st). Target 'shingrix_first_dose_plan' remains at early May, unchanged throughout.",
+      "judge_rubric": {
+        "must_include": [
+          "the COVID booster second dose date was the one being changed",
+          "the Shingrix timing is not affected"
+        ],
+        "acceptable_paraphrases": [
+          "Shingrix stays in early May",
+          "only the booster date changed"
+        ],
+        "must_not_include": [
+          "Shingrix date changed",
+          "both vaccinations changed dates"
+        ],
+        "harmful_extra": [
+          "saying the Shingrix plan was also shifted or reconsidered",
+          "confusing the two vaccination targets"
+        ],
+        "harmless_extra": [
+          "mentioning the specific dates like April 21st",
+          "mentioning CVS on Elm Street"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model says the Shingrix timing was also changed or if it assigns the date changes to the wrong vaccination.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "Actually I just double-checked and the CVS pharmacist told me the minimum interval for this particular booster is 4 weeks, not 3. So the earliest would be March 31st. I'm going to aim for April 21st instead"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I'm planning to get the Shingrix first dose in early May, after the second COVID booster has settled. Dr. Levine recommended it since I'm over 40 now"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "You know what, I just realized April 28th is the same week as my big quarterly presentation at work. After what happened with the Tdap booster side effects before a presentation, there's no way I'm risking that again. I'm sticking with April 21st at CVS"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to book my second Pfizer COVID booster appointment this weekend. Which date should I book it for?",
+      "candidate_options": [
+        "April 14th",
+        "April 21st",
+        "April 28th",
+        "April 7th"
+      ],
+      "distractor_rationale": "same-value-different-target: April 7th is the date Dan got his second Pfizer dose at Walgreens, not the user's appointment date. assistant echo: The assistant summarized April 14th and April 28th in various replies, but April 14th is a superseded initial target and April 28th is a tentative date the user explicitly rejected due to the quarterly presentation conflict.",
+      "expected_answer": "April 21st",
+      "gold_memory_state": "The user's confirmed target date for the second Pfizer COVID booster is April 21st. April 14th was the original target, superseded when the pharmacist corrected the minimum interval. April 28th was tentatively considered for the office clinic but explicitly rejected. April 7th is Dan's appointment date, not the user's.",
+      "judge_rubric": {
+        "must_include": [
+          "April 21st"
+        ],
+        "acceptable_paraphrases": [
+          "April 21"
+        ],
+        "must_not_include": [
+          "April 14th as the answer",
+          "April 28th as the answer",
+          "April 7th as the answer"
+        ],
+        "harmful_extra": [
+          "selecting any date other than April 21st"
+        ],
+        "harmless_extra": [
+          "mentioning CVS on Elm Street",
+          "mentioning late morning"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects April 14th (superseded initial target) or April 28th (tentative, rejected). The recency trap is April 28th: it was the most recently discussed alternative but was explicitly not adopted.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model selects April 7th (Dan's date, same-value-different-target distractor).",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "Actually I just double-checked and the CVS pharmacist told me the minimum interval for this particular booster is 4 weeks, not 3. So the earliest would be March 31st. I'm going to aim for April 21st instead"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "You know what, I just realized April 28th is the same week as my big quarterly presentation at work. After what happened with the Tdap booster side effects before a presentation, there's no way I'm risking that again. I'm sticking with April 21st at CVS"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to book my second Pfizer COVID booster appointment this weekend. Which date should I book it for?",
+      "candidate_options": [
+        "April 14th",
+        "April 21st",
+        "April 28th",
+        "April 7th"
+      ],
+      "distractor_rationale": "same-value-different-target: April 7th is the date Dan got his second Pfizer dose at Walgreens, not the user's appointment date. assistant echo: The assistant summarized April 14th and April 28th in various replies, but April 14th is a superseded initial target and April 28th is a tentative date the user explicitly rejected due to the quarterly presentation conflict.",
+      "expected_answer": "April 21st",
+      "gold_memory_state": "The user's confirmed target date for the second Pfizer COVID booster is April 21st. April 14th was the original target, superseded when the pharmacist corrected the minimum interval. April 28th was tentatively considered for the office clinic but explicitly rejected. April 7th is Dan's appointment date, not the user's.",
+      "judge_rubric": {
+        "must_include": [
+          "April 21st"
+        ],
+        "acceptable_paraphrases": [
+          "April 21"
+        ],
+        "must_not_include": [
+          "April 14th as the answer",
+          "April 28th as the answer",
+          "April 7th as the answer"
+        ],
+        "harmful_extra": [
+          "selecting any date other than April 21st"
+        ],
+        "harmless_extra": [
+          "mentioning CVS on Elm Street",
+          "mentioning late morning"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects April 14th (superseded initial target) or April 28th (tentative, rejected). The recency trap is April 28th: it was the most recently discussed alternative but was explicitly not adopted.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model selects April 7th (Dan's date, same-value-different-target distractor).",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "Actually I just double-checked and the CVS pharmacist told me the minimum interval for this particular booster is 4 weeks, not 3. So the earliest would be March 31st. I'm going to aim for April 21st instead"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "You know what, I just realized April 28th is the same week as my big quarterly presentation at work. After what happened with the Tdap booster side effects before a presentation, there's no way I'm risking that again. I'm sticking with April 21st at CVS"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I want to draft a quick text message to my sister Laura letting her know when I'm getting my second COVID booster, where I'm going, and when I plan to start the Shingrix series afterward. Can you write that for me? I also want to mention my preferred appointment time so she knows when I'll be unavailable.",
+      "application_probe_type": "multi_hop_derivation",
+      "expected_answer": "A text message to Laura stating: the second Pfizer COVID booster is scheduled for April 21st at the CVS on Elm Street, with a late morning appointment around 10–11 AM, and the first Shingrix dose is planned for early May after the booster settles.",
+      "gold_memory_state": "Second Pfizer COVID booster date: April 21st (confirmed). Location: CVS on Elm Street. Appointment time preference: late morning (10–11 AM). First Shingrix dose: early May (confirmed). April 14th and April 28th are superseded/rejected and should not appear as the scheduled date.",
+      "judge_rubric": {
+        "must_include": [
+          "April 21st",
+          "CVS on Elm Street",
+          "late morning or 10-11 AM",
+          "early May for Shingrix",
+          "Laura as the recipient"
+        ],
+        "acceptable_paraphrases": [
+          "around 10 or 11 in the morning",
+          "Shingrix starting in early May",
+          "CVS on Elm"
+        ],
+        "must_not_include": [
+          "April 14th as the booster date",
+          "April 28th as the booster date"
+        ],
+        "harmful_extra": [
+          "using April 14th or April 28th as the scheduled date",
+          "telling Laura to get her COVID booster when the user only mentioned Tdap for Laura"
+        ],
+        "harmless_extra": [
+          "mentioning Pfizer specifically",
+          "mentioning side-effect spacing rationale",
+          "mentioning Dr. Levine's Shingrix recommendation"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the draft message uses April 14th or April 28th as the booster appointment date.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the message omits the Shingrix plan or the appointment time preference.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's confirmed second Pfizer COVID booster date is April 21st.",
+        "Fact 2: The location is CVS on Elm Street.",
+        "Fact 3: The user prefers late morning appointments, around 10 or 11 AM.",
+        "Fact 4: The user plans to start the Shingrix series in early May, after the booster settles.",
+        "Fact 5: The recipient is Laura, the user's sister.",
+        "Inference: The text message must combine all four scheduling facts into a coherent note addressed to Laura, using April 21st (not the superseded April 14th or rejected April 28th) as the booster date."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "Actually I just double-checked and the CVS pharmacist told me the minimum interval for this particular booster is 4 weeks, not 3. So the earliest would be March 31st. I'm going to aim for April 21st instead"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I always book my vaccine appointments for late morning, like 10 or 11 AM"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I'm planning to get the Shingrix first dose in early May, after the second COVID booster has settled. Dr. Levine recommended it since I'm over 40 now"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "You know what, I just realized April 28th is the same week as my big quarterly presentation at work. After what happened with the Tdap booster side effects before a presentation, there's no way I'm risking that again. I'm sticking with April 21st at CVS"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I want to draft a quick text message to my sister Laura letting her know when I'm getting my second COVID booster, where I'm going, and when I plan to start the Shingrix series afterward. Can you write that for me? I also want to mention my preferred appointment time so she knows when I'll be unavailable.",
+      "application_probe_type": "multi_hop_derivation",
+      "expected_answer": "A text message to Laura stating: the second Pfizer COVID booster is scheduled for April 21st at the CVS on Elm Street, with a late morning appointment around 10–11 AM, and the first Shingrix dose is planned for early May after the booster settles.",
+      "gold_memory_state": "Second Pfizer COVID booster date: April 21st (confirmed). Location: CVS on Elm Street. Appointment time preference: late morning (10–11 AM). First Shingrix dose: early May (confirmed). April 14th and April 28th are superseded/rejected and should not appear as the scheduled date.",
+      "judge_rubric": {
+        "must_include": [
+          "April 21st",
+          "CVS on Elm Street",
+          "late morning or 10-11 AM",
+          "early May for Shingrix",
+          "Laura as the recipient"
+        ],
+        "acceptable_paraphrases": [
+          "around 10 or 11 in the morning",
+          "Shingrix starting in early May",
+          "CVS on Elm"
+        ],
+        "must_not_include": [
+          "April 14th as the booster date",
+          "April 28th as the booster date"
+        ],
+        "harmful_extra": [
+          "using April 14th or April 28th as the scheduled date",
+          "telling Laura to get her COVID booster when the user only mentioned Tdap for Laura"
+        ],
+        "harmless_extra": [
+          "mentioning Pfizer specifically",
+          "mentioning side-effect spacing rationale",
+          "mentioning Dr. Levine's Shingrix recommendation"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the draft message uses April 14th or April 28th as the booster appointment date.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the message omits the Shingrix plan or the appointment time preference.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's confirmed second Pfizer COVID booster date is April 21st.",
+        "Fact 2: The location is CVS on Elm Street.",
+        "Fact 3: The user prefers late morning appointments, around 10 or 11 AM.",
+        "Fact 4: The user plans to start the Shingrix series in early May, after the booster settles.",
+        "Fact 5: The recipient is Laura, the user's sister.",
+        "Inference: The text message must combine all four scheduling facts into a coherent note addressed to Laura, using April 21st (not the superseded April 14th or rejected April 28th) as the booster date."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "Actually I just double-checked and the CVS pharmacist told me the minimum interval for this particular booster is 4 weeks, not 3. So the earliest would be March 31st. I'm going to aim for April 21st instead"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I always book my vaccine appointments for late morning, like 10 or 11 AM"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I'm planning to get the Shingrix first dose in early May, after the second COVID booster has settled. Dr. Levine recommended it since I'm over 40 now"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "You know what, I just realized April 28th is the same week as my big quarterly presentation at work. After what happened with the Tdap booster side effects before a presentation, there's no way I'm risking that again. I'm sticking with April 21st at CVS"
+        }
+      ]
+    }
+  ]
+}

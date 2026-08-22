@@ -1,0 +1,808 @@
+{
+  "target_fact": "Hozier concert ticket price per ticket, undergoing multiple corrections across the conversation",
+  "operation_type": "Update",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "hozier_ticket_price",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I paid $187 each for the Hozier tickets"
+      },
+      "target": {
+        "target_id": "hozier_ticket_price_each",
+        "target_name": "Hozier concert ticket price per ticket"
+      },
+      "old_value": null,
+      "new_value": "$187",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I paid $187 each for the Hozier tickets"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "hozier_ticket_price",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I went back and checked the confirmation email and it was actually $179 each, not $187"
+      },
+      "target": {
+        "target_id": "hozier_ticket_price_each",
+        "target_name": "Hozier concert ticket price per ticket"
+      },
+      "old_value": "$187",
+      "new_value": "$179",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I went back and checked the confirmation email and it was actually $179 each, not $187"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "hozier_ticket_price",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I just realized that $179 was the base price before the service fee. With the fee it was $192 per ticket"
+      },
+      "target": {
+        "target_id": "hozier_ticket_price_each",
+        "target_name": "Hozier concert ticket price per ticket"
+      },
+      "old_value": "$179",
+      "new_value": "$192",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I just realized that $179 was the base price before the service fee. With the fee it was $192 per ticket"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "hozier_ticket_price",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "Dana just texted me saying the Ticketmaster app shows $198 per ticket for our order. She thinks there was an additional venue surcharge"
+      },
+      "target": {
+        "target_id": "hozier_ticket_price_each",
+        "target_name": "Hozier concert ticket price per ticket"
+      },
+      "old_value": "$192",
+      "new_value": "$198",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Dana just texted me saying the Ticketmaster app shows $198 per ticket for our order. She thinks there was an additional venue surcharge"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "hozier_ticket_price",
+      "chain_step": 5,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 7,
+        "quote": "I just pulled up my bank statement and the charge was exactly $384 total for two tickets. So it's $192 each after all"
+      },
+      "target": {
+        "target_id": "hozier_ticket_price_each",
+        "target_name": "Hozier concert ticket price per ticket"
+      },
+      "old_value": "$198",
+      "new_value": "$192",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I just pulled up my bank statement and the charge was exactly $384 total for two tickets. So it's $192 each after all"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I bought a single ticket for the Ari Aster A24 film at Alamo Drafthouse in Crystal City. The screening is May 17 at 7:30 PM"
+      },
+      "target": {
+        "target_id": "ari_aster_screening",
+        "target_name": "Ari Aster A24 film screening details"
+      },
+      "old_value": null,
+      "new_value": "Single ticket, Alamo Drafthouse Crystal City, May 17, 7:30 PM",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I bought a single ticket for the Ari Aster A24 film at Alamo Drafthouse in Crystal City. The screening is May 17 at 7:30 PM"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish Hozier ticket price and concert details; first correction from $187 to $179",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to keep track of some upcoming events I've got tickets for. First up — I paid $187 each for the Hozier tickets. Two of them. The show is May 10 at the Anthem in DC, floor seats in section GA2. I'm going with my friend Dana."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it! I've noted your Hozier concert details: two floor tickets in section GA2 at the Anthem in DC on May 10, at $187 each, so $374 total. You're attending with your friend Dana. That sounds like a fantastic show — floor seats at the Anthem should be an incredible experience. Would you like me to set any reminders closer to the date, or is there anything else about the event you'd like me to track?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, Dana has been wanting to see Hozier live for years, so this is kind of a big deal for her. Also I should mention that the Anthem is a pretty large venue — I think it holds around 6,000 people. I like that it still manages to feel somewhat intimate despite the size, especially on the floor level."
+        },
+        {
+          "role": "assistant",
+          "content": "That's really thoughtful of you to make that happen for Dana — seeing an artist you've been wanting to catch live for years is always a special experience. And you're right about the Anthem; it's one of those venues that balances scale with a surprisingly good atmosphere, particularly on the floor. The sightlines from GA2 should be excellent. I'll keep the Anthem capacity note in mind too. Anything else about the show or other upcoming events you want me to track?"
+        },
+        {
+          "role": "user",
+          "content": "Actually hold on — I need to correct the price. I went back and checked the confirmation email and it was actually $179 each, not $187. So the total was $358 for both tickets. I must have been thinking of a different purchase when I said $187. Sorry about that."
+        },
+        {
+          "role": "assistant",
+          "content": "No worries at all — thanks for double-checking! I've updated the Hozier ticket price to $179 each, bringing the total to $358 for both tickets. It's always good to verify against the confirmation email. So to recap: two floor tickets in section GA2 at the Anthem in DC, May 10, $179 each, $358 total, attending with Dana. Everything else about the show stays the same. Let me know if there's anything else you'd like to add or correct."
+        },
+        {
+          "role": "user",
+          "content": "Great, thanks for updating that. I also wanted to mention that I looked into getting tickets for the Wicked IMAX re-release but ended up not buying any. The only available showings were crowded weekend evening slots and that's just not my thing. I'd rather wait for a quieter Tuesday afternoon screening if they add one."
+        },
+        {
+          "role": "assistant",
+          "content": "Totally understandable — crowded weekend evening screenings can really take away from the experience, especially for something like an IMAX showing where you want to be fully immersed. Waiting for a quieter Tuesday afternoon slot sounds like a smart call if they open those up. I'll note that you passed on the Wicked IMAX re-release for now but might revisit if a low-crowd weekday showing becomes available. In the meantime, your Hozier concert on May 10 is locked in at the corrected price. Anything else coming up on your events calendar?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Introduce Ari Aster screening as control target; update Hozier price to $192 with service fee; discuss Bon Iver interest",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Yeah, there's another one. I bought a single ticket for the Ari Aster A24 film at Alamo Drafthouse in Crystal City. The screening is May 17 at 7:30 PM. I like that particular Alamo location because it's never too packed on weekday evenings. Saturday nights there stress me out a bit."
+        },
+        {
+          "role": "assistant",
+          "content": "Nice choice! I've noted the Ari Aster A24 film screening: one ticket at the Alamo Drafthouse in Crystal City on May 17 at 7:30 PM. That's a solid pick — weekday evenings at that location should give you the low-key vibe you prefer. Ari Aster's work is always an experience worth seeing on the big screen, and the Alamo's food-and-drink service makes it even better. So between the Hozier concert on May 10 and this screening on May 17, you've got a packed couple of weeks. Anything else?"
+        },
+        {
+          "role": "user",
+          "content": "Oh wait — about the Hozier tickets. I just realized that $179 was the base price before the service fee. With the fee it was $192 per ticket. So the actual total I paid was $384 for two tickets. I should have looked at the full charge rather than just the face value."
+        },
+        {
+          "role": "assistant",
+          "content": "Ah, good catch! Service fees always sneak up on you. I've updated the Hozier ticket price to $192 each, making the total $384 for both tickets. That's the all-in price including the service fee. So the current tally is: Hozier at the Anthem on May 10, two floor tickets in GA2, $192 each, $384 total, with Dana. And the Ari Aster screening at Alamo Drafthouse Crystal City on May 17 at 7:30 PM. Want me to keep tracking anything else?"
+        },
+        {
+          "role": "user",
+          "content": "Actually yes — I saw that Bon Iver is playing at Merriweather Post Pavilion on July 19. Lawn seats are $65. I haven't bought tickets yet, I'm still going back and forth on it. Dana said she might be interested too but she'll confirm by end of May."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted! Bon Iver at Merriweather Post Pavilion on July 19, lawn seats at $65 — that's on your radar but not purchased yet. And Dana is a potential plus-one, pending her confirmation by end of May. Merriweather is a great outdoor venue for a summer show, and Bon Iver's sound would be perfect for a lawn setting. I'll keep this flagged as a tentative plan. Between the confirmed Hozier show, the Ari Aster screening, and this possible Bon Iver outing, you've got a solid lineup shaping up. Let me know when Dana decides or if you pull the trigger on those lawn seats."
+        },
+        {
+          "role": "user",
+          "content": "Thanks. I was also pretty frustrated last month when I tried to get tickets for the Knocked Loose show at the 9:30 Club on April 12 and they sold out in about four minutes. I had the page open and everything and just got stuck in the queue. That kind of ruined my afternoon honestly.\n\nHa, yeah, maybe next time. Oh one more thing — I had been thinking about going to the Ghibli Fest screening of Spirited Away on June 8 at AMC Tysons, but I'm going to skip it. The only times are 1 PM and 7 PM on a Saturday, and both are going to be packed. Not really my scene."
+        },
+        {
+          "role": "assistant",
+          "content": "Ugh, that's the worst — especially when you're right there, page loaded, ready to go, and the queue just doesn't move fast enough. Four minutes for a sellout at the 9:30 Club is brutal but not surprising for a band like Knocked Loose; they've got a really dedicated following. It's one of those situations where you almost need bots on your side, which defeats the whole purpose. Sorry that messed up your day. At least you've got some great events already locked in to look forward to. If Knocked Loose announces another DC-area date, I can help you strategize the ticket grab.\n\nThat makes sense — a Saturday Ghibli Fest screening at a major AMC is going to draw big crowds, especially for Spirited Away. Given your preference for quieter, less packed showings, skipping this one seems like the right call. If they ever do a midweek encore screening at a smaller venue, that would probably be more your speed. So to summarize your active plans: Hozier on May 10, Ari Aster on May 17, and Bon Iver on July 19 as a maybe. The Spirited Away and Wicked screenings are both passes for now. Sound about right?"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Tentative price from Dana ($198); adversarial injection of old $187 value; confirmed revert to $192 via bank statement",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, quick question — can you remind me what I've got on the books for May? I want to make sure I'm not double-booking anything with work travel that month. I know there were at least two things."
+        },
+        {
+          "role": "assistant",
+          "content": "Sure! Here's what you have confirmed for May: First, the Hozier concert at the Anthem in DC on May 10 — two floor tickets in section GA2 at $192 each ($384 total), attending with Dana. Second, the Ari Aster A24 film screening at Alamo Drafthouse in Crystal City on May 17 at 7:30 PM — single ticket. You also have the Bon Iver show at Merriweather Post Pavilion on July 19 on your radar, but that's not purchased yet and Dana hasn't confirmed. For May specifically, it's just those two events. Want me to help you map those against your work schedule?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, May 10 is a Saturday so that should be fine. And May 17 is also a Saturday — wait, no. Let me check. Actually May 17 is a Saturday too. That works because my work travel is mid-week that month, the 12th through the 15th. So I'll be back in time for both weekend events."
+        },
+        {
+          "role": "assistant",
+          "content": "Perfect timing then! Your work travel from May 12 through 15 falls neatly between both events. You'll be back well before the Ari Aster screening on Saturday the 17th, and the Hozier show on Saturday the 10th happens before you even leave. No conflicts at all. That's a nice setup — concert on the 10th, travel Monday through Thursday, then the film on the 17th. You might want to grab dinner before the 7:30 PM Alamo screening since you'll have the whole Saturday afternoon free after getting back from your trip."
+        },
+        {
+          "role": "user",
+          "content": "Dana just texted me saying the Ticketmaster app shows $198 per ticket for our order. She thinks there was an additional venue surcharge. If that's right then the total would be $396 for two tickets instead of $384. I haven't verified it myself yet though."
+        },
+        {
+          "role": "assistant",
+          "content": "Interesting — a $6 per ticket venue surcharge would bring it to $198 each and $396 total. That's not uncommon for larger venues like the Anthem; sometimes those surcharges show up as a separate line item in the Ticketmaster breakdown that's easy to miss on the initial confirmation. It might be worth pulling up your own Ticketmaster account or your bank statement to verify. Right now I had $192 each on file from your earlier correction. Let me know what you find when you check, and I'll update accordingly. In the meantime, I also noticed that Dana's confirmation deadline for the Bon Iver show is coming up at the end of this month."
+        },
+        {
+          "role": "user",
+          "content": "Good point about Dana and Bon Iver. I'll nudge her on that. Also, funny thing — I was scrolling through my old texts and found a message from March where I told my brother the Hozier tickets were $187 each. That was before I checked the confirmation email. It's been a whole saga keeping track of this price.\n\nOkay I just pulled up my bank statement and the charge was exactly $384 total for two tickets. So it's $192 each after all. Dana must have been looking at a different listing or a resale price or something. The $198 isn't right for our order."
+        },
+        {
+          "role": "assistant",
+          "content": "Ha, it really has been a journey with this ticket price! From the $187 you initially mentioned to your brother, to the $179 base price from the confirmation email, then up to $192 with the service fee, and now Dana's app showing $198 with a possible venue surcharge. That's four different numbers floating around for the same pair of tickets. Your bank statement should be the definitive source since that's the actual amount charged. Once you confirm that, we can lock in the final number and put this pricing mystery to rest. In the meantime, don't forget to check in with Dana about Bon Iver before the end of May.\n\nMystery solved! The bank statement is the ultimate source of truth, and $384 total — $192 per ticket — is the confirmed final price. Dana might have been seeing a resale listing or a different seating tier on the Ticketmaster app. So your Hozier concert details are now fully locked in: two floor tickets in section GA2 at the Anthem in DC on May 10, $192 each, $384 total, attending with Dana. The Ari Aster screening at Alamo Drafthouse Crystal City on May 17 at 7:30 PM is also set. And you'll be following up with Dana about the Bon Iver show before end of May. Sounds like you've got a great lineup ahead!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations, I mentioned the price of my Hozier tickets several times and the number kept shifting. Can you walk me through what I said about the ticket price at different points?",
+      "expected_answer": "You initially said the Hozier tickets were $187 each, then checked your confirmation email and said it was actually $179 each, then realized $179 was the base price before the service fee and said the all-in price was $192 per ticket. Your friend Dana then reported seeing $198 per ticket on the Ticketmaster app, but you pulled up your bank statement and confirmed the charge was $384 total for two tickets, which is $192 each.",
+      "gold_memory_state": "Hozier ticket price per ticket: $192 (confirmed via bank statement). Previous values $187, $179, and $198 are all superseded.",
+      "judge_rubric": {
+        "must_include": [
+          "$187",
+          "$179",
+          "$192",
+          "$198",
+          "bank statement"
+        ],
+        "acceptable_paraphrases": [
+          "confirmation email",
+          "service fee",
+          "Dana's report"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the final price is anything other than $192"
+        ],
+        "harmless_extra": [
+          "mentioning the $384 total",
+          "mentioning Dana saw a different price on Ticketmaster"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model presents $187, $179, or $198 as the current price rather than as historical values.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I paid $187 each for the Hozier tickets"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I went back and checked the confirmation email and it was actually $179 each, not $187"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I just realized that $179 was the base price before the service fee. With the fee it was $192 per ticket"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Dana just texted me saying the Ticketmaster app shows $198 per ticket for our order. She thinks there was an additional venue surcharge"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I just pulled up my bank statement and the charge was exactly $384 total for two tickets. So it's $192 each after all"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations, I mentioned the price of my Hozier tickets several times and the number kept shifting. Can you walk me through what I said about the ticket price at different points?",
+      "expected_answer": "You initially said the Hozier tickets were $187 each, then checked your confirmation email and said it was actually $179 each, then realized $179 was the base price before the service fee and said the all-in price was $192 per ticket. Your friend Dana then reported seeing $198 per ticket on the Ticketmaster app, but you pulled up your bank statement and confirmed the charge was $384 total for two tickets, which is $192 each.",
+      "gold_memory_state": "Hozier ticket price per ticket: $192 (confirmed via bank statement). Previous values $187, $179, and $198 are all superseded.",
+      "judge_rubric": {
+        "must_include": [
+          "$187",
+          "$179",
+          "$192",
+          "$198",
+          "bank statement"
+        ],
+        "acceptable_paraphrases": [
+          "confirmation email",
+          "service fee",
+          "Dana's report"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the final price is anything other than $192"
+        ],
+        "harmless_extra": [
+          "mentioning the $384 total",
+          "mentioning Dana saw a different price on Ticketmaster"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model presents $187, $179, or $198 as the current price rather than as historical values.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I paid $187 each for the Hozier tickets"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I went back and checked the confirmation email and it was actually $179 each, not $187"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I just realized that $179 was the base price before the service fee. With the fee it was $192 per ticket"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Dana just texted me saying the Ticketmaster app shows $198 per ticket for our order. She thinks there was an additional venue surcharge"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I just pulled up my bank statement and the charge was exactly $384 total for two tickets. So it's $192 each after all"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've mentioned ticket purchases for different events. When I kept going back and forth on the per-ticket dollar amount, which event's pricing was I adjusting? Did the pricing for any of my other ticketed events get affected by those changes?",
+      "expected_answer": "The per-ticket price that kept changing was for the Hozier concert at the Anthem on May 10. The Ari Aster film screening at Alamo Drafthouse Crystal City was a separate purchase and its details were not affected by the Hozier price adjustments.",
+      "gold_memory_state": "Hozier ticket price: $192 each (confirmed). Ari Aster screening: single ticket, Alamo Drafthouse Crystal City, May 17, 7:30 PM (unchanged, separate record).",
+      "judge_rubric": {
+        "must_include": [
+          "Hozier",
+          "concert or show at the Anthem"
+        ],
+        "acceptable_paraphrases": [
+          "Hozier show",
+          "Hozier event"
+        ],
+        "must_not_include": [
+          "Ari Aster price changed",
+          "screening price was adjusted"
+        ],
+        "harmful_extra": [
+          "claiming the Ari Aster screening price was also corrected",
+          "merging the two events into a single record"
+        ],
+        "harmless_extra": [
+          "mentioning the Bon Iver show as a tentative plan that was also unaffected"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model says the Ari Aster screening was part of the price corrections.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I paid $187 each for the Hozier tickets"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I bought a single ticket for the Ari Aster A24 film at Alamo Drafthouse in Crystal City. The screening is May 17 at 7:30 PM"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I just pulled up my bank statement and the charge was exactly $384 total for two tickets. So it's $192 each after all"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've mentioned ticket purchases for different events. When I kept going back and forth on the per-ticket dollar amount, which event's pricing was I adjusting? Did the pricing for any of my other ticketed events get affected by those changes?",
+      "expected_answer": "The per-ticket price that kept changing was for the Hozier concert at the Anthem on May 10. The Ari Aster film screening at Alamo Drafthouse Crystal City was a separate purchase and its details were not affected by the Hozier price adjustments.",
+      "gold_memory_state": "Hozier ticket price: $192 each (confirmed). Ari Aster screening: single ticket, Alamo Drafthouse Crystal City, May 17, 7:30 PM (unchanged, separate record).",
+      "judge_rubric": {
+        "must_include": [
+          "Hozier",
+          "concert or show at the Anthem"
+        ],
+        "acceptable_paraphrases": [
+          "Hozier show",
+          "Hozier event"
+        ],
+        "must_not_include": [
+          "Ari Aster price changed",
+          "screening price was adjusted"
+        ],
+        "harmful_extra": [
+          "claiming the Ari Aster screening price was also corrected",
+          "merging the two events into a single record"
+        ],
+        "harmless_extra": [
+          "mentioning the Bon Iver show as a tentative plan that was also unaffected"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model says the Ari Aster screening was part of the price corrections.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I paid $187 each for the Hozier tickets"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I bought a single ticket for the Ari Aster A24 film at Alamo Drafthouse in Crystal City. The screening is May 17 at 7:30 PM"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I just pulled up my bank statement and the charge was exactly $384 total for two tickets. So it's $192 each after all"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to settle up with Dana for her share of the Hozier tickets. Which of these per-ticket amounts should I use to figure out what she owes me?",
+      "candidate_options": [
+        "$192",
+        "$198",
+        "$187",
+        "$179"
+      ],
+      "expected_answer": "$192",
+      "gold_memory_state": "Hozier ticket price per ticket: $192 (confirmed via bank statement, $384 total for two tickets).",
+      "judge_rubric": {
+        "must_include": [
+          "$192"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "$198 is the correct price",
+          "$187 is the correct price",
+          "$179 is the correct price"
+        ],
+        "harmful_extra": [
+          "selecting any value other than $192"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: $198 came from Dana's Ticketmaster app report, which was an unverified third-party claim about the same order and was later disproven by the bank statement. assistant echo: $187 was the user's initial self-report that was corrected after checking the confirmation email; the assistant echoed this value in its first response. $179 was the base price before the service fee, also superseded.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects $187, $179, or $198 instead of $192. $198 is the recency-trap tentative value from Dana's unverified report. $187 is the earliest stale value. $179 is the intermediate stale base price.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I just pulled up my bank statement and the charge was exactly $384 total for two tickets. So it's $192 each after all"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to settle up with Dana for her share of the Hozier tickets. Which of these per-ticket amounts should I use to figure out what she owes me?",
+      "candidate_options": [
+        "$192",
+        "$198",
+        "$187",
+        "$179"
+      ],
+      "expected_answer": "$192",
+      "gold_memory_state": "Hozier ticket price per ticket: $192 (confirmed via bank statement, $384 total for two tickets).",
+      "judge_rubric": {
+        "must_include": [
+          "$192"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "$198 is the correct price",
+          "$187 is the correct price",
+          "$179 is the correct price"
+        ],
+        "harmful_extra": [
+          "selecting any value other than $192"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: $198 came from Dana's Ticketmaster app report, which was an unverified third-party claim about the same order and was later disproven by the bank statement. assistant echo: $187 was the user's initial self-report that was corrected after checking the confirmation email; the assistant echoed this value in its first response. $179 was the base price before the service fee, also superseded.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects $187, $179, or $198 instead of $192. $198 is the recency-trap tentative value from Dana's unverified report. $187 is the earliest stale value. $179 is the intermediate stale base price.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I just pulled up my bank statement and the charge was exactly $384 total for two tickets. So it's $192 each after all"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "Dana and I are splitting the Hozier tickets evenly, and I also need to budget for my Ari Aster screening that same month. Can you draft a quick May entertainment expense summary showing what I owe or am owed for the Hozier split plus my solo screening cost, and give me the grand total I'm personally spending on ticketed events in May?",
+      "expected_answer": "The Hozier tickets cost $192 each, $384 total for two. If you split evenly with Dana, she owes you $192 for her ticket, meaning your net personal cost for Hozier is $192. You also have the Ari Aster screening at Alamo Drafthouse Crystal City on May 17 as a single ticket. Combining your $192 Hozier share with the Ari Aster ticket gives your total May entertainment spend. Since the Ari Aster ticket price was not specified, the confirmed portion is $192 for Hozier plus whatever the screening ticket cost.",
+      "gold_memory_state": "Hozier ticket price: $192 each, $384 total for two tickets (confirmed). Ari Aster screening: single ticket, Alamo Drafthouse Crystal City, May 17, 7:30 PM (no price provided). Stale Hozier values $187, $179, and tentative $198 are all superseded.",
+      "judge_rubric": {
+        "must_include": [
+          "$192 per Hozier ticket",
+          "Dana owes $192 or the split results in $192 personal Hozier cost",
+          "Ari Aster screening as a separate May expense"
+        ],
+        "acceptable_paraphrases": [
+          "$192 each for Hozier",
+          "your half is $192",
+          "Ari Aster film ticket"
+        ],
+        "must_not_include": [
+          "$187 as the Hozier price",
+          "$179 as the Hozier price",
+          "$198 as the Hozier price"
+        ],
+        "harmful_extra": [
+          "using any stale or tentative Hozier price in the calculation",
+          "inventing a price for the Ari Aster ticket"
+        ],
+        "harmless_extra": [
+          "noting that the Ari Aster ticket price was not mentioned",
+          "mentioning the Bon Iver show as a possible future expense"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses $187, $179, or $198 instead of $192 for the Hozier calculation.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model omits the Ari Aster screening from the May summary or conflates it with the Hozier purchase.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "application_probe_type": "multi_hop_derivation",
+      "gold_reasoning_chain": [
+        "Fact 1: Hozier tickets are $192 each, two tickets purchased, $384 total.",
+        "Fact 2: The user is attending the Hozier concert with Dana and they are splitting evenly.",
+        "Fact 3: The user bought a single ticket for the Ari Aster A24 screening at Alamo Drafthouse Crystal City on May 17.",
+        "Inference: An even split of $384 means Dana owes $192 and the user's net Hozier cost is $192.",
+        "Inference: The user's total confirmed May entertainment spend is $192 (Hozier share) plus the Ari Aster ticket cost, which was never stated, so only the $192 Hozier portion can be confirmed."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I just pulled up my bank statement and the charge was exactly $384 total for two tickets. So it's $192 each after all"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I paid $187 each for the Hozier tickets. Two of them. The show is May 10 at the Anthem in DC, floor seats in section GA2. I'm going with my friend Dana."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I bought a single ticket for the Ari Aster A24 film at Alamo Drafthouse in Crystal City. The screening is May 17 at 7:30 PM"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "Dana and I are splitting the Hozier tickets evenly, and I also need to budget for my Ari Aster screening that same month. Can you draft a quick May entertainment expense summary showing what I owe or am owed for the Hozier split plus my solo screening cost, and give me the grand total I'm personally spending on ticketed events in May?",
+      "expected_answer": "The Hozier tickets cost $192 each, $384 total for two. If you split evenly with Dana, she owes you $192 for her ticket, meaning your net personal cost for Hozier is $192. You also have the Ari Aster screening at Alamo Drafthouse Crystal City on May 17 as a single ticket. Combining your $192 Hozier share with the Ari Aster ticket gives your total May entertainment spend. Since the Ari Aster ticket price was not specified, the confirmed portion is $192 for Hozier plus whatever the screening ticket cost.",
+      "gold_memory_state": "Hozier ticket price: $192 each, $384 total for two tickets (confirmed). Ari Aster screening: single ticket, Alamo Drafthouse Crystal City, May 17, 7:30 PM (no price provided). Stale Hozier values $187, $179, and tentative $198 are all superseded.",
+      "judge_rubric": {
+        "must_include": [
+          "$192 per Hozier ticket",
+          "Dana owes $192 or the split results in $192 personal Hozier cost",
+          "Ari Aster screening as a separate May expense"
+        ],
+        "acceptable_paraphrases": [
+          "$192 each for Hozier",
+          "your half is $192",
+          "Ari Aster film ticket"
+        ],
+        "must_not_include": [
+          "$187 as the Hozier price",
+          "$179 as the Hozier price",
+          "$198 as the Hozier price"
+        ],
+        "harmful_extra": [
+          "using any stale or tentative Hozier price in the calculation",
+          "inventing a price for the Ari Aster ticket"
+        ],
+        "harmless_extra": [
+          "noting that the Ari Aster ticket price was not mentioned",
+          "mentioning the Bon Iver show as a possible future expense"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses $187, $179, or $198 instead of $192 for the Hozier calculation.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model omits the Ari Aster screening from the May summary or conflates it with the Hozier purchase.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "application_probe_type": "multi_hop_derivation",
+      "gold_reasoning_chain": [
+        "Fact 1: Hozier tickets are $192 each, two tickets purchased, $384 total.",
+        "Fact 2: The user is attending the Hozier concert with Dana and they are splitting evenly.",
+        "Fact 3: The user bought a single ticket for the Ari Aster A24 screening at Alamo Drafthouse Crystal City on May 17.",
+        "Inference: An even split of $384 means Dana owes $192 and the user's net Hozier cost is $192.",
+        "Inference: The user's total confirmed May entertainment spend is $192 (Hozier share) plus the Ari Aster ticket cost, which was never stated, so only the $192 Hozier portion can be confirmed."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I just pulled up my bank statement and the charge was exactly $384 total for two tickets. So it's $192 each after all"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I paid $187 each for the Hozier tickets. Two of them. The show is May 10 at the Anthem in DC, floor seats in section GA2. I'm going with my friend Dana."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I bought a single ticket for the Ari Aster A24 film at Alamo Drafthouse in Crystal City. The screening is May 17 at 7:30 PM"
+        }
+      ]
+    }
+  ]
+}

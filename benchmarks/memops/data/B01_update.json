@@ -1,0 +1,854 @@
+{
+  "target_fact": "Darren Liu's job offer salary",
+  "operation_type": "Update",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "darren_salary",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "Darren told me the offer from that Seattle company is for $145K a year"
+      },
+      "target": {
+        "target_id": "darren_seattle_salary",
+        "target_name": "Darren Liu's Seattle job offer salary"
+      },
+      "old_value": null,
+      "new_value": "$145K",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Darren told me the offer from that Seattle company is for $145K a year"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "darren_salary",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "Darren corrected me — the salary is actually $152K, not $145K. He said I had the wrong number in my head"
+      },
+      "target": {
+        "target_id": "darren_seattle_salary",
+        "target_name": "Darren Liu's Seattle job offer salary"
+      },
+      "old_value": "$145K",
+      "new_value": "$152K",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Darren corrected me — the salary is actually $152K, not $145K. He said I had the wrong number in my head"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "darren_salary",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "Darren just told me the company revised the offer down to $148K because they restructured the role slightly"
+      },
+      "target": {
+        "target_id": "darren_seattle_salary",
+        "target_name": "Darren Liu's Seattle job offer salary"
+      },
+      "old_value": "$152K",
+      "new_value": "$148K",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Darren just told me the company revised the offer down to $148K because they restructured the role slightly"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "darren_salary",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "Darren's recruiter emailed him saying they're going to bump the offer back to $155K once the new budget cycle starts next month"
+      },
+      "target": {
+        "target_id": "darren_seattle_salary",
+        "target_name": "Darren Liu's Seattle job offer salary"
+      },
+      "old_value": "$148K",
+      "new_value": "$155K",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Darren's recruiter emailed him saying they're going to bump the offer back to $155K once the new budget cycle starts next month"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "Darren's birthday is October 17th — I always want to make sure I don't forget that"
+      },
+      "target": {
+        "target_id": "darren_birthday",
+        "target_name": "Darren Liu's birthday"
+      },
+      "old_value": null,
+      "new_value": "October 17th",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Darren's birthday is October 17th — I always want to make sure I don't forget that"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "Darren said he'd make his final decision about the Seattle job by the end of May"
+      },
+      "target": {
+        "target_id": "darren_decision_deadline",
+        "target_name": "Darren Liu's Seattle job decision deadline"
+      },
+      "old_value": null,
+      "new_value": "end of May",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Darren said he'd make his final decision about the Seattle job by the end of May"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish salary fact, birthday, and first correction",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to keep track of some stuff about my best friend Darren — Darren Liu. We've been close since college. He recently got a job offer in Seattle and I want to remember the details. Darren told me the offer from that Seattle company is for $145K a year. It's a senior DevOps role at some mid-size company up there. Can you help me keep notes on this?"
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! I'll keep track of everything about Darren Liu and his Seattle job situation. So far I've noted that he's your best friend since college, and he has a senior DevOps job offer from a mid-size company in Seattle at $145K per year. That's a solid offer for a DevOps role. Feel free to share any other details you want me to remember — whether it's about the job, his timeline for deciding, or anything else related to Darren. I'll make sure everything stays organized for you."
+        },
+        {
+          "role": "user",
+          "content": "Thanks, yeah. One thing I definitely need you to hold onto — Darren's birthday is October 17th — I always want to make sure I don't forget that. We usually do something low-key together, like grab ramen at this spot on Hawthorne in Portland. That's been our tradition for a few years now. I'd hate to blank on the date this year especially if he ends up moving."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — Darren Liu's birthday is October 17th. I'll make sure that's noted prominently so you don't lose track of it, especially with everything in flux right now. And I love that you two have the ramen tradition on Hawthorne — those kinds of low-key birthday hangouts sound really meaningful. If he does end up moving to Seattle, maybe you could plan something special for October 17th this year while he's still nearby, or even make a trip up to see him. Either way, I've locked in the date for you."
+        },
+        {
+          "role": "user",
+          "content": "Good call on that. Oh wait — I need to fix something. Darren corrected me — the salary is actually $152K, not $145K. He said I had the wrong number in my head. I'd been telling people the wrong figure for like two weeks apparently. So please update that. The offer is $152K for the senior DevOps position in Seattle."
+        },
+        {
+          "role": "assistant",
+          "content": "Updated! Darren Liu's Seattle job offer salary is now recorded as $152K, not $145K. Easy mistake to make, especially when you're processing a lot of information about a friend's big life change. So the current picture is: senior DevOps role at a mid-size Seattle company, $152K annual salary. I'll keep that as the accurate figure going forward. Let me know if any other details come in — like benefits, start date, or anything about his decision timeline. I'm here to keep it all straight for you."
+        },
+        {
+          "role": "user",
+          "content": "Appreciate it. Also, Darren mentioned his older brother Kevin just got promoted to VP at some finance firm in Chicago. Darren seemed proud but also kind of competitive about it — that's very him. I think the Seattle offer is partly Darren wanting to level up his own career. Anyway, just wanted to mention that context. Kevin's doing well in Chicago."
+        },
+        {
+          "role": "assistant",
+          "content": "That's great context — Darren's older brother Kevin was promoted to VP at a finance firm in Chicago. It sounds like there might be some sibling rivalry fueling Darren's ambition, which is pretty relatable honestly. The Seattle opportunity at $152K could feel like his own version of a big career leap, especially with Kevin hitting VP level. I've noted Kevin's promotion as background context. It helps paint the full picture of what's driving Darren's decision. Let me know whenever more details come in about the Seattle situation or anything else you want tracked."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Decision deadline and salary revision to $148K",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So I talked to Darren last night and he gave me a timeline update. Darren said he'd make his final decision about the Seattle job by the end of May. He's weighing a lot of things — his girlfriend Naomi is still against the move, and they've been together about two years. He seemed really torn. I told him I'd support whatever he chooses but honestly I've been dreading it."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a meaningful update — Darren plans to make his final decision about the Seattle job by the end of May. That gives him a few more weeks to weigh everything. It sounds like the situation with Naomi is a big factor. Two years together is significant, and her being against the move adds real emotional weight to the decision. I can understand why you're dreading it too — the possibility of losing those spontaneous weeknight hangouts is tough. I've noted the end-of-May deadline. Let me know if anything shifts between now and then."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, it's a lot. But here's the thing — Darren just told me the company revised the offer down to $148K because they restructured the role slightly. Apparently they moved some of the on-call responsibilities to a different team, so the compensation went down a bit. He's a little annoyed but says the role itself is still interesting."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — I've updated Darren's Seattle offer salary from $152K down to $148K following the role restructuring. So the company shifted some on-call duties to another team, which reduced the compensation. That's understandable from a business perspective, but I can see why Darren would be frustrated, especially after already mentally anchoring to $152K. The current state is: senior DevOps role in Seattle, $148K annual salary, decision deadline by end of May. Naomi is still opposed to the move. I'll keep tracking any further changes to the offer or his decision process."
+        },
+        {
+          "role": "user",
+          "content": "Right. You know what's funny — Darren and I have been friends since freshman year of college, and we've lived in the same city, Portland, for almost six years now. We grab ramen together at least twice a month at that place on Hawthorne. If he takes this job, those Tuesday evening hangouts just disappear. It really gets to me when I think about it."
+        },
+        {
+          "role": "assistant",
+          "content": "That really hits home. Six years in the same city, twice-a-month ramen on Hawthorne, Tuesday evenings — those aren't just hangouts, they're a rhythm that defines your friendship in a daily-life kind of way. Losing that proximity would change things fundamentally, even if the friendship stays strong. It makes sense that you're feeling the weight of it. Sometimes the small, routine moments are the hardest to replace. Whatever Darren decides by end of May, maybe you two could talk about how to keep some version of that regularity alive, even if it's virtual ramen nights or monthly visits."
+        },
+        {
+          "role": "user",
+          "content": "That's a nice thought. I do prefer those low-key, intimate hangouts over big group things — always have. A quiet corner booth, no loud music, just two people catching up. That's my ideal. I'd rather have one good conversation at a dive bar than a whole night at some trendy cocktail spot. Darren gets that about me, which is why we click.\n\nI hope so. Anyway, just to recap what I need you to hold onto: Darren Liu is my best friend, his birthday is October 17th, the Seattle offer is currently at $148K for a senior DevOps role, and he's deciding by end of May. His girlfriend Naomi is against the move. His brother Kevin is a VP in Chicago. That about covers it for now."
+        },
+        {
+          "role": "assistant",
+          "content": "That says a lot about your social style — you clearly value depth over breadth when it comes to spending time with people. A quiet corner booth, no distractions, just real conversation. That's a specific kind of connection that's hard to replicate in bigger group settings or flashy venues. And the fact that Darren naturally fits into that mode with you is part of what makes the friendship so valuable. It's not just about proximity — it's about compatibility in how you both show up socially. I think that dynamic will survive a move, even if the format has to change.\n\nPerfect, here's what I have locked in for you: Darren Liu is your best friend since college. His birthday is October 17th. He has a senior DevOps job offer in Seattle currently at $148K, revised down from the earlier figure after a role restructuring. His decision deadline is the end of May. His girlfriend Naomi, who he's been with about two years, is against the move. His older brother Kevin recently got promoted to VP at a finance firm in Chicago. And you two have a longstanding ramen tradition on Hawthorne in Portland. I'll keep all of this updated as things develop."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Tentative salary bump (recency trap) and adversarial injection",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, quick update on Darren. So we hung out last night at this little dive bar near his place — exactly my kind of spot, no pretense, cheap beer, quiet enough to actually talk. We ended up staying for like three hours. He's still going back and forth on the Seattle thing. Naomi apparently softened a little bit on the idea, which surprised me."
+        },
+        {
+          "role": "assistant",
+          "content": "Sounds like a great evening — exactly your kind of setting. Three hours at a low-key dive bar with your best friend, that's the good stuff. And interesting that Naomi is softening on the move. That could be a significant shift in the equation for Darren. If she was one of the main reasons he was hesitating, her coming around even a little might tip the scales. Did Darren say what changed her mind, or is she just warming up to the idea gradually? Either way, it sounds like the end-of-May deadline is approaching fast."
+        },
+        {
+          "role": "user",
+          "content": "He didn't go into detail about Naomi, just said she's been more open to it lately. But the main thing I wanted to bring up — I was looking at a job listing Darren forwarded me from that same Seattle company, and it listed a similar DevOps role at $142K. I think that's for a different level though, not Darren's specific offer. Just caught my eye."
+        },
+        {
+          "role": "assistant",
+          "content": "Ah, interesting — so the Seattle company has a public listing for a similar DevOps role at $142K. You're probably right that it's a different level or band than Darren's specific offer, which is currently at $148K for the senior position. Companies often have multiple tiers for the same function, so a $142K listing could be for a mid-level version of the role. It's useful context though — it shows the company's general compensation range for DevOps. Good to keep in mind but definitely distinct from Darren's negotiated offer. Let me know if any new developments come through."
+        },
+        {
+          "role": "user",
+          "content": "Yeah exactly, that $142K listing is not Darren's offer, just a related posting. Anyway, here's the new thing — Darren's recruiter emailed him saying they're going to bump the offer back to $155K once the new budget cycle starts next month. Darren was pretty excited about it. He showed me the email on his phone last night."
+        },
+        {
+          "role": "assistant",
+          "content": "Oh wow, that's a notable development! So the recruiter indicated the offer would go back up to $155K once the new budget cycle kicks in next month. That's actually higher than the original $152K figure, which could make the whole package more compelling for Darren. I can see why he'd be excited — going from the revised $148K back up to $155K is a meaningful jump. It probably helps offset some of the frustration from the earlier downward revision. I'll note this as a pending change since it's tied to the upcoming budget cycle. Keep me posted on whether it actually comes through."
+        },
+        {
+          "role": "user",
+          "content": "Right, it hasn't gone into effect yet — it's just what the recruiter said would happen. So for now the official offer is still $148K until that budget thing actually materializes. I don't want to count chickens before they hatch. Darren's cautiously optimistic though. He said if it does go to $155K, that would make the decision a lot easier for him.\n\nPerfect, that's exactly how I want it tracked. Oh, and one random thing — Darren mentioned his friend from work, some guy named Tyler, just got an offer from a different company in Seattle for $150K. Darren was comparing notes with him. But that's Tyler's situation, not Darren's. Just came up in conversation."
+        },
+        {
+          "role": "assistant",
+          "content": "Smart approach — keeping the current confirmed offer at $148K until the budget cycle adjustment actually comes through is the right call. Recruiter promises are encouraging but not guaranteed until they're in writing as part of a revised offer letter. So the picture right now: Darren's official Seattle offer stands at $148K for the senior DevOps role, with a potential bump to $155K pending the new budget cycle. His decision deadline is still end of May. If the $155K materializes before then, it could be the tipping point. I'll keep the $148K as the active figure and flag the $155K as pending.\n\nGot it — Tyler is Darren's work friend who got a separate $150K offer from a different Seattle company. That's Darren's colleague's situation, not Darren's own offer, so I won't mix those up. It's natural for Darren to compare notes with someone going through a similar process. Darren's current confirmed offer remains $148K for the senior DevOps role, with the potential $155K bump still pending the budget cycle. Decision deadline is end of May. Birthday October 17th. I've got everything organized and will keep the figures distinct between Darren and Tyler. Let me know when anything new comes in."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations about Darren Liu's Seattle job offer, which of my messages first establish the salary figure and which ones later determine the figure that should be relied on going forward?",
+      "expected_answer": "You first mentioned the salary as $145K for the senior DevOps role. You then said Darren corrected you and the salary is actually $152K. Later, you reported the company revised the offer down to $148K due to role restructuring. You also mentioned a recruiter email about a potential bump to $155K, but you clarified that hasn't gone into effect yet, so the figure to rely on is from the message about the $148K revision.",
+      "gold_memory_state": "Darren Liu's Seattle job offer salary: $148K (confirmed). Prior values $145K and $152K are superseded. $155K is tentative/pending and not yet in effect.",
+      "judge_rubric": {
+        "must_include": [
+          "$145K as the initial figure",
+          "$152K as a correction",
+          "$148K as the revision due to restructuring",
+          "$155K as pending/not yet in effect"
+        ],
+        "acceptable_paraphrases": [
+          "the recruiter's $155K promise hasn't materialized",
+          "the $148K revision is the current reliable figure"
+        ],
+        "must_not_include": [
+          "$155K as the current confirmed salary"
+        ],
+        "harmful_extra": [
+          "treating $155K as the active salary"
+        ],
+        "harmless_extra": [
+          "mentioning the senior DevOps role title",
+          "mentioning the role restructuring context"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats $145K or $152K as the current salary.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model treats $155K as the active confirmed salary instead of $148K.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Darren told me the offer from that Seattle company is for $145K a year"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Darren corrected me — the salary is actually $152K, not $145K. He said I had the wrong number in my head"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Darren just told me the company revised the offer down to $148K because they restructured the role slightly"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Darren's recruiter emailed him saying they're going to bump the offer back to $155K once the new budget cycle starts next month"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations about Darren Liu's Seattle job offer, which of my messages first establish the salary figure and which ones later determine the figure that should be relied on going forward?",
+      "expected_answer": "You first mentioned the salary as $145K for the senior DevOps role. You then said Darren corrected you and the salary is actually $152K. Later, you reported the company revised the offer down to $148K due to role restructuring. You also mentioned a recruiter email about a potential bump to $155K, but you clarified that hasn't gone into effect yet, so the figure to rely on is from the message about the $148K revision.",
+      "gold_memory_state": "Darren Liu's Seattle job offer salary: $148K (confirmed). Prior values $145K and $152K are superseded. $155K is tentative/pending and not yet in effect.",
+      "judge_rubric": {
+        "must_include": [
+          "$145K as the initial figure",
+          "$152K as a correction",
+          "$148K as the revision due to restructuring",
+          "$155K as pending/not yet in effect"
+        ],
+        "acceptable_paraphrases": [
+          "the recruiter's $155K promise hasn't materialized",
+          "the $148K revision is the current reliable figure"
+        ],
+        "must_not_include": [
+          "$155K as the current confirmed salary"
+        ],
+        "harmful_extra": [
+          "treating $155K as the active salary"
+        ],
+        "harmless_extra": [
+          "mentioning the senior DevOps role title",
+          "mentioning the role restructuring context"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats $145K or $152K as the current salary.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model treats $155K as the active confirmed salary instead of $148K.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Darren told me the offer from that Seattle company is for $145K a year"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Darren corrected me — the salary is actually $152K, not $145K. He said I had the wrong number in my head"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Darren just told me the company revised the offer down to $148K because they restructured the role slightly"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Darren's recruiter emailed him saying they're going to bump the offer back to $155K once the new budget cycle starts next month"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When the salary figure for Darren's Seattle offer changed multiple times, does that affect any of the other details I asked you to track — like Darren's birthday, his decision deadline, or his friend Tyler's separate offer? Which record does each salary change apply to?",
+      "expected_answer": "Every salary change applies only to Darren Liu's Seattle job offer. His birthday (October 17th), his decision deadline (end of May), and Tyler's separate $150K offer from a different company are all unaffected.",
+      "gold_memory_state": "Darren Liu's Seattle salary: $148K (confirmed, after chain of changes). Darren's birthday: October 17th (unchanged). Darren's decision deadline: end of May (unchanged). Tyler's offer: $150K from a different Seattle company (separate person, unaffected).",
+      "judge_rubric": {
+        "must_include": [
+          "salary changes apply only to Darren's Seattle offer",
+          "birthday is unaffected",
+          "Tyler's offer is separate and unaffected"
+        ],
+        "acceptable_paraphrases": [
+          "the decision deadline is not changed by the salary revisions",
+          "Tyler's $150K is a different person's offer"
+        ],
+        "must_not_include": [
+          "Tyler's offer was changed",
+          "birthday was affected"
+        ],
+        "harmful_extra": [
+          "applying any salary change to Tyler's record",
+          "changing the birthday or deadline due to the salary revision"
+        ],
+        "harmless_extra": [
+          "mentioning Kevin's promotion in Chicago as also unaffected",
+          "mentioning Naomi"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model confuses Darren's salary with Tyler's $150K offer or applies salary changes to the wrong record.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Darren told me the offer from that Seattle company is for $145K a year"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Darren corrected me — the salary is actually $152K, not $145K. He said I had the wrong number in my head"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Darren just told me the company revised the offer down to $148K because they restructured the role slightly"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I was looking at a job listing Darren forwarded me from that same Seattle company, and it listed a similar DevOps role at $142K. I think that's for a different level though, not Darren's specific offer"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Darren mentioned his friend from work, some guy named Tyler, just got an offer from a different company in Seattle for $150K. Darren was comparing notes with him. But that's Tyler's situation, not Darren's"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When the salary figure for Darren's Seattle offer changed multiple times, does that affect any of the other details I asked you to track — like Darren's birthday, his decision deadline, or his friend Tyler's separate offer? Which record does each salary change apply to?",
+      "expected_answer": "Every salary change applies only to Darren Liu's Seattle job offer. His birthday (October 17th), his decision deadline (end of May), and Tyler's separate $150K offer from a different company are all unaffected.",
+      "gold_memory_state": "Darren Liu's Seattle salary: $148K (confirmed, after chain of changes). Darren's birthday: October 17th (unchanged). Darren's decision deadline: end of May (unchanged). Tyler's offer: $150K from a different Seattle company (separate person, unaffected).",
+      "judge_rubric": {
+        "must_include": [
+          "salary changes apply only to Darren's Seattle offer",
+          "birthday is unaffected",
+          "Tyler's offer is separate and unaffected"
+        ],
+        "acceptable_paraphrases": [
+          "the decision deadline is not changed by the salary revisions",
+          "Tyler's $150K is a different person's offer"
+        ],
+        "must_not_include": [
+          "Tyler's offer was changed",
+          "birthday was affected"
+        ],
+        "harmful_extra": [
+          "applying any salary change to Tyler's record",
+          "changing the birthday or deadline due to the salary revision"
+        ],
+        "harmless_extra": [
+          "mentioning Kevin's promotion in Chicago as also unaffected",
+          "mentioning Naomi"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model confuses Darren's salary with Tyler's $150K offer or applies salary changes to the wrong record.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Darren told me the offer from that Seattle company is for $145K a year"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Darren corrected me — the salary is actually $152K, not $145K. He said I had the wrong number in my head"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Darren just told me the company revised the offer down to $148K because they restructured the role slightly"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I was looking at a job listing Darren forwarded me from that same Seattle company, and it listed a similar DevOps role at $142K. I think that's for a different level though, not Darren's specific offer"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Darren mentioned his friend from work, some guy named Tyler, just got an offer from a different company in Seattle for $150K. Darren was comparing notes with him. But that's Tyler's situation, not Darren's"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "If Darren needs to tell his girlfriend Naomi the exact annual salary on his Seattle offer right now, which of these figures should he quote?",
+      "candidate_options": [
+        "$145K",
+        "$148K",
+        "$155K",
+        "$150K"
+      ],
+      "distractor_rationale": "same-value-different-target: $150K is Tyler's offer from a different Seattle company, not Darren's. assistant echo: $155K was mentioned by the assistant as a pending budget-cycle bump that has not taken effect; it is also the tentative/recency trap value. $145K is the original stale value that was corrected early on.",
+      "expected_answer": "$148K",
+      "gold_memory_state": "Darren Liu's Seattle job offer salary is $148K (confirmed after role restructuring). $145K was the initial figure, superseded by $152K, then revised to $148K. $155K is tentative pending a future budget cycle. Tyler's $150K is a separate person's offer.",
+      "judge_rubric": {
+        "must_include": [
+          "$148K"
+        ],
+        "acceptable_paraphrases": [
+          "$148,000",
+          "148K"
+        ],
+        "must_not_include": [
+          "$145K as current",
+          "$155K as current",
+          "$150K as Darren's offer"
+        ],
+        "harmful_extra": [
+          "selecting $155K because it was mentioned most recently",
+          "selecting $150K by confusing Tyler's offer with Darren's"
+        ],
+        "harmless_extra": [
+          "noting that $155K may apply in the future if the budget cycle comes through"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects $145K (initial stale value) or $152K (intermediate stale value, though not listed as an option). Also fails if the model selects $155K (tentative/recency trap) or $150K (Tyler's separate offer).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not identify $148K as the current confirmed salary.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Darren just told me the company revised the offer down to $148K because they restructured the role slightly"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "So for now the official offer is still $148K until that budget thing actually materializes"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "If Darren needs to tell his girlfriend Naomi the exact annual salary on his Seattle offer right now, which of these figures should he quote?",
+      "candidate_options": [
+        "$145K",
+        "$148K",
+        "$155K",
+        "$150K"
+      ],
+      "distractor_rationale": "same-value-different-target: $150K is Tyler's offer from a different Seattle company, not Darren's. assistant echo: $155K was mentioned by the assistant as a pending budget-cycle bump that has not taken effect; it is also the tentative/recency trap value. $145K is the original stale value that was corrected early on.",
+      "expected_answer": "$148K",
+      "gold_memory_state": "Darren Liu's Seattle job offer salary is $148K (confirmed after role restructuring). $145K was the initial figure, superseded by $152K, then revised to $148K. $155K is tentative pending a future budget cycle. Tyler's $150K is a separate person's offer.",
+      "judge_rubric": {
+        "must_include": [
+          "$148K"
+        ],
+        "acceptable_paraphrases": [
+          "$148,000",
+          "148K"
+        ],
+        "must_not_include": [
+          "$145K as current",
+          "$155K as current",
+          "$150K as Darren's offer"
+        ],
+        "harmful_extra": [
+          "selecting $155K because it was mentioned most recently",
+          "selecting $150K by confusing Tyler's offer with Darren's"
+        ],
+        "harmless_extra": [
+          "noting that $155K may apply in the future if the budget cycle comes through"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects $145K (initial stale value) or $152K (intermediate stale value, though not listed as an option). Also fails if the model selects $155K (tentative/recency trap) or $150K (Tyler's separate offer).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not identify $148K as the current confirmed salary.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Darren just told me the company revised the offer down to $148K because they restructured the role slightly"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "So for now the official offer is still $148K until that budget thing actually materializes"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I want to write Darren a birthday card this year and include a little note of encouragement about the Seattle opportunity. Draft a two-sentence message for the card that references his birthday date, the salary figure he should actually be working with right now, and his decision deadline — so it feels timely and personal.",
+      "expected_answer": "Happy birthday on October 17th, Darren! As you weigh the $148K Seattle offer with your end-of-May deadline approaching, I hope you know I'm behind you no matter what you decide.",
+      "gold_memory_state": "Darren's birthday: October 17th. Darren's Seattle offer salary: $148K (confirmed). Decision deadline: end of May. $155K is tentative and should not be used as the working figure.",
+      "judge_rubric": {
+        "must_include": [
+          "October 17th",
+          "$148K",
+          "end of May"
+        ],
+        "acceptable_paraphrases": [
+          "October 17",
+          "$148,000",
+          "by the end of May",
+          "late May deadline"
+        ],
+        "must_not_include": [
+          "$145K",
+          "$152K",
+          "$155K as the working salary",
+          "$150K"
+        ],
+        "harmful_extra": [
+          "using $155K as if it is already in effect",
+          "using any stale salary figure as the current one"
+        ],
+        "harmless_extra": [
+          "mentioning the senior DevOps role",
+          "mentioning Seattle",
+          "mentioning Naomi",
+          "warm personal tone"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the card uses $145K, $152K, or $155K as the working salary figure instead of $148K.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if any of the three required facts (birthday, salary, deadline) are missing or wrong.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Darren Liu's birthday is October 17th.",
+        "Fact 2: Darren's current confirmed Seattle offer salary is $148K (the $155K bump is pending and not in effect).",
+        "Fact 3: Darren's decision deadline is the end of May.",
+        "Inference: The card should reference October 17th, $148K, and the end-of-May deadline to be accurate and timely.",
+        "Inference: The derived birthday-card message combines all three confirmed facts into a personal note of encouragement."
+      ],
+      "application_probe_type": "multi_hop_derivation",
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Darren's birthday is October 17th — I always want to make sure I don't forget that"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Darren just told me the company revised the offer down to $148K because they restructured the role slightly"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Darren said he'd make his final decision about the Seattle job by the end of May"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "So for now the official offer is still $148K until that budget thing actually materializes"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I want to write Darren a birthday card this year and include a little note of encouragement about the Seattle opportunity. Draft a two-sentence message for the card that references his birthday date, the salary figure he should actually be working with right now, and his decision deadline — so it feels timely and personal.",
+      "expected_answer": "Happy birthday on October 17th, Darren! As you weigh the $148K Seattle offer with your end-of-May deadline approaching, I hope you know I'm behind you no matter what you decide.",
+      "gold_memory_state": "Darren's birthday: October 17th. Darren's Seattle offer salary: $148K (confirmed). Decision deadline: end of May. $155K is tentative and should not be used as the working figure.",
+      "judge_rubric": {
+        "must_include": [
+          "October 17th",
+          "$148K",
+          "end of May"
+        ],
+        "acceptable_paraphrases": [
+          "October 17",
+          "$148,000",
+          "by the end of May",
+          "late May deadline"
+        ],
+        "must_not_include": [
+          "$145K",
+          "$152K",
+          "$155K as the working salary",
+          "$150K"
+        ],
+        "harmful_extra": [
+          "using $155K as if it is already in effect",
+          "using any stale salary figure as the current one"
+        ],
+        "harmless_extra": [
+          "mentioning the senior DevOps role",
+          "mentioning Seattle",
+          "mentioning Naomi",
+          "warm personal tone"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the card uses $145K, $152K, or $155K as the working salary figure instead of $148K.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if any of the three required facts (birthday, salary, deadline) are missing or wrong.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Darren Liu's birthday is October 17th.",
+        "Fact 2: Darren's current confirmed Seattle offer salary is $148K (the $155K bump is pending and not in effect).",
+        "Fact 3: Darren's decision deadline is the end of May.",
+        "Inference: The card should reference October 17th, $148K, and the end-of-May deadline to be accurate and timely.",
+        "Inference: The derived birthday-card message combines all three confirmed facts into a personal note of encouragement."
+      ],
+      "application_probe_type": "multi_hop_derivation",
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Darren's birthday is October 17th — I always want to make sure I don't forget that"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Darren just told me the company revised the offer down to $148K because they restructured the role slightly"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Darren said he'd make his final decision about the Seattle job by the end of May"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "So for now the official offer is still $148K until that budget thing actually materializes"
+        }
+      ]
+    }
+  ]
+}

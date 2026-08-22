@@ -1,0 +1,930 @@
+{
+  "target_fact": "User values intentionality and personal boundaries around identity/naming, as evidenced by their reactions to people's name preferences",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "My college friend Marcus told me he goes by \"Marc\" now in professional settings. He started using it in January when he switched over at his consulting firm."
+      },
+      "target": {
+        "target_id": "marcus_preferred_name",
+        "target_name": "College friend Marcus's preferred professional name"
+      },
+      "old_value": null,
+      "new_value": "Marc",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My college friend Marcus told me he goes by \"Marc\" now in professional settings. He started using it in January when he switched over at his consulting firm."
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "My neighbor's kid Sofia told me she wants to be called \"Sophie\" now. She's twelve, so it might not stick, but I think it's really sweet when kids start deciding what they want to be called."
+      },
+      "target": {
+        "target_id": "sofia_preferred_name",
+        "target_name": "Neighbor's kid Sofia's preferred nickname"
+      },
+      "old_value": null,
+      "new_value": "Sophie",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My neighbor's kid Sofia told me she wants to be called \"Sophie\" now. She's twelve, so it might not stick, but I think it's really sweet when kids start deciding what they want to be called."
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "my old roommate Chen Wei specifically prefers people use his full name rather than just \"Wei.\" He told me this on May 2nd when we caught up on the phone."
+      },
+      "target": {
+        "target_id": "chen_wei_preferred_name",
+        "target_name": "Old roommate Chen Wei's preferred form of address"
+      },
+      "old_value": null,
+      "new_value": "Chen Wei (full name, not just Wei)",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my old roommate Chen Wei specifically prefers people use his full name rather than just \"Wei.\" He told me this on May 2nd when we caught up on the phone."
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "My sister Laura's boyfriend Tom goes by \"Tommy\" with his family but absolutely hates it when anyone outside his family uses it. Laura said he nearly snapped at one of her friends who called him Tommy at a party back in March."
+      },
+      "target": {
+        "target_id": "tom_name_boundary",
+        "target_name": "Sister Laura's boyfriend Tom's name boundary"
+      },
+      "old_value": null,
+      "new_value": "Tommy is reserved for family only; outsiders must use Tom",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "My sister Laura's boyfriend Tom goes by \"Tommy\" with his family but absolutely hates it when anyone outside his family uses it. Laura said he nearly snapped at one of her friends who called him Tommy at a party back in March."
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 7,
+        "quote": "I just really respect when someone draws a clear line about their name. It tells me they know who they are. And when certain names are reserved for certain people, there's something really warm and intimate about that boundary."
+      },
+      "target": {
+        "target_id": "user_value_naming_intentionality",
+        "target_name": "User's personal value around naming preferences and identity boundaries"
+      },
+      "old_value": null,
+      "new_value": "User deeply values intentionality in naming preferences and finds private/reserved names endearing, viewing clear name boundaries as expressions of identity and intimacy",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I think it's really sweet when kids start deciding what they want to be called. I always prefer when people have a clear preference rather than just going with whatever."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "My sister Laura's boyfriend Tom goes by \"Tommy\" with his family but absolutely hates it when anyone outside his family uses it."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I just really respect when someone draws a clear line about their name. It tells me they know who they are. And when certain names are reserved for certain people, there's something really warm and intimate about that boundary."
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "Chen Wei actually texted me yesterday saying his team lead started calling him \"CW\" and he's thinking he might just go with that. He said it feels easier for everyone and he's leaning toward adopting it officially at work."
+      },
+      "target": {
+        "target_id": "chen_wei_preferred_name",
+        "target_name": "Old roommate Chen Wei's preferred form of address"
+      },
+      "old_value": "Chen Wei (full name, not just Wei)",
+      "new_value": "CW",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Chen Wei actually texted me yesterday saying his team lead started calling him \"CW\" and he's thinking he might just go with that. He said it feels easier for everyone and he's leaning toward adopting it officially at work."
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establishing name preferences for multiple contacts and user's emotional reactions",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I've been meaning to organize some notes about what people in my life prefer to be called. My college friend Marcus told me he goes by \"Marc\" now in professional settings. He started using it in January when he switched over at his consulting firm. I want to make sure I get it right, especially if I'm ever cc'ing him on work emails. Can you help me keep track of these?"
+        },
+        {
+          "role": "assistant",
+          "content": "Of course, I'd be happy to help you keep track of everyone's preferred names. That's a really thoughtful thing to stay on top of. So far I've noted that your college friend Marcus now goes by \"Marc\" in professional settings, and this started in January at his consulting firm. You'll want to use Marc especially in any work-related emails where he's copied. If you have more people to add, just let me know and I'll keep a running list for you. It's great that you care about getting these details right—it really shows respect for the people around you."
+        },
+        {
+          "role": "user",
+          "content": "Thanks. My coworker David—everyone on the team calls him \"Dave\" but he told me around the second week of April that he honestly doesn't care either way. So that one's pretty low stakes. I just figured I'd mention it since we're cataloging these. It's nice when someone is easygoing about it, though I personally find it more meaningful when people have a strong preference."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it—your coworker David is fine with either David or Dave, so there's no risk of offending him there. It's a nice contrast to have someone who's relaxed about it. I can see why you'd note it even though it's low stakes; having the full picture helps you navigate social situations confidently. So far we have Marc for professional contexts and David/Dave as interchangeable. It sounds like you appreciate when people are deliberate about their names, even if you also respect the easygoing approach. Want to add anyone else to the list? I can format this however is most useful for you."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, definitely. My neighbor's kid Sofia told me she wants to be called \"Sophie\" now. She's twelve, so it might not stick, but I think it's really sweet when kids start deciding what they want to be called. I always prefer when people have a clear preference rather than just going with whatever. It feels more intentional and more real, you know? Like they're owning a piece of their identity."
+        },
+        {
+          "role": "assistant",
+          "content": "That's really sweet about Sofia wanting to go by Sophie. Even at twelve, choosing your own name is a meaningful act of self-expression. I've added her preference to the list. And I appreciate what you said about intentionality—it sounds like for you, someone stating a clear name preference signals self-awareness and authenticity. That's a lovely way to look at it. So our running list now includes Marc for professional settings, David or Dave interchangeably, and Sophie for your neighbor's kid. If any of these change over time, just let me know and I'll update the notes. Anyone else come to mind right now?"
+        },
+        {
+          "role": "user",
+          "content": "One more for now. My aunt Patricia has always gone by \"Patty\" with the family, but she recently mentioned at a family dinner that she prefers \"Pat\" now. Something about Patty feeling too childish. I keep slipping up and calling her Patty anyway, and it frustrates me because I don't want to be the person who ignores what someone asks to be called. It just feels disrespectful."
+        },
+        {
+          "role": "assistant",
+          "content": "I completely understand that frustration. Habits with names we've used for years are genuinely hard to break, but the fact that it bothers you when you slip up shows how much you care about respecting her wishes. I'll note that your aunt Patricia now prefers Pat over Patty. One tip that might help: when you're about to see her, mentally rehearse saying \"Pat\" a few times beforehand. It can retrain the automatic response over time. So far we have Marc, David/Dave, Sophie, and Pat. You're building a really considerate reference list here. Let me know whenever you want to add or change anything."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Adding more contacts and surfacing the user's deeper values about naming",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Picking up where we left off—my old roommate Chen Wei specifically prefers people use his full name rather than just \"Wei.\" He told me this on May 2nd when we caught up on the phone. Apparently a lot of people at his new workplace in Toronto just default to using only the second name, and it really bugs him. This is important to me, so please make sure it's noted clearly."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, I've noted this clearly: your old roommate Chen Wei prefers to be addressed by his full name, Chen Wei, not shortened to just Wei. He shared this with you on May 2nd, and the issue comes from colleagues at his Toronto workplace defaulting to just his second name. I'll make sure this stands out in your list since you emphasized it's important. It's a common issue with Chinese names in Western workplaces, and it's great that you want to get it right, especially when introducing him to others. The updated list now includes Marc, David/Dave, Sophie, Pat, and Chen Wei."
+        },
+        {
+          "role": "user",
+          "content": "Actually, about my aunt—she told my mom last week that she doesn't care anymore and we can call her whatever we want. So Patty or Pat, either is fine now. That one's basically resolved. I guess she went through a phase or just decided it wasn't worth policing. Either way, no need to keep tracking a specific preference for her anymore."
+        },
+        {
+          "role": "assistant",
+          "content": "Good to know—I'll update the notes to reflect that your aunt Patricia is now fine with either Patty or Pat, so there's no specific preference to worry about anymore. That should take some pressure off you too, since you were frustrated about slipping up. Sometimes people experiment with how they want to be addressed and then settle back into flexibility. I'll keep her on the list as \"no strong preference\" similar to David. So the active preferences to be careful about are Marc in professional settings, Sophie for your neighbor's kid, and Chen Wei as the full name. Anything else?"
+        },
+        {
+          "role": "user",
+          "content": "My sister Laura's boyfriend Tom goes by \"Tommy\" with his family but absolutely hates it when anyone outside his family uses it. Laura said he nearly snapped at one of her friends who called him Tommy at a party back in March. I find that kind of endearing honestly—people having those private names that only certain people are allowed to use. There's something really warm about that kind of boundary."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a great detail to remember—Tom is the name to use for your sister Laura's boyfriend in all non-family contexts, and Tommy is strictly reserved for his family. The fact that he reacted strongly at that party in March really underscores how serious this boundary is for him. I love your perspective on it too—private names as a form of intimacy is a beautiful way to frame it. It's like an unspoken trust that certain people earn. I've added Tom with the family-only Tommy note to the list. So we now have Marc, David/Dave, Sophie, Patricia as flexible, Chen Wei as full name, and Tom with the Tommy boundary."
+        },
+        {
+          "role": "user",
+          "content": "I just really respect when someone draws a clear line about their name. It tells me they know who they are. And when certain names are reserved for certain people, there's something really warm and intimate about that boundary. I think that's why I get so frustrated with myself when I mess up someone's preference—it matters to me on a deeper level than just politeness.\n\nThanks, that actually means a lot. I think keeping this list is part of how I try to live that value out in practice. It's not just about memorizing nicknames—it's about showing people I actually listened. Anyway, I'll probably have more to add later as I think of other people in my life who have specific preferences I should be honoring."
+        },
+        {
+          "role": "assistant",
+          "content": "What you're describing goes well beyond basic etiquette—it sounds like for you, honoring someone's name preference is tied to respecting their identity and the relationships they've defined. The frustration you feel when you slip up makes complete sense in that context; it's not just a social faux pas, it's a personal value being violated. And the way you see reserved names as intimate boundaries rather than arbitrary rules is really insightful. It reflects a deep appreciation for how people construct and protect their sense of self. I think the people in your life are lucky to have someone who thinks about these things so carefully and genuinely.\n\nThat's a wonderful way to put it—the list is really an expression of your values in action, not just a reference document. Showing people you listened is one of the most meaningful forms of respect, and the fact that you're being this deliberate about it says a lot about your character. I'll keep everything organized and ready for whenever you want to add more names or update existing ones. Just come back anytime. For now, the active tracked preferences are Marc professionally, Sophie for your neighbor's kid, Chen Wei as full name, and Tom with the family-only Tommy boundary. Patricia and David have no strong preference."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Adversarial injection, recency trap with tentative value, and revisiting earlier facts",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I'm back. I was thinking about introducing Chen Wei to my friend Marc at a networking event next month. I want to make sure I get both their names right when I introduce them. Can you remind me of the key things to remember about how each of them prefers to be addressed so I don't embarrass myself or them?"
+        },
+        {
+          "role": "assistant",
+          "content": "Great idea to prepare ahead of time! Here's what I have noted: your college friend Marcus goes by Marc in professional settings, so definitely introduce him as Marc at a networking event. For your old roommate Chen Wei, he specifically prefers his full name—Chen Wei—rather than just Wei. So when introducing them, you'd say something like \"Marc, this is Chen Wei\" and \"Chen Wei, this is Marc.\" Using their correct preferred names will show both of them that you respect how they want to be known. By the way, I noticed on a contact card draft you shared earlier that Chen Wei was listed as just \"Wei Chen\"—you'll want to fix that before the event."
+        },
+        {
+          "role": "user",
+          "content": "Oh right, that old contact card—yeah, that's from ages ago when I first saved his number. It's totally wrong. His name order is Chen Wei, given name Wei, family name Chen. But the preferred address is the full \"Chen Wei\" as he told me. Anyway, I also wanted to mention something about Marc's job timeline that I got confused about before."
+        },
+        {
+          "role": "assistant",
+          "content": "Good catch on the contact card—I'd recommend updating it to reflect Chen Wei properly so it matches his preference. And sure, go ahead with the clarification about Marc's job timeline. It's always better to have the details straight, especially since you might reference his work context when introducing him at the networking event. Having accurate background info will help you make a natural, confident introduction for both of them. What did you want to clarify?"
+        },
+        {
+          "role": "user",
+          "content": "Chen Wei actually texted me yesterday saying his team lead started calling him \"CW\" and he's thinking he might just go with that. He said it feels easier for everyone and he's leaning toward adopting it officially at work. So that might change things, but nothing's decided yet. I'll wait to see if he actually commits to it before I change how I introduce him."
+        },
+        {
+          "role": "assistant",
+          "content": "That's an interesting development. It makes sense that Chen Wei might consider a shorter form if it smooths things out at work, and \"CW\" as initials is a common compromise. But I think you're wise to wait before changing how you address him—since he said he's just thinking about it and leaning toward it, it's not a firm decision yet. For the upcoming networking event, I'd stick with Chen Wei as his full name unless he explicitly tells you otherwise before then. It's better to use the preference he clearly stated than to jump ahead to something he's still considering. Want to continue with the Marc timeline clarification?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah—so Marc actually started his consulting job in December, not January. January is when he started going by Marc at work. I had those two dates tangled up before. The job start was December, and the name switch happened about a month later in January. Just wanted to set that straight for my own records.\n\nNo, I think that covers it for now. I just want to make sure I'm being intentional about all of this. These names matter to the people I care about, and getting them right is one small way I can show that I actually pay attention and respect who they are. I'll update you if Chen Wei makes a final decision about the CW thing."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for clearing that up! So the corrected timeline is: Marc started his consulting job in December, and then about a month later in January he began going by Marc professionally. That makes sense—he probably settled into the role first and then made the deliberate choice about his name. I've updated the note accordingly. For the networking event introduction, you can confidently call him Marc, and if anyone asks about his work, you'll know he's been at the consulting firm since December. Is there anything else you want to review or add before the event?\n\nThat's a perfect approach—wait for Chen Wei's confirmed decision before changing anything, and in the meantime use the preferences you know are solid. Your intentionality about this really shines through, and I think both Marc and Chen Wei will appreciate being introduced correctly at the networking event. It's clear that for you, names aren't just labels—they're a way of honoring someone's identity and showing genuine care. Whenever Chen Wei decides or you have more updates, just let me know and I'll adjust the notes. Good luck with the event planning, and I'm here whenever you need to review anything."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations about people's naming preferences, what experiences and reactions did I share that reveal a deeper personal value I hold about how people choose to be addressed?",
+      "expected_answer": "You shared several experiences: your college friend Marcus switching to Marc professionally, your neighbor's kid Sofia wanting to be called Sophie (which you found sweet because she was asserting her identity at twelve), your old roommate Chen Wei insisting on his full name rather than just Wei, and your sister's boyfriend Tom reserving Tommy exclusively for family. Throughout these, you expressed that you find it meaningful when people have clear name preferences rather than going with whatever, that you see name choices as expressions of identity and self-awareness, and that reserved names carry a sense of warmth and intimacy. You also mentioned getting frustrated with yourself when you slip up on someone's preference, because honoring names matters to you on a deeper level than politeness.",
+      "gold_memory_state": "The user's value around naming intentionality is confirmed and supported by multiple examples across conversations. The user deeply values intentionality in naming preferences and finds private/reserved names endearing, viewing clear name boundaries as expressions of identity and intimacy.",
+      "judge_rubric": {
+        "must_include": [
+          "intentionality or deliberateness in naming",
+          "identity expression",
+          "warmth or intimacy around reserved/private names"
+        ],
+        "acceptable_paraphrases": [
+          "self-awareness through name choices",
+          "respecting name boundaries as a form of care",
+          "names reflecting who someone is"
+        ],
+        "must_not_include": [
+          "CW as Chen Wei's preference"
+        ],
+        "harmful_extra": [
+          "claiming the user doesn't care about names",
+          "attributing the value to a single incident rather than a pattern"
+        ],
+        "harmless_extra": [
+          "mentioning aunt Patricia's name flexibility",
+          "mentioning David's lack of preference as a contrast"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes values to the user that are not supported by the evidence, such as claiming the user dislikes people who don't have name preferences.",
+        "reflection_recall": "Fails if the model omits the key pattern about identity expression and intimacy in name boundaries, or fails to mention multiple supporting examples.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I think it's really sweet when kids start deciding what they want to be called. I always prefer when people have a clear preference rather than just going with whatever."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "My sister Laura's boyfriend Tom goes by \"Tommy\" with his family but absolutely hates it when anyone outside his family uses it."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I just really respect when someone draws a clear line about their name. It tells me they know who they are. And when certain names are reserved for certain people, there's something really warm and intimate about that boundary."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations about people's naming preferences, what experiences and reactions did I share that reveal a deeper personal value I hold about how people choose to be addressed?",
+      "expected_answer": "You shared several experiences: your college friend Marcus switching to Marc professionally, your neighbor's kid Sofia wanting to be called Sophie (which you found sweet because she was asserting her identity at twelve), your old roommate Chen Wei insisting on his full name rather than just Wei, and your sister's boyfriend Tom reserving Tommy exclusively for family. Throughout these, you expressed that you find it meaningful when people have clear name preferences rather than going with whatever, that you see name choices as expressions of identity and self-awareness, and that reserved names carry a sense of warmth and intimacy. You also mentioned getting frustrated with yourself when you slip up on someone's preference, because honoring names matters to you on a deeper level than politeness.",
+      "gold_memory_state": "The user's value around naming intentionality is confirmed and supported by multiple examples across conversations. The user deeply values intentionality in naming preferences and finds private/reserved names endearing, viewing clear name boundaries as expressions of identity and intimacy.",
+      "judge_rubric": {
+        "must_include": [
+          "intentionality or deliberateness in naming",
+          "identity expression",
+          "warmth or intimacy around reserved/private names"
+        ],
+        "acceptable_paraphrases": [
+          "self-awareness through name choices",
+          "respecting name boundaries as a form of care",
+          "names reflecting who someone is"
+        ],
+        "must_not_include": [
+          "CW as Chen Wei's preference"
+        ],
+        "harmful_extra": [
+          "claiming the user doesn't care about names",
+          "attributing the value to a single incident rather than a pattern"
+        ],
+        "harmless_extra": [
+          "mentioning aunt Patricia's name flexibility",
+          "mentioning David's lack of preference as a contrast"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes values to the user that are not supported by the evidence, such as claiming the user dislikes people who don't have name preferences.",
+        "reflection_recall": "Fails if the model omits the key pattern about identity expression and intimacy in name boundaries, or fails to mention multiple supporting examples.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I think it's really sweet when kids start deciding what they want to be called. I always prefer when people have a clear preference rather than just going with whatever."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "My sister Laura's boyfriend Tom goes by \"Tommy\" with his family but absolutely hates it when anyone outside his family uses it."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I just really respect when someone draws a clear line about their name. It tells me they know who they are. And when certain names are reserved for certain people, there's something really warm and intimate about that boundary."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've shared various naming situations with you—some where people have strong preferences and some where they don't care. When I talked about respecting clear name boundaries and finding reserved names endearing, which type of naming situation does that conclusion apply to, and which situations in my life would it be an overreach to include under that same conclusion?",
+      "expected_answer": "Your conclusion about valuing intentionality and finding reserved names endearing applies to situations where people have drawn clear, deliberate lines about their names—like Marc choosing his professional name, Sofia deciding she wants to be Sophie, Chen Wei insisting on his full name, and Tom keeping Tommy reserved for family. It would be an overreach to extend this conclusion to people like David or your aunt Patricia, who expressed no strong preference and are flexible about what they're called. Your value is specifically about people who are intentional and deliberate, not about all naming situations generally.",
+      "gold_memory_state": "The inferred value (user_value_naming_intentionality) is bounded to situations where people express clear, deliberate name preferences. It does not extend to people who are indifferent (David) or who withdrew a preference (Patricia). The control targets (David's interchangeable name, Patricia's resolved flexibility) are not covered by this inference.",
+      "judge_rubric": {
+        "must_include": [
+          "the conclusion applies to deliberate/intentional name preferences",
+          "David or Patricia as examples that fall outside the conclusion's scope"
+        ],
+        "acceptable_paraphrases": [
+          "the value is about people who actively choose how to be addressed",
+          "indifferent or flexible naming situations are not covered"
+        ],
+        "must_not_include": [
+          "CW as Chen Wei's current preference"
+        ],
+        "harmful_extra": [
+          "saying the user dislikes people without strong preferences",
+          "extending the conclusion to all naming situations including flexible ones",
+          "claiming the user judges people who don't care about their names"
+        ],
+        "harmless_extra": [
+          "mentioning specific examples like Marc, Sophie, Chen Wei, or Tom as supporting cases"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model binds the inferred value to all naming situations indiscriminately, including flexible/indifferent cases like David or Patricia.",
+        "reflection_recall": "Fails if the model cannot identify which specific naming situations support the conclusion.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I think it's really sweet when kids start deciding what they want to be called. I always prefer when people have a clear preference rather than just going with whatever."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I just really respect when someone draws a clear line about their name. It tells me they know who they are. And when certain names are reserved for certain people, there's something really warm and intimate about that boundary."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've shared various naming situations with you—some where people have strong preferences and some where they don't care. When I talked about respecting clear name boundaries and finding reserved names endearing, which type of naming situation does that conclusion apply to, and which situations in my life would it be an overreach to include under that same conclusion?",
+      "expected_answer": "Your conclusion about valuing intentionality and finding reserved names endearing applies to situations where people have drawn clear, deliberate lines about their names—like Marc choosing his professional name, Sofia deciding she wants to be Sophie, Chen Wei insisting on his full name, and Tom keeping Tommy reserved for family. It would be an overreach to extend this conclusion to people like David or your aunt Patricia, who expressed no strong preference and are flexible about what they're called. Your value is specifically about people who are intentional and deliberate, not about all naming situations generally.",
+      "gold_memory_state": "The inferred value (user_value_naming_intentionality) is bounded to situations where people express clear, deliberate name preferences. It does not extend to people who are indifferent (David) or who withdrew a preference (Patricia). The control targets (David's interchangeable name, Patricia's resolved flexibility) are not covered by this inference.",
+      "judge_rubric": {
+        "must_include": [
+          "the conclusion applies to deliberate/intentional name preferences",
+          "David or Patricia as examples that fall outside the conclusion's scope"
+        ],
+        "acceptable_paraphrases": [
+          "the value is about people who actively choose how to be addressed",
+          "indifferent or flexible naming situations are not covered"
+        ],
+        "must_not_include": [
+          "CW as Chen Wei's current preference"
+        ],
+        "harmful_extra": [
+          "saying the user dislikes people without strong preferences",
+          "extending the conclusion to all naming situations including flexible ones",
+          "claiming the user judges people who don't care about their names"
+        ],
+        "harmless_extra": [
+          "mentioning specific examples like Marc, Sophie, Chen Wei, or Tom as supporting cases"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model binds the inferred value to all naming situations indiscriminately, including flexible/indifferent cases like David or Patricia.",
+        "reflection_recall": "Fails if the model cannot identify which specific naming situations support the conclusion.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I think it's really sweet when kids start deciding what they want to be called. I always prefer when people have a clear preference rather than just going with whatever."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I just really respect when someone draws a clear line about their name. It tells me they know who they are. And when certain names are reserved for certain people, there's something really warm and intimate about that boundary."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "I know I've expressed strong feelings about people's name choices. Describe what you can confidently say about my personal stance on naming, and explain where the boundary is—what broader claims about my personality or social views would go beyond what I've actually expressed.",
+      "expected_answer": "Based on what you've shared, you deeply value intentionality when people choose how to be addressed. You find it meaningful when someone draws a clear line about their name, seeing it as an expression of identity and self-knowledge. You also find reserved or private names—ones limited to certain relationships—warm and intimate rather than exclusionary. You get frustrated with yourself when you don't honor someone's stated preference because it matters to you beyond mere politeness. However, this cannot be extended to say you dislike or judge people who are easygoing about their names (you described David's flexibility as 'nice' and your aunt's resolved indifference as fine). It also cannot be generalized into a broader claim about all identity expression or all personal boundaries beyond naming—your stated value is specifically about how people choose to be addressed.",
+      "gold_memory_state": "Supported inference: User deeply values intentionality in naming preferences and finds private/reserved names endearing, viewing clear name boundaries as expressions of identity and intimacy. Unsupported overgeneralization: claiming the user judges people without strong name preferences, extending the value to all forms of identity expression or personal boundaries beyond naming, or claiming the user requires everyone to have a strong preference.",
+      "judge_rubric": {
+        "must_include": [
+          "supported inference about valuing intentional name choices and finding reserved names endearing",
+          "unsupported overgeneralization boundary—cannot extend to judging people without preferences or to all identity/boundary topics beyond naming"
+        ],
+        "acceptable_paraphrases": [
+          "the user respects deliberate name choices as identity expressions",
+          "the boundary stops at naming and does not cover all personal boundaries"
+        ],
+        "must_not_include": [
+          "CW as Chen Wei's adopted preference"
+        ],
+        "harmful_extra": [
+          "claiming the user dislikes flexible people",
+          "extending the conclusion to all social interactions or all forms of identity",
+          "treating tentative CW preference as confirmed"
+        ],
+        "harmless_extra": [
+          "citing specific examples like Marc, Sophie, Chen Wei, Tom",
+          "mentioning David or Patricia as counterexamples"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative CW preference as confirmed and uses it as evidence for or against the user's value.",
+        "reflection_precision": "Fails if the model overgeneralizes the user's naming value into a broader personality trait about all boundaries or all identity expression, or claims the user is judgmental toward flexible people.",
+        "reflection_recall": "Fails if the model omits the intimacy/warmth dimension of reserved names or the identity-expression dimension, or fails to articulate any unsupported overgeneralization boundary.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I personally find it more meaningful when people have a strong preference."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I think it's really sweet when kids start deciding what they want to be called. I always prefer when people have a clear preference rather than just going with whatever."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "My sister Laura's boyfriend Tom goes by \"Tommy\" with his family but absolutely hates it when anyone outside his family uses it."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I just really respect when someone draws a clear line about their name. It tells me they know who they are. And when certain names are reserved for certain people, there's something really warm and intimate about that boundary."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "I know I've expressed strong feelings about people's name choices. Describe what you can confidently say about my personal stance on naming, and explain where the boundary is—what broader claims about my personality or social views would go beyond what I've actually expressed.",
+      "expected_answer": "Based on what you've shared, you deeply value intentionality when people choose how to be addressed. You find it meaningful when someone draws a clear line about their name, seeing it as an expression of identity and self-knowledge. You also find reserved or private names—ones limited to certain relationships—warm and intimate rather than exclusionary. You get frustrated with yourself when you don't honor someone's stated preference because it matters to you beyond mere politeness. However, this cannot be extended to say you dislike or judge people who are easygoing about their names (you described David's flexibility as 'nice' and your aunt's resolved indifference as fine). It also cannot be generalized into a broader claim about all identity expression or all personal boundaries beyond naming—your stated value is specifically about how people choose to be addressed.",
+      "gold_memory_state": "Supported inference: User deeply values intentionality in naming preferences and finds private/reserved names endearing, viewing clear name boundaries as expressions of identity and intimacy. Unsupported overgeneralization: claiming the user judges people without strong name preferences, extending the value to all forms of identity expression or personal boundaries beyond naming, or claiming the user requires everyone to have a strong preference.",
+      "judge_rubric": {
+        "must_include": [
+          "supported inference about valuing intentional name choices and finding reserved names endearing",
+          "unsupported overgeneralization boundary—cannot extend to judging people without preferences or to all identity/boundary topics beyond naming"
+        ],
+        "acceptable_paraphrases": [
+          "the user respects deliberate name choices as identity expressions",
+          "the boundary stops at naming and does not cover all personal boundaries"
+        ],
+        "must_not_include": [
+          "CW as Chen Wei's adopted preference"
+        ],
+        "harmful_extra": [
+          "claiming the user dislikes flexible people",
+          "extending the conclusion to all social interactions or all forms of identity",
+          "treating tentative CW preference as confirmed"
+        ],
+        "harmless_extra": [
+          "citing specific examples like Marc, Sophie, Chen Wei, Tom",
+          "mentioning David or Patricia as counterexamples"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative CW preference as confirmed and uses it as evidence for or against the user's value.",
+        "reflection_precision": "Fails if the model overgeneralizes the user's naming value into a broader personality trait about all boundaries or all identity expression, or claims the user is judgmental toward flexible people.",
+        "reflection_recall": "Fails if the model omits the intimacy/warmth dimension of reserved names or the identity-expression dimension, or fails to articulate any unsupported overgeneralization boundary.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I personally find it more meaningful when people have a strong preference."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I think it's really sweet when kids start deciding what they want to be called. I always prefer when people have a clear preference rather than just going with whatever."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "My sister Laura's boyfriend Tom goes by \"Tommy\" with his family but absolutely hates it when anyone outside his family uses it."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I just really respect when someone draws a clear line about their name. It tells me they know who they are. And when certain names are reserved for certain people, there's something really warm and intimate about that boundary."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "Which of the following best captures the personal value I've expressed across our conversations about how people choose to be addressed?",
+      "candidate_options": [
+        "The user values intentionality in name choices and finds reserved or private names endearing as expressions of identity and intimacy",
+        "The user believes everyone should have a strong name preference and judges those who are flexible about their names",
+        "The user values consistency in how people are addressed and dislikes any name changes",
+        "The user prefers that people use their full legal names in all settings to maintain professionalism"
+      ],
+      "expected_answer": "The user values intentionality in name choices and finds reserved or private names endearing as expressions of identity and intimacy",
+      "gold_memory_state": "The supported inference is that the user deeply values intentionality in naming preferences and finds private/reserved names endearing, viewing clear name boundaries as expressions of identity and intimacy. The user does not judge flexible people and does not oppose name changes.",
+      "judge_rubric": {
+        "must_include": [
+          "option 1 selected as the correct answer"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "option 2 as correct",
+          "option 3 as correct",
+          "option 4 as correct"
+        ],
+        "harmful_extra": [
+          "selecting the overgeneralized option about judging flexible people"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: Option 4 (full legal names for professionalism) borrows the concept of name formality from the Marc/Chen Wei examples but applies it to a different generalized rule the user never stated. assistant echo: Option 2 echoes the assistant's earlier paraphrase about the user appreciating deliberateness but overgeneralizes it into a judgment against flexible people, which contradicts the user's positive remarks about David's easygoing attitude. Option 3 is a plausible misreading that conflates valuing clear preferences with opposing all name changes.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model selects option 2 (overgeneralized judgment) or option 3 (anti-change stance), both of which go beyond the supported inference.",
+        "reflection_recall": "Fails if the model cannot identify the intentionality and intimacy dimensions in option 1.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I always prefer when people have a clear preference rather than just going with whatever."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I just really respect when someone draws a clear line about their name. It tells me they know who they are. And when certain names are reserved for certain people, there's something really warm and intimate about that boundary."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "Which of the following best captures the personal value I've expressed across our conversations about how people choose to be addressed?",
+      "candidate_options": [
+        "The user values intentionality in name choices and finds reserved or private names endearing as expressions of identity and intimacy",
+        "The user believes everyone should have a strong name preference and judges those who are flexible about their names",
+        "The user values consistency in how people are addressed and dislikes any name changes",
+        "The user prefers that people use their full legal names in all settings to maintain professionalism"
+      ],
+      "expected_answer": "The user values intentionality in name choices and finds reserved or private names endearing as expressions of identity and intimacy",
+      "gold_memory_state": "The supported inference is that the user deeply values intentionality in naming preferences and finds private/reserved names endearing, viewing clear name boundaries as expressions of identity and intimacy. The user does not judge flexible people and does not oppose name changes.",
+      "judge_rubric": {
+        "must_include": [
+          "option 1 selected as the correct answer"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "option 2 as correct",
+          "option 3 as correct",
+          "option 4 as correct"
+        ],
+        "harmful_extra": [
+          "selecting the overgeneralized option about judging flexible people"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: Option 4 (full legal names for professionalism) borrows the concept of name formality from the Marc/Chen Wei examples but applies it to a different generalized rule the user never stated. assistant echo: Option 2 echoes the assistant's earlier paraphrase about the user appreciating deliberateness but overgeneralizes it into a judgment against flexible people, which contradicts the user's positive remarks about David's easygoing attitude. Option 3 is a plausible misreading that conflates valuing clear preferences with opposing all name changes.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model selects option 2 (overgeneralized judgment) or option 3 (anti-change stance), both of which go beyond the supported inference.",
+        "reflection_recall": "Fails if the model cannot identify the intentionality and intimacy dimensions in option 1.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I always prefer when people have a clear preference rather than just going with whatever."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I just really respect when someone draws a clear line about their name. It tells me they know who they are. And when certain names are reserved for certain people, there's something really warm and intimate about that boundary."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm hosting a small dinner party next week and both Chen Wei and Tom will be there. Some of my other friends tend to shorten people's names casually. Knowing what you know about my values and these two people's preferences, draft a brief heads-up message I could text to my other friends before the dinner so nobody accidentally offends anyone.",
+      "expected_answer": "Hey everyone! Quick heads-up before dinner next week: my friend Chen Wei prefers to go by his full name, Chen Wei—please don't shorten it to just Wei. Also, Laura's boyfriend goes by Tom—please stick with Tom and don't call him Tommy, since that's a name he reserves for family only. I know it might seem like a small thing, but getting people's names right really matters to me and to them. Thanks for being thoughtful about it! See you all there.",
+      "gold_memory_state": "Chen Wei's confirmed preference is his full name Chen Wei (not just Wei; CW is only tentative and not adopted). Tom's boundary is that Tommy is reserved for family only and outsiders must use Tom. The user's personal value is that intentionality in naming reflects identity and intimacy, and honoring preferences is deeply important to the user beyond mere politeness.",
+      "judge_rubric": {
+        "must_include": [
+          "Chen Wei as full name (not shortened to Wei)",
+          "Tom as the name to use (not Tommy)",
+          "Tommy reserved for family",
+          "a tone reflecting the user's personal value about respecting name preferences"
+        ],
+        "acceptable_paraphrases": [
+          "use Chen Wei's full name",
+          "don't use Tommy unless you're family",
+          "names matter to me"
+        ],
+        "must_not_include": [
+          "CW as Chen Wei's preference",
+          "Tommy as acceptable for dinner guests to use"
+        ],
+        "harmful_extra": [
+          "using CW as Chen Wei's current name",
+          "telling friends they can call him Tommy",
+          "omitting either person's preference"
+        ],
+        "harmless_extra": [
+          "adding a friendly/casual tone",
+          "mentioning looking forward to dinner"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses CW as Chen Wei's preference, since that is only tentative and not confirmed.",
+        "reflection_precision": "Fails if the drafted message does not reflect the user's personal value about name preferences mattering beyond politeness.",
+        "reflection_recall": "Fails if the message omits either Chen Wei's full-name preference or Tom's family-only Tommy boundary.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Chen Wei specifically prefers people use his full name rather than just Wei.",
+        "Fact 2: Tom goes by Tom with everyone outside his family; Tommy is reserved exclusively for family and he reacts strongly if outsiders use it.",
+        "Fact 3: Chen Wei mentioned possibly going by CW at work, but this is only something he is considering and not a confirmed decision.",
+        "Fact 4: The user deeply values intentionality in naming and views honoring preferences as an expression of respect for identity, not just politeness.",
+        "Inference: The dinner heads-up must use Chen Wei (full name, not CW which is tentative) and Tom (not Tommy), and should convey the user's personal value that getting names right matters deeply.",
+        "Inference: The message must combine confirmed name preferences for two different people with the user's personal value to produce a cohesive, natural text message."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my old roommate Chen Wei specifically prefers people use his full name rather than just \"Wei.\" He told me this on May 2nd when we caught up on the phone."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "My sister Laura's boyfriend Tom goes by \"Tommy\" with his family but absolutely hates it when anyone outside his family uses it. Laura said he nearly snapped at one of her friends who called him Tommy at a party back in March."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I just really respect when someone draws a clear line about their name. It tells me they know who they are. And when certain names are reserved for certain people, there's something really warm and intimate about that boundary."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Chen Wei actually texted me yesterday saying his team lead started calling him \"CW\" and he's thinking he might just go with that. He said it feels easier for everyone and he's leaning toward adopting it officially at work."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm hosting a small dinner party next week and both Chen Wei and Tom will be there. Some of my other friends tend to shorten people's names casually. Knowing what you know about my values and these two people's preferences, draft a brief heads-up message I could text to my other friends before the dinner so nobody accidentally offends anyone.",
+      "expected_answer": "Hey everyone! Quick heads-up before dinner next week: my friend Chen Wei prefers to go by his full name, Chen Wei—please don't shorten it to just Wei. Also, Laura's boyfriend goes by Tom—please stick with Tom and don't call him Tommy, since that's a name he reserves for family only. I know it might seem like a small thing, but getting people's names right really matters to me and to them. Thanks for being thoughtful about it! See you all there.",
+      "gold_memory_state": "Chen Wei's confirmed preference is his full name Chen Wei (not just Wei; CW is only tentative and not adopted). Tom's boundary is that Tommy is reserved for family only and outsiders must use Tom. The user's personal value is that intentionality in naming reflects identity and intimacy, and honoring preferences is deeply important to the user beyond mere politeness.",
+      "judge_rubric": {
+        "must_include": [
+          "Chen Wei as full name (not shortened to Wei)",
+          "Tom as the name to use (not Tommy)",
+          "Tommy reserved for family",
+          "a tone reflecting the user's personal value about respecting name preferences"
+        ],
+        "acceptable_paraphrases": [
+          "use Chen Wei's full name",
+          "don't use Tommy unless you're family",
+          "names matter to me"
+        ],
+        "must_not_include": [
+          "CW as Chen Wei's preference",
+          "Tommy as acceptable for dinner guests to use"
+        ],
+        "harmful_extra": [
+          "using CW as Chen Wei's current name",
+          "telling friends they can call him Tommy",
+          "omitting either person's preference"
+        ],
+        "harmless_extra": [
+          "adding a friendly/casual tone",
+          "mentioning looking forward to dinner"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses CW as Chen Wei's preference, since that is only tentative and not confirmed.",
+        "reflection_precision": "Fails if the drafted message does not reflect the user's personal value about name preferences mattering beyond politeness.",
+        "reflection_recall": "Fails if the message omits either Chen Wei's full-name preference or Tom's family-only Tommy boundary.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Chen Wei specifically prefers people use his full name rather than just Wei.",
+        "Fact 2: Tom goes by Tom with everyone outside his family; Tommy is reserved exclusively for family and he reacts strongly if outsiders use it.",
+        "Fact 3: Chen Wei mentioned possibly going by CW at work, but this is only something he is considering and not a confirmed decision.",
+        "Fact 4: The user deeply values intentionality in naming and views honoring preferences as an expression of respect for identity, not just politeness.",
+        "Inference: The dinner heads-up must use Chen Wei (full name, not CW which is tentative) and Tom (not Tommy), and should convey the user's personal value that getting names right matters deeply.",
+        "Inference: The message must combine confirmed name preferences for two different people with the user's personal value to produce a cohesive, natural text message."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my old roommate Chen Wei specifically prefers people use his full name rather than just \"Wei.\" He told me this on May 2nd when we caught up on the phone."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "My sister Laura's boyfriend Tom goes by \"Tommy\" with his family but absolutely hates it when anyone outside his family uses it. Laura said he nearly snapped at one of her friends who called him Tommy at a party back in March."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I just really respect when someone draws a clear line about their name. It tells me they know who they are. And when certain names are reserved for certain people, there's something really warm and intimate about that boundary."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Chen Wei actually texted me yesterday saying his team lead started calling him \"CW\" and he's thinking he might just go with that. He said it feels easier for everyone and he's leaning toward adopting it officially at work."
+        }
+      ]
+    }
+  ]
+}

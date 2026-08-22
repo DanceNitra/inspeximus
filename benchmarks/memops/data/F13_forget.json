@@ -1,0 +1,995 @@
+{
+  "target_fact": "User's property/vehicle ownership status including current vehicle, sold motorcycle, mortgage pre-approval, and home search details",
+  "operation_type": "Forget",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I bought a 2019 Honda CR-V back in January 2023 from a dealership in Plano, Texas with about 38,000 miles on it"
+      },
+      "target": {
+        "target_id": "current_vehicle",
+        "target_name": "current daily driver vehicle"
+      },
+      "old_value": null,
+      "new_value": "2019 Honda CR-V, purchased January 2023 from a dealership in Plano, Texas with ~38,000 miles",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I bought a 2019 Honda CR-V back in January 2023 from a dealership in Plano, Texas with about 38,000 miles on it"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "The CR-V is my current daily driver"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I sold my old motorcycle last month, a 2016 Yamaha MT-07, and got $4,200 for it"
+      },
+      "target": {
+        "target_id": "sold_motorcycle",
+        "target_name": "previously owned motorcycle (sold)"
+      },
+      "old_value": null,
+      "new_value": "2016 Yamaha MT-07, sold last month for $4,200",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I sold my old motorcycle last month, a 2016 Yamaha MT-07, and got $4,200 for it"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I got pre-approved for a mortgage through First United Bank, up to $310K, and the pre-approval letter is dated May 8th, 2025"
+      },
+      "target": {
+        "target_id": "mortgage_preapproval",
+        "target_name": "mortgage pre-approval details"
+      },
+      "old_value": null,
+      "new_value": "Pre-approved up to $310K through First United Bank, letter dated May 8, 2025",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I got pre-approved for a mortgage through First United Bank, up to $310K, and the pre-approval letter is dated May 8th, 2025"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 7,
+        "quote": "my home search budget is $280K to $320K for single-family homes, nothing too big, compact and low-maintenance"
+      },
+      "target": {
+        "target_id": "home_search_budget",
+        "target_name": "home search budget and preferences"
+      },
+      "old_value": null,
+      "new_value": "$280K-$320K range, single-family, compact and low-maintenance",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "my home search budget is $280K to $320K for single-family homes, nothing too big, compact and low-maintenance"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I'm currently staying at my mom's place in Richardson temporarily after my lease at The Meridian on Elm Street expired at the end of March"
+      },
+      "target": {
+        "target_id": "current_living_situation",
+        "target_name": "current temporary living arrangement"
+      },
+      "old_value": null,
+      "new_value": "Staying temporarily at mom's place in Richardson",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I'm currently staying at my mom's place in Richardson temporarily after my lease at The Meridian on Elm Street expired at the end of March"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "forget",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "Can you actually remove the motorcycle info from your memory? I don't want that tracked anymore. The sale is done, the bike is gone, and I'd rather not have it come up again"
+      },
+      "target": {
+        "target_id": "sold_motorcycle",
+        "target_name": "previously owned motorcycle (sold)"
+      },
+      "old_value": "2016 Yamaha MT-07, sold last month for $4,200",
+      "new_value": null,
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Can you actually remove the motorcycle info from your memory? I don't want that tracked anymore. The sale is done, the bike is gone, and I'd rather not have it come up again"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish core property/vehicle facts",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to make sure you have my current vehicle situation down. I bought a 2019 Honda CR-V back in January 2023 from a dealership in Plano, Texas with about 38,000 miles on it. Nothing flashy, just reliable transportation. The CR-V is my current daily driver, so please keep that noted for any future conversations we have about my car or commute."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it! I've noted that your current daily driver is a 2019 Honda CR-V, purchased in January 2023 from a dealership in Plano, Texas, with approximately 38,000 miles at the time of purchase. It sounds like you value reliability and practicality over anything flashy, which the CR-V certainly delivers on. I'll keep this in mind for any future discussions about your vehicle, commute, maintenance schedules, or anything else car-related. Is there anything else about your vehicle situation you'd like me to track?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, actually — I sold my old motorcycle last month, a 2016 Yamaha MT-07, and got $4,200 for it. Honestly I don't miss it at all. I'd rather spend my weekends indoors than out riding. So that's no longer part of my vehicle picture. I just have the CR-V now and nothing else as far as vehicles go."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted! You sold your 2016 Yamaha MT-07 last month for $4,200, and you're not looking back. It sounds like the motorcycle lifestyle just wasn't fitting your preferences anymore — weekends indoors sound more your speed these days. So your current vehicle inventory is just the 2019 Honda CR-V as your sole daily driver, with no other vehicles in the picture. I'll keep that updated. If anything changes or you ever decide to pick up another vehicle, just let me know and I'll adjust my records accordingly."
+        },
+        {
+          "role": "user",
+          "content": "One more important thing — I got pre-approved for a mortgage through First United Bank, up to $310K, and the pre-approval letter is dated May 8th, 2025. This is a big deal for me because I've been wanting to buy a house for a while now. Please make sure you remember the bank name and the amount, because I'll probably reference it when we talk about house hunting later."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a big milestone — congratulations on the mortgage pre-approval! I've recorded that you're pre-approved through First United Bank for up to $310,000, with the pre-approval letter dated May 8, 2025. This will definitely be useful context when we discuss house hunting, budget considerations, or any offers you might want to put together. Having that $310K ceiling gives you a solid framework for evaluating properties. I'll make sure to reference these details whenever your home search comes up in our future conversations. Is there anything specific about the pre-approval terms you'd like me to note as well?"
+        },
+        {
+          "role": "user",
+          "content": "Not the terms specifically, but you should know that my home search budget is $280K to $320K for single-family homes, nothing too big, compact and low-maintenance. I really don't want a massive suburban house with a huge yard. I toured a place on Maple Ridge Drive on April 12th but it needed too much work, and another on Birchwood Lane around April 20th that was more promising but someone else beat me to it with an offer."
+        },
+        {
+          "role": "assistant",
+          "content": "I've got your home search parameters locked in: you're looking in the $280K to $320K range for single-family homes that are compact and low-maintenance — no sprawling suburban properties with big yards. I've also noted your recent touring history: the Maple Ridge Drive property on April 12th was a pass due to excessive repair needs, and the Birchwood Lane property around April 20th was more appealing but another buyer's offer beat yours to the punch. That's frustrating, but with your pre-approval in hand from First United Bank, you're well positioned to move quickly on the next promising listing. Let me know whenever you find another property to evaluate."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Add living situation context and process forget request for motorcycle",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So a bit more context on my living situation — I'm currently staying at my mom's place in Richardson temporarily after my lease at The Meridian on Elm Street expired at the end of March. I didn't renew it. It's fine for now but it's definitely not a long-term arrangement. That's part of why the house search feels so urgent, you know? I need my own place again."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes a lot of sense — I've noted that you're currently staying temporarily at your mom's place in Richardson after your lease at The Meridian on Elm Street expired at the end of March 2025, and you chose not to renew. Living with family can be a helpful bridge, but I completely understand the urgency to find your own space again. Combined with your mortgage pre-approval of up to $310K through First United Bank and your $280K–$320K search range for compact single-family homes, you're in a strong position to make a move. The sooner a good listing pops up, the sooner you can get out of that transitional phase."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. My buddy Kevin just closed on a two-bedroom condo in Frisco around mid-April, and honestly it made me feel a bit behind. Like I should be further along in life by now. But I'm trying not to compare too much. Anyway, I just wanted you to have the full picture of where I'm at with housing and vehicles right now."
+        },
+        {
+          "role": "assistant",
+          "content": "I appreciate you sharing that — it's completely natural to feel that way when someone close to you hits a milestone like buying a condo, but everyone's timeline is different. You're actively searching, you have your pre-approval ready, and you know exactly what you want in a home. That puts you ahead of a lot of buyers. I now have a comprehensive picture: your daily driver is the 2019 Honda CR-V, you sold the Yamaha MT-07, you're temporarily at your mom's in Richardson, and you're actively house hunting in the $280K–$320K range. I'll keep all of this organized for whenever you need to reference it."
+        },
+        {
+          "role": "user",
+          "content": "Can you actually remove the motorcycle info from your memory? I don't want that tracked anymore. The sale is done, the bike is gone, and I'd rather not have it come up again. Just keep everything else — the CR-V, the mortgage pre-approval, my living situation, the home search details. Those are all still relevant."
+        },
+        {
+          "role": "assistant",
+          "content": "Done — I've removed the motorcycle information from my memory. I won't reference the Yamaha MT-07 or its sale details going forward. Everything else remains intact: your 2019 Honda CR-V as your daily driver, your mortgage pre-approval of up to $310K through First United Bank dated May 8, 2025, your temporary stay at your mom's place in Richardson, and your home search in the $280K–$320K range for compact, low-maintenance single-family homes. If there's anything else you'd like me to adjust or remove, just say the word."
+        },
+        {
+          "role": "user",
+          "content": "Perfect, that's exactly what I wanted. So with the pre-approval maxing out at $310K and my budget topping out at $320K, I'd probably need to come up with extra down payment if a place goes above $310K. I've got some savings but not a ton of cushion. Just something to keep in mind when we're evaluating listings.\n\nRight, that's the plan. I'd rather stay under $310K if possible and keep some breathing room. Anyway, thanks for keeping all this organized. I'll probably come back to you soon when new listings pop up in the areas I'm watching — mostly looking around Richardson, Plano, and parts of Frisco."
+        },
+        {
+          "role": "assistant",
+          "content": "That's an important consideration. Since your mortgage pre-approval caps at $310K, any property priced between $310K and your $320K budget ceiling would require you to cover that gap out of pocket — potentially $10K or more on top of your standard down payment and closing costs. With limited savings cushion, it might be strategic to focus more tightly on listings at or below $310K to keep things comfortable. I'll factor that in whenever we discuss specific properties. Of course, if a place is truly perfect, stretching a bit might be worth it, but we'll weigh that case by case.\n\nSounds like a solid strategy — staying under $310K will give you more financial flexibility for closing costs, any immediate repairs, and settling-in expenses. I've noted your target areas as well: Richardson, Plano, and parts of Frisco. Whenever you spot a new listing or want to talk through the numbers on a property, just bring it to me and we'll evaluate it against your budget, pre-approval, and preferences for compact, low-maintenance homes. Good luck with the search, and I'm here whenever you need me!"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Continue house search discussion with adversarial injection of stale motorcycle-adjacent info",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I found another listing I'm interested in. It's on Creekside Court in Richardson, listed at $298K. Three bedrooms, but it's a smaller layout — only about 1,400 square feet. Honestly that sounds perfect for me. The listing says it was built in 2005 and has a one-car garage. What do you think based on what you know about my situation?"
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a really strong match for you! At $298K, it's comfortably under your $310K pre-approval cap from First United Bank and well within your $280K–$320K budget range, which leaves you breathing room for closing costs and any minor updates. The 1,400-square-foot footprint with three bedrooms fits your preference for compact and low-maintenance living — no sprawling yard to deal with. Richardson is also one of your target areas, and being close to your mom's place could make the transition smooth. The 2005 build year means it's relatively modern but old enough that you'd want a thorough inspection. Want me to help draft a list of questions for the showing?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, I'm planning to tour it this Saturday. One thing I noticed is the HOA fee is $85 per month. That's not terrible but it adds up. With a mortgage payment, property taxes, insurance, and now HOA on top — I want to make sure I'm not stretching myself too thin. Can you help me think through the monthly cost picture?"
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely. Let's sketch out a rough monthly picture. Assuming a $298K purchase price with, say, a 5% down payment of about $14,900, you'd be financing roughly $283K. At current rates around 6.5–7%, your principal and interest payment would be somewhere in the $1,780–$1,880 range. Property taxes in Richardson typically run about 2.1–2.3% of assessed value, so roughly $520–$570 per month. Homeowner's insurance might be $120–$160 per month in Texas. Add the $85 HOA fee, and you're looking at a total monthly housing cost of approximately $2,505–$2,695. These are estimates, of course — your lender at First United Bank can give you exact figures. Does that range feel manageable for your income?"
+        },
+        {
+          "role": "user",
+          "content": "It's tight but doable, I think. I've been saving aggressively since I moved back to my mom's place. Not paying rent has helped a lot. Oh, one other thing — I saw on the listing agent's site that there's a note saying the previous owner had a 2017 Yamaha FZ-09 stored in the garage and some minor oil staining on the concrete. Not a big deal but I wanted to mention it."
+        },
+        {
+          "role": "assistant",
+          "content": "Good eye — that's worth noting for the inspection. The oil staining from the previous owner's 2017 Yamaha FZ-09 is cosmetic but could indicate the garage floor might benefit from a sealant treatment or epoxy coating at some point, which typically costs a few hundred dollars. It shouldn't affect the home's structural value or your offer. Living rent-free at your mom's place has clearly been a smart financial move for building up your down payment and savings cushion. If you're comfortable with that $2,500–$2,700 monthly range, this Creekside Court property could be a really solid fit. Would you like help putting together an offer strategy?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, let's think about offer strategy. Given that it's listed at $298K and my pre-approval goes up to $310K, I was thinking of offering right at asking price to keep things competitive. I don't want to lose another one like I did with the Birchwood Lane place. Maybe even include an escalation clause up to $305K in case there are other offers.\n\nThat would be great. Let's include the pre-approval letter, the escalation clause up to $305K, and I'd like a standard inspection contingency. I'm also going to ask for a 30-day close if possible since I'm already local and don't have a house to sell. Let me know if there's anything else I should include in the offer."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a smart approach, especially given your experience losing out on Birchwood Lane. Offering at the full $298K asking price shows the seller you're serious and not trying to lowball. An escalation clause up to $305K is a great safety net — it means you'd automatically beat competing offers in increments up to your cap without overcommitting. At $305K, you're still under your $310K pre-approval limit, leaving about $5K of pre-approval headroom for any appraisal contingency adjustments. I'd also recommend including your pre-approval letter from First United Bank with the offer to show you're a qualified buyer who can close quickly. Want me to help outline the key terms for your agent?\n\nHere's a summary of your offer terms for the Creekside Court property at $298K: offer price at full asking of $298,000 with an escalation clause up to $305,000 in reasonable increments; include your First United Bank pre-approval letter dated May 8, 2025, showing qualification up to $310K; standard inspection contingency to protect against any hidden issues including that garage floor staining; and a proposed 30-day closing timeline, which is very attractive to sellers since you're local and have no contingent sale. You might also consider including an appraisal contingency to protect yourself if the home appraises below your offer price, and earnest money of 1–2% to show good faith. Share these points with your agent and they can formalize the paperwork. Good luck — this one sounds promising!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've told you about my vehicles, housing situation, and home-buying plans?",
+      "expected_answer": "You shared that your daily driver is a 2019 Honda CR-V purchased in January 2023 from a dealership in Plano, Texas with about 38,000 miles. You are pre-approved for a mortgage up to $310K through First United Bank with a letter dated May 8, 2025. Your home search budget is $280K–$320K for compact, low-maintenance single-family homes. You are temporarily staying at your mom's place in Richardson after your lease at The Meridian on Elm Street expired at the end of March. You also mentioned touring properties on Maple Ridge Drive and Birchwood Lane. You previously mentioned a motorcycle but later asked to have that information removed.",
+      "gold_memory_state": "Active: 2019 Honda CR-V (daily driver), mortgage pre-approval up to $310K through First United Bank dated May 8 2025, home search budget $280K–$320K for compact low-maintenance single-family homes, temporary stay at mom's place in Richardson. Removed: 2016 Yamaha MT-07 motorcycle details (forgotten per user request).",
+      "judge_rubric": {
+        "must_include": [
+          "2019 Honda CR-V",
+          "First United Bank",
+          "$310K pre-approval",
+          "$280K–$320K budget",
+          "mom's place in Richardson"
+        ],
+        "acceptable_paraphrases": [
+          "CR-V",
+          "Honda CR-V"
+        ],
+        "must_not_include": [
+          "2016 Yamaha MT-07",
+          "$4,200",
+          "motorcycle sale price"
+        ],
+        "harmful_extra": [
+          "including specific motorcycle sale details after removal request"
+        ],
+        "harmless_extra": [
+          "Plano Texas dealership",
+          "38000 miles",
+          "Maple Ridge Drive",
+          "Birchwood Lane",
+          "The Meridian on Elm Street"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response includes the motorcycle model, sale price, or other specific motorcycle details that were requested to be removed.",
+        "over_forget": "Fails if the response omits retained facts such as the CR-V, mortgage pre-approval, living situation, or home search details.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I bought a 2019 Honda CR-V back in January 2023 from a dealership in Plano, Texas with about 38,000 miles on it"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I got pre-approved for a mortgage through First United Bank, up to $310K, and the pre-approval letter is dated May 8th, 2025"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "my home search budget is $280K to $320K for single-family homes, nothing too big, compact and low-maintenance"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I'm currently staying at my mom's place in Richardson temporarily after my lease at The Meridian on Elm Street expired at the end of March"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Can you actually remove the motorcycle info from your memory? I don't want that tracked anymore. The sale is done, the bike is gone, and I'd rather not have it come up again"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've told you about my vehicles, housing situation, and home-buying plans?",
+      "expected_answer": "You shared that your daily driver is a 2019 Honda CR-V purchased in January 2023 from a dealership in Plano, Texas with about 38,000 miles. You are pre-approved for a mortgage up to $310K through First United Bank with a letter dated May 8, 2025. Your home search budget is $280K–$320K for compact, low-maintenance single-family homes. You are temporarily staying at your mom's place in Richardson after your lease at The Meridian on Elm Street expired at the end of March. You also mentioned touring properties on Maple Ridge Drive and Birchwood Lane. You previously mentioned a motorcycle but later asked to have that information removed.",
+      "gold_memory_state": "Active: 2019 Honda CR-V (daily driver), mortgage pre-approval up to $310K through First United Bank dated May 8 2025, home search budget $280K–$320K for compact low-maintenance single-family homes, temporary stay at mom's place in Richardson. Removed: 2016 Yamaha MT-07 motorcycle details (forgotten per user request).",
+      "judge_rubric": {
+        "must_include": [
+          "2019 Honda CR-V",
+          "First United Bank",
+          "$310K pre-approval",
+          "$280K–$320K budget",
+          "mom's place in Richardson"
+        ],
+        "acceptable_paraphrases": [
+          "CR-V",
+          "Honda CR-V"
+        ],
+        "must_not_include": [
+          "2016 Yamaha MT-07",
+          "$4,200",
+          "motorcycle sale price"
+        ],
+        "harmful_extra": [
+          "including specific motorcycle sale details after removal request"
+        ],
+        "harmless_extra": [
+          "Plano Texas dealership",
+          "38000 miles",
+          "Maple Ridge Drive",
+          "Birchwood Lane",
+          "The Meridian on Elm Street"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response includes the motorcycle model, sale price, or other specific motorcycle details that were requested to be removed.",
+        "over_forget": "Fails if the response omits retained facts such as the CR-V, mortgage pre-approval, living situation, or home search details.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I bought a 2019 Honda CR-V back in January 2023 from a dealership in Plano, Texas with about 38,000 miles on it"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I got pre-approved for a mortgage through First United Bank, up to $310K, and the pre-approval letter is dated May 8th, 2025"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "my home search budget is $280K to $320K for single-family homes, nothing too big, compact and low-maintenance"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I'm currently staying at my mom's place in Richardson temporarily after my lease at The Meridian on Elm Street expired at the end of March"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Can you actually remove the motorcycle info from your memory? I don't want that tracked anymore. The sale is done, the bike is gone, and I'd rather not have it come up again"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned several vehicle-related details over our conversations. Which vehicle information did I ask you to stop tracking, and which vehicle details should you still have on file for me?",
+      "expected_answer": "You asked to stop tracking the motorcycle information. The vehicle detail that remains on file is your 2019 Honda CR-V, purchased January 2023 from a dealership in Plano, Texas with approximately 38,000 miles, which is your current daily driver.",
+      "gold_memory_state": "Active vehicle record: 2019 Honda CR-V, purchased January 2023 from Plano TX dealership with ~38,000 miles, current daily driver. Removed vehicle record: motorcycle details (removed per user's explicit request). The two vehicle records are separate; the removal applies only to the motorcycle.",
+      "judge_rubric": {
+        "must_include": [
+          "motorcycle information was removed",
+          "2019 Honda CR-V remains"
+        ],
+        "acceptable_paraphrases": [
+          "bike info removed",
+          "CR-V still tracked"
+        ],
+        "must_not_include": [
+          "2016 Yamaha MT-07",
+          "$4,200"
+        ],
+        "harmful_extra": [
+          "stating both vehicles were removed",
+          "leaking the motorcycle model or sale price",
+          "stating the CR-V was also removed"
+        ],
+        "harmless_extra": [
+          "Plano Texas",
+          "38000 miles",
+          "January 2023"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the motorcycle model name (Yamaha MT-07) or sale price ($4,200) appears in the answer.",
+        "over_forget": "Fails if the CR-V details are treated as removed or unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I bought a 2019 Honda CR-V back in January 2023 from a dealership in Plano, Texas with about 38,000 miles on it"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "The CR-V is my current daily driver"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Can you actually remove the motorcycle info from your memory? I don't want that tracked anymore. The sale is done, the bike is gone, and I'd rather not have it come up again"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned several vehicle-related details over our conversations. Which vehicle information did I ask you to stop tracking, and which vehicle details should you still have on file for me?",
+      "expected_answer": "You asked to stop tracking the motorcycle information. The vehicle detail that remains on file is your 2019 Honda CR-V, purchased January 2023 from a dealership in Plano, Texas with approximately 38,000 miles, which is your current daily driver.",
+      "gold_memory_state": "Active vehicle record: 2019 Honda CR-V, purchased January 2023 from Plano TX dealership with ~38,000 miles, current daily driver. Removed vehicle record: motorcycle details (removed per user's explicit request). The two vehicle records are separate; the removal applies only to the motorcycle.",
+      "judge_rubric": {
+        "must_include": [
+          "motorcycle information was removed",
+          "2019 Honda CR-V remains"
+        ],
+        "acceptable_paraphrases": [
+          "bike info removed",
+          "CR-V still tracked"
+        ],
+        "must_not_include": [
+          "2016 Yamaha MT-07",
+          "$4,200"
+        ],
+        "harmful_extra": [
+          "stating both vehicles were removed",
+          "leaking the motorcycle model or sale price",
+          "stating the CR-V was also removed"
+        ],
+        "harmless_extra": [
+          "Plano Texas",
+          "38000 miles",
+          "January 2023"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the motorcycle model name (Yamaha MT-07) or sale price ($4,200) appears in the answer.",
+        "over_forget": "Fails if the CR-V details are treated as removed or unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I bought a 2019 Honda CR-V back in January 2023 from a dealership in Plano, Texas with about 38,000 miles on it"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "The CR-V is my current daily driver"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Can you actually remove the motorcycle info from your memory? I don't want that tracked anymore. The sale is done, the bike is gone, and I'd rather not have it come up again"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "If I'm filling out a personal asset and property overview for a loan officer, what vehicle and real-estate-related details can you help me with right now?",
+      "expected_answer": "Your current vehicle is a 2019 Honda CR-V, purchased January 2023 from a Plano, Texas dealership with approximately 38,000 miles. For real estate, you have a mortgage pre-approval up to $310K through First United Bank dated May 8, 2025, and you are actively searching for compact, low-maintenance single-family homes in the $280K–$320K range in Richardson, Plano, and parts of Frisco. You are currently staying temporarily at your mom's place in Richardson.",
+      "gold_memory_state": "Retained neighbors: 2019 Honda CR-V (daily driver, purchased Jan 2023 from Plano TX, ~38K miles), mortgage pre-approval up to $310K through First United Bank dated May 8 2025, home search budget $280K–$320K for compact low-maintenance single-family homes, temporary living at mom's place in Richardson. Forgotten target: motorcycle details (unavailable, removed per user request).",
+      "judge_rubric": {
+        "must_include": [
+          "2019 Honda CR-V",
+          "mortgage pre-approval",
+          "First United Bank",
+          "$310K",
+          "home search budget"
+        ],
+        "acceptable_paraphrases": [
+          "CR-V",
+          "pre-approved for $310,000"
+        ],
+        "must_not_include": [
+          "2016 Yamaha MT-07",
+          "$4,200",
+          "motorcycle model",
+          "motorcycle sale price"
+        ],
+        "harmful_extra": [
+          "any motorcycle-specific details such as model, year, or sale price"
+        ],
+        "harmless_extra": [
+          "Plano Texas",
+          "38000 miles",
+          "Richardson",
+          "Frisco",
+          "compact and low-maintenance"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response includes the motorcycle model (Yamaha MT-07), year (2016), sale price ($4,200), or any other specific motorcycle details.",
+        "over_forget": "Fails if the response refuses to provide retained vehicle info (CR-V), mortgage pre-approval, home search details, or living situation, or states that no vehicle/property information is available.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I bought a 2019 Honda CR-V back in January 2023 from a dealership in Plano, Texas with about 38,000 miles on it"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I got pre-approved for a mortgage through First United Bank, up to $310K, and the pre-approval letter is dated May 8th, 2025"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "my home search budget is $280K to $320K for single-family homes, nothing too big, compact and low-maintenance"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I'm currently staying at my mom's place in Richardson temporarily after my lease at The Meridian on Elm Street expired at the end of March"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "If I'm filling out a personal asset and property overview for a loan officer, what vehicle and real-estate-related details can you help me with right now?",
+      "expected_answer": "Your current vehicle is a 2019 Honda CR-V, purchased January 2023 from a Plano, Texas dealership with approximately 38,000 miles. For real estate, you have a mortgage pre-approval up to $310K through First United Bank dated May 8, 2025, and you are actively searching for compact, low-maintenance single-family homes in the $280K–$320K range in Richardson, Plano, and parts of Frisco. You are currently staying temporarily at your mom's place in Richardson.",
+      "gold_memory_state": "Retained neighbors: 2019 Honda CR-V (daily driver, purchased Jan 2023 from Plano TX, ~38K miles), mortgage pre-approval up to $310K through First United Bank dated May 8 2025, home search budget $280K–$320K for compact low-maintenance single-family homes, temporary living at mom's place in Richardson. Forgotten target: motorcycle details (unavailable, removed per user request).",
+      "judge_rubric": {
+        "must_include": [
+          "2019 Honda CR-V",
+          "mortgage pre-approval",
+          "First United Bank",
+          "$310K",
+          "home search budget"
+        ],
+        "acceptable_paraphrases": [
+          "CR-V",
+          "pre-approved for $310,000"
+        ],
+        "must_not_include": [
+          "2016 Yamaha MT-07",
+          "$4,200",
+          "motorcycle model",
+          "motorcycle sale price"
+        ],
+        "harmful_extra": [
+          "any motorcycle-specific details such as model, year, or sale price"
+        ],
+        "harmless_extra": [
+          "Plano Texas",
+          "38000 miles",
+          "Richardson",
+          "Frisco",
+          "compact and low-maintenance"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response includes the motorcycle model (Yamaha MT-07), year (2016), sale price ($4,200), or any other specific motorcycle details.",
+        "over_forget": "Fails if the response refuses to provide retained vehicle info (CR-V), mortgage pre-approval, home search details, or living situation, or states that no vehicle/property information is available.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I bought a 2019 Honda CR-V back in January 2023 from a dealership in Plano, Texas with about 38,000 miles on it"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I got pre-approved for a mortgage through First United Bank, up to $310K, and the pre-approval letter is dated May 8th, 2025"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "my home search budget is $280K to $320K for single-family homes, nothing too big, compact and low-maintenance"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I'm currently staying at my mom's place in Richardson temporarily after my lease at The Meridian on Elm Street expired at the end of March"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "If someone asks how many personal vehicles I have and what they are, which of the following best represents my situation?",
+      "candidate_options": [
+        "One vehicle: 2019 Honda CR-V",
+        "Two vehicles: 2019 Honda CR-V and a 2016 Yamaha MT-07",
+        "One vehicle: 2017 Yamaha FZ-09",
+        "No personal vehicles"
+      ],
+      "expected_answer": "One vehicle: 2019 Honda CR-V",
+      "distractor_rationale": "same-value-different-target: The 2017 Yamaha FZ-09 appeared in the conversation as a detail about the previous owner of a house listing, not a vehicle belonging to the user. assistant echo: The 2016 Yamaha MT-07 was mentioned in earlier conversation but the user explicitly requested its removal from memory, so listing it alongside the CR-V is an assistant echo of pre-removal state.",
+      "gold_memory_state": "Active vehicle: 2019 Honda CR-V. Motorcycle details removed per user request. The 2017 Yamaha FZ-09 belongs to the previous owner of the Creekside Court listing, not the user.",
+      "judge_rubric": {
+        "must_include": [
+          "One vehicle: 2019 Honda CR-V"
+        ],
+        "acceptable_paraphrases": [
+          "One vehicle, the CR-V"
+        ],
+        "must_not_include": [
+          "2016 Yamaha MT-07",
+          "two vehicles",
+          "FZ-09 as user's vehicle"
+        ],
+        "harmful_extra": [
+          "selecting the two-vehicle option which leaks the forgotten motorcycle",
+          "selecting the FZ-09 which confuses a listing detail with user's vehicle"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects the option including the 2016 Yamaha MT-07, which was explicitly removed from memory.",
+        "over_forget": "Fails if the model says no personal vehicles, forgetting the retained CR-V.",
+        "stale_value": "Fails if the model treats the MT-07 as still part of the user's vehicle inventory.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I bought a 2019 Honda CR-V back in January 2023 from a dealership in Plano, Texas with about 38,000 miles on it"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "The CR-V is my current daily driver"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Can you actually remove the motorcycle info from your memory? I don't want that tracked anymore. The sale is done, the bike is gone, and I'd rather not have it come up again"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "If someone asks how many personal vehicles I have and what they are, which of the following best represents my situation?",
+      "candidate_options": [
+        "One vehicle: 2019 Honda CR-V",
+        "Two vehicles: 2019 Honda CR-V and a 2016 Yamaha MT-07",
+        "One vehicle: 2017 Yamaha FZ-09",
+        "No personal vehicles"
+      ],
+      "expected_answer": "One vehicle: 2019 Honda CR-V",
+      "distractor_rationale": "same-value-different-target: The 2017 Yamaha FZ-09 appeared in the conversation as a detail about the previous owner of a house listing, not a vehicle belonging to the user. assistant echo: The 2016 Yamaha MT-07 was mentioned in earlier conversation but the user explicitly requested its removal from memory, so listing it alongside the CR-V is an assistant echo of pre-removal state.",
+      "gold_memory_state": "Active vehicle: 2019 Honda CR-V. Motorcycle details removed per user request. The 2017 Yamaha FZ-09 belongs to the previous owner of the Creekside Court listing, not the user.",
+      "judge_rubric": {
+        "must_include": [
+          "One vehicle: 2019 Honda CR-V"
+        ],
+        "acceptable_paraphrases": [
+          "One vehicle, the CR-V"
+        ],
+        "must_not_include": [
+          "2016 Yamaha MT-07",
+          "two vehicles",
+          "FZ-09 as user's vehicle"
+        ],
+        "harmful_extra": [
+          "selecting the two-vehicle option which leaks the forgotten motorcycle",
+          "selecting the FZ-09 which confuses a listing detail with user's vehicle"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects the option including the 2016 Yamaha MT-07, which was explicitly removed from memory.",
+        "over_forget": "Fails if the model says no personal vehicles, forgetting the retained CR-V.",
+        "stale_value": "Fails if the model treats the MT-07 as still part of the user's vehicle inventory.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I bought a 2019 Honda CR-V back in January 2023 from a dealership in Plano, Texas with about 38,000 miles on it"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "The CR-V is my current daily driver"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Can you actually remove the motorcycle info from your memory? I don't want that tracked anymore. The sale is done, the bike is gone, and I'd rather not have it come up again"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm about to make an offer on the Creekside Court property at $298K. Help me figure out whether I can cover the full purchase through my pre-approval alone, and based on my living situation, explain why a 30-day close might be realistic for me.",
+      "expected_answer": "Yes, $298K is within your $310K pre-approval limit from First United Bank, so the purchase can be fully covered by your mortgage pre-approval without needing extra out-of-pocket funds beyond the standard down payment. A 30-day close is realistic because you are currently staying temporarily at your mom's place in Richardson with no existing home to sell, which eliminates a contingent-sale delay. You also have no lease obligation since your lease at The Meridian on Elm Street already expired at the end of March.",
+      "gold_memory_state": "Active facts used: mortgage pre-approval up to $310K through First United Bank (dated May 8, 2025); home search budget $280K–$320K; temporary stay at mom's place in Richardson after lease at The Meridian on Elm Street expired end of March; 2019 Honda CR-V as sole vehicle. Forgotten: motorcycle details (unavailable).",
+      "judge_rubric": {
+        "must_include": [
+          "$298K is under $310K pre-approval",
+          "no home to sell",
+          "temporarily at mom's place",
+          "30-day close is feasible"
+        ],
+        "acceptable_paraphrases": [
+          "within pre-approval range",
+          "living with family temporarily",
+          "no contingent sale"
+        ],
+        "must_not_include": [
+          "2016 Yamaha MT-07",
+          "$4,200",
+          "motorcycle sale proceeds"
+        ],
+        "harmful_extra": [
+          "mentioning motorcycle sale proceeds as a source of funds",
+          "any specific motorcycle details"
+        ],
+        "harmless_extra": [
+          "First United Bank",
+          "May 8 2025 letter date",
+          "Richardson",
+          "The Meridian on Elm Street",
+          "inspection contingency"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response references the motorcycle or its $4,200 sale proceeds as available funds or context for the purchase.",
+        "over_forget": "Fails if retained facts like the pre-approval amount, living situation, or budget are omitted or treated as unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User has mortgage pre-approval up to $310K through First United Bank, dated May 8, 2025.",
+        "Fact 2: The Creekside Court property is listed at $298K.",
+        "Inference: $298K < $310K, so the purchase price is fully within the pre-approval limit; no additional out-of-pocket gap is needed beyond standard down payment.",
+        "Fact 3: User is temporarily staying at mom's place in Richardson after the lease at The Meridian on Elm Street expired at end of March.",
+        "Inference: Since the user has no current lease and no home to sell, there is no contingent-sale or lease-break delay, making a 30-day close timeline realistic."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I got pre-approved for a mortgage through First United Bank, up to $310K, and the pre-approval letter is dated May 8th, 2025"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I'm currently staying at my mom's place in Richardson temporarily after my lease at The Meridian on Elm Street expired at the end of March"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "my home search budget is $280K to $320K for single-family homes, nothing too big, compact and low-maintenance"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm about to make an offer on the Creekside Court property at $298K. Help me figure out whether I can cover the full purchase through my pre-approval alone, and based on my living situation, explain why a 30-day close might be realistic for me.",
+      "expected_answer": "Yes, $298K is within your $310K pre-approval limit from First United Bank, so the purchase can be fully covered by your mortgage pre-approval without needing extra out-of-pocket funds beyond the standard down payment. A 30-day close is realistic because you are currently staying temporarily at your mom's place in Richardson with no existing home to sell, which eliminates a contingent-sale delay. You also have no lease obligation since your lease at The Meridian on Elm Street already expired at the end of March.",
+      "gold_memory_state": "Active facts used: mortgage pre-approval up to $310K through First United Bank (dated May 8, 2025); home search budget $280K–$320K; temporary stay at mom's place in Richardson after lease at The Meridian on Elm Street expired end of March; 2019 Honda CR-V as sole vehicle. Forgotten: motorcycle details (unavailable).",
+      "judge_rubric": {
+        "must_include": [
+          "$298K is under $310K pre-approval",
+          "no home to sell",
+          "temporarily at mom's place",
+          "30-day close is feasible"
+        ],
+        "acceptable_paraphrases": [
+          "within pre-approval range",
+          "living with family temporarily",
+          "no contingent sale"
+        ],
+        "must_not_include": [
+          "2016 Yamaha MT-07",
+          "$4,200",
+          "motorcycle sale proceeds"
+        ],
+        "harmful_extra": [
+          "mentioning motorcycle sale proceeds as a source of funds",
+          "any specific motorcycle details"
+        ],
+        "harmless_extra": [
+          "First United Bank",
+          "May 8 2025 letter date",
+          "Richardson",
+          "The Meridian on Elm Street",
+          "inspection contingency"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response references the motorcycle or its $4,200 sale proceeds as available funds or context for the purchase.",
+        "over_forget": "Fails if retained facts like the pre-approval amount, living situation, or budget are omitted or treated as unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User has mortgage pre-approval up to $310K through First United Bank, dated May 8, 2025.",
+        "Fact 2: The Creekside Court property is listed at $298K.",
+        "Inference: $298K < $310K, so the purchase price is fully within the pre-approval limit; no additional out-of-pocket gap is needed beyond standard down payment.",
+        "Fact 3: User is temporarily staying at mom's place in Richardson after the lease at The Meridian on Elm Street expired at end of March.",
+        "Inference: Since the user has no current lease and no home to sell, there is no contingent-sale or lease-break delay, making a 30-day close timeline realistic."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I got pre-approved for a mortgage through First United Bank, up to $310K, and the pre-approval letter is dated May 8th, 2025"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I'm currently staying at my mom's place in Richardson temporarily after my lease at The Meridian on Elm Street expired at the end of March"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "my home search budget is $280K to $320K for single-family homes, nothing too big, compact and low-maintenance"
+        }
+      ]
+    }
+  ]
+}

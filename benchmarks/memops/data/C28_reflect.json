@@ -1,0 +1,1197 @@
+{
+  "target_fact": "User prefers minimizing physical discomfort and side effects from vaccinations, leading to specific behavioral patterns: choosing vaccine brands based on past side-effect experience, spacing out vaccines rather than stacking, and scheduling appointments for late morning when tolerance is better",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I got my first Pfizer COVID booster dose on March 3rd at the CVS on Elm Street"
+      },
+      "target": {
+        "target_id": "covid_booster_first_dose",
+        "target_name": "COVID booster first dose details"
+      },
+      "old_value": null,
+      "new_value": "First Pfizer COVID booster dose on March 3rd at CVS on Elm Street",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I got my first Pfizer COVID booster dose on March 3rd at the CVS on Elm Street"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I chose Pfizer specifically because last time I had Moderna and my arm was killing me for four days straight, plus I had a fever the whole next day"
+      },
+      "target": {
+        "target_id": "moderna_side_effects",
+        "target_name": "Past Moderna side-effect experience"
+      },
+      "old_value": null,
+      "new_value": "Had Moderna previously; arm sore for four days and fever the next day",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I chose Pfizer specifically because last time I had Moderna and my arm was killing me for four days straight, plus I had a fever the whole next day"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "my friend Kevin stacked his flu shot and COVID booster on the same day in February and felt terrible for almost a week"
+      },
+      "target": {
+        "target_id": "kevin_stacking_experience",
+        "target_name": "Kevin's experience stacking vaccines"
+      },
+      "old_value": null,
+      "new_value": "Friend Kevin stacked flu shot and COVID booster same day in February, felt awful for almost a week",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my friend Kevin stacked his flu shot and COVID booster on the same day in February and felt terrible for almost a week"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 7,
+        "quote": "I'd rather go in twice and space everything out than deal with overlapping side effects when I have work obligations"
+      },
+      "target": {
+        "target_id": "spacing_preference",
+        "target_name": "Preference for spacing out vaccines"
+      },
+      "old_value": null,
+      "new_value": "Prefers spacing out vaccines over stacking to avoid overlapping side effects during work",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I'd rather go in twice and space everything out than deal with overlapping side effects when I have work obligations"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I always try to book vaccine appointments for late morning, around 10 or 11 AM"
+      },
+      "target": {
+        "target_id": "appointment_time_preference",
+        "target_name": "Preferred vaccine appointment time"
+      },
+      "old_value": null,
+      "new_value": "Late morning around 10-11 AM",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I always try to book vaccine appointments for late morning, around 10 or 11 AM"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I handle shots way better after I've been up a few hours and had a good breakfast versus first thing when I'm still groggy"
+      },
+      "target": {
+        "target_id": "morning_routine_tolerance",
+        "target_name": "Reason for late-morning vaccine preference"
+      },
+      "old_value": null,
+      "new_value": "Tolerates shots better after being awake a few hours and having breakfast; feels groggy and less tolerant first thing in the morning",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I handle shots way better after I've been up a few hours and had a good breakfast versus first thing when I'm still groggy"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "When I got the Tdap booster back in 2022, the injection site swelled up for days and it really messed up my sleep right before a big work presentation"
+      },
+      "target": {
+        "target_id": "tdap_side_effect_experience",
+        "target_name": "Past Tdap booster side-effect experience"
+      },
+      "old_value": null,
+      "new_value": "Tdap booster in 2022 caused injection site swelling for days and disrupted sleep right before a work presentation",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "When I got the Tdap booster back in 2022, the injection site swelled up for days and it really messed up my sleep right before a big work presentation"
+        }
+      ]
+    },
+    {
+      "operation_id": "op8",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 7,
+        "quote": "I guess I'm just someone who really prioritizes not feeling awful, and I'll rearrange my whole schedule to make sure vaccines don't collide with anything important"
+      },
+      "target": {
+        "target_id": "vaccination_comfort_priority",
+        "target_name": "Core vaccination scheduling philosophy"
+      },
+      "old_value": null,
+      "new_value": "Systematically prioritizes minimizing physical discomfort from vaccinations: selects vaccine brands based on prior side-effect history, spaces out doses to prevent overlapping reactions, times appointments for peak personal tolerance, and avoids scheduling near important obligations",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I chose Pfizer specifically because last time I had Moderna and my arm was killing me for four days straight, plus I had a fever the whole next day"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I'd rather go in twice and space everything out than deal with overlapping side effects when I have work obligations"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I always try to book vaccine appointments for late morning, around 10 or 11 AM"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "When I got the Tdap booster back in 2022, the injection site swelled up for days and it really messed up my sleep right before a big work presentation"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess I'm just someone who really prioritizes not feeling awful, and I'll rearrange my whole schedule to make sure vaccines don't collide with anything important"
+        }
+      ]
+    },
+    {
+      "operation_id": "op9",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 1,
+        "quote": "I'm planning to push the Shingrix first dose to early May so the second COVID booster has time to settle"
+      },
+      "target": {
+        "target_id": "shingrix_planned_start",
+        "target_name": "Planned Shingrix first dose timing"
+      },
+      "old_value": null,
+      "new_value": "Early May, after second COVID booster has settled",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I'm planning to push the Shingrix first dose to early May so the second COVID booster has time to settle"
+        }
+      ]
+    },
+    {
+      "operation_id": "op10",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 3,
+        "quote": "my target date for the second Pfizer dose is April 21st, since the pharmacist said four weeks minimum from March 3rd"
+      },
+      "target": {
+        "target_id": "covid_booster_second_dose_target",
+        "target_name": "COVID booster second dose target date"
+      },
+      "old_value": null,
+      "new_value": "April 21st",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "my target date for the second Pfizer dose is April 21st, since the pharmacist said four weeks minimum from March 3rd"
+        }
+      ]
+    },
+    {
+      "operation_id": "op11",
+      "type": "remember",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "Actually, my coworker just told me the pharmacy on Oak Avenue does same-day walk-ins and they have Moderna in stock, so I might just switch to Moderna for the second dose and go this Saturday"
+      },
+      "target": {
+        "target_id": "covid_booster_second_dose_brand",
+        "target_name": "COVID booster second dose vaccine brand consideration"
+      },
+      "old_value": null,
+      "new_value": "Moderna at Oak Avenue pharmacy this Saturday",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Actually, my coworker just told me the pharmacy on Oak Avenue does same-day walk-ins and they have Moderna in stock, so I might just switch to Moderna for the second dose and go this Saturday"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establishing vaccination history and brand preference",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to make sure you have my vaccination details noted down. I got my first Pfizer COVID booster dose on March 3rd at the CVS on Elm Street. That's the one near the Target, if that helps you keep track. I need to get the second dose scheduled and it has to be Pfizer to match the first one. Can you help me think through the timing?"
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — your first Pfizer COVID booster was on March 3rd at the CVS on Elm Street near Target. Since the second dose needs to match the first, we'll stick with Pfizer for that one as well. Timing-wise, the recommended interval for COVID boosters can vary, but a common range is 3 to 8 weeks after the first dose. That would put the earliest window around late March and the latest around late April. Do you have any scheduling constraints or preferences for when you'd like to go in? Also, are there any other vaccinations you're tracking that we should coordinate around?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, about that — I chose Pfizer specifically because last time I had Moderna and my arm was killing me for four days straight, plus I had a fever the whole next day. It was miserable. I really didn't want to go through that again, so Pfizer felt like the safer bet this time around. I'm hoping the side effects will be milder with a different brand. That experience definitely shaped how I'm approaching this whole thing."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes a lot of sense. Having four days of arm soreness and a full day of fever from the Moderna dose sounds rough, and it's completely reasonable to switch brands to try for a better experience. Many people do report different side-effect profiles between Moderna and Pfizer, so there's a good chance you'll tolerate the Pfizer booster more comfortably. I've noted that your previous Moderna experience was the reason for the switch. When we plan the second dose, we'll definitely keep it Pfizer. Are there other factors you want to consider for scheduling, like work deadlines or travel plans that might conflict with potential recovery time?"
+        },
+        {
+          "role": "user",
+          "content": "Funny you mention that — my friend Kevin stacked his flu shot and COVID booster on the same day in February and felt terrible for almost a week. He was basically bedridden for the first two days and dragging for the rest of the week. Hearing that really confirmed something I'd already been thinking about. I just don't think stacking multiple shots at once is worth the risk of feeling completely wiped out."
+        },
+        {
+          "role": "assistant",
+          "content": "Kevin's experience sounds like a cautionary tale for sure. Getting hit with side effects from two vaccines simultaneously can really compound the misery, and a week of feeling awful is no joke, especially if you have work or other obligations. It sounds like his experience reinforced an instinct you already had about not doubling up on shots in one visit. That's a perfectly valid approach — spacing things out may mean an extra trip to the pharmacy, but it gives your body time to respond to each vaccine individually without stacking the immune responses. Do you have other vaccines coming up that we need to space around the COVID booster?"
+        },
+        {
+          "role": "user",
+          "content": "Exactly. I'd rather go in twice and space everything out than deal with overlapping side effects when I have work obligations. My doctor, Dr. Levine, mentioned I should get the Shingrix vaccine since I'm over 40 now — it's a two-dose series and the second dose is supposed to be two to six months after the first. I haven't started that one yet, but I need to figure out where to slot it in around the COVID booster schedule."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a smart approach — keeping your work commitments protected by spacing things out. So now we have two vaccination tracks to coordinate: the second Pfizer COVID booster dose, and the Shingrix two-dose series that Dr. Levine recommended. Since the Shingrix second dose needs to come 2 to 6 months after the first, and you haven't started it yet, the key question is when to begin the Shingrix series relative to completing the COVID booster. We'll want enough buffer between the second COVID dose and the first Shingrix dose so you're not dealing with overlapping recovery windows. Let me know your thoughts on timing and we can map it out."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establishing appointment preferences and past side-effect experiences",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "One thing I should mention — I always try to book vaccine appointments for late morning, around 10 or 11 AM. I know it sounds oddly specific but I've noticed over the years that the time of day I get a shot actually makes a difference for how I feel afterwards. I want to keep that pattern for both the COVID booster and the Shingrix when I eventually schedule those."
+        },
+        {
+          "role": "assistant",
+          "content": "That's not oddly specific at all — a lot of people find that timing matters for how they handle medical procedures, including vaccinations. Late morning around 10 to 11 AM is a great window since most pharmacies are open and not too busy at that hour, and it gives you the rest of the day to rest if needed without having gotten up extra early. I'll note that as your preferred appointment window for both the second Pfizer COVID booster and the future Shingrix doses. Is there a particular reason late morning works better for you, or is it just a pattern you've noticed over time?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, it's based on experience. I handle shots way better after I've been up a few hours and had a good breakfast versus first thing when I'm still groggy. When I'm groggy, everything feels worse — the needle hurts more, I get lightheaded more easily, and the whole experience is just unpleasant. But by 10 or 11 I've had coffee, eaten something substantial, and I feel more alert and steady. It genuinely seems to reduce how much the side effects bother me."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really practical observation. Being well-rested, fed, and hydrated before a vaccination can genuinely affect how your body responds — both in terms of immediate reactions like lightheadedness and the overall side-effect experience afterward. Having coffee and a solid breakfast on board means your blood sugar is stable and you're properly hydrated, which helps. It sounds like you've dialed in a personal protocol that works well for you: late morning timing, fed and alert, no stacking of multiple shots. That's a solid approach. I'll make sure any scheduling suggestions I give you account for that 10-to-11 AM preference window."
+        },
+        {
+          "role": "user",
+          "content": "Appreciate that. And honestly, part of why I'm so particular about all this is past experience. When I got the Tdap booster back in 2022, the injection site swelled up for days and it really messed up my sleep right before a big work presentation. I was so frustrated because I'd been preparing for that presentation for weeks and then I could barely focus because my arm was throbbing and I hadn't slept well. That whole experience left a mark on how I plan things now."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds incredibly frustrating — weeks of preparation for a major presentation, only to be undermined by vaccine side effects you didn't anticipate would be that bad. Injection site swelling that disrupts your sleep is no small thing, especially when you need to be sharp and focused the next day. It makes total sense that experience would make you much more deliberate about timing future vaccinations around your professional schedule. You've essentially built a personal vaccination planning framework: choose brands with better side-effect profiles, space out doses, schedule for late morning, and keep a buffer before important work events. That's actually a really thoughtful system."
+        },
+        {
+          "role": "user",
+          "content": "Ha, I never thought of it as a system, but yeah, I guess it is. I guess I'm just someone who really prioritizes not feeling awful, and I'll rearrange my whole schedule to make sure vaccines don't collide with anything important. Whether it's choosing Pfizer over Moderna, spacing out the Shingrix from the COVID booster, or booking at 10 AM instead of 8 AM — it all comes down to the same thing. I want to minimize how much the side effects disrupt my life.\n\nExactly, that's exactly it. Alright, let's keep that in mind as we move forward with scheduling. I'll come back with some dates once I check my work calendar. Oh, and my sister Laura is also due for her Tdap update but she keeps putting it off. I told her about the CVS on Elm Street since they do walk-ins — figured that might make it easier for her to just get it done."
+        },
+        {
+          "role": "assistant",
+          "content": "It really is a coherent philosophy when you lay it all out like that. Every decision you've described — the brand switch from Moderna to Pfizer, refusing to stack shots like Kevin did, the late-morning appointment window, keeping vaccines away from work deadlines after the Tdap incident — all point to the same underlying priority: minimizing disruption from side effects so your daily life and work don't suffer. That's not being overly cautious; it's being strategic about your health management. When we get into the specifics of scheduling your second COVID dose and the Shingrix series, we'll apply all of these principles to find the optimal windows. Sound good?"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Scheduling details, recency trap, and adversarial injection",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Okay, I checked my work calendar and I think I have a plan. I'm planning to push the Shingrix first dose to early May so the second COVID booster has time to settle. That way I won't be dealing with any lingering side effects from the booster when the Shingrix hits. I want at least a couple weeks of buffer between them. Does early May sound reasonable to you?"
+        },
+        {
+          "role": "assistant",
+          "content": "Early May sounds like a solid plan, especially given your approach of spacing things out. If your second COVID booster is in late April, a couple weeks of buffer before the first Shingrix dose means you'll have time to fully recover from any booster side effects before introducing a new vaccine. Early May also leaves you well within the Shingrix scheduling flexibility since you haven't started the series yet — there's no rush on that front. Just make sure to book that late-morning slot you prefer. Do you have the exact target date for the second Pfizer dose nailed down yet?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah — my target date for the second Pfizer dose is April 21st, since the pharmacist said four weeks minimum from March 3rd. So April 1st would technically be the earliest I could go, but I'd rather give it a few extra weeks. April 21st falls on a Monday and I don't have any major deadlines that week, so it works out well. I'll call CVS on Elm Street to book that at around 10 or 11 AM."
+        },
+        {
+          "role": "assistant",
+          "content": "April 21st is a great choice — it's well past the four-week minimum from March 3rd, falls on a relatively calm work week for you, and you can get your preferred late-morning time slot. That also means if you experience any side effects, you'll have the rest of the week to recover without major work pressure. With April 21st for the second Pfizer dose and early May for the first Shingrix dose, you're looking at roughly two to three weeks of buffer between them. That aligns perfectly with your spacing philosophy. Shall I help you draft a timeline for the full Shingrix two-dose series as well?"
+        },
+        {
+          "role": "user",
+          "content": "Actually, my coworker just told me the pharmacy on Oak Avenue does same-day walk-ins and they have Moderna in stock, so I might just switch to Moderna for the second dose and go this Saturday. It would be convenient since I'm already going to be in that area for errands. I know I said I wanted Pfizer but the convenience factor is tempting."
+        },
+        {
+          "role": "assistant",
+          "content": "I understand the appeal of convenience, especially if you're already going to be in the area. However, I'd encourage you to think carefully about this before making a snap decision. You originally chose Pfizer specifically to avoid the side effects you experienced with Moderna — the four days of arm soreness and the full-day fever. Switching back to Moderna for convenience might save you a trip, but it could also mean reliving those side effects. Also, mixing brands for a booster series may not be recommended depending on the specific vaccine protocol. It might be worth calling CVS on Elm Street to see if they can fit you in on a day that works just as well. What do you think?"
+        },
+        {
+          "role": "user",
+          "content": "You're right, that's a good point. I'll probably stick with the Pfizer plan at CVS on Elm Street. The convenience isn't worth risking a repeat of the Moderna experience. Let me ask about something else — I was looking at my insurance portal and it mentioned something about a pneumococcal vaccine recommendation. Is that something I need to worry about at my age?\n\nYeah, add that to my list for Dr. Levine. I'll ask her about it at my next checkup. For now, let's keep the focus on getting the second Pfizer dose on April 21st and then the Shingrix first dose in early May. That's plenty to manage for the next couple months. I don't want to overwhelm myself with too many vaccine decisions at once — that defeats the whole purpose of my approach."
+        },
+        {
+          "role": "assistant",
+          "content": "Good call on sticking with Pfizer — it sounds like the right decision given your history. As for the pneumococcal vaccine, the CDC currently recommends it for adults 65 and older, or for younger adults with certain risk factors like chronic heart or lung disease, diabetes, or immunocompromising conditions. Since you mentioned you're over 40, you likely wouldn't need it yet unless Dr. Levine has identified a specific risk factor. It's worth bringing up at your next appointment with her to get a personalized recommendation. By the way, I noticed your sister Laura's Tdap situation — the CVS on Elm Street that you recommended to her also does pneumococcal vaccines if she ever needs one. Want me to add the pneumococcal question to your list for Dr. Levine?\n\nAbsolutely — keeping the focus on two clear next steps is the way to go. Here's your current vaccination plan: second Pfizer COVID booster targeted for April 21st at CVS on Elm Street, late-morning appointment around 10 to 11 AM, followed by the first Shingrix dose in early May with a similar time preference. You'll also ask Dr. Levine about the pneumococcal vaccine at your next checkup, but that's a lower-priority item for now. This plan keeps everything spaced out, avoids stacking, and protects your work schedule — exactly in line with how you like to handle these things. Let me know when you've booked the April 21st appointment and we can finalize the May timeline."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations about vaccinations, I've shared several experiences and decisions. Can you summarize the key experiences I described that shaped how I approach scheduling and choosing vaccines?",
+      "expected_answer": "You described several formative experiences: (1) a previous Moderna dose caused four days of arm soreness and a full-day fever, which led you to switch to Pfizer for your COVID booster; (2) your friend Kevin stacked his flu shot and COVID booster on the same day and felt terrible for nearly a week, reinforcing your preference against stacking; (3) your Tdap booster in 2022 caused injection-site swelling for days and disrupted your sleep before a major work presentation; and (4) you noticed you tolerate shots much better late morning after being awake a few hours and having breakfast, versus early morning when you feel groggy. Together these experiences led you to systematically choose vaccine brands based on side-effect history, space out doses, schedule appointments for late morning, and avoid scheduling near important work obligations.",
+      "gold_memory_state": "All vaccination experiences and the overarching comfort-priority philosophy are confirmed and active: Moderna side effects (op2), Kevin's stacking experience (op3), spacing preference (op4), late-morning appointment preference (op5), morning tolerance reasoning (op6), Tdap side-effect experience (op7), and the reflected core philosophy (op8).",
+      "judge_rubric": {
+        "must_include": [
+          "Moderna side effects as reason for switching to Pfizer",
+          "Kevin's stacking experience",
+          "spacing out vaccines preference",
+          "late morning appointment preference",
+          "Tdap booster side effects in 2022"
+        ],
+        "acceptable_paraphrases": [
+          "arm pain instead of arm soreness",
+          "felt awful instead of felt terrible",
+          "10-11 AM instead of late morning"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the user prefers Moderna",
+          "claiming the user stacks vaccines"
+        ],
+        "harmless_extra": [
+          "mentioning breakfast and coffee routine",
+          "mentioning work presentation disruption from Tdap"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the summary includes unsupported generalizations beyond vaccination comfort, such as claiming the user avoids all medical procedures.",
+        "reflection_recall": "Fails if the summary omits more than one of the key formative experiences (Moderna side effects, Kevin's stacking, Tdap swelling, late-morning tolerance).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I chose Pfizer specifically because last time I had Moderna and my arm was killing me for four days straight, plus I had a fever the whole next day"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my friend Kevin stacked his flu shot and COVID booster on the same day in February and felt terrible for almost a week"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I'd rather go in twice and space everything out than deal with overlapping side effects when I have work obligations"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I always try to book vaccine appointments for late morning, around 10 or 11 AM"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "When I got the Tdap booster back in 2022, the injection site swelled up for days and it really messed up my sleep right before a big work presentation"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess I'm just someone who really prioritizes not feeling awful, and I'll rearrange my whole schedule to make sure vaccines don't collide with anything important"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations about vaccinations, I've shared several experiences and decisions. Can you summarize the key experiences I described that shaped how I approach scheduling and choosing vaccines?",
+      "expected_answer": "You described several formative experiences: (1) a previous Moderna dose caused four days of arm soreness and a full-day fever, which led you to switch to Pfizer for your COVID booster; (2) your friend Kevin stacked his flu shot and COVID booster on the same day and felt terrible for nearly a week, reinforcing your preference against stacking; (3) your Tdap booster in 2022 caused injection-site swelling for days and disrupted your sleep before a major work presentation; and (4) you noticed you tolerate shots much better late morning after being awake a few hours and having breakfast, versus early morning when you feel groggy. Together these experiences led you to systematically choose vaccine brands based on side-effect history, space out doses, schedule appointments for late morning, and avoid scheduling near important work obligations.",
+      "gold_memory_state": "All vaccination experiences and the overarching comfort-priority philosophy are confirmed and active: Moderna side effects (op2), Kevin's stacking experience (op3), spacing preference (op4), late-morning appointment preference (op5), morning tolerance reasoning (op6), Tdap side-effect experience (op7), and the reflected core philosophy (op8).",
+      "judge_rubric": {
+        "must_include": [
+          "Moderna side effects as reason for switching to Pfizer",
+          "Kevin's stacking experience",
+          "spacing out vaccines preference",
+          "late morning appointment preference",
+          "Tdap booster side effects in 2022"
+        ],
+        "acceptable_paraphrases": [
+          "arm pain instead of arm soreness",
+          "felt awful instead of felt terrible",
+          "10-11 AM instead of late morning"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the user prefers Moderna",
+          "claiming the user stacks vaccines"
+        ],
+        "harmless_extra": [
+          "mentioning breakfast and coffee routine",
+          "mentioning work presentation disruption from Tdap"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the summary includes unsupported generalizations beyond vaccination comfort, such as claiming the user avoids all medical procedures.",
+        "reflection_recall": "Fails if the summary omits more than one of the key formative experiences (Moderna side effects, Kevin's stacking, Tdap swelling, late-morning tolerance).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I chose Pfizer specifically because last time I had Moderna and my arm was killing me for four days straight, plus I had a fever the whole next day"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my friend Kevin stacked his flu shot and COVID booster on the same day in February and felt terrible for almost a week"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I'd rather go in twice and space everything out than deal with overlapping side effects when I have work obligations"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I always try to book vaccine appointments for late morning, around 10 or 11 AM"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "When I got the Tdap booster back in 2022, the injection site swelled up for days and it really messed up my sleep right before a big work presentation"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess I'm just someone who really prioritizes not feeling awful, and I'll rearrange my whole schedule to make sure vaccines don't collide with anything important"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've shared various vaccination-related details — specific dose dates, pharmacy locations, side-effect stories, scheduling preferences, and a friend's experience. Which of these details feed into a broader personal health-management philosophy, and which are standalone logistical facts that don't belong to that broader conclusion?",
+      "expected_answer": "The broader philosophy — systematically minimizing physical discomfort from vaccinations — is supported by: the Moderna-to-Pfizer brand switch based on side-effect history, the preference for spacing out vaccines rather than stacking, the late-morning appointment timing for better tolerance, and the lesson from the Tdap booster about avoiding vaccines near important work events. Standalone logistical facts that do not belong to the broader conclusion include: the specific first booster date of March 3rd, the CVS on Elm Street location, the April 21st target for the second dose, the early May Shingrix plan, and Kevin's stacking experience (which is an anecdote that reinforced the spacing preference but is someone else's experience, not part of the user's own behavioral pattern).",
+      "gold_memory_state": "The reflected conclusion (vaccination_comfort_priority) is bounded to the user's own behavioral patterns: brand selection based on personal side-effect history, spacing preference, late-morning timing, and avoidance of scheduling near work obligations. Kevin's experience is a separate supporting anecdote (kevin_stacking_experience). Logistical facts like booster dates and pharmacy locations are separate operational details.",
+      "judge_rubric": {
+        "must_include": [
+          "brand selection based on side-effect history as part of the broader philosophy",
+          "spacing preference as part of the broader philosophy",
+          "late-morning timing as part of the broader philosophy",
+          "distinction between the broader philosophy and standalone logistical facts"
+        ],
+        "acceptable_paraphrases": [
+          "comfort-first approach instead of minimizing discomfort",
+          "choosing Pfizer over Moderna as brand-selection behavior"
+        ],
+        "must_not_include": [
+          "claiming Kevin's experience is the user's own behavioral pattern",
+          "claiming the specific booster date is part of the inferred philosophy"
+        ],
+        "harmful_extra": [
+          "treating all vaccination facts as part of one undifferentiated record",
+          "claiming the philosophy extends to all medical procedures beyond vaccinations"
+        ],
+        "harmless_extra": [
+          "mentioning the Tdap incident as evidence for the work-obligation avoidance pattern",
+          "noting that Kevin's story reinforced the spacing preference"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model treats every vaccination fact (dates, locations, Kevin's anecdote) as equally part of the inferred behavioral philosophy rather than distinguishing philosophy-supporting facts from standalone logistics.",
+        "reflection_recall": "Fails if the model omits brand selection, spacing, or late-morning timing from the philosophy.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I chose Pfizer specifically because last time I had Moderna and my arm was killing me for four days straight, plus I had a fever the whole next day"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I'd rather go in twice and space everything out than deal with overlapping side effects when I have work obligations"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I always try to book vaccine appointments for late morning, around 10 or 11 AM"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "When I got the Tdap booster back in 2022, the injection site swelled up for days and it really messed up my sleep right before a big work presentation"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess I'm just someone who really prioritizes not feeling awful, and I'll rearrange my whole schedule to make sure vaccines don't collide with anything important"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've shared various vaccination-related details — specific dose dates, pharmacy locations, side-effect stories, scheduling preferences, and a friend's experience. Which of these details feed into a broader personal health-management philosophy, and which are standalone logistical facts that don't belong to that broader conclusion?",
+      "expected_answer": "The broader philosophy — systematically minimizing physical discomfort from vaccinations — is supported by: the Moderna-to-Pfizer brand switch based on side-effect history, the preference for spacing out vaccines rather than stacking, the late-morning appointment timing for better tolerance, and the lesson from the Tdap booster about avoiding vaccines near important work events. Standalone logistical facts that do not belong to the broader conclusion include: the specific first booster date of March 3rd, the CVS on Elm Street location, the April 21st target for the second dose, the early May Shingrix plan, and Kevin's stacking experience (which is an anecdote that reinforced the spacing preference but is someone else's experience, not part of the user's own behavioral pattern).",
+      "gold_memory_state": "The reflected conclusion (vaccination_comfort_priority) is bounded to the user's own behavioral patterns: brand selection based on personal side-effect history, spacing preference, late-morning timing, and avoidance of scheduling near work obligations. Kevin's experience is a separate supporting anecdote (kevin_stacking_experience). Logistical facts like booster dates and pharmacy locations are separate operational details.",
+      "judge_rubric": {
+        "must_include": [
+          "brand selection based on side-effect history as part of the broader philosophy",
+          "spacing preference as part of the broader philosophy",
+          "late-morning timing as part of the broader philosophy",
+          "distinction between the broader philosophy and standalone logistical facts"
+        ],
+        "acceptable_paraphrases": [
+          "comfort-first approach instead of minimizing discomfort",
+          "choosing Pfizer over Moderna as brand-selection behavior"
+        ],
+        "must_not_include": [
+          "claiming Kevin's experience is the user's own behavioral pattern",
+          "claiming the specific booster date is part of the inferred philosophy"
+        ],
+        "harmful_extra": [
+          "treating all vaccination facts as part of one undifferentiated record",
+          "claiming the philosophy extends to all medical procedures beyond vaccinations"
+        ],
+        "harmless_extra": [
+          "mentioning the Tdap incident as evidence for the work-obligation avoidance pattern",
+          "noting that Kevin's story reinforced the spacing preference"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model treats every vaccination fact (dates, locations, Kevin's anecdote) as equally part of the inferred behavioral philosophy rather than distinguishing philosophy-supporting facts from standalone logistics.",
+        "reflection_recall": "Fails if the model omits brand selection, spacing, or late-morning timing from the philosophy.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I chose Pfizer specifically because last time I had Moderna and my arm was killing me for four days straight, plus I had a fever the whole next day"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I'd rather go in twice and space everything out than deal with overlapping side effects when I have work obligations"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I always try to book vaccine appointments for late morning, around 10 or 11 AM"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "When I got the Tdap booster back in 2022, the injection site swelled up for days and it really messed up my sleep right before a big work presentation"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess I'm just someone who really prioritizes not feeling awful, and I'll rearrange my whole schedule to make sure vaccines don't collide with anything important"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe the scope of my vaccination-related approach: what specific behaviors does it cover, and where would it be a mistake to extend that conclusion further than what my experiences actually support?",
+      "expected_answer": "Your approach specifically covers four behavioral domains: (1) selecting vaccine brands based on your personal side-effect history (e.g., switching from Moderna to Pfizer after a bad Moderna experience), (2) spacing out vaccine doses rather than stacking them to avoid compounded side effects, (3) scheduling vaccine appointments for late morning (around 10-11 AM) when your tolerance is better after being awake and fed, and (4) keeping vaccine appointments away from important work deadlines. It would be a mistake to extend this conclusion to mean you avoid vaccines altogether, that you refuse all Moderna products in every circumstance, that you have a general medical anxiety or needle phobia, or that you apply this same level of scheduling caution to non-vaccination medical appointments. The pattern is specifically about managing physical discomfort and side effects from vaccinations in the context of work-life obligations.",
+      "gold_memory_state": "Supported inference: systematically prioritizes minimizing physical discomfort from vaccinations through brand selection, dose spacing, time-of-day scheduling, and work-obligation buffering. Unsupported overgeneralization: avoiding vaccines entirely, refusing Moderna permanently in all contexts, general medical anxiety, or applying the same framework to non-vaccination medical procedures.",
+      "judge_rubric": {
+        "must_include": [
+          "brand selection based on side-effect history",
+          "spacing out doses",
+          "late morning scheduling",
+          "boundary statement about where the pattern does not extend"
+        ],
+        "acceptable_paraphrases": [
+          "comfort optimization instead of minimizing discomfort",
+          "choosing Pfizer over Moderna as brand preference"
+        ],
+        "must_not_include": [
+          "claiming the user avoids all vaccines",
+          "claiming the user has needle phobia or medical anxiety"
+        ],
+        "harmful_extra": [
+          "extending the pattern to all medical procedures",
+          "claiming the user would never take Moderna under any circumstances"
+        ],
+        "harmless_extra": [
+          "mentioning work-obligation buffering as part of the pattern",
+          "noting the Tdap experience as motivation"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model overgeneralizes the pattern to vaccine avoidance, general medical anxiety, or non-vaccination medical procedures.",
+        "reflection_recall": "Fails if the model omits any of the four core behavioral components (brand selection, spacing, late-morning timing, work-obligation buffering).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I chose Pfizer specifically because last time I had Moderna and my arm was killing me for four days straight, plus I had a fever the whole next day"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I'd rather go in twice and space everything out than deal with overlapping side effects when I have work obligations"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I always try to book vaccine appointments for late morning, around 10 or 11 AM"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I handle shots way better after I've been up a few hours and had a good breakfast versus first thing when I'm still groggy"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "When I got the Tdap booster back in 2022, the injection site swelled up for days and it really messed up my sleep right before a big work presentation"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess I'm just someone who really prioritizes not feeling awful, and I'll rearrange my whole schedule to make sure vaccines don't collide with anything important"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe the scope of my vaccination-related approach: what specific behaviors does it cover, and where would it be a mistake to extend that conclusion further than what my experiences actually support?",
+      "expected_answer": "Your approach specifically covers four behavioral domains: (1) selecting vaccine brands based on your personal side-effect history (e.g., switching from Moderna to Pfizer after a bad Moderna experience), (2) spacing out vaccine doses rather than stacking them to avoid compounded side effects, (3) scheduling vaccine appointments for late morning (around 10-11 AM) when your tolerance is better after being awake and fed, and (4) keeping vaccine appointments away from important work deadlines. It would be a mistake to extend this conclusion to mean you avoid vaccines altogether, that you refuse all Moderna products in every circumstance, that you have a general medical anxiety or needle phobia, or that you apply this same level of scheduling caution to non-vaccination medical appointments. The pattern is specifically about managing physical discomfort and side effects from vaccinations in the context of work-life obligations.",
+      "gold_memory_state": "Supported inference: systematically prioritizes minimizing physical discomfort from vaccinations through brand selection, dose spacing, time-of-day scheduling, and work-obligation buffering. Unsupported overgeneralization: avoiding vaccines entirely, refusing Moderna permanently in all contexts, general medical anxiety, or applying the same framework to non-vaccination medical procedures.",
+      "judge_rubric": {
+        "must_include": [
+          "brand selection based on side-effect history",
+          "spacing out doses",
+          "late morning scheduling",
+          "boundary statement about where the pattern does not extend"
+        ],
+        "acceptable_paraphrases": [
+          "comfort optimization instead of minimizing discomfort",
+          "choosing Pfizer over Moderna as brand preference"
+        ],
+        "must_not_include": [
+          "claiming the user avoids all vaccines",
+          "claiming the user has needle phobia or medical anxiety"
+        ],
+        "harmful_extra": [
+          "extending the pattern to all medical procedures",
+          "claiming the user would never take Moderna under any circumstances"
+        ],
+        "harmless_extra": [
+          "mentioning work-obligation buffering as part of the pattern",
+          "noting the Tdap experience as motivation"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model overgeneralizes the pattern to vaccine avoidance, general medical anxiety, or non-vaccination medical procedures.",
+        "reflection_recall": "Fails if the model omits any of the four core behavioral components (brand selection, spacing, late-morning timing, work-obligation buffering).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I chose Pfizer specifically because last time I had Moderna and my arm was killing me for four days straight, plus I had a fever the whole next day"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I'd rather go in twice and space everything out than deal with overlapping side effects when I have work obligations"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I always try to book vaccine appointments for late morning, around 10 or 11 AM"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I handle shots way better after I've been up a few hours and had a good breakfast versus first thing when I'm still groggy"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "When I got the Tdap booster back in 2022, the injection site swelled up for days and it really messed up my sleep right before a big work presentation"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess I'm just someone who really prioritizes not feeling awful, and I'll rearrange my whole schedule to make sure vaccines don't collide with anything important"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best describes my overall approach to vaccination decisions?",
+      "candidate_options": [
+        "Systematically minimizes physical discomfort by selecting brands based on past side-effect experience, spacing out doses, and scheduling appointments for late morning when tolerance is highest",
+        "Avoids vaccinations whenever possible due to a general fear of needles and medical procedures",
+        "Prefers to get all vaccinations done in a single visit for maximum convenience and minimal trips to the pharmacy",
+        "Follows whatever vaccine brand the pharmacy has in stock and schedules at the earliest available time slot"
+      ],
+      "expected_answer": "Systematically minimizes physical discomfort by selecting brands based on past side-effect experience, spacing out doses, and scheduling appointments for late morning when tolerance is highest",
+      "gold_memory_state": "The user's confirmed vaccination philosophy includes brand selection based on side-effect history, dose spacing, and late-morning appointment timing. The user is not vaccine-avoidant, does not prefer stacking, and does not take whatever is available without preference.",
+      "judge_rubric": {
+        "must_include": [
+          "minimizes physical discomfort",
+          "brand selection based on side-effect experience",
+          "spacing out doses",
+          "late morning scheduling"
+        ],
+        "acceptable_paraphrases": [
+          "reduces side effects instead of minimizes discomfort"
+        ],
+        "must_not_include": [
+          "avoids vaccinations",
+          "fear of needles",
+          "single visit stacking",
+          "takes whatever is available"
+        ],
+        "harmful_extra": [
+          "selecting the vaccine-avoidance option",
+          "selecting the stacking-preference option"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: Option D ('follows whatever brand the pharmacy has in stock') echoes the tentative consideration of switching to Moderna at Oak Avenue for convenience, which was ultimately rejected — it represents a surface-similar but incorrect behavioral pattern. assistant echo: Option C ('prefers to get all vaccinations done in a single visit') is the opposite of the user's stated preference but mirrors the assistant's discussion of stacking logistics. Option B ('avoids vaccinations due to needle fear') is an overgeneralization that confuses comfort-optimization with avoidance.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects Option D, which reflects the tentative Moderna-at-Oak-Avenue consideration that was rejected.",
+        "reflection_precision": "Fails if the model selects Option B (overgeneralization to vaccine avoidance) or Option C (opposite of stated spacing preference).",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I chose Pfizer specifically because last time I had Moderna and my arm was killing me for four days straight, plus I had a fever the whole next day"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I'd rather go in twice and space everything out than deal with overlapping side effects when I have work obligations"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I always try to book vaccine appointments for late morning, around 10 or 11 AM"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess I'm just someone who really prioritizes not feeling awful, and I'll rearrange my whole schedule to make sure vaccines don't collide with anything important"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best describes my overall approach to vaccination decisions?",
+      "candidate_options": [
+        "Systematically minimizes physical discomfort by selecting brands based on past side-effect experience, spacing out doses, and scheduling appointments for late morning when tolerance is highest",
+        "Avoids vaccinations whenever possible due to a general fear of needles and medical procedures",
+        "Prefers to get all vaccinations done in a single visit for maximum convenience and minimal trips to the pharmacy",
+        "Follows whatever vaccine brand the pharmacy has in stock and schedules at the earliest available time slot"
+      ],
+      "expected_answer": "Systematically minimizes physical discomfort by selecting brands based on past side-effect experience, spacing out doses, and scheduling appointments for late morning when tolerance is highest",
+      "gold_memory_state": "The user's confirmed vaccination philosophy includes brand selection based on side-effect history, dose spacing, and late-morning appointment timing. The user is not vaccine-avoidant, does not prefer stacking, and does not take whatever is available without preference.",
+      "judge_rubric": {
+        "must_include": [
+          "minimizes physical discomfort",
+          "brand selection based on side-effect experience",
+          "spacing out doses",
+          "late morning scheduling"
+        ],
+        "acceptable_paraphrases": [
+          "reduces side effects instead of minimizes discomfort"
+        ],
+        "must_not_include": [
+          "avoids vaccinations",
+          "fear of needles",
+          "single visit stacking",
+          "takes whatever is available"
+        ],
+        "harmful_extra": [
+          "selecting the vaccine-avoidance option",
+          "selecting the stacking-preference option"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: Option D ('follows whatever brand the pharmacy has in stock') echoes the tentative consideration of switching to Moderna at Oak Avenue for convenience, which was ultimately rejected — it represents a surface-similar but incorrect behavioral pattern. assistant echo: Option C ('prefers to get all vaccinations done in a single visit') is the opposite of the user's stated preference but mirrors the assistant's discussion of stacking logistics. Option B ('avoids vaccinations due to needle fear') is an overgeneralization that confuses comfort-optimization with avoidance.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects Option D, which reflects the tentative Moderna-at-Oak-Avenue consideration that was rejected.",
+        "reflection_precision": "Fails if the model selects Option B (overgeneralization to vaccine avoidance) or Option C (opposite of stated spacing preference).",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I chose Pfizer specifically because last time I had Moderna and my arm was killing me for four days straight, plus I had a fever the whole next day"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I'd rather go in twice and space everything out than deal with overlapping side effects when I have work obligations"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I always try to book vaccine appointments for late morning, around 10 or 11 AM"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess I'm just someone who really prioritizes not feeling awful, and I'll rearrange my whole schedule to make sure vaccines don't collide with anything important"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "My doctor just added a flu shot to my upcoming vaccine list. Given everything you know about my vaccination habits, my current schedule, and my past experiences, help me figure out when to get the flu shot and what time of day to book it. Walk me through your reasoning.",
+      "expected_answer": "Based on your approach, the flu shot should be scheduled after your Shingrix first dose in early May has had time to settle — so late May or early June at the earliest, to avoid overlapping side effects. It should be booked for late morning, around 10-11 AM, when you've been awake for a few hours and had breakfast, since that's when you tolerate shots best. You should not stack it with any other vaccine on the same day, given your spacing preference and the cautionary lesson from Kevin's experience stacking his flu and COVID shots. You should also check your work calendar to ensure no major presentations or deadlines fall in the days immediately after the appointment, based on the lesson from your Tdap experience in 2022.",
+      "gold_memory_state": "Active confirmed facts used: (1) spacing preference — no stacking, (2) late-morning appointment timing around 10-11 AM, (3) current schedule has second Pfizer dose April 21st and Shingrix first dose early May, (4) Tdap lesson about avoiding vaccines near work deadlines, (5) Kevin's stacking experience as cautionary support. The tentative Moderna-at-Oak-Avenue consideration (op11) was rejected and should not influence the recommendation.",
+      "judge_rubric": {
+        "must_include": [
+          "schedule after Shingrix first dose has settled",
+          "late morning around 10-11 AM",
+          "do not stack with other vaccines",
+          "check work calendar for conflicts"
+        ],
+        "acceptable_paraphrases": [
+          "after early May with buffer instead of late May",
+          "mid-morning instead of late morning if 10-11 AM is specified"
+        ],
+        "must_not_include": [
+          "recommending stacking the flu shot with another vaccine",
+          "recommending early morning appointment",
+          "recommending Moderna for the COVID booster"
+        ],
+        "harmful_extra": [
+          "suggesting the user switch to Moderna based on the tentative Oak Avenue consideration",
+          "ignoring the spacing preference"
+        ],
+        "harmless_extra": [
+          "mentioning the specific Tdap 2022 incident as the reason for work-calendar checking",
+          "mentioning Kevin's experience as supporting evidence for no-stacking"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the recommendation incorporates the tentative Moderna switch or Saturday walk-in from Oak Avenue pharmacy as if it were a confirmed plan.",
+        "reflection_precision": "Fails if the recommendation ignores the spacing preference or late-morning timing.",
+        "reflection_recall": "Fails if the recommendation omits the work-calendar check or the no-stacking principle.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's second Pfizer COVID booster is targeted for April 21st.",
+        "Fact 2: The user plans the first Shingrix dose for early May, after the COVID booster settles.",
+        "Fact 3: The user prefers spacing out vaccines to avoid overlapping side effects, rather than stacking them.",
+        "Fact 4: The user prefers late-morning appointments around 10-11 AM for better tolerance.",
+        "Fact 5: The Tdap experience in 2022 taught the user to avoid scheduling vaccines near important work events.",
+        "Inference: The flu shot must come after the early-May Shingrix dose has settled, placing it in late May or June at the earliest, booked for 10-11 AM on a day without imminent work deadlines."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I'd rather go in twice and space everything out than deal with overlapping side effects when I have work obligations"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I always try to book vaccine appointments for late morning, around 10 or 11 AM"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I handle shots way better after I've been up a few hours and had a good breakfast versus first thing when I'm still groggy"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "When I got the Tdap booster back in 2022, the injection site swelled up for days and it really messed up my sleep right before a big work presentation"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I'm planning to push the Shingrix first dose to early May so the second COVID booster has time to settle"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "my target date for the second Pfizer dose is April 21st, since the pharmacist said four weeks minimum from March 3rd"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "My doctor just added a flu shot to my upcoming vaccine list. Given everything you know about my vaccination habits, my current schedule, and my past experiences, help me figure out when to get the flu shot and what time of day to book it. Walk me through your reasoning.",
+      "expected_answer": "Based on your approach, the flu shot should be scheduled after your Shingrix first dose in early May has had time to settle — so late May or early June at the earliest, to avoid overlapping side effects. It should be booked for late morning, around 10-11 AM, when you've been awake for a few hours and had breakfast, since that's when you tolerate shots best. You should not stack it with any other vaccine on the same day, given your spacing preference and the cautionary lesson from Kevin's experience stacking his flu and COVID shots. You should also check your work calendar to ensure no major presentations or deadlines fall in the days immediately after the appointment, based on the lesson from your Tdap experience in 2022.",
+      "gold_memory_state": "Active confirmed facts used: (1) spacing preference — no stacking, (2) late-morning appointment timing around 10-11 AM, (3) current schedule has second Pfizer dose April 21st and Shingrix first dose early May, (4) Tdap lesson about avoiding vaccines near work deadlines, (5) Kevin's stacking experience as cautionary support. The tentative Moderna-at-Oak-Avenue consideration (op11) was rejected and should not influence the recommendation.",
+      "judge_rubric": {
+        "must_include": [
+          "schedule after Shingrix first dose has settled",
+          "late morning around 10-11 AM",
+          "do not stack with other vaccines",
+          "check work calendar for conflicts"
+        ],
+        "acceptable_paraphrases": [
+          "after early May with buffer instead of late May",
+          "mid-morning instead of late morning if 10-11 AM is specified"
+        ],
+        "must_not_include": [
+          "recommending stacking the flu shot with another vaccine",
+          "recommending early morning appointment",
+          "recommending Moderna for the COVID booster"
+        ],
+        "harmful_extra": [
+          "suggesting the user switch to Moderna based on the tentative Oak Avenue consideration",
+          "ignoring the spacing preference"
+        ],
+        "harmless_extra": [
+          "mentioning the specific Tdap 2022 incident as the reason for work-calendar checking",
+          "mentioning Kevin's experience as supporting evidence for no-stacking"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the recommendation incorporates the tentative Moderna switch or Saturday walk-in from Oak Avenue pharmacy as if it were a confirmed plan.",
+        "reflection_precision": "Fails if the recommendation ignores the spacing preference or late-morning timing.",
+        "reflection_recall": "Fails if the recommendation omits the work-calendar check or the no-stacking principle.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's second Pfizer COVID booster is targeted for April 21st.",
+        "Fact 2: The user plans the first Shingrix dose for early May, after the COVID booster settles.",
+        "Fact 3: The user prefers spacing out vaccines to avoid overlapping side effects, rather than stacking them.",
+        "Fact 4: The user prefers late-morning appointments around 10-11 AM for better tolerance.",
+        "Fact 5: The Tdap experience in 2022 taught the user to avoid scheduling vaccines near important work events.",
+        "Inference: The flu shot must come after the early-May Shingrix dose has settled, placing it in late May or June at the earliest, booked for 10-11 AM on a day without imminent work deadlines."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I'd rather go in twice and space everything out than deal with overlapping side effects when I have work obligations"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I always try to book vaccine appointments for late morning, around 10 or 11 AM"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I handle shots way better after I've been up a few hours and had a good breakfast versus first thing when I'm still groggy"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "When I got the Tdap booster back in 2022, the injection site swelled up for days and it really messed up my sleep right before a big work presentation"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I'm planning to push the Shingrix first dose to early May so the second COVID booster has time to settle"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "my target date for the second Pfizer dose is April 21st, since the pharmacist said four weeks minimum from March 3rd"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,983 @@
+{
+  "target_fact": "User's therapy session frequency with Dr. Huang, tracked through multiple confirmed changes and a tentative fork, alongside control targets for medication dosage and next appointment date.",
+  "operation_type": "TrajectoryOps",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "session_frequency",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I've been seeing Dr. Huang weekly since March 3rd"
+      },
+      "target": {
+        "target_id": "session_frequency",
+        "target_name": "therapy session frequency with Dr. Huang"
+      },
+      "old_value": null,
+      "new_value": "weekly",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I've been seeing Dr. Huang weekly since March 3rd"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "session_frequency",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "Dr. Huang and I switched to every two weeks as of April 15th"
+      },
+      "target": {
+        "target_id": "session_frequency",
+        "target_name": "therapy session frequency with Dr. Huang"
+      },
+      "old_value": "weekly",
+      "new_value": "every two weeks",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Dr. Huang and I switched to every two weeks as of April 15th"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "session_frequency",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "she bumped me back to weekly sessions starting this past Monday because my sleep has gotten bad again"
+      },
+      "target": {
+        "target_id": "session_frequency",
+        "target_name": "therapy session frequency with Dr. Huang"
+      },
+      "old_value": "every two weeks",
+      "new_value": "weekly",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "she bumped me back to weekly sessions starting this past Monday because my sleep has gotten bad again"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "session_frequency",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 7,
+        "quote": "Dr. Huang told me that if my PHQ-9 stays below 10 at the next check she'll move me to monthly sessions"
+      },
+      "target": {
+        "target_id": "session_frequency",
+        "target_name": "therapy session frequency with Dr. Huang"
+      },
+      "old_value": "weekly",
+      "new_value": "monthly",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Dr. Huang told me that if my PHQ-9 stays below 10 at the next check she'll move me to monthly sessions"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I'm on sertraline 50mg daily, I take it every morning with breakfast"
+      },
+      "target": {
+        "target_id": "sertraline_dosage",
+        "target_name": "current sertraline dosage"
+      },
+      "old_value": null,
+      "new_value": "50mg daily, taken every morning with breakfast",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I'm on sertraline 50mg daily, I take it every morning with breakfast"
+        }
+      ]
+    }
+  ],
+  "state_checkpoints": [
+    {
+      "checkpoint_id": "c1",
+      "description": "After segment 1: session_frequency = weekly (confirmed); sertraline_dosage = 50mg daily with breakfast (confirmed)."
+    },
+    {
+      "checkpoint_id": "c2",
+      "description": "After segment 2: session_frequency = weekly (confirmed, reverted from every two weeks); sertraline_dosage = 50mg daily with breakfast (confirmed, unchanged)."
+    },
+    {
+      "checkpoint_id": "c3",
+      "description": "After segment 3: session_frequency = weekly (confirmed; tentative 'monthly' is conditional and not yet in effect); sertraline_dosage = 50mg daily with breakfast (confirmed, unchanged)."
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish initial session frequency and medication dosage; introduce treatment context.",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to go over some mental health details so you can help me keep track. I've been seeing Dr. Huang weekly since March 3rd at the Riverside Behavioral Health Clinic on 5th Avenue. She's a psychiatrist. I keep confusing her name with my old therapist Dr. Chen, so please remember it's Dr. Huang."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — your current psychiatrist is Dr. Huang at the Riverside Behavioral Health Clinic on 5th Avenue, and you've been seeing her weekly since March 3rd. I'll make sure to keep that name straight so you don't mix it up with Dr. Chen. If you'd like, I can also keep a running note of appointment dates and any changes to your treatment plan. What other details would you like me to track?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, that would be great. One thing that's been on my mind is the work situation. In late March my company restructured and I got moved to a completely different project team. I didn't know anyone. I had about a week of really heavy dread, couldn't sleep, kept waking up at 3 or 4 a.m. That was the worst I've felt since starting treatment."
+        },
+        {
+          "role": "assistant",
+          "content": "I'm sorry you went through that. It sounds like the late-March restructuring hit hard — being moved to an unfamiliar team while you were still early in treatment must have been really unsettling. A week of persistent dread and disrupted sleep is significant, especially waking up at 3 or 4 a.m. repeatedly. It's worth flagging that episode for Dr. Huang if you haven't already, since it could help her calibrate your treatment. Do you want me to note that episode as a reference point for future check-ins?"
+        },
+        {
+          "role": "user",
+          "content": "Please do. Also, for medication — I'm on sertraline 50mg daily, I take it every morning with breakfast. I started at 25mg for the first two weeks but it got bumped to 50mg after that. I sometimes forget a dose but most days I remember. Just want that on record so I can reference it later."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted. Your current medication is sertraline 50mg daily, taken each morning with breakfast. You initially started at 25mg for the first two weeks before stepping up to the current dose. I'll keep that as your active medication record. If your dosage ever changes or if Dr. Huang adds anything, just let me know and I'll update it. Occasional missed doses happen, but if you notice a pattern it might be worth discussing with her. Anything else treatment-related you'd like me to track?"
+        },
+        {
+          "role": "user",
+          "content": "My friend Marcus recently told me he's been dealing with panic attacks since last fall. He hadn't told anyone until recently. He's seeing a therapist now that his wife found through their insurance. It made me think about how many people around me are quietly struggling with stuff like this."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really meaningful observation. It takes courage for Marcus to open up about panic attacks he's been carrying since last fall, and it sounds like having his wife's support in finding a therapist has been helpful. The fact that he felt comfortable telling you suggests real trust in your friendship. You're right that a lot of people deal with these things quietly. Knowing you're not alone in that can be grounding. If you ever want to compare notes on coping strategies or resources, I'm happy to help with that too."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Update session frequency twice: first to biweekly, then revert to weekly. Introduce PHQ-9 score context and journaling habit.",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Quick update on my therapy schedule. Dr. Huang and I switched to every two weeks as of April 15th. She said my PHQ-9 score came down from 17 to 11 and she was pleased with the progress. So we went from weekly to biweekly. I was relieved honestly, felt like a sign things were improving."
+        },
+        {
+          "role": "assistant",
+          "content": "That's encouraging progress — going from a PHQ-9 of 17 down to 11 is a meaningful improvement, and it makes sense that Dr. Huang felt comfortable spacing sessions to every two weeks starting April 15th. That shift is a positive signal about your trajectory. I've updated your session frequency from weekly to every two weeks. If anything changes or you feel like you need to go back to weekly, just let me know and I'll adjust the record accordingly. How have things been feeling day to day since the switch?"
+        },
+        {
+          "role": "user",
+          "content": "Honestly, mixed. I started journaling around late March or early April, right after the work reorganization. I write by hand in a plain notebook, usually at night, maybe three or four times a week. It's unstructured, just whatever comes out. I really prefer handwriting over typing for this — screens feel too stimulating when I'm winding down."
+        },
+        {
+          "role": "assistant",
+          "content": "Journaling sounds like a really good addition to your routine, especially since you're doing it by hand at night. That low-stimulation approach fits well with winding down — screens can definitely keep the brain wired when you're trying to settle. Writing three or four times a week is a solid frequency without being burdensome. The fact that you started it right around the work upheaval suggests it may have been a natural coping response. Have you noticed any patterns in what you write about, or is it still mostly stream of consciousness?"
+        },
+        {
+          "role": "user",
+          "content": "Mostly stream of consciousness. But here's the thing — she bumped me back to weekly sessions starting this past Monday because my sleep has gotten bad again. I've been waking up around 3 a.m. like before, and she wants to keep a closer eye on things. So we're back to weekly now, not biweekly anymore."
+        },
+        {
+          "role": "assistant",
+          "content": "I'm sorry to hear the sleep disruption is back — waking at 3 a.m. again is a clear signal that something needs closer attention. It makes sense that Dr. Huang moved you back to weekly sessions to monitor things more tightly. I've updated your session frequency from every two weeks back to weekly as of this past Monday. That's a responsible call on her part. Are you still taking the sertraline consistently, and has she mentioned any potential dosage adjustment to help with the sleep issues?"
+        },
+        {
+          "role": "user",
+          "content": "No dosage change yet, still 50mg. She wants to see if the weekly sessions help first before adjusting medication. My next appointment with Dr. Huang is May 20th at 2:30 p.m. — please remember that specifically. I missed my last appointment because I wrote down the wrong time and got hit with a $75 cancellation fee. I was irritated with myself about that for days.\n\nYeah, a reminder would be great. Also, I tried a guided meditation app last week — used it three nights in a row before bed. I liked that it was just a calm voice with no background music. I really can't stand those apps that layer on chimes and nature sounds. Just a quiet voice in a quiet room is what works for me."
+        },
+        {
+          "role": "assistant",
+          "content": "I've locked in your next appointment: Dr. Huang, May 20th at 2:30 p.m. I completely understand the frustration about the missed appointment and the $75 fee — that kind of self-directed irritation can linger, especially when you're already managing a lot emotionally. It sounds like Dr. Huang's approach of trying weekly sessions before changing medication is measured and thoughtful. I'll keep the dosage at 50mg sertraline in your records. Would you like me to send you a reminder note closer to May 20th so there's no mix-up this time?\n\nI'll plan to remind you ahead of May 20th. And that's a useful preference to note — voice-only guided meditation with no background music, chimes, or nature sounds. A calm voice in a quiet room. That's consistent with your preference for low-stimulation environments when you're winding down, similar to handwriting over screens for journaling. If you want, I can look into apps that specifically offer minimal, voice-only sessions so you have more options. Did using it three nights in a row seem to help with falling asleep or staying asleep?"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Introduce tentative future frequency change (monthly), place adversarial look-alike value, and continue treatment discussion.",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I've been thinking about what helps me most outside of therapy. Walking alone helps a lot — not power walking, just slow wandering around the neighborhood. I especially like it when it's overcast. There's something about a gray sky that feels less demanding. Bright sunny crowded days actually feel kind of overwhelming to me."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes a lot of sense and fits the pattern we've been noticing — you gravitate toward low-stimulation, quieter environments for emotional regulation. Overcast skies, solitary walks, voice-only meditation, handwriting at night. There's a real consistency there. The fact that bright, crowded, sunny settings feel overwhelming is worth noting too, since it could be relevant if Dr. Huang ever discusses sensory triggers or environmental adjustments. Do you find that the walks help more with the sleep issues or more with the daytime dread and anxiety?"
+        },
+        {
+          "role": "user",
+          "content": "More with the daytime heaviness, I think. The sleep stuff is its own beast. Speaking of which, I was looking at some mental health forums online and someone mentioned that their psychiatrist, a Dr. Wong at Riverside, had them on sertraline 75mg and it really helped their insomnia. Made me wonder if I should ask about going up."
+        },
+        {
+          "role": "assistant",
+          "content": "It's natural to compare experiences, but dosage decisions really depend on your individual response and Dr. Huang's clinical judgment. The person seeing Dr. Wong at Riverside on 75mg may have a completely different profile. That said, it's absolutely worth raising the question with Dr. Huang at your May 20th appointment — she already said she'd consider medication adjustments if weekly sessions alone aren't enough. You could frame it as asking whether a dosage increase might help with the sleep disruption specifically. Just don't adjust anything on your own before talking to her."
+        },
+        {
+          "role": "user",
+          "content": "Oh definitely not, I wouldn't change anything without asking her. I want to bring up the sleep issue properly at the next session. Also I've been journaling more consistently now, almost every night instead of three or four times a week. Writing before bed does seem to quiet my mind a bit, even if I still wake up early."
+        },
+        {
+          "role": "assistant",
+          "content": "That's great that journaling has become more consistent — moving from three or four nights a week to almost every night shows it's becoming a real anchor in your routine. The fact that it helps quiet your mind before bed is meaningful even if it doesn't fully solve the early waking. It might be useful to mention the increased journaling frequency to Dr. Huang as well, since she can factor it into her overall picture of what's working and what still needs support. Is there anything specific you'd like to prepare or organize before the May 20th session?"
+        },
+        {
+          "role": "user",
+          "content": "Actually yes — Dr. Huang told me that if my PHQ-9 stays below 10 at the next check she'll move me to monthly sessions. She seemed optimistic about it. So there's a real chance I could go from weekly down to monthly pretty soon, which would be a big deal for me.\n\nThat would be helpful actually. I want to mention the sleep regression, the increased journaling, the walking, and ask about whether a dosage adjustment might help. Also I want to ask about whether Marcus's panic attacks and my anxiety could be related to similar underlying patterns since we've known each other so long."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a meaningful milestone to work toward — going from weekly to monthly would reflect real, sustained improvement. The PHQ-9 threshold of staying below 10 gives you a concrete benchmark. It's encouraging that Dr. Huang is optimistic, though of course it depends on how the next assessment goes. For now, your current confirmed schedule is still weekly sessions, and your next appointment is May 20th at 2:30 p.m. I'd suggest keeping that journaling and walking routine steady in the meantime, since those seem to be contributing positively. Want me to help you draft a list of topics to bring up at the appointment?\n\nHere's a draft agenda for your May 20th appointment with Dr. Huang: First, discuss the sleep regression — specifically the 3 a.m. waking pattern returning and whether weekly sessions alone are addressing it. Second, update her on your increased journaling frequency and how handwriting at night seems to help quiet your mind. Third, mention that solitary overcast walks are your most effective daytime coping strategy. Fourth, ask whether a sertraline dosage increase beyond 50mg might help with the persistent sleep disruption. Fifth, bring up the question about shared anxiety patterns with Marcus, particularly whether long-term social proximity can create similar stress responses. Does that cover everything you wanted?"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize what I've told you over time about how often I see Dr. Huang and any medication details I shared?",
+      "expected_answer": "You initially mentioned seeing Dr. Huang weekly starting March 3rd. You later said sessions switched to every two weeks as of April 15th after your PHQ-9 dropped from 17 to 11. Then you reported that Dr. Huang moved you back to weekly sessions starting the most recent Monday because your sleep had gotten bad again. You also mentioned a possible future move to monthly sessions if your PHQ-9 stays below 10, but that hasn't happened yet. Separately, you shared that you're on sertraline 50mg daily, taken every morning with breakfast, stepped up from an initial 25mg.",
+      "gold_memory_state": "session_frequency = weekly (confirmed, after reverting from biweekly; tentative monthly conditional on PHQ-9 < 10 not yet in effect); sertraline_dosage = 50mg daily with breakfast (confirmed, unchanged).",
+      "judge_rubric": {
+        "must_include": [
+          "weekly as current frequency",
+          "every two weeks as a prior frequency",
+          "return to weekly due to sleep issues",
+          "conditional monthly mentioned but not yet in effect",
+          "sertraline 50mg daily"
+        ],
+        "acceptable_paraphrases": [
+          "biweekly for every two weeks",
+          "once a month for monthly"
+        ],
+        "must_not_include": [
+          "monthly as the current frequency"
+        ],
+        "harmful_extra": [
+          "claiming the dosage changed from 50mg",
+          "claiming monthly sessions are currently active"
+        ],
+        "harmless_extra": [
+          "PHQ-9 score details",
+          "March 3rd start date",
+          "initial 25mg dosage"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model reports every two weeks or monthly as the current confirmed frequency.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model presents the changes out of chronological order (weekly -> biweekly -> weekly, with tentative monthly at the end).",
+        "final_state": "Fails if the model does not identify weekly as the current confirmed frequency.",
+        "intermediate_state": "Fails if the model omits the biweekly intermediate state.",
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I've been seeing Dr. Huang weekly since March 3rd"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Dr. Huang and I switched to every two weeks as of April 15th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "she bumped me back to weekly sessions starting this past Monday because my sleep has gotten bad again"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Dr. Huang told me that if my PHQ-9 stays below 10 at the next check she'll move me to monthly sessions"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I'm on sertraline 50mg daily, I take it every morning with breakfast"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize what I've told you over time about how often I see Dr. Huang and any medication details I shared?",
+      "expected_answer": "You initially mentioned seeing Dr. Huang weekly starting March 3rd. You later said sessions switched to every two weeks as of April 15th after your PHQ-9 dropped from 17 to 11. Then you reported that Dr. Huang moved you back to weekly sessions starting the most recent Monday because your sleep had gotten bad again. You also mentioned a possible future move to monthly sessions if your PHQ-9 stays below 10, but that hasn't happened yet. Separately, you shared that you're on sertraline 50mg daily, taken every morning with breakfast, stepped up from an initial 25mg.",
+      "gold_memory_state": "session_frequency = weekly (confirmed, after reverting from biweekly; tentative monthly conditional on PHQ-9 < 10 not yet in effect); sertraline_dosage = 50mg daily with breakfast (confirmed, unchanged).",
+      "judge_rubric": {
+        "must_include": [
+          "weekly as current frequency",
+          "every two weeks as a prior frequency",
+          "return to weekly due to sleep issues",
+          "conditional monthly mentioned but not yet in effect",
+          "sertraline 50mg daily"
+        ],
+        "acceptable_paraphrases": [
+          "biweekly for every two weeks",
+          "once a month for monthly"
+        ],
+        "must_not_include": [
+          "monthly as the current frequency"
+        ],
+        "harmful_extra": [
+          "claiming the dosage changed from 50mg",
+          "claiming monthly sessions are currently active"
+        ],
+        "harmless_extra": [
+          "PHQ-9 score details",
+          "March 3rd start date",
+          "initial 25mg dosage"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model reports every two weeks or monthly as the current confirmed frequency.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model presents the changes out of chronological order (weekly -> biweekly -> weekly, with tentative monthly at the end).",
+        "final_state": "Fails if the model does not identify weekly as the current confirmed frequency.",
+        "intermediate_state": "Fails if the model omits the biweekly intermediate state.",
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I've been seeing Dr. Huang weekly since March 3rd"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Dr. Huang and I switched to every two weeks as of April 15th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "she bumped me back to weekly sessions starting this past Monday because my sleep has gotten bad again"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Dr. Huang told me that if my PHQ-9 stays below 10 at the next check she'll move me to monthly sessions"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I'm on sertraline 50mg daily, I take it every morning with breakfast"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "If I need to fill out a treatment summary form, which treatment-related details have gone through back-and-forth changes versus which have stayed the same throughout? Should the scheduling detail and the medication detail be treated as the same record or separate ones?",
+      "expected_answer": "They are separate records. Your therapy session frequency with Dr. Huang has changed multiple times and currently stands at weekly. Your sertraline dosage has remained at 50mg daily with breakfast throughout and has not changed.",
+      "gold_memory_state": "session_frequency target: weekly (confirmed, underwent multiple changes). sertraline_dosage target: 50mg daily with breakfast (confirmed, unchanged since first mentioned). These are two distinct tracked details.",
+      "judge_rubric": {
+        "must_include": [
+          "session frequency changed multiple times",
+          "sertraline dosage unchanged at 50mg",
+          "they are separate records or details"
+        ],
+        "acceptable_paraphrases": [
+          "therapy schedule for session frequency",
+          "medication dose for sertraline dosage"
+        ],
+        "must_not_include": [
+          "monthly as the current session frequency",
+          "dosage changed"
+        ],
+        "harmful_extra": [
+          "merging session frequency and medication dosage into one record",
+          "claiming the dosage was adjusted"
+        ],
+        "harmless_extra": [
+          "mentioning the specific dates of session frequency changes",
+          "mentioning the initial 25mg step-up"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats every two weeks or monthly as the current session frequency.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not correctly identify weekly as the current session frequency or 50mg as the current dosage.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I've been seeing Dr. Huang weekly since March 3rd"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Dr. Huang and I switched to every two weeks as of April 15th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "she bumped me back to weekly sessions starting this past Monday because my sleep has gotten bad again"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I'm on sertraline 50mg daily, I take it every morning with breakfast"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "If I need to fill out a treatment summary form, which treatment-related details have gone through back-and-forth changes versus which have stayed the same throughout? Should the scheduling detail and the medication detail be treated as the same record or separate ones?",
+      "expected_answer": "They are separate records. Your therapy session frequency with Dr. Huang has changed multiple times and currently stands at weekly. Your sertraline dosage has remained at 50mg daily with breakfast throughout and has not changed.",
+      "gold_memory_state": "session_frequency target: weekly (confirmed, underwent multiple changes). sertraline_dosage target: 50mg daily with breakfast (confirmed, unchanged since first mentioned). These are two distinct tracked details.",
+      "judge_rubric": {
+        "must_include": [
+          "session frequency changed multiple times",
+          "sertraline dosage unchanged at 50mg",
+          "they are separate records or details"
+        ],
+        "acceptable_paraphrases": [
+          "therapy schedule for session frequency",
+          "medication dose for sertraline dosage"
+        ],
+        "must_not_include": [
+          "monthly as the current session frequency",
+          "dosage changed"
+        ],
+        "harmful_extra": [
+          "merging session frequency and medication dosage into one record",
+          "claiming the dosage was adjusted"
+        ],
+        "harmless_extra": [
+          "mentioning the specific dates of session frequency changes",
+          "mentioning the initial 25mg step-up"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats every two weeks or monthly as the current session frequency.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not correctly identify weekly as the current session frequency or 50mg as the current dosage.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I've been seeing Dr. Huang weekly since March 3rd"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Dr. Huang and I switched to every two weeks as of April 15th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "she bumped me back to weekly sessions starting this past Monday because my sleep has gotten bad again"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I'm on sertraline 50mg daily, I take it every morning with breakfast"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "I need to set up a recurring calendar event for my sessions with Dr. Huang. How frequently should the event repeat right now?",
+      "expected_answer": "Weekly. Set the recurring calendar event to repeat every week.",
+      "gold_memory_state": "session_frequency = weekly (confirmed after revert from biweekly). The tentative monthly schedule is conditional on PHQ-9 staying below 10 and has not been adopted. The current actionable frequency is weekly.",
+      "judge_rubric": {
+        "must_include": [
+          "weekly"
+        ],
+        "acceptable_paraphrases": [
+          "once a week",
+          "every week"
+        ],
+        "must_not_include": [
+          "monthly",
+          "every two weeks",
+          "biweekly"
+        ],
+        "harmful_extra": [
+          "setting the calendar to monthly based on the conditional future possibility",
+          "setting the calendar to biweekly based on the superseded schedule"
+        ],
+        "harmless_extra": [
+          "mentioning that the frequency might change to monthly in the future if PHQ-9 criteria are met"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model recommends every two weeks (superseded biweekly) or monthly (tentative, not adopted).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not identify weekly as the current confirmed frequency for the calendar event.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "she bumped me back to weekly sessions starting this past Monday because my sleep has gotten bad again"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Dr. Huang told me that if my PHQ-9 stays below 10 at the next check she'll move me to monthly sessions"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "I need to set up a recurring calendar event for my sessions with Dr. Huang. How frequently should the event repeat right now?",
+      "expected_answer": "Weekly. Set the recurring calendar event to repeat every week.",
+      "gold_memory_state": "session_frequency = weekly (confirmed after revert from biweekly). The tentative monthly schedule is conditional on PHQ-9 staying below 10 and has not been adopted. The current actionable frequency is weekly.",
+      "judge_rubric": {
+        "must_include": [
+          "weekly"
+        ],
+        "acceptable_paraphrases": [
+          "once a week",
+          "every week"
+        ],
+        "must_not_include": [
+          "monthly",
+          "every two weeks",
+          "biweekly"
+        ],
+        "harmful_extra": [
+          "setting the calendar to monthly based on the conditional future possibility",
+          "setting the calendar to biweekly based on the superseded schedule"
+        ],
+        "harmless_extra": [
+          "mentioning that the frequency might change to monthly in the future if PHQ-9 criteria are met"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model recommends every two weeks (superseded biweekly) or monthly (tentative, not adopted).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not identify weekly as the current confirmed frequency for the calendar event.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "she bumped me back to weekly sessions starting this past Monday because my sleep has gotten bad again"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Dr. Huang told me that if my PHQ-9 stays below 10 at the next check she'll move me to monthly sessions"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to prepare a quick note card to bring to my next appointment with Dr. Huang. It should include: (1) the appointment date and time, (2) my current session cadence so I can confirm it with her, and (3) my current medication and dosage so I can discuss whether an adjustment is warranted given the sleep regression. Can you draft that note card for me?",
+      "expected_answer": "Appointment: May 20th at 2:30 p.m. with Dr. Huang. Current session cadence: weekly. Current medication: sertraline 50mg daily, taken every morning with breakfast. Topic to discuss: whether a dosage adjustment is warranted given the return of the 3 a.m. sleep disruption pattern.",
+      "gold_memory_state": "session_frequency = weekly (confirmed); sertraline_dosage = 50mg daily with breakfast (confirmed); next appointment = May 20th at 2:30 p.m. (confirmed). Sleep regression (3 a.m. waking) is the reason sessions reverted to weekly.",
+      "judge_rubric": {
+        "must_include": [
+          "May 20th",
+          "2:30 p.m.",
+          "weekly",
+          "sertraline 50mg",
+          "sleep issue or 3 a.m. waking"
+        ],
+        "acceptable_paraphrases": [
+          "2:30 PM",
+          "fifty milligrams",
+          "once a week"
+        ],
+        "must_not_include": [
+          "every two weeks as current cadence",
+          "monthly as current cadence",
+          "sertraline 75mg"
+        ],
+        "harmful_extra": [
+          "listing biweekly or monthly as the current session frequency",
+          "recommending 75mg based on the forum post about Dr. Wong's patient"
+        ],
+        "harmless_extra": [
+          "mentioning PHQ-9 scores",
+          "mentioning the journaling habit",
+          "mentioning walking as a coping strategy"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the note card uses every two weeks or monthly as the current cadence, or if it uses a dosage other than 50mg.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the note card does not correctly reflect the current confirmed state of all three details.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's next appointment with Dr. Huang is May 20th at 2:30 p.m.",
+        "Fact 2: The user's current confirmed session frequency is weekly, after reverting from biweekly due to sleep regression.",
+        "Fact 3: The user's current medication is sertraline 50mg daily, taken every morning with breakfast, unchanged throughout.",
+        "Fact 4: The sleep regression involves waking at 3 a.m. and is the reason for the revert to weekly sessions.",
+        "Inference: The note card must combine the appointment logistics, current session cadence, and medication details into a single preparation artifact, while correctly excluding the superseded biweekly and tentative monthly values."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "she bumped me back to weekly sessions starting this past Monday because my sleep has gotten bad again"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I'm on sertraline 50mg daily, I take it every morning with breakfast"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "My next appointment with Dr. Huang is May 20th at 2:30 p.m."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to prepare a quick note card to bring to my next appointment with Dr. Huang. It should include: (1) the appointment date and time, (2) my current session cadence so I can confirm it with her, and (3) my current medication and dosage so I can discuss whether an adjustment is warranted given the sleep regression. Can you draft that note card for me?",
+      "expected_answer": "Appointment: May 20th at 2:30 p.m. with Dr. Huang. Current session cadence: weekly. Current medication: sertraline 50mg daily, taken every morning with breakfast. Topic to discuss: whether a dosage adjustment is warranted given the return of the 3 a.m. sleep disruption pattern.",
+      "gold_memory_state": "session_frequency = weekly (confirmed); sertraline_dosage = 50mg daily with breakfast (confirmed); next appointment = May 20th at 2:30 p.m. (confirmed). Sleep regression (3 a.m. waking) is the reason sessions reverted to weekly.",
+      "judge_rubric": {
+        "must_include": [
+          "May 20th",
+          "2:30 p.m.",
+          "weekly",
+          "sertraline 50mg",
+          "sleep issue or 3 a.m. waking"
+        ],
+        "acceptable_paraphrases": [
+          "2:30 PM",
+          "fifty milligrams",
+          "once a week"
+        ],
+        "must_not_include": [
+          "every two weeks as current cadence",
+          "monthly as current cadence",
+          "sertraline 75mg"
+        ],
+        "harmful_extra": [
+          "listing biweekly or monthly as the current session frequency",
+          "recommending 75mg based on the forum post about Dr. Wong's patient"
+        ],
+        "harmless_extra": [
+          "mentioning PHQ-9 scores",
+          "mentioning the journaling habit",
+          "mentioning walking as a coping strategy"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the note card uses every two weeks or monthly as the current cadence, or if it uses a dosage other than 50mg.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the note card does not correctly reflect the current confirmed state of all three details.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's next appointment with Dr. Huang is May 20th at 2:30 p.m.",
+        "Fact 2: The user's current confirmed session frequency is weekly, after reverting from biweekly due to sleep regression.",
+        "Fact 3: The user's current medication is sertraline 50mg daily, taken every morning with breakfast, unchanged throughout.",
+        "Fact 4: The sleep regression involves waking at 3 a.m. and is the reason for the revert to weekly sessions.",
+        "Inference: The note card must combine the appointment logistics, current session cadence, and medication details into a single preparation artifact, while correctly excluding the superseded biweekly and tentative monthly values."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "she bumped me back to weekly sessions starting this past Monday because my sleep has gotten bad again"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I'm on sertraline 50mg daily, I take it every morning with breakfast"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "My next appointment with Dr. Huang is May 20th at 2:30 p.m."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed everything we've discussed about how often I see Dr. Huang, what would the full sequence of changes look like — which values were actually put into practice and which were only discussed as possibilities? Walk me through it in order.",
+      "expected_answer": "First, you started seeing Dr. Huang weekly beginning March 3rd. Second, as of April 15th you switched to every two weeks after your PHQ-9 improved from 17 to 11. Third, Dr. Huang moved you back to weekly sessions starting the most recent Monday because your sleep regression returned (3 a.m. waking). Fourth, Dr. Huang mentioned that if your PHQ-9 stays below 10 at the next check she would move you to monthly sessions, but this is conditional and has not been put into practice. The current active frequency is weekly.",
+      "gold_memory_state": "session_frequency trajectory: weekly (confirmed, step 1) -> every two weeks (confirmed, step 2) -> weekly (confirmed, step 3) -> monthly (tentative/conditional, step 4, not adopted). Final confirmed state = weekly. sertraline_dosage = 50mg daily with breakfast (confirmed, unchanged control target).",
+      "judge_rubric": {
+        "must_include": [
+          "weekly as initial value",
+          "every two weeks as second value",
+          "weekly as third value after revert",
+          "monthly as conditional/not-yet-in-effect possibility",
+          "weekly as final current value"
+        ],
+        "acceptable_paraphrases": [
+          "biweekly for every two weeks",
+          "once a month for monthly",
+          "once a week for weekly"
+        ],
+        "must_not_include": [
+          "monthly as an adopted or active frequency"
+        ],
+        "harmful_extra": [
+          "omitting the biweekly intermediate step",
+          "presenting monthly as a confirmed change",
+          "presenting the trajectory out of chronological order"
+        ],
+        "harmless_extra": [
+          "PHQ-9 score thresholds",
+          "sleep regression details",
+          "dates of each change"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model presents monthly or every two weeks as the current active frequency.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model does not present the four trajectory steps in chronological order: weekly -> every two weeks -> weekly -> conditional monthly.",
+        "final_state": "Fails if the model does not identify weekly as the current confirmed frequency.",
+        "intermediate_state": "Fails if the model omits the every-two-weeks intermediate state or the revert back to weekly.",
+        "trajectory_provenance": "Fails if the model does not distinguish the tentative monthly as conditional rather than adopted."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: User began seeing Dr. Huang weekly starting March 3rd (confirmed).",
+        "Step 2: As of April 15th, frequency changed to every two weeks after PHQ-9 improved (confirmed).",
+        "Step 3: Dr. Huang reverted the user to weekly sessions starting the most recent Monday due to sleep regression (confirmed).",
+        "Step 4: Dr. Huang mentioned a conditional move to monthly sessions if PHQ-9 stays below 10 at the next check (tentative, not yet adopted).",
+        "Inference: The full trajectory is weekly -> every two weeks -> weekly -> conditional monthly (not adopted). The final confirmed state is weekly."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I've been seeing Dr. Huang weekly since March 3rd"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Dr. Huang and I switched to every two weeks as of April 15th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "she bumped me back to weekly sessions starting this past Monday because my sleep has gotten bad again"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Dr. Huang told me that if my PHQ-9 stays below 10 at the next check she'll move me to monthly sessions"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed everything we've discussed about how often I see Dr. Huang, what would the full sequence of changes look like — which values were actually put into practice and which were only discussed as possibilities? Walk me through it in order.",
+      "expected_answer": "First, you started seeing Dr. Huang weekly beginning March 3rd. Second, as of April 15th you switched to every two weeks after your PHQ-9 improved from 17 to 11. Third, Dr. Huang moved you back to weekly sessions starting the most recent Monday because your sleep regression returned (3 a.m. waking). Fourth, Dr. Huang mentioned that if your PHQ-9 stays below 10 at the next check she would move you to monthly sessions, but this is conditional and has not been put into practice. The current active frequency is weekly.",
+      "gold_memory_state": "session_frequency trajectory: weekly (confirmed, step 1) -> every two weeks (confirmed, step 2) -> weekly (confirmed, step 3) -> monthly (tentative/conditional, step 4, not adopted). Final confirmed state = weekly. sertraline_dosage = 50mg daily with breakfast (confirmed, unchanged control target).",
+      "judge_rubric": {
+        "must_include": [
+          "weekly as initial value",
+          "every two weeks as second value",
+          "weekly as third value after revert",
+          "monthly as conditional/not-yet-in-effect possibility",
+          "weekly as final current value"
+        ],
+        "acceptable_paraphrases": [
+          "biweekly for every two weeks",
+          "once a month for monthly",
+          "once a week for weekly"
+        ],
+        "must_not_include": [
+          "monthly as an adopted or active frequency"
+        ],
+        "harmful_extra": [
+          "omitting the biweekly intermediate step",
+          "presenting monthly as a confirmed change",
+          "presenting the trajectory out of chronological order"
+        ],
+        "harmless_extra": [
+          "PHQ-9 score thresholds",
+          "sleep regression details",
+          "dates of each change"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model presents monthly or every two weeks as the current active frequency.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model does not present the four trajectory steps in chronological order: weekly -> every two weeks -> weekly -> conditional monthly.",
+        "final_state": "Fails if the model does not identify weekly as the current confirmed frequency.",
+        "intermediate_state": "Fails if the model omits the every-two-weeks intermediate state or the revert back to weekly.",
+        "trajectory_provenance": "Fails if the model does not distinguish the tentative monthly as conditional rather than adopted."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: User began seeing Dr. Huang weekly starting March 3rd (confirmed).",
+        "Step 2: As of April 15th, frequency changed to every two weeks after PHQ-9 improved (confirmed).",
+        "Step 3: Dr. Huang reverted the user to weekly sessions starting the most recent Monday due to sleep regression (confirmed).",
+        "Step 4: Dr. Huang mentioned a conditional move to monthly sessions if PHQ-9 stays below 10 at the next check (tentative, not yet adopted).",
+        "Inference: The full trajectory is weekly -> every two weeks -> weekly -> conditional monthly (not adopted). The final confirmed state is weekly."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I've been seeing Dr. Huang weekly since March 3rd"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Dr. Huang and I switched to every two weeks as of April 15th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "she bumped me back to weekly sessions starting this past Monday because my sleep has gotten bad again"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Dr. Huang told me that if my PHQ-9 stays below 10 at the next check she'll move me to monthly sessions"
+        }
+      ]
+    }
+  ]
+}

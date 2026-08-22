@@ -1,0 +1,1083 @@
+{
+  "target_fact": "User's input method setup across devices: Gboard on phone (switched March 3rd), dark gray theme, Japanese as secondary language added mid-April, keyboard height medium, US International layout on laptop set April 1st",
+  "operation_type": "Remember",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 3,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": true,
+      "never_stored_target": "phone clipboard manager app"
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I switched to Gboard on my phone on March 3rd"
+      },
+      "target": {
+        "target_id": "phone_default_input_method",
+        "target_name": "phone default input method"
+      },
+      "old_value": null,
+      "new_value": "Gboard",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I switched to Gboard on my phone on March 3rd"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I set the theme to a plain dark gray background in Gboard"
+      },
+      "target": {
+        "target_id": "gboard_theme",
+        "target_name": "Gboard keyboard theme"
+      },
+      "old_value": null,
+      "new_value": "plain dark gray background",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I set the theme to a plain dark gray background in Gboard"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "the switch date from SwiftKey to Gboard was March 3rd"
+      },
+      "target": {
+        "target_id": "gboard_switch_date",
+        "target_name": "date switched to Gboard from SwiftKey"
+      },
+      "old_value": null,
+      "new_value": "March 3rd",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I switched to Gboard on my phone on March 3rd"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "the switch date from SwiftKey to Gboard was March 3rd"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I added Japanese as a secondary input language in Gboard around the second week of April"
+      },
+      "target": {
+        "target_id": "gboard_secondary_language",
+        "target_name": "Gboard secondary input language"
+      },
+      "old_value": null,
+      "new_value": "Japanese, added around second week of April",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I added Japanese as a secondary input language in Gboard around the second week of April"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "my keyboard height in Gboard is currently set to medium"
+      },
+      "target": {
+        "target_id": "gboard_keyboard_height",
+        "target_name": "Gboard keyboard height setting"
+      },
+      "old_value": null,
+      "new_value": "medium",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "my keyboard height in Gboard is currently set to medium"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "On my laptop I use the default Windows IME with a US International keyboard layout, which I set on April 1st"
+      },
+      "target": {
+        "target_id": "laptop_keyboard_layout",
+        "target_name": "laptop keyboard layout"
+      },
+      "old_value": null,
+      "new_value": "US International layout on Windows IME, set April 1st",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "On my laptop I use the default Windows IME with a US International keyboard layout, which I set on April 1st"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 7,
+        "quote": "I turned off the emoji suggestions bar in Gboard because I prefer having more screen space for the text area"
+      },
+      "target": {
+        "target_id": "gboard_emoji_bar",
+        "target_name": "Gboard emoji suggestions bar setting"
+      },
+      "old_value": null,
+      "new_value": "turned off",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I turned off the emoji suggestions bar in Gboard because I prefer having more screen space for the text area"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establishing phone input method basics and theme preference",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to get some notes organized about my input method setup across my devices. Starting with my phone: I switched to Gboard on my phone on March 3rd. Before that I was using SwiftKey for over a year, but it started lagging terribly after an update and I just couldn't deal with it anymore. Can you help me keep track of all this?"
+        },
+        {
+          "role": "assistant",
+          "content": "Of course, I'd be happy to help you organize your input method setup notes! So far I've got that you switched your phone's default input method to Gboard on March 3rd, coming from SwiftKey which had been your keyboard for over a year before performance issues drove you away. That sounds frustrating, especially if you'd invested time customizing SwiftKey's dictionary. Let me know what other details you'd like to capture — theme settings, language configurations, any other device setups — and I'll keep everything structured for you."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, exactly. I spent so long training SwiftKey's autocorrect and then it just became unusable. Anyway, for the theme side of things: I set the theme to a plain dark gray background in Gboard. I really hate those flashy keyboard themes with gradients or pictures behind the keys. They feel cluttered and distracting to me. I like things clean and minimal."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — you've set Gboard to a plain dark gray background theme, and you strongly prefer clean, minimalist keyboard visuals over flashy gradient or image-based themes. That's a clear preference worth noting. It sounds like you value readability and a distraction-free typing experience above aesthetic flair. I'll keep that recorded alongside your Gboard switch date. Do you have any other Gboard-specific settings or customizations you want to document, or shall we move on to your other devices?"
+        },
+        {
+          "role": "user",
+          "content": "One more thing on the timeline — just to be precise, the switch date from SwiftKey to Gboard was March 3rd. I want that nailed down because apps keep prompting me to change my input method and I want a reference point for when I made the deliberate choice. Also, my coworker David mentioned he switched to Fleksy and loves it, but I looked into it and decided not to try it."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — March 3rd is your firm switch date from SwiftKey to Gboard, and you want that anchored as your intentional decision point so you can reference it whenever apps try to nudge you to change. And regarding Fleksy, I'll note that your coworker David recommended it but you investigated and chose not to adopt it. So your current phone input method remains Gboard as a deliberate, settled choice. Want to continue with more Gboard settings or move to laptop setup next?"
+        },
+        {
+          "role": "user",
+          "content": "Let's keep going with Gboard settings in the next round. For now, I also want to note that I tend to like tools that keep things minimal but still let me discover small fun features on my own without being pushy about it. Like recently Gboard added sticker suggestions and I enjoyed browsing them at my own pace. That's my general preference for software tools."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a great general preference to capture: you favor minimal, non-intrusive software that still offers discoverable features you can explore voluntarily. The Gboard sticker suggestions are a good example — you appreciated being able to browse them on your own terms rather than having them forced on you. I'll record this as a broader tool preference alongside your specific Gboard configuration notes. Whenever you're ready, we can dive into more Gboard settings or your laptop input method setup in our next session."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Documenting language settings, keyboard height, laptop layout, and emoji bar",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Alright, continuing with my Gboard setup details. I added Japanese as a secondary input language in Gboard around the second week of April. I started doing some casual Japanese study and needed to be able to type in it. The globe key on Gboard lets me toggle between English and Japanese, and that's still active right now."
+        },
+        {
+          "role": "assistant",
+          "content": "Great, I've noted that you added Japanese as a secondary input language in Gboard around the second week of April for your Japanese language studies. You use the globe key to toggle between English and Japanese, and that configuration is still active. That's a nice addition to your setup — having quick language switching without needing a separate app. So your Gboard currently handles both English as primary and Japanese as secondary. Shall we continue with other Gboard settings or move to a different device?"
+        },
+        {
+          "role": "user",
+          "content": "One more Gboard detail: my keyboard height in Gboard is currently set to medium. I had changed it to tall at one point thinking bigger keys would help, but I actually found I was mistyping less with the slightly smaller medium setting. So medium is where it's at right now and I'm happy with it."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood — your Gboard keyboard height is currently set to medium. You tried the tall setting previously but found that medium actually reduced your mistyping, so you've settled on medium as your preferred height. That makes sense; sometimes a slightly more compact layout can improve accuracy because your thumbs don't have to stretch as far. I'll record medium as your current keyboard height setting. What's next — more phone settings or shall we jump to your laptop input method?"
+        },
+        {
+          "role": "user",
+          "content": "Let's do the laptop now. On my laptop I use the default Windows IME with a US International keyboard layout, which I set on April 1st. I needed it so I can type accented characters for Spanish. That's completely separate from my phone Gboard setup — two different devices, two different input method configurations."
+        },
+        {
+          "role": "assistant",
+          "content": "Perfect, I've captured your laptop setup: you're using the default Windows IME with a US International keyboard layout, configured on April 1st specifically for typing Spanish accented characters. And as you noted, this is entirely separate from your phone's Gboard configuration — different device, different input method, different purpose. So to summarize across devices: phone uses Gboard with English and Japanese, laptop uses Windows IME with US International for English and Spanish characters. Want to add any more details about either device?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, one more thing about the phone Gboard setup. I turned off the emoji suggestions bar in Gboard because I prefer having more screen space for the text area. I really value screen real estate when typing, and that bar was just taking up space I didn't need. The emoji are still accessible through the emoji button, I just don't want them suggested automatically at the top.\n\nI think that covers the main settings. Oh, I should mention — I had voice input enabled in Gboard for a while but I disabled it about three weeks ago. The mic icon was getting in the way and I almost never used it. That's already handled though, no need to track it going forward. Just wanted you to know it's been taken care of."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — you've disabled the emoji suggestions bar in Gboard to maximize screen space for the text area. The emojis are still available via the dedicated emoji button, but you don't want them automatically suggested in a bar at the top of the keyboard. That aligns perfectly with your overall preference for clean, minimal interfaces that don't clutter the screen with unnecessary elements. I'll add this to your Gboard configuration notes. Is there anything else about your input method setup you'd like to document?\n\nUnderstood — voice input was previously enabled in Gboard but you disabled it roughly three weeks ago since you rarely used it and the mic icon was intrusive. And since you've confirmed that's fully resolved, I won't track it as an active setting. So your current active Gboard configuration is: Gboard as default input method since March 3rd, plain dark gray theme, Japanese as secondary language via globe key, medium keyboard height, and emoji suggestions bar turned off. On your laptop: Windows IME with US International layout since April 1st. Looks like a solid, well-organized setup!"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Review and confirmation with adversarial distractor injection",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to circle back and make sure everything is captured correctly about my input method setup. Can you give me a quick rundown of what you have for my phone configuration? I want to double-check before I consider it finalized in my notes."
+        },
+        {
+          "role": "assistant",
+          "content": "Sure! Here's what I have for your phone input method configuration: Your default input method is Gboard, which you switched to on March 3rd from SwiftKey. The theme is set to a plain dark gray background. You have Japanese added as a secondary input language (added around the second week of April), toggled via the globe key. Keyboard height is currently set to medium. The emoji suggestions bar is turned off for more screen space. Voice input has been disabled and doesn't need ongoing tracking. Does all of that look correct?"
+        },
+        {
+          "role": "user",
+          "content": "That looks right. By the way, I was reading a thread on Reddit about input methods and someone mentioned that Samsung Keyboard defaults to a medium-tall height setting and comes with a built-in Grammarly integration now. Interesting, but not relevant to my setup since I'm on Gboard."
+        },
+        {
+          "role": "assistant",
+          "content": "Interesting tidbit about Samsung Keyboard! The Grammarly integration does sound convenient for Samsung users. But you're right, since you're committed to Gboard, that's not directly relevant to your configuration. Speaking of keyboard comparisons, I recall you mentioned your coworker David uses Fleksy — I actually came across a review that noted Fleksy uses a US QWERTY Compact layout by default, which is different from Gboard's standard layout. Just a passing note; your setup is well-documented as-is. Anything else you'd like to verify?"
+        },
+        {
+          "role": "user",
+          "content": "No, David's Fleksy setup isn't something I need to track. I want to make sure my notes reflect that the Japanese language addition happened about five and a half weeks after the initial Gboard switch. That timeline matters to me because I want to remember the progression of how I customized things over time."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a useful timeline note. Let me verify: you switched to Gboard on March 3rd, and you added Japanese around the second week of April. So roughly five to six weeks elapsed between your initial switch and adding the secondary language. That progression shows you settled into Gboard first before expanding its configuration. I can see why tracking that sequence matters — it gives you a clear picture of your customization journey. Would you like me to note any other timeline relationships between your settings changes?"
+        },
+        {
+          "role": "user",
+          "content": "Actually yes — I also want to keep in mind that I set up the laptop's US International layout on April 1st, which was about a week and a half before adding Japanese on the phone. So there was a period in early April where I was setting up multilingual input across both devices in quick succession. That context is helpful for me.\n\nI think that's everything. My friend Mei told me about RIME input method on Linux for Chinese but I don't need Chinese input myself, so that's not relevant to my setup. I just want to make sure all my own settings are properly documented — Gboard on the phone, Windows IME on the laptop, and all the specific customizations we discussed."
+        },
+        {
+          "role": "assistant",
+          "content": "Great observation! So the timeline flows like this: Gboard switch on March 3rd, then laptop US International layout on April 1st (about four weeks later), then Japanese added to Gboard around the second week of April (roughly a week and a half after the laptop setup). That early-April window was clearly your multilingual configuration sprint across both devices. Having that chronological context really ties your setup story together. It shows you went from a single-language phone keyboard to a full multilingual setup on two devices within about six weeks. Anything else to finalize?\n\nUnderstood — Mei's RIME setup for Chinese on Linux is noted as interesting but not part of your personal configuration. Your complete documented setup is: Phone — Gboard (default since March 3rd), plain dark gray theme, Japanese secondary language (added ~second week of April), medium keyboard height, emoji suggestions bar off. Laptop — Windows IME with US International layout (set April 1st) for Spanish accented characters. Voice input was disabled and doesn't need tracking. You also have a clear timeline: March 3rd Gboard switch → April 1st laptop layout → mid-April Japanese addition. Everything is captured and organized. Let me know anytime you need to reference or update these notes!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've told you about how my phone and laptop input methods are set up, including all the specific customizations and dates?",
+      "expected_answer": "You switched your phone's default keyboard to Gboard on March 3rd, replacing SwiftKey. You set Gboard's theme to a plain dark gray background. You added Japanese as a secondary input language around the second week of April, toggled via the globe key. Your keyboard height is set to medium. You turned off the emoji suggestions bar for more screen space. On your laptop, you use the default Windows IME with a US International keyboard layout, which you set on April 1st for typing Spanish accented characters.",
+      "gold_memory_state": "All seven confirmed remember operations are active: phone default input method (Gboard), Gboard theme (plain dark gray), switch date (March 3rd), secondary language (Japanese, mid-April), keyboard height (medium), laptop layout (US International on Windows IME, April 1st), emoji suggestions bar (off).",
+      "judge_rubric": {
+        "must_include": [
+          "Gboard",
+          "March 3rd",
+          "dark gray",
+          "Japanese",
+          "medium",
+          "US International",
+          "April 1st",
+          "emoji suggestions bar off"
+        ],
+        "acceptable_paraphrases": [
+          "plain dark gray background",
+          "dark gray theme",
+          "turned off emoji bar",
+          "disabled emoji suggestions"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming SwiftKey is still active",
+          "claiming voice input is still tracked"
+        ],
+        "harmless_extra": [
+          "mentioning SwiftKey as the previous keyboard",
+          "mentioning the globe key for language switching",
+          "mentioning Spanish accented characters as the reason for US International"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I switched to Gboard on my phone on March 3rd"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I set the theme to a plain dark gray background in Gboard"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I added Japanese as a secondary input language in Gboard around the second week of April"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "my keyboard height in Gboard is currently set to medium"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "On my laptop I use the default Windows IME with a US International keyboard layout, which I set on April 1st"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I turned off the emoji suggestions bar in Gboard because I prefer having more screen space for the text area"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've told you about how my phone and laptop input methods are set up, including all the specific customizations and dates?",
+      "expected_answer": "You switched your phone's default keyboard to Gboard on March 3rd, replacing SwiftKey. You set Gboard's theme to a plain dark gray background. You added Japanese as a secondary input language around the second week of April, toggled via the globe key. Your keyboard height is set to medium. You turned off the emoji suggestions bar for more screen space. On your laptop, you use the default Windows IME with a US International keyboard layout, which you set on April 1st for typing Spanish accented characters.",
+      "gold_memory_state": "All seven confirmed remember operations are active: phone default input method (Gboard), Gboard theme (plain dark gray), switch date (March 3rd), secondary language (Japanese, mid-April), keyboard height (medium), laptop layout (US International on Windows IME, April 1st), emoji suggestions bar (off).",
+      "judge_rubric": {
+        "must_include": [
+          "Gboard",
+          "March 3rd",
+          "dark gray",
+          "Japanese",
+          "medium",
+          "US International",
+          "April 1st",
+          "emoji suggestions bar off"
+        ],
+        "acceptable_paraphrases": [
+          "plain dark gray background",
+          "dark gray theme",
+          "turned off emoji bar",
+          "disabled emoji suggestions"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming SwiftKey is still active",
+          "claiming voice input is still tracked"
+        ],
+        "harmless_extra": [
+          "mentioning SwiftKey as the previous keyboard",
+          "mentioning the globe key for language switching",
+          "mentioning Spanish accented characters as the reason for US International"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I switched to Gboard on my phone on March 3rd"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I set the theme to a plain dark gray background in Gboard"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I added Japanese as a secondary input language in Gboard around the second week of April"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "my keyboard height in Gboard is currently set to medium"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "On my laptop I use the default Windows IME with a US International keyboard layout, which I set on April 1st"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I turned off the emoji suggestions bar in Gboard because I prefer having more screen space for the text area"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I have input method configurations on two different devices. If I need to update the keyboard layout for typing accented characters, which device's configuration does that belong to, and is my phone's language setup affected?",
+      "expected_answer": "The keyboard layout for typing accented characters belongs to your laptop configuration — specifically the US International layout on Windows IME. Your phone's Gboard language setup (English primary, Japanese secondary) is a completely separate configuration and is not affected.",
+      "gold_memory_state": "Laptop keyboard layout: US International on Windows IME, set April 1st, for Spanish accented characters. Phone Gboard secondary language: Japanese, added mid-April. These are distinct targets on different devices.",
+      "judge_rubric": {
+        "must_include": [
+          "laptop",
+          "US International"
+        ],
+        "acceptable_paraphrases": [
+          "laptop's US International layout",
+          "Windows IME layout on laptop"
+        ],
+        "must_not_include": [
+          "phone layout changed for accented characters"
+        ],
+        "harmful_extra": [
+          "conflating the laptop layout with the phone's Japanese language addition",
+          "saying the phone also handles Spanish accented characters"
+        ],
+        "harmless_extra": [
+          "mentioning April 1st as the date the laptop layout was set",
+          "mentioning that the phone uses Gboard"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "On my laptop I use the default Windows IME with a US International keyboard layout, which I set on April 1st"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I added Japanese as a secondary input language in Gboard around the second week of April"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I have input method configurations on two different devices. If I need to update the keyboard layout for typing accented characters, which device's configuration does that belong to, and is my phone's language setup affected?",
+      "expected_answer": "The keyboard layout for typing accented characters belongs to your laptop configuration — specifically the US International layout on Windows IME. Your phone's Gboard language setup (English primary, Japanese secondary) is a completely separate configuration and is not affected.",
+      "gold_memory_state": "Laptop keyboard layout: US International on Windows IME, set April 1st, for Spanish accented characters. Phone Gboard secondary language: Japanese, added mid-April. These are distinct targets on different devices.",
+      "judge_rubric": {
+        "must_include": [
+          "laptop",
+          "US International"
+        ],
+        "acceptable_paraphrases": [
+          "laptop's US International layout",
+          "Windows IME layout on laptop"
+        ],
+        "must_not_include": [
+          "phone layout changed for accented characters"
+        ],
+        "harmful_extra": [
+          "conflating the laptop layout with the phone's Japanese language addition",
+          "saying the phone also handles Spanish accented characters"
+        ],
+        "harmless_extra": [
+          "mentioning April 1st as the date the laptop layout was set",
+          "mentioning that the phone uses Gboard"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "On my laptop I use the default Windows IME with a US International keyboard layout, which I set on April 1st"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I added Japanese as a secondary input language in Gboard around the second week of April"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Is the date I added the secondary language on my phone close to the date I configured my laptop's layout, and how do those two setup events relate in time?",
+      "expected_answer": "Yes, the two events are close. You set up the US International layout on your laptop on April 1st, and you added Japanese as a secondary language in Gboard around the second week of April — roughly a week and a half later. Both multilingual configurations happened in quick succession in early April.",
+      "gold_memory_state": "Laptop keyboard layout set April 1st. Gboard secondary language (Japanese) added around the second week of April. Both are confirmed and active. The user explicitly noted these events happened in quick succession.",
+      "judge_rubric": {
+        "must_include": [
+          "April 1st",
+          "second week of April",
+          "approximately a week and a half apart"
+        ],
+        "acceptable_paraphrases": [
+          "about ten days apart",
+          "roughly a week to ten days later",
+          "close together in early April"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying the events happened on the same day",
+          "confusing which event came first"
+        ],
+        "harmless_extra": [
+          "mentioning the user described this as a multilingual configuration sprint"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model cannot recall both dates or gets the temporal order wrong.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "On my laptop I use the default Windows IME with a US International keyboard layout, which I set on April 1st"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I added Japanese as a secondary input language in Gboard around the second week of April"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Is the date I added the secondary language on my phone close to the date I configured my laptop's layout, and how do those two setup events relate in time?",
+      "expected_answer": "Yes, the two events are close. You set up the US International layout on your laptop on April 1st, and you added Japanese as a secondary language in Gboard around the second week of April — roughly a week and a half later. Both multilingual configurations happened in quick succession in early April.",
+      "gold_memory_state": "Laptop keyboard layout set April 1st. Gboard secondary language (Japanese) added around the second week of April. Both are confirmed and active. The user explicitly noted these events happened in quick succession.",
+      "judge_rubric": {
+        "must_include": [
+          "April 1st",
+          "second week of April",
+          "approximately a week and a half apart"
+        ],
+        "acceptable_paraphrases": [
+          "about ten days apart",
+          "roughly a week to ten days later",
+          "close together in early April"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying the events happened on the same day",
+          "confusing which event came first"
+        ],
+        "harmless_extra": [
+          "mentioning the user described this as a multilingual configuration sprint"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model cannot recall both dates or gets the temporal order wrong.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "On my laptop I use the default Windows IME with a US International keyboard layout, which I set on April 1st"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I added Japanese as a secondary input language in Gboard around the second week of April"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "Which keyboard app am I using as my phone's default input method right now?",
+      "candidate_options": [
+        "Gboard",
+        "SwiftKey",
+        "Fleksy",
+        "Samsung Keyboard"
+      ],
+      "expected_answer": "Gboard",
+      "distractor_rationale": "same-value-different-target: Samsung Keyboard is mentioned in the conversation as another keyboard app with a medium-tall height setting, but it belongs to a different context (Reddit thread) and is not the user's app. assistant echo: Fleksy was mentioned by the assistant when discussing the coworker David's setup, making it a plausible but incorrect echo. SwiftKey is the user's previous keyboard before March 3rd.",
+      "gold_memory_state": "Phone default input method is Gboard, switched on March 3rd from SwiftKey. Fleksy is David's keyboard, not the user's. Samsung Keyboard was mentioned in a Reddit thread, not adopted.",
+      "judge_rubric": {
+        "must_include": [
+          "Gboard"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "SwiftKey as current",
+          "Fleksy as current",
+          "Samsung Keyboard as current"
+        ],
+        "harmful_extra": [
+          "selecting any option other than Gboard"
+        ],
+        "harmless_extra": [
+          "noting that SwiftKey was the previous keyboard"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if SwiftKey is selected as the current input method, since it was replaced on March 3rd.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I switched to Gboard on my phone on March 3rd"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "Which keyboard app am I using as my phone's default input method right now?",
+      "candidate_options": [
+        "Gboard",
+        "SwiftKey",
+        "Fleksy",
+        "Samsung Keyboard"
+      ],
+      "expected_answer": "Gboard",
+      "distractor_rationale": "same-value-different-target: Samsung Keyboard is mentioned in the conversation as another keyboard app with a medium-tall height setting, but it belongs to a different context (Reddit thread) and is not the user's app. assistant echo: Fleksy was mentioned by the assistant when discussing the coworker David's setup, making it a plausible but incorrect echo. SwiftKey is the user's previous keyboard before March 3rd.",
+      "gold_memory_state": "Phone default input method is Gboard, switched on March 3rd from SwiftKey. Fleksy is David's keyboard, not the user's. Samsung Keyboard was mentioned in a Reddit thread, not adopted.",
+      "judge_rubric": {
+        "must_include": [
+          "Gboard"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "SwiftKey as current",
+          "Fleksy as current",
+          "Samsung Keyboard as current"
+        ],
+        "harmful_extra": [
+          "selecting any option other than Gboard"
+        ],
+        "harmless_extra": [
+          "noting that SwiftKey was the previous keyboard"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if SwiftKey is selected as the current input method, since it was replaced on March 3rd.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I switched to Gboard on my phone on March 3rd"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to write a quick setup guide for a friend who's curious about my typing configuration across devices. Draft a short paragraph that covers what keyboard I use on my phone, what visual style it has, how long after switching keyboards I added a second language, and what layout my laptop uses. Make sure the timeline is clear.",
+      "expected_answer": "Here's a quick guide to my setup: On my phone, I use Gboard with a plain dark gray theme for a clean, minimal look. I switched to Gboard on March 3rd, and about five to six weeks later — around the second week of April — I added Japanese as a secondary language, toggled via the globe key. On my laptop, I use the default Windows IME with a US International keyboard layout, which I set up on April 1st for typing Spanish accented characters. So the multilingual expansion happened in early-to-mid April on both devices.",
+      "gold_memory_state": "Phone: Gboard (since March 3rd), plain dark gray theme, Japanese secondary language (added ~second week of April), medium keyboard height, emoji bar off. Laptop: Windows IME, US International layout (since April 1st).",
+      "judge_rubric": {
+        "must_include": [
+          "Gboard",
+          "dark gray",
+          "March 3rd",
+          "Japanese",
+          "second week of April",
+          "five to six weeks",
+          "US International",
+          "laptop"
+        ],
+        "acceptable_paraphrases": [
+          "about 5-6 weeks later",
+          "roughly five and a half weeks after",
+          "approximately six weeks"
+        ],
+        "must_not_include": [
+          "SwiftKey as current keyboard"
+        ],
+        "harmful_extra": [
+          "saying Samsung Keyboard or Fleksy is used",
+          "getting the timeline calculation wrong"
+        ],
+        "harmless_extra": [
+          "mentioning the globe key",
+          "mentioning Spanish accented characters",
+          "mentioning medium keyboard height",
+          "mentioning emoji bar is off"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if SwiftKey is presented as the current keyboard or if voice input is listed as active.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user switched to Gboard on March 3rd.",
+        "Fact 2: The user set Gboard's theme to plain dark gray background.",
+        "Fact 3: The user added Japanese as a secondary language around the second week of April.",
+        "Fact 4: The user's laptop uses Windows IME with US International layout, set April 1st.",
+        "Inference: The gap between March 3rd and the second week of April is approximately five to six weeks.",
+        "Inference: The multilingual configuration on the laptop (April 1st) preceded the phone's Japanese addition (mid-April) by about one to two weeks, so both multilingual setups happened in quick succession in early-to-mid April."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I switched to Gboard on my phone on March 3rd"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I set the theme to a plain dark gray background in Gboard"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I added Japanese as a secondary input language in Gboard around the second week of April"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "On my laptop I use the default Windows IME with a US International keyboard layout, which I set on April 1st"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to write a quick setup guide for a friend who's curious about my typing configuration across devices. Draft a short paragraph that covers what keyboard I use on my phone, what visual style it has, how long after switching keyboards I added a second language, and what layout my laptop uses. Make sure the timeline is clear.",
+      "expected_answer": "Here's a quick guide to my setup: On my phone, I use Gboard with a plain dark gray theme for a clean, minimal look. I switched to Gboard on March 3rd, and about five to six weeks later — around the second week of April — I added Japanese as a secondary language, toggled via the globe key. On my laptop, I use the default Windows IME with a US International keyboard layout, which I set up on April 1st for typing Spanish accented characters. So the multilingual expansion happened in early-to-mid April on both devices.",
+      "gold_memory_state": "Phone: Gboard (since March 3rd), plain dark gray theme, Japanese secondary language (added ~second week of April), medium keyboard height, emoji bar off. Laptop: Windows IME, US International layout (since April 1st).",
+      "judge_rubric": {
+        "must_include": [
+          "Gboard",
+          "dark gray",
+          "March 3rd",
+          "Japanese",
+          "second week of April",
+          "five to six weeks",
+          "US International",
+          "laptop"
+        ],
+        "acceptable_paraphrases": [
+          "about 5-6 weeks later",
+          "roughly five and a half weeks after",
+          "approximately six weeks"
+        ],
+        "must_not_include": [
+          "SwiftKey as current keyboard"
+        ],
+        "harmful_extra": [
+          "saying Samsung Keyboard or Fleksy is used",
+          "getting the timeline calculation wrong"
+        ],
+        "harmless_extra": [
+          "mentioning the globe key",
+          "mentioning Spanish accented characters",
+          "mentioning medium keyboard height",
+          "mentioning emoji bar is off"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if SwiftKey is presented as the current keyboard or if voice input is listed as active.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user switched to Gboard on March 3rd.",
+        "Fact 2: The user set Gboard's theme to plain dark gray background.",
+        "Fact 3: The user added Japanese as a secondary language around the second week of April.",
+        "Fact 4: The user's laptop uses Windows IME with US International layout, set April 1st.",
+        "Inference: The gap between March 3rd and the second week of April is approximately five to six weeks.",
+        "Inference: The multilingual configuration on the laptop (April 1st) preceded the phone's Japanese addition (mid-April) by about one to two weeks, so both multilingual setups happened in quick succession in early-to-mid April."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I switched to Gboard on my phone on March 3rd"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I set the theme to a plain dark gray background in Gboard"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I added Japanese as a secondary input language in Gboard around the second week of April"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "On my laptop I use the default Windows IME with a US International keyboard layout, which I set on April 1st"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What phone clipboard manager app did I tell you I use?",
+      "expected_answer": "I don't have any information about a phone clipboard manager app from you. You haven't mentioned one.",
+      "gold_memory_state": "No phone clipboard manager app was ever provided by the user. The user's phone input method details include Gboard as the keyboard, dark gray theme, Japanese secondary language, medium height, and emoji bar off, but no clipboard manager was ever mentioned.",
+      "judge_rubric": {
+        "must_include": [
+          "no information",
+          "not provided"
+        ],
+        "acceptable_paraphrases": [
+          "you never mentioned a clipboard manager",
+          "I have no record of a clipboard manager app",
+          "you didn't share that"
+        ],
+        "must_not_include": [
+          "any specific clipboard manager app name"
+        ],
+        "harmful_extra": [
+          "inventing a clipboard manager app name",
+          "borrowing Gboard or any other app name as a clipboard manager"
+        ],
+        "harmless_extra": [
+          "Gboard",
+          "SwiftKey",
+          "keyboard height",
+          "emoji bar"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model invents or hallucinates a clipboard manager app name.",
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I switched to Gboard on my phone on March 3rd"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I turned off the emoji suggestions bar in Gboard because I prefer having more screen space for the text area"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What phone clipboard manager app did I tell you I use?",
+      "expected_answer": "I don't have any information about a phone clipboard manager app from you. You haven't mentioned one.",
+      "gold_memory_state": "No phone clipboard manager app was ever provided by the user. The user's phone input method details include Gboard as the keyboard, dark gray theme, Japanese secondary language, medium height, and emoji bar off, but no clipboard manager was ever mentioned.",
+      "judge_rubric": {
+        "must_include": [
+          "no information",
+          "not provided"
+        ],
+        "acceptable_paraphrases": [
+          "you never mentioned a clipboard manager",
+          "I have no record of a clipboard manager app",
+          "you didn't share that"
+        ],
+        "must_not_include": [
+          "any specific clipboard manager app name"
+        ],
+        "harmful_extra": [
+          "inventing a clipboard manager app name",
+          "borrowing Gboard or any other app name as a clipboard manager"
+        ],
+        "harmless_extra": [
+          "Gboard",
+          "SwiftKey",
+          "keyboard height",
+          "emoji bar"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model invents or hallucinates a clipboard manager app name.",
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I switched to Gboard on my phone on March 3rd"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I turned off the emoji suggestions bar in Gboard because I prefer having more screen space for the text area"
+        }
+      ]
+    }
+  ]
+}

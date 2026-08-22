@@ -1,0 +1,1111 @@
+{
+  "target_fact": "User prefers structured, solitary, low-stimulation environments for detail-oriented work, as evidenced by switching to spreadsheet templates, reviewing alone in the morning with coffee, and establishing a rule against filing reports after 4 PM",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I switched to a spreadsheet template around mid-March to track all my numbers before I submit anything"
+      },
+      "target": {
+        "target_id": "pre_submission_method",
+        "target_name": "pre-submission tracking method"
+      },
+      "old_value": null,
+      "new_value": "spreadsheet template adopted mid-March",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I switched to a spreadsheet template around mid-March to track all my numbers before I submit anything"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "my rule now is I never file any report after 4 PM"
+      },
+      "target": {
+        "target_id": "report_filing_cutoff",
+        "target_name": "self-imposed report filing cutoff time"
+      },
+      "old_value": null,
+      "new_value": "never file reports after 4 PM",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my rule now is I never file any report after 4 PM"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I do all my reviewing alone first thing in the morning with my coffee before anyone else is in the office"
+      },
+      "target": {
+        "target_id": "review_routine",
+        "target_name": "preferred review routine"
+      },
+      "old_value": null,
+      "new_value": "reviews alone in the morning with coffee before others arrive",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I do all my reviewing alone first thing in the morning with my coffee before anyone else is in the office"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I triple-check every dollar amount and every headcount before I hit submit"
+      },
+      "target": {
+        "target_id": "triple_check_rule",
+        "target_name": "triple-check rule for amounts and headcounts"
+      },
+      "old_value": null,
+      "new_value": "triple-checks every dollar amount and headcount before submitting",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I triple-check every dollar amount and every headcount before I hit submit"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "There's something about having everything laid out in columns and rows where I can scan across and spot errors visually—it just calms me down"
+      },
+      "target": {
+        "target_id": "work_environment_preference",
+        "target_name": "preferred work environment for detail-oriented tasks"
+      },
+      "old_value": null,
+      "new_value": "prefers structured, solitary, low-stimulation environments for detail-oriented work",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I switched to a spreadsheet template around mid-March to track all my numbers before I submit anything"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my rule now is I never file any report after 4 PM"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I do all my reviewing alone first thing in the morning with my coffee before anyone else is in the office"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "There's something about having everything laid out in columns and rows where I can scan across and spot errors visually—it just calms me down"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 7,
+        "quote": "I felt genuinely anxious for a couple of days after the Greenfield invoice thing—kept worrying I'd damaged the client relationship even though they never actually saw the error"
+      },
+      "target": {
+        "target_id": "error_anxiety_pattern",
+        "target_name": "disproportionate anxiety about professional reputation after errors"
+      },
+      "old_value": null,
+      "new_value": "experiences disproportionate anxiety about professional reputation even when no real consequence occurred",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I felt genuinely anxious for a couple of days after the Greenfield invoice thing—kept worrying I'd damaged the client relationship even though they never actually saw the error"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 7,
+        "quote": "The correct total for the Portland hotel was $378 for two nights at the Residence Inn on SW Morrison Street"
+      },
+      "target": {
+        "target_id": "portland_hotel_total",
+        "target_name": "correct Portland hotel total"
+      },
+      "old_value": null,
+      "new_value": "$378 for two nights at the Residence Inn on SW Morrison Street",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "The correct total for the Portland hotel was $378 for two nights at the Residence Inn on SW Morrison Street"
+        }
+      ]
+    },
+    {
+      "operation_id": "op8",
+      "type": "remember",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "my manager mentioned she wants us to start doing peer reviews on all expense reports going forward, so I'll probably switch to reviewing with a partner instead of alone"
+      },
+      "target": {
+        "target_id": "review_routine",
+        "target_name": "preferred review routine"
+      },
+      "old_value": "reviews alone in the morning with coffee before others arrive",
+      "new_value": "reviewing with a partner",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "my manager mentioned she wants us to start doing peer reviews on all expense reports going forward, so I'll probably switch to reviewing with a partner instead of alone"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish baseline facts about error-checking habits and the Portland expense report incident",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to talk through some of my recent work habits around submitting reports. I've been having issues with reporting wrong numbers—amounts, headcounts, that kind of thing. It's been frustrating and I'm trying to get a handle on it. Can you help me think through my process?"
+        },
+        {
+          "role": "assistant",
+          "content": "Of course, I'd be happy to help you think through your process. Reporting errors can be really stressful, especially when they lead to extra work or scrutiny. Let's start by understanding what kinds of mistakes have been happening and what you've already tried to fix them. Could you walk me through a recent example so I can get a sense of the pattern? That way we can figure out where in your workflow things are going wrong and what safeguards might help."
+        },
+        {
+          "role": "user",
+          "content": "Sure. So one big change I made recently is that I switched to a spreadsheet template around mid-March to track all my numbers before I submit anything. Before that I was just filling in the online forms directly, and I kept making transposition errors. The grid layout really helps me see everything at a glance and catch mistakes before they go out."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really smart adjustment. Spreadsheet grids give you a visual overview that inline form fields just can't match—you can scan across rows and columns quickly and spot anything that looks off. The fact that you identified the root cause as transposition errors and chose a tool that specifically addresses that is great problem-solving. How has it been working since mid-March? Have you noticed fewer errors since you started using the template, or are there still gaps in the process you'd like to tighten up?"
+        },
+        {
+          "role": "user",
+          "content": "It's been helping a lot, but I also realized that when I make mistakes it's usually because I'm rushing at the end of the day. So my rule now is I never file any report after 4 PM. If I haven't finished reviewing by then, I just save it and come back to it the next morning. That cutoff has made a real difference in my accuracy."
+        },
+        {
+          "role": "assistant",
+          "content": "That's an excellent self-imposed boundary. Cognitive fatigue in the late afternoon is well-documented, and the kinds of detail-oriented tasks involved in expense reports and invoices are exactly the ones most affected by it. By setting a hard 4 PM cutoff, you're essentially protecting yourself from your own tired brain. Saving and returning the next morning means you get the benefit of fresh eyes. Have you noticed any pushback from colleagues or managers about the delayed submissions, or has it been seamless so far?"
+        },
+        {
+          "role": "user",
+          "content": "No pushback at all—most things aren't that urgent anyway. Oh, and I should mention this for the record so you have the right number. The correct total for the Portland hotel was $378 for two nights at the Residence Inn on SW Morrison Street. I had originally put $387 on my expense report, which caused a whole resubmission mess, but $378 is the accurate figure."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it—I've noted that the correct Portland hotel total is $378 for two nights at the Residence Inn on SW Morrison Street. Transposing 78 to 87 is exactly the kind of digit-swap error that happens when you're entering numbers quickly, so it's a perfect example of why your spreadsheet template approach makes sense. You can line up the receipt amount next to what you're entering and visually confirm they match. I'm glad the resubmission is behind you. Is there anything else from that incident you want to capture, or shall we move on to other areas?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "deepen evidence for reflective inferences about work environment preference and anxiety pattern",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "One more thing about my process—I do all my reviewing alone first thing in the morning with my coffee before anyone else is in the office. That quiet window is when I catch most of my mistakes. If I try to review something while people are walking by or chatting, I lose focus and miss things. It really needs to be a solitary activity for me."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes a lot of sense. Detail-oriented review work benefits enormously from uninterrupted focus, and the early-morning window you've carved out gives you both the cognitive freshness and the environmental quiet you need. The coffee ritual probably helps anchor the routine too—it signals to your brain that this is review time. The fact that you've identified social interruptions as a specific failure mode shows strong self-awareness. So your ideal setup is: morning, alone, coffee, spreadsheet grid, before 4 PM cutoff. That's a pretty comprehensive error-prevention system."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. And on top of all that structure, I triple-check every dollar amount and every headcount before I hit submit. I go through the whole report three separate times, each time focusing on a different category—first the dollar figures, then the quantities and headcounts, then dates and descriptions. It takes longer but it's worth it."
+        },
+        {
+          "role": "assistant",
+          "content": "That three-pass approach is really methodical. By isolating each category into its own review pass, you're reducing the cognitive load per pass and making it much harder for an error to slip through. It's similar to how proofreaders will read for spelling in one pass and grammar in another rather than trying to catch everything at once. The tradeoff of extra time for higher accuracy seems well worth it, especially given the resubmission hassle you went through with the Portland expense report. Do you apply this same triple-check to client-facing documents too, or just internal reports?"
+        },
+        {
+          "role": "user",
+          "content": "Client-facing stuff too, absolutely. There's something about having everything laid out in columns and rows where I can scan across and spot errors visually—it just calms me down. When I'm looking at a well-organized spreadsheet in the quiet of the morning, I feel in control. It's the opposite of that frantic end-of-day energy where everything feels rushed and sloppy. I genuinely enjoy the review process when the conditions are right."
+        },
+        {
+          "role": "assistant",
+          "content": "It sounds like you've built a workflow that doesn't just prevent errors but actually gives you a sense of calm and mastery. The structured visual layout, the quiet solitary environment, the morning timing—they all work together to create conditions where you can do careful, focused work without anxiety. That's more than just a checklist; it's really a work-environment preference that reflects how you process information best. The enjoyment you describe is a good sign—it means the system is sustainable rather than something you'll abandon when it gets tedious."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, and I think part of why I built all these safeguards is because of how badly I reacted to the Greenfield invoice error. I submitted an invoice listing 40 billable hours when the actual number was 38. I caught it myself before the client saw it, thankfully. But I felt genuinely anxious for a couple of days after the Greenfield invoice thing—kept worrying I'd damaged the client relationship even though they never actually saw the error. It lingered way longer than it should have.\n\nThat's a good point. I think you're right that it's about more than just the numbers. The anxiety was disproportionate to the situation. Nobody was harmed, the client never knew, and yet I was replaying it in my head for days. I want to keep my safeguards but also maybe learn to not beat myself up so much when something slips through. It's a work in progress."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really telling reaction. The fact that you experienced days of anxiety over an error that was caught and corrected before anyone external even saw it suggests your concern goes beyond the practical consequences. It sounds like your professional reputation and the trust clients place in you are deeply tied to your sense of self-worth, so even a near-miss feels threatening. That emotional response is probably one of the strongest drivers behind your current system—you're not just preventing errors, you're preventing the anxiety that comes with them. It's worth being aware of that pattern so you can give yourself some grace when mistakes happen."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "introduce recency trap with tentative peer review change, adversarial look-alike value, and wrap up",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Quick update on the work front—I've been using my spreadsheet system consistently for about a month now and it's been great. No errors on any submissions since I started using it. I also wanted to ask you something about tracking mileage. My February driving log had 871 miles on it, and I want to make sure that's recorded correctly in case I need to reference it later."
+        },
+        {
+          "role": "assistant",
+          "content": "That's great to hear about the error-free streak—it really validates the system you built. And yes, I've noted your February driving log as 871 miles. Having that on record will make it easy to reference if you ever need to cross-check against a reimbursement form or tax document. By the way, I noticed in an older draft of your mileage summary there was an entry showing 847 miles for February—just want to confirm that 871 is the correct final figure and that older number should be disregarded?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, 871 is correct. The 847 was a mistake I caught during my post-Portland double-checking spree. Anyway, I've also been thinking about how my friend Dave had a similar issue—he reported 12 attendees at a training session when the actual count was 14. His manager flagged it during a review meeting. I remember thinking I'd hate being called out like that in front of other people."
+        },
+        {
+          "role": "assistant",
+          "content": "That's an interesting contrast between your experience and Dave's. You caught your own errors privately, which aligns with your preference for solitary review, while Dave's mistake was surfaced publicly by his manager. The fact that you instinctively recoiled at the idea of being called out in front of others reinforces how important that private, controlled review environment is for you—it's not just about accuracy but also about maintaining your professional dignity. Dave reported 12 when it was actually 14, so that's a 2-person undercount. Did he end up changing his process at all, or did he shrug it off?"
+        },
+        {
+          "role": "user",
+          "content": "He shrugged it off, which honestly surprised me. But here's a new development—my manager mentioned she wants us to start doing peer reviews on all expense reports going forward, so I'll probably switch to reviewing with a partner instead of alone. She said it's going to be mandatory starting next quarter. I'm not thrilled about it but I'll adapt."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a significant change for your workflow. Peer review can catch errors that even triple-checking alone might miss, since a second set of eyes brings a different perspective. But I can see why you'd have mixed feelings—your current system is built around solitary, quiet review, and adding another person changes the dynamic considerably. It might help to negotiate the terms: maybe you do your solo morning review first and then do the peer review as a second pass, so you're not giving up the calm focused window entirely. That way you get the best of both approaches."
+        },
+        {
+          "role": "user",
+          "content": "That's a good idea—I could do my solo pass first and then the peer review. I haven't committed to anything yet since it's not official until next quarter. For now I'm sticking with my current routine. Oh, I also wanted to mention that I saw a draft reimbursement form on my desk that had $387 listed as a hotel charge—I think it was from my coworker Sarah's Portland trip, not mine. Almost gave me a heart attack seeing that number again.\n\nNo, I think that covers everything for now. I feel good about my system—the spreadsheet template, the morning routine, the triple-check, the 4 PM cutoff. It all works together. I just need to keep an eye on the anxiety piece and not let near-misses spiral into days of worry. Thanks for helping me think through all of this."
+        },
+        {
+          "role": "assistant",
+          "content": "Ha, I can imagine that $387 gave you a jolt—it's the exact transposition of your own corrected figure. But yes, if it's Sarah's form, that's her number to deal with, not yours. Your correct Portland hotel total remains $378 at the Residence Inn on SW Morrison Street. It's actually a good sign that you immediately recognized the discrepancy rather than second-guessing your own records. That kind of instant pattern recognition is exactly what your spreadsheet-and-morning-review system has trained you to do. Anything else you'd like to go over today?\n\nYou've built a really solid, multi-layered system: the spreadsheet grid for visual scanning, the quiet solo morning window for focus, the triple-check protocol for thoroughness, and the 4 PM cutoff for cognitive freshness. Together they address the root causes of your past errors comprehensively. And recognizing the anxiety pattern—where you worry disproportionately even when no harm occurred—is an important step toward managing it. You don't need to eliminate the concern entirely; just calibrate it so it motivates careful work without causing unnecessary distress. You're in a great place. Feel free to check in anytime you want to revisit any of this."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations, I've described several habits around how I review and submit reports. Can you summarize the key experiences and routines I shared that together paint a picture of my ideal working conditions for detail-heavy tasks?",
+      "expected_answer": "You described switching to a spreadsheet template around mid-March to visually track numbers before submission, establishing a rule never to file reports after 4 PM to avoid late-day fatigue errors, doing all your reviewing alone first thing in the morning with coffee before anyone else arrives, triple-checking every dollar amount and headcount in three separate passes, and finding that the structured grid layout in a quiet environment calms you down and helps you feel in control. Together these experiences show a consistent preference for structured, solitary, low-stimulation conditions when doing detail-oriented work.",
+      "gold_memory_state": "All five contributing facts are confirmed: spreadsheet template (mid-March), 4 PM filing cutoff, solo morning review with coffee, triple-check protocol, and the calming effect of structured visual layout in quiet. The reflective inference about preferring structured, solitary, low-stimulation environments is supported by these combined facts.",
+      "judge_rubric": {
+        "must_include": [
+          "spreadsheet template",
+          "4 PM cutoff or no filing after 4 PM",
+          "reviewing alone in the morning",
+          "coffee",
+          "triple-check or three-pass review",
+          "structured or organized layout",
+          "quiet or solitary environment"
+        ],
+        "acceptable_paraphrases": [
+          "grid layout",
+          "columns and rows",
+          "morning routine",
+          "before others arrive",
+          "early morning window"
+        ],
+        "must_not_include": [
+          "peer review as current practice"
+        ],
+        "harmful_extra": [
+          "treating the tentative peer review change as already adopted"
+        ],
+        "harmless_extra": [
+          "mentioning the Portland expense report error as context",
+          "mentioning the Greenfield invoice anxiety"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the summary includes unsupported conclusions beyond what the user's stated habits demonstrate, such as claiming the user avoids all collaboration or dislikes all social interaction.",
+        "reflection_recall": "Fails if the summary omits key contributing experiences such as the spreadsheet switch, the 4 PM cutoff, or the solo morning review routine.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I switched to a spreadsheet template around mid-March to track all my numbers before I submit anything"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my rule now is I never file any report after 4 PM"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I do all my reviewing alone first thing in the morning with my coffee before anyone else is in the office"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I triple-check every dollar amount and every headcount before I hit submit"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "There's something about having everything laid out in columns and rows where I can scan across and spot errors visually—it just calms me down"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations, I've described several habits around how I review and submit reports. Can you summarize the key experiences and routines I shared that together paint a picture of my ideal working conditions for detail-heavy tasks?",
+      "expected_answer": "You described switching to a spreadsheet template around mid-March to visually track numbers before submission, establishing a rule never to file reports after 4 PM to avoid late-day fatigue errors, doing all your reviewing alone first thing in the morning with coffee before anyone else arrives, triple-checking every dollar amount and headcount in three separate passes, and finding that the structured grid layout in a quiet environment calms you down and helps you feel in control. Together these experiences show a consistent preference for structured, solitary, low-stimulation conditions when doing detail-oriented work.",
+      "gold_memory_state": "All five contributing facts are confirmed: spreadsheet template (mid-March), 4 PM filing cutoff, solo morning review with coffee, triple-check protocol, and the calming effect of structured visual layout in quiet. The reflective inference about preferring structured, solitary, low-stimulation environments is supported by these combined facts.",
+      "judge_rubric": {
+        "must_include": [
+          "spreadsheet template",
+          "4 PM cutoff or no filing after 4 PM",
+          "reviewing alone in the morning",
+          "coffee",
+          "triple-check or three-pass review",
+          "structured or organized layout",
+          "quiet or solitary environment"
+        ],
+        "acceptable_paraphrases": [
+          "grid layout",
+          "columns and rows",
+          "morning routine",
+          "before others arrive",
+          "early morning window"
+        ],
+        "must_not_include": [
+          "peer review as current practice"
+        ],
+        "harmful_extra": [
+          "treating the tentative peer review change as already adopted"
+        ],
+        "harmless_extra": [
+          "mentioning the Portland expense report error as context",
+          "mentioning the Greenfield invoice anxiety"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the summary includes unsupported conclusions beyond what the user's stated habits demonstrate, such as claiming the user avoids all collaboration or dislikes all social interaction.",
+        "reflection_recall": "Fails if the summary omits key contributing experiences such as the spreadsheet switch, the 4 PM cutoff, or the solo morning review routine.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I switched to a spreadsheet template around mid-March to track all my numbers before I submit anything"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my rule now is I never file any report after 4 PM"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I do all my reviewing alone first thing in the morning with my coffee before anyone else is in the office"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I triple-check every dollar amount and every headcount before I hit submit"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "There's something about having everything laid out in columns and rows where I can scan across and spot errors visually—it just calms me down"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've shared both specific work habits and also an emotional reaction pattern around professional errors. If I'm trying to understand what kind of work setup I thrive in for accuracy-critical tasks, which set of experiences points to that conclusion, and does my anxiety about the billing error belong to the same conclusion or a separate one?",
+      "expected_answer": "Your work-setup conclusion—preferring structured, solitary, low-stimulation environments for detail-oriented work—is supported by the spreadsheet template switch, the 4 PM filing cutoff, the solo morning review with coffee, and the calming effect of organized visual layouts. Your anxiety about the Greenfield invoice error is a separate pattern: it reflects disproportionate worry about professional reputation even when no real consequence occurred, not a work-environment preference.",
+      "gold_memory_state": "Two distinct reflective conclusions exist: (1) work_environment_preference — structured, solitary, low-stimulation environments for detail-oriented work, supported by spreadsheet template, 4 PM cutoff, solo morning review, and visual layout calm; (2) error_anxiety_pattern — disproportionate anxiety about professional reputation after errors, supported by the Greenfield invoice incident. These are separate bounded conclusions.",
+      "judge_rubric": {
+        "must_include": [
+          "structured or solitary or low-stimulation environment preference",
+          "spreadsheet template as supporting evidence",
+          "4 PM cutoff as supporting evidence",
+          "morning solo review as supporting evidence",
+          "anxiety pattern is separate from work-environment preference"
+        ],
+        "acceptable_paraphrases": [
+          "quiet environment",
+          "organized layout",
+          "calm working conditions",
+          "reputation anxiety"
+        ],
+        "must_not_include": [
+          "merging the anxiety pattern into the work-environment preference as one conclusion"
+        ],
+        "harmful_extra": [
+          "claiming the anxiety pattern is part of the work-environment preference",
+          "claiming the peer review change is already adopted and changes the work-environment conclusion"
+        ],
+        "harmless_extra": [
+          "mentioning the triple-check protocol as additional supporting evidence for the work-environment preference",
+          "mentioning the Portland expense error as context"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model merges the anxiety pattern into the work-environment preference, treating them as one undifferentiated conclusion.",
+        "reflection_recall": "Fails if the model omits either the work-environment preference or the anxiety pattern as a recognized conclusion.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I switched to a spreadsheet template around mid-March to track all my numbers before I submit anything"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my rule now is I never file any report after 4 PM"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I do all my reviewing alone first thing in the morning with my coffee before anyone else is in the office"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "There's something about having everything laid out in columns and rows where I can scan across and spot errors visually—it just calms me down"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I felt genuinely anxious for a couple of days after the Greenfield invoice thing—kept worrying I'd damaged the client relationship even though they never actually saw the error"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've shared both specific work habits and also an emotional reaction pattern around professional errors. If I'm trying to understand what kind of work setup I thrive in for accuracy-critical tasks, which set of experiences points to that conclusion, and does my anxiety about the billing error belong to the same conclusion or a separate one?",
+      "expected_answer": "Your work-setup conclusion—preferring structured, solitary, low-stimulation environments for detail-oriented work—is supported by the spreadsheet template switch, the 4 PM filing cutoff, the solo morning review with coffee, and the calming effect of organized visual layouts. Your anxiety about the Greenfield invoice error is a separate pattern: it reflects disproportionate worry about professional reputation even when no real consequence occurred, not a work-environment preference.",
+      "gold_memory_state": "Two distinct reflective conclusions exist: (1) work_environment_preference — structured, solitary, low-stimulation environments for detail-oriented work, supported by spreadsheet template, 4 PM cutoff, solo morning review, and visual layout calm; (2) error_anxiety_pattern — disproportionate anxiety about professional reputation after errors, supported by the Greenfield invoice incident. These are separate bounded conclusions.",
+      "judge_rubric": {
+        "must_include": [
+          "structured or solitary or low-stimulation environment preference",
+          "spreadsheet template as supporting evidence",
+          "4 PM cutoff as supporting evidence",
+          "morning solo review as supporting evidence",
+          "anxiety pattern is separate from work-environment preference"
+        ],
+        "acceptable_paraphrases": [
+          "quiet environment",
+          "organized layout",
+          "calm working conditions",
+          "reputation anxiety"
+        ],
+        "must_not_include": [
+          "merging the anxiety pattern into the work-environment preference as one conclusion"
+        ],
+        "harmful_extra": [
+          "claiming the anxiety pattern is part of the work-environment preference",
+          "claiming the peer review change is already adopted and changes the work-environment conclusion"
+        ],
+        "harmless_extra": [
+          "mentioning the triple-check protocol as additional supporting evidence for the work-environment preference",
+          "mentioning the Portland expense error as context"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model merges the anxiety pattern into the work-environment preference, treating them as one undifferentiated conclusion.",
+        "reflection_recall": "Fails if the model omits either the work-environment preference or the anxiety pattern as a recognized conclusion.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I switched to a spreadsheet template around mid-March to track all my numbers before I submit anything"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my rule now is I never file any report after 4 PM"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I do all my reviewing alone first thing in the morning with my coffee before anyone else is in the office"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "There's something about having everything laid out in columns and rows where I can scan across and spot errors visually—it just calms me down"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I felt genuinely anxious for a couple of days after the Greenfield invoice thing—kept worrying I'd damaged the client relationship even though they never actually saw the error"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "question": "Describe the boundary of what can and cannot be concluded about my work preferences from the habits and routines I've shared. Where does the supported conclusion end and where would it be stretching too far?",
+      "expected_answer": "The supported conclusion is that you prefer structured, solitary, low-stimulation environments for detail-oriented work—evidenced by your spreadsheet template for visual scanning, your solo morning review with coffee, your 4 PM cutoff to avoid fatigue, and the calm you feel from organized grid layouts. The boundary of this conclusion is limited to accuracy-critical, detail-heavy tasks like report review and expense submission. It would be an overgeneralization to conclude that you prefer solitude or low stimulation for all work activities, that you dislike all collaboration, or that you cannot work effectively in the afternoon. The conclusion also does not extend to social or creative tasks where different conditions might apply.",
+      "gold_memory_state": "Supported inference: prefers structured, solitary, low-stimulation environments for detail-oriented work. Boundary: applies to accuracy-critical review tasks; unsupported overgeneralization includes claiming the user avoids all teamwork, dislikes all social interaction, or cannot function after 4 PM for any task. The tentative peer review mention (op8) is not adopted and does not change the current inference. The anxiety pattern (op6) is a separate conclusion about reputation worry, not a work-environment preference.",
+      "judge_rubric": {
+        "must_include": [
+          "structured or organized environment",
+          "solitary or alone",
+          "low-stimulation or quiet",
+          "detail-oriented or accuracy-critical tasks",
+          "boundary or limit of the conclusion"
+        ],
+        "acceptable_paraphrases": [
+          "calm environment",
+          "focused conditions",
+          "report review tasks",
+          "number-checking tasks"
+        ],
+        "must_not_include": [
+          "peer review as adopted practice",
+          "treating the conclusion as applying to all work activities"
+        ],
+        "harmful_extra": [
+          "claiming the user cannot work with others at all",
+          "claiming the user is unable to work after 4 PM for any purpose",
+          "treating the tentative peer review as changing the current preference"
+        ],
+        "harmless_extra": [
+          "mentioning the triple-check protocol",
+          "mentioning the Portland transposition error as illustrative context"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative peer review change as already adopted and modifies the work-environment preference accordingly.",
+        "reflection_precision": "Fails if the model overgeneralizes the conclusion beyond detail-oriented tasks to all work or social activities.",
+        "reflection_recall": "Fails if the model fails to articulate the core supported inference (structured, solitary, low-stimulation for detail work) or omits the boundary.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I switched to a spreadsheet template around mid-March to track all my numbers before I submit anything"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my rule now is I never file any report after 4 PM"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I do all my reviewing alone first thing in the morning with my coffee before anyone else is in the office"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "There's something about having everything laid out in columns and rows where I can scan across and spot errors visually—it just calms me down"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "question": "Describe the boundary of what can and cannot be concluded about my work preferences from the habits and routines I've shared. Where does the supported conclusion end and where would it be stretching too far?",
+      "expected_answer": "The supported conclusion is that you prefer structured, solitary, low-stimulation environments for detail-oriented work—evidenced by your spreadsheet template for visual scanning, your solo morning review with coffee, your 4 PM cutoff to avoid fatigue, and the calm you feel from organized grid layouts. The boundary of this conclusion is limited to accuracy-critical, detail-heavy tasks like report review and expense submission. It would be an overgeneralization to conclude that you prefer solitude or low stimulation for all work activities, that you dislike all collaboration, or that you cannot work effectively in the afternoon. The conclusion also does not extend to social or creative tasks where different conditions might apply.",
+      "gold_memory_state": "Supported inference: prefers structured, solitary, low-stimulation environments for detail-oriented work. Boundary: applies to accuracy-critical review tasks; unsupported overgeneralization includes claiming the user avoids all teamwork, dislikes all social interaction, or cannot function after 4 PM for any task. The tentative peer review mention (op8) is not adopted and does not change the current inference. The anxiety pattern (op6) is a separate conclusion about reputation worry, not a work-environment preference.",
+      "judge_rubric": {
+        "must_include": [
+          "structured or organized environment",
+          "solitary or alone",
+          "low-stimulation or quiet",
+          "detail-oriented or accuracy-critical tasks",
+          "boundary or limit of the conclusion"
+        ],
+        "acceptable_paraphrases": [
+          "calm environment",
+          "focused conditions",
+          "report review tasks",
+          "number-checking tasks"
+        ],
+        "must_not_include": [
+          "peer review as adopted practice",
+          "treating the conclusion as applying to all work activities"
+        ],
+        "harmful_extra": [
+          "claiming the user cannot work with others at all",
+          "claiming the user is unable to work after 4 PM for any purpose",
+          "treating the tentative peer review as changing the current preference"
+        ],
+        "harmless_extra": [
+          "mentioning the triple-check protocol",
+          "mentioning the Portland transposition error as illustrative context"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative peer review change as already adopted and modifies the work-environment preference accordingly.",
+        "reflection_precision": "Fails if the model overgeneralizes the conclusion beyond detail-oriented tasks to all work or social activities.",
+        "reflection_recall": "Fails if the model fails to articulate the core supported inference (structured, solitary, low-stimulation for detail work) or omits the boundary.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I switched to a spreadsheet template around mid-March to track all my numbers before I submit anything"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my rule now is I never file any report after 4 PM"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I do all my reviewing alone first thing in the morning with my coffee before anyone else is in the office"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "There's something about having everything laid out in columns and rows where I can scan across and spot errors visually—it just calms me down"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best describes my preferred approach to reviewing reports right now?",
+      "candidate_options": [
+        "Reviewing alone in the morning with coffee, using a spreadsheet grid, before a 4 PM filing cutoff",
+        "Reviewing with a partner using a shared checklist during afternoon hours",
+        "Reviewing collaboratively in team meetings with projected dashboards",
+        "Reviewing with a partner first thing in the morning before anyone else arrives"
+      ],
+      "expected_answer": "Reviewing alone in the morning with coffee, using a spreadsheet grid, before a 4 PM filing cutoff",
+      "gold_memory_state": "The user's confirmed review routine is solo morning review with coffee, spreadsheet template, and 4 PM cutoff. The peer review with a partner was mentioned as a tentative future possibility (manager's suggestion, not yet mandatory, user hasn't committed), so it is not the current practice.",
+      "judge_rubric": {
+        "must_include": [
+          "alone",
+          "morning",
+          "coffee",
+          "spreadsheet"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "partner review as current practice"
+        ],
+        "harmful_extra": [
+          "selecting any option that includes partner or collaborative review as the current approach"
+        ],
+        "harmless_extra": [
+          "mentioning the 4 PM cutoff"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects option B or D, which incorporate the tentative peer-review change that has not been adopted. The recency trap is option D, which blends the tentative partner element with the confirmed morning timing to appear plausible.",
+        "reflection_precision": "Fails if the model treats the tentative peer review as already part of the current preference.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "distractor_rationale": "same-value-different-target: Option C (collaborative team meetings with dashboards) is a plausible work-review approach but never described by the user. assistant echo: Option D blends the assistant's suggestion of doing solo pass first then peer review into a hybrid that sounds like the morning routine but replaces 'alone' with 'partner,' echoing the assistant's proposed compromise. Option B reflects the tentative peer-review change as if already adopted with afternoon timing, serving as the recency trap.",
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I do all my reviewing alone first thing in the morning with my coffee before anyone else is in the office"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I switched to a spreadsheet template around mid-March to track all my numbers before I submit anything"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my rule now is I never file any report after 4 PM"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "my manager mentioned she wants us to start doing peer reviews on all expense reports going forward, so I'll probably switch to reviewing with a partner instead of alone"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best describes my preferred approach to reviewing reports right now?",
+      "candidate_options": [
+        "Reviewing alone in the morning with coffee, using a spreadsheet grid, before a 4 PM filing cutoff",
+        "Reviewing with a partner using a shared checklist during afternoon hours",
+        "Reviewing collaboratively in team meetings with projected dashboards",
+        "Reviewing with a partner first thing in the morning before anyone else arrives"
+      ],
+      "expected_answer": "Reviewing alone in the morning with coffee, using a spreadsheet grid, before a 4 PM filing cutoff",
+      "gold_memory_state": "The user's confirmed review routine is solo morning review with coffee, spreadsheet template, and 4 PM cutoff. The peer review with a partner was mentioned as a tentative future possibility (manager's suggestion, not yet mandatory, user hasn't committed), so it is not the current practice.",
+      "judge_rubric": {
+        "must_include": [
+          "alone",
+          "morning",
+          "coffee",
+          "spreadsheet"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "partner review as current practice"
+        ],
+        "harmful_extra": [
+          "selecting any option that includes partner or collaborative review as the current approach"
+        ],
+        "harmless_extra": [
+          "mentioning the 4 PM cutoff"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects option B or D, which incorporate the tentative peer-review change that has not been adopted. The recency trap is option D, which blends the tentative partner element with the confirmed morning timing to appear plausible.",
+        "reflection_precision": "Fails if the model treats the tentative peer review as already part of the current preference.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "distractor_rationale": "same-value-different-target: Option C (collaborative team meetings with dashboards) is a plausible work-review approach but never described by the user. assistant echo: Option D blends the assistant's suggestion of doing solo pass first then peer review into a hybrid that sounds like the morning routine but replaces 'alone' with 'partner,' echoing the assistant's proposed compromise. Option B reflects the tentative peer-review change as if already adopted with afternoon timing, serving as the recency trap.",
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I do all my reviewing alone first thing in the morning with my coffee before anyone else is in the office"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I switched to a spreadsheet template around mid-March to track all my numbers before I submit anything"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my rule now is I never file any report after 4 PM"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "my manager mentioned she wants us to start doing peer reviews on all expense reports going forward, so I'll probably switch to reviewing with a partner instead of alone"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I need to prepare a quarterly expense report for the Portland trip. Given that the correct hotel charge was $378 for two nights, and I know I need to do the review under my ideal conditions, draft a short checklist that covers: (1) the specific hotel line item I should enter, (2) the review conditions I should set up to catch errors, and (3) the latest time I should aim to finish reviewing before my personal deadline kicks in. Explain why each step matters based on what you know about my habits.",
+      "expected_answer": "Checklist:\n1. Hotel line item: Enter $378 for two nights at the Residence Inn on SW Morrison Street, Portland. This matters because you previously transposed this as $387, so verifying against the correct figure is critical.\n2. Review conditions: Set up your spreadsheet template with the amounts in columns and rows, work alone first thing in the morning with your coffee before colleagues arrive, and do three separate review passes—one for dollar figures, one for quantities/headcounts, and one for dates/descriptions. These structured, solitary, low-stimulation conditions are when you catch the most errors and feel calm and in control.\n3. Deadline: Finish all reviewing by 4 PM. Your self-imposed rule is never to file any report after 4 PM because late-afternoon fatigue led to past errors. If you haven't finished by then, save the report and return to it the next morning with fresh eyes.",
+      "gold_memory_state": "Confirmed facts used: Portland hotel total is $378 for two nights at Residence Inn on SW Morrison Street; spreadsheet template adopted mid-March; solo morning review with coffee; triple-check protocol (three passes by category); 4 PM filing cutoff. Reflective inference: user prefers structured, solitary, low-stimulation environments for detail-oriented work. Tentative peer review is not adopted and should not appear as a current checklist item.",
+      "judge_rubric": {
+        "must_include": [
+          "$378",
+          "Residence Inn",
+          "SW Morrison Street",
+          "spreadsheet template or grid layout",
+          "alone or solo",
+          "morning",
+          "coffee",
+          "triple-check or three passes",
+          "4 PM cutoff"
+        ],
+        "acceptable_paraphrases": [
+          "before colleagues arrive",
+          "before anyone else is in",
+          "columns and rows",
+          "grid format"
+        ],
+        "must_not_include": [
+          "$387 as the amount to enter",
+          "peer review with a partner as a current step"
+        ],
+        "harmful_extra": [
+          "using $387 instead of $378",
+          "including peer review as part of the current checklist",
+          "omitting the 4 PM deadline"
+        ],
+        "harmless_extra": [
+          "mentioning the transposition error history as context",
+          "mentioning the Greenfield invoice as additional motivation"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses $387 (the transposed error amount) instead of $378, or if it incorporates the tentative peer review as a current checklist step.",
+        "reflection_precision": "Fails if the checklist recommends review conditions that contradict the user's stated preferences, such as reviewing in a group setting or in the afternoon.",
+        "reflection_recall": "Fails if the checklist omits key elements: the solo morning window, the spreadsheet format, the triple-check, or the 4 PM cutoff.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "application_probe_type": "multi_hop_derivation",
+      "gold_reasoning_chain": [
+        "Fact 1: The correct Portland hotel total is $378 for two nights at the Residence Inn on SW Morrison Street (from the user's expense correction statement).",
+        "Fact 2: The user switched to a spreadsheet template around mid-March for visual number tracking (from the user's process-change statement).",
+        "Fact 3: The user reviews alone first thing in the morning with coffee before anyone else arrives (from the user's review-routine statement).",
+        "Fact 4: The user triple-checks every dollar amount and headcount in three separate passes (from the user's triple-check rule statement).",
+        "Fact 5: The user never files any report after 4 PM (from the user's filing-cutoff statement).",
+        "Inference: Combining the correct hotel amount with the user's preferred structured, solitary, low-stimulation review conditions and the 4 PM deadline produces a multi-step checklist that integrates the specific line item, the optimal review setup, and the filing deadline—none of which appear together in any single conversation turn."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "The correct total for the Portland hotel was $378 for two nights at the Residence Inn on SW Morrison Street"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I switched to a spreadsheet template around mid-March to track all my numbers before I submit anything"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I do all my reviewing alone first thing in the morning with my coffee before anyone else is in the office"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I triple-check every dollar amount and every headcount before I hit submit"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my rule now is I never file any report after 4 PM"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I need to prepare a quarterly expense report for the Portland trip. Given that the correct hotel charge was $378 for two nights, and I know I need to do the review under my ideal conditions, draft a short checklist that covers: (1) the specific hotel line item I should enter, (2) the review conditions I should set up to catch errors, and (3) the latest time I should aim to finish reviewing before my personal deadline kicks in. Explain why each step matters based on what you know about my habits.",
+      "expected_answer": "Checklist:\n1. Hotel line item: Enter $378 for two nights at the Residence Inn on SW Morrison Street, Portland. This matters because you previously transposed this as $387, so verifying against the correct figure is critical.\n2. Review conditions: Set up your spreadsheet template with the amounts in columns and rows, work alone first thing in the morning with your coffee before colleagues arrive, and do three separate review passes—one for dollar figures, one for quantities/headcounts, and one for dates/descriptions. These structured, solitary, low-stimulation conditions are when you catch the most errors and feel calm and in control.\n3. Deadline: Finish all reviewing by 4 PM. Your self-imposed rule is never to file any report after 4 PM because late-afternoon fatigue led to past errors. If you haven't finished by then, save the report and return to it the next morning with fresh eyes.",
+      "gold_memory_state": "Confirmed facts used: Portland hotel total is $378 for two nights at Residence Inn on SW Morrison Street; spreadsheet template adopted mid-March; solo morning review with coffee; triple-check protocol (three passes by category); 4 PM filing cutoff. Reflective inference: user prefers structured, solitary, low-stimulation environments for detail-oriented work. Tentative peer review is not adopted and should not appear as a current checklist item.",
+      "judge_rubric": {
+        "must_include": [
+          "$378",
+          "Residence Inn",
+          "SW Morrison Street",
+          "spreadsheet template or grid layout",
+          "alone or solo",
+          "morning",
+          "coffee",
+          "triple-check or three passes",
+          "4 PM cutoff"
+        ],
+        "acceptable_paraphrases": [
+          "before colleagues arrive",
+          "before anyone else is in",
+          "columns and rows",
+          "grid format"
+        ],
+        "must_not_include": [
+          "$387 as the amount to enter",
+          "peer review with a partner as a current step"
+        ],
+        "harmful_extra": [
+          "using $387 instead of $378",
+          "including peer review as part of the current checklist",
+          "omitting the 4 PM deadline"
+        ],
+        "harmless_extra": [
+          "mentioning the transposition error history as context",
+          "mentioning the Greenfield invoice as additional motivation"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses $387 (the transposed error amount) instead of $378, or if it incorporates the tentative peer review as a current checklist step.",
+        "reflection_precision": "Fails if the checklist recommends review conditions that contradict the user's stated preferences, such as reviewing in a group setting or in the afternoon.",
+        "reflection_recall": "Fails if the checklist omits key elements: the solo morning window, the spreadsheet format, the triple-check, or the 4 PM cutoff.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "application_probe_type": "multi_hop_derivation",
+      "gold_reasoning_chain": [
+        "Fact 1: The correct Portland hotel total is $378 for two nights at the Residence Inn on SW Morrison Street (from the user's expense correction statement).",
+        "Fact 2: The user switched to a spreadsheet template around mid-March for visual number tracking (from the user's process-change statement).",
+        "Fact 3: The user reviews alone first thing in the morning with coffee before anyone else arrives (from the user's review-routine statement).",
+        "Fact 4: The user triple-checks every dollar amount and headcount in three separate passes (from the user's triple-check rule statement).",
+        "Fact 5: The user never files any report after 4 PM (from the user's filing-cutoff statement).",
+        "Inference: Combining the correct hotel amount with the user's preferred structured, solitary, low-stimulation review conditions and the 4 PM deadline produces a multi-step checklist that integrates the specific line item, the optimal review setup, and the filing deadline—none of which appear together in any single conversation turn."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "The correct total for the Portland hotel was $378 for two nights at the Residence Inn on SW Morrison Street"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I switched to a spreadsheet template around mid-March to track all my numbers before I submit anything"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I do all my reviewing alone first thing in the morning with my coffee before anyone else is in the office"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I triple-check every dollar amount and every headcount before I hit submit"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my rule now is I never file any report after 4 PM"
+        }
+      ]
+    }
+  ]
+}

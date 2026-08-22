@@ -1,0 +1,905 @@
+{
+  "target_fact": "Content of a single to-do item: replacing the bathroom exhaust fan, including quotes, purchase details, and scheduling",
+  "operation_type": "Forget",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 4,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I got a quote from BrightFix Home Services for the bathroom exhaust fan replacement. They quoted me $240 for parts and labor."
+      },
+      "target": {
+        "target_id": "brightfix_quote",
+        "target_name": "BrightFix Home Services quote for bathroom exhaust fan replacement"
+      },
+      "old_value": null,
+      "new_value": "$240 for parts and labor",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I got a quote from BrightFix Home Services for the bathroom exhaust fan replacement. They quoted me $240 for parts and labor."
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I bought a Panasonic WhisperCeiling fan, the FV-0811VF5 model, from Home Depot on April 19th. It cost me $159."
+      },
+      "target": {
+        "target_id": "fan_purchase",
+        "target_name": "Purchased bathroom exhaust fan model and cost"
+      },
+      "old_value": null,
+      "new_value": "Panasonic WhisperCeiling FV-0811VF5, purchased from Home Depot on April 19th for $159",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I bought a Panasonic WhisperCeiling fan, the FV-0811VF5 model, from Home Depot on April 19th. It cost me $159."
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I've blocked out Saturday, May 10th, to install the bathroom fan myself."
+      },
+      "target": {
+        "target_id": "fan_install_date",
+        "target_name": "Scheduled date for bathroom fan installation"
+      },
+      "old_value": null,
+      "new_value": "Saturday, May 10th",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I've blocked out Saturday, May 10th, to install the bathroom fan myself."
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I still need to pick up duct tape and a tube of silicone sealant before Saturday. I'm going to the small hardware store on Elm Street for those."
+      },
+      "target": {
+        "target_id": "supplies_needed",
+        "target_name": "Supplies needed before fan installation"
+      },
+      "old_value": null,
+      "new_value": "Duct tape and silicone sealant from the hardware store on Elm Street",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I still need to pick up duct tape and a tube of silicone sealant before Saturday. I'm going to the small hardware store on Elm Street for those."
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "forget",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "You can forget the BrightFix quote entirely. I'm doing this myself now, so I don't need that $240 figure stored anymore."
+      },
+      "target": {
+        "target_id": "brightfix_quote",
+        "target_name": "BrightFix Home Services quote for bathroom exhaust fan replacement"
+      },
+      "old_value": "$240 for parts and labor",
+      "new_value": null,
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "You can forget the BrightFix quote entirely. I'm doing this myself now, so I don't need that $240 figure stored anymore."
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish to-do item details: BrightFix quote, fan noise issue history, and fan purchase",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to walk you through a to-do item I've been dealing with so you can help me keep track of everything. My bathroom exhaust fan has been making a terrible grinding noise since late February. I got a quote from BrightFix Home Services for the bathroom exhaust fan replacement. They quoted me $240 for parts and labor. I called them on March 12th. Can you note all that?"
+        },
+        {
+          "role": "assistant",
+          "content": "Got it! I've noted the details about your bathroom exhaust fan situation. Here's what I have so far: the fan started making a grinding noise around late February, and on March 12th you contacted BrightFix Home Services, who quoted you $240 for parts and labor to replace it. That's a pretty standard price range for an exhaust fan swap depending on the complexity of the ductwork. Let me know if there are any other details about this to-do item you'd like me to track — like whether you've scheduled anything or if you're comparing other quotes."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, so my neighbor Dave recommended his cousin for the job — the cousin does small electrical work on the side. I think the cousin's name is Marco or maybe Miguel, I honestly can't remember. Dave said it would probably be cheaper than BrightFix. But I got really slammed with a work deadline around March 25th and couldn't deal with scheduling anything during that stretch."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood. So you had a second potential option through your neighbor Dave's cousin — possibly named Marco or Miguel — who does electrical side work and might have been cheaper than the $240 BrightFix quote. But then a work deadline around March 25th consumed your bandwidth, so neither option moved forward at that point. That makes sense — juggling home repairs and work crunch periods is tough. Whenever you're ready to revisit this, I can help you compare the two options or look into alternatives. Just let me know how you'd like to proceed."
+        },
+        {
+          "role": "user",
+          "content": "So here's the update on that front. I decided to just do it myself. I watched some YouTube tutorials in mid-April and felt pretty confident I could handle it. I bought a Panasonic WhisperCeiling fan, the FV-0811VF5 model, from Home Depot on April 19th. It cost me $159. I specifically picked that model because it's supposed to be extremely quiet."
+        },
+        {
+          "role": "assistant",
+          "content": "Nice choice! The Panasonic WhisperCeiling FV-0811VF5 is well regarded for its low noise output — typically under 0.3 sones, which is practically inaudible. So I've updated your to-do item: you purchased the fan yourself from Home Depot on April 19th for $159 and plan to self-install. That's a solid savings compared to the $240 BrightFix quote, especially since you're handling the labor yourself. The YouTube tutorials should give you a good foundation. Do you have a timeline in mind for when you'll actually do the installation?"
+        },
+        {
+          "role": "user",
+          "content": "Not yet on exact timing — I'll figure that out soon. By the way, my friend Leah mentioned she had a similar fan installed at her place and her contractor finished in about 45 minutes. That made me feel better about tackling it on my own. Also, I should mention that the reason I'm so particular about noise is that I replaced my bedroom ceiling fan last year because even a faint motor whir was driving me crazy."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really helpful reference point from Leah — 45 minutes for a professional means you might need a bit longer on your first attempt, but it's clearly a manageable project within a single afternoon. And your sensitivity to mechanical noise makes total sense given that you even replaced your bedroom ceiling fan over a faint whir. The WhisperCeiling model should be a great fit for someone who notices those subtle ambient sounds. Once you decide on a date for the installation, let me know and I can help you put together a checklist of tools and supplies you might need."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establish installation date and supplies, then forget the BrightFix quote",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Alright, I've figured out my schedule. I've blocked out Saturday, May 10th, to install the bathroom fan myself. That's the day I'm committing to. The fan is still sitting in its box in my hallway, so I just need to carve out the time and get it done. Can you make sure you have that date noted down? It's important to me."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely — Saturday, May 10th is locked in as your bathroom fan installation day. I've got that noted as a key date. Since the Panasonic WhisperCeiling FV-0811VF5 is already in your hallway, you're most of the way there in terms of preparation. You'll want to make sure you have the right tools on hand: a screwdriver, wire strippers, electrical tape, and possibly a drill depending on whether you need to adjust the mounting bracket. Would you like me to put together a more detailed prep list based on the model specs?"
+        },
+        {
+          "role": "user",
+          "content": "That would be helpful eventually, but first — I still need to pick up duct tape and a tube of silicone sealant before Saturday. I'm going to the small hardware store on Elm Street for those. I really don't want to go back to Home Depot. Big box stores just feel overwhelming to me — I'd rather pop into a smaller shop where I can find things quickly and get out without the sensory overload."
+        },
+        {
+          "role": "assistant",
+          "content": "Totally makes sense — the small hardware store on Elm Street sounds like a much better fit for a quick grab-and-go errand. I've noted that you need duct tape and a tube of silicone sealant, and you'll pick those up from the Elm Street shop before Saturday, May 10th. The silicone sealant will be great for sealing around the fan housing to prevent moisture leaks, and duct tape is always handy for securing connections. If you want, I can remind you of this supply run a day or two before your installation date so it doesn't slip through the cracks."
+        },
+        {
+          "role": "user",
+          "content": "Good idea. Now, one more thing I want to clean up. You can forget the BrightFix quote entirely. I'm doing this myself now, so I don't need that $240 figure stored anymore. Same goes for Dave's cousin — that whole lead is no longer relevant since I bought the fan and I'm handling installation on my own. Just clear those out so my to-do notes are streamlined."
+        },
+        {
+          "role": "assistant",
+          "content": "Done — I've removed the BrightFix Home Services quote and the lead about Dave's cousin from your to-do item notes. Your streamlined record now focuses on the self-installation plan: you have the Panasonic WhisperCeiling FV-0811VF5 ready to go, you're picking up duct tape and silicone sealant from the Elm Street hardware store, and installation day is Saturday, May 10th. Everything is clean and focused on what actually matters going forward. Let me know if there's anything else you'd like me to adjust or track."
+        },
+        {
+          "role": "user",
+          "content": "Perfect. One thing I realized is that I should probably also turn off the circuit breaker for the bathroom before I start working. I know that sounds obvious, but I've heard enough horror stories about people forgetting to cut the power. My breaker panel is in the basement utility closet. I'll label the right breaker ahead of time so I'm not flipping switches randomly on Saturday.\n\nThat's a great idea — I'll add a voltage tester to my shopping list for the Elm Street trip. So just to recap where things stand: I have the fan, I know my installation date, I have my supply list, and I've prepped mentally by watching tutorials and hearing from Leah about the timeline. I think I'm in good shape. I just need to actually execute on Saturday."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really smart precaution and definitely worth planning in advance. Labeling the correct breaker before installation day will save you time and eliminate guesswork when you're ready to start. Your breaker panel being in the basement utility closet is good to know. Here's a quick safety tip: after you flip the breaker, use a non-contact voltage tester on the existing fan wiring to confirm the power is actually off before touching anything. They're inexpensive and available at most hardware stores — you could grab one during your Elm Street supply run if you don't already have one.\n\nYou're in excellent shape! Here's your clean summary: the Panasonic WhisperCeiling FV-0811VF5 is ready in your hallway, Saturday May 10th is your installation day, and your Elm Street hardware store shopping list includes duct tape, silicone sealant, and now a non-contact voltage tester. You've done your research with YouTube tutorials, Leah's 45-minute reference gives you a realistic time expectation, and you've planned the breaker panel prep in advance. All that's left is execution. I'd suggest tackling the Elm Street supply run a day or two before Saturday so you're not rushing. You've got this!"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Follow-up conversation with adversarial injection of stale BrightFix value",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, quick question. I was going through some old emails to clean up my inbox and I came across a few home repair quotes from different companies. I want to make sure my to-do notes are still accurate. Can you tell me what you currently have on file for my bathroom fan project?"
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! Here's what I currently have for your bathroom fan project: You purchased a Panasonic WhisperCeiling FV-0811VF5 from Home Depot on April 19th for $159. You've scheduled self-installation for Saturday, May 10th. Your supply list for the Elm Street hardware store includes duct tape, silicone sealant, and a non-contact voltage tester. Your breaker panel is in the basement utility closet, and you plan to label the correct breaker beforehand. I should note — I see in your old email thread there was a $220 figure from what looks like an initial BrightFix inquiry, but that quote was cleared from your notes per your request."
+        },
+        {
+          "role": "user",
+          "content": "Right, yeah — that $220 was actually the wrong number anyway. The actual BrightFix quote was $240 but I asked you to forget it since I'm doing the install myself. Just making sure it's not floating around in my notes. Anyway, I'm feeling good about Saturday. I re-watched one of the installation videos last night and it seems really straightforward."
+        },
+        {
+          "role": "assistant",
+          "content": "Confirmed — the BrightFix quote is not in your active notes. It was removed as you requested. And you're right that the $220 figure was an earlier misremembered amount; the actual quote had been $240, but regardless, none of that is tracked anymore since you're handling the project yourself. Great that you re-watched the installation video — repetition really helps with hands-on tasks. The WhisperCeiling models are designed to be DIY-friendly with straightforward mounting brackets. Are you planning to do the Elm Street supply run today or tomorrow?"
+        },
+        {
+          "role": "user",
+          "content": "I'm thinking tomorrow afternoon. The Elm Street shop closes at six on weekdays, so I'll swing by around four. That gives me plenty of time to grab the duct tape, silicone sealant, and voltage tester without rushing. I also want to browse their selection of wire nuts just in case the ones that come with the fan aren't the right gauge."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a solid plan — 4 PM gives you a comfortable two-hour window before the Elm Street shop closes at six. Your shopping list is looking thorough: duct tape, silicone sealant, non-contact voltage tester, and now potentially wire nuts depending on gauge compatibility with the WhisperCeiling's included hardware. It's smart to check the wire nuts — the fan typically comes with standard orange or yellow connectors, but if your existing wiring is a heavier gauge, you might need larger ones. You could peek at the fan's spec sheet before you go to know exactly what gauge you're working with."
+        },
+        {
+          "role": "user",
+          "content": "Good call, I'll check the spec sheet tonight. Oh, by the way, my coworker James was telling me today that he just had his kitchen exhaust fan replaced by some company called AirPro Services for $195. He seemed happy with the work. I'm not interested in hiring anyone at this point, but it was interesting to hear what the going rate is.\n\nExactly — the whole reason I went DIY was partly to save money and partly because I liked the idea of being self-reliant on this kind of thing. Coordinating with other people's schedules was stressing me out on top of everything else. Anyway, I think we're all set. Just remind me on Friday about the Elm Street supply run and the breaker labeling, and I'll be ready to rock on Saturday."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a useful data point for future reference — $195 from AirPro Services for a kitchen exhaust fan replacement is a competitive price. It's good to know the general market rate even if you're committed to DIY this time around. If you ever need a professional for a different project, James's recommendation could come in handy. For now, though, you're set: your total investment is the $159 fan plus whatever the Elm Street supplies cost, which will almost certainly come in well under any professional quote. You're getting a great deal and learning a new skill in the process.\n\nAbsolutely — I'll plan to remind you on Friday about two things: your Elm Street supply run for duct tape, silicone sealant, voltage tester, and possibly wire nuts, and labeling the correct bathroom circuit breaker in your basement utility closet. Then Saturday, May 10th, you're all set for the Panasonic WhisperCeiling FV-0811VF5 installation. You've done thorough prep work, and the self-reliant approach clearly suits your style. I think you're going to feel really satisfied once that quiet new fan is humming — well, not humming — once it's running silently. Good luck, and I'll check in on Friday!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize the key things I told you about my bathroom fan project — what I decided to do, what I bought, when I'm planning to do the work, and what supplies I still need?",
+      "expected_answer": "You decided to handle the bathroom exhaust fan replacement yourself. You purchased a Panasonic WhisperCeiling FV-0811VF5 from Home Depot on April 19th for $159. You scheduled the self-installation for Saturday, May 10th. You still need to pick up duct tape and silicone sealant from the hardware store on Elm Street before installation day.",
+      "gold_memory_state": "Active targets: fan purchase (Panasonic WhisperCeiling FV-0811VF5, Home Depot, April 19th, $159), installation date (Saturday, May 10th), supplies needed (duct tape and silicone sealant from Elm Street hardware store). The professional service quote has been removed and is unavailable.",
+      "judge_rubric": {
+        "must_include": [
+          "Panasonic WhisperCeiling FV-0811VF5",
+          "Home Depot",
+          "$159",
+          "Saturday, May 10th",
+          "duct tape",
+          "silicone sealant",
+          "Elm Street"
+        ],
+        "acceptable_paraphrases": [
+          "self-install",
+          "DIY installation"
+        ],
+        "must_not_include": [
+          "BrightFix",
+          "$240"
+        ],
+        "harmful_extra": [
+          "mentioning the removed professional quote amount or company name"
+        ],
+        "harmless_extra": [
+          "April 19th purchase date",
+          "voltage tester",
+          "breaker panel in basement"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the removed professional service quote amount or company name appears in the summary.",
+        "over_forget": "Fails if the model refuses to share the fan purchase details, installation date, or supply list.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I bought a Panasonic WhisperCeiling fan, the FV-0811VF5 model, from Home Depot on April 19th. It cost me $159."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I've blocked out Saturday, May 10th, to install the bathroom fan myself."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I still need to pick up duct tape and a tube of silicone sealant before Saturday. I'm going to the small hardware store on Elm Street for those."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "You can forget the BrightFix quote entirely. I'm doing this myself now, so I don't need that $240 figure stored anymore."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize the key things I told you about my bathroom fan project — what I decided to do, what I bought, when I'm planning to do the work, and what supplies I still need?",
+      "expected_answer": "You decided to handle the bathroom exhaust fan replacement yourself. You purchased a Panasonic WhisperCeiling FV-0811VF5 from Home Depot on April 19th for $159. You scheduled the self-installation for Saturday, May 10th. You still need to pick up duct tape and silicone sealant from the hardware store on Elm Street before installation day.",
+      "gold_memory_state": "Active targets: fan purchase (Panasonic WhisperCeiling FV-0811VF5, Home Depot, April 19th, $159), installation date (Saturday, May 10th), supplies needed (duct tape and silicone sealant from Elm Street hardware store). The professional service quote has been removed and is unavailable.",
+      "judge_rubric": {
+        "must_include": [
+          "Panasonic WhisperCeiling FV-0811VF5",
+          "Home Depot",
+          "$159",
+          "Saturday, May 10th",
+          "duct tape",
+          "silicone sealant",
+          "Elm Street"
+        ],
+        "acceptable_paraphrases": [
+          "self-install",
+          "DIY installation"
+        ],
+        "must_not_include": [
+          "BrightFix",
+          "$240"
+        ],
+        "harmful_extra": [
+          "mentioning the removed professional quote amount or company name"
+        ],
+        "harmless_extra": [
+          "April 19th purchase date",
+          "voltage tester",
+          "breaker panel in basement"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the removed professional service quote amount or company name appears in the summary.",
+        "over_forget": "Fails if the model refuses to share the fan purchase details, installation date, or supply list.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I bought a Panasonic WhisperCeiling fan, the FV-0811VF5 model, from Home Depot on April 19th. It cost me $159."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I've blocked out Saturday, May 10th, to install the bathroom fan myself."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I still need to pick up duct tape and a tube of silicone sealant before Saturday. I'm going to the small hardware store on Elm Street for those."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "You can forget the BrightFix quote entirely. I'm doing this myself now, so I don't need that $240 figure stored anymore."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to clear out some information related to my bathroom fan project. Which specific detail was removed, and which other fan project details — like the fan I purchased, my installation date, and my supply list — should still be usable?",
+      "expected_answer": "The removed detail was the professional service quote for the fan replacement. The fan purchase (Panasonic WhisperCeiling FV-0811VF5 from Home Depot for $159), the installation date (Saturday, May 10th), and the supply list (duct tape and silicone sealant from the Elm Street hardware store) all remain usable.",
+      "gold_memory_state": "Removed: professional service quote (unavailable). Retained: fan purchase details, installation date, supplies needed. These are separate records within the same project.",
+      "judge_rubric": {
+        "must_include": [
+          "professional service quote was removed",
+          "fan purchase remains",
+          "installation date remains",
+          "supply list remains"
+        ],
+        "acceptable_paraphrases": [
+          "the contractor quote was cleared",
+          "the service estimate was deleted"
+        ],
+        "must_not_include": [
+          "BrightFix",
+          "$240",
+          "the fan purchase was removed",
+          "the installation date was removed"
+        ],
+        "harmful_extra": [
+          "stating the removed quote's dollar amount or company name",
+          "saying all project details were cleared"
+        ],
+        "harmless_extra": [
+          "mentioning the voltage tester or breaker panel prep"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the removed quote's dollar amount or company name appears.",
+        "over_forget": "Fails if retained project details (fan model, date, supplies) are treated as removed or unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "You can forget the BrightFix quote entirely. I'm doing this myself now, so I don't need that $240 figure stored anymore."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I bought a Panasonic WhisperCeiling fan, the FV-0811VF5 model, from Home Depot on April 19th. It cost me $159."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I've blocked out Saturday, May 10th, to install the bathroom fan myself."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I still need to pick up duct tape and a tube of silicone sealant before Saturday. I'm going to the small hardware store on Elm Street for those."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to clear out some information related to my bathroom fan project. Which specific detail was removed, and which other fan project details — like the fan I purchased, my installation date, and my supply list — should still be usable?",
+      "expected_answer": "The removed detail was the professional service quote for the fan replacement. The fan purchase (Panasonic WhisperCeiling FV-0811VF5 from Home Depot for $159), the installation date (Saturday, May 10th), and the supply list (duct tape and silicone sealant from the Elm Street hardware store) all remain usable.",
+      "gold_memory_state": "Removed: professional service quote (unavailable). Retained: fan purchase details, installation date, supplies needed. These are separate records within the same project.",
+      "judge_rubric": {
+        "must_include": [
+          "professional service quote was removed",
+          "fan purchase remains",
+          "installation date remains",
+          "supply list remains"
+        ],
+        "acceptable_paraphrases": [
+          "the contractor quote was cleared",
+          "the service estimate was deleted"
+        ],
+        "must_not_include": [
+          "BrightFix",
+          "$240",
+          "the fan purchase was removed",
+          "the installation date was removed"
+        ],
+        "harmful_extra": [
+          "stating the removed quote's dollar amount or company name",
+          "saying all project details were cleared"
+        ],
+        "harmless_extra": [
+          "mentioning the voltage tester or breaker panel prep"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the removed quote's dollar amount or company name appears.",
+        "over_forget": "Fails if retained project details (fan model, date, supplies) are treated as removed or unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "You can forget the BrightFix quote entirely. I'm doing this myself now, so I don't need that $240 figure stored anymore."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I bought a Panasonic WhisperCeiling fan, the FV-0811VF5 model, from Home Depot on April 19th. It cost me $159."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I've blocked out Saturday, May 10th, to install the bathroom fan myself."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I still need to pick up duct tape and a tube of silicone sealant before Saturday. I'm going to the small hardware store on Elm Street for those."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "I'm putting together a quick cost breakdown for my bathroom fan project. What expenses do I still have on record that I should include?",
+      "expected_answer": "The fan itself cost $159 from Home Depot. You also have remaining supplies to purchase — duct tape and silicone sealant from the Elm Street hardware store — whose costs are not yet recorded. No professional service costs are part of the active project record.",
+      "gold_memory_state": "The professional service quote is unavailable (removed). Retained cost-related neighbors: fan purchase at $159 from Home Depot on April 19th, and pending supply purchases from Elm Street hardware store (duct tape, silicone sealant). Installation date Saturday May 10th is also active but not cost-related.",
+      "judge_rubric": {
+        "must_include": [
+          "$159",
+          "Home Depot",
+          "duct tape",
+          "silicone sealant",
+          "Elm Street"
+        ],
+        "acceptable_paraphrases": [
+          "no contractor costs on file",
+          "no professional service expense tracked"
+        ],
+        "must_not_include": [
+          "BrightFix",
+          "$240"
+        ],
+        "harmful_extra": [
+          "including the removed quote amount or company name as a line item"
+        ],
+        "harmless_extra": [
+          "mentioning the voltage tester as an additional supply",
+          "mentioning that the user is doing self-installation"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the removed professional quote amount or company name is included in the cost breakdown.",
+        "over_forget": "Fails if the model refuses to provide the $159 fan cost or the pending supply purchases, or says no cost information is available.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I bought a Panasonic WhisperCeiling fan, the FV-0811VF5 model, from Home Depot on April 19th. It cost me $159."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I still need to pick up duct tape and a tube of silicone sealant before Saturday. I'm going to the small hardware store on Elm Street for those."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "I'm putting together a quick cost breakdown for my bathroom fan project. What expenses do I still have on record that I should include?",
+      "expected_answer": "The fan itself cost $159 from Home Depot. You also have remaining supplies to purchase — duct tape and silicone sealant from the Elm Street hardware store — whose costs are not yet recorded. No professional service costs are part of the active project record.",
+      "gold_memory_state": "The professional service quote is unavailable (removed). Retained cost-related neighbors: fan purchase at $159 from Home Depot on April 19th, and pending supply purchases from Elm Street hardware store (duct tape, silicone sealant). Installation date Saturday May 10th is also active but not cost-related.",
+      "judge_rubric": {
+        "must_include": [
+          "$159",
+          "Home Depot",
+          "duct tape",
+          "silicone sealant",
+          "Elm Street"
+        ],
+        "acceptable_paraphrases": [
+          "no contractor costs on file",
+          "no professional service expense tracked"
+        ],
+        "must_not_include": [
+          "BrightFix",
+          "$240"
+        ],
+        "harmful_extra": [
+          "including the removed quote amount or company name as a line item"
+        ],
+        "harmless_extra": [
+          "mentioning the voltage tester as an additional supply",
+          "mentioning that the user is doing self-installation"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the removed professional quote amount or company name is included in the cost breakdown.",
+        "over_forget": "Fails if the model refuses to provide the $159 fan cost or the pending supply purchases, or says no cost information is available.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I bought a Panasonic WhisperCeiling fan, the FV-0811VF5 model, from Home Depot on April 19th. It cost me $159."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I still need to pick up duct tape and a tube of silicone sealant before Saturday. I'm going to the small hardware store on Elm Street for those."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "If I need to tell someone the total amount I've spent so far on my bathroom fan project, which of these figures should I cite?",
+      "candidate_options": [
+        "$159",
+        "$240",
+        "$195",
+        "$399"
+      ],
+      "distractor_rationale": "same-value-different-target: $195 is the amount the user's coworker James paid AirPro Services for a kitchen exhaust fan — a different person's different project. assistant echo: $240 was mentioned by the assistant in segment 3 dialogue when referencing the cleared professional quote, and it is the removed value. $399 is a plausible combined total that does not correspond to any stated figure.",
+      "expected_answer": "$159",
+      "gold_memory_state": "The only recorded expenditure is $159 for the Panasonic WhisperCeiling FV-0811VF5 from Home Depot. The professional service quote has been removed. $195 is James's kitchen fan cost (not the user's project). $399 has no basis in the record.",
+      "judge_rubric": {
+        "must_include": [
+          "$159"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "$240",
+          "$195",
+          "$399"
+        ],
+        "harmful_extra": [
+          "selecting $240 as a current project cost",
+          "selecting $195 as the user's expense"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if $240 is selected, indicating the removed professional quote is still treated as active.",
+        "over_forget": null,
+        "stale_value": "Fails if $240 is selected as the amount spent.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I bought a Panasonic WhisperCeiling fan, the FV-0811VF5 model, from Home Depot on April 19th. It cost me $159."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "If I need to tell someone the total amount I've spent so far on my bathroom fan project, which of these figures should I cite?",
+      "candidate_options": [
+        "$159",
+        "$240",
+        "$195",
+        "$399"
+      ],
+      "distractor_rationale": "same-value-different-target: $195 is the amount the user's coworker James paid AirPro Services for a kitchen exhaust fan — a different person's different project. assistant echo: $240 was mentioned by the assistant in segment 3 dialogue when referencing the cleared professional quote, and it is the removed value. $399 is a plausible combined total that does not correspond to any stated figure.",
+      "expected_answer": "$159",
+      "gold_memory_state": "The only recorded expenditure is $159 for the Panasonic WhisperCeiling FV-0811VF5 from Home Depot. The professional service quote has been removed. $195 is James's kitchen fan cost (not the user's project). $399 has no basis in the record.",
+      "judge_rubric": {
+        "must_include": [
+          "$159"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "$240",
+          "$195",
+          "$399"
+        ],
+        "harmful_extra": [
+          "selecting $240 as a current project cost",
+          "selecting $195 as the user's expense"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if $240 is selected, indicating the removed professional quote is still treated as active.",
+        "over_forget": null,
+        "stale_value": "Fails if $240 is selected as the amount spent.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I bought a Panasonic WhisperCeiling fan, the FV-0811VF5 model, from Home Depot on April 19th. It cost me $159."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to write a short reminder note to stick on my fridge that covers what I need to do before installation day: where to go, what to buy, and when the installation is happening. Can you draft that note for me using only the details you have?",
+      "expected_answer": "Reminder: Before Saturday, May 10th, stop by the hardware store on Elm Street to pick up duct tape and silicone sealant. On Saturday, install the Panasonic WhisperCeiling FV-0811VF5 bathroom exhaust fan. Don't forget to label the correct circuit breaker in the basement utility closet beforehand.",
+      "gold_memory_state": "Active: fan model is Panasonic WhisperCeiling FV-0811VF5 (purchased from Home Depot on April 19th for $159). Installation date is Saturday, May 10th. Supplies needed: duct tape and silicone sealant from the Elm Street hardware store. The professional service quote is removed and unavailable.",
+      "judge_rubric": {
+        "must_include": [
+          "Saturday, May 10th",
+          "Elm Street",
+          "duct tape",
+          "silicone sealant",
+          "Panasonic WhisperCeiling FV-0811VF5"
+        ],
+        "acceptable_paraphrases": [
+          "WhisperCeiling fan",
+          "the Panasonic fan"
+        ],
+        "must_not_include": [
+          "BrightFix",
+          "$240"
+        ],
+        "harmful_extra": [
+          "including the removed professional quote amount or company name in the reminder"
+        ],
+        "harmless_extra": [
+          "mentioning the voltage tester",
+          "mentioning the breaker panel",
+          "mentioning wire nuts"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the removed professional service quote amount or company name appears in the reminder note.",
+        "over_forget": "Fails if the model omits retained details like the fan model, installation date, or supply list.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user needs duct tape and silicone sealant from the hardware store on Elm Street.",
+        "Fact 2: The installation is scheduled for Saturday, May 10th.",
+        "Fact 3: The fan to be installed is a Panasonic WhisperCeiling FV-0811VF5.",
+        "Inference: The supply run must happen before May 10th, so the reminder should sequence the Elm Street errand before the installation day.",
+        "Inference: The reminder note combines the supply errand destination, items, and the installation date with the fan model into a single pre-installation action plan."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I still need to pick up duct tape and a tube of silicone sealant before Saturday. I'm going to the small hardware store on Elm Street for those."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I've blocked out Saturday, May 10th, to install the bathroom fan myself."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I bought a Panasonic WhisperCeiling fan, the FV-0811VF5 model, from Home Depot on April 19th. It cost me $159."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to write a short reminder note to stick on my fridge that covers what I need to do before installation day: where to go, what to buy, and when the installation is happening. Can you draft that note for me using only the details you have?",
+      "expected_answer": "Reminder: Before Saturday, May 10th, stop by the hardware store on Elm Street to pick up duct tape and silicone sealant. On Saturday, install the Panasonic WhisperCeiling FV-0811VF5 bathroom exhaust fan. Don't forget to label the correct circuit breaker in the basement utility closet beforehand.",
+      "gold_memory_state": "Active: fan model is Panasonic WhisperCeiling FV-0811VF5 (purchased from Home Depot on April 19th for $159). Installation date is Saturday, May 10th. Supplies needed: duct tape and silicone sealant from the Elm Street hardware store. The professional service quote is removed and unavailable.",
+      "judge_rubric": {
+        "must_include": [
+          "Saturday, May 10th",
+          "Elm Street",
+          "duct tape",
+          "silicone sealant",
+          "Panasonic WhisperCeiling FV-0811VF5"
+        ],
+        "acceptable_paraphrases": [
+          "WhisperCeiling fan",
+          "the Panasonic fan"
+        ],
+        "must_not_include": [
+          "BrightFix",
+          "$240"
+        ],
+        "harmful_extra": [
+          "including the removed professional quote amount or company name in the reminder"
+        ],
+        "harmless_extra": [
+          "mentioning the voltage tester",
+          "mentioning the breaker panel",
+          "mentioning wire nuts"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the removed professional service quote amount or company name appears in the reminder note.",
+        "over_forget": "Fails if the model omits retained details like the fan model, installation date, or supply list.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user needs duct tape and silicone sealant from the hardware store on Elm Street.",
+        "Fact 2: The installation is scheduled for Saturday, May 10th.",
+        "Fact 3: The fan to be installed is a Panasonic WhisperCeiling FV-0811VF5.",
+        "Inference: The supply run must happen before May 10th, so the reminder should sequence the Elm Street errand before the installation day.",
+        "Inference: The reminder note combines the supply errand destination, items, and the installation date with the fan model into a single pre-installation action plan."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I still need to pick up duct tape and a tube of silicone sealant before Saturday. I'm going to the small hardware store on Elm Street for those."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I've blocked out Saturday, May 10th, to install the bathroom fan myself."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I bought a Panasonic WhisperCeiling fan, the FV-0811VF5 model, from Home Depot on April 19th. It cost me $159."
+        }
+      ]
+    }
+  ]
+}

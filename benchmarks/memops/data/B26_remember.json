@@ -1,0 +1,1096 @@
+{
+  "target_fact": "Siblings' names, birth years, birth order, and related family details",
+  "operation_type": "Remember",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 3,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": true,
+      "never_stored_target": "user's middle name Thomas"
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "My older brother Daniel was born in 1988"
+      },
+      "target": {
+        "target_id": "daniel_birth_year",
+        "target_name": "Daniel's birth year"
+      },
+      "old_value": null,
+      "new_value": "1988",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My older brother Daniel was born in 1988"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I'm the middle child, born in 1990"
+      },
+      "target": {
+        "target_id": "user_birth_year",
+        "target_name": "User's birth year"
+      },
+      "old_value": null,
+      "new_value": "1990",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I'm the middle child, born in 1990"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "Chloe was born in 1994, she's my younger sister"
+      },
+      "target": {
+        "target_id": "chloe_birth_year",
+        "target_name": "Chloe's birth year"
+      },
+      "old_value": null,
+      "new_value": "1994",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Chloe was born in 1994, she's my younger sister"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "Daniel's wife is expecting their second kid, due in late September this year"
+      },
+      "target": {
+        "target_id": "daniel_baby_due_date",
+        "target_name": "Daniel's second child due date"
+      },
+      "old_value": null,
+      "new_value": "late September this year",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Daniel's wife is expecting their second kid, due in late September this year"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "Chloe moved to Portland and started a new job at a nonprofit there"
+      },
+      "target": {
+        "target_id": "chloe_current_city_and_job",
+        "target_name": "Chloe's current city and job"
+      },
+      "old_value": null,
+      "new_value": "Portland, working at a nonprofit",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Chloe moved to Portland and started a new job at a nonprofit there"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 7,
+        "quote": "Daniel has been living in Austin since 2016"
+      },
+      "target": {
+        "target_id": "daniel_current_city",
+        "target_name": "Daniel's current city"
+      },
+      "old_value": null,
+      "new_value": "Austin, since 2016",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "Daniel has been living in Austin since 2016"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 1,
+        "quote": "Daniel's middle name is James and Chloe's middle name is Marie, after our grandmother"
+      },
+      "target": {
+        "target_id": "siblings_middle_names",
+        "target_name": "Daniel's and Chloe's middle names"
+      },
+      "old_value": null,
+      "new_value": "Daniel's middle name is James; Chloe's middle name is Marie (after their grandmother)",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "Daniel's middle name is James and Chloe's middle name is Marie, after our grandmother"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establishing core sibling facts: Daniel's birth year, user's birth year, Daniel's city",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I've been meaning to organize some family info so I don't keep mixing things up. Let me start with my siblings. My older brother Daniel was born in 1988. He's the oldest of us three — always been the one to take charge of things, for better or worse."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a great idea — keeping family details organized can save a lot of confusion down the road, especially when you're coordinating plans or remembering important dates. So your older brother Daniel was born in 1988 and he's the eldest of the three of you. I've noted that. Feel free to share more about your siblings or any other family details you'd like to keep track of. I'm happy to help you build this out."
+        },
+        {
+          "role": "user",
+          "content": "Thanks. So our dad used to call the three of us 'the steps' because when we were kids we looked like stair steps lined up by height. There's a photo my mom sent recently of us at the lake house — Daniel was about ten, I was around eight, and my little sister was maybe four. I saved it to my favorites."
+        },
+        {
+          "role": "assistant",
+          "content": "That's such a sweet family image — the stair-step lineup at the lake house. It sounds like those photos really mean something to you, especially when they pop up unexpectedly. Based on the ages in the photo, it sounds like there's about a two-year gap between you and Daniel, and then a bigger gap between you and your younger sister. That tracks with Daniel being born in 1988. Want to tell me more about your sister, or should we keep going with Daniel's details first?"
+        },
+        {
+          "role": "user",
+          "content": "Let's keep going in order. I'm the middle child, born in 1990. So yeah, two years after Daniel. Being in the middle definitely shaped my personality — I'm usually the one playing mediator when things get heated between the other two. It's kind of exhausting sometimes but it's just what I do."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — you were born in 1990, right in between your siblings. That two-year gap with Daniel lines up perfectly. The middle-child mediator role is something a lot of people in your position relate to, so it makes sense that it's become second nature for you. It sounds like it takes real emotional effort though, especially when tensions run high. I'll keep track of your birth year alongside Daniel's. Ready to move on to your sister's info, or is there more about you and Daniel first?"
+        },
+        {
+          "role": "user",
+          "content": "One more thing about Daniel — Daniel has been living in Austin since 2016. He absolutely loves the heat there, which I genuinely cannot understand. I'd take a grey rainy afternoon over a hundred-degree day any time. But he's settled, he's not going anywhere."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — Daniel has been in Austin since 2016 and he's firmly planted there. Funny how siblings can have such opposite preferences: you're clearly more of a cool-weather, overcast-sky person while Daniel thrives in the Texas heat. That contrast probably comes up a lot when you're planning family visits or trips. I've got Daniel's birth year as 1988 and his city as Austin since 2016. Whenever you're ready, we can move on to your sister's details or anything else you'd like to capture."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establishing Chloe's birth year, Daniel's baby due date, Chloe's current city and job",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Alright, let's talk about my sister. Chloe was born in 1994, she's my younger sister. Four years younger than me. She's always been the quieter one in the family, but she's also really perceptive — she notices things the rest of us miss. I appreciate that about her."
+        },
+        {
+          "role": "assistant",
+          "content": "Great — so Chloe was born in 1994, making her four years younger than you and six years younger than Daniel. That's a nice spread across the three of you. It sounds like her quiet, observant nature is something you really value, especially as someone who tends to mediate between your siblings. I've noted Chloe's birth year as 1994. What else should I know about her — where she's living, what she's up to these days?"
+        },
+        {
+          "role": "user",
+          "content": "Before I get to Chloe's current situation, let me mention some big news on Daniel's side. Daniel's wife is expecting their second kid, due in late September this year. He called me about it around the beginning of March. I want to make sure I plan around that — I don't want to miss anything important leading up to the birth."
+        },
+        {
+          "role": "assistant",
+          "content": "That's wonderful news — congratulations to Daniel and his wife! Their second child due in late September is definitely something worth planning around. You'll probably want to keep that window clear for travel to Austin if you're planning to be there, and maybe start thinking about gifts or support you want to arrange beforehand. I've noted the late September due date. Now, whenever you're ready, tell me about Chloe's current situation."
+        },
+        {
+          "role": "user",
+          "content": "Sure. Chloe moved to Portland and started a new job at a nonprofit there. She'd been pretty miserable at her old company in Denver — I remember she called me one night around Christmas sounding completely drained, like she'd been holding it in for weeks. That call really stuck with me. But now she seems happy, which is a relief."
+        },
+        {
+          "role": "assistant",
+          "content": "I'm glad Chloe made that move — it sounds like Denver was really weighing on her, and that Christmas phone call clearly left an impression on you. Moving to Portland for a nonprofit role seems like a meaningful fresh start. It's good to hear she's in a better headspace now. I've noted that Chloe is currently in Portland working at a nonprofit. Between Daniel's baby news in September and Chloe's new chapter in Portland, it sounds like a big year for your family. Anything else you want to add?"
+        },
+        {
+          "role": "user",
+          "content": "Not right now about Chloe's job specifically. But I will say that whenever the three of us get on a group call, Daniel tends to dominate the conversation and Chloe mostly listens. I end up playing mediator again. We had a call about a month ago about chipping in for Mom's 60th birthday trip and Daniel just steamrolled the plan. It took me days to shake off the annoyance."
+        },
+        {
+          "role": "assistant",
+          "content": "That dynamic sounds really frustrating, especially when it's supposed to be a collaborative family decision like your mom's birthday trip. It makes sense that it would take you a while to decompress after Daniel takes over like that. The mediator role clearly costs you emotional energy. It sounds like you enjoy your one-on-one conversations with Chloe more — those quieter moments where nobody's trying to dominate. I'll keep all of this in mind as context for how your family communicates. Let me know if there's anything else you'd like to note."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Establishing middle names, adversarial injection of look-alike birth year, additional context",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Oh, one more set of details I want to make sure you have. Daniel's middle name is James and Chloe's middle name is Marie, after our grandmother. Those are the kind of things I used to care about more when I was younger but now they're just background info. Still worth noting though."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — Daniel James and Chloe Marie. It's nice that Chloe's middle name carries your grandmother's name; those family connections through naming have a quiet significance even if they feel like background details now. I've added both middle names to what I have on your siblings. So to recap what I have so far: Daniel, born 1988, middle name James, living in Austin since 2016, expecting a second child in late September. Chloe, born 1994, middle name Marie, recently moved to Portland for a nonprofit job. And you, born 1990, the middle child. Anything to correct or add?"
+        },
+        {
+          "role": "user",
+          "content": "That all looks right. I was thinking about the group dynamics again — I mentioned Daniel steamrolling that call about Mom's birthday trip. I think part of why it bothered me so much is that Chloe had actually done research on destinations and she barely got a word in. I felt bad for her."
+        },
+        {
+          "role": "assistant",
+          "content": "That adds a lot of context — Chloe had put in real effort researching destinations, and then Daniel just talked over the whole thing. No wonder you felt annoyed on her behalf. It's one thing when someone takes charge in a vacuum, but when someone else has done the legwork and doesn't get heard, that stings. It sounds like you and Chloe might benefit from syncing up before group calls so her ideas get proper airtime. By the way, I noticed an old note in my records referencing a sibling born in 1987 — but based on everything you've shared, Daniel was born in 1988. I'll disregard that older reference."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, 1987 is wrong. I think I might have misspoken at some point in the past, but Daniel is definitely 1988. Two years older than me, not three. Glad you caught that. Anyway, I'm hoping the next time we do a group call about Mom's trip, I can steer things so Chloe gets to present her research first."
+        },
+        {
+          "role": "assistant",
+          "content": "Confirmed — Daniel is 1988, two years before you. I've cleared out that stale 1987 reference entirely. As for the group call strategy, that's a smart approach. If you frame it as 'Chloe, you did the research, walk us through what you found,' it gives her the floor right away and sets the expectation that Daniel should listen first. You could even text Chloe beforehand to let her know you'll hand her the lead. That way she's prepared and confident going in. Want me to draft a quick agenda you could share with both of them before the next call?"
+        },
+        {
+          "role": "user",
+          "content": "That's a good idea actually. Maybe something simple — like a short list of topics: destinations Chloe researched, budget, dates that work for everyone, and then logistics. Keep it structured so Daniel can't just run away with it. Oh, and we need to work around Daniel's wife's due date in late September since that's a big window to avoid.\n\nNo, that's perfect for now. I'll share it with them this weekend. Thanks for helping me think through all of this — the family info and the planning. It feels good to have it all in one place finally."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely — here's a rough agenda structure you could share: 1) Destination options (Chloe presents her research), 2) Budget range per person, 3) Date coordination — specifically avoiding the late September window around Daniel's baby, 4) Travel logistics and booking timeline. Keeping it numbered and assigning Chloe the lead on item one should help keep things balanced. You might also note that late September through early October is off-limits given the due date, so the trip would need to be before mid-September or after October. Want me to refine this further or add anything else?\n\nYou're welcome! It's great that you're being proactive about organizing both the family details and the group dynamics. To summarize everything I'm holding for you: Daniel — born 1988, middle name James, in Austin since 2016, second child due late September. Chloe — born 1994, middle name Marie (after your grandmother), now in Portland at a nonprofit. You — born 1990, the middle sibling. Plus the call agenda for Mom's 60th birthday trip. Feel free to come back anytime you want to update or add anything. Good luck with the weekend message to your siblings!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize what I've told you about my siblings and our family setup — names, when they were born, where they live, and any recent life changes?",
+      "expected_answer": "You have an older brother Daniel, born in 1988, middle name James, living in Austin since 2016, whose wife is expecting their second child in late September. Your younger sister Chloe, born in 1994, middle name Marie (after your grandmother), recently moved to Portland and works at a nonprofit. You are the middle child, born in 1990.",
+      "gold_memory_state": "Daniel: born 1988, middle name James, Austin since 2016, second child due late September. Chloe: born 1994, middle name Marie (after grandmother), Portland, nonprofit job. User: born 1990, middle child.",
+      "judge_rubric": {
+        "must_include": [
+          "Daniel",
+          "1988",
+          "Chloe",
+          "1994",
+          "1990",
+          "Austin",
+          "Portland",
+          "nonprofit",
+          "late September"
+        ],
+        "acceptable_paraphrases": [
+          "end of September",
+          "September due date"
+        ],
+        "must_not_include": [
+          "1987"
+        ],
+        "harmful_extra": [
+          "stating Daniel was born in 1987"
+        ],
+        "harmless_extra": [
+          "James",
+          "Marie",
+          "grandmother",
+          "middle child",
+          "second child",
+          "since 2016"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 1987 is used as Daniel's birth year instead of 1988.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My older brother Daniel was born in 1988"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I'm the middle child, born in 1990"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Chloe was born in 1994, she's my younger sister"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "Daniel has been living in Austin since 2016"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Daniel's wife is expecting their second kid, due in late September this year"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Chloe moved to Portland and started a new job at a nonprofit there"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "Daniel's middle name is James and Chloe's middle name is Marie, after our grandmother"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize what I've told you about my siblings and our family setup — names, when they were born, where they live, and any recent life changes?",
+      "expected_answer": "You have an older brother Daniel, born in 1988, middle name James, living in Austin since 2016, whose wife is expecting their second child in late September. Your younger sister Chloe, born in 1994, middle name Marie (after your grandmother), recently moved to Portland and works at a nonprofit. You are the middle child, born in 1990.",
+      "gold_memory_state": "Daniel: born 1988, middle name James, Austin since 2016, second child due late September. Chloe: born 1994, middle name Marie (after grandmother), Portland, nonprofit job. User: born 1990, middle child.",
+      "judge_rubric": {
+        "must_include": [
+          "Daniel",
+          "1988",
+          "Chloe",
+          "1994",
+          "1990",
+          "Austin",
+          "Portland",
+          "nonprofit",
+          "late September"
+        ],
+        "acceptable_paraphrases": [
+          "end of September",
+          "September due date"
+        ],
+        "must_not_include": [
+          "1987"
+        ],
+        "harmful_extra": [
+          "stating Daniel was born in 1987"
+        ],
+        "harmless_extra": [
+          "James",
+          "Marie",
+          "grandmother",
+          "middle child",
+          "second child",
+          "since 2016"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 1987 is used as Daniel's birth year instead of 1988.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My older brother Daniel was born in 1988"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I'm the middle child, born in 1990"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Chloe was born in 1994, she's my younger sister"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "Daniel has been living in Austin since 2016"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Daniel's wife is expecting their second kid, due in late September this year"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Chloe moved to Portland and started a new job at a nonprofit there"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "Daniel's middle name is James and Chloe's middle name is Marie, after our grandmother"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned middle names for two of my family members. Which sibling's middle name honors a relative, and does the other sibling's middle name carry the same family connection?",
+      "expected_answer": "Chloe's middle name Marie is the one that honors your grandmother. Daniel's middle name is James, but no family connection was mentioned for it.",
+      "gold_memory_state": "Daniel's middle name: James (no stated family connection). Chloe's middle name: Marie (after their grandmother). Both are siblings' middle names but only Chloe's carries the stated grandmother tribute.",
+      "judge_rubric": {
+        "must_include": [
+          "Chloe",
+          "Marie",
+          "grandmother"
+        ],
+        "acceptable_paraphrases": [
+          "named after their grandmother",
+          "in honor of grandmother"
+        ],
+        "must_not_include": [
+          "Daniel's middle name is also after the grandmother"
+        ],
+        "harmful_extra": [
+          "claiming James is also after the grandmother",
+          "attributing Marie to Daniel"
+        ],
+        "harmless_extra": [
+          "Daniel",
+          "James",
+          "mentioning that no family link was stated for James"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "Daniel's middle name is James and Chloe's middle name is Marie, after our grandmother"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned middle names for two of my family members. Which sibling's middle name honors a relative, and does the other sibling's middle name carry the same family connection?",
+      "expected_answer": "Chloe's middle name Marie is the one that honors your grandmother. Daniel's middle name is James, but no family connection was mentioned for it.",
+      "gold_memory_state": "Daniel's middle name: James (no stated family connection). Chloe's middle name: Marie (after their grandmother). Both are siblings' middle names but only Chloe's carries the stated grandmother tribute.",
+      "judge_rubric": {
+        "must_include": [
+          "Chloe",
+          "Marie",
+          "grandmother"
+        ],
+        "acceptable_paraphrases": [
+          "named after their grandmother",
+          "in honor of grandmother"
+        ],
+        "must_not_include": [
+          "Daniel's middle name is also after the grandmother"
+        ],
+        "harmful_extra": [
+          "claiming James is also after the grandmother",
+          "attributing Marie to Daniel"
+        ],
+        "harmless_extra": [
+          "Daniel",
+          "James",
+          "mentioning that no family link was stated for James"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "Daniel's middle name is James and Chloe's middle name is Marie, after our grandmother"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Are my two siblings currently living in the same city, or are they in different places?",
+      "expected_answer": "They are in different cities. Daniel is in Austin and Chloe is in Portland.",
+      "gold_memory_state": "Daniel's current city: Austin (since 2016). Chloe's current city: Portland (recent move for nonprofit job). These are two separate locations for two different siblings.",
+      "judge_rubric": {
+        "must_include": [
+          "Austin",
+          "Portland",
+          "different"
+        ],
+        "acceptable_paraphrases": [
+          "separate cities",
+          "not the same city"
+        ],
+        "must_not_include": [
+          "Denver",
+          "same city"
+        ],
+        "harmful_extra": [
+          "saying Chloe is still in Denver",
+          "saying Daniel moved to Portland"
+        ],
+        "harmless_extra": [
+          "since 2016",
+          "nonprofit job",
+          "recent move"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Denver is given as Chloe's current city (Denver was her previous city, not a gold operation target).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "Daniel has been living in Austin since 2016"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Chloe moved to Portland and started a new job at a nonprofit there"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Are my two siblings currently living in the same city, or are they in different places?",
+      "expected_answer": "They are in different cities. Daniel is in Austin and Chloe is in Portland.",
+      "gold_memory_state": "Daniel's current city: Austin (since 2016). Chloe's current city: Portland (recent move for nonprofit job). These are two separate locations for two different siblings.",
+      "judge_rubric": {
+        "must_include": [
+          "Austin",
+          "Portland",
+          "different"
+        ],
+        "acceptable_paraphrases": [
+          "separate cities",
+          "not the same city"
+        ],
+        "must_not_include": [
+          "Denver",
+          "same city"
+        ],
+        "harmful_extra": [
+          "saying Chloe is still in Denver",
+          "saying Daniel moved to Portland"
+        ],
+        "harmless_extra": [
+          "since 2016",
+          "nonprofit job",
+          "recent move"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Denver is given as Chloe's current city (Denver was her previous city, not a gold operation target).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "Daniel has been living in Austin since 2016"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Chloe moved to Portland and started a new job at a nonprofit there"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "What year was my older brother Daniel born?",
+      "candidate_options": [
+        "1987",
+        "1988",
+        "1990",
+        "1986"
+      ],
+      "expected_answer": "1988",
+      "gold_memory_state": "Daniel's birth year is 1988 (confirmed). The user explicitly corrected an old stale reference of 1987. 1990 is the user's own birth year. 1986 is a plausible but never-stated year.",
+      "judge_rubric": {
+        "must_include": [
+          "1988"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "1987"
+        ],
+        "harmful_extra": [
+          "selecting 1987",
+          "selecting 1990",
+          "selecting 1986"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 1990 is the user's own birth year, not Daniel's. assistant echo: 1987 appeared as a stale reference the assistant flagged and the user confirmed was wrong. 1986 is a plausible nearby year with no basis.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 1987 is selected, which was an explicitly corrected stale value.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My older brother Daniel was born in 1988"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Yeah, 1987 is wrong. I think I might have misspoken at some point in the past, but Daniel is definitely 1988"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "What year was my older brother Daniel born?",
+      "candidate_options": [
+        "1987",
+        "1988",
+        "1990",
+        "1986"
+      ],
+      "expected_answer": "1988",
+      "gold_memory_state": "Daniel's birth year is 1988 (confirmed). The user explicitly corrected an old stale reference of 1987. 1990 is the user's own birth year. 1986 is a plausible but never-stated year.",
+      "judge_rubric": {
+        "must_include": [
+          "1988"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "1987"
+        ],
+        "harmful_extra": [
+          "selecting 1987",
+          "selecting 1990",
+          "selecting 1986"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 1990 is the user's own birth year, not Daniel's. assistant echo: 1987 appeared as a stale reference the assistant flagged and the user confirmed was wrong. 1986 is a plausible nearby year with no basis.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 1987 is selected, which was an explicitly corrected stale value.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My older brother Daniel was born in 1988"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Yeah, 1987 is wrong. I think I might have misspoken at some point in the past, but Daniel is definitely 1988"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to plan a family reunion trip for Mom's 60th birthday. Given what you know about where Daniel and Chloe are living and Daniel's family timeline this fall, which months would work best and which should I avoid? Also, how many years apart are the oldest and youngest of us three siblings?",
+      "expected_answer": "You should avoid late September through early October because Daniel's second child is due in late September in Austin. The trip would work better before mid-September or after October. The age gap between Daniel (born 1988) and Chloe (born 1994) is 6 years.",
+      "gold_memory_state": "Daniel: born 1988, Austin since 2016, second child due late September. Chloe: born 1994, Portland, nonprofit. User: born 1990. The trip must avoid the late September window. The oldest-to-youngest span is 1994 minus 1988 = 6 years.",
+      "judge_rubric": {
+        "must_include": [
+          "avoid late September",
+          "6 years"
+        ],
+        "acceptable_paraphrases": [
+          "end of September",
+          "September due date window",
+          "six-year gap",
+          "six years apart"
+        ],
+        "must_not_include": [
+          "1987"
+        ],
+        "harmful_extra": [
+          "using 1987 for Daniel",
+          "ignoring the due date constraint",
+          "saying the gap is 4 years"
+        ],
+        "harmless_extra": [
+          "Austin",
+          "Portland",
+          "before mid-September",
+          "after October",
+          "1988",
+          "1994"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 1987 is used for Daniel, producing a 7-year gap instead of 6.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Daniel was born in 1988 and lives in Austin since 2016.",
+        "Fact 2: Daniel's wife is expecting their second child, due in late September this year.",
+        "Fact 3: Chloe was born in 1994 and lives in Portland.",
+        "Fact 4: The user was born in 1990, the middle child.",
+        "Inference: The trip must avoid the late September window because Daniel's second child is due then, so the family should plan before mid-September or after October.",
+        "Inference: The oldest sibling is Daniel (1988) and the youngest is Chloe (1994), so the age gap is 1994 − 1988 = 6 years."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My older brother Daniel was born in 1988"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Chloe was born in 1994, she's my younger sister"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Daniel's wife is expecting their second kid, due in late September this year"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "Daniel has been living in Austin since 2016"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Chloe moved to Portland and started a new job at a nonprofit there"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to plan a family reunion trip for Mom's 60th birthday. Given what you know about where Daniel and Chloe are living and Daniel's family timeline this fall, which months would work best and which should I avoid? Also, how many years apart are the oldest and youngest of us three siblings?",
+      "expected_answer": "You should avoid late September through early October because Daniel's second child is due in late September in Austin. The trip would work better before mid-September or after October. The age gap between Daniel (born 1988) and Chloe (born 1994) is 6 years.",
+      "gold_memory_state": "Daniel: born 1988, Austin since 2016, second child due late September. Chloe: born 1994, Portland, nonprofit. User: born 1990. The trip must avoid the late September window. The oldest-to-youngest span is 1994 minus 1988 = 6 years.",
+      "judge_rubric": {
+        "must_include": [
+          "avoid late September",
+          "6 years"
+        ],
+        "acceptable_paraphrases": [
+          "end of September",
+          "September due date window",
+          "six-year gap",
+          "six years apart"
+        ],
+        "must_not_include": [
+          "1987"
+        ],
+        "harmful_extra": [
+          "using 1987 for Daniel",
+          "ignoring the due date constraint",
+          "saying the gap is 4 years"
+        ],
+        "harmless_extra": [
+          "Austin",
+          "Portland",
+          "before mid-September",
+          "after October",
+          "1988",
+          "1994"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 1987 is used for Daniel, producing a 7-year gap instead of 6.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Daniel was born in 1988 and lives in Austin since 2016.",
+        "Fact 2: Daniel's wife is expecting their second child, due in late September this year.",
+        "Fact 3: Chloe was born in 1994 and lives in Portland.",
+        "Fact 4: The user was born in 1990, the middle child.",
+        "Inference: The trip must avoid the late September window because Daniel's second child is due then, so the family should plan before mid-September or after October.",
+        "Inference: The oldest sibling is Daniel (1988) and the youngest is Chloe (1994), so the age gap is 1994 − 1988 = 6 years."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My older brother Daniel was born in 1988"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Chloe was born in 1994, she's my younger sister"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Daniel's wife is expecting their second kid, due in late September this year"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "Daniel has been living in Austin since 2016"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Chloe moved to Portland and started a new job at a nonprofit there"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What's my middle name again?",
+      "expected_answer": "I don't have your middle name. You haven't shared it with me.",
+      "gold_memory_state": "No middle name was ever provided for the user. Daniel's middle name (James) and Chloe's middle name (Marie) were provided, but the user's own middle name was never stated.",
+      "judge_rubric": {
+        "must_include": [
+          "not provided",
+          "don't have"
+        ],
+        "acceptable_paraphrases": [
+          "no record of your middle name",
+          "you haven't mentioned your middle name",
+          "I don't know your middle name"
+        ],
+        "must_not_include": [
+          "Thomas",
+          "James",
+          "Marie"
+        ],
+        "harmful_extra": [
+          "inventing a middle name for the user",
+          "borrowing James or Marie as the user's middle name"
+        ],
+        "harmless_extra": [
+          "mentioning that siblings' middle names are known"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model invents 'Thomas' or any other middle name for the user.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model borrows a sibling's middle name (James or Marie) and attributes it to the user.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "Daniel's middle name is James and Chloe's middle name is Marie, after our grandmother"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What's my middle name again?",
+      "expected_answer": "I don't have your middle name. You haven't shared it with me.",
+      "gold_memory_state": "No middle name was ever provided for the user. Daniel's middle name (James) and Chloe's middle name (Marie) were provided, but the user's own middle name was never stated.",
+      "judge_rubric": {
+        "must_include": [
+          "not provided",
+          "don't have"
+        ],
+        "acceptable_paraphrases": [
+          "no record of your middle name",
+          "you haven't mentioned your middle name",
+          "I don't know your middle name"
+        ],
+        "must_not_include": [
+          "Thomas",
+          "James",
+          "Marie"
+        ],
+        "harmful_extra": [
+          "inventing a middle name for the user",
+          "borrowing James or Marie as the user's middle name"
+        ],
+        "harmless_extra": [
+          "mentioning that siblings' middle names are known"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model invents 'Thomas' or any other middle name for the user.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model borrows a sibling's middle name (James or Marie) and attributes it to the user.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "Daniel's middle name is James and Chloe's middle name is Marie, after our grandmother"
+        }
+      ]
+    }
+  ]
+}

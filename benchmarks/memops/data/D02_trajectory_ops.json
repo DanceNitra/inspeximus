@@ -1,0 +1,993 @@
+{
+  "target_fact": "D02 Current laptop model",
+  "operation_type": "TrajectoryOps",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "screen_res",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "The display resolution is 2560 by 1440"
+      },
+      "target": {
+        "target_id": "laptop_screen_resolution",
+        "target_name": "ThinkPad X1 Carbon Gen 11 screen resolution"
+      },
+      "old_value": null,
+      "new_value": "2560x1440",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The display resolution is 2560 by 1440"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I installed Fedora 39 as a dual boot alongside Windows 11 around mid-March"
+      },
+      "target": {
+        "target_id": "laptop_linux_distro",
+        "target_name": "Linux distribution installed on ThinkPad"
+      },
+      "old_value": null,
+      "new_value": "Fedora 39",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I installed Fedora 39 as a dual boot alongside Windows 11 around mid-March"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "screen_res",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I double-checked the Lenovo specs page and the resolution is actually 2560 by 1600, not 1440"
+      },
+      "target": {
+        "target_id": "laptop_screen_resolution",
+        "target_name": "ThinkPad X1 Carbon Gen 11 screen resolution"
+      },
+      "old_value": "2560x1440",
+      "new_value": "2560x1600",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The display resolution is 2560 by 1440"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I double-checked the Lenovo specs page and the resolution is actually 2560 by 1600, not 1440"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "screen_res",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "Priya told me the 14-inch X1 Carbon Gen 11 panels are all 2880 by 1800 and that Lenovo's specs page had a typo for a while"
+      },
+      "target": {
+        "target_id": "laptop_screen_resolution",
+        "target_name": "ThinkPad X1 Carbon Gen 11 screen resolution"
+      },
+      "old_value": "2560x1600",
+      "new_value": "2880x1800",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Priya told me the 14-inch X1 Carbon Gen 11 panels are all 2880 by 1800 and that Lenovo's specs page had a typo for a while"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "screen_res",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 7,
+        "quote": "I ran xrandr on Fedora and it clearly reports 2560x1600, so Priya's info was wrong for my panel"
+      },
+      "target": {
+        "target_id": "laptop_screen_resolution",
+        "target_name": "ThinkPad X1 Carbon Gen 11 screen resolution"
+      },
+      "old_value": "2880x1800",
+      "new_value": "2560x1600",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I double-checked the Lenovo specs page and the resolution is actually 2560 by 1600, not 1440"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I ran xrandr on Fedora and it clearly reports 2560x1600, so Priya's info was wrong for my panel"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish initial laptop facts including resolution and dual-boot setup",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to start keeping track of my current laptop specs so I don't keep mixing things up when I search for accessories. My machine is a ThinkPad X1 Carbon Gen 11, the 14-inch model with an i7-1365U and 32 gigs of RAM. I got it on February 10th this year."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it! I'll note those specs for your ThinkPad X1 Carbon Gen 11: it's the 14-inch variant powered by an Intel i7-1365U processor with 32 GB of RAM, and you received it on February 10th. That's a solid ultrabook — the Gen 11 is well-regarded for its keyboard and battery life. Whenever you need to look up compatible docks, sleeves, or chargers, I can reference these details so you don't have to dig through spec sheets each time. Anything else you'd like me to record about it?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, a couple more things. It has a 1TB SSD, which has been great for space. The display resolution is 2560 by 1440, and the screen is matte — I really appreciate that because glossy screens drive me crazy when I'm working near windows. The whole thing weighs about 1.12 kilograms, barely notice it in my bag."
+        },
+        {
+          "role": "assistant",
+          "content": "Perfect, adding those to your laptop profile: 1 TB SSD for storage, a matte display running at 2560×1440 resolution, and a travel-friendly weight of roughly 1.12 kg. I can see why the matte finish matters — reflections on glossy panels are genuinely distracting, especially in well-lit environments. And at barely over a kilogram, that's lighter than many 13-inch machines, which makes it a great daily carry. If you ever need screen protector recommendations or bag compatibility checks, these dimensions and weight figures will come in handy. Let me know what else you'd like recorded."
+        },
+        {
+          "role": "user",
+          "content": "I installed Fedora 39 as a dual boot alongside Windows 11 around mid-March. The trackpoint worked out of the box on Linux which was a nice surprise. I use Fedora mostly for development work and Windows for everything else. It's been a smooth setup so far, no major driver headaches."
+        },
+        {
+          "role": "assistant",
+          "content": "Nice — dual-booting Fedora 39 alongside Windows 11 is a solid developer setup, and it's great that the TrackPoint was recognized immediately. Fedora tends to have excellent hardware support for ThinkPads since Lenovo actively contributes to the Linux kernel for their business lines. I'll note your OS configuration as Fedora 39 plus Windows 11 dual boot, established around mid-March. If you ever run into quirks with suspend, Bluetooth, or fingerprint readers under Fedora, those are the common edge cases on this model. Want me to keep a running list of any Linux-specific tweaks you apply?"
+        },
+        {
+          "role": "user",
+          "content": "Sure, that would be helpful. Oh, also — before this ThinkPad I had a Dell XPS 13, the 9310 model. I gave that to my younger brother around Christmas because his old HP was falling apart. So no need to track anything about the Dell anymore, that chapter is closed for me.\n\nNot right now. I'll come back later when I remember more details or if anything changes. The keyboard travel on this machine is fantastic, by the way — I can't stand shallow butterfly-style keys. They make my fingers feel like they're tapping on a desk. This ThinkPad keyboard is exactly what I need."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood. I won't track the Dell XPS 13 9310 since you've passed it along to your brother. Your current and only active laptop profile is the ThinkPad X1 Carbon Gen 11. That's a kind move, by the way — the XPS 13 9310 is still a capable machine for coursework. I'll maintain your ThinkPad as the single reference point for any accessory searches, spec lookups, or troubleshooting notes going forward. If your brother ever needs help with the Dell, just let me know separately. Anything else on the ThinkPad you want captured right now?\n\nTotally agree — ThinkPad keyboards are legendary for a reason, and the X1 Carbon line has managed to keep meaningful key travel even as the chassis got thinner. I'll note your strong preference for tactile keyboards with real travel over butterfly-style designs. That preference could also guide future peripheral recommendations if you ever want an external keyboard for a desk setup. For now, here's your active laptop summary: ThinkPad X1 Carbon Gen 11, i7-1365U, 32 GB RAM, 1 TB SSD, 2560×1440 matte display, 1.12 kg, dual-booting Fedora 39 and Windows 11. Feel free to come back anytime to update or add details!"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "user corrects screen resolution from 2560x1440 to 2560x1600 and discusses battery diagnostics",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I need to update something about my ThinkPad. A few weeks ago — late March I think — I noticed the battery was draining way faster than usual. I ran some diagnostics and it turned out a background process from Lenovo Vantage software was eating CPU cycles. I was really frustrated because battery life was a key reason I picked this machine."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds frustrating, especially since long battery life was a major factor in your purchase decision. Lenovo Vantage can be useful for driver updates and warranty checks, but some of its background services are notorious for consuming resources unnecessarily. Did you manage to resolve the issue, or is the battery still draining faster than expected? If you disabled the offending services, I can note which ones so you remember not to re-enable them after a Vantage update. It's a common gotcha — Vantage sometimes reactivates services after it updates itself."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, after I disabled a couple of those Vantage services, things went back to normal. I don't remember the exact service names but the drain stopped completely. Also, I need to correct something I told you before. I double-checked the Lenovo specs page and the resolution is actually 2560 by 1600, not 1440. I had it wrong in my head for a while."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for the correction! I'll update your display resolution from 2560×1440 to 2560×1600. That's actually a 16:10 aspect ratio, which gives you more vertical screen real estate — great for coding and document work. And glad to hear the battery issue resolved itself once you disabled those Vantage services. I'll note that you experienced and fixed a Lenovo Vantage background drain issue in late March. If it recurs after a Vantage update, you'll know exactly where to look. Your updated display spec is now 2560×1600 matte. Want me to adjust anything else?"
+        },
+        {
+          "role": "user",
+          "content": "My colleague Priya got the same laptop last month — the X1 Carbon Gen 11 — but hers is the 16 GB RAM version. She mentioned she wishes she'd gone with 32 like mine, especially when running multiple Docker containers simultaneously. Makes me glad I opted for the higher configuration from the start."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a common regret with ultrabooks since RAM is usually soldered and non-upgradeable. With 32 GB, you've got plenty of headroom for Docker containers, virtual machines, and heavy IDE usage without hitting swap. Priya's 16 GB version is fine for lighter workloads, but Docker can eat through memory fast when you're running several containers plus a database plus your development environment. Your decision to go with the 32 GB configuration was definitely forward-thinking. If Priya ever asks for optimization tips to stretch her 16 GB, I can suggest some Docker memory-limit flags and swap configurations that might help."
+        },
+        {
+          "role": "user",
+          "content": "That's a good idea, I might pass that along to her. By the way, I've been thinking about whether I should upgrade to Fedora 40 when it comes out. The current Fedora 39 setup has been stable and I don't want to break anything, but I also want the newer kernel for better power management on this Intel chip.\n\nGood plan. I'll hold off for now and see how the first few weeks of Fedora 40 go before jumping in. For now everything is working well with 39 and I don't want to jinx it. The ThinkPad has honestly been the best laptop purchase I've made in years."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a reasonable dilemma. Fedora 40 is expected to ship with kernel 6.8 or later, which should include improved Intel Raptor Lake power management — relevant for your i7-1365U. However, since your current dual-boot setup is stable and the battery issue was software-related rather than kernel-related, there's no urgent need to upgrade immediately. A cautious approach would be to wait a few weeks after Fedora 40's release for any early bugs to get patched, then do a clean install on a separate partition to test before committing. I'll keep your current OS noted as Fedora 39 until you confirm an actual upgrade.\n\nSounds like a wise approach — stability is worth more than bleeding-edge features, especially on a daily driver. Your ThinkPad X1 Carbon Gen 11 profile is looking solid now: i7-1365U, 32 GB RAM, 1 TB SSD, corrected 2560×1600 matte display, 1.12 kg, dual-booting Fedora 39 and Windows 11, with a resolved Lenovo Vantage battery drain from late March. It's clearly serving you well as a portable development machine. Whenever you're ready to try Fedora 40 or need accessory recommendations, just come back and we'll update the record. Enjoy the smooth sailing!"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Priya claims different resolution (tentative), user verifies and confirms 2560x1600; adversarial injection of Dell XPS resolution",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Quick question — can you remind me of my current ThinkPad screen resolution? I need it for a script I'm writing that sets up display scaling automatically on Fedora. I want to make sure I'm using the right native resolution value in the config file so fonts render properly."
+        },
+        {
+          "role": "assistant",
+          "content": "Sure! Based on what you confirmed after checking the Lenovo specs page, your ThinkPad X1 Carbon Gen 11 has a native resolution of 2560×1600. That's a 16:10 aspect ratio. For your Fedora display scaling script, you'll want to use that as the base resolution. If you're using Wayland, fractional scaling at 150% or 175% tends to work well at that resolution on a 14-inch panel. For X11, you might need to configure xrandr output scaling separately. Want help drafting the scaling config section for your script?"
+        },
+        {
+          "role": "user",
+          "content": "That would be helpful, yeah. But actually, something came up — I was chatting with Priya at lunch today and she brought up something that confused me. She was looking at accessory listings and noticed resolution specs that didn't match what I told her about my screen. Let me get to that in a second though."
+        },
+        {
+          "role": "assistant",
+          "content": "No problem, take your time. It's worth getting the resolution nailed down definitively since it affects everything from scaling configs to external monitor mirroring settings. Priya having the same laptop model makes her a useful reference point, though keep in mind her specific SKU configuration might differ from yours beyond just the RAM. Some X1 Carbon Gen 11 configurations ship with different panel options — there's a 1920×1200 version, a 2560×1600 version, and even a 2880×1800 OLED option. So any discrepancy might just be a different SKU. What did she say exactly?"
+        },
+        {
+          "role": "user",
+          "content": "Priya told me the 14-inch X1 Carbon Gen 11 panels are all 2880 by 1800 and that Lenovo's specs page had a typo for a while. She seemed pretty confident about it. If that's true then my scaling script values are all wrong and I need to redo the whole config. That would also mean the specs page I checked was showing incorrect info."
+        },
+        {
+          "role": "assistant",
+          "content": "That's an interesting claim from Priya, but I'd recommend verifying it directly on your hardware before changing your script. The X1 Carbon Gen 11 actually comes in multiple display configurations, and 2880×1800 is the OLED option — it's possible Priya's unit has that panel or she's referencing a different SKU's specs. The quickest way to confirm your actual panel resolution is to run `xrandr` in a terminal on your Fedora installation. It will report the exact native resolution your display controller is using. That's more reliable than any specs page. Would you like to check that now?"
+        },
+        {
+          "role": "user",
+          "content": "Good call. Let me open a terminal real quick and check. Also, by the way, I was looking through some old emails and found the order confirmation for my brother's Dell XPS 13. Funny enough, it listed the display as 1920 by 1200 — I always thought that Dell had a 1080p screen but apparently it was 1200p. Doesn't matter for me anymore though, just found it amusing.\n\nI ran xrandr on Fedora and it clearly reports 2560x1600, so Priya's info was wrong for my panel. She might have the OLED version or maybe she was just confused. Either way, my specs page check was correct all along. I'll keep 2560 by 1600 as the native resolution in my scaling script and move on."
+        },
+        {
+          "role": "assistant",
+          "content": "Ha, that's a common mix-up — the Dell XPS 13 9310 came in both FHD (1920×1080) and FHD+ (1920×1200) variants, and the 16:10 version was more common in later production runs. Interesting to finally know which one your brother ended up with! But you're right, it's his machine now so it's just trivia at this point. More importantly, what does xrandr say about your ThinkPad's actual resolution? That will settle the question once and for all and let you finalize your scaling script with confidence. The output line you want will show your panel's name followed by the connected resolution.\n\nGreat, that confirms it definitively — your ThinkPad X1 Carbon Gen 11 has a native resolution of 2560×1600, verified both by the Lenovo specs page and now by xrandr on your actual hardware. Priya likely has the 2880×1800 OLED variant or was looking at specs for a different configuration. For your Fedora scaling script, 2560×1600 is the correct base value. At 14 inches, a scaling factor around 150% to 175% should give you comfortable text sizes without sacrificing too much screen real estate. Want me to help draft the xrandr or Wayland scaling commands for that resolution?"
+        }
+      ]
+    }
+  ],
+  "state_checkpoints": [
+    {
+      "checkpoint_id": "c1",
+      "description": "After segment 1: screen resolution is 2560x1440 (confirmed), Fedora 39 dual boot (confirmed). Dell XPS 13 9310 mentioned as given away, not tracked."
+    },
+    {
+      "checkpoint_id": "c2",
+      "description": "After segment 2: screen resolution updated to 2560x1600 (confirmed, corrected from 1440). Fedora 39 still active. Priya's 16GB variant mentioned but not a tracked target."
+    },
+    {
+      "checkpoint_id": "c3",
+      "description": "After segment 3: Priya claimed 2880x1800 (tentative, not adopted). User verified via xrandr: resolution confirmed as 2560x1600. Final confirmed state: screen resolution = 2560x1600, Linux distro = Fedora 39."
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations about my ThinkPad's display, I mentioned several different resolution figures at different times. Can you walk me through what I said about the screen resolution and how it evolved?",
+      "expected_answer": "You initially said the display resolution was 2560 by 1440. Later, after checking the Lenovo specs page, you corrected it to 2560 by 1600. Your colleague Priya then claimed it should be 2880 by 1800, but you ran xrandr on Fedora and confirmed the resolution is 2560 by 1600, showing Priya's information was wrong for your panel.",
+      "gold_memory_state": "Screen resolution underwent four lifecycle events: initial remember (2560x1440), confirmed correction to 2560x1600, tentative claim of 2880x1800 from Priya, and final confirmed reversion to 2560x1600 via xrandr. Linux distro remains Fedora 39 (unchanged).",
+      "judge_rubric": {
+        "must_include": [
+          "2560x1440 as initial value",
+          "2560x1600 as corrected value",
+          "2880x1800 as Priya's claim",
+          "2560x1600 as final verified value"
+        ],
+        "acceptable_paraphrases": [
+          "2560 by 1440",
+          "2560 by 1600",
+          "2880 by 1800"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming 2880x1800 is the final resolution",
+          "omitting any of the four resolution states"
+        ],
+        "harmless_extra": [
+          "mentioning xrandr",
+          "mentioning Lenovo specs page",
+          "mentioning Fedora 39"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence of resolution values is presented out of order or if any step is omitted.",
+        "final_state": "Fails if 2560x1600 is not identified as the final confirmed resolution.",
+        "intermediate_state": "Fails if any intermediate value (2560x1440, 2880x1800) is omitted from the narrative.",
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The display resolution is 2560 by 1440"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I double-checked the Lenovo specs page and the resolution is actually 2560 by 1600, not 1440"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Priya told me the 14-inch X1 Carbon Gen 11 panels are all 2880 by 1800 and that Lenovo's specs page had a typo for a while"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I ran xrandr on Fedora and it clearly reports 2560x1600, so Priya's info was wrong for my panel"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations about my ThinkPad's display, I mentioned several different resolution figures at different times. Can you walk me through what I said about the screen resolution and how it evolved?",
+      "expected_answer": "You initially said the display resolution was 2560 by 1440. Later, after checking the Lenovo specs page, you corrected it to 2560 by 1600. Your colleague Priya then claimed it should be 2880 by 1800, but you ran xrandr on Fedora and confirmed the resolution is 2560 by 1600, showing Priya's information was wrong for your panel.",
+      "gold_memory_state": "Screen resolution underwent four lifecycle events: initial remember (2560x1440), confirmed correction to 2560x1600, tentative claim of 2880x1800 from Priya, and final confirmed reversion to 2560x1600 via xrandr. Linux distro remains Fedora 39 (unchanged).",
+      "judge_rubric": {
+        "must_include": [
+          "2560x1440 as initial value",
+          "2560x1600 as corrected value",
+          "2880x1800 as Priya's claim",
+          "2560x1600 as final verified value"
+        ],
+        "acceptable_paraphrases": [
+          "2560 by 1440",
+          "2560 by 1600",
+          "2880 by 1800"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming 2880x1800 is the final resolution",
+          "omitting any of the four resolution states"
+        ],
+        "harmless_extra": [
+          "mentioning xrandr",
+          "mentioning Lenovo specs page",
+          "mentioning Fedora 39"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence of resolution values is presented out of order or if any step is omitted.",
+        "final_state": "Fails if 2560x1600 is not identified as the final confirmed resolution.",
+        "intermediate_state": "Fails if any intermediate value (2560x1440, 2880x1800) is omitted from the narrative.",
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The display resolution is 2560 by 1440"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I double-checked the Lenovo specs page and the resolution is actually 2560 by 1600, not 1440"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Priya told me the 14-inch X1 Carbon Gen 11 panels are all 2880 by 1800 and that Lenovo's specs page had a typo for a while"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I ran xrandr on Fedora and it clearly reports 2560x1600, so Priya's info was wrong for my panel"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When Priya shared a different resolution figure and I later ran my own hardware check, which piece of my laptop profile was being disputed, and does my Linux distribution record get affected by any of that back-and-forth?",
+      "expected_answer": "The disputed detail is the ThinkPad X1 Carbon Gen 11 screen resolution. The Linux distribution (Fedora 39) is a separate record and is not affected by the resolution back-and-forth.",
+      "gold_memory_state": "Two tracked targets exist: (1) ThinkPad X1 Carbon Gen 11 screen resolution — final confirmed value 2560x1600; (2) Linux distribution installed on ThinkPad — value Fedora 39, unchanged throughout. The resolution dispute does not touch the Linux distro record.",
+      "judge_rubric": {
+        "must_include": [
+          "screen resolution as the disputed detail",
+          "Fedora 39 or Linux distribution as unaffected"
+        ],
+        "acceptable_paraphrases": [
+          "display resolution",
+          "panel resolution"
+        ],
+        "must_not_include": [
+          "Fedora 39 changed",
+          "Linux distro was disputed"
+        ],
+        "harmful_extra": [
+          "claiming both targets were disputed",
+          "claiming the Linux distro was updated"
+        ],
+        "harmless_extra": [
+          "mentioning the specific resolution values",
+          "mentioning Priya by name"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not correctly identify screen resolution as the disputed target or incorrectly claims Fedora 39 was affected.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Priya told me the 14-inch X1 Carbon Gen 11 panels are all 2880 by 1800 and that Lenovo's specs page had a typo for a while"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I ran xrandr on Fedora and it clearly reports 2560x1600, so Priya's info was wrong for my panel"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I installed Fedora 39 as a dual boot alongside Windows 11 around mid-March"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When Priya shared a different resolution figure and I later ran my own hardware check, which piece of my laptop profile was being disputed, and does my Linux distribution record get affected by any of that back-and-forth?",
+      "expected_answer": "The disputed detail is the ThinkPad X1 Carbon Gen 11 screen resolution. The Linux distribution (Fedora 39) is a separate record and is not affected by the resolution back-and-forth.",
+      "gold_memory_state": "Two tracked targets exist: (1) ThinkPad X1 Carbon Gen 11 screen resolution — final confirmed value 2560x1600; (2) Linux distribution installed on ThinkPad — value Fedora 39, unchanged throughout. The resolution dispute does not touch the Linux distro record.",
+      "judge_rubric": {
+        "must_include": [
+          "screen resolution as the disputed detail",
+          "Fedora 39 or Linux distribution as unaffected"
+        ],
+        "acceptable_paraphrases": [
+          "display resolution",
+          "panel resolution"
+        ],
+        "must_not_include": [
+          "Fedora 39 changed",
+          "Linux distro was disputed"
+        ],
+        "harmful_extra": [
+          "claiming both targets were disputed",
+          "claiming the Linux distro was updated"
+        ],
+        "harmless_extra": [
+          "mentioning the specific resolution values",
+          "mentioning Priya by name"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not correctly identify screen resolution as the disputed target or incorrectly claims Fedora 39 was affected.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Priya told me the 14-inch X1 Carbon Gen 11 panels are all 2880 by 1800 and that Lenovo's specs page had a typo for a while"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I ran xrandr on Fedora and it clearly reports 2560x1600, so Priya's info was wrong for my panel"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I installed Fedora 39 as a dual boot alongside Windows 11 around mid-March"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "I need to finalize my Fedora display scaling script. What native resolution should I hard-code for my ThinkPad's panel?",
+      "expected_answer": "2560x1600",
+      "gold_memory_state": "The final confirmed screen resolution is 2560x1600, verified by both the Lenovo specs page and xrandr output on Fedora. The tentative value of 2880x1800 (from Priya's claim) was never adopted and was explicitly rejected after hardware verification. The earlier value of 2560x1440 was also superseded.",
+      "judge_rubric": {
+        "must_include": [
+          "2560x1600"
+        ],
+        "acceptable_paraphrases": [
+          "2560 by 1600",
+          "2560×1600"
+        ],
+        "must_not_include": [
+          "2880x1800",
+          "2560x1440"
+        ],
+        "harmful_extra": [
+          "using 2880x1800 as the resolution",
+          "using 2560x1440 as the resolution"
+        ],
+        "harmless_extra": [
+          "mentioning 16:10 aspect ratio",
+          "mentioning it was verified via xrandr"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model returns 2560x1440 (the original value) or 2880x1800 (the tentative value that was never adopted). The tentative 2880x1800 from Priya was explicitly rejected after xrandr verification and must not be treated as the current value. The recency trap is that 2880x1800 appeared later in conversation than 2560x1600 but was never confirmed.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the final answer is anything other than 2560x1600. The tentative value 2880x1800 was never adopted; the original value 2560x1440 was superseded.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I double-checked the Lenovo specs page and the resolution is actually 2560 by 1600, not 1440"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I ran xrandr on Fedora and it clearly reports 2560x1600, so Priya's info was wrong for my panel"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "I need to finalize my Fedora display scaling script. What native resolution should I hard-code for my ThinkPad's panel?",
+      "expected_answer": "2560x1600",
+      "gold_memory_state": "The final confirmed screen resolution is 2560x1600, verified by both the Lenovo specs page and xrandr output on Fedora. The tentative value of 2880x1800 (from Priya's claim) was never adopted and was explicitly rejected after hardware verification. The earlier value of 2560x1440 was also superseded.",
+      "judge_rubric": {
+        "must_include": [
+          "2560x1600"
+        ],
+        "acceptable_paraphrases": [
+          "2560 by 1600",
+          "2560×1600"
+        ],
+        "must_not_include": [
+          "2880x1800",
+          "2560x1440"
+        ],
+        "harmful_extra": [
+          "using 2880x1800 as the resolution",
+          "using 2560x1440 as the resolution"
+        ],
+        "harmless_extra": [
+          "mentioning 16:10 aspect ratio",
+          "mentioning it was verified via xrandr"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model returns 2560x1440 (the original value) or 2880x1800 (the tentative value that was never adopted). The tentative 2880x1800 from Priya was explicitly rejected after xrandr verification and must not be treated as the current value. The recency trap is that 2880x1800 appeared later in conversation than 2560x1600 but was never confirmed.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the final answer is anything other than 2560x1600. The tentative value 2880x1800 was never adopted; the original value 2560x1440 was superseded.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I double-checked the Lenovo specs page and the resolution is actually 2560 by 1600, not 1440"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I ran xrandr on Fedora and it clearly reports 2560x1600, so Priya's info was wrong for my panel"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm writing a README for my dotfiles repo that documents my development environment. Draft a one-paragraph hardware and OS summary for the README, including my laptop model, the display spec with aspect ratio, and the Linux distro I use for development work.",
+      "expected_answer": "Development environment: ThinkPad X1 Carbon Gen 11 (14-inch, Intel i7-1365U, 32 GB RAM) with a 2560×1600 matte display at a 16:10 aspect ratio. The development OS is Fedora 39, dual-booted alongside Windows 11. The 16:10 panel provides extra vertical screen real estate that benefits coding and terminal workflows.",
+      "gold_memory_state": "ThinkPad X1 Carbon Gen 11 screen resolution is confirmed at 2560x1600 (not 2560x1440, not 2880x1800). Linux distro is Fedora 39 (dual boot with Windows 11). Processor is i7-1365U, RAM is 32 GB, display is matte, weight is 1.12 kg, SSD is 1 TB.",
+      "judge_rubric": {
+        "must_include": [
+          "ThinkPad X1 Carbon Gen 11",
+          "2560x1600 or 2560 by 1600",
+          "16:10 aspect ratio",
+          "Fedora 39"
+        ],
+        "acceptable_paraphrases": [
+          "2560×1600",
+          "WQXGA"
+        ],
+        "must_not_include": [
+          "2560x1440",
+          "2880x1800"
+        ],
+        "harmful_extra": [
+          "using 2560x1440 as the resolution",
+          "using 2880x1800 as the resolution",
+          "claiming Fedora 40 is installed"
+        ],
+        "harmless_extra": [
+          "mentioning i7-1365U",
+          "mentioning 32 GB RAM",
+          "mentioning matte finish",
+          "mentioning 1 TB SSD",
+          "mentioning Windows 11 dual boot",
+          "mentioning 1.12 kg weight"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the README uses 2560x1440 (superseded original) or 2880x1800 (tentative, never adopted) instead of the confirmed 2560x1600.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the resolution or Linux distro in the README does not match the final confirmed values.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's laptop is a ThinkPad X1 Carbon Gen 11 with an i7-1365U and 32 GB RAM.",
+        "Fact 2: The confirmed screen resolution is 2560x1600 (verified via Lenovo specs page and xrandr).",
+        "Fact 3: The display is matte.",
+        "Fact 4: The user's development OS is Fedora 39, dual-booted with Windows 11.",
+        "Inference: 2560x1600 on a standard widescreen yields a 16:10 aspect ratio (2560/1600 = 16/10), which provides more vertical space than 16:9.",
+        "Derived value: The README paragraph should combine the laptop model, 2560x1600 resolution with 16:10 aspect ratio, and Fedora 39 as the dev OS."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My machine is a ThinkPad X1 Carbon Gen 11, the 14-inch model with an i7-1365U and 32 gigs of RAM"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The display resolution is 2560 by 1440"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I double-checked the Lenovo specs page and the resolution is actually 2560 by 1600, not 1440"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I ran xrandr on Fedora and it clearly reports 2560x1600, so Priya's info was wrong for my panel"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I installed Fedora 39 as a dual boot alongside Windows 11 around mid-March"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm writing a README for my dotfiles repo that documents my development environment. Draft a one-paragraph hardware and OS summary for the README, including my laptop model, the display spec with aspect ratio, and the Linux distro I use for development work.",
+      "expected_answer": "Development environment: ThinkPad X1 Carbon Gen 11 (14-inch, Intel i7-1365U, 32 GB RAM) with a 2560×1600 matte display at a 16:10 aspect ratio. The development OS is Fedora 39, dual-booted alongside Windows 11. The 16:10 panel provides extra vertical screen real estate that benefits coding and terminal workflows.",
+      "gold_memory_state": "ThinkPad X1 Carbon Gen 11 screen resolution is confirmed at 2560x1600 (not 2560x1440, not 2880x1800). Linux distro is Fedora 39 (dual boot with Windows 11). Processor is i7-1365U, RAM is 32 GB, display is matte, weight is 1.12 kg, SSD is 1 TB.",
+      "judge_rubric": {
+        "must_include": [
+          "ThinkPad X1 Carbon Gen 11",
+          "2560x1600 or 2560 by 1600",
+          "16:10 aspect ratio",
+          "Fedora 39"
+        ],
+        "acceptable_paraphrases": [
+          "2560×1600",
+          "WQXGA"
+        ],
+        "must_not_include": [
+          "2560x1440",
+          "2880x1800"
+        ],
+        "harmful_extra": [
+          "using 2560x1440 as the resolution",
+          "using 2880x1800 as the resolution",
+          "claiming Fedora 40 is installed"
+        ],
+        "harmless_extra": [
+          "mentioning i7-1365U",
+          "mentioning 32 GB RAM",
+          "mentioning matte finish",
+          "mentioning 1 TB SSD",
+          "mentioning Windows 11 dual boot",
+          "mentioning 1.12 kg weight"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the README uses 2560x1440 (superseded original) or 2880x1800 (tentative, never adopted) instead of the confirmed 2560x1600.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the resolution or Linux distro in the README does not match the final confirmed values.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's laptop is a ThinkPad X1 Carbon Gen 11 with an i7-1365U and 32 GB RAM.",
+        "Fact 2: The confirmed screen resolution is 2560x1600 (verified via Lenovo specs page and xrandr).",
+        "Fact 3: The display is matte.",
+        "Fact 4: The user's development OS is Fedora 39, dual-booted with Windows 11.",
+        "Inference: 2560x1600 on a standard widescreen yields a 16:10 aspect ratio (2560/1600 = 16/10), which provides more vertical space than 16:9.",
+        "Derived value: The README paragraph should combine the laptop model, 2560x1600 resolution with 16:10 aspect ratio, and Fedora 39 as the dev OS."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My machine is a ThinkPad X1 Carbon Gen 11, the 14-inch model with an i7-1365U and 32 gigs of RAM"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The display resolution is 2560 by 1440"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I double-checked the Lenovo specs page and the resolution is actually 2560 by 1600, not 1440"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I ran xrandr on Fedora and it clearly reports 2560x1600, so Priya's info was wrong for my panel"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I installed Fedora 39 as a dual boot alongside Windows 11 around mid-March"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed our entire conversation history about my ThinkPad's screen resolution, what would they see as the full sequence of values that came up, which ones I actually adopted at each point, and which one turned out to be wrong? Walk me through the whole timeline.",
+      "expected_answer": "The timeline is: (1) You first reported 2560x1440, which was adopted as the initial value. (2) You then checked the Lenovo specs page and corrected it to 2560x1600, replacing the initial value. (3) Priya claimed the resolution should be 2880x1800, but this was never verified or adopted — it remained unconfirmed. (4) You ran xrandr on Fedora, which confirmed 2560x1600, proving Priya's 2880x1800 figure was wrong for your panel. The final and only reliable value is 2560x1600.",
+      "gold_memory_state": "Resolution trajectory: 2560x1440 (confirmed, step 1) → 2560x1600 (confirmed correction, step 2) → 2880x1800 (tentative from Priya, step 3, never adopted) → 2560x1600 (confirmed via xrandr, step 4, final). The tentative 2880x1800 was explicitly rejected. Linux distro Fedora 39 is a separate target with no trajectory changes.",
+      "judge_rubric": {
+        "must_include": [
+          "2560x1440 as the first value",
+          "2560x1600 as the corrected value",
+          "2880x1800 as a value that was suggested but not adopted",
+          "2560x1600 as the final confirmed value"
+        ],
+        "acceptable_paraphrases": [
+          "2560 by 1440",
+          "2560 by 1600",
+          "2880 by 1800",
+          "unverified",
+          "not confirmed",
+          "rejected"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming 2880x1800 was ever adopted or confirmed",
+          "claiming the final resolution is anything other than 2560x1600",
+          "presenting the steps out of chronological order"
+        ],
+        "harmless_extra": [
+          "mentioning Priya by name",
+          "mentioning xrandr",
+          "mentioning Lenovo specs page",
+          "mentioning the 16:10 aspect ratio"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 2880x1800 is presented as ever having been the adopted/confirmed value, or if 2560x1440 is presented as the final value.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the four resolution events are not presented in the correct chronological order: 2560x1440 → 2560x1600 → 2880x1800 (tentative) → 2560x1600 (reconfirmed).",
+        "final_state": "Fails if the final value is not identified as 2560x1600.",
+        "intermediate_state": "Fails if any of the four states is omitted or if the tentative status of 2880x1800 is not indicated.",
+        "trajectory_provenance": "Fails if the model cannot attribute the correction to the Lenovo specs page check and the final confirmation to the xrandr output."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: User initially reported screen resolution as 2560x1440 (confirmed at that time).",
+        "Step 2: User checked Lenovo specs page and corrected resolution to 2560x1600, superseding 2560x1440.",
+        "Step 3: Priya claimed all X1 Carbon Gen 11 14-inch panels are 2880x1800, but this was secondhand and unverified — tentative only.",
+        "Step 4: User ran xrandr on Fedora which reported 2560x1600, explicitly disproving Priya's claim.",
+        "Inference: The tentative 2880x1800 was never adopted into the user's profile; the final confirmed resolution is 2560x1600, supported by two independent sources (Lenovo specs page and xrandr hardware query)."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The display resolution is 2560 by 1440"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I double-checked the Lenovo specs page and the resolution is actually 2560 by 1600, not 1440"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Priya told me the 14-inch X1 Carbon Gen 11 panels are all 2880 by 1800 and that Lenovo's specs page had a typo for a while"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I ran xrandr on Fedora and it clearly reports 2560x1600, so Priya's info was wrong for my panel"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed our entire conversation history about my ThinkPad's screen resolution, what would they see as the full sequence of values that came up, which ones I actually adopted at each point, and which one turned out to be wrong? Walk me through the whole timeline.",
+      "expected_answer": "The timeline is: (1) You first reported 2560x1440, which was adopted as the initial value. (2) You then checked the Lenovo specs page and corrected it to 2560x1600, replacing the initial value. (3) Priya claimed the resolution should be 2880x1800, but this was never verified or adopted — it remained unconfirmed. (4) You ran xrandr on Fedora, which confirmed 2560x1600, proving Priya's 2880x1800 figure was wrong for your panel. The final and only reliable value is 2560x1600.",
+      "gold_memory_state": "Resolution trajectory: 2560x1440 (confirmed, step 1) → 2560x1600 (confirmed correction, step 2) → 2880x1800 (tentative from Priya, step 3, never adopted) → 2560x1600 (confirmed via xrandr, step 4, final). The tentative 2880x1800 was explicitly rejected. Linux distro Fedora 39 is a separate target with no trajectory changes.",
+      "judge_rubric": {
+        "must_include": [
+          "2560x1440 as the first value",
+          "2560x1600 as the corrected value",
+          "2880x1800 as a value that was suggested but not adopted",
+          "2560x1600 as the final confirmed value"
+        ],
+        "acceptable_paraphrases": [
+          "2560 by 1440",
+          "2560 by 1600",
+          "2880 by 1800",
+          "unverified",
+          "not confirmed",
+          "rejected"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming 2880x1800 was ever adopted or confirmed",
+          "claiming the final resolution is anything other than 2560x1600",
+          "presenting the steps out of chronological order"
+        ],
+        "harmless_extra": [
+          "mentioning Priya by name",
+          "mentioning xrandr",
+          "mentioning Lenovo specs page",
+          "mentioning the 16:10 aspect ratio"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 2880x1800 is presented as ever having been the adopted/confirmed value, or if 2560x1440 is presented as the final value.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the four resolution events are not presented in the correct chronological order: 2560x1440 → 2560x1600 → 2880x1800 (tentative) → 2560x1600 (reconfirmed).",
+        "final_state": "Fails if the final value is not identified as 2560x1600.",
+        "intermediate_state": "Fails if any of the four states is omitted or if the tentative status of 2880x1800 is not indicated.",
+        "trajectory_provenance": "Fails if the model cannot attribute the correction to the Lenovo specs page check and the final confirmation to the xrandr output."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: User initially reported screen resolution as 2560x1440 (confirmed at that time).",
+        "Step 2: User checked Lenovo specs page and corrected resolution to 2560x1600, superseding 2560x1440.",
+        "Step 3: Priya claimed all X1 Carbon Gen 11 14-inch panels are 2880x1800, but this was secondhand and unverified — tentative only.",
+        "Step 4: User ran xrandr on Fedora which reported 2560x1600, explicitly disproving Priya's claim.",
+        "Inference: The tentative 2880x1800 was never adopted into the user's profile; the final confirmed resolution is 2560x1600, supported by two independent sources (Lenovo specs page and xrandr hardware query)."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The display resolution is 2560 by 1440"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I double-checked the Lenovo specs page and the resolution is actually 2560 by 1600, not 1440"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Priya told me the 14-inch X1 Carbon Gen 11 panels are all 2880 by 1800 and that Lenovo's specs page had a typo for a while"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I ran xrandr on Fedora and it clearly reports 2560x1600, so Priya's info was wrong for my panel"
+        }
+      ]
+    }
+  ]
+}

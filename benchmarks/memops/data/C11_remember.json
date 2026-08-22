@@ -1,0 +1,1084 @@
+{
+  "target_fact": "C11 exam preparation details including new exam date May 10, exam center at 250 Yonge Street Toronto, flashcard purchase from CSI for $45, and friend Kevin's exam date May 24",
+  "operation_type": "Remember",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 3,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": true,
+      "never_stored_target": "C11 exam registration fee"
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "My C11 exam is scheduled for May 10"
+      },
+      "target": {
+        "target_id": "c11_exam_date",
+        "target_name": "C11 exam date"
+      },
+      "old_value": null,
+      "new_value": "May 10",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My C11 exam is scheduled for May 10"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "The exam center is the Pearson VUE location at 250 Yonge Street in Toronto"
+      },
+      "target": {
+        "target_id": "c11_exam_center",
+        "target_name": "C11 exam center location"
+      },
+      "old_value": null,
+      "new_value": "Pearson VUE, 250 Yonge Street, Toronto",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The exam center is the Pearson VUE location at 250 Yonge Street in Toronto"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I bought a set of physical flashcards from the CSI website for $45"
+      },
+      "target": {
+        "target_id": "c11_flashcard_purchase",
+        "target_name": "C11 exam flashcard purchase details"
+      },
+      "old_value": null,
+      "new_value": "Physical flashcard set from CSI, $45",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I bought a set of physical flashcards from the CSI website for $45"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "Kevin moved his C11 exam to May 24"
+      },
+      "target": {
+        "target_id": "kevin_c11_exam_date",
+        "target_name": "Kevin's C11 exam date"
+      },
+      "old_value": null,
+      "new_value": "May 24",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Kevin moved his C11 exam to May 24"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 7,
+        "quote": "I've been doing one full practice exam every weekend since I got the May date, so that's been about five weekends now"
+      },
+      "target": {
+        "target_id": "c11_practice_exam_cadence",
+        "target_name": "C11 practice exam study cadence"
+      },
+      "old_value": null,
+      "new_value": "One full practice exam every weekend, approximately five weekends completed",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I've been doing one full practice exam every weekend since I got the May date, so that's been about five weekends now"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 1,
+        "quote": "My latest practice exam score was 71 percent from last Sunday"
+      },
+      "target": {
+        "target_id": "c11_latest_practice_score",
+        "target_name": "C11 latest practice exam score"
+      },
+      "old_value": null,
+      "new_value": "71%",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "My latest practice exam score was 71 percent from last Sunday"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "The passing score for C11 is 60 percent"
+      },
+      "target": {
+        "target_id": "c11_passing_score",
+        "target_name": "C11 exam passing score threshold"
+      },
+      "old_value": null,
+      "new_value": "60%",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The passing score for C11 is 60 percent"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establishing core exam details: date, study preferences, and exam center",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to go over some details about my upcoming insurance exam so you can help me plan my study schedule. My C11 exam is scheduled for May 10. That's the Fundamentals of Insurance course. I registered back in early March and I want to make sure I'm fully prepared by then."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for sharing that! Having your C11 Fundamentals of Insurance exam on May 10 gives us a clear planning window. Depending on where we are now in the calendar, we can break down the remaining weeks into focused study blocks. Do you know roughly how many chapters or modules the C11 covers? That way I can help you map out a realistic weekly target so you're not cramming at the end. Also, do you have any particular areas you feel weaker on, or is it more of an even spread across the material?"
+        },
+        {
+          "role": "user",
+          "content": "There are about twelve chapters total. I feel okay on most of them but the underwriting section has been really tough for me. I had a rough experience with an early practice test where that section tripped me up badly. I'd say I need to dedicate extra sessions to underwriting specifically, maybe double the time I give other chapters."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes sense — underwriting tends to be one of the denser sections in C11 because it involves a lot of interrelated concepts like risk classification, policy selection, and rating. If you double your time on underwriting relative to other chapters, that's a smart allocation. For twelve chapters with extra underwriting focus, I'd suggest covering roughly two chapters per week for the standard ones and reserving a full week just for underwriting review and practice questions. We can also schedule a mock exam in the final week before May 10. Does that pacing feel manageable?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, that sounds good. The exam center is the Pearson VUE location at 250 Yonge Street in Toronto. I confirmed that when I booked the slot. It was a bit tricky to get a mid-May date because a lot of slots were already taken, but I managed to lock in May 10 specifically at that location."
+        },
+        {
+          "role": "assistant",
+          "content": "Good to know your exam is at the Pearson VUE center on 250 Yonge Street in Toronto. Since you had to work to secure that specific slot, it's worth noting any rescheduling policies in case something comes up — Pearson VUE usually requires at least 24 to 48 hours' notice. For logistics, 250 Yonge is right near Dundas station, so transit should be straightforward. I'd recommend arriving at least 30 minutes early to handle check-in and settle your nerves. Do you know what time your exam slot is, or is that still to be confirmed?"
+        },
+        {
+          "role": "user",
+          "content": "I don't have the exact time yet, they said they'd send a confirmation email closer to the date. One thing I know about myself is that I study way better in the mornings, so I'm hoping for an early slot. My brain is just sharper before noon, and I've been protecting morning hours specifically for exam prep these past few weeks.\n\nExactly, that's what I've been doing. I also want to mention that my friend Kevin is taking C11 too. He originally planned for the May session but I'm not sure of his exact date yet. We've been loosely talking about studying together but haven't committed to anything formal. I'll update you once I know his schedule better."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a great self-awareness to have. Morning cognitive sharpness is well-documented, and if you've been consistently studying before noon, your brain will be primed for that time window on exam day. When the confirmation email comes, if they offer multiple slots, definitely grab the earliest one. In the meantime, keep anchoring your practice sessions to the morning so you build that routine. We can structure your weekly plan so the hardest material — like underwriting — falls in your peak morning hours, and lighter review happens in the afternoon. Sound good?\n\nHaving a study partner can be really helpful for accountability and for talking through tricky concepts, especially something like underwriting where explaining it out loud can deepen your understanding. Once Kevin locks in his date, we can see if there's overlap in your prep timelines and maybe coordinate joint review sessions. In the meantime, keep your solo morning study routine going strong. For this week, I'd suggest focusing on whichever chapter you're currently on and earmarking the underwriting chapter for the dedicated deep-dive week we discussed. Let me know when Kevin's date is confirmed!"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Adding study material details, Kevin's confirmed date, and practice exam cadence",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Quick update on the study materials front. I bought a set of physical flashcards from the CSI website for $45. I really prefer physical cards over digital ones — there's something about flipping through them by hand that helps me retain things better. I find the tactile aspect makes a real difference."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a solid investment! The CSI flashcards are well-regarded for C11 prep because they're aligned directly with the official curriculum. And your preference for physical over digital makes a lot of sense — research on haptic learning suggests that the physical act of handling cards engages different memory pathways than scrolling on a screen. You could integrate them into your morning sessions: maybe spend the first 15 minutes flipping through flashcards as a warm-up before diving into chapter reading or practice questions. That way you're combining your peak focus time with the study method that works best for you."
+        },
+        {
+          "role": "user",
+          "content": "That's a great idea, I'll try that warm-up approach. I've also been thinking about how to structure my weekends differently from weekdays. On weekdays I do chapter reading and flashcards in the morning, but weekends I want to reserve for full-length practice exams to simulate the real test environment as closely as possible."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really disciplined approach. Separating your weekday content learning from weekend full-length simulations mirrors how a lot of successful test-takers structure their prep. For the practice exams on weekends, try to replicate exam conditions as closely as you can: sit at a desk, set a timer for the actual exam duration, no phone, no notes. After each practice exam, spend an hour reviewing every question you got wrong or guessed on. Track your scores week over week so you can see the trend line and identify persistent weak spots. Are you using the CSI practice exams or a third-party source?"
+        },
+        {
+          "role": "user",
+          "content": "I'm using the CSI ones that came bundled with the flashcard purchase. Also, I have an update about Kevin. Kevin moved his C11 exam to May 24. He told me last week that he fell behind on studying so he pushed it back. So now we're both in May, just on different dates, which actually works out for joint study sessions."
+        },
+        {
+          "role": "assistant",
+          "content": "That works out well! With Kevin on May 24 and you on May 10, there's a nice two-week gap. You could study together leading up to your exam, and then after yours is done, you could even help Kevin review during his final stretch — teaching material to someone else is one of the best ways to solidify your own understanding. For scheduling joint sessions, maybe aim for one or two evenings per week where you quiz each other using those CSI flashcards. Since you both have the same curriculum, the overlap should be seamless. Just make sure the joint sessions supplement rather than replace your solo morning prep."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, that's the plan. Kevin and I are going to try Wednesdays and Saturdays for joint review. On a different note, I've been tracking my study hours and I realize I've been averaging about two hours a day on weekdays and four hours on weekends. Does that seem like enough given how much time I have left?\n\nThat's reassuring. I've been doing one full practice exam every weekend since I got the May date, so that's been about five weekends now. My scores have been gradually improving, which feels encouraging. I want to keep that momentum going into the final stretch before the exam."
+        },
+        {
+          "role": "assistant",
+          "content": "Let's do some quick math. If you're averaging two hours on weekdays and four on weekends, that's roughly 10 weekday hours plus 8 weekend hours, so about 18 hours per week. With your exam on May 10, depending on how many weeks you have left, that could add up to a substantial total. For C11, most prep guides suggest 80 to 120 hours of total study time. If you've already been at this pace for several weeks, you're likely in a strong position. The key is making sure those hours are high-quality — active recall with flashcards, practice exams, and targeted underwriting review rather than passive rereading.\n\nFive weekends of consistent practice exams is excellent — that's a strong data set to track your progress. The fact that your scores are trending upward means your study strategy is working. For the remaining weekends before May 10, I'd suggest making each practice exam progressively harder by timing yourself more strictly or focusing on your weakest sections first. Also, consider doing a final comprehensive review the weekend before the exam rather than a full practice test — sometimes it's better to consolidate what you know rather than risk a demoralizing score right before test day. Keep up the great work!"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Latest practice score, passing threshold, and final prep discussion with adversarial injection",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So I wanted to give you an update on my practice exams. My latest practice exam score was 71 percent from last Sunday. It's decent but I feel like I should be scoring higher with the exam coming up soon. The underwriting section is still dragging my average down even though I've improved on it compared to where I started."
+        },
+        {
+          "role": "assistant",
+          "content": "A 71% is a solid score, especially considering underwriting has been your toughest area. The fact that you've improved there shows real progress. For context, I recall seeing that Kevin mentioned to you he scored around 68% on his most recent practice — so you're actually tracking ahead of him even though his exam is two weeks after yours. To push past 71%, I'd recommend targeted drilling: take the underwriting questions from your last few practice exams, categorize the ones you missed, and create a mini flashcard deck just for those concepts. That focused repetition should help close the gap."
+        },
+        {
+          "role": "user",
+          "content": "That's a good idea, I'll make a targeted underwriting deck. I've also been thinking about the logistics of exam day. Since my exam is at 250 Yonge Street, I was planning to take the subway down and arrive about forty-five minutes early. I want to have time to settle in and not feel rushed."
+        },
+        {
+          "role": "assistant",
+          "content": "Arriving 45 minutes early is smart, especially at the 250 Yonge Street Pearson VUE center — it can get busy during peak exam periods. The closest subway stop is Dundas, which is practically right there. Bring two forms of valid ID; Pearson VUE is strict about that. Also, you won't be allowed to bring personal items into the testing room, so travel light. I noticed that on some older booking confirmations for that center, the suite number was listed as 302, but they moved to suite 410 last year — worth double-checking your confirmation email to make sure you go to the right floor."
+        },
+        {
+          "role": "user",
+          "content": "Good call, I'll verify the suite number. I also want to talk about the passing requirements. The passing score for C11 is 60 percent. So technically my 71 percent practice score is above passing, but I don't want to just barely clear the bar — I want a comfortable margin because the real exam always feels harder than practice."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a wise mindset. Aiming well above the 60% passing threshold gives you a buffer for exam-day nerves and any questions that are trickier than expected. With your current 71% on practice exams, you have an 11-point cushion, which is decent but I understand wanting more. A good target would be consistently hitting 75% or above on your remaining practice exams. That would give you a 15-point buffer over the pass mark. Focus your remaining study time on the highest-yield weak areas — underwriting being the main one — and try to convert those missed questions into reliable points."
+        },
+        {
+          "role": "user",
+          "content": "Right, 75 percent is my target for the next practice exam this weekend. I also realized I should review the claims section more carefully. I've been so focused on underwriting that I've been neglecting claims, and there were a few tricky questions on my last practice test from that section too.\n\nThat alternating schedule sounds perfect. I think between the flashcards, the practice exams, and the joint sessions with Kevin, I have a solid plan for the last stretch. I just need to stay disciplined and keep protecting my morning study time. That's really been the key to my improvement so far."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really important catch. It's common to develop tunnel vision on one weak area and overlook others that are slipping. The claims section in C11 covers topics like the claims process, adjusting, settlement methods, and subrogation — all of which can have nuanced scenario-based questions on the exam. I'd suggest splitting your underwriting and claims review into alternating days this week: Monday and Wednesday for underwriting, Tuesday and Thursday for claims. Use your CSI flashcards for both sections, and flag any cards you consistently get wrong for extra repetition. That balanced approach should help you shore up both areas.\n\nYou've built a really strong foundation with your study system — morning solo sessions for deep focus, physical flashcards for active recall, weekend practice exams for simulation, and Wednesday-Saturday joint reviews with Kevin for accountability. The combination of all those elements is exactly why your scores have been trending upward. For the final days before May 10, I'd suggest tapering your study load slightly — maybe lighter review sessions two days before the exam and a full rest day the day before. You want to walk into that Pearson VUE center feeling sharp and confident, not burned out. You've got this!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've told you about my upcoming insurance exam preparation — the logistics, study materials, practice scores, and any details about my friend who's also taking it?",
+      "expected_answer": "The user's insurance fundamentals exam is scheduled for May 10 at the Pearson VUE location at 250 Yonge Street in Toronto. The user purchased physical flashcards from CSI for $45. The user has been doing one full practice exam every weekend for about five weekends, with the latest score being 71%. The passing score is 60%. The user's friend Kevin moved his exam to May 24.",
+      "gold_memory_state": "All seven confirmed remember operations are active: exam date May 10, exam center Pearson VUE 250 Yonge Street Toronto, flashcard purchase from CSI $45, Kevin's exam date May 24, practice exam cadence one per weekend for five weekends, latest practice score 71%, passing score 60%.",
+      "judge_rubric": {
+        "must_include": [
+          "May 10",
+          "250 Yonge Street",
+          "Toronto",
+          "flashcards",
+          "$45",
+          "Kevin",
+          "May 24",
+          "71%",
+          "60%"
+        ],
+        "acceptable_paraphrases": [
+          "Pearson VUE center",
+          "CSI flashcards",
+          "physical flashcard set"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "fabricating details not in the conversation"
+        ],
+        "harmless_extra": [
+          "mentioning underwriting as a weak area",
+          "morning study preference",
+          "study hours per week"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My C11 exam is scheduled for May 10"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The exam center is the Pearson VUE location at 250 Yonge Street in Toronto"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I bought a set of physical flashcards from the CSI website for $45"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Kevin moved his C11 exam to May 24"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I've been doing one full practice exam every weekend since I got the May date, so that's been about five weekends now"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "My latest practice exam score was 71 percent from last Sunday"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The passing score for C11 is 60 percent"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've told you about my upcoming insurance exam preparation — the logistics, study materials, practice scores, and any details about my friend who's also taking it?",
+      "expected_answer": "The user's insurance fundamentals exam is scheduled for May 10 at the Pearson VUE location at 250 Yonge Street in Toronto. The user purchased physical flashcards from CSI for $45. The user has been doing one full practice exam every weekend for about five weekends, with the latest score being 71%. The passing score is 60%. The user's friend Kevin moved his exam to May 24.",
+      "gold_memory_state": "All seven confirmed remember operations are active: exam date May 10, exam center Pearson VUE 250 Yonge Street Toronto, flashcard purchase from CSI $45, Kevin's exam date May 24, practice exam cadence one per weekend for five weekends, latest practice score 71%, passing score 60%.",
+      "judge_rubric": {
+        "must_include": [
+          "May 10",
+          "250 Yonge Street",
+          "Toronto",
+          "flashcards",
+          "$45",
+          "Kevin",
+          "May 24",
+          "71%",
+          "60%"
+        ],
+        "acceptable_paraphrases": [
+          "Pearson VUE center",
+          "CSI flashcards",
+          "physical flashcard set"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "fabricating details not in the conversation"
+        ],
+        "harmless_extra": [
+          "mentioning underwriting as a weak area",
+          "morning study preference",
+          "study hours per week"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My C11 exam is scheduled for May 10"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The exam center is the Pearson VUE location at 250 Yonge Street in Toronto"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I bought a set of physical flashcards from the CSI website for $45"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Kevin moved his C11 exam to May 24"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I've been doing one full practice exam every weekend since I got the May date, so that's been about five weekends now"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "My latest practice exam score was 71 percent from last Sunday"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The passing score for C11 is 60 percent"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned two different people's exam dates during our conversations. If I need to set a personal countdown timer, which exam date is mine and which belongs to my friend? Could the two dates get mixed up in a scheduling tool?",
+      "expected_answer": "Your exam date is May 10. Kevin's exam date is May 24. These are two separate people's dates and should not be mixed up — May 10 is yours and May 24 is Kevin's.",
+      "gold_memory_state": "User's exam date: May 10 (target: user exam date). Kevin's exam date: May 24 (target: Kevin's exam date). These are distinct person-bound records.",
+      "judge_rubric": {
+        "must_include": [
+          "May 10 for the user",
+          "May 24 for Kevin"
+        ],
+        "acceptable_paraphrases": [
+          "your date is May 10",
+          "Kevin's date is May 24"
+        ],
+        "must_not_include": [
+          "May 10 for Kevin",
+          "May 24 for the user"
+        ],
+        "harmful_extra": [
+          "swapping the two dates",
+          "merging both into a single record"
+        ],
+        "harmless_extra": [
+          "mentioning the exam center location"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My C11 exam is scheduled for May 10"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Kevin moved his C11 exam to May 24"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned two different people's exam dates during our conversations. If I need to set a personal countdown timer, which exam date is mine and which belongs to my friend? Could the two dates get mixed up in a scheduling tool?",
+      "expected_answer": "Your exam date is May 10. Kevin's exam date is May 24. These are two separate people's dates and should not be mixed up — May 10 is yours and May 24 is Kevin's.",
+      "gold_memory_state": "User's exam date: May 10 (target: user exam date). Kevin's exam date: May 24 (target: Kevin's exam date). These are distinct person-bound records.",
+      "judge_rubric": {
+        "must_include": [
+          "May 10 for the user",
+          "May 24 for Kevin"
+        ],
+        "acceptable_paraphrases": [
+          "your date is May 10",
+          "Kevin's date is May 24"
+        ],
+        "must_not_include": [
+          "May 10 for Kevin",
+          "May 24 for the user"
+        ],
+        "harmful_extra": [
+          "swapping the two dates",
+          "merging both into a single record"
+        ],
+        "harmless_extra": [
+          "mentioning the exam center location"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My C11 exam is scheduled for May 10"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Kevin moved his C11 exam to May 24"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "My friend and I are both preparing for the same insurance exam. Are our exam dates close enough that we could realistically do a joint study session after my exam but before his?",
+      "expected_answer": "Yes. Your exam is May 10 and Kevin's is May 24, giving a 14-day gap. After your exam on May 10, there would be about two weeks before Kevin's exam on May 24, which is enough time for joint review sessions to help him prepare.",
+      "gold_memory_state": "User exam date: May 10. Kevin's exam date: May 24. Both dates are confirmed and active. The gap is 14 days.",
+      "judge_rubric": {
+        "must_include": [
+          "May 10",
+          "May 24",
+          "two weeks or 14 days gap"
+        ],
+        "acceptable_paraphrases": [
+          "about two weeks apart",
+          "14-day window"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating the exams are on the same date",
+          "swapping the dates between user and Kevin"
+        ],
+        "harmless_extra": [
+          "mentioning Wednesday and Saturday joint sessions"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User's exam date is May 10",
+        "Fact 2: Kevin's exam date is May 24",
+        "Inference: May 24 minus May 10 = 14 days, so there is a two-week window after the user's exam and before Kevin's exam for joint study"
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My C11 exam is scheduled for May 10"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Kevin moved his C11 exam to May 24"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "My friend and I are both preparing for the same insurance exam. Are our exam dates close enough that we could realistically do a joint study session after my exam but before his?",
+      "expected_answer": "Yes. Your exam is May 10 and Kevin's is May 24, giving a 14-day gap. After your exam on May 10, there would be about two weeks before Kevin's exam on May 24, which is enough time for joint review sessions to help him prepare.",
+      "gold_memory_state": "User exam date: May 10. Kevin's exam date: May 24. Both dates are confirmed and active. The gap is 14 days.",
+      "judge_rubric": {
+        "must_include": [
+          "May 10",
+          "May 24",
+          "two weeks or 14 days gap"
+        ],
+        "acceptable_paraphrases": [
+          "about two weeks apart",
+          "14-day window"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating the exams are on the same date",
+          "swapping the dates between user and Kevin"
+        ],
+        "harmless_extra": [
+          "mentioning Wednesday and Saturday joint sessions"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User's exam date is May 10",
+        "Fact 2: Kevin's exam date is May 24",
+        "Inference: May 24 minus May 10 = 14 days, so there is a two-week window after the user's exam and before Kevin's exam for joint study"
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My C11 exam is scheduled for May 10"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Kevin moved his C11 exam to May 24"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I need to enter the address of my exam center into a GPS app. Which of the following is the correct location?",
+      "candidate_options": [
+        "Pearson VUE, 250 Yonge Street, Toronto",
+        "Pearson VUE, 250 Bay Street, Toronto",
+        "Prometric, 250 Yonge Street, Toronto",
+        "Pearson VUE, 250 Yonge Street, Suite 302, Toronto"
+      ],
+      "expected_answer": "Pearson VUE, 250 Yonge Street, Toronto",
+      "distractor_rationale": "same-value-different-target: '250 Bay Street' substitutes a plausible nearby Toronto street for Yonge Street. assistant echo: 'Suite 302' was mentioned by the assistant as an old suite number that is no longer valid (the center moved to suite 410), creating a false detail injection. 'Prometric' substitutes a different testing company at the same address.",
+      "gold_memory_state": "Exam center: Pearson VUE, 250 Yonge Street, Toronto. No suite number was provided by the user.",
+      "judge_rubric": {
+        "must_include": [
+          "Pearson VUE",
+          "250 Yonge Street",
+          "Toronto"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "Bay Street",
+          "Prometric",
+          "Suite 302"
+        ],
+        "harmful_extra": [
+          "adding suite 302 from the assistant's speculative mention"
+        ],
+        "harmless_extra": [
+          "mentioning proximity to Dundas station"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model selects Suite 302 which was an assistant-injected old detail, not user-provided.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The exam center is the Pearson VUE location at 250 Yonge Street in Toronto"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I need to enter the address of my exam center into a GPS app. Which of the following is the correct location?",
+      "candidate_options": [
+        "Pearson VUE, 250 Yonge Street, Toronto",
+        "Pearson VUE, 250 Bay Street, Toronto",
+        "Prometric, 250 Yonge Street, Toronto",
+        "Pearson VUE, 250 Yonge Street, Suite 302, Toronto"
+      ],
+      "expected_answer": "Pearson VUE, 250 Yonge Street, Toronto",
+      "distractor_rationale": "same-value-different-target: '250 Bay Street' substitutes a plausible nearby Toronto street for Yonge Street. assistant echo: 'Suite 302' was mentioned by the assistant as an old suite number that is no longer valid (the center moved to suite 410), creating a false detail injection. 'Prometric' substitutes a different testing company at the same address.",
+      "gold_memory_state": "Exam center: Pearson VUE, 250 Yonge Street, Toronto. No suite number was provided by the user.",
+      "judge_rubric": {
+        "must_include": [
+          "Pearson VUE",
+          "250 Yonge Street",
+          "Toronto"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "Bay Street",
+          "Prometric",
+          "Suite 302"
+        ],
+        "harmful_extra": [
+          "adding suite 302 from the assistant's speculative mention"
+        ],
+        "harmless_extra": [
+          "mentioning proximity to Dundas station"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model selects Suite 302 which was an assistant-injected old detail, not user-provided.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The exam center is the Pearson VUE location at 250 Yonge Street in Toronto"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to figure out how well-prepared I am relative to the passing bar, and plan what to tell Kevin. Draft me a short note to Kevin that includes: how many percentage points above the pass mark my latest practice score is, whether I still have weekends of practice exams left before my exam given my current weekly cadence, and when his exam is so he knows how much longer he has than me.",
+      "expected_answer": "Hey Kevin — my latest practice score is 71%, which is 11 points above the 60% passing threshold. I've been doing a full practice exam every weekend and I have my exam on May 10, so I still have remaining weekends to keep practicing. Your exam isn't until May 24, so you have an extra two weeks beyond my date to prepare. Let's keep pushing!",
+      "gold_memory_state": "Latest practice score: 71%. Passing score: 60%. Practice cadence: one full exam every weekend for about five weekends. User exam date: May 10. Kevin's exam date: May 24.",
+      "judge_rubric": {
+        "must_include": [
+          "11 points or 11 percentage points above passing",
+          "60% passing threshold",
+          "71% latest score",
+          "May 10 user exam",
+          "May 24 Kevin exam",
+          "weekly practice exam cadence"
+        ],
+        "acceptable_paraphrases": [
+          "11% margin",
+          "eleven-point cushion",
+          "two-week gap"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "wrong arithmetic such as 10 points or 12 points above passing",
+          "wrong exam dates"
+        ],
+        "harmless_extra": [
+          "mentioning the exam center",
+          "mentioning flashcards",
+          "mentioning underwriting weakness"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's latest practice exam score is 71%",
+        "Fact 2: The passing score for the exam is 60%",
+        "Fact 3: The user has been doing one full practice exam every weekend for about five weekends",
+        "Fact 4: The user's exam date is May 10",
+        "Fact 5: Kevin's exam date is May 24",
+        "Inference: 71% minus 60% = 11 percentage points above the passing threshold",
+        "Inference: May 24 minus May 10 = 14 days, so Kevin has two additional weeks beyond the user's exam date"
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "My latest practice exam score was 71 percent from last Sunday"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The passing score for C11 is 60 percent"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I've been doing one full practice exam every weekend since I got the May date, so that's been about five weekends now"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My C11 exam is scheduled for May 10"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Kevin moved his C11 exam to May 24"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to figure out how well-prepared I am relative to the passing bar, and plan what to tell Kevin. Draft me a short note to Kevin that includes: how many percentage points above the pass mark my latest practice score is, whether I still have weekends of practice exams left before my exam given my current weekly cadence, and when his exam is so he knows how much longer he has than me.",
+      "expected_answer": "Hey Kevin — my latest practice score is 71%, which is 11 points above the 60% passing threshold. I've been doing a full practice exam every weekend and I have my exam on May 10, so I still have remaining weekends to keep practicing. Your exam isn't until May 24, so you have an extra two weeks beyond my date to prepare. Let's keep pushing!",
+      "gold_memory_state": "Latest practice score: 71%. Passing score: 60%. Practice cadence: one full exam every weekend for about five weekends. User exam date: May 10. Kevin's exam date: May 24.",
+      "judge_rubric": {
+        "must_include": [
+          "11 points or 11 percentage points above passing",
+          "60% passing threshold",
+          "71% latest score",
+          "May 10 user exam",
+          "May 24 Kevin exam",
+          "weekly practice exam cadence"
+        ],
+        "acceptable_paraphrases": [
+          "11% margin",
+          "eleven-point cushion",
+          "two-week gap"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "wrong arithmetic such as 10 points or 12 points above passing",
+          "wrong exam dates"
+        ],
+        "harmless_extra": [
+          "mentioning the exam center",
+          "mentioning flashcards",
+          "mentioning underwriting weakness"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's latest practice exam score is 71%",
+        "Fact 2: The passing score for the exam is 60%",
+        "Fact 3: The user has been doing one full practice exam every weekend for about five weekends",
+        "Fact 4: The user's exam date is May 10",
+        "Fact 5: Kevin's exam date is May 24",
+        "Inference: 71% minus 60% = 11 percentage points above the passing threshold",
+        "Inference: May 24 minus May 10 = 14 days, so Kevin has two additional weeks beyond the user's exam date"
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "My latest practice exam score was 71 percent from last Sunday"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The passing score for C11 is 60 percent"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I've been doing one full practice exam every weekend since I got the May date, so that's been about five weekends now"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My C11 exam is scheduled for May 10"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Kevin moved his C11 exam to May 24"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "How much was my exam registration fee again?",
+      "expected_answer": "I don't have any information about your exam registration fee. You haven't shared that detail with me.",
+      "gold_memory_state": "No exam registration fee was ever provided by the user. Neighboring financial fact: flashcard purchase from CSI for $45. These are distinct items.",
+      "judge_rubric": {
+        "must_include": [
+          "no record or not provided or not shared"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have that information",
+          "you haven't mentioned a registration fee",
+          "no registration fee on file"
+        ],
+        "must_not_include": [
+          "$45",
+          "any specific dollar amount as the registration fee"
+        ],
+        "harmful_extra": [
+          "fabricating a registration fee amount",
+          "borrowing the $45 flashcard cost as the registration fee"
+        ],
+        "harmless_extra": [
+          "mentioning that flashcard cost is a separate item"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model borrows the $45 flashcard purchase price and presents it as the registration fee.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I bought a set of physical flashcards from the CSI website for $45"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "How much was my exam registration fee again?",
+      "expected_answer": "I don't have any information about your exam registration fee. You haven't shared that detail with me.",
+      "gold_memory_state": "No exam registration fee was ever provided by the user. Neighboring financial fact: flashcard purchase from CSI for $45. These are distinct items.",
+      "judge_rubric": {
+        "must_include": [
+          "no record or not provided or not shared"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have that information",
+          "you haven't mentioned a registration fee",
+          "no registration fee on file"
+        ],
+        "must_not_include": [
+          "$45",
+          "any specific dollar amount as the registration fee"
+        ],
+        "harmful_extra": [
+          "fabricating a registration fee amount",
+          "borrowing the $45 flashcard cost as the registration fee"
+        ],
+        "harmless_extra": [
+          "mentioning that flashcard cost is a separate item"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model borrows the $45 flashcard purchase price and presents it as the registration fee.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I bought a set of physical flashcards from the CSI website for $45"
+        }
+      ]
+    }
+  ]
+}

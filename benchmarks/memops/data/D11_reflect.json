@@ -1,0 +1,992 @@
+{
+  "target_fact": "User prefers quiet, low-stimulation dining environments based on consistently choosing Olive & Thyme for its soft lighting, no loud music, quiet counter seating for solo dining, and calm patio atmosphere",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "Olive & Thyme on Magnolia Boulevard is my go-to restaurant"
+      },
+      "target": {
+        "target_id": "favorite_restaurant",
+        "target_name": "user's favorite specific restaurant"
+      },
+      "old_value": null,
+      "new_value": "Olive & Thyme on Magnolia Boulevard",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Olive & Thyme on Magnolia Boulevard is my go-to restaurant"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "The lighting is really soft and warm, and they keep the music low enough that you can actually have a conversation without raising your voice"
+      },
+      "target": {
+        "target_id": "olive_thyme_ambiance",
+        "target_name": "Olive & Thyme ambiance qualities user appreciates"
+      },
+      "old_value": null,
+      "new_value": "Soft warm lighting, low music volume",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The lighting is really soft and warm, and they keep the music low enough that you can actually have a conversation without raising your voice"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I like eating there solo because they have this counter seating by the window that feels totally natural for one person"
+      },
+      "target": {
+        "target_id": "solo_dining_preference_counter",
+        "target_name": "user's preferred solo dining spot at Olive & Thyme"
+      },
+      "old_value": null,
+      "new_value": "Counter seating by the window for comfortable solo dining",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I like eating there solo because they have this counter seating by the window that feels totally natural for one person"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "They have this small patio out back with maybe six tables and it's just really peaceful out there"
+      },
+      "target": {
+        "target_id": "patio_preference",
+        "target_name": "user's preference for Olive & Thyme patio seating"
+      },
+      "old_value": null,
+      "new_value": "Prefers the small back patio when weather is decent; about six tables, peaceful atmosphere",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "They have this small patio out back with maybe six tables and it's just really peaceful out there"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I stopped going to Siam Garden on Riverside after I found Olive & Thyme"
+      },
+      "target": {
+        "target_id": "siam_garden_status",
+        "target_name": "status of Siam Garden in user's restaurant rotation"
+      },
+      "old_value": null,
+      "new_value": "No longer part of user's restaurant rotation; replaced by Olive & Thyme",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I stopped going to Siam Garden on Riverside after I found Olive & Thyme"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "I think the reason I keep going back is that it's just calm. No harsh lights, no blaring speakers, no cramped seating. Even outside on the patio it's quiet. I guess I just really need that low-key vibe when I eat out"
+      },
+      "target": {
+        "target_id": "dining_environment_preference",
+        "target_name": "user's inferred dining environment preference"
+      },
+      "old_value": null,
+      "new_value": "Strongly prefers quiet, low-stimulation dining environments: soft lighting, low music, uncrowded seating, peaceful outdoor option",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The lighting is really soft and warm, and they keep the music low enough that you can actually have a conversation without raising your voice"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I like eating there solo because they have this counter seating by the window that feels totally natural for one person"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "They have this small patio out back with maybe six tables and it's just really peaceful out there"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think the reason I keep going back is that it's just calm. No harsh lights, no blaring speakers, no cramped seating. Even outside on the patio it's quiet. I guess I just really need that low-key vibe when I eat out"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 7,
+        "quote": "my coworker Dev told me about this new place called Basil & Vine that just opened on Franklin Street. He says it's got a rooftop with string lights and a DJ on weekends. He's convinced I'd love it and I'm thinking he might be right"
+      },
+      "target": {
+        "target_id": "basil_vine_interest",
+        "target_name": "user's tentative interest in Basil & Vine restaurant"
+      },
+      "old_value": null,
+      "new_value": "Basil & Vine on Franklin Street, rooftop with string lights and weekend DJ",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "my coworker Dev told me about this new place called Basil & Vine that just opened on Franklin Street. He says it's got a rooftop with string lights and a DJ on weekends. He's convinced I'd love it and I'm thinking he might be right"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish core restaurant facts and ambiance details",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to chat about restaurants a bit. Olive & Thyme on Magnolia Boulevard is my go-to restaurant. I first went there back in early February when my friend Clara brought me for her birthday lunch, and I've been hooked ever since. My usual order is the roasted cauliflower flatbread with a side of their house green salad—that combo just works perfectly for me every time."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a wonderful find! It's great when a friend introduces you to a place that really clicks. The roasted cauliflower flatbread with the house green salad sounds like a solid go-to order—lighter but still satisfying. Since you've been going since early February, it sounds like Olive & Thyme has really earned a spot in your regular routine. Do you remember what specifically drew you in on that first visit with Clara, or was it more of a gradual thing where you kept finding reasons to return over multiple visits?"
+        },
+        {
+          "role": "user",
+          "content": "Honestly it was pretty immediate. The lighting is really soft and warm, and they keep the music low enough that you can actually have a conversation without raising your voice. That was the first thing I noticed when I walked in. I'm someone who gets really bothered by loud, chaotic restaurant environments—like if there's a TV blasting sports or music thumping through the floor, I just can't relax. Olive & Thyme felt like the opposite of all that from the moment I stepped inside."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes a lot of sense—the atmosphere of a restaurant can completely make or break the experience, especially for someone who values being able to relax and actually enjoy the meal. Soft lighting and controlled music volume are details that a lot of places overlook, so it says something about Olive & Thyme that they get those right. It sounds like the environment was almost as important as the food in making it your regular spot. Have you found that you tend to go at specific times or days when it's even quieter, or is the vibe pretty consistent no matter when you visit?"
+        },
+        {
+          "role": "user",
+          "content": "I've been at different times and it stays pretty consistent actually. I like eating there solo because they have this counter seating by the window that feels totally natural for one person. Some restaurants make you feel awkward if you're dining alone, like the host gives you a look or they stick you at a weird table in the corner. But at Olive & Thyme the counter by the window is actually a nice spot—you can watch people walk by on Magnolia and just enjoy your meal without feeling self-conscious about it."
+        },
+        {
+          "role": "assistant",
+          "content": "That's such an underrated quality in a restaurant—making solo diners feel genuinely welcome rather than like an afterthought. The counter seating by the window sounds ideal for that: you have a view, you're in a comfortable spot, and there's no awkward energy from staff or other diners. It's clear that Olive & Thyme has thought about the experience for all kinds of guests, not just groups. Between the calm atmosphere and the comfortable solo seating, it really sounds like you've found a place that fits your personality well. Have you brought other people there too, or is it mostly your solo retreat?"
+        },
+        {
+          "role": "user",
+          "content": "Oh I've brought people too. A few weeks after Clara's birthday I took my mom there for a weeknight dinner. She said the portions were reasonable, which in her language is high praise honestly. She really liked their lemon herb chicken—she even asked the server for the recipe and the server just laughed. It was a nice evening. The bill for both of us that night was pretty affordable too, which I appreciated since I was treating her."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a lovely evening—taking your mom out and having her genuinely enjoy the place must have felt great, especially since her \"reasonable portions\" comment is clearly the equivalent of a five-star review. The lemon herb chicken sounds like a solid dish if it impressed her enough to ask for the recipe. It's also nice that the pricing is fair; finding a restaurant that hits the right notes on atmosphere, food quality, and affordability is rare. Between your solo visits and bringing family, it sounds like Olive & Thyme works well across different kinds of dining occasions for you."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "deepen environmental preferences and trigger reflection",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "One thing I keep meaning to mention is the outdoor space. They have this small patio out back with maybe six tables and it's just really peaceful out there. When the weather is decent I always choose to sit outside. There's no street noise because it faces the back, and they've got some planters and soft lighting out there too. It just makes the whole meal better for me when I can eat outside without a lot of commotion."
+        },
+        {
+          "role": "assistant",
+          "content": "That back patio sounds like a hidden gem—only six tables means it probably never feels overcrowded, and facing away from the street eliminates all that traffic noise that can ruin outdoor dining. The planters and soft lighting add to the sense that it's a carefully curated space rather than just some chairs thrown outside. It makes sense that you gravitate toward it whenever the weather cooperates. Between the quiet interior, the comfortable counter seating, and now this peaceful patio, it really seems like every part of Olive & Thyme aligns with what you value in a dining experience. Do you have any other spots in your rotation, or is it pretty much Olive & Thyme at this point?"
+        },
+        {
+          "role": "user",
+          "content": "Good question. I stopped going to Siam Garden on Riverside after I found Olive & Thyme. Siam Garden was fine—the food was decent Thai—but it was always kind of loud in there and the tables were really close together. I never felt like I could fully relax. Once I found Olive & Thyme there was just no reason to keep going back to Siam Garden. So right now Olive & Thyme is basically my only regular restaurant."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a telling comparison—Siam Garden had acceptable food but the loud environment and cramped seating were enough to push it out of your rotation once you had a better alternative. It really underscores how much the dining environment matters to you, maybe even more than the cuisine itself. Olive & Thyme clearly checks all the boxes that Siam Garden didn't: quiet atmosphere, comfortable spacing, and food you genuinely enjoy. Having one go-to spot that you trust completely is honestly better than juggling multiple places that only partially satisfy you. It sounds like you've really zeroed in on what makes dining out enjoyable for you."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, I think you're right. I think the reason I keep going back is that it's just calm. No harsh lights, no blaring speakers, no cramped seating. Even outside on the patio it's quiet. I guess I just really need that low-key vibe when I eat out. It's not even about the food being the absolute best I've ever had—though it is really good—it's more that the whole environment lets me actually decompress. That's what keeps pulling me back."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really clear insight about yourself. What you're describing goes beyond just liking a particular restaurant—it sounds like you have a strong preference for quiet, low-stimulation dining environments in general. The soft lighting, low music, uncrowded seating, and peaceful patio are all part of the same pattern: you need the space around you to feel calm so you can genuinely relax and enjoy the experience. That's why Siam Garden fell away despite decent food, and why Olive & Thyme became your anchor. It's less about any single feature and more about the overall sensory environment being gentle and unobtrusive. That's a valuable thing to know about yourself when evaluating any new restaurant."
+        },
+        {
+          "role": "user",
+          "content": "Exactly, that's it. Oh, one more thing—I tried their mushroom risotto once on a solo visit in late March. It was good but honestly a little too rich for my taste. I'm sticking with the cauliflower flatbread going forward. I think I just prefer lighter, simpler flavors in general. The flatbread and green salad hit that sweet spot without being heavy."
+        },
+        {
+          "role": "assistant",
+          "content": "That tracks perfectly with everything else you've described. Just like you prefer a calm, understated environment, you also lean toward lighter and simpler flavors rather than rich, heavy dishes. The mushroom risotto being too rich for you is a useful data point—it confirms that the cauliflower flatbread and house green salad aren't just a habit but genuinely align with your flavor preferences. It's a consistent pattern: you gravitate toward things that are clean and uncomplicated, whether that's the atmosphere of the restaurant or the food on your plate. Sticking with what works makes a lot of sense when you've already found the combination that fits you best."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "recency trap with tentative new restaurant and adversarial injection",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I went back to Olive & Thyme last week with my coworker Dev. He's vegetarian and was really impressed by how many options they had for him. He ordered the beet and goat cheese tartine and kept raving about it. I had my usual flatbread. The bill for both of us came to $47 before tip, which I thought was really fair for two meals and drinks."
+        },
+        {
+          "role": "assistant",
+          "content": "That's great that Dev had such a positive experience—it says a lot about Olive & Thyme that they can impress a vegetarian with their range of options. The beet and goat cheese tartine sounds like a flavorful choice, and at $47 for two meals and drinks before tip, that's genuinely reasonable pricing. It's nice to have a spot you can confidently bring different people to, knowing the menu will work for various dietary preferences. Between bringing your mom, going solo, and now dining with Dev, Olive & Thyme seems to handle every kind of visit well. Speaking of Dev, does he have other restaurant recommendations in the area?"
+        },
+        {
+          "role": "user",
+          "content": "He does actually. He mentioned a place on Vermont called The Green Fork that he goes to a lot. He said it's entirely plant-based and the portions are generous. I looked it up and it seems nice but the reviews mention that they play live acoustic music most evenings and the space is pretty small. That's a dealbreaker for me honestly—live music in a small space is exactly the kind of thing that would stress me out rather than help me relax."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a smart call based on what you know about yourself. Even if the food at The Green Fork is excellent, live acoustic music in a small space would likely create exactly the kind of sensory overload you avoid. It's the same reason Siam Garden didn't work for you—the environment matters as much as the menu. It's worth noting though that Dev seems to enjoy livelier dining atmospheres, which is a useful thing to know if you're ever picking a spot together. For your own visits, Olive & Thyme clearly remains the better fit. Incidentally, I noticed Dev mentioned a spot on Vermont—is that near the Magnolia Boulevard area where Olive & Thyme is, or a different part of town entirely?"
+        },
+        {
+          "role": "user",
+          "content": "Different part of town. Olive & Thyme is on Magnolia, around 3938 Magnolia Blvd I think—or maybe 3936, somewhere right around there. The Green Fork is a good twenty minutes away. I'm not going to drive twenty minutes to a place that'll stress me out when I have Olive & Thyme ten minutes from my apartment. It just doesn't make sense."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely—the proximity of Olive & Thyme is another huge advantage. Being only ten minutes from your apartment means it's convenient enough for spontaneous weeknight visits, not just planned outings. And you're right that driving twenty minutes to a place that conflicts with your core dining preferences would be counterproductive. You know, it's interesting that on Yelp there's a listing for a place called Olive Garden Bistro at 3940 Magnolia that some reviewers confuse with Olive & Thyme—completely different restaurant though, apparently much louder and more of a bar atmosphere. Anyway, your setup with Olive & Thyme sounds ideal given everything that matters to you."
+        },
+        {
+          "role": "user",
+          "content": "Ha, yeah I've seen that confusion online. Totally different place. Anyway, my coworker Dev told me about this new place called Basil & Vine that just opened on Franklin Street. He says it's got a rooftop with string lights and a DJ on weekends. He's convinced I'd love it and I'm thinking he might be right. The rooftop part sounds appealing since I like outdoor dining, and string lights sound nice. I might check it out this weekend.\n\nHmm that's a fair point actually. The DJ thing might not be my scene. I'll think about it more before committing. For now Olive & Thyme is still where I feel most comfortable. Oh—I was annoyed recently because they discontinued the lavender lemonade, which was my favorite drink there. They replaced it with some hibiscus thing that's way too sweet for me. That really put me in a sour mood for the whole evening."
+        },
+        {
+          "role": "assistant",
+          "content": "The rooftop with string lights does sound visually appealing, and I can see why the outdoor element caught your attention given how much you enjoy Olive & Thyme's patio. However, I'd encourage you to think carefully about the DJ aspect—even if it's a weekend-only thing, a DJ on a rooftop typically means amplified music in an open space, which could be quite different from the quiet patio experience you love. String lights and a nice view are great, but the overall sound environment might not match what you need to actually relax. It could be worth checking their weekday vibe first if they're open without the DJ, so you can evaluate the space on its own merits before committing to a louder weekend visit.\n\nI'm sorry to hear about the lavender lemonade—losing a favorite menu item at your go-to spot is genuinely frustrating, especially when the replacement doesn't suit your taste at all. The hibiscus drink being too sweet fits with your general preference for simpler, less intense flavors. It's the kind of small change that can feel disproportionately upsetting because it disrupts a routine you've built around comfort and familiarity. Hopefully they'll bring it back or offer something closer to what you liked. In the meantime, Olive & Thyme still clearly has everything else going for it—the calm environment, your flatbread order, the patio, the comfortable solo seating. One drink change doesn't undo all of that, even if it stings right now."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "What specific experiences and details have I shared about dining out that, taken together, reveal a pattern in what I look for in a restaurant?",
+      "expected_answer": "You described Olive & Thyme's soft warm lighting and low music volume, the comfortable counter seating by the window for solo dining, the peaceful back patio with about six tables and no street noise, and you explicitly said the reason you keep going back is that it's calm with no harsh lights, no blaring speakers, and no cramped seating. You also stopped going to Siam Garden because it was too loud and the tables were too close together. Together these experiences show a consistent preference for quiet, low-stimulation dining environments.",
+      "gold_memory_state": "Confirmed facts: Olive & Thyme on Magnolia Boulevard is user's go-to restaurant; soft warm lighting and low music volume appreciated; counter seating by the window preferred for solo dining; small back patio (~6 tables) is peaceful and preferred in good weather; Siam Garden on Riverside dropped due to loudness and cramped tables; user explicitly stated need for calm, low-key vibe when eating out. Reflected conclusion: user strongly prefers quiet, low-stimulation dining environments.",
+      "judge_rubric": {
+        "must_include": [
+          "soft lighting or warm lighting",
+          "low music or quiet music",
+          "counter seating or solo dining comfort",
+          "patio or outdoor peaceful space",
+          "Siam Garden dropped or replaced"
+        ],
+        "acceptable_paraphrases": [
+          "gentle atmosphere",
+          "calm environment",
+          "low-key vibe",
+          "uncrowded seating"
+        ],
+        "must_not_include": [
+          "Basil & Vine as a confirmed preference"
+        ],
+        "harmful_extra": [
+          "treating Basil & Vine as an adopted or confirmed restaurant"
+        ],
+        "harmless_extra": [
+          "mentioning the user's mom's visit",
+          "mentioning the cauliflower flatbread order",
+          "mentioning the lavender lemonade discontinuation"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes preferences the user never expressed, such as preferring loud or lively atmospheres.",
+        "reflection_recall": "Fails if the model omits key evidence spans such as the patio preference, the Siam Garden comparison, or the explicit calm-environment statement.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The lighting is really soft and warm, and they keep the music low enough that you can actually have a conversation without raising your voice"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I like eating there solo because they have this counter seating by the window that feels totally natural for one person"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "They have this small patio out back with maybe six tables and it's just really peaceful out there"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I stopped going to Siam Garden on Riverside after I found Olive & Thyme"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think the reason I keep going back is that it's just calm. No harsh lights, no blaring speakers, no cramped seating. Even outside on the patio it's quiet. I guess I just really need that low-key vibe when I eat out"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "What specific experiences and details have I shared about dining out that, taken together, reveal a pattern in what I look for in a restaurant?",
+      "expected_answer": "You described Olive & Thyme's soft warm lighting and low music volume, the comfortable counter seating by the window for solo dining, the peaceful back patio with about six tables and no street noise, and you explicitly said the reason you keep going back is that it's calm with no harsh lights, no blaring speakers, and no cramped seating. You also stopped going to Siam Garden because it was too loud and the tables were too close together. Together these experiences show a consistent preference for quiet, low-stimulation dining environments.",
+      "gold_memory_state": "Confirmed facts: Olive & Thyme on Magnolia Boulevard is user's go-to restaurant; soft warm lighting and low music volume appreciated; counter seating by the window preferred for solo dining; small back patio (~6 tables) is peaceful and preferred in good weather; Siam Garden on Riverside dropped due to loudness and cramped tables; user explicitly stated need for calm, low-key vibe when eating out. Reflected conclusion: user strongly prefers quiet, low-stimulation dining environments.",
+      "judge_rubric": {
+        "must_include": [
+          "soft lighting or warm lighting",
+          "low music or quiet music",
+          "counter seating or solo dining comfort",
+          "patio or outdoor peaceful space",
+          "Siam Garden dropped or replaced"
+        ],
+        "acceptable_paraphrases": [
+          "gentle atmosphere",
+          "calm environment",
+          "low-key vibe",
+          "uncrowded seating"
+        ],
+        "must_not_include": [
+          "Basil & Vine as a confirmed preference"
+        ],
+        "harmful_extra": [
+          "treating Basil & Vine as an adopted or confirmed restaurant"
+        ],
+        "harmless_extra": [
+          "mentioning the user's mom's visit",
+          "mentioning the cauliflower flatbread order",
+          "mentioning the lavender lemonade discontinuation"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes preferences the user never expressed, such as preferring loud or lively atmospheres.",
+        "reflection_recall": "Fails if the model omits key evidence spans such as the patio preference, the Siam Garden comparison, or the explicit calm-environment statement.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The lighting is really soft and warm, and they keep the music low enough that you can actually have a conversation without raising your voice"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I like eating there solo because they have this counter seating by the window that feels totally natural for one person"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "They have this small patio out back with maybe six tables and it's just really peaceful out there"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I stopped going to Siam Garden on Riverside after I found Olive & Thyme"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think the reason I keep going back is that it's just calm. No harsh lights, no blaring speakers, no cramped seating. Even outside on the patio it's quiet. I guess I just really need that low-key vibe when I eat out"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When I described my dining habits and what keeps me coming back to a particular restaurant, does the conclusion apply specifically to my restaurant atmosphere preferences, or does it also extend to my food flavor preferences or my feelings about specific menu items?",
+      "expected_answer": "The conclusion applies to your dining environment preferences: you strongly prefer quiet, low-stimulation settings with soft lighting, low music, uncrowded seating, and peaceful outdoor options. This is a separate conclusion from your food preferences. Your preference for lighter, simpler flavors like the cauliflower flatbread over the rich mushroom risotto is a related but distinct pattern about cuisine taste, not about the physical dining environment.",
+      "gold_memory_state": "Reflected target 'dining_environment_preference': strongly prefers quiet, low-stimulation dining environments. Neighboring but separate facts: user prefers lighter/simpler flavors (flatbread over risotto); user's go-to order is cauliflower flatbread with house green salad; user's go-to restaurant is Olive & Thyme. The environment preference conclusion does not subsume the food flavor preference or specific menu item choices.",
+      "judge_rubric": {
+        "must_include": [
+          "quiet or calm or low-stimulation environment preference",
+          "distinction from food/flavor preferences"
+        ],
+        "acceptable_paraphrases": [
+          "sensory environment preference",
+          "atmosphere preference",
+          "ambiance preference"
+        ],
+        "must_not_include": [
+          "merging food flavor preference into the environment conclusion as one single target"
+        ],
+        "harmful_extra": [
+          "claiming the environment preference also covers cuisine type preferences",
+          "claiming the lighter flavor preference is the same conclusion as the environment preference"
+        ],
+        "harmless_extra": [
+          "mentioning that lighter flavors and calm environments share a common theme of simplicity"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model merges the food-flavor preference into the dining-environment conclusion as one undifferentiated target.",
+        "reflection_recall": "Fails if the model omits the core environment preference components (lighting, music, seating, patio).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think the reason I keep going back is that it's just calm. No harsh lights, no blaring speakers, no cramped seating. Even outside on the patio it's quiet. I guess I just really need that low-key vibe when I eat out"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I tried their mushroom risotto once on a solo visit in late March. It was good but honestly a little too rich for my taste. I'm sticking with the cauliflower flatbread going forward. I think I just prefer lighter, simpler flavors in general"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When I described my dining habits and what keeps me coming back to a particular restaurant, does the conclusion apply specifically to my restaurant atmosphere preferences, or does it also extend to my food flavor preferences or my feelings about specific menu items?",
+      "expected_answer": "The conclusion applies to your dining environment preferences: you strongly prefer quiet, low-stimulation settings with soft lighting, low music, uncrowded seating, and peaceful outdoor options. This is a separate conclusion from your food preferences. Your preference for lighter, simpler flavors like the cauliflower flatbread over the rich mushroom risotto is a related but distinct pattern about cuisine taste, not about the physical dining environment.",
+      "gold_memory_state": "Reflected target 'dining_environment_preference': strongly prefers quiet, low-stimulation dining environments. Neighboring but separate facts: user prefers lighter/simpler flavors (flatbread over risotto); user's go-to order is cauliflower flatbread with house green salad; user's go-to restaurant is Olive & Thyme. The environment preference conclusion does not subsume the food flavor preference or specific menu item choices.",
+      "judge_rubric": {
+        "must_include": [
+          "quiet or calm or low-stimulation environment preference",
+          "distinction from food/flavor preferences"
+        ],
+        "acceptable_paraphrases": [
+          "sensory environment preference",
+          "atmosphere preference",
+          "ambiance preference"
+        ],
+        "must_not_include": [
+          "merging food flavor preference into the environment conclusion as one single target"
+        ],
+        "harmful_extra": [
+          "claiming the environment preference also covers cuisine type preferences",
+          "claiming the lighter flavor preference is the same conclusion as the environment preference"
+        ],
+        "harmless_extra": [
+          "mentioning that lighter flavors and calm environments share a common theme of simplicity"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model merges the food-flavor preference into the dining-environment conclusion as one undifferentiated target.",
+        "reflection_recall": "Fails if the model omits the core environment preference components (lighting, music, seating, patio).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think the reason I keep going back is that it's just calm. No harsh lights, no blaring speakers, no cramped seating. Even outside on the patio it's quiet. I guess I just really need that low-key vibe when I eat out"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I tried their mushroom risotto once on a solo visit in late March. It was good but honestly a little too rich for my taste. I'm sticking with the cauliflower flatbread going forward. I think I just prefer lighter, simpler flavors in general"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe what my dining environment preferences actually cover and where the boundary is—what kinds of dining situations fall within my demonstrated preferences, and what would be stretching them beyond what I've actually shown?",
+      "expected_answer": "Your demonstrated preference covers quiet, low-stimulation indoor and outdoor restaurant environments: soft or warm lighting, low background music, uncrowded or spaciously arranged seating, and peaceful outdoor dining areas. This is well-supported by your consistent choices at Olive & Thyme and your rejection of Siam Garden for being loud and cramped. The boundary is that this preference applies specifically to dining environment sensory qualities. It would be an overgeneralization to conclude that you avoid all outdoor dining (you love the patio), that you avoid all social dining (you've brought your mom and coworker Dev), or that you prefer isolation rather than calm company. It would also be unsupported to extend this to non-dining contexts like preferring quiet workplaces or quiet entertainment venues, since you've only described dining situations.",
+      "gold_memory_state": "Supported inference: user strongly prefers quiet, low-stimulation dining environments with soft lighting, low music, uncrowded seating, and peaceful outdoor options. Unsupported overgeneralization: extending this to non-dining contexts, concluding user avoids social dining entirely, or concluding user avoids all outdoor spaces. Tentative/not adopted: Basil & Vine with DJ is not confirmed as fitting user's preferences; user expressed doubt about the DJ element.",
+      "judge_rubric": {
+        "must_include": [
+          "supported preference for quiet/calm/low-stimulation dining environments",
+          "boundary or limit of the inference"
+        ],
+        "acceptable_paraphrases": [
+          "gentle sensory environment",
+          "low-key dining atmosphere",
+          "understated restaurant setting"
+        ],
+        "must_not_include": [
+          "Basil & Vine as a confirmed new preference",
+          "claim that user avoids all social dining"
+        ],
+        "harmful_extra": [
+          "extending the preference to non-dining life domains without qualification",
+          "claiming user prefers total solitude when dining"
+        ],
+        "harmless_extra": [
+          "mentioning the Siam Garden comparison as negative evidence",
+          "mentioning the patio as positive evidence for outdoor calm dining"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats Basil & Vine (tentative, with DJ concern) as an adopted preference that contradicts the quiet-environment conclusion.",
+        "reflection_precision": "Fails if the model overgeneralizes the dining environment preference to all life domains or claims user avoids social dining entirely.",
+        "reflection_recall": "Fails if the model fails to articulate the supported inference (quiet, low-stimulation dining) or fails to identify at least one boundary of the inference.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think the reason I keep going back is that it's just calm. No harsh lights, no blaring speakers, no cramped seating. Even outside on the patio it's quiet. I guess I just really need that low-key vibe when I eat out"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The lighting is really soft and warm, and they keep the music low enough that you can actually have a conversation without raising your voice"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I stopped going to Siam Garden on Riverside after I found Olive & Thyme"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "Oh I've brought people too. A few weeks after Clara's birthday I took my mom there for a weeknight dinner."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe what my dining environment preferences actually cover and where the boundary is—what kinds of dining situations fall within my demonstrated preferences, and what would be stretching them beyond what I've actually shown?",
+      "expected_answer": "Your demonstrated preference covers quiet, low-stimulation indoor and outdoor restaurant environments: soft or warm lighting, low background music, uncrowded or spaciously arranged seating, and peaceful outdoor dining areas. This is well-supported by your consistent choices at Olive & Thyme and your rejection of Siam Garden for being loud and cramped. The boundary is that this preference applies specifically to dining environment sensory qualities. It would be an overgeneralization to conclude that you avoid all outdoor dining (you love the patio), that you avoid all social dining (you've brought your mom and coworker Dev), or that you prefer isolation rather than calm company. It would also be unsupported to extend this to non-dining contexts like preferring quiet workplaces or quiet entertainment venues, since you've only described dining situations.",
+      "gold_memory_state": "Supported inference: user strongly prefers quiet, low-stimulation dining environments with soft lighting, low music, uncrowded seating, and peaceful outdoor options. Unsupported overgeneralization: extending this to non-dining contexts, concluding user avoids social dining entirely, or concluding user avoids all outdoor spaces. Tentative/not adopted: Basil & Vine with DJ is not confirmed as fitting user's preferences; user expressed doubt about the DJ element.",
+      "judge_rubric": {
+        "must_include": [
+          "supported preference for quiet/calm/low-stimulation dining environments",
+          "boundary or limit of the inference"
+        ],
+        "acceptable_paraphrases": [
+          "gentle sensory environment",
+          "low-key dining atmosphere",
+          "understated restaurant setting"
+        ],
+        "must_not_include": [
+          "Basil & Vine as a confirmed new preference",
+          "claim that user avoids all social dining"
+        ],
+        "harmful_extra": [
+          "extending the preference to non-dining life domains without qualification",
+          "claiming user prefers total solitude when dining"
+        ],
+        "harmless_extra": [
+          "mentioning the Siam Garden comparison as negative evidence",
+          "mentioning the patio as positive evidence for outdoor calm dining"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats Basil & Vine (tentative, with DJ concern) as an adopted preference that contradicts the quiet-environment conclusion.",
+        "reflection_precision": "Fails if the model overgeneralizes the dining environment preference to all life domains or claims user avoids social dining entirely.",
+        "reflection_recall": "Fails if the model fails to articulate the supported inference (quiet, low-stimulation dining) or fails to identify at least one boundary of the inference.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think the reason I keep going back is that it's just calm. No harsh lights, no blaring speakers, no cramped seating. Even outside on the patio it's quiet. I guess I just really need that low-key vibe when I eat out"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The lighting is really soft and warm, and they keep the music low enough that you can actually have a conversation without raising your voice"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I stopped going to Siam Garden on Riverside after I found Olive & Thyme"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "Oh I've brought people too. A few weeks after Clara's birthday I took my mom there for a weeknight dinner."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "Which of the following best describes the dining preference pattern my restaurant choices support?",
+      "candidate_options": [
+        "Prefers quiet, low-stimulation dining environments with soft lighting, low music, uncrowded seating, and peaceful outdoor options",
+        "Prefers trendy rooftop dining with string lights and DJ entertainment on weekends",
+        "Prefers restaurants with the widest vegetarian menu options and generous portions",
+        "Prefers small, intimate restaurants regardless of noise level as long as outdoor seating is available"
+      ],
+      "expected_answer": "Prefers quiet, low-stimulation dining environments with soft lighting, low music, uncrowded seating, and peaceful outdoor options",
+      "gold_memory_state": "Reflected conclusion: user strongly prefers quiet, low-stimulation dining environments. Basil & Vine (rooftop, DJ) is tentative and user expressed doubt. The Green Fork was rejected for live music in a small space. Vegetarian options were appreciated by Dev, not the user's primary criterion.",
+      "judge_rubric": {
+        "must_include": [
+          "quiet or low-stimulation dining environments"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "rooftop DJ preference",
+          "vegetarian-focused preference"
+        ],
+        "harmful_extra": [
+          "selecting the Basil & Vine-style option as the user's preference"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the Basil & Vine rooftop/DJ option, which reflects a tentative and ultimately doubted suggestion rather than the user's confirmed pattern.",
+        "reflection_precision": "Fails if the model selects a preference that overgeneralizes (e.g., any small restaurant regardless of noise) or misattributes (e.g., vegetarian focus from Dev's preferences).",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "distractor_rationale": "same-value-different-target: Option C ('widest vegetarian menu options and generous portions') is grounded in Dev's experience at Olive & Thyme and his recommendation of The Green Fork, but those are Dev's dining priorities, not the user's core preference. assistant echo: Option D ('small, intimate restaurants regardless of noise level as long as outdoor seating is available') echoes the assistant's observations about the patio and small space but incorrectly drops the noise-level requirement, which is the user's central criterion. Option B ('trendy rooftop dining with string lights and DJ') is the recency-trap tentative value from Basil & Vine that the user initially considered but then doubted.",
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think the reason I keep going back is that it's just calm. No harsh lights, no blaring speakers, no cramped seating. Even outside on the patio it's quiet. I guess I just really need that low-key vibe when I eat out"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "my coworker Dev told me about this new place called Basil & Vine that just opened on Franklin Street. He says it's got a rooftop with string lights and a DJ on weekends. He's convinced I'd love it and I'm thinking he might be right"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "Which of the following best describes the dining preference pattern my restaurant choices support?",
+      "candidate_options": [
+        "Prefers quiet, low-stimulation dining environments with soft lighting, low music, uncrowded seating, and peaceful outdoor options",
+        "Prefers trendy rooftop dining with string lights and DJ entertainment on weekends",
+        "Prefers restaurants with the widest vegetarian menu options and generous portions",
+        "Prefers small, intimate restaurants regardless of noise level as long as outdoor seating is available"
+      ],
+      "expected_answer": "Prefers quiet, low-stimulation dining environments with soft lighting, low music, uncrowded seating, and peaceful outdoor options",
+      "gold_memory_state": "Reflected conclusion: user strongly prefers quiet, low-stimulation dining environments. Basil & Vine (rooftop, DJ) is tentative and user expressed doubt. The Green Fork was rejected for live music in a small space. Vegetarian options were appreciated by Dev, not the user's primary criterion.",
+      "judge_rubric": {
+        "must_include": [
+          "quiet or low-stimulation dining environments"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "rooftop DJ preference",
+          "vegetarian-focused preference"
+        ],
+        "harmful_extra": [
+          "selecting the Basil & Vine-style option as the user's preference"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the Basil & Vine rooftop/DJ option, which reflects a tentative and ultimately doubted suggestion rather than the user's confirmed pattern.",
+        "reflection_precision": "Fails if the model selects a preference that overgeneralizes (e.g., any small restaurant regardless of noise) or misattributes (e.g., vegetarian focus from Dev's preferences).",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "distractor_rationale": "same-value-different-target: Option C ('widest vegetarian menu options and generous portions') is grounded in Dev's experience at Olive & Thyme and his recommendation of The Green Fork, but those are Dev's dining priorities, not the user's core preference. assistant echo: Option D ('small, intimate restaurants regardless of noise level as long as outdoor seating is available') echoes the assistant's observations about the patio and small space but incorrectly drops the noise-level requirement, which is the user's central criterion. Option B ('trendy rooftop dining with string lights and DJ') is the recency-trap tentative value from Basil & Vine that the user initially considered but then doubted.",
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think the reason I keep going back is that it's just calm. No harsh lights, no blaring speakers, no cramped seating. Even outside on the patio it's quiet. I guess I just really need that low-key vibe when I eat out"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "my coworker Dev told me about this new place called Basil & Vine that just opened on Franklin Street. He says it's got a rooftop with string lights and a DJ on weekends. He's convinced I'd love it and I'm thinking he might be right"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "My coworker Dev wants to take me to a new restaurant this weekend to celebrate a project milestone. He's narrowed it down to two options: one is a place with a rooftop patio, string lights, and a weekend DJ set, and the other is a neighborhood café with dim Edison-bulb lighting, no background music, and a small garden courtyard with four tables. Based on everything you know about my dining habits and what happened when I left my previous regular restaurant, which place should Dev book and why?",
+      "expected_answer": "Dev should book the neighborhood café with dim Edison-bulb lighting, no background music, and the small garden courtyard. This aligns with your consistent preference for quiet, low-stimulation dining environments. You chose Olive & Thyme specifically because of its soft warm lighting, low music, uncrowded counter seating, and peaceful back patio. You dropped Siam Garden because it was too loud and cramped. The rooftop with a DJ would conflict with your need for calm—you yourself expressed doubt about Basil & Vine's weekend DJ when Dev suggested it. The café's dim lighting, silence, and small courtyard mirror exactly the qualities that keep you returning to Olive & Thyme.",
+      "gold_memory_state": "Confirmed: user prefers quiet, low-stimulation dining (soft lighting, low music, uncrowded seating, peaceful outdoor). Confirmed: user dropped Siam Garden for being loud and cramped. Confirmed: user prefers Olive & Thyme's back patio (~6 tables, peaceful). Tentative/not adopted: Basil & Vine with rooftop DJ—user expressed doubt about the DJ element. The café option matches the confirmed preference pattern; the rooftop DJ option matches the tentative/rejected pattern.",
+      "judge_rubric": {
+        "must_include": [
+          "recommend the neighborhood café",
+          "quiet or calm environment preference as the reason",
+          "reference to user's demonstrated pattern at Olive & Thyme or against Siam Garden"
+        ],
+        "acceptable_paraphrases": [
+          "the café with Edison bulbs and garden courtyard",
+          "the quieter option",
+          "the low-stimulation option"
+        ],
+        "must_not_include": [
+          "recommending the rooftop DJ venue"
+        ],
+        "harmful_extra": [
+          "recommending the DJ rooftop as a good fit",
+          "treating Basil & Vine as an adopted preference"
+        ],
+        "harmless_extra": [
+          "mentioning the user's solo counter seating preference",
+          "mentioning the user's lighter flavor preferences",
+          "mentioning Dev is vegetarian"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model recommends the rooftop DJ venue based on the tentative Basil & Vine interest that the user subsequently doubted.",
+        "reflection_precision": "Fails if the model recommends the DJ venue or fails to connect the recommendation to the user's demonstrated quiet-environment preference.",
+        "reflection_recall": "Fails if the model cannot cite specific evidence (Olive & Thyme ambiance qualities, Siam Garden rejection, or explicit calm-environment statement) to justify the recommendation.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User appreciates Olive & Thyme for its soft warm lighting and low music volume.",
+        "Fact 2: User prefers the small peaceful back patio with about six tables at Olive & Thyme.",
+        "Fact 3: User dropped Siam Garden because it was loud and had cramped seating.",
+        "Fact 4: User explicitly stated needing a calm, low-key vibe when dining out—no harsh lights, no blaring speakers, no cramped seating.",
+        "Fact 5: User expressed doubt about Basil & Vine's weekend DJ despite initial interest in the rooftop.",
+        "Inference: The café with dim Edison-bulb lighting, no background music, and a small garden courtyard matches all confirmed preference criteria (soft lighting, quiet, small uncrowded outdoor space), while the rooftop with DJ directly contradicts them.",
+        "Derived value: Dev should book the neighborhood café because it mirrors the qualities the user consistently seeks and avoids the loud, stimulating elements the user has repeatedly rejected."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The lighting is really soft and warm, and they keep the music low enough that you can actually have a conversation without raising your voice"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "They have this small patio out back with maybe six tables and it's just really peaceful out there"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I stopped going to Siam Garden on Riverside after I found Olive & Thyme"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think the reason I keep going back is that it's just calm. No harsh lights, no blaring speakers, no cramped seating. Even outside on the patio it's quiet. I guess I just really need that low-key vibe when I eat out"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "my coworker Dev told me about this new place called Basil & Vine that just opened on Franklin Street. He says it's got a rooftop with string lights and a DJ on weekends. He's convinced I'd love it and I'm thinking he might be right"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "My coworker Dev wants to take me to a new restaurant this weekend to celebrate a project milestone. He's narrowed it down to two options: one is a place with a rooftop patio, string lights, and a weekend DJ set, and the other is a neighborhood café with dim Edison-bulb lighting, no background music, and a small garden courtyard with four tables. Based on everything you know about my dining habits and what happened when I left my previous regular restaurant, which place should Dev book and why?",
+      "expected_answer": "Dev should book the neighborhood café with dim Edison-bulb lighting, no background music, and the small garden courtyard. This aligns with your consistent preference for quiet, low-stimulation dining environments. You chose Olive & Thyme specifically because of its soft warm lighting, low music, uncrowded counter seating, and peaceful back patio. You dropped Siam Garden because it was too loud and cramped. The rooftop with a DJ would conflict with your need for calm—you yourself expressed doubt about Basil & Vine's weekend DJ when Dev suggested it. The café's dim lighting, silence, and small courtyard mirror exactly the qualities that keep you returning to Olive & Thyme.",
+      "gold_memory_state": "Confirmed: user prefers quiet, low-stimulation dining (soft lighting, low music, uncrowded seating, peaceful outdoor). Confirmed: user dropped Siam Garden for being loud and cramped. Confirmed: user prefers Olive & Thyme's back patio (~6 tables, peaceful). Tentative/not adopted: Basil & Vine with rooftop DJ—user expressed doubt about the DJ element. The café option matches the confirmed preference pattern; the rooftop DJ option matches the tentative/rejected pattern.",
+      "judge_rubric": {
+        "must_include": [
+          "recommend the neighborhood café",
+          "quiet or calm environment preference as the reason",
+          "reference to user's demonstrated pattern at Olive & Thyme or against Siam Garden"
+        ],
+        "acceptable_paraphrases": [
+          "the café with Edison bulbs and garden courtyard",
+          "the quieter option",
+          "the low-stimulation option"
+        ],
+        "must_not_include": [
+          "recommending the rooftop DJ venue"
+        ],
+        "harmful_extra": [
+          "recommending the DJ rooftop as a good fit",
+          "treating Basil & Vine as an adopted preference"
+        ],
+        "harmless_extra": [
+          "mentioning the user's solo counter seating preference",
+          "mentioning the user's lighter flavor preferences",
+          "mentioning Dev is vegetarian"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model recommends the rooftop DJ venue based on the tentative Basil & Vine interest that the user subsequently doubted.",
+        "reflection_precision": "Fails if the model recommends the DJ venue or fails to connect the recommendation to the user's demonstrated quiet-environment preference.",
+        "reflection_recall": "Fails if the model cannot cite specific evidence (Olive & Thyme ambiance qualities, Siam Garden rejection, or explicit calm-environment statement) to justify the recommendation.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User appreciates Olive & Thyme for its soft warm lighting and low music volume.",
+        "Fact 2: User prefers the small peaceful back patio with about six tables at Olive & Thyme.",
+        "Fact 3: User dropped Siam Garden because it was loud and had cramped seating.",
+        "Fact 4: User explicitly stated needing a calm, low-key vibe when dining out—no harsh lights, no blaring speakers, no cramped seating.",
+        "Fact 5: User expressed doubt about Basil & Vine's weekend DJ despite initial interest in the rooftop.",
+        "Inference: The café with dim Edison-bulb lighting, no background music, and a small garden courtyard matches all confirmed preference criteria (soft lighting, quiet, small uncrowded outdoor space), while the rooftop with DJ directly contradicts them.",
+        "Derived value: Dev should book the neighborhood café because it mirrors the qualities the user consistently seeks and avoids the loud, stimulating elements the user has repeatedly rejected."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The lighting is really soft and warm, and they keep the music low enough that you can actually have a conversation without raising your voice"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "They have this small patio out back with maybe six tables and it's just really peaceful out there"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I stopped going to Siam Garden on Riverside after I found Olive & Thyme"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think the reason I keep going back is that it's just calm. No harsh lights, no blaring speakers, no cramped seating. Even outside on the patio it's quiet. I guess I just really need that low-key vibe when I eat out"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "my coworker Dev told me about this new place called Basil & Vine that just opened on Franklin Street. He says it's got a rooftop with string lights and a DJ on weekends. He's convinced I'd love it and I'm thinking he might be right"
+        }
+      ]
+    }
+  ]
+}

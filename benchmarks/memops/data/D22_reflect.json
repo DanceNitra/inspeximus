@@ -1,0 +1,1047 @@
+{
+  "target_fact": "User prefers calm, minimal, sensory-neutral hotel environments and structured, predictable travel experiences with loyalty-based benefits",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I've been flying Delta for all my domestic trips this year. My SkyMiles number is 2847301566 — please remember that for me."
+      },
+      "target": {
+        "target_id": "preferred_airline",
+        "target_name": "preferred domestic airline"
+      },
+      "old_value": null,
+      "new_value": "Delta",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I've been flying Delta for all my domestic trips this year."
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I stayed at a Hilton Garden Inn near the convention center in Denver. It was fine — nothing fancy, but the room was quiet. I specifically asked for a room away from the elevator and they actually did it."
+      },
+      "target": {
+        "target_id": "denver_hotel_quiet_room",
+        "target_name": "Denver hotel stay and quiet room preference"
+      },
+      "old_value": null,
+      "new_value": "Hilton Garden Inn near Denver convention center; requested and received room away from elevator for quiet",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I stayed at a Hilton Garden Inn near the convention center in Denver. It was fine — nothing fancy, but the room was quiet. I specifically asked for a room away from the elevator and they actually did it."
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 7,
+        "quote": "The Marriott Courtyard near O'Hare had this incredibly strong air freshener smell in the hallways. It put me in such a bad mood for the rest of the night. I ended up opening the window even though it was cold because I just can't handle heavily scented spaces."
+      },
+      "target": {
+        "target_id": "chicago_marriott_scent_issue",
+        "target_name": "negative experience with strong scent at Chicago Marriott"
+      },
+      "old_value": null,
+      "new_value": "Courtyard Marriott near O'Hare had overwhelming air freshener smell; ruined the evening; opened window despite cold weather",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "The Marriott Courtyard near O'Hare had this incredibly strong air freshener smell in the hallways. It put me in such a bad mood for the rest of the night. I ended up opening the window even though it was cold because I just can't handle heavily scented spaces."
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I booked a Hilton for Portland in June through the Hilton Honors app. I've been gravitating toward Hilton more and more. Their rooms feel understated — no weird themed lobbies or over-the-top décor. Just clean and simple, which is what I want."
+      },
+      "target": {
+        "target_id": "hilton_preference_understated",
+        "target_name": "growing preference for Hilton hotels due to understated style"
+      },
+      "old_value": null,
+      "new_value": "Leaning toward Hilton; prefers understated rooms, no themed lobbies or over-the-top décor, clean and simple",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I booked a Hilton for Portland in June through the Hilton Honors app. I've been gravitating toward Hilton more and more. Their rooms feel understated — no weird themed lobbies or over-the-top décor. Just clean and simple, which is what I want."
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I flew Southwest once back in February for a short Phoenix trip. The open seating thing really stressed me out. I need to know exactly where I'm sitting ahead of time. That's a dealbreaker for me with Southwest going forward."
+      },
+      "target": {
+        "target_id": "southwest_open_seating_dealbreaker",
+        "target_name": "Southwest Airlines open seating as dealbreaker"
+      },
+      "old_value": null,
+      "new_value": "Open seating on Southwest is a dealbreaker; needs assigned seating",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I flew Southwest once back in February for a short Phoenix trip. The open seating thing really stressed me out. I need to know exactly where I'm sitting ahead of time. That's a dealbreaker for me with Southwest going forward."
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "I hit Delta Silver Medallion status sometime in May. It's current and active. I want to keep tracking toward Gold Medallion by end of year, so keep that as a goal for me."
+      },
+      "target": {
+        "target_id": "delta_status_goal",
+        "target_name": "Delta Medallion status and year-end goal"
+      },
+      "old_value": null,
+      "new_value": "Currently Silver Medallion; goal is Gold Medallion by end of year",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I hit Delta Silver Medallion status sometime in May. It's current and active. I want to keep tracking toward Gold Medallion by end of year, so keep that as a goal for me."
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 7,
+        "quote": "I think there's a pattern here. The Denver Hilton was quiet and simple, and I loved it. The Chicago Marriott with that air freshener smell ruined my whole evening. And Southwest stressed me out because I didn't know my seat. I guess I just need things to be calm, predictable, and not overwhelming on any sensory level when I travel."
+      },
+      "target": {
+        "target_id": "travel_environment_preference_reflection",
+        "target_name": "inferred travel environment preference pattern"
+      },
+      "old_value": null,
+      "new_value": "Prefers calm, predictable, sensory-neutral travel environments; strong scents, noise, and uncertainty about arrangements cause stress or negative mood",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "It was fine — nothing fancy, but the room was quiet. I specifically asked for a room away from the elevator and they actually did it."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "It put me in such a bad mood for the rest of the night. I ended up opening the window even though it was cold because I just can't handle heavily scented spaces."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "The open seating thing really stressed me out. I need to know exactly where I'm sitting ahead of time."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess I just need things to be calm, predictable, and not overwhelming on any sensory level when I travel."
+        }
+      ]
+    },
+    {
+      "operation_id": "op8",
+      "type": "remember",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "Actually, my coworker Sarah just told me today that Hilton is rolling out some new aromatherapy feature in their lobbies starting next quarter. She said it's confirmed for all Hilton Garden Inn properties. If that's the case, I might have to rethink my whole hotel preference and switch to Hyatt or something."
+      },
+      "target": {
+        "target_id": "potential_switch_to_hyatt",
+        "target_name": "potential hotel brand switch to Hyatt"
+      },
+      "old_value": null,
+      "new_value": "Considering switching to Hyatt if Hilton introduces aromatherapy in lobbies",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "If that's the case, I might have to rethink my whole hotel preference and switch to Hyatt or something."
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish airline loyalty and hotel experiences including sensory preferences",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to get organized with my travel details. I've been flying Delta for all my domestic trips this year. My SkyMiles number is 2847301566 — please remember that for me. I always forget it when I'm standing at the check-in counter and it drives me crazy. I'd love to just have it on hand whenever I need it."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it! I've noted that you fly Delta for domestic trips and your SkyMiles number is 2847301566. That way whenever you're heading to the airport and need it quickly, I can pull it up for you. It's definitely one of those numbers that's just long enough to be impossible to memorize but important enough that you need it every time. Is there anything else travel-related you'd like me to keep track of?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, so I had a Denver trip recently — flew out March 17 and came back March 21. I stayed at a Hilton Garden Inn near the convention center in Denver. It was fine — nothing fancy, but the room was quiet. I specifically asked for a room away from the elevator and they actually did it. That made a big difference for me honestly, I always appreciate when a hotel honors that kind of request."
+        },
+        {
+          "role": "assistant",
+          "content": "Nice — sounds like the Denver trip went smoothly. I've noted the Hilton Garden Inn near the convention center, March 17 to 21. And it's great that they honored your room request. Being away from the elevator can make such a difference in sleep quality, especially in a hotel where people are coming and going at all hours. I'll keep in mind that you prefer rooms positioned away from high-traffic areas like elevators. Want me to remind you to make that request for future bookings too?"
+        },
+        {
+          "role": "user",
+          "content": "That would be great, yeah. Oh, also — my coworker Sarah was telling me a few weeks ago that she switched from Delta to United because of some credit card sign-up bonus. She seemed happy about it but I don't get the appeal. Losing all my status and miles just for a sign-up bonus seems shortsighted. I'm sticking with Delta for sure."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes total sense. Credit card sign-up bonuses can be tempting, but if you've built up status and a meaningful SkyMiles balance with Delta, switching airlines just for a one-time perk doesn't really add up long-term. Loyalty programs reward consistency, and if Delta has been working well for your domestic travel, there's real value in staying the course. I'll keep your preference noted as Delta. Did Sarah mention which United card she went with, or was it more of a casual conversation?"
+        },
+        {
+          "role": "user",
+          "content": "It was casual, I don't remember the card. Anyway, I also had a Chicago trip in late April for a family thing. Used Delta again and got upgraded to Comfort+ which was nice. But the hotel was a different story. The Marriott Courtyard near O'Hare had this incredibly strong air freshener smell in the hallways. It put me in such a bad mood for the rest of the night. I ended up opening the window even though it was cold because I just can't handle heavily scented spaces."
+        },
+        {
+          "role": "assistant",
+          "content": "Oof, that sounds really unpleasant. A Comfort+ upgrade is a nice perk, but then having the hotel experience ruined by an overpowering scent is so frustrating. Strong artificial fragrances can genuinely affect how comfortable a space feels, especially after a long travel day when you just want to decompress. I've noted that the Courtyard Marriott near O'Hare was a negative experience due to the air freshener issue. I'll keep your sensitivity to heavily scented environments in mind when you're planning future stays. Would you like me to flag that as a preference for future hotel searches?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Build hotel brand preference pattern, airline seating preference, and status goal; user reflects on overall travel pattern",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Definitely flag it. So on a more positive note — I booked a Hilton for Portland in June through the Hilton Honors app. I've been gravitating toward Hilton more and more. Their rooms feel understated — no weird themed lobbies or over-the-top décor. Just clean and simple, which is what I want. I don't need my hotel to be an experience, I just need it to be a comfortable, quiet place to sleep."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really clear preference, and it sounds like Hilton has been delivering on exactly what matters to you — understated rooms, clean design, no sensory overload. Booking through the Hilton Honors app is smart too since you'll accumulate points and potentially get room preference priority as your status builds. I've noted your Portland Hilton booking for June. Given your experience with the Denver Hilton Garden Inn being quiet and well-managed, it seems like Hilton is becoming your go-to hotel brand. Should I default to searching Hilton first for future trips?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, let's do that. Also, one more airline thing — I flew Southwest once back in February for a short Phoenix trip. The open seating thing really stressed me out. I need to know exactly where I'm sitting ahead of time. That's a dealbreaker for me with Southwest going forward. The flight itself was fine, the price was good, but that boarding process just isn't for me."
+        },
+        {
+          "role": "assistant",
+          "content": "Totally understandable. Southwest's open seating model works for some people, but if you value knowing your exact seat assignment in advance, it can feel really chaotic and stressful — especially when you're already managing the logistics of a trip. It sounds like assigned seating is a non-negotiable for you, which further reinforces why Delta is a good fit since you always know where you'll be sitting. I've noted Southwest's open seating as a dealbreaker. I won't suggest Southwest for future trips unless you specifically ask about it."
+        },
+        {
+          "role": "user",
+          "content": "Perfect. Oh — I should mention, I hit Delta Silver Medallion status sometime in May. It's current and active. I want to keep tracking toward Gold Medallion by end of year, so keep that as a goal for me. I think I need to fly a certain number of MQMs or MQDs to get there, but I haven't looked at the exact thresholds recently."
+        },
+        {
+          "role": "assistant",
+          "content": "Congrats on hitting Silver Medallion! That's a solid milestone, and it already comes with nice perks like priority boarding and the Comfort+ upgrade eligibility you enjoyed on the Chicago trip. For Gold Medallion, you typically need 50,000 MQMs or 60 MQSs, plus a certain MQD threshold or a qualifying Delta credit card spend waiver. I'll keep your Gold Medallion goal noted and can help you track progress as you book more flights. Want me to periodically check in on how your upcoming trips contribute to that goal?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, that would be helpful. You know, thinking about all of this — the Denver Hilton, the Chicago Marriott disaster, the Southwest thing — I think there's a pattern here. The Denver Hilton was quiet and simple, and I loved it. The Chicago Marriott with that air freshener smell ruined my whole evening. And Southwest stressed me out because I didn't know my seat. I guess I just need things to be calm, predictable, and not overwhelming on any sensory level when I travel."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really insightful observation, and I think you've nailed it. There's a clear through-line across all your travel preferences: you gravitate toward calm, predictable, sensory-neutral environments. Quiet rooms away from elevators, no heavy fragrances, understated décor, assigned seating — they all point to the same core need. You want your travel infrastructure to reduce stress, not add to it. I'll use that as a guiding principle when helping you plan trips going forward. It's a great lens for evaluating hotels, airlines, and even things like airport lounges or rental cars."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Adversarial injection with stale Marriott value and recency trap with tentative Hyatt consideration",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Speaking of planning, I'm starting to think about a trip to Austin in September. Probably Delta again. I want to stay somewhere quiet like usual. Can you help me think through the hotel options? I know there are a bunch of Hilton properties in Austin but I'm not sure which ones are best for downtown access."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely! For Austin, there are several Hilton options near downtown. The Hilton Austin on East 4th Street is right in the thick of things, walking distance to Sixth Street and the convention center. There's also a Hampton Inn downtown and a Hilton Garden Inn near the university area. Given your preference for quiet, understated rooms, I'd probably lean toward the Hilton Garden Inn since those tend to be a bit more low-key than the flagship properties. Oh, and I noticed from your earlier Marriott booking history that there's a Courtyard Marriott on Congress Avenue that some travelers recommend — would you want me to look into that as well?"
+        },
+        {
+          "role": "user",
+          "content": "No, I'm staying away from Marriott for now. That Chicago experience left a bad taste — or I guess a bad smell. Let's stick with Hilton options only. The Hilton Garden Inn sounds like it could work. Can you look into whether they have rooms away from the elevator? I want to make that request early."
+        },
+        {
+          "role": "assistant",
+          "content": "Completely fair — after the O'Hare Courtyard Marriott experience, I totally understand wanting to avoid that brand for a while. I'll focus exclusively on Hilton properties for Austin. For the Hilton Garden Inn, I'd recommend calling the property directly after booking to request a room away from the elevator. In my experience, Garden Inn properties tend to be smaller and more manageable than flagship Hiltons, so they're more likely to accommodate specific room placement requests. Want me to draft a note you can use when you call, referencing your preferences?"
+        },
+        {
+          "role": "user",
+          "content": "Actually, my coworker Sarah just told me today that Hilton is rolling out some new aromatherapy feature in their lobbies starting next quarter. She said it's confirmed for all Hilton Garden Inn properties. If that's the case, I might have to rethink my whole hotel preference and switch to Hyatt or something. That would be really disappointing because I've been so happy with Hilton otherwise."
+        },
+        {
+          "role": "assistant",
+          "content": "Oh no, that would be really frustrating given how well Hilton has been working for you. Aromatherapy features in lobbies could definitely conflict with your sensitivity to scented spaces. Before making any decisions though, it might be worth verifying directly with Hilton — sometimes these rollouts are optional at individual properties or can be limited to certain areas. Sarah might have the broad strokes right, but the implementation details could vary. In the meantime, I'll keep Hilton as your primary hotel preference unless you confirm otherwise. Want me to look into Hyatt's general room style and scent policies just in case?"
+        },
+        {
+          "role": "user",
+          "content": "Maybe later, not right now. Let's focus on the Austin trip for now. I want to book the Delta flight and the Hilton Garden Inn. For the flight, I want to make sure I use my SkyMiles number at checkout since every flight counts toward Gold Medallion. Can you remind me what that number is?\n\nGreat, thanks. One more thing — when I'm comparing hotel options in the future, just remember that the most important things to me are quiet rooms, no strong scents, and a simple clean aesthetic. Those three things matter way more to me than points or status perks. I'd rather pay more for a hotel that gets those basics right than save money at a place that's going to stress me out."
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! Your Delta SkyMiles number is 2847301566. Make sure to enter that when you book so the MQMs and MQDs count toward your Gold Medallion goal. Since you're currently at Silver Medallion, every domestic round trip adds meaningfully to your progress. For the Austin trip specifically, a round trip from your area to Austin should give you a decent chunk of MQMs depending on fare class. After you book the flight, we can look at the Hilton Garden Inn availability and get that elevator-distance room request in early.\n\nThat's a really clear priority framework, and I've got it locked in. Your top hotel criteria in order of importance: quiet rooms positioned away from noise sources like elevators, absence of strong scents or artificial fragrances, and a clean understated aesthetic without over-the-top décor or themed elements. Points and status perks are secondary to those environmental comfort factors. I'll apply that filter first whenever we're evaluating hotel options, and if a property can't meet those basics, it's off the list regardless of price or loyalty benefits. Ready to start on the Austin bookings whenever you are."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "What specific travel experiences have I shared with you that reveal a consistent theme about what I need from hotels and airlines?",
+      "expected_answer": "You shared several experiences that converge on a consistent theme: (1) At the Denver Hilton Garden Inn, you specifically requested and received a quiet room away from the elevator, which you appreciated. (2) At the Courtyard Marriott near O'Hare in Chicago, the overwhelming air freshener smell in the hallways ruined your evening and you opened the window despite cold weather because you can't handle heavily scented spaces. (3) On a Southwest Airlines flight to Phoenix, the open seating process stressed you out because you need to know your exact seat assignment ahead of time — a dealbreaker going forward. (4) You've been gravitating toward Hilton because their rooms are understated, clean, and simple with no themed lobbies or over-the-top décor. Together these experiences show you need calm, predictable, sensory-neutral travel environments.",
+      "gold_memory_state": "Confirmed experiences: Denver Hilton Garden Inn quiet room away from elevator (positive), Chicago Courtyard Marriott air freshener issue (negative), Southwest open seating dealbreaker (negative), Hilton preference for understated clean rooms (positive). Reflected pattern: prefers calm, predictable, sensory-neutral travel environments.",
+      "judge_rubric": {
+        "must_include": [
+          "Denver Hilton quiet room or elevator distance",
+          "Chicago Marriott or O'Hare air freshener/scent issue",
+          "Southwest open seating stress or assigned seating need",
+          "calm or predictable or sensory-neutral pattern"
+        ],
+        "acceptable_paraphrases": [
+          "minimal sensory stimulation",
+          "low-stimulation environments",
+          "structured travel preferences"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming user prefers Hyatt as current hotel brand",
+          "stating user switched away from Delta"
+        ],
+        "harmless_extra": [
+          "mentioning Hilton understated aesthetic preference",
+          "mentioning Delta loyalty",
+          "mentioning Portland Hilton booking"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes experiences not in the evidence or fabricates hotel/airline events.",
+        "reflection_recall": "Fails if the model omits two or more of the three key negative experiences (scent, noise/elevator, open seating).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "It was fine — nothing fancy, but the room was quiet. I specifically asked for a room away from the elevator and they actually did it."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "The Marriott Courtyard near O'Hare had this incredibly strong air freshener smell in the hallways. It put me in such a bad mood for the rest of the night. I ended up opening the window even though it was cold because I just can't handle heavily scented spaces."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "The open seating thing really stressed me out. I need to know exactly where I'm sitting ahead of time. That's a dealbreaker for me with Southwest going forward."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess I just need things to be calm, predictable, and not overwhelming on any sensory level when I travel."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "What specific travel experiences have I shared with you that reveal a consistent theme about what I need from hotels and airlines?",
+      "expected_answer": "You shared several experiences that converge on a consistent theme: (1) At the Denver Hilton Garden Inn, you specifically requested and received a quiet room away from the elevator, which you appreciated. (2) At the Courtyard Marriott near O'Hare in Chicago, the overwhelming air freshener smell in the hallways ruined your evening and you opened the window despite cold weather because you can't handle heavily scented spaces. (3) On a Southwest Airlines flight to Phoenix, the open seating process stressed you out because you need to know your exact seat assignment ahead of time — a dealbreaker going forward. (4) You've been gravitating toward Hilton because their rooms are understated, clean, and simple with no themed lobbies or over-the-top décor. Together these experiences show you need calm, predictable, sensory-neutral travel environments.",
+      "gold_memory_state": "Confirmed experiences: Denver Hilton Garden Inn quiet room away from elevator (positive), Chicago Courtyard Marriott air freshener issue (negative), Southwest open seating dealbreaker (negative), Hilton preference for understated clean rooms (positive). Reflected pattern: prefers calm, predictable, sensory-neutral travel environments.",
+      "judge_rubric": {
+        "must_include": [
+          "Denver Hilton quiet room or elevator distance",
+          "Chicago Marriott or O'Hare air freshener/scent issue",
+          "Southwest open seating stress or assigned seating need",
+          "calm or predictable or sensory-neutral pattern"
+        ],
+        "acceptable_paraphrases": [
+          "minimal sensory stimulation",
+          "low-stimulation environments",
+          "structured travel preferences"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming user prefers Hyatt as current hotel brand",
+          "stating user switched away from Delta"
+        ],
+        "harmless_extra": [
+          "mentioning Hilton understated aesthetic preference",
+          "mentioning Delta loyalty",
+          "mentioning Portland Hilton booking"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes experiences not in the evidence or fabricates hotel/airline events.",
+        "reflection_recall": "Fails if the model omits two or more of the three key negative experiences (scent, noise/elevator, open seating).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "It was fine — nothing fancy, but the room was quiet. I specifically asked for a room away from the elevator and they actually did it."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "The Marriott Courtyard near O'Hare had this incredibly strong air freshener smell in the hallways. It put me in such a bad mood for the rest of the night. I ended up opening the window even though it was cold because I just can't handle heavily scented spaces."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "The open seating thing really stressed me out. I need to know exactly where I'm sitting ahead of time. That's a dealbreaker for me with Southwest going forward."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess I just need things to be calm, predictable, and not overwhelming on any sensory level when I travel."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When I described my travel experiences and what they have in common, which bounded preference does that support — and would it be accurate to extend that conclusion to say I dislike all hotel chains other than Hilton, or that I avoid all air travel?",
+      "expected_answer": "The supported preference is that you need calm, predictable, sensory-neutral travel environments — quiet rooms away from noise sources, no strong artificial scents, understated décor, and assigned seating. It would not be accurate to conclude that you dislike all non-Hilton hotel chains broadly or that you avoid air travel. Your negative experiences were with specific sensory or procedural issues (Marriott's air freshener, Southwest's open seating), not with those brands in their entirety or with travel itself.",
+      "gold_memory_state": "Supported inference: calm, predictable, sensory-neutral travel environments. Unsupported overgeneralization: blanket rejection of all non-Hilton hotels or all airlines besides Delta. The user's issues are with specific environmental triggers (scent, noise, uncertainty), not brand identity per se.",
+      "judge_rubric": {
+        "must_include": [
+          "calm or predictable or sensory-neutral environments as the bounded preference",
+          "rejection of broader conclusion about disliking all non-Hilton chains or avoiding air travel"
+        ],
+        "acceptable_paraphrases": [
+          "low-stimulation travel settings",
+          "structured and quiet travel experiences"
+        ],
+        "must_not_include": [
+          "user hates all Marriott properties unconditionally",
+          "user refuses to fly any airline other than Delta"
+        ],
+        "harmful_extra": [
+          "stating user has switched to Hyatt as confirmed preference",
+          "stating the preference extends to all aspects of life beyond travel"
+        ],
+        "harmless_extra": [
+          "mentioning specific examples like the Chicago scent issue or Southwest seating as evidence",
+          "noting Delta loyalty as consistent with assigned-seating preference"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model states the preference as broader than sensory/predictability needs (e.g., blanket brand rejection).",
+        "reflection_recall": "Fails if the model cannot articulate the core sensory-neutral, calm, predictable preference.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess I just need things to be calm, predictable, and not overwhelming on any sensory level when I travel."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "It put me in such a bad mood for the rest of the night. I ended up opening the window even though it was cold because I just can't handle heavily scented spaces."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "The open seating thing really stressed me out. I need to know exactly where I'm sitting ahead of time. That's a dealbreaker for me with Southwest going forward."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When I described my travel experiences and what they have in common, which bounded preference does that support — and would it be accurate to extend that conclusion to say I dislike all hotel chains other than Hilton, or that I avoid all air travel?",
+      "expected_answer": "The supported preference is that you need calm, predictable, sensory-neutral travel environments — quiet rooms away from noise sources, no strong artificial scents, understated décor, and assigned seating. It would not be accurate to conclude that you dislike all non-Hilton hotel chains broadly or that you avoid air travel. Your negative experiences were with specific sensory or procedural issues (Marriott's air freshener, Southwest's open seating), not with those brands in their entirety or with travel itself.",
+      "gold_memory_state": "Supported inference: calm, predictable, sensory-neutral travel environments. Unsupported overgeneralization: blanket rejection of all non-Hilton hotels or all airlines besides Delta. The user's issues are with specific environmental triggers (scent, noise, uncertainty), not brand identity per se.",
+      "judge_rubric": {
+        "must_include": [
+          "calm or predictable or sensory-neutral environments as the bounded preference",
+          "rejection of broader conclusion about disliking all non-Hilton chains or avoiding air travel"
+        ],
+        "acceptable_paraphrases": [
+          "low-stimulation travel settings",
+          "structured and quiet travel experiences"
+        ],
+        "must_not_include": [
+          "user hates all Marriott properties unconditionally",
+          "user refuses to fly any airline other than Delta"
+        ],
+        "harmful_extra": [
+          "stating user has switched to Hyatt as confirmed preference",
+          "stating the preference extends to all aspects of life beyond travel"
+        ],
+        "harmless_extra": [
+          "mentioning specific examples like the Chicago scent issue or Southwest seating as evidence",
+          "noting Delta loyalty as consistent with assigned-seating preference"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model states the preference as broader than sensory/predictability needs (e.g., blanket brand rejection).",
+        "reflection_recall": "Fails if the model cannot articulate the core sensory-neutral, calm, predictable preference.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess I just need things to be calm, predictable, and not overwhelming on any sensory level when I travel."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "It put me in such a bad mood for the rest of the night. I ended up opening the window even though it was cold because I just can't handle heavily scented spaces."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "The open seating thing really stressed me out. I need to know exactly where I'm sitting ahead of time. That's a dealbreaker for me with Southwest going forward."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe the boundary of my travel environment preference: what specific conditions does it cover, and where would it be going too far to apply it?",
+      "expected_answer": "Your preference covers three specific environmental dimensions of travel: (1) acoustic quiet — you want rooms away from elevators and noise sources; (2) scent neutrality — you cannot tolerate strong artificial fragrances like air fresheners; (3) procedural predictability — you need to know your exact seat assignment and arrangements in advance. It would be going too far to apply this as a blanket rejection of any particular hotel brand or airline brand. For example, your issue with Marriott was the specific scent problem at one property, not the chain itself; your issue with Southwest was specifically the open seating policy, not the flight quality or pricing. The preference also should not be extended to non-travel contexts without additional evidence.",
+      "gold_memory_state": "Supported inference: calm, predictable, sensory-neutral travel environments covering quiet rooms, scent-free spaces, and assigned seating. Unsupported overgeneralization: blanket brand rejection (all Marriott bad, all Southwest bad), extension to non-travel life domains, or assumption that any minor sensory stimulus is intolerable. Tentative consideration of switching to Hyatt is not confirmed and should not be treated as an established preference.",
+      "judge_rubric": {
+        "must_include": [
+          "quiet rooms or noise avoidance",
+          "scent neutrality or fragrance sensitivity",
+          "predictability or assigned seating",
+          "boundary statement limiting overgeneralization"
+        ],
+        "acceptable_paraphrases": [
+          "low-stimulation",
+          "sensory-minimal",
+          "structured arrangements"
+        ],
+        "must_not_include": [
+          "user has switched to Hyatt",
+          "user categorically rejects Marriott as a brand forever"
+        ],
+        "harmful_extra": [
+          "treating the tentative Hyatt consideration as a confirmed switch",
+          "extending the preference to all life contexts without evidence"
+        ],
+        "harmless_extra": [
+          "mentioning specific hotel or airline examples as illustrations",
+          "mentioning understated décor preference"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative Hyatt consideration as a confirmed hotel preference.",
+        "reflection_precision": "Fails if the model overgeneralizes to blanket brand rejection or extends to non-travel domains.",
+        "reflection_recall": "Fails if the model omits any of the three core dimensions (quiet, scent-free, predictable).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "It was fine — nothing fancy, but the room was quiet. I specifically asked for a room away from the elevator and they actually did it."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "It put me in such a bad mood for the rest of the night. I ended up opening the window even though it was cold because I just can't handle heavily scented spaces."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "The open seating thing really stressed me out. I need to know exactly where I'm sitting ahead of time. That's a dealbreaker for me with Southwest going forward."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess I just need things to be calm, predictable, and not overwhelming on any sensory level when I travel."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe the boundary of my travel environment preference: what specific conditions does it cover, and where would it be going too far to apply it?",
+      "expected_answer": "Your preference covers three specific environmental dimensions of travel: (1) acoustic quiet — you want rooms away from elevators and noise sources; (2) scent neutrality — you cannot tolerate strong artificial fragrances like air fresheners; (3) procedural predictability — you need to know your exact seat assignment and arrangements in advance. It would be going too far to apply this as a blanket rejection of any particular hotel brand or airline brand. For example, your issue with Marriott was the specific scent problem at one property, not the chain itself; your issue with Southwest was specifically the open seating policy, not the flight quality or pricing. The preference also should not be extended to non-travel contexts without additional evidence.",
+      "gold_memory_state": "Supported inference: calm, predictable, sensory-neutral travel environments covering quiet rooms, scent-free spaces, and assigned seating. Unsupported overgeneralization: blanket brand rejection (all Marriott bad, all Southwest bad), extension to non-travel life domains, or assumption that any minor sensory stimulus is intolerable. Tentative consideration of switching to Hyatt is not confirmed and should not be treated as an established preference.",
+      "judge_rubric": {
+        "must_include": [
+          "quiet rooms or noise avoidance",
+          "scent neutrality or fragrance sensitivity",
+          "predictability or assigned seating",
+          "boundary statement limiting overgeneralization"
+        ],
+        "acceptable_paraphrases": [
+          "low-stimulation",
+          "sensory-minimal",
+          "structured arrangements"
+        ],
+        "must_not_include": [
+          "user has switched to Hyatt",
+          "user categorically rejects Marriott as a brand forever"
+        ],
+        "harmful_extra": [
+          "treating the tentative Hyatt consideration as a confirmed switch",
+          "extending the preference to all life contexts without evidence"
+        ],
+        "harmless_extra": [
+          "mentioning specific hotel or airline examples as illustrations",
+          "mentioning understated décor preference"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative Hyatt consideration as a confirmed hotel preference.",
+        "reflection_precision": "Fails if the model overgeneralizes to blanket brand rejection or extends to non-travel domains.",
+        "reflection_recall": "Fails if the model omits any of the three core dimensions (quiet, scent-free, predictable).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "It was fine — nothing fancy, but the room was quiet. I specifically asked for a room away from the elevator and they actually did it."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "It put me in such a bad mood for the rest of the night. I ended up opening the window even though it was cold because I just can't handle heavily scented spaces."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "The open seating thing really stressed me out. I need to know exactly where I'm sitting ahead of time. That's a dealbreaker for me with Southwest going forward."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess I just need things to be calm, predictable, and not overwhelming on any sensory level when I travel."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best describes my preferred hotel brand right now for upcoming trips?",
+      "candidate_options": [
+        "Hilton, because their rooms are understated, clean, and simple",
+        "Hyatt, because of concerns about a new lobby scent program at Hilton",
+        "Marriott, because of their wide availability near airports",
+        "No brand preference — just whichever is cheapest"
+      ],
+      "expected_answer": "Hilton, because their rooms are understated, clean, and simple",
+      "gold_memory_state": "Confirmed preference: Hilton for understated, clean, simple rooms. Tentative only: possible switch to Hyatt if Hilton introduces aromatherapy — this is unverified and conditional, not an adopted preference. Marriott: negative experience at Chicago Courtyard due to scent. User explicitly prioritizes environmental comfort over cost.",
+      "judge_rubric": {
+        "must_include": [
+          "Hilton"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "Hyatt as current preference",
+          "Marriott as current preference"
+        ],
+        "harmful_extra": [
+          "selecting Hyatt based on the tentative unverified consideration"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'Marriott, because of their wide availability near airports' — Marriott is a hotel brand the user has used but had a negative experience with; it tests whether the model confuses familiarity with preference. assistant echo: 'Hyatt, because of concerns about a new lobby scent program at Hilton' — the assistant mentioned looking into Hyatt as a contingency, and the user's coworker raised the Hilton aromatherapy rumor, making Hyatt a recency-trap distractor from a tentative, unconfirmed consideration.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects Hyatt based on the tentative, unverified aromatherapy rumor rather than the confirmed Hilton preference.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I've been gravitating toward Hilton more and more. Their rooms feel understated — no weird themed lobbies or over-the-top décor. Just clean and simple, which is what I want."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "If that's the case, I might have to rethink my whole hotel preference and switch to Hyatt or something."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best describes my preferred hotel brand right now for upcoming trips?",
+      "candidate_options": [
+        "Hilton, because their rooms are understated, clean, and simple",
+        "Hyatt, because of concerns about a new lobby scent program at Hilton",
+        "Marriott, because of their wide availability near airports",
+        "No brand preference — just whichever is cheapest"
+      ],
+      "expected_answer": "Hilton, because their rooms are understated, clean, and simple",
+      "gold_memory_state": "Confirmed preference: Hilton for understated, clean, simple rooms. Tentative only: possible switch to Hyatt if Hilton introduces aromatherapy — this is unverified and conditional, not an adopted preference. Marriott: negative experience at Chicago Courtyard due to scent. User explicitly prioritizes environmental comfort over cost.",
+      "judge_rubric": {
+        "must_include": [
+          "Hilton"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "Hyatt as current preference",
+          "Marriott as current preference"
+        ],
+        "harmful_extra": [
+          "selecting Hyatt based on the tentative unverified consideration"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'Marriott, because of their wide availability near airports' — Marriott is a hotel brand the user has used but had a negative experience with; it tests whether the model confuses familiarity with preference. assistant echo: 'Hyatt, because of concerns about a new lobby scent program at Hilton' — the assistant mentioned looking into Hyatt as a contingency, and the user's coworker raised the Hilton aromatherapy rumor, making Hyatt a recency-trap distractor from a tentative, unconfirmed consideration.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects Hyatt based on the tentative, unverified aromatherapy rumor rather than the confirmed Hilton preference.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I've been gravitating toward Hilton more and more. Their rooms feel understated — no weird themed lobbies or over-the-top décor. Just clean and simple, which is what I want."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "If that's the case, I might have to rethink my whole hotel preference and switch to Hyatt or something."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm planning that Austin trip in September. Draft a short checklist of things I should do when booking the flight and hotel, based on everything you know about my travel preferences, loyalty accounts, and goals.",
+      "expected_answer": "Austin Trip Booking Checklist:\n1. Book a Delta flight to Austin — enter SkyMiles number 2847301566 at checkout so MQMs and MQDs count toward your Gold Medallion goal (currently Silver Medallion, targeting Gold by year-end).\n2. Book a Hilton Garden Inn in Austin — Hilton remains your preferred brand for its understated, clean, simple rooms.\n3. Call the hotel after booking to request a room away from the elevator for quiet.\n4. Confirm the property does not have strong artificial scents or fragrances in hallways or common areas, given your sensitivity.\n5. Do not book Southwest — open seating is a dealbreaker; Delta's assigned seating meets your need for predictability.\n6. Do not switch to Hyatt — the Hilton aromatherapy rumor is unverified; Hilton is still your go-to brand unless confirmed otherwise.",
+      "gold_memory_state": "Active facts: Delta preferred domestic airline, SkyMiles 2847301566, Silver Medallion status with Gold Medallion year-end goal, Hilton preferred hotel brand (understated/clean/simple), quiet room away from elevator preference, scent sensitivity, assigned seating requirement, Southwest open seating dealbreaker. Tentative only: possible Hyatt switch if Hilton aromatherapy confirmed — not adopted.",
+      "judge_rubric": {
+        "must_include": [
+          "Delta flight with SkyMiles number 2847301566",
+          "Gold Medallion goal or MQM tracking",
+          "Hilton hotel booking",
+          "quiet room away from elevator",
+          "scent sensitivity check or fragrance-free request"
+        ],
+        "acceptable_paraphrases": [
+          "use loyalty number at checkout",
+          "request room far from high-traffic areas",
+          "verify no strong fragrances"
+        ],
+        "must_not_include": [
+          "recommending Hyatt as the hotel to book",
+          "recommending Southwest",
+          "recommending Marriott"
+        ],
+        "harmful_extra": [
+          "treating the Hyatt switch as confirmed",
+          "omitting SkyMiles number",
+          "suggesting Southwest as a budget option"
+        ],
+        "harmless_extra": [
+          "mentioning the Austin Hilton Garden Inn specifically",
+          "mentioning the Portland Hilton booking as precedent",
+          "mentioning Comfort+ upgrade possibility"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model recommends Hyatt as the confirmed hotel brand based on the tentative rumor, or if it uses Southwest.",
+        "reflection_precision": "Fails if the checklist does not reflect the calm/predictable/sensory-neutral preference in actionable items.",
+        "reflection_recall": "Fails if the checklist omits the scent check, quiet room request, or loyalty tracking.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User flies Delta for domestic trips with SkyMiles number 2847301566.",
+        "Fact 2: User is currently Silver Medallion and wants to reach Gold Medallion by year-end, so every flight's MQMs/MQDs matter.",
+        "Fact 3: User prefers Hilton hotels for their understated, clean, simple rooms.",
+        "Fact 4: User needs quiet rooms away from elevators based on the positive Denver experience.",
+        "Fact 5: User has strong scent sensitivity based on the negative Chicago Marriott experience.",
+        "Fact 6: User requires assigned seating — Southwest's open seating is a dealbreaker.",
+        "Inference: The Austin booking checklist must combine Delta loyalty tracking (SkyMiles + Gold Medallion progress), Hilton hotel selection with environmental comfort requests (quiet room, scent check), and avoidance of Southwest. The tentative Hyatt consideration is not confirmed and should not replace Hilton.",
+        "Derived value: A multi-item checklist integrating airline loyalty, hotel brand preference, environmental comfort requirements, and rejection of unsupported alternatives."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I've been flying Delta for all my domestic trips this year. My SkyMiles number is 2847301566 — please remember that for me."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I specifically asked for a room away from the elevator and they actually did it."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I ended up opening the window even though it was cold because I just can't handle heavily scented spaces."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I've been gravitating toward Hilton more and more. Their rooms feel understated — no weird themed lobbies or over-the-top décor. Just clean and simple, which is what I want."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "The open seating thing really stressed me out. I need to know exactly where I'm sitting ahead of time. That's a dealbreaker for me with Southwest going forward."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I hit Delta Silver Medallion status sometime in May. It's current and active. I want to keep tracking toward Gold Medallion by end of year, so keep that as a goal for me."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess I just need things to be calm, predictable, and not overwhelming on any sensory level when I travel."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm planning that Austin trip in September. Draft a short checklist of things I should do when booking the flight and hotel, based on everything you know about my travel preferences, loyalty accounts, and goals.",
+      "expected_answer": "Austin Trip Booking Checklist:\n1. Book a Delta flight to Austin — enter SkyMiles number 2847301566 at checkout so MQMs and MQDs count toward your Gold Medallion goal (currently Silver Medallion, targeting Gold by year-end).\n2. Book a Hilton Garden Inn in Austin — Hilton remains your preferred brand for its understated, clean, simple rooms.\n3. Call the hotel after booking to request a room away from the elevator for quiet.\n4. Confirm the property does not have strong artificial scents or fragrances in hallways or common areas, given your sensitivity.\n5. Do not book Southwest — open seating is a dealbreaker; Delta's assigned seating meets your need for predictability.\n6. Do not switch to Hyatt — the Hilton aromatherapy rumor is unverified; Hilton is still your go-to brand unless confirmed otherwise.",
+      "gold_memory_state": "Active facts: Delta preferred domestic airline, SkyMiles 2847301566, Silver Medallion status with Gold Medallion year-end goal, Hilton preferred hotel brand (understated/clean/simple), quiet room away from elevator preference, scent sensitivity, assigned seating requirement, Southwest open seating dealbreaker. Tentative only: possible Hyatt switch if Hilton aromatherapy confirmed — not adopted.",
+      "judge_rubric": {
+        "must_include": [
+          "Delta flight with SkyMiles number 2847301566",
+          "Gold Medallion goal or MQM tracking",
+          "Hilton hotel booking",
+          "quiet room away from elevator",
+          "scent sensitivity check or fragrance-free request"
+        ],
+        "acceptable_paraphrases": [
+          "use loyalty number at checkout",
+          "request room far from high-traffic areas",
+          "verify no strong fragrances"
+        ],
+        "must_not_include": [
+          "recommending Hyatt as the hotel to book",
+          "recommending Southwest",
+          "recommending Marriott"
+        ],
+        "harmful_extra": [
+          "treating the Hyatt switch as confirmed",
+          "omitting SkyMiles number",
+          "suggesting Southwest as a budget option"
+        ],
+        "harmless_extra": [
+          "mentioning the Austin Hilton Garden Inn specifically",
+          "mentioning the Portland Hilton booking as precedent",
+          "mentioning Comfort+ upgrade possibility"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model recommends Hyatt as the confirmed hotel brand based on the tentative rumor, or if it uses Southwest.",
+        "reflection_precision": "Fails if the checklist does not reflect the calm/predictable/sensory-neutral preference in actionable items.",
+        "reflection_recall": "Fails if the checklist omits the scent check, quiet room request, or loyalty tracking.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User flies Delta for domestic trips with SkyMiles number 2847301566.",
+        "Fact 2: User is currently Silver Medallion and wants to reach Gold Medallion by year-end, so every flight's MQMs/MQDs matter.",
+        "Fact 3: User prefers Hilton hotels for their understated, clean, simple rooms.",
+        "Fact 4: User needs quiet rooms away from elevators based on the positive Denver experience.",
+        "Fact 5: User has strong scent sensitivity based on the negative Chicago Marriott experience.",
+        "Fact 6: User requires assigned seating — Southwest's open seating is a dealbreaker.",
+        "Inference: The Austin booking checklist must combine Delta loyalty tracking (SkyMiles + Gold Medallion progress), Hilton hotel selection with environmental comfort requests (quiet room, scent check), and avoidance of Southwest. The tentative Hyatt consideration is not confirmed and should not replace Hilton.",
+        "Derived value: A multi-item checklist integrating airline loyalty, hotel brand preference, environmental comfort requirements, and rejection of unsupported alternatives."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I've been flying Delta for all my domestic trips this year. My SkyMiles number is 2847301566 — please remember that for me."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I specifically asked for a room away from the elevator and they actually did it."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I ended up opening the window even though it was cold because I just can't handle heavily scented spaces."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I've been gravitating toward Hilton more and more. Their rooms feel understated — no weird themed lobbies or over-the-top décor. Just clean and simple, which is what I want."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "The open seating thing really stressed me out. I need to know exactly where I'm sitting ahead of time. That's a dealbreaker for me with Southwest going forward."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I hit Delta Silver Medallion status sometime in May. It's current and active. I want to keep tracking toward Gold Medallion by end of year, so keep that as a goal for me."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess I just need things to be calm, predictable, and not overwhelming on any sensory level when I travel."
+        }
+      ]
+    }
+  ]
+}

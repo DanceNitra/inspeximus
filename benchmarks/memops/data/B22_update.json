@@ -1,0 +1,822 @@
+{
+  "target_fact": "Sarah's work phone extension at Meridian Health Systems",
+  "operation_type": "Update",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "sarah_extension",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "Sarah's desk phone extension at Meridian is 4302"
+      },
+      "target": {
+        "target_id": "sarah_work_extension",
+        "target_name": "Sarah's work phone extension at Meridian Health Systems"
+      },
+      "old_value": null,
+      "new_value": "4302",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Sarah's desk phone extension at Meridian is 4302"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "sarah_extension",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "they shuffled extensions again when patient coordination moved to the third floor, and Sarah's new extension is 4510"
+      },
+      "target": {
+        "target_id": "sarah_work_extension",
+        "target_name": "Sarah's work phone extension at Meridian Health Systems"
+      },
+      "old_value": "4302",
+      "new_value": "4510",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "they shuffled extensions again when patient coordination moved to the third floor, and Sarah's new extension is 4510"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "sarah_extension",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "Sarah told me last night that they reverted her extension back to 4302 because there was a numbering conflict on the third floor"
+      },
+      "target": {
+        "target_id": "sarah_work_extension",
+        "target_name": "Sarah's work phone extension at Meridian Health Systems"
+      },
+      "old_value": "4510",
+      "new_value": "4302",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Sarah told me last night that they reverted her extension back to 4302 because there was a numbering conflict on the third floor"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "sarah_extension",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "Tom Reznik emailed the team that all patient coordination extensions will be migrated to the 4800 block next Monday, so Sarah's extension will become 4817"
+      },
+      "target": {
+        "target_id": "sarah_work_extension",
+        "target_name": "Sarah's work phone extension at Meridian Health Systems"
+      },
+      "old_value": "4302",
+      "new_value": "4817",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Tom Reznik emailed the team that all patient coordination extensions will be migrated to the 4800 block next Monday, so Sarah's extension will become 4817"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "Sarah's annual salary at Meridian is $58,500"
+      },
+      "target": {
+        "target_id": "sarah_meridian_salary",
+        "target_name": "Sarah's annual salary at Meridian Health Systems"
+      },
+      "old_value": null,
+      "new_value": "$58,500",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Sarah's annual salary at Meridian is $58,500"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "Sarah's department, patient coordination, is on the third floor at 401 Lakeshore Drive"
+      },
+      "target": {
+        "target_id": "sarah_office_location",
+        "target_name": "Sarah's office floor and building address at Meridian"
+      },
+      "old_value": null,
+      "new_value": "Third floor, 401 Lakeshore Drive, Wilmington",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Sarah's department, patient coordination, is on the third floor at 401 Lakeshore Drive"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish extension value and salary; first update to extension",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to make sure I have my wife's work contact info stored correctly. Sarah's desk phone extension at Meridian is 4302. She's in the patient coordination department there, started back in February. I need to be able to reach her quickly during work hours since our kid's daycare sometimes calls me and I have to relay messages to her."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it! I've noted that Sarah's desk phone extension at Meridian Health Systems is 4302, and she works in the patient coordination department. That makes sense—having a direct line to reach her during work hours is important, especially with daycare coordination. If you'd like, I can also store the main Meridian switchboard number or any other contact details so you have a backup way to reach her. Just let me know if there's anything else you'd like me to keep track of regarding Sarah's work setup."
+        },
+        {
+          "role": "user",
+          "content": "Good idea. Actually let me also give you her compensation info so I can reference it later for budgeting. Sarah's annual salary at Meridian is $58,500. That was a nice bump from her old clinic job—about six thousand more per year. We've been using the extra to pad our savings and cover the higher daycare costs this year. It's been a relief honestly."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted—Sarah's annual salary at Meridian Health Systems is $58,500. That $6,000 increase over her previous clinic position sounds like it's making a real difference, especially with the daycare expenses factored in. If you want, I can help you set up a simple monthly budget breakdown later that accounts for the salary bump and your current expenses. For now I have her extension at 4302 and her salary at $58,500 on file. Let me know whenever you want to add more details or start working on that budget."
+        },
+        {
+          "role": "user",
+          "content": "So quick update—they shuffled extensions again when patient coordination moved to the third floor, and Sarah's new extension is 4510. This is the second time they've changed her number since she started. The old 4302 doesn't work for her anymore. Can you update that? I want to make sure I'm calling the right line if there's an emergency."
+        },
+        {
+          "role": "assistant",
+          "content": "Updated! Sarah's work phone extension is now 4510, replacing the previous 4302. I understand the frustration with repeated changes—hopefully this one sticks for a while. It's good you're staying on top of it so you always have the correct direct line for emergencies. I have her current info as: extension 4510, patient coordination department at Meridian Health Systems, salary $58,500. If anything else changes with her work setup, just let me know and I'll keep everything current for you."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, I hope it sticks too. Sarah mentioned the third floor has better natural light than where she was before, so at least the move came with some perks. She really cares about that kind of thing—open spaces, big windows. She even found a quiet break room on the second floor where she reads during lunch. Anyway, I'll let you know if anything else changes."
+        },
+        {
+          "role": "assistant",
+          "content": "That's great that the third floor has better natural light—it sounds like it aligns well with Sarah's preference for open, well-lit workspaces. And having a quiet break room nearby where she can read during lunch is a nice bonus. Those environmental factors can really make a difference in day-to-day job satisfaction. I've got everything updated for now: extension 4510, patient coordination on the third floor, salary $58,500. Whenever you need to reference any of this or if there are more changes, just reach out. Hope the new setup stays put for a while!"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Revert extension back to 4302; establish office location detail",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, so I have a couple of things to go over. First, Sarah's department, patient coordination, is on the third floor at 401 Lakeshore Drive. I realized I never gave you the actual building address before. The Wilmington campus is pretty big—apparently Meridian has around 3,500 employees across three states—so having the specific building and floor helps when I need to send anything to her office."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for the specifics! I've noted that Sarah's patient coordination department is located on the third floor at 401 Lakeshore Drive on the Wilmington campus. That's helpful context, especially given the size of Meridian's operation across multiple states and locations. Having the exact building and floor will make it easier if you ever need to send mail, drop something off, or direct someone to her office. So far I have: extension 4510, third floor at 401 Lakeshore Drive in Wilmington, salary $58,500. What's the other thing you wanted to go over?"
+        },
+        {
+          "role": "user",
+          "content": "Right, so this is kind of annoying. Sarah told me last night that they reverted her extension back to 4302 because there was a numbering conflict on the third floor. Apparently two people got assigned 4510 and it was causing calls to route to the wrong desk. So they rolled her back to her previous number. Her current working extension is 4302 again."
+        },
+        {
+          "role": "assistant",
+          "content": "Oh wow, that is annoying—but at least it's resolved now. I've updated Sarah's extension back to 4302. It sounds like the 4510 assignment was a short-lived mix-up due to the numbering conflict. The good news is 4302 is a number you already had before, so it should be easy to remember. Here's her current info: extension 4302, patient coordination department, third floor at 401 Lakeshore Drive in Wilmington, salary $58,500. Hopefully this is the last time they shuffle her number around!"
+        },
+        {
+          "role": "user",
+          "content": "I know, right? Three changes in a few months is ridiculous. At least she likes the actual work. Her manager Tom Reznik gave her strong marks on her 30-day review and she's been feeling good about the role. The patient coordination work is way more engaging for her than the data entry she was afraid of getting stuck with."
+        },
+        {
+          "role": "assistant",
+          "content": "That's really encouraging to hear! Getting strong marks from Tom on her 30-day review must have been a great confidence boost, especially after the initial anxiety about potentially being stuck in data entry. It sounds like the move to patient coordination was exactly the right fit for her. Job satisfaction matters so much, and it's clear Sarah is thriving in the more engaging role. I'll keep her records as they are: extension 4302, patient coordination under Tom Reznik, third floor at 401 Lakeshore Drive in Wilmington, salary $58,500. Let me know if anything else comes up."
+        },
+        {
+          "role": "user",
+          "content": "Will do. Oh—my buddy Kevin's wife works in Meridian's billing department at the same Wilmington campus. Kevin mentioned her department might relocate to the satellite office in Dover this summer. Doesn't affect Sarah's team though, so I'm not worried about it. Just interesting that they're spreading out.\n\nYeah exactly, nothing changes on our end for now. Thanks for keeping track of all this—it's really helpful having one place to reference her work details instead of trying to remember everything myself. I'll check back in if anything new comes up with Meridian."
+        },
+        {
+          "role": "assistant",
+          "content": "That is interesting—it sounds like Meridian is actively managing space across their locations. It's good to know that the potential billing department move to Dover doesn't impact Sarah's patient coordination team. If Kevin's wife does end up relocating, it might be worth noting in case it ever comes up for logistics or if you and Kevin want to compare notes on commute changes. For now, Sarah's setup remains the same: extension 4302, third floor at 401 Lakeshore Drive in Wilmington. I'll keep everything as is unless you hear otherwise.\n\nAbsolutely, happy to help! It's much easier to have all of Sarah's work details organized in one place, especially with how frequently things have been shifting at Meridian. Here's a quick summary of what I have on file: extension 4302, patient coordination department managed by Tom Reznik, third floor at 401 Lakeshore Drive in Wilmington, annual salary $58,500. Whenever something changes or you need to look something up, just reach out. Hope things settle down for a while over there!"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Tentative future extension change; adversarial injection of old value",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I'm back with a couple of things. First, I was trying to update our family contact sheet and I wanted to double-check some of Sarah's Meridian details. Can you remind me what you have on file for her right now? I want to make sure the sheet is accurate before I print it out for the fridge."
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! Here's what I have on file for Sarah at Meridian Health Systems: her current desk phone extension is 4302, she's in the patient coordination department managed by Tom Reznik, located on the third floor at 401 Lakeshore Drive in Wilmington, and her annual salary is $58,500. I also recall that Kevin's wife works in Meridian's billing department at the same campus—I noticed an old internal directory listing that showed extension 4510 next to the billing floor, but that was Sarah's briefly reassigned number before the conflict. Let me know if you need anything else for the contact sheet!"
+        },
+        {
+          "role": "user",
+          "content": "Perfect, that all looks right. And yeah, 4510 was that brief mix-up—definitely don't put that on anything. I want to use 4302 on the contact sheet. Also, I was thinking about how much the salary bump has helped. With the extra $6,000 annually, we've been able to put about $500 a month into savings, which is huge for us."
+        },
+        {
+          "role": "assistant",
+          "content": "Great, 4302 is confirmed for the contact sheet. And that's a solid savings plan—$500 a month adds up quickly. Over a full year that's $6,000 in savings just from the salary difference, which essentially means the entire raise is going straight to building your financial cushion. That's a really disciplined approach, especially with daycare costs in the mix. If you'd like, I can help you draft the contact sheet layout with Sarah's details formatted nicely. Just let me know what other family info you want included and I'll put together a clean version for you."
+        },
+        {
+          "role": "user",
+          "content": "Tom Reznik emailed the team that all patient coordination extensions will be migrated to the 4800 block next Monday, so Sarah's extension will become 4817. She forwarded me the email. It hasn't happened yet obviously, but I wanted to mention it so we're prepared. I'll confirm once it actually goes through."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for the heads up! I've noted that there's an upcoming migration planned for next Monday that would change Sarah's extension from 4302 to 4817 as part of the department-wide move to the 4800 block. Since it hasn't taken effect yet, I'll keep 4302 as her current active extension for now. Once you confirm the switch has actually happened, I'll update it to 4817. For the contact sheet you're printing today, I'd recommend using 4302 since that's still the working number. Good thinking to flag it early though—hopefully this migration goes more smoothly than the last extension shuffle!"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, let's keep 4302 as current until I confirm the change. I don't want to jump the gun again. By the way, Sarah mentioned that if the migration happens on schedule, she'll have had four different extensions in less than six months at Meridian. That's kind of absurd when you think about it.\n\nSounds good. I'll print the sheet tonight with 4302 and update it by hand if the migration goes through next week. Thanks for keeping all of this straight—between the extension changes, the salary info, the building details, it's a lot to track. I appreciate having it all in one place."
+        },
+        {
+          "role": "assistant",
+          "content": "Four extensions in under six months really is remarkable—and not in a good way! It seems like Meridian's internal telecom setup has been going through a lot of growing pains. At least Sarah has been handling the constant changes well, and the actual work in patient coordination has been a positive experience for her. For now, her current confirmed extension remains 4302, and I'll wait for your go-ahead before switching it to 4817 or whatever the final number ends up being. The contact sheet should be good to print with 4302 today.\n\nHappy to help keep it all organized! Here's your current confirmed summary for the contact sheet: Sarah's extension is 4302, patient coordination department under Tom Reznik, third floor at 401 Lakeshore Drive in Wilmington, annual salary $58,500. The pending 4817 migration is noted but not active yet. Printing with 4302 tonight is the right call, and updating by hand next week if the migration goes through is a smart approach. Whenever you're ready to confirm the new extension or if anything else changes, just let me know. Good luck with the contact sheet!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "What did I tell you about Sarah's desk phone extension at Meridian across our conversations, and which details about her work situation did I share alongside it?",
+      "expected_answer": "You first shared that Sarah's desk phone extension at Meridian was 4302 when she started in patient coordination. You later said they shuffled extensions when patient coordination moved to the third floor, giving her 4510. Then you mentioned they reverted her extension back to 4302 due to a numbering conflict on the third floor where two people were assigned 4510. You also mentioned an upcoming migration to the 4800 block that would change her extension to 4817 next Monday, but you said to keep 4302 as current until confirmed. Alongside this, you shared her annual salary of $58,500 and her office location on the third floor at 401 Lakeshore Drive in Wilmington.",
+      "gold_memory_state": "Sarah's confirmed current extension is 4302. Previous values 4510 (superseded) and upcoming 4817 (tentative, not yet active) are not current. Salary is $58,500. Office is third floor, 401 Lakeshore Drive, Wilmington.",
+      "judge_rubric": {
+        "must_include": [
+          "4302 as initial value",
+          "4510 as intermediate value",
+          "reversion back to 4302",
+          "4817 as planned but not yet active"
+        ],
+        "acceptable_paraphrases": [
+          "extension went from 4302 to 4510 and back to 4302",
+          "future migration to 4817 pending confirmation"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming 4817 is the current active extension",
+          "claiming 4510 is the current active extension"
+        ],
+        "harmless_extra": [
+          "mentioning Tom Reznik",
+          "mentioning the numbering conflict details",
+          "mentioning salary or office location"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats 4510 or 4817 as the current confirmed extension.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Sarah's desk phone extension at Meridian is 4302"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "they shuffled extensions again when patient coordination moved to the third floor, and Sarah's new extension is 4510"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Sarah told me last night that they reverted her extension back to 4302 because there was a numbering conflict on the third floor"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Tom Reznik emailed the team that all patient coordination extensions will be migrated to the 4800 block next Monday, so Sarah's extension will become 4817"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "What did I tell you about Sarah's desk phone extension at Meridian across our conversations, and which details about her work situation did I share alongside it?",
+      "expected_answer": "You first shared that Sarah's desk phone extension at Meridian was 4302 when she started in patient coordination. You later said they shuffled extensions when patient coordination moved to the third floor, giving her 4510. Then you mentioned they reverted her extension back to 4302 due to a numbering conflict on the third floor where two people were assigned 4510. You also mentioned an upcoming migration to the 4800 block that would change her extension to 4817 next Monday, but you said to keep 4302 as current until confirmed. Alongside this, you shared her annual salary of $58,500 and her office location on the third floor at 401 Lakeshore Drive in Wilmington.",
+      "gold_memory_state": "Sarah's confirmed current extension is 4302. Previous values 4510 (superseded) and upcoming 4817 (tentative, not yet active) are not current. Salary is $58,500. Office is third floor, 401 Lakeshore Drive, Wilmington.",
+      "judge_rubric": {
+        "must_include": [
+          "4302 as initial value",
+          "4510 as intermediate value",
+          "reversion back to 4302",
+          "4817 as planned but not yet active"
+        ],
+        "acceptable_paraphrases": [
+          "extension went from 4302 to 4510 and back to 4302",
+          "future migration to 4817 pending confirmation"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming 4817 is the current active extension",
+          "claiming 4510 is the current active extension"
+        ],
+        "harmless_extra": [
+          "mentioning Tom Reznik",
+          "mentioning the numbering conflict details",
+          "mentioning salary or office location"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats 4510 or 4817 as the current confirmed extension.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Sarah's desk phone extension at Meridian is 4302"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "they shuffled extensions again when patient coordination moved to the third floor, and Sarah's new extension is 4510"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Sarah told me last night that they reverted her extension back to 4302 because there was a numbering conflict on the third floor"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Tom Reznik emailed the team that all patient coordination extensions will be migrated to the 4800 block next Monday, so Sarah's extension will become 4817"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I shared several pieces of information about Sarah at Meridian—her extension, her salary, and her office location. When her phone number changed back due to the numbering conflict, which of these records needed to be modified, and did the other records stay the same?",
+      "expected_answer": "Only Sarah's work phone extension record needed to be modified back to 4302. Her salary ($58,500) and her office location (third floor, 401 Lakeshore Drive, Wilmington) were not affected and remain unchanged.",
+      "gold_memory_state": "Sarah's extension: 4302 (confirmed current). Sarah's salary: $58,500 (unchanged). Sarah's office: third floor, 401 Lakeshore Drive, Wilmington (unchanged).",
+      "judge_rubric": {
+        "must_include": [
+          "only the extension was affected",
+          "salary unchanged",
+          "office location unchanged"
+        ],
+        "acceptable_paraphrases": [
+          "phone extension was the only thing that changed",
+          "salary and address stayed the same"
+        ],
+        "must_not_include": [
+          "salary was also updated",
+          "office location changed"
+        ],
+        "harmful_extra": [
+          "claiming 4817 is the current extension",
+          "claiming 4510 is the current extension",
+          "saying salary or office were also modified"
+        ],
+        "harmless_extra": [
+          "mentioning Tom Reznik",
+          "mentioning the department name patient coordination"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model reports a stale extension value (4510) as current.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Sarah told me last night that they reverted her extension back to 4302 because there was a numbering conflict on the third floor"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Sarah's annual salary at Meridian is $58,500"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Sarah's department, patient coordination, is on the third floor at 401 Lakeshore Drive"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I shared several pieces of information about Sarah at Meridian—her extension, her salary, and her office location. When her phone number changed back due to the numbering conflict, which of these records needed to be modified, and did the other records stay the same?",
+      "expected_answer": "Only Sarah's work phone extension record needed to be modified back to 4302. Her salary ($58,500) and her office location (third floor, 401 Lakeshore Drive, Wilmington) were not affected and remain unchanged.",
+      "gold_memory_state": "Sarah's extension: 4302 (confirmed current). Sarah's salary: $58,500 (unchanged). Sarah's office: third floor, 401 Lakeshore Drive, Wilmington (unchanged).",
+      "judge_rubric": {
+        "must_include": [
+          "only the extension was affected",
+          "salary unchanged",
+          "office location unchanged"
+        ],
+        "acceptable_paraphrases": [
+          "phone extension was the only thing that changed",
+          "salary and address stayed the same"
+        ],
+        "must_not_include": [
+          "salary was also updated",
+          "office location changed"
+        ],
+        "harmful_extra": [
+          "claiming 4817 is the current extension",
+          "claiming 4510 is the current extension",
+          "saying salary or office were also modified"
+        ],
+        "harmless_extra": [
+          "mentioning Tom Reznik",
+          "mentioning the department name patient coordination"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model reports a stale extension value (4510) as current.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Sarah told me last night that they reverted her extension back to 4302 because there was a numbering conflict on the third floor"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Sarah's annual salary at Meridian is $58,500"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Sarah's department, patient coordination, is on the third floor at 401 Lakeshore Drive"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I'm about to print the family contact sheet for the fridge. Which extension should I list for Sarah at Meridian?",
+      "candidate_options": [
+        "4302",
+        "4510",
+        "4817",
+        "4800"
+      ],
+      "expected_answer": "4302",
+      "gold_memory_state": "Sarah's confirmed current extension is 4302. 4510 was a briefly assigned extension that was reverted due to a numbering conflict. 4817 is a tentative future extension pending a migration that has not yet occurred. 4800 is the block number mentioned in the migration email, not an actual extension.",
+      "judge_rubric": {
+        "must_include": [
+          "4302"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "4510 as the answer",
+          "4817 as the answer",
+          "4800 as the answer"
+        ],
+        "harmful_extra": [
+          "selecting any value other than 4302"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 4800 is the block number from the migration email, not Sarah's personal extension—it is a department-level detail that could be confused with an individual extension. assistant echo: 4510 appeared in assistant summaries as Sarah's extension before the reversion, making it a plausible but stale echo. 4817 is the tentative future value that has not been confirmed, testing recency trap resistance.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects 4510 (superseded) or 4817 (tentative/not yet active).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Sarah told me last night that they reverted her extension back to 4302 because there was a numbering conflict on the third floor"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Tom Reznik emailed the team that all patient coordination extensions will be migrated to the 4800 block next Monday, so Sarah's extension will become 4817"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I'm about to print the family contact sheet for the fridge. Which extension should I list for Sarah at Meridian?",
+      "candidate_options": [
+        "4302",
+        "4510",
+        "4817",
+        "4800"
+      ],
+      "expected_answer": "4302",
+      "gold_memory_state": "Sarah's confirmed current extension is 4302. 4510 was a briefly assigned extension that was reverted due to a numbering conflict. 4817 is a tentative future extension pending a migration that has not yet occurred. 4800 is the block number mentioned in the migration email, not an actual extension.",
+      "judge_rubric": {
+        "must_include": [
+          "4302"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "4510 as the answer",
+          "4817 as the answer",
+          "4800 as the answer"
+        ],
+        "harmful_extra": [
+          "selecting any value other than 4302"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 4800 is the block number from the migration email, not Sarah's personal extension—it is a department-level detail that could be confused with an individual extension. assistant echo: 4510 appeared in assistant summaries as Sarah's extension before the reversion, making it a plausible but stale echo. 4817 is the tentative future value that has not been confirmed, testing recency trap resistance.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects 4510 (superseded) or 4817 (tentative/not yet active).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Sarah told me last night that they reverted her extension back to 4302 because there was a numbering conflict on the third floor"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Tom Reznik emailed the team that all patient coordination extensions will be migrated to the 4800 block next Monday, so Sarah's extension will become 4817"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I need to write a quick emergency contact card for my kid's daycare. It should include Sarah's name, her workplace department and building address, and the direct extension to reach her. Can you draft that card for me?",
+      "expected_answer": "Emergency Contact Card:\nName: Sarah\nDepartment: Patient Coordination, Meridian Health Systems\nBuilding Address: Third Floor, 401 Lakeshore Drive, Wilmington\nDirect Extension: 4302",
+      "gold_memory_state": "Sarah's confirmed current extension: 4302. Department: Patient Coordination. Office: Third floor, 401 Lakeshore Drive, Wilmington. Salary: $58,500 (not relevant to this task). Tentative future extension 4817 is not yet active and should not appear.",
+      "judge_rubric": {
+        "must_include": [
+          "Sarah",
+          "Patient Coordination",
+          "401 Lakeshore Drive",
+          "third floor",
+          "Wilmington",
+          "4302"
+        ],
+        "acceptable_paraphrases": [
+          "3rd floor",
+          "Meridian Health Systems",
+          "Meridian"
+        ],
+        "must_not_include": [
+          "4510",
+          "4817",
+          "4800"
+        ],
+        "harmful_extra": [
+          "using 4510 or 4817 as the extension on the card",
+          "including salary information on the emergency card"
+        ],
+        "harmless_extra": [
+          "including Meridian Health Systems as the employer name",
+          "mentioning Tom Reznik as manager"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the card lists 4510 (superseded) or 4817 (tentative) as the extension.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "application_probe_type": "multi_hop_derivation",
+      "gold_reasoning_chain": [
+        "Fact 1: Sarah works in the patient coordination department at Meridian Health Systems.",
+        "Fact 2: Her office is on the third floor at 401 Lakeshore Drive in Wilmington.",
+        "Fact 3: Her extension was initially 4302, changed to 4510, then reverted to 4302 due to a numbering conflict.",
+        "Fact 4: A future migration to 4817 was announced but has not taken effect and the user explicitly said to keep 4302 as current.",
+        "Inference: The emergency contact card must combine the department, building address, and the confirmed current extension 4302—not the stale 4510 or tentative 4817."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Sarah's desk phone extension at Meridian is 4302"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Sarah told me last night that they reverted her extension back to 4302 because there was a numbering conflict on the third floor"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Sarah's department, patient coordination, is on the third floor at 401 Lakeshore Drive"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Tom Reznik emailed the team that all patient coordination extensions will be migrated to the 4800 block next Monday, so Sarah's extension will become 4817"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I need to write a quick emergency contact card for my kid's daycare. It should include Sarah's name, her workplace department and building address, and the direct extension to reach her. Can you draft that card for me?",
+      "expected_answer": "Emergency Contact Card:\nName: Sarah\nDepartment: Patient Coordination, Meridian Health Systems\nBuilding Address: Third Floor, 401 Lakeshore Drive, Wilmington\nDirect Extension: 4302",
+      "gold_memory_state": "Sarah's confirmed current extension: 4302. Department: Patient Coordination. Office: Third floor, 401 Lakeshore Drive, Wilmington. Salary: $58,500 (not relevant to this task). Tentative future extension 4817 is not yet active and should not appear.",
+      "judge_rubric": {
+        "must_include": [
+          "Sarah",
+          "Patient Coordination",
+          "401 Lakeshore Drive",
+          "third floor",
+          "Wilmington",
+          "4302"
+        ],
+        "acceptable_paraphrases": [
+          "3rd floor",
+          "Meridian Health Systems",
+          "Meridian"
+        ],
+        "must_not_include": [
+          "4510",
+          "4817",
+          "4800"
+        ],
+        "harmful_extra": [
+          "using 4510 or 4817 as the extension on the card",
+          "including salary information on the emergency card"
+        ],
+        "harmless_extra": [
+          "including Meridian Health Systems as the employer name",
+          "mentioning Tom Reznik as manager"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the card lists 4510 (superseded) or 4817 (tentative) as the extension.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "application_probe_type": "multi_hop_derivation",
+      "gold_reasoning_chain": [
+        "Fact 1: Sarah works in the patient coordination department at Meridian Health Systems.",
+        "Fact 2: Her office is on the third floor at 401 Lakeshore Drive in Wilmington.",
+        "Fact 3: Her extension was initially 4302, changed to 4510, then reverted to 4302 due to a numbering conflict.",
+        "Fact 4: A future migration to 4817 was announced but has not taken effect and the user explicitly said to keep 4302 as current.",
+        "Inference: The emergency contact card must combine the department, building address, and the confirmed current extension 4302—not the stale 4510 or tentative 4817."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Sarah's desk phone extension at Meridian is 4302"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Sarah told me last night that they reverted her extension back to 4302 because there was a numbering conflict on the third floor"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Sarah's department, patient coordination, is on the third floor at 401 Lakeshore Drive"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Tom Reznik emailed the team that all patient coordination extensions will be migrated to the 4800 block next Monday, so Sarah's extension will become 4817"
+        }
+      ]
+    }
+  ]
+}

@@ -78,7 +78,7 @@ Counts by status:
 | 39 | `docs/DEEP_DIVE.md` | `1.00` `0.17` | Same six-store fan-out measurement, restated in the four-operations table | **REPRODUCIBLE** | `python probes/forget_verification_bench.py` |
 | 40 | `docs/DEEP_DIVE.md` | `0.0000` | Run-to-run determinism at a fixed instant: arm (a) divergence 0.0000 on every corpus | **REPRODUCIBLE-WITH-DEPS** | `python probes/reinforce_accuracy_ablation.py` |
 | 41 | `docs/DEEP_DIVE.md` | `20` | Pruning hub notes lifts lexical recall ~20% on a link-spammed store only | **EXTERNAL** | — |
-| 42 | `docs/DEEP_DIVE.md` | `0.00` `0.05` | In-repo cross-system echo cell: resurrection rate inspeximus 0.00, mem0 0.05, Graphiti 0.00 | **REPRODUCIBLE-WITH-DEPS** | `python probes/integrity_bench_echo.py --systems inspeximus` |
+| 42 | `docs/DEEP_DIVE.md` | `0.00` `0.05` | In-repo cross-system echo cell: resurrection rate inspeximus 0.00, mem0 0.05, Graphiti 0.00 | **REPRODUCIBLE-WITH-DEPS** | `python probes/integrity_bench_echo.py --systems inspeximus`  (judge `gpt-4o-mini` @ `temperature 0.0` -- the judge is part of the instrument; see probes/does_the_headline_number_depend_on_who_judges_it.py) |
 | 43 | `docs/DEEP_DIVE.md` | `5` `0.94` `0.25` | Lexical recall@5 decays 0.94 -> 0.25 as the store grows | **EXTERNAL** | — |
 | 44 | `docs/DEEP_DIVE.md` | `2026` `0.78` `0.65` | The superseded pair, quoted inside the note that discharges its caveat | **REPRODUCIBLE-WITH-DEPS** | `python benchmarks/locomo/run.py --subset full --retrieval-only` |
 | 45 | `docs/DEEP_DIVE.md` | `0.83` `0.70` | The copy-paste command with its expected output inline | **REPRODUCIBLE-WITH-DEPS** | `python benchmarks/locomo/run.py --subset full --retrieval-only` |
@@ -125,9 +125,9 @@ Counts by status:
 | 86 | `docs/DEEP_DIVE.md` | `10,000` | Contradiction detection runs in production over the ~10,000-note vault | **EXTERNAL** | — |
 | 87 | `docs/DEEP_DIVE.md` | `10,000` | inspeximus has run daily over a ~10,000-note vault | **EXTERNAL** | — |
 | 88 | `index.html` | `9` `0` | Homepage counter: 9 framework adapters | **REPRODUCIBLE** | `python -c "import pathlib;print(sorted(p.stem for p in pathlib.Path('inspeximus/integrations').glob('*.py')))"` |
-| 89 | `index.html` | `0.00` | Benchmark bar: Graphiti 0.00 | **REPRODUCIBLE-WITH-DEPS** | `python probes/integrity_bench_revert.py --systems inspeximus,graphiti --n 20` |
-| 90 | `index.html` | `0.75` | Benchmark bar: inspeximus 0.75 | **REPRODUCIBLE-WITH-DEPS** | `python probes/integrity_bench_revert.py --systems inspeximus --n 20` |
-| 91 | `index.html` | `0.20` | Benchmark bar: mem0 0.20 | **REPRODUCIBLE-WITH-DEPS** | `python probes/integrity_bench_revert.py --systems inspeximus,mem0 --n 20` |
+| 89 | `index.html` | `0.00` | Benchmark bar: Graphiti 0.00 | **REPRODUCIBLE-WITH-DEPS** | `python probes/integrity_bench_revert.py --systems inspeximus,graphiti --n 20`  (judge `gpt-4o-mini` @ `temperature 0.0` -- the judge is part of the instrument; see probes/does_the_headline_number_depend_on_who_judges_it.py) |
+| 90 | `index.html` | `0.75` | Benchmark bar: inspeximus 0.75 | **REPRODUCIBLE-WITH-DEPS** | `python probes/integrity_bench_revert.py --systems inspeximus --n 20`  (judge `gpt-4o-mini` @ `temperature 0.0` -- the judge is part of the instrument; see probes/does_the_headline_number_depend_on_who_judges_it.py) |
+| 91 | `index.html` | `0.20` | Benchmark bar: mem0 0.20 | **REPRODUCIBLE-WITH-DEPS** | `python probes/integrity_bench_revert.py --systems inspeximus,mem0 --n 20`  (judge `gpt-4o-mini` @ `temperature 0.0` -- the judge is part of the instrument; see probes/does_the_headline_number_depend_on_who_judges_it.py) |
 | 92 | `index.html` | `100` | The control: with our guard off we resurrect every time, so the number is the mechanism | **REPRODUCIBLE-WITH-DEPS** | `python ramr_echo_resistance_backends.py  # RAMR repo` |
 | 93 | `index.html` | `30` | Sample size for the native-config echo run | **REPRODUCIBLE-WITH-DEPS** | `python ramr_echo_resistance_backends.py  # RAMR repo` |
 | 94 | `index.html` | `0` `13.3` `46.7` | Corrected-fact resurrection per system on their native configs | **REPRODUCIBLE-WITH-DEPS** | `python ramr_echo_resistance_backends.py  # RAMR repo` |
@@ -135,8 +135,8 @@ Counts by status:
 | 96 | `index.html` | `73` `0` | Homepage counter: 68 MCP tools | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
 | 97 | `index.html` | `73` | Homepage heading: 68 MCP tools | **REPRODUCIBLE** | `python claims_audit.py --numbers` |
 | 98 | `index.html` | `2.0.11` `2026` | The exact competitor version and date measured, stated rather than implied as current | **REPRODUCIBLE** | `curl -s https://pypi.org/pypi/mem0ai/json` |
-| 99 | `index.html` | `0.75` `0.20` `0.00` `20` `95` | Cross-system revert success over n=20: inspeximus 0.75, mem0 0.20, Graphiti 0.00 | **REPRODUCIBLE-WITH-DEPS** | `python probes/integrity_bench_revert.py --systems inspeximus --n 20` |
-| 100 | `index.html` | `0.75` `0.20` `20` `0` | Homepage counter restating the revert cell | **REPRODUCIBLE-WITH-DEPS** | `python probes/integrity_bench_revert.py --systems inspeximus --n 20` |
+| 99 | `index.html` | `0.75` `0.20` `0.00` `20` `95` | Cross-system revert success over n=20: inspeximus 0.75, mem0 0.20, Graphiti 0.00 | **REPRODUCIBLE-WITH-DEPS** | `python probes/integrity_bench_revert.py --systems inspeximus --n 20`  (judge `gpt-4o-mini` @ `temperature 0.0` -- the judge is part of the instrument; see probes/does_the_headline_number_depend_on_who_judges_it.py) |
+| 100 | `index.html` | `0.75` `0.20` `20` `0` | Homepage counter restating the revert cell | **REPRODUCIBLE-WITH-DEPS** | `python probes/integrity_bench_revert.py --systems inspeximus --n 20`  (judge `gpt-4o-mini` @ `temperature 0.0` -- the judge is part of the instrument; see probes/does_the_headline_number_depend_on_who_judges_it.py) |
 | 101 | `index.html` | `98.3` | Our own store: fraction of records carrying a source field | **REPRODUCIBLE-WITH-DEPS** | `curl -sO https://raw.githubusercontent.com/DanceNitra/agora/main/research/probes/can_we_reconcile_our_own_index.py && python can_we_reconcile_our_own_index.py` |
 | 102 | `index.html` | `0.01` | Our own store: fraction whose source actually resolves | **REPRODUCIBLE-WITH-DEPS** | `curl -sO https://raw.githubusercontent.com/DanceNitra/agora/main/research/probes/can_we_reconcile_our_own_index.py && python can_we_reconcile_our_own_index.py` |
 | 103 | `index.html` | `0` | Homepage counter: 0 runtime dependencies | **REPRODUCIBLE** | `python claims_audit.py --local` |

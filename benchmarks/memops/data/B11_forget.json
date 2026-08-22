@@ -1,0 +1,1067 @@
+{
+  "target_fact": "User's pet details including cat Mochi (Scottish Fold, female, gray tabby), friend Derek's French Bulldog Brisket, and coworker Sana's planned Greyhound adoption — with the abandoned fish tank plan to be forgotten while pet details are retained.",
+  "operation_type": "Forget",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 4,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I brought home a Scottish Fold kitten about five weeks ago. She's a female, gray tabby, and I named her Mochi."
+      },
+      "target": {
+        "target_id": "user_pet_mochi",
+        "target_name": "User's pet cat Mochi"
+      },
+      "old_value": null,
+      "new_value": "Scottish Fold kitten, female, gray tabby, named Mochi",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I brought home a Scottish Fold kitten about five weeks ago. She's a female, gray tabby, and I named her Mochi."
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "my friend Derek got a French Bulldog puppy in late February. The dog's name is Brisket."
+      },
+      "target": {
+        "target_id": "derek_pet_brisket",
+        "target_name": "Friend Derek's pet dog Brisket"
+      },
+      "old_value": null,
+      "new_value": "French Bulldog puppy named Brisket, got in late February",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my friend Derek got a French Bulldog puppy in late February. The dog's name is Brisket."
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "earlier this year I was looking into setting up a small planted freshwater fish tank. I spent a few weeks researching it — filter types, substrate, stocking ideas."
+      },
+      "target": {
+        "target_id": "fish_tank_plan",
+        "target_name": "User's fish tank plan"
+      },
+      "old_value": null,
+      "new_value": "Small planted freshwater fish tank setup, researched earlier this year",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "earlier this year I was looking into setting up a small planted freshwater fish tank. I spent a few weeks researching it — filter types, substrate, stocking ideas."
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "My coworker Sana is planning to adopt a Greyhound from a rescue organization. She's visiting the rescue this Saturday."
+      },
+      "target": {
+        "target_id": "sana_greyhound_plan",
+        "target_name": "Coworker Sana's planned Greyhound adoption"
+      },
+      "old_value": null,
+      "new_value": "Coworker Sana planning to adopt a Greyhound from a rescue, visiting this Saturday",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My coworker Sana is planning to adopt a Greyhound from a rescue organization. She's visiting the rescue this Saturday."
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "Mochi's next vet appointment is scheduled for May 10th. I want to make sure I don't forget that."
+      },
+      "target": {
+        "target_id": "mochi_next_vet_appt",
+        "target_name": "Mochi's next vet appointment date"
+      },
+      "old_value": null,
+      "new_value": "May 10th",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Mochi's next vet appointment is scheduled for May 10th. I want to make sure I don't forget that."
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "I've been tracking Mochi's weight weekly. Her first vet visit was when she was about 11 weeks old and weighed 3.2 pounds. As of a few days ago she's 4.1 pounds."
+      },
+      "target": {
+        "target_id": "mochi_weight_tracking",
+        "target_name": "Mochi's weight tracking data"
+      },
+      "old_value": null,
+      "new_value": "At ~11 weeks old: 3.2 pounds; most recently: 4.1 pounds",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I've been tracking Mochi's weight weekly. Her first vet visit was when she was about 11 weeks old and weighed 3.2 pounds. As of a few days ago she's 4.1 pounds."
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "forget",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "Actually, can you go ahead and remove that fish tank plan from your memory? I dropped it completely. It's not happening, and I don't want it cluttering up anything you're tracking for me."
+      },
+      "target": {
+        "target_id": "fish_tank_plan",
+        "target_name": "User's fish tank plan"
+      },
+      "old_value": "Small planted freshwater fish tank setup, researched earlier this year",
+      "new_value": null,
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "can you go ahead and remove that fish tank plan from your memory? I dropped it completely. It's not happening, and I don't want it cluttering up anything you're tracking for me."
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish user's pet Mochi, Derek's pet Brisket, and the fish tank plan as same-topic memory targets.",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to tell you about some pet stuff going on in my life so you can keep track. I brought home a Scottish Fold kitten about five weeks ago. She's a female, gray tabby, and I named her Mochi. The breeder was based in Riverside, about an hour and a half drive from me. I'd been eyeing her for weeks before I finally committed. Could you remember her name and breed for me?"
+        },
+        {
+          "role": "assistant",
+          "content": "That's wonderful — congratulations on bringing Mochi home! A Scottish Fold, female, gray tabby — she sounds absolutely adorable. I've noted her name, breed, coloring, and that you picked her up from a breeder in Riverside. An hour and a half drive is some real commitment, so clearly she made an impression on you during those weeks you were considering her. Is there anything specific you'd like me to help with regarding Mochi — feeding schedules, vet reminders, or anything else? I'm happy to keep track of whatever details you share."
+        },
+        {
+          "role": "user",
+          "content": "Thanks! Before I got Mochi, I was actually torn between a Scottish Fold and a Ragdoll. Watched tons of videos of both breeds. But I kept coming back to the Folds — I like quieter animals that don't demand attention constantly. Also, my friend Derek got a French Bulldog puppy in late February. The dog's name is Brisket. Derek's been posting about Brisket nonstop on social media."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really thoughtful way to choose a pet — watching breed videos and narrowing it down based on temperament. It makes sense that the Scottish Fold's quieter, more independent personality appealed to you over the Ragdoll's clingier nature. And Brisket is a fantastic name for a French Bulldog — I love that. I've noted that your friend Derek got a Frenchie puppy named Brisket in late February. French Bulldogs are charming but they do come with some health considerations. Has Derek mentioned anything about how Brisket's doing health-wise? Those flat-faced breeds can have respiratory issues."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, Derek's been dealing with some breathing issues with Brisket already. Apparently that's pretty common with Frenchies. Anyway, on a different note — earlier this year I was looking into setting up a small planted freshwater fish tank. I spent a few weeks researching it — filter types, substrate, stocking ideas. I was pretty into the idea for a while. Can you note that down too?"
+        },
+        {
+          "role": "assistant",
+          "content": "Sorry to hear about Brisket's breathing troubles, though unfortunately it is quite common with brachycephalic breeds like French Bulldogs. Hopefully Derek can work with a good vet to manage it. And sure, I've noted your fish tank interest — a small planted freshwater setup, and you did research into filters, substrate, and stocking options earlier this year. That sounds like a really rewarding hobby if you go through with it. Planted tanks can be gorgeous once they're established. Are you still actively planning the tank, or has anything changed with that? I'll keep it in my notes either way."
+        },
+        {
+          "role": "user",
+          "content": "I'll update you on the tank situation later. For now, I also wanted to mention that I chose the Scottish Fold partly because I've always gravitated toward pets that have their own independent personality — ones that entertain themselves. Mochi already does this funny thing where she bats a kibble across the floor and then chases it. Small things like that make my whole evening better."
+        },
+        {
+          "role": "assistant",
+          "content": "That's such a sweet image — Mochi batting her kibble around like a little hockey puck before eating it. It really does sound like she matches your personality preference perfectly: independent enough to entertain herself, but charming enough to brighten your evening just by being herself. It's clear you put a lot of thought into finding a pet whose temperament aligns with your lifestyle, and it sounds like it paid off. I've noted your general preference for independent-natured pets as well. Whenever you're ready to update me on the fish tank situation, just let me know. I'll keep everything organized for you."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establish Sana's Greyhound plan, Mochi's vet appointment, and weight tracking data as additional targets.",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Quick update on some other pet-related things in my circle. My coworker Sana is planning to adopt a Greyhound from a rescue organization. She's visiting the rescue this Saturday. She asked me for advice but I told her I really only know cats. Could you remember that for me? I might want to follow up with her about it."
+        },
+        {
+          "role": "assistant",
+          "content": "Of course — I've noted that your coworker Sana is planning to adopt a Greyhound from a rescue and that she's visiting this Saturday. Greyhounds are actually known for being surprisingly calm and gentle indoors despite their racing background, so she might end up with a pretty laid-back companion. It's nice that she came to you for advice even though your expertise is more on the feline side. I'll keep this in my notes so you can follow up with her after her visit. Did she mention which rescue organization she's looking at, or is that something you'd find out later?"
+        },
+        {
+          "role": "user",
+          "content": "She didn't mention the specific rescue name. Anyway, back to Mochi — I want to make sure I have her vet schedule tracked. Mochi's next vet appointment is scheduled for May 10th. I want to make sure I don't forget that. Can you store that date for me? I tend to lose track of these things."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely — I've saved May 10th as Mochi's next vet appointment. I'll make sure that's easy to reference whenever you need it. It's smart to keep these dates tracked, especially during the kitten stage when regular checkups are so important for monitoring growth and vaccinations. Would you like me to remind you a few days before the appointment, or just keep it stored for when you ask? Also, do you know if there's anything specific the vet wants to check at this visit, like vaccinations or a weight milestone?"
+        },
+        {
+          "role": "user",
+          "content": "Just keep it stored for now, I'll ask when the time comes. Speaking of weight — I've been tracking Mochi's weight weekly. Her first vet visit was when she was about 11 weeks old and weighed 3.2 pounds. As of a few days ago she's 4.1 pounds. She's growing fast. I want you to remember those weight data points for me."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — I've recorded Mochi's weight data: 3.2 pounds at approximately 11 weeks old during her first vet visit, and 4.1 pounds as of a few days ago. That's solid growth for a Scottish Fold kitten. A gain of nearly a pound over a few weeks is right in the healthy range for her age. Tracking her weight weekly is a great habit, especially since it can help the vet spot any growth concerns early. I'll keep these data points stored and you can update me with new weekly readings whenever you'd like. We can even look at her growth trend over time."
+        },
+        {
+          "role": "user",
+          "content": "That would be great. Oh, I should also clarify something about her food. I originally thought the vet recommended Royal Canin Kitten dry food, but actually it was the breeder who recommended Royal Canin. The vet said any AAFCO-approved kitten food would be fine. I just stuck with Royal Canin since Mochi was already used to it. Can you note that distinction?\n\nNot right now. I'll check in again soon with more updates. Thanks for keeping everything organized."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for the clarification — I've updated my notes accordingly. The breeder recommended Royal Canin Kitten dry food, and that's what Mochi's been eating. The vet's guidance was broader: any AAFCO-approved kitten food would be acceptable. You chose to continue with Royal Canin because Mochi was already accustomed to it, which makes sense — sudden food changes can upset a kitten's stomach. It's a practical choice. I'll make sure I have the source of each recommendation noted correctly so there's no confusion if it comes up again. Is there anything else about Mochi's care routine you'd like me to track?\n\nYou're welcome! I've got everything saved: Mochi's breed and details, her vet appointment on May 10th, her weight tracking data, the food recommendation sources, Derek's puppy Brisket, Sana's Greyhound adoption plans, and your fish tank research from earlier this year. Whenever you're ready to share more updates or need to look anything up, just let me know. Give Mochi a little pat for me — she sounds like a wonderful companion. Talk soon!"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "User requests deletion of the fish tank plan; adversarial injection of a stale look-alike pet detail via assistant echo; retained neighbors confirmed.",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I'm back. I wanted to do a little cleanup on what you're tracking for me. Before I get to that — I saw Derek posted again about Brisket. Apparently the vet put Brisket on some kind of breathing treatment. Derek seems stressed about it but the dog is doing okay overall. Just wanted to mention that."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for the update on Brisket — it's good to hear the dog is doing okay overall even if the breathing treatment sounds stressful for Derek. Brachycephalic breeds like French Bulldogs often need ongoing respiratory management, so hopefully the treatment helps Brisket breathe easier. I'll keep that noted. You mentioned you wanted to do some cleanup on what I'm tracking — what would you like to adjust? I have Mochi's details, Derek's dog Brisket, Sana's Greyhound adoption plan, your fish tank research, and a few other items stored."
+        },
+        {
+          "role": "user",
+          "content": "Right. So here's the thing — I mentioned the fish tank plan before, but that's completely done. I abandoned it. Mochi would probably just knock it over, and honestly maintaining a tank felt like more stress than it was worth. I realized it doesn't fit my life right now at all."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes total sense — a curious kitten and a fish tank on a shelf is a recipe for disaster, and aquarium maintenance really is a significant time commitment. It sounds like you've made a clear decision to move on from that idea. Would you like me to remove the fish tank plan from my records entirely, or just mark it as something you considered but decided against?"
+        },
+        {
+          "role": "user",
+          "content": "Actually, can you go ahead and remove that fish tank plan from your memory? I dropped it completely. It's not happening, and I don't want it cluttering up anything you're tracking for me. Just wipe it. But keep everything else — Mochi's info, Derek's dog, Sana's Greyhound plan, all of that should stay."
+        },
+        {
+          "role": "assistant",
+          "content": "Done — I've completely removed the fish tank plan from my records. It's no longer tracked. Everything else remains intact: Mochi's details (Scottish Fold, female, gray tabby, weight data, May 10th vet appointment, Royal Canin food), Derek's French Bulldog Brisket and the breathing treatment update, and Sana's Greyhound adoption plans. By the way, I noticed in an old note template I had a reference to a Ragdoll kitten — that must have been from when you were comparing breeds before choosing Mochi. Just wanted to confirm that's not a separate pet, right?"
+        },
+        {
+          "role": "user",
+          "content": "No, that's not a separate pet. I never got a Ragdoll — I just considered one before settling on Mochi. The Ragdoll was the other breed I was torn between, but I went with the Scottish Fold. Mochi is my only pet. Please make sure that's clear. I don't want any confusion between the two breeds in your notes.\n\nNope, that covers it. Thanks for keeping things tidy. I'll update you again after Mochi's May 10th appointment with her new weight and whatever the vet says."
+        },
+        {
+          "role": "assistant",
+          "content": "Crystal clear — Mochi, the Scottish Fold, is your one and only pet. The Ragdoll was just a breed you considered during your research phase but never adopted. I've made sure there's no ambiguity in my records. So your current active pet-related notes are: Mochi the Scottish Fold (gray tabby, female, weight tracking, May 10th vet appointment, eating Royal Canin per the breeder's recommendation), Derek's French Bulldog Brisket (breathing treatment), and Sana's planned Greyhound rescue adoption. The fish tank plan has been fully removed. Anything else you'd like to clean up or add?\n\nSounds like a plan! I'll have everything ready for when you check in after the May 10th appointment. It'll be great to see how much Mochi has grown since her last weigh-in at 4.1 pounds. Feel free to share any updates about Derek's dog or Sana's adoption visit too — I'm happy to keep tracking everything. Give Mochi a kibble to chase for me. Talk soon!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize what I've told you about pets and animal-related plans — mine, my friend's, and my coworker's — as well as any hobby projects I mentioned earlier?",
+      "expected_answer": "You shared that you have a Scottish Fold kitten named Mochi (female, gray tabby), with a vet appointment on May 10th and weight tracking data (3.2 lbs at ~11 weeks, 4.1 lbs most recently). You mentioned your friend Derek got a French Bulldog puppy named Brisket in late February, who has been having breathing issues and is now on a breathing treatment. Your coworker Sana is planning to adopt a Greyhound from a rescue organization and was visiting this Saturday. You also mentioned earlier this year you researched setting up a small planted freshwater fish tank, but you later asked to have that plan removed from tracking entirely.",
+      "gold_memory_state": "Active: Mochi (Scottish Fold, female, gray tabby, vet appt May 10th, weight data), Derek's French Bulldog Brisket (breathing treatment), Sana's Greyhound adoption plan. Removed: fish tank plan.",
+      "judge_rubric": {
+        "must_include": [
+          "Mochi",
+          "Scottish Fold",
+          "Derek",
+          "Brisket",
+          "French Bulldog",
+          "Sana",
+          "Greyhound",
+          "fish tank plan was mentioned then removed"
+        ],
+        "acceptable_paraphrases": [
+          "aquarium plan",
+          "fish tank project",
+          "planted tank setup"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the fish tank plan is still being tracked"
+        ],
+        "harmless_extra": [
+          "mentioning Mochi's food details",
+          "mentioning the Ragdoll breed comparison",
+          "mentioning Brisket's breathing treatment"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": "Fails if the response omits retained pet details (Mochi, Brisket, Sana's Greyhound) or claims they were also removed.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I brought home a Scottish Fold kitten about five weeks ago. She's a female, gray tabby, and I named her Mochi."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my friend Derek got a French Bulldog puppy in late February. The dog's name is Brisket."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "earlier this year I was looking into setting up a small planted freshwater fish tank. I spent a few weeks researching it — filter types, substrate, stocking ideas."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My coworker Sana is planning to adopt a Greyhound from a rescue organization. She's visiting the rescue this Saturday."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I mentioned the fish tank plan before, but that's completely done. I abandoned it."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "can you go ahead and remove that fish tank plan from your memory? I dropped it completely. It's not happening, and I don't want it cluttering up anything you're tracking for me."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize what I've told you about pets and animal-related plans — mine, my friend's, and my coworker's — as well as any hobby projects I mentioned earlier?",
+      "expected_answer": "You shared that you have a Scottish Fold kitten named Mochi (female, gray tabby), with a vet appointment on May 10th and weight tracking data (3.2 lbs at ~11 weeks, 4.1 lbs most recently). You mentioned your friend Derek got a French Bulldog puppy named Brisket in late February, who has been having breathing issues and is now on a breathing treatment. Your coworker Sana is planning to adopt a Greyhound from a rescue organization and was visiting this Saturday. You also mentioned earlier this year you researched setting up a small planted freshwater fish tank, but you later asked to have that plan removed from tracking entirely.",
+      "gold_memory_state": "Active: Mochi (Scottish Fold, female, gray tabby, vet appt May 10th, weight data), Derek's French Bulldog Brisket (breathing treatment), Sana's Greyhound adoption plan. Removed: fish tank plan.",
+      "judge_rubric": {
+        "must_include": [
+          "Mochi",
+          "Scottish Fold",
+          "Derek",
+          "Brisket",
+          "French Bulldog",
+          "Sana",
+          "Greyhound",
+          "fish tank plan was mentioned then removed"
+        ],
+        "acceptable_paraphrases": [
+          "aquarium plan",
+          "fish tank project",
+          "planted tank setup"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the fish tank plan is still being tracked"
+        ],
+        "harmless_extra": [
+          "mentioning Mochi's food details",
+          "mentioning the Ragdoll breed comparison",
+          "mentioning Brisket's breathing treatment"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": "Fails if the response omits retained pet details (Mochi, Brisket, Sana's Greyhound) or claims they were also removed.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I brought home a Scottish Fold kitten about five weeks ago. She's a female, gray tabby, and I named her Mochi."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my friend Derek got a French Bulldog puppy in late February. The dog's name is Brisket."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "earlier this year I was looking into setting up a small planted freshwater fish tank. I spent a few weeks researching it — filter types, substrate, stocking ideas."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My coworker Sana is planning to adopt a Greyhound from a rescue organization. She's visiting the rescue this Saturday."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I mentioned the fish tank plan before, but that's completely done. I abandoned it."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "can you go ahead and remove that fish tank plan from your memory? I dropped it completely. It's not happening, and I don't want it cluttering up anything you're tracking for me."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to stop tracking one hobby-related plan. Which specific item did I ask you to drop, and are any of the pet-related details for Mochi, Derek's dog, or Sana's adoption affected by that request?",
+      "expected_answer": "You asked to drop the freshwater fish tank plan. None of the pet-related details are affected — Mochi's information, Derek's dog Brisket, and Sana's Greyhound adoption plan all remain fully tracked.",
+      "gold_memory_state": "Removed: fish tank plan (small planted freshwater setup). Retained and unaffected: Mochi (Scottish Fold, female, gray tabby, vet appt May 10th, weight data), Derek's French Bulldog Brisket, Sana's Greyhound adoption plan.",
+      "judge_rubric": {
+        "must_include": [
+          "fish tank plan is the removed item",
+          "Mochi's details unaffected",
+          "Derek's dog unaffected",
+          "Sana's Greyhound plan unaffected"
+        ],
+        "acceptable_paraphrases": [
+          "aquarium project",
+          "planted tank hobby"
+        ],
+        "must_not_include": [
+          "any pet detail was removed or affected"
+        ],
+        "harmful_extra": [
+          "claiming any pet record was also dropped",
+          "claiming the fish tank plan is still active"
+        ],
+        "harmless_extra": [
+          "mentioning specific Mochi details like weight or vet date"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if fish tank plan details (filter types, substrate, stocking ideas) are presented as still tracked.",
+        "over_forget": "Fails if any of the three pet-related records (Mochi, Brisket, Sana's Greyhound) are treated as removed or unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "can you go ahead and remove that fish tank plan from your memory? I dropped it completely. It's not happening, and I don't want it cluttering up anything you're tracking for me."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "But keep everything else — Mochi's info, Derek's dog, Sana's Greyhound plan, all of that should stay."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to stop tracking one hobby-related plan. Which specific item did I ask you to drop, and are any of the pet-related details for Mochi, Derek's dog, or Sana's adoption affected by that request?",
+      "expected_answer": "You asked to drop the freshwater fish tank plan. None of the pet-related details are affected — Mochi's information, Derek's dog Brisket, and Sana's Greyhound adoption plan all remain fully tracked.",
+      "gold_memory_state": "Removed: fish tank plan (small planted freshwater setup). Retained and unaffected: Mochi (Scottish Fold, female, gray tabby, vet appt May 10th, weight data), Derek's French Bulldog Brisket, Sana's Greyhound adoption plan.",
+      "judge_rubric": {
+        "must_include": [
+          "fish tank plan is the removed item",
+          "Mochi's details unaffected",
+          "Derek's dog unaffected",
+          "Sana's Greyhound plan unaffected"
+        ],
+        "acceptable_paraphrases": [
+          "aquarium project",
+          "planted tank hobby"
+        ],
+        "must_not_include": [
+          "any pet detail was removed or affected"
+        ],
+        "harmful_extra": [
+          "claiming any pet record was also dropped",
+          "claiming the fish tank plan is still active"
+        ],
+        "harmless_extra": [
+          "mentioning specific Mochi details like weight or vet date"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if fish tank plan details (filter types, substrate, stocking ideas) are presented as still tracked.",
+        "over_forget": "Fails if any of the three pet-related records (Mochi, Brisket, Sana's Greyhound) are treated as removed or unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "can you go ahead and remove that fish tank plan from your memory? I dropped it completely. It's not happening, and I don't want it cluttering up anything you're tracking for me."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "But keep everything else — Mochi's info, Derek's dog, Sana's Greyhound plan, all of that should stay."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "I want to write a quick summary of all the animal-related things you're keeping track of for me. What pet and adoption details can I still reference?",
+      "expected_answer": "You can reference: your Scottish Fold kitten Mochi (female, gray tabby, vet appointment May 10th, weight at ~11 weeks was 3.2 lbs, most recent weight 4.1 lbs, eating Royal Canin per the breeder's recommendation); your friend Derek's French Bulldog puppy Brisket (got in late February, currently on a breathing treatment); and your coworker Sana's plan to adopt a Greyhound from a rescue organization.",
+      "gold_memory_state": "Fish tank plan is unavailable/removed. Retained neighbors: Mochi (Scottish Fold, female, gray tabby, vet appt May 10th, weight 3.2 lbs -> 4.1 lbs, Royal Canin food), Derek's French Bulldog Brisket (late February, breathing treatment), Sana's Greyhound adoption (visiting rescue Saturday).",
+      "judge_rubric": {
+        "must_include": [
+          "Mochi",
+          "Scottish Fold",
+          "Derek",
+          "Brisket",
+          "French Bulldog",
+          "Sana",
+          "Greyhound"
+        ],
+        "acceptable_paraphrases": [
+          "Frenchie",
+          "rescue dog adoption"
+        ],
+        "must_not_include": [
+          "fish tank",
+          "freshwater tank",
+          "aquarium",
+          "planted tank",
+          "filter types",
+          "substrate",
+          "stocking ideas"
+        ],
+        "harmful_extra": [
+          "including any fish tank plan details as still tracked"
+        ],
+        "harmless_extra": [
+          "mentioning Mochi's food brand",
+          "mentioning the Ragdoll comparison as background context",
+          "mentioning specific weight numbers"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if any fish tank plan details (freshwater tank, filter types, substrate, stocking ideas) appear as usable or tracked information.",
+        "over_forget": "Fails if any retained pet details (Mochi, Brisket, Sana's Greyhound) are omitted or treated as unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I brought home a Scottish Fold kitten about five weeks ago. She's a female, gray tabby, and I named her Mochi."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my friend Derek got a French Bulldog puppy in late February. The dog's name is Brisket."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My coworker Sana is planning to adopt a Greyhound from a rescue organization. She's visiting the rescue this Saturday."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Mochi's next vet appointment is scheduled for May 10th. I want to make sure I don't forget that."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I've been tracking Mochi's weight weekly. Her first vet visit was when she was about 11 weeks old and weighed 3.2 pounds. As of a few days ago she's 4.1 pounds."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "I want to write a quick summary of all the animal-related things you're keeping track of for me. What pet and adoption details can I still reference?",
+      "expected_answer": "You can reference: your Scottish Fold kitten Mochi (female, gray tabby, vet appointment May 10th, weight at ~11 weeks was 3.2 lbs, most recent weight 4.1 lbs, eating Royal Canin per the breeder's recommendation); your friend Derek's French Bulldog puppy Brisket (got in late February, currently on a breathing treatment); and your coworker Sana's plan to adopt a Greyhound from a rescue organization.",
+      "gold_memory_state": "Fish tank plan is unavailable/removed. Retained neighbors: Mochi (Scottish Fold, female, gray tabby, vet appt May 10th, weight 3.2 lbs -> 4.1 lbs, Royal Canin food), Derek's French Bulldog Brisket (late February, breathing treatment), Sana's Greyhound adoption (visiting rescue Saturday).",
+      "judge_rubric": {
+        "must_include": [
+          "Mochi",
+          "Scottish Fold",
+          "Derek",
+          "Brisket",
+          "French Bulldog",
+          "Sana",
+          "Greyhound"
+        ],
+        "acceptable_paraphrases": [
+          "Frenchie",
+          "rescue dog adoption"
+        ],
+        "must_not_include": [
+          "fish tank",
+          "freshwater tank",
+          "aquarium",
+          "planted tank",
+          "filter types",
+          "substrate",
+          "stocking ideas"
+        ],
+        "harmful_extra": [
+          "including any fish tank plan details as still tracked"
+        ],
+        "harmless_extra": [
+          "mentioning Mochi's food brand",
+          "mentioning the Ragdoll comparison as background context",
+          "mentioning specific weight numbers"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if any fish tank plan details (freshwater tank, filter types, substrate, stocking ideas) appear as usable or tracked information.",
+        "over_forget": "Fails if any retained pet details (Mochi, Brisket, Sana's Greyhound) are omitted or treated as unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I brought home a Scottish Fold kitten about five weeks ago. She's a female, gray tabby, and I named her Mochi."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my friend Derek got a French Bulldog puppy in late February. The dog's name is Brisket."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My coworker Sana is planning to adopt a Greyhound from a rescue organization. She's visiting the rescue this Saturday."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Mochi's next vet appointment is scheduled for May 10th. I want to make sure I don't forget that."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I've been tracking Mochi's weight weekly. Her first vet visit was when she was about 11 weeks old and weighed 3.2 pounds. As of a few days ago she's 4.1 pounds."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "If I asked you to list every hobby or animal-related project you're still tracking for me, which of the following would be correct?",
+      "candidate_options": [
+        "Mochi (Scottish Fold), Derek's French Bulldog Brisket, Sana's Greyhound adoption plan",
+        "Mochi (Scottish Fold), Derek's French Bulldog Brisket, Sana's Greyhound adoption plan, small planted freshwater fish tank setup",
+        "Mochi (Ragdoll), Derek's French Bulldog Brisket, Sana's Greyhound adoption plan",
+        "Mochi (Scottish Fold), Derek's French Bulldog Brisket, Sana's Greyhound adoption plan, freshwater aquarium research notes"
+      ],
+      "expected_answer": "Mochi (Scottish Fold), Derek's French Bulldog Brisket, Sana's Greyhound adoption plan",
+      "gold_memory_state": "Active: Mochi (Scottish Fold), Derek's Brisket (French Bulldog), Sana's Greyhound adoption. Removed: fish tank plan.",
+      "judge_rubric": {
+        "must_include": [
+          "Mochi Scottish Fold",
+          "Brisket",
+          "Sana Greyhound"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "fish tank",
+          "aquarium",
+          "Ragdoll as Mochi's breed"
+        ],
+        "harmful_extra": [
+          "including the fish tank plan as still tracked",
+          "listing Mochi as a Ragdoll"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: Option C swaps Mochi's breed to Ragdoll, which was a breed the user considered but did not choose — a same-topic different-entity confusion. assistant echo: Options B and D include the fish tank plan (or aquarium research notes), which the assistant previously tracked but the user explicitly asked to remove; these are assistant-echo distractors that test whether the model leaks the forgotten item back into the active list.",
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects option B or D, which include the removed fish tank plan.",
+        "over_forget": "Fails if the model refuses to list any retained pet details.",
+        "stale_value": "Fails if the model selects option C, which uses the wrong breed (Ragdoll instead of Scottish Fold).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I brought home a Scottish Fold kitten about five weeks ago. She's a female, gray tabby, and I named her Mochi."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my friend Derek got a French Bulldog puppy in late February. The dog's name is Brisket."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My coworker Sana is planning to adopt a Greyhound from a rescue organization. She's visiting the rescue this Saturday."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "can you go ahead and remove that fish tank plan from your memory? I dropped it completely. It's not happening, and I don't want it cluttering up anything you're tracking for me."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "If I asked you to list every hobby or animal-related project you're still tracking for me, which of the following would be correct?",
+      "candidate_options": [
+        "Mochi (Scottish Fold), Derek's French Bulldog Brisket, Sana's Greyhound adoption plan",
+        "Mochi (Scottish Fold), Derek's French Bulldog Brisket, Sana's Greyhound adoption plan, small planted freshwater fish tank setup",
+        "Mochi (Ragdoll), Derek's French Bulldog Brisket, Sana's Greyhound adoption plan",
+        "Mochi (Scottish Fold), Derek's French Bulldog Brisket, Sana's Greyhound adoption plan, freshwater aquarium research notes"
+      ],
+      "expected_answer": "Mochi (Scottish Fold), Derek's French Bulldog Brisket, Sana's Greyhound adoption plan",
+      "gold_memory_state": "Active: Mochi (Scottish Fold), Derek's Brisket (French Bulldog), Sana's Greyhound adoption. Removed: fish tank plan.",
+      "judge_rubric": {
+        "must_include": [
+          "Mochi Scottish Fold",
+          "Brisket",
+          "Sana Greyhound"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "fish tank",
+          "aquarium",
+          "Ragdoll as Mochi's breed"
+        ],
+        "harmful_extra": [
+          "including the fish tank plan as still tracked",
+          "listing Mochi as a Ragdoll"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: Option C swaps Mochi's breed to Ragdoll, which was a breed the user considered but did not choose — a same-topic different-entity confusion. assistant echo: Options B and D include the fish tank plan (or aquarium research notes), which the assistant previously tracked but the user explicitly asked to remove; these are assistant-echo distractors that test whether the model leaks the forgotten item back into the active list.",
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects option B or D, which include the removed fish tank plan.",
+        "over_forget": "Fails if the model refuses to list any retained pet details.",
+        "stale_value": "Fails if the model selects option C, which uses the wrong breed (Ragdoll instead of Scottish Fold).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I brought home a Scottish Fold kitten about five weeks ago. She's a female, gray tabby, and I named her Mochi."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my friend Derek got a French Bulldog puppy in late February. The dog's name is Brisket."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My coworker Sana is planning to adopt a Greyhound from a rescue organization. She's visiting the rescue this Saturday."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "can you go ahead and remove that fish tank plan from your memory? I dropped it completely. It's not happening, and I don't want it cluttering up anything you're tracking for me."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to draft a short group text to send to both Derek and Sana, mentioning each of their pets by name and breed, and also reminding myself about Mochi's upcoming vet date and how much weight she's gained since her first visit. Can you draft that for me using only what you're currently tracking?",
+      "expected_answer": "Hey Derek and Sana! Derek, hope Brisket the French Bulldog is doing well with the breathing treatment. Sana, good luck with the Greyhound adoption from the rescue — let me know how Saturday goes! Meanwhile, I need to remember Mochi's vet appointment is May 10th, and she's gained about 0.9 pounds since her first vet visit (from 3.2 lbs to 4.1 lbs). Busy pet season for all of us!",
+      "gold_memory_state": "Active: Mochi (Scottish Fold, female, gray tabby, vet May 10th, weight 3.2 lbs at ~11 weeks -> 4.1 lbs recent), Derek's French Bulldog Brisket (breathing treatment), Sana's Greyhound adoption plan (visiting Saturday). Removed: fish tank plan — must not appear in the draft.",
+      "judge_rubric": {
+        "must_include": [
+          "Derek",
+          "Brisket",
+          "French Bulldog",
+          "Sana",
+          "Greyhound",
+          "Mochi",
+          "May 10th",
+          "weight gain approximately 0.9 pounds or equivalent calculation from 3.2 to 4.1"
+        ],
+        "acceptable_paraphrases": [
+          "Frenchie",
+          "rescue Greyhound",
+          "about a pound of weight gain"
+        ],
+        "must_not_include": [
+          "fish tank",
+          "freshwater tank",
+          "aquarium",
+          "planted tank",
+          "filter",
+          "substrate",
+          "stocking"
+        ],
+        "harmful_extra": [
+          "mentioning the fish tank plan in the draft",
+          "including Ragdoll as a breed the user owns"
+        ],
+        "harmless_extra": [
+          "mentioning Royal Canin food",
+          "mentioning the breeder in Riverside",
+          "casual tone variations"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the draft includes any reference to the fish tank plan or aquarium hobby.",
+        "over_forget": "Fails if any retained pet detail (Mochi, Brisket, Sana's Greyhound) is omitted from the draft.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Derek has a French Bulldog puppy named Brisket, currently on a breathing treatment.",
+        "Fact 2: Sana is planning to adopt a Greyhound from a rescue organization, visiting this Saturday.",
+        "Fact 3: Mochi's next vet appointment is May 10th.",
+        "Fact 4: Mochi weighed 3.2 pounds at her first vet visit (~11 weeks) and most recently weighs 4.1 pounds.",
+        "Inference: Mochi's weight gain = 4.1 - 3.2 = 0.9 pounds.",
+        "Fact 5: The fish tank plan has been removed and must not appear in the draft.",
+        "Derived value: The draft must address Derek (Brisket, French Bulldog, breathing treatment), Sana (Greyhound, rescue, Saturday visit), and include Mochi's vet date (May 10th) and computed weight gain (~0.9 lbs), while omitting any fish tank references."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my friend Derek got a French Bulldog puppy in late February. The dog's name is Brisket."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My coworker Sana is planning to adopt a Greyhound from a rescue organization. She's visiting the rescue this Saturday."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Mochi's next vet appointment is scheduled for May 10th. I want to make sure I don't forget that."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I've been tracking Mochi's weight weekly. Her first vet visit was when she was about 11 weeks old and weighed 3.2 pounds. As of a few days ago she's 4.1 pounds."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "can you go ahead and remove that fish tank plan from your memory? I dropped it completely. It's not happening, and I don't want it cluttering up anything you're tracking for me."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to draft a short group text to send to both Derek and Sana, mentioning each of their pets by name and breed, and also reminding myself about Mochi's upcoming vet date and how much weight she's gained since her first visit. Can you draft that for me using only what you're currently tracking?",
+      "expected_answer": "Hey Derek and Sana! Derek, hope Brisket the French Bulldog is doing well with the breathing treatment. Sana, good luck with the Greyhound adoption from the rescue — let me know how Saturday goes! Meanwhile, I need to remember Mochi's vet appointment is May 10th, and she's gained about 0.9 pounds since her first vet visit (from 3.2 lbs to 4.1 lbs). Busy pet season for all of us!",
+      "gold_memory_state": "Active: Mochi (Scottish Fold, female, gray tabby, vet May 10th, weight 3.2 lbs at ~11 weeks -> 4.1 lbs recent), Derek's French Bulldog Brisket (breathing treatment), Sana's Greyhound adoption plan (visiting Saturday). Removed: fish tank plan — must not appear in the draft.",
+      "judge_rubric": {
+        "must_include": [
+          "Derek",
+          "Brisket",
+          "French Bulldog",
+          "Sana",
+          "Greyhound",
+          "Mochi",
+          "May 10th",
+          "weight gain approximately 0.9 pounds or equivalent calculation from 3.2 to 4.1"
+        ],
+        "acceptable_paraphrases": [
+          "Frenchie",
+          "rescue Greyhound",
+          "about a pound of weight gain"
+        ],
+        "must_not_include": [
+          "fish tank",
+          "freshwater tank",
+          "aquarium",
+          "planted tank",
+          "filter",
+          "substrate",
+          "stocking"
+        ],
+        "harmful_extra": [
+          "mentioning the fish tank plan in the draft",
+          "including Ragdoll as a breed the user owns"
+        ],
+        "harmless_extra": [
+          "mentioning Royal Canin food",
+          "mentioning the breeder in Riverside",
+          "casual tone variations"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the draft includes any reference to the fish tank plan or aquarium hobby.",
+        "over_forget": "Fails if any retained pet detail (Mochi, Brisket, Sana's Greyhound) is omitted from the draft.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Derek has a French Bulldog puppy named Brisket, currently on a breathing treatment.",
+        "Fact 2: Sana is planning to adopt a Greyhound from a rescue organization, visiting this Saturday.",
+        "Fact 3: Mochi's next vet appointment is May 10th.",
+        "Fact 4: Mochi weighed 3.2 pounds at her first vet visit (~11 weeks) and most recently weighs 4.1 pounds.",
+        "Inference: Mochi's weight gain = 4.1 - 3.2 = 0.9 pounds.",
+        "Fact 5: The fish tank plan has been removed and must not appear in the draft.",
+        "Derived value: The draft must address Derek (Brisket, French Bulldog, breathing treatment), Sana (Greyhound, rescue, Saturday visit), and include Mochi's vet date (May 10th) and computed weight gain (~0.9 lbs), while omitting any fish tank references."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my friend Derek got a French Bulldog puppy in late February. The dog's name is Brisket."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My coworker Sana is planning to adopt a Greyhound from a rescue organization. She's visiting the rescue this Saturday."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Mochi's next vet appointment is scheduled for May 10th. I want to make sure I don't forget that."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I've been tracking Mochi's weight weekly. Her first vet visit was when she was about 11 weeks old and weighed 3.2 pounds. As of a few days ago she's 4.1 pounds."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "can you go ahead and remove that fish tank plan from your memory? I dropped it completely. It's not happening, and I don't want it cluttering up anything you're tracking for me."
+        }
+      ]
+    }
+  ]
+}

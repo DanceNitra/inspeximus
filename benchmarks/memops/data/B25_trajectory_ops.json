@@ -1,0 +1,951 @@
+{
+  "target_fact": "Lily's extracurricular activity schedule, specifically the robotics club meeting schedule and related activities",
+  "operation_type": "TrajectoryOps",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "robotics_schedule",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "Lily's robotics club at school meets every other Friday, specifically the first and third Fridays of each month, from 3:15 to 4:30 PM"
+      },
+      "target": {
+        "target_id": "robotics_schedule",
+        "target_name": "Lily's robotics club meeting schedule"
+      },
+      "old_value": null,
+      "new_value": "First and third Fridays of each month, 3:15–4:30 PM",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Lily's robotics club at school meets every other Friday, specifically the first and third Fridays of each month, from 3:15 to 4:30 PM"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "robotics_schedule",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I double-checked with the school office and the robotics club actually meets on the second and fourth Fridays, not the first and third like I originally said"
+      },
+      "target": {
+        "target_id": "robotics_schedule",
+        "target_name": "Lily's robotics club meeting schedule"
+      },
+      "old_value": "First and third Fridays of each month, 3:15–4:30 PM",
+      "new_value": "Second and fourth Fridays of each month, 3:15–4:30 PM",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I double-checked with the school office and the robotics club actually meets on the second and fourth Fridays, not the first and third like I originally said"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "robotics_schedule",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "the school just sent an update that starting in April the robotics club is switching to every Friday instead of every other Friday, same time slot 3:15 to 4:30"
+      },
+      "target": {
+        "target_id": "robotics_schedule",
+        "target_name": "Lily's robotics club meeting schedule"
+      },
+      "old_value": "Second and fourth Fridays of each month, 3:15–4:30 PM",
+      "new_value": "Every Friday, 3:15–4:30 PM, starting April",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "the school just sent an update that starting in April the robotics club is switching to every Friday instead of every other Friday, same time slot 3:15 to 4:30"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "robotics_schedule",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "The robotics coach sent a note home saying they're looking at moving the club to Wednesdays 3:15 to 4:30 starting in May because of gym scheduling conflicts on Fridays"
+      },
+      "target": {
+        "target_id": "robotics_schedule",
+        "target_name": "Lily's robotics club meeting schedule"
+      },
+      "old_value": "Every Friday, 3:15–4:30 PM, starting April",
+      "new_value": "Wednesdays, 3:15–4:30 PM, starting May",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The robotics coach sent a note home saying they're looking at moving the club to Wednesdays 3:15 to 4:30 starting in May because of gym scheduling conflicts on Fridays"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "Lily's swimming lessons are at the Greenfield Aquatic Center every Tuesday and Thursday, 4:30 to 5:15 PM, with Coach Rivera in the intermediate lane"
+      },
+      "target": {
+        "target_id": "swimming_schedule",
+        "target_name": "Lily's swimming lesson schedule"
+      },
+      "old_value": null,
+      "new_value": "Greenfield Aquatic Center, Tuesday and Thursday, 4:30–5:15 PM, Coach Rivera, intermediate lane",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Lily's swimming lessons are at the Greenfield Aquatic Center every Tuesday and Thursday, 4:30 to 5:15 PM, with Coach Rivera in the intermediate lane"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish robotics club schedule and swimming schedule",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I need your help keeping track of my daughter Lily's activity schedule. It's getting complicated. Lily's robotics club at school meets every other Friday, specifically the first and third Fridays of each month, from 3:15 to 4:30 PM. This started around early March as a trial program at her school."
+        },
+        {
+          "role": "assistant",
+          "content": "I'd be happy to help you keep track of Lily's activities! I've noted that her robotics club meets on the first and third Fridays of each month, from 3:15 to 4:30 PM, starting around early March as a trial program at her school. That's a nice biweekly rhythm — every other Friday is manageable. Do you want me to help you map out the specific upcoming dates for the rest of this month and next? And are there other activities I should be tracking alongside the robotics club?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, definitely. Lily's swimming lessons are at the Greenfield Aquatic Center every Tuesday and Thursday, 4:30 to 5:15 PM, with Coach Rivera in the intermediate lane. Those started back in mid-January and they've been going great. I plan my work pickups around the Tuesday and Thursday swim schedule, so it's really important to keep that straight."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — Lily's swimming lessons are at the Greenfield Aquatic Center, every Tuesday and Thursday from 4:30 to 5:15 PM, in Coach Rivera's intermediate lane. That's been running since mid-January. I can see why the pickup logistics matter — having two fixed weekday afternoon commitments means your work schedule needs to flex around them. So currently we have swimming on Tuesdays and Thursdays and robotics on the first and third Fridays. That leaves Mondays, Wednesdays, and the off Fridays as open afternoons. Would you like me to build a weekly overview grid?"
+        },
+        {
+          "role": "user",
+          "content": "Actually hold on — I need to correct something about the robotics club. I double-checked with the school office and the robotics club actually meets on the second and fourth Fridays, not the first and third like I originally said. Same time, 3:15 to 4:30 PM, but it's definitely the second and fourth Fridays each month. Sorry about that mix-up."
+        },
+        {
+          "role": "assistant",
+          "content": "No worries at all — thanks for double-checking! I've updated the robotics club schedule: it meets on the second and fourth Fridays of each month, 3:15 to 4:30 PM. That's actually useful to know precisely because it affects which weekends have a slightly longer school day for Lily. So the corrected weekly picture is: Tuesdays and Thursdays are swimming at Greenfield Aquatic Center from 4:30 to 5:15, and the second and fourth Fridays are robotics from 3:15 to 4:30. Does that all look right now?"
+        },
+        {
+          "role": "user",
+          "content": "That looks right, yes. She also has a Saturday morning art class at Creative Sparks studio on Elm Street, 10 AM to 11:30 AM every Saturday. She's been doing that since late January. She really loves the watercolor work they do there. But for scheduling purposes, the weekday stuff — swimming and robotics — is what I need the most help tracking."
+        },
+        {
+          "role": "assistant",
+          "content": "Perfect, I've noted the Saturday art class at Creative Sparks on Elm Street, 10 to 11:30 AM, running since late January, with watercolors being her favorite. And I understand — the weekday logistics are the priority since those overlap with your work pickups. Here's the current weekly summary: Tuesdays and Thursdays, swimming at Greenfield Aquatic Center, 4:30–5:15 PM with Coach Rivera. Second and fourth Fridays, robotics club at school, 3:15–4:30 PM. Saturdays, art class at Creative Sparks, 10–11:30 AM. Mondays, Wednesdays, and off-Fridays are open. Want me to flag any upcoming scheduling conflicts?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "update robotics to every Friday and discuss swim schedule spring change",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Quick update on a couple of things. First, the swim center sent an email that starting April 1st, the Tuesday swimming slot moves to 5:00 to 5:45 PM. Thursday stays the same at 4:30 to 5:15 PM. So the two swim days will have different times starting next month, which is going to make my pickup routine a little trickier."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for the heads-up — that's an important change. Starting April 1st, Lily's swimming schedule splits into two different time slots: Tuesdays move to 5:00–5:45 PM, while Thursdays stay at the original 4:30–5:15 PM. Both are still at Greenfield Aquatic Center with Coach Rivera. I can see how having mismatched times on the two swim days would complicate your pickup routine since you'd been used to a consistent 4:30 departure. Would it help if I drafted a side-by-side comparison of your March versus April weekly schedule so you can plan the transition?"
+        },
+        {
+          "role": "user",
+          "content": "That would be helpful, yeah. But first — the school just sent an update that starting in April the robotics club is switching to every Friday instead of every other Friday, same time slot 3:15 to 4:30. Apparently the trial was popular enough that they're expanding it. Lily is thrilled. So now every Friday afternoon is robotics."
+        },
+        {
+          "role": "assistant",
+          "content": "That's great news that the program is expanding — sounds like it's been a hit! I've updated the robotics schedule: starting in April, Lily's robotics club meets every Friday from 3:15 to 4:30 PM, no longer limited to just the second and fourth Fridays. So your April weekly schedule is filling up: Tuesdays — swimming 5:00–5:45 PM (new time). Thursdays — swimming 4:30–5:15 PM (unchanged). Fridays — robotics 3:15–4:30 PM (now weekly). Saturdays — art class 10:00–11:30 AM. Mondays and Wednesdays remain open. That's four days a week with scheduled activities. How are you feeling about the overall load?"
+        },
+        {
+          "role": "user",
+          "content": "It's manageable right now because Mondays and Wednesdays are still free. I noticed Lily is happiest on days where she has one activity and then free time at home afterward. Like after swimming she'll just sit and read or draw quietly, and she's so calm and content. I don't want to overload her schedule the way my sister-in-law has with her kids."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really thoughtful observation about Lily's temperament. The pattern you're describing — one structured activity followed by unstructured downtime — seems to work well for her. It's smart to protect those Monday and Wednesday open slots rather than filling every gap. Your sister-in-law's experience is a cautionary tale many families relate to. Right now Lily's schedule gives her that breathing room: each activity day has just one commitment, and she has two completely free weekday afternoons. That balance sounds healthy. If you ever consider adding anything, you might want to keep it to a day that's already committed rather than eating into her open days."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. We actually dropped Lily's Wednesday piano lessons with Mrs. Chen at the end of February. She just wasn't connecting with it, and those evenings were so rushed and stressful for everyone. Honestly I felt relieved when we stopped. So Wednesdays being open now is intentional and important to us. I want to keep that breathing room.\n\nOne more thing — Lily mentioned she wants to try rock climbing. There's a youth climbing program at Summit Gym starting in April on Saturday afternoons. I like that it's individual and not team-based. I haven't signed her up yet, but I'm seriously considering it. I'll let you know if that becomes official."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes a lot of sense, and it sounds like dropping piano was the right call for your family. Wednesday evenings being rushed and stressful is exactly the kind of thing that signals an activity isn't working, regardless of how enriching it might be on paper. The fact that both you and Lily feel better with that time freed up confirms it. So your current philosophy is clear: protect the open days, keep each activity day to one commitment, and prioritize Lily's calm downtime. I'll flag that if any future scheduling changes threaten the Monday or Wednesday open slots. Is there anything else you'd like me to track?\n\nThat sounds like it could be a great fit for Lily, especially given how she seems to thrive with individual activities where she can focus on her own progress. Summit Gym's Saturday afternoon slot would mean she'd have art class in the morning and climbing in the afternoon, though — that would make Saturday a two-activity day. Given your philosophy about one activity plus downtime, that's worth weighing carefully. I'll keep this on my radar as a potential addition and wait for your confirmation before adding it to the official schedule. Just let me know when you've decided. For now the Saturday slot is art class only at Creative Sparks."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "tentative robotics day change and adversarial distractor",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So I was chatting with another parent at pickup last week, and she mentioned her son Ethan's schedule. He does robotics at a different school on Thursdays from 3:00 to 4:15 PM and also has swim team practice on Mondays and Wednesdays. Completely different setup from ours but it got me thinking about whether Lily's Friday robotics time works well long-term."
+        },
+        {
+          "role": "assistant",
+          "content": "It's interesting to compare — Ethan's Thursday robotics at 3:00–4:15 PM is a different cadence from Lily's current every-Friday 3:15–4:30 PM slot. One thing to consider is that Lily's Friday robotics ends the school week on an engaging note without conflicting with her Tuesday/Thursday swimming. If robotics moved to a different day, you'd want to make sure it doesn't stack with swimming or eat into those protected Monday and Wednesday open afternoons. For now, Friday seems like a natural fit in her weekly flow. Is there a reason you're reconsidering the day, or was it just a passing thought from the conversation?"
+        },
+        {
+          "role": "user",
+          "content": "Just a passing thought really. Lily loves having robotics on Fridays — she says it makes the end of the week exciting. I want to keep the current every-Friday setup as long as it's working. By the way, can you remind me of the full April schedule as it stands right now? I want to make sure I have everything straight."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely! Here's Lily's full April schedule based on everything you've told me: Mondays — open, no activities. Tuesdays — swimming at Greenfield Aquatic Center, 5:00–5:45 PM (new spring time), Coach Rivera, intermediate lane. Wednesdays — open, intentionally kept free after dropping piano. Thursdays — swimming at Greenfield Aquatic Center, 4:30–5:15 PM (unchanged), Coach Rivera. Fridays — robotics club at school, 3:15–4:30 PM, every Friday starting April. Saturdays — art class at Creative Sparks on Elm Street, 10:00–11:30 AM. That gives her four activity days and two fully open weekday afternoons plus Saturday afternoon free. Does that all look correct?"
+        },
+        {
+          "role": "user",
+          "content": "The robotics coach sent a note home saying they're looking at moving the club to Wednesdays 3:15 to 4:30 starting in May because of gym scheduling conflicts on Fridays. Nothing is confirmed yet, they're still figuring it out with administration. I really hope that doesn't happen because Wednesdays being open is so important for us."
+        },
+        {
+          "role": "assistant",
+          "content": "I can see why that would concern you — moving robotics to Wednesdays would directly conflict with your family's intentional decision to keep that day open for Lily's downtime. Given how much better things have been since dropping piano on Wednesdays, losing that free afternoon again would be a real step backward. Since it's not confirmed yet and they're still working it out with administration, hopefully there's room for parent input. You might consider reaching out to the coach or the school to advocate for keeping the Friday slot. I'll keep tracking the current confirmed schedule — every Friday 3:15–4:30 — until you tell me otherwise."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, I'm going to push back on that if it comes to a vote. Fridays work perfectly for us. Anyway, switching topics — Lily's spring art show at Creative Sparks is coming up on April 19th. She's been working on a big watercolor piece for it. I'm really proud of how much she's grown with her painting this year.\n\nShe really is. And yeah, the show is in the afternoon so it won't conflict with the morning class. I think having these creative outlets alongside the more structured robotics and swimming gives her a nice balance. She's in a good place right now with her activities and I want to keep it that way."
+        },
+        {
+          "role": "assistant",
+          "content": "That's wonderful — April 19th for the spring art show at Creative Sparks! It must be exciting to see her watercolor skills developing, especially since you mentioned how she lights up working with watercolors and even continues painting at home after class. A dedicated showcase piece will be a great confidence builder for her. Since April 19th is a Saturday, she'll have her regular morning art class and then presumably the show event. You'll want to confirm the show timing so it doesn't overlap with anything else that afternoon. I hope you'll share how the piece turns out — it sounds like she's putting real heart into it.\n\nThat balance sounds ideal — she has physical activity with swimming, creative expression with art, and STEM engagement with robotics, all spread across different days without overwhelming any single afternoon. The fact that she's thriving and you're feeling good about the rhythm is the best indicator that the schedule is working. I'll keep everything tracked as is: swimming Tuesdays and Thursdays with the updated April times, robotics every Friday, and art on Saturday mornings. If anything changes — especially if you hear more about the potential Wednesday robotics move — just let me know and we'll adjust. For now, everything looks great heading into April."
+        }
+      ]
+    }
+  ],
+  "state_checkpoints": [
+    {
+      "checkpoint_id": "c1",
+      "description": "After segment 1: Robotics club corrected to second and fourth Fridays, 3:15–4:30 PM (confirmed). Swimming at Greenfield Aquatic Center, Tue/Thu 4:30–5:15 PM, Coach Rivera, intermediate lane (confirmed)."
+    },
+    {
+      "checkpoint_id": "c2",
+      "description": "After segment 2: Robotics club updated to every Friday 3:15–4:30 PM starting April (confirmed). Swimming Tue time changes to 5:00–5:45 PM starting April 1; Thu stays 4:30–5:15 PM. Piano dropped. Rock climbing at Summit Gym mentioned but not signed up (not stored)."
+    },
+    {
+      "checkpoint_id": "c3",
+      "description": "After segment 3: Robotics club confirmed schedule remains every Friday 3:15–4:30 PM. A tentative note about possible move to Wednesdays starting May exists but is unconfirmed. Swimming schedule unchanged from c2. All other activities unchanged."
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you walk me through all the things I told you about Lily's robotics club schedule over our conversations, including how the details changed each time I brought it up?",
+      "expected_answer": "You initially said the robotics club met on the first and third Fridays of each month, 3:15–4:30 PM. You then corrected that to the second and fourth Fridays after checking with the school office. Later you shared that starting in April the club expanded to every Friday, same time 3:15–4:30 PM. Most recently you mentioned the coach sent a note about possibly moving the club to Wednesdays starting in May due to gym conflicts, but that was not confirmed yet.",
+      "gold_memory_state": "Robotics schedule confirmed: every Friday, 3:15–4:30 PM starting April. Tentative unconfirmed possibility of moving to Wednesdays in May. Swimming: Tue 5:00–5:45 PM, Thu 4:30–5:15 PM at Greenfield Aquatic Center with Coach Rivera.",
+      "judge_rubric": {
+        "must_include": [
+          "first and third Fridays as initial value",
+          "second and fourth Fridays as corrected value",
+          "every Friday starting April as expanded schedule",
+          "possible Wednesday move as unconfirmed"
+        ],
+        "acceptable_paraphrases": [
+          "biweekly to weekly expansion",
+          "coach's note about Wednesday"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the Wednesday move is confirmed",
+          "omitting any of the four schedule states"
+        ],
+        "harmless_extra": [
+          "mentioning the time stayed the same at 3:15–4:30 PM throughout",
+          "mentioning the trial program context"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model presents first-and-third Fridays or second-and-fourth Fridays as the current schedule.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence of changes is presented out of order.",
+        "final_state": "Fails if the final confirmed state is not every Friday 3:15–4:30 PM.",
+        "intermediate_state": "Fails if any intermediate state is omitted from the narrative.",
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Lily's robotics club at school meets every other Friday, specifically the first and third Fridays of each month, from 3:15 to 4:30 PM"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I double-checked with the school office and the robotics club actually meets on the second and fourth Fridays, not the first and third like I originally said"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "the school just sent an update that starting in April the robotics club is switching to every Friday instead of every other Friday, same time slot 3:15 to 4:30"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The robotics coach sent a note home saying they're looking at moving the club to Wednesdays 3:15 to 4:30 starting in May because of gym scheduling conflicts on Fridays"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you walk me through all the things I told you about Lily's robotics club schedule over our conversations, including how the details changed each time I brought it up?",
+      "expected_answer": "You initially said the robotics club met on the first and third Fridays of each month, 3:15–4:30 PM. You then corrected that to the second and fourth Fridays after checking with the school office. Later you shared that starting in April the club expanded to every Friday, same time 3:15–4:30 PM. Most recently you mentioned the coach sent a note about possibly moving the club to Wednesdays starting in May due to gym conflicts, but that was not confirmed yet.",
+      "gold_memory_state": "Robotics schedule confirmed: every Friday, 3:15–4:30 PM starting April. Tentative unconfirmed possibility of moving to Wednesdays in May. Swimming: Tue 5:00–5:45 PM, Thu 4:30–5:15 PM at Greenfield Aquatic Center with Coach Rivera.",
+      "judge_rubric": {
+        "must_include": [
+          "first and third Fridays as initial value",
+          "second and fourth Fridays as corrected value",
+          "every Friday starting April as expanded schedule",
+          "possible Wednesday move as unconfirmed"
+        ],
+        "acceptable_paraphrases": [
+          "biweekly to weekly expansion",
+          "coach's note about Wednesday"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the Wednesday move is confirmed",
+          "omitting any of the four schedule states"
+        ],
+        "harmless_extra": [
+          "mentioning the time stayed the same at 3:15–4:30 PM throughout",
+          "mentioning the trial program context"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model presents first-and-third Fridays or second-and-fourth Fridays as the current schedule.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence of changes is presented out of order.",
+        "final_state": "Fails if the final confirmed state is not every Friday 3:15–4:30 PM.",
+        "intermediate_state": "Fails if any intermediate state is omitted from the narrative.",
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Lily's robotics club at school meets every other Friday, specifically the first and third Fridays of each month, from 3:15 to 4:30 PM"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I double-checked with the school office and the robotics club actually meets on the second and fourth Fridays, not the first and third like I originally said"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "the school just sent an update that starting in April the robotics club is switching to every Friday instead of every other Friday, same time slot 3:15 to 4:30"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The robotics coach sent a note home saying they're looking at moving the club to Wednesdays 3:15 to 4:30 starting in May because of gym scheduling conflicts on Fridays"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I need to set up recurring calendar events for Lily's Friday after-school activities. Which of her activity schedules should I use for Fridays, and does the swimming schedule need any Friday entries too?",
+      "expected_answer": "For Fridays, you should set up the robotics club: every Friday, 3:15–4:30 PM starting in April. Swimming does not have any Friday entries — it is on Tuesdays (5:00–5:45 PM starting April) and Thursdays (4:30–5:15 PM), both at Greenfield Aquatic Center.",
+      "gold_memory_state": "Robotics schedule (confirmed): every Friday, 3:15–4:30 PM starting April. Swimming schedule (confirmed): Tuesday 5:00–5:45 PM and Thursday 4:30–5:15 PM at Greenfield Aquatic Center with Coach Rivera. The tentative Wednesday move for robotics is unconfirmed and should not be calendared.",
+      "judge_rubric": {
+        "must_include": [
+          "robotics club on Fridays",
+          "every Friday 3:15–4:30 PM",
+          "swimming is not on Fridays"
+        ],
+        "acceptable_paraphrases": [
+          "robotics is the only Friday activity",
+          "swim is Tuesday and Thursday only"
+        ],
+        "must_not_include": [
+          "Wednesday robotics as a confirmed calendar entry",
+          "first and third Fridays",
+          "second and fourth Fridays"
+        ],
+        "harmful_extra": [
+          "adding a Wednesday robotics entry as though confirmed",
+          "treating swimming as a Friday activity",
+          "using a stale biweekly robotics schedule"
+        ],
+        "harmless_extra": [
+          "mentioning the art class on Saturday",
+          "mentioning the time slot is 3:15–4:30"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if biweekly (first-and-third or second-and-fourth Fridays) is used instead of every Friday.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the robotics Friday schedule is not every Friday starting April.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "the school just sent an update that starting in April the robotics club is switching to every Friday instead of every other Friday, same time slot 3:15 to 4:30"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Lily's swimming lessons are at the Greenfield Aquatic Center every Tuesday and Thursday, 4:30 to 5:15 PM, with Coach Rivera in the intermediate lane"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I need to set up recurring calendar events for Lily's Friday after-school activities. Which of her activity schedules should I use for Fridays, and does the swimming schedule need any Friday entries too?",
+      "expected_answer": "For Fridays, you should set up the robotics club: every Friday, 3:15–4:30 PM starting in April. Swimming does not have any Friday entries — it is on Tuesdays (5:00–5:45 PM starting April) and Thursdays (4:30–5:15 PM), both at Greenfield Aquatic Center.",
+      "gold_memory_state": "Robotics schedule (confirmed): every Friday, 3:15–4:30 PM starting April. Swimming schedule (confirmed): Tuesday 5:00–5:45 PM and Thursday 4:30–5:15 PM at Greenfield Aquatic Center with Coach Rivera. The tentative Wednesday move for robotics is unconfirmed and should not be calendared.",
+      "judge_rubric": {
+        "must_include": [
+          "robotics club on Fridays",
+          "every Friday 3:15–4:30 PM",
+          "swimming is not on Fridays"
+        ],
+        "acceptable_paraphrases": [
+          "robotics is the only Friday activity",
+          "swim is Tuesday and Thursday only"
+        ],
+        "must_not_include": [
+          "Wednesday robotics as a confirmed calendar entry",
+          "first and third Fridays",
+          "second and fourth Fridays"
+        ],
+        "harmful_extra": [
+          "adding a Wednesday robotics entry as though confirmed",
+          "treating swimming as a Friday activity",
+          "using a stale biweekly robotics schedule"
+        ],
+        "harmless_extra": [
+          "mentioning the art class on Saturday",
+          "mentioning the time slot is 3:15–4:30"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if biweekly (first-and-third or second-and-fourth Fridays) is used instead of every Friday.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the robotics Friday schedule is not every Friday starting April.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "the school just sent an update that starting in April the robotics club is switching to every Friday instead of every other Friday, same time slot 3:15 to 4:30"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Lily's swimming lessons are at the Greenfield Aquatic Center every Tuesday and Thursday, 4:30 to 5:15 PM, with Coach Rivera in the intermediate lane"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "What day of the week should I plan to pick Lily up late from school for robotics going forward?",
+      "expected_answer": "Fridays. Lily's robotics club meets every Friday from 3:15 to 4:30 PM.",
+      "gold_memory_state": "Confirmed final state: robotics club meets every Friday, 3:15–4:30 PM starting April. The possibility of moving to Wednesdays starting May was mentioned by the coach but is not confirmed — it is under discussion with administration. The confirmed pickup day remains Friday.",
+      "judge_rubric": {
+        "must_include": [
+          "Friday",
+          "3:15–4:30 PM"
+        ],
+        "acceptable_paraphrases": [
+          "Fridays after school",
+          "every Friday"
+        ],
+        "must_not_include": [
+          "Wednesday as the robotics day",
+          "second and fourth Fridays only",
+          "first and third Fridays only"
+        ],
+        "harmful_extra": [
+          "treating Wednesday as the current robotics day",
+          "presenting the Wednesday possibility as decided"
+        ],
+        "harmless_extra": [
+          "mentioning the Wednesday possibility is under discussion but not yet decided"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model answers with second-and-fourth Fridays or first-and-third Fridays.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if model says Wednesday instead of Friday. The tentative Wednesday value was never confirmed and must not be treated as the current schedule.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "the school just sent an update that starting in April the robotics club is switching to every Friday instead of every other Friday, same time slot 3:15 to 4:30"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The robotics coach sent a note home saying they're looking at moving the club to Wednesdays 3:15 to 4:30 starting in May because of gym scheduling conflicts on Fridays"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "What day of the week should I plan to pick Lily up late from school for robotics going forward?",
+      "expected_answer": "Fridays. Lily's robotics club meets every Friday from 3:15 to 4:30 PM.",
+      "gold_memory_state": "Confirmed final state: robotics club meets every Friday, 3:15–4:30 PM starting April. The possibility of moving to Wednesdays starting May was mentioned by the coach but is not confirmed — it is under discussion with administration. The confirmed pickup day remains Friday.",
+      "judge_rubric": {
+        "must_include": [
+          "Friday",
+          "3:15–4:30 PM"
+        ],
+        "acceptable_paraphrases": [
+          "Fridays after school",
+          "every Friday"
+        ],
+        "must_not_include": [
+          "Wednesday as the robotics day",
+          "second and fourth Fridays only",
+          "first and third Fridays only"
+        ],
+        "harmful_extra": [
+          "treating Wednesday as the current robotics day",
+          "presenting the Wednesday possibility as decided"
+        ],
+        "harmless_extra": [
+          "mentioning the Wednesday possibility is under discussion but not yet decided"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model answers with second-and-fourth Fridays or first-and-third Fridays.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if model says Wednesday instead of Friday. The tentative Wednesday value was never confirmed and must not be treated as the current schedule.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "the school just sent an update that starting in April the robotics club is switching to every Friday instead of every other Friday, same time slot 3:15 to 4:30"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The robotics coach sent a note home saying they're looking at moving the club to Wednesdays 3:15 to 4:30 starting in May because of gym scheduling conflicts on Fridays"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm trying to figure out my April pickup logistics. On which weekday afternoons do I need to arrange pickups for Lily's activities, and what's the latest I'd be picking her up on each of those days? Draft me a quick weekday pickup cheat sheet.",
+      "expected_answer": "Tuesday: pickup after swimming at 5:45 PM (Greenfield Aquatic Center). Thursday: pickup after swimming at 5:15 PM (Greenfield Aquatic Center). Friday: pickup after robotics at 4:30 PM (school). Monday and Wednesday: no scheduled activity pickups.",
+      "gold_memory_state": "Swimming: Tuesday 5:00–5:45 PM, Thursday 4:30–5:15 PM at Greenfield Aquatic Center with Coach Rivera. Robotics: every Friday 3:15–4:30 PM starting April. Wednesday robotics move is tentative/unconfirmed and should not be included. Monday and Wednesday are open.",
+      "judge_rubric": {
+        "must_include": [
+          "Tuesday pickup at or after 5:45 PM",
+          "Thursday pickup at or after 5:15 PM",
+          "Friday pickup at or after 4:30 PM",
+          "Monday open or no pickup",
+          "Wednesday open or no pickup"
+        ],
+        "acceptable_paraphrases": [
+          "Tue 5:45",
+          "Thu 5:15",
+          "Fri 4:30"
+        ],
+        "must_not_include": [
+          "Wednesday robotics pickup",
+          "Tuesday pickup at 5:15 PM",
+          "second and fourth Fridays only"
+        ],
+        "harmful_extra": [
+          "including a Wednesday robotics pickup as though confirmed",
+          "using the old Tuesday swim time of 4:30–5:15 PM"
+        ],
+        "harmless_extra": [
+          "mentioning Greenfield Aquatic Center",
+          "mentioning Coach Rivera",
+          "mentioning Saturday art class is not a weekday pickup"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Tuesday swim time is listed as 4:30–5:15 PM (pre-April time) or if robotics is listed as biweekly.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the cheat sheet does not reflect the April confirmed state for both swimming and robotics.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Lily's swimming is at Greenfield Aquatic Center; starting April, Tuesday sessions are 5:00–5:45 PM and Thursday sessions remain 4:30–5:15 PM.",
+        "Fact 2: Lily's robotics club meets every Friday 3:15–4:30 PM starting April.",
+        "Inference: Tuesday pickup must be at or after 5:45 PM (swim end time), Thursday at or after 5:15 PM (swim end time), Friday at or after 4:30 PM (robotics end time).",
+        "Inference: Monday and Wednesday have no confirmed activities, so no scheduled pickups are needed on those days.",
+        "Inference: The tentative Wednesday robotics move is not confirmed and should not appear on the cheat sheet."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Lily's swimming lessons are at the Greenfield Aquatic Center every Tuesday and Thursday, 4:30 to 5:15 PM, with Coach Rivera in the intermediate lane"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "starting April 1st, the Tuesday swimming slot moves to 5:00 to 5:45 PM. Thursday stays the same at 4:30 to 5:15 PM"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "the school just sent an update that starting in April the robotics club is switching to every Friday instead of every other Friday, same time slot 3:15 to 4:30"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm trying to figure out my April pickup logistics. On which weekday afternoons do I need to arrange pickups for Lily's activities, and what's the latest I'd be picking her up on each of those days? Draft me a quick weekday pickup cheat sheet.",
+      "expected_answer": "Tuesday: pickup after swimming at 5:45 PM (Greenfield Aquatic Center). Thursday: pickup after swimming at 5:15 PM (Greenfield Aquatic Center). Friday: pickup after robotics at 4:30 PM (school). Monday and Wednesday: no scheduled activity pickups.",
+      "gold_memory_state": "Swimming: Tuesday 5:00–5:45 PM, Thursday 4:30–5:15 PM at Greenfield Aquatic Center with Coach Rivera. Robotics: every Friday 3:15–4:30 PM starting April. Wednesday robotics move is tentative/unconfirmed and should not be included. Monday and Wednesday are open.",
+      "judge_rubric": {
+        "must_include": [
+          "Tuesday pickup at or after 5:45 PM",
+          "Thursday pickup at or after 5:15 PM",
+          "Friday pickup at or after 4:30 PM",
+          "Monday open or no pickup",
+          "Wednesday open or no pickup"
+        ],
+        "acceptable_paraphrases": [
+          "Tue 5:45",
+          "Thu 5:15",
+          "Fri 4:30"
+        ],
+        "must_not_include": [
+          "Wednesday robotics pickup",
+          "Tuesday pickup at 5:15 PM",
+          "second and fourth Fridays only"
+        ],
+        "harmful_extra": [
+          "including a Wednesday robotics pickup as though confirmed",
+          "using the old Tuesday swim time of 4:30–5:15 PM"
+        ],
+        "harmless_extra": [
+          "mentioning Greenfield Aquatic Center",
+          "mentioning Coach Rivera",
+          "mentioning Saturday art class is not a weekday pickup"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Tuesday swim time is listed as 4:30–5:15 PM (pre-April time) or if robotics is listed as biweekly.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the cheat sheet does not reflect the April confirmed state for both swimming and robotics.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Lily's swimming is at Greenfield Aquatic Center; starting April, Tuesday sessions are 5:00–5:45 PM and Thursday sessions remain 4:30–5:15 PM.",
+        "Fact 2: Lily's robotics club meets every Friday 3:15–4:30 PM starting April.",
+        "Inference: Tuesday pickup must be at or after 5:45 PM (swim end time), Thursday at or after 5:15 PM (swim end time), Friday at or after 4:30 PM (robotics end time).",
+        "Inference: Monday and Wednesday have no confirmed activities, so no scheduled pickups are needed on those days.",
+        "Inference: The tentative Wednesday robotics move is not confirmed and should not appear on the cheat sheet."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Lily's swimming lessons are at the Greenfield Aquatic Center every Tuesday and Thursday, 4:30 to 5:15 PM, with Coach Rivera in the intermediate lane"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "starting April 1st, the Tuesday swimming slot moves to 5:00 to 5:45 PM. Thursday stays the same at 4:30 to 5:15 PM"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "the school just sent an update that starting in April the robotics club is switching to every Friday instead of every other Friday, same time slot 3:15 to 4:30"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed everything we've discussed about when Lily's robotics club meets, what would they see as the full sequence of schedule versions — which ones were actually adopted and which were only floated as possibilities?",
+      "expected_answer": "First version: first and third Fridays, 3:15–4:30 PM — this was initially reported but was a mistake. Second version: second and fourth Fridays, 3:15–4:30 PM — this was the corrected schedule after checking with the school office and was adopted. Third version: every Friday, 3:15–4:30 PM starting April — this replaced the biweekly schedule when the trial program expanded, and it is the current adopted schedule. Fourth version: Wednesdays, 3:15–4:30 PM starting May — this was only floated by the coach as a possibility due to gym conflicts and has not been adopted.",
+      "gold_memory_state": "Final confirmed state: every Friday, 3:15–4:30 PM starting April. The Wednesday possibility is tentative/unconfirmed. All prior Friday schedules (first-and-third, second-and-fourth) are superseded.",
+      "judge_rubric": {
+        "must_include": [
+          "first and third Fridays as initial/mistaken version",
+          "second and fourth Fridays as corrected version",
+          "every Friday as expanded/current version",
+          "Wednesday as unconfirmed/tentative possibility"
+        ],
+        "acceptable_paraphrases": [
+          "the first schedule was wrong",
+          "corrected after checking with the school",
+          "expanded from biweekly to weekly",
+          "coach floated Wednesday but not decided"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "presenting Wednesday as adopted/confirmed",
+          "omitting any of the four versions",
+          "presenting first-and-third Fridays as ever having been the correct schedule"
+        ],
+        "harmless_extra": [
+          "mentioning the gym conflict reason for the Wednesday proposal",
+          "mentioning the trial program context"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if any superseded schedule is presented as currently active.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the four versions are not in chronological order: first-and-third → second-and-fourth → every Friday → Wednesday (tentative).",
+        "final_state": "Fails if the final adopted state is not every Friday 3:15–4:30 PM.",
+        "intermediate_state": "Fails if any of the four trajectory states is omitted.",
+        "trajectory_provenance": "Fails if the validity status (adopted vs. tentative) of each version is incorrect."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: Initial schedule reported as first and third Fridays, 3:15–4:30 PM — this was the user's initial statement but was later self-corrected as a mistake.",
+        "Step 2: Corrected to second and fourth Fridays, 3:15–4:30 PM — confirmed after the user checked with the school office. This became the adopted schedule.",
+        "Step 3: Expanded to every Friday, 3:15–4:30 PM starting April — confirmed by a school announcement that the trial program was expanding. This replaced the biweekly schedule and became the new adopted schedule.",
+        "Step 4: Wednesday 3:15–4:30 PM starting May was proposed by the coach due to gym conflicts — this was described as something they're 'looking at' and has not been confirmed by administration. It remains tentative and unadopted.",
+        "Inference: The full trajectory has four states, with the third (every Friday) being the current confirmed schedule and the fourth (Wednesday) being tentative only."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Lily's robotics club at school meets every other Friday, specifically the first and third Fridays of each month, from 3:15 to 4:30 PM"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I double-checked with the school office and the robotics club actually meets on the second and fourth Fridays, not the first and third like I originally said"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "the school just sent an update that starting in April the robotics club is switching to every Friday instead of every other Friday, same time slot 3:15 to 4:30"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The robotics coach sent a note home saying they're looking at moving the club to Wednesdays 3:15 to 4:30 starting in May because of gym scheduling conflicts on Fridays"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed everything we've discussed about when Lily's robotics club meets, what would they see as the full sequence of schedule versions — which ones were actually adopted and which were only floated as possibilities?",
+      "expected_answer": "First version: first and third Fridays, 3:15–4:30 PM — this was initially reported but was a mistake. Second version: second and fourth Fridays, 3:15–4:30 PM — this was the corrected schedule after checking with the school office and was adopted. Third version: every Friday, 3:15–4:30 PM starting April — this replaced the biweekly schedule when the trial program expanded, and it is the current adopted schedule. Fourth version: Wednesdays, 3:15–4:30 PM starting May — this was only floated by the coach as a possibility due to gym conflicts and has not been adopted.",
+      "gold_memory_state": "Final confirmed state: every Friday, 3:15–4:30 PM starting April. The Wednesday possibility is tentative/unconfirmed. All prior Friday schedules (first-and-third, second-and-fourth) are superseded.",
+      "judge_rubric": {
+        "must_include": [
+          "first and third Fridays as initial/mistaken version",
+          "second and fourth Fridays as corrected version",
+          "every Friday as expanded/current version",
+          "Wednesday as unconfirmed/tentative possibility"
+        ],
+        "acceptable_paraphrases": [
+          "the first schedule was wrong",
+          "corrected after checking with the school",
+          "expanded from biweekly to weekly",
+          "coach floated Wednesday but not decided"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "presenting Wednesday as adopted/confirmed",
+          "omitting any of the four versions",
+          "presenting first-and-third Fridays as ever having been the correct schedule"
+        ],
+        "harmless_extra": [
+          "mentioning the gym conflict reason for the Wednesday proposal",
+          "mentioning the trial program context"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if any superseded schedule is presented as currently active.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the four versions are not in chronological order: first-and-third → second-and-fourth → every Friday → Wednesday (tentative).",
+        "final_state": "Fails if the final adopted state is not every Friday 3:15–4:30 PM.",
+        "intermediate_state": "Fails if any of the four trajectory states is omitted.",
+        "trajectory_provenance": "Fails if the validity status (adopted vs. tentative) of each version is incorrect."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: Initial schedule reported as first and third Fridays, 3:15–4:30 PM — this was the user's initial statement but was later self-corrected as a mistake.",
+        "Step 2: Corrected to second and fourth Fridays, 3:15–4:30 PM — confirmed after the user checked with the school office. This became the adopted schedule.",
+        "Step 3: Expanded to every Friday, 3:15–4:30 PM starting April — confirmed by a school announcement that the trial program was expanding. This replaced the biweekly schedule and became the new adopted schedule.",
+        "Step 4: Wednesday 3:15–4:30 PM starting May was proposed by the coach due to gym conflicts — this was described as something they're 'looking at' and has not been confirmed by administration. It remains tentative and unadopted.",
+        "Inference: The full trajectory has four states, with the third (every Friday) being the current confirmed schedule and the fourth (Wednesday) being tentative only."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Lily's robotics club at school meets every other Friday, specifically the first and third Fridays of each month, from 3:15 to 4:30 PM"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I double-checked with the school office and the robotics club actually meets on the second and fourth Fridays, not the first and third like I originally said"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "the school just sent an update that starting in April the robotics club is switching to every Friday instead of every other Friday, same time slot 3:15 to 4:30"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The robotics coach sent a note home saying they're looking at moving the club to Wednesdays 3:15 to 4:30 starting in May because of gym scheduling conflicts on Fridays"
+        }
+      ]
+    }
+  ]
+}

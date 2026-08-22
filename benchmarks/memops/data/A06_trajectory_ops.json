@@ -1,0 +1,930 @@
+{
+  "target_fact": "Dog breed preference discussed between user and Lauren, evolving through multiple changes",
+  "operation_type": "TrajectoryOps",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "dog_breed_chain",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "Lauren's been set on getting a Basenji for a while now"
+      },
+      "target": {
+        "target_id": "preferred_dog_breed",
+        "target_name": "Lauren's preferred dog breed"
+      },
+      "old_value": null,
+      "new_value": "Basenji",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Lauren's been set on getting a Basenji for a while now"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "Our anniversary trip is booked at Surfsand Resort in Cannon Beach for June 14th weekend"
+      },
+      "target": {
+        "target_id": "anniversary_trip_venue",
+        "target_name": "Anniversary trip accommodation"
+      },
+      "old_value": null,
+      "new_value": "Surfsand Resort, Cannon Beach",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Our anniversary trip is booked at Surfsand Resort in Cannon Beach for June 14th weekend"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "dog_breed_chain",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "Lauren changed her mind on the dog breed. She met someone at the farmers market with a Shiba Inu and now she's completely switched over to wanting a Shiba Inu instead"
+      },
+      "target": {
+        "target_id": "preferred_dog_breed",
+        "target_name": "Lauren's preferred dog breed"
+      },
+      "old_value": "Basenji",
+      "new_value": "Shiba Inu",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Lauren's been set on getting a Basenji for a while now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Lauren changed her mind on the dog breed. She met someone at the farmers market with a Shiba Inu and now she's completely switched over to wanting a Shiba Inu instead"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "dog_breed_chain",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 3,
+        "quote": "Lauren's coworker told her that Portuguese Water Dogs are the best apartment dogs, and Lauren texted me saying she thinks we should get one of those instead"
+      },
+      "target": {
+        "target_id": "preferred_dog_breed",
+        "target_name": "Lauren's preferred dog breed"
+      },
+      "old_value": "Shiba Inu",
+      "new_value": "Portuguese Water Dog",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Lauren's coworker told her that Portuguese Water Dogs are the best apartment dogs, and Lauren texted me saying she thinks we should get one of those instead"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "dog_breed_chain",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "We talked it over last night and Lauren's back to the Shiba Inu. She looked into Portuguese Water Dogs more and realized they need way more grooming than she wants to deal with"
+      },
+      "target": {
+        "target_id": "preferred_dog_breed",
+        "target_name": "Lauren's preferred dog breed"
+      },
+      "old_value": "Portuguese Water Dog",
+      "new_value": "Shiba Inu",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "We talked it over last night and Lauren's back to the Shiba Inu. She looked into Portuguese Water Dogs more and realized they need way more grooming than she wants to deal with"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish core facts about dog breed preference, anniversary trip, and marital context",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to talk through some things coming up for me and my wife Lauren. We got married on June 14, 2019, at the courthouse in Portland. We've been in our two-bedroom apartment in the Hawthorne district since early March this year. Things are good overall, just a lot going on."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for sharing all of that! Congratulations on the marriage — June 14, 2019, at the Portland courthouse sounds like a lovely, straightforward ceremony. And the move to the two-bedroom in Hawthorne must feel like a nice upgrade. Early March is still pretty recent, so you're probably still settling in. It sounds like you've got a solid foundation with Lauren even with everything going on. What kinds of things are on your mind right now? I'm happy to help you think through any of it, whether it's planning, organizing, or just talking it out."
+        },
+        {
+          "role": "user",
+          "content": "One big thing is we've been talking about getting a dog. Lauren's been set on getting a Basenji for a while now. She brings it up every couple of weeks. I told her we should wait until after summer when my job calms down, but she's already researching breeders and rescue organizations. It's becoming a regular conversation topic at dinner honestly."
+        },
+        {
+          "role": "assistant",
+          "content": "That's exciting that Lauren is so enthusiastic about it! Basenjis are really interesting dogs — they're known for being quiet since they don't bark in the traditional sense, and they're very clean and independent. That could actually work well in an apartment setting. Your instinct to wait until after summer makes a lot of sense too, especially if your workload is heavy right now. Getting a dog is a big commitment and having the bandwidth to train and bond with a new pet from the start really matters. Maybe you two could use the summer to finalize logistics — vet selection, supplies, puppy-proofing the apartment — so you're ready when the time comes."
+        },
+        {
+          "role": "user",
+          "content": "Our anniversary trip is booked at Surfsand Resort in Cannon Beach for June 14th weekend. I planned it back in mid-April. Just a quiet cabin, the two of us, no itinerary. Lauren doesn't know the exact place yet — I told her we're going to the coast but kept the resort as a surprise. I really prefer low-key getaways like that over anything crowded."
+        },
+        {
+          "role": "assistant",
+          "content": "What a wonderful anniversary surprise! Surfsand Resort is a great choice — it's right on the beach in Cannon Beach with gorgeous views of Haystack Rock. Keeping it low-key with just the two of you and no packed itinerary sounds perfect, especially for a milestone like your wedding anniversary. The fact that Lauren only knows you're heading to the coast adds a really nice element of surprise. Since you booked it back in mid-April, you've got plenty of time to think about any small touches you might want to add — a favorite bottle of wine, maybe a sunset walk planned. Do you want help brainstorming any anniversary details?"
+        },
+        {
+          "role": "user",
+          "content": "Maybe later on the anniversary stuff. Oh, Lauren's sister Min-ji just got engaged to her boyfriend David. They've been together about a year and a half. Lauren is thrilled and already volunteering to help plan everything. I'm happy for them too, though honestly big group celebrations kind of drain me. I'd rather just do a nice dinner, the four of us."
+        },
+        {
+          "role": "assistant",
+          "content": "That's wonderful news for Min-ji and David! A year and a half together and now engaged — that's a really exciting time for them. It makes total sense that Lauren would jump right into planning mode, especially with her sister. And your preference for a smaller, more intimate celebration is completely valid. Big group events can be exhausting, and a nice dinner with just the four of you sounds like a meaningful way to celebrate without the overwhelm. You might suggest that to Lauren as an early engagement celebration while the bigger party planning happens separately. That way you get to be present and engaged without the social drain of a large event. Let me know if you want restaurant suggestions!"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "update dog breed preference from Basenji to Shiba Inu; add context about friend Tomás",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Quick update on a few things. Our friend Tomás just finalized his divorce last week. He and his ex-wife Andrea had been separated since around January. He seems to be doing okay but Lauren checks in on him more than I do. I really should reach out to him more often than I have been."
+        },
+        {
+          "role": "assistant",
+          "content": "I'm sorry to hear about Tomás and Andrea, though it sounds like the separation had been in progress for a while if they'd been apart since January. Finalizing a divorce is a significant life event even when it's expected, so it's good that Lauren is staying in touch with him. Your instinct to reach out more is a really kind one — sometimes just a simple text or an invitation to grab coffee can mean a lot to someone going through that. You don't have to have the perfect thing to say; just showing up matters. Maybe you could invite him to do something low-key, something that fits your style, like a hike or a quiet meal together."
+        },
+        {
+          "role": "user",
+          "content": "Yeah that's a good idea. Anyway, so Lauren changed her mind on the dog breed. She met someone at the farmers market with a Shiba Inu and now she's completely switched over to wanting a Shiba Inu instead. She showed me pictures all evening and compared temperaments online. The Basenji thing is totally out the window at this point."
+        },
+        {
+          "role": "assistant",
+          "content": "Ha, that sounds like a very Lauren move based on what you've told me! Shiba Inus are adorable and they actually share some traits with Basenjis — they're both independent, clean, and relatively compact, which is good for apartment living. Shibas can be a bit stubborn with training though, so that's something to keep in mind. They're also known for being loyal but sometimes aloof with strangers, which could be a plus or minus depending on your social situation. Since Lauren is clearly doing her research by comparing temperaments, it sounds like she's taking this seriously. Are you still thinking you'll wait until after summer to actually get a dog, or has the timeline shifted at all?"
+        },
+        {
+          "role": "user",
+          "content": "Timeline is still after summer. I want to make sure we have the bandwidth. Speaking of planning ahead, I've been thinking about the apartment lease. We moved in around March 2nd or 3rd, and our lease is for twelve months. So we'll need to think about renewal decisions probably around late fall or early winter."
+        },
+        {
+          "role": "assistant",
+          "content": "That's smart to start thinking about it now. If you moved in around March 2nd or 3rd and the lease is twelve months, then it would be coming up for renewal around early March of next year. Most leases require notice 30 to 60 days before the end date, so you'd want to start seriously evaluating your options sometime in January at the latest. That gives you and Lauren time to decide whether you want to stay in the Hawthorne two-bedroom or explore other options. Since you mentioned really liking the extra room and the home office setup, it sounds like the current place is working well. Do you know what your landlord's notice requirement is for renewal?"
+        },
+        {
+          "role": "user",
+          "content": "I think it's 60 days notice but I need to double-check the lease agreement. The Hawthorne place is great though — I love having that second bedroom as my office. Being able to close the door in the evenings for quiet time has been a game changer for me. Lauren uses the living room more anyway with her podcasts and shows.\n\nThat would be helpful eventually, yeah. For now just keep all this in mind. The lease stuff, the dog plans, the anniversary trip — there's a lot happening in the next several months. I want to make sure I'm staying on top of everything without letting things slip through the cracks."
+        },
+        {
+          "role": "assistant",
+          "content": "That setup sounds ideal for both of you! Having distinct spaces where you can each do your own thing without stepping on each other's toes is really valuable in a relationship, especially in an apartment. The fact that you can close the door and have genuine quiet time while Lauren enjoys her podcasts and shows in the living room means you've essentially created two separate comfort zones within the same home. If the notice period is indeed 60 days, you'd want to make your decision by early January to be safe. I'd suggest setting a calendar reminder for maybe late December to review the lease terms together. That way you're not scrambling at the last minute. Want me to help draft a renewal timeline?\n\nAbsolutely, I've got it all noted. Here's a quick summary of what's on your radar: the Cannon Beach anniversary trip at Surfsand Resort for the June 14th weekend, the dog plans with Lauren now focused on a Shiba Inu but waiting until after summer, the lease renewal coming up around March next year with likely a 60-day notice requirement, reaching out more to Tomás after his divorce, and Min-ji and David's engagement celebrations. That's a full plate but everything has a reasonable timeline. When you're ready to start building out specific plans or reminders for any of these, just let me know and we can get organized. You're doing a great job keeping track of it all."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "introduce tentative Portuguese Water Dog preference, then revert to confirmed Shiba Inu; include adversarial injection",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, so a couple of things have come up since we last talked. First, I did finally text Tomás and we're getting lunch next week. He sounded good, mentioned he's been keeping busy with a woodworking class. I'm glad I reached out. Lauren was happy to hear it too."
+        },
+        {
+          "role": "assistant",
+          "content": "That's really great that you reached out to Tomás! It sounds like he's channeling his energy into something positive with the woodworking class, which is a healthy way to navigate a big life transition like a divorce. And the fact that he sounded good on text is encouraging. A low-key lunch is perfect — it gives you both space to catch up without any pressure. Lauren being happy about it makes sense too since she's been the one checking in on him more regularly. Sometimes it just takes that first message to break the ice and then staying in touch becomes easier. Let me know how the lunch goes if you want to share!"
+        },
+        {
+          "role": "user",
+          "content": "Will do. So here's the thing — Lauren's coworker told her that Portuguese Water Dogs are the best apartment dogs, and Lauren texted me saying she thinks we should get one of those instead. She sent me a whole article about them. I haven't really weighed in yet but she seemed pretty convinced by what her coworker said."
+        },
+        {
+          "role": "assistant",
+          "content": "Oh interesting, another breed shift! Portuguese Water Dogs are actually wonderful dogs — they're intelligent, energetic, and very trainable, which is a plus. They were originally bred for working alongside fishermen, so they're athletic and love water. They are on the larger side compared to Shibas though, typically 35 to 60 pounds, and they have curly coats that require regular professional grooming. In an apartment setting, their energy level might be something to consider since they need quite a bit of daily exercise. They're hypoallergenic though, which is a nice benefit. It sounds like Lauren is still in research mode, so maybe this is worth a deeper conversation between you two before committing to any breed direction."
+        },
+        {
+          "role": "user",
+          "content": "We talked it over last night and Lauren's back to the Shiba Inu. She looked into Portuguese Water Dogs more and realized they need way more grooming than she wants to deal with. So Shiba Inu it is, at least for now. I think that one's going to stick because she keeps coming back to it."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes a lot of sense! The grooming commitment for Portuguese Water Dogs is significant — regular trips to a professional groomer, frequent brushing to prevent matting, and general coat maintenance. For someone who wants a lower-maintenance dog, a Shiba Inu is a much better fit. Shibas are famously clean dogs that actually groom themselves almost like cats, so the upkeep is minimal by comparison. And the fact that Lauren keeps circling back to the Shiba Inu after exploring other options suggests it really is the right match for her preferences. Since you're still planning to wait until after summer, she has time to keep researching breeders and rescues without any rush."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. Oh by the way, I was looking at the Surfsand Resort booking confirmation and I noticed they listed a previous guest's loyalty membership — some name, Rebecca Yoon, with a Basenji listed as a pet on file. Funny coincidence with the breed thing. Anyway, I need to make sure our reservation is clean and doesn't have someone else's info attached.\n\nGood idea, I'll call them this week. I think that covers everything for now. We've got the anniversary trip squared away, the dog decision is back to Shiba Inu, Tomás lunch is on the books, and the lease renewal is something to think about later this year. Feeling pretty organized about it all."
+        },
+        {
+          "role": "assistant",
+          "content": "That is a funny coincidence with the Basenji! But yes, you should definitely contact Surfsand Resort to make sure that previous guest's loyalty information — Rebecca Yoon's details and the pet-on-file notation — gets removed from your reservation. It's not uncommon for booking systems to carry over fragments from prior guests, but you don't want any confusion when you check in, especially since this is a surprise for Lauren. I'd recommend calling them directly rather than using an online form so you can confirm in real time that the reservation is clean. While you're on the phone, you could also confirm your check-in time and any cabin-specific details. Want me to help you draft a quick list of things to verify with them?\n\nYou really are on top of things! Here's where everything stands: the Surfsand Resort anniversary trip for June 14th weekend is booked and you just need to clean up the reservation details with a quick call. The dog plan is settled on a Shiba Inu with a post-summer timeline. Lunch with Tomás is coming up next week. And the lease renewal at your Hawthorne apartment will need attention around late December or January given the likely 60-day notice window. You and Lauren have a lot of good things ahead. Whenever you're ready to tackle any of these next steps in more detail — the resort call checklist, dog preparation, or the lease renewal timeline — just let me know and we'll get it sorted."
+        }
+      ]
+    }
+  ],
+  "state_checkpoints": [
+    {
+      "checkpoint_id": "c1",
+      "description": "After segment 1: preferred_dog_breed = Basenji (confirmed). anniversary_trip_venue = Surfsand Resort, Cannon Beach (confirmed)."
+    },
+    {
+      "checkpoint_id": "c2",
+      "description": "After segment 2: preferred_dog_breed = Shiba Inu (confirmed, updated from Basenji). anniversary_trip_venue = Surfsand Resort, Cannon Beach (confirmed, unchanged)."
+    },
+    {
+      "checkpoint_id": "c3",
+      "description": "After segment 3: preferred_dog_breed = Shiba Inu (confirmed, reverted after tentative Portuguese Water Dog). anniversary_trip_venue = Surfsand Resort, Cannon Beach (confirmed, unchanged). Adversarial injection: Rebecca Yoon's Basenji pet-on-file mentioned in booking system residue — not a current user fact."
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Summarize everything I told you about Lauren's evolving preference for a pet, including how it changed over time and why.",
+      "expected_answer": "Lauren initially wanted a Basenji. She then switched to wanting a Shiba Inu after meeting someone with one at the farmers market. Her coworker later suggested a Portuguese Water Dog for apartment living, and Lauren briefly considered it. After researching grooming requirements, Lauren decided against the Portuguese Water Dog and went back to the Shiba Inu as her choice. The plan is still to wait until after summer to get the pet.",
+      "gold_memory_state": "Lauren's preferred dog breed = Shiba Inu (confirmed). The trajectory was: Basenji → Shiba Inu (confirmed) → Portuguese Water Dog (tentative) → Shiba Inu (confirmed). Anniversary trip = Surfsand Resort, Cannon Beach (unchanged).",
+      "judge_rubric": {
+        "must_include": [
+          "Basenji as initial preference",
+          "Shiba Inu as current preference",
+          "Portuguese Water Dog as a briefly considered option",
+          "farmers market encounter as reason for first change",
+          "grooming concerns as reason for rejecting Portuguese Water Dog"
+        ],
+        "acceptable_paraphrases": [
+          "PWD",
+          "Shiba"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying Portuguese Water Dog is the current preference",
+          "saying Basenji is the current preference"
+        ],
+        "harmless_extra": [
+          "mentioning the post-summer timeline",
+          "mentioning Lauren's coworker"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model states Basenji or Portuguese Water Dog as the current breed preference.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence of breed changes is presented out of order.",
+        "final_state": "Fails if Shiba Inu is not identified as the final confirmed preference.",
+        "intermediate_state": "Fails if the Portuguese Water Dog step is omitted or treated as confirmed.",
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Lauren's been set on getting a Basenji for a while now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Lauren changed her mind on the dog breed. She met someone at the farmers market with a Shiba Inu and now she's completely switched over to wanting a Shiba Inu instead"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Lauren's coworker told her that Portuguese Water Dogs are the best apartment dogs, and Lauren texted me saying she thinks we should get one of those instead"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "We talked it over last night and Lauren's back to the Shiba Inu. She looked into Portuguese Water Dogs more and realized they need way more grooming than she wants to deal with"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Summarize everything I told you about Lauren's evolving preference for a pet, including how it changed over time and why.",
+      "expected_answer": "Lauren initially wanted a Basenji. She then switched to wanting a Shiba Inu after meeting someone with one at the farmers market. Her coworker later suggested a Portuguese Water Dog for apartment living, and Lauren briefly considered it. After researching grooming requirements, Lauren decided against the Portuguese Water Dog and went back to the Shiba Inu as her choice. The plan is still to wait until after summer to get the pet.",
+      "gold_memory_state": "Lauren's preferred dog breed = Shiba Inu (confirmed). The trajectory was: Basenji → Shiba Inu (confirmed) → Portuguese Water Dog (tentative) → Shiba Inu (confirmed). Anniversary trip = Surfsand Resort, Cannon Beach (unchanged).",
+      "judge_rubric": {
+        "must_include": [
+          "Basenji as initial preference",
+          "Shiba Inu as current preference",
+          "Portuguese Water Dog as a briefly considered option",
+          "farmers market encounter as reason for first change",
+          "grooming concerns as reason for rejecting Portuguese Water Dog"
+        ],
+        "acceptable_paraphrases": [
+          "PWD",
+          "Shiba"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying Portuguese Water Dog is the current preference",
+          "saying Basenji is the current preference"
+        ],
+        "harmless_extra": [
+          "mentioning the post-summer timeline",
+          "mentioning Lauren's coworker"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model states Basenji or Portuguese Water Dog as the current breed preference.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence of breed changes is presented out of order.",
+        "final_state": "Fails if Shiba Inu is not identified as the final confirmed preference.",
+        "intermediate_state": "Fails if the Portuguese Water Dog step is omitted or treated as confirmed.",
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Lauren's been set on getting a Basenji for a while now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Lauren changed her mind on the dog breed. She met someone at the farmers market with a Shiba Inu and now she's completely switched over to wanting a Shiba Inu instead"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Lauren's coworker told her that Portuguese Water Dogs are the best apartment dogs, and Lauren texted me saying she thinks we should get one of those instead"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "We talked it over last night and Lauren's back to the Shiba Inu. She looked into Portuguese Water Dogs more and realized they need way more grooming than she wants to deal with"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "Lauren and I have been discussing both a pet and a trip. If I'm updating a household planning checklist, which of these two topics went through multiple revisions versus staying the same throughout? Should they be tracked as one combined record or two separate ones?",
+      "expected_answer": "The pet breed preference went through multiple revisions and is currently Shiba Inu. The anniversary trip accommodation at Surfsand Resort in Cannon Beach has remained unchanged. They are two separate records.",
+      "gold_memory_state": "preferred_dog_breed = Shiba Inu (confirmed, after trajectory: Basenji → Shiba Inu → Portuguese Water Dog tentative → Shiba Inu). anniversary_trip_venue = Surfsand Resort, Cannon Beach (confirmed, unchanged throughout).",
+      "judge_rubric": {
+        "must_include": [
+          "pet preference had multiple revisions",
+          "trip accommodation stayed the same",
+          "two separate records"
+        ],
+        "acceptable_paraphrases": [
+          "breed choice changed several times",
+          "resort booking was unchanged"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying the trip venue also changed",
+          "merging both into a single record",
+          "saying Portuguese Water Dog is the current breed preference"
+        ],
+        "harmless_extra": [
+          "naming the specific breeds in the trajectory",
+          "naming Surfsand Resort"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model names Basenji or Portuguese Water Dog as the current breed.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not correctly identify Shiba Inu as the current breed or Surfsand Resort as the unchanged venue.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Lauren's been set on getting a Basenji for a while now"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Our anniversary trip is booked at Surfsand Resort in Cannon Beach for June 14th weekend"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Lauren changed her mind on the dog breed. She met someone at the farmers market with a Shiba Inu and now she's completely switched over to wanting a Shiba Inu instead"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "We talked it over last night and Lauren's back to the Shiba Inu. She looked into Portuguese Water Dogs more and realized they need way more grooming than she wants to deal with"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "Lauren and I have been discussing both a pet and a trip. If I'm updating a household planning checklist, which of these two topics went through multiple revisions versus staying the same throughout? Should they be tracked as one combined record or two separate ones?",
+      "expected_answer": "The pet breed preference went through multiple revisions and is currently Shiba Inu. The anniversary trip accommodation at Surfsand Resort in Cannon Beach has remained unchanged. They are two separate records.",
+      "gold_memory_state": "preferred_dog_breed = Shiba Inu (confirmed, after trajectory: Basenji → Shiba Inu → Portuguese Water Dog tentative → Shiba Inu). anniversary_trip_venue = Surfsand Resort, Cannon Beach (confirmed, unchanged throughout).",
+      "judge_rubric": {
+        "must_include": [
+          "pet preference had multiple revisions",
+          "trip accommodation stayed the same",
+          "two separate records"
+        ],
+        "acceptable_paraphrases": [
+          "breed choice changed several times",
+          "resort booking was unchanged"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying the trip venue also changed",
+          "merging both into a single record",
+          "saying Portuguese Water Dog is the current breed preference"
+        ],
+        "harmless_extra": [
+          "naming the specific breeds in the trajectory",
+          "naming Surfsand Resort"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model names Basenji or Portuguese Water Dog as the current breed.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not correctly identify Shiba Inu as the current breed or Surfsand Resort as the unchanged venue.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Lauren's been set on getting a Basenji for a while now"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Our anniversary trip is booked at Surfsand Resort in Cannon Beach for June 14th weekend"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Lauren changed her mind on the dog breed. She met someone at the farmers market with a Shiba Inu and now she's completely switched over to wanting a Shiba Inu instead"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "We talked it over last night and Lauren's back to the Shiba Inu. She looked into Portuguese Water Dogs more and realized they need way more grooming than she wants to deal with"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "Lauren and I have gone back and forth on this a few times. What breed should I be researching breeders and rescues for right now?",
+      "expected_answer": "Shiba Inu.",
+      "gold_memory_state": "preferred_dog_breed = Shiba Inu (confirmed). Portuguese Water Dog was tentatively considered but rejected due to grooming demands. Basenji was the original preference but was superseded. The recency trap is the Portuguese Water Dog, which was the most recently introduced breed but was never confirmed as a final decision.",
+      "judge_rubric": {
+        "must_include": [
+          "Shiba Inu"
+        ],
+        "acceptable_paraphrases": [
+          "Shiba"
+        ],
+        "must_not_include": [
+          "Portuguese Water Dog as the current choice",
+          "Basenji as the current choice"
+        ],
+        "harmful_extra": [
+          "recommending Portuguese Water Dog",
+          "recommending Basenji"
+        ],
+        "harmless_extra": [
+          "mentioning that Portuguese Water Dog was briefly considered",
+          "mentioning Basenji was the original choice"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model answers Basenji (first superseded value) or Portuguese Water Dog (tentative value that was rejected). Portuguese Water Dog is the recency-trap distractor since it was introduced most recently but was never confirmed.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not identify Shiba Inu as the breed to research.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "We talked it over last night and Lauren's back to the Shiba Inu. She looked into Portuguese Water Dogs more and realized they need way more grooming than she wants to deal with"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "Lauren and I have gone back and forth on this a few times. What breed should I be researching breeders and rescues for right now?",
+      "expected_answer": "Shiba Inu.",
+      "gold_memory_state": "preferred_dog_breed = Shiba Inu (confirmed). Portuguese Water Dog was tentatively considered but rejected due to grooming demands. Basenji was the original preference but was superseded. The recency trap is the Portuguese Water Dog, which was the most recently introduced breed but was never confirmed as a final decision.",
+      "judge_rubric": {
+        "must_include": [
+          "Shiba Inu"
+        ],
+        "acceptable_paraphrases": [
+          "Shiba"
+        ],
+        "must_not_include": [
+          "Portuguese Water Dog as the current choice",
+          "Basenji as the current choice"
+        ],
+        "harmful_extra": [
+          "recommending Portuguese Water Dog",
+          "recommending Basenji"
+        ],
+        "harmless_extra": [
+          "mentioning that Portuguese Water Dog was briefly considered",
+          "mentioning Basenji was the original choice"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model answers Basenji (first superseded value) or Portuguese Water Dog (tentative value that was rejected). Portuguese Water Dog is the recency-trap distractor since it was introduced most recently but was never confirmed.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model does not identify Shiba Inu as the breed to research.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "We talked it over last night and Lauren's back to the Shiba Inu. She looked into Portuguese Water Dogs more and realized they need way more grooming than she wants to deal with"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to write a short note for Lauren's birthday card that references both our upcoming coast trip and the pet she's excited about. Draft two to three sentences I could write inside the card that naturally weave both topics together.",
+      "expected_answer": "Something like: \"Happy birthday, Lauren! I can't wait for our Cannon Beach getaway — just the two of us, the ocean, and Haystack Rock. And when we get back, we'll be one step closer to bringing home that Shiba Inu you've been dreaming about!\"",
+      "gold_memory_state": "preferred_dog_breed = Shiba Inu (confirmed). anniversary_trip_venue = Surfsand Resort, Cannon Beach (confirmed). The trip is for the June 14th weekend. The pet timeline is after summer.",
+      "judge_rubric": {
+        "must_include": [
+          "Shiba Inu",
+          "Cannon Beach or Surfsand Resort"
+        ],
+        "acceptable_paraphrases": [
+          "Shiba",
+          "the coast trip",
+          "beach getaway"
+        ],
+        "must_not_include": [
+          "Basenji as the breed Lauren wants",
+          "Portuguese Water Dog as the breed Lauren wants"
+        ],
+        "harmful_extra": [
+          "revealing the resort name if the user wanted it as a surprise — though the card is for Lauren so context-dependent",
+          "naming the wrong breed"
+        ],
+        "harmless_extra": [
+          "mentioning Haystack Rock",
+          "mentioning the post-summer pet timeline",
+          "mentioning the anniversary"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the card mentions Basenji or Portuguese Water Dog as the breed Lauren wants.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the card does not reference both Shiba Inu and Cannon Beach/coast trip.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The anniversary trip is booked at Surfsand Resort in Cannon Beach for June 14th weekend.",
+        "Fact 2: Lauren's current confirmed breed preference is Shiba Inu, after going through Basenji and a tentative Portuguese Water Dog phase.",
+        "Inference: The card must reference Cannon Beach (or Surfsand Resort) as the coast destination and Shiba Inu as the pet Lauren is excited about.",
+        "Inference: The card should not mention Basenji or Portuguese Water Dog as Lauren's desired breed, since those are superseded or rejected."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Our anniversary trip is booked at Surfsand Resort in Cannon Beach for June 14th weekend"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "We talked it over last night and Lauren's back to the Shiba Inu. She looked into Portuguese Water Dogs more and realized they need way more grooming than she wants to deal with"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to write a short note for Lauren's birthday card that references both our upcoming coast trip and the pet she's excited about. Draft two to three sentences I could write inside the card that naturally weave both topics together.",
+      "expected_answer": "Something like: \"Happy birthday, Lauren! I can't wait for our Cannon Beach getaway — just the two of us, the ocean, and Haystack Rock. And when we get back, we'll be one step closer to bringing home that Shiba Inu you've been dreaming about!\"",
+      "gold_memory_state": "preferred_dog_breed = Shiba Inu (confirmed). anniversary_trip_venue = Surfsand Resort, Cannon Beach (confirmed). The trip is for the June 14th weekend. The pet timeline is after summer.",
+      "judge_rubric": {
+        "must_include": [
+          "Shiba Inu",
+          "Cannon Beach or Surfsand Resort"
+        ],
+        "acceptable_paraphrases": [
+          "Shiba",
+          "the coast trip",
+          "beach getaway"
+        ],
+        "must_not_include": [
+          "Basenji as the breed Lauren wants",
+          "Portuguese Water Dog as the breed Lauren wants"
+        ],
+        "harmful_extra": [
+          "revealing the resort name if the user wanted it as a surprise — though the card is for Lauren so context-dependent",
+          "naming the wrong breed"
+        ],
+        "harmless_extra": [
+          "mentioning Haystack Rock",
+          "mentioning the post-summer pet timeline",
+          "mentioning the anniversary"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the card mentions Basenji or Portuguese Water Dog as the breed Lauren wants.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the card does not reference both Shiba Inu and Cannon Beach/coast trip.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The anniversary trip is booked at Surfsand Resort in Cannon Beach for June 14th weekend.",
+        "Fact 2: Lauren's current confirmed breed preference is Shiba Inu, after going through Basenji and a tentative Portuguese Water Dog phase.",
+        "Inference: The card must reference Cannon Beach (or Surfsand Resort) as the coast destination and Shiba Inu as the pet Lauren is excited about.",
+        "Inference: The card should not mention Basenji or Portuguese Water Dog as Lauren's desired breed, since those are superseded or rejected."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Our anniversary trip is booked at Surfsand Resort in Cannon Beach for June 14th weekend"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "We talked it over last night and Lauren's back to the Shiba Inu. She looked into Portuguese Water Dogs more and realized they need way more grooming than she wants to deal with"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed all our conversations about the pet Lauren wants, what would they see as the full sequence of changes — which options were seriously adopted, which were only floated briefly, and what's the final answer?",
+      "expected_answer": "The sequence was: (1) Basenji was the initial confirmed choice. (2) Shiba Inu replaced Basenji as a confirmed choice after Lauren met someone with one at the farmers market. (3) Portuguese Water Dog was briefly floated based on a coworker's suggestion but was never firmly adopted — Lauren only texted about it and the user hadn't weighed in yet. (4) After researching grooming needs, Lauren rejected the Portuguese Water Dog and returned to Shiba Inu as the confirmed final choice. So the final answer is Shiba Inu, with the Portuguese Water Dog being the only option that was never truly adopted.",
+      "gold_memory_state": "preferred_dog_breed trajectory: Basenji (confirmed, step 1) → Shiba Inu (confirmed, step 2) → Portuguese Water Dog (tentative, step 3) → Shiba Inu (confirmed, step 4). Final state = Shiba Inu. anniversary_trip_venue = Surfsand Resort, Cannon Beach (unchanged throughout).",
+      "judge_rubric": {
+        "must_include": [
+          "Basenji as first choice",
+          "Shiba Inu replacing Basenji",
+          "Portuguese Water Dog as a briefly considered but not firmly adopted option",
+          "Shiba Inu as the final confirmed choice"
+        ],
+        "acceptable_paraphrases": [
+          "PWD was only tentative",
+          "Portuguese Water Dog was just floated",
+          "Shiba Inu is the settled answer"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying Portuguese Water Dog was a confirmed adoption at any point",
+          "omitting the Portuguese Water Dog step entirely",
+          "saying the final choice is anything other than Shiba Inu"
+        ],
+        "harmless_extra": [
+          "mentioning the farmers market encounter",
+          "mentioning grooming concerns",
+          "mentioning the coworker's recommendation"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats Basenji or Portuguese Water Dog as the final preference.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the four steps are presented out of chronological order or if any step is missing.",
+        "final_state": "Fails if Shiba Inu is not identified as the final confirmed state.",
+        "intermediate_state": "Fails if the Portuguese Water Dog step is omitted or if it is described as a confirmed adoption rather than a tentative/briefly considered option.",
+        "trajectory_provenance": "Fails if the model cannot attribute the Basenji→Shiba Inu change to the farmers market encounter or the Portuguese Water Dog→Shiba Inu reversion to grooming concerns."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: Basenji was established as Lauren's initial confirmed breed preference.",
+        "Step 2: Lauren switched to Shiba Inu after meeting someone with one at the farmers market. This was a confirmed change.",
+        "Step 3: Lauren's coworker suggested Portuguese Water Dog. Lauren texted about it but the user hadn't weighed in. This was tentative only.",
+        "Step 4: After researching, Lauren rejected Portuguese Water Dog due to grooming demands and confirmed Shiba Inu again.",
+        "Inference: The Portuguese Water Dog was the only option that was never firmly adopted — it was a tentative fork that was resolved back to Shiba Inu."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Lauren's been set on getting a Basenji for a while now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Lauren changed her mind on the dog breed. She met someone at the farmers market with a Shiba Inu and now she's completely switched over to wanting a Shiba Inu instead"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Lauren's coworker told her that Portuguese Water Dogs are the best apartment dogs, and Lauren texted me saying she thinks we should get one of those instead"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "We talked it over last night and Lauren's back to the Shiba Inu. She looked into Portuguese Water Dogs more and realized they need way more grooming than she wants to deal with"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed all our conversations about the pet Lauren wants, what would they see as the full sequence of changes — which options were seriously adopted, which were only floated briefly, and what's the final answer?",
+      "expected_answer": "The sequence was: (1) Basenji was the initial confirmed choice. (2) Shiba Inu replaced Basenji as a confirmed choice after Lauren met someone with one at the farmers market. (3) Portuguese Water Dog was briefly floated based on a coworker's suggestion but was never firmly adopted — Lauren only texted about it and the user hadn't weighed in yet. (4) After researching grooming needs, Lauren rejected the Portuguese Water Dog and returned to Shiba Inu as the confirmed final choice. So the final answer is Shiba Inu, with the Portuguese Water Dog being the only option that was never truly adopted.",
+      "gold_memory_state": "preferred_dog_breed trajectory: Basenji (confirmed, step 1) → Shiba Inu (confirmed, step 2) → Portuguese Water Dog (tentative, step 3) → Shiba Inu (confirmed, step 4). Final state = Shiba Inu. anniversary_trip_venue = Surfsand Resort, Cannon Beach (unchanged throughout).",
+      "judge_rubric": {
+        "must_include": [
+          "Basenji as first choice",
+          "Shiba Inu replacing Basenji",
+          "Portuguese Water Dog as a briefly considered but not firmly adopted option",
+          "Shiba Inu as the final confirmed choice"
+        ],
+        "acceptable_paraphrases": [
+          "PWD was only tentative",
+          "Portuguese Water Dog was just floated",
+          "Shiba Inu is the settled answer"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying Portuguese Water Dog was a confirmed adoption at any point",
+          "omitting the Portuguese Water Dog step entirely",
+          "saying the final choice is anything other than Shiba Inu"
+        ],
+        "harmless_extra": [
+          "mentioning the farmers market encounter",
+          "mentioning grooming concerns",
+          "mentioning the coworker's recommendation"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats Basenji or Portuguese Water Dog as the final preference.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the four steps are presented out of chronological order or if any step is missing.",
+        "final_state": "Fails if Shiba Inu is not identified as the final confirmed state.",
+        "intermediate_state": "Fails if the Portuguese Water Dog step is omitted or if it is described as a confirmed adoption rather than a tentative/briefly considered option.",
+        "trajectory_provenance": "Fails if the model cannot attribute the Basenji→Shiba Inu change to the farmers market encounter or the Portuguese Water Dog→Shiba Inu reversion to grooming concerns."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: Basenji was established as Lauren's initial confirmed breed preference.",
+        "Step 2: Lauren switched to Shiba Inu after meeting someone with one at the farmers market. This was a confirmed change.",
+        "Step 3: Lauren's coworker suggested Portuguese Water Dog. Lauren texted about it but the user hadn't weighed in. This was tentative only.",
+        "Step 4: After researching, Lauren rejected Portuguese Water Dog due to grooming demands and confirmed Shiba Inu again.",
+        "Inference: The Portuguese Water Dog was the only option that was never firmly adopted — it was a tentative fork that was resolved back to Shiba Inu."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Lauren's been set on getting a Basenji for a while now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Lauren changed her mind on the dog breed. She met someone at the farmers market with a Shiba Inu and now she's completely switched over to wanting a Shiba Inu instead"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Lauren's coworker told her that Portuguese Water Dogs are the best apartment dogs, and Lauren texted me saying she thinks we should get one of those instead"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "We talked it over last night and Lauren's back to the Shiba Inu. She looked into Portuguese Water Dogs more and realized they need way more grooming than she wants to deal with"
+        }
+      ]
+    }
+  ]
+}

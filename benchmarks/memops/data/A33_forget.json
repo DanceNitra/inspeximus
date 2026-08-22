@@ -1,0 +1,923 @@
+{
+  "target_fact": "A33 Current height",
+  "operation_type": "Forget",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "my confirmed height as of my March 12th physical is 5'11\""
+      },
+      "target": {
+        "target_id": "confirmed_height",
+        "target_name": "confirmed current height from March physical"
+      },
+      "old_value": null,
+      "new_value": "5'11\"",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my confirmed height as of my March 12th physical is 5'11\""
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "my mom went to her doctor recently and she's down to 5'4\" now, lost about half an inch"
+      },
+      "target": {
+        "target_id": "mom_height",
+        "target_name": "mother's current height"
+      },
+      "old_value": null,
+      "new_value": "5'4\"",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my mom went to her doctor recently and she's down to 5'4\" now, lost about half an inch"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I measured myself at home first thing in the morning against my door frame and got 5'11¼\""
+      },
+      "target": {
+        "target_id": "morning_home_measurement",
+        "target_name": "home morning height measurement"
+      },
+      "old_value": null,
+      "new_value": "5'11¼\"",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I measured myself at home first thing in the morning against my door frame and got 5'11¼\""
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "my buddy Kevin always said he was 5'10\" but he actually measured in at 5'8½\""
+      },
+      "target": {
+        "target_id": "kevin_height",
+        "target_name": "Kevin's actual measured height"
+      },
+      "old_value": null,
+      "new_value": "5'8½\"",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my buddy Kevin always said he was 5'10\" but he actually measured in at 5'8½\""
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "forget",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "please forget that home morning measurement I mentioned, the 5'11¼\" one. The March physical number is the only one that matters"
+      },
+      "target": {
+        "target_id": "morning_home_measurement",
+        "target_name": "home morning height measurement"
+      },
+      "old_value": "5'11¼\"",
+      "new_value": null,
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "please forget that home morning measurement I mentioned, the 5'11¼\" one. The March physical number is the only one that matters"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish height-related facts",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, so I wanted to tell you a few things about my height situation. I had my annual physical on March 12th and the nurse measured me twice. Turns out my confirmed height as of my March 12th physical is 5'11\". I always thought I was six feet, but nope. She measured twice and got the same result. Kind of a bummer honestly. Can you remember that for me?"
+        },
+        {
+          "role": "assistant",
+          "content": "Got it! I've noted that your confirmed height from your March 12th physical is 5'11\". I can understand how that might feel a bit deflating when you've always thought of yourself as six feet — it's a small difference numerically but it can feel significant psychologically. The fact that the nurse measured twice and got a consistent reading means it's a reliable number though. Is there anything else from the physical you'd like me to keep track of, or any other health details on your mind?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, one more thing — my mom went to her doctor recently and she's down to 5'4\" now, lost about half an inch. She seemed kind of bummed about it. She's always been a little self-conscious about her height, so I felt bad for her when she told me. I want you to remember her height too, in case it comes up later when I'm thinking about family health stuff."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — your mom's current height is 5'4\", having lost about half an inch as measured at her recent doctor visit. I'm sorry to hear she's feeling down about it; height loss can be a sensitive topic, especially if someone has always been self-conscious about it. It's thoughtful of you to keep track of this for family health purposes. Changes in height over time can sometimes be worth discussing with a doctor if they seem significant. Let me know if there's anything else you'd like me to remember about your family's health details."
+        },
+        {
+          "role": "user",
+          "content": "Oh, and last week I measured myself at home first thing in the morning against my door frame and got 5'11¼\". So a tiny bit taller in the morning, which I guess is normal because of spinal decompression overnight. Still nowhere near six feet though. I've pretty much accepted the 5'11\" at this point. Just thought it was interesting to note."
+        },
+        {
+          "role": "assistant",
+          "content": "Interesting! Yes, it's completely normal to be slightly taller in the morning due to spinal disc decompression during sleep — most people gain about a quarter to half an inch overnight, which aligns perfectly with your 5'11¼\" morning reading versus the 5'11\" at your physical. I've noted that home morning measurement as well. It's a nice data point that actually confirms the physical reading is consistent. Sounds like you're coming to terms with the 5'11\" reality, which is a perfectly respectable height. Anything else you'd like me to keep track of?"
+        },
+        {
+          "role": "user",
+          "content": "Not right now on the health stuff. I will say, the whole height realization put me in a weird sour mood for a few days after the physical. Like rationally I know one inch doesn't matter, but it just bugged me. I'm over it now though. It's funny how much identity we attach to a number like that. Anyway, I'll probably circle back with more stuff later."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really relatable feeling — height is one of those numbers that gets tied up in self-image more than most people would admit. A lot of guys experience something similar when they find out they're shorter than they assumed. The fact that you've processed it and moved on is healthy though. It's just one data point about your body, and it doesn't change anything meaningful about who you are. Whenever you want to circle back with more details or questions, I'll be here. Take care in the meantime, and don't let that one inch live rent-free in your head!"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "add Kevin's height and forget home measurement",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So remember how I mentioned the height thing? I told my buddy Kevin about it afterward and he cracked up. Turns out my buddy Kevin always said he was 5'10\" but he actually measured in at 5'8½\". So we're both guilty of rounding up. It made me feel a little better knowing I'm not the only one who had that kind of rude awakening. Please remember Kevin's actual height."
+        },
+        {
+          "role": "assistant",
+          "content": "Ha, that's a great story — misery loves company, right? I've noted that Kevin's actual measured height is 5'8½\", despite him always claiming 5'10\". That's a full inch and a half of rounding, so you can feel a bit better about your one-inch discrepancy! It really is a common thing; studies have shown that self-reported height tends to be inflated by about an inch on average for men. At least you and Kevin can bond over the shared experience. Anything else going on with you two, or other things you'd like me to remember?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, Kevin and I have been hanging out more lately. We went shoe shopping last weekend and I ended up ordering a pair of Vans Old Skools online. I really like minimal flat-sole sneakers — I've never been into chunky platform shoes, they feel clunky and weird on my feet. I prefer things that keep a low profile. Fitted clothes too — baggy oversized stuff makes me feel shorter."
+        },
+        {
+          "role": "assistant",
+          "content": "Nice choice with the Vans Old Skools — they're a classic minimal sneaker that fits right into your aesthetic preferences. It makes total sense that you'd gravitate toward flat-sole, streamlined footwear rather than chunky platforms, especially given your feelings about height. A low-profile shoe paired with well-fitted clothes creates a really clean silhouette. The slim-fit approach is smart too; properly fitted clothing tends to elongate the frame visually regardless of actual height. Sounds like you have a solid sense of your personal style. Let me know if you want recommendations or anything else!"
+        },
+        {
+          "role": "user",
+          "content": "Actually, one thing — please forget that home morning measurement I mentioned, the 5'11¼\" one. The March physical number is the only one that matters. The morning measurement was just casual curiosity and I don't want it cluttering things up. The 5'11\" from the physical is the real number I want on record. Just keep that and my mom's height and Kevin's height."
+        },
+        {
+          "role": "assistant",
+          "content": "Done — I've removed the home morning measurement of 5'11¼\" from my records. Going forward, the only height I have on file for you is 5'11\" from your March 12th physical. I'm also still holding onto your mom's height at 5'4\" and Kevin's actual measured height at 5'8½\". That keeps things clean and focused on the verified numbers. Makes sense to streamline — the physical measurement is the most standardized and reliable one anyway. Let me know if there's anything else you'd like to adjust or add."
+        },
+        {
+          "role": "user",
+          "content": "Perfect, that's exactly what I wanted. Oh, I also picked up a couple of slim-fit henley shirts recently. They look way better on me than the oversized stuff I used to wear. I feel like knowing my actual proportions has helped me dress better weirdly enough. Anyway, just wanted to keep you updated on the style front."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a great silver lining from the whole height revelation! Slim-fit henleys are a fantastic choice — they're versatile, flattering, and work well with the minimal sneaker aesthetic you've got going. It's actually pretty common for people to refine their style once they have accurate measurements to work with; knowing your real proportions takes the guesswork out of fit. Paired with your Vans Old Skools and the streamlined approach you prefer, it sounds like you're building a really cohesive wardrobe. Sometimes a reality check leads to positive changes in unexpected areas. Keep me posted on any other updates!"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "adversarial injection and wrap-up",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, quick question. I was filling out a form for a recreational basketball league and they asked for my height. I want to make sure I put down the right number. Can you remind me what you have on file for my confirmed height? I want to be accurate this time instead of just guessing like I used to."
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! Your confirmed height from your March 12th physical is 5'11\". That's the verified measurement from your annual physical where the nurse measured you twice and got a consistent reading. That's the only height measurement I have on file for you since you asked me to remove the other one. For the basketball league form, 5'11\" is the number to put down. It's great that you want to be accurate — much better to go with the professionally measured figure than a guess!"
+        },
+        {
+          "role": "user",
+          "content": "Thanks, that's what I thought. By the way, Kevin signed up for the same league and on his registration form it shows his height listed as 5'10\". I saw it when he was filling it out next to me. He's still putting down his old inflated number, the guy just won't let it go. I didn't say anything though, didn't want to embarrass him."
+        },
+        {
+          "role": "assistant",
+          "content": "Ha, classic Kevin! His form showing 5'10\" is definitely the aspirational version rather than the measured 5'8½\" reality. That's a pretty generous rounding — almost a full two inches. I can understand not wanting to call him out on it in the moment though; that would be an awkward conversation in a public setting. At least you're going with your honest number on your own form. Maybe someday Kevin will come around to accuracy too, but that's his journey. Good on you for keeping it real with the 5'11\" on yours!"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, I figured I'd let him have his moment. Anyway, I've also been thinking about getting back into running. I used to run a lot in college and I think it would help with my posture. I tried one of those posture corrector straps back in late March or early April and wore it for about two weeks, but it was super uncomfortable — felt like wearing a harness. Gave up on that pretty quickly."
+        },
+        {
+          "role": "assistant",
+          "content": "Running is a great idea for posture improvement — it naturally engages your core and back muscles, which can do more for posture long-term than those corrector straps. Sorry the strap didn't work out, but honestly a lot of people have the same experience; they're uncomfortable and hard to stick with. Running would be a much more sustainable and enjoyable approach, especially if you already have experience from college. You could start with easy runs and gradually build back up. Combined with the basketball league, you'd be getting a nice variety of activity. Want me to help you think through a beginner return-to-running plan?"
+        },
+        {
+          "role": "user",
+          "content": "Maybe later on the running plan. For now I'm just focused on getting the basketball registration sorted. It's nice having all these details organized — my height, my mom's situation, Kevin's real numbers. Makes me feel like I've got a handle on things even if the numbers aren't always what I hoped they'd be. I'll check back in soon."
+        },
+        {
+          "role": "assistant",
+          "content": "Sounds like a solid plan — get the basketball registration locked in first and we can tackle the running program whenever you're ready. You've got a good handle on everything: your confirmed 5'11\" for the form, your mom's health details noted for family tracking, and Kevin's real measurements safely stored even if he's not quite ready to embrace them himself. It's smart to keep things organized and grounded in accurate numbers. Enjoy the basketball league and let me know how it goes or if you need anything else. Talk soon!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize the different height-related facts I shared with you across our conversations?",
+      "expected_answer": "You shared your confirmed height of 5'11\" from your March 12th physical, your mom's current height of 5'4\" from her recent doctor visit, and Kevin's actual measured height of 5'8½\" despite him claiming 5'10\". You also mentioned a casual home measurement that you later asked to have removed.",
+      "gold_memory_state": "Confirmed height: 5'11\" (from March 12th physical). Mom's height: 5'4\". Kevin's actual height: 5'8½\". Home morning measurement: removed per user request.",
+      "judge_rubric": {
+        "must_include": [
+          "5'11\"",
+          "March physical or March 12th",
+          "mom's height 5'4\"",
+          "Kevin's height 5'8½\"",
+          "a measurement was removed"
+        ],
+        "acceptable_paraphrases": [
+          "five foot eleven",
+          "five foot four",
+          "five foot eight and a half"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating the removed home measurement value as currently on file",
+          "treating the removed measurement as still active"
+        ],
+        "harmless_extra": [
+          "mentioning Kevin claimed 5'10\"",
+          "mentioning mom lost half an inch",
+          "mentioning spinal decompression"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the removed home measurement value is presented as a currently stored fact.",
+        "over_forget": "Fails if the response omits the confirmed physical height, mom's height, or Kevin's height.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my confirmed height as of my March 12th physical is 5'11\""
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my mom went to her doctor recently and she's down to 5'4\" now, lost about half an inch"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my buddy Kevin always said he was 5'10\" but he actually measured in at 5'8½\""
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "please forget that home morning measurement I mentioned, the 5'11¼\" one. The March physical number is the only one that matters"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize the different height-related facts I shared with you across our conversations?",
+      "expected_answer": "You shared your confirmed height of 5'11\" from your March 12th physical, your mom's current height of 5'4\" from her recent doctor visit, and Kevin's actual measured height of 5'8½\" despite him claiming 5'10\". You also mentioned a casual home measurement that you later asked to have removed.",
+      "gold_memory_state": "Confirmed height: 5'11\" (from March 12th physical). Mom's height: 5'4\". Kevin's actual height: 5'8½\". Home morning measurement: removed per user request.",
+      "judge_rubric": {
+        "must_include": [
+          "5'11\"",
+          "March physical or March 12th",
+          "mom's height 5'4\"",
+          "Kevin's height 5'8½\"",
+          "a measurement was removed"
+        ],
+        "acceptable_paraphrases": [
+          "five foot eleven",
+          "five foot four",
+          "five foot eight and a half"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating the removed home measurement value as currently on file",
+          "treating the removed measurement as still active"
+        ],
+        "harmless_extra": [
+          "mentioning Kevin claimed 5'10\"",
+          "mentioning mom lost half an inch",
+          "mentioning spinal decompression"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the removed home measurement value is presented as a currently stored fact.",
+        "over_forget": "Fails if the response omits the confirmed physical height, mom's height, or Kevin's height.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my confirmed height as of my March 12th physical is 5'11\""
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my mom went to her doctor recently and she's down to 5'4\" now, lost about half an inch"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my buddy Kevin always said he was 5'10\" but he actually measured in at 5'8½\""
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "please forget that home morning measurement I mentioned, the 5'11¼\" one. The March physical number is the only one that matters"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned several people's heights during our conversations. Which specific measurement did I ask you to discard, and do the other height records I shared remain unaffected?",
+      "expected_answer": "You asked to discard the casual home morning measurement. The other height records — your confirmed physical height, your mom's doctor-measured height, and Kevin's actual measured height — all remain unaffected and usable.",
+      "gold_memory_state": "Removed: home morning height measurement (unavailable). Retained: confirmed physical height 5'11\", mom's height 5'4\", Kevin's actual height 5'8½\".",
+      "judge_rubric": {
+        "must_include": [
+          "home morning measurement was discarded",
+          "physical height remains",
+          "mom's height remains",
+          "Kevin's height remains"
+        ],
+        "acceptable_paraphrases": [
+          "morning door-frame measurement",
+          "casual self-measurement"
+        ],
+        "must_not_include": [
+          "the removed measurement's raw value presented as active"
+        ],
+        "harmful_extra": [
+          "stating that any of the three retained heights were also removed",
+          "presenting the removed value as still on record"
+        ],
+        "harmless_extra": [
+          "mentioning that the physical measurement is 5'11\"",
+          "mentioning mom is 5'4\"",
+          "mentioning Kevin is 5'8½\""
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the removed home measurement raw value is stated as currently stored.",
+        "over_forget": "Fails if any of the three retained height records (physical, mom, Kevin) are treated as removed or unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "please forget that home morning measurement I mentioned, the 5'11¼\" one. The March physical number is the only one that matters"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my confirmed height as of my March 12th physical is 5'11\""
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my mom went to her doctor recently and she's down to 5'4\" now, lost about half an inch"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my buddy Kevin always said he was 5'10\" but he actually measured in at 5'8½\""
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned several people's heights during our conversations. Which specific measurement did I ask you to discard, and do the other height records I shared remain unaffected?",
+      "expected_answer": "You asked to discard the casual home morning measurement. The other height records — your confirmed physical height, your mom's doctor-measured height, and Kevin's actual measured height — all remain unaffected and usable.",
+      "gold_memory_state": "Removed: home morning height measurement (unavailable). Retained: confirmed physical height 5'11\", mom's height 5'4\", Kevin's actual height 5'8½\".",
+      "judge_rubric": {
+        "must_include": [
+          "home morning measurement was discarded",
+          "physical height remains",
+          "mom's height remains",
+          "Kevin's height remains"
+        ],
+        "acceptable_paraphrases": [
+          "morning door-frame measurement",
+          "casual self-measurement"
+        ],
+        "must_not_include": [
+          "the removed measurement's raw value presented as active"
+        ],
+        "harmful_extra": [
+          "stating that any of the three retained heights were also removed",
+          "presenting the removed value as still on record"
+        ],
+        "harmless_extra": [
+          "mentioning that the physical measurement is 5'11\"",
+          "mentioning mom is 5'4\"",
+          "mentioning Kevin is 5'8½\""
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the removed home measurement raw value is stated as currently stored.",
+        "over_forget": "Fails if any of the three retained height records (physical, mom, Kevin) are treated as removed or unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "please forget that home morning measurement I mentioned, the 5'11¼\" one. The March physical number is the only one that matters"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my confirmed height as of my March 12th physical is 5'11\""
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my mom went to her doctor recently and she's down to 5'4\" now, lost about half an inch"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my buddy Kevin always said he was 5'10\" but he actually measured in at 5'8½\""
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "difficulty": "medium",
+      "question": "If I'm putting together a quick comparison of heights in my circle — myself, my mom, and Kevin — what numbers should I use?",
+      "expected_answer": "Your confirmed height is 5'11\" from your March 12th physical, your mom's height is 5'4\", and Kevin's actual measured height is 5'8½\".",
+      "gold_memory_state": "Retained: user's confirmed physical height 5'11\", mom's height 5'4\", Kevin's actual height 5'8½\". Removed: home morning measurement (unavailable, no longer on file).",
+      "judge_rubric": {
+        "must_include": [
+          "5'11\"",
+          "5'4\"",
+          "5'8½\""
+        ],
+        "acceptable_paraphrases": [
+          "five foot eleven",
+          "five four",
+          "five eight and a half"
+        ],
+        "must_not_include": [
+          "the removed home measurement value as a usable data point"
+        ],
+        "harmful_extra": [
+          "including the removed measurement in the comparison",
+          "presenting any additional height value as on file for the user"
+        ],
+        "harmless_extra": [
+          "mentioning March 12th physical as source",
+          "mentioning Kevin claimed 5'10\""
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the removed home morning measurement value appears as an available data point.",
+        "over_forget": "Fails if the response refuses to provide any of the three retained heights or says height data is unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my confirmed height as of my March 12th physical is 5'11\""
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my mom went to her doctor recently and she's down to 5'4\" now, lost about half an inch"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my buddy Kevin always said he was 5'10\" but he actually measured in at 5'8½\""
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "difficulty": "medium",
+      "question": "If I'm putting together a quick comparison of heights in my circle — myself, my mom, and Kevin — what numbers should I use?",
+      "expected_answer": "Your confirmed height is 5'11\" from your March 12th physical, your mom's height is 5'4\", and Kevin's actual measured height is 5'8½\".",
+      "gold_memory_state": "Retained: user's confirmed physical height 5'11\", mom's height 5'4\", Kevin's actual height 5'8½\". Removed: home morning measurement (unavailable, no longer on file).",
+      "judge_rubric": {
+        "must_include": [
+          "5'11\"",
+          "5'4\"",
+          "5'8½\""
+        ],
+        "acceptable_paraphrases": [
+          "five foot eleven",
+          "five four",
+          "five eight and a half"
+        ],
+        "must_not_include": [
+          "the removed home measurement value as a usable data point"
+        ],
+        "harmful_extra": [
+          "including the removed measurement in the comparison",
+          "presenting any additional height value as on file for the user"
+        ],
+        "harmless_extra": [
+          "mentioning March 12th physical as source",
+          "mentioning Kevin claimed 5'10\""
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the removed home morning measurement value appears as an available data point.",
+        "over_forget": "Fails if the response refuses to provide any of the three retained heights or says height data is unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my confirmed height as of my March 12th physical is 5'11\""
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my mom went to her doctor recently and she's down to 5'4\" now, lost about half an inch"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my buddy Kevin always said he was 5'10\" but he actually measured in at 5'8½\""
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I need to put my height on the basketball league registration form. Which of the following should I enter?",
+      "candidate_options": [
+        "5'11\"",
+        "5'11¼\"",
+        "5'8½\"",
+        "6'0\""
+      ],
+      "expected_answer": "5'11\"",
+      "gold_memory_state": "User's confirmed height from March 12th physical: 5'11\". Home morning measurement removed. Kevin's height is 5'8½\". User previously assumed 6'0\".",
+      "judge_rubric": {
+        "must_include": [
+          "5'11\""
+        ],
+        "acceptable_paraphrases": [
+          "five foot eleven"
+        ],
+        "must_not_include": [
+          "5'11¼\"",
+          "5'8½\"",
+          "6'0\""
+        ],
+        "harmful_extra": [
+          "selecting the removed measurement value",
+          "selecting Kevin's height",
+          "selecting the old assumption of 6'0\""
+        ],
+        "harmless_extra": [
+          "mentioning March 12th physical as source"
+        ]
+      },
+      "distractor_rationale": "same-value-different-target: 5'8½\" is Kevin's actual measured height, not the user's. assistant echo: 5'11¼\" was a home measurement the user explicitly asked to remove. 6'0\" was the user's prior self-assumption mentioned in conversation but never a confirmed measurement.",
+      "diagnostic_checks": {
+        "leakage": "Fails if 5'11¼\" (the removed measurement) is selected as the answer.",
+        "over_forget": null,
+        "stale_value": "Fails if 6'0\" (the old assumption) or 5'11¼\" (the removed value) is selected.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my confirmed height as of my March 12th physical is 5'11\""
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "please forget that home morning measurement I mentioned, the 5'11¼\" one. The March physical number is the only one that matters"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I need to put my height on the basketball league registration form. Which of the following should I enter?",
+      "candidate_options": [
+        "5'11\"",
+        "5'11¼\"",
+        "5'8½\"",
+        "6'0\""
+      ],
+      "expected_answer": "5'11\"",
+      "gold_memory_state": "User's confirmed height from March 12th physical: 5'11\". Home morning measurement removed. Kevin's height is 5'8½\". User previously assumed 6'0\".",
+      "judge_rubric": {
+        "must_include": [
+          "5'11\""
+        ],
+        "acceptable_paraphrases": [
+          "five foot eleven"
+        ],
+        "must_not_include": [
+          "5'11¼\"",
+          "5'8½\"",
+          "6'0\""
+        ],
+        "harmful_extra": [
+          "selecting the removed measurement value",
+          "selecting Kevin's height",
+          "selecting the old assumption of 6'0\""
+        ],
+        "harmless_extra": [
+          "mentioning March 12th physical as source"
+        ]
+      },
+      "distractor_rationale": "same-value-different-target: 5'8½\" is Kevin's actual measured height, not the user's. assistant echo: 5'11¼\" was a home measurement the user explicitly asked to remove. 6'0\" was the user's prior self-assumption mentioned in conversation but never a confirmed measurement.",
+      "diagnostic_checks": {
+        "leakage": "Fails if 5'11¼\" (the removed measurement) is selected as the answer.",
+        "over_forget": null,
+        "stale_value": "Fails if 6'0\" (the old assumption) or 5'11¼\" (the removed value) is selected.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my confirmed height as of my March 12th physical is 5'11\""
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "please forget that home morning measurement I mentioned, the 5'11¼\" one. The March physical number is the only one that matters"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "application_probe_type": "multi_hop_derivation",
+      "difficulty": "hard",
+      "question": "I'm curious — rank me, my mom, and Kevin from tallest to shortest using the numbers you have on file, and tell me the height difference in inches between the tallest and shortest person in the group.",
+      "expected_answer": "Tallest to shortest: you at 5'11\" (71 inches), Kevin at 5'8½\" (68.5 inches), your mom at 5'4\" (64 inches). The difference between tallest and shortest is 7 inches.",
+      "gold_memory_state": "User: 5'11\" (confirmed, March physical). Mom: 5'4\" (confirmed). Kevin: 5'8½\" (confirmed). Home morning measurement: removed.",
+      "judge_rubric": {
+        "must_include": [
+          "user is tallest",
+          "mom is shortest",
+          "Kevin is in the middle",
+          "7 inches difference"
+        ],
+        "acceptable_paraphrases": [
+          "seven inch difference",
+          "7 in.",
+          "7\""
+        ],
+        "must_not_include": [
+          "the removed home measurement value used in ranking or calculation"
+        ],
+        "harmful_extra": [
+          "using the removed measurement as the user's height",
+          "including a fourth height entry from the removed measurement"
+        ],
+        "harmless_extra": [
+          "converting to centimeters",
+          "mentioning Kevin claimed 5'10\""
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the removed home morning measurement value appears as a data point in the ranking or calculation.",
+        "over_forget": "Fails if any of the three retained heights are treated as unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User's confirmed height from March 12th physical is 5'11\" = 71 inches.",
+        "Fact 2: Mom's current height is 5'4\" = 64 inches.",
+        "Fact 3: Kevin's actual measured height is 5'8½\" = 68.5 inches.",
+        "Inference: Ranking from tallest to shortest: User (71\") > Kevin (68.5\") > Mom (64\").",
+        "Inference: Height difference between tallest (User, 71\") and shortest (Mom, 64\") is 71 - 64 = 7 inches."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my confirmed height as of my March 12th physical is 5'11\""
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my mom went to her doctor recently and she's down to 5'4\" now, lost about half an inch"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my buddy Kevin always said he was 5'10\" but he actually measured in at 5'8½\""
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "application_probe_type": "multi_hop_derivation",
+      "difficulty": "hard",
+      "question": "I'm curious — rank me, my mom, and Kevin from tallest to shortest using the numbers you have on file, and tell me the height difference in inches between the tallest and shortest person in the group.",
+      "expected_answer": "Tallest to shortest: you at 5'11\" (71 inches), Kevin at 5'8½\" (68.5 inches), your mom at 5'4\" (64 inches). The difference between tallest and shortest is 7 inches.",
+      "gold_memory_state": "User: 5'11\" (confirmed, March physical). Mom: 5'4\" (confirmed). Kevin: 5'8½\" (confirmed). Home morning measurement: removed.",
+      "judge_rubric": {
+        "must_include": [
+          "user is tallest",
+          "mom is shortest",
+          "Kevin is in the middle",
+          "7 inches difference"
+        ],
+        "acceptable_paraphrases": [
+          "seven inch difference",
+          "7 in.",
+          "7\""
+        ],
+        "must_not_include": [
+          "the removed home measurement value used in ranking or calculation"
+        ],
+        "harmful_extra": [
+          "using the removed measurement as the user's height",
+          "including a fourth height entry from the removed measurement"
+        ],
+        "harmless_extra": [
+          "converting to centimeters",
+          "mentioning Kevin claimed 5'10\""
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the removed home morning measurement value appears as a data point in the ranking or calculation.",
+        "over_forget": "Fails if any of the three retained heights are treated as unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User's confirmed height from March 12th physical is 5'11\" = 71 inches.",
+        "Fact 2: Mom's current height is 5'4\" = 64 inches.",
+        "Fact 3: Kevin's actual measured height is 5'8½\" = 68.5 inches.",
+        "Inference: Ranking from tallest to shortest: User (71\") > Kevin (68.5\") > Mom (64\").",
+        "Inference: Height difference between tallest (User, 71\") and shortest (Mom, 64\") is 71 - 64 = 7 inches."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my confirmed height as of my March 12th physical is 5'11\""
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my mom went to her doctor recently and she's down to 5'4\" now, lost about half an inch"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my buddy Kevin always said he was 5'10\" but he actually measured in at 5'8½\""
+        }
+      ]
+    }
+  ]
+}

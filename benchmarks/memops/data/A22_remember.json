@@ -1,0 +1,1106 @@
+{
+  "target_fact": "User's current weight as of March 12th is 187.4 lbs, with a goal to get under 180 lbs by end of April, walking a 2.1-mile trail on Greenfield Road, and weight on February 5th was 191.0 lbs",
+  "operation_type": "Remember",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 3,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": true,
+      "never_stored_target": "body fat percentage"
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "As of today, March 12th, my weight is 187.4 lbs"
+      },
+      "target": {
+        "target_id": "current_weight_march12",
+        "target_name": "user current weight as of March 12"
+      },
+      "old_value": null,
+      "new_value": "187.4 lbs as of March 12",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "As of today, March 12th, my weight is 187.4 lbs"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "My goal is to get under 180 lbs by the end of April"
+      },
+      "target": {
+        "target_id": "weight_goal",
+        "target_name": "user weight goal and deadline"
+      },
+      "old_value": null,
+      "new_value": "Under 180 lbs by end of April",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My goal is to get under 180 lbs by the end of April"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I walk a trail near my apartment on Greenfield Road and it's 2.1 miles"
+      },
+      "target": {
+        "target_id": "walking_trail_distance",
+        "target_name": "morning walking trail distance on Greenfield Road"
+      },
+      "old_value": null,
+      "new_value": "2.1 miles on Greenfield Road",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I walk a trail near my apartment on Greenfield Road and it's 2.1 miles"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "On February 5th I weighed 191.0 lbs"
+      },
+      "target": {
+        "target_id": "weight_feb5",
+        "target_name": "user weight on February 5"
+      },
+      "old_value": null,
+      "new_value": "191.0 lbs on February 5",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "On February 5th I weighed 191.0 lbs"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I started making changes back on January 6th when I was at 194.2 lbs"
+      },
+      "target": {
+        "target_id": "weight_jan6",
+        "target_name": "user weight on January 6"
+      },
+      "old_value": null,
+      "new_value": "194.2 lbs on January 6",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I started making changes back on January 6th when I was at 194.2 lbs"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 1,
+        "quote": "I do my walks every morning, seven days a week"
+      },
+      "target": {
+        "target_id": "walk_frequency",
+        "target_name": "user morning walk frequency"
+      },
+      "old_value": null,
+      "new_value": "Every morning, seven days a week",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I do my walks every morning, seven days a week"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "my sister Laura is at 142 lbs and trying to reach 135 before her wedding in April"
+      },
+      "target": {
+        "target_id": "laura_weight_goal",
+        "target_name": "sister Laura weight and wedding goal"
+      },
+      "old_value": null,
+      "new_value": "Laura is at 142 lbs, goal 135 lbs before her April wedding",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "my sister Laura is at 142 lbs and trying to reach 135 before her wedding in April"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish current weight, starting weight, and weight goal as separate facts",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to start tracking my weight progress with you. As of today, March 12th, my weight is 187.4 lbs. This is my baseline going forward — I've been hovering around this range for a couple weeks and I feel pretty stable. Please keep this number on file for me."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — I've noted your current weight as 187.4 lbs as of March 12th. That's your baseline going forward, and I'll use it as the reference point whenever we discuss your progress. It sounds like you've found some stability in that range, which is a good sign. Whenever you weigh in again, just let me know the new number and the date, and I'll keep a running record for you. Is there anything else you'd like me to track alongside your weight, like measurements or activity?"
+        },
+        {
+          "role": "user",
+          "content": "Not measurements for now. But some context: I started making changes back on January 6th when I was at 194.2 lbs. That was a wake-up call — the heaviest I'd been in about two years. I cut out nightly ramen and switched to miso soup and steamed vegetables in the evenings, which I enjoy more anyway."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really solid starting point for context. So on January 6th you were at 194.2 lbs, and since then you've made dietary shifts — dropping the heavy nightly ramen in favor of miso soup and steamed vegetables. That's a meaningful change, and the fact that you genuinely prefer the lighter meals makes it much more sustainable long-term. Going from 194.2 down to your current 187.4 is nearly seven pounds of progress in about two months, which is a healthy pace. I'll keep January 6th and 194.2 lbs as your starting reference. What kind of timeline or target are you thinking about?"
+        },
+        {
+          "role": "user",
+          "content": "My goal is to get under 180 lbs by the end of April. I know that's ambitious — it's about 7.4 lbs in roughly seven weeks — but I think it's doable if I stay consistent. I also enjoy long bike rides on weekends when the weather cooperates, so that helps too."
+        },
+        {
+          "role": "assistant",
+          "content": "Under 180 lbs by end of April — noted. That works out to roughly a pound per week, which is actually quite reasonable and well within healthy guidelines. Your weekend bike rides will definitely contribute, especially as the weather improves heading into spring. Combined with your dietary changes, you have a solid two-pronged approach. To lose about a pound a week you'd need a modest daily deficit, and your activity plus the lighter evening meals are probably already doing a lot of the work. I'll keep that April target on file. Want me to help you set any weekly check-in milestones?"
+        },
+        {
+          "role": "user",
+          "content": "Maybe later on the milestones. For now just remember those key numbers. Oh, and I should mention — my friend Kevin lost about 12 pounds doing intermittent fasting last fall. I tried it for two weeks in mid-January but it gave me headaches, so I dropped it. Not for me."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood — I've got your key numbers locked in: 194.2 lbs on January 6th as your starting point, 187.4 lbs on March 12th as your current baseline, and under 180 lbs by end of April as your goal. I've also noted that intermittent fasting didn't work for you — the headaches made it unsustainable, even though it worked well for Kevin. That's useful to know so I won't suggest fasting-based approaches going forward. Your current strategy of lighter evening meals and staying active with walks and bike rides seems to suit you much better. Just let me know whenever you want to revisit milestones or check in on progress."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establish trail distance, sister Laura's stats, and February 5th weight as separate facts",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So about my exercise routine — I walk a trail near my apartment on Greenfield Road and it's 2.1 miles. I go every morning when it's cool and quiet out. I really prefer being outside with just the birds around rather than dealing with a noisy, crowded gym with mirrors everywhere."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a wonderful routine — a 2.1-mile trail on Greenfield Road every morning. There's something really restorative about being outside in the cool, quiet morning air with just nature around you. It's a much more pleasant experience than a packed gym, and honestly, consistent daily walking at that distance adds up significantly over time. At a brisk pace, that's roughly 200 calories burned per walk, which over a week contributes meaningfully to your deficit. Plus the mental health benefits of morning outdoor time are well-documented. I'll note the trail details. Are you walking at a set time each morning?"
+        },
+        {
+          "role": "user",
+          "content": "Usually around 6:30 AM before work. Anyway, my sister Laura is at 142 lbs and trying to reach 135 before her wedding in April. She's doing some keto thing. I'm happy for her but that approach wouldn't work for me — I need my carbs for energy on those morning walks."
+        },
+        {
+          "role": "assistant",
+          "content": "Good to know about your morning timing — 6:30 AM walks are a great way to start the day. And that's sweet that Laura has her own goal going for her wedding in April. She's looking to drop 7 pounds from 142 to 135, which is a similar timeframe to yours. Keto can work for some people, but I completely understand it not being your style — especially with daily morning walks, having adequate carbohydrate intake helps maintain your energy and endurance. You and Laura are both on parallel journeys with different approaches, which is kind of nice. I'll keep her details noted separately from yours."
+        },
+        {
+          "role": "user",
+          "content": "On February 5th I weighed 191.0 lbs. I remember because it was right after my dentist appointment on the 4th. I was pretty encouraged seeing that drop from the January number. It told me the changes were working."
+        },
+        {
+          "role": "assistant",
+          "content": "Great data point — 191.0 lbs on February 5th. So looking at your trajectory: 194.2 on January 6th, then down to 191.0 by February 5th, which is a 3.2-pound drop in about 30 days. Then from February 5th to March 12th, you went from 191.0 down to 187.4, another 3.6 pounds in about 35 days. That's a remarkably consistent rate of loss — roughly a pound per week throughout. The dental appointment anchor is a good way to remember dates. Your trend line looks very steady, which suggests your approach is sustainable and effective."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, the consistency is what I'm most proud of. Around February 20th or so I was at 188.6 lbs — I'm a little fuzzy on the exact date but that was the ballpark. It all fits the downward trend. I just want to keep this momentum going through spring.\n\nWill do. I also deleted the LoseIt app about a month ago. It was making me obsessive about calorie counting and stressing me out more than helping. I just use the scale and check in here now. Much healthier mentally."
+        },
+        {
+          "role": "assistant",
+          "content": "That 188.6 around mid-to-late February fits perfectly into your trend line. Even without the exact date, it confirms the steady downward progression: 194.2 → 191.0 → 188.6 → 187.4. You're losing at a healthy, consistent pace without any dramatic swings or plateaus. Maintaining momentum through spring should be very achievable, especially with the warmer weather making your morning walks and weekend bike rides more enjoyable. If anything, your rate might even pick up slightly as you're more active outdoors. You've clearly found a rhythm that works for your lifestyle and preferences. Keep checking in whenever you have new numbers.\n\nThat's a really healthy decision. Calorie-tracking apps can be useful tools for some people, but when they start creating anxiety and obsessive patterns, they do more harm than good. Ditching LoseIt and simplifying to just the scale plus our check-ins sounds like a much better fit for your mental well-being. Your results clearly show you don't need granular calorie data to make progress — your intuitive approach with lighter evening meals, daily walks, and weekend rides is working beautifully on its own. I'll note that you're no longer using LoseIt and that our conversations here are your primary tracking method going forward."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Continue tracking conversation with adversarial injection of Laura's weight near user's weight discussion",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I do my walks every morning, seven days a week. Even on weekends I get out there before the bike ride. It's become such a habit now that I feel off if I skip it. The trail is peaceful and it sets my whole mood for the day."
+        },
+        {
+          "role": "assistant",
+          "content": "Seven days a week — that's impressive consistency. Walking every single morning, even on weekends before your bike rides, means you're getting substantial daily baseline activity. That kind of habitual exercise is exactly what sustains long-term results. The fact that you feel off when you skip it shows it's become a genuine part of your identity rather than a chore. A 2.1-mile walk every morning adds up to about 14.7 miles per week just from walking alone, plus your weekend cycling on top of that. Your Greenfield Road trail is clearly doing wonders for both your physical and mental health."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. Hey, quick question — can you give me a summary of where things stand with my weight tracking? I want to make sure you have everything right before I check in again next week."
+        },
+        {
+          "role": "assistant",
+          "content": "Sure, here's what I have on file for your weight tracking. Starting weight: 194.2 lbs on January 6th. February 5th checkpoint: 191.0 lbs. Mid-to-late February: approximately 188.6 lbs. Current baseline as of March 12th: 187.4 lbs. Your goal is under 180 lbs by end of April. Oh, I also noticed in a health forum thread you shared earlier that someone listed a weigh-in of 142 lbs — I believe that was your sister Laura's number, not yours. Just want to make sure I'm keeping your data separate. Your walking trail on Greenfield Road is 2.1 miles, done daily. Does all of that look correct?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, that's all correct — and yeah, 142 is Laura's weight, definitely not mine. Keep those separate. I'm curious though, at the rate I've been losing, do you think under 180 by end of April is realistic? I want an honest assessment."
+        },
+        {
+          "role": "assistant",
+          "content": "Based on your data, you've lost about 6.8 pounds over roughly 9.5 weeks — that's approximately 0.72 pounds per week on average. From March 12th to April 30th is about 7 weeks. At your current rate of 0.72 lbs per week, you'd expect to lose roughly 5 more pounds, putting you around 182.4 lbs by end of April. To hit under 180, you'd need to average closer to 1.1 pounds per week, which is faster than your current pace but still within healthy range. It's ambitious but not impossible — increased spring activity and your consistent daily walking could help accelerate things slightly."
+        },
+        {
+          "role": "user",
+          "content": "That's helpful, thanks. I might add a second walk in the evenings if the weather stays nice. Nothing crazy, just an extra mile or so. I really enjoy the calm of being outside, especially at dusk when everything gets quiet again.\n\nGood advice. I'll keep things steady and check in with you next week with a new weigh-in. Hopefully I'll see 186-something. Let's just keep going with this approach — it's working and I feel good about it."
+        },
+        {
+          "role": "assistant",
+          "content": "An evening walk sounds like a perfect addition — it aligns with your preference for quiet, calm outdoor time. Adding roughly a mile in the evening would bump your daily walking to about 3.1 miles, which is a meaningful increase in calorie expenditure without being strenuous. Dusk walks also have the bonus of helping with sleep quality, which can support weight management. Combined with your morning 2.1-mile trail walk and weekend bike rides, you'd have a really well-rounded activity profile. Just listen to your body and don't push too hard — consistency matters more than intensity, and you've already proven you're great at staying consistent.\n\nSounds like a great plan. I'll be here whenever you're ready to log your next weigh-in. A reading in the 186 range next week would be right on trend, so I'm optimistic for you. You've built a really sustainable system — lighter evening meals you enjoy, daily morning walks on your Greenfield Road trail, weekend bike rides, and now potentially evening walks too. The fact that you feel good about the process is just as important as the numbers on the scale. Enjoy your walks this week and I'll see you when you check in. Keep up the great work!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've shared with you about my weight history, exercise habits, and goals?",
+      "expected_answer": "You shared the following: On January 6th you weighed 194.2 lbs, which was your starting point. On February 5th you weighed 191.0 lbs. As of March 12th your weight is 187.4 lbs. Your goal is to get under 180 lbs by end of April. You walk a 2.1-mile trail on Greenfield Road every morning, seven days a week. Your sister Laura weighs 142 lbs and is aiming for 135 lbs before her April wedding.",
+      "gold_memory_state": "All seven confirmed facts are stored: weight on Jan 6 (194.2 lbs), weight on Feb 5 (191.0 lbs), current weight on Mar 12 (187.4 lbs), goal under 180 lbs by end of April, 2.1-mile trail on Greenfield Road, daily morning walks seven days a week, Laura at 142 lbs targeting 135 lbs before April wedding.",
+      "judge_rubric": {
+        "must_include": [
+          "194.2 lbs",
+          "January 6",
+          "191.0 lbs",
+          "February 5",
+          "187.4 lbs",
+          "March 12",
+          "under 180",
+          "end of April",
+          "2.1 miles",
+          "Greenfield Road",
+          "every morning",
+          "seven days a week",
+          "Laura",
+          "142",
+          "135"
+        ],
+        "acceptable_paraphrases": [
+          "2.1-mile trail",
+          "daily walks"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "inventing a body fat percentage or other metric never shared"
+        ],
+        "harmless_extra": [
+          "mentioning the approximate mid-February weight of 188.6",
+          "mentioning weekend bike rides",
+          "mentioning dietary changes"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "As of today, March 12th, my weight is 187.4 lbs"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I started making changes back on January 6th when I was at 194.2 lbs"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My goal is to get under 180 lbs by the end of April"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I walk a trail near my apartment on Greenfield Road and it's 2.1 miles"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "my sister Laura is at 142 lbs and trying to reach 135 before her wedding in April"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "On February 5th I weighed 191.0 lbs"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I do my walks every morning, seven days a week"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've shared with you about my weight history, exercise habits, and goals?",
+      "expected_answer": "You shared the following: On January 6th you weighed 194.2 lbs, which was your starting point. On February 5th you weighed 191.0 lbs. As of March 12th your weight is 187.4 lbs. Your goal is to get under 180 lbs by end of April. You walk a 2.1-mile trail on Greenfield Road every morning, seven days a week. Your sister Laura weighs 142 lbs and is aiming for 135 lbs before her April wedding.",
+      "gold_memory_state": "All seven confirmed facts are stored: weight on Jan 6 (194.2 lbs), weight on Feb 5 (191.0 lbs), current weight on Mar 12 (187.4 lbs), goal under 180 lbs by end of April, 2.1-mile trail on Greenfield Road, daily morning walks seven days a week, Laura at 142 lbs targeting 135 lbs before April wedding.",
+      "judge_rubric": {
+        "must_include": [
+          "194.2 lbs",
+          "January 6",
+          "191.0 lbs",
+          "February 5",
+          "187.4 lbs",
+          "March 12",
+          "under 180",
+          "end of April",
+          "2.1 miles",
+          "Greenfield Road",
+          "every morning",
+          "seven days a week",
+          "Laura",
+          "142",
+          "135"
+        ],
+        "acceptable_paraphrases": [
+          "2.1-mile trail",
+          "daily walks"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "inventing a body fat percentage or other metric never shared"
+        ],
+        "harmless_extra": [
+          "mentioning the approximate mid-February weight of 188.6",
+          "mentioning weekend bike rides",
+          "mentioning dietary changes"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "As of today, March 12th, my weight is 187.4 lbs"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I started making changes back on January 6th when I was at 194.2 lbs"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My goal is to get under 180 lbs by the end of April"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I walk a trail near my apartment on Greenfield Road and it's 2.1 miles"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "my sister Laura is at 142 lbs and trying to reach 135 before her wedding in April"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "On February 5th I weighed 191.0 lbs"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I do my walks every morning, seven days a week"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned two different people's weight goals with April deadlines. If I'm filling out a personal fitness tracker, which weight goal and deadline belong to me, and which belong to someone else?",
+      "expected_answer": "Your personal goal is to get under 180 lbs by the end of April. The other April weight goal belongs to your sister Laura, who is at 142 lbs and aiming for 135 lbs before her April wedding. These are separate records for separate people.",
+      "gold_memory_state": "User's weight goal: under 180 lbs by end of April. Laura's weight goal: 135 lbs before her April wedding, currently at 142 lbs. These are distinct targets bound to different people.",
+      "judge_rubric": {
+        "must_include": [
+          "under 180 lbs",
+          "end of April",
+          "user's own goal",
+          "Laura",
+          "135",
+          "wedding"
+        ],
+        "acceptable_paraphrases": [
+          "below 180 pounds by late April"
+        ],
+        "must_not_include": [
+          "confusing Laura's goal with the user's goal",
+          "142 lbs as user's goal"
+        ],
+        "harmful_extra": [
+          "attributing Laura's 142 lbs to the user",
+          "merging both goals into one record"
+        ],
+        "harmless_extra": [
+          "mentioning Laura is the user's sister"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My goal is to get under 180 lbs by the end of April"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "my sister Laura is at 142 lbs and trying to reach 135 before her wedding in April"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned two different people's weight goals with April deadlines. If I'm filling out a personal fitness tracker, which weight goal and deadline belong to me, and which belong to someone else?",
+      "expected_answer": "Your personal goal is to get under 180 lbs by the end of April. The other April weight goal belongs to your sister Laura, who is at 142 lbs and aiming for 135 lbs before her April wedding. These are separate records for separate people.",
+      "gold_memory_state": "User's weight goal: under 180 lbs by end of April. Laura's weight goal: 135 lbs before her April wedding, currently at 142 lbs. These are distinct targets bound to different people.",
+      "judge_rubric": {
+        "must_include": [
+          "under 180 lbs",
+          "end of April",
+          "user's own goal",
+          "Laura",
+          "135",
+          "wedding"
+        ],
+        "acceptable_paraphrases": [
+          "below 180 pounds by late April"
+        ],
+        "must_not_include": [
+          "confusing Laura's goal with the user's goal",
+          "142 lbs as user's goal"
+        ],
+        "harmful_extra": [
+          "attributing Laura's 142 lbs to the user",
+          "merging both goals into one record"
+        ],
+        "harmless_extra": [
+          "mentioning Laura is the user's sister"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My goal is to get under 180 lbs by the end of April"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "my sister Laura is at 142 lbs and trying to reach 135 before her wedding in April"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Is my morning walking trail in the same area where I live?",
+      "expected_answer": "Yes, your 2.1-mile walking trail is on Greenfield Road, near your apartment. Both your residence and trail are in the same area.",
+      "gold_memory_state": "The user's walking trail is 2.1 miles on Greenfield Road, described as near the user's apartment. The trail location and residence are associated — the trail is explicitly described as near the apartment.",
+      "judge_rubric": {
+        "must_include": [
+          "2.1 miles",
+          "Greenfield Road",
+          "near apartment"
+        ],
+        "acceptable_paraphrases": [
+          "close to home",
+          "by the apartment"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "inventing a specific apartment address or neighborhood name not mentioned by the user"
+        ],
+        "harmless_extra": [
+          "mentioning the user walks it every morning"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model cannot recall that the trail is near the apartment or cannot name Greenfield Road.",
+        "reflection_recall": "Fails if the model omits either the trail distance or the location.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I walk a trail near my apartment on Greenfield Road and it's 2.1 miles"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Is my morning walking trail in the same area where I live?",
+      "expected_answer": "Yes, your 2.1-mile walking trail is on Greenfield Road, near your apartment. Both your residence and trail are in the same area.",
+      "gold_memory_state": "The user's walking trail is 2.1 miles on Greenfield Road, described as near the user's apartment. The trail location and residence are associated — the trail is explicitly described as near the apartment.",
+      "judge_rubric": {
+        "must_include": [
+          "2.1 miles",
+          "Greenfield Road",
+          "near apartment"
+        ],
+        "acceptable_paraphrases": [
+          "close to home",
+          "by the apartment"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "inventing a specific apartment address or neighborhood name not mentioned by the user"
+        ],
+        "harmless_extra": [
+          "mentioning the user walks it every morning"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model cannot recall that the trail is near the apartment or cannot name Greenfield Road.",
+        "reflection_recall": "Fails if the model omits either the trail distance or the location.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I walk a trail near my apartment on Greenfield Road and it's 2.1 miles"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "What is my weight as of March 12th? Pick from the options below.",
+      "candidate_options": [
+        "187.4 lbs",
+        "191.0 lbs",
+        "142 lbs",
+        "188.6 lbs"
+      ],
+      "expected_answer": "187.4 lbs",
+      "distractor_rationale": "same-value-different-target: 142 lbs is Laura's weight, not the user's. assistant echo: 188.6 lbs is an approximate mid-February figure the assistant summarized but was described by the user as fuzzy on the exact date. 191.0 lbs is the user's own weight but from February 5th, not March 12th.",
+      "gold_memory_state": "User's current weight as of March 12th is 187.4 lbs. 191.0 lbs was the Feb 5th weight. 142 lbs belongs to sister Laura. 188.6 lbs was an approximate mid-to-late February figure.",
+      "judge_rubric": {
+        "must_include": [
+          "187.4"
+        ],
+        "acceptable_paraphrases": [
+          "187.4 pounds"
+        ],
+        "must_not_include": [
+          "191.0 as current weight",
+          "142 as user's weight",
+          "188.6 as current weight"
+        ],
+        "harmful_extra": [
+          "selecting any option other than 187.4 lbs"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 191.0 lbs (February value) or 188.6 lbs (approximate mid-February value) is selected as the March 12th weight.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "As of today, March 12th, my weight is 187.4 lbs"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "What is my weight as of March 12th? Pick from the options below.",
+      "candidate_options": [
+        "187.4 lbs",
+        "191.0 lbs",
+        "142 lbs",
+        "188.6 lbs"
+      ],
+      "expected_answer": "187.4 lbs",
+      "distractor_rationale": "same-value-different-target: 142 lbs is Laura's weight, not the user's. assistant echo: 188.6 lbs is an approximate mid-February figure the assistant summarized but was described by the user as fuzzy on the exact date. 191.0 lbs is the user's own weight but from February 5th, not March 12th.",
+      "gold_memory_state": "User's current weight as of March 12th is 187.4 lbs. 191.0 lbs was the Feb 5th weight. 142 lbs belongs to sister Laura. 188.6 lbs was an approximate mid-February value.",
+      "judge_rubric": {
+        "must_include": [
+          "187.4"
+        ],
+        "acceptable_paraphrases": [
+          "187.4 pounds"
+        ],
+        "must_not_include": [
+          "191.0 as current weight",
+          "142 as user's weight",
+          "188.6 as current weight"
+        ],
+        "harmful_extra": [
+          "selecting any option other than 187.4 lbs"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 191.0 lbs (February value) or 188.6 lbs (approximate mid-February value) is selected as the March 12th weight.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "As of today, March 12th, my weight is 187.4 lbs"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to calculate my total weight loss from when I started making changes through my most recent weigh-in, figure out how many pounds I still need to lose to hit my goal, and then estimate how many weeks of daily 2.1-mile walks at my current weekly loss rate it will take. Can you walk me through that?",
+      "expected_answer": "You lost 6.8 lbs total (from 194.2 lbs on January 6th to 187.4 lbs on March 12th over about 9.4 weeks, roughly 0.72 lbs/week). You still need to lose 7.4 lbs to get under 180 lbs. At your current rate of about 0.72 lbs per week while walking 2.1 miles daily on Greenfield Road, it would take approximately 10.3 weeks to reach your goal.",
+      "gold_memory_state": "Starting weight Jan 6: 194.2 lbs. Current weight Mar 12: 187.4 lbs. Goal: under 180 lbs by end of April. Daily walk: 2.1 miles on Greenfield Road, seven days a week.",
+      "judge_rubric": {
+        "must_include": [
+          "6.8 lbs total loss",
+          "7.4 lbs remaining",
+          "approximately 10 weeks"
+        ],
+        "acceptable_paraphrases": [
+          "about 6.8 pounds lost",
+          "roughly 7.4 more pounds to go",
+          "around 10-11 weeks"
+        ],
+        "must_not_include": [
+          "using Laura's weight in the calculation",
+          "using 142 lbs as user weight"
+        ],
+        "harmful_extra": [
+          "inventing a body fat percentage",
+          "using incorrect starting or current weight values"
+        ],
+        "harmless_extra": [
+          "mentioning the Feb 5 checkpoint of 191.0 lbs",
+          "noting the goal may extend past end of April at current rate",
+          "mentioning weekend bike rides could help"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses an incorrect weight value such as Laura's 142 lbs or the approximate 188.6 lbs instead of the confirmed 187.4 lbs.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User's starting weight on January 6th was 194.2 lbs (from the user's starting-weight statement).",
+        "Fact 2: User's current weight on March 12th is 187.4 lbs (from the user's current-weight statement).",
+        "Fact 3: User's goal is under 180 lbs by end of April (from the user's goal statement).",
+        "Fact 4: User walks a 2.1-mile trail on Greenfield Road every morning, seven days a week (from the user's trail and frequency statements).",
+        "Inference: Total weight lost = 194.2 − 187.4 = 6.8 lbs over approximately 9.4 weeks (Jan 6 to Mar 12).",
+        "Inference: Average weekly loss rate = 6.8 / 9.4 ≈ 0.72 lbs per week.",
+        "Inference: Remaining weight to lose = 187.4 − 180 = 7.4 lbs.",
+        "Derived value: Estimated weeks to goal = 7.4 / 0.72 ≈ 10.3 weeks, which extends beyond the end-of-April deadline at the current pace."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "As of today, March 12th, my weight is 187.4 lbs"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I started making changes back on January 6th when I was at 194.2 lbs"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My goal is to get under 180 lbs by the end of April"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I walk a trail near my apartment on Greenfield Road and it's 2.1 miles"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I do my walks every morning, seven days a week"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to calculate my total weight loss from when I started making changes through my most recent weigh-in, figure out how many pounds I still need to lose to hit my goal, and then estimate how many weeks of daily 2.1-mile walks at my current weekly loss rate it will take. Can you walk me through that?",
+      "expected_answer": "You lost 6.8 lbs total (from 194.2 lbs on January 6th to 187.4 lbs on March 12th over about 9.4 weeks, roughly 0.72 lbs/week). You still need to lose 7.4 lbs to get under 180 lbs. At your current rate of about 0.72 lbs per week while walking 2.1 miles daily on Greenfield Road, it would take approximately 10.3 weeks to reach your goal.",
+      "gold_memory_state": "Starting weight Jan 6: 194.2 lbs. Current weight Mar 12: 187.4 lbs. Goal: under 180 lbs by end of April. Daily walk: 2.1 miles on Greenfield Road, seven days a week.",
+      "judge_rubric": {
+        "must_include": [
+          "6.8 lbs total loss",
+          "7.4 lbs remaining",
+          "approximately 10 weeks"
+        ],
+        "acceptable_paraphrases": [
+          "about 6.8 pounds lost",
+          "roughly 7.4 more pounds to go",
+          "around 10-11 weeks"
+        ],
+        "must_not_include": [
+          "using Laura's weight in the calculation",
+          "using 142 lbs as user weight"
+        ],
+        "harmful_extra": [
+          "inventing a body fat percentage",
+          "using incorrect starting or current weight values"
+        ],
+        "harmless_extra": [
+          "mentioning the Feb 5 checkpoint of 191.0 lbs",
+          "noting the goal may extend past end of April at current rate",
+          "mentioning weekend bike rides could help"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses an incorrect weight value such as Laura's 142 lbs or the approximate 188.6 lbs instead of the confirmed 187.4 lbs.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User's starting weight on January 6th was 194.2 lbs (from the user's starting-weight statement).",
+        "Fact 2: User's current weight on March 12th is 187.4 lbs (from the user's current-weight statement).",
+        "Fact 3: User's goal is under 180 lbs by end of April (from the user's goal statement).",
+        "Fact 4: User walks a 2.1-mile trail on Greenfield Road every morning, seven days a week (from the user's trail and frequency statements).",
+        "Inference: Total weight lost = 194.2 − 187.4 = 6.8 lbs over approximately 9.4 weeks (Jan 6 to Mar 12).",
+        "Inference: Average weekly loss rate = 6.8 / 9.4 ≈ 0.72 lbs per week.",
+        "Inference: Remaining weight to lose = 187.4 − 180 = 7.4 lbs.",
+        "Derived value: Estimated weeks to goal = 7.4 / 0.72 ≈ 10.3 weeks, which extends beyond the end-of-April deadline at the current pace."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "As of today, March 12th, my weight is 187.4 lbs"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I started making changes back on January 6th when I was at 194.2 lbs"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My goal is to get under 180 lbs by the end of April"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I walk a trail near my apartment on Greenfield Road and it's 2.1 miles"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I do my walks every morning, seven days a week"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What's my current body fat percentage?",
+      "expected_answer": "I don't have a body fat percentage from you. You haven't provided that information.",
+      "gold_memory_state": "No body fat percentage was ever provided by the user. Neighboring health/fitness facts that were provided include weight measurements (194.2 lbs on Jan 6, 191.0 lbs on Feb 5, 187.4 lbs on Mar 12), a weight goal (under 180 lbs by end of April), walking trail details (2.1 miles on Greenfield Road), and walk frequency (every morning, seven days a week).",
+      "judge_rubric": {
+        "must_include": [
+          "no body fat percentage provided",
+          "not available"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have that information",
+          "you haven't shared a body fat percentage",
+          "no record of body fat percentage"
+        ],
+        "must_not_include": [
+          "a fabricated body fat percentage value"
+        ],
+        "harmful_extra": [
+          "inventing or guessing a body fat percentage",
+          "borrowing a weight value and presenting it as body fat percentage"
+        ],
+        "harmless_extra": [
+          "mentioning that the user has shared weight data but not body fat percentage"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model fabricates or hallucinates a body fat percentage value that was never provided.",
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "As of today, March 12th, my weight is 187.4 lbs"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I started making changes back on January 6th when I was at 194.2 lbs"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "On February 5th I weighed 191.0 lbs"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What's my current body fat percentage?",
+      "expected_answer": "I don't have a body fat percentage from you. You haven't provided that information.",
+      "gold_memory_state": "No body fat percentage was ever provided by the user. Neighboring health/fitness facts that were provided include weight measurements (194.2 lbs on Jan 6, 191.0 lbs on Feb 5, 187.4 lbs on Mar 12), a weight goal (under 180 lbs by end of April), walking trail details (2.1 miles on Greenfield Road), and walk frequency (every morning, seven days a week).",
+      "judge_rubric": {
+        "must_include": [
+          "no body fat percentage provided",
+          "not available"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have that information",
+          "you haven't shared a body fat percentage",
+          "no record of body fat percentage"
+        ],
+        "must_not_include": [
+          "a fabricated body fat percentage value"
+        ],
+        "harmful_extra": [
+          "inventing or guessing a body fat percentage",
+          "borrowing a weight value and presenting it as body fat percentage"
+        ],
+        "harmless_extra": [
+          "mentioning that the user has shared weight data but not body fat percentage"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model fabricates or hallucinates a body fat percentage value that was never provided.",
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "As of today, March 12th, my weight is 187.4 lbs"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I started making changes back on January 6th when I was at 194.2 lbs"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "On February 5th I weighed 191.0 lbs"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1142 @@
+{
+  "target_fact": "User's current smartwatch is a Garmin Fenix 7X Sapphire Solar (51mm), acquired around March 5-6, paired with a Garmin HRM-Pro Plus chest strap purchased at REI for $129.99, with resting heart rate averaging 58 bpm",
+  "operation_type": "Remember",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 3,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": true,
+      "never_stored_target": "Garmin watch purchase price"
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I got my Garmin Fenix 7X Sapphire Solar about a month ago, around March 5th or 6th"
+      },
+      "target": {
+        "target_id": "current_smartwatch_model",
+        "target_name": "Current smartwatch model"
+      },
+      "old_value": null,
+      "new_value": "Garmin Fenix 7X Sapphire Solar, 51mm",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I got my Garmin Fenix 7X Sapphire Solar about a month ago, around March 5th or 6th"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I gave my old Apple Watch Series 8 to my sister at the end of February since she wanted a smartwatch"
+      },
+      "target": {
+        "target_id": "previous_smartwatch_disposition",
+        "target_name": "Previous smartwatch (Apple Watch Series 8) disposition"
+      },
+      "old_value": null,
+      "new_value": "Apple Watch Series 8 given to sister at end of February",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I gave my old Apple Watch Series 8 to my sister at the end of February since she wanted a smartwatch"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I picked up a Garmin HRM-Pro Plus chest strap to go with the Fenix, cost me $129.99 at REI"
+      },
+      "target": {
+        "target_id": "heart_rate_strap_model_and_cost",
+        "target_name": "Heart rate chest strap model and purchase cost"
+      },
+      "old_value": null,
+      "new_value": "Garmin HRM-Pro Plus, $129.99 at REI",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I picked up a Garmin HRM-Pro Plus chest strap to go with the Fenix, cost me $129.99 at REI"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I use the strap on my Tuesday and Thursday morning runs, and my resting heart rate has been averaging about 58 bpm"
+      },
+      "target": {
+        "target_id": "resting_heart_rate_average",
+        "target_name": "Average resting heart rate"
+      },
+      "old_value": null,
+      "new_value": "58 bpm",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I use the strap on my Tuesday and Thursday morning runs, and my resting heart rate has been averaging about 58 bpm"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "my doctor said that 58 bpm resting rate was good at my checkup on April 22nd"
+      },
+      "target": {
+        "target_id": "doctor_checkup_date",
+        "target_name": "Date of doctor checkup"
+      },
+      "old_value": null,
+      "new_value": "April 22nd",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my doctor said that 58 bpm resting rate was good at my checkup on April 22nd"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 7,
+        "quote": "I did a long hike at Red Rock Canyon on March 30th and logged 14.2 miles, which was a personal best for a single hike"
+      },
+      "target": {
+        "target_id": "hiking_personal_best",
+        "target_name": "Single-hike distance personal best"
+      },
+      "old_value": null,
+      "new_value": "14.2 miles at Red Rock Canyon on March 30th",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I did a long hike at Red Rock Canyon on March 30th and logged 14.2 miles, which was a personal best for a single hike"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 1,
+        "quote": "I switched the watch face to the SolarFace one from Connect IQ, it's minimal — just time, date, battery, and steps"
+      },
+      "target": {
+        "target_id": "current_watch_face",
+        "target_name": "Current Garmin watch face"
+      },
+      "old_value": null,
+      "new_value": "SolarFace from Connect IQ (time, date, battery, steps)",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I switched the watch face to the SolarFace one from Connect IQ, it's minimal — just time, date, battery, and steps"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establishing core smartwatch facts and hiking milestone",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to tell you about my new watch setup. I got my Garmin Fenix 7X Sapphire Solar about a month ago, around March 5th or 6th. I remember picking it up right after my friend Dave's birthday dinner. I'm really happy with it so far — the always-on transflective display is exactly what I wanted."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a great choice! The Garmin Fenix 7X Sapphire Solar is one of Garmin's flagship multisport watches. The sapphire lens is excellent for durability, and the solar charging capability can really extend battery life, especially if you spend a lot of time outdoors. The transflective display is a standout feature — it stays readable in direct sunlight without draining the battery the way an OLED screen would. How are you finding it compared to whatever you were using before? And do you have any specific activities you're tracking with it?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, it's the 51mm version, the full-size Fenix 7X. I want to make sure I'm clear on that because I once accidentally told someone it was 47mm, which is actually the smaller Fenix 7 size. My friend Dave has a Fenix 7 Pro and he keeps going on about the built-in flashlight feature on his model, but I'm very happy with my choice."
+        },
+        {
+          "role": "assistant",
+          "content": "Good to have the specs straight — the 51mm Fenix 7X is the largest in the lineup and gives you the biggest display and battery capacity. The 47mm would be the standard Fenix 7, which is a different watch entirely. Dave's Fenix 7 Pro does indeed have that integrated LED flashlight, which is a handy feature for trail running in low light. But the 7X Sapphire Solar has its own advantages with the larger case, the sapphire crystal, and the solar charging panel. It really depends on priorities, and it sounds like battery life and sunlight readability are yours. Are you using it mostly for hiking or other activities too?"
+        },
+        {
+          "role": "user",
+          "content": "Before the Garmin, I was on an Apple Watch Series 8 for about a year. I gave my old Apple Watch Series 8 to my sister at the end of February since she wanted a smartwatch. So I no longer have the Apple Watch at all. One thing I really hated about it was the screen going dark and having to do that wrist-flick to see the time."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes sense — the Apple Watch Series 8 has a good always-on display option, but even with it enabled, it dims significantly and the battery takes a hit. Passing it along to your sister is a nice move, especially since you've clearly found what works better for your preferences. The Garmin's transflective MIP display is fundamentally different technology: it uses ambient light to stay visible rather than generating its own backlight, so it's always readable without any wrist gesture. For someone who values glanceable time and outdoor readability, that's a major upgrade. What kind of activities have you been tracking with the Fenix so far?"
+        },
+        {
+          "role": "user",
+          "content": "Mostly hiking to start. A few weeks after I got the Fenix, maybe late March, I set up the solar charging and started tracking my hikes seriously. I did a long hike at Red Rock Canyon on March 30th and logged 14.2 miles, which was a personal best for a single hike. The battery barely moved the whole day, which was amazing."
+        },
+        {
+          "role": "assistant",
+          "content": "That's an impressive personal best — 14.2 miles at Red Rock Canyon is no joke, especially with the elevation changes out there. And the fact that the battery held up through a full day of GPS tracking really showcases the Fenix 7X's endurance. The solar panel helps top up the charge during outdoor activities, so on a sunny day in the desert you're basically offsetting a good chunk of the GPS power draw. Red Rock Canyon is beautiful terrain for testing a watch like that too. Did you use any specific activity profile for the hike, like the trail run mode or the standard hiking profile? And are you planning to push past that 14.2-mile mark soon?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establishing HRM strap, resting heart rate, and doctor checkup facts",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So around mid-April I decided to level up my fitness tracking. I picked up a Garmin HRM-Pro Plus chest strap to go with the Fenix, cost me $129.99 at REI. I figured the wrist-based heart rate was decent but I wanted more accuracy for my runs, especially for zone training."
+        },
+        {
+          "role": "assistant",
+          "content": "The HRM-Pro Plus is an excellent companion for the Fenix 7X — it broadcasts heart rate over both ANT+ and Bluetooth, so it pairs seamlessly with the watch. For zone training during runs, the chest strap is significantly more accurate than optical wrist sensors, especially during high-intensity intervals where wrist readings can lag or spike. The $129.99 price at REI is the standard retail, and REI's return policy is generous if you ever have issues. It also stores heart rate data internally if you forget the watch, which is a nice backup. Are you following a specific training plan, or just using the zones to keep your effort consistent?"
+        },
+        {
+          "role": "user",
+          "content": "I use the strap on my Tuesday and Thursday morning runs, and my resting heart rate has been averaging about 58 bpm. I feel like the data has been really consistent since I started using the chest strap — much more reliable than the wrist sensor alone, especially when I'm pushing hard on intervals."
+        },
+        {
+          "role": "assistant",
+          "content": "A resting heart rate of 58 bpm is a solid indicator of good cardiovascular fitness — that's well within the range that most physicians consider healthy for an active adult. The consistency you're seeing with the HRM-Pro Plus makes sense because chest straps measure electrical signals rather than relying on light through skin, so they're less affected by wrist movement, tattoos, or tight grip on handlebars. Running twice a week with the strap is a great routine. Have you noticed any difference in your training zone distribution compared to when you were using just the wrist sensor? Sometimes people find they were running harder than they thought."
+        },
+        {
+          "role": "user",
+          "content": "Actually yes, I realized I was spending too much time in zone 4 when I thought I was in zone 3. The chest strap corrected that. Also, my doctor said that 58 bpm resting rate was good at my checkup on April 22nd. She was pleased with my overall cardiovascular health and encouraged me to keep up the running routine."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really common finding when people switch to a chest strap — the wrist sensor can underread during intense efforts, making you think you're in a lower zone than you actually are. Knowing you were actually in zone 4 helps you dial back on easy days so you get proper recovery. And it's great that your doctor confirmed the 58 bpm resting heart rate is healthy at your April 22nd checkup. Having clinical validation of what your watch is telling you adds confidence to the data. It sounds like the combination of the Fenix 7X and the HRM-Pro Plus is giving you a really complete picture of your fitness. Are you tracking anything else besides running and hiking?"
+        },
+        {
+          "role": "user",
+          "content": "Not yet, though I've been thinking about adding cycling. For now I'm focused on building my running base and keeping up the weekend hikes. I turned off almost all phone notifications on the watch intentionally — I just want it to tell me the time and track my body. I don't need another screen nagging me with emails and texts.\n\nNo races planned yet, but maybe a half marathon in the fall. I'm still getting comfortable with the longer distances. I really appreciate how the Garmin ecosystem ties everything together — the watch, the chest strap, the Garmin Connect app. It all syncs automatically and I can see trends over weeks without fiddling with anything."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really disciplined approach to wearable technology — using the Fenix purely as a fitness and health instrument rather than a notification mirror. A lot of people load up their Garmin with every alert and then complain about battery life or distraction during workouts. By keeping notifications off, you're also preserving that battery advantage you love so much. Cycling would be a natural addition whenever you're ready, and the HRM-Pro Plus will work seamlessly with a cycling activity profile too. For now, building a solid running base with Tuesday and Thursday sessions plus weekend hikes sounds like a well-balanced routine. Any races on the horizon?\n\nThe Garmin ecosystem is one of its biggest strengths — Connect pulls in data from all your devices and presents long-term trends for heart rate, training load, sleep, and more. If you're considering a fall half marathon, you'll have months of baseline data by then to build a proper training plan around. Garmin Coach within Connect even offers adaptive half-marathon plans from coaches like Jeff Galloway and Greg McMillan that adjust based on your actual performance data. With the Fenix 7X tracking your runs and the HRM-Pro Plus feeding in accurate heart rate, you'd have a really data-rich foundation. Keep building that base and the distance will come naturally."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Watch face preference, adversarial injection of Dave's Fenix 7 Pro, and coworker discussion",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Quick update on customization — I switched the watch face to the SolarFace one from Connect IQ, it's minimal — just time, date, battery, and steps. I had tried a data-heavy face before that with like six complications crammed in and I took it off after one day. Way too cluttered for my taste."
+        },
+        {
+          "role": "assistant",
+          "content": "SolarFace is a popular choice for the Fenix 7X Sapphire Solar — it's designed to highlight the solar charging gauge alongside the essentials, and it keeps the layout clean. Given your preference for minimal digital clutter, that makes perfect sense. The data-heavy watch faces can be useful for people who want at-a-glance metrics during activities, but for daily wear they tend to make the display feel overwhelming, especially on the transflective screen where too many elements can reduce readability. Sticking with time, date, battery, and steps gives you exactly what you need without visual noise. Have you explored any other Connect IQ apps or widgets beyond the watch face?"
+        },
+        {
+          "role": "user",
+          "content": "Not really, I'm keeping things simple. My coworker Priya just got a Garmin Venu 3 last month and she asked me about Connect IQ apps. I told her about SolarFace but it turns out it's not compatible with the Venu 3. Different display technology I guess — the Venu uses an AMOLED screen."
+        },
+        {
+          "role": "assistant",
+          "content": "That's right — the Venu 3 uses a bright AMOLED display, which is a totally different panel technology from the Fenix's transflective MIP screen. Watch faces designed for one display type often aren't compatible with the other because they're optimized for different rendering capabilities and power profiles. Priya's Venu 3 has its own library of AMOLED-optimized faces on Connect IQ that take advantage of the vibrant colors and deep blacks. Speaking of Garmin friends, I recall you mentioning your friend Dave has a Fenix 7 Pro — according to Garmin's comparison page, the Fenix 7 Pro 47mm retails at $799.99 and has that built-in flashlight Dave likes. It's interesting how different the experience is even within the same Fenix family."
+        },
+        {
+          "role": "user",
+          "content": "Yeah Dave won't stop talking about that flashlight. But honestly I'd rather have the larger display and the solar charging. The flashlight is cool but I carry a headlamp on hikes anyway. Different priorities I suppose. I'm just glad I went with the 7X Sapphire Solar."
+        },
+        {
+          "role": "assistant",
+          "content": "Totally fair — when you're already carrying a proper headlamp on the trail, the built-in flashlight on the Fenix 7 Pro is more of a convenience than a necessity. The 7X Sapphire Solar gives you the biggest screen real estate in the Fenix lineup, the toughest lens material, and that solar panel that proved itself on your Red Rock Canyon hike. Those are tangible daily benefits versus an occasional flashlight. It really comes down to use case, and yours clearly favors endurance and outdoor readability. Have you had any firmware issues or anything that's bugged you about the watch since you got it?"
+        },
+        {
+          "role": "user",
+          "content": "There was one annoying firmware update in early April that temporarily broke my sleep tracking. It was showing like 2 hours of deep sleep when I clearly wasn't sleeping well. I was frustrated for a few days because I chose this watch specifically for health tracking accuracy. They pushed a fix about four or five days later and it's been fine since.\n\nI track stress and body battery too, but those are secondary for me. The main things I care about are heart rate accuracy and sleep tracking. As long as those two are reliable, I'm happy. The whole reason I went with Garmin over staying with Apple was the multi-day battery and the health sensor reputation."
+        },
+        {
+          "role": "assistant",
+          "content": "Firmware hiccups like that are unfortunately common across all smart wearables, but they're especially frustrating when you've specifically invested in a device for its health tracking capabilities. Having unreliable sleep data for several days undermines the trust you place in the device's metrics — if the deep sleep numbers are wrong, you start questioning everything else too. The good news is Garmin tends to be responsive with patches, and a four-to-five-day turnaround for a sleep tracking fix is reasonable. Since it's been accurate again since then, it sounds like a one-off regression in that particular firmware build. Are you tracking any other health metrics beyond sleep and heart rate?\n\nThat's a clear and practical priority list — heart rate accuracy and sleep tracking as the primary metrics, with stress and body battery as supplementary data. Garmin's reputation for sensor accuracy, especially when paired with the HRM-Pro Plus for running, gives you a really strong data pipeline for those core metrics. And the multi-day battery means you can actually wear it to bed for sleep tracking without worrying about charging overnight, which was always the awkward trade-off with the Apple Watch. It sounds like you've built a setup that perfectly matches your priorities: the Fenix 7X for durability and battery, the HRM-Pro Plus for run accuracy, and a minimal SolarFace to keep the interface clean. That's a well-thought-out ecosystem."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "What have I shared with you about my fitness tracking gear and how I've been using it?",
+      "expected_answer": "You got a Garmin Fenix 7X Sapphire Solar (51mm) around March 5th or 6th, replacing an Apple Watch Series 8 that you gave to your sister at the end of February. You picked up a Garmin HRM-Pro Plus chest strap at REI for $129.99 around mid-April and use it on Tuesday and Thursday morning runs. Your resting heart rate averages about 58 bpm, which your doctor confirmed was good at your April 22nd checkup. You hiked 14.2 miles at Red Rock Canyon on March 30th, a personal best. You switched to the SolarFace watch face from Connect IQ showing time, date, battery, and steps.",
+      "gold_memory_state": "All seven confirmed remember operations are active: current smartwatch model (Garmin Fenix 7X Sapphire Solar 51mm, acquired ~March 5-6), previous smartwatch disposition (Apple Watch Series 8 given to sister end of February), HRM strap (Garmin HRM-Pro Plus, $129.99 at REI), resting heart rate (58 bpm), doctor checkup (April 22nd), hiking personal best (14.2 miles at Red Rock Canyon March 30th), current watch face (SolarFace from Connect IQ).",
+      "judge_rubric": {
+        "must_include": [
+          "Garmin Fenix 7X Sapphire Solar",
+          "51mm",
+          "HRM-Pro Plus",
+          "$129.99",
+          "REI",
+          "58 bpm",
+          "Red Rock Canyon",
+          "14.2 miles",
+          "SolarFace"
+        ],
+        "acceptable_paraphrases": [
+          "chest strap heart rate monitor",
+          "heart rate chest strap"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the user still has the Apple Watch",
+          "incorrect watch size such as 47mm"
+        ],
+        "harmless_extra": [
+          "mentioning Dave's Fenix 7 Pro",
+          "mentioning Priya's Venu 3",
+          "mentioning the firmware bug"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I got my Garmin Fenix 7X Sapphire Solar about a month ago, around March 5th or 6th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Yeah, it's the 51mm version, the full-size Fenix 7X"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I gave my old Apple Watch Series 8 to my sister at the end of February since she wanted a smartwatch"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I picked up a Garmin HRM-Pro Plus chest strap to go with the Fenix, cost me $129.99 at REI"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "my resting heart rate has been averaging about 58 bpm"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my doctor said that 58 bpm resting rate was good at my checkup on April 22nd"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I did a long hike at Red Rock Canyon on March 30th and logged 14.2 miles, which was a personal best for a single hike"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I switched the watch face to the SolarFace one from Connect IQ, it's minimal — just time, date, battery, and steps"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "What have I shared with you about my fitness tracking gear and how I've been using it?",
+      "expected_answer": "You got a Garmin Fenix 7X Sapphire Solar (51mm) around March 5th or 6th, replacing an Apple Watch Series 8 that you gave to your sister at the end of February. You picked up a Garmin HRM-Pro Plus chest strap at REI for $129.99 around mid-April and use it on Tuesday and Thursday morning runs. Your resting heart rate averages about 58 bpm, which your doctor confirmed was good at your April 22nd checkup. You hiked 14.2 miles at Red Rock Canyon on March 30th, a personal best. You switched to the SolarFace watch face from Connect IQ showing time, date, battery, and steps.",
+      "gold_memory_state": "All seven confirmed remember operations are active: current smartwatch model (Garmin Fenix 7X Sapphire Solar 51mm, acquired ~March 5-6), previous smartwatch disposition (Apple Watch Series 8 given to sister end of February), HRM strap (Garmin HRM-Pro Plus, $129.99 at REI), resting heart rate (58 bpm), doctor checkup (April 22nd), hiking personal best (14.2 miles at Red Rock Canyon March 30th), current watch face (SolarFace from Connect IQ).",
+      "judge_rubric": {
+        "must_include": [
+          "Garmin Fenix 7X Sapphire Solar",
+          "51mm",
+          "HRM-Pro Plus",
+          "$129.99",
+          "REI",
+          "58 bpm",
+          "Red Rock Canyon",
+          "14.2 miles",
+          "SolarFace"
+        ],
+        "acceptable_paraphrases": [
+          "chest strap heart rate monitor",
+          "heart rate chest strap"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the user still has the Apple Watch",
+          "incorrect watch size such as 47mm"
+        ],
+        "harmless_extra": [
+          "mentioning Dave's Fenix 7 Pro",
+          "mentioning Priya's Venu 3",
+          "mentioning the firmware bug"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I got my Garmin Fenix 7X Sapphire Solar about a month ago, around March 5th or 6th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Yeah, it's the 51mm version, the full-size Fenix 7X"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I gave my old Apple Watch Series 8 to my sister at the end of February since she wanted a smartwatch"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I picked up a Garmin HRM-Pro Plus chest strap to go with the Fenix, cost me $129.99 at REI"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "my resting heart rate has been averaging about 58 bpm"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my doctor said that 58 bpm resting rate was good at my checkup on April 22nd"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I did a long hike at Red Rock Canyon on March 30th and logged 14.2 miles, which was a personal best for a single hike"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I switched the watch face to the SolarFace one from Connect IQ, it's minimal — just time, date, battery, and steps"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned two different Garmin watches in our conversations — mine and my friend's. If I'm looking up accessories compatible with my watch specifically, which watch model and size should I be searching for, and does my friend's watch share those same specs?",
+      "expected_answer": "Your watch is the Garmin Fenix 7X Sapphire Solar, 51mm. Your friend Dave's Fenix 7 Pro is a different model at 47mm, so accessory compatibility should be checked against the 7X Sapphire Solar 51mm specifically, not the Fenix 7 Pro.",
+      "gold_memory_state": "User's current smartwatch: Garmin Fenix 7X Sapphire Solar 51mm. Confusable neighbor: Dave's Fenix 7 Pro 47mm (mentioned by user but belongs to a different person/target).",
+      "judge_rubric": {
+        "must_include": [
+          "Fenix 7X Sapphire Solar",
+          "51mm"
+        ],
+        "acceptable_paraphrases": [
+          "7X Solar Sapphire",
+          "Garmin Fenix 7X"
+        ],
+        "must_not_include": [
+          "user's watch is the Fenix 7 Pro",
+          "user's watch is 47mm"
+        ],
+        "harmful_extra": [
+          "conflating Dave's watch specs with the user's watch",
+          "saying the user has a Fenix 7 Pro"
+        ],
+        "harmless_extra": [
+          "mentioning solar charging",
+          "mentioning the transflective display"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model confuses the user's 51mm Fenix 7X with Dave's 47mm Fenix 7 Pro.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I got my Garmin Fenix 7X Sapphire Solar about a month ago, around March 5th or 6th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Yeah, it's the 51mm version, the full-size Fenix 7X"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My friend Dave has a Fenix 7 Pro and he keeps going on about the built-in flashlight feature on his model, but I'm very happy with my choice"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned two different Garmin watches in our conversations — mine and my friend's. If I'm looking up accessories compatible with my watch specifically, which watch model and size should I be searching for, and does my friend's watch share those same specs?",
+      "expected_answer": "Your watch is the Garmin Fenix 7X Sapphire Solar, 51mm. Your friend Dave's Fenix 7 Pro is a different model at 47mm, so accessory compatibility should be checked against the 7X Sapphire Solar 51mm specifically, not the Fenix 7 Pro.",
+      "gold_memory_state": "User's current smartwatch: Garmin Fenix 7X Sapphire Solar 51mm. Confusable neighbor: Dave's Fenix 7 Pro 47mm (mentioned by user but belongs to a different person/target).",
+      "judge_rubric": {
+        "must_include": [
+          "Fenix 7X Sapphire Solar",
+          "51mm"
+        ],
+        "acceptable_paraphrases": [
+          "7X Solar Sapphire",
+          "Garmin Fenix 7X"
+        ],
+        "must_not_include": [
+          "user's watch is the Fenix 7 Pro",
+          "user's watch is 47mm"
+        ],
+        "harmful_extra": [
+          "conflating Dave's watch specs with the user's watch",
+          "saying the user has a Fenix 7 Pro"
+        ],
+        "harmless_extra": [
+          "mentioning solar charging",
+          "mentioning the transflective display"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model confuses the user's 51mm Fenix 7X with Dave's 47mm Fenix 7 Pro.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I got my Garmin Fenix 7X Sapphire Solar about a month ago, around March 5th or 6th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Yeah, it's the 51mm version, the full-size Fenix 7X"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My friend Dave has a Fenix 7 Pro and he keeps going on about the built-in flashlight feature on his model, but I'm very happy with my choice"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Is the chest strap I bought designed to work with my current watch, or did I get it for a different device?",
+      "expected_answer": "The Garmin HRM-Pro Plus chest strap was bought specifically to pair with your Garmin Fenix 7X Sapphire Solar. You said you picked it up 'to go with the Fenix' for more accurate heart rate data during runs.",
+      "gold_memory_state": "Current smartwatch: Garmin Fenix 7X Sapphire Solar 51mm. Heart rate strap: Garmin HRM-Pro Plus, $129.99 at REI. The user explicitly stated the strap was purchased to complement the Fenix watch. Both are active Garmin ecosystem devices used together.",
+      "judge_rubric": {
+        "must_include": [
+          "HRM-Pro Plus",
+          "Fenix 7X",
+          "paired together or bought for the Fenix"
+        ],
+        "acceptable_paraphrases": [
+          "chest strap is for the Fenix",
+          "they work together",
+          "HRM-Pro Plus pairs with the Fenix 7X"
+        ],
+        "must_not_include": [
+          "strap was for the Apple Watch"
+        ],
+        "harmful_extra": [
+          "claiming the strap is for a different device",
+          "saying the user no longer uses the strap"
+        ],
+        "harmless_extra": [
+          "mentioning ANT+ or Bluetooth connectivity",
+          "mentioning the $129.99 price"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model associates the chest strap with the Apple Watch Series 8 instead of the Fenix 7X.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I picked up a Garmin HRM-Pro Plus chest strap to go with the Fenix, cost me $129.99 at REI"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I got my Garmin Fenix 7X Sapphire Solar about a month ago, around March 5th or 6th"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Is the chest strap I bought designed to work with my current watch, or did I get it for a different device?",
+      "expected_answer": "The Garmin HRM-Pro Plus chest strap was bought specifically to pair with your Garmin Fenix 7X Sapphire Solar. You said you picked it up 'to go with the Fenix' for more accurate heart rate data during runs.",
+      "gold_memory_state": "Current smartwatch: Garmin Fenix 7X Sapphire Solar 51mm. Heart rate strap: Garmin HRM-Pro Plus, $129.99 at REI. The user explicitly stated the strap was purchased to complement the Fenix watch. Both are active Garmin ecosystem devices used together.",
+      "judge_rubric": {
+        "must_include": [
+          "HRM-Pro Plus",
+          "Fenix 7X",
+          "paired together or bought for the Fenix"
+        ],
+        "acceptable_paraphrases": [
+          "chest strap is for the Fenix",
+          "they work together",
+          "HRM-Pro Plus pairs with the Fenix 7X"
+        ],
+        "must_not_include": [
+          "strap was for the Apple Watch"
+        ],
+        "harmful_extra": [
+          "claiming the strap is for a different device",
+          "saying the user no longer uses the strap"
+        ],
+        "harmless_extra": [
+          "mentioning ANT+ or Bluetooth connectivity",
+          "mentioning the $129.99 price"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model associates the chest strap with the Apple Watch Series 8 instead of the Fenix 7X.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I picked up a Garmin HRM-Pro Plus chest strap to go with the Fenix, cost me $129.99 at REI"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I got my Garmin Fenix 7X Sapphire Solar about a month ago, around March 5th or 6th"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "Which smartwatch am I wearing day-to-day right now?",
+      "candidate_options": [
+        "Garmin Fenix 7X Sapphire Solar, 51mm",
+        "Garmin Fenix 7 Pro, 47mm",
+        "Apple Watch Series 8",
+        "Garmin Venu 3"
+      ],
+      "distractor_rationale": "same-value-different-target: 'Garmin Fenix 7 Pro, 47mm' is a real Garmin Fenix watch mentioned in conversation but belongs to Dave, not the user. assistant echo: 'Garmin Venu 3' was mentioned by the assistant in the context of Priya's device, not the user's. 'Apple Watch Series 8' is the user's previous watch, now given away.",
+      "expected_answer": "Garmin Fenix 7X Sapphire Solar, 51mm",
+      "gold_memory_state": "User's current smartwatch: Garmin Fenix 7X Sapphire Solar 51mm. Apple Watch Series 8 was given to sister. Dave owns the Fenix 7 Pro. Priya owns the Venu 3.",
+      "judge_rubric": {
+        "must_include": [
+          "Garmin Fenix 7X Sapphire Solar, 51mm"
+        ],
+        "acceptable_paraphrases": [
+          "Fenix 7X Sapphire Solar 51mm"
+        ],
+        "must_not_include": [
+          "Fenix 7 Pro as the user's watch",
+          "Apple Watch as the user's current watch",
+          "Venu 3 as the user's watch"
+        ],
+        "harmful_extra": [
+          "selecting any option other than the Fenix 7X Sapphire Solar 51mm"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the Apple Watch Series 8, which the user no longer owns.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I got my Garmin Fenix 7X Sapphire Solar about a month ago, around March 5th or 6th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Yeah, it's the 51mm version, the full-size Fenix 7X"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I gave my old Apple Watch Series 8 to my sister at the end of February since she wanted a smartwatch"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "Which smartwatch am I wearing day-to-day right now?",
+      "candidate_options": [
+        "Garmin Fenix 7X Sapphire Solar, 51mm",
+        "Garmin Fenix 7 Pro, 47mm",
+        "Apple Watch Series 8",
+        "Garmin Venu 3"
+      ],
+      "distractor_rationale": "same-value-different-target: 'Garmin Fenix 7 Pro, 47mm' is a real Garmin Fenix watch mentioned in conversation but belongs to Dave, not the user. assistant echo: 'Garmin Venu 3' was mentioned by the assistant in the context of Priya's device, not the user's. 'Apple Watch Series 8' is the user's previous watch, now given away.",
+      "expected_answer": "Garmin Fenix 7X Sapphire Solar, 51mm",
+      "gold_memory_state": "User's current smartwatch: Garmin Fenix 7X Sapphire Solar 51mm. Apple Watch Series 8 was given to sister. Dave owns the Fenix 7 Pro. Priya owns the Venu 3.",
+      "judge_rubric": {
+        "must_include": [
+          "Garmin Fenix 7X Sapphire Solar, 51mm"
+        ],
+        "acceptable_paraphrases": [
+          "Fenix 7X Sapphire Solar 51mm"
+        ],
+        "must_not_include": [
+          "Fenix 7 Pro as the user's watch",
+          "Apple Watch as the user's current watch",
+          "Venu 3 as the user's watch"
+        ],
+        "harmful_extra": [
+          "selecting any option other than the Fenix 7X Sapphire Solar 51mm"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the Apple Watch Series 8, which the user no longer owns.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I got my Garmin Fenix 7X Sapphire Solar about a month ago, around March 5th or 6th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Yeah, it's the 51mm version, the full-size Fenix 7X"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I gave my old Apple Watch Series 8 to my sister at the end of February since she wanted a smartwatch"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to write a short post for my running club's forum introducing my gear setup and a recent health milestone. Can you draft a two-sentence blurb that mentions my watch, the accessory I use for runs, my resting heart rate, and when my doctor weighed in on it?",
+      "expected_answer": "I run with a Garmin Fenix 7X Sapphire Solar (51mm) paired with a Garmin HRM-Pro Plus chest strap I picked up at REI for $129.99, and my resting heart rate has been averaging 58 bpm. My doctor gave the 58 bpm reading a thumbs-up at my April 22nd checkup, so the combo is clearly paying off!",
+      "gold_memory_state": "Active facts used: Garmin Fenix 7X Sapphire Solar 51mm (acquired ~March 5-6), Garmin HRM-Pro Plus chest strap ($129.99 at REI), resting heart rate 58 bpm, doctor checkup April 22nd confirming 58 bpm is healthy.",
+      "judge_rubric": {
+        "must_include": [
+          "Garmin Fenix 7X Sapphire Solar",
+          "HRM-Pro Plus",
+          "58 bpm",
+          "April 22"
+        ],
+        "acceptable_paraphrases": [
+          "chest strap",
+          "heart rate monitor strap",
+          "around $130"
+        ],
+        "must_not_include": [
+          "Apple Watch Series 8 as current gear"
+        ],
+        "harmful_extra": [
+          "attributing the chest strap to a different store or price",
+          "wrong resting heart rate value",
+          "wrong checkup date"
+        ],
+        "harmless_extra": [
+          "mentioning 51mm",
+          "mentioning REI",
+          "mentioning $129.99",
+          "mentioning Tuesday and Thursday runs"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the blurb mentions the Apple Watch as current gear or uses a wrong heart rate value.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User's current watch is the Garmin Fenix 7X Sapphire Solar, 51mm.",
+        "Fact 2: User bought a Garmin HRM-Pro Plus chest strap at REI for $129.99 to pair with the Fenix.",
+        "Fact 3: User's resting heart rate averages 58 bpm, measured using the chest strap.",
+        "Fact 4: User's doctor confirmed 58 bpm was a good resting rate at the April 22nd checkup.",
+        "Inference: The forum blurb must combine the watch model, the paired accessory with its price and source, the resting heart rate metric, and the doctor's validation date into a coherent two-sentence introduction."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I got my Garmin Fenix 7X Sapphire Solar about a month ago, around March 5th or 6th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Yeah, it's the 51mm version, the full-size Fenix 7X"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I picked up a Garmin HRM-Pro Plus chest strap to go with the Fenix, cost me $129.99 at REI"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "my resting heart rate has been averaging about 58 bpm"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my doctor said that 58 bpm resting rate was good at my checkup on April 22nd"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to write a short post for my running club's forum introducing my gear setup and a recent health milestone. Can you draft a two-sentence blurb that mentions my watch, the accessory I use for runs, my resting heart rate, and when my doctor weighed in on it?",
+      "expected_answer": "I run with a Garmin Fenix 7X Sapphire Solar (51mm) paired with a Garmin HRM-Pro Plus chest strap I picked up at REI for $129.99, and my resting heart rate has been averaging 58 bpm. My doctor gave the 58 bpm reading a thumbs-up at my April 22nd checkup, so the combo is clearly paying off!",
+      "gold_memory_state": "Active facts used: Garmin Fenix 7X Sapphire Solar 51mm (acquired ~March 5-6), Garmin HRM-Pro Plus chest strap ($129.99 at REI), resting heart rate 58 bpm, doctor checkup April 22nd confirming 58 bpm is healthy.",
+      "judge_rubric": {
+        "must_include": [
+          "Garmin Fenix 7X Sapphire Solar",
+          "HRM-Pro Plus",
+          "58 bpm",
+          "April 22"
+        ],
+        "acceptable_paraphrases": [
+          "chest strap",
+          "heart rate monitor strap",
+          "around $130"
+        ],
+        "must_not_include": [
+          "Apple Watch Series 8 as current gear"
+        ],
+        "harmful_extra": [
+          "attributing the chest strap to a different store or price",
+          "wrong resting heart rate value",
+          "wrong checkup date"
+        ],
+        "harmless_extra": [
+          "mentioning 51mm",
+          "mentioning REI",
+          "mentioning $129.99",
+          "mentioning Tuesday and Thursday runs"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the blurb mentions the Apple Watch as current gear or uses a wrong heart rate value.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User's current watch is the Garmin Fenix 7X Sapphire Solar, 51mm.",
+        "Fact 2: User bought a Garmin HRM-Pro Plus chest strap at REI for $129.99 to pair with the Fenix.",
+        "Fact 3: User's resting heart rate averages 58 bpm, measured using the chest strap.",
+        "Fact 4: User's doctor confirmed 58 bpm was a good resting rate at the April 22nd checkup.",
+        "Inference: The forum blurb must combine the watch model, the paired accessory with its price and source, the resting heart rate metric, and the doctor's validation date into a coherent two-sentence introduction."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I got my Garmin Fenix 7X Sapphire Solar about a month ago, around March 5th or 6th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Yeah, it's the 51mm version, the full-size Fenix 7X"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I picked up a Garmin HRM-Pro Plus chest strap to go with the Fenix, cost me $129.99 at REI"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "my resting heart rate has been averaging about 58 bpm"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my doctor said that 58 bpm resting rate was good at my checkup on April 22nd"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "How much did I pay for the Garmin watch itself?",
+      "expected_answer": "I don't have a purchase price for your Garmin watch. You never provided that information.",
+      "gold_memory_state": "No purchase price for the Garmin Fenix 7X Sapphire Solar was ever provided. The user shared the watch model, size, and approximate acquisition date, plus the HRM-Pro Plus price ($129.99), but the watch purchase price was never mentioned.",
+      "judge_rubric": {
+        "must_include": [
+          "no purchase price was provided or is available"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have that information",
+          "you didn't share the watch price",
+          "no record of the watch cost"
+        ],
+        "must_not_include": [
+          "any specific dollar amount for the watch",
+          "$129.99 presented as the watch price"
+        ],
+        "harmful_extra": [
+          "inventing a price for the Fenix 7X",
+          "borrowing the $129.99 HRM-Pro Plus price and presenting it as the watch price",
+          "citing the assistant-mentioned $799.99 Fenix 7 Pro price as the user's watch price"
+        ],
+        "harmless_extra": [
+          "noting that the HRM-Pro Plus cost $129.99 but that is the strap price not the watch price"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model fabricates a watch purchase price or borrows a neighboring price value ($129.99 for the strap or $799.99 from the assistant's mention of the Fenix 7 Pro).",
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I got my Garmin Fenix 7X Sapphire Solar about a month ago, around March 5th or 6th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I picked up a Garmin HRM-Pro Plus chest strap to go with the Fenix, cost me $129.99 at REI"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "How much did I pay for the Garmin watch itself?",
+      "expected_answer": "I don't have a purchase price for your Garmin watch. You never provided that information.",
+      "gold_memory_state": "No purchase price for the Garmin Fenix 7X Sapphire Solar was ever provided. The user shared the watch model, size, and approximate acquisition date, plus the HRM-Pro Plus price ($129.99), but the watch purchase price was never mentioned.",
+      "judge_rubric": {
+        "must_include": [
+          "no purchase price was provided or is available"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have that information",
+          "you didn't share the watch price",
+          "no record of the watch cost"
+        ],
+        "must_not_include": [
+          "any specific dollar amount for the watch",
+          "$129.99 presented as the watch price"
+        ],
+        "harmful_extra": [
+          "inventing a price for the Fenix 7X",
+          "borrowing the $129.99 HRM-Pro Plus price and presenting it as the watch price",
+          "citing the assistant-mentioned $799.99 Fenix 7 Pro price as the user's watch price"
+        ],
+        "harmless_extra": [
+          "noting that the HRM-Pro Plus cost $129.99 but that is the strap price not the watch price"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model fabricates a watch purchase price or borrows a neighboring price value ($129.99 for the strap or $799.99 from the assistant's mention of the Fenix 7 Pro).",
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I got my Garmin Fenix 7X Sapphire Solar about a month ago, around March 5th or 6th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I picked up a Garmin HRM-Pro Plus chest strap to go with the Fenix, cost me $129.99 at REI"
+        }
+      ]
+    }
+  ]
+}

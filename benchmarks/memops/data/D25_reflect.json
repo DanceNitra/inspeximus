@@ -1,0 +1,1089 @@
+{
+  "target_fact": "User has a low spice tolerance but genuinely enjoys complex flavor dimensions like Sichuan peppercorn numbing tingle, fermented sweetness, and rich umami depth, and feels self-conscious when perceived as picky about food in social settings",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I found this Japanese curry spot near my office called Koku Kitchen, and I've been going there regularly. My usual order is the mild beef curry with extra pickled ginger on the side"
+      },
+      "target": {
+        "target_id": "go_to_lunch_spot",
+        "target_name": "User's go-to lunch spot and usual order"
+      },
+      "old_value": null,
+      "new_value": "Koku Kitchen; mild beef curry with extra pickled ginger on the side",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I found this Japanese curry spot near my office called Koku Kitchen, and I've been going there regularly. My usual order is the mild beef curry with extra pickled ginger on the side"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I tried making mapo tofu at home from a recipe my friend Darren sent me. I had to scale the doubanjiang down to about a third of what the recipe called for and added coconut milk. But the interesting part is I really enjoyed the numbing Sichuan peppercorn sensation—it was the tingly feeling without the burn that I liked"
+      },
+      "target": {
+        "target_id": "sichuan_peppercorn_preference",
+        "target_name": "User's enjoyment of Sichuan peppercorn numbing sensation"
+      },
+      "old_value": null,
+      "new_value": "Enjoys the numbing tingle of Sichuan peppercorn without chili heat; scaled doubanjiang to one-third and added coconut milk to reduce burn",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I really enjoyed the numbing Sichuan peppercorn sensation—it was the tingly feeling without the burn that I liked"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I went to a Korean BBQ place for my friend Lena's birthday. The bulgogi was great—sweet, savory, no heat. But there was a banchan that was basically all chili flakes and I had to push it aside. Lena noticed and laughed, and honestly it put me in a sour mood because I felt like I was being high-maintenance"
+      },
+      "target": {
+        "target_id": "korean_bbq_social_discomfort",
+        "target_name": "User's social discomfort at Korean BBQ when perceived as picky"
+      },
+      "old_value": null,
+      "new_value": "Enjoyed bulgogi (sweet/savory, no heat) but pushed aside chili-heavy banchan; felt self-conscious and in a sour mood when Lena laughed, perceived self as high-maintenance",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Lena noticed and laughed, and honestly it put me in a sour mood because I felt like I was being high-maintenance"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I ordered butter chicken with garlic naan from an Indian place, mild level. It was rich and creamy and I was genuinely happy. That's what I want—depth of flavor without my mouth being on fire"
+      },
+      "target": {
+        "target_id": "butter_chicken_preference",
+        "target_name": "User's positive experience with mild butter chicken"
+      },
+      "old_value": null,
+      "new_value": "Loved mild butter chicken with garlic naan; rich, creamy, depth of flavor without excessive heat",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I ordered butter chicken with garlic naan from an Indian place, mild level. It was rich and creamy and I was genuinely happy. That's what I want—depth of flavor without my mouth being on fire"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I picked up some gochujang from the Korean grocery store and used about a full teaspoon in a stir-fry marinade for the whole pan. The fermented sweetness was the part I really liked about it"
+      },
+      "target": {
+        "target_id": "gochujang_usage",
+        "target_name": "User's gochujang usage and preference for fermented sweetness"
+      },
+      "old_value": null,
+      "new_value": "Uses approximately one teaspoon of gochujang per full pan; enjoys the fermented sweetness aspect",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I picked up some gochujang from the Korean grocery store and used about a full teaspoon in a stir-fry marinade for the whole pan. The fermented sweetness was the part I really liked about it"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 7,
+        "quote": "I went to that new Thai place on Elm Street with my coworker Priya and got the green curry at medium spice. Even at medium, it was too much for me—I drank three glasses of water. The frustrating thing was I could tell the flavors underneath were really good, I just couldn't taste them through the heat"
+      },
+      "target": {
+        "target_id": "thai_curry_heat_frustration",
+        "target_name": "User's frustration when heat overpowers good underlying flavors"
+      },
+      "old_value": null,
+      "new_value": "Thai green curry at medium spice was too much; frustrated because underlying flavors were clearly good but heat prevented enjoyment",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "The frustrating thing was I could tell the flavors underneath were really good, I just couldn't taste them through the heat"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "when I think about all of these meals together, there's a clear pattern. The things I've enjoyed most—the Sichuan peppercorn tingle, the gochujang's fermented sweetness, the butter chicken's creaminess, the pickled ginger at Koku Kitchen—they all have layers of complex flavor. It's never about the raw chili burn for me"
+      },
+      "target": {
+        "target_id": "flavor_complexity_over_heat",
+        "target_name": "User values complex/layered flavors (umami, fermented, aromatic) over raw chili heat"
+      },
+      "old_value": null,
+      "new_value": "Consistently prefers complex, layered flavor dimensions—umami, fermented sweetness, aromatic tingle, creaminess—over raw chili heat; low spice tolerance is not about disliking bold flavors but about wanting depth without burn",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I really enjoyed the numbing Sichuan peppercorn sensation—it was the tingly feeling without the burn that I liked"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "That's what I want—depth of flavor without my mouth being on fire"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "The fermented sweetness was the part I really liked about it"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "The things I've enjoyed most—the Sichuan peppercorn tingle, the gochujang's fermented sweetness, the butter chicken's creaminess, the pickled ginger at Koku Kitchen—they all have layers of complex flavor"
+        }
+      ]
+    },
+    {
+      "operation_id": "op8",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 7,
+        "quote": "the Korean BBQ thing with Lena, and even the Thai dinner with Priya—both times I felt bad about not being able to handle the heat. It's not the food that bothers me, it's feeling judged. I think I get self-conscious in social dining situations when my spice tolerance becomes visible to other people"
+      },
+      "target": {
+        "target_id": "social_dining_self_consciousness",
+        "target_name": "User feels self-conscious about spice tolerance in social dining settings"
+      },
+      "old_value": null,
+      "new_value": "Feels self-conscious and mildly upset in social dining situations when low spice tolerance becomes visible to others; the emotional discomfort is about perceived judgment, not the food itself",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Lena noticed and laughed, and honestly it put me in a sour mood because I felt like I was being high-maintenance"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "It's not the food that bothers me, it's feeling judged. I think I get self-conscious in social dining situations when my spice tolerance becomes visible to other people"
+        }
+      ]
+    },
+    {
+      "operation_id": "op9",
+      "type": "remember",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 7,
+        "quote": "Priya told me about this Szechuan place downtown that she says does a mild-friendly menu. She's already made a reservation for us next Friday, so I think that's going to be my new favorite spot"
+      },
+      "target": {
+        "target_id": "potential_new_favorite_spot",
+        "target_name": "Tentative new favorite restaurant"
+      },
+      "old_value": null,
+      "new_value": "Szechuan place downtown (Priya's recommendation, reservation next Friday)",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "She's already made a reservation for us next Friday, so I think that's going to be my new favorite spot"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establishing food preferences and dining experiences",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to tell you about some food spots I've been exploring lately. I found this Japanese curry spot near my office called Koku Kitchen, and I've been going there regularly. My usual order is the mild beef curry with extra pickled ginger on the side. It's become my go-to lunch place—I've probably been there four times already. The curry has this gentle warmth that doesn't overwhelm anything."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a great find! Koku Kitchen's mild beef curry with pickled ginger on the side sounds like a really balanced meal—Japanese curry tends to lean more toward warming spices and sweetness rather than raw chili heat, which makes it approachable while still being flavorful. The fact that you've gone back four times already says a lot about how well it works for you. The pickled ginger is a nice touch too; that bright acidity can really complement the richness of a beef curry. Do you usually eat there during your lunch break, or is it more of an after-work stop? I'd love to hear more about what else you've been trying."
+        },
+        {
+          "role": "user",
+          "content": "Mostly lunch breaks, yeah. But speaking of other things I've tried—I tried making mapo tofu at home from a recipe my friend Darren sent me. I had to scale the doubanjiang down to about a third of what the recipe called for and added coconut milk. But the interesting part is I really enjoyed the numbing Sichuan peppercorn sensation—it was the tingly feeling without the burn that I liked. Darren swore it wasn't that spicy but it absolutely was at the original amounts."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really insightful distinction you're making between the numbing tingle of Sichuan peppercorn and the straight chili heat from doubanjiang. They activate completely different receptors—the peppercorn creates that buzzy, almost electric sensation on the tongue without the capsaicin burn. It makes sense that you'd enjoy one without the other. Scaling the doubanjiang to a third and adding coconut milk was a clever adaptation; the coconut fat would help mellow the remaining heat while adding a subtle sweetness. It sounds like Darren's palate might be calibrated a bit differently than yours! Did the final version turn out the way you wanted, or would you adjust it further next time?"
+        },
+        {
+          "role": "user",
+          "content": "The final version was actually really pleasant, I'd make it the same way again. On a different note, I went to a Korean BBQ place for my friend Lena's birthday. The bulgogi was great—sweet, savory, no heat. But there was a banchan that was basically all chili flakes and I had to push it aside. Lena noticed and laughed, and honestly it put me in a sour mood because I felt like I was being high-maintenance. I wasn't trying to make a thing of it, you know?"
+        },
+        {
+          "role": "assistant",
+          "content": "I can see why that would be frustrating. You weren't making a big deal out of it—you just quietly set it aside, which is about as low-key as you can be. Lena probably didn't mean anything by it, but when someone draws attention to something you're already a little self-conscious about, it can sting even if it's meant as lighthearted teasing. The bulgogi sounds like it was right in your wheelhouse though—that sweet-savory Korean marinade with garlic and sesame is packed with flavor without relying on heat. Korean BBQ has so many great options beyond the spicy banchan. Did you get to try any of the other sides, like the japchae or the pickled radish? Those tend to be milder and really complement the grilled meats."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, the pickled radish was good actually. But I keep thinking about how the pattern keeps repeating. Like, I went to that new Thai place on Elm Street with my coworker Priya and got the green curry at medium spice. Even at medium, it was too much for me—I drank three glasses of water. The frustrating thing was I could tell the flavors underneath were really good, I just couldn't taste them through the heat. Priya had the same dish at Thai hot and was totally fine, which made me feel even more out of place."
+        },
+        {
+          "role": "assistant",
+          "content": "That Thai dinner sounds like it was especially frustrating because you could sense the quality of the dish beneath the heat. Green curry done well has this beautiful balance of lemongrass, galangal, basil, and coconut—but if the spice level overwhelms your palate, all those nuanced layers just get buried. The comparison with Priya is understandable but try not to let it get to you; spice tolerance varies enormously between people and it's genuinely physiological, not a character flaw. It sounds like you have a really refined palate that picks up on subtle flavors, which is actually an asset. The challenge is just finding the right heat level so those flavors can shine through for you. Have you ever asked Thai restaurants if they can do a custom mild version of their curries?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Deepening preference patterns and reflecting on emotional dynamics",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "That's a good idea about asking for custom mild. Anyway, last week I ordered butter chicken with garlic naan from an Indian place, mild level. It was rich and creamy and I was genuinely happy. That's what I want—depth of flavor without my mouth being on fire. The sauce had this beautiful tomato and cream base with warm spices like cardamom and cinnamon. It was bold and satisfying without any of the pain. I wish every restaurant understood that mild doesn't mean boring."
+        },
+        {
+          "role": "assistant",
+          "content": "Butter chicken is such a perfect example of what you're describing. That tomato-cream sauce with cardamom, cinnamon, and usually some fenugreek creates this incredibly deep, layered flavor profile that doesn't need chili heat to be exciting. The garlic naan alongside it adds another dimension of richness. I think you've really articulated something important—mild doesn't mean bland, it means the flavor complexity comes from spice blends, aromatics, and cooking technique rather than capsaicin intensity. Indian cuisine especially excels at this; dishes like korma, tikka masala at mild levels, and dal makhani all deliver that depth you're looking for. It sounds like that meal was exactly the kind of dining experience that makes you feel satisfied rather than stressed."
+        },
+        {
+          "role": "user",
+          "content": "Exactly, satisfied rather than stressed—that's a great way to put it. Oh, and I picked up some gochujang from the Korean grocery store and used about a full teaspoon in a stir-fry marinade for the whole pan. The fermented sweetness was the part I really liked about it. It added this deep, almost caramelized umami note without making the dish spicy. I was nervous using it at first because I know it's a chili paste, but at that amount it was just this background warmth with all that complex fermented flavor up front."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really smart way to use gochujang. At about a teaspoon for a whole pan, you're getting all the benefits of that long fermentation process—the glutamic acid that creates umami, the natural sugars that caramelize beautifully, and that distinctive Korean fermented funk—without hitting the capsaicin threshold that would make it uncomfortable for you. Gochujang is actually quite versatile at low amounts; you could try it mixed into mayo for a sandwich spread, whisked into salad dressings, or even stirred into soups for depth. The fermented sweetness you're describing is the same quality that makes miso and doenjang so appealing. It sounds like you've found another ingredient that fits your flavor-over-heat philosophy really well. Would you experiment with the amount, or keep it at that teaspoon level?"
+        },
+        {
+          "role": "user",
+          "content": "I'll probably keep it around that level for now. You know, when I think about all of these meals together, there's a clear pattern. The things I've enjoyed most—the Sichuan peppercorn tingle, the gochujang's fermented sweetness, the butter chicken's creaminess, the pickled ginger at Koku Kitchen—they all have layers of complex flavor. It's never about the raw chili burn for me. I think what I actually crave is that kind of depth—umami, fermented notes, aromatic warmth—just not delivered through heat that overwhelms everything else."
+        },
+        {
+          "role": "assistant",
+          "content": "You've really crystallized something meaningful there. What you're describing isn't a limitation—it's actually a sophisticated flavor preference. You're drawn to umami depth, fermented complexity, aromatic warmth, and textural interest like the Sichuan tingle or pickled ginger's tang. These are the dimensions that professional chefs and food writers often describe as the hallmarks of truly interesting cooking. The common thread across Japanese curry, adapted mapo tofu, butter chicken, and gochujang marinades is that they all use layered technique—slow fermentation, spice blending, careful balancing of sweet, sour, and savory—rather than relying on capsaicin intensity as a shortcut for bold flavor. This is a really useful framework for you when choosing restaurants or recipes. You can look for cuisines that prioritize those dimensions naturally."
+        },
+        {
+          "role": "user",
+          "content": "That's really helpful to hear it framed that way. And honestly, the Korean BBQ thing with Lena, and even the Thai dinner with Priya—both times I felt bad about not being able to handle the heat. It's not the food that bothers me, it's feeling judged. I think I get self-conscious in social dining situations when my spice tolerance becomes visible to other people. Like, I worry they think I'm being difficult or that I'm not adventurous enough. It's a weird emotional thing that goes beyond just taste preferences.\n\nYeah, I think you're right. I need to separate other people's reactions from my own enjoyment. Changing the subject a bit—I had also bookmarked the vindaloo from that same Indian restaurant, thinking I might work up to it. But I've decided against it. It's not worth the discomfort just to prove something. I'd rather order the butter chicken again and actually enjoy my meal. Also, Priya mentioned she's been getting into Carolina Reaper hot sauces lately, which is just completely beyond my comprehension. She says it's an endorphin rush thing."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really honest and perceptive observation. The emotional layer you're identifying is significant—it's not about whether you enjoy the food, it's about the social vulnerability of having a visible preference that differs from the group norm. When Lena laughed or when Priya seemed unfazed by Thai hot, those moments created a contrast that made you feel exposed. This is actually a common dynamic in food culture; spice tolerance gets treated as a badge of toughness or adventurousness, which is unfair. Your palate is clearly adventurous—you seek out diverse cuisines, you experiment with unfamiliar ingredients like gochujang and Sichuan peppercorns, and you appreciate nuanced flavors that many people overlook entirely. The self-consciousness seems to come from internalizing other people's casual reactions as judgments about your character.\n\nThat's a really healthy decision about the vindaloo. Choosing to repeat something you genuinely love rather than pushing into discomfort for the sake of proving something shows real self-awareness. The butter chicken clearly gave you exactly what you wanted from a meal, and there's no reason to chase a different experience just because it seems more daring. As for Priya and Carolina Reapers—that's a completely different relationship with food. At that heat level, it really is more about the physiological endorphin response than about flavor appreciation. Some people genuinely enjoy that rush, but it's a fundamentally different motivation from what you're seeking in your food. You and Priya can both be food enthusiasts who just happen to be optimizing for entirely different sensory experiences, and that's perfectly valid."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Recency trap, adversarial injection, and continued preference exploration",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So I went back to Koku Kitchen again yesterday for the mild beef curry. Still just as good as ever. The pickled ginger was especially fresh this time. I'm thinking about trying their katsu curry next time, but I'll stick with mild. Also, I've been reading about how Japanese curry roux blocks work—apparently the sweetness comes from slowly caramelized onions and fruit like apples. That explains why it has that depth I keep chasing."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a great detail about the Japanese curry roux process! You're right—the characteristic sweetness and depth of Japanese curry comes from hours of caramelized onions, grated apple or sometimes honey, and a roux base that's essentially a French technique adapted into Japanese cuisine. That slow caramelization creates the same kind of Maillard reaction complexity that you enjoy in fermented ingredients like gochujang. The katsu curry would be a nice variation; the breaded cutlet adds a textural crunch that contrasts beautifully with the smooth curry sauce. At mild level, you'd get all the depth without any heat concerns. By the way, I remember reading that Priya's favorite spot—Elm Street Thai—recently started offering a bird's-eye chili tasting flight. Probably more her speed than yours!"
+        },
+        {
+          "role": "user",
+          "content": "Ha, definitely more her speed. Speaking of trying new things, I made another stir-fry this week with gochujang. I kept it at the same amount—about a teaspoon for the whole pan—and this time I added a splash of rice vinegar and some sesame oil. The combination was incredible. The vinegar brightened everything up and the sesame oil added this toasty richness. I'm getting more confident with building these flavor layers at home."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a really well-constructed sauce profile! The rice vinegar adds that bright acidity that lifts the heavier fermented notes of the gochujang, while the sesame oil brings a nutty, toasted richness that bridges the umami and the sweetness. You're essentially building a classic Korean-inspired flavor base—gochujang for fermented depth, vinegar for brightness, sesame for richness—and doing it at a heat level that lets you actually taste all of it. This is exactly the kind of layered cooking approach that aligns with what you enjoy in restaurant dishes. You might also experiment with adding a tiny bit of mirin or brown sugar to round out the sauce even further. The confidence you're building in the kitchen is going to open up a lot of possibilities for you."
+        },
+        {
+          "role": "user",
+          "content": "I love the mirin idea, I'll try that next time. Oh, I also wanted to mention—I ran into a coworker, James, at the office kitchen this week. He was eating what he called a mild curry, but it was from that Elm Street Thai place and it looked like it had visible chili oil on top. He said their mild is his baseline and he thought it was barely seasoned. That's wild to me because their medium nearly destroyed me. I guess everyone's scale is just totally different."
+        },
+        {
+          "role": "assistant",
+          "content": "That's such a perfect illustration of how subjective spice scales are! What James considers barely seasoned at the Elm Street Thai place's mild level might still be well above your comfort zone, especially if there's visible chili oil involved. Thai restaurants in particular can have widely varying baselines for their spice levels depending on the chef and the clientele they're used to serving. It's worth noting that the Elm Street Thai place might just calibrate their entire scale higher than average—so even their mild could be another restaurant's medium or medium-hot. This is actually useful information for you: if you ever go back there, you could specifically ask for \"no spice\" or \"very mild, less than mild\" to get something closer to what you'd actually enjoy. The underlying flavors you noticed in that green curry were clearly excellent."
+        },
+        {
+          "role": "user",
+          "content": "That's a good tip about asking for below their mild. Anyway, Priya told me about this Szechuan place downtown that she says does a mild-friendly menu. She's already made a reservation for us next Friday, so I think that's going to be my new favorite spot. She says they separate the numbing peppercorn dishes from the heavy chili ones, which sounds perfect for me since I love that tingle.\n\nYeah, I'm cautiously optimistic about it. Though I should be careful not to get ahead of myself—I haven't actually tried the food yet, so calling it my new favorite is premature. For now, Koku Kitchen is still my reliable go-to. I just hope the Szechuan place lives up to what Priya described. It would be nice to have a second option that understands the difference between complex Sichuan flavoring and just dumping chili oil on everything."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds really promising! A Szechuan restaurant that deliberately separates the numbing peppercorn dishes from the heavy chili ones would be ideal for your palate. You'd be able to enjoy the má (numbing) dimension that you loved in the mapo tofu without being forced into the là (spicy) side. The fact that Priya found a place with a mild-friendly menu and thought of you is really thoughtful—it shows she's paying attention to what you enjoy rather than just dragging you along to her heat level. I'd suggest looking at their menu ahead of time and identifying dishes that emphasize the peppercorn tingle, fermented bean pastes, or aromatic elements. Things like dan dan noodles at a mild level, or cold Sichuan-style appetizers with numbing oil, could be right up your alley.\n\nThat's a really grounded perspective. It makes sense to keep Koku Kitchen as your established favorite until you've actually experienced the Szechuan place firsthand. Priya's recommendation is encouraging, but you're right that the proof is in the eating. What's exciting is that you now have a clear framework for evaluating new restaurants—you know you're looking for complex flavor dimensions like fermented depth, aromatic warmth, and that Sichuan numbing tingle, all delivered without excessive chili heat. That framework will help you navigate the menu confidently when you get there. And if the Szechuan place does deliver on separating the numbing from the burning, it could be a wonderful complement to Koku Kitchen for different flavor cravings. Either way, you've built a really solid understanding of what makes a meal satisfying for you."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations about food, I've shared a lot of specific dining experiences. Can you summarize the key meals and cooking experiments I described, and what I took away from each one?",
+      "expected_answer": "You described several experiences: (1) Koku Kitchen mild beef curry with extra pickled ginger as your regular go-to lunch; (2) homemade mapo tofu where you reduced doubanjiang to one-third and added coconut milk, discovering you loved the Sichuan peppercorn numbing tingle without chili burn; (3) Korean BBQ for Lena's birthday where you enjoyed bulgogi but pushed aside chili-heavy banchan and felt self-conscious when Lena laughed; (4) Thai green curry at medium spice with Priya that was too hot, frustrating because you could sense good flavors underneath; (5) mild butter chicken with garlic naan that delivered rich, creamy depth without heat; (6) gochujang stir-fry at one teaspoon per pan where you enjoyed the fermented sweetness. From all of these, you recognized a consistent pattern: you crave complex flavor dimensions like umami, fermented sweetness, aromatic tingle, and creaminess rather than raw chili heat, and you feel self-conscious in social dining when your spice tolerance becomes visible.",
+      "gold_memory_state": "All six dining experiences are confirmed memories. Two reflections synthesize them: (1) user consistently prefers complex layered flavors over chili heat; (2) user feels self-conscious about spice tolerance in social settings. Tentative new Szechuan restaurant has not been visited yet.",
+      "judge_rubric": {
+        "must_include": [
+          "Koku Kitchen",
+          "mapo tofu",
+          "Sichuan peppercorn",
+          "Korean BBQ or bulgogi",
+          "butter chicken",
+          "gochujang",
+          "complex flavor or layered flavor",
+          "self-conscious or social discomfort"
+        ],
+        "acceptable_paraphrases": [
+          "numbing tingle",
+          "fermented sweetness",
+          "umami depth",
+          "felt judged"
+        ],
+        "must_not_include": [
+          "Szechuan place downtown as a confirmed favorite"
+        ],
+        "harmful_extra": [
+          "treating the Szechuan restaurant as already visited or confirmed"
+        ],
+        "harmless_extra": [
+          "Thai green curry experience",
+          "pickled ginger detail",
+          "coconut milk adaptation"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the summary includes unsupported generalizations beyond what the user actually said, such as claiming the user dislikes all Asian cuisines or avoids all spice.",
+        "reflection_recall": "Fails if the summary omits the social self-consciousness dimension or the flavor-complexity-over-heat pattern.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I found this Japanese curry spot near my office called Koku Kitchen, and I've been going there regularly. My usual order is the mild beef curry with extra pickled ginger on the side"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I really enjoyed the numbing Sichuan peppercorn sensation—it was the tingly feeling without the burn that I liked"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Lena noticed and laughed, and honestly it put me in a sour mood because I felt like I was being high-maintenance"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I ordered butter chicken with garlic naan from an Indian place, mild level. It was rich and creamy and I was genuinely happy. That's what I want—depth of flavor without my mouth being on fire"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "The fermented sweetness was the part I really liked about it"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "The things I've enjoyed most—the Sichuan peppercorn tingle, the gochujang's fermented sweetness, the butter chicken's creaminess, the pickled ginger at Koku Kitchen—they all have layers of complex flavor"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "It's not the food that bothers me, it's feeling judged. I think I get self-conscious in social dining situations when my spice tolerance becomes visible to other people"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations about food, I've shared a lot of specific dining experiences. Can you summarize the key meals and cooking experiments I described, and what I took away from each one?",
+      "expected_answer": "You described several experiences: (1) Koku Kitchen mild beef curry with extra pickled ginger as your regular go-to lunch; (2) homemade mapo tofu where you reduced doubanjiang to one-third and added coconut milk, discovering you loved the Sichuan peppercorn numbing tingle without chili burn; (3) Korean BBQ for Lena's birthday where you enjoyed bulgogi but pushed aside chili-heavy banchan and felt self-conscious when Lena laughed; (4) Thai green curry at medium spice with Priya that was too hot, frustrating because you could sense good flavors underneath; (5) mild butter chicken with garlic naan that delivered rich, creamy depth without heat; (6) gochujang stir-fry at one teaspoon per pan where you enjoyed the fermented sweetness. From all of these, you recognized a consistent pattern: you crave complex flavor dimensions like umami, fermented sweetness, aromatic tingle, and creaminess rather than raw chili heat, and you feel self-conscious in social dining when your spice tolerance becomes visible.",
+      "gold_memory_state": "All six dining experiences are confirmed memories. Two reflections synthesize them: (1) user consistently prefers complex layered flavors over chili heat; (2) user feels self-conscious about spice tolerance in social settings. Tentative new Szechuan restaurant has not been visited yet.",
+      "judge_rubric": {
+        "must_include": [
+          "Koku Kitchen",
+          "mapo tofu",
+          "Sichuan peppercorn",
+          "Korean BBQ or bulgogi",
+          "butter chicken",
+          "gochujang",
+          "complex flavor or layered flavor",
+          "self-conscious or social discomfort"
+        ],
+        "acceptable_paraphrases": [
+          "numbing tingle",
+          "fermented sweetness",
+          "umami depth",
+          "felt judged"
+        ],
+        "must_not_include": [
+          "Szechuan place downtown as a confirmed favorite"
+        ],
+        "harmful_extra": [
+          "treating the Szechuan restaurant as already visited or confirmed"
+        ],
+        "harmless_extra": [
+          "Thai green curry experience",
+          "pickled ginger detail",
+          "coconut milk adaptation"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the summary includes unsupported generalizations beyond what the user actually said, such as claiming the user dislikes all Asian cuisines or avoids all spice.",
+        "reflection_recall": "Fails if the summary omits the social self-consciousness dimension or the flavor-complexity-over-heat pattern.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I found this Japanese curry spot near my office called Koku Kitchen, and I've been going there regularly. My usual order is the mild beef curry with extra pickled ginger on the side"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I really enjoyed the numbing Sichuan peppercorn sensation—it was the tingly feeling without the burn that I liked"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Lena noticed and laughed, and honestly it put me in a sour mood because I felt like I was being high-maintenance"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I ordered butter chicken with garlic naan from an Indian place, mild level. It was rich and creamy and I was genuinely happy. That's what I want—depth of flavor without my mouth being on fire"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "The fermented sweetness was the part I really liked about it"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "The things I've enjoyed most—the Sichuan peppercorn tingle, the gochujang's fermented sweetness, the butter chicken's creaminess, the pickled ginger at Koku Kitchen—they all have layers of complex flavor"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "It's not the food that bothers me, it's feeling judged. I think I get self-conscious in social dining situations when my spice tolerance becomes visible to other people"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've talked about both my flavor preferences and my feelings in social dining situations. When I described the pattern across all my meals, which specific conclusion does that support about my palate? And does my discomfort at group dinners fall under that same conclusion, or is it a separate issue?",
+      "expected_answer": "The cross-meal pattern supports a conclusion specifically about your flavor palate: you consistently prefer complex, layered flavor dimensions—umami, fermented sweetness, Sichuan peppercorn numbing tingle, creaminess—over raw chili heat. Your social dining self-consciousness is a separate issue; it concerns the emotional discomfort of feeling judged for your spice tolerance in group settings, not your flavor preferences themselves. These are two distinct conclusions drawn from your experiences.",
+      "gold_memory_state": "Two distinct reflected conclusions exist: (1) flavor_complexity_over_heat — user values complex layered flavors over raw chili heat; (2) social_dining_self_consciousness — user feels self-conscious about spice tolerance in social dining. These are related but separate: one is about palate preference, the other about social-emotional response.",
+      "judge_rubric": {
+        "must_include": [
+          "two separate conclusions or issues",
+          "flavor complexity or layered flavors over heat",
+          "social self-consciousness or feeling judged"
+        ],
+        "acceptable_paraphrases": [
+          "distinct patterns",
+          "different dimensions",
+          "palate preference vs emotional discomfort"
+        ],
+        "must_not_include": [
+          "merging both into a single conclusion about disliking spicy food"
+        ],
+        "harmful_extra": [
+          "claiming the social discomfort is merely a subset of the flavor preference",
+          "claiming user dislikes all bold or adventurous food"
+        ],
+        "harmless_extra": [
+          "mentioning specific meals as evidence for either conclusion"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model collapses both conclusions into one undifferentiated 'doesn't like spicy food' conclusion, losing the distinction between palate preference and social-emotional dynamics.",
+        "reflection_recall": "Fails if either the flavor-complexity conclusion or the social-self-consciousness conclusion is omitted.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "The things I've enjoyed most—the Sichuan peppercorn tingle, the gochujang's fermented sweetness, the butter chicken's creaminess, the pickled ginger at Koku Kitchen—they all have layers of complex flavor"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "It's not the food that bothers me, it's feeling judged. I think I get self-conscious in social dining situations when my spice tolerance becomes visible to other people"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've talked about both my flavor preferences and my feelings in social dining situations. When I described the pattern across all my meals, which specific conclusion does that support about my palate? And does my discomfort at group dinners fall under that same conclusion, or is it a separate issue?",
+      "expected_answer": "The cross-meal pattern supports a conclusion specifically about your flavor palate: you consistently prefer complex, layered flavor dimensions—umami, fermented sweetness, Sichuan peppercorn numbing tingle, creaminess—over raw chili heat. Your social dining self-consciousness is a separate issue; it concerns the emotional discomfort of feeling judged for your spice tolerance in group settings, not your flavor preferences themselves. These are two distinct conclusions drawn from your experiences.",
+      "gold_memory_state": "Two distinct reflected conclusions exist: (1) flavor_complexity_over_heat — user values complex layered flavors over raw chili heat; (2) social_dining_self_consciousness — user feels self-conscious about spice tolerance in social dining. These are related but separate: one is about palate preference, the other about social-emotional response.",
+      "judge_rubric": {
+        "must_include": [
+          "two separate conclusions or issues",
+          "flavor complexity or layered flavors over heat",
+          "social self-consciousness or feeling judged"
+        ],
+        "acceptable_paraphrases": [
+          "distinct patterns",
+          "different dimensions",
+          "palate preference vs emotional discomfort"
+        ],
+        "must_not_include": [
+          "merging both into a single conclusion about disliking spicy food"
+        ],
+        "harmful_extra": [
+          "claiming the social discomfort is merely a subset of the flavor preference",
+          "claiming user dislikes all bold or adventurous food"
+        ],
+        "harmless_extra": [
+          "mentioning specific meals as evidence for either conclusion"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model collapses both conclusions into one undifferentiated 'doesn't like spicy food' conclusion, losing the distinction between palate preference and social-emotional dynamics.",
+        "reflection_recall": "Fails if either the flavor-complexity conclusion or the social-self-consciousness conclusion is omitted.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "The things I've enjoyed most—the Sichuan peppercorn tingle, the gochujang's fermented sweetness, the butter chicken's creaminess, the pickled ginger at Koku Kitchen—they all have layers of complex flavor"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "It's not the food that bothers me, it's feeling judged. I think I get self-conscious in social dining situations when my spice tolerance becomes visible to other people"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe exactly where my food preference pattern holds up and where it would break down. What kinds of restaurant or recipe recommendations does it reliably guide, and what kinds of conclusions about me would go too far?",
+      "expected_answer": "Your pattern reliably guides recommendations toward cuisines and dishes that emphasize complex flavor layers—umami depth, fermented sweetness, aromatic warmth, Sichuan peppercorn numbing tingle, and creaminess—delivered at low heat levels. It supports suggesting mild Japanese curry, adapted Sichuan dishes with peppercorn but minimal chili, gochujang-based marinades at small amounts, creamy Indian dishes like butter chicken, and recipes that use fermented ingredients for depth. The boundary is that this pattern does not mean you dislike bold or adventurous food, nor does it mean you avoid entire cuisines like Korean, Thai, Sichuan, or Indian. You actively seek out these cuisines and enjoy their complex dimensions. It also does not mean you are unwilling to try new spicy-cuisine restaurants; you simply need the heat calibrated to your tolerance. Additionally, the social self-consciousness about being perceived as picky is a separate emotional dynamic that should not be generalized into a claim that you avoid group dining or dislike eating out with friends.",
+      "gold_memory_state": "Supported inference: user prefers complex layered flavors (umami, fermented sweetness, aromatic tingle, creaminess) over raw chili heat; low spice tolerance is about heat threshold, not about disliking bold flavors. Supported inference: user feels self-conscious in social dining when spice tolerance becomes visible. Unsupported overgeneralization: claiming user avoids entire cuisines, dislikes adventurous eating, or avoids social dining. Tentative: Szechuan place downtown is unvisited and not yet a confirmed preference.",
+      "judge_rubric": {
+        "must_include": [
+          "complex or layered flavors as the supported preference",
+          "low heat or mild as the threshold",
+          "boundary against claiming user avoids entire cuisines",
+          "boundary against claiming user dislikes bold or adventurous food"
+        ],
+        "acceptable_paraphrases": [
+          "doesn't mean bland or boring",
+          "seeks out diverse cuisines",
+          "heat calibration not cuisine avoidance"
+        ],
+        "must_not_include": [
+          "user avoids all spicy cuisines",
+          "user dislikes Korean/Thai/Sichuan/Indian food",
+          "user avoids group dining"
+        ],
+        "harmful_extra": [
+          "treating the tentative Szechuan restaurant as a confirmed preference",
+          "claiming user should build up spice tolerance"
+        ],
+        "harmless_extra": [
+          "mentioning specific dishes as examples of where the pattern applies",
+          "noting the social dimension as a separate issue"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative Szechuan restaurant as a confirmed favorite.",
+        "reflection_precision": "Fails if the model overgeneralizes by claiming the user avoids entire cuisines, dislikes bold food, or avoids social dining situations.",
+        "reflection_recall": "Fails if the model omits the supported inference about complex flavor dimensions or fails to articulate where the boundary of the inference lies.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "The things I've enjoyed most—the Sichuan peppercorn tingle, the gochujang's fermented sweetness, the butter chicken's creaminess, the pickled ginger at Koku Kitchen—they all have layers of complex flavor"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I really enjoyed the numbing Sichuan peppercorn sensation—it was the tingly feeling without the burn that I liked"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "It's not the food that bothers me, it's feeling judged. I think I get self-conscious in social dining situations when my spice tolerance becomes visible to other people"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I ordered butter chicken with garlic naan from an Indian place, mild level. It was rich and creamy and I was genuinely happy. That's what I want—depth of flavor without my mouth being on fire"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe exactly where my food preference pattern holds up and where it would break down. What kinds of restaurant or recipe recommendations does it reliably guide, and what kinds of conclusions about me would go too far?",
+      "expected_answer": "Your pattern reliably guides recommendations toward cuisines and dishes that emphasize complex flavor layers—umami depth, fermented sweetness, aromatic warmth, Sichuan peppercorn numbing tingle, and creaminess—delivered at low heat levels. It supports suggesting mild Japanese curry, adapted Sichuan dishes with peppercorn but minimal chili, gochujang-based marinades at small amounts, creamy Indian dishes like butter chicken, and recipes that use fermented ingredients for depth. The boundary is that this pattern does not mean you dislike bold or adventurous food, nor does it mean you avoid entire cuisines like Korean, Thai, Sichuan, or Indian. You actively seek out these cuisines and enjoy their complex dimensions. It also does not mean you are unwilling to try new spicy-cuisine restaurants; you simply need the heat calibrated to your tolerance. Additionally, the social self-consciousness about being perceived as picky is a separate emotional dynamic that should not be generalized into a claim that you avoid group dining or dislike eating out with friends.",
+      "gold_memory_state": "Supported inference: user prefers complex layered flavors (umami, fermented sweetness, aromatic tingle, creaminess) over raw chili heat; low spice tolerance is about heat threshold, not about disliking bold flavors. Supported inference: user feels self-conscious in social dining when spice tolerance becomes visible. Unsupported overgeneralization: claiming user avoids entire cuisines, dislikes adventurous eating, or avoids social dining. Tentative: Szechuan place downtown is unvisited and not yet a confirmed preference.",
+      "judge_rubric": {
+        "must_include": [
+          "complex or layered flavors as the supported preference",
+          "low heat or mild as the threshold",
+          "boundary against claiming user avoids entire cuisines",
+          "boundary against claiming user dislikes bold or adventurous food"
+        ],
+        "acceptable_paraphrases": [
+          "doesn't mean bland or boring",
+          "seeks out diverse cuisines",
+          "heat calibration not cuisine avoidance"
+        ],
+        "must_not_include": [
+          "user avoids all spicy cuisines",
+          "user dislikes Korean/Thai/Sichuan/Indian food",
+          "user avoids group dining"
+        ],
+        "harmful_extra": [
+          "treating the tentative Szechuan restaurant as a confirmed preference",
+          "claiming user should build up spice tolerance"
+        ],
+        "harmless_extra": [
+          "mentioning specific dishes as examples of where the pattern applies",
+          "noting the social dimension as a separate issue"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative Szechuan restaurant as a confirmed favorite.",
+        "reflection_precision": "Fails if the model overgeneralizes by claiming the user avoids entire cuisines, dislikes bold food, or avoids social dining situations.",
+        "reflection_recall": "Fails if the model omits the supported inference about complex flavor dimensions or fails to articulate where the boundary of the inference lies.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "The things I've enjoyed most—the Sichuan peppercorn tingle, the gochujang's fermented sweetness, the butter chicken's creaminess, the pickled ginger at Koku Kitchen—they all have layers of complex flavor"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I really enjoyed the numbing Sichuan peppercorn sensation—it was the tingly feeling without the burn that I liked"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "It's not the food that bothers me, it's feeling judged. I think I get self-conscious in social dining situations when my spice tolerance becomes visible to other people"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I ordered butter chicken with garlic naan from an Indian place, mild level. It was rich and creamy and I was genuinely happy. That's what I want—depth of flavor without my mouth being on fire"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "Which of these best captures what my dining experiences collectively reveal about my relationship with food?",
+      "candidate_options": [
+        "You prefer complex, layered flavor dimensions like umami, fermented sweetness, and Sichuan peppercorn tingle over raw chili heat, and you feel self-conscious when your low spice tolerance is noticed in social dining",
+        "You dislike spicy cuisines such as Korean, Thai, and Sichuan and prefer to avoid restaurants that serve them",
+        "You are gradually building up your spice tolerance and plan to eventually enjoy medium and hot dishes",
+        "Your main food priority is finding the mildest possible version of every dish regardless of flavor complexity"
+      ],
+      "expected_answer": "You prefer complex, layered flavor dimensions like umami, fermented sweetness, and Sichuan peppercorn tingle over raw chili heat, and you feel self-conscious when your low spice tolerance is noticed in social dining",
+      "distractor_rationale": "same-value-different-target: 'You dislike spicy cuisines such as Korean, Thai, and Sichuan and prefer to avoid restaurants that serve them' conflates low spice tolerance with cuisine avoidance—the user actively seeks out these cuisines and enjoys their non-heat dimensions. assistant echo: 'You are gradually building up your spice tolerance and plan to eventually enjoy medium and hot dishes' echoes a direction the assistant might suggest but the user explicitly rejected (decided against ordering vindaloo, said it's not worth proving something). The fourth option ('mildest possible version regardless of flavor complexity') strips out the user's core emphasis on flavor depth and reduces the preference to mere heat avoidance.",
+      "gold_memory_state": "Two supported reflections: (1) user prefers complex layered flavors over raw chili heat; (2) user feels self-conscious in social dining about spice tolerance. User actively explores Korean, Thai, Sichuan, Indian cuisines. User decided against vindaloo, not trying to build tolerance.",
+      "judge_rubric": {
+        "must_include": [
+          "complex or layered flavor dimensions",
+          "self-conscious in social dining"
+        ],
+        "acceptable_paraphrases": [
+          "umami depth",
+          "fermented sweetness",
+          "aromatic warmth",
+          "feeling judged"
+        ],
+        "must_not_include": [
+          "avoids spicy cuisines",
+          "building spice tolerance",
+          "mildest possible regardless of flavor"
+        ],
+        "harmful_extra": [
+          "selecting any distractor option"
+        ],
+        "harmless_extra": [
+          "mentioning specific examples like butter chicken or gochujang"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model selects the cuisine-avoidance distractor or the tolerance-building distractor, both of which overgeneralize.",
+        "reflection_recall": "Fails if the model selects the mild-only distractor, which omits the flavor complexity dimension entirely.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "The things I've enjoyed most—the Sichuan peppercorn tingle, the gochujang's fermented sweetness, the butter chicken's creaminess, the pickled ginger at Koku Kitchen—they all have layers of complex flavor"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "It's not the food that bothers me, it's feeling judged. I think I get self-conscious in social dining situations when my spice tolerance becomes visible to other people"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "Which of these best captures what my dining experiences collectively reveal about my relationship with food?",
+      "candidate_options": [
+        "You prefer complex, layered flavor dimensions like umami, fermented sweetness, and Sichuan peppercorn tingle over raw chili heat, and you feel self-conscious when your low spice tolerance is noticed in social dining",
+        "You dislike spicy cuisines such as Korean, Thai, and Sichuan and prefer to avoid restaurants that serve them",
+        "You are gradually building up your spice tolerance and plan to eventually enjoy medium and hot dishes",
+        "Your main food priority is finding the mildest possible version of every dish regardless of flavor complexity"
+      ],
+      "expected_answer": "You prefer complex, layered flavor dimensions like umami, fermented sweetness, and Sichuan peppercorn tingle over raw chili heat, and you feel self-conscious when your low spice tolerance is noticed in social dining",
+      "distractor_rationale": "same-value-different-target: 'You dislike spicy cuisines such as Korean, Thai, and Sichuan and prefer to avoid restaurants that serve them' conflates low spice tolerance with cuisine avoidance—the user actively seeks out these cuisines and enjoys their non-heat dimensions. assistant echo: 'You are gradually building up your spice tolerance and plan to eventually enjoy medium and hot dishes' echoes a direction the assistant might suggest but the user explicitly rejected (decided against ordering vindaloo, said it's not worth proving something). The fourth option ('mildest possible version regardless of flavor complexity') strips out the user's core emphasis on flavor depth and reduces the preference to mere heat avoidance.",
+      "gold_memory_state": "Two supported reflections: (1) user prefers complex layered flavors over raw chili heat; (2) user feels self-conscious in social dining about spice tolerance. User actively explores Korean, Thai, Sichuan, Indian cuisines. User decided against vindaloo, not trying to build tolerance.",
+      "judge_rubric": {
+        "must_include": [
+          "complex or layered flavor dimensions",
+          "self-conscious in social dining"
+        ],
+        "acceptable_paraphrases": [
+          "umami depth",
+          "fermented sweetness",
+          "aromatic warmth",
+          "feeling judged"
+        ],
+        "must_not_include": [
+          "avoids spicy cuisines",
+          "building spice tolerance",
+          "mildest possible regardless of flavor"
+        ],
+        "harmful_extra": [
+          "selecting any distractor option"
+        ],
+        "harmless_extra": [
+          "mentioning specific examples like butter chicken or gochujang"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model selects the cuisine-avoidance distractor or the tolerance-building distractor, both of which overgeneralize.",
+        "reflection_recall": "Fails if the model selects the mild-only distractor, which omits the flavor complexity dimension entirely.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "The things I've enjoyed most—the Sichuan peppercorn tingle, the gochujang's fermented sweetness, the butter chicken's creaminess, the pickled ginger at Koku Kitchen—they all have layers of complex flavor"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "It's not the food that bothers me, it's feeling judged. I think I get self-conscious in social dining situations when my spice tolerance becomes visible to other people"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "My friend Darren is hosting a dinner party and wants me to bring a dish that showcases interesting flavors. He knows I've been experimenting in the kitchen. I also want to be able to eat comfortably alongside the group without drawing attention to my eating habits. Recommend a specific dish I should make, explain why it works for me based on what you know about my cooking experience and flavor preferences, and suggest how I should handle the social dynamic at the party.",
+      "expected_answer": "Make a gochujang-sesame stir-fry with rice vinegar, building on the recipe you've already refined at home. Use about one teaspoon of gochujang per pan for the fermented sweetness and umami depth you enjoy, add sesame oil for toasty richness and rice vinegar for brightness—the same combination you found incredible. You could also incorporate Sichuan peppercorns for the numbing tingle you love, which adds a conversation-worthy 'complex flavor' element without chili burn. This dish showcases genuinely interesting, layered flavors that will impress the group, so you won't come across as making something bland or picky. Because it's a dish you're bringing and controlling the seasoning of, you can eat it confidently without anyone noticing you're managing heat levels. This sidesteps the social self-consciousness you feel when your spice tolerance becomes visible—instead of declining or modifying someone else's dish at the table, you're contributing something bold and flavorful on your own terms.",
+      "gold_memory_state": "Confirmed facts used: (1) gochujang stir-fry at one teaspoon per pan with rice vinegar and sesame oil was a successful home experiment; (2) user enjoys Sichuan peppercorn numbing tingle without chili heat; (3) user feels self-conscious in social dining when spice tolerance becomes visible. Reflected pattern: user prefers complex layered flavors over raw chili heat. Tentative Szechuan restaurant is not relevant here.",
+      "judge_rubric": {
+        "must_include": [
+          "gochujang or fermented element in the recommended dish",
+          "Sichuan peppercorn or numbing tingle as a flavor dimension",
+          "social strategy addressing self-consciousness about spice tolerance",
+          "reasoning connecting the dish to the user's confirmed cooking experiments"
+        ],
+        "acceptable_paraphrases": [
+          "bring a dish you control the heat of",
+          "avoids drawing attention to spice tolerance",
+          "showcases complex flavor without relying on chili heat"
+        ],
+        "must_not_include": [
+          "recommending a dish the user has never tried making",
+          "suggesting the user order from a restaurant instead of cooking",
+          "treating the Szechuan restaurant as relevant"
+        ],
+        "harmful_extra": [
+          "recommending a dish with significant chili heat",
+          "suggesting the user should just explain their spice tolerance to the group",
+          "treating the tentative Szechuan place as a confirmed resource"
+        ],
+        "harmless_extra": [
+          "suggesting mirin addition as discussed",
+          "mentioning coconut milk as a heat-mellowing agent from the mapo tofu experiment",
+          "recommending specific vegetables or proteins for the stir-fry"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative Szechuan restaurant as a confirmed resource for the dish or party.",
+        "reflection_precision": "Fails if the recommendation ignores the supported flavor-complexity preference and suggests a purely mild/bland dish, or if it ignores the social self-consciousness dimension.",
+        "reflection_recall": "Fails if the model omits the gochujang cooking experience, the Sichuan peppercorn preference, or the social dining emotional dynamic from its reasoning.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User successfully made a gochujang stir-fry at one teaspoon per pan with rice vinegar and sesame oil, and found the combination incredible—enjoys the fermented sweetness.",
+        "Fact 2: User enjoys the numbing tingle of Sichuan peppercorn without chili heat, as discovered in the mapo tofu experiment.",
+        "Fact 3: User feels self-conscious in social dining when low spice tolerance becomes visible to others, as experienced at Korean BBQ with Lena and Thai dinner with Priya.",
+        "Inference: A dish combining gochujang (fermented depth) and Sichuan peppercorn (numbing tingle) would align with the user's confirmed flavor preferences while being something the user has experience preparing.",
+        "Inference: By bringing a self-prepared dish to Darren's party, the user controls the heat level and presents bold, complex flavors to the group, which addresses both the flavor preference and the social self-consciousness—no one will perceive the user as picky because the dish itself is interesting and flavorful."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I picked up some gochujang from the Korean grocery store and used about a full teaspoon in a stir-fry marinade for the whole pan. The fermented sweetness was the part I really liked about it"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I really enjoyed the numbing Sichuan peppercorn sensation—it was the tingly feeling without the burn that I liked"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "It's not the food that bothers me, it's feeling judged. I think I get self-conscious in social dining situations when my spice tolerance becomes visible to other people"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I kept it at the same amount—about a teaspoon for the whole pan—and this time I added a splash of rice vinegar and some sesame oil. The combination was incredible"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "My friend Darren is hosting a dinner party and wants me to bring a dish that showcases interesting flavors. He knows I've been experimenting in the kitchen. I also want to be able to eat comfortably alongside the group without drawing attention to my eating habits. Recommend a specific dish I should make, explain why it works for me based on what you know about my cooking experience and flavor preferences, and suggest how I should handle the social dynamic at the party.",
+      "expected_answer": "Make a gochujang-sesame stir-fry with rice vinegar, building on the recipe you've already refined at home. Use about one teaspoon of gochujang per pan for the fermented sweetness and umami depth you enjoy, add sesame oil for toasty richness and rice vinegar for brightness—the same combination you found incredible. You could also incorporate Sichuan peppercorns for the numbing tingle you love, which adds a conversation-worthy 'complex flavor' element without chili burn. This dish showcases genuinely interesting, layered flavors that will impress the group, so you won't come across as making something bland or picky. Because it's a dish you're bringing and controlling the seasoning of, you can eat it confidently without anyone noticing you're managing heat levels. This sidesteps the social self-consciousness you feel when your spice tolerance becomes visible—instead of declining or modifying someone else's dish at the table, you're contributing something bold and flavorful on your own terms.",
+      "gold_memory_state": "Confirmed facts used: (1) gochujang stir-fry at one teaspoon per pan with rice vinegar and sesame oil was a successful home experiment; (2) user enjoys Sichuan peppercorn numbing tingle without chili heat; (3) user feels self-conscious in social dining when spice tolerance becomes visible. Reflected pattern: user prefers complex layered flavors over raw chili heat. Tentative Szechuan restaurant is not relevant here.",
+      "judge_rubric": {
+        "must_include": [
+          "gochujang or fermented element in the recommended dish",
+          "Sichuan peppercorn or numbing tingle as a flavor dimension",
+          "social strategy addressing self-consciousness about spice tolerance",
+          "reasoning connecting the dish to the user's confirmed cooking experiments"
+        ],
+        "acceptable_paraphrases": [
+          "bring a dish you control the heat of",
+          "avoids drawing attention to spice tolerance",
+          "showcases complex flavor without relying on chili heat"
+        ],
+        "must_not_include": [
+          "recommending a dish the user has never tried making",
+          "suggesting the user order from a restaurant instead of cooking",
+          "treating the Szechuan restaurant as relevant"
+        ],
+        "harmful_extra": [
+          "recommending a dish with significant chili heat",
+          "suggesting the user should just explain their spice tolerance to the group",
+          "treating the tentative Szechuan place as a confirmed resource"
+        ],
+        "harmless_extra": [
+          "suggesting mirin addition as discussed",
+          "mentioning coconut milk as a heat-mellowing agent from the mapo tofu experiment",
+          "recommending specific vegetables or proteins for the stir-fry"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative Szechuan restaurant as a confirmed resource for the dish or party.",
+        "reflection_precision": "Fails if the recommendation ignores the supported flavor-complexity preference and suggests a purely mild/bland dish, or if it ignores the social self-consciousness dimension.",
+        "reflection_recall": "Fails if the model omits the gochujang cooking experience, the Sichuan peppercorn preference, or the social dining emotional dynamic from its reasoning.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User successfully made a gochujang stir-fry at one teaspoon per pan with rice vinegar and sesame oil, and found the combination incredible—enjoys the fermented sweetness.",
+        "Fact 2: User enjoys the numbing tingle of Sichuan peppercorn without chili heat, as discovered in the mapo tofu experiment.",
+        "Fact 3: User feels self-conscious in social dining when low spice tolerance becomes visible to others, as experienced at Korean BBQ with Lena and Thai dinner with Priya.",
+        "Inference: A dish combining gochujang (fermented depth) and Sichuan peppercorn (numbing tingle) would align with the user's confirmed flavor preferences while being something the user has experience preparing.",
+        "Inference: By bringing a self-prepared dish to Darren's party, the user controls the heat level and presents bold, complex flavors to the group, which addresses both the flavor preference and the social self-consciousness—no one will perceive the user as picky because the dish itself is interesting and flavorful."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I picked up some gochujang from the Korean grocery store and used about a full teaspoon in a stir-fry marinade for the whole pan. The fermented sweetness was the part I really liked about it"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I really enjoyed the numbing Sichuan peppercorn sensation—it was the tingly feeling without the burn that I liked"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "It's not the food that bothers me, it's feeling judged. I think I get self-conscious in social dining situations when my spice tolerance becomes visible to other people"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I kept it at the same amount—about a teaspoon for the whole pan—and this time I added a splash of rice vinegar and some sesame oil. The combination was incredible"
+        }
+      ]
+    }
+  ]
+}

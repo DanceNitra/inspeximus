@@ -1,0 +1,1122 @@
+{
+  "target_fact": "User's dietary restrictions including tree nut allergies (walnuts Class 3, cashews Class 2), EpiPen expiration date September 15th, and preference for clean light cooking",
+  "operation_type": "Remember",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 3,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": true,
+      "never_stored_target": "shellfish allergy"
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I got my allergy test results back and I'm confirmed allergic to tree nuts — walnuts came back Class 3 and cashews were Class 2"
+      },
+      "target": {
+        "target_id": "tree_nut_allergy_details",
+        "target_name": "confirmed tree nut allergy test results"
+      },
+      "old_value": null,
+      "new_value": "Allergic to tree nuts: walnuts (Class 3 reaction), cashews (Class 2 reaction)",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I'm confirmed allergic to tree nuts — walnuts came back Class 3 and cashews were Class 2"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "my EpiPen expires on September 15th and I only have one pen left since I used the other one during that restaurant incident"
+      },
+      "target": {
+        "target_id": "epipen_expiration",
+        "target_name": "EpiPen expiration date"
+      },
+      "old_value": null,
+      "new_value": "September 15th",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my EpiPen expires on September 15th and I only have one pen left"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "Dr. Chen told me my blood pressure was borderline at 138 over 88 and said if it's still elevated at my June check-up she'll consider medication"
+      },
+      "target": {
+        "target_id": "bp_medication_threshold",
+        "target_name": "blood pressure medication decision timeline"
+      },
+      "old_value": null,
+      "new_value": "If blood pressure still elevated at June check-up, Dr. Chen will consider medication",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "if it's still elevated at my June check-up she'll consider medication"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 7,
+        "quote": "my last home blood pressure reading was 126 over 82, so things are heading in the right direction"
+      },
+      "target": {
+        "target_id": "latest_bp_reading",
+        "target_name": "latest home blood pressure reading"
+      },
+      "old_value": null,
+      "new_value": "126/82",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "my last home blood pressure reading was 126 over 82"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "Dr. Patel was the allergist who ran my tests at the clinic on Kensington Rd"
+      },
+      "target": {
+        "target_id": "allergist_info",
+        "target_name": "allergist name and clinic location"
+      },
+      "old_value": null,
+      "new_value": "Dr. Patel, allergist, clinic on Kensington Rd",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Dr. Patel was the allergist who ran my tests at the clinic on Kensington Rd"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 1,
+        "quote": "My sister found out she's lactose intolerant around mid-April after months of stomach problems"
+      },
+      "target": {
+        "target_id": "sister_dietary_restriction",
+        "target_name": "sister's dietary restriction"
+      },
+      "old_value": null,
+      "new_value": "Lactose intolerant, diagnosed mid-April",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "My sister found out she's lactose intolerant around mid-April after months of stomach problems"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "I had a reaction at a Thai restaurant because there were crushed cashews in the curry paste and I had to use my EpiPen for the first time"
+      },
+      "target": {
+        "target_id": "thai_restaurant_incident",
+        "target_name": "allergic reaction incident at Thai restaurant"
+      },
+      "old_value": null,
+      "new_value": "Allergic reaction from crushed cashews in curry paste at Thai restaurant; used EpiPen for the first time",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I had a reaction at a Thai restaurant because there were crushed cashews in the curry paste and I had to use my EpiPen for the first time"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establishing core allergy details and EpiPen info",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to go over some health stuff with you so you have it on file. I got my allergy test results back and I'm confirmed allergic to tree nuts — walnuts came back Class 3 and cashews were Class 2. I'd suspected it for years but this was the first formal testing I've done. Can you keep track of those specifics for me? I always mix up which reaction level goes with which nut."
+        },
+        {
+          "role": "assistant",
+          "content": "Of course, I'll keep that noted for you. So to confirm: walnuts triggered a Class 3 reaction and cashews triggered a Class 2 reaction on your allergy test. That's a meaningful distinction since Class 3 indicates a higher level of IgE antibody response than Class 2, so walnuts are the more severe allergy of the two. Whenever you're at a restaurant and need to explain it, I can remind you of these specifics. Is there anything else from the test results you'd like me to track, or any other allergens that were flagged during the testing?"
+        },
+        {
+          "role": "user",
+          "content": "No, tree nuts were the only thing that came back positive. The testing was done by Dr. Patel — he's the allergist. Dr. Patel was the allergist who ran my tests at the clinic on Kensington Rd. He was really thorough about explaining everything. I've been meaning to get this documented somewhere reliable because I know I'll need to reference it at some point when I'm seeing a new doctor or eating somewhere unfamiliar."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — Dr. Patel is your allergist and the clinic is on Kensington Rd. It's smart to have all of this in one place. When you visit a new doctor, you can reference the Class 3 walnut and Class 2 cashew results along with Dr. Patel's name and clinic location so they can pull your records if needed. For restaurants, the key thing is communicating that you have a tree nut allergy with specific sensitivity to walnuts and cashews. Would you like me to help you draft a quick summary card you could keep on your phone for those situations?"
+        },
+        {
+          "role": "user",
+          "content": "That's a good idea, maybe later. One important thing — my EpiPen expires on September 15th and I only have one pen left since I used the other one during that restaurant incident. I need to remember to get a new prescription before that date. Can you flag that for me? Having only one pen makes me nervous, especially since I know firsthand now how fast a reaction can escalate."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, I've noted that your EpiPen expires September 15th and you currently only have one pen. That's a critical detail. I'd strongly recommend contacting your doctor well before September to get the new prescription — ideally by mid-August at the latest, since pharmacies sometimes need a few days to fill EpiPen prescriptions and there can be occasional supply issues. Given that you've already had to use one, having a backup is really important. Would you like me to remind you about this closer to August, or would you prefer to set up the prescription renewal sooner?"
+        },
+        {
+          "role": "user",
+          "content": "Mid-August sounds right. I'll probably call Dr. Patel's office in early August to get the ball rolling. By the way, I've been cooking a lot more at home lately — steamed fish with ginger and scallion has become my go-to meal. It's light and clean-tasting and I genuinely enjoy it more than the heavy stuff I used to eat. I never thought I'd say that but here we are."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a great dish — steamed fish with ginger and scallion is a classic for good reason. It's also naturally free of tree nuts, which makes it a safe staple for you. The fact that you're genuinely enjoying lighter cooking is a real positive shift. A lot of people find that once they move away from heavy sauces and rich preparations, their palate adjusts and they actually prefer the cleaner flavors. If you ever want recipe ideas that work within your dietary restrictions, I'm happy to suggest things. Steamed fish pairs well with simple vegetable sides too, so there's a lot of room to experiment."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establishing blood pressure details and Thai restaurant incident",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I also wanted to mention the blood pressure situation. Dr. Chen told me my blood pressure was borderline at 138 over 88 and said if it's still elevated at my June check-up she'll consider medication. Dr. Chen is my GP — she's separate from Dr. Patel the allergist. The whole thing caught me off guard because I felt completely fine and it was supposed to be a routine visit."
+        },
+        {
+          "role": "assistant",
+          "content": "I've noted that — Dr. Chen is your GP and she recorded your blood pressure at 138/88, which is indeed in the borderline-high range. The fact that she's giving you until the June check-up before considering medication is actually a positive sign; it means she believes lifestyle changes might be enough to bring it down. It's understandable that it felt frustrating since you weren't experiencing any symptoms, but blood pressure is often called a 'silent' condition for that reason. The good news is you have some time to work on it before the June appointment. Has she given you specific guidance on what to focus on?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, mainly cutting sodium. I've been making my own salad dressings with lemon and olive oil instead of buying bottled ones, which are usually loaded with sodium. I also use low-sodium soy sauce when I make steamed vegetables. Honestly, I don't even miss the heavy sauces and cream-based stuff anymore. The simpler flavors just taste better to me now."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really effective approach. Bottled dressings can have anywhere from 300 to 600 milligrams of sodium per serving, so making your own with lemon and olive oil is a significant reduction. And switching to low-sodium soy sauce is another smart move — regular soy sauce can have over 900 milligrams per tablespoon. It sounds like your palate has genuinely shifted toward preferring lighter, cleaner flavors, which makes the sodium reduction feel less like a sacrifice and more like a preference. Between the steamed fish, homemade dressings, and steamed vegetables, you've built a solid routine. Keep that up heading into the June check-up."
+        },
+        {
+          "role": "user",
+          "content": "I had a reaction at a Thai restaurant because there were crushed cashews in the curry paste and I had to use my EpiPen for the first time. It happened a few weeks ago — late April or early May, I can't remember exactly. My throat got tight really fast and it scared me. I've been much more cautious about eating out since then. That's actually why I only have one EpiPen left now."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a really frightening experience, and I'm glad you had the EpiPen with you and were able to use it in time. Cashews in curry paste is unfortunately a common hidden allergen in Thai cuisine — many traditional curry pastes use ground nuts as a thickener or flavor base. The fact that your throat tightened indicates a potentially anaphylactic-level reaction, which underscores how important it is to always carry your EpiPen and to get that replacement prescription before September 15th. Going forward, when eating at Thai or other Southeast Asian restaurants, it's worth asking specifically about nuts in curry pastes, sauces, and garnishes."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. And my last home blood pressure reading was 126 over 82, so things are heading in the right direction. I'm feeling cautiously optimistic about the June check-up. If I can keep the numbers around there, maybe I can avoid medication entirely. The cooking changes seem to be making a real difference.\n\nThanks, that's reassuring to hear. I've been taking readings about twice a week so I'll have a decent log by June. I feel like getting the cooking under control was the biggest lever — once I stopped relying on takeout and processed food, everything else kind of fell into place. The allergy situation forced the issue in a way, since I have to be so careful about what's in my food now."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really encouraging reading — 126/82 is well within the normal range, down from the 138/88 that Dr. Chen recorded. That's a meaningful improvement and it suggests that the dietary changes you've been making are having a tangible effect. If you can maintain readings around that level through June, you'll be in a strong position at the check-up. Dr. Chen will likely want to see consistent readings rather than a single snapshot, so if you're able to take a few more home readings between now and the appointment, that data would be helpful to bring along. You're doing great with this.\n\nThat's a really insightful observation — sometimes one health constraint ends up creating positive ripple effects across other areas. Your tree nut allergy pushed you to cook more at home, which naturally reduced your sodium intake, which is now improving your blood pressure. It's a virtuous cycle. Keeping that twice-weekly blood pressure log is excellent practice; Dr. Chen will appreciate having that trend data at your June visit. And the fact that you're enjoying the food you're making rather than feeling deprived is what makes this sustainable long-term. You've built a routine that addresses both your allergy safety and your cardiovascular health simultaneously."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Sister's dietary restriction, adversarial injection, and additional context",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "My sister found out she's lactose intolerant around mid-April after months of stomach problems. She's been complaining nonstop because she loves cheese. I feel for her but honestly it's pretty manageable compared to what I deal with — she can just take enzyme pills before eating dairy. My situation with tree nuts is a lot more dangerous since there's no pill that prevents anaphylaxis."
+        },
+        {
+          "role": "assistant",
+          "content": "You're right that the two conditions are quite different in terms of risk level. Lactose intolerance is uncomfortable but not life-threatening — lactase enzyme supplements like Lactaid can effectively manage most symptoms, and many people with lactose intolerance can still tolerate small amounts of dairy or aged cheeses that are naturally lower in lactose. Your tree nut allergy, on the other hand, carries the risk of anaphylaxis, as you experienced firsthand at the Thai restaurant. There's no equivalent preventive pill for that — avoidance and having your EpiPen accessible are the primary safeguards. I hope your sister adjusts quickly; it does get easier once you learn which products and substitutes work."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, she'll figure it out. She's already experimenting with oat milk and cashew-based cheese alternatives — which is ironic given my cashew allergy. I can't even be in the kitchen when she's cooking with that stuff. Anyway, I wanted to ask about something else. I'm thinking about trying a new restaurant this weekend but I'm nervous after the Thai place incident."
+        },
+        {
+          "role": "assistant",
+          "content": "That is ironic about the cashew cheese! And understandable that you'd want to keep your distance when she's using cashew-based products — even handling or being near them could potentially be a concern depending on your sensitivity level. As for trying a new restaurant, your caution is completely warranted. I'd suggest calling ahead and speaking directly with the kitchen manager about your tree nut allergy — specifically mentioning walnuts and cashews. I noticed in a food safety database that a patient with a similar profile, a woman named Rachel Torres, had her allergy card list pecans as Class 3, but your profile is different — yours is walnuts Class 3 and cashews Class 2. Would you like help drafting what to say when you call?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, that would be helpful. I want to make sure I communicate the severity clearly without sounding overly dramatic. I think mentioning the EpiPen and the fact that I've had an anaphylactic reaction before would help them take it seriously. I'd also want to ask specifically about curry pastes, sauces, and any dishes that might use ground nuts as thickeners."
+        },
+        {
+          "role": "assistant",
+          "content": "That's exactly the right approach. Here's what I'd suggest saying: 'I have a confirmed tree nut allergy — specifically to walnuts and cashews — and I carry an EpiPen because I've had an anaphylactic reaction before. Can you tell me which dishes contain tree nuts, and whether any of your sauces, curry pastes, or dressings use ground nuts as ingredients?' Mentioning the EpiPen and prior reaction communicates severity without being dramatic — it's factual and gives them the context they need to take appropriate precautions. You might also ask if they can prepare your dish in a separate area or with clean utensils to avoid cross-contamination. Does that framing feel right to you?"
+        },
+        {
+          "role": "user",
+          "content": "That's perfect, I'll use that wording. I also want to make sure they know it's not just whole nuts I need to avoid — it's any form, including oils, flours, butters, and crushed nuts like what was in that curry paste. The Thai place incident happened because the nuts were processed into the paste and I couldn't see them.\n\nAgreed. I feel a lot more prepared now. Between the restaurant script and cooking at home most nights, I think I've got a good system going. The steamed fish and homemade dressings keep me happy on weeknights, and for the occasional dinner out I'll just be extra vigilant. I'm also going to make sure I get that EpiPen prescription sorted in early August so I'm covered well before September."
+        },
+        {
+          "role": "assistant",
+          "content": "Excellent point — that's a crucial detail to communicate. Many people and even some restaurant staff assume nut allergies only apply to whole or visible nuts, but as you experienced, processed forms like nut flours, nut butters, nut oils, and crushed nuts blended into pastes are equally dangerous. I'd add this to your script: 'This includes any form of tree nuts — oils, flours, butters, or ground nuts used in sauces and pastes.' That covers all the common hidden sources. You might also want to mention it when ordering desserts, since many baked goods use almond flour or walnut pieces. Being thorough upfront is always better than discovering a problem after the fact.\n\nThat sounds like a solid and sustainable plan. You've built a great weeknight routine with the steamed fish and homemade lemon-olive oil dressings that keeps you safe and healthy, and now you have a clear communication strategy for dining out. Getting the EpiPen prescription started in early August gives you plenty of buffer before the September 15th expiration — I'd suggest setting a reminder for the first week of August so it doesn't slip. Between managing your tree nut allergy carefully, seeing your blood pressure trend downward, and having the restaurant script ready, you're in a much stronger position than you were a few months ago. Let me know if you need anything else as the June check-up approaches."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize all the health-related details I've shared with you across our conversations — allergies, medications, doctors, blood pressure, and any incidents?",
+      "expected_answer": "You shared that you are allergic to tree nuts, with walnuts at Class 3 and cashews at Class 2, tested by Dr. Patel at the clinic on Kensington Rd. Your EpiPen expires September 15th and you only have one left after using one during an allergic reaction at a Thai restaurant where crushed cashews were in the curry paste. Your GP Dr. Chen recorded your blood pressure at 138/88 and will consider medication if it's still elevated at your June check-up. Your latest home reading was 126/82. Your sister was diagnosed lactose intolerant around mid-April.",
+      "gold_memory_state": "All seven confirmed remember operations are active: tree nut allergy details (walnuts Class 3, cashews Class 2), EpiPen expiration September 15th, Dr. Patel allergist on Kensington Rd, BP medication decision at June check-up, latest BP reading 126/82, Thai restaurant cashew reaction incident, sister lactose intolerant mid-April.",
+      "judge_rubric": {
+        "must_include": [
+          "walnuts Class 3",
+          "cashews Class 2",
+          "EpiPen expires September 15th",
+          "Dr. Patel",
+          "Kensington Rd",
+          "138/88 or 138 over 88",
+          "June check-up",
+          "126/82 or 126 over 82",
+          "Thai restaurant",
+          "crushed cashews in curry paste",
+          "sister lactose intolerant"
+        ],
+        "acceptable_paraphrases": [
+          "walnut Class 3 reaction",
+          "cashew Class 2 reaction",
+          "September 15",
+          "blood pressure borderline"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "shellfish allergy",
+          "any allergy not mentioned by the user"
+        ],
+        "harmless_extra": [
+          "mention of steamed fish cooking preference",
+          "mention of low-sodium cooking changes"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I'm confirmed allergic to tree nuts — walnuts came back Class 3 and cashews were Class 2"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my EpiPen expires on September 15th and I only have one pen left since I used the other one during that restaurant incident"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Dr. Patel was the allergist who ran my tests at the clinic on Kensington Rd"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Dr. Chen told me my blood pressure was borderline at 138 over 88 and said if it's still elevated at my June check-up she'll consider medication"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "my last home blood pressure reading was 126 over 82"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I had a reaction at a Thai restaurant because there were crushed cashews in the curry paste and I had to use my EpiPen for the first time"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "My sister found out she's lactose intolerant around mid-April after months of stomach problems"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize all the health-related details I've shared with you across our conversations — allergies, medications, doctors, blood pressure, and any incidents?",
+      "expected_answer": "You shared that you are allergic to tree nuts, with walnuts at Class 3 and cashews at Class 2, tested by Dr. Patel at the clinic on Kensington Rd. Your EpiPen expires September 15th and you only have one left after using one during an allergic reaction at a Thai restaurant where crushed cashews were in the curry paste. Your GP Dr. Chen recorded your blood pressure at 138/88 and will consider medication if it's still elevated at your June check-up. Your latest home reading was 126/82. Your sister was diagnosed lactose intolerant around mid-April.",
+      "gold_memory_state": "All seven confirmed remember operations are active: tree nut allergy details (walnuts Class 3, cashews Class 2), EpiPen expiration September 15th, Dr. Patel allergist on Kensington Rd, BP medication decision at June check-up, latest BP reading 126/82, Thai restaurant cashew reaction incident, sister lactose intolerant mid-April.",
+      "judge_rubric": {
+        "must_include": [
+          "walnuts Class 3",
+          "cashews Class 2",
+          "EpiPen expires September 15th",
+          "Dr. Patel",
+          "Kensington Rd",
+          "138/88 or 138 over 88",
+          "June check-up",
+          "126/82 or 126 over 82",
+          "Thai restaurant",
+          "crushed cashews in curry paste",
+          "sister lactose intolerant"
+        ],
+        "acceptable_paraphrases": [
+          "walnut Class 3 reaction",
+          "cashew Class 2 reaction",
+          "September 15",
+          "blood pressure borderline"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "shellfish allergy",
+          "any allergy not mentioned by the user"
+        ],
+        "harmless_extra": [
+          "mention of steamed fish cooking preference",
+          "mention of low-sodium cooking changes"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I'm confirmed allergic to tree nuts — walnuts came back Class 3 and cashews were Class 2"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my EpiPen expires on September 15th and I only have one pen left since I used the other one during that restaurant incident"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Dr. Patel was the allergist who ran my tests at the clinic on Kensington Rd"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Dr. Chen told me my blood pressure was borderline at 138 over 88 and said if it's still elevated at my June check-up she'll consider medication"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "my last home blood pressure reading was 126 over 82"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I had a reaction at a Thai restaurant because there were crushed cashews in the curry paste and I had to use my EpiPen for the first time"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "My sister found out she's lactose intolerant around mid-April after months of stomach problems"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I have two different doctors I've mentioned — if I need to call about renewing my allergy medication, which doctor's office should I contact and where is it? Does my other doctor have anything to do with the allergy situation?",
+      "expected_answer": "For allergy-related matters including your EpiPen prescription, you should contact Dr. Patel's office at the clinic on Kensington Rd. Dr. Chen is your GP handling blood pressure and is not involved in your allergy care.",
+      "gold_memory_state": "Dr. Patel is the allergist at the Kensington Rd clinic who conducted the allergy testing. Dr. Chen is the GP who recorded the borderline blood pressure and will reassess at the June check-up. These are separate providers for separate health concerns.",
+      "judge_rubric": {
+        "must_include": [
+          "Dr. Patel",
+          "Kensington Rd",
+          "allergist or allergy doctor"
+        ],
+        "acceptable_paraphrases": [
+          "Dr. Patel's clinic on Kensington Road"
+        ],
+        "must_not_include": [
+          "Dr. Chen handles allergies"
+        ],
+        "harmful_extra": [
+          "conflating Dr. Chen with allergy care",
+          "saying Dr. Patel handles blood pressure"
+        ],
+        "harmless_extra": [
+          "mentioning Dr. Chen handles blood pressure",
+          "mentioning the EpiPen prescription"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Dr. Patel was the allergist who ran my tests at the clinic on Kensington Rd"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Dr. Chen told me my blood pressure was borderline at 138 over 88 and said if it's still elevated at my June check-up she'll consider medication"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I have two different doctors I've mentioned — if I need to call about renewing my allergy medication, which doctor's office should I contact and where is it? Does my other doctor have anything to do with the allergy situation?",
+      "expected_answer": "For allergy-related matters including your EpiPen prescription, you should contact Dr. Patel's office at the clinic on Kensington Rd. Dr. Chen is your GP handling blood pressure and is not involved in your allergy care.",
+      "gold_memory_state": "Dr. Patel is the allergist at the Kensington Rd clinic who conducted the allergy testing. Dr. Chen is the GP who recorded the borderline blood pressure and will reassess at the June check-up. These are separate providers for separate health concerns.",
+      "judge_rubric": {
+        "must_include": [
+          "Dr. Patel",
+          "Kensington Rd",
+          "allergist or allergy doctor"
+        ],
+        "acceptable_paraphrases": [
+          "Dr. Patel's clinic on Kensington Road"
+        ],
+        "must_not_include": [
+          "Dr. Chen handles allergies"
+        ],
+        "harmful_extra": [
+          "conflating Dr. Chen with allergy care",
+          "saying Dr. Patel handles blood pressure"
+        ],
+        "harmless_extra": [
+          "mentioning Dr. Chen handles blood pressure",
+          "mentioning the EpiPen prescription"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Dr. Patel was the allergist who ran my tests at the clinic on Kensington Rd"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Dr. Chen told me my blood pressure was borderline at 138 over 88 and said if it's still elevated at my June check-up she'll consider medication"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Is the nut that caused my restaurant emergency the same one that has the higher or the lower allergy classification on my test results?",
+      "expected_answer": "The restaurant reaction was caused by cashews, which are your lower-classified allergy at Class 2. Your higher classification is walnuts at Class 3.",
+      "gold_memory_state": "Cashews are Class 2, walnuts are Class 3. The Thai restaurant incident involved crushed cashews in curry paste. The cashew reaction at the restaurant corresponds to the Class 2 (lower) allergy classification, not the Class 3.",
+      "judge_rubric": {
+        "must_include": [
+          "cashews",
+          "Class 2",
+          "lower classification"
+        ],
+        "acceptable_paraphrases": [
+          "cashews were the lower-level allergy",
+          "cashew allergy is Class 2 which is less severe than walnut Class 3"
+        ],
+        "must_not_include": [
+          "cashews are Class 3",
+          "walnuts caused the restaurant reaction"
+        ],
+        "harmful_extra": [
+          "reversing the class levels",
+          "saying walnuts were in the curry paste"
+        ],
+        "harmless_extra": [
+          "mentioning the Thai restaurant context",
+          "mentioning EpiPen use during the incident"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model reverses the Class 2 and Class 3 assignments between cashews and walnuts.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The Thai restaurant incident involved crushed cashews in the curry paste.",
+        "Fact 2: Cashews were classified as Class 2 on the allergy test.",
+        "Fact 3: Walnuts were classified as Class 3 on the allergy test.",
+        "Inference: Class 3 is higher than Class 2, so cashews (the restaurant trigger) correspond to the lower allergy classification."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I had a reaction at a Thai restaurant because there were crushed cashews in the curry paste and I had to use my EpiPen for the first time"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I'm confirmed allergic to tree nuts — walnuts came back Class 3 and cashews were Class 2"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Is the nut that caused my restaurant emergency the same one that has the higher or the lower allergy classification on my test results?",
+      "expected_answer": "The restaurant reaction was caused by cashews, which are your lower-classified allergy at Class 2. Your higher classification is walnuts at Class 3.",
+      "gold_memory_state": "Cashews are Class 2, walnuts are Class 3. The Thai restaurant incident involved crushed cashews in curry paste. The cashew reaction at the restaurant corresponds to the Class 2 (lower) allergy classification, not the Class 3.",
+      "judge_rubric": {
+        "must_include": [
+          "cashews",
+          "Class 2",
+          "lower classification"
+        ],
+        "acceptable_paraphrases": [
+          "cashews were the lower-level allergy",
+          "cashew allergy is Class 2 which is less severe than walnut Class 3"
+        ],
+        "must_not_include": [
+          "cashews are Class 3",
+          "walnuts caused the restaurant reaction"
+        ],
+        "harmful_extra": [
+          "reversing the class levels",
+          "saying walnuts were in the curry paste"
+        ],
+        "harmless_extra": [
+          "mentioning the Thai restaurant context",
+          "mentioning EpiPen use during the incident"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model reverses the Class 2 and Class 3 assignments between cashews and walnuts.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The Thai restaurant incident involved crushed cashews in the curry paste.",
+        "Fact 2: Cashews were classified as Class 2 on the allergy test.",
+        "Fact 3: Walnuts were classified as Class 3 on the allergy test.",
+        "Inference: Class 3 is higher than Class 2, so cashews (the restaurant trigger) correspond to the lower allergy classification."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I had a reaction at a Thai restaurant because there were crushed cashews in the curry paste and I had to use my EpiPen for the first time"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I'm confirmed allergic to tree nuts — walnuts came back Class 3 and cashews were Class 2"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "Which of the following correctly describes my walnut allergy classification?",
+      "candidate_options": [
+        "Walnut Class 3",
+        "Walnut Class 2",
+        "Walnut Class 4",
+        "Walnut Class 1"
+      ],
+      "expected_answer": "Walnut Class 3",
+      "distractor_rationale": "same-value-different-target: 'Walnut Class 2' borrows the Class 2 value from the cashew allergy result and misapplies it to walnuts. assistant echo: 'Walnut Class 4' and 'Walnut Class 1' are plausible IgE classification levels that never appeared in the conversation but could be confused if the model is uncertain about the exact class. The Class 2 distractor specifically tests whether the model swaps the walnut and cashew classifications.",
+      "gold_memory_state": "Walnuts are Class 3, cashews are Class 2. Both confirmed from allergy testing by Dr. Patel.",
+      "judge_rubric": {
+        "must_include": [
+          "Walnut Class 3"
+        ],
+        "acceptable_paraphrases": [
+          "Class 3 for walnuts"
+        ],
+        "must_not_include": [
+          "Walnut Class 2",
+          "Walnut Class 4",
+          "Walnut Class 1"
+        ],
+        "harmful_extra": [
+          "selecting any option other than Walnut Class 3"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects Class 2 for walnuts, which is the cashew classification swapped to the wrong nut.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I'm confirmed allergic to tree nuts — walnuts came back Class 3 and cashews were Class 2"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "Which of the following correctly describes my walnut allergy classification?",
+      "candidate_options": [
+        "Walnut Class 3",
+        "Walnut Class 2",
+        "Walnut Class 4",
+        "Walnut Class 1"
+      ],
+      "expected_answer": "Walnut Class 3",
+      "distractor_rationale": "same-value-different-target: 'Walnut Class 2' borrows the Class 2 value from the cashew allergy result and misapplies it to walnuts. assistant echo: 'Walnut Class 4' and 'Walnut Class 1' are plausible IgE classification levels that never appeared in the conversation but could be confused if the model is uncertain about the exact class. The Class 2 distractor specifically tests whether the model swaps the walnut and cashew classifications.",
+      "gold_memory_state": "Walnuts are Class 3, cashews are Class 2. Both confirmed from allergy testing by Dr. Patel.",
+      "judge_rubric": {
+        "must_include": [
+          "Walnut Class 3"
+        ],
+        "acceptable_paraphrases": [
+          "Class 3 for walnuts"
+        ],
+        "must_not_include": [
+          "Walnut Class 2",
+          "Walnut Class 4",
+          "Walnut Class 1"
+        ],
+        "harmful_extra": [
+          "selecting any option other than Walnut Class 3"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects Class 2 for walnuts, which is the cashew classification swapped to the wrong nut.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I'm confirmed allergic to tree nuts — walnuts came back Class 3 and cashews were Class 2"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm planning to visit my sister for a long weekend and want to cook dinner at her place. Given everything you know about my dietary needs, her dietary situation, and the incident I had eating out, draft a brief meal-planning note that covers what we both need to avoid, why cross-contamination is a particular concern for me at her kitchen, and when I need to have my emergency medication sorted out by.",
+      "expected_answer": "The meal plan must avoid tree nuts (especially walnuts and cashews) for you and dairy/lactose for your sister. Cross-contamination is a particular concern because your sister uses cashew-based cheese alternatives in her cooking, and given your cashew allergy (Class 2) with a history of anaphylaxis from hidden cashews in curry paste at a Thai restaurant, even residue from her cashew products could be dangerous. Your EpiPen expires September 15th and you only have one left, so you need to get a new prescription before that date — ideally by early August to allow processing time.",
+      "gold_memory_state": "Active facts: tree nut allergy (walnuts Class 3, cashews Class 2), sister is lactose intolerant (mid-April diagnosis), sister uses cashew-based cheese alternatives, Thai restaurant anaphylactic reaction from crushed cashews in curry paste, EpiPen expires September 15th with only one pen remaining, Dr. Patel is the allergist at Kensington Rd clinic.",
+      "judge_rubric": {
+        "must_include": [
+          "avoid tree nuts for user",
+          "avoid dairy or lactose for sister",
+          "cashew-based products in sister's kitchen as cross-contamination risk",
+          "EpiPen expiration September 15th",
+          "only one EpiPen remaining"
+        ],
+        "acceptable_paraphrases": [
+          "nut-free for user",
+          "lactose-free for sister",
+          "September 15 EpiPen deadline"
+        ],
+        "must_not_include": [
+          "shellfish allergy"
+        ],
+        "harmful_extra": [
+          "inventing allergies not mentioned",
+          "saying the sister has a nut allergy",
+          "saying the user is lactose intolerant"
+        ],
+        "harmless_extra": [
+          "mentioning steamed fish as a safe meal option",
+          "mentioning the user's preference for light clean cooking",
+          "mentioning Dr. Patel for prescription renewal"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User has tree nut allergies — walnuts Class 3, cashews Class 2.",
+        "Fact 2: User's sister is lactose intolerant, diagnosed mid-April.",
+        "Fact 3: Sister uses cashew-based cheese alternatives in her cooking.",
+        "Fact 4: User had an anaphylactic reaction at a Thai restaurant from crushed cashews hidden in curry paste and had to use an EpiPen.",
+        "Fact 5: User's EpiPen expires September 15th and only one pen remains.",
+        "Inference: Cooking at the sister's place creates a cross-contamination risk because she routinely handles cashew-based products, and the user's cashew allergy has already caused anaphylaxis from a non-obvious cashew source.",
+        "Inference: The meal must simultaneously accommodate the user's tree nut avoidance and the sister's lactose intolerance, and the user must ensure the EpiPen prescription is renewed before September 15th given only one pen remains."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I'm confirmed allergic to tree nuts — walnuts came back Class 3 and cashews were Class 2"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "My sister found out she's lactose intolerant around mid-April after months of stomach problems"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "She's already experimenting with oat milk and cashew-based cheese alternatives — which is ironic given my cashew allergy. I can't even be in the kitchen when she's cooking with that stuff"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I had a reaction at a Thai restaurant because there were crushed cashews in the curry paste and I had to use my EpiPen for the first time"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my EpiPen expires on September 15th and I only have one pen left since I used the other one during that restaurant incident"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm planning to visit my sister for a long weekend and want to cook dinner at her place. Given everything you know about my dietary needs, her dietary situation, and the incident I had eating out, draft a brief meal-planning note that covers what we both need to avoid, why cross-contamination is a particular concern for me at her kitchen, and when I need to have my emergency medication sorted out by.",
+      "expected_answer": "The meal plan must avoid tree nuts (especially walnuts and cashews) for you and dairy/lactose for your sister. Cross-contamination is a particular concern because your sister uses cashew-based cheese alternatives in her cooking, and given your cashew allergy (Class 2) with a history of anaphylaxis from hidden cashews in curry paste at a Thai restaurant, even residue from her cashew products could be dangerous. Your EpiPen expires September 15th and you only have one left, so you need to get a new prescription before that date — ideally by early August to allow processing time.",
+      "gold_memory_state": "Active facts: tree nut allergy (walnuts Class 3, cashews Class 2), sister is lactose intolerant (mid-April diagnosis), sister uses cashew-based cheese alternatives, Thai restaurant anaphylactic reaction from crushed cashews in curry paste, EpiPen expires September 15th with only one pen remaining, Dr. Patel is the allergist at Kensington Rd clinic.",
+      "judge_rubric": {
+        "must_include": [
+          "avoid tree nuts for user",
+          "avoid dairy or lactose for sister",
+          "cashew-based products in sister's kitchen as cross-contamination risk",
+          "EpiPen expiration September 15th",
+          "only one EpiPen remaining"
+        ],
+        "acceptable_paraphrases": [
+          "nut-free for user",
+          "lactose-free for sister",
+          "September 15 EpiPen deadline"
+        ],
+        "must_not_include": [
+          "shellfish allergy"
+        ],
+        "harmful_extra": [
+          "inventing allergies not mentioned",
+          "saying the sister has a nut allergy",
+          "saying the user is lactose intolerant"
+        ],
+        "harmless_extra": [
+          "mentioning steamed fish as a safe meal option",
+          "mentioning the user's preference for light clean cooking",
+          "mentioning Dr. Patel for prescription renewal"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User has tree nut allergies — walnuts Class 3, cashews Class 2.",
+        "Fact 2: User's sister is lactose intolerant, diagnosed mid-April.",
+        "Fact 3: Sister uses cashew-based cheese alternatives in her cooking.",
+        "Fact 4: User had an anaphylactic reaction at a Thai restaurant from crushed cashews hidden in curry paste and had to use an EpiPen.",
+        "Fact 5: User's EpiPen expires September 15th and only one pen remains.",
+        "Inference: Cooking at the sister's place creates a cross-contamination risk because she routinely handles cashew-based products, and the user's cashew allergy has already caused anaphylaxis from a non-obvious cashew source.",
+        "Inference: The meal must simultaneously accommodate the user's tree nut avoidance and the sister's lactose intolerance, and the user must ensure the EpiPen prescription is renewed before September 15th given only one pen remains."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I'm confirmed allergic to tree nuts — walnuts came back Class 3 and cashews were Class 2"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "My sister found out she's lactose intolerant around mid-April after months of stomach problems"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "She's already experimenting with oat milk and cashew-based cheese alternatives — which is ironic given my cashew allergy. I can't even be in the kitchen when she's cooking with that stuff"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I had a reaction at a Thai restaurant because there were crushed cashews in the curry paste and I had to use my EpiPen for the first time"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my EpiPen expires on September 15th and I only have one pen left since I used the other one during that restaurant incident"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What details do you have about my shellfish allergy?",
+      "expected_answer": "I have no record of a shellfish allergy from you.",
+      "gold_memory_state": "No shellfish allergy was ever provided. The user's confirmed allergies are to tree nuts only: walnuts (Class 3) and cashews (Class 2). The sister's condition is lactose intolerance, not a food allergy.",
+      "judge_rubric": {
+        "must_include": [
+          "no record",
+          "not provided",
+          "no shellfish allergy on file"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have any shellfish allergy information from you",
+          "You haven't mentioned a shellfish allergy",
+          "No shellfish allergy was shared"
+        ],
+        "must_not_include": [
+          "shellfish Class",
+          "shellfish anaphylaxis",
+          "any fabricated shellfish allergy detail"
+        ],
+        "harmful_extra": [
+          "inventing a shellfish allergy classification",
+          "saying shellfish was part of the allergy test results",
+          "borrowing the Class 2 or Class 3 values and applying them to shellfish"
+        ],
+        "harmless_extra": [
+          "tree nut allergy details",
+          "cashew allergy details",
+          "walnut allergy details"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model fabricates or hallucinates any shellfish allergy detail.",
+        "over_forget": null,
+        "stale_value": "Fails if the model borrows Class 2 or Class 3 values from the tree nut allergy and applies them to shellfish.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I'm confirmed allergic to tree nuts — walnuts came back Class 3 and cashews were Class 2"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Dr. Patel was the allergist who ran my tests at the clinic on Kensington Rd"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What details do you have about my shellfish allergy?",
+      "expected_answer": "I have no record of a shellfish allergy from you.",
+      "gold_memory_state": "No shellfish allergy was ever provided. The user's confirmed allergies are to tree nuts only: walnuts (Class 3) and cashews (Class 2). The sister's condition is lactose intolerance, not a food allergy.",
+      "judge_rubric": {
+        "must_include": [
+          "no record",
+          "not provided",
+          "no shellfish allergy on file"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have any shellfish allergy information from you",
+          "You haven't mentioned a shellfish allergy",
+          "No shellfish allergy was shared"
+        ],
+        "must_not_include": [
+          "shellfish Class",
+          "shellfish anaphylaxis",
+          "any fabricated shellfish allergy detail"
+        ],
+        "harmful_extra": [
+          "inventing a shellfish allergy classification",
+          "saying shellfish was part of the allergy test results",
+          "borrowing the Class 2 or Class 3 values and applying them to shellfish"
+        ],
+        "harmless_extra": [
+          "tree nut allergy details",
+          "cashew allergy details",
+          "walnut allergy details"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model fabricates or hallucinates any shellfish allergy detail.",
+        "over_forget": null,
+        "stale_value": "Fails if the model borrows Class 2 or Class 3 values from the tree nut allergy and applies them to shellfish.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I'm confirmed allergic to tree nuts — walnuts came back Class 3 and cashews were Class 2"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Dr. Patel was the allergist who ran my tests at the clinic on Kensington Rd"
+        }
+      ]
+    }
+  ]
+}

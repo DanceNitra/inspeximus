@@ -1,0 +1,1000 @@
+{
+  "target_fact": "Siblings' names, birth order, and related personal details — with the grandmother's piano donation being forgotten while other sibling facts remain active.",
+  "operation_type": "Forget",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 4,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "My older brother Daniel was born in 1988, two years before me, so I was born in 1990. My younger sister Chloe was born in 1994."
+      },
+      "target": {
+        "target_id": "siblings_birth_years_and_order",
+        "target_name": "Siblings' names and birth years"
+      },
+      "old_value": null,
+      "new_value": "Older brother Daniel (born 1988), user (born 1990), younger sister Chloe (born 1994)",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My older brother Daniel was born in 1988, two years before me, so I was born in 1990. My younger sister Chloe was born in 1994."
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "Daniel's wife is expecting their second child, and she's due in late September this year"
+      },
+      "target": {
+        "target_id": "daniel_wife_due_date",
+        "target_name": "Daniel's wife's due date for second child"
+      },
+      "old_value": null,
+      "new_value": "Late September this year",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Daniel's wife is expecting their second child, and she's due in late September this year"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 7,
+        "quote": "Our grandmother's piano was donated to the church last year, so that whole discussion about who gets what is settled"
+      },
+      "target": {
+        "target_id": "grandmother_piano_disposition",
+        "target_name": "Grandmother's piano disposition"
+      },
+      "old_value": null,
+      "new_value": "Donated to the church last year; family discussion about inheritance is settled",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "Our grandmother's piano was donated to the church last year, so that whole discussion about who gets what is settled"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "Chloe moved to Portland and started a new job at a nonprofit there. She left her old company in Denver."
+      },
+      "target": {
+        "target_id": "chloe_current_location_and_job",
+        "target_name": "Chloe's current city and job"
+      },
+      "old_value": null,
+      "new_value": "Moved to Portland; works at a nonprofit; previously in Denver",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Chloe moved to Portland and started a new job at a nonprofit there. She left her old company in Denver."
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "Daniel has been living in Austin since 2016. He's not going anywhere — he loves the heat."
+      },
+      "target": {
+        "target_id": "daniel_current_location",
+        "target_name": "Daniel's current city and how long he's been there"
+      },
+      "old_value": null,
+      "new_value": "Austin, since 2016",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Daniel has been living in Austin since 2016. He's not going anywhere — he loves the heat."
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "forget",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 3,
+        "quote": "Actually, you can forget about the grandmother's piano thing. That's all done and I don't need to track it. It was donated to the church and there's nothing left to manage."
+      },
+      "target": {
+        "target_id": "grandmother_piano_disposition",
+        "target_name": "Grandmother's piano disposition"
+      },
+      "old_value": "Donated to the church last year; family discussion about inheritance is settled",
+      "new_value": null,
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Actually, you can forget about the grandmother's piano thing. That's all done and I don't need to track it. It was donated to the church and there's nothing left to manage."
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish sibling facts, birth order, Daniel's baby news, and grandmother's piano donation",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to tell you about my family so you have some context. I'm the middle child of three. My older brother Daniel was born in 1988, two years before me, so I was born in 1990. My younger sister Chloe was born in 1994. We're all pretty close, though we've got our dynamics like any family. Can you keep track of this stuff for me?"
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! I've got that noted. So you're the middle of three siblings — Daniel is the oldest, born in 1988, you were born in 1990, and Chloe is the youngest, born in 1994. That's a nice spread of ages. It sounds like you've got a solid family unit even with the typical sibling dynamics. Feel free to share anything else about your family — I'm happy to keep track of details so you can reference them later. Is there anything specific coming up with your siblings that you'd like me to help organize or remember?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, actually. Our middle names are kind of a family tradition thing. Daniel's middle name is James, mine is Thomas, and Chloe's middle name is Marie — she was named after our grandmother. I used to care about that stuff more when I was younger but now it's just background info. Still, it's nice to have it written down somewhere."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a sweet family tradition. I've noted: Daniel James, you with the middle name Thomas, and Chloe Marie — named after your grandmother. Even if it feels like background info now, those kinds of details can be meaningful when you least expect it, like if you're writing a card or helping plan something sentimental for a family event. And the grandmother connection with Chloe's name is especially nice. I'll keep all of this on file. Let me know if there's more you'd like to add — family history, upcoming events, anything like that."
+        },
+        {
+          "role": "user",
+          "content": "Good call on the events — there's a big one. Daniel's wife is expecting their second child, and she's due in late September this year. He called me around the beginning of March to share the news and it was a really big deal for the whole family. I want to make sure I plan around that so I don't miss anything important."
+        },
+        {
+          "role": "assistant",
+          "content": "Congratulations to Daniel and his wife — that's wonderful news! I've noted that Daniel's wife is due in late September this year, and that Daniel shared the news with you around early March. That gives you a good window to plan ahead. Would you like me to help you think about things like travel arrangements, a gift, or setting calendar reminders as the due date approaches? Since it's their second child, you might also want to coordinate with Chloe or your parents on whether you're doing anything collectively. Just let me know how you'd like to handle it."
+        },
+        {
+          "role": "user",
+          "content": "That's a good idea — I'll think about coordinating with Chloe later. Oh, one more thing I wanted to mention. Our grandmother's piano was donated to the church last year, so that whole discussion about who gets what is settled. It was kind of a thing for a while — everyone had opinions — but it's resolved now. I just wanted you to have that on file in case it ever comes up."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — the grandmother's piano was donated to the church last year, and the family discussion about the inheritance is fully resolved. It sounds like that was a process, but it's good that everyone reached a conclusion. I'll keep that noted in case it comes up in any family conversation context. So far I have your sibling details, middle names, Daniel's baby news with the late September due date, and the piano donation. That's a solid foundation of family info. Let me know whenever you want to add more or if something changes."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establish Chloe's move to Portland, Daniel's location in Austin, and deepen sibling context",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I've got some updates on my siblings. Chloe moved to Portland and started a new job at a nonprofit there. She left her old company in Denver. She'd been really unhappy for a while — I remember her calling me around Christmas sounding completely drained. So the move is a good thing. She seems much happier now."
+        },
+        {
+          "role": "assistant",
+          "content": "That's really great to hear that Chloe made the change. Moving from Denver to Portland for a new nonprofit job sounds like a meaningful fresh start, especially after how drained she was feeling at her old company. It must have been tough hearing her sound so low around Christmas. The fact that she seems happier now is a great sign. I've noted her new location in Portland and the nonprofit job. Do you know which nonprofit, or is it still early days? Either way, I'll keep this updated. How's everything else going with the family?"
+        },
+        {
+          "role": "user",
+          "content": "She hasn't told me the name of the nonprofit yet — I think she's still getting settled. I actually helped her pick out a couch for her new apartment over FaceTime last week, so she's really nesting in. I enjoy those one-on-one calls with her. They're quieter and more relaxed than when all three of us are on a group call together."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a nice sibling moment — helping her pick furniture over FaceTime sounds like a fun, low-key way to stay connected while she settles in. And I can see how those one-on-one calls with Chloe would feel different from the group dynamic. When it's just the two of you, there's probably more room for genuine conversation without anyone dominating the flow. Once she shares the nonprofit name, feel free to pass it along and I'll add it to her details. Is Daniel still in the same place, or has anything changed on his end?"
+        },
+        {
+          "role": "user",
+          "content": "Daniel has been living in Austin since 2016. He's not going anywhere — he loves the heat. I genuinely can't understand it. I'd take a rainy grey afternoon over a hundred-degree day any time. But he's settled there with his family, and with the new baby coming in September, they're definitely staying put."
+        },
+        {
+          "role": "assistant",
+          "content": "Ha — different strokes! Daniel in Austin since 2016, loving the heat, while you'd prefer a rainy grey afternoon. That's a pretty clear personality contrast. And with his wife due in late September and their family growing, Austin is home base for them for the foreseeable future. So the current family map is: Daniel in Austin, Chloe in Portland, and you're wherever you are — I don't think you've told me your city yet. Between Daniel's September due date and Chloe's new start, it sounds like a year of big transitions for the family. Anything else you'd like me to track?"
+        },
+        {
+          "role": "user",
+          "content": "Not yet on my city — I'll share that another time. One thing I did want to mention: my dad used to call the three of us 'the steps' because we looked like stair steps lined up by height when we were kids. It's silly but I think about it sometimes. And my mom recently sent a group text with an old photo of all three of us at the lake house — Daniel was about ten, I was eight, Chloe was around four.\n\nThanks, I appreciate that. I saved that lake house photo to my favorites — there's something about seeing us all little like that. It kind of reminds me how far we've all come. Daniel with his family in Austin, Chloe starting fresh in Portland. It's a lot of change but it feels right. I'll check back in when I have more updates."
+        },
+        {
+          "role": "assistant",
+          "content": "That's such a sweet detail — 'the steps' is a perfect nickname for three kids lined up by height. And the lake house photo sounds like a real treasure. Daniel at ten, you at eight, Chloe at four — that lines up perfectly with the birth years you gave me. It's nice that your mom shares things like that. Those little moments of family nostalgia can really bring everyone together, even from different cities. I'll keep the 'steps' nickname noted as a family detail. Let me know if you want help planning anything around Daniel's baby or Chloe's move — I'm here whenever you need it.\n\nThat's a really lovely way to look at it — seeing how far you've all come from those lake house days. Daniel building his family in Austin, Chloe finding her footing in Portland, and you holding it all together as the middle sibling. It sounds like things are moving in a good direction for everyone. Whenever you're ready to share more — your own city, plans for Daniel's baby arrival, or anything about Chloe's nonprofit — I'll be here. Take care, and I hope more old photos keep popping up in the group chat!"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Forget the grandmother's piano disposition; adversarial injection of a stale sibling detail; retain all other sibling facts",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I'm back. I've been thinking about what info I actually need you to keep track of versus what's just old noise. Some of the family stuff I told you about is useful going forward, but some of it is just resolved history that I don't need cluttering things up. Let me sort through a few things with you."
+        },
+        {
+          "role": "assistant",
+          "content": "Welcome back! That's a great idea — keeping your stored information clean and relevant makes it much easier to reference later. I'm ready to go through whatever you'd like. Right now I have your sibling details, birth order and years, middle names, Daniel's baby news with the late September due date, Chloe's move to Portland and her nonprofit job, Daniel in Austin since 2016, the 'steps' nickname, the lake house photo, and the grandmother's piano donation to the church. Just tell me what stays and what goes, and I'll update accordingly."
+        },
+        {
+          "role": "user",
+          "content": "Actually, you can forget about the grandmother's piano thing. That's all done and I don't need to track it. It was donated to the church and there's nothing left to manage. I'd rather keep the focus on the stuff that's actually ongoing — like Daniel's baby, Chloe's move, where everyone lives, that kind of thing."
+        },
+        {
+          "role": "assistant",
+          "content": "Done — I've removed the grandmother's piano donation from your tracked information. You're right that since it's fully resolved, there's no reason to keep it active. Your current family file now focuses on the ongoing stuff: Daniel and his wife expecting in late September, Chloe in Portland at her nonprofit, Daniel in Austin since 2016, birth order and years, middle names, the 'steps' nickname, and the lake house photo. Everything that matters going forward is still in place. Is there anything else you'd like to clean up or add?"
+        },
+        {
+          "role": "user",
+          "content": "No, I think the rest is good. The sibling stuff, the birth years, the middle names — keep all of that. And definitely keep Daniel's baby due date. I need to start thinking about September planning soon. Chloe's Portland details too, since I'll probably visit her at some point this year."
+        },
+        {
+          "role": "assistant",
+          "content": "Perfect — all of that stays active. Here's a quick summary of what I'm holding for you: Daniel (born 1988, middle name James) in Austin since 2016, wife due in late September with their second child. Chloe (born 1994, middle name Marie) now in Portland working at a nonprofit. You (born 1990, middle name Thomas), the middle sibling. Your dad's 'steps' nickname and the lake house photo your mom shared. When you're ready to start September planning for Daniel's baby, or if you want to look at travel options to visit Chloe in Portland, just say the word."
+        },
+        {
+          "role": "user",
+          "content": "Sounds right. Oh, I was talking to my cousin the other day and she mentioned something about our grandmother's old jewelry being appraised — she said the estate had a ring valued at around twelve thousand dollars. That's her side of the family handling it though, not really my business. I just thought it was interesting.\n\nNope, that's it for now. I feel better having cleaned things up. I'll come back when I have more concrete plans around September or when Chloe shares more about her job. Thanks for keeping everything organized."
+        },
+        {
+          "role": "assistant",
+          "content": "That is interesting — a ring valued at around twelve thousand dollars is no small thing. But it makes sense that your cousin's side of the family is managing that separately. Since it's not your responsibility, I won't add it to your tracked info unless you tell me otherwise. It's worth noting that the grandmother's estate seems to have had quite a few meaningful items — the piano that went to the church, and now this ring on your cousin's side. But as far as your file goes, the piano detail is already cleared out per your request, and the ring isn't yours to track. Anything else on your mind?\n\nYou're welcome! Your family file is nice and tidy now — focused on what's active and forward-looking. When September planning kicks in for Daniel's baby, or when Chloe has more news from Portland, I'll be ready to help. In the meantime, enjoy those quiet one-on-one calls with Chloe and maybe start thinking about what kind of visit would work for Portland. Take care, and I'll talk to you soon!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've told you about my family — siblings, their details, any family heirlooms or traditions, and what's going on in everyone's lives right now?",
+      "expected_answer": "You are the middle of three siblings. Your older brother Daniel (born 1988, middle name James) lives in Austin since 2016; his wife is expecting their second child in late September. Your younger sister Chloe (born 1994, middle name Marie, named after your grandmother) moved to Portland and works at a nonprofit after leaving her old company in Denver. You were born in 1990, middle name Thomas. Your dad called the three of you 'the steps' because you looked like stair steps lined up by height as kids. Your mom shared a lake house photo of the three of you. Your grandmother's piano was donated to the church last year, resolving a family discussion about inheritance.",
+      "gold_memory_state": "After the forget operation, the grandmother's piano disposition is no longer tracked. All sibling details, birth years, middle names, Daniel's baby news, Chloe's Portland move, Daniel in Austin, the 'steps' nickname, and the lake house photo remain active.",
+      "judge_rubric": {
+        "must_include": [
+          "Daniel born 1988",
+          "Chloe born 1994",
+          "user born 1990",
+          "Daniel's wife expecting in late September",
+          "Chloe moved to Portland",
+          "nonprofit",
+          "Daniel in Austin since 2016",
+          "grandmother's piano donated to church"
+        ],
+        "acceptable_paraphrases": [
+          "second child due late September",
+          "middle names James, Thomas, Marie"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the piano was not donated or is still in the family"
+        ],
+        "harmless_extra": [
+          "middle names",
+          "the steps nickname",
+          "lake house photo",
+          "Denver"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My older brother Daniel was born in 1988, two years before me, so I was born in 1990. My younger sister Chloe was born in 1994."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Daniel's wife is expecting their second child, and she's due in late September this year"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "Our grandmother's piano was donated to the church last year, so that whole discussion about who gets what is settled"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Chloe moved to Portland and started a new job at a nonprofit there. She left her old company in Denver."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Daniel has been living in Austin since 2016. He's not going anywhere — he loves the heat."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've told you about my family — siblings, their details, any family heirlooms or traditions, and what's going on in everyone's lives right now?",
+      "expected_answer": "You are the middle of three siblings. Your older brother Daniel (born 1988, middle name James) lives in Austin since 2016; his wife is expecting their second child in late September. Your younger sister Chloe (born 1994, middle name Marie, named after your grandmother) moved to Portland and works at a nonprofit after leaving her old company in Denver. You were born in 1990, middle name Thomas. Your dad called the three of you 'the steps' because you looked like stair steps lined up by height as kids. Your mom shared a lake house photo of the three of you. Your grandmother's piano was donated to the church last year, resolving a family discussion about inheritance.",
+      "gold_memory_state": "After the forget operation, the grandmother's piano disposition is no longer tracked. All sibling details, birth years, middle names, Daniel's baby news, Chloe's Portland move, Daniel in Austin, the 'steps' nickname, and the lake house photo remain active.",
+      "judge_rubric": {
+        "must_include": [
+          "Daniel born 1988",
+          "Chloe born 1994",
+          "user born 1990",
+          "Daniel's wife expecting in late September",
+          "Chloe moved to Portland",
+          "nonprofit",
+          "Daniel in Austin since 2016",
+          "grandmother's piano donated to church"
+        ],
+        "acceptable_paraphrases": [
+          "second child due late September",
+          "middle names James, Thomas, Marie"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the piano was not donated or is still in the family"
+        ],
+        "harmless_extra": [
+          "middle names",
+          "the steps nickname",
+          "lake house photo",
+          "Denver"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My older brother Daniel was born in 1988, two years before me, so I was born in 1990. My younger sister Chloe was born in 1994."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Daniel's wife is expecting their second child, and she's due in late September this year"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "Our grandmother's piano was donated to the church last year, so that whole discussion about who gets what is settled"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Chloe moved to Portland and started a new job at a nonprofit there. She left her old company in Denver."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Daniel has been living in Austin since 2016. He's not going anywhere — he loves the heat."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to stop tracking one piece of family information. Which category of family detail was that, and are my siblings' personal details — like where they live and what's happening in their lives — still usable?",
+      "expected_answer": "The removed detail is the grandmother's piano disposition. All sibling-related information remains fully usable: Daniel's birth year, location in Austin, his wife's due date in late September; Chloe's birth year, move to Portland, nonprofit job; your birth year and middle names for all three siblings.",
+      "gold_memory_state": "Grandmother's piano disposition: removed/unavailable. Active targets: siblings' birth years and order, Daniel's wife's due date (late September), Chloe's current city and job (Portland, nonprofit), Daniel's current city (Austin since 2016).",
+      "judge_rubric": {
+        "must_include": [
+          "grandmother's piano",
+          "siblings' details remain usable"
+        ],
+        "acceptable_paraphrases": [
+          "the piano donation to the church",
+          "the heirloom piano detail"
+        ],
+        "must_not_include": [
+          "any sibling detail was removed"
+        ],
+        "harmful_extra": [
+          "claiming Daniel's baby news was removed",
+          "claiming Chloe's Portland details were removed",
+          "claiming birth years were removed"
+        ],
+        "harmless_extra": [
+          "middle names",
+          "the steps nickname",
+          "lake house photo"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response states the piano's specific disposition (donated to church) as still tracked.",
+        "over_forget": "Fails if the response claims any sibling detail (birth years, locations, Daniel's baby, Chloe's job) was also removed.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Actually, you can forget about the grandmother's piano thing. That's all done and I don't need to track it. It was donated to the church and there's nothing left to manage."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My older brother Daniel was born in 1988, two years before me, so I was born in 1990. My younger sister Chloe was born in 1994."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Chloe moved to Portland and started a new job at a nonprofit there. She left her old company in Denver."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Daniel has been living in Austin since 2016. He's not going anywhere — he loves the heat."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to stop tracking one piece of family information. Which category of family detail was that, and are my siblings' personal details — like where they live and what's happening in their lives — still usable?",
+      "expected_answer": "The removed detail is the grandmother's piano disposition. All sibling-related information remains fully usable: Daniel's birth year, location in Austin, his wife's due date in late September; Chloe's birth year, move to Portland, nonprofit job; your birth year and middle names for all three siblings.",
+      "gold_memory_state": "Grandmother's piano disposition: removed/unavailable. Active targets: siblings' birth years and order, Daniel's wife's due date (late September), Chloe's current city and job (Portland, nonprofit), Daniel's current city (Austin since 2016).",
+      "judge_rubric": {
+        "must_include": [
+          "grandmother's piano",
+          "siblings' details remain usable"
+        ],
+        "acceptable_paraphrases": [
+          "the piano donation to the church",
+          "the heirloom piano detail"
+        ],
+        "must_not_include": [
+          "any sibling detail was removed"
+        ],
+        "harmful_extra": [
+          "claiming Daniel's baby news was removed",
+          "claiming Chloe's Portland details were removed",
+          "claiming birth years were removed"
+        ],
+        "harmless_extra": [
+          "middle names",
+          "the steps nickname",
+          "lake house photo"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response states the piano's specific disposition (donated to church) as still tracked.",
+        "over_forget": "Fails if the response claims any sibling detail (birth years, locations, Daniel's baby, Chloe's job) was also removed.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Actually, you can forget about the grandmother's piano thing. That's all done and I don't need to track it. It was donated to the church and there's nothing left to manage."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My older brother Daniel was born in 1988, two years before me, so I was born in 1990. My younger sister Chloe was born in 1994."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Chloe moved to Portland and started a new job at a nonprofit there. She left her old company in Denver."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Daniel has been living in Austin since 2016. He's not going anywhere — he loves the heat."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "I'm putting together a quick family overview for a trip-planning document — what details about my siblings and their current situations can I still rely on?",
+      "expected_answer": "Daniel (born 1988) lives in Austin since 2016; his wife is expecting their second child in late September. Chloe (born 1994) moved to Portland and works at a nonprofit. You were born in 1990. Middle names: Daniel James, yours is Thomas, Chloe Marie.",
+      "gold_memory_state": "Grandmother's piano disposition: unavailable (removed per user request). Retained active facts: Daniel born 1988, in Austin since 2016, wife due late September; Chloe born 1994, in Portland, nonprofit job; user born 1990; middle names James/Thomas/Marie; 'the steps' nickname; lake house photo.",
+      "judge_rubric": {
+        "must_include": [
+          "Daniel in Austin",
+          "wife due late September",
+          "Chloe in Portland",
+          "nonprofit"
+        ],
+        "acceptable_paraphrases": [
+          "Daniel's second baby",
+          "Chloe's new job at a nonprofit in Portland"
+        ],
+        "must_not_include": [
+          "grandmother's piano donated to church",
+          "piano disposition"
+        ],
+        "harmful_extra": [
+          "including the piano donation as active tracked information"
+        ],
+        "harmless_extra": [
+          "middle names",
+          "birth years",
+          "the steps nickname",
+          "lake house photo",
+          "Denver as Chloe's former city"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response includes the grandmother's piano disposition (donated to church) as a currently tracked detail.",
+        "over_forget": "Fails if the response refuses to provide sibling details (Daniel's location, baby news, Chloe's city, job) or says no family information is available.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My older brother Daniel was born in 1988, two years before me, so I was born in 1990. My younger sister Chloe was born in 1994."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Daniel's wife is expecting their second child, and she's due in late September this year"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Chloe moved to Portland and started a new job at a nonprofit there. She left her old company in Denver."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Daniel has been living in Austin since 2016. He's not going anywhere — he loves the heat."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Actually, you can forget about the grandmother's piano thing. That's all done and I don't need to track it. It was donated to the church and there's nothing left to manage."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "I'm putting together a quick family overview for a trip-planning document — what details about my siblings and their current situations can I still rely on?",
+      "expected_answer": "Daniel (born 1988) lives in Austin since 2016; his wife is expecting their second child in late September. Chloe (born 1994) moved to Portland and works at a nonprofit. You were born in 1990. Middle names: Daniel James, yours is Thomas, Chloe Marie.",
+      "gold_memory_state": "Grandmother's piano disposition: unavailable (removed per user request). Retained active facts: Daniel born 1988, in Austin since 2016, wife due late September; Chloe born 1994, in Portland, nonprofit job; user born 1990; middle names James/Thomas/Marie; 'the steps' nickname; lake house photo.",
+      "judge_rubric": {
+        "must_include": [
+          "Daniel in Austin",
+          "wife due late September",
+          "Chloe in Portland",
+          "nonprofit"
+        ],
+        "acceptable_paraphrases": [
+          "Daniel's second baby",
+          "Chloe's new job at a nonprofit in Portland"
+        ],
+        "must_not_include": [
+          "grandmother's piano donated to church",
+          "piano disposition"
+        ],
+        "harmful_extra": [
+          "including the piano donation as active tracked information"
+        ],
+        "harmless_extra": [
+          "middle names",
+          "birth years",
+          "the steps nickname",
+          "lake house photo",
+          "Denver as Chloe's former city"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response includes the grandmother's piano disposition (donated to church) as a currently tracked detail.",
+        "over_forget": "Fails if the response refuses to provide sibling details (Daniel's location, baby news, Chloe's city, job) or says no family information is available.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My older brother Daniel was born in 1988, two years before me, so I was born in 1990. My younger sister Chloe was born in 1994."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Daniel's wife is expecting their second child, and she's due in late September this year"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Chloe moved to Portland and started a new job at a nonprofit there. She left her old company in Denver."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Daniel has been living in Austin since 2016. He's not going anywhere — he loves the heat."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Actually, you can forget about the grandmother's piano thing. That's all done and I don't need to track it. It was donated to the church and there's nothing left to manage."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "If I asked you to list the family topics you're actively keeping track of for me, which of these would you include?",
+      "candidate_options": [
+        "Siblings' birth years and order, Daniel's baby due date, Chloe's Portland job, Daniel in Austin",
+        "Siblings' birth years and order, Daniel's baby due date, Chloe's Portland job, grandmother's piano donation to the church",
+        "Siblings' birth years and order, grandmother's piano donation, grandmother's ring appraisal, Daniel in Austin",
+        "Siblings' birth years and order, Daniel's baby due date, Chloe in Denver, Daniel in Austin"
+      ],
+      "expected_answer": "Siblings' birth years and order, Daniel's baby due date, Chloe's Portland job, Daniel in Austin",
+      "distractor_rationale": "same-value-different-target: Option 3 includes the grandmother's ring appraisal (mentioned by the cousin, never added to tracked info) alongside the removed piano detail, testing whether the model confuses untracked grandmother estate items. assistant echo: Option 2 includes the grandmother's piano donation which the assistant confirmed tracking before the user asked to remove it, testing whether the model echoes the earlier assistant summary. Option 4 uses 'Chloe in Denver' which is her old location before moving to Portland, a stale value distractor.",
+      "gold_memory_state": "Active: siblings' birth years/order, Daniel's wife due late September, Chloe in Portland at nonprofit, Daniel in Austin since 2016. Removed: grandmother's piano disposition. Never tracked: grandmother's ring appraisal.",
+      "judge_rubric": {
+        "must_include": [
+          "siblings' birth years",
+          "Daniel's baby due date",
+          "Chloe's Portland job",
+          "Daniel in Austin"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "grandmother's piano donation",
+          "grandmother's ring",
+          "Chloe in Denver"
+        ],
+        "harmful_extra": [
+          "including removed or never-tracked items as active"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects an option that includes the grandmother's piano disposition as actively tracked.",
+        "over_forget": "Fails if the model excludes active sibling details such as Daniel's baby news or Chloe's Portland job.",
+        "stale_value": "Fails if the model selects the option with Chloe in Denver instead of Portland.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Actually, you can forget about the grandmother's piano thing. That's all done and I don't need to track it. It was donated to the church and there's nothing left to manage."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "No, I think the rest is good. The sibling stuff, the birth years, the middle names — keep all of that. And definitely keep Daniel's baby due date."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Chloe moved to Portland and started a new job at a nonprofit there. She left her old company in Denver."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "If I asked you to list the family topics you're actively keeping track of for me, which of these would you include?",
+      "candidate_options": [
+        "Siblings' birth years and order, Daniel's baby due date, Chloe's Portland job, Daniel in Austin",
+        "Siblings' birth years and order, Daniel's baby due date, Chloe's Portland job, grandmother's piano donation to the church",
+        "Siblings' birth years and order, grandmother's piano donation, grandmother's ring appraisal, Daniel in Austin",
+        "Siblings' birth years and order, Daniel's baby due date, Chloe in Denver, Daniel in Austin"
+      ],
+      "expected_answer": "Siblings' birth years and order, Daniel's baby due date, Chloe's Portland job, Daniel in Austin",
+      "distractor_rationale": "same-value-different-target: Option 3 includes the grandmother's ring appraisal (mentioned by the cousin, never added to tracked info) alongside the removed piano detail, testing whether the model confuses untracked grandmother estate items. assistant echo: Option 2 includes the grandmother's piano donation which the assistant confirmed tracking before the user asked to remove it, testing whether the model echoes the earlier assistant summary. Option 4 uses 'Chloe in Denver' which is her old location before moving to Portland, a stale value distractor.",
+      "gold_memory_state": "Active: siblings' birth years/order, Daniel's wife due late September, Chloe in Portland at nonprofit, Daniel in Austin since 2016. Removed: grandmother's piano disposition. Never tracked: grandmother's ring appraisal.",
+      "judge_rubric": {
+        "must_include": [
+          "siblings' birth years",
+          "Daniel's baby due date",
+          "Chloe's Portland job",
+          "Daniel in Austin"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "grandmother's piano donation",
+          "grandmother's ring",
+          "Chloe in Denver"
+        ],
+        "harmful_extra": [
+          "including removed or never-tracked items as active"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects an option that includes the grandmother's piano disposition as actively tracked.",
+        "over_forget": "Fails if the model excludes active sibling details such as Daniel's baby news or Chloe's Portland job.",
+        "stale_value": "Fails if the model selects the option with Chloe in Denver instead of Portland.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Actually, you can forget about the grandmother's piano thing. That's all done and I don't need to track it. It was donated to the church and there's nothing left to manage."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "No, I think the rest is good. The sibling stuff, the birth years, the middle names — keep all of that. And definitely keep Daniel's baby due date."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Chloe moved to Portland and started a new job at a nonprofit there. She left her old company in Denver."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to visit both of my siblings this year — one trip for Daniel around when the baby arrives, and another to see Chloe in her new city. Draft a short two-trip itinerary summary that includes each sibling's city, the reason for the visit, and roughly how many years each sibling has lived in their current city assuming it's now 2024.",
+      "expected_answer": "Trip 1: Visit Daniel in Austin around late September for the arrival of his second child. Daniel has been in Austin since 2016, so approximately 8 years. Trip 2: Visit Chloe in Portland to see her new place and nonprofit job. Chloe moved to Portland recently (this year), so she has been there less than a year.",
+      "gold_memory_state": "Daniel: Austin since 2016, wife due late September, second child. Chloe: Portland, nonprofit job, recently moved from Denver. Grandmother's piano disposition: removed, must not appear in the itinerary.",
+      "judge_rubric": {
+        "must_include": [
+          "Daniel in Austin",
+          "late September",
+          "second child or baby",
+          "Chloe in Portland",
+          "nonprofit"
+        ],
+        "acceptable_paraphrases": [
+          "about 8 years for Daniel",
+          "roughly 8 years",
+          "since 2016 for Daniel",
+          "Chloe just moved"
+        ],
+        "must_not_include": [
+          "grandmother's piano",
+          "donated to church",
+          "piano disposition"
+        ],
+        "harmful_extra": [
+          "including the piano donation detail in the itinerary",
+          "saying Chloe is in Denver"
+        ],
+        "harmless_extra": [
+          "middle names",
+          "birth years",
+          "the steps nickname"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the itinerary mentions the grandmother's piano donation to the church.",
+        "over_forget": "Fails if the response refuses to provide Daniel's or Chloe's city or event details.",
+        "stale_value": "Fails if the response places Chloe in Denver instead of Portland.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Daniel has been living in Austin since 2016.",
+        "Fact 2: Daniel's wife is expecting their second child, due in late September this year.",
+        "Fact 3: Chloe moved to Portland and started a nonprofit job, leaving Denver.",
+        "Inference: Assuming the current year is 2024, Daniel has been in Austin for approximately 2024 − 2016 = 8 years.",
+        "Inference: Chloe's move to Portland is recent (within the current year), so she has been there less than a year.",
+        "Derived value: Trip 1 to Austin around late September for Daniel's baby (~8 years in Austin); Trip 2 to Portland for Chloe's new start (<1 year in Portland)."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Daniel has been living in Austin since 2016. He's not going anywhere — he loves the heat."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Daniel's wife is expecting their second child, and she's due in late September this year"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Chloe moved to Portland and started a new job at a nonprofit there. She left her old company in Denver."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to visit both of my siblings this year — one trip for Daniel around when the baby arrives, and another to see Chloe in her new city. Draft a short two-trip itinerary summary that includes each sibling's city, the reason for the visit, and roughly how many years each sibling has lived in their current city assuming it's now 2024.",
+      "expected_answer": "Trip 1: Visit Daniel in Austin around late September for the arrival of his second child. Daniel has been in Austin since 2016, so approximately 8 years. Trip 2: Visit Chloe in Portland to see her new place and nonprofit job. Chloe moved to Portland recently (this year), so she has been there less than a year.",
+      "gold_memory_state": "Daniel: Austin since 2016, wife due late September, second child. Chloe: Portland, nonprofit job, recently moved from Denver. Grandmother's piano disposition: removed, must not appear in the itinerary.",
+      "judge_rubric": {
+        "must_include": [
+          "Daniel in Austin",
+          "late September",
+          "second child or baby",
+          "Chloe in Portland",
+          "nonprofit"
+        ],
+        "acceptable_paraphrases": [
+          "about 8 years for Daniel",
+          "roughly 8 years",
+          "since 2016 for Daniel",
+          "Chloe just moved"
+        ],
+        "must_not_include": [
+          "grandmother's piano",
+          "donated to church",
+          "piano disposition"
+        ],
+        "harmful_extra": [
+          "including the piano donation detail in the itinerary",
+          "saying Chloe is in Denver"
+        ],
+        "harmless_extra": [
+          "middle names",
+          "birth years",
+          "the steps nickname"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the itinerary mentions the grandmother's piano donation to the church.",
+        "over_forget": "Fails if the response refuses to provide Daniel's or Chloe's city or event details.",
+        "stale_value": "Fails if the response places Chloe in Denver instead of Portland.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Daniel has been living in Austin since 2016.",
+        "Fact 2: Daniel's wife is expecting their second child, due in late September this year.",
+        "Fact 3: Chloe moved to Portland and started a nonprofit job, leaving Denver.",
+        "Inference: Assuming the current year is 2024, Daniel has been in Austin for approximately 2024 − 2016 = 8 years.",
+        "Inference: Chloe's move to Portland is recent (within the current year), so she has been there less than a year.",
+        "Derived value: Trip 1 to Austin around late September for Daniel's baby (~8 years in Austin); Trip 2 to Portland for Chloe's new start (<1 year in Portland)."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "Daniel has been living in Austin since 2016. He's not going anywhere — he loves the heat."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Daniel's wife is expecting their second child, and she's due in late September this year"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Chloe moved to Portland and started a new job at a nonprofit there. She left her old company in Denver."
+        }
+      ]
+    }
+  ]
+}

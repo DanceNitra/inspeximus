@@ -1,0 +1,943 @@
+{
+  "target_fact": "User's retinoid application schedule, which undergoes multiple changes through the conversation",
+  "operation_type": "TrajectoryOps",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "retinoid_schedule",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "My dermatologist prescribed a retinoid and told me to apply it every night before bed"
+      },
+      "target": {
+        "target_id": "retinoid_frequency",
+        "target_name": "retinoid application frequency"
+      },
+      "old_value": null,
+      "new_value": "every night",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My dermatologist prescribed a retinoid and told me to apply it every night before bed"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "my rent auto-pay is set up for the 1st of every month, so that's one less thing to worry about"
+      },
+      "target": {
+        "target_id": "rent_autopay_schedule",
+        "target_name": "rent auto-pay schedule"
+      },
+      "old_value": null,
+      "new_value": "monthly on the 1st",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my rent auto-pay is set up for the 1st of every month, so that's one less thing to worry about"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "retinoid_schedule",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I went back to my dermatologist after the peeling got bad, and she clarified the retinoid should be every other night, not nightly"
+      },
+      "target": {
+        "target_id": "retinoid_frequency",
+        "target_name": "retinoid application frequency"
+      },
+      "old_value": "every night",
+      "new_value": "every other night",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "she clarified the retinoid should be every other night, not nightly"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "retinoid_schedule",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 3,
+        "quote": "The dermatologist's office called today and the nurse said they want me to bump it up to three nights per week instead of every other night"
+      },
+      "target": {
+        "target_id": "retinoid_frequency",
+        "target_name": "retinoid application frequency"
+      },
+      "old_value": "every other night",
+      "new_value": "three nights per week",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "the nurse said they want me to bump it up to three nights per week instead of every other night"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "retinoid_schedule",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "I just got off the phone with Dr. Patel herself and she said to disregard the nurse's message. She wants me to stay at every other night for now"
+      },
+      "target": {
+        "target_id": "retinoid_frequency",
+        "target_name": "retinoid application frequency"
+      },
+      "old_value": "every other night",
+      "new_value": "every other night",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "she said to disregard the nurse's message. She wants me to stay at every other night for now"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish initial facts about retinoid schedule and rent auto-pay",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to keep track of a few personal health and finance things. My dermatologist prescribed a retinoid and told me to apply it every night before bed. I started on March 3rd. She also mentioned I should use a gentle moisturizer fifteen minutes after applying it. Can you note all that for me?"
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! I've noted your retinoid details. You started on March 3rd, applying it every night before bed, and you follow up with a gentle moisturizer fifteen minutes after application. That's a solid skincare routine to keep track of. If you ever need a reminder about the timing or want to log any skin reactions, just let me know. Keeping a record of when you started will also be helpful if your dermatologist asks about your progress at your next appointment. Is there anything else health-related you'd like me to track alongside this?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, one more health thing. My GP told me to take a vitamin D supplement — 50,000 IU once a week on Sundays. I've been doing that since late January. It's a prescription-strength dose, so I definitely need to stick to the weekly schedule and not accidentally double up or anything."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — your vitamin D supplement is 50,000 IU, taken once a week on Sundays, starting from late January. Since it's prescription-strength, keeping the weekly cadence is really important. I'll make sure that's recorded clearly so there's no confusion. Taking it on the same day each week is a great strategy for consistency. If you ever need to shift the day temporarily, like if you're traveling, it might be worth checking with your GP first given the high dosage. Want me to set up any kind of weekly reminder note for Sundays?"
+        },
+        {
+          "role": "user",
+          "content": "No reminders needed, thanks. On the finance side, my rent auto-pay is set up for the 1st of every month, so that's one less thing to worry about. I specifically chose monthly billing — I've had issues before with confusing biweekly payment cycles, so I want to make sure this stays clearly monthly."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood — your rent auto-pay is monthly, hitting on the 1st of each month. I've noted your strong preference for monthly billing to avoid any confusion with biweekly cycles. That's a smart move given past headaches with mixed billing frequencies. Having it on auto-pay also means you won't accidentally miss a due date, which is great for your credit record and peace of mind. If you ever switch apartments or landlords and need to update the payment details, just let me know and I'll help you keep the records straight. Anything else on the finance side?"
+        },
+        {
+          "role": "user",
+          "content": "Not right now. Oh, I also joined a biweekly book club recently — meets every other Saturday afternoon. I really prefer that pace over the weekly book club I tried last year, which felt way too rushed. The biweekly rhythm gives me enough time to actually finish each book without stressing."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a great fit for you! I've noted your biweekly book club meeting every other Saturday afternoon. It makes sense that the weekly pace felt rushed — having two weeks per book gives you breathing room to enjoy the reading without it feeling like homework. If you ever want to track which books you're reading or jot down discussion notes after each meeting, I'm happy to help with that too. It's nice to have obligations spaced out enough that they stay enjoyable rather than becoming a chore. Let me know if anything else comes up!"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "update retinoid frequency from nightly to every other night after dermatologist correction",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So I need to correct something about the retinoid. I went back to my dermatologist after the peeling got bad, and she clarified the retinoid should be every other night, not nightly. I had been doing it wrong for about ten days before my skin started reacting. I felt pretty embarrassed about the whole thing honestly."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for the update — I've corrected your retinoid schedule to every other night instead of nightly. I'm sorry you went through that peeling episode; ten days of over-application would definitely irritate your skin. Don't be too hard on yourself though — it's a really common mistake, and the important thing is you caught it and got the right information from your dermatologist. Going forward, the every-other-night schedule should be much gentler on your skin while still giving you the retinoid benefits. Has your skin started recovering since you switched to the correct frequency?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, it's getting better. The peeling mostly stopped after about a week of doing every other night. My dermatologist's name is Dr. Patel, by the way — I should have mentioned that earlier. She's been really patient with me through all of this. Her office is over on Elm Street, near the pharmacy I use."
+        },
+        {
+          "role": "assistant",
+          "content": "Glad to hear your skin is recovering! I've noted that your dermatologist is Dr. Patel, and her office is on Elm Street near your pharmacy. It sounds like she's a great doctor to have — being patient and thorough with explanations makes such a difference, especially when you're navigating a new skincare routine. Having her office near your pharmacy is convenient too, in case you ever need to pick up a new prescription right after an appointment. If you want me to keep track of your appointment dates with Dr. Patel going forward, just let me know."
+        },
+        {
+          "role": "user",
+          "content": "Sure, that would be helpful. Speaking of schedules, my sister Emily mentioned she only gets her allergy shots once a month now instead of every two weeks. She's happy about having more free Thursdays. I thought that was interesting because she used to complain about how often she had to go in."
+        },
+        {
+          "role": "assistant",
+          "content": "That's great news for Emily! Going from every two weeks to once a month for allergy shots is a big quality-of-life improvement, especially since it frees up her Thursdays. It's common for allergy shot schedules to taper down over time as the body builds up tolerance, so she's probably making good progress with her treatment. I've noted Emily's updated allergy shot schedule in case it comes up again. It sounds like both you and your sister are getting into better rhythms with your medical routines. Is there anything else you'd like to update?"
+        },
+        {
+          "role": "user",
+          "content": "One more thing — my team standup meetings at work are shifting from daily to three times a week starting in May. My coworker Dave told me about it yesterday. I'm honestly relieved because daily standups were eating into my morning focus time. The new schedule should be much more manageable.\n\nWill do. I think that covers everything for now. Between the retinoid correction, the standup change, and Emily's allergy shots, it's been a busy week of schedule adjustments. At least my rent auto-pay and vitamin D routine are staying consistent — those are the anchors keeping me sane."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a welcome change! I've noted that your team standups are moving to three times a week starting in May, down from daily. Getting back some of those morning slots should really help with deep focus work. Daily standups can be useful for fast-moving projects, but they do fragment the morning when they happen every single day. Your coworker Dave sounds like a good source for workplace updates. If you find out the specific days of the week for the new standup schedule, let me know and I can note those too so you can plan your focus blocks around them.\n\nIt really has been a week of changes! But you're handling it well — having those stable anchors like your monthly rent auto-pay on the 1st and your weekly Sunday vitamin D dose makes a big difference when other things are shifting around. Your retinoid is now correctly set at every other night, the standups are moving to three times a week in May, and Emily's down to monthly allergy shots. Everything is documented and up to date. Whenever new changes come up or you want to review what we've tracked, just reach out. Enjoy the calmer pace going forward!"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "introduce tentative retinoid change, then revert to confirmed every-other-night; adversarial injection via assistant echo",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, quick question. I was looking at a printout from Dr. Patel's office and it had some notes about skincare frequencies. I noticed it mentioned something about nightly application for one of the other patients — made me glad my schedule is less intense. Anyway, I wanted to check in on a few things."
+        },
+        {
+          "role": "assistant",
+          "content": "Sure, happy to check in! And yes, it's definitely nice to have a gentler schedule. I actually noticed that some dermatology intake forms default to listing nightly retinoid application as a standard recommendation, so it's not unusual to see that on printouts. Your current schedule of every other night is specifically what Dr. Patel prescribed for you after the correction. It's the right pace for your skin's tolerance level. What did you want to go over today? I've got your health and finance records ready to reference if needed."
+        },
+        {
+          "role": "user",
+          "content": "So here's the thing. The dermatologist's office called today and the nurse said they want me to bump it up to three nights per week instead of every other night. She said my skin has adjusted well enough. I haven't confirmed with Dr. Patel directly yet, but the nurse seemed pretty sure about it."
+        },
+        {
+          "role": "assistant",
+          "content": "Okay, I've noted that the nurse from Dr. Patel's office suggested increasing your retinoid to three nights per week, citing that your skin has adjusted well. Since you haven't confirmed this directly with Dr. Patel yet, I'd recommend holding off on changing your routine until you speak with her personally. Nurse recommendations are helpful, but given your earlier experience with the frequency mix-up, it's worth getting direct confirmation from the prescribing doctor. Do you want me to flag this as a pending change for now, or would you prefer to wait until after you've spoken with Dr. Patel?"
+        },
+        {
+          "role": "user",
+          "content": "Good thinking. Actually, I just got off the phone with Dr. Patel herself and she said to disregard the nurse's message. She wants me to stay at every other night for now. She said my skin is doing well precisely because of the current frequency, and she doesn't want to risk another irritation episode. So we're back to where we were."
+        },
+        {
+          "role": "assistant",
+          "content": "Perfect — I've confirmed that your retinoid schedule stays at every other night, per Dr. Patel's direct instructions. It sounds like she's being cautious and prioritizing the progress your skin has made, which makes total sense given the earlier peeling incident. The nurse's suggestion of three nights per week is officially disregarded. I'm glad you called Dr. Patel to verify before making any changes — that's exactly the kind of double-checking that prevents another mix-up. Your current routine is working well, so no reason to rock the boat. Anything else you'd like to go over today?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, I wanted to make sure my vitamin D supplement info is still accurate. It's still 50,000 IU on Sundays, once a week. And my rent auto-pay is still monthly on the 1st. Those haven't changed. I just like to periodically verify that nothing got jumbled in my records.\n\nNope, I think we're good. I'm just glad the retinoid situation got straightened out again without me actually changing anything this time. Lesson learned from last time — always confirm directly with the doctor before adjusting. Thanks for keeping everything organized for me."
+        },
+        {
+          "role": "assistant",
+          "content": "Everything checks out! Your vitamin D supplement is 50,000 IU taken once a week on Sundays, and your rent auto-pay is monthly on the 1st — both exactly as you originally set them up. No changes to either one. It's a smart habit to periodically verify your records, especially since you've had experiences with frequency mix-ups before. Having these anchor routines documented clearly gives you a reliable reference point whenever you're unsure. Your retinoid is every other night, vitamin D is weekly Sundays, and rent is monthly on the 1st. All consistent and confirmed. Anything else?\n\nAbsolutely — that's a great takeaway. Confirming directly with Dr. Patel before making changes saved you from another potential skin irritation episode. Your records are all clean and up to date: retinoid every other night per Dr. Patel, vitamin D 50,000 IU on Sundays, rent auto-pay monthly on the 1st, and your biweekly book club every other Saturday. Everything is well-documented and easy to reference whenever you need it. Don't hesitate to reach out anytime you want to verify or update anything. Take care!"
+        }
+      ]
+    }
+  ],
+  "state_checkpoints": [
+    {
+      "checkpoint_id": "c1",
+      "description": "After segment 1: retinoid_frequency = every night (confirmed); rent_autopay_schedule = monthly on the 1st (confirmed)"
+    },
+    {
+      "checkpoint_id": "c2",
+      "description": "After segment 2: retinoid_frequency = every other night (confirmed, updated from every night); rent_autopay_schedule = monthly on the 1st (confirmed, unchanged)"
+    },
+    {
+      "checkpoint_id": "c3",
+      "description": "After segment 3: retinoid_frequency = every other night (confirmed, reverted after tentative three nights per week was disregarded); rent_autopay_schedule = monthly on the 1st (confirmed, unchanged)"
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize the key things I've shared with you about my skincare routine and how the instructions evolved over our conversations?",
+      "expected_answer": "You initially shared that your dermatologist prescribed a retinoid to be applied every night before bed, starting March 3rd, with a gentle moisturizer fifteen minutes after. You later reported that your dermatologist, Dr. Patel, clarified it should be every other night instead of nightly. A nurse from Dr. Patel's office then suggested three nights per week, but Dr. Patel herself called to say to disregard that and stay at every other night.",
+      "gold_memory_state": "retinoid_frequency = every other night (confirmed after revert); rent_autopay_schedule = monthly on the 1st (unchanged)",
+      "judge_rubric": {
+        "must_include": [
+          "every night initially",
+          "every other night after dermatologist correction",
+          "nurse suggested three nights per week",
+          "Dr. Patel said to disregard nurse and stay at every other night"
+        ],
+        "acceptable_paraphrases": [
+          "nightly at first",
+          "alternate nights",
+          "3 nights per week"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying the final schedule is three nights per week",
+          "saying the final schedule is every night"
+        ],
+        "harmless_extra": [
+          "March 3rd start date",
+          "moisturizer detail",
+          "peeling incident"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model says current frequency is every night or three nights per week.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if model misstates the order of changes (e.g., places nurse suggestion before dermatologist correction).",
+        "final_state": "Fails if model does not identify every other night as the final confirmed frequency.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My dermatologist prescribed a retinoid and told me to apply it every night before bed"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "she clarified the retinoid should be every other night, not nightly"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "the nurse said they want me to bump it up to three nights per week instead of every other night"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "she said to disregard the nurse's message. She wants me to stay at every other night for now"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize the key things I've shared with you about my skincare routine and how the instructions evolved over our conversations?",
+      "expected_answer": "You initially shared that your dermatologist prescribed a retinoid to be applied every night before bed, starting March 3rd, with a gentle moisturizer fifteen minutes after. You later reported that your dermatologist, Dr. Patel, clarified it should be every other night instead of nightly. A nurse from Dr. Patel's office then suggested three nights per week, but Dr. Patel herself called to say to disregard that and stay at every other night.",
+      "gold_memory_state": "retinoid_frequency = every other night (confirmed after revert); rent_autopay_schedule = monthly on the 1st (unchanged)",
+      "judge_rubric": {
+        "must_include": [
+          "every night initially",
+          "every other night after dermatologist correction",
+          "nurse suggested three nights per week",
+          "Dr. Patel said to disregard nurse and stay at every other night"
+        ],
+        "acceptable_paraphrases": [
+          "nightly at first",
+          "alternate nights",
+          "3 nights per week"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying the final schedule is three nights per week",
+          "saying the final schedule is every night"
+        ],
+        "harmless_extra": [
+          "March 3rd start date",
+          "moisturizer detail",
+          "peeling incident"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model says current frequency is every night or three nights per week.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if model misstates the order of changes (e.g., places nurse suggestion before dermatologist correction).",
+        "final_state": "Fails if model does not identify every other night as the final confirmed frequency.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My dermatologist prescribed a retinoid and told me to apply it every night before bed"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "she clarified the retinoid should be every other night, not nightly"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "the nurse said they want me to bump it up to three nights per week instead of every other night"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "she said to disregard the nurse's message. She wants me to stay at every other night for now"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When I got the call from the nurse about changing my skincare frequency, and then the follow-up call from the doctor — which specific part of my routine was being discussed, and did any of my other recurring schedules like my supplement or rent payment get affected by those calls?",
+      "expected_answer": "The calls were about your retinoid application frequency only. Your vitamin D supplement schedule (50,000 IU weekly on Sundays) and your rent auto-pay (monthly on the 1st) were not affected.",
+      "gold_memory_state": "retinoid_frequency = every other night (confirmed); rent_autopay_schedule = monthly on the 1st (unchanged); vitamin D = 50,000 IU weekly on Sundays (unchanged)",
+      "judge_rubric": {
+        "must_include": [
+          "retinoid application frequency"
+        ],
+        "acceptable_paraphrases": [
+          "retinoid schedule",
+          "how often I apply retinoid"
+        ],
+        "must_not_include": [
+          "rent auto-pay changed",
+          "vitamin D changed"
+        ],
+        "harmful_extra": [
+          "claiming the nurse's suggestion was adopted for any schedule",
+          "merging retinoid and vitamin D into one record"
+        ],
+        "harmless_extra": [
+          "mentioning book club or standup schedules as also unaffected"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if model says a non-retinoid schedule was affected by the nurse/doctor calls.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "the nurse said they want me to bump it up to three nights per week instead of every other night"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "she said to disregard the nurse's message. She wants me to stay at every other night for now"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my rent auto-pay is set up for the 1st of every month, so that's one less thing to worry about"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When I got the call from the nurse about changing my skincare frequency, and then the follow-up call from the doctor — which specific part of my routine was being discussed, and did any of my other recurring schedules like my supplement or rent payment get affected by those calls?",
+      "expected_answer": "The calls were about your retinoid application frequency only. Your vitamin D supplement schedule (50,000 IU weekly on Sundays) and your rent auto-pay (monthly on the 1st) were not affected.",
+      "gold_memory_state": "retinoid_frequency = every other night (confirmed); rent_autopay_schedule = monthly on the 1st (unchanged); vitamin D = 50,000 IU weekly on Sundays (unchanged)",
+      "judge_rubric": {
+        "must_include": [
+          "retinoid application frequency"
+        ],
+        "acceptable_paraphrases": [
+          "retinoid schedule",
+          "how often I apply retinoid"
+        ],
+        "must_not_include": [
+          "rent auto-pay changed",
+          "vitamin D changed"
+        ],
+        "harmful_extra": [
+          "claiming the nurse's suggestion was adopted for any schedule",
+          "merging retinoid and vitamin D into one record"
+        ],
+        "harmless_extra": [
+          "mentioning book club or standup schedules as also unaffected"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if model says a non-retinoid schedule was affected by the nurse/doctor calls.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "the nurse said they want me to bump it up to three nights per week instead of every other night"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "she said to disregard the nurse's message. She wants me to stay at every other night for now"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my rent auto-pay is set up for the 1st of every month, so that's one less thing to worry about"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "After everything that happened with my dermatologist's office recently, how often should I be applying my retinoid right now?",
+      "expected_answer": "Every other night.",
+      "gold_memory_state": "retinoid_frequency = every other night (confirmed by Dr. Patel directly). The nurse's suggestion of three nights per week was disregarded per Dr. Patel's instruction. The original nightly frequency was corrected earlier due to skin peeling.",
+      "judge_rubric": {
+        "must_include": [
+          "every other night"
+        ],
+        "acceptable_paraphrases": [
+          "alternate nights",
+          "every second night"
+        ],
+        "must_not_include": [
+          "three nights per week as current",
+          "every night as current",
+          "nightly as current"
+        ],
+        "harmful_extra": [
+          "presenting three nights per week as the active schedule",
+          "presenting nightly as the active schedule"
+        ],
+        "harmless_extra": [
+          "mentioning Dr. Patel confirmed this"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model returns 'every night' (original stale value) or 'three nights per week' (tentative value that was rejected). The tentative recency trap is triggered if the model selects 'three nights per week' because it appeared most recently before the revert.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if model does not return 'every other night' as the current frequency.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "she said to disregard the nurse's message. She wants me to stay at every other night for now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "she clarified the retinoid should be every other night, not nightly"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "After everything that happened with my dermatologist's office recently, how often should I be applying my retinoid right now?",
+      "expected_answer": "Every other night.",
+      "gold_memory_state": "retinoid_frequency = every other night (confirmed by Dr. Patel directly). The nurse's suggestion of three nights per week was disregarded per Dr. Patel's instruction. The original nightly frequency was corrected earlier due to skin peeling.",
+      "judge_rubric": {
+        "must_include": [
+          "every other night"
+        ],
+        "acceptable_paraphrases": [
+          "alternate nights",
+          "every second night"
+        ],
+        "must_not_include": [
+          "three nights per week as current",
+          "every night as current",
+          "nightly as current"
+        ],
+        "harmful_extra": [
+          "presenting three nights per week as the active schedule",
+          "presenting nightly as the active schedule"
+        ],
+        "harmless_extra": [
+          "mentioning Dr. Patel confirmed this"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model returns 'every night' (original stale value) or 'three nights per week' (tentative value that was rejected). The tentative recency trap is triggered if the model selects 'three nights per week' because it appeared most recently before the revert.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if model does not return 'every other night' as the current frequency.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "she said to disregard the nurse's message. She wants me to stay at every other night for now"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "she clarified the retinoid should be every other night, not nightly"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm trying to figure out how my weekly evenings look. Between my retinoid nights and the fact that I take my vitamin D on Sundays, can you draft a sample weekly evening schedule showing which nights I apply the retinoid and which night I take my supplement? Also note which night of the month my rent auto-pay hits so I don't accidentally schedule anything stressful that evening.",
+      "expected_answer": "Your retinoid is applied every other night (e.g., Sunday, Tuesday, Thursday, Saturday one week, then Monday, Wednesday, Friday the next week — alternating). Your vitamin D supplement (50,000 IU) is taken on Sundays. On the 1st of each month, your rent auto-pay processes. So on a Sunday that falls on the 1st, you would have both your vitamin D dose and rent auto-pay on the same day, and if it's a retinoid night, all three overlap. A sample Week 1 might be: Sunday — vitamin D + retinoid; Monday — off; Tuesday — retinoid; Wednesday — off; Thursday — retinoid; Friday — off; Saturday — retinoid. Week 2: Sunday — vitamin D (no retinoid); Monday — retinoid; Tuesday — off; Wednesday — retinoid; Thursday — off; Friday — retinoid; Saturday — off. The 1st of the month adds the rent auto-pay note to whichever day it falls on.",
+      "gold_memory_state": "retinoid_frequency = every other night; vitamin D = 50,000 IU weekly on Sundays; rent_autopay = monthly on the 1st",
+      "judge_rubric": {
+        "must_include": [
+          "every other night for retinoid",
+          "vitamin D on Sundays",
+          "rent auto-pay on the 1st"
+        ],
+        "acceptable_paraphrases": [
+          "alternate nights",
+          "every second night"
+        ],
+        "must_not_include": [
+          "nightly retinoid",
+          "three nights per week retinoid"
+        ],
+        "harmful_extra": [
+          "using the tentative three-nights-per-week schedule",
+          "using the original nightly schedule"
+        ],
+        "harmless_extra": [
+          "specific day assignments may vary as long as the alternating pattern is correct",
+          "mentioning the moisturizer 15 minutes after retinoid"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the retinoid is scheduled nightly or three nights per week.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if any of the three schedules are wrong.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's retinoid application frequency is every other night, confirmed by Dr. Patel.",
+        "Fact 2: The user takes vitamin D 50,000 IU once a week on Sundays.",
+        "Fact 3: The user's rent auto-pay processes monthly on the 1st.",
+        "Inference: An every-other-night retinoid schedule means roughly 3-4 application nights per week in an alternating pattern.",
+        "Inference: On Sundays, the vitamin D dose overlaps with a retinoid night every other week. On the 1st of the month, the rent auto-pay adds a financial event to whichever day it falls on.",
+        "Derived value: A combined weekly schedule must interleave the alternating retinoid nights with the fixed Sunday vitamin D and the monthly 1st rent auto-pay."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "she said to disregard the nurse's message. She wants me to stay at every other night for now"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My GP told me to take a vitamin D supplement — 50,000 IU once a week on Sundays"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my rent auto-pay is set up for the 1st of every month, so that's one less thing to worry about"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm trying to figure out how my weekly evenings look. Between my retinoid nights and the fact that I take my vitamin D on Sundays, can you draft a sample weekly evening schedule showing which nights I apply the retinoid and which night I take my supplement? Also note which night of the month my rent auto-pay hits so I don't accidentally schedule anything stressful that evening.",
+      "expected_answer": "Your retinoid is applied every other night (e.g., Sunday, Tuesday, Thursday, Saturday one week, then Monday, Wednesday, Friday the next week — alternating). Your vitamin D supplement (50,000 IU) is taken on Sundays. On the 1st of each month, your rent auto-pay processes. So on a Sunday that falls on the 1st, you would have both your vitamin D dose and rent auto-pay on the same day, and if it's a retinoid night, all three overlap. A sample Week 1 might be: Sunday — vitamin D + retinoid; Monday — off; Tuesday — retinoid; Wednesday — off; Thursday — retinoid; Friday — off; Saturday — retinoid. Week 2: Sunday — vitamin D (no retinoid); Monday — retinoid; Tuesday — off; Wednesday — retinoid; Thursday — off; Friday — retinoid; Saturday — off. The 1st of the month adds the rent auto-pay note to whichever day it falls on.",
+      "gold_memory_state": "retinoid_frequency = every other night; vitamin D = 50,000 IU weekly on Sundays; rent_autopay = monthly on the 1st",
+      "judge_rubric": {
+        "must_include": [
+          "every other night for retinoid",
+          "vitamin D on Sundays",
+          "rent auto-pay on the 1st"
+        ],
+        "acceptable_paraphrases": [
+          "alternate nights",
+          "every second night"
+        ],
+        "must_not_include": [
+          "nightly retinoid",
+          "three nights per week retinoid"
+        ],
+        "harmful_extra": [
+          "using the tentative three-nights-per-week schedule",
+          "using the original nightly schedule"
+        ],
+        "harmless_extra": [
+          "specific day assignments may vary as long as the alternating pattern is correct",
+          "mentioning the moisturizer 15 minutes after retinoid"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the retinoid is scheduled nightly or three nights per week.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if any of the three schedules are wrong.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's retinoid application frequency is every other night, confirmed by Dr. Patel.",
+        "Fact 2: The user takes vitamin D 50,000 IU once a week on Sundays.",
+        "Fact 3: The user's rent auto-pay processes monthly on the 1st.",
+        "Inference: An every-other-night retinoid schedule means roughly 3-4 application nights per week in an alternating pattern.",
+        "Inference: On Sundays, the vitamin D dose overlaps with a retinoid night every other week. On the 1st of the month, the rent auto-pay adds a financial event to whichever day it falls on.",
+        "Derived value: A combined weekly schedule must interleave the alternating retinoid nights with the fixed Sunday vitamin D and the monthly 1st rent auto-pay."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "she said to disregard the nurse's message. She wants me to stay at every other night for now"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My GP told me to take a vitamin D supplement — 50,000 IU once a week on Sundays"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my rent auto-pay is set up for the 1st of every month, so that's one less thing to worry about"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed all our conversations about how often I use my retinoid, what would they see as the full sequence of frequency changes — which values were actually adopted by my doctor versus which ones were floated but never put into practice?",
+      "expected_answer": "The sequence was: (1) Initially every night, as prescribed by the dermatologist — this was adopted and followed for about ten days. (2) Changed to every other night after the dermatologist (Dr. Patel) clarified the correct frequency due to peeling — this was adopted. (3) A nurse from Dr. Patel's office suggested bumping up to three nights per week, but this was never adopted because the user had not confirmed with Dr. Patel. (4) Dr. Patel herself called and said to disregard the nurse's suggestion and stay at every other night — this confirmed every other night as the final adopted frequency. So only two values were ever actually practiced: nightly (briefly, in error) and every other night (the lasting schedule). Three nights per week was suggested but never put into practice.",
+      "gold_memory_state": "retinoid_frequency trajectory: every night (confirmed, step 1) -> every other night (confirmed, step 2) -> three nights per week (tentative, step 3, never adopted) -> every other night (confirmed, step 4, revert). Final state = every other night.",
+      "judge_rubric": {
+        "must_include": [
+          "every night as the initial frequency",
+          "every other night as the correction",
+          "three nights per week as a suggestion that was not adopted",
+          "every other night as the final frequency"
+        ],
+        "acceptable_paraphrases": [
+          "nightly",
+          "alternate nights",
+          "3 nights per week"
+        ],
+        "must_not_include": [
+          "three nights per week was adopted",
+          "every night is the current frequency"
+        ],
+        "harmful_extra": [
+          "omitting the tentative three-nights-per-week step entirely",
+          "saying three nights per week was confirmed by Dr. Patel"
+        ],
+        "harmless_extra": [
+          "mentioning the peeling incident",
+          "mentioning the nurse vs doctor distinction",
+          "mentioning the ten-day timeframe"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model presents 'every night' or 'three nights per week' as the current active frequency.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model misstates the chronological order of changes or omits a step.",
+        "final_state": "Fails if model does not identify 'every other night' as the final confirmed frequency.",
+        "intermediate_state": "Fails if model does not correctly identify 'three nights per week' as tentative/never adopted.",
+        "trajectory_provenance": "Fails if model attributes the tentative suggestion to Dr. Patel instead of the nurse, or attributes the revert to the nurse instead of Dr. Patel."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: User reports dermatologist prescribed retinoid every night — confirmed and practiced.",
+        "Step 2: User reports dermatologist (Dr. Patel) corrected frequency to every other night due to peeling — confirmed and adopted, replacing nightly.",
+        "Step 3: Nurse from Dr. Patel's office suggested three nights per week — tentative only, user had not confirmed with Dr. Patel.",
+        "Step 4: Dr. Patel called directly and said to disregard the nurse's message, stay at every other night — confirmed revert.",
+        "Inference: The trajectory has four steps but only two distinct adopted values (every night briefly, then every other night). Three nights per week was a tentative fork that was rejected."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My dermatologist prescribed a retinoid and told me to apply it every night before bed"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "she clarified the retinoid should be every other night, not nightly"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "the nurse said they want me to bump it up to three nights per week instead of every other night"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "she said to disregard the nurse's message. She wants me to stay at every other night for now"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed all our conversations about how often I use my retinoid, what would they see as the full sequence of frequency changes — which values were actually adopted by my doctor versus which ones were floated but never put into practice?",
+      "expected_answer": "The sequence was: (1) Initially every night, as prescribed by the dermatologist — this was adopted and followed for about ten days. (2) Changed to every other night after the dermatologist (Dr. Patel) clarified the correct frequency due to peeling — this was adopted. (3) A nurse from Dr. Patel's office suggested bumping up to three nights per week, but this was never adopted because the user had not confirmed with Dr. Patel. (4) Dr. Patel herself called and said to disregard the nurse's suggestion and stay at every other night — this confirmed every other night as the final adopted frequency. So only two values were ever actually practiced: nightly (briefly, in error) and every other night (the lasting schedule). Three nights per week was suggested but never put into practice.",
+      "gold_memory_state": "retinoid_frequency trajectory: every night (confirmed, step 1) -> every other night (confirmed, step 2) -> three nights per week (tentative, step 3, never adopted) -> every other night (confirmed, step 4, revert). Final state = every other night.",
+      "judge_rubric": {
+        "must_include": [
+          "every night as the initial frequency",
+          "every other night as the correction",
+          "three nights per week as a suggestion that was not adopted",
+          "every other night as the final frequency"
+        ],
+        "acceptable_paraphrases": [
+          "nightly",
+          "alternate nights",
+          "3 nights per week"
+        ],
+        "must_not_include": [
+          "three nights per week was adopted",
+          "every night is the current frequency"
+        ],
+        "harmful_extra": [
+          "omitting the tentative three-nights-per-week step entirely",
+          "saying three nights per week was confirmed by Dr. Patel"
+        ],
+        "harmless_extra": [
+          "mentioning the peeling incident",
+          "mentioning the nurse vs doctor distinction",
+          "mentioning the ten-day timeframe"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if model presents 'every night' or 'three nights per week' as the current active frequency.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the model misstates the chronological order of changes or omits a step.",
+        "final_state": "Fails if model does not identify 'every other night' as the final confirmed frequency.",
+        "intermediate_state": "Fails if model does not correctly identify 'three nights per week' as tentative/never adopted.",
+        "trajectory_provenance": "Fails if model attributes the tentative suggestion to Dr. Patel instead of the nurse, or attributes the revert to the nurse instead of Dr. Patel."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: User reports dermatologist prescribed retinoid every night — confirmed and practiced.",
+        "Step 2: User reports dermatologist (Dr. Patel) corrected frequency to every other night due to peeling — confirmed and adopted, replacing nightly.",
+        "Step 3: Nurse from Dr. Patel's office suggested three nights per week — tentative only, user had not confirmed with Dr. Patel.",
+        "Step 4: Dr. Patel called directly and said to disregard the nurse's message, stay at every other night — confirmed revert.",
+        "Inference: The trajectory has four steps but only two distinct adopted values (every night briefly, then every other night). Three nights per week was a tentative fork that was rejected."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My dermatologist prescribed a retinoid and told me to apply it every night before bed"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "she clarified the retinoid should be every other night, not nightly"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "the nurse said they want me to bump it up to three nights per week instead of every other night"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "she said to disregard the nurse's message. She wants me to stay at every other night for now"
+        }
+      ]
+    }
+  ]
+}

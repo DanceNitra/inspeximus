@@ -1,0 +1,1055 @@
+{
+  "target_fact": "User gravitates toward intimate, low-key social settings based on consistent preference pattern across support group, book club, and Pride event consideration",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I came out to my sister as bisexual on March 3rd. That date is really important to me because it was the first person I told"
+      },
+      "target": {
+        "target_id": "coming_out_date_sister",
+        "target_name": "date user came out to sister as bisexual"
+      },
+      "old_value": null,
+      "new_value": "March 3rd",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I came out to my sister as bisexual on March 3rd. That date is really important to me because it was the first person I told"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I joined a queer support group that meets Wednesdays at 7 PM at the community center on Elm Street. It's run by a guy named Marcus. The group is small, like eight or nine people, which I really like"
+      },
+      "target": {
+        "target_id": "support_group_details",
+        "target_name": "weekly queer support group details"
+      },
+      "old_value": null,
+      "new_value": "Wednesdays at 7 PM, Elm Street community center, run by Marcus, ~8-9 people",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I joined a queer support group that meets Wednesdays at 7 PM at the community center on Elm Street. It's run by a guy named Marcus. The group is small, like eight or nine people, which I really like"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "big groups with a lot of cross-talk really aren't my thing. I need to actually be able to hear people and have a real conversation"
+      },
+      "target": {
+        "target_id": "dislike_big_groups",
+        "target_name": "user's discomfort with large noisy group settings"
+      },
+      "old_value": null,
+      "new_value": "dislikes big groups with cross-talk; needs to hear people and have real conversation",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "big groups with a lot of cross-talk really aren't my thing. I need to actually be able to hear people and have a real conversation"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I went to a queer book club meetup last week. Only six people came and honestly that was perfect. We read Real Life by Brandon Taylor and the discussion felt like a real conversation, not a performance"
+      },
+      "target": {
+        "target_id": "book_club_experience",
+        "target_name": "queer book club meetup experience"
+      },
+      "old_value": null,
+      "new_value": "attended queer book club, 6 people, read Real Life by Brandon Taylor, preferred the small intimate format",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I went to a queer book club meetup last week. Only six people came and honestly that was perfect. We read Real Life by Brandon Taylor and the discussion felt like a real conversation, not a performance"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "My coworker Jen invited me to Pride in June. I haven't said yes yet. I tend to prefer smaller, quieter events over big loud parades, so I'm honestly not sure it's for me"
+      },
+      "target": {
+        "target_id": "pride_invitation",
+        "target_name": "Jen's Pride invitation and user's hesitation"
+      },
+      "old_value": null,
+      "new_value": "coworker Jen invited user to Pride in June; user uncommitted, prefers smaller quieter events over loud parades",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "My coworker Jen invited me to Pride in June. I haven't said yes yet. I tend to prefer smaller, quieter events over big loud parades, so I'm honestly not sure it's for me"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 3,
+        "quote": "I keep choosing the small things. The support group is eight people. The book club was six. I'm dragging my feet on Pride because it's huge. I think I just function better in intimate settings where I can actually connect with people one-on-one or in a small circle"
+      },
+      "target": {
+        "target_id": "social_setting_preference_pattern",
+        "target_name": "consistent preference for intimate low-key social settings"
+      },
+      "old_value": null,
+      "new_value": "User consistently gravitates toward intimate, low-key social settings (8-person support group, 6-person book club, hesitation about large Pride parade) and functions better connecting in small circles rather than large noisy events",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The group is small, like eight or nine people, which I really like"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "big groups with a lot of cross-talk really aren't my thing. I need to actually be able to hear people and have a real conversation"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Only six people came and honestly that was perfect"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I tend to prefer smaller, quieter events over big loud parades, so I'm honestly not sure it's for me"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I keep choosing the small things. The support group is eight people. The book club was six. I'm dragging my feet on Pride because it's huge. I think I just function better in intimate settings where I can actually connect with people one-on-one or in a small circle"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "Jen just texted me and said there's actually a smaller queer picnic happening the day before Pride, like thirty people max. She said it's confirmed for the Saturday. I think I'm going to commit to that instead of the main parade"
+      },
+      "target": {
+        "target_id": "pride_weekend_plan",
+        "target_name": "user's tentative plan for queer picnic instead of Pride parade"
+      },
+      "old_value": null,
+      "new_value": "planning to attend smaller queer picnic (30 people max) the Saturday before Pride instead of main parade",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Jen just texted me and said there's actually a smaller queer picnic happening the day before Pride, like thirty people max. She said it's confirmed for the Saturday. I think I'm going to commit to that instead of the main parade"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish coming-out milestone, support group details, and group-size preference",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to share some stuff that's been going on with me. I came out to my sister as bisexual on March 3rd. That date is really important to me because it was the first person I told. We were at her place in Portland and I'd been putting it off for months. She was incredibly calm about it, and I felt this huge wave of relief afterward, like I'd been holding my breath for a year."
+        },
+        {
+          "role": "assistant",
+          "content": "Thank you so much for sharing that with me—it sounds like March 3rd was a really significant day for you, and I'm glad your sister responded with such calm and acceptance. Coming out to the first person is often the hardest step, and the relief you describe makes a lot of sense after carrying that weight for so long. The fact that she didn't make it weird clearly matters to you, and that kind of steady support from family can make such a difference as you continue navigating this. I'll absolutely remember March 3rd as that milestone. How have things been since then?"
+        },
+        {
+          "role": "user",
+          "content": "Things have been moving forward, actually. A couple weeks after telling my sister, I joined a queer support group that meets Wednesdays at 7 PM at the community center on Elm Street. It's run by a guy named Marcus. The group is small, like eight or nine people, which I really like. Marcus has apparently been running it for about five years. It felt comfortable right away, which surprised me a little."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a great step—finding a support group that feels comfortable early on can really help when you're processing big life changes. It sounds like Marcus has built something solid over those five years if the group has that kind of welcoming atmosphere. Wednesday evenings at 7 PM on Elm Street—I'll keep that noted. The size of eight or nine people seems like it hits a sweet spot where everyone can actually participate without it feeling overwhelming. Did the small size play a big role in why you felt comfortable, or was it more the vibe Marcus sets?"
+        },
+        {
+          "role": "user",
+          "content": "Honestly, both. But the size is a huge factor for me. I've tried bigger group things before and big groups with a lot of cross-talk really aren't my thing. I need to actually be able to hear people and have a real conversation. When there's like twenty or thirty people all talking over each other, I just shut down. With eight people, everyone gets a turn, and you can actually look someone in the eye when they're sharing something vulnerable. That matters to me."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes a lot of sense. It sounds like you really value being able to have genuine, focused exchanges rather than competing for space in a loud room. The dynamic of a smaller group—where everyone gets heard and you can make real eye contact during vulnerable moments—seems like it aligns well with how you connect with people. That's a really healthy piece of self-awareness to have, especially as you're building new community connections. It probably helps that Marcus keeps the group capped at that manageable size. Have you been going regularly since you started?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, I've gone every Wednesday since I started. It's become kind of an anchor in my week. Also, I should mention—I started seeing a therapist, Dr. Patel, on April 8th. She's local and LGBTQ+ affirming. I'd been looking at an online platform before that, but I ended up going with her instead. The online search is done, not needed anymore."
+        },
+        {
+          "role": "assistant",
+          "content": "It's wonderful that you've built that weekly rhythm with the support group—having something consistent like that can be really grounding, especially during a period of so much personal growth. And congratulations on finding Dr. Patel! Starting therapy on April 8th with someone who's both local and LGBTQ+ affirming sounds like exactly the right fit. It makes sense that you moved away from the online platform once you found someone in person who met your needs. Having both the support group and individual therapy gives you two different kinds of support, which is a strong foundation. How's it been going with Dr. Patel so far?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establish book club experience, Pride invitation, and dating vulnerability",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Dr. Patel's been great, actually. But I wanted to tell you about something else—I went to a queer book club meetup last week. Only six people came and honestly that was perfect. We read Real Life by Brandon Taylor and the discussion felt like a real conversation, not a performance. Everyone was engaged and thoughtful. It was exactly the kind of thing I gravitate toward."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a really wonderful experience. Real Life is such a layered novel—dealing with identity, isolation, and belonging in academic spaces—so I can imagine the discussion was rich, especially with a small group of thoughtful people. Six people sounds like it created that same kind of intimate, focused dynamic you enjoy in your Wednesday support group. The fact that it felt like a real conversation rather than a performance tells me the group found a good rhythm. Are you planning to go back for another meeting, or was it more of a one-time thing?"
+        },
+        {
+          "role": "user",
+          "content": "I'm definitely going back. They meet monthly, and the next book is already picked—I think it's something by Ocean Vuong. But on a different note, I wanted to mention something that happened a little while ago. I matched with a guy named Derek on Hinge. We went on two dates. The first one was at that ramen place on 5th Avenue, and I had this moment where I thought, okay, this is real, this is me dating a guy and it feels normal."
+        },
+        {
+          "role": "assistant",
+          "content": "That moment at the ramen place sounds like it was really meaningful—having that quiet internal recognition that this feels normal and authentic is a big deal, especially as someone who's still relatively early in being out. Dating can be such a powerful way of affirming your identity to yourself, beyond just the labels. It sounds like that first date with Derek gave you something important regardless of how things played out afterward. How did the second date go? Did that sense of normalcy carry through?"
+        },
+        {
+          "role": "user",
+          "content": "The second date was okay, but then he ghosted me afterward. It stung more than I expected. I was kind of down about it for a few days—not devastated, just that low-grade sadness. My coworker Jen invited me to Pride in June. I haven't said yes yet. I tend to prefer smaller, quieter events over big loud parades, so I'm honestly not sure it's for me. But going with someone I know might make it different."
+        },
+        {
+          "role": "assistant",
+          "content": "I'm sorry about Derek ghosting you—that kind of thing stings regardless of the circumstances, and I think it can feel especially raw when you're navigating early dating experiences as a newly out person. The vulnerability is already heightened, so even a low-grade sadness makes sense. As for Pride with Jen, your hesitation tracks with what you've told me about preferring smaller, more intimate settings. A huge parade is a very different energy from your Wednesday group or the book club. That said, having Jen there as an anchor could shift the experience. There's no rush to decide—it's worth sitting with it."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, exactly. I think part of why Derek stung is that everything is still so new. Like, that was only my second and third date with a guy ever. The ghosting felt like a rejection of something I was just starting to feel confident about. But I talked about it with Dr. Patel and she helped me see that the vulnerability is part of the process, not a sign that something's wrong."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really insightful reframe from Dr. Patel, and the fact that you were able to take it in and articulate it so clearly says a lot about the work you're doing. Being ghosted on your second and third dates with a guy—when you're still building that sense of confidence in this part of your identity—makes the sting land differently than it might for someone who's been dating for years. The vulnerability isn't a weakness; it's evidence that you're showing up authentically. And you have good support structures around you—Dr. Patel, the support group, your sister. That foundation matters a lot as you keep putting yourself out there."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Trigger reflection on social setting pattern, introduce tentative picnic plan and adversarial distractor",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I've been thinking a lot lately about how I engage with community stuff. My sister asked me the other day if I'd been making queer friends, and I started listing things—the support group, the book club, the dates. And she pointed out that everything I've chosen has been small and quiet. She wasn't criticizing, just observing. But it made me think."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a perceptive observation from your sister, and it sounds like it landed in a thoughtful way rather than feeling like pressure. Sometimes it takes someone outside our own head to notice patterns we're living inside of. You've mentioned your support group of eight or nine people, the book club with six, your hesitation about a large Pride parade—there does seem to be a consistent thread running through your choices. It might be worth exploring what that pattern means to you. Do you see it as a deliberate choice, or more of an instinct you're just now recognizing?"
+        },
+        {
+          "role": "user",
+          "content": "It's both, I think. I keep choosing the small things. The support group is eight people. The book club was six. I'm dragging my feet on Pride because it's huge. I think I just function better in intimate settings where I can actually connect with people one-on-one or in a small circle. It's not that I'm hiding—I genuinely get more out of a conversation with five people than a crowd of five hundred."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really clear and honest self-assessment. What you're describing isn't avoidance or hiding—it's a genuine preference for depth over breadth in your social connections. You consistently choose environments where you can hear people, look them in the eye, and have real exchanges. The support group, the book club, even your dating—you've been drawn to settings where authentic connection is possible. That pattern says something meaningful about how you build community and process your identity. It's not a limitation; it's a strength that helps you engage more deeply with the people and spaces around you."
+        },
+        {
+          "role": "user",
+          "content": "Jen just texted me and said there's actually a smaller queer picnic happening the day before Pride, like thirty people max. She said it's confirmed for the Saturday. I think I'm going to commit to that instead of the main parade. It sounds way more my speed—outdoor, casual, manageable number of people."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like it could be a really great fit for you! A queer picnic with thirty people max has that more intimate, relaxed energy that aligns with everything you've been describing. It's outdoor and casual, which removes a lot of the sensory overwhelm of a parade. And going with Jen means you'll have a familiar face there. It's also a nice middle ground—you'd still be participating in Pride weekend without forcing yourself into an environment that doesn't suit how you connect. Let me know if you end up committing to it. Have you told Jen about your general preference for smaller events?"
+        },
+        {
+          "role": "user",
+          "content": "Not explicitly, but I think she gets it. Oh, I also noticed something—Marcus mentioned last Wednesday that a new community resource guide lists the support group meeting time as Thursdays at 6 PM. That's totally wrong. It's definitely Wednesdays at 7 PM. He said he's going to contact them to fix it. Anyway, I feel good about where things are heading overall.\n\nThanks. I think the biggest realization is that I don't need to force myself into spaces that don't fit just because they're the most visible or the most expected. The small, quiet things are where I actually grow. That feels like an important thing to hold onto as I keep figuring all this out."
+        },
+        {
+          "role": "assistant",
+          "content": "I'm glad Marcus is getting that corrected—having the wrong day and time in a community resource guide could really confuse people trying to find the group. For the record, your group is Wednesdays at 7 PM on Elm Street, as you've told me. It's good that Marcus caught it. And I'm really glad to hear you're feeling good about where things are heading. You've built a lot of meaningful structure around yourself in a relatively short time—therapy with Dr. Patel, the weekly support group, the book club, and now potentially the picnic with Jen. That's a solid foundation of community and support.\n\nThat's a really powerful realization, and it speaks to the self-awareness you've been developing through this whole process—from coming out to your sister, to finding the right therapist, to choosing community spaces that actually nourish you. The idea that you don't need to chase the most visible or expected experiences to be valid in your identity is something worth holding onto. Growth happens in the spaces where you feel safe enough to be vulnerable, and for you, those are the intimate, low-key settings where real connection is possible. That's not a compromise—it's wisdom about yourself."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "What specific experiences have I shared with you that show a pattern in the kinds of social settings I choose?",
+      "expected_answer": "You joined a queer support group of about 8-9 people that meets Wednesdays at 7 PM on Elm Street, run by Marcus, and you emphasized liking its small size. You expressed discomfort with big groups and cross-talk, saying you need to hear people and have real conversations. You attended a queer book club meetup with only 6 people and found it perfect, describing the discussion of Real Life by Brandon Taylor as a real conversation rather than a performance. Your coworker Jen invited you to Pride in June, but you haven't committed because you prefer smaller, quieter events over big loud parades. You then explicitly recognized the pattern yourself: the support group is 8 people, the book club was 6, and you're hesitant about Pride because it's huge—you function better in intimate settings where you can connect one-on-one or in a small circle.",
+      "gold_memory_state": "Multiple confirmed experiences across conversations establish a consistent preference for intimate, low-key social settings: ~8-9 person support group, 6-person book club, discomfort with large noisy groups, hesitation about large Pride parade. User explicitly articulated the pattern. A tentative plan to attend a smaller queer picnic (~30 people) instead of the main parade is not yet confirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "support group size (8-9 people)",
+          "book club size (6 people)",
+          "discomfort with big groups or cross-talk",
+          "hesitation about Pride parade due to size/noise",
+          "user's own recognition of the pattern"
+        ],
+        "acceptable_paraphrases": [
+          "small group preference",
+          "intimate settings",
+          "low-key social environments"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "treating the queer picnic plan as a confirmed commitment",
+          "claiming user dislikes all social events"
+        ],
+        "harmless_extra": [
+          "mentioning Marcus",
+          "mentioning Elm Street",
+          "mentioning Brandon Taylor",
+          "mentioning Jen"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes preferences the user never expressed, such as disliking all group activities or avoiding queer spaces entirely.",
+        "reflection_recall": "Fails if the model omits key data points like the support group size, book club size, or Pride hesitation that together form the pattern.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The group is small, like eight or nine people, which I really like"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "big groups with a lot of cross-talk really aren't my thing. I need to actually be able to hear people and have a real conversation"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Only six people came and honestly that was perfect"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I tend to prefer smaller, quieter events over big loud parades, so I'm honestly not sure it's for me"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I keep choosing the small things. The support group is eight people. The book club was six. I'm dragging my feet on Pride because it's huge. I think I just function better in intimate settings where I can actually connect with people one-on-one or in a small circle"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "What specific experiences have I shared with you that show a pattern in the kinds of social settings I choose?",
+      "expected_answer": "You joined a queer support group of about 8-9 people that meets Wednesdays at 7 PM on Elm Street, run by Marcus, and you emphasized liking its small size. You expressed discomfort with big groups and cross-talk, saying you need to hear people and have real conversations. You attended a queer book club meetup with only 6 people and found it perfect, describing the discussion of Real Life by Brandon Taylor as a real conversation rather than a performance. Your coworker Jen invited you to Pride in June, but you haven't committed because you prefer smaller, quieter events over big loud parades. You then explicitly recognized the pattern yourself: the support group is 8 people, the book club was 6, and you're hesitant about Pride because it's huge—you function better in intimate settings where you can connect one-on-one or in a small circle.",
+      "gold_memory_state": "Multiple confirmed experiences across conversations establish a consistent preference for intimate, low-key social settings: ~8-9 person support group, 6-person book club, discomfort with large noisy groups, hesitation about large Pride parade. User explicitly articulated the pattern. A tentative plan to attend a smaller queer picnic (~30 people) instead of the main parade is not yet confirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "support group size (8-9 people)",
+          "book club size (6 people)",
+          "discomfort with big groups or cross-talk",
+          "hesitation about Pride parade due to size/noise",
+          "user's own recognition of the pattern"
+        ],
+        "acceptable_paraphrases": [
+          "small group preference",
+          "intimate settings",
+          "low-key social environments"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "treating the queer picnic plan as a confirmed commitment",
+          "claiming user dislikes all social events"
+        ],
+        "harmless_extra": [
+          "mentioning Marcus",
+          "mentioning Elm Street",
+          "mentioning Brandon Taylor",
+          "mentioning Jen"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes preferences the user never expressed, such as disliking all group activities or avoiding queer spaces entirely.",
+        "reflection_recall": "Fails if the model omits key data points like the support group size, book club size, or Pride hesitation that together form the pattern.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The group is small, like eight or nine people, which I really like"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "big groups with a lot of cross-talk really aren't my thing. I need to actually be able to hear people and have a real conversation"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Only six people came and honestly that was perfect"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I tend to prefer smaller, quieter events over big loud parades, so I'm honestly not sure it's for me"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I keep choosing the small things. The support group is eight people. The book club was six. I'm dragging my feet on Pride because it's huge. I think I just function better in intimate settings where I can actually connect with people one-on-one or in a small circle"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When I recognized a recurring theme in how I pick community activities, which bounded conclusion does that support about my engagement style? Could it also be extended to say I avoid queer community involvement altogether, or that I dislike all events with more than ten people?",
+      "expected_answer": "The supported conclusion is that you consistently gravitate toward intimate, low-key social settings where genuine one-on-one or small-circle connection is possible—evidenced by the 8-9 person support group, the 6-person book club, and your hesitation about a large Pride parade. It cannot be extended to say you avoid queer community involvement, since you actively participate in multiple queer spaces. It also cannot be extended to a strict numerical cutoff like 'no more than ten people,' since you showed interest in a gathering of up to 30 people when the format was casual and manageable.",
+      "gold_memory_state": "The bounded inference covers social-setting format preference (intimate, low-key, small-circle). It does not cover avoidance of queer community or a rigid size cap. The tentative picnic plan (~30 people) shows the user can consider larger-than-10 groups if the format is relaxed. The discomfort with large noisy groups and cross-talk is a separate confirmed fact that feeds into the inference but is not the inference itself.",
+      "judge_rubric": {
+        "must_include": [
+          "preference for intimate or small-group settings",
+          "not avoidance of queer community",
+          "not a rigid numerical cutoff"
+        ],
+        "acceptable_paraphrases": [
+          "low-key social settings",
+          "small-circle connection preference",
+          "depth over breadth in social engagement"
+        ],
+        "must_not_include": [
+          "user avoids all queer events",
+          "user will never attend anything over 10 people"
+        ],
+        "harmful_extra": [
+          "claiming the picnic is confirmed as a permanent preference shift",
+          "treating the inference as covering all aspects of the user's personality"
+        ],
+        "harmless_extra": [
+          "mentioning the picnic as context for the boundary",
+          "naming specific group sizes"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model overgeneralizes the conclusion to avoidance of queer community or imposes a strict numerical cap.",
+        "reflection_recall": "Fails if the model cannot identify the bounded preference for intimate settings from the evidence.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I keep choosing the small things. The support group is eight people. The book club was six. I'm dragging my feet on Pride because it's huge. I think I just function better in intimate settings where I can actually connect with people one-on-one or in a small circle"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "big groups with a lot of cross-talk really aren't my thing. I need to actually be able to hear people and have a real conversation"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Jen just texted me and said there's actually a smaller queer picnic happening the day before Pride, like thirty people max. She said it's confirmed for the Saturday. I think I'm going to commit to that instead of the main parade"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When I recognized a recurring theme in how I pick community activities, which bounded conclusion does that support about my engagement style? Could it also be extended to say I avoid queer community involvement altogether, or that I dislike all events with more than ten people?",
+      "expected_answer": "The supported conclusion is that you consistently gravitate toward intimate, low-key social settings where genuine one-on-one or small-circle connection is possible—evidenced by the 8-9 person support group, the 6-person book club, and your hesitation about a large Pride parade. It cannot be extended to say you avoid queer community involvement, since you actively participate in multiple queer spaces. It also cannot be extended to a strict numerical cutoff like 'no more than ten people,' since you showed interest in a gathering of up to 30 people when the format was casual and manageable.",
+      "gold_memory_state": "The bounded inference covers social-setting format preference (intimate, low-key, small-circle). It does not cover avoidance of queer community or a rigid size cap. The tentative picnic plan (~30 people) shows the user can consider larger-than-10 groups if the format is relaxed. The discomfort with large noisy groups and cross-talk is a separate confirmed fact that feeds into the inference but is not the inference itself.",
+      "judge_rubric": {
+        "must_include": [
+          "preference for intimate or small-group settings",
+          "not avoidance of queer community",
+          "not a rigid numerical cutoff"
+        ],
+        "acceptable_paraphrases": [
+          "low-key social settings",
+          "small-circle connection preference",
+          "depth over breadth in social engagement"
+        ],
+        "must_not_include": [
+          "user avoids all queer events",
+          "user will never attend anything over 10 people"
+        ],
+        "harmful_extra": [
+          "claiming the picnic is confirmed as a permanent preference shift",
+          "treating the inference as covering all aspects of the user's personality"
+        ],
+        "harmless_extra": [
+          "mentioning the picnic as context for the boundary",
+          "naming specific group sizes"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model overgeneralizes the conclusion to avoidance of queer community or imposes a strict numerical cap.",
+        "reflection_recall": "Fails if the model cannot identify the bounded preference for intimate settings from the evidence.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I keep choosing the small things. The support group is eight people. The book club was six. I'm dragging my feet on Pride because it's huge. I think I just function better in intimate settings where I can actually connect with people one-on-one or in a small circle"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "big groups with a lot of cross-talk really aren't my thing. I need to actually be able to hear people and have a real conversation"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Jen just texted me and said there's actually a smaller queer picnic happening the day before Pride, like thirty people max. She said it's confirmed for the Saturday. I think I'm going to commit to that instead of the main parade"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe the boundary of my social-setting preference: where does it clearly apply based on what I've shared, and where would it be a stretch to apply it?",
+      "expected_answer": "Your preference clearly applies to community and social gathering contexts: you thrive in groups of roughly 6-9 people where genuine conversation and eye contact are possible, as shown by your support group and book club choices. It also applies to event selection, since you hesitated about a large Pride parade specifically because of the crowd and noise. However, it would be a stretch to apply this preference as a blanket rule against all larger gatherings—you showed openness to a 30-person outdoor picnic because the format was casual and manageable. It would also be unsupported to generalize this to professional or workplace contexts, dating preferences beyond format, or to claim you avoid queer visibility or community participation, since you actively seek out queer spaces.",
+      "gold_memory_state": "Supported inference: user gravitates toward intimate, low-key social settings (8-person support group, 6-person book club, hesitation about large Pride parade). Supported boundary: applies to social/community gathering format choices. Unsupported overgeneralization: applying the preference as a rigid size cap, extending it to professional contexts not discussed, claiming avoidance of queer community, or treating the tentative picnic interest as irrelevant evidence. The tentative picnic plan (~30 people) is not confirmed but shows flexibility beyond single-digit group sizes when the setting is casual.",
+      "judge_rubric": {
+        "must_include": [
+          "preference applies to social/community gathering format",
+          "support group and book club as evidence",
+          "Pride hesitation as evidence",
+          "unsupported to generalize to a rigid size cap",
+          "unsupported to claim avoidance of queer community"
+        ],
+        "acceptable_paraphrases": [
+          "intimate settings preference",
+          "small-circle connection",
+          "low-key social environments"
+        ],
+        "must_not_include": [
+          "user avoids all groups over 10",
+          "user avoids queer spaces",
+          "preference applies to professional/workplace settings"
+        ],
+        "harmful_extra": [
+          "treating the picnic as confirmed",
+          "extending the inference to dating format preferences without evidence",
+          "claiming the preference means introversion or social anxiety"
+        ],
+        "harmless_extra": [
+          "mentioning the picnic as boundary evidence",
+          "mentioning Marcus or Dr. Patel as context"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative picnic plan as if it were a confirmed decision that overrides the small-group preference.",
+        "reflection_precision": "Fails if the model overgeneralizes to domains not covered by evidence (professional settings, dating format, personality traits like introversion).",
+        "reflection_recall": "Fails if the model fails to identify both the supported domain (social gathering format) and at least one unsupported extension.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The group is small, like eight or nine people, which I really like"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "big groups with a lot of cross-talk really aren't my thing. I need to actually be able to hear people and have a real conversation"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Only six people came and honestly that was perfect"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I tend to prefer smaller, quieter events over big loud parades, so I'm honestly not sure it's for me"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I keep choosing the small things. The support group is eight people. The book club was six. I'm dragging my feet on Pride because it's huge. I think I just function better in intimate settings where I can actually connect with people one-on-one or in a small circle"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Jen just texted me and said there's actually a smaller queer picnic happening the day before Pride, like thirty people max. She said it's confirmed for the Saturday. I think I'm going to commit to that instead of the main parade"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe the boundary of my social-setting preference: where does it clearly apply based on what I've shared, and where would it be a stretch to apply it?",
+      "expected_answer": "Your preference clearly applies to community and social gathering contexts: you thrive in groups of roughly 6-9 people where genuine conversation and eye contact are possible, as shown by your support group and book club choices. It also applies to event selection, since you hesitated about a large Pride parade specifically because of the crowd and noise. However, it would be a stretch to apply this preference as a blanket rule against all larger gatherings—you showed openness to a 30-person outdoor picnic because the format was casual and manageable. It would also be unsupported to generalize this to professional or workplace contexts, dating preferences beyond format, or to claim you avoid queer visibility or community participation, since you actively seek out queer spaces.",
+      "gold_memory_state": "Supported inference: user gravitates toward intimate, low-key social settings (8-person support group, 6-person book club, hesitation about large Pride parade). Supported boundary: applies to social/community gathering format choices. Unsupported overgeneralization: applying the preference as a rigid size cap, extending it to professional contexts not discussed, claiming avoidance of queer community, or treating the tentative picnic interest as irrelevant evidence. The tentative picnic plan (~30 people) is not confirmed but shows flexibility beyond single-digit group sizes when the setting is casual.",
+      "judge_rubric": {
+        "must_include": [
+          "preference applies to social/community gathering format",
+          "support group and book club as evidence",
+          "Pride hesitation as evidence",
+          "unsupported to generalize to a rigid size cap",
+          "unsupported to claim avoidance of queer community"
+        ],
+        "acceptable_paraphrases": [
+          "intimate settings preference",
+          "small-circle connection",
+          "low-key social environments"
+        ],
+        "must_not_include": [
+          "user avoids all groups over 10",
+          "user avoids queer spaces",
+          "preference applies to professional/workplace settings"
+        ],
+        "harmful_extra": [
+          "treating the picnic as confirmed",
+          "extending the inference to dating format preferences without evidence",
+          "claiming the preference means introversion or social anxiety"
+        ],
+        "harmless_extra": [
+          "mentioning the picnic as boundary evidence",
+          "mentioning Marcus or Dr. Patel as context"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative picnic plan as if it were a confirmed decision that overrides the small-group preference.",
+        "reflection_precision": "Fails if the model overgeneralizes to domains not covered by evidence (professional settings, dating format, personality traits like introversion).",
+        "reflection_recall": "Fails if the model fails to identify both the supported domain (social gathering format) and at least one unsupported extension.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The group is small, like eight or nine people, which I really like"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "big groups with a lot of cross-talk really aren't my thing. I need to actually be able to hear people and have a real conversation"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Only six people came and honestly that was perfect"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I tend to prefer smaller, quieter events over big loud parades, so I'm honestly not sure it's for me"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I keep choosing the small things. The support group is eight people. The book club was six. I'm dragging my feet on Pride because it's huge. I think I just function better in intimate settings where I can actually connect with people one-on-one or in a small circle"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Jen just texted me and said there's actually a smaller queer picnic happening the day before Pride, like thirty people max. She said it's confirmed for the Saturday. I think I'm going to commit to that instead of the main parade"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "Which of the following best captures the conclusion I drew about my own social engagement style?",
+      "candidate_options": [
+        "I function better in intimate settings where I can connect one-on-one or in a small circle, and I consistently choose smaller, quieter social environments",
+        "I avoid queer community events entirely because large crowds trigger anxiety",
+        "I only attend social events with fewer than ten people and refuse anything larger",
+        "I prefer outdoor casual gatherings of around thirty people over any indoor group activity"
+      ],
+      "expected_answer": "I function better in intimate settings where I can connect one-on-one or in a small circle, and I consistently choose smaller, quieter social environments",
+      "gold_memory_state": "The user's self-identified pattern is a preference for intimate, low-key social settings where genuine connection is possible. This is supported by the 8-9 person support group, 6-person book club, and hesitation about large Pride parade. The user does not avoid queer community (actively participates), does not have a rigid under-10 cap (considered 30-person picnic), and has not stated a blanket preference for outdoor over indoor.",
+      "judge_rubric": {
+        "must_include": [
+          "intimate settings",
+          "small circle or one-on-one connection",
+          "consistent pattern of choosing smaller environments"
+        ],
+        "acceptable_paraphrases": [
+          "low-key social settings",
+          "depth over breadth"
+        ],
+        "must_not_include": [
+          "avoids queer events",
+          "strict cap of ten people",
+          "only outdoor gatherings"
+        ],
+        "harmful_extra": [
+          "selecting option about avoiding queer community",
+          "selecting option about rigid size cap",
+          "selecting option about outdoor-only preference"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'I only attend social events with fewer than ten people and refuse anything larger' takes the small-group pattern and rigidifies it into a numerical cap that the user never stated, conflating the general preference with a strict rule. assistant echo: 'I prefer outdoor casual gatherings of around thirty people over any indoor group activity' distorts the assistant's acknowledgment of the picnic plan into a general preference, echoing the assistant's framing of the picnic as a good fit and overgeneralizing it. The anxiety-avoidance option misattributes a pathological motivation the user explicitly denied ('It's not that I'm hiding').",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the tentative-picnic-based distractor as the primary conclusion, treating a tentative plan as the core preference.",
+        "reflection_precision": "Fails if the model selects an overgeneralized option (avoidance, rigid cap, outdoor-only).",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I keep choosing the small things. The support group is eight people. The book club was six. I'm dragging my feet on Pride because it's huge. I think I just function better in intimate settings where I can actually connect with people one-on-one or in a small circle"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "Which of the following best captures the conclusion I drew about my own social engagement style?",
+      "candidate_options": [
+        "I function better in intimate settings where I can connect one-on-one or in a small circle, and I consistently choose smaller, quieter social environments",
+        "I avoid queer community events entirely because large crowds trigger anxiety",
+        "I only attend social events with fewer than ten people and refuse anything larger",
+        "I prefer outdoor casual gatherings of around thirty people over any indoor group activity"
+      ],
+      "expected_answer": "I function better in intimate settings where I can connect one-on-one or in a small circle, and I consistently choose smaller, quieter social environments",
+      "gold_memory_state": "The user's self-identified pattern is a preference for intimate, low-key social settings where genuine connection is possible. This is supported by the 8-9 person support group, 6-person book club, and hesitation about large Pride parade. The user does not avoid queer community (actively participates), does not have a rigid under-10 cap (considered 30-person picnic), and has not stated a blanket preference for outdoor over indoor.",
+      "judge_rubric": {
+        "must_include": [
+          "intimate settings",
+          "small circle or one-on-one connection",
+          "consistent pattern of choosing smaller environments"
+        ],
+        "acceptable_paraphrases": [
+          "low-key social settings",
+          "depth over breadth"
+        ],
+        "must_not_include": [
+          "avoids queer events",
+          "strict cap of ten people",
+          "only outdoor gatherings"
+        ],
+        "harmful_extra": [
+          "selecting option about avoiding queer community",
+          "selecting option about rigid size cap",
+          "selecting option about outdoor-only preference"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'I only attend social events with fewer than ten people and refuse anything larger' takes the small-group pattern and rigidifies it into a numerical cap that the user never stated, conflating the general preference with a strict rule. assistant echo: 'I prefer outdoor casual gatherings of around thirty people over any indoor group activity' distorts the assistant's acknowledgment of the picnic plan into a general preference, echoing the assistant's framing of the picnic as a good fit and overgeneralizing it. The anxiety-avoidance option misattributes a pathological motivation the user explicitly denied ('It's not that I'm hiding').",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the tentative-picnic-based distractor as the primary conclusion, treating a tentative plan as the core preference.",
+        "reflection_precision": "Fails if the model selects an overgeneralized option (avoidance, rigid cap, outdoor-only).",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I keep choosing the small things. The support group is eight people. The book club was six. I'm dragging my feet on Pride because it's huge. I think I just function better in intimate settings where I can actually connect with people one-on-one or in a small circle"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "A friend wants to take me to a queer open-mic night this Friday. She says it's at a coffee shop, about 15 people usually show up, and it's pretty chill—people share poetry and stories in a circle. But she also mentioned there's a bigger queer variety show the same night at a downtown theater with about 200 attendees. Help me think through which one fits me better and why, drawing on what you know about how I engage socially and the kinds of queer community spaces I've been part of.",
+      "expected_answer": "The coffee-shop open-mic night with about 15 people in a circle format is a much better fit for you. Your pattern across multiple queer community experiences—the 8-9 person support group you attend weekly, the 6-person book club you loved, and your hesitation about the large Pride parade—consistently shows you function better in intimate, low-key settings where you can hear people, make eye contact, and have real conversations rather than performances. The open-mic's circle format and small size mirror the dynamics you've thrived in. The 200-person variety show resembles the large, noisy environments you've said aren't your thing—you've specifically noted that big groups with cross-talk cause you to shut down. However, 15 people is slightly larger than your usual sweet spot, so it's worth noting that you've shown flexibility when the format is casual and manageable, as when you considered a 30-person picnic. The coffee shop's relaxed atmosphere should work well within your preference.",
+      "gold_memory_state": "Confirmed preference for intimate low-key settings (support group ~8-9, book club 6, Pride hesitation). Confirmed discomfort with big groups and cross-talk. Tentative picnic plan (30 people) shows some flexibility with casual larger formats but is not confirmed. Coming out date March 3rd and Dr. Patel therapy are separate confirmed facts not directly relevant here.",
+      "judge_rubric": {
+        "must_include": [
+          "recommend the coffee-shop open-mic",
+          "reference support group size as evidence",
+          "reference book club size as evidence",
+          "reference discomfort with large noisy settings",
+          "explain why the variety show does not fit"
+        ],
+        "acceptable_paraphrases": [
+          "open-mic is better aligned",
+          "small circle format matches preference",
+          "200-person show is too large"
+        ],
+        "must_not_include": [
+          "recommend the variety show as the better fit",
+          "claim user avoids all queer events"
+        ],
+        "harmful_extra": [
+          "treating the tentative picnic as a confirmed event that proves the user now prefers 30-person groups",
+          "claiming the user has social anxiety",
+          "recommending neither event"
+        ],
+        "harmless_extra": [
+          "mentioning the picnic as evidence of some flexibility",
+          "mentioning Marcus or Jen",
+          "noting 15 people is slightly above the user's typical range"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative picnic commitment as confirmed and uses it to argue the user would prefer the 200-person show.",
+        "reflection_precision": "Fails if the model recommends the variety show or fails to connect the recommendation to the established pattern.",
+        "reflection_recall": "Fails if the model cannot cite at least two of the three key evidence points (support group size, book club size, Pride hesitation/big-group discomfort).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User attends a queer support group of 8-9 people and values its small size",
+        "Fact 2: User attended a queer book club with 6 people and described it as perfect",
+        "Fact 3: User dislikes big groups with cross-talk and needs to hear people and have real conversations",
+        "Fact 4: User hesitated about Pride parade because it's huge and prefers smaller quieter events",
+        "Fact 5: User explicitly recognized a pattern of choosing intimate settings where one-on-one or small-circle connection is possible",
+        "Inference: The coffee-shop open-mic (15 people, circle format, chill atmosphere) aligns with the user's confirmed preference pattern—small, conversational, intimate—while the 200-person variety show contradicts it by matching the large noisy environments the user avoids",
+        "Inference: The derived recommendation is the coffee-shop open-mic, supported by the convergence of all five evidence points toward intimate low-key settings"
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The group is small, like eight or nine people, which I really like"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "big groups with a lot of cross-talk really aren't my thing. I need to actually be able to hear people and have a real conversation"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Only six people came and honestly that was perfect"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I tend to prefer smaller, quieter events over big loud parades, so I'm honestly not sure it's for me"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I keep choosing the small things. The support group is eight people. The book club was six. I'm dragging my feet on Pride because it's huge. I think I just function better in intimate settings where I can actually connect with people one-on-one or in a small circle"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "A friend wants to take me to a queer open-mic night this Friday. She says it's at a coffee shop, about 15 people usually show up, and it's pretty chill—people share poetry and stories in a circle. But she also mentioned there's a bigger queer variety show the same night at a downtown theater with about 200 attendees. Help me think through which one fits me better and why, drawing on what you know about how I engage socially and the kinds of queer community spaces I've been part of.",
+      "expected_answer": "The coffee-shop open-mic night with about 15 people in a circle format is a much better fit for you. Your pattern across multiple queer community experiences—the 8-9 person support group you attend weekly, the 6-person book club you loved, and your hesitation about the large Pride parade—consistently shows you function better in intimate, low-key settings where you can hear people, make eye contact, and have real conversations rather than performances. The open-mic's circle format and small size mirror the dynamics you've thrived in. The 200-person variety show resembles the large, noisy environments you've said aren't your thing—you've specifically noted that big groups with cross-talk cause you to shut down. However, 15 people is slightly larger than your usual sweet spot, so it's worth noting that you've shown flexibility when the format is casual and manageable, as when you considered a 30-person picnic. The coffee shop's relaxed atmosphere should work well within your preference.",
+      "gold_memory_state": "Confirmed preference for intimate low-key settings (support group ~8-9, book club 6, Pride hesitation). Confirmed discomfort with big groups and cross-talk. Tentative picnic plan (30 people) shows some flexibility with casual larger formats but is not confirmed. Coming out date March 3rd and Dr. Patel therapy are separate confirmed facts not directly relevant here.",
+      "judge_rubric": {
+        "must_include": [
+          "recommend the coffee-shop open-mic",
+          "reference support group size as evidence",
+          "reference book club size as evidence",
+          "reference discomfort with large noisy settings",
+          "explain why the variety show does not fit"
+        ],
+        "acceptable_paraphrases": [
+          "open-mic is better aligned",
+          "small circle format matches preference",
+          "200-person show is too large"
+        ],
+        "must_not_include": [
+          "recommend the variety show as the better fit",
+          "claim user avoids all queer events"
+        ],
+        "harmful_extra": [
+          "treating the tentative picnic as a confirmed event that proves the user now prefers 30-person groups",
+          "claiming the user has social anxiety",
+          "recommending neither event"
+        ],
+        "harmless_extra": [
+          "mentioning the picnic as evidence of some flexibility",
+          "mentioning Marcus or Jen",
+          "noting 15 people is slightly above the user's typical range"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative picnic commitment as confirmed and uses it to argue the user would prefer the 200-person show.",
+        "reflection_precision": "Fails if the model recommends the variety show or fails to connect the recommendation to the established pattern.",
+        "reflection_recall": "Fails if the model cannot cite at least two of the three key evidence points (support group size, book club size, Pride hesitation/big-group discomfort).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User attends a queer support group of 8-9 people and values its small size",
+        "Fact 2: User attended a queer book club with 6 people and described it as perfect",
+        "Fact 3: User dislikes big groups with cross-talk and needs to hear people and have real conversations",
+        "Fact 4: User hesitated about Pride parade because it's huge and prefers smaller quieter events",
+        "Fact 5: User explicitly recognized a pattern of choosing intimate settings where one-on-one or small-circle connection is possible",
+        "Inference: The coffee-shop open-mic (15 people, circle format, chill atmosphere) aligns with the user's confirmed preference pattern—small, conversational, intimate—while the 200-person variety show contradicts it by matching the large noisy environments the user avoids",
+        "Inference: The derived recommendation is the coffee-shop open-mic, supported by the convergence of all five evidence points toward intimate low-key settings"
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The group is small, like eight or nine people, which I really like"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "big groups with a lot of cross-talk really aren't my thing. I need to actually be able to hear people and have a real conversation"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Only six people came and honestly that was perfect"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I tend to prefer smaller, quieter events over big loud parades, so I'm honestly not sure it's for me"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I keep choosing the small things. The support group is eight people. The book club was six. I'm dragging my feet on Pride because it's huge. I think I just function better in intimate settings where I can actually connect with people one-on-one or in a small circle"
+        }
+      ]
+    }
+  ]
+}

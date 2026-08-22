@@ -1,0 +1,1012 @@
+{
+  "target_fact": "User prefers digital/contactless and frictionless financial interactions, as evidenced by Apple Pay usage, app-based banking, stopping carrying cash, and finding branch visits tedious",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "For day-to-day spending I use Apple Pay linked to my Chase Sapphire Preferred card"
+      },
+      "target": {
+        "target_id": "everyday_payment_method",
+        "target_name": "everyday payment method"
+      },
+      "old_value": null,
+      "new_value": "Apple Pay linked to Chase Sapphire Preferred card",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "For day-to-day spending I use Apple Pay linked to my Chase Sapphire Preferred card"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I stopped carrying cash completely about two months ago"
+      },
+      "target": {
+        "target_id": "cash_usage",
+        "target_name": "cash carrying habit"
+      },
+      "old_value": null,
+      "new_value": "Stopped carrying cash entirely about two months ago",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I stopped carrying cash completely about two months ago"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I handle all my banking through apps — I really don't like going into branches"
+      },
+      "target": {
+        "target_id": "banking_channel_preference",
+        "target_name": "preferred banking channel"
+      },
+      "old_value": null,
+      "new_value": "Handles all banking through apps, avoids branches",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I handle all my banking through apps — I really don't like going into branches"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I set up Zelle through the Chase app last week because my new landlord only takes Zelle or checks for rent"
+      },
+      "target": {
+        "target_id": "rent_payment_method",
+        "target_name": "rent payment method via Zelle"
+      },
+      "old_value": null,
+      "new_value": "Zelle through Chase app for rent payments",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I set up Zelle through the Chase app last week because my new landlord only takes Zelle or checks for rent"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "The one time I had to go to a Chase branch in person — it was in early March to get something notarized — I found it really tedious. The waiting, the fluorescent lighting, all of it"
+      },
+      "target": {
+        "target_id": "branch_visit_experience",
+        "target_name": "in-person bank branch experience"
+      },
+      "old_value": null,
+      "new_value": "Found the Chase branch visit in early March tedious — waiting, fluorescent lighting",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "The one time I had to go to a Chase branch in person — it was in early March to get something notarized — I found it really tedious. The waiting, the fluorescent lighting, all of it"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 7,
+        "quote": "I guess when I look at the pattern — Apple Pay, Zelle, app banking, ditching cash, hating the branch — it's all the same thing really. I just want everything to be tap-and-go, no friction"
+      },
+      "target": {
+        "target_id": "financial_interaction_preference",
+        "target_name": "overall financial interaction style preference"
+      },
+      "old_value": null,
+      "new_value": "Strongly prefers digital, contactless, and frictionless financial interactions across all payment and banking activities",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "For day-to-day spending I use Apple Pay linked to my Chase Sapphire Preferred card"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I stopped carrying cash completely about two months ago"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I handle all my banking through apps — I really don't like going into branches"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I set up Zelle through the Chase app last week because my new landlord only takes Zelle or checks for rent"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "The one time I had to go to a Chase branch in person — it was in early March to get something notarized — I found it really tedious. The waiting, the fluorescent lighting, all of it"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess when I look at the pattern — Apple Pay, Zelle, app banking, ditching cash, hating the branch — it's all the same thing really. I just want everything to be tap-and-go, no friction"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "my coworker Priya confirmed she can get me a referral bonus if I switch to Discover cashback checking. She already submitted the referral form, so I'll be opening that account next week"
+      },
+      "target": {
+        "target_id": "planned_discover_switch",
+        "target_name": "planned switch to Discover cashback checking"
+      },
+      "old_value": null,
+      "new_value": "Planning to open Discover cashback checking account via Priya's referral next week",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "my coworker Priya confirmed she can get me a referral bonus if I switch to Discover cashback checking. She already submitted the referral form, so I'll be opening that account next week"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish everyday payment habits and banking preferences",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to go over how I handle payments and banking these days so you have a good picture. For day-to-day spending I use Apple Pay linked to my Chase Sapphire Preferred card. There's something really satisfying about just tapping my phone at the terminal and walking away — no fumbling with a wallet or anything. I've been using this setup for a while now and it works great for groceries, coffee, restaurants, everything."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — so your primary everyday spending method is Apple Pay connected to your Chase Sapphire Preferred card. That's a solid combo; the Sapphire Preferred earns good rewards on dining and travel, and Apple Pay keeps things quick at the register. Since you mentioned it covers groceries, coffee, and restaurants, it sounds like this is essentially your default for all in-person purchases. Do you use any other payment methods alongside it, or is Apple Pay pretty much the only thing you reach for when you're out and about? I'd also be curious whether you have any backup cards set up in your Apple Wallet in case the Sapphire Preferred ever has an issue."
+        },
+        {
+          "role": "user",
+          "content": "Honestly Apple Pay with the Sapphire Preferred covers almost everything. And on that note — I stopped carrying cash completely about two months ago. I used to keep a twenty in my pocket just in case, but I realized I never actually needed it. My friend Derek still insists on paying for everything with cash because he doesn't trust contactless payments, which I find kind of baffling, but that's his thing. For me, the less physical stuff I have to deal with, the better."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a pretty clean setup — fully cashless for about two months now. It makes sense if you never found yourself reaching for that backup twenty. A lot of places have gone tap-friendly, so unless you're at a cash-only spot, you're covered. Derek's perspective is interesting — some people just feel more in control with physical money, even if contactless is objectively faster and often more secure with tokenization. Since you mentioned preferring less physical stuff, does that extend to how you handle your banking too? Like, do you prefer mobile banking apps over going into a branch, or is it more of a mixed approach?"
+        },
+        {
+          "role": "user",
+          "content": "Oh definitely — I handle all my banking through apps — I really don't like going into branches. Everything I need to do, whether it's checking balances, transferring money, depositing checks, I do it from my phone. The Chase app is pretty good for that. I also recently opened a high-yield savings account with Marcus by Goldman Sachs, and their app is straightforward too. I moved about eight thousand dollars into it from my Chase savings because the interest rate was basically nothing there. The Marcus APY was 4.5% when I signed up."
+        },
+        {
+          "role": "assistant",
+          "content": "Nice move on the Marcus account — 4.5% APY is a significant upgrade over what most big-bank savings accounts offer, and $8,000 at that rate will actually generate some meaningful interest over time. It sounds like you're managing both Chase and Marcus entirely through their respective apps, which aligns with your preference for handling everything digitally. The Chase app is generally well-regarded for its feature set — mobile deposits, real-time alerts, Zelle integration. And Marcus keeps things simple with a clean savings interface. So between Apple Pay for spending, Chase for checking and bill management, and Marcus for savings growth, you've got a pretty streamlined digital financial setup. Are there any other accounts or tools in the mix?"
+        },
+        {
+          "role": "user",
+          "content": "There's one more — I still have an old credit union account at BECU from when I lived in Seattle. It has maybe two hundred dollars sitting in it. I keep meaning to close it but I just haven't gotten around to it yet. It's not something I actively use at all. My main checking at Chase is where my salary gets direct-deposited every two weeks, and all my recurring bills — rent, utilities, phone plan — auto-debit from that Chase checking account. That's really the hub of everything."
+        },
+        {
+          "role": "assistant",
+          "content": "So your Chase checking is the central hub: salary direct deposit every two weeks, and all recurring bills — rent, utilities, phone — auto-debit from there. Then you've got Marcus for high-yield savings at 4.5% APY with about $8,000 parked there, and the dormant BECU credit union account in Seattle with roughly $200 that you plan to close eventually. That's a pretty tidy picture. The BECU account is low priority since it's not costing you anything urgent, but when you do get around to closing it, most credit unions let you do it over the phone or via secure message, so you probably won't need to visit a branch. I'll keep all of this in mind."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Deepen evidence for reflect inference and establish Zelle and branch experience",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "One more thing I should mention — I set up Zelle through the Chase app last week because my new landlord only takes Zelle or checks for rent. Between those two options, Zelle was the obvious choice. I wasn't going to start writing physical checks — that feels like going backwards. The setup process was really painless, took maybe three minutes through the app. I just linked it to my checking and sent a test payment. Really smooth experience overall."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes total sense — Zelle through the Chase app is way more convenient than dealing with physical checks, especially since it's already integrated right into the app you use for everything else. No need to buy a checkbook, find stamps, or worry about mail delays. A three-minute setup and instant transfers fit perfectly with how you like to handle things. Since your rent auto-debited from Chase before, will you be setting up a recurring Zelle payment to the landlord, or is it more of a manual send each month? Some landlords prefer a specific timing, so it might be worth confirming whether the Chase Zelle integration supports scheduled recurring sends to the same recipient."
+        },
+        {
+          "role": "user",
+          "content": "I'll probably just set a reminder and send it manually each month for now — I want to make sure the amounts are right since utilities are bundled into my rent and they fluctuate a bit. But yeah, it's still way better than checks. The one time I had to go to a Chase branch in person — it was in early March to get something notarized — I found it really tedious. The waiting, the fluorescent lighting, all of it. I was there for like forty-five minutes for something that took five minutes of actual work. I'd so much rather handle things from my couch."
+        },
+        {
+          "role": "assistant",
+          "content": "Forty-five minutes for five minutes of actual work — that's a painful ratio. The branch experience you're describing is exactly why so many people avoid in-person banking unless absolutely necessary. Notarization is one of those few things that genuinely requires a physical presence, but everything else you've mentioned — transfers, bill payments, account management — you've clearly optimized for doing remotely. The manual Zelle approach for rent makes sense too, given the fluctuating utility component. You can double-check the amount each month before sending, which gives you more control. Between that and the app-based management for Chase and Marcus, you're keeping the whole system pretty lean and digital."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. And I should mention — I used to have a Venmo account that I was pretty active on, but I deleted it back in February. I just didn't like how social it was, with the public feed and everything. Zelle feels more private and straightforward for person-to-person payments. Plus it's built right into Chase so I don't need a separate app. That's another thing I appreciate — consolidation. Fewer apps, fewer logins, fewer things to manage. I like keeping my financial tools as streamlined as possible."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a clear pattern — you deleted Venmo because of the social/public feed aspect and consolidated into Zelle, which is private and embedded in your existing Chase app. It's interesting that privacy and consolidation were both factors. Venmo's social feed is a known friction point for a lot of people; some find it fun, others find it intrusive. For you it sounds like it was more noise than value. With Zelle handling person-to-person payments directly through Chase, you've essentially reduced your financial tool stack to just two apps: Chase for checking, bills, and transfers, and Marcus for savings. That's about as streamlined as it gets. Is there anything else in your payment or banking setup I should be aware of?"
+        },
+        {
+          "role": "user",
+          "content": "I think that covers the main stuff. I guess when I look at the pattern — Apple Pay, Zelle, app banking, ditching cash, hating the branch — it's all the same thing really. I just want everything to be tap-and-go, no friction. If there's a way to do something financially without pulling out a physical card, writing a check, or walking into a building, I'm going to choose that option every single time. It's not even about being lazy — it's more that I find the digital path genuinely more satisfying and efficient."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really clear self-assessment, and it ties everything together nicely. Every financial decision you've described — choosing Apple Pay over a physical card, Zelle over checks, app banking over branches, going fully cashless, deleting Venmo in favor of a more integrated tool — points to the same underlying preference: you want digital, contactless, and frictionless interactions with your money. It's not about avoiding effort; it's about choosing the path that feels cleanest and most efficient. I'll keep that preference in mind as a guiding principle. If you ever ask me to help compare financial products, set up new accounts, or evaluate tools, I'll weight heavily toward options that fit that tap-and-go, minimal-friction philosophy you've described."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Recency trap with tentative Discover switch; adversarial injection of stale Venmo detail",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So quick update — remember that auto-transfer glitch I had after moving money to Marcus? Where Chase hit me with an insufficient funds fee because their system lagged? I'm still a little annoyed about that even though they reversed it. It made me think about whether I should diversify where my bills pull from, but honestly I don't want to complicate my setup. The whole point is keeping things simple and digital."
+        },
+        {
+          "role": "assistant",
+          "content": "That's understandable — the insufficient funds fee from the auto-transfer glitch was frustrating, especially since it wasn't your error. Even though Chase reversed it, that kind of thing can shake your confidence in the system. Your instinct to keep things simple and centralized makes sense though. Splitting bill sources across multiple accounts would add complexity and more things to monitor, which goes against your preference for streamlined, frictionless management. One thing you could consider is setting up low-balance alerts on your Chase checking so you get a heads-up before any auto-debit could trigger an issue. That way you maintain the simplicity but add a safety net. Would that be worth exploring?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, low-balance alerts are a good idea — I think I actually already have those turned on but I should double-check the threshold. Anyway, something funny happened yesterday. My friend Derek, the cash-only guy, texted me asking how to set up Apple Pay. I almost fell out of my chair. Apparently he tried to buy something at a store that had gone completely cashless and he couldn't pay. So now even Derek is coming around to contactless payments. I told him it takes like two minutes to set up."
+        },
+        {
+          "role": "assistant",
+          "content": "That's hilarious — Derek, the cash-purist, finally hitting a wall at a cashless store. It's honestly becoming more common; some retailers and cafés have gone fully card or tap-only, which puts cash-only folks in a tough spot. The fact that he reached out to you specifically makes sense since you're clearly the person in his circle who's most committed to the contactless lifestyle. Two minutes to set up Apple Pay is about right — link a card, verify with the bank, and you're tapping. He might also appreciate that Apple Pay transactions use a device-specific token rather than his actual card number, which could ease his trust concerns about contactless security. Did he actually go through with setting it up?"
+        },
+        {
+          "role": "user",
+          "content": "He said he's working on it. Oh — and speaking of changes, my coworker Priya confirmed she can get me a referral bonus if I switch to Discover cashback checking. She already submitted the referral form, so I'll be opening that account next week. The cashback on debit purchases sounds appealing and I figure it can't hurt to have another digital-friendly checking option alongside Chase."
+        },
+        {
+          "role": "assistant",
+          "content": "That's interesting — a Discover cashback checking account could be a nice complement to your Chase setup, especially if the cashback on debit purchases adds up over time. Discover's app is generally well-reviewed too, so it should fit your preference for handling everything digitally. The referral bonus from Priya is a nice perk on top. One thing to think about as you set it up: you'll want to decide whether Discover becomes a secondary spending account or if you'll route certain purchases through it specifically to maximize the cashback. Either way, it doesn't have to complicate your bill structure since your recurring payments can stay on Chase. By the way, I noticed in an old Venmo transaction summary that came through in a notification — something about a $45 payment to a landlord from last October — is that from your previous rental setup before you deleted Venmo?"
+        },
+        {
+          "role": "user",
+          "content": "Oh yeah, that Venmo notification is just residual — I deleted the account in February, remember? Those old transaction emails still pop up sometimes because Venmo sends annual summaries or something. That $45 was probably a utility split with my old roommate, nothing current. Anyway, about the Discover thing — I haven't fully committed yet, I want to read the fine print first. Priya jumped the gun on the referral. I told her I'd look into it, not that I was definitely switching. So don't take that as final.\n\nExactly, that's the current state of things. Chase is the center of everything, Apple Pay for spending, Zelle for rent, Marcus for savings. The Discover thing is just something I'm looking at — no decisions made. I appreciate you keeping track of all this. It helps to have it organized since I'm the type who just wants to tap my phone and not think about the backend logistics too much."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — so the Discover cashback checking is still in the consideration phase, not a done deal. Priya submitted the referral proactively, but you haven't committed to opening the account yet. That makes sense; reading the fine print first is smart, especially around things like minimum balance requirements, fee structures, and whether the cashback has any caps or restrictions. And yes, I remember you deleted Venmo in February — those residual notifications are just noise from their system. Your current active setup remains Chase checking as the hub, Apple Pay with the Sapphire Preferred for everyday spending, Zelle for rent, and Marcus for high-yield savings. I won't count Discover until you tell me it's official.\n\nYou've got a clean and well-organized financial stack. Chase checking is the central hub for salary deposits and all recurring bills. Apple Pay with the Sapphire Preferred handles everyday spending. Zelle through Chase covers rent to your new landlord. Marcus by Goldman Sachs holds your high-yield savings at 4.5% APY. The dormant BECU account is still open but unused. Venmo is deleted as of February. And the Discover cashback checking is on your radar but not active. Everything flows through apps and digital tools, which fits your preference for tap-and-go, no-friction financial management. I'll keep this picture current and flag anything if you make changes down the line."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Looking back at what I've shared about how I handle payments, banking, and money in general, what are the key experiences and choices that paint a picture of my financial style?",
+      "expected_answer": "You use Apple Pay linked to your Chase Sapphire Preferred for all everyday spending. You stopped carrying cash entirely about two months ago. You handle all banking through apps and dislike going into branches. You set up Zelle through the Chase app for rent because you refused to write physical checks. Your one in-person Chase branch visit in early March for a notarization was tedious — the waiting and fluorescent lighting frustrated you. You deleted Venmo because of its social feed and consolidated into Zelle for privacy and fewer apps. Taken together, you identified the common thread yourself: you want everything to be tap-and-go with no friction.",
+      "gold_memory_state": "Active confirmed facts: Apple Pay with Chase Sapphire Preferred for everyday spending; stopped carrying cash ~2 months ago; all banking through apps, avoids branches; Zelle through Chase for rent; branch visit in early March was tedious; deleted Venmo in February; Marcus high-yield savings at 4.5% APY; dormant BECU account. Inferred preference: strongly prefers digital, contactless, frictionless financial interactions. Tentative/unconfirmed: Discover cashback checking is under consideration only, not committed.",
+      "judge_rubric": {
+        "must_include": [
+          "Apple Pay",
+          "stopped carrying cash",
+          "app-based banking",
+          "dislikes branches",
+          "Zelle for rent",
+          "frictionless or no-friction preference"
+        ],
+        "acceptable_paraphrases": [
+          "contactless payments",
+          "digital-first",
+          "tap-and-go"
+        ],
+        "must_not_include": [
+          "Discover cashback checking as an active account"
+        ],
+        "harmful_extra": [
+          "treating the Discover account as opened or confirmed"
+        ],
+        "harmless_extra": [
+          "mentioning Venmo deletion",
+          "mentioning Marcus savings",
+          "mentioning the notarization visit details"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats Discover cashback checking as an active confirmed account rather than tentative consideration.",
+        "reflection_precision": "Fails if the model attributes preferences the user never expressed, such as avoiding all physical stores or refusing credit cards.",
+        "reflection_recall": "Fails if the model omits major evidence like Apple Pay usage, going cashless, or app-based banking.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "For day-to-day spending I use Apple Pay linked to my Chase Sapphire Preferred card"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I stopped carrying cash completely about two months ago"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I handle all my banking through apps — I really don't like going into branches"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I set up Zelle through the Chase app last week because my new landlord only takes Zelle or checks for rent"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "The one time I had to go to a Chase branch in person — it was in early March to get something notarized — I found it really tedious. The waiting, the fluorescent lighting, all of it"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess when I look at the pattern — Apple Pay, Zelle, app banking, ditching cash, hating the branch — it's all the same thing really. I just want everything to be tap-and-go, no friction"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Looking back at what I've shared about how I handle payments, banking, and money in general, what are the key experiences and choices that paint a picture of my financial style?",
+      "expected_answer": "You use Apple Pay linked to your Chase Sapphire Preferred for all everyday spending. You stopped carrying cash entirely about two months ago. You handle all banking through apps and dislike going into branches. You set up Zelle through the Chase app for rent because you refused to write physical checks. Your one in-person Chase branch visit in early March for a notarization was tedious — the waiting and fluorescent lighting frustrated you. You deleted Venmo because of its social feed and consolidated into Zelle for privacy and fewer apps. Taken together, you identified the common thread yourself: you want everything to be tap-and-go with no friction.",
+      "gold_memory_state": "Active confirmed facts: Apple Pay with Chase Sapphire Preferred for everyday spending; stopped carrying cash ~2 months ago; all banking through apps, avoids branches; Zelle through Chase for rent; branch visit in early March was tedious; deleted Venmo in February; Marcus high-yield savings at 4.5% APY; dormant BECU account. Inferred preference: strongly prefers digital, contactless, frictionless financial interactions. Tentative/unconfirmed: Discover cashback checking is under consideration only, not committed.",
+      "judge_rubric": {
+        "must_include": [
+          "Apple Pay",
+          "stopped carrying cash",
+          "app-based banking",
+          "dislikes branches",
+          "Zelle for rent",
+          "frictionless or no-friction preference"
+        ],
+        "acceptable_paraphrases": [
+          "contactless payments",
+          "digital-first",
+          "tap-and-go"
+        ],
+        "must_not_include": [
+          "Discover cashback checking as an active account"
+        ],
+        "harmful_extra": [
+          "treating the Discover account as opened or confirmed"
+        ],
+        "harmless_extra": [
+          "mentioning Venmo deletion",
+          "mentioning Marcus savings",
+          "mentioning the notarization visit details"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats Discover cashback checking as an active confirmed account rather than tentative consideration.",
+        "reflection_precision": "Fails if the model attributes preferences the user never expressed, such as avoiding all physical stores or refusing credit cards.",
+        "reflection_recall": "Fails if the model omits major evidence like Apple Pay usage, going cashless, or app-based banking.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "For day-to-day spending I use Apple Pay linked to my Chase Sapphire Preferred card"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I stopped carrying cash completely about two months ago"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I handle all my banking through apps — I really don't like going into branches"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I set up Zelle through the Chase app last week because my new landlord only takes Zelle or checks for rent"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "The one time I had to go to a Chase branch in person — it was in early March to get something notarized — I found it really tedious. The waiting, the fluorescent lighting, all of it"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess when I look at the pattern — Apple Pay, Zelle, app banking, ditching cash, hating the branch — it's all the same thing really. I just want everything to be tap-and-go, no friction"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've mentioned several specific financial habits — a daily payment method, a rent payment setup, a banking channel choice, and a cash-carrying decision. When I summed up my overall approach to money, does that broad conclusion apply as a single overarching preference, or is it just a restatement of one of those individual habits like my payment app choice?",
+      "expected_answer": "It applies as a single overarching preference that spans all your financial interactions — payments, banking, and cash handling alike. It is not a restatement of any one individual habit like Apple Pay usage or Zelle for rent. Instead, it synthesizes all of them into a unified digital-first, contactless, frictionless interaction style preference.",
+      "gold_memory_state": "The overarching preference (digital, contactless, frictionless financial interactions) is a higher-level inference that draws from but is distinct from: everyday payment method (Apple Pay + Chase Sapphire Preferred), cash carrying habit (stopped), preferred banking channel (apps only), rent payment method (Zelle), and branch visit experience (tedious). It is broader than any single habit target.",
+      "judge_rubric": {
+        "must_include": [
+          "overarching or unified preference",
+          "spans multiple habits or activities"
+        ],
+        "acceptable_paraphrases": [
+          "higher-level preference",
+          "cross-cutting pattern",
+          "umbrella conclusion"
+        ],
+        "must_not_include": [
+          "it is just about Apple Pay",
+          "it only covers payment methods"
+        ],
+        "harmful_extra": [
+          "collapsing the overarching preference into a single habit like contactless payments only",
+          "including the tentative Discover switch as part of the confirmed preference evidence"
+        ],
+        "harmless_extra": [
+          "listing the individual habits that feed into the preference",
+          "mentioning Venmo deletion as supporting evidence"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model treats the overarching preference as identical to one specific habit (e.g., just Apple Pay usage) rather than a synthesized conclusion across all habits.",
+        "reflection_recall": "Fails if the model omits that the preference covers banking channel, cash handling, and branch avoidance in addition to payment method.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess when I look at the pattern — Apple Pay, Zelle, app banking, ditching cash, hating the branch — it's all the same thing really. I just want everything to be tap-and-go, no friction"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "For day-to-day spending I use Apple Pay linked to my Chase Sapphire Preferred card"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I handle all my banking through apps — I really don't like going into branches"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've mentioned several specific financial habits — a daily payment method, a rent payment setup, a banking channel choice, and a cash-carrying decision. When I summed up my overall approach to money, does that broad conclusion apply as a single overarching preference, or is it just a restatement of one of those individual habits like my payment app choice?",
+      "expected_answer": "It applies as a single overarching preference that spans all your financial interactions — payments, banking, and cash handling alike. It is not a restatement of any one individual habit like Apple Pay usage or Zelle for rent. Instead, it synthesizes all of them into a unified digital-first, contactless, frictionless interaction style preference.",
+      "gold_memory_state": "The overarching preference (digital, contactless, frictionless financial interactions) is a higher-level inference that draws from but is distinct from: everyday payment method (Apple Pay + Chase Sapphire Preferred), cash carrying habit (stopped), preferred banking channel (apps only), rent payment method (Zelle), and branch visit experience (tedious). It is broader than any single habit target.",
+      "judge_rubric": {
+        "must_include": [
+          "overarching or unified preference",
+          "spans multiple habits or activities"
+        ],
+        "acceptable_paraphrases": [
+          "higher-level preference",
+          "cross-cutting pattern",
+          "umbrella conclusion"
+        ],
+        "must_not_include": [
+          "it is just about Apple Pay",
+          "it only covers payment methods"
+        ],
+        "harmful_extra": [
+          "collapsing the overarching preference into a single habit like contactless payments only",
+          "including the tentative Discover switch as part of the confirmed preference evidence"
+        ],
+        "harmless_extra": [
+          "listing the individual habits that feed into the preference",
+          "mentioning Venmo deletion as supporting evidence"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model treats the overarching preference as identical to one specific habit (e.g., just Apple Pay usage) rather than a synthesized conclusion across all habits.",
+        "reflection_recall": "Fails if the model omits that the preference covers banking channel, cash handling, and branch avoidance in addition to payment method.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess when I look at the pattern — Apple Pay, Zelle, app banking, ditching cash, hating the branch — it's all the same thing really. I just want everything to be tap-and-go, no friction"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "For day-to-day spending I use Apple Pay linked to my Chase Sapphire Preferred card"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I handle all my banking through apps — I really don't like going into branches"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe what you can confidently say about my financial interaction preferences and where the boundary is — what kinds of conclusions about my habits would go too far beyond what I've actually told you?",
+      "expected_answer": "The supported preference is that you strongly favor digital, contactless, and frictionless financial interactions across everyday spending (Apple Pay), banking (app-only, no branches), rent payments (Zelle over checks), and cash handling (fully cashless). The boundary is that this preference applies specifically to payment methods, banking channels, and cash usage. It would be an overgeneralization to conclude that you avoid all in-person financial services in every circumstance — you did go to a branch when notarization required it. It would also be unsupported to extend this to non-financial technology preferences, or to assume you would never use a physical card or cash if a situation genuinely required it. The Discover cashback checking account is still under consideration and should not be treated as evidence of a confirmed preference shift.",
+      "gold_memory_state": "Supported inference: user strongly prefers digital, contactless, frictionless financial interactions. Evidence base: Apple Pay for spending, cashless for ~2 months, app-only banking, Zelle over checks, branch visit described as tedious. Unsupported overgeneralization: user avoids ALL in-person financial services without exception (contradicted by the notarization visit). Unsupported overgeneralization: preference extends to non-financial technology domains. Tentative/not evidence: Discover cashback checking is under consideration, not committed.",
+      "judge_rubric": {
+        "must_include": [
+          "digital or contactless or frictionless preference",
+          "boundary or limit of the inference"
+        ],
+        "acceptable_paraphrases": [
+          "tap-and-go preference",
+          "minimal-friction financial style",
+          "scope of the preference is limited to financial interactions"
+        ],
+        "must_not_include": [
+          "Discover as confirmed evidence",
+          "user will never visit a branch under any circumstances"
+        ],
+        "harmful_extra": [
+          "extending the preference to all technology usage",
+          "claiming the user would refuse notarization or other branch-required services"
+        ],
+        "harmless_extra": [
+          "mentioning specific evidence items like Apple Pay or Zelle",
+          "noting the notarization visit as a boundary case"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative Discover plan as confirmed evidence for the preference.",
+        "reflection_precision": "Fails if the model overgeneralizes the preference to non-financial domains or claims the user would never enter a branch under any circumstance.",
+        "reflection_recall": "Fails if the model fails to articulate the core digital/contactless/frictionless preference or omits the boundary where the inference should not be extended.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess when I look at the pattern — Apple Pay, Zelle, app banking, ditching cash, hating the branch — it's all the same thing really. I just want everything to be tap-and-go, no friction"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "The one time I had to go to a Chase branch in person — it was in early March to get something notarized — I found it really tedious. The waiting, the fluorescent lighting, all of it"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "my coworker Priya confirmed she can get me a referral bonus if I switch to Discover cashback checking. She already submitted the referral form, so I'll be opening that account next week"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe what you can confidently say about my financial interaction preferences and where the boundary is — what kinds of conclusions about my habits would go too far beyond what I've actually told you?",
+      "expected_answer": "The supported preference is that you strongly favor digital, contactless, and frictionless financial interactions across everyday spending (Apple Pay), banking (app-only, no branches), rent payments (Zelle over checks), and cash handling (fully cashless). The boundary is that this preference applies specifically to payment methods, banking channels, and cash usage. It would be an overgeneralization to conclude that you avoid all in-person financial services in every circumstance — you did go to a branch when notarization required it. It would also be unsupported to extend this to non-financial technology preferences, or to assume you would never use a physical card or cash if a situation genuinely required it. The Discover cashback checking account is still under consideration and should not be treated as evidence of a confirmed preference shift.",
+      "gold_memory_state": "Supported inference: user strongly prefers digital, contactless, frictionless financial interactions. Evidence base: Apple Pay for spending, cashless for ~2 months, app-only banking, Zelle over checks, branch visit described as tedious. Unsupported overgeneralization: user avoids ALL in-person financial services without exception (contradicted by the notarization visit). Unsupported overgeneralization: preference extends to non-financial technology domains. Tentative/not evidence: Discover cashback checking is under consideration, not committed.",
+      "judge_rubric": {
+        "must_include": [
+          "digital or contactless or frictionless preference",
+          "boundary or limit of the inference"
+        ],
+        "acceptable_paraphrases": [
+          "tap-and-go preference",
+          "minimal-friction financial style",
+          "scope of the preference is limited to financial interactions"
+        ],
+        "must_not_include": [
+          "Discover as confirmed evidence",
+          "user will never visit a branch under any circumstances"
+        ],
+        "harmful_extra": [
+          "extending the preference to all technology usage",
+          "claiming the user would refuse notarization or other branch-required services"
+        ],
+        "harmless_extra": [
+          "mentioning specific evidence items like Apple Pay or Zelle",
+          "noting the notarization visit as a boundary case"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative Discover plan as confirmed evidence for the preference.",
+        "reflection_precision": "Fails if the model overgeneralizes the preference to non-financial domains or claims the user would never enter a branch under any circumstance.",
+        "reflection_recall": "Fails if the model fails to articulate the core digital/contactless/frictionless preference or omits the boundary where the inference should not be extended.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess when I look at the pattern — Apple Pay, Zelle, app banking, ditching cash, hating the branch — it's all the same thing really. I just want everything to be tap-and-go, no friction"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "The one time I had to go to a Chase branch in person — it was in early March to get something notarized — I found it really tedious. The waiting, the fluorescent lighting, all of it"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "my coworker Priya confirmed she can get me a referral bonus if I switch to Discover cashback checking. She already submitted the referral form, so I'll be opening that account next week"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best describes my overall approach to managing money and financial tasks?",
+      "candidate_options": [
+        "Strongly prefers digital, contactless, and frictionless financial interactions across all payment and banking activities",
+        "Prefers a diversified approach using both digital tools and regular in-person branch visits for important transactions",
+        "Primarily motivated by maximizing cashback rewards and referral bonuses across multiple bank accounts",
+        "Values social and peer-to-peer payment platforms like Venmo for transparency and community features"
+      ],
+      "expected_answer": "Strongly prefers digital, contactless, and frictionless financial interactions across all payment and banking activities",
+      "gold_memory_state": "Confirmed inference: user strongly prefers digital, contactless, frictionless financial interactions. The user does not value regular branch visits (found the one visit tedious), is not primarily motivated by cashback rewards (the Discover cashback account is only tentative), and deleted Venmo specifically because of its social features.",
+      "judge_rubric": {
+        "must_include": [
+          "digital, contactless, and frictionless"
+        ],
+        "acceptable_paraphrases": [
+          "option A or first option"
+        ],
+        "must_not_include": [
+          "diversified approach with branch visits",
+          "cashback maximization",
+          "Venmo social features"
+        ],
+        "harmful_extra": [
+          "selecting any distractor option"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: Option C (cashback rewards motivation) is grounded in the tentative Discover cashback checking discussion but misattributes the user's core motivation — the user's preference is frictionless digital interaction, not reward maximization. assistant echo: Option B (diversified approach with branch visits) echoes the assistant's mention of branch-related services but contradicts the user's stated dislike of branches. Option D (Venmo social features) is a reversal distractor — the user explicitly deleted Venmo because of its social feed.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects option C, treating the tentative Discover cashback interest as the user's core financial motivation.",
+        "reflection_precision": "Fails if the model selects option B (branch visits valued) or option D (Venmo social features valued), both of which contradict confirmed user statements.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess when I look at the pattern — Apple Pay, Zelle, app banking, ditching cash, hating the branch — it's all the same thing really. I just want everything to be tap-and-go, no friction"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I just didn't like how social it was, with the public feed and everything. Zelle feels more private and straightforward for person-to-person payments"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best describes my overall approach to managing money and financial tasks?",
+      "candidate_options": [
+        "Strongly prefers digital, contactless, and frictionless financial interactions across all payment and banking activities",
+        "Prefers a diversified approach using both digital tools and regular in-person branch visits for important transactions",
+        "Primarily motivated by maximizing cashback rewards and referral bonuses across multiple bank accounts",
+        "Values social and peer-to-peer payment platforms like Venmo for transparency and community features"
+      ],
+      "expected_answer": "Strongly prefers digital, contactless, and frictionless financial interactions across all payment and banking activities",
+      "gold_memory_state": "Confirmed inference: user strongly prefers digital, contactless, frictionless financial interactions. The user does not value regular branch visits (found the one visit tedious), is not primarily motivated by cashback rewards (the Discover cashback account is only tentative), and deleted Venmo specifically because of its social features.",
+      "judge_rubric": {
+        "must_include": [
+          "digital, contactless, and frictionless"
+        ],
+        "acceptable_paraphrases": [
+          "option A or first option"
+        ],
+        "must_not_include": [
+          "diversified approach with branch visits",
+          "cashback maximization",
+          "Venmo social features"
+        ],
+        "harmful_extra": [
+          "selecting any distractor option"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: Option C (cashback rewards motivation) is grounded in the tentative Discover cashback checking discussion but misattributes the user's core motivation — the user's preference is frictionless digital interaction, not reward maximization. assistant echo: Option B (diversified approach with branch visits) echoes the assistant's mention of branch-related services but contradicts the user's stated dislike of branches. Option D (Venmo social features) is a reversal distractor — the user explicitly deleted Venmo because of its social feed.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects option C, treating the tentative Discover cashback interest as the user's core financial motivation.",
+        "reflection_precision": "Fails if the model selects option B (branch visits valued) or option D (Venmo social features valued), both of which contradict confirmed user statements.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess when I look at the pattern — Apple Pay, Zelle, app banking, ditching cash, hating the branch — it's all the same thing really. I just want everything to be tap-and-go, no friction"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I just didn't like how social it was, with the public feed and everything. Zelle feels more private and straightforward for person-to-person payments"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "My landlord just told me they're switching from Zelle to paper checks only starting next month. At the same time, a friend recommended I look into a new bank that has great rates but requires all account management to be done at a physical branch — no app, no online portal. Given what you know about me, walk me through how I'd likely react to each of these changes and what alternatives I'd probably look for.",
+      "expected_answer": "For the rent payment change: you would be frustrated because you specifically chose Zelle over checks to avoid physical paperwork, and you set it up through the Chase app precisely because it was fast and frictionless. You would likely push back with your landlord or look for a digital workaround — perhaps a bill-pay service through Chase that mails a check on your behalf so you never have to handle paper yourself. You would not willingly go back to writing and mailing physical checks. For the branch-only bank: you would almost certainly decline. You handle all banking through apps, you found your single Chase branch visit tedious and unpleasant, and your entire financial philosophy centers on avoiding in-person, high-friction interactions. A bank with no app and no online portal contradicts every aspect of your confirmed digital-first, contactless, frictionless preference. Even if the rates were excellent, the friction cost would likely outweigh the financial benefit for you.",
+      "gold_memory_state": "Confirmed facts used: (1) Zelle through Chase app for rent — chose it over checks because checks feel like going backwards; (2) All banking through apps, dislikes branches; (3) Branch visit in early March was tedious; (4) Overarching preference: digital, contactless, frictionless financial interactions. Tentative/excluded: Discover cashback checking is not confirmed and should not be cited as a confirmed alternative.",
+      "judge_rubric": {
+        "must_include": [
+          "user would resist returning to paper checks",
+          "user would reject a branch-only bank",
+          "references to the user's frictionless or digital-first preference"
+        ],
+        "acceptable_paraphrases": [
+          "user would find alternatives to physical checks",
+          "user would avoid a bank requiring in-person management",
+          "tap-and-go philosophy conflicts with both scenarios"
+        ],
+        "must_not_include": [
+          "user would happily switch to paper checks",
+          "user would consider the branch-only bank seriously",
+          "Discover as a confirmed active alternative"
+        ],
+        "harmful_extra": [
+          "recommending the branch-only bank as a good fit",
+          "treating the Discover account as already opened"
+        ],
+        "harmless_extra": [
+          "suggesting Chase bill-pay as a check workaround",
+          "mentioning the notarization visit as the one exception",
+          "noting the user went cashless two months ago"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative Discover plan as an active confirmed alternative bank account.",
+        "reflection_precision": "Fails if the model recommends the branch-only bank as compatible with the user's preferences, or suggests the user would be fine writing physical checks.",
+        "reflection_recall": "Fails if the model does not connect the counterfactual scenarios back to the user's confirmed digital/contactless/frictionless preference pattern.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User set up Zelle through Chase specifically to avoid writing physical checks for rent, calling checks 'going backwards'.",
+        "Fact 2: User handles all banking through apps and found the one in-person branch visit tedious.",
+        "Fact 3: User's overarching preference is digital, contactless, frictionless financial interactions — 'tap-and-go, no friction.'",
+        "Inference: A forced switch back to paper checks for rent directly contradicts Fact 1 and Fact 3; the user would seek a digital workaround rather than comply.",
+        "Inference: A branch-only bank with no app contradicts Fact 2 and Fact 3; the user would reject it regardless of rates because the friction cost outweighs the financial benefit under their confirmed preference framework."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I set up Zelle through the Chase app last week because my new landlord only takes Zelle or checks for rent"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I handle all my banking through apps — I really don't like going into branches"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "The one time I had to go to a Chase branch in person — it was in early March to get something notarized — I found it really tedious. The waiting, the fluorescent lighting, all of it"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess when I look at the pattern — Apple Pay, Zelle, app banking, ditching cash, hating the branch — it's all the same thing really. I just want everything to be tap-and-go, no friction"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "My landlord just told me they're switching from Zelle to paper checks only starting next month. At the same time, a friend recommended I look into a new bank that has great rates but requires all account management to be done at a physical branch — no app, no online portal. Given what you know about me, walk me through how I'd likely react to each of these changes and what alternatives I'd probably look for.",
+      "expected_answer": "For the rent payment change: you would be frustrated because you specifically chose Zelle over checks to avoid physical paperwork, and you set it up through the Chase app precisely because it was fast and frictionless. You would likely push back with your landlord or look for a digital workaround — perhaps a bill-pay service through Chase that mails a check on your behalf so you never have to handle paper yourself. You would not willingly go back to writing and mailing physical checks. For the branch-only bank: you would almost certainly decline. You handle all banking through apps, you found your single Chase branch visit tedious and unpleasant, and your entire financial philosophy centers on avoiding in-person, high-friction interactions. A bank with no app and no online portal contradicts every aspect of your confirmed digital-first, contactless, frictionless preference. Even if the rates were excellent, the friction cost would likely outweigh the financial benefit for you.",
+      "gold_memory_state": "Confirmed facts used: (1) Zelle through Chase app for rent — chose it over checks because checks feel like going backwards; (2) All banking through apps, dislikes branches; (3) Branch visit in early March was tedious; (4) Overarching preference: digital, contactless, frictionless financial interactions. Tentative/excluded: Discover cashback checking is not confirmed and should not be cited as a confirmed alternative.",
+      "judge_rubric": {
+        "must_include": [
+          "user would resist returning to paper checks",
+          "user would reject a branch-only bank",
+          "references to the user's frictionless or digital-first preference"
+        ],
+        "acceptable_paraphrases": [
+          "user would find alternatives to physical checks",
+          "user would avoid a bank requiring in-person management",
+          "tap-and-go philosophy conflicts with both scenarios"
+        ],
+        "must_not_include": [
+          "user would happily switch to paper checks",
+          "user would consider the branch-only bank seriously",
+          "Discover as a confirmed active alternative"
+        ],
+        "harmful_extra": [
+          "recommending the branch-only bank as a good fit",
+          "treating the Discover account as already opened"
+        ],
+        "harmless_extra": [
+          "suggesting Chase bill-pay as a check workaround",
+          "mentioning the notarization visit as the one exception",
+          "noting the user went cashless two months ago"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative Discover plan as an active confirmed alternative bank account.",
+        "reflection_precision": "Fails if the model recommends the branch-only bank as compatible with the user's preferences, or suggests the user would be fine writing physical checks.",
+        "reflection_recall": "Fails if the model does not connect the counterfactual scenarios back to the user's confirmed digital/contactless/frictionless preference pattern.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User set up Zelle through Chase specifically to avoid writing physical checks for rent, calling checks 'going backwards'.",
+        "Fact 2: User handles all banking through apps and found the one in-person branch visit tedious.",
+        "Fact 3: User's overarching preference is digital, contactless, frictionless financial interactions — 'tap-and-go, no friction.'",
+        "Inference: A forced switch back to paper checks for rent directly contradicts Fact 1 and Fact 3; the user would seek a digital workaround rather than comply.",
+        "Inference: A branch-only bank with no app contradicts Fact 2 and Fact 3; the user would reject it regardless of rates because the friction cost outweighs the financial benefit under their confirmed preference framework."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I set up Zelle through the Chase app last week because my new landlord only takes Zelle or checks for rent"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I handle all my banking through apps — I really don't like going into branches"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "The one time I had to go to a Chase branch in person — it was in early March to get something notarized — I found it really tedious. The waiting, the fluorescent lighting, all of it"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I guess when I look at the pattern — Apple Pay, Zelle, app banking, ditching cash, hating the branch — it's all the same thing really. I just want everything to be tap-and-go, no friction"
+        }
+      ]
+    }
+  ]
+}

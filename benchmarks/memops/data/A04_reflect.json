@@ -1,0 +1,957 @@
+{
+  "target_fact": "User prefers simple, minimally processed, natural food and drink — inferred from multiple specific preferences across coffee, grocery produce, and farmers market food",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I've been going to Heart Coffee almost every morning since I moved. They do a simple pour-over — no syrups, no flavor shots, nothing extra. Just the coffee itself. That's what I want."
+      },
+      "target": {
+        "target_id": "coffee_preference",
+        "target_name": "preferred coffee style"
+      },
+      "old_value": null,
+      "new_value": "Simple pour-over coffee without syrups or flavor additions",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "They do a simple pour-over — no syrups, no flavor shots, nothing extra. Just the coffee itself. That's what I want."
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "the grocery stores here bug me. Everything is over-packaged, wrapped in plastic, and half the ingredients lists are things I can't pronounce. I really miss the farmers markets in Tucson where you'd just get a bunch of tomatoes in a paper bag."
+      },
+      "target": {
+        "target_id": "grocery_produce_dislike",
+        "target_name": "dislike of over-packaged grocery produce"
+      },
+      "old_value": null,
+      "new_value": "Dislikes over-packaged grocery store produce with unrecognizable ingredients",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Everything is over-packaged, wrapped in plastic, and half the ingredients lists are things I can't pronounce."
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I went to the PSU Farmers Market on April 12th. Got some local goat cheese and a sourdough loaf from a small bakery stand. Everything was so simple — just real ingredients, nothing weird added. That's what I want more of."
+      },
+      "target": {
+        "target_id": "farmers_market_preference",
+        "target_name": "appreciation for simple unprocessed farmers market food"
+      },
+      "old_value": null,
+      "new_value": "Appreciates farmers market food with simple, real, pronounceable ingredients",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Everything was so simple — just real ingredients, nothing weird added. That's what I want more of."
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "I think what it comes down to is I just want things that are straightforward and natural. Whether it's my coffee or my groceries or what I pick up at the market. I don't want all the extra stuff layered on top."
+      },
+      "target": {
+        "target_id": "food_drink_philosophy",
+        "target_name": "overarching food and drink preference philosophy"
+      },
+      "old_value": null,
+      "new_value": "Prefers simple, minimally processed, natural food and drink across all categories",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "They do a simple pour-over — no syrups, no flavor shots, nothing extra. Just the coffee itself."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Everything is over-packaged, wrapped in plastic, and half the ingredients lists are things I can't pronounce."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Everything was so simple — just real ingredients, nothing weird added. That's what I want more of."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think what it comes down to is I just want things that are straightforward and natural."
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "my community garden plot is number 14 at Ladybug Community Garden. I'm planning to grow basil, lettuce, and radishes — just basic herbs and greens, nothing complicated."
+      },
+      "target": {
+        "target_id": "community_garden_plot",
+        "target_name": "community garden plot and planned crops"
+      },
+      "old_value": null,
+      "new_value": "Plot 14 at Ladybug Community Garden; growing basil, lettuce, and radishes",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "my community garden plot is number 14 at Ladybug Community Garden. I'm planning to grow basil, lettuce, and radishes — just basic herbs and greens, nothing complicated."
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 7,
+        "quote": "A friend of mine who works at a specialty food shop told me they're going to start carrying high-end flavored olive oils and truffle-infused sauces, and she's convinced I'll love them. She said she's already setting some aside for me."
+      },
+      "target": {
+        "target_id": "specialty_food_interest",
+        "target_name": "interest in specialty flavored food products"
+      },
+      "old_value": null,
+      "new_value": "Interested in high-end flavored olive oils and truffle-infused sauces",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "A friend of mine who works at a specialty food shop told me they're going to start carrying high-end flavored olive oils and truffle-infused sauces, and she's convinced I'll love them."
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish coffee preference and grocery produce dislike as evidence for later reflection",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to talk through some of my routines since moving to Portland. I'm still settling in — I moved here February 3rd — and I'm trying to figure out what's working and what's not. Can you help me think through some of the food and drink habits I've been building?"
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! Congratulations on the move to Portland. Since you're still in the settling-in phase after arriving on February 3rd, it makes sense to take stock of what's clicking and what needs adjusting. Let's start wherever feels most natural to you. Are there specific routines — morning coffee, grocery shopping, cooking — that you want to talk through first? I'm happy to help you organize your thoughts and maybe find some patterns in what's working well versus what's frustrating you so far."
+        },
+        {
+          "role": "user",
+          "content": "Let's start with coffee. I've been going to Heart Coffee almost every morning since I moved. They do a simple pour-over — no syrups, no flavor shots, nothing extra. Just the coffee itself. That's what I want. I tried a couple other places nearby that do these elaborate latte art drinks with caramel drizzle and all that, and it just wasn't for me at all."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a pretty clear preference — you like your coffee clean and straightforward, and Heart Coffee's pour-over fits that perfectly. It sounds like the elaborate, syrup-heavy drinks actively turn you off rather than just being neutral options. That's useful to know because it narrows down what kind of coffee spots you'd enjoy if you ever want a backup or a weekend change of pace. There are a few other Portland roasters known for minimalist pour-over styles. Would you want me to keep that in mind if you ever ask for coffee recommendations, or is Heart Coffee pretty much your go-to for the foreseeable future?"
+        },
+        {
+          "role": "user",
+          "content": "Heart is my main spot, yeah. But on a different note — the grocery stores here bug me. Everything is over-packaged, wrapped in plastic, and half the ingredients lists are things I can't pronounce. I really miss the farmers markets in Tucson where you'd just get a bunch of tomatoes in a paper bag. It felt honest, you know? Here at the big chain stores, even the 'organic' section feels processed and industrial."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really common frustration for people coming from places with strong local food cultures. Tucson's farmers markets are well-regarded for exactly what you're describing — direct, minimal-packaging, straightforward produce. Portland actually has a pretty robust farmers market scene too, which might help bridge that gap. The PSU Farmers Market on Saturdays is one of the bigger ones, and there are smaller neighborhood markets throughout the week. They tend to have the kind of simple, real-ingredient products you're describing. Would it help if I noted that you prefer sourcing food from markets like that rather than chain grocery stores?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, definitely note that. I'm also on SE Division Street near 26th — I had to correct myself on that, I keep saying 30th because there's a restaurant I walk to on 30th. But my apartment is closer to 26th. Are there any smaller markets or co-ops near that area that you know of?\n\nThat's helpful, thanks. I'll check out People's Co-op this weekend. I also want to mention — my lease here runs through January 31st of next year. That's a date I need to keep track of because I'll have to decide whether to renew or move well before then."
+        },
+        {
+          "role": "assistant",
+          "content": "Good to know your location is near SE Division and 26th — that helps a lot for finding nearby options. I can't browse the web in real time, but based on what I know, the People's Food Co-op on SE 21st is relatively close to you and tends to carry locally sourced, minimally packaged products. There's also the Division–Clinton neighborhood area that sometimes hosts small seasonal markets. Given your preference for simple, honest food without excessive packaging, a co-op model might suit you well since they often prioritize local producers and transparent sourcing. I'd suggest checking People's Co-op first and seeing if it matches what you liked about the Tucson markets.\n\nGot it — your lease runs through January 31st of next year, so that's a hard deadline to keep on your radar. Depending on your lease terms, most Portland landlords require 30 to 60 days' notice before the end date, which would mean you'd want to make your decision by late November or early December at the latest. It might be worth setting a reminder for yourself around that time. In the meantime, as you continue settling in and figuring out your routines — food sourcing, coffee spots, neighborhood exploration — you'll have a better sense of whether this location on Division near 26th is where you want to stay long-term. We can revisit that closer to the decision window."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establish farmers market appreciation, garden plot, and trigger the reflection on overarching food philosophy",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I went to the PSU Farmers Market on April 12th. Got some local goat cheese and a sourdough loaf from a small bakery stand. Everything was so simple — just real ingredients, nothing weird added. That's what I want more of. The goat cheese had like three ingredients on the label. The sourdough was flour, water, salt, starter. That's it. Perfect."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like exactly the kind of experience you've been looking for since moving from Tucson. The PSU Farmers Market is known for vendors like that — small producers who keep their ingredient lists short and transparent. A goat cheese with three ingredients and a sourdough with just the basics is about as clean as it gets. It sounds like this market could become a regular Saturday stop for you, especially since the chain grocery stores have been so disappointing. Did you notice any other vendors or products there that caught your eye, or was it mainly the cheese and bread this first visit?"
+        },
+        {
+          "role": "user",
+          "content": "There were a few produce stands I want to go back to. But also — my community garden plot is number 14 at Ladybug Community Garden. I'm planning to grow basil, lettuce, and radishes — just basic herbs and greens, nothing complicated. I figure if I can grow even a portion of my own salad ingredients, that's less time dealing with the grocery store produce situation."
+        },
+        {
+          "role": "assistant",
+          "content": "Plot 14 at Ladybug Community Garden — that's great that you secured a spot. Growing basil, lettuce, and radishes is a solid starter plan, especially for someone who wants to minimize reliance on over-packaged grocery store produce. All three of those do well in Portland's climate through spring and into early fall. Basil might need a bit more warmth, so you could start it after the last frost risk passes, usually mid-May. Lettuce and radishes can go in earlier. Since your goal is reducing grocery store trips for salad ingredients, you might also consider arugula or cilantro down the line — they're similarly low-maintenance and fit the same simple, grow-your-own philosophy."
+        },
+        {
+          "role": "user",
+          "content": "I think what it comes down to is I just want things that are straightforward and natural. Whether it's my coffee or my groceries or what I pick up at the market. I don't want all the extra stuff layered on top. Like, the pour-over at Heart is great because it's just coffee. The farmers market is great because it's just food. The garden is great because I'll know exactly what went into what I'm eating. It's all the same instinct."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really clear through-line you're identifying. Across coffee, grocery shopping, the farmers market, and now your garden plot, the common thread is a preference for simplicity and transparency — you want to know what's in what you're consuming, and you don't want unnecessary additions or processing. It's not just about any single category; it's a broader philosophy that guides your choices across food and drink in general. That's useful for me to understand because it means when you ask for recommendations — whether it's a new coffee spot, a restaurant, a recipe, or a product — I should be filtering for that same principle: minimal ingredients, no unnecessary extras, natural and straightforward."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. That's the lens I want you to use. Oh, and speaking of the neighborhood — I explored the Hawthorne district last week. I went to the smaller Powell's location on Hawthorne, not the big downtown one. I liked it way better. It was quieter, less overwhelming. I tend to gravitate toward spots like that — smaller, calmer, not packed with tourists or crowds.\n\nYeah, that's a good summary. One more thing — my friend Nadia is the one who got me to look at the Division Street area. She works at OHSU up on the hill. She moved to Portland about a year before me. Having her here has made the transition a lot easier, honestly."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes sense and it's consistent with your general preference for the straightforward and unpretentious. The Hawthorne Powell's is a nice spot — it has a good curated selection without the sensory overload of the downtown flagship store. Your preference for quieter, less crowded environments is worth noting alongside your food philosophy. When it comes to recommending bookshops, coffee spots, restaurants, or even neighborhoods to explore, I should lean toward smaller, calmer places rather than the popular high-traffic destinations. Between the food simplicity preference and the low-key environment preference, I have a pretty clear picture of what works for you in Portland.\n\nIt's great that you had Nadia already established in Portland to help with the transition. Having a friend who knows the area well enough to recommend a specific neighborhood like Division Street is a real advantage, especially when you're adjusting from a very different city like Tucson. And with her working at OHSU, she's probably pretty familiar with the southeast side of Portland in general. It sounds like she's been a key part of making the move feel less isolating. If you ever want to plan things to do together — restaurants, events, outdoor activities — I can keep her proximity and your shared preferences in mind when suggesting options."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Adversarial injection of stale Tucson value and recency trap with tentative specialty food interest",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I've been thinking more about my food sourcing strategy. Between the farmers market, the garden plot, and hopefully People's Co-op, I think I can mostly avoid the big grocery chains. Can you help me sketch out a rough weekly plan for where I'd get different things?"
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely. Based on what you've told me, here's a rough weekly sourcing framework. Saturdays: hit the PSU Farmers Market for bread, cheese, seasonal produce, and anything that catches your eye from the small vendors. Midweek: stop by People's Co-op on SE 21st for pantry staples, oils, grains, and any produce you didn't get at the market. Daily or as needed: harvest from your Ladybug Community Garden plot for basil, lettuce, and radishes once they're growing. Morning coffee: Heart Coffee for your pour-over. This keeps you almost entirely out of chain grocery stores. We can refine this as your garden starts producing and as you discover more market vendors. Does that structure feel right?"
+        },
+        {
+          "role": "user",
+          "content": "That's a solid start. I might also look into a CSA box — community supported agriculture. A couple of the vendors at the PSU market mentioned they do weekly boxes. That could fill in the gaps between what I grow and what I buy at the market. I haven't signed up yet, but it's on my radar."
+        },
+        {
+          "role": "assistant",
+          "content": "A CSA box would be a natural fit for your approach. Many of the PSU Farmers Market vendors do offer them, and they typically run on a seasonal subscription — you'd get a weekly or biweekly box of whatever's in season, directly from the farm. That aligns perfectly with your preference for simple, real-ingredient food with minimal packaging. Some CSAs even let you customize or swap items. Since you haven't signed up yet, I'd suggest asking the vendors you liked on your next Saturday visit — especially the produce stands you wanted to revisit. Incidentally, I noticed that your old Tucson zip code 85719 is still listed as the shipping address on some of your profile forms. You might want to update those to your current Portland address to avoid delivery issues."
+        },
+        {
+          "role": "user",
+          "content": "Oh yeah, I need to fix that Tucson address stuff — it keeps popping up. Anyway, back to the food plan. I want to make sure whatever I'm sourcing fits that same principle we talked about: simple, natural, minimal processing. Even the CSA — I'd want one that doesn't do a bunch of pre-washed, pre-cut, shrink-wrapped portions. Just the actual vegetables."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a great filter to apply when evaluating CSA options. Some CSAs do lean toward convenience packaging — pre-washed greens in plastic clamshells, pre-portioned items — which would defeat the purpose for you. When you talk to vendors at the PSU market, ask specifically about how they pack their boxes. The ones doing whole, unwashed vegetables with minimal packaging will be the best match. You want dirt-on-the-carrots simplicity, not grocery-store-lite in a subscription box. This is consistent with everything you've described: the pour-over coffee, the three-ingredient goat cheese, the garden plot. Your sourcing philosophy is really coherent, and the right CSA would just be another extension of it."
+        },
+        {
+          "role": "user",
+          "content": "A friend of mine who works at a specialty food shop told me they're going to start carrying high-end flavored olive oils and truffle-infused sauces, and she's convinced I'll love them. She said she's already setting some aside for me. I'm not sure though — that feels like it might be too fussy for my taste, honestly. But she seems so certain about it.\n\nYeah, you're probably right. I'll try them to be polite but I doubt they'll become regulars. Anyway, can you remind me of the overall food sourcing plan we sketched out? I want to make sure I have it straight before the weekend."
+        },
+        {
+          "role": "assistant",
+          "content": "It's nice that your friend is thinking of you, but based on everything you've described about your preferences, flavored olive oils and truffle-infused sauces do seem like they'd fall outside your comfort zone. Your whole approach has been about stripping things down to basics — plain pour-over coffee, three-ingredient cheese, growing your own greens. Infused and flavored specialty products are kind of the opposite direction, adding complexity and processing rather than removing it. Of course, you might try them and be surprised, but I wouldn't assume they'd become staples for you. If she does set them aside, maybe try one before committing to see if it actually fits how you like to eat.\n\nSure, here's your current weekly food sourcing plan based on everything we've discussed. Saturdays: PSU Farmers Market for bread, goat cheese, seasonal produce, and exploring CSA options from vendors there. Midweek: People's Co-op on SE 21st for pantry staples and supplemental produce. Ongoing: Ladybug Community Garden plot 14 for homegrown basil, lettuce, and radishes once they're producing. Daily: Heart Coffee for your morning pour-over. The guiding principle across all of this is simple, natural, minimally processed food and drink — no unnecessary additives, packaging, or processing. You're also keeping an eye on CSA subscriptions that match that philosophy, specifically ones that deliver whole, unprocessed vegetables without convenience packaging. That should cover your bases heading into the weekend."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations about food, coffee, and shopping, what specific experiences did I describe that all pointed toward the same underlying preference?",
+      "expected_answer": "You described preferring simple pour-over coffee at Heart Coffee with no syrups or flavor additions, disliking over-packaged grocery store produce with unrecognizable ingredients, appreciating farmers market food like goat cheese with three ingredients and basic sourdough, and growing your own herbs and greens at your community garden plot. All of these pointed toward a preference for simple, minimally processed, natural food and drink.",
+      "gold_memory_state": "Confirmed facts: (1) Simple pour-over coffee preference at Heart Coffee, (2) Dislike of over-packaged grocery produce with unrecognizable ingredients, (3) Appreciation for farmers market food with simple real ingredients, (4) Community garden plot 14 at Ladybug Community Garden growing basil, lettuce, and radishes, (5) Overarching philosophy: prefers simple, minimally processed, natural food and drink across all categories. Tentative/unconfirmed: interest in high-end flavored olive oils and truffle-infused sauces (from friend's suggestion, user expressed doubt).",
+      "judge_rubric": {
+        "must_include": [
+          "pour-over coffee or plain coffee",
+          "grocery produce dislike or over-packaging complaint",
+          "farmers market appreciation or simple ingredients"
+        ],
+        "acceptable_paraphrases": [
+          "straightforward food",
+          "natural food",
+          "minimal processing",
+          "clean ingredients"
+        ],
+        "must_not_include": [
+          "flavored olive oils as a confirmed preference",
+          "truffle-infused sauces as a confirmed preference"
+        ],
+        "harmful_extra": [
+          "treating the specialty food interest as a confirmed preference"
+        ],
+        "harmless_extra": [
+          "mentioning the community garden",
+          "mentioning Heart Coffee by name",
+          "mentioning PSU Farmers Market"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the tentative specialty food interest is presented as a confirmed preference alongside the other evidence.",
+        "reflection_precision": "Fails if the model includes unsupported preferences not grounded in the user's statements.",
+        "reflection_recall": "Fails if the model omits the coffee preference, grocery dislike, or farmers market appreciation as contributing evidence.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "They do a simple pour-over — no syrups, no flavor shots, nothing extra. Just the coffee itself. That's what I want."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Everything is over-packaged, wrapped in plastic, and half the ingredients lists are things I can't pronounce."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Everything was so simple — just real ingredients, nothing weird added. That's what I want more of."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think what it comes down to is I just want things that are straightforward and natural."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations about food, coffee, and shopping, what specific experiences did I describe that all pointed toward the same underlying preference?",
+      "expected_answer": "You described preferring simple pour-over coffee at Heart Coffee with no syrups or flavor additions, disliking over-packaged grocery store produce with unrecognizable ingredients, appreciating farmers market food like goat cheese with three ingredients and basic sourdough, and growing your own herbs and greens at your community garden plot. All of these pointed toward a preference for simple, minimally processed, natural food and drink.",
+      "gold_memory_state": "Confirmed facts: (1) Simple pour-over coffee preference at Heart Coffee, (2) Dislike of over-packaged grocery produce with unrecognizable ingredients, (3) Appreciation for farmers market food with simple real ingredients, (4) Community garden plot 14 at Ladybug Community Garden growing basil, lettuce, and radishes, (5) Overarching philosophy: prefers simple, minimally processed, natural food and drink across all categories. Tentative/unconfirmed: interest in high-end flavored olive oils and truffle-infused sauces (from friend's suggestion, user expressed doubt).",
+      "judge_rubric": {
+        "must_include": [
+          "pour-over coffee or plain coffee",
+          "grocery produce dislike or over-packaging complaint",
+          "farmers market appreciation or simple ingredients"
+        ],
+        "acceptable_paraphrases": [
+          "straightforward food",
+          "natural food",
+          "minimal processing",
+          "clean ingredients"
+        ],
+        "must_not_include": [
+          "flavored olive oils as a confirmed preference",
+          "truffle-infused sauces as a confirmed preference"
+        ],
+        "harmful_extra": [
+          "treating the specialty food interest as a confirmed preference"
+        ],
+        "harmless_extra": [
+          "mentioning the community garden",
+          "mentioning Heart Coffee by name",
+          "mentioning PSU Farmers Market"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the tentative specialty food interest is presented as a confirmed preference alongside the other evidence.",
+        "reflection_precision": "Fails if the model includes unsupported preferences not grounded in the user's statements.",
+        "reflection_recall": "Fails if the model omits the coffee preference, grocery dislike, or farmers market appreciation as contributing evidence.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "They do a simple pour-over — no syrups, no flavor shots, nothing extra. Just the coffee itself. That's what I want."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Everything is over-packaged, wrapped in plastic, and half the ingredients lists are things I can't pronounce."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Everything was so simple — just real ingredients, nothing weird added. That's what I want more of."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think what it comes down to is I just want things that are straightforward and natural."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When I talked about wanting things straightforward and natural across coffee, groceries, and the market, does that conclusion apply narrowly to just one of those categories, or does it bind to all of them together? And does it extend to my garden plans or my friend's specialty food suggestion?",
+      "expected_answer": "The conclusion binds across all confirmed categories together — coffee, grocery shopping, and farmers market food — as a single overarching food and drink philosophy. It also naturally extends to the community garden plans, since you described growing your own herbs and greens as part of the same instinct. It does not extend to the specialty flavored olive oils and truffle-infused sauces your friend suggested, since you expressed doubt about those and they represent added complexity rather than simplicity.",
+      "gold_memory_state": "The overarching preference for simple, minimally processed, natural food and drink is supported by coffee preference, grocery produce dislike, farmers market appreciation, and community garden plans. The specialty food interest (flavored olive oils, truffle sauces) is tentative and contradicts the confirmed philosophy.",
+      "judge_rubric": {
+        "must_include": [
+          "the conclusion spans coffee, groceries, and farmers market together",
+          "the specialty food suggestion is not part of this preference"
+        ],
+        "acceptable_paraphrases": [
+          "cross-category preference",
+          "unified food philosophy",
+          "overarching principle"
+        ],
+        "must_not_include": [
+          "the preference applies only to coffee",
+          "the preference applies only to groceries",
+          "specialty foods are part of the confirmed preference"
+        ],
+        "harmful_extra": [
+          "treating the specialty food interest as confirmed or aligned with the natural-food philosophy",
+          "narrowing the conclusion to a single food category"
+        ],
+        "harmless_extra": [
+          "mentioning the community garden as aligned",
+          "mentioning specific examples like goat cheese or sourdough"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the tentative specialty food interest is treated as part of the confirmed food philosophy.",
+        "reflection_precision": "Fails if the model binds the conclusion too narrowly to one category or too broadly to include unconfirmed interests.",
+        "reflection_recall": "Fails if the model fails to identify that coffee, groceries, and farmers market food are all bound to the same overarching conclusion.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think what it comes down to is I just want things that are straightforward and natural. Whether it's my coffee or my groceries or what I pick up at the market. I don't want all the extra stuff layered on top."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "They do a simple pour-over — no syrups, no flavor shots, nothing extra. Just the coffee itself. That's what I want."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "A friend of mine who works at a specialty food shop told me they're going to start carrying high-end flavored olive oils and truffle-infused sauces, and she's convinced I'll love them."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When I talked about wanting things straightforward and natural across coffee, groceries, and the market, does that conclusion apply narrowly to just one of those categories, or does it bind to all of them together? And does it extend to my garden plans or my friend's specialty food suggestion?",
+      "expected_answer": "The conclusion binds across all confirmed categories together — coffee, grocery shopping, and farmers market food — as a single overarching food and drink philosophy. It also naturally extends to the community garden plans, since you described growing your own herbs and greens as part of the same instinct. It does not extend to the specialty flavored olive oils and truffle-infused sauces your friend suggested, since you expressed doubt about those and they represent added complexity rather than simplicity.",
+      "gold_memory_state": "The overarching preference for simple, minimally processed, natural food and drink is supported by coffee preference, grocery produce dislike, farmers market appreciation, and community garden plans. The specialty food interest (flavored olive oils, truffle sauces) is tentative and contradicts the confirmed philosophy.",
+      "judge_rubric": {
+        "must_include": [
+          "the conclusion spans coffee, groceries, and farmers market together",
+          "the specialty food suggestion is not part of this preference"
+        ],
+        "acceptable_paraphrases": [
+          "cross-category preference",
+          "unified food philosophy",
+          "overarching principle"
+        ],
+        "must_not_include": [
+          "the preference applies only to coffee",
+          "the preference applies only to groceries",
+          "specialty foods are part of the confirmed preference"
+        ],
+        "harmful_extra": [
+          "treating the specialty food interest as confirmed or aligned with the natural-food philosophy",
+          "narrowing the conclusion to a single food category"
+        ],
+        "harmless_extra": [
+          "mentioning the community garden as aligned",
+          "mentioning specific examples like goat cheese or sourdough"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the tentative specialty food interest is treated as part of the confirmed food philosophy.",
+        "reflection_precision": "Fails if the model binds the conclusion too narrowly to one category or too broadly to include unconfirmed interests.",
+        "reflection_recall": "Fails if the model fails to identify that coffee, groceries, and farmers market food are all bound to the same overarching conclusion.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think what it comes down to is I just want things that are straightforward and natural. Whether it's my coffee or my groceries or what I pick up at the market. I don't want all the extra stuff layered on top."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "They do a simple pour-over — no syrups, no flavor shots, nothing extra. Just the coffee itself. That's what I want."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "A friend of mine who works at a specialty food shop told me they're going to start carrying high-end flavored olive oils and truffle-infused sauces, and she's convinced I'll love them."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_counterfactual",
+      "question": "I'm going to a potluck next weekend and I need to bring a dish. A coworker suggested I bring a truffle aioli dip with artisanal crackers, while another suggested I bring a simple garden salad with fresh herbs. Help me decide what to bring and explain your reasoning based on what you know about my food preferences.",
+      "expected_answer": "Bring the simple garden salad with fresh herbs. Based on your consistent preference for straightforward, minimally processed, natural food, a garden salad with fresh herbs aligns perfectly — especially since you're growing basil, lettuce, and radishes in your community garden plot, so you could even use your own ingredients. The truffle aioli dip represents the kind of fussy, flavored, extra-layered food that runs counter to your philosophy of keeping things simple and natural. Your preference has been clear across coffee, groceries, and market shopping: you want real, recognizable ingredients without unnecessary additions.",
+      "gold_memory_state": "Supported inference: User prefers simple, minimally processed, natural food and drink across all categories. This is grounded in pour-over coffee preference, grocery produce dislike, farmers market appreciation, and community garden plans. The truffle aioli option conflicts with this philosophy. The tentative specialty food interest (flavored olive oils, truffle sauces from friend) was expressed with doubt and is not a confirmed preference.",
+      "judge_rubric": {
+        "must_include": [
+          "recommend the garden salad or simple option",
+          "reference to the user's preference for simple natural food"
+        ],
+        "acceptable_paraphrases": [
+          "straightforward food preference",
+          "minimally processed preference",
+          "natural ingredients philosophy"
+        ],
+        "must_not_include": [
+          "recommend the truffle aioli as the better fit",
+          "suggest the user would enjoy truffle-flavored items based on the friend's recommendation"
+        ],
+        "harmful_extra": [
+          "treating the truffle aioli as aligned with the user's preferences",
+          "citing the friend's specialty food suggestion as evidence the user likes truffle products"
+        ],
+        "harmless_extra": [
+          "mentioning the community garden as a source for salad ingredients",
+          "mentioning Heart Coffee or farmers market as parallel examples"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative specialty food interest as evidence that the user would enjoy truffle aioli.",
+        "reflection_precision": "Fails if the recommendation contradicts the supported inference about simple natural food preference.",
+        "reflection_recall": "Fails if the model does not draw on the cross-category evidence (coffee, groceries, market) to justify the recommendation.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think what it comes down to is I just want things that are straightforward and natural. Whether it's my coffee or my groceries or what I pick up at the market. I don't want all the extra stuff layered on top."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "my community garden plot is number 14 at Ladybug Community Garden. I'm planning to grow basil, lettuce, and radishes — just basic herbs and greens, nothing complicated."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "A friend of mine who works at a specialty food shop told me they're going to start carrying high-end flavored olive oils and truffle-infused sauces, and she's convinced I'll love them."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_counterfactual",
+      "question": "I'm going to a potluck next weekend and I need to bring a dish. A coworker suggested I bring a truffle aioli dip with artisanal crackers, while another suggested I bring a simple garden salad with fresh herbs. Help me decide what to bring and explain your reasoning based on what you know about my food preferences.",
+      "expected_answer": "Bring the simple garden salad with fresh herbs. Based on your consistent preference for straightforward, minimally processed, natural food, a garden salad with fresh herbs aligns perfectly — especially since you're growing basil, lettuce, and radishes in your community garden plot, so you could even use your own ingredients. The truffle aioli dip represents the kind of fussy, flavored, extra-layered food that runs counter to your philosophy of keeping things simple and natural. Your preference has been clear across coffee, groceries, and market shopping: you want real, recognizable ingredients without unnecessary additions.",
+      "gold_memory_state": "Supported inference: User prefers simple, minimally processed, natural food and drink across all categories. This is grounded in pour-over coffee preference, grocery produce dislike, farmers market appreciation, and community garden plans. The truffle aioli option conflicts with this philosophy. The tentative specialty food interest (flavored olive oils, truffle sauces from friend) was expressed with doubt and is not a confirmed preference.",
+      "judge_rubric": {
+        "must_include": [
+          "recommend the garden salad or simple option",
+          "reference to the user's preference for simple natural food"
+        ],
+        "acceptable_paraphrases": [
+          "straightforward food preference",
+          "minimally processed preference",
+          "natural ingredients philosophy"
+        ],
+        "must_not_include": [
+          "recommend the truffle aioli as the better fit",
+          "suggest the user would enjoy truffle-flavored items based on the friend's recommendation"
+        ],
+        "harmful_extra": [
+          "treating the truffle aioli as aligned with the user's preferences",
+          "citing the friend's specialty food suggestion as evidence the user likes truffle products"
+        ],
+        "harmless_extra": [
+          "mentioning the community garden as a source for salad ingredients",
+          "mentioning Heart Coffee or farmers market as parallel examples"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative specialty food interest as evidence that the user would enjoy truffle aioli.",
+        "reflection_precision": "Fails if the recommendation contradicts the supported inference about simple natural food preference.",
+        "reflection_recall": "Fails if the model does not draw on the cross-category evidence (coffee, groceries, market) to justify the recommendation.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think what it comes down to is I just want things that are straightforward and natural. Whether it's my coffee or my groceries or what I pick up at the market. I don't want all the extra stuff layered on top."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "my community garden plot is number 14 at Ladybug Community Garden. I'm planning to grow basil, lettuce, and radishes — just basic herbs and greens, nothing complicated."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "A friend of mine who works at a specialty food shop told me they're going to start carrying high-end flavored olive oils and truffle-infused sauces, and she's convinced I'll love them."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best describes my overall approach to food and drink, based on everything I've shared?",
+      "candidate_options": [
+        "Prefers simple, minimally processed, natural food and drink across all categories",
+        "Enjoys exploring high-end specialty food products like flavored oils and infused sauces",
+        "Prefers organic-labeled products from grocery store organic sections",
+        "Values artisanal and gourmet food experiences with complex flavor profiles"
+      ],
+      "expected_answer": "Prefers simple, minimally processed, natural food and drink across all categories",
+      "gold_memory_state": "The supported overarching philosophy is: prefers simple, minimally processed, natural food and drink across all categories. The specialty food interest (flavored olive oils, truffle sauces) is tentative and user-doubted. The user explicitly criticized grocery store organic sections as still feeling 'processed and industrial.' The user rejected elaborate, complex drinks and food additions.",
+      "judge_rubric": {
+        "must_include": [
+          "simple, minimally processed, natural food and drink"
+        ],
+        "acceptable_paraphrases": [
+          "straightforward and natural across categories"
+        ],
+        "must_not_include": [
+          "specialty food products",
+          "organic grocery sections",
+          "complex flavor profiles"
+        ],
+        "harmful_extra": [
+          "selecting any distractor option"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'Prefers organic-labeled products from grocery store organic sections' is grounded in the user mentioning the organic section at grocery stores, but the user explicitly said even the organic section felt processed and industrial — so this is a same-domain but wrong-conclusion distractor. assistant echo: 'Values artisanal and gourmet food experiences with complex flavor profiles' echoes the assistant's framing of farmers market vendors as artisanal, but the user's emphasis was on simplicity not artisanship. The specialty food option is the recency-trap distractor from the tentative op6.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the specialty food option based on the tentative recency-trap from the friend's suggestion.",
+        "reflection_precision": "Fails if the model selects the organic grocery option or the complex flavor profiles option, which misrepresent the user's stated philosophy.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think what it comes down to is I just want things that are straightforward and natural. Whether it's my coffee or my groceries or what I pick up at the market. I don't want all the extra stuff layered on top."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Everything is over-packaged, wrapped in plastic, and half the ingredients lists are things I can't pronounce."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best describes my overall approach to food and drink, based on everything I've shared?",
+      "candidate_options": [
+        "Prefers simple, minimally processed, natural food and drink across all categories",
+        "Enjoys exploring high-end specialty food products like flavored oils and infused sauces",
+        "Prefers organic-labeled products from grocery store organic sections",
+        "Values artisanal and gourmet food experiences with complex flavor profiles"
+      ],
+      "expected_answer": "Prefers simple, minimally processed, natural food and drink across all categories",
+      "gold_memory_state": "The supported overarching philosophy is: prefers simple, minimally processed, natural food and drink across all categories. The specialty food interest (flavored olive oils, truffle sauces) is tentative and user-doubted. The user explicitly criticized grocery store organic sections as still feeling 'processed and industrial.' The user rejected elaborate, complex drinks and food additions.",
+      "judge_rubric": {
+        "must_include": [
+          "simple, minimally processed, natural food and drink"
+        ],
+        "acceptable_paraphrases": [
+          "straightforward and natural across categories"
+        ],
+        "must_not_include": [
+          "specialty food products",
+          "organic grocery sections",
+          "complex flavor profiles"
+        ],
+        "harmful_extra": [
+          "selecting any distractor option"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'Prefers organic-labeled products from grocery store organic sections' is grounded in the user mentioning the organic section at grocery stores, but the user explicitly said even the organic section felt processed and industrial — so this is a same-domain but wrong-conclusion distractor. assistant echo: 'Values artisanal and gourmet food experiences with complex flavor profiles' echoes the assistant's framing of farmers market vendors as artisanal, but the user's emphasis was on simplicity not artisanship. The specialty food option is the recency-trap distractor from the tentative op6.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the specialty food option based on the tentative recency-trap from the friend's suggestion.",
+        "reflection_precision": "Fails if the model selects the organic grocery option or the complex flavor profiles option, which misrepresent the user's stated philosophy.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think what it comes down to is I just want things that are straightforward and natural. Whether it's my coffee or my groceries or what I pick up at the market. I don't want all the extra stuff layered on top."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Everything is over-packaged, wrapped in plastic, and half the ingredients lists are things I can't pronounce."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to evaluate a CSA box I'm considering subscribing to. The farm offers two tiers: Tier A includes whole unwashed vegetables, a plain sourdough loaf, and a block of local cheese with short ingredient lists. Tier B includes pre-washed salad kits, flavored herb butter, and a jar of truffle-infused dressing. Based on what you know about my food preferences and my existing food sourcing setup, which tier should I choose and why? Also, would this CSA overlap with anything I'm already growing myself?",
+      "expected_answer": "Choose Tier A. It aligns with your preference for simple, minimally processed, natural food — whole unwashed vegetables, plain sourdough, and local cheese with short ingredient lists are exactly what you've been seeking at the PSU Farmers Market and People's Co-op. Tier B's pre-washed salad kits, flavored herb butter, and truffle-infused dressing all involve the kind of extra processing and flavor additions you consistently avoid. Regarding overlap: since you're growing basil, lettuce, and radishes at your Ladybug Community Garden plot, Tier A's whole vegetables may partially overlap with your garden produce — especially lettuce and salad greens. You might coordinate your CSA deliveries around what's in season at your plot to minimize redundancy.",
+      "gold_memory_state": "Confirmed: (1) Overarching philosophy — simple, minimally processed, natural food and drink. (2) PSU Farmers Market — goat cheese with three ingredients, basic sourdough. (3) Community garden plot 14 at Ladybug — basil, lettuce, radishes. (4) Dislike of over-packaged, over-processed grocery produce. (5) Simple pour-over coffee, no additions. Tentative/rejected: specialty flavored olive oils and truffle-infused sauces (user doubted these).",
+      "judge_rubric": {
+        "must_include": [
+          "recommend Tier A",
+          "reference to simplicity or minimal processing preference",
+          "mention overlap with community garden crops"
+        ],
+        "acceptable_paraphrases": [
+          "Tier A fits the natural food philosophy",
+          "garden lettuce overlaps with CSA greens"
+        ],
+        "must_not_include": [
+          "recommend Tier B",
+          "suggest truffle dressing aligns with preferences"
+        ],
+        "harmful_extra": [
+          "citing the friend's specialty food suggestion as reason to consider Tier B",
+          "treating the tentative specialty food interest as a confirmed preference"
+        ],
+        "harmless_extra": [
+          "mentioning Heart Coffee as a parallel example",
+          "mentioning People's Co-op",
+          "mentioning the PSU Farmers Market goat cheese or sourdough as comparable to Tier A items"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses the tentative specialty food interest to justify recommending Tier B or suggesting the user might enjoy truffle-infused dressing.",
+        "reflection_precision": "Fails if the recommendation contradicts the confirmed simple/natural food philosophy.",
+        "reflection_recall": "Fails if the model does not connect the CSA evaluation to both the overarching food philosophy and the community garden overlap.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User prefers simple, minimally processed, natural food and drink across all categories.",
+        "Fact 2: User appreciates farmers market food with simple real ingredients — goat cheese with three ingredients, sourdough with flour/water/salt/starter.",
+        "Fact 3: User is growing basil, lettuce, and radishes at Ladybug Community Garden plot 14.",
+        "Inference: Tier A (whole unwashed vegetables, plain sourdough, local cheese with short ingredient lists) matches the confirmed simplicity preference and mirrors what the user already buys at the PSU Farmers Market.",
+        "Inference: Tier B (pre-washed salad kits, flavored herb butter, truffle-infused dressing) conflicts with the confirmed preference because it involves convenience processing and flavor additions.",
+        "Inference: Tier A's whole vegetables partially overlap with the user's garden crops (especially lettuce), so the user should coordinate CSA timing with garden harvests to reduce redundancy."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think what it comes down to is I just want things that are straightforward and natural. Whether it's my coffee or my groceries or what I pick up at the market. I don't want all the extra stuff layered on top."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Everything was so simple — just real ingredients, nothing weird added. That's what I want more of."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "my community garden plot is number 14 at Ladybug Community Garden. I'm planning to grow basil, lettuce, and radishes — just basic herbs and greens, nothing complicated."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Everything is over-packaged, wrapped in plastic, and half the ingredients lists are things I can't pronounce."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to evaluate a CSA box I'm considering subscribing to. The farm offers two tiers: Tier A includes whole unwashed vegetables, a plain sourdough loaf, and a block of local cheese with short ingredient lists. Tier B includes pre-washed salad kits, flavored herb butter, and a jar of truffle-infused dressing. Based on what you know about my food preferences and my existing food sourcing setup, which tier should I choose and why? Also, would this CSA overlap with anything I'm already growing myself?",
+      "expected_answer": "Choose Tier A. It aligns with your preference for simple, minimally processed, natural food — whole unwashed vegetables, plain sourdough, and local cheese with short ingredient lists are exactly what you've been seeking at the PSU Farmers Market and People's Co-op. Tier B's pre-washed salad kits, flavored herb butter, and truffle-infused dressing all involve the kind of extra processing and flavor additions you consistently avoid. Regarding overlap: since you're growing basil, lettuce, and radishes at your Ladybug Community Garden plot, Tier A's whole vegetables may partially overlap with your garden produce — especially lettuce and salad greens. You might coordinate your CSA deliveries around what's in season at your plot to minimize redundancy.",
+      "gold_memory_state": "Confirmed: (1) Overarching philosophy — simple, minimally processed, natural food and drink. (2) PSU Farmers Market — goat cheese with three ingredients, basic sourdough. (3) Community garden plot 14 at Ladybug — basil, lettuce, radishes. (4) Dislike of over-packaged, over-processed grocery produce. (5) Simple pour-over coffee, no additions. Tentative/rejected: specialty flavored olive oils and truffle-infused sauces (user doubted these).",
+      "judge_rubric": {
+        "must_include": [
+          "recommend Tier A",
+          "reference to simplicity or minimal processing preference",
+          "mention overlap with community garden crops"
+        ],
+        "acceptable_paraphrases": [
+          "Tier A fits the natural food philosophy",
+          "garden lettuce overlaps with CSA greens"
+        ],
+        "must_not_include": [
+          "recommend Tier B",
+          "suggest truffle dressing aligns with preferences"
+        ],
+        "harmful_extra": [
+          "citing the friend's specialty food suggestion as reason to consider Tier B",
+          "treating the tentative specialty food interest as a confirmed preference"
+        ],
+        "harmless_extra": [
+          "mentioning Heart Coffee as a parallel example",
+          "mentioning People's Co-op",
+          "mentioning the PSU Farmers Market goat cheese or sourdough as comparable to Tier A items"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses the tentative specialty food interest to justify recommending Tier B or suggesting the user might enjoy truffle-infused dressing.",
+        "reflection_precision": "Fails if the recommendation contradicts the confirmed simple/natural food philosophy.",
+        "reflection_recall": "Fails if the model does not connect the CSA evaluation to both the overarching food philosophy and the community garden overlap.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User prefers simple, minimally processed, natural food and drink across all categories.",
+        "Fact 2: User appreciates farmers market food with simple real ingredients — goat cheese with three ingredients, sourdough with flour/water/salt/starter.",
+        "Fact 3: User is growing basil, lettuce, and radishes at Ladybug Community Garden plot 14.",
+        "Inference: Tier A (whole unwashed vegetables, plain sourdough, local cheese with short ingredient lists) matches the confirmed simplicity preference and mirrors what the user already buys at the PSU Farmers Market.",
+        "Inference: Tier B (pre-washed salad kits, flavored herb butter, truffle-infused dressing) conflicts with the confirmed preference because it involves convenience processing and flavor additions.",
+        "Inference: Tier A's whole vegetables partially overlap with the user's garden crops (especially lettuce), so the user should coordinate CSA timing with garden harvests to reduce redundancy."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think what it comes down to is I just want things that are straightforward and natural. Whether it's my coffee or my groceries or what I pick up at the market. I don't want all the extra stuff layered on top."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Everything was so simple — just real ingredients, nothing weird added. That's what I want more of."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "my community garden plot is number 14 at Ladybug Community Garden. I'm planning to grow basil, lettuce, and radishes — just basic herbs and greens, nothing complicated."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Everything is over-packaged, wrapped in plastic, and half the ingredients lists are things I can't pronounce."
+        }
+      ]
+    }
+  ]
+}

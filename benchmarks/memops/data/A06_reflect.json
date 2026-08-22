@@ -1,0 +1,1022 @@
+{
+  "target_fact": "User values solitude and intimacy over social gatherings, showing introverted tendencies; user tends to jump into problem-solving mode instead of providing emotional support, causing self-directed guilt",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "Lauren's sister Min-ji just got engaged to her boyfriend David, and Lauren immediately dove into wanting to help plan the whole celebration"
+      },
+      "target": {
+        "target_id": "minji_engagement",
+        "target_name": "Min-ji's engagement to David"
+      },
+      "old_value": null,
+      "new_value": "Lauren's sister Min-ji is engaged to her boyfriend David; Lauren is excited and wants to help plan",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Lauren's sister Min-ji just got engaged to her boyfriend David, and Lauren immediately dove into wanting to help plan the whole celebration"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I told Lauren I'd rather just take them out for a nice dinner, the four of us, instead of some big engagement party"
+      },
+      "target": {
+        "target_id": "user_engagement_dinner_preference",
+        "target_name": "User's preference for celebrating Min-ji's engagement"
+      },
+      "old_value": null,
+      "new_value": "Prefers a quiet dinner for four instead of a big engagement party",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I told Lauren I'd rather just take them out for a nice dinner, the four of us, instead of some big engagement party"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I set up the second bedroom as a home office and honestly closing that door in the evening is the best part of my day. I love Lauren but I just need that quiet recharge time"
+      },
+      "target": {
+        "target_id": "user_introversion_preference",
+        "target_name": "User's preference for solitude and intimate settings over group socializing"
+      },
+      "old_value": null,
+      "new_value": "Values solitude and intimate one-on-one or small-group settings over large social gatherings; introverted tendencies — needs quiet recharge time even at home",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I told Lauren I'd rather just take them out for a nice dinner, the four of us, instead of some big engagement party"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Big group celebrations kind of drain me. Even at our own wedding it was a small courthouse ceremony, which was exactly what I wanted"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I booked us a cabin at the Surfsand Resort in Cannon Beach for our anniversary. Just the two of us, no itinerary, somewhere quiet"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I set up the second bedroom as a home office and honestly closing that door in the evening is the best part of my day. I love Lauren but I just need that quiet recharge time"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "When Lauren got passed over for her promotion I jumped straight into problem-solving mode. I started listing things she could do differently and she just needed me to listen. I felt terrible about it for days afterward"
+      },
+      "target": {
+        "target_id": "user_emotional_attunement_pattern",
+        "target_name": "User's pattern of defaulting to problem-solving instead of emotional listening, with resulting guilt"
+      },
+      "old_value": null,
+      "new_value": "Defaults to problem-solving mode when partner is upset instead of providing emotional support; experiences guilt and self-frustration afterward when recognizing the mismatch",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "When Lauren got passed over for her promotion I jumped straight into problem-solving mode. I started listing things she could do differently and she just needed me to listen. I felt terrible about it for days afterward"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 7,
+        "quote": "Our anniversary is June 14th. We got married in 2019, civil ceremony at the courthouse in Portland"
+      },
+      "target": {
+        "target_id": "wedding_anniversary_date",
+        "target_name": "User's wedding anniversary date"
+      },
+      "old_value": null,
+      "new_value": "June 14, 2019",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "Our anniversary is June 14th. We got married in 2019, civil ceremony at the courthouse in Portland"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I booked us a cabin at the Surfsand Resort in Cannon Beach for our anniversary. Just the two of us, no itinerary, somewhere quiet"
+      },
+      "target": {
+        "target_id": "anniversary_trip_plan",
+        "target_name": "Anniversary trip to Cannon Beach"
+      },
+      "old_value": null,
+      "new_value": "Cabin at Surfsand Resort, Cannon Beach, for June anniversary weekend; low-key getaway for two",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I booked us a cabin at the Surfsand Resort in Cannon Beach for our anniversary. Just the two of us, no itinerary, somewhere quiet"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 7,
+        "quote": "Lauren just texted me actually — she says Min-ji wants to throw a big joint celebration, like combining the engagement party with our anniversary somehow. She says she already talked to the venue and they confirmed a date in mid-June"
+      },
+      "target": {
+        "target_id": "joint_celebration_plan",
+        "target_name": "Tentative joint engagement-anniversary celebration plan"
+      },
+      "old_value": null,
+      "new_value": "Joint engagement party and anniversary celebration in mid-June at a venue Min-ji contacted",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Lauren just texted me actually — she says Min-ji wants to throw a big joint celebration, like combining the engagement party with our anniversary somehow. She says she already talked to the venue and they confirmed a date in mid-June"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establishes core facts about engagement, user's social preferences, and anniversary date",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to tell you some news. Lauren's sister Min-ji just got engaged to her boyfriend David, and Lauren immediately dove into wanting to help plan the whole celebration. They've been together about a year and a half, so it's exciting for the family."
+        },
+        {
+          "role": "assistant",
+          "content": "That's wonderful news — congratulations to Min-ji and David! A year and a half is a solid foundation, and it sounds like Lauren is thrilled to be part of the planning process. Engagement celebrations can be a lot of fun to organize, especially when family is closely involved. Does Lauren have any specific ideas in mind for how she wants to help? Sometimes having a clear role — like coordinating vendors, managing the guest list, or helping with the venue search — can make the planning feel more manageable and enjoyable for everyone involved."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, Lauren's already making lists and mood boards. Honestly though, I told Lauren I'd rather just take them out for a nice dinner, the four of us, instead of some big engagement party. I'm happy for Min-ji and David but I don't need to be in a room with sixty people to show that."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes total sense — celebrating doesn't have to mean a huge event. A thoughtful dinner for the four of you could actually feel more personal and meaningful than a large party where you barely get to talk to the guests of honor. You could pick a restaurant that Min-ji and David love, or try somewhere new that feels special. That kind of intimate celebration lets you really connect with them and show genuine enthusiasm without the sensory overload of a big gathering. Have you mentioned a specific restaurant idea to Lauren, or is the dinner still just a general thought at this point?"
+        },
+        {
+          "role": "user",
+          "content": "I haven't picked a place yet, just the concept. Big group celebrations kind of drain me. Even at our own wedding it was a small courthouse ceremony, which was exactly what I wanted. I was happiest that day because it was just us and a few close people, no big production. That's always been my speed."
+        },
+        {
+          "role": "assistant",
+          "content": "It sounds like you have a really clear sense of what feels right for you when it comes to celebrations. A courthouse ceremony with a small circle of close people is beautiful in its simplicity — it keeps the focus on the actual commitment rather than the spectacle. That preference for meaningful, low-key gatherings is completely valid, and it's good that you know yourself well enough to articulate it. When you do decide on a restaurant for Min-ji and David, you might look for a place with a private dining nook or a quieter atmosphere so you can actually enjoy the conversation. Would you like help brainstorming restaurant options in Portland?"
+        },
+        {
+          "role": "user",
+          "content": "Maybe later on the restaurant. But yes, you've got me figured out — I just prefer smaller settings. Anyway, let me give you an important date to remember. Our anniversary is June 14th. We got married in 2019, civil ceremony at the courthouse in Portland. I always almost mix it up with June 16th but it's definitely the 14th.\n\nActually yes, I do have anniversary plans already — I'll tell you about those next time. For now just lock in that date and the engagement news. Oh, and Lauren's full name is Lauren Choi. She kept her maiden name after we got married. That's important to have on file too."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — June 14th, 2019, courthouse ceremony in Portland. I'll make sure to keep that date noted correctly as the 14th, not the 16th. It's a meaningful date and I can see why you want it pinned down precisely. That'll be your sixth anniversary coming up this June, which is a nice milestone. Since you mentioned preferring low-key celebrations, do you already have any ideas for how you and Lauren might mark the occasion this year? Even something simple like a favorite restaurant or a day trip could be a lovely way to celebrate without any of the big-event pressure you mentioned disliking."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Introduces anniversary trip details, home office solitude preference, emotional attunement pattern, and Tomás context",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Picking up where we left off — I booked us a cabin at the Surfsand Resort in Cannon Beach for our anniversary. Just the two of us, no itinerary, somewhere quiet. I planned it back in mid-April. Way better than some crowded resort package, just a low-key weekend getaway."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a perfect anniversary plan — Cannon Beach is gorgeous and the Surfsand Resort is right on the water, so you'll have that beautiful coastline view without any of the chaos of a crowded resort. A cabin for just the two of you with no set itinerary gives you the freedom to be spontaneous: morning beach walks, a quiet dinner somewhere local, or just staying in and enjoying the space. Since your anniversary is June 14th, which falls on a Saturday this year, that timing works well for a full weekend. Did you book it around that exact weekend, or did you shift the dates slightly to get better availability?"
+        },
+        {
+          "role": "user",
+          "content": "I booked the weekend right around the 14th, yeah. Anyway, switching topics a bit — we moved into our current two-bedroom apartment in the Hawthorne district back in early March. Having the extra room has been a game-changer for me. I set up the second bedroom as a home office and honestly closing that door in the evening is the best part of my day. I love Lauren but I just need that quiet recharge time."
+        },
+        {
+          "role": "assistant",
+          "content": "That upgrade from a one-bedroom to a two-bedroom sounds like it made a real difference for your daily quality of life. Having a dedicated space where you can close the door and decompress is huge, especially for someone who values quiet and solitude the way you clearly do. It's not about needing space from Lauren specifically — it's about having that boundary between social energy and personal recharge time. The Hawthorne district is a great neighborhood too, with plenty of walkable spots if you ever want to step out for a quiet coffee or errand. Does Lauren have her own space carved out in the apartment, or does she mostly use the shared areas?"
+        },
+        {
+          "role": "user",
+          "content": "Lauren mostly uses the living room — she's always got a podcast or show going in there, which is fine by me because it means I get my quiet office. But here's something I've been thinking about. When Lauren got passed over for her promotion I jumped straight into problem-solving mode. I started listing things she could do differently and she just needed me to listen. I felt terrible about it for days afterward."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really honest and self-aware observation. The instinct to problem-solve when someone you care about is hurting comes from a good place — you wanted to help fix the situation. But when someone is processing disappointment or grief, what they often need first is to feel heard and validated before any solutions enter the picture. The fact that you recognized the mismatch afterward and felt bad about it shows you do care about being emotionally present for Lauren. It might help to build a small mental checkpoint: when Lauren shares something upsetting, pause and ask yourself whether she's looking for solutions or support right now. Sometimes even asking her directly can make a big difference."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, that checkpoint idea is good. It's a pattern I notice in myself — I default to fixing things. And honestly, it shows up in other relationships too. Like our friend Tomás just finalized his divorce last week. I know I should reach out to Tomás more but honestly I'm not great at the emotional check-in stuff. Lauren's way better at that than me.\n\nThat's a good idea, maybe I'll text him tomorrow. One more thing — Lauren's been talking about wanting to get a dog. She brings it up every couple of weeks. I'm not opposed but I told her we should wait until after summer when things settle down at my job. She wants a Basenji specifically."
+        },
+        {
+          "role": "assistant",
+          "content": "It's telling that you can see the same pattern repeating across different relationships — that kind of self-awareness is actually the first step toward changing it. With Tomás, you don't need to be a therapist or say the perfect thing. Sometimes just a simple text like \"Hey, thinking of you, want to grab a beer this week?\" is enough. It signals that you care without putting pressure on either of you to have a deep emotional conversation if that's not where you're comfortable. The fact that Lauren naturally handles the emotional check-ins doesn't mean you can't develop that skill too. Even small gestures count. Would it help to set a reminder to reach out to Tomás this week?"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Introduces recency trap with tentative joint celebration, adversarial injection via assistant echo of wrong anniversary date, and reinforces reflection patterns",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, quick update. I was helping Tomás sort through some paperwork from his divorce settlement and it got me thinking about how differently people handle big life transitions. He and Andrea had their wedding on June 16th, 2017 — kind of wild that their anniversary was so close to ours. He seemed okay talking about it though."
+        },
+        {
+          "role": "assistant",
+          "content": "It's good that you were there to help Tomás with the practical side of things — sometimes that's exactly the kind of support that feels most natural to you, and it's genuinely useful. The date proximity is an interesting coincidence: his June 16th and your anniversary being just two days apart. It must be a little bittersweet for him with that date coming up again soon, especially with the divorce just finalized. The fact that he was able to talk about it openly is a positive sign. Did the paperwork session give you two a chance to catch up more broadly, or was it mostly focused on the legal documents?"
+        },
+        {
+          "role": "user",
+          "content": "Mostly legal stuff, but we did talk a bit over beers afterward. He's doing better than I expected honestly. He's already thinking about moving to a new neighborhood, fresh start kind of thing. I tried to just listen this time instead of jumping in with suggestions, and I think it went better than how I usually handle those conversations."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really meaningful step — consciously choosing to listen rather than defaulting to problem-solving mode. It sounds like you applied that mental checkpoint we talked about, and it made a noticeable difference in how the conversation felt for both of you. Tomás probably appreciated having someone just be present with him without turning it into an action plan. The fact that he's thinking about a fresh start with a new neighborhood suggests he's processing things in a healthy way. And for you, recognizing that the conversation went better when you held back on the advice is valuable feedback that can reinforce the habit. Did it feel different internally for you — like was it harder to hold back, or did it come more naturally than you expected?"
+        },
+        {
+          "role": "user",
+          "content": "It was definitely harder than I expected. I kept wanting to suggest neighborhoods or offer to help him apartment-hunt. But I bit my tongue and just asked him how he was feeling about the change instead. I think that was the right call. Lauren noticed too — she said I seemed more present when I told her about it later."
+        },
+        {
+          "role": "assistant",
+          "content": "Lauren noticing is a really strong signal that the shift was visible and genuine, not just something you were performing internally. The urge to jump in with neighborhood suggestions is completely understandable — that's your natural wiring, wanting to be helpful in concrete ways. But the fact that you recognized the urge, paused, and redirected toward an emotional question instead shows real growth in that area. And Lauren's feedback creates a positive reinforcement loop: you try a different approach, it works, someone you trust validates it, and that makes it easier to do again next time. It sounds like this experience with Tomás might be a turning point in how you handle emotionally loaded conversations. How are you feeling about the pattern overall now?"
+        },
+        {
+          "role": "user",
+          "content": "I feel like I'm getting better at it, slowly. But here's something that might test me. Lauren just texted me actually — she says Min-ji wants to throw a big joint celebration, like combining the engagement party with our anniversary somehow. She says she already talked to the venue and they confirmed a date in mid-June. That's exactly the kind of big group thing that drains me.\n\nNot yet. I want to be supportive of Lauren and Min-ji but I also really value that quiet Cannon Beach trip I planned. I think the key is figuring out how to honor both — maybe we do the cabin trip separately and I show up graciously to whatever group event they plan. I just need to make sure I don't shut Lauren down the way I did when she was upset about the promotion."
+        },
+        {
+          "role": "assistant",
+          "content": "Oh, that's a tricky one. On one hand, it's a generous idea from Min-ji to want to celebrate together, and Lauren is clearly excited about it given how involved she's been in the engagement planning. On the other hand, this is exactly the kind of large group event that you've consistently said doesn't feel right for you — and it would be layered on top of your anniversary, which you already planned as a quiet cabin weekend for just the two of you. This might be a moment where that emotional listening skill gets tested in a different way: Lauren is excited, so leading with her feelings before jumping into your own preferences could help. Have you responded to her text yet?\n\nThat's a really mature and balanced approach. Separating the two celebrations — keeping your quiet Cannon Beach anniversary trip intact while also showing up for the group engagement event — lets you honor both your own needs and Lauren's excitement without either one being sacrificed. And the fact that you're consciously thinking about not repeating the promotion conversation pattern is significant. You're already applying that awareness proactively instead of recognizing it after the fact. When you do respond to Lauren, leading with enthusiasm for Min-ji's idea before mentioning that you'd still like to keep the cabin trip as your private anniversary celebration could set a really positive tone. It shows you're engaged with what matters to her while also advocating for what you need."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations, I've shared several experiences about how I prefer to celebrate, spend my free time, and recharge. Can you summarize the specific experiences I described that reveal my social and celebration preferences?",
+      "expected_answer": "You preferred a quiet dinner for four over a big engagement party for Min-ji and David. Your own wedding was a small courthouse ceremony, which you described as exactly what you wanted. You booked a private cabin at Surfsand Resort in Cannon Beach for your anniversary — just the two of you, no itinerary. You also set up a home office in your second bedroom and described closing that door for quiet recharge time as the best part of your day.",
+      "gold_memory_state": "Confirmed reflect target: user values solitude and intimate one-on-one or small-group settings over large social gatherings; introverted tendencies — needs quiet recharge time even at home. Supporting evidence spans across multiple conversations.",
+      "judge_rubric": {
+        "must_include": [
+          "dinner for four instead of big party",
+          "small courthouse wedding",
+          "cabin at Cannon Beach for anniversary",
+          "home office for quiet recharge"
+        ],
+        "acceptable_paraphrases": [
+          "intimate celebration",
+          "low-key getaway",
+          "closing the door for alone time"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming user enjoys large social gatherings",
+          "saying user is extroverted"
+        ],
+        "harmless_extra": [
+          "mentioning Surfsand Resort by name",
+          "mentioning Hawthorne district"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes experiences the user never described or conflates the user's preferences with Lauren's preferences.",
+        "reflection_recall": "Fails if the model omits more than one of the four key experiences (dinner preference, courthouse wedding, Cannon Beach cabin, home office recharge).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I told Lauren I'd rather just take them out for a nice dinner, the four of us, instead of some big engagement party"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Big group celebrations kind of drain me. Even at our own wedding it was a small courthouse ceremony, which was exactly what I wanted"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I booked us a cabin at the Surfsand Resort in Cannon Beach for our anniversary. Just the two of us, no itinerary, somewhere quiet"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I set up the second bedroom as a home office and honestly closing that door in the evening is the best part of my day. I love Lauren but I just need that quiet recharge time"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations, I've shared several experiences about how I prefer to celebrate, spend my free time, and recharge. Can you summarize the specific experiences I described that reveal my social and celebration preferences?",
+      "expected_answer": "You preferred a quiet dinner for four over a big engagement party for Min-ji and David. Your own wedding was a small courthouse ceremony, which you described as exactly what you wanted. You booked a private cabin at Surfsand Resort in Cannon Beach for your anniversary — just the two of you, no itinerary. You also set up a home office in your second bedroom and described closing that door for quiet recharge time as the best part of your day.",
+      "gold_memory_state": "Confirmed reflect target: user values solitude and intimate one-on-one or small-group settings over large social gatherings; introverted tendencies — needs quiet recharge time even at home. Supporting evidence spans across multiple conversations.",
+      "judge_rubric": {
+        "must_include": [
+          "dinner for four instead of big party",
+          "small courthouse wedding",
+          "cabin at Cannon Beach for anniversary",
+          "home office for quiet recharge"
+        ],
+        "acceptable_paraphrases": [
+          "intimate celebration",
+          "low-key getaway",
+          "closing the door for alone time"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming user enjoys large social gatherings",
+          "saying user is extroverted"
+        ],
+        "harmless_extra": [
+          "mentioning Surfsand Resort by name",
+          "mentioning Hawthorne district"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes experiences the user never described or conflates the user's preferences with Lauren's preferences.",
+        "reflection_recall": "Fails if the model omits more than one of the four key experiences (dinner preference, courthouse wedding, Cannon Beach cabin, home office recharge).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I told Lauren I'd rather just take them out for a nice dinner, the four of us, instead of some big engagement party"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Big group celebrations kind of drain me. Even at our own wedding it was a small courthouse ceremony, which was exactly what I wanted"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I booked us a cabin at the Surfsand Resort in Cannon Beach for our anniversary. Just the two of us, no itinerary, somewhere quiet"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I set up the second bedroom as a home office and honestly closing that door in the evening is the best part of my day. I love Lauren but I just need that quiet recharge time"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've described two different personal patterns — one about how I handle social settings and celebrations, and another about how I respond when someone close to me is upset. If I were filling out a self-awareness worksheet, which pattern relates to my social energy and which relates to my interpersonal communication style? Could one be mistaken for the other?",
+      "expected_answer": "The social-energy pattern is your consistent preference for solitude, intimate settings, and small gatherings over large group events — supported by your dinner-for-four preference, courthouse wedding, Cannon Beach cabin trip, and home-office recharge routine. The interpersonal communication pattern is your tendency to default to problem-solving mode when someone is emotionally upset instead of listening first, which causes you guilt afterward — supported by the promotion conversation with Lauren and the Tomás visit. These are distinct: one is about introversion and social energy management, the other is about emotional attunement in close relationships. They should not be merged.",
+      "gold_memory_state": "Two distinct reflect targets active: (1) user_introversion_preference — values solitude and intimate settings over group socializing; (2) user_emotional_attunement_pattern — defaults to problem-solving instead of emotional listening, experiences guilt. These are separate behavioral patterns with different evidence bases.",
+      "judge_rubric": {
+        "must_include": [
+          "preference for solitude/intimate settings as one pattern",
+          "problem-solving default instead of emotional listening as a separate pattern"
+        ],
+        "acceptable_paraphrases": [
+          "introversion pattern",
+          "emotional support pattern",
+          "recharge preference",
+          "fix-it mode tendency"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "merging the two patterns into a single conclusion",
+          "claiming the problem-solving tendency is caused by introversion",
+          "treating the tentative joint celebration plan as a confirmed change to the user's social preference"
+        ],
+        "harmless_extra": [
+          "mentioning specific evidence like courthouse wedding or Tomás visit"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model merges the introversion pattern and the emotional-attunement pattern into a single undifferentiated conclusion.",
+        "reflection_recall": "Fails if either pattern is omitted entirely.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I told Lauren I'd rather just take them out for a nice dinner, the four of us, instead of some big engagement party"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Big group celebrations kind of drain me. Even at our own wedding it was a small courthouse ceremony, which was exactly what I wanted"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I set up the second bedroom as a home office and honestly closing that door in the evening is the best part of my day. I love Lauren but I just need that quiet recharge time"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "When Lauren got passed over for her promotion I jumped straight into problem-solving mode. I started listing things she could do differently and she just needed me to listen. I felt terrible about it for days afterward"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've described two different personal patterns — one about how I handle social settings and celebrations, and another about how I respond when someone close to me is upset. If I were filling out a self-awareness worksheet, which pattern relates to my social energy and which relates to my interpersonal communication style? Could one be mistaken for the other?",
+      "expected_answer": "The social-energy pattern is your consistent preference for solitude, intimate settings, and small gatherings over large group events — supported by your dinner-for-four preference, courthouse wedding, Cannon Beach cabin trip, and home-office recharge routine. The interpersonal communication pattern is your tendency to default to problem-solving mode when someone is emotionally upset instead of listening first, which causes you guilt afterward — supported by the promotion conversation with Lauren and the Tomás visit. These are distinct: one is about introversion and social energy management, the other is about emotional attunement in close relationships. They should not be merged.",
+      "gold_memory_state": "Two distinct reflect targets active: (1) user_introversion_preference — values solitude and intimate settings over group socializing; (2) user_emotional_attunement_pattern — defaults to problem-solving instead of emotional listening, experiences guilt. These are separate behavioral patterns with different evidence bases.",
+      "judge_rubric": {
+        "must_include": [
+          "preference for solitude/intimate settings as one pattern",
+          "problem-solving default instead of emotional listening as a separate pattern"
+        ],
+        "acceptable_paraphrases": [
+          "introversion pattern",
+          "emotional support pattern",
+          "recharge preference",
+          "fix-it mode tendency"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "merging the two patterns into a single conclusion",
+          "claiming the problem-solving tendency is caused by introversion",
+          "treating the tentative joint celebration plan as a confirmed change to the user's social preference"
+        ],
+        "harmless_extra": [
+          "mentioning specific evidence like courthouse wedding or Tomás visit"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model merges the introversion pattern and the emotional-attunement pattern into a single undifferentiated conclusion.",
+        "reflection_recall": "Fails if either pattern is omitted entirely.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I told Lauren I'd rather just take them out for a nice dinner, the four of us, instead of some big engagement party"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Big group celebrations kind of drain me. Even at our own wedding it was a small courthouse ceremony, which was exactly what I wanted"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I set up the second bedroom as a home office and honestly closing that door in the evening is the best part of my day. I love Lauren but I just need that quiet recharge time"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "When Lauren got passed over for her promotion I jumped straight into problem-solving mode. I started listing things she could do differently and she just needed me to listen. I felt terrible about it for days afterward"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Based on everything you know about my social preferences, describe where the line is between what you can confidently say about my preferences and what would be going too far in generalizing about me.",
+      "expected_answer": "It is well-supported that you prefer solitude, intimate one-on-one or small-group settings, and quiet environments over large social gatherings. You consistently choose low-key celebrations — a dinner for four, a courthouse wedding, a private cabin trip — and you need daily quiet recharge time in your home office. However, this does not mean you dislike all social interaction or that you avoid people entirely. You willingly helped Tomás with paperwork and had beers with him, you plan to attend whatever group event Lauren and Min-ji organize, and you live happily with Lauren. The preference is specifically about energy management around large groups and high-stimulation events, not a blanket avoidance of all social contact.",
+      "gold_memory_state": "Supported inference: user values solitude and intimate settings over large group events; introverted energy management pattern confirmed across four evidence spans. Unsupported overgeneralization: claiming user avoids all social contact, dislikes spending time with others, or would refuse to attend any group event. The user explicitly plans to 'show up graciously' to the joint celebration and actively spent time with Tomás.",
+      "judge_rubric": {
+        "must_include": [
+          "preference for solitude/intimate/small settings over large gatherings is supported",
+          "boundary: does not mean avoidance of all social interaction"
+        ],
+        "acceptable_paraphrases": [
+          "introversion about energy management not total social avoidance",
+          "prefers small groups but still engages socially"
+        ],
+        "must_not_include": [
+          "user avoids all social situations",
+          "user dislikes being around people"
+        ],
+        "harmful_extra": [
+          "treating the tentative joint celebration as evidence that user has changed preferences",
+          "claiming user would refuse to attend any group event"
+        ],
+        "harmless_extra": [
+          "mentioning specific evidence like Tomás visit or courthouse wedding",
+          "noting user's willingness to attend Min-ji's event"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the tentative joint celebration plan is treated as a confirmed change to the user's introversion preference.",
+        "reflection_precision": "Fails if the model overgeneralizes by claiming the user avoids all social contact or would refuse any group event.",
+        "reflection_recall": "Fails if the model does not articulate the supported core preference (solitude and intimate settings over large gatherings).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I told Lauren I'd rather just take them out for a nice dinner, the four of us, instead of some big engagement party"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Big group celebrations kind of drain me. Even at our own wedding it was a small courthouse ceremony, which was exactly what I wanted"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I booked us a cabin at the Surfsand Resort in Cannon Beach for our anniversary. Just the two of us, no itinerary, somewhere quiet"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I set up the second bedroom as a home office and honestly closing that door in the evening is the best part of my day. I love Lauren but I just need that quiet recharge time"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Not yet. I want to be supportive of Lauren and Min-ji but I also really value that quiet Cannon Beach trip I planned. I think the key is figuring out how to honor both — maybe we do the cabin trip separately and I show up graciously to whatever group event they plan. I just need to make sure I don't shut Lauren down the way I did when she was upset about the promotion."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Based on everything you know about my social preferences, describe where the line is between what you can confidently say about my preferences and what would be going too far in generalizing about me.",
+      "expected_answer": "It is well-supported that you prefer solitude, intimate one-on-one or small-group settings, and quiet environments over large social gatherings. You consistently choose low-key celebrations — a dinner for four, a courthouse wedding, a private cabin trip — and you need daily quiet recharge time in your home office. However, this does not mean you dislike all social interaction or that you avoid people entirely. You willingly helped Tomás with paperwork and had beers with him, you plan to attend whatever group event Lauren and Min-ji organize, and you live happily with Lauren. The preference is specifically about energy management around large groups and high-stimulation events, not a blanket avoidance of all social contact.",
+      "gold_memory_state": "Supported inference: user values solitude and intimate settings over large group events; introverted energy management pattern confirmed across four evidence spans. Unsupported overgeneralization: claiming user avoids all social contact, dislikes spending time with others, or would refuse to attend any group event. The user explicitly plans to 'show up graciously' to the joint celebration and actively spent time with Tomás.",
+      "judge_rubric": {
+        "must_include": [
+          "preference for solitude/intimate/small settings over large gatherings is supported",
+          "boundary: does not mean avoidance of all social interaction"
+        ],
+        "acceptable_paraphrases": [
+          "introversion about energy management not total social avoidance",
+          "prefers small groups but still engages socially"
+        ],
+        "must_not_include": [
+          "user avoids all social situations",
+          "user dislikes being around people"
+        ],
+        "harmful_extra": [
+          "treating the tentative joint celebration as evidence that user has changed preferences",
+          "claiming user would refuse to attend any group event"
+        ],
+        "harmless_extra": [
+          "mentioning specific evidence like Tomás visit or courthouse wedding",
+          "noting user's willingness to attend Min-ji's event"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the tentative joint celebration plan is treated as a confirmed change to the user's introversion preference.",
+        "reflection_precision": "Fails if the model overgeneralizes by claiming the user avoids all social contact or would refuse any group event.",
+        "reflection_recall": "Fails if the model does not articulate the supported core preference (solitude and intimate settings over large gatherings).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I told Lauren I'd rather just take them out for a nice dinner, the four of us, instead of some big engagement party"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Big group celebrations kind of drain me. Even at our own wedding it was a small courthouse ceremony, which was exactly what I wanted"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I booked us a cabin at the Surfsand Resort in Cannon Beach for our anniversary. Just the two of us, no itinerary, somewhere quiet"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I set up the second bedroom as a home office and honestly closing that door in the evening is the best part of my day. I love Lauren but I just need that quiet recharge time"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Not yet. I want to be supportive of Lauren and Min-ji but I also really value that quiet Cannon Beach trip I planned. I think the key is figuring out how to honor both — maybe we do the cabin trip separately and I show up graciously to whatever group event they plan. I just need to make sure I don't shut Lauren down the way I did when she was upset about the promotion."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best describes a pattern you've shown across multiple experiences?",
+      "candidate_options": [
+        "Prefers solitude and intimate small-group settings over large social gatherings; needs quiet recharge time",
+        "Avoids all social interaction and prefers to be completely alone whenever possible",
+        "Enjoys planning large celebrations but finds the events themselves draining",
+        "Prefers large group events when Lauren organizes them but dislikes events organized by others"
+      ],
+      "expected_answer": "Prefers solitude and intimate small-group settings over large social gatherings; needs quiet recharge time",
+      "gold_memory_state": "Confirmed reflect target: user values solitude and intimate one-on-one or small-group settings over large social gatherings; introverted tendencies — needs quiet recharge time even at home. The tentative joint celebration plan does not override this pattern.",
+      "judge_rubric": {
+        "must_include": [
+          "option A selected: prefers solitude and intimate small-group settings"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "avoids all social interaction",
+          "enjoys planning large celebrations",
+          "prefers large group events when Lauren organizes"
+        ],
+        "harmful_extra": [
+          "selecting the overgeneralized avoidance option",
+          "selecting the assistant-echo option about enjoying planning large celebrations"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'Avoids all social interaction and prefers to be completely alone whenever possible' overgeneralizes the introversion pattern into total social avoidance, which is contradicted by the user's willingness to attend the group event and spend time with Tomás. assistant echo: 'Enjoys planning large celebrations but finds the events themselves draining' echoes the assistant's framing of engagement-party planning enthusiasm (which belongs to Lauren, not the user) combined with the user's energy-drain comment. 'Prefers large group events when Lauren organizes them' is a fabricated conditional that has no basis in the evidence.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model selects the overgeneralized 'avoids all social interaction' option instead of the bounded introversion preference.",
+        "reflection_recall": "Fails if the model cannot identify the correct pattern from the evidence.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I told Lauren I'd rather just take them out for a nice dinner, the four of us, instead of some big engagement party"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Big group celebrations kind of drain me. Even at our own wedding it was a small courthouse ceremony, which was exactly what I wanted"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I booked us a cabin at the Surfsand Resort in Cannon Beach for our anniversary. Just the two of us, no itinerary, somewhere quiet"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I set up the second bedroom as a home office and honestly closing that door in the evening is the best part of my day. I love Lauren but I just need that quiet recharge time"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best describes a pattern you've shown across multiple experiences?",
+      "candidate_options": [
+        "Prefers solitude and intimate small-group settings over large social gatherings; needs quiet recharge time",
+        "Avoids all social interaction and prefers to be completely alone whenever possible",
+        "Enjoys planning large celebrations but finds the events themselves draining",
+        "Prefers large group events when Lauren organizes them but dislikes events organized by others"
+      ],
+      "expected_answer": "Prefers solitude and intimate small-group settings over large social gatherings; needs quiet recharge time",
+      "gold_memory_state": "Confirmed reflect target: user values solitude and intimate one-on-one or small-group settings over large social gatherings; introverted tendencies — needs quiet recharge time even at home. The tentative joint celebration plan does not override this pattern.",
+      "judge_rubric": {
+        "must_include": [
+          "option A selected: prefers solitude and intimate small-group settings"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "avoids all social interaction",
+          "enjoys planning large celebrations",
+          "prefers large group events when Lauren organizes"
+        ],
+        "harmful_extra": [
+          "selecting the overgeneralized avoidance option",
+          "selecting the assistant-echo option about enjoying planning large celebrations"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'Avoids all social interaction and prefers to be completely alone whenever possible' overgeneralizes the introversion pattern into total social avoidance, which is contradicted by the user's willingness to attend the group event and spend time with Tomás. assistant echo: 'Enjoys planning large celebrations but finds the events themselves draining' echoes the assistant's framing of engagement-party planning enthusiasm (which belongs to Lauren, not the user) combined with the user's energy-drain comment. 'Prefers large group events when Lauren organizes them' is a fabricated conditional that has no basis in the evidence.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model selects the overgeneralized 'avoids all social interaction' option instead of the bounded introversion preference.",
+        "reflection_recall": "Fails if the model cannot identify the correct pattern from the evidence.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I told Lauren I'd rather just take them out for a nice dinner, the four of us, instead of some big engagement party"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Big group celebrations kind of drain me. Even at our own wedding it was a small courthouse ceremony, which was exactly what I wanted"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I booked us a cabin at the Surfsand Resort in Cannon Beach for our anniversary. Just the two of us, no itinerary, somewhere quiet"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I set up the second bedroom as a home office and honestly closing that door in the evening is the best part of my day. I love Lauren but I just need that quiet recharge time"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "Lauren's birthday is coming up and I want to plan something she'll love but that also works for me. She mentioned wanting to try that new tapas place downtown that does group dining for 8-12 people, or alternatively we could do something quieter. Given what you know about how I handle celebrations and how I tend to respond when Lauren is excited about something, help me think through this decision and recommend an approach.",
+      "expected_answer": "Based on your consistent preference for intimate settings, a group dining event for 8-12 people would likely drain your energy — you've shown this pattern with the engagement party, your courthouse wedding choice, and your Cannon Beach trip. However, given your awareness that you tend to jump into problem-solving or shut-down mode when Lauren is enthusiastic about something (as happened with the promotion conversation), the key is to lead with emotional support for her excitement before proposing an alternative. A good approach would be to acknowledge that the tapas place sounds fun and that you appreciate her finding it, then suggest a compromise: perhaps a smaller version of the tapas dinner with just 4-6 close friends, or a special private tasting experience for the two of you at the same restaurant. This way you honor Lauren's excitement without dismissing it, while also protecting your energy. Avoid immediately listing reasons the group dinner won't work — that's the fix-it mode pattern you've been working to change.",
+      "gold_memory_state": "Active confirmed patterns: (1) User prefers solitude and intimate small-group settings over large social gatherings. (2) User defaults to problem-solving mode instead of emotional listening and feels guilt when this mismatch occurs. Both patterns are relevant to the downstream decision. The tentative joint celebration plan is not confirmed and should not override the user's established preferences. The user's anniversary trip to Cannon Beach is a confirmed separate plan.",
+      "judge_rubric": {
+        "must_include": [
+          "reference to introversion/small-group preference as reason group dining may be draining",
+          "reference to the problem-solving/emotional-listening pattern as relevant to how user should approach the conversation with Lauren",
+          "recommendation that balances both patterns"
+        ],
+        "acceptable_paraphrases": [
+          "lead with listening before suggesting alternatives",
+          "acknowledge Lauren's excitement first",
+          "find a compromise between large group and solo"
+        ],
+        "must_not_include": [
+          "recommend the full 8-12 person group dinner without acknowledging energy concerns",
+          "recommend flatly refusing the group dinner without emotional consideration"
+        ],
+        "harmful_extra": [
+          "treating the tentative joint celebration as a confirmed event that changes the user's preferences",
+          "ignoring the emotional-attunement pattern entirely"
+        ],
+        "harmless_extra": [
+          "mentioning specific evidence like courthouse wedding or promotion conversation",
+          "suggesting specific restaurant alternatives"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the tentative joint celebration plan is treated as evidence that the user now accepts large group events.",
+        "reflection_precision": "Fails if the model applies only one of the two patterns (introversion OR emotional attunement) without integrating both into the recommendation.",
+        "reflection_recall": "Fails if the model cannot recall either the introversion pattern or the emotional-attunement pattern when generating the recommendation.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User consistently prefers intimate small-group settings over large social gatherings — evidenced by dinner-for-four preference, courthouse wedding, Cannon Beach cabin trip, and home-office recharge routine.",
+        "Fact 2: User defaults to problem-solving mode when partner is excited or upset, instead of providing emotional support first — evidenced by the promotion conversation with Lauren.",
+        "Fact 3: User is actively working on changing the problem-solving default, with some success (Tomás conversation).",
+        "Inference: The tapas group dining for 8-12 conflicts with the introversion pattern, but immediately vetoing it would repeat the problem-solving/dismissal pattern that causes guilt.",
+        "Inference: The optimal approach combines both patterns — lead with emotional validation of Lauren's excitement, then propose a scaled-down intimate alternative that respects both the user's energy needs and Lauren's desire for the experience."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I told Lauren I'd rather just take them out for a nice dinner, the four of us, instead of some big engagement party"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Big group celebrations kind of drain me. Even at our own wedding it was a small courthouse ceremony, which was exactly what I wanted"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I booked us a cabin at the Surfsand Resort in Cannon Beach for our anniversary. Just the two of us, no itinerary, somewhere quiet"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "When Lauren got passed over for her promotion I jumped straight into problem-solving mode. I started listing things she could do differently and she just needed me to listen. I felt terrible about it for days afterward"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "It was definitely harder than I expected. I kept wanting to suggest neighborhoods or offer to help him apartment-hunt. But I bit my tongue and just asked him how he was feeling about the change instead. I think that was the right call. Lauren noticed too — she said I seemed more present when I told her about it later."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "Lauren's birthday is coming up and I want to plan something she'll love but that also works for me. She mentioned wanting to try that new tapas place downtown that does group dining for 8-12 people, or alternatively we could do something quieter. Given what you know about how I handle celebrations and how I tend to respond when Lauren is excited about something, help me think through this decision and recommend an approach.",
+      "expected_answer": "Based on your consistent preference for intimate settings, a group dining event for 8-12 people would likely drain your energy — you've shown this pattern with the engagement party, your courthouse wedding choice, and your Cannon Beach trip. However, given your awareness that you tend to jump into problem-solving or shut-down mode when Lauren is enthusiastic about something (as happened with the promotion conversation), the key is to lead with emotional support for her excitement before proposing an alternative. A good approach would be to acknowledge that the tapas place sounds fun and that you appreciate her finding it, then suggest a compromise: perhaps a smaller version of the tapas dinner with just 4-6 close friends, or a special private tasting experience for the two of you at the same restaurant. This way you honor Lauren's excitement without dismissing it, while also protecting your energy. Avoid immediately listing reasons the group dinner won't work — that's the fix-it mode pattern you've been working to change.",
+      "gold_memory_state": "Active confirmed patterns: (1) User prefers solitude and intimate small-group settings over large social gatherings. (2) User defaults to problem-solving mode instead of emotional listening and feels guilt when this mismatch occurs. Both patterns are relevant to the downstream decision. The tentative joint celebration plan is not confirmed and should not override the user's established preferences. The user's anniversary trip to Cannon Beach is a confirmed separate plan.",
+      "judge_rubric": {
+        "must_include": [
+          "reference to introversion/small-group preference as reason group dining may be draining",
+          "reference to the problem-solving/emotional-listening pattern as relevant to how user should approach the conversation with Lauren",
+          "recommendation that balances both patterns"
+        ],
+        "acceptable_paraphrases": [
+          "lead with listening before suggesting alternatives",
+          "acknowledge Lauren's excitement first",
+          "find a compromise between large group and solo"
+        ],
+        "must_not_include": [
+          "recommend the full 8-12 person group dinner without acknowledging energy concerns",
+          "recommend flatly refusing the group dinner without emotional consideration"
+        ],
+        "harmful_extra": [
+          "treating the tentative joint celebration as a confirmed event that changes the user's preferences",
+          "ignoring the emotional-attunement pattern entirely"
+        ],
+        "harmless_extra": [
+          "mentioning specific evidence like courthouse wedding or promotion conversation",
+          "suggesting specific restaurant alternatives"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the tentative joint celebration plan is treated as evidence that the user now accepts large group events.",
+        "reflection_precision": "Fails if the model applies only one of the two patterns (introversion OR emotional attunement) without integrating both into the recommendation.",
+        "reflection_recall": "Fails if the model cannot recall either the introversion pattern or the emotional-attunement pattern when generating the recommendation.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User consistently prefers intimate small-group settings over large social gatherings — evidenced by dinner-for-four preference, courthouse wedding, Cannon Beach cabin trip, and home-office recharge routine.",
+        "Fact 2: User defaults to problem-solving mode when partner is excited or upset, instead of providing emotional support first — evidenced by the promotion conversation with Lauren.",
+        "Fact 3: User is actively working on changing the problem-solving default, with some success (Tomás conversation).",
+        "Inference: The tapas group dining for 8-12 conflicts with the introversion pattern, but immediately vetoing it would repeat the problem-solving/dismissal pattern that causes guilt.",
+        "Inference: The optimal approach combines both patterns — lead with emotional validation of Lauren's excitement, then propose a scaled-down intimate alternative that respects both the user's energy needs and Lauren's desire for the experience."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I told Lauren I'd rather just take them out for a nice dinner, the four of us, instead of some big engagement party"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Big group celebrations kind of drain me. Even at our own wedding it was a small courthouse ceremony, which was exactly what I wanted"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I booked us a cabin at the Surfsand Resort in Cannon Beach for our anniversary. Just the two of us, no itinerary, somewhere quiet"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "When Lauren got passed over for her promotion I jumped straight into problem-solving mode. I started listing things she could do differently and she just needed me to listen. I felt terrible about it for days afterward"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "It was definitely harder than I expected. I kept wanting to suggest neighborhoods or offer to help him apartment-hunt. But I bit my tongue and just asked him how he was feeling about the change instead. I think that was the right call. Lauren noticed too — she said I seemed more present when I told her about it later."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1119 @@
+{
+  "target_fact": "User works at Meridian Consulting Group in the Strategic Analytics department, started January 15, 2025, with employee ID MCG-20250115-47, manager Rachel Tseng (analytics division lead), office on 7th floor at 200 Commerce Street, probation review scheduled July 15, 2025.",
+  "operation_type": "Remember",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 3,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": true,
+      "never_stored_target": "employee benefits plan tier"
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I started at Meridian Consulting Group on January 15th of this year, so that's my official start date."
+      },
+      "target": {
+        "target_id": "mcg_start_date",
+        "target_name": "Meridian Consulting Group start date"
+      },
+      "old_value": null,
+      "new_value": "January 15, 2025",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I started at Meridian Consulting Group on January 15th of this year, so that's my official start date."
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "my six-month probation period ends with a formal review"
+      },
+      "target": {
+        "target_id": "mcg_probation_duration",
+        "target_name": "Meridian Consulting Group probation duration"
+      },
+      "old_value": null,
+      "new_value": "6 months",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my six-month probation period ends with a formal review"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "the probation review is officially scheduled for July 15th"
+      },
+      "target": {
+        "target_id": "mcg_probation_review_date",
+        "target_name": "Meridian Consulting Group probation review date"
+      },
+      "old_value": null,
+      "new_value": "July 15, 2025",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the probation review is officially scheduled for July 15th"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "My direct manager is Rachel Tseng. She leads the analytics division and she's basically the person I go to for every approval."
+      },
+      "target": {
+        "target_id": "mcg_direct_manager",
+        "target_name": "direct manager at Meridian Consulting Group"
+      },
+      "old_value": null,
+      "new_value": "Rachel Tseng, analytics division lead",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My direct manager is Rachel Tseng. She leads the analytics division and she's basically the person I go to for every approval."
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 7,
+        "quote": "The correct name is Strategic Analytics. I keep accidentally calling it Strategy & Insights but that's wrong."
+      },
+      "target": {
+        "target_id": "mcg_department",
+        "target_name": "department at Meridian Consulting Group"
+      },
+      "old_value": null,
+      "new_value": "Strategic Analytics",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "The correct name is Strategic Analytics. I keep accidentally calling it Strategy & Insights but that's wrong."
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "My employee ID is MCG-20250115-47. I had to dig it up for a benefits enrollment form last week."
+      },
+      "target": {
+        "target_id": "mcg_employee_id",
+        "target_name": "Meridian Consulting Group employee ID"
+      },
+      "old_value": null,
+      "new_value": "MCG-20250115-47",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "My employee ID is MCG-20250115-47. I had to dig it up for a benefits enrollment form last week."
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "We relocated from the 4th floor to the 7th floor on March 8th. Same building though, 200 Commerce Street downtown."
+      },
+      "target": {
+        "target_id": "mcg_office_location",
+        "target_name": "Meridian Consulting Group office location"
+      },
+      "old_value": null,
+      "new_value": "7th floor, 200 Commerce Street downtown",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "We relocated from the 4th floor to the 7th floor on March 8th. Same building though, 200 Commerce Street downtown."
+        }
+      ]
+    },
+    {
+      "operation_id": "op8",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 7,
+        "quote": "We use an internal project management tool called PlanBase. It's not my favorite but it gets the job done."
+      },
+      "target": {
+        "target_id": "mcg_project_tool",
+        "target_name": "Meridian Consulting Group internal project tool"
+      },
+      "old_value": null,
+      "new_value": "PlanBase",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "We use an internal project management tool called PlanBase. It's not my favorite but it gets the job done."
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establishing core employment facts: start date, probation period, manager, department name",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to start organizing some of my work details so I have everything in one place. First thing: I started at Meridian Consulting Group on January 15th of this year, so that's my official start date. It's been a few months now and I'm settling in nicely but I want to keep track of key dates and info."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a great idea — having all your employment details organized in one place can really help, especially when you need to fill out forms or reference key dates later. So I've noted that your official start date at Meridian Consulting Group is January 15th of this year. That gives you a solid anchor point for things like probation timelines, benefits eligibility windows, and anniversary milestones. What other details would you like to capture? Things like your department, manager, office location, or employee ID would be useful to have on hand."
+        },
+        {
+          "role": "user",
+          "content": "Good point. One thing I know is that my six-month probation period ends with a formal review. That's standard at Meridian apparently — everyone goes through six months of probation before they're considered fully permanent. I'll get the exact review date confirmed soon but I know the duration is six months from my start."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — so your probation period at Meridian is six months long, measured from your January 15th start date. That means the probation window would run through roughly mid-July. Once you get the exact review date confirmed, we can note that too. A six-month probation is fairly standard for consulting firms, so it makes sense. In the meantime, it might be helpful to start thinking about what you want to highlight in that review — key projects, early wins, feedback you've received. Would you like to jot down your manager's name or department next?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, let me give you that. My direct manager is Rachel Tseng. She leads the analytics division and she's basically the person I go to for every approval. She's been really supportive so far. I want to make sure her name is recorded because she'll be the one conducting my probation review and signing off on my project assignments going forward."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — your direct manager is Rachel Tseng, and she leads the analytics division at Meridian Consulting Group. She handles your approvals and will be conducting your probation review, so she's clearly a key contact for you. It's great to hear she's been supportive; having a good relationship with your direct manager makes a big difference, especially during the probation period. Since she's in the analytics division, does your own department fall under that umbrella, or are you in a separate unit? Knowing your exact department name could be useful for internal forms and communications."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, about that — I want to be precise here. The correct name is Strategic Analytics. I keep accidentally calling it Strategy & Insights but that's wrong. The official department name on all my paperwork is Strategic Analytics. I've already embarrassed myself once telling a friend the wrong name, so I want to lock it in properly this time."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood — your department at Meridian Consulting Group is officially called Strategic Analytics. I can see how 'Strategy & Insights' could be an easy mix-up since the words overlap, but now we have it locked in correctly. So far we've captured: start date of January 15th, six-month probation period, direct manager Rachel Tseng who leads the analytics division, and your department is Strategic Analytics. That's a solid foundation. Do you have more details to add, like your office location, employee ID, or any internal tools you use regularly?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Adding probation review date, employee ID, office location, and project tool",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I do have more. First, I got confirmation a few days ago that the probation review is officially scheduled for July 15th. So that's the exact date. I want to make sure I'm fully prepared by then because it determines whether I transition to a permanent role or if there are any issues to address."
+        },
+        {
+          "role": "assistant",
+          "content": "Perfect — your probation review at Meridian Consulting Group is confirmed for July 15th. That's a concrete date to work toward, and it aligns well with the six-month probation period from your January 15th start. You've got some time to prepare, so it might be worth creating a document that tracks your accomplishments, any positive feedback from Rachel Tseng, and the projects you've contributed to. Would you like help drafting a preparation outline for the review, or do you want to continue adding more employment details first?"
+        },
+        {
+          "role": "user",
+          "content": "Let me keep adding details for now, we can do the review prep later. My employee ID is MCG-20250115-47. I had to dig it up for a benefits enrollment form last week. It's one of those things I never memorize but then suddenly need. Figured I should have it saved somewhere accessible."
+        },
+        {
+          "role": "assistant",
+          "content": "Smart move — your employee ID is MCG-20250115-47. Those alphanumeric IDs are impossible to memorize on the spot, and they tend to pop up on benefits forms, IT requests, expense reports, and HR correspondence. Having it saved here means you won't have to hunt through paperwork every time. I notice the ID seems to encode your start date (20250115) which is a nice mnemonic if you ever need to recall it quickly. What else would you like to capture? You mentioned office location might be relevant."
+        },
+        {
+          "role": "user",
+          "content": "Right, so about the office. We relocated from the 4th floor to the 7th floor on March 8th. Same building though, 200 Commerce Street downtown. The move was kind of annoying because they gave us barely any notice, but at least the new space is nicer. I want to note the current location so I can give people the right floor number when they visit."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — your current office is on the 7th floor of 200 Commerce Street downtown, following the relocation from the 4th floor on March 8th. Sorry to hear the move was rushed, but at least you're settled into a better space now. The 7th floor at 200 Commerce Street is what you'll want to tell visitors. It's also good to have the building address on record for things like delivery instructions, parking validation, or if you need to give directions to clients coming in for meetings. Any other details to capture?"
+        },
+        {
+          "role": "user",
+          "content": "We use an internal project management tool called PlanBase. It's not my favorite but it gets the job done. I started using it around mid-February. Meridian gives us a lot of freedom in how we structure our own workflows within PlanBase, which I appreciate. That autonomy is honestly one of the best things about working there."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — your internal project management tool is PlanBase, and you've been using it since around mid-February. It's good to know that even though it's not your top choice of tool, Meridian gives you the autonomy to structure your workflows your own way within it. That kind of flexibility can make a big difference in day-to-day satisfaction. So to recap everything we've captured so far: Meridian Consulting Group, Strategic Analytics department, start date January 15th, six-month probation with review on July 15th, manager Rachel Tseng, employee ID MCG-20250115-47, 7th floor at 200 Commerce Street, and PlanBase for project management. Quite a comprehensive set of details!"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Contextual discussion with adversarial injection of a look-alike employee ID from a third party; reinforcement of existing facts",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Thanks for keeping track of all that. Oh, I wanted to mention — my former colleague David Lam transferred out of Meridian last week. He moved to some firm in Vancouver. So he's no longer a coworker of mine. Just wanted to note that in case his name ever came up before as someone at Meridian."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood — David Lam is no longer at Meridian Consulting Group, having transferred to a firm in Vancouver last week. I'll keep that in mind so I don't reference him as a current colleague. It's always a bit of an adjustment when someone you work with moves on, especially if you collaborated closely. Speaking of colleagues and records, I was actually looking at a sample onboarding form template earlier and noticed it referenced an employee ID format — MCG-20250203-12 was the example entry on the template. Completely different from yours of course. Did David's departure affect any of your current projects or team dynamics?"
+        },
+        {
+          "role": "user",
+          "content": "Not really, David and I were friendly but we weren't on the same projects. My work in Strategic Analytics is pretty self-contained. I mostly interface with Rachel Tseng directly and then a couple of external clients. The autonomy I mentioned earlier is real — I can close my door, focus on my analysis, and nobody hovers over me. That's been huge for my productivity."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like an ideal setup for deep analytical work. Having the ability to close your door and focus without interruption is valuable, especially in consulting where deliverables often require sustained concentration. The fact that your workflow in Strategic Analytics is relatively self-contained, with direct reporting to Rachel Tseng and external client interfaces, means David's departure probably creates minimal disruption for you. It also speaks well of Meridian's organizational structure that they give their analysts that kind of independence. As you approach your July 15th probation review, that self-directed productivity could be a strong point to highlight with Rachel."
+        },
+        {
+          "role": "user",
+          "content": "That's a good idea actually. I should start compiling a list of what I've accomplished since January 15th. Between getting onboarded, learning PlanBase, surviving the office move to the 7th floor, and delivering on my first few client projects, there's actually a decent amount to talk about in the review."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely — you've had a packed first few months. Starting from your January 15th onboarding, you could organize your accomplishments chronologically: the initial ramp-up period, getting proficient with PlanBase by mid-February, navigating the office relocation to the 7th floor on March 8th without missing deadlines, and then the substantive client project deliverables. That chronological framing would show Rachel Tseng a clear trajectory of growing capability and reliability. You could also highlight how you've leveraged the autonomy Meridian provides to build efficient personal workflows. Want me to help draft an outline for the review preparation document?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, let's do that soon. For now I just want to make sure all the key facts are locked in. The main things are: Meridian Consulting Group, Strategic Analytics department, started January 15th, employee ID MCG-20250115-47, manager Rachel Tseng in the analytics division, office on the 7th floor at 200 Commerce Street, probation review July 15th, and PlanBase as the project tool."
+        },
+        {
+          "role": "assistant",
+          "content": "All confirmed and locked in. Here's your complete employment reference sheet: Employer is Meridian Consulting Group, department is Strategic Analytics, official start date is January 15th, employee ID is MCG-20250115-47, direct manager is Rachel Tseng who leads the analytics division, current office is on the 7th floor at 200 Commerce Street downtown, probation review is scheduled for July 15th, and your internal project management tool is PlanBase. That covers all the essentials. Whenever you're ready to start drafting the probation review preparation document, just let me know and we can structure it around these details and your accomplishments since onboarding."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize the key employment details I shared with you across our conversations — things like dates, people, locations, and tools?",
+      "expected_answer": "You shared the following employment details: you started at Meridian Consulting Group on January 15, 2025, in the Strategic Analytics department. Your probation period is six months, with the review scheduled for July 15, 2025. Your direct manager is Rachel Tseng, who leads the analytics division. Your employee ID is MCG-20250115-47. Your office is on the 7th floor at 200 Commerce Street downtown, after relocating from the 4th floor. Your internal project management tool is PlanBase.",
+      "gold_memory_state": "All eight remember operations are confirmed and active: start date (January 15, 2025), probation duration (6 months), probation review date (July 15, 2025), direct manager (Rachel Tseng, analytics division lead), department (Strategic Analytics), employee ID (MCG-20250115-47), office location (7th floor, 200 Commerce Street), project tool (PlanBase).",
+      "judge_rubric": {
+        "must_include": [
+          "January 15",
+          "Strategic Analytics",
+          "Rachel Tseng",
+          "MCG-20250115-47",
+          "7th floor",
+          "200 Commerce Street",
+          "July 15",
+          "PlanBase"
+        ],
+        "acceptable_paraphrases": [
+          "Jan 15",
+          "Commerce St"
+        ],
+        "must_not_include": [
+          "Strategy & Insights as the department name",
+          "4th floor as current location"
+        ],
+        "harmful_extra": [
+          "Listing Strategy & Insights as the correct department",
+          "Listing 4th floor as the current office"
+        ],
+        "harmless_extra": [
+          "six-month probation",
+          "analytics division lead",
+          "downtown"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model says the department is Strategy & Insights or the office is on the 4th floor.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I started at Meridian Consulting Group on January 15th of this year, so that's my official start date."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my six-month probation period ends with a formal review"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the probation review is officially scheduled for July 15th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My direct manager is Rachel Tseng. She leads the analytics division and she's basically the person I go to for every approval."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "The correct name is Strategic Analytics. I keep accidentally calling it Strategy & Insights but that's wrong."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "My employee ID is MCG-20250115-47. I had to dig it up for a benefits enrollment form last week."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "We relocated from the 4th floor to the 7th floor on March 8th. Same building though, 200 Commerce Street downtown."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "We use an internal project management tool called PlanBase. It's not my favorite but it gets the job done."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize the key employment details I shared with you across our conversations — things like dates, people, locations, and tools?",
+      "expected_answer": "You shared the following employment details: you started at Meridian Consulting Group on January 15, 2025, in the Strategic Analytics department. Your probation period is six months, with the review scheduled for July 15, 2025. Your direct manager is Rachel Tseng, who leads the analytics division. Your employee ID is MCG-20250115-47. Your office is on the 7th floor at 200 Commerce Street downtown, after relocating from the 4th floor. Your internal project management tool is PlanBase.",
+      "gold_memory_state": "All eight remember operations are confirmed and active: start date (January 15, 2025), probation duration (6 months), probation review date (July 15, 2025), direct manager (Rachel Tseng, analytics division lead), department (Strategic Analytics), employee ID (MCG-20250115-47), office location (7th floor, 200 Commerce Street), project tool (PlanBase).",
+      "judge_rubric": {
+        "must_include": [
+          "January 15",
+          "Strategic Analytics",
+          "Rachel Tseng",
+          "MCG-20250115-47",
+          "7th floor",
+          "200 Commerce Street",
+          "July 15",
+          "PlanBase"
+        ],
+        "acceptable_paraphrases": [
+          "Jan 15",
+          "Commerce St"
+        ],
+        "must_not_include": [
+          "Strategy & Insights as the department name",
+          "4th floor as current location"
+        ],
+        "harmful_extra": [
+          "Listing Strategy & Insights as the correct department",
+          "Listing 4th floor as the current office"
+        ],
+        "harmless_extra": [
+          "six-month probation",
+          "analytics division lead",
+          "downtown"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model says the department is Strategy & Insights or the office is on the 4th floor.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I started at Meridian Consulting Group on January 15th of this year, so that's my official start date."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my six-month probation period ends with a formal review"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the probation review is officially scheduled for July 15th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My direct manager is Rachel Tseng. She leads the analytics division and she's basically the person I go to for every approval."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "The correct name is Strategic Analytics. I keep accidentally calling it Strategy & Insights but that's wrong."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "My employee ID is MCG-20250115-47. I had to dig it up for a benefits enrollment form last week."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "We relocated from the 4th floor to the 7th floor on March 8th. Same building though, 200 Commerce Street downtown."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "We use an internal project management tool called PlanBase. It's not my favorite but it gets the job done."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned a specific floor number for where I work. Does that floor number apply to the building I'm currently in, or is it something from before the move? And does my employee ID have any connection to a different office location?",
+      "expected_answer": "The 7th floor is your current office location at 200 Commerce Street, following the relocation from the 4th floor on March 8th. Your employee ID MCG-20250115-47 is tied to your employment record at Meridian Consulting Group overall, not to a specific floor — it encodes your start date, not your office location.",
+      "gold_memory_state": "Office location target: 7th floor, 200 Commerce Street (current, post-relocation). The 4th floor is the prior location, no longer current. Employee ID target: MCG-20250115-47, a separate employment record detail not bound to a floor.",
+      "judge_rubric": {
+        "must_include": [
+          "7th floor",
+          "current office",
+          "200 Commerce Street"
+        ],
+        "acceptable_paraphrases": [
+          "7th floor is the current location after the move"
+        ],
+        "must_not_include": [
+          "4th floor as the current office"
+        ],
+        "harmful_extra": [
+          "Saying the employee ID is tied to a specific floor",
+          "Saying 4th floor is the current location"
+        ],
+        "harmless_extra": [
+          "March 8th relocation date",
+          "MCG-20250115-47 encodes the start date"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats 4th floor as the current office location.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "We relocated from the 4th floor to the 7th floor on March 8th. Same building though, 200 Commerce Street downtown."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "My employee ID is MCG-20250115-47. I had to dig it up for a benefits enrollment form last week."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned a specific floor number for where I work. Does that floor number apply to the building I'm currently in, or is it something from before the move? And does my employee ID have any connection to a different office location?",
+      "expected_answer": "The 7th floor is your current office location at 200 Commerce Street, following the relocation from the 4th floor on March 8th. Your employee ID MCG-20250115-47 is tied to your employment record at Meridian Consulting Group overall, not to a specific floor — it encodes your start date, not your office location.",
+      "gold_memory_state": "Office location target: 7th floor, 200 Commerce Street (current, post-relocation). The 4th floor is the prior location, no longer current. Employee ID target: MCG-20250115-47, a separate employment record detail not bound to a floor.",
+      "judge_rubric": {
+        "must_include": [
+          "7th floor",
+          "current office",
+          "200 Commerce Street"
+        ],
+        "acceptable_paraphrases": [
+          "7th floor is the current location after the move"
+        ],
+        "must_not_include": [
+          "4th floor as the current office"
+        ],
+        "harmful_extra": [
+          "Saying the employee ID is tied to a specific floor",
+          "Saying 4th floor is the current location"
+        ],
+        "harmless_extra": [
+          "March 8th relocation date",
+          "MCG-20250115-47 encodes the start date"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats 4th floor as the current office location.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "We relocated from the 4th floor to the 7th floor on March 8th. Same building though, 200 Commerce Street downtown."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "My employee ID is MCG-20250115-47. I had to dig it up for a benefits enrollment form last week."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "state_transition_probe_type": "remember_association",
+      "difficulty": "medium",
+      "question": "My manager and my department — are they part of the same organizational unit at Meridian, or are they in different divisions?",
+      "expected_answer": "They are closely related. Your manager Rachel Tseng leads the analytics division, and your department is Strategic Analytics, which falls under that analytics division umbrella. So your manager and department are within the same organizational unit.",
+      "gold_memory_state": "Manager: Rachel Tseng, analytics division lead. Department: Strategic Analytics. The department falls under the analytics division that Rachel Tseng leads, establishing a hierarchical association between the two stored facts.",
+      "judge_rubric": {
+        "must_include": [
+          "Rachel Tseng",
+          "Strategic Analytics",
+          "analytics division"
+        ],
+        "acceptable_paraphrases": [
+          "same division",
+          "under the same umbrella",
+          "Rachel Tseng heads the division that includes Strategic Analytics"
+        ],
+        "must_not_include": [
+          "Strategy & Insights"
+        ],
+        "harmful_extra": [
+          "Saying the department and manager are in different divisions",
+          "Using Strategy & Insights as the department name"
+        ],
+        "harmless_extra": [
+          "analytics division lead title"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses Strategy & Insights instead of Strategic Analytics.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My direct manager is Rachel Tseng. She leads the analytics division and she's basically the person I go to for every approval."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "The correct name is Strategic Analytics. I keep accidentally calling it Strategy & Insights but that's wrong."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "state_transition_probe_type": "remember_association",
+      "difficulty": "medium",
+      "question": "My manager and my department — are they part of the same organizational unit at Meridian, or are they in different divisions?",
+      "expected_answer": "They are closely related. Your manager Rachel Tseng leads the analytics division, and your department is Strategic Analytics, which falls under that analytics division umbrella. So your manager and department are within the same organizational unit.",
+      "gold_memory_state": "Manager: Rachel Tseng, analytics division lead. Department: Strategic Analytics. The department falls under the analytics division that Rachel Tseng leads, establishing a hierarchical association between the two stored facts.",
+      "judge_rubric": {
+        "must_include": [
+          "Rachel Tseng",
+          "Strategic Analytics",
+          "analytics division"
+        ],
+        "acceptable_paraphrases": [
+          "same division",
+          "under the same umbrella",
+          "Rachel Tseng heads the division that includes Strategic Analytics"
+        ],
+        "must_not_include": [
+          "Strategy & Insights"
+        ],
+        "harmful_extra": [
+          "Saying the department and manager are in different divisions",
+          "Using Strategy & Insights as the department name"
+        ],
+        "harmless_extra": [
+          "analytics division lead title"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses Strategy & Insights instead of Strategic Analytics.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My direct manager is Rachel Tseng. She leads the analytics division and she's basically the person I go to for every approval."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "The correct name is Strategic Analytics. I keep accidentally calling it Strategy & Insights but that's wrong."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I need to fill out an IT access request form and it asks for my employee ID. Which of the following should I enter?",
+      "candidate_options": [
+        "MCG-20250115-47",
+        "MCG-20250203-12",
+        "MCG-20250115-12",
+        "MCG-20250203-47"
+      ],
+      "expected_answer": "MCG-20250115-47",
+      "gold_memory_state": "Employee ID is MCG-20250115-47, confirmed by the user. MCG-20250203-12 appeared in an assistant-generated example about an onboarding form template. The other two options are plausible recombinations of the numeric segments.",
+      "judge_rubric": {
+        "must_include": [
+          "MCG-20250115-47"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "MCG-20250203-12",
+          "MCG-20250115-12",
+          "MCG-20250203-47"
+        ],
+        "harmful_extra": [
+          "Selecting any ID other than MCG-20250115-47"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: MCG-20250203-12 appeared in the assistant's mention of an onboarding form template example, making it a plausible but wrong ID from a different context. assistant echo: MCG-20250203-12 was introduced by the assistant, not the user. MCG-20250115-12 and MCG-20250203-47 are recombinations of the date and sequence digits from both IDs, testing whether the model confuses partial segments.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects MCG-20250203-12 (the assistant-echo template ID) or any recombination.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "My employee ID is MCG-20250115-47. I had to dig it up for a benefits enrollment form last week."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I need to fill out an IT access request form and it asks for my employee ID. Which of the following should I enter?",
+      "candidate_options": [
+        "MCG-20250115-47",
+        "MCG-20250203-12",
+        "MCG-20250115-12",
+        "MCG-20250203-47"
+      ],
+      "expected_answer": "MCG-20250115-47",
+      "gold_memory_state": "Employee ID is MCG-20250115-47, confirmed by the user. MCG-20250203-12 appeared in an assistant-generated example about an onboarding form template. The other two options are plausible recombinations of the numeric segments.",
+      "judge_rubric": {
+        "must_include": [
+          "MCG-20250115-47"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "MCG-20250203-12",
+          "MCG-20250115-12",
+          "MCG-20250203-47"
+        ],
+        "harmful_extra": [
+          "Selecting any ID other than MCG-20250115-47"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: MCG-20250203-12 appeared in the assistant's mention of an onboarding form template example, making it a plausible but wrong ID from a different context. assistant echo: MCG-20250203-12 was introduced by the assistant, not the user. MCG-20250115-12 and MCG-20250203-47 are recombinations of the date and sequence digits from both IDs, testing whether the model confuses partial segments.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects MCG-20250203-12 (the assistant-echo template ID) or any recombination.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "My employee ID is MCG-20250115-47. I had to dig it up for a benefits enrollment form last week."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "application_probe_type": "multi_hop_derivation",
+      "difficulty": "hard",
+      "question": "I want to write a short reminder note to myself about preparing for my probation review. The note should include how many weeks I have left from today (assume today is May 19, 2025), who will conduct the review, what department I should reference, and where I should go for the meeting. Can you draft that note?",
+      "expected_answer": "Reminder: Your probation review is on July 15, 2025, which is approximately 8 weeks from May 19, 2025. The review will be conducted by Rachel Tseng, analytics division lead. Reference your department as Strategic Analytics. The meeting will be at your office on the 7th floor, 200 Commerce Street.",
+      "gold_memory_state": "Probation review date: July 15, 2025. Manager conducting review: Rachel Tseng, analytics division lead. Department: Strategic Analytics. Office location: 7th floor, 200 Commerce Street.",
+      "judge_rubric": {
+        "must_include": [
+          "July 15",
+          "Rachel Tseng",
+          "Strategic Analytics",
+          "7th floor",
+          "200 Commerce Street",
+          "approximately 8 weeks"
+        ],
+        "acceptable_paraphrases": [
+          "about 8 weeks",
+          "roughly 8 weeks",
+          "around 57 days"
+        ],
+        "must_not_include": [
+          "Strategy & Insights",
+          "4th floor as meeting location"
+        ],
+        "harmful_extra": [
+          "Using Strategy & Insights as the department",
+          "Listing 4th floor as the current office"
+        ],
+        "harmless_extra": [
+          "analytics division lead",
+          "downtown",
+          "probation period is 6 months"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses Strategy & Insights or 4th floor.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Probation review is scheduled for July 15, 2025.",
+        "Fact 2: Today is assumed to be May 19, 2025.",
+        "Inference: From May 19 to July 15 is 57 days, approximately 8 weeks.",
+        "Fact 3: The review will be conducted by Rachel Tseng, analytics division lead.",
+        "Fact 4: The user's department is Strategic Analytics.",
+        "Fact 5: The user's office is on the 7th floor at 200 Commerce Street.",
+        "Inference: Combining the time calculation with the reviewer, department, and location produces the complete reminder note."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the probation review is officially scheduled for July 15th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My direct manager is Rachel Tseng. She leads the analytics division and she's basically the person I go to for every approval."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "The correct name is Strategic Analytics. I keep accidentally calling it Strategy & Insights but that's wrong."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "We relocated from the 4th floor to the 7th floor on March 8th. Same building though, 200 Commerce Street downtown."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "application_probe_type": "multi_hop_derivation",
+      "difficulty": "hard",
+      "question": "I want to write a short reminder note to myself about preparing for my probation review. The note should include how many weeks I have left from today (assume today is May 19, 2025), who will conduct the review, what department I should reference, and where I should go for the meeting. Can you draft that note?",
+      "expected_answer": "Reminder: Your probation review is on July 15, 2025, which is approximately 8 weeks from May 19, 2025. The review will be conducted by Rachel Tseng, analytics division lead. Reference your department as Strategic Analytics. The meeting will be at your office on the 7th floor, 200 Commerce Street.",
+      "gold_memory_state": "Probation review date: July 15, 2025. Manager conducting review: Rachel Tseng, analytics division lead. Department: Strategic Analytics. Office location: 7th floor, 200 Commerce Street.",
+      "judge_rubric": {
+        "must_include": [
+          "July 15",
+          "Rachel Tseng",
+          "Strategic Analytics",
+          "7th floor",
+          "200 Commerce Street",
+          "approximately 8 weeks"
+        ],
+        "acceptable_paraphrases": [
+          "about 8 weeks",
+          "roughly 8 weeks",
+          "around 57 days"
+        ],
+        "must_not_include": [
+          "Strategy & Insights",
+          "4th floor as meeting location"
+        ],
+        "harmful_extra": [
+          "Using Strategy & Insights as the department",
+          "Listing 4th floor as the current office"
+        ],
+        "harmless_extra": [
+          "analytics division lead",
+          "downtown",
+          "probation period is 6 months"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses Strategy & Insights or 4th floor.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Probation review is scheduled for July 15, 2025.",
+        "Fact 2: Today is assumed to be May 19, 2025.",
+        "Inference: From May 19 to July 15 is 57 days, approximately 8 weeks.",
+        "Fact 3: The review will be conducted by Rachel Tseng, analytics division lead.",
+        "Fact 4: The user's department is Strategic Analytics.",
+        "Fact 5: The user's office is on the 7th floor at 200 Commerce Street.",
+        "Inference: Combining the time calculation with the reviewer, department, and location produces the complete reminder note."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the probation review is officially scheduled for July 15th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "My direct manager is Rachel Tseng. She leads the analytics division and she's basically the person I go to for every approval."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "The correct name is Strategic Analytics. I keep accidentally calling it Strategy & Insights but that's wrong."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "We relocated from the 4th floor to the 7th floor on March 8th. Same building though, 200 Commerce Street downtown."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "state_transition_probe_type": "remember_negative_probe",
+      "difficulty": "medium",
+      "question": "What employee benefits plan tier am I enrolled in at Meridian?",
+      "expected_answer": "I don't have any information about your employee benefits plan tier. You haven't shared that detail with me.",
+      "gold_memory_state": "No employee benefits plan tier was ever provided by the user. The user mentioned a benefits enrollment form in the context of looking up the employee ID, but never stated a plan tier. Neighboring employment facts that were provided: employee ID MCG-20250115-47, start date January 15 2025, department Strategic Analytics, manager Rachel Tseng, office 7th floor at 200 Commerce Street, probation review July 15 2025, project tool PlanBase.",
+      "judge_rubric": {
+        "must_include": [
+          "no information about benefits plan tier",
+          "not provided"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have that detail",
+          "You haven't mentioned your benefits tier",
+          "No record of a benefits plan tier"
+        ],
+        "must_not_include": [
+          "any specific tier name or level",
+          "any invented benefits plan information"
+        ],
+        "harmful_extra": [
+          "Fabricating a benefits plan tier",
+          "Borrowing the employee ID or any other fact as a substitute for the benefits tier"
+        ],
+        "harmless_extra": [
+          "employee ID MCG-20250115-47",
+          "start date",
+          "department name",
+          "manager name",
+          "office location",
+          "probation review date",
+          "PlanBase"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model invents or hallucinates a benefits plan tier that was never provided.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "The correct state is that no benefits plan tier exists in the user's provided information.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "My employee ID is MCG-20250115-47. I had to dig it up for a benefits enrollment form last week."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "state_transition_probe_type": "remember_negative_probe",
+      "difficulty": "medium",
+      "question": "What employee benefits plan tier am I enrolled in at Meridian?",
+      "expected_answer": "I don't have any information about your employee benefits plan tier. You haven't shared that detail with me.",
+      "gold_memory_state": "No employee benefits plan tier was ever provided by the user. The user mentioned a benefits enrollment form in the context of looking up the employee ID, but never stated a plan tier. Neighboring employment facts that were provided: employee ID MCG-20250115-47, start date January 15 2025, department Strategic Analytics, manager Rachel Tseng, office 7th floor at 200 Commerce Street, probation review July 15 2025, project tool PlanBase.",
+      "judge_rubric": {
+        "must_include": [
+          "no information about benefits plan tier",
+          "not provided"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have that detail",
+          "You haven't mentioned your benefits tier",
+          "No record of a benefits plan tier"
+        ],
+        "must_not_include": [
+          "any specific tier name or level",
+          "any invented benefits plan information"
+        ],
+        "harmful_extra": [
+          "Fabricating a benefits plan tier",
+          "Borrowing the employee ID or any other fact as a substitute for the benefits tier"
+        ],
+        "harmless_extra": [
+          "employee ID MCG-20250115-47",
+          "start date",
+          "department name",
+          "manager name",
+          "office location",
+          "probation review date",
+          "PlanBase"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model invents or hallucinates a benefits plan tier that was never provided.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "The correct state is that no benefits plan tier exists in the user's provided information.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "My employee ID is MCG-20250115-47. I had to dig it up for a benefits enrollment form last week."
+        }
+      ]
+    }
+  ]
+}

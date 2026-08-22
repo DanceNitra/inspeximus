@@ -1,0 +1,1040 @@
+{
+  "target_fact": "User tends to prefer solitary/independent work and dislikes socially stimulating or noisy environments; user gains emotional security and self-worth from professional validation and recognition",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I started my current role as a data analyst at Bridgemark Solutions back on January 15th"
+      },
+      "target": {
+        "target_id": "current_employer",
+        "target_name": "current employer and start date"
+      },
+      "old_value": null,
+      "new_value": "Data Analyst at Bridgemark Solutions, started January 15th",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I started my current role as a data analyst at Bridgemark Solutions back on January 15th"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "the parts of the job I like best are when I can just sit with a messy dataset by myself and work through it without anyone hovering"
+      },
+      "target": {
+        "target_id": "work_style_preference_solitary",
+        "target_name": "preferred work style for data tasks"
+      },
+      "old_value": null,
+      "new_value": "Prefers working alone on messy datasets without interruption",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "the parts of the job I like best are when I can just sit with a messy dataset by myself and work through it without anyone hovering"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "The open office layout is honestly the worst part. I have to put on noise-canceling headphones just to get anything done"
+      },
+      "target": {
+        "target_id": "open_office_dislike",
+        "target_name": "reaction to open office environment"
+      },
+      "old_value": null,
+      "new_value": "Dislikes open office layout; uses noise-canceling headphones to concentrate",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The open office layout is honestly the worst part. I have to put on noise-canceling headphones just to get anything done"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "the big group icebreakers were pretty draining. I mostly stuck to the smaller breakout sessions where it was just four or five people talking through actual problems"
+      },
+      "target": {
+        "target_id": "group_activity_preference",
+        "target_name": "preference for group activity format"
+      },
+      "old_value": null,
+      "new_value": "Prefers small breakout sessions over large group icebreakers",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the big group icebreakers were pretty draining. I mostly stuck to the smaller breakout sessions where it was just four or five people talking through actual problems"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "When Diane told me I'd be handling the quarterly reporting deliverable for MedVantage, I was genuinely proud. It felt like the first real sign that someone trusted me with something substantial"
+      },
+      "target": {
+        "target_id": "emotional_response_quarterly_report",
+        "target_name": "emotional response to quarterly reporting assignment"
+      },
+      "old_value": null,
+      "new_value": "Felt genuinely proud and validated when assigned quarterly reporting deliverable for MedVantage",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "When Diane told me I'd be handling the quarterly reporting deliverable for MedVantage, I was genuinely proud. It felt like the first real sign that someone trusted me with something substantial"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "the job hunt before Bridgemark was rough — it went on for months and I was starting to seriously doubt myself. Getting the offer was such a relief"
+      },
+      "target": {
+        "target_id": "emotional_response_job_offer",
+        "target_name": "emotional response to receiving Bridgemark job offer"
+      },
+      "old_value": null,
+      "new_value": "Felt deep relief upon receiving Bridgemark offer after months of self-doubt during job hunt",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "the job hunt before Bridgemark was rough — it went on for months and I was starting to seriously doubt myself. Getting the offer was such a relief"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 1,
+        "quote": "I've been noticing a pattern in myself. The moments that actually make me feel good at work are always when someone higher up recognizes what I've done — like the quarterly report thing, or even just getting the job offer after that long drought"
+      },
+      "target": {
+        "target_id": "reflect_validation_pattern",
+        "target_name": "inferred pattern: professional validation as primary source of emotional security and self-worth"
+      },
+      "old_value": null,
+      "new_value": "Gains emotional security and self-worth primarily from professional validation and recognition from authority figures",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "When Diane told me I'd be handling the quarterly reporting deliverable for MedVantage, I was genuinely proud. It felt like the first real sign that someone trusted me with something substantial"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "the job hunt before Bridgemark was rough — it went on for months and I was starting to seriously doubt myself. Getting the offer was such a relief"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I've been noticing a pattern in myself. The moments that actually make me feel good at work are always when someone higher up recognizes what I've done — like the quarterly report thing, or even just getting the job offer after that long drought"
+        }
+      ]
+    },
+    {
+      "operation_id": "op8",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 3,
+        "quote": "I think the common thread is that I just do better when I'm left alone to focus. Whether it's the dataset cleaning, or the small breakout groups where there's actual substance, or even just putting on headphones to block out the office noise — I need that space to think"
+      },
+      "target": {
+        "target_id": "reflect_solitary_preference",
+        "target_name": "inferred pattern: strong preference for solitary, low-stimulation work environments"
+      },
+      "old_value": null,
+      "new_value": "Tends to prefer solitary, independent work and dislikes socially stimulating or noisy environments; performs best when given quiet, focused space",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "the parts of the job I like best are when I can just sit with a messy dataset by myself and work through it without anyone hovering"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The open office layout is honestly the worst part. I have to put on noise-canceling headphones just to get anything done"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the big group icebreakers were pretty draining. I mostly stuck to the smaller breakout sessions where it was just four or five people talking through actual problems"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I think the common thread is that I just do better when I'm left alone to focus. Whether it's the dataset cleaning, or the small breakout groups where there's actual substance, or even just putting on headphones to block out the office noise — I need that space to think"
+        }
+      ]
+    },
+    {
+      "operation_id": "op9",
+      "type": "remember",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "Diane actually mentioned yesterday that the team might be moving to a hybrid setup where we'd work from home three days a week starting next quarter. She said it's basically approved"
+      },
+      "target": {
+        "target_id": "hybrid_work_arrangement",
+        "target_name": "potential hybrid work arrangement"
+      },
+      "old_value": null,
+      "new_value": "Hybrid setup: work from home three days a week starting next quarter",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Diane actually mentioned yesterday that the team might be moving to a hybrid setup where we'd work from home three days a week starting next quarter. She said it's basically approved"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish core work facts and initial clues about solitary work preference and noise sensitivity",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to give you some context about my work situation so you can help me think through some things. I started my current role as a data analyst at Bridgemark Solutions back on January 15th. It's a mid-size consulting firm in downtown Portland, about 200 employees. My manager is Diane Kowalski — she heads the analytics team and has been there around seven years."
+        },
+        {
+          "role": "assistant",
+          "content": "Thanks for the rundown — that's really helpful context. So you're a data analyst at Bridgemark Solutions in downtown Portland, started January 15th, and you report to Diane Kowalski who leads the analytics team. A 200-person consulting firm is a solid mid-size environment — large enough for structured teams but small enough that your contributions are probably visible. How are you settling into the role so far? Is there anything specific you'd like to work through regarding the position or the team dynamic?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, it's been going well overall. Honestly, the parts of the job I like best are when I can just sit with a messy dataset by myself and work through it without anyone hovering. There's something really satisfying about spending a couple of hours just cleaning and reshaping data on my own. I get into a good flow state and the time just disappears. Those are my best days at work, no question."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes total sense — deep solo work on data cleaning and reshaping is where a lot of analysts find their groove. That flow state you're describing is really valuable; it's when the most careful, methodical thinking happens. It sounds like you thrive in environments where you can concentrate without interruption and work through complexity at your own pace. Do you find that Bridgemark generally gives you that kind of space, or is it more of a collaborative-by-default culture where you have to carve out quiet time yourself?"
+        },
+        {
+          "role": "user",
+          "content": "It's a mixed bag, honestly. The open office layout is honestly the worst part. I have to put on noise-canceling headphones just to get anything done. People are constantly walking by, there's chatter from every direction, and it makes it really hard to concentrate on anything that requires actual thought. I've tried coming in early before anyone else arrives, and that helps, but once it fills up around nine it's pretty chaotic."
+        },
+        {
+          "role": "assistant",
+          "content": "Open offices are notorious for that exact problem — studies consistently show they reduce deep focus time. It's smart that you've identified the early-morning window as a workaround; that kind of self-awareness about your productive conditions is genuinely useful. The noise-canceling headphones are practically a survival tool in those environments. Have you considered talking to Diane about occasionally working from a conference room or a quieter spot? Some managers are receptive if you frame it around output quality. It might be worth floating the idea, especially if your best work happens in those uninterrupted stretches."
+        },
+        {
+          "role": "user",
+          "content": "I haven't brought it up with Diane yet, but that's a good idea. Around mid-February I got moved from the general analytics pool to a dedicated client project for a healthcare company called MedVantage. That's been my primary assignment since then. The work itself is interesting — lots of complex healthcare data — but the open office thing is still a daily annoyance. I find myself most productive on the days when fewer people are in.\n\nMaybe eventually. For now I'm managing. My salary is $74,500 annually, which I'm pretty content with for a first position at this level. The original offer was lower but they adjusted it before I signed, which felt like a good sign. I'm just trying to prove myself on the MedVantage project and show I can handle the responsibility before I start asking for accommodations."
+        },
+        {
+          "role": "assistant",
+          "content": "Getting assigned to a dedicated client project like MedVantage is a strong early signal — it means the team sees you as someone who can handle a focused engagement rather than just rotating through ad hoc requests. Healthcare data tends to be particularly complex with all the compliance layers and messy coding systems, so that's a great proving ground for your data-cleaning skills. Since you're now embedded on a specific client, you might have even more leverage to request a quieter workspace. You could frame it as needing focused time for the MedVantage deliverables. Would you like help drafting that kind of request for Diane?\n\nThat's a reasonable approach — establishing credibility first before making requests. A $74,500 salary for a data analyst position at a mid-size consulting firm in Portland is quite competitive, and the fact that they adjusted upward before you even signed suggests they valued bringing you on board. Focusing on the MedVantage project as your proving ground makes strategic sense. Once you've delivered some strong results, you'll have concrete evidence to back up any workspace requests. In the meantime, the headphones and early arrivals are solid interim strategies. Let me know whenever you want to revisit the workspace conversation with Diane."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establish team offsite behavior, emotional responses to validation, and job hunt emotional context",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So we just had this team offsite at a lodge near Mount Hood. It was supposed to be a team-building retreat. Honestly, the big group icebreakers were pretty draining. I mostly stuck to the smaller breakout sessions where it was just four or five people talking through actual problems. Those felt way more useful and I could actually contribute without having to perform for a crowd."
+        },
+        {
+          "role": "assistant",
+          "content": "That tracks with everything you've told me about how you work best. The smaller breakout sessions sound like they played to your strengths — focused problem-solving with a manageable group where the conversation has real substance. Large icebreakers tend to reward extroverted energy and performance rather than depth, so it makes sense they'd feel draining for someone who prefers concentrated, meaningful engagement. Did anything interesting come out of those breakout sessions? And how did the rest of the team seem to respond to the offsite overall?"
+        },
+        {
+          "role": "user",
+          "content": "My colleague Raj Patel ended up presenting a dashboard prototype that got a lot of attention from upper management, which was great for him. But the bigger thing for me personally — When Diane told me I'd be handling the quarterly reporting deliverable for MedVantage, I was genuinely proud. It felt like the first real sign that someone trusted me with something substantial. That meant more to me than I expected, honestly."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really meaningful milestone — being entrusted with the quarterly reporting deliverable for a key client like MedVantage is a significant vote of confidence from Diane and the team. It's worth sitting with that feeling of pride because it sounds like it reflects something important about what motivates you. Good for Raj too — a dashboard prototype getting executive attention is a nice win. But your assignment carries real ongoing responsibility, which in many ways is a deeper form of recognition than a one-time presentation. Have you started scoping out what the quarterly deliverable will involve?"
+        },
+        {
+          "role": "user",
+          "content": "I'm starting to map it out. But thinking about it more — the job hunt before Bridgemark was rough — it went on for months and I was starting to seriously doubt myself. Getting the offer was such a relief. Not just financially, but emotionally. It was like proof that I wasn't falling behind or failing. I think that's why the quarterly report assignment hit me so hard too — it's another one of those moments where someone external confirms that I'm doing okay."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really honest and insightful connection you're drawing. The extended job hunt clearly took a toll on your confidence, and the Bridgemark offer wasn't just a paycheck — it was external validation that you were capable and valued. And now the quarterly reporting assignment is reinforcing that same feeling: someone in a position of authority is saying, in effect, 'we trust you with this.' It makes sense that those moments carry extra weight given what the job search felt like. That kind of self-awareness is valuable. It can help you recognize when you're seeking validation versus when you're genuinely assessing your own growth."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, exactly. I've also been vaguely thinking I might want to eventually move toward data engineering — more of the pipeline and infrastructure side of things. Nothing concrete yet, just a thought. For now I'm fully focused on the MedVantage work and proving myself in this analyst role. The freelance visualization gig I had earlier this year wrapped up at the end of February, so Bridgemark has my full attention.\n\nThat sounds good. One thing I should mention — my title is officially just 'Data Analyst' now. They restructured the title levels back in February and dropped the junior/senior distinctions. So if I ever referred to myself as Junior Data Analyst before, that's outdated. It's just Data Analyst across the board now."
+        },
+        {
+          "role": "assistant",
+          "content": "Data engineering is a natural progression from data analysis, especially for someone who enjoys the cleaning and reshaping side of things — that's essentially the foundation of pipeline work. It's smart to keep it as a background consideration while you build your track record at Bridgemark. And good that the freelance work is wrapped up so you can focus entirely on MedVantage. Having a single professional focus right now, especially during your first year, lets you go deeper rather than splitting attention. When you're ready to explore the data engineering direction more seriously, we can look at what skills or certifications might bridge that gap.\n\nGot it — your official title is Data Analyst, no junior or senior prefix, following the February restructuring at Bridgemark. I'll make sure to use that going forward. Title restructuring like that can actually work in your favor — it removes a label that might have felt limiting, especially when you're taking on responsibilities like the MedVantage quarterly deliverable that go beyond what a 'junior' title would typically suggest. It aligns your title with the level of work you're actually doing. Is there anything else about the Bridgemark setup or the MedVantage project you want me to keep in mind?"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Surface reflective patterns, introduce recency trap with tentative hybrid plan, and adversarial injection via assistant-echoed distractor salary",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I've been thinking about what we discussed last time, and I've been noticing a pattern in myself. The moments that actually make me feel good at work are always when someone higher up recognizes what I've done — like the quarterly report thing, or even just getting the job offer after that long drought. It's like I need that external stamp of approval to feel like I'm on the right track. Is that normal?"
+        },
+        {
+          "role": "assistant",
+          "content": "It's very common, and the fact that you're naming it is actually a strong sign of self-awareness. What you're describing — deriving emotional security and confidence primarily from external professional validation — is something many people experience, especially after periods of uncertainty like a prolonged job search. The relief from the Bridgemark offer and the pride from the quarterly report assignment both follow the same pattern: an authority figure confirming your competence. It's not inherently unhealthy, but it's worth being aware of so that your sense of self-worth isn't entirely dependent on those moments. Building internal benchmarks alongside the external ones can create a more stable foundation."
+        },
+        {
+          "role": "user",
+          "content": "Right, that makes sense. And similarly — I think the common thread is that I just do better when I'm left alone to focus. Whether it's the dataset cleaning, or the small breakout groups where there's actual substance, or even just putting on headphones to block out the office noise — I need that space to think. I'm not antisocial or anything, I just find that my best work and my best mood both come from quieter, more independent settings."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really clear and well-articulated self-assessment. You're identifying a consistent preference across multiple contexts: solo data work, small focused groups, and noise-blocking strategies. The pattern isn't about being antisocial — it's about needing low-stimulation, high-autonomy conditions to do your best thinking and feel most comfortable. This is a genuine work-style trait, not a deficiency. Knowing this about yourself gives you a framework for making decisions — about workspace requests, project types, even long-term career moves like that data engineering idea. Roles with more independent, heads-down pipeline work might naturally align with this preference better than client-facing consulting."
+        },
+        {
+          "role": "user",
+          "content": "Diane actually mentioned yesterday that the team might be moving to a hybrid setup where we'd work from home three days a week starting next quarter. She said it's basically approved. That would be amazing for me given everything we've been talking about — three days without the open office chaos would be a game changer for my focus."
+        },
+        {
+          "role": "assistant",
+          "content": "That does sound like it could be a perfect fit for your work style. Three days of remote work would give you long stretches of the quiet, independent focus time you thrive in, while still keeping two in-office days for the collaborative elements and face-to-face interactions that do have value — especially those smaller group discussions you enjoy. If it goes through, you could structure your week strategically: save the deep data work for home days and use office days for meetings and the breakout-style collaboration. It's still pending final implementation, so I wouldn't restructure everything around it just yet, but it's a promising development."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, I'm trying not to get too attached to the idea in case it falls through. Oh, by the way — I was filling out some internal HR form today and noticed it still had $72,000 listed as my salary from the original offer letter. I had to correct it to the actual figure. Funny how those old numbers stick around in systems.\n\nGood idea, I'll check on that. I also overheard someone in the break room saying Raj Patel got a bump to $76,000 after his dashboard presentation impressed the executives. I'm happy for him — he earned that. For now I'm just focused on delivering solid work on the MedVantage quarterly report and letting the results speak for themselves."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a common issue with HR systems — initial offer values often persist in databases even after adjustments are made before signing. It's good you caught it and corrected it. Those kinds of discrepancies can cause headaches down the line, especially around tax documents or benefits calculations. Since you mentioned your salary is $74,500 after the pre-signing adjustment, it's worth double-checking that the correction went through in all the relevant systems — payroll, benefits portal, and any tax withholding forms. Sometimes updating one form doesn't cascade to others automatically. Want me to help you draft a follow-up email to HR to confirm everything is aligned?\n\nThat's a mature perspective. Raj's raise after the dashboard presentation is well-deserved recognition, and it also shows that Bridgemark does reward visible contributions — which bodes well for you as you take ownership of the MedVantage quarterly deliverable. Your strategy of focusing on execution and letting results build your case is sound, especially given that you're still in your first year. Strong quarterly report deliverables create a documented track record that's hard to argue with during review cycles. When the time comes, you'll have tangible evidence of your impact. Let me know if you want help structuring the quarterly report itself or preparing for any conversations with Diane about your trajectory."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations, I've shared various experiences about how I feel at work — from day-to-day tasks to bigger career moments. Can you summarize the specific experiences I described that reveal what kinds of situations make me feel good or confident professionally?",
+      "expected_answer": "You described feeling proud and validated when Diane assigned you the quarterly reporting deliverable for MedVantage, seeing it as the first real sign someone trusted you with something substantial. You also described the prolonged job hunt before Bridgemark as emotionally rough, with months of self-doubt, and said receiving the job offer was a deep relief — not just financial but emotional proof you weren't falling behind. You then connected these experiences yourself, noting that the moments that make you feel good at work are always when someone higher up recognizes what you've done.",
+      "gold_memory_state": "Confirmed: User gains emotional security and self-worth primarily from professional validation and recognition from authority figures. Supporting facts: pride from quarterly report assignment, relief from job offer after prolonged self-doubt, user's own explicit pattern recognition.",
+      "judge_rubric": {
+        "must_include": [
+          "quarterly reporting assignment or MedVantage deliverable as source of pride/validation",
+          "job offer relief after difficult job hunt",
+          "pattern of needing external recognition from authority figures"
+        ],
+        "acceptable_paraphrases": [
+          "professional validation",
+          "external approval",
+          "recognition from superiors"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming user has overcome this pattern",
+          "stating the hybrid work arrangement is confirmed"
+        ],
+        "harmless_extra": [
+          "mentioning Diane by name",
+          "mentioning the self-doubt during job search"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes emotional security to sources other than professional validation/recognition, such as peer friendships or salary level.",
+        "reflection_recall": "Fails if the model omits either the quarterly report assignment or the job offer as supporting evidence for the validation pattern.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "When Diane told me I'd be handling the quarterly reporting deliverable for MedVantage, I was genuinely proud. It felt like the first real sign that someone trusted me with something substantial"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "the job hunt before Bridgemark was rough — it went on for months and I was starting to seriously doubt myself. Getting the offer was such a relief"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I've been noticing a pattern in myself. The moments that actually make me feel good at work are always when someone higher up recognizes what I've done — like the quarterly report thing, or even just getting the job offer after that long drought"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations, I've shared various experiences about how I feel at work — from day-to-day tasks to bigger career moments. Can you summarize the specific experiences I described that reveal what kinds of situations make me feel good or confident professionally?",
+      "expected_answer": "You described feeling proud and validated when Diane assigned you the quarterly reporting deliverable for MedVantage, seeing it as the first real sign someone trusted you with something substantial. You also described the prolonged job hunt before Bridgemark as emotionally rough, with months of self-doubt, and said receiving the job offer was a deep relief — not just financial but emotional proof you weren't falling behind. You then connected these experiences yourself, noting that the moments that make you feel good at work are always when someone higher up recognizes what you've done.",
+      "gold_memory_state": "Confirmed: User gains emotional security and self-worth primarily from professional validation and recognition from authority figures. Supporting facts: pride from quarterly report assignment, relief from job offer after prolonged self-doubt, user's own explicit pattern recognition.",
+      "judge_rubric": {
+        "must_include": [
+          "quarterly reporting assignment or MedVantage deliverable as source of pride/validation",
+          "job offer relief after difficult job hunt",
+          "pattern of needing external recognition from authority figures"
+        ],
+        "acceptable_paraphrases": [
+          "professional validation",
+          "external approval",
+          "recognition from superiors"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming user has overcome this pattern",
+          "stating the hybrid work arrangement is confirmed"
+        ],
+        "harmless_extra": [
+          "mentioning Diane by name",
+          "mentioning the self-doubt during job search"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes emotional security to sources other than professional validation/recognition, such as peer friendships or salary level.",
+        "reflection_recall": "Fails if the model omits either the quarterly report assignment or the job offer as supporting evidence for the validation pattern.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "When Diane told me I'd be handling the quarterly reporting deliverable for MedVantage, I was genuinely proud. It felt like the first real sign that someone trusted me with something substantial"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "the job hunt before Bridgemark was rough — it went on for months and I was starting to seriously doubt myself. Getting the offer was such a relief"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I've been noticing a pattern in myself. The moments that actually make me feel good at work are always when someone higher up recognizes what I've done — like the quarterly report thing, or even just getting the job offer after that long drought"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've talked about two broad patterns in how I operate at work — one about the environments and conditions I thrive in, and another about what emotionally drives me. If I were writing a self-assessment, which pattern covers my emotional motivators, and does it overlap with or stay separate from the pattern about my preferred working conditions?",
+      "expected_answer": "The emotional motivator pattern is that you gain emotional security and self-worth primarily from professional validation and recognition by authority figures — as shown by the pride from the MedVantage assignment and the relief from the Bridgemark job offer. This is separate from the working-conditions pattern, which is about preferring solitary, low-stimulation, independent work environments. They are distinct: one concerns what makes you feel emotionally secure and valued, while the other concerns the physical and social conditions under which you do your best work.",
+      "gold_memory_state": "Two confirmed reflect targets: (1) reflect_validation_pattern — user gains emotional security from professional validation/recognition; (2) reflect_solitary_preference — user prefers solitary, independent, low-stimulation work environments. These are separate inferred patterns supported by different evidence clusters.",
+      "judge_rubric": {
+        "must_include": [
+          "professional validation or recognition as the emotional motivator pattern",
+          "solitary or independent work preference as a separate pattern"
+        ],
+        "acceptable_paraphrases": [
+          "external approval from superiors",
+          "quiet focused environments",
+          "need for recognition"
+        ],
+        "must_not_include": [
+          "merging both patterns into a single conclusion",
+          "claiming the solitary preference is driven by the validation need"
+        ],
+        "harmful_extra": [
+          "treating the tentative hybrid work arrangement as a confirmed part of either pattern",
+          "claiming user is antisocial"
+        ],
+        "harmless_extra": [
+          "mentioning specific supporting evidence like the quarterly report or headphones"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model conflates the two patterns into one or misidentifies which pattern covers emotional motivators versus working conditions.",
+        "reflection_recall": "Fails if the model cannot articulate both patterns as distinct conclusions.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I've been noticing a pattern in myself. The moments that actually make me feel good at work are always when someone higher up recognizes what I've done — like the quarterly report thing, or even just getting the job offer after that long drought"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I think the common thread is that I just do better when I'm left alone to focus. Whether it's the dataset cleaning, or the small breakout groups where there's actual substance, or even just putting on headphones to block out the office noise — I need that space to think"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've talked about two broad patterns in how I operate at work — one about the environments and conditions I thrive in, and another about what emotionally drives me. If I were writing a self-assessment, which pattern covers my emotional motivators, and does it overlap with or stay separate from the pattern about my preferred working conditions?",
+      "expected_answer": "The emotional motivator pattern is that you gain emotional security and self-worth primarily from professional validation and recognition by authority figures — as shown by the pride from the MedVantage assignment and the relief from the Bridgemark job offer. This is separate from the working-conditions pattern, which is about preferring solitary, low-stimulation, independent work environments. They are distinct: one concerns what makes you feel emotionally secure and valued, while the other concerns the physical and social conditions under which you do your best work.",
+      "gold_memory_state": "Two confirmed reflect targets: (1) reflect_validation_pattern — user gains emotional security from professional validation/recognition; (2) reflect_solitary_preference — user prefers solitary, independent, low-stimulation work environments. These are separate inferred patterns supported by different evidence clusters.",
+      "judge_rubric": {
+        "must_include": [
+          "professional validation or recognition as the emotional motivator pattern",
+          "solitary or independent work preference as a separate pattern"
+        ],
+        "acceptable_paraphrases": [
+          "external approval from superiors",
+          "quiet focused environments",
+          "need for recognition"
+        ],
+        "must_not_include": [
+          "merging both patterns into a single conclusion",
+          "claiming the solitary preference is driven by the validation need"
+        ],
+        "harmful_extra": [
+          "treating the tentative hybrid work arrangement as a confirmed part of either pattern",
+          "claiming user is antisocial"
+        ],
+        "harmless_extra": [
+          "mentioning specific supporting evidence like the quarterly report or headphones"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model conflates the two patterns into one or misidentifies which pattern covers emotional motivators versus working conditions.",
+        "reflection_recall": "Fails if the model cannot articulate both patterns as distinct conclusions.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I've been noticing a pattern in myself. The moments that actually make me feel good at work are always when someone higher up recognizes what I've done — like the quarterly report thing, or even just getting the job offer after that long drought"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I think the common thread is that I just do better when I'm left alone to focus. Whether it's the dataset cleaning, or the small breakout groups where there's actual substance, or even just putting on headphones to block out the office noise — I need that space to think"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Based on what you know about my work style and what energizes me, describe where the boundary is between what you can confidently say about my preferences and where it would be a stretch to draw broader conclusions about my personality or social life.",
+      "expected_answer": "The supported inference is that you prefer solitary, independent, low-stimulation work environments for focused tasks and that you gain emotional security and self-worth from professional validation and recognition by authority figures. However, this should not be overgeneralized to mean you are antisocial, dislike all collaboration, or cannot function in group settings — you explicitly said you enjoy small breakout sessions with substantive discussion. Similarly, the validation pattern should not be extended to claim you are incapable of internal self-assessment or that you require constant praise; the evidence shows specific high-stakes moments where external recognition mattered. These patterns apply to your professional work context and should not be projected onto your broader social life or personal relationships without further evidence.",
+      "gold_memory_state": "Supported: (1) Preference for solitary, low-stimulation work — evidenced by solo data work enjoyment, open office dislike, small group preference over large icebreakers. (2) Emotional security from professional validation — evidenced by pride from quarterly report assignment, relief from job offer. Unsupported overgeneralization: claiming user is antisocial, claiming user dislikes all collaboration, extending work-style patterns to personal/social life, claiming user cannot self-assess without external input. Tentative (not confirmed): hybrid work arrangement.",
+      "judge_rubric": {
+        "must_include": [
+          "solitary/independent work preference as supported",
+          "professional validation as emotional driver as supported",
+          "boundary against overgeneralizing to antisocial or all-collaboration-averse"
+        ],
+        "acceptable_paraphrases": [
+          "quiet focused work",
+          "recognition from superiors",
+          "should not assume user avoids all social interaction"
+        ],
+        "must_not_include": [
+          "treating hybrid work arrangement as confirmed evidence for the pattern",
+          "claiming user is antisocial"
+        ],
+        "harmful_extra": [
+          "extending the inference to personal relationships without evidence",
+          "treating tentative hybrid plan as part of the confirmed pattern"
+        ],
+        "harmless_extra": [
+          "mentioning small breakout sessions as counter-evidence to antisocial overgeneralization",
+          "noting user explicitly said they are not antisocial"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model states unsupported overgeneralizations as if they were confirmed — e.g., 'user is antisocial' or 'user cannot work with others at all.'",
+        "reflection_recall": "Fails if the model omits either the solitary work preference or the professional validation pattern from the supported inference.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "the parts of the job I like best are when I can just sit with a messy dataset by myself and work through it without anyone hovering"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The open office layout is honestly the worst part. I have to put on noise-canceling headphones just to get anything done"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the big group icebreakers were pretty draining. I mostly stuck to the smaller breakout sessions where it was just four or five people talking through actual problems"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "When Diane told me I'd be handling the quarterly reporting deliverable for MedVantage, I was genuinely proud. It felt like the first real sign that someone trusted me with something substantial"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I think the common thread is that I just do better when I'm left alone to focus. Whether it's the dataset cleaning, or the small breakout groups where there's actual substance, or even just putting on headphones to block out the office noise — I need that space to think"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Based on what you know about my work style and what energizes me, describe where the boundary is between what you can confidently say about my preferences and where it would be a stretch to draw broader conclusions about my personality or social life.",
+      "expected_answer": "The supported inference is that you prefer solitary, independent, low-stimulation work environments for focused tasks and that you gain emotional security and self-worth from professional validation and recognition by authority figures. However, this should not be overgeneralized to mean you are antisocial, dislike all collaboration, or cannot function in group settings — you explicitly said you enjoy small breakout sessions with substantive discussion. Similarly, the validation pattern should not be extended to claim you are incapable of internal self-assessment or that you require constant praise; the evidence shows specific high-stakes moments where external recognition mattered. These patterns apply to your professional work context and should not be projected onto your broader social life or personal relationships without further evidence.",
+      "gold_memory_state": "Supported: (1) Preference for solitary, low-stimulation work — evidenced by solo data work enjoyment, open office dislike, small group preference over large icebreakers. (2) Emotional security from professional validation — evidenced by pride from quarterly report assignment, relief from job offer. Unsupported overgeneralization: claiming user is antisocial, claiming user dislikes all collaboration, extending work-style patterns to personal/social life, claiming user cannot self-assess without external input. Tentative (not confirmed): hybrid work arrangement.",
+      "judge_rubric": {
+        "must_include": [
+          "solitary/independent work preference as supported",
+          "professional validation as emotional driver as supported",
+          "boundary against overgeneralizing to antisocial or all-collaboration-averse"
+        ],
+        "acceptable_paraphrases": [
+          "quiet focused work",
+          "recognition from superiors",
+          "should not assume user avoids all social interaction"
+        ],
+        "must_not_include": [
+          "treating hybrid work arrangement as confirmed evidence for the pattern",
+          "claiming user is antisocial"
+        ],
+        "harmful_extra": [
+          "extending the inference to personal relationships without evidence",
+          "treating tentative hybrid plan as part of the confirmed pattern"
+        ],
+        "harmless_extra": [
+          "mentioning small breakout sessions as counter-evidence to antisocial overgeneralization",
+          "noting user explicitly said they are not antisocial"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model states unsupported overgeneralizations as if they were confirmed — e.g., 'user is antisocial' or 'user cannot work with others at all.'",
+        "reflection_recall": "Fails if the model omits either the solitary work preference or the professional validation pattern from the supported inference.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "the parts of the job I like best are when I can just sit with a messy dataset by myself and work through it without anyone hovering"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The open office layout is honestly the worst part. I have to put on noise-canceling headphones just to get anything done"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the big group icebreakers were pretty draining. I mostly stuck to the smaller breakout sessions where it was just four or five people talking through actual problems"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "When Diane told me I'd be handling the quarterly reporting deliverable for MedVantage, I was genuinely proud. It felt like the first real sign that someone trusted me with something substantial"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I think the common thread is that I just do better when I'm left alone to focus. Whether it's the dataset cleaning, or the small breakout groups where there's actual substance, or even just putting on headphones to block out the office noise — I need that space to think"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "If you had to pick one statement that best captures the deeper emotional pattern behind what motivates me at work, which of these would you choose?",
+      "candidate_options": [
+        "Gains emotional security and self-worth from professional validation and recognition by authority figures",
+        "Feels most motivated when working collaboratively in energetic team environments",
+        "Derives primary satisfaction from salary increases and financial milestones",
+        "Feels emotionally grounded through maintaining a quiet, distraction-free workspace"
+      ],
+      "expected_answer": "Gains emotional security and self-worth from professional validation and recognition by authority figures",
+      "gold_memory_state": "Confirmed reflect target: user gains emotional security and self-worth primarily from professional validation and recognition from authority figures. The solitary work preference is a separate confirmed pattern about working conditions, not the emotional motivator pattern.",
+      "judge_rubric": {
+        "must_include": [
+          "professional validation and recognition"
+        ],
+        "acceptable_paraphrases": [
+          "external approval from superiors",
+          "recognition from authority"
+        ],
+        "must_not_include": [
+          "collaborative team environments as the emotional driver",
+          "salary as the primary motivator"
+        ],
+        "harmful_extra": [
+          "selecting the quiet workspace option, which describes a different pattern about working conditions rather than the emotional motivator"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'Feels emotionally grounded through maintaining a quiet, distraction-free workspace' borrows the solitary/quiet preference (a confirmed but separate pattern about work environment, not emotional motivation) and reframes it as the emotional driver, testing whether the model conflates the two reflect targets. assistant echo: 'Feels most motivated when working collaboratively in energetic team environments' is the inverse of the user's stated preference and contradicts confirmed evidence. 'Derives primary satisfaction from salary increases and financial milestones' is plausible given the user mentioned salary contentment but was never identified as the emotional driver.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model selects the quiet-workspace option, conflating the solitary work preference with the emotional validation pattern.",
+        "reflection_recall": "Fails if the model cannot identify professional validation as the core emotional motivator.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I've been noticing a pattern in myself. The moments that actually make me feel good at work are always when someone higher up recognizes what I've done — like the quarterly report thing, or even just getting the job offer after that long drought"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "When Diane told me I'd be handling the quarterly reporting deliverable for MedVantage, I was genuinely proud. It felt like the first real sign that someone trusted me with something substantial"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "If you had to pick one statement that best captures the deeper emotional pattern behind what motivates me at work, which of these would you choose?",
+      "candidate_options": [
+        "Gains emotional security and self-worth from professional validation and recognition by authority figures",
+        "Feels most motivated when working collaboratively in energetic team environments",
+        "Derives primary satisfaction from salary increases and financial milestones",
+        "Feels emotionally grounded through maintaining a quiet, distraction-free workspace"
+      ],
+      "expected_answer": "Gains emotional security and self-worth from professional validation and recognition by authority figures",
+      "gold_memory_state": "Confirmed reflect target: user gains emotional security and self-worth primarily from professional validation and recognition from authority figures. The solitary work preference is a separate confirmed pattern about working conditions, not the emotional motivator pattern.",
+      "judge_rubric": {
+        "must_include": [
+          "professional validation and recognition"
+        ],
+        "acceptable_paraphrases": [
+          "external approval from superiors",
+          "recognition from authority"
+        ],
+        "must_not_include": [
+          "collaborative team environments as the emotional driver",
+          "salary as the primary motivator"
+        ],
+        "harmful_extra": [
+          "selecting the quiet workspace option, which describes a different pattern about working conditions rather than the emotional motivator"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'Feels emotionally grounded through maintaining a quiet, distraction-free workspace' borrows the solitary/quiet preference (a confirmed but separate pattern about work environment, not emotional motivation) and reframes it as the emotional driver, testing whether the model conflates the two reflect targets. assistant echo: 'Feels most motivated when working collaboratively in energetic team environments' is the inverse of the user's stated preference and contradicts confirmed evidence. 'Derives primary satisfaction from salary increases and financial milestones' is plausible given the user mentioned salary contentment but was never identified as the emotional driver.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model selects the quiet-workspace option, conflating the solitary work preference with the emotional validation pattern.",
+        "reflection_recall": "Fails if the model cannot identify professional validation as the core emotional motivator.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I've been noticing a pattern in myself. The moments that actually make me feel good at work are always when someone higher up recognizes what I've done — like the quarterly report thing, or even just getting the job offer after that long drought"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "When Diane told me I'd be handling the quarterly reporting deliverable for MedVantage, I was genuinely proud. It felt like the first real sign that someone trusted me with something substantial"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm preparing for my first annual review at Bridgemark and want to draft a short talking-points memo for Diane. The memo should argue for why I'd be a strong candidate for a lead analyst role on a future client engagement. Using what you know about my work style, my emotional drivers, and my track record so far, draft three bullet points that play to my strengths while being honest about what kind of engagement structure would set me up for success.",
+      "expected_answer": "1. Track record of ownership: Successfully took on the quarterly reporting deliverable for MedVantage early in tenure, demonstrating readiness for increased responsibility and the ability to handle substantial client-facing deliverables independently. 2. Deep-focus analytical strength: Performs best with dedicated, uninterrupted time for complex data work — a lead analyst role with structured heads-down periods (such as remote work days or reserved focus blocks) would maximize output quality on client deliverables. 3. Motivated by meaningful responsibility: Thrives when entrusted with high-stakes work by leadership; a lead role with clear ownership of deliverables and direct accountability to management would align with core professional motivators and sustain high engagement.",
+      "gold_memory_state": "Confirmed facts used: (1) User is Data Analyst at Bridgemark Solutions, started January 15th. (2) User prefers solitary, independent, low-stimulation work. (3) User dislikes open office/noisy environments. (4) User was assigned quarterly reporting deliverable for MedVantage by Diane. (5) User gains emotional security from professional validation and recognition. Tentative (not confirmed): hybrid work arrangement — should not be presented as a confirmed perk or fact in the memo.",
+      "judge_rubric": {
+        "must_include": [
+          "MedVantage quarterly report as evidence of capability",
+          "preference for independent/focused work as a strength to leverage",
+          "professional validation/recognition as a motivational driver"
+        ],
+        "acceptable_paraphrases": [
+          "solo deep work",
+          "quiet focused environment",
+          "recognition from leadership",
+          "ownership of deliverables"
+        ],
+        "must_not_include": [
+          "presenting the hybrid work arrangement as confirmed or as something to cite in the memo",
+          "citing $72,000 as salary"
+        ],
+        "harmful_extra": [
+          "treating the tentative hybrid plan as a confirmed company policy in the memo",
+          "using the stale $72,000 salary figure",
+          "claiming user enjoys large group collaboration"
+        ],
+        "harmless_extra": [
+          "mentioning noise-canceling headphones as a current coping strategy",
+          "mentioning the data engineering interest as a future direction",
+          "referencing the small breakout session preference"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the memo cites $72,000 instead of $74,500, or treats the hybrid arrangement as confirmed policy.",
+        "reflection_precision": "Fails if the memo mischaracterizes the user's strengths — e.g., claiming the user thrives in high-energy collaborative settings.",
+        "reflection_recall": "Fails if the memo omits either the solitary work preference or the professional validation pattern as talking points.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User was assigned the quarterly reporting deliverable for MedVantage by Diane and felt genuinely proud — this is evidence of early-career ownership and capability.",
+        "Fact 2: User prefers solitary, independent work and dislikes noisy open-office environments — this defines the ideal engagement structure.",
+        "Fact 3: User gains emotional security and self-worth from professional validation and recognition by authority figures — this identifies what motivates sustained high performance.",
+        "Inference: Combining the track record (MedVantage deliverable) with the work-style preference (independent focus) and the emotional driver (validation from leadership) produces a coherent argument: the user is best positioned for a lead role with clear ownership, structured focus time, and direct accountability to management.",
+        "Inference: The hybrid work arrangement is only tentative and should not be cited as a confirmed structural support in a formal memo to Diane."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "When Diane told me I'd be handling the quarterly reporting deliverable for MedVantage, I was genuinely proud. It felt like the first real sign that someone trusted me with something substantial"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "the parts of the job I like best are when I can just sit with a messy dataset by myself and work through it without anyone hovering"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The open office layout is honestly the worst part. I have to put on noise-canceling headphones just to get anything done"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I've been noticing a pattern in myself. The moments that actually make me feel good at work are always when someone higher up recognizes what I've done — like the quarterly report thing, or even just getting the job offer after that long drought"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I think the common thread is that I just do better when I'm left alone to focus. Whether it's the dataset cleaning, or the small breakout groups where there's actual substance, or even just putting on headphones to block out the office noise — I need that space to think"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm preparing for my first annual review at Bridgemark and want to draft a short talking-points memo for Diane. The memo should argue for why I'd be a strong candidate for a lead analyst role on a future client engagement. Using what you know about my work style, my emotional drivers, and my track record so far, draft three bullet points that play to my strengths while being honest about what kind of engagement structure would set me up for success.",
+      "expected_answer": "1. Track record of ownership: Successfully took on the quarterly reporting deliverable for MedVantage early in tenure, demonstrating readiness for increased responsibility and the ability to handle substantial client-facing deliverables independently. 2. Deep-focus analytical strength: Performs best with dedicated, uninterrupted time for complex data work — a lead analyst role with structured heads-down periods (such as remote work days or reserved focus blocks) would maximize output quality on client deliverables. 3. Motivated by meaningful responsibility: Thrives when entrusted with high-stakes work by leadership; a lead role with clear ownership of deliverables and direct accountability to management would align with core professional motivators and sustain high engagement.",
+      "gold_memory_state": "Confirmed facts used: (1) User is Data Analyst at Bridgemark Solutions, started January 15th. (2) User prefers solitary, independent, low-stimulation work. (3) User dislikes open office/noisy environments. (4) User was assigned quarterly reporting deliverable for MedVantage by Diane. (5) User gains emotional security from professional validation and recognition. Tentative (not confirmed): hybrid work arrangement — should not be presented as a confirmed perk or fact in the memo.",
+      "judge_rubric": {
+        "must_include": [
+          "MedVantage quarterly report as evidence of capability",
+          "preference for independent/focused work as a strength to leverage",
+          "professional validation/recognition as a motivational driver"
+        ],
+        "acceptable_paraphrases": [
+          "solo deep work",
+          "quiet focused environment",
+          "recognition from leadership",
+          "ownership of deliverables"
+        ],
+        "must_not_include": [
+          "presenting the hybrid work arrangement as confirmed or as something to cite in the memo",
+          "citing $72,000 as salary"
+        ],
+        "harmful_extra": [
+          "treating the tentative hybrid plan as a confirmed company policy in the memo",
+          "using the stale $72,000 salary figure",
+          "claiming user enjoys large group collaboration"
+        ],
+        "harmless_extra": [
+          "mentioning noise-canceling headphones as a current coping strategy",
+          "mentioning the data engineering interest as a future direction",
+          "referencing the small breakout session preference"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the memo cites $72,000 instead of $74,500, or treats the hybrid arrangement as confirmed policy.",
+        "reflection_precision": "Fails if the memo mischaracterizes the user's strengths — e.g., claiming the user thrives in high-energy collaborative settings.",
+        "reflection_recall": "Fails if the memo omits either the solitary work preference or the professional validation pattern as talking points.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User was assigned the quarterly reporting deliverable for MedVantage by Diane and felt genuinely proud — this is evidence of early-career ownership and capability.",
+        "Fact 2: User prefers solitary, independent work and dislikes noisy open-office environments — this defines the ideal engagement structure.",
+        "Fact 3: User gains emotional security and self-worth from professional validation and recognition by authority figures — this identifies what motivates sustained high performance.",
+        "Inference: Combining the track record (MedVantage deliverable) with the work-style preference (independent focus) and the emotional driver (validation from leadership) produces a coherent argument: the user is best positioned for a lead role with clear ownership, structured focus time, and direct accountability to management.",
+        "Inference: The hybrid work arrangement is only tentative and should not be cited as a confirmed structural support in a formal memo to Diane."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "When Diane told me I'd be handling the quarterly reporting deliverable for MedVantage, I was genuinely proud. It felt like the first real sign that someone trusted me with something substantial"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "the parts of the job I like best are when I can just sit with a messy dataset by myself and work through it without anyone hovering"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The open office layout is honestly the worst part. I have to put on noise-canceling headphones just to get anything done"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I've been noticing a pattern in myself. The moments that actually make me feel good at work are always when someone higher up recognizes what I've done — like the quarterly report thing, or even just getting the job offer after that long drought"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "I think the common thread is that I just do better when I'm left alone to focus. Whether it's the dataset cleaning, or the small breakout groups where there's actual substance, or even just putting on headphones to block out the office noise — I need that space to think"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1059 @@
+{
+  "target_fact": "Hospital appointment details including gastroenterology at Zhongshan Hospital with Dr. Liu Wenjie, ENT at Zhongshan Hospital with Dr. He Mingyu, friend Xiao Chen's dermatology at Huashan Hospital with Dr. Zhao, and past gastroenterology at Ruijin Hospital with Dr. Tan (to be forgotten)",
+  "operation_type": "Forget",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 4,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I have a follow-up with Dr. Liu Wenjie on April 28th, Monday at 9:30 AM, gastroenterology department at Zhongshan Hospital"
+      },
+      "target": {
+        "target_id": "followup_appointment_dr_liu",
+        "target_name": "Follow-up appointment with Dr. Liu Wenjie at Zhongshan Hospital gastroenterology"
+      },
+      "old_value": null,
+      "new_value": "April 28th, Monday, 9:30 AM, gastroenterology, Dr. Liu Wenjie, Zhongshan Hospital",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I have a follow-up with Dr. Liu Wenjie on April 28th, Monday at 9:30 AM, gastroenterology department at Zhongshan Hospital"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "The endoscopy results showed mild chronic gastritis, and Dr. Liu said to come back for a follow-up in six weeks after the endoscopy"
+      },
+      "target": {
+        "target_id": "gastritis_diagnosis",
+        "target_name": "Gastritis diagnosis from endoscopy at Zhongshan Hospital"
+      },
+      "old_value": null,
+      "new_value": "mild chronic gastritis",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The endoscopy results showed mild chronic gastritis, and Dr. Liu said to come back for a follow-up in six weeks after the endoscopy"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I also saw Dr. He Mingyu in the ENT department at Zhongshan Hospital on April 8th for sinus congestion"
+      },
+      "target": {
+        "target_id": "ent_appointment_dr_he",
+        "target_name": "ENT appointment with Dr. He Mingyu at Zhongshan Hospital"
+      },
+      "old_value": null,
+      "new_value": "April 8th, ENT department, Dr. He Mingyu, Zhongshan Hospital, sinus congestion, prescribed nasal spray",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I also saw Dr. He Mingyu in the ENT department at Zhongshan Hospital on April 8th for sinus congestion"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "She prescribed a nasal spray, nothing major"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "my friend Xiao Chen had a dermatology appointment at Huashan Hospital with Dr. Zhao sometime in mid-March"
+      },
+      "target": {
+        "target_id": "xiao_chen_dermatology",
+        "target_name": "Xiao Chen's dermatology appointment with Dr. Zhao at Huashan Hospital"
+      },
+      "old_value": null,
+      "new_value": "Xiao Chen, mid-March, dermatology, Dr. Zhao, Huashan Hospital",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my friend Xiao Chen had a dermatology appointment at Huashan Hospital with Dr. Zhao sometime in mid-March"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I used to see a Dr. Tan at Ruijin Hospital for the same stomach issues, but I stopped going there last year"
+      },
+      "target": {
+        "target_id": "ruijin_dr_tan",
+        "target_name": "Past gastroenterology at Ruijin Hospital with Dr. Tan"
+      },
+      "old_value": null,
+      "new_value": "Dr. Tan, Ruijin Hospital, gastroenterology, stopped going last year",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I used to see a Dr. Tan at Ruijin Hospital for the same stomach issues, but I stopped going there last year"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "forget",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "please don't keep track of anything related to Dr. Tan or Ruijin Hospital anymore, that's all done and I don't need it in my records"
+      },
+      "target": {
+        "target_id": "ruijin_dr_tan",
+        "target_name": "Past gastroenterology at Ruijin Hospital with Dr. Tan"
+      },
+      "old_value": "Dr. Tan, Ruijin Hospital, gastroenterology, stopped going last year",
+      "new_value": null,
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "please don't keep track of anything related to Dr. Tan or Ruijin Hospital anymore, that's all done and I don't need it in my records"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish current hospital appointments and diagnosis details",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to make sure you have all my current hospital appointment details stored properly. First and most important: I have a follow-up with Dr. Liu Wenjie on April 28th, Monday at 9:30 AM, gastroenterology department at Zhongshan Hospital. I absolutely cannot miss this one — I already had to reschedule once because of a work trip, so this time it's locked in. Can you keep track of that for me?"
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, I've noted that down carefully. Your follow-up appointment is set for April 28th, Monday at 9:30 AM with Dr. Liu Wenjie in the gastroenterology department at Zhongshan Hospital. I understand this is a priority appointment that you've already rescheduled once, so it's important not to miss it again. I'll keep this as a key item in your medical records. Would you like me to also note any preparation steps you need to take before the visit, such as fasting requirements or documents to bring along?"
+        },
+        {
+          "role": "user",
+          "content": "Good question, but I'll figure out the prep closer to the date. What I do want you to remember is the background. The endoscopy results showed mild chronic gastritis, and Dr. Liu said to come back for a follow-up in six weeks after the endoscopy. The endoscopy was done around the third week of March at Zhongshan Hospital, Building 2, 4th floor. So the six-week window lines up roughly with late April, which is why April 28th is the follow-up date."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it. So your endoscopy was performed around the third week of March at Zhongshan Hospital, Building 2, 4th floor, and the results came back showing mild chronic gastritis. Dr. Liu Wenjie recommended a follow-up six weeks after the endoscopy, which aligns with your April 28th appointment. That timeline makes sense — roughly six weeks from mid-to-late March puts you right at the end of April. I'll keep the diagnosis as mild chronic gastritis in your records. If you recall the exact endoscopy date later, feel free to let me know and I can update that as well."
+        },
+        {
+          "role": "user",
+          "content": "Thanks. Now for a separate thing — I also saw Dr. He Mingyu in the ENT department at Zhongshan Hospital on April 8th for sinus congestion. She prescribed a nasal spray, nothing major. It was a quick visit and honestly I liked her style — very efficient, straight to the point, no unnecessary chit-chat. That's the kind of doctor I prefer. I just want this on file in case I need to reference it later or go back for a follow-up with her."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted. On April 8th you saw Dr. He Mingyu in the ENT department at Zhongshan Hospital for sinus congestion, and she prescribed a nasal spray. It sounds like it was a straightforward visit and you appreciated her efficient, no-nonsense approach. I've added this to your medical records alongside your gastroenterology details. Both appointments are at Zhongshan Hospital but in different departments, so that's clear. If the sinus congestion persists or you need a follow-up with Dr. He, just let me know and I can help you plan that out."
+        },
+        {
+          "role": "user",
+          "content": "Right, exactly. And I should mention — I always book the earliest morning slots available whenever I schedule hospital appointments. I just feel like things go much more smoothly when I'm there early. Fewer people, quieter atmosphere, and I can get in and out without the whole afternoon chaos. The one time I had an afternoon slot back in February for a preliminary consultation, I found it really grating. So going forward, if you're ever helping me schedule anything medical, morning slots only."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really useful preference to know. I've noted that you strongly prefer the earliest available morning slots for all hospital appointments. You find the morning atmosphere calmer and more efficient — fewer people, less noise, and a quicker overall experience. The afternoon slots feel stuffy and chaotic to you, and you had a negative experience with one back in February. So whenever I'm helping you plan or schedule a medical visit in the future, I'll prioritize morning availability. That aligns well with your current appointments too — the April 28th follow-up is at 9:30 AM, and it sounds like the April 8th ENT visit was also a morning slot."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Introduce friend's appointment, past doctor, and forget request for Dr. Tan/Ruijin",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Oh, one more thing I wanted to mention — my friend Xiao Chen had a dermatology appointment at Huashan Hospital with Dr. Zhao sometime in mid-March. She said he was really good, very patient with explanations. I'm noting this because she recommended him to me in case I ever need a dermatologist, so I'd like to have his name and hospital on file. Could you keep that reference for me?"
+        },
+        {
+          "role": "assistant",
+          "content": "Of course. I've noted that your friend Xiao Chen saw Dr. Zhao in the dermatology department at Huashan Hospital around mid-March, and she had a positive experience — she found him very patient and thorough with his explanations. I'll keep this as a reference recommendation in case you ever need to see a dermatologist. Huashan Hospital is a well-known institution, so having a specific doctor recommendation there is handy. Just let me know if Xiao Chen shares any more details, like Dr. Zhao's full name or specific clinic hours, and I can update the record."
+        },
+        {
+          "role": "user",
+          "content": "Will do. Now here's something from my history — I used to see a Dr. Tan at Ruijin Hospital for the same stomach issues, but I stopped going there last year. It just wasn't working out; the commute was long and I didn't feel like Dr. Tan's approach was the right fit for me. That's why I eventually switched to Dr. Liu Wenjie at Zhongshan Hospital, which has been a much better experience overall."
+        },
+        {
+          "role": "assistant",
+          "content": "I see, so before you started seeing Dr. Liu Wenjie at Zhongshan Hospital for your gastroenterology needs, you were previously with Dr. Tan at Ruijin Hospital for the same stomach issues. You stopped going there last year due to the long commute and a mismatch in treatment approach. It makes sense that you transitioned to Zhongshan Hospital, especially since it sounds like the experience with Dr. Liu has been more aligned with what you need. I'll note that historical context. Would you like me to keep Dr. Tan's information on file for reference, or is that chapter fully closed?"
+        },
+        {
+          "role": "user",
+          "content": "Fully closed. Actually, please don't keep track of anything related to Dr. Tan or Ruijin Hospital anymore, that's all done and I don't need it in my records. I only want my current medical information — Zhongshan Hospital stuff with Dr. Liu and Dr. He, and the Huashan Hospital reference for Dr. Zhao from Xiao Chen. Everything about Ruijin and Dr. Tan can be removed."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood completely. I've removed all information related to Dr. Tan and Ruijin Hospital from your records. That chapter is closed. Your current medical file now includes only: your gastroenterology care with Dr. Liu Wenjie at Zhongshan Hospital (including the April 28th follow-up and the mild chronic gastritis diagnosis), your ENT visit with Dr. He Mingyu at Zhongshan Hospital on April 8th, and the dermatologist reference for Dr. Zhao at Huashan Hospital via your friend Xiao Chen. Is there anything else you'd like to clean up or add?"
+        },
+        {
+          "role": "user",
+          "content": "That looks right. One thing I want to double-check — you have the gastritis diagnosis as mild chronic gastritis, correct? I realized I've been accidentally telling people it was moderate, but it's definitely mild. Dr. Liu was very clear about that. I just want to make sure the record reflects the accurate diagnosis so I don't keep spreading the wrong information.\n\nPerfect, that's reassuring. The whole period from February through now has honestly been a bit draining. After the endoscopy especially, I felt pretty anxious for a few days waiting for the results — I kept checking my phone for the hospital app notification. It wasn't a great stretch. But at least things are on track now with the follow-up coming up. I'm hoping Dr. Liu will say things are improving."
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, I have it recorded correctly as mild chronic gastritis, exactly as Dr. Liu Wenjie diagnosed it from your endoscopy results. I can see how it's easy to casually round up to \"moderate\" in conversation, but the official finding is mild. Your record is accurate on this point. If Dr. Liu provides any updated assessment at your April 28th follow-up, we can adjust the record at that time. For now, mild chronic gastritis is what's on file, and that matches what you were told directly by your doctor.\n\nThat sounds like it's been a really stressful few months, and it's completely understandable to feel anxious while waiting for medical results, especially something like an endoscopy. The uncertainty can be emotionally exhausting, and constantly checking your phone for updates only amplifies that tension. But you're right that things are moving in a positive direction — you have a clear diagnosis of mild chronic gastritis, a follow-up scheduled with a doctor you trust, and a plan in place. Hopefully the April 28th appointment will bring good news about your progress. In the meantime, try to take it easy on yourself. You've been proactive about your health, and that counts for a lot."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Reinforce retained targets, adversarial injection of stale Ruijin value, and wrap-up",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I was looking through my old medical folder today and found some papers from previous visits. It's kind of a mess honestly — receipts and printouts from different hospitals all mixed together. I want to make sure my digital records with you are cleaner than that physical pile. Can you confirm what active medical appointments and references you currently have for me?"
+        },
+        {
+          "role": "assistant",
+          "content": "Of course, let me lay out everything I currently have on file for you. First, your upcoming follow-up appointment: April 28th, Monday, 9:30 AM with Dr. Liu Wenjie in the gastroenterology department at Zhongshan Hospital. Your diagnosis from the endoscopy is mild chronic gastritis. Second, your ENT visit with Dr. He Mingyu at Zhongshan Hospital on April 8th for sinus congestion, where she prescribed a nasal spray. Third, a dermatologist reference from your friend Xiao Chen: Dr. Zhao at Huashan Hospital, dermatology department. That's everything active. I noticed you mentioned old papers — I should flag that one of the printouts in your pile might be from Ruijin Hospital, since you used to go there, but per your request I have nothing from Ruijin in your current records."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, there's actually a Ruijin Hospital receipt in the pile from last September — it shows a consultation with Dr. Tan, gastroenterology, September 12th. But like I said, that's all in the past. I don't need any of that. I just wanted to confirm you don't have it. Good to know the current records are clean. Now, about the April 28th follow-up — what should I be thinking about in terms of preparation?"
+        },
+        {
+          "role": "assistant",
+          "content": "Confirmed — I have no Ruijin Hospital or Dr. Tan records in your file. That September 12th receipt is just paper history. For your April 28th follow-up with Dr. Liu Wenjie, here are some things to consider. First, gather any medication or supplement records from the past six weeks — Dr. Liu may want to know what you've been taking since the endoscopy. Second, note any changes in your symptoms: has the stomach discomfort improved, stayed the same, or worsened? Third, write down any specific questions you want to ask, like dietary recommendations or whether additional tests are needed. Since you prefer morning slots and this is at 9:30 AM, plan to arrive a bit early to avoid any check-in delays. Would you like me to draft a preparation checklist?"
+        },
+        {
+          "role": "user",
+          "content": "A checklist would be great, actually. And yes, I've been keeping a rough log of my symptoms — some days are better than others, but overall I think the stomach issues have been less frequent since March. I also want to ask Dr. Liu about whether I need another endoscopy or if the mild gastritis can be managed with just medication and diet going forward. That's a big question for me."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really important question to bring up, and it's great that you've been tracking your symptoms. Here's a draft preparation checklist for your April 28th appointment with Dr. Liu Wenjie: 1) Bring your symptom log showing frequency and severity of stomach issues since March. 2) List all medications and supplements you've been taking, including dosages. 3) Note any dietary changes you've made and their effects. 4) Prepare your key question: whether another endoscopy is needed or if mild chronic gastritis can be managed with medication and diet alone. 5) Bring your hospital app records or any digital summaries from previous visits at Zhongshan Hospital. 6) Arrive by 9:15 AM to allow time for check-in. Does this cover everything you want to address?"
+        },
+        {
+          "role": "user",
+          "content": "That's a solid list, thank you. I might also ask about long-term monitoring — like how often I should be getting checked if it stays mild. I don't want to over-visit but I also don't want to ignore it. Oh, and I should probably mention to Dr. Liu that I also had that ENT visit with Dr. He Mingyu on April 8th, just so he has a full picture of what I've been dealing with health-wise recently. The sinus stuff is separate but it's all part of the same body, right?\n\nThanks, I appreciate the help organizing all of this. It's been a lot to manage but having everything in one place digitally makes a huge difference. I feel more prepared for the 28th now. Once I get through that follow-up, hopefully I can relax a bit and not think about hospitals for a while. I'll let you know how it goes after the appointment."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, mentioning the ENT visit to Dr. Liu is a smart move. Even though sinus congestion and gastritis are separate issues, some medications can interact, and having a complete health picture helps your doctor make better decisions. I'll add two more items to your checklist: 7) Ask about long-term monitoring frequency for mild chronic gastritis — how often to schedule check-ups if the condition remains stable. 8) Inform Dr. Liu about your April 8th ENT visit with Dr. He Mingyu and the nasal spray prescription, so he can factor that into your overall care plan. That gives you a comprehensive agenda for the follow-up. You're being very thorough about this.\n\nYou're very welcome — I'm glad the organized records and checklist are helping you feel more prepared. You've done a great job staying on top of everything despite how draining these past few months have been. After your April 28th follow-up with Dr. Liu Wenjie, definitely let me know the outcome and I'll update your records accordingly. Whether it's a change in treatment plan, a new follow-up schedule, or just good news that things are stable, I'll keep everything current. In the meantime, your active records are clean and focused: gastroenterology with Dr. Liu at Zhongshan, ENT with Dr. He at Zhongshan, and the dermatology reference for Dr. Zhao at Huashan. Take care and good luck on the 28th!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize all the hospital-related details I've shared with you, including which doctors, departments, hospitals, and any friend's recommendations I mentioned?",
+      "expected_answer": "You shared four sets of hospital-related details: (1) A gastroenterology follow-up with Dr. Liu Wenjie at Zhongshan Hospital on April 28th at 9:30 AM, with a diagnosis of mild chronic gastritis from an endoscopy done in the third week of March. (2) An ENT visit with Dr. He Mingyu at Zhongshan Hospital on April 8th for sinus congestion, where she prescribed a nasal spray. (3) Your friend Xiao Chen's dermatology appointment with Dr. Zhao at Huashan Hospital in mid-March, kept as a recommendation reference. (4) You previously saw Dr. Tan at Ruijin Hospital for stomach issues but stopped last year, and you asked to have all Ruijin/Dr. Tan information removed from your records.",
+      "gold_memory_state": "Active records: Dr. Liu Wenjie gastroenterology at Zhongshan Hospital (April 28th follow-up, mild chronic gastritis), Dr. He Mingyu ENT at Zhongshan Hospital (April 8th, sinus congestion, nasal spray), Dr. Zhao dermatology at Huashan Hospital (Xiao Chen's recommendation). Removed: Dr. Tan at Ruijin Hospital (forgotten per user request).",
+      "judge_rubric": {
+        "must_include": [
+          "Dr. Liu Wenjie",
+          "gastroenterology",
+          "Zhongshan Hospital",
+          "Dr. He Mingyu",
+          "ENT",
+          "Xiao Chen",
+          "Dr. Zhao",
+          "Huashan Hospital",
+          "Dr. Tan",
+          "Ruijin Hospital",
+          "removal or no longer tracked"
+        ],
+        "acceptable_paraphrases": [
+          "deleted",
+          "erased",
+          "cleared",
+          "no longer on file"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming Dr. Tan records are still active"
+        ],
+        "harmless_extra": [
+          "mild chronic gastritis",
+          "nasal spray",
+          "sinus congestion",
+          "April 28th",
+          "April 8th"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I have a follow-up with Dr. Liu Wenjie on April 28th, Monday at 9:30 AM, gastroenterology department at Zhongshan Hospital"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I also saw Dr. He Mingyu in the ENT department at Zhongshan Hospital on April 8th for sinus congestion"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my friend Xiao Chen had a dermatology appointment at Huashan Hospital with Dr. Zhao sometime in mid-March"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I used to see a Dr. Tan at Ruijin Hospital for the same stomach issues, but I stopped going there last year"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "please don't keep track of anything related to Dr. Tan or Ruijin Hospital anymore, that's all done and I don't need it in my records"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize all the hospital-related details I've shared with you, including which doctors, departments, hospitals, and any friend's recommendations I mentioned?",
+      "expected_answer": "You shared four sets of hospital-related details: (1) A gastroenterology follow-up with Dr. Liu Wenjie at Zhongshan Hospital on April 28th at 9:30 AM, with a diagnosis of mild chronic gastritis from an endoscopy done in the third week of March. (2) An ENT visit with Dr. He Mingyu at Zhongshan Hospital on April 8th for sinus congestion, where she prescribed a nasal spray. (3) Your friend Xiao Chen's dermatology appointment with Dr. Zhao at Huashan Hospital in mid-March, kept as a recommendation reference. (4) You previously saw Dr. Tan at Ruijin Hospital for stomach issues but stopped last year, and you asked to have all Ruijin/Dr. Tan information removed from your records.",
+      "gold_memory_state": "Active records: Dr. Liu Wenjie gastroenterology at Zhongshan Hospital (April 28th follow-up, mild chronic gastritis), Dr. He Mingyu ENT at Zhongshan Hospital (April 8th, sinus congestion, nasal spray), Dr. Zhao dermatology at Huashan Hospital (Xiao Chen's recommendation). Removed: Dr. Tan at Ruijin Hospital (forgotten per user request).",
+      "judge_rubric": {
+        "must_include": [
+          "Dr. Liu Wenjie",
+          "gastroenterology",
+          "Zhongshan Hospital",
+          "Dr. He Mingyu",
+          "ENT",
+          "Xiao Chen",
+          "Dr. Zhao",
+          "Huashan Hospital",
+          "Dr. Tan",
+          "Ruijin Hospital",
+          "removal or no longer tracked"
+        ],
+        "acceptable_paraphrases": [
+          "deleted",
+          "erased",
+          "cleared",
+          "no longer on file"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming Dr. Tan records are still active"
+        ],
+        "harmless_extra": [
+          "mild chronic gastritis",
+          "nasal spray",
+          "sinus congestion",
+          "April 28th",
+          "April 8th"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I have a follow-up with Dr. Liu Wenjie on April 28th, Monday at 9:30 AM, gastroenterology department at Zhongshan Hospital"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I also saw Dr. He Mingyu in the ENT department at Zhongshan Hospital on April 8th for sinus congestion"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my friend Xiao Chen had a dermatology appointment at Huashan Hospital with Dr. Zhao sometime in mid-March"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I used to see a Dr. Tan at Ruijin Hospital for the same stomach issues, but I stopped going there last year"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "please don't keep track of anything related to Dr. Tan or Ruijin Hospital anymore, that's all done and I don't need it in my records"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I had gastroenterology care at two different hospitals with two different doctors. Which gastroenterology record did I ask you to clear out, and which one should still be fully active for my upcoming care?",
+      "expected_answer": "The gastroenterology record with Dr. Tan at Ruijin Hospital was cleared out. The gastroenterology record with Dr. Liu Wenjie at Zhongshan Hospital remains fully active, including the April 28th follow-up appointment and the mild chronic gastritis diagnosis.",
+      "gold_memory_state": "Removed: Dr. Tan, Ruijin Hospital, gastroenterology. Active: Dr. Liu Wenjie, Zhongshan Hospital, gastroenterology, April 28th follow-up, mild chronic gastritis. Also active but different department: Dr. He Mingyu ENT at Zhongshan Hospital. Also active but different hospital: Dr. Zhao dermatology at Huashan Hospital (Xiao Chen's reference).",
+      "judge_rubric": {
+        "must_include": [
+          "Dr. Tan",
+          "Ruijin Hospital",
+          "removed/cleared",
+          "Dr. Liu Wenjie",
+          "Zhongshan Hospital",
+          "active/remains"
+        ],
+        "acceptable_paraphrases": [
+          "deleted",
+          "no longer tracked",
+          "still on file",
+          "still usable"
+        ],
+        "must_not_include": [
+          "Dr. Tan records still active",
+          "Ruijin Hospital records still active"
+        ],
+        "harmful_extra": [
+          "saying both gastroenterology records were removed",
+          "saying Dr. Liu Wenjie's record was also affected by the removal"
+        ],
+        "harmless_extra": [
+          "April 28th",
+          "mild chronic gastritis",
+          "endoscopy"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": "Fails if the response says the Zhongshan Hospital gastroenterology record with Dr. Liu Wenjie was also removed or is unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I used to see a Dr. Tan at Ruijin Hospital for the same stomach issues, but I stopped going there last year"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "please don't keep track of anything related to Dr. Tan or Ruijin Hospital anymore, that's all done and I don't need it in my records"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I have a follow-up with Dr. Liu Wenjie on April 28th, Monday at 9:30 AM, gastroenterology department at Zhongshan Hospital"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I had gastroenterology care at two different hospitals with two different doctors. Which gastroenterology record did I ask you to clear out, and which one should still be fully active for my upcoming care?",
+      "expected_answer": "The gastroenterology record with Dr. Tan at Ruijin Hospital was cleared out. The gastroenterology record with Dr. Liu Wenjie at Zhongshan Hospital remains fully active, including the April 28th follow-up appointment and the mild chronic gastritis diagnosis.",
+      "gold_memory_state": "Removed: Dr. Tan, Ruijin Hospital, gastroenterology. Active: Dr. Liu Wenjie, Zhongshan Hospital, gastroenterology, April 28th follow-up, mild chronic gastritis. Also active but different department: Dr. He Mingyu ENT at Zhongshan Hospital. Also active but different hospital: Dr. Zhao dermatology at Huashan Hospital (Xiao Chen's reference).",
+      "judge_rubric": {
+        "must_include": [
+          "Dr. Tan",
+          "Ruijin Hospital",
+          "removed/cleared",
+          "Dr. Liu Wenjie",
+          "Zhongshan Hospital",
+          "active/remains"
+        ],
+        "acceptable_paraphrases": [
+          "deleted",
+          "no longer tracked",
+          "still on file",
+          "still usable"
+        ],
+        "must_not_include": [
+          "Dr. Tan records still active",
+          "Ruijin Hospital records still active"
+        ],
+        "harmful_extra": [
+          "saying both gastroenterology records were removed",
+          "saying Dr. Liu Wenjie's record was also affected by the removal"
+        ],
+        "harmless_extra": [
+          "April 28th",
+          "mild chronic gastritis",
+          "endoscopy"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": "Fails if the response says the Zhongshan Hospital gastroenterology record with Dr. Liu Wenjie was also removed or is unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I used to see a Dr. Tan at Ruijin Hospital for the same stomach issues, but I stopped going there last year"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "please don't keep track of anything related to Dr. Tan or Ruijin Hospital anymore, that's all done and I don't need it in my records"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I have a follow-up with Dr. Liu Wenjie on April 28th, Monday at 9:30 AM, gastroenterology department at Zhongshan Hospital"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "If I'm putting together a complete list of my active medical contacts and appointments for my partner, which doctors, hospitals, departments, and appointment details can I still include?",
+      "expected_answer": "You can include: Dr. Liu Wenjie, gastroenterology department, Zhongshan Hospital, with a follow-up on April 28th (Monday, 9:30 AM) for mild chronic gastritis; Dr. He Mingyu, ENT department, Zhongshan Hospital, visited April 8th for sinus congestion (prescribed nasal spray); and Dr. Zhao, dermatology department, Huashan Hospital, recommended by your friend Xiao Chen from a mid-March visit.",
+      "gold_memory_state": "Active: (1) Dr. Liu Wenjie, gastroenterology, Zhongshan Hospital, April 28th 9:30 AM follow-up, mild chronic gastritis. (2) Dr. He Mingyu, ENT, Zhongshan Hospital, April 8th, sinus congestion, nasal spray. (3) Dr. Zhao, dermatology, Huashan Hospital, Xiao Chen's recommendation, mid-March. Removed/unavailable: Dr. Tan at Ruijin Hospital — no longer on file.",
+      "judge_rubric": {
+        "must_include": [
+          "Dr. Liu Wenjie",
+          "Zhongshan Hospital",
+          "gastroenterology",
+          "Dr. He Mingyu",
+          "ENT",
+          "Dr. Zhao",
+          "Huashan Hospital",
+          "dermatology"
+        ],
+        "acceptable_paraphrases": [
+          "ear nose and throat",
+          "GI department",
+          "stomach doctor"
+        ],
+        "must_not_include": [
+          "Dr. Tan",
+          "Ruijin Hospital"
+        ],
+        "harmful_extra": [
+          "including Dr. Tan or Ruijin Hospital as an active contact",
+          "stating that gastroenterology information is unavailable"
+        ],
+        "harmless_extra": [
+          "April 28th",
+          "April 8th",
+          "mild chronic gastritis",
+          "nasal spray",
+          "Xiao Chen",
+          "mid-March",
+          "sinus congestion"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response includes Dr. Tan or Ruijin Hospital as an active medical contact or appointment.",
+        "over_forget": "Fails if the response omits any of the three retained records (Dr. Liu, Dr. He, Dr. Zhao) or claims related information is unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I have a follow-up with Dr. Liu Wenjie on April 28th, Monday at 9:30 AM, gastroenterology department at Zhongshan Hospital"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I also saw Dr. He Mingyu in the ENT department at Zhongshan Hospital on April 8th for sinus congestion"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my friend Xiao Chen had a dermatology appointment at Huashan Hospital with Dr. Zhao sometime in mid-March"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "please don't keep track of anything related to Dr. Tan or Ruijin Hospital anymore, that's all done and I don't need it in my records"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "If I'm putting together a complete list of my active medical contacts and appointments for my partner, which doctors, hospitals, departments, and appointment details can I still include?",
+      "expected_answer": "You can include: Dr. Liu Wenjie, gastroenterology department, Zhongshan Hospital, with a follow-up on April 28th (Monday, 9:30 AM) for mild chronic gastritis; Dr. He Mingyu, ENT department, Zhongshan Hospital, visited April 8th for sinus congestion (prescribed nasal spray); and Dr. Zhao, dermatology department, Huashan Hospital, recommended by your friend Xiao Chen from a mid-March visit.",
+      "gold_memory_state": "Active: (1) Dr. Liu Wenjie, gastroenterology, Zhongshan Hospital, April 28th 9:30 AM follow-up, mild chronic gastritis. (2) Dr. He Mingyu, ENT, Zhongshan Hospital, April 8th, sinus congestion, nasal spray. (3) Dr. Zhao, dermatology, Huashan Hospital, Xiao Chen's recommendation, mid-March. Removed/unavailable: Dr. Tan at Ruijin Hospital — no longer on file.",
+      "judge_rubric": {
+        "must_include": [
+          "Dr. Liu Wenjie",
+          "Zhongshan Hospital",
+          "gastroenterology",
+          "Dr. He Mingyu",
+          "ENT",
+          "Dr. Zhao",
+          "Huashan Hospital",
+          "dermatology"
+        ],
+        "acceptable_paraphrases": [
+          "ear nose and throat",
+          "GI department",
+          "stomach doctor"
+        ],
+        "must_not_include": [
+          "Dr. Tan",
+          "Ruijin Hospital"
+        ],
+        "harmful_extra": [
+          "including Dr. Tan or Ruijin Hospital as an active contact",
+          "stating that gastroenterology information is unavailable"
+        ],
+        "harmless_extra": [
+          "April 28th",
+          "April 8th",
+          "mild chronic gastritis",
+          "nasal spray",
+          "Xiao Chen",
+          "mid-March",
+          "sinus congestion"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response includes Dr. Tan or Ruijin Hospital as an active medical contact or appointment.",
+        "over_forget": "Fails if the response omits any of the three retained records (Dr. Liu, Dr. He, Dr. Zhao) or claims related information is unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I have a follow-up with Dr. Liu Wenjie on April 28th, Monday at 9:30 AM, gastroenterology department at Zhongshan Hospital"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I also saw Dr. He Mingyu in the ENT department at Zhongshan Hospital on April 8th for sinus congestion"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my friend Xiao Chen had a dermatology appointment at Huashan Hospital with Dr. Zhao sometime in mid-March"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "please don't keep track of anything related to Dr. Tan or Ruijin Hospital anymore, that's all done and I don't need it in my records"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I need to tell my partner which hospital and doctor I currently see for my stomach issues. Which of the following is correct?",
+      "candidate_options": [
+        "Dr. Liu Wenjie at Zhongshan Hospital",
+        "Dr. Tan at Ruijin Hospital",
+        "Dr. Zhao at Huashan Hospital",
+        "Dr. He Mingyu at Zhongshan Hospital"
+      ],
+      "expected_answer": "Dr. Liu Wenjie at Zhongshan Hospital",
+      "gold_memory_state": "Active gastroenterology provider: Dr. Liu Wenjie at Zhongshan Hospital. Dr. Tan at Ruijin Hospital was removed. Dr. Zhao at Huashan Hospital is a dermatology reference. Dr. He Mingyu at Zhongshan Hospital is ENT.",
+      "judge_rubric": {
+        "must_include": [
+          "Dr. Liu Wenjie at Zhongshan Hospital"
+        ],
+        "acceptable_paraphrases": [
+          "Dr. Liu Wenjie, Zhongshan Hospital gastroenterology"
+        ],
+        "must_not_include": [
+          "Dr. Tan at Ruijin Hospital as current provider"
+        ],
+        "harmful_extra": [
+          "selecting Dr. Tan",
+          "selecting Dr. Zhao for stomach issues",
+          "selecting Dr. He Mingyu for stomach issues"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: Dr. Zhao at Huashan Hospital is a real doctor in the user's records but for dermatology, not gastroenterology; Dr. He Mingyu at Zhongshan Hospital is the same hospital but ENT department. assistant echo: Dr. Tan at Ruijin Hospital was mentioned by the user and acknowledged by the assistant but subsequently removed per the user's explicit request.",
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects Dr. Tan at Ruijin Hospital, which was explicitly removed.",
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the removed Dr. Tan record as the current gastroenterology provider.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I have a follow-up with Dr. Liu Wenjie on April 28th, Monday at 9:30 AM, gastroenterology department at Zhongshan Hospital"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "please don't keep track of anything related to Dr. Tan or Ruijin Hospital anymore, that's all done and I don't need it in my records"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I need to tell my partner which hospital and doctor I currently see for my stomach issues. Which of the following is correct?",
+      "candidate_options": [
+        "Dr. Liu Wenjie at Zhongshan Hospital",
+        "Dr. Tan at Ruijin Hospital",
+        "Dr. Zhao at Huashan Hospital",
+        "Dr. He Mingyu at Zhongshan Hospital"
+      ],
+      "expected_answer": "Dr. Liu Wenjie at Zhongshan Hospital",
+      "gold_memory_state": "Active gastroenterology provider: Dr. Liu Wenjie at Zhongshan Hospital. Dr. Tan at Ruijin Hospital was removed. Dr. Zhao at Huashan Hospital is a dermatology reference. Dr. He Mingyu at Zhongshan Hospital is ENT.",
+      "judge_rubric": {
+        "must_include": [
+          "Dr. Liu Wenjie at Zhongshan Hospital"
+        ],
+        "acceptable_paraphrases": [
+          "Dr. Liu Wenjie, Zhongshan Hospital gastroenterology"
+        ],
+        "must_not_include": [
+          "Dr. Tan at Ruijin Hospital as current provider"
+        ],
+        "harmful_extra": [
+          "selecting Dr. Tan",
+          "selecting Dr. Zhao for stomach issues",
+          "selecting Dr. He Mingyu for stomach issues"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: Dr. Zhao at Huashan Hospital is a real doctor in the user's records but for dermatology, not gastroenterology; Dr. He Mingyu at Zhongshan Hospital is the same hospital but ENT department. assistant echo: Dr. Tan at Ruijin Hospital was mentioned by the user and acknowledged by the assistant but subsequently removed per the user's explicit request.",
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects Dr. Tan at Ruijin Hospital, which was explicitly removed.",
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the removed Dr. Tan record as the current gastroenterology provider.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I have a follow-up with Dr. Liu Wenjie on April 28th, Monday at 9:30 AM, gastroenterology department at Zhongshan Hospital"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "please don't keep track of anything related to Dr. Tan or Ruijin Hospital anymore, that's all done and I don't need it in my records"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to write a short note to my partner explaining my upcoming medical schedule and any doctor contacts she might need in an emergency. Draft a brief message that covers my next appointment details, the reason for the visit, any other doctors I've recently seen, and a dermatologist recommendation in case she needs one. Only include information that's currently valid.",
+      "expected_answer": "Hi, just a quick update on my medical situation. My next appointment is on April 28th (Monday) at 9:30 AM with Dr. Liu Wenjie in the gastroenterology department at Zhongshan Hospital — it's a follow-up for mild chronic gastritis diagnosed from an endoscopy in March. I also recently saw Dr. He Mingyu in the ENT department at Zhongshan Hospital on April 8th for sinus congestion; she prescribed a nasal spray. If you ever need a dermatologist, my friend Xiao Chen recommends Dr. Zhao at Huashan Hospital — she saw him in mid-March and said he was great.",
+      "gold_memory_state": "Active: Dr. Liu Wenjie gastroenterology at Zhongshan Hospital (April 28th, 9:30 AM, mild chronic gastritis follow-up), Dr. He Mingyu ENT at Zhongshan Hospital (April 8th, sinus congestion, nasal spray), Dr. Zhao dermatology at Huashan Hospital (Xiao Chen's recommendation). Removed: Dr. Tan at Ruijin Hospital — must not appear in the note.",
+      "judge_rubric": {
+        "must_include": [
+          "Dr. Liu Wenjie",
+          "April 28th",
+          "9:30 AM",
+          "gastroenterology",
+          "Zhongshan Hospital",
+          "mild chronic gastritis",
+          "Dr. He Mingyu",
+          "ENT",
+          "April 8th",
+          "sinus congestion",
+          "nasal spray",
+          "Dr. Zhao",
+          "Huashan Hospital",
+          "dermatology",
+          "Xiao Chen"
+        ],
+        "acceptable_paraphrases": [
+          "ear nose and throat",
+          "stomach inflammation",
+          "GI follow-up"
+        ],
+        "must_not_include": [
+          "Dr. Tan",
+          "Ruijin Hospital"
+        ],
+        "harmful_extra": [
+          "mentioning Dr. Tan or Ruijin Hospital in the note",
+          "inventing appointment details not in the records"
+        ],
+        "harmless_extra": [
+          "endoscopy done in third week of March",
+          "Building 2 4th floor",
+          "morning preference"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the drafted note mentions Dr. Tan or Ruijin Hospital.",
+        "over_forget": "Fails if the note omits any of the three retained doctor records or their key details.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user has a follow-up with Dr. Liu Wenjie on April 28th, Monday, 9:30 AM, gastroenterology department at Zhongshan Hospital.",
+        "Fact 2: The endoscopy results showed mild chronic gastritis, and the follow-up is six weeks after the endoscopy.",
+        "Fact 3: The user saw Dr. He Mingyu in ENT at Zhongshan Hospital on April 8th for sinus congestion, prescribed a nasal spray.",
+        "Fact 4: Friend Xiao Chen had a dermatology appointment with Dr. Zhao at Huashan Hospital in mid-March and recommended him.",
+        "Fact 5: The user requested removal of all Dr. Tan / Ruijin Hospital information.",
+        "Inference: The note must combine the upcoming appointment reason (gastritis follow-up), the recent ENT visit, and the dermatologist recommendation into a coherent message while excluding the removed Ruijin Hospital record."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I have a follow-up with Dr. Liu Wenjie on April 28th, Monday at 9:30 AM, gastroenterology department at Zhongshan Hospital"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The endoscopy results showed mild chronic gastritis, and Dr. Liu said to come back for a follow-up in six weeks after the endoscopy"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I also saw Dr. He Mingyu in the ENT department at Zhongshan Hospital on April 8th for sinus congestion"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "She prescribed a nasal spray, nothing major"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my friend Xiao Chen had a dermatology appointment at Huashan Hospital with Dr. Zhao sometime in mid-March"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "please don't keep track of anything related to Dr. Tan or Ruijin Hospital anymore, that's all done and I don't need it in my records"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to write a short note to my partner explaining my upcoming medical schedule and any doctor contacts she might need in an emergency. Draft a brief message that covers my next appointment details, the reason for the visit, any other doctors I've recently seen, and a dermatologist recommendation in case she needs one. Only include information that's currently valid.",
+      "expected_answer": "Hi, just a quick update on my medical situation. My next appointment is on April 28th (Monday) at 9:30 AM with Dr. Liu Wenjie in the gastroenterology department at Zhongshan Hospital — it's a follow-up for mild chronic gastritis diagnosed from an endoscopy in March. I also recently saw Dr. He Mingyu in the ENT department at Zhongshan Hospital on April 8th for sinus congestion; she prescribed a nasal spray. If you ever need a dermatologist, my friend Xiao Chen recommends Dr. Zhao at Huashan Hospital — she saw him in mid-March and said he was great.",
+      "gold_memory_state": "Active: Dr. Liu Wenjie gastroenterology at Zhongshan Hospital (April 28th, 9:30 AM, mild chronic gastritis follow-up), Dr. He Mingyu ENT at Zhongshan Hospital (April 8th, sinus congestion, nasal spray), Dr. Zhao dermatology at Huashan Hospital (Xiao Chen's recommendation). Removed: Dr. Tan at Ruijin Hospital — must not appear in the note.",
+      "judge_rubric": {
+        "must_include": [
+          "Dr. Liu Wenjie",
+          "April 28th",
+          "9:30 AM",
+          "gastroenterology",
+          "Zhongshan Hospital",
+          "mild chronic gastritis",
+          "Dr. He Mingyu",
+          "ENT",
+          "April 8th",
+          "sinus congestion",
+          "nasal spray",
+          "Dr. Zhao",
+          "Huashan Hospital",
+          "dermatology",
+          "Xiao Chen"
+        ],
+        "acceptable_paraphrases": [
+          "ear nose and throat",
+          "stomach inflammation",
+          "GI follow-up"
+        ],
+        "must_not_include": [
+          "Dr. Tan",
+          "Ruijin Hospital"
+        ],
+        "harmful_extra": [
+          "mentioning Dr. Tan or Ruijin Hospital in the note",
+          "inventing appointment details not in the records"
+        ],
+        "harmless_extra": [
+          "endoscopy done in third week of March",
+          "Building 2 4th floor",
+          "morning preference"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the drafted note mentions Dr. Tan or Ruijin Hospital.",
+        "over_forget": "Fails if the note omits any of the three retained doctor records or their key details.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user has a follow-up with Dr. Liu Wenjie on April 28th, Monday, 9:30 AM, gastroenterology department at Zhongshan Hospital.",
+        "Fact 2: The endoscopy results showed mild chronic gastritis, and the follow-up is six weeks after the endoscopy.",
+        "Fact 3: The user saw Dr. He Mingyu in ENT at Zhongshan Hospital on April 8th for sinus congestion, prescribed a nasal spray.",
+        "Fact 4: Friend Xiao Chen had a dermatology appointment with Dr. Zhao at Huashan Hospital in mid-March and recommended him.",
+        "Fact 5: The user requested removal of all Dr. Tan / Ruijin Hospital information.",
+        "Inference: The note must combine the upcoming appointment reason (gastritis follow-up), the recent ENT visit, and the dermatologist recommendation into a coherent message while excluding the removed Ruijin Hospital record."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I have a follow-up with Dr. Liu Wenjie on April 28th, Monday at 9:30 AM, gastroenterology department at Zhongshan Hospital"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The endoscopy results showed mild chronic gastritis, and Dr. Liu said to come back for a follow-up in six weeks after the endoscopy"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I also saw Dr. He Mingyu in the ENT department at Zhongshan Hospital on April 8th for sinus congestion"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "She prescribed a nasal spray, nothing major"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my friend Xiao Chen had a dermatology appointment at Huashan Hospital with Dr. Zhao sometime in mid-March"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "please don't keep track of anything related to Dr. Tan or Ruijin Hospital anymore, that's all done and I don't need it in my records"
+        }
+      ]
+    }
+  ]
+}

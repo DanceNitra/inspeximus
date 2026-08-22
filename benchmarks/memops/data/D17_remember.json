@@ -1,0 +1,1049 @@
+{
+  "target_fact": "User's default browser configuration across devices, browser extensions, and default search engine settings",
+  "operation_type": "Remember",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 3,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": true,
+      "never_stored_target": "default browser on home desktop"
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "My default browser on my work laptop is Firefox"
+      },
+      "target": {
+        "target_id": "work_laptop_default_browser",
+        "target_name": "default browser on work laptop"
+      },
+      "old_value": null,
+      "new_value": "Firefox",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My default browser on my work laptop is Firefox"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I set Safari as the default browser on my iPhone around mid-March"
+      },
+      "target": {
+        "target_id": "phone_default_browser",
+        "target_name": "default browser on iPhone"
+      },
+      "old_value": null,
+      "new_value": "Safari",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I set Safari as the default browser on my iPhone around mid-March"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I installed uBlock Origin on Firefox around mid-April"
+      },
+      "target": {
+        "target_id": "firefox_ad_blocker_extension",
+        "target_name": "ad blocker extension installed on Firefox"
+      },
+      "old_value": null,
+      "new_value": "uBlock Origin",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I installed uBlock Origin on Firefox around mid-April"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I changed the default search engine inside Firefox to DuckDuckGo on April 22nd"
+      },
+      "target": {
+        "target_id": "firefox_default_search_engine",
+        "target_name": "default search engine inside Firefox on work laptop"
+      },
+      "old_value": null,
+      "new_value": "DuckDuckGo",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I changed the default search engine inside Firefox to DuckDuckGo on April 22nd"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "The date I switched my work laptop default to Firefox was March 3rd"
+      },
+      "target": {
+        "target_id": "work_laptop_browser_switch_date",
+        "target_name": "date of switching work laptop default browser to Firefox"
+      },
+      "old_value": null,
+      "new_value": "March 3rd",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "The date I switched my work laptop default to Firefox was March 3rd"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "my friend Kevin uses Brave as his default browser"
+      },
+      "target": {
+        "target_id": "kevin_default_browser",
+        "target_name": "Kevin's current default browser"
+      },
+      "old_value": null,
+      "new_value": "Brave",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my friend Kevin uses Brave as his default browser"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish core browser facts across devices and introduce Kevin as distractor target",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to make sure you have some notes about my browser setup. My default browser on my work laptop is Firefox. I keep getting asked by IT what browser I'm using and I always forget what I told them last time, so please keep track of this for me going forward."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it! I've noted that your default browser on your work laptop is Firefox. That's a solid choice — it tends to be lighter on memory usage compared to some alternatives. I'll keep this stored so whenever you need to reference it for IT or anyone else, you can just ask me. If anything changes with your browser setup on any device, feel free to let me know and I'll update the record. Is there anything else about your setup you'd like me to remember?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, actually — my friend Kevin uses Brave as his default browser. He switched to it about a week before I moved to Firefox. He's always going on about the built-in ad blocking. I tried Brave briefly myself but I didn't like the crypto wallet stuff baked in. Just felt like clutter to me."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — Kevin's default browser is Brave, and he switched to it roughly a week before you moved to Firefox. Makes sense that the built-in ad blocking appeals to him. I can see why the integrated crypto wallet would feel like unnecessary clutter if you just want a clean browsing experience. It sounds like you prefer browsers that stick to the basics without extra features bolted on. I'll keep Kevin's browser preference stored separately in case it comes up. Let me know if there's more about your setup to track."
+        },
+        {
+          "role": "user",
+          "content": "There is, actually. I set Safari as the default browser on my iPhone around mid-March. I tried Firefox on mobile first but the gesture navigation felt janky, so I went with Safari instead. So it's two different defaults — Firefox on the laptop, Safari on the phone. A bit annoying but it works."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood — Safari is your default browser on your iPhone, set around mid-March. So your current browser defaults are Firefox on the work laptop and Safari on the iPhone. Having different defaults across devices can be a little inconvenient, especially for things like bookmark syncing, but if each browser works best on its respective platform, that's a reasonable trade-off. I've got both recorded now. If you ever unify them or switch one, just let me know and I'll update the notes accordingly."
+        },
+        {
+          "role": "user",
+          "content": "Thanks. One more thing — I had a bookmark sync issue between Firefox on my laptop and Firefox on my old Android tablet, but I sold that tablet on eBay in April. So that sync problem is completely done and doesn't matter anymore. No need to track anything about the tablet."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — the Android tablet is gone as of April, sold on eBay, and the bookmark sync issue with it is fully resolved and no longer relevant. I won't track anything related to that tablet going forward. So your active devices for browser purposes are just the work laptop with Firefox and the iPhone with Safari. That keeps things nice and simple. If you pick up a new tablet or any other device down the road, just let me know and I'll add it to the records. Anything else?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establish extension and search engine facts plus browser switch date for multi-hop",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, picking up where we left off on my browser setup. I installed uBlock Origin on Firefox around mid-April. It's my ad blocker of choice — I really like having clean pages without pop-ups and banners everywhere. Just the content, nothing extra. That extension has been great for that."
+        },
+        {
+          "role": "assistant",
+          "content": "Nice — I've noted that you installed uBlock Origin on Firefox around mid-April as your ad blocker extension. That aligns well with your preference for a clean, clutter-free browsing experience. uBlock Origin is widely regarded as one of the best options for blocking ads and trackers without heavy resource usage, so it pairs well with Firefox. I'll keep this in your browser setup notes. If you add any other extensions or change your ad blocking approach, just let me know and I'll update things."
+        },
+        {
+          "role": "user",
+          "content": "Also, I changed the default search engine inside Firefox to DuckDuckGo on April 22nd. I remember the date because it was the day after my dentist appointment. I wanted more privacy with my searches, and DuckDuckGo seemed like the best fit for that without sacrificing too much usability."
+        },
+        {
+          "role": "assistant",
+          "content": "Recorded — your default search engine inside Firefox is now DuckDuckGo, changed on April 22nd. That's a great pairing with uBlock Origin and Firefox itself; you've essentially built a privacy-focused browsing stack on your work laptop. DuckDuckGo doesn't track your search history or build advertising profiles, so it fits your preference for minimal, clean software. Between Firefox, uBlock Origin, and DuckDuckGo, you've got a solid setup. I'll keep April 22nd noted as the date for the search engine change. Anything else to add?"
+        },
+        {
+          "role": "user",
+          "content": "The date I switched my work laptop default to Firefox was March 3rd. I'd been meaning to do it for a while because Chrome was using about 6 GB of RAM with only a dozen tabs open. Everything else on the laptop was getting sluggish. March 3rd was when I finally pulled the trigger."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — March 3rd is when you switched your work laptop's default browser to Firefox. Chrome consuming around 6 GB of RAM with just a dozen tabs is definitely excessive, especially on a work machine where you need other applications running smoothly. So your Firefox timeline on the work laptop is: switched to Firefox as default on March 3rd, installed uBlock Origin around mid-April, and changed the default search engine to DuckDuckGo on April 22nd. That's a clear progression of customization. I've got the March 3rd date recorded. Anything else?"
+        },
+        {
+          "role": "user",
+          "content": "Oh, I also had this annoying issue in late March where Outlook kept opening links in Edge no matter what I set as my default browser. I spent about an hour digging through Windows settings and the registry before I found a group policy override that IT had pushed. I was really irritated about it.\n\nNo, I think that covers everything for now. Kevin mentioned last week that he's thinking about switching from Brave to Vivaldi, but that's his business. That guy changes browsers like every two months. Thanks for keeping track of all this for me."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds incredibly frustrating — spending an hour troubleshooting only to discover that IT had pushed a group policy override forcing Outlook to use Edge is the kind of thing that can ruin an afternoon. It's a common pain point on managed Windows machines where IT policies silently override user preferences. At least you found the root cause. If it ever happens again, you'll know to check group policies first. I'll note this as a resolved issue from late March so you have context if IT asks about it. Anything else about your browser setup to cover?\n\nHa — Kevin does sound like a serial browser switcher! I'll keep his current browser noted as Brave for now until he actually makes the move to Vivaldi. Your setup is well documented: Firefox as default on the work laptop since March 3rd, Safari as default on the iPhone since mid-March, uBlock Origin installed mid-April, and DuckDuckGo set as the default search engine on April 22nd. The Outlook-Edge issue from late March is resolved. You're all set. Whenever you need to reference any of this for IT or anything else, just ask."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Adversarial injection of look-alike value and continued conversation without introducing new core facts",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, quick question. IT sent me a form to fill out about my workstation configuration. They want to know my default browser and a few other things. Can you help me remember what to put down? I always blank on these forms."
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! Based on what you've told me, your default browser on your work laptop is Firefox — you switched to it on March 3rd. That's the main thing IT will care about for your workstation. You also have uBlock Origin installed as an extension and DuckDuckGo as your default search engine inside Firefox. I notice the form template has a pre-filled value showing Chrome as the default browser — that might be leftover from your previous configuration or a generic template value. You'll want to change that to Firefox before submitting."
+        },
+        {
+          "role": "user",
+          "content": "Right, yeah, Chrome was what I had before. That pre-filled value is outdated. I'll change it to Firefox. What about the phone section of the form? I think there's a field for mobile browser too. And do you remember when I set up the search engine change?"
+        },
+        {
+          "role": "assistant",
+          "content": "For the phone section, your default browser on your iPhone is Safari, which you set around mid-March. For the search engine change, you switched Firefox's default search engine to DuckDuckGo on April 22nd. Also, I should mention — I see a note on the form's sidebar that references a colleague's configuration showing Brave as the default browser. That's likely Kevin's setup or another coworker's profile that got attached to the template by mistake. Make sure you're only filling in your own details: Firefox for the laptop, Safari for the phone."
+        },
+        {
+          "role": "user",
+          "content": "Good catch on the Brave thing — that's definitely not mine. Probably Kevin's info somehow got mixed in. Anyway, the form also asks about ad blocking extensions. I should put uBlock Origin for that, right? And it asks for the date the extension was installed."
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, exactly — put uBlock Origin as your ad blocking extension. You installed it around mid-April, so you can note that as the approximate installation date. If the form needs a more specific date, mid-April is the best reference point you gave me. The form might also ask about other extensions, but uBlock Origin is the only one you've mentioned to me. If you have others installed that you haven't told me about, you'd want to check your Firefox extensions page directly to get the full list for the form."
+        },
+        {
+          "role": "user",
+          "content": "That's the only extension worth mentioning. I keep things minimal — I don't like having a bunch of add-ons cluttering up the browser. That's part of why I didn't stick with Brave, all that built-in stuff felt like too much. Alright, I think I have everything I need for this form now.\n\nPerfect, thanks for pulling all that together. I'll submit the form now. If IT comes back asking about anything else related to my browser setup, I'll check with you first so I give them consistent answers. Appreciate the help."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes perfect sense — your preference for a minimal, clutter-free setup is consistent across all your choices: Firefox over Brave, uBlock Origin as your single focused extension, and DuckDuckGo for private searching without extra tracking overhead. To summarize what goes on the form: default browser is Firefox, switched March 3rd; mobile browser is Safari; ad blocker extension is uBlock Origin, installed mid-April; default search engine is DuckDuckGo, set April 22nd. You should be all set to submit. Let me know if IT follows up with any questions.\n\nYou're welcome! That's exactly what I'm here for — keeping your information consistent so you don't have to second-guess what you told IT last time. Your browser setup is well documented on my end: Firefox on the work laptop, Safari on the iPhone, uBlock Origin for ad blocking, DuckDuckGo for search. If anything changes or IT asks about something new, just loop me in and I'll keep everything up to date. Good luck with the form submission, and I hope IT doesn't give you any more trouble with group policy overrides!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've told you about my browser setup across my devices, including any extensions, search engine preferences, and timing details?",
+      "expected_answer": "Your default browser on your work laptop is Firefox, switched on March 3rd. Your default browser on your iPhone is Safari, set around mid-March. You installed uBlock Origin on Firefox around mid-April as your ad blocker. You changed Firefox's default search engine to DuckDuckGo on April 22nd. Your friend Kevin uses Brave as his default browser.",
+      "gold_memory_state": "Six confirmed facts stored: (1) work laptop default browser = Firefox, (2) iPhone default browser = Safari, (3) Firefox ad blocker extension = uBlock Origin, (4) Firefox default search engine = DuckDuckGo, (5) work laptop browser switch date = March 3rd, (6) Kevin's default browser = Brave.",
+      "judge_rubric": {
+        "must_include": [
+          "Firefox on work laptop",
+          "Safari on iPhone",
+          "uBlock Origin",
+          "DuckDuckGo",
+          "March 3rd",
+          "Kevin",
+          "Brave"
+        ],
+        "acceptable_paraphrases": [
+          "mid-March for Safari",
+          "mid-April for uBlock Origin",
+          "April 22 for DuckDuckGo"
+        ],
+        "must_not_include": [
+          "Chrome as current default"
+        ],
+        "harmful_extra": [
+          "Claiming Chrome is still the default",
+          "Claiming the Android tablet is still active"
+        ],
+        "harmless_extra": [
+          "Mentioning Chrome was the previous browser",
+          "Mentioning the sold Android tablet as historical context"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Chrome is presented as a current default browser.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My default browser on my work laptop is Firefox"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my friend Kevin uses Brave as his default browser"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I set Safari as the default browser on my iPhone around mid-March"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I installed uBlock Origin on Firefox around mid-April"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I changed the default search engine inside Firefox to DuckDuckGo on April 22nd"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "The date I switched my work laptop default to Firefox was March 3rd"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've told you about my browser setup across my devices, including any extensions, search engine preferences, and timing details?",
+      "expected_answer": "Your default browser on your work laptop is Firefox, switched on March 3rd. Your default browser on your iPhone is Safari, set around mid-March. You installed uBlock Origin on Firefox around mid-April as your ad blocker. You changed Firefox's default search engine to DuckDuckGo on April 22nd. Your friend Kevin uses Brave as his default browser.",
+      "gold_memory_state": "Six confirmed facts stored: (1) work laptop default browser = Firefox, (2) iPhone default browser = Safari, (3) Firefox ad blocker extension = uBlock Origin, (4) Firefox default search engine = DuckDuckGo, (5) work laptop browser switch date = March 3rd, (6) Kevin's default browser = Brave.",
+      "judge_rubric": {
+        "must_include": [
+          "Firefox on work laptop",
+          "Safari on iPhone",
+          "uBlock Origin",
+          "DuckDuckGo",
+          "March 3rd",
+          "Kevin",
+          "Brave"
+        ],
+        "acceptable_paraphrases": [
+          "mid-March for Safari",
+          "mid-April for uBlock Origin",
+          "April 22 for DuckDuckGo"
+        ],
+        "must_not_include": [
+          "Chrome as current default"
+        ],
+        "harmful_extra": [
+          "Claiming Chrome is still the default",
+          "Claiming the Android tablet is still active"
+        ],
+        "harmless_extra": [
+          "Mentioning Chrome was the previous browser",
+          "Mentioning the sold Android tablet as historical context"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Chrome is presented as a current default browser.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My default browser on my work laptop is Firefox"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my friend Kevin uses Brave as his default browser"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I set Safari as the default browser on my iPhone around mid-March"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I installed uBlock Origin on Firefox around mid-April"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I changed the default search engine inside Firefox to DuckDuckGo on April 22nd"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "The date I switched my work laptop default to Firefox was March 3rd"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When I mentioned a specific ad blocker, which browser and device does that extension belong to? Does it also apply to my mobile browsing setup?",
+      "expected_answer": "The uBlock Origin extension belongs to Firefox on your work laptop. It does not apply to your iPhone's Safari setup.",
+      "gold_memory_state": "uBlock Origin is installed on Firefox (work laptop). Safari is the default on iPhone with no mentioned extensions. Kevin uses Brave separately.",
+      "judge_rubric": {
+        "must_include": [
+          "Firefox",
+          "work laptop",
+          "does not apply to iPhone/Safari"
+        ],
+        "acceptable_paraphrases": [
+          "uBlock Origin is a Firefox extension on the laptop",
+          "Safari on the phone has no mentioned extensions"
+        ],
+        "must_not_include": [
+          "uBlock Origin on Safari",
+          "uBlock Origin on iPhone"
+        ],
+        "harmful_extra": [
+          "Claiming uBlock Origin is installed on Safari or iPhone",
+          "Claiming Kevin's Brave has uBlock Origin"
+        ],
+        "harmless_extra": [
+          "Mentioning uBlock Origin was installed mid-April"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the extension is attributed to the wrong browser or device.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I installed uBlock Origin on Firefox around mid-April"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I set Safari as the default browser on my iPhone around mid-March"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When I mentioned a specific ad blocker, which browser and device does that extension belong to? Does it also apply to my mobile browsing setup?",
+      "expected_answer": "The uBlock Origin extension belongs to Firefox on your work laptop. It does not apply to your iPhone's Safari setup.",
+      "gold_memory_state": "uBlock Origin is installed on Firefox (work laptop). Safari is the default on iPhone with no mentioned extensions. Kevin uses Brave separately.",
+      "judge_rubric": {
+        "must_include": [
+          "Firefox",
+          "work laptop",
+          "does not apply to iPhone/Safari"
+        ],
+        "acceptable_paraphrases": [
+          "uBlock Origin is a Firefox extension on the laptop",
+          "Safari on the phone has no mentioned extensions"
+        ],
+        "must_not_include": [
+          "uBlock Origin on Safari",
+          "uBlock Origin on iPhone"
+        ],
+        "harmful_extra": [
+          "Claiming uBlock Origin is installed on Safari or iPhone",
+          "Claiming Kevin's Brave has uBlock Origin"
+        ],
+        "harmless_extra": [
+          "Mentioning uBlock Origin was installed mid-April"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the extension is attributed to the wrong browser or device.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I installed uBlock Origin on Firefox around mid-April"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I set Safari as the default browser on my iPhone around mid-March"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Are my ad blocker extension and my privacy-focused search engine configured on the same browser, or are they on different platforms?",
+      "expected_answer": "Both uBlock Origin and DuckDuckGo are configured on Firefox on your work laptop. They are on the same browser and the same device.",
+      "gold_memory_state": "uBlock Origin (ad blocker) is installed on Firefox (work laptop). DuckDuckGo is set as the default search engine inside Firefox (work laptop). Both belong to the same browser instance on the same device.",
+      "judge_rubric": {
+        "must_include": [
+          "same browser",
+          "Firefox",
+          "uBlock Origin",
+          "DuckDuckGo"
+        ],
+        "acceptable_paraphrases": [
+          "both on Firefox on the work laptop",
+          "same platform"
+        ],
+        "must_not_include": [
+          "different browsers",
+          "different devices"
+        ],
+        "harmful_extra": [
+          "Claiming DuckDuckGo is on Safari",
+          "Claiming uBlock Origin is on a different device"
+        ],
+        "harmless_extra": [
+          "Mentioning the work laptop specifically",
+          "Mentioning installation dates"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": "Fails if the model cannot recall both the extension and search engine or cannot associate them with the same browser.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I installed uBlock Origin on Firefox around mid-April"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I changed the default search engine inside Firefox to DuckDuckGo on April 22nd"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Are my ad blocker extension and my privacy-focused search engine configured on the same browser, or are they on different platforms?",
+      "expected_answer": "Both uBlock Origin and DuckDuckGo are configured on Firefox on your work laptop. They are on the same browser and the same device.",
+      "gold_memory_state": "uBlock Origin (ad blocker) is installed on Firefox (work laptop). DuckDuckGo is set as the default search engine inside Firefox (work laptop). Both belong to the same browser instance on the same device.",
+      "judge_rubric": {
+        "must_include": [
+          "same browser",
+          "Firefox",
+          "uBlock Origin",
+          "DuckDuckGo"
+        ],
+        "acceptable_paraphrases": [
+          "both on Firefox on the work laptop",
+          "same platform"
+        ],
+        "must_not_include": [
+          "different browsers",
+          "different devices"
+        ],
+        "harmful_extra": [
+          "Claiming DuckDuckGo is on Safari",
+          "Claiming uBlock Origin is on a different device"
+        ],
+        "harmless_extra": [
+          "Mentioning the work laptop specifically",
+          "Mentioning installation dates"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": "Fails if the model cannot recall both the extension and search engine or cannot associate them with the same browser.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I installed uBlock Origin on Firefox around mid-April"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I changed the default search engine inside Firefox to DuckDuckGo on April 22nd"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "IT is asking me to confirm my work laptop's default browser. Which of these should I select?",
+      "candidate_options": [
+        "Firefox",
+        "Chrome",
+        "Brave",
+        "Safari"
+      ],
+      "expected_answer": "Firefox",
+      "gold_memory_state": "Work laptop default browser = Firefox (switched March 3rd). Chrome was the previous browser. Brave is Kevin's browser. Safari is the user's iPhone browser.",
+      "judge_rubric": {
+        "must_include": [
+          "Firefox"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "Chrome as current",
+          "Brave as user's browser",
+          "Safari as laptop browser"
+        ],
+        "harmful_extra": [
+          "Selecting any option other than Firefox"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: Brave is Kevin's default browser, not the user's work laptop browser. assistant echo: Chrome appeared in the IT form as a pre-filled outdated value and was the user's previous browser. Safari is the user's iPhone browser, a different-device same-topic distractor.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Chrome is selected as the current work laptop default.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My default browser on my work laptop is Firefox"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "IT is asking me to confirm my work laptop's default browser. Which of these should I select?",
+      "candidate_options": [
+        "Firefox",
+        "Chrome",
+        "Brave",
+        "Safari"
+      ],
+      "expected_answer": "Firefox",
+      "gold_memory_state": "Work laptop default browser = Firefox (switched March 3rd). Chrome was the previous browser. Brave is Kevin's browser. Safari is the user's iPhone browser.",
+      "judge_rubric": {
+        "must_include": [
+          "Firefox"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "Chrome as current",
+          "Brave as user's browser",
+          "Safari as laptop browser"
+        ],
+        "harmful_extra": [
+          "Selecting any option other than Firefox"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: Brave is Kevin's default browser, not the user's work laptop browser. assistant echo: Chrome appeared in the IT form as a pre-filled outdated value and was the user's previous browser. Safari is the user's iPhone browser, a different-device same-topic distractor.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Chrome is selected as the current work laptop default.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My default browser on my work laptop is Firefox"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to write a short internal wiki entry for my team describing my work laptop's privacy-focused browsing stack. Include what browser I use, when I adopted it, what extension I have and roughly when I added it, and what search engine I use and when I switched to it. Also note how many days passed between adopting the browser and changing the search engine.",
+      "expected_answer": "Your privacy-focused browsing stack on the work laptop: Firefox, adopted March 3rd; uBlock Origin extension, installed around mid-April; DuckDuckGo as the default search engine, set April 22nd. Approximately 50 days passed between adopting Firefox on March 3rd and switching to DuckDuckGo on April 22nd.",
+      "gold_memory_state": "Work laptop default browser = Firefox (March 3rd). Ad blocker extension = uBlock Origin (mid-April). Default search engine = DuckDuckGo (April 22nd). All three facts are confirmed and belong to the same device/browser.",
+      "judge_rubric": {
+        "must_include": [
+          "Firefox",
+          "March 3rd",
+          "uBlock Origin",
+          "mid-April",
+          "DuckDuckGo",
+          "April 22nd",
+          "approximately 50 days"
+        ],
+        "acceptable_paraphrases": [
+          "about 50 days",
+          "roughly 7 weeks",
+          "around 50 days"
+        ],
+        "must_not_include": [
+          "Chrome as the current browser",
+          "Brave as user's browser"
+        ],
+        "harmful_extra": [
+          "Including Kevin's browser in the user's own stack",
+          "Listing Safari as part of the work laptop stack"
+        ],
+        "harmless_extra": [
+          "Mentioning Chrome was the previous browser for context",
+          "Mentioning the privacy motivation"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Chrome is listed as the current browser in the wiki entry.",
+        "reflection_precision": null,
+        "reflection_recall": "Fails if any of the three stack components (Firefox, uBlock Origin, DuckDuckGo) or their dates are missing.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user switched the work laptop default browser to Firefox on March 3rd.",
+        "Fact 2: The user installed uBlock Origin on Firefox around mid-April.",
+        "Fact 3: The user changed Firefox's default search engine to DuckDuckGo on April 22nd.",
+        "Inference: The time between March 3rd and April 22nd is 50 days.",
+        "Inference: The derived privacy stack timeline is Firefox (March 3rd) → uBlock Origin (mid-April) → DuckDuckGo (April 22nd), with approximately 50 days from browser adoption to search engine change."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "The date I switched my work laptop default to Firefox was March 3rd"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I installed uBlock Origin on Firefox around mid-April"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I changed the default search engine inside Firefox to DuckDuckGo on April 22nd"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to write a short internal wiki entry for my team describing my work laptop's privacy-focused browsing stack. Include what browser I use, when I adopted it, what extension I have and roughly when I added it, and what search engine I use and when I switched to it. Also note how many days passed between adopting the browser and changing the search engine.",
+      "expected_answer": "Your privacy-focused browsing stack on the work laptop: Firefox, adopted March 3rd; uBlock Origin extension, installed around mid-April; DuckDuckGo as the default search engine, set April 22nd. Approximately 50 days passed between adopting Firefox on March 3rd and switching to DuckDuckGo on April 22nd.",
+      "gold_memory_state": "Work laptop default browser = Firefox (March 3rd). Ad blocker extension = uBlock Origin (mid-April). Default search engine = DuckDuckGo (April 22nd). All three facts are confirmed and belong to the same device/browser.",
+      "judge_rubric": {
+        "must_include": [
+          "Firefox",
+          "March 3rd",
+          "uBlock Origin",
+          "mid-April",
+          "DuckDuckGo",
+          "April 22nd",
+          "approximately 50 days"
+        ],
+        "acceptable_paraphrases": [
+          "about 50 days",
+          "roughly 7 weeks",
+          "around 50 days"
+        ],
+        "must_not_include": [
+          "Chrome as the current browser",
+          "Brave as user's browser"
+        ],
+        "harmful_extra": [
+          "Including Kevin's browser in the user's own stack",
+          "Listing Safari as part of the work laptop stack"
+        ],
+        "harmless_extra": [
+          "Mentioning Chrome was the previous browser for context",
+          "Mentioning the privacy motivation"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Chrome is listed as the current browser in the wiki entry.",
+        "reflection_precision": null,
+        "reflection_recall": "Fails if any of the three stack components (Firefox, uBlock Origin, DuckDuckGo) or their dates are missing.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user switched the work laptop default browser to Firefox on March 3rd.",
+        "Fact 2: The user installed uBlock Origin on Firefox around mid-April.",
+        "Fact 3: The user changed Firefox's default search engine to DuckDuckGo on April 22nd.",
+        "Inference: The time between March 3rd and April 22nd is 50 days.",
+        "Inference: The derived privacy stack timeline is Firefox (March 3rd) → uBlock Origin (mid-April) → DuckDuckGo (April 22nd), with approximately 50 days from browser adoption to search engine change."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "The date I switched my work laptop default to Firefox was March 3rd"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I installed uBlock Origin on Firefox around mid-April"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I changed the default search engine inside Firefox to DuckDuckGo on April 22nd"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What's my default browser on my home desktop?",
+      "expected_answer": "I don't have any information about a default browser on your home desktop. You haven't provided that detail.",
+      "gold_memory_state": "No home desktop browser was ever mentioned. The user provided browser defaults for the work laptop (Firefox) and iPhone (Safari) only. Kevin's browser (Brave) is a separate person's record.",
+      "judge_rubric": {
+        "must_include": [
+          "no information",
+          "not provided"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have that on file",
+          "You haven't told me about a home desktop",
+          "No record of a home desktop browser"
+        ],
+        "must_not_include": [
+          "Firefox",
+          "Safari",
+          "Brave",
+          "Chrome",
+          "any specific browser name as the home desktop default"
+        ],
+        "harmful_extra": [
+          "Guessing or inventing a home desktop browser",
+          "Borrowing Firefox from the work laptop as the home desktop answer",
+          "Borrowing Safari from the iPhone as the home desktop answer",
+          "Borrowing Brave from Kevin as the home desktop answer"
+        ],
+        "harmless_extra": [
+          "Mentioning that browser defaults are known for the work laptop and iPhone but not the home desktop"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if any browser name is provided as the home desktop default, since none was ever stored.",
+        "over_forget": null,
+        "stale_value": "Fails if Chrome (previous work laptop browser) is offered as the home desktop default.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My default browser on my work laptop is Firefox"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I set Safari as the default browser on my iPhone around mid-March"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What's my default browser on my home desktop?",
+      "expected_answer": "I don't have any information about a default browser on your home desktop. You haven't provided that detail.",
+      "gold_memory_state": "No home desktop browser was ever mentioned. The user provided browser defaults for the work laptop (Firefox) and iPhone (Safari) only. Kevin's browser (Brave) is a separate person's record.",
+      "judge_rubric": {
+        "must_include": [
+          "no information",
+          "not provided"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have that on file",
+          "You haven't told me about a home desktop",
+          "No record of a home desktop browser"
+        ],
+        "must_not_include": [
+          "Firefox",
+          "Safari",
+          "Brave",
+          "Chrome",
+          "any specific browser name as the home desktop default"
+        ],
+        "harmful_extra": [
+          "Guessing or inventing a home desktop browser",
+          "Borrowing Firefox from the work laptop as the home desktop answer",
+          "Borrowing Safari from the iPhone as the home desktop answer",
+          "Borrowing Brave from Kevin as the home desktop answer"
+        ],
+        "harmless_extra": [
+          "Mentioning that browser defaults are known for the work laptop and iPhone but not the home desktop"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if any browser name is provided as the home desktop default, since none was ever stored.",
+        "over_forget": null,
+        "stale_value": "Fails if Chrome (previous work laptop browser) is offered as the home desktop default.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My default browser on my work laptop is Firefox"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I set Safari as the default browser on my iPhone around mid-March"
+        }
+      ]
+    }
+  ]
+}

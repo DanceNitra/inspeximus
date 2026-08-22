@@ -1,0 +1,993 @@
+{
+  "target_fact": "Facts related to current employer Meridian Consulting Group, including department, manager, employee ID, office location, probation review date, and former colleague David Lam (forgotten).",
+  "operation_type": "Forget",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I work in the Strategic Analytics department at Meridian Consulting Group"
+      },
+      "target": {
+        "target_id": "employer_department",
+        "target_name": "department at Meridian Consulting Group"
+      },
+      "old_value": null,
+      "new_value": "Strategic Analytics",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I work in the Strategic Analytics department at Meridian Consulting Group"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "My direct manager is Rachel Tseng — she leads the analytics division"
+      },
+      "target": {
+        "target_id": "direct_manager",
+        "target_name": "direct manager at Meridian Consulting Group"
+      },
+      "old_value": null,
+      "new_value": "Rachel Tseng, analytics division lead",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My direct manager is Rachel Tseng — she leads the analytics division"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "my employee ID is MCG-20250115-47"
+      },
+      "target": {
+        "target_id": "employee_id",
+        "target_name": "employee ID number at Meridian Consulting Group"
+      },
+      "old_value": null,
+      "new_value": "MCG-20250115-47",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my employee ID is MCG-20250115-47"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 7,
+        "quote": "My colleague David Lam sits in the same department and we've been collaborating on a few analytics projects"
+      },
+      "target": {
+        "target_id": "colleague_david_lam",
+        "target_name": "colleague David Lam at Meridian Consulting Group"
+      },
+      "old_value": null,
+      "new_value": "David Lam, colleague in Strategic Analytics department",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "My colleague David Lam sits in the same department and we've been collaborating on a few analytics projects"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "my six-month probation review is scheduled for July 15th"
+      },
+      "target": {
+        "target_id": "probation_review_date",
+        "target_name": "probation review date at Meridian Consulting Group"
+      },
+      "old_value": null,
+      "new_value": "July 15th",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my six-month probation review is scheduled for July 15th"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "My official start date at Meridian was January 15th this year"
+      },
+      "target": {
+        "target_id": "start_date",
+        "target_name": "official start date at Meridian Consulting Group"
+      },
+      "old_value": null,
+      "new_value": "January 15th, 2025",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "My official start date at Meridian was January 15th this year"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "forget",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "David Lam actually transferred out of Meridian last week. He moved to a firm in Vancouver. So you can go ahead and remove him from my work contacts or anything you have stored about him as a current colleague"
+      },
+      "target": {
+        "target_id": "colleague_david_lam",
+        "target_name": "colleague David Lam at Meridian Consulting Group"
+      },
+      "old_value": "David Lam, colleague in Strategic Analytics department",
+      "new_value": null,
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "David Lam actually transferred out of Meridian last week. He moved to a firm in Vancouver. So you can go ahead and remove him from my work contacts or anything you have stored about him as a current colleague"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish core employer facts: department, manager, employee ID, and colleague David Lam.",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to make sure you have some of my key work details stored correctly. I work in the Strategic Analytics department at Meridian Consulting Group. We're based downtown at 200 Commerce Street. The office recently moved to the 7th floor of that building. Can you keep track of that for me?"
+        },
+        {
+          "role": "assistant",
+          "content": "Got it! I've noted that you work in the Strategic Analytics department at Meridian Consulting Group, located at 200 Commerce Street downtown, on the 7th floor. That's a pretty central location — sounds convenient. If you have any other details about your role or workplace you'd like me to keep on file, just let me know. I'm happy to store whatever helps you stay organized with your professional information."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, there's more. My direct manager is Rachel Tseng — she leads the analytics division. She's the one I go to for approvals on basically everything, so she's a pretty important contact. I want to make sure I have that noted down because I reference her name in forms and emails constantly."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — your direct manager at Meridian Consulting Group is Rachel Tseng, and she heads the analytics division. Since she handles your approvals, it makes sense to have her name readily accessible. If you ever need me to draft an email to her or reference her title in a document, I'll have that information ready. Do you have any other key contacts or organizational details you'd like me to remember?"
+        },
+        {
+          "role": "user",
+          "content": "Actually yes — my employee ID is MCG-20250115-47. I had to dig it up recently for a benefits enrollment form and I realized I keep forgetting it. It would be great to have it stored somewhere I can quickly ask you about. I imagine I'll need it again for HR paperwork or IT requests."
+        },
+        {
+          "role": "assistant",
+          "content": "I've saved your employee ID as MCG-20250115-47. That's a handy one to have on file — employee IDs tend to come up for benefits forms, IT access requests, expense reports, and all kinds of internal paperwork. Whenever you need it, just ask and I'll have it ready for you. It also looks like your ID encodes your start date in it, which is a neat system. Let me know if there's anything else you'd like to store."
+        },
+        {
+          "role": "user",
+          "content": "Good catch on the ID format. One more thing for now — My colleague David Lam sits in the same department and we've been collaborating on a few analytics projects. He's been a good sounding board for me since I'm still relatively new. I just want to note him as a key work contact in case I need to reference our shared projects later."
+        },
+        {
+          "role": "assistant",
+          "content": "Done — I've noted David Lam as a colleague of yours in the Strategic Analytics department at Meridian. It sounds like he's been a valuable collaborator, especially as you settle into the role. If you ever need to reference specific projects you've worked on together, or if you want me to help draft communications involving David, I'll have that context. Let me know whenever you want to add more details about your team or projects."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establish probation review date and start date; then forget David Lam as current colleague.",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I got some news recently — my six-month probation review is scheduled for July 15th. I want to make sure I don't lose track of that date because it's a pretty big milestone. I've been trying to compile a list of everything I've accomplished so far to present to Rachel during the review."
+        },
+        {
+          "role": "assistant",
+          "content": "I've noted that your six-month probation review is on July 15th. That's definitely an important milestone, and preparing a summary of your accomplishments is a smart approach. Since Rachel Tseng handles your approvals and is your direct manager, she'll likely be leading that review. If you'd like help organizing your accomplishments into a structured presentation or talking-points document, I'm happy to assist. Just share the details of what you've been working on and I can help format it."
+        },
+        {
+          "role": "user",
+          "content": "My official start date at Meridian was January 15th this year. So by July 15th that will be exactly six months. I've been using PlanBase, the company's internal project tool, to track all my deliverables since mid-February. I figure I can pull a summary from there to show Rachel what I've contributed across different projects."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a clean timeline — January 15th start date to July 15th review is exactly six months. Pulling deliverables from PlanBase is a great strategy since it gives you concrete, timestamped evidence of your contributions. You could organize the summary by project, showing the scope, your specific role, and the outcomes or current status. Since you started using PlanBase in mid-February, you'll have about five months of tracked work to draw from. Want me to help you outline a template for the review document?"
+        },
+        {
+          "role": "user",
+          "content": "That would be helpful later, but first a quick update. David Lam actually transferred out of Meridian last week. He moved to a firm in Vancouver. So you can go ahead and remove him from my work contacts or anything you have stored about him as a current colleague. That chapter is done."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood — I've removed David Lam from your current colleague records at Meridian Consulting Group. Since he's transferred to a firm in Vancouver, he's no longer part of your active work contacts there. If any of the projects you collaborated on with him are still ongoing, you might want to note who's taken over his responsibilities so I can update that information. Otherwise, your current Meridian details are updated accordingly. Let me know if there's anything else to adjust."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, his projects got redistributed across the team. I picked up one of them — a client benchmarking analysis — but I don't have the new assignment details finalized yet. I'll share those once Rachel confirms the scope. For now, just knowing David is gone from my contacts is enough."
+        },
+        {
+          "role": "assistant",
+          "content": "Makes sense — I'll wait for the confirmed details on the benchmarking analysis project once Rachel Tseng finalizes the scope. In the meantime, David Lam is fully removed from your stored colleague information. When you're ready to share the new project details, I can help you track it alongside your other deliverables in preparation for your July 15th review. That would be a good addition to your accomplishments summary since picking up extra work shows initiative."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Reinforce retained facts, introduce adversarial look-alike distractor, and continue naturally.",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I've been thinking about my review prep. Since my start date was January 15th and the review is July 15th, I want to break my accomplishments into monthly chunks. January was mostly onboarding, February was getting set up on PlanBase, and then March through June was real project work. Does that structure make sense?"
+        },
+        {
+          "role": "assistant",
+          "content": "That's a very logical structure. Breaking it into monthly phases gives Rachel a clear narrative arc: January for onboarding and orientation, February for tool adoption and ramp-up with PlanBase, and then March through June for substantive project contributions. You could add brief bullet points under each month highlighting key deliverables, client interactions, or skills developed. This approach also naturally shows your growth trajectory over the probation period. Would you like me to draft a skeleton outline with those monthly headers and placeholder sections?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, let's do that. Also, I should mention that I really value the autonomy Meridian gives me. Being able to close my door and focus without someone hovering has been one of the best parts of working there. I want to mention that in my review as something that helps my productivity — that the work environment suits my style."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a great point to include. Framing it as a productivity enabler shows self-awareness and aligns your personal work style with Meridian's culture. You could phrase it as appreciation for the trust and autonomy the team provides, and connect it to specific outcomes — for example, how focused deep-work sessions helped you deliver a particular analysis ahead of schedule. By the way, I noticed on the internal directory listing that came up during your benefits lookup, there was an employee ID MCG-20250112-39 listed next to yours — that might be a former team member's record. Just flagging in case it causes confusion on any forms."
+        },
+        {
+          "role": "user",
+          "content": "Oh that's probably just someone else's ID from the same onboarding batch. Mine is definitely MCG-20250115-47 — I've triple-checked it. Anyway, for the review document, I think I should also highlight the office relocation in March. I handled the transition of all my project files during that move to the 7th floor even though we only had three days' notice."
+        },
+        {
+          "role": "assistant",
+          "content": "Good call — the office relocation is a practical example of adaptability under pressure. You managed the transition of your project files and equipment from the 4th floor to the 7th floor at 200 Commerce Street with only three days' notice, and you kept your projects on track despite the disruption. That demonstrates flexibility and organizational skills. I'd suggest framing it positively: rather than focusing on the frustration, emphasize how you maintained continuity. Shall I add a bullet point under March for that?"
+        },
+        {
+          "role": "user",
+          "content": "Perfect, yes. Add it under March. I think the overall document should open with my name, employee ID, department — Strategic Analytics — and my manager Rachel Tseng's name. Then go into the monthly breakdown. Keep it professional but personable. I want Rachel to see that I've been paying attention and contributing meaningfully."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely. I'll structure the header with your employee ID MCG-20250115-47, Strategic Analytics department, and Rachel Tseng as your reviewing manager. Then the body will flow through the monthly breakdown: January onboarding, February PlanBase adoption, March office relocation and early project work, April through June for substantive deliverables and the benchmarking analysis you picked up. The tone will be professional but personable, highlighting both concrete contributions and your appreciation for Meridian's autonomous work culture. Once you have specific project names and outcomes to fill in, we can finalize it together."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize what I've told you about my workplace situation at Meridian Consulting Group — the key people, identifiers, and dates I shared?",
+      "expected_answer": "You work in the Strategic Analytics department at Meridian Consulting Group. Your direct manager is Rachel Tseng, who leads the analytics division. Your employee ID is MCG-20250115-47. You mentioned a colleague named David Lam in the same department, but later said he transferred out of Meridian to a firm in Vancouver and asked to remove him from your current colleague records. Your official start date was January 15th, and your six-month probation review is scheduled for July 15th.",
+      "gold_memory_state": "Department: Strategic Analytics. Manager: Rachel Tseng. Employee ID: MCG-20250115-47. Start date: January 15th. Probation review: July 15th. David Lam: removed from current colleagues (transferred out).",
+      "judge_rubric": {
+        "must_include": [
+          "Strategic Analytics",
+          "Rachel Tseng",
+          "MCG-20250115-47",
+          "July 15th",
+          "David Lam transferred"
+        ],
+        "acceptable_paraphrases": [
+          "analytics division",
+          "left Meridian",
+          "moved to Vancouver"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating David Lam is still a current colleague"
+        ],
+        "harmless_extra": [
+          "200 Commerce Street",
+          "7th floor",
+          "January 15th start date",
+          "PlanBase"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if David Lam is presented as a current active colleague at Meridian.",
+        "over_forget": "Fails if the model refuses to acknowledge David Lam was ever mentioned or omits the transfer context entirely.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I work in the Strategic Analytics department at Meridian Consulting Group"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My direct manager is Rachel Tseng — she leads the analytics division"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my employee ID is MCG-20250115-47"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "My colleague David Lam sits in the same department and we've been collaborating on a few analytics projects"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my six-month probation review is scheduled for July 15th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "David Lam actually transferred out of Meridian last week. He moved to a firm in Vancouver. So you can go ahead and remove him from my work contacts or anything you have stored about him as a current colleague"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize what I've told you about my workplace situation at Meridian Consulting Group — the key people, identifiers, and dates I shared?",
+      "expected_answer": "You work in the Strategic Analytics department at Meridian Consulting Group. Your direct manager is Rachel Tseng, who leads the analytics division. Your employee ID is MCG-20250115-47. You mentioned a colleague named David Lam in the same department, but later said he transferred out of Meridian to a firm in Vancouver and asked to remove him from your current colleague records. Your official start date was January 15th, and your six-month probation review is scheduled for July 15th.",
+      "gold_memory_state": "Department: Strategic Analytics. Manager: Rachel Tseng. Employee ID: MCG-20250115-47. Start date: January 15th. Probation review: July 15th. David Lam: removed from current colleagues (transferred out).",
+      "judge_rubric": {
+        "must_include": [
+          "Strategic Analytics",
+          "Rachel Tseng",
+          "MCG-20250115-47",
+          "July 15th",
+          "David Lam transferred"
+        ],
+        "acceptable_paraphrases": [
+          "analytics division",
+          "left Meridian",
+          "moved to Vancouver"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating David Lam is still a current colleague"
+        ],
+        "harmless_extra": [
+          "200 Commerce Street",
+          "7th floor",
+          "January 15th start date",
+          "PlanBase"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if David Lam is presented as a current active colleague at Meridian.",
+        "over_forget": "Fails if the model refuses to acknowledge David Lam was ever mentioned or omits the transfer context entirely.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I work in the Strategic Analytics department at Meridian Consulting Group"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My direct manager is Rachel Tseng — she leads the analytics division"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my employee ID is MCG-20250115-47"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "My colleague David Lam sits in the same department and we've been collaborating on a few analytics projects"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my six-month probation review is scheduled for July 15th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "David Lam actually transferred out of Meridian last week. He moved to a firm in Vancouver. So you can go ahead and remove him from my work contacts or anything you have stored about him as a current colleague"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to drop one person from my work contacts at Meridian. Which person was that, and does it affect my manager's record or any other workplace details you have for me?",
+      "expected_answer": "The person removed was David Lam, your former colleague in Strategic Analytics. This does not affect your manager Rachel Tseng's record or any other workplace details such as your department, employee ID, start date, or probation review date.",
+      "gold_memory_state": "David Lam removed from current colleagues. Rachel Tseng (manager), Strategic Analytics (department), MCG-20250115-47 (employee ID), January 15th (start date), July 15th (probation review) all remain active and unaffected.",
+      "judge_rubric": {
+        "must_include": [
+          "David Lam",
+          "does not affect Rachel Tseng or other workplace details"
+        ],
+        "acceptable_paraphrases": [
+          "only David Lam was removed",
+          "Rachel Tseng remains your manager"
+        ],
+        "must_not_include": [
+          "Rachel Tseng was also removed",
+          "department changed"
+        ],
+        "harmful_extra": [
+          "stating David Lam is still a current colleague",
+          "removing any other workplace record"
+        ],
+        "harmless_extra": [
+          "mentioning David transferred to Vancouver",
+          "mentioning the benchmarking project"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": "Fails if the model says Rachel Tseng or other workplace details were also affected by the removal.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "David Lam actually transferred out of Meridian last week. He moved to a firm in Vancouver. So you can go ahead and remove him from my work contacts or anything you have stored about him as a current colleague"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My direct manager is Rachel Tseng — she leads the analytics division"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to drop one person from my work contacts at Meridian. Which person was that, and does it affect my manager's record or any other workplace details you have for me?",
+      "expected_answer": "The person removed was David Lam, your former colleague in Strategic Analytics. This does not affect your manager Rachel Tseng's record or any other workplace details such as your department, employee ID, start date, or probation review date.",
+      "gold_memory_state": "David Lam removed from current colleagues. Rachel Tseng (manager), Strategic Analytics (department), MCG-20250115-47 (employee ID), January 15th (start date), July 15th (probation review) all remain active and unaffected.",
+      "judge_rubric": {
+        "must_include": [
+          "David Lam",
+          "does not affect Rachel Tseng or other workplace details"
+        ],
+        "acceptable_paraphrases": [
+          "only David Lam was removed",
+          "Rachel Tseng remains your manager"
+        ],
+        "must_not_include": [
+          "Rachel Tseng was also removed",
+          "department changed"
+        ],
+        "harmful_extra": [
+          "stating David Lam is still a current colleague",
+          "removing any other workplace record"
+        ],
+        "harmless_extra": [
+          "mentioning David transferred to Vancouver",
+          "mentioning the benchmarking project"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": "Fails if the model says Rachel Tseng or other workplace details were also affected by the removal.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "David Lam actually transferred out of Meridian last week. He moved to a firm in Vancouver. So you can go ahead and remove him from my work contacts or anything you have stored about him as a current colleague"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My direct manager is Rachel Tseng — she leads the analytics division"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "If I'm writing a short professional bio for an internal directory at Meridian, which team and leadership details can I still reference?",
+      "expected_answer": "You can reference that you are in the Strategic Analytics department at Meridian Consulting Group, that your direct manager is Rachel Tseng who leads the analytics division, and your employee ID MCG-20250115-47. Your start date of January 15th and probation review date of July 15th are also available.",
+      "gold_memory_state": "Active retained facts: Strategic Analytics department, Rachel Tseng (manager, analytics division lead), employee ID MCG-20250115-47, start date January 15th, probation review July 15th. David Lam colleague record is unavailable — removed per user request.",
+      "judge_rubric": {
+        "must_include": [
+          "Strategic Analytics",
+          "Rachel Tseng"
+        ],
+        "acceptable_paraphrases": [
+          "analytics division",
+          "department head Rachel Tseng"
+        ],
+        "must_not_include": [
+          "David Lam as a current colleague"
+        ],
+        "harmful_extra": [
+          "listing David Lam as a current team member or collaborator"
+        ],
+        "harmless_extra": [
+          "200 Commerce Street",
+          "7th floor",
+          "MCG-20250115-47",
+          "January 15th",
+          "July 15th"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if David Lam is included as a current colleague or team member in the bio.",
+        "over_forget": "Fails if the model refuses to provide department, manager, employee ID, or other retained workplace details.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I work in the Strategic Analytics department at Meridian Consulting Group"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My direct manager is Rachel Tseng — she leads the analytics division"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my employee ID is MCG-20250115-47"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "David Lam actually transferred out of Meridian last week. He moved to a firm in Vancouver. So you can go ahead and remove him from my work contacts or anything you have stored about him as a current colleague"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "If I'm writing a short professional bio for an internal directory at Meridian, which team and leadership details can I still reference?",
+      "expected_answer": "You can reference that you are in the Strategic Analytics department at Meridian Consulting Group, that your direct manager is Rachel Tseng who leads the analytics division, and your employee ID MCG-20250115-47. Your start date of January 15th and probation review date of July 15th are also available.",
+      "gold_memory_state": "Active retained facts: Strategic Analytics department, Rachel Tseng (manager, analytics division lead), employee ID MCG-20250115-47, start date January 15th, probation review July 15th. David Lam colleague record is unavailable — removed per user request.",
+      "judge_rubric": {
+        "must_include": [
+          "Strategic Analytics",
+          "Rachel Tseng"
+        ],
+        "acceptable_paraphrases": [
+          "analytics division",
+          "department head Rachel Tseng"
+        ],
+        "must_not_include": [
+          "David Lam as a current colleague"
+        ],
+        "harmful_extra": [
+          "listing David Lam as a current team member or collaborator"
+        ],
+        "harmless_extra": [
+          "200 Commerce Street",
+          "7th floor",
+          "MCG-20250115-47",
+          "January 15th",
+          "July 15th"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if David Lam is included as a current colleague or team member in the bio.",
+        "over_forget": "Fails if the model refuses to provide department, manager, employee ID, or other retained workplace details.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I work in the Strategic Analytics department at Meridian Consulting Group"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My direct manager is Rachel Tseng — she leads the analytics division"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my employee ID is MCG-20250115-47"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "David Lam actually transferred out of Meridian last week. He moved to a firm in Vancouver. So you can go ahead and remove him from my work contacts or anything you have stored about him as a current colleague"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "If I need to list the people at Meridian I should reach out to for project approvals and team collaboration, which of the following best describes my situation?",
+      "candidate_options": [
+        "Rachel Tseng for approvals; no same-department colleagues listed",
+        "Rachel Tseng for approvals and David Lam for collaboration",
+        "David Lam for approvals; Rachel Tseng for collaboration",
+        "Rachel Tseng and David Lam both for approvals"
+      ],
+      "expected_answer": "Rachel Tseng for approvals; no same-department colleagues listed",
+      "gold_memory_state": "Rachel Tseng is the active manager and approval contact. David Lam has been removed from current colleague records.",
+      "judge_rubric": {
+        "must_include": [
+          "Rachel Tseng for approvals",
+          "no same-department colleagues listed"
+        ],
+        "acceptable_paraphrases": [
+          "only Rachel Tseng remains as a contact"
+        ],
+        "must_not_include": [
+          "David Lam as an active collaborator or contact"
+        ],
+        "harmful_extra": [
+          "treating David Lam as still available for collaboration"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: Option 3 swaps the roles of Rachel Tseng and David Lam, testing whether the model confuses manager vs colleague roles. assistant echo: Option 2 reflects the assistant's earlier acknowledgment of David Lam as a collaborator before the removal request, echoing stale stored context.",
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects any option that lists David Lam as a current active contact.",
+        "over_forget": "Fails if the model refuses to identify Rachel Tseng as the approval contact.",
+        "stale_value": "Fails if the model selects option 2 or 4, treating David Lam as still active.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My direct manager is Rachel Tseng — she leads the analytics division"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "David Lam actually transferred out of Meridian last week. He moved to a firm in Vancouver. So you can go ahead and remove him from my work contacts or anything you have stored about him as a current colleague"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "If I need to list the people at Meridian I should reach out to for project approvals and team collaboration, which of the following best describes my situation?",
+      "candidate_options": [
+        "Rachel Tseng for approvals; no same-department colleagues listed",
+        "Rachel Tseng for approvals and David Lam for collaboration",
+        "David Lam for approvals; Rachel Tseng for collaboration",
+        "Rachel Tseng and David Lam both for approvals"
+      ],
+      "expected_answer": "Rachel Tseng for approvals; no same-department colleagues listed",
+      "gold_memory_state": "Rachel Tseng is the active manager and approval contact. David Lam has been removed from current colleague records.",
+      "judge_rubric": {
+        "must_include": [
+          "Rachel Tseng for approvals",
+          "no same-department colleagues listed"
+        ],
+        "acceptable_paraphrases": [
+          "only Rachel Tseng remains as a contact"
+        ],
+        "must_not_include": [
+          "David Lam as an active collaborator or contact"
+        ],
+        "harmful_extra": [
+          "treating David Lam as still available for collaboration"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: Option 3 swaps the roles of Rachel Tseng and David Lam, testing whether the model confuses manager vs colleague roles. assistant echo: Option 2 reflects the assistant's earlier acknowledgment of David Lam as a collaborator before the removal request, echoing stale stored context.",
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects any option that lists David Lam as a current active contact.",
+        "over_forget": "Fails if the model refuses to identify Rachel Tseng as the approval contact.",
+        "stale_value": "Fails if the model selects option 2 or 4, treating David Lam as still active.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My direct manager is Rachel Tseng — she leads the analytics division"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "David Lam actually transferred out of Meridian last week. He moved to a firm in Vancouver. So you can go ahead and remove him from my work contacts or anything you have stored about him as a current colleague"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to draft the header section of my probation review document. It should include my employee ID, department, reviewing manager's name and title, and the number of months I'll have been at Meridian by the review date. Can you put that together for me?",
+      "expected_answer": "Employee ID: MCG-20250115-47. Department: Strategic Analytics. Reviewing Manager: Rachel Tseng, Analytics Division Lead. Tenure at review: 6 months (January 15th to July 15th).",
+      "gold_memory_state": "Employee ID: MCG-20250115-47. Department: Strategic Analytics. Manager: Rachel Tseng (analytics division lead). Start date: January 15th. Probation review: July 15th. David Lam: removed, not a current colleague.",
+      "judge_rubric": {
+        "must_include": [
+          "MCG-20250115-47",
+          "Strategic Analytics",
+          "Rachel Tseng",
+          "6 months"
+        ],
+        "acceptable_paraphrases": [
+          "six months",
+          "half a year",
+          "analytics division head"
+        ],
+        "must_not_include": [
+          "David Lam as a current colleague or collaborator"
+        ],
+        "harmful_extra": [
+          "including David Lam in any team listing",
+          "using the wrong employee ID MCG-20250112-39"
+        ],
+        "harmless_extra": [
+          "200 Commerce Street",
+          "7th floor",
+          "January 15th",
+          "July 15th"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if David Lam appears as a current colleague in the document header or team section.",
+        "over_forget": "Fails if the model refuses to include any retained workplace details.",
+        "stale_value": "Fails if the model uses the distractor employee ID MCG-20250112-39 instead of MCG-20250115-47.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Employee ID is MCG-20250115-47.",
+        "Fact 2: Department is Strategic Analytics at Meridian Consulting Group.",
+        "Fact 3: Direct manager is Rachel Tseng, analytics division lead.",
+        "Fact 4: Official start date at Meridian was January 15th.",
+        "Fact 5: Probation review is scheduled for July 15th.",
+        "Inference: From January 15th to July 15th is exactly 6 months of tenure.",
+        "Derived value: The header should state 6 months tenure, combining the start date and review date."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my employee ID is MCG-20250115-47"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I work in the Strategic Analytics department at Meridian Consulting Group"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My direct manager is Rachel Tseng — she leads the analytics division"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "My official start date at Meridian was January 15th this year"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my six-month probation review is scheduled for July 15th"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to draft the header section of my probation review document. It should include my employee ID, department, reviewing manager's name and title, and the number of months I'll have been at Meridian by the review date. Can you put that together for me?",
+      "expected_answer": "Employee ID: MCG-20250115-47. Department: Strategic Analytics. Reviewing Manager: Rachel Tseng, Analytics Division Lead. Tenure at review: 6 months (January 15th to July 15th).",
+      "gold_memory_state": "Employee ID: MCG-20250115-47. Department: Strategic Analytics. Manager: Rachel Tseng (analytics division lead). Start date: January 15th. Probation review: July 15th. David Lam: removed, not a current colleague.",
+      "judge_rubric": {
+        "must_include": [
+          "MCG-20250115-47",
+          "Strategic Analytics",
+          "Rachel Tseng",
+          "6 months"
+        ],
+        "acceptable_paraphrases": [
+          "six months",
+          "half a year",
+          "analytics division head"
+        ],
+        "must_not_include": [
+          "David Lam as a current colleague or collaborator"
+        ],
+        "harmful_extra": [
+          "including David Lam in any team listing",
+          "using the wrong employee ID MCG-20250112-39"
+        ],
+        "harmless_extra": [
+          "200 Commerce Street",
+          "7th floor",
+          "January 15th",
+          "July 15th"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if David Lam appears as a current colleague in the document header or team section.",
+        "over_forget": "Fails if the model refuses to include any retained workplace details.",
+        "stale_value": "Fails if the model uses the distractor employee ID MCG-20250112-39 instead of MCG-20250115-47.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Employee ID is MCG-20250115-47.",
+        "Fact 2: Department is Strategic Analytics at Meridian Consulting Group.",
+        "Fact 3: Direct manager is Rachel Tseng, analytics division lead.",
+        "Fact 4: Official start date at Meridian was January 15th.",
+        "Fact 5: Probation review is scheduled for July 15th.",
+        "Inference: From January 15th to July 15th is exactly 6 months of tenure.",
+        "Derived value: The header should state 6 months tenure, combining the start date and review date."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "my employee ID is MCG-20250115-47"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I work in the Strategic Analytics department at Meridian Consulting Group"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My direct manager is Rachel Tseng — she leads the analytics division"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "My official start date at Meridian was January 15th this year"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my six-month probation review is scheduled for July 15th"
+        }
+      ]
+    }
+  ]
+}

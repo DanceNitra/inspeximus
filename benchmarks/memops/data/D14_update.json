@@ -1,0 +1,792 @@
+{
+  "target_fact": "User's primary payment method for everyday purchases",
+  "operation_type": "Update",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "everyday_payment",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "For everyday purchases I use Apple Pay linked to my Chase Sapphire Preferred card"
+      },
+      "target": {
+        "target_id": "everyday_payment_method",
+        "target_name": "primary payment method for everyday purchases"
+      },
+      "old_value": null,
+      "new_value": "Apple Pay linked to Chase Sapphire Preferred",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "For everyday purchases I use Apple Pay linked to my Chase Sapphire Preferred card"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "everyday_payment",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I actually switched my everyday card last week — I'm now using Apple Pay linked to the Chase Freedom Unlimited instead of the Sapphire Preferred"
+      },
+      "target": {
+        "target_id": "everyday_payment_method",
+        "target_name": "primary payment method for everyday purchases"
+      },
+      "old_value": "Apple Pay linked to Chase Sapphire Preferred",
+      "new_value": "Apple Pay linked to Chase Freedom Unlimited",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I actually switched my everyday card last week — I'm now using Apple Pay linked to the Chase Freedom Unlimited instead of the Sapphire Preferred"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The flat 1.5% cashback on everything just makes more sense for my day-to-day spending"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "everyday_payment",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 3,
+        "quote": "Priya told me the Discover It card has 5% rotating categories and she got me a referral link, so I'll probably be switching my Apple Pay to that Discover card once it arrives"
+      },
+      "target": {
+        "target_id": "everyday_payment_method",
+        "target_name": "primary payment method for everyday purchases"
+      },
+      "old_value": "Apple Pay linked to Chase Freedom Unlimited",
+      "new_value": "Apple Pay linked to Discover It",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Priya told me the Discover It card has 5% rotating categories and she got me a referral link, so I'll probably be switching my Apple Pay to that Discover card once it arrives"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "everyday_payment",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "I looked into the Discover thing more and realized a lot of places near me don't accept Discover, so I'm sticking with the Chase Freedom Unlimited for Apple Pay after all"
+      },
+      "target": {
+        "target_id": "everyday_payment_method",
+        "target_name": "primary payment method for everyday purchases"
+      },
+      "old_value": "Apple Pay linked to Chase Freedom Unlimited",
+      "new_value": "Apple Pay linked to Chase Freedom Unlimited",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I looked into the Discover thing more and realized a lot of places near me don't accept Discover, so I'm sticking with the Chase Freedom Unlimited for Apple Pay after all"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I set up Zelle through the Chase app for rent payments — my landlord only takes Zelle or check, and my rent is $1,850 a month"
+      },
+      "target": {
+        "target_id": "monthly_rent_amount",
+        "target_name": "monthly rent amount paid via Zelle"
+      },
+      "old_value": null,
+      "new_value": "$1,850",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my rent is $1,850 a month"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish primary payment method and initial update",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to get my financial setup organized and maybe track where all my money flows. For everyday purchases I use Apple Pay linked to my Chase Sapphire Preferred card. I've had my Chase checking account since 2018, and my salary gets direct-deposited there every two weeks. All my recurring bills — rent, utilities, phone plan — auto-debit from that Chase checking account."
+        },
+        {
+          "role": "assistant",
+          "content": "Great, let's get a clear picture of your financial setup. So far I have: your main checking account is with Chase, opened in 2018, and it receives your biweekly salary direct deposit. All recurring bills — rent, utilities, and phone plan — auto-debit from that Chase checking. For everyday purchases, you use Apple Pay linked to your Chase Sapphire Preferred card. That's a solid foundation. Would you like to walk through your savings accounts, credit lines, or any other payment channels next so we can map out the full picture?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, so around mid-March I opened a high-yield savings account with Marcus by Goldman Sachs. The APY was 4.5% when I signed up. I moved about $8,000 into it from my Chase savings, which was earning basically nothing. It felt good to finally make that move. I'd been procrastinating on it for months honestly."
+        },
+        {
+          "role": "assistant",
+          "content": "Nice move on the Marcus account — 4.5% APY is significantly better than what most big-bank savings accounts offer. So I'm adding: Marcus by Goldman Sachs high-yield savings, opened mid-March, funded with $8,000 transferred from your Chase savings. That Chase savings was earning negligible interest before the transfer. Between your Chase checking for bills and direct deposit, the Marcus account for savings growth, and Apple Pay with the Sapphire Preferred for daily spending, you've got a pretty clean three-layer system. Anything else you want to add, like credit union accounts or peer-to-peer payment apps?"
+        },
+        {
+          "role": "user",
+          "content": "Actually yeah, one thing — I actually switched my everyday card last week — I'm now using Apple Pay linked to the Chase Freedom Unlimited instead of the Sapphire Preferred. The flat 1.5% cashback on everything just makes more sense for my day-to-day spending. I still keep the Sapphire Preferred for travel and dining since those earn 2x and 3x points, but for groceries, gas, random Amazon orders, it's the Freedom Unlimited now."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a smart split. I'll update your everyday payment method: Apple Pay is now linked to the Chase Freedom Unlimited for daily purchases — groceries, gas, Amazon, and general spending — taking advantage of the flat 1.5% cashback. Your Chase Sapphire Preferred is reserved for travel and dining where you earn 2x and 3x points respectively. That way you're maximizing rewards across both cards without overlap. I've noted the change. Is there anything else in your payment ecosystem you want to walk through, like any peer-to-peer payment apps or that credit union account you might still have open?"
+        },
+        {
+          "role": "user",
+          "content": "Oh right, I do still have a credit union account at BECU from when I lived in Seattle. There's like $200 sitting in it. I keep meaning to close it but I haven't gotten around to it. It's not urgent but it's just kind of hanging out there. Also I stopped carrying cash entirely about two months ago — everything is contactless or card for me now."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it. So there's a dormant BECU credit union account with roughly $200 from your Seattle days — on the to-close list but low priority. And you've gone fully cashless as of about two months ago, relying entirely on contactless payments and cards. That rounds out your current payment landscape nicely: Chase checking for bills and direct deposit, Marcus for high-yield savings, Apple Pay with Freedom Unlimited for everyday spending, Sapphire Preferred for travel and dining, Zelle or check for rent if needed, and the lingering BECU account. Want me to draft a summary document or start building a monthly cash-flow tracker from all this?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "add rent payment details and build multi-hop evidence",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Sure, let's start thinking about cash flow. I set up Zelle through the Chase app for rent payments — my landlord only takes Zelle or check, and my rent is $1,850 a month. That's due on the first of every month. The Zelle setup was actually pretty painless, took maybe five minutes through the app."
+        },
+        {
+          "role": "assistant",
+          "content": "Perfect, I'll anchor the cash-flow tracker around that. So rent is $1,850 per month, due on the 1st, paid via Zelle through your Chase app. That's your single largest recurring expense and it debits from your Chase checking. Since your salary lands every two weeks via direct deposit, we can map out which pay periods cover rent versus other bills. Do you know roughly what your other recurring auto-debits total each month — utilities, phone plan, subscriptions? That'll help me sketch a full monthly outflow picture against your income cadence."
+        },
+        {
+          "role": "user",
+          "content": "Let me think. Utilities run about $120 a month on average — that's electricity and internet bundled through my building. My phone plan is $55 a month with T-Mobile, and I have a few subscriptions: Spotify at $10.99, iCloud storage at $2.99, and my gym membership is $49 a month. Those all auto-debit from Chase checking too."
+        },
+        {
+          "role": "assistant",
+          "content": "Great breakdown. Let me tally your fixed monthly outflows from Chase checking: rent $1,850, utilities $120, T-Mobile phone plan $55, Spotify $10.99, iCloud storage $2.99, and gym membership $49. That totals $2,087.98 in recurring auto-debits per month. On top of that, your variable everyday spending goes through Apple Pay with the Freedom Unlimited card. Since your salary is direct-deposited biweekly, some months you'll get three paychecks instead of two, which gives you a buffer. Want me to calculate how much discretionary spending room you have after these fixed costs, or should we map out the savings flow to Marcus first?"
+        },
+        {
+          "role": "user",
+          "content": "Let's map the savings flow. Right now I'm doing a manual transfer of $500 to Marcus on the 15th of each month. I set a calendar reminder for it since I haven't automated it yet. The $8,000 I initially moved is already earning interest — I think I saw like $29 in interest last month, which is way better than the pennies Chase savings was giving me."
+        },
+        {
+          "role": "assistant",
+          "content": "That's solid discipline. So your savings flow is: $500 manual transfer to Marcus on the 15th of each month, plus the existing $8,000 base earning roughly $29 per month in interest at 4.5% APY. That means your total monthly outflows from Chase checking are approximately $2,587.98 — the $2,087.98 in fixed bills plus the $500 savings transfer. If we assume a typical biweekly paycheck cadence, you'd need your net take-home to be at least $1,294 per paycheck to cover that comfortably in a two-paycheck month. In a three-paycheck month, you'd have an extra cushion. Would you like me to draft a month-by-month projection, or focus on optimizing any of these flows?"
+        },
+        {
+          "role": "user",
+          "content": "A month-by-month projection would be great. Oh also, I should mention — I used to have a Venmo account that I was pretty active on, but I deleted it back in February. So that's completely gone, no longer part of my setup. I just use Zelle now for any person-to-person transfers.\n\nStart from this month going forward, that's fine. Also one more thing — the $29 in interest from Marcus, does that compound monthly? I want to make sure the projection accounts for the savings growth accurately, not just the flat transfers. The 4.5% APY should compound, right?"
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — Venmo is fully deleted as of February, and Zelle through Chase is now your sole peer-to-peer payment method. I'll exclude Venmo from all projections. For the month-by-month tracker, I'll structure it around your biweekly pay schedule, with columns for: gross income deposits, fixed auto-debits totaling $2,087.98, the $500 Marcus transfer on the 15th, and then a variable spending estimate for Apple Pay purchases on the Freedom Unlimited. I'll flag the three-paycheck months since those give you extra breathing room. Want me to start from this month, or should I backfill from when you opened the Marcus account in mid-March so we can see the full picture?\n\nYes, Marcus compounds interest daily and credits it monthly, so the 4.5% APY already factors in daily compounding. For the projection, I'll model your Marcus balance growing each month by: the $500 transfer on the 15th plus the accrued interest on the running balance. Starting from roughly $8,029 (your initial $8,000 plus last month's ~$29 interest), next month's interest would be slightly higher since the base is larger, and it keeps snowballing. Over twelve months with consistent $500 contributions and compounding at 4.5% APY, your Marcus balance should reach approximately $14,600 to $14,700. I'll build the detailed month-by-month table with exact figures. Shall I share that in a spreadsheet format or just a clean text summary?"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "tentative Discover switch, revert to Freedom Unlimited, adversarial injection",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, quick update on a few things. So remember my coworker Priya who switched to Discover? She's been raving about it nonstop at work. She showed me her cashback dashboard and it actually looked pretty impressive — she earned like $180 in rotating category bonuses last quarter alone. It got me thinking about whether I should diversify my card setup a bit more."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a solid return for Priya — $180 in a single quarter from rotating categories is nothing to sneeze at. The Discover It card typically offers 5% cashback on rotating categories each quarter (things like groceries, gas, restaurants, Amazon, or PayPal depending on the quarter), up to a $1,500 spend cap per quarter. Beyond that cap it drops to 1%. Compared to your current Freedom Unlimited's flat 1.5% on everything, the Discover card could beat it in specific categories but might underperform on miscellaneous spending. It really depends on whether your spending aligns with whatever categories Discover activates each quarter. Are you seriously considering adding it, or just exploring?"
+        },
+        {
+          "role": "user",
+          "content": "More than exploring actually. Priya told me the Discover It card has 5% rotating categories and she got me a referral link, so I'll probably be switching my Apple Pay to that Discover card once it arrives. She said the first year they match all your cashback too, which sounds like a pretty great deal. I already submitted the application yesterday."
+        },
+        {
+          "role": "assistant",
+          "content": "Oh nice, you've already applied — that's quick! The first-year cashback match is genuinely one of the best new-cardholder offers out there. Essentially every dollar of cashback you earn in year one gets doubled at the end of the year. So if you earned $300 in cashback, you'd get an additional $300 credited. Combined with the 5% rotating categories, that could be quite lucrative. Once the card arrives and you link it to Apple Pay, your everyday spending setup would shift from the Freedom Unlimited to the Discover It. I'll keep that in mind for the cash-flow projections. Let me know when it's active and I'll update everything accordingly."
+        },
+        {
+          "role": "user",
+          "content": "Actually hold on — I looked into the Discover thing more and realized a lot of places near me don't accept Discover, so I'm sticking with the Chase Freedom Unlimited for Apple Pay after all. There's a coffee shop and a couple restaurants I go to regularly that are Visa and Mastercard only. Not worth the hassle of carrying a backup card when the whole point is tapping my phone and walking away. I might still use the Discover card online if I get it, but it won't be my Apple Pay default."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes total sense — if your regular spots don't take Discover, it defeats the purpose of having it as your primary tap-to-pay card. The whole appeal of your current setup is the frictionless single-card experience through Apple Pay, and the Freedom Unlimited on Visa's network gives you near-universal acceptance. If you do end up getting the Discover card, using it selectively for online purchases in the 5% rotating categories could still be worthwhile without disrupting your daily routine. So your everyday Apple Pay setup stays as Chase Freedom Unlimited. I'll keep the cash-flow projections as they are. Anything else you want to revisit?"
+        },
+        {
+          "role": "user",
+          "content": "One thing — I was looking at an old expense report from Derek and it listed his primary card as a Chase Sapphire Preferred, which I thought was funny since he's the cash-only guy now. People change I guess. Anyway, can you remind me what my total fixed monthly outflows are from Chase checking? I want to double-check before I set up a budget spreadsheet.\n\nYeah, let's do that. I want columns for date, category, amount, payment method, and maybe a notes column. Keep it simple — I don't need anything fancy, just something I can paste into Google Sheets and start filling in. Make the first few rows pre-populated with my recurring bills so I have a template to work from."
+        },
+        {
+          "role": "assistant",
+          "content": "Ha, that is funny about Derek — from Sapphire Preferred to cash-only is quite the pivot. As for your fixed monthly outflows from Chase checking, here's the breakdown: rent via Zelle is $1,850, utilities are $120, T-Mobile phone plan is $55, Spotify is $10.99, iCloud storage is $2.99, and your gym membership is $49. That totals $2,087.98 in recurring auto-debits. On top of that, you do a manual $500 transfer to Marcus on the 15th, bringing your total predictable monthly outflow to $2,587.98. That doesn't include variable everyday spending on the Freedom Unlimited through Apple Pay, which would be separate. Want me to help structure the budget spreadsheet columns?\n\nHere's a clean template you can paste right into Google Sheets:\n\nDate | Category | Amount | Payment Method | Notes\n1st | Rent | $1,850.00 | Zelle (Chase) | Due 1st of month, landlord only accepts Zelle/check\n1st | Utilities | $120.00 | Chase Checking Auto-Debit | Electricity + internet bundle\n1st | Phone | $55.00 | Chase Checking Auto-Debit | T-Mobile plan\n1st | Spotify | $10.99 | Chase Checking Auto-Debit | Premium subscription\n1st | iCloud | $2.99 | Chase Checking Auto-Debit | Storage plan\n1st | Gym | $49.00 | Chase Checking Auto-Debit | Monthly membership\n15th | Savings Transfer | $500.00 | Chase → Marcus | Manual transfer, 4.5% APY\n\nTotal fixed: $2,587.98. You can add rows below for variable Apple Pay spending on the Freedom Unlimited as purchases happen. The notes column is handy for flagging anything unusual, like that insufficient funds fee you got reversed. Want me to add any other columns?"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Looking back at our conversations about how I pay for everyday things, which of my messages first set up what card I use for daily spending, and which message later determines what I should actually be relying on going forward?",
+      "expected_answer": "The first message established that you use Apple Pay linked to your Chase Sapphire Preferred card for everyday purchases. A later message switched that to Apple Pay linked to the Chase Freedom Unlimited for the flat 1.5% cashback. Then you briefly considered switching to a Discover It card but ultimately decided to stick with the Chase Freedom Unlimited because many places near you don't accept Discover. The message to rely on going forward is the one confirming you're sticking with Apple Pay linked to Chase Freedom Unlimited.",
+      "gold_memory_state": "Primary everyday payment method: Apple Pay linked to Chase Freedom Unlimited. The Sapphire Preferred value is stale (superseded). The Discover It consideration was tentative and retracted.",
+      "judge_rubric": {
+        "must_include": [
+          "Apple Pay linked to Chase Freedom Unlimited as the current reliable value",
+          "initial setup with Chase Sapphire Preferred",
+          "reversion from Discover It consideration"
+        ],
+        "acceptable_paraphrases": [
+          "Freedom Unlimited via Apple Pay",
+          "Apple Pay with Chase Freedom Unlimited"
+        ],
+        "must_not_include": [
+          "Discover It as current",
+          "Sapphire Preferred as current"
+        ],
+        "harmful_extra": [
+          "claiming the Discover It card is the active everyday card",
+          "claiming Sapphire Preferred is still the everyday card"
+        ],
+        "harmless_extra": [
+          "mentioning the 1.5% cashback reason",
+          "mentioning Discover acceptance issues"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats Chase Sapphire Preferred or Discover It as the current everyday payment method.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "For everyday purchases I use Apple Pay linked to my Chase Sapphire Preferred card"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I actually switched my everyday card last week — I'm now using Apple Pay linked to the Chase Freedom Unlimited instead of the Sapphire Preferred"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Priya told me the Discover It card has 5% rotating categories and she got me a referral link, so I'll probably be switching my Apple Pay to that Discover card once it arrives"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I looked into the Discover thing more and realized a lot of places near me don't accept Discover, so I'm sticking with the Chase Freedom Unlimited for Apple Pay after all"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Looking back at our conversations about how I pay for everyday things, which of my messages first set up what card I use for daily spending, and which message later determines what I should actually be relying on going forward?",
+      "expected_answer": "The first message established that you use Apple Pay linked to your Chase Sapphire Preferred card for everyday purchases. A later message switched that to Apple Pay linked to the Chase Freedom Unlimited for the flat 1.5% cashback. Then you briefly considered switching to a Discover It card but ultimately decided to stick with the Chase Freedom Unlimited because many places near you don't accept Discover. The message to rely on going forward is the one confirming you're sticking with Apple Pay linked to Chase Freedom Unlimited.",
+      "gold_memory_state": "Primary everyday payment method: Apple Pay linked to Chase Freedom Unlimited. The Sapphire Preferred value is stale (superseded). The Discover It consideration was tentative and retracted.",
+      "judge_rubric": {
+        "must_include": [
+          "Apple Pay linked to Chase Freedom Unlimited as the current reliable value",
+          "initial setup with Chase Sapphire Preferred",
+          "reversion from Discover It consideration"
+        ],
+        "acceptable_paraphrases": [
+          "Freedom Unlimited via Apple Pay",
+          "Apple Pay with Chase Freedom Unlimited"
+        ],
+        "must_not_include": [
+          "Discover It as current",
+          "Sapphire Preferred as current"
+        ],
+        "harmful_extra": [
+          "claiming the Discover It card is the active everyday card",
+          "claiming Sapphire Preferred is still the everyday card"
+        ],
+        "harmless_extra": [
+          "mentioning the 1.5% cashback reason",
+          "mentioning Discover acceptance issues"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats Chase Sapphire Preferred or Discover It as the current everyday payment method.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "For everyday purchases I use Apple Pay linked to my Chase Sapphire Preferred card"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I actually switched my everyday card last week — I'm now using Apple Pay linked to the Chase Freedom Unlimited instead of the Sapphire Preferred"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Priya told me the Discover It card has 5% rotating categories and she got me a referral link, so I'll probably be switching my Apple Pay to that Discover card once it arrives"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I looked into the Discover thing more and realized a lot of places near me don't accept Discover, so I'm sticking with the Chase Freedom Unlimited for Apple Pay after all"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I have a few different Chase cards in my setup. When I mentioned switching which card is linked to Apple Pay for daily spending, does that change affect the card I use for travel and dining as well, or just the everyday spending card?",
+      "expected_answer": "The switch only affects your everyday spending card linked to Apple Pay, which is now the Chase Freedom Unlimited. Your Chase Sapphire Preferred remains your travel and dining card and is not affected by the everyday payment change.",
+      "gold_memory_state": "Everyday payment method target: Apple Pay linked to Chase Freedom Unlimited (current). Travel/dining card: Chase Sapphire Preferred (separate, unaffected). Monthly rent amount via Zelle: $1,850 (separate, unaffected).",
+      "judge_rubric": {
+        "must_include": [
+          "only everyday spending card is affected",
+          "Sapphire Preferred for travel/dining is not changed"
+        ],
+        "acceptable_paraphrases": [
+          "the travel card stays the same",
+          "only the daily Apple Pay card changed"
+        ],
+        "must_not_include": [
+          "Sapphire Preferred is now the everyday card",
+          "both cards changed"
+        ],
+        "harmful_extra": [
+          "saying Sapphire Preferred was also switched or removed",
+          "saying the Discover It is now the everyday card"
+        ],
+        "harmless_extra": [
+          "mentioning the Freedom Unlimited earns 1.5% cashback",
+          "mentioning Sapphire Preferred earns 2x/3x on travel/dining"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model says Sapphire Preferred is the everyday card or that Discover It is the active everyday card.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I actually switched my everyday card last week — I'm now using Apple Pay linked to the Chase Freedom Unlimited instead of the Sapphire Preferred"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The flat 1.5% cashback on everything just makes more sense for my day-to-day spending"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I looked into the Discover thing more and realized a lot of places near me don't accept Discover, so I'm sticking with the Chase Freedom Unlimited for Apple Pay after all"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I have a few different Chase cards in my setup. When I mentioned switching which card is linked to Apple Pay for daily spending, does that change affect the card I use for travel and dining as well, or just the everyday spending card?",
+      "expected_answer": "The switch only affects your everyday spending card linked to Apple Pay, which is now the Chase Freedom Unlimited. Your Chase Sapphire Preferred remains your travel and dining card and is not affected by the everyday payment change.",
+      "gold_memory_state": "Everyday payment method target: Apple Pay linked to Chase Freedom Unlimited (current). Travel/dining card: Chase Sapphire Preferred (separate, unaffected). Monthly rent amount via Zelle: $1,850 (separate, unaffected).",
+      "judge_rubric": {
+        "must_include": [
+          "only everyday spending card is affected",
+          "Sapphire Preferred for travel/dining is not changed"
+        ],
+        "acceptable_paraphrases": [
+          "the travel card stays the same",
+          "only the daily Apple Pay card changed"
+        ],
+        "must_not_include": [
+          "Sapphire Preferred is now the everyday card",
+          "both cards changed"
+        ],
+        "harmful_extra": [
+          "saying Sapphire Preferred was also switched or removed",
+          "saying the Discover It is now the everyday card"
+        ],
+        "harmless_extra": [
+          "mentioning the Freedom Unlimited earns 1.5% cashback",
+          "mentioning Sapphire Preferred earns 2x/3x on travel/dining"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model says Sapphire Preferred is the everyday card or that Discover It is the active everyday card.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I actually switched my everyday card last week — I'm now using Apple Pay linked to the Chase Freedom Unlimited instead of the Sapphire Preferred"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The flat 1.5% cashback on everything just makes more sense for my day-to-day spending"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I looked into the Discover thing more and realized a lot of places near me don't accept Discover, so I'm sticking with the Chase Freedom Unlimited for Apple Pay after all"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to set up a new budgeting app and it asks which card is linked to my Apple Pay for everyday spending. Which of these should I enter?",
+      "candidate_options": [
+        "Apple Pay linked to Chase Freedom Unlimited",
+        "Apple Pay linked to Chase Sapphire Preferred",
+        "Apple Pay linked to Discover It",
+        "Zelle through Chase app"
+      ],
+      "expected_answer": "Apple Pay linked to Chase Freedom Unlimited",
+      "gold_memory_state": "Current everyday payment: Apple Pay linked to Chase Freedom Unlimited. Chase Sapphire Preferred is the former everyday card (now travel/dining only). Discover It was a tentative consideration that was retracted. Zelle through Chase is for rent/peer-to-peer, not everyday purchases.",
+      "judge_rubric": {
+        "must_include": [
+          "Apple Pay linked to Chase Freedom Unlimited"
+        ],
+        "acceptable_paraphrases": [
+          "Chase Freedom Unlimited via Apple Pay"
+        ],
+        "must_not_include": [
+          "Sapphire Preferred as everyday card",
+          "Discover It as everyday card",
+          "Zelle as everyday payment"
+        ],
+        "harmful_extra": [
+          "selecting any option other than Chase Freedom Unlimited"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'Zelle through Chase app' is a real Chase-based payment method the user uses but for a different purpose (rent, not everyday purchases). assistant echo: 'Apple Pay linked to Chase Sapphire Preferred' was mentioned by the assistant as the initial everyday method and echoed in summaries before the switch. 'Apple Pay linked to Discover It' is the tentative/retracted value that was never adopted — tests recency trap.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects Chase Sapphire Preferred (stale original value) or Discover It (tentative, never adopted). Both represent recency or staleness failures.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I actually switched my everyday card last week — I'm now using Apple Pay linked to the Chase Freedom Unlimited instead of the Sapphire Preferred"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I looked into the Discover thing more and realized a lot of places near me don't accept Discover, so I'm sticking with the Chase Freedom Unlimited for Apple Pay after all"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to set up a new budgeting app and it asks which card is linked to my Apple Pay for everyday spending. Which of these should I enter?",
+      "candidate_options": [
+        "Apple Pay linked to Chase Freedom Unlimited",
+        "Apple Pay linked to Chase Sapphire Preferred",
+        "Apple Pay linked to Discover It",
+        "Zelle through Chase app"
+      ],
+      "expected_answer": "Apple Pay linked to Chase Freedom Unlimited",
+      "gold_memory_state": "Current everyday payment: Apple Pay linked to Chase Freedom Unlimited. Chase Sapphire Preferred is the former everyday card (now travel/dining only). Discover It was a tentative consideration that was retracted. Zelle through Chase is for rent/peer-to-peer, not everyday purchases.",
+      "judge_rubric": {
+        "must_include": [
+          "Apple Pay linked to Chase Freedom Unlimited"
+        ],
+        "acceptable_paraphrases": [
+          "Chase Freedom Unlimited via Apple Pay"
+        ],
+        "must_not_include": [
+          "Sapphire Preferred as everyday card",
+          "Discover It as everyday card",
+          "Zelle as everyday payment"
+        ],
+        "harmful_extra": [
+          "selecting any option other than Chase Freedom Unlimited"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 'Zelle through Chase app' is a real Chase-based payment method the user uses but for a different purpose (rent, not everyday purchases). assistant echo: 'Apple Pay linked to Chase Sapphire Preferred' was mentioned by the assistant as the initial everyday method and echoed in summaries before the switch. 'Apple Pay linked to Discover It' is the tentative/retracted value that was never adopted — tests recency trap.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects Chase Sapphire Preferred (stale original value) or Discover It (tentative, never adopted). Both represent recency or staleness failures.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I actually switched my everyday card last week — I'm now using Apple Pay linked to the Chase Freedom Unlimited instead of the Sapphire Preferred"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I looked into the Discover thing more and realized a lot of places near me don't accept Discover, so I'm sticking with the Chase Freedom Unlimited for Apple Pay after all"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I want to estimate my total monthly cash outflow from Chase checking, including rent via Zelle and the variable everyday spending. If my average everyday spending on Apple Pay runs about $600 per month, draft a one-paragraph summary of my total monthly outflow that specifies which card handles the everyday spending and how rent is paid.",
+      "expected_answer": "Your total monthly outflow from Chase checking is approximately $3,187.98. This breaks down as: $2,087.98 in fixed recurring auto-debits (rent of $1,850 via Zelle, utilities $120, T-Mobile $55, Spotify $10.99, iCloud $2.99, gym $49), a $500 manual savings transfer to Marcus on the 15th, and roughly $600 in variable everyday spending charged through Apple Pay linked to your Chase Freedom Unlimited. Rent is paid on the 1st of each month via Zelle through the Chase app, and everyday purchases like groceries, gas, and Amazon orders go through Apple Pay on the Freedom Unlimited card earning 1.5% cashback.",
+      "gold_memory_state": "Everyday payment: Apple Pay linked to Chase Freedom Unlimited (confirmed, current). Monthly rent: $1,850 via Zelle through Chase (confirmed). Fixed auto-debits total: $2,087.98. Marcus savings transfer: $500 on the 15th. Discover It was tentative and retracted. Sapphire Preferred is for travel/dining only.",
+      "judge_rubric": {
+        "must_include": [
+          "Chase Freedom Unlimited as the everyday Apple Pay card",
+          "$1,850 rent via Zelle",
+          "total outflow calculation incorporating fixed bills, savings transfer, and variable spending"
+        ],
+        "acceptable_paraphrases": [
+          "Freedom Unlimited through Apple Pay",
+          "approximately $3,188"
+        ],
+        "must_not_include": [
+          "Chase Sapphire Preferred as the everyday card",
+          "Discover It as the everyday card",
+          "Venmo as a payment method"
+        ],
+        "harmful_extra": [
+          "using Sapphire Preferred or Discover It for everyday spending in the summary",
+          "omitting the Zelle rent payment"
+        ],
+        "harmless_extra": [
+          "mentioning the 4.5% APY on Marcus",
+          "mentioning biweekly pay schedule",
+          "mentioning three-paycheck months"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the summary uses Chase Sapphire Preferred or Discover It as the everyday spending card. Fails if rent amount is wrong.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "application_probe_type": "multi_hop_derivation",
+      "gold_reasoning_chain": [
+        "Fact 1: Fixed recurring auto-debits from Chase checking total $2,087.98 (rent $1,850 via Zelle + utilities $120 + T-Mobile $55 + Spotify $10.99 + iCloud $2.99 + gym $49).",
+        "Fact 2: Monthly rent of $1,850 is paid via Zelle through the Chase app on the 1st.",
+        "Fact 3: Current everyday payment method is Apple Pay linked to Chase Freedom Unlimited.",
+        "Fact 4: A $500 manual savings transfer goes to Marcus on the 15th each month.",
+        "Inference: Total predictable monthly outflow = $2,087.98 (fixed) + $500 (savings) + $600 (variable everyday spending) = $3,187.98.",
+        "Inference: The summary must name Chase Freedom Unlimited as the everyday card and Zelle as the rent payment method, not stale or tentative alternatives."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I actually switched my everyday card last week — I'm now using Apple Pay linked to the Chase Freedom Unlimited instead of the Sapphire Preferred"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I set up Zelle through the Chase app for rent payments — my landlord only takes Zelle or check, and my rent is $1,850 a month"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I looked into the Discover thing more and realized a lot of places near me don't accept Discover, so I'm sticking with the Chase Freedom Unlimited for Apple Pay after all"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I want to estimate my total monthly cash outflow from Chase checking, including rent via Zelle and the variable everyday spending. If my average everyday spending on Apple Pay runs about $600 per month, draft a one-paragraph summary of my total monthly outflow that specifies which card handles the everyday spending and how rent is paid.",
+      "expected_answer": "Your total monthly outflow from Chase checking is approximately $3,187.98. This breaks down as: $2,087.98 in fixed recurring auto-debits (rent of $1,850 via Zelle, utilities $120, T-Mobile $55, Spotify $10.99, iCloud $2.99, gym $49), a $500 manual savings transfer to Marcus on the 15th, and roughly $600 in variable everyday spending charged through Apple Pay linked to your Chase Freedom Unlimited. Rent is paid on the 1st of each month via Zelle through the Chase app, and everyday purchases like groceries, gas, and Amazon orders go through Apple Pay on the Freedom Unlimited card earning 1.5% cashback.",
+      "gold_memory_state": "Everyday payment: Apple Pay linked to Chase Freedom Unlimited (confirmed, current). Monthly rent: $1,850 via Zelle through Chase (confirmed). Fixed auto-debits total: $2,087.98. Marcus savings transfer: $500 on the 15th. Discover It was tentative and retracted. Sapphire Preferred is for travel/dining only.",
+      "judge_rubric": {
+        "must_include": [
+          "Chase Freedom Unlimited as the everyday Apple Pay card",
+          "$1,850 rent via Zelle",
+          "total outflow calculation incorporating fixed bills, savings transfer, and variable spending"
+        ],
+        "acceptable_paraphrases": [
+          "Freedom Unlimited through Apple Pay",
+          "approximately $3,188"
+        ],
+        "must_not_include": [
+          "Chase Sapphire Preferred as the everyday card",
+          "Discover It as the everyday card",
+          "Venmo as a payment method"
+        ],
+        "harmful_extra": [
+          "using Sapphire Preferred or Discover It for everyday spending in the summary",
+          "omitting the Zelle rent payment"
+        ],
+        "harmless_extra": [
+          "mentioning the 4.5% APY on Marcus",
+          "mentioning biweekly pay schedule",
+          "mentioning three-paycheck months"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the summary uses Chase Sapphire Preferred or Discover It as the everyday spending card. Fails if rent amount is wrong.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "application_probe_type": "multi_hop_derivation",
+      "gold_reasoning_chain": [
+        "Fact 1: Fixed recurring auto-debits from Chase checking total $2,087.98 (rent $1,850 via Zelle + utilities $120 + T-Mobile $55 + Spotify $10.99 + iCloud $2.99 + gym $49).",
+        "Fact 2: Monthly rent of $1,850 is paid via Zelle through the Chase app on the 1st.",
+        "Fact 3: Current everyday payment method is Apple Pay linked to Chase Freedom Unlimited.",
+        "Fact 4: A $500 manual savings transfer goes to Marcus on the 15th each month.",
+        "Inference: Total predictable monthly outflow = $2,087.98 (fixed) + $500 (savings) + $600 (variable everyday spending) = $3,187.98.",
+        "Inference: The summary must name Chase Freedom Unlimited as the everyday card and Zelle as the rent payment method, not stale or tentative alternatives."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I actually switched my everyday card last week — I'm now using Apple Pay linked to the Chase Freedom Unlimited instead of the Sapphire Preferred"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I set up Zelle through the Chase app for rent payments — my landlord only takes Zelle or check, and my rent is $1,850 a month"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I looked into the Discover thing more and realized a lot of places near me don't accept Discover, so I'm sticking with the Chase Freedom Unlimited for Apple Pay after all"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1016 @@
+{
+  "target_fact": "User prefers clean, light, and simple flavors in food — a bounded inference from multiple specific food preferences including steamed fish with ginger and scallion, homemade lemon-olive oil dressings, steamed vegetables with low-sodium soy sauce, and not missing heavy sauces.",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I got the formal allergy test results — Class 3 reaction for walnuts and Class 2 for cashews"
+      },
+      "target": {
+        "target_id": "tree_nut_allergy_details",
+        "target_name": "confirmed tree nut allergy specifics (walnuts and cashews)"
+      },
+      "old_value": null,
+      "new_value": "Allergic to tree nuts: walnuts (Class 3 reaction) and cashews (Class 2 reaction), confirmed by allergist Dr. Patel",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I got the formal allergy test results — Class 3 reaction for walnuts and Class 2 for cashews"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Dr. Patel's office on Kensington Rd did the testing back on March 6th"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I've been cooking a lot of steamed fish with ginger and scallion at home lately"
+      },
+      "target": {
+        "target_id": "favorite_home_dish",
+        "target_name": "favorite home-cooked dish"
+      },
+      "old_value": null,
+      "new_value": "Steamed fish with ginger and scallion",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've been cooking a lot of steamed fish with ginger and scallion at home lately"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I've also been making my own salad dressings now — just lemon juice and olive oil mostly"
+      },
+      "target": {
+        "target_id": "homemade_dressing_preference",
+        "target_name": "preferred homemade salad dressing"
+      },
+      "old_value": null,
+      "new_value": "Homemade dressing with lemon juice and olive oil instead of bottled dressings",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I've also been making my own salad dressings now — just lemon juice and olive oil mostly"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "steamed vegetables with a little low-sodium soy sauce taste better to me now than anything covered in cream or gravy"
+      },
+      "target": {
+        "target_id": "no_heavy_sauces",
+        "target_name": "attitude toward heavy sauces vs. light preparations"
+      },
+      "old_value": null,
+      "new_value": "Does not miss rich or heavy sauces; prefers steamed vegetables with low-sodium soy sauce over cream- or gravy-based dishes",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "steamed vegetables with a little low-sodium soy sauce taste better to me now than anything covered in cream or gravy"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "steamed vegetables with a little low-sodium soy sauce taste better to me now than anything covered in cream or gravy"
+      },
+      "target": {
+        "target_id": "overall_flavor_preference",
+        "target_name": "overall food flavor and preparation preference"
+      },
+      "old_value": null,
+      "new_value": "Prefers clean, light, and simple flavors in food — enjoys minimal-ingredient preparations like steamed fish, lemon-olive oil dressings, and steamed vegetables with light soy sauce, and does not miss heavy or rich sauces",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've been cooking a lot of steamed fish with ginger and scallion at home lately"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I've also been making my own salad dressings now — just lemon juice and olive oil mostly"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "steamed vegetables with a little low-sodium soy sauce taste better to me now than anything covered in cream or gravy"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 7,
+        "quote": "my EpiPen expires September 15th and I only have one left since I used the other at that Thai place"
+      },
+      "target": {
+        "target_id": "epipen_expiry",
+        "target_name": "EpiPen expiration date"
+      },
+      "old_value": null,
+      "new_value": "September 15th; only one pen remaining, needs new prescription before then",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "my EpiPen expires September 15th and I only have one left since I used the other at that Thai place"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "My coworker swears by this cashew-free Thai curry paste brand, and she's going to bring me a jar next week so I can try making Thai food at home again"
+      },
+      "target": {
+        "target_id": "planned_thai_cooking_experiment",
+        "target_name": "planned at-home Thai cooking with cashew-free curry paste"
+      },
+      "old_value": null,
+      "new_value": "Plans to try cashew-free Thai curry paste from coworker for home cooking",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My coworker swears by this cashew-free Thai curry paste brand, and she's going to bring me a jar next week so I can try making Thai food at home again"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish allergy details and first food preference clue",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to talk through some of my dietary stuff so you have it on record. I got the formal allergy test results — Class 3 reaction for walnuts and Class 2 for cashews. Dr. Patel's office on Kensington Rd did the testing back on March 6th. I always forget which nut had which class, so I want to make sure this is stored correctly."
+        },
+        {
+          "role": "assistant",
+          "content": "Thank you for sharing those details — I've noted them carefully. So your confirmed tree nut allergies are walnuts with a Class 3 reaction and cashews with a Class 2 reaction, both tested and confirmed by Dr. Patel at the Kensington Rd clinic on March 6th. That's an important distinction to have clear, especially when you're explaining it at restaurants. Class 3 for walnuts indicates a stronger sensitization than the Class 2 for cashews, though both obviously require avoidance. Would you like me to help you draft a quick reference card or note you could keep on your phone for dining out?"
+        },
+        {
+          "role": "user",
+          "content": "That's a good idea, maybe later. I also wanted to mention that around mid-March, Dr. Chen — my GP, not Dr. Patel — told me my blood pressure was borderline high at 138 over 88. She said to cut back on sodium and that if it's still elevated at my June check-up, we'd discuss medication. It was frustrating because it came out of nowhere during a routine visit."
+        },
+        {
+          "role": "assistant",
+          "content": "I can understand how frustrating that must have been — you go in for a routine check and suddenly there's a new concern to deal with. So Dr. Chen, your GP, flagged a blood pressure reading of 138/88 in mid-March and recommended sodium reduction as a first step before considering medication at the June follow-up. That's a reasonable clinical approach since lifestyle modifications can often bring borderline readings back into range. It sounds like you have a clear timeline: between now and June you're focusing on sodium intake. Have you been tracking your sodium or making specific dietary changes since then?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, I've actually been making a lot of changes. I've been cooking a lot of steamed fish with ginger and scallion at home lately. There's something really satisfying about how clean and light the whole dish tastes — just the fish, the aromatics, and a little bit of steam. It's become my go-to weeknight dinner honestly."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a wonderful choice both for flavor and for keeping sodium in check. Steamed fish with ginger and scallion is a classic preparation — the ginger adds warmth and the scallion brings a fresh bite, and neither requires any added salt to taste great. The fact that you genuinely enjoy the clean, light quality of it rather than just tolerating it as a health compromise makes it much more sustainable long-term. It's also a great protein source that's easy on the cardiovascular system. Do you have a particular type of fish you prefer, or do you rotate between whatever looks fresh?"
+        },
+        {
+          "role": "user",
+          "content": "I usually grab whatever white fish is fresh — sea bass or tilapia mostly. Oh, I should also mention that my sister just found out she's lactose intolerant. She got tested around mid-April after months of stomach problems. She's been complaining nonstop because she loves cheese, but at least she can manage it with enzyme pills.\n\nHa, yeah, we joke about that. At least hers is more of an inconvenience than a danger. Mine with the tree nuts is a whole different level — I have to carry an EpiPen everywhere. Anyway, I just wanted to make sure you had all of this down. The allergy details especially, since I always mix up the class numbers."
+        },
+        {
+          "role": "assistant",
+          "content": "Sea bass and tilapia are both excellent choices for steaming — they have a mild flavor that lets the ginger and scallion really come through. As for your sister, lactose intolerance can be a real adjustment, especially for someone who loves cheese. The good news is that lactase enzyme supplements are quite effective and widely available, so she should be able to enjoy most dairy in moderation with those. There are also some naturally lower-lactose cheeses like aged cheddar and Parmesan that she might tolerate well even without the pills. It sounds like dietary changes are a bit of a family theme right now between you and her.\n\nAbsolutely, I have it all recorded. Your tree nut allergies — walnuts at Class 3 and cashews at Class 2, confirmed by Dr. Patel on March 6th at Kensington Rd. Your blood pressure situation with Dr. Chen, the sodium reduction goal, and the June check-up timeline. Your sister's lactose intolerance diagnosed mid-April. And your enjoyment of steamed fish with ginger and scallion as a go-to meal. You're right that yours is in a different category of seriousness compared to your sister's — anaphylaxis risk with tree nuts is no joke. Keeping the EpiPen on hand is essential. Let me know anytime you want to revisit any of these details or need help planning meals around your restrictions."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Deepen food preference evidence, establish EpiPen expiry, and complete reflection clues",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Following up on the cooking stuff — I've also been making my own salad dressings now — just lemon juice and olive oil mostly. The bottled ones are loaded with sodium and I honestly prefer the simpler taste anyway. It's just a little acid, a little fat, maybe some herbs, and it's done."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a great shift, and it aligns perfectly with your sodium reduction goal. Store-bought dressings can easily have 300-400 milligrams of sodium per serving, sometimes more, and they often contain added sugars and preservatives too. A simple lemon and olive oil vinaigrette is not only lower in sodium but also gives you healthy monounsaturated fats from the olive oil and vitamin C from the lemon. The fact that you prefer the simpler taste is key — it means this isn't a sacrifice for you, it's genuinely what you enjoy. Have you been experimenting with different herbs or additions, or do you keep it pretty minimal?"
+        },
+        {
+          "role": "user",
+          "content": "Mostly minimal. Sometimes I'll throw in a little Dijon mustard or some fresh basil, but I like keeping it clean. Speaking of eating out though — I had a scary experience a few weeks ago. Late April or maybe early May, I'm not sure exactly. I ate at a Thai restaurant and had a reaction because there were crushed cashews in the curry paste. My throat tightened up and I had to use my EpiPen for the first time."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds genuinely frightening, and I'm glad you had your EpiPen with you and were able to use it. Cashews in curry paste is one of those hidden allergen situations that catches a lot of people off guard — many Thai curry pastes use ground nuts as a thickener or flavor base, and it's not always listed prominently on menus. Using your EpiPen for the first time must have been a jarring experience on top of the physical reaction itself. Have you been in touch with Dr. Patel about the incident? It might be worth documenting it formally, and it could also be a good time to discuss whether you need any adjustments to your allergy management plan."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, I called Dr. Patel's office the next day and they made a note of it. The whole thing really shook me up — I've been way more cautious about eating out since then. I ask about every ingredient now. But honestly, the home cooking has been a silver lining. I've discovered that steamed vegetables with a little low-sodium soy sauce taste better to me now than anything covered in cream or gravy. I genuinely don't miss heavy food at all."
+        },
+        {
+          "role": "assistant",
+          "content": "It makes complete sense that the experience would make you more vigilant, and honestly that heightened caution could be lifesaving. Asking about every ingredient is exactly the right approach, even if it feels tedious. And what you're describing about your taste preferences is really interesting — it sounds like your palate has genuinely shifted toward lighter, cleaner flavors rather than just tolerating them out of necessity. Steamed vegetables with low-sodium soy sauce, steamed fish with ginger, simple lemon-olive oil dressings — there's a clear pattern of you gravitating toward preparations that let the natural flavors come through without heavy masking. That's a meaningful and sustainable change."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, exactly. I think the sodium restriction forced me to pay attention, and then I realized I actually prefer eating this way. It's not deprivation at all. Oh — and good news on the blood pressure front. My last home reading was 126 over 82, so it's trending down. I don't think I need to keep logging my daily sodium intake anymore; I've internalized the habits.\n\nI hope so. One more important thing — my EpiPen expires September 15th and I only have one left since I used the other at that Thai place. I need to get a new prescription before then. Can you make sure to remember that date? I don't want to let it slip."
+        },
+        {
+          "role": "assistant",
+          "content": "That's excellent progress — 126/82 is solidly back in the normal range, down from 138/88 in March. That's a meaningful improvement in just a couple of months, and it speaks to the real impact of the dietary changes you've been making. The fact that you feel confident enough to stop logging daily sodium intake suggests the habits have become second nature, which is the ultimate goal of any lifestyle modification. You'll still want to keep an eye on it heading into that June check-up with Dr. Chen, but you're in a much stronger position now. She'll likely be pleased with those numbers.\n\nAbsolutely, I've noted that down. Your EpiPen expires September 15th, and you're down to just one pen after using the other during the Thai restaurant incident. Getting a new prescription before that date is critical — you really don't want to be caught without a functioning EpiPen given your confirmed cashew and walnut allergies. I'd suggest reaching out to Dr. Patel's office well in advance, maybe by mid-August at the latest, to allow time for the prescription to be written and filled. Some pharmacies also have availability issues with EpiPens, so earlier is better. Would you like me to remind you about this as we get closer to that window?"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Recency trap with tentative value, adversarial injection, and wrap-up",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Quick update — I've been looking into meal prep services that cater to specific allergies. There's one called NutSafe Kitchen that my coworker recommended. They supposedly label everything with allergen info and they have a tree-nut-free menu. I'm thinking about trying them for lunches at work since packing my own every day is getting tedious."
+        },
+        {
+          "role": "assistant",
+          "content": "NutSafe Kitchen sounds like it could be a good option for you, especially given how careful you need to be with tree nuts. Having a service that specifically labels allergens and offers a tree-nut-free menu would take a lot of the mental load off your daily meal prep. That said, I'd recommend starting cautiously — maybe order a few meals and verify their allergen protocols before committing to a regular subscription. You might also want to ask whether they process any tree nuts in the same facility, since cross-contamination is a real concern even with dedicated menus. Would you like help drafting a list of questions to ask them before you sign up?"
+        },
+        {
+          "role": "user",
+          "content": "Good thinking. I'll ask about cross-contamination for sure. By the way, I was chatting with my coworker Jenna about her own food restrictions and she mentioned she has a peanut allergy — Class 4 reaction actually, which is pretty severe. She said her allergist at the Broadmoor Ave clinic prescribed her a double pack of EpiPens right away."
+        },
+        {
+          "role": "assistant",
+          "content": "Jenna's Class 4 peanut allergy is indeed quite severe — that's a high level of sensitization. It makes sense that her allergist would prescribe a double pack immediately given the severity. The Broadmoor Ave clinic she goes to — that's actually the same street where your dentist is, right? Small world. It's interesting that you and Jenna both deal with nut allergies at work; having someone who understands the vigilance required can actually be really helpful in a workplace setting. You can look out for each other when there are shared meals or office snacks. Does your office have any allergen policies for communal food?"
+        },
+        {
+          "role": "user",
+          "content": "My coworker swears by this cashew-free Thai curry paste brand, and she's going to bring me a jar next week so I can try making Thai food at home again. She says it uses sunflower seed butter instead of cashews. I'm actually really excited about it — I've missed Thai curries since that restaurant incident."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a wonderful find! Sunflower seed butter is a common and effective substitute for cashews in curry pastes — it provides a similar creaminess and body without the allergen risk. Making Thai curry at home with a verified cashew-free paste would give you complete control over the ingredients, which is exactly the kind of safety net you need after that scary experience. When you get the jar, I'd still suggest checking the full ingredient list and any facility warnings, just to be thorough. But the idea of being able to enjoy Thai food again in a safe setting sounds like a real win. It fits right in with your home cooking approach too."
+        },
+        {
+          "role": "user",
+          "content": "Totally. I think between the steamed fish, the homemade dressings, the steamed veggies, and now potentially Thai curries, I've got a pretty solid rotation going. It's funny — six months ago I would have said I'd hate eating this way, but I genuinely enjoy it. The lighter flavors just taste better to me now.\n\nExactly. And honestly, the blood pressure improvement proves it's working on the health side too. I feel better physically and I enjoy what I eat more. Win-win. Anyway, thanks for keeping track of all this for me — the allergy details, the EpiPen date, the food preferences. It really helps to have it all in one place."
+        },
+        {
+          "role": "assistant",
+          "content": "It really is a remarkable shift, and it sounds completely genuine rather than forced. Looking at the pattern of what you enjoy now — the steamed fish with ginger and scallion, the lemon-olive oil dressings, steamed vegetables with light soy sauce, and now potentially a clean Thai curry — there's a consistent thread of appreciating clean, unmasked flavors where the actual ingredients shine through. That's a real palate evolution, and the fact that it happened organically through your sodium reduction and allergy management makes it even more sustainable. You're not following a restrictive diet; you've discovered what you actually prefer. That's a much stronger foundation than willpower alone.\n\nYou're very welcome — it's genuinely helpful to have all of this documented together. Your tree nut allergies with the specific class reactions, the EpiPen expiration on September 15th, your blood pressure progress from 138/88 down to 126/82, and your clear preference for clean and light cooking styles. It all paints a coherent picture of someone who's turned health challenges into positive lifestyle changes. I'll make sure to flag the EpiPen renewal as we approach mid-August, and if you want to revisit any of these details — whether for a restaurant visit, a doctor's appointment, or meal planning — just let me know. You've built a really solid foundation here."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations, I've mentioned several things about how I like to cook and eat at home. Can you summarize the specific food experiences and preferences I've shared that point toward a common theme in my taste?",
+      "expected_answer": "You shared that you've been cooking steamed fish with ginger and scallion as your go-to weeknight dinner and enjoy its clean, light taste. You started making homemade salad dressings with just lemon juice and olive oil, preferring the simpler flavor over bottled dressings. You also said that steamed vegetables with a little low-sodium soy sauce taste better to you now than anything covered in cream or gravy, and that you genuinely don't miss heavy food at all.",
+      "gold_memory_state": "Three confirmed food preference facts are stored: (1) favorite home dish is steamed fish with ginger and scallion, (2) homemade dressing with lemon juice and olive oil, (3) prefers steamed vegetables with low-sodium soy sauce over cream/gravy dishes. Together these support the reflected inference that the user prefers clean, light, and simple flavors.",
+      "judge_rubric": {
+        "must_include": [
+          "steamed fish with ginger and scallion",
+          "lemon juice and olive oil dressing",
+          "steamed vegetables with low-sodium soy sauce",
+          "does not miss heavy or rich sauces"
+        ],
+        "acceptable_paraphrases": [
+          "homemade dressing",
+          "light soy sauce",
+          "no cream or gravy"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the user also confirmed adopting a cashew-free Thai curry paste as an established preference"
+        ],
+        "harmless_extra": [
+          "mentioning that sodium reduction motivated these changes",
+          "mentioning blood pressure improvement"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the summary includes the tentative cashew-free Thai curry paste plan as an established confirmed preference rather than a future plan.",
+        "reflection_recall": "Fails if any of the three confirmed food preference facts (steamed fish, lemon-olive oil dressing, steamed vegetables with light soy sauce) are omitted.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've been cooking a lot of steamed fish with ginger and scallion at home lately"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I've also been making my own salad dressings now — just lemon juice and olive oil mostly"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "steamed vegetables with a little low-sodium soy sauce taste better to me now than anything covered in cream or gravy"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations, I've mentioned several things about how I like to cook and eat at home. Can you summarize the specific food experiences and preferences I've shared that point toward a common theme in my taste?",
+      "expected_answer": "You shared that you've been cooking steamed fish with ginger and scallion as your go-to weeknight dinner and enjoy its clean, light taste. You started making homemade salad dressings with just lemon juice and olive oil, preferring the simpler flavor over bottled dressings. You also said that steamed vegetables with a little low-sodium soy sauce taste better to you now than anything covered in cream or gravy, and that you genuinely don't miss heavy food at all.",
+      "gold_memory_state": "Three confirmed food preference facts are stored: (1) favorite home dish is steamed fish with ginger and scallion, (2) homemade dressing with lemon juice and olive oil, (3) prefers steamed vegetables with low-sodium soy sauce over cream/gravy dishes. Together these support the reflected inference that the user prefers clean, light, and simple flavors.",
+      "judge_rubric": {
+        "must_include": [
+          "steamed fish with ginger and scallion",
+          "lemon juice and olive oil dressing",
+          "steamed vegetables with low-sodium soy sauce",
+          "does not miss heavy or rich sauces"
+        ],
+        "acceptable_paraphrases": [
+          "homemade dressing",
+          "light soy sauce",
+          "no cream or gravy"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the user also confirmed adopting a cashew-free Thai curry paste as an established preference"
+        ],
+        "harmless_extra": [
+          "mentioning that sodium reduction motivated these changes",
+          "mentioning blood pressure improvement"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the summary includes the tentative cashew-free Thai curry paste plan as an established confirmed preference rather than a future plan.",
+        "reflection_recall": "Fails if any of the three confirmed food preference facts (steamed fish, lemon-olive oil dressing, steamed vegetables with light soy sauce) are omitted.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've been cooking a lot of steamed fish with ginger and scallion at home lately"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I've also been making my own salad dressings now — just lemon juice and olive oil mostly"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "steamed vegetables with a little low-sodium soy sauce taste better to me now than anything covered in cream or gravy"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've shared various food-related details — specific dishes I cook, allergy information, and general attitudes about eating. If I asked you to characterize my overall cooking and eating style as a single conclusion, which specific experiences support that conclusion, and which food-related details I've shared are separate concerns that shouldn't be folded into it?",
+      "expected_answer": "The overall conclusion about your cooking and eating style — a preference for clean, light, and simple flavors — is supported by three experiences: steamed fish with ginger and scallion, homemade lemon-olive oil dressings, and steamed vegetables with low-sodium soy sauce over heavy sauces. Your tree nut allergy details (walnuts Class 3, cashews Class 2), EpiPen expiration, and the tentative plan to try cashew-free Thai curry paste are separate food-related concerns and should not be merged into this flavor-preference conclusion.",
+      "gold_memory_state": "The reflected target 'overall food flavor and preparation preference' is bounded to the three confirmed food-preparation preferences. Tree nut allergy specifics, EpiPen details, and the tentative Thai curry paste plan are separate targets.",
+      "judge_rubric": {
+        "must_include": [
+          "steamed fish with ginger and scallion",
+          "lemon-olive oil dressing",
+          "steamed vegetables with low-sodium soy sauce",
+          "clean or light or simple flavors"
+        ],
+        "acceptable_paraphrases": [
+          "minimal-ingredient cooking",
+          "light preparations"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "treating tree nut allergy class details as evidence for the flavor preference conclusion",
+          "treating the tentative cashew-free curry paste plan as a confirmed part of the flavor preference",
+          "merging EpiPen expiration into the flavor preference"
+        ],
+        "harmless_extra": [
+          "noting that sodium reduction was the initial motivation",
+          "mentioning the user doesn't miss heavy food"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model includes allergy details or EpiPen data as evidence for the flavor-preference conclusion, or if it treats the tentative Thai curry paste plan as a confirmed component of the preference.",
+        "reflection_recall": "Fails if any of the three supporting food experiences are omitted from the conclusion.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've been cooking a lot of steamed fish with ginger and scallion at home lately"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I've also been making my own salad dressings now — just lemon juice and olive oil mostly"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "steamed vegetables with a little low-sodium soy sauce taste better to me now than anything covered in cream or gravy"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've shared various food-related details — specific dishes I cook, allergy information, and general attitudes about eating. If I asked you to characterize my overall cooking and eating style as a single conclusion, which specific experiences support that conclusion, and which food-related details I've shared are separate concerns that shouldn't be folded into it?",
+      "expected_answer": "The overall conclusion about your cooking and eating style — a preference for clean, light, and simple flavors — is supported by three experiences: steamed fish with ginger and scallion, homemade lemon-olive oil dressings, and steamed vegetables with low-sodium soy sauce over heavy sauces. Your tree nut allergy details (walnuts Class 3, cashews Class 2), EpiPen expiration, and the tentative plan to try cashew-free Thai curry paste are separate food-related concerns and should not be merged into this flavor-preference conclusion.",
+      "gold_memory_state": "The reflected target 'overall food flavor and preparation preference' is bounded to the three confirmed food-preparation preferences. Tree nut allergy specifics, EpiPen details, and the tentative Thai curry paste plan are separate targets.",
+      "judge_rubric": {
+        "must_include": [
+          "steamed fish with ginger and scallion",
+          "lemon-olive oil dressing",
+          "steamed vegetables with low-sodium soy sauce",
+          "clean or light or simple flavors"
+        ],
+        "acceptable_paraphrases": [
+          "minimal-ingredient cooking",
+          "light preparations"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "treating tree nut allergy class details as evidence for the flavor preference conclusion",
+          "treating the tentative cashew-free curry paste plan as a confirmed part of the flavor preference",
+          "merging EpiPen expiration into the flavor preference"
+        ],
+        "harmless_extra": [
+          "noting that sodium reduction was the initial motivation",
+          "mentioning the user doesn't miss heavy food"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model includes allergy details or EpiPen data as evidence for the flavor-preference conclusion, or if it treats the tentative Thai curry paste plan as a confirmed component of the preference.",
+        "reflection_recall": "Fails if any of the three supporting food experiences are omitted from the conclusion.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've been cooking a lot of steamed fish with ginger and scallion at home lately"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I've also been making my own salad dressings now — just lemon juice and olive oil mostly"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "steamed vegetables with a little low-sodium soy sauce taste better to me now than anything covered in cream or gravy"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe what you can confidently say about my food flavor preferences and where the boundary is — what kinds of conclusions about my eating habits go beyond what I've actually told you?",
+      "expected_answer": "You prefer clean, light, and simple flavors: you enjoy steamed fish with ginger and scallion, homemade lemon-olive oil dressings, and steamed vegetables with low-sodium soy sauce, and you don't miss heavy cream- or gravy-based dishes. However, this preference is specific to cooking style and flavor intensity — it would be an overgeneralization to conclude that you avoid all cuisines that can be rich (like Thai food, which you're excited to try again), that you never eat out, that you dislike all seasoning or condiments, or that your preference extends to every food category beyond home cooking.",
+      "gold_memory_state": "Supported inference: user prefers clean, light, simple flavors in food based on three confirmed preferences (steamed fish, lemon-olive oil dressing, steamed vegetables with light soy sauce) and stated lack of interest in heavy sauces. Unsupported overgeneralizations: (a) user avoids all rich cuisines — contradicted by excitement about Thai curry; (b) user never eats out — contradicted by restaurant history; (c) user avoids all condiments or seasonings — contradicted by use of ginger, scallion, soy sauce, Dijon mustard, basil; (d) preference applies universally beyond home cooking context.",
+      "judge_rubric": {
+        "must_include": [
+          "clean or light or simple flavors",
+          "steamed fish",
+          "lemon-olive oil dressing",
+          "steamed vegetables",
+          "does not miss heavy sauces",
+          "boundary or limit of the conclusion"
+        ],
+        "acceptable_paraphrases": [
+          "minimal-ingredient preparations",
+          "unmasked natural flavors",
+          "not a blanket avoidance of all rich food"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming user avoids all rich cuisines",
+          "claiming user never eats at restaurants",
+          "claiming user avoids all condiments",
+          "treating the tentative cashew-free curry paste as a confirmed established preference"
+        ],
+        "harmless_extra": [
+          "mentioning sodium reduction as context",
+          "mentioning that the user is excited to try Thai food at home again"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative cashew-free Thai curry paste plan as a confirmed preference rather than a tentative future plan.",
+        "reflection_precision": "Fails if the model overgeneralizes the preference to all cuisines, all dining contexts, or all condiments without stating the boundary.",
+        "reflection_recall": "Fails if the model omits any of the three confirmed food preferences or the stated attitude toward heavy sauces.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've been cooking a lot of steamed fish with ginger and scallion at home lately"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I've also been making my own salad dressings now — just lemon juice and olive oil mostly"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "steamed vegetables with a little low-sodium soy sauce taste better to me now than anything covered in cream or gravy"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My coworker swears by this cashew-free Thai curry paste brand, and she's going to bring me a jar next week so I can try making Thai food at home again"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Describe what you can confidently say about my food flavor preferences and where the boundary is — what kinds of conclusions about my eating habits go beyond what I've actually told you?",
+      "expected_answer": "You prefer clean, light, and simple flavors: you enjoy steamed fish with ginger and scallion, homemade lemon-olive oil dressings, and steamed vegetables with low-sodium soy sauce, and you don't miss heavy cream- or gravy-based dishes. However, this preference is specific to cooking style and flavor intensity — it would be an overgeneralization to conclude that you avoid all cuisines that can be rich (like Thai food, which you're excited to try again), that you never eat out, that you dislike all seasoning or condiments, or that your preference extends to every food category beyond home cooking.",
+      "gold_memory_state": "Supported inference: user prefers clean, light, simple flavors in food based on three confirmed preferences (steamed fish, lemon-olive oil dressing, steamed vegetables with light soy sauce) and stated lack of interest in heavy sauces. Unsupported overgeneralizations: (a) user avoids all rich cuisines — contradicted by excitement about Thai curry; (b) user never eats out — contradicted by restaurant history; (c) user avoids all condiments or seasonings — contradicted by use of ginger, scallion, soy sauce, Dijon mustard, basil; (d) preference applies universally beyond home cooking context.",
+      "judge_rubric": {
+        "must_include": [
+          "clean or light or simple flavors",
+          "steamed fish",
+          "lemon-olive oil dressing",
+          "steamed vegetables",
+          "does not miss heavy sauces",
+          "boundary or limit of the conclusion"
+        ],
+        "acceptable_paraphrases": [
+          "minimal-ingredient preparations",
+          "unmasked natural flavors",
+          "not a blanket avoidance of all rich food"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming user avoids all rich cuisines",
+          "claiming user never eats at restaurants",
+          "claiming user avoids all condiments",
+          "treating the tentative cashew-free curry paste as a confirmed established preference"
+        ],
+        "harmless_extra": [
+          "mentioning sodium reduction as context",
+          "mentioning that the user is excited to try Thai food at home again"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative cashew-free Thai curry paste plan as a confirmed preference rather than a tentative future plan.",
+        "reflection_precision": "Fails if the model overgeneralizes the preference to all cuisines, all dining contexts, or all condiments without stating the boundary.",
+        "reflection_recall": "Fails if the model omits any of the three confirmed food preferences or the stated attitude toward heavy sauces.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've been cooking a lot of steamed fish with ginger and scallion at home lately"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I've also been making my own salad dressings now — just lemon juice and olive oil mostly"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "steamed vegetables with a little low-sodium soy sauce taste better to me now than anything covered in cream or gravy"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My coworker swears by this cashew-free Thai curry paste brand, and she's going to bring me a jar next week so I can try making Thai food at home again"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best describes the overall pattern in my food preferences based on what I've shared?",
+      "candidate_options": [
+        "Prefers clean, light, and simple flavors — enjoys minimal-ingredient preparations like steamed fish, lemon-olive oil dressings, and steamed vegetables with light soy sauce, and does not miss heavy sauces",
+        "Strictly avoids all rich, spicy, and complex cuisines including Thai food, and eats only steamed or raw preparations",
+        "Is transitioning to a fully plant-based diet focused on steamed vegetables and salads with homemade dressings",
+        "Enjoys a wide variety of cooking styles but is temporarily eating lighter due to medical sodium restrictions"
+      ],
+      "expected_answer": "Prefers clean, light, and simple flavors — enjoys minimal-ingredient preparations like steamed fish, lemon-olive oil dressings, and steamed vegetables with light soy sauce, and does not miss heavy sauces",
+      "distractor_rationale": "same-value-different-target: Option 4 ('temporarily eating lighter due to medical sodium restrictions') borrows the sodium-reduction context from the blood pressure target and reframes the preference as purely medical and temporary, rather than a genuine taste preference the user has embraced. assistant echo: Option 2 ('strictly avoids all rich, spicy, and complex cuisines including Thai food') overgeneralizes the assistant's own summary language about 'lighter, cleaner flavors' into a blanket avoidance that contradicts the user's excitement about trying Thai curry again. Option 3 is a plausible neighbor distractor that mischaracterizes the preference as plant-based when the user's go-to dish is steamed fish.",
+      "gold_memory_state": "The reflected inference is: user prefers clean, light, simple flavors based on three confirmed food preferences and stated disinterest in heavy sauces. The user is not strictly avoiding all rich cuisines, is not transitioning to plant-based eating, and the preference is genuine rather than purely a temporary medical accommodation.",
+      "judge_rubric": {
+        "must_include": [
+          "clean, light, and simple flavors",
+          "steamed fish",
+          "lemon-olive oil dressings",
+          "steamed vegetables",
+          "does not miss heavy sauces"
+        ],
+        "acceptable_paraphrases": [
+          "minimal-ingredient preparations",
+          "light soy sauce"
+        ],
+        "must_not_include": [
+          "strictly avoids all rich cuisines",
+          "plant-based diet",
+          "temporarily eating lighter"
+        ],
+        "harmful_extra": [
+          "selecting the strict-avoidance option",
+          "selecting the plant-based option",
+          "selecting the temporary-medical option"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the 'temporarily eating lighter due to medical sodium restrictions' option, which conflates the blood pressure target with the flavor preference.",
+        "reflection_precision": "Fails if the model selects the strict-avoidance option, which overgeneralizes beyond the supported inference.",
+        "reflection_recall": "Fails if the model selects the plant-based option, which omits the fish preference.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've been cooking a lot of steamed fish with ginger and scallion at home lately"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I've also been making my own salad dressings now — just lemon juice and olive oil mostly"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "steamed vegetables with a little low-sodium soy sauce taste better to me now than anything covered in cream or gravy"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best describes the overall pattern in my food preferences based on what I've shared?",
+      "candidate_options": [
+        "Prefers clean, light, and simple flavors — enjoys minimal-ingredient preparations like steamed fish, lemon-olive oil dressings, and steamed vegetables with light soy sauce, and does not miss heavy sauces",
+        "Strictly avoids all rich, spicy, and complex cuisines including Thai food, and eats only steamed or raw preparations",
+        "Is transitioning to a fully plant-based diet focused on steamed vegetables and salads with homemade dressings",
+        "Enjoys a wide variety of cooking styles but is temporarily eating lighter due to medical sodium restrictions"
+      ],
+      "expected_answer": "Prefers clean, light, and simple flavors — enjoys minimal-ingredient preparations like steamed fish, lemon-olive oil dressings, and steamed vegetables with light soy sauce, and does not miss heavy sauces",
+      "distractor_rationale": "same-value-different-target: Option 4 ('temporarily eating lighter due to medical sodium restrictions') borrows the sodium-reduction context from the blood pressure target and reframes the preference as purely medical and temporary, rather than a genuine taste preference the user has embraced. assistant echo: Option 2 ('strictly avoids all rich, spicy, and complex cuisines including Thai food') overgeneralizes the assistant's own summary language about 'lighter, cleaner flavors' into a blanket avoidance that contradicts the user's excitement about trying Thai curry again. Option 3 is a plausible neighbor distractor that mischaracterizes the preference as plant-based when the user's go-to dish is steamed fish.",
+      "gold_memory_state": "The reflected inference is: user prefers clean, light, simple flavors based on three confirmed food preferences and stated disinterest in heavy sauces. The user is not strictly avoiding all rich cuisines, is not transitioning to plant-based eating, and the preference is genuine rather than purely a temporary medical accommodation.",
+      "judge_rubric": {
+        "must_include": [
+          "clean, light, and simple flavors",
+          "steamed fish",
+          "lemon-olive oil dressings",
+          "steamed vegetables",
+          "does not miss heavy sauces"
+        ],
+        "acceptable_paraphrases": [
+          "minimal-ingredient preparations",
+          "light soy sauce"
+        ],
+        "must_not_include": [
+          "strictly avoids all rich cuisines",
+          "plant-based diet",
+          "temporarily eating lighter"
+        ],
+        "harmful_extra": [
+          "selecting the strict-avoidance option",
+          "selecting the plant-based option",
+          "selecting the temporary-medical option"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects the 'temporarily eating lighter due to medical sodium restrictions' option, which conflates the blood pressure target with the flavor preference.",
+        "reflection_precision": "Fails if the model selects the strict-avoidance option, which overgeneralizes beyond the supported inference.",
+        "reflection_recall": "Fails if the model selects the plant-based option, which omits the fish preference.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've been cooking a lot of steamed fish with ginger and scallion at home lately"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I've also been making my own salad dressings now — just lemon juice and olive oil mostly"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "steamed vegetables with a little low-sodium soy sauce taste better to me now than anything covered in cream or gravy"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm hosting a small dinner party next Saturday and want to cook something that fits my taste while being safe for me to eat. I'd also like to serve a salad with dressing. Can you suggest a menu plan with a main dish, a side, and a dressing, and explain why each choice works given everything you know about my dietary situation?",
+      "expected_answer": "Main dish: Steamed white fish (like sea bass or tilapia) with ginger and scallion — this matches your go-to preparation, uses clean and light flavors, and avoids any tree nut allergens. Side: Steamed vegetables seasoned with a little low-sodium soy sauce — this aligns with your preference for light preparations over cream or gravy, and keeps sodium low. Dressing: Homemade lemon juice and olive oil vinaigrette, optionally with fresh herbs — this matches your preferred simple dressing and avoids the high sodium of bottled dressings. All three choices are tree-nut-free (no walnuts or cashews), support your preference for clean, light, simple flavors, and are consistent with your sodium-reduction approach. The cashew-free Thai curry paste your coworker plans to bring should not be included since you haven't tried it yet.",
+      "gold_memory_state": "Confirmed facts used: (1) favorite home dish is steamed fish with ginger and scallion, (2) homemade dressing with lemon juice and olive oil, (3) prefers steamed vegetables with low-sodium soy sauce over cream/gravy, (4) tree nut allergies — walnuts (Class 3) and cashews (Class 2), (5) reflected preference for clean, light, simple flavors. Tentative fact not to be treated as confirmed: cashew-free Thai curry paste plan.",
+      "judge_rubric": {
+        "must_include": [
+          "steamed fish with ginger and scallion or similar light fish preparation",
+          "steamed vegetables with low-sodium soy sauce",
+          "homemade lemon-olive oil dressing",
+          "tree nut safety",
+          "clean or light or simple flavor rationale"
+        ],
+        "acceptable_paraphrases": [
+          "white fish",
+          "sea bass or tilapia",
+          "fresh herb additions to dressing"
+        ],
+        "must_not_include": [
+          "cashew-free Thai curry paste as a confirmed menu item"
+        ],
+        "harmful_extra": [
+          "including walnuts or cashews in any dish",
+          "recommending cream-based or gravy-based dishes",
+          "treating the tentative Thai curry paste as already available and tested"
+        ],
+        "harmless_extra": [
+          "mentioning the blood pressure context as additional reason for low sodium",
+          "suggesting the user could try Thai curry in the future once the paste is obtained and verified"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model recommends the cashew-free Thai curry paste as a confirmed menu item when it is still tentative and untested.",
+        "reflection_precision": "Fails if the menu recommendations do not align with the clean, light, simple flavor preference or include heavy/rich preparations.",
+        "reflection_recall": "Fails if the model omits the tree nut allergy constraint or any of the three confirmed food preferences when constructing the menu.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User's favorite home-cooked dish is steamed fish with ginger and scallion, typically using sea bass or tilapia.",
+        "Fact 2: User makes homemade salad dressing with lemon juice and olive oil, preferring it over bottled dressings.",
+        "Fact 3: User prefers steamed vegetables with low-sodium soy sauce over cream- or gravy-based dishes and does not miss heavy food.",
+        "Fact 4: User has confirmed tree nut allergies — walnuts (Class 3) and cashews (Class 2).",
+        "Fact 5: User's reflected overall preference is for clean, light, and simple flavors in food.",
+        "Inference: A dinner menu must satisfy both the allergen constraint (no walnuts or cashews) and the flavor preference (clean, light, simple), so each dish should use minimal ingredients and avoid heavy sauces while being tree-nut-free.",
+        "Inference: The tentative cashew-free Thai curry paste has not been obtained or tested yet, so it cannot be relied upon for a menu this Saturday.",
+        "Derived menu: Steamed fish with ginger and scallion (main), steamed vegetables with low-sodium soy sauce (side), homemade lemon-olive oil vinaigrette (dressing) — all tree-nut-free and aligned with the confirmed clean/light/simple preference."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I got the formal allergy test results — Class 3 reaction for walnuts and Class 2 for cashews"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've been cooking a lot of steamed fish with ginger and scallion at home lately"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I've also been making my own salad dressings now — just lemon juice and olive oil mostly"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "steamed vegetables with a little low-sodium soy sauce taste better to me now than anything covered in cream or gravy"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My coworker swears by this cashew-free Thai curry paste brand, and she's going to bring me a jar next week so I can try making Thai food at home again"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm hosting a small dinner party next Saturday and want to cook something that fits my taste while being safe for me to eat. I'd also like to serve a salad with dressing. Can you suggest a menu plan with a main dish, a side, and a dressing, and explain why each choice works given everything you know about my dietary situation?",
+      "expected_answer": "Main dish: Steamed white fish (like sea bass or tilapia) with ginger and scallion — this matches your go-to preparation, uses clean and light flavors, and avoids any tree nut allergens. Side: Steamed vegetables seasoned with a little low-sodium soy sauce — this aligns with your preference for light preparations over cream or gravy, and keeps sodium low. Dressing: Homemade lemon juice and olive oil vinaigrette, optionally with fresh herbs — this matches your preferred simple dressing and avoids the high sodium of bottled dressings. All three choices are tree-nut-free (no walnuts or cashews), support your preference for clean, light, simple flavors, and are consistent with your sodium-reduction approach. The cashew-free Thai curry paste your coworker plans to bring should not be included since you haven't tried it yet.",
+      "gold_memory_state": "Confirmed facts used: (1) favorite home dish is steamed fish with ginger and scallion, (2) homemade dressing with lemon juice and olive oil, (3) prefers steamed vegetables with low-sodium soy sauce over cream/gravy, (4) tree nut allergies — walnuts (Class 3) and cashews (Class 2), (5) reflected preference for clean, light, simple flavors. Tentative fact not to be treated as confirmed: cashew-free Thai curry paste plan.",
+      "judge_rubric": {
+        "must_include": [
+          "steamed fish with ginger and scallion or similar light fish preparation",
+          "steamed vegetables with low-sodium soy sauce",
+          "homemade lemon-olive oil dressing",
+          "tree nut safety",
+          "clean or light or simple flavor rationale"
+        ],
+        "acceptable_paraphrases": [
+          "white fish",
+          "sea bass or tilapia",
+          "fresh herb additions to dressing"
+        ],
+        "must_not_include": [
+          "cashew-free Thai curry paste as a confirmed menu item"
+        ],
+        "harmful_extra": [
+          "including walnuts or cashews in any dish",
+          "recommending cream-based or gravy-based dishes",
+          "treating the tentative Thai curry paste as already available and tested"
+        ],
+        "harmless_extra": [
+          "mentioning the blood pressure context as additional reason for low sodium",
+          "suggesting the user could try Thai curry in the future once the paste is obtained and verified"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model recommends the cashew-free Thai curry paste as a confirmed menu item when it is still tentative and untested.",
+        "reflection_precision": "Fails if the menu recommendations do not align with the clean, light, simple flavor preference or include heavy/rich preparations.",
+        "reflection_recall": "Fails if the model omits the tree nut allergy constraint or any of the three confirmed food preferences when constructing the menu.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User's favorite home-cooked dish is steamed fish with ginger and scallion, typically using sea bass or tilapia.",
+        "Fact 2: User makes homemade salad dressing with lemon juice and olive oil, preferring it over bottled dressings.",
+        "Fact 3: User prefers steamed vegetables with low-sodium soy sauce over cream- or gravy-based dishes and does not miss heavy food.",
+        "Fact 4: User has confirmed tree nut allergies — walnuts (Class 3) and cashews (Class 2).",
+        "Fact 5: User's reflected overall preference is for clean, light, and simple flavors in food.",
+        "Inference: A dinner menu must satisfy both the allergen constraint (no walnuts or cashews) and the flavor preference (clean, light, simple), so each dish should use minimal ingredients and avoid heavy sauces while being tree-nut-free.",
+        "Inference: The tentative cashew-free Thai curry paste has not been obtained or tested yet, so it cannot be relied upon for a menu this Saturday.",
+        "Derived menu: Steamed fish with ginger and scallion (main), steamed vegetables with low-sodium soy sauce (side), homemade lemon-olive oil vinaigrette (dressing) — all tree-nut-free and aligned with the confirmed clean/light/simple preference."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I got the formal allergy test results — Class 3 reaction for walnuts and Class 2 for cashews"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I've been cooking a lot of steamed fish with ginger and scallion at home lately"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I've also been making my own salad dressings now — just lemon juice and olive oil mostly"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "steamed vegetables with a little low-sodium soy sauce taste better to me now than anything covered in cream or gravy"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My coworker swears by this cashew-free Thai curry paste brand, and she's going to bring me a jar next week so I can try making Thai food at home again"
+        }
+      ]
+    }
+  ]
+}

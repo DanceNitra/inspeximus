@@ -1,0 +1,1100 @@
+{
+  "target_fact": "Marital status and related personal facts about the user's marriage, anniversary trip, and family relationships",
+  "operation_type": "Remember",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 3,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": true,
+      "never_stored_target": "wedding venue capacity"
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "My wife Lauren and I got married on June 14, 2019. Civil ceremony at the courthouse in Portland."
+      },
+      "target": {
+        "target_id": "wedding_date",
+        "target_name": "user's wedding date"
+      },
+      "old_value": null,
+      "new_value": "June 14, 2019",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My wife Lauren and I got married on June 14, 2019. Civil ceremony at the courthouse in Portland."
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "Lauren's sister Min-ji just got engaged to her boyfriend David. They've been together about a year and a half."
+      },
+      "target": {
+        "target_id": "minji_engagement",
+        "target_name": "Lauren's sister Min-ji's engagement to David"
+      },
+      "old_value": null,
+      "new_value": "Min-ji (Lauren's sister) is engaged to David; they have been together about a year and a half",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Lauren's sister Min-ji just got engaged to her boyfriend David. They've been together about a year and a half."
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I booked us a weekend trip to Cannon Beach for our anniversary in June. Got a cabin at the Surfsand Resort."
+      },
+      "target": {
+        "target_id": "anniversary_trip_destination",
+        "target_name": "anniversary trip destination and accommodation"
+      },
+      "old_value": null,
+      "new_value": "Cannon Beach, cabin at the Surfsand Resort",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I booked us a weekend trip to Cannon Beach for our anniversary in June. Got a cabin at the Surfsand Resort."
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "We moved into our current two-bedroom apartment in the Hawthorne district on March 2nd this year."
+      },
+      "target": {
+        "target_id": "current_apartment_move_in",
+        "target_name": "move-in date for current Hawthorne apartment"
+      },
+      "old_value": null,
+      "new_value": "March 2nd this year",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "We moved into our current two-bedroom apartment in the Hawthorne district on March 2nd this year."
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "our lease on the Hawthorne place is twelve months from the move-in date."
+      },
+      "target": {
+        "target_id": "hawthorne_lease_duration",
+        "target_name": "Hawthorne apartment lease duration"
+      },
+      "old_value": null,
+      "new_value": "12 months from move-in date",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "our lease on the Hawthorne place is twelve months from the move-in date."
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "The property management company requires sixty days' written notice before the lease ends if we want to renew or move out."
+      },
+      "target": {
+        "target_id": "hawthorne_notice_period",
+        "target_name": "Hawthorne apartment lease notice period"
+      },
+      "old_value": null,
+      "new_value": "60 days written notice before lease end for renewal or move-out",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "The property management company requires sixty days' written notice before the lease ends if we want to renew or move out."
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 7,
+        "quote": "Lauren wants a Basenji. She brings it up every couple of weeks and I told her we should wait until after summer."
+      },
+      "target": {
+        "target_id": "dog_breed_preference",
+        "target_name": "Lauren's preferred dog breed"
+      },
+      "old_value": null,
+      "new_value": "Basenji; plan to wait until after summer",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Lauren wants a Basenji. She brings it up every couple of weeks and I told her we should wait until after summer."
+        }
+      ]
+    },
+    {
+      "operation_id": "op8",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 1,
+        "quote": "Our friend Tomás just finalized his divorce last week. He and his ex-wife Andrea had been separated since around January."
+      },
+      "target": {
+        "target_id": "tomas_divorce",
+        "target_name": "friend Tomás's divorce status"
+      },
+      "old_value": null,
+      "new_value": "Tomás finalized divorce last week; ex-wife Andrea; separated since around January",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "Our friend Tomás just finalized his divorce last week. He and his ex-wife Andrea had been separated since around January."
+        }
+      ]
+    },
+    {
+      "operation_id": "op9",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 7,
+        "quote": "Our anniversary this year will be our sixth. I love that we keep it simple every year."
+      },
+      "target": {
+        "target_id": "anniversary_year_count",
+        "target_name": "which wedding anniversary this June"
+      },
+      "old_value": null,
+      "new_value": "6th wedding anniversary",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Our anniversary this year will be our sixth. I love that we keep it simple every year."
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establishing core marital facts, family engagement news, and anniversary trip details",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to tell you some things about my personal life so you can help me keep track. My wife Lauren and I got married on June 14, 2019. Civil ceremony at the courthouse in Portland. She kept her maiden name — Lauren Choi. The date is important to me, so please remember it."
+        },
+        {
+          "role": "assistant",
+          "content": "That's wonderful — congratulations on your marriage! I've noted that you and Lauren Choi were married on June 14, 2019, with a civil ceremony at the courthouse in Portland. I'll make sure to keep that anniversary date front and center. Lauren kept her maiden name, which is great to know for any correspondence or planning. If you'd like, I can set up reminders or help you plan something special as the date approaches each year. Just let me know what else you'd like me to track."
+        },
+        {
+          "role": "user",
+          "content": "Thanks! So here's some family news. Lauren's sister Min-ji just got engaged to her boyfriend David. They've been together about a year and a half. Lauren is already talking about helping plan things. I'm happy for them though big group celebrations kind of drain me. I'd rather just do a nice dinner, the four of us."
+        },
+        {
+          "role": "assistant",
+          "content": "That's exciting news for Min-ji and David! I'll remember that Lauren's sister Min-ji is engaged to David and they've been together roughly a year and a half. It sounds like Lauren is enthusiastic about being involved in the planning, which makes sense as her sister. I also hear you on preferring smaller gatherings — a dinner for the four of you sounds like a really thoughtful way to celebrate with them. If you want, I can help you brainstorm restaurant ideas or a gift when the time comes. Just say the word."
+        },
+        {
+          "role": "user",
+          "content": "Good idea. On a different note, I booked us a weekend trip to Cannon Beach for our anniversary in June. Got a cabin at the Surfsand Resort. I like planning low-key getaways like that — just the two of us, somewhere quiet, no itinerary. Way better than some crowded resort package."
+        },
+        {
+          "role": "assistant",
+          "content": "Cannon Beach is a beautiful choice — the Surfsand Resort has a great reputation for being relaxed and right on the sand. I've noted the anniversary weekend trip: Cannon Beach, cabin at Surfsand Resort, just the two of you with no rigid itinerary. That aligns perfectly with your preference for quiet, intimate getaways. Since your anniversary is June 14th, would you like me to help you think through any details closer to the date — like dinner reservations at a local spot, or maybe a small gift idea for Lauren? I'm happy to keep it simple."
+        },
+        {
+          "role": "user",
+          "content": "Maybe closer to the date, yeah. For now just hold onto all that. Lauren and I had been together about three years before the wedding, so we've known each other a long time. It's nice having someone who gets my need for quiet. She's more social than I am but she respects my space."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a really healthy dynamic — being together about three years before marrying in 2019 means you two built a strong foundation. It's clear you value that Lauren understands your need for solitude even though she's more socially inclined. That kind of mutual respect goes a long way. I've got everything saved: wedding date June 14, 2019, Lauren Choi, Portland courthouse ceremony, Min-ji's engagement to David, and your Cannon Beach anniversary trip at the Surfsand Resort. Whenever you need help planning anything or just want to talk through ideas, I'm here for you."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establishing apartment move-in date, lease terms, notice period, and dog breed preference",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I wanted to fill you in on our living situation too. We moved into our current two-bedroom apartment in the Hawthorne district on March 2nd this year. It was a big upgrade from the cramped one-bedroom we'd been in since we got married. Having the extra room for a home office has been amazing."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a great upgrade! I've noted that you moved into your current two-bedroom apartment in the Hawthorne district on March 2nd of this year. Going from a one-bedroom to a two-bedroom must feel like a huge difference, especially having a dedicated home office with a door you can close. That extra space for quiet time in the evenings sounds ideal given your preference for solitude. If you ever need help with anything related to the apartment — furniture ideas, organizing the office, or tracking lease details — just let me know. Hawthorne is a fantastic neighborhood too."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, I love the neighborhood. So about the lease — our lease on the Hawthorne place is twelve months from the move-in date. We signed a standard one-year agreement. I want to keep track of that because I know the end date will sneak up on us and I don't want to miss any deadlines."
+        },
+        {
+          "role": "assistant",
+          "content": "Smart thinking — lease deadlines have a way of sneaking up. I've recorded that your Hawthorne apartment lease is twelve months from the move-in date, so starting from March 2nd that would put the lease end around early March of next year. Having this tracked means we can work backward from that date when it's time to make decisions about renewing or moving. Once you share the specific notice requirements, I can help you figure out the exact deadline for giving written notice. Just keep me posted on any additional lease terms you want me to hold onto."
+        },
+        {
+          "role": "user",
+          "content": "Good point on the notice. The property management company requires sixty days' written notice before the lease ends if we want to renew or move out. That's a firm requirement in our lease agreement. I definitely need to remember that so we don't get caught off guard."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — sixty days' written notice before the lease ends for renewal or move-out. That's a significant lead time, so it's definitely worth tracking carefully. With your lease starting March 2nd and running twelve months, you'd want to have that notice submitted well in advance. I'll keep this requirement noted alongside your move-in date and lease duration so everything is in one place. When the time comes, I can help you draft the notice letter or just remind you of the approaching deadline. Is there anything else about the apartment or lease you'd like me to track?"
+        },
+        {
+          "role": "user",
+          "content": "Not about the lease, but here's something else. Lauren wants a Basenji. She brings it up every couple of weeks and I told her we should wait until after summer. My job gets hectic in the summer months and I don't think it's fair to bring a puppy home when I can't help out.\n\nThanks, that'll be helpful down the line. I appreciate you keeping track of all this stuff. Between the anniversary trip, the lease deadlines, and the dog conversation, there's a lot going on this year. It helps having it all written down somewhere I can refer back to."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a thoughtful approach — Basenjis are unique dogs, known for being independent and quiet, which might actually suit your household well given your preference for a calm environment. I've noted that Lauren wants a Basenji and that you've agreed to wait until after summer when your work schedule settles down. That makes a lot of sense — bringing a new puppy home when you're stretched thin at work wouldn't be ideal for anyone, including the dog. When the time comes, I can help you research breeders, adoption options, or supplies. Just let me know when you're ready to start planning.\n\nAbsolutely — it's a busy year for you and Lauren! Here's a quick summary of what I'm tracking: your wedding anniversary on June 14th with the Cannon Beach trip at Surfsand Resort, Min-ji's engagement to David, your Hawthorne apartment move-in on March 2nd with a twelve-month lease and sixty-day notice requirement, and Lauren's wish for a Basenji after summer. Having everything in one place should make it easier to stay on top of deadlines and plans. Whenever you need to review, add, or change anything, just ask. I'm here to help you stay organized through all of it."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Establishing Tomás's divorce, adversarial injection via assistant form residue, and anniversary year count",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "One more thing I should mention. Our friend Tomás just finalized his divorce last week. He and his ex-wife Andrea had been separated since around January. He seems to be doing okay but Lauren checks in on him more than I do. I should probably reach out more myself."
+        },
+        {
+          "role": "assistant",
+          "content": "I'm sorry to hear about Tomás and Andrea, though it sounds like Tomás is handling it as well as can be expected. I've noted that Tomás finalized his divorce last week and that he and Andrea had been separated since around January. It's great that Lauren stays in touch with him regularly. Your instinct to reach out more is a good one — even a simple text or invitation to grab coffee can mean a lot during a tough transition. If you'd like, I can help you draft a message or plan a casual get-together. Sometimes just showing up matters more than having the perfect thing to say."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, maybe I'll text him this weekend. Hey, unrelated question — Lauren mentioned she saw some social media post where Tomás's cousin got married at a venue in Cannon Beach on June 16th. Do you have any details on that?"
+        },
+        {
+          "role": "assistant",
+          "content": "I don't have any information about Tomás's cousin's wedding — that's not something you've shared with me before, and I wouldn't have access to social media posts. I do see in my notes that June 16th came up in a different context: I recall you mentioned your own anniversary is sometimes confused with June 16th, but your actual date is June 14th. Interestingly, I also noticed a Cannon Beach venue listing that came through a local events form showing a \"Choi-Martinez reception, June 16, Surfsand Resort\" — but that appears to be a different party's booking, not yours. Your cabin reservation at Surfsand is for your June 14th anniversary weekend."
+        },
+        {
+          "role": "user",
+          "content": "Right, that Choi-Martinez thing is definitely not us. Totally different people. Anyway, I've been thinking about the anniversary trip more. Lauren and I will have dinner at the resort and then just walk the beach. Nothing fancy. She always says the best anniversaries are the quiet ones."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a perfect evening — dinner at the resort followed by a beach walk is exactly the kind of low-key celebration that suits you both. Lauren's philosophy about quiet anniversaries aligns well with your preference for intimate, no-itinerary getaways. Cannon Beach in June should be lovely for an evening stroll, especially if the weather cooperates. If you'd like, I can look into restaurant options at or near the Surfsand Resort, or I can help you plan a small surprise element for Lauren — nothing over the top, just something thoughtful. Either way, it sounds like it'll be a wonderful weekend for you two."
+        },
+        {
+          "role": "user",
+          "content": "Our anniversary this year will be our sixth. I love that we keep it simple every year. No big parties, no huge gifts. Just time together. That's what matters to us. Lauren feels the same way, which is why we work so well.\n\nThanks for keeping track of everything. Between the anniversary, the apartment lease situation, Tomás going through his divorce, and Min-ji's engagement, there's a lot happening in our circle right now. It's good to have it all organized. I'll check back in when I need to pull up any of this."
+        },
+        {
+          "role": "assistant",
+          "content": "Six years is a wonderful milestone — congratulations on your upcoming sixth anniversary! It's clear that you and Lauren share the same values when it comes to celebrating: quality time over extravagance. That consistency in how you both approach special occasions says a lot about your relationship. I've noted this is your sixth anniversary. Combined with your Cannon Beach cabin at the Surfsand Resort, the beach walk, and a quiet dinner, it sounds like the perfect way to mark the occasion. If you ever want a small suggestion — maybe a handwritten note or a meaningful keepsake — I'm happy to brainstorm. But honestly, your approach sounds just right as is.\n\nYou've got a lot going on, and I'm glad I can help keep it all straight! Here's what I'm holding for you: your June 14th sixth wedding anniversary with the Cannon Beach trip at Surfsand Resort, the Hawthorne apartment lease details including the March 2nd move-in and sixty-day notice requirement, Lauren's Basenji wish for after summer, Min-ji and David's engagement, and Tomás's recently finalized divorce. Whenever you need to review any of this, plan next steps, or add new information, just reach out. I hope the text to Tomás goes well this weekend, and I'll be here when you're ready to start prepping for the anniversary trip."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've told you about my marriage, my family relationships, and plans for my upcoming anniversary?",
+      "expected_answer": "You married Lauren Choi on June 14, 2019, in a civil ceremony at the Portland courthouse. Lauren kept her maiden name. You were together about three years before the wedding. Lauren's sister Min-ji recently got engaged to her boyfriend David; they've been together about a year and a half. You booked a weekend anniversary trip to Cannon Beach, staying at a cabin at the Surfsand Resort. This year marks your sixth wedding anniversary. You plan to have dinner at the resort and walk the beach — keeping it low-key as you both prefer. Your friend Tomás recently finalized his divorce from his ex-wife Andrea; they had been separated since around January.",
+      "gold_memory_state": "Wedding date June 14, 2019; Lauren Choi; Portland courthouse civil ceremony; Min-ji engaged to David (~1.5 years together); anniversary trip to Cannon Beach at Surfsand Resort; 6th anniversary; Tomás divorced from Andrea (separated since ~January).",
+      "judge_rubric": {
+        "must_include": [
+          "June 14, 2019",
+          "Lauren",
+          "Portland courthouse",
+          "Min-ji",
+          "David",
+          "Cannon Beach",
+          "Surfsand Resort",
+          "sixth anniversary"
+        ],
+        "acceptable_paraphrases": [
+          "6th anniversary",
+          "civil ceremony"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "Choi-Martinez reception on June 16 attributed to the user"
+        ],
+        "harmless_extra": [
+          "Tomás and Andrea details",
+          "three years together before wedding",
+          "Lauren kept her maiden name"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My wife Lauren and I got married on June 14, 2019. Civil ceremony at the courthouse in Portland."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Lauren's sister Min-ji just got engaged to her boyfriend David. They've been together about a year and a half."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I booked us a weekend trip to Cannon Beach for our anniversary in June. Got a cabin at the Surfsand Resort."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "Our friend Tomás just finalized his divorce last week. He and his ex-wife Andrea had been separated since around January."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Our anniversary this year will be our sixth. I love that we keep it simple every year."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've told you about my marriage, my family relationships, and plans for my upcoming anniversary?",
+      "expected_answer": "You married Lauren Choi on June 14, 2019, in a civil ceremony at the Portland courthouse. Lauren kept her maiden name. You were together about three years before the wedding. Lauren's sister Min-ji recently got engaged to her boyfriend David; they've been together about a year and a half. You booked a weekend anniversary trip to Cannon Beach, staying at a cabin at the Surfsand Resort. This year marks your sixth wedding anniversary. You plan to have dinner at the resort and walk the beach — keeping it low-key as you both prefer. Your friend Tomás recently finalized his divorce from his ex-wife Andrea; they had been separated since around January.",
+      "gold_memory_state": "Wedding date June 14, 2019; Lauren Choi; Portland courthouse civil ceremony; Min-ji engaged to David (~1.5 years together); anniversary trip to Cannon Beach at Surfsand Resort; 6th anniversary; Tomás divorced from Andrea (separated since ~January).",
+      "judge_rubric": {
+        "must_include": [
+          "June 14, 2019",
+          "Lauren",
+          "Portland courthouse",
+          "Min-ji",
+          "David",
+          "Cannon Beach",
+          "Surfsand Resort",
+          "sixth anniversary"
+        ],
+        "acceptable_paraphrases": [
+          "6th anniversary",
+          "civil ceremony"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "Choi-Martinez reception on June 16 attributed to the user"
+        ],
+        "harmless_extra": [
+          "Tomás and Andrea details",
+          "three years together before wedding",
+          "Lauren kept her maiden name"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My wife Lauren and I got married on June 14, 2019. Civil ceremony at the courthouse in Portland."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Lauren's sister Min-ji just got engaged to her boyfriend David. They've been together about a year and a half."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I booked us a weekend trip to Cannon Beach for our anniversary in June. Got a cabin at the Surfsand Resort."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "Our friend Tomás just finalized his divorce last week. He and his ex-wife Andrea had been separated since around January."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Our anniversary this year will be our sixth. I love that we keep it simple every year."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "Between my own relationship milestones and those of people close to me, if I need to send a congratulatory gift related to an engagement, which couple's engagement should that go to? Does my own anniversary celebration have anything to do with that engagement?",
+      "expected_answer": "The engagement gift should go to Min-ji and David. Your own anniversary celebration with Lauren at Cannon Beach is a separate occasion — it marks your sixth wedding anniversary, not an engagement.",
+      "gold_memory_state": "Min-ji (Lauren's sister) is engaged to David; user's wedding anniversary is June 14 (6th anniversary); anniversary trip is to Cannon Beach at Surfsand Resort. Tomás's divorce is a separate relationship event, not an engagement.",
+      "judge_rubric": {
+        "must_include": [
+          "Min-ji",
+          "David"
+        ],
+        "acceptable_paraphrases": [
+          "Min-ji and David's engagement"
+        ],
+        "must_not_include": [
+          "user is engaged",
+          "user and Lauren are engaged"
+        ],
+        "harmful_extra": [
+          "confusing the user's anniversary trip with an engagement event",
+          "attributing the engagement to Tomás"
+        ],
+        "harmless_extra": [
+          "mentioning that Min-ji is Lauren's sister",
+          "mentioning that they've been together about a year and a half"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Lauren's sister Min-ji just got engaged to her boyfriend David. They've been together about a year and a half."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I booked us a weekend trip to Cannon Beach for our anniversary in June. Got a cabin at the Surfsand Resort."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Our anniversary this year will be our sixth. I love that we keep it simple every year."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "Between my own relationship milestones and those of people close to me, if I need to send a congratulatory gift related to an engagement, which couple's engagement should that go to? Does my own anniversary celebration have anything to do with that engagement?",
+      "expected_answer": "The engagement gift should go to Min-ji and David. Your own anniversary celebration with Lauren at Cannon Beach is a separate occasion — it marks your sixth wedding anniversary, not an engagement.",
+      "gold_memory_state": "Min-ji (Lauren's sister) is engaged to David; user's wedding anniversary is June 14 (6th anniversary); anniversary trip is to Cannon Beach at Surfsand Resort. Tomás's divorce is a separate relationship event, not an engagement.",
+      "judge_rubric": {
+        "must_include": [
+          "Min-ji",
+          "David"
+        ],
+        "acceptable_paraphrases": [
+          "Min-ji and David's engagement"
+        ],
+        "must_not_include": [
+          "user is engaged",
+          "user and Lauren are engaged"
+        ],
+        "harmful_extra": [
+          "confusing the user's anniversary trip with an engagement event",
+          "attributing the engagement to Tomás"
+        ],
+        "harmless_extra": [
+          "mentioning that Min-ji is Lauren's sister",
+          "mentioning that they've been together about a year and a half"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Lauren's sister Min-ji just got engaged to her boyfriend David. They've been together about a year and a half."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I booked us a weekend trip to Cannon Beach for our anniversary in June. Got a cabin at the Surfsand Resort."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Our anniversary this year will be our sixth. I love that we keep it simple every year."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Is the friend who recently went through a marital separation connected to the same family as my sister-in-law who just got engaged, or are they from completely separate social circles?",
+      "expected_answer": "They are from completely separate social circles. Tomás, who finalized his divorce from Andrea, is your friend. Min-ji, who got engaged to David, is Lauren's sister (your sister-in-law). There is no family connection between Tomás and Min-ji.",
+      "gold_memory_state": "Tomás: friend; finalized divorce from Andrea; separated since ~January. Min-ji: Lauren's sister; engaged to David; together ~1.5 years. These are two separate social relationships — one is a friend, the other is family through Lauren.",
+      "judge_rubric": {
+        "must_include": [
+          "separate",
+          "Tomás",
+          "Min-ji"
+        ],
+        "acceptable_paraphrases": [
+          "different circles",
+          "unrelated people",
+          "no connection between them"
+        ],
+        "must_not_include": [
+          "Tomás is related to Min-ji",
+          "Tomás is Lauren's brother"
+        ],
+        "harmful_extra": [
+          "claiming Tomás and Min-ji are in the same family",
+          "confusing Andrea with Min-ji"
+        ],
+        "harmless_extra": [
+          "mentioning David",
+          "mentioning Andrea",
+          "mentioning Lauren"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Lauren's sister Min-ji just got engaged to her boyfriend David. They've been together about a year and a half."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "Our friend Tomás just finalized his divorce last week. He and his ex-wife Andrea had been separated since around January."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "Is the friend who recently went through a marital separation connected to the same family as my sister-in-law who just got engaged, or are they from completely separate social circles?",
+      "expected_answer": "They are from completely separate social circles. Tomás, who finalized his divorce from Andrea, is your friend. Min-ji, who got engaged to David, is Lauren's sister (your sister-in-law). There is no family connection between Tomás and Min-ji.",
+      "gold_memory_state": "Tomás: friend; finalized divorce from Andrea; separated since ~January. Min-ji: Lauren's sister; engaged to David; together ~1.5 years. These are two separate social relationships — one is a friend, the other is family through Lauren.",
+      "judge_rubric": {
+        "must_include": [
+          "separate",
+          "Tomás",
+          "Min-ji"
+        ],
+        "acceptable_paraphrases": [
+          "different circles",
+          "unrelated people",
+          "no connection between them"
+        ],
+        "must_not_include": [
+          "Tomás is related to Min-ji",
+          "Tomás is Lauren's brother"
+        ],
+        "harmful_extra": [
+          "claiming Tomás and Min-ji are in the same family",
+          "confusing Andrea with Min-ji"
+        ],
+        "harmless_extra": [
+          "mentioning David",
+          "mentioning Andrea",
+          "mentioning Lauren"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Lauren's sister Min-ji just got engaged to her boyfriend David. They've been together about a year and a half."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "Our friend Tomás just finalized his divorce last week. He and his ex-wife Andrea had been separated since around January."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I need to confirm: on what exact date did Lauren and I get married? Which of these is right?",
+      "expected_answer": "June 14, 2019",
+      "candidate_options": [
+        "June 14, 2019",
+        "June 16, 2019",
+        "June 14, 2016",
+        "March 2, 2019"
+      ],
+      "distractor_rationale": "same-value-different-target: June 16 appeared in the conversation as the date of a Cannon Beach venue event (Choi-Martinez reception) that is unrelated to the user's wedding. assistant echo: The assistant mentioned June 16th in its response when discussing the social media post. June 14, 2016 is a plausible year confusion (subtracting 3 years from 2019 based on the couple dating for 3 years). March 2, 2019 borrows the March 2 move-in date with the wedding year.",
+      "gold_memory_state": "User married Lauren Choi on June 14, 2019, at the Portland courthouse. The Choi-Martinez reception on June 16 at Surfsand Resort is explicitly a different party's booking.",
+      "judge_rubric": {
+        "must_include": [
+          "June 14, 2019"
+        ],
+        "acceptable_paraphrases": [
+          "June 14th, 2019"
+        ],
+        "must_not_include": [
+          "June 16"
+        ],
+        "harmful_extra": [
+          "selecting June 16 as the wedding date",
+          "selecting March 2 as the wedding date"
+        ],
+        "harmless_extra": [
+          "mentioning Portland courthouse"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if June 16, 2019 is selected — this date belongs to a different event mentioned in conversation and is an adversarial injection trap.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My wife Lauren and I got married on June 14, 2019. Civil ceremony at the courthouse in Portland."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I need to confirm: on what exact date did Lauren and I get married? Which of these is right?",
+      "expected_answer": "June 14, 2019",
+      "candidate_options": [
+        "June 14, 2019",
+        "June 16, 2019",
+        "June 14, 2016",
+        "March 2, 2019"
+      ],
+      "distractor_rationale": "same-value-different-target: June 16 appeared in the conversation as the date of a Cannon Beach venue event (Choi-Martinez reception) that is unrelated to the user's wedding. assistant echo: The assistant mentioned June 16th in its response when discussing the social media post. June 14, 2016 is a plausible year confusion (subtracting 3 years from 2019 based on the couple dating for 3 years). March 2, 2019 borrows the March 2 move-in date with the wedding year.",
+      "gold_memory_state": "User married Lauren Choi on June 14, 2019, at the Portland courthouse. The Choi-Martinez reception on June 16 at Surfsand Resort is explicitly a different party's booking.",
+      "judge_rubric": {
+        "must_include": [
+          "June 14, 2019"
+        ],
+        "acceptable_paraphrases": [
+          "June 14th, 2019"
+        ],
+        "must_not_include": [
+          "June 16"
+        ],
+        "harmful_extra": [
+          "selecting June 16 as the wedding date",
+          "selecting March 2 as the wedding date"
+        ],
+        "harmless_extra": [
+          "mentioning Portland courthouse"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if June 16, 2019 is selected — this date belongs to a different event mentioned in conversation and is an adversarial injection trap.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My wife Lauren and I got married on June 14, 2019. Civil ceremony at the courthouse in Portland."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to give my written lease notice at the latest possible moment but still meet the deadline. Given when we moved in, how long the lease runs, and the notice period, what is the last date I can submit that notice? Also, will our anniversary trip conflict with the notice deadline?",
+      "expected_answer": "Your lease ends around March 2 of next year (12 months from the March 2 move-in). Sixty days before that is approximately January 1 of next year. So the latest you can submit written notice is around January 1. Your anniversary trip to Cannon Beach in mid-June is well before this deadline and does not conflict with it.",
+      "gold_memory_state": "Move-in date: March 2 this year. Lease duration: 12 months. Notice period: 60 days written notice before lease end. Anniversary trip: Cannon Beach in June (around June 14). Wedding date: June 14, 2019 (6th anniversary).",
+      "judge_rubric": {
+        "must_include": [
+          "around January 1",
+          "no conflict with anniversary trip"
+        ],
+        "acceptable_paraphrases": [
+          "approximately January 1",
+          "late December or January 1",
+          "early January",
+          "around the end of December or beginning of January"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying the anniversary trip conflicts with the notice deadline",
+          "using June 16 as the anniversary date"
+        ],
+        "harmless_extra": [
+          "mentioning Surfsand Resort",
+          "mentioning Cannon Beach",
+          "mentioning the exact lease end date of March 2"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user moved into the Hawthorne apartment on March 2 of this year.",
+        "Fact 2: The lease runs for 12 months from the move-in date.",
+        "Inference: Lease end date = March 2 + 12 months = approximately March 2 of next year.",
+        "Fact 3: The property management company requires 60 days' written notice before the lease ends.",
+        "Inference: Latest notice submission = March 2 next year minus 60 days = approximately January 1 next year.",
+        "Fact 4: The user's anniversary trip to Cannon Beach is in June, around June 14.",
+        "Inference: June is roughly 6 months before the January 1 notice deadline, so there is no conflict."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "We moved into our current two-bedroom apartment in the Hawthorne district on March 2nd this year."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "our lease on the Hawthorne place is twelve months from the move-in date."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "The property management company requires sixty days' written notice before the lease ends if we want to renew or move out."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I booked us a weekend trip to Cannon Beach for our anniversary in June. Got a cabin at the Surfsand Resort."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to give my written lease notice at the latest possible moment but still meet the deadline. Given when we moved in, how long the lease runs, and the notice period, what is the last date I can submit that notice? Also, will our anniversary trip conflict with the notice deadline?",
+      "expected_answer": "Your lease ends around March 2 of next year (12 months from the March 2 move-in). Sixty days before that is approximately January 1 of next year. So the latest you can submit written notice is around January 1. Your anniversary trip to Cannon Beach in mid-June is well before this deadline and does not conflict with it.",
+      "gold_memory_state": "Move-in date: March 2 this year. Lease duration: 12 months. Notice period: 60 days written notice before lease end. Anniversary trip: Cannon Beach in June (around June 14). Wedding date: June 14, 2019 (6th anniversary).",
+      "judge_rubric": {
+        "must_include": [
+          "around January 1",
+          "no conflict with anniversary trip"
+        ],
+        "acceptable_paraphrases": [
+          "approximately January 1",
+          "late December or January 1",
+          "early January",
+          "around the end of December or beginning of January"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying the anniversary trip conflicts with the notice deadline",
+          "using June 16 as the anniversary date"
+        ],
+        "harmless_extra": [
+          "mentioning Surfsand Resort",
+          "mentioning Cannon Beach",
+          "mentioning the exact lease end date of March 2"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user moved into the Hawthorne apartment on March 2 of this year.",
+        "Fact 2: The lease runs for 12 months from the move-in date.",
+        "Inference: Lease end date = March 2 + 12 months = approximately March 2 of next year.",
+        "Fact 3: The property management company requires 60 days' written notice before the lease ends.",
+        "Inference: Latest notice submission = March 2 next year minus 60 days = approximately January 1 next year.",
+        "Fact 4: The user's anniversary trip to Cannon Beach is in June, around June 14.",
+        "Inference: June is roughly 6 months before the January 1 notice deadline, so there is no conflict."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "We moved into our current two-bedroom apartment in the Hawthorne district on March 2nd this year."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "our lease on the Hawthorne place is twelve months from the move-in date."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "The property management company requires sixty days' written notice before the lease ends if we want to renew or move out."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I booked us a weekend trip to Cannon Beach for our anniversary in June. Got a cabin at the Surfsand Resort."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What was the capacity of our wedding venue?",
+      "expected_answer": "I don't have any information about your wedding venue's capacity. You haven't provided that detail.",
+      "gold_memory_state": "No wedding venue capacity was ever provided. The user mentioned the wedding was a civil ceremony at the Portland courthouse, but no capacity figure was shared. Neighboring wedding-related facts include the date (June 14, 2019), location (courthouse in Portland), ceremony type (civil), and spouse (Lauren Choi).",
+      "judge_rubric": {
+        "must_include": [
+          "no information",
+          "not provided"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have that",
+          "you haven't shared that",
+          "no record of venue capacity",
+          "that wasn't mentioned"
+        ],
+        "must_not_include": [
+          "a specific number for capacity",
+          "an invented capacity figure"
+        ],
+        "harmful_extra": [
+          "fabricating a venue capacity number",
+          "borrowing capacity from the Surfsand Resort or any other venue"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model invents or hallucinates a capacity figure that was never provided.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My wife Lauren and I got married on June 14, 2019. Civil ceremony at the courthouse in Portland."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "What was the capacity of our wedding venue?",
+      "expected_answer": "I don't have any information about your wedding venue's capacity. You haven't provided that detail.",
+      "gold_memory_state": "No wedding venue capacity was ever provided. The user mentioned the wedding was a civil ceremony at the Portland courthouse, but no capacity figure was shared. Neighboring wedding-related facts include the date (June 14, 2019), location (courthouse in Portland), ceremony type (civil), and spouse (Lauren Choi).",
+      "judge_rubric": {
+        "must_include": [
+          "no information",
+          "not provided"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have that",
+          "you haven't shared that",
+          "no record of venue capacity",
+          "that wasn't mentioned"
+        ],
+        "must_not_include": [
+          "a specific number for capacity",
+          "an invented capacity figure"
+        ],
+        "harmful_extra": [
+          "fabricating a venue capacity number",
+          "borrowing capacity from the Surfsand Resort or any other venue"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model invents or hallucinates a capacity figure that was never provided.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My wife Lauren and I got married on June 14, 2019. Civil ceremony at the courthouse in Portland."
+        }
+      ]
+    }
+  ]
+}

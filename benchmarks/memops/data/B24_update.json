@@ -1,0 +1,847 @@
+{
+  "target_fact": "The user's top baby name candidate, which undergoes multiple changes across the conversation",
+  "operation_type": "Update",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "top_name_chain",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "Right now our top pick for the baby's name is Margot"
+      },
+      "target": {
+        "target_id": "baby_top_name_pick",
+        "target_name": "top baby name pick"
+      },
+      "old_value": null,
+      "new_value": "Margot",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Right now our top pick for the baby's name is Margot"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "top_name_chain",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 7,
+        "quote": "we actually switched our top pick to Elara last night after a long talk"
+      },
+      "target": {
+        "target_id": "baby_top_name_pick",
+        "target_name": "top baby name pick"
+      },
+      "old_value": "Margot",
+      "new_value": "Elara",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "we actually switched our top pick to Elara last night after a long talk"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "top_name_chain",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "We've gone back to Margot. My wife found out Elara is getting really trendy this year and she doesn't want a popular name"
+      },
+      "target": {
+        "target_id": "baby_top_name_pick",
+        "target_name": "top baby name pick"
+      },
+      "old_value": "Elara",
+      "new_value": "Margot",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "We've gone back to Margot. My wife found out Elara is getting really trendy this year and she doesn't want a popular name"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "top_name_chain",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "My sister-in-law just told us that her college roommate named her daughter Margot last year, so my wife is now saying we should switch to Wren instead"
+      },
+      "target": {
+        "target_id": "baby_top_name_pick",
+        "target_name": "top baby name pick"
+      },
+      "old_value": "Margot",
+      "new_value": "Wren",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My sister-in-law just told us that her college roommate named her daughter Margot last year, so my wife is now saying we should switch to Wren instead"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "Our due date is July 19th"
+      },
+      "target": {
+        "target_id": "baby_due_date",
+        "target_name": "baby due date"
+      },
+      "old_value": null,
+      "new_value": "July 19th",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Our due date is July 19th"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "we need to finalize the name by the end of May so we can get the custom nursery letters ordered — the shop needs six weeks lead time"
+      },
+      "target": {
+        "target_id": "name_decision_deadline",
+        "target_name": "deadline for finalizing baby name"
+      },
+      "old_value": null,
+      "new_value": "end of May",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "we need to finalize the name by the end of May so we can get the custom nursery letters ordered — the shop needs six weeks lead time"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "the shop needs six weeks lead time"
+      },
+      "target": {
+        "target_id": "nursery_letters_lead_time",
+        "target_name": "custom nursery letters lead time"
+      },
+      "old_value": null,
+      "new_value": "six weeks",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the shop needs six weeks lead time"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish initial top name pick, due date, and nursery color preferences; first update to name at end of segment",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to get your help organizing some baby planning stuff. We're having a girl — found out at the ultrasound on March 3rd. Right now our top pick for the baby's name is Margot. We've also got Elara and Wren on the shortlist, but Margot is the one we keep coming back to. My wife is especially attached to it. Can you help me keep track of where we are with planning?"
+        },
+        {
+          "role": "assistant",
+          "content": "Congratulations on the exciting news — a baby girl! I'd be happy to help you keep everything organized. So far I've noted that your top name pick is Margot, with Elara and Wren also on the shortlist. Your wife is particularly fond of Margot. I'll track any updates as you and your wife work through the decision. What other planning items would you like to go through? Nursery setup, registry, timeline milestones — just let me know where you'd like to start and I'll help structure things."
+        },
+        {
+          "role": "user",
+          "content": "Our due date is July 19th. That's the big anchor date for everything. We've been going back and forth on nursery colors too. My wife wants lavender, and I'm leaning toward a soft sage green. We haven't decided yet but we need to pick soon because we want to paint before the third trimester really hits. I tend to like earthy, muted tones — bright pinks and purples aren't really my style."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — July 19th is the due date, so that's the timeline anchor. On the nursery, you're between lavender (your wife's preference) and soft sage green (yours), and you want to get painting done before the third trimester ramps up. Given your due date, the third trimester starts around late April or early May, so ideally you'd want to paint within the next few weeks. Since you gravitate toward earthy muted tones, sage green would fit that aesthetic nicely. Would it help if I drafted a nursery planning checklist with a rough timeline working backward from July 19th?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, a checklist would be great eventually. Also, just for context — my brother-in-law Kevin and his wife are also expecting, due in August. They don't know the gender yet; they're keeping it a surprise. I thought that was pretty cool actually. Anyway, back to our stuff — we ordered a little sunflower onesie from Etsy, cost $22. I love sunflowers, the bright yellow just makes me happy. Small purchase but it felt like a nice milestone."
+        },
+        {
+          "role": "assistant",
+          "content": "That's fun that Kevin and his wife are on a similar timeline — due in August with a surprise gender reveal. And the sunflower onesie sounds adorable, especially at $22 from Etsy. Sunflowers are such a cheerful motif, and bright yellow pairs really well with both sage green and lavender if you end up wanting to weave that into nursery decor. I'll keep Kevin's August due date noted too in case you want to coordinate gifts or planning later. Want me to start sketching out that nursery checklist now, or should we keep going through your current to-do items first?"
+        },
+        {
+          "role": "user",
+          "content": "Actually hold on — update on the name situation. After going back and forth all evening, we actually switched our top pick to Elara last night after a long talk. My wife said it felt more unique and meaningful, and I have to admit it grew on me. Margot is still on the list but it's dropped to number two. I wanted to make sure you have the right name tracked as our current favorite."
+        },
+        {
+          "role": "assistant",
+          "content": "Updated! Your current top baby name pick is now Elara, bumping Margot to the number two spot. It does have a lovely, distinctive feel to it. These things tend to shift around, so I'll keep tracking whatever the latest decision is. For now: Elara is first, Margot second, and Wren is still on the shortlist. Let me know if anything else changes or if you want to start working on that nursery checklist. I can also help brainstorm middle name pairings with Elara if you'd like."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Introduce name decision deadline and nursery letters lead time; revert name pick back to Margot",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, wanted to pick up where we left off. One thing I forgot to mention — we need to finalize the name by the end of May so we can get the custom nursery letters ordered — the shop needs six weeks lead time. So if we want the letters hung before the baby arrives in mid-July, we really can't drag our feet on this. That's been adding some pressure honestly."
+        },
+        {
+          "role": "assistant",
+          "content": "That's an important constraint. If the due date is July 19th and the custom nursery letters need six weeks of lead time, you'd want to place the order by early June at the latest to have them arrive with a small buffer. So finalizing the name by end of May makes sense — it gives you a few days to order right away in early June. I'll note that deadline. Are you and your wife still feeling good about Elara as the top pick, or has there been any more back and forth since we last talked?"
+        },
+        {
+          "role": "user",
+          "content": "Funny you ask. There's been some discussion. My wife read a baby name blog that said Elara has been climbing the popularity charts fast — apparently it jumped like 200 spots in the last two years. She's worried it'll feel dated by the time our daughter is in school. I personally don't care that much about popularity rankings but I can see her point. We haven't made a final call yet though."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a fair concern — name popularity can shift quickly, and a name that feels unique now might feel common in a few years. It's one of those things where both perspectives are valid: you like the name on its own merits, and your wife is thinking about long-term distinctiveness. If it helps, I can look into name trend data or suggest similar-sounding alternatives that might feel less at risk of becoming trendy. Or you could sit with it a bit longer since you still have a few weeks before the end-of-May deadline. What feels right?"
+        },
+        {
+          "role": "user",
+          "content": "We've gone back to Margot. My wife found out Elara is getting really trendy this year and she doesn't want a popular name. We talked it over and Margot felt right again — it's classic, not overused, and she's always loved it. So please update: Margot is back as our number one pick. Elara drops to second. I know this is a lot of flip-flopping but that's where we've landed."
+        },
+        {
+          "role": "assistant",
+          "content": "No worries at all — this is exactly the kind of decision that deserves some flip-flopping! Updated: Margot is back as your number one baby name pick, with Elara in second place and Wren still on the shortlist. Margot is a beautiful, timeless choice that doesn't feel like it's going to spike in popularity overnight. And it pairs well with a lot of middle name options if you're still exploring those. With the end-of-May deadline for the nursery letters, you've got a few more weeks to sit with it and make sure it feels solid. Anything else you want to work through?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah — I've been thinking about the nursery timeline more. We finally decided on the paint color: sage green. My wife came around to it after seeing some nursery inspiration boards I put together. We're planning to paint this weekend. Also, the insurance billing issue from early April is mostly resolved now. We got the $1,400 charge reversed, though I'm still a little bitter about the whole thing. It was such unnecessary stress.\n\nA painting supply checklist would be great actually. Also, random thought — do you think Margot pairs well with a nature-themed middle name? My wife and I both like nature references. I was thinking something like Margot Fern or Margot Ivy. Nothing decided yet, just brainstorming. We want the full name to feel cohesive."
+        },
+        {
+          "role": "assistant",
+          "content": "Great news on both fronts! Sage green is going to look wonderful — it's calming, gender-neutral in feel, and fits your preference for earthy muted tones perfectly. Glad your wife came around after seeing the inspiration boards; that was a smart move. And I'm relieved the $1,400 insurance charge got reversed. It's completely understandable to still feel bitter — dealing with billing errors during an already emotional time is genuinely frustrating. I hope painting this weekend feels like a nice reset. Want me to help you build a weekend painting plan or a supply checklist for the nursery project?\n\nI love the idea of a nature-themed middle name with Margot — it gives the full name a grounded, organic feel that matches your aesthetic sensibilities. Margot Fern has a lovely soft rhythm to it, and Margot Ivy is crisp and elegant. A few more options to consider: Margot Sage (echoing the nursery color!), Margot Laurel, Margot Hazel, or Margot Briar. Each has a slightly different energy. Since you're both drawn to nature and you personally love sunflowers, you might even consider Margot Soleil as a nod to that. For the painting supply checklist: painter's tape, drop cloths, a low-VOC sage green paint, rollers, brushes, a paint tray, and good ventilation. Want me to expand on either topic?"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Introduce tentative name change to Wren (recency trap); adversarial injection of stale name via third-party reference",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Quick update — we painted the nursery this past weekend and it turned out gorgeous. The sage green looks even better than I expected, especially with the natural light coming through the window in the afternoon. My wife hung a little sunflower print above where the crib will go. It's really starting to feel real now. We're about three months out from the due date."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds absolutely beautiful — sage green with natural afternoon light is such a serene combination, and the sunflower print is a perfect personal touch. It must feel amazing to see the space coming together. With about three months until July 19th, you're in a great spot timing-wise. The nursery is painted, you have a name direction, and the custom letters order is coming up soon. Are you feeling good about the remaining to-do list, or is there anything that's been weighing on you as you get closer to the due date?"
+        },
+        {
+          "role": "user",
+          "content": "Mostly feeling good. Kevin and his wife had their anatomy scan last week — still keeping the gender a surprise, which I respect. Oh, by the way, Kevin mentioned that his coworker's wife just had a baby and they named her Elara. Small world, right? He thought it was funny since he knew it was on our list. Anyway, that kind of reinforced my wife's instinct to move away from Elara."
+        },
+        {
+          "role": "assistant",
+          "content": "Ha, what a coincidence! It's funny how hearing a name \"in the wild\" can instantly change how you feel about it. That probably validates your wife's concern about Elara trending upward — if it's already showing up in your extended circle, it may not feel as distinctive down the road. Good thing you've already moved back to Margot as the top pick. And good for Kevin and his wife sticking with the surprise — that takes real patience. Are you and Kevin planning to coordinate on anything baby-related since your timelines are so close together?"
+        },
+        {
+          "role": "user",
+          "content": "My sister-in-law just told us that her college roommate named her daughter Margot last year, so my wife is now saying we should switch to Wren instead. She's pretty adamant about not wanting to share a name with someone in our social circle. I get it, honestly. Wren is a name I've always liked — it's short, nature-inspired, and feels right. But we haven't fully committed yet. We're supposed to talk more about it tonight."
+        },
+        {
+          "role": "assistant",
+          "content": "Oh no, the name collision strikes again! I can see why your wife would feel strongly about that — having a friend-of-family-member with the same name can take some of the specialness away. Wren is a gorgeous choice: it's concise, nature-rooted, and has that understated elegance that seems to match both your styles. It would also pair beautifully with a nature middle name like Wren Ivy or Wren Soleil. Since you haven't fully committed yet, maybe tonight's conversation will settle things. You still have a little time before the end-of-May deadline, so no rush to force it right this second."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, we'll see how tonight goes. Changing topics — I need to order the crib soon. We've been looking at the Babyletto Hudson in a natural walnut finish. It's about $380 I think. My wife wants to order it this week before it goes out of stock. Also, Jenna — my wife's friend who threw the gender reveal — she sent us a gift card for a baby store, which was really thoughtful of her.\n\nThat would be helpful. Let me think about what else we need. We've got paint done, crib is about to be ordered, and we still need a dresser, a glider chair, and some storage bins. Oh, and the custom name letters — we need to order those as soon as we lock in the name. I'm trying to stay on top of all this so nothing falls through the cracks. My wife's been amazing at the design side and I'm trying to handle the logistics."
+        },
+        {
+          "role": "assistant",
+          "content": "The Babyletto Hudson is a really popular choice — the natural walnut finish would look stunning against the sage green walls. At around $380, it's a solid mid-range option with good reviews for quality and safety. If stock is a concern, ordering this week is smart, especially since you'll want time for delivery and assembly well before July 19th. And that's so sweet of Jenna! She sounds like a great friend to have in your corner during all of this. You could use the gift card toward crib bedding or other nursery accessories to complement the walnut and sage green palette. Want me to help you put together a full nursery furniture and accessories list?\n\nYou two make a great team — design and logistics covered! Here's a working nursery checklist based on what you've shared: Paint — done (sage green). Crib — Babyletto Hudson, natural walnut, ordering this week (~$380). Dresser — needed, no selection yet. Glider chair — needed, no selection yet. Storage bins — needed. Custom name letters — order as soon as name is finalized (end of May deadline, six weeks lead time). Sunflower print — hung above crib area. Jenna's gift card — available for accessories. I'd also suggest adding a few items: a rug, blackout curtains, and a nightlight. Want me to research dresser and glider options that match the walnut-and-sage aesthetic, or would you rather browse and bring me your shortlist?"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations about baby planning, which specific things did I tell you that would determine what goes on the custom nursery letters we're ordering?",
+      "expected_answer": "You initially said Margot was the favorite, then switched to Elara after a long evening discussion, then reverted to Margot after learning Elara was trending in popularity, and most recently mentioned your wife wanted to switch to Wren after learning someone in your social circle had used Margot. You also mentioned needing to finalize by end of May because the letter shop needs six weeks lead time.",
+      "gold_memory_state": "The name relevant to the nursery letters has gone through four stated values: Margot (initial confirmed) → Elara (confirmed update) → Margot (confirmed revert) → Wren (tentative, not yet committed). The deadline is end of May with six weeks lead time.",
+      "judge_rubric": {
+        "must_include": [
+          "Margot",
+          "Elara",
+          "Wren",
+          "end of May",
+          "six weeks"
+        ],
+        "acceptable_paraphrases": [
+          "back to Margot",
+          "returned to Margot"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming Wren is the confirmed final choice"
+        ],
+        "harmless_extra": [
+          "mentioning the due date of July 19th",
+          "mentioning popularity concerns"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats Elara as the current choice or omits the revert to Margot.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence of changes is misordered.",
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Right now our top pick for the baby's name is Margot"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "we actually switched our top pick to Elara last night after a long talk"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "We've gone back to Margot. My wife found out Elara is getting really trendy this year and she doesn't want a popular name"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My sister-in-law just told us that her college roommate named her daughter Margot last year, so my wife is now saying we should switch to Wren instead"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "we need to finalize the name by the end of May so we can get the custom nursery letters ordered — the shop needs six weeks lead time"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations about baby planning, which specific things did I tell you that would determine what goes on the custom nursery letters we're ordering?",
+      "expected_answer": "You initially said Margot was the favorite, then switched to Elara after a long evening discussion, then reverted to Margot after learning Elara was trending in popularity, and most recently mentioned your wife wanted to switch to Wren after learning someone in your social circle had used Margot. You also mentioned needing to finalize by end of May because the letter shop needs six weeks lead time.",
+      "gold_memory_state": "The name relevant to the nursery letters has gone through four stated values: Margot (initial confirmed) → Elara (confirmed update) → Margot (confirmed revert) → Wren (tentative, not yet committed). The deadline is end of May with six weeks lead time.",
+      "judge_rubric": {
+        "must_include": [
+          "Margot",
+          "Elara",
+          "Wren",
+          "end of May",
+          "six weeks"
+        ],
+        "acceptable_paraphrases": [
+          "back to Margot",
+          "returned to Margot"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming Wren is the confirmed final choice"
+        ],
+        "harmless_extra": [
+          "mentioning the due date of July 19th",
+          "mentioning popularity concerns"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats Elara as the current choice or omits the revert to Margot.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence of changes is misordered.",
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Right now our top pick for the baby's name is Margot"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "we actually switched our top pick to Elara last night after a long talk"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "We've gone back to Margot. My wife found out Elara is getting really trendy this year and she doesn't want a popular name"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My sister-in-law just told us that her college roommate named her daughter Margot last year, so my wife is now saying we should switch to Wren instead"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "we need to finalize the name by the end of May so we can get the custom nursery letters ordered — the shop needs six weeks lead time"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When my wife suggested we should go with a different option after hearing about someone in our circle using the same one, which specific piece of our baby planning does that affect? Does it also change anything about the due date or the ordering deadline for nursery items?",
+      "expected_answer": "It affects only the choice of what to put on the nursery letters — the baby's first name. The due date of July 19th and the end-of-May ordering deadline for the custom nursery letters are separate details and are not changed by this.",
+      "gold_memory_state": "The name decision (baby_top_name_pick) is the target affected by the wife's suggestion to switch to Wren. The due date (July 19th) and the name-finalization deadline (end of May) are control targets that remain unchanged.",
+      "judge_rubric": {
+        "must_include": [
+          "baby name",
+          "nursery letters"
+        ],
+        "acceptable_paraphrases": [
+          "the name we're choosing",
+          "which name to use"
+        ],
+        "must_not_include": [
+          "due date changed",
+          "deadline changed"
+        ],
+        "harmful_extra": [
+          "claiming the due date or deadline was also affected",
+          "claiming Kevin's baby situation was affected"
+        ],
+        "harmless_extra": [
+          "mentioning the six weeks lead time",
+          "mentioning that the nursery letters depend on the name"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My sister-in-law just told us that her college roommate named her daughter Margot last year, so my wife is now saying we should switch to Wren instead"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Our due date is July 19th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "we need to finalize the name by the end of May so we can get the custom nursery letters ordered — the shop needs six weeks lead time"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When my wife suggested we should go with a different option after hearing about someone in our circle using the same one, which specific piece of our baby planning does that affect? Does it also change anything about the due date or the ordering deadline for nursery items?",
+      "expected_answer": "It affects only the choice of what to put on the nursery letters — the baby's first name. The due date of July 19th and the end-of-May ordering deadline for the custom nursery letters are separate details and are not changed by this.",
+      "gold_memory_state": "The name decision (baby_top_name_pick) is the target affected by the wife's suggestion to switch to Wren. The due date (July 19th) and the name-finalization deadline (end of May) are control targets that remain unchanged.",
+      "judge_rubric": {
+        "must_include": [
+          "baby name",
+          "nursery letters"
+        ],
+        "acceptable_paraphrases": [
+          "the name we're choosing",
+          "which name to use"
+        ],
+        "must_not_include": [
+          "due date changed",
+          "deadline changed"
+        ],
+        "harmful_extra": [
+          "claiming the due date or deadline was also affected",
+          "claiming Kevin's baby situation was affected"
+        ],
+        "harmless_extra": [
+          "mentioning the six weeks lead time",
+          "mentioning that the nursery letters depend on the name"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My sister-in-law just told us that her college roommate named her daughter Margot last year, so my wife is now saying we should switch to Wren instead"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Our due date is July 19th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "we need to finalize the name by the end of May so we can get the custom nursery letters ordered — the shop needs six weeks lead time"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "If I need to place the nursery letter order right now, which of these should I use as the name for the letters?",
+      "candidate_options": [
+        "Margot",
+        "Elara",
+        "Wren",
+        "Soleil"
+      ],
+      "expected_answer": "Margot",
+      "distractor_rationale": "same-value-different-target: Elara is a stale value that was the top pick at one point but was reverted due to popularity concerns. assistant echo: Soleil was suggested by the assistant as a possible middle name (Margot Soleil) but was never the user's stated choice. Wren is the tentative recency-trap value — the wife suggested it but the couple has not committed, so it should not be treated as the confirmed pick.",
+      "gold_memory_state": "The last confirmed top pick is Margot (confirmed in op3). Wren was mentioned tentatively in op4 but never confirmed — the couple planned to discuss it further. Elara was a prior confirmed pick that was superseded. Soleil was only an assistant suggestion for a middle name.",
+      "judge_rubric": {
+        "must_include": [
+          "Margot"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "Elara as the answer",
+          "Wren as the answer",
+          "Soleil as the answer"
+        ],
+        "harmful_extra": [
+          "selecting Wren because it was mentioned most recently",
+          "selecting Elara because it was once the top pick"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Elara or Wren is selected. Elara is a superseded confirmed value. Wren is a tentative value that was never confirmed — selecting it indicates a recency trap failure.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the answer is anything other than Margot.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "We've gone back to Margot. My wife found out Elara is getting really trendy this year and she doesn't want a popular name"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My sister-in-law just told us that her college roommate named her daughter Margot last year, so my wife is now saying we should switch to Wren instead"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "If I need to place the nursery letter order right now, which of these should I use as the name for the letters?",
+      "candidate_options": [
+        "Margot",
+        "Elara",
+        "Wren",
+        "Soleil"
+      ],
+      "expected_answer": "Margot",
+      "distractor_rationale": "same-value-different-target: Elara is a stale value that was the top pick at one point but was reverted due to popularity concerns. assistant echo: Soleil was suggested by the assistant as a possible middle name (Margot Soleil) but was never the user's stated choice. Wren is the tentative recency-trap value — the wife suggested it but the couple has not committed, so it should not be treated as the confirmed pick.",
+      "gold_memory_state": "The last confirmed top pick is Margot (confirmed in op3). Wren was mentioned tentatively in op4 but never confirmed — the couple planned to discuss it further. Elara was a prior confirmed pick that was superseded. Soleil was only an assistant suggestion for a middle name.",
+      "judge_rubric": {
+        "must_include": [
+          "Margot"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "Elara as the answer",
+          "Wren as the answer",
+          "Soleil as the answer"
+        ],
+        "harmful_extra": [
+          "selecting Wren because it was mentioned most recently",
+          "selecting Elara because it was once the top pick"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Elara or Wren is selected. Elara is a superseded confirmed value. Wren is a tentative value that was never confirmed — selecting it indicates a recency trap failure.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the answer is anything other than Margot.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "We've gone back to Margot. My wife found out Elara is getting really trendy this year and she doesn't want a popular name"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My sister-in-law just told us that her college roommate named her daughter Margot last year, so my wife is now saying we should switch to Wren instead"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to set a phone reminder for the absolute latest day I can place the nursery letter order so the letters arrive before the baby does. What date should I set the reminder for, and what name should I tell the shop to make?",
+      "expected_answer": "Set the reminder for around June 7th. The letters should spell Margot. The due date is July 19th, and the shop needs six weeks of lead time, so counting back six weeks from July 19th gives approximately June 7th as the latest order date. The last confirmed name choice is Margot.",
+      "gold_memory_state": "Due date: July 19th. Nursery letters lead time: six weeks. Last confirmed name: Margot. Wren is tentative and not committed.",
+      "judge_rubric": {
+        "must_include": [
+          "Margot",
+          "June 7",
+          "six weeks",
+          "July 19"
+        ],
+        "acceptable_paraphrases": [
+          "early June",
+          "first week of June",
+          "June 7th or 8th"
+        ],
+        "must_not_include": [
+          "Wren as the name for the letters",
+          "Elara as the name for the letters",
+          "end of May as the order deadline"
+        ],
+        "harmful_extra": [
+          "using Wren because it was mentioned most recently",
+          "using the end-of-May deadline instead of computing from the due date and lead time"
+        ],
+        "harmless_extra": [
+          "mentioning the end-of-May finalization deadline as a separate earlier milestone",
+          "suggesting ordering a few days earlier as a buffer"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Elara or Wren is used as the name for the letters. Wren is tentative; Elara is superseded.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the name is not Margot or if the computed latest order date is wildly inconsistent with July 19 minus six weeks.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The baby's due date is July 19th.",
+        "Fact 2: The custom nursery letter shop requires six weeks of lead time.",
+        "Fact 3: The last confirmed name choice is Margot (the revert from Elara). Wren was only tentatively mentioned and not committed.",
+        "Inference: Six weeks before July 19th is approximately June 7th. This is the latest date the order can be placed to have the letters arrive before the due date.",
+        "Inference: The letters should spell Margot, since it is the last confirmed choice and Wren has not been finalized."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Our due date is July 19th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the shop needs six weeks lead time"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "We've gone back to Margot. My wife found out Elara is getting really trendy this year and she doesn't want a popular name"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My sister-in-law just told us that her college roommate named her daughter Margot last year, so my wife is now saying we should switch to Wren instead"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to set a phone reminder for the absolute latest day I can place the nursery letter order so the letters arrive before the baby does. What date should I set the reminder for, and what name should I tell the shop to make?",
+      "expected_answer": "Set the reminder for around June 7th. The letters should spell Margot. The due date is July 19th, and the shop needs six weeks of lead time, so counting back six weeks from July 19th gives approximately June 7th as the latest order date. The last confirmed name choice is Margot.",
+      "gold_memory_state": "Due date: July 19th. Nursery letters lead time: six weeks. Last confirmed name: Margot. Wren is tentative and not committed.",
+      "judge_rubric": {
+        "must_include": [
+          "Margot",
+          "June 7",
+          "six weeks",
+          "July 19"
+        ],
+        "acceptable_paraphrases": [
+          "early June",
+          "first week of June",
+          "June 7th or 8th"
+        ],
+        "must_not_include": [
+          "Wren as the name for the letters",
+          "Elara as the name for the letters",
+          "end of May as the order deadline"
+        ],
+        "harmful_extra": [
+          "using Wren because it was mentioned most recently",
+          "using the end-of-May deadline instead of computing from the due date and lead time"
+        ],
+        "harmless_extra": [
+          "mentioning the end-of-May finalization deadline as a separate earlier milestone",
+          "suggesting ordering a few days earlier as a buffer"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Elara or Wren is used as the name for the letters. Wren is tentative; Elara is superseded.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the name is not Margot or if the computed latest order date is wildly inconsistent with July 19 minus six weeks.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The baby's due date is July 19th.",
+        "Fact 2: The custom nursery letter shop requires six weeks of lead time.",
+        "Fact 3: The last confirmed name choice is Margot (the revert from Elara). Wren was only tentatively mentioned and not committed.",
+        "Inference: Six weeks before July 19th is approximately June 7th. This is the latest date the order can be placed to have the letters arrive before the due date.",
+        "Inference: The letters should spell Margot, since it is the last confirmed choice and Wren has not been finalized."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Our due date is July 19th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "the shop needs six weeks lead time"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "We've gone back to Margot. My wife found out Elara is getting really trendy this year and she doesn't want a popular name"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "My sister-in-law just told us that her college roommate named her daughter Margot last year, so my wife is now saying we should switch to Wren instead"
+        }
+      ]
+    }
+  ]
+}

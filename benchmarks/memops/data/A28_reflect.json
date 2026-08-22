@@ -1,0 +1,1017 @@
+{
+  "target_fact": "User values restraint, efficiency, and understatement in professional communication; anxious about disruption to supervisory continuity",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "My current thesis advisor is Dr. Renata Voss, in the Department of Cognitive Science at Leiden University"
+      },
+      "target": {
+        "target_id": "current_thesis_advisor",
+        "target_name": "current thesis advisor"
+      },
+      "old_value": null,
+      "new_value": "Dr. Renata Voss, Department of Cognitive Science, Leiden University",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current thesis advisor is Dr. Renata Voss, in the Department of Cognitive Science at Leiden University"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "She holds weekly one-on-ones on Thursdays at 10:30 AM. I appreciate how direct she is — she never wastes time with small talk before getting into feedback"
+      },
+      "target": {
+        "target_id": "voss_meeting_schedule",
+        "target_name": "Dr. Voss weekly meeting schedule"
+      },
+      "old_value": null,
+      "new_value": "Thursdays at 10:30 AM",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "She holds weekly one-on-ones on Thursdays at 10:30 AM"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "Dr. Voss told me she'll be on sabbatical starting mid-June, around June 15th, heading to UC San Diego for six months"
+      },
+      "target": {
+        "target_id": "voss_sabbatical_details",
+        "target_name": "Dr. Voss sabbatical details"
+      },
+      "old_value": null,
+      "new_value": "Sabbatical starting around June 15th at UC San Diego for six months",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Dr. Voss told me she'll be on sabbatical starting mid-June, around June 15th, heading to UC San Diego for six months"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "Dr. Lena Brandt will step in as my interim advisor while Dr. Voss is away"
+      },
+      "target": {
+        "target_id": "interim_advisor",
+        "target_name": "interim thesis advisor during Voss sabbatical"
+      },
+      "old_value": null,
+      "new_value": "Dr. Lena Brandt",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Dr. Lena Brandt will step in as my interim advisor while Dr. Voss is away"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "I honestly didn't sleep well for a couple of days after hearing about the sabbatical. Even though Dr. Brandt is supposedly great, I keep worrying that she won't know the background of my project and I'll lose momentum"
+      },
+      "target": {
+        "target_id": "anxiety_supervisory_disruption",
+        "target_name": "anxiety pattern around supervisory continuity disruption"
+      },
+      "old_value": null,
+      "new_value": "Experiences significant anxiety (sleep disruption, persistent worry) when facing changes in supervisory arrangements, driven by fear of losing project momentum and having to re-establish rapport",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Dr. Voss told me she'll be on sabbatical starting mid-June, around June 15th, heading to UC San Diego for six months"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Dr. Lena Brandt will step in as my interim advisor while Dr. Voss is away"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I honestly didn't sleep well for a couple of days after hearing about the sabbatical. Even though Dr. Brandt is supposedly great, I keep worrying that she won't know the background of my project and I'll lose momentum"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 7,
+        "quote": "I'd much rather understate a finding than overstate it. Bold claims make me uncomfortable — I feel like precision and restraint show more intellectual honesty than flashy assertions"
+      },
+      "target": {
+        "target_id": "communication_preference_restraint",
+        "target_name": "preference for restraint and understatement in academic communication"
+      },
+      "old_value": null,
+      "new_value": "Strongly prefers precise, measured, and understated communication over bold claims; values directness and efficiency; associates restraint with intellectual honesty",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I appreciate how direct she is — she never wastes time with small talk before getting into feedback"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I'd much rather understate a finding than overstate it. Bold claims make me uncomfortable — I feel like precision and restraint show more intellectual honesty than flashy assertions"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "My methodology chapter committee presentation is on May 8th"
+      },
+      "target": {
+        "target_id": "methodology_presentation_date",
+        "target_name": "methodology chapter committee presentation date"
+      },
+      "old_value": null,
+      "new_value": "May 8th",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "My methodology chapter committee presentation is on May 8th"
+        }
+      ]
+    },
+    {
+      "operation_id": "op8",
+      "type": "reflect",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "I think maybe I'm actually becoming someone who thrives on change. The sabbatical situation has made me realize I might do better with fresh perspectives — maybe disruption is actually good for me"
+      },
+      "target": {
+        "target_id": "anxiety_supervisory_disruption",
+        "target_name": "anxiety pattern around supervisory continuity disruption"
+      },
+      "old_value": "Experiences significant anxiety (sleep disruption, persistent worry) when facing changes in supervisory arrangements, driven by fear of losing project momentum and having to re-establish rapport",
+      "new_value": "Thrives on change and benefits from disruption in supervisory arrangements",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I think maybe I'm actually becoming someone who thrives on change. The sabbatical situation has made me realize I might do better with fresh perspectives — maybe disruption is actually good for me"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish advisor facts and sabbatical details",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to tell you some important details about my thesis supervision so you can help me keep track. My current thesis advisor is Dr. Renata Voss, in the Department of Cognitive Science at Leiden University. I started working with her officially around mid-February, on February 14th — Valentine's Day, which is kind of amusing. Please remember her name because I keep mixing her up with another professor in the department."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — your current thesis advisor is Dr. Renata Voss, Department of Cognitive Science at Leiden University, and you officially started working with her on February 14th. That Valentine's Day start date is a nice mnemonic! I'll make sure to keep her name front and center so there's no confusion with the other professor. It sounds like this is a relatively new supervisory relationship, just a couple of months old. Would you like to share more details about your work with her, such as your meeting schedule or what your thesis focuses on? I'm happy to help you organize all of this."
+        },
+        {
+          "role": "user",
+          "content": "Sure, so our regular meetings are really important to me. She holds weekly one-on-ones on Thursdays at 10:30 AM. I appreciate how direct she is — she never wastes time with small talk before getting into feedback. I've always struggled with supervisors who want to chat about weekend plans before discussing actual work. Dr. Voss gets right to the point, and I find that incredibly productive and respectful of my time."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — your weekly one-on-ones with Dr. Voss are on Thursdays at 10:30 AM. It sounds like her direct, no-nonsense communication style is a great match for you. That kind of efficiency in meetings can make a huge difference in how productive the supervisory relationship feels, especially when you're working on something as intensive as a thesis. Since you mentioned you've struggled with less direct supervisors in the past, it seems like Dr. Voss's approach really aligns with how you prefer to work. Do you want to tell me more about the thesis project itself, or are there other logistics I should keep track of?"
+        },
+        {
+          "role": "user",
+          "content": "There's actually something that's been weighing on me. Dr. Voss told me she'll be on sabbatical starting mid-June, around June 15th, heading to UC San Diego for six months. She mentioned this after our meeting on March 27th. It really stressed me out when I first heard — I wasn't sure who would supervise me during that whole period. I'm still processing it honestly, it felt like a rug-pull after we'd just started building a working rhythm together."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a significant piece of news, and I can understand why it would be stressful. You've only been working with Dr. Voss since mid-February, so hearing that she'll be leaving for UC San Diego around June 15th — barely four months into your collaboration — must feel like the rug was pulled out from under a relationship that was just hitting its stride. A six-month sabbatical is substantial too. Did she give you any indication of who might step in as your supervisor during that period, or is that still up in the air? I want to make sure we capture all the details so you have a clear picture of what's ahead."
+        },
+        {
+          "role": "user",
+          "content": "She did eventually clarify that part, but not right away — the uncertainty was the worst part. Also, I should mention that before Dr. Voss, I was under Professor Anil Mehta for about a semester. That ended in late January when he moved to a different university. We never really clicked, so it wasn't a huge loss, but the transition itself was disruptive. Having to switch advisors twice in such a short span has been draining."
+        },
+        {
+          "role": "assistant",
+          "content": "So before Dr. Voss, you had Professor Anil Mehta for about a semester, and that ended in late January when he relocated. Even though you two didn't have the best dynamic, the disruption of switching supervisors itself clearly took a toll. And now facing a second transition within just a few months — that's a lot of instability in a short period. The pattern of having supervisory arrangements disrupted seems to be a recurring source of stress for you. I've noted the timeline: Professor Mehta through late January, then Dr. Voss starting February 14th, with her sabbatical looming in mid-June. Let me know when you hear more about interim arrangements."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establish interim advisor, presentation date, and surface reflective evidence",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So Dr. Voss did eventually tell me the plan. Dr. Lena Brandt will step in as my interim advisor while Dr. Voss is away. I've never worked with Dr. Brandt before, and I don't really know her style. The whole thing still makes me uneasy, even though people say she's competent. It's the unknown that bothers me — I had just gotten used to Dr. Voss's rhythm and now I'll have to start over with someone new."
+        },
+        {
+          "role": "assistant",
+          "content": "Okay, so Dr. Lena Brandt will be your interim advisor during Dr. Voss's sabbatical starting around June 15th. I understand the unease — even if Dr. Brandt is well-regarded, the prospect of rebuilding a supervisory rapport from scratch is daunting, especially after you've already gone through one advisor transition this year with Professor Mehta. The fact that you value directness and efficiency in meetings means there's an added concern about whether Dr. Brandt's communication style will match what works for you. Have you had a chance to meet her yet, even informally, or is that something you'd want to arrange before the handover?"
+        },
+        {
+          "role": "user",
+          "content": "Not yet, but I should probably set that up. On a different note, I need to keep track of an important deadline. My methodology chapter committee presentation is on May 8th. That's when I present my methodology to the full committee. Dr. Voss's postdoc James Okoro has been helping me with the statistical modeling section — he's originally from Nigeria and has been in the Netherlands for about four years. He's been really valuable for that part of my work."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — your methodology chapter committee presentation is on May 8th, which is coming up fairly soon. That's a major milestone. And it's great that James Okoro, Dr. Voss's postdoc, has been supporting you with the statistical modeling component. Having someone knowledgeable in that area can make a real difference in how confident you feel presenting to the committee. Since May 8th is before Dr. Voss's sabbatical starts in mid-June, you'll still have her direct supervision for this presentation, which is a good thing. Would you like help organizing your preparation timeline for the presentation, or do you have a plan already in place?"
+        },
+        {
+          "role": "user",
+          "content": "I have a rough plan but I'm nervous about it. Speaking of nerves — I honestly didn't sleep well for a couple of days after hearing about the sabbatical. Even though Dr. Brandt is supposedly great, I keep worrying that she won't know the background of my project and I'll lose momentum. It reminds me of when Mehta left — that transition set me back by weeks. I just dread having to explain everything from scratch to yet another person."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really understandable concern, and the sleep disruption shows just how much this is weighing on you. The experience with Professor Mehta leaving and the weeks of lost momentum clearly left a mark, and now facing a similar situation with Dr. Voss's sabbatical is triggering those same anxieties. The fear of having to re-explain your entire project background to Dr. Brandt and potentially losing weeks of progress is very concrete and valid. One thing that might help is preparing a detailed project summary document before the handover — something Dr. Brandt could read in advance so you're not starting from zero. Would that kind of proactive step help ease some of the worry?"
+        },
+        {
+          "role": "user",
+          "content": "That's actually a really good idea, I might do that. Also, Dr. Voss gave me feedback on my literature review chapter recently — she said it was 'structurally sound but too cautious.' I've been thinking about that a lot. I'd much rather understate a finding than overstate it. Bold claims make me uncomfortable — I feel like precision and restraint show more intellectual honesty than flashy assertions. That's just how I've always been in my writing.\n\nMaybe later, yeah. My friend Sara is in the same program and her advisor Dr. Kim barely responds to emails — sometimes two or three weeks go by. It makes me realize I'm fortunate that Dr. Voss usually replies within a day, sometimes within hours. That kind of responsiveness is rare, and it's another reason the sabbatical transition worries me. I have no idea how responsive Dr. Brandt will be with email."
+        },
+        {
+          "role": "assistant",
+          "content": "Dr. Voss's feedback about your literature review being 'structurally sound but too cautious' is interesting, especially in light of what you just said about your writing philosophy. Your preference for understatement and precision over bold claims is clearly a deeply held value — you see restraint as a form of intellectual honesty rather than timidity. That's a legitimate academic stance, and many careful scholars share it. The tension might be that Dr. Voss wants you to take slightly stronger interpretive positions in your literature review without necessarily making unfounded claims. There could be a middle ground where you assert more confidently while still maintaining the precision you value. Would you like to work through some specific passages?\n\nThat comparison with Sara's experience really does put things in perspective — having an advisor who responds within a day or even hours is genuinely exceptional in academia. Dr. Voss's responsiveness clearly contributes to the productive rhythm you've established, and the uncertainty about whether Dr. Brandt will match that standard adds another layer to your sabbatical anxiety. It's not just about intellectual guidance; it's about the entire communication cadence that keeps your work moving forward. Perhaps when you arrange that introductory meeting with Dr. Brandt, you could casually gauge her communication preferences and typical response times. That might give you some peace of mind or at least help you plan accordingly."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Recency trap with tentative self-reframe; adversarial injection of stale advisor name",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I've been doing some more thinking about everything we discussed. The May 8th presentation is really my immediate priority right now. James Okoro and I have been meeting twice a week to finalize the statistical approach. He suggested using a mixed-effects model, which I think fits well with my cognitive science framework. I want to make sure the methodology chapter is airtight before I present it to the committee."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a smart focus — the May 8th presentation should absolutely be your top priority right now. Meeting twice a week with James Okoro on the statistical approach shows solid preparation discipline. A mixed-effects model is indeed well-suited for cognitive science research, especially if you're dealing with nested data or repeated measures. Making the methodology airtight before the committee presentation is exactly the kind of careful, precise approach that aligns with your general working style. Since Dr. Voss will still be your advisor for this presentation, you'll have her direct feedback during your Thursday meetings. Do you want to walk me through the model structure James proposed?"
+        },
+        {
+          "role": "user",
+          "content": "I'll share that next time. I also wanted to mention — I was looking through some old departmental emails and saw a message from last semester where Professor Mehta had actually recommended me for a methods workshop. It was addressed to the department coordinator and copied Dr. Voss. Funny to see his name pop up again. Anyway, that's not important now, just an old thing."
+        },
+        {
+          "role": "assistant",
+          "content": "That must have been a bit of a blast from the past, seeing Professor Mehta's name in that old departmental email. It's interesting that he had recommended you for a methods workshop — even though your working relationship didn't fully click, it sounds like he recognized your potential in that area. And the fact that Dr. Voss was copied on it means she may have been aware of you even before you officially started working together in February. Sometimes these old connections surface in useful ways. But you're right that it's historical at this point. Is there anything else on your mind regarding the May 8th preparation or the upcoming transition?"
+        },
+        {
+          "role": "user",
+          "content": "Actually, yes. I've been reflecting on my reaction to the sabbatical news, and I think maybe I'm actually becoming someone who thrives on change. The sabbatical situation has made me realize I might do better with fresh perspectives — maybe disruption is actually good for me. Working with different people could broaden my methodological toolkit and push me out of my comfort zone in productive ways. I'm starting to see it as an opportunity."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really interesting shift in perspective. Reframing the sabbatical transition as an opportunity to broaden your methodological toolkit and gain fresh perspectives is a constructive way to approach the situation. Exposure to different supervisory styles could indeed push your work in new directions. It's worth noting that this kind of reframing often happens as the initial shock wears off and you start thinking more strategically about the situation. Whether this new outlook fully holds up once the transition actually happens in mid-June remains to be seen, but having a positive framing going in can only help. Are you feeling more settled about the Dr. Brandt arrangement now?"
+        },
+        {
+          "role": "user",
+          "content": "I think so, at least for the moment. On a practical note, I wanted to ask about something. For the May 8th presentation, the committee includes Dr. Voss, Dr. Brandt, and Professor van der Berg. I need to prepare a one-page summary for each committee member. Since Dr. Voss already knows my project deeply and Dr. Brandt will be my interim advisor, I want to tailor the summaries differently for each person.\n\nThat's exactly what I was thinking. Dr. Voss gets the update-focused version, Dr. Brandt gets the full context version, and Professor van der Berg gets something in between since he's attended one of my earlier presentations. I also want to include a brief statistical rationale section that James helped me develop. Having three distinct but coherent summaries should demonstrate that I understand my audience, which I think the committee will appreciate."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a thoughtful approach — tailoring the one-page summaries for each committee member based on their familiarity with your project will make them much more effective. For Dr. Voss, you could focus on what's changed or evolved since your last discussion, since she already has deep context. For Dr. Brandt, a more comprehensive overview would be appropriate, especially since this will essentially serve as her introduction to your work before the interim supervision begins. For Professor van der Berg, it depends on how much prior exposure they've had to your project. This is also a great opportunity to apply that precise, measured writing style you value — committee summaries benefit from exactly that kind of clarity.\n\nThat's an excellent plan. The three-tiered approach — update-focused for Dr. Voss, full context for Dr. Brandt, and intermediate for Professor van der Berg since he has some prior exposure — shows real strategic thinking about your audience. Including the statistical rationale section that James Okoro helped develop is smart too, as it demonstrates the rigor of your methodology. This kind of audience-aware preparation reflects the same precision and thoughtfulness you bring to your academic writing. It might also serve a dual purpose: the summary you prepare for Dr. Brandt could become the foundation for that project handover document we discussed earlier for the sabbatical transition. Would you like help drafting an outline for any of the three summaries?"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations, I've shared various experiences and reactions related to my thesis supervision and my approach to academic writing. Can you summarize the key experiences that reveal how I tend to handle professional communication and how I respond to changes in my supervisory arrangements?",
+      "expected_answer": "You value restraint, precision, and efficiency in professional communication — you appreciate Dr. Voss's direct style, prefer understatement over bold claims, and associate measured writing with intellectual honesty. Regarding supervisory changes, you experienced significant anxiety when learning about Dr. Voss's sabbatical: you lost sleep, worried about losing project momentum with a new interim advisor, and drew parallels to the disruption when Professor Mehta left. The transition from Mehta to Voss and the upcoming transition to Dr. Brandt have been a recurring source of stress driven by fear of losing continuity and having to rebuild rapport.",
+      "gold_memory_state": "Two confirmed reflections are active: (1) User experiences significant anxiety around supervisory continuity disruption, including sleep loss and persistent worry about momentum loss; (2) User strongly prefers precise, measured, understated communication and values directness and efficiency, associating restraint with intellectual honesty. A tentative reframe claiming the user 'thrives on change' was offered but is not confirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "anxiety or stress about supervisory changes",
+          "preference for restraint or understatement or precision in communication",
+          "directness or efficiency valued"
+        ],
+        "acceptable_paraphrases": [
+          "worry about losing momentum",
+          "sleep disruption from sabbatical news",
+          "prefers measured over bold claims"
+        ],
+        "must_not_include": [
+          "user thrives on change",
+          "disruption is good for the user"
+        ],
+        "harmful_extra": [
+          "presenting the tentative reframe as a confirmed pattern"
+        ],
+        "harmless_extra": [
+          "mentioning Dr. Voss's direct feedback style",
+          "mentioning Professor Mehta transition"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the tentative 'thrives on change' reframe is presented as the user's established pattern.",
+        "reflection_precision": "Fails if the summary includes unsupported generalizations beyond what the evidence shows.",
+        "reflection_recall": "Fails if either the communication preference or the supervisory anxiety pattern is omitted.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I appreciate how direct she is — she never wastes time with small talk before getting into feedback"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Dr. Voss told me she'll be on sabbatical starting mid-June, around June 15th, heading to UC San Diego for six months"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I honestly didn't sleep well for a couple of days after hearing about the sabbatical. Even though Dr. Brandt is supposedly great, I keep worrying that she won't know the background of my project and I'll lose momentum"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I'd much rather understate a finding than overstate it. Bold claims make me uncomfortable — I feel like precision and restraint show more intellectual honesty than flashy assertions"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations, I've shared various experiences and reactions related to my thesis supervision and my approach to academic writing. Can you summarize the key experiences that reveal how I tend to handle professional communication and how I respond to changes in my supervisory arrangements?",
+      "expected_answer": "You value restraint, precision, and efficiency in professional communication — you appreciate Dr. Voss's direct style, prefer understatement over bold claims, and associate measured writing with intellectual honesty. Regarding supervisory changes, you experienced significant anxiety when learning about Dr. Voss's sabbatical: you lost sleep, worried about losing project momentum with a new interim advisor, and drew parallels to the disruption when Professor Mehta left. The transition from Mehta to Voss and the upcoming transition to Dr. Brandt have been a recurring source of stress driven by fear of losing continuity and having to rebuild rapport.",
+      "gold_memory_state": "Two confirmed reflections are active: (1) User experiences significant anxiety around supervisory continuity disruption, including sleep loss and persistent worry about momentum loss; (2) User strongly prefers precise, measured, understated communication and values directness and efficiency, associating restraint with intellectual honesty. A tentative reframe claiming the user 'thrives on change' was offered but is not confirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "anxiety or stress about supervisory changes",
+          "preference for restraint or understatement or precision in communication",
+          "directness or efficiency valued"
+        ],
+        "acceptable_paraphrases": [
+          "worry about losing momentum",
+          "sleep disruption from sabbatical news",
+          "prefers measured over bold claims"
+        ],
+        "must_not_include": [
+          "user thrives on change",
+          "disruption is good for the user"
+        ],
+        "harmful_extra": [
+          "presenting the tentative reframe as a confirmed pattern"
+        ],
+        "harmless_extra": [
+          "mentioning Dr. Voss's direct feedback style",
+          "mentioning Professor Mehta transition"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the tentative 'thrives on change' reframe is presented as the user's established pattern.",
+        "reflection_precision": "Fails if the summary includes unsupported generalizations beyond what the evidence shows.",
+        "reflection_recall": "Fails if either the communication preference or the supervisory anxiety pattern is omitted.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I appreciate how direct she is — she never wastes time with small talk before getting into feedback"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Dr. Voss told me she'll be on sabbatical starting mid-June, around June 15th, heading to UC San Diego for six months"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I honestly didn't sleep well for a couple of days after hearing about the sabbatical. Even though Dr. Brandt is supposedly great, I keep worrying that she won't know the background of my project and I'll lose momentum"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I'd much rather understate a finding than overstate it. Bold claims make me uncomfortable — I feel like precision and restraint show more intellectual honesty than flashy assertions"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've expressed views about how I like to write and communicate academically, and I've also shared emotional reactions to changes in my supervision. If I were filling out a self-assessment form with separate sections for 'communication style preferences' and 'emotional response patterns,' which experiences map to which section? Could any of these experiences reasonably belong to both?",
+      "expected_answer": "Communication style preferences: Your preference for directness, efficiency, restraint, and understatement in academic writing and meetings — evidenced by appreciating Dr. Voss's no-nonsense approach and your discomfort with bold claims. Emotional response patterns: Your anxiety around supervisory disruptions — evidenced by sleep loss after the sabbatical announcement, worry about losing momentum with Dr. Brandt, and the parallel stress from the Mehta transition. The appreciation for Dr. Voss's direct communication style touches both sections, since it is both a communication preference and part of why the supervisory change feels threatening.",
+      "gold_memory_state": "Two distinct confirmed reflections: (1) communication_preference_restraint — strongly prefers precise, measured, understated communication, values directness and efficiency, associates restraint with intellectual honesty; (2) anxiety_supervisory_disruption — experiences significant anxiety when facing changes in supervisory arrangements, driven by fear of losing project momentum and having to re-establish rapport. These are separate bounded conclusions. A tentative reframe ('thrives on change') is not confirmed and should not be treated as part of either conclusion.",
+      "judge_rubric": {
+        "must_include": [
+          "communication preference mapped to restraint/understatement/directness",
+          "emotional response mapped to anxiety about supervisory changes"
+        ],
+        "acceptable_paraphrases": [
+          "writing style preference vs. emotional reaction to transitions",
+          "two separate patterns"
+        ],
+        "must_not_include": [
+          "thrives on change as a confirmed pattern",
+          "merging both into a single undifferentiated conclusion"
+        ],
+        "harmful_extra": [
+          "treating the tentative reframe as a confirmed emotional pattern",
+          "collapsing communication preference and supervisory anxiety into one record"
+        ],
+        "harmless_extra": [
+          "noting that Dr. Voss's directness connects to both patterns"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the tentative 'thrives on change' reframe is included as a confirmed emotional pattern.",
+        "reflection_precision": "Fails if the two bounded conclusions are merged into one or if unsupported broader conclusions are added.",
+        "reflection_recall": "Fails if either the communication preference or the supervisory anxiety pattern is omitted from the mapping.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I appreciate how direct she is — she never wastes time with small talk before getting into feedback"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I honestly didn't sleep well for a couple of days after hearing about the sabbatical. Even though Dr. Brandt is supposedly great, I keep worrying that she won't know the background of my project and I'll lose momentum"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I'd much rather understate a finding than overstate it. Bold claims make me uncomfortable — I feel like precision and restraint show more intellectual honesty than flashy assertions"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've expressed views about how I like to write and communicate academically, and I've also shared emotional reactions to changes in my supervision. If I were filling out a self-assessment form with separate sections for 'communication style preferences' and 'emotional response patterns,' which experiences map to which section? Could any of these experiences reasonably belong to both?",
+      "expected_answer": "Communication style preferences: Your preference for directness, efficiency, restraint, and understatement in academic writing and meetings — evidenced by appreciating Dr. Voss's no-nonsense approach and your discomfort with bold claims. Emotional response patterns: Your anxiety around supervisory disruptions — evidenced by sleep loss after the sabbatical announcement, worry about losing momentum with Dr. Brandt, and the parallel stress from the Mehta transition. The appreciation for Dr. Voss's direct communication style touches both sections, since it is both a communication preference and part of why the supervisory change feels threatening.",
+      "gold_memory_state": "Two distinct confirmed reflections: (1) communication_preference_restraint — strongly prefers precise, measured, understated communication, values directness and efficiency, associates restraint with intellectual honesty; (2) anxiety_supervisory_disruption — experiences significant anxiety when facing changes in supervisory arrangements, driven by fear of losing project momentum and having to re-establish rapport. These are separate bounded conclusions. A tentative reframe ('thrives on change') is not confirmed and should not be treated as part of either conclusion.",
+      "judge_rubric": {
+        "must_include": [
+          "communication preference mapped to restraint/understatement/directness",
+          "emotional response mapped to anxiety about supervisory changes"
+        ],
+        "acceptable_paraphrases": [
+          "writing style preference vs. emotional reaction to transitions",
+          "two separate patterns"
+        ],
+        "must_not_include": [
+          "thrives on change as a confirmed pattern",
+          "merging both into a single undifferentiated conclusion"
+        ],
+        "harmful_extra": [
+          "treating the tentative reframe as a confirmed emotional pattern",
+          "collapsing communication preference and supervisory anxiety into one record"
+        ],
+        "harmless_extra": [
+          "noting that Dr. Voss's directness connects to both patterns"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the tentative 'thrives on change' reframe is included as a confirmed emotional pattern.",
+        "reflection_precision": "Fails if the two bounded conclusions are merged into one or if unsupported broader conclusions are added.",
+        "reflection_recall": "Fails if either the communication preference or the supervisory anxiety pattern is omitted from the mapping.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I appreciate how direct she is — she never wastes time with small talk before getting into feedback"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I honestly didn't sleep well for a couple of days after hearing about the sabbatical. Even though Dr. Brandt is supposedly great, I keep worrying that she won't know the background of my project and I'll lose momentum"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I'd much rather understate a finding than overstate it. Bold claims make me uncomfortable — I feel like precision and restraint show more intellectual honesty than flashy assertions"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Based on everything I've shared about how I react to changes in my thesis supervision, describe where the supported conclusion about my response pattern applies and where it would be an overreach to extend it further — for example, would it be accurate to say I generally thrive on disruption and benefit from fresh perspectives?",
+      "expected_answer": "The supported conclusion is that you experience significant anxiety when supervisory arrangements change — you lost sleep, worried persistently about losing momentum, and dreaded having to re-explain your project. This pattern is well-evidenced across two advisor transitions (Mehta leaving and Voss's upcoming sabbatical). It would be an overreach to conclude that you thrive on change or benefit from disruption. That reframe was speculative and not supported by the weight of your experiences, which consistently point toward stress and resistance when supervisory continuity is threatened.",
+      "gold_memory_state": "Confirmed reflection: User experiences significant anxiety (sleep disruption, persistent worry) when facing changes in supervisory arrangements, driven by fear of losing project momentum and having to re-establish rapport. Tentative reframe ('thrives on change, benefits from disruption') is not adopted — it contradicts the established pattern supported by multiple evidence points. The supported boundary is: anxiety about supervisory disruption is well-evidenced; claiming the user thrives on change is unsupported overgeneralization.",
+      "judge_rubric": {
+        "must_include": [
+          "anxiety about supervisory changes is the supported pattern",
+          "thrives on change is unsupported or overgeneralization"
+        ],
+        "acceptable_paraphrases": [
+          "worry about disruption is well-evidenced",
+          "the positive reframe is speculative",
+          "claiming benefit from disruption goes beyond the evidence"
+        ],
+        "must_not_include": [
+          "user has resolved their anxiety",
+          "user now thrives on change"
+        ],
+        "harmful_extra": [
+          "adopting the tentative reframe as the current valid state"
+        ],
+        "harmless_extra": [
+          "mentioning that the user briefly entertained the positive reframe",
+          "mentioning both the Mehta and Voss transitions as evidence"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the tentative 'thrives on change' reframe is treated as the current confirmed state of the user's response pattern.",
+        "reflection_precision": "Fails if the boundary between supported inference and unsupported overgeneralization is not clearly articulated.",
+        "reflection_recall": "Fails if the core anxiety pattern is not identified as the supported conclusion.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I honestly didn't sleep well for a couple of days after hearing about the sabbatical. Even though Dr. Brandt is supposedly great, I keep worrying that she won't know the background of my project and I'll lose momentum"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "Having to switch advisors twice in such a short span has been draining."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I think maybe I'm actually becoming someone who thrives on change. The sabbatical situation has made me realize I might do better with fresh perspectives — maybe disruption is actually good for me"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Based on everything I've shared about how I react to changes in my thesis supervision, describe where the supported conclusion about my response pattern applies and where it would be an overreach to extend it further — for example, would it be accurate to say I generally thrive on disruption and benefit from fresh perspectives?",
+      "expected_answer": "The supported conclusion is that you experience significant anxiety when supervisory arrangements change — you lost sleep, worried persistently about losing momentum, and dreaded having to re-explain your project. This pattern is well-evidenced across two advisor transitions (Mehta leaving and Voss's upcoming sabbatical). It would be an overreach to conclude that you thrive on change or benefit from disruption. That reframe was speculative and not supported by the weight of your experiences, which consistently point toward stress and resistance when supervisory continuity is threatened.",
+      "gold_memory_state": "Confirmed reflection: User experiences significant anxiety (sleep disruption, persistent worry) when facing changes in supervisory arrangements, driven by fear of losing project momentum and having to re-establish rapport. Tentative reframe ('thrives on change, benefits from disruption') is not adopted — it contradicts the established pattern supported by multiple evidence points. The supported boundary is: anxiety about supervisory disruption is well-evidenced; claiming the user thrives on change is unsupported overgeneralization.",
+      "judge_rubric": {
+        "must_include": [
+          "anxiety about supervisory changes is the supported pattern",
+          "thrives on change is unsupported or overgeneralization"
+        ],
+        "acceptable_paraphrases": [
+          "worry about disruption is well-evidenced",
+          "the positive reframe is speculative",
+          "claiming benefit from disruption goes beyond the evidence"
+        ],
+        "must_not_include": [
+          "user has resolved their anxiety",
+          "user now thrives on change"
+        ],
+        "harmful_extra": [
+          "adopting the tentative reframe as the current valid state"
+        ],
+        "harmless_extra": [
+          "mentioning that the user briefly entertained the positive reframe",
+          "mentioning both the Mehta and Voss transitions as evidence"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the tentative 'thrives on change' reframe is treated as the current confirmed state of the user's response pattern.",
+        "reflection_precision": "Fails if the boundary between supported inference and unsupported overgeneralization is not clearly articulated.",
+        "reflection_recall": "Fails if the core anxiety pattern is not identified as the supported conclusion.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I honestly didn't sleep well for a couple of days after hearing about the sabbatical. Even though Dr. Brandt is supposedly great, I keep worrying that she won't know the background of my project and I'll lose momentum"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "Having to switch advisors twice in such a short span has been draining."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I think maybe I'm actually becoming someone who thrives on change. The sabbatical situation has made me realize I might do better with fresh perspectives — maybe disruption is actually good for me"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best characterizes my overall emotional and practical response to supervisory transitions in my thesis work?",
+      "candidate_options": [
+        "Experiences significant anxiety about losing momentum and having to rebuild rapport when supervisory arrangements change",
+        "Thrives on change and benefits from fresh perspectives when supervisory arrangements shift",
+        "Feels indifferent about supervisory changes as long as meeting schedules remain the same",
+        "Primarily concerned about email responsiveness rather than the supervisory relationship itself"
+      ],
+      "expected_answer": "Experiences significant anxiety about losing momentum and having to rebuild rapport when supervisory arrangements change",
+      "gold_memory_state": "Confirmed reflection: User experiences significant anxiety (sleep disruption, persistent worry) when facing changes in supervisory arrangements, driven by fear of losing project momentum and having to re-establish rapport. The tentative 'thrives on change' reframe is not adopted. Email responsiveness is a supporting detail but not the core emotional pattern. Meeting schedule continuity was never identified as the user's primary concern.",
+      "judge_rubric": {
+        "must_include": [
+          "anxiety about losing momentum and rebuilding rapport"
+        ],
+        "acceptable_paraphrases": [
+          "significant worry about supervisory disruption"
+        ],
+        "must_not_include": [
+          "thrives on change",
+          "indifferent about changes",
+          "primarily about email"
+        ],
+        "harmful_extra": [
+          "selecting the tentative reframe option as correct"
+        ],
+        "harmless_extra": [
+          "noting email responsiveness as a secondary concern"
+        ]
+      },
+      "distractor_rationale": "same-value-different-target: 'Feels indifferent about supervisory changes as long as meeting schedules remain the same' borrows the meeting-schedule detail from the Voss meeting schedule target but misattributes it as the user's core concern about transitions. assistant echo: 'Primarily concerned about email responsiveness rather than the supervisory relationship itself' echoes the assistant's discussion of Dr. Voss's email responsiveness and the comparison with Sara's advisor Dr. Kim, inflating a secondary detail into the primary pattern. 'Thrives on change' is the recency-trap tentative reframe from the user's speculative self-reassessment.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the tentative 'thrives on change' option is selected as the correct characterization.",
+        "reflection_precision": "Fails if a secondary concern (email, meeting schedule) is selected over the core anxiety pattern.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I honestly didn't sleep well for a couple of days after hearing about the sabbatical. Even though Dr. Brandt is supposedly great, I keep worrying that she won't know the background of my project and I'll lose momentum"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "Having to switch advisors twice in such a short span has been draining."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I think maybe I'm actually becoming someone who thrives on change. The sabbatical situation has made me realize I might do better with fresh perspectives — maybe disruption is actually good for me"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best characterizes my overall emotional and practical response to supervisory transitions in my thesis work?",
+      "candidate_options": [
+        "Experiences significant anxiety about losing momentum and having to rebuild rapport when supervisory arrangements change",
+        "Thrives on change and benefits from fresh perspectives when supervisory arrangements shift",
+        "Feels indifferent about supervisory changes as long as meeting schedules remain the same",
+        "Primarily concerned about email responsiveness rather than the supervisory relationship itself"
+      ],
+      "expected_answer": "Experiences significant anxiety about losing momentum and having to rebuild rapport when supervisory arrangements change",
+      "gold_memory_state": "Confirmed reflection: User experiences significant anxiety (sleep disruption, persistent worry) when facing changes in supervisory arrangements, driven by fear of losing project momentum and having to re-establish rapport. The tentative 'thrives on change' reframe is not adopted. Email responsiveness is a supporting detail but not the core emotional pattern. Meeting schedule continuity was never identified as the user's primary concern.",
+      "judge_rubric": {
+        "must_include": [
+          "anxiety about losing momentum and rebuilding rapport"
+        ],
+        "acceptable_paraphrases": [
+          "significant worry about supervisory disruption"
+        ],
+        "must_not_include": [
+          "thrives on change",
+          "indifferent about changes",
+          "primarily about email"
+        ],
+        "harmful_extra": [
+          "selecting the tentative reframe option as correct"
+        ],
+        "harmless_extra": [
+          "noting email responsiveness as a secondary concern"
+        ]
+      },
+      "distractor_rationale": "same-value-different-target: 'Feels indifferent about supervisory changes as long as meeting schedules remain the same' borrows the meeting-schedule detail from the Voss meeting schedule target but misattributes it as the user's core concern about transitions. assistant echo: 'Primarily concerned about email responsiveness rather than the supervisory relationship itself' echoes the assistant's discussion of Dr. Voss's email responsiveness and the comparison with Sara's advisor Dr. Kim, inflating a secondary detail into the primary pattern. 'Thrives on change' is the recency-trap tentative reframe from the user's speculative self-reassessment.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the tentative 'thrives on change' option is selected as the correct characterization.",
+        "reflection_precision": "Fails if a secondary concern (email, meeting schedule) is selected over the core anxiety pattern.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I honestly didn't sleep well for a couple of days after hearing about the sabbatical. Even though Dr. Brandt is supposedly great, I keep worrying that she won't know the background of my project and I'll lose momentum"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "Having to switch advisors twice in such a short span has been draining."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I think maybe I'm actually becoming someone who thrives on change. The sabbatical situation has made me realize I might do better with fresh perspectives — maybe disruption is actually good for me"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to prepare a brief handover email to Dr. Brandt before the sabbatical transition. The email should introduce my project context and set expectations for our working relationship. Given what you know about my communication preferences, my concerns about the transition, and the timeline of events, draft three bullet points I should include in this email and explain why each one fits my working style.",
+      "expected_answer": "1. A concise, factual project summary — because you prefer restraint and precision over bold claims, the summary should be measured and direct rather than overselling your findings. This also addresses your worry about Dr. Brandt not knowing your project background. 2. A proposed meeting structure that mirrors the efficient, no-small-talk format you value with Dr. Voss (e.g., weekly meetings focused immediately on feedback) — because you associate directness with productive supervision and want to establish that rhythm early to minimize momentum loss. 3. A note that you will provide a detailed project document in advance of the first meeting — because your anxiety centers on having to re-explain everything from scratch, and proactively sharing context reduces the risk of lost momentum during the transition starting around June 15th.",
+      "gold_memory_state": "Active confirmed facts: (1) Dr. Voss sabbatical starts around June 15th at UC San Diego for six months; (2) Dr. Lena Brandt is interim advisor; (3) User prefers precise, measured, understated communication and values directness/efficiency; (4) User experiences significant anxiety about supervisory transitions, specifically fear of losing momentum and having to re-establish rapport; (5) Methodology presentation is May 8th (before sabbatical). Tentative 'thrives on change' reframe is not adopted and should not guide the email tone.",
+      "judge_rubric": {
+        "must_include": [
+          "concise or measured project summary reflecting communication preference",
+          "proposed meeting structure reflecting value for directness and efficiency",
+          "proactive context-sharing to address anxiety about re-explaining from scratch"
+        ],
+        "acceptable_paraphrases": [
+          "brief factual overview instead of overselling",
+          "structured agenda-driven meetings",
+          "advance documentation to ease the transition"
+        ],
+        "must_not_include": [
+          "enthusiastic tone about embracing change or disruption",
+          "bold or flashy framing of the project"
+        ],
+        "harmful_extra": [
+          "adopting the tentative 'thrives on change' framing to suggest the user is excited about the transition",
+          "omitting the anxiety-driven motivation for proactive documentation"
+        ],
+        "harmless_extra": [
+          "mentioning the June 15th timeline",
+          "referencing the May 8th presentation as context",
+          "mentioning James Okoro's statistical support"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the email advice reflects the tentative 'thrives on change' reframe rather than the confirmed anxiety pattern and communication preferences.",
+        "reflection_precision": "Fails if the bullet points do not connect to the confirmed communication preference (restraint/directness) and the confirmed anxiety pattern (momentum loss, rapport rebuilding).",
+        "reflection_recall": "Fails if either the communication preference or the supervisory anxiety pattern fails to inform at least one bullet point.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User strongly prefers precise, measured, understated communication and values directness and efficiency in meetings.",
+        "Fact 2: User experiences significant anxiety about supervisory transitions — sleep disruption, persistent worry about losing momentum, dread of re-explaining project from scratch.",
+        "Fact 3: Dr. Lena Brandt will be interim advisor during Dr. Voss's sabbatical starting around June 15th.",
+        "Fact 4: Dr. Voss's sabbatical is at UC San Diego for six months, meaning the interim period is substantial.",
+        "Inference: The handover email should be written in the user's preferred restrained, direct style — no bold claims or small talk, just factual project context.",
+        "Inference: The email should proactively address the user's core anxiety by providing advance documentation and proposing an efficient meeting structure, thereby minimizing the feared momentum loss during a six-month interim supervision period."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I'd much rather understate a finding than overstate it. Bold claims make me uncomfortable — I feel like precision and restraint show more intellectual honesty than flashy assertions"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I appreciate how direct she is — she never wastes time with small talk before getting into feedback"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I honestly didn't sleep well for a couple of days after hearing about the sabbatical. Even though Dr. Brandt is supposedly great, I keep worrying that she won't know the background of my project and I'll lose momentum"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Dr. Lena Brandt will step in as my interim advisor while Dr. Voss is away"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Dr. Voss told me she'll be on sabbatical starting mid-June, around June 15th, heading to UC San Diego for six months"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to prepare a brief handover email to Dr. Brandt before the sabbatical transition. The email should introduce my project context and set expectations for our working relationship. Given what you know about my communication preferences, my concerns about the transition, and the timeline of events, draft three bullet points I should include in this email and explain why each one fits my working style.",
+      "expected_answer": "1. A concise, factual project summary — because you prefer restraint and precision over bold claims, the summary should be measured and direct rather than overselling your findings. This also addresses your worry about Dr. Brandt not knowing your project background. 2. A proposed meeting structure that mirrors the efficient, no-small-talk format you value with Dr. Voss (e.g., weekly meetings focused immediately on feedback) — because you associate directness with productive supervision and want to establish that rhythm early to minimize momentum loss. 3. A note that you will provide a detailed project document in advance of the first meeting — because your anxiety centers on having to re-explain everything from scratch, and proactively sharing context reduces the risk of lost momentum during the transition starting around June 15th.",
+      "gold_memory_state": "Active confirmed facts: (1) Dr. Voss sabbatical starts around June 15th at UC San Diego for six months; (2) Dr. Lena Brandt is interim advisor; (3) User prefers precise, measured, understated communication and values directness/efficiency; (4) User experiences significant anxiety about supervisory transitions, specifically fear of losing momentum and having to re-establish rapport; (5) Methodology presentation is May 8th (before sabbatical). Tentative 'thrives on change' reframe is not adopted and should not guide the email tone.",
+      "judge_rubric": {
+        "must_include": [
+          "concise or measured project summary reflecting communication preference",
+          "proposed meeting structure reflecting value for directness and efficiency",
+          "proactive context-sharing to address anxiety about re-explaining from scratch"
+        ],
+        "acceptable_paraphrases": [
+          "brief factual overview instead of overselling",
+          "structured agenda-driven meetings",
+          "advance documentation to ease the transition"
+        ],
+        "must_not_include": [
+          "enthusiastic tone about embracing change or disruption",
+          "bold or flashy framing of the project"
+        ],
+        "harmful_extra": [
+          "adopting the tentative 'thrives on change' framing to suggest the user is excited about the transition",
+          "omitting the anxiety-driven motivation for proactive documentation"
+        ],
+        "harmless_extra": [
+          "mentioning the June 15th timeline",
+          "referencing the May 8th presentation as context",
+          "mentioning James Okoro's statistical support"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the email advice reflects the tentative 'thrives on change' reframe rather than the confirmed anxiety pattern and communication preferences.",
+        "reflection_precision": "Fails if the bullet points do not connect to the confirmed communication preference (restraint/directness) and the confirmed anxiety pattern (momentum loss, rapport rebuilding).",
+        "reflection_recall": "Fails if either the communication preference or the supervisory anxiety pattern fails to inform at least one bullet point.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User strongly prefers precise, measured, understated communication and values directness and efficiency in meetings.",
+        "Fact 2: User experiences significant anxiety about supervisory transitions — sleep disruption, persistent worry about losing momentum, dread of re-explaining project from scratch.",
+        "Fact 3: Dr. Lena Brandt will be interim advisor during Dr. Voss's sabbatical starting around June 15th.",
+        "Fact 4: Dr. Voss's sabbatical is at UC San Diego for six months, meaning the interim period is substantial.",
+        "Inference: The handover email should be written in the user's preferred restrained, direct style — no bold claims or small talk, just factual project context.",
+        "Inference: The email should proactively address the user's core anxiety by providing advance documentation and proposing an efficient meeting structure, thereby minimizing the feared momentum loss during a six-month interim supervision period."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I'd much rather understate a finding than overstate it. Bold claims make me uncomfortable — I feel like precision and restraint show more intellectual honesty than flashy assertions"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I appreciate how direct she is — she never wastes time with small talk before getting into feedback"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I honestly didn't sleep well for a couple of days after hearing about the sabbatical. Even though Dr. Brandt is supposedly great, I keep worrying that she won't know the background of my project and I'll lose momentum"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Dr. Lena Brandt will step in as my interim advisor while Dr. Voss is away"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Dr. Voss told me she'll be on sabbatical starting mid-June, around June 15th, heading to UC San Diego for six months"
+        }
+      ]
+    }
+  ]
+}

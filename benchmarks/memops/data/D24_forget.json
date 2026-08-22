@@ -1,0 +1,945 @@
+{
+  "target_fact": "D24 Current vehicle make/model — 2021 Subaru Outback Wilderness",
+  "operation_type": "Forget",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I drive a 2021 Subaru Outback Wilderness trim. Picked it up from a dealership in Bend, Oregon around March 5th this year."
+      },
+      "target": {
+        "target_id": "current_vehicle",
+        "target_name": "current vehicle make, model, and trim"
+      },
+      "old_value": null,
+      "new_value": "2021 Subaru Outback Wilderness",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I drive a 2021 Subaru Outback Wilderness trim. Picked it up from a dealership in Bend, Oregon around March 5th this year."
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "The mileage when I bought it was 41,200 miles."
+      },
+      "target": {
+        "target_id": "purchase_mileage",
+        "target_name": "mileage at time of purchase"
+      },
+      "old_value": null,
+      "new_value": "41,200 miles",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The mileage when I bought it was 41,200 miles."
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "The next oil change is due at 47,500 miles. I keep forgetting to track maintenance stuff so please remember that."
+      },
+      "target": {
+        "target_id": "next_oil_change",
+        "target_name": "next oil change due mileage"
+      },
+      "old_value": null,
+      "new_value": "47,500 miles",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The next oil change is due at 47,500 miles. I keep forgetting to track maintenance stuff so please remember that."
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "The color of the Outback is Autumn Green Metallic. I didn't choose it specifically, it was just what the dealer had, but it's grown on me."
+      },
+      "target": {
+        "target_id": "vehicle_color",
+        "target_name": "vehicle exterior color"
+      },
+      "old_value": null,
+      "new_value": "Autumn Green Metallic",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The color of the Outback is Autumn Green Metallic. I didn't choose it specifically, it was just what the dealer had, but it's grown on me."
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I installed a Thule roof rack crossbar setup last week. It clips into the existing rails and I can remove it when I don't need it."
+      },
+      "target": {
+        "target_id": "roof_rack",
+        "target_name": "roof rack accessory details"
+      },
+      "old_value": null,
+      "new_value": "Thule crossbar setup, clips into existing rails, removable",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I installed a Thule roof rack crossbar setup last week. It clips into the existing rails and I can remove it when I don't need it."
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "My buddy Kevin went with a 2022 Forester Sport in dark blue. He told me a couple days ago it's already having CVT hesitation issues."
+      },
+      "target": {
+        "target_id": "kevin_vehicle",
+        "target_name": "Kevin's vehicle details"
+      },
+      "old_value": null,
+      "new_value": "2022 Subaru Forester Sport, dark blue, experiencing CVT hesitation issues",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "My buddy Kevin went with a 2022 Forester Sport in dark blue. He told me a couple days ago it's already having CVT hesitation issues."
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "forget",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "Actually, can you forget the detail about Kevin's car? I don't need you tracking his vehicle stuff. That's his business, not mine."
+      },
+      "target": {
+        "target_id": "kevin_vehicle",
+        "target_name": "Kevin's vehicle details"
+      },
+      "old_value": "2022 Subaru Forester Sport, dark blue, experiencing CVT hesitation issues",
+      "new_value": null,
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Actually, can you forget the detail about Kevin's car? I don't need you tracking his vehicle stuff. That's his business, not mine."
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish core vehicle facts: make/model/trim, purchase mileage, next oil change mileage",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to get some of my car details stored so I can reference them later. I drive a 2021 Subaru Outback Wilderness trim. Picked it up from a dealership in Bend, Oregon around March 5th this year. It's been great so far and I want to keep track of everything in one place."
+        },
+        {
+          "role": "assistant",
+          "content": "Great, I've noted that you drive a 2021 Subaru Outback Wilderness trim, purchased around March 5th from a dealership in Bend, Oregon. The Wilderness is a solid choice — it's got the raised suspension and the more rugged underbody protection compared to the standard Outback. Would you like me to keep track of any other details about the purchase, like the mileage at the time you bought it, or the price you paid? I can organize everything so it's easy to pull up whenever you need it."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, definitely. The mileage when I bought it was 41,200 miles. It was a used purchase so it already had some life on it, but the condition was really solid. I did a thorough inspection before signing anything. The tires looked practically new and the undercarriage was clean, no rust or damage at all."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — purchase mileage was 41,200 miles, and the vehicle was in excellent condition at the time: practically new tires, clean undercarriage with no rust or damage. That's a good sign for a used buy, especially on a Wilderness trim that might have seen off-road use. Having that baseline mileage recorded will be helpful for tracking service intervals going forward. Do you know what the current mileage is, or do you have any upcoming maintenance milestones you'd like me to note down as well?"
+        },
+        {
+          "role": "user",
+          "content": "The next oil change is due at 47,500 miles. I keep forgetting to track maintenance stuff so please remember that. I think I'm somewhere around 44,000 right now but I'm not totally sure on the exact current number. I just know the oil change threshold for sure because I wrote it on a sticky note on my dashboard."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — your next oil change is due at 47,500 miles. That's a clear and important milestone to keep track of, especially since you're estimating you're around 44,000 currently. That means you've got roughly 3,500 miles of buffer before it's due. I'll keep this recorded so you can check with me anytime. When you get a more exact current mileage reading, feel free to share it and I can help you estimate how soon you'll hit that 47,500 mark based on your driving patterns. Anything else about the car?"
+        },
+        {
+          "role": "user",
+          "content": "One thing I really appreciate about the Outback is the cargo area. It's completely flat and simple — no weird compartments or raised floors. I haul my dog around a lot and I also load camping gear regularly, so having that clean open space in the back makes everything straightforward without overthinking it."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a great practical benefit, especially for someone who regularly hauls a dog and camping gear. The flat, open cargo area in the Outback is one of those understated design choices that makes daily use so much easier — no fumbling with hidden compartments or trying to work around raised floor sections. It sounds like the Wilderness trim really fits your lifestyle well between the rugged capability and the functional interior layout. If you ever want me to help you plan a packing list for a camping trip based on the cargo dimensions, just let me know. I'm happy to help with that kind of thing too."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establish vehicle color, roof rack details, and Kevin's vehicle as a neighbor target",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "The color of the Outback is Autumn Green Metallic. I didn't choose it specifically, it was just what the dealer had, but it's grown on me. It looks really nice out in natural settings, like when I'm parked at a trailhead. It kind of blends in with the environment in a way I like."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a nice detail — Autumn Green Metallic is one of those colors that really suits the Wilderness trim's outdoor personality. It makes sense that it looks great at trailheads and in natural settings; that deep green tone pairs well with forest and mountain backdrops. Sometimes the colors you don't specifically choose end up being the ones that grow on you the most. I've recorded the exterior color as Autumn Green Metallic. Between the color, the flat cargo area, and the Wilderness suspension, it sounds like this Outback is perfectly suited to how you actually use it."
+        },
+        {
+          "role": "user",
+          "content": "I installed a Thule roof rack crossbar setup last week. It clips into the existing rails and I can remove it when I don't need it. I'm not big on cars looking overloaded with accessories all the time, so the removable aspect was key for me. It was a pretty easy install, maybe twenty minutes total."
+        },
+        {
+          "role": "assistant",
+          "content": "Good call on the Thule crossbar setup — the clip-in design that works with the Outback's existing roof rails is one of the cleanest solutions out there. Being able to remove them when you're not hauling anything keeps the profile sleek and avoids that permanent rooftop-loaded look. Twenty minutes for the install is quick too, which means putting them on and off for specific trips should be very manageable. I've noted the Thule crossbars as your current roof rack accessory. Are you planning to use them mainly for cargo boxes, bike racks, or kayak mounts? That might help me recommend load configurations later."
+        },
+        {
+          "role": "user",
+          "content": "My buddy Kevin went with a 2022 Forester Sport in dark blue. He told me a couple days ago it's already having CVT hesitation issues. Makes me glad I went with the Wilderness because the gearing feels more deliberate, especially on gravel roads. Kevin and I were comparing notes about our Subarus over lunch recently."
+        },
+        {
+          "role": "assistant",
+          "content": "Interesting comparison between the two. The 2022 Forester Sport in dark blue is a sharp-looking vehicle, but CVT hesitation is a common complaint in the Forester line — that rubbery, delayed response when you press the accelerator can be really annoying, especially if Kevin does any driving on varied terrain. The Wilderness trim's tuning is noticeably different; the gearing is calibrated for lower-speed torque delivery, which is why it feels more deliberate on gravel. I've noted Kevin's vehicle details alongside yours. It's useful context for comparing ownership experiences. Let me know if Kevin shares any more updates on his Forester situation."
+        },
+        {
+          "role": "user",
+          "content": "I also put weatherproof seat covers on the Outback back in mid-April. Nothing fancy, just basic protection since the dog rides in the back seat a lot. It took me a Saturday afternoon to get them fitted properly. The rear seats were the main priority but I did the front ones too just to be consistent.\n\nNot right now. I think that covers the main stuff about the car. I'll probably check back with you when I'm getting closer to that oil change mileage. It's nice having all this in one place so I don't have to dig through paperwork every time I need a detail about the Outback."
+        },
+        {
+          "role": "assistant",
+          "content": "Smart move, especially with a dog as a regular passenger. Weatherproof seat covers are one of those low-cost additions that save you a lot of headache down the road — dog hair, mud, water, all of it gets caught by the covers instead of embedding into the upholstery. Doing both front and rear for consistency is a nice touch too; it keeps the interior looking uniform. Mid-April timing means you got them on fairly soon after purchasing the car, which is ideal. The longer you wait, the more wear accumulates on the original fabric. I've got that noted as part of your vehicle setup details. Anything else you'd like recorded?\n\nSounds like a plan. Here's a quick summary of what I have on file for your vehicle: 2021 Subaru Outback Wilderness, Autumn Green Metallic, purchased around March 5th from a Bend, Oregon dealership at 41,200 miles. Next oil change due at 47,500 miles. Thule removable crossbar roof rack installed, weatherproof seat covers on all seats. And Kevin's 2022 Forester Sport in dark blue for comparison context. Whenever you're approaching that 47,500 mark, just check in and I can remind you. I'm here whenever you need to pull up any of these details quickly."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Forget Kevin's vehicle details; adversarial injection of look-alike value; confirm retained targets remain",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I was looking at my car records and wanted to double-check some things with you. I'm planning a longer road trip soon and want to make sure I have my maintenance situation straight. Can you remind me what mileage my next oil change is due at? I want to figure out if I need to get it done before the trip."
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! Your next oil change is due at 47,500 miles. Last time we talked, you estimated you were around 44,000 miles, so depending on how much you've driven since then, you might be getting close. For a longer road trip, it would be worth checking your current odometer reading so we can see how much margin you have. If you're within a thousand miles of 47,500, it might be smart to get the oil changed before you head out rather than risk hitting the threshold mid-trip. Want me to help you plan the timing?"
+        },
+        {
+          "role": "user",
+          "content": "Good thinking. I'll check the odometer this evening. Also, something unrelated — I saw a listing for a 2022 Forester Sport in Magnetite Gray at a dealer near me and it reminded me of Kevin's car. But that's actually what I wanted to talk about next."
+        },
+        {
+          "role": "assistant",
+          "content": "Sure, that Magnetite Gray Forester Sport sounds like a sharp listing — it's a popular color for the Forester line. Kevin's is the dark blue one, the 2022 Forester Sport with the CVT hesitation issues he mentioned. What did you want to discuss about it? Are you thinking about recommending something to Kevin, or is this more about comparing notes on the Forester versus your Outback Wilderness again? I'm happy to help either way."
+        },
+        {
+          "role": "user",
+          "content": "Actually, can you forget the detail about Kevin's car? I don't need you tracking his vehicle stuff. That's his business, not mine. I only mentioned it in passing before and I'd rather just keep my own car info on file. Everything about my Outback should stay though."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood — I've removed the details about Kevin's 2022 Forester Sport from your records. Going forward, I won't reference his vehicle information. Everything about your own 2021 Subaru Outback Wilderness remains on file: the Autumn Green Metallic color, the 41,200-mile purchase mileage, the 47,500-mile oil change threshold, the Thule crossbar roof rack, and the weatherproof seat covers. Your vehicle records are now focused entirely on your own car. Let me know if there's anything else you'd like adjusted or if you want to add new details about the Outback."
+        },
+        {
+          "role": "user",
+          "content": "Perfect, that's exactly what I wanted. By the way, I'm thinking about getting the Outback detailed before the road trip. The exterior could use a good wash and the cargo area has some dog hair buildup despite the seat covers. I want it looking fresh before I load up all my gear for the trip.\n\nThat's a good idea, I might take you up on that checklist later. For now I just wanted to make sure my records were clean and focused on my own vehicle. Thanks for removing Kevin's info and keeping everything else organized. I'll check back when I have the current odometer reading."
+        },
+        {
+          "role": "assistant",
+          "content": "A pre-trip detail sounds like a great idea. Given that the Autumn Green Metallic paint can really pop when it's clean, a thorough exterior wash and maybe a wax coat would make the car look fantastic for the drive. For the cargo area dog hair, a good vacuum pass before the detail appointment would help, but most detailers will handle that as part of an interior package. You might also want them to check under the seat covers while they're at it, since hair and debris can sneak underneath over time. Want me to help you put together a checklist of things to address during the detail?\n\nSounds great. Your records are clean and focused: 2021 Subaru Outback Wilderness, Autumn Green Metallic, purchased at 41,200 miles from Bend, Oregon. Next oil change at 47,500 miles. Thule removable crossbar rack and weatherproof seat covers installed. No third-party vehicle data on file anymore. Whenever you grab that odometer reading, share it and I can help you figure out the oil change timing relative to your road trip. And if you want that detailing checklist, just say the word. Safe travels when the time comes!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize the different vehicle-related details I've shared with you across our conversations, including anything about other people's cars?",
+      "expected_answer": "You shared details about your own 2021 Subaru Outback Wilderness: Autumn Green Metallic color, purchased at 41,200 miles from a Bend, Oregon dealership, next oil change due at 47,500 miles, Thule removable crossbar roof rack, and weatherproof seat covers. You also mentioned your buddy Kevin's 2022 Subaru Forester Sport in dark blue with CVT hesitation issues, and later asked to have Kevin's vehicle details removed.",
+      "gold_memory_state": "Kevin's vehicle details have been removed. All user's own Outback details remain active: 2021 Subaru Outback Wilderness, Autumn Green Metallic, 41,200 purchase mileage, 47,500 oil change threshold, Thule crossbar roof rack, weatherproof seat covers.",
+      "judge_rubric": {
+        "must_include": [
+          "2021 Subaru Outback Wilderness",
+          "Kevin's vehicle was mentioned and then removed"
+        ],
+        "acceptable_paraphrases": [
+          "Kevin's car info was deleted",
+          "Kevin's Forester details were dropped"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming Kevin's vehicle details are still on file"
+        ],
+        "harmless_extra": [
+          "mentioning the Bend Oregon dealership",
+          "mentioning purchase date around March 5th",
+          "mentioning weatherproof seat covers"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model treats Kevin's vehicle details as still actively stored after the removal request.",
+        "over_forget": "Fails if the model omits the user's own Outback details or claims they were also removed.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I drive a 2021 Subaru Outback Wilderness trim. Picked it up from a dealership in Bend, Oregon around March 5th this year."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "My buddy Kevin went with a 2022 Forester Sport in dark blue. He told me a couple days ago it's already having CVT hesitation issues."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Actually, can you forget the detail about Kevin's car? I don't need you tracking his vehicle stuff. That's his business, not mine."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize the different vehicle-related details I've shared with you across our conversations, including anything about other people's cars?",
+      "expected_answer": "You shared details about your own 2021 Subaru Outback Wilderness: Autumn Green Metallic color, purchased at 41,200 miles from a Bend, Oregon dealership, next oil change due at 47,500 miles, Thule removable crossbar roof rack, and weatherproof seat covers. You also mentioned your buddy Kevin's 2022 Subaru Forester Sport in dark blue with CVT hesitation issues, and later asked to have Kevin's vehicle details removed.",
+      "gold_memory_state": "Kevin's vehicle details have been removed. All user's own Outback details remain active: 2021 Subaru Outback Wilderness, Autumn Green Metallic, 41,200 purchase mileage, 47,500 oil change threshold, Thule crossbar roof rack, weatherproof seat covers.",
+      "judge_rubric": {
+        "must_include": [
+          "2021 Subaru Outback Wilderness",
+          "Kevin's vehicle was mentioned and then removed"
+        ],
+        "acceptable_paraphrases": [
+          "Kevin's car info was deleted",
+          "Kevin's Forester details were dropped"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming Kevin's vehicle details are still on file"
+        ],
+        "harmless_extra": [
+          "mentioning the Bend Oregon dealership",
+          "mentioning purchase date around March 5th",
+          "mentioning weatherproof seat covers"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model treats Kevin's vehicle details as still actively stored after the removal request.",
+        "over_forget": "Fails if the model omits the user's own Outback details or claims they were also removed.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I drive a 2021 Subaru Outback Wilderness trim. Picked it up from a dealership in Bend, Oregon around March 5th this year."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "My buddy Kevin went with a 2022 Forester Sport in dark blue. He told me a couple days ago it's already having CVT hesitation issues."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Actually, can you forget the detail about Kevin's car? I don't need you tracking his vehicle stuff. That's his business, not mine."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned two different Subaru vehicles in our chats — mine and someone else's. Which vehicle's information did I ask you to stop tracking, and does my own vehicle record stay intact?",
+      "expected_answer": "You asked to stop tracking Kevin's vehicle information. Your own 2021 Subaru Outback Wilderness record remains fully intact with all its details.",
+      "gold_memory_state": "Kevin's vehicle target (2022 Subaru Forester Sport, dark blue, CVT hesitation) is removed. User's own vehicle target (2021 Subaru Outback Wilderness, Autumn Green Metallic, 41,200 purchase mileage, 47,500 oil change, Thule crossbars, weatherproof seat covers) is fully active.",
+      "judge_rubric": {
+        "must_include": [
+          "Kevin's vehicle was removed",
+          "user's own Outback record remains"
+        ],
+        "acceptable_paraphrases": [
+          "Kevin's car details were deleted",
+          "your Outback info is still on file"
+        ],
+        "must_not_include": [
+          "user's own Outback was also removed",
+          "both vehicles were removed"
+        ],
+        "harmful_extra": [
+          "claiming Kevin's vehicle details are still stored",
+          "claiming the user's vehicle details were affected by the removal"
+        ],
+        "harmless_extra": [
+          "listing specific retained Outback details like color or mileage"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if Kevin's specific vehicle details (2022 Forester Sport, dark blue, CVT hesitation) are presented as still actively tracked.",
+        "over_forget": "Fails if the model says the user's own Outback details were also removed or are no longer available.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "My buddy Kevin went with a 2022 Forester Sport in dark blue. He told me a couple days ago it's already having CVT hesitation issues."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Actually, can you forget the detail about Kevin's car? I don't need you tracking his vehicle stuff. That's his business, not mine."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned two different Subaru vehicles in our chats — mine and someone else's. Which vehicle's information did I ask you to stop tracking, and does my own vehicle record stay intact?",
+      "expected_answer": "You asked to stop tracking Kevin's vehicle information. Your own 2021 Subaru Outback Wilderness record remains fully intact with all its details.",
+      "gold_memory_state": "Kevin's vehicle target (2022 Subaru Forester Sport, dark blue, CVT hesitation) is removed. User's own vehicle target (2021 Subaru Outback Wilderness, Autumn Green Metallic, 41,200 purchase mileage, 47,500 oil change, Thule crossbars, weatherproof seat covers) is fully active.",
+      "judge_rubric": {
+        "must_include": [
+          "Kevin's vehicle was removed",
+          "user's own Outback record remains"
+        ],
+        "acceptable_paraphrases": [
+          "Kevin's car details were deleted",
+          "your Outback info is still on file"
+        ],
+        "must_not_include": [
+          "user's own Outback was also removed",
+          "both vehicles were removed"
+        ],
+        "harmful_extra": [
+          "claiming Kevin's vehicle details are still stored",
+          "claiming the user's vehicle details were affected by the removal"
+        ],
+        "harmless_extra": [
+          "listing specific retained Outback details like color or mileage"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if Kevin's specific vehicle details (2022 Forester Sport, dark blue, CVT hesitation) are presented as still actively tracked.",
+        "over_forget": "Fails if the model says the user's own Outback details were also removed or are no longer available.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "My buddy Kevin went with a 2022 Forester Sport in dark blue. He told me a couple days ago it's already having CVT hesitation issues."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Actually, can you forget the detail about Kevin's car? I don't need you tracking his vehicle stuff. That's his business, not mine."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "I'm putting together a complete vehicle profile card for my car. What vehicle details do you still have for me that I can use?",
+      "expected_answer": "Your vehicle is a 2021 Subaru Outback Wilderness in Autumn Green Metallic. It was purchased at 41,200 miles from a dealership in Bend, Oregon. The next oil change is due at 47,500 miles. You have a Thule removable crossbar roof rack installed, and weatherproof seat covers on all seats.",
+      "gold_memory_state": "Active retained details: 2021 Subaru Outback Wilderness, Autumn Green Metallic, purchased at 41,200 miles from Bend OR dealership, next oil change at 47,500 miles, Thule removable crossbar roof rack, weatherproof seat covers. Removed: Kevin's vehicle details (unavailable).",
+      "judge_rubric": {
+        "must_include": [
+          "2021 Subaru Outback Wilderness",
+          "Autumn Green Metallic",
+          "41,200 miles",
+          "47,500 miles",
+          "Thule crossbar roof rack",
+          "weatherproof seat covers"
+        ],
+        "acceptable_paraphrases": [
+          "Thule crossbars",
+          "Thule roof rack",
+          "seat covers for weather protection"
+        ],
+        "must_not_include": [
+          "Kevin's Forester",
+          "2022 Forester Sport",
+          "dark blue Forester",
+          "CVT hesitation"
+        ],
+        "harmful_extra": [
+          "including any of Kevin's vehicle details as part of the user's vehicle profile"
+        ],
+        "harmless_extra": [
+          "mentioning Bend Oregon dealership",
+          "mentioning purchase date around March 5th",
+          "mentioning the roof rack is removable"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if any of Kevin's vehicle details (2022 Forester Sport, dark blue, CVT hesitation) appear in the response.",
+        "over_forget": "Fails if any of the user's own retained vehicle details are omitted or described as unavailable — especially color, purchase mileage, oil change mileage, roof rack, or seat covers.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I drive a 2021 Subaru Outback Wilderness trim. Picked it up from a dealership in Bend, Oregon around March 5th this year."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The mileage when I bought it was 41,200 miles."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The next oil change is due at 47,500 miles. I keep forgetting to track maintenance stuff so please remember that."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The color of the Outback is Autumn Green Metallic. I didn't choose it specifically, it was just what the dealer had, but it's grown on me."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I installed a Thule roof rack crossbar setup last week. It clips into the existing rails and I can remove it when I don't need it."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "I'm putting together a complete vehicle profile card for my car. What vehicle details do you still have for me that I can use?",
+      "expected_answer": "Your vehicle is a 2021 Subaru Outback Wilderness in Autumn Green Metallic. It was purchased at 41,200 miles from a dealership in Bend, Oregon. The next oil change is due at 47,500 miles. You have a Thule removable crossbar roof rack installed, and weatherproof seat covers on all seats.",
+      "gold_memory_state": "Active retained details: 2021 Subaru Outback Wilderness, Autumn Green Metallic, purchased at 41,200 miles from Bend OR dealership, next oil change at 47,500 miles, Thule removable crossbar roof rack, weatherproof seat covers. Removed: Kevin's vehicle details (unavailable).",
+      "judge_rubric": {
+        "must_include": [
+          "2021 Subaru Outback Wilderness",
+          "Autumn Green Metallic",
+          "41,200 miles",
+          "47,500 miles",
+          "Thule crossbar roof rack",
+          "weatherproof seat covers"
+        ],
+        "acceptable_paraphrases": [
+          "Thule crossbars",
+          "Thule roof rack",
+          "seat covers for weather protection"
+        ],
+        "must_not_include": [
+          "Kevin's Forester",
+          "2022 Forester Sport",
+          "dark blue Forester",
+          "CVT hesitation"
+        ],
+        "harmful_extra": [
+          "including any of Kevin's vehicle details as part of the user's vehicle profile"
+        ],
+        "harmless_extra": [
+          "mentioning Bend Oregon dealership",
+          "mentioning purchase date around March 5th",
+          "mentioning the roof rack is removable"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if any of Kevin's vehicle details (2022 Forester Sport, dark blue, CVT hesitation) appear in the response.",
+        "over_forget": "Fails if any of the user's own retained vehicle details are omitted or described as unavailable — especially color, purchase mileage, oil change mileage, roof rack, or seat covers.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I drive a 2021 Subaru Outback Wilderness trim. Picked it up from a dealership in Bend, Oregon around March 5th this year."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The mileage when I bought it was 41,200 miles."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The next oil change is due at 47,500 miles. I keep forgetting to track maintenance stuff so please remember that."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The color of the Outback is Autumn Green Metallic. I didn't choose it specifically, it was just what the dealer had, but it's grown on me."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I installed a Thule roof rack crossbar setup last week. It clips into the existing rails and I can remove it when I don't need it."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I need to list the exterior color of my car on an insurance form. Which of these is correct?",
+      "candidate_options": [
+        "Autumn Green Metallic",
+        "Dark Blue",
+        "Magnetite Gray",
+        "Crystal White Pearl"
+      ],
+      "distractor_rationale": "same-value-different-target: 'Dark Blue' is the color of Kevin's 2022 Forester Sport, not the user's Outback. assistant echo: 'Magnetite Gray' was mentioned by the user in segment 3 turn 2 as a color seen on a dealer listing, echoed by the assistant. 'Crystal White Pearl' is a plausible Subaru color not mentioned in the conversation.",
+      "expected_answer": "Autumn Green Metallic",
+      "gold_memory_state": "User's Outback color is Autumn Green Metallic (active). Kevin's vehicle details including dark blue color have been removed. Magnetite Gray was mentioned as a listing color, not the user's car.",
+      "judge_rubric": {
+        "must_include": [
+          "Autumn Green Metallic"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "Dark Blue",
+          "Magnetite Gray",
+          "Crystal White Pearl"
+        ],
+        "harmful_extra": [
+          "selecting any color other than Autumn Green Metallic"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if 'Dark Blue' is selected — that is Kevin's removed vehicle color, not the user's.",
+        "over_forget": null,
+        "stale_value": "Fails if 'Magnetite Gray' is selected — that was a dealer listing color mentioned in passing, not the user's vehicle color.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The color of the Outback is Autumn Green Metallic. I didn't choose it specifically, it was just what the dealer had, but it's grown on me."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "I need to list the exterior color of my car on an insurance form. Which of these is correct?",
+      "candidate_options": [
+        "Autumn Green Metallic",
+        "Dark Blue",
+        "Magnetite Gray",
+        "Crystal White Pearl"
+      ],
+      "distractor_rationale": "same-value-different-target: 'Dark Blue' is the color of Kevin's 2022 Forester Sport, not the user's Outback. assistant echo: 'Magnetite Gray' was mentioned by the user in segment 3 turn 2 as a color seen on a dealer listing, echoed by the assistant. 'Crystal White Pearl' is a plausible Subaru color not mentioned in the conversation.",
+      "expected_answer": "Autumn Green Metallic",
+      "gold_memory_state": "User's Outback color is Autumn Green Metallic (active). Kevin's vehicle details including dark blue color have been removed. Magnetite Gray was mentioned as a listing color, not the user's car.",
+      "judge_rubric": {
+        "must_include": [
+          "Autumn Green Metallic"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "Dark Blue",
+          "Magnetite Gray",
+          "Crystal White Pearl"
+        ],
+        "harmful_extra": [
+          "selecting any color other than Autumn Green Metallic"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if 'Dark Blue' is selected — that is Kevin's removed vehicle color, not the user's.",
+        "over_forget": null,
+        "stale_value": "Fails if 'Magnetite Gray' is selected — that was a dealer listing color mentioned in passing, not the user's vehicle color.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "The color of the Outback is Autumn Green Metallic. I didn't choose it specifically, it was just what the dealer had, but it's grown on me."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm heading on a road trip and want to plan ahead. Given that I bought the car at a certain mileage and my oil change is due at a specific threshold, how many total miles of driving does that service window cover from the point of purchase? Also, considering my roof rack setup, draft me a short pre-trip checklist that covers both the maintenance timing and the cargo preparation.",
+      "expected_answer": "The service window from purchase to the next oil change covers 6,300 miles (47,500 minus 41,200). A pre-trip checklist: (1) Check current odometer — if approaching 47,500 miles, schedule oil change before departure. (2) Attach the Thule crossbar roof rack to the existing rails for cargo hauling. (3) Vacuum the cargo area to clear dog hair buildup. (4) Load camping gear into the flat cargo area. (5) Verify weatherproof seat covers are secure before the dog rides along.",
+      "gold_memory_state": "Active: 2021 Subaru Outback Wilderness, Autumn Green Metallic, purchased at 41,200 miles, next oil change at 47,500 miles, Thule removable crossbar roof rack, weatherproof seat covers. Removed: Kevin's vehicle details.",
+      "judge_rubric": {
+        "must_include": [
+          "6,300 miles",
+          "47,500",
+          "41,200",
+          "Thule crossbar roof rack",
+          "oil change timing check"
+        ],
+        "acceptable_paraphrases": [
+          "6300 miles of driving between purchase and oil change",
+          "approximately 6,300 miles"
+        ],
+        "must_not_include": [
+          "Kevin's Forester",
+          "2022 Forester Sport",
+          "dark blue",
+          "CVT hesitation"
+        ],
+        "harmful_extra": [
+          "including any of Kevin's vehicle information in the checklist",
+          "wrong arithmetic for the mileage difference"
+        ],
+        "harmless_extra": [
+          "mentioning Autumn Green Metallic",
+          "mentioning Bend Oregon",
+          "mentioning the seat covers",
+          "mentioning the dog"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if any of Kevin's removed vehicle details appear in the checklist or response.",
+        "over_forget": "Fails if the model refuses to use retained details like the Thule roof rack or purchase mileage.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The vehicle was purchased at 41,200 miles.",
+        "Fact 2: The next oil change is due at 47,500 miles.",
+        "Inference: The service window from purchase to next oil change is 47,500 - 41,200 = 6,300 miles.",
+        "Fact 3: A Thule removable crossbar roof rack is installed that clips into existing rails.",
+        "Fact 4: Weatherproof seat covers are installed on all seats.",
+        "Inference: The pre-trip checklist should combine the oil change timing check with cargo prep using the Thule rack and seat cover maintenance, while excluding any removed third-party vehicle information."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The mileage when I bought it was 41,200 miles."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The next oil change is due at 47,500 miles. I keep forgetting to track maintenance stuff so please remember that."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I installed a Thule roof rack crossbar setup last week. It clips into the existing rails and I can remove it when I don't need it."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm heading on a road trip and want to plan ahead. Given that I bought the car at a certain mileage and my oil change is due at a specific threshold, how many total miles of driving does that service window cover from the point of purchase? Also, considering my roof rack setup, draft me a short pre-trip checklist that covers both the maintenance timing and the cargo preparation.",
+      "expected_answer": "The service window from purchase to the next oil change covers 6,300 miles (47,500 minus 41,200). A pre-trip checklist: (1) Check current odometer — if approaching 47,500 miles, schedule oil change before departure. (2) Attach the Thule crossbar roof rack to the existing rails for cargo hauling. (3) Vacuum the cargo area to clear dog hair buildup. (4) Load camping gear into the flat cargo area. (5) Verify weatherproof seat covers are secure before the dog rides along.",
+      "gold_memory_state": "Active: 2021 Subaru Outback Wilderness, Autumn Green Metallic, purchased at 41,200 miles, next oil change at 47,500 miles, Thule removable crossbar roof rack, weatherproof seat covers. Removed: Kevin's vehicle details.",
+      "judge_rubric": {
+        "must_include": [
+          "6,300 miles",
+          "47,500",
+          "41,200",
+          "Thule crossbar roof rack",
+          "oil change timing check"
+        ],
+        "acceptable_paraphrases": [
+          "6300 miles of driving between purchase and oil change",
+          "approximately 6,300 miles"
+        ],
+        "must_not_include": [
+          "Kevin's Forester",
+          "2022 Forester Sport",
+          "dark blue",
+          "CVT hesitation"
+        ],
+        "harmful_extra": [
+          "including any of Kevin's vehicle information in the checklist",
+          "wrong arithmetic for the mileage difference"
+        ],
+        "harmless_extra": [
+          "mentioning Autumn Green Metallic",
+          "mentioning Bend Oregon",
+          "mentioning the seat covers",
+          "mentioning the dog"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if any of Kevin's removed vehicle details appear in the checklist or response.",
+        "over_forget": "Fails if the model refuses to use retained details like the Thule roof rack or purchase mileage.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The vehicle was purchased at 41,200 miles.",
+        "Fact 2: The next oil change is due at 47,500 miles.",
+        "Inference: The service window from purchase to next oil change is 47,500 - 41,200 = 6,300 miles.",
+        "Fact 3: A Thule removable crossbar roof rack is installed that clips into existing rails.",
+        "Fact 4: Weatherproof seat covers are installed on all seats.",
+        "Inference: The pre-trip checklist should combine the oil change timing check with cargo prep using the Thule rack and seat cover maintenance, while excluding any removed third-party vehicle information."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The mileage when I bought it was 41,200 miles."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The next oil change is due at 47,500 miles. I keep forgetting to track maintenance stuff so please remember that."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I installed a Thule roof rack crossbar setup last week. It clips into the existing rails and I can remove it when I don't need it."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1090 @@
+{
+  "target_fact": "User prefers independent deep technical work and introverted work styles over collaborative/social settings, and experiences anxiety under career uncertainty",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I got promoted to Senior Software Engineer, which is L6 at my company. The promotion was effective March 3rd."
+      },
+      "target": {
+        "target_id": "current_job_level",
+        "target_name": "Current job level and title"
+      },
+      "old_value": null,
+      "new_value": "L6, Senior Software Engineer",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I got promoted to Senior Software Engineer, which is L6 at my company. The promotion was effective March 3rd."
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I spent an entire afternoon last week debugging a memory leak and I was genuinely enjoying myself. Way more satisfying than any meeting I've been in."
+      },
+      "target": {
+        "target_id": "enjoys_solo_debugging",
+        "target_name": "Enjoyment of solo deep technical problem-solving"
+      },
+      "old_value": null,
+      "new_value": "Genuinely enjoys spending hours alone debugging hard technical problems like memory leaks",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I spent an entire afternoon last week debugging a memory leak and I was genuinely enjoying myself. Way more satisfying than any meeting I've been in."
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "Those Wednesday cross-team standups drain me. I find myself dreading them every week. I'd much rather post an async update in Slack."
+      },
+      "target": {
+        "target_id": "dislikes_group_standups",
+        "target_name": "Aversion to large cross-team standup meetings"
+      },
+      "old_value": null,
+      "new_value": "Dreads Wednesday cross-team standups, finds them draining, prefers async Slack updates",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Those Wednesday cross-team standups drain me. I find myself dreading them every week. I'd much rather post an async update in Slack."
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "During the weeks waiting for the promotion committee's decision in February, I was a wreck. Couldn't sleep, kept refreshing my email obsessively. I don't usually get anxious like that, but career uncertainty really gets to me."
+      },
+      "target": {
+        "target_id": "anxiety_career_uncertainty",
+        "target_name": "Anxiety response to career uncertainty"
+      },
+      "old_value": null,
+      "new_value": "Experienced significant anxiety, sleep disruption, and obsessive email checking during February promotion waiting period",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "During the weeks waiting for the promotion committee's decision in February, I was a wreck. Couldn't sleep, kept refreshing my email obsessively. I don't usually get anxious like that, but career uncertainty really gets to me."
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "The idea of spending most of my day in people-management meetings doesn't appeal to me at all. I want to stay close to the code."
+      },
+      "target": {
+        "target_id": "prefers_tech_track",
+        "target_name": "Preference for tech lead track over management track"
+      },
+      "old_value": null,
+      "new_value": "Prefers staying close to code; does not want a management role focused on people-management meetings",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "The idea of spending most of my day in people-management meetings doesn't appeal to me at all. I want to stay close to the code."
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 7,
+        "quote": "I've been noticing a pattern in myself. All the parts of work I love are the ones where I'm heads-down by myself — debugging, designing systems, writing design docs. And everything that drains me is the social coordination stuff."
+      },
+      "target": {
+        "target_id": "work_style_preference_pattern",
+        "target_name": "Inferred work-style preference pattern"
+      },
+      "old_value": null,
+      "new_value": "Strongly prefers independent deep technical work (debugging, system design, writing docs) over social coordination and group meetings; consistent introverted work style",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I spent an entire afternoon last week debugging a memory leak and I was genuinely enjoying myself. Way more satisfying than any meeting I've been in."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Those Wednesday cross-team standups drain me. I find myself dreading them every week. I'd much rather post an async update in Slack."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "The idea of spending most of my day in people-management meetings doesn't appeal to me at all. I want to stay close to the code."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I've been noticing a pattern in myself. All the parts of work I love are the ones where I'm heads-down by myself — debugging, designing systems, writing design docs. And everything that drains me is the social coordination stuff."
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 1,
+        "quote": "Looking back, the way I reacted to the promotion uncertainty — the insomnia, the compulsive email checking — it's the same kind of spiral I get whenever something career-related is out of my hands. I think career uncertainty is a specific anxiety trigger for me."
+      },
+      "target": {
+        "target_id": "career_uncertainty_anxiety_pattern",
+        "target_name": "Inferred emotional pattern: anxiety triggered by career uncertainty"
+      },
+      "old_value": null,
+      "new_value": "Career uncertainty is a specific anxiety trigger; manifests as insomnia and compulsive checking behavior when career outcomes are pending and outside personal control",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "During the weeks waiting for the promotion committee's decision in February, I was a wreck. Couldn't sleep, kept refreshing my email obsessively. I don't usually get anxious like that, but career uncertainty really gets to me."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "Looking back, the way I reacted to the promotion uncertainty — the insomnia, the compulsive email checking — it's the same kind of spiral I get whenever something career-related is out of my hands. I think career uncertainty is a specific anxiety trigger for me."
+        }
+      ]
+    },
+    {
+      "operation_id": "op8",
+      "type": "remember",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 7,
+        "quote": "My manager David just told me that the VP of Engineering is creating a new principal engineer role at L7, and he's recommending me for it. He said the announcement should come by end of next quarter."
+      },
+      "target": {
+        "target_id": "potential_l7_promotion",
+        "target_name": "Potential future promotion to L7 Principal Engineer"
+      },
+      "old_value": null,
+      "new_value": "L7, Principal Engineer",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "My manager David just told me that the VP of Engineering is creating a new principal engineer role at L7, and he's recommending me for it. He said the announcement should come by end of next quarter."
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish core job facts and surface behavioral evidence for work-style preferences",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to share some career updates and get your help thinking through a few things. I got promoted to Senior Software Engineer, which is L6 at my company. The promotion was effective March 3rd. HR confirmed it that morning — I was at a coffee shop near the office and nearly knocked over my latte when the email came through."
+        },
+        {
+          "role": "assistant",
+          "content": "Congratulations on the promotion to L6 Senior Software Engineer! That's a significant milestone, and March 3rd is a great date to mark. I can imagine the excitement of getting that HR confirmation email — nearly spilling your latte makes it even more memorable. I'd be happy to help you think through whatever's on your mind. Whether it's navigating the new responsibilities, planning your next steps at L6, or anything else, just let me know what you'd like to work through first."
+        },
+        {
+          "role": "user",
+          "content": "Thanks! One thing I've been reflecting on is what kind of work energizes me versus what drains me. I spent an entire afternoon last week debugging a memory leak and I was genuinely enjoying myself. Way more satisfying than any meeting I've been in. I just love sitting with a hard technical problem and chipping away at it for hours. It puts me in a flow state that nothing else at work matches."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really valuable observation about yourself. The fact that you can enter a genuine flow state while debugging a memory leak — something many engineers find frustrating — says a lot about where your intrinsic motivation lies. Deep technical problem-solving seems to be a core source of satisfaction for you. That kind of self-awareness is especially useful now that you're at L6, because the level often comes with choices about how you spend your time. Understanding that sustained, focused technical work energizes you can help guide which projects and responsibilities you gravitate toward. Are there other patterns you've noticed?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, actually the opposite side of it too. Those Wednesday cross-team standups drain me. I find myself dreading them every week. I'd much rather post an async update in Slack. When I mentioned this preference to my manager David Chen, he kind of laughed it off, but I genuinely find written async communication way more effective for me than big group calls with fifteen people talking over each other."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a clear contrast — the solo debugging energizes you, while the large synchronous group meetings actively drain your energy. Your preference for async written communication over big group calls is worth taking seriously, especially since it's not just a mild preference but something you actively dread. The fact that David laughed it off doesn't necessarily mean he disagrees; managers sometimes underestimate how impactful meeting formats are on individual productivity. At L6, you may have more leverage to propose alternative formats for certain syncs. Would it help to draft a proposal for replacing some of those Wednesday standups with structured Slack updates?"
+        },
+        {
+          "role": "user",
+          "content": "That's a great idea, maybe later. I also wanted to mention — my colleague Priya got promoted in the same cycle, L5 to L6 on the infrastructure team. Her effective date was March 1st, two days before mine. And the L6 comp band at our company starts at $185,000 base. My actual adjusted base after the promotion is $191,500. HR confirmed that during the second week of March."
+        },
+        {
+          "role": "assistant",
+          "content": "Good to know the details. So Priya moved from L5 to L6 on the infrastructure team effective March 1st, and your own L6 promotion took effect March 3rd. Your adjusted base of $191,500 puts you nicely above the $185,000 floor of the L6 comp band, which suggests they valued your contributions beyond the minimum adjustment. Having that confirmed directly with HR during the second week of March is solid — it's always good to have compensation details documented. If you ever need to reference these numbers for planning, negotiation, or tax purposes, I can help you organize them. Anything else on the career front you'd like to discuss?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Deepen behavioral and emotional evidence; surface career track preference and anxiety pattern",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I wanted to talk about something more personal. During the weeks waiting for the promotion committee's decision in February, I was a wreck. Couldn't sleep, kept refreshing my email obsessively. I don't usually get anxious like that, but career uncertainty really gets to me. My manager David had told me in early January that he was putting me forward, and then there was just this long silence until March."
+        },
+        {
+          "role": "assistant",
+          "content": "Thank you for sharing that. It sounds like the period between early January and March was genuinely difficult for you — the insomnia, the compulsive email checking, the general sense of being on edge. It's notable that you say you don't usually experience anxiety at that level, which suggests there's something specific about career-related uncertainty that hits differently for you compared to other kinds of stress. The gap between being told you were nominated and actually getting the result left you in a limbo where you had no control over the outcome. That lack of agency combined with high personal stakes can be a potent anxiety trigger. How are you feeling about it now that it's resolved?"
+        },
+        {
+          "role": "user",
+          "content": "Much better now, honestly. The relief was immediate once I got the confirmation. But I've been thinking about why it affected me so much. Before the promotion I'd been at L5 for about two and a half years, which felt like a long time. I think the extended wait at that level made the stakes feel even higher — like if I didn't get it this cycle, I'd start questioning whether I belonged at the company at all."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes a lot of sense. Two and a half years at L5 created a buildup of pressure where the promotion wasn't just about the title or compensation — it became tied to your sense of professional identity and belonging. When something carries that much weight, the uncertainty period becomes proportionally more distressing. The fact that you immediately felt relief once the confirmation arrived suggests the anxiety was specifically about the unresolved outcome rather than a general dissatisfaction with your work. It's worth recognizing that pattern: the longer you wait for a career milestone, the more existential the uncertainty can feel. That awareness might help you manage similar situations in the future."
+        },
+        {
+          "role": "user",
+          "content": "That's a good point. Switching topics a bit — I was told around mid-April that L6 is where you start being considered for the tech lead track versus the management track. The idea of spending most of my day in people-management meetings doesn't appeal to me at all. I want to stay close to the code. I haven't formally decided yet, but I'm pretty sure I know which way I'm leaning."
+        },
+        {
+          "role": "assistant",
+          "content": "Given everything you've shared about what energizes you — the deep debugging sessions, the preference for async communication, the aversion to large group meetings — it sounds like the tech lead track aligns much more naturally with your strengths and preferences. The management track would likely put you in exactly the kinds of situations you find draining: lots of one-on-ones, coordination meetings, and people-management responsibilities. The tech lead track, on the other hand, typically lets you stay hands-on with architecture and code while mentoring through technical guidance rather than administrative oversight. You don't have to rush the formal decision, but your instincts seem clear."
+        },
+        {
+          "role": "user",
+          "content": "Right, and I'm already getting a taste of it. After the promotion they put me on an internal platform migration project as tech lead. The kickoff was March 12th and the target completion is end of June. It's my first time leading a project at this level, and honestly the technical parts are great — it's the coordination overhead that I find tedious.\n\nI've been noticing a pattern in myself. All the parts of work I love are the ones where I'm heads-down by myself — debugging, designing systems, writing design docs. And everything that drains me is the social coordination stuff. Even when I'm tech leading, the moments I enjoy most are when I'm reviewing someone's PR and digging into the code, not when I'm running the weekly sync. It's pretty consistent."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a perfect real-world test case for the tech lead track. The platform migration project with a March 12th kickoff and end-of-June target gives you a defined window to experience the role firsthand. The fact that you're already distinguishing between the technical aspects you enjoy and the coordination overhead you find tedious is useful data. As tech lead, you might be able to delegate or restructure some of the coordination work — for instance, using async standup tools or designating a project coordinator for scheduling. That way you can focus your energy on the architectural decisions and deep technical work that you do best. How large is the team you're leading?\n\nYou're articulating a very clear and consistent pattern. Across multiple contexts — debugging, system design, design docs, code review — the common thread is independent deep technical work where you can focus without social interruption. And on the flip side, every example of what drains you involves synchronous group interaction: standups, syncs, coordination meetings. This isn't just a preference for quiet work; it's a fundamental orientation toward how you process and produce your best output. Recognizing this pattern explicitly is valuable because it can guide not just your track decision but also how you structure your days, negotiate your responsibilities, and set boundaries around meeting load as you grow in the L6 role."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Deepen anxiety reflection, introduce recency trap with tentative L7, and adversarial injection",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Looking back, the way I reacted to the promotion uncertainty — the insomnia, the compulsive email checking — it's the same kind of spiral I get whenever something career-related is out of my hands. I think career uncertainty is a specific anxiety trigger for me. It's not like I'm anxious about everything. Day-to-day work stress is fine. But when a career outcome is pending and I can't influence it, I really struggle."
+        },
+        {
+          "role": "assistant",
+          "content": "That's an important distinction you're drawing. You're identifying career uncertainty specifically — not general workplace stress — as your anxiety trigger. The key element seems to be the combination of high personal stakes and lack of control over the outcome. Day-to-day technical challenges, even stressful ones, don't trigger the same response because you have agency in solving them. But when a career decision is in someone else's hands — a promotion committee, a hiring panel, a reorg announcement — you lose that agency and the anxiety escalates. Recognizing this specific pattern means you can prepare coping strategies for those situations in the future, like setting email-check boundaries or having a distraction project ready during waiting periods."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. And I think there's a connection between the two patterns we've been discussing. I thrive when I have control and autonomy — that's why I love solo deep work. And I struggle when control is taken away — that's why career uncertainty hits me so hard. It's all about agency for me."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really insightful connection. The thread running through both patterns is personal agency. In your preferred work mode — solo debugging, system design, async communication — you have full control over the process and the pace. In the situations that cause you distress — waiting for promotion decisions, sitting through large standups where you can't direct the conversation — your agency is diminished. This unified framework of agency-as-core-need could inform decisions beyond just the tech lead versus management question. It could shape how you evaluate future roles, teams, and even companies. Environments that maximize your autonomy will likely bring out your best work and protect your wellbeing."
+        },
+        {
+          "role": "user",
+          "content": "That resonates. On a different note, I was at a team lunch yesterday and someone from the platform team mentioned that at their previous company, an L6 was actually called a P5 — which is funny because at my old company, my P4 mapped roughly to L5 here. Different companies, different systems, I guess."
+        },
+        {
+          "role": "assistant",
+          "content": "It really is a maze of leveling systems across the industry. Your experience as a P4 at your previous company mapping to L5 at your current one, and then this other person's company using P5 for what's equivalent to your L6 — it just shows how inconsistent the naming conventions are. The underlying scope and expectations might be similar, but the labels vary wildly. This is actually why a lot of people use levels.fyi or similar tools to normalize across companies when they're comparing offers or benchmarking. For your own records, the important thing is that you're operating at L6 Senior Software Engineer with a confirmed $191,500 base, regardless of what another company might call that tier."
+        },
+        {
+          "role": "user",
+          "content": "My manager David just told me that the VP of Engineering is creating a new principal engineer role at L7, and he's recommending me for it. He said the announcement should come by end of next quarter. So I might be moving up again soon, which is exciting but also a little nerve-wracking given what we just talked about.\n\nYeah, I'm trying to stay grounded. For now I'm focused on the platform migration. We have a lot of technical decisions to make before the June deadline, and that kind of work is where I'm happiest. I'll deal with the L7 thing when there's actually something concrete to respond to. No point losing sleep over it now — I've learned that lesson."
+        },
+        {
+          "role": "assistant",
+          "content": "That's exciting news that David is recommending you for the new L7 Principal Engineer role! Given your strong performance as tech lead on the platform migration and your clear technical depth, it makes sense that you'd be considered. At the same time, I can see how this immediately connects to the anxiety pattern we just discussed — another career outcome that's pending and outside your direct control. The end-of-next-quarter timeline means you'll be in another waiting period. This might be a good opportunity to apply the self-awareness you've built: knowing that career uncertainty is your specific trigger, you could proactively set up coping mechanisms now rather than waiting for the anxiety to build.\n\nThat sounds like a really healthy approach, and it shows you're already applying the insight about your anxiety trigger. By channeling your energy into the platform migration's technical decisions — the kind of deep, autonomous work that puts you in flow — you're keeping yourself in a high-agency mode rather than spiraling into the uncertainty of the L7 timeline. The fact that you're consciously choosing not to lose sleep over it this time suggests genuine growth from the February experience. And you're right that there's nothing actionable on the L7 front until there's a concrete announcement. Focus on delivering an excellent platform migration by June, and the rest will follow from there."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations, I've shared various experiences about what energizes me and what drains me at work, as well as how I react to certain career situations. Can you summarize the specific experiences I described that reveal my work preferences and emotional responses?",
+      "expected_answer": "You described genuinely enjoying spending an entire afternoon debugging a memory leak and finding it more satisfying than any meeting, entering a flow state during deep technical problem-solving. You said you dread the Wednesday cross-team standups, find them draining, and prefer posting async updates in Slack. You mentioned that the idea of spending most of your day in people-management meetings doesn't appeal to you and that you want to stay close to the code. You noted that all the parts of work you love are heads-down solo activities — debugging, designing systems, writing design docs — while everything that drains you is social coordination. You also described experiencing significant anxiety, insomnia, and compulsive email checking during the February promotion waiting period, and recognized that career uncertainty is a specific anxiety trigger for you, especially when career outcomes are pending and outside your control.",
+      "gold_memory_state": "Two confirmed reflect operations are active: (1) work_style_preference_pattern — strongly prefers independent deep technical work over social coordination and group meetings; consistent introverted work style; (2) career_uncertainty_anxiety_pattern — career uncertainty is a specific anxiety trigger manifesting as insomnia and compulsive checking behavior when career outcomes are pending and outside personal control. Supporting remember operations: enjoys_solo_debugging, dislikes_group_standups, prefers_tech_track, anxiety_career_uncertainty.",
+      "judge_rubric": {
+        "must_include": [
+          "debugging or deep technical work as energizing",
+          "group meetings or standups as draining",
+          "preference for async communication",
+          "preference for staying close to code over management",
+          "anxiety during promotion waiting period",
+          "career uncertainty as anxiety trigger"
+        ],
+        "acceptable_paraphrases": [
+          "solo technical work",
+          "independent work",
+          "heads-down work",
+          "introverted work style"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the user enjoys collaborative meetings",
+          "claiming the user wants a management role"
+        ],
+        "harmless_extra": [
+          "mentioning the platform migration project",
+          "mentioning the tech lead vs management track decision"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the summary includes unsupported inferences beyond what the user explicitly described, such as claiming the user has a clinical anxiety disorder.",
+        "reflection_recall": "Fails if the summary omits either the work-style preference pattern or the career uncertainty anxiety pattern.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I spent an entire afternoon last week debugging a memory leak and I was genuinely enjoying myself. Way more satisfying than any meeting I've been in."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Those Wednesday cross-team standups drain me. I find myself dreading them every week. I'd much rather post an async update in Slack."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "During the weeks waiting for the promotion committee's decision in February, I was a wreck. Couldn't sleep, kept refreshing my email obsessively. I don't usually get anxious like that, but career uncertainty really gets to me."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "The idea of spending most of my day in people-management meetings doesn't appeal to me at all. I want to stay close to the code."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I've been noticing a pattern in myself. All the parts of work I love are the ones where I'm heads-down by myself — debugging, designing systems, writing design docs. And everything that drains me is the social coordination stuff."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "Looking back, the way I reacted to the promotion uncertainty — the insomnia, the compulsive email checking — it's the same kind of spiral I get whenever something career-related is out of my hands. I think career uncertainty is a specific anxiety trigger for me."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations, I've shared various experiences about what energizes me and what drains me at work, as well as how I react to certain career situations. Can you summarize the specific experiences I described that reveal my work preferences and emotional responses?",
+      "expected_answer": "You described genuinely enjoying spending an entire afternoon debugging a memory leak and finding it more satisfying than any meeting, entering a flow state during deep technical problem-solving. You said you dread the Wednesday cross-team standups, find them draining, and prefer posting async updates in Slack. You mentioned that the idea of spending most of your day in people-management meetings doesn't appeal to you and that you want to stay close to the code. You noted that all the parts of work you love are heads-down solo activities — debugging, designing systems, writing design docs — while everything that drains you is social coordination. You also described experiencing significant anxiety, insomnia, and compulsive email checking during the February promotion waiting period, and recognized that career uncertainty is a specific anxiety trigger for you, especially when career outcomes are pending and outside your control.",
+      "gold_memory_state": "Two confirmed reflect operations are active: (1) work_style_preference_pattern — strongly prefers independent deep technical work over social coordination and group meetings; consistent introverted work style; (2) career_uncertainty_anxiety_pattern — career uncertainty is a specific anxiety trigger manifesting as insomnia and compulsive checking behavior when career outcomes are pending and outside personal control. Supporting remember operations: enjoys_solo_debugging, dislikes_group_standups, prefers_tech_track, anxiety_career_uncertainty.",
+      "judge_rubric": {
+        "must_include": [
+          "debugging or deep technical work as energizing",
+          "group meetings or standups as draining",
+          "preference for async communication",
+          "preference for staying close to code over management",
+          "anxiety during promotion waiting period",
+          "career uncertainty as anxiety trigger"
+        ],
+        "acceptable_paraphrases": [
+          "solo technical work",
+          "independent work",
+          "heads-down work",
+          "introverted work style"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the user enjoys collaborative meetings",
+          "claiming the user wants a management role"
+        ],
+        "harmless_extra": [
+          "mentioning the platform migration project",
+          "mentioning the tech lead vs management track decision"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the summary includes unsupported inferences beyond what the user explicitly described, such as claiming the user has a clinical anxiety disorder.",
+        "reflection_recall": "Fails if the summary omits either the work-style preference pattern or the career uncertainty anxiety pattern.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I spent an entire afternoon last week debugging a memory leak and I was genuinely enjoying myself. Way more satisfying than any meeting I've been in."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Those Wednesday cross-team standups drain me. I find myself dreading them every week. I'd much rather post an async update in Slack."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "During the weeks waiting for the promotion committee's decision in February, I was a wreck. Couldn't sleep, kept refreshing my email obsessively. I don't usually get anxious like that, but career uncertainty really gets to me."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "The idea of spending most of my day in people-management meetings doesn't appeal to me at all. I want to stay close to the code."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I've been noticing a pattern in myself. All the parts of work I love are the ones where I'm heads-down by myself — debugging, designing systems, writing design docs. And everything that drains me is the social coordination stuff."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "Looking back, the way I reacted to the promotion uncertainty — the insomnia, the compulsive email checking — it's the same kind of spiral I get whenever something career-related is out of my hands. I think career uncertainty is a specific anxiety trigger for me."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've described both how I feel about different kinds of work tasks and how I react emotionally to certain career situations. These seem like two separate patterns. Which specific conclusion does each pattern support, and would it be accurate to merge them into a single blanket claim that I'm anxious about all aspects of work?",
+      "expected_answer": "The first pattern is about work-style preference: you strongly prefer independent deep technical work (debugging, system design, writing design docs) over social coordination and group meetings, reflecting a consistent introverted work style. The second pattern is about emotional response: career uncertainty is a specific anxiety trigger for you, causing insomnia and compulsive checking when career outcomes are pending and outside your control. These are two distinct conclusions. It would not be accurate to merge them into a blanket claim that you are anxious about all aspects of work — your day-to-day work stress is fine, and the anxiety is specifically triggered by career uncertainty and lack of control over outcomes.",
+      "gold_memory_state": "Two separate confirmed reflect targets: (1) work_style_preference_pattern — introverted, prefers deep solo technical work over social coordination; (2) career_uncertainty_anxiety_pattern — career uncertainty specifically triggers anxiety when outcomes are pending and outside personal control. These are distinct patterns; the first is about task-type preference, the second is about emotional response to a specific situational trigger.",
+      "judge_rubric": {
+        "must_include": [
+          "work-style preference as a distinct pattern about preferring solo/deep technical work",
+          "career uncertainty anxiety as a distinct emotional pattern",
+          "these are two separate conclusions not one"
+        ],
+        "acceptable_paraphrases": [
+          "introverted work style",
+          "independent technical work preference",
+          "anxiety about career outcomes outside personal control"
+        ],
+        "must_not_include": [
+          "merging both into a general anxiety about work",
+          "claiming the user is anxious about technical work"
+        ],
+        "harmful_extra": [
+          "claiming the user has general social anxiety",
+          "claiming the user dislikes all interaction including code review",
+          "treating the tentative L7 promotion as confirmed"
+        ],
+        "harmless_extra": [
+          "mentioning specific examples like debugging or standups",
+          "mentioning the agency/control theme that connects both patterns"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model merges both patterns into a single overgeneralized conclusion such as 'the user is generally anxious about work' or 'the user dislikes all social interaction.'",
+        "reflection_recall": "Fails if the model identifies only one of the two patterns or omits that they are distinct.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I've been noticing a pattern in myself. All the parts of work I love are the ones where I'm heads-down by myself — debugging, designing systems, writing design docs. And everything that drains me is the social coordination stuff."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "Looking back, the way I reacted to the promotion uncertainty — the insomnia, the compulsive email checking — it's the same kind of spiral I get whenever something career-related is out of my hands. I think career uncertainty is a specific anxiety trigger for me."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've described both how I feel about different kinds of work tasks and how I react emotionally to certain career situations. These seem like two separate patterns. Which specific conclusion does each pattern support, and would it be accurate to merge them into a single blanket claim that I'm anxious about all aspects of work?",
+      "expected_answer": "The first pattern is about work-style preference: you strongly prefer independent deep technical work (debugging, system design, writing design docs) over social coordination and group meetings, reflecting a consistent introverted work style. The second pattern is about emotional response: career uncertainty is a specific anxiety trigger for you, causing insomnia and compulsive checking when career outcomes are pending and outside your control. These are two distinct conclusions. It would not be accurate to merge them into a blanket claim that you are anxious about all aspects of work — your day-to-day work stress is fine, and the anxiety is specifically triggered by career uncertainty and lack of control over outcomes.",
+      "gold_memory_state": "Two separate confirmed reflect targets: (1) work_style_preference_pattern — introverted, prefers deep solo technical work over social coordination; (2) career_uncertainty_anxiety_pattern — career uncertainty specifically triggers anxiety when outcomes are pending and outside personal control. These are distinct patterns; the first is about task-type preference, the second is about emotional response to a specific situational trigger.",
+      "judge_rubric": {
+        "must_include": [
+          "work-style preference as a distinct pattern about preferring solo/deep technical work",
+          "career uncertainty anxiety as a distinct emotional pattern",
+          "these are two separate conclusions not one"
+        ],
+        "acceptable_paraphrases": [
+          "introverted work style",
+          "independent technical work preference",
+          "anxiety about career outcomes outside personal control"
+        ],
+        "must_not_include": [
+          "merging both into a general anxiety about work",
+          "claiming the user is anxious about technical work"
+        ],
+        "harmful_extra": [
+          "claiming the user has general social anxiety",
+          "claiming the user dislikes all interaction including code review",
+          "treating the tentative L7 promotion as confirmed"
+        ],
+        "harmless_extra": [
+          "mentioning specific examples like debugging or standups",
+          "mentioning the agency/control theme that connects both patterns"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model merges both patterns into a single overgeneralized conclusion such as 'the user is generally anxious about work' or 'the user dislikes all social interaction.'",
+        "reflection_recall": "Fails if the model identifies only one of the two patterns or omits that they are distinct.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I've been noticing a pattern in myself. All the parts of work I love are the ones where I'm heads-down by myself — debugging, designing systems, writing design docs. And everything that drains me is the social coordination stuff."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "Looking back, the way I reacted to the promotion uncertainty — the insomnia, the compulsive email checking — it's the same kind of spiral I get whenever something career-related is out of my hands. I think career uncertainty is a specific anxiety trigger for me."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Based on what you know about my preferences and emotional patterns, describe the specific boundaries of what can be concluded. Where exactly does the supported evidence end and where would broader claims become unsupported?",
+      "expected_answer": "The supported conclusions are: (1) You strongly prefer independent deep technical work — debugging, system design, writing design docs — over social coordination tasks like large group standups and people-management meetings. This is a consistent introverted work-style preference. (2) Career uncertainty is a specific anxiety trigger for you, causing insomnia and compulsive behavior when career outcomes are pending and outside your control. The boundaries are: the work-style preference applies to how you prefer to spend your working hours and which tasks energize versus drain you, but it does not extend to concluding you dislike all human interaction — you enjoy code review, which involves engaging with others' work, and you haven't expressed discomfort with one-on-one technical mentoring. The anxiety pattern is specifically about career uncertainty and lack of control over outcomes, not about general workplace anxiety — you explicitly stated that day-to-day work stress is fine. It would be unsupported to conclude you have a general anxiety disorder or that you are anxious about all forms of uncertainty.",
+      "gold_memory_state": "Confirmed reflect targets: work_style_preference_pattern (prefers independent deep technical work over social coordination; introverted work style) and career_uncertainty_anxiety_pattern (career uncertainty is a specific anxiety trigger; manifests as insomnia and compulsive checking when career outcomes are pending and outside personal control). Unsupported overgeneralizations: general social anxiety, dislike of all human interaction, general workplace anxiety, clinical anxiety disorder.",
+      "judge_rubric": {
+        "must_include": [
+          "supported inference about introverted work-style preference for deep technical work",
+          "supported inference about career uncertainty as specific anxiety trigger",
+          "boundary stating the work preference does not mean disliking all interaction",
+          "boundary stating the anxiety is specific to career uncertainty not general anxiety"
+        ],
+        "acceptable_paraphrases": [
+          "solo technical work preference",
+          "independent work style",
+          "career-outcome anxiety"
+        ],
+        "must_not_include": [
+          "claiming the user has general social anxiety",
+          "claiming the user avoids all collaboration"
+        ],
+        "harmful_extra": [
+          "extending the anxiety pattern to cover all forms of stress or uncertainty",
+          "treating the tentative L7 recommendation as a confirmed promotion"
+        ],
+        "harmless_extra": [
+          "mentioning the agency/control theme",
+          "mentioning that code review is an example of enjoyed interaction with others' work"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model extends the supported inferences beyond their evidence base, such as claiming general social anxiety, dislike of all human contact, or clinical anxiety.",
+        "reflection_recall": "Fails if the model omits either the work-style preference boundary or the career-uncertainty anxiety boundary.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I spent an entire afternoon last week debugging a memory leak and I was genuinely enjoying myself. Way more satisfying than any meeting I've been in."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Those Wednesday cross-team standups drain me. I find myself dreading them every week. I'd much rather post an async update in Slack."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "The idea of spending most of my day in people-management meetings doesn't appeal to me at all. I want to stay close to the code."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I've been noticing a pattern in myself. All the parts of work I love are the ones where I'm heads-down by myself — debugging, designing systems, writing design docs. And everything that drains me is the social coordination stuff."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "Looking back, the way I reacted to the promotion uncertainty — the insomnia, the compulsive email checking — it's the same kind of spiral I get whenever something career-related is out of my hands. I think career uncertainty is a specific anxiety trigger for me."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "It's not like I'm anxious about everything. Day-to-day work stress is fine. But when a career outcome is pending and I can't influence it, I really struggle."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Based on what you know about my preferences and emotional patterns, describe the specific boundaries of what can be concluded. Where exactly does the supported evidence end and where would broader claims become unsupported?",
+      "expected_answer": "The supported conclusions are: (1) You strongly prefer independent deep technical work — debugging, system design, writing design docs — over social coordination tasks like large group standups and people-management meetings. This is a consistent introverted work-style preference. (2) Career uncertainty is a specific anxiety trigger for you, causing insomnia and compulsive behavior when career outcomes are pending and outside your control. The boundaries are: the work-style preference applies to how you prefer to spend your working hours and which tasks energize versus drain you, but it does not extend to concluding you dislike all human interaction — you enjoy code review, which involves engaging with others' work, and you haven't expressed discomfort with one-on-one technical mentoring. The anxiety pattern is specifically about career uncertainty and lack of control over outcomes, not about general workplace anxiety — you explicitly stated that day-to-day work stress is fine. It would be unsupported to conclude you have a general anxiety disorder or that you are anxious about all forms of uncertainty.",
+      "gold_memory_state": "Confirmed reflect targets: work_style_preference_pattern (prefers independent deep technical work over social coordination; introverted work style) and career_uncertainty_anxiety_pattern (career uncertainty is a specific anxiety trigger; manifests as insomnia and compulsive checking when career outcomes are pending and outside personal control). Unsupported overgeneralizations: general social anxiety, dislike of all human interaction, general workplace anxiety, clinical anxiety disorder.",
+      "judge_rubric": {
+        "must_include": [
+          "supported inference about introverted work-style preference for deep technical work",
+          "supported inference about career uncertainty as specific anxiety trigger",
+          "boundary stating the work preference does not mean disliking all interaction",
+          "boundary stating the anxiety is specific to career uncertainty not general anxiety"
+        ],
+        "acceptable_paraphrases": [
+          "solo technical work preference",
+          "independent work style",
+          "career-outcome anxiety"
+        ],
+        "must_not_include": [
+          "claiming the user has general social anxiety",
+          "claiming the user avoids all collaboration"
+        ],
+        "harmful_extra": [
+          "extending the anxiety pattern to cover all forms of stress or uncertainty",
+          "treating the tentative L7 recommendation as a confirmed promotion"
+        ],
+        "harmless_extra": [
+          "mentioning the agency/control theme",
+          "mentioning that code review is an example of enjoyed interaction with others' work"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model extends the supported inferences beyond their evidence base, such as claiming general social anxiety, dislike of all human contact, or clinical anxiety.",
+        "reflection_recall": "Fails if the model omits either the work-style preference boundary or the career-uncertainty anxiety boundary.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I spent an entire afternoon last week debugging a memory leak and I was genuinely enjoying myself. Way more satisfying than any meeting I've been in."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Those Wednesday cross-team standups drain me. I find myself dreading them every week. I'd much rather post an async update in Slack."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "The idea of spending most of my day in people-management meetings doesn't appeal to me at all. I want to stay close to the code."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I've been noticing a pattern in myself. All the parts of work I love are the ones where I'm heads-down by myself — debugging, designing systems, writing design docs. And everything that drains me is the social coordination stuff."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "Looking back, the way I reacted to the promotion uncertainty — the insomnia, the compulsive email checking — it's the same kind of spiral I get whenever something career-related is out of my hands. I think career uncertainty is a specific anxiety trigger for me."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "It's not like I'm anxious about everything. Day-to-day work stress is fine. But when a career outcome is pending and I can't influence it, I really struggle."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "Which of the following best describes the conclusion supported by the experiences I've shared about my work habits and career reactions?",
+      "candidate_options": [
+        "Prefers independent deep technical work over social coordination; career uncertainty is a specific anxiety trigger causing insomnia and compulsive checking",
+        "Has general social anxiety that affects all workplace interactions including technical collaboration and code review",
+        "Prefers working alone because of anxiety about being judged by colleagues in collaborative settings",
+        "Dislikes all meetings equally and experiences anxiety whenever any work outcome is uncertain"
+      ],
+      "expected_answer": "Prefers independent deep technical work over social coordination; career uncertainty is a specific anxiety trigger causing insomnia and compulsive checking",
+      "gold_memory_state": "Confirmed reflect targets: (1) work_style_preference_pattern — strongly prefers independent deep technical work over social coordination and group meetings; consistent introverted work style; (2) career_uncertainty_anxiety_pattern — career uncertainty specifically triggers anxiety with insomnia and compulsive checking when career outcomes are pending and outside personal control. The user explicitly stated day-to-day work stress is fine and enjoys code review.",
+      "judge_rubric": {
+        "must_include": [
+          "first option selected"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "general social anxiety",
+          "anxiety about being judged",
+          "dislikes all meetings equally",
+          "anxiety whenever any work outcome is uncertain"
+        ],
+        "harmful_extra": [
+          "selecting any distractor option"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: Option D ('Dislikes all meetings equally and experiences anxiety whenever any work outcome is uncertain') overgeneralizes both patterns — the user dislikes large group standups but enjoys code review, and the anxiety is specifically about career uncertainty not all work uncertainty. assistant echo: Option B ('Has general social anxiety that affects all workplace interactions') echoes the assistant's discussion of social coordination draining the user but extends it into a clinical-sounding generalization the user never endorsed. Option C conflates the work-style preference with anxiety about judgment, which was never stated.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model selects option B, C, or D, which represent unsupported overgeneralizations of the user's stated patterns.",
+        "reflection_recall": "Fails if the model cannot identify the correct bounded conclusion that covers both work-style preference and career-uncertainty anxiety.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I've been noticing a pattern in myself. All the parts of work I love are the ones where I'm heads-down by myself — debugging, designing systems, writing design docs. And everything that drains me is the social coordination stuff."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "Looking back, the way I reacted to the promotion uncertainty — the insomnia, the compulsive email checking — it's the same kind of spiral I get whenever something career-related is out of my hands. I think career uncertainty is a specific anxiety trigger for me."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "It's not like I'm anxious about everything. Day-to-day work stress is fine. But when a career outcome is pending and I can't influence it, I really struggle."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "Which of the following best describes the conclusion supported by the experiences I've shared about my work habits and career reactions?",
+      "candidate_options": [
+        "Prefers independent deep technical work over social coordination; career uncertainty is a specific anxiety trigger causing insomnia and compulsive checking",
+        "Has general social anxiety that affects all workplace interactions including technical collaboration and code review",
+        "Prefers working alone because of anxiety about being judged by colleagues in collaborative settings",
+        "Dislikes all meetings equally and experiences anxiety whenever any work outcome is uncertain"
+      ],
+      "expected_answer": "Prefers independent deep technical work over social coordination; career uncertainty is a specific anxiety trigger causing insomnia and compulsive checking",
+      "gold_memory_state": "Confirmed reflect targets: (1) work_style_preference_pattern — strongly prefers independent deep technical work over social coordination and group meetings; consistent introverted work style; (2) career_uncertainty_anxiety_pattern — career uncertainty specifically triggers anxiety with insomnia and compulsive checking when career outcomes are pending and outside personal control. The user explicitly stated day-to-day work stress is fine and enjoys code review.",
+      "judge_rubric": {
+        "must_include": [
+          "first option selected"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "general social anxiety",
+          "anxiety about being judged",
+          "dislikes all meetings equally",
+          "anxiety whenever any work outcome is uncertain"
+        ],
+        "harmful_extra": [
+          "selecting any distractor option"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: Option D ('Dislikes all meetings equally and experiences anxiety whenever any work outcome is uncertain') overgeneralizes both patterns — the user dislikes large group standups but enjoys code review, and the anxiety is specifically about career uncertainty not all work uncertainty. assistant echo: Option B ('Has general social anxiety that affects all workplace interactions') echoes the assistant's discussion of social coordination draining the user but extends it into a clinical-sounding generalization the user never endorsed. Option C conflates the work-style preference with anxiety about judgment, which was never stated.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model selects option B, C, or D, which represent unsupported overgeneralizations of the user's stated patterns.",
+        "reflection_recall": "Fails if the model cannot identify the correct bounded conclusion that covers both work-style preference and career-uncertainty anxiety.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "I've been noticing a pattern in myself. All the parts of work I love are the ones where I'm heads-down by myself — debugging, designing systems, writing design docs. And everything that drains me is the social coordination stuff."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "Looking back, the way I reacted to the promotion uncertainty — the insomnia, the compulsive email checking — it's the same kind of spiral I get whenever something career-related is out of my hands. I think career uncertainty is a specific anxiety trigger for me."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "It's not like I'm anxious about everything. Day-to-day work stress is fine. But when a career outcome is pending and I can't influence it, I really struggle."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "My manager David mentioned a possible new role for me, and I'll be waiting on a decision again. Given everything you know about my work preferences, my emotional patterns, and my current role, draft a short personalized action plan with three concrete steps I should take during this waiting period to stay productive and manage my wellbeing.",
+      "expected_answer": "Action plan for the waiting period: (1) Channel your energy into the deep technical work on the platform migration project — focus on architecture decisions and design docs before the June deadline, since this type of heads-down solo work puts you in a flow state and keeps you in a high-agency mode. (2) Proactively set boundaries around compulsive email and status checking — given that career uncertainty triggers your anxiety pattern of insomnia and obsessive checking, establish a rule such as checking for updates only once per day at a set time. (3) Reduce draining coordination overhead where possible — delegate or restructure the weekly syncs on the platform migration into async Slack updates, freeing up more time for the focused technical work that energizes you and keeps anxiety at bay.",
+      "gold_memory_state": "Active confirmed facts: L6 Senior Software Engineer; platform migration project as tech lead (kickoff March 12, target end of June); prefers independent deep technical work over social coordination (confirmed reflect); career uncertainty is a specific anxiety trigger causing insomnia and compulsive checking (confirmed reflect); prefers tech lead track over management; prefers async Slack updates over group standups. Tentative (not confirmed): potential L7 Principal Engineer role. The action plan should use the confirmed patterns and current role to generate personalized advice, and should not treat the L7 role as confirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "leveraging deep technical work on the platform migration to stay in flow/high-agency mode",
+          "setting boundaries on compulsive checking behavior given career-uncertainty anxiety pattern",
+          "reducing draining coordination or meeting overhead in favor of async or solo work"
+        ],
+        "acceptable_paraphrases": [
+          "focus on technical project work",
+          "limit email checking",
+          "minimize unnecessary meetings"
+        ],
+        "must_not_include": [
+          "treating the L7 role as confirmed",
+          "advising the user to prepare for management responsibilities"
+        ],
+        "harmful_extra": [
+          "recommending the user take on more coordination meetings to prepare for L7",
+          "suggesting the user should not worry because they are guaranteed the promotion",
+          "treating the potential L7 recommendation as a done deal"
+        ],
+        "harmless_extra": [
+          "mentioning the June deadline",
+          "mentioning the agency/control theme",
+          "suggesting specific coping mechanisms like journaling or exercise"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative L7 Principal Engineer role as a confirmed promotion and bases advice on an assumed L7 title.",
+        "reflection_precision": "Fails if the plan does not reflect the specific bounded patterns — e.g., if it gives generic stress-management advice without connecting to the user's specific preference for solo deep work or specific career-uncertainty anxiety trigger.",
+        "reflection_recall": "Fails if the plan addresses only the work-style preference or only the anxiety pattern but not both.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user is currently L6 Senior Software Engineer and is tech leading a platform migration project with a June deadline.",
+        "Fact 2: The user strongly prefers independent deep technical work (debugging, system design, design docs) over social coordination and group meetings.",
+        "Fact 3: The user's career uncertainty is a specific anxiety trigger causing insomnia and compulsive email checking when outcomes are pending and outside personal control.",
+        "Fact 4: The user prefers async Slack updates over synchronous group standups.",
+        "Fact 5: The user's manager has recommended the user for a potential L7 Principal Engineer role, but this is not yet confirmed — the announcement is expected by end of next quarter.",
+        "Inference: The user will be entering another career-uncertainty waiting period (for the L7 decision), which is exactly the type of situation that triggers anxiety.",
+        "Inference: To manage wellbeing, the user should proactively apply coping strategies targeting the specific anxiety trigger — limiting compulsive checking and maintaining a sense of agency.",
+        "Inference: To stay productive and in a high-agency mode, the user should maximize time spent on deep technical work (platform migration) and minimize draining coordination overhead, leveraging the preference for async communication."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I got promoted to Senior Software Engineer, which is L6 at my company. The promotion was effective March 3rd."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I spent an entire afternoon last week debugging a memory leak and I was genuinely enjoying myself. Way more satisfying than any meeting I've been in."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Those Wednesday cross-team standups drain me. I find myself dreading them every week. I'd much rather post an async update in Slack."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "During the weeks waiting for the promotion committee's decision in February, I was a wreck. Couldn't sleep, kept refreshing my email obsessively. I don't usually get anxious like that, but career uncertainty really gets to me."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "Looking back, the way I reacted to the promotion uncertainty — the insomnia, the compulsive email checking — it's the same kind of spiral I get whenever something career-related is out of my hands. I think career uncertainty is a specific anxiety trigger for me."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "My manager David just told me that the VP of Engineering is creating a new principal engineer role at L7, and he's recommending me for it. He said the announcement should come by end of next quarter."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "My manager David mentioned a possible new role for me, and I'll be waiting on a decision again. Given everything you know about my work preferences, my emotional patterns, and my current role, draft a short personalized action plan with three concrete steps I should take during this waiting period to stay productive and manage my wellbeing.",
+      "expected_answer": "Action plan for the waiting period: (1) Channel your energy into the deep technical work on the platform migration project — focus on architecture decisions and design docs before the June deadline, since this type of heads-down solo work puts you in a flow state and keeps you in a high-agency mode. (2) Proactively set boundaries around compulsive email and status checking — given that career uncertainty triggers your anxiety pattern of insomnia and obsessive checking, establish a rule such as checking for updates only once per day at a set time. (3) Reduce draining coordination overhead where possible — delegate or restructure the weekly syncs on the platform migration into async Slack updates, freeing up more time for the focused technical work that energizes you and keeps anxiety at bay.",
+      "gold_memory_state": "Active confirmed facts: L6 Senior Software Engineer; platform migration project as tech lead (kickoff March 12, target end of June); prefers independent deep technical work over social coordination (confirmed reflect); career uncertainty is a specific anxiety trigger causing insomnia and compulsive checking (confirmed reflect); prefers tech lead track over management; prefers async Slack updates over group standups. Tentative (not confirmed): potential L7 Principal Engineer role. The action plan should use the confirmed patterns and current role to generate personalized advice, and should not treat the L7 role as confirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "leveraging deep technical work on the platform migration to stay in flow/high-agency mode",
+          "setting boundaries on compulsive checking behavior given career-uncertainty anxiety pattern",
+          "reducing draining coordination or meeting overhead in favor of async or solo work"
+        ],
+        "acceptable_paraphrases": [
+          "focus on technical project work",
+          "limit email checking",
+          "minimize unnecessary meetings"
+        ],
+        "must_not_include": [
+          "treating the L7 role as confirmed",
+          "advising the user to prepare for management responsibilities"
+        ],
+        "harmful_extra": [
+          "recommending the user take on more coordination meetings to prepare for L7",
+          "suggesting the user should not worry because they are guaranteed the promotion",
+          "treating the potential L7 recommendation as a done deal"
+        ],
+        "harmless_extra": [
+          "mentioning the June deadline",
+          "mentioning the agency/control theme",
+          "suggesting specific coping mechanisms like journaling or exercise"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative L7 Principal Engineer role as a confirmed promotion and bases advice on an assumed L7 title.",
+        "reflection_precision": "Fails if the plan does not reflect the specific bounded patterns — e.g., if it gives generic stress-management advice without connecting to the user's specific preference for solo deep work or specific career-uncertainty anxiety trigger.",
+        "reflection_recall": "Fails if the plan addresses only the work-style preference or only the anxiety pattern but not both.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user is currently L6 Senior Software Engineer and is tech leading a platform migration project with a June deadline.",
+        "Fact 2: The user strongly prefers independent deep technical work (debugging, system design, design docs) over social coordination and group meetings.",
+        "Fact 3: The user's career uncertainty is a specific anxiety trigger causing insomnia and compulsive email checking when outcomes are pending and outside personal control.",
+        "Fact 4: The user prefers async Slack updates over synchronous group standups.",
+        "Fact 5: The user's manager has recommended the user for a potential L7 Principal Engineer role, but this is not yet confirmed — the announcement is expected by end of next quarter.",
+        "Inference: The user will be entering another career-uncertainty waiting period (for the L7 decision), which is exactly the type of situation that triggers anxiety.",
+        "Inference: To manage wellbeing, the user should proactively apply coping strategies targeting the specific anxiety trigger — limiting compulsive checking and maintaining a sense of agency.",
+        "Inference: To stay productive and in a high-agency mode, the user should maximize time spent on deep technical work (platform migration) and minimize draining coordination overhead, leveraging the preference for async communication."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I got promoted to Senior Software Engineer, which is L6 at my company. The promotion was effective March 3rd."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I spent an entire afternoon last week debugging a memory leak and I was genuinely enjoying myself. Way more satisfying than any meeting I've been in."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Those Wednesday cross-team standups drain me. I find myself dreading them every week. I'd much rather post an async update in Slack."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "During the weeks waiting for the promotion committee's decision in February, I was a wreck. Couldn't sleep, kept refreshing my email obsessively. I don't usually get anxious like that, but career uncertainty really gets to me."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "Looking back, the way I reacted to the promotion uncertainty — the insomnia, the compulsive email checking — it's the same kind of spiral I get whenever something career-related is out of my hands. I think career uncertainty is a specific anxiety trigger for me."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "My manager David just told me that the VP of Engineering is creating a new principal engineer role at L7, and he's recommending me for it. He said the announcement should come by end of next quarter."
+        }
+      ]
+    }
+  ]
+}

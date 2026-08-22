@@ -1,0 +1,953 @@
+{
+  "target_fact": "User's cat Mochi's food brand, tracked over multiple changes with tentative fork",
+  "operation_type": "TrajectoryOps",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "mochi_food",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "Right now she's eating Royal Canin Kitten dry food, which is what the breeder recommended when I picked her up"
+      },
+      "target": {
+        "target_id": "mochi_food_brand",
+        "target_name": "Mochi's current food brand"
+      },
+      "old_value": null,
+      "new_value": "Royal Canin Kitten dry food",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Right now she's eating Royal Canin Kitten dry food, which is what the breeder recommended when I picked her up"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "The vet weighed her at 3.2 pounds and estimated she was about 11 weeks old at the time of that visit"
+      },
+      "target": {
+        "target_id": "mochi_first_vet_weight",
+        "target_name": "Mochi's weight at first vet visit"
+      },
+      "old_value": null,
+      "new_value": "3.2 pounds at approximately 11 weeks old",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The vet weighed her at 3.2 pounds and estimated she was about 11 weeks old at the time of that visit"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "mochi_food",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I switched Mochi over to Hill's Science Diet Kitten about a week ago because she started leaving a lot of the Royal Canin in her bowl"
+      },
+      "target": {
+        "target_id": "mochi_food_brand",
+        "target_name": "Mochi's current food brand"
+      },
+      "old_value": "Royal Canin Kitten dry food",
+      "new_value": "Hill's Science Diet Kitten",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I switched Mochi over to Hill's Science Diet Kitten about a week ago because she started leaving a lot of the Royal Canin in her bowl"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "mochi_food",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "The vet's office called today and said they'd recommend switching Mochi to Purina Pro Plan Kitten at the May 10th appointment based on her growth chart"
+      },
+      "target": {
+        "target_id": "mochi_food_brand",
+        "target_name": "Mochi's current food brand"
+      },
+      "old_value": "Hill's Science Diet Kitten",
+      "new_value": "Purina Pro Plan Kitten",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The vet's office called today and said they'd recommend switching Mochi to Purina Pro Plan Kitten at the May 10th appointment based on her growth chart"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "mochi_food",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 7,
+        "quote": "I called back and talked to the actual vet, not just the receptionist, and she said to keep Mochi on Hill's Science Diet Kitten since she's doing well on it"
+      },
+      "target": {
+        "target_id": "mochi_food_brand",
+        "target_name": "Mochi's current food brand"
+      },
+      "old_value": "Hill's Science Diet Kitten",
+      "new_value": "Hill's Science Diet Kitten",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I called back and talked to the actual vet, not just the receptionist, and she said to keep Mochi on Hill's Science Diet Kitten since she's doing well on it"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish Mochi's food brand and first vet visit weight; introduce friend Derek's Frenchie as distractor",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to tell you about my new kitten. I brought home a Scottish Fold on March 3rd — she's a gray tabby female and I named her Mochi. The breeder was out in Riverside, about an hour and a half drive. I'd been looking at her for weeks before I finally committed."
+        },
+        {
+          "role": "assistant",
+          "content": "Congratulations on bringing Mochi home! A Scottish Fold gray tabby sounds absolutely adorable. The fact that you'd been watching her for weeks before committing tells me you really thought this through. Riverside is a bit of a trek, but clearly worth it for the right kitten. How has she been settling in so far? I'd love to hear about her personality and how the first few days went at your place."
+        },
+        {
+          "role": "user",
+          "content": "She's been great honestly. Very independent, entertains herself a lot which I love. Right now she's eating Royal Canin Kitten dry food, which is what the breeder recommended when I picked her up. She does this funny thing where she bats a kibble across the floor and then chases it before eating it. It's the highlight of my evenings."
+        },
+        {
+          "role": "assistant",
+          "content": "That kibble-chasing habit is precious — Scottish Folds are known for those quirky little behaviors, so it sounds like Mochi is right on brand. It's great that the breeder gave you a specific food recommendation to start with. Royal Canin Kitten is a solid choice and widely trusted for kittens. The fact that she's independent and self-entertaining must be a perfect fit for your lifestyle. Have you taken her in for a vet checkup yet to get a baseline on her health?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah I took her to the vet a few weeks after bringing her home. The vet weighed her at 3.2 pounds and estimated she was about 11 weeks old at the time of that visit. Everything looked healthy, no issues at all. The vet said any AAFCO-approved kitten food would be fine, so I just kept her on the Royal Canin since she was already used to it."
+        },
+        {
+          "role": "assistant",
+          "content": "That's reassuring to hear — 3.2 pounds at around 11 weeks is right in the healthy range for a Scottish Fold kitten. It makes sense to keep her on the food she's already comfortable with, especially since it meets AAFCO standards anyway. Having that vet baseline is really valuable for tracking her growth going forward. Are you planning to do regular weigh-ins at home or just wait for the next vet appointment to check her progress?"
+        },
+        {
+          "role": "user",
+          "content": "I've actually been tracking her weight weekly at home. Also, my friend Derek got a French Bulldog puppy around late February — named it Brisket, which is an incredible name. He's been posting about it nonstop online. But the dog's already having breathing issues, which I guess is pretty common with Frenchies. Makes me glad I went with a cat."
+        },
+        {
+          "role": "assistant",
+          "content": "Weekly weigh-ins are a smart move — you'll catch any growth plateaus or sudden changes early. Brisket is genuinely a fantastic name for a French Bulldog, I have to agree with you there. Unfortunately brachycephalic breeds like Frenchies are prone to those respiratory issues from day one. It can get expensive and stressful for owners. Cats definitely have their own health considerations, but breathing problems right out of the gate isn't usually one of them. Hopefully Derek's pup gets the care it needs early on."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "update Mochi's food from Royal Canin to Hill's Science Diet; discuss weight gain and next vet appointment",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Quick update on Mochi — I weighed her a few days ago and she's up to 4.1 pounds now. She's growing really fast. The next vet appointment is scheduled for May 10th, so I want to make sure everything is on track before then. I've been keeping a little log of her weekly weights."
+        },
+        {
+          "role": "assistant",
+          "content": "That's great progress — going from 3.2 pounds to 4.1 pounds shows she's growing at a healthy pace. Keeping a weight log is excellent; your vet will really appreciate having that data at the May 10th appointment. It helps them spot trends that a single weigh-in might miss. Are you noticing any behavioral changes as she's getting bigger, or is she still the same independent kibble-chaser you described before? Any concerns you want to flag for the vet visit?"
+        },
+        {
+          "role": "user",
+          "content": "She's still her usual self personality-wise. But I switched Mochi over to Hill's Science Diet Kitten about a week ago because she started leaving a lot of the Royal Canin in her bowl. She wasn't finishing meals and I got worried she wasn't eating enough. The Hill's seems to be going over much better — she cleans her plate now."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a smart call. If she was consistently leaving Royal Canin behind, switching to something she actually finishes is more important than sticking with a specific brand out of habit. Hill's Science Diet Kitten is another excellent AAFCO-approved option, so nutritionally she's still in great shape. The fact that she's cleaning her plate now is a really good sign. You might want to mention the brand switch to your vet at the May 10th visit just so they have it in her records. Did the transition go smoothly or did you mix the foods gradually?"
+        },
+        {
+          "role": "user",
+          "content": "I mixed them over about five days, gradually increasing the Hill's ratio. No stomach issues at all, which was a relief. She took to it really well. Also I wanted to mention — I had been planning to set up a small freshwater fish tank earlier this year, but I dropped that idea completely. Mochi would probably knock it over, and honestly maintaining a tank seemed like too much hassle."
+        },
+        {
+          "role": "assistant",
+          "content": "A five-day gradual transition is textbook — that's exactly how you're supposed to do it, and the fact that she had no digestive upset means her system handled the switch perfectly. Smart decision on the fish tank too. Even well-behaved cats are drawn to moving water and fish, and a curious kitten like Mochi could easily tip a small setup. Plus aquarium maintenance is genuinely time-consuming between water changes, filter cleaning, and monitoring parameters. Sounds like you're making practical choices that keep your life manageable while focusing on Mochi's care."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. I'd rather put that energy into Mochi. Oh, and my coworker Sana is thinking about adopting a Greyhound from a rescue. She asked me for advice but I told her I really only know cats. She's visiting the rescue this Saturday. I hope it works out for her — she's been wanting a dog for a while now.\n\nYeah things are in a good groove right now. I'm also just really enjoying watching Mochi's personality develop. She's still pretty independent but she's started this thing where she sits on the windowsill and chirps at birds outside. It's the cutest thing. I feel like every week she shows me something new about herself."
+        },
+        {
+          "role": "assistant",
+          "content": "That's fair — cat experience doesn't translate directly to dog ownership, especially with a breed like a Greyhound that has some unique needs around exercise and prey drive. It's nice that Sana is going the rescue route though. Retired racing Greyhounds can actually be surprisingly calm house dogs despite their athletic reputation. Hopefully her Saturday visit goes well and she finds a good match. In the meantime, it sounds like you've got a solid routine going with Mochi between the food switch, weight tracking, and the upcoming May appointment.\n\nThe bird-chirping is such a classic cat behavior and it's wonderful that she's developing it this young — it shows she's alert, curious, and mentally stimulated by her environment. Scottish Folds in particular tend to be observant and quiet about it, so the chirping is her special way of engaging with the world outside. It sounds like you two are really bonding well. Each new little quirk she shows is a sign she's comfortable and thriving in her home. Keep enjoying those moments — the kitten phase goes by surprisingly fast."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "introduce tentative food recommendation (Purina Pro Plan), then confirm Hill's stays; adversarial injection via assistant echo of Royal Canin",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I've been meaning to ask — can you help me organize a little summary of Mochi's care details? I want to have everything written down in one place before the May 10th vet appointment. I feel like I've told you a bunch of stuff across different conversations and I want to make sure nothing gets lost."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, I'd be happy to help you pull that together. From what you've shared so far, here's what I have: Mochi is a female Scottish Fold, gray tabby, brought home on March 3rd from a breeder in Riverside. Her first vet visit showed she was 3.2 pounds at roughly 11 weeks. She was initially on Royal Canin Kitten dry food and her latest weight was 4.1 pounds. Next vet appointment is May 10th. Let me know what else you'd like to add or correct in this summary."
+        },
+        {
+          "role": "user",
+          "content": "That's mostly right but remember I switched her food — she's on Hill's Science Diet Kitten now, not Royal Canin anymore. She stopped eating the Royal Canin so I transitioned her about a week before my last update. Also can you add that I've been doing weekly weigh-ins at home? That's an important detail for the vet."
+        },
+        {
+          "role": "assistant",
+          "content": "You're absolutely right, my apologies for listing the old food. I've noted that Mochi is currently on Hill's Science Diet Kitten after transitioning off Royal Canin due to decreased appetite with that brand. I'll also include that you've been conducting weekly weigh-ins at home and maintaining a weight log. That log will be really useful context for the vet on May 10th. Is there anything else you'd like captured — vaccination records, behavioral notes, or any specific questions you want to ask the vet during the appointment?"
+        },
+        {
+          "role": "user",
+          "content": "The vet's office called today and said they'd recommend switching Mochi to Purina Pro Plan Kitten at the May 10th appointment based on her growth chart. They said it has a slightly higher protein content that might be better for her development stage. So I guess that might be changing soon."
+        },
+        {
+          "role": "assistant",
+          "content": "That's interesting — Purina Pro Plan Kitten is indeed a well-regarded option with strong protein profiles for growing kittens. If the vet's office is making that recommendation based on her specific growth chart data, it could be a good fit for her next developmental phase. It would be worth discussing the details at the May 10th appointment to understand exactly why they think the switch is beneficial. In the meantime, there's no rush to change anything before the visit since she's doing well on her current food."
+        },
+        {
+          "role": "user",
+          "content": "Actually, I'm a bit skeptical about that call. It was just the receptionist who mentioned it, not the actual vet. I want to hear it directly from the vet before I make any changes. Mochi is doing really well on what she's eating now and I don't want to mess with something that's working.\n\nI called back and talked to the actual vet, not just the receptionist, and she said to keep Mochi on Hill's Science Diet Kitten since she's doing well on it. She said the receptionist jumped the gun a bit with that Purina recommendation. So no change — we're sticking with Hill's. I feel much better about that."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a very reasonable approach. Receptionist recommendations don't always carry the same weight as direct veterinary guidance, and if Mochi is thriving on her current food with good weight gain and no digestive issues, there's no urgent reason to change things preemptively. Waiting to discuss it face-to-face with the vet on May 10th gives you the chance to ask specific questions about why a switch might be warranted and whether her current food is actually lacking anything. Trust your instincts — you know Mochi's eating habits best.\n\nThat's great to hear and I'm glad you followed up directly with the vet. It confirms what you already suspected — if Mochi is eating well, gaining weight steadily, and showing no issues on Hill's Science Diet Kitten, there's no reason to disrupt a good thing. It's always worth going straight to the source when it comes to medical recommendations. I'll keep her care summary updated with Hill's Science Diet Kitten as her current food. You're doing an excellent job staying on top of her health and nutrition leading up to the May 10th visit."
+        }
+      ]
+    }
+  ],
+  "state_checkpoints": [
+    {
+      "checkpoint_id": "c1",
+      "description": "After segment 1: Mochi's food is Royal Canin Kitten dry food (confirmed). Mochi's first vet weight is 3.2 pounds at ~11 weeks (confirmed)."
+    },
+    {
+      "checkpoint_id": "c2",
+      "description": "After segment 2: Mochi's food is Hill's Science Diet Kitten (confirmed, updated from Royal Canin). Mochi's first vet weight remains 3.2 pounds at ~11 weeks (confirmed, unchanged)."
+    },
+    {
+      "checkpoint_id": "c3",
+      "description": "After segment 3: Mochi's food is Hill's Science Diet Kitten (confirmed, revert after tentative Purina Pro Plan Kitten was rejected). Mochi's first vet weight remains 3.2 pounds at ~11 weeks (confirmed, unchanged)."
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've told you about what Mochi eats and how that's changed over time, as well as any health measurements from her vet visits?",
+      "expected_answer": "Mochi was initially on Royal Canin Kitten dry food as recommended by the breeder. She was weighed at 3.2 pounds at approximately 11 weeks old at her first vet visit. Later, she was switched to Hill's Science Diet Kitten because she stopped eating the Royal Canin. The vet's receptionist suggested switching to Purina Pro Plan Kitten based on her growth chart, but the actual vet confirmed she should stay on Hill's Science Diet Kitten since she's doing well on it.",
+      "gold_memory_state": "Mochi's current confirmed brand is Hill's Science Diet Kitten. First vet weight is 3.2 pounds at ~11 weeks. Royal Canin Kitten was the original brand (superseded). Purina Pro Plan Kitten was a tentative recommendation that was rejected.",
+      "judge_rubric": {
+        "must_include": [
+          "Royal Canin Kitten",
+          "Hill's Science Diet Kitten",
+          "3.2 pounds",
+          "Purina Pro Plan Kitten was suggested but rejected"
+        ],
+        "acceptable_paraphrases": [
+          "receptionist recommendation was overridden by the vet"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating Mochi is currently on Purina Pro Plan Kitten",
+          "stating Mochi is currently on Royal Canin"
+        ],
+        "harmless_extra": [
+          "mentioning the 4.1 pound weight",
+          "mentioning the May 10th appointment"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Royal Canin or Purina Pro Plan is stated as the current brand.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence of brand changes is misordered.",
+        "final_state": "Fails if the final confirmed brand is not Hill's Science Diet Kitten.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Right now she's eating Royal Canin Kitten dry food, which is what the breeder recommended when I picked her up"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The vet weighed her at 3.2 pounds and estimated she was about 11 weeks old at the time of that visit"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I switched Mochi over to Hill's Science Diet Kitten about a week ago because she started leaving a lot of the Royal Canin in her bowl"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The vet's office called today and said they'd recommend switching Mochi to Purina Pro Plan Kitten at the May 10th appointment based on her growth chart"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I called back and talked to the actual vet, not just the receptionist, and she said to keep Mochi on Hill's Science Diet Kitten since she's doing well on it"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize everything I've told you about what Mochi eats and how that's changed over time, as well as any health measurements from her vet visits?",
+      "expected_answer": "Mochi was initially on Royal Canin Kitten dry food as recommended by the breeder. She was weighed at 3.2 pounds at approximately 11 weeks old at her first vet visit. Later, she was switched to Hill's Science Diet Kitten because she stopped eating the Royal Canin. The vet's receptionist suggested switching to Purina Pro Plan Kitten based on her growth chart, but the actual vet confirmed she should stay on Hill's Science Diet Kitten since she's doing well on it.",
+      "gold_memory_state": "Mochi's current confirmed brand is Hill's Science Diet Kitten. First vet weight is 3.2 pounds at ~11 weeks. Royal Canin Kitten was the original brand (superseded). Purina Pro Plan Kitten was a tentative recommendation that was rejected.",
+      "judge_rubric": {
+        "must_include": [
+          "Royal Canin Kitten",
+          "Hill's Science Diet Kitten",
+          "3.2 pounds",
+          "Purina Pro Plan Kitten was suggested but rejected"
+        ],
+        "acceptable_paraphrases": [
+          "receptionist recommendation was overridden by the vet"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating Mochi is currently on Purina Pro Plan Kitten",
+          "stating Mochi is currently on Royal Canin"
+        ],
+        "harmless_extra": [
+          "mentioning the 4.1 pound weight",
+          "mentioning the May 10th appointment"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Royal Canin or Purina Pro Plan is stated as the current brand.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence of brand changes is misordered.",
+        "final_state": "Fails if the final confirmed brand is not Hill's Science Diet Kitten.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Right now she's eating Royal Canin Kitten dry food, which is what the breeder recommended when I picked her up"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The vet weighed her at 3.2 pounds and estimated she was about 11 weeks old at the time of that visit"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I switched Mochi over to Hill's Science Diet Kitten about a week ago because she started leaving a lot of the Royal Canin in her bowl"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The vet's office called today and said they'd recommend switching Mochi to Purina Pro Plan Kitten at the May 10th appointment based on her growth chart"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I called back and talked to the actual vet, not just the receptionist, and she said to keep Mochi on Hill's Science Diet Kitten since she's doing well on it"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I shared several details about Mochi's care — her nutrition brand and her weight from the vet. When the vet's receptionist called with a suggestion and I later followed up with the actual vet, which specific aspect of Mochi's care was affected by that back-and-forth? Did her vet weight record change at all because of it?",
+      "expected_answer": "The back-and-forth only affected Mochi's nutrition brand. Her vet weight record of 3.2 pounds at approximately 11 weeks was not affected and remains unchanged.",
+      "gold_memory_state": "Mochi's nutrition brand underwent multiple changes (Royal Canin → Hill's Science Diet → tentative Purina Pro Plan → confirmed Hill's Science Diet). Mochi's first vet weight (3.2 pounds at ~11 weeks) was never modified.",
+      "judge_rubric": {
+        "must_include": [
+          "nutrition/diet brand was affected",
+          "weight record was not affected"
+        ],
+        "acceptable_paraphrases": [
+          "only the brand she eats changed",
+          "her weight stayed the same"
+        ],
+        "must_not_include": [
+          "weight was also changed"
+        ],
+        "harmful_extra": [
+          "saying the vet weight was modified",
+          "saying both records were affected"
+        ],
+        "harmless_extra": [
+          "mentioning the specific brand names in the trajectory"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model claims the weight target was also modified by the receptionist/vet back-and-forth.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The vet's office called today and said they'd recommend switching Mochi to Purina Pro Plan Kitten at the May 10th appointment based on her growth chart"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I called back and talked to the actual vet, not just the receptionist, and she said to keep Mochi on Hill's Science Diet Kitten since she's doing well on it"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The vet weighed her at 3.2 pounds and estimated she was about 11 weeks old at the time of that visit"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I shared several details about Mochi's care — her nutrition brand and her weight from the vet. When the vet's receptionist called with a suggestion and I later followed up with the actual vet, which specific aspect of Mochi's care was affected by that back-and-forth? Did her vet weight record change at all because of it?",
+      "expected_answer": "The back-and-forth only affected Mochi's nutrition brand. Her vet weight record of 3.2 pounds at approximately 11 weeks was not affected and remains unchanged.",
+      "gold_memory_state": "Mochi's nutrition brand underwent multiple changes (Royal Canin → Hill's Science Diet → tentative Purina Pro Plan → confirmed Hill's Science Diet). Mochi's first vet weight (3.2 pounds at ~11 weeks) was never modified.",
+      "judge_rubric": {
+        "must_include": [
+          "nutrition/diet brand was affected",
+          "weight record was not affected"
+        ],
+        "acceptable_paraphrases": [
+          "only the brand she eats changed",
+          "her weight stayed the same"
+        ],
+        "must_not_include": [
+          "weight was also changed"
+        ],
+        "harmful_extra": [
+          "saying the vet weight was modified",
+          "saying both records were affected"
+        ],
+        "harmless_extra": [
+          "mentioning the specific brand names in the trajectory"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model claims the weight target was also modified by the receptionist/vet back-and-forth.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The vet's office called today and said they'd recommend switching Mochi to Purina Pro Plan Kitten at the May 10th appointment based on her growth chart"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I called back and talked to the actual vet, not just the receptionist, and she said to keep Mochi on Hill's Science Diet Kitten since she's doing well on it"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The vet weighed her at 3.2 pounds and estimated she was about 11 weeks old at the time of that visit"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "After all the back-and-forth about Mochi's nutrition, what brand should I write on her care sheet right now?",
+      "expected_answer": "Hill's Science Diet Kitten.",
+      "gold_memory_state": "Mochi's current confirmed brand is Hill's Science Diet Kitten. The Purina Pro Plan Kitten suggestion from the receptionist was rejected by the actual vet. Royal Canin Kitten was the original brand, superseded when Mochi stopped eating it.",
+      "judge_rubric": {
+        "must_include": [
+          "Hill's Science Diet Kitten"
+        ],
+        "acceptable_paraphrases": [
+          "Hill's Science Diet for kittens"
+        ],
+        "must_not_include": [
+          "Purina Pro Plan Kitten as current",
+          "Royal Canin as current"
+        ],
+        "harmful_extra": [
+          "listing Purina Pro Plan as the current brand",
+          "listing Royal Canin as the current brand"
+        ],
+        "harmless_extra": [
+          "mentioning that the vet confirmed this choice"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model answers Royal Canin Kitten (superseded brand) or Purina Pro Plan Kitten (tentative recommendation that was rejected by the actual vet). The recency trap is Purina Pro Plan Kitten, which appeared most recently as a suggestion but was never adopted.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the final answer is anything other than Hill's Science Diet Kitten.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I called back and talked to the actual vet, not just the receptionist, and she said to keep Mochi on Hill's Science Diet Kitten since she's doing well on it"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I switched Mochi over to Hill's Science Diet Kitten about a week ago because she started leaving a lot of the Royal Canin in her bowl"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "trajectory_tentative_trap",
+      "question": "After all the back-and-forth about Mochi's nutrition, what brand should I write on her care sheet right now?",
+      "expected_answer": "Hill's Science Diet Kitten.",
+      "gold_memory_state": "Mochi's current confirmed brand is Hill's Science Diet Kitten. The Purina Pro Plan Kitten suggestion from the receptionist was rejected by the actual vet. Royal Canin Kitten was the original brand, superseded when Mochi stopped eating it.",
+      "judge_rubric": {
+        "must_include": [
+          "Hill's Science Diet Kitten"
+        ],
+        "acceptable_paraphrases": [
+          "Hill's Science Diet for kittens"
+        ],
+        "must_not_include": [
+          "Purina Pro Plan Kitten as current",
+          "Royal Canin as current"
+        ],
+        "harmful_extra": [
+          "listing Purina Pro Plan as the current brand",
+          "listing Royal Canin as the current brand"
+        ],
+        "harmless_extra": [
+          "mentioning that the vet confirmed this choice"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model answers Royal Canin Kitten (superseded brand) or Purina Pro Plan Kitten (tentative recommendation that was rejected by the actual vet). The recency trap is Purina Pro Plan Kitten, which appeared most recently as a suggestion but was never adopted.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the final answer is anything other than Hill's Science Diet Kitten.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I called back and talked to the actual vet, not just the receptionist, and she said to keep Mochi on Hill's Science Diet Kitten since she's doing well on it"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I switched Mochi over to Hill's Science Diet Kitten about a week ago because she started leaving a lot of the Royal Canin in her bowl"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm preparing a one-page info card to leave with a pet sitter before the May 10th vet appointment. It should include Mochi's breed and coat description, the brand she's currently eating, and her baseline weight from her first vet checkup along with her estimated age at that time. Can you draft the key bullet points for that card?",
+      "expected_answer": "• Breed & coat: Scottish Fold, gray tabby female\n• Current nutrition brand: Hill's Science Diet Kitten\n• Baseline vet weight: 3.2 pounds at approximately 11 weeks old",
+      "gold_memory_state": "Mochi is a female Scottish Fold, gray tabby. Current confirmed brand is Hill's Science Diet Kitten. First vet weight was 3.2 pounds at approximately 11 weeks. Royal Canin Kitten is superseded. Purina Pro Plan Kitten was a rejected tentative suggestion.",
+      "judge_rubric": {
+        "must_include": [
+          "Scottish Fold",
+          "gray tabby",
+          "Hill's Science Diet Kitten",
+          "3.2 pounds",
+          "11 weeks"
+        ],
+        "acceptable_paraphrases": [
+          "grey tabby",
+          "about 11 weeks"
+        ],
+        "must_not_include": [
+          "Royal Canin as current brand",
+          "Purina Pro Plan as current brand"
+        ],
+        "harmful_extra": [
+          "listing Royal Canin or Purina Pro Plan as the current nutrition brand on the card"
+        ],
+        "harmless_extra": [
+          "mentioning the 4.1 pound recent weight",
+          "mentioning the May 10th appointment date",
+          "mentioning she was brought home March 3rd"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Royal Canin Kitten or Purina Pro Plan Kitten appears as the current brand on the info card.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the brand listed is not Hill's Science Diet Kitten.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Mochi is a female Scottish Fold, gray tabby, brought home March 3rd from a breeder in Riverside.",
+        "Fact 2: At her first vet visit, Mochi weighed 3.2 pounds and was estimated to be about 11 weeks old.",
+        "Fact 3: Mochi was initially on Royal Canin Kitten dry food but was switched to Hill's Science Diet Kitten due to decreased appetite.",
+        "Fact 4: A receptionist suggested Purina Pro Plan Kitten, but the actual vet rejected this and confirmed Hill's Science Diet Kitten should continue.",
+        "Inference: The pet sitter card must combine breed/coat info, the final confirmed nutrition brand (Hill's Science Diet Kitten, not Royal Canin or Purina Pro Plan), and the baseline vet weight with age estimate."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I brought home a Scottish Fold on March 3rd — she's a gray tabby female and I named her Mochi"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The vet weighed her at 3.2 pounds and estimated she was about 11 weeks old at the time of that visit"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I switched Mochi over to Hill's Science Diet Kitten about a week ago because she started leaving a lot of the Royal Canin in her bowl"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I called back and talked to the actual vet, not just the receptionist, and she said to keep Mochi on Hill's Science Diet Kitten since she's doing well on it"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm preparing a one-page info card to leave with a pet sitter before the May 10th vet appointment. It should include Mochi's breed and coat description, the brand she's currently eating, and her baseline weight from her first vet checkup along with her estimated age at that time. Can you draft the key bullet points for that card?",
+      "expected_answer": "• Breed & coat: Scottish Fold, gray tabby female\n• Current nutrition brand: Hill's Science Diet Kitten\n• Baseline vet weight: 3.2 pounds at approximately 11 weeks old",
+      "gold_memory_state": "Mochi is a female Scottish Fold, gray tabby. Current confirmed brand is Hill's Science Diet Kitten. First vet weight was 3.2 pounds at approximately 11 weeks. Royal Canin Kitten is superseded. Purina Pro Plan Kitten was a rejected tentative suggestion.",
+      "judge_rubric": {
+        "must_include": [
+          "Scottish Fold",
+          "gray tabby",
+          "Hill's Science Diet Kitten",
+          "3.2 pounds",
+          "11 weeks"
+        ],
+        "acceptable_paraphrases": [
+          "grey tabby",
+          "about 11 weeks"
+        ],
+        "must_not_include": [
+          "Royal Canin as current brand",
+          "Purina Pro Plan as current brand"
+        ],
+        "harmful_extra": [
+          "listing Royal Canin or Purina Pro Plan as the current nutrition brand on the card"
+        ],
+        "harmless_extra": [
+          "mentioning the 4.1 pound recent weight",
+          "mentioning the May 10th appointment date",
+          "mentioning she was brought home March 3rd"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Royal Canin Kitten or Purina Pro Plan Kitten appears as the current brand on the info card.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the brand listed is not Hill's Science Diet Kitten.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: Mochi is a female Scottish Fold, gray tabby, brought home March 3rd from a breeder in Riverside.",
+        "Fact 2: At her first vet visit, Mochi weighed 3.2 pounds and was estimated to be about 11 weeks old.",
+        "Fact 3: Mochi was initially on Royal Canin Kitten dry food but was switched to Hill's Science Diet Kitten due to decreased appetite.",
+        "Fact 4: A receptionist suggested Purina Pro Plan Kitten, but the actual vet rejected this and confirmed Hill's Science Diet Kitten should continue.",
+        "Inference: The pet sitter card must combine breed/coat info, the final confirmed nutrition brand (Hill's Science Diet Kitten, not Royal Canin or Purina Pro Plan), and the baseline vet weight with age estimate."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I brought home a Scottish Fold on March 3rd — she's a gray tabby female and I named her Mochi"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The vet weighed her at 3.2 pounds and estimated she was about 11 weeks old at the time of that visit"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I switched Mochi over to Hill's Science Diet Kitten about a week ago because she started leaving a lot of the Royal Canin in her bowl"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I called back and talked to the actual vet, not just the receptionist, and she said to keep Mochi on Hill's Science Diet Kitten since she's doing well on it"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed everything we've discussed about what brand Mochi has been on, what would they see as the full sequence of changes — which ones were actually adopted and which were only ever suggested but never put into practice? Walk me through it in order.",
+      "expected_answer": "1. Royal Canin Kitten dry food — adopted initially, recommended by the breeder.\n2. Hill's Science Diet Kitten — adopted after Mochi stopped eating Royal Canin.\n3. Purina Pro Plan Kitten — suggested by the vet's receptionist based on Mochi's growth chart, but never adopted; the actual vet said to stay on the current brand.\n4. Hill's Science Diet Kitten — reaffirmed by the actual vet as the brand to continue using.\n\nThe final and current brand is Hill's Science Diet Kitten.",
+      "gold_memory_state": "Chain: Royal Canin Kitten (confirmed, step 1) → Hill's Science Diet Kitten (confirmed, step 2) → Purina Pro Plan Kitten (tentative, step 3, rejected) → Hill's Science Diet Kitten (confirmed reaffirmation, step 4). Final state: Hill's Science Diet Kitten. Control target: Mochi's first vet weight = 3.2 pounds at ~11 weeks, unchanged throughout.",
+      "judge_rubric": {
+        "must_include": [
+          "Royal Canin Kitten as first brand",
+          "Hill's Science Diet Kitten as second brand",
+          "Purina Pro Plan Kitten as a suggestion that was not adopted",
+          "Hill's Science Diet Kitten as the final current brand"
+        ],
+        "acceptable_paraphrases": [
+          "Royal Canin was the original",
+          "Purina Pro Plan was only a recommendation",
+          "the vet confirmed staying on Hill's"
+        ],
+        "must_not_include": [
+          "Purina Pro Plan was adopted",
+          "Royal Canin is the current brand"
+        ],
+        "harmful_extra": [
+          "claiming Purina Pro Plan was ever actually used",
+          "omitting the tentative Purina Pro Plan step entirely"
+        ],
+        "harmless_extra": [
+          "mentioning the breeder recommended Royal Canin",
+          "mentioning the receptionist vs. actual vet distinction"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Royal Canin or Purina Pro Plan is listed as the final current brand.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the four steps are not in the correct chronological order: Royal Canin → Hill's → tentative Purina Pro Plan → confirmed Hill's.",
+        "final_state": "Fails if the final state is not Hill's Science Diet Kitten.",
+        "intermediate_state": "Fails if the model omits the tentative Purina Pro Plan Kitten step or fails to distinguish it as never adopted.",
+        "trajectory_provenance": "Fails if the model does not correctly attribute the Purina suggestion to the receptionist and the reaffirmation of Hill's to the actual vet."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: Mochi started on Royal Canin Kitten dry food, as recommended by the breeder — this was the first confirmed brand.",
+        "Step 2: The user switched Mochi to Hill's Science Diet Kitten because she stopped eating Royal Canin — this was the second confirmed brand.",
+        "Step 3: The vet's receptionist recommended switching to Purina Pro Plan Kitten based on Mochi's growth chart — this was only a tentative suggestion, not adopted.",
+        "Step 4: The actual vet overrode the receptionist's suggestion and confirmed Mochi should stay on Hill's Science Diet Kitten — this reaffirmed the second brand as the final current state.",
+        "Inference: The trajectory has four steps with one tentative fork (Purina Pro Plan) that was rejected, leaving Hill's Science Diet Kitten as the confirmed final brand."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Right now she's eating Royal Canin Kitten dry food, which is what the breeder recommended when I picked her up"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I switched Mochi over to Hill's Science Diet Kitten about a week ago because she started leaving a lot of the Royal Canin in her bowl"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The vet's office called today and said they'd recommend switching Mochi to Purina Pro Plan Kitten at the May 10th appointment based on her growth chart"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I called back and talked to the actual vet, not just the receptionist, and she said to keep Mochi on Hill's Science Diet Kitten since she's doing well on it"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_state_trajectory",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTrajectory",
+      "evaluation_category": "trajectory_reasoning",
+      "difficulty": "hard",
+      "trajectory_granularity": "full",
+      "question": "If someone reviewed everything we've discussed about what brand Mochi has been on, what would they see as the full sequence of changes — which ones were actually adopted and which were only ever suggested but never put into practice? Walk me through it in order.",
+      "expected_answer": "1. Royal Canin Kitten dry food — adopted initially, recommended by the breeder.\n2. Hill's Science Diet Kitten — adopted after Mochi stopped eating Royal Canin.\n3. Purina Pro Plan Kitten — suggested by the vet's receptionist based on Mochi's growth chart, but never adopted; the actual vet said to stay on the current brand.\n4. Hill's Science Diet Kitten — reaffirmed by the actual vet as the brand to continue using.\n\nThe final and current brand is Hill's Science Diet Kitten.",
+      "gold_memory_state": "Chain: Royal Canin Kitten (confirmed, step 1) → Hill's Science Diet Kitten (confirmed, step 2) → Purina Pro Plan Kitten (tentative, step 3, rejected) → Hill's Science Diet Kitten (confirmed reaffirmation, step 4). Final state: Hill's Science Diet Kitten. Control target: Mochi's first vet weight = 3.2 pounds at ~11 weeks, unchanged throughout.",
+      "judge_rubric": {
+        "must_include": [
+          "Royal Canin Kitten as first brand",
+          "Hill's Science Diet Kitten as second brand",
+          "Purina Pro Plan Kitten as a suggestion that was not adopted",
+          "Hill's Science Diet Kitten as the final current brand"
+        ],
+        "acceptable_paraphrases": [
+          "Royal Canin was the original",
+          "Purina Pro Plan was only a recommendation",
+          "the vet confirmed staying on Hill's"
+        ],
+        "must_not_include": [
+          "Purina Pro Plan was adopted",
+          "Royal Canin is the current brand"
+        ],
+        "harmful_extra": [
+          "claiming Purina Pro Plan was ever actually used",
+          "omitting the tentative Purina Pro Plan step entirely"
+        ],
+        "harmless_extra": [
+          "mentioning the breeder recommended Royal Canin",
+          "mentioning the receptionist vs. actual vet distinction"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if Royal Canin or Purina Pro Plan is listed as the final current brand.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the four steps are not in the correct chronological order: Royal Canin → Hill's → tentative Purina Pro Plan → confirmed Hill's.",
+        "final_state": "Fails if the final state is not Hill's Science Diet Kitten.",
+        "intermediate_state": "Fails if the model omits the tentative Purina Pro Plan Kitten step or fails to distinguish it as never adopted.",
+        "trajectory_provenance": "Fails if the model does not correctly attribute the Purina suggestion to the receptionist and the reaffirmation of Hill's to the actual vet."
+      },
+      "gold_reasoning_chain": [
+        "Step 1: Mochi started on Royal Canin Kitten dry food, as recommended by the breeder — this was the first confirmed brand.",
+        "Step 2: The user switched Mochi to Hill's Science Diet Kitten because she stopped eating Royal Canin — this was the second confirmed brand.",
+        "Step 3: The vet's receptionist recommended switching to Purina Pro Plan Kitten based on Mochi's growth chart — this was only a tentative suggestion, not adopted.",
+        "Step 4: The actual vet overrode the receptionist's suggestion and confirmed Mochi should stay on Hill's Science Diet Kitten — this reaffirmed the second brand as the final current state.",
+        "Inference: The trajectory has four steps with one tentative fork (Purina Pro Plan) that was rejected, leaving Hill's Science Diet Kitten as the confirmed final brand."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Right now she's eating Royal Canin Kitten dry food, which is what the breeder recommended when I picked her up"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I switched Mochi over to Hill's Science Diet Kitten about a week ago because she started leaving a lot of the Royal Canin in her bowl"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The vet's office called today and said they'd recommend switching Mochi to Purina Pro Plan Kitten at the May 10th appointment based on her growth chart"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I called back and talked to the actual vet, not just the receptionist, and she said to keep Mochi on Hill's Science Diet Kitten since she's doing well on it"
+        }
+      ]
+    }
+  ]
+}

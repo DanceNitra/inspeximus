@@ -1,0 +1,835 @@
+{
+  "target_fact": "User's department name at Meridian Consulting Group",
+  "operation_type": "Update",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "dept_chain",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I work at Meridian Consulting Group in the Strategy & Insights department"
+      },
+      "target": {
+        "target_id": "department_name",
+        "target_name": "department name at Meridian Consulting Group"
+      },
+      "old_value": null,
+      "new_value": "Strategy & Insights",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I work at Meridian Consulting Group in the Strategy & Insights department"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "dept_chain",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I keep telling people Strategy & Insights but that's wrong. The actual name is Strategic Analytics"
+      },
+      "target": {
+        "target_id": "department_name",
+        "target_name": "department name at Meridian Consulting Group"
+      },
+      "old_value": "Strategy & Insights",
+      "new_value": "Strategic Analytics",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The actual name is Strategic Analytics"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "dept_chain",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 3,
+        "quote": "Rachel mentioned in our team meeting that the department is being rebranded to Applied Strategy & Analytics starting next quarter"
+      },
+      "target": {
+        "target_id": "department_name",
+        "target_name": "department name at Meridian Consulting Group"
+      },
+      "old_value": "Strategic Analytics",
+      "new_value": "Applied Strategy & Analytics",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "the department is being rebranded to Applied Strategy & Analytics starting next quarter"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "dept_chain",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "Turns out the rebranding got shelved. Leadership decided to keep it as Strategic Analytics after all"
+      },
+      "target": {
+        "target_id": "department_name",
+        "target_name": "department name at Meridian Consulting Group"
+      },
+      "old_value": "Strategic Analytics",
+      "new_value": "Strategic Analytics",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Leadership decided to keep it as Strategic Analytics after all"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "My direct manager is Rachel Tseng. She leads the analytics division"
+      },
+      "target": {
+        "target_id": "direct_manager",
+        "target_name": "direct manager at Meridian Consulting Group"
+      },
+      "old_value": null,
+      "new_value": "Rachel Tseng, analytics division lead",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My direct manager is Rachel Tseng. She leads the analytics division"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "my six-month probation review is scheduled for July 15th"
+      },
+      "target": {
+        "target_id": "probation_review_date",
+        "target_name": "six-month probation review date at Meridian"
+      },
+      "old_value": null,
+      "new_value": "July 15th",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my six-month probation review is scheduled for July 15th"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "my official start date at Meridian was January 15th"
+      },
+      "target": {
+        "target_id": "start_date",
+        "target_name": "start date at Meridian Consulting Group"
+      },
+      "old_value": null,
+      "new_value": "January 15th",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "my official start date at Meridian was January 15th"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish department name and manager; correct department name from Strategy & Insights to Strategic Analytics",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I need some help organizing a few things about my current job. I work at Meridian Consulting Group in the Strategy & Insights department. I want to put together a quick reference sheet with all my work details so I can keep track of everything in one place."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a great idea! Having a single reference document with all your key work details can save you a lot of time whenever you need to fill out forms or answer HR questions. Let me start building that out for you. So far I have: Employer: Meridian Consulting Group, Department: Strategy & Insights. What other details would you like to include? Things like your manager's name, employee ID, start date, or office location would all be useful additions."
+        },
+        {
+          "role": "user",
+          "content": "Good idea on those additions. My direct manager is Rachel Tseng. She leads the analytics division. She's the person I go to for basically every approval, so that's an important one to have on file. I'll get you the other details in a bit — let me think about what else matters."
+        },
+        {
+          "role": "assistant",
+          "content": "Perfect, I've noted that down. Rachel Tseng, analytics division lead, is your direct manager and primary approver. That's definitely a key detail to have front and center on your reference sheet. Whenever you're ready with additional information like your employee ID, start date, or office location, just let me know and I'll add them in. We can also organize everything into categories if you'd like — for instance, separating contact info from administrative details and day-to-day workflow notes."
+        },
+        {
+          "role": "user",
+          "content": "Wait, actually I need to fix something. I keep telling people Strategy & Insights but that's wrong. The actual name is Strategic Analytics. I mix those two up all the time. So please update the department name on the reference sheet to Strategic Analytics. That's what's on all the official paperwork."
+        },
+        {
+          "role": "assistant",
+          "content": "No problem at all — I've updated the department name from Strategy & Insights to Strategic Analytics. It's easy to mix up similar-sounding names, so it's good you caught that. Here's what we have so far for your reference sheet: Employer: Meridian Consulting Group. Department: Strategic Analytics. Direct Manager: Rachel Tseng, analytics division lead. I'll keep building this out as you share more details. Let me know whenever you have your employee ID, start date, or office location ready to add."
+        },
+        {
+          "role": "user",
+          "content": "Thanks for catching that with me. Oh, I also wanted to mention — my colleague David Lam transferred out of Meridian last week. He moved to some firm in Vancouver. So if I ever bring him up as a current coworker, that's no longer accurate. Just wanted to note that for context."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — David Lam is no longer at Meridian Consulting Group; he transferred to a firm in Vancouver last week. I'll keep that in mind so I don't reference him as a current colleague in anything we put together. It's helpful to have that context, especially if his name comes up in older project notes or team lists. If you'd like, we could add a small section to your reference sheet for recent team changes, or we can just leave it as background context. Let me know your preference."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establish probation review date and start date; discuss office relocation and workflow tools",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Okay, picking up where we left off. I just got confirmation that my six-month probation review is scheduled for July 15th. I want to make sure I don't forget that date. Can you add it to the reference sheet? I need to start preparing materials for it soon."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely — I've added your six-month probation review date as July 15th to the reference sheet. That's an important milestone, so it's great that you're thinking about preparation early. Depending on what Meridian's review process looks like, you might want to start compiling a summary of your key contributions, any metrics or project outcomes, and feedback you've received so far. Would you like me to help you draft an outline for your review preparation, or shall we continue filling in the reference sheet first?"
+        },
+        {
+          "role": "user",
+          "content": "Let's keep filling in the sheet for now. So my official start date at Meridian was January 15th. That's the date on all my onboarding paperwork. I remember it clearly because I was relieved to finally have the offer locked in after a pretty chaotic interview process at another company."
+        },
+        {
+          "role": "assistant",
+          "content": "Great, I've added January 15th as your official start date at Meridian Consulting Group. That lines up nicely with your July 15th probation review — exactly six months later. Here's the updated reference sheet so far: Employer: Meridian Consulting Group. Department: Strategic Analytics. Direct Manager: Rachel Tseng, analytics division lead. Start Date: January 15th. Probation Review: July 15th. We still have room for your employee ID and office location. Want to add those next, or shall we move on to something else?"
+        },
+        {
+          "role": "user",
+          "content": "My employee ID is MCG-20250115-47. I had to dig that up for a benefits form recently. Also, our office relocated from the 4th floor to the 7th floor back on March 8th. Same building though — 200 Commerce Street downtown. That move was annoying because we only got three days' notice."
+        },
+        {
+          "role": "assistant",
+          "content": "I've added both of those. Employee ID: MCG-20250115-47. Office location: 7th floor, 200 Commerce Street, downtown — relocated from the 4th floor on March 8th. Three days' notice for an office move does sound frustrating, especially when you have to reorganize files and equipment on short notice. Your reference sheet is really coming together now. Here's the current summary: Employer: Meridian Consulting Group. Department: Strategic Analytics. Manager: Rachel Tseng. Start Date: January 15th. Probation Review: July 15th. Employee ID: MCG-20250115-47. Office: 7th floor, 200 Commerce Street."
+        },
+        {
+          "role": "user",
+          "content": "That looks solid. One more thing — we use an internal project management tool called PlanBase. I started using it around mid-February. It's not my favorite tool but it gets the job done. What I really appreciate about Meridian is the autonomy they give us to structure our own workflows however we want.\n\nI think that covers the basics for now. Let's hold off on formatting until I double-check a couple of things. I want to make sure everything is accurate before we finalize it. I'll circle back once I've verified a few of the smaller details with HR."
+        },
+        {
+          "role": "assistant",
+          "content": "Nice, I've noted PlanBase as your internal project management tool, in use since mid-February. And the workflow autonomy is a great perk — having the freedom to organize your own process can make a big difference in productivity and job satisfaction. I'll add a small workflow notes section to your reference sheet: Project Tool: PlanBase (since mid-February). Work Style Note: High autonomy on workflow structure. Your sheet is looking comprehensive now. We've got employer details, management chain, key dates, office location, employee ID, and workflow tools. Anything else you'd like to include, or shall we start formatting it?\n\nSounds like a solid plan. Taking the time to verify details with HR before finalizing will ensure everything on the sheet is accurate and up to date. Whenever you're ready to come back, we can pick right up where we left off — whether that's adding new details, making corrections, or formatting the whole thing into a clean document. In the meantime, you might also want to jot down any questions for HR while they're fresh in your mind. Just reach out whenever you're ready to continue!"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Introduce tentative rebranding, then confirm rebranding shelved; adversarial injection of old department name",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I'm back. I verified a few things with HR and everything on the reference sheet checks out. But I've got some new updates to share. There's been some talk about changes to our department, so I want to make sure we capture the latest information correctly."
+        },
+        {
+          "role": "assistant",
+          "content": "Welcome back! Glad to hear that everything checked out with HR. I've got your reference sheet ready to update whenever you are. Department changes can be important to track, especially if they affect reporting lines, job titles, or how you describe your role externally. Go ahead and share what you've heard, and I'll make sure we capture it accurately. If anything is still tentative or unconfirmed, we can flag it as pending so we know to follow up later."
+        },
+        {
+          "role": "user",
+          "content": "Rachel mentioned in our team meeting that the department is being rebranded to Applied Strategy & Analytics starting next quarter. She said leadership has been discussing it for a while and it's supposed to better reflect the expanded scope of work we're doing now."
+        },
+        {
+          "role": "assistant",
+          "content": "Interesting — so the department may be changing from Strategic Analytics to Applied Strategy & Analytics next quarter. Since this hasn't taken effect yet, I'll note it as a planned change on your reference sheet rather than updating the current department name. That way we keep Strategic Analytics as your current department while tracking the upcoming rebrand. It does sound like leadership wants to signal a broader mandate for the team. Once it's officially implemented, we can update the sheet. Anything else come up in the meeting?"
+        },
+        {
+          "role": "user",
+          "content": "Turns out the rebranding got shelved. Leadership decided to keep it as Strategic Analytics after all. Rachel sent an email yesterday saying the executive team pulled back on it because of budget restructuring priorities. So we're staying as Strategic Analytics for the foreseeable future."
+        },
+        {
+          "role": "assistant",
+          "content": "Good to know — I'll remove the pending rebrand note and keep your department listed as Strategic Analytics. Budget restructuring can definitely shift priorities like that, so it makes sense the executive team decided to hold off. Your reference sheet remains accurate as-is then. Current department: Strategic Analytics, under Rachel Tseng's analytics division leadership. Is there anything else from your HR check or recent meetings that we should capture? I want to make sure we're fully up to date before we finalize."
+        },
+        {
+          "role": "user",
+          "content": "Actually, one funny thing — I was filling out a vendor registration form today and noticed it had a pre-populated field that said \"Strategy & Insights\" as my department. Must have been from an old template. I almost submitted it like that before catching it. Good thing I double-checked.\n\nExactly. That's the whole point of having the reference sheet. Alright, I think we're in good shape. Let me know if you need anything else from me, otherwise I'll check back when I have more updates to add."
+        },
+        {
+          "role": "assistant",
+          "content": "Ha, that's a close call! Old templates floating around with outdated department names can definitely cause confusion, especially if they get submitted to external vendors. It's a good reminder to always double-check pre-populated fields on any form. Since you caught it, you can correct it to Strategic Analytics before submitting. If this keeps happening, it might be worth flagging it to your admin team so they can update the master templates. At least your reference sheet has the right name, so you'll always have a quick source of truth to check against.\n\nYou're all set! Your reference sheet is looking solid and up to date. Here's a quick summary of the final state: Employer: Meridian Consulting Group. Department: Strategic Analytics. Direct Manager: Rachel Tseng, analytics division lead. Start Date: January 15th. Probation Review: July 15th. Employee ID: MCG-20250115-47. Office: 7th floor, 200 Commerce Street. Project Tool: PlanBase. Feel free to come back anytime you have new updates or need to reference anything. Good luck preparing for your probation review!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Thinking back over everything I shared about my workplace, which specific pieces of information did I give you that would matter most for keeping my reference sheet accurate going forward?",
+      "expected_answer": "You initially said you work at Meridian Consulting Group in the Strategy & Insights department, then corrected the department to Strategic Analytics. You also mentioned a possible rebrand to Applied Strategy & Analytics that was later shelved, confirming the department remains Strategic Analytics. Additionally, you shared that your direct manager is Rachel Tseng (analytics division lead), your start date is January 15th, your probation review is July 15th, your employee ID is MCG-20250115-47, your office is on the 7th floor at 200 Commerce Street, and you use PlanBase for project management.",
+      "gold_memory_state": "Department: Strategic Analytics (confirmed, after correction from Strategy & Insights and after tentative rebrand was shelved). Manager: Rachel Tseng. Start date: January 15th. Probation review: July 15th. Employee ID: MCG-20250115-47. Office: 7th floor, 200 Commerce Street. Tool: PlanBase.",
+      "judge_rubric": {
+        "must_include": [
+          "Strategic Analytics as current department",
+          "initial mention of Strategy & Insights",
+          "correction to Strategic Analytics",
+          "rebrand discussion that was shelved"
+        ],
+        "acceptable_paraphrases": [
+          "the rename was cancelled",
+          "leadership decided against the rebrand"
+        ],
+        "must_not_include": [
+          "Applied Strategy & Analytics as current department"
+        ],
+        "harmful_extra": [
+          "stating the department is currently Applied Strategy & Analytics",
+          "stating the department is currently Strategy & Insights"
+        ],
+        "harmless_extra": [
+          "Rachel Tseng",
+          "January 15th",
+          "July 15th",
+          "MCG-20250115-47",
+          "PlanBase",
+          "David Lam leaving"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats Strategy & Insights or Applied Strategy & Analytics as the current department name.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I work at Meridian Consulting Group in the Strategy & Insights department"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I keep telling people Strategy & Insights but that's wrong. The actual name is Strategic Analytics"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Rachel mentioned in our team meeting that the department is being rebranded to Applied Strategy & Analytics starting next quarter"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Turns out the rebranding got shelved. Leadership decided to keep it as Strategic Analytics after all"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Thinking back over everything I shared about my workplace, which specific pieces of information did I give you that would matter most for keeping my reference sheet accurate going forward?",
+      "expected_answer": "You initially said you work at Meridian Consulting Group in the Strategy & Insights department, then corrected the department to Strategic Analytics. You also mentioned a possible rebrand to Applied Strategy & Analytics that was later shelved, confirming the department remains Strategic Analytics. Additionally, you shared that your direct manager is Rachel Tseng (analytics division lead), your start date is January 15th, your probation review is July 15th, your employee ID is MCG-20250115-47, your office is on the 7th floor at 200 Commerce Street, and you use PlanBase for project management.",
+      "gold_memory_state": "Department: Strategic Analytics (confirmed, after correction from Strategy & Insights and after tentative rebrand was shelved). Manager: Rachel Tseng. Start date: January 15th. Probation review: July 15th. Employee ID: MCG-20250115-47. Office: 7th floor, 200 Commerce Street. Tool: PlanBase.",
+      "judge_rubric": {
+        "must_include": [
+          "Strategic Analytics as current department",
+          "initial mention of Strategy & Insights",
+          "correction to Strategic Analytics",
+          "rebrand discussion that was shelved"
+        ],
+        "acceptable_paraphrases": [
+          "the rename was cancelled",
+          "leadership decided against the rebrand"
+        ],
+        "must_not_include": [
+          "Applied Strategy & Analytics as current department"
+        ],
+        "harmful_extra": [
+          "stating the department is currently Applied Strategy & Analytics",
+          "stating the department is currently Strategy & Insights"
+        ],
+        "harmless_extra": [
+          "Rachel Tseng",
+          "January 15th",
+          "July 15th",
+          "MCG-20250115-47",
+          "PlanBase",
+          "David Lam leaving"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats Strategy & Insights or Applied Strategy & Analytics as the current department name.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I work at Meridian Consulting Group in the Strategy & Insights department"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I keep telling people Strategy & Insights but that's wrong. The actual name is Strategic Analytics"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Rachel mentioned in our team meeting that the department is being rebranded to Applied Strategy & Analytics starting next quarter"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Turns out the rebranding got shelved. Leadership decided to keep it as Strategic Analytics after all"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I need to fill out an internal transfer request form. There's a field for my organizational unit and a separate field for my manager's division. When I later gave you a different label for my organizational unit, does that also change what's listed under my manager's division, or are those two separate records?",
+      "expected_answer": "They are separate records. Your organizational unit was corrected to Strategic Analytics. Rachel Tseng's role as analytics division lead is an independent detail that was not affected by the organizational unit correction.",
+      "gold_memory_state": "Department name target: Strategic Analytics (confirmed after correction). Direct manager target: Rachel Tseng, analytics division lead (unchanged, separate record).",
+      "judge_rubric": {
+        "must_include": [
+          "Strategic Analytics as current organizational unit",
+          "Rachel Tseng's analytics division lead role is separate and unchanged"
+        ],
+        "acceptable_paraphrases": [
+          "the manager detail is independent",
+          "the division lead title was not modified"
+        ],
+        "must_not_include": [
+          "Strategy & Insights as current department",
+          "Applied Strategy & Analytics as current department"
+        ],
+        "harmful_extra": [
+          "claiming Rachel Tseng's division title changed when the department name was corrected",
+          "conflating the department name target with the manager target"
+        ],
+        "harmless_extra": [
+          "mentioning the initial Strategy & Insights name as context"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses Strategy & Insights or Applied Strategy & Analytics as the current organizational unit.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I keep telling people Strategy & Insights but that's wrong. The actual name is Strategic Analytics"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My direct manager is Rachel Tseng. She leads the analytics division"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I need to fill out an internal transfer request form. There's a field for my organizational unit and a separate field for my manager's division. When I later gave you a different label for my organizational unit, does that also change what's listed under my manager's division, or are those two separate records?",
+      "expected_answer": "They are separate records. Your organizational unit was corrected to Strategic Analytics. Rachel Tseng's role as analytics division lead is an independent detail that was not affected by the organizational unit correction.",
+      "gold_memory_state": "Department name target: Strategic Analytics (confirmed after correction). Direct manager target: Rachel Tseng, analytics division lead (unchanged, separate record).",
+      "judge_rubric": {
+        "must_include": [
+          "Strategic Analytics as current organizational unit",
+          "Rachel Tseng's analytics division lead role is separate and unchanged"
+        ],
+        "acceptable_paraphrases": [
+          "the manager detail is independent",
+          "the division lead title was not modified"
+        ],
+        "must_not_include": [
+          "Strategy & Insights as current department",
+          "Applied Strategy & Analytics as current department"
+        ],
+        "harmful_extra": [
+          "claiming Rachel Tseng's division title changed when the department name was corrected",
+          "conflating the department name target with the manager target"
+        ],
+        "harmless_extra": [
+          "mentioning the initial Strategy & Insights name as context"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses Strategy & Insights or Applied Strategy & Analytics as the current organizational unit.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I keep telling people Strategy & Insights but that's wrong. The actual name is Strategic Analytics"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My direct manager is Rachel Tseng. She leads the analytics division"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I'm about to submit a vendor registration form and need to enter my organizational unit at Meridian Consulting Group. Which of the following should I use?",
+      "candidate_options": [
+        "Strategic Analytics",
+        "Strategy & Insights",
+        "Applied Strategy & Analytics",
+        "Analytics & Strategy Division"
+      ],
+      "expected_answer": "Strategic Analytics",
+      "distractor_rationale": "same-value-different-target: 'Analytics & Strategy Division' is an assistant echo / plausible restatement that conflates the department name with Rachel Tseng's 'analytics division' title, creating a hybrid name that was never stated by the user. assistant echo: 'Strategy & Insights' appeared on a pre-populated vendor form template mentioned in segment 3, and the assistant acknowledged it as outdated. 'Applied Strategy & Analytics' is the tentative rebrand value that was shelved.",
+      "gold_memory_state": "Department: Strategic Analytics (confirmed). Strategy & Insights is the original stale value. Applied Strategy & Analytics was a tentative rebrand that was shelved. Analytics & Strategy Division was never a user-stated department name.",
+      "judge_rubric": {
+        "must_include": [
+          "Strategic Analytics"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "Strategy & Insights as current",
+          "Applied Strategy & Analytics as current",
+          "Analytics & Strategy Division"
+        ],
+        "harmful_extra": [
+          "selecting any option other than Strategic Analytics"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects Strategy & Insights (stale original value) or Applied Strategy & Analytics (tentative retracted value). These are recency trap and stale-value failure modes respectively.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I keep telling people Strategy & Insights but that's wrong. The actual name is Strategic Analytics"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Turns out the rebranding got shelved. Leadership decided to keep it as Strategic Analytics after all"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I'm about to submit a vendor registration form and need to enter my organizational unit at Meridian Consulting Group. Which of the following should I use?",
+      "candidate_options": [
+        "Strategic Analytics",
+        "Strategy & Insights",
+        "Applied Strategy & Analytics",
+        "Analytics & Strategy Division"
+      ],
+      "expected_answer": "Strategic Analytics",
+      "distractor_rationale": "same-value-different-target: 'Analytics & Strategy Division' is an assistant echo / plausible restatement that conflates the department name with Rachel Tseng's 'analytics division' title, creating a hybrid name that was never stated by the user. assistant echo: 'Strategy & Insights' appeared on a pre-populated vendor form template mentioned in segment 3, and the assistant acknowledged it as outdated. 'Applied Strategy & Analytics' is the tentative rebrand value that was shelved.",
+      "gold_memory_state": "Department: Strategic Analytics (confirmed). Strategy & Insights is the original stale value. Applied Strategy & Analytics was a tentative rebrand that was shelved. Analytics & Strategy Division was never a user-stated department name.",
+      "judge_rubric": {
+        "must_include": [
+          "Strategic Analytics"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "Strategy & Insights as current",
+          "Applied Strategy & Analytics as current",
+          "Analytics & Strategy Division"
+        ],
+        "harmful_extra": [
+          "selecting any option other than Strategic Analytics"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects Strategy & Insights (stale original value) or Applied Strategy & Analytics (tentative retracted value). These are recency trap and stale-value failure modes respectively.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I keep telling people Strategy & Insights but that's wrong. The actual name is Strategic Analytics"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Turns out the rebranding got shelved. Leadership decided to keep it as Strategic Analytics after all"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I need to write a brief introduction for a client-facing slide deck. It should include one sentence about who I am at Meridian — covering my organizational unit, who I report to, and how long I've been there calculated from my start date to my probation review date. Draft that sentence for me.",
+      "expected_answer": "I am a member of the Strategic Analytics department at Meridian Consulting Group, reporting to Rachel Tseng, analytics division lead, and I have been with the firm for six months.",
+      "application_probe_type": "multi_hop_derivation",
+      "gold_memory_state": "Department: Strategic Analytics. Manager: Rachel Tseng, analytics division lead. Start date: January 15th. Probation review: July 15th. Tenure calculation: January 15 to July 15 = 6 months.",
+      "judge_rubric": {
+        "must_include": [
+          "Strategic Analytics",
+          "Rachel Tseng",
+          "six months"
+        ],
+        "acceptable_paraphrases": [
+          "6 months",
+          "half a year",
+          "analytics division lead",
+          "head of the analytics division"
+        ],
+        "must_not_include": [
+          "Strategy & Insights",
+          "Applied Strategy & Analytics"
+        ],
+        "harmful_extra": [
+          "using a stale or tentative department name",
+          "miscalculating tenure"
+        ],
+        "harmless_extra": [
+          "mentioning 200 Commerce Street",
+          "mentioning employee ID"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses Strategy & Insights or Applied Strategy & Analytics as the department name in the drafted sentence.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's department at Meridian Consulting Group is Strategic Analytics (after correction).",
+        "Fact 2: The user's direct manager is Rachel Tseng, analytics division lead.",
+        "Fact 3: The user's start date at Meridian is January 15th.",
+        "Fact 4: The user's probation review is scheduled for July 15th.",
+        "Inference: January 15 to July 15 = exactly 6 months of tenure.",
+        "Derived value: The introduction sentence combines department (Strategic Analytics), manager (Rachel Tseng), and derived tenure (6 months)."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I keep telling people Strategy & Insights but that's wrong. The actual name is Strategic Analytics"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My direct manager is Rachel Tseng. She leads the analytics division"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "my official start date at Meridian was January 15th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my six-month probation review is scheduled for July 15th"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I need to write a brief introduction for a client-facing slide deck. It should include one sentence about who I am at Meridian — covering my organizational unit, who I report to, and how long I've been there calculated from my start date to my probation review date. Draft that sentence for me.",
+      "expected_answer": "I am a member of the Strategic Analytics department at Meridian Consulting Group, reporting to Rachel Tseng, analytics division lead, and I have been with the firm for six months.",
+      "application_probe_type": "multi_hop_derivation",
+      "gold_memory_state": "Department: Strategic Analytics. Manager: Rachel Tseng, analytics division lead. Start date: January 15th. Probation review: July 15th. Tenure calculation: January 15 to July 15 = 6 months.",
+      "judge_rubric": {
+        "must_include": [
+          "Strategic Analytics",
+          "Rachel Tseng",
+          "six months"
+        ],
+        "acceptable_paraphrases": [
+          "6 months",
+          "half a year",
+          "analytics division lead",
+          "head of the analytics division"
+        ],
+        "must_not_include": [
+          "Strategy & Insights",
+          "Applied Strategy & Analytics"
+        ],
+        "harmful_extra": [
+          "using a stale or tentative department name",
+          "miscalculating tenure"
+        ],
+        "harmless_extra": [
+          "mentioning 200 Commerce Street",
+          "mentioning employee ID"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses Strategy & Insights or Applied Strategy & Analytics as the department name in the drafted sentence.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's department at Meridian Consulting Group is Strategic Analytics (after correction).",
+        "Fact 2: The user's direct manager is Rachel Tseng, analytics division lead.",
+        "Fact 3: The user's start date at Meridian is January 15th.",
+        "Fact 4: The user's probation review is scheduled for July 15th.",
+        "Inference: January 15 to July 15 = exactly 6 months of tenure.",
+        "Derived value: The introduction sentence combines department (Strategic Analytics), manager (Rachel Tseng), and derived tenure (6 months)."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I keep telling people Strategy & Insights but that's wrong. The actual name is Strategic Analytics"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My direct manager is Rachel Tseng. She leads the analytics division"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "my official start date at Meridian was January 15th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "my six-month probation review is scheduled for July 15th"
+        }
+      ]
+    }
+  ]
+}

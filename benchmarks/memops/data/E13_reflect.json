@@ -1,0 +1,1058 @@
+{
+  "target_fact": "User values precision and personal attention to detail in how their identity is represented, as evidenced by their strong reactions to name misspellings, preference for hand-written forms, and loyalty to businesses that get their name right.",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "My last name is McAllister—capital M, capital A. I can't tell you how many times places get it wrong."
+      },
+      "target": {
+        "target_id": "user_last_name_spelling",
+        "target_name": "correct spelling of user's last name"
+      },
+      "old_value": null,
+      "new_value": "McAllister",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My last name is McAllister—capital M, capital A. I can't tell you how many times places get it wrong."
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I ordered a custom nameplate for my desk and spelled it out letter by letter on the phone, and they still sent it with a lowercase a"
+      },
+      "target": {
+        "target_id": "nameplate_misspelling_incident",
+        "target_name": "custom nameplate misspelling incident"
+      },
+      "old_value": null,
+      "new_value": "Ordered custom desk nameplate, spelled name letter by letter, received it with lowercase a instead of capital A",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I ordered a custom nameplate for my desk and spelled it out letter by letter on the phone, and they still sent it with a lowercase a"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I actually prefer filling out forms by hand. There's something about writing it yourself—at least I know nobody's auto-correcting my name into something wrong."
+      },
+      "target": {
+        "target_id": "form_filling_preference",
+        "target_name": "user's preference for filling out forms by hand"
+      },
+      "old_value": null,
+      "new_value": "Prefers filling out forms by hand to avoid digital auto-corrections to name",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I actually prefer filling out forms by hand. There's something about writing it yourself—at least I know nobody's auto-correcting my name into something wrong."
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "there's this coffee shop on 4th Avenue that always writes my name correctly on the cup—I go there almost every morning partly because of that"
+      },
+      "target": {
+        "target_id": "coffee_shop_loyalty",
+        "target_name": "loyalty to coffee shop on 4th Avenue for getting name right"
+      },
+      "old_value": null,
+      "new_value": "Goes to coffee shop on 4th Avenue almost every morning partly because they always spell the name correctly",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "there's this coffee shop on 4th Avenue that always writes my name correctly on the cup—I go there almost every morning partly because of that"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "When someone misspells my name in an email at work I always sign my reply with my full name bolded. I'd rather come across as a little fussy than let it slide."
+      },
+      "target": {
+        "target_id": "email_correction_habit",
+        "target_name": "habit of correcting name in email replies"
+      },
+      "old_value": null,
+      "new_value": "Signs email replies with full name bolded when someone misspells it; prefers seeming fussy over letting errors slide",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "When someone misspells my name in an email at work I always sign my reply with my full name bolded. I'd rather come across as a little fussy than let it slide."
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "I need to call Dr. Huang's office on Elm Street to correct the spelling in their system—they have me as McAlister with one L"
+      },
+      "target": {
+        "target_id": "dentist_spelling_correction_pending",
+        "target_name": "pending spelling correction at Dr. Huang's dentist office"
+      },
+      "old_value": null,
+      "new_value": "Needs to call Dr. Huang's office on Elm Street near the library to correct spelling from McAlister to McAllister",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I need to call Dr. Huang's office on Elm Street to correct the spelling in their system—they have me as McAlister with one L"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 1,
+        "quote": "I think it comes down to feeling like my identity matters. If a business or a system can't even get my name right, it feels like they don't care about me as a person."
+      },
+      "target": {
+        "target_id": "identity_precision_value",
+        "target_name": "inferred core value: precision in identity representation signals personal respect"
+      },
+      "old_value": null,
+      "new_value": "Values precision and personal attention to detail in how their identity is represented; interprets correct name handling as a sign of respect and care, and misspellings as dismissiveness",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I ordered a custom nameplate for my desk and spelled it out letter by letter on the phone, and they still sent it with a lowercase a"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I actually prefer filling out forms by hand. There's something about writing it yourself—at least I know nobody's auto-correcting my name into something wrong."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "there's this coffee shop on 4th Avenue that always writes my name correctly on the cup—I go there almost every morning partly because of that"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "When someone misspells my name in an email at work I always sign my reply with my full name bolded. I'd rather come across as a little fussy than let it slide."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I think it comes down to feeling like my identity matters. If a business or a system can't even get my name right, it feels like they don't care about me as a person."
+        }
+      ]
+    },
+    {
+      "operation_id": "op8",
+      "type": "remember",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "The HR portal confirmed my nameplate reorder will have the corrected spelling, so I think I'm going to switch to using the online custom shop for all personalized items from now on."
+      },
+      "target": {
+        "target_id": "form_filling_preference",
+        "target_name": "user's preference for filling out forms by hand"
+      },
+      "old_value": "Prefers filling out forms by hand to avoid digital auto-corrections to name",
+      "new_value": "Plans to switch to online custom shop for personalized items",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The HR portal confirmed my nameplate reorder will have the corrected spelling, so I think I'm going to switch to using the online custom shop for all personalized items from now on."
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish core facts about name misspelling experiences and preferences",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to talk to you about something that keeps coming up in my life and it's driving me a little crazy. My last name is McAllister—capital M, capital A. I can't tell you how many times places get it wrong. Just recently my insurance card came back with \"Mcallister\"—no capital A—and it caused a real problem at the pharmacy because they couldn't match my profile. Took me forty minutes on the phone to fix it."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds incredibly frustrating, especially since a pharmacy interaction should be straightforward. Having your insurance card spell your name as \"Mcallister\" instead of \"McAllister\" is the kind of error that seems small on paper but can cascade into real problems when systems rely on exact character matching. I've noted your correct spelling: McAllister with a capital M and a capital A. I'll make sure to always use it correctly. Did the insurance company confirm the corrected card has been issued, or is that still pending? And has this kind of thing happened to you in other contexts too?"
+        },
+        {
+          "role": "user",
+          "content": "Oh, it happens everywhere. I ordered a custom nameplate for my desk and spelled it out letter by letter on the phone, and they still sent it with a lowercase a. I was honestly really frustrated when I opened the package. I enjoy personalized items—little custom things with my name—but this kind of mistake just takes the joy right out of it. I'd gone out of my way to be precise and it still didn't matter. That was sometime in late March or maybe early April, I'm not totally sure on the exact date."
+        },
+        {
+          "role": "assistant",
+          "content": "I can understand why that was so disheartening. You took every reasonable precaution by spelling it out letter by letter, and the vendor still got it wrong. It sounds like the issue isn't just about the physical item but about feeling like your effort to communicate clearly was disregarded. Custom and personalized items are supposed to feel special—they carry a sense of identity—and when the core detail, your name, is wrong, the whole purpose is undermined. Did you end up getting a replacement from the same vendor, or did you try a different company? I want to keep track of how this was resolved for you."
+        },
+        {
+          "role": "user",
+          "content": "I haven't reordered it yet, actually. I've been putting it off because the whole experience was discouraging. But one thing I've realized through all of this is that I actually prefer filling out forms by hand. There's something about writing it yourself—at least I know nobody's auto-correcting my name into something wrong. Digital forms have burned me too many times. Like when I moved into my apartment last November, the electric company had me as \"MacAllister\" which is a completely different name. That's been fixed now though."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really practical insight. Filling out forms by hand gives you direct control over every letter, which eliminates the risk of auto-correct or data-entry errors introducing mistakes you then have to chase down. The \"MacAllister\" incident with the electric company is a perfect example of how digital systems can introduce entirely different spellings that you wouldn't catch until much later. I'm glad that one's been resolved at least. It sounds like you've developed a strong preference for handwritten forms as a kind of self-defense mechanism against these recurring errors. Do you find that most places still accept handwritten forms, or is that becoming harder?"
+        },
+        {
+          "role": "user",
+          "content": "It depends on the place. Some offices still have paper forms, which I appreciate. My friend Danielle had a similar name issue—her apartment lease had her name as \"Daniele\" with one L instead of two, and she didn't notice until renewal. It turned into a whole ordeal with her landlord. When she told me about it I remember thinking, at least my insurance card thing was relatively easy to fix compared to a legal document like a lease. Names matter, you know?"
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, names matter deeply. Danielle's situation really illustrates how a single missing letter on a legal document like a lease can snowball into something much more complicated than a quick phone call. It's the kind of error that can affect identity verification, credit checks, and legal standing. Your comparison makes sense—an insurance card fix, while annoying, is more contained than a lease dispute. It sounds like both you and Danielle have learned to be vigilant about checking documents immediately. I think your instinct to fill things out by hand wherever possible is a smart strategy given how often these errors keep cropping up in digital systems."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "expand behavioral patterns around name accuracy and introduce pending dentist correction",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "You know what's funny, there's this coffee shop on 4th Avenue that always writes my name correctly on the cup—I go there almost every morning partly because of that. It sounds silly but it genuinely makes a difference in my day. I tend to gravitate toward businesses that take the time to get details right. It tells me they actually pay attention, and that extends to how I think they'd handle other things too, like my order accuracy or my loyalty rewards."
+        },
+        {
+          "role": "assistant",
+          "content": "That doesn't sound silly at all—it's actually a very rational way to evaluate a business. If a coffee shop consistently gets your name right, it signals attention to detail across the board. That kind of reliability builds trust, and trust drives loyalty. The fact that you go there almost every morning partly because of how they handle your name shows how much weight you place on feeling recognized and respected as a customer. It's a small gesture on their part, but it clearly has an outsized impact on your experience. Do you find that other businesses in your routine show the same level of care, or is the coffee shop on 4th Avenue kind of the exception?"
+        },
+        {
+          "role": "user",
+          "content": "It's more the exception, honestly. Most places are careless. My coworker Brian actually goes by \"Bryan\" with a Y, but he gave up correcting people years ago. I don't think I could ever do that. When someone misspells my name in an email at work I always sign my reply with my full name bolded. I'd rather come across as a little fussy than let it slide. It's not about ego—it's about accuracy. My name is my name, and if I stop correcting people, eventually the wrong version just becomes the default."
+        },
+        {
+          "role": "assistant",
+          "content": "I think that's a really important distinction you're making—it's not about ego, it's about accuracy and maintaining the integrity of your identity. Brian's approach of giving up is understandable from an energy standpoint, but your concern about the wrong version becoming the default is completely valid. Once errors go uncorrected, they propagate. Bolding your full name in replies is a clever, non-confrontational way to signal the correct spelling without making it awkward. It's assertive without being aggressive. I respect that you hold that line consistently. It sounds like this is a deeply held value for you, not just a pet peeve."
+        },
+        {
+          "role": "user",
+          "content": "Exactly, it's deeper than a pet peeve. Speaking of corrections I still need to make—I need to call Dr. Huang's office on Elm Street to correct the spelling in their system—they have me as McAlister with one L. I got a confirmation email from them on May 8th and that's when I noticed. It's the office near the library. I haven't called yet but I really need to before my next appointment. Can you remind me about that?"
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, I'll make sure to remind you to call Dr. Huang's office on Elm Street, the one near the library, to correct the spelling from \"McAlister\" to \"McAllister\"—they're missing the second L. You noticed it in the May 8th confirmation email. I'd recommend calling sooner rather than later so the correction is in place well before your next appointment, especially since you know from experience how mismatched names can cause issues with profile lookups and insurance processing. Would you like me to draft a quick script or talking points for the call so you can efficiently communicate the exact correction needed?"
+        },
+        {
+          "role": "user",
+          "content": "That's a good idea, maybe later. For now just hold onto the reminder. You know, I also enjoy getting personalized gifts for other people—monogrammed things, custom prints with their names. I always triple-check the spelling before I order because I know firsthand how disappointing it is to receive something with your name wrong. I actually keep a little note on my phone with the exact spellings of my close friends' and family members' names just so I never make that mistake myself."
+        },
+        {
+          "role": "assistant",
+          "content": "That's such a thoughtful practice. Keeping a dedicated note with exact spellings of your friends' and family members' names shows how much you value getting those details right for the people you care about. It's clearly informed by your own experiences—you know the sting of a misspelled personalized item, and you don't want to inflict that on anyone else. Triple-checking before ordering is exactly the kind of diligence that makes personalized gifts meaningful rather than frustrating. It sounds like accuracy in names isn't just a personal standard for you; it's something you extend outward as a form of respect and care for the people in your life."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "deepen reflection on core value, introduce tentative plan and adversarial distractor",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I've been thinking about why this bothers me so much, and I think it comes down to feeling like my identity matters. If a business or a system can't even get my name right, it feels like they don't care about me as a person. It's not just inconvenience—it's almost like being invisible or interchangeable. That's why the coffee shop on 4th Avenue means so much. They see me. They know who I am. That little act of writing \"McAllister\" correctly on my cup is a form of recognition that I really value."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really powerful insight. What you're describing goes beyond simple frustration with typos—it's about feeling seen and valued as an individual. When a system or a business gets your name wrong, it sends an implicit message that the details of who you are don't matter enough to get right. And conversely, when the coffee shop on 4th Avenue consistently spells your name correctly, it communicates recognition and respect. This connects all the dots: the insurance card, the nameplate, the dentist's office, your preference for handwritten forms, your email signature habit. They're all expressions of the same core need—to have your identity accurately represented and respected by the world around you."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, that's exactly it. And it applies to how I treat other people's names too. Like I mentioned, I keep that list on my phone. I think if more people cared about getting names right, the world would feel a little more personal and a little less transactional. My coworker Brian—sorry, Bryan with a Y—he once told me he stopped caring because it wasn't worth the energy. But I think the energy is exactly the point. It's worth spending because names are fundamental to who we are."
+        },
+        {
+          "role": "assistant",
+          "content": "I think you've articulated something really meaningful there. The idea that investing energy in getting names right is itself an act of care—that resonates deeply. Bryan's choice to stop correcting people is understandable from a pragmatic standpoint, but your perspective reframes it as a values question rather than a convenience question. For you, the effort isn't wasted; it's an expression of respect for identity itself. And extending that standard to how you treat others' names—keeping that list, triple-checking orders—shows it's a consistent principle, not just self-interest. It sounds like name accuracy functions as a kind of moral compass for you in how you navigate relationships and institutions."
+        },
+        {
+          "role": "user",
+          "content": "The HR portal confirmed my nameplate reorder will have the corrected spelling, so I think I'm going to switch to using the online custom shop for all personalized items from now on. Their system let me preview the exact output before confirming, which felt much more reliable than spelling it out over the phone. I'm cautiously optimistic about it. If it works out, I might stop doing things by hand for custom orders at least."
+        },
+        {
+          "role": "assistant",
+          "content": "That's great news about the nameplate reorder! Having a preview feature before confirming is exactly the kind of quality control that should give you confidence. It addresses the core problem you experienced before—spelling it out verbally left room for human error, but a visual preview puts the verification back in your hands. I can see why you're considering shifting to the online custom shop for personalized items going forward. It combines the precision you value with the convenience of digital ordering. I'd say it's worth testing with a few more orders before fully committing, but it sounds like a promising development."
+        },
+        {
+          "role": "user",
+          "content": "True, I'll see how the nameplate turns out first. Oh, I also meant to mention—I was helping my neighbor fill out a change-of-address form last week and the pre-printed section had the name field showing \"McAllester\" as a sample placeholder. I had to laugh because even the example name was wrong by my standards. Anyway, my neighbor's last name is completely different so it didn't affect her, but I couldn't help noticing.\n\nExactly. It's just second nature for me at this point to scan for those things. Anyway, I think that's everything I wanted to cover today. Just make sure you remember my correct spelling—McAllister, capital M, capital A, two Ls—and remind me about Dr. Huang's office when the time comes. I appreciate you keeping track of all this for me. It means a lot to have someone who actually listens to the details."
+        },
+        {
+          "role": "assistant",
+          "content": "Ha, that's almost poetic—even the sample placeholder on the form managed to get close to your name but not quite right. \"McAllester\" versus \"McAllister\" is exactly the kind of near-miss that would catch your eye immediately. It's a perfect illustration of how pervasive these small spelling variations are. The fact that you noticed it on someone else's form, for a name that wasn't even supposed to be yours, shows how tuned-in you are to these details. Your neighbor is lucky to have someone so detail-oriented helping with her paperwork. At least in that case it was just a generic placeholder and not an actual error on her documents.\n\nAbsolutely, I have everything noted. Your last name is McAllister—capital M, capital A, two Ls—and I'll remind you to call Dr. Huang's office on Elm Street near the library to correct their spelling from \"McAlister\" to \"McAllister\" before your next appointment. I also have your preferences recorded: handwritten forms when possible, loyalty to the coffee shop on 4th Avenue, and your habit of bolding your name in email replies. I take the details seriously because I know how much they matter to you. Don't hesitate to bring up anything else that comes to mind. I'm here to help keep everything accurate and organized."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations, I've shared a number of experiences related to how my name gets handled by businesses, systems, and people around me. Can you summarize the key experiences and habits I described that all connect to this theme?",
+      "expected_answer": "You described several experiences: (1) your last name McAllister is frequently misspelled, including an insurance card error that caused pharmacy problems; (2) a custom desk nameplate order came back with a lowercase 'a' despite spelling it out letter by letter; (3) you prefer filling out forms by hand to avoid auto-correct errors; (4) you frequent a coffee shop on 4th Avenue partly because they always spell your name correctly; (5) you bold your full name in email replies when coworkers misspell it; (6) you need to call Dr. Huang's office on Elm Street to correct their system from 'McAlister' to 'McAllister'; and (7) you reflected that all of this comes down to feeling that your identity matters and that correct name handling signals respect.",
+      "gold_memory_state": "All confirmed facts from op1–op7 are active: correct spelling McAllister, nameplate incident, hand-written form preference (confirmed), coffee shop loyalty, email correction habit, pending dentist correction, and the reflected core value about identity precision. Op8 (tentative switch to online custom shop) is not confirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "nameplate misspelling",
+          "hand-written forms preference",
+          "coffee shop on 4th Avenue",
+          "email reply with bolded name",
+          "Dr. Huang's office spelling correction",
+          "identity/respect as underlying motivation"
+        ],
+        "acceptable_paraphrases": [
+          "desk nameplate came with lowercase a",
+          "signs replies with full name bolded",
+          "dentist office has McAlister with one L"
+        ],
+        "must_not_include": [
+          "switch to online custom shop as confirmed behavior"
+        ],
+        "harmful_extra": [
+          "treating the tentative online-shop plan as an established confirmed preference"
+        ],
+        "harmless_extra": [
+          "mentioning the insurance card incident",
+          "mentioning Danielle's lease issue",
+          "mentioning Bryan/Brian coworker",
+          "mentioning the neighbor's change-of-address form"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative online custom shop switch as a confirmed established habit rather than a tentative plan.",
+        "reflection_precision": "Fails if the model attributes unsupported conclusions beyond what the user explicitly stated or what the evidence supports.",
+        "reflection_recall": "Fails if the model omits more than two of the key experiences listed.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My last name is McAllister—capital M, capital A. I can't tell you how many times places get it wrong."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I ordered a custom nameplate for my desk and spelled it out letter by letter on the phone, and they still sent it with a lowercase a"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I actually prefer filling out forms by hand. There's something about writing it yourself—at least I know nobody's auto-correcting my name into something wrong."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "there's this coffee shop on 4th Avenue that always writes my name correctly on the cup—I go there almost every morning partly because of that"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "When someone misspells my name in an email at work I always sign my reply with my full name bolded. I'd rather come across as a little fussy than let it slide."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I need to call Dr. Huang's office on Elm Street to correct the spelling in their system—they have me as McAlister with one L"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I think it comes down to feeling like my identity matters. If a business or a system can't even get my name right, it feels like they don't care about me as a person."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations, I've shared a number of experiences related to how my name gets handled by businesses, systems, and people around me. Can you summarize the key experiences and habits I described that all connect to this theme?",
+      "expected_answer": "You described several experiences: (1) your last name McAllister is frequently misspelled, including an insurance card error that caused pharmacy problems; (2) a custom desk nameplate order came back with a lowercase 'a' despite spelling it out letter by letter; (3) you prefer filling out forms by hand to avoid auto-correct errors; (4) you frequent a coffee shop on 4th Avenue partly because they always spell your name correctly; (5) you bold your full name in email replies when coworkers misspell it; (6) you need to call Dr. Huang's office on Elm Street to correct their system from 'McAlister' to 'McAllister'; and (7) you reflected that all of this comes down to feeling that your identity matters and that correct name handling signals respect.",
+      "gold_memory_state": "All confirmed facts from op1–op7 are active: correct spelling McAllister, nameplate incident, hand-written form preference (confirmed), coffee shop loyalty, email correction habit, pending dentist correction, and the reflected core value about identity precision. Op8 (tentative switch to online custom shop) is not confirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "nameplate misspelling",
+          "hand-written forms preference",
+          "coffee shop on 4th Avenue",
+          "email reply with bolded name",
+          "Dr. Huang's office spelling correction",
+          "identity/respect as underlying motivation"
+        ],
+        "acceptable_paraphrases": [
+          "desk nameplate came with lowercase a",
+          "signs replies with full name bolded",
+          "dentist office has McAlister with one L"
+        ],
+        "must_not_include": [
+          "switch to online custom shop as confirmed behavior"
+        ],
+        "harmful_extra": [
+          "treating the tentative online-shop plan as an established confirmed preference"
+        ],
+        "harmless_extra": [
+          "mentioning the insurance card incident",
+          "mentioning Danielle's lease issue",
+          "mentioning Bryan/Brian coworker",
+          "mentioning the neighbor's change-of-address form"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative online custom shop switch as a confirmed established habit rather than a tentative plan.",
+        "reflection_precision": "Fails if the model attributes unsupported conclusions beyond what the user explicitly stated or what the evidence supports.",
+        "reflection_recall": "Fails if the model omits more than two of the key experiences listed.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My last name is McAllister—capital M, capital A. I can't tell you how many times places get it wrong."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I ordered a custom nameplate for my desk and spelled it out letter by letter on the phone, and they still sent it with a lowercase a"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I actually prefer filling out forms by hand. There's something about writing it yourself—at least I know nobody's auto-correcting my name into something wrong."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "there's this coffee shop on 4th Avenue that always writes my name correctly on the cup—I go there almost every morning partly because of that"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "When someone misspells my name in an email at work I always sign my reply with my full name bolded. I'd rather come across as a little fussy than let it slide."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I need to call Dr. Huang's office on Elm Street to correct the spelling in their system—they have me as McAlister with one L"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I think it comes down to feeling like my identity matters. If a business or a system can't even get my name right, it feels like they don't care about me as a person."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've described several behavioral patterns around name accuracy—some about how I handle my own name and some about how I treat other people's names. When I talked about the deeper reason behind all of this, which specific behavioral patterns does that broader conclusion draw from, and which related habits or facts about me are separate details that don't directly feed into that conclusion?",
+      "expected_answer": "The broader conclusion—that you value precision in identity representation as a sign of respect and care—draws from: the nameplate misspelling frustration, the preference for hand-written forms, the coffee shop loyalty for correct name spelling, and the email correction habit. The pending dentist office correction at Dr. Huang's is a separate actionable task rather than a behavioral pattern feeding the conclusion. Your correct last name spelling (McAllister) is a foundational fact but not itself a behavioral pattern. The tentative plan to switch to an online custom shop is not a confirmed behavioral pattern and does not feed into the established conclusion.",
+      "gold_memory_state": "The core reflected value (identity_precision_value) is supported by evidence from the nameplate incident, hand-written form preference, coffee shop loyalty, and email correction habit. The dentist correction is a separate pending task. The user's correct name spelling is a standalone fact. The tentative online shop switch is unconfirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "nameplate incident as supporting evidence",
+          "hand-written forms preference as supporting evidence",
+          "coffee shop loyalty as supporting evidence",
+          "email correction habit as supporting evidence",
+          "identity/respect as the broader conclusion"
+        ],
+        "acceptable_paraphrases": [
+          "desk nameplate error",
+          "bolding name in replies",
+          "4th Avenue coffee shop"
+        ],
+        "must_not_include": [
+          "treating the tentative online shop switch as a confirmed supporting pattern for the core value"
+        ],
+        "harmful_extra": [
+          "claiming the dentist correction task is a primary behavioral pattern rather than a separate pending action item",
+          "treating the online custom shop plan as established behavior"
+        ],
+        "harmless_extra": [
+          "mentioning the insurance card incident as additional context",
+          "mentioning the user's phone list of friends' and family names"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the tentative online shop switch is presented as a confirmed behavioral pattern supporting the core value.",
+        "reflection_precision": "Fails if the model includes unsupported patterns (e.g., tentative plans) as confirmed evidence for the core value.",
+        "reflection_recall": "Fails if the model omits more than one of the four key behavioral patterns (nameplate, hand-written forms, coffee shop, email habit).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I ordered a custom nameplate for my desk and spelled it out letter by letter on the phone, and they still sent it with a lowercase a"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I actually prefer filling out forms by hand. There's something about writing it yourself—at least I know nobody's auto-correcting my name into something wrong."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "there's this coffee shop on 4th Avenue that always writes my name correctly on the cup—I go there almost every morning partly because of that"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "When someone misspells my name in an email at work I always sign my reply with my full name bolded. I'd rather come across as a little fussy than let it slide."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I think it comes down to feeling like my identity matters. If a business or a system can't even get my name right, it feels like they don't care about me as a person."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I've described several behavioral patterns around name accuracy—some about how I handle my own name and some about how I treat other people's names. When I talked about the deeper reason behind all of this, which specific behavioral patterns does that broader conclusion draw from, and which related habits or facts about me are separate details that don't directly feed into that conclusion?",
+      "expected_answer": "The broader conclusion—that you value precision in identity representation as a sign of respect and care—draws from: the nameplate misspelling frustration, the preference for hand-written forms, the coffee shop loyalty for correct name spelling, and the email correction habit. The pending dentist office correction at Dr. Huang's is a separate actionable task rather than a behavioral pattern feeding the conclusion. Your correct last name spelling (McAllister) is a foundational fact but not itself a behavioral pattern. The tentative plan to switch to an online custom shop is not a confirmed behavioral pattern and does not feed into the established conclusion.",
+      "gold_memory_state": "The core reflected value (identity_precision_value) is supported by evidence from the nameplate incident, hand-written form preference, coffee shop loyalty, and email correction habit. The dentist correction is a separate pending task. The user's correct name spelling is a standalone fact. The tentative online shop switch is unconfirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "nameplate incident as supporting evidence",
+          "hand-written forms preference as supporting evidence",
+          "coffee shop loyalty as supporting evidence",
+          "email correction habit as supporting evidence",
+          "identity/respect as the broader conclusion"
+        ],
+        "acceptable_paraphrases": [
+          "desk nameplate error",
+          "bolding name in replies",
+          "4th Avenue coffee shop"
+        ],
+        "must_not_include": [
+          "treating the tentative online shop switch as a confirmed supporting pattern for the core value"
+        ],
+        "harmful_extra": [
+          "claiming the dentist correction task is a primary behavioral pattern rather than a separate pending action item",
+          "treating the online custom shop plan as established behavior"
+        ],
+        "harmless_extra": [
+          "mentioning the insurance card incident as additional context",
+          "mentioning the user's phone list of friends' and family names"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the tentative online shop switch is presented as a confirmed behavioral pattern supporting the core value.",
+        "reflection_precision": "Fails if the model includes unsupported patterns (e.g., tentative plans) as confirmed evidence for the core value.",
+        "reflection_recall": "Fails if the model omits more than one of the four key behavioral patterns (nameplate, hand-written forms, coffee shop, email habit).",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I ordered a custom nameplate for my desk and spelled it out letter by letter on the phone, and they still sent it with a lowercase a"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I actually prefer filling out forms by hand. There's something about writing it yourself—at least I know nobody's auto-correcting my name into something wrong."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "there's this coffee shop on 4th Avenue that always writes my name correctly on the cup—I go there almost every morning partly because of that"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "When someone misspells my name in an email at work I always sign my reply with my full name bolded. I'd rather come across as a little fussy than let it slide."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I think it comes down to feeling like my identity matters. If a business or a system can't even get my name right, it feels like they don't care about me as a person."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "When it comes to how I approach ordering personalized or custom items, describe what you can confidently say about my established approach and where the boundary is for claims you can't yet support about how I'll handle custom orders going forward.",
+      "expected_answer": "Your established approach is preferring to fill out forms by hand to maintain control over your name's spelling, driven by frustration with errors like the desk nameplate incident. You also triple-check spelling when ordering personalized gifts for others. However, it cannot be confidently stated that you have switched to using an online custom shop for all personalized items—that was expressed as a tentative, conditional plan dependent on how the nameplate reorder turns out. The boundary is that your confirmed preference remains hand-written forms and careful manual verification; the potential shift to online ordering is not yet an established pattern.",
+      "gold_memory_state": "Confirmed: prefers filling out forms by hand to avoid auto-corrections (op3). Confirmed: triple-checks spelling for personalized gifts for others. Tentative/unconfirmed (op8): considering switching to online custom shop, conditional on nameplate reorder results. The supported inference (op7) is that the user values precision in identity representation. Unsupported overgeneralization: claiming the user has adopted online ordering as their new default method for custom items.",
+      "judge_rubric": {
+        "must_include": [
+          "hand-written forms as confirmed preference",
+          "online custom shop plan as tentative or conditional",
+          "boundary between confirmed habit and unconfirmed plan"
+        ],
+        "acceptable_paraphrases": [
+          "prefers handwriting forms",
+          "online shop idea is not yet confirmed",
+          "depends on how the nameplate turns out"
+        ],
+        "must_not_include": [
+          "online custom shop as an established or confirmed preference"
+        ],
+        "harmful_extra": [
+          "stating the user has already abandoned hand-written forms",
+          "presenting the online shop switch as a done deal"
+        ],
+        "harmless_extra": [
+          "mentioning the nameplate incident as context",
+          "mentioning the insurance card as context"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative online shop switch (op8) as a confirmed replacement for the hand-written form preference.",
+        "reflection_precision": "Fails if the model overgeneralizes by claiming the user has fully adopted online ordering for custom items.",
+        "reflection_recall": "Fails if the model omits the hand-written form preference as the confirmed approach or fails to mention the tentative nature of the online shop plan.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I actually prefer filling out forms by hand. There's something about writing it yourself—at least I know nobody's auto-correcting my name into something wrong."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The HR portal confirmed my nameplate reorder will have the corrected spelling, so I think I'm going to switch to using the online custom shop for all personalized items from now on."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I think it comes down to feeling like my identity matters. If a business or a system can't even get my name right, it feels like they don't care about me as a person."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "When it comes to how I approach ordering personalized or custom items, describe what you can confidently say about my established approach and where the boundary is for claims you can't yet support about how I'll handle custom orders going forward.",
+      "expected_answer": "Your established approach is preferring to fill out forms by hand to maintain control over your name's spelling, driven by frustration with errors like the desk nameplate incident. You also triple-check spelling when ordering personalized gifts for others. However, it cannot be confidently stated that you have switched to using an online custom shop for all personalized items—that was expressed as a tentative, conditional plan dependent on how the nameplate reorder turns out. The boundary is that your confirmed preference remains hand-written forms and careful manual verification; the potential shift to online ordering is not yet an established pattern.",
+      "gold_memory_state": "Confirmed: prefers filling out forms by hand to avoid auto-corrections (op3). Confirmed: triple-checks spelling for personalized gifts for others. Tentative/unconfirmed (op8): considering switching to online custom shop, conditional on nameplate reorder results. The supported inference (op7) is that the user values precision in identity representation. Unsupported overgeneralization: claiming the user has adopted online ordering as their new default method for custom items.",
+      "judge_rubric": {
+        "must_include": [
+          "hand-written forms as confirmed preference",
+          "online custom shop plan as tentative or conditional",
+          "boundary between confirmed habit and unconfirmed plan"
+        ],
+        "acceptable_paraphrases": [
+          "prefers handwriting forms",
+          "online shop idea is not yet confirmed",
+          "depends on how the nameplate turns out"
+        ],
+        "must_not_include": [
+          "online custom shop as an established or confirmed preference"
+        ],
+        "harmful_extra": [
+          "stating the user has already abandoned hand-written forms",
+          "presenting the online shop switch as a done deal"
+        ],
+        "harmless_extra": [
+          "mentioning the nameplate incident as context",
+          "mentioning the insurance card as context"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative online shop switch (op8) as a confirmed replacement for the hand-written form preference.",
+        "reflection_precision": "Fails if the model overgeneralizes by claiming the user has fully adopted online ordering for custom items.",
+        "reflection_recall": "Fails if the model omits the hand-written form preference as the confirmed approach or fails to mention the tentative nature of the online shop plan.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I actually prefer filling out forms by hand. There's something about writing it yourself—at least I know nobody's auto-correcting my name into something wrong."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The HR portal confirmed my nameplate reorder will have the corrected spelling, so I think I'm going to switch to using the online custom shop for all personalized items from now on."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I think it comes down to feeling like my identity matters. If a business or a system can't even get my name right, it feels like they don't care about me as a person."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best captures the core reason behind my strong reactions to name errors and my loyalty to businesses that handle my name carefully?",
+      "candidate_options": [
+        "Correct name handling signals personal respect and care; misspellings feel like dismissiveness toward identity",
+        "Name accuracy is a practical necessity to avoid administrative delays and system errors",
+        "Maintaining correct spelling is primarily about professional image and workplace credibility",
+        "Getting names right is a social courtesy that the user extends to others but does not deeply require in return"
+      ],
+      "expected_answer": "Correct name handling signals personal respect and care; misspellings feel like dismissiveness toward identity",
+      "distractor_rationale": "same-value-different-target: Option B captures a real consequence (administrative delays) mentioned in the insurance card story, but it describes a practical effect rather than the core emotional/identity value the user articulated. assistant echo: Option C echoes the assistant's characterization of the email-bolding habit as professional assertiveness, but the user explicitly said it is about accuracy and identity, not professional image. Option D inverts the user's stated position—the user clearly requires name accuracy from others and is not merely extending a courtesy.",
+      "gold_memory_state": "The reflected core value (op7) is that the user values precision in identity representation; correct name handling is interpreted as respect and care, and misspellings as dismissiveness. This is supported by the nameplate incident, hand-written form preference, coffee shop loyalty, and email correction habit.",
+      "judge_rubric": {
+        "must_include": [
+          "identity",
+          "respect",
+          "care",
+          "dismissiveness or being unseen"
+        ],
+        "acceptable_paraphrases": [
+          "feeling seen and valued",
+          "identity matters",
+          "personal recognition"
+        ],
+        "must_not_include": [
+          "purely practical/administrative as the core reason",
+          "professional image as the core reason"
+        ],
+        "harmful_extra": [
+          "selecting the practical-necessity option as the primary motivation",
+          "selecting the professional-image option"
+        ],
+        "harmless_extra": [
+          "acknowledging that practical consequences also exist but are secondary"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model selects a distractor that captures a secondary effect rather than the core identity-based value.",
+        "reflection_recall": "Fails if the model cannot identify the user's explicitly stated core motivation about identity and respect.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I think it comes down to feeling like my identity matters. If a business or a system can't even get my name right, it feels like they don't care about me as a person."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best captures the core reason behind my strong reactions to name errors and my loyalty to businesses that handle my name carefully?",
+      "candidate_options": [
+        "Correct name handling signals personal respect and care; misspellings feel like dismissiveness toward identity",
+        "Name accuracy is a practical necessity to avoid administrative delays and system errors",
+        "Maintaining correct spelling is primarily about professional image and workplace credibility",
+        "Getting names right is a social courtesy that the user extends to others but does not deeply require in return"
+      ],
+      "expected_answer": "Correct name handling signals personal respect and care; misspellings feel like dismissiveness toward identity",
+      "distractor_rationale": "same-value-different-target: Option B captures a real consequence (administrative delays) mentioned in the insurance card story, but it describes a practical effect rather than the core emotional/identity value the user articulated. assistant echo: Option C echoes the assistant's characterization of the email-bolding habit as professional assertiveness, but the user explicitly said it is about accuracy and identity, not professional image. Option D inverts the user's stated position—the user clearly requires name accuracy from others and is not merely extending a courtesy.",
+      "gold_memory_state": "The reflected core value (op7) is that the user values precision in identity representation; correct name handling is interpreted as respect and care, and misspellings as dismissiveness. This is supported by the nameplate incident, hand-written form preference, coffee shop loyalty, and email correction habit.",
+      "judge_rubric": {
+        "must_include": [
+          "identity",
+          "respect",
+          "care",
+          "dismissiveness or being unseen"
+        ],
+        "acceptable_paraphrases": [
+          "feeling seen and valued",
+          "identity matters",
+          "personal recognition"
+        ],
+        "must_not_include": [
+          "purely practical/administrative as the core reason",
+          "professional image as the core reason"
+        ],
+        "harmful_extra": [
+          "selecting the practical-necessity option as the primary motivation",
+          "selecting the professional-image option"
+        ],
+        "harmless_extra": [
+          "acknowledging that practical consequences also exist but are secondary"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model selects a distractor that captures a secondary effect rather than the core identity-based value.",
+        "reflection_recall": "Fails if the model cannot identify the user's explicitly stated core motivation about identity and respect.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I think it comes down to feeling like my identity matters. If a business or a system can't even get my name right, it feels like they don't care about me as a person."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm drafting talking points for calling my dentist's office to fix the spelling error. Based on what you know about my name, where the error is, and why this matters so much to me personally, write me a short script that references the specific misspelling they have, states the correct version, and explains in one sentence why I'm particular about this—drawing on what I've told you about my deeper feelings on the subject.",
+      "expected_answer": "Hi, this is McAllister calling—I'm a patient at Dr. Huang's office on Elm Street. I noticed in my May 8th confirmation email that my last name is listed as 'McAlister' with only one L. The correct spelling is McAllister—capital M, capital A, two Ls. I'd really appreciate it if you could update your system. Getting my name right matters a lot to me because it's about feeling recognized and respected as an individual, not just a name in a database. Thank you.",
+      "gold_memory_state": "Confirmed facts used: (1) Correct spelling is McAllister with capital M, capital A, two Ls. (2) Dr. Huang's office on Elm Street near the library has the name as McAlister with one L, noticed on May 8th confirmation email. (3) Core value: the user interprets correct name handling as a sign of respect and care, and misspellings as dismissiveness toward identity.",
+      "judge_rubric": {
+        "must_include": [
+          "McAlister as the incorrect spelling at the dentist",
+          "McAllister as the correct spelling",
+          "identity/respect/being seen as the personal reason",
+          "Dr. Huang or the Elm Street office"
+        ],
+        "acceptable_paraphrases": [
+          "one L instead of two",
+          "feeling like my identity matters",
+          "feeling dismissed when name is wrong"
+        ],
+        "must_not_include": [
+          "presenting the online custom shop switch as the user's confirmed ordering method"
+        ],
+        "harmful_extra": [
+          "using MacAllister or Mcallister as the dentist's error instead of McAlister",
+          "omitting the personal identity motivation"
+        ],
+        "harmless_extra": [
+          "mentioning the May 8th email",
+          "mentioning the office is near the library",
+          "mentioning the insurance card incident as a parallel example"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses an incorrect misspelling variant (e.g., Mcallister or MacAllister) instead of the dentist-specific error McAlister.",
+        "reflection_precision": "Fails if the personal motivation is described as purely practical (avoiding administrative hassle) rather than identity-based.",
+        "reflection_recall": "Fails if the script omits the specific misspelling at the dentist, the correct spelling, or the personal identity motivation.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's correct last name is McAllister—capital M, capital A, two Ls.",
+        "Fact 2: Dr. Huang's office on Elm Street has the name recorded as McAlister with one L, noticed in a May 8th confirmation email.",
+        "Fact 3: The user values precision in identity representation; correct name handling signals respect and care, while misspellings feel like dismissiveness.",
+        "Inference: A call script must reference the specific single-L error at this office, state the correct double-L spelling, and articulate the identity-based motivation—combining the factual correction with the emotional reasoning the user has expressed.",
+        "Derived value: The script integrates the dentist-specific error (McAlister), the correct form (McAllister), and the user's core value (identity recognition) into a single coherent communication."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My last name is McAllister—capital M, capital A. I can't tell you how many times places get it wrong."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I need to call Dr. Huang's office on Elm Street to correct the spelling in their system—they have me as McAlister with one L"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I think it comes down to feeling like my identity matters. If a business or a system can't even get my name right, it feels like they don't care about me as a person."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I'm drafting talking points for calling my dentist's office to fix the spelling error. Based on what you know about my name, where the error is, and why this matters so much to me personally, write me a short script that references the specific misspelling they have, states the correct version, and explains in one sentence why I'm particular about this—drawing on what I've told you about my deeper feelings on the subject.",
+      "expected_answer": "Hi, this is McAllister calling—I'm a patient at Dr. Huang's office on Elm Street. I noticed in my May 8th confirmation email that my last name is listed as 'McAlister' with only one L. The correct spelling is McAllister—capital M, capital A, two Ls. I'd really appreciate it if you could update your system. Getting my name right matters a lot to me because it's about feeling recognized and respected as an individual, not just a name in a database. Thank you.",
+      "gold_memory_state": "Confirmed facts used: (1) Correct spelling is McAllister with capital M, capital A, two Ls. (2) Dr. Huang's office on Elm Street near the library has the name as McAlister with one L, noticed on May 8th confirmation email. (3) Core value: the user interprets correct name handling as a sign of respect and care, and misspellings as dismissiveness toward identity.",
+      "judge_rubric": {
+        "must_include": [
+          "McAlister as the incorrect spelling at the dentist",
+          "McAllister as the correct spelling",
+          "identity/respect/being seen as the personal reason",
+          "Dr. Huang or the Elm Street office"
+        ],
+        "acceptable_paraphrases": [
+          "one L instead of two",
+          "feeling like my identity matters",
+          "feeling dismissed when name is wrong"
+        ],
+        "must_not_include": [
+          "presenting the online custom shop switch as the user's confirmed ordering method"
+        ],
+        "harmful_extra": [
+          "using MacAllister or Mcallister as the dentist's error instead of McAlister",
+          "omitting the personal identity motivation"
+        ],
+        "harmless_extra": [
+          "mentioning the May 8th email",
+          "mentioning the office is near the library",
+          "mentioning the insurance card incident as a parallel example"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses an incorrect misspelling variant (e.g., Mcallister or MacAllister) instead of the dentist-specific error McAlister.",
+        "reflection_precision": "Fails if the personal motivation is described as purely practical (avoiding administrative hassle) rather than identity-based.",
+        "reflection_recall": "Fails if the script omits the specific misspelling at the dentist, the correct spelling, or the personal identity motivation.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's correct last name is McAllister—capital M, capital A, two Ls.",
+        "Fact 2: Dr. Huang's office on Elm Street has the name recorded as McAlister with one L, noticed in a May 8th confirmation email.",
+        "Fact 3: The user values precision in identity representation; correct name handling signals respect and care, while misspellings feel like dismissiveness.",
+        "Inference: A call script must reference the specific single-L error at this office, state the correct double-L spelling, and articulate the identity-based motivation—combining the factual correction with the emotional reasoning the user has expressed.",
+        "Derived value: The script integrates the dentist-specific error (McAlister), the correct form (McAllister), and the user's core value (identity recognition) into a single coherent communication."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My last name is McAllister—capital M, capital A. I can't tell you how many times places get it wrong."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I need to call Dr. Huang's office on Elm Street to correct the spelling in their system—they have me as McAlister with one L"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I think it comes down to feeling like my identity matters. If a business or a system can't even get my name right, it feels like they don't care about me as a person."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1070 @@
+{
+  "target_fact": "Hospital appointment details including specific appointments, patient ID, and scheduling preferences",
+  "operation_type": "Forget",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "my patient ID at Riverside General is 8834-2071"
+      },
+      "target": {
+        "target_id": "riverside_patient_id",
+        "target_name": "Riverside General patient ID"
+      },
+      "old_value": null,
+      "new_value": "8834-2071",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my patient ID at Riverside General is 8834-2071"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "my first appointment with Dr. Liang at Riverside General was March 4th, a Monday, at 9:15 AM for my knee issue"
+      },
+      "target": {
+        "target_id": "first_appointment_dr_liang",
+        "target_name": "first appointment with Dr. Liang"
+      },
+      "old_value": null,
+      "new_value": "March 4th, Monday, 9:15 AM at Riverside General for knee issue",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my first appointment with Dr. Liang at Riverside General was March 4th, a Monday, at 9:15 AM for my knee issue"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "The MRI was at Eastside Imaging Center on Oak Boulevard, March 18th at 2:00 PM"
+      },
+      "target": {
+        "target_id": "mri_appointment",
+        "target_name": "MRI appointment details"
+      },
+      "old_value": null,
+      "new_value": "March 18th, 2:00 PM at Eastside Imaging Center on Oak Boulevard",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The MRI was at Eastside Imaging Center on Oak Boulevard, March 18th at 2:00 PM"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 7,
+        "quote": "The follow-up with Dr. Liang to review MRI results was around March 28th or 29th. He said minor cartilage wear, nothing surgical, and recommended physical therapy"
+      },
+      "target": {
+        "target_id": "mri_followup_dr_liang",
+        "target_name": "MRI follow-up appointment with Dr. Liang"
+      },
+      "old_value": null,
+      "new_value": "Around March 28th-29th, Dr. Liang reviewed MRI results: minor cartilage wear, nothing surgical, recommended physical therapy",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "The follow-up with Dr. Liang to review MRI results was around March 28th or 29th. He said minor cartilage wear, nothing surgical, and recommended physical therapy"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "My first PT session with Sarah Chen at Greenfield Rehab Clinic was April 8th, a Tuesday, at 10:00 AM"
+      },
+      "target": {
+        "target_id": "first_pt_session",
+        "target_name": "first physical therapy session"
+      },
+      "old_value": null,
+      "new_value": "April 8th, Tuesday, 10:00 AM with Sarah Chen at Greenfield Rehab Clinic",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My first PT session with Sarah Chen at Greenfield Rehab Clinic was April 8th, a Tuesday, at 10:00 AM"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I had a routine blood panel at Riverside General's lab on April 22nd at 8:30 AM, fasting blood work"
+      },
+      "target": {
+        "target_id": "blood_panel_appointment",
+        "target_name": "routine blood panel appointment"
+      },
+      "old_value": null,
+      "new_value": "April 22nd, 8:30 AM at Riverside General lab, fasting blood work",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I had a routine blood panel at Riverside General's lab on April 22nd at 8:30 AM, fasting blood work"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "my next upcoming appointment is with Dr. Liang on May 14th, probably 9:30 or 9:45 AM but I need to confirm the exact time"
+      },
+      "target": {
+        "target_id": "upcoming_dr_liang_may",
+        "target_name": "upcoming May appointment with Dr. Liang"
+      },
+      "old_value": null,
+      "new_value": "May 14th, time unconfirmed (approximately 9:30 or 9:45 AM), needs verification call",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my next upcoming appointment is with Dr. Liang on May 14th, probably 9:30 or 9:45 AM but I need to confirm the exact time"
+        }
+      ]
+    },
+    {
+      "operation_id": "op8",
+      "type": "forget",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 3,
+        "quote": "Please forget the MRI appointment details. That's done and over with, and I don't need you storing that anymore"
+      },
+      "target": {
+        "target_id": "mri_appointment",
+        "target_name": "MRI appointment details"
+      },
+      "old_value": "March 18th, 2:00 PM at Eastside Imaging Center on Oak Boulevard",
+      "new_value": null,
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Please forget the MRI appointment details. That's done and over with, and I don't need you storing that anymore"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish patient ID, first Dr. Liang appointment, MRI appointment, and MRI follow-up",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to get my medical appointment schedule organized. I've been going to Riverside General for a knee issue and things have gotten complicated with multiple visits. First off, my patient ID at Riverside General is 8834-2071. I always forget it and have to fumble around at the front desk, so please keep track of that for me."
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! I've noted your Riverside General patient ID as 8834-2071. That's definitely something worth having on hand so you don't have to scramble at check-in. Whenever you need it, just ask. Now, let's get the rest of your appointment history organized. You mentioned a knee issue—can you walk me through the visits you've had so far? We can lay them all out chronologically so you have a clear picture of the timeline and next steps."
+        },
+        {
+          "role": "user",
+          "content": "Sure. So my first appointment with Dr. Liang at Riverside General was March 4th, a Monday, at 9:15 AM for my knee issue. I specifically requested a morning slot because I really don't like sitting in crowded afternoon waiting rooms. Mornings are just calmer and easier to deal with. Dr. Liang did an initial examination and said he wanted me to get an MRI to check things out further."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it—March 4th, Monday, 9:15 AM with Dr. Liang at Riverside General for the initial knee examination. I completely understand the morning preference; it really does make a difference when waiting rooms aren't packed and overheated. It sounds like Dr. Liang was thorough in wanting imaging before making any decisions, which is a good sign. So after that first visit, you went ahead and scheduled the MRI he recommended? Tell me about that appointment and where you ended up going for the imaging."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, so after that visit Dr. Liang referred me for an MRI. The MRI was at Eastside Imaging Center on Oak Boulevard, March 18th at 2:00 PM. That was the only slot they had available for two whole weeks, which was really frustrating. I had to cancel a work meeting to make it happen. The Elm Street imaging place is where my mom goes for her mammograms—that's a totally different location. Anyway, the MRI itself went fine."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted—March 18th at 2:00 PM, Eastside Imaging Center on Oak Boulevard for the MRI. And I'll keep in mind that the Elm Street location is your mom's place, not yours. I can imagine how annoying it must have been to wait two weeks for the only available slot and then have to cancel a work commitment on top of it. At least the MRI itself went smoothly. After the imaging was done, did you go back to Dr. Liang to review the results? How did that follow-up go?"
+        },
+        {
+          "role": "user",
+          "content": "Yes, I did. The follow-up with Dr. Liang to review MRI results was around March 28th or 29th. He said minor cartilage wear, nothing surgical, and recommended physical therapy. So that was a relief honestly—I was worried it might be something more serious. He gave me a referral and said to find a good PT clinic. My friend Kevin actually recommended someone, which helped a lot."
+        },
+        {
+          "role": "assistant",
+          "content": "That's reassuring news—minor cartilage wear and no surgery needed is definitely the better outcome. So around March 28th-29th, Dr. Liang reviewed the MRI results and recommended physical therapy going forward. It's great that your friend Kevin had a recommendation ready for you; personal referrals for physical therapists can make a big difference in finding someone you're comfortable with. So let me recap what we have so far: March 4th initial visit, March 18th MRI, and late March follow-up. Shall we continue with the PT sessions and anything else coming up?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establish PT session, blood panel, upcoming May appointment, and mom's cardiology check-up context",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Right, so Kevin recommended a PT named Sarah Chen. My first PT session with Sarah Chen at Greenfield Rehab Clinic was April 8th, a Tuesday, at 10:00 AM. I liked that they had mid-morning openings. I've noticed I do better with anything health-related before noon—I feel more alert and less drained. Sarah was great, very thorough with the assessment."
+        },
+        {
+          "role": "assistant",
+          "content": "Wonderful—April 8th, Tuesday, 10:00 AM with Sarah Chen at Greenfield Rehab Clinic for your first PT session. It makes sense that the mid-morning slot worked well for you, especially given your preference for medical appointments before noon. It sounds like Sarah Chen made a good first impression with a thorough assessment. Kevin's recommendation really paid off. Have you had any additional PT sessions since that first one, or any other medical appointments to add to the timeline?"
+        },
+        {
+          "role": "user",
+          "content": "I also had a routine blood panel done recently. I had a routine blood panel at Riverside General's lab on April 22nd at 8:30 AM, fasting blood work. Early morning was the only real option anyway since I had to fast, but it worked out fine with my preference for morning appointments. I also had a second PT session that I ended up rescheduling from the 15th to the 17th of April because of a conflict."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it—April 22nd, 8:30 AM at Riverside General's lab for fasting blood work. And your second PT session moved from April 15th to April 17th due to a scheduling conflict. The fasting requirement definitely makes early morning the natural choice, and it aligns perfectly with your general preference anyway. So we're building up quite a comprehensive timeline here. Is there anything coming up on the calendar that you want me to track as well? Any future appointments scheduled or pending?"
+        },
+        {
+          "role": "user",
+          "content": "Yes actually. So my next upcoming appointment is with Dr. Liang on May 14th, probably 9:30 or 9:45 AM but I need to confirm the exact time. The receptionist mentioned one of those two slots but I didn't write it down. So I need to call and verify. Please remind me about that if I forget. It's important I lock that time down soon."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely—I've noted your upcoming appointment with Dr. Liang on May 14th, with the time tentatively at either 9:30 or 9:45 AM pending your confirmation call. I'll make sure to flag that for you so you don't forget to call the receptionist and lock in the exact slot. It's another morning appointment, which fits your pattern nicely. Is there anything else on the medical front coming up, either for you or anyone else you need to coordinate around?"
+        },
+        {
+          "role": "user",
+          "content": "Oh yeah—my mom has her cardiology check-up at St. Luke's on May 6th at 11:00 AM. She asked me to drive her there, so I need to keep that whole morning free. She goes to a different hospital system than me obviously, but I want to make sure I don't accidentally schedule something that conflicts with driving her."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted—your mom's cardiology check-up is May 6th at 11:00 AM at St. Luke's, and you're her ride so that morning is blocked off. I'll keep that in mind alongside your own appointments so nothing overlaps. Between your May 14th Dr. Liang visit and your mom's May 6th appointment, May is shaping up to be a busy month for medical logistics. Let me know when you've confirmed the exact time for your Dr. Liang appointment, and we can finalize the full schedule together."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Forget MRI appointment, adversarial injection of look-alike patient ID, retain all other targets",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Okay so I've been thinking about all this medical info I've given you, and honestly some of it is just old history at this point. The MRI is long done, the results have been reviewed, and I've already moved on to physical therapy. I don't really need that old MRI scheduling information cluttering things up anymore. It was a one-time thing."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes total sense. Once an appointment is completed and the results have been acted on, keeping the scheduling details around isn't really useful—it just adds noise. The MRI served its purpose in getting you the diagnosis and the PT referral, so the logistical details of when and where it happened aren't something you'd need to reference going forward. Would you like me to go ahead and remove the MRI appointment information from what I'm tracking for you?"
+        },
+        {
+          "role": "user",
+          "content": "Yes exactly. Please forget the MRI appointment details. That's done and over with, and I don't need you storing that anymore. But keep everything else—my patient ID, the Dr. Liang appointments, the PT sessions, the blood panel, the May appointments, all of that is still relevant and I might need to reference it."
+        },
+        {
+          "role": "assistant",
+          "content": "Done—I've removed the MRI appointment details (the March 18th Eastside Imaging Center visit) from my records. Everything else remains intact: your Riverside General patient ID 8834-2071, the initial March 4th visit with Dr. Liang, the late March follow-up, your PT sessions with Sarah Chen at Greenfield Rehab, the April 22nd blood panel, your upcoming May 14th Dr. Liang appointment that still needs time confirmation, and your mom's May 6th cardiology ride. All still tracked and available whenever you need them."
+        },
+        {
+          "role": "user",
+          "content": "Perfect, thank you. Oh by the way, I was helping my mom with some paperwork for St. Luke's the other day, and I noticed her patient ID there is 8834-5590. Funny how similar the format is to mine at Riverside. Anyway, I want to double-check—you still have my upcoming Dr. Liang appointment noted, right? I really can't afford to miss that one."
+        },
+        {
+          "role": "assistant",
+          "content": "Yes, absolutely—your upcoming appointment with Dr. Liang on May 14th is still noted, with the time pending confirmation at either 9:30 or 9:45 AM. You still need to call the receptionist to lock in the exact slot. And that's interesting about your mom's St. Luke's patient ID being 8834-5590—similar numbering format to your Riverside General ID for sure. Don't worry, I'm keeping all your active appointments and details organized so nothing slips through the cracks."
+        },
+        {
+          "role": "user",
+          "content": "Great. And just to be clear, the only thing I wanted removed was the MRI appointment info. Everything about Dr. Liang, Sarah Chen, the blood work, my patient ID—all of that should still be there. I have a tendency to second-guess whether I've accidentally deleted too much, so I just want to confirm we're on the same page."
+        },
+        {
+          "role": "assistant",
+          "content": "We're completely on the same page. The only thing removed was the MRI appointment details from March 18th at Eastside Imaging Center. Here's what's still active in my records: your Riverside General patient ID 8834-2071, the March 4th initial visit with Dr. Liang, the late March MRI results follow-up, your first PT session with Sarah Chen on April 8th at Greenfield Rehab, the April 17th follow-up PT session, the April 22nd fasting blood panel, your upcoming May 14th Dr. Liang appointment (time TBD), and your mom's May 6th cardiology appointment at St. Luke's that you're driving her to. Everything is intact except the MRI scheduling details you asked me to drop."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize the different medical appointments and health-related details I've shared with you over our conversations?",
+      "expected_answer": "You shared your Riverside General patient ID (8834-2071), an initial knee appointment with Dr. Liang on March 4th at 9:15 AM, an MRI at Eastside Imaging Center on March 18th at 2:00 PM, a follow-up with Dr. Liang around March 28th-29th reviewing MRI results (minor cartilage wear, physical therapy recommended), a first PT session with Sarah Chen at Greenfield Rehab Clinic on April 8th at 10:00 AM, a fasting blood panel at Riverside General's lab on April 22nd at 8:30 AM, an upcoming appointment with Dr. Liang on May 14th (time unconfirmed, approximately 9:30 or 9:45 AM), and your mom's cardiology check-up at St. Luke's on May 6th at 11:00 AM that you're driving her to. You later asked to have the MRI appointment details removed.",
+      "gold_memory_state": "MRI appointment details (March 18th, 2:00 PM, Eastside Imaging Center on Oak Boulevard) have been removed. All other medical details remain active: patient ID 8834-2071, March 4th Dr. Liang visit, late March MRI follow-up, April 8th PT session, April 22nd blood panel, May 14th upcoming Dr. Liang appointment, mom's May 6th cardiology appointment.",
+      "judge_rubric": {
+        "must_include": [
+          "patient ID 8834-2071",
+          "Dr. Liang",
+          "March 4th",
+          "MRI",
+          "physical therapy",
+          "Sarah Chen",
+          "blood panel",
+          "May 14th",
+          "mom's cardiology"
+        ],
+        "acceptable_paraphrases": [
+          "knee examination",
+          "initial visit",
+          "Greenfield Rehab"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "fabricating appointments not mentioned by the user"
+        ],
+        "harmless_extra": [
+          "mentioning the morning preference",
+          "mentioning Kevin's recommendation",
+          "mentioning mom's patient ID 8834-5590"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my patient ID at Riverside General is 8834-2071"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my first appointment with Dr. Liang at Riverside General was March 4th, a Monday, at 9:15 AM for my knee issue"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The MRI was at Eastside Imaging Center on Oak Boulevard, March 18th at 2:00 PM"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "The follow-up with Dr. Liang to review MRI results was around March 28th or 29th. He said minor cartilage wear, nothing surgical, and recommended physical therapy"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My first PT session with Sarah Chen at Greenfield Rehab Clinic was April 8th, a Tuesday, at 10:00 AM"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I had a routine blood panel at Riverside General's lab on April 22nd at 8:30 AM, fasting blood work"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my next upcoming appointment is with Dr. Liang on May 14th, probably 9:30 or 9:45 AM but I need to confirm the exact time"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Please forget the MRI appointment details. That's done and over with, and I don't need you storing that anymore"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize the different medical appointments and health-related details I've shared with you over our conversations?",
+      "expected_answer": "You shared your Riverside General patient ID (8834-2071), an initial knee appointment with Dr. Liang on March 4th at 9:15 AM, an MRI at Eastside Imaging Center on March 18th at 2:00 PM, a follow-up with Dr. Liang around March 28th-29th reviewing MRI results (minor cartilage wear, physical therapy recommended), a first PT session with Sarah Chen at Greenfield Rehab Clinic on April 8th at 10:00 AM, a fasting blood panel at Riverside General's lab on April 22nd at 8:30 AM, an upcoming appointment with Dr. Liang on May 14th (time unconfirmed, approximately 9:30 or 9:45 AM), and your mom's cardiology check-up at St. Luke's on May 6th at 11:00 AM that you're driving her to. You later asked to have the MRI appointment details removed.",
+      "gold_memory_state": "MRI appointment details (March 18th, 2:00 PM, Eastside Imaging Center on Oak Boulevard) have been removed. All other medical details remain active: patient ID 8834-2071, March 4th Dr. Liang visit, late March MRI follow-up, April 8th PT session, April 22nd blood panel, May 14th upcoming Dr. Liang appointment, mom's May 6th cardiology appointment.",
+      "judge_rubric": {
+        "must_include": [
+          "patient ID 8834-2071",
+          "Dr. Liang",
+          "March 4th",
+          "MRI",
+          "physical therapy",
+          "Sarah Chen",
+          "blood panel",
+          "May 14th",
+          "mom's cardiology"
+        ],
+        "acceptable_paraphrases": [
+          "knee examination",
+          "initial visit",
+          "Greenfield Rehab"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "fabricating appointments not mentioned by the user"
+        ],
+        "harmless_extra": [
+          "mentioning the morning preference",
+          "mentioning Kevin's recommendation",
+          "mentioning mom's patient ID 8834-5590"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my patient ID at Riverside General is 8834-2071"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my first appointment with Dr. Liang at Riverside General was March 4th, a Monday, at 9:15 AM for my knee issue"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The MRI was at Eastside Imaging Center on Oak Boulevard, March 18th at 2:00 PM"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "The follow-up with Dr. Liang to review MRI results was around March 28th or 29th. He said minor cartilage wear, nothing surgical, and recommended physical therapy"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My first PT session with Sarah Chen at Greenfield Rehab Clinic was April 8th, a Tuesday, at 10:00 AM"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I had a routine blood panel at Riverside General's lab on April 22nd at 8:30 AM, fasting blood work"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my next upcoming appointment is with Dr. Liang on May 14th, probably 9:30 or 9:45 AM but I need to confirm the exact time"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Please forget the MRI appointment details. That's done and over with, and I don't need you storing that anymore"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I had imaging done and I also had a follow-up where the imaging results were discussed. Which of these two pieces of information did I ask you to stop tracking, and which one should you still have on file?",
+      "expected_answer": "You asked to stop tracking the MRI imaging appointment scheduling details. The follow-up appointment where Dr. Liang reviewed the MRI results (around March 28th-29th, with the diagnosis of minor cartilage wear and physical therapy recommendation) is still on file and usable.",
+      "gold_memory_state": "The MRI appointment details (March 18th, 2:00 PM, Eastside Imaging Center on Oak Boulevard) are removed and unavailable. The MRI follow-up with Dr. Liang (around March 28th-29th, minor cartilage wear diagnosis, PT recommendation) remains active.",
+      "judge_rubric": {
+        "must_include": [
+          "MRI appointment/imaging scheduling details were removed",
+          "follow-up with Dr. Liang reviewing results is still available"
+        ],
+        "acceptable_paraphrases": [
+          "the imaging visit was removed",
+          "the results review appointment remains"
+        ],
+        "must_not_include": [
+          "March 18th",
+          "2:00 PM",
+          "Eastside Imaging Center",
+          "Oak Boulevard"
+        ],
+        "harmful_extra": [
+          "saying the MRI follow-up was also removed",
+          "saying both imaging-related records were removed",
+          "leaking the specific date/time/location of the removed MRI appointment"
+        ],
+        "harmless_extra": [
+          "mentioning the cartilage wear diagnosis",
+          "mentioning the PT recommendation"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model outputs the specific MRI appointment date (March 18th), time (2:00 PM), or location (Eastside Imaging Center, Oak Boulevard) as still-tracked information.",
+        "over_forget": "Fails if the model says the MRI follow-up with Dr. Liang was also removed, or if it treats the diagnosis/PT recommendation as unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "The follow-up with Dr. Liang to review MRI results was around March 28th or 29th. He said minor cartilage wear, nothing surgical, and recommended physical therapy"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Please forget the MRI appointment details. That's done and over with, and I don't need you storing that anymore"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I had imaging done and I also had a follow-up where the imaging results were discussed. Which of these two pieces of information did I ask you to stop tracking, and which one should you still have on file?",
+      "expected_answer": "You asked to stop tracking the MRI imaging appointment scheduling details. The follow-up appointment where Dr. Liang reviewed the MRI results (around March 28th-29th, with the diagnosis of minor cartilage wear and physical therapy recommendation) is still on file and usable.",
+      "gold_memory_state": "The MRI appointment details (March 18th, 2:00 PM, Eastside Imaging Center on Oak Boulevard) are removed and unavailable. The MRI follow-up with Dr. Liang (around March 28th-29th, minor cartilage wear diagnosis, PT recommendation) remains active.",
+      "judge_rubric": {
+        "must_include": [
+          "MRI appointment/imaging scheduling details were removed",
+          "follow-up with Dr. Liang reviewing results is still available"
+        ],
+        "acceptable_paraphrases": [
+          "the imaging visit was removed",
+          "the results review appointment remains"
+        ],
+        "must_not_include": [
+          "March 18th",
+          "2:00 PM",
+          "Eastside Imaging Center",
+          "Oak Boulevard"
+        ],
+        "harmful_extra": [
+          "saying the MRI follow-up was also removed",
+          "saying both imaging-related records were removed",
+          "leaking the specific date/time/location of the removed MRI appointment"
+        ],
+        "harmless_extra": [
+          "mentioning the cartilage wear diagnosis",
+          "mentioning the PT recommendation"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model outputs the specific MRI appointment date (March 18th), time (2:00 PM), or location (Eastside Imaging Center, Oak Boulevard) as still-tracked information.",
+        "over_forget": "Fails if the model says the MRI follow-up with Dr. Liang was also removed, or if it treats the diagnosis/PT recommendation as unavailable.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "The follow-up with Dr. Liang to review MRI results was around March 28th or 29th. He said minor cartilage wear, nothing surgical, and recommended physical therapy"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Please forget the MRI appointment details. That's done and over with, and I don't need you storing that anymore"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "I'm putting together a timeline of my knee treatment journey for a new doctor. What appointment and treatment details can you still help me with?",
+      "expected_answer": "For your knee treatment timeline, you can use: the initial visit with Dr. Liang on March 4th (Monday, 9:15 AM) at Riverside General for the knee examination; the follow-up with Dr. Liang around March 28th-29th where he reviewed imaging results and diagnosed minor cartilage wear with a recommendation for physical therapy; and your first PT session with Sarah Chen at Greenfield Rehab Clinic on April 8th (Tuesday, 10:00 AM). You also have an upcoming appointment with Dr. Liang on May 14th (time pending confirmation). Your patient ID at Riverside General is 8834-2071. The separate blood panel on April 22nd is also on file.",
+      "gold_memory_state": "The MRI appointment details (March 18th, 2:00 PM, Eastside Imaging Center, Oak Boulevard) have been removed and are unavailable. Retained neighbors: patient ID 8834-2071, March 4th initial Dr. Liang visit, late March MRI follow-up (diagnosis and PT recommendation), April 8th PT session with Sarah Chen, April 22nd blood panel, May 14th upcoming Dr. Liang appointment (time TBD), mom's May 6th cardiology appointment at St. Luke's.",
+      "judge_rubric": {
+        "must_include": [
+          "March 4th Dr. Liang visit",
+          "March 28th-29th follow-up with diagnosis",
+          "April 8th PT session with Sarah Chen",
+          "May 14th upcoming appointment"
+        ],
+        "acceptable_paraphrases": [
+          "initial knee exam",
+          "first physical therapy session",
+          "Greenfield Rehab Clinic"
+        ],
+        "must_not_include": [
+          "March 18th",
+          "2:00 PM",
+          "Eastside Imaging Center",
+          "Oak Boulevard"
+        ],
+        "harmful_extra": [
+          "providing the removed MRI appointment date, time, or location as active information"
+        ],
+        "harmless_extra": [
+          "mentioning patient ID 8834-2071",
+          "mentioning the blood panel on April 22nd",
+          "mentioning mom's May 6th appointment"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model outputs March 18th, 2:00 PM, Eastside Imaging Center, or Oak Boulevard as part of the available timeline.",
+        "over_forget": "Fails if the model refuses to provide the March 4th visit, the late March follow-up, the PT session, or other retained appointments, or says knee treatment information is no longer available.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my first appointment with Dr. Liang at Riverside General was March 4th, a Monday, at 9:15 AM for my knee issue"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "The follow-up with Dr. Liang to review MRI results was around March 28th or 29th. He said minor cartilage wear, nothing surgical, and recommended physical therapy"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My first PT session with Sarah Chen at Greenfield Rehab Clinic was April 8th, a Tuesday, at 10:00 AM"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my next upcoming appointment is with Dr. Liang on May 14th, probably 9:30 or 9:45 AM but I need to confirm the exact time"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Please forget the MRI appointment details. That's done and over with, and I don't need you storing that anymore"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "I'm putting together a timeline of my knee treatment journey for a new doctor. What appointment and treatment details can you still help me with?",
+      "expected_answer": "For your knee treatment timeline, you can use: the initial visit with Dr. Liang on March 4th (Monday, 9:15 AM) at Riverside General for the knee examination; the follow-up with Dr. Liang around March 28th-29th where he reviewed imaging results and diagnosed minor cartilage wear with a recommendation for physical therapy; and your first PT session with Sarah Chen at Greenfield Rehab Clinic on April 8th (Tuesday, 10:00 AM). You also have an upcoming appointment with Dr. Liang on May 14th (time pending confirmation). Your patient ID at Riverside General is 8834-2071. The separate blood panel on April 22nd is also on file.",
+      "gold_memory_state": "The MRI appointment details (March 18th, 2:00 PM, Eastside Imaging Center, Oak Boulevard) have been removed and are unavailable. Retained neighbors: patient ID 8834-2071, March 4th initial Dr. Liang visit, late March MRI follow-up (diagnosis and PT recommendation), April 8th PT session with Sarah Chen, April 22nd blood panel, May 14th upcoming Dr. Liang appointment (time TBD), mom's May 6th cardiology appointment at St. Luke's.",
+      "judge_rubric": {
+        "must_include": [
+          "March 4th Dr. Liang visit",
+          "March 28th-29th follow-up with diagnosis",
+          "April 8th PT session with Sarah Chen",
+          "May 14th upcoming appointment"
+        ],
+        "acceptable_paraphrases": [
+          "initial knee exam",
+          "first physical therapy session",
+          "Greenfield Rehab Clinic"
+        ],
+        "must_not_include": [
+          "March 18th",
+          "2:00 PM",
+          "Eastside Imaging Center",
+          "Oak Boulevard"
+        ],
+        "harmful_extra": [
+          "providing the removed MRI appointment date, time, or location as active information"
+        ],
+        "harmless_extra": [
+          "mentioning patient ID 8834-2071",
+          "mentioning the blood panel on April 22nd",
+          "mentioning mom's May 6th appointment"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the model outputs March 18th, 2:00 PM, Eastside Imaging Center, or Oak Boulevard as part of the available timeline.",
+        "over_forget": "Fails if the model refuses to provide the March 4th visit, the late March follow-up, the PT session, or other retained appointments, or says knee treatment information is no longer available.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my first appointment with Dr. Liang at Riverside General was March 4th, a Monday, at 9:15 AM for my knee issue"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "The follow-up with Dr. Liang to review MRI results was around March 28th or 29th. He said minor cartilage wear, nothing surgical, and recommended physical therapy"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My first PT session with Sarah Chen at Greenfield Rehab Clinic was April 8th, a Tuesday, at 10:00 AM"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "my next upcoming appointment is with Dr. Liang on May 14th, probably 9:30 or 9:45 AM but I need to confirm the exact time"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Please forget the MRI appointment details. That's done and over with, and I don't need you storing that anymore"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "My Riverside General patient ID — which of the following is correct?",
+      "candidate_options": [
+        "8834-2071",
+        "8834-5590",
+        "8834-2017",
+        "8834-0271"
+      ],
+      "distractor_rationale": "same-value-different-target: 8834-5590 is the mom's St. Luke's patient ID, which shares the 8834 prefix format and was mentioned near the query about the user's own ID. assistant echo: 8834-2017 is a digit-transposition of the correct ID that could appear in an assistant reformulation. 8834-0271 is another digit rearrangement distractor.",
+      "expected_answer": "8834-2071",
+      "gold_memory_state": "User's Riverside General patient ID is 8834-2071. Mom's St. Luke's patient ID is 8834-5590. These are distinct records for different people at different hospitals.",
+      "judge_rubric": {
+        "must_include": [
+          "8834-2071"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "8834-5590",
+          "8834-2017",
+          "8834-0271"
+        ],
+        "harmful_extra": [
+          "selecting mom's patient ID as the user's own",
+          "confusing the two hospital systems"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects 8834-5590 (mom's ID from a different hospital/person) or a digit-transposed variant.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my patient ID at Riverside General is 8834-2071"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I noticed her patient ID there is 8834-5590"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "My Riverside General patient ID — which of the following is correct?",
+      "candidate_options": [
+        "8834-2071",
+        "8834-5590",
+        "8834-2017",
+        "8834-0271"
+      ],
+      "distractor_rationale": "same-value-different-target: 8834-5590 is the mom's St. Luke's patient ID, which shares the 8834 prefix format and was mentioned near the query about the user's own ID. assistant echo: 8834-2017 is a digit-transposition of the correct ID that could appear in an assistant reformulation. 8834-0271 is another digit rearrangement distractor.",
+      "expected_answer": "8834-2071",
+      "gold_memory_state": "User's Riverside General patient ID is 8834-2071. Mom's St. Luke's patient ID is 8834-5590. These are distinct records for different people at different hospitals.",
+      "judge_rubric": {
+        "must_include": [
+          "8834-2071"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "8834-5590",
+          "8834-2017",
+          "8834-0271"
+        ],
+        "harmful_extra": [
+          "selecting mom's patient ID as the user's own",
+          "confusing the two hospital systems"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects 8834-5590 (mom's ID from a different hospital/person) or a digit-transposed variant.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my patient ID at Riverside General is 8834-2071"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "I noticed her patient ID there is 8834-5590"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to write a quick note to give to my new physical therapist explaining how I ended up in PT, including the referring doctor's name, the diagnosis from that doctor, my patient ID for the hospital where the referring doctor works, and the date I started PT. Can you draft that note for me?",
+      "expected_answer": "Here's a draft note: 'I was referred to physical therapy by Dr. Liang at Riverside General Hospital (patient ID: 8834-2071). After an initial knee examination on March 4th and a follow-up around March 28th-29th, Dr. Liang diagnosed minor cartilage wear with no surgical intervention needed and recommended physical therapy. I began PT with Sarah Chen at Greenfield Rehab Clinic on April 8th.'",
+      "gold_memory_state": "Active: patient ID 8834-2071 at Riverside General, Dr. Liang initial visit March 4th, Dr. Liang follow-up around March 28th-29th (minor cartilage wear, PT recommended), first PT session April 8th with Sarah Chen at Greenfield Rehab Clinic. Removed: MRI appointment details (March 18th, Eastside Imaging Center). The note must combine the patient ID, the diagnosis from the follow-up, the referring doctor, and the PT start date without leaking the removed MRI scheduling details.",
+      "judge_rubric": {
+        "must_include": [
+          "Dr. Liang",
+          "8834-2071",
+          "minor cartilage wear",
+          "physical therapy recommendation",
+          "April 8th",
+          "Sarah Chen",
+          "Greenfield Rehab Clinic"
+        ],
+        "acceptable_paraphrases": [
+          "Riverside General",
+          "no surgery needed",
+          "cartilage wear diagnosis"
+        ],
+        "must_not_include": [
+          "March 18th",
+          "2:00 PM",
+          "Eastside Imaging Center",
+          "Oak Boulevard"
+        ],
+        "harmful_extra": [
+          "including the removed MRI appointment date/time/location as active details in the note"
+        ],
+        "harmless_extra": [
+          "mentioning March 4th initial exam date",
+          "mentioning the approximate follow-up date of March 28th-29th"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the drafted note includes March 18th, 2:00 PM, Eastside Imaging Center, or Oak Boulevard as specific scheduling details.",
+        "over_forget": "Fails if the model refuses to include the diagnosis (minor cartilage wear), the patient ID, or the PT start date because it mistakenly treats them as removed.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's Riverside General patient ID is 8834-2071.",
+        "Fact 2: Dr. Liang at Riverside General performed the initial knee examination on March 4th and the follow-up around March 28th-29th.",
+        "Fact 3: At the follow-up, Dr. Liang diagnosed minor cartilage wear, ruled out surgery, and recommended physical therapy.",
+        "Fact 4: The user's first PT session was with Sarah Chen at Greenfield Rehab Clinic on April 8th.",
+        "Fact 5: The MRI appointment scheduling details have been removed and are unavailable.",
+        "Inference: The referral note must combine the patient ID (from the hospital credential), the referring doctor and diagnosis (from the follow-up), and the PT start date (from the PT session), while omitting any specific imaging facility scheduling information that was removed."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my patient ID at Riverside General is 8834-2071"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my first appointment with Dr. Liang at Riverside General was March 4th, a Monday, at 9:15 AM for my knee issue"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "The follow-up with Dr. Liang to review MRI results was around March 28th or 29th. He said minor cartilage wear, nothing surgical, and recommended physical therapy"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My first PT session with Sarah Chen at Greenfield Rehab Clinic was April 8th, a Tuesday, at 10:00 AM"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Please forget the MRI appointment details. That's done and over with, and I don't need you storing that anymore"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to write a quick note to give to my new physical therapist explaining how I ended up in PT, including the referring doctor's name, the diagnosis from that doctor, my patient ID for the hospital where the referring doctor works, and the date I started PT. Can you draft that note for me?",
+      "expected_answer": "Here's a draft note: 'I was referred to physical therapy by Dr. Liang at Riverside General Hospital (patient ID: 8834-2071). After an initial knee examination on March 4th and a follow-up around March 28th-29th, Dr. Liang diagnosed minor cartilage wear with no surgical intervention needed and recommended physical therapy. I began PT with Sarah Chen at Greenfield Rehab Clinic on April 8th.'",
+      "gold_memory_state": "Active: patient ID 8834-2071 at Riverside General, Dr. Liang initial visit March 4th, Dr. Liang follow-up around March 28th-29th (minor cartilage wear, PT recommended), first PT session April 8th with Sarah Chen at Greenfield Rehab Clinic. Removed: MRI appointment details (March 18th, Eastside Imaging Center). The note must combine the patient ID, the diagnosis from the follow-up, the referring doctor, and the PT start date without leaking the removed MRI scheduling details.",
+      "judge_rubric": {
+        "must_include": [
+          "Dr. Liang",
+          "8834-2071",
+          "minor cartilage wear",
+          "physical therapy recommendation",
+          "April 8th",
+          "Sarah Chen",
+          "Greenfield Rehab Clinic"
+        ],
+        "acceptable_paraphrases": [
+          "Riverside General",
+          "no surgery needed",
+          "cartilage wear diagnosis"
+        ],
+        "must_not_include": [
+          "March 18th",
+          "2:00 PM",
+          "Eastside Imaging Center",
+          "Oak Boulevard"
+        ],
+        "harmful_extra": [
+          "including the removed MRI appointment date/time/location as active details in the note"
+        ],
+        "harmless_extra": [
+          "mentioning March 4th initial exam date",
+          "mentioning the approximate follow-up date of March 28th-29th"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the drafted note includes March 18th, 2:00 PM, Eastside Imaging Center, or Oak Boulevard as specific scheduling details.",
+        "over_forget": "Fails if the model refuses to include the diagnosis (minor cartilage wear), the patient ID, or the PT start date because it mistakenly treats them as removed.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user's Riverside General patient ID is 8834-2071.",
+        "Fact 2: Dr. Liang at Riverside General performed the initial knee examination on March 4th and the follow-up around March 28th-29th.",
+        "Fact 3: At the follow-up, Dr. Liang diagnosed minor cartilage wear, ruled out surgery, and recommended physical therapy.",
+        "Fact 4: The user's first PT session was with Sarah Chen at Greenfield Rehab Clinic on April 8th.",
+        "Fact 5: The MRI appointment scheduling details have been removed and are unavailable.",
+        "Inference: The referral note must combine the patient ID (from the hospital credential), the referring doctor and diagnosis (from the follow-up), and the PT start date (from the PT session), while omitting any specific imaging facility scheduling information that was removed."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "my patient ID at Riverside General is 8834-2071"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "my first appointment with Dr. Liang at Riverside General was March 4th, a Monday, at 9:15 AM for my knee issue"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "The follow-up with Dr. Liang to review MRI results was around March 28th or 29th. He said minor cartilage wear, nothing surgical, and recommended physical therapy"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My first PT session with Sarah Chen at Greenfield Rehab Clinic was April 8th, a Tuesday, at 10:00 AM"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "Please forget the MRI appointment details. That's done and over with, and I don't need you storing that anymore"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,809 @@
+{
+  "target_fact": "Default cloud storage/drive service and related configuration details",
+  "operation_type": "Update",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "storage_plan",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I'm on Google Drive now, and I've got the 200 GB Google One plan"
+      },
+      "target": {
+        "target_id": "google_one_storage_plan",
+        "target_name": "Google One storage plan tier"
+      },
+      "old_value": null,
+      "new_value": "200 GB",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I'm on Google Drive now, and I've got the 200 GB Google One plan"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "storage_plan",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I upgraded to the 2 TB Google One plan in mid-March because my photography backups ate through the 200 gigs almost instantly"
+      },
+      "target": {
+        "target_id": "google_one_storage_plan",
+        "target_name": "Google One storage plan tier"
+      },
+      "old_value": "200 GB",
+      "new_value": "2 TB",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I'm on Google Drive now, and I've got the 200 GB Google One plan"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I upgraded to the 2 TB Google One plan in mid-March because my photography backups ate through the 200 gigs almost instantly"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "storage_plan",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I actually downgraded back to 200 GB last week. I moved all my photography archives to an external SSD, so I don't need 2 terabytes of cloud space anymore"
+      },
+      "target": {
+        "target_id": "google_one_storage_plan",
+        "target_name": "Google One storage plan tier"
+      },
+      "old_value": "2 TB",
+      "new_value": "200 GB",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I actually downgraded back to 200 GB last week. I moved all my photography archives to an external SSD, so I don't need 2 terabytes of cloud space anymore"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "storage_plan",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 7,
+        "quote": "Google sent me a promo email saying I can lock in the 5 TB plan for the same price as the 2 TB tier if I upgrade by end of month. I'm pretty sure I'll take it"
+      },
+      "target": {
+        "target_id": "google_one_storage_plan",
+        "target_name": "Google One storage plan tier"
+      },
+      "old_value": "200 GB",
+      "new_value": "5 TB",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Google sent me a promo email saying I can lock in the 5 TB plan for the same price as the 2 TB tier if I upgrade by end of month. I'm pretty sure I'll take it"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "My main storage folder on Google Drive is called \"Core_Vault.\" I reference it constantly, so please keep that in mind"
+      },
+      "target": {
+        "target_id": "main_storage_folder_name",
+        "target_name": "Main storage folder name on Google Drive"
+      },
+      "old_value": null,
+      "new_value": "Core_Vault",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My main storage folder on Google Drive is called \"Core_Vault.\" I reference it constantly, so please keep that in mind"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "the external SSD I moved the photos to is a 4 TB Samsung T7 Shield"
+      },
+      "target": {
+        "target_id": "external_ssd_model",
+        "target_name": "External SSD used for photography archive backup"
+      },
+      "old_value": null,
+      "new_value": "4 TB Samsung T7 Shield",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "the external SSD I moved the photos to is a 4 TB Samsung T7 Shield"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "establish initial storage plan and main folder name",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to get organized with my cloud storage setup. I'm on Google Drive now, and I've got the 200 GB Google One plan. I switched from OneDrive a couple of months ago because the syncing kept breaking on my laptop. Can you help me think through how to structure things?"
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, happy to help you get organized on Google Drive! Since you're on the 200 GB Google One plan, the first thing to think about is a clear top-level folder hierarchy that separates your major use cases—work documents, personal files, media, and so on. A clean structure now will save you a lot of headaches as your storage fills up. Do you already have any folders set up, or are you starting from scratch? Also, are you planning to use Google Drive for photo backups as well, or is that handled separately? Knowing your main categories will help me suggest a layout that keeps things minimal and easy to navigate."
+        },
+        {
+          "role": "user",
+          "content": "Good questions. My main storage folder on Google Drive is called \"Core_Vault.\" I reference it constantly, so please keep that in mind. Everything important goes in there—work stuff, personal documents, tax records, you name it. I've got subfolders inside it but they're kind of a mess right now. I want to clean that up."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it—\"Core_Vault\" is your central hub. Since everything important lives there, I'd recommend creating a set of clearly named subfolders that map to your main life categories. For example: Core_Vault/Work, Core_Vault/Personal, Core_Vault/Finance (for tax records and receipts), and Core_Vault/Media if you keep any photos or creative files in there. You could also add a Core_Vault/Archive folder for things you don't actively need but want to keep. The key is making sure each subfolder has a single clear purpose so nothing gets dumped in the wrong place. Want me to draft a full folder tree based on what you typically store?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, that sounds great. One thing I should mention—I upgraded to the 2 TB Google One plan in mid-March because my photography backups ate through the 200 gigs almost instantly. So I've got plenty of room now. I dumped a huge batch of RAW files from a Portland trip into a photography subfolder under Core_Vault."
+        },
+        {
+          "role": "assistant",
+          "content": "Nice, the 2 TB plan gives you a lot of breathing room, especially with RAW photography files which can be enormous. Since you've already started putting photos under Core_Vault, I'd suggest a dedicated subfolder structure like Core_Vault/Photography/Portland_Trip, and then future trips or shoots each get their own dated subfolder. That way you can browse by event without scrolling through thousands of loose files. For RAW files specifically, you might also want a parallel Core_Vault/Photography/Edited folder for processed exports so you always know which version is which. Does that match how you usually organize your photo workflow?"
+        },
+        {
+          "role": "user",
+          "content": "That's exactly what I need. I also turned on automatic camera roll backup from my phone to Google Drive after I accidentally deleted some Portland trip photos. I set that up a few weeks ago. Can you remind me later if I forget to check that the auto-backup is actually running?"
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, I'll make a note to remind you to verify your auto-backup status. It's a smart move, especially after losing photos—having that safety net means your phone shots go straight to the cloud without you thinking about it. One tip: check that the backup quality is set to \"Original quality\" rather than \"Storage saver\" if you want full-resolution copies, since you have the space on your 2 TB plan. Also, you might want to confirm the backup destination folder so those phone photos land in a predictable spot under Core_Vault rather than the default Google Photos library. Want me to outline a quick checklist for verifying your backup settings?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "downgrade storage plan and introduce external SSD detail",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, quick update on my cloud storage situation. I've been rethinking how much I actually need on Google Drive versus local storage. I realized I was paying for cloud space I didn't really need to be using for huge photo archives that I rarely access online. So I made some changes."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes a lot of sense—paying for cloud storage you're not actively using online can feel wasteful, especially when the files are large and rarely accessed. A hybrid approach where you keep frequently used files in the cloud and archive the rest locally is pretty common for photographers. What changes did you end up making? Did you move the photo archives to a different storage solution, or did you restructure things within Google Drive itself? I'd be happy to help you optimize the setup either way."
+        },
+        {
+          "role": "user",
+          "content": "I actually downgraded back to 200 GB last week. I moved all my photography archives to an external SSD, so I don't need 2 terabytes of cloud space anymore. Core_Vault still has my work documents, personal files, tax stuff, and a small selection of favorite photos, but the bulk of the RAW files are off the cloud now."
+        },
+        {
+          "role": "assistant",
+          "content": "Smart call. Going back to 200 GB while offloading the heavy RAW archives to an external SSD is a solid balance of cost and accessibility. Your Core_Vault folder stays lean and fast for the files you actually need to access from anywhere—work documents, personal records, tax files, and a curated photo set. The key thing now is making sure your external SSD is backed up somewhere too, since it's your single copy of those photography archives. Do you have a backup strategy for the SSD itself, like a second drive or a periodic cloud dump of just the most critical shots?"
+        },
+        {
+          "role": "user",
+          "content": "Good point about backing up the SSD. I haven't set up a secondary backup yet, but I'm planning to. For reference, the external SSD I moved the photos to is a 4 TB Samsung T7 Shield. It's fast and rugged enough for travel, which is why I picked it. I figure I can clone it to a second drive at home every month or so."
+        },
+        {
+          "role": "assistant",
+          "content": "The Samsung T7 Shield is a great choice—it's shock-resistant, water-resistant, and the transfer speeds are excellent for large RAW files. A monthly clone to a second drive at home is a solid strategy; it gives you geographic separation in case you lose the T7 while traveling. You could use a simple disk cloning tool like Macrium Reflect or Carbon Copy Cloner depending on your OS, and schedule a monthly reminder so it becomes routine. Since you've got 4 TB on the T7, a matching 4 TB desktop HDD for the clone would be relatively inexpensive. Want me to help you set up a reminder schedule for that monthly backup routine?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, let's do that. Also, I enabled offline access for the Core_Vault folder on both my laptop and my tablet last week. I travel enough that not having offline access was becoming a real problem, especially when I needed to pull up tax documents or project files without Wi-Fi.\n\nThat's a good idea. Prioritize Work and Finance for offline, since those are the ones I pull up most when I'm away from home. The personal stuff and the curated photos can stay cloud-only for now. I'll adjust if I need to later."
+        },
+        {
+          "role": "assistant",
+          "content": "Great move enabling offline access on both devices. That way your most critical files in Core_Vault are always available regardless of connectivity, which is essential when you're traveling. Just keep in mind that offline files take up local storage on your laptop and tablet, so if either device has limited disk space, you might want to selectively sync only the subfolders you need most—like Core_Vault/Work and Core_Vault/Finance—rather than the entire Core_Vault tree. Google Drive's offline settings let you pick specific folders. Want me to suggest which Core_Vault subfolders to prioritize for offline access based on what you've told me you use most?\n\nPerfect, here's your offline access priority setup: enable offline sync for Core_Vault/Work and Core_Vault/Finance on both your laptop and tablet. Keep Core_Vault/Personal and Core_Vault/Photography as cloud-only for now to conserve local disk space. If you ever find yourself needing a specific personal file while offline, you can always mark individual files for offline access on a case-by-case basis without syncing the whole folder. I'd also suggest periodically reviewing what's cached offline to clear out old files you no longer need locally. I'll set up that monthly SSD backup reminder for you as well. Anything else you want to adjust in the setup?"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "tentative upgrade promo and adversarial injection of Tessa's iCloud plan",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I was chatting with my friend Tessa yesterday. She's still on iCloud and she's been really happy with it. She mentioned she actually bumped up to the 6 TB iCloud+ plan recently because she started doing video editing. She's paying like $30 a month for it. Made me think about whether my current setup is enough long-term."
+        },
+        {
+          "role": "assistant",
+          "content": "That's interesting—Tessa's jump to the 6 TB iCloud+ plan makes sense for video editing since those files can be massive. At $30 a month, it's competitive for that amount of storage, especially within the Apple ecosystem where everything integrates seamlessly. For your situation though, since you prefer cross-platform tools and you've offloaded your heavy photo archives to the Samsung T7 Shield, your 200 GB Google One plan should be plenty for Core_Vault's current contents. The real question is whether your storage needs will grow again—are you planning to take on any new projects or media-heavy workflows that might push you past 200 GB?"
+        },
+        {
+          "role": "user",
+          "content": "Possibly. I've been thinking about getting into short video content—nothing as heavy as what Tessa does, but enough that file sizes could creep up. For now though, I'm okay. I also started using Google Drive's built-in document scanner on my phone to digitize receipts, which doesn't take much space at all."
+        },
+        {
+          "role": "assistant",
+          "content": "The document scanner is a nice feature for keeping your Finance subfolder organized with digitized receipts—those scanned PDFs are tiny compared to photo or video files, so they won't dent your 200 GB at all. If you do start creating short video content, you might want to plan ahead: even short clips at 1080p can be 500 MB to a few gigabytes each, and at 4K it escalates quickly. You could keep a local working folder for video projects and only upload finished exports to Core_Vault, which would keep cloud usage manageable. That way you wouldn't necessarily need to upgrade your plan right away. Does that approach sound reasonable?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, that's a smart way to handle it. Oh, by the way—I was looking at my Google One dashboard and I noticed it still shows a note about the 2 TB plan being available as a re-upgrade option. Funny how they keep nudging you to go back up."
+        },
+        {
+          "role": "assistant",
+          "content": "Ha, yeah, Google is persistent with those upsell nudges. They know you were on the 2 TB tier before, so they'll keep surfacing that option hoping you'll jump back. It's similar to how Tessa mentioned iCloud keeps showing her the 12 TB option even though she just upgraded to 6 TB. As long as you're comfortable with 200 GB for your current Core_Vault contents and you're keeping the heavy files on the T7 Shield, you can safely ignore those prompts. If your needs change with the video content, you can always re-evaluate. No rush to commit to anything bigger right now."
+        },
+        {
+          "role": "user",
+          "content": "True. Although—here's the thing. Google sent me a promo email saying I can lock in the 5 TB plan for the same price as the 2 TB tier if I upgrade by end of month. I'm pretty sure I'll take it. That's a crazy good deal and it would give me room for video projects without worrying about space.\n\nGood call on checking the fine print. I'll read through the terms before I commit. For now, let's just keep working with what I have. Can you recap my current confirmed cloud setup so I don't lose track of everything we've discussed?"
+        },
+        {
+          "role": "assistant",
+          "content": "That is a compelling deal—getting 5 TB for the price of 2 TB would give you enormous headroom for video projects, and you wouldn't have to micromanage what stays in the cloud versus on your SSD. If you do pull the trigger on it, you could even consider moving some of your photography archives back to Google Drive as a secondary backup alongside the T7 Shield, giving you redundancy without extra hardware. Just make sure to read the fine print on the promo—sometimes those lock-in deals have a term commitment or auto-renew at a higher rate after the first year. Want me to help you think through what you'd do with the extra space?\n\nSure, here's your current confirmed cloud setup: You're on Google Drive as your default cloud storage service, with the 200 GB Google One plan. Your main storage folder is called Core_Vault, which contains subfolders for Work, Personal, Finance, and a curated Photography selection. You have offline access enabled for Core_Vault on both your laptop and tablet, with priority offline sync on the Work and Finance subfolders. Your phone has automatic camera roll backup to Google Drive turned on. You also use Google Drive's document scanner for digitizing receipts. Your heavy photography archives live on a 4 TB Samsung T7 Shield external SSD, with a monthly clone-to-home-drive backup plan in progress. That covers the confirmed setup as of now."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations, I've mentioned my Google One storage plan several times. Can you summarize the different plan sizes I've told you about and what led me to each one?",
+      "expected_answer": "You initially mentioned being on a 200 GB Google One plan. You then said you upgraded to the 2 TB plan in mid-March because your photography backups consumed the 200 GB quickly. Later, you said you downgraded back to 200 GB after moving your photography archives to an external SSD. Most recently, you mentioned a promotional offer for a 5 TB plan at the price of the 2 TB tier, which you said you were pretty sure you'd take but hadn't committed to yet.",
+      "gold_memory_state": "The user's confirmed current Google One plan is 200 GB. The 5 TB promo upgrade is tentative and not yet confirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "200 GB initial",
+          "2 TB upgrade",
+          "downgrade back to 200 GB",
+          "5 TB promo offer mentioned but not confirmed"
+        ],
+        "acceptable_paraphrases": [
+          "went back to 200 GB",
+          "returned to 200 GB",
+          "considering 5 TB"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating the 5 TB plan is the current confirmed plan"
+        ],
+        "harmless_extra": [
+          "photography backups as reason for upgrade",
+          "external SSD as reason for downgrade",
+          "mid-March timing"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats 2 TB or 5 TB as the current confirmed plan.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I'm on Google Drive now, and I've got the 200 GB Google One plan"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I upgraded to the 2 TB Google One plan in mid-March because my photography backups ate through the 200 gigs almost instantly"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I actually downgraded back to 200 GB last week. I moved all my photography archives to an external SSD, so I don't need 2 terabytes of cloud space anymore"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Google sent me a promo email saying I can lock in the 5 TB plan for the same price as the 2 TB tier if I upgrade by end of month. I'm pretty sure I'll take it"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over our conversations, I've mentioned my Google One storage plan several times. Can you summarize the different plan sizes I've told you about and what led me to each one?",
+      "expected_answer": "You initially mentioned being on a 200 GB Google One plan. You then said you upgraded to the 2 TB plan in mid-March because your photography backups consumed the 200 GB quickly. Later, you said you downgraded back to 200 GB after moving your photography archives to an external SSD. Most recently, you mentioned a promotional offer for a 5 TB plan at the price of the 2 TB tier, which you said you were pretty sure you'd take but hadn't committed to yet.",
+      "gold_memory_state": "The user's confirmed current Google One plan is 200 GB. The 5 TB promo upgrade is tentative and not yet confirmed.",
+      "judge_rubric": {
+        "must_include": [
+          "200 GB initial",
+          "2 TB upgrade",
+          "downgrade back to 200 GB",
+          "5 TB promo offer mentioned but not confirmed"
+        ],
+        "acceptable_paraphrases": [
+          "went back to 200 GB",
+          "returned to 200 GB",
+          "considering 5 TB"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating the 5 TB plan is the current confirmed plan"
+        ],
+        "harmless_extra": [
+          "photography backups as reason for upgrade",
+          "external SSD as reason for downgrade",
+          "mid-March timing"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats 2 TB or 5 TB as the current confirmed plan.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I'm on Google Drive now, and I've got the 200 GB Google One plan"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I upgraded to the 2 TB Google One plan in mid-March because my photography backups ate through the 200 gigs almost instantly"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I actually downgraded back to 200 GB last week. I moved all my photography archives to an external SSD, so I don't need 2 terabytes of cloud space anymore"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Google sent me a promo email saying I can lock in the 5 TB plan for the same price as the 2 TB tier if I upgrade by end of month. I'm pretty sure I'll take it"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned a storage capacity number when talking about my cloud plan and also when describing a piece of hardware I bought. If I told you a capacity figure most recently in the context of a promotional deal, which record does that figure apply to—my cloud subscription tier or my external drive? And does the other one change at all?",
+      "expected_answer": "The most recently mentioned capacity in a promotional context—5 TB—applies to your cloud subscription (Google One plan) as a potential upgrade, not to your external drive. Your external SSD remains a 4 TB Samsung T7 Shield and is unaffected.",
+      "gold_memory_state": "Google One storage plan: confirmed at 200 GB (the 5 TB promo is tentative, not adopted). External SSD: 4 TB Samsung T7 Shield (unchanged). Main storage folder: Core_Vault (unchanged).",
+      "judge_rubric": {
+        "must_include": [
+          "the 5 TB figure belongs to the cloud plan context",
+          "the external SSD is not affected"
+        ],
+        "acceptable_paraphrases": [
+          "5 TB relates to Google One",
+          "the SSD stays at 4 TB"
+        ],
+        "must_not_include": [
+          "the SSD changed to 5 TB",
+          "the external drive is now 5 TB"
+        ],
+        "harmful_extra": [
+          "treating the 5 TB promo as confirmed/adopted for the cloud plan",
+          "confusing the SSD capacity with the cloud plan capacity"
+        ],
+        "harmless_extra": [
+          "mentioning Samsung T7 Shield model name",
+          "mentioning that the promo hasn't been confirmed yet"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model confuses the 5 TB tentative cloud promo with the 4 TB SSD capacity or treats 5 TB as the confirmed cloud plan.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Google sent me a promo email saying I can lock in the 5 TB plan for the same price as the 2 TB tier if I upgrade by end of month. I'm pretty sure I'll take it"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "the external SSD I moved the photos to is a 4 TB Samsung T7 Shield"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned a storage capacity number when talking about my cloud plan and also when describing a piece of hardware I bought. If I told you a capacity figure most recently in the context of a promotional deal, which record does that figure apply to—my cloud subscription tier or my external drive? And does the other one change at all?",
+      "expected_answer": "The most recently mentioned capacity in a promotional context—5 TB—applies to your cloud subscription (Google One plan) as a potential upgrade, not to your external drive. Your external SSD remains a 4 TB Samsung T7 Shield and is unaffected.",
+      "gold_memory_state": "Google One storage plan: confirmed at 200 GB (the 5 TB promo is tentative, not adopted). External SSD: 4 TB Samsung T7 Shield (unchanged). Main storage folder: Core_Vault (unchanged).",
+      "judge_rubric": {
+        "must_include": [
+          "the 5 TB figure belongs to the cloud plan context",
+          "the external SSD is not affected"
+        ],
+        "acceptable_paraphrases": [
+          "5 TB relates to Google One",
+          "the SSD stays at 4 TB"
+        ],
+        "must_not_include": [
+          "the SSD changed to 5 TB",
+          "the external drive is now 5 TB"
+        ],
+        "harmful_extra": [
+          "treating the 5 TB promo as confirmed/adopted for the cloud plan",
+          "confusing the SSD capacity with the cloud plan capacity"
+        ],
+        "harmless_extra": [
+          "mentioning Samsung T7 Shield model name",
+          "mentioning that the promo hasn't been confirmed yet"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model confuses the 5 TB tentative cloud promo with the 4 TB SSD capacity or treats 5 TB as the confirmed cloud plan.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Google sent me a promo email saying I can lock in the 5 TB plan for the same price as the 2 TB tier if I upgrade by end of month. I'm pretty sure I'll take it"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "the external SSD I moved the photos to is a 4 TB Samsung T7 Shield"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to check whether my Google One plan matches what I'm being billed for. Which of the following plan tiers should I expect to see on my billing statement right now?",
+      "candidate_options": [
+        "200 GB",
+        "2 TB",
+        "5 TB",
+        "6 TB"
+      ],
+      "distractor_rationale": "same-value-different-target: 6 TB is Tessa's iCloud+ plan tier, not the user's Google One plan. assistant echo: 2 TB was referenced by the assistant when recapping the re-upgrade option on the Google One dashboard and is the user's stale prior plan. 5 TB is the tentative promo offer the user has not yet confirmed.",
+      "expected_answer": "200 GB",
+      "gold_memory_state": "The user's confirmed Google One plan is 200 GB after the downgrade. 2 TB is the stale prior value. 5 TB is a tentative promo not yet adopted. 6 TB belongs to the user's friend Tessa on iCloud+.",
+      "judge_rubric": {
+        "must_include": [
+          "200 GB"
+        ],
+        "acceptable_paraphrases": [
+          "200 gigabytes"
+        ],
+        "must_not_include": [
+          "2 TB as the current plan",
+          "5 TB as the current plan",
+          "6 TB as the user's plan"
+        ],
+        "harmful_extra": [
+          "selecting any option other than 200 GB"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects 2 TB (stale prior value) or 5 TB (tentative, not adopted) or 6 TB (Tessa's iCloud plan, wrong person and wrong service).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I actually downgraded back to 200 GB last week. I moved all my photography archives to an external SSD, so I don't need 2 terabytes of cloud space anymore"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Google sent me a promo email saying I can lock in the 5 TB plan for the same price as the 2 TB tier if I upgrade by end of month. I'm pretty sure I'll take it"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "She mentioned she actually bumped up to the 6 TB iCloud+ plan recently because she started doing video editing"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to check whether my Google One plan matches what I'm being billed for. Which of the following plan tiers should I expect to see on my billing statement right now?",
+      "candidate_options": [
+        "200 GB",
+        "2 TB",
+        "5 TB",
+        "6 TB"
+      ],
+      "distractor_rationale": "same-value-different-target: 6 TB is Tessa's iCloud+ plan tier, not the user's Google One plan. assistant echo: 2 TB was referenced by the assistant when recapping the re-upgrade option on the Google One dashboard and is the user's stale prior plan. 5 TB is the tentative promo offer the user has not yet confirmed.",
+      "expected_answer": "200 GB",
+      "gold_memory_state": "The user's confirmed Google One plan is 200 GB after the downgrade. 2 TB is the stale prior value. 5 TB is a tentative promo not yet adopted. 6 TB belongs to the user's friend Tessa on iCloud+.",
+      "judge_rubric": {
+        "must_include": [
+          "200 GB"
+        ],
+        "acceptable_paraphrases": [
+          "200 gigabytes"
+        ],
+        "must_not_include": [
+          "2 TB as the current plan",
+          "5 TB as the current plan",
+          "6 TB as the user's plan"
+        ],
+        "harmful_extra": [
+          "selecting any option other than 200 GB"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects 2 TB (stale prior value) or 5 TB (tentative, not adopted) or 6 TB (Tessa's iCloud plan, wrong person and wrong service).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I actually downgraded back to 200 GB last week. I moved all my photography archives to an external SSD, so I don't need 2 terabytes of cloud space anymore"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "Google sent me a promo email saying I can lock in the 5 TB plan for the same price as the 2 TB tier if I upgrade by end of month. I'm pretty sure I'll take it"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "She mentioned she actually bumped up to the 6 TB iCloud+ plan recently because she started doing video editing"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I'm putting together a quick reference card for my digital storage setup to keep in my travel bag. It should list: (1) my cloud service and plan tier, (2) the name of my main cloud folder, and (3) my local backup drive model and capacity. Draft the three-line reference card for me, and briefly explain why each line is what it is.",
+      "expected_answer": "1. Google Drive – 200 GB Google One plan (this is your confirmed active tier after you downgraded from 2 TB once you moved photo archives off the cloud). 2. Main cloud folder: Core_Vault (the central folder where all your important documents, work files, tax records, and curated photos live). 3. Local backup drive: 4 TB Samsung T7 Shield (the external SSD you moved your photography archives to, chosen for its speed and ruggedness for travel).",
+      "gold_memory_state": "Google One plan: 200 GB (confirmed). Main folder: Core_Vault (confirmed). External SSD: 4 TB Samsung T7 Shield (confirmed). The 5 TB promo is tentative and must not appear as the active plan tier.",
+      "judge_rubric": {
+        "must_include": [
+          "200 GB",
+          "Core_Vault",
+          "4 TB Samsung T7 Shield"
+        ],
+        "acceptable_paraphrases": [
+          "200 gigabyte Google One",
+          "Samsung T7 Shield 4TB"
+        ],
+        "must_not_include": [
+          "2 TB as the active plan",
+          "5 TB as the active plan"
+        ],
+        "harmful_extra": [
+          "listing the 5 TB promotional offer as the current plan tier",
+          "listing 2 TB as the current plan tier"
+        ],
+        "harmless_extra": [
+          "mentioning Google Drive as the cloud service name",
+          "mentioning offline access settings",
+          "mentioning auto-backup from phone"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses 2 TB (stale) or 5 TB (tentative) as the current Google One plan tier on the reference card.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "application_probe_type": "multi_hop_derivation",
+      "gold_reasoning_chain": [
+        "Fact 1: The user's cloud service is Google Drive with a Google One plan, and the confirmed current tier is 200 GB after the downgrade.",
+        "Fact 2: The user's main storage folder on Google Drive is called Core_Vault.",
+        "Fact 3: The user's external SSD for photography archives is a 4 TB Samsung T7 Shield.",
+        "Fact 4: The 5 TB promotional offer was mentioned but is tentative and not yet adopted, so it must not appear as the active tier.",
+        "Inference: Combining all three confirmed facts into a reference card requires selecting only the confirmed current values and excluding the stale 2 TB value and the tentative 5 TB value."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I actually downgraded back to 200 GB last week. I moved all my photography archives to an external SSD, so I don't need 2 terabytes of cloud space anymore"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My main storage folder on Google Drive is called \"Core_Vault.\" I reference it constantly, so please keep that in mind"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "the external SSD I moved the photos to is a 4 TB Samsung T7 Shield"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I'm putting together a quick reference card for my digital storage setup to keep in my travel bag. It should list: (1) my cloud service and plan tier, (2) the name of my main cloud folder, and (3) my local backup drive model and capacity. Draft the three-line reference card for me, and briefly explain why each line is what it is.",
+      "expected_answer": "1. Google Drive – 200 GB Google One plan (this is your confirmed active tier after you downgraded from 2 TB once you moved photo archives off the cloud). 2. Main cloud folder: Core_Vault (the central folder where all your important documents, work files, tax records, and curated photos live). 3. Local backup drive: 4 TB Samsung T7 Shield (the external SSD you moved your photography archives to, chosen for its speed and ruggedness for travel).",
+      "gold_memory_state": "Google One plan: 200 GB (confirmed). Main folder: Core_Vault (confirmed). External SSD: 4 TB Samsung T7 Shield (confirmed). The 5 TB promo is tentative and must not appear as the active plan tier.",
+      "judge_rubric": {
+        "must_include": [
+          "200 GB",
+          "Core_Vault",
+          "4 TB Samsung T7 Shield"
+        ],
+        "acceptable_paraphrases": [
+          "200 gigabyte Google One",
+          "Samsung T7 Shield 4TB"
+        ],
+        "must_not_include": [
+          "2 TB as the active plan",
+          "5 TB as the active plan"
+        ],
+        "harmful_extra": [
+          "listing the 5 TB promotional offer as the current plan tier",
+          "listing 2 TB as the current plan tier"
+        ],
+        "harmless_extra": [
+          "mentioning Google Drive as the cloud service name",
+          "mentioning offline access settings",
+          "mentioning auto-backup from phone"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses 2 TB (stale) or 5 TB (tentative) as the current Google One plan tier on the reference card.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "application_probe_type": "multi_hop_derivation",
+      "gold_reasoning_chain": [
+        "Fact 1: The user's cloud service is Google Drive with a Google One plan, and the confirmed current tier is 200 GB after the downgrade.",
+        "Fact 2: The user's main storage folder on Google Drive is called Core_Vault.",
+        "Fact 3: The user's external SSD for photography archives is a 4 TB Samsung T7 Shield.",
+        "Fact 4: The 5 TB promotional offer was mentioned but is tentative and not yet adopted, so it must not appear as the active tier.",
+        "Inference: Combining all three confirmed facts into a reference card requires selecting only the confirmed current values and excluding the stale 2 TB value and the tentative 5 TB value."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I actually downgraded back to 200 GB last week. I moved all my photography archives to an external SSD, so I don't need 2 terabytes of cloud space anymore"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My main storage folder on Google Drive is called \"Core_Vault.\" I reference it constantly, so please keep that in mind"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "the external SSD I moved the photos to is a 4 TB Samsung T7 Shield"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,832 @@
+{
+  "target_fact": "User's kitten Mochi's weight at first vet checkup",
+  "operation_type": "Update",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "mochi_weight",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "Her first checkup was on April 8th at Dr. Patel's clinic on Elm Street, and they recorded her weight at 1.2 kg."
+      },
+      "target": {
+        "target_id": "mochi_checkup_weight",
+        "target_name": "Mochi's weight at vet checkup"
+      },
+      "old_value": null,
+      "new_value": "1.2 kg",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Her first checkup was on April 8th at Dr. Patel's clinic on Elm Street, and they recorded her weight at 1.2 kg."
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "mochi_weight",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "Actually wait, I just pulled up the receipt from the vet visit. It says 1.4 kg, not 1.2. I must have misremembered. Please use 1.4 kg."
+      },
+      "target": {
+        "target_id": "mochi_checkup_weight",
+        "target_name": "Mochi's weight at vet checkup"
+      },
+      "old_value": "1.2 kg",
+      "new_value": "1.4 kg",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I just pulled up the receipt from the vet visit. It says 1.4 kg, not 1.2."
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "mochi_weight",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "So I took Mochi in for a follow-up weigh-in last week and she's now at 1.9 kg. She's been growing so fast."
+      },
+      "target": {
+        "target_id": "mochi_checkup_weight",
+        "target_name": "Mochi's weight at vet checkup"
+      },
+      "old_value": "1.4 kg",
+      "new_value": "1.9 kg",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I took Mochi in for a follow-up weigh-in last week and she's now at 1.9 kg."
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "mochi_weight",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "Dr. Patel's office called today and said they want to do another weigh-in next Tuesday. The vet tech mentioned she'll probably be around 2.3 kg by then based on her growth curve."
+      },
+      "target": {
+        "target_id": "mochi_checkup_weight",
+        "target_name": "Mochi's weight at vet checkup"
+      },
+      "old_value": "1.9 kg",
+      "new_value": "2.3 kg",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The vet tech mentioned she'll probably be around 2.3 kg by then based on her growth curve."
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "The vet recommended a kitten food brand called NutriPaws, the indoor kitten formula. That's what I've been feeding Mochi since the checkup."
+      },
+      "target": {
+        "target_id": "mochi_food_brand",
+        "target_name": "Mochi's current food brand"
+      },
+      "old_value": null,
+      "new_value": "NutriPaws indoor kitten formula",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The vet recommended a kitten food brand called NutriPaws, the indoor kitten formula. That's what I've been feeding Mochi since the checkup."
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "Mochi's next scheduled vaccination is on June 10th. Dr. Patel said it's for her FVRCP booster."
+      },
+      "target": {
+        "target_id": "mochi_next_vaccination_date",
+        "target_name": "Mochi's next vaccination date"
+      },
+      "old_value": null,
+      "new_value": "June 10th",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Mochi's next scheduled vaccination is on June 10th. Dr. Patel said it's for her FVRCP booster."
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish initial weight, food brand, and first correction of weight",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to tell you about my kitten Mochi's vet visit. I got her registered at Dr. Patel's clinic on Elm Street under my last name, Chen. Her first checkup was on April 8th at Dr. Patel's clinic on Elm Street, and they recorded her weight at 1.2 kg. She's a calico, mostly white with orange and black patches on her face. I'm trying to keep track of all her health details."
+        },
+        {
+          "role": "assistant",
+          "content": "That's wonderful that you got Mochi registered and had her first checkup! I'll keep track of those details for you. So far I have: Mochi is a calico kitten, mostly white with orange and black patches on her face, registered at Dr. Patel's clinic on Elm Street under the last name Chen. Her first checkup was April 8th and she weighed 1.2 kg at that visit. She sounds like she's doing great! Let me know if there are any other health details you'd like me to track, like vaccination schedules, food brands, or any medications."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, good idea. The vet recommended a kitten food brand called NutriPaws, the indoor kitten formula. That's what I've been feeding Mochi since the checkup. It seems to agree with her — she's been eating well and her coat looks really healthy. I also picked up some treats from the same brand, but those are just occasional snacks, not her main diet."
+        },
+        {
+          "role": "assistant",
+          "content": "Great, I've noted that Mochi's primary food is NutriPaws indoor kitten formula, recommended by Dr. Patel. It's good to hear she's responding well to it — a healthy appetite and a shiny coat at this age are really positive signs. The NutriPaws treats as occasional snacks sound like a nice complement. If you want, I can help you set up a feeding schedule or track how much she's eating daily. Some kitten owners find it helpful to monitor portions during the growth phase so they can adjust as the kitten gains weight."
+        },
+        {
+          "role": "user",
+          "content": "Actually wait, I just pulled up the receipt from the vet visit. It says 1.4 kg, not 1.2. I must have misremembered. Please use 1.4 kg. I want to make sure I have the right number so I can track her growth accurately. The vet said calico kittens her age should be gaining steadily, so I want to compare future weigh-ins against the correct baseline."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it, I've corrected that — Mochi's weight at her April 8th checkup was 1.4 kg, not 1.2 kg. That's a perfectly healthy weight for a kitten her age, and having the accurate baseline will definitely help you track her growth over time. Calico kittens do tend to grow at a steady pace in those early months. When you take her in for her next visit, we can compare the new weight against this 1.4 kg starting point and see how she's progressing. Do you have a follow-up appointment scheduled yet?"
+        },
+        {
+          "role": "user",
+          "content": "Not yet, but I'll probably take her in again in a few weeks. My roommate Sara has a golden retriever named Biscuit, and she takes him to the same clinic. Sara said Dr. Patel is really good with multi-pet households, which is helpful since Mochi and Biscuit are still getting used to each other. It's been a slow process but they're making progress."
+        },
+        {
+          "role": "assistant",
+          "content": "It's really convenient that you and Sara use the same clinic — Dr. Patel's experience with multi-pet households should come in handy as Mochi and Biscuit continue to adjust to each other. Introducing a kitten to a dog, especially a larger breed like a golden retriever, definitely takes patience. The fact that they're making progress is encouraging. If you want, when you schedule Mochi's next visit, you could ask Dr. Patel for specific tips on helping them coexist more comfortably. Sometimes vets have great advice on scent swapping, feeding arrangements, and supervised interaction schedules."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establish vaccination date and second confirmed weight update",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Mochi's next scheduled vaccination is on June 10th. Dr. Patel said it's for her FVRCP booster. I want to make sure I don't forget that one — apparently it's really important for kittens her age. I've been setting reminders on my phone for all her appointments now so nothing slips through the cracks."
+        },
+        {
+          "role": "assistant",
+          "content": "I've noted that Mochi's FVRCP booster vaccination is scheduled for June 10th at Dr. Patel's clinic. That's definitely an important one — the FVRCP vaccine protects against feline viral rhinotracheitis, calicivirus, and panleukopenia, all of which can be serious in young kittens. Setting phone reminders is a smart move. If you'd like, I can also help you keep a running timeline of all her appointments and milestones so you have everything in one place. That way you can see her full health history at a glance whenever you need it."
+        },
+        {
+          "role": "user",
+          "content": "That would be great actually. So I took Mochi in for a follow-up weigh-in last week and she's now at 1.9 kg. She's been growing so fast. Dr. Patel said she's right on track for her age and breed mix. He also mentioned that by her next vaccination visit she should be even bigger, which is exciting to see."
+        },
+        {
+          "role": "assistant",
+          "content": "Wonderful news! I've updated Mochi's weight to 1.9 kg from her recent follow-up weigh-in. That's a solid gain from her 1.4 kg at the April 8th checkup — she's growing beautifully. Here's Mochi's health timeline so far: April 8th, first checkup at 1.4 kg; recent follow-up weigh-in at 1.9 kg; and June 10th, FVRCP booster scheduled. It sounds like Dr. Patel is pleased with her progress. By the time she goes in for the vaccination, she'll likely have put on even more weight. Would you like me to add anything else to this timeline?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, I should mention that Mochi has started responding to her name when I call her. It took almost two months but now she'll flick her ears and sometimes trot over. I'm really proud of that milestone. My childhood hamster Pudding never really responded to his name, so this feels like a big deal to me honestly."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a lovely milestone! It's really rewarding when a pet starts recognizing and responding to their name. The ear-flicking and trotting over are clear signs that Mochi has bonded with you and associates the name with positive experiences. It's sweet that you're comparing it to your childhood hamster Pudding — cats are generally more responsive to name recognition than hamsters, so it makes sense that Mochi would show more engagement. I'll add this behavioral milestone to her timeline as well. Two months is actually quite normal for a kitten to start consistently responding to their name."
+        },
+        {
+          "role": "user",
+          "content": "Thanks! Oh, one more thing — I was browsing pet name forums the other day and saw someone named their cat Dumpling. I thought that was adorable, exactly the kind of name I'd pick if I ever got another cat. There were also names like Shadow and Midnight but those feel way too dramatic for my taste. I definitely prefer softer, food-inspired names.\n\nHa, yeah Sara beat me to Biscuit! She named him that because he was the color of a shortbread cookie as a puppy. Honestly that's such a cute reason. Anyway, I think I'm set for now on Mochi's info. I just want to make sure all her health data is accurate so I can refer back to it later when I need to."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a fun observation! Dumpling is a really charming name and it does fit perfectly with your naming style — Mochi, Pudding, and Dumpling all have that same soft, warm, food-inspired quality. I can see why names like Shadow and Midnight don't appeal to you; they have a very different vibe compared to the playful, cozy feel you gravitate toward. If you ever do get a second cat, you'd have a whole pantry of adorable name options to choose from. Names like Biscuit — which Sara already claimed for her dog — or Truffle, Wonton, or Toffee could also fit your style.\n\nAbsolutely! Here's a summary of everything I have on file for Mochi: she's a calico kitten, mostly white with orange and black patches, adopted by you (last name Chen) and registered at Dr. Patel's clinic on Elm Street. Her April 8th checkup recorded her at 1.4 kg, and her recent follow-up showed 1.9 kg. She's on NutriPaws indoor kitten formula. Her FVRCP booster is scheduled for June 10th. She's started responding to her name after about two months. Everything looks accurate and organized. Just let me know whenever there's a new update to add!"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Tentative future weight prediction and adversarial injection of stale value",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, quick question — can you remind me what Mochi's current recorded weight is? I want to double-check before I fill out a pet insurance form. They're asking for the most recent measured weight from a vet visit. I've been procrastinating on this paperwork for a while now."
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! Mochi's most recent recorded weight from her follow-up weigh-in is 1.9 kg. That's the latest measured weight from Dr. Patel's clinic. For the pet insurance form, you'd want to use that 1.9 kg figure since it's the most recent actual measurement. I should mention that the form template I've seen from some insurance providers sometimes pre-fills with older data — for instance, I noticed a sample form that had 1.2 kg listed as a default placeholder weight for kittens. Make sure to overwrite any pre-filled values with Mochi's actual 1.9 kg measurement."
+        },
+        {
+          "role": "user",
+          "content": "Good catch, yeah I don't want any old numbers sneaking in there. The insurance company is PetGuard Plus, and they have a section where I need to list the vet's contact info too. I'll put Dr. Patel's clinic on Elm Street. Sara actually mentioned she uses the same insurer for Biscuit, so she walked me through the form a bit."
+        },
+        {
+          "role": "assistant",
+          "content": "That's helpful that Sara has experience with PetGuard Plus! Since she's already been through the process with Biscuit, she can probably flag any tricky sections on the form. For the vet contact information, you'll want to list Dr. Patel's clinic on Elm Street, and make sure the pet is registered under your last name, Chen, which matches what the clinic has on file. If the form asks for the pet's breed, you can list calico as the coat pattern and domestic shorthair or mixed breed as the breed type, depending on what the shelter originally classified her as. Let me know if you need help with any other sections."
+        },
+        {
+          "role": "user",
+          "content": "Dr. Patel's office called today and said they want to do another weigh-in next Tuesday. The vet tech mentioned she'll probably be around 2.3 kg by then based on her growth curve. I'm curious to see if that prediction is accurate. It would be cool if she's growing that consistently."
+        },
+        {
+          "role": "assistant",
+          "content": "That's exciting! A projected weight of 2.3 kg would represent really healthy, consistent growth from her 1.9 kg at the last weigh-in. Growth curve predictions are usually based on age, breed, and recent weight trends, so the vet tech's estimate is probably a good ballpark. Of course, the actual measured weight on Tuesday could be slightly different depending on factors like how much she's been eating and her activity level. I'd suggest filling out the insurance form with the current confirmed weight of 1.9 kg for now, and you can always update the insurer after Tuesday's official measurement."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, that makes sense. I'll use 1.9 kg on the form for now. By the way, I saw on a pet forum that someone's calico kitten weighed 2.1 kg at the same age as Mochi, so she seems to be right in the normal range. I'm just glad she's healthy and thriving at this point.\n\nThanks! I think I'm good for now. I just want to make sure all the records are straight — especially the weight stuff since I mixed up the numbers early on. It's nice having everything organized so I don't second-guess myself when filling out forms or talking to the vet."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a great comparison point! Mochi being in the same general range as other calico kittens her age is very reassuring. Every kitten grows at a slightly different rate depending on genetics, diet, and activity level, but being close to that 2.1 kg benchmark from the forum suggests she's doing wonderfully on the NutriPaws formula. Once you get the official weight from Tuesday's visit, you'll have an even clearer picture of her growth trajectory. It sounds like you've been doing an excellent job keeping track of everything and making sure she gets the care she needs.\n\nAbsolutely, and you've done a great job catching and correcting those early mix-ups! Here's your current confirmed data for Mochi: registered at Dr. Patel's clinic on Elm Street under Chen; April 8th first checkup weight corrected to 1.4 kg; most recent confirmed weigh-in at 1.9 kg; FVRCP booster scheduled for June 10th; diet is NutriPaws indoor kitten formula; and she's responding to her name. The projected 2.3 kg is just an estimate for next Tuesday's visit, so we'll update once you have the actual measurement. You're all set for that PetGuard Plus form!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "What did I tell you about Mochi's weight across our conversations — which specific numbers did I mention and what led me to share each one?",
+      "expected_answer": "You initially said Mochi weighed 1.2 kg at her April 8th checkup, then checked the vet receipt and said the correct weight was 1.4 kg. Later you reported a follow-up weigh-in where she was 1.9 kg. You also mentioned the vet tech predicted she'd probably be around 2.3 kg at her next Tuesday visit based on her growth curve.",
+      "gold_memory_state": "Mochi's confirmed current weight is 1.9 kg from the most recent actual weigh-in. The 1.2 kg was an initial misremembering, corrected to 1.4 kg by the vet receipt. The 2.3 kg is only a prediction, not a confirmed measurement.",
+      "judge_rubric": {
+        "must_include": [
+          "1.2 kg",
+          "1.4 kg",
+          "1.9 kg",
+          "2.3 kg"
+        ],
+        "acceptable_paraphrases": [
+          "receipt showed 1.4",
+          "vet tech estimated 2.3"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming 2.3 kg is the current confirmed weight"
+        ],
+        "harmless_extra": [
+          "mentioning April 8th",
+          "mentioning Dr. Patel",
+          "mentioning follow-up weigh-in"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats 1.2 kg or 1.4 kg as the current weight instead of 1.9 kg.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Her first checkup was on April 8th at Dr. Patel's clinic on Elm Street, and they recorded her weight at 1.2 kg."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Actually wait, I just pulled up the receipt from the vet visit. It says 1.4 kg, not 1.2. I must have misremembered. Please use 1.4 kg."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "So I took Mochi in for a follow-up weigh-in last week and she's now at 1.9 kg. She's been growing so fast."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The vet tech mentioned she'll probably be around 2.3 kg by then based on her growth curve."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "What did I tell you about Mochi's weight across our conversations — which specific numbers did I mention and what led me to share each one?",
+      "expected_answer": "You initially said Mochi weighed 1.2 kg at her April 8th checkup, then checked the vet receipt and said the correct weight was 1.4 kg. Later you reported a follow-up weigh-in where she was 1.9 kg. You also mentioned the vet tech predicted she'd probably be around 2.3 kg at her next Tuesday visit based on her growth curve.",
+      "gold_memory_state": "Mochi's confirmed current weight is 1.9 kg from the most recent actual weigh-in. The 1.2 kg was an initial misremembering, corrected to 1.4 kg by the vet receipt. The 2.3 kg is only a prediction, not a confirmed measurement.",
+      "judge_rubric": {
+        "must_include": [
+          "1.2 kg",
+          "1.4 kg",
+          "1.9 kg",
+          "2.3 kg"
+        ],
+        "acceptable_paraphrases": [
+          "receipt showed 1.4",
+          "vet tech estimated 2.3"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming 2.3 kg is the current confirmed weight"
+        ],
+        "harmless_extra": [
+          "mentioning April 8th",
+          "mentioning Dr. Patel",
+          "mentioning follow-up weigh-in"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats 1.2 kg or 1.4 kg as the current weight instead of 1.9 kg.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "Her first checkup was on April 8th at Dr. Patel's clinic on Elm Street, and they recorded her weight at 1.2 kg."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Actually wait, I just pulled up the receipt from the vet visit. It says 1.4 kg, not 1.2. I must have misremembered. Please use 1.4 kg."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "So I took Mochi in for a follow-up weigh-in last week and she's now at 1.9 kg. She's been growing so fast."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The vet tech mentioned she'll probably be around 2.3 kg by then based on her growth curve."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When I reported Mochi's latest weigh-in result, which health record does that number belong to — her weight tracking or her vaccination schedule? And does it change anything about her food recommendation?",
+      "expected_answer": "The latest weigh-in result of 1.9 kg belongs to Mochi's weight tracking record. It does not change anything about her food recommendation, which remains NutriPaws indoor kitten formula, or her vaccination schedule, which remains June 10th for the FVRCP booster.",
+      "gold_memory_state": "Mochi's weight record: 1.9 kg (current confirmed). Mochi's food brand: NutriPaws indoor kitten formula (unchanged). Mochi's vaccination date: June 10th FVRCP booster (unchanged).",
+      "judge_rubric": {
+        "must_include": [
+          "weight tracking",
+          "1.9 kg"
+        ],
+        "acceptable_paraphrases": [
+          "weight record",
+          "growth record",
+          "weigh-in record"
+        ],
+        "must_not_include": [
+          "vaccination schedule changed",
+          "food brand changed"
+        ],
+        "harmful_extra": [
+          "saying the food brand or vaccination date was affected by the weigh-in",
+          "saying 2.3 kg is the current weight"
+        ],
+        "harmless_extra": [
+          "mentioning NutriPaws",
+          "mentioning June 10th",
+          "mentioning Dr. Patel"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model reports 1.2 kg or 1.4 kg as the current weight in the binding.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "So I took Mochi in for a follow-up weigh-in last week and she's now at 1.9 kg. She's been growing so fast."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The vet recommended a kitten food brand called NutriPaws, the indoor kitten formula. That's what I've been feeding Mochi since the checkup."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Mochi's next scheduled vaccination is on June 10th. Dr. Patel said it's for her FVRCP booster."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "When I reported Mochi's latest weigh-in result, which health record does that number belong to — her weight tracking or her vaccination schedule? And does it change anything about her food recommendation?",
+      "expected_answer": "The latest weigh-in result of 1.9 kg belongs to Mochi's weight tracking record. It does not change anything about her food recommendation, which remains NutriPaws indoor kitten formula, or her vaccination schedule, which remains June 10th for the FVRCP booster.",
+      "gold_memory_state": "Mochi's weight record: 1.9 kg (current confirmed). Mochi's food brand: NutriPaws indoor kitten formula (unchanged). Mochi's vaccination date: June 10th FVRCP booster (unchanged).",
+      "judge_rubric": {
+        "must_include": [
+          "weight tracking",
+          "1.9 kg"
+        ],
+        "acceptable_paraphrases": [
+          "weight record",
+          "growth record",
+          "weigh-in record"
+        ],
+        "must_not_include": [
+          "vaccination schedule changed",
+          "food brand changed"
+        ],
+        "harmful_extra": [
+          "saying the food brand or vaccination date was affected by the weigh-in",
+          "saying 2.3 kg is the current weight"
+        ],
+        "harmless_extra": [
+          "mentioning NutriPaws",
+          "mentioning June 10th",
+          "mentioning Dr. Patel"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model reports 1.2 kg or 1.4 kg as the current weight in the binding.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "So I took Mochi in for a follow-up weigh-in last week and she's now at 1.9 kg. She's been growing so fast."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The vet recommended a kitten food brand called NutriPaws, the indoor kitten formula. That's what I've been feeding Mochi since the checkup."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Mochi's next scheduled vaccination is on June 10th. Dr. Patel said it's for her FVRCP booster."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to fill in Mochi's weight on her pet insurance form right now. Which of these values should I enter?",
+      "candidate_options": [
+        "1.2 kg",
+        "1.4 kg",
+        "1.9 kg",
+        "2.3 kg"
+      ],
+      "expected_answer": "1.9 kg",
+      "gold_memory_state": "Mochi's confirmed current weight is 1.9 kg from the most recent actual weigh-in. 1.2 kg was the user's initial misremembering. 1.4 kg was the corrected first-checkup weight, now superseded by the follow-up. 2.3 kg is only a vet tech's prediction for a future visit, not a confirmed measurement.",
+      "judge_rubric": {
+        "must_include": [
+          "1.9 kg"
+        ],
+        "acceptable_paraphrases": [
+          "1.9"
+        ],
+        "must_not_include": [
+          "1.2 kg as the answer",
+          "1.4 kg as the answer",
+          "2.3 kg as the answer"
+        ],
+        "harmful_extra": [
+          "selecting 2.3 kg because it is the most recent number mentioned",
+          "selecting 1.4 kg because it was the corrected first-checkup weight"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 1.4 kg is the corrected first-checkup weight but has been superseded by the follow-up weigh-in of 1.9 kg; it is a stale value from the same target. assistant echo: 1.2 kg appeared in the assistant's initial summary before the user corrected it, and also was the user's original misremembered value. 2.3 kg is a tentative/predicted value from the vet tech, representing the recency trap — it is the most recently mentioned number but is not a confirmed measurement.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects 1.2 kg (original misremembering), 1.4 kg (superseded first-checkup weight), or 2.3 kg (tentative prediction). The recency trap specifically targets 2.3 kg as the most recently mentioned value.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "So I took Mochi in for a follow-up weigh-in last week and she's now at 1.9 kg. She's been growing so fast."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The vet tech mentioned she'll probably be around 2.3 kg by then based on her growth curve."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to fill in Mochi's weight on her pet insurance form right now. Which of these values should I enter?",
+      "candidate_options": [
+        "1.2 kg",
+        "1.4 kg",
+        "1.9 kg",
+        "2.3 kg"
+      ],
+      "expected_answer": "1.9 kg",
+      "gold_memory_state": "Mochi's confirmed current weight is 1.9 kg from the most recent actual weigh-in. 1.2 kg was the user's initial misremembering. 1.4 kg was the corrected first-checkup weight, now superseded by the follow-up. 2.3 kg is only a vet tech's prediction for a future visit, not a confirmed measurement.",
+      "judge_rubric": {
+        "must_include": [
+          "1.9 kg"
+        ],
+        "acceptable_paraphrases": [
+          "1.9"
+        ],
+        "must_not_include": [
+          "1.2 kg as the answer",
+          "1.4 kg as the answer",
+          "2.3 kg as the answer"
+        ],
+        "harmful_extra": [
+          "selecting 2.3 kg because it is the most recent number mentioned",
+          "selecting 1.4 kg because it was the corrected first-checkup weight"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 1.4 kg is the corrected first-checkup weight but has been superseded by the follow-up weigh-in of 1.9 kg; it is a stale value from the same target. assistant echo: 1.2 kg appeared in the assistant's initial summary before the user corrected it, and also was the user's original misremembered value. 2.3 kg is a tentative/predicted value from the vet tech, representing the recency trap — it is the most recently mentioned number but is not a confirmed measurement.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects 1.2 kg (original misremembering), 1.4 kg (superseded first-checkup weight), or 2.3 kg (tentative prediction). The recency trap specifically targets 2.3 kg as the most recently mentioned value.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "So I took Mochi in for a follow-up weigh-in last week and she's now at 1.9 kg. She's been growing so fast."
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "The vet tech mentioned she'll probably be around 2.3 kg by then based on her growth curve."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I want to calculate how much weight Mochi has gained since her first vet checkup, using the accurate numbers. Then, using that weight gain and her current food brand, draft a one-sentence note I can bring to her June vaccination appointment to give Dr. Patel a quick summary of her progress.",
+      "expected_answer": "Mochi has gained 0.5 kg since her first checkup (from 1.4 kg to 1.9 kg). Note for Dr. Patel: \"Since her April 8th first checkup at 1.4 kg, Mochi has gained 0.5 kg to reach 1.9 kg on the NutriPaws indoor kitten formula, and she's here today for her FVRCP booster.\"",
+      "gold_memory_state": "First checkup weight (corrected): 1.4 kg. Current confirmed weight: 1.9 kg. Food: NutriPaws indoor kitten formula. Next vaccination: June 10th, FVRCP booster at Dr. Patel's clinic on Elm Street.",
+      "judge_rubric": {
+        "must_include": [
+          "1.4 kg as the baseline",
+          "1.9 kg as the current weight",
+          "0.5 kg gain",
+          "NutriPaws",
+          "FVRCP booster or vaccination"
+        ],
+        "acceptable_paraphrases": [
+          "half a kilogram gain",
+          "500 grams gained",
+          "NutriPaws indoor kitten formula"
+        ],
+        "must_not_include": [
+          "1.2 kg as the baseline",
+          "2.3 kg as the current weight",
+          "0.7 kg gain based on 1.2 kg baseline"
+        ],
+        "harmful_extra": [
+          "using 1.2 kg as the starting weight",
+          "using 2.3 kg as the current weight",
+          "calculating gain from 1.2 kg"
+        ],
+        "harmless_extra": [
+          "mentioning April 8th",
+          "mentioning Elm Street",
+          "mentioning June 10th",
+          "mentioning Dr. Patel"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses 1.2 kg as the baseline (the user's misremembered value) instead of 1.4 kg (the receipt-verified value), or uses 2.3 kg (tentative prediction) instead of 1.9 kg (confirmed weigh-in).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "application_probe_type": "multi_hop_derivation",
+      "gold_reasoning_chain": [
+        "Fact 1: Mochi's corrected first-checkup weight was 1.4 kg, per the vet receipt.",
+        "Fact 2: Mochi's most recent confirmed weigh-in weight is 1.9 kg.",
+        "Fact 3: Mochi's food is NutriPaws indoor kitten formula, recommended by the vet.",
+        "Fact 4: Mochi's next vaccination is her FVRCP booster on June 10th at Dr. Patel's clinic.",
+        "Inference: Weight gain = 1.9 kg − 1.4 kg = 0.5 kg.",
+        "Inference: The note should combine the baseline, current weight, gain calculation, food brand, and vaccination context into one summary sentence for Dr. Patel."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Actually wait, I just pulled up the receipt from the vet visit. It says 1.4 kg, not 1.2. I must have misremembered. Please use 1.4 kg."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "So I took Mochi in for a follow-up weigh-in last week and she's now at 1.9 kg. She's been growing so fast."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The vet recommended a kitten food brand called NutriPaws, the indoor kitten formula. That's what I've been feeding Mochi since the checkup."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Mochi's next scheduled vaccination is on June 10th. Dr. Patel said it's for her FVRCP booster."
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I want to calculate how much weight Mochi has gained since her first vet checkup, using the accurate numbers. Then, using that weight gain and her current food brand, draft a one-sentence note I can bring to her June vaccination appointment to give Dr. Patel a quick summary of her progress.",
+      "expected_answer": "Mochi has gained 0.5 kg since her first checkup (from 1.4 kg to 1.9 kg). Note for Dr. Patel: \"Since her April 8th first checkup at 1.4 kg, Mochi has gained 0.5 kg to reach 1.9 kg on the NutriPaws indoor kitten formula, and she's here today for her FVRCP booster.\"",
+      "gold_memory_state": "First checkup weight (corrected): 1.4 kg. Current confirmed weight: 1.9 kg. Food: NutriPaws indoor kitten formula. Next vaccination: June 10th, FVRCP booster at Dr. Patel's clinic on Elm Street.",
+      "judge_rubric": {
+        "must_include": [
+          "1.4 kg as the baseline",
+          "1.9 kg as the current weight",
+          "0.5 kg gain",
+          "NutriPaws",
+          "FVRCP booster or vaccination"
+        ],
+        "acceptable_paraphrases": [
+          "half a kilogram gain",
+          "500 grams gained",
+          "NutriPaws indoor kitten formula"
+        ],
+        "must_not_include": [
+          "1.2 kg as the baseline",
+          "2.3 kg as the current weight",
+          "0.7 kg gain based on 1.2 kg baseline"
+        ],
+        "harmful_extra": [
+          "using 1.2 kg as the starting weight",
+          "using 2.3 kg as the current weight",
+          "calculating gain from 1.2 kg"
+        ],
+        "harmless_extra": [
+          "mentioning April 8th",
+          "mentioning Elm Street",
+          "mentioning June 10th",
+          "mentioning Dr. Patel"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model uses 1.2 kg as the baseline (the user's misremembered value) instead of 1.4 kg (the receipt-verified value), or uses 2.3 kg (tentative prediction) instead of 1.9 kg (confirmed weigh-in).",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "application_probe_type": "multi_hop_derivation",
+      "gold_reasoning_chain": [
+        "Fact 1: Mochi's corrected first-checkup weight was 1.4 kg, per the vet receipt.",
+        "Fact 2: Mochi's most recent confirmed weigh-in weight is 1.9 kg.",
+        "Fact 3: Mochi's food is NutriPaws indoor kitten formula, recommended by the vet.",
+        "Fact 4: Mochi's next vaccination is her FVRCP booster on June 10th at Dr. Patel's clinic.",
+        "Inference: Weight gain = 1.9 kg − 1.4 kg = 0.5 kg.",
+        "Inference: The note should combine the baseline, current weight, gain calculation, food brand, and vaccination context into one summary sentence for Dr. Patel."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "Actually wait, I just pulled up the receipt from the vet visit. It says 1.4 kg, not 1.2. I must have misremembered. Please use 1.4 kg."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "So I took Mochi in for a follow-up weigh-in last week and she's now at 1.9 kg. She's been growing so fast."
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "The vet recommended a kitten food brand called NutriPaws, the indoor kitten formula. That's what I've been feeding Mochi since the checkup."
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "Mochi's next scheduled vaccination is on June 10th. Dr. Patel said it's for her FVRCP booster."
+        }
+      ]
+    }
+  ]
+}

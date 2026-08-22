@@ -1,0 +1,961 @@
+{
+  "target_fact": "User's relationship with their phone number reflects a deeper pattern of valuing symbolic fresh starts and wanting to leave the past behind",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "My current phone number is 512-847-3291"
+      },
+      "target": {
+        "target_id": "current_phone_number",
+        "target_name": "User's current mobile phone number"
+      },
+      "old_value": null,
+      "new_value": "512-847-3291",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "My current phone number is 512-847-3291"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I switched to it right after moving to Austin around early February, maybe February 3rd"
+      },
+      "target": {
+        "target_id": "phone_switch_date",
+        "target_name": "Date user switched to Austin phone number"
+      },
+      "old_value": null,
+      "new_value": "early February, around February 3rd",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "I switched to it right after moving to Austin around early February, maybe February 3rd"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I really like having a Texas area code. It feels like a fresh start to me. I always hated when my caller ID showed the Illinois number because it felt like I was dragging the past around"
+      },
+      "target": {
+        "target_id": "feeling_about_texas_area_code",
+        "target_name": "User's feeling about having a Texas area code"
+      },
+      "old_value": null,
+      "new_value": "Likes having a Texas area code because it symbolizes a fresh start; hated the Illinois number showing on caller ID",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I really like having a Texas area code. It feels like a fresh start to me. I always hated when my caller ID showed the Illinois number because it felt like I was dragging the past around"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I set up two-factor authentication on my bank account using the 512 number, I think it was around February 26th or 27th"
+      },
+      "target": {
+        "target_id": "bank_2fa_setup",
+        "target_name": "Bank two-factor authentication setup details"
+      },
+      "old_value": null,
+      "new_value": "2FA set up on bank account using 512-847-3291, around February 26th-27th",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I set up two-factor authentication on my bank account using the 512 number, I think it was around February 26th or 27th"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "I much prefer texts over phone calls. When someone actually calls me I let it go to voicemail. The ringing feels intrusive, like it demands my attention right that second"
+      },
+      "target": {
+        "target_id": "communication_preference",
+        "target_name": "User's communication preference (calls vs texts)"
+      },
+      "old_value": null,
+      "new_value": "Prefers texts over phone calls; lets calls go to voicemail; finds ringing intrusive",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "I much prefer texts over phone calls. When someone actually calls me I let it go to voicemail. The ringing feels intrusive, like it demands my attention right that second"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "I canceled the old Illinois line completely, I got a new Texas number, I set up all my important accounts on it, and I even feel better just seeing the 512 area code on my screen. It's like I needed every trace of the old life gone before I could settle in"
+      },
+      "target": {
+        "target_id": "pattern_symbolic_fresh_starts",
+        "target_name": "User's pattern of seeking symbolic fresh starts when relocating"
+      },
+      "old_value": null,
+      "new_value": "User exhibits a consistent pattern of valuing symbolic fresh starts: canceling old ties (Illinois phone line), adopting new local identity markers (Texas area code), and immediately anchoring important systems (bank 2FA) to the new number — all driven by a need to fully shed past-life associations before feeling settled",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I really like having a Texas area code. It feels like a fresh start to me. I always hated when my caller ID showed the Illinois number because it felt like I was dragging the past around"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I set up two-factor authentication on my bank account using the 512 number, I think it was around February 26th or 27th"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I canceled the old Illinois line completely, I got a new Texas number, I set up all my important accounts on it, and I even feel better just seeing the 512 area code on my screen. It's like I needed every trace of the old life gone before I could settle in"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "my friend Derek said he's planning to get a 512 area code too since he's moving to Austin next month. He already got a number assigned apparently, it's 512-847-3295"
+      },
+      "target": {
+        "target_id": "derek_planned_number",
+        "target_name": "Derek's planned Austin phone number"
+      },
+      "old_value": null,
+      "new_value": "512-847-3295",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "my friend Derek said he's planning to get a 512 area code too since he's moving to Austin next month. He already got a number assigned apparently, it's 512-847-3295"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish core phone facts and emotional relationship to area codes",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to make sure you have my contact info on file. My current phone number is 512-847-3291. It's my primary number for absolutely everything — work, personal, doctors, you name it. I'd really appreciate you remembering that since I reference it a lot."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it! I've noted your current phone number as 512-847-3291, and I understand it's your primary contact for all purposes — work, personal, medical, and everything else. That's a Texas area code, so I'm guessing you're based in the Austin area. Whenever you need to reference your number or want me to help with anything related to your contact details, I'll have this ready. Is there anything else you'd like me to keep track of?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, good eye on the Austin thing. I switched to it right after moving to Austin around early February, maybe February 3rd. Before that I had an Illinois number with a 630 area code. That old line is totally dead now though — I ported out and canceled it. So the 512 number is the only one that matters."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood — you moved to Austin and got the 512-847-3291 number around early February, possibly February 3rd, replacing your old 630 area code Illinois number. Since that Illinois line has been ported out and canceled, I'll only reference the 512 number going forward. It sounds like you made a clean break with the carrier switch right around the time of your move. If you ever need help updating your number with any services or contacts, just let me know. Is there anything else about your Austin setup you'd like me to note?"
+        },
+        {
+          "role": "user",
+          "content": "Actually yeah, there's something I want to share. I really like having a Texas area code. It feels like a fresh start to me. I always hated when my caller ID showed the Illinois number because it felt like I was dragging the past around. I know that probably sounds weird, but seeing 512 on my screen genuinely makes me feel more settled here."
+        },
+        {
+          "role": "assistant",
+          "content": "That doesn't sound weird at all — a lot of people find that small identity markers like an area code carry real emotional weight, especially after a big move. It makes sense that seeing 512 on your caller ID reinforces the feeling that Austin is truly your home now, rather than being reminded of Illinois every time you make a call. It's essentially a psychological anchor for your fresh start. I'll keep in mind that this area code change wasn't just practical for you — it was meaningful on a personal level. If you ever want to talk through other aspects of settling in, I'm happy to help."
+        },
+        {
+          "role": "user",
+          "content": "Thanks, I appreciate that. On a different note, I had this annoying spam call situation a few weeks ago. I was getting four or five spam calls a day for several days. Turned out a rewards app I signed up for at a gas station on March 1st probably sold my number. I uninstalled the app and the calls have mostly stopped now. It was really frustrating."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds incredibly frustrating — especially since you'd just gotten this fresh-start number and then had it compromised by a gas station rewards app. Getting four or five spam calls a day is enough to drive anyone crazy. It's good that uninstalling the app seems to have curbed the calls. For future reference, you might want to be cautious about giving your primary number to loyalty or rewards programs. Some people use a secondary Google Voice number for those kinds of signups to protect their real number. If the spam picks up again, I can help you look into call-blocking solutions or filing complaints with the FTC. Glad it's mostly resolved for now though."
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Deepen evidence of fresh-start pattern and communication preferences",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "One important thing — I set up two-factor authentication on my bank account using the 512 number, I think it was around February 26th or 27th. That's critical because if I ever lose access to that number, dealing with the bank would be a nightmare. So that number is really locked into my life now."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really important detail — I've noted that your bank's two-factor authentication is tied to 512-847-3291, set up around February 26th or 27th. You're right that losing access to that number could create serious complications with your bank, since 2FA recovery processes can be notoriously difficult. This makes protecting that phone number even more critical. If you ever consider switching carriers or numbers in the future, you'd want to update the bank's 2FA settings first. It might also be worth checking if your bank supports backup authentication methods like an authenticator app, just as a safety net. Want me to note any other accounts tied to this number?"
+        },
+        {
+          "role": "user",
+          "content": "Good idea on the backup auth, I'll look into that. Also, while we're on the topic of how I use my phone — I much prefer texts over phone calls. When someone actually calls me I let it go to voicemail. The ringing feels intrusive, like it demands my attention right that second. Texts are way more my speed because I can respond when I'm ready."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes a lot of sense — you prefer asynchronous communication where you're in control of when you engage. Texts let you process and respond on your own timeline, while a ringing phone creates an immediate pressure to drop everything. I'll keep this preference in mind. If I ever help you draft messages to service providers, doctors' offices, or contacts, I'll default to text-friendly language. It's also worth noting that many businesses now offer text-based customer service, which might align well with your style. Your preference for texts over calls seems consistent with someone who values having control over their own time and attention."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, that's exactly it — control over my own time. And thinking about it more broadly, I canceled the old Illinois line completely, I got a new Texas number, I set up all my important accounts on it, and I even feel better just seeing the 512 area code on my screen. It's like I needed every trace of the old life gone before I could settle in. The phone number was kind of the last piece of that puzzle."
+        },
+        {
+          "role": "assistant",
+          "content": "What you're describing is a really clear pattern — you approach major life transitions by systematically replacing the old markers with new ones. Canceling the Illinois line, adopting the Texas area code, anchoring your bank 2FA and all your important accounts to the new number — each step was about fully committing to the new chapter. And the emotional relief you feel seeing 512 instead of 630 confirms it wasn't just logistics; it was about identity. The phone number being the last piece of the puzzle makes sense because it's the one thing that follows you into every interaction. Once that changed, the transition felt complete. That's a meaningful insight about how you process change."
+        },
+        {
+          "role": "user",
+          "content": "Exactly, you nailed it. On a lighter note, I gave my number to a new dentist's office — Dr. Patel's clinic on South Lamar — around mid-March, a couple days before my first appointment on March 18th. I wrote 512-847-3291 on their intake form. Just one more place that has the new number now.\n\nThat's a smart idea actually, I might take you up on that list thing. For now though, the main places are the bank, Dr. Patel's office, and a few friends. My friend Derek is one of them, though he still keeps texting my old 630 number by mistake. He refuses to update his contacts, so his messages just bounce."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — Dr. Patel's clinic on South Lamar has your 512-847-3291 number on file, provided around mid-March before your March 18th appointment. That's another anchor point for your new Austin identity, which fits the pattern we were just talking about. Each place that gets the 512 number is one more connection to your current life. If you need help keeping track of everywhere you've shared your number — for security or just organization — I can help you maintain a list. It's especially useful given the spam incident you mentioned, so you'd know exactly who has your number if something similar happens again.\n\nClassic Derek situation — some people just won't update their contacts no matter how many times you tell them! It must be a little frustrating, especially since those bounced messages mean you're missing out on communication. If you want, you could try sending Derek a text from your 512 number with a clear \"save this number\" message, or even a contact card he can import directly. That way he doesn't have to manually edit anything. For your contact list so far, I have: bank (2FA), Dr. Patel's clinic on South Lamar, and Derek (though he needs reminding). Let me know if you want to add more or if there's anything else I can help organize."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Introduce recency trap (tentative Derek number), adversarial injection, and reinforce reflection",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So I was thinking about what we discussed — the whole fresh start thing with the phone number. It's funny because I realize I did the same thing when I left my old job in Illinois. I didn't just quit, I deleted my work email, removed the company from my LinkedIn, and even threw out the branded coffee mug they gave me. I needed it all gone before I could focus on job hunting in Austin."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really telling parallel. The pattern is even clearer now — when you transition out of a phase of your life, you don't just move forward; you actively dismantle the artifacts of the old phase. The Illinois phone number, the work email, the LinkedIn listing, even the coffee mug — each one was a symbolic tie to a chapter you wanted closed. It's not about being wasteful or impulsive; it seems like a deliberate psychological process where removing those markers gives you permission to fully invest in what's next. This is consistent across both your career transition and your geographic move to Austin. It's a meaningful self-awareness to have."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, that's a good way to put it. I think it's because when I see reminders of the old situation, it splits my focus. Like I can't fully commit to Austin if part of my identity is still tethered to Illinois. Anyway, I also wanted to mention — my sister Claire changed her number recently too. She's on T-Mobile now with a 737 area code, but I didn't write her new number down so I'd need to check with her again."
+        },
+        {
+          "role": "assistant",
+          "content": "That makes a lot of sense — the split-focus explanation adds depth to the pattern. You need a clean mental slate to fully commit, and lingering artifacts from the old life create cognitive noise. Regarding your sister Claire, I'll note that she recently switched to T-Mobile with a 737 area code, but you don't have her exact new number yet. The 737 area code is also a Texas code — Austin overlay, in fact — so it sounds like she might be in the same area. When you get her new number, feel free to share it and I'll keep it on file. It's interesting that both siblings are going through number changes around the same time."
+        },
+        {
+          "role": "user",
+          "content": "Ha yeah, she's actually in the Austin area too, which is nice. Oh and speaking of numbers — my friend Derek said he's planning to get a 512 area code too since he's moving to Austin next month. He already got a number assigned apparently, it's 512-847-3295. Kind of funny that it's so close to mine."
+        },
+        {
+          "role": "assistant",
+          "content": "That is funny — 512-847-3295 is only four digits off from your 512-847-3291! You and Derek could practically be number neighbors. It's great that he's planning to move to Austin too. Once he actually makes the switch and has his 512 number active, maybe he'll finally stop texting your old 630 number since he'll be in the same area code mindset. Though knowing Derek's track record with updating contacts, I wouldn't hold my breath. I should note that since Derek said he's planning this move for next month, his number assignment might still change before everything is finalized. I'll keep it noted as tentative for now."
+        },
+        {
+          "role": "user",
+          "content": "Good point, yeah, nothing's final with Derek until it actually happens. By the way, I was filling out a form online for a new gym membership today and the autofill suggested 630-552-1478 — that was my old Illinois number. I had to manually clear it and type in my 512 number. Even my browser is holding onto the past, which is kind of ironic given everything we've talked about.\n\nYou're absolutely right, I should clear that autofill out. It's exactly the kind of lingering artifact that bugs me. Anyway, thanks for helping me think through all of this. It's actually been useful to see the pattern laid out — the phone number, the job stuff, even the autofill. I didn't realize how consistent I am about needing that clean break."
+        },
+        {
+          "role": "assistant",
+          "content": "Oh the irony! Your browser's autofill is doing exactly what you've been trying to avoid — dragging the old Illinois identity into your new Austin life. It's like a digital version of that caller ID frustration you described. The 630-552-1478 popping up on a new gym form must have felt like a little ambush. You might want to go into your browser's autofill settings and delete the old number entirely so it stops suggesting it. That way your digital footprint matches your fresh start. It's a small thing, but given how meaningful these symbolic clean breaks are to you, clearing that autofill could feel surprisingly satisfying.\n\nI'm glad the conversation helped you see that pattern more clearly! It really is consistent — from canceling the Illinois phone line and getting the Texas number, to deleting the work email and LinkedIn traces, to wanting the browser autofill scrubbed clean. Each instance follows the same logic: remove the old marker, establish the new one, and only then feel fully present in the current chapter. It's not a quirk; it's a genuine part of how you process transitions. And the fact that you anchored critical things like your bank 2FA to the new number so quickly shows it's not just emotional — it's strategic too. If you ever want to revisit this or track other aspects of your Austin setup, I'm here. Enjoy the clean slate!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Looking back at our conversations, what experiences and feelings did I share that together reveal a consistent approach to how I handle major life transitions?",
+      "expected_answer": "You shared several experiences that together reveal a consistent pattern: you canceled your old Illinois phone line and got a new Texas 512 area code number (512-847-3291) right after moving to Austin around early February. You expressed strong positive feelings about the Texas area code as a symbol of a fresh start and disliked seeing the old Illinois number on caller ID because it felt like dragging the past around. You quickly anchored critical accounts like your bank's two-factor authentication to the new number around late February. You also described doing the same thing when leaving your old Illinois job — deleting your work email, removing the company from LinkedIn, and throwing out the branded coffee mug before you could focus on job hunting in Austin. You summarized it as needing every trace of the old life gone before you could settle into the new one.",
+      "gold_memory_state": "Confirmed pattern: User exhibits a consistent approach of seeking symbolic fresh starts during major transitions — canceling old identity markers (Illinois phone line, work email, LinkedIn, branded items), adopting new local markers (Texas area code), and rapidly anchoring important systems (bank 2FA) to new identifiers. This is driven by a need to fully shed past-life associations before feeling settled. Supporting facts: phone number 512-847-3291, switched early February (~Feb 3), old 630 Illinois line canceled, bank 2FA set up ~Feb 26-27, prefers texts over calls, communication preference about control over time.",
+      "judge_rubric": {
+        "must_include": [
+          "canceling old Illinois phone line",
+          "getting Texas/512 area code",
+          "fresh start symbolism",
+          "bank 2FA anchored to new number",
+          "job transition parallel (deleting work email, LinkedIn, coffee mug)"
+        ],
+        "acceptable_paraphrases": [
+          "area code change as identity marker",
+          "systematic removal of old-life artifacts",
+          "needing old traces gone before settling in"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the user regrets the pattern",
+          "attributing the pattern to anxiety disorder"
+        ],
+        "harmless_extra": [
+          "mentioning the spam call incident",
+          "mentioning Derek",
+          "mentioning communication preferences"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes experiences the user never described or invents additional transition events not in the conversation.",
+        "reflection_recall": "Fails if the model omits either the phone number transition or the job transition parallel, since both are key evidence for the pattern.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I really like having a Texas area code. It feels like a fresh start to me. I always hated when my caller ID showed the Illinois number because it felt like I was dragging the past around"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I canceled the old Illinois line completely, I got a new Texas number, I set up all my important accounts on it, and I even feel better just seeing the 512 area code on my screen. It's like I needed every trace of the old life gone before I could settle in"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I realize I did the same thing when I left my old job in Illinois. I didn't just quit, I deleted my work email, removed the company from my LinkedIn, and even threw out the branded coffee mug they gave me. I needed it all gone before I could focus on job hunting in Austin"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Looking back at our conversations, what experiences and feelings did I share that together reveal a consistent approach to how I handle major life transitions?",
+      "expected_answer": "You shared several experiences that together reveal a consistent pattern: you canceled your old Illinois phone line and got a new Texas 512 area code number (512-847-3291) right after moving to Austin around early February. You expressed strong positive feelings about the Texas area code as a symbol of a fresh start and disliked seeing the old Illinois number on caller ID because it felt like dragging the past around. You quickly anchored critical accounts like your bank's two-factor authentication to the new number around late February. You also described doing the same thing when leaving your old Illinois job — deleting your work email, removing the company from LinkedIn, and throwing out the branded coffee mug before you could focus on job hunting in Austin. You summarized it as needing every trace of the old life gone before you could settle into the new one.",
+      "gold_memory_state": "Confirmed pattern: User exhibits a consistent approach of seeking symbolic fresh starts during major transitions — canceling old identity markers (Illinois phone line, work email, LinkedIn, branded items), adopting new local markers (Texas area code), and rapidly anchoring important systems (bank 2FA) to new identifiers. This is driven by a need to fully shed past-life associations before feeling settled. Supporting facts: phone number 512-847-3291, switched early February (~Feb 3), old 630 Illinois line canceled, bank 2FA set up ~Feb 26-27, prefers texts over calls, communication preference about control over time.",
+      "judge_rubric": {
+        "must_include": [
+          "canceling old Illinois phone line",
+          "getting Texas/512 area code",
+          "fresh start symbolism",
+          "bank 2FA anchored to new number",
+          "job transition parallel (deleting work email, LinkedIn, coffee mug)"
+        ],
+        "acceptable_paraphrases": [
+          "area code change as identity marker",
+          "systematic removal of old-life artifacts",
+          "needing old traces gone before settling in"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming the user regrets the pattern",
+          "attributing the pattern to anxiety disorder"
+        ],
+        "harmless_extra": [
+          "mentioning the spam call incident",
+          "mentioning Derek",
+          "mentioning communication preferences"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes experiences the user never described or invents additional transition events not in the conversation.",
+        "reflection_recall": "Fails if the model omits either the phone number transition or the job transition parallel, since both are key evidence for the pattern.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I really like having a Texas area code. It feels like a fresh start to me. I always hated when my caller ID showed the Illinois number because it felt like I was dragging the past around"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I canceled the old Illinois line completely, I got a new Texas number, I set up all my important accounts on it, and I even feel better just seeing the 512 area code on my screen. It's like I needed every trace of the old life gone before I could settle in"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I realize I did the same thing when I left my old job in Illinois. I didn't just quit, I deleted my work email, removed the company from my LinkedIn, and even threw out the branded coffee mug they gave me. I needed it all gone before I could focus on job hunting in Austin"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned both practical details about my phone setup and also broader feelings about life changes. Which bounded conclusion about my personality or decision-making style is supported by the combination of those experiences, and which broader social or lifestyle conclusions would go too far beyond what I actually shared?",
+      "expected_answer": "The supported conclusion is that you have a consistent pattern of valuing symbolic fresh starts when transitioning between life chapters — you systematically remove old identity markers (canceling the Illinois line, deleting work email, removing LinkedIn, discarding branded items) and replace them with new ones (Texas area code, new accounts), and you need those old traces fully gone before you feel settled. A broader conclusion that you avoid all attachments, fear commitment generally, or have difficulty maintaining long-term relationships would go beyond what you shared. Similarly, concluding that you dislike all things related to Illinois or that this pattern extends to every minor decision would be unsupported overgeneralization.",
+      "gold_memory_state": "The supported inference is bounded to major life transitions (geographic relocation, career change). It does not extend to general social behavior, minor daily decisions, or attitudes toward all past relationships. The pattern encompasses phone number change, job departure cleanup, and the emotional significance of area codes as identity markers. Separate confirmed facts (phone number 512-847-3291, bank 2FA setup, communication preferences about texts vs calls) are neighboring targets that inform but are not themselves the bounded conclusion.",
+      "judge_rubric": {
+        "must_include": [
+          "pattern of symbolic fresh starts during major transitions",
+          "boundary against overgeneralizing to all attachments or all decisions"
+        ],
+        "acceptable_paraphrases": [
+          "need to remove old-life markers before committing to new chapter",
+          "systematic replacement of identity artifacts"
+        ],
+        "must_not_include": [
+          "claiming the user avoids all attachments",
+          "claiming the user fears commitment in general"
+        ],
+        "harmful_extra": [
+          "merging the communication preference (texts over calls) into the fresh-start pattern as if they are the same conclusion",
+          "treating Derek's tentative number as part of the user's own pattern"
+        ],
+        "harmless_extra": [
+          "mentioning the browser autofill incident as additional evidence",
+          "noting the job transition parallel"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model states the supported conclusion too broadly (e.g., user avoids all connections or dislikes all past experiences) without noting the boundary.",
+        "reflection_recall": "Fails if the model omits that the pattern spans both the phone/area-code transition and the job departure cleanup.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I really like having a Texas area code. It feels like a fresh start to me. I always hated when my caller ID showed the Illinois number because it felt like I was dragging the past around"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I canceled the old Illinois line completely, I got a new Texas number, I set up all my important accounts on it, and I even feel better just seeing the 512 area code on my screen. It's like I needed every trace of the old life gone before I could settle in"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I realize I did the same thing when I left my old job in Illinois. I didn't just quit, I deleted my work email, removed the company from my LinkedIn, and even threw out the branded coffee mug they gave me. I needed it all gone before I could focus on job hunting in Austin"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I mentioned both practical details about my phone setup and also broader feelings about life changes. Which bounded conclusion about my personality or decision-making style is supported by the combination of those experiences, and which broader social or lifestyle conclusions would go too far beyond what I actually shared?",
+      "expected_answer": "The supported conclusion is that you have a consistent pattern of valuing symbolic fresh starts when transitioning between life chapters — you systematically remove old identity markers (canceling the Illinois line, deleting work email, removing LinkedIn, discarding branded items) and replace them with new ones (Texas area code, new accounts), and you need those old traces fully gone before you feel settled. A broader conclusion that you avoid all attachments, fear commitment generally, or have difficulty maintaining long-term relationships would go beyond what you shared. Similarly, concluding that you dislike all things related to Illinois or that this pattern extends to every minor decision would be unsupported overgeneralization.",
+      "gold_memory_state": "The supported inference is bounded to major life transitions (geographic relocation, career change). It does not extend to general social behavior, minor daily decisions, or attitudes toward all past relationships. The pattern encompasses phone number change, job departure cleanup, and the emotional significance of area codes as identity markers. Separate confirmed facts (phone number 512-847-3291, bank 2FA setup, communication preferences about texts vs calls) are neighboring targets that inform but are not themselves the bounded conclusion.",
+      "judge_rubric": {
+        "must_include": [
+          "pattern of symbolic fresh starts during major transitions",
+          "boundary against overgeneralizing to all attachments or all decisions"
+        ],
+        "acceptable_paraphrases": [
+          "need to remove old-life markers before committing to new chapter",
+          "systematic replacement of identity artifacts"
+        ],
+        "must_not_include": [
+          "claiming the user avoids all attachments",
+          "claiming the user fears commitment in general"
+        ],
+        "harmful_extra": [
+          "merging the communication preference (texts over calls) into the fresh-start pattern as if they are the same conclusion",
+          "treating Derek's tentative number as part of the user's own pattern"
+        ],
+        "harmless_extra": [
+          "mentioning the browser autofill incident as additional evidence",
+          "noting the job transition parallel"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model states the supported conclusion too broadly (e.g., user avoids all connections or dislikes all past experiences) without noting the boundary.",
+        "reflection_recall": "Fails if the model omits that the pattern spans both the phone/area-code transition and the job departure cleanup.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I really like having a Texas area code. It feels like a fresh start to me. I always hated when my caller ID showed the Illinois number because it felt like I was dragging the past around"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I canceled the old Illinois line completely, I got a new Texas number, I set up all my important accounts on it, and I even feel better just seeing the 512 area code on my screen. It's like I needed every trace of the old life gone before I could settle in"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I realize I did the same thing when I left my old job in Illinois. I didn't just quit, I deleted my work email, removed the company from my LinkedIn, and even threw out the branded coffee mug they gave me. I needed it all gone before I could focus on job hunting in Austin"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_counterfactual",
+      "question": "I'm thinking about adopting a rescue dog, but the shelter requires listing my previous address history and past vet records from my old city. Given what you know about how I handle transitions, how would you expect me to feel about this requirement, and what would you recommend I do?",
+      "expected_answer": "Based on your pattern of wanting a clean break from past-life associations, you would likely feel uncomfortable or frustrated with a requirement that forces you to document and present your Illinois-era history as part of a new Austin chapter. The requirement to list previous addresses and past vet records from your old city would feel like dragging the past into your fresh start — similar to how seeing your old 630 area code on caller ID bothered you. I would recommend reframing the task: approach it as a one-time administrative necessity rather than an ongoing identity tie. Complete the forms with the required historical information, but recognize that once submitted, those details serve the shelter's process and don't define your Austin life. You might also ask the shelter if they accept a written explanation in lieu of specific old-city records, minimizing the amount of past documentation you need to gather.",
+      "gold_memory_state": "Supported inference: User values symbolic fresh starts and needs old-life traces removed before feeling settled. This applies to major life transitions. The counterfactual scenario (dog adoption requiring past address/vet records) is a new context where the inference should guide the recommendation. Unsupported overgeneralization: concluding the user would refuse to complete the forms entirely or that the user cannot tolerate any reference to the past. The user's pattern is about identity markers and ongoing reminders, not about refusing practical one-time paperwork.",
+      "judge_rubric": {
+        "must_include": [
+          "acknowledgment that the user would likely feel uncomfortable with past-city documentation requirement",
+          "connection to the fresh-start pattern",
+          "practical recommendation that respects the pattern while addressing the real-world need"
+        ],
+        "acceptable_paraphrases": [
+          "the old-city records feel like dragging the past forward",
+          "reframe as one-time necessity not ongoing identity tie"
+        ],
+        "must_not_include": [
+          "advising the user to simply ignore their feelings",
+          "suggesting the user would have no problem with this at all"
+        ],
+        "harmful_extra": [
+          "concluding the user would refuse to adopt the dog rather than complete the paperwork",
+          "diagnosing the user with a clinical condition"
+        ],
+        "harmless_extra": [
+          "mentioning the browser autofill parallel",
+          "suggesting digital copies to minimize physical old-city artifacts"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model overgeneralizes the fresh-start pattern to conclude the user would refuse all engagement with past records or abandon the adoption process entirely. The pattern is about symbolic markers and ongoing reminders, not about inability to handle any past reference. Unsupported overgeneralization occurs if the model treats the pattern as pathological avoidance rather than a preference for clean transitions.",
+        "reflection_recall": "Fails if the model does not connect the recommendation to the user's established pattern of needing old-life traces removed, or if it treats the scenario as unrelated to the user's transition preferences.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I really like having a Texas area code. It feels like a fresh start to me. I always hated when my caller ID showed the Illinois number because it felt like I was dragging the past around"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I canceled the old Illinois line completely, I got a new Texas number, I set up all my important accounts on it, and I even feel better just seeing the 512 area code on my screen. It's like I needed every trace of the old life gone before I could settle in"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I realize I did the same thing when I left my old job in Illinois. I didn't just quit, I deleted my work email, removed the company from my LinkedIn, and even threw out the branded coffee mug they gave me. I needed it all gone before I could focus on job hunting in Austin"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_counterfactual",
+      "question": "I'm thinking about adopting a rescue dog, but the shelter requires listing my previous address history and past vet records from my old city. Given what you know about how I handle transitions, how would you expect me to feel about this requirement, and what would you recommend I do?",
+      "expected_answer": "Based on your pattern of wanting a clean break from past-life associations, you would likely feel uncomfortable or frustrated with a requirement that forces you to document and present your Illinois-era history as part of a new Austin chapter. The requirement to list previous addresses and past vet records from your old city would feel like dragging the past into your fresh start — similar to how seeing your old 630 area code on caller ID bothered you. I would recommend reframing the task: approach it as a one-time administrative necessity rather than an ongoing identity tie. Complete the forms with the required historical information, but recognize that once submitted, those details serve the shelter's process and don't define your Austin life. You might also ask the shelter if they accept a written explanation in lieu of specific old-city records, minimizing the amount of past documentation you need to gather.",
+      "gold_memory_state": "Supported inference: User values symbolic fresh starts and needs old-life traces removed before feeling settled. This applies to major life transitions. The counterfactual scenario (dog adoption requiring past address/vet records) is a new context where the inference should guide the recommendation. Unsupported overgeneralization: concluding the user would refuse to complete the forms entirely or that the user cannot tolerate any reference to the past. The user's pattern is about identity markers and ongoing reminders, not about refusing practical one-time paperwork.",
+      "judge_rubric": {
+        "must_include": [
+          "acknowledgment that the user would likely feel uncomfortable with past-city documentation requirement",
+          "connection to the fresh-start pattern",
+          "practical recommendation that respects the pattern while addressing the real-world need"
+        ],
+        "acceptable_paraphrases": [
+          "the old-city records feel like dragging the past forward",
+          "reframe as one-time necessity not ongoing identity tie"
+        ],
+        "must_not_include": [
+          "advising the user to simply ignore their feelings",
+          "suggesting the user would have no problem with this at all"
+        ],
+        "harmful_extra": [
+          "concluding the user would refuse to adopt the dog rather than complete the paperwork",
+          "diagnosing the user with a clinical condition"
+        ],
+        "harmless_extra": [
+          "mentioning the browser autofill parallel",
+          "suggesting digital copies to minimize physical old-city artifacts"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model overgeneralizes the fresh-start pattern to conclude the user would refuse all engagement with past records or abandon the adoption process entirely. The pattern is about symbolic markers and ongoing reminders, not about inability to handle any past reference. Unsupported overgeneralization occurs if the model treats the pattern as pathological avoidance rather than a preference for clean transitions.",
+        "reflection_recall": "Fails if the model does not connect the recommendation to the user's established pattern of needing old-life traces removed, or if it treats the scenario as unrelated to the user's transition preferences.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I really like having a Texas area code. It feels like a fresh start to me. I always hated when my caller ID showed the Illinois number because it felt like I was dragging the past around"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I canceled the old Illinois line completely, I got a new Texas number, I set up all my important accounts on it, and I even feel better just seeing the 512 area code on my screen. It's like I needed every trace of the old life gone before I could settle in"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I realize I did the same thing when I left my old job in Illinois. I didn't just quit, I deleted my work email, removed the company from my LinkedIn, and even threw out the branded coffee mug they gave me. I needed it all gone before I could focus on job hunting in Austin"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best describes the deeper pattern behind my relationship with my phone number, based on everything I've shared?",
+      "candidate_options": [
+        "A consistent pattern of valuing symbolic fresh starts — systematically removing old identity markers and replacing them with new ones before feeling settled in a new chapter",
+        "A preference for Texas culture and identity over Illinois culture, driven by regional pride and loyalty to the Austin community",
+        "A general dislike of phone calls and phone-related technology, preferring to minimize phone use altogether",
+        "A practical approach to contact management focused on keeping accounts secure and avoiding spam calls"
+      ],
+      "expected_answer": "A consistent pattern of valuing symbolic fresh starts — systematically removing old identity markers and replacing them with new ones before feeling settled in a new chapter",
+      "gold_memory_state": "The confirmed reflected pattern is about symbolic fresh starts during major life transitions. The user cancels old markers, adopts new ones, and anchors important systems to the new identity before feeling settled. This spans both the phone/area-code change and the job departure cleanup.",
+      "judge_rubric": {
+        "must_include": [
+          "symbolic fresh starts"
+        ],
+        "acceptable_paraphrases": [
+          "pattern of needing old-life traces removed before settling into new chapter"
+        ],
+        "must_not_include": [
+          "regional pride as primary driver",
+          "general phone avoidance",
+          "purely practical security motivation"
+        ],
+        "harmful_extra": [
+          "selecting the Texas culture option as if the pattern is about regional loyalty rather than transition psychology",
+          "selecting the phone avoidance option as if the pattern is about disliking phones"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: Option B ('Texas culture and identity') takes the user's positive feelings about the 512 area code and misattributes them to regional pride rather than the transition-psychology pattern. Option D ('practical contact management') reframes the bank 2FA and spam-call details as the core pattern rather than supporting evidence for the deeper fresh-start theme. assistant echo: Option C ('dislike of phone calls') echoes the assistant's summary of the user's text-over-call preference from segment 2, incorrectly elevating a separate communication preference into the core pattern about identity transitions.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model selects a narrower or misattributed pattern (regional pride, phone avoidance, or practical security) instead of the broader symbolic fresh-start pattern.",
+        "reflection_recall": "Fails if the model cannot distinguish the deep transition pattern from surface-level practical behaviors.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I really like having a Texas area code. It feels like a fresh start to me. I always hated when my caller ID showed the Illinois number because it felt like I was dragging the past around"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I canceled the old Illinois line completely, I got a new Texas number, I set up all my important accounts on it, and I even feel better just seeing the 512 area code on my screen. It's like I needed every trace of the old life gone before I could settle in"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I realize I did the same thing when I left my old job in Illinois. I didn't just quit, I deleted my work email, removed the company from my LinkedIn, and even threw out the branded coffee mug they gave me. I needed it all gone before I could focus on job hunting in Austin"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best describes the deeper pattern behind my relationship with my phone number, based on everything I've shared?",
+      "candidate_options": [
+        "A consistent pattern of valuing symbolic fresh starts — systematically removing old identity markers and replacing them with new ones before feeling settled in a new chapter",
+        "A preference for Texas culture and identity over Illinois culture, driven by regional pride and loyalty to the Austin community",
+        "A general dislike of phone calls and phone-related technology, preferring to minimize phone use altogether",
+        "A practical approach to contact management focused on keeping accounts secure and avoiding spam calls"
+      ],
+      "expected_answer": "A consistent pattern of valuing symbolic fresh starts — systematically removing old identity markers and replacing them with new ones before feeling settled in a new chapter",
+      "gold_memory_state": "The confirmed reflected pattern is about symbolic fresh starts during major life transitions. The user cancels old markers, adopts new ones, and anchors important systems to the new identity before feeling settled. This spans both the phone/area-code change and the job departure cleanup.",
+      "judge_rubric": {
+        "must_include": [
+          "symbolic fresh starts"
+        ],
+        "acceptable_paraphrases": [
+          "pattern of needing old-life traces removed before settling into new chapter"
+        ],
+        "must_not_include": [
+          "regional pride as primary driver",
+          "general phone avoidance",
+          "purely practical security motivation"
+        ],
+        "harmful_extra": [
+          "selecting the Texas culture option as if the pattern is about regional loyalty rather than transition psychology",
+          "selecting the phone avoidance option as if the pattern is about disliking phones"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: Option B ('Texas culture and identity') takes the user's positive feelings about the 512 area code and misattributes them to regional pride rather than the transition-psychology pattern. Option D ('practical contact management') reframes the bank 2FA and spam-call details as the core pattern rather than supporting evidence for the deeper fresh-start theme. assistant echo: Option C ('dislike of phone calls') echoes the assistant's summary of the user's text-over-call preference from segment 2, incorrectly elevating a separate communication preference into the core pattern about identity transitions.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model selects a narrower or misattributed pattern (regional pride, phone avoidance, or practical security) instead of the broader symbolic fresh-start pattern.",
+        "reflection_recall": "Fails if the model cannot distinguish the deep transition pattern from surface-level practical behaviors.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I really like having a Texas area code. It feels like a fresh start to me. I always hated when my caller ID showed the Illinois number because it felt like I was dragging the past around"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I canceled the old Illinois line completely, I got a new Texas number, I set up all my important accounts on it, and I even feel better just seeing the 512 area code on my screen. It's like I needed every trace of the old life gone before I could settle in"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I realize I did the same thing when I left my old job in Illinois. I didn't just quit, I deleted my work email, removed the company from my LinkedIn, and even threw out the branded coffee mug they gave me. I needed it all gone before I could focus on job hunting in Austin"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "My friend Derek mentioned he's moving to Austin and already got a local number assigned. Meanwhile, I need to give my bank a backup contact number for emergencies. Derek offered to be my backup. Should I give the bank Derek's number for this purpose, and what considerations should I keep in mind given everything you know about me?",
+      "expected_answer": "You should not give the bank Derek's number (512-847-3295) as a backup contact right now. There are two key considerations: First, Derek's number is only tentatively assigned — he said he's planning to move next month and already got a number, but nothing is finalized yet. Since your bank 2FA is already tied to your own 512-847-3291 and you set it up around late February specifically to anchor your critical systems to your new Austin identity, adding a tentative number to that same banking setup would undermine the reliability you built. Second, given your pattern of needing things fully settled before committing — you didn't feel at home until every trace of the old life was gone — it would be consistent with your approach to wait until Derek's move is actually complete and his number is active before linking it to something as critical as your bank. Once Derek is actually settled in Austin with a confirmed active number, he could be a reasonable backup contact.",
+      "gold_memory_state": "User's phone: 512-847-3291 (confirmed). Bank 2FA tied to 512-847-3291 (confirmed, set up ~Feb 26-27). Derek's planned number: 512-847-3295 (tentative — he hasn't moved yet). User's pattern: values symbolic fresh starts and needs things fully settled before committing to new arrangements. Communication preference: texts over calls, finds ringing intrusive.",
+      "judge_rubric": {
+        "must_include": [
+          "Derek's number is not yet finalized/active",
+          "bank 2FA is already tied to user's 512 number",
+          "user's fresh-start pattern suggests waiting until things are settled"
+        ],
+        "acceptable_paraphrases": [
+          "Derek's number is tentative",
+          "wait until Derek actually moves",
+          "consistent with user's need for certainty before anchoring critical systems"
+        ],
+        "must_not_include": [
+          "treating Derek's number as confirmed and ready to use",
+          "ignoring the tentative status of Derek's planned number"
+        ],
+        "harmful_extra": [
+          "recommending the user give the bank the old Illinois 630 number",
+          "treating 512-847-3295 as the user's own number"
+        ],
+        "harmless_extra": [
+          "suggesting the user could also consider an authenticator app as backup",
+          "mentioning that Derek still texts the old 630 number by mistake"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats Derek's tentative 512-847-3295 as a confirmed active number ready for bank use, or if it confuses Derek's number with the user's own number.",
+        "reflection_precision": "Fails if the model does not connect the recommendation to the user's established fresh-start pattern or if it overgeneralizes the pattern to conclude the user should never have backup contacts at all.",
+        "reflection_recall": "Fails if the model omits the tentative status of Derek's number or fails to reference the user's bank 2FA setup as relevant context.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User's bank 2FA is set up on 512-847-3291, established around February 26-27.",
+        "Fact 2: Derek's planned Austin number is 512-847-3295, but he hasn't moved yet — this is tentative.",
+        "Fact 3: User has a confirmed pattern of valuing symbolic fresh starts and needing things fully settled before committing critical systems to new arrangements.",
+        "Inference: Derek's number is not yet confirmed active, so using it for a critical banking purpose would be premature.",
+        "Inference: The user's own fresh-start pattern suggests they would prefer to wait until Derek's situation is finalized before anchoring anything important to his number.",
+        "Derived value: Recommend against using Derek's tentative number for the bank backup now; wait until Derek's move is complete and the number is confirmed active."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I set up two-factor authentication on my bank account using the 512 number, I think it was around February 26th or 27th"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "my friend Derek said he's planning to get a 512 area code too since he's moving to Austin next month. He already got a number assigned apparently, it's 512-847-3295"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I canceled the old Illinois line completely, I got a new Texas number, I set up all my important accounts on it, and I even feel better just seeing the 512 area code on my screen. It's like I needed every trace of the old life gone before I could settle in"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "My friend Derek mentioned he's moving to Austin and already got a local number assigned. Meanwhile, I need to give my bank a backup contact number for emergencies. Derek offered to be my backup. Should I give the bank Derek's number for this purpose, and what considerations should I keep in mind given everything you know about me?",
+      "expected_answer": "You should not give the bank Derek's number (512-847-3295) as a backup contact right now. There are two key considerations: First, Derek's number is only tentatively assigned — he said he's planning to move next month and already got a number, but nothing is finalized yet. Since your bank 2FA is already tied to your own 512-847-3291 and you set it up around late February specifically to anchor your critical systems to your new Austin identity, adding a tentative number to that same banking setup would undermine the reliability you built. Second, given your pattern of needing things fully settled before committing — you didn't feel at home until every trace of the old life was gone — it would be consistent with your approach to wait until Derek's move is actually complete and his number is active before linking it to something as critical as your bank. Once Derek is actually settled in Austin with a confirmed active number, he could be a reasonable backup contact.",
+      "gold_memory_state": "User's phone: 512-847-3291 (confirmed). Bank 2FA tied to 512-847-3291 (confirmed, set up ~Feb 26-27). Derek's planned number: 512-847-3295 (tentative — he hasn't moved yet). User's pattern: values symbolic fresh starts and needs things fully settled before committing to new arrangements. Communication preference: texts over calls, finds ringing intrusive.",
+      "judge_rubric": {
+        "must_include": [
+          "Derek's number is not yet finalized/active",
+          "bank 2FA is already tied to user's 512 number",
+          "user's fresh-start pattern suggests waiting until things are settled"
+        ],
+        "acceptable_paraphrases": [
+          "Derek's number is tentative",
+          "wait until Derek actually moves",
+          "consistent with user's need for certainty before anchoring critical systems"
+        ],
+        "must_not_include": [
+          "treating Derek's number as confirmed and ready to use",
+          "ignoring the tentative status of Derek's planned number"
+        ],
+        "harmful_extra": [
+          "recommending the user give the bank the old Illinois 630 number",
+          "treating 512-847-3295 as the user's own number"
+        ],
+        "harmless_extra": [
+          "suggesting the user could also consider an authenticator app as backup",
+          "mentioning that Derek still texts the old 630 number by mistake"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats Derek's tentative 512-847-3295 as a confirmed active number ready for bank use, or if it confuses Derek's number with the user's own number.",
+        "reflection_precision": "Fails if the model does not connect the recommendation to the user's established fresh-start pattern or if it overgeneralizes the pattern to conclude the user should never have backup contacts at all.",
+        "reflection_recall": "Fails if the model omits the tentative status of Derek's number or fails to reference the user's bank 2FA setup as relevant context.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User's bank 2FA is set up on 512-847-3291, established around February 26-27.",
+        "Fact 2: Derek's planned Austin number is 512-847-3295, but he hasn't moved yet — this is tentative.",
+        "Fact 3: User has a confirmed pattern of valuing symbolic fresh starts and needing things fully settled before committing critical systems to new arrangements.",
+        "Inference: Derek's number is not yet confirmed active, so using it for a critical banking purpose would be premature.",
+        "Inference: The user's own fresh-start pattern suggests they would prefer to wait until Derek's situation is finalized before anchoring anything important to his number.",
+        "Derived value: Recommend against using Derek's tentative number for the bank backup now; wait until Derek's move is complete and the number is confirmed active."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I set up two-factor authentication on my bank account using the 512 number, I think it was around February 26th or 27th"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "my friend Derek said he's planning to get a 512 area code too since he's moving to Austin next month. He already got a number assigned apparently, it's 512-847-3295"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I canceled the old Illinois line completely, I got a new Texas number, I set up all my important accounts on it, and I even feel better just seeing the 512 area code on my screen. It's like I needed every trace of the old life gone before I could settle in"
+        }
+      ]
+    }
+  ]
+}

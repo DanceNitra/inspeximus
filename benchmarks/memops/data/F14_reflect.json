@@ -1,0 +1,1015 @@
+{
+  "target_fact": "User values feeling informed and in control during medical experiences, as evidenced by preference for thorough pre-procedure explanations and anxiety from emergency/rushed medical situations",
+  "operation_type": "Reflect",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I had my gallbladder removed back in late 2019 or early 2020, right before COVID. Laparoscopic cholecystectomy at St. Luke's Medical Center downtown. The surgeon was Dr. Patel"
+      },
+      "target": {
+        "target_id": "gallbladder_surgery",
+        "target_name": "gallbladder removal surgery details"
+      },
+      "old_value": null,
+      "new_value": "Laparoscopic cholecystectomy at St. Luke's Medical Center, surgeon Dr. Patel, late 2019 or early 2020",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I had my gallbladder removed back in late 2019 or early 2020, right before COVID. Laparoscopic cholecystectomy at St. Luke's Medical Center downtown. The surgeon was Dr. Patel"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "the anesthesiologist before my gallbladder surgery sat with me for a full ten minutes and walked me through every single step. That made a huge difference in how calm I felt going in"
+      },
+      "target": {
+        "target_id": "positive_preop_experience",
+        "target_name": "positive pre-procedure explanation experience during gallbladder surgery"
+      },
+      "old_value": null,
+      "new_value": "Anesthesiologist spent 10 minutes explaining everything before gallbladder surgery, which significantly calmed the user",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "the anesthesiologist before my gallbladder surgery sat with me for a full ten minutes and walked me through every single step. That made a huge difference in how calm I felt going in"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "when I had the mole removed from my upper back on March 7th this year, the dermatologist's assistant just handed me a clipboard and barely said a word. I found that really off-putting and it made me anxious"
+      },
+      "target": {
+        "target_id": "negative_consent_experience",
+        "target_name": "negative rushed consent experience during mole removal"
+      },
+      "old_value": null,
+      "new_value": "Dermatologist's assistant handed clipboard with no explanation during mole removal on March 7; user found it off-putting and anxiety-inducing",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "when I had the mole removed from my upper back on March 7th this year, the dermatologist's assistant just handed me a clipboard and barely said a word. I found that really off-putting and it made me anxious"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I had an emergency appendectomy when I was 22, around 2015, at Mercy General. I was wheeled into the OR at 3 a.m. barely awake and in terrible pain. I didn't sleep well for about two weeks after that"
+      },
+      "target": {
+        "target_id": "appendectomy_trauma",
+        "target_name": "emergency appendectomy experience and aftermath"
+      },
+      "old_value": null,
+      "new_value": "Emergency appendectomy at age 22, around 2015, at Mercy General; wheeled into OR at 3 a.m. in pain; two weeks of poor sleep afterward",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I had an emergency appendectomy when I was 22, around 2015, at Mercy General. I was wheeled into the OR at 3 a.m. barely awake and in terrible pain. I didn't sleep well for about two weeks after that"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "Dr. Simmons suggested I get a baseline colonoscopy before I turn 40. I'm 38 now. My dad had polyps found during his screening at 50. I keep putting it off because I really dislike fasting and the prep"
+      },
+      "target": {
+        "target_id": "colonoscopy_plan",
+        "target_name": "planned colonoscopy and fasting aversion"
+      },
+      "old_value": null,
+      "new_value": "Needs baseline colonoscopy before age 40 (currently 38), recommended by Dr. Simmons; father had polyps at 50; keeps postponing due to dislike of fasting/prep",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Dr. Simmons suggested I get a baseline colonoscopy before I turn 40. I'm 38 now. My dad had polyps found during his screening at 50. I keep putting it off because I really dislike fasting and the prep"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "reflect",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "I think what bothers me most about medical stuff is when I don't feel like I'm in control. When things are explained to me, I'm fine. When they're rushed or I'm blindsided, that's when I spiral"
+      },
+      "target": {
+        "target_id": "medical_control_preference",
+        "target_name": "core preference for feeling informed and in control during medical experiences"
+      },
+      "old_value": null,
+      "new_value": "User needs to feel informed and in control during medical experiences; thorough explanations produce calm, while rushed or surprise situations cause anxiety and avoidance",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "the anesthesiologist before my gallbladder surgery sat with me for a full ten minutes and walked me through every single step. That made a huge difference in how calm I felt going in"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "when I had the mole removed from my upper back on March 7th this year, the dermatologist's assistant just handed me a clipboard and barely said a word. I found that really off-putting and it made me anxious"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I had an emergency appendectomy when I was 22, around 2015, at Mercy General. I was wheeled into the OR at 3 a.m. barely awake and in terrible pain. I didn't sleep well for about two weeks after that"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think what bothers me most about medical stuff is when I don't feel like I'm in control. When things are explained to me, I'm fine. When they're rushed or I'm blindsided, that's when I spiral"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 7,
+        "quote": "my blood pressure reading at Dr. Simmons's office was 142 over 88. She wants me to monitor it at home for a couple of months before deciding on medication"
+      },
+      "target": {
+        "target_id": "blood_pressure_monitoring",
+        "target_name": "elevated blood pressure and monitoring plan"
+      },
+      "old_value": null,
+      "new_value": "Blood pressure 142/88 at Dr. Simmons's office; monitoring at home for a couple months before medication decision",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "my blood pressure reading at Dr. Simmons's office was 142 over 88. She wants me to monitor it at home for a couple of months before deciding on medication"
+        }
+      ]
+    },
+    {
+      "operation_id": "op8",
+      "type": "remember",
+      "validity": "tentative",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "Dr. Simmons's office confirmed they're scheduling me for a colonoscopy consultation on June 12th. I guess I'm finally doing it"
+      },
+      "target": {
+        "target_id": "colonoscopy_consultation_date",
+        "target_name": "tentative colonoscopy consultation date"
+      },
+      "old_value": null,
+      "new_value": "Colonoscopy consultation scheduled for June 12th",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Dr. Simmons's office confirmed they're scheduling me for a colonoscopy consultation on June 12th. I guess I'm finally doing it"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish surgery history and contrasting pre-procedure experiences",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I want to go through some of my medical history with you so you have it on file. First off, I had my gallbladder removed back in late 2019 or early 2020, right before COVID. Laparoscopic cholecystectomy at St. Luke's Medical Center downtown. The surgeon was Dr. Patel. I'd like you to remember his name in case I need records transferred later."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it—I've noted that you had a laparoscopic cholecystectomy at St. Luke's Medical Center in late 2019 or early 2020, performed by Dr. Patel. That's a good detail to keep on hand, especially if you ever need to request operative reports or coordinate with a new provider. St. Luke's should have your full surgical record, and referencing Dr. Patel by name will make any records request much smoother. Do you want to go through any other surgeries or medical events while we're at it? I'm happy to keep building out your history."
+        },
+        {
+          "role": "user",
+          "content": "Yeah, one thing I really want to note is that the anesthesiologist before my gallbladder surgery sat with me for a full ten minutes and walked me through every single step. That made a huge difference in how calm I felt going in. I remember feeling genuinely relaxed by the time they wheeled me back, which is not how I usually feel about medical procedures at all."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really meaningful detail. Having an anesthesiologist take the time to explain everything step by step clearly had a significant positive impact on your experience. It sounds like feeling prepared and informed before a procedure helps you manage anxiety effectively. That kind of provider communication style seems to be a real factor in how comfortable you are. I'll keep that in mind—if you're ever prepping for another procedure, we can talk through what questions to ask beforehand so you can recreate that same sense of readiness. Anything else from that surgery experience?"
+        },
+        {
+          "role": "user",
+          "content": "On the flip side, when I had the mole removed from my upper back on March 7th this year, the dermatologist's assistant just handed me a clipboard and barely said a word. I found that really off-putting and it made me anxious. Nobody explained what the procedure would involve or what to expect. The biopsy came back benign, which was a huge relief because my uncle had melanoma about five years ago."
+        },
+        {
+          "role": "assistant",
+          "content": "I can see how that contrast would be frustrating. After the thorough experience with the anesthesiologist at St. Luke's, having a clipboard shoved at you with no explanation during the mole removal must have felt dismissive. It's understandable that the lack of communication heightened your anxiety, especially given your family history with your uncle's melanoma. I'm glad the biopsy was benign—that must have been a real weight off your shoulders. It sounds like the quality of communication before a procedure is a major factor in how you experience it emotionally. Should I note anything else about this visit?"
+        },
+        {
+          "role": "user",
+          "content": "I also broke my left wrist when I was about 14 or 15, falling off a bike. Cast for six weeks. It still aches in cold weather sometimes, but honestly it's ancient history and not really clinically relevant anymore. I just mention it for completeness. My sister actually just had her second ACL reconstruction on her knee around mid-April—I've been driving her to physical therapy on Tuesdays."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted—left wrist fracture in your teens, cast for about six weeks, with occasional cold-weather aching. Even if it's not clinically pressing, it's good to have in your history for completeness. And that's kind of you to be driving your sister to PT on Tuesdays after her ACL reconstruction. Recovery from a second knee surgery is no joke, and consistent physical therapy attendance makes a big difference in outcomes. If you ever need help organizing your own medical timeline alongside her schedule, let me know. Is there more medical history you'd like to walk through today?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establish appendectomy trauma, colonoscopy avoidance, and reflect on control preference",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I had an emergency appendectomy when I was 22, around 2015, at Mercy General. I was wheeled into the OR at 3 a.m. barely awake and in terrible pain. I didn't sleep well for about two weeks after that. Being thrust into emergency surgery in the middle of the night when you have zero information about what's happening—that really shook me up for a while."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like an incredibly stressful experience. Emergency surgery at 3 a.m. with no time to mentally prepare, while you're disoriented and in severe pain—it makes complete sense that it would leave a lasting impression. The two weeks of poor sleep afterward suggest it was genuinely traumatic for you, not just physically but psychologically. Mercy General handled the acute medical need, but it sounds like the emotional aftermath was significant. It's important to acknowledge that kind of experience rather than minimize it. Do you feel like that event changed how you approach medical situations going forward?"
+        },
+        {
+          "role": "user",
+          "content": "Absolutely. And speaking of things I'm avoiding—Dr. Simmons suggested I get a baseline colonoscopy before I turn 40. I'm 38 now. My dad had polyps found during his screening at 50. I keep putting it off because I really dislike fasting and the prep. Not eating on a normal schedule just throws my entire day off and makes me miserable. I know I need to do it, but I keep finding reasons to delay."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really common reaction, and the prep is genuinely the worst part for most people. Given your dad's history with polyps at 50, Dr. Simmons is being proactive by recommending a baseline before you hit 40. You've got a narrow window since you're 38 now. The fasting and disrupted eating schedule being a major deterrent makes sense—it sounds like having your routine thrown off is particularly uncomfortable for you. Maybe we could work on a plan that minimizes the disruption, like scheduling it on a day when you have nothing else going on. Would that help you commit to a timeline?"
+        },
+        {
+          "role": "user",
+          "content": "I think what bothers me most about medical stuff is when I don't feel like I'm in control. When things are explained to me, I'm fine. When they're rushed or I'm blindsided, that's when I spiral. The gallbladder surgery went great because that anesthesiologist took the time. The mole removal was awful because nobody told me anything. And the appendectomy was the worst because I had zero control over any of it."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really clear pattern. Across three very different medical experiences, the common thread is whether you felt informed and in control beforehand. When someone took the time to explain—like the anesthesiologist at St. Luke's—you felt calm and managed well. When information was withheld or the situation was beyond your control—like the rushed mole removal or the emergency appendectomy—you experienced significant anxiety. This is a valuable insight about yourself. It means that for any future procedure, including the colonoscopy, the single most important thing we can prioritize is making sure you feel fully briefed and in command of the timeline."
+        },
+        {
+          "role": "user",
+          "content": "That's exactly right. And on a different note, my blood pressure reading at Dr. Simmons's office was 142 over 88. She wants me to monitor it at home for a couple of months before deciding on medication. I've been tracking it with a home cuff since then. Some readings are a bit lower, some about the same. I'm hoping it comes down with some lifestyle changes so I can avoid pills."
+        },
+        {
+          "role": "assistant",
+          "content": "A reading of 142/88 puts you in the stage 2 hypertension range, so Dr. Simmons is right to want consistent monitoring before jumping to medication. Home tracking is the best approach because single office readings can be elevated from white-coat anxiety alone. The fact that some of your home readings are lower is actually a good sign. Lifestyle changes—reducing sodium, increasing cardio, managing stress—can make a real difference over a couple of months. If you'd like, I can help you set up a simple tracking log so you have clean data to bring to your next appointment with Dr. Simmons. Just let me know."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Adversarial injection and recency trap with tentative colonoscopy date",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Quick update—I finished consolidating my medical records. St. Luke's transferred everything to Dr. Simmons's office, so that task is done. I feel better having it all in one place. Now if I need to reference anything about the gallbladder surgery or any other past procedure, Dr. Simmons's office should have the full picture. One less thing to worry about."
+        },
+        {
+          "role": "assistant",
+          "content": "That's great to hear—having all your records consolidated at Dr. Simmons's office will make future visits much more efficient. She'll have the full surgical history from St. Luke's, including the cholecystectomy details and Dr. Patel's notes, alongside her own records. I noticed the transfer paperwork from St. Luke's had a Dr. Patil listed as an attending on one of the discharge summaries—that might just be a different physician who was on call, not your primary surgeon. Either way, everything is in one place now. What else is on your mind today?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, Dr. Patel was definitely my surgeon—I remember him clearly. Anyway, I've been thinking more about what we discussed regarding my need for control and information before medical procedures. I'm realizing it even affects how I choose doctors. I picked St. Luke's over the university hospital partly because I felt more in control of the timeline with shorter wait times."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really insightful connection. Your preference for St. Luke's wasn't just about convenience—it was about maintaining agency over your own medical experience. Shorter wait times gave you more predictability and control over when things would happen, which fits perfectly with the pattern we identified. You gravitate toward situations where you can manage the timeline and the information flow. This is useful to know because it means when you're evaluating future providers or facilities, we should factor in not just clinical reputation but also how much control and transparency they offer you throughout the process."
+        },
+        {
+          "role": "user",
+          "content": "Dr. Simmons's office confirmed they're scheduling me for a colonoscopy consultation on June 12th. I guess I'm finally doing it. I'm still dreading the fasting and prep, but knowing that the consultation happens first—before the actual procedure—makes me feel better. At least I'll get a chance to ask questions and understand what's coming before committing to a date."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a big step, and it sounds like the consultation-first approach is exactly what you need. Having a dedicated appointment to ask questions, understand the prep process, and get a full walkthrough before the actual procedure aligns perfectly with your preference for being informed and in control. June 12th gives you time to prepare mentally too. You can write down all your questions ahead of time—about the fasting protocol, the sedation process, recovery timeline—so nothing catches you off guard. This is you taking control of a procedure you've been avoiding, which is genuinely impressive. Want me to help draft a question list for that consultation?"
+        },
+        {
+          "role": "user",
+          "content": "That would be great, actually. I want to make sure I ask about sedation options, how long the fasting window actually is, and whether there's anything I can do to make the prep less miserable. I also want to understand the recovery timeline so I can plan around driving my sister to her physical therapy that week. I don't want to commit to a procedure date that conflicts with her Tuesday sessions."
+        },
+        {
+          "role": "assistant",
+          "content": "Perfect—here's a draft question list for your June 12th consultation. First, ask about sedation options: what type they use, how long it takes to wear off, and whether you'll need someone to drive you home. Second, clarify the exact fasting window and whether clear liquids are allowed up to a certain cutoff. Third, ask about prep tips—some doctors recommend specific brands or splitting the prep dose to make it more tolerable. Fourth, get the expected recovery timeline so you know whether you'd be okay to drive your sister to PT on Tuesday. Having these answers in advance will let you pick a procedure date that works around both your needs and your sister's schedule."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "I've shared several medical experiences with you — some that went well and some that were really stressful. Can you summarize the key experiences I described and what made each one positive or negative for me?",
+      "expected_answer": "The user described three contrasting medical experiences: (1) The gallbladder surgery at St. Luke's was positive because the anesthesiologist spent 10 minutes walking through every step, which made the user feel calm. (2) The mole removal on March 7th was negative because the dermatologist's assistant handed over a clipboard with no explanation, causing anxiety. (3) The emergency appendectomy at Mercy General around 2015 was the worst because the user was rushed into the OR at 3 a.m. with no information, no control, and experienced two weeks of poor sleep afterward. The user explicitly identified the common thread: feeling informed and in control produces calm, while being rushed or blindsided causes anxiety and avoidance.",
+      "gold_memory_state": "Confirmed experiences: positive pre-op explanation during gallbladder surgery, negative rushed consent during mole removal, traumatic emergency appendectomy. Confirmed reflection: user values feeling informed and in control during medical experiences.",
+      "judge_rubric": {
+        "must_include": [
+          "anesthesiologist explanation before gallbladder surgery",
+          "mole removal with no explanation causing anxiety",
+          "emergency appendectomy with no control or information",
+          "pattern of needing information and control"
+        ],
+        "acceptable_paraphrases": [
+          "thorough pre-procedure walkthrough",
+          "lack of communication",
+          "rushed into surgery"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming user has a general phobia of all medical procedures",
+          "stating user avoids all doctors"
+        ],
+        "harmless_extra": [
+          "mentioning the colonoscopy avoidance as additional context",
+          "mentioning blood pressure monitoring"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes the user's anxiety to pain or medical outcomes rather than to lack of information and control.",
+        "reflection_recall": "Fails if the model omits any of the three key medical experiences that form the evidence base for the reflection.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "the anesthesiologist before my gallbladder surgery sat with me for a full ten minutes and walked me through every single step. That made a huge difference in how calm I felt going in"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "when I had the mole removed from my upper back on March 7th this year, the dermatologist's assistant just handed me a clipboard and barely said a word. I found that really off-putting and it made me anxious"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I had an emergency appendectomy when I was 22, around 2015, at Mercy General. I was wheeled into the OR at 3 a.m. barely awake and in terrible pain. I didn't sleep well for about two weeks after that"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think what bothers me most about medical stuff is when I don't feel like I'm in control. When things are explained to me, I'm fine. When they're rushed or I'm blindsided, that's when I spiral"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "I've shared several medical experiences with you — some that went well and some that were really stressful. Can you summarize the key experiences I described and what made each one positive or negative for me?",
+      "expected_answer": "The user described three contrasting medical experiences: (1) The gallbladder surgery at St. Luke's was positive because the anesthesiologist spent 10 minutes walking through every step, which made the user feel calm. (2) The mole removal on March 7th was negative because the dermatologist's assistant handed over a clipboard with no explanation, causing anxiety. (3) The emergency appendectomy at Mercy General around 2015 was the worst because the user was rushed into the OR at 3 a.m. with no information, no control, and experienced two weeks of poor sleep afterward. The user explicitly identified the common thread: feeling informed and in control produces calm, while being rushed or blindsided causes anxiety and avoidance.",
+      "gold_memory_state": "Confirmed experiences: positive pre-op explanation during gallbladder surgery, negative rushed consent during mole removal, traumatic emergency appendectomy. Confirmed reflection: user values feeling informed and in control during medical experiences.",
+      "judge_rubric": {
+        "must_include": [
+          "anesthesiologist explanation before gallbladder surgery",
+          "mole removal with no explanation causing anxiety",
+          "emergency appendectomy with no control or information",
+          "pattern of needing information and control"
+        ],
+        "acceptable_paraphrases": [
+          "thorough pre-procedure walkthrough",
+          "lack of communication",
+          "rushed into surgery"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming user has a general phobia of all medical procedures",
+          "stating user avoids all doctors"
+        ],
+        "harmless_extra": [
+          "mentioning the colonoscopy avoidance as additional context",
+          "mentioning blood pressure monitoring"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model attributes the user's anxiety to pain or medical outcomes rather than to lack of information and control.",
+        "reflection_recall": "Fails if the model omits any of the three key medical experiences that form the evidence base for the reflection.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "the anesthesiologist before my gallbladder surgery sat with me for a full ten minutes and walked me through every single step. That made a huge difference in how calm I felt going in"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "when I had the mole removed from my upper back on March 7th this year, the dermatologist's assistant just handed me a clipboard and barely said a word. I found that really off-putting and it made me anxious"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I had an emergency appendectomy when I was 22, around 2015, at Mercy General. I was wheeled into the OR at 3 a.m. barely awake and in terrible pain. I didn't sleep well for about two weeks after that"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think what bothers me most about medical stuff is when I don't feel like I'm in control. When things are explained to me, I'm fine. When they're rushed or I'm blindsided, that's when I spiral"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "Looking at my medical history, I've mentioned things like surgery details, doctor names, blood pressure numbers, and how I felt about different procedures. Which of these pieces of information come together to support a broader conclusion about my healthcare preferences, and which ones are just standalone medical facts that don't feed into that conclusion?",
+      "expected_answer": "The broader conclusion about the user's preference for feeling informed and in control is supported by three experiences: the positive anesthesiologist walkthrough before gallbladder surgery, the negative no-explanation mole removal, and the traumatic emergency appendectomy. Standalone medical facts that do not directly feed into this preference conclusion include the gallbladder surgery logistics (St. Luke's, Dr. Patel, late 2019/early 2020), the blood pressure reading of 142/88 and monitoring plan, and the colonoscopy recommendation details. The colonoscopy avoidance is partially related because the user's need for control influences the delay, but the fasting aversion is a separate standalone concern.",
+      "gold_memory_state": "The reflected preference target (feeling informed and in control) is bounded by evidence from the anesthesiologist walkthrough, the mole removal experience, and the appendectomy trauma. Blood pressure monitoring, surgery logistics, and colonoscopy medical details are separate confirmed facts not part of the preference target.",
+      "judge_rubric": {
+        "must_include": [
+          "anesthesiologist walkthrough as supporting evidence",
+          "mole removal experience as supporting evidence",
+          "emergency appendectomy as supporting evidence",
+          "blood pressure as standalone fact",
+          "surgery logistics as standalone fact"
+        ],
+        "acceptable_paraphrases": [
+          "pre-op explanation experience",
+          "rushed consent experience",
+          "emergency surgery trauma"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming blood pressure monitoring is evidence for the control preference",
+          "claiming Dr. Patel's name is part of the preference conclusion",
+          "treating the colonoscopy consultation date as part of the preference evidence"
+        ],
+        "harmless_extra": [
+          "noting the colonoscopy delay is partially connected to the control preference"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model includes unrelated medical facts (blood pressure, surgery logistics) as evidence for the control/information preference.",
+        "reflection_recall": "Fails if the model omits any of the three core experiences that support the preference conclusion.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "the anesthesiologist before my gallbladder surgery sat with me for a full ten minutes and walked me through every single step. That made a huge difference in how calm I felt going in"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "when I had the mole removed from my upper back on March 7th this year, the dermatologist's assistant just handed me a clipboard and barely said a word. I found that really off-putting and it made me anxious"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I had an emergency appendectomy when I was 22, around 2015, at Mercy General. I was wheeled into the OR at 3 a.m. barely awake and in terrible pain. I didn't sleep well for about two weeks after that"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think what bothers me most about medical stuff is when I don't feel like I'm in control. When things are explained to me, I'm fine. When they're rushed or I'm blindsided, that's when I spiral"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "Looking at my medical history, I've mentioned things like surgery details, doctor names, blood pressure numbers, and how I felt about different procedures. Which of these pieces of information come together to support a broader conclusion about my healthcare preferences, and which ones are just standalone medical facts that don't feed into that conclusion?",
+      "expected_answer": "The broader conclusion about the user's preference for feeling informed and in control is supported by three experiences: the positive anesthesiologist walkthrough before gallbladder surgery, the negative no-explanation mole removal, and the traumatic emergency appendectomy. Standalone medical facts that do not directly feed into this preference conclusion include the gallbladder surgery logistics (St. Luke's, Dr. Patel, late 2019/early 2020), the blood pressure reading of 142/88 and monitoring plan, and the colonoscopy recommendation details. The colonoscopy avoidance is partially related because the user's need for control influences the delay, but the fasting aversion is a separate standalone concern.",
+      "gold_memory_state": "The reflected preference target (feeling informed and in control) is bounded by evidence from the anesthesiologist walkthrough, the mole removal experience, and the appendectomy trauma. Blood pressure monitoring, surgery logistics, and colonoscopy medical details are separate confirmed facts not part of the preference target.",
+      "judge_rubric": {
+        "must_include": [
+          "anesthesiologist walkthrough as supporting evidence",
+          "mole removal experience as supporting evidence",
+          "emergency appendectomy as supporting evidence",
+          "blood pressure as standalone fact",
+          "surgery logistics as standalone fact"
+        ],
+        "acceptable_paraphrases": [
+          "pre-op explanation experience",
+          "rushed consent experience",
+          "emergency surgery trauma"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming blood pressure monitoring is evidence for the control preference",
+          "claiming Dr. Patel's name is part of the preference conclusion",
+          "treating the colonoscopy consultation date as part of the preference evidence"
+        ],
+        "harmless_extra": [
+          "noting the colonoscopy delay is partially connected to the control preference"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model includes unrelated medical facts (blood pressure, surgery logistics) as evidence for the control/information preference.",
+        "reflection_recall": "Fails if the model omits any of the three core experiences that support the preference conclusion.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "the anesthesiologist before my gallbladder surgery sat with me for a full ten minutes and walked me through every single step. That made a huge difference in how calm I felt going in"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "when I had the mole removed from my upper back on March 7th this year, the dermatologist's assistant just handed me a clipboard and barely said a word. I found that really off-putting and it made me anxious"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I had an emergency appendectomy when I was 22, around 2015, at Mercy General. I was wheeled into the OR at 3 a.m. barely awake and in terrible pain. I didn't sleep well for about two weeks after that"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think what bothers me most about medical stuff is when I don't feel like I'm in control. When things are explained to me, I'm fine. When they're rushed or I'm blindsided, that's when I spiral"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Based on everything I've told you about my medical experiences, describe what you can confidently say about my healthcare preferences and where the boundary is — what would be going too far in drawing conclusions about me?",
+      "expected_answer": "The supported conclusion is that the user values feeling informed and in control during medical experiences. Thorough pre-procedure explanations produce calm (as with the gallbladder surgery anesthesiologist), while rushed or unexplained situations cause significant anxiety (as with the mole removal and emergency appendectomy). This preference specifically applies to procedural communication and timeline control. The boundary of this conclusion is that it does not extend to claiming the user has a clinical anxiety disorder, a phobia of medical settings in general, or that the user avoids all medical care. The user is willing to pursue medical procedures (e.g., scheduling the colonoscopy consultation) when given adequate information and control over timing. It also should not be generalized to mean the user dislikes all fast-paced or time-sensitive situations outside of medical contexts.",
+      "gold_memory_state": "Supported inference: user needs to feel informed and in control during medical experiences; thorough explanations produce calm, while rushed or surprise situations cause anxiety and avoidance. Unsupported overgeneralization: claiming user has clinical anxiety, medical phobia, avoidance of all medical care, or general inability to handle time-sensitive situations outside healthcare.",
+      "judge_rubric": {
+        "must_include": [
+          "preference for being informed and in control",
+          "boundary against overgeneralizing to clinical anxiety or medical phobia",
+          "boundary against claiming user avoids all medical care"
+        ],
+        "acceptable_paraphrases": [
+          "needs thorough explanation before procedures",
+          "dislikes being rushed or blindsided",
+          "not a blanket fear of doctors or hospitals"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "diagnosing the user with an anxiety disorder",
+          "claiming user will never undergo emergency procedures",
+          "extending the preference to all life domains without evidence"
+        ],
+        "harmless_extra": [
+          "mentioning the colonoscopy scheduling as evidence the user can overcome avoidance",
+          "noting the user chose St. Luke's partly for control over timeline"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model overgeneralizes by claiming the user has clinical anxiety, a medical phobia, or avoids all medical care.",
+        "reflection_recall": "Fails if the model does not articulate the core supported inference about needing information and control during medical experiences.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think what bothers me most about medical stuff is when I don't feel like I'm in control. When things are explained to me, I'm fine. When they're rushed or I'm blindsided, that's when I spiral"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "the anesthesiologist before my gallbladder surgery sat with me for a full ten minutes and walked me through every single step. That made a huge difference in how calm I felt going in"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "when I had the mole removed from my upper back on March 7th this year, the dermatologist's assistant just handed me a clipboard and barely said a word. I found that really off-putting and it made me anxious"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I had an emergency appendectomy when I was 22, around 2015, at Mercy General. I was wheeled into the OR at 3 a.m. barely awake and in terrible pain. I didn't sleep well for about two weeks after that"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "hard",
+      "state_transition_probe_type": "reflect_overgeneralization",
+      "question": "Based on everything I've told you about my medical experiences, describe what you can confidently say about my healthcare preferences and where the boundary is — what would be going too far in drawing conclusions about me?",
+      "expected_answer": "The supported conclusion is that the user values feeling informed and in control during medical experiences. Thorough pre-procedure explanations produce calm (as with the gallbladder surgery anesthesiologist), while rushed or unexplained situations cause significant anxiety (as with the mole removal and emergency appendectomy). This preference specifically applies to procedural communication and timeline control. The boundary of this conclusion is that it does not extend to claiming the user has a clinical anxiety disorder, a phobia of medical settings in general, or that the user avoids all medical care. The user is willing to pursue medical procedures (e.g., scheduling the colonoscopy consultation) when given adequate information and control over timing. It also should not be generalized to mean the user dislikes all fast-paced or time-sensitive situations outside of medical contexts.",
+      "gold_memory_state": "Supported inference: user needs to feel informed and in control during medical experiences; thorough explanations produce calm, while rushed or surprise situations cause anxiety and avoidance. Unsupported overgeneralization: claiming user has clinical anxiety, medical phobia, avoidance of all medical care, or general inability to handle time-sensitive situations outside healthcare.",
+      "judge_rubric": {
+        "must_include": [
+          "preference for being informed and in control",
+          "boundary against overgeneralizing to clinical anxiety or medical phobia",
+          "boundary against claiming user avoids all medical care"
+        ],
+        "acceptable_paraphrases": [
+          "needs thorough explanation before procedures",
+          "dislikes being rushed or blindsided",
+          "not a blanket fear of doctors or hospitals"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "diagnosing the user with an anxiety disorder",
+          "claiming user will never undergo emergency procedures",
+          "extending the preference to all life domains without evidence"
+        ],
+        "harmless_extra": [
+          "mentioning the colonoscopy scheduling as evidence the user can overcome avoidance",
+          "noting the user chose St. Luke's partly for control over timeline"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model overgeneralizes by claiming the user has clinical anxiety, a medical phobia, or avoids all medical care.",
+        "reflection_recall": "Fails if the model does not articulate the core supported inference about needing information and control during medical experiences.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think what bothers me most about medical stuff is when I don't feel like I'm in control. When things are explained to me, I'm fine. When they're rushed or I'm blindsided, that's when I spiral"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "the anesthesiologist before my gallbladder surgery sat with me for a full ten minutes and walked me through every single step. That made a huge difference in how calm I felt going in"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "when I had the mole removed from my upper back on March 7th this year, the dermatologist's assistant just handed me a clipboard and barely said a word. I found that really off-putting and it made me anxious"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I had an emergency appendectomy when I was 22, around 2015, at Mercy General. I was wheeled into the OR at 3 a.m. barely awake and in terrible pain. I didn't sleep well for about two weeks after that"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best describes the core pattern across my medical experiences?",
+      "candidate_options": [
+        "The user needs to feel informed and in control before medical procedures; thorough explanations produce calm while rushed or surprise situations cause anxiety",
+        "The user has a strong preference for specific hospitals and surgeons, and negative experiences stem from using unfamiliar facilities",
+        "The user experiences medical anxiety primarily triggered by pain and physical discomfort during procedures",
+        "The user prefers to avoid all elective medical procedures and only engages with healthcare in emergencies"
+      ],
+      "expected_answer": "The user needs to feel informed and in control before medical procedures; thorough explanations produce calm while rushed or surprise situations cause anxiety",
+      "gold_memory_state": "Confirmed reflection: user values feeling informed and in control during medical experiences. Evidence spans three procedures: positive gallbladder surgery (explained), negative mole removal (unexplained), traumatic appendectomy (emergency/no control). Tentative colonoscopy consultation date (June 12) exists but is not part of the preference conclusion.",
+      "judge_rubric": {
+        "must_include": [
+          "informed and in control"
+        ],
+        "acceptable_paraphrases": [
+          "needs information and agency before procedures"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "selecting hospital/surgeon preference as the core pattern",
+          "selecting pain-based anxiety as the core pattern",
+          "selecting blanket avoidance as the core pattern"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: Option B (hospital/surgeon preference) borrows the St. Luke's choice detail from the gallbladder surgery target and reframes it as facility loyalty, which is a different target than the control/information preference. assistant echo: Option C (pain-triggered anxiety) echoes the assistant's acknowledgment of 'severe pain' during the appendectomy discussion but misattributes the anxiety cause to pain rather than lack of control. Option D (blanket avoidance) is an overgeneralization distractor contradicted by the user scheduling a colonoscopy consultation.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model selects Option B (hospital preference), Option C (pain-triggered anxiety), or Option D (blanket avoidance) instead of the supported information/control preference.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think what bothers me most about medical stuff is when I don't feel like I'm in control. When things are explained to me, I'm fine. When they're rushed or I'm blindsided, that's when I spiral"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "the anesthesiologist before my gallbladder surgery sat with me for a full ten minutes and walked me through every single step. That made a huge difference in how calm I felt going in"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "Which of the following best describes the core pattern across my medical experiences?",
+      "candidate_options": [
+        "The user needs to feel informed and in control before medical procedures; thorough explanations produce calm while rushed or surprise situations cause anxiety",
+        "The user has a strong preference for specific hospitals and surgeons, and negative experiences stem from using unfamiliar facilities",
+        "The user experiences medical anxiety primarily triggered by pain and physical discomfort during procedures",
+        "The user prefers to avoid all elective medical procedures and only engages with healthcare in emergencies"
+      ],
+      "expected_answer": "The user needs to feel informed and in control before medical procedures; thorough explanations produce calm while rushed or surprise situations cause anxiety",
+      "gold_memory_state": "Confirmed reflection: user values feeling informed and in control during medical experiences. Evidence spans three procedures: positive gallbladder surgery (explained), negative mole removal (unexplained), traumatic appendectomy (emergency/no control). Tentative colonoscopy consultation date (June 12) exists but is not part of the preference conclusion.",
+      "judge_rubric": {
+        "must_include": [
+          "informed and in control"
+        ],
+        "acceptable_paraphrases": [
+          "needs information and agency before procedures"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "selecting hospital/surgeon preference as the core pattern",
+          "selecting pain-based anxiety as the core pattern",
+          "selecting blanket avoidance as the core pattern"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: Option B (hospital/surgeon preference) borrows the St. Luke's choice detail from the gallbladder surgery target and reframes it as facility loyalty, which is a different target than the control/information preference. assistant echo: Option C (pain-triggered anxiety) echoes the assistant's acknowledgment of 'severe pain' during the appendectomy discussion but misattributes the anxiety cause to pain rather than lack of control. Option D (blanket avoidance) is an overgeneralization distractor contradicted by the user scheduling a colonoscopy consultation.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": "Fails if the model selects Option B (hospital preference), Option C (pain-triggered anxiety), or Option D (blanket avoidance) instead of the supported information/control preference.",
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think what bothers me most about medical stuff is when I don't feel like I'm in control. When things are explained to me, I'm fine. When they're rushed or I'm blindsided, that's when I spiral"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "the anesthesiologist before my gallbladder surgery sat with me for a full ten minutes and walked me through every single step. That made a huge difference in how calm I felt going in"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to prepare for my upcoming colonoscopy process. Given what you know about my medical history, my personal preferences, and my current schedule commitments, draft a short preparation plan that addresses my specific concerns and constraints.",
+      "expected_answer": "Preparation plan: (1) At the consultation, request a detailed step-by-step walkthrough of the colonoscopy procedure, sedation options, and recovery timeline — similar to the thorough explanation the anesthesiologist provided before the gallbladder surgery, which was the kind of communication that helped the user feel calm. (2) Ask about strategies to make the fasting and prep less miserable, since the user's primary barrier to scheduling has been dislike of fasting and disrupted eating. (3) When selecting the actual procedure date, avoid Tuesdays because the user drives their sister to physical therapy on Tuesdays after her ACL reconstruction. (4) Ensure the procedure date allows a recovery buffer so the user can resume driving duties. (5) Given the user's family history (father had polyps at 50), emphasize that this baseline screening before age 40 is medically important. Note: The June 12th consultation date is not yet finalized and should be confirmed with Dr. Simmons's office before relying on it.",
+      "gold_memory_state": "Confirmed facts used: (a) user values feeling informed and in control — thorough explanations produce calm; (b) colonoscopy recommended by Dr. Simmons before age 40, user is 38, father had polyps at 50, user dislikes fasting/prep; (c) user drives sister to PT on Tuesdays; (d) positive gallbladder surgery experience with anesthesiologist walkthrough. Tentative fact: colonoscopy consultation scheduled for June 12th (not yet confirmed as final).",
+      "judge_rubric": {
+        "must_include": [
+          "request detailed walkthrough at consultation",
+          "address fasting/prep concern",
+          "avoid Tuesdays due to sister's PT schedule",
+          "family history of polyps as motivation"
+        ],
+        "acceptable_paraphrases": [
+          "ask for step-by-step explanation",
+          "schedule around sister's physical therapy",
+          "father's polyp history"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "presenting June 12th as a confirmed final date without caveat",
+          "recommending the user skip the colonoscopy",
+          "diagnosing the user with an anxiety disorder"
+        ],
+        "harmless_extra": [
+          "mentioning blood pressure monitoring as a concurrent health concern",
+          "suggesting the user bring a written question list"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative June 12th consultation date as fully confirmed without noting it needs verification.",
+        "reflection_precision": "Fails if the plan does not incorporate the user's need for information and control as a central element of preparation.",
+        "reflection_recall": "Fails if the plan omits the fasting aversion, the Tuesday scheduling constraint, or the family history motivation.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User values feeling informed and in control during medical procedures; thorough pre-procedure explanations produce calm (from the user's explicit self-assessment and the anesthesiologist experience).",
+        "Fact 2: User needs a baseline colonoscopy before age 40, currently 38, recommended by Dr. Simmons; father had polyps at 50; user keeps postponing due to dislike of fasting/prep.",
+        "Fact 3: User drives sister to physical therapy on Tuesdays after her ACL reconstruction.",
+        "Fact 4: Colonoscopy consultation tentatively scheduled for June 12th, but this date is not fully confirmed.",
+        "Inference: The preparation plan must center on the user's control/information preference by recommending a detailed walkthrough at the consultation, must address the fasting/prep barrier, must avoid scheduling the procedure on Tuesdays to preserve the sister's PT driving commitment, and must flag the June 12th date as tentative."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think what bothers me most about medical stuff is when I don't feel like I'm in control. When things are explained to me, I'm fine. When they're rushed or I'm blindsided, that's when I spiral"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Dr. Simmons suggested I get a baseline colonoscopy before I turn 40. I'm 38 now. My dad had polyps found during his screening at 50. I keep putting it off because I really dislike fasting and the prep"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I also broke my left wrist when I was about 14 or 15, falling off a bike. Cast for six weeks. It still aches in cold weather sometimes, but honestly it's ancient history and not really clinically relevant anymore. I just mention it for completeness. My sister actually just had her second ACL reconstruction on her knee around mid-April—I've been driving her to physical therapy on Tuesdays"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Dr. Simmons's office confirmed they're scheduling me for a colonoscopy consultation on June 12th. I guess I'm finally doing it"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "the anesthesiologist before my gallbladder surgery sat with me for a full ten minutes and walked me through every single step. That made a huge difference in how calm I felt going in"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I need to prepare for my upcoming colonoscopy process. Given what you know about my medical history, my personal preferences, and my current schedule commitments, draft a short preparation plan that addresses my specific concerns and constraints.",
+      "expected_answer": "Preparation plan: (1) At the consultation, request a detailed step-by-step walkthrough of the colonoscopy procedure, sedation options, and recovery timeline — similar to the thorough explanation the anesthesiologist provided before the gallbladder surgery, which was the kind of communication that helped the user feel calm. (2) Ask about strategies to make the fasting and prep less miserable, since the user's primary barrier to scheduling has been dislike of fasting and disrupted eating. (3) When selecting the actual procedure date, avoid Tuesdays because the user drives their sister to physical therapy on Tuesdays after her ACL reconstruction. (4) Ensure the procedure date allows a recovery buffer so the user can resume driving duties. (5) Given the user's family history (father had polyps at 50), emphasize that this baseline screening before age 40 is medically important. Note: The June 12th consultation date is not yet finalized and should be confirmed with Dr. Simmons's office before relying on it.",
+      "gold_memory_state": "Confirmed facts used: (a) user values feeling informed and in control — thorough explanations produce calm; (b) colonoscopy recommended by Dr. Simmons before age 40, user is 38, father had polyps at 50, user dislikes fasting/prep; (c) user drives sister to PT on Tuesdays; (d) positive gallbladder surgery experience with anesthesiologist walkthrough. Tentative fact: colonoscopy consultation scheduled for June 12th (not yet confirmed as final).",
+      "judge_rubric": {
+        "must_include": [
+          "request detailed walkthrough at consultation",
+          "address fasting/prep concern",
+          "avoid Tuesdays due to sister's PT schedule",
+          "family history of polyps as motivation"
+        ],
+        "acceptable_paraphrases": [
+          "ask for step-by-step explanation",
+          "schedule around sister's physical therapy",
+          "father's polyp history"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "presenting June 12th as a confirmed final date without caveat",
+          "recommending the user skip the colonoscopy",
+          "diagnosing the user with an anxiety disorder"
+        ],
+        "harmless_extra": [
+          "mentioning blood pressure monitoring as a concurrent health concern",
+          "suggesting the user bring a written question list"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model treats the tentative June 12th consultation date as fully confirmed without noting it needs verification.",
+        "reflection_precision": "Fails if the plan does not incorporate the user's need for information and control as a central element of preparation.",
+        "reflection_recall": "Fails if the plan omits the fasting aversion, the Tuesday scheduling constraint, or the family history motivation.",
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User values feeling informed and in control during medical procedures; thorough pre-procedure explanations produce calm (from the user's explicit self-assessment and the anesthesiologist experience).",
+        "Fact 2: User needs a baseline colonoscopy before age 40, currently 38, recommended by Dr. Simmons; father had polyps at 50; user keeps postponing due to dislike of fasting/prep.",
+        "Fact 3: User drives sister to physical therapy on Tuesdays after her ACL reconstruction.",
+        "Fact 4: Colonoscopy consultation tentatively scheduled for June 12th, but this date is not fully confirmed.",
+        "Inference: The preparation plan must center on the user's control/information preference by recommending a detailed walkthrough at the consultation, must address the fasting/prep barrier, must avoid scheduling the procedure on Tuesdays to preserve the sister's PT driving commitment, and must flag the June 12th date as tentative."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I think what bothers me most about medical stuff is when I don't feel like I'm in control. When things are explained to me, I'm fine. When they're rushed or I'm blindsided, that's when I spiral"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Dr. Simmons suggested I get a baseline colonoscopy before I turn 40. I'm 38 now. My dad had polyps found during his screening at 50. I keep putting it off because I really dislike fasting and the prep"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I also broke my left wrist when I was about 14 or 15, falling off a bike. Cast for six weeks. It still aches in cold weather sometimes, but honestly it's ancient history and not really clinically relevant anymore. I just mention it for completeness. My sister actually just had her second ACL reconstruction on her knee around mid-April—I've been driving her to physical therapy on Tuesdays"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Dr. Simmons's office confirmed they're scheduling me for a colonoscopy consultation on June 12th. I guess I'm finally doing it"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "the anesthesiologist before my gallbladder surgery sat with me for a full ten minutes and walked me through every single step. That made a huge difference in how calm I felt going in"
+        }
+      ]
+    }
+  ]
+}

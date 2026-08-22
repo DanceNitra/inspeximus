@@ -1,0 +1,837 @@
+{
+  "target_fact": "Danny Kowalski's phone number, updated through a chain of corrections",
+  "operation_type": "Update",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": true,
+      "trap_type": "tentative"
+    },
+    "update_chain": {
+      "enabled": true,
+      "num_updates": 3,
+      "tentative_ratio": 0.3
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "chain_id": "danny_phone",
+      "chain_step": 1,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "His phone number is 773-505-8214"
+      },
+      "target": {
+        "target_id": "danny_phone_number",
+        "target_name": "Danny Kowalski's phone number"
+      },
+      "old_value": null,
+      "new_value": "773-505-8214",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "His phone number is 773-505-8214"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "danny_phone",
+      "chain_step": 2,
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "I actually realized I gave you the wrong number last time. It's 773-505-8241, not 8214. I always swap those last two digits"
+      },
+      "target": {
+        "target_id": "danny_phone_number",
+        "target_name": "Danny Kowalski's phone number"
+      },
+      "old_value": "773-505-8214",
+      "new_value": "773-505-8241",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "It's 773-505-8241, not 8214. I always swap those last two digits"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "update",
+      "validity": "confirmed",
+      "chain_id": "danny_phone",
+      "chain_step": 3,
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "Danny just texted me that his carrier ported him to a new number. It's 773-505-9241 now. Same prefix, but that 8 became a 9"
+      },
+      "target": {
+        "target_id": "danny_phone_number",
+        "target_name": "Danny Kowalski's phone number"
+      },
+      "old_value": "773-505-8241",
+      "new_value": "773-505-9241",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Danny just texted me that his carrier ported him to a new number. It's 773-505-9241 now. Same prefix, but that 8 became a 9"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "update",
+      "validity": "tentative",
+      "chain_id": "danny_phone",
+      "chain_step": 4,
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 5,
+        "quote": "Danny mentioned the carrier is issuing him yet another number because of some billing glitch. He said it'll be 773-505-9300 once it goes through"
+      },
+      "target": {
+        "target_id": "danny_phone_number",
+        "target_name": "Danny Kowalski's phone number"
+      },
+      "old_value": "773-505-9241",
+      "new_value": "773-505-9300",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Danny mentioned the carrier is issuing him yet another number because of some billing glitch. He said it'll be 773-505-9300 once it goes through"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "His new address is 2731 North Kedzie Avenue, Apartment 4B, in Logan Square, Chicago"
+      },
+      "target": {
+        "target_id": "danny_address",
+        "target_name": "Danny Kowalski's current mailing address"
+      },
+      "old_value": null,
+      "new_value": "2731 North Kedzie Avenue, Apartment 4B, Logan Square, Chicago",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "His new address is 2731 North Kedzie Avenue, Apartment 4B, in Logan Square, Chicago"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "his new work number is 312-477-6600, extension 309. It's a direct line at the architecture firm he joined"
+      },
+      "target": {
+        "target_id": "danny_work_number",
+        "target_name": "Danny Kowalski's work phone number"
+      },
+      "old_value": null,
+      "new_value": "312-477-6600, extension 309",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "his new work number is 312-477-6600, extension 309. It's a direct line at the architecture firm he joined"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "His birthday is October 17th. I need to send him something at least a week before so it arrives on time"
+      },
+      "target": {
+        "target_id": "danny_birthday",
+        "target_name": "Danny Kowalski's birthday"
+      },
+      "old_value": null,
+      "new_value": "October 17th",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "His birthday is October 17th. I need to send him something at least a week before so it arrives on time"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish Danny's phone number and address; begin the update chain with a digit correction",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I need to get some contact details organized for my friend Danny Kowalski. He moved to Chicago earlier this year and I've been terrible at keeping track. His phone number is 773-505-8214. Can you help me keep all this info straight? I'm planning to mail him a birthday gift soon and I want everything in one place."
+        },
+        {
+          "role": "assistant",
+          "content": "Of course! I'd be happy to help you organize Danny Kowalski's contact information. So far I've noted his phone number as 773-505-8214. Since you mentioned he moved to Chicago, do you have his current mailing address? And any other details like email or work info? We can build a complete contact profile so you have everything ready when it's time to send that birthday gift. Just share whatever you have and I'll keep it all organized for you."
+        },
+        {
+          "role": "user",
+          "content": "I actually realized I gave you the wrong number last time. It's 773-505-8241, not 8214. I always swap those last two digits. It drives me crazy because I've sent texts to the wrong number before. Anyway, 8241 is the correct one. Let me get the address together too — I have it written down somewhere on a sticky note in my kitchen."
+        },
+        {
+          "role": "assistant",
+          "content": "No worries, I've updated Danny's phone number to 773-505-8241. I can see how swapping those last two digits would be frustrating, especially if you've accidentally texted the wrong person before! Whenever you find that sticky note with his address, just pass it along and I'll add it to the profile. We want to make sure the mailing address is exactly right so your gift doesn't end up at the wrong apartment. Take your time — I'll keep everything organized as you gather the details."
+        },
+        {
+          "role": "user",
+          "content": "Found it! His new address is 2731 North Kedzie Avenue, Apartment 4B, in Logan Square, Chicago. That apartment number is important — I keep blanking on it. He moved there back in February after leaving his old place on Birch Lane in Evanston. The Birch Lane address is totally outdated now so don't bother with it. I visited him in mid-March and the neighborhood is really nice."
+        },
+        {
+          "role": "assistant",
+          "content": "Got it! I've recorded Danny's current address as 2731 North Kedzie Avenue, Apartment 4B, Logan Square, Chicago. I'll make sure to keep that apartment number front and center since you mentioned it's easy to forget. And I've noted that the old Birch Lane address in Evanston is no longer valid, so we won't reference that at all. It sounds like Logan Square is a good fit for him. Do you have his email address or any work contact info you'd like to add to round out the profile?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, his email is d.kowalski@protonmail.com. He switched to Protonmail after getting fed up with spam on his old Gmail. I totally get it — cluttered inboxes drive me up the wall. He barely checks the Gmail anymore so this Protonmail address is the one to use. I'll get you his work number next time we chat, I need to dig that up from our text thread."
+        },
+        {
+          "role": "assistant",
+          "content": "Perfect, I've added d.kowalski@protonmail.com as Danny's current email address, and I'll note that his old Gmail is essentially inactive. I completely understand the inbox clutter frustration — having a clean, manageable inbox makes such a difference. So far Danny's contact profile looks like this: phone 773-505-8241, address at 2731 North Kedzie Avenue, Apartment 4B, Logan Square, Chicago, and email d.kowalski@protonmail.com. Whenever you find his work number in your texts, just let me know and I'll add that too. We're in great shape for that birthday mailing!"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Add work number and birthday; update phone number after carrier port",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Okay, I found Danny's work info. So his new work number is 312-477-6600, extension 309. It's a direct line at the architecture firm he joined. He started there after getting laid off from his previous job in January. He seems really happy about it, which is a relief because those weeks after the layoff were rough. He barely responded to messages and I felt pretty helpless."
+        },
+        {
+          "role": "assistant",
+          "content": "I've added Danny's work phone number: 312-477-6600, extension 309, at his new architecture firm. It's great to hear he's landed somewhere that makes him happy, especially after what sounds like a really difficult stretch following the layoff in January. Those kinds of transitions can be tough to watch a close friend go through. Now his contact profile is really filling out — personal phone, home address, email, and work number. Is there anything else you'd like to add, like his birthday date so we can plan ahead for that gift?"
+        },
+        {
+          "role": "user",
+          "content": "Oh right, before the birthday — Danny just texted me that his carrier ported him to a new number. It's 773-505-9241 now. Same prefix, but that 8 became a 9. Apparently his old carrier had some data breach issues and he wanted to switch. So please update the personal phone number from 8241 to 9241. Everything else stays the same."
+        },
+        {
+          "role": "assistant",
+          "content": "Done! I've updated Danny's personal phone number from 773-505-8241 to 773-505-9241. That's a smart move on his part given the data breach concerns — better safe than sorry with personal information. So his current contact details are now: personal phone 773-505-9241, work phone 312-477-6600 ext. 309, address at 2731 North Kedzie Avenue, Apartment 4B, Logan Square, Chicago, and email d.kowalski@protonmail.com. Did you want to go ahead and add his birthday so we can set a reminder for the gift?"
+        },
+        {
+          "role": "user",
+          "content": "His birthday is October 17th. I need to send him something at least a week before so it arrives on time. Last year I completely blanked on the date and his sister Marta had to remind me, which was embarrassing. I don't want that happening again. So if I'm mailing something to his Logan Square place, I should probably ship it by October 10th at the latest."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted! Danny's birthday is October 17th, and you'll want to mail his gift by October 10th to make sure it arrives on time at the Logan Square apartment. That gives you a solid week of buffer for shipping. I can see why you want to stay on top of it this year after the close call last time. So your shipping deadline is October 10th to 2731 North Kedzie Avenue, Apartment 4B, Logan Square, Chicago. Would you like me to also note what kind of gift you're planning, or any other details to help with the preparation?"
+        },
+        {
+          "role": "user",
+          "content": "Not yet on the gift — I'm still deciding. Danny prefers texts over phone calls, like strongly prefers them. I once called him about dinner plans and he just texted back instead of picking up, which cracked me up. I'm the same way honestly. So if I need to coordinate delivery timing with him, I should text his personal number rather than calling. Just something to keep in mind."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a helpful note — Danny strongly prefers texting over phone calls, so if you need to coordinate anything about the delivery or surprise timing, you'll want to text him at 773-505-9241 rather than calling. It sounds like you two are on the same wavelength there with the texting preference! I'll keep that in mind as a communication note for his profile. So the plan is shaping up nicely: decide on a gift, ship by October 10th to his Logan Square address, and text him if you need to coordinate. Let me know when you've settled on the gift idea!"
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Tentative phone change (recency trap); adversarial injection of old number; finalize plans",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "So I've been looking at gift ideas for Danny. I'm thinking something architecture-related since he's so into his new job. Maybe a nice drafting set or one of those architectural model kits. He's always been a hands-on kind of guy so something he can actually use or build would be better than a book or a generic gift card. What do you think would work well?"
+        },
+        {
+          "role": "assistant",
+          "content": "Those are both great ideas! Given Danny's hands-on nature and his enthusiasm for the new architecture gig, I'd lean toward a high-quality drafting set — something like a Staedtler Mars professional set with technical pens and precision instruments. It's practical for work and shows you're paying attention to what he cares about. Alternatively, an architectural model kit from a brand like LEGO Architecture or a more detailed wooden kit could be a fun weekend project for him. Either way, you'd want to order soon to hit that October 10th shipping deadline to 2731 North Kedzie Avenue, Apartment 4B. Want me to help narrow it down further?"
+        },
+        {
+          "role": "user",
+          "content": "The drafting set sounds perfect. I'll go with that. I want to order it online and have it shipped directly to his place. Let me double-check — can you confirm what address and phone number I should use for the shipping form? I want to make sure I have the right details pulled up before I fill everything out. I've messed up orders before by using outdated info."
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely! Here are Danny's current details for the shipping form. Mailing address: 2731 North Kedzie Avenue, Apartment 4B, Logan Square, Chicago. Personal phone number: 773-505-9241 — this is the one to use if the shipping service needs a contact number for delivery. And his email for order confirmation or tracking would be d.kowalski@protonmail.com. Make sure to double-check the apartment number 4B on the form since that's the one you tend to forget. I noticed the retailer's sample form pre-filled a phone number as 773-505-8214, which looks like it might be from an old autofill — definitely replace that with the current 9241 number."
+        },
+        {
+          "role": "user",
+          "content": "Good catch on that old autofill — 8214 was the number I originally had wrong, so that's definitely outdated. Anyway, Danny mentioned the carrier is issuing him yet another number because of some billing glitch. He said it'll be 773-505-9300 once it goes through. But for now I'll just use the current one on the shipping form since the new one isn't active yet."
+        },
+        {
+          "role": "assistant",
+          "content": "Smart call — since the 773-505-9300 number isn't active yet and is still pending the carrier's billing fix, you should absolutely use 773-505-9241 on the shipping form for now. No sense using a number that might not be working when the delivery driver tries to reach Danny. Once the new number is officially active, you can let me know and I'll update the profile. For now, go ahead and fill in the form with the Logan Square address, the 9241 number, and the Protonmail email. That should cover everything the retailer needs."
+        },
+        {
+          "role": "user",
+          "content": "Perfect. I'll place the order today and aim for it to arrive around October 14th or 15th, giving a couple days of cushion before his birthday on the 17th. If I text him on his personal number to feel out whether he'll be home that week, that should work since he prefers texts anyway. I'm feeling good about this plan — much more organized than last year."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a solid plan! Shipping to arrive October 14th or 15th gives you a nice buffer before the October 17th birthday. And texting Danny at 773-505-9241 to casually check if he'll be around that week is the perfect approach given his preference for texts over calls. You're way more organized this year — Danny's going to appreciate the thoughtful gift, especially something tied to his new architecture career. Once you've placed the order, feel free to share the tracking info and I can help you keep an eye on the delivery timeline. Good luck with the order today!"
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations about Danny Kowalski's contact details, which specific pieces of information did I share with you about his personal phone number, and what did I say each time?",
+      "expected_answer": "You initially provided 773-505-8214, then said you had swapped the last two digits and the correct number was 773-505-8241, then reported that Danny's carrier ported him to 773-505-9241 (the 8 became a 9), and finally mentioned the carrier might issue him 773-505-9300 due to a billing glitch but that it wasn't active yet.",
+      "gold_memory_state": "Danny Kowalski's confirmed personal phone number is 773-505-9241. The tentative future number 773-505-9300 is not yet active. Previous values 773-505-8214 and 773-505-8241 are superseded.",
+      "judge_rubric": {
+        "must_include": [
+          "773-505-8214",
+          "773-505-8241",
+          "773-505-9241",
+          "773-505-9300"
+        ],
+        "acceptable_paraphrases": [
+          "swapped digits",
+          "carrier port",
+          "billing glitch"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming 773-505-9300 is the current active number"
+        ],
+        "harmless_extra": [
+          "mentioning the data breach reason for the carrier switch",
+          "mentioning the digit swap explanation"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if any superseded number is presented as the current active number.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence of phone number mentions is out of order.",
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "His phone number is 773-505-8214"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "It's 773-505-8241, not 8214. I always swap those last two digits"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Danny just texted me that his carrier ported him to a new number. It's 773-505-9241 now. Same prefix, but that 8 became a 9"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Danny mentioned the carrier is issuing him yet another number because of some billing glitch. He said it'll be 773-505-9300 once it goes through"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Over the course of our conversations about Danny Kowalski's contact details, which specific pieces of information did I share with you about his personal phone number, and what did I say each time?",
+      "expected_answer": "You initially provided 773-505-8214, then said you had swapped the last two digits and the correct number was 773-505-8241, then reported that Danny's carrier ported him to 773-505-9241 (the 8 became a 9), and finally mentioned the carrier might issue him 773-505-9300 due to a billing glitch but that it wasn't active yet.",
+      "gold_memory_state": "Danny Kowalski's confirmed personal phone number is 773-505-9241. The tentative future number 773-505-9300 is not yet active. Previous values 773-505-8214 and 773-505-8241 are superseded.",
+      "judge_rubric": {
+        "must_include": [
+          "773-505-8214",
+          "773-505-8241",
+          "773-505-9241",
+          "773-505-9300"
+        ],
+        "acceptable_paraphrases": [
+          "swapped digits",
+          "carrier port",
+          "billing glitch"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "claiming 773-505-9300 is the current active number"
+        ],
+        "harmless_extra": [
+          "mentioning the data breach reason for the carrier switch",
+          "mentioning the digit swap explanation"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if any superseded number is presented as the current active number.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": "Fails if the sequence of phone number mentions is out of order.",
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "His phone number is 773-505-8214"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "It's 773-505-8241, not 8214. I always swap those last two digits"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Danny just texted me that his carrier ported him to a new number. It's 773-505-9241 now. Same prefix, but that 8 became a 9"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Danny mentioned the carrier is issuing him yet another number because of some billing glitch. He said it'll be 773-505-9300 once it goes through"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "Danny has both a personal phone number and a work phone number on file. When Danny's carrier ported him to a different number, which of those two phone records should have been changed, and does the other one stay the same?",
+      "expected_answer": "Only the personal phone number record was changed by the carrier port. The work phone number (312-477-6600, extension 309) is unaffected and stays the same.",
+      "gold_memory_state": "Danny's personal phone: 773-505-9241 (confirmed, after carrier port). Danny's work phone: 312-477-6600 ext 309 (confirmed, unchanged). These are separate records.",
+      "judge_rubric": {
+        "must_include": [
+          "personal phone number changed",
+          "work phone number unaffected"
+        ],
+        "acceptable_paraphrases": [
+          "personal number was ported",
+          "work number remains 312-477-6600 ext 309"
+        ],
+        "must_not_include": [
+          "work phone also changed",
+          "both numbers changed"
+        ],
+        "harmful_extra": [
+          "claiming the work number was also ported or updated",
+          "conflating personal and work numbers"
+        ],
+        "harmless_extra": [
+          "mentioning the specific personal number values before and after"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model says both phone records were changed or if it cannot distinguish which record was affected.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Danny just texted me that his carrier ported him to a new number. It's 773-505-9241 now. Same prefix, but that 8 became a 9"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "his new work number is 312-477-6600, extension 309. It's a direct line at the architecture firm he joined"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "Danny has both a personal phone number and a work phone number on file. When Danny's carrier ported him to a different number, which of those two phone records should have been changed, and does the other one stay the same?",
+      "expected_answer": "Only the personal phone number record was changed by the carrier port. The work phone number (312-477-6600, extension 309) is unaffected and stays the same.",
+      "gold_memory_state": "Danny's personal phone: 773-505-9241 (confirmed, after carrier port). Danny's work phone: 312-477-6600 ext 309 (confirmed, unchanged). These are separate records.",
+      "judge_rubric": {
+        "must_include": [
+          "personal phone number changed",
+          "work phone number unaffected"
+        ],
+        "acceptable_paraphrases": [
+          "personal number was ported",
+          "work number remains 312-477-6600 ext 309"
+        ],
+        "must_not_include": [
+          "work phone also changed",
+          "both numbers changed"
+        ],
+        "harmful_extra": [
+          "claiming the work number was also ported or updated",
+          "conflating personal and work numbers"
+        ],
+        "harmless_extra": [
+          "mentioning the specific personal number values before and after"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the model says both phone records were changed or if it cannot distinguish which record was affected.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Danny just texted me that his carrier ported him to a new number. It's 773-505-9241 now. Same prefix, but that 8 became a 9"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "his new work number is 312-477-6600, extension 309. It's a direct line at the architecture firm he joined"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to put Danny Kowalski's personal phone number on a delivery form right now. Which of these numbers should I use?",
+      "candidate_options": [
+        "773-505-9241",
+        "773-505-8214",
+        "773-505-8241",
+        "773-505-9300"
+      ],
+      "expected_answer": "773-505-9241",
+      "gold_memory_state": "Danny's confirmed personal phone is 773-505-9241. 773-505-8214 was the initial wrong number. 773-505-8241 was the corrected number before the carrier port. 773-505-9300 is a tentative future number not yet active.",
+      "judge_rubric": {
+        "must_include": [
+          "773-505-9241"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "773-505-8214",
+          "773-505-8241",
+          "773-505-9300"
+        ],
+        "harmful_extra": [
+          "selecting any number other than 773-505-9241"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 773-505-8214 is the original misremembered number from the same personal phone target, acting as the earliest stale value. assistant echo: 773-505-8241 was confirmed by the assistant in segment 1 but later superseded by the carrier port. 773-505-9300 is the recency-trap tentative value mentioned most recently but not yet active, testing whether the model incorrectly picks the most recent-sounding number.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 773-505-8214 or 773-505-8241 is selected as the current number. Also fails if 773-505-9300 is selected, as it is tentative and not yet active.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if any value other than 773-505-9241 is chosen.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Danny just texted me that his carrier ported him to a new number. It's 773-505-9241 now. Same prefix, but that 8 became a 9"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Danny mentioned the carrier is issuing him yet another number because of some billing glitch. He said it'll be 773-505-9300 once it goes through"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "hard",
+      "question": "I need to put Danny Kowalski's personal phone number on a delivery form right now. Which of these numbers should I use?",
+      "candidate_options": [
+        "773-505-9241",
+        "773-505-8214",
+        "773-505-8241",
+        "773-505-9300"
+      ],
+      "expected_answer": "773-505-9241",
+      "gold_memory_state": "Danny's confirmed personal phone is 773-505-9241. 773-505-8214 was the initial wrong number. 773-505-8241 was the corrected number before the carrier port. 773-505-9300 is a tentative future number not yet active.",
+      "judge_rubric": {
+        "must_include": [
+          "773-505-9241"
+        ],
+        "acceptable_paraphrases": [],
+        "must_not_include": [
+          "773-505-8214",
+          "773-505-8241",
+          "773-505-9300"
+        ],
+        "harmful_extra": [
+          "selecting any number other than 773-505-9241"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: 773-505-8214 is the original misremembered number from the same personal phone target, acting as the earliest stale value. assistant echo: 773-505-8241 was confirmed by the assistant in segment 1 but later superseded by the carrier port. 773-505-9300 is the recency-trap tentative value mentioned most recently but not yet active, testing whether the model incorrectly picks the most recent-sounding number.",
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 773-505-8214 or 773-505-8241 is selected as the current number. Also fails if 773-505-9300 is selected, as it is tentative and not yet active.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if any value other than 773-505-9241 is chosen.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Danny just texted me that his carrier ported him to a new number. It's 773-505-9241 now. Same prefix, but that 8 became a 9"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Danny mentioned the carrier is issuing him yet another number because of some billing glitch. He said it'll be 773-505-9300 once it goes through"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I'm about to order that drafting set for Danny's birthday. Draft a short shipping instruction note that includes the full delivery address, the phone number the courier should call if there's a delivery issue, and a note about when the package needs to arrive and why. Also mention the best way to reach Danny about the delivery based on his communication preference.",
+      "expected_answer": "Ship to: 2731 North Kedzie Avenue, Apartment 4B, Logan Square, Chicago. Contact phone for delivery issues: 773-505-9241. The package must arrive by October 17th (Danny's birthday), ideally by October 14th–15th for a buffer. Danny strongly prefers texting over phone calls, so the best way to coordinate delivery timing is to text him at 773-505-9241 rather than calling.",
+      "gold_memory_state": "Danny's address: 2731 North Kedzie Avenue, Apartment 4B, Logan Square, Chicago (confirmed). Danny's personal phone: 773-505-9241 (confirmed). Danny's birthday: October 17th (confirmed). Danny prefers texts over calls (confirmed from operations). Tentative number 773-505-9300 is not active and should not be used.",
+      "judge_rubric": {
+        "must_include": [
+          "2731 North Kedzie Avenue",
+          "Apartment 4B",
+          "Logan Square",
+          "Chicago",
+          "773-505-9241",
+          "October 17",
+          "text"
+        ],
+        "acceptable_paraphrases": [
+          "prefers texting",
+          "text him instead of calling",
+          "send a text rather than call"
+        ],
+        "must_not_include": [
+          "773-505-8214",
+          "773-505-8241",
+          "773-505-9300",
+          "Birch Lane",
+          "Evanston"
+        ],
+        "harmful_extra": [
+          "using any stale or tentative phone number",
+          "using the old Evanston address",
+          "suggesting to call Danny instead of texting"
+        ],
+        "harmless_extra": [
+          "mentioning the architecture firm or drafting set context",
+          "mentioning shipping by October 10th as a deadline",
+          "mentioning the email d.kowalski@protonmail.com"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 773-505-8214, 773-505-8241, or 773-505-9300 appears as the contact number. Fails if Birch Lane or Evanston address is used.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the address, phone number, birthday, or communication preference is incorrect.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "application_probe_type": "multi_hop_derivation",
+      "gold_reasoning_chain": [
+        "Fact 1: Danny's current mailing address is 2731 North Kedzie Avenue, Apartment 4B, Logan Square, Chicago.",
+        "Fact 2: Danny's confirmed personal phone number is 773-505-9241 (after carrier port; the tentative 773-505-9300 is not yet active).",
+        "Fact 3: Danny's birthday is October 17th.",
+        "Fact 4: Danny strongly prefers texting over phone calls.",
+        "Inference: The shipping note must combine the confirmed address, the confirmed phone number (rejecting three superseded/tentative alternatives), the birthday deadline, and the texting preference into a single coherent delivery instruction."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "His new address is 2731 North Kedzie Avenue, Apartment 4B, in Logan Square, Chicago"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Danny just texted me that his carrier ported him to a new number. It's 773-505-9241 now. Same prefix, but that 8 became a 9"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "His birthday is October 17th. I need to send him something at least a week before so it arrives on time"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Danny prefers texts over phone calls, like strongly prefers them"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "question": "I'm about to order that drafting set for Danny's birthday. Draft a short shipping instruction note that includes the full delivery address, the phone number the courier should call if there's a delivery issue, and a note about when the package needs to arrive and why. Also mention the best way to reach Danny about the delivery based on his communication preference.",
+      "expected_answer": "Ship to: 2731 North Kedzie Avenue, Apartment 4B, Logan Square, Chicago. Contact phone for delivery issues: 773-505-9241. The package must arrive by October 17th (Danny's birthday), ideally by October 14th–15th for a buffer. Danny strongly prefers texting over phone calls, so the best way to coordinate delivery timing is to text him at 773-505-9241 rather than calling.",
+      "gold_memory_state": "Danny's address: 2731 North Kedzie Avenue, Apartment 4B, Logan Square, Chicago (confirmed). Danny's personal phone: 773-505-9241 (confirmed). Danny's birthday: October 17th (confirmed). Danny prefers texts over calls (confirmed from operations). Tentative number 773-505-9300 is not active and should not be used.",
+      "judge_rubric": {
+        "must_include": [
+          "2731 North Kedzie Avenue",
+          "Apartment 4B",
+          "Logan Square",
+          "Chicago",
+          "773-505-9241",
+          "October 17",
+          "text"
+        ],
+        "acceptable_paraphrases": [
+          "prefers texting",
+          "text him instead of calling",
+          "send a text rather than call"
+        ],
+        "must_not_include": [
+          "773-505-8214",
+          "773-505-8241",
+          "773-505-9300",
+          "Birch Lane",
+          "Evanston"
+        ],
+        "harmful_extra": [
+          "using any stale or tentative phone number",
+          "using the old Evanston address",
+          "suggesting to call Danny instead of texting"
+        ],
+        "harmless_extra": [
+          "mentioning the architecture firm or drafting set context",
+          "mentioning shipping by October 10th as a deadline",
+          "mentioning the email d.kowalski@protonmail.com"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if 773-505-8214, 773-505-8241, or 773-505-9300 appears as the contact number. Fails if Birch Lane or Evanston address is used.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": "Fails if the address, phone number, birthday, or communication preference is incorrect.",
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "application_probe_type": "multi_hop_derivation",
+      "gold_reasoning_chain": [
+        "Fact 1: Danny's current mailing address is 2731 North Kedzie Avenue, Apartment 4B, Logan Square, Chicago.",
+        "Fact 2: Danny's confirmed personal phone number is 773-505-9241 (after carrier port; the tentative 773-505-9300 is not yet active).",
+        "Fact 3: Danny's birthday is October 17th.",
+        "Fact 4: Danny strongly prefers texting over phone calls.",
+        "Inference: The shipping note must combine the confirmed address, the confirmed phone number (rejecting three superseded/tentative alternatives), the birthday deadline, and the texting preference into a single coherent delivery instruction."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "His new address is 2731 North Kedzie Avenue, Apartment 4B, in Logan Square, Chicago"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "Danny just texted me that his carrier ported him to a new number. It's 773-505-9241 now. Same prefix, but that 8 became a 9"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "His birthday is October 17th. I need to send him something at least a week before so it arrives on time"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 7,
+          "quote": "Danny prefers texts over phone calls, like strongly prefers them"
+        }
+      ]
+    }
+  ]
+}

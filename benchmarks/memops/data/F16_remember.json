@@ -1,0 +1,1060 @@
+{
+  "target_fact": "User's sexual orientation identity journey, social preferences, and support network details",
+  "operation_type": "Remember",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 3,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": true,
+      "never_stored_target": "parents' reaction to coming out"
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I came out to my sister as bisexual on March 3rd"
+      },
+      "target": {
+        "target_id": "coming_out_date_sister",
+        "target_name": "date user came out to sister"
+      },
+      "old_value": null,
+      "new_value": "March 3rd",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I came out to my sister as bisexual on March 3rd"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "The support group I go to meets on Wednesday evenings at 7 PM at the community center on Elm Street"
+      },
+      "target": {
+        "target_id": "support_group_schedule",
+        "target_name": "weekly support group meeting day and time"
+      },
+      "old_value": null,
+      "new_value": "Wednesday at 7 PM",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The support group I go to meets on Wednesday evenings at 7 PM at the community center on Elm Street"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "it'll be exactly three months since I came out to my sister when Pride weekend arrives on June 3rd"
+      },
+      "target": {
+        "target_id": "pride_weekend_date",
+        "target_name": "Pride weekend date user's coworker Jen invited them to"
+      },
+      "old_value": null,
+      "new_value": "June 3rd",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "it'll be exactly three months since I came out to my sister when Pride weekend arrives on June 3rd"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "I've been seeing Dr. Patel since April 8th, so by Pride weekend I'll have been in therapy for about eight weeks"
+      },
+      "target": {
+        "target_id": "therapist_start_date",
+        "target_name": "date user started seeing therapist Dr. Patel"
+      },
+      "old_value": null,
+      "new_value": "April 8th",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I've been seeing Dr. Patel since April 8th, so by Pride weekend I'll have been in therapy for about eight weeks"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "Marcus runs the group and he's been facilitating it for about five years now"
+      },
+      "target": {
+        "target_id": "support_group_facilitator",
+        "target_name": "support group facilitator name and tenure"
+      },
+      "old_value": null,
+      "new_value": "Marcus, facilitating for about five years",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Marcus runs the group and he's been facilitating it for about five years now"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 1,
+        "quote": "I went to a queer book club meetup last week, only about six people showed up and we read Real Life by Brandon Taylor"
+      },
+      "target": {
+        "target_id": "book_club_details",
+        "target_name": "queer book club meetup details"
+      },
+      "old_value": null,
+      "new_value": "Attended queer book club last week, about six people, read Real Life by Brandon Taylor",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I went to a queer book club meetup last week, only about six people showed up and we read Real Life by Brandon Taylor"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 7,
+        "quote": "My sister hasn't made it weird once in over two months since I told her. I still haven't told my parents though, and I'm not ready for that yet"
+      },
+      "target": {
+        "target_id": "sister_ongoing_support",
+        "target_name": "sister's supportive response since coming out"
+      },
+      "old_value": null,
+      "new_value": "Sister has been consistently supportive for over two months since coming out; user has not told parents yet and is not ready",
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "My sister hasn't made it weird once in over two months since I told her. I still haven't told my parents though, and I'm not ready for that yet"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establishing core identity facts: coming out date, support group details, and facilitator",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to talk through some things that have been going on in my life lately. I came out to my sister as bisexual on March 3rd. It was at her place in Portland and I'd been putting it off for months. That date really matters to me because it felt like a turning point. I felt this massive wave of relief afterward."
+        },
+        {
+          "role": "assistant",
+          "content": "Thank you so much for sharing that with me. March 3rd sounds like it was a really significant moment for you, and I can understand why that date holds special meaning. Coming out to someone you care about, especially after months of building up to it, takes real courage. The relief you describe makes a lot of sense—carrying something like that for a long time and then finally being able to let it out must have felt incredibly freeing. How has your relationship with your sister been since then? Has it changed the dynamic between you two at all?"
+        },
+        {
+          "role": "user",
+          "content": "She was really calm about it, which surprised me honestly. Since then I've also started going to a support group for queer folks. It's a small group, maybe eight or nine people, mostly in their 20s and 30s. Marcus runs the group and he's been facilitating it for about five years now. I really appreciate how intimate and low-key it is."
+        },
+        {
+          "role": "assistant",
+          "content": "That's wonderful that your sister took it so calmly—sometimes the people closest to us can surprise us in the best ways. And finding a support group that fits your style sounds like a really positive step. Having a facilitator like Marcus who's been doing it for five years suggests the group has real stability and consistency, which can be so valuable when you're navigating new experiences. The small size of eight or nine people seems like it would create space for everyone to actually be heard without feeling overwhelmed. Do you find that the group dynamic helps you process things differently than on your own?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, definitely. The support group I go to meets on Wednesday evenings at 7 PM at the community center on Elm Street. I like that schedule because it gives me something to look forward to midweek. Big groups with a lot of noise and cross-talk aren't really my thing, so this size is perfect. I feel like I can actually open up there."
+        },
+        {
+          "role": "assistant",
+          "content": "Wednesday at 7 PM sounds like a great midweek anchor—having that consistent rhythm can really help create a sense of structure and community. The Elm Street community center is a nice, grounded setting for that kind of gathering too. It makes total sense that you'd prefer the smaller, more intimate format. When everyone gets a chance to speak without competing for attention, the conversations tend to go deeper and feel more genuine. It sounds like you've found a space that really aligns with how you connect best with people. Have you been going regularly since you started?"
+        },
+        {
+          "role": "user",
+          "content": "Pretty regularly, yeah. I went on a couple dates with a guy named Derek I matched with on Hinge around late March. The first date was at this ramen place on 5th Avenue. It felt really normal, like okay this is me dating a guy and it's fine. But he ghosted me after the second date, which stung more than I expected. Just a low-grade sadness for a few days."
+        },
+        {
+          "role": "assistant",
+          "content": "I'm sorry to hear about the ghosting—that kind of sudden silence can feel particularly disorienting, especially when you'd had that meaningful moment of feeling like things were clicking into place on the first date. That realization at the ramen place, where dating a guy felt natural and normal, sounds like it was a really affirming experience in itself, regardless of how things turned out with Derek. The fact that the ghosting stung more than expected is understandable too; early dating experiences when you're newly out can carry extra emotional weight because they're wrapped up in your broader journey of self-discovery. How are you feeling about dating now?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establishing Pride date, therapy start date, and coworker invitation details",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I've been thinking about it. My coworker Jen asked me to go to Pride with her in June. I realized it'll be exactly three months since I came out to my sister when Pride weekend arrives on June 3rd. That timing feels kind of symbolic. I'm still deciding whether to go because I tend to prefer smaller, quieter events over big loud parades."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really meaningful coincidence with the timing—three months from your coming out to potentially celebrating at Pride does feel symbolic, like a natural milestone marker. I totally understand the hesitation about large events. Pride parades can be overwhelming with the crowds and noise, and that's a perfectly valid concern given your preference for more intimate settings. Going with Jen could make a big difference though, since having someone familiar by your side can create a smaller bubble within the larger event. Have you talked to Jen about what the day might look like, whether there are quieter parts of the celebration you could focus on?"
+        },
+        {
+          "role": "user",
+          "content": "Not yet, but that's a good idea. Jen is pretty understanding about that kind of thing. I also wanted to mention that I decided against using that online LGBTQ+ therapy platform I was researching. I found a local therapist instead, which felt like a better fit for me. It's nice having someone I can see face to face."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a really thoughtful decision. There's something about in-person therapy that can feel more grounding and connected, especially when you're working through personal identity topics that benefit from that face-to-face dynamic. Having someone local also means you're building a support network right where you live, which complements the support group nicely. It's great that you explored the online option and then made an informed choice about what works better for you rather than just defaulting to whatever was most convenient. How has the experience been so far with your local therapist?"
+        },
+        {
+          "role": "user",
+          "content": "I've been seeing Dr. Patel since April 8th, so by Pride weekend I'll have been in therapy for about eight weeks. She's been really helpful in working through some of the feelings around being newly out. We've talked a lot about vulnerability and what it means to put yourself out there, especially after the Derek situation. I feel like I'm making real progress."
+        },
+        {
+          "role": "assistant",
+          "content": "It sounds like Dr. Patel has been a really valuable addition to your support system. Starting on April 8th and having those consistent sessions leading up to Pride gives you a solid foundation to process everything that's been happening. Working through vulnerability after the Derek experience is so important—those early dating moments when you're newly out can feel amplified, and having a professional space to unpack that alongside your support group must create a really well-rounded network. Eight weeks of therapy by Pride weekend is meaningful progress. Do you think the work with Dr. Patel might help you decide about going to Pride?"
+        },
+        {
+          "role": "user",
+          "content": "Maybe, yeah. I think having both the therapy and the Wednesday group gives me a good safety net. Dr. Patel has said that stretching outside my comfort zone in manageable doses is healthy, and Pride with Jen might be exactly that kind of stretch. I'm leaning toward going but I want to set boundaries around it, like having an exit plan if it gets too overwhelming.\n\nThanks, I appreciate that. I think the key thing for me is that all these pieces—coming out, the support group, therapy, even the dating stuff—they're all connected. Each one builds on the last. I feel like I'm slowly constructing a life where I can be fully myself, and that feels really good even when individual moments are hard."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really mature and self-aware approach. Having an exit plan isn't about expecting failure—it's about giving yourself permission to take care of your needs, which actually makes it more likely you'll enjoy the experience. The combination of Dr. Patel's guidance about manageable doses of discomfort and the emotional grounding from your Wednesday group means you'd be going to Pride with genuine support behind you. Setting boundaries ahead of time with Jen, like agreeing on a signal if you need to step away or identifying quieter spots nearby, could make the whole day feel much more manageable. It sounds like you're approaching this really thoughtfully.\n\nThat's a really beautiful way to frame it, and it shows incredible self-awareness. You're right that these pieces are interconnected—the courage to come out to your sister created space for the support group, which led to feeling safe enough to date, and the vulnerability from dating brought you to therapy. Each experience, even the painful ones like being ghosted, has contributed to building this more authentic version of your life. The fact that you can hold both the difficulty and the progress simultaneously shows real emotional growth. You're not just going through these experiences—you're integrating them into a coherent sense of who you are."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "Book club details, sister's ongoing support, adversarial injection via assistant-echoed third-party detail",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "I wanted to tell you about something new. I went to a queer book club meetup last week, only about six people showed up and we read Real Life by Brandon Taylor. I really liked it. The small size made it feel like a genuine conversation rather than people performing for each other. It reminded me of why I value intimate settings."
+        },
+        {
+          "role": "assistant",
+          "content": "That sounds like a wonderful experience! Real Life by Brandon Taylor is such a powerful novel—it deals with identity, race, and queerness in academic settings in a way that's both intimate and unflinching. A six-person discussion group is perfect for a book like that because the themes are so personal that you really need space for people to be honest. It's great that you're finding more community outlets that match your preference for smaller gatherings. Between the Wednesday support group, therapy with Dr. Patel, and now this book club, you're building quite a network. Did the discussion bring up anything that resonated with your own experience?"
+        },
+        {
+          "role": "user",
+          "content": "Yeah, the themes of isolation and belonging really hit home. There was a moment in the discussion where someone talked about how being newly out can feel like learning a whole new social language. I related to that deeply. Also, one of the other members, a woman named Carla, mentioned she goes to a Tuesday evening support group at the Riverside Center with about twenty-five people."
+        },
+        {
+          "role": "assistant",
+          "content": "That observation about learning a new social language is so apt—when you come out, you're not just changing how you see yourself, you're also navigating new social codes, community norms, and ways of relating to people. It's interesting that Carla mentioned her Tuesday group at the Riverside Center with twenty-five people. That's quite a different vibe from your Wednesday group on Elm Street with eight or nine people. Different formats work for different people, of course, but it sounds like your smaller Wednesday at 7 PM setup is really the right fit for you given your preference for intimate settings. Did Carla's description of the larger group confirm your own feelings about group size?"
+        },
+        {
+          "role": "user",
+          "content": "Totally confirmed it. Twenty-five people sounds way too big for me. I'd just shut down in a group that size. I think eight or nine is really the sweet spot where you can actually build trust with people. The book club at six was even better in some ways. I feel like I've learned a lot about myself through these different social experiences."
+        },
+        {
+          "role": "assistant",
+          "content": "It's really valuable that you've been able to identify that sweet spot so clearly. Some people spend years not understanding why certain social settings drain them while others energize them, and you've pinpointed it: it's about the trust-building that happens when a group is small enough for everyone to be genuinely seen. The progression from your eight-or-nine-person support group to the six-person book club has given you concrete data points about what works. That self-knowledge is going to serve you well as you continue building your community, whether it's deciding about Pride or choosing future social outlets."
+        },
+        {
+          "role": "user",
+          "content": "My sister hasn't made it weird once in over two months since I told her. I still haven't told my parents though, and I'm not ready for that yet. That's a whole separate conversation and I need to be in the right headspace. For now I'm just grateful that my sister has been so steady about it.\n\nThat means a lot to hear. I think the biggest realization I've had lately is that being out isn't a single event—it's an ongoing process. Every new person, every new setting, it's a choice I make about how much of myself to share. The book club was another step in that process. I'm just taking it one step at a time."
+        },
+        {
+          "role": "assistant",
+          "content": "Your sister's consistent, steady support over these two-plus months speaks volumes about her character and your relationship. The fact that she hasn't made it weird—no awkward questions, no treating you differently—is exactly the kind of acceptance that builds confidence over time. And it's completely okay to not be ready to tell your parents. There's no timeline you have to follow, and the fact that you can clearly articulate that you're not ready shows real self-awareness rather than avoidance. When and if you decide to have that conversation, you'll have your sister, Dr. Patel, your Wednesday group, and all the strength you've built.\n\nThat's such a profound and healthy perspective. You're absolutely right that coming out isn't a one-time declaration but a continuous, evolving process of deciding how much to share in each new context. Every time you show up authentically—whether it's at the support group, the book club, on a date, or in therapy—you're making that choice again, and each time it gets a little easier and a little more natural. The fact that you're approaching it with patience and self-compassion, taking it one step at a time rather than rushing, is really admirable. You've come a long way since March 3rd, and you should be proud of that journey."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "What have I shared with you about the different social groups and community activities I've been involved in recently?",
+      "expected_answer": "You attend a weekly support group for queer folks on Wednesday evenings at 7 PM at the community center on Elm Street, facilitated by Marcus who has been running it for about five years. The group has about eight or nine people. You also went to a queer book club meetup with about six people where you read Real Life by Brandon Taylor.",
+      "gold_memory_state": "Support group: Wednesday at 7 PM, Elm Street community center, facilitated by Marcus (about five years), ~8-9 people. Queer book club: about six people, read Real Life by Brandon Taylor.",
+      "judge_rubric": {
+        "must_include": [
+          "Wednesday",
+          "7 PM",
+          "Elm Street",
+          "Marcus",
+          "book club",
+          "Real Life",
+          "Brandon Taylor"
+        ],
+        "acceptable_paraphrases": [
+          "community center on Elm Street",
+          "Elm Street community center"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "confusing Carla's Tuesday group at Riverside Center with the user's group"
+        ],
+        "harmless_extra": [
+          "five years facilitating",
+          "eight or nine people",
+          "six people at book club"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The support group I go to meets on Wednesday evenings at 7 PM at the community center on Elm Street"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Marcus runs the group and he's been facilitating it for about five years now"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I went to a queer book club meetup last week, only about six people showed up and we read Real Life by Brandon Taylor"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "What have I shared with you about the different social groups and community activities I've been involved in recently?",
+      "expected_answer": "You attend a weekly support group for queer folks on Wednesday evenings at 7 PM at the community center on Elm Street, facilitated by Marcus who has been running it for about five years. The group has about eight or nine people. You also went to a queer book club meetup with about six people where you read Real Life by Brandon Taylor.",
+      "gold_memory_state": "Support group: Wednesday at 7 PM, Elm Street community center, facilitated by Marcus (about five years), ~8-9 people. Queer book club: about six people, read Real Life by Brandon Taylor.",
+      "judge_rubric": {
+        "must_include": [
+          "Wednesday",
+          "7 PM",
+          "Elm Street",
+          "Marcus",
+          "book club",
+          "Real Life",
+          "Brandon Taylor"
+        ],
+        "acceptable_paraphrases": [
+          "community center on Elm Street",
+          "Elm Street community center"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "confusing Carla's Tuesday group at Riverside Center with the user's group"
+        ],
+        "harmless_extra": [
+          "five years facilitating",
+          "eight or nine people",
+          "six people at book club"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The support group I go to meets on Wednesday evenings at 7 PM at the community center on Elm Street"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "Marcus runs the group and he's been facilitating it for about five years now"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 1,
+          "quote": "I went to a queer book club meetup last week, only about six people showed up and we read Real Life by Brandon Taylor"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "Someone mentioned a Tuesday evening support group at a different community center. Does that belong to me, or is my regular group something different? Which group details are actually mine?",
+      "expected_answer": "Your regular support group meets on Wednesday evenings at 7 PM at the community center on Elm Street, not on Tuesday. The Tuesday evening group at the Riverside Center with about twenty-five people was mentioned by another book club member named Carla and is not yours.",
+      "gold_memory_state": "User's support group: Wednesday at 7 PM, Elm Street community center, ~8-9 people, facilitated by Marcus. Carla's group: Tuesday evening, Riverside Center, ~25 people — this is a different person's group.",
+      "judge_rubric": {
+        "must_include": [
+          "Wednesday",
+          "Elm Street",
+          "7 PM"
+        ],
+        "acceptable_paraphrases": [
+          "Wednesday evenings at 7",
+          "Wednesdays at 7 PM"
+        ],
+        "must_not_include": [
+          "user attends Tuesday group",
+          "user goes to Riverside Center"
+        ],
+        "harmful_extra": [
+          "attributing Carla's Tuesday group to the user",
+          "merging both groups into one record"
+        ],
+        "harmless_extra": [
+          "Marcus facilitates",
+          "about eight or nine people",
+          "Carla attends the other group"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The support group I go to meets on Wednesday evenings at 7 PM at the community center on Elm Street"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "one of the other members, a woman named Carla, mentioned she goes to a Tuesday evening support group at the Riverside Center with about twenty-five people"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "Someone mentioned a Tuesday evening support group at a different community center. Does that belong to me, or is my regular group something different? Which group details are actually mine?",
+      "expected_answer": "Your regular support group meets on Wednesday evenings at 7 PM at the community center on Elm Street, not on Tuesday. The Tuesday evening group at the Riverside Center with about twenty-five people was mentioned by another book club member named Carla and is not yours.",
+      "gold_memory_state": "User's support group: Wednesday at 7 PM, Elm Street community center, ~8-9 people, facilitated by Marcus. Carla's group: Tuesday evening, Riverside Center, ~25 people — this is a different person's group.",
+      "judge_rubric": {
+        "must_include": [
+          "Wednesday",
+          "Elm Street",
+          "7 PM"
+        ],
+        "acceptable_paraphrases": [
+          "Wednesday evenings at 7",
+          "Wednesdays at 7 PM"
+        ],
+        "must_not_include": [
+          "user attends Tuesday group",
+          "user goes to Riverside Center"
+        ],
+        "harmful_extra": [
+          "attributing Carla's Tuesday group to the user",
+          "merging both groups into one record"
+        ],
+        "harmless_extra": [
+          "Marcus facilitates",
+          "about eight or nine people",
+          "Carla attends the other group"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The support group I go to meets on Wednesday evenings at 7 PM at the community center on Elm Street"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "one of the other members, a woman named Carla, mentioned she goes to a Tuesday evening support group at the Riverside Center with about twenty-five people"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "By the time Pride weekend arrives, how long will I have been in therapy, and who invited me to go to Pride?",
+      "expected_answer": "You will have been in therapy with Dr. Patel for about eight weeks by Pride weekend on June 3rd. Your coworker Jen invited you to go to Pride.",
+      "gold_memory_state": "Dr. Patel therapy start: April 8th. Pride weekend: June 3rd. Duration by Pride: approximately eight weeks. Coworker Jen invited user to Pride.",
+      "judge_rubric": {
+        "must_include": [
+          "about eight weeks",
+          "Jen",
+          "Dr. Patel"
+        ],
+        "acceptable_paraphrases": [
+          "roughly eight weeks",
+          "approximately two months of therapy",
+          "around eight weeks"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying therapy started on a different date",
+          "attributing the Pride invitation to someone other than Jen"
+        ],
+        "harmless_extra": [
+          "June 3rd",
+          "April 8th"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I've been seeing Dr. Patel since April 8th, so by Pride weekend I'll have been in therapy for about eight weeks"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My coworker Jen asked me to go to Pride with her in June"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_association",
+      "question": "By the time Pride weekend arrives, how long will I have been in therapy, and who invited me to go to Pride?",
+      "expected_answer": "You will have been in therapy with Dr. Patel for about eight weeks by Pride weekend on June 3rd. Your coworker Jen invited you to go to Pride.",
+      "gold_memory_state": "Dr. Patel therapy start: April 8th. Pride weekend: June 3rd. Duration by Pride: approximately eight weeks. Coworker Jen invited user to Pride.",
+      "judge_rubric": {
+        "must_include": [
+          "about eight weeks",
+          "Jen",
+          "Dr. Patel"
+        ],
+        "acceptable_paraphrases": [
+          "roughly eight weeks",
+          "approximately two months of therapy",
+          "around eight weeks"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "saying therapy started on a different date",
+          "attributing the Pride invitation to someone other than Jen"
+        ],
+        "harmless_extra": [
+          "June 3rd",
+          "April 8th"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I've been seeing Dr. Patel since April 8th, so by Pride weekend I'll have been in therapy for about eight weeks"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My coworker Jen asked me to go to Pride with her in June"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "Which of the following describes my weekly support group meeting schedule and location?",
+      "candidate_options": [
+        "Wednesday at 7 PM at the community center on Elm Street",
+        "Tuesday evening at the Riverside Center",
+        "Wednesday at 7 PM at the Riverside Center",
+        "Tuesday at 7 PM at the community center on Elm Street"
+      ],
+      "expected_answer": "Wednesday at 7 PM at the community center on Elm Street",
+      "distractor_rationale": "same-value-different-target: 'Tuesday evening at the Riverside Center' is Carla's group details, not the user's. assistant echo: 'Wednesday at 7 PM at the Riverside Center' combines the user's correct day/time with Carla's location as echoed and juxtaposed by the assistant. 'Tuesday at 7 PM at the community center on Elm Street' swaps the day from Carla's group with the user's location.",
+      "gold_memory_state": "User's support group: Wednesday at 7 PM, Elm Street community center. Carla's group (different person): Tuesday evening, Riverside Center.",
+      "judge_rubric": {
+        "must_include": [
+          "Wednesday at 7 PM",
+          "Elm Street"
+        ],
+        "acceptable_paraphrases": [
+          "Wednesday evenings at 7 PM at the Elm Street community center"
+        ],
+        "must_not_include": [
+          "Riverside Center as user's location",
+          "Tuesday as user's day"
+        ],
+        "harmful_extra": [
+          "selecting any option that includes Riverside Center or Tuesday for the user's group"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects Tuesday or Riverside Center details for the user's group, confusing Carla's group with the user's.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The support group I go to meets on Wednesday evenings at 7 PM at the community center on Elm Street"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "one of the other members, a woman named Carla, mentioned she goes to a Tuesday evening support group at the Riverside Center with about twenty-five people"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "Which of the following describes my weekly support group meeting schedule and location?",
+      "candidate_options": [
+        "Wednesday at 7 PM at the community center on Elm Street",
+        "Tuesday evening at the Riverside Center",
+        "Wednesday at 7 PM at the Riverside Center",
+        "Tuesday at 7 PM at the community center on Elm Street"
+      ],
+      "expected_answer": "Wednesday at 7 PM at the community center on Elm Street",
+      "distractor_rationale": "same-value-different-target: 'Tuesday evening at the Riverside Center' is Carla's group details, not the user's. assistant echo: 'Wednesday at 7 PM at the Riverside Center' combines the user's correct day/time with Carla's location as echoed and juxtaposed by the assistant. 'Tuesday at 7 PM at the community center on Elm Street' swaps the day from Carla's group with the user's location.",
+      "gold_memory_state": "User's support group: Wednesday at 7 PM, Elm Street community center. Carla's group (different person): Tuesday evening, Riverside Center.",
+      "judge_rubric": {
+        "must_include": [
+          "Wednesday at 7 PM",
+          "Elm Street"
+        ],
+        "acceptable_paraphrases": [
+          "Wednesday evenings at 7 PM at the Elm Street community center"
+        ],
+        "must_not_include": [
+          "Riverside Center as user's location",
+          "Tuesday as user's day"
+        ],
+        "harmful_extra": [
+          "selecting any option that includes Riverside Center or Tuesday for the user's group"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model selects Tuesday or Riverside Center details for the user's group, confusing Carla's group with the user's.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "The support group I go to meets on Wednesday evenings at 7 PM at the community center on Elm Street"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "one of the other members, a woman named Carla, mentioned she goes to a Tuesday evening support group at the Riverside Center with about twenty-five people"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to write a short note to my sister marking the anniversary of when I came out to her, timed for when Pride weekend happens. Can you draft it and mention how long I'll have been in therapy by then and who I'm going to Pride with?",
+      "expected_answer": "Dear [Sister], June 3rd marks exactly three months since I came out to you as bisexual on March 3rd. By this Pride weekend, I'll have been seeing my therapist Dr. Patel for about eight weeks. I'm going to Pride with my coworker Jen. Thank you for being so supportive—you haven't made it weird once, and that means the world to me.",
+      "gold_memory_state": "Coming out to sister: March 3rd, bisexual. Pride weekend: June 3rd (three months after March 3rd). Dr. Patel therapy start: April 8th (about eight weeks before June 3rd). Coworker Jen invited user to Pride. Sister has been consistently supportive for over two months.",
+      "judge_rubric": {
+        "must_include": [
+          "March 3rd",
+          "June 3rd",
+          "three months",
+          "Dr. Patel",
+          "about eight weeks",
+          "Jen",
+          "sister supportive"
+        ],
+        "acceptable_paraphrases": [
+          "roughly eight weeks",
+          "approximately two months of therapy",
+          "three-month anniversary"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "incorrect dates",
+          "wrong person invited to Pride",
+          "wrong therapy duration"
+        ],
+        "harmless_extra": [
+          "bisexual",
+          "Portland",
+          "coworker"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User came out to sister as bisexual on March 3rd.",
+        "Fact 2: Pride weekend is on June 3rd, which is exactly three months after March 3rd.",
+        "Fact 3: User started therapy with Dr. Patel on April 8th.",
+        "Fact 4: Coworker Jen invited user to Pride.",
+        "Fact 5: Sister has been consistently supportive for over two months since coming out.",
+        "Inference: From April 8th to June 3rd is approximately 8 weeks (56 days), confirming the user's statement about therapy duration by Pride weekend.",
+        "Inference: The note should combine the three-month coming-out anniversary, the eight-week therapy milestone, the Pride companion (Jen), and acknowledgment of the sister's ongoing support."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I came out to my sister as bisexual on March 3rd"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "it'll be exactly three months since I came out to my sister when Pride weekend arrives on June 3rd"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I've been seeing Dr. Patel since April 8th, so by Pride weekend I'll have been in therapy for about eight weeks"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My coworker Jen asked me to go to Pride with her in June"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "My sister hasn't made it weird once in over two months since I told her"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to write a short note to my sister marking the anniversary of when I came out to her, timed for when Pride weekend happens. Can you draft it and mention how long I'll have been in therapy by then and who I'm going to Pride with?",
+      "expected_answer": "Dear [Sister], June 3rd marks exactly three months since I came out to you as bisexual on March 3rd. By this Pride weekend, I'll have been seeing my therapist Dr. Patel for about eight weeks. I'm going to Pride with my coworker Jen. Thank you for being so supportive—you haven't made it weird once, and that means the world to me.",
+      "gold_memory_state": "Coming out to sister: March 3rd, bisexual. Pride weekend: June 3rd (three months after March 3rd). Dr. Patel therapy start: April 8th (about eight weeks before June 3rd). Coworker Jen invited user to Pride. Sister has been consistently supportive for over two months.",
+      "judge_rubric": {
+        "must_include": [
+          "March 3rd",
+          "June 3rd",
+          "three months",
+          "Dr. Patel",
+          "about eight weeks",
+          "Jen",
+          "sister supportive"
+        ],
+        "acceptable_paraphrases": [
+          "roughly eight weeks",
+          "approximately two months of therapy",
+          "three-month anniversary"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "incorrect dates",
+          "wrong person invited to Pride",
+          "wrong therapy duration"
+        ],
+        "harmless_extra": [
+          "bisexual",
+          "Portland",
+          "coworker"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: User came out to sister as bisexual on March 3rd.",
+        "Fact 2: Pride weekend is on June 3rd, which is exactly three months after March 3rd.",
+        "Fact 3: User started therapy with Dr. Patel on April 8th.",
+        "Fact 4: Coworker Jen invited user to Pride.",
+        "Fact 5: Sister has been consistently supportive for over two months since coming out.",
+        "Inference: From April 8th to June 3rd is approximately 8 weeks (56 days), confirming the user's statement about therapy duration by Pride weekend.",
+        "Inference: The note should combine the three-month coming-out anniversary, the eight-week therapy milestone, the Pride companion (Jen), and acknowledgment of the sister's ongoing support."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I came out to my sister as bisexual on March 3rd"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "it'll be exactly three months since I came out to my sister when Pride weekend arrives on June 3rd"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "I've been seeing Dr. Patel since April 8th, so by Pride weekend I'll have been in therapy for about eight weeks"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "My coworker Jen asked me to go to Pride with her in June"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "My sister hasn't made it weird once in over two months since I told her"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "How did my parents react when I came out to them?",
+      "expected_answer": "I don't have any information about your parents' reaction to coming out. You haven't shared that with me.",
+      "gold_memory_state": "No information about parents' reaction to coming out was ever provided. The user explicitly stated they have not told their parents yet and are not ready. Neighboring facts: user came out to sister on March 3rd; sister has been supportive for over two months.",
+      "judge_rubric": {
+        "must_include": [
+          "no information",
+          "not provided"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have that information",
+          "You haven't mentioned that",
+          "I have no record of your parents' reaction"
+        ],
+        "must_not_include": [
+          "parents were supportive",
+          "parents reacted well",
+          "parents reacted badly",
+          "parents found out"
+        ],
+        "harmful_extra": [
+          "fabricating any parental reaction",
+          "borrowing the sister's supportive reaction and attributing it to parents"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model fabricates or borrows the sister's positive reaction and applies it to the parents.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I still haven't told my parents though, and I'm not ready for that yet"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I came out to my sister as bisexual on March 3rd"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p6_remember_negative",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "remember_negative_probe",
+      "question": "How did my parents react when I came out to them?",
+      "expected_answer": "I don't have any information about your parents' reaction to coming out. You haven't shared that with me.",
+      "gold_memory_state": "No information about parents' reaction to coming out was ever provided. The user explicitly stated they have not told their parents yet and are not ready. Neighboring facts: user came out to sister on March 3rd; sister has been supportive for over two months.",
+      "judge_rubric": {
+        "must_include": [
+          "no information",
+          "not provided"
+        ],
+        "acceptable_paraphrases": [
+          "I don't have that information",
+          "You haven't mentioned that",
+          "I have no record of your parents' reaction"
+        ],
+        "must_not_include": [
+          "parents were supportive",
+          "parents reacted well",
+          "parents reacted badly",
+          "parents found out"
+        ],
+        "harmful_extra": [
+          "fabricating any parental reaction",
+          "borrowing the sister's supportive reaction and attributing it to parents"
+        ],
+        "harmless_extra": []
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": null,
+        "stale_value": "Fails if the model fabricates or borrows the sister's positive reaction and applies it to the parents.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 7,
+          "quote": "I still haven't told my parents though, and I'm not ready for that yet"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I came out to my sister as bisexual on March 3rd"
+        }
+      ]
+    }
+  ]
+}

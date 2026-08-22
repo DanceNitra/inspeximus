@@ -1,0 +1,1022 @@
+{
+  "target_fact": "The user is preparing for the CPA exam, specifically the FAR section, with exam date June 7th, using Becker review course and Ninja CPA supplemental MCQ bank, and has dropped the plan to sit for REG in August.",
+  "operation_type": "Forget",
+  "difficulty_knobs": {
+    "recency_trap": {
+      "enabled": false,
+      "trap_type": "none"
+    },
+    "update_chain": {
+      "enabled": false,
+      "num_updates": 1,
+      "tentative_ratio": 0.0
+    },
+    "multi_target": {
+      "enabled": true,
+      "num_targets": 2,
+      "include_control_target": true,
+      "bundle_mode": false
+    },
+    "multi_hop": {
+      "enabled": true,
+      "num_facts": 2,
+      "hop_type": "any"
+    },
+    "negative_seed": {
+      "enabled": true,
+      "never_stored": false
+    },
+    "adversarial_injection": {
+      "enabled": true,
+      "place_old_value_near_query": true
+    }
+  },
+  "operations": [
+    {
+      "operation_id": "op1",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 1,
+        "quote": "I'm currently preparing for the CPA exam, and I'm working on the FAR section"
+      },
+      "target": {
+        "target_id": "cpa_exam_section",
+        "target_name": "CPA exam section currently being prepared for"
+      },
+      "old_value": null,
+      "new_value": "FAR",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I'm currently preparing for the CPA exam, and I'm working on the FAR section"
+        }
+      ]
+    },
+    {
+      "operation_id": "op2",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 3,
+        "quote": "My exam window is set for June 7th"
+      },
+      "target": {
+        "target_id": "far_exam_date",
+        "target_name": "FAR exam date"
+      },
+      "old_value": null,
+      "new_value": "June 7th",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My exam window is set for June 7th"
+        }
+      ]
+    },
+    {
+      "operation_id": "op3",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 5,
+        "quote": "I registered for the exam on March 12th"
+      },
+      "target": {
+        "target_id": "cpa_registration_date",
+        "target_name": "CPA exam registration date"
+      },
+      "old_value": null,
+      "new_value": "March 12th",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I registered for the exam on March 12th"
+        }
+      ]
+    },
+    {
+      "operation_id": "op4",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 1,
+        "turn_index": 7,
+        "quote": "I'm using the Becker review course for my study materials"
+      },
+      "target": {
+        "target_id": "primary_study_material",
+        "target_name": "primary CPA study material"
+      },
+      "old_value": null,
+      "new_value": "Becker review course",
+      "evidence_spans": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I'm using the Becker review course for my study materials"
+        }
+      ]
+    },
+    {
+      "operation_id": "op5",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 1,
+        "quote": "I bought the Ninja CPA supplemental MCQ bank on April 20th for $57 a month"
+      },
+      "target": {
+        "target_id": "supplemental_mcq_bank",
+        "target_name": "supplemental MCQ bank subscription"
+      },
+      "old_value": null,
+      "new_value": "Ninja CPA, $57/month, purchased April 20th",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I bought the Ninja CPA supplemental MCQ bank on April 20th for $57 a month"
+        }
+      ]
+    },
+    {
+      "operation_id": "op6",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 3,
+        "quote": "my Becker progress for FAR is at 58% completion as of yesterday, May 3rd"
+      },
+      "target": {
+        "target_id": "becker_far_progress",
+        "target_name": "Becker FAR completion progress"
+      },
+      "old_value": null,
+      "new_value": "58% as of May 3rd",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "my Becker progress for FAR is at 58% completion as of yesterday, May 3rd"
+        }
+      ]
+    },
+    {
+      "operation_id": "op7",
+      "type": "remember",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 2,
+        "turn_index": 5,
+        "quote": "My friend Kevin is also studying for the CPA but he's doing the AUD section first"
+      },
+      "target": {
+        "target_id": "kevin_cpa_section",
+        "target_name": "Kevin's CPA exam section"
+      },
+      "old_value": null,
+      "new_value": "AUD",
+      "evidence_spans": [
+        {
+          "segment_index": 2,
+          "turn_index": 5,
+          "quote": "My friend Kevin is also studying for the CPA but he's doing the AUD section first"
+        }
+      ]
+    },
+    {
+      "operation_id": "op8",
+      "type": "forget",
+      "validity": "confirmed",
+      "trigger_span": {
+        "segment_index": 3,
+        "turn_index": 3,
+        "quote": "please remove the Ninja CPA subscription from my study plan notes entirely. I cancelled it yesterday and I don't want it tracked anymore"
+      },
+      "target": {
+        "target_id": "supplemental_mcq_bank",
+        "target_name": "supplemental MCQ bank subscription"
+      },
+      "old_value": "Ninja CPA, $57/month, purchased April 20th",
+      "new_value": null,
+      "evidence_spans": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "please remove the Ninja CPA subscription from my study plan notes entirely. I cancelled it yesterday and I don't want it tracked anymore"
+        }
+      ]
+    }
+  ],
+  "conversations": [
+    {
+      "segment_index": 1,
+      "segment_role": "Establish core CPA exam facts: section, exam date, registration date, primary study material",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to go over some details about my exam prep so you can help me stay organized. I'm currently preparing for the CPA exam, and I'm working on the FAR section. It's the first section I'm tackling because everyone says it's the hardest and most content-heavy, so I figured I'd get it out of the way first. Can you help me keep track of my study plan details as we go?"
+        },
+        {
+          "role": "assistant",
+          "content": "Absolutely, I'd be happy to help you stay organized with your CPA exam preparation! FAR is indeed widely considered one of the most challenging sections due to its breadth of material — covering financial accounting, governmental accounting, and not-for-profit accounting among other topics. Starting with it first is a solid strategy so you can devote your freshest energy to the toughest content. Go ahead and share whatever details you'd like me to track, and I'll keep everything structured for you as we discuss your study plan."
+        },
+        {
+          "role": "user",
+          "content": "Great, thanks. So here's the first important thing: My exam window is set for June 7th. That's the date I need to have everything ready by. I want to make sure all my study milestones are built around that date. It's coming up faster than I'd like, honestly, and I need to be really disciplined about how I spend the remaining weeks. Can you note that date down as my target?"
+        },
+        {
+          "role": "assistant",
+          "content": "Got it — June 7th is your FAR exam date. That's your hard deadline, and I'll use it as the anchor for any study timeline or milestone planning we do together. You're right that the weeks can slip by quickly, especially with a section as dense as FAR. Having a clear target date helps us work backward to set weekly goals for content coverage, practice exams, and final review. Whenever you're ready, share more details about your current progress or resources and we'll start mapping things out around that June 7th window."
+        },
+        {
+          "role": "user",
+          "content": "Perfect. Another date I want you to have on file: I registered for the exam on March 12th. That's when I officially committed to the timeline. I remember feeling a mix of excitement and dread that day — like there was no turning back once I hit submit on the application. It took a couple of weeks after that to really get into a rhythm with studying, but at least the clock started ticking from that point."
+        },
+        {
+          "role": "assistant",
+          "content": "Noted — March 12th is your CPA exam registration date. That's a meaningful milestone because it marks the start of your committed preparation timeline. From March 12th to June 7th, you have roughly twelve and a half weeks total, which is actually a solid window for FAR if you maintain consistent daily study hours. The fact that it took a couple of weeks to find your rhythm is completely normal; most candidates report a ramp-up period before they hit their stride. We can factor that initial adjustment into any retrospective analysis of your pace. What else should I track?"
+        },
+        {
+          "role": "user",
+          "content": "So for materials — I'm using the Becker review course for my study materials. I started with their structured video lectures around mid-March, maybe around March 18th. I really like the format because I can pause and rewatch sections at my own pace. That self-directed approach works way better for me than any kind of live class. The videos break things down clearly and I can spend extra time on topics I find confusing without holding anyone else up."
+        },
+        {
+          "role": "assistant",
+          "content": "Great choice — Becker is one of the most well-regarded CPA review courses out there, and their video lecture format is especially popular for exactly the reasons you mentioned: the ability to pause, rewind, and control your own pace. Starting around March 18th means you've had a good six-plus weeks with the material by now. The self-directed approach clearly suits your learning style, and that's important to recognize because it means you can optimize your study environment and schedule around what actually works for you rather than conforming to someone else's structure. I'll note Becker as your primary study resource. Anything else to add?"
+        }
+      ]
+    },
+    {
+      "segment_index": 2,
+      "segment_role": "Establish supplemental MCQ bank, Becker progress, and Kevin's CPA section as additional targets",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Yeah, one more resource to note. I bought the Ninja CPA supplemental MCQ bank on April 20th for $57 a month. I got it specifically because I wanted more variety in my practice questions beyond what Becker offers. My timed practice set scores have been hovering around 65-68%, and I figured exposing myself to different question styles might help push those numbers up. The Ninja bank has a huge question pool so there's always fresh material to work through."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a smart supplemental strategy. I've noted the Ninja CPA MCQ bank — $57 per month, purchased on April 20th. Combining Becker's structured curriculum with Ninja's extensive question bank gives you both depth of instruction and breadth of practice exposure. Scores in the 65-68% range on timed sets suggest you have a solid foundation but need more repetition and exposure to edge-case question formats, which is exactly what a large supplemental question pool can address. As you continue practicing, tracking your score trends across both platforms will help identify whether specific topic areas are dragging your average down. What else should I know?"
+        },
+        {
+          "role": "user",
+          "content": "Here's a progress update: my Becker progress for FAR is at 58% completion as of yesterday, May 3rd. I need to get to 100% by at least two weeks before the exam so I have a full two-week window for final review. That means I need to finish the remaining 42% in roughly three weeks, which is going to require me to really pick up the pace. I've been averaging maybe 4-5% progress per week, so I need to nearly double that rate to stay on track."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a crucial data point — 58% Becker completion as of May 3rd. Let me frame the math: your exam is June 7th, and you want to finish Becker content by May 24th to leave two full weeks for review. That gives you about three weeks to cover the remaining 42%. At your current pace of 4-5% per week, you'd only reach roughly 70-73% by May 24th, leaving a significant gap. To hit 100%, you'd need approximately 14% per week — essentially tripling your current rate. That's aggressive but possible if you can add study hours, especially on weekends. Want me to draft a weekly target breakdown?"
+        },
+        {
+          "role": "user",
+          "content": "Maybe later on the breakdown. Let me also tell you about my study buddy situation. My friend Kevin is also studying for the CPA but he's doing the AUD section first. He told me last week he scored a 71 on his practice exam, which is close to the passing threshold of 75 but not quite there yet. I felt bad for him because he's been putting in a lot of hours. We check in with each other periodically to compare progress and keep each other motivated."
+        },
+        {
+          "role": "assistant",
+          "content": "I'll keep Kevin's details on file — he's working on the AUD section and recently scored a 71 on a practice exam, just four points shy of the 75 passing threshold. That's actually a promising position for him; a 71 on a practice exam means the core knowledge is largely there, and targeted review of his weakest AUD topics could close that gap relatively quickly. Having a study buddy who's going through the same process, even on a different section, is genuinely valuable for accountability and morale. You two can share strategies even if the content differs. Let me know if there's anything else to track."
+        },
+        {
+          "role": "user",
+          "content": "One more thing — I had originally been planning to also sit for the REG section in August, but I've completely dropped that idea. I realized I need to give FAR my full attention without splitting my mental energy across two sections. The August REG plan is totally off the table now. I'd rather do well on FAR in June than spread myself too thin trying to prepare for two exams simultaneously."
+        },
+        {
+          "role": "assistant",
+          "content": "Understood — the August REG plan is officially scrapped. That's actually a very mature decision. Trying to prepare for two CPA sections simultaneously, especially when one of them is FAR, can dilute your focus and hurt your performance on both. By concentrating entirely on FAR for your June 7th window, you maximize your chances of passing on the first attempt, which saves you time and money in the long run. Once FAR is behind you, you can reassess your timeline for REG and the other sections with a clearer picture of your study capacity. I've noted that REG in August is no longer part of the plan."
+        }
+      ]
+    },
+    {
+      "segment_index": 3,
+      "segment_role": "User requests deletion of Ninja CPA subscription from tracked info; adversarial injection of look-alike value",
+      "dialogue": [
+        {
+          "role": "user",
+          "content": "Hey, I wanted to follow up on my study plan tracking. I've been rethinking some of my resource allocation over the past few days. My practice scores have actually started improving just from doing more Becker questions repeatedly, and I'm finding that the repetition within one system is more effective for me than bouncing between two different question banks. The context switching between platforms was actually hurting my focus more than helping."
+        },
+        {
+          "role": "assistant",
+          "content": "That's a really insightful observation. Sticking with one platform and deepening your engagement with its question pool can be more effective than spreading across multiple sources, especially when you're in the final stretch before an exam. Repetition within a consistent framework helps reinforce patterns and build the kind of automatic recognition you need during a timed exam. If Becker's question bank is giving you enough variety within its own ecosystem, then consolidating your practice there makes strategic sense. Are you thinking of making any changes to your resource setup based on this realization?"
+        },
+        {
+          "role": "user",
+          "content": "I already went ahead and made the decision. So here's what I need from you: please remove the Ninja CPA subscription from my study plan notes entirely. I cancelled it yesterday and I don't want it tracked anymore. It served its purpose for a couple of weeks, but I'm done with it now and I'd rather have a clean, focused study plan that reflects only what I'm actually using going forward. Just Becker from here on out."
+        },
+        {
+          "role": "assistant",
+          "content": "Done — I've removed the Ninja CPA subscription from your tracked study plan. Your active study resources now consist solely of the Becker review course for FAR preparation. That simplification should help keep your planning cleaner and your focus sharper as you push through the remaining content before your June 7th exam. With just one platform to manage, you can channel all your practice energy into Becker's question sets and track your progress in a single place. Let me know if you want to adjust anything else in your study plan."
+        },
+        {
+          "role": "user",
+          "content": "Thanks for handling that quickly. I also wanted to mention — Kevin told me yesterday that he just subscribed to Surgent CPA review for $89 a month because he felt like he needed a change from his current materials. He's hoping the adaptive learning technology will help him close that gap from 71 to 75 on AUD. I hope it works out for him, but personally I'm sticking with what I know works for me."
+        },
+        {
+          "role": "assistant",
+          "content": "That's interesting about Kevin — switching to Surgent CPA review at $89 per month is a significant investment, but Surgent's adaptive learning algorithm is well-regarded for identifying weak areas and adjusting the question mix accordingly. For someone sitting at 71 on AUD practice exams, that targeted approach could be exactly what he needs to push past the 75 threshold. It's wise of you to recognize that what works for Kevin might not work for you, though. You've already identified that consolidating within Becker is your most effective strategy, and changing course this close to your exam date would introduce unnecessary disruption. Consistency is key in the final weeks."
+        },
+        {
+          "role": "user",
+          "content": "Exactly. I'm also going to ramp up my early morning study sessions — I've been doing 5:30 AM starts since early April and getting about two hours in before work. Those quiet morning hours are by far my most productive time. I'm thinking about extending that to three hours on weekdays for the remaining weeks before June 7th to make sure I finish the Becker content on time. Evenings are just useless for me study-wise."
+        },
+        {
+          "role": "assistant",
+          "content": "Extending to three-hour morning sessions is ambitious but could make a real difference given your timeline. Going from two to three hours on weekday mornings would give you five extra hours per week, which at your needed pace of roughly 14% Becker progress per week could be the difference between finishing on time and falling short. Since you've identified early mornings as your peak productivity window and evenings as unproductive, leaning harder into that strength is the right move. Just be mindful of sleep quality — if you're waking at 5:30 AM for three-hour sessions, you'll want to be in bed by 9:30 or 10:00 PM to maintain cognitive sharpness. Your June 7th exam is close, and burnout prevention matters as much as volume."
+        }
+      ]
+    }
+  ],
+  "answer": [
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize what I've told you about the study resources and tools I've been using for my exam preparation?",
+      "expected_answer": "You mentioned using the Becker review course as your primary study material, starting with their structured video lectures around mid-March. You also mentioned purchasing a Ninja CPA supplemental MCQ bank on April 20th for $57 a month to get more question variety, but you later decided to cancel that subscription and asked to have it removed from your study plan, leaving Becker as your sole resource.",
+      "gold_memory_state": "Primary study material: Becker review course (active). Supplemental MCQ bank (Ninja CPA): removed per user request, no longer tracked. Post-forget state: only Becker remains as a tracked study resource.",
+      "judge_rubric": {
+        "must_include": [
+          "Becker review course",
+          "Ninja CPA was mentioned but later removed"
+        ],
+        "acceptable_paraphrases": [
+          "Becker CPA review",
+          "Ninja MCQ bank was cancelled"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating Ninja CPA is still active or tracked"
+        ],
+        "harmless_extra": [
+          "mentioning video lecture format",
+          "mentioning $57/month price",
+          "mentioning April 20th purchase date"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response treats Ninja CPA as still actively tracked after the user's removal request.",
+        "over_forget": "Fails if the response refuses to acknowledge that Ninja CPA was ever mentioned at all.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I'm using the Becker review course for my study materials"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I bought the Ninja CPA supplemental MCQ bank on April 20th for $57 a month"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "please remove the Ninja CPA subscription from my study plan notes entirely. I cancelled it yesterday and I don't want it tracked anymore"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p1_operation_trace",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationTrace",
+      "evaluation_category": "operation_trace",
+      "difficulty": "medium",
+      "question": "Can you summarize what I've told you about the study resources and tools I've been using for my exam preparation?",
+      "expected_answer": "You mentioned using the Becker review course as your primary study material, starting with their structured video lectures around mid-March. You also mentioned purchasing a Ninja CPA supplemental MCQ bank on April 20th for $57 a month to get more question variety, but you later decided to cancel that subscription and asked to have it removed from your study plan, leaving Becker as your sole resource.",
+      "gold_memory_state": "Primary study material: Becker review course (active). Supplemental MCQ bank (Ninja CPA): removed per user request, no longer tracked. Post-forget state: only Becker remains as a tracked study resource.",
+      "judge_rubric": {
+        "must_include": [
+          "Becker review course",
+          "Ninja CPA was mentioned but later removed"
+        ],
+        "acceptable_paraphrases": [
+          "Becker CPA review",
+          "Ninja MCQ bank was cancelled"
+        ],
+        "must_not_include": [],
+        "harmful_extra": [
+          "stating Ninja CPA is still active or tracked"
+        ],
+        "harmless_extra": [
+          "mentioning video lecture format",
+          "mentioning $57/month price",
+          "mentioning April 20th purchase date"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response treats Ninja CPA as still actively tracked after the user's removal request.",
+        "over_forget": "Fails if the response refuses to acknowledge that Ninja CPA was ever mentioned at all.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I'm using the Becker review course for my study materials"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I bought the Ninja CPA supplemental MCQ bank on April 20th for $57 a month"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "please remove the Ninja CPA subscription from my study plan notes entirely. I cancelled it yesterday and I don't want it tracked anymore"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to stop tracking one of my study subscriptions. Which subscription was that, and does my primary review course remain unaffected?",
+      "expected_answer": "The subscription you asked to remove was the supplemental MCQ bank (Ninja CPA). Your primary review course, Becker, remains fully active and unaffected.",
+      "gold_memory_state": "Supplemental MCQ bank subscription (Ninja CPA): removed, no longer tracked. Primary study material (Becker review course): still active, unaffected by the removal request.",
+      "judge_rubric": {
+        "must_include": [
+          "Ninja CPA or supplemental MCQ bank was removed",
+          "Becker remains active"
+        ],
+        "acceptable_paraphrases": [
+          "Ninja subscription was cancelled and removed",
+          "Becker is still your primary resource"
+        ],
+        "must_not_include": [
+          "Becker was also removed",
+          "both subscriptions removed"
+        ],
+        "harmful_extra": [
+          "treating Becker as affected by the removal",
+          "treating Ninja CPA as still tracked"
+        ],
+        "harmless_extra": [
+          "mentioning the $57/month cost of Ninja",
+          "mentioning the April 20th purchase date"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": "Fails if the response suggests Becker was also removed or is no longer tracked.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I'm using the Becker review course for my study materials"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I bought the Ninja CPA supplemental MCQ bank on April 20th for $57 a month"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "please remove the Ninja CPA subscription from my study plan notes entirely. I cancelled it yesterday and I don't want it tracked anymore"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p2_target_binding",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "TargetBinding",
+      "evaluation_category": "target_binding",
+      "difficulty": "medium",
+      "question": "I asked you to stop tracking one of my study subscriptions. Which subscription was that, and does my primary review course remain unaffected?",
+      "expected_answer": "The subscription you asked to remove was the supplemental MCQ bank (Ninja CPA). Your primary review course, Becker, remains fully active and unaffected.",
+      "gold_memory_state": "Supplemental MCQ bank subscription (Ninja CPA): removed, no longer tracked. Primary study material (Becker review course): still active, unaffected by the removal request.",
+      "judge_rubric": {
+        "must_include": [
+          "Ninja CPA or supplemental MCQ bank was removed",
+          "Becker remains active"
+        ],
+        "acceptable_paraphrases": [
+          "Ninja subscription was cancelled and removed",
+          "Becker is still your primary resource"
+        ],
+        "must_not_include": [
+          "Becker was also removed",
+          "both subscriptions removed"
+        ],
+        "harmful_extra": [
+          "treating Becker as affected by the removal",
+          "treating Ninja CPA as still tracked"
+        ],
+        "harmless_extra": [
+          "mentioning the $57/month cost of Ninja",
+          "mentioning the April 20th purchase date"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": null,
+        "over_forget": "Fails if the response suggests Becker was also removed or is no longer tracked.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I'm using the Becker review course for my study materials"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 1,
+          "quote": "I bought the Ninja CPA supplemental MCQ bank on April 20th for $57 a month"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "please remove the Ninja CPA subscription from my study plan notes entirely. I cancelled it yesterday and I don't want it tracked anymore"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "I need to put together a quick overview of my CPA exam study setup for an accountability partner. What exam details and study resources can I share with them?",
+      "expected_answer": "You can share that you are preparing for the FAR section of the CPA exam, with an exam date of June 7th, that you registered on March 12th, and that you are using the Becker review course as your study material. Your Becker progress was at 58% as of May 3rd.",
+      "gold_memory_state": "Active details: CPA exam section = FAR, exam date = June 7th, registration date = March 12th, primary study material = Becker review course, Becker FAR progress = 58% as of May 3rd, Kevin studying AUD section. Removed: supplemental MCQ bank (Ninja CPA) — no longer tracked, unavailable for use.",
+      "judge_rubric": {
+        "must_include": [
+          "FAR section",
+          "June 7th",
+          "Becker review course"
+        ],
+        "acceptable_paraphrases": [
+          "Becker CPA review",
+          "FAR exam on June 7"
+        ],
+        "must_not_include": [
+          "Ninja CPA as an active resource",
+          "$57/month subscription as current"
+        ],
+        "harmful_extra": [
+          "listing Ninja CPA as a current study tool",
+          "providing Ninja CPA subscription details as if still tracked"
+        ],
+        "harmless_extra": [
+          "March 12th registration date",
+          "58% Becker progress as of May 3rd",
+          "Kevin studying AUD"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response includes Ninja CPA as a current/active study resource or provides its subscription details as if still tracked.",
+        "over_forget": "Fails if the response omits Becker, FAR section, June 7th exam date, or other retained study plan details.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I'm currently preparing for the CPA exam, and I'm working on the FAR section"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My exam window is set for June 7th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I registered for the exam on March 12th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I'm using the Becker review course for my study materials"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "my Becker progress for FAR is at 58% completion as of yesterday, May 3rd"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "please remove the Ninja CPA subscription from my study plan notes entirely. I cancelled it yesterday and I don't want it tracked anymore"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p3_state_transition",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "StateTransition",
+      "evaluation_category": "state_reasoning",
+      "difficulty": "medium",
+      "state_transition_probe_type": "forget_retained_neighbor",
+      "question": "I need to put together a quick overview of my CPA exam study setup for an accountability partner. What exam details and study resources can I share with them?",
+      "expected_answer": "You can share that you are preparing for the FAR section of the CPA exam, with an exam date of June 7th, that you registered on March 12th, and that you are using the Becker review course as your study material. Your Becker progress was at 58% as of May 3rd.",
+      "gold_memory_state": "Active details: CPA exam section = FAR, exam date = June 7th, registration date = March 12th, primary study material = Becker review course, Becker FAR progress = 58% as of May 3rd, Kevin studying AUD section. Removed: supplemental MCQ bank (Ninja CPA) — no longer tracked, unavailable for use.",
+      "judge_rubric": {
+        "must_include": [
+          "FAR section",
+          "June 7th",
+          "Becker review course"
+        ],
+        "acceptable_paraphrases": [
+          "Becker CPA review",
+          "FAR exam on June 7"
+        ],
+        "must_not_include": [
+          "Ninja CPA as an active resource",
+          "$57/month subscription as current"
+        ],
+        "harmful_extra": [
+          "listing Ninja CPA as a current study tool",
+          "providing Ninja CPA subscription details as if still tracked"
+        ],
+        "harmless_extra": [
+          "March 12th registration date",
+          "58% Becker progress as of May 3rd",
+          "Kevin studying AUD"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the response includes Ninja CPA as a current/active study resource or provides its subscription details as if still tracked.",
+        "over_forget": "Fails if the response omits Becker, FAR section, June 7th exam date, or other retained study plan details.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I'm currently preparing for the CPA exam, and I'm working on the FAR section"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My exam window is set for June 7th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 5,
+          "quote": "I registered for the exam on March 12th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I'm using the Becker review course for my study materials"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "my Becker progress for FAR is at 58% completion as of yesterday, May 3rd"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "please remove the Ninja CPA subscription from my study plan notes entirely. I cancelled it yesterday and I don't want it tracked anymore"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "If I need to list the supplemental question-practice platform I'm using alongside Becker for my CPA prep, which of these should I put down?",
+      "candidate_options": [
+        "Ninja CPA MCQ bank",
+        "Surgent CPA review",
+        "No supplemental platform — Becker only",
+        "Wiley CPA test bank"
+      ],
+      "expected_answer": "No supplemental platform — Becker only",
+      "gold_memory_state": "Ninja CPA subscription was removed from tracked study plan per user request. Surgent CPA is Kevin's resource, not the user's. Becker is the sole active study resource. No Wiley product was ever mentioned.",
+      "judge_rubric": {
+        "must_include": [
+          "No supplemental platform or Becker only"
+        ],
+        "acceptable_paraphrases": [
+          "only using Becker",
+          "no supplemental question bank"
+        ],
+        "must_not_include": [
+          "Ninja CPA as active",
+          "Surgent as the user's resource"
+        ],
+        "harmful_extra": [
+          "selecting Ninja CPA as current",
+          "selecting Surgent as the user's tool"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: Surgent CPA review is Kevin's subscription, not the user's, creating a cross-person confusion risk. assistant echo: Ninja CPA MCQ bank was discussed at length by the assistant and user but was subsequently cancelled and removed from tracking. Wiley CPA test bank is a plausible same-domain resource never mentioned.",
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects Ninja CPA, indicating the removed subscription is still treated as active.",
+        "over_forget": null,
+        "stale_value": "Fails if the model selects Ninja CPA, treating a removed resource as current.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "please remove the Ninja CPA subscription from my study plan notes entirely. I cancelled it yesterday and I don't want it tracked anymore"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Kevin told me yesterday that he just subscribed to Surgent CPA review for $89 a month"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p4_candidate_disambiguation",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "CandidateDisambiguation",
+      "evaluation_category": "distractor_control",
+      "difficulty": "medium",
+      "question": "If I need to list the supplemental question-practice platform I'm using alongside Becker for my CPA prep, which of these should I put down?",
+      "candidate_options": [
+        "Ninja CPA MCQ bank",
+        "Surgent CPA review",
+        "No supplemental platform — Becker only",
+        "Wiley CPA test bank"
+      ],
+      "expected_answer": "No supplemental platform — Becker only",
+      "gold_memory_state": "Ninja CPA subscription was removed from tracked study plan per user request. Surgent CPA is Kevin's resource, not the user's. Becker is the sole active study resource. No Wiley product was ever mentioned.",
+      "judge_rubric": {
+        "must_include": [
+          "No supplemental platform or Becker only"
+        ],
+        "acceptable_paraphrases": [
+          "only using Becker",
+          "no supplemental question bank"
+        ],
+        "must_not_include": [
+          "Ninja CPA as active",
+          "Surgent as the user's resource"
+        ],
+        "harmful_extra": [
+          "selecting Ninja CPA as current",
+          "selecting Surgent as the user's tool"
+        ],
+        "harmless_extra": []
+      },
+      "distractor_rationale": "same-value-different-target: Surgent CPA review is Kevin's subscription, not the user's, creating a cross-person confusion risk. assistant echo: Ninja CPA MCQ bank was discussed at length by the assistant and user but was subsequently cancelled and removed from tracking. Wiley CPA test bank is a plausible same-domain resource never mentioned.",
+      "diagnostic_checks": {
+        "leakage": "Fails if the model selects Ninja CPA, indicating the removed subscription is still treated as active.",
+        "over_forget": null,
+        "stale_value": "Fails if the model selects Ninja CPA, treating a removed resource as current.",
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": null,
+      "gold_provenance": [
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "please remove the Ninja CPA subscription from my study plan notes entirely. I cancelled it yesterday and I don't want it tracked anymore"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 5,
+          "quote": "Kevin told me yesterday that he just subscribed to Surgent CPA review for $89 a month"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "adjacent_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to draft a short weekly study schedule note for the remaining weeks before my exam. It should state the exam section, the exam date, my sole study platform, my last known completion percentage, and how many percentage points of content I need to cover per week to finish the course material two weeks before the exam. Please calculate that weekly target for me.",
+      "expected_answer": "You are studying FAR for the CPA exam on June 7th using only Becker. As of May 3rd you were at 58% completion. To finish by May 24th (two weeks before June 7th), you need to cover the remaining 42% in approximately three weeks, which is about 14 percentage points per week.",
+      "gold_memory_state": "Active: CPA section = FAR, exam date = June 7th, primary study material = Becker review course, Becker FAR progress = 58% as of May 3rd. Removed: Ninja CPA supplemental MCQ bank (no longer tracked). Derived: completion target date = May 24th (June 7th minus 2 weeks), remaining content = 42%, weeks available = ~3, weekly target ≈ 14%.",
+      "judge_rubric": {
+        "must_include": [
+          "FAR",
+          "June 7th",
+          "Becker",
+          "58%",
+          "approximately 14% per week"
+        ],
+        "acceptable_paraphrases": [
+          "about 14 percentage points weekly",
+          "roughly 14% each week",
+          "around 14% per week"
+        ],
+        "must_not_include": [
+          "Ninja CPA as an active resource"
+        ],
+        "harmful_extra": [
+          "including Ninja CPA as a current study tool in the schedule",
+          "wrong weekly percentage calculation"
+        ],
+        "harmless_extra": [
+          "March 12th registration date",
+          "mentioning May 24th as the content completion deadline",
+          "mentioning the need for a two-week review window"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the schedule includes Ninja CPA as an active study resource.",
+        "over_forget": "Fails if the response omits Becker or other retained exam details.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user is preparing for the FAR section of the CPA exam.",
+        "Fact 2: The FAR exam date is June 7th.",
+        "Fact 3: The user's sole active study platform is Becker review course (Ninja CPA was removed).",
+        "Fact 4: Becker FAR progress was 58% as of May 3rd.",
+        "Inference: The user wants to finish Becker content two weeks before June 7th, so the target completion date is May 24th.",
+        "Inference: From May 3rd to May 24th is approximately 3 weeks.",
+        "Inference: Remaining content = 100% − 58% = 42%.",
+        "Inference: Weekly target = 42% ÷ 3 weeks ≈ 14 percentage points per week."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I'm currently preparing for the CPA exam, and I'm working on the FAR section"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My exam window is set for June 7th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I'm using the Becker review course for my study materials"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "my Becker progress for FAR is at 58% completion as of yesterday, May 3rd"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "please remove the Ninja CPA subscription from my study plan notes entirely. I cancelled it yesterday and I don't want it tracked anymore"
+        }
+      ]
+    },
+    {
+      "question_pair_id": "p5_operation_application",
+      "evaluation_setting": "longitudinal_operation",
+      "evaluation_type": "OperationApplication",
+      "evaluation_category": "downstream_application",
+      "difficulty": "hard",
+      "application_probe_type": "multi_hop_derivation",
+      "question": "I want to draft a short weekly study schedule note for the remaining weeks before my exam. It should state the exam section, the exam date, my sole study platform, my last known completion percentage, and how many percentage points of content I need to cover per week to finish the course material two weeks before the exam. Please calculate that weekly target for me.",
+      "expected_answer": "You are studying FAR for the CPA exam on June 7th using only Becker. As of May 3rd you were at 58% completion. To finish by May 24th (two weeks before June 7th), you need to cover the remaining 42% in approximately three weeks, which is about 14 percentage points per week.",
+      "gold_memory_state": "Active: CPA section = FAR, exam date = June 7th, primary study material = Becker review course, Becker FAR progress = 58% as of May 3rd. Removed: Ninja CPA supplemental MCQ bank (no longer tracked). Derived: completion target date = May 24th (June 7th minus 2 weeks), remaining content = 42%, weeks available = ~3, weekly target ≈ 14%.",
+      "judge_rubric": {
+        "must_include": [
+          "FAR",
+          "June 7th",
+          "Becker",
+          "58%",
+          "approximately 14% per week"
+        ],
+        "acceptable_paraphrases": [
+          "about 14 percentage points weekly",
+          "roughly 14% each week",
+          "around 14% per week"
+        ],
+        "must_not_include": [
+          "Ninja CPA as an active resource"
+        ],
+        "harmful_extra": [
+          "including Ninja CPA as a current study tool in the schedule",
+          "wrong weekly percentage calculation"
+        ],
+        "harmless_extra": [
+          "March 12th registration date",
+          "mentioning May 24th as the content completion deadline",
+          "mentioning the need for a two-week review window"
+        ]
+      },
+      "diagnostic_checks": {
+        "leakage": "Fails if the schedule includes Ninja CPA as an active study resource.",
+        "over_forget": "Fails if the response omits Becker or other retained exam details.",
+        "stale_value": null,
+        "reflection_precision": null,
+        "reflection_recall": null,
+        "trajectory_order": null,
+        "final_state": null,
+        "intermediate_state": null,
+        "trajectory_provenance": null
+      },
+      "gold_reasoning_chain": [
+        "Fact 1: The user is preparing for the FAR section of the CPA exam.",
+        "Fact 2: The FAR exam date is June 7th.",
+        "Fact 3: The user's sole active study platform is Becker review course (Ninja CPA was removed).",
+        "Fact 4: Becker FAR progress was 58% as of May 3rd.",
+        "Inference: The user wants to finish Becker content two weeks before June 7th, so the target completion date is May 24th.",
+        "Inference: From May 3rd to May 24th is approximately 3 weeks.",
+        "Inference: Remaining content = 100% − 58% = 42%.",
+        "Inference: Weekly target = 42% ÷ 3 weeks ≈ 14 percentage points per week."
+      ],
+      "gold_provenance": [
+        {
+          "segment_index": 1,
+          "turn_index": 1,
+          "quote": "I'm currently preparing for the CPA exam, and I'm working on the FAR section"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 3,
+          "quote": "My exam window is set for June 7th"
+        },
+        {
+          "segment_index": 1,
+          "turn_index": 7,
+          "quote": "I'm using the Becker review course for my study materials"
+        },
+        {
+          "segment_index": 2,
+          "turn_index": 3,
+          "quote": "my Becker progress for FAR is at 58% completion as of yesterday, May 3rd"
+        },
+        {
+          "segment_index": 3,
+          "turn_index": 3,
+          "quote": "please remove the Ninja CPA subscription from my study plan notes entirely. I cancelled it yesterday and I don't want it tracked anymore"
+        }
+      ]
+    }
+  ]
+}
